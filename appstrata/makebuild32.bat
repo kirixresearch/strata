@@ -22,8 +22,6 @@ set WEBRES_DIR=%SOURCE_PATH%\appstrata\webres
 set BUILD_PROJECT=appstrata
 set BUILD_SLN=build32.sln
 set BUILDUTIL=cscript /nologo %SOURCE_PATH%\appmain\buildutil.vbs %CONFIG_PATH% 
-set S3BUCKET=builds.kirix.com/kirix-strata
-set S3NAME=kirix-strata-%YEAR%-%MONTH%-%DAY%.msi
 
 REM -- these variables are used by the WIX source files --
 set BUILDSRC=d:\build32\buildsrc
@@ -36,6 +34,10 @@ echo Log will be placed in file: %SOURCE_PATH%\build.log
 
 set BUILD_OUTPUT_PATH=%BUILD_BASE%\builds\%BUILD_CURRENT%
 
+REM -- s3 bucket variables
+set S3BUCKET=builds.kirix.com/kirix-strata
+set S3NAME=kirix-strata-%YEAR%-%MONTH%-%DAY%-build-%BUILD_CURRENT%.msi
+
 
 REM -- make sure that the output path doesn't already exist --
 
@@ -43,7 +45,6 @@ if exist %BUILD_OUTPUT_PATH% (
     echo Error Build Output Path '%BUILD_OUTPUT_PATH%' already exists.
     goto end
 )
-
 
 
 REM -- change to the drive and driectory where the build will be made --
@@ -148,7 +149,7 @@ if "%2"=="build_only" goto end
 
 REM -- make the setup exe --
 
-
+:build
 
 echo Generating Installation...
 erase %SETUP_PATH%\%WXS_NAME%_tmp.wxs /f /q 2>nul
@@ -157,7 +158,7 @@ erase %SETUP_PATH%\%WXS_NAME%.msi /f /q 2>nul
 erase %SETUP_PATH%\*.wixobj /f /q >nul
 %BUILDUTIL% process_wix %SETUP_PATH%\%WXS_NAME%.wxs %SETUP_PATH%\%WXS_NAME%_tmp.wxs
 
-heat dir %BUILDSRCXR% -var %BUILDSRCXR% -ke -gg -sreg -dr INSTALLDIR -cg xr -var env.buildsrcxr -out xr.wxs
+heat dir %BUILDSRCXR% -var %BUILDSRCXR% -ke -gg -sreg -dr INSTALLDIR -cg xr -var env.buildsrcxr -out %SETUP_PATH%\xr.wxs
 candle %SETUP_PATH%\xr.wxs -o %SETUP_PATH%\xr.wixobj
 candle %SETUP_PATH%\%WXS_NAME%_tmp.wxs -o %SETUP_PATH%\%WXS_NAME%.wixobj
 
@@ -203,6 +204,7 @@ date /t
 time /t
 %BUILDUTIL% open %BUILD_OUTPUT_PATH%
 
+pause
 
 :end
-pause
+
