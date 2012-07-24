@@ -34,7 +34,7 @@ echo Log will be placed in file: %SOURCE_PATH%\build.log
 
 set BUILD_OUTPUT_PATH=%BUILD_BASE%\builds\%BUILD_CURRENT%
 
-REM -- s3 bucket variables
+REM -- s3 bucket variables --
 set S3BUCKET=builds.kirix.com/kirix-strata
 set S3NAME=kirix-strata-%YEAR%-%MONTH%-%DAY%-build-%BUILD_CURRENT%.msi
 
@@ -177,6 +177,7 @@ REM -- make sure the setup output file exists --
 
 
 if not "%S3BUCKET%"=="" (
+echo Uploading to S3...
 copy %SETUP_PATH%\%WXS_NAME%.msi %TEMP%\%S3NAME%
 s3 put %S3BUCKET%/ %TEMP%\%S3NAME%
 erase %TEMP%\%S3NAME%
