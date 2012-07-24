@@ -149,7 +149,7 @@ bool GetProcessImageName(DWORD pid, LPTSTR cmdline, size_t maxlen)
         if (!h)
             return false;
 
-        if (0 == pGetModuleFileNameEx(h, (HMODULE)0, cmdline, maxlen))
+        if (0 == pGetModuleFileNameEx(h, (HMODULE)0, cmdline, (DWORD)maxlen))
         {
             CloseHandle(h);
             return false;
@@ -329,8 +329,11 @@ void CloseAllCrashWindows()
 
 BOOL IsHung(HWND hwnd)
 {
+#if defined(__LP64__) || defined(_M_X64)
+	DWORD_PTR d = 1;
+#else
     DWORD d = 1;
-    
+#endif
 
     LRESULT res = SendMessageTimeout(hwnd,
                                      WM_NULL,
