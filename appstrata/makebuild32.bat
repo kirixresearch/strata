@@ -7,6 +7,9 @@ set WIX_PATH="c:\Program Files (x86)\Windows Installer XML v3.5\bin"
 set SIGNCMD=d:\build32\cert\signtool sign /d "%APPLICATION_NAME%" /f d:\build32\cert\signcert.p12 /t http://timestamp.comodoca.com/authenticode
 set MSGFMT="c:\Program Files (x86)\Poedit\bin\msgfmt"
 set MSGCAT="c:\Program Files (x86)\Poedit\bin\msgcat"
+SET YEAR=%DATE:~10,4%
+SET MONTH=%DATE:~4,2%
+SET DAY=%DATE:~7,2%
 
 set BUILD_DRIVE=d:
 set BUILD_BASE=d:\build32
@@ -19,6 +22,8 @@ set WEBRES_DIR=%SOURCE_PATH%\appstrata\webres
 set BUILD_PROJECT=appstrata
 set BUILD_SLN=build32.sln
 set BUILDUTIL=cscript /nologo %SOURCE_PATH%\appmain\buildutil.vbs %CONFIG_PATH% 
+set S3BUCKET=builds.kirix.com/kirix-strata
+set S3NAME=kirix-strata-%YEAR%-%MONTH%-%DAY%.msi
 
 REM -- these variables are used by the WIX source files --
 set BUILDSRC=d:\build32\buildsrc
@@ -170,6 +175,11 @@ erase %SETUP_PATH%\*.wixobj /f /q 2>nul
 REM -- make sure the setup output file exists --
 
 
+if not "%S3BUCKET%"=="" (
+copy %SETUP_PATH%\%WXS_NAME%.msi %TEMP%\%S3NAME%
+s3 put %S3BUCKET%/ %TEMP%\%S3NAME%
+erase %TEMP%\%S3NAME%
+)
 
 
 mkdir %BUILD_OUTPUT_PATH%
