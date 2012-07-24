@@ -1,0 +1,34 @@
+#/*!
+# *
+# * Copyright (c) 2002-2004, Kirix Research, LLC.  All rights reserved.
+# *
+# * Project:  Paladin Code Generator Client
+# * Author:   Benjamin I. Williams
+# * Created:  2004-04-01
+# *
+# */
+
+
+include ../top.mak
+
+EXENAME = palgen-console
+INCLUDES = -I../xcm/include -I../kl/include -I${WX_DIR}/include -I${WX_DIR}/contrib/include 
+DEFINES = -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES
+CFLAGS = ${WX_CFLAGSBASE} ${TOP_CFLAGS}
+LIBDIRS = -L../paladin
+LIBS = -lpaladin ${WX_LIBSBASE}
+
+OBJECTS = app.o \
+	gencode.o 
+
+all: $(EXENAME)
+
+$(EXENAME):	$(OBJECTS)
+		$(CPP) $^ $(LINKFLAGS) $(LIBDIRS) $(LIBS) -o $(OUTPUT_DIR)/$(EXENAME)
+
+clean:
+	rm -f *.o $(EXENAME)
+
+$(OBJECTS): %.o : %.cpp
+	$(CPP) $(CFLAGS) $(INCLUDES) $(DEFINES) -c $<
+

@@ -1,0 +1,16 @@
+/*!
+ *
+ * Copyright (c) 2009-2011, Kirix Research, LLC.  All rights reserved.
+ *
+ * Project:  wxWebConnect Test Application
+ * Author:   Benjamin I. Williams
+ * Created:  2009-05-14
+ *
+ */
+
+
+mondrian ICON "mondrian.ico"
+
+#define wxUSE_NO_MANIFEST 1
+#include "wx/msw/wx.rc"
+

@@ -1,0 +1,94 @@
+
+UNAME=`uname`
+
+if [ "$UNAME" == "Darwin" ]; then
+
+
+RELEASE_CONFIGURE="./configure --with-mac --with-expat --disable-debug --enable-unicode --enable-postscript --enable-miniframe --enable-aui --disable-shared --disable-precomp-headers --disable-exceptions --disable-iff --disable-pcx --disable-joystick --disable-accessibility --without-libtiff --without-regex --disable-display"
+
+DEBUG_CONFIGURE="./configure --with-mac --with-expat --enable-debug --enable-unicode --enable-postscript --enable-miniframe --enable-aui --disable-shared --disable-precomp-headers --disable-exceptions --disable-iff --disable-pcx --disable-joystick --disable-accessibility --without-libtiff  --without-regex --disable-display"
+
+else
+
+RELEASE_CONFIGURE="./configure --with-gtk --with-expat --disable-debug --enable-unicode --enable-postscript --enable-miniframe --enable-aui --disable-shared --disable-precomp-headers --disable-exceptions --disable-iff --disable-pcx --disable-joystick --disable-accessibility --without-libtiff --with-gnomeprint --without-regex --disable-display"
+
+DEBUG_CONFIGURE="./configure --with-gtk --with-expat --enable-debug --enable-unicode --enable-postscript --enable-miniframe --enable-aui --disable-shared --disable-precomp-headers --disable-exceptions --disable-iff --disable-pcx --disable-joystick --disable-accessibility --without-libtiff --with-gnomeprint --without-regex --disable-display"
+
+fi
+
+
+if [ "$1" == "" ]; then
+
+    echo "usage: makewx <debug|release|clean|both> [configure]"
+    echo "  debug = create debug build"
+    echo "  release = create release build"
+    echo "  configure = run configure only. do not build"
+
+    exit
+fi
+
+
+if [ "$1" == "clean" ] || [ "$1" == "both" ]; then
+
+    $DEBUG_CONFIGURE
+    make clean
+    cd contrib/src/stc
+    make clean
+    cd ../../..
+
+    $RELEASE_CONFIGURE
+    make clean
+    cd contrib/src/stc
+    make clean
+    cd ../../..
+
+fi
+
+
+
+if [ "$1" == "debug" ] || [ "$1" == "both" ]; then
+
+    $DEBUG_CONFIGURE
+
+    if [ "$2"  == "configure"]; then
+        exit
+    fi
+
+    make clean
+    make
+    cd contrib/src/stc
+    make clean
+    make
+    cd ../../..
+fi
+
+
+
+
+if [ "$1" == "release" ] || [ "$1" == "both" ]; then
+
+    $RELEASE_CONFIGURE
+
+    if [ "$2"  == "configure"]; then
+        exit
+    fi
+
+    make clean
+    make
+    cd contrib/src/stc
+    make clean
+    make
+    cd ../../..
+fi
+
+
+#make clean
+#make
+#cd contrib/src/propgrid
+#make clean
+#make
+#cd ../stc
+#make clean
+#make
+#cd ../../..
+

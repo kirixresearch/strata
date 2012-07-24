@@ -1,0 +1,111 @@
+/*!
+ *
+ * Copyright (c) 2003-2011, Kirix Research, LLC.  All rights reserved.
+ *
+ * Project:  XD Database Library
+ * Author:   David Z. Williams; Benjamin I. Williams
+ * Created:  2003-04-16
+ *
+ */
+
+
+#include <xcm/xcm.h>
+#include "tango.h"
+#include "../xdcommon/connectionstr.h"
+#include "../xdcommon/errorinfo.h"
+#include "drizzle_client.h"
+#include "database.h"
+
+
+class DatabaseMgr : public tango::IDatabaseMgr
+{
+    XCM_CLASS_NAME("xddrizzle.DatabaseMgr")
+    XCM_BEGIN_INTERFACE_MAP(DatabaseMgr)
+        XCM_INTERFACE_ENTRY(tango::IDatabaseMgr)
+    XCM_END_INTERFACE_MAP()
+
+public:
+
+    tango::IDatabasePtr createDatabase(const std::wstring& location,
+                                       const std::wstring& dbname)
+    {
+        return xcm::null;
+    }
+    
+    bool createDatabase(const std::wstring& location, int db_type)
+    {
+        return false;
+    }
+
+    tango::IDatabasePtr open(const std::wstring& connection_str)
+    {
+        xdcommon::ConnectionStr c(connection_str);
+        std::wstring provider = c.getLowerValue(L"xdprovider");
+        if (provider.empty())
+            return xcm::null;
+        
+        // check if the provider is xdnative, or in a different DLL
+        if (provider != L"xddrizzle")
+        {
+            return xcm::null;
+        }
+        
+        // parse the connection string
+        
+        std::wstring host = c.getValue(L"host");
+        std::wstring port = c.getValue(L"port");
+        std::wstring database = c.getValue(L"database");
+        std::wstring uid = c.getValue(L"user id");
+        std::wstring password = c.getValue(L"password");
+        
+
+        DrizzleDatabase* db = new DrizzleDatabase;
+        db->ref();
+
+        if (!db->open(host, kl::wtoi(port), database, uid, password))
+        {
+            m_error.setError(db->getErrorCode(), db->getErrorString());
+
+            db->unref();
+            return xcm::null;
+        }
+
+        return tango::IDatabasePtr(db, false);
+    }
+
+    tango::IDatabaseEntryEnumPtr getDatabaseList(const std::wstring& host, int port,
+                                                 const std::wstring& uid,
+                                                 const std::wstring& password)
+    {
+        xcm::IVectorImpl<tango::IDatabaseEntryPtr>* vec = new xcm::IVectorImpl<tango::IDatabaseEntryPtr>;
+        return vec;
+    }
+    
+    std::wstring getErrorString()
+    {
+        return m_error.getErrorString();
+    }
+
+    int getErrorCode()
+    {
+        return m_error.getErrorCode();
+    }
+    
+public:
+
+    ThreadErrorInfo m_error;
+};
+
+
+
+
+// these are the publicly creatable classes
+
+XCM_BEGIN_DYNAMIC_MODULE(xddrizzle)
+    XCM_BEGIN_CLASS_MAP()
+        XCM_CLASS_ENTRY(DatabaseMgr)
+        XCM_CLASS_ENTRY(DrizzleDatabase)
+    XCM_END_CLASS_MAP()
+XCM_END_DYNAMIC_MODULE(xddrizzle)
+
+

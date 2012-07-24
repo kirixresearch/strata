@@ -1,0 +1,69 @@
+#/*!
+# *
+# * Copyright (c) 2004-2011, Kirix Research, LLC.  All rights reserved.
+# *
+# * Project:  XD Database Library
+# * Author:   Benjamin I. Williams
+# * Created:  2004-03-31
+# *
+# */
+
+
+include ../../top.mak
+
+
+CPP = g++
+INCLUDES = -I../../xcm/include -I../../kl/include -I../include 
+DEFINES = 
+CFLAGS = -fPIC $(TOP_CFLAGS)
+
+OBJECTS = block.o \
+	cmnbaseiterator.o \
+	cmnbaseset.o \
+	cmndynamicset.o \
+	cmnfilterset.o \
+	columninfo.o \
+	connectionstr.o \
+	dbattr.o \
+	dbentry.o \
+	dbfuncs.o \
+	errorinfo.o \
+	exindex.o \
+	exkeypool.o \
+	exprfuncs.o \
+	extfileinfo.o \
+	fileinfo.o \
+	filestream.o \
+	idxutil.o \
+	jobinfo.o \
+	keylayout.o \
+	localrowcache.o \
+	rowidarray.o \
+	setconfigfile.o \
+	sqlalter.o \
+	sqlcommon.o \
+	sqlcreate.o \
+	sqldelete.o \
+	sqldrop.o \
+	sqlinsert.o \
+	sqlmove.o \
+	sqlselect.o \
+	sqlupdate.o \
+	structure.o \
+	util.o \
+	xdcommon.o \
+
+all: libxdcommon.a
+
+libxdcommon.a:	$(OBJECTS)
+	ar rc libxdcommon.a $(OBJECTS)
+	ranlib libxdcommon.a
+
+clean:
+	rm -f *.o libxdcommon.a
+
+$(OBJECTS): %.o : %.cpp
+	@echo $<
+	@$(CPP) $(CFLAGS) $(INCLUDES) $(DEFINES) -c $<
+
+

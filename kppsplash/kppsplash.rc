@@ -1,0 +1,19 @@
+/*!
+ *
+ * Copyright (c) 2004-2011, Kirix Research, LLC.  All rights reserved.
+ *
+ * Project:  Splash Screen Application
+ * Author:   Benjamin I. Williams
+ * Created:
+ *
+ */
+ 
+
+1001 RCDATA DISCARDABLE autorun_background_normal.png
+1002 RCDATA DISCARDABLE autorun_background_eval.png
+1003 RCDATA DISCARDABLE autorun_button_none.png
+1004 RCDATA DISCARDABLE autorun_button_hover.png
+1005 RCDATA DISCARDABLE autorun_button_down.png
+
+KPPICON ICON kpp.ico
+

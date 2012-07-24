@@ -1,0 +1,15 @@
+
+///////////////////////////////////////////////////////////////////////////////
+// Name:        wxauitest.rc
+// Purpose:     wxaui: wx advanced user interface - sample/test program
+// Author:      Benjamin I. Williams
+// Modified by:
+// Created:     2005-10-03
+// RCS-ID:      
+// Copyright:   Copyright (c) 2005, Kirix Research, LLC.  All rights reserved.
+// License:     wxWidgets licence version 3.1
+///////////////////////////////////////////////////////////////////////////////
+
+mondrian ICON "mondrian.ico"
+
+#include "wx/msw/wx.rc"

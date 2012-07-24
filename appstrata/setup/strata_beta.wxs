@@ -1,0 +1,591 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
+    
+    <Product Name="Kirix Strata Beta"
+        Id="%GUID%"
+        UpgradeCode="1499DE09-1D0C-40be-9EF3-BA106AEC73B7" 
+        Version="%VERSION%"
+        Manufacturer="Kirix Corporation"
+        Language="1033">
+        
+    <Package Id="%GUID%" 
+        Comments="This MSI installation file installs Kirix Strata Beta"
+        Manufacturer="Kirix Corporation"
+        InstallerVersion="200" 
+        Description="Kirix Strata Beta"
+        Languages="1033" Compressed="yes"/>
+        
+    <Media Id="1" EmbedCab="yes" Cabinet="kxbetainst.cab"/>
+        
+
+    <Upgrade Id="1499DE09-1D0C-40be-9EF3-BA106AEC73B7">
+        <UpgradeVersion Property="PREVIOUSVERSIONFOUND"
+            Minimum="0.0.1"
+            Maximum="%VERSION%"
+            MigrateFeatures="yes"
+            IncludeMinimum="yes"
+            IncludeMaximum="no" />
+
+        <UpgradeVersion Property="NEWERVERSIONFOUND"
+            OnlyDetect="yes"
+            Minimum="%VERSION%"
+            IncludeMinimum="no"/>
+    </Upgrade>
+
+
+    <CustomAction Id="AlreadyUpdated" Error="A newer version of this product is already installed." />
+
+    <InstallExecuteSequence>
+        <Custom Action="AlreadyUpdated" After="FindRelatedProducts">NEWERVERSIONFOUND</Custom>
+        <RemoveExistingProducts After="InstallValidate"/>
+    </InstallExecuteSequence>
+
+
+    <Icon Id="kstrata.exe" SourceFile="j:\build\strata\4\buildsrc\win32\standard\bin\appmain.exe"/>
+
+    <!-- setting ALLUSERS to 2 will first attempt a machine
+         install and, that failing, will then do a user install -->
+    <Property Id="ALLUSERS">2</Property>
+    <Property Id="ARPPRODUCTICON">kstrata.exe</Property>
+    <Property Id="ARPURLINFOABOUT"><![CDATA[http://www.kirix.com]]></Property>
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+        <Directory Id="ProgramFilesFolder" Name="PFiles">
+            <Directory Id="PKG_BASEDIR" Name="STRATABT" LongName="Kirix Strata Beta">
+                <Directory Id="PKG_BINDIR" Name="bin">
+
+                    <!--
+                    <Component Id="Documentation Files"  Guid="E60C33C5-BE35-48a1-9DC6-C55BE4865AE6">
+                        <File Id="readme" Name="Readme.txt" LongName="Readme.txt" DiskId="1" src="Readme.txt"/>
+                    </Component>
+                    -->
+
+                    <Component Id="Core" Guid="23928A6C-4566-45f5-A42C-8EAA8C650068">
+                        <File Id="kstrata" Name="KSTRATA.EXE" LongName="kstrata.exe" DiskId="1" Source="j:\build\strata\4\buildsrc\win32\standard\bin\appmain.exe">
+                            <Shortcut Id="StrataProgramMenuShortcut"
+                                Directory="ProgramMenuDir"
+                                Name="StrataBt"
+                                LongName="Kirix Strata Beta"
+                                Target="DefaultFeature"
+                                Show="normal"
+                                Icon="kstrata.exe" IconIndex="0"
+                                WorkingDirectory="TARGETDIR"/>
+                            <Shortcut Id="StrataDesktopShortcut"
+                                Directory="DesktopFolder"
+                                Name="StrataBt"
+                                LongName="Kirix Strata Beta"
+                                Target="DefaultFeature"
+                                Show="normal"
+                                Icon="kstrata.exe" IconIndex="0"
+                                WorkingDirectory="TARGETDIR"/>
+                        </File>
+
+                        <File Id="imgres"   Name="IMGRES.ZIP"   LongName="imgres.zip"   DiskId="1" Source="j:\build\strata\4\buildsrc\win32\standard\bin\imgres.zip"/>
+                        <File Id="webres"   Name="WEBRES.JAR"   LongName="webres.jar"   DiskId="1" Source="j:\build\strata\4\buildsrc\win32\standard\bin\webres.jar"/>
+                        <File Id="xdfs"     Name="XDFS.DLL"     LongName="xdfs.dll"     DiskId="1" Source="j:\build\strata\4\buildsrc\win32\standard\bin\xdfs.dll"/>
+                        <File Id="xdnative" Name="XDNATIVE.DLL" LongName="xdnative.dll" DiskId="1" Source="j:\build\strata\4\buildsrc\win32\standard\bin\xdnative.dll"/>
+                        <File Id="xdodbc"   Name="XDODBC.DLL"   LongName="xdodbc.dll"   DiskId="1" Source="j:\build\strata\4\buildsrc\win32\standard\bin\xdodbc.dll"/>
+                        <File Id="xdoracle" Name="XDORACLE.DLL" LongName="xdoracle.dll" DiskId="1" Source="j:\build\strata\4\buildsrc\win32\standard\bin\xdoracle.dll"/>
+
+                        <RemoveFolder Id="ProgramMenuDir" Directory='ProgramMenuDir' On="uninstall"/>
+
+                    </Component>
+
+                    
+                    <!-- core registry items for things like license keys -->
+                    <Component Id="CoreRegistry" Guid="3B45F207-EEA1-4bec-86F8-8A5F8EEEDC74" KeyPath="yes" SharedDllRefCount="no" Permanent="yes">
+
+                        <Registry Id="Registry0" Root="HKLM" Key="SOFTWARE\Kirix\LicenseInfo" Action="createKey">
+                            <Permission User="Everyone" Read="yes" Write="yes" CreateSubkeys="yes" EnumerateSubkeys="yes" Notify="yes" CreateLink="yes" Delete="yes" ReadPermission="yes" ChangePermission="yes" TakeOwnership="yes" />
+                        </Registry>
+
+<!--
+                        <Registry Id="Registry1" Root="HKLM" Key="SOFTWARE\Kirix\LicenseInfo\KSTRATA" Action="createKey">
+                            <Permission User="Everyone" Read="yes" Write="yes" CreateSubkeys="yes" EnumerateSubkeys="yes" Notify="yes" CreateLink="yes" Delete="yes" ReadPermission="yes" ChangePermission="yes" TakeOwnership="yes" />
+                        </Registry>
+
+                        <Registry Id="Registry2" Root="HKLM" Key="SOFTWARE\Kirix\LicenseInfo\KSTRATA\AuthCode" Action="createKey">
+                            <Permission User="Everyone" Read="yes" Write="yes" CreateSubkeys="yes" EnumerateSubkeys="yes" Notify="yes" CreateLink="yes" Delete="yes" ReadPermission="yes" ChangePermission="yes" TakeOwnership="yes" />
+                        </Registry>
+
+                        <Registry Id="Registry3" Root="HKLM" Key="SOFTWARE\Kirix\LicenseInfo\KSTRATA\ExtraInfo1" Action="createKey">
+                            <Permission User="Everyone" Read="yes" Write="yes" CreateSubkeys="yes" EnumerateSubkeys="yes" Notify="yes" CreateLink="yes" Delete="yes" ReadPermission="yes" ChangePermission="yes" TakeOwnership="yes" />
+                        </Registry>
+
+                        <Registry Id="Registry4" Root="HKLM" Key="SOFTWARE\Kirix\LicenseInfo\KSTRATAEVAL" Action="createKey">
+                            <Permission User="Everyone" Read="yes" Write="yes" CreateSubkeys="yes" EnumerateSubkeys="yes" Notify="yes" CreateLink="yes" Delete="yes" ReadPermission="yes" ChangePermission="yes" TakeOwnership="yes" />
+                        </Registry>
+
+                        <Registry Id="Registry5" Root="HKLM" Key="SOFTWARE\Kirix\LicenseInfo\KSTRATAEVAL\AuthCode" Action="createKey">
+                            <Permission User="Everyone" Read="yes" Write="yes" CreateSubkeys="yes" EnumerateSubkeys="yes" Notify="yes" CreateLink="yes" Delete="yes" ReadPermission="yes" ChangePermission="yes" TakeOwnership="yes" />
+                        </Registry>
+
+                        <Registry Id="Registry6" Root="HKLM" Key="SOFTWARE\Kirix\LicenseInfo\KSTRATAEVAL\ExtraInfo1" Action="createKey">
+                            <Permission User="Everyone" Read="yes" Write="yes" CreateSubkeys="yes" EnumerateSubkeys="yes" Notify="yes" CreateLink="yes" Delete="yes" ReadPermission="yes" ChangePermission="yes" TakeOwnership="yes" />
+                        </Registry>
+-->
+                        <Registry Id="Registry7" Root="HKLM" Key="SOFTWARE\Kirix\LicenseInfo\KSTRATATEST" Action="createKey">
+                            <Permission User="Everyone" Read="yes" Write="yes" CreateSubkeys="yes" EnumerateSubkeys="yes" Notify="yes" CreateLink="yes" Delete="yes" ReadPermission="yes" ChangePermission="yes" TakeOwnership="yes" />
+                        </Registry>
+
+                        <Registry Id="Registry8" Root="HKLM" Key="SOFTWARE\Kirix\LicenseInfo\KSTRATATEST\AuthCode" Action="createKey">
+                            <Permission User="Everyone" Read="yes" Write="yes" CreateSubkeys="yes" EnumerateSubkeys="yes" Notify="yes" CreateLink="yes" Delete="yes" ReadPermission="yes" ChangePermission="yes" TakeOwnership="yes" />
+                        </Registry>
+
+                        <Registry Id="Registry9" Root="HKLM" Key="SOFTWARE\Kirix\LicenseInfo\KSTRATATEST\ExtraInfo1" Action="createKey">
+                            <Permission User="Everyone" Read="yes" Write="yes" CreateSubkeys="yes" EnumerateSubkeys="yes" Notify="yes" CreateLink="yes" Delete="yes" ReadPermission="yes" ChangePermission="yes" TakeOwnership="yes" />
+                        </Registry>
+
+                        <!--
+                            <Registry Id="Registry9" Root="HKCR" Key="kirix.kpgfile" Name="BrowserFlags" Type="integer" Value="8" />
+                            <Registry Id="RegistryB" Root="HKCR" Key="kirix.kpgfile" Name="EditFlags" Type="integer" Value="65536" />
+                            -->
+
+                    </Component>
+                </Directory>
+
+                <Directory Id="PKG_HELPDIR" Name="help">
+                    <Component Id="Help" Guid="43928A7C-4566-45f5-B42C-5EAA8C651068">
+                        <File Id="help"   Name="HELP.CHM"   LongName="help.chm"   DiskId="1" Source="j:\build\strata\4\buildsrc\win32\standard\help\help.chm"/>
+                    </Component>
+                </Directory>
+
+                <Directory Id="PKG_SAMPLEDIR" Name="samples">
+                    <Component Id="Samples" Guid="13938A7C-4566-45f5-B42C-5FAA8C652068">
+                        <File Id="samples"   Name="STARTUP.KPG"   LongName="startup.kpg"   DiskId="1" Source="j:\build\strata\4\buildsrc\win32\standard\samples\startup.kpg"/>
+                    </Component>
+                </Directory>
+
+            </Directory>
+        </Directory>
+
+
+        <Directory Id="ProgramMenuFolder" Name="PMenu" LongName="Programs">
+            <Directory Id="ProgramMenuDir" Name='StrataBt' LongName="Kirix Strata Beta"/>
+        </Directory>
+
+        <Directory Id="DesktopFolder" Name="Desktop"/>
+        
+    </Directory>
+
+ 
+        <!--
+        <ProgId Id='kirix.kpgfile' Description='Kirix Package File'>
+            <Extension Id='kpg' ContentType='application/kirixkpg'>
+                <Verb Id='open' Sequence='10' Command='Open' Target='[!FileId]' Argument='"%1"' />
+            </Extension>
+        </ProgId>
+        -->
+        
+    <Feature Id="DefaultFeature" Level="1">
+        <ComponentRef Id="Core"/>
+        <ComponentRef Id="CoreRegistry"/>
+        <ComponentRef Id="Help"/>
+        <ComponentRef Id="Samples"/>
+        <ComponentRef Id="XrComponent0"/>
+        <ComponentRef Id="XrComponent1"/>
+        <ComponentRef Id="XrComponent2"/>
+        <ComponentRef Id="XrComponent3"/>
+        <ComponentRef Id="XrComponent4"/>
+        <ComponentRef Id="XrComponent5"/>
+        <ComponentRef Id="XrComponent6"/>
+        <ComponentRef Id="XrComponent7"/>
+        <ComponentRef Id="XrComponent8"/>
+        <ComponentRef Id="XrComponent9"/>
+        <ComponentRef Id="XrComponent10"/>
+        <ComponentRef Id="XrComponent11"/>
+        <ComponentRef Id="XrComponent12"/>
+        <ComponentRef Id="XrComponent13"/>
+        <ComponentRef Id="XrComponent14"/>
+        <ComponentRef Id="XrComponent15"/>
+    </Feature>
+
+    <Property Id="WIXUI_INSTALLDIR">PKG_BASEDIR</Property>
+    <UIRef Id="WixUI_InstallDir"/>
+    <UIRef Id="WixUI_ErrorProgressText"/>
+
+    </Product>
+
+
+
+  <Fragment>
+    <DirectoryRef Id="PKG_BASEDIR">
+      <Directory Id="directory0" Name="XULRUN_1" LongName="xr">
+        <Component Id="XrComponent0" DiskId="1" Guid="%GUID%">
+          <File Id="file0" Name="ACCESS_1.DLL" LongName="AccessibleMarshal.dll" Source="c:\xr\AccessibleMarshal.dll" />
+          <File Id="file1" Name="CRASHR_1.EXE" LongName="crashreporter.exe" Source="c:\xr\crashreporter.exe" />
+          <File Id="file2" Name="CRASHR_1.INI" LongName="crashreporter.ini" Source="c:\xr\crashreporter.ini" />
+          <File Id="file3" Name="DEPEND_1.LIS" LongName="dependentlibs.list" Source="c:\xr\dependentlibs.list" />
+          <File Id="file4" Name="freebl3.chk" Source="c:\xr\freebl3.chk" />
+          <File Id="file5" Name="freebl3.dll" Source="c:\xr\freebl3.dll" />
+          <File Id="file6" Name="IA2MAR_1.DLL" LongName="IA2Marshal.dll" Source="c:\xr\IA2Marshal.dll" />
+          <File Id="file7" Name="JAVAXP_1.JAR" LongName="javaxpcom.jar" Source="c:\xr\javaxpcom.jar" />
+          <File Id="file8" Name="JAVAXP_1.DLL" LongName="javaxpcomglue.dll" Source="c:\xr\javaxpcomglue.dll" />
+          <File Id="file9" Name="js.exe" Source="c:\xr\js.exe" />
+          <File Id="file10" Name="js3250.dll" Source="c:\xr\js3250.dll" />
+          <File Id="file11" Name="LICENSE" Source="c:\xr\LICENSE" />
+          <File Id="file12" Name="mozcrt19.dll" Source="c:\xr\mozcrt19.dll" />
+          <File Id="file13" Name="mozctl.dll" Source="c:\xr\mozctl.dll" />
+          <File Id="file14" Name="mozctlx.dll" Source="c:\xr\mozctlx.dll" />
+          <File Id="file15" Name="NSPR-C_1" LongName="nspr-config" Source="c:\xr\nspr-config" />
+          <File Id="file16" Name="nspr4.dll" Source="c:\xr\nspr4.dll" />
+          <File Id="file17" Name="nss3.dll" Source="c:\xr\nss3.dll" />
+          <File Id="file18" Name="nssckbi.dll" Source="c:\xr\nssckbi.dll" />
+          <File Id="file19" Name="nssdbm3.dll" Source="c:\xr\nssdbm3.dll" />
+          <File Id="file20" Name="nssutil3.dll" Source="c:\xr\nssutil3.dll" />
+          <File Id="file21" Name="platform.ini" Source="c:\xr\platform.ini" />
+          <File Id="file22" Name="plc4.dll" Source="c:\xr\plc4.dll" />
+          <File Id="file23" Name="plds4.dll" Source="c:\xr\plds4.dll" />
+          <File Id="file24" Name="README.txt" Source="c:\xr\README.txt" />
+          <File Id="file25" Name="redit.exe" Source="c:\xr\redit.exe" />
+          <File Id="file26" Name="smime3.dll" Source="c:\xr\smime3.dll" />
+          <File Id="file27" Name="softokn3.chk" Source="c:\xr\softokn3.chk" />
+          <File Id="file28" Name="softokn3.dll" Source="c:\xr\softokn3.dll" />
+          <File Id="file29" Name="sqlite3.dll" Source="c:\xr\sqlite3.dll" />
+          <File Id="file30" Name="ssl3.dll" Source="c:\xr\ssl3.dll" />
+          <File Id="file31" Name="UPDATE_1.LOC" LongName="update.locale" Source="c:\xr\update.locale" />
+          <File Id="file32" Name="updater.exe" Source="c:\xr\updater.exe" />
+          <File Id="file33" Name="xpcom.dll" Source="c:\xr\xpcom.dll" />
+          <File Id="file34" Name="xpcshell.exe" Source="c:\xr\xpcshell.exe" />
+          <File Id="file35" Name="xpidl.exe" Source="c:\xr\xpidl.exe" />
+          <File Id="file36" Name="xpt_dump.exe" Source="c:\xr\xpt_dump.exe" />
+          <File Id="file37" Name="xpt_link.exe" Source="c:\xr\xpt_link.exe" />
+          <File Id="file38" Name="xul.dll" Source="c:\xr\xul.dll" />
+          <File Id="file39" Name="XULRUN_1.EXE" LongName="xulrunner-stub.exe" Source="c:\xr\xulrunner-stub.exe" />
+          <File Id="file40" Name="XULRUN_2.EXE" LongName="xulrunner.exe" Source="c:\xr\xulrunner.exe" />
+        </Component>
+        <Directory Id="directory1" Name="chrome">
+          <Component Id="XrComponent1" DiskId="1" Guid="%GUID%">
+            <File Id="file41" Name="classic.jar" Source="c:\xr\chrome\classic.jar" />
+            <File Id="file42" Name="CLASSI_1.MAN" LongName="classic.manifest" Source="c:\xr\chrome\classic.manifest" />
+            <File Id="file43" Name="comm.jar" Source="c:\xr\chrome\comm.jar" />
+            <File Id="file44" Name="COMM_1.MAN" LongName="comm.manifest" Source="c:\xr\chrome\comm.manifest" />
+            <File Id="file45" Name="en-US.jar" Source="c:\xr\chrome\en-US.jar" />
+            <File Id="file46" Name="EN-US_1.MAN" LongName="en-US.manifest" Source="c:\xr\chrome\en-US.manifest" />
+            <File Id="file47" Name="pippki.jar" Source="c:\xr\chrome\pippki.jar" />
+            <File Id="file48" Name="PIPPKI_1.MAN" LongName="pippki.manifest" Source="c:\xr\chrome\pippki.manifest" />
+            <File Id="file49" Name="toolkit.jar" Source="c:\xr\chrome\toolkit.jar" />
+            <File Id="file50" Name="TOOLKI_1.MAN" LongName="toolkit.manifest" Source="c:\xr\chrome\toolkit.manifest" />
+          </Component>
+        </Directory>
+        <Directory Id="directory2" Name="COMPON_1" LongName="components">
+          <Component Id="XrComponent2" DiskId="1" Guid="%GUID%">
+            <RemoveFile Id="UninstRemoveGeneratedFile0" Name="compreg.dat" On="uninstall" />
+            <RemoveFile Id="UninstRemoveGeneratedFile1" Name="xpti.dat" On="uninstall" />
+            <RemoveFile Id="InstRemoveGeneratedFile0" Name="compreg.dat" On="install" />
+            <RemoveFile Id="InstRemoveGeneratedFile1" Name="xpti.dat" On="install" />
+            <File Id="file51" Name="ACCESS_1.XPT" LongName="accessibility-msaa.xpt" Source="c:\xr\components\accessibility-msaa.xpt" />
+            <File Id="file52" Name="ACCESS_2.XPT" LongName="accessibility.xpt" Source="c:\xr\components\accessibility.xpt" />
+            <File Id="file53" Name="alerts.xpt" Source="c:\xr\components\alerts.xpt" />
+            <File Id="file54" Name="appshell.xpt" Source="c:\xr\components\appshell.xpt" />
+            <File Id="file55" Name="APPSTA_1.XPT" LongName="appstartup.xpt" Source="c:\xr\components\appstartup.xpt" />
+            <File Id="file56" Name="AUTOCO_1.XPT" LongName="autocomplete.xpt" Source="c:\xr\components\autocomplete.xpt" />
+            <File Id="file57" Name="AUTOCO_2.XPT" LongName="autoconfig.xpt" Source="c:\xr\components\autoconfig.xpt" />
+            <File Id="file58" Name="caps.xpt" Source="c:\xr\components\caps.xpt" />
+            <File Id="file59" Name="chardet.xpt" Source="c:\xr\components\chardet.xpt" />
+            <File Id="file60" Name="chrome.xpt" Source="c:\xr\components\chrome.xpt" />
+            <File Id="file61" Name="COMMAN_1.XPT" LongName="commandhandler.xpt" Source="c:\xr\components\commandhandler.xpt" />
+            <File Id="file62" Name="COMMAN_2.XPT" LongName="commandlines.xpt" Source="c:\xr\components\commandlines.xpt" />
+            <File Id="file63" Name="composer.xpt" Source="c:\xr\components\composer.xpt" />
+            <File Id="file64" Name="COC868_1.XPT" LongName="contentprefs.xpt" Source="c:\xr\components\contentprefs.xpt" />
+            <File Id="file65" Name="CONTEN_2.XPT" LongName="content_base.xpt" Source="c:\xr\components\content_base.xpt" />
+            <File Id="file66" Name="CONTEN_1.XPT" LongName="content_html.xpt" Source="c:\xr\components\content_html.xpt" />
+            <File Id="file67" Name="CO861A_1.XPT" LongName="content_htmldoc.xpt" Source="c:\xr\components\content_htmldoc.xpt" />
+            <File Id="file68" Name="CONTEN_3.XPT" LongName="content_xmldoc.xpt" Source="c:\xr\components\content_xmldoc.xpt" />
+            <File Id="file69" Name="CONTEN_4.XPT" LongName="content_xslt.xpt" Source="c:\xr\components\content_xslt.xpt" />
+            <File Id="file70" Name="CO4CFD_1.XPT" LongName="content_xtf.xpt" Source="c:\xr\components\content_xtf.xpt" />
+            <File Id="file71" Name="cookie.xpt" Source="c:\xr\components\cookie.xpt" />
+            <File Id="file72" Name="DIRECT_1.XPT" LongName="directory.xpt" Source="c:\xr\components\directory.xpt" />
+            <File Id="file73" Name="DOCSHE_1.XPT" LongName="docshell_base.xpt" Source="c:\xr\components\docshell_base.xpt" />
+            <File Id="file74" Name="dom.xpt" Source="c:\xr\components\dom.xpt" />
+            <File Id="file75" Name="dom_base.xpt" Source="c:\xr\components\dom_base.xpt" />
+            <File Id="file76" Name="DOM_CA_1.XPT" LongName="dom_canvas.xpt" Source="c:\xr\components\dom_canvas.xpt" />
+            <File Id="file77" Name="dom_core.xpt" Source="c:\xr\components\dom_core.xpt" />
+            <File Id="file78" Name="dom_css.xpt" Source="c:\xr\components\dom_css.xpt" />
+            <File Id="file79" Name="DOM_EV_1.XPT" LongName="dom_events.xpt" Source="c:\xr\components\dom_events.xpt" />
+            <File Id="file80" Name="DOM_GE_1.XPT" LongName="dom_geolocation.xpt" Source="c:\xr\components\dom_geolocation.xpt" />
+            <File Id="file81" Name="dom_html.xpt" Source="c:\xr\components\dom_html.xpt" />
+            <File Id="file82" Name="dom_json.xpt" Source="c:\xr\components\dom_json.xpt" />
+            <File Id="file83" Name="DOM_LO_1.XPT" LongName="dom_loadsave.xpt" Source="c:\xr\components\dom_loadsave.xpt" />
+            <File Id="file84" Name="DOM_OF_1.XPT" LongName="dom_offline.xpt" Source="c:\xr\components\dom_offline.xpt" />
+            <File Id="file85" Name="DOM_RA_1.XPT" LongName="dom_range.xpt" Source="c:\xr\components\dom_range.xpt" />
+            <File Id="file86" Name="DOM_SI_1.XPT" LongName="dom_sidebar.xpt" Source="c:\xr\components\dom_sidebar.xpt" />
+            <File Id="file87" Name="DOM_ST_2.XPT" LongName="dom_storage.xpt" Source="c:\xr\components\dom_storage.xpt" />
+            <File Id="file88" Name="DOM_ST_1.XPT" LongName="dom_stylesheets.xpt" Source="c:\xr\components\dom_stylesheets.xpt" />
+            <File Id="file89" Name="dom_svg.xpt" Source="c:\xr\components\dom_svg.xpt" />
+            <File Id="file90" Name="DOM_TH_1.XPT" LongName="dom_threads.xpt" Source="c:\xr\components\dom_threads.xpt" />
+            <File Id="file91" Name="DOM_TR_1.XPT" LongName="dom_traversal.xpt" Source="c:\xr\components\dom_traversal.xpt" />
+            <File Id="file92" Name="DOM_VI_1.XPT" LongName="dom_views.xpt" Source="c:\xr\components\dom_views.xpt" />
+            <File Id="file93" Name="dom_xbl.xpt" Source="c:\xr\components\dom_xbl.xpt" />
+            <File Id="file94" Name="DOM_XP_1.XPT" LongName="dom_xpath.xpt" Source="c:\xr\components\dom_xpath.xpt" />
+            <File Id="file95" Name="dom_xul.xpt" Source="c:\xr\components\dom_xul.xpt" />
+            <File Id="file96" Name="DOWNLO_1.XPT" LongName="downloads.xpt" Source="c:\xr\components\downloads.xpt" />
+            <File Id="file97" Name="editor.xpt" Source="c:\xr\components\editor.xpt" />
+            <File Id="file98" Name="EMBED__1.XPT" LongName="embed_base.xpt" Source="c:\xr\components\embed_base.xpt" />
+            <File Id="file99" Name="EXTENS_1.XPT" LongName="extensions.xpt" Source="c:\xr\components\extensions.xpt" />
+            <File Id="file100" Name="EXTHAN_1.XPT" LongName="exthandler.xpt" Source="c:\xr\components\exthandler.xpt" />
+            <File Id="file101" Name="EXTHEL_1.XPT" LongName="exthelper.xpt" Source="c:\xr\components\exthelper.xpt" />
+            <File Id="file102" Name="fastfind.xpt" Source="c:\xr\components\fastfind.xpt" />
+            <File Id="file103" Name="FEEDPR_1.JS" LongName="FeedProcessor.js" Source="c:\xr\components\FeedProcessor.js" />
+            <File Id="file104" Name="feeds.xpt" Source="c:\xr\components\feeds.xpt" />
+            <File Id="file105" Name="find.xpt" Source="c:\xr\components\find.xpt" />
+            <File Id="file106" Name="gfx.xpt" Source="c:\xr\components\gfx.xpt" />
+            <File Id="file107" Name="HTMLPA_1.XPT" LongName="htmlparser.xpt" Source="c:\xr\components\htmlparser.xpt" />
+            <File Id="file108" Name="imgicon.xpt" Source="c:\xr\components\imgicon.xpt" />
+            <File Id="file109" Name="imglib2.xpt" Source="c:\xr\components\imglib2.xpt" />
+            <File Id="file110" Name="INSPEC_1.XPT" LongName="inspector.xpt" Source="c:\xr\components\inspector.xpt" />
+            <File Id="file111" Name="intl.xpt" Source="c:\xr\components\intl.xpt" />
+            <File Id="file112" Name="jar.xpt" Source="c:\xr\components\jar.xpt" />
+            <File Id="file113" Name="JSCONS_1.JS" LongName="jsconsole-clhandler.js" Source="c:\xr\components\jsconsole-clhandler.js" />
+            <File Id="file114" Name="JSDSER_1.XPT" LongName="jsdservice.xpt" Source="c:\xr\components\jsdservice.xpt" />
+            <File Id="file115" Name="LAYOUT_1.XPT" LongName="layout_base.xpt" Source="c:\xr\components\layout_base.xpt" />
+            <File Id="file116" Name="LAYOUT_4.XPT" LongName="layout_printing.xpt" Source="c:\xr\components\layout_printing.xpt" />
+            <File Id="file117" Name="LAYOUT_2.XPT" LongName="layout_xul.xpt" Source="c:\xr\components\layout_xul.xpt" />
+            <File Id="file118" Name="LAYOUT_3.XPT" LongName="layout_xul_tree.xpt" Source="c:\xr\components\layout_xul_tree.xpt" />
+            <File Id="file119" Name="locale.xpt" Source="c:\xr\components\locale.xpt" />
+            <File Id="file120" Name="loginmgr.xpt" Source="c:\xr\components\loginmgr.xpt" />
+            <File Id="file121" Name="lwbrk.xpt" Source="c:\xr\components\lwbrk.xpt" />
+            <File Id="file122" Name="mimetype.xpt" Source="c:\xr\components\mimetype.xpt" />
+            <File Id="file123" Name="mozbrwsr.xpt" Source="c:\xr\components\mozbrwsr.xpt" />
+            <File Id="file124" Name="mozfind.xpt" Source="c:\xr\components\mozfind.xpt" />
+            <File Id="file125" Name="necko.xpt" Source="c:\xr\components\necko.xpt" />
+            <File Id="file126" Name="NED214_1.XPT" LongName="necko_about.xpt" Source="c:\xr\components\necko_about.xpt" />
+            <File Id="file127" Name="NEB0C2_1.XPT" LongName="necko_cache.xpt" Source="c:\xr\components\necko_cache.xpt" />
+            <File Id="file128" Name="NECKO__1.XPT" LongName="necko_cookie.xpt" Source="c:\xr\components\necko_cookie.xpt" />
+            <File Id="file129" Name="NECKO__2.XPT" LongName="necko_dns.xpt" Source="c:\xr\components\necko_dns.xpt" />
+            <File Id="file130" Name="NE16F8_1.XPT" LongName="necko_file.xpt" Source="c:\xr\components\necko_file.xpt" />
+            <File Id="file131" Name="NECD81_1.XPT" LongName="necko_ftp.xpt" Source="c:\xr\components\necko_ftp.xpt" />
+            <File Id="file132" Name="NE5A17_1.XPT" LongName="necko_http.xpt" Source="c:\xr\components\necko_http.xpt" />
+            <File Id="file133" Name="NEA1BF_1.XPT" LongName="necko_res.xpt" Source="c:\xr\components\necko_res.xpt" />
+            <File Id="file134" Name="NECKO__3.XPT" LongName="necko_socket.xpt" Source="c:\xr\components\necko_socket.xpt" />
+            <File Id="file135" Name="NECKO__4.XPT" LongName="necko_strconv.xpt" Source="c:\xr\components\necko_strconv.xpt" />
+            <File Id="file136" Name="NED679_1.XPT" LongName="necko_viewsource.xpt" Source="c:\xr\components\necko_viewsource.xpt" />
+            <File Id="file137" Name="NE2009_1.XPT" LongName="necko_wifi.xpt" Source="c:\xr\components\necko_wifi.xpt" />
+            <File Id="file138" Name="NETWOR_1.JS" LongName="NetworkGeolocationProvider.js" Source="c:\xr\components\NetworkGeolocationProvider.js" />
+            <File Id="file139" Name="NSADDO_1.JS" LongName="nsAddonRepository.js" Source="c:\xr\components\nsAddonRepository.js" />
+            <File Id="file140" Name="NSBADC_1.JS" LongName="nsBadCertHandler.js" Source="c:\xr\components\nsBadCertHandler.js" />
+            <File Id="file141" Name="NSBLOC_1.JS" LongName="nsBlocklistService.js" Source="c:\xr\components\nsBlocklistService.js" />
+            <File Id="file142" Name="NSCONT_2.JS" LongName="nsContentDispatchChooser.js" Source="c:\xr\components\nsContentDispatchChooser.js" />
+            <File Id="file143" Name="NSCONT_1.JS" LongName="nsContentPrefService.js" Source="c:\xr\components\nsContentPrefService.js" />
+            <File Id="file144" Name="NSDEFA_1.JS" LongName="nsDefaultCLH.js" Source="c:\xr\components\nsDefaultCLH.js" />
+            <File Id="file145" Name="NSDOWN_1.JS" LongName="nsDownloadManagerUI.js" Source="c:\xr\components\nsDownloadManagerUI.js" />
+            <File Id="file146" Name="NSEXTE_1.JS" LongName="nsExtensionManager.js" Source="c:\xr\components\nsExtensionManager.js" />
+            <File Id="file147" Name="NSHAND_1.JS" LongName="nsHandlerService.js" Source="c:\xr\components\nsHandlerService.js" />
+            <File Id="file148" Name="NSHELP_1.JS" LongName="nsHelperAppDlg.js" Source="c:\xr\components\nsHelperAppDlg.js" />
+            <File Id="file149" Name="NSLIVE_1.JS" LongName="nsLivemarkService.js" Source="c:\xr\components\nsLivemarkService.js" />
+            <File Id="file150" Name="NSLOGI_3.JS" LongName="nsLoginInfo.js" Source="c:\xr\components\nsLoginInfo.js" />
+            <File Id="file151" Name="NSLOGI_1.JS" LongName="nsLoginManager.js" Source="c:\xr\components\nsLoginManager.js" />
+            <File Id="file152" Name="NSLOGI_2.JS" LongName="nsLoginManagerPrompter.js" Source="c:\xr\components\nsLoginManagerPrompter.js" />
+            <File Id="file153" Name="NSPLAC_1.JS" LongName="nsPlacesDBFlush.js" Source="c:\xr\components\nsPlacesDBFlush.js" />
+            <File Id="file154" Name="NSPOST_1.JS" LongName="nsPostUpdateWin.js" Source="c:\xr\components\nsPostUpdateWin.js" />
+            <File Id="file155" Name="NSPROG_1.JS" LongName="nsProgressDialog.js" Source="c:\xr\components\nsProgressDialog.js" />
+            <File Id="file156" Name="NSPROX_1.JS" LongName="nsProxyAutoConfig.js" Source="c:\xr\components\nsProxyAutoConfig.js" />
+            <File Id="file157" Name="NSSEAR_1.JS" LongName="nsSearchService.js" Source="c:\xr\components\nsSearchService.js" />
+            <File Id="file158" Name="NSSEAR_2.JS" LongName="nsSearchSuggestions.js" Source="c:\xr\components\nsSearchSuggestions.js" />
+            <File Id="file159" Name="NSTAGG_1.JS" LongName="nsTaggingService.js" Source="c:\xr\components\nsTaggingService.js" />
+            <File Id="file160" Name="NSTRYT_1.JS" LongName="nsTryToClose.js" Source="c:\xr\components\nsTryToClose.js" />
+            <File Id="file161" Name="NSUPDA_1.JS" LongName="nsUpdateService.js" Source="c:\xr\components\nsUpdateService.js" />
+            <File Id="file162" Name="NSURLF_1.JS" LongName="nsURLFormatter.js" Source="c:\xr\components\nsURLFormatter.js" />
+            <File Id="file163" Name="NSWEBH_1.JS" LongName="nsWebHandlerApp.js" Source="c:\xr\components\nsWebHandlerApp.js" />
+            <File Id="file164" Name="NSXULA_1.JS" LongName="nsXULAppInstall.js" Source="c:\xr\components\nsXULAppInstall.js" />
+            <File Id="file165" Name="oji.xpt" Source="c:\xr\components\oji.xpt" />
+            <File Id="file166" Name="PARENT_1.XPT" LongName="parentalcontrols.xpt" Source="c:\xr\components\parentalcontrols.xpt" />
+            <File Id="file167" Name="pipboot.xpt" Source="c:\xr\components\pipboot.xpt" />
+            <File Id="file168" Name="pipnss.xpt" Source="c:\xr\components\pipnss.xpt" />
+            <File Id="file169" Name="pippki.xpt" Source="c:\xr\components\pippki.xpt" />
+            <File Id="file170" Name="places.xpt" Source="c:\xr\components\places.xpt" />
+            <File Id="file171" Name="plugin.xpt" Source="c:\xr\components\plugin.xpt" />
+            <File Id="file172" Name="PLUGIN_1.JS" LongName="pluginGlue.js" Source="c:\xr\components\pluginGlue.js" />
+            <File Id="file173" Name="pref.xpt" Source="c:\xr\components\pref.xpt" />
+            <File Id="file174" Name="prefetch.xpt" Source="c:\xr\components\prefetch.xpt" />
+            <File Id="file175" Name="profile.xpt" Source="c:\xr\components\profile.xpt" />
+            <File Id="file176" Name="PROXYO_1.XPT" LongName="proxyObject.xpt" Source="c:\xr\components\proxyObject.xpt" />
+            <File Id="file177" Name="rdf.xpt" Source="c:\xr\components\rdf.xpt" />
+            <File Id="file178" Name="satchel.xpt" Source="c:\xr\components\satchel.xpt" />
+            <File Id="file179" Name="SAXPAR_1.XPT" LongName="saxparser.xpt" Source="c:\xr\components\saxparser.xpt" />
+            <File Id="file180" Name="shistory.xpt" Source="c:\xr\components\shistory.xpt" />
+            <File Id="file181" Name="SPELLC_1.XPT" LongName="spellchecker.xpt" Source="c:\xr\components\spellchecker.xpt" />
+            <File Id="file182" Name="STORAG_1.JS" LongName="storage-Legacy.js" Source="c:\xr\components\storage-Legacy.js" />
+            <File Id="file183" Name="STORAG_2.JS" LongName="storage-mozStorage.js" Source="c:\xr\components\storage-mozStorage.js" />
+            <File Id="file184" Name="storage.xpt" Source="c:\xr\components\storage.xpt" />
+            <File Id="file185" Name="TOOLKI_2.XPT" LongName="toolkitprofile.xpt" Source="c:\xr\components\toolkitprofile.xpt" />
+            <File Id="file186" Name="TOOLKI_1.XPT" LongName="toolkitsearch.xpt" Source="c:\xr\components\toolkitsearch.xpt" />
+            <File Id="file187" Name="TXEXSL_1.JS" LongName="txEXSLTRegExFunctions.js" Source="c:\xr\components\txEXSLTRegExFunctions.js" />
+            <File Id="file188" Name="txmgr.xpt" Source="c:\xr\components\txmgr.xpt" />
+            <File Id="file189" Name="txtsvc.xpt" Source="c:\xr\components\txtsvc.xpt" />
+            <File Id="file190" Name="uconv.xpt" Source="c:\xr\components\uconv.xpt" />
+            <File Id="file191" Name="UNICHA_1.XPT" LongName="unicharutil.xpt" Source="c:\xr\components\unicharutil.xpt" />
+            <File Id="file192" Name="update.xpt" Source="c:\xr\components\update.xpt" />
+            <File Id="file193" Name="URILOA_1.XPT" LongName="uriloader.xpt" Source="c:\xr\components\uriloader.xpt" />
+            <File Id="file194" Name="URLFOR_1.XPT" LongName="urlformatter.xpt" Source="c:\xr\components\urlformatter.xpt" />
+            <File Id="file195" Name="WEBBRO_1.XPT" LongName="webbrowserpersist.xpt" Source="c:\xr\components\webbrowserpersist.xpt" />
+            <File Id="file196" Name="WEBBRO_2.XPT" LongName="webBrowser_core.xpt" Source="c:\xr\components\webBrowser_core.xpt" />
+            <File Id="file197" Name="WEBSHE_1.XPT" LongName="webshell_idls.xpt" Source="c:\xr\components\webshell_idls.xpt" />
+            <File Id="file198" Name="widget.xpt" Source="c:\xr\components\widget.xpt" />
+            <File Id="file199" Name="windowds.xpt" Source="c:\xr\components\windowds.xpt" />
+            <File Id="file200" Name="WINDOW_1.XPT" LongName="windowwatcher.xpt" Source="c:\xr\components\windowwatcher.xpt" />
+            <File Id="file201" Name="XPCOM__1.XPT" LongName="xpcom_base.xpt" Source="c:\xr\components\xpcom_base.xpt" />
+            <File Id="file202" Name="XPCOM__2.XPT" LongName="xpcom_components.xpt" Source="c:\xr\components\xpcom_components.xpt" />
+            <File Id="file203" Name="xpcom_ds.xpt" Source="c:\xr\components\xpcom_ds.xpt" />
+            <File Id="file204" Name="xpcom_io.xpt" Source="c:\xr\components\xpcom_io.xpt" />
+            <File Id="file205" Name="XPA985_1.XPT" LongName="xpcom_system.xpt" Source="c:\xr\components\xpcom_system.xpt" />
+            <File Id="file206" Name="XPCOM__3.XPT" LongName="xpcom_thread.xpt" Source="c:\xr\components\xpcom_thread.xpt" />
+            <File Id="file207" Name="XPCOM__4.XPT" LongName="xpcom_xpti.xpt" Source="c:\xr\components\xpcom_xpti.xpt" />
+            <File Id="file208" Name="XPCONN_1.XPT" LongName="xpconnect.xpt" Source="c:\xr\components\xpconnect.xpt" />
+            <File Id="file209" Name="XPINST_1.XPT" LongName="xpinstall.xpt" Source="c:\xr\components\xpinstall.xpt" />
+            <File Id="file210" Name="xulapp.xpt" Source="c:\xr\components\xulapp.xpt" />
+            <File Id="file211" Name="XULAPP_1.XPT" LongName="xulapp_setup.xpt" Source="c:\xr\components\xulapp_setup.xpt" />
+            <File Id="file212" Name="xuldoc.xpt" Source="c:\xr\components\xuldoc.xpt" />
+            <File Id="file213" Name="xultmpl.xpt" Source="c:\xr\components\xultmpl.xpt" />
+            <File Id="file214" Name="ZIPWRI_1.XPT" LongName="zipwriter.xpt" Source="c:\xr\components\zipwriter.xpt" />
+          </Component>
+        </Directory>
+        <Directory Id="directory3" Name="defaults">
+          <Directory Id="directory4" Name="AUTOCO_1" LongName="autoconfig">
+            <Component Id="XrComponent3" DiskId="1" Guid="%GUID%">
+              <File Id="file215" Name="platform.js" Source="c:\xr\defaults\autoconfig\platform.js" />
+              <File Id="file216" Name="PREFCA_1.JS" LongName="prefcalls.js" Source="c:\xr\defaults\autoconfig\prefcalls.js" />
+            </Component>
+          </Directory>
+          <Directory Id="directory5" Name="pref">
+            <Component Id="XrComponent4" DiskId="1" Guid="%GUID%">
+              <File Id="file217" Name="XULRUN_1.JS" LongName="xulrunner.js" Source="c:\xr\defaults\pref\xulrunner.js" />
+            </Component>
+          </Directory>
+          <Directory Id="directory6" Name="profile">
+            <Component Id="XrComponent5" DiskId="1" Guid="%GUID%">
+              <File Id="file218" Name="LOCALS_1.RDF" LongName="localstore.rdf" Source="c:\xr\defaults\profile\localstore.rdf" />
+            </Component>
+            <Directory Id="directory7" Name="chrome">
+              <Component Id="XrComponent6" DiskId="1" Guid="%GUID%">
+                <File Id="file219" Name="USERCH_1.CSS" LongName="userChrome-example.css" Source="c:\xr\defaults\profile\chrome\userChrome-example.css" />
+                <File Id="file220" Name="USERCO_1.CSS" LongName="userContent-example.css" Source="c:\xr\defaults\profile\chrome\userContent-example.css" />
+              </Component>
+            </Directory>
+            <Directory Id="directory8" Name="US">
+              <Component Id="XrComponent7" DiskId="1" Guid="%GUID%">
+                <File Id="file221" Name="LOCALS_1.RDF" LongName="localstore.rdf" Source="c:\xr\defaults\profile\US\localstore.rdf" />
+              </Component>
+              <Directory Id="directory9" Name="chrome">
+                <Component Id="XrComponent8" DiskId="1" Guid="%GUID%">
+                  <File Id="file222" Name="USERCH_1.CSS" LongName="userChrome-example.css" Source="c:\xr\defaults\profile\US\chrome\userChrome-example.css" />
+                  <File Id="file223" Name="USERCO_1.CSS" LongName="userContent-example.css" Source="c:\xr\defaults\profile\US\chrome\userContent-example.css" />
+                </Component>
+              </Directory>
+            </Directory>
+          </Directory>
+        </Directory>
+        <Directory Id="directory10" Name="DICTIO_1" LongName="dictionaries">
+          <Component Id="XrComponent9" DiskId="1" Guid="%GUID%">
+            <File Id="file224" Name="en-US.aff" Source="c:\xr\dictionaries\en-US.aff" />
+            <File Id="file225" Name="en-US.dic" Source="c:\xr\dictionaries\en-US.dic" />
+          </Component>
+        </Directory>
+        <Directory Id="directory11" Name="greprefs">
+          <Component Id="XrComponent10" DiskId="1" Guid="%GUID%">
+            <File Id="file226" Name="all.js" Source="c:\xr\greprefs\all.js" />
+            <File Id="file227" Name="SECURI_1.JS" LongName="security-prefs.js" Source="c:\xr\greprefs\security-prefs.js" />
+            <File Id="file228" Name="XPINST_1.JS" LongName="xpinstall.js" Source="c:\xr\greprefs\xpinstall.js" />
+          </Component>
+        </Directory>
+        <Directory Id="directory12" Name="modules">
+          <Component Id="XrComponent11" DiskId="1" Guid="%GUID%">
+            <File Id="file229" Name="debug.js" Source="c:\xr\modules\debug.js" />
+            <File Id="file230" Name="DOWNLO_2.JSM" LongName="DownloadLastDir.jsm" Source="c:\xr\modules\DownloadLastDir.jsm" />
+            <File Id="file231" Name="DOWNLO_1.JSM" LongName="DownloadUtils.jsm" Source="c:\xr\modules\DownloadUtils.jsm" />
+            <File Id="file232" Name="ISO860_1.JSM" LongName="ISO8601DateUtils.jsm" Source="c:\xr\modules\ISO8601DateUtils.jsm" />
+            <File Id="file233" Name="MICROF_1.JS" LongName="Microformats.js" Source="c:\xr\modules\Microformats.js" />
+            <File Id="file234" Name="PLACES_1.JSM" LongName="PlacesDBUtils.jsm" Source="c:\xr\modules\PlacesDBUtils.jsm" />
+            <File Id="file235" Name="PLURAL_1.JSM" LongName="PluralForm.jsm" Source="c:\xr\modules\PluralForm.jsm" />
+            <File Id="file236" Name="SPATIA_1.JS" LongName="SpatialNavigation.js" Source="c:\xr\modules\SpatialNavigation.js" />
+            <File Id="file237" Name="utils.js" Source="c:\xr\modules\utils.js" />
+            <File Id="file238" Name="WINDOW_1.JSM" LongName="WindowDraggingUtils.jsm" Source="c:\xr\modules\WindowDraggingUtils.jsm" />
+            <File Id="file239" Name="XPCOMU_1.JSM" LongName="XPCOMUtils.jsm" Source="c:\xr\modules\XPCOMUtils.jsm" />
+          </Component>
+        </Directory>
+        <Directory Id="directory13" Name="plugins">
+          <Component Id="XrComponent12" DiskId="1" Guid="%GUID%">
+            <File Id="file240" Name="npnul32.dll" Source="c:\xr\plugins\npnul32.dll" />
+          </Component>
+        </Directory>
+        <Directory Id="directory14" Name="res">
+          <Component Id="XrComponent13" DiskId="1" Guid="%GUID%">
+            <File Id="file241" Name="arrow.gif" Source="c:\xr\res\arrow.gif" />
+            <File Id="file242" Name="arrowd.gif" Source="c:\xr\res\arrowd.gif" />
+            <File Id="file243" Name="BROKEN_1.GIF" LongName="broken-image.gif" Source="c:\xr\res\broken-image.gif" />
+            <File Id="file244" Name="CHARSE_1.PRO" LongName="charsetalias.properties" Source="c:\xr\res\charsetalias.properties" />
+            <File Id="file245" Name="CHARSE_2.PRO" LongName="charsetData.properties" Source="c:\xr\res\charsetData.properties" />
+            <File Id="file246" Name="CONTEN_1.CSS" LongName="contenteditable.css" Source="c:\xr\res\contenteditable.css" />
+            <File Id="file247" Name="DESIGN_1.CSS" LongName="designmode.css" Source="c:\xr\res\designmode.css" />
+            <File Id="file248" Name="EDITOR_1.CSS" LongName="EditorOverride.css" Source="c:\xr\res\EditorOverride.css" />
+            <File Id="file249" Name="forms.css" Source="c:\xr\res\forms.css" />
+            <File Id="file250" Name="grabber.gif" Source="c:\xr\res\grabber.gif" />
+            <File Id="file251" Name="HIDDEN_1.HTM" LongName="hiddenWindow.html" Source="c:\xr\res\hiddenWindow.html" />
+            <File Id="file252" Name="html.css" Source="c:\xr\res\html.css" />
+            <File Id="file253" Name="LANGGR_1.PRO" LongName="langGroups.properties" Source="c:\xr\res\langGroups.properties" />
+            <File Id="file254" Name="LANGUA_1.PRO" LongName="language.properties" Source="c:\xr\res\language.properties" />
+            <File Id="file255" Name="LOADIN_1.GIF" LongName="loading-image.gif" Source="c:\xr\res\loading-image.gif" />
+            <File Id="file256" Name="mathml.css" Source="c:\xr\res\mathml.css" />
+            <File Id="file257" Name="quirk.css" Source="c:\xr\res\quirk.css" />
+            <File Id="file258" Name="svg.css" Source="c:\xr\res\svg.css" />
+            <File Id="file259" Name="TABLE-_1.GIF" LongName="table-add-column-after-active.gif" Source="c:\xr\res\table-add-column-after-active.gif" />
+            <File Id="file260" Name="TABLE-_2.GIF" LongName="table-add-column-after-hover.gif" Source="c:\xr\res\table-add-column-after-hover.gif" />
+            <File Id="file261" Name="TABLE-_3.GIF" LongName="table-add-column-after.gif" Source="c:\xr\res\table-add-column-after.gif" />
+            <File Id="file262" Name="TABLE-_4.GIF" LongName="table-add-column-before-active.gif" Source="c:\xr\res\table-add-column-before-active.gif" />
+            <File Id="file263" Name="TA0788_1.GIF" LongName="table-add-column-before-hover.gif" Source="c:\xr\res\table-add-column-before-hover.gif" />
+            <File Id="file264" Name="TAA904_1.GIF" LongName="table-add-column-before.gif" Source="c:\xr\res\table-add-column-before.gif" />
+            <File Id="file265" Name="TA8201_1.GIF" LongName="table-add-row-after-active.gif" Source="c:\xr\res\table-add-row-after-active.gif" />
+            <File Id="file266" Name="TA6E8A_1.GIF" LongName="table-add-row-after-hover.gif" Source="c:\xr\res\table-add-row-after-hover.gif" />
+            <File Id="file267" Name="TA9444_1.GIF" LongName="table-add-row-after.gif" Source="c:\xr\res\table-add-row-after.gif" />
+            <File Id="file268" Name="TA0638_1.GIF" LongName="table-add-row-before-active.gif" Source="c:\xr\res\table-add-row-before-active.gif" />
+            <File Id="file269" Name="TA9D1F_1.GIF" LongName="table-add-row-before-hover.gif" Source="c:\xr\res\table-add-row-before-hover.gif" />
+            <File Id="file270" Name="TAD893_1.GIF" LongName="table-add-row-before.gif" Source="c:\xr\res\table-add-row-before.gif" />
+            <File Id="file271" Name="TA502C_1.GIF" LongName="table-remove-column-active.gif" Source="c:\xr\res\table-remove-column-active.gif" />
+            <File Id="file272" Name="TA2CA5_1.GIF" LongName="table-remove-column-hover.gif" Source="c:\xr\res\table-remove-column-hover.gif" />
+            <File Id="file273" Name="TA033D_1.GIF" LongName="table-remove-column.gif" Source="c:\xr\res\table-remove-column.gif" />
+            <File Id="file274" Name="TA1A56_1.GIF" LongName="table-remove-row-active.gif" Source="c:\xr\res\table-remove-row-active.gif" />
+            <File Id="file275" Name="TAD56B_1.GIF" LongName="table-remove-row-hover.gif" Source="c:\xr\res\table-remove-row-hover.gif" />
+            <File Id="file276" Name="TA7AD5_1.GIF" LongName="table-remove-row.gif" Source="c:\xr\res\table-remove-row.gif" />
+            <File Id="file277" Name="ua.css" Source="c:\xr\res\ua.css" />
+            <File Id="file278" Name="VIEWSO_1.CSS" LongName="viewsource.css" Source="c:\xr\res\viewsource.css" />
+            <File Id="file279" Name="WINCHA_1.PRO" LongName="wincharset.properties" Source="c:\xr\res\wincharset.properties" />
+          </Component>
+          <Directory Id="directory15" Name="dtd">
+            <Component Id="XrComponent14" DiskId="1" Guid="%GUID%">
+              <File Id="file280" Name="mathml.dtd" Source="c:\xr\res\dtd\mathml.dtd" />
+              <File Id="file281" Name="xhtml11.dtd" Source="c:\xr\res\dtd\xhtml11.dtd" />
+            </Component>
+          </Directory>
+          <Directory Id="directory16" Name="ENTITY_1" LongName="entityTables">
+            <Component Id="XrComponent15" DiskId="1" Guid="%GUID%">
+              <File Id="file282" Name="HTML40_1.PRO" LongName="html40Latin1.properties" Source="c:\xr\res\entityTables\html40Latin1.properties" />
+              <File Id="file283" Name="HTML40_3.PRO" LongName="html40Special.properties" Source="c:\xr\res\entityTables\html40Special.properties" />
+              <File Id="file284" Name="HTML40_2.PRO" LongName="html40Symbols.properties" Source="c:\xr\res\entityTables\html40Symbols.properties" />
+              <File Id="file285" Name="HTMLEN_1.PRO" LongName="htmlEntityVersions.properties" Source="c:\xr\res\entityTables\htmlEntityVersions.properties" />
+              <File Id="file286" Name="MATHML_1.PRO" LongName="mathml20.properties" Source="c:\xr\res\entityTables\mathml20.properties" />
+              <File Id="file287" Name="TRANSL_1.PRO" LongName="transliterate.properties" Source="c:\xr\res\entityTables\transliterate.properties" />
+            </Component>
+          </Directory>
+          <Directory Id="directory17" Name="fonts">
+            <Component Id="XrComponent16" DiskId="1" Guid="%GUID%">
+              <File Id="file288" Name="MATHFO_1.PRO" LongName="mathfont.properties" Source="c:\xr\res\fonts\mathfont.properties" />
+              <File Id="file289" Name="MA097E_1.PRO" LongName="mathfontStandardSymbolsL.properties" Source="c:\xr\res\fonts\mathfontStandardSymbolsL.properties" />
+              <File Id="file290" Name="MATHFO_3.PRO" LongName="mathfontSTIXNonUnicode.properties" Source="c:\xr\res\fonts\mathfontSTIXNonUnicode.properties" />
+              <File Id="file291" Name="MATHFO_4.PRO" LongName="mathfontSTIXSize1.properties" Source="c:\xr\res\fonts\mathfontSTIXSize1.properties" />
+              <File Id="file292" Name="MA8713_1.PRO" LongName="mathfontSymbol.properties" Source="c:\xr\res\fonts\mathfontSymbol.properties" />
+              <File Id="file293" Name="MATHFO_2.PRO" LongName="mathfontUnicode.properties" Source="c:\xr\res\fonts\mathfontUnicode.properties" />
+            </Component>
+          </Directory>
+          <Directory Id="directory18" Name="html">
+            <Component Id="XrComponent17" DiskId="1" Guid="%GUID%">
+              <File Id="file294" Name="folder.png" Source="c:\xr\res\html\folder.png" />
+            </Component>
+          </Directory>
+        </Directory>
+      </Directory>
+    </DirectoryRef>
+  </Fragment>
+
+
+</Wix>
+

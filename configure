@@ -1,0 +1,57 @@
+#!/bin/sh
+
+if [ $# -le 1 ]; then
+   echo Current settings:
+   cat app_config.mak
+   exit
+fi
+
+MODE=RELEASE
+UI=GUI
+OPTIMIZATION=ON
+
+while [ $# -ge 1 ]; do
+
+    case "$1" in
+       "debug")
+           MODE=DEBUG
+           ;;
+       "release")
+           MODE=RELEASE
+           ;;
+       "opt")
+           OPTIMIZATION=ON
+           ;;
+       "noopt")
+           OPTIMIZATION=OFF
+           ;;
+       "gui")
+           UI=GUI
+           ;;
+       "console")
+           UI=CONSOLE
+           ;;
+       *)
+           echo Unknown option \"$1\"
+           exit 0
+    esac
+
+    shift
+done
+
+
+echo BUILD_MODE=$MODE > app_config.mak
+echo UI_MODE=$UI >> app_config.mak
+echo OPTIMIZATION_MODE=$OPTIMIZATION >> app_config.mak
+
+
+
+echo
+echo Configuration file written
+echo --------------------------
+echo      Mode: $MODE
+echo      Optimizations: $OPTIMIZATION
+echo      User Interface: $UI
+echo
+
+

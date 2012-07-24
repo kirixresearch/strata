@@ -1,0 +1,4486 @@
+/*!
+ *
+ * Copyright (c) 2005-2011, Kirix Research, LLC.  All rights reserved.
+ *
+ * Project:  Application Client
+ * Author:   David Z. Williams
+ * Created:  2005-12-09
+ *
+ */
+
+
+#include "appmain.h"
+
+#include "app.h"
+#include "appcontroller.h"
+#include "tabledoc.h"
+#include "editordoc.h"
+#include "querydoc.h"
+#include "reportdoc.h"
+#include "importwizard.h"
+#include "exportwizard.h"
+#include "paneldatabaseinfo.h"
+#include "panelfileinfo.h"
+#include "panelrelationship.h"
+#include "jobcopy.h"
+#include "jobimport.h"
+#include "jobexport.h"
+#include "toolbars.h"
+#include "dlgdatabasefile.h"
+#include "dlgprojectmgr.h"
+#include "dbdoc.h"
+#include "structuredoc.h"
+#include "connectionwizard.h"
+#include "bookmark.h"
+#include "dlglinkprops.h"
+
+#include <wx/generic/dirctrlg.h>
+#include <wx/sstream.h>
+#include <kl/md5.h>
+
+#ifdef WIN32
+#include <windows.h>
+#include <commctrl.h>
+#endif
+
+
+std::map<std::wstring, wxBitmap> g_custom_icons; // image md5/bitmap hash
+std::vector<cfw::IFsItemPtr> g_cutcopy_items;
+int g_cutcopy_action = 0;
+
+
+
+
+// -- utility functions --
+
+static wxString appendPath(const wxString& path1,
+                           const wxString& path2)
+{
+    wxString result;
+    result = path1;
+
+    if (result.Length() > 0)
+    {
+        if (result.Last() == wxT('/') ||
+            result.Last() == wxT('\\'))
+        {
+            result.RemoveLast();
+        }
+    }
+
+
+    if (result.IsEmpty())
+        result = wxT("/");
+
+    if (result.Last() != wxT('/'))
+        result += wxT("/");
+
+    result += path2;
+
+    result.Replace(wxT("\\"), wxT("/"));
+
+    return result;
+}
+
+static wxString stripExtension(const wxString& s)
+{
+    wxString ext;
+    ext = s.AfterLast(wxT('.'));
+    ext.MakeUpper();
+
+    if (ext == wxT("DBF") || ext == wxT("TXT") || ext == wxT("CSV") || ext == wxT("ICSV"))
+        return s.BeforeLast(wxT('.'));
+
+    return s;
+}
+
+static wxString getDatabaseNameProjectLabel()
+{
+    wxString project_name = towx(g_app->getDatabase()->getDatabaseName());
+    wxString label;
+    if (project_name.Length() > 0)
+        label = wxString::Format(_("Project '%s'"), project_name.c_str());
+         else
+        label = _("Project");
+    
+    return label;
+}
+
+
+static wxString getDbDriver(tango::IDatabasePtr& db)
+{
+    if (db.isNull())
+        return wxEmptyString;
+    
+    xcm::class_info* class_info = xcm::get_class_info(db.p);
+    return towx(class_info->get_name()).BeforeFirst('.');
+}
+
+
+
+static wxMenu* createProjectsMenu(const std::vector<ProjectInfo>& projects,
+                                  const wxString& active_project_location,
+                                  int base_id)
+{
+    wxMenu* menu = new wxMenu;
+    
+    std::vector<ProjectInfo>::const_iterator it, it_end;
+    it_end = projects.end();
+    
+    int i = 0;
+    for (it = projects.begin(); it != it_end; ++it)
+    {
+        wxString menu_name = it->name;
+        menu_name.Append(L" - ");
+        menu_name.Append(it->location);
+
+        menu->AppendCheckItem(base_id+i, menu_name);
+        
+        // check the active project in the menu
+        if (active_project_location == it->location)
+            menu->Check(base_id+i, true);
+            
+        ++i;
+    }
+
+    menu->AppendSeparator();
+    menu->Append(base_id+i, _("&Edit..."));
+    return menu;
+}
+
+
+
+std::vector<std::pair<wxBitmap, wxBitmap> > g_shortcut_bitmaps;
+
+wxBitmap getShortcutBitmap(const wxBitmap& input_bmp)
+{
+    static const char* xpm_shortcut[] = {
+    "7 7 6 1",
+    "X c #303030",
+    "Y c #949494",
+    "Z c #888888",
+    "A c #DEDEDE",
+    "B c #ECECEC",
+    "  c #FFFFFF",
+    "XXXXXXX",
+    "X     X",
+    "X  XX X",
+    "X ZYX X",
+    "X XA  X",
+    "X BB  X",
+    "XXXXXXX"};
+
+    
+    // check to see if we've already made a shortcut bitmap
+    
+    std::vector<std::pair<wxBitmap, wxBitmap> >::iterator it;
+    for (it = g_shortcut_bitmaps.begin(); it != g_shortcut_bitmaps.end(); ++it)
+    {
+        if (it->first.IsSameAs(input_bmp))
+            return it->second;
+    }
+
+
+    wxImage image = input_bmp.ConvertToImage();
+    wxImage shortcut_image(xpm_shortcut);
+    
+    int x,y;
+    int width = image.GetWidth();
+    int height = image.GetHeight();
+    
+    for (y = 0; y < 7; ++y)
+    {
+        for (x = 0; x < 7; ++x)
+        {
+            int r = shortcut_image.GetRed(x,y);
+            int g = shortcut_image.GetGreen(x,y);
+            int b = shortcut_image.GetBlue(x,y);
+
+            image.SetRGB(x, height+y-7, r, g, b);
+            if (image.HasAlpha())
+                image.SetAlpha(x, height+y-7, 255);
+        }
+    }
+    
+    wxBitmap result = wxBitmap(image);
+    g_shortcut_bitmaps.push_back(std::pair<wxBitmap,wxBitmap>(input_bmp, result));
+    
+    return result;
+}
+
+static double blendColour(double fg, double bg, double alpha)
+{
+    double result = bg + (alpha * (fg - bg));
+    if (result < 0.0)
+        result = 0.0;
+    if (result > 255)
+        result = 255;
+    return result;
+}
+
+// snagged from our toolbar code
+static wxBitmap lightenBitmap(const wxBitmap& bmp)
+{
+    wxImage image = bmp.ConvertToImage();
+    
+    int mr, mg, mb;
+    mr = image.GetMaskRed();
+    mg = image.GetMaskGreen();
+    mb = image.GetMaskBlue();
+
+    unsigned char* data = image.GetData();
+    int width = image.GetWidth();
+    int height = image.GetHeight();
+    bool has_mask = image.HasMask();
+
+    for (int y = height-1; y >= 0; --y)
+    {
+        for (int x = width-1; x >= 0; --x)
+        {
+            data = image.GetData() + (y*(width*3))+(x*3);
+            unsigned char* r = data;
+            unsigned char* g = data+1;
+            unsigned char* b = data+2;
+
+            if (has_mask && *r == mr && *g == mg && *b == mb)
+                continue;
+
+            *r = (unsigned char)blendColour((double)*r, 255.0, 0.4);
+            *g = (unsigned char)blendColour((double)*g, 255.0, 0.4);
+            *b = (unsigned char)blendColour((double)*b, 255.0, 0.4);
+        }
+    }
+
+    return wxBitmap(image);
+}
+
+
+// -- functor for sorting IFileInfoPtr objects --
+
+class FileInfoLess
+{
+public:
+
+     bool operator()(const tango::IFileInfoPtr& f1,
+                     const tango::IFileInfoPtr& f2) const                
+     {
+        int f1_type = f1->getType();
+        int f2_type = f2->getType();
+        
+        /*
+        // mounts always float to the very top (above folders even)
+        if (f2->isMount() && !f1->isMount())
+            return false;
+        if (f1->isMount() && !f2->isMount())
+            return true;
+        */
+        
+        //  after mounts, folders always float to the top
+        if (f1_type == tango::filetypeFolder ||
+            f2_type == tango::filetypeFolder)
+        {
+            if (f1_type == f2_type)
+            {
+                return wcscasecmp(f1->getName().c_str(),
+                                  f2->getName().c_str()) < 0 ? true : false;
+            }
+             else if (f1_type == tango::filetypeFolder)
+            {
+                return true;
+            }
+             else
+            {
+                return false;
+            }
+        }
+        
+            
+        return wcscasecmp(f1->getName().c_str(),
+                          f2->getName().c_str()) < 0 ? true : false;
+     }
+};
+
+
+
+
+// helper function for sorting IFileInfoPtr objects
+
+static void sortFolderInfo(tango::IFileInfoEnumPtr& f)
+{
+    if (f.isNull())
+        return;
+
+    std::vector<tango::IFileInfoPtr> vec;
+    std::vector<tango::IFileInfoPtr>::iterator it;
+    
+    size_t i, count = f->size();
+    
+    for (i = 0; i < count; ++i)
+        vec.push_back(f->getItem(i));
+    
+    std::sort(vec.begin(), vec.end(), FileInfoLess());
+    
+    f->clear();
+    for (it = vec.begin(); it != vec.end(); ++it)
+        f->append(*it);
+}
+
+
+
+
+// -- DbDocDisplayOrder class implementation --
+
+class DbDocDisplayOrder
+{
+
+public:
+
+    DbDocDisplayOrder(tango::IDatabasePtr db)
+    {
+        m_db = db;
+    }
+    
+    bool load(const std::wstring& positions_file_path)
+    {
+        tango::INodeValuePtr file = m_db->openNodeFile(positions_file_path);
+        if (file.isNull())
+            return false;
+        
+        tango::INodeValuePtr positions = file->getChild(L"positions", false);
+        if (positions.isNull())
+            return false;
+        
+        m_positions.clear();
+        
+        size_t p = 0;
+        size_t i, count = positions->getChildCount();
+        for (i = 0; i < count; ++i)
+        {
+            tango::INodeValuePtr pos = positions->getChildByIdx(i);
+            tango::INodeValuePtr name = pos->getChild(L"name", false);
+            if (name.isNull())
+                continue;
+                
+            m_positions[name->getString()] = p++;
+        }
+        
+        // .objorder should always be last
+        insertEntry(L".objorder", m_positions.size());
+        
+        return true;
+    }
+    
+    bool save(const std::wstring& positions_file_path)
+    {
+        if (m_db->getFileExist(positions_file_path))
+        {
+            if (!m_db->deleteFile(positions_file_path))
+                return false;
+        }
+        
+        tango::INodeValuePtr file = m_db->createNodeFile(positions_file_path);
+        if (file.isNull())
+            return false;
+            
+        tango::INodeValuePtr positions = file->createChild(L"positions");
+        if (positions.isNull())
+            return false;
+            
+            
+        // put map into a vector and remove gaps   
+        std::vector<std::wstring> vpos;
+        
+        std::map<std::wstring, int, kl::cmp_nocase>::iterator pit;
+        for (pit = m_positions.begin(); pit != m_positions.end(); ++pit)
+        {
+            int pos = pit->second;
+            while ((size_t)pos >= vpos.size())
+                vpos.push_back(L"");
+            vpos[pos] = pit->first;
+        }
+        
+        int i, count = (int)vpos.size();
+        for (i = 0; i < count; ++i)
+        {
+            if (vpos[i].length() == 0)
+            {
+                vpos.erase(vpos.begin() + i);
+                i--;
+                count--;
+            }
+        }
+        
+        
+        // dump position data into file
+        
+        wchar_t node_name[255];
+        count = (int)vpos.size();
+        for (i = 0; i < count; ++i)
+        {    
+            swprintf(node_name, 254, L"position%d", i);
+            tango::INodeValuePtr entry = positions->createChild(node_name);
+            tango::INodeValuePtr name = entry->createChild(L"name");
+            if (name.isNull())
+                continue;
+                
+            name->setString(vpos[i]);
+        }
+        
+        return true;
+    }
+    
+    void sync(tango::IFileInfoEnumPtr fi)
+    {
+        std::vector<tango::IFileInfoPtr> vec;
+        size_t i, count = fi->size();
+        for (i = 0; i < count; ++i)
+            vec.push_back(fi->getItem(i));
+        sync(vec);
+    }
+    
+    void sync(std::vector<tango::IFileInfoPtr>& vec)
+    {
+        // remove entries from the m_positions which are not found
+        // in the vector passed in the parameter above
+        
+        std::set<std::wstring, kl::cmp_nocase> existing;
+        size_t i, count = vec.size();
+        for (i = 0; i < count; ++i)
+            existing.insert(vec[i]->getName());
+        
+        std::vector<std::wstring> position_names;
+        std::map<std::wstring, int, kl::cmp_nocase>::iterator it;
+        for (it = m_positions.begin(); it != m_positions.end(); ++it)
+            position_names.push_back(it->first);
+        
+        std::vector<std::wstring>::iterator vit;
+        for (vit = position_names.begin(); vit != position_names.end(); ++vit)
+        {
+            std::set<std::wstring, kl::cmp_nocase>::iterator sit;
+            sit = existing.find(*vit);
+            if (sit == existing.end())
+                deleteEntry(*vit);
+        }
+
+
+        // add any entries that m_positions doesn't yet have
+        
+        for (i = 0; i < count; ++i)
+        {
+            const std::wstring& name = vec[i]->getName();
+            std::map<std::wstring, int, kl::cmp_nocase>::iterator it;
+            it = m_positions.find(name);
+            if (it == m_positions.end())
+            {
+                insertEntry(name, m_positions.size());
+            }
+        }
+    }
+    
+    void sort(std::vector<tango::IFileInfoPtr>& vec)
+    {
+        if (m_positions.size() == 0)
+            return;
+        
+        sync(vec);
+        
+        size_t i = 0, count = vec.size();
+        while (i < count)
+        {
+            std::map<std::wstring, int, kl::cmp_nocase>::iterator it;
+            const std::wstring& name = vec[i]->getName();
+            it = m_positions.find(name);
+            if (it == m_positions.end())
+            {
+                i++;
+                continue;
+            }
+            
+            int new_pos = it->second;
+            if (new_pos >= 0 && (size_t)new_pos < vec.size())
+            {
+                if (new_pos != i)
+                {
+                    tango::IFileInfoPtr temp = vec[new_pos];
+                    vec[new_pos] = vec[i];
+                    vec[i] = temp;
+                }
+                 else
+                {
+                    i++;
+                }
+            }
+             else
+            {
+                i++;
+            }
+        }
+    }
+    
+    bool createDefaultOrder(const std::wstring& folder_path)
+    {
+        m_positions.clear();
+        
+        tango::IFileInfoEnumPtr files = m_db->getFolderInfo(folder_path);
+        if (files.isNull())
+            return false;
+            
+        sortFolderInfo(files);
+        
+        size_t i, count = files->size();
+        for (i = 0; i < count; ++i)
+        {
+            tango::IFileInfoPtr f = files->getItem(i);
+            const std::wstring& name = f->getName();
+            m_positions[name] = i;
+        }
+        
+        
+        // .objorder should always be last
+        insertEntry(L".objorder", m_positions.size());
+
+        return true;
+    }
+    
+    bool deleteEntry(const std::wstring& filename)
+    {
+        std::map<std::wstring, int, kl::cmp_nocase>::iterator it, entry_it;
+        entry_it = m_positions.find(filename);
+        if (entry_it == m_positions.end())
+            return false;
+        int deleted_pos = entry_it->second;
+        for (it = m_positions.begin(); it != m_positions.end(); ++it)
+        {
+            if (it->second >= deleted_pos)
+                (it->second)--;
+        }
+        m_positions.erase(entry_it);
+        return true;
+    }
+
+    void insertEntry(const std::wstring& filename, int pos)
+    {
+        if (pos < 0)
+        {
+            // passing -1 here will set the item's position to the end
+            pos = m_positions.size();
+        }
+        
+        if ((size_t)pos > m_positions.size())
+            pos = (int)m_positions.size();
+                
+        std::map<std::wstring, int, kl::cmp_nocase>::iterator it;
+        it = m_positions.find(filename);
+        if (it != m_positions.end())
+        {
+            if (it->second == pos)
+                return;
+
+            int old_pos = it->second;
+            
+            m_positions.erase(it);
+            
+            for (it = m_positions.begin(); it != m_positions.end(); ++it)
+            {
+                if (it->second >= old_pos)
+                    (it->second)--;
+            }
+        }
+            
+        for (it = m_positions.begin(); it != m_positions.end(); ++it)
+        {
+            if (it->second >= pos)
+                (it->second)++;
+        }
+        
+        m_positions[filename] = pos;
+    }
+    
+private:
+
+    tango::IDatabasePtr m_db;
+    std::map<std::wstring, int, kl::cmp_nocase> m_positions;
+};
+
+
+
+
+
+
+// -- DbFolderFsItem class implementation --
+
+DbFolderFsItem::DbFolderFsItem()
+{
+    m_path = wxT("/");
+    m_is_mount = false;
+    m_only_folders = false;
+    m_only_tables = false;
+    m_link_bar_mode = false;
+}
+
+DbFolderFsItem::~DbFolderFsItem()
+{
+}
+
+void DbFolderFsItem::setLinkBarMode(bool b)
+{
+    m_link_bar_mode = b;
+}
+
+void DbFolderFsItem::setConnection(IConnectionPtr conn)
+{
+    m_conn = conn;
+}
+
+IConnectionPtr DbFolderFsItem::getConnection()
+{
+    return m_conn;
+}
+
+void DbFolderFsItem::setDatabase(tango::IDatabasePtr db)
+{
+    m_db = db;
+}
+
+tango::IDatabasePtr DbFolderFsItem::getDatabase()
+{
+    return m_db;
+}
+
+void DbFolderFsItem::setPath(const wxString& s)
+{
+    m_path = s;
+}
+
+void DbFolderFsItem::setType(int new_val)
+{
+    wxFAIL_MSG(wxT("Can't change a folder's type"));
+}
+
+int DbFolderFsItem::getType()
+{
+    return dbobjtypeFolder;
+}
+
+void DbFolderFsItem::setIsMount(bool b)
+{
+    m_is_mount = b;
+}
+
+bool DbFolderFsItem::getIsMount()
+{
+    return m_is_mount;
+}
+    
+wxString DbFolderFsItem::getPath()
+{
+    return m_path;
+}
+
+void DbFolderFsItem::setOwner(IDbFolderFsItemPtr owner)
+{
+    m_owner = owner;
+}
+
+IDbFolderFsItemPtr DbFolderFsItem::getOwner()
+{
+    return m_owner;
+}
+
+void DbFolderFsItem::setFoldersOnly(bool new_val)
+{
+    m_only_folders = new_val;
+}
+
+void DbFolderFsItem::setTablesOnly(bool new_val)
+{
+    m_only_tables = new_val;
+}
+
+// this function sets a specific file info enumerator to use for this folder,
+// which will be used in getChildren() as an override instead of actually
+// trying to get the children of the folder item
+void DbFolderFsItem::setChildrenOverride(tango::IFileInfoEnumPtr children_override)
+{
+    m_children_override = children_override;
+}
+
+
+class ExtensionBitmapMgr
+{
+public:
+
+    wxBitmap getBitmap(const wxString& ext)
+    {
+        std::map<wxString, wxBitmap>::iterator it;
+        it = m_ext_bitmaps.find(ext);
+        if (it != m_ext_bitmaps.end())
+            return it->second;
+
+        wxBitmap bmp;
+        
+        int id = wxTheFileIconsTable->GetIconID(ext);
+        wxImageList* image_list = wxTheFileIconsTable->GetSmallImageList();
+        bmp = image_list->GetBitmap(id);
+
+        #ifdef WIN32
+        HIMAGELIST il = (HIMAGELIST)image_list->GetHIMAGELIST();
+        HICON il_icon = ImageList_GetIcon(il, id, ILD_NORMAL);
+        wxIcon icon;
+        icon.SetHICON((WXHICON)il_icon);
+        bmp.CopyFromIcon(icon);
+        #else
+        bmp = image_list->GetBitmap(id);
+        #endif
+
+        m_ext_bitmaps[ext] = bmp;
+        return bmp;
+    }
+    
+private:
+
+    std::map<wxString, wxBitmap> m_ext_bitmaps;
+};
+
+ExtensionBitmapMgr g_ext_bitmaps;
+
+
+
+// DECIDE_BMP() simply chooses a shortcut version of the
+// bitmap, if the file is a mount, or the regular bitmap if not
+#define DECIDE_BMP(bmp) ((info.isOk() && info->isMount()) ? (getShortcutBitmap(GETBMP(bmp))) : (GETBMP(bmp)))
+
+cfw::IFsItemEnumPtr DbFolderFsItem::getChildren()
+{
+    xcm::IVectorImpl<cfw::IFsItemPtr>* vec;
+    vec = new xcm::IVectorImpl<cfw::IFsItemPtr>;
+
+    if (m_conn)
+    {
+        if (!m_conn->isOpen())
+        {
+            m_conn->open();
+        }
+
+        m_db = m_conn->getDatabasePtr();
+    }
+
+
+    if (m_db.isNull())
+    {
+        return vec;
+    }
+
+    // if we're overriding the children enum, use that
+    tango::IFileInfoEnumPtr files;
+    if (m_children_override.isOk())
+        files = m_children_override;
+         else
+        files = m_db->getFolderInfo(towstr(m_path));
+    
+    if (files.isNull())
+    {
+        return vec;
+    }
+    
+    
+    if (m_link_bar_mode)
+    {
+        if (!checkForDisplayOrder(files))
+        {
+            // there was no display order file, so sort alphabetically
+            sortFolderInfo(files);
+        }
+    }
+     else
+    {
+        // regular tree mode is always alphabetical
+        sortFolderInfo(files);
+    }
+
+    size_t i, count = files->size();
+
+
+    // get filters into vector form
+    std::vector<wxString> exts;
+    if (m_conn)
+    {
+        wxString filters = m_conn->getFilter();
+
+        if (!filters.IsEmpty())
+        {
+            wxStringTokenizer t(filters, wxT(" ,;"));
+            
+            while (t.HasMoreTokens())
+            {
+                wxString token = t.GetNextToken();
+                exts.push_back(token);
+            }
+        }
+    }
+
+    // now add other items
+    for (i = 0; i < count; ++i)
+    {
+        tango::IFileInfoPtr info = files->getItem(i);
+
+        wxString item_name = towx(info->getName());
+        int item_type = info->getType();
+        
+        if ((item_type != tango::filetypeSet && item_type != tango::filetypeFolder) && m_only_tables)
+            continue;
+        
+        if (item_type != tango::filetypeFolder && m_only_folders)
+            continue;
+
+        // don't show hidden files (hidden files begin
+        // with a period)
+        if (*(item_name.c_str()) == wxT('.'))
+            continue;
+
+
+
+        // if there is an extension filter, make sure the
+        // files shown are in that filter
+
+        if (exts.size() > 0 && m_conn->getType() == dbtypeFilesystem)
+        {
+            bool ext_found = false;
+            wxString ext = item_name.AfterLast(wxT('.'));
+
+            std::vector<wxString>::iterator it;
+            for (it = exts.begin(); it != exts.end(); ++it)
+            {
+                if (!ext.CmpNoCase(*it))
+                {
+                    ext_found = true;
+                    break;
+                }
+            }
+
+            // if the file extension is not included in the filter,
+            // do not add it to the list of items in the tree
+            if (!ext_found)
+                continue;
+        }
+
+        if (item_type == tango::filetypeFolder)
+        {
+            DbFolderFsItem* item = new DbFolderFsItem;
+            item->setLinkBarMode(m_link_bar_mode);
+            item->setBitmap(DECIDE_BMP(gf_folder_closed_16), cfw::fsbmpSmall);
+            item->setBitmap(DECIDE_BMP(gf_folder_open_16), cfw::fsbmpSmallExpanded);
+            item->setBitmap(DECIDE_BMP(gf_folder_closed_16), cfw::fsbmpLarge);
+            item->setLabel(item_name);
+            item->setPath(appendPath(m_path, item_name));
+            item->setDatabase(m_db);
+            item->setConnection(m_conn);
+            item->setFoldersOnly(m_only_folders);
+            item->setTablesOnly(m_only_tables);
+            item->setOwner(this);
+            if (info->isMount())
+            {
+                item->setIsMount(true);
+                item->setDeferred(true);
+            }
+            
+            vec->append(static_cast<cfw::IFsItem*>(item));
+        }
+         else if (item_type == tango::filetypeSet)
+        {
+            // it appears that all files that are in mounted folders
+            // except scripts (which are of type tango::filetypeStream)
+            // are of type tango::filetypeSet, so we need to determine
+            // the db object type based on the file's extension
+
+            wxBitmap bmp = DECIDE_BMP(gf_table_16);
+                
+            int dbobject_type = dbobjtypeSet;
+
+            int period_idx = item_name.Find(wxT('.'), true);
+            if (period_idx != -1)
+            {
+                wxString ext = item_name.AfterLast(wxT('.'));
+                ext.MakeUpper();
+
+                if (ext != wxT("EXE"))
+                {
+                    bmp = g_ext_bitmaps.getBitmap(ext);
+                }
+                
+                if (ext == wxT("JS"))
+                {
+                    dbobject_type = dbobjtypeScript;
+                }
+
+                if (ext == wxT("HTM") ||
+                    ext == wxT("HTML") ||
+                    ext == wxT("XML"))
+                {
+                    dbobject_type = dbobjtypeBookmark;
+                }
+            }
+
+
+            DbObjectFsItem* item = new DbObjectFsItem;
+            item->setBitmap(bmp, cfw::fsbmpSmall);
+            item->setBitmap(bmp, cfw::fsbmpLarge);
+            item->setLabel(item_name);
+            item->setPath(appendPath(m_path, item_name));
+            item->setType(dbobject_type);
+            item->setOwner(this);
+            vec->append(static_cast<cfw::IFsItem*>(item));
+        }
+         else if (item_type == tango::filetypeNode)
+        {
+            wxString path = appendPath(m_path, item_name);;
+            tango::INodeValuePtr file;
+            
+            if (!info->isMount())
+            {
+                file = m_db->openNodeFile(towstr(path));
+            }
+             else
+            {
+                // links to node files must be dereferenced manually.  We
+                // should expand the API to include a way of opening node
+                // files having the database do the deferencing work
+                std::wstring cstr, rpath;
+                if (m_db->getMountPoint(towstr(path), cstr, rpath))
+                {
+                    tango::IDatabasePtr db2 = m_db->getMountDatabase(towstr(path));
+                    if (db2)
+                    {
+                        file = db2->openNodeFile(towstr(rpath));
+                    }
+                }
+            }
+            
+            
+
+            if (!file)
+            {
+                continue;
+            }
+
+            bool script = false;
+            bool report = false;
+            bool query = false;
+            bool bookmark = false;
+
+
+            tango::INodeValuePtr bookmark_node = file->getChild(L"bookmark", false);
+            bookmark = bookmark_node.isOk();
+            
+            // some bookmarks have an image
+            tango::INodeValuePtr favicon_node;
+            tango::INodeValuePtr location_node;
+            if (bookmark_node.isOk())
+            {
+                location_node = bookmark_node->getChild(L"location", false);
+                favicon_node = bookmark_node->getChild(L"favicon", false);
+            }
+                
+            tango::INodeValuePtr script_node = file->getChild(L"kpp_script", false);
+            script = script_node.isOk();
+
+            tango::INodeValuePtr report_node = file->getChild(L"kpp_report", false);
+            report = report_node.isOk();
+
+            tango::INodeValuePtr template_node = file->getChild(L"kpp_template", false);
+            if (template_node)
+            {
+                tango::INodeValuePtr type = template_node->getChild(L"type", false);
+                if (type.isOk() && type->getString() == L"query")
+                {
+                    query = true;
+                }
+            }
+
+            DbObjectFsItem* item = new DbObjectFsItem;
+            item->setLabel(item_name);
+            item->setPath(path);
+            item->setOwner(this);
+
+            if (bookmark)
+            {
+                item->setBitmap(GETBMP(gf_document_16), cfw::fsbmpSmall);
+                item->setBitmap(GETBMP(gf_document_16), cfw::fsbmpLarge);
+                item->setType(dbobjtypeBookmark);
+            }
+             else if (script)
+            {
+                item->setBitmap(DECIDE_BMP(gf_script_16), cfw::fsbmpSmall);
+                item->setBitmap(DECIDE_BMP(gf_script_16), cfw::fsbmpLarge);
+                item->setType(dbobjtypeScript);
+            }
+             else if (report)
+            {
+                item->setBitmap(DECIDE_BMP(gf_report_16), cfw::fsbmpSmall);
+                item->setBitmap(DECIDE_BMP(gf_report_16), cfw::fsbmpLarge);
+                item->setType(dbobjtypeReport);
+            }
+             else if (query)
+            {
+                item->setBitmap(DECIDE_BMP(gf_query_16), cfw::fsbmpSmall);
+                item->setBitmap(DECIDE_BMP(gf_query_16), cfw::fsbmpLarge);
+                item->setType(dbobjtypeTemplate);
+            }
+             else
+            {
+                item->setBitmap(DECIDE_BMP(gf_gear_16), cfw::fsbmpSmall);
+                item->setBitmap(DECIDE_BMP(gf_gear_16), cfw::fsbmpLarge);
+                item->setType(dbobjtypeTemplate);
+            }
+            
+            
+            if (favicon_node.isOk() && location_node.isOk())
+            {
+                wxBitmap bmp;
+                
+                std::wstring location = location_node->getString();
+                
+                std::map<std::wstring, wxBitmap>::iterator it;
+                it = g_custom_icons.find(location);
+                if (it != g_custom_icons.end())
+                {
+                    bmp = it->second;
+                }
+                 else
+                {             
+                    // item has a custom image -- put it in
+                    wxString favicon = towx(favicon_node->getString());
+                    wxImage img = Bookmark::textToImage(favicon);
+                    bmp = wxBitmap(img);
+                    if (bmp.IsOk())
+                    {
+                        g_custom_icons[location] = bmp;
+                    }
+                }
+                
+                if (bmp.IsOk())
+                {
+                    item->setBitmap(bmp, cfw::fsbmpSmall);
+                    item->setBitmap(bmp, cfw::fsbmpLarge);
+                }
+                
+            }
+
+            vec->append(static_cast<cfw::IFsItem*>(item));
+        }
+         else if (item_type == tango::filetypeStream)
+        {
+            const std::wstring& mime_type = info->getMimeType();
+            if (mime_type == L"application/vnd.kx.report")
+            {
+                DbObjectFsItem* item = new DbObjectFsItem;
+                item->setLabel(item_name);
+                item->setPath(appendPath(m_path, item_name));
+                item->setOwner(this);
+                item->setBitmap(DECIDE_BMP(gf_report_16), cfw::fsbmpSmall);
+                item->setBitmap(DECIDE_BMP(gf_report_16), cfw::fsbmpLarge);
+                item->setType(dbobjtypeReport);
+                vec->append(static_cast<cfw::IFsItem*>(item));
+            }
+             else if (mime_type == L"application/vnd.kx.query")
+            {
+                DbObjectFsItem* item = new DbObjectFsItem;
+                item->setLabel(item_name);
+                item->setPath(appendPath(m_path, item_name));
+                item->setOwner(this);
+                item->setBitmap(DECIDE_BMP(gf_query_16), cfw::fsbmpSmall);
+                item->setBitmap(DECIDE_BMP(gf_query_16), cfw::fsbmpLarge);
+                item->setType(dbobjtypeTemplate);
+                vec->append(static_cast<cfw::IFsItem*>(item));
+            }
+             else if (mime_type.substr(0, 19) == L"application/vnd.kx.")
+            {
+                DbObjectFsItem* item = new DbObjectFsItem;
+                item->setLabel(item_name);
+                item->setPath(appendPath(m_path, item_name));
+                item->setOwner(this);
+                item->setBitmap(DECIDE_BMP(gf_gear_16), cfw::fsbmpSmall);
+                item->setBitmap(DECIDE_BMP(gf_gear_16), cfw::fsbmpLarge);
+                item->setType(dbobjtypeTemplate);
+                vec->append(static_cast<cfw::IFsItem*>(item));
+            }
+             else
+            {
+                DbObjectFsItem* item = new DbObjectFsItem;
+                item->setLabel(item_name);
+                item->setPath(appendPath(m_path, item_name));
+                item->setOwner(this);
+                item->setBitmap(DECIDE_BMP(gf_script_16), cfw::fsbmpSmall);
+                item->setBitmap(DECIDE_BMP(gf_script_16), cfw::fsbmpLarge);
+                item->setType(dbobjtypeScript);
+                vec->append(static_cast<cfw::IFsItem*>(item));
+            }
+        }
+        
+        
+        if (m_link_bar_mode)
+        {
+            // in link bar mode, chop very long lables down a bit
+            if (vec->size() > 0)
+            {
+                cfw::IFsItemPtr item = vec->getItem(vec->size()-1);
+                if (item.isOk())
+                {
+                    wxString label = item->getLabel();
+                    if (label.Length() > 47)
+                    {
+                        label = label.Left(47);
+                        label += wxT("...");
+                        item->setLabel(label);
+                    }
+                }
+            }
+        }
+    }
+    
+    return vec;
+}
+
+
+
+bool DbFolderFsItem::checkForDisplayOrder(tango::IFileInfoEnumPtr& f)
+{
+    if (f.isNull())
+        return false;
+
+    std::vector<tango::IFileInfoPtr> vec;
+    std::vector<tango::IFileInfoPtr>::iterator it;
+    
+    size_t i, count = f->size();
+    bool disp_order_active = false;
+    
+    for (i = 0; i < count; ++i)
+    {
+        vec.push_back(f->getItem(i));
+        if (vec[i]->getName() == L".objorder")
+            disp_order_active = true;
+    }
+    
+    if (!disp_order_active)
+    {
+        // no particular display order found
+        return false;
+    }
+
+    std::wstring info_path = towstr(m_path);
+    if (info_path.empty() || info_path[info_path.length()-1] != L'/')
+        info_path += L'/';
+    info_path += L".objorder";
+
+    DbDocDisplayOrder dispord(m_db);
+    if (!dispord.load(info_path))
+        return false;
+    
+    dispord.sort(vec);
+    
+    f->clear();
+    for (it = vec.begin(); it != vec.end(); ++it)
+    {
+        f->append(*it);
+    }
+    
+    return true;
+}
+
+// -- DbObjectFsItem class implementation --
+
+DbObjectFsItem::DbObjectFsItem()
+{
+    m_path = wxT("");
+    m_type = dbobjtypeSet;
+    m_is_mount = false;
+}
+
+DbObjectFsItem::~DbObjectFsItem()
+{
+
+}
+
+void DbObjectFsItem::setPath(const wxString& s)
+{
+    m_path = s;
+}
+
+wxString DbObjectFsItem::getPath()
+{
+    return m_path;
+}
+
+
+void DbObjectFsItem::setType(int new_val)
+{
+    m_type = new_val;
+}
+
+int DbObjectFsItem::getType()
+{
+    return m_type;
+}
+
+void DbObjectFsItem::setIsMount(bool b)
+{
+    m_is_mount = b;
+}
+
+bool DbObjectFsItem::getIsMount()
+{
+    return m_is_mount;
+}
+
+void DbObjectFsItem::setOwner(IDbFolderFsItemPtr owner)
+{
+    m_owner = owner;
+}
+
+IDbFolderFsItemPtr DbObjectFsItem::getOwner()
+{
+    return m_owner;
+}
+
+
+
+// -- DbDoc class implementation --
+
+enum
+{
+    ID_ItemProperties = wxID_HIGHEST+1,
+    ID_ExpandItem,
+    ID_RemoveItem,
+    ID_RenameItem,
+    ID_RefreshItem,
+    ID_Cut,
+    ID_Copy,
+    ID_Paste,    
+    ID_Open,
+    ID_OpenAsTable,
+    ID_OpenAsText,
+    ID_OpenAsWeb,
+    ID_RunQuery,
+    ID_RunScript,
+    ID_PrintReport,
+    ID_ModifyStructure,
+    ID_NewShortcut,    
+    ID_NewFolder,
+    ID_NewTable,
+    ID_NewReport,
+    ID_NewQuery,
+    ID_NewScript,
+    ID_NewItemFinished
+};
+
+
+BEGIN_EVENT_TABLE(DbDoc, wxEvtHandler)
+    EVT_MENU(ID_Project_ConnectExternal, DbDoc::onCreateExternalConnection)
+    EVT_MENU(ID_Project_NewTable, DbDoc::onCreateTable)
+    EVT_MENU(ID_Project_Import, DbDoc::onImportData)
+    EVT_MENU(ID_Project_Export, DbDoc::onExportData)
+    EVT_MENU(ID_App_OpenProject, DbDoc::onOpenProject)
+    EVT_MENU(ID_Project_ProjectProperties, DbDoc::onProjectProperties)
+    EVT_MENU(ID_ItemProperties, DbDoc::onItemProperties)
+    EVT_MENU(ID_Project_RefreshProject, DbDoc::onRefreshProject)
+    EVT_MENU(ID_RefreshItem, DbDoc::onRefreshItem)
+    EVT_MENU(ID_ExpandItem, DbDoc::onExpandItem)
+    EVT_MENU(ID_RemoveItem, DbDoc::onRemoveItem)
+    EVT_MENU(ID_RenameItem, DbDoc::onRenameItem) 
+    EVT_MENU(ID_Cut, DbDoc::onCut)
+    EVT_MENU(ID_Copy, DbDoc::onCopy)
+    EVT_MENU(ID_Paste, DbDoc::onPaste)    
+    EVT_MENU(ID_Open, DbDoc::onOpen)
+    EVT_MENU(ID_OpenAsTable, DbDoc::onOpenAsTable)
+    EVT_MENU(ID_OpenAsText, DbDoc::onOpenAsText)
+    EVT_MENU(ID_OpenAsWeb, DbDoc::onOpenAsWeb)
+    EVT_MENU(ID_RunQuery, DbDoc::onRunQuery)
+    EVT_MENU(ID_RunScript, DbDoc::onRunScript)
+    EVT_MENU(ID_PrintReport, DbDoc::onPrintReport)
+    EVT_MENU(ID_ModifyStructure, DbDoc::onModifyStructure)
+    EVT_MENU(ID_NewShortcut, DbDoc::onNewShortcut)    
+    EVT_MENU(ID_NewFolder, DbDoc::onNewFolder)
+    EVT_MENU(ID_NewTable, DbDoc::onNewTable)
+    EVT_MENU(ID_NewReport, DbDoc::onNewReport)
+    EVT_MENU(ID_NewQuery, DbDoc::onNewQuery)
+    EVT_MENU(ID_NewScript, DbDoc::onNewScript)
+    EVT_MENU(ID_NewItemFinished, DbDoc::onNewItemFinished)               
+    EVT_SET_FOCUS(DbDoc::onSetFocus)
+    EVT_KILL_FOCUS(DbDoc::onKillFocus)
+END_EVENT_TABLE()
+
+
+
+
+DbDoc::DbDoc()
+{
+    m_edit_mode = editNone;
+    m_link_bar_mode = false;
+    m_no_edit = false;
+    m_style = 0;
+    m_ref_count = 1;
+}
+
+
+DbDoc::~DbDoc()
+{
+}
+
+void DbDoc::ref()
+{
+    m_ref_count++;
+}
+
+void DbDoc::unref()
+{
+    if (--m_ref_count <= 0)
+    {
+        if (!wxPendingDelete.Member(this))
+            wxPendingDelete.Append(this);
+    }
+}
+
+
+bool DbDoc::initAsWindow(wxWindow* window, 
+                         wxWindowID id,
+                         const wxPoint& position,
+                         const wxSize& size,
+                         int flags,
+                         cfw::IFsItemPtr item)
+{
+    // set the root item
+    IDbFolderFsItemPtr db_item = item;
+    
+    wxString caption = wxT("");
+    
+    if (db_item)
+    {
+        caption = db_item->getPath();
+        m_root_item = item;
+    }
+
+    // create the FsPanel
+    m_fspanel.create_instance("cfw.FsPanel");
+    
+    if (m_fspanel.isNull())
+    {
+        wxFAIL_MSG(wxT("Could not create cfw.FsPanel object"));
+        return false;
+    }
+    
+    m_fspanel->setStyle(m_style);
+    if (!m_fspanel->create(window, id, position, size, flags))
+    {
+        wxFAIL_MSG(wxT("Could not create cfw.FsPanel window"));
+        return false;
+    }
+
+    // connect FsPanel's signals
+    m_fspanel->sigItemActivated().connect(this, &DbDoc::onFsItemActivated);
+    m_fspanel->sigItemBeginLabelEdit().connect(this, &DbDoc::onFsItemBeginLabelEdit);
+    m_fspanel->sigItemEndLabelEdit().connect(this, &DbDoc::onFsItemEndLabelEdit);
+    m_fspanel->sigItemRightClicked().connect(this, &DbDoc::onFsItemRightClicked);
+    m_fspanel->sigItemHighlightRequest().connect(this, &DbDoc::onFsItemHighlightRequest);
+    m_fspanel->sigKeyDown().connect(this, &DbDoc::onKeyDown);
+    m_fspanel->sigDragDrop().connect(this, &DbDoc::onDragDrop);
+
+    m_fspanel->setRootItem(m_root_item);
+    m_fspanel->setView(cfw::fsviewTree);
+    m_fspanel->refresh();
+    
+    return true;
+}
+
+
+bool DbDoc::initAsDocument(cfw::IFsItemPtr item)
+{
+    // set the root item
+    IDbFolderFsItemPtr db_item = item;
+    
+    wxString caption = wxEmptyString;
+    
+    if (db_item)
+    {
+        caption = db_item->getPath();
+        m_root_item = item;
+    }
+    
+    
+    // create the FsPanel
+    m_fspanel.create_instance("cfw.FsPanel");
+    
+    if (m_fspanel.isNull())
+    {
+        wxFAIL_MSG(wxT("Could not create cfw.FsPanel object"));
+        return false;
+    }
+    
+    int x = 0, y = 0, w = 220, h = 80, state = cfw::sitetypeDockable | cfw::dockLeft;
+    m_fspanel->setStyle(m_style);
+    m_dbdoc_site = g_app->getMainFrame()->createSite(m_fspanel, state, x, y, w, h);
+    
+    if (m_dbdoc_site.isNull())
+    {
+        wxFAIL_MSG(wxT("Could not create site for cfw.FsPanel"));
+        return false;
+    }
+    
+    m_dbdoc_site->setBitmap(GETBMP(gf_project_16));
+    m_dbdoc_site->setMinSize(200, 400);
+    m_dbdoc_site->setCaption(caption);
+    m_dbdoc_site->setVisible(true);
+
+    // connect FsPanel's signals
+    m_fspanel->sigItemActivated().connect(this, &DbDoc::onFsItemActivated);
+    m_fspanel->sigItemBeginLabelEdit().connect(this, &DbDoc::onFsItemBeginLabelEdit);
+    m_fspanel->sigItemEndLabelEdit().connect(this, &DbDoc::onFsItemEndLabelEdit);
+    m_fspanel->sigItemRightClicked().connect(this, &DbDoc::onFsItemRightClicked);
+    m_fspanel->sigItemHighlightRequest().connect(this, &DbDoc::onFsItemHighlightRequest);
+    m_fspanel->sigKeyDown().connect(this, &DbDoc::onKeyDown);
+    m_fspanel->sigDragDrop().connect(this, &DbDoc::onDragDrop);
+
+    m_fspanel->setRootItem(m_root_item);
+    m_fspanel->setView(cfw::fsviewTree);
+    m_fspanel->refresh();
+    
+    return true;
+}
+
+
+cfw::IDocumentSitePtr DbDoc::getDbDocSite()
+{
+    return m_dbdoc_site;
+}
+
+cfw::IFsPanelPtr DbDoc::getFsPanel()
+{
+    return m_fspanel;
+}
+
+wxWindow* DbDoc::getDocWindow()
+{
+    cfw::IDocumentPtr doc = m_fspanel;
+    if (doc.isNull())
+        return NULL;
+    return doc->getDocumentWindow();
+}
+
+void DbDoc::setDatabase(tango::IDatabasePtr db, const wxString& root_path)
+{
+    if (db)
+    {
+        DbFolderFsItem* root = new DbFolderFsItem;
+        root->setDatabase(db);
+        root->setLinkBarMode(m_link_bar_mode);
+        if (root_path.Length() > 0)
+            root->setPath(root_path);
+        
+        wxString db_label = getDatabaseNameProjectLabel();
+        
+        root->setLabel(db_label);
+        root->setBitmap(GETBMP(gf_project_16));
+        m_fspanel->setRootItem(root);
+    }
+     else
+    {
+        m_fspanel->setRootItem(xcm::null);
+    }
+
+    m_fspanel->refresh();
+    g_cutcopy_items.clear();
+}
+
+// this function sets a specific root item for the DbDoc, insteaad of
+// creating a root item based on the path as is the case in setDatabase()
+void DbDoc::setRootItem(IDbFolderFsItemPtr root_folder)
+{
+    m_fspanel->setRootItem(root_folder);
+    m_fspanel->refresh();
+    g_cutcopy_items.clear();
+}
+
+bool DbDoc::isFsItemExternal(cfw::IFsItemPtr item)
+{
+    tango::IDatabasePtr db = getItemDatabase(item);
+    if (db != g_app->getDatabase())
+        return true;
+
+    return false;
+}
+
+
+void DbDoc::refresh()
+{
+    if (!m_fspanel)
+        return;
+        
+    // make sure the root label is updated
+    cfw::IFsItemPtr root = m_fspanel->getRootItem();
+    
+    if (!root)
+        return;
+        
+    wxString cur_label = root->getLabel();
+    wxString new_label = getDatabaseNameProjectLabel();
+    if (cur_label.CmpNoCase(new_label) != 0)
+        root->setLabel(new_label);
+
+    m_fspanel->refresh();
+}
+
+
+void DbDoc::actionActivate(cfw::IFsItemPtr item, int open_mask)
+{
+    AppBusyCursor bc;
+
+    // if the item is not a Database Object Item, bail out
+    IDbObjectFsItemPtr obj = item;
+    if (!obj)
+        return;
+        
+    IDbFolderFsItemPtr folder = item;
+    if (folder)
+    {
+        // don't activate a folder
+        return;
+    }
+
+    AppController* app_cont = g_app->getAppController();
+    wxString obj_path = obj->getPath();
+    int obj_type = obj->getType();
+
+    if (!app_cont->openAny(obj_path, open_mask))
+    {
+        cfw::appMessageBox(_("The file cannot be opened.  Please check to make sure that the file\nexists, that you have the necessary permissions to access it, and \nit is not currently being modified."),
+                       APPLICATION_NAME,
+                       wxOK | wxICON_EXCLAMATION | wxCENTER);
+        return;
+    }
+    
+    
+    g_macro << "";
+    g_macro << "// open a file";
+    g_macro << wxString::Format(wxT("HostApp.open('%s');"), wxcstr(obj_path));
+}
+
+
+
+
+
+
+class DbDocItemActivate : public wxEvtHandler
+{
+friend class DbDoc;
+
+private:
+    
+    DbDocItemActivate(cfw::IFsItemPtr item, int open_mask)
+    {
+        m_item = item;
+        m_open_mask = open_mask;
+    }
+        
+    bool ProcessEvent(wxEvent& event)
+    {
+        DbDoc::actionActivate(m_item, m_open_mask);
+        if (!wxPendingDelete.Member(this))
+            wxPendingDelete.Append(this);
+        return true;
+    }
+    
+private:
+
+    cfw::IFsItemPtr m_item;
+    int m_open_mask;
+};
+
+
+void DbDoc::actionActivateDeferred(cfw::IFsItemPtr item, int open_mask)
+{
+    DbDocItemActivate* act = new DbDocItemActivate(item, open_mask);
+    wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED, 10000);
+    ::wxPostEvent(act, e);
+}
+
+
+void DbDoc::getFsItemPaths(cfw::IFsItemEnumPtr source,
+                           std::vector<wxString>& result,
+                           bool expand_subfolders)
+{
+    std::vector<wxString>::iterator it;
+    wxString path;
+    
+    size_t i, size = source->size();
+    for (i = 0; i < size; ++i)
+    {
+        cfw::IFsItemPtr item = source->getItem(i);
+        IDbFolderFsItemPtr db_folder_item = item;
+        
+        if (db_folder_item.isOk())
+        {
+            if (expand_subfolders && !DbDoc::isItemMount(item))
+            {
+                getFsItemPaths(item->getChildren(), result, expand_subfolders);
+                continue;
+            }
+             else
+            {
+                path = db_folder_item->getPath();
+            }
+        }
+         else
+        {
+            IDbObjectFsItemPtr db_object_item;
+            db_object_item = item;
+
+            if (!db_object_item)
+                continue;
+
+            path = db_object_item->getPath();
+        }
+        
+        // make sure we don't have any duplicate entries in the vector
+        bool found = false;
+        for (it = result.begin(); it != result.end(); ++it)
+        {
+            if (path.CmpNoCase(*it) == 0)
+            {
+                found = true;
+                break;
+            }
+        }
+        
+        if (!found)
+            result.push_back(path);
+    }
+}
+
+wxString DbDoc::getFsItemPath(cfw::IFsItemPtr source)
+{
+    IDbFolderFsItemPtr db_folder_item = source;
+
+    if (db_folder_item)
+    {
+        return db_folder_item->getPath();
+    }
+
+    IDbObjectFsItemPtr db_object_item;
+    db_object_item = source;
+
+    if (db_object_item)
+    {
+        return db_object_item->getPath();
+    }
+
+    return wxEmptyString;
+}
+
+void DbDoc::setFileVisualLocation(const wxString& path, int insert_index)
+{
+    tango::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return;
+    
+    wxString filename = path.AfterLast(wxT('/'));
+    
+    wxString p = path.BeforeLast(wxT('/'));
+    wxString folder = p;
+    if (folder.Length() > 0 && folder.Last() == wxT('/'))
+        folder.RemoveLast();
+    if (folder.IsEmpty())
+        folder += wxT("/");
+        
+    if (p.IsEmpty() || p.Last() != wxT('/'))
+        p += wxT("/");
+    std::wstring wstr_path = towstr(p);
+    wstr_path += L".objorder";
+    
+    tango::IFileInfoPtr fileinfo = db->getFileInfo(towstr(folder));
+    if (fileinfo.isNull() || fileinfo->getType() != tango::filetypeFolder)
+        return;
+    
+    DbDocDisplayOrder disp(db);
+    
+    if (!disp.load(wstr_path))
+    {
+        disp.createDefaultOrder(towstr(folder));
+    }
+     else
+    {
+        tango::IFileInfoEnumPtr folderinfo = db->getFolderInfo(towstr(folder));
+        disp.sync(folderinfo);
+    }
+
+    disp.insertEntry(towstr(filename), insert_index);
+    
+    disp.save(wstr_path);
+}
+
+
+bool DbDoc::isItemMount(cfw::IFsItemPtr _item)
+{
+    IDbObjectFsItemPtr item = _item;
+    if (item.isNull())
+        return false;
+    return item->getIsMount();
+}
+
+bool DbDoc::isItemInMount(cfw::IFsItemPtr item)
+{
+    IDbObjectFsItemPtr dbitem = item;
+    
+    while (1)
+    {
+        if (dbitem.isNull())
+            return false;
+        
+        IDbObjectFsItemPtr dbitem2 = dbitem->getOwner();
+        if (dbitem2.isNull())
+            return false;
+            
+        if (dbitem2->getIsMount())
+            return true;
+            
+        dbitem = dbitem2;
+    }
+}
+
+tango::IDatabasePtr DbDoc::getItemDatabase(cfw::IFsItemPtr _item)
+{
+    IDbObjectFsItemPtr item = _item;
+    
+    
+    // specific to the tree -- this section won't work for the link bar
+    // but it's necessary for the 'New Folder' to work
+    if (item.isNull())
+    {
+        DbDoc* dbdoc = g_app->getDbDoc();
+        if (!dbdoc)
+            return xcm::null;
+            
+        cfw::IFsPanelPtr fspanel = dbdoc->getFsPanel();
+        if (fspanel.isNull())
+            return xcm::null;
+            
+        cfw::IFsItemPtr parent = fspanel->getItemParent(_item);
+        if (!parent)
+            return xcm::null;
+        
+        item = parent;
+    }
+ 
+    while (1)
+    {
+        if (item.isNull())
+            return xcm::null;
+        
+        IDbFolderFsItemPtr folder = item;
+        if (folder.isOk())
+        {
+            tango::IDatabasePtr db = folder->getDatabase();
+            if (db.isOk())
+                return db;
+        }
+        
+        IDbObjectFsItemPtr parent = item->getOwner();
+        item = parent;
+    }
+}
+
+cfw::IFsItemPtr DbDoc::getFsItemFromPath(const wxString& path)
+{
+    wxString s = path;
+    s.Trim();
+    s.Trim(TRUE);
+
+    return _findFsItem(m_fspanel->getRootItem(), s);
+}
+
+
+void DbDoc::onKeyDown(const wxKeyEvent& evt)
+{
+    if (evt.GetKeyCode() == WXK_RETURN)
+    {
+        openSelectedItems();
+        toggleExpandOnSelectedItems();
+    }
+
+    if (evt.GetKeyCode() == WXK_DELETE)
+    {
+        wxCommandEvent empty;
+        onRemoveItem(empty);
+    }
+}
+
+void DbDoc::onCreateExternalConnection(wxCommandEvent& evt)
+{
+    cfw::IFsItemEnumPtr items;
+    items = m_fspanel->getSelectedItems();
+    if (items->size() != 1)
+        return;
+
+    cfw::IFsItemPtr item = items->getItem(0);
+
+    IDbFolderFsItemPtr folder = item;
+    if (!folder)
+        return;
+
+    g_app->getAppController()->showCreateExternalConnectionWizard();
+}
+
+void DbDoc::onCreateTable(wxCommandEvent& evt)
+{
+    cfw::IFsItemEnumPtr items;
+    items = m_fspanel->getSelectedItems();
+    if (items->size() != 1)
+        return;
+
+    cfw::IFsItemPtr item = items->getItem(0);
+
+    IDbFolderFsItemPtr folder = item;
+    if (!folder)
+        return;
+
+    g_app->getAppController()->showCreateTable();
+}
+
+void DbDoc::onImportData(wxCommandEvent& evt)
+{
+    cfw::IFsItemEnumPtr items;
+    items = m_fspanel->getSelectedItems();
+    if (items->size() != 1)
+        return;
+
+    cfw::IFsItemPtr item = items->getItem(0);
+
+    IDbFolderFsItemPtr folder = item;
+    if (!folder)
+        return;
+
+    ImportInfo info;
+    info.base_path = getFsItemPath(item);
+
+    g_app->getAppController()->showImportWizard(info);
+}
+
+void DbDoc::onExportData(wxCommandEvent& evt)
+{
+    cfw::IFsItemEnumPtr items;
+    items = m_fspanel->getSelectedItems();
+
+    int i;
+    int count = items->size();
+
+    ExportInfo info;
+    ExportTableSelection ts;
+
+    for (i = 0; i < count; ++i)
+    {
+        cfw::IFsItemPtr item = items->getItem(i);
+        wxString path = getFsItemPath(item);
+
+        ts.input_tablename = path;
+        ts.output_tablename = path.AfterLast(wxT('/'));
+        info.tables.push_back(ts);
+    }
+
+    g_app->getAppController()->showExportWizard(info);
+}
+
+void DbDoc::onOpenProject(wxCommandEvent& evt)
+{
+    g_app->getAppController()->showProjectManager();
+}
+
+void DbDoc::onProjectProperties(wxCommandEvent& evt)
+{
+    cfw::IFsItemEnumPtr items;
+    items = m_fspanel->getSelectedItems();
+    if (items->size() != 1)
+        return;
+
+    cfw::IFsItemPtr item = items->getItem(0);
+
+    IDbFolderFsItemPtr folder = item;
+    if (!folder)
+        return;
+
+    g_app->getAppController()->showProjectProperties();
+}
+
+void DbDoc::onItemProperties(wxCommandEvent& evt)
+{
+    cfw::IFsItemEnumPtr items;
+    items = m_fspanel->getSelectedItems();
+    size_t i,count = items->size();
+
+    if (count == 1)
+    {
+        IDbObjectFsItemPtr item = items->getItem(0);
+        if (item->getType() == dbobjtypeBookmark)
+        {
+            wxString path = getFsItemPath(item);
+            wxString label = items->getItem(0)->getLabel();
+            int idx = m_fspanel->getItemIndex(item);
+            
+            Bookmark b;
+            if (!b.load(path))
+                return;
+            
+            wxString title = wxString::Format(_("\"%s\" Properties"),
+                                              label.c_str());
+            
+            LinkPropsDialog dlg(g_app->getMainWindow());
+            dlg.setStartFolder(path.BeforeLast(wxT('/')));
+            dlg.setName(label);
+            dlg.setLocation(b.getLocation());
+            dlg.setTags(b.getTags());
+            dlg.setDescription(b.getDescription());
+            dlg.setRunTarget(b.getRunTarget());
+            dlg.SetTitle(title);
+            dlg.CenterOnScreen();
+            
+            if (dlg.ShowModal() == wxID_OK)
+            {
+                // save the properties
+                b.setLocation(dlg.getLocation());
+                b.setTags(dlg.getTags());
+                b.setDescription(dlg.getDescription());
+                b.save(dlg.getPath());
+                b.setRunTarget(dlg.getRunTarget());
+                
+                // position the bookmark in the linkbar
+                if (idx != -1)
+                {
+                    DbDoc::setFileVisualLocation(dlg.getPath(), idx);
+                }
+            }
+            
+            refresh();
+            return;
+        }
+    
+    
+    
+        IDbFolderFsItemPtr folder = items->getItem(0);
+        if (folder)
+        {
+            std::wstring path = towstr(folder->getPath());
+            
+            tango::IDatabasePtr db = getItemDatabase(folder);
+            if (db.isNull())
+                return;
+                
+            tango::IFileInfoPtr file_info = db->getFileInfo(path);
+            
+            if (file_info.isOk() && file_info->isMount())
+            {   
+                // get connection string
+                std::wstring cstr, rpath;
+                db->getMountPoint(path, cstr, rpath);
+                if (cstr.empty())
+                    return;
+                
+                cfw::IDocumentSitePtr site;
+                
+                m_edit_item = folder;
+                
+                ConnectionWizard* wizard = new ConnectionWizard;
+                wizard->setTitle(_("Connection Properties"));
+                wizard->setMode(ConnectionWizard::ModeProperties);
+                wizard->setConnectionString(towx(cstr));
+                wizard->sigConnectionWizardFinished.connect(this, &DbDoc::onSetConnectionPropertiesFinished);
+                
+                site = g_app->getMainFrame()->createSite(wizard, cfw::sitetypeModeless,
+                                                         -1, -1, 540, 480);
+                site->setMinSize(540,480);
+                site->setName(wxT("ConnectionPropertiesPanel"));
+                return;
+            }
+        }
+    }
+
+
+    AppBusyCursor bc;
+
+    MultiFileInfoPanel* panel = new MultiFileInfoPanel;
+
+    for (i = 0; i < count; ++i)
+        panel->addFile(getFsItemPath(items->getItem(i)));
+
+    cfw::IDocumentSitePtr site;
+    site = g_app->getMainFrame()->createSite(panel, cfw::sitetypeModeless,
+                                             -1, -1, 600, 520);
+    site->setMinSize(600,320);
+    site->setName(wxT("FilePropertiesPanel"));
+}
+
+void DbDoc::onRefreshProject(wxCommandEvent& evt)
+{
+    g_app->getAppController()->refreshDbDoc();
+}
+
+void DbDoc::onRefreshItem(wxCommandEvent& evt)
+{
+    cfw::IFsItemEnumPtr items;
+    items = m_fspanel->getSelectedItems();
+    if (items->size() != 1)
+        return;
+    cfw::IFsItemPtr item = items->getItem(0);
+
+    m_fspanel->refreshItem(item);
+}
+
+void DbDoc::onExpandItem(wxCommandEvent& evt)
+{
+    toggleExpandOnSelectedItems();
+}
+
+void DbDoc::onRemoveItem(wxCommandEvent& evt)
+{
+    bool external_database_item = false;
+    bool external = false;
+    bool all_mounts = true;
+    wxString message;
+    int i;
+
+    cfw::IFsItemEnumPtr items;
+    items = m_fspanel->getSelectedItems();
+    int count = items->size();
+    if (count < 1)
+        return;
+
+    for (i = 0; i < count; ++i)
+    {
+        cfw::IFsItemPtr item = items->getItem(i);
+        
+        if (!isItemMount(item))
+            all_mounts = false;
+            
+        external = isFsItemExternal(item);
+        if (!external)
+        {
+            if (getFsItemPath(item) == wxT("/"))
+                return;
+        }
+         else
+        {
+            IDbFolderFsItemPtr db_folder_item = item;
+            if (db_folder_item)
+            {
+                external_database_item = true;
+            }
+        }
+    }
+
+    if (all_mounts)
+    {
+        message += _("You are about to remove the following connection(s).\nAre you sure you want to continue?\n\n");
+    }
+     else
+    {
+        message += _("You are about to delete the following item(s).\nAre you sure you want to continue?\n\n");
+    }
+    
+    int mcount = 0;
+
+    for (i = 0; i < count; ++i)
+    {
+        cfw::IFsItemPtr item = items->getItem(i);
+
+        wxString path = getFsItemPath(item);
+        path = path.AfterLast(L'/');
+        
+        if (mcount < 10)
+        {
+            message += wxT("     ");
+
+            message += path;
+            message += wxT("\n");
+        }
+         else if (mcount == 10)
+        {   
+            message += wxT("     ");
+            message += _("(More files...)");
+        }
+
+        mcount++;
+    }
+
+
+    if (mcount > 0 && !external_database_item)
+    {
+        int result = cfw::appMessageBox(message,
+                                        APPLICATION_NAME,
+                                        wxYES_NO | wxICON_EXCLAMATION | wxCENTER);
+        if (result != wxYES)
+            return;
+    }
+
+
+    // if the user is trying to remove an external connection,
+    // let's ask them if they really want to do this just to make sure
+    
+    if (external_database_item)
+    {
+        cfw::IFsItemPtr item = items->getItem(0);
+        
+        message = _("You are about to remove the following external connection.\nAre you sure?\n\n");
+        message += wxT("     ");
+        message += item->getLabel();
+
+        int result = cfw::appMessageBox(message,
+                                        APPLICATION_NAME,
+                                        wxYES_NO | wxICON_EXCLAMATION | wxCENTER);
+        if (result != wxYES)
+            return;
+    }
+
+
+    std::vector<wxString> problem_items;
+
+
+    {
+        AppBusyCursor bc;
+
+        for (i = 0; i < count; ++i)
+        {
+            deleteFsItem(m_fspanel, items->getItem(i), problem_items);
+        }
+    }
+
+
+    if (problem_items.size() > 0)
+    {
+        if (!external)
+        {
+            message = _("One or more of the following items could not be deleted.  They may be in use.\n\n");
+        }
+         else
+        {
+            message = _("One or more of the following items could not be deleted.  They may be in use or read-only,\nor you may not have user privileges to delete them.\n\n");
+        }
+
+        for (std::vector<wxString>::iterator it = problem_items.begin();
+             it != problem_items.end(); ++it)
+        {        
+            message += wxT("     ");
+            message += *it;
+            message += wxT("\n");
+        }
+
+        cfw::appMessageBox(message,
+                           APPLICATION_NAME,
+                           wxOK| wxICON_EXCLAMATION | wxCENTER);
+    }
+    
+    
+    // refocus the project tree; note: deleting a bookmarked webpage from a
+    // folder in the link bar folder was causing a crash since doc was null; 
+    // check to see if doc is null before deleting to prevent the crash
+    cfw::IDocumentPtr doc = m_fspanel;
+    
+    if (doc.isOk())
+        doc->setDocumentFocus();
+}
+
+void DbDoc::onRenameItem(wxCommandEvent& evt)
+{
+    cfw::IFsItemEnumPtr items;
+    items = m_fspanel->getSelectedItems();
+    if (items->size() != 1)
+        return;
+    cfw::IFsItemPtr item = items->getItem(0);
+        
+    if (m_link_bar_mode)
+    {
+        // link bar rename requires a dialog because of the
+        // transient nature of the drop-down dbdocs
+        
+        wxString default_name = DbDoc::getFsItemPath(item);
+        default_name = default_name.AfterLast(L'/');
+        
+        wxTextEntryDialog dlg(g_app->getMainWindow(),
+                              _("New name:"),
+                              _("Rename"),
+                              default_name);
+        dlg.SetSize(260,141);
+        
+        if (dlg.ShowModal() == wxID_OK && dlg.GetValue() != default_name)
+        {
+            bool allow = true;
+            m_edit_mode = editRename;
+            onFsItemEndLabelEdit(item, dlg.GetValue(), false, &allow);
+        }
+
+    }
+     else
+    {
+        // normal, in-tree edit
+        m_edit_mode = editRename;
+        m_fspanel->editLabel(item);
+    }
+}
+
+void DbDoc::onOpen(wxCommandEvent& evt)
+{
+    openSelectedItems();
+}
+
+void DbDoc::onOpenAsTable(wxCommandEvent& evt)
+{
+    openSelectedItems(appOpenDefault | appOpenAsTable);
+}
+
+void DbDoc::onOpenAsText(wxCommandEvent& evt)
+{
+    openSelectedItems(appOpenDefault | appOpenAsText);
+}
+
+void DbDoc::onOpenAsWeb(wxCommandEvent& evt)
+{
+    openSelectedItems(appOpenDefault | appOpenAsWeb);
+}
+
+void DbDoc::onRunQuery(wxCommandEvent& event)
+{
+    cfw::IFsItemEnumPtr items;
+    items = m_fspanel->getSelectedItems();
+
+    int i, count;
+    count = items->size();
+
+    for (i = 0; i < count; ++i)
+    {
+        cfw::IFsItemPtr item = items->getItem(i);
+
+        IDbObjectFsItemPtr obj;
+        obj = item;
+
+        if (obj)
+        {
+            g_app->getAppController()->execute(obj->getPath());
+        }
+    }
+}
+
+void DbDoc::onRunScript(wxCommandEvent& event)
+{
+    cfw::IFsItemEnumPtr items;
+    items = m_fspanel->getSelectedItems();
+    if (items->size() != 1)
+        return;
+    cfw::IFsItemPtr item = items->getItem(0);
+    wxString item_path = getFsItemPath(item);
+    
+    cfw::IDocumentSiteEnumPtr docsites;
+    cfw::IDocumentSitePtr site;
+    IEditorDocPtr editor_doc;
+    
+    // if we're running a script from the project panel, make sure
+    // all open scripts (except untitled scripts) are saved first
+    docsites = g_app->getMainFrame()->getDocumentSites(cfw::sitetypeNormal);
+    int site_count = docsites->size();
+    for (int i = 0; i < site_count; ++i)
+    {
+        site = docsites->getItem(i);
+        editor_doc = site->getDocument();
+        if (editor_doc.isOk() && !editor_doc->isTemporary())
+            editor_doc->doSave();
+    }
+    
+    // now we can run the script
+    AppScriptError error;
+    
+    if (g_app->getAppController()->executeScript(item_path, NULL, &error).isNull())
+    {
+        // open the script that has an error in it
+        
+        wxString script_path;
+        if (!error.file.IsEmpty())
+            script_path = error.file;
+             else
+            script_path = item_path;
+        
+        int doc_id;
+        if (!g_app->getAppController()->openScript(script_path, &doc_id))
+            return;
+        
+        cfw::IDocumentSitePtr site = g_app->getMainFrame()->lookupSiteById(doc_id);
+        if (site.isNull())
+            return;
+        
+        IEditorDocPtr doc_ptr = site->getDocument();
+        if (doc_ptr.isNull())
+            return;
+        
+        // show the error in the statusbar
+        if (doc_ptr.isOk())
+            doc_ptr->reportError(error.offset, error.line, error.message);
+        
+        wxString error_str = wxString::Format(_("Compiler error (line %d): %s"),
+                                              error.line,
+                                              error.message.c_str());
+        
+        wxString message = wxString::Format(_("The selected script could not be run because there are errors in it:\n\n%s"),
+                                            error_str.c_str());
+        
+        // alert the user that the script couldn't be run
+        cfw::appMessageBox(message,
+                           APPLICATION_NAME,
+                           wxOK | wxICON_EXCLAMATION | wxCENTER);
+    }
+}
+
+void DbDoc::onPrintReport(wxCommandEvent& evt)
+{
+    cfw::IFsItemEnumPtr items;
+    items = m_fspanel->getSelectedItems();
+
+    int i, count;
+    count = items->size();
+
+    for (i = 0; i < count; ++i)
+    {
+        cfw::IFsItemPtr item = items->getItem(i);
+
+        IDbObjectFsItemPtr obj;
+        obj = item;
+
+        if (obj)
+        {
+            g_app->getAppController()->print(obj->getPath());
+        }
+    }
+}
+
+void DbDoc::onModifyStructure(wxCommandEvent& event)
+{
+    cfw::IFsItemEnumPtr items;
+    items = m_fspanel->getSelectedItems();
+    if (items->size() != 1)
+        return;
+    cfw::IFsItemPtr item = items->getItem(0);
+    
+    IDbObjectFsItemPtr obj = item;
+    if (!obj)
+        return;
+
+    tango::ISetPtr modify_set;
+    
+    modify_set = g_app->getDatabase()->openSet(towstr(obj->getPath()));
+    if (!modify_set)
+    {
+        return;
+    }
+
+    StructureDoc* doc = new StructureDoc;
+    doc->setModifySet(modify_set);
+    g_app->getMainFrame()->createSite(static_cast<cfw::IDocument*>(doc),
+                                      cfw::sitetypeNormal,
+                                      -1, -1, -1, -1);
+}
+
+
+void DbDoc::doCut()
+{
+    g_cutcopy_items.clear();
+    g_cutcopy_action = actionCut;
+    
+    cfw::IFsItemEnumPtr items;
+    items = m_fspanel->getSelectedItems();
+    
+    size_t i, count = items->size();
+
+    for (i = 0; i < count; ++i)
+    {
+        cfw::IFsItemPtr item = items->getItem(i);
+        g_cutcopy_items.push_back(item);
+        m_fspanel->setItemBitmap(item, lightenBitmap(item->getBitmap()));
+    }
+}
+
+void DbDoc::doCopy()
+{
+    g_cutcopy_items.clear();
+    g_cutcopy_action = actionCopy;
+
+    cfw::IFsItemEnumPtr items;
+    items = m_fspanel->getSelectedItems();
+    int count = items->size();
+    int i;
+
+    for (i = 0; i < count; ++i)
+    {
+        cfw::IFsItemPtr item = items->getItem(i);
+        g_cutcopy_items.push_back(item);
+    }
+}
+
+void DbDoc::doPaste()
+{
+    tango::IDatabasePtr db = g_app->getDatabase();
+
+
+    if (g_cutcopy_items.size() == 0)
+        return;
+
+    cfw::IFsItemEnumPtr items;
+    items = m_fspanel->getSelectedItems();
+    if (items->size() != 1)
+        return;
+
+    cfw::IFsItemPtr target = items->getItem(0);
+    
+    while (target)
+    {
+        IDbFolderFsItemPtr f = target;
+        if (f.isOk())
+            break;
+        target = m_fspanel->getItemParent(target);
+    }
+    
+    if (target.isNull())
+        return; // can't find parent folder item
+    
+    
+    wxString target_location = getFsItemPath(target);
+    
+    
+    tango::IDatabasePtr target_database = getItemDatabase(target);
+
+    std::vector<cfw::IFsItemPtr>::iterator it;
+
+    if (g_cutcopy_action == actionCut)
+    {
+        // don't allow cut/paste of same items in the same location
+        for (it = g_cutcopy_items.begin(); it != g_cutcopy_items.end(); ++it)
+        {
+            if (target == *it)
+            {
+                cfw::appMessageBox(_("One or more source and/or destination files are the same."),
+                                   APPLICATION_NAME,
+                                   wxOK | wxICON_EXCLAMATION | wxCENTER);
+                return;
+            }
+        }
+    
+
+
+        for (it = g_cutcopy_items.begin(); it != g_cutcopy_items.end(); ++it)
+        {
+            wxString src_path = getFsItemPath(*it);
+            wxString fname = src_path.AfterLast(wxT('/'));
+            wxString target_path;
+    
+            int counter = 0;
+            do
+            {
+                target_path = target_location;
+                if (target_path.IsEmpty() || target_path.Last() != wxT('/'))
+                {
+                    target_path += wxT("/");
+                }
+
+                target_path += fname;
+                if (counter > 0)
+                {
+                    target_path += wxString::Format(wxT("_%d"), counter+1);
+                }
+
+                counter++;
+
+            } while (db->getFileExist(towstr(target_path)));
+
+
+            if (db->moveFile(towstr(src_path), towstr(target_path)))
+            {
+                m_fspanel->remove(*it);
+
+                // post a command that lets everyone know that
+                // an ofs item has been moved
+
+                cfw::Event* cfw_event = new cfw::Event(wxT("treepanel.ofsFileRenamed"));
+                cfw_event->s_param = src_path;
+                cfw_event->s_param2 = target_path;
+                g_app->getMainFrame()->postEvent(cfw_event);
+            }
+        }
+
+        m_fspanel->refreshItem(target);
+
+        IDbFolderFsItemPtr folder = getFsItemFromPath(target_location);
+        if (folder)
+        {
+            m_fspanel->expand(folder);
+        }
+
+        g_cutcopy_items.clear();
+    }
+     else if (g_cutcopy_action == actionCopy)
+    {
+        bool external_copy = false;
+
+        std::vector<cfw::IFsItemPtr>::iterator it;
+        for (it = g_cutcopy_items.begin(); it != g_cutcopy_items.end(); ++it)
+        {
+            cfw::IFsItemPtr item = *it;
+
+            if (isFsItemExternal(item))
+            {
+                external_copy = true;
+                break;
+            }
+        }
+
+
+        if (!external_copy)
+        {
+            CopyJob* job = new CopyJob;
+            
+            // set folder to refresh after paste operation
+            job->setExtraString(target_location);
+            
+            for (it = g_cutcopy_items.begin(); it != g_cutcopy_items.end(); ++it)
+            {
+                wxString src_path = getFsItemPath(*it);
+                wxString fname = stripExtension(src_path.AfterLast(wxT('/')));
+                wxString target_path;
+
+                int counter = 0;
+                do
+                {
+                    target_path = target_location;
+                    if (target_path.IsEmpty() || target_path.Last() != wxT('/'))
+                    {
+                        target_path += wxT("/");
+                    }
+
+                    target_path += fname;
+                    if (counter > 0)
+                    {
+                        target_path += wxString::Format(wxT("_%d"), counter+1);
+                    }
+
+
+                    // if we're saving the file to a filesystem mount and no
+                    // extension is specified, then automatically add a 'csv'
+                    // or 'js' extension; this is a usability issue since without 
+                    // the extension, the user usually ends up adding this as the 
+                    // first item of business after saving
+                    IDbObjectFsItemPtr dbobject_item = *it;
+                    if (dbobject_item.isOk())
+                    {
+                        if (dbobject_item->getType() == dbobjtypeSet)
+                            target_path = addExtensionIfExternalFsDatabase(target_path, wxT(".csv"));
+                        if (dbobject_item->getType() == dbobjtypeScript)
+                            target_path = addExtensionIfExternalFsDatabase(target_path, wxT(".js"));
+                    }
+
+
+                    counter++;
+                } while (db->getFileExist(towstr(target_path)));
+
+
+
+                
+
+                tango::IDatabasePtr db = g_app->getDatabase();
+                tango::IDatabasePtr source_db = getItemDatabase(*it);
+                tango::IDatabasePtr dest_db = target_database;
+                wxString dest_path = target_path;
+
+                std::wstring cstr;
+                std::wstring rpath;
+                if (db->getMountPoint(towstr(dest_path), cstr, rpath))
+                {
+                    dest_db = db->getMountDatabase(towstr(dest_path));
+                    dest_path = rpath;
+                    if (dest_db.isNull())
+                        return;
+                }
+
+
+
+                
+                if (source_db != dest_db)
+                {
+                    job->addCopyInstruction(source_db,
+                                            src_path,
+                                            dest_db,
+                                            dest_path);
+                    continue;
+                }
+
+
+                tango::IFileInfoPtr file_info = db->getFileInfo(towstr(src_path));
+                if (!file_info)
+                {
+                    cfw::appMessageBox(_("One or more source files are in use, and cannot be accessed at this time."),
+                                       APPLICATION_NAME,
+                                       wxOK | wxICON_EXCLAMATION | wxCENTER);
+                    delete job;
+                    return;
+                }
+
+                if (file_info->getType() == tango::filetypeSet ||
+                    file_info->getType() == tango::filetypeStream)
+                {
+                    job->addCopyInstruction(g_app->getDatabase(),
+                                            src_path,
+                                            target_database,
+                                            target_path);
+                }
+                 else
+                {
+                    db->copyFile(towstr(src_path), towstr(target_path));
+                }
+            }
+
+            if (g_cutcopy_items.size() > job->getInstructionCount())
+            {
+                m_fspanel->refreshItem(target);
+            }
+
+            if (job->getInstructionCount() > 0)
+            {
+                g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+                
+                job->sigJobFinished().connect(this, &DbDoc::onCopyJobFinished);
+            }
+        }
+         else
+        {
+            //doImportJob(g_cutcopy_items, target_location);
+        }
+    }
+}
+
+void DbDoc::onCut(wxCommandEvent& evt)
+{
+    doCut();
+}
+
+void DbDoc::onCopy(wxCommandEvent& evt)
+{
+    doCopy();
+}
+
+void DbDoc::onPaste(wxCommandEvent& evt)
+{
+    doPaste();
+}
+
+void DbDoc::onNewShortcut(wxCommandEvent& evt)
+{
+    cfw::IFsItemEnumPtr items;
+    items = m_fspanel->getSelectedItems();
+    if (items->size() != 1)
+        return;
+
+    cfw::IFsItemPtr parent_item = items->getItem(0);
+
+    DlgDatabaseFile dlg(g_app->getMainWindow(), DlgDatabaseFile::modeOpen);
+    dlg.setCaption(_("Select Item Location"));
+    dlg.setAffirmativeButtonLabel(_("OK"));
+    if (dlg.ShowModal() != wxID_OK)
+        return;
+
+
+    tango::IDatabasePtr db = getItemDatabase(parent_item);
+    wxString path = getFsItemPath(parent_item);
+    path += wxT("/New_Shortcut");
+
+
+    db->setMountPoint(towstr(path), L"", towstr(dlg.getPath()));
+    
+    m_fspanel->refreshItem(parent_item);
+
+    cfw::IFsItemPtr target = getFsItemFromPath(path);
+    if (target.isOk())
+    {
+        m_fspanel->unselectAll();
+        m_fspanel->selectItem(target);
+    }
+    
+}
+
+cfw::IFsItemPtr DbDoc::getNewFileParent()
+{
+    tango::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return xcm::null;
+    
+    cfw::IFsItemEnumPtr items;
+    items = m_fspanel->getSelectedItems();
+    if (items->size() != 1)
+        return xcm::null;
+
+    return items->getItem(0);
+}
+    
+wxString DbDoc::getDefaultNewFileName(cfw::IFsItemPtr parent, const wxString& name)
+{
+    wxASSERT(parent.isOk());
+    
+    tango::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return wxEmptyString;
+
+    wxString path = getFsItemPath(parent);
+    
+    if (path.IsEmpty() || path.Last() != '/')
+        path += wxT("/");
+        
+    wxString result;
+    
+    int i = 1;
+    do
+    {
+        result = path;
+        result += name;
+        
+        if (i > 1)
+            result += wxString::Format(wxT(" %d"), i);
+        ++i;
+    } while (db->getFileExist(towstr(result)));
+
+    return result;
+}
+
+
+
+void DbDoc::onNewFolder(wxCommandEvent& evt)
+{
+/*
+    cfw::IFsItemEnumPtr items;
+    items = m_fspanel->getSelectedItems();
+    if (items->size() != 1)
+        return;
+
+    m_newitem_parent = items->getItem(0);
+    
+    // find the last folder and put our temporary
+    // edit item directly under there
+
+    cfw::IFsItemPtr previous_item;
+    cfw::IFsItemEnumPtr all_items;
+    
+    all_items = m_fspanel->getItemChildren(m_newitem_parent);
+
+    int count = all_items->size();
+    int i;
+
+    for (i = 0; i < count; ++i)
+    {
+        cfw::IFsItemPtr item = all_items->getItem(i);
+        IDbFolderFsItemPtr folder = item;
+        if (!folder)
+            break;
+
+        previous_item = item;
+    }
+
+    cfw::IFsItemPtr new_item;
+    new_item = m_fspanel->insertItem(m_newitem_parent,
+                                     previous_item,
+                                     wxT(""),
+                                     GETBMP(gf_folder_open_16));
+    m_edit_mode = editNewFolder;
+
+    m_fspanel->expand(m_newitem_parent);
+    m_fspanel->editLabel(new_item);
+*/
+
+    cfw::IFsItemPtr parent = getNewFileParent();
+    if (parent.isNull())
+        return;
+        
+    wxString path = getDefaultNewFileName(parent, _("New Folder"));
+    
+    tango::IDatabasePtr db = g_app->getDatabase();
+    if (!db->createFolder(towstr(path)))
+    {
+        cfw::appMessageBox(_("A folder could not be created in this location."),
+                           APPLICATION_NAME,
+                           wxOK | wxICON_ERROR | wxCENTER);
+        return;
+    }
+    
+    m_fspanel->refreshItem(parent);
+    
+    if (!m_fspanel->isItemExpanded(parent))
+        m_fspanel->expand(parent);
+    
+    cfw::IFsItemPtr new_item = getFsItemFromPath(path);
+    if (new_item)
+    {
+        m_fspanel->expand(new_item);
+        m_edit_mode = editRename;
+        m_fspanel->editLabel(new_item);
+    }
+    
+}
+
+void DbDoc::onNewTable(wxCommandEvent& evt)
+{
+    cfw::IFsItemPtr parent = getNewFileParent();
+    if (parent.isNull())
+        return;
+        
+    wxString path = getDefaultNewFileName(parent, _("New Table"));
+    
+    if (!TableDocMgr::newFile(path))
+    {
+        cfw::appMessageBox(_("A file could not be created in this folder."),
+                           APPLICATION_NAME,
+                           wxOK | wxICON_ERROR | wxCENTER);
+        return;
+    }
+    
+    m_fspanel->refreshItem(parent);
+    
+    if (!m_fspanel->isItemExpanded(parent))
+        m_fspanel->expand(parent);
+    
+    cfw::IFsItemPtr new_item = getFsItemFromPath(path);
+    if (new_item)
+    {
+        m_edit_mode = editRename;
+        m_fspanel->editLabel(new_item);
+    }
+}
+
+void DbDoc::onNewReport(wxCommandEvent& evt)
+{
+    cfw::IFsItemPtr parent = getNewFileParent();
+    if (parent.isNull())
+        return;
+        
+    wxString path = getDefaultNewFileName(parent, _("New Report"));
+    if (!ReportDoc::newFile(path))
+    {
+        cfw::appMessageBox(_("A file could not be created in this folder."),
+                           APPLICATION_NAME,
+                           wxOK | wxICON_ERROR | wxCENTER);
+        return;
+    }
+    
+    m_fspanel->refreshItem(parent);
+    
+    if (!m_fspanel->isItemExpanded(parent))
+        m_fspanel->expand(parent);
+    
+    cfw::IFsItemPtr new_item = getFsItemFromPath(path);
+    if (new_item)
+    {
+        m_edit_mode = editRename;
+        m_fspanel->editLabel(new_item);
+    }
+}
+
+void DbDoc::onNewQuery(wxCommandEvent& evt)
+{
+    cfw::IFsItemPtr parent = getNewFileParent();
+    if (parent.isNull())
+        return;
+        
+    wxString path = getDefaultNewFileName(parent, _("New Query"));
+    if (!QueryDoc::newFile(path))
+    {
+        cfw::appMessageBox(_("A file could not be created in this folder."),
+                           APPLICATION_NAME,
+                           wxOK | wxICON_ERROR | wxCENTER);
+        return;
+    }
+    
+    m_fspanel->refreshItem(parent);
+    
+    if (!m_fspanel->isItemExpanded(parent))
+        m_fspanel->expand(parent);
+    
+    cfw::IFsItemPtr new_item = getFsItemFromPath(path);
+    if (new_item)
+    {
+        m_edit_mode = editRename;
+        m_fspanel->editLabel(new_item);
+    }
+}
+
+void DbDoc::onNewScript(wxCommandEvent& evt)
+{
+    cfw::IFsItemPtr parent = getNewFileParent();
+    if (parent.isNull())
+        return;
+        
+    wxString path = getDefaultNewFileName(parent, _("New Script"));
+    if (!EditorDoc::newFile(path))
+    {
+        cfw::appMessageBox(_("A file could not be created in this folder."),
+                           APPLICATION_NAME,
+                           wxOK | wxICON_ERROR | wxCENTER);
+        return;
+    }
+    
+    m_fspanel->refreshItem(parent);
+    
+    if (!m_fspanel->isItemExpanded(parent))
+        m_fspanel->expand(parent);
+    
+    cfw::IFsItemPtr new_item = getFsItemFromPath(path);
+    if (new_item)
+    {
+        m_edit_mode = editRename;
+        m_fspanel->editLabel(new_item);
+    }
+}
+
+void DbDoc::onNewItemFinished(wxCommandEvent& evt)
+{
+    wxString label = evt.GetString();
+    
+    m_fspanel->refreshItem(m_newitem_parent);
+    updateCutCopyItems();
+    
+    // now select the new folder
+    cfw::IFsItemEnumPtr children = m_fspanel->getItemChildren(m_newitem_parent);
+    int child_count = children->size();
+    int i;
+    
+    for (i = 0; i < child_count; ++i)
+    {
+        cfw::IFsItemPtr child = children->getItem(i);
+        IDbFolderFsItemPtr folder = child;
+        if (folder.isNull())
+            continue;
+
+        if (child->getLabel().CmpNoCase(label) == 0)
+        {
+            m_fspanel->unselectAll();
+            m_fspanel->selectItem(child);
+            m_fspanel->expand(child);
+            break;
+        }
+    }
+    
+    m_newitem_parent.clear();
+}
+
+void DbDoc::onSetFocus(wxFocusEvent& evt)
+{
+    wxWindow* win = getDocWindow();
+    if (win == NULL)
+        return;
+
+    win->SetFocus();
+}
+
+void DbDoc::onKillFocus(wxFocusEvent& evt)
+{
+}
+
+void DbDoc::openSelectedItems(int open_mask)
+{
+    // if no mask is specified, open the selected
+    // item with the default
+    if (open_mask == -1)
+        open_mask = appOpenDefault;
+
+    cfw::IFsItemEnumPtr items;
+    items = m_fspanel->getSelectedItems();
+
+    int i, count;
+    count = items->size();
+
+    for (i = 0; i < count; ++i)
+    {
+        cfw::IFsItemPtr item = items->getItem(i);
+
+        IDbObjectFsItemPtr obj;
+        obj = item;
+
+        if (obj)
+        {
+            actionActivateDeferred(item, open_mask);
+        }
+    }
+}
+
+void DbDoc::toggleExpandOnSelectedItems()
+{
+    cfw::IFsItemEnumPtr items;
+    items = m_fspanel->getSelectedItems();
+
+    size_t i, count = items->size();
+    if (count < 1)
+        return;
+
+    for (i = 0; i < count; ++i)
+    {
+        cfw::IFsItemPtr item = items->getItem(i);
+        if (m_fspanel->isItemExpanded(item))
+            m_fspanel->collapse(item);
+             else
+            m_fspanel->expand(item);
+    }
+}
+
+void DbDoc::updateCutCopyItems()
+{
+    std::vector<cfw::IFsItemPtr> new_cutcopy_items;
+
+    std::vector<cfw::IFsItemPtr>::iterator it;
+    for (it = g_cutcopy_items.begin(); it != g_cutcopy_items.end(); ++it)
+    {
+        wxString path = getFsItemPath(*it);
+        cfw::IFsItemPtr new_item = getFsItemFromPath(path);
+        if (new_item)
+        {
+            if (new_item != *it)
+            {
+                m_fspanel->setItemBitmap(new_item, lightenBitmap(new_item->getBitmap()));
+            }
+
+            new_cutcopy_items.push_back(new_item);
+        }
+    }
+
+    g_cutcopy_items.clear();
+    g_cutcopy_items = new_cutcopy_items;
+}
+
+
+
+// This function deletes a folder in the tree as well
+// as recursively deletes its contents
+
+void DbDoc::deleteFsItem(cfw::IFsPanelPtr tree,
+                         cfw::IFsItemPtr item,
+                         std::vector<wxString>& problem_items)
+{    
+    IDbFolderFsItemPtr folder = item;
+    IDbObjectFsItemPtr obj = item;
+
+
+
+    tango::IDatabasePtr db = getItemDatabase(item);
+
+    if (db.isNull())
+    {
+        problem_items.push_back(getFsItemPath(item));
+        return;
+    }
+
+    if (folder)
+    {
+        // first check if we're deleting a mount
+        {
+            tango::IDatabasePtr db = g_app->getDatabase();
+            tango::IFileInfoPtr file_info = db->getFileInfo(towstr(folder->getPath()));
+            
+            if (file_info.isOk() && file_info->isMount())
+            {
+                if (!db->deleteFile(towstr(folder->getPath())))
+                {
+                    problem_items.push_back(folder->getPath());
+                }
+                 else
+                {
+                    if (tree)
+                        tree->remove(item);
+                }
+                
+                return;
+            }
+        }
+
+    
+    
+        int problem_item_count = problem_items.size();
+
+        cfw::IFsItemEnumPtr child_items = tree->getItemChildren(item);
+        
+        size_t i, child_count = child_items->size();
+
+        for (i = 0; i < child_count; ++i)
+        {
+            deleteFsItem(tree, child_items->getItem(i), problem_items);
+        }
+
+        // if there were no further problems deleting child
+        // sets, then proceed to delete the folder
+
+        if (problem_items.size() == problem_item_count)
+        {
+            if (!db->deleteFile(towstr(folder->getPath())))
+            {
+                problem_items.push_back(folder->getPath());
+            }
+             else
+            {
+                if (tree)
+                    tree->remove(item);
+            }
+        }
+    }
+     else if (obj)
+    {
+
+        int obj_type = obj->getType();
+        if (obj_type == dbobjtypeSet && db == g_app->getDatabase())
+        {
+            // local set deletion: we must delete
+            // the tabledoc model as well
+
+            bool problem = false;
+
+            tango::ISetPtr set;
+            set = db->openSet(towstr(obj->getPath()));
+            if (set.isOk())
+            {
+                wxString set_id = towx(set->getSetId());
+                set.clear();
+
+                if (db->deleteFile(towstr(obj->getPath())))
+                {
+                    // delete the tabledoc model
+                    TableDocMgr::deleteModel(set_id);
+                }
+                 else
+                {
+                    problem = true;
+                }
+            }
+             else
+            {
+                if (!db->deleteFile(towstr(obj->getPath())))
+                {
+                    problem = true;
+                }
+            }
+
+            if (problem)
+            {
+                problem_items.push_back(obj->getPath());
+            }
+             else
+            {
+                if (tree)
+                    tree->remove(item);
+            }
+        }
+         else
+        {
+            if (!db->deleteFile(towstr(obj->getPath())))
+            {
+                problem_items.push_back(obj->getPath());
+            }
+             else
+            {
+                if (tree)
+                    tree->remove(item);
+            }
+        }
+    }
+}
+
+cfw::IFsItemPtr DbDoc::_findFsItem(cfw::IFsItemPtr item,
+                                   const wxString& _path)
+{
+    wxString path = _path;
+    
+    if (getFsItemPath(item) == path)
+        return item;
+    
+    // if there's a slash at the beginning, remove it
+    while (path.Length() > 0 && path.GetChar(0) == L'/')
+        path.Remove(0, 1);
+            
+    // get next chunk
+    wxString piece = path.BeforeFirst(L'/');
+    
+    bool last_piece = false;
+    if (piece == path)
+    {
+        last_piece = true;
+    }
+    
+    cfw::IFsItemEnumPtr items = m_fspanel->getItemChildren(item);
+    if (items.isNull())
+        return xcm::null;
+
+    int i, count = items->size();
+    for (i = 0; i < count; ++i)
+    {
+        cfw::IFsItemPtr t = items->getItem(i);
+
+        wxString label = t->getLabel();
+        if (0 == label.CmpNoCase(piece))
+        {
+            if (last_piece)
+            {
+                return t;
+            }
+             else
+            {
+                return _findFsItem(t, path.AfterFirst(L'/'));
+            }
+        }
+    }
+    
+    return xcm::null;
+}
+
+void DbDoc::onFsItemActivated(cfw::IFsItemPtr item)
+{
+    actionActivateDeferred(item, appOpenDefault);
+}
+
+void DbDoc::onFsItemBeginLabelEdit(cfw::IFsItemPtr item,
+                                   bool* allow)
+{
+    if (m_no_edit)
+    {
+        *allow = false;
+        return;
+    }
+    
+    IDbFolderFsItemPtr folder = item;
+
+    if (isFsItemExternal(item))
+    {
+        // user may change the description of the
+        // connection, but not any of the tables inside the
+        // connection (for now)
+
+        if (folder.isOk() && folder->getPath() == wxT("/"))
+        {
+            *allow = true;
+            return;
+        }
+         else
+        {
+            *allow = false;
+            return;
+        }
+    }
+
+    // do not allow renaming of the root item of the project database
+    if (folder.isOk() && folder->getPath() == wxT("/"))
+    {
+        *allow = false;
+        return;
+    }
+    
+    if (m_edit_mode == editNone)
+    {
+        m_edit_mode = editRename;
+    }
+}
+
+void DbDoc::onFsItemEndLabelEdit(cfw::IFsItemPtr item,
+                                 wxString text,
+                                 bool cancelled,
+                                 bool* allow)
+{
+    if (cancelled)
+    {
+        if (m_edit_mode == editNewFolder)
+        {
+            m_edit_mode = editNone;
+            if (m_fspanel)
+                m_fspanel->remove(item);
+        }
+
+        *allow = false;
+
+        return;
+    }
+    
+
+    // user may be renaming a connection; check this case first
+
+    if (isFsItemExternal(item))
+    {
+        IDbFolderFsItemPtr folder = item;
+        if (folder.isNull())
+        {
+            *allow = false;
+            return;
+        }
+
+        IConnectionPtr conn = folder->getConnection();
+        if (conn.isNull())
+        {
+            *allow = false;
+            return;
+        }
+
+        conn->setDescription(text);
+
+        *allow = true;
+        return;
+    }
+
+
+    wxString label = text;
+
+    if (!isValidObjectName(label))
+    {
+        if (m_edit_mode == editNewFolder)
+        {
+            if (m_fspanel)
+                m_fspanel->remove(item);
+        }
+
+        *allow = false;
+
+        appInvalidObjectMessageBox();
+        return;
+    }
+
+    if (m_edit_mode == editNewFolder)
+    {
+        if (text.Length() == 0)
+        {
+            if (m_fspanel)
+                m_fspanel->remove(item);
+            *allow = false;
+            return;
+        }
+                        
+        // create new folder
+        IDbFolderFsItemPtr folder = m_newitem_parent;
+        
+        if (folder.isNull())
+        {
+            if (m_fspanel)
+                m_fspanel->remove(item);
+            *allow = false;
+            return;
+        }
+
+        wxString filename;
+        filename = folder->getPath();
+        if (filename.IsEmpty() || filename.Last() != wxT('/'))
+            filename += wxT("/");
+        filename += label;
+
+        tango::IDatabasePtr db = g_app->getDatabase();
+
+        // find out if a file with the new name already exists
+        if (db->getFileExist(towstr(filename)))
+        {
+            if (m_fspanel)
+                m_fspanel->remove(item);
+            *allow = false;
+            
+            wxString message = wxString::Format(_("An object with the name '%s' already exists.  Please choose a different name."),
+                                                label.c_str());
+            cfw::deferredAppMessageBox(message,
+                                       APPLICATION_NAME,
+                                       wxOK | wxICON_EXCLAMATION | wxCENTER);
+            return;
+        }
+
+        bool result = db->createFolder(towstr(filename));
+        if (!result)
+        {               
+            // failed
+            if (m_fspanel)
+                m_fspanel->remove(item);
+            *allow = false;
+            return;
+        }
+
+        // the rest of this processing must be executed
+        // after this event is done
+        
+        wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED, ID_NewItemFinished);
+        e.SetString(label);
+        ::wxPostEvent(this, e);
+    }
+     else if (m_edit_mode == editRename)
+    {
+        tango::IDatabasePtr db = g_app->getDatabase();
+        wxString old_path;
+
+        // check if edit was cancelled or was empty
+        if (label.Length() == 0 || cancelled)
+        {
+            *allow = false;
+            return;
+        }
+
+        old_path = getFsItemPath(item);
+        if (old_path.IsEmpty())
+        {
+            *allow = false;
+            return;
+        }
+
+        // find out if a file with the new name already exists
+        wxString new_path = old_path;
+        int slash_pos = new_path.Find(wxT('/'), TRUE);
+        if (slash_pos == -1)
+        {
+            return;
+        }
+        new_path = new_path.BeforeLast(wxT('/'));
+        new_path += wxT("/");
+        new_path += label;
+        
+        wxString old_label = old_path.AfterLast(wxT('/'));
+
+        // the first part of the following 'if' condition checks
+        // that we are assigning a new filename to the object;
+        // it could be that we are simply changing the case of the
+        // existing filename.
+        
+        if (0 != old_label.CmpNoCase(label) && db->getFileExist(towstr(new_path)))
+        {
+            wxString message = wxString::Format(_("An object with the name '%s' already exists.  Please choose a different name."),
+                                                label.c_str());
+
+            cfw::deferredAppMessageBox(message,
+                               APPLICATION_NAME,
+                               wxOK | wxICON_EXCLAMATION | wxCENTER);
+            
+            *allow = false;
+            return;
+        }
+
+
+        bool rename_result;
+        
+        {
+            AppBusyCursor bc;
+            rename_result = db->renameFile(towstr(old_path), towstr(label));
+        }
+        
+        if (rename_result)
+        {
+            // we'll handle the tree updating ourselves
+            *allow = false;
+
+            IDbFolderFsItemPtr folder = item;
+            IDbObjectFsItemPtr obj = item;
+
+            item->setLabel(label);
+            
+            if (folder)
+            {
+                folder->setPath(new_path);
+                if (m_fspanel)
+                    m_fspanel->refreshItem(item);
+            }
+             else if (obj)
+            {
+                obj->setPath(new_path);
+                if (m_fspanel)
+                    m_fspanel->refreshItem(item);
+            }
+
+            updateCutCopyItems();
+
+            // post a command that lets everyone know that
+            // an ofs item has been renamed
+
+            cfw::Event* event = new cfw::Event(wxT("treepanel.ofsFileRenamed"));
+            event->s_param = old_path;
+            event->s_param2 = new_path;
+            g_app->getMainFrame()->postEvent(event);
+        }
+         else
+        {
+            wxString message = wxString::Format(_("The rename operation could not execute.  The table may be locked."),
+                                                label.c_str());
+
+            message += wxT("\n");
+            message += db->getErrorString();
+            
+            cfw::deferredAppMessageBox(message,
+                               APPLICATION_NAME,
+                               wxOK | wxICON_EXCLAMATION | wxCENTER);
+            
+            *allow = false;
+        }
+    }
+     else
+    {
+    }
+
+    m_edit_mode = editNone;
+}
+
+void DbDoc::onFsItemRightClicked(cfw::IFsItemPtr item)
+{
+    // if we've right-clicked on an item that was not already selected,
+    // we need to deselect all selected items and select the right-click
+    // item because, for some reason, the FsPanelTreeView does not
+    // already take care of this for us
+    
+    cfw::IFsItemEnumPtr items;
+    items = m_fspanel->getSelectedItems();
+
+    int i, count;
+    count = items->size();
+    
+    bool rightclick_item_selected = false;
+    for (i = 0; i < count; ++i)
+    {
+        cfw::IFsItemPtr selected_item = items->getItem(i);
+
+        if (selected_item == item)
+            rightclick_item_selected = true;
+    }
+    
+    if (!rightclick_item_selected)
+    {
+        m_fspanel->unselectAll();
+        m_fspanel->selectItem(item);
+    }
+
+    wxMenu menuPopup, menuNew, menuProjects;
+    bool root_selected = false;
+
+    cfw::IFsItemEnumPtr tree_items = m_fspanel->getSelectedItems();
+    int selected_count = tree_items->size();
+
+
+    // ---------- multiple object right-click menus ----------
+
+    if (selected_count > 1)
+    {
+        int db_count = 0;
+        bool folder_selected = false;
+        bool all_mounts = true;
+
+        int i;
+        for (i = 0; i < selected_count; ++i)
+        {
+            cfw::IFsItemPtr item = tree_items->getItem(i);
+            tango::IDatabasePtr db = getItemDatabase(item);
+            
+            if (!isItemMount(item))
+                all_mounts = false;
+
+            IDbFolderFsItemPtr folder = item;
+            if (folder)
+            {
+                folder_selected = true;
+
+                if (folder->getPath() == wxT("/"))
+                {
+                    root_selected = true;
+                    db_count++;
+                    break;
+                }
+            }
+        }
+
+
+        // if more that one database has been selected, there should not be
+        // a right-click menu offered to the user
+        if (db_count > 1)
+            return;
+
+
+        // if a database is selected along with some of its objects, there
+        // should not be a right-click menu offered to the user
+        if (db_count == 1 && selected_count > 1)
+            return;
+
+
+        if (!folder_selected)
+        {
+            menuPopup.Append(ID_Open, _("&Open"));
+            menuPopup.AppendSeparator();
+            menuPopup.Append(ID_Cut, _("Cu&t"));
+            menuPopup.Append(ID_Copy, _("&Copy"));
+            menuPopup.AppendSeparator();
+            menuPopup.Append(ID_RemoveItem, _("&Delete"));
+            menuPopup.AppendSeparator();
+            menuPopup.Append(ID_ItemProperties, _("Properti&es"));
+        }
+         else
+        {
+            if (all_mounts)
+            {
+                menuPopup.Append(ID_RemoveItem, _("Re&move"));
+            }
+             else
+            {
+                menuPopup.Append(ID_RemoveItem, _("&Delete"));
+            }
+            
+            menuPopup.AppendSeparator();
+            menuPopup.Append(ID_ItemProperties, _("Properti&es"));
+        }
+
+        int result = m_fspanel->popupMenu(&menuPopup);
+        
+        if (result != 0)
+        {
+            wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED, result);
+            if (m_link_bar_mode)
+            {
+                ref();
+                ProcessEvent(e);
+                g_app->getMainWindow()->SetFocus(); // this dismisses the menu
+                unref();
+            }
+             else
+            {
+                ::wxPostEvent(this, e);
+            }
+        }
+        
+        return;
+    }
+
+
+    // ---------- single object right-click menus ----------
+
+    IDbFolderFsItemPtr folder = item;
+    std::vector<ProjectInfo> projects;
+
+    if (folder)
+    {
+        // we have clicked on a folder object
+
+        if (folder->getPath() == wxT("/"))
+        {
+            root_selected = true;
+        }
+
+        // -- new submenu --
+        wxMenu* submenuNew = new wxMenu;
+        submenuNew->Append(ID_NewFolder, _("&Folder"));
+        submenuNew->AppendSeparator();
+        submenuNew->Append(ID_NewTable, _("&Table"));
+        submenuNew->Append(ID_NewReport, _("&Report"));
+        submenuNew->Append(ID_NewQuery, _("&Query"));
+        submenuNew->Append(ID_NewScript, _("&Script"));
+
+        if (root_selected)
+        {
+            ProjectMgr projmgr;
+            projects = projmgr.getProjectEntries();
+            std::sort(projects.begin(), projects.end(), ProjectInfoLess());
+
+            menuPopup.AppendSubMenu(submenuNew, _("&New"));
+            menuPopup.Append(ID_Project_RefreshProject, _("Refres&h"));
+            menuPopup.AppendSeparator();
+            menuPopup.Append(ID_Project_Import, _("&Import..."));
+            menuPopup.Append(ID_Project_Export, _("&Export..."));
+            menuPopup.Append(ID_Project_ConnectExternal, _("Create Co&nnection..."));
+            menuPopup.AppendSeparator();            
+
+            menuPopup.Append(ID_App_OpenProject, _("P&rojects..."));
+            menuPopup.Append(27600, _("&Switch Project"),
+                         createProjectsMenu(projects, g_app->getDatabaseLocation(), 27600));
+            
+            menuPopup.AppendSeparator();            
+            menuPopup.Append(ID_Paste, _("&Paste"));
+            menuPopup.AppendSeparator();
+            menuPopup.Append(ID_Project_ProjectProperties, _("Properti&es"));
+        }
+         else
+        {
+            bool is_mount = isItemMount(item);
+            bool is_expanded = m_fspanel->isItemExpanded(item);
+
+            if (is_mount)
+            {
+                if (!is_expanded)
+                    menuPopup.Append(ID_ExpandItem, _("&Expand"));
+                     else
+                    menuPopup.Append(ID_ExpandItem, _("C&ollapse"));
+
+                menuPopup.Append(ID_RefreshItem, _("Refre&sh"));
+                menuPopup.AppendSeparator();
+                menuPopup.Append(ID_ItemProperties, _("Edit &Connection..."));
+                menuPopup.AppendSeparator();
+                menuPopup.Append(ID_Paste, _("&Paste"));
+                menuPopup.AppendSeparator();
+                menuPopup.Append(ID_RemoveItem, _("Re&move"));
+                menuPopup.Append(ID_RenameItem, _("&Rename"));
+                menuPopup.AppendSeparator();
+                menuPopup.Append(ID_ItemProperties, _("Properti&es"));
+            }
+             else
+            {
+                if (!is_expanded)
+                    menuPopup.Append(ID_ExpandItem, _("&Expand"));
+                     else
+                    menuPopup.Append(ID_ExpandItem, _("C&ollapse"));
+
+                menuPopup.Append(ID_RefreshItem, _("Refre&sh"));
+                menuPopup.AppendSeparator();
+                menuPopup.AppendSubMenu(submenuNew, _("&New"));
+                menuPopup.Append(ID_Project_ConnectExternal, _("Cre&ate Connection..."));
+                menuPopup.AppendSeparator();
+                menuPopup.Append(ID_Paste, _("&Paste"));
+                menuPopup.AppendSeparator();
+                menuPopup.Append(ID_RemoveItem, _("&Delete"));
+                menuPopup.Append(ID_RenameItem, _("&Rename"));
+                menuPopup.AppendSeparator();
+                menuPopup.Append(ID_ItemProperties, _("P&roperti&es"));
+            }
+        }
+
+        if (g_cutcopy_items.size() == 0)
+        {
+            if (menuPopup.FindItem(ID_Paste))
+            {
+                menuPopup.Enable(ID_Paste, false);
+            }
+        }
+
+        int result = m_fspanel->popupMenu(&menuPopup);
+        
+        if (result != 0)
+        {
+            // handle menu commands for changing projects
+            if (result >= 27600 && result <= 27699)
+            {
+                size_t i = result-27600;
+                if (i >= projects.size())
+                {
+                    // user clicked the "Edit..." menu item
+                    g_app->getAppController()->showProjectManager();
+                }
+                 else
+                {
+                    // if the project we're switching to is a different project
+                    // and the previous project is successfully closed, open
+                    // the new project
+                    ProjectInfo info = projects[i];
+                    if (info.location != g_app->getDatabaseLocation() && 
+                        g_app->getAppController()->closeProject())
+                    {
+                        // user clicked on one of the projects;
+                        // set that project to the active project
+                        g_app->getAppController()->openProject(info.location, info.user_id, info.passwd);
+                    }
+                }
+            }
+            else
+            {
+                wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED, result);
+
+                if (m_link_bar_mode)
+                {
+                    ref();
+                    ProcessEvent(e);
+                    g_app->getMainWindow()->SetFocus(); // this dismisses the menu
+                    unref();
+                }
+                 else
+                {
+                    ::wxPostEvent(this, e);
+                }
+            }
+        }
+
+        return;
+    }
+
+
+    IDbObjectFsItemPtr obj = item;
+    if (obj)
+    {
+    
+        wxMenu* submenuOpenWith = new wxMenu;
+        submenuOpenWith->Append(ID_OpenAsText, _("Text &Editor"));
+        submenuOpenWith->Append(ID_OpenAsTable, _("&Table Browser"));
+        submenuOpenWith->Append(ID_OpenAsWeb, _("&Web Browser"));
+    
+        // we have clicked on a non-folder object
+        
+        if (obj->getType() == dbobjtypeSet)
+        {
+            // if we're on a set, distinguish between database
+            // sets and external file sets; allow external file
+            // sets to be opened in text mode, since they might
+            // be regular text files
+            
+            // TODO: is there a better way to find out if the
+            // current item is part of a filesystem?
+            bool fs_mount = false;
+            tango::IDatabasePtr db = g_app->getDatabase()->getMountDatabase(towstr(getFsItemPath(item)));
+            if (db.isOk() && db->getDatabaseType() == tango::dbtypeFilesystem)
+                fs_mount = true;
+
+            menuPopup.Append(ID_Open, _("&Open"));
+
+            if (!fs_mount)
+                menuPopup.Append(ID_ModifyStructure, _("&Edit Structure"));
+                  else
+                menuPopup.AppendSubMenu(submenuOpenWith, _("Open &With"));
+
+            menuPopup.AppendSeparator();
+            menuPopup.Append(ID_Cut, _("Cu&t"));
+            menuPopup.Append(ID_Copy, _("&Copy"));
+            menuPopup.AppendSeparator();
+            menuPopup.Append(ID_RemoveItem, _("&Delete"));
+            menuPopup.Append(ID_RenameItem, _("&Rename"));
+            menuPopup.AppendSeparator();
+            menuPopup.Append(ID_ItemProperties, _("P&roperti&es"));
+        }
+         else if (obj->getType() == dbobjtypeScript)
+        {
+            menuPopup.Append(ID_Open, _("&Open"));
+            menuPopup.AppendSubMenu(submenuOpenWith, _("Open &With"));
+            menuPopup.AppendSeparator();
+            menuPopup.Append(ID_RunScript, _("Ru&n"));
+            menuPopup.AppendSeparator();
+            menuPopup.Append(ID_Cut, _("Cu&t"));
+            menuPopup.Append(ID_Copy, _("&Copy"));
+            menuPopup.AppendSeparator();
+            menuPopup.Append(ID_RemoveItem, _("&Delete"));
+            menuPopup.Append(ID_RenameItem, _("&Rename"));
+            menuPopup.AppendSeparator();
+            menuPopup.Append(ID_ItemProperties, _("Properti&es"));
+        }
+         else if (obj->getType() == dbobjtypeTemplate)
+        {
+            menuPopup.Append(ID_Open, _("&Open"));
+            menuPopup.AppendSubMenu(submenuOpenWith, _("Open &With"));
+            menuPopup.AppendSeparator();
+            menuPopup.Append(ID_RunQuery, _("Ru&n"));
+            menuPopup.AppendSeparator();
+            menuPopup.Append(ID_Cut, _("Cu&t"));
+            menuPopup.Append(ID_Copy, _("&Copy"));
+            menuPopup.AppendSeparator();
+            menuPopup.Append(ID_RemoveItem, _("&Delete"));
+            menuPopup.Append(ID_RenameItem, _("&Rename"));
+            menuPopup.AppendSeparator();
+            menuPopup.Append(ID_ItemProperties, _("Properti&es"));
+        }
+         else if (obj->getType() == dbobjtypeReport)
+        {
+            menuPopup.Append(ID_Open, _("&Open"));
+            menuPopup.AppendSubMenu(submenuOpenWith, _("Open &With"));
+            menuPopup.AppendSeparator();
+            menuPopup.Append(ID_PrintReport, _("Pri&nt"));
+            menuPopup.AppendSeparator();
+            menuPopup.Append(ID_Cut, _("Cu&t"));
+            menuPopup.Append(ID_Copy, _("&Copy"));
+            menuPopup.AppendSeparator();
+            menuPopup.Append(ID_RemoveItem, _("&Delete"));
+            menuPopup.Append(ID_RenameItem, _("&Rename"));
+            menuPopup.AppendSeparator();
+            menuPopup.Append(ID_ItemProperties, _("Properti&es"));
+        }
+         else if (obj->getType() == dbobjtypeBookmark)
+        {
+            menuPopup.Append(ID_Open, _("&Open"));
+            menuPopup.AppendSubMenu(submenuOpenWith, _("Open &With"));
+            menuPopup.AppendSeparator();
+            menuPopup.Append(ID_Cut, _("Cu&t"));
+            menuPopup.Append(ID_Copy, _("&Copy"));
+            menuPopup.AppendSeparator();
+            menuPopup.Append(ID_RemoveItem, _("&Delete"));
+            menuPopup.Append(ID_RenameItem, _("&Rename"));
+            menuPopup.AppendSeparator();
+            menuPopup.Append(ID_ItemProperties, _("Properti&es"));
+        }
+
+        int result = m_fspanel->popupMenu(&menuPopup);
+
+        if (result != 0)
+        {
+            wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED, result);
+            
+            if (m_link_bar_mode)
+            {
+                ref();
+                ProcessEvent(e);
+                g_app->getMainWindow()->SetFocus(); // this dismisses the menu
+                unref();
+            }
+             else
+            {
+                ::wxPostEvent(this, e);
+            }
+        }
+    }
+}
+
+void DbDoc::onFsItemHighlightRequest(cfw::IFsItemPtr& item)
+{
+    IDbFolderFsItemPtr folder = item;
+    if (!folder)
+    {
+        item = m_fspanel->getItemParent(item);
+    }
+}
+
+void DbDoc::onDragDrop(cfw::IFsItemPtr target,
+                       wxDataObject* data,
+                       wxDragResult* result)
+{
+    if (data->GetPreferredFormat() != wxDataFormat(wxT("application/vnd.kx.fspanel")))
+    {
+        *result = wxDragNone;
+        return;
+    }
+
+    
+    IDbFolderFsItemPtr folder = target;
+    if (!folder)
+    {
+        cfw::appMessageBox(_("Files can only be dragged into folders"),
+                           APPLICATION_NAME,
+                           wxOK | wxICON_EXCLAMATION | wxCENTER);
+
+        *result = wxDragNone;
+        return;
+    }
+
+
+    wxString target_path = getFsItemPath(target);
+
+
+    cfw::FsDataObject* tree_data = (cfw::FsDataObject*)data;
+    cfw::IFsItemEnumPtr items = tree_data->getFsItems();
+
+    size_t i, count = items->size();
+
+
+    // if one or more of the items is being dragged onto
+    // itself cancel the drag operation
+    for (i = 0; i < count; ++i)
+    {
+        cfw::IFsItemPtr item = items->getItem(i);
+        if (item == target)
+        {
+            *result = wxDragNone;
+            return;
+        }
+    }
+
+
+    // check if the items have been moved at all
+
+    bool ok = false;
+    for (i = 0; i < count; ++i)
+    {
+        cfw::IFsItemPtr item = items->getItem(i);
+        if (m_fspanel->getItemParent(item) != target)
+        {
+            ok = true;
+            break;
+        }
+    }
+
+    if (!ok)
+    {
+        if (!m_link_bar_mode)
+        {
+            *result = wxDragNone;
+            return;
+        }
+         else
+        {
+
+            // link bar mode -- item is being dragged inside a folder.
+            // Set it's visual position
+            int x, y;
+            ::wxGetMousePosition(&x, &y);
+            cfw::IDocumentPtr doc = m_fspanel;
+            doc->getDocumentWindow()->ScreenToClient(&x, &y);
+            
+            cfw::IFsItemPtr item = m_fspanel->hitTest(x,y);
+            if (item.isOk())
+            {
+                int idx = m_fspanel->getItemIndex(item);
+                if (idx != -1)
+                {
+                    for (i = 0; i < count; ++i)
+                    {
+                        cfw::IFsItemPtr item = items->getItem(i);
+                        DbDoc::setFileVisualLocation(getFsItemPath(item), idx+i);
+                    }
+                }
+            }
+            
+            refresh();
+            return;
+        }
+    }
+
+
+
+
+
+
+
+    // perform the copy or move operation
+
+    CopyJob* job = NULL;
+
+    for (i = 0; i < count; ++i)
+    {
+        cfw::IFsItemPtr item = items->getItem(i);
+
+        wxString src_path = getFsItemPath(item);
+        wxString dest_location = getFsItemPath(target);
+
+
+        // lookup database pointers
+        tango::IDatabasePtr db = g_app->getDatabase();
+        tango::IDatabasePtr source_db = getItemDatabase(item);
+        tango::IDatabasePtr dest_db = getItemDatabase(target);
+
+        // determine if this is a cross-mount drag
+        bool cross_mount_drag = false;
+        if (isItemInMount(item) || isItemInMount(target))
+            cross_mount_drag = true;
+
+
+        
+        
+        // generate destination path
+        wxString fname = src_path.AfterLast(wxT('/'));
+        
+        if (getDbDriver(db) == wxT("xdnative"))
+        {
+            fname = stripExtension(fname);
+            fname.Replace(wxT("."), wxT("_"));
+            fname = makeValidObjectName(fname, dest_db);
+        }
+        
+        wxString dest_path;
+        dest_path = dest_location;
+        if (dest_path.IsEmpty() || dest_path.Last() != wxT('/'))
+            dest_path += wxT("/");
+        dest_path += fname;
+
+
+        // if we're saving the file to a filesystem mount and no
+        // extension is specified, then automatically add a 'csv'
+        // or 'js' extension; this is a usability issue since without 
+        // the extension, the user usually ends up adding this as the 
+        // first item of business after saving
+        IDbObjectFsItemPtr dbobject_item = item;
+        if (dbobject_item.isOk())
+        {
+            if (dbobject_item->getType() == dbobjtypeSet)
+                dest_path = addExtensionIfExternalFsDatabase(dest_path, wxT(".csv"));
+            if (dbobject_item->getType() == dbobjtypeScript)
+                dest_path = addExtensionIfExternalFsDatabase(dest_path, wxT(".js"));
+        }
+        
+
+        std::wstring cstr;
+        std::wstring rpath;
+        if (db->getMountPoint(towstr(dest_location), cstr, rpath))
+        {
+            dest_db = db->getMountDatabase(towstr(dest_location));
+            if (dest_db.isNull())
+                return;
+            if (dest_db != source_db)
+                dest_path = getFilenameFromPath(dest_path, true);
+        }
+
+
+        if (m_link_bar_mode)
+        {
+            if (tree_data->getSourceId() == ID_Toolbar_Link)
+            {
+                if (db->moveFile(towstr(src_path), towstr(dest_path)))
+                {
+                    g_app->getAppController()->refreshLinkBar();
+                }
+            }
+             else
+            {
+                // create the bookmark
+                Bookmark::create(dest_path, src_path);
+            }
+        }
+         else if (source_db != dest_db || cross_mount_drag)
+        {
+            IDbObjectFsItemPtr obj = item;
+            if (obj)
+            {
+                if (source_db.isOk() && dest_db.isOk())
+                {
+                    if (!job)
+                    {
+                        job = new CopyJob;
+
+                        // set folder to be refreshed when copy job is finished
+                        job->setExtraString(dest_location);
+                    }
+                    
+                    job->addCopyInstruction(source_db,
+                                            src_path,
+                                            dest_db,
+                                            dest_path);
+                }
+            }
+        }
+         else
+        {
+            if (db->moveFile(towstr(src_path), towstr(dest_path)))
+            {
+                if (tree_data->getSourceId() != ID_Toolbar_Link)
+                {
+                    m_fspanel->remove(item);
+                }
+                 else
+                {
+                    g_app->getAppController()->refreshLinkBar();
+                }
+
+                // post a command that lets everyone know that
+                // an ofs item has been moved
+
+                cfw::Event* event = new cfw::Event(wxT("treepanel.ofsFileRenamed"));
+                event->s_param = src_path;
+                event->s_param2 = dest_path;
+                g_app->getMainFrame()->postEvent(event);
+            }
+        }
+    }
+
+    if (job == NULL || count > job->getInstructionCount())
+    {
+        m_fspanel->refreshItem(target);
+    }
+
+    if (job && job->getInstructionCount() > 0)
+    {
+        // add and start job
+        job->sigJobFinished().connect(this, &DbDoc::onCopyJobFinished);
+        g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+    }
+     else
+    {
+        cfw::IFsItemPtr target = getFsItemFromPath(target_path);
+        if (target)
+        {
+            m_fspanel->expand(target);
+            m_fspanel->unselectAll();
+            
+            // this if says 'don't select root item if it's hidden'
+            if ((m_style & cfw::fsstyleTreeHideRoot) == 0 ||
+                 m_fspanel->getRootItem() != target)
+            {
+                m_fspanel->selectItem(target);
+            }
+        }
+    }
+}
+
+static void onImportJobFinished(cfw::IJobPtr job)
+{
+    if (job->getJobInfo()->getState() != cfw::jobStateFinished)
+        return;
+
+    g_app->getAppController()->refreshDbDoc();
+}
+
+void DbDoc::doImportJob(std::vector<cfw::IFsItemPtr>& items,
+                        const wxString& dest_location)
+{
+    if (items.size() == 0)
+        return;
+
+    IDbFolderFsItemPtr parent = m_fspanel->getItemParent(items[0]);
+    if (parent.isNull())
+        return;
+    
+    IConnectionPtr conn = parent->getConnection();
+    if (conn.isNull())
+        return;
+
+    ImportJob* job = new ImportJob;
+    job->sigJobFinished().connect(&onImportJobFinished);
+    job->setImportType(conn->getType());
+    job->setFilename(conn->getPath());
+    job->setConnectionInfo(conn->getHost(), conn->getPort(),
+                           conn->getDatabase(), conn->getUsername(),
+                           conn->getPassword());
+
+
+    ImportJobInfo job_import_info;
+    FieldTransInfo fi;
+
+
+    // set default values for text-delimited import
+
+    std::vector<cfw::IFsItemPtr>::iterator it;
+    for (it = items.begin(); it != items.end(); ++it)
+    {
+        cfw::IFsItemPtr item = *it;
+
+        wxString src_path = getFsItemPath(item);
+
+        // if the file is a comma delimited file,
+        // we know the way to read these files
+
+        int conn_type = conn->getType();
+        if (conn_type == dbtypeFilesystem)
+        {
+            if (src_path.AfterLast(wxT('.')) == wxT("csv"))
+            {
+                job_import_info.delimiters = L",";
+                job_import_info.text_qualifier = L"\"";
+                job_import_info.first_row_header = true;
+            }
+             else if (src_path.AfterLast(wxT('.')) == wxT("icsv"))
+            {
+                job_import_info.delimiters = L",";
+                job_import_info.text_qualifier = L"\"";
+                job_import_info.first_row_header = true;
+            }
+             else
+            {
+                job_import_info.delimiters = L"";
+                job_import_info.text_qualifier = L"";
+                job_import_info.first_row_header = false;
+            }
+        }
+
+
+        wxString dest_path;
+        dest_path = dest_location;
+        if (dest_path.IsEmpty() || dest_path.Last() != wxT('/'))
+        {
+            dest_path += wxT("/");
+        }
+
+        if (conn_type == dbtypeFilesystem ||
+            conn_type == dbtypeAccess ||
+            conn_type == dbtypeExcel)
+        {
+            // trim the src_path before concatination
+            wxString temp = src_path;
+            temp = temp.AfterLast(wxT('/'));
+            temp = temp.AfterLast(wxT('\\'));
+            temp = temp.BeforeFirst(wxT('.'));
+            dest_path += makeValidObjectName(temp);
+        }
+         else
+        {
+            dest_path += makeValidObjectName(src_path.AfterLast(wxT('/')));
+        }
+
+        job_import_info.input_path = src_path;
+        job_import_info.output_path = dest_path;
+        job_import_info.append = false;
+
+
+        wxString fname;
+        if (conn_type != dbtypeFilesystem)
+            fname = stripExtension(src_path.AfterLast(wxT('/')));
+             else
+            fname = src_path;
+
+
+        tango::IDatabasePtr src_db = getItemDatabase(item);
+        tango::ISetPtr set = src_db->openSet(towstr(fname));
+
+        if (!set)
+        {
+            continue;
+        }
+
+        tango::IDelimitedTextSetPtr td_set = set;
+        if (td_set.isOk())
+        {
+            td_set->setDelimiters(towstr(job_import_info.delimiters), false);
+            td_set->setTextQualifier(towstr(job_import_info.text_qualifier), false);
+            td_set->setFirstRowColumnNames(job_import_info.first_row_header);
+            
+            // read through the entire file to determine column sizes
+            td_set->determineColumns(-1, NULL);
+        }
+
+        tango::IStructurePtr s = set->getStructure();
+
+        int j = 0;
+        int col_count = s->getColumnCount();
+
+        job_import_info.field_info.clear();
+        for (j = 0; j < col_count; ++j)
+        {
+            tango::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(j);
+
+            fi.input_name = towx(colinfo->getName());
+            fi.input_type = colinfo->getType();
+            fi.input_width = colinfo->getWidth();
+            fi.input_scale = colinfo->getScale();
+
+            fi.output_name = fi.input_name;
+            fi.output_type = fi.input_type;
+            fi.output_width = fi.input_width;
+            fi.output_scale = fi.input_scale;
+
+            fi.expression = wxT("");
+
+            job_import_info.field_info.push_back(fi);
+        }
+
+        job->addImportSet(job_import_info);
+    }
+
+    g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+}
+
+
+void DbDoc::doExportJob(std::vector<cfw::IFsItemPtr>& items,
+                        cfw::IFsItemPtr dest_item)
+{
+    if (items.size() == 0)
+        return;
+
+    IDbFolderFsItemPtr db_item = dest_item;
+    IConnectionPtr conn;
+    wxString dest_folder;
+
+    if (db_item)
+    {
+        conn = db_item->getConnection();
+    }
+
+    if (conn.isNull())
+        return;
+
+    if (!conn->isOpen())
+    {
+        if (!conn->open())
+        {
+            wxString msg = _("There was an error connecting to the specified database.");
+            msg += wxT("  ");
+            msg += conn->getErrorString();
+            
+            cfw::appMessageBox(msg,
+                               APPLICATION_NAME,
+                               wxOK | wxICON_EXCLAMATION | wxCENTER);
+            return;
+        }
+    }
+
+    tango::IDatabasePtr conn_db = conn->getDatabasePtr();
+    if (conn_db.isNull())
+        return;
+
+    // determine the destination folder
+    dest_folder = getFsItemPath(dest_item);
+    if (dest_folder.IsEmpty() || 
+         (dest_folder.Last() != wxT('/') &&
+          dest_folder.Last() != wxT('\\')))
+    {
+        dest_folder += wxT("/");
+    }
+
+
+    // create the export job
+    ExportJob* job = new ExportJob;
+    job->setExportType(conn->getType());
+    job->setFilename(conn->getPath(), true); // force overwrite
+    job->setConnectionInfo(conn->getHost(),
+                           conn->getPort(),
+                           conn->getDatabase(),
+                           conn->getUsername(),
+                           conn->getPassword());
+
+    ExportJobInfo job_export_info;
+
+    std::vector<cfw::IFsItemPtr>::iterator it;
+    for (it = items.begin(); it != items.end(); ++it)
+    {
+        cfw::IFsItemPtr item = *it;
+
+        wxString src_path = getFsItemPath(item);
+        wxString dest_stub = src_path.AfterLast(wxT('/'));
+        wxString dest_path;
+
+
+        // if the destination connection is a filesystem,
+        // add a CSV extension, as this is the default
+        // type that xdfs creates
+
+        wxString ext = wxT("");
+        if (conn->getType() == dbtypeFilesystem)
+        {
+            ext = wxT(".csv");
+        }
+
+
+        dest_stub = makeValidObjectName(dest_stub, conn->getDatabasePtr());
+
+        // determine if name already exists in destination,
+        // append an '_2', '_3', etc. if it does
+
+        bool first = true;
+        int counter = 1;
+        dest_path = dest_folder;
+        dest_path += dest_stub;
+        dest_path += ext;
+        while (conn_db->getFileExist(towstr(dest_path)))
+        {
+            // if we've already added a number onto the
+            // string, remove it and add a new number
+            if (first)
+                first = false;
+                  else
+                dest_path = dest_path.BeforeLast(wxT('_'));
+        
+            counter++;
+            dest_path = wxString::Format(wxT("%s%s_%d%s"),
+                                         dest_folder.c_str(),
+                                         dest_stub.c_str(),
+                                         counter,
+                                         ext.c_str());
+        }
+
+
+        job_export_info.input_path = src_path;
+        job_export_info.output_path = dest_path;
+        job_export_info.append = false;
+
+        job->addExportSet(job_export_info);
+    }
+
+    g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+}
+
+void DbDoc::onCopyJobFinished(cfw::IJobPtr job)
+{
+    wxString folder_to_refresh = job->getExtraString();
+    if (folder_to_refresh.Length() > 0)
+    {
+        cfw::IFsItemPtr item = getFsItemFromPath(folder_to_refresh);
+        if (item)
+        {
+            m_fspanel->refreshItem(item);
+            return;
+        }
+    }
+
+
+    m_fspanel->refresh();
+}
+
+void DbDoc::onSetConnectionPropertiesFinished(ConnectionWizard* dlg)
+{
+    // get the connection string
+    wxString conn_str = dlg->getConnectionString();
+    tango::IDatabasePtr db = getItemDatabase(m_edit_item);
+    wxASSERT_MSG(db.p, wxT("Missing db"));
+    
+    // set the mount point
+    wxString path = getFsItemPath(m_edit_item);
+    g_app->getDatabase()->setMountPoint(towstr(path), towstr(conn_str), L"/");
+    
+    // refresh the project
+    refresh();
+}
+

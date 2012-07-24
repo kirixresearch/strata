@@ -1,0 +1,3750 @@
+/*!
+ *
+ * Copyright (c) 2001-2011, Kirix Research, LLC.  All rights reserved.
+ *
+ * Project:  XD Database Library
+ * Author:   Benjamin I. Williams
+ * Created:  2001-11-09
+ *
+ */
+
+
+#ifdef _MSC_VER
+#pragma warning(disable : 4786)
+#endif
+
+
+#include <ctime>
+#include <kl/klib.h>
+#include <kl/crypt.h>
+#include <kl/url.h>
+#include "tango.h"
+#include "../xdcommon/xdcommon.h"
+#include "../xdcommon/dbattr.h"
+#include "../xdcommon/fileinfo.h"
+#include "../xdcommon/filestream.h"
+#include "../xdcommon/connectionstr.h"
+#include "database.h"
+#include "baseset.h"
+#include "nativetbl.h"
+#include "tableset.h"
+#include "util.h"
+#include "ofs.h"
+#include "dbmgr.h"
+
+
+const wchar_t* xdnative_keywords =
+                L"ADD,ALL,ALTER,AND,ANY,AS,ASC,AVG,BEGIN,BETWEEN,BOOL,BOOLEAN,"
+                L"BOTH,BREAK,BY,CASE,CHAR,CHARACTER,CHECK,CLOSE,COLLATE,"
+                L"COLUMN,COMMIT,CONNECT,CONTINUE,CREATE,CURRENT,CURSOR,"
+                L"DATE,DATETIME,DECIMAL,DECLARE,DEFAULT,DELETE,DESC,"
+                L"DESCRIBE,DISTINCT,DO,DOUBLE,DROP,ELSE,ELSEIF,END,EXISTS,"
+                L"FALSE,FETCH,FLOAT,FOR,FOREIGN,FROM,FULL,FUNCTION,GOTO,"
+                L"GRANT,GROUP,HAVING,IF,IN,INDEX,INNER,INSERT,INT,INTEGER,"
+                L"INTERSECT,INTO,IS,JOIN,KEY,LEFT,LEVEL,LIKE,LONG,MATCH,MIN,MAX,NEW,"
+                L"NOT,NULL,NUMERIC,OF,ON,OPEN,OPTION,OR,ORDER,OUTER,PRIMARY,"
+                L"PRIVATE,PRECISION,PRIVILEGES,PROCEDURE,PROTECTED,PUBLIC,"
+                L"READ,RESTRICT,RETURN,REVOKE,RIGHT,ROWS,SELECT,SESSION,SET,"
+                L"SIZE,SHORT,SIGNED,SMALLINT,SOME,SUM,SWITCH,TABLE,THEN,THIS,TO,"
+                L"TRUE,UNION,UNIQUE,UNSIGNED,UPDATE,USER,USING,VALUES,VARCHAR,"
+                L"VARYING,VIEW,VOID,WHEN,WHENEVER,WHERE,WHILE,WITH";
+
+
+// -- secondary keywords (may be used in the future) --
+
+const wchar_t* xdnative_keywords2 = L"";
+
+const wchar_t* xdnative_invalid_column_chars =
+                             L"~!@#$%^&*()+{}|:\"<>?`-=[]\\;',./";
+const wchar_t* xdnative_invalid_column_starting_chars =
+                             L"~!@#$%^&*()+{}|:\"<>?`-=[]\\;',./ 0123456789";
+const wchar_t* xdnative_invalid_object_chars =
+                             L"~!@#$%^&*()+{}|:\"<>?`-=[]\\;',/";
+const wchar_t* xdnative_invalid_object_starting_chars =
+                             L"~!@#$%^&*()+{}|:\"<>?`-=[]\\;',./ 0123456789";
+
+
+
+// -- Database class implementation --
+
+Database::Database()
+{
+    m_last_job = 0;
+    m_base_dir = L"";
+
+    std::wstring kws;
+    kws += xdnative_keywords;
+    kws += L",";
+    kws += xdnative_keywords2;
+
+    m_attr = static_cast<tango::IAttributes*>(new DatabaseAttributes);
+    m_attr->setStringAttribute(tango::dbattrKeywords, kws);
+    m_attr->setIntAttribute(tango::dbattrColumnMaxNameLength, 80);
+    m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 80);
+    m_attr->setStringAttribute(tango::dbattrColumnInvalidChars,
+                               xdnative_invalid_column_chars);
+    m_attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars,
+                               xdnative_invalid_column_starting_chars);
+    m_attr->setStringAttribute(tango::dbattrTableInvalidChars,
+                               xdnative_invalid_object_chars);
+    m_attr->setStringAttribute(tango::dbattrTableInvalidStartingChars,
+                               xdnative_invalid_object_starting_chars);
+    m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"[");
+    m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"]");
+
+    m_db_mgr = static_cast<tango::IDatabaseMgr*>(new DatabaseMgr);
+}
+
+Database::~Database()
+{
+    std::vector<JobInfo*>::iterator it;
+
+    for (it = m_jobs.begin(); it != m_jobs.end(); ++it)
+    {
+        (*it)->unref();
+    }
+
+    deleteTempData();
+}
+
+
+void Database::setDatabaseName(const std::wstring& db_name)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    m_dbname = db_name;
+
+    tango::INodeValuePtr node = openNodeFile(L"/.system/database_name");
+    if (node)
+    {
+        node->setString(m_dbname);
+    }
+}
+
+bool Database::setBaseDirectory(const std::wstring& base_dir)
+{    
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    m_base_dir = base_dir;
+
+    // make sure m_base_dir has a trailing slash
+
+    if (m_base_dir.length() == 0)
+    {
+        m_base_dir += PATH_SEPARATOR_CHAR;
+    }
+     else
+    {
+        if (m_base_dir[m_base_dir.length()-1] != PATH_SEPARATOR_CHAR)
+            m_base_dir += PATH_SEPARATOR_CHAR;
+    }
+
+    // set ofs root from m_base_dir
+
+    m_ofs_root = m_base_dir;
+    m_ofs_root += L"ofs";
+
+    // update these database attributes
+    m_attr->setStringAttribute(tango::dbattrTempDirectory, getTempPath());
+    m_attr->setStringAttribute(tango::dbattrDefinitionDirectory, getDefinitionPath());
+
+    return true;
+}
+
+std::wstring Database::getBaseDirectory()
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    return m_base_dir;
+}
+
+std::wstring Database::getActiveUid()
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    return m_uid;
+}
+
+
+tango::IAttributesPtr Database::getAttributes()
+{
+    return m_attr;
+}
+
+
+
+double Database::getFreeSpace()
+{
+    return (double)xf_get_free_disk_space(m_base_dir);
+}
+
+double Database::getUsedSpace()
+{
+    double total_size = 2000000.0;
+
+    std::wstring data_path = makePathName(m_base_dir, L"data");
+
+    xf_dirhandle_t h = xf_opendir(data_path);
+    xf_direntry_t info;
+    while (xf_readdir(h, &info))
+    {
+        if (info.m_type == xfFileTypeNormal)
+        {
+            std::wstring path = makePathName(data_path, L"", info.m_name);
+            total_size += xf_get_file_size(path);
+        }
+    }
+    xf_closedir(h);
+
+    return total_size;
+}
+
+
+
+void Database::addFileToTrash(const std::wstring& filename)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    tango::INodeValuePtr root;
+
+    if (!getFileExist(L"/.system/trash"))
+    {
+        root = createNodeFile(L"/.system/trash");
+    }
+     else
+    {
+        root = openNodeFile(L"/.system/trash");
+    }
+
+    tango::INodeValuePtr item = root->createChild(getUniqueString());
+    item->setString(filename);
+}
+
+void Database::emptyTrash()
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    if (!getFileExist(L"/.system/trash"))
+    {
+        return;
+    }
+
+    tango::INodeValuePtr root;
+    root = openNodeFile(L"/.system/trash");
+
+    int child_count = root->getChildCount();
+    int i;
+
+    std::vector<std::wstring> nodes_to_remove;
+
+    for (i = 0; i < child_count; ++i)
+    {
+        tango::INodeValuePtr item = root->getChildByIdx(i);
+        if (item.isNull())
+            continue;
+
+        std::wstring filename = item->getString();
+
+
+        if (filename.find(L'\\') == -1 &&
+            filename.find(L'/') == -1)
+        {
+            // filename is not absolute
+            filename = makePathName(m_base_dir, L"data", filename);
+        }
+
+
+
+        if (!xf_get_file_exist(filename))
+        {
+            // file does not exist, so get rid
+            // of this entry from the trash
+            nodes_to_remove.push_back(item->getName());
+            continue;
+        }
+
+        if (xf_remove(filename))
+        {
+            // removal successful
+            nodes_to_remove.push_back(item->getName());
+        }
+    }
+
+    std::vector<std::wstring>::iterator it;
+    for (it = nodes_to_remove.begin();
+         it != nodes_to_remove.end();
+         ++it)
+    {
+        root->deleteChild(*it);
+    }
+}
+
+
+std::wstring Database::getErrorString()
+{
+    return m_error.getErrorString();
+}
+
+int Database::getErrorCode()
+{
+    return m_error.getErrorCode();
+}
+
+void Database::setError(int error_code, const std::wstring& error_string)
+{
+    m_error.setError(error_code, error_string);
+}
+
+
+std::wstring Database::getTempFilename()
+{
+    return makePathName(m_base_dir, L"temp", getUniqueString());
+}
+
+std::wstring Database::getUniqueFilename()
+{
+    return makePathName(m_base_dir, L"data", getUniqueString());
+}
+
+std::wstring Database::getTempOfsPath()
+{
+    std::wstring s = L"/.temp/";
+    s += getUniqueString();
+    return s;
+}
+
+std::wstring Database::getTempPath()
+{
+    return makePathName(m_base_dir, L"temp", L"");
+}
+
+std::wstring Database::getDefinitionPath()
+{
+    return makePathName(m_base_dir, L"def", L"");
+}
+
+std::wstring Database::getBasePath()
+{
+    return m_base_dir;
+}
+
+std::wstring Database::getOfsPath()
+{
+    return m_ofs_root;
+}
+
+#ifndef WIN32
+
+static bool correctCase(const std::wstring& dir, std::wstring& fn)
+{
+    std::string s_dir = kl::tostring(dir);
+    std::string s_fn = kl::tostring(fn);
+    
+    xf_dirhandle_t h = xf_opendir(dir);
+    xf_direntry_t info;
+    while (xf_readdir(h, &info))
+    {
+        if (0 == wcscasecmp(info.m_name.c_str(), fn.c_str()))
+        {
+            fn = info.m_name;
+            xf_closedir(h);
+            return true;
+        }
+    }
+    xf_closedir(h);
+    
+    return false;
+}
+
+static bool correctFilenameCase(std::wstring& fn)
+{
+    std::vector<std::wstring> parts;
+    std::vector<std::wstring>::iterator it;
+    bool found = true;
+    
+    parseDelimitedList(fn, parts, L'/', false);
+    
+    for (it = parts.begin(); it != parts.end(); ++it)
+    {
+        if (it->empty())
+            continue;
+
+         
+        std::wstring dir;
+        std::vector<std::wstring>::iterator bit;
+        for (bit = parts.begin(); bit != it; ++bit)
+        {
+            dir += *bit;
+            dir += L"/";
+        }
+        
+        if (!correctCase(dir, *it))
+        {
+            found = false;
+            break;
+        }
+    }
+    
+    // build result
+    
+    std::wstring result;
+    for (it = parts.begin(); it != parts.end(); ++it)
+    {
+        result += *it;
+        if (it+1 != parts.end())
+        {
+            result += L"/";
+        }
+    }
+    
+    fn = result;
+    
+    return found;
+}
+
+#endif
+
+
+IJobInternalPtr Database::createJobEntry()
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    m_last_job++;
+
+    JobInfo* job = new JobInfo;
+    job->setJobId(m_last_job);
+    job->ref();
+    m_jobs.push_back(job);
+
+    return static_cast<IJobInternal*>(job);
+}
+
+tango::IJobPtr Database::createJob()
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    m_last_job++;
+
+    JobInfo* job = new JobInfo;
+    job->setJobId(m_last_job);
+    job->ref();
+    m_jobs.push_back(job);
+
+    return static_cast<tango::IJob*>(job);
+}
+
+tango::IJobPtr Database::getJob(tango::jobid_t job_id)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    std::vector<JobInfo*>::iterator it;
+    for (it = m_jobs.begin(); it != m_jobs.end(); ++it)
+    {
+        if ((*it)->getJobId() == job_id)
+        {
+            return static_cast<tango::IJob*>(*it);
+        }
+    }
+
+    return xcm::null;
+}
+
+
+
+std::wstring Database::ofsToPhysFilename(const std::wstring& ofs_path,
+                                         bool folder)
+{
+    std::wstring result;
+    result = makePathName(m_ofs_root, ofs_path, L"", folder ? L"" : L"xml");
+    
+#ifdef WIN32
+    return result;
+#else
+    // non-windows filesystems are case-sensitive, so correct the filename
+    correctFilenameCase(result);
+    return result;
+#endif
+}
+
+std::wstring Database::urlToOfsFilename(const std::wstring& url)
+{
+    // get a filename from a url
+    std::wstring fname = kl::urlToFilename(url);
+    
+    // change all slashes to forward slashes
+    size_t i, len = fname.length();
+    for (i = 0; i < len; ++i)
+    {
+        if (fname[i] == L'\\')
+            fname[i] = L'/';
+    }
+    
+    // transform normal filename into a filename
+    // in the /.fs mount directory
+    
+    if (fname.length() >= 2 && isalpha(fname[0]) && fname[1] == L':')
+    {
+        fname.insert(0, L"|");
+    }
+     else
+    {
+        if (fname.substr(0, 2) == L"//")
+        {
+            fname.erase(0,2);
+            fname.insert(0, L"|");
+        }
+         else
+        {
+            // remove all leading slashes
+            while (fname.length() > 0 && fname[0] == '/')
+                fname.erase(0, 1);
+        }
+    }
+    
+    fname = L"/.fs/" + fname;
+    
+    return fname;
+}
+
+bool Database::createDatabase(const std::wstring& db_name,
+                              const std::wstring& base_dir)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    // create the directory
+
+    if (!xf_get_directory_exist(base_dir))
+    {
+        bool res = xf_mkdir(base_dir);
+        if (!res)
+        {
+            return false;
+        }
+    }
+
+    // create the temporary directory
+
+    if (!xf_mkdir(makePathName(base_dir, L"temp")))
+    {
+        return false;
+    }
+  
+    // create the data store directory
+    if (!xf_mkdir(makePathName(base_dir, L"data")))
+        return false;
+    
+    // create the definitions directory
+    if (!xf_mkdir(makePathName(base_dir, L"def")))
+        return false;
+
+    // create the object filesystem
+    if (!xf_mkdir(makePathName(base_dir, L"ofs")))
+        return false;
+
+    setBaseDirectory(base_dir);
+
+
+    // create system folder structure
+
+    tango::INodeValuePtr node;
+    bool res;
+    
+    res = createFolder(L"/.appdata");
+    if (!res)
+        return false;
+
+    res = createFolder(L"/.temp");
+    if (!res)
+        return false;
+
+    res = createFolder(L"/.system");
+    if (!res)
+        return false;
+
+    node = createNodeFile(L"/.system/ordinals");
+    if (!node)
+        return false;
+
+    node = createNodeFile(L"/.system/ordinal_counter");
+    if (!node)
+        return false;
+    node->setInteger(1);
+
+    node = createNodeFile(L"/.system/database_name");
+    if (!node)
+        return false;
+    node->setString(db_name);
+
+    node = createNodeFile(L"/.system/database_version");
+    if (!node)
+        return false;
+    node->setInteger(2);
+
+    m_dbname = db_name;
+    m_uid = L"admin";
+
+    // create a mount point for external files
+    setMountPoint(L"/.fs", L"Xdprovider=xdfs;Database=;User ID=;Password=;", L"/");
+
+    return true;
+}
+
+
+bool Database::openDatabase(const std::wstring& location,
+                            const std::wstring& uid,
+                            const std::wstring& password)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+
+
+    // check for the existence of the db's base directory
+    if (!xf_get_directory_exist(location))
+    {
+        return false;
+    }
+
+    // check for the existence of the db's registry
+    if (!xf_get_directory_exist(makePathName(location, L"ofs")))
+    {
+        return false;
+    }
+    
+    // check for the existence of the db's def directory;
+    // create it if it's missing - in older versions it did
+    // not used to exist
+    if (!xf_get_directory_exist(makePathName(location, L"def")))
+    {
+        xf_mkdir(makePathName(location, L"def"));
+    }
+    
+
+    setBaseDirectory(location);
+
+
+
+    if (!getFileExist(L"/.system/users"))
+    {
+        m_uid = L"admin";
+        createFolder(L"/.system/users");
+        createUser(L"admin", L"");
+    }
+
+
+    if (!checkPassword(uid, password))
+    {
+        // bad password
+        return false;
+    }
+
+    m_uid = uid;
+
+
+    // in 2005.1 and before, these folders were not 'folder' type objects, but
+    // rather generics.  These lines will convert them to folder objects, because
+    // having the generic type caused problems with the save dialog
+    createFolder(L"/.appdata");
+    createFolder(L"/.temp");
+    createFolder(L"/.system");
+
+    // read database name
+    tango::INodeValuePtr dbname = openNodeFile(L"/.system/database_name");
+    if (!dbname)
+    {
+        return false;
+    }
+    m_dbname = dbname->getString();
+
+    // ensure that an ordinal counter exists
+    tango::INodeValuePtr last_ord = openNodeFile(L"/.system/ordinal_counter");
+    if (!last_ord)
+    {
+        return false;
+    }
+
+    // ensure that a database version exists
+    if (!getFileExist(L"/.system/database_version"))
+    {
+        tango::INodeValuePtr db_ver = createNodeFile(L"/.system/database_version");
+        if (db_ver)
+        {
+            db_ver->setInteger(2);
+        }
+    }
+    
+    // ensure that a xdfs mount exists;
+    // note older versions of databases don't have this, so we check to make
+    // sure it gets added to databases if it doesn't already exist
+    if (!getFileExist(L"/.fs"))
+    {
+        setMountPoint(L"/.fs", L"Xdprovider=xdfs;Database=;", L"/");
+    }
+
+
+    return true;
+}
+
+
+void Database::close()
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    emptyTrash();
+    deleteTempData();
+}
+
+
+
+inline std::wstring getUserPasswordEncryptionKey()
+{
+    return L"jgk5]4X4";
+}
+
+
+bool Database::createUser(const std::wstring& uid,
+                          const std::wstring& password)
+{
+    // must be admin to create a user
+    if (m_uid != L"admin")
+        return false;
+
+    std::wstring path = L"/.system/users";
+    
+    if (!getFileExist(path))
+        createFolder(path);
+    
+    path += L"/";
+    path += uid;
+
+    // if user already exists, return failure
+    if (getFileExist(path))
+        return false;
+
+    tango::INodeValuePtr node = createNodeFile(path);
+    if (node.isNull())
+        return false;
+        
+    tango::INodeValuePtr uid_node = node->getChild(L"uid", true);
+    uid_node->setString(uid);
+    
+    tango::INodeValuePtr password_node = node->getChild(L"password", true);
+    password_node->setString(kl::encryptString(password, getUserPasswordEncryptionKey()));
+    
+    return true;
+}
+
+bool Database::deleteUser(const std::wstring& uid)
+{
+    // must be admin to create a user
+    if (m_uid != L"admin")
+        return false;
+    
+    std::wstring path = L"/.system/users/";
+    path += uid;
+    
+    return deleteFile(path);
+}
+
+
+bool Database::checkPassword(
+                          const std::wstring& uid,
+                          const std::wstring& password)
+{
+    std::wstring path = L"/.system/users/";
+    path += uid;
+    
+    tango::INodeValuePtr node = openNodeFile(path);
+    if (node.isNull())
+        return false;
+        
+    tango::INodeValuePtr uid_node = node->getChild(L"uid", false);
+    if (!uid_node)
+        return false;
+    
+    tango::INodeValuePtr password_node = node->getChild(L"password", false);
+    if (!password_node)
+        return false;
+
+    std::wstring s = kl::decryptString(password_node->getString(), getUserPasswordEncryptionKey());
+    if (s == password)
+        return true;
+        
+    return false;
+}
+
+bool Database::getUserExist(const std::wstring& uid)
+{
+    std::wstring path = L"/.system/users/";
+    path += uid;
+    
+    return getFileExist(path);
+}
+
+tango::tableord_t Database::allocOrdinal()
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    tango::tableord_t ordinal_counter;
+
+    // get the ordinal counter from the registry
+    tango::INodeValuePtr ord_file;
+    
+    if (getFileExist(L"/.system/ordinal_counter"))
+    {
+        ord_file = openNodeFile(L"/.system/ordinal_counter");
+        if (!ord_file)
+            return 0;
+    }
+     else
+    {
+        ord_file = createNodeFile(L"/.system/ordinal_counter");
+        if (!ord_file)
+            return 0;
+
+        ord_file->setInteger(0);
+        ordinal_counter = 0;
+    }
+
+    ordinal_counter = ord_file->getInteger();
+
+    // increment the last ordinal
+    ord_file->setInteger(ordinal_counter + 1);
+
+    return ordinal_counter;
+}
+
+bool Database::setOrdinalTable(tango::tableord_t ordinal,
+                               const std::wstring& _filename)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    std::wstring filename;
+    std::wstring data_path = makePathName(m_base_dir, L"data");
+
+    int path_len = data_path.length();
+
+    if (path_len == 0 || data_path[path_len-1] != PATH_SEPARATOR_CHAR)
+    {
+        data_path += PATH_SEPARATOR_CHAR;
+        ++path_len;
+    }
+
+    if (!wcsncasecmp(_filename.c_str(), data_path.c_str(), path_len))
+    {
+        filename = _filename.substr(path_len);
+        
+        if (filename.find(PATH_SEPARATOR_CHAR) != -1)
+        {
+            filename = _filename;
+        }
+    }
+     else
+    {
+        filename = _filename;
+    }
+
+
+    // write out ordinal entry with table filename
+    wchar_t tableord_path[255];
+    swprintf(tableord_path, 255, L"/.system/ordinals/%u", ordinal);
+
+    tango::INodeValuePtr tableord;
+    if (!getFileExist(tableord_path))
+    {
+        tableord = createNodeFile(tableord_path);
+        if (!tableord)
+            return false;
+    }
+     else
+    {
+        tableord = openNodeFile(tableord_path);
+        if (!tableord)
+            return false;
+    }
+
+    tango::INodeValuePtr target_file = tableord->getChild(L"target_file", true);
+    if (!target_file)
+        return false;
+
+    target_file->setString(filename);
+
+    return true;
+}
+
+bool Database::deleteOrdinal(tango::tableord_t ordinal)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    // write out ordinal entry with table filename
+    wchar_t tableord_path[255];
+    swprintf(tableord_path, 255, L"/.system/ordinals/%u", ordinal);
+    
+    if (!deleteFile(tableord_path))
+        return false;
+
+    return true;
+}
+
+
+
+
+void Database::updateSetReference(const std::wstring& ofs_path)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    // open file
+    tango::INodeValuePtr set_file = openNodeFile(ofs_path);
+    if (set_file.isNull())
+        return;
+
+    tango::INodeValuePtr setid_node = set_file->getChild(L"set_id", false);
+    if (!setid_node)
+        return;
+    
+    std::wstring set_id = setid_node->getString();
+
+    setid_node = xcm::null;
+    set_file = xcm::null;
+
+    std::wstring path;
+    path.reserve(80);
+    path = L"/.system/objects/";
+    path += set_id;
+
+    tango::INodeValuePtr setid_file = openNodeFile(path);
+    if (setid_file.isNull())
+        return;
+
+    tango::INodeValuePtr ofspath_value = setid_file->getChild(L"ofs_path", true);
+    ofspath_value->setString(ofs_path);
+
+    // if the set is open, let it know that its ofs path changed
+    tango::ISet* lookup_set = lookupSet(set_id);
+    if (lookup_set)
+    {
+        ISetInternalPtr iset;
+        iset = lookup_set;
+        if (iset)
+        {
+            iset->onOfsPathChanged(ofs_path);
+        }
+        
+        // release ref set by lookupSet() above
+        lookup_set->unref();
+    }
+}
+
+
+void Database::recursiveReferenceUpdate(const std::wstring& folder_path)
+{
+    tango::IFileInfoEnumPtr files = getFolderInfo(folder_path);
+    tango::IFileInfoPtr info;
+
+    int file_count = files->size();
+    int i;
+
+    for (i = 0; i < file_count; ++i)
+    {
+        info = files->getItem(i);
+        int file_type = info->getType();
+
+        std::wstring path = combineOfsPath(folder_path, info->getName());
+
+        if (file_type == tango::filetypeSet)
+        {
+            updateSetReference(path);
+        }
+         else if (file_type == tango::filetypeFolder)
+        {
+            recursiveReferenceUpdate(path);
+        }
+    }
+}
+
+void Database::onOfsPostRenameFile(std::wstring ofs_path, std::wstring new_name)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    // create a fully-qualified path for the newly renamed object
+    std::wstring new_path = kl::beforeLast(ofs_path, L'/');
+    if (new_path == ofs_path)
+        new_path = new_name;
+         else
+        new_path += new_name;
+
+    // check to see if a folder has been renamed
+    tango::IFileInfoPtr file_info = getFileInfo(new_path);
+    if (file_info->getType() == tango::filetypeFolder)
+    {
+        recursiveReferenceUpdate(new_path);
+        return;
+    }
+
+
+    // a regular object was renamed, update it if it was a set
+    updateSetReference(new_path);
+}
+
+
+void Database::onOfsPostMoveFile(std::wstring ofs_path, std::wstring new_path)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    updateSetReference(new_path);
+}
+
+
+
+
+bool Database::deleteStream(const std::wstring& ofs_path)
+{
+    tango::IFileInfoPtr file_info = getFileInfo(ofs_path);
+    if (!file_info)
+        return false;
+
+    if (file_info->getType() != tango::filetypeStream)
+        return false;
+    file_info.clear();
+        
+    std::wstring stream_fname = getStreamFilename(ofs_path);
+    
+    if (xf_get_file_exist(stream_fname))
+    {
+        if (!xf_remove(stream_fname))
+        {
+            // can't delete, must be in use
+            return false;
+        }
+    }
+    
+    // get object id
+    tango::INodeValuePtr stream_file = openNodeFile(ofs_path);
+    if (!stream_file)
+    {
+        return false;
+    }
+    
+    tango::INodeValuePtr objectid_node = stream_file->getChild(L"object_id", false);
+    if (!objectid_node)
+        return false;
+    
+    std::wstring object_id = objectid_node->getString();
+    stream_file.clear();
+    objectid_node.clear();
+    
+    
+    
+    // delete file in objects folder
+    std::wstring path;
+    path.reserve(80);
+    path = L"/.system/objects/";
+    path += object_id;
+    
+    deleteOfsFile(path);
+    
+    // delete stream pointer file
+    deleteOfsFile(ofs_path);
+    
+    return true;
+}
+
+
+bool Database::deleteSet(const std::wstring& ofs_path)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    // make sure we are dealing with a file
+    tango::IFileInfoPtr file_info = getFileInfo(ofs_path);
+    if (!file_info)
+        return false;
+
+    if (file_info->getType() != tango::filetypeSet)
+        return false;
+
+    file_info.clear();
+
+    // get set id
+    tango::INodeValuePtr set_file = openNodeFile(ofs_path);
+    if (!set_file)
+    {
+        return false;
+    }
+
+    // load the set type
+    tango::INodeValuePtr setid_node = set_file->getChild(L"set_id", false);
+    if (!setid_node)
+        return false;
+
+    std::wstring set_id = setid_node->getString();
+    set_file.clear();
+    setid_node.clear();
+
+    // if the set is open by someone, don't allow the delete
+    tango::ISet* lookup_set = lookupSet(set_id);
+    if (lookup_set)
+    {
+        lookup_set->unref();
+        return false;
+    }
+
+    // find the set id file
+
+    std::wstring path;
+    path.reserve(80);
+    path = L"/.system/objects/";
+    path += set_id;
+
+    set_file = openNodeFile(path);
+    if (!set_file)
+    {
+        std::wstring fname = ofsToPhysFilename(path, false);
+        if (!xf_get_file_exist(fname))
+        {
+            // missing set id file-- the link to the data file is missing;
+            // allow the delete to proceed
+            return deleteOfsFile(ofs_path);
+        }
+        
+        return false;
+    }
+
+    // get the set type
+    tango::INodeValuePtr settype_node = set_file->getChild(L"set_type", false);
+    if (!settype_node)
+    {
+        return false;
+    }
+
+    std::wstring set_type = settype_node->getString();
+    settype_node.clear();
+
+    if (set_type == L"table")
+    {
+        // get the ordinal
+        tango::INodeValuePtr ordinal_node = set_file->getChild(L"ordinal", false);
+        if (!ordinal_node)
+        {
+            set_file.clear();
+            deleteFile(path);
+            return false;
+        }
+
+        tango::tableord_t ordinal = ordinal_node->getInteger();
+
+
+        // delete the table file and it's map file
+        std::wstring filename = getTableFilename(ordinal);
+        if (filename.length() > 0)
+        {
+            // table file
+            xf_remove(filename);
+
+            if (xf_get_file_exist(filename))
+                return false;
+
+            // map file
+            filename = kl::beforeLast(filename, L'.');
+            filename += L".map";
+
+            xf_remove(filename);
+        }
+
+
+
+        // delete the set's indexes
+        tango::INodeValuePtr indexes_node = set_file->getChild(L"indexes", false);
+        if (indexes_node)
+        {
+            int index_count = indexes_node->getChildCount();
+            for (int i = 0; i < index_count; ++i)
+            {
+                tango::INodeValuePtr index = indexes_node->getChildByIdx(i);
+
+                tango::INodeValuePtr idx_filename_node = index->getChild(L"filename", false);
+                if (idx_filename_node.isNull())
+                    continue;
+
+                std::wstring full_idx_filename;
+                full_idx_filename = makePathName(getBasePath(),
+                                                 L"data",
+                                                 idx_filename_node->getString());
+                xf_remove(full_idx_filename);
+            }
+        }
+
+
+        // delete the ordinal file
+        deleteOrdinal(ordinal);
+
+        // delete the set id file
+        set_file.clear();
+        deleteFile(path);
+    }
+     else if (set_type == L"dynamic")
+    {
+        // get the ordinal
+        tango::INodeValuePtr datafile_node = set_file->getChild(L"data_file", false);
+        if (datafile_node)
+        {
+            xf_remove(datafile_node->getString());
+        }
+
+        set_file.clear();
+        deleteFile(path);
+    }
+     else if (set_type == L"filter")
+    {
+        set_file.clear();
+        deleteFile(path);
+    }
+
+
+    // finally, delete the set pointer file
+    deleteOfsFile(ofs_path);
+
+
+    // update the global relationship table. note
+    // that this routine takes care of it's own cleanup
+    tango::IRelationEnumPtr rel_enum;
+    rel_enum = getRelationEnum();
+
+    return true;
+}
+
+
+bool Database::setMountPoint(const std::wstring& path,
+                             const std::wstring& connection_str,
+                             const std::wstring& remote_path)
+{
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, cstr, rpath))
+    {
+        bool file_exists = xf_get_file_exist(ofsToPhysFilename(path, false));
+
+        if (!file_exists)
+        {
+            // move takes place in a mount
+            tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+            if (db.isNull())
+                return false;
+
+            return db->setMountPoint(rpath, connection_str, remote_path);
+        }
+    }    
+
+
+    std::wstring final_connection_string = connection_str;
+    if (final_connection_string.find(L"://") != -1)
+        final_connection_string = xdcommon::urlToConnectionStr(connection_str);
+    final_connection_string = xdcommon::encryptConnectionStringPassword(final_connection_string);
+
+    
+    // try to create or open a file to store the mount point in
+    OfsFile* file = OfsFile::createFile(this, path, tango::filetypeNode);
+    if (!file)
+        return false;
+
+    tango::INodeValuePtr root = file->getRootNode();
+    tango::INodeValuePtr cs = root->createChild(L"connection_str");
+    cs->setString(final_connection_string);
+    
+    tango::INodeValuePtr rp = root->createChild(L"remote_path");
+    rp->setString(remote_path);
+    
+    file->unref();
+
+    return true;
+}
+
+tango::IDatabasePtr Database::getMountDatabase(const std::wstring& path)
+{
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, cstr, rpath))
+    {
+        return lookupOrOpenMountDb(cstr);
+    }
+  
+    return xcm::null;
+}
+
+                    
+bool Database::getMountPoint(const std::wstring& path,
+                             std::wstring& connection_str,
+                             std::wstring& remote_path)
+{
+    tango::INodeValuePtr root = openLocalNodeFile(path);
+    if (root.isNull())
+        return false;
+        
+    tango::INodeValuePtr cs = root->getChild(L"connection_str", false);
+    if (cs.isNull())
+        return false;
+        
+    tango::INodeValuePtr rp = root->getChild(L"remote_path", false);
+    if (rp.isNull())
+        return false;
+        
+    connection_str = xdcommon::decryptConnectionStringPassword(cs->getString());
+    remote_path = rp->getString();
+
+    return true;
+}
+
+bool Database::createFolder(const std::wstring& path)
+{
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, cstr, rpath))
+    {
+        // action takes place in a mount
+        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return xcm::null;
+
+        return db->createFolder(rpath);
+    }
+
+    OfsFile* f = OfsFile::createFile(this, path, tango::filetypeFolder);
+
+    if (!f)
+    {
+        return false;
+    }
+
+    f->unref();
+
+    return true;
+}
+
+
+tango::INodeValuePtr Database::createNodeFile(const std::wstring& path)
+{
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, cstr, rpath))
+    {
+        bool file_exists = xf_get_file_exist(ofsToPhysFilename(path, false));
+
+        if (!file_exists)
+        {
+            // action takes place in a mount
+            tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+            if (db.isNull())
+                return xcm::null;
+
+            return db->createNodeFile(rpath);
+        }
+    }
+    
+
+
+    OfsFile* file = OfsFile::createFile(this, path, tango::filetypeNode);
+
+    if (!file)
+    {
+        return xcm::null;
+    }
+
+    tango::INodeValuePtr result = file->getRootNode();
+    file->unref();
+    return result;
+}
+
+tango::INodeValuePtr Database::openLocalNodeFile(const std::wstring& path)
+{
+    XCM_AUTO_LOCK(m_objregistry_mutex);
+
+
+    // lookup in our list to see if the file is already open
+    std::vector<OfsFile*>::iterator it;
+    for (it = m_ofs_files.begin(); it != m_ofs_files.end(); ++it)
+    {
+        if (!wcscasecmp((*it)->getPath().c_str(), path.c_str()))
+        {
+            return (*it)->getRootNode();
+        }
+    }
+
+    OfsFile* file = OfsFile::openFile(this, path);
+
+    if (!file)
+    {
+        return xcm::null;
+    }
+
+    tango::INodeValuePtr result = file->getRootNode();
+    file->unref();
+    return result;
+}
+
+tango::INodeValuePtr Database::openNodeFile(const std::wstring& _path)
+{
+    XCM_AUTO_LOCK(m_objregistry_mutex);
+
+    if (_path.empty())
+        return xcm::null;
+        
+    std::wstring path = _path;
+    if (kl::isFileUrl(_path))
+        path = urlToOfsFilename(_path);
+
+
+    // lookup in our list to see if the file is already open
+    std::vector<OfsFile*>::iterator it;
+    for (it = m_ofs_files.begin(); it != m_ofs_files.end(); ++it)
+    {
+        if (!wcscasecmp((*it)->getPath().c_str(), path.c_str()))
+        {
+            return (*it)->getRootNode();
+        }
+    }
+
+
+    // check if it's mounted
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, cstr, rpath))
+    {
+        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return xcm::null;
+
+        return db->openNodeFile(rpath);
+    }
+    
+
+
+
+
+
+    OfsFile* file = OfsFile::openFile(this, path);
+
+    if (!file)
+    {
+        return xcm::null;
+    }
+
+    tango::INodeValuePtr result = file->getRootNode();
+    file->unref();
+    return result;
+}
+
+
+bool Database::renameOfsFile(const std::wstring& _path,
+                             const std::wstring& new_name)
+{
+    bool allow = true;
+    
+    std::wstring path = _path;
+    if (path.find(L'/') == -1)
+    {
+        path = L"/" + path;
+    }
+    
+    std::wstring dest_path;
+
+    dest_path = kl::beforeLast(path, L'/');
+    dest_path += L"/";
+    dest_path += new_name;
+
+
+    std::wstring s1 = ofsToPhysFilename(path, true);
+    std::wstring s2 = ofsToPhysFilename(dest_path, true);
+    bool result1 = xf_move(s1, s2);
+
+    s1 = ofsToPhysFilename(path, false);
+    s2 = ofsToPhysFilename(dest_path, false);
+    bool result2 = xf_move(s1, s2);
+
+    bool success = (result1 || result2) ? true : false;
+
+    return success;
+}
+
+
+bool Database::moveOfsFile(const std::wstring& ofs_path,
+                           const std::wstring& new_path)
+{
+    if (getFileExist(new_path))
+        return false;
+
+    // make sure base destination path exists
+    std::wstring base_dest = kl::beforeLast(new_path, L'/');
+    if (base_dest.length() == 0)
+    {
+        base_dest = L"/";
+    }
+
+    if (base_dest != L"/")
+    {
+        // make sure destination folder exists
+        std::wstring real_base = ofsToPhysFilename(base_dest, true);
+        if (!xf_get_directory_exist(real_base))
+        {
+            createFolder(base_dest);
+        }
+    }
+
+
+    // get filenames
+    std::wstring dest_file = ofsToPhysFilename(new_path, false);
+    std::wstring dest_path = ofsToPhysFilename(new_path, true);
+    std::wstring src_file = ofsToPhysFilename(ofs_path, false);
+    std::wstring src_path = ofsToPhysFilename(ofs_path, true);
+
+    // attempt the move
+    bool result;
+    result = xf_move(src_file, dest_file);
+    if (!result)
+    {
+        return false;
+    }
+
+    if (xf_get_directory_exist(src_path))
+    {
+        result = xf_move(src_path, dest_path);
+        if (!result)
+        {
+            // try to move the src_file back
+            xf_move(dest_file, src_file);
+            return false;
+        }
+    }
+
+
+    return true;
+}
+
+
+
+
+
+
+bool Database::deleteOfsFile(const std::wstring& key_path)
+{
+    bool res = true;
+
+    // remove key file
+    xf_remove(ofsToPhysFilename(key_path, false));
+
+    // remove sub keys
+    res = xf_rmtree(ofsToPhysFilename(key_path, true));
+
+
+    if (m_ofs_root.length() > 0)
+    {
+        std::wstring temps;
+
+        wchar_t ch = m_ofs_root[m_ofs_root.length()-1];
+        if (ch == L'\\' || ch == L'/')
+        {
+            temps = kl::beforeLast(m_ofs_root, ch);
+        }
+         else
+        {
+            temps = m_ofs_root;
+        }
+
+        if (!xf_get_file_exist(temps))
+        {
+            xf_mkdir(temps);
+        }
+    }
+
+    return res;
+}
+
+
+static bool _copyFile(const std::wstring& src, const std::wstring& dest)
+{
+    xf_file_t src_file, dest_file;
+
+    src_file = xf_open(src, xfOpen, xfRead, xfShareNone);
+    if (!src_file)
+    {
+        return false;
+    }
+
+    xf_remove(dest);
+
+    dest_file = xf_open(dest, xfCreate, xfReadWrite, xfShareNone);
+    if (!dest_file)
+    {
+        xf_close(src_file);
+        return false;
+    }
+
+
+    unsigned char* buf = new unsigned char[65536];
+
+    int read_bytes, write_bytes;
+    bool result = true;
+
+    while (1)
+    {
+        read_bytes = xf_read(src_file, buf, 1, 65536);
+
+        write_bytes = xf_write(dest_file, buf, 1, read_bytes);
+
+        if (read_bytes != write_bytes)
+        {
+            result = false;
+            break;
+        }
+
+        if (read_bytes != 65536)
+        {
+            break;
+        }
+    }
+
+
+    delete[] buf;
+
+    xf_close(src_file);
+    xf_close(dest_file);
+
+    return result;
+}
+
+
+
+static bool _copyTree(const std::wstring& path,
+                      const std::wstring& dest_folder)
+{
+    std::vector<std::wstring> to_remove;
+    std::wstring filename;
+
+    if (path.find_last_not_of(PATH_SEPARATOR_CHAR) == -1)
+        return false;
+
+    filename = kl::afterLast(path, PATH_SEPARATOR_CHAR);
+
+
+    if (!xf_mkdir(makePathName(dest_folder, L"", filename)))
+    {
+        return false;
+    }
+
+
+    xf_dirhandle_t h = xf_opendir(path);
+    xf_direntry_t info;
+    while (xf_readdir(h, &info))
+    {
+        if (info.m_type == xfFileTypeNormal)
+        {
+            if (!_copyFile(makePathName(path, L"", info.m_name),
+                           makePathName(dest_folder, L"", info.m_name)))
+            {
+                return false;
+            }
+        }
+        if (info.m_type == xfFileTypeDirectory && info.m_name[0] != '.')
+        {
+            if (!_copyTree(makePathName(path, info.m_name),
+                           makePathName(dest_folder, L"", info.m_name)))
+            {
+                return false;
+            }
+        }
+    }
+    xf_closedir(h);
+
+    return true;
+}
+
+
+
+bool Database::copyFile(const std::wstring& src_path,
+                        const std::wstring& dest_path)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+    
+    
+    if (src_path.empty() || dest_path.empty())
+        return false;
+
+
+    // find out if we are copying a stream
+    tango::IFileInfoPtr info = getFileInfo(src_path);
+    if (info.isOk() && info->getType() == tango::filetypeStream)
+    {
+        tango::IStreamPtr src_stream = openStream(src_path);
+        tango::IStreamPtr dest_stream = createStream(dest_path, info->getMimeType());
+        if (src_stream.isNull() || dest_stream.isNull())
+            return false;
+            
+        
+        unsigned char* buf = new unsigned char[16384];
+
+        unsigned long read_bytes, write_bytes;
+        bool result = true;
+
+        while (1)
+        {
+            if (!src_stream->read(buf, 16384, &read_bytes))
+                break;
+            
+            if (read_bytes == 0)    
+                break;
+                
+            if (!dest_stream->write(buf, read_bytes, &write_bytes))
+                break;
+            
+            if (read_bytes != write_bytes)
+                break;
+        }
+
+        delete[] buf;
+        
+        return true;
+    }
+     else
+    {
+        std::wstring src_file_name = ofsToPhysFilename(src_path, false);
+        std::wstring src_dir_name = ofsToPhysFilename(src_path, true);
+        std::wstring dest_file_name = ofsToPhysFilename(dest_path, false);
+        std::wstring dest_dir_name = ofsToPhysFilename(dest_path, true);
+
+        if (!_copyFile(src_file_name, dest_file_name))
+        {
+            return false;
+        }
+
+        if (!_copyTree(src_dir_name, dest_dir_name))
+        {
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+
+bool Database::renameFile(const std::wstring& _path,
+                          const std::wstring& new_name)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    if (_path.empty() || new_name.empty())
+        return false;
+
+    std::wstring path = _path;
+    if (kl::isFileUrl(_path))
+        path = urlToOfsFilename(_path);
+        
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, cstr, rpath) && !getLocalFileExist(path))
+    {
+        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return false;
+
+        return db->renameFile(rpath, new_name);
+    }
+    
+    
+
+
+    if (!renameOfsFile(path, new_name))
+        return false;
+
+    // create a fully-qualified path for the newly renamed object
+    std::wstring new_path;
+
+    int slash_pos = path.find_last_of(L'/');
+    if (slash_pos != -1)
+    {
+        new_path = path.substr(0, slash_pos);
+        new_path += L"/";
+    }
+     else
+    {
+        new_path = L"/";
+    }
+
+    new_path += new_name;
+
+
+
+    tango::IFileInfoPtr file_info = getFileInfo(new_path);
+    if (file_info.isNull())
+        return false;
+
+    if (!file_info->isMount())
+    {
+        int type = file_info->getType();
+
+        if (type == tango::filetypeFolder)
+        {
+            // it is a folder, so all references underneath must be updated
+            recursiveReferenceUpdate(new_path);
+        }
+         else if (type == tango::filetypeSet)
+        {
+            // the set reference must be updated
+            updateSetReference(new_path);
+        }
+    }
+
+    return true;
+}
+
+bool Database::moveFile(const std::wstring& _src_path,
+                        const std::wstring& _dest_path)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    if (_src_path.empty() || _dest_path.empty() || _src_path == _dest_path)
+        return false;
+    
+    std::wstring src_path = _src_path, dest_path = _dest_path;
+    if (kl::isFileUrl(_src_path))
+        src_path = urlToOfsFilename(_src_path);
+    if (kl::isFileUrl(_dest_path))
+        dest_path = urlToOfsFilename(_dest_path);
+
+    if (src_path.empty() || dest_path.empty())
+        return false;
+
+    if (src_path[0] != '/')
+        src_path = L"/" + src_path;
+    
+    if (dest_path[0] != '/')
+        dest_path = L"/" + dest_path;
+        
+
+    // if dest_path is an existing folder, the user wants
+    // to move src_path while retaining its original name
+    // into the existing dest_path folder
+    tango::IFileInfoPtr dest_info = getFileInfo(dest_path);
+    if (dest_info.isOk() && dest_info->getType() == tango::filetypeFolder)
+    {
+        std::wstring f = src_path;
+        
+        // strip any existing trailing slash
+        if (f.length() > 0 && f[f.length()-1] == L'/')
+            f.erase(f.length()-1, 1);
+            
+        f = kl::afterLast(f, L'/');
+        
+        // if necessary, append a slash to the dest path
+        if (dest_path.length() == 0 || dest_path[dest_path.length()] != '/')
+            dest_path += L"/";
+            
+        // append original source file
+        dest_path += f;
+    }
+
+
+
+
+
+    bool source_item_is_mount = false;
+    tango::IFileInfoPtr info = getFileInfo(src_path);
+    if (info.isOk())
+    {
+        source_item_is_mount = info->isMount();
+    }
+
+
+    if (!source_item_is_mount)
+    {
+        std::wstring src_cstr, src_rpath;
+        std::wstring dest_cstr, dest_rpath;
+        
+        if (detectMountPoint(src_path, src_cstr, src_rpath))
+            src_path = src_rpath;
+            
+        if (detectMountPoint(dest_path, dest_cstr, dest_rpath))
+            dest_path = dest_rpath;
+        
+        if (src_cstr != dest_cstr)
+        {
+            // moves between mount points are not allowed
+            return false;
+        }
+        
+        if (src_cstr.length() > 0)
+        {
+            // move takes place in a mount
+            tango::IDatabasePtr db = lookupOrOpenMountDb(src_cstr);
+            if (db.isNull())
+                return false;
+
+            return db->moveFile(src_path, dest_path);
+        }
+    }
+    
+    
+    if (!moveOfsFile(src_path, dest_path))
+        return false;
+
+    tango::IFileInfoPtr file_info = getFileInfo(dest_path);
+    if (file_info.isNull())
+        return false;
+
+    if (!file_info->isMount())
+    {
+        int type = file_info->getType();
+
+        if (type == tango::filetypeFolder)
+        {
+            // it is a folder, so all references underneath
+            // must be updated
+            recursiveReferenceUpdate(dest_path);
+        }
+         else if (type == tango::filetypeSet)
+        {
+            // the set reference must be updated
+            updateSetReference(dest_path);
+        }
+    }
+
+    return true;
+}
+
+bool Database::deleteFile(const std::wstring& _path)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    if (_path.empty())
+        return false;
+        
+    std::wstring path = _path;
+    if (kl::isFileUrl(_path))
+        path = urlToOfsFilename(_path);
+
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, cstr, rpath))
+    {
+        // check if the mount is just a single
+        // mount to another file
+        tango::INodeValuePtr f = openLocalNodeFile(path);
+        if (f.isOk())
+        {
+            f.clear();
+            return deleteOfsFile(path);
+        }
+        
+  
+        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return false;
+
+        return db->deleteFile(rpath);
+    }
+    
+    
+    
+    tango::IFileInfoPtr file_info = getFileInfo(path);
+    if (file_info.isNull())
+    {
+        // no file existed in the first place
+        return false;
+    }
+
+    if (file_info->isMount())
+    {
+        return deleteOfsFile(path);
+    }
+
+    int type = file_info->getType();
+
+    if (type == tango::filetypeSet)
+    {
+        return deleteSet(path);
+    }
+     else if (type == tango::filetypeStream)
+    {
+        return deleteStream(path);
+    }
+     else
+    {
+        return deleteOfsFile(path);
+    }
+}
+
+
+
+bool Database::getLocalFileExist(const std::wstring& _path)
+{
+    // this was causing deadlocks when appmain was creating a sort/filter
+    // set in a report. (aaron's problem)
+    //XCM_AUTO_LOCK(m_object_mutex);
+
+    std::wstring path = _path;
+    if (kl::isFileUrl(_path))
+        path = urlToOfsFilename(_path);
+        
+    if (path.empty())
+        return false;
+
+    return (xf_get_directory_exist(ofsToPhysFilename(path, true)) ||
+            xf_get_file_exist(ofsToPhysFilename(path, false)));
+}
+
+bool Database::getFileExist(const std::wstring& _path)
+{
+    // this was causing deadlocks when appmain was creating a sort/filter
+    // set in a report. (aaron's problem)
+    //XCM_AUTO_LOCK(m_object_mutex);
+
+    std::wstring path = _path;
+    if (kl::isFileUrl(_path))
+        path = urlToOfsFilename(_path);
+        
+    if (path.empty())
+        return false;
+
+
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, cstr, rpath))
+    {
+        // root always exists
+        if (rpath.empty() || rpath == L"/")
+            return true;
+            
+        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return false;
+
+        return db->getFileExist(rpath);
+    }
+
+
+
+    return (xf_get_directory_exist(ofsToPhysFilename(path, true)) ||
+            xf_get_file_exist(ofsToPhysFilename(path, false)));
+}
+
+
+tango::tango_int64_t Database::getFileSize(const std::wstring& ofs_path)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    if (ofs_path.empty())
+        return 0;
+
+    // fix up set name problems
+    std::wstring fixed_name;
+
+    if (*(ofs_path.c_str()) != L'/')
+    {
+        fixed_name = L"/";
+    }
+
+    fixed_name += ofs_path;
+    kl::trimRight(fixed_name);
+
+
+    // open up set file
+
+    tango::INodeValuePtr set_file = openNodeFile(fixed_name);
+    if (!set_file)
+    {
+        return 0;
+    }
+
+    // load the set id
+    tango::INodeValuePtr setid_node = set_file->getChild(L"set_id", false);
+    if (!setid_node)
+        return 0;
+
+    std::wstring set_id = setid_node->getString();
+
+    // generate set filename
+    std::wstring path;
+    path.reserve(80);
+    path = L"/.system/objects/";
+    path += set_id;
+
+    // get filename from registry
+
+    set_file = openNodeFile(path);
+    if (!set_file)
+    {
+        return 0;
+    }
+
+    // load ordinal
+    tango::INodeValuePtr ordinal_node = set_file->getChild(L"ordinal", false);
+    if (!ordinal_node)
+        return 0;
+
+    std::wstring table_filename = getTableFilename(ordinal_node->getInteger());
+
+    return xf_get_file_size(table_filename);
+}
+
+std::wstring Database::getFileMimeType(const std::wstring& path)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    if (path.empty())
+        return L"";
+    
+    tango::INodeValuePtr file = openNodeFile(path);
+    if (!file)
+        return L"";
+
+    tango::INodeValuePtr mime_type = file->getChild(L"mime_type", false);
+    if (!mime_type)
+        return L"";
+    
+    return mime_type->getString();
+}
+
+class NativeFileInfo : public tango::IFileInfo
+{
+    XCM_CLASS_NAME("xdnative.FileInfo")
+    XCM_BEGIN_INTERFACE_MAP(NativeFileInfo)
+        XCM_INTERFACE_ENTRY(tango::IFileInfo)
+    XCM_END_INTERFACE_MAP()
+
+public:
+
+    NativeFileInfo(tango::IDatabasePtr _db)
+    {
+        db = _db;
+        fetched_size = false;
+        fetched_mime_type = false;
+    }
+
+    const std::wstring& getName()
+    {
+        return name;
+    }
+
+    int getType()
+    {
+        return type;
+    }
+    
+    int getFormat()
+    {
+        return format;
+    }
+
+    tango::tango_int64_t getSize()
+    {
+        if (fetched_size)
+            return size;
+        
+        size = db->getFileSize(path);
+        fetched_size = true;
+        return size;
+    }
+    
+    const std::wstring& getMimeType()
+    {
+        if (fetched_mime_type)
+        {
+            return mime_type;
+        }
+        
+        mime_type = db->getFileMimeType(path);
+        fetched_mime_type = true;
+        return mime_type;
+    }
+    
+    bool isMount()
+    {
+        return is_mount;
+    }
+
+    const std::wstring& getPrimaryKey()
+    {
+        return primary_key;
+    }
+    
+public:
+
+    std::wstring name;
+    std::wstring mime_type;
+    std::wstring path;
+    std::wstring primary_key;
+    tango::tango_int64_t size;
+    int type;
+    int format;
+    bool is_mount;
+    
+    bool fetched_mime_type;
+    bool fetched_size;
+    IDatabaseInternalPtr db;
+};
+
+
+bool Database::setFileType(const std::wstring& path, int type)
+{
+    XCM_AUTO_LOCK(m_objregistry_mutex);
+
+    OfsFile* file = NULL;
+
+    // lookup in our list to see if the file is already open
+    std::vector<OfsFile*>::iterator it;
+    for (it = m_ofs_files.begin(); it != m_ofs_files.end(); ++it)
+    {
+        if (!wcscasecmp((*it)->getPath().c_str(), path.c_str()))
+        {
+            file = *it;
+            file->ref();
+            break;
+        }
+    }
+
+    if (file == NULL)
+    {
+        file = OfsFile::openFile(this, path);
+
+        if (!file)
+        {
+            return false;
+        }
+    }
+
+    file->setType(type);
+    file->unref();
+
+    return true;
+}
+
+
+bool Database::getFileType(const std::wstring& path, int* type, bool* is_mount)
+{
+    XCM_AUTO_LOCK(m_objregistry_mutex);
+
+    if (path.empty() || path == L"/")
+    {
+        // caller wants file type information for root folder
+        if (type)
+            *type = tango::filetypeFolder;
+        if (is_mount)
+            *is_mount = false;
+        return true;
+    }
+
+
+    OfsFile* file = NULL;
+
+    // lookup in our list to see if the file is already open
+    std::vector<OfsFile*>::iterator it;
+    for (it = m_ofs_files.begin(); it != m_ofs_files.end(); ++it)
+    {
+        if (!wcscasecmp((*it)->getPath().c_str(), path.c_str()))
+        {
+            file = *it;
+            
+            if (type)
+                *type = (*it)->getType();
+            if (is_mount)
+            {
+                *is_mount = false;
+                tango::INodeValuePtr root = file->getRootNode();
+                if (root.isOk())
+                {
+                    tango::INodeValuePtr cs = root->getChild(L"connection_str", false);
+                    if (cs.isOk())
+                        *is_mount = true;
+                }
+            }
+            
+            break;
+        }
+    }
+
+
+    return OfsFile::getFileType(this, path, type, is_mount);
+}
+
+
+tango::IFileInfoPtr Database::getFileInfo(const std::wstring& _path)
+{
+    if (_path.empty())
+        return xcm::null;
+        
+    std::wstring path = _path;
+    if (kl::isFileUrl(_path))
+        path = urlToOfsFilename(_path);
+
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, cstr, rpath))
+    {
+        // if it's the root, it's automatically a folder
+        if (rpath.empty() || rpath == L"/")
+        {
+            xdcommon::FileInfo* f = new xdcommon::FileInfo;
+            f->name = kl::afterLast(path, L'/');
+            f->type = tango::filetypeFolder;
+            f->format = tango::formatNative;
+            f->is_mount = true;
+            return static_cast<tango::IFileInfo*>(f);
+        }
+         else
+        {
+            std::wstring file_primary_key;
+            int file_type = tango::filetypeSet;
+            int file_format = tango::formatNative;
+            int is_mount = -1;
+            
+            if (getLocalFileExist(path))
+                is_mount = 1;
+                
+            tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+            if (db.isOk())
+            {
+                if (!checkCircularMount(path, db, rpath))
+                {
+                    tango::IFileInfoPtr file_info = db->getFileInfo(rpath);
+                    if (file_info.isOk())
+                    {
+                        file_type = file_info->getType();
+                        file_format = file_info->getFormat();
+                        file_primary_key = file_info->getPrimaryKey();
+                        if (is_mount == -1)
+                            is_mount = file_info->isMount() ? 1 : 0;
+                    }
+                }
+            }
+                       
+            xdcommon::FileInfo* f = new xdcommon::FileInfo;
+            f->name = kl::afterLast(path, L'/');
+            f->type = file_type;
+            f->format = file_format;
+            f->is_mount = (is_mount == 1 ? true : false);
+            f->primary_key = file_primary_key;
+            
+            return static_cast<tango::IFileInfo*>(f);
+        }
+    }
+
+
+    if (!getFileExist(path))
+        return xcm::null;
+
+
+    NativeFileInfo* f = new NativeFileInfo(static_cast<tango::IDatabase*>(this));
+    f->type = tango::filetypeNode;
+    f->is_mount = false;
+    
+    int slash_pos = path.find_last_of(L'/');
+    if (slash_pos == -1)
+    {
+        f->name = path;
+    }
+     else
+    {
+        f->name = path.substr(slash_pos+1);
+    }
+
+    f->path = path;
+    f->format = tango::formatNative;
+    getFileType(path, &(f->type), &(f->is_mount));
+
+    return static_cast<tango::IFileInfo*>(f);
+}
+
+
+tango::IDatabasePtr Database::lookupOrOpenMountDb(const std::wstring& cstr)
+{
+    if (cstr.empty())
+    {
+        return static_cast<tango::IDatabase*>(this);
+    }
+
+
+    tango::IDatabasePtr db;
+    
+    std::map<std::wstring, tango::IDatabasePtr>::iterator it;
+    it = m_mounted_dbs.find(cstr);
+    if (it != m_mounted_dbs.end())
+    {
+        db = it->second;
+    }
+    
+    
+    if (db.isNull())
+    {
+        db = m_db_mgr->open(cstr);
+        
+        if (db)
+        {
+            // tell the mount database to store its temporary files
+            // in our temporary directory
+            tango::IAttributesPtr attr = db->getAttributes();
+            
+            if (attr)
+            {
+                attr->setStringAttribute(tango::dbattrTempDirectory, getTempPath());
+                attr->setStringAttribute(tango::dbattrDefinitionDirectory, getDefinitionPath());
+            }
+        }      
+        
+        m_mounted_dbs[cstr] = db;
+    }
+    
+    return db;
+}
+
+
+
+bool Database::detectMountPoint(const std::wstring& path,
+                                std::wstring& connection_str,
+                                std::wstring& remote_path)
+{
+    std::vector<std::wstring> parts;
+    std::vector<std::wstring>::iterator it, it2;
+    bool found = true;
+    
+    
+    // /.system folder never contains mounts
+    if (0 == path.compare(0, 8, L"/.system"))
+        return false;
+    
+    parseDelimitedList(path, parts, L'/', false);
+    
+    std::wstring fpath = L"/";
+    
+    // delete any empty parts
+    int i = 0;
+    for (i = 0; i < (int)parts.size(); ++i)
+    {
+        if (parts[i].empty())
+        {
+            parts.erase(parts.begin() + i);
+            --i;
+        }
+    }
+    
+    for (it = parts.begin(); it != parts.end(); ++it)
+    {
+        if (fpath.empty() || fpath[fpath.length()-1] != L'/')
+            fpath += L"/";
+        fpath += *it;
+
+        bool is_mount = false;
+        OfsFile::getFileType(this, fpath, NULL, &is_mount);
+        if (!is_mount)
+            continue;
+            
+
+        tango::INodeValuePtr val = openLocalNodeFile(fpath);
+        if (val.isNull())
+            break;
+            
+        tango::INodeValuePtr cs = val->getChild(L"connection_str", false);
+        if (cs.isNull())
+            continue;
+            
+        tango::INodeValuePtr rp = val->getChild(L"remote_path", false);
+        if (rp.isNull())
+            continue;
+        
+        if (cs.isOk() && rp.isOk())
+        {  
+            connection_str = xdcommon::decryptConnectionStringPassword(cs->getString());
+            remote_path = rp->getString();
+
+            for (it2 = it+1; it2 < parts.end(); ++it2)
+            {
+                if (remote_path.empty() || remote_path[remote_path.length()-1] != '/')
+                {
+                    remote_path += L'/';
+                }
+                
+                remote_path += *it2;
+                if (it2+1 < parts.end())
+                    remote_path += L'/';
+            }
+            
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+/*
+bool Database::checkCircularMount(const std::wstring& path,
+                                  tango::IDatabasePtr remote_db, 
+                                  const std::wstring remote_path)
+{
+    if (static_cast<tango::IDatabase*>(this) != remote_db.p)
+        return false;
+        
+    return (0 == wcscasecmp(remote_path.c_str(), path.c_str())) ? true : false;
+}
+*/
+
+
+
+bool Database::checkCircularMountInternal(std::set<std::wstring, kl::cmp_nocase>& bad_paths,
+                                          tango::IDatabasePtr remote_db, 
+                                          const std::wstring remote_path)
+{
+    // if remote is a different db, it's not circular
+    if (static_cast<tango::IDatabase*>(this) != remote_db.p)
+        return false;
+        
+    if (bad_paths.find(remote_path) != bad_paths.end())
+        return true;
+       
+    std::wstring cstr, rpath;
+    if (!detectMountPoint(remote_path, cstr, rpath))
+    {
+        // remote is not a reference itself, so not circular
+        return false;
+    }
+    
+    if (cstr.length() > 0)
+    {
+        // there's a connection string, which means that
+        // the remote database is different than |this|,
+        // so we'll return false for circular mount
+        return false;
+    }
+    
+    tango::IDatabasePtr rdb = lookupOrOpenMountDb(cstr);
+    bad_paths.insert(remote_path);
+    
+    return checkCircularMountInternal(bad_paths, rdb, rpath);
+}
+
+
+
+
+bool Database::checkCircularMount(const std::wstring& path,
+                                  tango::IDatabasePtr remote_db, 
+                                  const std::wstring remote_path)
+{
+    std::set<std::wstring, kl::cmp_nocase> bad_paths;
+    bad_paths.insert(path);
+    
+    return checkCircularMountInternal(bad_paths, remote_db, remote_path);
+}
+
+
+
+tango::IFileInfoEnumPtr Database::getFolderInfo(const std::wstring& _mask)
+{ 
+    xcm::IVectorImpl<tango::IFileInfoPtr>* retval;
+    retval = new xcm::IVectorImpl<tango::IFileInfoPtr>;
+    
+    // if the parameter is empty, assume they want the root folder
+    std::wstring mask = _mask;
+    if (mask.length() == 0)
+        mask = L"/";
+
+
+    // detect if the specified folder is a mount point
+    
+    std::wstring cstr, rpath;
+    
+    if (detectMountPoint(mask, cstr, rpath))
+    {
+        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return retval;
+            
+        delete retval;
+        return db->getFolderInfo(rpath);
+    }
+
+
+
+
+    // find the physical directory
+    std::wstring dir = ofsToPhysFilename(mask, true);
+
+
+    // find the base ofs directory (to be prepended to
+    // a filename in order to create a full path)
+    std::wstring base_ofs_path;
+    if (mask[0] != L'/')
+    {
+        base_ofs_path = L"/";
+    }
+    base_ofs_path += mask;
+    if (base_ofs_path[base_ofs_path.length()-1] != L'/')
+    {
+        base_ofs_path += L"/";
+    }
+
+
+    // get directory entries, if this key is a folder
+
+    xf_dirhandle_t h = xf_opendir(dir);
+    xf_direntry_t info;
+
+    while (xf_readdir(h, &info))
+    {
+        if (info.m_type == xfFileTypeNormal)
+        {
+            std::wstring file_name;
+
+            int dot_pos = info.m_name.find_last_of(L'.');
+
+            if (dot_pos <= 0)
+                file_name = info.m_name;
+                 else
+                file_name = info.m_name.substr(0, dot_pos);
+
+
+            //  get file type from getFileInfo()
+            std::wstring ofs_path = base_ofs_path;
+            ofs_path += file_name;
+
+            tango::IFileInfoPtr file_info = getFileInfo(ofs_path);
+            if (file_info.isOk())
+            {
+                retval->append(file_info);
+            }
+        }
+
+    }
+
+    xf_closedir(h);
+
+    return retval;
+}
+
+
+
+void Database::registerNodeFile(OfsFile* file)
+{
+    XCM_AUTO_LOCK(m_objregistry_mutex);
+
+    m_ofs_files.push_back(file);
+}
+
+void Database::unregisterNodeFile(OfsFile* file)
+{
+    XCM_AUTO_LOCK(m_objregistry_mutex);
+
+    std::vector<OfsFile*>::iterator it;
+    for (it = m_ofs_files.begin(); it != m_ofs_files.end(); ++it)
+    {
+        if (*it == file)
+        {
+            m_ofs_files.erase(it);
+            return;
+        }
+    }
+}
+
+void Database::registerSet(tango::ISet* set)
+{
+    XCM_AUTO_LOCK(m_objregistry_mutex);
+
+    m_sets.push_back(set);
+}
+
+void Database::unregisterSet(tango::ISet* set)
+{
+    XCM_AUTO_LOCK(m_objregistry_mutex);
+
+    std::vector<tango::ISet*>::iterator it;
+    for (it = m_sets.begin(); it != m_sets.end(); ++it)
+    {
+        if (*it == set)
+        {
+            m_sets.erase(it);
+            return;
+        }   
+    }
+}
+
+void Database::registerTable(ITable* table)
+{
+    XCM_AUTO_LOCK(m_objregistry_mutex);
+
+    m_tables.push_back(table);
+}
+
+void Database::unregisterTable(ITable* table)
+{
+    XCM_AUTO_LOCK(m_objregistry_mutex);
+
+    std::vector<ITable*>::iterator it;
+    for (it = m_tables.begin(); it != m_tables.end(); ++it)
+    {
+        if (*it == table)
+        {
+            m_tables.erase(it);
+            return;
+        }
+    }
+}
+
+
+bool Database::deleteTempData()
+{
+    if (m_base_dir.length() == 0)
+        return false;
+
+    // get directory entries, if this key is a folder
+    xf_dirhandle_t h = xf_opendir(makePathName(m_base_dir, L"temp"));
+    xf_direntry_t info;
+    while (xf_readdir(h, &info))
+    {
+        if (info.m_type == xfFileTypeNormal)
+        {
+            xf_remove(makePathName(m_base_dir, L"temp", info.m_name));
+        }
+    }
+
+    xf_closedir(h);
+
+    return true;
+}
+
+
+
+
+
+
+void Database::getFolderUsedOrdinals(const std::wstring& folder_path,
+                                      std::set<int>& used_ordinals)
+{
+    // skip mounts
+    tango::IFileInfoPtr fileinfo = getFileInfo(folder_path);
+    if (fileinfo.isNull() || fileinfo->isMount())
+        return;
+    
+
+    tango::IFileInfoEnumPtr files = getFolderInfo(folder_path);
+    tango::IFileInfoPtr info;
+
+    int file_count = files->size();
+    int i;
+
+    for (i = 0; i < file_count; ++i)
+    {
+        info = files->getItem(i);
+        int file_type = info->getType();
+        
+        // skip mounts
+        if (info->isMount())
+            continue;
+
+        std::wstring path = combineOfsPath(folder_path, info->getName());
+
+
+        if (file_type == tango::filetypeSet)
+        {
+            tango::INodeValuePtr set_file = openNodeFile(path);
+            if (set_file)
+            {
+                tango::INodeValuePtr setid_node;
+                setid_node = set_file->getChild(L"set_id", false);
+
+                if (!setid_node)
+                    continue;
+    
+                std::wstring set_id = setid_node->getString();
+
+                path = L"/.system/objects/";
+                path += set_id;
+
+                tango::INodeValuePtr file;
+                file = openNodeFile(path);
+
+                if (file)
+                {
+                    tango::INodeValuePtr setid_node;
+                    setid_node = file->getChild(L"ordinal", false);
+                    if (!setid_node)
+                        continue;
+
+                    used_ordinals.insert(setid_node->getInteger());
+                }
+            }
+        }
+
+        getFolderUsedOrdinals(path, used_ordinals);
+    }
+}
+
+
+
+bool Database::cleanup()
+{
+    std::set<int> used_ordinals;
+    int max_ordinal = 0;
+
+    tango::INodeValuePtr ord_file;
+
+    ord_file = openNodeFile(L"/.system/ordinal_counter");
+    if (!ord_file)
+        return false;
+    max_ordinal = ord_file->getInteger();
+
+
+    getFolderUsedOrdinals(L"/", used_ordinals);
+
+    int i;
+    std::wstring filename;
+
+    for (i = 0; i < max_ordinal; ++i)
+    {
+        if (used_ordinals.find(i) == used_ordinals.end())
+        {
+            bool ok = true;
+
+            filename = getTableFilename(i);
+            if (filename.length() > 0)
+            {
+                ok = (xf_remove(filename) == 0 ? true : false);
+            }
+
+            if (ok)
+            {
+                deleteOrdinal(i);
+            }
+        }
+    }
+
+    deleteTempData();
+    emptyTrash();
+
+    return true;
+}
+
+
+tango::IStreamPtr Database::openStream(const std::wstring& _path)
+{
+    std::wstring path = _path;
+    if (kl::isFileUrl(_path))
+        path = urlToOfsFilename(_path);
+
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, cstr, rpath))
+    {
+        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return xcm::null;
+
+        return db->openStream(rpath);
+    }
+
+    std::wstring stream_filename = getStreamFilename(path);
+    
+    if (stream_filename.length() == 0)
+    {
+        return xcm::null;
+    }
+    
+    FileStream* stream = new FileStream;
+    if (!stream->open(stream_filename))
+    {
+        delete stream;
+        return xcm::null;
+    }
+    
+    return static_cast<tango::IStream*>(stream);
+}
+
+tango::IStreamPtr Database::createStream(const std::wstring& _path, const std::wstring& mime_type)
+{
+    std::wstring path = _path;
+    if (kl::isFileUrl(_path))
+        path = urlToOfsFilename(_path);
+
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, cstr, rpath))
+    {
+        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return xcm::null;
+
+        return db->createStream(rpath, mime_type);
+    }
+
+
+
+    std::wstring stream_fname = getStreamFilename(path);
+    if (stream_fname.length() > 0)
+    {
+        // change mime_type in stream info file
+        OfsFile* file = OfsFile::openFile(this, path);
+        if (file)
+        {
+            tango::INodeValuePtr root = file->getRootNode();
+            tango::INodeValuePtr mime_type_node = root->getChild(L"mime_type", true);
+            mime_type_node->setString(mime_type);
+            file->unref();
+        }
+        
+        if (xf_remove(stream_fname))
+        {
+            // just overwrite old file
+            FileStream* file_stream = new FileStream;
+            if (!file_stream->create(stream_fname))
+            {
+                delete file_stream;
+                return xcm::null;
+            }
+
+            return static_cast<tango::IStream*>(file_stream);
+        }
+         else
+        {
+            // mark the stream file which is in use for later deletion;
+            // create a new pointer file point to a new stream location
+            addFileToTrash(stream_fname);
+        }
+    }
+    
+
+    // normal xdnative stream
+    if (getFileExist(path))
+    {
+        deleteFile(path);
+    }
+    
+    
+    // create or open an ofs node file
+    OfsFile* file = OfsFile::createFile(this, path, tango::filetypeStream);
+    if (!file)
+    {
+        return xcm::null;
+    }
+
+    tango::INodeValuePtr root = file->getRootNode();
+    
+    // create a new object id
+    std::wstring object_id = getUniqueString();
+    
+    // set object id in ofs node file
+    tango::INodeValuePtr object_id_node = root->getChild(L"object_id", true);
+    object_id_node->setString(object_id);
+    
+    tango::INodeValuePtr mime_type_node = root->getChild(L"mime_type", true);
+    mime_type_node->setString(mime_type);
+    
+    object_id_node.clear();
+    mime_type_node.clear();
+    file->unref();
+    
+    // create an object entry
+    std::wstring object_path;
+    object_path.reserve(80);
+    object_path = L"/.system/objects/";
+    object_path += object_id;
+
+    root = createNodeFile(object_path);
+    if (!root)
+    {
+        return xcm::null;
+    }
+    
+    
+    // create a filename for the data file
+    std::wstring data_filename = getUniqueString();
+    data_filename += L".dat";
+    
+    
+    // add entry pointing to data file
+    tango::INodeValuePtr data_file_node = root->getChild(L"data_file", true);
+    if (!data_file_node)
+    {
+        return xcm::null;
+    }
+    
+    data_file_node->setString(data_filename);
+
+
+    // create data file stream
+    std::wstring full_path = makePathName(m_base_dir, L"data", data_filename);
+    FileStream* file_stream = new FileStream;
+    if (!file_stream->create(full_path))
+    {
+        delete file_stream;
+        return xcm::null;
+    }
+
+    return static_cast<tango::IStream*>(file_stream);
+}
+
+
+
+tango::ISet* Database::lookupSet(const std::wstring& set_id)
+{
+    XCM_AUTO_LOCK(m_objregistry_mutex);
+
+    // search existing sets for a match
+    std::vector<tango::ISet*>::iterator sit;
+    for (sit = m_sets.begin(); sit != m_sets.end(); ++sit)
+    {
+        if (!wcscasecmp((*sit)->getSetId().c_str(), set_id.c_str()))
+        {
+            (*sit)->ref();
+            return *sit;
+        }
+    }
+
+    return NULL;
+}
+
+
+tango::IStructurePtr Database::createStructure()
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    Structure* s = new Structure;
+    return static_cast<tango::IStructure*>(s);
+}
+
+tango::ISetPtr Database::createSet(const std::wstring& _path,
+                                   tango::IStructurePtr structure,
+                                   tango::FormatInfo* format_info)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+
+    std::wstring path = _path;
+    
+    if (path.length() > 0)
+    {
+        if (kl::isFileUrl(_path))
+            path = urlToOfsFilename(_path);
+
+        std::wstring cstr, rpath;
+        if (detectMountPoint(path, cstr, rpath))
+        {
+            tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+            if (db.isNull())
+                return xcm::null;
+
+            tango::ISetPtr set = db->createSet(rpath, structure, format_info);
+            if (set.isOk())
+            {
+                set->setObjectPath(_path);
+            }
+            
+            return set;
+        }
+    }
+    
+
+
+
+    TableSet* set = new TableSet(this);
+    set->ref();
+
+    if (!set->create(structure))
+        return xcm::null;
+
+    if (path.length() > 0)
+    {
+        if (!storeObject(static_cast<tango::ISet*>(set), path))
+        {
+            set->unref();
+            return xcm::null;
+        }
+    }
+
+    return tango::ISetPtr(set, false);
+}
+
+
+std::wstring Database::getDatabaseName()
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    return m_dbname;
+}
+
+int Database::getDatabaseType()
+{
+    return tango::dbtypeXdnative;
+}
+
+std::wstring Database::getStreamFilename(const std::wstring& ofs_path)
+{    
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    tango::INodeValuePtr file = openNodeFile(ofs_path);
+    if (!file)
+        return L"";
+
+    tango::INodeValuePtr object_id_node = file->getChild(L"object_id", false);
+    if (!object_id_node)
+        return L"";
+
+    std::wstring object_id = object_id_node->getString();
+    if (object_id.length() == 0)
+        return L"";
+        
+    file.clear();
+    
+    std::wstring object_path;
+    object_path.reserve(80);
+    object_path = L"/.system/objects/";
+    object_path += object_id;
+
+    file = openNodeFile(object_path);
+    if (!file)
+        return L"";
+        
+    tango::INodeValuePtr data_file_node = file->getChild(L"data_file", false);
+    if (!data_file_node)
+        return L"";
+
+    std::wstring data_file = data_file_node->getString();
+    if (data_file.length() == 0)
+        return L"";
+
+    return makePathName(m_base_dir, L"data", data_file);
+}
+
+
+std::wstring Database::getTableFilename(tango::tableord_t table_ordinal)
+{    
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    wchar_t ord_key_name[255];
+    swprintf(ord_key_name, 255, L"/.system/ordinals/%d", table_ordinal);
+
+    tango::INodeValuePtr ordinal = openNodeFile(ord_key_name);
+    if (!ordinal)
+        return L"";
+
+    tango::INodeValuePtr target_file = ordinal->getChild(L"target_file", false);
+    if (!target_file)
+        return L"";
+
+    std::wstring filename = target_file->getString();
+
+    if (filename.find(PATH_SEPARATOR_CHAR) != -1)
+        return filename;
+
+    return makePathName(m_base_dir, L"data", filename);
+}
+
+
+ITablePtr Database::openTableByOrdinal(tango::tableord_t table_ordinal)
+{
+    {
+        XCM_AUTO_LOCK(m_objregistry_mutex);
+
+        // see if the table is already opened
+
+        std::vector<ITable*>::iterator it;
+        for (it = m_tables.begin(); it != m_tables.end(); ++it)
+        {
+            if ((*it)->getTableOrdinal() == table_ordinal)
+            {
+                return *it;
+            }
+        }
+    }
+    
+    // table is not already opened, so open it
+
+    std::wstring table_filename = getTableFilename(table_ordinal);
+
+    if (table_filename.empty() == 0)
+        return xcm::null;
+
+    if (!xf_get_file_exist(table_filename))
+        return xcm::null;
+
+    // find file extension
+    int ext_pos = table_filename.find_last_of(L'.');
+    if (ext_pos == -1)
+        return xcm::null;
+    
+    std::wstring ext = table_filename.substr(ext_pos+1);
+
+    if (!wcscasecmp(ext.c_str(), L"ttb"))
+    {
+        NativeTable* table = new NativeTable(this);
+        if (!table->open(table_filename, table_ordinal))
+        {
+            delete table;
+            return xcm::null;
+        }
+        return static_cast<ITable*>(table);
+    }
+
+    return xcm::null;
+}
+
+
+
+tango::ISetPtr Database::openSetById(const std::wstring& set_id)
+{
+    // check if the set is locked
+    if (getSetLocked(set_id))
+    {
+        return xcm::null;
+    }
+
+    // check if the set is already open
+    tango::ISet* lookup_set = lookupSet(set_id);
+    if (lookup_set)
+    {
+        // result is already ref'ed by lookupSet();
+        tango::ISetPtr ret(lookup_set, false);
+        return ret;
+    }
+
+
+    std::wstring path;
+    path.reserve(80);
+    path = L"/.system/objects/";
+    path += set_id;
+
+    // get filename from registry
+
+    tango::INodeValuePtr set_file = openNodeFile(path);
+    if (!set_file)
+    {
+        return xcm::null;
+    }
+
+    // load the set type
+    tango::INodeValuePtr settype_node = set_file->getChild(L"set_type", false);
+    if (!settype_node)
+        return xcm::null;
+
+    std::wstring set_type = settype_node->getString();
+
+    if (set_type == L"table")
+    {
+        TableSet* set = new TableSet(this);
+        set->ref();
+        if (!set->load(set_file))
+        {
+            set->unref();
+            return xcm::null;
+        }
+
+        return tango::ISetPtr(static_cast<tango::ISet*>(set), false);
+    }
+
+    return xcm::null;
+}
+
+
+
+std::wstring Database::getSetIdFromPath(const std::wstring& set_path)
+{
+    if (set_path.empty())
+        return L"";
+
+    // fix up set name problems
+    std::wstring fixed_name;
+
+    if (*(set_path.c_str()) != L'/')
+        fixed_name += L"/";
+
+    fixed_name += set_path;
+    kl::trim(fixed_name);
+
+    // open up set file
+
+    tango::INodeValuePtr set_file = openNodeFile(fixed_name);
+    if (!set_file)
+    {
+        return L"";
+    }
+
+    // load the set id
+    tango::INodeValuePtr setid_node = set_file->getChild(L"set_id", false);
+    if (!setid_node)
+        return L"";
+
+    return setid_node->getString();
+}
+
+
+std::wstring Database::getSetPathFromId(const std::wstring& set_id)
+{
+    std::wstring path;
+    path.reserve(80);
+    path = L"/.system/objects/";
+    path += set_id;
+
+    tango::INodeValuePtr setid_file = openNodeFile(path);
+    if (setid_file.isNull())
+        return L"";
+
+    tango::INodeValuePtr ofspath_value = setid_file->getChild(L"ofs_path", true);
+    if (ofspath_value.isNull())
+        return L"";
+
+    return ofspath_value->getString();
+}
+
+
+
+
+tango::ISetPtr Database::openSet(const std::wstring& set_path)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    if (kl::isFileUrl(set_path))
+    {
+        return openSetEx(set_path, tango::formatNative);
+    }
+
+    std::wstring cstr, rpath;
+    if (detectMountPoint(set_path, cstr, rpath))
+    {
+        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+
+        if (db.isNull())
+            return xcm::null;
+
+        if (checkCircularMount(set_path, db, rpath))
+            return xcm::null;
+
+        tango::ISetPtr set = db->openSet(rpath);
+        if (set.isNull())
+            return xcm::null;
+
+        set->setObjectPath(set_path);
+        return set;
+    }
+
+
+    // check for ptr sets
+    if (set_path.substr(0, 12) == L"/.temp/.ptr/")
+    {
+        std::wstring ptr_string = kl::afterLast(set_path, L'/');
+        unsigned long l = (unsigned long)hex2uint64(ptr_string.c_str());
+        tango::ISet* sptr = (tango::ISet*)l;
+        return sptr;
+    }
+
+
+
+    std::wstring set_id = getSetIdFromPath(set_path);
+    if (set_id.empty())
+        return xcm::null;
+
+    return openSetById(set_id);
+}
+
+tango::ISetPtr Database::openSetEx(const std::wstring& _path,
+                                   int format)
+{
+    std::wstring path;
+
+    if (kl::isFileUrl(_path))
+        path = urlToOfsFilename(_path);
+         else
+        path = _path;
+
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, cstr, rpath))
+    {
+        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return xcm::null;
+
+        tango::ISetPtr set = db->openSetEx(rpath, format);
+        if (set)
+        {
+            set->setObjectPath(path);
+        }
+
+        return set;
+    }
+
+    return openSet(path);
+}
+
+bool Database::storeObject(xcm::IObject* _obj, const std::wstring& ofs_path)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    // get the ISet interface
+    tango::ISetPtr obj = _obj;
+    if (!obj)
+    {
+        return false;
+    }
+
+    // check path validity
+
+    if (ofs_path.length() == 0)
+    {
+        return false;
+    }
+
+    if (iswspace(ofs_path[0]))
+    {
+        return false;
+    }
+
+
+    // remove old object stored at 'ofs_path'
+
+    if (wcscasecmp(obj->getObjectPath().c_str(), ofs_path.c_str()) != 0)
+    {
+        if (getFileExist(ofs_path))
+        {
+            deleteFile(ofs_path);
+        }
+    }
+
+    // store the object
+
+    return obj->storeObject(ofs_path);
+}
+
+
+bool Database::lockSet(const std::wstring& set_id)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    std::vector<std::wstring>::iterator it;
+    it = std::find(m_locked_sets.begin(), m_locked_sets.end(), set_id);
+    if (it != m_locked_sets.end())
+    {
+        return false;
+    }
+
+    m_locked_sets.push_back(set_id);
+    return true;
+}
+
+bool Database::unlockSet(const std::wstring& set_id)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    std::vector<std::wstring>::iterator it;
+    it = std::find(m_locked_sets.begin(), m_locked_sets.end(), set_id);
+    if (it == m_locked_sets.end())
+    {
+        return false;
+    }
+
+    m_locked_sets.erase(it);
+    return true;
+}
+
+
+bool Database::getSetLocked(const std::wstring& set_id)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    std::vector<std::wstring>::iterator it;
+    it = std::find(m_locked_sets.begin(), m_locked_sets.end(), set_id);
+    if (it == m_locked_sets.end())
+    {
+        return false;
+    }
+
+    return true;
+}
+
+
+class RelationInfo : public tango::IRelation,
+                     public IRelationInternal
+{
+    XCM_CLASS_NAME("xdnative.RelationInfo")
+    XCM_BEGIN_INTERFACE_MAP(RelationInfo)
+        XCM_INTERFACE_ENTRY(tango::IRelation)
+        XCM_INTERFACE_ENTRY(IRelationInternal)
+    XCM_END_INTERFACE_MAP()
+
+public:
+
+    RelationInfo(IDatabaseInternal* db)
+    {
+        // RelationInfo does not need to call ref() on the database object
+        // since references themselves are held by the db
+        m_dbi = db;
+    }
+
+
+    void setRelationId(const std::wstring& new_val)
+    {
+        XCM_AUTO_LOCK(m_obj_mutex);
+        m_relation_id = new_val;
+    }
+
+    std::wstring getRelationId()
+    {
+        XCM_AUTO_LOCK(m_obj_mutex);
+        return m_relation_id;
+    }
+
+    void setTag(const std::wstring& new_val)
+    {
+        XCM_AUTO_LOCK(m_obj_mutex);
+        m_tag = new_val;
+    }
+
+    const std::wstring& getTag()
+    {
+        XCM_AUTO_LOCK(m_obj_mutex);
+        return m_tag;
+    }
+
+    void setLeftSetId(const std::wstring& new_value)
+    {
+        XCM_AUTO_LOCK(m_obj_mutex);
+        m_left_setid = new_value;
+    }
+
+    std::wstring getLeftSetId()
+    {
+        XCM_AUTO_LOCK(m_obj_mutex);
+        return m_left_setid;
+    }
+
+    std::wstring getLeftSet()
+    {
+        XCM_AUTO_LOCK(m_obj_mutex);
+        return m_dbi->getSetPathFromId(m_left_setid);
+    }
+
+    void setRightSetId(const std::wstring& new_value)
+    {
+        XCM_AUTO_LOCK(m_obj_mutex);
+        m_right_setid = new_value;
+    }
+    
+    std::wstring getRightSetId()
+    {
+        XCM_AUTO_LOCK(m_obj_mutex);
+        return m_right_setid;
+    }
+
+    std::wstring getRightSet()
+    {
+        XCM_AUTO_LOCK(m_obj_mutex);
+        return m_dbi->getSetPathFromId(m_right_setid);
+    }
+
+    void setLeftExpression(const std::wstring& new_value)
+    {
+        XCM_AUTO_LOCK(m_obj_mutex);
+        m_left_expression = new_value;
+    }
+
+    std::wstring getLeftExpression()
+    {
+        XCM_AUTO_LOCK(m_obj_mutex);
+        return m_left_expression;
+    }
+
+    void setRightExpression(const std::wstring& new_value)
+    {
+        XCM_AUTO_LOCK(m_obj_mutex);
+        m_right_expression = new_value;
+    }
+
+    std::wstring getRightExpression()
+    {
+        XCM_AUTO_LOCK(m_obj_mutex);
+        return m_right_expression;
+    }
+
+    tango::ISetPtr getRightSetPtr()
+    {
+        XCM_AUTO_LOCK(m_obj_mutex);
+        return m_dbi->openSetById(m_right_setid);
+    }
+
+
+private:
+
+    IDatabaseInternal* m_dbi;
+    std::wstring m_relation_id;
+    std::wstring m_tag;
+    std::wstring m_left_setid;
+    std::wstring m_right_setid;
+    std::wstring m_left_expression;
+    std::wstring m_right_expression;
+
+    xcm::mutex m_obj_mutex;
+};
+
+
+tango::IRelationEnumPtr Database::getRelationEnum()
+{
+    XCM_AUTO_LOCK(m_relations_mutex);
+
+    xcm::IVectorImpl<tango::IRelationPtr>* vec;
+    vec = new xcm::IVectorImpl<tango::IRelationPtr>;
+
+
+    tango::INodeValuePtr file;
+
+    if (!getFileExist(L"/.system/rel_table"))
+        return vec;
+
+    file = openNodeFile(L"/.system/rel_table");
+    if (!file)
+        return vec;
+
+    int count = file->getChildCount();
+    int i;
+
+    std::wstring tag, left_set_id, right_set_id, left_expr, right_expr;
+
+    tango::INodeValuePtr rel_node, left_setid_node, right_setid_node,
+                        left_expr_node, right_expr_node, tag_node;
+
+
+    std::vector<std::wstring> to_delete;
+
+    for (i = 0; i < count; ++i)
+    {
+        tango::INodeValuePtr rel_node = file->getChildByIdx(i);
+
+        tag_node = rel_node->getChild(L"tag", false);
+        if (!tag_node)
+            continue;
+        tag = tag_node->getString();
+
+        left_setid_node = rel_node->getChild(L"left_set_id", false);
+        if (!left_setid_node)
+            continue;
+        left_set_id = left_setid_node->getString();
+
+        right_setid_node = rel_node->getChild(L"right_set_id", false);
+        if (!right_setid_node)
+            continue;
+        right_set_id = right_setid_node->getString();
+
+        left_expr_node = rel_node->getChild(L"left_expression", false);
+        if (!left_expr_node)
+            continue;
+        left_expr = left_expr_node->getString();
+
+        right_expr_node = rel_node->getChild(L"right_expression", false);
+        if (!right_expr_node)
+            continue;
+        right_expr = right_expr_node->getString();
+
+
+        // check to make sure both the left set and the right set still exist
+        std::wstring temps;
+        
+        temps = getSetPathFromId(left_set_id);
+        if (temps.length() == 0)
+        {
+            to_delete.push_back(rel_node->getName());
+            continue;
+        }
+
+        temps = getSetPathFromId(right_set_id);
+        if (temps.length() == 0)
+        {
+            to_delete.push_back(rel_node->getName());
+            continue;
+        }
+
+        RelationInfo* relation;
+        relation = new RelationInfo(static_cast<IDatabaseInternal*>(this));
+        relation->setRelationId(rel_node->getName());
+        relation->setTag(tag);
+        relation->setLeftSetId(left_set_id);
+        relation->setRightSetId(right_set_id);
+        relation->setLeftExpression(left_expr);
+        relation->setRightExpression(right_expr);
+
+        tango::IRelationPtr r = static_cast<tango::IRelation*>(relation);
+        vec->append(r);
+    }
+
+
+    // now delete entries which are invalid
+    std::vector<std::wstring>::iterator it;
+    for (it = to_delete.begin(); it != to_delete.end(); ++it)
+        file->deleteChild(*it);
+
+    return vec;
+}
+
+tango::IRelationPtr Database::createRelation(const std::wstring& tag,
+                                             const std::wstring& left_set_id,
+                                             const std::wstring& right_set_id,
+                                             const std::wstring& left_expr,
+                                             const std::wstring& right_expr)
+{
+    XCM_AUTO_LOCK(m_relations_mutex);
+    
+
+    tango::INodeValuePtr root;
+
+    if (!getFileExist(L"/.system/rel_table"))
+    {
+        root = createNodeFile(L"/.system/rel_table");
+    }
+     else
+    {
+        root = openNodeFile(L"/.system/rel_table");
+    }
+
+    if (!root)
+    {
+        return xcm::null;
+    }
+
+    
+    std::wstring rel_id = getUniqueString();
+
+
+    // create a new entry in our relationship table file
+    tango::INodeValuePtr rel_node, left_setid_node, right_setid_node,
+                        left_expr_node, right_expr_node, tag_node;
+
+    rel_node = root->getChild(rel_id, true);
+    if (rel_node.isNull())
+        return xcm::null;
+
+    tag_node = rel_node->getChild(L"tag", true);
+    tag_node->setString(tag);
+
+    left_setid_node = rel_node->getChild(L"left_set_id", true);
+    left_setid_node->setString(left_set_id);
+
+    right_setid_node = rel_node->getChild(L"right_set_id", true);
+    right_setid_node->setString(right_set_id);
+
+    left_expr_node = rel_node->getChild(L"left_expression", true);
+    left_expr_node->setString(left_expr);
+
+    right_expr_node = rel_node->getChild(L"right_expression", true);
+    right_expr_node->setString(right_expr);
+
+
+    // create a new relationship object to return to the caller
+    RelationInfo* relation = new RelationInfo(static_cast<IDatabaseInternal*>(this));
+    relation->setRelationId(rel_id);
+    relation->setTag(tag);
+    relation->setLeftSetId(left_set_id);
+    relation->setRightSetId(right_set_id);
+    relation->setLeftExpression(left_expr);
+    relation->setRightExpression(right_expr);
+
+    return static_cast<tango::IRelation*>(relation);
+}
+
+bool Database::deleteRelation(tango::IRelationPtr rel)
+{
+    XCM_AUTO_LOCK(m_relations_mutex);
+
+
+    tango::INodeValuePtr root;
+
+    if (!getFileExist(L"/.system/rel_table"))
+    {
+        return false;
+    }
+
+    root = openNodeFile(L"/.system/rel_table");
+
+    if (!root)
+    {
+        return false;
+    }
+
+    return root->deleteChild(rel->getRelationId());
+}
+

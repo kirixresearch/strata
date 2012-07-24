@@ -1,0 +1,247 @@
+Index: treectrl.cpp
+===================================================================
+--- treectrl.cpp	(revision 49091)
++++ treectrl.cpp	(working copy)
+@@ -56,6 +56,10 @@
+ // private functions
+ // ----------------------------------------------------------------------------
+ 
++ 
++// implemented below
++bool LockItemState(HWND hwndTV, HTREEITEM hItem, bool lock);
++
+ // wrappers for TreeView_GetItem/TreeView_SetItem
+ static bool IsItemSelected(HWND hwndTV, HTREEITEM hItem)
+ {
+@@ -65,11 +69,14 @@
+     tvi.stateMask = TVIS_SELECTED;
+     tvi.hItem = hItem;
+ 
++    LockItemState(hwndTV, hItem, false);
++
+     if ( !TreeView_GetItem(hwndTV, &tvi) )
+     {
+         wxLogLastError(wxT("TreeView_GetItem"));
+     }
+ 
++    LockItemState(hwndTV, hItem, true);
+     return (tvi.state & TVIS_SELECTED) != 0;
+ }
+ 
+@@ -81,12 +88,17 @@
+     tvi.state = select ? TVIS_SELECTED : 0;
+     tvi.hItem = hItem;
+ 
++    LockItemState(hwndTV, hItem, false);
++
+     if ( TreeView_SetItem(hwndTV, &tvi) == -1 )
+     {
++        LockItemState(hwndTV, hItem, true);
+         wxLogLastError(wxT("TreeView_SetItem"));
+         return false;
+     }
+ 
++    LockItemState(hwndTV, hItem, true);
++
+     return true;
+ }
+ 
+@@ -271,6 +283,10 @@
+     {
+         m_data = NULL;
+ 
++        // m_state_locked is only used in multi-selection tree
++        // controls on Windows Vista
++        m_state_locked = true;
++
+         for ( size_t n = 0; n < WXSIZEOF(m_images); n++ )
+         {
+             m_images[n] = -1;
+@@ -327,7 +343,16 @@
+         // set item
+     void SetItem(const wxTreeItemId& item) { m_item = item; }
+ 
++    // whether the item highlight state is locked.
++    // This is only used in multi-selection trees in Vista
++    // and later. It is necessary for compatibility with
++    // Vista's new tree control behaviour
++    bool IsStateLocked() const { return m_state_locked; }
++    void LockState() { m_state_locked = true; }
++    void UnlockState() { m_state_locked = false; }
++
+ protected:
++
+     // all the images associated with the item
+     int m_images[wxTreeItemIcon_Max];
+ 
+@@ -337,6 +362,9 @@
+     // the real client data
+     wxTreeItemData *m_data;
+ 
++    // item highlight state lock
++    bool m_state_locked;
++
+     DECLARE_NO_COPY_CLASS(wxTreeItemParam)
+ };
+ 
+@@ -479,6 +507,40 @@
+     DECLARE_NO_COPY_CLASS(TraverseCounter)
+ };
+ 
++// LockItemState sets a flag inside the item's wxTreeItemParam
++// which prevents the item's state from being changed.  This is
++// necessary only for Vista (and works only with Vista).
++// Item State locking is used only with multi-selection tree controls.
++
++bool LockItemState(HWND hwndTV, HTREEITEM hItem, bool lock)
++{
++    if (!hItem)
++    {
++        return false;
++    }
++
++    TV_ITEM tvi;
++    tvi.mask = TVIF_PARAM;
++    tvi.hItem = hItem;
++    tvi.lParam = 0;
++
++    if ( !TreeView_GetItem(hwndTV, &tvi) )
++    {
++        wxLogLastError(wxT("TreeView_GetItem"));
++    }
++
++    if (!tvi.lParam)
++        return false;
++
++    wxTreeItemParam* param = (wxTreeItemParam*)tvi.lParam;
++    if (lock)
++        param->LockState();
++    else
++        param->UnlockState();
++
++    return true;
++}
++
+ // ----------------------------------------------------------------------------
+ // wxWin macros
+ // ----------------------------------------------------------------------------
+@@ -808,10 +870,14 @@
+ 
+ void wxTreeCtrl::DoSetItem(wxTreeViewItem *tvItem)
+ {
++    LockItemState(GetHwnd(), tvItem->hItem, false);
++
+     if ( TreeView_SetItem(GetHwnd(), tvItem) == -1 )
+     {
+         wxLogLastError(wxT("TreeView_SetItem"));
+     }
++
++    LockItemState(GetHwnd(), tvItem->hItem, true);
+ }
+ 
+ unsigned int wxTreeCtrl::GetCount() const
+@@ -2150,7 +2216,34 @@
+                     }
+                 }
+                 break;
++                
++            case WM_RBUTTONDOWN:
++                // only multiple select mode needs to be handled specially
++                if ( isMultiple )
++                {
++                    if (!IsItemSelected(GetHwnd(), htItem))
++                    {
++                        UnselectAll();
++                        SelectItem(htItem);
++                    }
+ 
++                    // fire EVT_RIGHT_DOWN
++                    HandleMouseEvent( nMsg, x, y, wParam );
++                    
++                    // send NM_RCLICK
++                    NMHDR nmhdr;
++                    nmhdr.hwndFrom = GetHwnd();
++                    nmhdr.idFrom = ::GetWindowLong( GetHwnd(), GWL_ID );
++                    nmhdr.code = NM_RCLICK;
++                    ::SendMessage( ::GetParent( GetHwnd() ), WM_NOTIFY, nmhdr.idFrom, (LPARAM)&nmhdr );
++
++                    // prevent tree control default processing,
++                    // as we've already done everything                   
++                    processed = true;
++                }
++                break;
++
++
+             case WM_MOUSEMOVE:
+ #ifndef __WXWINCE__
+                 if ( m_htClickedItem )
+@@ -2607,6 +2700,54 @@
+             }
+             break;
+ 
++
++        // Vista's tree control has introduced some problems with our
++        // multi-selection tree.  When TreeView_SelectItem() is called,
++        // the wrong items are deselected.
++        
++        // Fortunately, Vista provides a new notification, TVN_ITEMCHANGING
++        // that can be used to regulate this incorrect behavior.  The
++        // following messages will allow only the previous selection's
++        // and the pending new selection's highlight state to be modified
++        // Note that, since we don't want to depend on the Vista SDK, these
++        // we use equivalet message numbers and structures.
++        case (TVN_FIRST-16): // same as TVN_ITEMCHANGINGA -- vista only
++        case (TVN_FIRST-17): // same as TVN_ITEMCHANGINGW -- vista only
++            {
++                // we only need to handles these in multi-select trees
++                if ( HasFlag(wxTR_MULTIPLE) )
++                {
++                    // most SDK won't have TVITEMCHANGE, and we just want the
++                    // hItem parameter, so use this structure to get it
++                    struct item_change_struct
++                    {
++                        NMHDR hdr;
++                        UINT uChanged;
++                        HTREEITEM hItem;
++                    } *info;
++
++                    // get info about the item about to be changed
++                    info = (struct item_change_struct*)lParam;
++                    wxTreeItemId item((void*)info->hItem);
++
++                    // get the item's wxTreeItemParam
++                    wxTreeItemParam* param = GetItemParam(item);
++                    if (param)
++                    {
++                        if (param->IsStateLocked())
++                        {
++                            // item's state is locked, don't allow the change
++
++                            *result = 1; // returning 1 will disallow the change
++                            return true;
++                        }
++                    }
++                }
++
++                // allow the state change
++            }
++            return false;
++
+         // NB: MSLU is broken and sends TVN_SELCHANGEDA instead of
+         //     TVN_SELCHANGEDW in Unicode mode under Win98. Therefore
+         //     we have to handle both messages:
+@@ -2828,6 +2969,14 @@
+                         (wxTreeItemParam *)tv->itemOld.lParam;
+                 delete param;
+ 
++                // this prevents anybody from accessing the wxTreeItemParam ptr
++                // after it has been deleted
++                TV_ITEM tvi;
++                wxZeroMemory(tvi);
++                tvi.mask = TVIF_PARAM;
++                tvi.hItem = tv->itemOld.hItem;
++                TreeView_SetItem(GetHwnd(), &tvi);
++
+                 processed = true; // Make sure we don't get called twice
+             }
+             break;

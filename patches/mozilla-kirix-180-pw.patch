@@ -1,0 +1,122 @@
+Index: extensions/java/xpcom/nsJavaWrapper.cpp
+===================================================================
+RCS file: /cvsroot/mozilla/extensions/java/xpcom/nsJavaWrapper.cpp,v
+retrieving revision 1.33.10.1
+diff -u -r1.33.10.1 nsJavaWrapper.cpp
+--- extensions/java/xpcom/nsJavaWrapper.cpp	6 Jan 2006 21:01:24 -0000	1.33.10.1
++++ extensions/java/xpcom/nsJavaWrapper.cpp	26 Sep 2006 14:26:52 -0000
+@@ -1004,7 +1004,7 @@
+     {
+       if (NS_SUCCEEDED(aInvokeResult)) {
+         jdouble value = (aType == nsXPTType::T_DOUBLE) ? aVariant.val.d :
+-                                                         aVariant.val.u64;
++                                                         ((__int64)aVariant.val.u64);
+         if (aParamInfo.IsRetval() && !aIsArrayElement) {
+           *aParam = env->NewObject(doubleClass, doubleInitMID, value);
+         } else if ((aParamInfo.IsOut() || aIsArrayElement) && *aParam) {
+Index: extensions/java/xpcom/nsJavaXPTCStub.cpp
+===================================================================
+RCS file: /cvsroot/mozilla/extensions/java/xpcom/nsJavaXPTCStub.cpp,v
+retrieving revision 1.33.8.1
+diff -u -r1.33.8.1 nsJavaXPTCStub.cpp
+--- extensions/java/xpcom/nsJavaXPTCStub.cpp	6 Jan 2006 21:01:25 -0000	1.33.8.1
++++ extensions/java/xpcom/nsJavaXPTCStub.cpp	26 Sep 2006 14:26:54 -0000
+@@ -722,7 +722,7 @@
+     {
+       if (!aParamInfo.IsOut()) {  // 'in'
+         aJValue.d = (tag == nsXPTType::T_DOUBLE) ? aVariant.val.d :
+-                                                   aVariant.val.u64;
++                                                   ((__int64)aVariant.val.u64);
+         aMethodSig.Append('D');
+       } else {  // 'inout' & 'out'
+         if (aVariant.val.p) {
+Index: security/manager/ssl/src/nsNSSComponent.cpp
+===================================================================
+RCS file: /cvsroot/mozilla/security/manager/ssl/src/nsNSSComponent.cpp,v
+retrieving revision 1.126.2.1
+diff -u -r1.126.2.1 nsNSSComponent.cpp
+--- security/manager/ssl/src/nsNSSComponent.cpp	26 Aug 2005 06:41:50 -0000	1.126.2.1
++++ security/manager/ssl/src/nsNSSComponent.cpp	26 Sep 2006 14:27:47 -0000
+@@ -1330,8 +1330,13 @@
+                                 getter_AddRefs(profilePath));
+     if (NS_FAILED(rv)) {
+       PR_LOG(gPIPNSSLog, PR_LOG_ERROR, ("Unable to get profile directory\n"));
+-      return rv;
++      ConfigureInternalPKCS11Token();
++      SECStatus init_rv = NSS_NoDB_Init(NULL);
++      if (init_rv != SECSuccess)
++        return NS_ERROR_NOT_AVAILABLE;
+     }
++    else
++    {
+ 
+   // XP_MAC == CFM
+   // XP_MACOSX == MachO
+@@ -1409,9 +1414,12 @@
+         PR_LOG(gPIPNSSLog, PR_LOG_DEBUG, ("can not init in r/o either\n"));
+         which_nss_problem = problem_no_security_at_all;
+ 
+-        NSS_NoDB_Init(profileStr.get());
++        init_rv = NSS_NoDB_Init(profileStr.get());
++        if (init_rv != SECSuccess)
++          return NS_ERROR_NOT_AVAILABLE;
+       }
+-    }
++    } // have profile dir
++    } // lock
+ 
+     // init phase 3, only if phase 2 was successful
+ 
+Index: toolkit/components/passwordmgr/base/nsPasswordManager.cpp
+===================================================================
+RCS file: /cvsroot/mozilla/toolkit/components/passwordmgr/base/nsPasswordManager.cpp,v
+retrieving revision 1.65.2.4
+diff -u -r1.65.2.4 nsPasswordManager.cpp
+--- toolkit/components/passwordmgr/base/nsPasswordManager.cpp	29 Aug 2005 22:43:43 -0000	1.65.2.4
++++ toolkit/components/passwordmgr/base/nsPasswordManager.cpp	26 Sep 2006 14:27:59 -0000
+@@ -284,9 +284,12 @@
+   // Now read in the signon file
+   nsXPIDLCString signonFile;
+   mPrefBranch->GetCharPref("SignonFileName", getter_Copies(signonFile));
+-  NS_ASSERTION(!signonFile.IsEmpty(), "Fallback for signon filename not present");
++  NS_ENSURE_TRUE(!signonFile.IsEmpty(), NS_ERROR_FAILURE);
++  //NS_ASSERTION(!signonFile.IsEmpty(), "Fallback for signon filename not present");
++
++  NS_GetSpecialDirectory(NS_APP_USER_PROFILE_50_DIR, getter_AddRefs(mSignonFile));
++  NS_ENSURE_TRUE(mSignonFile, NS_ERROR_FAILURE);
+ 
+-  NS_GetSpecialDirectory(NS_APP_USER_PROFILE_50_DIR, getter_AddRefs(mSignonFile));
+   mSignonFile->AppendNative(signonFile);
+ 
+   nsCAutoString path;
+Index: view/src/nsViewManager.cpp
+===================================================================
+RCS file: /cvsroot/mozilla/view/src/nsViewManager.cpp,v
+retrieving revision 3.411.2.3.2.1
+diff -u -r3.411.2.3.2.1 nsViewManager.cpp
+--- view/src/nsViewManager.cpp	23 Feb 2006 02:55:44 -0000	3.411.2.3.2.1
++++ view/src/nsViewManager.cpp	26 Sep 2006 14:28:09 -0000
+@@ -1685,9 +1685,9 @@
+ 
+ // This gets around an internal compiler error C1001
+ // (compiler file 'E:\8799\vc98\p2\src\P2\main.c', line 494)
+-#ifdef WINCE
++//#ifdef WINCE
+ #pragma optimize( "", off )
+-#endif
++//#endif
+ void
+ nsViewManager::WillBitBlit(nsView* aView, nsPoint aScrollAmount)
+ {
+@@ -1705,9 +1705,9 @@
+   // offset we want to use when accumulating dirty rects.
+   AccumulateIntersectionsIntoDirtyRegion(aView, GetRootView(), -aScrollAmount);
+ }
+-#ifdef WINCE
++//#ifdef WINCE
+ #pragma optimize( "", on )
+-#endif
++//#endif
+ 
+ 
+ // Invalidate all widgets which overlap the view, other than the view's own widgets.

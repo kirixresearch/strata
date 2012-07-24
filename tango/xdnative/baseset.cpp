@@ -1,0 +1,751 @@
+/*!
+ *
+ * Copyright (c) 2002-2011, Kirix Research, LLC.  All rights reserved.
+ *
+ * Project:  XD Database Library
+ * Author:   Benjamin I. Williams
+ * Created:  2002-04-13
+ *
+ */
+
+
+#ifdef _MSC_VER
+#pragma warning(disable : 4786)
+#endif
+
+
+#include "tango.h"
+#include "../xdcommon/xdcommon.h"
+#include "../xdcommon/exindex.h"
+#include "../xdcommon/idxutil.h"
+#include "xdnative_private.h"
+#include "baseset.h"
+#include "stdset.h"
+#include "stditer.h"
+#include "util.h"
+#include <ctime>
+#include <algorithm>
+
+
+BaseSet::BaseSet(tango::IDatabase* database)
+{
+    m_database = database;
+    m_dbi = m_database;
+    
+    m_set_flags = 0;
+    m_calcrefresh_time = 0;
+    m_rel_init = false;
+}
+
+BaseSet::~BaseSet()
+{
+
+}
+
+tango::INodeValuePtr BaseSet::openSetDefinition(bool create_if_not_exist)
+{
+    std::wstring path;
+    path.reserve(80);
+    path = L"/.system/objects/";
+    path += getSetId();
+
+    tango::INodeValuePtr file = m_database->openNodeFile(path);
+    if (file.isOk())
+    {
+        return file;
+    }
+
+    if (create_if_not_exist)
+    {
+        return m_database->createNodeFile(path);
+    }
+
+    return xcm::null;
+}
+
+
+unsigned int BaseSet::getSetFlags()
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    return m_set_flags;
+}
+
+void BaseSet::setSetFlags(unsigned int new_val)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    m_set_flags = new_val;
+}
+
+void BaseSet::setSetId(const std::wstring& new_val)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+    
+    m_set_id = new_val;
+}
+
+std::wstring BaseSet::getSetId()
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    if (m_set_id.length() == 0)
+    {
+        m_set_id = getUniqueString();
+    }
+
+    return m_set_id;
+}
+
+tango::IRowInserterPtr BaseSet::getRowInserter()
+{
+    // -- default does nothing --
+    return xcm::null;
+}
+
+tango::IRowDeleterPtr BaseSet::getRowDeleter()
+{
+    // -- default does nothing --
+    return xcm::null;
+}
+
+int BaseSet::insert(tango::IIteratorPtr source_iter,
+                    const std::wstring& where_condition,
+                    int max_rows,
+                    tango::IJob* job)
+{
+    // -- default does nothing --
+    return 0;
+}
+
+
+
+// -- Indexing routines --
+
+tango::IIndexInfoEnumPtr BaseSet::getIndexEnum()
+{
+    xcm::IVectorImpl<tango::IIndexInfoPtr>* indexes;
+    indexes = new xcm::IVectorImpl<tango::IIndexInfoPtr>;
+    return indexes;
+}
+
+tango::IIndexInfoPtr BaseSet::createIndex(const std::wstring& name,
+                                          const std::wstring& expr,
+                                          tango::IJob* job)
+{
+    return xcm::null;
+}
+
+tango::IIndexInfoPtr BaseSet::lookupIndex(const std::wstring& expr,
+                                          bool exact_column_order)
+{
+    tango::IIndexInfoEnumPtr indexes = getIndexEnum();
+    return ::lookupIndex(indexes, expr, exact_column_order);
+}
+
+bool BaseSet::deleteIndex(const std::wstring& name)
+{
+    return false;
+}
+
+bool BaseSet::renameIndex(const std::wstring& name,
+                          const std::wstring& new_name)
+{
+    return false;
+}
+
+
+// -- Relationship routines --
+
+
+void BaseSet::checkRelInit()
+{
+    // -- load our set-local relation table for the database's master copy --
+    if (!m_rel_init)
+    {
+        tango::IRelationEnumPtr relations = m_database->getRelationEnum();
+        
+        int i;
+        int count = relations->size();
+
+        for (i = 0; i < count; ++i)
+        {
+            tango::IRelationPtr rel = relations->getItem(i);
+            IRelationInternalPtr rx = rel;
+
+            if (rx)
+            {
+                if (getSetId() == rx->getLeftSetId())
+                    m_relations.push_back(rel);
+            }
+        }
+
+        m_rel_init = true;
+    }
+}
+
+tango::IRelationPtr BaseSet::createRelation(const std::wstring& tag,
+                                            const std::wstring& right_set_path,
+                                            const std::wstring& left_expr,
+                                            const std::wstring& right_expr)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+    
+    checkRelInit();
+
+    IDatabaseInternalPtr dbi = m_database;
+
+    std::wstring left_set_id = getSetId();
+    std::wstring right_set_id = dbi->getSetIdFromPath(right_set_path);
+
+    if (left_set_id.empty() || right_set_id.empty())
+        return xcm::null;
+
+    
+    tango::IRelationPtr rel;
+    rel = dbi->createRelation(tag,
+                              left_set_id,
+                              right_set_id,
+                              left_expr,
+                              right_expr);
+
+    if (!rel)
+    {
+        return xcm::null;
+    }
+
+    m_relations.push_back(rel);
+
+    fire_onSetRelationshipsUpdated();
+
+    return rel;
+}
+
+tango::IRelationPtr BaseSet::getRelation(const std::wstring& rel_tag)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    checkRelInit();
+
+    std::vector<tango::IRelationPtr>::iterator it;
+    for (it = m_relations.begin(); it != m_relations.end(); ++it)
+    {
+        if (!wcscasecmp((*it)->getTag().c_str(), rel_tag.c_str()))
+            return (*it);
+    }
+
+    return xcm::null;
+}
+
+
+int BaseSet::getRelationCount()
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    checkRelInit();
+
+    return m_relations.size();
+}
+
+
+tango::IRelationEnumPtr BaseSet::getRelationEnum()
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    checkRelInit();
+
+    xcm::IVectorImpl<tango::IRelationPtr>* vec;
+    vec = new xcm::IVectorImpl<tango::IRelationPtr>;
+    vec->setVector(m_relations);
+    return vec;
+}
+
+
+bool BaseSet::deleteRelation(const std::wstring& tag)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    checkRelInit();
+
+    IDatabaseInternalPtr dbi = m_database;
+
+    std::vector<tango::IRelationPtr>::iterator it;
+    for (it = m_relations.begin(); it != m_relations.end(); ++it)
+    {
+        if (!wcscasecmp((*it)->getTag().c_str(), tag.c_str()))
+        {
+            dbi->deleteRelation(*it);
+
+            m_relations.erase(it);
+            fire_onSetRelationshipsUpdated();
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool BaseSet::deleteAllRelations()
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    checkRelInit();
+
+    IDatabaseInternalPtr dbi = m_database;
+
+    std::vector<tango::IRelationPtr>::iterator it;
+    for (it = m_relations.begin(); it != m_relations.end(); ++it)
+    {
+        dbi->deleteRelation(*it);
+    }
+
+    m_relations.clear();
+
+    fire_onSetRelationshipsUpdated();
+
+    return true;
+}
+
+
+// -- Calculated Field routines --
+
+bool BaseSet::createCalcField(tango::IColumnInfoPtr colinfo)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    tango::INodeValuePtr file = openSetDefinition(true);
+    if (file.isNull())
+        return false;
+
+    // -- load calculated fields --
+    tango::INodeValuePtr folder_node = file->getChild(L"calc_fields", true);
+    if (!folder_node)
+        return false;
+
+    std::wstring name = colinfo->getName();
+    kl::makeUpper(name);
+
+    if (folder_node->getChildExist(name))
+    {
+        return false;
+    }
+
+    tango::INodeValuePtr item_node = folder_node->createChild(name);
+
+    tango::INodeValuePtr name_node = item_node->createChild(L"name");
+    name_node->setString(colinfo->getName());
+
+    tango::INodeValuePtr type_node = item_node->createChild(L"type");
+    type_node->setInteger(colinfo->getType());
+
+    tango::INodeValuePtr width_node = item_node->createChild(L"width");
+    width_node->setInteger(colinfo->getWidth());
+
+    tango::INodeValuePtr scale_node = item_node->createChild(L"scale");
+    scale_node->setInteger(colinfo->getScale());
+
+    tango::INodeValuePtr expr_node = item_node->createChild(L"expression");
+    expr_node->setString(colinfo->getExpression());
+
+    tango::IColumnInfoPtr newcol = colinfo->clone();
+    newcol->setCalculated(true);
+
+    m_calc_fields.push_back(newcol);
+
+    return true;
+}
+
+
+bool BaseSet::modifyCalcField(const std::wstring& _name,
+                              tango::IColumnInfoPtr colinfo)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    tango::INodeValuePtr file = openSetDefinition(true);
+    if (file.isNull())
+        return false;
+
+    // -- load calculated fields --
+    tango::INodeValuePtr folder_node = file->getChild(L"calc_fields", true);
+    if (!folder_node)
+        return false;
+
+    std::wstring name = _name;
+    kl::makeUpper(name);
+
+    tango::INodeValuePtr item_node = folder_node->getChild(name, false);
+    if (item_node.isNull())
+    {
+        return false;
+    }
+    
+    if (!colinfo->getCalculated())
+    {
+        // -- this is a make permanent operation --
+        return false;
+    }
+
+    if (colinfo->getName().length() > 0)
+    {
+        std::wstring new_name = colinfo->getName();
+        kl::makeUpper(new_name);
+
+        if (!folder_node->renameChild(name, new_name))
+        {
+            return false;
+        }
+
+        tango::INodeValuePtr name_node = item_node->getChild(L"name", true);
+        name_node->setString(colinfo->getName());
+    }
+
+    if (colinfo->getType() != -1)
+    {
+        tango::INodeValuePtr type_node = item_node->getChild(L"type", true);
+        type_node->setInteger(colinfo->getType());
+    }
+
+    if (colinfo->getWidth() != -1)
+    {
+        tango::INodeValuePtr width_node = item_node->getChild(L"width", true);
+        width_node->setInteger(colinfo->getWidth());
+    }
+
+    if (colinfo->getScale() != -1)
+    {
+        tango::INodeValuePtr scale_node = item_node->getChild(L"scale", true);
+        scale_node->setInteger(colinfo->getScale());
+    }
+
+    if (colinfo->getExpression().length() > 0)
+    {
+        tango::INodeValuePtr expr_node = item_node->getChild(L"expression", true);
+        expr_node->setString(colinfo->getExpression());
+    }
+
+    m_calcrefresh_time = 0;
+
+    return true;
+}
+
+
+bool BaseSet::deleteCalcField(const std::wstring& _name)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    tango::INodeValuePtr file = openSetDefinition(true);
+    if (file.isNull())
+        return false;
+
+    // -- load calculated fields --
+    tango::INodeValuePtr folder_node = file->getChild(L"calc_fields", true);
+    if (!folder_node)
+        return false;
+
+    std::wstring name = _name;
+    kl::makeUpper(name);
+
+    if (!folder_node->getChildExist(name))
+    {
+        return false;
+    }
+
+    folder_node->deleteChild(name);
+
+    m_calcrefresh_time = 0;
+
+    return true;
+}
+
+
+void BaseSet::appendCalcFields(tango::IStructure* structure)
+{
+    // do this before the m_object_mutex of BaseSet is locked;
+    // this will avoid interlocking the mutexes of NativeTable
+    // and BaseSet.  This problem won't exist anymore once we
+    // make getStructureModifyTime in NativeTable take no mutex.
+    tango::tango_uint64_t t = getStructureModifyTime();
+    
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    if (t == 0 || t != m_calcrefresh_time)
+    {
+        m_calcrefresh_time = t;
+
+        tango::INodeValuePtr file = openSetDefinition(false);
+        if (file.isNull())
+            return;
+
+        // -- load calculated fields --
+        tango::INodeValuePtr folder_node = file->getChild(L"calc_fields", true);
+        if (!folder_node)
+            return;
+
+        tango::INodeValuePtr item_node, node;
+        ColumnInfo* colinfo;
+
+        int child_count = folder_node->getChildCount();
+        m_calc_fields.clear();
+
+        for (int i = 0; i < child_count; i++)
+        {
+            item_node = folder_node->getChildByIdx(i);
+            colinfo = new ColumnInfo;
+
+            node = item_node->getChild(L"name", false);
+            if (node.isOk())
+            {
+                colinfo->setName(node->getString());
+            }
+             else
+            {
+                colinfo->setName(item_node->getName());
+            }
+
+            node = item_node->getChild(L"type", false);
+            if (!node)
+                continue;
+            colinfo->setType(node->getInteger());
+
+            node = item_node->getChild(L"width", false);
+            if (!node)
+                continue;
+            colinfo->setWidth(node->getInteger());
+
+            node = item_node->getChild(L"scale", false);
+            if (!node)
+                continue;
+            colinfo->setScale(node->getInteger());
+
+            node = item_node->getChild(L"expression", false);
+            if (!node)
+                continue;
+            colinfo->setExpression(node->getString());
+
+            colinfo->setCalculated(true);
+
+            m_calc_fields.push_back(static_cast<tango::IColumnInfo*>(colinfo));
+        }
+    }
+
+    IStructureInternalPtr intstruct = structure;
+
+    std::vector<tango::IColumnInfoPtr>::iterator it;
+    for (it = m_calc_fields.begin();
+         it != m_calc_fields.end();
+         ++it)
+    {
+        intstruct->addColumn((*it)->clone());
+    }
+
+}
+
+
+void BaseSet::onOfsPathChanged(const std::wstring& new_path)
+{
+}
+
+
+// -- modify structure stuff --
+
+
+
+
+
+bool BaseSet::modifyStructure(tango::IStructure* struct_config,
+                              bool* done_flag)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    *done_flag = false;
+
+    // -- keep the file open --
+    tango::INodeValuePtr file = openSetDefinition(true);
+    if (file.isNull())
+        return false;
+
+    IStructureInternalPtr struct_int = struct_config;
+
+    std::vector<StructureAction>& actions = struct_int->getStructureActions();
+    std::vector<StructureAction>::iterator it;
+    int processed_action_count = 0;
+
+    // -- handle delete --
+    for (it = actions.begin(); it != actions.end(); ++it)
+    {
+        if (it->m_action != StructureAction::actionDelete)
+            continue;
+
+        if (deleteCalcField(it->m_colname))
+            processed_action_count++;
+    }
+
+    // -- handle modify --
+    for (it = actions.begin(); it != actions.end(); ++it)
+    {
+        if (it->m_action != StructureAction::actionModify)
+            continue;
+
+        if (modifyCalcField(it->m_colname, it->m_params))
+            processed_action_count++;
+    }
+
+    // -- handle create --
+    for (it = actions.begin(); it != actions.end(); ++it)
+    {
+        if (it->m_action != StructureAction::actionCreate)
+            continue;
+
+        if (it->m_params->getExpression().length() > 0)
+        {
+            if (createCalcField(it->m_params))
+                processed_action_count++;
+        }
+    }
+
+    // -- handle insert --
+    for (it = actions.begin(); it != actions.end(); ++it)
+    {
+        if (it->m_action != StructureAction::actionInsert)
+            continue;
+
+        if (it->m_params->getExpression().length() > 0)
+        {
+            if (createCalcField(it->m_params))
+                processed_action_count++;
+        }
+    }
+
+    if (processed_action_count == actions.size())
+    {
+        // -- we have handled all actions, so we're done --
+        *done_flag = true;
+    }
+
+    return true;
+}
+
+
+
+
+
+
+// -- bookmark creation --
+
+
+tango::rowpos_t BaseSet::getRowCount()
+{
+    // -- we don't know how many rows are in the set --
+    return 0;
+}
+
+
+
+
+
+
+
+
+bool BaseSet::addEventHandler(ISetEvents* handler)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+    m_event_handlers.push_back(handler);
+    return true;
+}
+
+bool BaseSet::removeEventHandler(ISetEvents* handler)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+    std::vector<ISetEvents*>::iterator it;
+    it = std::find(m_event_handlers.begin(),
+                   m_event_handlers.end(),
+                   handler);
+    if (it == m_event_handlers.end())
+        return false;
+    m_event_handlers.erase(it);
+    return true;
+}
+
+bool BaseSet::updateRow(tango::rowid_t rowid,
+                        tango::ColumnUpdateInfo* info,
+                        size_t info_size)
+{
+    return false;
+}                           
+
+
+tango::tango_uint64_t BaseSet::getStructureModifyTime()
+{
+    return 0;
+}
+
+
+void BaseSet::fire_onSetDomainUpdated()
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    std::vector<ISetEvents*>::iterator it;
+    for (it = m_event_handlers.begin();
+         it != m_event_handlers.end();
+         ++it)
+    {
+        (*it)->onSetDomainUpdated();
+    }
+}
+
+void BaseSet::fire_onSetStructureUpdated()
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    std::vector<ISetEvents*>::iterator it;
+    for (it = m_event_handlers.begin();
+         it != m_event_handlers.end();
+         ++it)
+    {
+        (*it)->onSetStructureUpdated();
+    }
+}
+
+void BaseSet::fire_onSetRelationshipsUpdated()
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    std::vector<ISetEvents*>::iterator it;
+    for (it = m_event_handlers.begin();
+         it != m_event_handlers.end();
+         ++it)
+    {
+        (*it)->onSetRelationshipsUpdated();
+    }
+}
+
+void BaseSet::fire_onSetRowUpdated(tango::rowid_t rowid)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    std::vector<ISetEvents*>::iterator it;
+    for (it = m_event_handlers.begin();
+         it != m_event_handlers.end();
+         ++it)
+    {
+        (*it)->onSetRowUpdated(rowid);
+    }
+}
+
+void BaseSet::fire_onSetRowDeleted(tango::rowid_t rowid)
+{
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    std::vector<ISetEvents*>::iterator it;
+    for (it = m_event_handlers.begin();
+         it != m_event_handlers.end();
+         ++it)
+    {
+        (*it)->onSetRowDeleted(rowid);
+    }
+}
+
+
+
+
+

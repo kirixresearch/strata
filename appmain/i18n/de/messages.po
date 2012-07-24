@@ -1,0 +1,6161 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Kirix Appmain\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-08-10 21:54+0100\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Benjamin Williams <bwilliams@kirix.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Basepath: c:\\devsrc_vc9\\trunk\n"
+"X-Poedit-Language: German\n"
+"X-Poedit-Country: GERMANY\n"
+"X-Poedit-SourceCharset: iso-8859-1\n"
+"X-Poedit-Bookmarks: 180,-1,-1,-1,-1,-1,-1,31,948,-1\n"
+"X-Poedit-SearchPath-0: appmain\n"
+"X-Poedit-SearchPath-1: kcl\n"
+"X-Poedit-SearchPath-2: cfw\n"
+
+#: appmain/app.cpp:182
+msgid "&Show Main Window"
+msgstr "&Hauptfenster anzeigen"
+
+#: appmain/app.cpp:258
+msgid "Your license for this application has expired.  Please renew your license."
+msgstr "Ihre Lizenz ist abgelaufen.  Bitte erneuern Sie sie."
+
+#: appmain/app.cpp:264
+msgid "The clock was set back on your computer.  Please reset the clock to the normal time or re-license this software."
+msgstr "Die Systemuhr an Ihrem Computer wurde zurückgestellt.  Bitte stellen Sie die Uhr richtig oder lizenzieren Sie diese Software neu."
+
+#: appmain/app.cpp:393
+#: appmain/app.cpp:414
+msgid "The specified license file is not valid."
+msgstr "Die angegebene Lizenzdatei ist nicht gültig."
+
+#: appmain/app.cpp:394
+#: appmain/app.cpp:403
+#: appmain/app.cpp:415
+#: appmain/app.cpp:423
+#: appmain/app.cpp:447
+#: appmain/app.cpp:458
+#: appmain/appcontroller.cpp:6371
+msgid "License Manager"
+msgstr "Lizenzmanager"
+
+#: appmain/app.cpp:402
+msgid "The specified license file does not exist."
+msgstr "Die angegebene Lizenzdatei existiert nicht."
+
+#: appmain/app.cpp:422
+msgid "The specified license file is not valid for this application."
+msgstr "Die angegebene Lizenzdatei ist für diese Anwendung nicht gültig."
+
+#: appmain/app.cpp:446
+msgid "Your product license has been activated successfully."
+msgstr "Ihre Produktlizenz wurde erfolgreich aktiviert."
+
+#: appmain/app.cpp:457
+msgid "The specified license file is not valid for this application, or this license has already been activated."
+msgstr "Die angegebene Lizenzdatei ist für diese Anwendung nicht gültig, oder diese Lizenz wurde bereits aktiviert."
+
+#: appmain/app.cpp:1325
+msgid "ctrl"
+msgstr "strg"
+
+#: appmain/app.cpp:1326
+msgid "shift"
+msgstr "umschalt"
+
+#: appmain/app.cpp:1327
+msgid "alt"
+msgstr "alt"
+
+#: appmain/app.cpp:1330
+msgid "&About"
+msgstr "Info"
+
+#: appmain/app.cpp:1331
+msgid "&Apply"
+msgstr "&Übernehmen"
+
+#: appmain/app.cpp:1332
+msgid "&Cancel"
+msgstr "&Abbrechen"
+
+#: appmain/app.cpp:1333
+msgid "&Yes"
+msgstr "&Ja"
+
+#: appmain/app.cpp:1334
+msgid "&No"
+msgstr "&Nein"
+
+#: appmain/app.cpp:1335
+msgid "&OK"
+msgstr "&OK"
+
+#: appmain/app.cpp:1336
+msgid "&Save"
+msgstr "&Speichern"
+
+#: appmain/app.cpp:1337
+#: appmain/appcontroller.cpp:774
+msgid "Save &As..."
+msgstr "Speichern &unter..."
+
+#: appmain/appcontroller.cpp:762
+msgid "&Tab\tCtrl+T"
+msgstr "&Registerkarte\tStrg+T"
+
+#: appmain/appcontroller.cpp:763
+msgid "T&able"
+msgstr "Tabelle"
+
+#: appmain/appcontroller.cpp:764
+msgid "&Report"
+msgstr "Bericht"
+
+#: appmain/appcontroller.cpp:765
+msgid "&Query"
+msgstr "Abfrage"
+
+#: appmain/appcontroller.cpp:766
+msgid "&Script"
+msgstr "Programm"
+
+#: appmain/appcontroller.cpp:769
+msgid "&New"
+msgstr "Neu"
+
+#: appmain/appcontroller.cpp:770
+msgid "&Open...\tCtrl+O"
+msgstr "Öffnen...\tStrg+O"
+
+#: appmain/appcontroller.cpp:771
+msgid "&Close\tCtrl+W"
+msgstr "Schließen\tStrg+W"
+
+#: appmain/appcontroller.cpp:773
+msgid "&Save\tCtrl+S"
+msgstr "Speichern\tStrg+S"
+
+#: appmain/appcontroller.cpp:775
+msgid "Save As Ex&ternal..."
+msgstr "Speichern extern unter.."
+
+#: appmain/appcontroller.cpp:777
+msgid "&Bookmark This Location...\tCtrl+D"
+msgstr "Lesezeichen für diese Seite hinzufügen...\tStrg+D"
+
+#: appmain/appcontroller.cpp:778
+msgid "Refres&h\tCtrl+R"
+msgstr "Aktualisieren\tStrg+R"
+
+#: appmain/appcontroller.cpp:780
+msgid "&Import..."
+msgstr "&Importieren..."
+
+#: appmain/appcontroller.cpp:781
+msgid "&Export..."
+msgstr "&Exportieren..."
+
+#: appmain/appcontroller.cpp:782
+msgid "Create Co&nnection..."
+msgstr "Verbindung erstellen..."
+
+#: appmain/appcontroller.cpp:784
+msgid "P&rojects..."
+msgstr "&Projekte..."
+
+#: appmain/appcontroller.cpp:786
+msgid "Page Set&up..."
+msgstr "Seiteneinstellungen..."
+
+#: appmain/appcontroller.cpp:787
+msgid "&Print...\tCtrl+P"
+msgstr "&Drucken...\tStrg+P"
+
+#: appmain/appcontroller.cpp:789
+msgid "E&xit"
+msgstr "&Beenden"
+
+#: appmain/appcontroller.cpp:792
+msgid "&Undo\tCtrl+Z"
+msgstr "&Rückgängig\tStrg+Z"
+
+#: appmain/appcontroller.cpp:793
+msgid "&Redo\tCtrl+Y"
+msgstr "&Wiederholen\tStrg+Y"
+
+#: appmain/appcontroller.cpp:795
+msgid "Cu&t\tCtrl+X"
+msgstr "&Ausschneiden\tStrg+X"
+
+#: appmain/appcontroller.cpp:796
+msgid "&Copy\tCtrl+C"
+msgstr "&Kopieren\tStrg+C"
+
+#: appmain/appcontroller.cpp:797
+msgid "&Paste\tCtrl+V"
+msgstr "&Einfügen\tStrg+V"
+
+#: appmain/appcontroller.cpp:798
+msgid "&Delete"
+msgstr "&Löschen"
+
+#: appmain/appcontroller.cpp:800
+msgid "Select &All\tCtrl+A"
+msgstr "&Alles markieren\tStrg+A"
+
+#: appmain/appcontroller.cpp:802
+msgid "&Find...\tCtrl+F"
+msgstr "&Suchen...\tStrg+F"
+
+#: appmain/appcontroller.cpp:803
+msgid "R&eplace...\tCtrl+H"
+msgstr "&Ersetzen..\tStrg+H"
+
+#: appmain/appcontroller.cpp:805
+msgid "&Go To...\tCtrl+G"
+msgstr "&Gehe zu..."
+
+#: appmain/appcontroller.cpp:807
+msgid "Pr&otect Data"
+msgstr "&Daten schützen"
+
+#: appmain/appcontroller.cpp:816
+msgid "&Next\tCtrl+Tab"
+msgstr "&Nächste\tStrg+Tab"
+
+#: appmain/appcontroller.cpp:817
+msgid "&Previous\tCtrl+Shift+Tab"
+msgstr "&Vorherige\tStrg+Shift+Tab"
+
+#: appmain/appcontroller.cpp:819
+msgid "New &Horizontal Group"
+msgstr "Neue &horizontale Gruppe"
+
+#: appmain/appcontroller.cpp:820
+msgid "New &Vertical Group"
+msgstr "Neue &vertikale Gruppe"
+
+#: appmain/appcontroller.cpp:830
+msgid "&Increase\tCtrl++"
+msgstr "&Vergrößern\tStrg++"
+
+#: appmain/appcontroller.cpp:831
+msgid "&Decrease\tCtrl+-"
+msgstr "&Verkleinern\tStrg+-"
+
+#: appmain/appcontroller.cpp:833
+msgid "Size To &Fit"
+msgstr "Passend für die Seite vergrößern"
+
+#: appmain/appcontroller.cpp:834
+msgid "Size To &Width"
+msgstr "Passend für die Breite der Seite vergrößern"
+
+#: appmain/appcontroller.cpp:836
+msgid "&Normal\tCtrl+0"
+msgstr "&Normal\tStrg+0"
+
+#: appmain/appcontroller.cpp:842
+msgid "&Tabs"
+msgstr "&Registerkarten"
+
+#: appmain/appcontroller.cpp:843
+msgid "&Zoom"
+msgstr "&Zoom"
+
+#: appmain/appcontroller.cpp:845
+#: appmain/appcontroller.cpp:3476
+msgid "&Navigation Toolbar"
+msgstr "F&ormat-Symbolleiste"
+
+#: appmain/appcontroller.cpp:846
+#: appmain/appcontroller.cpp:3477
+msgid "&Bookmarks Toolbar"
+msgstr "Lesezeichen-Symbolleiste"
+
+#: appmain/appcontroller.cpp:847
+#: appmain/appcontroller.cpp:3478
+msgid "F&ormat Toolbar"
+msgstr "F&ormat-Symbolleiste"
+
+#: appmain/appcontroller.cpp:849
+msgid "St&atus Bar"
+msgstr "Statusleiste"
+
+#: appmain/appcontroller.cpp:851
+msgid "&Project Panel\tCtrl+B"
+msgstr "&Projektpanel\tStrg+B"
+
+#: appmain/appcontroller.cpp:852
+msgid "&Console Panel\tCtrl+K"
+msgstr "Konsole\tCtrl+M"
+
+#: appmain/appcontroller.cpp:853
+#: appmain/appcontroller.cpp:3482
+msgid "&Fields Panel"
+msgstr "&Feldliste"
+
+#: appmain/appcontroller.cpp:854
+#: appmain/appcontroller.cpp:3483
+msgid "&Marks Panel"
+msgstr "&Markierungspanel"
+
+#: appmain/appcontroller.cpp:856
+msgid "F&ull Screen\tF11"
+msgstr "Vollbild\tF11"
+
+#: appmain/appcontroller.cpp:861
+msgid "Insert &Calculated Field..."
+msgstr "Berechnetes Feld einfügen..."
+
+#: appmain/appcontroller.cpp:862
+msgid "&Edit Calculated Field..."
+msgstr "&Berechnetes Feld bearbeiten"
+
+#: appmain/appcontroller.cpp:863
+msgid "Convert to Fixed &Field"
+msgstr "Zu fixiertem Feld umwandeln"
+
+#: appmain/appcontroller.cpp:864
+msgid "&Delete Calculated Field"
+msgstr "&Berechnetes Feld löschen"
+
+#: appmain/appcontroller.cpp:866
+msgid "&Insert Column..."
+msgstr "&Spalten einfügen..."
+
+#: appmain/appcontroller.cpp:867
+msgid "&Hide Column"
+msgstr "&Spalten ausblenden"
+
+#: appmain/appcontroller.cpp:870
+msgid "&Insert Group Break"
+msgstr "&Gruppentrenner einblenden"
+
+#: appmain/appcontroller.cpp:871
+msgid "&Remove Group Break"
+msgstr "&Gruppentrenner ausblenden"
+
+#: appmain/appcontroller.cpp:873
+msgid "&Group Records..."
+msgstr "&Datensätze gruppieren"
+
+#: appmain/appcontroller.cpp:876
+msgid "&Sort..."
+msgstr "&Sortieren..."
+
+#: appmain/appcontroller.cpp:877
+msgid "&Filter...\tCtrl+J"
+msgstr "Filter..."
+
+#: appmain/appcontroller.cpp:878
+msgid "&Remove Sort/Filter\tCtrl+M"
+msgstr "&Sortierung/Filter entfernen"
+
+#: appmain/appcontroller.cpp:880
+msgid "Edit &Indexes..."
+msgstr "Index bearbeiten..."
+
+#: appmain/appcontroller.cpp:882
+msgid "&Columns"
+msgstr "&Spalten"
+
+#: appmain/appcontroller.cpp:883
+msgid "&Groups"
+msgstr "&Gruppen"
+
+#: appmain/appcontroller.cpp:885
+msgid "&Mark Records..."
+msgstr "&Datensätze markieren..."
+
+#: appmain/appcontroller.cpp:887
+msgid "C&opy Records...\tCtrl+E"
+msgstr "Datensätze k&opieren..."
+
+#: appmain/appcontroller.cpp:888
+msgid "&Append Records..."
+msgstr "&Datensätze hinzufügen..."
+
+#: appmain/appcontroller.cpp:889
+msgid "&Delete Records..."
+msgstr "Datensätze &löschen..."
+
+#: appmain/appcontroller.cpp:890
+msgid "&Update Records..."
+msgstr "Datensätze &aktualisieren..."
+
+#: appmain/appcontroller.cpp:892
+msgid "Summari&ze"
+msgstr "&Zusammenfassen"
+
+#: appmain/appcontroller.cpp:895
+#: appmain/appcontroller.cpp:2646
+msgid "&No Relationship Filter or Mark"
+msgstr "Kein Filter"
+
+#: appmain/appcontroller.cpp:896
+#: appmain/appcontroller.cpp:2647
+msgid "&Filter Related Records"
+msgstr "&Bezugsdatensätze filtern"
+
+#: appmain/appcontroller.cpp:897
+#: appmain/appcontroller.cpp:2648
+msgid "&Mark Related Records"
+msgstr "&Bezugsdatensätze markieren"
+
+#: appmain/appcontroller.cpp:900
+msgid "&Relationships..."
+msgstr "&Verknüpfungen..."
+
+#: appmain/appcontroller.cpp:901
+msgid "Rel&ated Records"
+msgstr "Buzugsdatensätze filtern"
+
+#: appmain/appcontroller.cpp:903
+msgid "Ru&n Script/Query\tAlt+Enter"
+msgstr "Programm/Abfrage ausführen\tAlt+Enter"
+
+#: appmain/appcontroller.cpp:904
+msgid "&Cancel Job\tCtrl+Break"
+msgstr "&Job abbrechen"
+
+#: appmain/appcontroller.cpp:909
+msgid "&Divide Table..."
+msgstr "&Tabelle teilen..."
+
+#: appmain/appcontroller.cpp:910
+msgid "&Merge Tables..."
+msgstr "&Tabelllen zusammenfügen..."
+
+#: appmain/appcontroller.cpp:912
+msgid "Compact &Project"
+msgstr "Projekt kompaktieren"
+
+#: appmain/appcontroller.cpp:914
+msgid "&Jobs..."
+msgstr "&Jobs..."
+
+#: appmain/appcontroller.cpp:915
+msgid "Sc&hedule Jobs..."
+msgstr "&Geplante Jobs..."
+
+#: appmain/appcontroller.cpp:916
+msgid "&Extensions..."
+msgstr "Erweiterungen..."
+
+#: appmain/appcontroller.cpp:918
+msgid "&Options..."
+msgstr "&Einstellungen..."
+
+#: appmain/appcontroller.cpp:922
+msgid "&Help Contents\tF1"
+msgstr "&Hilfethemen\tF1"
+
+#: appmain/appcontroller.cpp:923
+msgid "&Online Help"
+msgstr "&Online-Hilfe"
+
+#: appmain/appcontroller.cpp:924
+msgid "&Developer Resources"
+msgstr "Ressourcen für Entwickler"
+
+#: appmain/appcontroller.cpp:926
+msgid "Support &Forums"
+msgstr "Support-Foren"
+
+#: appmain/appcontroller.cpp:927
+msgid "&Contact Us"
+msgstr "Kontakt"
+
+#: appmain/appcontroller.cpp:929
+msgid "&Activate..."
+msgstr "&Aktivieren..."
+
+#: appmain/appcontroller.cpp:930
+msgid "Check for &Updates..."
+msgstr "&Aktualisierung durchführen..."
+
+#: appmain/appcontroller.cpp:932
+msgid "A&bout..."
+msgstr "&Info..."
+
+#: appmain/appcontroller.cpp:935
+msgid "&File"
+msgstr "&Datei"
+
+#: appmain/appcontroller.cpp:936
+msgid "&Edit"
+msgstr "&Bearbeiten"
+
+#: appmain/appcontroller.cpp:937
+msgid "&View"
+msgstr "&Ansicht"
+
+#: appmain/appcontroller.cpp:938
+msgid "&Data"
+msgstr "Daten"
+
+#: appmain/appcontroller.cpp:939
+msgid "&Tools"
+msgstr "Extras"
+
+#: appmain/appcontroller.cpp:940
+msgid "&Help"
+msgstr "?"
+
+#: appmain/appcontroller.cpp:951
+msgid "Navigation Toolbar"
+msgstr "Navigations-Symbolleiste"
+
+#: appmain/appcontroller.cpp:961
+msgid "Bookmarks Toolbar"
+msgstr "Lesezeichen-Symbolleiste"
+
+#: appmain/appcontroller.cpp:971
+msgid "Format Toolbar"
+msgstr "Format-Symbolleiste"
+
+#: appmain/appcontroller.cpp:1007
+msgid "Show/Hide Project Panel"
+msgstr "Projektpanel anzeigen/ausblenden"
+
+#: appmain/appcontroller.cpp:1012
+msgid "Show/Hide Fields Panel"
+msgstr "Feldliste anzeigen/ausblenden"
+
+#: appmain/appcontroller.cpp:1017
+msgid "Show/Hide Marks Panel"
+msgstr "Markierungspanel anzeigen/ausblenden"
+
+#: appmain/appcontroller.cpp:1022
+msgid "Show/Hide Relationships Panel"
+msgstr "Verknüpfungen anzeigen/ausblenden"
+
+#: appmain/appcontroller.cpp:1106
+#: appmain/appcontroller.cpp:6804
+msgid "Console"
+msgstr "Console"
+
+#: appmain/appcontroller.cpp:1113
+#: appmain/dbcombo.cpp:305
+msgid "Project"
+msgstr "Projekt"
+
+#: appmain/appcontroller.cpp:1138
+msgid "Fields"
+msgstr "Felder"
+
+#: appmain/appcontroller.cpp:1153
+msgid "Marks"
+msgstr "Markierungen"
+
+#: appmain/appcontroller.cpp:1519
+msgid "Tab"
+msgstr "Registerkarte"
+
+#: appmain/appcontroller.cpp:1523
+msgid "Table"
+msgstr "Tabelle"
+
+#: appmain/appcontroller.cpp:1527
+msgid "Report"
+msgstr "Bericht"
+
+#: appmain/appcontroller.cpp:1531
+msgid "Query"
+msgstr "Abfrage"
+
+#: appmain/appcontroller.cpp:1535
+msgid "Script"
+msgstr "Programm"
+
+#: appmain/appcontroller.cpp:1751
+msgid "A project must be open in order to create a bookmark."
+msgstr "Ein Projekt muss offen sein, um ein Lesezeichen erstellen zu können."
+
+#: appmain/appcontroller.cpp:1774
+msgid "New Bookmark"
+msgstr "Neues Lesezeichen"
+
+#: appmain/appcontroller.cpp:1940
+#: appmain/connectionpages.cpp:381
+#: appmain/connectionpages.cpp:518
+#: appmain/connectionpages.cpp:525
+msgid "All Files"
+msgstr "Alle Dateien"
+
+#: appmain/appcontroller.cpp:1942
+msgid "All Text Files"
+msgstr "Alle Textdateien"
+
+#: appmain/appcontroller.cpp:1944
+#: appmain/connectionpages.cpp:512
+msgid "Comma-Delimited Files"
+msgstr "Kommagetrennte Dateien"
+
+#: appmain/appcontroller.cpp:1946
+#: appmain/connectionpages.cpp:514
+msgid "Tab-Delimited Files"
+msgstr "Tabgetrennte Dateien"
+
+#: appmain/appcontroller.cpp:1948
+#: appmain/connectionpages.cpp:139
+#: appmain/connectionpages.cpp:507
+msgid "Microsoft FoxPro/Xbase Files"
+msgstr "Microsoft FoxPro/Xbase Dateien"
+
+#: appmain/appcontroller.cpp:1950
+#: appmain/connectionpages.cpp:497
+msgid "Microsoft Access Files"
+msgstr "Mircrosoft Access Dateien"
+
+#: appmain/appcontroller.cpp:1952
+#: appmain/connectionpages.cpp:502
+msgid "Microsoft Excel Files"
+msgstr "Mircrosoft Excel Dateien"
+
+#: appmain/appcontroller.cpp:1954
+#: appmain/connectionpages.cpp:492
+msgid "Package Files"
+msgstr "Paketdateien"
+
+#: appmain/appcontroller.cpp:1956
+msgid "Sqlite databases"
+msgstr "Sqllite-Datenbanken"
+
+#: appmain/appcontroller.cpp:1958
+msgid "HTML Files"
+msgstr "HTML Dateien"
+
+#: appmain/appcontroller.cpp:1960
+msgid "Script Files"
+msgstr "Programmdateien"
+
+#: appmain/appcontroller.cpp:1965
+msgid "Open File(s)"
+msgstr "Datei öffnen"
+
+#: appmain/appcontroller.cpp:1999
+msgid "More than one file type was selected.  Please select only one file type to continue."
+msgstr "Mehr als ein Dateityp wurde auswählt. Bitte wählen Sie nur einen Dateityp, um fortzufahren. "
+
+#: appmain/appcontroller.cpp:2041
+#, c-format
+msgid "One or more of the selected files could not be opened because it is not supported by %s."
+msgstr "Eine oder mehrere Dateien konnten nicht geöffnet werden, da sie nicht durch %s unterstützt werden."
+
+#: appmain/appcontroller.cpp:2052
+msgid "One or more of the selected files could not be opened either because they are already in use or no longer exist."
+msgstr "Eine oder mehrere Dateien konnten nicht geöffnet werden. Entweder werden sie gerade benutzt oder existieren nicht mehr. "
+
+#: appmain/appcontroller.cpp:2103
+msgid "Please close all panels before closing the project."
+msgstr "Bitte schließen Sie alle Panels bevor Sie das Projekt schließen. "
+
+#: appmain/appcontroller.cpp:2252
+msgid "To exit full screen mode, press F11."
+msgstr "Um den Vollbildmodus auszuschalten, drücken Sie die F11-Taste."
+
+#: appmain/appcontroller.cpp:3322
+#, c-format
+msgid "There are currently jobs scheduled to run.  If you choose to exit %s, these jobs will not run as scheduled.  Would you like to run %s in the background or exit?"
+msgstr "Es gibt zur Zeit geplante Jobs. Wenn Sie %s beenden, werden diese Jobs nicht wie geplant laufen.  Möchten Sie %s im Hintergrund laufen lassen oder das Programm beenden?"
+
+#: appmain/appcontroller.cpp:3326
+msgid "Run Jobs in Background"
+msgstr "Jobs in Hintergrund laufen lassen"
+
+#: appmain/appcontroller.cpp:3327
+msgid "Exit"
+msgstr "Beenden"
+
+#: appmain/appcontroller.cpp:3346
+#, c-format
+msgid "There are currently jobs scheduled to run.  If you choose to exit %s, these jobs will not run as scheduled.  Are you sure you want to exit %s?"
+msgstr "Es gibt zur Zeit geplante Jobs. Wenn Sie %s beenden, werden diese Jobs nicht wie geplant laufen.  Möchten Sie %s im Hintergrund laufen lassen oder das Programm beenden?"
+
+#: appmain/appcontroller.cpp:3480
+msgid "&Project Panel"
+msgstr "&Projektpanel"
+
+#: appmain/appcontroller.cpp:3481
+msgid "&Console Panel"
+msgstr "Konsole"
+
+#: appmain/appcontroller.cpp:3484
+msgid "&Relationships Panel"
+msgstr "&Verküpfungen"
+
+#: appmain/appcontroller.cpp:3486
+msgid "&Status Bar"
+msgstr "Statusleiste"
+
+#: appmain/appcontroller.cpp:3488
+msgid "F&ull Screen"
+msgstr "Vollbild"
+
+#: appmain/appcontroller.cpp:3657
+#: appmain/appcontroller.cpp:3673
+msgid "Source View"
+msgstr "Quellenansicht"
+
+#: appmain/appcontroller.cpp:3658
+msgid "Web Page View"
+msgstr "Webseite-Ansicht"
+
+#: appmain/appcontroller.cpp:3665
+#: appmain/appcontroller.cpp:3674
+#: appmain/appcontroller.cpp:3682
+#: appmain/appcontroller.cpp:3691
+#: appmain/appcontroller.cpp:3701
+msgid "Design View"
+msgstr "Designansicht"
+
+#: appmain/appcontroller.cpp:3666
+msgid "Layout View"
+msgstr "Layoutansicht"
+
+#: appmain/appcontroller.cpp:3675
+#: appmain/appcontroller.cpp:3683
+#: appmain/appcontroller.cpp:3692
+#: appmain/appcontroller.cpp:3702
+msgid "Table View"
+msgstr "Tabellenansicht"
+
+#: appmain/appcontroller.cpp:3690
+msgid "SQL View"
+msgstr "SQL-Ansicht"
+
+#: appmain/appcontroller.cpp:3721
+msgid "&New Tab"
+msgstr "&Neue Registierkarte"
+
+#: appmain/appcontroller.cpp:3727
+msgid "&Duplicate Tab"
+msgstr "&Registerkarte verdoppeln"
+
+#: appmain/appcontroller.cpp:3731
+msgid "&Refresh Tab"
+msgstr "&Registerkarte aktualisieren"
+
+#: appmain/appcontroller.cpp:3732
+msgid "Refresh &All Tabs"
+msgstr "&Alle Registerkarten aktualisieren"
+
+#: appmain/appcontroller.cpp:3734
+msgid "&Bookmark This Location..."
+msgstr "Lesezeichen für diese Seite hinzufügen..."
+
+#: appmain/appcontroller.cpp:3736
+msgid "&Close Tab"
+msgstr "Registerkarte &schließen"
+
+#: appmain/appcontroller.cpp:3737
+msgid "Close &Other Tabs"
+msgstr "&Andere Registerrkarten schließen"
+
+#: appmain/appcontroller.cpp:4337
+msgid "This report could not be opened.  It may have an invalid format or may have been created with a different version."
+msgstr "Dieser Bericht konnte nicht geöffnet werden.  Entweder ist sein Format ungültig, oder er wurde mit einer anderen Version erstellt."
+
+#: appmain/appcontroller.cpp:4910
+#: appmain/appcontroller.cpp:4918
+#, c-format
+msgid "%s on %s"
+msgstr "%s auf %s"
+
+#: appmain/appcontroller.cpp:4953
+msgid "There was an error opening the specified Microsoft Excel file.  Make sure the file is not open by another application."
+msgstr "Es gab einen Fehler beim Öffnen der angegebenen Microsoft Excel-Datei. Bitte überprüfen Sie, ob die Datei in einer anderen Andwendung offen ist. "
+
+#: appmain/appcontroller.cpp:4966
+#, c-format
+msgid "Open '%s'"
+msgstr "Öffnen '%s'"
+
+#: appmain/appcontroller.cpp:4982
+msgid "Select the tables you would like to open from this file."
+msgstr "Wählen Sie die Tabellen aus, die Sie von dieser Datei öffnen möchten."
+
+#: appmain/appcontroller.cpp:4995
+#, c-format
+msgid "Importing from '%s'"
+msgstr "Importieren von '%s'"
+
+#: appmain/appcontroller.cpp:5006
+msgid "No tables were opened from the Microsoft Excel file because no tables in the list were selected."
+msgstr "Die Tabellen der Microsoft Excel-Datei konnten nicht geöffnet werden, da keine Tabellen in der Liste ausgwählt wurden."
+
+#: appmain/appcontroller.cpp:5053
+msgid "There was an error opening the specified Microsoft Access file.  Make sure the file is not open by another application."
+msgstr "Beim Öffnen der Microsoft-Access Datei ist ein Fehler aufgetreten.  Bitte überprüfen Sie, ob die Datei in einer anderen Anwendung offen ist."
+
+#: appmain/appcontroller.cpp:5066
+#: appmain/appcontroller.cpp:5112
+#, c-format
+msgid "Import '%s'"
+msgstr "Importieren '%s'"
+
+#: appmain/appcontroller.cpp:5099
+msgid "There was an error opening the specified package file.  Make sure the file is not open by another application."
+msgstr "Beim Öffnen der angegebenen Paketatei ist ein Fehler aufgetreten.  Bitte überprüfen Sie, ob die Datei in einer anderen Anwendung offen ist."
+
+#: appmain/appcontroller.cpp:5169
+msgid "Would you like to create a report from the selected columns?"
+msgstr "Möchten Sie einen Bericht erstellen aus den gewählten Spalten?"
+
+#: appmain/appcontroller.cpp:5342
+msgid "Could not initialize database environment"
+msgstr "Datenbankumgebung konnte nicht hergestellt werden."
+
+#: appmain/appcontroller.cpp:5354
+msgid "Input file not found"
+msgstr "Die Eingangsdatei konnte nicht gefunden werden."
+
+#: appmain/appcontroller.cpp:5610
+msgid "This report could not be printed."
+msgstr "Dieser Bericht konnte nicht gedruckt werden."
+
+#: appmain/appcontroller.cpp:5803
+#: appmain/appcontroller.cpp:5854
+msgid "Your system is missing a software component.  To correct this problem, please reinstall the software."
+msgstr "Ihrem System fehlt eine Softwarekomponente. Um dieses Problem zu beheben, installieren Sie die Software neu."
+
+#: appmain/appcontroller.cpp:5867
+msgid "The specified project could not be opened.  The path does not exist or is invalid."
+msgstr "Das angegebene Projekt konnte nicht geöffnet werden. Der Pfad existiert nicht oder ist ungültig."
+
+#: appmain/appcontroller.cpp:5881
+msgid "The specified path does not contain a valid database project."
+msgstr "Der angegebene Pfad beinhaltet kein gültiges Datenbankprojekt. "
+
+#: appmain/appcontroller.cpp:5902
+msgid ""
+"This project is currently stored in an older format and must be \n"
+"converted to a newer format before it can be used by this application.\n"
+"After the project is converted to the newer format, it can no longer\n"
+"be used by other applications that utilize the older format.\n"
+"Would you like to upgrade this project to the newer format?"
+msgstr ""
+"Dieses Projekt ist derzeit in einem alten Format gespeichert und muss \n"
+"durch ein neueres Format ersetzt werden bevor es von dieser \n"
+" Anwendung genutzt werden kann. Nachdem dieses Projekt in eine neues Format\n"
+" umgewandelt ist, kann es nicht mehr von anderen Anwendungen genutzt werden,\n"
+"die das alte Format unterstützen.\n"
+"Möchten Sie dieses Projekt in ein neueres Format umwandeln?"
+
+#: appmain/appcontroller.cpp:5945
+msgid "The specified project could not be opened."
+msgstr "Das spezifizierte Projekt konnte nicht geöffnet werden."
+
+#: appmain/appcontroller.cpp:6055
+msgid "Cancelling all running jobs..."
+msgstr "Alle laufenden Jobs werden beendet..."
+
+#: appmain/appcontroller.cpp:6094
+msgid "There are currently jobs running.  Would you like to cancel all running jobs and continue?"
+msgstr "Derzeit werden mehrere Jobs ausgeführt.  Möchten Sie alle Jobs abbrechen und beenden?"
+
+#: appmain/appcontroller.cpp:6099
+msgid "Cancel Jobs and Continue"
+msgstr "Jobs abbrechen und beenden"
+
+#: appmain/appcontroller.cpp:6100
+msgid "Don't Continue"
+msgstr "Nicht beenden"
+
+#: appmain/appcontroller.cpp:6232
+msgid "Would you like to compact this project?"
+msgstr "Möchten Sie dieses Projekt kompaktieren?"
+
+#: appmain/appcontroller.cpp:6245
+msgid "Project successfully compacted."
+msgstr "Projekt wurde erfolgreich kompaktiert."
+
+#: appmain/appcontroller.cpp:6370
+msgid "Untitled documents must be either saved or closed before using the license manager."
+msgstr "Unbenannte Dokumente müssen entweder gespeichert oder geschlossen werden, bevor der Lizenzmanager genutzt werden kann."
+
+#: appmain/appcontroller.cpp:6599
+msgid ""
+"This project is currently set to 'read-only' status to protect your data from unintentional changes.  Would you like\n"
+"to temporarily remove the 'read-only' status to perform this operation?"
+msgstr ""
+"Dieses Projekt ist zur Zeit mit einem Schreibschutz versehen, um unabsichtliche Veränderungen an den Daten zu vermeiden.\n"
+"Möchten Sie diesen 'Schreibschutz'-Status vorübergehend aufheben, um diesen Vorgang durchzuführen?"
+
+#: appmain/appcontroller.cpp:6660
+msgid "About"
+msgstr "Info"
+
+#: appmain/appcontroller.cpp:6673
+msgid "To create a database table, please create or open a project."
+msgstr "Um eine Datenbanktabelle anzulegen, muss ein Projekt geöffnet oder hergestellt werden."
+
+#: appmain/appcontroller.cpp:6738
+msgid "Relationships"
+msgstr "Verknüpfungen..."
+
+#: appmain/appcontroller.cpp:6889
+msgid "A project must first be opened to display project properties."
+msgstr "Ein Projekt muss zuerst geöffnet werden, um die Projekteigenschaften anzuzeigen."
+
+#: appmain/apputil.cpp:177
+#, c-format
+msgid "%d jobs running"
+msgstr "%d laufende Jobs"
+
+#: appmain/apputil.cpp:300
+msgid "Yes"
+msgstr "Ja"
+
+#: appmain/apputil.cpp:303
+msgid "No"
+msgstr "Nein"
+
+#: appmain/apputil.cpp:564
+msgid "The specified output path is invalid because it does not specify a valid folder."
+msgstr "Der spezifizierte Ausgangspfad ist ungültig, weil er keinen gültigen Ordner spezifiziert."
+
+#: appmain/apputil.cpp:578
+msgid "The specified output path is invalid because it specifies an invalid filename."
+msgstr "Der spezifizierte Ausgangspfad ist ungültig, weil er einen ungültigen Dateinamen spezifiziert. "
+
+#: appmain/apputil.cpp:599
+msgid "The specified output path is invalid because it specifies a folder that already exists."
+msgstr "Der spezifizierte Ausgangspfad ist ungültig, weil er einen Ordner spezifiziert, der bereits existiert."
+
+#: appmain/apputil.cpp:608
+msgid "The specified output file name already exists.  Would you like to overwrite it?"
+msgstr "Die angegebene Ausgangsdatei existiert bereits.  Möchten Sie diese ersetzen? "
+
+#: appmain/apputil.cpp:630
+msgid "An object with an invalid name was specified.  Please rename the item(s) to continue.  Database object names, such as table names, must not be a reserved keyword, and must not contain any control characters.  For a listing of reserved keywords and invalid characters, please consult the user documentation."
+msgstr "Ein Objekt mit einem ungültien Namen wurde angegeben.  Bitte ändern Sie den Namen des Objekts, um fortzufahren.  Objketnamen in Datenbanken, wie z.B. Tabellennamen, dürfen keine reservierten Schlüsselwörter sein, und dürfen keine Kontrollzeichen enthalten."
+
+#: appmain/apputil.cpp:634
+#, c-format
+msgid "The object name '%s' is invalid.  Please rename the item to continue.  Database object names, such as table names, must not be a reserved keyword, and must not contain any control characters.  For a listing of reserved keywords and invalid characters, please consult the user documentation."
+msgstr "Der Objektname '%s' ist ungültig. Bitte geben Sie dem Artikel einen neuen Namen, um fortzufahren. Datenbank-Objektnamen, wie z.B. Tabellennamen, müssen keine reservierten Schlüsselwörter sein, und müssen keine Controlzeichen enthalten. Eine Liste der reservierten Schlüsselwörter bzw. ungültiger Zeichen könnnen Sie der Benutzerdokumentation entnehmen."
+
+#: appmain/apputil.cpp:639
+msgid "Invalid Object Name"
+msgstr "Ungültiger Objektname"
+
+#: appmain/apputil.cpp:652
+msgid "A field with an invalid name was specified.  Please rename the field to continue.  A field name must not be a reserved keyword, and must not contain any control characters.  For a listing of reserved keywords and invalid characters, please consult the user documentation."
+msgstr "Ein Feld mit ungültigen Namen wurden angegeben. Bitte geben Sie dem Feld einen neuen Namen, um fortzufahren. Ein Feldname muss kein reserviertes Schlüsselwort sein und muss keine Control Zeichen enthalten. Eine Liste, die reservierte Schlüsselwörter oder ungültige Zeichen enthalten, entnehmen Sie der Benutzerdokumentation."
+
+#: appmain/apputil.cpp:656
+#, c-format
+msgid "The field name '%s' is invalid.  Please rename the field to continue.  A field name must not be a reserved keyword, and must not contain any control characters.  For a listing of reserved keywords and invalid characters, please consult the user documentation."
+msgstr "Der Feldname  '%s' wurde angegeben. Bitte geben Sie dem Feld einen neuen Namen, um fortzufahren. Ein Feldname muss kein reserviertes Schlüsselwort sein und muss keine Controlzeichen enthalten. Eine Liste der reservierten Schlüsselwörter bzw. ungültiger Zeichen können Sie der Benutzerdokumentation entnehmen."
+
+#: appmain/apputil.cpp:661
+msgid "Invalid Field Name"
+msgstr "Ungültiger Feldname"
+
+#: appmain/apputil.cpp:1353
+msgid "Undefined"
+msgstr "Undefiniert"
+
+#: appmain/apputil.cpp:1354
+msgid "Invalid"
+msgstr "Ungültig"
+
+#: appmain/apputil.cpp:1355
+msgid "Character"
+msgstr "Charakter"
+
+#: appmain/apputil.cpp:1356
+msgid "Wide Character"
+msgstr "Unicode Charakter"
+
+#: appmain/apputil.cpp:1357
+msgid "Binary"
+msgstr "Binär"
+
+#: appmain/apputil.cpp:1358
+msgid "Numeric"
+msgstr "Numerisch"
+
+#: appmain/apputil.cpp:1359
+msgid "Double"
+msgstr "Doppelt"
+
+#: appmain/apputil.cpp:1360
+msgid "Integer"
+msgstr "Integer"
+
+#: appmain/apputil.cpp:1361
+msgid "Date"
+msgstr "Datum"
+
+#: appmain/apputil.cpp:1362
+msgid "DateTime"
+msgstr "DateTime"
+
+#: appmain/apputil.cpp:1363
+msgid "Boolean"
+msgstr "Boolean"
+
+#: appmain/connectionpages.cpp:123
+msgid "Please enter the location of the folder to which you would like to connect."
+msgstr "Bitte geben Sie den Ort des Ordners ein, mit dem eine Verbindung hergestellt werden soll."
+
+#: appmain/connectionpages.cpp:128
+msgid "File Type:"
+msgstr "Dateityp:"
+
+#: appmain/connectionpages.cpp:137
+msgid "Text-Delimited Files"
+msgstr "Tabgetrennte Dateien"
+
+#: appmain/connectionpages.cpp:138
+msgid "Fixed-Length Files"
+msgstr "Dateien mit fester Länge"
+
+#: appmain/connectionpages.cpp:140
+msgid "Microsoft Access File"
+msgstr "Microsoft Access Datei"
+
+#: appmain/connectionpages.cpp:141
+msgid "Microsoft Excel File"
+msgstr "Micrososft Excel Datei"
+
+#: appmain/connectionpages.cpp:142
+msgid "Package File"
+msgstr "Paketdatei"
+
+#: appmain/connectionpages.cpp:152
+msgid "Folder:"
+msgstr "Ordner:"
+
+#: appmain/connectionpages.cpp:165
+msgid "Browse..."
+msgstr "Auswählen..."
+
+#: appmain/connectionpages.cpp:176
+msgid "Filter:"
+msgstr "Filter:"
+
+#: appmain/connectionpages.cpp:184
+msgid "All Database Files (*.dbf; *.csv; *.tsv; *.txt)"
+msgstr "Alle Datendateien (*.dbf;*.csv;*.tsv;*.txt)"
+
+#: appmain/connectionpages.cpp:185
+msgid "Microsoft FoxPro/Xbase Files (*.dbf)"
+msgstr "Mircrosoft FoxPro/Xbase Dateien (*.dbf)"
+
+#: appmain/connectionpages.cpp:186
+msgid "Comma-Delimited Files (*.csv)"
+msgstr "Kommagetrennte Dateien (*.csv)"
+
+#: appmain/connectionpages.cpp:187
+msgid "Tab-Delimited Files (*.tsv)"
+msgstr "Tabgetrennte Dateien (*.tsv)"
+
+#: appmain/connectionpages.cpp:188
+msgid "Text Files (*.txt)"
+msgstr "Textdateien (*.txt)"
+
+#: appmain/connectionpages.cpp:189
+msgid "All Files (*.*)"
+msgstr "Alle Dateien (*.*)"
+
+#: appmain/connectionpages.cpp:199
+msgid "Version:"
+msgstr "Version:"
+
+#: appmain/connectionpages.cpp:207
+msgid "Version 1.0"
+msgstr "Version 1.0"
+
+#: appmain/connectionpages.cpp:208
+msgid "Version 2.0 (Recommended)"
+msgstr "Version 2.0 (Empfohlen)"
+
+#: appmain/connectionpages.cpp:219
+msgid "Compress File"
+msgstr "Datei komprimieren"
+
+#: appmain/connectionpages.cpp:291
+msgid "A valid location needs to be specified to continue."
+msgstr "Ein gültiger Ort muss angegeben werden, um fortzufahren. "
+
+#: appmain/connectionpages.cpp:292
+msgid "Invalid Location"
+msgstr "Ungültiger Pfad"
+
+#: appmain/connectionpages.cpp:314
+msgid "The specified folder does not exist or is invalid.  Please choose a valid folder to continue."
+msgstr "Der spezifizierte Ordner existiert nicht oder ist ungültig.  Bitte wählen Sie einen gültigen Ordner, um fortzufahren. "
+
+#: appmain/connectionpages.cpp:315
+msgid "Invalid Path"
+msgstr "Ungültiger Pfad"
+
+#: appmain/connectionpages.cpp:333
+msgid "Choose Folder"
+msgstr "Ordner wählen"
+
+#: appmain/connectionpages.cpp:370
+msgid "Choose Files"
+msgstr "Dateien wählen"
+
+#: appmain/connectionpages.cpp:374
+msgid "Choose File"
+msgstr "Datei wählen"
+
+#: appmain/connectionpages.cpp:516
+#: appmain/connectionpages.cpp:523
+msgid "Text Files"
+msgstr "Textdatei"
+
+#: appmain/connectionpages.cpp:695
+msgid "Please select the ODBC data source to which you would like to connect."
+msgstr "Bitte wählen Sie die ODBC Datenquelle mit der eine Verbindung hergestellt werden soll."
+
+#: appmain/connectionpages.cpp:708
+msgid "Data Source"
+msgstr "Quellendatei"
+
+#: appmain/connectionpages.cpp:709
+msgid "Description"
+msgstr "Beschreibung"
+
+#: appmain/connectionpages.cpp:829
+#, c-format
+msgid "%s is missing a required component (xdodbc) and must be reinstalled"
+msgstr "%s fehlt eine notwendige Komponente (xdodbc) und muss erneut installiert werden. "
+
+#: appmain/connectionpages.cpp:870
+msgid ""
+"Please contact your database administrator\n"
+"to set up an ODBC database connection"
+msgstr ""
+"Bitte kontaktieren Sie Ihren Datenbank- Administrator,\n"
+"um eine ODBC Dantenbankverbindung zu konfiguieren."
+
+#: appmain/connectionpages.cpp:915
+msgid "Please enter the connection settings for the database to which you would like to connect."
+msgstr "Bitte geben Sie die Verbindungseinstellungen für die Datenbank ein, zu der Sie eine Verbindung herstellen möchten."
+
+#: appmain/connectionpages.cpp:922
+msgid "Server:"
+msgstr "Server:"
+
+#: appmain/connectionpages.cpp:941
+msgid "Database:"
+msgstr "Datenbank:"
+
+#: appmain/connectionpages.cpp:960
+msgid "Port Number:"
+msgstr "Portnummer:"
+
+#: appmain/connectionpages.cpp:979
+msgid "User Name:"
+msgstr "Benutzename:"
+
+#: appmain/connectionpages.cpp:998
+msgid "Password:"
+msgstr "Passwort:"
+
+#: appmain/connectionpages.cpp:1026
+msgid "Save Password"
+msgstr "Passwort speichern"
+
+#: appmain/connectionpages.cpp:1160
+msgid "There was an error connecting to the specified database."
+msgstr "Dateien können nur in Ordner verschoben werden."
+
+#: appmain/connectionpages.cpp:1175
+msgid "Your system may be lacking the necessary Oracle client software."
+msgstr "Diesem Rechner fehlt möglicherweise die benötigte Oracle-Client-Software."
+
+#: appmain/connectionpages.cpp:1180
+msgid "Error"
+msgstr "Fehler"
+
+#: appmain/connectionpages.cpp:1285
+msgid "<Enter page message here>"
+msgstr "<Bitte geben Sie die Seitennachricht hier ein>"
+
+#: appmain/connectionpages.cpp:1291
+#: appmain/connectionpages.cpp:1324
+#: appmain/connectionwizard.cpp:251
+msgid "Save"
+msgstr "Speichern"
+
+#: appmain/connectionwizard.cpp:113
+msgid "File"
+msgstr "Datei"
+
+#: appmain/connectionwizard.cpp:122
+msgid "Folder"
+msgstr "Ordner"
+
+#: appmain/connectionwizard.cpp:131
+msgid "MySQL"
+msgstr "MySQL"
+
+#: appmain/connectionwizard.cpp:140
+msgid "SQL Server"
+msgstr "SQL Server"
+
+#: appmain/connectionwizard.cpp:149
+msgid "Oracle"
+msgstr "Oracle"
+
+#: appmain/connectionwizard.cpp:158
+msgid "DB2"
+msgstr "DB2"
+
+#: appmain/connectionwizard.cpp:167
+msgid "ODBC"
+msgstr "ODBC"
+
+#: appmain/connectionwizard.cpp:207
+msgid "Create Connection"
+msgstr "Verbindung erstellen"
+
+#: appmain/connectionwizard.cpp:249
+msgid "Connect"
+msgstr "Verbinden"
+
+#: appmain/connectionwizard.cpp:270
+msgid "Path Selection"
+msgstr "Pfadauswahl"
+
+#: appmain/connectionwizard.cpp:271
+msgid "ODBC Data Source"
+msgstr "ODBC Datenquelle"
+
+#: appmain/connectionwizard.cpp:272
+msgid "Server Properties"
+msgstr "Servereigenschaften"
+
+#: appmain/connectionwizard.cpp:585
+msgid "Please enter the username and password for the selected database."
+msgstr "Bitte geben Sie Ihren Benutzername und Ihr Passwort ein für die ausgewählte Datenbank."
+
+#: appmain/dbcombo.cpp:303
+#, c-format
+msgid "Project '%s'"
+msgstr "Projekt '%s'"
+
+#: appmain/dbdoc.cpp:147
+msgid "&Edit..."
+msgstr "Bearbeiten..."
+
+#: appmain/dbdoc.cpp:1554
+msgid ""
+"The file cannot be opened.  Please check to make sure that the file\n"
+"exists, that you have the necessary permissions to access it, and \n"
+"it is not currently being modified."
+msgstr ""
+"Die Datei kann nicht geöffnet werden. Bitte überprüfen Sie, ob die Datei tatsächlich existiert. \n"
+"Stellen Sie fest, ob Sie die notwendigen Befugnisse haben, die Datei zu öffnen und schauen Sie nach, \n"
+"ob die Datei zur Zeit modifiziert wird."
+
+#: appmain/dbdoc.cpp:1930
+#, c-format
+msgid "\"%s\" Properties"
+msgstr "\"%s\" Eigenschaften"
+
+#: appmain/dbdoc.cpp:1989
+msgid "Connection Properties"
+msgstr "Verbindungseigenschaften"
+
+#: appmain/dbdoc.cpp:2078
+msgid ""
+"You are about to remove the following connection(s).\n"
+"Are you sure you want to continue?\n"
+"\n"
+msgstr ""
+"Sie sind gerade dabei, die folgenden Verbindungen zu löschen.\n"
+"Möchten Sie fortfahren?\n"
+"\n"
+
+#: appmain/dbdoc.cpp:2082
+msgid ""
+"You are about to delete the following item(s).\n"
+"Are you sure you want to continue?\n"
+"\n"
+msgstr ""
+"Sie sind gerade dabei, die folgenden Objekte zu löschen.\n"
+"Möchten Sie fortfahren?\n"
+"\n"
+
+#: appmain/dbdoc.cpp:2104
+msgid "(More files...)"
+msgstr "(Mehr Dateien...)"
+
+#: appmain/dbdoc.cpp:2128
+msgid ""
+"You are about to remove the following external connection.\n"
+"Are you sure?\n"
+"\n"
+msgstr ""
+"Sie sind gerade dabei, folgenden externen Verbindungen zu löschen.\n"
+"Möchten Sie das?\n"
+"\n"
+
+#: appmain/dbdoc.cpp:2157
+msgid ""
+"One or more of the following items could not be deleted.  They may be in use.\n"
+"\n"
+msgstr ""
+"Einer oder mehrere der folgenden Artikel konnten nicht gelöscht werden. Sie werden möglicherweise bearbeitet.\n"
+"\n"
+
+#: appmain/dbdoc.cpp:2161
+msgid ""
+"One or more of the following items could not be deleted.  They may be in use or read-only,\n"
+"or you may not have user privileges to delete them.\n"
+"\n"
+msgstr ""
+"Einer oder mehrere der folgenden Artikeln konnten nicht gelöscht werden. Sie werden möglicherweise \n"
+"gerade verwendet oder sind mit einem Schreibschutz versehen, \n"
+"oder Sie sind nicht befugt, diese Artikel zu löschen.\n"
+"\n"
+
+#: appmain/dbdoc.cpp:2204
+msgid "New name:"
+msgstr "Neuer Name:"
+
+#: appmain/dbdoc.cpp:2205
+msgid "Rename"
+msgstr "Umbenennen"
+
+#: appmain/dbdoc.cpp:2321
+#: appmain/editordoc.cpp:2234
+#, c-format
+msgid "Compiler error (line %d): %s"
+msgstr "Kompilierungsfehler (Zeile %d): %s"
+
+#: appmain/dbdoc.cpp:2325
+#, c-format
+msgid ""
+"The selected script could not be run because there are errors in it:\n"
+"\n"
+"%s"
+msgstr ""
+"Das ausgewählte Skriptprogramm konnte nicht ausgeführt werden, weil Fehler enthalten sind.\n"
+"\n"
+"%s"
+
+#: appmain/dbdoc.cpp:2441
+msgid "One or more source and/or destination files are the same."
+msgstr "Eine oder mehrere Eingangs- und/oder Ausgangsdateien sind gleich."
+
+#: appmain/dbdoc.cpp:2600
+msgid "One or more source files are in use, and cannot be accessed at this time."
+msgstr "Eine oder mehrere Quellendateien werden gerade verwendet.  Auf diese Dateien kann derzeit nicht zugegriffen werden."
+
+#: appmain/dbdoc.cpp:2652
+msgid "Select Item Location"
+msgstr "Speicherort des Objekts auswählen"
+
+#: appmain/dbdoc.cpp:2653
+#: appmain/dlgdatabasefile.cpp:74
+#: appmain/dlgdatabasefile.cpp:289
+#: appmain/dlgreportprops.cpp:599
+#: appmain/exprbuilder.cpp:529
+#: appmain/exprbuilder.cpp:551
+#: appmain/exprbuilder.cpp:1188
+#: appmain/exprbuilder.cpp:1207
+msgid "OK"
+msgstr "OK"
+
+#: appmain/dbdoc.cpp:2767
+msgid "New Folder"
+msgstr "Neuer Ordner"
+
+#: appmain/dbdoc.cpp:2772
+msgid "A folder could not be created in this location."
+msgstr "Ein Ordner konnte an diesem Ort nicht erstellt werden."
+
+#: appmain/dbdoc.cpp:2799
+msgid "New Table"
+msgstr "&Neue Tabelle"
+
+#: appmain/dbdoc.cpp:2803
+#: appmain/dbdoc.cpp:2831
+#: appmain/dbdoc.cpp:2859
+#: appmain/dbdoc.cpp:2887
+msgid "A file could not be created in this folder."
+msgstr "Die konnte nicht in diesem Ordner erstellt werden."
+
+#: appmain/dbdoc.cpp:2828
+msgid "New Report"
+msgstr "Neuer Bericht"
+
+#: appmain/dbdoc.cpp:2856
+msgid "New Query"
+msgstr "Neue Abfrage"
+
+#: appmain/dbdoc.cpp:2884
+msgid "New Script"
+msgstr "Neues Programm"
+
+#: appmain/dbdoc.cpp:3346
+#: appmain/dbdoc.cpp:3410
+#, c-format
+msgid "An object with the name '%s' already exists.  Please choose a different name."
+msgstr "Das Objekt mit dem Namen '%s' existiert bereits. Bitte wählen Sie einen anderen Namen."
+
+#: appmain/dbdoc.cpp:3464
+msgid "The rename operation could not execute.  The table may be locked."
+msgstr "Das Object konnte nicht umbenannt werden.  Das Object könnte möglicherweise gesperrt sein."
+
+#: appmain/dbdoc.cpp:3565
+#: appmain/dbdoc.cpp:3784
+#: appmain/dbdoc.cpp:3802
+#: appmain/dbdoc.cpp:3817
+#: appmain/dbdoc.cpp:3832
+#: appmain/dbdoc.cpp:3847
+#: appmain/dlgprojectmgr.cpp:902
+msgid "&Open"
+msgstr "&Öffnen"
+
+#: appmain/dbdoc.cpp:3567
+#: appmain/dbdoc.cpp:3792
+#: appmain/dbdoc.cpp:3807
+#: appmain/dbdoc.cpp:3822
+#: appmain/dbdoc.cpp:3837
+#: appmain/dbdoc.cpp:3850
+msgid "Cu&t"
+msgstr "Ausschnei&den"
+
+#: appmain/dbdoc.cpp:3568
+#: appmain/dbdoc.cpp:3793
+#: appmain/dbdoc.cpp:3808
+#: appmain/dbdoc.cpp:3823
+#: appmain/dbdoc.cpp:3838
+#: appmain/dbdoc.cpp:3851
+msgid "&Copy"
+msgstr "&Kopieren"
+
+#: appmain/dbdoc.cpp:3572
+#: appmain/dbdoc.cpp:3586
+#: appmain/dbdoc.cpp:3655
+#: appmain/dbdoc.cpp:3678
+#: appmain/dbdoc.cpp:3813
+#: appmain/dbdoc.cpp:3828
+#: appmain/dbdoc.cpp:3843
+#: appmain/dbdoc.cpp:3856
+msgid "Properti&es"
+msgstr "Eigenschaften"
+
+#: appmain/dbdoc.cpp:3578
+#: appmain/dbdoc.cpp:3675
+msgid "Re&move"
+msgstr "Entfernen"
+
+#: appmain/dbdoc.cpp:3627
+msgid "&Folder"
+msgstr "Ordner"
+
+#: appmain/dbdoc.cpp:3629
+msgid "&Table"
+msgstr "Tabelle"
+
+#: appmain/dbdoc.cpp:3641
+msgid "Refres&h"
+msgstr "Aktualisieren"
+
+#: appmain/dbdoc.cpp:3649
+msgid "&Switch Project"
+msgstr "Projekt wechseln"
+
+#: appmain/dbdoc.cpp:3653
+#: appmain/dbdoc.cpp:3673
+#: appmain/dbdoc.cpp:3692
+msgid "&Paste"
+msgstr "&Einfügen"
+
+#: appmain/dbdoc.cpp:3665
+#: appmain/dbdoc.cpp:3683
+msgid "&Expand"
+msgstr "Ausklappen"
+
+#: appmain/dbdoc.cpp:3667
+#: appmain/dbdoc.cpp:3685
+msgid "C&ollapse"
+msgstr "Einklappen"
+
+#: appmain/dbdoc.cpp:3669
+#: appmain/dbdoc.cpp:3687
+msgid "Refre&sh"
+msgstr "Aktualisieren"
+
+#: appmain/dbdoc.cpp:3671
+msgid "Edit &Connection..."
+msgstr "Verbindung bearbeiten..."
+
+#: appmain/dbdoc.cpp:3676
+#: appmain/dbdoc.cpp:3695
+#: appmain/dbdoc.cpp:3796
+#: appmain/dbdoc.cpp:3811
+#: appmain/dbdoc.cpp:3826
+#: appmain/dbdoc.cpp:3841
+#: appmain/dbdoc.cpp:3854
+#: appmain/dlgprojectmgr.cpp:903
+msgid "&Rename"
+msgstr "&Umbenennen"
+
+#: appmain/dbdoc.cpp:3690
+msgid "Cre&ate Connection..."
+msgstr "Verbindung erstellen..."
+
+#: appmain/dbdoc.cpp:3697
+#: appmain/dbdoc.cpp:3798
+msgid "P&roperti&es"
+msgstr "&Eigenschaften"
+
+#: appmain/dbdoc.cpp:3764
+msgid "Text &Editor"
+msgstr "Texteditor"
+
+#: appmain/dbdoc.cpp:3765
+msgid "&Table Browser"
+msgstr "Tabellenbrowser"
+
+#: appmain/dbdoc.cpp:3766
+msgid "&Web Browser"
+msgstr "Webbrowser"
+
+#: appmain/dbdoc.cpp:3787
+msgid "&Edit Structure"
+msgstr "Struktur bearbeiten"
+
+#: appmain/dbdoc.cpp:3789
+#: appmain/dbdoc.cpp:3803
+#: appmain/dbdoc.cpp:3818
+#: appmain/dbdoc.cpp:3833
+#: appmain/dbdoc.cpp:3848
+msgid "Open &With"
+msgstr "Öffnen mit"
+
+#: appmain/dbdoc.cpp:3805
+#: appmain/dbdoc.cpp:3820
+msgid "Ru&n"
+msgstr "Ausführen"
+
+#: appmain/dbdoc.cpp:3835
+msgid "Pri&nt"
+msgstr "Drucken"
+
+#: appmain/dbdoc.cpp:3903
+msgid "Files can only be dragged into folders"
+msgstr "Dateien können nur in einen Ordner verschoben werden."
+
+#: appmain/dlgauth.cpp:39
+#: appmain/dlgauth.cpp:44
+#: appmain/dlgauth.cpp:73
+msgid "Expired"
+msgstr "Abgelaufen"
+
+#: appmain/dlgauth.cpp:50
+#, c-format
+msgid "(%d day left)"
+msgstr "(Ihre Lizenz läuft in %d Tag ab.)"
+
+#: appmain/dlgauth.cpp:52
+#, c-format
+msgid "(%d days left)"
+msgstr "(Ihre Lizenz läuft in %d Tagen ab.)"
+
+#: appmain/dlgauth.cpp:58
+msgid "Activated"
+msgstr "Aktiviert"
+
+#: appmain/dlgauth.cpp:65
+msgid "Expires"
+msgstr "Lizenzablauf am"
+
+#: appmain/dlgauth.cpp:78
+msgid "Not Activated"
+msgstr "Nicht aktiviert"
+
+#: appmain/dlgauth.cpp:92
+msgid "Software Activation Help"
+msgstr "Softwareaktivierungs- Hilfe"
+
+#: appmain/dlgauth.cpp:114
+#, c-format
+msgid "Thank you for installing %s.  Prior to working with the software, it must first be activated."
+msgstr "Danke, dass Sie %s installiert haben.  Um mit der Software arbeiten zu können, müssen Sie diese zunächste aktivieren. "
+
+#: appmain/dlgauth.cpp:116
+msgid "Activate Automatically"
+msgstr "Automatisch aktivieren"
+
+#: appmain/dlgauth.cpp:117
+msgid "Activating automatically over the Internet is the easiest way to get your software up and running.  Simply enter the serial code (provided in your email confirmation) and then click the OK button.  Your software will be activated over the Internet and you'll be able to begin using the software immediately."
+msgstr "Automatische Aktivierung durch das Interent is die einfachste Art und Weise Ihre  Software zum Laufen zu bekommen.  Geben Sie den Seriencode ( Diese befinden sich in Ihrer Auftragsbestätigungs-Email) ein und klicken Sie auf das OK Feld.  Ihre Software wird durch das Internet aktiviert, und die Software kann gleich danach benutzt werden."
+
+#: appmain/dlgauth.cpp:118
+msgid "Activate Manually"
+msgstr "Manuell aktivieren"
+
+#: appmain/dlgauth.cpp:119
+#, c-format
+msgid "Sometimes it is difficult to activate automatically, which is often caused by restrictions set up by corporate firewalls.  If you find yourself in this situation, you can still activate %s using a manually-generated activation code."
+msgstr "Ab und zu ist es nicht möglich, automatisch zu aktivieren.  Dies wird oft verursacht durch Einschränkungseinstellungen von Firewalls.  Wenn dies der Fall ist, können Sie nach wie vor %s durch einen manuellen Aktivationscode aktivieren."
+
+#: appmain/dlgauth.cpp:121
+#, c-format
+msgid "To obtain an Activation Code manually, login to your online account (%s) and follow the instructions provided.  Once you have your activation code, enter it and click the OK button to begin using the software."
+msgstr "Um den Aktivierungscode manuell zu bekommen, loggen Sie sich in Ihren Online-Account ein (%s) und folgen Sie den angegeben Anweisungen.  Sobald Sie den Aktivationscode erhalten haben, geben Sie ihn hier ein und klicken Sie die OK-Schaltfläche, um die Software zu benutzen."
+
+#: appmain/dlgauth.cpp:123
+msgid "Further Help"
+msgstr "Weitere Hilfen"
+
+#: appmain/dlgauth.cpp:124
+#, c-format
+msgid "If you have any questions or need any help activating %s, please contact our support team at %s or %s."
+msgstr "Wenn Sie eine Frage haben oder Hilfe beim Aktivieren von %s benötigen, kontaktieren Sie bitte unser Support-Team unter %s oder %s."
+
+#: appmain/dlgauth.cpp:240
+msgid "Software Activation"
+msgstr "Softwareaktivierung"
+
+#: appmain/dlgauth.cpp:272
+msgid "Activate manually"
+msgstr "Manuell aktivieren"
+
+#: appmain/dlgauth.cpp:273
+msgid "Activate automatically"
+msgstr "Automatisch aktivieren"
+
+#: appmain/dlgauth.cpp:278
+msgid "Activation Code:"
+msgstr "Aktivierungscode:"
+
+#: appmain/dlgauth.cpp:298
+msgid "Site Code:"
+msgstr "Sitecode:"
+
+#: appmain/dlgauth.cpp:315
+msgid "Serial Number:"
+msgstr "Seriennummer:"
+
+#: appmain/dlgauth.cpp:339
+msgid "Status"
+msgstr "Status"
+
+#: appmain/dlgauth.cpp:353
+#, c-format
+msgid "To continue using %s beyond the first 30 days, a serial number is required.  You may obtain this number by purchasing %s; please contact %s for more details.  For help activating this software, please click the Help button below."
+msgstr "Um %s über die 30-tägige Probeperiode hinaus zu benutzen, ist eine Seriennummer erforderlich. Die Seriennummer für %s können Sie käuflich erwerben; für weitere Details nehmen Sie bitte Kontakt mit uns unter %s auf. Um Hilfe bei der Aktivierung der Software zu erhalten, klicken Sie unten auf die \"Hilfe\"-Schaltfläche."
+
+#: appmain/dlgauth.cpp:413
+msgid "Serial Number"
+msgstr "Seriennummer:"
+
+#: appmain/dlgauth.cpp:461
+#, c-format
+msgid "The license server could not be contacted.  Your computer may not have the necessary Internet access or may be behind a firewall or proxy server.  Please try again and, if activation still does not work, either go to %s to generate an activation code manually or contact %s for further information."
+msgstr "Der Lizenzserver konnte nicht erreicht werden.  Ihr Computer verfügt wahrscheinlich über einen unzureichenden Internetzugang, ist vielleicht hinter einer Firewall oder Proxyserver, oder der Lizenzserver ist derzeit nicht verfügbar.  Bitte versuchen Sie es nochmals.  Wenn es weiterhin nicht funktioniert, gehen Sie zu %s, um einen Aktivierungscode zu generieren.  Für weitere Informationen nehmen Sie bitte Kontakt mit Ihrem Systemadministrator oder mit uns (%s) auf."
+
+#: appmain/dlgauth.cpp:473
+msgid "Your computer's clock is set to the wrong date or time.  Please set your computer's clock to the correct date and time and try again."
+msgstr "Die Uhr Ihres Computer ist falsch eingestellt in Datum oder Uhrzeit. Bitte stellen Sie die Uhr Ihres Computers richtig ein und versuchen Sie es nocheinmal. "
+
+#: appmain/dlgauth.cpp:484
+#, c-format
+msgid "%s could not be activated with the serial number provided.  Please check to make sure the serial number matches the one you were given and try again.  If activation still does not work, either go to %s to generate an activation code manually or contact %s for further information."
+msgstr "%s konnte mit der angegebenen Seriennummer nicht aktiviert werden.  Bitte überprüfen Sie, dass die Seriennummer richtig ist und probieren Sie nochmals.  Wenn die Aktivierung immer noch nicht erfolgt, bitte gehen Sie zu %s, um einen manuellen Aktivierungscode zu erstellen.  Oder nehmen Sie Kontakt mit uns (%s) auf."
+
+#: appmain/dlgauth.cpp:498
+#, c-format
+msgid "The serial number provided has either expired or is invalid.  Please check to make sure the serial number matches the one you were given and try again.  If activation still does not work, either go to %s to generate an activation code manually or contact %s for further information."
+msgstr "Die eingegebene Seriennummer ist entweder abgelaufen oder ungültig.  Bitte überprüfen Sie, dass die Seriennummer richtig ist und probieren Sie nochmals.  Wenn die Aktivierung immer noch nicht erfolgt, bitte gehen Sie zu %s, um einen manuellen Aktivierungscode zu erstellen.  Oder nehmen Sie Kontakt mit uns (%s) auf."
+
+#: appmain/dlgauth.cpp:511
+#, c-format
+msgid "The serial number entered is not associated with this product.  Please contact %s or your system administrator for more information."
+msgstr "Der Lizenzcode, den Sie eingegeben haben, entspricht diesem Produkt nicht.  Bitte nehmen Sie Kontakt mit uns %s oder Ihrem Systemadministrator auf für weitere Informationen."
+
+#: appmain/dlgauth.cpp:524
+#, c-format
+msgid "The maximum number of installations for this license has been reached.  Please contact %s for more information."
+msgstr "Die Höchstanzahl an Installationen für diese Lizenz wurde erreicht.  Für weitere Informationen nehmen Sie bitte Kontakt mit %s oder Ihrem Systemadministrator auf."
+
+#: appmain/dlgauth.cpp:628
+#, c-format
+msgid "%s could not be activated with the activation code provided.  Please check to make sure the activation code matches the one you were given and try again.  If activation still does not work, either go to %s to generate a new activation code or contact %s for further information."
+msgstr "%s konnte mit dem eingegebenen Aktivierungscode nicht aktiviert werden.  Bitte überprüfen Sie, dass der Aktivierungscode richtig ist und versuchen Sie es nochmals.  Wenn die Aktivierung immer noch nicht erfolgt, bitte gehen Sie zu %s, um einen manuellen Aktivierungscode zu erstellen.   Ansonsten können Sie Kontakt mit uns (%s) aufnehmen."
+
+#: appmain/dlgauth.cpp:649
+msgid "Please enter your serial number to continue."
+msgstr "Bitte geben Sie Ihre Seriennummer ein, um fortzufahren. "
+
+#: appmain/dlgauth.cpp:737
+msgid "Your license is now activated.  Thank you."
+msgstr "Ihre Produktlizenz wurde erfolgreich aktiviert."
+
+#: appmain/dlgdatabasefile.cpp:73
+msgid "Select Folder"
+msgstr "Ordner auswählen"
+
+#: appmain/dlgdatabasefile.cpp:79
+#: appmain/dlgdatabasefile.cpp:80
+#: appmain/dlgdatabasefile.cpp:285
+msgid "Open"
+msgstr "Öffnen"
+
+#: appmain/dlgdatabasefile.cpp:85
+#: appmain/editordoc.cpp:1845
+#: appmain/editordoc.cpp:1872
+msgid "Save As"
+msgstr "Speichern unter"
+
+#: appmain/dlgdatabasefile.cpp:109
+msgid "Save in:"
+msgstr "Speichern in:"
+
+#: appmain/dlgdatabasefile.cpp:161
+#: appmain/dlglinkprops.cpp:118
+#: appmain/dlgprojectmgr.cpp:252
+msgid "Name:"
+msgstr "Name:"
+
+#: appmain/dlgdatabasefile.cpp:446
+msgid "The file name you have entered is a folder. A folder is not valid for this operation."
+msgstr "Der Dateiname, den Sie verwendet haben, bezieht sich auf einen Ordner.  Ein Ordner ist nicht gültig für diesen Vorgang. "
+
+#: appmain/dlgdatabasefile.cpp:456
+msgid "The file name you have entered does not exist."
+msgstr "Die Datei existiert nicht. "
+
+#: appmain/dlgdatabasefile.cpp:470
+msgid "The file name you have entered is a folder, and is not a valid target location."
+msgstr "Der eingegebene Dateiname ist ein Ordner und ist kein gültiger Zielort. "
+
+#: appmain/dlgdatabasefile.cpp:479
+msgid "The file name you have entered already exists.  Would you like to overwrite it?"
+msgstr "Die Datei besteht bereits.  Möchten Sie sie ersetzen?"
+
+#: appmain/dlglinkprops.cpp:46
+msgid "Link Properties"
+msgstr "Linkeigenschaften"
+
+#: appmain/dlglinkprops.cpp:93
+msgid "Create in:"
+msgstr "Erstellen in:"
+
+#: appmain/dlglinkprops.cpp:136
+#: appmain/dlgprojectmgr.cpp:261
+#: appmain/dlgprojectmgr.cpp:278
+msgid "Location:"
+msgstr "Ort:"
+
+#: appmain/dlglinkprops.cpp:151
+msgid "Tags:"
+msgstr "Tags:"
+
+#: appmain/dlglinkprops.cpp:170
+msgid "Description:"
+msgstr "Beschreibung:"
+
+#: appmain/dlglinkprops.cpp:191
+msgid "Run Target"
+msgstr "Zieldatei ausführen"
+
+#: appmain/dlgpagesetup.cpp:54
+msgid "Portrait"
+msgstr "Portrait"
+
+#: appmain/dlgpagesetup.cpp:60
+msgid "Landscape"
+msgstr "Landschaft"
+
+#: appmain/dlgpagesetup.cpp:64
+msgid "Orientation"
+msgstr "Orientierung"
+
+#: appmain/dlgpagesetup.cpp:135
+msgid "Custom Size"
+msgstr "Benutzerdefiniert"
+
+#: appmain/dlgpagesetup.cpp:162
+msgid "W:"
+msgstr "W:"
+
+#: appmain/dlgpagesetup.cpp:169
+msgid "H:"
+msgstr "H:"
+
+#: appmain/dlgpagesetup.cpp:186
+msgid "Paper Size (in inches)"
+msgstr "Papiergröße (in Zoll)"
+
+#: appmain/dlgpagesetup.cpp:388
+msgid "Left:"
+msgstr "Links:"
+
+#: appmain/dlgpagesetup.cpp:400
+msgid "Right:"
+msgstr "Rechts:"
+
+#: appmain/dlgpagesetup.cpp:413
+msgid "Top:"
+msgstr "Oben:"
+
+#: appmain/dlgpagesetup.cpp:425
+msgid "Bottom:"
+msgstr "Unten:"
+
+#: appmain/dlgpagesetup.cpp:464
+msgid "Margins (in inches)"
+msgstr "Ränder (in Zoll)"
+
+#: appmain/dlgpagesetup.cpp:512
+msgid "Page Setup"
+msgstr "Seiteneinstellungen"
+
+#: appmain/dlgpassword.cpp:31
+msgid "Enter username and password for this web site:"
+msgstr "Geben Sie den Benutzernamen und Passwort für diese Website ein:"
+
+#: appmain/dlgpassword.cpp:56
+msgid "Login"
+msgstr "Login"
+
+#: appmain/dlgpassword.cpp:68
+msgid "Username:"
+msgstr "Benutzername"
+
+#: appmain/dlgprojectmgr.cpp:236
+msgid "Add Project"
+msgstr "Projekt hinzufügen"
+
+#: appmain/dlgprojectmgr.cpp:248
+msgid "Create a new project"
+msgstr "Ein neues Projekt erstellen"
+
+#: appmain/dlgprojectmgr.cpp:253
+msgid "New Project"
+msgstr "Neues Projekt"
+
+#: appmain/dlgprojectmgr.cpp:274
+msgid "Add an existing project to the project manager list"
+msgstr "Ein existierendes Projekt zu dem Projektmanager hinzufügen"
+
+#: appmain/dlgprojectmgr.cpp:304
+msgid "Please select whether you would like to create a new project or add an existing project to the project manager list."
+msgstr "Bitte wählen Sie, ob Sie ein neues Projekt erstellen oder ein existierendes Projekt zu dem Projektmanager dazufügen möchten."
+
+#: appmain/dlgprojectmgr.cpp:415
+#: appmain/dlgprojectmgr.cpp:432
+msgid "Please select a project folder"
+msgstr "Bitte wählen Sie einen Projektordner"
+
+#: appmain/dlgprojectmgr.cpp:467
+msgid "The specified location is empty.  Please enter the location of the project you would like to add."
+msgstr "Der angegebene Ort ist leer. Bitte geben Sie den Ort des Projekts ein, das Sie hinzufügen möchten."
+
+#: appmain/dlgprojectmgr.cpp:476
+msgid "The specified folder does not exist or is invalid."
+msgstr "Der angegebene Ordner existiert nicht oder ist ungültig."
+
+#: appmain/dlgprojectmgr.cpp:489
+msgid "The specified folder does not contain a valid project."
+msgstr "Der angegebene Ordner enthält kein gültiges Projekt."
+
+#: appmain/dlgprojectmgr.cpp:506
+msgid "The specified project already exists in the project manager list."
+msgstr "Das angegebene Projekt existiert bereits in der Projektliste."
+
+#: appmain/dlgprojectmgr.cpp:532
+msgid "The specified location is empty.  Please enter the location of the project you would like to create."
+msgstr "Der angegebene Ort ist leer. Bitte geben Sie den Ort des Projekts ein, das Sie erstellen möchten."
+
+#: appmain/dlgprojectmgr.cpp:547
+#: appmain/dlgprojectmgr.cpp:556
+msgid "The specified folder could not be created.  Please check to make sure the specified path is valid."
+msgstr "Der angegebene Ordner konnte nicht erstellt werden. Bitte überprüfen Sie, ob der angegebene Pfad gültig ist."
+
+#: appmain/dlgprojectmgr.cpp:573
+msgid "The specified folder already contains a project."
+msgstr "Der angegebene Ordner enthält bereits ein Projekt."
+
+#: appmain/dlgprojectmgr.cpp:600
+msgid "The specified folder is not empty.  It is highly recommended that an empty folder is used when creating a new project.  Would you like to continue?"
+msgstr "Der angegebene Ordner ist nicht leer. Es ist sehr empfehlenswert einen leeren Ordner zu benutzen, wenn ein neues Projekt erstellt wird. Wollen Sie fortfahren. "
+
+#: appmain/dlgprojectmgr.cpp:615
+msgid "An error occurred while attempting to create the project.  The specified location is probably inaccessible or invalid."
+msgstr "Ein Fehler ist aufgetreten, während des Versuchs das Projekt zu erstellen. Dieser angegebene Speicherort is wahrscheinlich unzugänglich oder ungültig."
+
+#: appmain/dlgprojectmgr.cpp:708
+msgid "Projects"
+msgstr "Projekte"
+
+#: appmain/dlgprojectmgr.cpp:725
+msgid "Project Name"
+msgstr "Projektname"
+
+#: appmain/dlgprojectmgr.cpp:726
+#: appmain/fieldlistcontrol.cpp:124
+msgid "Type"
+msgstr "Typ"
+
+#: appmain/dlgprojectmgr.cpp:727
+msgid "Location"
+msgstr "Ort"
+
+#: appmain/dlgprojectmgr.cpp:728
+msgid "Size"
+msgstr "Größe"
+
+#: appmain/dlgprojectmgr.cpp:729
+msgid "User"
+msgstr "Benutzer"
+
+#: appmain/dlgprojectmgr.cpp:755
+msgid "Add Project..."
+msgstr "Projekt hinzufügen..."
+
+#: appmain/dlgprojectmgr.cpp:759
+msgid "Open Project"
+msgstr "Projekt öffnen"
+
+#: appmain/dlgprojectmgr.cpp:872
+msgid "Local"
+msgstr "Lokal"
+
+#: appmain/dlgprojectmgr.cpp:872
+msgid "Network"
+msgstr "Netzwerk"
+
+#: appmain/dlgprojectmgr.cpp:886
+msgid ""
+"Click on the 'Add Project...' button\n"
+"below to create a new project"
+msgstr ""
+"Klicken Sie unten auf 'Projekt hinzufügen...',\n"
+"um ein neues Projekt zu erstellen."
+
+#: appmain/dlgprojectmgr.cpp:905
+msgid "Remove from &List"
+msgstr "Von der &Liste entfernen"
+
+#: appmain/dlgprojectmgr.cpp:967
+msgid "The specified path does not contain a valid project."
+msgstr "Der spezifizierte Pfad beinhaltet kein gültiges Projekt. "
+
+#: appmain/dlgprojectmgr.cpp:987
+#, c-format
+msgid "A project must be selected in order to run %s.  Are you sure you would like to exit %s?"
+msgstr "Ein Projekt muss ausgewählt werden, um %s  auszuführen. Möchten Sie %s beenden?"
+
+#: appmain/dlgprojectmgr.cpp:1157
+msgid "The selected project is currently open.  Please close the project before deleting it."
+msgstr "Das ausgewählte Projekt ist derzeit geöffnet.  Bitte schließen Sie das Pojekt bevor Sie es löschen."
+
+#: appmain/dlgprojectmgr.cpp:1164
+msgid "WARNING:  This operation will delete the selected project and all of its contents.  This includes all tables, queries, scripts, reports and other objects contained in the project.  Press 'Yes' only if you are absolutely certain you want to delete this project."
+msgstr "VORSICHT: Dieser Vorgang wird das ausgewählte Projekte löschen. Dies beinhaltet alle Tabellen, Abfragen, Skriptprogramme, Berichte und andere Objekte, die in dem Projekt enthalten sind. Drücken Sie 'Ja', nur wenn Sie ganz sicher sind, dass Sie das Projekt löschen möchten."
+
+#: appmain/dlgreportprops.cpp:92
+msgid "Report Settings"
+msgstr "Berichteinstellungen"
+
+#: appmain/dlgreportprops.cpp:114
+msgid "Source:"
+msgstr "Quelle:"
+
+#: appmain/dlgreportprops.cpp:132
+msgid "Show Report Header"
+msgstr "Berichtkopfzeilen anzeigen"
+
+#: appmain/dlgreportprops.cpp:133
+msgid "Show Report Footer"
+msgstr "Berichtfußzeilen anzeigen"
+
+#: appmain/dlgreportprops.cpp:134
+msgid "Show Page Header"
+msgstr "Seitenkopfzeilen anzeigen"
+
+#: appmain/dlgreportprops.cpp:135
+msgid "Show Page Footer"
+msgstr "Seitenfußzeilen anzeigen"
+
+#: appmain/dlgreportprops.cpp:155
+msgid "Headers and Footers"
+msgstr "Kopf- und Fußzeilen"
+
+#: appmain/dlgreportprops.cpp:194
+#: appmain/exprbuilder.cpp:1298
+msgid "Field Name"
+msgstr "Feldname"
+
+#: appmain/dlgreportprops.cpp:195
+#: appmain/exprbuilder.cpp:1308
+msgid "Sort Direction"
+msgstr "Richtung sortieren"
+
+#: appmain/dlgreportprops.cpp:196
+msgid "Group Header"
+msgstr "Gruppenheader:"
+
+#: appmain/dlgreportprops.cpp:197
+msgid "Group Footer"
+msgstr "Gruppenfooter:"
+
+#: appmain/dlgreportprops.cpp:198
+msgid "Page Break"
+msgstr "Seitenumbruch"
+
+#: appmain/dlgreportprops.cpp:210
+#: appmain/exprbuilder.cpp:1313
+msgid "Ascending"
+msgstr "Aufsteigend"
+
+#: appmain/dlgreportprops.cpp:211
+#: appmain/exprbuilder.cpp:1314
+msgid "Descending"
+msgstr "Absteigend"
+
+#: appmain/dlgreportprops.cpp:237
+msgid "Source and Layout"
+msgstr "Daten- und Seiteneinstellungen"
+
+#: appmain/dlgreportprops.cpp:238
+msgid "Sorting and Grouping"
+msgstr "Sortieren und Gruppieren"
+
+#: appmain/dlgreportprops.cpp:420
+msgid "Double-click here to add a group"
+msgstr "Hier zweimal klicken, um eine Gruppe hinzuzufügen"
+
+#: appmain/dlgreportprops.cpp:505
+msgid "This field name does not exist in the specified source table"
+msgstr "Dieser Feldname existiert nicht in der spezifizierten Eingangstabelle"
+
+#: appmain/dlgreportprops.cpp:598
+msgid "Select Source Table"
+msgstr "Quellentabelle auswählen"
+
+#: appmain/editordoc.cpp:1109
+msgid "(Untitled)"
+msgstr "(Unbenannt)"
+
+#: appmain/editordoc.cpp:1141
+#, c-format
+msgid "Line number (1 - %d):"
+msgstr "Zeilennummer (1-%d):"
+
+#: appmain/editordoc.cpp:1142
+msgid "Go To Line"
+msgstr "Gehe zur Zeile"
+
+#: appmain/editordoc.cpp:1403
+msgid "Would you like to save the changes made to this document?"
+msgstr "Möchten Sie die Änderungen an diesem Dokument speichern?"
+
+#: appmain/editordoc.cpp:1688
+msgid ""
+"This file has been changed outside the source editor.\n"
+"Would you like to discard changes and reload the file?"
+msgstr ""
+"Die aktuelle Datei hat sich außerhalb des Texteditors geändert.\n"
+"Wollen Sie sie neu laden?"
+
+#: appmain/editordoc.cpp:2292
+#, c-format
+msgid "Line: %d"
+msgstr "Zeile: %d"
+
+#: appmain/editordoc.cpp:2293
+#, c-format
+msgid "Column: %d"
+msgstr "Spalte: %d"
+
+#: appmain/exportpages.cpp:433
+msgid "Add tables by dragging them from the project panel to the export list."
+msgstr "Tabellen dazufügen, um die Projektpanels zu den Exportlisten einzufügen."
+
+#: appmain/exportpages.cpp:436
+#: appmain/exportwizard.cpp:387
+msgid "Export to"
+msgstr "Exportiern zu:"
+
+#: appmain/exportpages.cpp:446
+msgid "Source Name"
+msgstr "Quellenname"
+
+#: appmain/exportpages.cpp:447
+msgid "Destination Name"
+msgstr "Zieldateiname"
+
+#: appmain/exportpages.cpp:448
+#: appmain/exportwizard.cpp:306
+msgid "Append"
+msgstr "Hinzufügen"
+
+#: appmain/exportpages.cpp:689
+msgid ""
+"One or more of the items dragged from the project panel is an external table.  Only native database\n"
+"tables can be dragged from the project panel."
+msgstr ""
+"Ein oder mehrere Artikel, die von einem Projektpanel verschoben wurden, sind externe Tabellen.\n"
+"Nur normale Tabellen können vom Projektpanel verschoben werden."
+
+#: appmain/exportpages.cpp:705
+msgid ""
+"One or more of the items dragged from the project panel is not a table.  If you would like to export objects other than tables,\n"
+"select 'File' as your export type and export as 'Package File'."
+msgstr ""
+"Ein oder mehrere Artikel, die von dem Projektpanel verschoben wurden, sind keine Tabellen. Wenn Sie Objekte, die keine Tabellen sind,\n"
+"exportieren möchten, klicken Sie auf 'Datei' als Exporttyp und exportieren Sie eine Paketdatei."
+
+#: appmain/exportpages.cpp:802
+msgid ""
+"This table has the same name as another table\n"
+"in this list and has an invalid name"
+msgstr ""
+"Diese Tabelle hat denselben Namen wie eine andere Tabelle\n"
+"aus dieser Liste und hat einen ungültigen Namen."
+
+#: appmain/exportpages.cpp:807
+msgid "This table has the same name as another table in this list"
+msgstr "Diese Tabelle hat den gleichen Namen wie eine andere Tabelle aus der Liste."
+
+#: appmain/exportpages.cpp:809
+msgid "This table has an invalid name"
+msgstr "Diese Tabelle hat einen ungültigen Namen"
+
+#: appmain/exportpages.cpp:844
+msgid ""
+"Drag items here from the Project Panel\n"
+"to add them to the export list"
+msgstr ""
+"Ziehen Sie diese Artikel von dem Projektpanel\n"
+"und fügen Sie sie in die Exportliste ein."
+
+#: appmain/exportpages.cpp:949
+msgid "Field Delimiters"
+msgstr "Feldtrenner"
+
+#: appmain/exportpages.cpp:953
+msgid "Text Qualifier"
+msgstr "Texterkennungszeichen"
+
+#: appmain/exportpages.cpp:957
+msgid "Modify the settings below to determine how the text-delimited files should be written."
+msgstr "Ändern Sie die folgenden Einstellungen, um festzulegen, wie die delimitierten Textdateien gelesen werden sollen."
+
+#: appmain/exportpages.cpp:965
+msgid "Comma"
+msgstr "Komma"
+
+#: appmain/exportpages.cpp:970
+msgid "Tab "
+msgstr "Tab "
+
+#: appmain/exportpages.cpp:971
+msgid "Semicolon"
+msgstr "Semikolon"
+
+#: appmain/exportpages.cpp:972
+msgid "Space"
+msgstr "Leerzeile"
+
+#: appmain/exportpages.cpp:973
+#: appmain/exportpages.cpp:1013
+msgid "None"
+msgstr "Keine"
+
+#: appmain/exportpages.cpp:974
+#: appmain/exportpages.cpp:1014
+msgid "Other:"
+msgstr "Sonstige:"
+
+#: appmain/exportpages.cpp:1007
+msgid "Quotation Marks (\")"
+msgstr "Anführungszeichen (\")"
+
+#: appmain/exportpages.cpp:1012
+msgid "Single Quote (')"
+msgstr "Einfaches Anführungszeichen (')"
+
+#: appmain/exportpages.cpp:1042
+msgid "First row contains field names"
+msgstr "Erster Datensatz enthält Feldnamen"
+
+#: appmain/exportwizard.cpp:77
+msgid "Export"
+msgstr "Exportieren"
+
+#: appmain/exportwizard.cpp:113
+msgid "ODBC Data Source Selection"
+msgstr "ODBC Datenquelleauswahl"
+
+#: appmain/exportwizard.cpp:115
+msgid "Table Selection"
+msgstr "Tabelle auswählen"
+
+#: appmain/exportwizard.cpp:116
+msgid "Text-Delimited Settings"
+msgstr "Delimitierte-Texteinstellungen"
+
+#: appmain/exportwizard.cpp:118
+msgid "Please enter the location of the database or directory to which you would like to export."
+msgstr "Bitte geben Sie den Ort der Datenbank oder den Ort des Ordners an, zu dem Sie exportieren möchten."
+
+#: appmain/exportwizard.cpp:119
+msgid "Export as:"
+msgstr "Exportieren unter:"
+
+#: appmain/exportwizard.cpp:193
+msgid "Please enter the connection settings for the database to which you would like to export."
+msgstr "Bitte geben Sie Verbindungsparameter für die Datenbank ein, zu der Sie exportieren möchten."
+
+#: appmain/exportwizard.cpp:209
+msgid "Please select the ODBC data source to which you would like to export."
+msgstr "Bitte wählen Sie die ODBC Datenquelle, zu der Sie exportieren möchten."
+
+#: appmain/exportwizard.cpp:291
+msgid "The specified location is a folder.  Please specify a valid file location to continue."
+msgstr "Der angegebene Ort ist ein Ordner. Bitte geben Sie einen gültigen Dateiort ein, um fortzufahren."
+
+#: appmain/exportwizard.cpp:304
+msgid "Overwrite File?"
+msgstr "Datei überschreiben?"
+
+#: appmain/exportwizard.cpp:305
+msgid ""
+"The file name specified already exists.  Would you like to append to or overwrite this file?\n"
+"\n"
+"NOTE: Selecting 'Overwrite' will not actually overwrite the file until the 'Finish' button is pressed on the next page."
+msgstr ""
+"Die angegebene Datei existiert bereits. Möchten Sie die Exportdaten dieser Datei hinzufügen oder die Datei überschreiben? \n"
+"(Hinweis: Wenn Sie auf 'Überschreiben' drücken, wird die Datei noch nicht überschrieben: erst dann, wenn Sie die Schaltfläche 'Fertig' auf der nächsten Seite geklickt haben.)"
+
+#: appmain/exportwizard.cpp:307
+msgid "Overwrite"
+msgstr "Überschreiben"
+
+#: appmain/exportwizard.cpp:355
+msgid "The specified file path is invalid.  Please specify a valid file path to continue."
+msgstr "Der angegebene Pfad ist ungültig. Bitte geben Sie einen gültigen Pfad ein, um fortzufahren. "
+
+#: appmain/exportwizard.cpp:356
+msgid "Invalid File"
+msgstr "Ungültige Datei"
+
+#: appmain/exportwizard.cpp:374
+msgid "The specified folder path is invalid.  Please specify a valid folder path to continue."
+msgstr "Der angegebene Ordnerpfad ist ungültig. Bitte geben Sie einen gülten Ordnerpfad ein, um fortzufahren."
+
+#: appmain/exportwizard.cpp:375
+msgid "Invalid Folder"
+msgstr "Ungültiger Ordner"
+
+#: appmain/exportwizard.cpp:454
+msgid "Please enter the location of the Microsoft Access file to which you would like to export."
+msgstr "Bitte geben Sie den Ort der Microsoft Access Datei ein, in die Sie exportieren wollen."
+
+#: appmain/exportwizard.cpp:455
+#: appmain/exportwizard.cpp:464
+#: appmain/exportwizard.cpp:473
+msgid "File:"
+msgstr "Datei:"
+
+#: appmain/exportwizard.cpp:463
+msgid "Please enter the location of the Microsoft Excel file to which you would like to export."
+msgstr "Bitte geben Sie den Ort der Microsoft Excel Datei ein, in die Sie exportieren wollen."
+
+#: appmain/exportwizard.cpp:472
+msgid "Please enter the location of the package file to which you would like to export."
+msgstr "Bitte geben Sie den Ort der Paketdatei ein, in die Sie exportieren wollen."
+
+#: appmain/exportwizard.cpp:481
+msgid "Please enter the location of the folder to which you would like to export."
+msgstr "Bitte geben Sie den Ort des Ordners ein, zu dem Sie exportieren wollen."
+
+#: appmain/exportwizard.cpp:613
+msgid "Please create or open a project to continue."
+msgstr "Bitte erstellen Sie oder öffnen Sie ein Projekt, um fortzufahren."
+
+#: appmain/exportwizard.cpp:622
+msgid "You must select at least one table to export."
+msgstr "Sie müssen mindestens eine Tabelle zum Exportieren wählen."
+
+#: appmain/exportwizard.cpp:623
+#: appmain/exportwizard.cpp:649
+#: appmain/exportwizard.cpp:659
+#: appmain/exportwizard.cpp:701
+#: appmain/exportwizard.cpp:730
+#: appmain/exportwizard.cpp:739
+#: appmain/exportwizard.cpp:763
+#: appmain/exportwizard.cpp:845
+#: appmain/exportwizard.cpp:893
+#: appmain/exportwizard.cpp:969
+#: appmain/exportwizard.cpp:1064
+#: appmain/exportwizard.cpp:1082
+#: appmain/exportwizard.cpp:1102
+#: appmain/exportwizard.cpp:1113
+#: appmain/exportwizard.cpp:1155
+#: appmain/exportwizard.cpp:1191
+#: appmain/exportwizard.cpp:1240
+#: appmain/exportwizard.cpp:1301
+msgid "Export Wizard"
+msgstr "Datenexport-Assistent"
+
+#: appmain/exportwizard.cpp:648
+msgid ""
+"There was an error connecting to the specified package file.\n"
+"Please make sure that the file exists and that it is not currently in use."
+msgstr ""
+"Beim öffnen der ausgewählten Paketdatei ist ein Fehler aufgetreten.\n"
+"Bitte stellen Sie sicher, dass die Datei existiert und nicht zur Zeit von einer anderen Anwendung benutzt wird."
+
+#: appmain/exportwizard.cpp:658
+msgid "The specified package file is either empty or corrupt."
+msgstr "Die spezifizierte Paketdatei ist entweder leer oder korrupt."
+
+#: appmain/exportwizard.cpp:700
+#: appmain/exportwizard.cpp:1300
+msgid "One or more of the table names specified for export already exists.  Would you like to overwrite these tables?"
+msgstr "Eine oder mehrere angegebenen Tabellennamen für den Export existieren bereits. Möchten Sie diese Tabellen überschreiben?"
+
+#: appmain/exportwizard.cpp:729
+msgid "The specified destination folder is invalid.  Please specify a valid destination folder to continue."
+msgstr "Der angegebene Ausgangsordner ist ungültig.  Bitte geben Sie einen gültigen Ausgangsordner an, um fortzufahren."
+
+#: appmain/exportwizard.cpp:738
+msgid "The specified destination folder does not exist.  Would you like to create it?"
+msgstr "Der angegeben Ausgangsordner existiert nicht.  Möchten Sie ihn erstellen?"
+
+#: appmain/exportwizard.cpp:762
+msgid "The specified destination folder could not be created.  Please make sure the specified destination folder is valid."
+msgstr "Der angegebe Bestimmungsordner konnte nicht erstellt werden. Bitte überprüfen Sie, ob der angegebene Bestimmungsordner gültig ist."
+
+#: appmain/exportwizard.cpp:844
+msgid "One or more of the filenames specified for export is invalid.  Please rename these files to continue."
+msgstr "Ein oder mehrere angegebene Dateienamen für den Export sind ungültig. Bitte nennen Sie diese Dateien um, um fortzufahren."
+
+#: appmain/exportwizard.cpp:892
+msgid "One or more of the tables no longer exists.  Please remove these tables from the export to continue."
+msgstr "Eine oder mehrere der Tabellen existieren nicht mehr. Bitte entfernen Sie diese Tabellen von dem Export, um fortzufahren."
+
+#: appmain/exportwizard.cpp:915
+#, c-format
+msgid ""
+"One or more of the tables contains fieldnames which are invalid in the export destination.  Would you like to have %s fix these fieldnames when performing the export?\n"
+"\n"
+"NOTE: Only the exported tables will have their fieldnames changed."
+msgstr ""
+"Eine oder mehrere Tabellen beinhalten Feldnamen, die in der Exportstabelle ungültig sind. Möchten Sie, dass %s die Feldnamen beim Exportieren korrigiert?\n"
+"\n"
+"(Hinweis: Nur bei exportieren Tabellen werden Feldnamen verändert.) "
+
+#: appmain/exportwizard.cpp:918
+msgid "Fix Invalid Fieldnames?"
+msgstr "Ungültige Feldnamen korrigieren?"
+
+#: appmain/exportwizard.cpp:921
+msgid "Fix Fieldnames"
+msgstr "Feldnamen korrigieren"
+
+#: appmain/exportwizard.cpp:922
+#: appmain/exprbuilder.cpp:530
+#: appmain/exprbuilder.cpp:552
+#: appmain/exprbuilder.cpp:1189
+#: appmain/exprbuilder.cpp:1208
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: appmain/exportwizard.cpp:968
+msgid "One or more of the filenames specified for export already exists.  Would you like to overwrite these files?"
+msgstr "Eine oder mehrere angegebenen Feldnamen für den Export existieren bereits.  Möchten Sie diese Dateien überschreiben?"
+
+#: appmain/exportwizard.cpp:1029
+#, c-format
+msgid "%s is missing a software component.  To correct this problem, please reinstall %s."
+msgstr "Bei %s fehlt eine Softwarekomponente. Um dieses Problem zu beheben, muss das %s  Programm reinstalliert werden."
+
+#: appmain/exportwizard.cpp:1042
+msgid "Microsoft Access file"
+msgstr "Mircrosoft Access Datei"
+
+#: appmain/exportwizard.cpp:1044
+msgid "Microsoft Excel file"
+msgstr "Mircrosoft Excel Datei"
+
+#: appmain/exportwizard.cpp:1046
+msgid "file"
+msgstr "Datei"
+
+#: appmain/exportwizard.cpp:1062
+#, c-format
+msgid ""
+"There specified %s is currently in use or you may not have permission to overwrite it.\n"
+"Please make sure that the file to be overwritten is not currently in use."
+msgstr ""
+"Das angegebene %s wird derzeit benutzt oder Sie verfügen nicht über die Erlaubnis es zu überschreiben.\n"
+"Bitte überprüfen Sie, ob die Datei, die überschreiben werden sollen derzeit nicht verwendet wird."
+
+#: appmain/exportwizard.cpp:1080
+#: appmain/exportwizard.cpp:1100
+#, c-format
+msgid ""
+"There was an error connecting to the specified %s.\n"
+"Please make sure that the file exists and that it is not currently in use."
+msgstr ""
+"Beim Herstellen einer Verbindung zu der angegebenen %s ist ein Fehler aufgetreten.\n"
+"Bitte überrüfen Sie, ob die Datei existiert und dass sie derzeit nicht in Gebrauch ist."
+
+#: appmain/exportwizard.cpp:1112
+msgid ""
+"There was an error connecting to the specified database.\n"
+"Please make sure that the connection information for the database is correct."
+msgstr ""
+"Beim Verbinden zu der angegebenen Datenbank ist ein Fehler aufgetreten.\n"
+"Bitte überprüfen Sie, ob die Verbindungsinformation für die Datenbank korrekt ist."
+
+#: appmain/exportwizard.cpp:1154
+msgid "One or more of the tables specified for export has an invalid name."
+msgstr "Eine oder mehrere Tabellen angegeben für den Export hat einen ungültigen Namen."
+
+#: appmain/exportwizard.cpp:1190
+msgid ""
+"One or more of the tables specified for export no longer exists.\n"
+"Remove these tables from the list to continue."
+msgstr ""
+"Eine oder mehrere Tabellen, die für den Export angegeben wurden existieren nicht mehr.\n"
+"Löschen Sie diese Tabellen von der Liste, um fortzufahren."
+
+#: appmain/exportwizard.cpp:1239
+msgid "One or more of the tables specified for export contains invalid fieldnames."
+msgstr "Eine oder mehrere von den für den Export angegebenen Tabellen haben mindestens einen ungültigen Feldnamen."
+
+#: appmain/exprbuilder.cpp:63
+msgid "ABS(number)"
+msgstr "ABS(number)"
+
+#: appmain/exprbuilder.cpp:63
+msgid "Returns the absolute value of a number"
+msgstr "berechnet den absoluten Wert einer Zahl"
+
+#: appmain/exprbuilder.cpp:64
+msgid "ACOS(number)"
+msgstr "ACOS(number)"
+
+#: appmain/exprbuilder.cpp:64
+msgid "Returns the arc cosine of a number in units of radians"
+msgstr "berechnet den Arcuscosinus einer Zahl"
+
+#: appmain/exprbuilder.cpp:65
+msgid "ASIN(number)"
+msgstr "ASIN(number)"
+
+#: appmain/exprbuilder.cpp:65
+msgid "Returns the arc sin of a number in units of radians"
+msgstr "berechnet den Arcussinus einer Zahl"
+
+#: appmain/exprbuilder.cpp:66
+msgid "ATAN(number)"
+msgstr "ATAN(number)"
+
+#: appmain/exprbuilder.cpp:66
+msgid "Returns the arc tangent of a number in units of radians"
+msgstr "berechnet die Tangente einer Zahl"
+
+#: appmain/exprbuilder.cpp:67
+msgid "AVG(number1 [, number2, ...])"
+msgstr "AVG(number1 [, number2, ...])"
+
+#: appmain/exprbuilder.cpp:67
+msgid "Returns the average number of an input list"
+msgstr "berechnet den Durchschnitt der Parameter"
+
+#: appmain/exprbuilder.cpp:68
+msgid "CEILING(number [, precision])"
+msgstr "CEILING(number [, precision])"
+
+#: appmain/exprbuilder.cpp:68
+msgid "Returns the smallest number, to the specified precision, that is greater than or equal to the input number"
+msgstr "ergibt die kleinste Nummer mit der angegebenen Präzision, die größer als oder gleich wie die Eingangsnummer ist"
+
+#: appmain/exprbuilder.cpp:69
+msgid "CONTAINS(string, search string)"
+msgstr "CONTAINS(string, search string)"
+
+#: appmain/exprbuilder.cpp:69
+msgid "Returns true if the search string is contained in the string, false otherwise"
+msgstr "ergibt 'true', wenn der Suchtext in der Eingangszeichenkette enthalten wird, ansonsten 'false'"
+
+#: appmain/exprbuilder.cpp:70
+msgid "COS(number)"
+msgstr "COS(number)"
+
+#: appmain/exprbuilder.cpp:70
+msgid "Returns the cosine of a number, where the input number is in units of radians"
+msgstr "berechnet den Cosinus einer Zahl"
+
+#: appmain/exprbuilder.cpp:71
+msgid "CURDATE()"
+msgstr "CURDATE()"
+
+#: appmain/exprbuilder.cpp:71
+msgid "Returns the current system date and time"
+msgstr "ergibt das Aktuelle Datum und die aktuelle Uhrzeit"
+
+#: appmain/exprbuilder.cpp:72
+msgid "DATE(string)"
+msgstr "DATE(string)"
+
+#: appmain/exprbuilder.cpp:72
+msgid "Returns a date from the specified input string"
+msgstr "ergibt ein Datum von der spezifizierter Zeichenkette"
+
+#: appmain/exprbuilder.cpp:73
+msgid "DAY(date)"
+msgstr "DAY(date)"
+
+#: appmain/exprbuilder.cpp:73
+msgid "Returns the day corresponding to a date"
+msgstr "ergibt den Tag von dem Datumswert"
+
+#: appmain/exprbuilder.cpp:74
+msgid "DAYNAME(date)"
+msgstr "DAYNAME(date)"
+
+#: appmain/exprbuilder.cpp:74
+msgid "Returns the day of the week corresponding to a date"
+msgstr "ergibt den Wochentagsnamen von dem Datumswert"
+
+#: appmain/exprbuilder.cpp:75
+msgid "DAYOFWEEK(date)"
+msgstr "DAYOFWEEK(date)"
+
+#: appmain/exprbuilder.cpp:75
+msgid "Returns the day of the week corresponding to a date as a number between 1 and 7, where Sunday is the first day of the week"
+msgstr "ergibt den Wochentag von einem Datumswert als Nummer zwischen 1 und 7.  Sonntag wird als erster Tag der Woche benutzt"
+
+#: appmain/exprbuilder.cpp:76
+msgid "EMPTY(value)"
+msgstr "EMPTY(value)"
+
+#: appmain/exprbuilder.cpp:76
+msgid "Returns true if an input string or date is empty, false otherwise"
+msgstr "ergibt 'true', wenn die Eingangszeichenkette leer ist, 'false' wenn sie nicht leer ist"
+
+#: appmain/exprbuilder.cpp:77
+msgid "EXP(number)"
+msgstr "EXP(number)"
+
+#: appmain/exprbuilder.cpp:77
+msgid "Returns the constant e raised to the power of a number"
+msgstr "ergibt die eulersche Zahl e = 2.7182818..."
+
+#: appmain/exprbuilder.cpp:78
+msgid "FLOOR(number [, precision])"
+msgstr "FLOOR(number [, precision])"
+
+#: appmain/exprbuilder.cpp:78
+msgid "Returns the largest number, to the specified precision, that is less than or equal to the input number"
+msgstr "ergibt die größte Nummer mit der angegebenen Präzision, die weniger als oder gleich wie die Eingangsnummer ist"
+
+#: appmain/exprbuilder.cpp:79
+msgid "HOUR(date)"
+msgstr "HOUR(date)"
+
+#: appmain/exprbuilder.cpp:79
+msgid "Returns the hour corresponding to a date"
+msgstr "ergibt die Stunde des Datumwerts"
+
+#: appmain/exprbuilder.cpp:80
+msgid "IIF(boolean test, true value, false value)"
+msgstr "IIF(boolean test, true value, false value)"
+
+#: appmain/exprbuilder.cpp:80
+msgid "If the boolean test is true, the function returns the true value, otherwise it returns the false value"
+msgstr "Wenn das Ergebnis des Tests True ist, ergibt die Funktion den True Wert, sondern ergibt sie den False Wert"
+
+#: appmain/exprbuilder.cpp:81
+msgid "INSTR(string, search string [, occurrence])"
+msgstr "INSTR(string, search string [, occurrence])"
+
+#: appmain/exprbuilder.cpp:81
+#: appmain/exprbuilder.cpp:84
+msgid "Returns the nth occurrence of the search string in the string, starting from the left side of the string"
+msgstr "Ergibt die n-te gefundene Position von dem Suchtext in der Eingangszeichenkette"
+
+#: appmain/exprbuilder.cpp:82
+msgid "LEFT(string, length)"
+msgstr "LEFT(string, length)"
+
+#: appmain/exprbuilder.cpp:82
+msgid "Returns the leftmost characters of a string to the specified length"
+msgstr "Ergibt die ersten X Zeichen von der Eingangszeichenkette"
+
+#: appmain/exprbuilder.cpp:83
+msgid "LENGTH(string)"
+msgstr "LENGTH(string)"
+
+#: appmain/exprbuilder.cpp:83
+msgid "Returns the number of characters in a string"
+msgstr "Ergibt die Länge einer Zeichenkette"
+
+#: appmain/exprbuilder.cpp:84
+msgid "LFIND(string, search string [, occurrence])"
+msgstr "LFIND(string, search string [, occurrence])"
+
+#: appmain/exprbuilder.cpp:85
+msgid "LN(number)"
+msgstr "LN(number)"
+
+#: appmain/exprbuilder.cpp:85
+msgid "Returns the natural logarithm of a number"
+msgstr "Ergibt den natürlichen Logarithmus einer Zahl"
+
+#: appmain/exprbuilder.cpp:86
+msgid "LOG(number [, base])"
+msgstr "LOG(number [, base])"
+
+#: appmain/exprbuilder.cpp:86
+msgid "Returns the logarithm of a number in the specified base"
+msgstr "berechnet den Logarithmus einer Zahl zur angegebenen Basis"
+
+#: appmain/exprbuilder.cpp:87
+msgid "LOWER(string)"
+msgstr "LOWER(string)"
+
+#: appmain/exprbuilder.cpp:87
+msgid "Converts all characters in a string to lowercase"
+msgstr "ergibt die Zeichenkette in Kleinschreibung"
+
+#: appmain/exprbuilder.cpp:88
+msgid "LPAD(string, length [, list])"
+msgstr "LPAD(string, length [, list])"
+
+#: appmain/exprbuilder.cpp:88
+msgid "Adds the characters in the list to the left side of a string until the string is the specified length"
+msgstr "stellt die Zeichen in der Liste der Zeichenkette voran, bis die angegebe Textlänge erreicht wird."
+
+#: appmain/exprbuilder.cpp:89
+msgid "LTRIM(string [, list])"
+msgstr "LTRIM(string [, list])"
+
+#: appmain/exprbuilder.cpp:89
+msgid "Removes each character in the list from the left side of a string"
+msgstr "entfert jedes Zeichen in der Liste vom Anfang der Zeichenkette"
+
+#: appmain/exprbuilder.cpp:90
+msgid "MAX(value1 [, value2, ...])"
+msgstr "MAX(value1 [, value2, ...])"
+
+#: appmain/exprbuilder.cpp:90
+msgid "Returns the maximum value from an input list"
+msgstr "ergibt den Wert des Parameters mit dem größten Wert"
+
+#: appmain/exprbuilder.cpp:91
+msgid "MIN(value1 [, value2, ...])"
+msgstr "MIN(value1 [, value2, ...])"
+
+#: appmain/exprbuilder.cpp:91
+msgid "Returns the minimum value from an input list"
+msgstr "ergibt den Wert des Parameters mit dem kleinsten Wert"
+
+#: appmain/exprbuilder.cpp:92
+msgid "MINUTE(date)"
+msgstr "MINUTE(date)"
+
+#: appmain/exprbuilder.cpp:92
+msgid "Returns the minute corresponding to a date"
+msgstr "ergibt die Minute des Datumwerts"
+
+#: appmain/exprbuilder.cpp:93
+msgid "MOD(numerator, denominator)"
+msgstr "MOD(numerator, denominator)"
+
+#: appmain/exprbuilder.cpp:93
+msgid "Returns the remainder of the numerator divided by the denominator"
+msgstr "ergibt den Rest beim Teilen des Zählers durch den Nenner"
+
+#: appmain/exprbuilder.cpp:94
+msgid "MONTH(date)"
+msgstr "MONTH(date)"
+
+#: appmain/exprbuilder.cpp:94
+msgid "Returns the month corresponding to a date"
+msgstr "ergibt den Monats von dem angegebenen Datum"
+
+#: appmain/exprbuilder.cpp:95
+msgid "MONTHNAME(date)"
+msgstr "MONTHNAME(date)"
+
+#: appmain/exprbuilder.cpp:95
+msgid "Returns the name of the month containing a date"
+msgstr "ergibt den Monatsnamen von dem angegebenen Datum"
+
+#: appmain/exprbuilder.cpp:96
+msgid "PI()"
+msgstr "PI()"
+
+#: appmain/exprbuilder.cpp:96
+msgid "Returns an approximation of the constant PI"
+msgstr "ergibt den ungefähren Wert von PI"
+
+#: appmain/exprbuilder.cpp:97
+msgid "POWER(base, exponent)"
+msgstr "POWER(base, exponent)"
+
+#: appmain/exprbuilder.cpp:97
+msgid "Returns the base raised to the power of the exponent"
+msgstr "ergibt den Wert von X potenziert mit Y"
+
+#: appmain/exprbuilder.cpp:98
+msgid "PROPER(string)"
+msgstr "PROPER(string)"
+
+#: appmain/exprbuilder.cpp:98
+msgid "Converts any character in a string that follows a non-letter character to uppercase"
+msgstr "ergibt eine Zeichenkette, in der jeder erste Buchstabe groß geschrieben wird"
+
+#: appmain/exprbuilder.cpp:99
+msgid "RAND()"
+msgstr "RAND()"
+
+#: appmain/exprbuilder.cpp:99
+msgid "Returns a random number between zero and one"
+msgstr "ergibt eine Zufallszahl zwischen null und eins"
+
+#: appmain/exprbuilder.cpp:100
+msgid "RECID()"
+msgstr "RECID()"
+
+#: appmain/exprbuilder.cpp:100
+msgid "Returns a string that uniquely identifies a record in a project"
+msgstr "ergibt eine Zeichenkette, die den Datensatz eindeutig identifizieren kann"
+
+#: appmain/exprbuilder.cpp:101
+msgid "RECNO()"
+msgstr "RECNO()"
+
+#: appmain/exprbuilder.cpp:101
+msgid "Returns a number indicating the unsorted, absolute position of a record in a set"
+msgstr "ergibt die physischen Datensatznummer"
+
+#: appmain/exprbuilder.cpp:102
+msgid "REGEXP(string, match string)"
+msgstr "REGEXP(string, match string)"
+
+#: appmain/exprbuilder.cpp:102
+msgid "Returns a portion of the string that matches the regular expression given by the match string"
+msgstr "ergibt einen Teil einer Zeichenkette"
+
+#: appmain/exprbuilder.cpp:103
+msgid "REPEAT(string, length)"
+msgstr "REPEAT(string, length)"
+
+#: appmain/exprbuilder.cpp:103
+msgid "Repeats the characters in the string until the specified length is reached"
+msgstr "ergibt eine Zeichenkette, in der der Eingangstext wiederholt wird bis die angegebene Zeichenkettelänge erreicht wird"
+
+#: appmain/exprbuilder.cpp:104
+msgid "REPLACE(string, search string, replace string)"
+msgstr "REPLACE(string, search string, replace string)"
+
+#: appmain/exprbuilder.cpp:104
+msgid "Replaces each occurrence of the search string in the input string with the corresponding replace string"
+msgstr "ergibt eine Zeichenkette, in der der Suchtext durch den Ersatztext ersetzt wird"
+
+#: appmain/exprbuilder.cpp:105
+msgid "REVERSE(string)"
+msgstr "REVERSE(string)"
+
+#: appmain/exprbuilder.cpp:105
+msgid "Reverses the order of characters in a string"
+msgstr "ergibt eine Zeichenkette in umgekehrter Reihenfolge"
+
+#: appmain/exprbuilder.cpp:106
+msgid "RFIND(string, search string [, occurrence])"
+msgstr "RFIND(string, search string [, occurrence])"
+
+#: appmain/exprbuilder.cpp:106
+msgid "Returns the nth occurrence of the search string in the string, starting from the right side of the string"
+msgstr "ergibt die n-te gefundene Position von dem Suchtext in der Eingangszeichenkett; die Suche erfolgt von rechts nach links"
+
+#: appmain/exprbuilder.cpp:107
+msgid "RIGHT(string, length)"
+msgstr "RIGHT(string, length)"
+
+#: appmain/exprbuilder.cpp:107
+msgid "Returns the rightmost characters of a string to the specified length"
+msgstr "ergibt die letzten X Zeichen von der Eingangszeichenkette"
+
+#: appmain/exprbuilder.cpp:108
+msgid "ROUND(number [, precision])"
+msgstr "ROUND(number [, precision])"
+
+#: appmain/exprbuilder.cpp:108
+msgid "Returns a number that is rounded to the specified precision"
+msgstr "ergibt eine Zahl, die auf die angegebene Anzahl von Dezimalstellen gerundet wird"
+
+#: appmain/exprbuilder.cpp:109
+msgid "RPAD(string, length [, list])"
+msgstr "RPAD(string, length [, list])"
+
+#: appmain/exprbuilder.cpp:109
+msgid "Adds the characters in the list to the right side of a string until the string is the specified length"
+msgstr "fügt die Zeichen in der Liste der Zeichenkette hinzu, bis die angegebe Textlänge erreicht wird."
+
+#: appmain/exprbuilder.cpp:110
+msgid "RTRIM(string [, list])"
+msgstr "RTRIM(string [, list])"
+
+#: appmain/exprbuilder.cpp:110
+msgid "Removes each character in the list from the right side of a string"
+msgstr "entfert jedes Zeichen in der Liste vom Ende der Zeichenkette"
+
+#: appmain/exprbuilder.cpp:111
+msgid "SECOND(date)"
+msgstr "SECOND(date)"
+
+#: appmain/exprbuilder.cpp:111
+msgid "Returns the second corresponding to a date"
+msgstr "ergibt die Sekund von dem Datumswert"
+
+#: appmain/exprbuilder.cpp:112
+msgid "SIGN(number)"
+msgstr "SIGN(number)"
+
+#: appmain/exprbuilder.cpp:112
+msgid "Returns the sign of a number"
+msgstr "ergibt -1, wenn die Nummer negative ist, 0, wenn sie 0 ist, und 1, wenn sie positiv ist"
+
+#: appmain/exprbuilder.cpp:113
+msgid "SIN(number)"
+msgstr "SIN(number)"
+
+#: appmain/exprbuilder.cpp:113
+msgid "Returns the sin of a number, where the input number is in units of radians"
+msgstr "berechnet den Sinus einer Zahl"
+
+#: appmain/exprbuilder.cpp:114
+msgid "SOUNDEX(string)"
+msgstr "SOUNDEX(string)"
+
+#: appmain/exprbuilder.cpp:114
+msgid "Returns a phonetic representation of a string"
+msgstr "ergibt einen Code, der den phonetischen Wert einer Zeichenkette repräsentiert"
+
+#: appmain/exprbuilder.cpp:115
+msgid "STDDEV(number1 [, number2, ...])"
+msgstr "STDDEV(nummer1 [, nummer2, ...])"
+
+#: appmain/exprbuilder.cpp:115
+msgid "Returns the standard deviation of an input list"
+msgstr "berechnet die Standardabweichung einer Eingangsliste"
+
+#: appmain/exprbuilder.cpp:116
+msgid "STR(number [, precision])"
+msgstr "STR(number [, precision])"
+
+#: appmain/exprbuilder.cpp:116
+msgid "Rounds a number to a specified precision and returns it as a string"
+msgstr "ergibt eine Nummer, gerundet auf eine angegebene Anzahl von Dezimalstellen, als eine Zeichenkette"
+
+#: appmain/exprbuilder.cpp:117
+msgid "STRPART(string, section [, delimiter])"
+msgstr "STRPART(string, section [, delimiter])"
+
+#: appmain/exprbuilder.cpp:117
+msgid "Returns the nth section of a string that is divided into sections by the delimiter string"
+msgstr "ergibt den n-ten Teil der Eingangszeichenkette, die delimitiert wird mit dem angegebenen Trennzeichen"
+
+#: appmain/exprbuilder.cpp:118
+msgid "SUBSTR(string, start [, length])"
+msgstr "SUBSTR(string, start [, length])"
+
+#: appmain/exprbuilder.cpp:118
+msgid "Returns a portion of an input string, from the specified start position in the string to the specified length"
+msgstr "ergibt ein Teil der Zeichenkette, from the specified start position in the string to the specified length"
+
+#: appmain/exprbuilder.cpp:119
+msgid "SUM(number1 [, number2, ...])"
+msgstr "SUM(number1 [, number2, ...])"
+
+#: appmain/exprbuilder.cpp:119
+msgid "Returns the sum of an input list"
+msgstr "ergibt die Summe einer Liste von Parameter"
+
+#: appmain/exprbuilder.cpp:120
+msgid "TAN(number)"
+msgstr "TAN(number)"
+
+#: appmain/exprbuilder.cpp:120
+msgid "Returns the tangent of a number, where the input number is in units of radians"
+msgstr "berechnet den Tangens einer Zahl"
+
+#: appmain/exprbuilder.cpp:121
+msgid "TRANSLATE(string, search, replace)"
+msgstr "TRANSLATE(string, search, replace)"
+
+#: appmain/exprbuilder.cpp:121
+msgid "Replaces each character in a string that matches a character in the search list with a character in the replace list"
+msgstr "ergibt eine Zeichenkette, in der alle Buchstaben in dem Suchtext durch den entsprechenden Buchstabe in dem Ersetzungsliste ersetzt wird"
+
+#: appmain/exprbuilder.cpp:122
+msgid "TRIM(string [, list])"
+msgstr "TRIM(string [, list])"
+
+#: appmain/exprbuilder.cpp:122
+msgid "Removes each character in the list from the left and right sides of a string"
+msgstr "entfernt jeden Buchstaben in der Liste vom Anfang und Ende der Zeichenkette"
+
+#: appmain/exprbuilder.cpp:123
+msgid "TRUNC(number [, precision])"
+msgstr "TRUNC(number [, precision])"
+
+#: appmain/exprbuilder.cpp:123
+msgid "Returns a number that is truncated the specified precision"
+msgstr "ergibt eine Nummer mit einer angegebenen Anzahl von Dezimalstellen"
+
+#: appmain/exprbuilder.cpp:124
+msgid "UPPER(string)"
+msgstr "UPPER(string)"
+
+#: appmain/exprbuilder.cpp:124
+msgid "Converts all characters in a string to uppercase"
+msgstr "ergibt die Zeichenkette in Großschreibung"
+
+#: appmain/exprbuilder.cpp:125
+msgid "VAL(string)"
+msgstr "VAL(string)"
+
+#: appmain/exprbuilder.cpp:125
+msgid "Returns a number from a string by interpreting it according to a format string"
+msgstr "ergibt den numerischen Wert, der in einer Zeichenkette enthalten wird"
+
+#: appmain/exprbuilder.cpp:126
+msgid "VARIANCE(number1 [, number2, ...])"
+msgstr "VARIANCE(nummer1 [, nummer2, ...])"
+
+#: appmain/exprbuilder.cpp:126
+msgid "Returns the variance of an input list"
+msgstr "ergibt die Summe einer Eingangsliste"
+
+#: appmain/exprbuilder.cpp:127
+msgid "WEEK(date)"
+msgstr "WEEK(date)"
+
+#: appmain/exprbuilder.cpp:127
+msgid "Returns the week of the year containing the given date as a number between 1 and 53"
+msgstr "ergibt die Jahreswoche von dem Datumswert"
+
+#: appmain/exprbuilder.cpp:128
+msgid "YEAR(date)"
+msgstr "YEAR(date)"
+
+#: appmain/exprbuilder.cpp:128
+msgid "Returns the year corresponding to a date"
+msgstr "ergibt das Jahr von dem Datumswert"
+
+#: appmain/exprbuilder.cpp:746
+msgid "Function Name"
+msgstr "Funktionsname"
+
+#: appmain/exprbuilder.cpp:791
+msgid "More..."
+msgstr "Mehr..."
+
+#: appmain/exprbuilder.cpp:985
+msgid "Valid"
+msgstr "Gültig"
+
+#: appmain/fieldlistcontrol.cpp:32
+#: appmain/fieldlistcontrol.cpp:53
+msgid "Wide Char."
+msgstr "Unicode Char."
+
+#: appmain/fieldlistcontrol.cpp:123
+msgid "Name"
+msgstr "Name"
+
+#: appmain/fieldlistcontrol.cpp:125
+msgid "Width"
+msgstr "Breite"
+
+#: appmain/fieldlistcontrol.cpp:126
+msgid "Dec."
+msgstr "Dez."
+
+#: appmain/importpages.cpp:138
+msgid "Please select the tables from the list that you would like to import."
+msgstr "Bitte wählen Sie die Tabelle von der Liste, die Sie importieren möchten."
+
+#: appmain/importpages.cpp:179
+msgid "Import to:"
+msgstr "Importieren in:"
+
+#: appmain/importpages.cpp:200
+msgid "Select All"
+msgstr "Alle auswählen"
+
+#: appmain/importpages.cpp:201
+msgid "Select None"
+msgstr "Keine auswählen"
+
+#: appmain/importpages.cpp:389
+#: appmain/importwizard.cpp:535
+#, c-format
+msgid "The package file '%s' could not be read."
+msgstr "Die Paketdatei '%s'  konnte nicht gelesen werden."
+
+#: appmain/importpages.cpp:392
+#: appmain/importpages.cpp:404
+#: appmain/importpages.cpp:498
+#: appmain/importpages.cpp:630
+#: appmain/importpages.cpp:646
+#: appmain/importwizard.cpp:538
+#: appmain/importwizard.cpp:552
+#: appmain/importwizard.cpp:588
+#: appmain/importwizard.cpp:718
+#: appmain/importwizard.cpp:767
+#: appmain/importwizard.cpp:777
+#: appmain/importwizard.cpp:822
+msgid "Import Wizard"
+msgstr "Assistent importieren"
+
+#: appmain/importpages.cpp:401
+#: appmain/importwizard.cpp:549
+#, c-format
+msgid "The package file '%s' is either empty or corrupt."
+msgstr "Die Paketdatei '%s' ist entweder leer oder korrupt."
+
+#: appmain/importpages.cpp:629
+msgid "No items have been selected for import.  Please select at least one item to continue."
+msgstr "Kein Artikel wurd von den Import ausgewählt. Bitte wählen mindestens einen Artikel, um fortzufahren."
+
+#: appmain/importpages.cpp:645
+msgid "To load an import template, please create or open a project"
+msgstr "Um eine Importvorlage zu öffnen, erstellen oder öffnen Sie bitte ein Projekt."
+
+#: appmain/importpages.cpp:750
+msgid "No tables were specified for import"
+msgstr "Keine Tabellen wurden für den Import spezifiziert. "
+
+#: appmain/importpages.cpp:758
+#, c-format
+msgid ""
+"No tables were found in\n"
+"'%s'"
+msgstr ""
+"Keine Tabellen wurden in \n"
+"'%s' gefunden."
+
+#: appmain/importpages.cpp:763
+msgid "No tables were found in the source database"
+msgstr "Keine Tabellen wurden in der Quellendatenbank gefunden"
+
+#: appmain/importpages.cpp:918
+msgid "Modify the settings below to determine how the text-delimited files should be read."
+msgstr "Ändern Sie die folgenden Einstellungen, um zu bestimmen, wie die delimitierten Textdateien gelesen werden sollen."
+
+#: appmain/importpages.cpp:933
+msgid "Pipe"
+msgstr "Pipe"
+
+#: appmain/importtemplate.cpp:1227
+#, c-format
+msgid "Importing from %s on '%s'"
+msgstr "Importieren von %s auf '%s'"
+
+#: appmain/importwizard.cpp:100
+msgid "Import"
+msgstr "Importieren"
+
+#: appmain/importwizard.cpp:173
+msgid "Please enter the location of the files you would like to import."
+msgstr "Bitte geben Sie den Ort der Dateien ein, die Sie importieren wollen."
+
+#: appmain/importwizard.cpp:174
+msgid "Files:"
+msgstr "Dateien:"
+
+#: appmain/importwizard.cpp:292
+msgid "Please enter the connection settings for the database from which you would like to import."
+msgstr "Bitte geben Sie die Verbindungssparameter für die Datenbank ein, von der Sie importieren möchten."
+
+#: appmain/importwizard.cpp:308
+msgid "Please select the ODBC data source from which you would like to import."
+msgstr "Bitte wählen Sie die ODBC-Datenquelle, von der Sie importieren möchten."
+
+#: appmain/importwizard.cpp:406
+msgid "One of the specified files does not exist or is invalid.  Please choose a valid file to continue."
+msgstr "Eine der angegebenen Dateien existiert nicht oder ist ungültig.  Bitte wählen Sie eine gültige Datei, um fortzufahren."
+
+#: appmain/importwizard.cpp:412
+msgid "The specified file does not exist or is invalid.  Please choose a valid file to continue."
+msgstr "Die angegebene Datei existiert nicht oder ist ungültig. Bitte wählen Sie eine gültige Datei, um fortzufahren."
+
+#: appmain/importwizard.cpp:478
+msgid "More than one file type was specified.  Please choose only one file type to continue."
+msgstr "Mehr als ein Dateityp wurde spezifiziert.  Bitte wählen Sie einen Dateityp aus, um fortzufahren."
+
+#: appmain/importwizard.cpp:479
+msgid "Multiple file types"
+msgstr "Mehrere Dateitypen"
+
+#: appmain/importwizard.cpp:496
+msgid "Only one package file can be imported at a time.  Please choose only one package file to continue."
+msgstr "Nur eine Paketdatei kann zu einem Zeitpunkt importiert werden.  Bitte wählen Sie zunächst nur eine Paketdatei aus, um fortzufahren."
+
+#: appmain/importwizard.cpp:497
+#: appmain/importwizard.cpp:507
+#: appmain/importwizard.cpp:517
+msgid "Too many files"
+msgstr "Zu viele Dateien"
+
+#: appmain/importwizard.cpp:506
+msgid "Only one Microsoft Access file can be imported at a time.  Please choose only one Microsoft Access file to continue."
+msgstr "Nur eine Microsoft Access Datei kann jeweils importiert werden. Bitte wählen Sie zunächst einen Microsoft Access Datei aus, um fortzufahren."
+
+#: appmain/importwizard.cpp:516
+msgid "Only one Microsoft Excel file can be imported at a time.  Please choose only one Microsoft Excel file to continue."
+msgstr "Nur eine Microsoft Excel Datei kann jeweils importiert werden. Bitte wählen Sie zunächst eine Microsoft Excel Datei aus, um fortzufahren."
+
+#: appmain/importwizard.cpp:717
+msgid ""
+"The specified import folder is invalid.  Check to make sure the path does not contain any invalid characters\n"
+"and that it will not create a folder which will overwrite an item in the project."
+msgstr ""
+"Der angegebene Eingangsordner ist ungültig.  Bitte stellen Sie sicher, dass der Pfad keine ungültige Zeichen enthält,\n"
+"und dass er kein existierendes Projektobjekt überschreiben würde."
+
+#: appmain/importwizard.cpp:766
+msgid "One or more items has the same path as an existing folder in the project.  Please change the output paths of these items to continue."
+msgstr "Ein oder mehrere Artikel haben den gleichen Pfad wie ein existierender Ordner in dem Projekt.  Bitte ändern Sie die Ausgangspfade von diesen Artikeln, um fortzufahren."
+
+#: appmain/importwizard.cpp:776
+msgid "One or more items has the same path as an existing item in the project.  Would you like to overwrite these items?"
+msgstr "Ein oder mehrere Artikel haben den gleichen Pfad wie ein existierendes Objekt in dem Projekt.  Möchten Sie dieses Objekt überschreiben?"
+
+#: appmain/importwizard.cpp:821
+msgid "To save the import template, please create or open a project"
+msgstr "Um eine Importvorlage zu öffnen, erstellen oder öffnen Sie bitte ein Projekt."
+
+#: appmain/importwizard.cpp:831
+msgid "Save Import Template"
+msgstr "Importvorlage speichern"
+
+#: appmain/jobappend.cpp:20
+msgid "Append Records"
+msgstr "Datensätze anhängen"
+
+#: appmain/jobappend.cpp:81
+#: appmain/jobcopy.cpp:365
+#: appmain/jobgroup.cpp:107
+#: appmain/jobgroup.cpp:143
+#: appmain/jobgroup.cpp:218
+#: appmain/jobimport.cpp:1227
+msgid "ERROR: Insufficient disk space"
+msgstr "FEHLER: Unzureichend Speicherplatz auf der Festplatte"
+
+#: appmain/jobcopy.cpp:23
+msgid "Copy Records"
+msgstr "Datensätze kopieren"
+
+#: appmain/jobcopy.cpp:116
+#: appmain/jobcopy.cpp:139
+#: appmain/jobcopy.cpp:202
+msgid "Querying..."
+msgstr "Abfragen..."
+
+#: appmain/jobcopy.cpp:120
+#: appmain/jobcopy.cpp:129
+#: appmain/jobcopy.cpp:151
+#: appmain/jobcopy.cpp:171
+msgid "ERROR: Source table busy."
+msgstr "FEHLER: Die Quellentabelle ist belegt."
+
+#: appmain/jobcopy.cpp:211
+msgid "ERROR: Query failed."
+msgstr "FEHLER: Abfrage fehlgeschlagen."
+
+#: appmain/jobcopy.cpp:285
+msgid "ERROR: Could not create input file"
+msgstr "FEHLER: Die Eingangsdatei konnte nicht erstellt werden."
+
+#: appmain/jobcopy.cpp:292
+#: appmain/jobcopy.cpp:315
+msgid "ERROR: Could not create output file"
+msgstr "FEHLER: Die Ausgangsdatei konnte nicht erstellt werden."
+
+#: appmain/jobcopy.cpp:348
+msgid "ERROR: Could not create output table"
+msgstr "FEHLER: Die Ausgangstabelle konnte nicht erstellt werden."
+
+#: appmain/jobexport.cpp:118
+msgid "Exporting to Microsoft Access File"
+msgstr "Exportiere zu Microsoft Access File"
+
+#: appmain/jobexport.cpp:120
+msgid "Exporting to Microsoft Excel File"
+msgstr "Exportiere zu Microsoft Excel Datei"
+
+#: appmain/jobexport.cpp:122
+msgid "Exporting to SQL Server"
+msgstr "Exportiere zu SQL Server"
+
+#: appmain/jobexport.cpp:124
+msgid "Exporting to MySQL"
+msgstr "Exportiere zu MySQL"
+
+#: appmain/jobexport.cpp:126
+msgid "Exporting to Oracle"
+msgstr "Exportiere zu Oracle"
+
+#: appmain/jobexport.cpp:128
+msgid "Exporting to ODBC"
+msgstr "Exportiere zu ODBC"
+
+#: appmain/jobexport.cpp:130
+msgid "Exporting to DB2"
+msgstr "Exportiere zu DB2"
+
+#: appmain/jobexport.cpp:132
+msgid "Exporting Xbase File(s)"
+msgstr "Exportiere Xbase-Datei(en) "
+
+#: appmain/jobexport.cpp:134
+msgid "Exporting Text-Delimited File(s)"
+msgstr "Exportiere Delimitierte- Textdatei(en) "
+
+#: appmain/jobexport.cpp:136
+msgid "Exporting Fixed-Length File(s)"
+msgstr "Exportiere Datei(en) mit fester Länge "
+
+#: appmain/jobexport.cpp:163
+#: appmain/jobexport.cpp:176
+#: appmain/jobexport.cpp:190
+#, c-format
+msgid "Exporting '%s' to '%s'"
+msgstr "Exportiere '%s' zu'%s' "
+
+#: appmain/jobexport.cpp:165
+#: appmain/jobexport.cpp:178
+#, c-format
+msgid "Exporting to '%s'"
+msgstr "Exportiere zu '%s' "
+
+#: appmain/jobexportpkg.cpp:388
+msgid "Export to Package"
+msgstr "Exportiere ins Paket"
+
+#: appmain/jobfindinfiles.cpp:21
+msgid "Find In Files"
+msgstr "In Dateien finden"
+
+#: appmain/jobftp.cpp:19
+msgid "FTP"
+msgstr "FTP"
+
+#: appmain/jobftp.cpp:70
+msgid "Connecting..."
+msgstr "Verbindung wird hergestellt..."
+
+#: appmain/jobftp.cpp:81
+msgid "Connect failed."
+msgstr "Keine Verbindung hergestellt."
+
+#: appmain/jobgroup.cpp:22
+msgid "Grouping Records"
+msgstr "Datensätze gruppieren"
+
+#: appmain/jobgroup.cpp:82
+#, c-format
+msgid "Grouping '%s'"
+msgstr "Gruppieren '%s'"
+
+#: appmain/jobimport.cpp:407
+msgid "Importing Microsoft Access File"
+msgstr "Mircrosoft Excel Datei importieren"
+
+#: appmain/jobimport.cpp:409
+msgid "Importing Microsoft Excel File"
+msgstr "Importiere Microsoft Excel Datei"
+
+#: appmain/jobimport.cpp:411
+msgid "Importing from SQL Server"
+msgstr "Importiere von SQL Server"
+
+#: appmain/jobimport.cpp:413
+msgid "Importing from MySQL"
+msgstr "Importiere von MySQL"
+
+#: appmain/jobimport.cpp:415
+msgid "Importing from Oracle"
+msgstr "Importiere von Oracle"
+
+#: appmain/jobimport.cpp:417
+msgid "Importing from ODBC"
+msgstr "Importiere von ODBC"
+
+#: appmain/jobimport.cpp:419
+msgid "Importing from DB2"
+msgstr "Importiere von DB2"
+
+#: appmain/jobimport.cpp:421
+msgid "Importing Xbase File(s)"
+msgstr "Importiere Xbasedatei(en)"
+
+#: appmain/jobimport.cpp:423
+msgid "Importing Text-Delimited File(s)"
+msgstr "Importiere delimitierte Textdatei(en) "
+
+#: appmain/jobimport.cpp:425
+msgid "Importing Fixed-Length File(s)"
+msgstr "Importiere Datei(en) mit fester Spaltenbreite"
+
+#: appmain/jobimport.cpp:452
+#: appmain/jobimport.cpp:465
+#: appmain/jobimportpkg.cpp:476
+#, c-format
+msgid "Importing '%s' from '%s'"
+msgstr "Importiere '%s' zu '%s' "
+
+#: appmain/jobimport.cpp:475
+#, c-format
+msgid "Importing '%s'"
+msgstr "Importiere '%s'"
+
+#: appmain/jobimport.cpp:604
+msgid "Opening database connection..."
+msgstr "Datenbankverbindung öffnen"
+
+#: appmain/jobimport.cpp:612
+#: appmain/jobimport.cpp:701
+msgid "Reading file..."
+msgstr "Datei wird gelesen..."
+
+#: appmain/jobimport.cpp:634
+msgid "The database connection could not be opened."
+msgstr "Datenbankverbindung konnte nicht hergestellt werden."
+
+#: appmain/jobimport.cpp:642
+msgid "The file could not be opened."
+msgstr "Die Datei konnte nicht geöffnet werden."
+
+#: appmain/jobimport.cpp:732
+msgid "Determining table structure: $c records processed"
+msgstr "Tabellenstruktur wird bestimmt: $c Datensätze verarbeitet"
+
+#: appmain/jobimport.cpp:733
+msgid "Determining table structure: $c of $m records processed ($p1%)"
+msgstr "Tabellenstruktur bestimmt: $c von $m Datensätze verarbeitet ($p1%)"
+
+#: appmain/jobimport.cpp:755
+msgid "$c records processed"
+msgstr "$c Datensätze verarbeitet"
+
+#: appmain/jobimport.cpp:756
+msgid "$c of $m records processed ($p1%)"
+msgstr "$c von $m Datensätze verarbeitet ($p1%)"
+
+#: appmain/jobimportpkg.cpp:450
+#: appmain/jobimportpkg.cpp:481
+msgid "Importing from package file"
+msgstr "Importiere von Paketdatei"
+
+#: appmain/jobindex.cpp:18
+msgid "Creating Index"
+msgstr "Index wird erstellt"
+
+#: appmain/jobmodifystruct.cpp:19
+msgid "Modify Structure"
+msgstr "Struktur modifizieren"
+
+#: appmain/jobmodifystruct.cpp:96
+msgid "Modify failed: The table may be in use by another user."
+msgstr "Strukturbearbeitung fehlgeschlagen: Die Tabelle wird von einem anderen Benutzer genutzt."
+
+#: appmain/jobscript.cpp:122
+msgid "Script Runtime Error"
+msgstr "Programmlaufzeitfehler"
+
+#: appmain/jobsplit.cpp:23
+msgid "Divide"
+msgstr "Dividieren"
+
+#: appmain/linkbar.cpp:1048
+#: appmain/linkbar.cpp:1056
+msgid "&Open All in Tabs"
+msgstr "Alle in Registerkarten öffnen"
+
+#: appmain/linkbar.cpp:1067
+msgid "&Open in New Tab"
+msgstr "In neuer Registerkarte öffnen"
+
+#: appmain/linkbar.cpp:1072
+msgid "New &Bookmark..."
+msgstr "Neues Lesezeichen..."
+
+#: appmain/linkbar.cpp:1073
+msgid "New &Folder..."
+msgstr "Neuer Ordner..."
+
+#: appmain/linkbar.cpp:1139
+msgid "\"New Bookmark\" Properties"
+msgstr "\"Neues Lesezeichen\" Eigenschaften"
+
+#: appmain/linkbar.cpp:1163
+#: appmain/linkbar.cpp:1203
+#: appmain/linkbar.cpp:1320
+msgid "Please enter the name of the folder:"
+msgstr "Bitte geben Sie den Namen des Ordners ein:"
+
+#: appmain/linkbar.cpp:1362
+#: appmain/linkbar.cpp:1400
+msgid "Please enter the name of the bookmark:"
+msgstr "Bitte geben Sie den Namen des Lesezeichens ein:"
+
+#: appmain/linkbar.cpp:1613
+msgid "New"
+msgstr "Neu"
+
+#: appmain/linkbar.cpp:1616
+msgid "Sort Data"
+msgstr "Sortieren"
+
+#: appmain/linkbar.cpp:1617
+msgid "Insert Calculated Field"
+msgstr "Berechnetes Feld einfügen..."
+
+#: appmain/linkbar.cpp:1618
+msgid "Group Data"
+msgstr "Gruppieren"
+
+#: appmain/linkbar.cpp:1619
+msgid "Filter Data"
+msgstr "Filtern"
+
+#: appmain/linkbar.cpp:1620
+msgid "Filter Related Records"
+msgstr "Buzugsdatensätze filtern"
+
+#: appmain/moduleremoveduprec.cpp:42
+msgid "File Selection"
+msgstr "Dateiauswahl"
+
+#: appmain/moduleremoveduprec.cpp:46
+msgid "Please specify the table on which you would like to remove duplicate records."
+msgstr "Wählen Sie die Tabelle aus, von der Sie duplizierte Datensätze entfernen möchten."
+
+#: appmain/moduleremoveduprec.cpp:49
+msgid "Input File:"
+msgstr "Eingangsdatei:"
+
+#: appmain/moduleremoveduprec.cpp:65
+msgid "Output File:"
+msgstr "Ausgangsdatei:"
+
+#: appmain/moduleremoveduprec.cpp:124
+#: appmain/moduleremoveduprec.cpp:151
+msgid "You have selected either a folder or more than one data set.  Please select only one data set."
+msgstr "Sie haben entweder einen Ordner oder mehrere Datentabellen selektiert.  Bitte selektieren Se nur eine Datentabelle."
+
+#: appmain/moduleremoveduprec.cpp:172
+msgid "Select Input File"
+msgstr "Eingangsdatei wählen"
+
+#: appmain/moduleremoveduprec.cpp:185
+msgid "Select Output File"
+msgstr "Ausgangsdatei wählen"
+
+#: appmain/moduleremoveduprec.cpp:238
+msgid "The specified input transaction set could not be opened."
+msgstr "Die angegebene Transaktionstabelle konnte nicht geöffnet werden."
+
+#: appmain/moduleremoveduprec.cpp:302
+msgid "Duplicate Record Removal"
+msgstr "Entfernung duplizierter Datensätze"
+
+#: appmain/moduleremoveduprec.cpp:323
+msgid "Run"
+msgstr "Ausführen"
+
+#: appmain/moduleremoveduprec.cpp:400
+msgid "An output set could not be created."
+msgstr "Eine Ausgangstabelle konnte nicht erstellt werden."
+
+#: appmain/moduleremoveduprec.cpp:427
+msgid "Remove Duplicate Records"
+msgstr "Duplizierte Datensätze entfernen"
+
+#: appmain/panelcolprops.cpp:112
+#: appmain/panelcolprops.cpp:236
+msgid "Calculated Field"
+msgstr "Berechnetes Feld einfügen..."
+
+#: appmain/panelcolprops.cpp:118
+msgid "(Auto)"
+msgstr "(Auto)"
+
+#: appmain/panelcolprops.cpp:129
+msgid "Type:"
+msgstr "Typ:"
+
+#: appmain/panelcolprops.cpp:130
+msgid "Width:"
+msgstr "Breite:"
+
+#: appmain/panelcolprops.cpp:131
+msgid "Decimals:"
+msgstr "Dezimalstellen:"
+
+#: appmain/panelcolprops.cpp:913
+msgid "The specified field name is invalid.  Please choose a different field name."
+msgstr "Der angegebene Feldname ist ungültig. Bitte wählen Sie einen anderen Feldnamen."
+
+#: appmain/panelcolprops.cpp:976
+msgid "The field with the specified name already exists.  Please choose a different field name."
+msgstr "Das Feld mit dem angegebenen Namen existiert bereits.  Bitte wählen Sie einen anderen Feldnamen."
+
+#: appmain/panelcolprops.cpp:1023
+msgid "The structure of the table could not be modified, due to an invalid parameter."
+msgstr "Die Struktur der Tabelle konnte nicht modifiziert werden, aufgrund eines ungültigen Parameters."
+
+#: appmain/panelcolprops.cpp:1094
+msgid ""
+"One or more indexes must be regenerated due to changes made in the table structure.\n"
+"Would you like to do this now?"
+msgstr ""
+"Eine oder meherer Verzeichnisse müssen regeneriert werden, wegen den Veränderungen in der Tabellenstruktur.\n"
+"Möchten Sie das jetzt tun?"
+
+#: appmain/paneldatabaseinfo.cpp:47
+msgid "Project Properties"
+msgstr "Projekteigenschaften"
+
+#: appmain/paneldatabaseinfo.cpp:91
+msgid "Size:"
+msgstr "Größe:"
+
+#: appmain/panelextensionmgr.cpp:121
+msgid "Extensions"
+msgstr "Erweiterungen"
+
+#: appmain/panelextensionmgr.cpp:125
+msgid "Add Extensions..."
+msgstr "Erweiterungen hinzufügen..."
+
+#: appmain/panelextensionmgr.cpp:200
+#, c-format
+msgid "This extension will be uninstalled when %s is restarted."
+msgstr "Diese Erweiterung wird deinstalliert, wenn %s wieder gestartet ist."
+
+#: appmain/panelextensionmgr.cpp:271
+msgid "Uninstall"
+msgstr "Deinstallieren"
+
+#: appmain/panelextensionmgr.cpp:289
+msgid "Don't Uninstall"
+msgstr "Nicht deinstallieren"
+
+#: appmain/panelextensionmgr.cpp:307
+msgid "Start Now"
+msgstr "Jetzt starten"
+
+#: appmain/panelextensionmgr.cpp:324
+msgid "Run at startup"
+msgstr "Startup starten"
+
+#: appmain/panelextensionmgr.cpp:440
+msgid "Application Extension Files"
+msgstr "Erweiterungsdatei"
+
+#: appmain/panelextensionmgr.cpp:519
+msgid "The following extensions were not installed because their extension format could not be determined:"
+msgstr "Die folgenden Erweiterungen wurden nicht installiert, weil ihr Erweiterungsformat nicht bestimmt werden konnte:"
+
+#: appmain/panelextensionmgr.cpp:573
+#, c-format
+msgid "Are you sure you want to uninstall the '%s' extension?"
+msgstr "Sind Sie sicher, dass Sie die '%s' Erweiterung deinstallieren wollen?"
+
+#: appmain/panelextensionmgr.cpp:576
+msgid "Extension Manager"
+msgstr "Erweiterungsmanager"
+
+#: appmain/panelfileinfo.cpp:251
+msgid "File Properties"
+msgstr "Datei Eigenschaften"
+
+#: appmain/panelfileinfo.cpp:302
+msgid "File Name"
+msgstr "Dateiname"
+
+#: appmain/panelfileinfo.cpp:305
+#: appmain/panelsplit.cpp:190
+msgid "Records"
+msgstr "Datensätze"
+
+#: appmain/panelfileinfo.cpp:326
+msgid "Close"
+msgstr "Schließen"
+
+#: appmain/panelfileinfo.cpp:421
+#: appmain/panelfileinfo.cpp:562
+msgid "Other"
+msgstr "Sonstige"
+
+#: appmain/panelfileinfo.cpp:432
+#: appmain/panelfileinfo.cpp:440
+msgid "(Unknown)"
+msgstr "(Unbekannt)"
+
+#: appmain/panelfileinfo.cpp:452
+#, c-format
+msgid "%d Folder"
+msgstr "%d Ordner"
+
+#: appmain/panelfileinfo.cpp:454
+#, c-format
+msgid "%d Folders"
+msgstr "%d Ordner"
+
+#: appmain/panelfileinfo.cpp:458
+#, c-format
+msgid "%d Table"
+msgstr "%d Tabelle"
+
+#: appmain/panelfileinfo.cpp:460
+#, c-format
+msgid "%d Tables"
+msgstr "%d Tabellen"
+
+#: appmain/panelfileinfo.cpp:464
+#, c-format
+msgid "%d Report"
+msgstr "%d Bericht"
+
+#: appmain/panelfileinfo.cpp:466
+#, c-format
+msgid "%d Reports"
+msgstr "%d Berichte"
+
+#: appmain/panelfileinfo.cpp:470
+#, c-format
+msgid "%d Query"
+msgstr "%d Abfrage"
+
+#: appmain/panelfileinfo.cpp:472
+#, c-format
+msgid "%d Queries"
+msgstr "%d Abfragen"
+
+#: appmain/panelfileinfo.cpp:476
+#, c-format
+msgid "%d Script"
+msgstr "%d Programm"
+
+#: appmain/panelfileinfo.cpp:478
+#, c-format
+msgid "%d Scripts"
+msgstr "%d Programme"
+
+#: appmain/panelfind.cpp:88
+#: appmain/panelfind.cpp:339
+msgid "Find"
+msgstr "Suchen"
+
+#: appmain/panelfind.cpp:139
+msgid "Find In Current Window"
+msgstr "Im aktuellen Fenster suchen"
+
+#: appmain/panelfind.cpp:140
+msgid "Find And Replace"
+msgstr "Suchen und Ersetzen"
+
+#: appmain/panelfind.cpp:142
+msgid "Mode:"
+msgstr "Modus:"
+
+#: appmain/panelfind.cpp:159
+msgid "Fi&nd:"
+msgstr "Fi&nden:"
+
+#: appmain/panelfind.cpp:177
+msgid "Look in:"
+msgstr "Suche in:"
+
+#: appmain/panelfind.cpp:209
+msgid "Re&place with:"
+msgstr "Er&setzen mit:"
+
+#: appmain/panelfind.cpp:229
+msgid "Match &case"
+msgstr "&Klein-/Großschreibung beachten"
+
+#: appmain/panelfind.cpp:233
+msgid "Match &whole word"
+msgstr "&Ganzes Wort finden"
+
+#: appmain/panelfind.cpp:237
+msgid "Look in all &open documents"
+msgstr "In allen offenen Dokumenten suchen"
+
+#: appmain/panelfind.cpp:241
+msgid "Find &Previous"
+msgstr "&Rückwärtssuchen"
+
+#: appmain/panelfind.cpp:245
+msgid "&Find Next"
+msgstr "&Weitersuchen"
+
+#: appmain/panelfind.cpp:249
+msgid "&Replace"
+msgstr "&Ersetzen"
+
+#: appmain/panelfind.cpp:253
+msgid "Find &All"
+msgstr "Alle finden"
+
+#: appmain/panelfind.cpp:257
+msgid "Replace &All"
+msgstr "&Alles ersetzen"
+
+#: appmain/panelfind.cpp:259
+#: appmain/paneloptions.cpp:2337
+msgid "Options"
+msgstr "Einstellungen"
+
+#: appmain/panelfind.cpp:343
+msgid "Find and Replace"
+msgstr "Suchen und Ersetzen"
+
+#: appmain/panelfind.cpp:755
+msgid "Please enter a search location."
+msgstr "Bitte geben Sie einen Suchort ein:"
+
+#: appmain/panelgroup.cpp:61
+msgid "<Count>"
+msgstr "<Anzahl>"
+
+#: appmain/panelgroup.cpp:62
+msgid "<Group ID>"
+msgstr "<Gruppen-ID>"
+
+#: appmain/panelgroup.cpp:241
+#: appmain/querydoc.cpp:377
+msgid "Function"
+msgstr "Funktion"
+
+#: appmain/panelgroup.cpp:242
+msgid "Input Field"
+msgstr "Eingangsfeld"
+
+#: appmain/panelgroup.cpp:243
+#: appmain/querydoc.cpp:376
+msgid "Output Field"
+msgstr "Ausgangsfeld"
+
+#: appmain/panelgroup.cpp:263
+msgid "Group Filter:"
+msgstr "Gruppierungsfilter:"
+
+#: appmain/panelgroup.cpp:265
+msgid "Include Detail Records"
+msgstr "Detaildatensätze einschließen"
+
+#: appmain/panelgroup.cpp:342
+msgid "Group"
+msgstr "Gruppieren"
+
+#: appmain/panelgroup.cpp:584
+msgid ""
+"Select fields from the list on the left and\n"
+"drag them here to add them to the output table"
+msgstr ""
+"Wählen Sie Felder von der linken Liste und \n"
+"ziehen Sie sie hierher, um sie in die Ausgangstabelle einzufügen."
+
+#: appmain/panelgroup.cpp:630
+msgid "The output table could not be created."
+msgstr "Die Ausgangstabelle kann nicht erstellt werden."
+
+#: appmain/panelgroup.cpp:675
+msgid "Please specify at least one output field."
+msgstr "Bitte geben Sie mindestens ein Ausgangsfeld an."
+
+#: appmain/panelgroup.cpp:683
+msgid "The specified group query must return a boolean (true/false) result."
+msgstr "Die angegebene Gruppierungsanfrage muss einen logischen (wahr/falsch) Wert ergeben."
+
+#: appmain/panelgroup.cpp:725
+msgid "One or more of the output fields is empty.  Please specify a valid field name to continue."
+msgstr "Ein oder mehrere Ausgangsfelder sind leer. Bitte geben Sie einen gültigen Feldnamen an, um fortzufahren."
+
+#: appmain/panelgroup.cpp:738
+msgid "One or more of the input fields is empty.  Please specify an existing field to continue."
+msgstr "Ein oder mehrer Eingangsfelder sind leer. Bitte geben Sie ein existierendes Feld an, um fortzufahren."
+
+#: appmain/panelgroup.cpp:751
+#, c-format
+msgid "The specified input field '%s' does not exist."
+msgstr "Das angegebe Eingangsfeld '%s' existiert nicht."
+
+#: appmain/panelgroup.cpp:783
+msgid "Parameters for the count function must evaluate to either true or false."
+msgstr "Der Parameter für die Count-Funktion muss einen logischen Wert ergeben."
+
+#: appmain/panelgroup.cpp:800
+msgid "One or more group field definitions has an invalid function type."
+msgstr "Ein oder mehrere Gruppenfelderdefinitionen hat einen ungültigen Funktionstyp."
+
+#: appmain/panelgroup.cpp:836
+msgid "Two or more fields have the same output name, or may be conflicting with one of the fields in the detail output.  Please make sure that the name of each output field is unique."
+msgstr "Zwei oder mehrere Felder haben denselben Ausgangsnamen, oder stehen in Widerspruch zu einem der Felder in der Detailausgabe. Bitte überprüfen Sie, dass der Name von jedem Ausgangsfeld einmalig ist."
+
+#: appmain/panelgroup.cpp:842
+msgid "Two or more fields have the same output name.  Please make sure that the name of each output field is unique."
+msgstr "Zwei oder mehrere Felder haben denselben Ausgangsnamen. Bitte überprüfen Sie, dass der Name von jedem Ausgangsfeld einmalig ist."
+
+#: appmain/panelgroup.cpp:883
+msgid "No key grouping fields have been defined.  The group operation will treat the entire data set as one group. Click 'Ok' if you would like to continue, or 'Cancel' if you would like to go back and specify one or more group fields."
+msgstr "Kein Schlüsselgruppenfeld wurde definiert. Die Gruppenoperation wird alle Datensätze in der Tabelle als eine Gruppe betrachten.  Klicken Sie auf 'Ok', wenn Sie fortfahren möchten, oder auf 'Abbrechen' wenn Sie zurückgehen wollen un einen oder mehrere Gruppenfelder angeben wollen."
+
+#: appmain/panelindex.cpp:81
+msgid "Index names cannot contain the following characters:"
+msgstr "Indexnamen dürfen die folgenden Zeichen nicht enthalten:"
+
+#: appmain/panelindex.cpp:97
+msgid "Index names cannot begin with the following characters:"
+msgstr "Indexnamen dürfen mit den folgenden Zeichen nicht beginnen:"
+
+#: appmain/panelindex.cpp:164
+#: appmain/panelindex.cpp:186
+msgid "Indexes"
+msgstr "Indizes"
+
+#: appmain/panelindex.cpp:197
+msgid "This index has the same name as another index in this list"
+msgstr "Dieser Index hat denselben Namen wie ein anderer Index von dieser Liste."
+
+#: appmain/panelindex.cpp:200
+msgid "Index names cannot contain spaces"
+msgstr "Indexnamen dürfen keine Leerstellen enthalten"
+
+#: appmain/panelindex.cpp:210
+#: appmain/panelview.cpp:134
+msgid "Available Fields"
+msgstr "Vorhandene Felder"
+
+#: appmain/panelindex.cpp:219
+msgid "Index Fields"
+msgstr "Indexfelder"
+
+#: appmain/panelindex.cpp:250
+#: appmain/panelview.cpp:159
+msgid "Add"
+msgstr "Hinzufügen"
+
+#: appmain/panelindex.cpp:261
+#: appmain/panelview.cpp:170
+msgid "Delete"
+msgstr "Löschen"
+
+#: appmain/panelindex.cpp:506
+msgid ""
+"To create an index on this table,\n"
+"click the 'Add' button below"
+msgstr ""
+"Um einen Index zu erstellen,\n"
+"klicken Sie auf die Schaltfläche 'Hinzufügen'"
+
+#: appmain/panelindex.cpp:514
+#: appmain/panelview.cpp:333
+msgid ""
+"Select fields from the\n"
+"'Available Fields' list\n"
+"and drag them here"
+msgstr ""
+"Wählen Sie Felder\n"
+"von der linken Liste\n"
+"und ziehen Sie sie hierher"
+
+#: appmain/panelindex.cpp:587
+msgid "One or more of the index names is invalid.  Please make sure all index names are valid to continue."
+msgstr "Ein oder mehrere Indexnamen sind ungültig.  Bitte überprüfen Sie alle Indexnamen, ob sie gültig sind, um fortzufahren."
+
+#: appmain/panelindex.cpp:596
+msgid "No fields exist in the selected index.  Please add at least one field to the index to continue."
+msgstr "Kein Feld existiert in dem angegebenen Index. Bitte fügen Sie mindestens ein Feld zum Index dazu, um fortzufahren."
+
+#: appmain/panelindex.cpp:616
+msgid "index"
+msgstr "Index"
+
+#: appmain/paneljobmgr.cpp:509
+msgid "Jobs"
+msgstr "Jobs..."
+
+#: appmain/paneljobmgr.cpp:513
+msgid "Clean Up"
+msgstr "Aufräumen"
+
+#: appmain/paneljobscheduler.cpp:153
+msgid "This job is inactive and will not run until activated."
+msgstr "Dieser Job ist z.Zt. nicht aktiv und wird nicht ausgeführt, bevor er wieder aktiviert wird."
+
+#: appmain/paneljobscheduler.cpp:180
+msgid "Monday, "
+msgstr "Montag,"
+
+#: appmain/paneljobscheduler.cpp:182
+msgid "Tuesday, "
+msgstr "Dienstag,"
+
+#: appmain/paneljobscheduler.cpp:184
+msgid "Wednesday, "
+msgstr "Mittwoch,"
+
+#: appmain/paneljobscheduler.cpp:186
+msgid "Thursday, "
+msgstr "Donnerstag,"
+
+#: appmain/paneljobscheduler.cpp:188
+msgid "Friday, "
+msgstr "Freitag,"
+
+#: appmain/paneljobscheduler.cpp:190
+msgid "Saturday, "
+msgstr "Samstag,"
+
+#: appmain/paneljobscheduler.cpp:192
+msgid "Sunday, "
+msgstr "Sonntag,"
+
+#: appmain/paneljobscheduler.cpp:199
+msgid " and "
+msgstr " und "
+
+#: appmain/paneljobscheduler.cpp:214
+#, c-format
+msgid "At %s on %s"
+msgstr "Um %s am %s"
+
+#: appmain/paneljobscheduler.cpp:217
+#, c-format
+msgid "Every day at %s, beginning on %s"
+msgstr "Jeden Tag um %s, beginnend am %s"
+
+#: appmain/paneljobscheduler.cpp:220
+#, c-format
+msgid "Every %s at %s, beginning on %s"
+msgstr "Jeden %s um %s, erst am %s"
+
+#: appmain/paneljobscheduler.cpp:223
+#, c-format
+msgid "On day %s of every month at %s, beginning on %s"
+msgstr "Am %s. Tag des Monats um %s, beginnend am %s"
+
+#: appmain/paneljobscheduler.cpp:229
+#, c-format
+msgid " and ending at %s on %s"
+msgstr "und zum letzten Mal um %s, %s"
+
+#: appmain/paneljobscheduler.cpp:321
+msgid "Job Scheduler"
+msgstr "Geplante Jobs"
+
+#: appmain/paneljobscheduler.cpp:332
+msgid "Job Name"
+msgstr "Jobname"
+
+#: appmain/paneljobscheduler.cpp:333
+msgid "Schedule"
+msgstr "Zeitplanung"
+
+#: appmain/paneljobscheduler.cpp:356
+msgid "Processes"
+msgstr "Prozesse"
+
+#: appmain/paneljobscheduler.cpp:468
+msgid "Repeat every"
+msgstr "Läuft alle"
+
+#: appmain/paneljobscheduler.cpp:472
+msgid "minute(s)"
+msgstr "Minute(n)"
+
+#: appmain/paneljobscheduler.cpp:475
+msgid "Schedule this job daily"
+msgstr "Täglich"
+
+#: appmain/paneljobscheduler.cpp:486
+msgid "Monday"
+msgstr "Montag"
+
+#: appmain/paneljobscheduler.cpp:487
+msgid "Tuesday"
+msgstr "Dienstag"
+
+#: appmain/paneljobscheduler.cpp:488
+msgid "Wednesday"
+msgstr "Mittwoch"
+
+#: appmain/paneljobscheduler.cpp:489
+msgid "Thursday"
+msgstr "Donnerstag"
+
+#: appmain/paneljobscheduler.cpp:490
+msgid "Friday"
+msgstr "Freitag"
+
+#: appmain/paneljobscheduler.cpp:491
+msgid "Saturday"
+msgstr "Samstag"
+
+#: appmain/paneljobscheduler.cpp:492
+msgid "Sunday"
+msgstr "Sonntag"
+
+#: appmain/paneljobscheduler.cpp:513
+msgid "Schedule this job weekly"
+msgstr "Wöchentlich"
+
+#: appmain/paneljobscheduler.cpp:534
+msgid "Day"
+msgstr "Tag"
+
+#: appmain/paneljobscheduler.cpp:538
+msgid "of the month"
+msgstr "des Monats"
+
+#: appmain/paneljobscheduler.cpp:541
+msgid "Schedule this job monthly"
+msgstr "Monatlich"
+
+#: appmain/paneljobscheduler.cpp:553
+msgid "Schedule Job:"
+msgstr "Planung des Jobs"
+
+#: appmain/paneljobscheduler.cpp:560
+msgid "Once"
+msgstr "Einmal"
+
+#: appmain/paneljobscheduler.cpp:561
+msgid "Daily"
+msgstr "Täglich"
+
+#: appmain/paneljobscheduler.cpp:562
+msgid "Weekly"
+msgstr "Wöchentlich"
+
+#: appmain/paneljobscheduler.cpp:563
+msgid "Monthly"
+msgstr "Monatlich"
+
+#: appmain/paneljobscheduler.cpp:572
+msgid "End:"
+msgstr "Ende:"
+
+#: appmain/paneljobscheduler.cpp:601
+msgid "Begin:"
+msgstr "Beginn:"
+
+#: appmain/paneljobscheduler.cpp:714
+msgid ""
+"To add a scheduled job,\n"
+"double-click here"
+msgstr ""
+"Um einen geplanten Job hinzuzufügen,\n"
+"klicken Sie zweimal hier"
+
+#: appmain/paneljobscheduler.cpp:731
+msgid ""
+"Select scripts or queries from the\n"
+"Project Panel and drag them here\n"
+"to add processes to this job"
+msgstr ""
+"Selektieren Sie Skriptprogramme oder Abfragen\n"
+"von dem Projektpanel und ziehen Sie sie\n"
+"hierher, um diesem Job Scritte hinzuzufügen."
+
+#: appmain/paneljobscheduler.cpp:919
+#, c-format
+msgid "Job #%d"
+msgstr "Job %d"
+
+#: appmain/paneljobscheduler.cpp:1370
+msgid "One or more of the items dragged from the project panel is an external object and cannot be added to the command list."
+msgstr "Einen oder mehrere Artikel, die von dem Projektpanel verschoben worden sind, ist ein externes Objekt und kann nicht zu der Commandliste dazugefügt werden."
+
+#: appmain/paneljobscheduler.cpp:1408
+msgid "One or more of the items dragged from the project panel is not a batchable command.  Only scripts, queries and job templates can been added to a scheduled job."
+msgstr ""
+"Ein oder mehrere Artikel, die von dem Projektpanel verschoben wurden, sind nicht ausführbar.\n"
+"Nur Script-Programme, Abfragen und Jobvorlagen können einem geplanten Job hinzugefügt werden."
+
+#: appmain/panelmarkmgr.cpp:168
+msgid "Color"
+msgstr "Farbe"
+
+#: appmain/panelmarkmgr.cpp:170
+msgid "Formula"
+msgstr "Formel"
+
+#: appmain/panelmarkmgr.cpp:356
+msgid ""
+"To add a mark,\n"
+"double-click here"
+msgstr ""
+"Um eine Markierung hinzuzufügen,\n"
+"klicken Sie zweimal hier"
+
+#: appmain/panelmarkmgr.cpp:363
+msgid "Mark #"
+msgstr "Markierung #"
+
+#: appmain/panelmarkmgr.cpp:454
+#, c-format
+msgid "Mark - [%s] - %s"
+msgstr "Markieren - [%s]- %s"
+
+#: appmain/panelmarkmgr.cpp:716
+msgid "Delete &Marks"
+msgstr "Markierungen löschen"
+
+#: appmain/panelmarkmgr.cpp:720
+msgid "&Add Mark..."
+msgstr "Markierung hinzufügen..."
+
+#: appmain/panelmarkmgr.cpp:721
+msgid "&Edit Mark..."
+msgstr "Markierung bearbeiten..."
+
+#: appmain/panelmarkmgr.cpp:726
+msgid "Delete &Mark"
+msgstr "Markierung löschen"
+
+#: appmain/panelmarkmgr.cpp:730
+msgid "&Filter Records"
+msgstr "Datensätze filtern"
+
+#: appmain/panelmarkmgr.cpp:731
+msgid "C&opy Records"
+msgstr "Datensätze &kopieren"
+
+#: appmain/panelmarkmgr.cpp:732
+msgid "&Delete Records"
+msgstr "&Datensätze löschen"
+
+#: appmain/panelmarkmgr.cpp:733
+msgid "&Update Records"
+msgstr "Datensätze &aktualisieren"
+
+#: appmain/panelmarkmgr.cpp:829
+msgid ""
+"Performing this operation will permanently delete data.  Are you sure\n"
+"you want to delete the records that meet the selected condition?"
+msgstr ""
+"Die Ausführung dieser Operation wird Daten permanent löschen.\n"
+"Sind Sie sicher, dass Sie die Datensätze löschen wollen, die diese Kondition erfüllen?"
+
+#: appmain/panelmerge.cpp:77
+msgid "Merge"
+msgstr "Zusammenfügen"
+
+#: appmain/panelmerge.cpp:94
+#: appmain/panelsplit.cpp:202
+msgid "Tables"
+msgstr "Tabellen"
+
+#: appmain/panelmerge.cpp:99
+#: appmain/querydoc.cpp:284
+msgid "Output Table:"
+msgstr "Ausgangsdatei:"
+
+#: appmain/panelmerge.cpp:222
+#: appmain/querydoc.cpp:1112
+msgid "Select Output Table"
+msgstr "Ausgangstabelle wählen"
+
+#: appmain/panelmerge.cpp:242
+msgid ""
+"Select tables from the Project Panel and\n"
+"drag them here to append them to this table"
+msgstr ""
+"Wählen Sie Tabellen aus dem Projektpanel aus\n"
+"und ziehen Sie diese hierher, um sie zu dieser Tabelle hinzuzufügen."
+
+#: appmain/panelmerge.cpp:244
+msgid ""
+"Select tables from the Project Panel and\n"
+"drag them here to add them to the output table"
+msgstr ""
+"Wählen Sie Tabellen von dem Projektpanel und\n"
+"ziehen Sie sie hierher, um sie zu der Ausgangstabelle hinzuzufügen."
+
+#: appmain/panelmerge.cpp:258
+#: appmain/panelsplit.cpp:791
+msgid "You have selected either a folder or more than one table.  Please select only one table."
+msgstr "Sie haben entweder einen Ordner oder mehr als eine Tabelle ausgewählt.  Bitte wählen Sie nur eine Tabelle."
+
+#: appmain/panelmerge.cpp:269
+msgid "One or more of the items dragged from the project panel is an external table and cannot be specified as the output table."
+msgstr "Ein oder mehrere Artikel, die aus dem Projektpanel verschoben worden sind, sind externe Tabellen können nicht als Ausgangstabelle angegeben werden."
+
+#: appmain/panelmerge.cpp:338
+msgid "One or more of the items dragged from the project panel is an external table and cannot be added to the output table."
+msgstr "Ein oder mehrere Artikel, die aus dem Projektpanel verschoben worden sind, sind externe Tabellen und können zu der Ausgangstabelle nicht hinzugefügt werden."
+
+#: appmain/panelmerge.cpp:451
+msgid "Please specify at least one input table to be added to the output table."
+msgstr "Bitte geben Sie mindestens eine Eingangstabelle an, die zu der Ausgangstabelle hinzugefügt werden sollte."
+
+#: appmain/panelmerge.cpp:487
+#, c-format
+msgid "'%s' cannot be appended to itself.  Recursive append operations are not permitted."
+msgstr "'%s' kann nicht zu sich selbst hinzugefügt werden.  Rekursive Hinzugefügungsoperationen sind nicht gestattet."
+
+#: appmain/panelmerge.cpp:538
+#, c-format
+msgid "'%s' could not be opened.  Please make sure this is a valid table."
+msgstr "'%s' konnte nicht geöffnet werden.  Bitte überprüfen Sie, ob diese Tabelle gültig ist."
+
+#: appmain/paneloptions.cpp:38
+msgid "<Last Open Project>"
+msgstr "<Letztes Projekt>"
+
+#: appmain/paneloptions.cpp:78
+msgid "Show Project Manager"
+msgstr "Projektmanager anzeigen"
+
+#: appmain/paneloptions.cpp:88
+msgid "Automatically Load Project:"
+msgstr "Projekt automatisch öffnen:"
+
+#: appmain/paneloptions.cpp:121
+msgid "Startup"
+msgstr "Startup"
+
+#: appmain/paneloptions.cpp:143
+msgid "Use &Current Page"
+msgstr "&Aktuelle Seite benutzen"
+
+#: appmain/paneloptions.cpp:145
+msgid "Use &Blank Page"
+msgstr "&Neue Seite benutzen"
+
+#: appmain/paneloptions.cpp:155
+msgid "Home Page"
+msgstr "Startseite"
+
+#: appmain/paneloptions.cpp:170
+msgid "Navigation Toolbar Style:"
+msgstr "Navigations-Symbolleiste Stil:"
+
+#: appmain/paneloptions.cpp:175
+msgid "Small Icons"
+msgstr "Kleine Symbole"
+
+#: appmain/paneloptions.cpp:176
+msgid "Large Icons"
+msgstr "Große Symbole"
+
+#: appmain/paneloptions.cpp:177
+msgid "Large Icons with Text"
+msgstr "Große Symbole mit Text"
+
+#: appmain/paneloptions.cpp:193
+msgid "Reset Toolbars and Panels"
+msgstr "Standardeinstellung der Symbolleisten und Panels zurücksetzen"
+
+#: appmain/paneloptions.cpp:200
+msgid "Toolbars and Panels"
+msgstr "Symbolleisten und Panels"
+
+#: appmain/paneloptions.cpp:210
+msgid "Automatically check for updates (recommended)"
+msgstr "Automatische Aktualisierung durchführen (empfohlen)"
+
+#: appmain/paneloptions.cpp:412
+msgid "The current page is not a web document so it cannot be used as your home page."
+msgstr "Diese Seite ist kein Webdokument und kann nicht als Startseite verwendet werden."
+
+#: appmain/paneloptions.cpp:426
+msgid "Are you sure you want to reset the location and size of all toolbars and panels?"
+msgstr "Sind Sie sicher, dass Sie den Ort/ Namen und Größe aller Symbolleisten und Panels zurücksetzen wollen?"
+
+#: appmain/paneloptions.cpp:427
+msgid "Reset View?"
+msgstr "Ansicht zurücksetzen"
+
+#: appmain/paneloptions.cpp:644
+msgid "Show horizontal grid lines"
+msgstr "Horizontale Rahmenlinien zeigen"
+
+#: appmain/paneloptions.cpp:645
+msgid "Show vertical grid lines"
+msgstr "Veritkale Rahmenlinien zeigen"
+
+#: appmain/paneloptions.cpp:646
+msgid "Show shaded rows every..."
+msgstr "Schattierte Zeilen zeigen..."
+
+#: appmain/paneloptions.cpp:651
+msgid "Wrap text in character fields"
+msgstr "Zeilenumbruch in Zeichenfeldern"
+
+#: appmain/paneloptions.cpp:652
+msgid "Use check boxes for boolean fields"
+msgstr "Kontrollkästchen für Boolean-Felder verwenden"
+
+#: appmain/paneloptions.cpp:654
+msgid "View and Formatting"
+msgstr "Ansicht und Formatierung"
+
+#: appmain/paneloptions.cpp:679
+msgid "Text Color"
+msgstr "Textfarbe"
+
+#: appmain/paneloptions.cpp:694
+msgid "Background Color"
+msgstr "Hintergrund Farbe"
+
+#: appmain/paneloptions.cpp:709
+msgid "Line Color"
+msgstr "Gitterlinienfarbe"
+
+#: appmain/paneloptions.cpp:724
+msgid "Invalid Area Color"
+msgstr "Farbe des Gitterrahmens"
+
+#: appmain/paneloptions.cpp:739
+msgid "Shaded Row Color"
+msgstr "Schattierte Zeilenfarbe"
+
+#: appmain/paneloptions.cpp:769
+msgid "Colors and Font"
+msgstr "Farben und Schrift"
+
+#: appmain/paneloptions.cpp:805
+msgid "Text"
+msgstr "Text"
+
+#: appmain/paneloptions.cpp:807
+msgid "Date/Time"
+msgstr "Datum/Uhrzeit"
+
+#: appmain/paneloptions.cpp:821
+msgid "Text Cell (0,0)"
+msgstr "Textzelle (0,0)"
+
+#: appmain/paneloptions.cpp:823
+msgid "Text Cell (2,0)"
+msgstr "Textzelle (2,0)"
+
+#: appmain/paneloptions.cpp:889
+msgid "Preview"
+msgstr "Vorschau"
+
+#: appmain/paneloptions.cpp:1348
+msgid "Directly connect to the Internet"
+msgstr "Direkt mit dem Internet verbinden"
+
+#: appmain/paneloptions.cpp:1355
+msgid "Automatically detect proxy settings for this network"
+msgstr "Die Proxy-Einstellungen automatisch für dieses Netzwerk erkennen"
+
+#: appmain/paneloptions.cpp:1361
+msgid "Manually configure proxy settings"
+msgstr "Manuelle Proxy-Konfiguration"
+
+#: appmain/paneloptions.cpp:1369
+msgid "HTTP Proxy:"
+msgstr "HTTP Proxy:"
+
+#: appmain/paneloptions.cpp:1376
+#: appmain/paneloptions.cpp:1395
+#: appmain/paneloptions.cpp:1414
+#: appmain/paneloptions.cpp:1433
+msgid "Port:"
+msgstr "Port:"
+
+#: appmain/paneloptions.cpp:1388
+msgid "FTP Proxy:"
+msgstr "FTP Proxy:"
+
+#: appmain/paneloptions.cpp:1407
+msgid "SSL Proxy:"
+msgstr "SSL Proxy:"
+
+#: appmain/paneloptions.cpp:1426
+msgid "SOCKS Proxy:"
+msgstr "SOCKS Proxy:"
+
+#: appmain/paneloptions.cpp:1462
+msgid "Proxy Settings (Advanced)"
+msgstr "Proxyeinstellungen (Fortgeschritten)"
+
+#: appmain/paneloptions.cpp:1694
+msgid "Block pop-up windows"
+msgstr "Pop-up Fenster blockieren"
+
+#: appmain/paneloptions.cpp:1698
+msgid "Accept cookies from sites"
+msgstr "Annahme aller Cookies aus Internetseiten"
+
+#: appmain/paneloptions.cpp:1702
+msgid "Keep until they expire"
+msgstr "Behalten bis die abgelaufen sind"
+
+#: appmain/paneloptions.cpp:1708
+#, c-format
+msgid "Keep until %s is closed"
+msgstr "Behalten bis %s beendet wird"
+
+#: appmain/paneloptions.cpp:1715
+msgid "Clear Private Data"
+msgstr "Private Daten löschen"
+
+#: appmain/paneloptions.cpp:1722
+msgid "Pop-ups"
+msgstr "Pop-ups"
+
+#: appmain/paneloptions.cpp:1735
+msgid "Cookies"
+msgstr "Cookies"
+
+#: appmain/paneloptions.cpp:1815
+msgid "Are you sure you want to clear all private data?"
+msgstr "Sind Sie sicher, dass Sie alle privaten Daten löschen möchten?"
+
+#: appmain/paneloptions.cpp:1889
+msgid "Font"
+msgstr "Schrift"
+
+#: appmain/paneloptions.cpp:2074
+msgid "Show line numbers"
+msgstr "Zeilennummer anzeigen"
+
+#: appmain/paneloptions.cpp:2078
+msgid "Show syntax highlighting"
+msgstr "Syntax hervorheben"
+
+#: appmain/paneloptions.cpp:2082
+msgid "Show whitespace characters (spaces, tabs, etc.)"
+msgstr "Leerzeichen zeigen (Leerzeichen, Tabs, usw.)"
+
+#: appmain/paneloptions.cpp:2086
+msgid "Insert spaces"
+msgstr "Leerstellen einfügen"
+
+#: appmain/paneloptions.cpp:2093
+msgid "Keep tabs"
+msgstr "Registrierkarte behalten"
+
+#: appmain/paneloptions.cpp:2119
+#: appmain/paneloptions.cpp:2352
+msgid "General"
+msgstr "Allgemein"
+
+#: appmain/paneloptions.cpp:2132
+msgid "Tabs"
+msgstr "Registerkarten"
+
+#: appmain/paneloptions.cpp:2355
+msgid "Internet"
+msgstr "Internet"
+
+#: appmain/paneloptions.cpp:2358
+msgid "Privacy"
+msgstr "Datenschutz"
+
+#: appmain/paneloptions.cpp:2361
+msgid "Datasheet"
+msgstr "Datenblatt"
+
+#: appmain/paneloptions.cpp:2372
+msgid "Restore Defaults"
+msgstr "Standardeinstellungen wiederherstellen"
+
+#: appmain/paneloptions.cpp:2615
+msgid ""
+"Restoring the default general settings will cause you to lose your current settings.\n"
+"Do you want to continue?"
+msgstr ""
+"Die Wiederherstellung der generellen Standardeinstellungen führt zum Verlust der derzeitigen Einstellungen.\n"
+"Möchten Sie fortfahren?"
+
+#: appmain/paneloptions.cpp:2616
+#: appmain/paneloptions.cpp:2630
+#: appmain/paneloptions.cpp:2644
+#: appmain/paneloptions.cpp:2658
+#: appmain/paneloptions.cpp:2672
+#: appmain/paneloptions.cpp:2686
+msgid "Restore Defaults?"
+msgstr "Standardeinstellungen wiederherstellen?"
+
+#: appmain/paneloptions.cpp:2629
+msgid ""
+"Restoring the default Internet settings will cause you to lose your current settings.\n"
+"Do you want to continue?"
+msgstr ""
+"Die Wiederherstellung der Standard-Interneteinstellungen führt zum Verlust der derzeitigen Einstellungen.\n"
+"Möchten Sie fortfahren?"
+
+#: appmain/paneloptions.cpp:2643
+msgid ""
+"Restoring the default privacy settings will cause you to lose your current settings.\n"
+"Do you want to continue?"
+msgstr ""
+"Die Wiederherstellung der Standard-Dateneinstellungen führt zum Verlust der derzeitigen Einstellungen.\n"
+"Möchten Sie fortfahren?"
+
+#: appmain/paneloptions.cpp:2657
+msgid ""
+"Restoring the default datasheet settings will cause you to lose your current settings.\n"
+"Do you want to continue?"
+msgstr ""
+"Die Wiederherstellung der Standard-Datenblatteinstellungen führt zum Verlust der derzeitigen Einstellungen.\n"
+"Möchten Sie fortfahren?"
+
+#: appmain/paneloptions.cpp:2671
+msgid ""
+"Restoring the default report settings will cause you to lose your current settings.\n"
+"Do you want to continue?"
+msgstr ""
+"Die Wiederherstellung der Standard-Berichteinstellungen führt zum Verlust der derzeitigen Einstellungen.\n"
+"Möchten Sie fortfahren?"
+
+#: appmain/paneloptions.cpp:2685
+msgid ""
+"Restoring the default script settings will cause you to lose your current settings.\n"
+"Do you want to continue?"
+msgstr ""
+"Die Wiederherstellung der Standard-Skripteinstellungen führt zum Verlust der derzeitigen Einstellungen.\n"
+"Möchten Sie fortfahren?"
+
+#: appmain/panelrelationship.cpp:206
+#: appmain/querydoc.cpp:276
+msgid "Add Table..."
+msgstr "Tabelle hinzufügen..."
+
+#: appmain/panelrelationship.cpp:209
+msgid "Update Relationships"
+msgstr "Verknüpfungen aktualisieren"
+
+#: appmain/panelrelationship.cpp:288
+msgid "Would you like to save your changes and activate the specified relationships?"
+msgstr "Möchten Sie die Veränderungen speichern und die angegebenen Verknüpfungen speichern?"
+
+#: appmain/panelrelationship.cpp:294
+msgid "Would you like to save the changes made to the relationships?"
+msgstr "Möchten Sie die Veränderungen, die Sie an den Verknüpfungen vorgenommen haben, speichern."
+
+#: appmain/panelrelationship.cpp:389
+msgid "Circular relationships cannot be created."
+msgstr "Zirkuläre Verknüpfungen können nicht erstellt werden."
+
+#: appmain/panelreplacerows.cpp:55
+msgid "Update Records"
+msgstr "Datensätze aktualisieren"
+
+#: appmain/panelreplacerows.cpp:57
+msgid "When the following formula is true, replace values in"
+msgstr "Wenn die folgende Kondition erfüllt wird, Werte ersetzen in"
+
+#: appmain/panelreplacerows.cpp:58
+msgid "with"
+msgstr "mit"
+
+#: appmain/panelreplacerows.cpp:128
+msgid "Update"
+msgstr "Aktualisierung"
+
+#: appmain/panelreplacerows.cpp:280
+msgid "Value"
+msgstr "Wert"
+
+#: appmain/panelreplacerows.cpp:351
+msgid "No field has been selected to update.  Please select a valid field to update to continue."
+msgstr "Kein Feld zum Aktialisieren wurde gewählt.  Bitte wählen Sie ein gültiges Feld, um fortzufahren."
+
+#: appmain/panelreplacerows.cpp:359
+msgid "The selected field to update does not exist or is invalid.  Please select a valid field to update to continue."
+msgstr "Das angegebene Feld existiert nicht oder ist ungültig.  Bitte wählen Sie ein gültiges Feld zum Aktualisieren, um fortzufahren."
+
+#: appmain/panelreplacerows.cpp:367
+msgid "The replace value is not valid for the selected field.  Please enter a valid replace value for this field to continue."
+msgstr "Der angegebene Wert ist nicht gültig für das selektierte Feld.  Bitte geben Sie einen gültigen Wert für dieses Feld ein, um fortzufahren."
+
+#: appmain/panelreplacerows.cpp:376
+msgid ""
+"The formula entered for updating matching records is empty.  All values in the selected field will be replaced with\n"
+"the specified replace value.  Are you sure you want to continue?"
+msgstr "Die eingegebene Formel ist leer.  Alle Werte in der gewählten Spalte werden aktualisiert mit dem angegebenen Wert.  Möchten Sie fortfahren?"
+
+#: appmain/panelreplacerows.cpp:464
+msgid "Update Values"
+msgstr "Datensätze aktualisieren"
+
+#: appmain/panelsplit.cpp:155
+msgid "Divide By:"
+msgstr "Getrennt durch:"
+
+#: appmain/panelsplit.cpp:157
+msgid "Number of records"
+msgstr "Anzahl der Datensätze"
+
+#: appmain/panelsplit.cpp:158
+msgid "Number of tables"
+msgstr "Anzahl der Tabellen"
+
+#: appmain/panelsplit.cpp:159
+msgid "Table size"
+msgstr "Tabellengröße"
+
+#: appmain/panelsplit.cpp:168
+msgid "Source Table:"
+msgstr "Tabellenquelle:"
+
+#: appmain/panelsplit.cpp:180
+msgid "Table Prefix:"
+msgstr "Tabellenpräfix:"
+
+#: appmain/panelsplit.cpp:188
+msgid "Record Count:"
+msgstr "Datensatzanzahl"
+
+#: appmain/panelsplit.cpp:201
+msgid "Table Count:"
+msgstr "Tabellenanzahl:"
+
+#: appmain/panelsplit.cpp:214
+msgid "Table Size:"
+msgstr "Tabellengröße:"
+
+#: appmain/panelsplit.cpp:216
+msgid "MB"
+msgstr "MB"
+
+#: appmain/panelsplit.cpp:227
+msgid "Formula:"
+msgstr "Formel:"
+
+#: appmain/panelsplit.cpp:277
+msgid "Input Options"
+msgstr "Eingangseinstellungen"
+
+#: appmain/panelsplit.cpp:286
+msgid "Output Options"
+msgstr "Ausgangseinstellungen"
+
+#: appmain/panelsplit.cpp:364
+msgid "The source table specified is invalid.  Please specify a valid table to continue."
+msgstr "Die Quellentabelle ist ungültig.  Bitte geben Sie eine gültige Tabelle an, um fortzufahren."
+
+#: appmain/panelsplit.cpp:447
+msgid "ERROR"
+msgstr "FEHLER"
+
+#: appmain/panelsplit.cpp:802
+msgid "One or more of the items dragged from the project panel is an external table and cannot be specified as the source table."
+msgstr "Ein oder mehrere Artikel, die aus dem Projektpanel verschoben worden sind, sind externe Tabellen und können nicht als Quellentabelle angegeben werden."
+
+#: appmain/panelview.cpp:44
+msgid "-- Column Break --"
+msgstr "-- Spaltentrenner --"
+
+#: appmain/panelview.cpp:103
+msgid "Column Views"
+msgstr "&Spaltenansichten"
+
+#: appmain/panelview.cpp:125
+msgid "Views"
+msgstr "Ansichten"
+
+#: appmain/panelview.cpp:146
+msgid "Visible Fields"
+msgstr "Eingeblendete Felder"
+
+#: appmain/panelview.cpp:552
+msgid "view"
+msgstr "Ansicht"
+
+#: appmain/panelview.cpp:665
+msgid "No fields exist in the selected view.  Please add at least one field to the view to continue."
+msgstr "Kein Feld existiert in der angegebenen Ansicht. Bitte fügen Sie mindestens ein Feld zur Ansicht dazu, um fortzufahren."
+
+#: appmain/querydoc.cpp:280
+msgid "Select Distinct"
+msgstr "Select Distinct"
+
+#: appmain/querydoc.cpp:316
+msgid "Query Definition"
+msgstr "Abfragedefinition"
+
+#: appmain/querydoc.cpp:346
+msgid ""
+"To add source tables to this query, drag in\n"
+"tables from the Project Panel or double-click here"
+msgstr ""
+"Um zu dieser Abfrage Quell-Tabellen hinzuzufügen,\n"
+"ziehen Sie die entsprechenden Tabellen aus dem Projektpanel\n"
+"auf dieses Fenster oder klicken Sie zweimal hier."
+
+#: appmain/querydoc.cpp:375
+msgid "Input Formula"
+msgstr "Eingangsformel"
+
+#: appmain/querydoc.cpp:378
+msgid "Sort Order"
+msgstr "Sortierung"
+
+#: appmain/querydoc.cpp:379
+msgid "Criteria"
+msgstr "Kriterien"
+
+#: appmain/querydoc.cpp:380
+#: appmain/querydoc.cpp:381
+#: appmain/querydoc.cpp:382
+#: appmain/querydoc.cpp:383
+#: appmain/querydoc.cpp:384
+msgid "Or"
+msgstr "Oder"
+
+#: appmain/querydoc.cpp:422
+msgid "1. Ascending"
+msgstr "1. aufsteigend"
+
+#: appmain/querydoc.cpp:423
+msgid "2. Ascending"
+msgstr "2. aufsteigend"
+
+#: appmain/querydoc.cpp:424
+msgid "3. Ascending"
+msgstr "3. aufsteigend"
+
+#: appmain/querydoc.cpp:425
+msgid "4. Ascending"
+msgstr "4. aufsteigend"
+
+#: appmain/querydoc.cpp:426
+msgid "5. Ascending"
+msgstr "5. aufsteigend"
+
+#: appmain/querydoc.cpp:427
+msgid "6. Ascending"
+msgstr "6. aufsteigend"
+
+#: appmain/querydoc.cpp:428
+msgid "1. Descending"
+msgstr "1. absteigend"
+
+#: appmain/querydoc.cpp:429
+msgid "2. Descending"
+msgstr "2. absteigend"
+
+#: appmain/querydoc.cpp:430
+msgid "3. Descending"
+msgstr "4. absteigend"
+
+#: appmain/querydoc.cpp:431
+msgid "4. Descending"
+msgstr "4. absteigend"
+
+#: appmain/querydoc.cpp:432
+msgid "5. Descending"
+msgstr "5. absteigend"
+
+#: appmain/querydoc.cpp:433
+msgid "6. Descending"
+msgstr "6. absteigend"
+
+#: appmain/querydoc.cpp:958
+msgid "&Insert Field"
+msgstr "&Feld einfügen"
+
+#: appmain/querydoc.cpp:962
+msgid "&Insert Fields"
+msgstr "&Felder einfügen"
+
+#: appmain/querydoc.cpp:970
+msgid "Select &All"
+msgstr "&Alles markieren"
+
+#: appmain/querydoc.cpp:1145
+msgid "One or more of the items is a folder.  Folders cannot be added to the relationship diagram."
+msgstr "Ein oder mehrere von den Artikeln sind Ordner. Ordner könne nicht in ein Verknüpfungsdiagramm hinzugefügt werden."
+
+#: appmain/querydoc.cpp:1153
+msgid "One or more of the items is an external table.  External tables cannot be added to the relationship diagram."
+msgstr "Ein oder mehrere von den Artikel sind eine externe Tabelle. Externe Tabelllen können nicht in ein Verknüpfungsdiagramm hinzugefügt werden."
+
+#: appmain/querydoc.cpp:1164
+msgid "One or more of the items is not a table.  Items that are not tables cannot be added to the relationship diagram."
+msgstr "Ein oder mehrere von den Artikeln ist keine Tabelle. Artikel, die keine  Tabelllen sind, können nicht in ein Verknüpfungsdiagramm hinzugefügt werden."
+
+#: appmain/querydoc.cpp:1184
+msgid "One or more of the items could not be found in the project."
+msgstr "Ein oder mehrere von den Artikeln konnen nicht im Projekt gefunden werden."
+
+#: appmain/querydoc.cpp:1226
+msgid "The data set already exists in the diagram."
+msgstr "Die Datentabelle exisiert bereits in dem Diagramm."
+
+#: appmain/querydoc.cpp:1360
+msgid "Inner Join"
+msgstr "Inner Join"
+
+#: appmain/querydoc.cpp:1361
+msgid "Left Outer Join"
+msgstr "Left Outer Join"
+
+#: appmain/querydoc.cpp:1363
+msgid "Delete Relation"
+msgstr "Relation löschen"
+
+#: appmain/querydoc.cpp:1793
+msgid ""
+"To add output fields to this query, drag in\n"
+"fields from the above tables or double-click here"
+msgstr ""
+"Um Ausgangsfelder zu dieser Abfrage hinzuzufügen,\n"
+"ziehen Sie Felder von den Tabellen\n"
+"oder klicken Sie zweimal hier. "
+
+#: appmain/querydoc.cpp:2011
+msgid "A query is already running.  Please wait until the query has finished running or cancel the job."
+msgstr "Die Abfrage läuft bereits. Bitte warten Sie bis die Abfrage zu Ende gelaufen ist oder brechen Sie den Job ab."
+
+#: appmain/querydoc.cpp:2187
+msgid "There was an error saving the specified query."
+msgstr "Es gab einen Fehler beim Speichern der angegebenen Abfrage."
+
+#: appmain/querydoc.cpp:2315
+msgid "Please specify a primary selection table."
+msgstr "Bitte geben Sie die primäre Selektionstabelle an."
+
+#: appmain/querydoc.cpp:2327
+msgid "Please specify at the most one primary selection table."
+msgstr "Bitte geben Sie höchstens eine primäre Selektionstabelle an."
+
+#: appmain/querydoc.cpp:2336
+msgid "No query parameters are currently specified.  Please add at least one parameter to the query definition."
+msgstr "Keine Abfragenparameter sind derzeit angegeben.  Bitte fügen Sie mindestens einen Parameter zu der Abfragendenfinition hinzu."
+
+#: appmain/querydoc.cpp:2373
+msgid "An input field or formula is missing."
+msgstr "Ein Eingangsfeld oder eine Formel fehlt."
+
+#: appmain/querydoc.cpp:2442
+msgid "The sort order has an error.  Two or more identical sort specifiers have been found."
+msgstr "Die Sortierung ist fehlerhaft. Zwei oder mehrere identischen Sortierungsfelder wurden spezifiziert."
+
+#: appmain/querydoc.cpp:2487
+msgid "The query condition contains an error."
+msgstr "Die Abfragekondition enthält Fehler."
+
+#: appmain/querydoc.cpp:2503
+msgid "The constructed SQL statement is empty."
+msgstr "Die konstruierte SQL-Anweisung ist leer."
+
+#: appmain/relationdiagram.cpp:169
+msgid "Add Table"
+msgstr "Tabelle hinzufügen"
+
+#: appmain/relationdiagram.cpp:191
+msgid "The table could not be opened. It may currently be in use."
+msgstr "Die Tabelle konnte nicht geöffnet werden.  Sie wird eventuell bereits benutzt."
+
+#: appmain/relationdiagram.cpp:1286
+msgid "Multi-field relationships cannot be created at one time.  Please connect each pair of fields individually."
+msgstr "Mulit-Feld Vernküpfungen können nicht zur selben Zeit erstellt werden. Bitte verbinden Sie jedes Paar der Felder individuell."
+
+#: appmain/relationdiagram.cpp:1508
+msgid ""
+"To add tables, double-click here\n"
+"or drag in tables from the Project Panel"
+msgstr ""
+"Um Tabellen hinzuzufügen, klicken Sie zweimal hier\n"
+"oder ziehen Sie Tabellen von dem Projektpanel."
+
+#: appmain/relationdiagram.cpp:1976
+msgid "Removing this table from the diagram will remove all relationships associated with this table.  Would you like to continue?"
+msgstr "Löschen Sie diese Tabelle vom Diagramm, dann löschen Sie auch alle damit verbundenen Verknüpfungen mit dieser Tabellle. Möchten Sie fortfahren?"
+
+#: appmain/relationdiagram.cpp:2317
+msgid "One or more of the tables was not added because it already exists in the relationship diagram."
+msgstr "Eine oder mehrer dieser Tabellen wurde nicht hinzugefügt, weil diese bereits in dem Verknüpfungsdiagramm existieren."
+
+#: appmain/reportdoc.cpp:670
+msgid "PDF Files"
+msgstr "PDF-Dateien"
+
+#: appmain/reportdoc.cpp:895
+msgid "All Image Files"
+msgstr "Alle Grafikdateien"
+
+#: appmain/reportdoc.cpp:897
+msgid "Bitmap Files"
+msgstr "Bitmap-Dateien"
+
+#: appmain/reportdoc.cpp:899
+msgid "JPEG Images"
+msgstr "JPEG-Dateien"
+
+#: appmain/reportdoc.cpp:901
+msgid "PNG Images"
+msgstr "PNG-Dateien"
+
+#: appmain/reportdoc.cpp:903
+msgid "Graphics Interface Files"
+msgstr "GIF-Dateien"
+
+#: appmain/reportdoc.cpp:908
+msgid "Choose File(s)"
+msgstr "Datei(en) wählen"
+
+#: appmain/reportdoc.cpp:2722
+msgid "Source: "
+msgstr "Quelldatei:"
+
+#: appmain/reportdoc.cpp:2724
+#, c-format
+msgid "Page: %s"
+msgstr "Seite: %s"
+
+#: appmain/reportdoc.cpp:2727
+#, c-format
+msgid "Page Count: %s"
+msgstr "Seitenanzahl: %s"
+
+#: appmain/reportdoc.cpp:3313
+msgid "Only one item can be selected as the source for a report."
+msgstr "Nur ein Objekt kann als Quelle für den Bericht ausgewählt werden."
+
+#: appmain/reportdoc.cpp:3330
+msgid "The selected item could not be found in the project."
+msgstr "Das ausgewählte Objekt konnte nicht geöffnet werden."
+
+#: appmain/reportdoc.cpp:3549
+msgid "To set the data source for this report, drag in"
+msgstr "Um die Quellendatei für diesen Bericht zu erstellen, ziehen Sie"
+
+#: appmain/reportdoc.cpp:3550
+msgid "a table from the Project Panel or double-click here"
+msgstr "eine Tabelle von dem Projektpanel oder klicken Sie zweimal hier."
+
+#: appmain/reportdoc.cpp:3645
+msgid "Insert &Fields..."
+msgstr "&Felder einfügen"
+
+#: appmain/reportdoc.cpp:3651
+msgid "<Current Date>"
+msgstr "<Heutiges Datum>"
+
+#: appmain/reportdoc.cpp:3652
+msgid "<Data Source>"
+msgstr "<Datenquelle>"
+
+#: appmain/reportdoc.cpp:3654
+msgid "<Page Number>"
+msgstr "<Seitennummer>"
+
+#: appmain/reportdoc.cpp:3655
+msgid "<Page Count>"
+msgstr "<Seitenanzahl>"
+
+#: appmain/reportdoc.cpp:3656
+msgid "<Page Number> of <Page Count>"
+msgstr "<Seitennummer> von <Seitenanzahl>"
+
+#: appmain/reportdoc.cpp:3657
+msgid "Page <Page Number>"
+msgstr "Seite <Seitennummerr>"
+
+#: appmain/reportdoc.cpp:3658
+msgid "Page <Page Number> of <Page Count>"
+msgstr "Seite <Seitennummberr> von <Seitenanzahl>"
+
+#: appmain/reportdoc.cpp:3660
+msgid "Custom Formula..."
+msgstr "Beliebige Formel..."
+
+#: appmain/reportdoc.cpp:3662
+msgid "Insert For&mula"
+msgstr "Formel einfügen"
+
+#: appmain/reportdoc.cpp:3673
+msgid "&Insert Row"
+msgstr "Reihen einfügen"
+
+#: appmain/reportdoc.cpp:3674
+msgid "&Delete Row"
+msgstr "Reihen löschen"
+
+#: appmain/reportdoc.cpp:3681
+msgid "&Insert Column"
+msgstr "&Spalten einfügen..."
+
+#: appmain/reportdoc.cpp:3682
+msgid "&Delete Column"
+msgstr "&Spalten löschen"
+
+#: appmain/reportdoc.cpp:3686
+msgid "Clear Co&ntents"
+msgstr "&Inhalte löschen"
+
+#: appmain/reportdoc.cpp:3690
+msgid "&Report Settings..."
+msgstr "Berichteinstellungen..."
+
+#: appmain/reportdoc.cpp:4274
+#, c-format
+msgid "Page number (1 - %d):"
+msgstr "Seitennummer (1 - %d):"
+
+#: appmain/reportdoc.cpp:4275
+msgid "Go To Page"
+msgstr "Gehe zu Seite"
+
+#: appmain/reportmodel.cpp:467
+msgid "True"
+msgstr "Wahr"
+
+#: appmain/reportmodel.cpp:467
+msgid "False"
+msgstr "Falsch"
+
+#: appmain/scriptdlg.cpp:429
+msgid "Choose a directory"
+msgstr "Ordner wählen"
+
+#: appmain/scriptdlg.cpp:553
+msgid "Enter Text"
+msgstr "Text eingeben"
+
+#: appmain/scriptdlg.cpp:722
+msgid "Enter Password"
+msgstr "Password eingeben"
+
+#: appmain/scriptdlg.cpp:735
+msgid "Choose Color"
+msgstr "Farbe wählen"
+
+#: appmain/scripthost.cpp:1260
+msgid "No error"
+msgstr "Kein Fehler"
+
+#: appmain/scripthost.cpp:1264
+msgid "Missing open brace"
+msgstr "Öffnende Klammer '{ ' fehlt"
+
+#: appmain/scripthost.cpp:1268
+msgid "Missing close brace"
+msgstr "Schließende Klammer ' }' fehlt"
+
+#: appmain/scripthost.cpp:1272
+msgid "Missing open bracket"
+msgstr "Öffnende Klammer '[ ' fehlt"
+
+#: appmain/scripthost.cpp:1276
+msgid "Missing close bracket"
+msgstr "Schließende Klammer ' ] ' fehlt"
+
+#: appmain/scripthost.cpp:1280
+msgid "Missing open parenthesis '('"
+msgstr "Öffnende Klammer '(' fehlt"
+
+#: appmain/scripthost.cpp:1284
+msgid "Missing close parenthesis ')'"
+msgstr "Schließende Klammer '(' fehlt"
+
+#: appmain/scripthost.cpp:1288
+msgid "Missing colon ':'"
+msgstr "Doppelpunkt ':' fehlt"
+
+#: appmain/scripthost.cpp:1292
+msgid "Missing semicolon ';'"
+msgstr "Semikolon  ';' fehlt"
+
+#: appmain/scripthost.cpp:1296
+msgid "Missing quotation mark"
+msgstr "Anführungszeichen ( \" ) fehlt"
+
+#: appmain/scripthost.cpp:1300
+msgid "Missing operator"
+msgstr "Fehlender Operator"
+
+#: appmain/scripthost.cpp:1304
+msgid "Missing 'catch' or 'finally' statement"
+msgstr "Fehlende 'catch'- oder 'finally'-Anweisung"
+
+#: appmain/scripthost.cpp:1308
+msgid "Missing base class"
+msgstr "Fehlende Basisklasse"
+
+#: appmain/scripthost.cpp:1312
+msgid "Malformed statement"
+msgstr "Fehlerhafte Anweisung"
+
+#: appmain/scripthost.cpp:1316
+msgid "Missing or invalid include file"
+msgstr "Fehlende oder ungültige Include-Datei"
+
+#: appmain/scripthost.cpp:1320
+#, c-format
+msgid "Undeclared identifier: '%s'"
+msgstr "Bezeicher nicht deklariert: '%s'"
+
+#: appmain/scripthost.cpp:1324
+#, c-format
+msgid "Invalid identifier or reserved word: '%s'"
+msgstr "Ungültiger Bezeichner oder reserviertes Wort: '%s'"
+
+#: appmain/scripthost.cpp:1328
+#, c-format
+msgid "Variable redefinition: '%s'"
+msgstr "Redefinition von Variable '%s'"
+
+#: appmain/scripthost.cpp:1332
+#, c-format
+msgid "Invalid parameter type(s) for function '%s'"
+msgstr "Ungültiger Parametertyp für Funktion '%s'"
+
+#: appmain/scripthost.cpp:1336
+msgid "Unterminated string"
+msgstr "Zeichenkette wird nicht beendet"
+
+#: appmain/scripthost.cpp:1340
+msgid "Malformed numeric constant"
+msgstr "Ungültiger numerische Konstante"
+
+#: appmain/scripthost.cpp:1344
+msgid "This construction is only allowed in class scope"
+msgstr "Diese Konstruktion ist nur im Klassebereich erlaubt."
+
+#: appmain/scripthost.cpp:1348
+#, c-format
+msgid "Unknown escape sequence '%s'"
+msgstr "Unbekannte Entfernungssequenz '%s'"
+
+#: appmain/scripthost.cpp:1352
+msgid "Unexpected token"
+msgstr "Unerwartetes Token"
+
+#: appmain/scripthost.cpp:1356
+msgid "Syntax error"
+msgstr "Syntaxfehler"
+
+#: appmain/scripthost.cpp:1361
+#: appmain/scripthost.cpp:1451
+msgid "Unknown Error"
+msgstr "Unbekannter Fehler"
+
+#: appmain/scripthost.cpp:1402
+msgid "Uncaught exception."
+msgstr "Ungefangene Exception"
+
+#: appmain/scripthost.cpp:1406
+msgid "Syntax error."
+msgstr "Syntaxfehler."
+
+#: appmain/scripthost.cpp:1410
+msgid "Type error."
+msgstr "Typ Fehler"
+
+#: appmain/scripthost.cpp:1414
+msgid "Range error."
+msgstr "Bereichsfehler."
+
+#: appmain/scripthost.cpp:1421
+#, c-format
+msgid "Reference error: while evaluating '%ls'."
+msgstr "Referenzfehler: '%ls'"
+
+#: appmain/scripthost.cpp:1427
+msgid "Reference error."
+msgstr "Referenzfehler."
+
+#: appmain/scripthost.cpp:1433
+msgid "No entry point."
+msgstr "Kein Startpunkt."
+
+#: appmain/scripthost.cpp:1437
+msgid "Object expected, but is missing."
+msgstr "Objekt erwartet, aber fehlt."
+
+#: appmain/scripthost.cpp:1441
+msgid "Object type mismatch (possibly missing 'new' operator)"
+msgstr "Objekttyp passt nicht (vielleicht fehlende 'new'-Anweisung)"
+
+#: appmain/scripthost.cpp:1445
+#, c-format
+msgid "Term '%s' does not evaluate to a function."
+msgstr "Term '%s' berechnet sich zu einer Funktion nicht."
+
+#: appmain/scripthostapp.cpp:1587
+msgid "Tools"
+msgstr "Extras"
+
+#: appmain/structuredoc.cpp:194
+msgid "Decimals"
+msgstr "Dezimale"
+
+#: appmain/structuredoc.cpp:307
+#: appmain/structuredoc.cpp:1597
+msgid "Would you like to save the changes made to the table's structure?"
+msgstr "Möchten Sie die Veränderungen, die Sie an der Tabellenstruktur vorgenommen haben, speichern?"
+
+#: appmain/structuredoc.cpp:644
+msgid "One or more of the calculated fields that is selected is new to the table's structure.  Only calculated fields that already exist in the table's structure can be converted to fixed fields."
+msgstr "Ein oder mehrere selektierte berechnete Felder sind in dieser Tabellenstruktur neu.  Nur berechnete Felder, die schon existieren, dürfen in feste Felder konvertiert werden."
+
+#: appmain/structuredoc.cpp:814
+#, c-format
+msgid "Modifying Structure of '%s'"
+msgstr "Die Struktur von '%s' modifizieren"
+
+#: appmain/structuredoc.cpp:1109
+#: appmain/structuredoc.cpp:1148
+msgid "The structure cannot be modified while the table is showing filtered related records."
+msgstr "Die Struktur kann nicht modifiziert werden, während die Tabelle gefilterte bezogene Datensätze anzeigt."
+
+#: appmain/structuredoc.cpp:1167
+msgid "The table you want to modify is currently showing filtered records.  Modifying the table will remove the filter.  Would you like to continue?"
+msgstr "Die Tabelle, die Sie derzeit modifizieren wollen zeigt gefilterte Datensätze. Die Modifizierung der Tabelle wird den Filter löschen. Möchten Sie fortfahren?"
+
+#: appmain/structuredoc.cpp:1280
+#, c-format
+msgid "Field Count: %d"
+msgstr "Feldanzahl: %d"
+
+#: appmain/structuredoc.cpp:1281
+#, c-format
+msgid "Record Width: %d"
+msgstr "Datensatzbreite: %d"
+
+#: appmain/structuredoc.cpp:1298
+msgid ""
+"To add fields to this table, drag in fields\n"
+"from the Fields Panel or double-click here"
+msgstr ""
+"Um Felder zu dieser Tabelle hinzuzufügen, ziehen Sie die Felder\n"
+"von den Feldpanels oder klicken Sie zweimal hier."
+
+#: appmain/structuredoc.cpp:1774
+msgid ""
+"This field has the same name as another field\n"
+"in this list and has an invalid name"
+msgstr ""
+"Dieses Feld hat denselben Namen wie ein anderes Feld\n"
+"von dieser Liste und hat einen ungültigen Namen."
+
+#: appmain/structuredoc.cpp:1779
+msgid "This field has the same name as another field in this list"
+msgstr "Dieses Feld hat denselben Namen wie ein anderes Feld von dieser Liste."
+
+#: appmain/structuredoc.cpp:1781
+msgid "This field has an invalid name"
+msgstr "Dieses Feld hat einen ungültigen Namen"
+
+#: appmain/structuredoc.cpp:1800
+msgid "This formula has a return type that does not match the field type"
+msgstr "Diese Formel ergibt einen Wert, dessen Typ dem Feldtyp nicht passt."
+
+#: appmain/structuredoc.cpp:1802
+msgid "This formula has invalid syntax"
+msgstr "Diese Fomel hat eine ungültige Syntax"
+
+#: appmain/structuredoc.cpp:2160
+msgid "Insert &Calculated Field"
+msgstr "Kalkuliertes Feld einfügen"
+
+#: appmain/structuredoc.cpp:2164
+msgid "Convert to Fixed Field"
+msgstr "Zu fixiertem Feld umwandeln"
+
+#: appmain/structurevalidator.cpp:27
+msgid "There are no fields in the table structure.  Add at least one field to the table to continue."
+msgstr "Es gibt keine Felder in der Tabellenstruktur.  Bitte fügen Sie mindestens ein Feld der Tabelle hinzu, um fortzufahren."
+
+#: appmain/structurevalidator.cpp:28
+#: appmain/structurevalidator.cpp:38
+#: appmain/structurevalidator.cpp:48
+#: appmain/structurevalidator.cpp:68
+msgid "Invalid Table Structure"
+msgstr "Ungültige Tabellenstruktur"
+
+#: appmain/structurevalidator.cpp:37
+msgid "The source table structure is invalid or corrupt.  This file cannot be opened in the Table View."
+msgstr "Die Quellentabellen Struktur ist ungültig oder korrupt. Diese Datei kann in der Tabellenansicht nicht geöffnet werden."
+
+#: appmain/structurevalidator.cpp:47
+msgid "Two or more fields have the same name.  Check to make sure all field names are unique to continue."
+msgstr "Zwei oder mehrer Felder haben denselben Namen. Bitte überprüfen Sie, ob alle Feldnamen einmalig sind, um fortzufahren."
+
+#: appmain/structurevalidator.cpp:57
+msgid "Two or more tables have the same name.  Check to make sure all table names are unique to continue."
+msgstr "Zwei oder mehrer Tabellen haben denselben Namen. Bitte überprüfen Sie, ob alle Tabellennamen einmalig sind, um fortzufahren."
+
+#: appmain/structurevalidator.cpp:58
+msgid "Duplicate Table Names"
+msgstr "Duplizierte Tabellennamen"
+
+#: appmain/structurevalidator.cpp:67
+msgid "One or more field names are invalid.  Check to make sure all field names are valid to continue."
+msgstr "Ein oder mehrere Feldnamen sind ungültig. Bitte überprüfen Sie alle Feldnamen, ob sie gültig sind, um fortzufahren."
+
+#: appmain/structurevalidator.cpp:77
+msgid "One or more table names are invalid.  Check to make sure all table names are valid to continue."
+msgstr "Eine oder mehrere Tabellennamen sind ungültig. Bitte überprüfen Sie alle Tabellennamen nach ihrer Gültigkeit, um forzufahren."
+
+#: appmain/structurevalidator.cpp:78
+msgid "Invalid Table Names"
+msgstr "Ungültige Tabellennamen"
+
+#: appmain/structurevalidator.cpp:86
+msgid "One or more formulas has invalid syntax.  Check to make sure all formulas have valid syntax to continue."
+msgstr "Eine oder mehrere Formeln haben ein ungültigen Syntax. Bitte überprüfen Sie alle Formeln nach gültiger Syntax, um weiter fortzufahren."
+
+#: appmain/structurevalidator.cpp:87
+#: appmain/structurevalidator.cpp:96
+msgid "Invalid Formula(s)"
+msgstr "Ungültige Formel(en)"
+
+#: appmain/structurevalidator.cpp:95
+msgid "One or more of the formulas has a return type that does not match the field type.  Would you like to continue?"
+msgstr "Eine oder mehrere Formel haben einen Ergebnistyp, der dem Feldtyp nicht passt.  Möchten Sie trotzdem fortfahren?"
+
+#: appmain/tabledoc.cpp:553
+#: appmain/tabledoc.cpp:583
+#: appmain/tabledoc.cpp:589
+#: appmain/tabledoc.cpp:593
+msgid "Field Info"
+msgstr "Feldinfo"
+
+#: appmain/tabledoc.cpp:593
+msgid "Decimal Places"
+msgstr "Dezimalstellen"
+
+#: appmain/tabledoc.cpp:597
+msgid "Column Foreground"
+msgstr "Spalte in den Vordergrund"
+
+#: appmain/tabledoc.cpp:601
+msgid "Column Background"
+msgstr "Spalte in den Hintergrund"
+
+#: appmain/tabledoc.cpp:605
+msgid "Column Width (pixels)"
+msgstr "Spaltenbreite (pixels)"
+
+#: appmain/tabledoc.cpp:608
+msgid "Default"
+msgstr "Standard"
+
+#: appmain/tabledoc.cpp:609
+msgid "Left"
+msgstr "Links"
+
+#: appmain/tabledoc.cpp:610
+msgid "Center"
+msgstr "Zentriert"
+
+#: appmain/tabledoc.cpp:611
+msgid "Right"
+msgstr "Rechts"
+
+#: appmain/tabledoc.cpp:615
+msgid "Column Alignment"
+msgstr "Spaltenausrichtung"
+
+#: appmain/tabledoc.cpp:1534
+msgid "The file could not be saved in the specified location.  The destination location may by in use."
+msgstr "Die Datei konnte nicht in dem angegebenen Speicherort gesichert werden.  Der Speicherort wird wahrscheinlich gerade benutzt."
+
+#: appmain/tabledoc.cpp:1599
+#: appmain/tabledoc.cpp:1715
+#: appmain/tabledoc.cpp:1731
+#, c-format
+msgid "Saving '%s' as '%s'"
+msgstr "Speichern '%s' als '%s'"
+
+#: appmain/tabledoc.cpp:1650
+msgid "Comma-Delimited Interchange Files"
+msgstr "Kommagetrennte Austauchdateien (*.csv)"
+
+#: appmain/tabledoc.cpp:1669
+#: appmain/tabledoc.cpp:1713
+msgid "Untitled"
+msgstr "Unbenannt"
+
+#: appmain/tabledoc.cpp:1843
+msgid "The file could not be reloaded, because the file is locked or marked as read only"
+msgstr "Die Datei konnte nicht erneut geladen werden, da die Datei als schreibgeschütz markiert oderverschlüsselt ist."
+
+#: appmain/tabledoc.cpp:1961
+#: appmain/tabledocapi.cpp:28
+#, c-format
+msgid "Filtering '%s'"
+msgstr "Filtere  '%s'"
+
+#: appmain/tabledoc.cpp:2079
+#, c-format
+msgid "Sum: %s"
+msgstr "Summe: %s"
+
+#: appmain/tabledoc.cpp:2148
+#: appmain/tabledoc.cpp:2154
+#, c-format
+msgid "Position: %s"
+msgstr "Position: %s"
+
+#: appmain/tabledoc.cpp:2149
+#, c-format
+msgid "Record Count: %s"
+msgstr "Datensatzanzahl: %s"
+
+#: appmain/tabledoc.cpp:2728
+msgid "Default View"
+msgstr "Standardansicht"
+
+#: appmain/tabledoc.cpp:3066
+msgid "Filtered"
+msgstr "Gefiltert"
+
+#: appmain/tabledoc.cpp:3451
+msgid "Default Order"
+msgstr "Standardsortierung"
+
+#: appmain/tabledoc.cpp:3666
+#: appmain/tabledoc.cpp:3900
+msgid "&Remove Sort/Filter"
+msgstr "&Sortierung/Filter entfernen"
+
+#: appmain/tabledoc.cpp:3668
+msgid "&Mark Records"
+msgstr "Datensätze &markieren"
+
+#: appmain/tabledoc.cpp:3895
+msgid "Sort &Ascending"
+msgstr "&Aufsteigend sortieren"
+
+#: appmain/tabledoc.cpp:3896
+msgid "&Sort Descending"
+msgstr "&Absteigend sortieren"
+
+#: appmain/tabledoc.cpp:3898
+msgid "Sort &Orders"
+msgstr "Sortierungen"
+
+#: appmain/tabledoc.cpp:3902
+msgid "Insert &Group Break"
+msgstr "Gruppentrenner einblenden"
+
+#: appmain/tabledoc.cpp:3903
+msgid "Re&move Group Break"
+msgstr "&Gruppentrenner ausblenden"
+
+#: appmain/tabledoc.cpp:3914
+msgid "Column &Views"
+msgstr "&Spaltenansichten"
+
+#: appmain/tabledoc.cpp:4350
+msgid "[Matching Records]"
+msgstr "Passende Datensätze"
+
+#: appmain/tabledoc.cpp:4374
+msgid "[Matching Records And Context]"
+msgstr "Passende Datensätze mit Kontext"
+
+#: appmain/tabledoc.cpp:4461
+msgid "&Delete Record"
+msgstr "&Datensätze löschen"
+
+#: appmain/tabledoc.cpp:4532
+#, c-format
+msgid "Name: %s, Type: %s, Width: %d, Decimals: %d"
+msgstr "Name: %s, Type: %s, Breite: %d, Dezimalzahlen: %d"
+
+#: appmain/tabledoc.cpp:4664
+msgid "The database table does not have a primary key specified, which is required for editing data values."
+msgstr "Diese Datentabelle hat keinen primären Schlüssel.  Ein primärer Schlüssel wird benötigt, um einen Wert zu ändern."
+
+#: appmain/tabledoc.cpp:4892
+msgid "The date entered was not formatted correctly."
+msgstr "Die Eingabe des Datums war nicht korrekt formatiert."
+
+#: appmain/tabledoc.cpp:5387
+msgid "One or more of the selected calculated fields does not exist."
+msgstr "Eine oder meherer ausgewählte, berechnete Felder existieren nicht."
+
+#: appmain/tabledoc.cpp:5395
+msgid "This operation may only be performed on calculated fields."
+msgstr "Diese Operation kann nur an kalkulierten Feldern ausgeführt werden."
+
+#: appmain/tabledoc.cpp:5582
+msgid "Unable to delete records on external files."
+msgstr "Datensätze von externen Daten können nicht gelöscht werden."
+
+#: appmain/tabledoc.cpp:5650
+#, c-format
+msgid ""
+"Performing this operation will permanently delete data.  Are you sure\n"
+"you want to delete %d record(s)?"
+msgstr ""
+"Bei der Ausführung dieser Operation werden die Daten permanent gelöscht.\n"
+"Sind Sie sicher, dass Sie diese %d Datensätze löschen wollen?"
+
+#: appmain/tabledoc.cpp:5780
+msgid ""
+"Performing this operation will permanently delete data.  Are you sure\n"
+"you want to delete the following field(s):"
+msgstr ""
+"Bei der Ausführung dieser Operation werden die Daten permanent gelöscht.\n"
+"Sind Sie sicher, dass Sie die folgenden Felder löschen wollen?"
+
+#: appmain/tabledoc.cpp:6004
+msgid "Only a single cell may be cut."
+msgstr "Nur eine einzige Zelle wird wahrscheinlich geschnitten."
+
+#: appmain/tabledoc.cpp:6406
+#, c-format
+msgid "Summarizing '%s'"
+msgstr "'%s' wird zusammengefasst"
+
+#: appmain/tabledoc.cpp:6509
+msgid "Please wait while the data is being searched..."
+msgstr "Bitte warten Sie, solange die Daten durchsucht werden..."
+
+#: appmain/tabledoc.cpp:6759
+#, c-format
+msgid "Record number (1 - %s):"
+msgstr "Datensatznummer (1 - %s)"
+
+#: appmain/tabledoc.cpp:6761
+msgid "Go To Record"
+msgstr "Gehe zu Datensatz"
+
+#: appmain/tabledoc.cpp:7178
+msgid "The beginning of the data has been reached."
+msgstr "Der Anfang der Daten wurde erreicht."
+
+#: appmain/tabledoc.cpp:7184
+msgid "The end of the data has been reached."
+msgstr "Das Ende der Daten wurde erreicht."
+
+#: appmain/tabledoc.cpp:7276
+msgid ""
+"Select fields from the list on the left and\n"
+"drag them here to define the table sort order"
+msgstr ""
+"Wählen Sie Felder von der linken Liste und ziehen Sie die Felder hierher, \n"
+"um die Tabellensortierungsordnung zu definieren."
+
+#: appmain/tabledoc.cpp:7288
+msgid "Sort"
+msgstr "Sortieren"
+
+#: appmain/tabledoc.cpp:7514
+#, c-format
+msgid "Copying Records from '%s'"
+msgstr "Datensätze kopieren von '%s'"
+
+#: appmain/tabledoc.cpp:7578
+msgid "Copy"
+msgstr "Kopieren"
+
+#: appmain/tabledoc.cpp:7732
+#: appmain/toolbars.cpp:171
+msgid "Filter"
+msgstr "Filtern"
+
+#: appmain/tabledoc.cpp:7784
+#, c-format
+msgid "Deleting records in '%s'"
+msgstr "Datensätze löschen in '%s'"
+
+#: appmain/tabledocapi.cpp:97
+#: appmain/tabledocapi.cpp:126
+#, c-format
+msgid "Sorting '%s'"
+msgstr "Sortiere '%s'"
+
+#: appmain/tabledocapi.cpp:175
+#, c-format
+msgid "Mark #%d"
+msgstr "Markierung #%d"
+
+#: appmain/textdoc.cpp:77
+msgid ""
+"Performing this operation will overwrite any changes that have already been made to the table structure.\n"
+"Are you sure you want to continue?"
+msgstr ""
+"Wenn Sie diese Operation ausführen, werden die Veränderungen, die Sie an der Tabellenstruktur bereits gemacht haben, überschrieben.\n"
+"Sind Sie sicher, dass Sie fortfahren wollen?"
+
+#: appmain/textdoc.cpp:307
+msgid "Text-Delimited"
+msgstr "Deliminierte-Texte"
+
+#: appmain/textdoc.cpp:308
+msgid "Fixed-Length"
+msgstr "Feste Breite"
+
+#: appmain/textdoc.cpp:310
+msgid "ASCII/Unicode"
+msgstr "ASCII/Unicode"
+
+#: appmain/textdoc.cpp:311
+#: appmain/textview.cpp:2323
+msgid "EBCDIC"
+msgstr "EBCDIC"
+
+#: appmain/textdoc.cpp:313
+msgid "Comma (,)"
+msgstr "Komma (,)"
+
+#: appmain/textdoc.cpp:315
+msgid "Semicolon (;)"
+msgstr "Semikolon (;)"
+
+#: appmain/textdoc.cpp:316
+msgid "Space ( )"
+msgstr "Leerzeile ( )"
+
+#: appmain/textdoc.cpp:317
+msgid "Pipe (|)"
+msgstr "Pipe (|)"
+
+#: appmain/textdoc.cpp:319
+#: appmain/textdoc.cpp:324
+#: appmain/transformationdoc.cpp:327
+#: appmain/transformationdoc.cpp:335
+#: appmain/transformationdoc.cpp:348
+#: appmain/transformationdoc.cpp:356
+msgid "Other..."
+msgstr "Sonstige..."
+
+#: appmain/textdoc.cpp:487
+msgid "Would you like to save the changes you made to the configuration?"
+msgstr "Möchten Sie die Veränderungen, die Sie in der Konfiguration gemacht haben, speichern?"
+
+#: appmain/textdoc.cpp:912
+msgid "Encoding:"
+msgstr "Kodierung:"
+
+#: appmain/textdoc.cpp:953
+msgid "Start Offset:"
+msgstr "Beginnoffset:"
+
+#: appmain/textdoc.cpp:957
+msgid "Row Width:"
+msgstr "Reihenbreite:"
+
+#: appmain/textdoc.cpp:979
+msgid "Rows end with CR/LF"
+msgstr "Reihenende mit CR/LF"
+
+#: appmain/textdoc.cpp:1000
+msgid "Field Delimiters:"
+msgstr "Felddelimiter:"
+
+#: appmain/textdoc.cpp:1003
+msgid "Text Qualifier:"
+msgstr "Texterkennungszeichen:"
+
+#: appmain/textdoc.cpp:1122
+#, c-format
+msgid "Offset: %d"
+msgstr "Offset: %d"
+
+#: appmain/textview.cpp:976
+#, c-format
+msgid "Field%d"
+msgstr "Feld%d"
+
+#: appmain/textview.cpp:2318
+msgid "Rename Column"
+msgstr "Spalte umbenennen"
+
+#: appmain/textview.cpp:2320
+msgid "Default Encoding"
+msgstr "Standardkodierung"
+
+#: appmain/textview.cpp:2321
+msgid "ASCII"
+msgstr "ASCII"
+
+#: appmain/textview.cpp:2322
+msgid "Unicode UCS-2"
+msgstr "Unicode UCS-2"
+
+#: appmain/textview.cpp:2324
+msgid "COMP Numeric"
+msgstr "COMP Numerisch"
+
+#: appmain/textview.cpp:2325
+msgid "COMP-3 Numeric"
+msgstr "COMP-3 Numerisch"
+
+#: appmain/toolbars.cpp:98
+msgid "Find/Filter..."
+msgstr "Finde/Filter..."
+
+#: appmain/toolbars.cpp:153
+msgid "Find/Filter"
+msgstr "Finde/Filter"
+
+#: appmain/toolbars.cpp:165
+msgid "Back"
+msgstr "Zurück"
+
+#: appmain/toolbars.cpp:166
+msgid "Forward"
+msgstr "Vorwärts"
+
+#: appmain/toolbars.cpp:167
+#: appmain/toolbars.cpp:177
+msgid "Refresh"
+msgstr "Aktualisieren"
+
+#: appmain/toolbars.cpp:168
+#: appmain/toolbars.cpp:178
+msgid "Stop"
+msgstr "Stopp"
+
+#: appmain/toolbars.cpp:169
+msgid "Home"
+msgstr "Startseite"
+
+#: appmain/toolbars.cpp:170
+msgid "Bookmark"
+msgstr "Lesezeichen"
+
+#: appmain/toolbars.cpp:172
+#: appmain/toolbars.cpp:182
+msgid "Find Next"
+msgstr "Weitersuchen"
+
+#: appmain/toolbars.cpp:173
+msgid "View"
+msgstr "Ansicht"
+
+#: appmain/toolbars.cpp:175
+msgid "Go Back"
+msgstr "Gehe zurück"
+
+#: appmain/toolbars.cpp:176
+msgid "Go Forward"
+msgstr "Gehe vorwärts"
+
+#: appmain/toolbars.cpp:179
+msgid "Go Home"
+msgstr "Zur Startseite"
+
+#: appmain/toolbars.cpp:180
+msgid "Bookmark This Location"
+msgstr "Lesezeichen für diese Seite hinzufügen"
+
+#: appmain/toolbars.cpp:181
+msgid "Quick Filter"
+msgstr "Schnellfilter"
+
+#: appmain/toolbars.cpp:183
+msgid "Switch Document View"
+msgstr "Dokumentenansicht wechseln"
+
+#: appmain/toolbars.cpp:475
+msgid "Undo"
+msgstr "Rückgängig machen"
+
+#: appmain/toolbars.cpp:476
+msgid "Redo"
+msgstr "Wiederholen"
+
+#: appmain/toolbars.cpp:477
+msgid "Zoom Out"
+msgstr "Ansicht verkleinern"
+
+#: appmain/toolbars.cpp:478
+msgid "Zoom In"
+msgstr "Ansicht vergrößern"
+
+#: appmain/toolbars.cpp:479
+msgid "Bold"
+msgstr "Fett"
+
+#: appmain/toolbars.cpp:480
+msgid "Italic"
+msgstr "Kursiv"
+
+#: appmain/toolbars.cpp:481
+msgid "Underline"
+msgstr "Unterstreichen"
+
+#: appmain/toolbars.cpp:482
+msgid "Align Left"
+msgstr "Linksbündig"
+
+#: appmain/toolbars.cpp:483
+msgid "Align Center"
+msgstr "Zentriert"
+
+#: appmain/toolbars.cpp:484
+msgid "Align Right"
+msgstr "Rechtsbündig"
+
+#: appmain/toolbars.cpp:488
+msgid "Wrap Text"
+msgstr "Text umbrechen"
+
+#: appmain/toolbars.cpp:489
+msgid "Merge Cells"
+msgstr "Zellen zusammenfügen"
+
+#: appmain/toolbars.cpp:490
+msgid "Border Style"
+msgstr "Randstil"
+
+#: appmain/toolbars.cpp:492
+msgid "Fill Color"
+msgstr "Füllfarbe"
+
+#: appmain/transformationdoc.cpp:324
+msgid "Trim leading spaces"
+msgstr "Führende Leerzeilen löschen"
+
+#: appmain/transformationdoc.cpp:325
+msgid "Trim leading zeros"
+msgstr "Führende Nullen löschen"
+
+#: appmain/transformationdoc.cpp:326
+msgid "Trim leading spaces and zeros"
+msgstr "Führende Leerzeilen und Nullen löschen"
+
+#: appmain/transformationdoc.cpp:347
+msgid "Julian Date"
+msgstr "Julianisches Datum"
+
+#: appmain/transformationdoc.cpp:355
+msgid "Not 0/0"
+msgstr "kein 0/0"
+
+#: appmain/transformationdoc.cpp:439
+msgid "Format/Formula"
+msgstr "Format/Formel"
+
+#: appmain/updater.cpp:35
+msgid "Checking for updates..."
+msgstr "Nach Updates suchen..."
+
+#: appmain/updater.cpp:206
+msgid "Downloading Update"
+msgstr "Aktuelle Version herunterladen.."
+
+#: appmain/updater.cpp:208
+#: appmain/webdoc.cpp:86
+#: appmain/webdoc.cpp:527
+msgid "$C KB downloaded"
+msgstr "$C KB heruntergeladen"
+
+#: appmain/updater.cpp:209
+#: appmain/webdoc.cpp:87
+#: appmain/webdoc.cpp:528
+msgid "$C of $M KB downloaded ($p1%)"
+msgstr "$C von $M KB heruntergeladen ($p1%)"
+
+#: appmain/updater.cpp:567
+#: appmain/updater.cpp:670
+#, c-format
+msgid "There are currently jobs running.  Please update %s after all running jobs are completed."
+msgstr "Es sind Jobs am Laufen. Bitte aktualisieren Sie %s nach dem alle laufenden Jobs beendet sind. "
+
+#: appmain/updater.cpp:575
+msgid "The update has finished downloading.  Would you like to install the update now?"
+msgstr "Das Herunterladen der Updates ist beendet.  Möchten Sie die Updates jetzt installieren?"
+
+#: appmain/updater.cpp:737
+#, c-format
+msgid "This version of %s (%s) is the current version."
+msgstr "Diese Version von %s (%s) ist die aktuelle Version."
+
+#: appmain/updater.cpp:748
+#, c-format
+msgid "A new version of %s is available.  Would you like to download it?"
+msgstr "Eine neue Version von %s ist verfügbar.  Möchten Sie sie herunterladen?"
+
+#: appmain/webdoc.cpp:81
+#: appmain/webdoc.cpp:522
+#, c-format
+msgid "Downloading '%s' to '%s'"
+msgstr "Herunterladen '%s' zu '%s'"
+
+#: appmain/webdoc.cpp:179
+msgid "Extension Download"
+msgstr "Erweiterung herunterladen"
+
+#: appmain/webdoc.cpp:180
+msgid ""
+"Would you like to download this extension or install it now?\n"
+"\n"
+"Please be aware that extensions can contain routines that may damage or destroy information on your computer and/or could violate your privacy.  We strongly recommend that you only install extensions from a trusted source."
+msgstr ""
+"Möchten Sie diese Erweiterung jetzt installieren oder nur auf Ihre Festplatten herunterladen?\n"
+"\n"
+"Bitte beachten Sie, dass es möglich ist, dass Erweiterungen Routinen beinhalten, die Informationen auf Ihrem Computer beeinträchtigen oder zerstören und/oder Datenschutz verletzen könnten."
+
+#: appmain/webdoc.cpp:183
+msgid "Download"
+msgstr "Datei herunterladen"
+
+#: appmain/webdoc.cpp:184
+msgid "Install Now"
+msgstr "Jetzt installieren"
+
+#: appmain/webdoc.cpp:269
+msgid "Installation of the extension was not possible, because the extension's format could not be determined."
+msgstr "Die Installation der Erweiterung war nicht möglich, weil das Erweiterungsformat nicht bestimmt werden konnte. "
+
+#: appmain/webdoc.cpp:1049
+msgid "File Download"
+msgstr "Datei herunterladen"
+
+#: appmain/webdoc.cpp:1055
+msgid "Would you like to open or save this file?"
+msgstr "Möchten Sie diese Datei öffnen oder speichern?"
+
+#: appmain/webdoc.cpp:1059
+msgid "Filename:"
+msgstr "Dateiname:"
+
+#: appmain/webdoc.cpp:2023
+msgid "Open in &New Tab"
+msgstr "In einer &neuen Registerkarte öffnen"
+
+#: appmain/webdoc.cpp:2025
+msgid "Save Lin&k As..."
+msgstr "Link speichern &unter..."
+
+#: appmain/webdoc.cpp:2030
+msgid "&Back"
+msgstr "&Zurück"
+
+#: appmain/webdoc.cpp:2031
+msgid "&Forward"
+msgstr "Vorwärts"
+
+#: appmain/webdoc.cpp:2032
+msgid "&Refresh"
+msgstr "&Aktualisieren"
+
+#: appmain/webdoc.cpp:2033
+msgid "&Stop"
+msgstr "&Stopp"
+
+#: appmain/webdoc.cpp:2035
+msgid "Save Pag&e As..."
+msgstr "Seite speichern &unter..."
+
+#: appmain/webdoc.cpp:2041
+msgid "Copy &Link"
+msgstr "&Verknüpfung kopieren"
+
+#: appmain/webdoc.cpp:2046
+msgid "&Import Table"
+msgstr "&Tabelle importieren"
+
+#: appmain/webdoc.cpp:2050
+msgid "&View Page Source"
+msgstr "Quelltext der Seite anzeigen"
+
+#: appmain/webdoc.cpp:2052
+msgid "&View Web Page"
+msgstr "&Webseite anzeigen"
+
+#: appmain/webdoc.cpp:2148
+msgid "A project must be open to import a table."
+msgstr "Ein Projekt muss geöffnet werden, um die Tabelle zu importieren."
+
+#: appmain/webdoc.cpp:2589
+#: appmain/webdoc.cpp:2600
+#, c-format
+msgid "Downloading '%s'"
+msgstr "Herunterladen '%s'"
+
+#: kcl/colorpanel.cpp:114
+msgid "Default Color"
+msgstr "Standardfarbe"
+
+#: kcl/colorpanel.cpp:131
+msgid "No Color"
+msgstr "Keine Farbe"
+
+#: kcl/colorpanel.cpp:340
+msgid "More Fill Colors..."
+msgstr "Mehr Füllfarben..."
+
+#: kcl/colorpanel.cpp:343
+msgid "No Fill Color"
+msgstr "Keine Füllfarbe..."
+
+#: kcl/colorpanel.cpp:347
+msgid "More Line Colors..."
+msgstr "Mehr Linienfarben"
+
+#: kcl/colorpanel.cpp:350
+msgid "No Line Color"
+msgstr "Keine Linienfarbe"
+
+#: kcl/colorpanel.cpp:354
+msgid "More Text Colors..."
+msgstr "Mehr Textfarben..."
+
+#: kcl/colorpanel.cpp:358
+msgid "More Colors..."
+msgstr "Mehr Farben..."
+
+#: kcl/colorpanel.cpp:406
+msgid "More Fill Colors"
+msgstr "Mehr Füllfarben"
+
+#: kcl/colorpanel.cpp:408
+msgid "More Line Colors"
+msgstr "Mehr Linienfarben"
+
+#: kcl/colorpanel.cpp:410
+msgid "More Text Colors"
+msgstr "Mehr Textfarben"
+
+#: kcl/colorpanel.cpp:412
+msgid "More Colors"
+msgstr "Mehr Farben"
+
+#: kcl/gridvalidator.cpp:58
+msgid "This item has the same name as another item in this list"
+msgstr "Das Object hat den gleichen Namen wie eine andere Tabelle aus der Liste."
+
+#: kcl/gridvalidator.cpp:67
+msgid "Item names cannot contain spaces"
+msgstr "Objektnamen dürfen keine Leerstellen enthalten"
+
+#: kcl/wizard.cpp:49
+msgid "Previous"
+msgstr "Zurück"
+
+#: kcl/wizard.cpp:50
+msgid "Next"
+msgstr "Nächste"
+
+#: kcl/wizard.cpp:51
+#: kcl/wizard.cpp:317
+msgid "Finish"
+msgstr "Fertig"
+
+#: cfw/fspanel.cpp:545
+msgid "Filesystem Panel"
+msgstr "Dateisystem Panel"
+
+#: cfw/fspanel.cpp:1143
+msgid "List"
+msgstr "Liste"
+
+#: cfw/jobinfo.cpp:89
+msgid "Records Processed:"
+msgstr "Datensätze verarbeitet:"
+
+#: cfw/jobinfo.cpp:116
+msgid "Total Records:"
+msgstr "Gesamte Datensätze"
+
+#: cfw/jobinfo.cpp:143
+msgid "Percentage:"
+msgstr "Prozent:"
+
+#: cfw/jobinfo.cpp:170
+msgid "Elapsed Time:"
+msgstr "Benötigte Zeit:"
+
+#: cfw/jobinfo.cpp:178
+msgid "Paused"
+msgstr "Pause"
+
+#: cfw/jobinfo.cpp:180
+msgid "Queued"
+msgstr "In Warteschlange"
+
+#: cfw/jobinfo.cpp:213
+#, c-format
+msgid "%02d:%02d:%02d elapsed"
+msgstr "%02d:%02d:%02d benötigt"
+
+#: cfw/jobinfo.cpp:228
+#, c-format
+msgid "Running (%s)"
+msgstr "Ausführen (%s)"
+
+#: cfw/jobinfo.cpp:231
+#, c-format
+msgid "Finished on %s at %s (%s)"
+msgstr "Beendet am %s at %s (%s)"
+
+#: cfw/jobinfo.cpp:237
+#, c-format
+msgid "Cancelling (%s)"
+msgstr "Abbrechen (%s)"
+
+#: cfw/jobinfo.cpp:240
+#, c-format
+msgid "Cancelled on %s at %s (%s)"
+msgstr "Abgebrochen am %s um %s (%s)"
+
+#: cfw/jobinfo.cpp:245
+#, c-format
+msgid "Failed on %s at %s (%s)"
+msgstr "Fehlgeschlagen am %s um %s (%s)"
+
+#: cfw/propertiespanel.cpp:58
+msgid "Properties"
+msgstr "Eigenschaften"
+
+#: appmain/appprint.h:100
+#, c-format
+msgid "Printing '%s'"
+msgstr "Drucken '%s'"
+
+#: appmain/appprint.h:105
+msgid "$c pages printed"
+msgstr "$c Seiten gedruckt"
+
+#: appmain/appprint.h:106
+#: appmain/appprint.h:112
+msgid "$c of $m pages printed ($p1%)"
+msgstr "$c von $m Seiten gedruckt ($p1%)"
+
+#: appmain/appprint.h:111
+msgid "$c page printed"
+msgstr "$c Seite gedruckt"
+
+#: appmain/exprbuilder.h:230
+msgid "Formula Builder"
+msgstr "Formelentwurf"
+
+#: appmain/exprbuilder.h:272
+msgid "Key Builder"
+msgstr "Schlüsselentwurf"
+

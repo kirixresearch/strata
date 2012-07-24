@@ -1,0 +1,21 @@
+Index: treectrl.cpp
+===================================================================
+RCS file: /pack/cvsroots/wxwidgets/wxWidgets/src/msw/treectrl.cpp,v
+retrieving revision 1.249.2.2
+diff -u -r1.249.2.2 treectrl.cpp
+--- treectrl.cpp	2007/03/30 12:57:15	1.249.2.2
++++ treectrl.cpp	2007/04/17 08:31:53
+@@ -2796,6 +2796,13 @@
+             // set ES_WANTRETURN ( like we do in BeginLabelEdit )
+             if ( event.IsAllowed() )
+             {
++                // prevent a drag drop from happening during edit --
++                // m_htClickedItem usually gets unset when in the WM_LBUTTONUP
++                // handler, but this handler is not called when an label
++                // is edited
++                m_htClickedItem.Unset();
++            
++
+                 HWND hText = TreeView_GetEditControl(GetHwnd());
+                 if ( hText )
+                 {

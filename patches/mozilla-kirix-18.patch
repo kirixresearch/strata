@@ -1,0 +1,174 @@
+? obj-xulrunner
+? prep.bat
+Index: extensions/java/xpcom/nsJavaWrapper.cpp
+===================================================================
+RCS file: /cvsroot/mozilla/extensions/java/xpcom/nsJavaWrapper.cpp,v
+retrieving revision 1.33.6.5
+diff -u -r1.33.6.5 nsJavaWrapper.cpp
+--- extensions/java/xpcom/nsJavaWrapper.cpp	15 Jun 2006 16:16:12 -0000	1.33.6.5
++++ extensions/java/xpcom/nsJavaWrapper.cpp	24 Sep 2006 09:27:29 -0000
+@@ -989,7 +989,7 @@
+     {
+       if (NS_SUCCEEDED(aInvokeResult)) {
+         jdouble value = (aType == nsXPTType::T_DOUBLE) ? aVariant.val.d :
+-                                                         aVariant.val.u64;
++                                                         ((__int64)aVariant.val.u64);
+         if (aParamInfo.IsRetval() && !aIsArrayElement) {
+           *aParam = env->NewObject(doubleClass, doubleInitMID, value);
+         } else if ((aParamInfo.IsOut() || aIsArrayElement) && *aParam) {
+Index: extensions/java/xpcom/nsJavaXPTCStub.cpp
+===================================================================
+RCS file: /cvsroot/mozilla/extensions/java/xpcom/nsJavaXPTCStub.cpp,v
+retrieving revision 1.33.4.5
+diff -u -r1.33.4.5 nsJavaXPTCStub.cpp
+--- extensions/java/xpcom/nsJavaXPTCStub.cpp	15 Jun 2006 16:16:12 -0000	1.33.4.5
++++ extensions/java/xpcom/nsJavaXPTCStub.cpp	24 Sep 2006 09:27:30 -0000
+@@ -733,7 +733,7 @@
+     {
+       if (!aParamInfo.IsOut()) {  // 'in'
+         aJValue.d = (tag == nsXPTType::T_DOUBLE) ? aVariant.val.d :
+-                                                   aVariant.val.u64;
++                                                   ((__int64)aVariant.val.u64);
+         aMethodSig.Append('D');
+       } else {  // 'inout' & 'out'
+         if (aVariant.val.p) {
+Index: security/manager/ssl/src/nsNSSComponent.cpp
+===================================================================
+RCS file: /cvsroot/mozilla/security/manager/ssl/src/nsNSSComponent.cpp,v
+retrieving revision 1.126.2.6
+diff -u -r1.126.2.6 nsNSSComponent.cpp
+--- security/manager/ssl/src/nsNSSComponent.cpp	16 May 2006 01:24:30 -0000	1.126.2.6
++++ security/manager/ssl/src/nsNSSComponent.cpp	24 Sep 2006 09:28:31 -0000
+@@ -1362,8 +1362,13 @@
+                                 getter_AddRefs(profilePath));
+     if (NS_FAILED(rv)) {
+       PR_LOG(gPIPNSSLog, PR_LOG_ERROR, ("Unable to get profile directory\n"));
+-      return rv;
++      ConfigureInternalPKCS11Token();
++      SECStatus init_rv = NSS_NoDB_Init(NULL);
++      if (init_rv != SECSuccess)
++        return NS_ERROR_NOT_AVAILABLE;
+     }
++    else
++    {
+ 
+   // XP_MAC == CFM
+   // XP_MACOSX == MachO
+@@ -1441,9 +1446,12 @@
+         PR_LOG(gPIPNSSLog, PR_LOG_DEBUG, ("can not init in r/o either\n"));
+         which_nss_problem = problem_no_security_at_all;
+ 
+-        NSS_NoDB_Init(profileStr.get());
++        init_rv = NSS_NoDB_Init(profileStr.get());
++        if (init_rv != SECSuccess)
++          return NS_ERROR_NOT_AVAILABLE;
+       }
+-    }
++    } // have profile dir
++    } // lock
+ 
+     // init phase 3, only if phase 2 was successful
+ 
+Index: storage/src/mozStorageAsyncIO.cpp
+===================================================================
+RCS file: /cvsroot/mozilla/storage/src/mozStorageAsyncIO.cpp,v
+retrieving revision 1.1.2.15
+diff -u -r1.1.2.15 mozStorageAsyncIO.cpp
+--- storage/src/mozStorageAsyncIO.cpp	2 Aug 2006 16:10:46 -0000	1.1.2.15
++++ storage/src/mozStorageAsyncIO.cpp	24 Sep 2006 09:28:37 -0000
+@@ -1094,7 +1094,7 @@
+ //
+ //    This method holds the mutex from start to finish because it has to
+ //    go through the whole queue and apply any changes to the file.
+-
++#pragma optimize( "", off )
+ int // static
+ AsyncRead(OsFile* aFile, void *aBuffer, int aCount)
+ {
+@@ -1187,7 +1187,7 @@
+ asyncread_out:
+   return rc;
+ }
+-
++#pragma optimize( "", on )
+ 
+ // AsyncSeek
+ //
+Index: storage/test/storage1.cpp
+===================================================================
+RCS file: /cvsroot/mozilla/storage/test/storage1.cpp,v
+retrieving revision 1.4.18.1
+diff -u -r1.4.18.1 storage1.cpp
+--- storage/test/storage1.cpp	23 Jan 2006 05:25:02 -0000	1.4.18.1
++++ storage/test/storage1.cpp	24 Sep 2006 09:28:38 -0000
+@@ -115,4 +115,6 @@
+ 
+     TEST_CHECK_ERROR(rv);
+     fprintf (stderr, "Done. %d 0x%08x %p\n", rv, rv, dbRow.get());
++    
++    return 0;
+ }
+Index: toolkit/components/downloads/src/nsDownloadManager.cpp
+===================================================================
+RCS file: /cvsroot/mozilla/toolkit/components/downloads/src/nsDownloadManager.cpp,v
+retrieving revision 1.53.2.10
+diff -u -r1.53.2.10 nsDownloadManager.cpp
+--- toolkit/components/downloads/src/nsDownloadManager.cpp	13 Jul 2006 20:08:29 -0000	1.53.2.10
++++ toolkit/components/downloads/src/nsDownloadManager.cpp	24 Sep 2006 09:28:46 -0000
+@@ -2034,7 +2034,7 @@
+   if (elapsedSecs > 0) {
+     nsUint64 curTotalProgress = (PRUint64)aCurTotalProgress;
+     nsUint64 diffBytes = curTotalProgress - nsUint64(mCurrBytes);
+-    double speed = double(diffBytes) / elapsedSecs;
++    double speed = double((PRInt64)(PRUint64)diffBytes) / elapsedSecs;
+     if (LL_IS_ZERO(mCurrBytes))
+       mSpeed = speed;
+     else {
+@@ -2330,14 +2330,14 @@
+ NS_IMETHODIMP
+ nsDownload::GetAmountTransferred(PRUint64* aAmountTransferred)
+ {
+-  *aAmountTransferred = ((PRFloat64)mCurrBytes / 1024.0 + .5);
++  *aAmountTransferred = ((PRFloat64)(PRInt64)(PRUint64)mCurrBytes / 1024.0 + .5);
+   return NS_OK;
+ }
+ 
+ NS_IMETHODIMP
+ nsDownload::GetSize(PRUint64* aSize)
+ {
+-  *aSize = ((PRFloat64)mMaxBytes / 1024 + .5);
++  *aSize = ((PRFloat64)(PRInt64)(PRUint64)mMaxBytes / 1024 + .5);
+   return NS_OK;
+ }
+ 
+Index: view/src/nsViewManager.cpp
+===================================================================
+RCS file: /cvsroot/mozilla/view/src/nsViewManager.cpp,v
+retrieving revision 3.411.2.4
+diff -u -r3.411.2.4 nsViewManager.cpp
+--- view/src/nsViewManager.cpp	16 Feb 2006 19:25:10 -0000	3.411.2.4
++++ view/src/nsViewManager.cpp	24 Sep 2006 09:29:02 -0000
+@@ -1685,9 +1685,9 @@
+ 
+ // This gets around an internal compiler error C1001
+ // (compiler file 'E:\8799\vc98\p2\src\P2\main.c', line 494)
+-#ifdef WINCE
++//#ifdef WINCE
+ #pragma optimize( "", off )
+-#endif
++//#endif
+ void
+ nsViewManager::WillBitBlit(nsView* aView, nsPoint aScrollAmount)
+ {
+@@ -1705,9 +1705,9 @@
+   // offset we want to use when accumulating dirty rects.
+   AccumulateIntersectionsIntoDirtyRegion(aView, GetRootView(), -aScrollAmount);
+ }
+-#ifdef WINCE
++//#ifdef WINCE
+ #pragma optimize( "", on )
+-#endif
++//#endif
+ 
+ 
+ // Invalidate all widgets which overlap the view, other than the view's own widgets.

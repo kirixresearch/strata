@@ -1,0 +1,128 @@
+/*!
+ *
+ * Copyright (c) 2008-2011, Kirix Research, LLC.  All rights reserved.
+ *
+ * Project:  XD Database Library
+ * Author:   Benjamin I. Williams
+ * Created:  2008-08-13
+ *
+ */
+
+
+#ifndef __XDSQLITE_DATABASE_H
+#define __XDSQLITE_DATABASE_H
+
+
+#include "sqlite3.h"
+#include "../xdcommon/errorinfo.h"
+
+
+class JobInfo;
+class SlDatabase : public tango::IDatabase
+{
+    friend class SlSet;
+    friend class SlIterator;
+
+    XCM_CLASS_NAME("xdsqlite.Database")
+    XCM_BEGIN_INTERFACE_MAP(SlDatabase)
+        XCM_INTERFACE_ENTRY(tango::IDatabase)
+    XCM_END_INTERFACE_MAP()
+
+public:
+
+    SlDatabase();
+    ~SlDatabase();
+
+    bool createDatabase(const std::wstring& path,
+                        const std::wstring& db_name);
+
+    bool openDatabase(const std::wstring& path,
+                      const std::wstring& username,
+                      const std::wstring& password);
+
+    // -- tango::IDatabase interface --
+
+    void close();
+
+    void setDatabaseName(const std::wstring& name);
+    std::wstring getDatabaseName();
+    int getDatabaseType();
+    tango::IAttributesPtr getAttributes();
+    std::wstring getActiveUid();
+    
+    std::wstring getErrorString();
+    int getErrorCode();
+    void setError(int error_code, const std::wstring& error_string);
+
+    double getFreeSpace();
+    double getUsedSpace();
+    bool cleanup();
+
+    bool storeObject(xcm::IObject* obj, const std::wstring& ofs_path);
+
+    tango::IJobPtr createJob();
+    tango::IJobPtr getJob(tango::jobid_t job_id);
+
+    bool createFolder(const std::wstring& path);
+    tango::IStreamPtr createStream(const std::wstring& path, const std::wstring& mime_type);
+    tango::INodeValuePtr createNodeFile(const std::wstring& path);
+    tango::INodeValuePtr openNodeFile(const std::wstring& path);
+    bool renameFile(const std::wstring& path, const std::wstring& new_name);
+    bool moveFile(const std::wstring& path, const std::wstring& new_location);
+    bool copyFile(const std::wstring& src_path, const std::wstring& dest_path);
+    bool deleteFile(const std::wstring& path);
+    bool getFileExist(const std::wstring& path);
+    tango::IFileInfoPtr getFileInfo(const std::wstring& path);
+    tango::IFileInfoEnumPtr getFolderInfo(const std::wstring& path);
+
+    tango::IStructurePtr createStructure();
+    tango::ISetPtr createSet(const std::wstring& path, tango::IStructurePtr struct_config, tango::FormatInfo* format_info);
+    tango::ISetPtr createDynamicSet(tango::ISetPtr base_set);
+    
+    tango::IStreamPtr openStream(const std::wstring& path);
+    tango::ISetPtr openSet(const std::wstring& path);
+    tango::ISetPtr openSetEx(const std::wstring& path, int format);
+
+    tango::IRelationEnumPtr getRelationEnum();
+
+    tango::IDatabasePtr getMountDatabase(const std::wstring& path);
+    
+    bool setMountPoint(const std::wstring& path,
+                       const std::wstring& connection_str,
+                       const std::wstring& remote_path);
+                                  
+    bool getMountPoint(const std::wstring& path,
+                       std::wstring& connection_str,
+                       std::wstring& remote_path);
+                       
+    bool execute(const std::wstring& command,
+                 unsigned int flags,
+                 xcm::IObjectPtr& result,
+                 tango::IJob* job);
+                 
+    tango::ISetPtr runGroupQuery(tango::ISetPtr set,
+                                 const std::wstring& group,
+                                 const std::wstring& output,
+                                 const std::wstring& filter,
+                                 const std::wstring& having,
+                                 tango::IJob* job);
+    
+    tango::IStructurePtr getStructureFromPath(std::wstring& path);
+    
+private:
+
+    std::wstring m_path;
+    std::wstring m_db_name;
+
+    sqlite3* m_db;
+    int m_last_job;
+    std::vector<JobInfo*> m_jobs;
+    
+    ThreadErrorInfo m_error;
+};
+
+
+
+
+#endif
+

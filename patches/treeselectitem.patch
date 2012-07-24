@@ -1,0 +1,40 @@
+Index: treectrl.cpp
+===================================================================
+RCS file: /pack/cvsroots/wxwidgets/wxWidgets/src/msw/treectrl.cpp,v
+retrieving revision 1.249.2.2
+diff -u -r1.249.2.2 treectrl.cpp
+--- treectrl.cpp	2007/03/30 12:57:15	1.249.2.2
++++ treectrl.cpp	2007/04/18 11:19:48
+@@ -178,21 +178,25 @@
+         // set the focus
+         if ( htItem != htFocus )
+         {
+-            // remember the selection state of the item
+-            bool wasSelected = IsItemSelected(hwndTV, htItem);
++            // remember the selection state of the new focus item
++            bool newWasSelected = IsItemSelected(hwndTV, htItem);
++            
++            // remember the selection state of the old focus item
++            bool oldWasSelected = false;
++            if (htFocus && IsItemSelected(hwndTV, htFocus))
++                oldWasSelected = true;
+ 
+-            if ( htFocus && IsItemSelected(hwndTV, htFocus) )
++            TreeView_SelectItem(hwndTV, htItem);
++
++            if ( oldWasSelected )
+             {
+                 // prevent the tree from unselecting the old focus which it
+                 // would do by default (TreeView_SelectItem unselects the
+                 // focused item)
+-                TreeView_SelectItem(hwndTV, 0);
+                 SelectItem(hwndTV, htFocus);
+             }
+-
+-            TreeView_SelectItem(hwndTV, htItem);
+ 
+-            if ( !wasSelected )
++            if ( !newWasSelected )
+             {
+                 // need to clear the selection which TreeView_SelectItem() gave
+                 // us

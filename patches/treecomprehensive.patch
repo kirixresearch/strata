@@ -1,0 +1,349 @@
+Index: src/msw/treectrl.cpp
+===================================================================
+RCS file: /pack/cvsroots/wxwidgets/wxWidgets/src/msw/treectrl.cpp,v
+retrieving revision 1.249.2.2
+diff -u -r1.249.2.2 treectrl.cpp
+--- src/msw/treectrl.cpp	2007/03/30 12:57:15	1.249.2.2
++++ src/msw/treectrl.cpp	2007/04/18 13:40:07
+@@ -56,6 +56,9 @@
+ // private functions
+ // ----------------------------------------------------------------------------
+ 
++// implemented below
++bool LockItemState(HWND hwndTV, HTREEITEM hItem, bool lock);
++
+ // wrappers for TreeView_GetItem/TreeView_SetItem
+ static bool IsItemSelected(HWND hwndTV, HTREEITEM hItem)
+ {
+@@ -81,12 +84,16 @@
+     tvi.state = select ? TVIS_SELECTED : 0;
+     tvi.hItem = hItem;
+ 
++    LockItemState(hwndTV, hItem, false);
++
+     if ( TreeView_SetItem(hwndTV, &tvi) == -1 )
+     {
+         wxLogLastError(wxT("TreeView_SetItem"));
++        LockItemState(hwndTV, hItem, true);
+         return false;
+     }
+ 
++    LockItemState(hwndTV, hItem, true);
+     return true;
+ }
+ 
+@@ -165,6 +172,7 @@
+     UpdateWindow(hwndTV);
+ }
+ 
++
+ // helper function which tricks the standard control into changing the focused
+ // item without changing anything else (if someone knows why Microsoft doesn't
+ // allow to do it by just setting TVIS_FOCUSED flag, please tell me!)
+@@ -178,21 +186,31 @@
+         // set the focus
+         if ( htItem != htFocus )
+         {
+-            // remember the selection state of the item
+-            bool wasSelected = IsItemSelected(hwndTV, htItem);
++            // remember the selection state of the new focus item
++            bool newWasSelected = IsItemSelected(hwndTV, htItem);
++            
++            // remember the selection state of the old focus item
++            bool oldWasSelected = false;
++            if (htFocus && IsItemSelected(hwndTV, htFocus))
++                oldWasSelected = true;
++
++            LockItemState(hwndTV, htItem, false);
++            LockItemState(hwndTV, htFocus, false);
++
++            TreeView_SelectItem(hwndTV, htItem);
++
++            LockItemState(hwndTV, htItem, true);
++            LockItemState(hwndTV, htFocus, true);
+ 
+-            if ( htFocus && IsItemSelected(hwndTV, htFocus) )
++            if ( oldWasSelected )
+             {
+                 // prevent the tree from unselecting the old focus which it
+                 // would do by default (TreeView_SelectItem unselects the
+                 // focused item)
+-                TreeView_SelectItem(hwndTV, 0);
+                 SelectItem(hwndTV, htFocus);
+             }
+ 
+-            TreeView_SelectItem(hwndTV, htItem);
+-
+-            if ( !wasSelected )
++            if ( !newWasSelected )
+             {
+                 // need to clear the selection which TreeView_SelectItem() gave
+                 // us
+@@ -271,6 +289,10 @@
+     {
+         m_data = NULL;
+ 
++        // m_state_locked is only used in multi-selection tree
++        // controls on Windows Vista
++        m_state_locked = true;
++
+         for ( size_t n = 0; n < WXSIZEOF(m_images); n++ )
+         {
+             m_images[n] = -1;
+@@ -327,6 +349,14 @@
+         // set item
+     void SetItem(const wxTreeItemId& item) { m_item = item; }
+ 
++        // whether the item highlight state is locked.
++        // This is only used in multi-selection trees in Vista
++        // and later. It is necessary for compatibility with
++        // Vista's new tree control behaviour
++    bool IsStateLocked() const { return m_state_locked; }
++    void LockState() { m_state_locked = true; }
++    void UnlockState() { m_state_locked = false; }
++
+ protected:
+     // all the images associated with the item
+     int m_images[wxTreeItemIcon_Max];
+@@ -337,6 +367,9 @@
+     // the real client data
+     wxTreeItemData *m_data;
+ 
++    // item highlight state lock
++    bool m_state_locked;
++
+     DECLARE_NO_COPY_CLASS(wxTreeItemParam)
+ };
+ 
+@@ -479,6 +512,42 @@
+     DECLARE_NO_COPY_CLASS(TraverseCounter)
+ };
+ 
++
++// LockItemState sets a flag inside the item's wxTreeItemParam
++// which prevents the item's state from being changed.  This is
++// necessary only for Vista (and works only with Vista).
++// Item State locking is used only with multi-selection tree controls.
++
++bool LockItemState(HWND hwndTV, HTREEITEM hItem, bool lock)
++{
++    if (!hItem)
++    {
++        return false;
++    }
++
++    TV_ITEM tvi;
++    tvi.mask = TVIF_PARAM;
++    tvi.hItem = hItem;
++    tvi.lParam = 0;
++
++    if ( !TreeView_GetItem(hwndTV, &tvi) )
++    {
++        wxLogLastError(wxT("TreeView_GetItem"));
++    }
++
++    if (!tvi.lParam)
++        return false;
++
++    wxTreeItemParam* param = (wxTreeItemParam*)tvi.lParam;
++    if (lock)
++        param->LockState();
++    else
++        param->UnlockState();
++
++    return true;
++}
++
++
+ // ----------------------------------------------------------------------------
+ // wxWin macros
+ // ----------------------------------------------------------------------------
+@@ -2065,11 +2134,13 @@
+                 {
+                     m_htClickedItem = (WXHTREEITEM) htItem;
+                     m_ptClick = wxPoint(x, y);
++                    
++                    processed = true;
++                    
++                    SetFocus();
+ 
+                     if ( wParam & MK_CONTROL )
+                     {
+-                        SetFocus();
+-
+                         // toggle selected state
+                         ::ToggleItemSelection(GetHwnd(), htItem);
+ 
+@@ -2077,8 +2148,6 @@
+ 
+                         // reset on any click without Shift
+                         m_htSelStart.Unset();
+-
+-                        processed = true;
+                     }
+                     else if ( wParam & MK_SHIFT )
+                     {
+@@ -2091,59 +2160,54 @@
+                             m_htSelStart = TreeView_GetSelection(GetHwnd());
+                         }
+ 
+-                        if ( m_htSelStart )
+-                            SelectRange(GetHwnd(), HITEM(m_htSelStart), htItem,
+-                                    !(wParam & MK_CONTROL));
+-                        else
+-                            ::SelectItem(GetHwnd(), htItem);
+-
+                         ::SetFocus(GetHwnd(), htItem);
+-
+-                        processed = true;
++                        SelectRange(GetHwnd(), HITEM(m_htSelStart), htItem, true);
+                     }
+                     else // normal click
+                     {
+-                        // avoid doing anything if we click on the only
+-                        // currently selected item
+-
+-                        SetFocus();
+-
+-                        wxArrayTreeItemIds selections;
+-                        size_t count = GetSelections(selections);
+-                        if ( count == 0 ||
+-                             count > 1 ||
+-                             HITEM(selections[0]) != htItem )
++                        if (IsItemSelected(GetHwnd(), htItem))
+                         {
+-                            // clear the previously selected items, if the
+-                            // user clicked outside of the present selection.
+-                            // otherwise, perform the deselection on mouse-up.
+-                            // this allows multiple drag and drop to work.
+-
+-                            if (!IsItemSelected(GetHwnd(), htItem))
+-                            {
+-                                UnselectAll();
+-
+-                                // prevent the click from starting in-place editing
+-                                // which should only happen if we click on the
+-                                // already selected item (and nothing else is
+-                                // selected)
+-
+-                                TreeView_SelectItem(GetHwnd(), 0);
+-                                ::SelectItem(GetHwnd(), htItem);
+-                            }
+                             ::SetFocus(GetHwnd(), htItem);
+-                            processed = true;
+                         }
+-
+-                        // reset on any click without Shift
+-                        m_htSelStart.Unset();
++                         else
++                        {
++                            UnselectAll();
++                            ::SetFocus(GetHwnd(), htItem);
++                            ::SelectItem(GetHwnd(), htItem);
++                        }
+                     }
+                 }
+                 break;
++                
++            case WM_RBUTTONDOWN:
++                // only multiple select mode needs to be handled specially
++                if ( isMultiple )
++                {
++                    if (!IsItemSelected(GetHwnd(), htItem))
++                    {
++                        UnselectAll();
++                        SelectItem(htItem);
++                    }
++
++                    // fire EVT_RIGHT_DOWN
++                    HandleMouseEvent( nMsg, x, y, wParam );
++                    
++                    // send NM_RCLICK
++                    NMHDR nmhdr;
++                    nmhdr.hwndFrom = GetHwnd();
++                    nmhdr.idFrom = ::GetWindowLong( GetHwnd(), GWL_ID );
++                    nmhdr.code = NM_RCLICK;
++                    ::SendMessage( ::GetParent( GetHwnd() ), WM_NOTIFY, nmhdr.idFrom, (LPARAM)&nmhdr );
+ 
++                    // prevent tree control default processing,
++                    // as we've already done everything                   
++                    processed = true;
++                }
++                break;
++
+             case WM_MOUSEMOVE:
+ #ifndef __WXWINCE__
+-                if ( m_htClickedItem )
++                if ( isMultiple && m_htClickedItem && m_dragImage == NULL )
+                 {
+                     int cx = abs(m_ptClick.x - x);
+                     int cy = abs(m_ptClick.y - y);
+@@ -2566,6 +2630,54 @@
+             }
+             break;
+ 
++
++        // Vista's tree control has introduced some problems with our
++        // multi-selection tree.  When TreeView_SelectItem() is called,
++        // the wrong items are deselected.
++        
++        // Fortunately, Vista provides a new notification, TVN_ITEMCHANGING
++        // that can be used to regulate this incorrect behavior.  The
++        // following messages will allow only the previous selection's
++        // and the pending new selection's highlight state to be modified
++        // Note that, since we don't want to depend on the Vista SDK, these
++        // we use equivalet message numbers and structures.
++        case (TVN_FIRST-16): // same as TVN_ITEMCHANGINGA -- vista only
++        case (TVN_FIRST-17): // same as TVN_ITEMCHANGINGW -- vista only
++            {
++                // we only need to handles these in multi-select trees
++                if ( HasFlag(wxTR_MULTIPLE) )
++                {
++                    // most SDK won't have TVITEMCHANGE, and we just want the
++                    // hItem parameter, so use this structure to get it
++                    struct item_change_struct
++                    {
++                        NMHDR hdr;
++                        UINT uChanged;
++                        HTREEITEM hItem;
++                    } *info;
++
++                    // get info about the item about to be changed
++                    info = (struct item_change_struct*)lParam;
++                    wxTreeItemId item((void*)info->hItem);
++
++                    // get the item's wxTreeItemParam
++                    wxTreeItemParam* param = GetItemParam(item);
++                    if (param)
++                    {
++                        if (param->IsStateLocked())
++                        {
++                            // item's state is locked, don't allow the change
++
++                            *result = 1; // returning 1 will disallow the change
++                            return true;
++                        }
++                    }
++                }
++
++                // allow the state change
++            }
++            return false;
++
+         // NB: MSLU is broken and sends TVN_SELCHANGEDA instead of
+         //     TVN_SELCHANGEDW in Unicode mode under Win98. Therefore
+         //     we have to handle both messages:
+@@ -2796,6 +2908,13 @@
+             // set ES_WANTRETURN ( like we do in BeginLabelEdit )
+             if ( event.IsAllowed() )
+             {
++                // prevent a drag drop from happening during edit --
++                // m_htClickedItem usually gets unset when in the WM_LBUTTONUP
++                // handler, but this handler is not called when an label
++                // is edited
++                m_htClickedItem.Unset();
++            
++
+                 HWND hText = TreeView_GetEditControl(GetHwnd());
+                 if ( hText )
+                 {

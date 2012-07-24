@@ -1,0 +1,40 @@
+Index: treectrl.cpp
+===================================================================
+RCS file: /pack/cvsroots/wxwidgets/wxWidgets/src/msw/treectrl.cpp,v
+retrieving revision 1.249.2.1
+diff -u -r1.249.2.1 treectrl.cpp
+--- treectrl.cpp	2007/02/05 14:14:46	1.249.2.1
++++ treectrl.cpp	2007/03/19 06:13:58
+@@ -2138,6 +2138,32 @@
+                     }
+                 }
+                 break;
++                
++            case WM_RBUTTONDOWN:
++                // only multiple select mode needs to be handled specially;
++                if ( isMultiple )
++                {
++                    if (!IsItemSelected(GetHwnd(), htItem))
++                    {
++                        UnselectAll();
++                        SelectItem(htItem);
++                    }
++
++                    // fire EVT_RIGHT_DOWN
++                    HandleMouseEvent( nMsg, x, y, wParam );
++                    
++                    // send NM_RCLICK
++                    NMHDR nmhdr;
++                    nmhdr.hwndFrom = GetHwnd();
++                    nmhdr.idFrom = ::GetWindowLong( GetHwnd(), GWL_ID );
++                    nmhdr.code = NM_RCLICK;
++                    ::SendMessage( ::GetParent( GetHwnd() ), WM_NOTIFY, nmhdr.idFrom, (LPARAM)&nmhdr );
++
++                    // prevent tree control default processing,
++                    // as we've already done everything                   
++                    processed = true;
++                }
++                break;
+ 
+             case WM_MOUSEMOVE:
+ #ifndef __WXWINCE__

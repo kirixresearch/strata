@@ -1,0 +1,16 @@
+Index: treectrl.cpp
+===================================================================
+RCS file: /pack/cvsroots/wxwidgets/wxWidgets/src/msw/treectrl.cpp,v
+retrieving revision 1.249.2.2
+diff -u -r1.249.2.2 treectrl.cpp
+--- treectrl.cpp	2007/03/30 12:57:15	1.249.2.2
++++ treectrl.cpp	2007/04/17 11:13:09
+@@ -2143,7 +2143,7 @@
+ 
+             case WM_MOUSEMOVE:
+ #ifndef __WXWINCE__
+-                if ( m_htClickedItem )
++                if ( isMultiple && m_htClickedItem && m_dragImage == NULL )
+                 {
+                     int cx = abs(m_ptClick.x - x);
+                     int cy = abs(m_ptClick.y - y);

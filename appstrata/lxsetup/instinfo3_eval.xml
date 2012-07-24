@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+
+<inst_info>
+
+    <create_dir>
+        <target>[TARGET]/bin</target>
+        <mode>755</mode>
+    </create_dir>
+
+    <copy_file>
+        <src>[INSTPROG_PATH]/data/strata48.png</src>
+        <target>[TARGET]/bin/strata48.png</target>
+        <mode>644</mode>
+    </copy_file>
+
+    <copy_file>
+        <src>[INSTPROG_PATH]/data/kstrata.bin</src>
+        <target>[TARGET]/bin/kstrata</target>
+        <mode>755</mode>
+    </copy_file>
+
+    <copy_file>
+        <src>[INSTPROG_PATH]/data/xdnative.bin</src>
+        <target>[TARGET]/bin/xdnative.so</target>
+        <mode>644</mode>
+    </copy_file>
+
+    <copy_file>
+        <src>[INSTPROG_PATH]/data/xdfs.bin</src>
+        <target>[TARGET]/bin/xdfs.so</target>
+        <mode>644</mode>
+    </copy_file>
+
+    <copy_file>
+        <src>[INSTPROG_PATH]/data/xdodbc.bin</src>
+        <target>[TARGET]/bin/xdodbc.so</target>
+        <mode>644</mode>
+    </copy_file>
+
+    <copy_file>
+        <src>[INSTPROG_PATH]/data/xdoracle.bin</src>
+        <target>[TARGET]/bin/xdoracle.so</target>
+        <mode>644</mode>
+    </copy_file>
+
+    <create_dir>
+        <target>[TARGET]/lib</target>
+        <mode>755</mode>
+    </create_dir>
+
+    <create_dir>
+        <target>[TARGET]/doc</target>
+        <mode>755</mode>
+    </create_dir>
+
+    <create_dir>
+        <target>[HOME]/.kirix</target>
+        <mode>755</mode>
+    </create_dir>
+
+    <copy_file>
+        <src>[INSTPROG_PATH]/data/evguide.pdf</src>
+        <target>[TARGET]/doc/eval_guide.pdf</target>
+        <stop_on_fail>NO</stop_on_fail>
+        <mode>644</mode>
+    </copy_file>
+
+    <unzip_file>
+        <src>[INSTPROG_PATH]/data/sample.zip</src>
+        <target>[HOME]/.kirix</target>
+    </unzip_file>
+
+    <create_regkey>
+        <config>kirix-strata</config>
+        <path>/RecentDatabases/connection099</path>
+        <vendor>Kirix</vendor>
+        <entries>
+            <entry><name>Local</name><value>1</value></entry>
+            <entry><name>Name</name><value>Sample</value></entry>
+            <entry><name>Location</name><value>[HOME]/.kirix/sample</value></entry>
+            <entry><name>User</name><value>admin</value></entry>
+            <entry><name>Password</name><value></value></entry>
+        </entries>
+    </create_regkey>
+
+    <create_launcher>
+        <filename>[DESKTOP]/Kirix Strata.desktop</filename>
+        <label>Kirix Strata</label>
+        <target>[TARGET]/bin/kstrata</target>
+        <icon>[TARGET]/bin/strata48.png</icon>
+    </create_launcher>
+
+    <create_shortcut>
+        <filename>[DESKTOP]/Kirix Strata Evaluation Guide.pdf</filename>
+        <target>[TARGET]/doc/eval_guide.pdf</target>
+    </create_shortcut>
+
+</inst_info>
+
+
+

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<inst_info>
+
+    <unzip_file>
+        <src>[INSTPROG_PATH]/data.bin</src>
+        <target>[TARGET]</target>
+    </unzip_file>
+
+    <create_launcher>
+        <filename>[DESKTOP]/Kirix Strata.desktop</filename>
+        <label>Kirix Strata</label>
+        <target>[TARGET]/bin/kstrata</target>
+        <icon>[TARGET]/bin/strata48.png</icon>
+    </create_launcher>
+
+</inst_info>
+
+
+

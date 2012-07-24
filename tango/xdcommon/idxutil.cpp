@@ -1,0 +1,763 @@
+/*!
+ *
+ * Copyright (c) 2006-2011, Kirix Research, LLC.  All rights reserved.
+ *
+ * Project:  XD Database Library
+ * Author:   Benjamin I. Williams
+ * Created:  2006-03-27
+ *
+ */
+
+
+#include "tango.h"
+#include "xdcommon.h"
+#include "exindex.h"
+#include "idxutil.h"
+#include "keylayout.h"
+#include "util.h"
+#include <kl/math.h>
+#include <kl/portable.h>
+#include <ctime>
+
+
+class BulkInsertProgress : public IIndexProgress
+{
+public:
+    void updateProgress(tango::rowpos_t cur_count,
+                        tango::rowpos_t max_count,
+                        bool* cancel)
+    {
+        if (cur_count == 0)
+        {
+            if (ijob)
+            {
+                ijob->startPhase();
+            }
+        }
+
+        if (cur_count % 1000 == 0)
+        {
+            if (ijob)
+            {
+                ijob->setCurrentCount(cur_count);
+                if (job->getCancelled())
+                {
+                    *cancel = true;
+                    cancelled = true;
+                }
+            }
+        }
+
+        if (cur_count % 10000 == 0)
+        {
+            if (xf_get_free_disk_space(filename) < 50000000)
+            {
+                if (ijob)
+                {
+                    ijob->setStatus(tango::jobFailed);
+                    *cancel = true;
+                    cancelled = true;
+                }
+            }
+        }
+    }
+
+public:
+    tango::IJob* job;
+    IJobInternal* ijob;
+    std::wstring filename;
+    bool cancelled;
+
+};
+
+
+IIndex* createExternalIndex(tango::ISetPtr set,
+                            const std::wstring& index_filename,
+                            const std::wstring& tempfile_path,
+                            const std::wstring& expr,
+                            bool allow_dups,
+                            tango::IJob* job)
+{
+    // -- job information --
+    IJobInternalPtr ijob;
+    tango::rowpos_t cur_count;
+    tango::rowpos_t max_count;
+
+    cur_count = 0;
+    max_count = 0;
+
+    if (job)
+    {
+        if (set->getSetFlags() & tango::sfFastRowCount)
+        {
+            max_count = set->getRowCount();
+        }
+
+        ijob = job;
+        if (!ijob)
+        {
+            return NULL;
+        }
+
+        ijob->setMaxCount(max_count);
+        ijob->setCurrentCount(0);
+        ijob->setStatus(tango::jobRunning);
+        ijob->setStartTime(time(NULL));
+        int phase_pcts[] = { 70, 30 };
+        ijob->setPhases(2, phase_pcts);
+        ijob->startPhase();
+    }
+
+
+    // -- create an unordered iterator --
+    tango::IIteratorPtr temp_iter = set->createIterator(L"", L"", NULL);
+    if (!temp_iter)
+    {
+        return NULL;
+    }
+    tango::IIterator* iter = temp_iter.p;
+    iter->ref();
+    temp_iter = xcm::null;
+
+
+    KeyLayout kl;
+    if (!kl.setKeyExpr(iter, expr))
+        return NULL;
+    int key_length = kl.getKeyLength();
+
+
+    iter->goFirst();
+
+
+    // -- create the index --
+    ExIndex* index = new ExIndex;
+    index->setTempFilePath(tempfile_path);
+
+    if (!index->create(index_filename,
+                       key_length,
+                       sizeof(tango::rowid_t),
+                       true))
+    {
+        delete index;
+        iter->unref();
+        return NULL;
+    }
+
+
+
+    
+
+    // -- add keys to the index --
+    tango::rowid_t rowid;
+    index->startBulkInsert(max_count);
+    while (!iter->eof())
+    {
+        rowid = iter->getRowId();
+
+
+        if (index->insert(kl.getKey(),
+                          key_length,
+                          &rowid,
+                          sizeof(tango::rowid_t)) != idxErrSuccess)
+        {
+            ijob->setStatus(tango::jobFailed);
+            index->cancelBulkInsert();
+            index->unref();
+
+            iter->unref();
+
+            return NULL;
+        }
+
+        iter->skip(1);
+        cur_count++;
+
+        if (job)
+        {
+            if (cur_count % 100 == 0)
+            {
+                ijob->setCurrentCount(cur_count);
+                if (job->getCancelled())
+                {
+                    index->cancelBulkInsert();
+                    index->unref();
+
+                    iter->unref();
+
+                    xf_remove(index_filename);
+
+                    return NULL;
+                }
+            }
+        }
+    }
+
+    BulkInsertProgress bip;
+    bip.job = job;
+    bip.ijob = ijob;
+    bip.filename = index_filename;
+    bip.cancelled = false;
+
+    index->finishBulkInsert(&bip);
+
+
+    iter->unref();
+
+
+    if (bip.cancelled)
+    {
+        index->unref();
+        xf_remove(index_filename);
+        return NULL;
+    }
+
+    // -- mark job as finished --
+    if (job)
+    {
+        ijob->setCurrentCount(cur_count);
+        ijob->setFinishTime(time(NULL));
+        ijob->setStatus(tango::jobFinished);
+    }
+
+    return index;
+}
+
+
+
+
+// seekRow() seeks a key in an index, and then
+// scrolls down to the specific rowid on the value side
+
+IIndexIterator* seekRow(IIndex* idx,
+                        const unsigned char* key,
+                        int key_len,
+                        tango::rowid_t rowid)
+{
+    // -- attempt to seek --
+    IIndexIterator* iter = idx->seek((unsigned char*)key, key_len, false);
+    
+    if (!iter)
+        return NULL;
+
+    tango::rowid_t idx_rowid;
+
+    bool found = false;
+    while (1)
+    {
+        memcpy(&idx_rowid, iter->getValue(), sizeof(tango::rowid_t));
+
+        if (idx_rowid == rowid)
+        {
+            found = true;
+            break;
+        }
+
+        iter->skip(1);
+        if (iter->isEof())
+            break;
+        if (0 != memcmp(key, iter->getKey(), key_len))
+            break;
+    }
+
+    if (!found)
+    {
+        iter->unref();
+        return NULL;
+    }
+
+    return iter;
+}
+
+
+tango::IIteratorPtr createIteratorFromIndex(tango::ISetPtr set,
+                                            IIndex* idx,
+                                            const std::wstring& columns,
+                                            const std::wstring& order)
+{
+    tango::IIteratorPtr data_iter = set->createIterator(columns, L"", NULL);
+    if (data_iter.isNull())
+        return xcm::null;
+        
+    IIndexIterator* idx_iter = idx->createIterator();
+    if (!idx_iter)
+        return xcm::null;
+    idx_iter->goFirst();
+
+    CommonIndexIterator* iter;
+    iter = new CommonIndexIterator(set, data_iter, idx_iter, order, true);
+
+    idx_iter->unref();
+    iter->goFirst();
+    return iter;
+}
+
+
+
+
+// -- CommonIndexIterator Implementation --
+
+CommonIndexIterator::CommonIndexIterator(tango::ISet* set,
+                                         tango::IIterator* data_iter,
+                                         IIndexIterator* idx_iter,
+                                         const std::wstring& order,
+                                         bool value_side)
+{
+    // store the set pointer
+    m_set = set;
+    if (m_set)
+    {
+        m_set->ref();
+    }
+     else
+    {
+        tango::ISetPtr spset = data_iter->getSet();
+        m_set = spset.p;
+        m_set->ref();
+    }
+    
+    // -- store the data iterator pointer
+    m_data_iter = data_iter;
+    m_data_iter->ref();
+    
+    // -- store the index iterator pointer --
+    m_idx_iter = idx_iter;
+    m_idx_iter->ref();
+
+    m_value_side = value_side;
+
+    m_row_deleted = false;
+
+    // -- get key length --
+    IIndex* idx = m_idx_iter->getIndex();
+    m_keylen = idx->getKeyLength();
+    idx->unref();
+
+    m_key_filter = new unsigned char[m_keylen];
+    m_key_filter_len = 0;
+    
+    // -- store the key columns --
+    m_order = order;
+    m_layout = NULL;
+}
+
+CommonIndexIterator::~CommonIndexIterator()
+{
+    if (m_set)
+        m_set->unref();
+    
+    delete m_layout;
+    
+    if (m_data_iter)
+        m_data_iter->unref();
+    
+    if (m_idx_iter)
+        m_idx_iter->unref();
+
+    delete[] m_key_filter;
+}
+
+tango::IIteratorPtr CommonIndexIterator::clone()
+{
+    IIndexIterator* index_iter = m_idx_iter->clone();
+    tango::IIteratorPtr data_iter = m_data_iter->clone();
+    
+    CommonIndexIterator* new_iter = new CommonIndexIterator(m_set,
+                                                            data_iter.p,
+                                                            index_iter,
+                                                            m_order,
+                                                            m_value_side);
+    index_iter->unref();
+
+    memcpy(new_iter->m_key_filter, m_key_filter, m_keylen);
+    new_iter->m_key_filter_len = m_key_filter_len;
+
+    new_iter->updatePos();
+
+    return static_cast<tango::IIterator*>(new_iter);
+}
+
+void* CommonIndexIterator::getKey()
+{
+    return m_idx_iter->getKey();
+}
+
+int CommonIndexIterator::getKeyLength()
+{
+    return m_keylen;
+}
+
+bool CommonIndexIterator::setKeyFilter(const void* key, int len)
+{
+    if (key == NULL || len == 0)
+    {
+        m_key_filter_len = 0;
+        return true;
+    }
+
+    if ((unsigned int)len > m_keylen)
+        len = m_keylen;
+
+    m_key_filter_len = len;
+    memcpy(m_key_filter, key, len);
+
+    return true;
+}
+
+void CommonIndexIterator::getKeyFilter(const void** key, int* len)
+{
+    *key = m_key_filter;
+    *len = m_key_filter_len;
+}
+
+bool CommonIndexIterator::setFirstKey()
+{
+    return m_idx_iter->setFirstKey();
+}
+
+
+void CommonIndexIterator::updatePos()
+{
+    if (m_idx_iter->isEof() || m_idx_iter->isBof())
+    {
+        m_rowid = 0;
+        return;
+    }
+    
+    if (m_value_side)
+    {
+        memcpy(&m_rowid, m_idx_iter->getValue(), sizeof(tango::rowid_t));
+    }
+     else
+    {
+        invert_rowid_endianness((unsigned char*)&m_rowid,
+                                (const unsigned char*)m_idx_iter->getKey());
+    }
+
+    m_data_iter->goRow(m_rowid);
+}
+
+
+void CommonIndexIterator::skip(int delta)
+{
+    if (m_row_deleted && delta > 0)
+    {
+        delta--;
+        m_row_deleted = false;
+    }
+     
+    if (delta != 0)
+    {       
+        m_idx_iter->skip(delta);
+    }
+
+    updatePos();
+}
+
+void CommonIndexIterator::goFirst()
+{
+    m_idx_iter->goFirst();
+    m_row_deleted = false;
+    updatePos();
+}
+
+void CommonIndexIterator::goLast()
+{
+    m_idx_iter->goLast();
+    m_row_deleted = false;
+    updatePos();
+}
+
+tango::rowid_t CommonIndexIterator::getRowId()
+{
+    return m_rowid;
+}
+
+bool CommonIndexIterator::bof()
+{
+    return m_idx_iter->isBof();
+}
+
+bool CommonIndexIterator::eof()
+{
+    if (m_idx_iter->isEof())
+        return true;
+
+    if (!m_key_filter)
+        return false;
+
+    return (memcmp(m_idx_iter->getKey(),
+                   m_key_filter,
+                   m_key_filter_len) == 0) ? false : true;
+}
+
+
+bool CommonIndexIterator::seek(const unsigned char* key,
+                               int length,
+                               bool soft)
+{
+    IIndex* idx = m_idx_iter->getIndex();
+    if (!idx)
+        return false;
+
+    if (!m_value_side)
+    {
+        // -- we are seeking for a record number.
+        //    'key' contains a 64-bit record id --
+
+        tango::rowid_t fixed_rowid;
+        invert_rowid_endianness((unsigned char*)&fixed_rowid,
+                                (unsigned char*)key);
+
+        IIndexIterator* idx_iter;
+        idx_iter = idx->seek(&fixed_rowid, sizeof(tango::rowid_t), false);
+
+        if (idx_iter != NULL)
+        {
+            m_idx_iter->unref();
+            m_idx_iter = idx_iter;
+            return true;
+        }
+    
+        return false;
+    }
+
+
+    // -- we are seeking for a specific key --
+
+    bool result = false;
+
+    IIndexIterator* seek_iter;
+    seek_iter = idx->seek((void*)key,
+                          std::max((unsigned int)length, idx->getKeyLength()),
+                          soft);
+    
+    if (seek_iter)
+    {
+        m_row_deleted = false;
+
+        m_idx_iter->unref();
+        m_idx_iter = seek_iter;
+
+        result = true;
+
+        if (soft)
+        {
+            int cmp_len = idx->getKeyLength();
+            if (length < cmp_len)
+                cmp_len = length;
+
+            if (memcmp(seek_iter->getKey(), key, cmp_len) != 0)
+            {
+                result = false;
+            }
+        }
+    }
+
+    idx->unref();
+
+    if (!eof())
+    {
+        updatePos();
+    }
+
+    return result;
+}
+
+bool CommonIndexIterator::seekValues(const wchar_t* values[], size_t values_size, bool soft)
+{
+    if (!m_layout)
+    {
+        m_layout = new KeyLayout;
+        m_layout->setKeyExpr(m_data_iter, m_order, false);
+    }
+
+    const unsigned char* key = m_layout->getKeyFromValues(values, values_size);
+    if (m_layout->getTruncation())
+        return false;
+    
+    return seek(key, m_layout->getKeyLength(), soft);
+}
+
+bool CommonIndexIterator::setPos(double pct)
+{
+    if (kl::dblcompare(pct, 0.001) <= 0)
+    {
+        m_idx_iter->goFirst();
+        return true;
+    }
+
+    if (kl::dblcompare(pct, 0.999) >= 0)
+    {
+        m_idx_iter->goLast();
+        return true;
+    }
+
+    m_idx_iter->setPos(pct);
+
+    m_row_deleted = false;
+
+    updatePos();
+
+    return true;
+}
+
+double CommonIndexIterator::getPos()
+{
+    return m_idx_iter->getPos();
+}
+
+void CommonIndexIterator::goRow(const tango::rowid_t& rowid)
+{
+    m_data_iter->goRow(rowid);
+}
+
+void CommonIndexIterator::onSetRowUpdated(tango::rowid_t rowid)
+{
+    if (rowid == m_rowid)
+    {
+        // -- refetch row --
+        m_data_iter->goRow(rowid);
+    }
+}
+
+
+void CommonIndexIterator::onSetRowDeleted(tango::rowid_t rowid)
+{
+    if (rowid == m_rowid)
+    {
+        m_row_deleted = true;
+    }
+}
+
+
+
+
+
+tango::ISetPtr CommonIndexIterator::getSet()
+{
+    if (m_set)
+    {
+        return m_set;
+    }
+     else
+    {
+        return m_data_iter->getSet();
+    }
+    
+    return xcm::null;
+}
+
+/*
+tango::IDatabasePtr CommonIndexIterator::getDatabase()
+{
+    return m_data_iter->getDatabase();
+}
+*/
+
+void CommonIndexIterator::setIteratorFlags(unsigned int mask, unsigned int value)
+{
+}
+
+unsigned int CommonIndexIterator::getIteratorFlags()
+{
+    return m_data_iter->getIteratorFlags();
+}
+
+void CommonIndexIterator::refreshStructure()
+{
+    m_data_iter->refreshStructure();
+}
+
+tango::IStructurePtr CommonIndexIterator::getStructure()
+{
+    return m_data_iter->getStructure();
+}
+
+bool CommonIndexIterator::modifyStructure(tango::IStructure* struct_config, tango::IJob* job)
+{
+    return m_data_iter->modifyStructure(struct_config, job);
+}
+
+tango::ISetPtr CommonIndexIterator::getChildSet(const std::wstring& relation_tag)
+{
+    tango::IIteratorRelationPtr iter = m_data_iter;
+    if (!iter)
+        return xcm::null;
+    return iter->getChildSet(relation_tag);
+}
+
+tango::IIteratorPtr CommonIndexIterator::getChildIterator(const std::wstring& relation_tag)
+{
+    tango::IIteratorRelationPtr iter = m_data_iter;
+    if (!iter)
+        return xcm::null;
+    return iter->getChildIterator(relation_tag);
+}
+
+tango::objhandle_t CommonIndexIterator::getHandle(const std::wstring& expr)
+{
+    return m_data_iter->getHandle(expr);
+}
+
+tango::IColumnInfoPtr CommonIndexIterator::getInfo(tango::objhandle_t data_handle)
+{
+    return m_data_iter->getInfo(data_handle);
+}
+
+int CommonIndexIterator::getType(tango::objhandle_t data_handle)
+{
+    return m_data_iter->getType(data_handle);
+}
+
+bool CommonIndexIterator::releaseHandle(tango::objhandle_t data_handle)
+{
+    return m_data_iter->releaseHandle(data_handle);
+}
+
+
+const unsigned char* CommonIndexIterator::getRawPtr(tango::objhandle_t data_handle)
+{
+    return m_data_iter->getRawPtr(data_handle);
+}
+
+int CommonIndexIterator::getRawWidth(tango::objhandle_t data_handle)
+{
+    return m_data_iter->getRawWidth(data_handle);
+}
+
+const std::string& CommonIndexIterator::getString(tango::objhandle_t data_handle)
+{
+    return m_data_iter->getString(data_handle);
+}
+
+const std::wstring& CommonIndexIterator::getWideString(tango::objhandle_t data_handle)
+{
+    return m_data_iter->getWideString(data_handle);
+}
+
+tango::datetime_t CommonIndexIterator::getDateTime(tango::objhandle_t data_handle)
+{
+    return m_data_iter->getDateTime(data_handle);
+}
+
+double CommonIndexIterator::getDouble(tango::objhandle_t data_handle)
+{
+    return m_data_iter->getDouble(data_handle);
+}
+
+int CommonIndexIterator::getInteger(tango::objhandle_t data_handle)
+{
+    return m_data_iter->getInteger(data_handle);
+}
+
+bool CommonIndexIterator::getBoolean(tango::objhandle_t data_handle)
+{
+    return m_data_iter->getBoolean(data_handle);
+}
+
+bool CommonIndexIterator::isNull(tango::objhandle_t data_handle)
+{
+    return m_data_iter->isNull(data_handle);
+}
+
+

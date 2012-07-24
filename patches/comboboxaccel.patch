@@ -1,0 +1,55 @@
+Index: include/wx/msw/combobox.h
+===================================================================
+RCS file: /pack/cvsroots/wxwidgets/wxWidgets/include/wx/msw/combobox.h,v
+retrieving revision 1.38
+diff -u -r1.38 combobox.h
+--- include/wx/msw/combobox.h	2006/03/12 20:53:27	1.38
++++ include/wx/msw/combobox.h	2007/05/05 07:59:02
+@@ -105,7 +105,8 @@
+     virtual bool MSWCommand(WXUINT param, WXWORD id);
+     bool MSWProcessEditMsg(WXUINT msg, WXWPARAM wParam, WXLPARAM lParam);
+     virtual WXLRESULT MSWWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam);
+-
++    bool MSWShouldPreProcessMessage(WXMSG *pMsg);
++    
+     WXHWND GetEditHWND() const;
+ 
+     // Standard event handling
+Index: src/msw/combobox.cpp
+===================================================================
+RCS file: /pack/cvsroots/wxwidgets/wxWidgets/src/msw/combobox.cpp,v
+retrieving revision 1.132
+diff -u -r1.132 combobox.cpp
+--- src/msw/combobox.cpp	2006/12/04 16:33:51	1.132
++++ src/msw/combobox.cpp	2007/05/05 10:09:09
+@@ -367,6 +367,30 @@
+     return true;
+ }
+ 
++bool wxComboBox::MSWShouldPreProcessMessage(WXMSG *pMsg)
++{
++    // prevent command accelerators from stealing editing
++    // hotkeys when we have the focus
++    if (wxIsCtrlDown())
++    {
++        WPARAM vkey = pMsg->wParam;
++        
++        switch (vkey)
++        {
++            case 'C':
++            case 'V':
++            case 'X':
++            case VK_INSERT:
++            case VK_DELETE:
++            case VK_HOME:
++            case VK_END:
++                return false;
++        }
++    }
++    
++    return wxChoice::MSWShouldPreProcessMessage(pMsg);
++}
++
+ WXHWND wxComboBox::GetEditHWND() const
+ {
+     // this function should not be called for wxCB_READONLY controls, it is

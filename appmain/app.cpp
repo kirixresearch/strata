@@ -1,0 +1,1341 @@
+/*!
+ *
+ * Copyright (c) 2001-2011, Kirix Research, LLC.  All rights reserved.
+ *
+ * Project:  Application Client
+ * Author:   Benjamin I. Williams
+ * Created:  2001-11-15
+ *
+ */
+
+
+#include "appmain.h"
+#include "app.h"
+#include "apphook.h"
+#include "appcontroller.h"
+#include "dlgprojectmgr.h"
+#include "jobscheduler.h"
+#include "../paladin/paladin.h"
+#include "../webconnect/webcontrol.h"
+#include "connectionmgr.h"
+#include "extensionmgr.h"
+#include "toolbars.h"
+#include "webserver.h"
+#include "scripthost.h"
+#include <wx/fs_zip.h>
+#include <wx/url.h>
+#include <wx/stdpaths.h>
+#include <wx/fontenum.h>
+#include <wx/paper.h>
+#include <wx/tooltip.h>
+#include <wx/dir.h>
+#include <map>
+
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
+#endif
+
+
+XCM_USING_STATIC_MODULE(cfw)
+
+
+
+MainApp* g_app = NULL;
+AppMacroRecorder g_macro;
+paladin::Authentication* g_auth = NULL;
+wxLocale g_locale;
+time_t g_app_start_time = 0;
+
+
+
+#include "appmain.h"
+
+
+static wxString getProgramPath()
+{
+    char buf[512];
+    char* slash;
+
+#if defined(__WXMSW__)
+    GetModuleFileNameA(NULL, buf, 511);
+    slash = strrchr(buf, '\\');
+    if (slash)
+    {
+        *slash = 0;
+    }
+#elif defined(__linux__)
+    int res;
+    res = readlink("/proc/self/exe", buf, 512);
+    if (res == -1)
+        return wxT("");
+    buf[res] = 0;
+    slash = strrchr(buf, '/');
+    if (slash)
+    {
+        *slash = 0;
+    }
+#elif defined(__APPLE__)
+    unsigned int len = 512;
+    if (_NSGetExecutablePath(buf, &len) == -1)
+        return wxT("");
+    buf[len] = 0;
+    slash = strrchr(buf, '/');
+    if (slash)
+    {
+        *slash = 0;
+    }
+#else
+    return wxT("");
+#endif
+
+    return towx(buf);
+}
+
+
+
+
+static wxString getAppDataPath()
+{
+    // try to get the application data path from the registry
+    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+
+    // on windows by default, this directory is stored in the user's 
+    // Application Data directory.  On English language systems, this 
+    // is usually C:\Document and Settings\<user>\Application Data
+    // The app's data path is, by default, put in the <Company>
+    // subdirectory inside this folder.
+
+    wxString retval;
+    
+    wxStandardPaths sp;
+    wxString default_appdata_path = sp.GetUserConfigDir();
+    
+    if (default_appdata_path.Right(1) != PATH_SEPARATOR_STR)
+        default_appdata_path += PATH_SEPARATOR_CHAR;
+    default_appdata_path += APP_COMPANY_KEY;
+    
+    // if the <AppData>/<Company> subdir doesn't exist, create it
+    if (!xf_get_directory_exist(towstr(default_appdata_path)))
+        xf_mkdir(towstr(default_appdata_path));
+    
+    // if the <AppData>/<Company>/<appname> subdir doesn't exist, create it
+    default_appdata_path += PATH_SEPARATOR_CHAR;
+    default_appdata_path += APP_CONFIG_KEY;
+    if (!xf_get_directory_exist(towstr(default_appdata_path)))
+    {
+        // migrate old standard path setting to new value
+        prefs->remove(wxT("standard_paths.application_data"));
+        xf_mkdir(towstr(default_appdata_path));
+    }
+    
+    if (!prefs->exists(wxT("standard_paths.application_data")))
+    {
+        retval = default_appdata_path;
+        prefs->setString(wxT("standard_paths.application_data"),
+                         default_appdata_path);
+        prefs->flush();
+    }
+     else
+    {
+        retval = prefs->getString(wxT("standard_paths.application_data"),
+                                  default_appdata_path);
+    }
+    
+    return retval;
+}
+
+
+
+
+
+#ifdef __WXMSW__
+
+class AppTaskBarIcon : public wxTaskBarIcon
+{
+public:
+
+    enum
+    {
+        ID_RestoreApp = 10000,
+        ID_ExitApp,
+    };
+
+private:
+
+    void onMenuRestore(wxCommandEvent& )
+    {
+        g_app->showApp(true);
+    }
+
+    void onMenuExit(wxCommandEvent& )
+    {
+        wxFrame* frame = g_app->getMainWindow();
+        if (frame)
+        {
+            frame->Close();
+        }
+    }
+
+    void onRButtonUp(wxTaskBarIconEvent&)
+    {
+        wxMenu menu;
+        menu.Append(ID_RestoreApp, _("&Show Main Window"));
+        menu.AppendSeparator();
+        menu.Append(ID_ExitApp, _T("E&xit"));
+
+        PopupMenu(&menu);
+    }
+
+    void onLButtonDClick(wxTaskBarIconEvent&)
+    {
+        g_app->showApp(true);
+    }
+
+    DECLARE_EVENT_TABLE()
+};
+
+
+BEGIN_EVENT_TABLE(AppTaskBarIcon, wxTaskBarIcon)
+    EVT_MENU(AppTaskBarIcon::ID_RestoreApp, AppTaskBarIcon::onMenuRestore)
+    EVT_MENU(AppTaskBarIcon::ID_ExitApp, AppTaskBarIcon::onMenuExit)
+    EVT_TASKBAR_RIGHT_UP(AppTaskBarIcon::onRButtonUp)
+    EVT_TASKBAR_LEFT_DCLICK(AppTaskBarIcon::onLButtonDClick)
+END_EVENT_TABLE()
+
+#endif
+
+
+
+
+#ifdef __WXMSW__
+
+static BOOL CALLBACK EnumAllWindowsProc(HWND hwnd, LPARAM lParam)
+{
+    wchar_t buf[512];
+    GetWindowTextW(hwnd, buf, 511);
+    buf[511] = 0;
+    
+    if (0 != wcsstr(buf, APPLICATION_NAME) && 0 == wcsstr(buf, L" Help"))
+    {
+        GetClassNameW(hwnd, buf, 511);
+
+        if (wcslen(buf) > 2 && 0 == wcsncmp(buf, L"wx", 2))
+        {
+            HWND* h = (HWND*)lParam;
+            *h = hwnd;
+            return FALSE;
+        }
+    }
+
+    return TRUE;
+}
+
+
+HWND FindApplicationWindow()
+{
+    HWND h = 0;
+    EnumWindows(EnumAllWindowsProc, (LPARAM)&h);
+    return h;
+}
+
+#endif
+
+
+class LicenseTimer : public wxTimer
+{
+public:
+
+    void Notify()
+    {
+        int auth_result = g_auth->checkAuth();
+        switch (auth_result)
+        {
+            case paladin::errNone:
+                return;
+
+            default:
+            case paladin::errAuthFailed:
+                this->Stop();
+                cfw::appMessageBox(_("Your license for this application has expired.  Please renew your license."),
+                              APPLICATION_NAME,
+                              wxOK | wxICON_INFORMATION | wxCENTER);
+                break;
+
+            case paladin::errClockModified:
+                this->Stop();
+                cfw::appMessageBox(_("The clock was set back on your computer.  Please reset the clock to the normal time or re-license this software."),
+                              APPLICATION_NAME,
+                              wxOK | wxICON_INFORMATION | wxCENTER);
+                break;
+        }
+
+        g_app->getMainFrame()->closeAll(true);
+        g_app->getMainWindow()->Close(true);
+    }
+};
+
+LicenseTimer* g_license_timer = NULL;
+
+
+
+
+
+class UpdateTimer : public wxTimer
+{
+public:
+
+    void Notify();
+};
+
+UpdateTimer* g_update_timer = NULL;
+
+
+void UpdateTimer::Notify()
+{
+    AppController* controller = g_app->getAppController();
+    if (!controller)
+        return;
+        
+    // user does not want updates
+    if (!getAppPrefsBoolean(wxT("general.updater.check_for_updates")))
+        return;
+        
+    time_t last_update = (time_t)getAppPrefsLong(wxT("general.updater.last_check"));
+    time_t now_time = time(NULL);
+    
+    struct tm last_tm, now_tm;
+    localtime_r(&now_time, &now_tm);
+    localtime_r(&last_update, &last_tm);
+    
+    if (now_tm.tm_year == last_tm.tm_year &&
+        now_tm.tm_mon == last_tm.tm_mon &&
+        now_tm.tm_mday == last_tm.tm_mday)
+    {
+        // we've already checked today -- slow down the timer
+        // to once an hour
+        g_update_timer->Stop();
+        g_update_timer->Start(3600000);
+        return;
+    }
+    
+    // don't check until program has been running 5 minutes
+    if (now_time - g_app_start_time < 300)
+        return;
+    
+    // check for update (this function will update
+    // the "general.updater.last_check" preference
+    controller->checkForUpdates(false /* show_full_gui */);
+}
+
+
+
+// -- app instantiation --
+
+#if APP_CONSOLE==0
+
+    IMPLEMENT_APP(MainApp)
+    BEGIN_EVENT_TABLE(MainApp, wxApp)
+        EVT_ACTIVATE_APP(MainApp::onActivateApp)
+    END_EVENT_TABLE()
+
+#else
+
+    IMPLEMENT_APP_CONSOLE(MainApp)
+    BEGIN_EVENT_TABLE(MainApp, wxAppConsole)
+    END_EVENT_TABLE()
+
+#endif
+
+MainApp::MainApp()
+{
+    // -- initialize variables --
+    m_frame = NULL;
+    m_app_controller = NULL;
+    m_frame_wnd = NULL;
+    m_database = xcm::null;
+    m_help_controller = NULL;
+    m_extension_mgr = NULL;
+    m_job_scheduler = NULL;
+    m_web_server = NULL;
+    m_paper_database = NULL;
+    m_dbdoc = NULL;
+#ifdef __WXMSW__
+    m_taskbar_icon = NULL;
+#endif
+}
+
+void MainApp::processIdle()
+{
+#if APP_CONSOLE==0
+    this->ProcessIdle();
+#endif
+}
+    
+// -- app initialization --
+
+static void registerLicenseFile(const wxChar* filename)
+{
+    kl::xmlnode root;
+
+    char text[2048];
+
+    FILE* f = fopen(kl::tstr(filename), "rb");
+    if (!f)
+        return;
+
+    int read_bytes = fread(text, 1, 2040, f);
+    text[read_bytes] = 0;
+
+    fclose(f);
+
+    // -- check signature --
+    if (text[0] != 0x00 ||
+        text[1] != 0x1a)
+    {
+        cfw::appMessageBox(_("The specified license file is not valid."),
+                           _("License Manager"),
+                           wxOK | wxICON_EXCLAMATION | wxCENTER);
+        return;
+    }
+
+
+    if (!root.parse(text+2))
+    {
+        cfw::appMessageBox(_("The specified license file does not exist."),
+                           _("License Manager"),
+                           wxOK | wxICON_EXCLAMATION | wxCENTER);
+        return;
+    }
+        
+
+    kl::xmlnode& apptag_node = root.getChild(L"app_tag");
+    kl::xmlnode& actcode_node = root.getChild(L"act_code");
+
+    if (apptag_node.isEmpty() || actcode_node.isEmpty())
+    {
+        cfw::appMessageBox(_("The specified license file is not valid."),
+                           _("License Manager"),
+                           wxOK | wxICON_EXCLAMATION | wxCENTER);
+        return;
+    }
+
+    if (0 != strcasecmp(kl::tostring(apptag_node.getNodeValue()).c_str(), PALADIN_APP_TAG))
+    {
+        cfw::appMessageBox(_("The specified license file is not valid for this application."),
+                           _("License Manager"),
+                           wxOK | wxICON_EXCLAMATION | wxCENTER);
+        return;
+    }
+
+    bool success = false;
+
+    paladin::actcode_t act_code = paladin::getCodeFromString(towx(actcode_node.getNodeValue()).mbc_str());
+
+    paladin::Authentication* auth = paladin::createAuthObject(
+                                                  kl::tostring(APP_COMPANY_KEY).c_str(),
+                                                  PALADIN_APP_TAG,
+                                                  PALADIN_APP_TAG APP_PALADIN_TEMP_LICENSE_COUNTER,
+                                                  paladin::modeLocal);
+    auth->setActivationCode(act_code);
+    if (auth->checkAuth() == paladin::errNone)
+    {
+        g_auth->setActivationCode(act_code);
+
+        if (g_auth->checkAuth() == paladin::errNone)
+        {
+            int days_left = g_auth->getDaysLeft();
+
+            cfw::appMessageBox(_("Your product license has been activated successfully."),
+                               _("License Manager"),
+                               wxOK | wxICON_INFORMATION | wxCENTER);
+            success = true;
+        }
+    }
+
+    delete auth;
+
+    if (!success)
+    {
+        cfw::appMessageBox(_("The specified license file is not valid for this application, or this license has already been activated."),
+                           _("License Manager"),
+                           wxOK | wxICON_EXCLAMATION | wxCENTER);
+    }
+}
+
+
+bool MainApp::OnInit()
+{
+#ifdef _DEBUG
+    wxLog::AddTraceMask(wxT("ole"));
+#endif
+
+    srand((unsigned)time(NULL));
+    g_app = this;
+
+    // get our install location
+    m_install_path = getProgramPath();
+
+    // initialize the paladin object (checks for license authenticity)
+    g_auth = paladin::createAuthObject(kl::tostring(APP_COMPANY_KEY).c_str(),
+                                       PALADIN_APP_TAG,
+                                       PALADIN_APP_TAG APP_PALADIN_TEMP_LICENSE_COUNTER);
+    
+    // check for a '-r' parameter, which registers a license file
+    if (argc > 1)
+    {
+        if (::wxStrcmp(argv[1], wxT("-r")) == 0 && argc >= 3)
+        {
+            registerLicenseFile(argv[2]);
+            return false;
+        }
+    }
+
+
+
+
+    
+#if APP_GUI==1
+    // the below code is necessary for xdoracle to load properly
+    // but it's not a good solution to change the directory just
+    // to make this work.  We need to change the directory, load
+    // xdoracle and then change it back, at the very least.  The
+    // above APP_GUI #if was added to make the console mode work
+    // on short notice without having to solve the problem below
+    // Eventually, this should be fixed properly
+    
+#ifdef __WXGTK__
+    // this should allow oracle instant client to find
+    // its support drivers on linux
+    chdir(tostr(m_install_path).c_str());
+#endif
+
+#endif
+
+    // set application start time
+    g_app_start_time = time(NULL);
+    
+    // initialize xcm
+    xcm::path_list::add(towstr(m_install_path));
+
+    // add current directory to xcm path list
+    wxString cwd = ::wxGetCwd();
+    xcm::path_list::add(towstr(cwd));
+    
+    
+    // no logging
+#ifndef _DEBUG
+    wxLog::EnableLogging(false);
+    cfw::suppressConsoleLogging();
+#endif
+
+
+    // initialize i18n (internationalization/language support)
+    wxString i18n_base_path;
+    i18n_base_path = m_install_path;
+    i18n_base_path += PATH_SEPARATOR_STR;
+    i18n_base_path += wxT("..");
+    i18n_base_path += PATH_SEPARATOR_STR;
+    i18n_base_path += wxT("i18n");
+    if (!wxDir::Exists(i18n_base_path))
+    {
+        // try old location: <bin_dir>/i18n/de
+        i18n_base_path = m_install_path;
+        i18n_base_path += PATH_SEPARATOR_STR;
+        i18n_base_path += wxT("i18n");
+    }
+    
+    g_locale.Init(wxLANGUAGE_DEFAULT);
+    g_locale.AddCatalogLookupPathPrefix(i18n_base_path);
+    g_locale.AddCatalog(wxT("messages"));
+    
+    wxSocketBase::Initialize();
+
+    #if APP_GUI==1
+
+    // initialize help controller
+    wxString help_path = m_install_path;
+    #ifdef __WXMSW__
+    help_path += wxT("\\..\\help\\help.chm");
+    #else
+    wxFileSystem::AddHandler(new wxZipFSHandler);
+    help_path += wxT("/../help/help.zip");
+    #endif
+
+    if (xf_get_file_exist(towstr(help_path)))
+    {
+        #ifdef __WXMSW__
+        m_help_controller = new wxCHMHelpController;
+        #else
+        m_help_controller = new wxHtmlHelpController;
+        #endif
+        
+        m_help_controller->Initialize(help_path);
+    }
+
+    // allow access to various image formats
+    wxImage::AddHandler(new wxPNGHandler);
+    wxImage::AddHandler(new wxJPEGHandler);
+    wxImage::AddHandler(new wxGIFHandler);
+    wxImage::AddHandler(new wxXPMHandler);
+    wxImage::AddHandler(new wxICOHandler);
+     
+    // create the paper database
+    m_paper_database = new wxPrintPaperDatabase;
+    populatePaperDatabaseClean();
+
+    // populate the font names array
+    wxFontEnumerator fonts;
+    fonts.EnumerateFacenames();
+    m_font_names = fonts.GetFacenames();
+
+    // try to find the default gui font facename in the list
+    bool found = false;
+    wxFont default_font = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
+    wxString default_facename = default_font.GetFaceName();
+    int i, count = m_font_names.GetCount();
+    for (i = 0; i < count; ++i)
+    {
+        if (default_facename.CmpNoCase(m_font_names.Item(i)) == 0)
+        {
+            found = true;
+            break;
+        }
+    }
+    
+    // if we couldn't find the default facename, add it
+    if (!found)
+        m_font_names.Add(default_facename);
+    
+    // sort the font facenames
+    m_font_names.Sort();
+
+    // initialize bitmap manager
+    wxString bmpres_path = m_install_path;
+    bmpres_path += PATH_SEPARATOR_STR;
+    bmpres_path += wxT("imgres.zip");
+
+    defineCommandsMain();
+    apphookInitCommands();
+    BitmapMgr::initBitmapMgr();
+    initIdBitmapMap();
+    BitmapMgr::getBitmapMgr()->init(bmpres_path);
+
+
+    #endif // APP_GUI==1
+
+
+    // create an app preferences object for our defaults
+    m_app_default_preferences.create_instance("cfw.MemoryAppPreferences");
+    if (!m_app_default_preferences)
+    {
+        cfw::appMessageBox(wxT("Could not create a 'cfw.MemoryAppPreferences' object"));
+        return false;
+    }
+
+
+    #if APP_GUI==1
+    initDefaultPreferences();
+    #endif
+    
+    
+    // create an app preferences object
+    m_app_preferences.create_instance("cfw.AppPreferences");
+    if (!m_app_preferences)
+    {
+        cfw::appMessageBox(wxT("Could not create a 'cfw.AppPreferences' object"));
+        return FALSE;
+    }
+
+    m_app_preferences->init(APP_COMPANY_KEY, APP_CONFIG_KEY);
+
+
+    // create job queues
+    m_job_queue.create_instance("cfw.JobQueue");
+    m_script_job_queue.create_instance("cfw.JobQueue");
+    m_frame_wnd = NULL;
+
+
+    // create the extension manager
+    m_extension_mgr = new ExtensionMgr;
+    
+    // create the job scheduler
+    m_job_scheduler = new JobScheduler;
+    m_job_scheduler->setInterval(21);
+
+    // initialize web client engine
+    initWebClient();
+
+    // initialize web server (if active)
+    initWebServer();
+
+    // create the application's controller
+    m_app_controller = new AppController;
+    
+    if (argc > 1)
+    {
+        // this is used in wxmsw mode to allow the GUI version of the program
+        // to run scripts from the command line
+
+#if APP_GUI==1
+        wxFrame* f = new wxFrame(NULL, -1, wxT(""));
+        if (!runCommandLineScript())
+            return FALSE;
+        SetExitOnFrameDelete(false);
+        return TRUE;
+#endif
+    }
+    
+    if (!m_app_controller->init())
+    {
+        delete m_app_controller;
+        m_app_controller = NULL;
+        return false;
+    }
+    
+    // start the license, update and document update timers
+#if APP_GUI==1
+    startLicenseTimer();
+    startUpdateTimer();
+#endif
+
+    return true;
+}
+
+
+void MainApp::initWebClient()
+{
+    #if APP_GUI==1
+    
+    // add some common plugin directories to MOZ_PLUGIN_PATH
+    #ifdef __WXMSW__
+    wxString program_files_dir;
+    ::wxGetEnv(wxT("ProgramFiles"), &program_files_dir);
+    if (program_files_dir.Length() == 0 || program_files_dir.Last() != '\\')
+        program_files_dir += wxT("\\");
+    
+    wxString system_dir;
+    TCHAR system_buf[255];
+    ::GetSystemDirectory(system_buf, 255);
+    system_dir = towx(system_buf);
+    if (system_dir.Length() == 0 || system_dir.Last() != '\\')
+        system_dir += wxT("\\");
+
+    
+    wxString dir1 = program_files_dir;
+    dir1 += wxT("Mozilla Firefox\\plugins");
+    wxWebControl::AddPluginPath(dir1);
+    
+    wxString dir2 = system_dir;
+    dir2 += wxT("Macromed\\Flash");
+    wxWebControl::AddPluginPath(dir2);
+    
+    #else
+    #endif
+    
+
+
+    // find out web controls engine path
+    wxString web_engine_path = getProgramPath();
+    web_engine_path = web_engine_path.BeforeLast(PATH_SEPARATOR_CHAR);
+    web_engine_path += PATH_SEPARATOR_CHAR;
+    web_engine_path += wxT("xr");
+    
+    
+    // on vista and windows 7, sometimes old versions of the files
+    // compreg.dat and xpti.dat from previous versions of windows
+    // can cause problems
+    
+    #ifdef __WXMSW__
+    
+    OSVERSIONINFO os_ver;
+    os_ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+    ::GetVersionEx(&os_ver);
+    if (os_ver.dwMajorVersion >= 6) // vista, windows 7, or greater
+    {
+        wxString s = wxStandardPaths::Get().GetUserLocalDataDir();
+        s = s.BeforeLast('\\'); // strip off app name
+        s += wxT("\\VirtualStore");
+        if (web_engine_path.Length() > 2 && web_engine_path.GetChar(1) == ':')
+        {
+            s += web_engine_path.substr(2);
+            if (::wxDirExists(s))
+            {
+                wxString fname;
+                fname = s + wxT("\\components\\compreg.dat");
+                if (::wxFileExists(fname))
+                    ::wxRemoveFile(fname);
+                fname = s + wxT("\\components\\xpti.dat");
+                if (::wxFileExists(fname))
+                    ::wxRemoveFile(fname);
+            }
+        }
+
+    }
+    
+    #endif // defined(__WXMSW__)
+    
+    
+    wxString app_data_path = this->getAppDataPath();
+    if (app_data_path.Right(1) != PATH_SEPARATOR_STR)
+        app_data_path += PATH_SEPARATOR_CHAR;
+    app_data_path += wxT("Browser");
+    if (!xf_get_directory_exist(towstr(app_data_path)))
+        xf_mkdir(towstr(app_data_path));
+
+    wxWebControl::SetProfilePath(app_data_path);
+
+    wxWebControl::InitEngine(web_engine_path);
+    
+    #endif //  APP_GUI==1
+}
+
+
+void MainApp::initWebServer()
+{
+    if (m_app_preferences->getBoolean(wxT("webserver.active"), false))
+    {
+        startWebServer();
+    }
+}
+
+
+void MainApp::populatePaperDatabaseClean()
+{
+    // populate our paper database with clean names and no duplicate sizes
+    size_t i, count = wxThePrintPaperDatabase->GetCount();
+    for (i = 0; i < count; ++i)
+    {
+        wxPrintPaperType* paper = wxThePrintPaperDatabase->Item(i);
+        if (!paper)
+            continue;
+        
+        // we'll add the custom item later
+        if (paper->GetId() == wxPAPER_NONE)
+            continue;
+        
+        // don't allow duplication paper sizes in the paper database
+        if (m_paper_database->GetCount() > 0)
+        {
+            wxPrintPaperType* already_exists;
+            already_exists = m_paper_database->FindPaperType(paper->GetSize());
+            if (already_exists)
+                continue;
+        }
+        
+        // only append names that have a comma in them... we do this
+        // because the names in the paper database are formatted as
+        // such: "Letter, 8 1/2 x 11 in", and there are also sizes
+        // that we don't want to include such as "11 x 17 in"
+        wxString name = paper->GetName();
+        if (name.Find(wxT(',')) == wxNOT_FOUND)
+            continue;
+        
+        wxString clean_name = name.BeforeFirst(wxT(','));
+        m_paper_database->AddPaperType(paper->GetId(),
+                                       clean_name,
+                                       paper->GetWidth(),
+                                       paper->GetHeight());
+    }
+}
+
+
+// app uninitialization
+
+int MainApp::OnExit()
+{
+    BitmapMgr::uninitBitmapMgr();
+    
+    delete m_job_scheduler;
+    delete m_help_controller;
+    delete m_paper_database;
+    delete m_app_controller;
+    delete m_extension_mgr;
+
+#ifdef __WXMSW__
+    if (m_taskbar_icon)
+    {
+        m_taskbar_icon->RemoveIcon();
+        delete m_taskbar_icon;
+    }
+#endif
+
+    delete g_license_timer;
+    delete g_update_timer;
+    delete g_auth;
+    g_auth = NULL;
+
+    m_app_preferences->flush();
+    m_app_preferences.clear();
+
+    return wxAppBaseClass::OnExit();
+}
+
+
+/*
+class TestTimer : public wxTimer
+{
+public:
+
+    void Notify()
+    {
+        printf("Hello!!!\n");
+    }
+};
+*/
+
+// this function is only used in console mode;  After tha
+// "main script" finishes, it instructs the main thread's
+// event loop to exit
+
+static void onMainScriptFinished(cfw::IJobPtr job)
+{
+    g_app->ExitMainLoop();
+}
+
+static void func_console_print(kscript::ExprEnv* env, void* param, kscript::Value* retval)
+{
+    wxString message = towx(env->m_eval_params[0]->getString());
+    message += wxT("\n");
+    wxPrintf(wxT("%s"), (const wxChar*)message.c_str());
+}
+
+bool MainApp::runCommandLineScript()
+{
+    if (argc <= 1)
+    {
+        // no script to run -- return success
+        return true;
+    }
+    
+    wxString path = argv[1];
+    if (path.Freq(PATH_SEPARATOR_CHAR) == 0)
+    {
+        path = ::wxGetCwd();
+        if (path.Length() == 0 || path.Last() != PATH_SEPARATOR_CHAR)
+            path += PATH_SEPARATOR_CHAR;
+        path += argv[1];
+    }
+
+    tango::IDatabasePtr db = getDatabase();
+    if (db.isNull())
+    {
+        // no database, try an xdfs next
+        db.create_instance("xdfs.Database");
+        setDatabase(db);
+    }
+    
+    ScriptHostParams* params = new ScriptHostParams;
+    params->print_function.setFunction(func_console_print);
+    AppScriptError error;
+    cfw::IJobPtr job = getAppController()->executeScript(path, params, &error);
+    if (error.code != 0)
+    {
+        if (error.file.length() == 0)
+            error.file = path;
+            
+#if APP_CONSOLE==1
+        #ifdef _UNICODE
+        wprintf(L"%ls(%d) : %ls\n", (const wchar_t*)error.file.c_str(), error.line+1, (const wchar_t*)error.message.c_str());
+        #else
+        wprintf(L"%s(%d) : %s\n", (const wchar_t*)error.file.c_str(), error.line+1, (const wchar_t*)error.message.c_str());
+        #endif
+#else
+        wchar_t str[512];
+        swprintf(str, 512, L"%ls(%d) : %ls\n", (const wchar_t*)error.file.c_str(), error.line+1, (const wchar_t*)error.message.c_str());
+        cfw::appMessageBox(str);
+#endif
+
+        return false;
+    }
+
+    if (job.isNull())
+    {
+        wprintf(L"An error occurred while compiling the script.\n");
+        return false;
+    }
+
+    job->sigJobFinished().connect(onMainScriptFinished);
+
+    return true;
+}
+
+
+int MainApp::OnRun()
+{
+    #if APP_CONSOLE==1
+    
+    if (argc > 1)
+    {
+        if (!runCommandLineScript())
+            return 0;
+    }
+
+    return MainLoop();
+    
+    #else
+    
+    return wxAppBaseClass::OnRun();
+    
+    #endif
+}
+
+void MainApp::startLicenseTimer()
+{
+    if (!g_license_timer)
+    {
+        g_license_timer = new LicenseTimer;
+    }
+    
+    g_license_timer->Start(30000);  // every 30 seconds
+}
+
+void MainApp::stopLicenseTimer()
+{
+    if (g_license_timer)
+        g_license_timer->Stop();
+}
+
+void MainApp::startUpdateTimer()
+{
+    if (!g_update_timer)
+    {
+        g_update_timer = new UpdateTimer;
+    }
+    
+    // start once every 10 minutes;
+    // the timer itself will modify this time interval
+    g_update_timer->Start(600000);
+}
+
+void MainApp::stopUpdateTimer()
+{
+    if (g_update_timer)
+        g_update_timer->Stop();
+}
+
+
+void MainApp::startWebServer()
+{
+    if (m_web_server)
+        return;
+    m_web_server = new WebServer;
+    m_web_server->start();
+}
+
+void MainApp::stopWebServer()
+{
+    WebServer* w = m_web_server;
+    m_web_server = NULL;
+    m_web_server->stop();
+    delete w;
+}
+
+WebServer* MainApp::getWebServer()
+{
+    return m_web_server;
+}
+
+void MainApp::onActivateApp(wxActivateEvent& evt)
+{
+    #ifdef __WXMSW__
+    if (evt.GetActive())
+    {
+        if (m_frame)
+        {
+            cfw::IDocumentSitePtr site = m_frame->getActiveChild();
+            if (site)
+            {
+                cfw::IDocumentPtr doc = site->getDocument();
+                if (doc)
+                {
+                    doc->setDocumentFocus();
+                }
+            }
+        }
+    }
+     else
+    {
+    }
+    #endif
+    
+    evt.Skip();
+}
+
+
+bool MainApp::getJobsActive()
+{
+    if (m_job_queue.isNull())
+        return false;
+    return m_job_queue->getJobsActive();
+}
+
+cfw::IJobQueuePtr MainApp::getJobQueue()
+{
+    return m_job_queue;
+}
+
+cfw::IJobQueuePtr MainApp::getScriptJobQueue()
+{
+    return m_script_job_queue;
+}
+
+JobScheduler* MainApp::getJobScheduler()
+{
+    return m_job_scheduler;
+}
+
+wxArrayString MainApp::getFontNames()
+{
+    return m_font_names;
+}
+
+wxString MainApp::getBookmarkFolder()
+{
+    wxASSERT(m_database.p);
+    
+    if (m_database.isNull())
+        return wxEmptyString;
+        
+    wxString res;
+
+    // first we will look if the users settings override the
+    // location of the bookmark toolbar
+    std::wstring path = L"/.appdata/";
+    path += m_database->getActiveUid();
+    path += L"/dcfe/bookmarkloc";
+ 
+    tango::INodeValuePtr n = m_database->openNodeFile(path);
+    if (n.isOk())
+    {
+        tango::INodeValuePtr path_node = n->getChild(L"path", false);
+        if (path_node)
+        {
+            res = towx(path_node->getString());
+            if (res.Length() > 0)
+            {
+                if (res.Last() == wxT('/'))
+                    res.RemoveLast();
+                
+                if (!m_database->getFileExist(towstr(res)))
+                    m_database->createFolder(towstr(res));
+                
+                return res;
+            }
+        }
+    }
+    
+    
+    res = L"/.appdata/";
+    res += m_database->getActiveUid();
+    res += L"/bookmarks";
+
+    if (!m_database->getFileExist(towstr(res)))
+        m_database->createFolder(towstr(res));
+    
+    return res;
+}
+
+    
+cfw::IFramePtr MainApp::getMainFrame()
+{
+    return m_frame;
+}
+
+AppController* MainApp::getAppController()
+{
+    return m_app_controller;
+}
+
+cfw::IAppPreferencesPtr MainApp::getAppPreferences()
+{
+    return m_app_preferences;
+}
+
+cfw::IAppPreferencesPtr MainApp::getAppDefaultPreferences()
+{
+    return m_app_default_preferences;
+}
+
+wxFrame* MainApp::getMainWindow()
+{
+    return m_frame_wnd;
+}
+
+wxPrintPaperDatabase* MainApp::getPaperDatabase()
+{
+    return m_paper_database;
+}
+
+wxHelpControllerBase* MainApp::getHelpController()
+{
+    return m_help_controller;
+}
+
+ExtensionMgr* MainApp::getExtensionMgr()
+{
+    return m_extension_mgr;
+}
+
+wxString MainApp::getInstallPath()
+{
+    return m_install_path;
+}
+
+wxString MainApp::getAppDataPath()
+{
+    return ::getAppDataPath();
+}
+
+void MainApp::setMainFrame(cfw::IFramePtr frame)
+{
+    m_frame = frame;
+
+    if (m_frame)
+        m_frame_wnd = m_frame->getFrameWindow();
+         else
+        m_frame_wnd = NULL;
+}
+
+tango::IDatabasePtr MainApp::getDatabase()
+{
+    return m_database;
+}
+
+void MainApp::setDatabase(tango::IDatabasePtr database)
+{
+    m_database = database;
+
+    if (m_database)
+    {
+        // load the jobs scheduled to run for this database
+        m_job_scheduler->load();
+    }
+}
+
+
+void MainApp::setDatabaseLocation(const wxString& string)
+{
+    m_db_location = string;
+}
+
+wxString MainApp::getDatabaseLocation()
+{
+    return m_db_location;
+}
+
+DbDoc* MainApp::getDbDoc()
+{
+    return m_dbdoc;
+}
+
+void MainApp::setDbDoc(DbDoc* dbdoc)
+{
+    m_dbdoc = dbdoc;
+}
+
+bool MainApp::isDatabaseOpen()
+{
+    return m_database.p ? true : false;
+}
+
+bool MainApp::isDatabaseReadOnly()
+{
+    return m_app_preferences->getBoolean(wxT("app.data_locked"), true);
+}
+
+wxString MainApp::getProjectName()
+{
+    if (m_database.isNull())
+        return wxT("");
+
+    return towx(m_database->getDatabaseName());
+}
+
+void MainApp::setProjectName(const wxString& name)
+{
+    wxString old_project_name = towx(m_database->getDatabaseName());
+    m_database->setDatabaseName(towstr(name));
+
+    ProjectMgr projmgr;
+    int idx = projmgr.getIdxFromLocation(getDatabaseLocation());
+    if (idx != -1)
+    {
+        projmgr.modifyProjectEntry(idx, name, wxEmptyString, wxEmptyString, wxEmptyString);
+    }
+}
+
+
+
+#ifdef __WXMSW__
+
+void MainApp::showApp(bool show)
+{
+    if (m_frame)
+    {
+        // create task bar icon
+    
+#ifdef __WXMSW__
+
+        if (!show)
+        {
+            AppBusyCursor bc;
+            if (!m_taskbar_icon)
+            {
+                m_taskbar_icon = new AppTaskBarIcon;
+            }
+            
+            wxIcon logo;
+            logo.LoadFile(wxT("AA_APPICON_9"), wxBITMAP_TYPE_ICO_RESOURCE);
+            
+            m_taskbar_icon->SetIcon(logo, wxEmptyString);
+        }
+         else
+        {
+            if (m_taskbar_icon)
+            {
+                m_taskbar_icon->RemoveIcon();
+            }
+        }
+#endif
+
+        wxFrame* frame = m_frame->getFrameWindow();
+        
+        // solves a bug when another process
+        // shows our window without us knowing it:
+        // see MainApp::OnInit()
+        
+        frame->Show(!show);
+        frame->Show(show);
+
+        if (frame->IsIconized())
+            frame->Iconize(false);
+    }
+}
+
+
+#endif
+
+
+
+
+
+#if 0
+// this code is never run, but we absolutely require
+// this strings to be translated (e.g. Ctrl into Strg
+// for german), so that our accelerators work properly;
+// this ensures that these strings land in our .po file
+_("ctrl")
+_("shift")
+_("alt")
+
+// these are stock labels used in wxWidgets which need to be translated
+_("&About")
+_("&Apply")
+_("&Cancel")
+_("&Yes")
+_("&No")
+_("&OK")
+_("&Save")
+_("Save &As...")
+#endif
+
