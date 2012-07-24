@@ -33,7 +33,7 @@ echo Log will be placed in file: %SOURCE_PATH%\build.log
 set BUILD_OUTPUT_PATH=%BUILD_BASE%\builds\%BUILD_CURRENT%
 
 REM -- s3 bucket variables --
-set S3BUCKET=builds.kirix.com/kirix-strata
+set S3BUCKET=builds.kirix.com/kirix-strata/development/64-bit/
 set S3NAME=kirix-strata-64bit-%YEAR%-%MONTH%-%DAY%-build-%BUILD_CURRENT%.msi
 
 
