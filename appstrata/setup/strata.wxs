@@ -11,9 +11,11 @@
         
     <Package
         Comments="This MSI installation file installs Kirix Strata" 
-        Manufacturer="Kirix Corporation" InstallerVersion="200" 
-        Languages="1033" Compressed="yes"/>
-        
+        Manufacturer="Kirix Research, LLC"
+		InstallerVersion="200" 
+        Languages="1033"
+		Compressed="yes"/>
+    
     <Media Id="1" EmbedCab="yes" Cabinet="kxinst.cab"/>
         
 

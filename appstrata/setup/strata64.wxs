@@ -11,8 +11,11 @@
         
     <Package
         Comments="This MSI installation file installs Kirix Strata" 
-        Manufacturer="Kirix Corporation" InstallerVersion="200" 
-        Languages="1033" Compressed="yes"/>
+        Manufacturer="Kirix Research, LLC"
+		InstallerVersion="200" 
+		Platform="x64"
+        Languages="1033"
+		Compressed="yes"/>
         
     <Media Id="1" EmbedCab="yes" Cabinet="kxinst.cab"/>
         
@@ -46,18 +49,18 @@
     <Property Id="ARPURLINFOABOUT"><![CDATA[http://www.kirix.com]]></Property>
 	
     <Directory Id="TARGETDIR" Name="SourceDir">
-        <Directory Id="ProgramFilesFolder" Name="PFiles">
+        <Directory Id="ProgramFiles64Folder" Name="PFiles">
             <Directory Id="INSTALLDIR" Name="Kirix Strata">
                 <Directory Id="PKG_BINDIR" Name="bin">
 				
 					<!--
-					<Component Id="Documentation Files"  Guid="8637E553-C046-60E0-9101-8D35A2870C86">
-						<File Id="readme" Name="Readme.txt" DiskId="1" src="Readme.txt"/>
+					<Component Id="Documentation Files"  Guid="8637E553-C046-60E0-9101-8D35A2870C86" Win64="yes">
+						<File Id="readme" Name="Readme.txt" DiskId="1" src="Readme.txt" ProcessorArchitecture="x64" />
 					</Component>
 					-->
 
-					<Component Id="Core" Guid="B081FEDE-736F-541C-26EA-BA1015D31B38">
-						<File Id="appstrata" Name="appstrata.exe" DiskId="1" Source="$(env.buildsrc)\bin\appstrata.exe" KeyPath="yes">
+					<Component Id="Core" Guid="B081FEDE-736F-541C-26EA-BA1015D31B38" Win64="yes">
+						<File Id="appstrata" Name="appstrata.exe" DiskId="1" Source="$(env.buildsrc)\bin\appstrata.exe" KeyPath="yes" ProcessorArchitecture="x64">
 							<Shortcut Id="KirixStrataProgramMenuShortcut"
 								Directory="ProgramMenuDir"
 								Name="Kirix Strata"
@@ -68,12 +71,12 @@
 								Advertise="yes"/>
 						</File>
 
-						<File Id="imgres"   Name="imgres.zip"   DiskId="1" Source="$(env.buildsrc)\bin\imgres.zip"/>
-                        <File Id="webres"   Name="webres.jar"   DiskId="1" Source="$(env.buildsrc)\bin\webres.jar"/>
-						<File Id="xdfs"     Name="xdfs.dll"     DiskId="1" Source="$(env.buildsrc)\bin\xdfs.dll"/>
-						<File Id="xdnative" Name="xdnative.dll" DiskId="1" Source="$(env.buildsrc)\bin\xdnative.dll"/>
-						<File Id="xdodbc"   Name="xdodbc.dll"   DiskId="1" Source="$(env.buildsrc)\bin\xdodbc.dll"/>
-                        <File Id="xdoracle" Name="xdoracle.dll" DiskId="1" Source="$(env.buildsrc)\bin\xdoracle.dll"/>
+						<File Id="imgres"   Name="imgres.zip"   DiskId="1" Source="$(env.buildsrc)\bin\imgres.zip"   ProcessorArchitecture="x64"/>
+                        <File Id="webres"   Name="webres.jar"   DiskId="1" Source="$(env.buildsrc)\bin\webres.jar"   ProcessorArchitecture="x64"/>
+						<File Id="xdfs"     Name="xdfs.dll"     DiskId="1" Source="$(env.buildsrc)\bin\xdfs.dll"     ProcessorArchitecture="x64"/>
+						<File Id="xdnative" Name="xdnative.dll" DiskId="1" Source="$(env.buildsrc)\bin\xdnative.dll" ProcessorArchitecture="x64"/>
+						<File Id="xdodbc"   Name="xdodbc.dll"   DiskId="1" Source="$(env.buildsrc)\bin\xdodbc.dll"   ProcessorArchitecture="x64"/>
+                        <File Id="xdoracle" Name="xdoracle.dll" DiskId="1" Source="$(env.buildsrc)\bin\xdoracle.dll" ProcessorArchitecture="x64"/>
 
 						<RemoveFolder Id="ProgramMenuDir" Directory='ProgramMenuDir' On="uninstall"/>
 						
@@ -81,7 +84,7 @@
 					
 					
                     <!-- core registry items for things like license keys -->
-                    <Component Id="CoreRegistry" Guid="0357E732-340A-4AE1-BAD2-01CF9A3F89E5" KeyPath="yes" SharedDllRefCount="no" Permanent="yes">
+                    <Component Id="CoreRegistry" Guid="0357E732-340A-4AE1-BAD2-01CF9A3F89E5" KeyPath="yes" SharedDllRefCount="no" Permanent="yes" Win64="yes">
 
  
 
@@ -135,8 +138,8 @@
 				</Directory>
 				
 				<Directory Id="PKG_HELPDIR" Name="help">
-                    <Component Id="Help" Guid="53928A7C-4566-4535-B42C-5EAB8C651068">
-                        <File Id="help" Name="help.chm" DiskId="1" Source="$(env.buildsrc)\help\help.chm" KeyPath="yes">
+                    <Component Id="Help" Guid="53928A7C-4566-4535-B42C-5EAB8C651068" Win64="yes">
+                        <File Id="help" Name="help.chm" DiskId="1" Source="$(env.buildsrc)\help\help.chm" KeyPath="yes" ProcessorArchitecture="x64">
                             <Shortcut Id="KirixStrataHelpMenuShortcut"
                                 Directory="ProgramMenuDir"
                                 Name="Kirix Strata Help"
@@ -153,16 +156,16 @@
 
                 <Directory Id="PKG_I18N" Name="i18n">
                     <Directory Id="PKG_I18N_DE" Name="de">
-                        <Component Id="Translation_de" Guid="53928C8D-3566-75f5-B42C-6BAA8C651068">
-                            <File Id="messages_de"  Name="messages.mo" DiskId="1" Source="$(env.buildsrc)\i18n\messages.mo" KeyPath="yes"/>
+                        <Component Id="Translation_de" Guid="53928C8D-3566-75f5-B42C-6BAA8C651068" Win64="yes">
+                            <File Id="messages_de"  Name="messages.mo" DiskId="1" Source="$(env.buildsrc)\i18n\messages.mo" KeyPath="yes" ProcessorArchitecture="x64"/>
                         </Component>
                     </Directory>
                 </Directory>
 
 
                 <Directory Id="PKG_SAMPLEDIR" Name="samples">
-                    <Component Id="Samples" Guid="13938A7B-4566-45f5-B42C-5FAA8C652068">
-                        <File Id="startup"   Name="startup.kpg"   DiskId="1" Source="$(env.buildsrc)\samples\startup.kpg" KeyPath="yes"/>
+                    <Component Id="Samples" Guid="13938A7B-4566-45f5-B42C-5FAA8C652068" Win64="yes">
+                        <File Id="startup"   Name="startup.kpg"   DiskId="1" Source="$(env.buildsrc)\samples\startup.kpg" KeyPath="yes" ProcessorArchitecture="x64"/>
                     </Component>
                 </Directory>
 				

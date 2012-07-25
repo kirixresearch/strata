@@ -1,8 +1,11 @@
 @echo off
 
-call "c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\vcvars32.bat"
+set APPLICATION_NAME=Kirix Strata
+
+call "C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /Release /x64 /xp
+
 set WIX_PATH="c:\Program Files (x86)\Windows Installer XML v3.5\bin"
-set SIGNCMD=d:\build64\cert\signtool sign /f d:\build64\cert\signcert.p12 /t http://timestamp.comodoca.com/authenticode
+set SIGNCMD=d:\build64\cert\signtool sign /d "%APPLICATION_NAME%" /f d:\build64\cert\signcert.p12 /t http://timestamp.comodoca.com/authenticode
 set MSGFMT="c:\Program Files (x86)\Poedit\bin\msgfmt"
 set MSGCAT="c:\Program Files (x86)\Poedit\bin\msgcat"
 SET YEAR=%DATE:~10,4%
@@ -15,7 +18,7 @@ set SOURCE_PATH=d:\build64\src\trunk
 set CONFIG_PATH=d:\build64\src\trunk\appstrata\config
 set VC_OUTPUT_PATH=d:\build64\src\trunk\releaseu
 set SETUP_PATH=%SOURCE_PATH%\appstrata\setup
-set WXS_NAME=strata
+set WXS_NAME=strata64
 set WEBRES_DIR=%SOURCE_PATH%\appstrata\webres
 set BUILD_PROJECT=appstrata
 set BUILD_SLN=build64.sln
@@ -45,7 +48,7 @@ if exist %BUILD_OUTPUT_PATH% (
 )
 
 
-
+goto ok
 REM -- change to the drive and driectory where the build will be made --
 
 REM %BUILD_DRIVE%
@@ -79,7 +82,7 @@ REM -- build the source tree --
 
 echo Building...
 REM %MSDEV% %BUILD_SLN% /MAKE "%BUILD_PROJECT% - Win32 Release Unicode"  /REBUILD /OUT build.log
-msbuild %SOURCE_PATH%\%BUILD_SLN% /t:Rebuild /p:Configuration=Release
+msbuild %SOURCE_PATH%\%BUILD_SLN% /t:Rebuild /p:Configuration=Release /p:Platform=x64
 
 
 IF NOT EXIST %VC_OUTPUT_PATH%\appstrata.exe goto err
@@ -158,8 +161,8 @@ erase %SETUP_PATH%\*.wixobj /f /q >nul
 %BUILDUTIL% process_wix %SETUP_PATH%\%WXS_NAME%.wxs %SETUP_PATH%\%WXS_NAME%_tmp.wxs
 
 heat dir %BUILDSRCXR% -var %BUILDSRCXR% -ke -gg -sreg -dr INSTALLDIR -cg xr -var env.buildsrcxr -out %SETUP_PATH%\xr.wxs
-candle %SETUP_PATH%\xr.wxs -o %SETUP_PATH%\xr.wixobj
-candle %SETUP_PATH%\%WXS_NAME%_tmp.wxs -o %SETUP_PATH%\%WXS_NAME%.wixobj
+candle %SETUP_PATH%\xr.wxs -arch x64 -o %SETUP_PATH%\xr.wixobj
+candle %SETUP_PATH%\%WXS_NAME%_tmp.wxs -arch x64 -o %SETUP_PATH%\%WXS_NAME%.wixobj
 
 light -ext WixUIExtension %SETUP_PATH%\%WXS_NAME%.wixobj %SETUP_PATH%\xr.wixobj -out %SETUP_PATH%\%WXS_NAME%.msi
 if not exist %SETUP_PATH%\%WXS_NAME%.msi (
@@ -170,6 +173,7 @@ if not exist %SETUP_PATH%\%WXS_NAME%.msi (
 erase %SETUP_PATH%\%WXS_NAME%_tmp.wxs /f /q 2>nul
 erase %SETUP_PATH%\*.wixobj /f /q 2>nul
 
+%SIGNCMD% %SETUP_PATH%\%WXS_NAME%.msi
 
 REM -- make sure the setup output file exists --
 

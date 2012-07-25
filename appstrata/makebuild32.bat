@@ -3,6 +3,7 @@
 set APPLICATION_NAME=Kirix Strata
 
 call "c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\vcvars32.bat"
+
 set WIX_PATH="c:\Program Files (x86)\Windows Installer XML v3.5\bin"
 set SIGNCMD=d:\build32\cert\signtool sign /d "%APPLICATION_NAME%" /f d:\build32\cert\signcert.p12 /t http://timestamp.comodoca.com/authenticode
 set MSGFMT="c:\Program Files (x86)\Poedit\bin\msgfmt"
