@@ -48,18 +48,18 @@ if exist %BUILD_OUTPUT_PATH% (
 )
 
 
-goto ok
+
 REM -- change to the drive and driectory where the build will be made --
 
-REM %BUILD_DRIVE%
-REM cd %SOURCE_PATH%
+%BUILD_DRIVE%
+cd %SOURCE_PATH%
 
 
 
 REM -- get the latest from source control --
 
 echo Getting latest from source control
-svn update >nul
+svn update
 
 
 
