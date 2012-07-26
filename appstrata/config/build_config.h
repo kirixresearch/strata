@@ -1,16 +1,7 @@
-/*!
- *
- * Copyright (c) 2007-2011, Kirix Research, LLC.  All rights reserved.
- *
- * Project:  Application Client
- * Author:   Benjamin I. Williams
- * Created:  2007-03-22
- *
- */
 
-
-// this file is normally blank
-
-// on build machines, it can be used to specify version
-// information and compile instructions
+// version info for main application executable
+#define APP_VERSION_MAJOR 1
+#define APP_VERSION_MINOR 0
+#define APP_VERSION_SUBMINOR 0
+#define APP_VERSION_BUILDSERIAL 2001
 
