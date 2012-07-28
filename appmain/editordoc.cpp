@@ -69,17 +69,17 @@ static wxString stripCRLF(const wxString& _str)
 // a timer; this allows the application to continue to
 // function as well as provide printer feedback using
 // the job queue
-class ExternalUpdateTimer : public wxTimer
+class EditorDocExternalUpdateTimer : public wxTimer
 {
 public:
 
-    ExternalUpdateTimer(EditorDoc* doc)
+    EditorDocExternalUpdateTimer(EditorDoc* doc)
     {
         // set the document and start the timer
         m_doc = doc;
     }
     
-    ~ExternalUpdateTimer()
+    ~EditorDocExternalUpdateTimer()
     {
     }
 
@@ -91,6 +91,7 @@ public:
     {
         // check for external changes
         m_doc->checkForExternalChanges();
+        m_doc->m_timer = NULL;
 
         // delete this object after we're done
         if (!wxPendingDelete.Member(this))
@@ -992,6 +993,7 @@ EditorDoc::EditorDoc()
     m_path = wxEmptyString;
     m_error_message = wxEmptyString;
     m_mime_type = wxT("text/plain");
+    m_timer = NULL;
     
     #ifdef __WXMSW__
     m_eol_mode = wxSTC_EOL_CRLF;
@@ -1010,7 +1012,12 @@ EditorDoc::EditorDoc()
 
 EditorDoc::~EditorDoc()
 {
-
+    if (m_timer)
+    {
+        m_timer->Stop();
+        delete m_timer;
+        m_timer = NULL;
+    }
 }
 
 
@@ -1121,16 +1128,19 @@ void EditorDoc::updateCaption()
 
 void EditorDoc::updateContent()
 {
-    // check to see if the content needs to be updated; 
-    // this gets called on a focus event in the editor
-    // control and creates a timed object to check for 
-    // updates; the reason a timed object is creatd is 
-    // so that the document has a chance to show before 
-    // the notification appears, which won't happen if
-    // the update function is tied directly to the focus 
-    // event
-    ExternalUpdateTimer* timer = new ExternalUpdateTimer(this);
+    // if a timer is already running, don't run another one
+    if (m_timer)
+        return;
+    
+    // check to see if the content needs to be updated; this gets called on a
+    // focus event in the editor control and creates a timed object to check
+    // for updates; the reason a timed object is created is so that the
+    // document has a chance to show before the notification appears, which
+    // won't happen if the update function is tied directly to the focus event
+    EditorDocExternalUpdateTimer* timer = new EditorDocExternalUpdateTimer(this);
     timer->Start(100, true);    // single shot
+
+    m_timer = timer;
 }
 
 void EditorDoc::gotoLine()
@@ -1391,6 +1401,13 @@ static void clearStatusBarTextItem()
 
 bool EditorDoc::onSiteClosing(bool force)
 {
+    if (m_timer)
+    {
+        m_timer->Stop();
+        delete m_timer;
+        m_timer = NULL;
+    }
+
     if (force)
     {
         clearStatusBarTextItem();

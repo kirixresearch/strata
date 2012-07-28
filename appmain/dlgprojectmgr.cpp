@@ -807,6 +807,7 @@ DlgProjectMgr::DlgProjectMgr(wxWindow* parent, wxWindowID id) :
     m_grid->refresh(kcl::Grid::refreshAll);
 
     SetSize(520,340);
+    Center();
 }
 
 ProjectInfo DlgProjectMgr::getSelectedProject()

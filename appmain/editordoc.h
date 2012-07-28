@@ -46,6 +46,8 @@ class EditorDoc : public wxWindow,
                   public cfw::StatusBarProviderBase,
                   public xcm::signal_sink
 {
+    friend class EditorDocExternalUpdateTimer;
+
     XCM_CLASS_NAME_NOREFCOUNT("appmain.EditorDoc")
     XCM_BEGIN_INTERFACE_MAP(EditorDoc)
         XCM_INTERFACE_ENTRY(cfw::IDocument)
@@ -166,6 +168,7 @@ private:
     wxString m_error_message;
     wxString m_mime_type;
     int m_eol_mode;           // end of line mode -- CR, LF, or CRLF
+    wxTimer* m_timer;
 
     cfw::IFramePtr m_frame;
     cfw::IDocumentSitePtr m_doc_site;
