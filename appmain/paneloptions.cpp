@@ -1889,9 +1889,9 @@ public:
         wxStaticBox* box = new wxStaticBox(this, -1, _("Font"));
         wxStaticBoxSizer* font_sizer = new wxStaticBoxSizer(box, wxHORIZONTAL);
         font_sizer->AddSpacer(10);
-        font_sizer->Add(m_fontface_combo, 1, wxEXPAND | wxTOP | wxBOTTOM, 10);
+        font_sizer->Add(m_fontface_combo, 1, wxTOP | wxBOTTOM, 10);
         font_sizer->AddSpacer(8);
-        font_sizer->Add(m_fontsize_combo, 0, wxEXPAND | wxTOP | wxBOTTOM, 10);
+        font_sizer->Add(m_fontsize_combo, 0, wxTOP | wxBOTTOM, 10);
         font_sizer->AddSpacer(10);
 
         

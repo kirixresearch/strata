@@ -6725,8 +6725,8 @@ void AppController::showOptionsDialog()
     site = m_frame->lookupSite(wxT("OptionsPanel"));
     if (site.isNull())
     {
-        int w = 520;
-        int h = 480;
+        int w = 530;
+        int h = 500;
         
         #ifdef __WXGTK__
         if (wxNORMAL_FONT->GetPointSize() >= 11)
