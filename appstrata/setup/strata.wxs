@@ -185,7 +185,7 @@
     
 
     <Feature Id="DefaultFeature" Level="1">
-        <MergeRef Id="CRT" />
+        <MergeRef Id="CRT"/>
         <ComponentRef Id="Core"/>
         <ComponentRef Id="CoreRegistry"/>
         <ComponentRef Id="Help"/>
