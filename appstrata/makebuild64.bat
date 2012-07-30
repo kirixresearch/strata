@@ -181,7 +181,7 @@ REM -- make sure the setup output file exists --
 if not "%S3BUCKET%"=="" (
 echo Uploading to S3...
 copy %SETUP_PATH%\%WXS_NAME%.msi %TEMP%\%S3NAME%
-s3 put %S3BUCKET%/ %TEMP%\%S3NAME%
+s3 put %S3BUCKET%/ %TEMP%\%S3NAME% /acl:public-read
 erase %TEMP%\%S3NAME%
 )
 
