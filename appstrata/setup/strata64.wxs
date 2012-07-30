@@ -80,6 +80,7 @@
 						<File Id="xdnative" Name="xdnative.dll" DiskId="1" Source="$(env.buildsrc)\bin\xdnative.dll" ProcessorArchitecture="x64"/>
 						<File Id="xdodbc"   Name="xdodbc.dll"   DiskId="1" Source="$(env.buildsrc)\bin\xdodbc.dll"   ProcessorArchitecture="x64"/>
                         <File Id="xdoracle" Name="xdoracle.dll" DiskId="1" Source="$(env.buildsrc)\bin\xdoracle.dll" ProcessorArchitecture="x64"/>
+                        <File Id="xdsqlite" Name="xdsqlite.dll" DiskId="1" Source="$(env.buildsrc)\bin\xdsqlite.dll" ProcessorArchitecture="x64"/>
 
 						<RemoveFolder Id="ProgramMenuDir" Directory='ProgramMenuDir' On="uninstall"/>
 						

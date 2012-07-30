@@ -79,7 +79,8 @@
                         <File Id="xdnative" Name="xdnative.dll" DiskId="1" Source="$(env.buildsrc)\bin\xdnative.dll"/>
                         <File Id="xdodbc"   Name="xdodbc.dll"   DiskId="1" Source="$(env.buildsrc)\bin\xdodbc.dll"/>
                         <File Id="xdoracle" Name="xdoracle.dll" DiskId="1" Source="$(env.buildsrc)\bin\xdoracle.dll"/>
-
+                        <File Id="xdsqlite" Name="xdsqlite.dll" DiskId="1" Source="$(env.buildsrc)\bin\xdsqlite.dll"/>
+						
                         <RemoveFolder Id="ProgramMenuDir" Directory='ProgramMenuDir' On="uninstall"/>
                         
                     </Component>

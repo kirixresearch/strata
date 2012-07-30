@@ -77,6 +77,7 @@ erase %VC_OUTPUT_PATH%\xdnative.dll /f/q
 erase %VC_OUTPUT_PATH%\xdodbc.dll /f/q
 erase %VC_OUTPUT_PATH%\xdoracle.dll /f/q
 erase %VC_OUTPUT_PATH%\xdfs.dll /f/q
+erase %VC_OUTPUT_PATH%\xdsqlite.dll /f/q
 
 REM -- build the source tree --
 
@@ -91,6 +92,7 @@ IF NOT EXIST %VC_OUTPUT_PATH%\xdnative.dll goto err
 IF NOT EXIST %VC_OUTPUT_PATH%\xdodbc.dll goto err
 IF NOT EXIST %VC_OUTPUT_PATH%\xdoracle.dll goto err
 IF NOT EXIST %VC_OUTPUT_PATH%\xdfs.dll goto err
+IF NOT EXIST %VC_OUTPUT_PATH%\xdsqlite.dll goto err
 
 goto ok
 
@@ -127,6 +129,7 @@ copy %VC_OUTPUT_PATH%\xdnative.dll %BUILDSRC%\bin /Y
 copy %VC_OUTPUT_PATH%\xdodbc.dll %BUILDSRC%\bin /Y
 copy %VC_OUTPUT_PATH%\xdoracle.dll %BUILDSRC%\bin /Y
 copy %VC_OUTPUT_PATH%\xdfs.dll %BUILDSRC%\bin /Y
+copy %VC_OUTPUT_PATH%\xdsqlite.dll %BUILDSRC%\bin /Y
 copy %VC_OUTPUT_PATH%\imgres.zip %BUILDSRC%\bin /Y
 copy %VC_OUTPUT_PATH%\webres.jar %BUILDSRC%\bin /Y
 mkdir %BUILDSRC%\i18n\de >nul
@@ -141,6 +144,7 @@ echo Signing build output files...
 %SIGNCMD% %BUILDSRC%\bin\gpasvc.exe
 %SIGNCMD% %BUILDSRC%\bin\xdnative.dll
 %SIGNCMD% %BUILDSRC%\bin\xdfs.dll
+%SIGNCMD% %BUILDSRC%\bin\xdsqlite.dll
 %SIGNCMD% %BUILDSRC%\bin\xdoracle.dll
 %SIGNCMD% %BUILDSRC%\bin\xdodbc.dll
 
@@ -192,6 +196,7 @@ copy %SETUP_PATH%\%WXS_NAME%.msi %BUILD_OUTPUT_PATH%
 copy %SOURCE_PATH%\appstrata\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
 copy %SOURCE_PATH%\tango\xdnative\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
 copy %SOURCE_PATH%\tango\xdfs\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
+copy %SOURCE_PATH%\tango\xdsqlite\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
 copy %SOURCE_PATH%\tango\xdoracle\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
 copy %SOURCE_PATH%\tango\xdodbc\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
 
