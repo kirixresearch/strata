@@ -12,9 +12,9 @@
     <Package
         Comments="This MSI installation file installs Kirix Strata" 
         Manufacturer="Kirix Research, LLC"
-		InstallerVersion="200" 
+        InstallerVersion="300" 
         Languages="1033"
-		Compressed="yes"/>
+        Compressed="yes"/>
     
     <Media Id="1" EmbedCab="yes" Cabinet="kxinst.cab"/>
         
@@ -46,63 +46,66 @@
 
     <Property Id="ARPPRODUCTICON">kstrata.exe</Property>
     <Property Id="ARPURLINFOABOUT"><![CDATA[http://www.kirix.com]]></Property>
-	
+    
     <Directory Id="TARGETDIR" Name="SourceDir">
+    
+        <Merge Id="CRT" Language="0" SourceFile="$(env.buildsrc)\setup\Microsoft_VC100_CRT_x86.msm" DiskId="1" />
+    
         <Directory Id="ProgramFilesFolder" Name="PFiles">
             <Directory Id="INSTALLDIR" Name="Kirix Strata">
                 <Directory Id="PKG_BINDIR" Name="bin">
-				
-					<!--
-					<Component Id="Documentation Files"  Guid="8637E553-C046-60E0-9101-8D35A2870C86">
-						<File Id="readme" Name="Readme.txt" DiskId="1" src="Readme.txt"/>
-					</Component>
-					-->
+                
+                    <!--
+                    <Component Id="Documentation Files"  Guid="8637E553-C046-60E0-9101-8D35A2870C86">
+                        <File Id="readme" Name="Readme.txt" DiskId="1" src="Readme.txt"/>
+                    </Component>
+                    -->
 
-					<Component Id="Core" Guid="B081FEDE-736F-541C-26EA-BA1015D31B38">
-						<File Id="appstrata" Name="appstrata.exe" DiskId="1" Source="$(env.buildsrc)\bin\appstrata.exe" KeyPath="yes">
-							<Shortcut Id="KirixStrataProgramMenuShortcut"
-								Directory="ProgramMenuDir"
-								Name="Kirix Strata"
-								Advertise="yes"/>
-							<Shortcut Id="AppmainDesktopShortcut"
-								Directory="DesktopFolder"
-								Name="Kirix Strata"
-								Advertise="yes"/>
-						</File>
+                    <Component Id="Core" Guid="B081FEDE-736F-541C-26EA-BA1015D31B38">
+                        <File Id="appstrata" Name="appstrata.exe" DiskId="1" Source="$(env.buildsrc)\bin\appstrata.exe" KeyPath="yes">
+                            <Shortcut Id="KirixStrataProgramMenuShortcut"
+                                Directory="ProgramMenuDir"
+                                Name="Kirix Strata"
+                                Advertise="yes"/>
+                            <Shortcut Id="AppmainDesktopShortcut"
+                                Directory="DesktopFolder"
+                                Name="Kirix Strata"
+                                Advertise="yes"/>
+                        </File>
 
-						<File Id="imgres"   Name="imgres.zip"   DiskId="1" Source="$(env.buildsrc)\bin\imgres.zip"/>
+                        <File Id="imgres"   Name="imgres.zip"   DiskId="1" Source="$(env.buildsrc)\bin\imgres.zip"/>
                         <File Id="webres"   Name="webres.jar"   DiskId="1" Source="$(env.buildsrc)\bin\webres.jar"/>
-						<File Id="xdfs"     Name="xdfs.dll"     DiskId="1" Source="$(env.buildsrc)\bin\xdfs.dll"/>
-						<File Id="xdnative" Name="xdnative.dll" DiskId="1" Source="$(env.buildsrc)\bin\xdnative.dll"/>
-						<File Id="xdodbc"   Name="xdodbc.dll"   DiskId="1" Source="$(env.buildsrc)\bin\xdodbc.dll"/>
+                        <File Id="xdfs"     Name="xdfs.dll"     DiskId="1" Source="$(env.buildsrc)\bin\xdfs.dll"/>
+                        <File Id="xdnative" Name="xdnative.dll" DiskId="1" Source="$(env.buildsrc)\bin\xdnative.dll"/>
+                        <File Id="xdodbc"   Name="xdodbc.dll"   DiskId="1" Source="$(env.buildsrc)\bin\xdodbc.dll"/>
                         <File Id="xdoracle" Name="xdoracle.dll" DiskId="1" Source="$(env.buildsrc)\bin\xdoracle.dll"/>
 
-						<RemoveFolder Id="ProgramMenuDir" Directory='ProgramMenuDir' On="uninstall"/>
-						
-					</Component>
-					
-					
+                        <RemoveFolder Id="ProgramMenuDir" Directory='ProgramMenuDir' On="uninstall"/>
+                        
+                    </Component>
+                    
+                    
                     <!-- core registry items for things like license keys -->
                     <Component Id="CoreRegistry" Guid="0357E732-340A-4AE1-BAD2-01CF9A3F89E5" KeyPath="yes" SharedDllRefCount="no" Permanent="yes">
 
  
 
-						<RegistryKey Root="HKLM" Key="SOFTWARE\Kirix\LicenseInfo" Action="create">
-							<Permission User="Everyone" Read="yes" Write="yes" CreateSubkeys="yes" EnumerateSubkeys="yes" Notify="yes" CreateLink="yes" Delete="yes" ReadPermission="yes" ChangePermission="yes" TakeOwnership="yes" />
-						</RegistryKey>
+                        <RegistryKey Root="HKLM" Key="SOFTWARE\Kirix\LicenseInfo" Action="create">
+                            <Permission User="Everyone" Read="yes" Write="yes" CreateSubkeys="yes" EnumerateSubkeys="yes" Notify="yes" CreateLink="yes" Delete="yes" ReadPermission="yes" ChangePermission="yes" TakeOwnership="yes" />
+                        </RegistryKey>
 
-						<RegistryKey Root="HKLM" Key="SOFTWARE\Kirix\LicenseInfo\KSTRATA" Action="create">
-							<Permission User="Everyone" Read="yes" Write="yes" CreateSubkeys="yes" EnumerateSubkeys="yes" Notify="yes" CreateLink="yes" Delete="yes" ReadPermission="yes" ChangePermission="yes" TakeOwnership="yes" />
-						</RegistryKey>
+                        <RegistryKey Root="HKLM" Key="SOFTWARE\Kirix\LicenseInfo\KSTRATA" Action="create">
+                            <Permission User="Everyone" Read="yes" Write="yes" CreateSubkeys="yes" EnumerateSubkeys="yes" Notify="yes" CreateLink="yes" Delete="yes" ReadPermission="yes" ChangePermission="yes" TakeOwnership="yes" />
+                        </RegistryKey>
 
-						<RegistryKey Root="HKLM" Key="SOFTWARE\Kirix\LicenseInfo\KSTRATA\AuthCode" Action="create">
-							<Permission User="Everyone" Read="yes" Write="yes" CreateSubkeys="yes" EnumerateSubkeys="yes" Notify="yes" CreateLink="yes" Delete="yes" ReadPermission="yes" ChangePermission="yes" TakeOwnership="yes" />
-						</RegistryKey>
-						
-						<RegistryKey Root="HKLM" Key="SOFTWARE\Kirix\LicenseInfo\KSTRATA\ExtraInfo1" Action="create">
-							<Permission User="Everyone" Read="yes" Write="yes" CreateSubkeys="yes" EnumerateSubkeys="yes" Notify="yes" CreateLink="yes" Delete="yes" ReadPermission="yes" ChangePermission="yes" TakeOwnership="yes" />
-						</RegistryKey>
-						
+                        <RegistryKey Root="HKLM" Key="SOFTWARE\Kirix\LicenseInfo\KSTRATA\AuthCode" Action="create">
+                            <Permission User="Everyone" Read="yes" Write="yes" CreateSubkeys="yes" EnumerateSubkeys="yes" Notify="yes" CreateLink="yes" Delete="yes" ReadPermission="yes" ChangePermission="yes" TakeOwnership="yes" />
+                        </RegistryKey>
+                        
+                        <RegistryKey Root="HKLM" Key="SOFTWARE\Kirix\LicenseInfo\KSTRATA\ExtraInfo1" Action="create">
+                            <Permission User="Everyone" Read="yes" Write="yes" CreateSubkeys="yes" EnumerateSubkeys="yes" Notify="yes" CreateLink="yes" Delete="yes" ReadPermission="yes" ChangePermission="yes" TakeOwnership="yes" />
+                        </RegistryKey>
+                        
                         <RegistryKey Root="HKLM" Key="SOFTWARE\Kirix\LicenseInfo\KSTRATAEVAL" Action="create">
                             <Permission User="Everyone" Read="yes" Write="yes" CreateSubkeys="yes" EnumerateSubkeys="yes" Notify="yes" CreateLink="yes" Delete="yes" ReadPermission="yes" ChangePermission="yes" TakeOwnership="yes" />
                         </RegistryKey>
@@ -133,10 +136,10 @@
                         -->
 
                     </Component>
-					
-				</Directory>
-				
-				<Directory Id="PKG_HELPDIR" Name="help">
+                    
+                </Directory>
+                
+                <Directory Id="PKG_HELPDIR" Name="help">
                     <Component Id="Help" Guid="53928A7C-4566-4535-B42C-5EAB8C651068">
                         <File Id="help" Name="help.chm" DiskId="1" Source="$(env.buildsrc)\help\help.chm" KeyPath="yes">
                             <Shortcut Id="KirixStrataHelpMenuShortcut"
@@ -167,7 +170,7 @@
                         <File Id="startup"   Name="startup.kpg"   DiskId="1" Source="$(env.buildsrc)\samples\startup.kpg" KeyPath="yes"/>
                     </Component>
                 </Directory>
-				
+                
             </Directory>
         </Directory>
 
@@ -182,12 +185,13 @@
     
 
     <Feature Id="DefaultFeature" Level="1">
+        <MergeRef Id="CRT" />
         <ComponentRef Id="Core"/>
-		<ComponentRef Id="CoreRegistry"/>
-		<ComponentRef Id="Help"/>
+        <ComponentRef Id="CoreRegistry"/>
+        <ComponentRef Id="Help"/>
         <ComponentRef Id="Samples"/>
         <ComponentRef Id="Translation_de"/>
-		<ComponentGroupRef Id="xr"/>
+        <ComponentGroupRef Id="xr"/>
     </Feature>
 
 
@@ -195,9 +199,9 @@
     <UIRef Id="WixUI_InstallDir"/>
     <UIRef Id="WixUI_ErrorProgressText"/>
 
-	
-	<WixVariable Id="WixUILicenseRtf" Value="$(env.buildsrc)\setup\license.rtf" />
-	<WixVariable Id="WixUIBannerBmp" Value="$(env.buildsrc)\setup\banner.bmp" />
+    
+    <WixVariable Id="WixUILicenseRtf" Value="$(env.buildsrc)\setup\license.rtf" />
+    <WixVariable Id="WixUIBannerBmp" Value="$(env.buildsrc)\setup\banner.bmp" />
     <WixVariable Id="WixUIDialogBmp" Value="$(env.buildsrc)\setup\dialog.bmp" />
 
   </Product>
