@@ -12,8 +12,27 @@
 #ifndef __SDSERV_CONTROLLER_H
 #define __SDSERV_CONTROLLER_H
 
-class RequestInfo;
-class ServerSessionObject;
+
+#include "request.h"
+
+
+class SdservSession : public ServerSessionObject
+{
+public:
+
+    SdservSession()
+    {
+    }
+    
+    virtual ~SdservSession()
+    {
+    }
+
+public:
+
+    tango::IDatabasePtr db;
+};
+
 
 class Controller
 {
@@ -32,7 +51,8 @@ public:
 private:
 
     void apiLogin(RequestInfo& req);
-
+    void apiSelectDb(RequestInfo& req);
+    void apiFolderInfo(RequestInfo& req);
                    
 private:
 
