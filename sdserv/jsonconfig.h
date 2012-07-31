@@ -49,6 +49,12 @@ public:
         return *this;
     }
     
+    JsonNode& operator=(const std::string& str)
+    {
+        setString(str);
+        return *this;
+    }
+
     JsonNode& operator=(int i)
     {
         setInteger(i);
@@ -144,6 +150,7 @@ public:
         return &m_value;
     }
     
+    void setString(const std::string& str)  { getValuePtr()->setString(str); }
     void setString(const std::wstring& str) { getValuePtr()->setString(str); }
     void setBoolean(bool b)             { getValuePtr()->setBoolean(b); }
     void setDouble(double num)          { getValuePtr()->setDouble(num); }

@@ -13,7 +13,8 @@
 #include "request.h"
 #include "jsonconfig.h"
 #include <kl/string.h>
-
+#include <kl/md5.h>
+#include <kl/portable.h>
 
 Controller::Controller()
 {
@@ -103,8 +104,12 @@ void Controller::removeAllServerSessionObjects()
 
 void Controller::apiLogin(RequestInfo& req)
 {
+    char buf[255];
+    snprintf(buf, 255, "%d.%d.%d", (int)time(NULL), (int)clock(), rand());
+    std::string session_id = kl::md5str(buf);
+
     JsonNode response;
     response["success"] = true;
-    response["session_id"] = 123;
+    response["session_id"] = session_id;
     req.write(response.toString());
 }
