@@ -21,62 +21,29 @@ Controller::Controller()
 
 Controller::~Controller()
 {
-
 }
 
-void Controller::onRequest(RequestInfo& ri)
+bool Controller::onRequest(RequestInfo& req)
 {
-    // get the intial time at the start of the request
-    clock_t time_start = ::clock();
-
-    std::wstring uri = L"";
-    std::wstring ext = kl::afterLast(uri, '.');
-
-    tango::IDatabasePtr db;
-
-    tango::IFileInfoPtr file;
-    if (db)
-        file = db->getFileInfo(uri);
-
-    if (file.isNull())
+    std::wstring uri = req.getURI();
+    uri = kl::beforeFirst(uri, '?');
+    if (uri.length() > 0 && uri[uri.length()-1] == '/')
+       uri = uri.substr(0, uri.length()-1);
+    
+    if (uri == L"/api/folderinfo")
     {
-        ri.setStatusCode(404); // 404 Not Found
+        req.setStatusCode(200);
+        req.setContentType("text/html");
+        req.write(uri);
+        return true;
     }
-    else if (file->getMimeType() == L"text/html" || ext == L"html" || ext == L"htm")
+     else
     {
-        handleHtmlResponse(uri, ri);
-    }
-    else if (ext == L"sjs")
-    {
-        handleScriptResponse(uri, ri);
-    }
-    else if (ext == L"pdf")
-    {
-        // TODO: remove when file->getFileType() is fixed for
-        // externally mounted PDFs
-
-        // default handler is stream; but right now, pdfs in external
-        // folders return filetype of tango::filetypeSet, and we don't
-        // want to serve these as tables, so we need to preempt the
-        // table handler
-        handleStreamResponse(uri, ri);
-    }
-    else if (file->getType() == tango::filetypeFolder)
-    {
-        handleFolderResponse(uri, ri);
-    }
-    else if (file->getType() == tango::filetypeSet)
-    {
-        handleTableResponse(uri, ri);
-    }
-    else
-    {
-        handleStreamResponse(uri, ri);
+        return false;
     }
 
-    // get the intial time at the end of the request
-    clock_t time_end = ::clock();
-    double total_time = (double)(time_end - time_start)/CLOCKS_PER_SEC;
+
+    return true;
 }
 
 bool Controller::getServerSessionObject(const std::wstring& name, ServerSessionObject** obj)

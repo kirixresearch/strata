@@ -25,16 +25,17 @@ static void* callback(enum mg_event evt,
 {
     if (evt == MG_NEW_REQUEST)
     {
-        RequestInfo r(conn, request_info);
+        RequestInfo req(conn, request_info);
     
-        r.write("Hello");
+        if (!c.onRequest(req))
+        {
+            req.setStatusCode(404);
+            req.setContentType("text/html");
+            req.write("<html><body><h2>Not found</h2></body></html>");
+        }
+    }
 
-        return "processed";
-    }
-     else
-    {
-        return NULL;
-    }
+    return "processed";
 }
 
 

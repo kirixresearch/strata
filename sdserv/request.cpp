@@ -648,6 +648,11 @@ size_t RequestInfo::write(const std::string& str)
     return (size_t)mg_write(m_conn, str.c_str(), (int)str.length());
 }
 
+size_t RequestInfo::write(const std::wstring& str)
+{
+    return write(kl::tostring(str));
+}
+
 
 std::wstring RequestInfo::getMethod() const
 {

@@ -22,7 +22,7 @@ public:
     Controller();
     virtual ~Controller();
 
-    void onRequest(RequestInfo& ri);
+    bool onRequest(RequestInfo& ri);
 
     bool getServerSessionObject(const std::wstring& name, ServerSessionObject** obj);
     void addServerSessionObject(const std::wstring& name, ServerSessionObject* obj);
@@ -40,6 +40,7 @@ private:
 private:
 
     std::map< std::wstring , ServerSessionObject* > m_session_objects;
+    tango::IDatabasePtr m_db;
 };
 
 
