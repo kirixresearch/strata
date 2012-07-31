@@ -30,11 +30,9 @@ bool Controller::onRequest(RequestInfo& req)
     if (uri.length() > 0 && uri[uri.length()-1] == '/')
        uri = uri.substr(0, uri.length()-1);
     
-    if (uri == L"/api/folderinfo")
+    if (uri == L"/api/login")
     {
-        req.setStatusCode(200);
-        req.setContentType("text/html");
-        req.write(uri);
+        apiLogin(req);
         return true;
     }
      else
@@ -90,37 +88,23 @@ void Controller::removeAllServerSessionObjects()
     m_session_objects.clear();
 }
 
-void Controller::handleFolderResponse(const std::wstring& uri, RequestInfo& ri)
-{
-    ri.setStatusCode(200);
-    ri.setContentType("text/html");
-    ri.write("");
-}
 
-void Controller::handleTableResponse(const std::wstring& uri, RequestInfo& ri)
-{
-    ri.setStatusCode(200);
-    ri.setContentType("text/html");
-    ri.write("");
-}
 
-void Controller::handleHtmlResponse(const std::wstring& uri, RequestInfo& ri)
-{
-    ri.setStatusCode(200);
-    ri.setContentType("text/html");
-    ri.write("");
-}
 
-void Controller::handleScriptResponse(const std::wstring& uri, RequestInfo& ri)
-{
-    ri.setStatusCode(200);
-    ri.setContentType("text/html");
-    ri.write("");
-}
 
-void Controller::handleStreamResponse(const std::wstring& uri, RequestInfo& ri)
+
+
+
+
+
+
+
+
+
+void Controller::apiLogin(RequestInfo& req)
 {
-    ri.setStatusCode(200);
-    ri.setContentType("text/html");
-    ri.write("");
+    JsonNode response;
+    response["success"] = true;
+    response["session_id"] = 123;
+    req.write(response.toString());
 }

@@ -87,6 +87,7 @@ public:
     void redirect(const char* location, int http_code = 301);
     void addHeader(const char* header);
     void addCookie(ResponseCookie& cookie);
+    void addCookie(const std::string& name, const std::string& value, time_t expire_time);
     
     size_t write(const void* ptr, size_t length);
     size_t write(const std::string& str);

@@ -55,6 +55,12 @@ public:
         return *this;
     }
     
+    JsonNode& operator=(bool b)
+    {
+        setBoolean(b);
+        return *this;
+    }
+    
     JsonNode& operator=(double d)
     {
         setDouble(d);

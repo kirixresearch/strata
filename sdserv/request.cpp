@@ -525,6 +525,15 @@ void RequestInfo::addCookie(ResponseCookie& cookie)
     m_response_cookies.push_back(cookie);
 }
 
+void RequestInfo::addCookie(const std::string& name, const std::string& value, time_t expire_time)
+{
+    ResponseCookie cookie;
+    cookie.name = name;
+    cookie.value = value;
+    cookie.expire_time = expire_time;
+
+    addCookie(cookie);
+}
 
 
 static const char* getHttpCodeString(int code)

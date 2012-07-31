@@ -28,14 +28,11 @@ public:
     void addServerSessionObject(const std::wstring& name, ServerSessionObject* obj);
     void removeServerSessionObject(const std::wstring& name);
     void removeAllServerSessionObjects();
-                   
+    
 private:
 
-    void handleFolderResponse(const std::wstring& uri, RequestInfo& ri);
-    void handleTableResponse(const std::wstring& uri, RequestInfo& ri);
-    void handleHtmlResponse(const std::wstring& uri, RequestInfo& ri);
-    void handleScriptResponse(const std::wstring& uri, RequestInfo& ri);
-    void handleStreamResponse(const std::wstring& uri, RequestInfo& ri);
+    void apiLogin(RequestInfo& req);
+
                    
 private:
 
