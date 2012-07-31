@@ -225,6 +225,10 @@ void RequestInfo::parse()
     }
 
 
+    // for now, disable compression (remove this line later, if we want compression support)
+    m_accept_compressed = false;
+
+
     
     if (*m_req->request_method == 'G')
     {

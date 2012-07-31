@@ -12,8 +12,10 @@
 #include "sdserv.h"
 #include "mongoose.h"
 #include "request.h"
+#include "controller.h"
 
 
+Controller c;
 
 #define LISTENING_PORT "23456"
 

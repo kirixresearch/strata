@@ -14,4 +14,6 @@
 #include <vector>
 #include <cstring>
 #include <cwchar>
+#include <ctime>
 #include <windows.h>
+#include <tango.h>
