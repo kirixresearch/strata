@@ -77,15 +77,24 @@ ClientDatabase::~ClientDatabase()
     }
 }
 
-bool ClientDatabase::open(const std::wstring& host, 
-                        const std::wstring& database, 
-                        const std::wstring& uid, 
-                        const std::wstring& password)
+bool ClientDatabase::open(const std::wstring& host,
+                          int port,
+                          const std::wstring& database, 
+                          const std::wstring& uid, 
+                          const std::wstring& password)
 {
     m_host = host;
     m_database = database;
     m_uid = uid;
     m_password = password;
+
+    std::wstring api = getRequestPath() + L"/api/login";
+    g_httprequest.resetPostParameters();
+    g_httprequest.setLocation(api);
+    g_httprequest.setPostValue(L"username", L"admin");
+    g_httprequest.setPostValue(L"password", L"");
+    g_httprequest.send();
+    std::wstring response = g_httprequest.getResponseString();
 
     return true;
 }
@@ -95,8 +104,9 @@ std::wstring ClientDatabase::getRequestPath()
     std::wstring path;
     path.append(L"http://");
     path.append(m_host);
-    path.append(L":80");
-    
+    path.append(L":");
+    path.append(m_port); 
+      
     return path;
 }
 
@@ -245,10 +255,10 @@ tango::IFileInfoPtr ClientDatabase::getFileInfo(const std::wstring& path)
 
 tango::IFileInfoEnumPtr ClientDatabase::getFolderInfo(const std::wstring& path)
 {
-    std::wstring location = getRequestPath();
-    location.append(path);
+    std::wstring api = getRequestPath() + L"/api/folderinfo?path=" + path;
 
-    g_httprequest.setLocation(kl::tostring(location));
+    g_httprequest.resetPostParameters();
+    g_httprequest.setLocation(api);
     g_httprequest.send();
     std::wstring response = g_httprequest.getResponseString();
 
@@ -256,9 +266,8 @@ tango::IFileInfoEnumPtr ClientDatabase::getFolderInfo(const std::wstring& path)
     node.fromString(response);
 
     size_t i, count;
-    count = node["total_count"].getInteger();
     kscript::JsonNode items = node["items"];
-
+    count = items.getCount();
 
     xcm::IVectorImpl<tango::IFileInfoPtr>* retval = new xcm::IVectorImpl<tango::IFileInfoPtr>;
 
@@ -272,24 +281,30 @@ tango::IFileInfoEnumPtr ClientDatabase::getFolderInfo(const std::wstring& path)
         std::wstring type = item["type"];
         if (type == L"folder")
             f->type = tango::filetypeFolder;
-        if (type == L"node")
+        else if (type == L"node")
             f->type = tango::filetypeNode;
-        if (type == L"set")
+        else if (type == L"set")
             f->type = tango::filetypeSet;
-        if (type == L"stream")
+        else if (type == L"table")
+            f->type = tango::filetypeSet;
+        else if (type == L"stream")
             f->type = tango::filetypeStream;
+        else
+            continue;
 
         std::wstring format = item["format"];
         if (type == L"native")
             f->format = tango::formatNative;
-        if (type == L"delimitedtext")
+        else if (type == L"delimitedtext")
             f->format = tango::formatDelimitedText;
-        if (type == L"fixedlengthtext")
+        else if (type == L"fixedlengthtext")
             f->format = tango::formatFixedLengthText;
-        if (type == L"text")
+        else if (type == L"text")
             f->format = tango::formatText;
-        if (type == L"xbase")
+        else if (type == L"xbase")
             f->format = tango::formatXbase;            
+        else
+            f->format = tango::formatNative;
 
         retval->append(f);
     }

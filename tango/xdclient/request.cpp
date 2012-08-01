@@ -13,6 +13,8 @@
 #include <curl/curl.h>
 #include <kl/string.h>
 #include <kl/utf8.h>
+#include <kl/portable.h>
+#include <kl/url.h>
 
 
 HttpRequest g_httprequest;
@@ -126,6 +128,7 @@ MethodResponse RpcConnectionHttp::call(const MethodCall& call)
 HttpRequest::HttpRequest()
 {
     m_response_bytes = 0;
+    m_post_string = "";
     
     // initialize CURL
     if (0 != curl_global_init(CURL_GLOBAL_ALL))
@@ -172,7 +175,7 @@ HttpRequest::HttpRequest()
     // include headers in body output
     //curl_result = curl_easy_setopt(m_curl, CURLOPT_HEADER, TRUE);
     
-    curl_version_info_data* a = curl_version_info(CURLVERSION_NOW);        
+    curl_version_info_data* a = curl_version_info(CURLVERSION_NOW);
 }
 
 HttpRequest::~HttpRequest()
@@ -225,20 +228,43 @@ void HttpRequest::send()
     if (curl_result != CURLE_OK)
         return;
     
+    // set the POST option
+    curl_result = curl_easy_setopt(m_curl, CURLOPT_POST, TRUE);
+    if (curl_result != CURLE_OK)
+        return;
+                
+    curl_result = curl_easy_setopt(m_curl, CURLOPT_POSTFIELDS, (const char*)m_post_string.c_str());
+    if (curl_result != CURLE_OK)
+        return;
+
     // retrieve the data from the URL
     curl_result = curl_easy_perform(m_curl);
     if (curl_result != CURLE_OK)
         return;
 }
 
-void HttpRequest::setLocation(const std::string& location)
+void HttpRequest::setLocation(const std::wstring& location)
 {
-    m_location = location;
+    m_location = kl::tostring(location);
+}
+
+void HttpRequest::resetPostParameters()
+{
+    m_post_string = "";
+}
+
+void HttpRequest::setPostValue(const std::wstring& key, const std::wstring& value)
+{
+    // append the value to our post string (regular, non-multipart post)
+    if (m_post_string.length() > 0)
+        m_post_string += "&";
+    m_post_string += kl::tostring(kl::url_escape(key));
+    m_post_string += "=";
+    m_post_string += kl::tostring(kl::url_escape(value));
 }
 
 std::wstring HttpRequest::getResponseString()
 {
-
     std::string response_a;
     
     std::list<HttpResponsePiece>::iterator it, it_end;

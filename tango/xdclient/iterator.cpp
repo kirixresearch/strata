@@ -637,7 +637,7 @@ bool ClientIterator::populateRowCache(int start, int limit)
     sprintf(buf, "&limit=%d", limit);
     query.append(kl::towstring(buf));
 
-    g_httprequest.setLocation(kl::tostring(query));
+    g_httprequest.setLocation(query);
     g_httprequest.send();
     std::wstring response = g_httprequest.getResponseString();
 

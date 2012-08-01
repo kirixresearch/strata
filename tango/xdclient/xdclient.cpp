@@ -44,6 +44,7 @@ public:
         
         // parse the connection string
         std::wstring host = c.getValue(L"host");
+        std::wstring port = c.getValue(L"port");
         std::wstring database = c.getValue(L"database");
         std::wstring uid = c.getValue(L"user id");
         std::wstring password = c.getValue(L"password");
@@ -52,7 +53,7 @@ public:
         ClientDatabase* db = new ClientDatabase;
         db->ref();
 
-        if (!db->open(host, database, uid, password))
+        if (!db->open(host, kl::wtoi(port), database, uid, password))
         {
             m_error.setError(db->getErrorCode(), db->getErrorString());
 
@@ -81,15 +82,17 @@ public:
         return xcm::null;
     }
 
-    tango::IDatabasePtr openRemoteDatabase(int type, const std::wstring& host, 
-                                           int port, const std::wstring& database,
+    tango::IDatabasePtr openRemoteDatabase(int type,
+                                           const std::wstring& host, 
+                                           int port,
+                                           const std::wstring& database,
                                            const std::wstring& uid,
                                            const std::wstring& password)
     {
         ClientDatabase* db = new ClientDatabase;
         db->ref();
 
-        if (!db->open(host, database, uid, password))
+        if (!db->open(host, port, database, uid, password))
         {
             db->unref();
             return xcm::null;

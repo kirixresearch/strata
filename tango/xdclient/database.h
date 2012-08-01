@@ -47,7 +47,9 @@ public:
 
     ClientDatabase();
     ~ClientDatabase();
-    bool open(const std::wstring& host, 
+
+    bool open(const std::wstring& host,
+              int port,
               const std::wstring& database, 
               const std::wstring& uid, 
               const std::wstring& password);
@@ -112,6 +114,7 @@ public:
                  unsigned int flags,
                  xcm::IObjectPtr& result,
                  tango::IJob* job);
+
     tango::ISetPtr runGroupQuery(tango::ISetPtr set,
                                  const std::wstring& group,
                                  const std::wstring& output,
@@ -122,6 +125,7 @@ public:
 private:
 
     std::wstring m_host;
+    std::wstring m_port;
     std::wstring m_database;
     std::wstring m_uid;
     std::wstring m_password;

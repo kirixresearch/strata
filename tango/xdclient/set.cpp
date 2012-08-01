@@ -92,7 +92,7 @@ unsigned int ClientSet::getSetFlags()
     path.append(m_tablename);
     path.append(L"?method=describe");
     
-    g_httprequest.setLocation(kl::tostring(path));
+    g_httprequest.setLocation(path);
     g_httprequest.send();
     std::wstring response = g_httprequest.getResponseString();
 
@@ -124,7 +124,7 @@ tango::IStructurePtr ClientSet::getStructure()
     path.append(m_tablename);
     path.append(L"?method=describe");
     
-    g_httprequest.setLocation(kl::tostring(path));
+    g_httprequest.setLocation(path);
     g_httprequest.send();
     std::wstring response = g_httprequest.getResponseString();
 
@@ -277,7 +277,7 @@ tango::rowpos_t ClientSet::getRowCount()
     path.append(m_tablename);
     path.append(L"?method=describe");
 
-    g_httprequest.setLocation(kl::tostring(path));
+    g_httprequest.setLocation(path);
     g_httprequest.send();
     std::wstring response = g_httprequest.getResponseString();
 

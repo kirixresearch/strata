@@ -110,7 +110,9 @@ public:
     HttpRequest();
     virtual ~HttpRequest();
 
-    void setLocation(const std::string& location);
+    void setLocation(const std::wstring& location);
+    void setPostValue(const std::wstring& key, const std::wstring& value);
+    void resetPostParameters();
 
     void send();
     std::wstring getResponseString();
@@ -131,6 +133,7 @@ private:
     size_t m_response_bytes;
 
     std::string m_location;
+    std::string m_post_string;
 };
 
 
