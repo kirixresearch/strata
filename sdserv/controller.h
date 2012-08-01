@@ -50,11 +50,13 @@ public:
     
 private:
 
+    void returnApiError(RequestInfo& req, const char* msg, const char* code = "ERR0000");
+    tango::IDatabasePtr getSessionDatabase(RequestInfo& req);
+    
     void apiLogin(RequestInfo& req);
     void apiSelectDb(RequestInfo& req);
     void apiFolderInfo(RequestInfo& req);
-    
-    void returnApiError(RequestInfo& req, const char* msg, const char* code = "ERR0000");
+    void apiFileInfo(RequestInfo& req);
 
 private:
 

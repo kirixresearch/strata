@@ -34,8 +34,8 @@ bool Controller::onRequest(RequestInfo& req)
     
          if (uri == L"/api/login")         apiLogin(req);
     else if (uri == L"/api/selectdb")      apiSelectDb(req);
-    else if (uri == L"/api/folderinfo") apiFolderInfo(req);
-
+    else if (uri == L"/api/folderinfo")    apiFolderInfo(req);
+    else if (uri == L"/api/fileinfo")      apiFileInfo(req);
     else return false;
 
     return true;
@@ -110,6 +110,24 @@ void Controller::returnApiError(RequestInfo& req, const char* msg, const char* c
     req.write(response.toString());
 }
 
+tango::IDatabasePtr Controller::getSessionDatabase(RequestInfo& req)
+{
+    std::wstring sid = req.getValue(L"sid");
+    SdservSession* session = NULL;
+    if (!getServerSessionObject(sid, (ServerSessionObject**)&session))
+    {
+        returnApiError(req, "Invalid session id");
+        return xcm::null;
+    }
+
+    if (session->db.isNull())
+    {
+        returnApiError(req, "No database selected");
+        return xcm::null;
+    }
+
+    return session->db;
+}
 
 
 
@@ -166,34 +184,25 @@ void Controller::apiSelectDb(RequestInfo& req)
 
 void Controller::apiFolderInfo(RequestInfo& req)
 {
-    std::wstring sid = req.getValue(L"sid");
-    SdservSession* session = NULL;
-    if (!getServerSessionObject(sid, (ServerSessionObject**)&session))
-    {
-        returnApiError(req, "Invalid session id");
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
         return;
-    }
-
-    if (session->db.isNull())
-    {
-        returnApiError(req, "No database selected");
-        return;
-    }
-
 
     if (!req.getValueExists(L"path"))
     {
         returnApiError(req, "Missing path parameter");
         return;
     }
-
+    
+    std::wstring path = req.getValue(L"path");
+    
 
     // return success to caller
     JsonNode response;
     response["success"].setBoolean(true);
     JsonNode items = response["items"];
 
-    tango::IFileInfoEnumPtr folder_info = session->db->getFolderInfo(req.getValue(L"path"));
+    tango::IFileInfoEnumPtr folder_info = db->getFolderInfo(path);
     if (folder_info.isOk())
     {
         size_t i, cnt = folder_info->size();
@@ -212,8 +221,72 @@ void Controller::apiFolderInfo(RequestInfo& req)
                 case tango::filetypeStream: item["type"] = "stream"; break;
                 default: continue;
             }
-
         }
+    }
+     else
+    {
+        returnApiError(req, "Path does not exist");
+        return;
+    }
+
+    req.write(response.toString());
+}
+
+
+
+void Controller::apiFileInfo(RequestInfo& req)
+{
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+        return;
+    
+    if (!req.getValueExists(L"path"))
+    {
+        returnApiError(req, "Missing path parameter");
+        return;
+    }
+    
+    std::wstring path = req.getValue(L"path");
+    
+
+    // return success to caller
+    JsonNode response;
+    response["success"].setBoolean(true);
+    JsonNode file_info = response["file_info"];
+
+    tango::IFileInfoPtr finfo = db->getFileInfo(path);
+    if (finfo.isOk())
+    {
+        file_info["name"] = finfo->getName();
+        
+        switch (finfo->getType())
+        {
+            case tango::filetypeFolder: file_info["type"] = "folder"; break;
+            case tango::filetypeNode: file_info["type"] = "node";     break;
+            case tango::filetypeSet: file_info["type"] = "table";     break;
+            case tango::filetypeStream: file_info["type"] = "stream"; break;
+            default: file_info["type"] = "unknown"; break;
+        }
+
+        switch (finfo->getFormat())
+        {
+            case tango::formatNative:          file_info["format"] = "native";            break;
+            case tango::formatXbase:           file_info["format"] = "xbase";             break;
+            case tango::formatDelimitedText:   file_info["format"] = "delimited_text";    break;
+            case tango::formatFixedLengthText: file_info["format"] = "fixedlength_text";  break;
+            case tango::formatText:            file_info["format"] = "fixed_length_text"; break;
+            default: file_info["type"] = "unknown"; break;
+        }
+
+        file_info["mime_type"] = finfo->getMimeType();
+        file_info["is_mount"].setBoolean(finfo->isMount());
+        file_info["primary_key"] = finfo->getPrimaryKey();
+        file_info["size"] = (double)finfo->getSize();
+    }
+     else
+    {
+        returnApiError(req, "Path does not exist");
+        return;
     }
 
     req.write(response.toString());
