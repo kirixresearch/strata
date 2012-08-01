@@ -299,7 +299,42 @@ bool ClientDatabase::getLocalFileExist(const std::wstring& path)
 
 tango::IFileInfoPtr ClientDatabase::getFileInfo(const std::wstring& path)
 {
-    return xcm::null;
+    ServerCallParams params;
+    params.setParam(L"path", path);
+    std::wstring sres = serverCall(L"/api/fileinfo", &params);
+    JsonNode response;
+    response.fromString(sres);
+
+    if (!response["success"].getBoolean())
+        return xcm::null;
+
+    JsonNode file_info = response["file_info"];
+
+    xdcommon::FileInfo* f = new xdcommon::FileInfo;
+    f->name = file_info["name"];
+    
+    std::wstring type = file_info["type"];
+         if (type == L"folder")          f->type = tango::filetypeFolder;
+    else if (type == L"node")            f->type = tango::filetypeNode;
+    else if (type == L"set")             f->type = tango::filetypeSet;
+    else if (type == L"table")           f->type = tango::filetypeSet;
+    else if (type == L"stream")          f->type = tango::filetypeStream;
+    else f->type = tango::filetypeSet;
+
+    std::wstring format = file_info["format"];
+         if (type == L"native")          f->format = tango::formatNative;
+    else if (type == L"delimitedtext")   f->format = tango::formatDelimitedText;
+    else if (type == L"fixedlengthtext") f->format = tango::formatFixedLengthText;
+    else if (type == L"text")            f->format = tango::formatText;
+    else if (type == L"xbase")           f->format = tango::formatXbase;            
+    else f->format = tango::formatNative;
+
+    f->mime_type = file_info["mime_type"];
+    f->is_mount = file_info["is_mount"].getBoolean();
+    f->primary_key = file_info["primary_key"];
+    f->size = (tango::tango_int64_t)file_info["size"].getDouble();
+
+    return static_cast<tango::IFileInfo*>(f);
 }
 
 tango::IFileInfoEnumPtr ClientDatabase::getFolderInfo(const std::wstring& path)
@@ -309,6 +344,9 @@ tango::IFileInfoEnumPtr ClientDatabase::getFolderInfo(const std::wstring& path)
     std::wstring sres = serverCall(L"/api/folderinfo", &params);
     JsonNode response;
     response.fromString(sres);
+
+    if (!response["success"].getBoolean())
+        return xcm::null;
 
     size_t i, count;
     JsonNode items = response["items"];
