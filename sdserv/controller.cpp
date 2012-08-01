@@ -43,6 +43,8 @@ bool Controller::onRequest(RequestInfo& req)
 
 bool Controller::getServerSessionObject(const std::wstring& name, ServerSessionObject** obj)
 {
+    XCM_AUTO_LOCK(m_session_object_mutex);
+
     std::map< std::wstring, ServerSessionObject* >::iterator it, it_end;
     it_end = m_session_objects.end();
 
@@ -56,11 +58,15 @@ bool Controller::getServerSessionObject(const std::wstring& name, ServerSessionO
 
 void Controller::addServerSessionObject(const std::wstring& name, ServerSessionObject* obj)
 {
+    XCM_AUTO_LOCK(m_session_object_mutex);
+
     m_session_objects[name] = obj;
 }
 
 void Controller::removeServerSessionObject(const std::wstring& name)
 {
+    XCM_AUTO_LOCK(m_session_object_mutex);
+
     std::map< std::wstring, ServerSessionObject* >::iterator it, it_end;
     it_end = m_session_objects.end();
 
@@ -73,6 +79,8 @@ void Controller::removeServerSessionObject(const std::wstring& name)
 
 void Controller::removeAllServerSessionObjects()
 {
+    XCM_AUTO_LOCK(m_session_object_mutex);
+
     std::map< std::wstring, ServerSessionObject* >::iterator it, it_end;
     it_end = m_session_objects.end();
     
@@ -110,7 +118,7 @@ void Controller::apiLogin(RequestInfo& req)
 
     // return success and session information to caller
     JsonNode response;
-    response["success"] = true;
+    response["success"].setBoolean(true);
     response["session_id"] = session_id;
     req.write(response.toString());
 }
@@ -122,37 +130,36 @@ void Controller::apiSelectDb(RequestInfo& req)
     if (!getServerSessionObject(sid, (ServerSessionObject**)&session))
     {
         JsonNode response;
-        response["success"] = false;
+        response["success"].setBoolean(false);
         response["msg"] = "Invalid session id";
         req.write(response.toString());
         return;
     }
 
-    if (session->db.isNull())
+    tango::IDatabaseMgrPtr dbmgr = tango::getDatabaseMgr();
+    if (dbmgr.isNull())
     {
         JsonNode response;
-        response["success"] = false;
-        response["msg"] = "No database selected";
+        response["success"].setBoolean(false);
+        response["msg"] = "Missing dbmgr component";
         req.write(response.toString());
         return;
     }
 
-
-    tango::IDatabaseMgrPtr dbmgr = tango::getDatabaseMgr();;
     session->db = dbmgr->open(L"xdprovider=xdnative;database=C:\\Users\\bwilliams\\Documents\\Gold Prairie Projects\\Default Project;user id=admin;password=;");
 
     if (session->db)
     {
         // return success to caller
         JsonNode response;
-        response["success"] = true;
+        response["success"].setBoolean(true);
         req.write(response.toString());
     } 
      else
     {
         // return failure to caller
         JsonNode response;
-        response["success"] = false;
+        response["success"].setBoolean(false);
         response["msg"] = "Database could not be opened";
         req.write(response.toString());
     }
@@ -166,7 +173,7 @@ void Controller::apiFolderInfo(RequestInfo& req)
     if (!getServerSessionObject(sid, (ServerSessionObject**)&session))
     {
         JsonNode response;
-        response["success"] = false;
+        response["success"].setBoolean(false);
         response["msg"] = "Invalid session id";
         req.write(response.toString());
         return;
@@ -175,7 +182,7 @@ void Controller::apiFolderInfo(RequestInfo& req)
     if (session->db.isNull())
     {
         JsonNode response;
-        response["success"] = false;
+        response["success"].setBoolean(false);
         response["msg"] = "No database selected";
         req.write(response.toString());
         return;

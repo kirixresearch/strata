@@ -244,31 +244,33 @@ void RequestInfo::parse()
     }
      else
     {
-    /*
-        if (m_req->post_data)
+        char post_data[8192];
+        int post_data_len;
+
+        post_data_len = mg_read(m_conn, post_data, 8192);
+
+
+        if (boundary)
         {
-            if (boundary)
+            const char* p = post_data;
+            while (parsePart(p, boundary, boundary_length, post_data + post_data_len, &p));
+        }
+            else
+        {
+            // post method -- regular
+            std::vector<request_member> parts;
+            std::vector<request_member>::iterator it;
+            std::string post_data(post_data, post_data_len);
+            extractPairs(kl::towstring(post_data), parts);
+            for (it = parts.begin(); it != parts.end(); ++it)
             {
-                const char* p = m_req->post_data;
-                while (parsePart(p, boundary, boundary_length, m_req->post_data + m_req->post_data_len, &p));
-            }
-             else
-            {
-                // post method -- regular
-                std::vector<request_member> parts;
-                std::vector<request_member>::iterator it;
-                std::string post_data(m_req->post_data, m_req->post_data_len);
-                extractPairs(kl::towstring(post_data), parts);
-                for (it = parts.begin(); it != parts.end(); ++it)
-                {
-                    RequestPostInfo& info = m_post[it->key];
-                    info.data = NULL;
-                    info.str = it->value;
-                    info.length = info.str.length();
-                }
+                RequestPostInfo& info = m_post[it->key];
+                info.data = NULL;
+                info.str = it->value;
+                info.length = info.str.length();
             }
         }
-        */
+
     }
 }
 

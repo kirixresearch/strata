@@ -57,6 +57,8 @@ private:
 private:
 
     std::map< std::wstring , ServerSessionObject* > m_session_objects;
+    xcm::mutex m_session_object_mutex;
+
     tango::IDatabasePtr m_db;
 };
 
