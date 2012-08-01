@@ -20,6 +20,9 @@
 class HttpRequest;
 class JobInfo;
 
+namespace kscript { class JsonNode; }
+typedef kscript::JsonNode JsonNode;
+
 
 xcm_interface IClientDatabase : public xcm::IObject
 {
@@ -31,6 +34,20 @@ public:
 };
 
 XCM_DECLARE_SMARTPTR(IClientDatabase)
+
+
+
+class ServerCallParams
+{
+public:
+
+    void setParam(const std::wstring& param, const std::wstring& value)
+    {
+        m_params.push_back(std::pair<std::wstring, std::wstring>(param, value));
+    }
+
+    std::vector<std::pair<std::wstring, std::wstring> > m_params;
+};
 
 
 // database class definition
@@ -55,6 +72,7 @@ public:
               const std::wstring& password);
 
     std::wstring getRequestPath();
+    std::wstring serverCall(const std::wstring& call_path, const ServerCallParams* params = NULL);
 
     // tango::IDatabase interface
 
@@ -129,6 +147,8 @@ private:
     std::wstring m_database;
     std::wstring m_uid;
     std::wstring m_password;
+
+    std::wstring m_session_id;
 
     std::vector<JobInfo*> m_jobs;
     xcm::mutex m_obj_mutex;

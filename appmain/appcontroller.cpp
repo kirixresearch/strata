@@ -5971,18 +5971,22 @@ bool AppController::openProject(const wxString& location,
 
 
     wxString cstr;
-    if (location.Find(L"xdprovider=") != -1)
+    if (location.Find(wxT("xdprovider=")) != -1)
     {
         // location string is already a connection string
         cstr = location;
         if (cstr.Length() == 0 || cstr.Last() != ';')
             cstr += wxT(";");
-        cstr += wxT("user id=");
-        cstr += uid;
-        cstr += wxT(";");
-        cstr += wxT("password=");
-        cstr += password;
-        cstr += wxT(";");
+        
+        if (location.Find(wxT("user id=")) == -1)
+        {
+            cstr += wxT("user id=");
+            cstr += uid;
+            cstr += wxT(";");
+            cstr += wxT("password=");
+            cstr += password;
+            cstr += wxT(";");
+        }
     }
      else
     {

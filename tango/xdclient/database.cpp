@@ -48,6 +48,7 @@ const wchar_t* xdclient_invalid_object_starting_chars =
                              L"~!@#$%^&*()+{}|:\"<>?`-=[]\\;',./ 0123456789";
 
 
+
 ClientDatabase::ClientDatabase()
 {
     m_last_job = 0;
@@ -88,15 +89,39 @@ bool ClientDatabase::open(const std::wstring& host,
     m_uid = uid;
     m_password = password;
 
-    std::wstring api = getRequestPath() + L"/api/login";
-    g_httprequest.resetPostParameters();
-    g_httprequest.setLocation(api);
-    g_httprequest.setPostValue(L"username", L"admin");
-    g_httprequest.setPostValue(L"password", L"");
-    g_httprequest.send();
-    std::wstring response = g_httprequest.getResponseString();
+    wchar_t buf[80];
+    swprintf(buf, 80, L"%d", port);
+    m_port = buf;
 
-    return true;
+
+    ServerCallParams params;
+    params.setParam(L"username", L"admin");
+    params.setParam(L"password", L"");
+    std::wstring sres = serverCall(L"/api/login", &params);
+    JsonNode response;
+    response.fromString(sres);
+
+    if (response["success"].getBoolean())
+    {
+        m_session_id = response["session_id"];
+        if (m_session_id.length() == 0)
+            return false;
+
+        ServerCallParams params;
+        std::wstring sres = serverCall(L"/api/selectdb", &params);
+        JsonNode response;
+        response.fromString(sres);
+        if (!response["success"].getBoolean())
+            return false;
+
+
+        return true;
+    }
+     else
+    {
+        return false;
+    }
+
 }
 
 std::wstring ClientDatabase::getRequestPath()
@@ -104,10 +129,34 @@ std::wstring ClientDatabase::getRequestPath()
     std::wstring path;
     path.append(L"http://");
     path.append(m_host);
-    path.append(L":");
-    path.append(m_port); 
+    if (m_port.length() > 0)
+    {
+        path.append(L":");
+        path.append(m_port); 
+    }
       
     return path;
+}
+
+std::wstring ClientDatabase::serverCall(const std::wstring& call_path, const ServerCallParams* params)
+{
+    std::vector<std::pair<std::wstring, std::wstring> >::const_iterator it;
+
+    g_httprequest.resetPostParameters();
+    g_httprequest.setLocation(getRequestPath() + call_path);
+
+    if (params)
+    {
+        for (it = params->m_params.begin(); it != params->m_params.end(); ++it)
+            g_httprequest.setPostValue(it->first, it->second);
+    }
+
+    if (m_session_id.length() > 0)
+        g_httprequest.setPostValue(L"sid", m_session_id);
+    
+    g_httprequest.send();
+
+    return g_httprequest.getResponseString();
 }
 
 void ClientDatabase::close()
@@ -255,25 +304,21 @@ tango::IFileInfoPtr ClientDatabase::getFileInfo(const std::wstring& path)
 
 tango::IFileInfoEnumPtr ClientDatabase::getFolderInfo(const std::wstring& path)
 {
-    std::wstring api = getRequestPath() + L"/api/folderinfo?path=" + path;
-
-    g_httprequest.resetPostParameters();
-    g_httprequest.setLocation(api);
-    g_httprequest.send();
-    std::wstring response = g_httprequest.getResponseString();
-
-    kscript::JsonNode node;
-    node.fromString(response);
+    ServerCallParams params;
+    params.setParam(L"path", path);
+    std::wstring sres = serverCall(L"/api/folderinfo", &params);
+    JsonNode response;
+    response.fromString(sres);
 
     size_t i, count;
-    kscript::JsonNode items = node["items"];
+    JsonNode items = response["items"];
     count = items.getCount();
 
     xcm::IVectorImpl<tango::IFileInfoPtr>* retval = new xcm::IVectorImpl<tango::IFileInfoPtr>;
 
     for (i = 0; i < count; ++i)
     {
-        kscript::JsonNode item = items[i];
+        JsonNode item = items[i];
     
         xdcommon::FileInfo* f = new xdcommon::FileInfo;
         f->name = item["name"];
