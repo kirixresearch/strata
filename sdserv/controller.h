@@ -53,7 +53,9 @@ private:
     void apiLogin(RequestInfo& req);
     void apiSelectDb(RequestInfo& req);
     void apiFolderInfo(RequestInfo& req);
-                   
+    
+    void returnApiError(RequestInfo& req, const char* msg, const char* code = "ERR0000");
+
 private:
 
     std::map< std::wstring , ServerSessionObject* > m_session_objects;

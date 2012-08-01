@@ -32,8 +32,8 @@ bool Controller::onRequest(RequestInfo& req)
     if (uri.length() > 0 && uri[uri.length()-1] == '/')
        uri = uri.substr(0, uri.length()-1);
     
-         if (uri == L"/api/login")      apiLogin(req);
-    else if (uri == L"/api/selectdb")   apiSelectDb(req);
+         if (uri == L"/api/login")         apiLogin(req);
+    else if (uri == L"/api/selectdb")      apiSelectDb(req);
     else if (uri == L"/api/folderinfo") apiFolderInfo(req);
 
     else return false;
@@ -101,7 +101,14 @@ void Controller::removeAllServerSessionObjects()
 
 
 
-
+void Controller::returnApiError(RequestInfo& req, const char* msg, const char* code)
+{
+    JsonNode response;
+    response["success"].setBoolean(false);
+    response["error_code"] = code;
+    response["msg"] = msg;
+    req.write(response.toString());
+}
 
 
 
@@ -129,20 +136,14 @@ void Controller::apiSelectDb(RequestInfo& req)
     SdservSession* session = NULL;
     if (!getServerSessionObject(sid, (ServerSessionObject**)&session))
     {
-        JsonNode response;
-        response["success"].setBoolean(false);
-        response["msg"] = "Invalid session id";
-        req.write(response.toString());
+        returnApiError(req, "Invalid session id");
         return;
     }
 
     tango::IDatabaseMgrPtr dbmgr = tango::getDatabaseMgr();
     if (dbmgr.isNull())
     {
-        JsonNode response;
-        response["success"].setBoolean(false);
-        response["msg"] = "Missing dbmgr component";
-        req.write(response.toString());
+        returnApiError(req, "Missing dbmgr component");
         return;
     }
 
@@ -157,11 +158,8 @@ void Controller::apiSelectDb(RequestInfo& req)
     } 
      else
     {
-        // return failure to caller
-        JsonNode response;
-        response["success"].setBoolean(false);
-        response["msg"] = "Database could not be opened";
-        req.write(response.toString());
+        returnApiError(req, "Database could not be opened");
+        return;
     }
 }
 
@@ -172,21 +170,51 @@ void Controller::apiFolderInfo(RequestInfo& req)
     SdservSession* session = NULL;
     if (!getServerSessionObject(sid, (ServerSessionObject**)&session))
     {
-        JsonNode response;
-        response["success"].setBoolean(false);
-        response["msg"] = "Invalid session id";
-        req.write(response.toString());
+        returnApiError(req, "Invalid session id");
         return;
     }
 
     if (session->db.isNull())
     {
-        JsonNode response;
-        response["success"].setBoolean(false);
-        response["msg"] = "No database selected";
-        req.write(response.toString());
+        returnApiError(req, "No database selected");
         return;
     }
 
 
+    if (!req.getValueExists(L"path"))
+    {
+        returnApiError(req, "Missing path parameter");
+        return;
+    }
+
+
+    // return success to caller
+    JsonNode response;
+    response["success"].setBoolean(true);
+    JsonNode items = response["items"];
+
+    tango::IFileInfoEnumPtr folder_info = session->db->getFolderInfo(req.getValue(L"path"));
+    if (folder_info.isOk())
+    {
+        size_t i, cnt = folder_info->size();
+        for (i = 0; i < cnt; ++i)
+        {
+            JsonNode item = items.appendElement();
+
+            tango::IFileInfoPtr finfo = folder_info->getItem(i);
+            item["name"] = finfo->getName();
+
+            switch (finfo->getType())
+            {
+                case tango::filetypeFolder: item["type"] = "folder"; break;
+                case tango::filetypeNode: item["type"] = "node";     break;
+                case tango::filetypeSet: item["type"] = "table";     break;
+                case tango::filetypeStream: item["type"] = "stream"; break;
+                default: continue;
+            }
+
+        }
+    }
+
+    req.write(response.toString());
 }

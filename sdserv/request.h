@@ -74,6 +74,7 @@ public:
     std::wstring getValue(const std::wstring& key);
     std::wstring getGetValue(const std::wstring& key);
     std::wstring getPostValue(const std::wstring& key);
+    bool getValueExists(const std::wstring& key) const;
     bool acceptCompressed();
     
     std::map<std::wstring, std::wstring>& getCookies() { return m_cookies; }

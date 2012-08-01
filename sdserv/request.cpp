@@ -453,6 +453,21 @@ std::wstring RequestInfo::getValue(const std::wstring& key)
     return L"";
 }
 
+bool RequestInfo::getValueExists(const std::wstring& key) const
+{
+    std::map<std::wstring, RequestPostInfo>::const_iterator p_it;
+    p_it = m_post.find(key);
+    if (p_it != m_post.end())
+        return true;
+    
+    std::map<std::wstring, std::wstring>::const_iterator g_it;
+    g_it = m_get.find(key);
+    if (g_it != m_get.end())
+        return true;
+
+    return false;
+}
+
 std::wstring RequestInfo::getGetValue(const std::wstring& key)
 {
     std::map<std::wstring, std::wstring>::iterator g_it;
