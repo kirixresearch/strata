@@ -151,6 +151,7 @@
     <ClCompile Include="iterator.cpp" />
     <ClCompile Include="request.cpp" />
     <ClCompile Include="set.cpp" />
+    <ClCompile Include="stream.cpp" />
     <ClCompile Include="xdclient.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -164,6 +165,7 @@
     <ClInclude Include="jsonutil.h" />
     <ClInclude Include="request.h" />
     <ClInclude Include="set.h" />
+    <ClInclude Include="stream.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="xdclient.rc">

@@ -72,7 +72,7 @@ public:
               const std::wstring& password);
 
     std::wstring getRequestPath();
-    std::wstring serverCall(const std::wstring& call_path, const ServerCallParams* params = NULL);
+    std::wstring serverCall(const std::wstring& call_path, const ServerCallParams* params = NULL, bool use_multipart = false);
 
     // tango::IDatabase interface
 

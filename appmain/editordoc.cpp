@@ -1718,7 +1718,22 @@ void EditorDoc::checkForExternalChanges()
 }
 
 bool EditorDoc::getFileHash(const wxString path, std::wstring& hash)
-{    
+{
+    if (!m_external)
+    {
+        tango::IDatabasePtr db = g_app->getDatabase();
+        xcm::class_info* class_info = xcm::get_class_info(db.p);
+        wxString driver = towx(class_info->get_name()).BeforeFirst('.');
+        if (driver == wxT("xdclient"))
+        {
+            // don't do this operation when running in xdclient mode
+            m_file_hash = L"";
+            hash = L"";
+            return true;
+        }
+    }
+
+
     wxString value;
     wxString mime_type;
     bool external;

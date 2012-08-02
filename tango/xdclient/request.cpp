@@ -39,6 +39,33 @@ static bool isUtf8(const std::string& header, const std::string& content)
 
 
 
+static std::wstring multipartEncode(const std::wstring& input)
+{
+    std::wstring result;
+    result.reserve(input.length() + 10);
+    
+    const wchar_t* ch = input.c_str();
+    unsigned int c;
+    
+    wchar_t buf[80];
+
+    while ((c = (unsigned int)*ch))
+    {
+        if (c > 255)
+        {
+            swprintf(buf, 80, L"&#%d;", c);
+            result += buf;
+        }
+         else
+        {
+            result += *ch;
+        }
+
+        ++ch;
+    }
+
+    return result;
+}
 
 
 
@@ -129,7 +156,10 @@ HttpRequest::HttpRequest()
 {
     m_response_bytes = 0;
     m_post_string = "";
-    
+    m_post_multipart = false;
+    m_formfields = NULL;
+    m_formfieldslast = NULL;
+
     // initialize CURL
     if (0 != curl_global_init(CURL_GLOBAL_ALL))
         return;
@@ -180,10 +210,12 @@ HttpRequest::HttpRequest()
 
 HttpRequest::~HttpRequest()
 {
+    resetPostParameters();
+
     if (m_curl != NULL)
         curl_easy_cleanup(m_curl);
         
-    freeResponsePieces();        
+    freeResponsePieces();
 }
 
 void HttpRequest::send()
@@ -223,19 +255,35 @@ void HttpRequest::send()
     if (curl_result != CURLE_OK)
         return;
 
-    // set the GET option
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTPGET, TRUE);
-    if (curl_result != CURLE_OK)
-        return;
-    
-    // set the POST option
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_POST, TRUE);
-    if (curl_result != CURLE_OK)
-        return;
+
+    if (m_post_multipart)
+    {
+        // set the post multipart parameters
+        curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTPPOST, m_formfields);
+        if (curl_result != CURLE_OK)
+            return;
+    }
+     else
+    {
+        if (m_post_string.length() == 0)
+        {
+            // set the GET option
+            curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTPGET, TRUE);
+            if (curl_result != CURLE_OK)
+                return;
+        }
+         else
+        {
+            // set the POST option
+            curl_result = curl_easy_setopt(m_curl, CURLOPT_POST, TRUE);
+            if (curl_result != CURLE_OK)
+                return;
                 
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_POSTFIELDS, (const char*)m_post_string.c_str());
-    if (curl_result != CURLE_OK)
-        return;
+            curl_result = curl_easy_setopt(m_curl, CURLOPT_POSTFIELDS, (const char*)m_post_string.c_str());
+            if (curl_result != CURLE_OK)
+                return;
+        }
+    }
 
     // retrieve the data from the URL
     curl_result = curl_easy_perform(m_curl);
@@ -250,11 +298,35 @@ void HttpRequest::setLocation(const std::wstring& location)
 
 void HttpRequest::resetPostParameters()
 {
+    // free the form fields
+    if (m_formfields != NULL)
+    {
+        curl_formfree(m_formfields);
+        m_formfields = NULL;
+        m_formfieldslast = NULL;
+    }
+
     m_post_string = "";
+    m_post_multipart = false;
+}
+
+void HttpRequest::useMultipartPost()
+{
+    m_post_multipart = true;
 }
 
 void HttpRequest::setPostValue(const std::wstring& key, const std::wstring& value)
 {
+    // append the value to our post structure (note
+    // this is only used in the case of multipart posts)
+    curl_formadd(&m_formfields, &m_formfieldslast,
+                 CURLFORM_COPYNAME, (const char*)kl::tostring(multipartEncode(key)).c_str(),
+                 CURLFORM_COPYCONTENTS, (const char*)kl::tostring(multipartEncode(value)).c_str(),
+                 CURLFORM_END);
+
+    if (m_post_multipart)
+        return; // only use multipart
+
     // append the value to our post string (regular, non-multipart post)
     if (m_post_string.length() > 0)
         m_post_string += "&";
@@ -315,9 +387,9 @@ size_t HttpRequest::http_header_writer(void* ptr, size_t size, size_t nmemb, voi
         str->append((const char*)ptr, total_size);
     }
 
-    // -- return the number of bytes actually taken care of; if it differs from
-    //    the amount passed to the function, it will signal an error to the library,
-    //    abort the transfer and return CURLE_WRITE_ERROR --
+    // return the number of bytes actually taken care of; if it differs from
+    // the amount passed to the function, it will signal an error to the library,
+    // abort the transfer and return CURLE_WRITE_ERROR
     return total_size;
 }
 

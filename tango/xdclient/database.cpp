@@ -13,6 +13,7 @@
 #include "database.h"
 #include "request.h"
 #include "set.h"
+#include "stream.h"
 #include "../xdcommon/xdcommon.h"
 #include "../xdcommon/dbattr.h"
 #include "../xdcommon/fileinfo.h"
@@ -138,11 +139,13 @@ std::wstring ClientDatabase::getRequestPath()
     return path;
 }
 
-std::wstring ClientDatabase::serverCall(const std::wstring& call_path, const ServerCallParams* params)
+std::wstring ClientDatabase::serverCall(const std::wstring& call_path, const ServerCallParams* params, bool use_multipart)
 {
     std::vector<std::pair<std::wstring, std::wstring> >::const_iterator it;
 
     g_httprequest.resetPostParameters();
+    if (use_multipart)
+        g_httprequest.useMultipartPost();
     g_httprequest.setLocation(getRequestPath() + call_path);
 
     if (params)
@@ -289,7 +292,7 @@ bool ClientDatabase::deleteFile(const std::wstring& path)
 
 bool ClientDatabase::getFileExist(const std::wstring& path)
 {
-    return false;
+    return getFileInfo(path).isOk();
 }
 
 bool ClientDatabase::getLocalFileExist(const std::wstring& path)
@@ -426,14 +429,34 @@ tango::ISetPtr ClientDatabase::createSet(const std::wstring& path,
     return xcm::null;
 }
 
-tango::IStreamPtr ClientDatabase::openStream(const std::wstring& ofs_path)
+tango::IStreamPtr ClientDatabase::openStream(const std::wstring& path)
 {
-    return xcm::null;
+    ServerCallParams params;
+    params.setParam(L"path", path);
+    std::wstring sres = serverCall(L"/api/openstream", &params);
+    JsonNode response;
+    response.fromString(sres);
+
+    if (!response["success"].getBoolean())
+        return xcm::null;
+
+    return static_cast<tango::IStream*>(new ClientStream(this, response["handle"]));
 }
 
-tango::IStreamPtr ClientDatabase::createStream(const std::wstring& ofs_path, const std::wstring& mime_type)
+tango::IStreamPtr ClientDatabase::createStream(const std::wstring& path, const std::wstring& mime_type)
 {
-    return xcm::null;
+    ServerCallParams params;
+    params.setParam(L"path", path);
+    params.setParam(L"mime_type", mime_type);
+    std::wstring sres = serverCall(L"/api/createstream", &params);
+    JsonNode response;
+    response.fromString(sres);
+
+    if (!response["success"].getBoolean())
+        return xcm::null;
+
+    return static_cast<tango::IStream*>(new ClientStream(this, response["handle"]));
+
 }
 
 tango::ISetPtr ClientDatabase::openSet(const std::wstring& ofs_path)
@@ -464,9 +487,9 @@ tango::IRelationEnumPtr ClientDatabase::getRelationEnum()
 }
 
 bool ClientDatabase::execute(const std::wstring& command,
-                           unsigned int flags,
-                           xcm::IObjectPtr& result,
-                           tango::IJob* job)
+                             unsigned int flags,
+                             xcm::IObjectPtr& result,
+                             tango::IJob* job)
 {
     m_error.clearError();
     result.clear();
