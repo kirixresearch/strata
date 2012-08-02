@@ -14,6 +14,7 @@
 #include "jsonconfig.h"
 #include <kl/string.h>
 #include <kl/md5.h>
+#include <kl/base64.h>
 #include <kl/portable.h>
 
 Controller::Controller()
@@ -36,12 +37,16 @@ bool Controller::onRequest(RequestInfo& req)
     else if (uri == L"/api/selectdb")      apiSelectDb(req);
     else if (uri == L"/api/folderinfo")    apiFolderInfo(req);
     else if (uri == L"/api/fileinfo")      apiFileInfo(req);
+    else if (uri == L"/api/createstream")  apiCreateStream(req);
+    else if (uri == L"/api/openstream")    apiOpenStream(req);
+    else if (uri == L"/api/readstream")    apiReadStream(req);
+    else if (uri == L"/api/writestream")   apiWriteStream(req);
     else return false;
 
     return true;
 }
 
-bool Controller::getServerSessionObject(const std::wstring& name, ServerSessionObject** obj)
+ServerSessionObject* Controller::getServerSessionObject(const std::wstring& name)
 {
     XCM_AUTO_LOCK(m_session_object_mutex);
 
@@ -50,10 +55,9 @@ bool Controller::getServerSessionObject(const std::wstring& name, ServerSessionO
 
     it = m_session_objects.find(name);
     if (it == it_end)
-        return false;
+        return NULL;
 
-    *obj = it->second;
-    return true;
+    return it->second;
 }
 
 void Controller::addServerSessionObject(const std::wstring& name, ServerSessionObject* obj)
@@ -94,7 +98,12 @@ void Controller::removeAllServerSessionObjects()
 }
 
 
-
+std::wstring Controller::createHandle() const
+{
+    char buf[255];
+    snprintf(buf, 255, "%d.%d.%d", (int)time(NULL), (int)clock(), rand());
+    return kl::towstring(kl::md5str(buf));
+}
 
 
 
@@ -113,8 +122,8 @@ void Controller::returnApiError(RequestInfo& req, const char* msg, const char* c
 tango::IDatabasePtr Controller::getSessionDatabase(RequestInfo& req)
 {
     std::wstring sid = req.getValue(L"sid");
-    SdservSession* session = NULL;
-    if (!getServerSessionObject(sid, (ServerSessionObject**)&session))
+    SdservSession* session = (SdservSession*)getServerSessionObject(sid);
+    if (!session)
     {
         returnApiError(req, "Invalid session id");
         return xcm::null;
@@ -129,14 +138,24 @@ tango::IDatabasePtr Controller::getSessionDatabase(RequestInfo& req)
     return session->db;
 }
 
+SdservSession* Controller::getSdservSession(RequestInfo& req)
+{
+    std::wstring sid = req.getValue(L"sid");
+    SdservSession* session = (SdservSession*)getServerSessionObject(sid);
+    if (!session)
+    {
+        returnApiError(req, "Invalid session id");
+        return NULL;
+    }
+
+    return session;
+}
 
 
 void Controller::apiLogin(RequestInfo& req)
 {
-    char buf[255];
-    snprintf(buf, 255, "%d.%d.%d", (int)time(NULL), (int)clock(), rand());
-    std::wstring session_id = kl::towstring(kl::md5str(buf));
-
+    std::wstring session_id = createHandle();
+    
     // create a new session
     SdservSession* session = new SdservSession;
     addServerSessionObject(session_id, session);
@@ -151,8 +170,8 @@ void Controller::apiLogin(RequestInfo& req)
 void Controller::apiSelectDb(RequestInfo& req)
 {
     std::wstring sid = req.getValue(L"sid");
-    SdservSession* session = NULL;
-    if (!getServerSessionObject(sid, (ServerSessionObject**)&session))
+    SdservSession* session = (SdservSession*)getServerSessionObject(sid);
+    if (!session)
     {
         returnApiError(req, "Invalid session id");
         return;
@@ -291,3 +310,222 @@ void Controller::apiFileInfo(RequestInfo& req)
 
     req.write(response.toString());
 }
+
+
+void Controller::apiCreateStream(RequestInfo& req)
+{
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+        return;
+    
+    SdservSession* session = getSdservSession(req);
+    if (!session)
+        return;
+    
+    if (!req.getValueExists(L"path"))
+    {
+        returnApiError(req, "Missing path parameter");
+        return;
+    }
+    
+    std::wstring path = req.getValue(L"path");
+    std::wstring mime_type = req.getValue(L"mime_type");
+    
+    tango::IStreamPtr stream = db->createStream(path, mime_type);
+    if (stream.isNull())
+    {
+        returnApiError(req, "Cannot open object");
+        return;
+    }
+    
+    // add object to session
+    std::wstring handle = createHandle();
+    session->streams[handle] = stream;
+        
+    // return success to caller
+    JsonNode response;
+    response["success"].setBoolean(true);
+    response["handle"] = handle;
+    
+    req.write(response.toString());
+}
+
+
+void Controller::apiOpenStream(RequestInfo& req)
+{
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+        return;
+    
+    SdservSession* session = getSdservSession(req);
+    if (!session)
+        return;
+    
+    if (!req.getValueExists(L"path"))
+    {
+        returnApiError(req, "Missing path parameter");
+        return;
+    }
+    
+    std::wstring path = req.getValue(L"path");
+    
+    tango::IStreamPtr stream = db->openStream(path);
+    if (stream.isNull())
+    {
+        returnApiError(req, "Cannot open object");
+        return;
+    }
+    
+    // add object to session
+    std::wstring handle = createHandle();
+    session->streams[handle] = stream;
+        
+    // return success to caller
+    JsonNode response;
+    response["success"].setBoolean(true);
+    response["handle"] = handle;
+    
+    req.write(response.toString());
+}
+
+
+void Controller::apiReadStream(RequestInfo& req)
+{
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+        return;
+    
+    SdservSession* session = getSdservSession(req);
+    if (!session)
+        return;
+    
+    if (!req.getValueExists(L"handle"))
+    {
+        returnApiError(req, "Missing path parameter");
+        return;
+    }
+   
+    if (!req.getValueExists(L"read_size"))
+    {
+        returnApiError(req, "Missing read_size parameter");
+        return;
+    }
+    
+    std::wstring handle = req.getValue(L"handle");
+    std::wstring read_size = req.getValue(L"read_size");
+    
+    std::map<std::wstring, tango::IStreamPtr>::iterator it;
+    it = session->streams.find(handle);
+    if (it == session->streams.end())
+    {
+        returnApiError(req, "Invalid handle");
+        return;
+    }
+    
+    tango::IStreamPtr stream = it->second;
+
+
+    unsigned long read_size_n = (unsigned long)kl::wtoi(read_size);
+    char* raw_buf = new char[read_size_n];
+    unsigned long raw_buf_len = 0;
+    bool res = stream->read(raw_buf, read_size_n, &raw_buf_len);
+    
+    if (!res || raw_buf_len == 0)
+    {
+        delete[] raw_buf;
+        returnApiError(req, "Read error/eof");
+        return;
+    }
+    
+    char* base64_buf = new char[(raw_buf_len+2)*4];
+    
+    kl::base64_encodestate state;
+    kl::base64_init_encodestate(&state);
+    int l1 = kl::base64_encode_block(raw_buf, raw_buf_len, base64_buf, &state);
+    int l2 = kl::base64_encode_blockend(base64_buf+l1, &state);
+    int base64_len = l1+l2;
+    if (base64_len > 0 && base64_buf[base64_len-1] == '\n')
+        base64_len--;
+    base64_buf[base64_len] = 0;
+
+
+    // return success to caller
+    JsonNode response;
+    response["success"].setBoolean(true);
+    response["data"] = base64_buf;
+    
+    delete[] base64_buf;
+    
+    req.write(response.toString());
+}
+
+
+void Controller::apiWriteStream(RequestInfo& req)
+{
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+        return;
+    
+    SdservSession* session = getSdservSession(req);
+    if (!session)
+        return;
+    
+    if (!req.getValueExists(L"handle"))
+    {
+        returnApiError(req, "Missing path parameter");
+        return;
+    }
+   
+    if (!req.getValueExists(L"write_size"))
+    {
+        returnApiError(req, "Missing read_size parameter");
+        return;
+    }
+    
+    std::wstring handle = req.getValue(L"handle");
+    std::wstring s_write_size = req.getValue(L"write_size");
+    std::wstring data = req.getValue(L"data");
+    
+    int write_size = kl::wtoi(s_write_size);
+    
+    std::map<std::wstring, tango::IStreamPtr>::iterator it;
+    it = session->streams.find(handle);
+    if (it == session->streams.end())
+    {
+        returnApiError(req, "Invalid handle");
+        return;
+    }
+    
+    tango::IStreamPtr stream = it->second;
+
+
+    std::string content = kl::tostring(data);
+    char* buf = new char[content.length()+1];
+    kl::base64_decodestate state;
+    kl::base64_init_decodestate(&state);
+    int len = kl::base64_decode_block(content.c_str(), content.length(), buf, &state);
+    buf[len] = 0;
+
+    if (write_size > len)
+        write_size = len;
+    
+    unsigned long written = 0;
+    
+    if (!stream->write(buf, write_size, &written))
+    {
+        delete[] buf;
+        returnApiError(req, "Write error");
+        return;
+    }
+    
+    delete[] buf;
+    
+    // return success to caller
+    JsonNode response;
+    response["success"].setBoolean(true);
+    response["written"] = (int)written;
+    
+
+    req.write(response.toString());
+}
+

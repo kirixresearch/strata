@@ -16,6 +16,7 @@
 #include "request.h"
 
 
+
 class SdservSession : public ServerSessionObject
 {
 public:
@@ -31,6 +32,7 @@ public:
 public:
 
     tango::IDatabasePtr db;
+    std::map<std::wstring, tango::IStreamPtr> streams;
 };
 
 
@@ -43,21 +45,29 @@ public:
 
     bool onRequest(RequestInfo& ri);
 
-    bool getServerSessionObject(const std::wstring& name, ServerSessionObject** obj);
+private:
+
+    ServerSessionObject* getServerSessionObject(const std::wstring& name);
     void addServerSessionObject(const std::wstring& name, ServerSessionObject* obj);
     void removeServerSessionObject(const std::wstring& name);
     void removeAllServerSessionObjects();
+    std::wstring createHandle() const;
     
 private:
 
     void returnApiError(RequestInfo& req, const char* msg, const char* code = "ERR0000");
     tango::IDatabasePtr getSessionDatabase(RequestInfo& req);
+    SdservSession* getSdservSession(RequestInfo& req);
     
     void apiLogin(RequestInfo& req);
     void apiSelectDb(RequestInfo& req);
     void apiFolderInfo(RequestInfo& req);
     void apiFileInfo(RequestInfo& req);
-
+    void apiCreateStream(RequestInfo& req);
+    void apiOpenStream(RequestInfo& req);
+    void apiReadStream(RequestInfo& req);
+    void apiWriteStream(RequestInfo& req);
+    
 private:
 
     std::map< std::wstring , ServerSessionObject* > m_session_objects;
