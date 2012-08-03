@@ -21,6 +21,34 @@ unsigned long getTotalPhysMemory();
 unsigned long getFreePhysMemory();
 
 
+
+
+class membuf
+{
+
+public:
+
+    membuf();
+    ~membuf();
+    
+    bool alloc(size_t size);
+    size_t getAllocSize() const;
+
+    bool append(const unsigned char* buf, size_t len);
+
+    unsigned char* getData();
+    size_t getDataSize() const;
+    
+private:
+
+    unsigned char* m_buf;
+    size_t m_alloc_size;
+    size_t m_size;
+
+};
+
+
+
 };
 
 
