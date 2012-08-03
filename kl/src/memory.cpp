@@ -58,14 +58,7 @@ namespace kl
 
 
 
-
-
-    unsigned char* m_buf;
-    size_t m_alloc_size;
-    size_t m_size;
-
-
-
+// membuf class implementation
 
 membuf::membuf()
 {
@@ -103,6 +96,13 @@ size_t membuf::getAllocSize() const
 
 unsigned char* membuf::append(const unsigned char* buf, size_t len)
 {
+    if (len == 0)
+    {
+        if (!m_buf)
+            alloc(10);
+        return m_buf + m_size;
+    }
+    
     size_t required_size = m_size + len;
     if (required_size > m_alloc_size)
     {

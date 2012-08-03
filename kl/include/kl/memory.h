@@ -34,7 +34,7 @@ public:
     bool alloc(size_t size);
     size_t getAllocSize() const;
 
-    bool append(const unsigned char* buf, size_t len);
+    unsigned char* append(const unsigned char* buf, size_t len);
 
     unsigned char* getData();
     size_t getDataSize() const;
