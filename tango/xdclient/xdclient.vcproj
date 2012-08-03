@@ -460,6 +460,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\stream.cpp"
+				>
+			</File>
+			<File
 				RelativePath="xdclient.cpp"
 				>
 				<FileConfiguration
@@ -522,6 +526,10 @@
 			</File>
 			<File
 				RelativePath=".\set.h"
+				>
+			</File>
+			<File
+				RelativePath=".\stream.h"
 				>
 			</File>
 		</Filter>
