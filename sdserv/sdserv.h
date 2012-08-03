@@ -17,3 +17,8 @@
 #include <ctime>
 #include <windows.h>
 #include <tango.h>
+#include <kl/string.h>
+#include <kl/md5.h>
+#include <kl/base64.h>
+#include <kl/portable.h>
+#include <kl/memory.h>

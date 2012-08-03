@@ -124,6 +124,8 @@ private:
     int m_status_code;
     bool m_header_sent;
     bool m_accept_compressed;
+    
+    kl::membuf m_post_data_buf;
 };
 
 

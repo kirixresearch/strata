@@ -15,6 +15,7 @@
 #include <kl/portable.h>
 #include <kl/url.h>
 #include <kl/md5.h>
+#include <kl/memory.h>
 
 
 
@@ -244,18 +245,27 @@ void RequestInfo::parse()
     }
      else
     {
-        char post_data[8192];
-        int post_data_len;
+        char buf[4096];
+        int buf_len;
 
-        post_data_len = mg_read(m_conn, post_data, 8192);
+        while (true)
+        {
+            buf_len = mg_read(m_conn, buf, 4096);
+            m_post_data_buf.append((unsigned char*)buf, buf_len);
+            
+            if (buf_len != 4096)
+                break;
+        }
 
-
+        char* post_data = (char*)m_post_data_buf.getData();
+        size_t post_data_len = m_post_data_buf.getDataSize();
+        
         if (boundary)
         {
             const char* p = post_data;
             while (parsePart(p, boundary, boundary_length, post_data + post_data_len, &p));
         }
-            else
+         else
         {
             // post method -- regular
             std::vector<request_member> parts;
@@ -438,6 +448,8 @@ std::wstring RequestInfo::getValue(const std::wstring& key)
     {
         if (p_it->second.data)
         {
+            std::string str(p_it->second.data, p_it->second.data + p_it->second.length);
+            return kl::towstring(str);
         }
          else
         {
@@ -485,6 +497,8 @@ std::wstring RequestInfo::getPostValue(const std::wstring& key)
     {
         if (p_it->second.data)
         {
+            std::string str(p_it->second.data, p_it->second.data + p_it->second.length);
+            return kl::towstring(str);
         }
          else
         {

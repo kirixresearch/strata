@@ -12,10 +12,7 @@
 #include "controller.h"
 #include "request.h"
 #include "jsonconfig.h"
-#include <kl/string.h>
-#include <kl/md5.h>
-#include <kl/base64.h>
-#include <kl/portable.h>
+
 
 Controller::Controller()
 {
