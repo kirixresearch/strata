@@ -65,7 +65,7 @@ struct HttpDataAccessInfo
     }
 };
 
-struct HttpCacheRow
+struct ClientCacheRow
 {
     std::vector<std::wstring> values;
 };
@@ -140,18 +140,15 @@ private:
     bool refreshDataAccessInfo();
     void clearDataAccessInfo();
 
-    bool populateRowCache(int start = 0, int limit = 0);
-    void clearRowCache();
-    
-    bool rowInCache(int row);
-    bool rowCachePopulated();
 
 private:
 
     std::vector<HttpDataAccessInfo*> m_fields;
     std::vector<HttpDataAccessInfo*> m_exprs;
 
-    std::vector<HttpCacheRow*> m_cache_rows;
+    std::vector<ClientCacheRow> m_cache_rows;
+    ClientCacheRow* m_current_row_ptr;
+
     std::wstring m_url_query;
 
     ClientDatabase* m_database;
@@ -161,15 +158,6 @@ private:
     tango::rowid_t m_current_row;
     tango::rowid_t m_cache_row_count;
     tango::rowid_t m_cache_start;
-    tango::rowid_t m_cache_limit;
-    bool m_cache_populated;
-    
-    tango::datetime_t m_result_date;
-    std::wstring m_result_wstring;
-    std::string m_result_string;
-    double m_result_double;
-    int m_result_integer;
-    bool m_result_boolean;
 };
 
 

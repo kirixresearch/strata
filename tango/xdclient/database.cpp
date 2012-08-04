@@ -86,13 +86,10 @@ bool ClientDatabase::open(const std::wstring& host,
                           const std::wstring& password)
 {
     m_host = host;
+    m_port = kl::itowstring(port);
     m_database = database;
     m_uid = uid;
     m_password = password;
-
-    wchar_t buf[80];
-    swprintf(buf, 80, L"%d", port);
-    m_port = buf;
 
 
     ServerCallParams params;

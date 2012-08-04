@@ -29,8 +29,6 @@ ClientIterator::ClientIterator(ClientDatabase* database, ClientSet* set)
     m_current_row = 0;
     m_cache_row_count = 0;
     m_cache_start = 0;
-    m_cache_limit = 0;
-    m_cache_populated = false;
 
     m_database = database;
     m_database->ref();
@@ -42,9 +40,6 @@ ClientIterator::ClientIterator(ClientDatabase* database, ClientSet* set)
 
 ClientIterator::~ClientIterator()
 {
-    // clear the cache
-    clearRowCache();
-
     // clear the data access info
     std::vector<HttpDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
@@ -96,23 +91,41 @@ void ClientIterator::skip(int delta)
 {
     int new_row = (int)m_current_row + delta;
 
-    if (!rowInCache(new_row))
-        populateRowCache(new_row, cache_size);
 
-    // TODO: include some type of bounds check on the
-    // new row to make sure it's within the row set
 
-    m_current_row = new_row;
+    if (new_row >= m_cache_start && new_row <= m_cache_start + m_cache_row_count)
+    {
+        // row is in cache
+        m_current_row_ptr = m_current_row_ptr = &(m_cache_rows[new_row - m_cache_start]);
+        m_current_row = new_row;
+        return;
+    }
+     else
+    {
+        // the row is not in the cache, so we need to fetch it
+
+        ServerCallParams params;
+        params.setParam(L"handle", m_handle);
+        params.setParam(L"start", kl::itowstring(new_row));
+        params.setParam(L"limit", L"50");
+        std::wstring sres = m_database->serverCall(L"/api/fetchrows", &params);
+        JsonNode response;
+        response.fromString(sres);
+
+        if (!response["success"].getBoolean())
+        {
+            return;
+        }
+
+    }
+
+    
 }
 
 void ClientIterator::goFirst()
 {
-    int new_row = 1;
-
-    if (!rowInCache(new_row))
-        populateRowCache(new_row, cache_size);
-
-    m_current_row = new_row;
+    m_current_row = 0;
+    skip(1);
 }
 
 void ClientIterator::goLast()
@@ -136,13 +149,8 @@ bool ClientIterator::bof()
 
 bool ClientIterator::eof()
 {
-    // if we haven't yet populated the cache, we don't
-    // know what the count is, so return false
-    if (!rowCachePopulated())
-        return false;
-
-    if (m_current_row > m_cache_row_count)
-        return true;
+   // if (m_current_row > m_cache_row_count)
+   //     return true;
 
     return false;
 }
@@ -462,14 +470,11 @@ const std::string& ClientIterator::getString(tango::objhandle_t data_handle)
         return handle->str_result;
     }
 
-    if (m_cache_rows.empty())
+    if (!m_current_row_ptr)
         return empty_string;
 
-    int cache_offset = m_current_row - m_cache_start;
-    HttpCacheRow* row = m_cache_rows[cache_offset];
-
-    m_result_string = kl::tostring(row->values[handle->ordinal]);
-    return m_result_string;
+    handle->str_result = kl::tostring(m_current_row_ptr->values[handle->ordinal]);
+    return handle->str_result;
 }
 
 const std::wstring& ClientIterator::getWideString(tango::objhandle_t data_handle)
@@ -485,14 +490,11 @@ const std::wstring& ClientIterator::getWideString(tango::objhandle_t data_handle
         return handle->wstr_result;
     }
 
-    if (m_cache_rows.empty())
+    if (!m_current_row_ptr)
         return empty_wstring;
 
-    int cache_offset = m_current_row - m_cache_start;
-    HttpCacheRow* row = m_cache_rows[cache_offset];
-
-    m_result_wstring = row->values[handle->ordinal];
-    return m_result_wstring;
+    handle->wstr_result = m_current_row_ptr->values[handle->ordinal];
+    return handle->wstr_result;
 }
 
 tango::datetime_t ClientIterator::getDateTime(tango::objhandle_t data_handle)
@@ -515,11 +517,14 @@ tango::datetime_t ClientIterator::getDateTime(tango::objhandle_t data_handle)
         return dt;
     }
 
+    return 0;
+
+    /*
     if (m_cache_rows.empty())
         return 0;
 
     int cache_offset = m_current_row - m_cache_start;
-    HttpCacheRow* row = m_cache_rows[cache_offset];
+    ClientCacheRow* row = m_cache_rows[cache_offset];
 
     int yy, mm, dd, h, m, s;
     if (!parseDateTime(row->values[handle->ordinal], &yy, &mm, &dd, &h, &m, &s))
@@ -536,6 +541,7 @@ tango::datetime_t ClientIterator::getDateTime(tango::objhandle_t data_handle)
     tango::DateTime dt(yy, mm, dd, h, m, s);
     m_result_date = dt;
     return m_result_date;
+    */
 }
 
 double ClientIterator::getDouble(tango::objhandle_t data_handle)
@@ -550,14 +556,10 @@ double ClientIterator::getDouble(tango::objhandle_t data_handle)
         return handle->expr_result.getDouble();
     }
 
-    if (m_cache_rows.empty())
+    if (!m_current_row_ptr)
         return 0.0f;
 
-    int cache_offset = m_current_row - m_cache_start;
-    HttpCacheRow* row = m_cache_rows[cache_offset];
-
-    m_result_double = kl::wtof(row->values[handle->ordinal]);
-    return m_result_double;
+    return kl::wtof(m_current_row_ptr->values[handle->ordinal]);
 }
 
 int ClientIterator::getInteger(tango::objhandle_t data_handle)
@@ -572,14 +574,10 @@ int ClientIterator::getInteger(tango::objhandle_t data_handle)
         return handle->expr_result.getInteger();
     }
 
-    if (m_cache_rows.empty())
+    if (!m_current_row_ptr)
         return 0;
 
-    int cache_offset = m_current_row - m_cache_start;
-    HttpCacheRow* row = m_cache_rows[cache_offset];
-
-    m_result_integer = kl::wtoi(row->values[handle->ordinal]);
-    return m_result_integer;
+    return kl::wtoi(m_current_row_ptr->values[handle->ordinal]);
 }
 
 bool ClientIterator::getBoolean(tango::objhandle_t data_handle)
@@ -594,14 +592,10 @@ bool ClientIterator::getBoolean(tango::objhandle_t data_handle)
         return handle->expr_result.getBoolean();
     }
 
-    if (m_cache_rows.empty())
+    if (!m_current_row_ptr)
         return false;
 
-    int cache_offset = m_current_row - m_cache_start;
-    HttpCacheRow* row = m_cache_rows[cache_offset];
-
-    m_result_boolean = (row->values[handle->ordinal] == L"true") ? true : false;
-    return m_result_boolean;
+    return (m_current_row_ptr->values[handle->ordinal] == L"true" ? true : false);
 }
 
 bool ClientIterator::isNull(tango::objhandle_t data_handle)
@@ -667,96 +661,4 @@ void ClientIterator::clearDataAccessInfo()
     }
     
     m_fields.clear();
-}
-
-bool ClientIterator::populateRowCache(int start, int limit)
-{
-    // clear the existing row cache
-    clearRowCache();
-
-    std::wstring query = m_url_query;
-
-    char buf[40];
-    
-    sprintf(buf, "&start=%d", start);
-    query.append(kl::towstring(buf));
-    
-    sprintf(buf, "&limit=%d", limit);
-    query.append(kl::towstring(buf));
-
-    g_httprequest.setLocation(query);
-    g_httprequest.send();
-    std::wstring response = g_httprequest.getResponseString();
-
-    // populate the cache
-    kscript::JsonNode node;
-    node.fromString(response);
-
-    m_cache_row_count = node["total_count"].getInteger();
-    m_cache_start = node["start"].getInteger();
-    m_cache_limit = node["limit"].getInteger();
-    
-    kscript::JsonNode item;
-    kscript::JsonNode items = node["items"];
-
-    int idx, count = items.getCount();
-    for (idx = 0; idx < count; ++idx)
-    {
-        item = items[idx];
-        std::vector<std::wstring> keys = item.getChildKeys();
-
-        HttpCacheRow* row = new HttpCacheRow;
-        row->values.reserve(keys.size());
-
-        std::vector<std::wstring>::iterator it, it_end;
-        it_end = keys.end();
-        
-        for (it = keys.begin(); it != it_end; ++it)
-        {
-            row->values.push_back(item[*it].getString());
-        }
-
-        m_cache_rows.push_back(row);
-    }
-
-    // set the cache populated flag
-    m_cache_populated = true;
-    return true;
-}
-
-void ClientIterator::clearRowCache()
-{
-    std::vector<HttpCacheRow*>::iterator it, it_end;
-    it_end = m_cache_rows.end();
-    
-    for (it = m_cache_rows.begin(); it != it_end; ++it)
-    {
-        delete *it;
-    }
-
-    m_cache_rows.clear();
-
-    m_cache_row_count = 0;
-    m_cache_start = 0;
-    m_cache_limit = 0;
-    m_cache_populated = false;
-}
-
-bool ClientIterator::rowInCache(int row)
-{
-    if (!rowCachePopulated())
-        return false;
-
-    if (row < m_cache_start)
-        return false;
-
-    if (row > m_cache_start + m_cache_limit - 1)
-        return false;
-
-    return true;
-}
-
-bool ClientIterator::rowCachePopulated()
-{
-    return  m_cache_populated;
 }
