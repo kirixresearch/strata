@@ -451,6 +451,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\string.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\url.cpp"
 				>
 			</File>
