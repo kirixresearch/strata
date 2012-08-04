@@ -172,6 +172,7 @@ RequestInfo::RequestInfo(struct mg_connection* conn, const struct mg_request_inf
     m_status_code = 200;
     m_header_sent = false;
     m_accept_compressed = false;
+    m_content_length = -1;
     parse();
 }
 
@@ -538,6 +539,11 @@ void RequestInfo::setContentType(const char* content_type)
     m_content_type = content_type;
 }
 
+void RequestInfo::setContentLength(int length)
+{
+    m_content_length = length;
+}
+
 void RequestInfo::redirect(const char* location, int http_code)
 {
     m_status_code = http_code;
@@ -646,6 +652,13 @@ void RequestInfo::checkHeaderSent()
         reply += "Content-Type: text/html\r\n";
     }
     
+    if (m_content_length != -1)
+    {
+        char buf[80];
+        sprintf(buf, "Content-Length: %d\r\n", m_content_length);
+        reply += buf;
+    }
+    
     std::vector<std::string>::iterator it;
     for (it = m_headers.begin(); it != m_headers.end(); ++it)
     {
@@ -668,6 +681,7 @@ void RequestInfo::checkHeaderSent()
     
     
     reply += "Connection: close\r\n\r\n";
+    //reply += "\r\n\r\n";
     
     mg_write(m_conn, reply.c_str(), reply.length());
 }

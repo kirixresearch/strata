@@ -38,6 +38,9 @@ bool Controller::onRequest(RequestInfo& req)
     else if (uri == L"/api/openstream")    apiOpenStream(req);
     else if (uri == L"/api/readstream")    apiReadStream(req);
     else if (uri == L"/api/writestream")   apiWriteStream(req);
+    else if (uri == L"/api/query")         apiQuery(req);
+    else if (uri == L"/api/describetable") apiDescribeTable(req);
+    else if (uri == L"/api/fetchrows")     apiFetchRows(req);
     else return false;
 
     return true;
@@ -524,5 +527,162 @@ void Controller::apiWriteStream(RequestInfo& req)
     
 
     req.write(response.toString());
+}
+
+
+
+
+void Controller::apiQuery(RequestInfo& req)
+{
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+        return;
+    
+    SdservSession* session = getSdservSession(req);
+    if (!session)
+        return;
+        
+    if (req.getValue(L"mode") == L"createiterator")
+    {
+        tango::ISetPtr set = db->openSet(req.getValue(L"path"));
+        if (!set.isOk())
+        {
+            returnApiError(req, "Invalid path");
+            return;
+        }
+        
+        tango::IIteratorPtr iter = set->createIterator(req.getValue(L"columns"), req.getValue(L"expr"), NULL);
+        if (!set.isOk())
+        {
+            returnApiError(req, "Could not create iterator");
+            return;
+        }
+        
+        // add object to session
+        std::wstring handle = createHandle();
+        session->iters[handle] = iter;
+        
+        // return success to caller
+        JsonNode response;
+        response["success"].setBoolean(true);
+        response["handle"] = handle;
+        
+        req.write(response.toString());
+    }
+     else
+    {
+        returnApiError(req, "Invalid query mode");
+    }
+}
+
+
+void Controller::apiDescribeTable(RequestInfo& req)
+{
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+        return;
+    
+    SdservSession* session = getSdservSession(req);
+    if (!session)
+        return;
+
+    std::wstring handle = req.getValue(L"handle");
+    if (handle.length() > 0)
+    {
+        tango::IStructurePtr structure;
+        std::map<std::wstring, tango::IIteratorPtr>::iterator it;
+        it = session->iters.find(handle);
+        if (it != session->iters.end())
+            structure = it->second->getStructure();
+        
+        if (structure.isNull())
+        {
+            returnApiError(req, "Invalid handle");
+            return;
+        }
+
+
+        JsonNode response;
+        response["success"].setBoolean(true);
+        
+        // set the total number of items
+        int idx;
+        int count = structure->getColumnCount();
+        
+        // set the items
+        JsonNode columns = response["columns"];
+        for (idx = 0; idx < count; ++idx)
+        {
+            JsonNode item = columns.appendElement();
+            
+            tango::IColumnInfoPtr info = structure->getColumnInfoByIdx(idx);
+            item["name"] = info->getName();
+            
+            switch (info->getType())
+            {
+                default:
+                case tango::typeUndefined:     item["type"] = "undefined";      break;
+                case tango::typeInvalid:       item["type"] = "invalid";        break;
+                case tango::typeCharacter:     item["type"] = "character";      break; 
+                case tango::typeWideCharacter: item["type"] = "widecharacter";  break;
+                case tango::typeNumeric:       item["type"] = "numeric";        break;
+                case tango::typeDouble:        item["type"] = "double";         break;
+                case tango::typeInteger:       item["type"] = "integer";        break;
+                case tango::typeDate:          item["type"] = "date";           break;
+                case tango::typeDateTime:      item["type"] = "datetime";       break;
+                case tango::typeBoolean:       item["type"] = "boolean";        break;
+                case tango::typeBinary:        item["type"] = "binary";         break;
+            }
+            
+            item["width"].setInteger(info->getWidth());
+            item["scale"].setInteger(info->getScale());    
+            item["expression"] = info->getExpression();    
+        }
+
+        req.write(response.toString());
+    }
+}
+
+void Controller::apiFetchRows(RequestInfo& req)
+{
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+        return;
+    
+    SdservSession* session = getSdservSession(req);
+    if (!session)
+        return;
+        
+    if (req.getValue(L"mode") == L"createiterator")
+    {
+        tango::ISetPtr set = db->openSet(req.getValue(L"path"));
+        if (!set.isOk())
+        {
+            returnApiError(req, "Invalid path");
+            return;
+        }
+        
+        tango::IIteratorPtr iter = set->createIterator(req.getValue(L"columns"), req.getValue(L"expr"), NULL);
+        if (!set.isOk())
+        {
+            returnApiError(req, "Could not create iterator");
+            return;
+        }
+        
+        // add object to session
+        std::wstring handle = createHandle();
+        session->iters[handle] = iter;
+        
+        // return success to caller
+        JsonNode response;
+        response["success"].setBoolean(true);
+        response["handle"] = handle;
+        
+        req.write(response.toString());
+    }
+     else
+    {
+        returnApiError(req, "Invalid query mode");
+    }
 }
 

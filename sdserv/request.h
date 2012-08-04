@@ -85,6 +85,7 @@ public:
     //void writeResultCode(int code, const char* mime_type = NULL);
     void setStatusCode(int code, const char* msg = NULL);
     void setContentType(const char* content_type);
+    void setContentLength(int length = -1);
     void redirect(const char* location, int http_code = 301);
     void addHeader(const char* header);
     void addCookie(ResponseCookie& cookie);
@@ -122,6 +123,7 @@ private:
     std::string m_content_type;    
       
     int m_status_code;
+    int m_content_length;
     bool m_header_sent;
     bool m_accept_compressed;
     

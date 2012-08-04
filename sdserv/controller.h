@@ -33,6 +33,7 @@ public:
 
     tango::IDatabasePtr db;
     std::map<std::wstring, tango::IStreamPtr> streams;
+    std::map<std::wstring, tango::IIteratorPtr> iters;
 };
 
 
@@ -67,6 +68,9 @@ private:
     void apiOpenStream(RequestInfo& req);
     void apiReadStream(RequestInfo& req);
     void apiWriteStream(RequestInfo& req);
+    void apiQuery(RequestInfo& req);
+    void apiDescribeTable(RequestInfo& req);
+    void apiFetchRows(RequestInfo& req);
     
 private:
 

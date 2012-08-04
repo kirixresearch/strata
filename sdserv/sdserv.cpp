@@ -42,7 +42,9 @@ static void* callback(enum mg_event evt,
 int main(int argc, const char** argv)
 {
     struct mg_context *ctx;
-    const char *options[] = {"listening_ports", LISTENING_PORT, NULL};
+    const char *options[] = { "listening_ports",   LISTENING_PORT,
+                              //"enable_keep_alive", "yes",
+                              NULL };
 
     ctx = mg_start(callback, NULL, options);
     
