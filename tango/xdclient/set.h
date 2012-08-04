@@ -22,7 +22,7 @@ class ClientSet : public CommonBaseSet
 
 friend class ClientDatabase;
 friend class ClientIterator;
-friend class HttpRowInserter;
+friend class ClientRowInserter;
 
     XCM_CLASS_NAME("xdclient.Set")
     XCM_BEGIN_INTERFACE_MAP(ClientSet)
@@ -31,7 +31,7 @@ friend class HttpRowInserter;
 
 public:
 
-    ClientSet();
+    ClientSet(ClientDatabase* database);
     virtual ~ClientSet();
     
     bool init();
@@ -41,7 +41,7 @@ public:
     void setObjectPath(const std::wstring& path);
     std::wstring getObjectPath();
     bool isTemporary();
-    bool storeObject(const std::wstring& ofs_path);
+    bool storeObject(const std::wstring& path);
     
     unsigned int getSetFlags();
     std::wstring getSetId();
@@ -80,20 +80,20 @@ public:
     bool deleteAllRelations();
 
     tango::IIteratorPtr createIterator(const std::wstring& columns,
-                                      const std::wstring& expr,
-                                      tango::IJob* job);
+                                       const std::wstring& expr,
+                                       tango::IJob* job);
 
     tango::rowpos_t getRowCount();
     
 private:
     
-    tango::IDatabasePtr m_database;
+    ClientDatabase* m_database;
     std::wstring m_tablename;
-    std::wstring m_ofs_path;
+    std::wstring m_path;
 };
 
 
-class HttpInsertData
+class ClientInsertData
 {
 public:
     std::wstring m_col_name;
@@ -105,17 +105,17 @@ public:
 };
 
 
-class HttpRowInserter : public tango::IRowInserter
+class ClientRowInserter : public tango::IRowInserter
 {
     XCM_CLASS_NAME("xdclient.RowInserter")
-    XCM_BEGIN_INTERFACE_MAP(HttpRowInserter)
+    XCM_BEGIN_INTERFACE_MAP(ClientRowInserter)
         XCM_INTERFACE_ENTRY(tango::IRowInserter)
     XCM_END_INTERFACE_MAP()
 
 public:
 
-    HttpRowInserter(ClientSet* set);
-    ~HttpRowInserter();
+    ClientRowInserter(ClientSet* set);
+    ~ClientRowInserter();
 
     tango::objhandle_t getHandle(const std::wstring& column_name);
     tango::IColumnInfoPtr getInfo(tango::objhandle_t column_handle);

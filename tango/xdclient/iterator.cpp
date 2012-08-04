@@ -11,6 +11,7 @@
 
 #include "tango.h"
 #include "database.h"
+#include "set.h"
 #include "iterator.h"
 #include "request.h"
 #include <kl/portable.h>
@@ -23,13 +24,20 @@ const std::wstring empty_wstring = L"";
 const int cache_size = 50;
 
 
-ClientIterator::ClientIterator()
+ClientIterator::ClientIterator(ClientDatabase* database, ClientSet* set)
 {
     m_current_row = 0;
     m_cache_row_count = 0;
     m_cache_start = 0;
     m_cache_limit = 0;
     m_cache_populated = false;
+
+    m_database = database;
+    m_database->ref();
+
+    m_set = set;
+    if (m_set)
+        m_set->ref();
 }
 
 ClientIterator::~ClientIterator()
@@ -44,11 +52,19 @@ ClientIterator::~ClientIterator()
 
     for (it = m_exprs.begin(); it != m_exprs.end(); ++it)
         delete (*it);
+
+    if (m_set)
+        m_set->unref();
+
+    if (m_database)
+        m_database->unref();
 }
 
-bool ClientIterator::init(const std::wstring& url_query)
+bool ClientIterator::init(const std::wstring& handle, const std::wstring& url_query)
 {
+    m_handle = handle;
     m_url_query = url_query;
+
     return refreshDataAccessInfo();
 }
 
@@ -154,21 +170,52 @@ void ClientIterator::goRow(const tango::rowid_t& rowid)
 
 tango::IStructurePtr ClientIterator::getStructure()
 {
+    ServerCallParams params;
+    params.setParam(L"handle", m_handle);
+    std::wstring sres = m_database->serverCall(L"/api/describetable", &params);
+    JsonNode response;
+    response.fromString(sres);
+
+    if (!response["success"].getBoolean())
+    {
+        return xcm::null;
+    }
+
+
+
     Structure* s = new Structure;
 
-    std::vector<HttpDataAccessInfo*>::iterator it, it_end;
-    it_end = m_fields.end();
-    
-    for (it = m_fields.begin(); it != it_end; ++it)
+    JsonNode columns = response["columns"];
+    size_t i = 0, cnt = columns.getCount();
+
+    for (i = 0; i < cnt; ++i)
     {
+        JsonNode column = columns[i];
+        std::wstring type = column["type"];
+        int ntype;
+
+             if (type == L"undefined")     ntype = tango::typeUndefined;
+        else if (type == L"invalid")       ntype = tango::typeInvalid;
+        else if (type == L"character")     ntype = tango::typeCharacter;
+        else if (type == L"widecharacter") ntype = tango::typeWideCharacter;
+        else if (type == L"numeric")       ntype = tango::typeNumeric;
+        else if (type == L"double")        ntype = tango::typeDouble;
+        else if (type == L"integer")       ntype = tango::typeInteger;
+        else if (type == L"date")          ntype = tango::typeDate;
+        else if (type == L"datetime")      ntype = tango::typeDateTime;
+        else if (type == L"boolean")       ntype = tango::typeBoolean;
+        else if (type == L"binary")        ntype = tango::typeBinary;
+        else ntype = tango::typeUndefined;
+
         tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
-        col->setName((*it)->name);
-        col->setType((*it)->type);
-        col->setWidth((*it)->width);
-        col->setScale((*it)->scale);
-        col->setColumnOrdinal((*it)->ordinal);
-        col->setExpression((*it)->expr_text);
-        col->setCalculated((*it)->calculated);
+        col->setName(column["name"]);
+        col->setType(ntype);
+        col->setWidth(column["width"].getInteger());
+        col->setScale(column["scale"].getInteger());
+        col->setColumnOrdinal(i);
+        col->setExpression(column["expression"]);
+        col->setCalculated(column["expression"].getString().length() > 0 ? true : false);
+
         s->addColumn(col);
     }
 
@@ -177,7 +224,7 @@ tango::IStructurePtr ClientIterator::getStructure()
 
 void ClientIterator::refreshStructure()
 {
-    //refreshDataAccessInfo();
+    refreshDataAccessInfo();
 }
 
 bool ClientIterator::modifyStructure(tango::IStructure* struct_config, tango::IJob* job)
@@ -583,7 +630,7 @@ bool ClientIterator::refreshDataAccessInfo()
     if (set.isNull())
         return false;
         
-    tango::IStructurePtr structure = set->getStructure();
+    tango::IStructurePtr structure = getStructure();
     if (structure.isNull())
         return false;
 

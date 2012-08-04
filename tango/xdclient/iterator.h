@@ -72,7 +72,7 @@ struct HttpCacheRow
 
 
 class ClientIterator : public CommonBaseIterator,
-                     public tango::ICacheRowUpdate
+                       public tango::ICacheRowUpdate
 {
 friend class ClientDatabase;
 friend class ClientSet;
@@ -85,9 +85,9 @@ friend class ClientSet;
 
 public:
 
-    ClientIterator();
+    ClientIterator(ClientDatabase* database, ClientSet* set);
     ~ClientIterator();
-    bool init(const std::wstring& url_query);
+    bool init(const std::wstring& handle, const std::wstring& url_query);
 
     // tango::IIterator interface implementation
 
@@ -154,8 +154,9 @@ private:
     std::vector<HttpCacheRow*> m_cache_rows;
     std::wstring m_url_query;
 
-    tango::IDatabasePtr m_database;
-    tango::ISetPtr m_set;
+    ClientDatabase* m_database;
+    ClientSet* m_set;
+    std::wstring m_handle;
 
     tango::rowid_t m_current_row;
     tango::rowid_t m_cache_row_count;

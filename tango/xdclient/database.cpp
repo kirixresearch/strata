@@ -139,7 +139,9 @@ std::wstring ClientDatabase::getRequestPath()
     return path;
 }
 
-std::wstring ClientDatabase::serverCall(const std::wstring& call_path, const ServerCallParams* params, bool use_multipart)
+std::wstring ClientDatabase::serverCall(const std::wstring& call_path,
+                                        const ServerCallParams* params,
+                                        bool use_multipart)
 {
     std::vector<std::pair<std::wstring, std::wstring> >::const_iterator it;
 
@@ -325,11 +327,11 @@ tango::IFileInfoPtr ClientDatabase::getFileInfo(const std::wstring& path)
     else f->type = tango::filetypeSet;
 
     std::wstring format = file_info["format"];
-         if (type == L"native")          f->format = tango::formatNative;
-    else if (type == L"delimitedtext")   f->format = tango::formatDelimitedText;
-    else if (type == L"fixedlengthtext") f->format = tango::formatFixedLengthText;
-    else if (type == L"text")            f->format = tango::formatText;
-    else if (type == L"xbase")           f->format = tango::formatXbase;            
+         if (format == L"native")          f->format = tango::formatNative;
+    else if (format == L"delimitedtext")   f->format = tango::formatDelimitedText;
+    else if (format == L"fixedlengthtext") f->format = tango::formatFixedLengthText;
+    else if (format == L"text")            f->format = tango::formatText;
+    else if (format == L"xbase")           f->format = tango::formatXbase;            
     else f->format = tango::formatNative;
 
     f->mime_type = file_info["mime_type"];
@@ -365,32 +367,21 @@ tango::IFileInfoEnumPtr ClientDatabase::getFolderInfo(const std::wstring& path)
         f->name = item["name"];
         
         std::wstring type = item["type"];
-        if (type == L"folder")
-            f->type = tango::filetypeFolder;
-        else if (type == L"node")
-            f->type = tango::filetypeNode;
-        else if (type == L"set")
-            f->type = tango::filetypeSet;
-        else if (type == L"table")
-            f->type = tango::filetypeSet;
-        else if (type == L"stream")
-            f->type = tango::filetypeStream;
-        else
-            continue;
+             if (type == L"folder")          f->type = tango::filetypeFolder;
+        else if (type == L"node")            f->type = tango::filetypeNode;
+        else if (type == L"set")             f->type = tango::filetypeSet;
+        else if (type == L"table")           f->type = tango::filetypeSet;
+        else if (type == L"stream")          f->type = tango::filetypeStream;
+        else f->type = tango::filetypeSet;
+
 
         std::wstring format = item["format"];
-        if (type == L"native")
-            f->format = tango::formatNative;
-        else if (type == L"delimitedtext")
-            f->format = tango::formatDelimitedText;
-        else if (type == L"fixedlengthtext")
-            f->format = tango::formatFixedLengthText;
-        else if (type == L"text")
-            f->format = tango::formatText;
-        else if (type == L"xbase")
-            f->format = tango::formatXbase;            
-        else
-            f->format = tango::formatNative;
+             if (format == L"native")          f->format = tango::formatNative;
+        else if (format == L"delimitedtext")   f->format = tango::formatDelimitedText;
+        else if (format == L"fixedlengthtext") f->format = tango::formatFixedLengthText;
+        else if (format == L"text")            f->format = tango::formatText;
+        else if (format == L"xbase")           f->format = tango::formatXbase;            
+        else f->format = tango::formatNative;
 
         retval->append(f);
     }
@@ -459,11 +450,15 @@ tango::IStreamPtr ClientDatabase::createStream(const std::wstring& path, const s
 
 }
 
-tango::ISetPtr ClientDatabase::openSet(const std::wstring& ofs_path)
+tango::ISetPtr ClientDatabase::openSet(const std::wstring& path)
 {
-    ClientSet* set = new ClientSet();
-    set->m_database = static_cast<tango::IDatabase*>(this);
-    set->m_tablename = getTablenameFromOfsPath(ofs_path);
+    tango::IFileInfoPtr finfo = getFileInfo(path);
+    if (finfo->getType() != tango::filetypeSet)
+        return xcm::null;
+
+    ClientSet* set = new ClientSet(this);
+    set->m_path = path;
+    set->m_tablename = getTablenameFromOfsPath(path);
 
     if (!set->init())
     {
@@ -474,9 +469,9 @@ tango::ISetPtr ClientDatabase::openSet(const std::wstring& ofs_path)
     return static_cast<tango::ISet*>(set);
 }
 
-tango::ISetPtr ClientDatabase::openSetEx(const std::wstring& ofs_path, int format)
+tango::ISetPtr ClientDatabase::openSetEx(const std::wstring& path, int format)
 {
-    return xcm::null;
+    return openSet(path);
 }
 
 tango::IRelationEnumPtr ClientDatabase::getRelationEnum()

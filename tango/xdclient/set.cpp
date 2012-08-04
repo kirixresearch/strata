@@ -42,12 +42,15 @@ static std::wstring buildOrderParams(const std::wstring& expr)
 }
 
 
-ClientSet::ClientSet()
+ClientSet::ClientSet(ClientDatabase* database)
 {
+    m_database = database;
+    m_database->ref();
 }
 
 ClientSet::~ClientSet()
 {
+    m_database->unref();
 }
 
 bool ClientSet::init()
@@ -57,13 +60,13 @@ bool ClientSet::init()
 
 void ClientSet::setObjectPath(const std::wstring& path)
 {
-    m_ofs_path = path;
+    m_path = path;
 }
 
 std::wstring ClientSet::getObjectPath()
 {
-    if (!m_ofs_path.empty())
-        return m_ofs_path;
+    if (!m_path.empty())
+        return m_path;
 
     return m_tablename;
 }
@@ -73,37 +76,14 @@ bool ClientSet::isTemporary()
     return false;
 }
 
-bool ClientSet::storeObject(const std::wstring& ofs_path)
+bool ClientSet::storeObject(const std::wstring& path)
 {
     return false;
 }
 
 unsigned int ClientSet::getSetFlags()
 {
-    // get the set flags and row count if they exist
-    IClientDatabasePtr httpdb = m_database;
-    std::wstring path = httpdb->getRequestPath();
-    path.append(L"/");
-    
-    // TODO: use the ofs path instead of the tablename,
-    // but strip off the part of the path that represents
-    // the mount portion in the ofs
-    
-    path.append(m_tablename);
-    path.append(L"?method=describe");
-    
-    g_httprequest.setLocation(path);
-    g_httprequest.send();
-    std::wstring response = g_httprequest.getResponseString();
-
-    kscript::JsonNode node;
-    node.fromString(response);
-
-    bool fast_row_count = node["fast_row_count"].getBoolean();
-    if (fast_row_count)
-        return tango::sfFastRowCount;
-
-    return 0;
+    return tango::sfFastRowCount;
 }
 
 std::wstring ClientSet::getSetId()
@@ -113,25 +93,7 @@ std::wstring ClientSet::getSetId()
 
 tango::IStructurePtr ClientSet::getStructure()
 {
-    IClientDatabasePtr httpdb = m_database;
-    std::wstring path = httpdb->getRequestPath();
-    path.append(L"/");
-    
-    // TODO: use the ofs path instead of the tablename,
-    // but strip off the part of the path that represents
-    // the mount portion in the ofs
-    
-    path.append(m_tablename);
-    path.append(L"?method=describe");
-    
-    g_httprequest.setLocation(path);
-    g_httprequest.send();
-    std::wstring response = g_httprequest.getResponseString();
-
-    kscript::JsonNode node;
-    node.fromString(response);
-    
-    return tango::JsonStructure::fromJsonNode(node);
+    return xcm::null;
 }
 
 bool ClientSet::modifyStructure(tango::IStructure* struct_config, tango::IJob* job)
@@ -229,32 +191,28 @@ tango::IIteratorPtr ClientSet::createIterator(const std::wstring& columns,
                                               const std::wstring& expr,
                                               tango::IJob* job)
 {
-    // initialize the iterator
-    ClientIterator* iter = new ClientIterator();
-    iter->m_database = m_database;
-    iter->m_set = this;
+    ServerCallParams params;
+    params.setParam(L"mode", L"createiterator");
+    params.setParam(L"path", m_path);
+    params.setParam(L"columns", columns);
+    params.setParam(L"expr", expr);
 
-    // get the data
-    IClientDatabasePtr httpdb = m_database;
-    std::wstring url_query = httpdb->getRequestPath();
-    url_query.append(L"/");
-    
-    // TODO: use the ofs path instead of the tablename,
-    // but strip off the part of the path that represents
-    // the mount portion in the ofs
-    
-    url_query.append(m_tablename);
-    url_query.append(L"?method=select");
+    std::wstring sres = m_database->serverCall(L"/api/query", &params);
+    JsonNode response;
+    response.fromString(sres);
 
-    // add the order parameters
-    std::wstring order_params = buildOrderParams(expr);
-    if (order_params.length() > 0)
+    if (!response["success"].getBoolean())
     {
-        url_query.append(L"&order=");
-        url_query.append(order_params);
+        return xcm::null;
     }
 
-    if (!iter->init(url_query))
+
+
+
+
+    // initialize the iterator
+    ClientIterator* iter = new ClientIterator(m_database, this);
+    if (!iter->init(response["handle"], L""))
     {
         delete iter;
         return xcm::null;
@@ -288,79 +246,82 @@ tango::rowpos_t ClientSet::getRowCount()
     return row_count;
 }
 
-HttpRowInserter::HttpRowInserter(ClientSet* set)
+
+
+
+ClientRowInserter::ClientRowInserter(ClientSet* set)
 {
 }
 
-HttpRowInserter::~HttpRowInserter()
+ClientRowInserter::~ClientRowInserter()
 {
 }
 
-tango::objhandle_t HttpRowInserter::getHandle(const std::wstring& column_name)
+tango::objhandle_t ClientRowInserter::getHandle(const std::wstring& column_name)
 {
     return 0;
 }
 
-tango::IColumnInfoPtr HttpRowInserter::getInfo(tango::objhandle_t column_handle)
+tango::IColumnInfoPtr ClientRowInserter::getInfo(tango::objhandle_t column_handle)
 {
     return xcm::null;
 }
 
-bool HttpRowInserter::putRawPtr(tango::objhandle_t column_handle, const unsigned char* value, int length)
+bool ClientRowInserter::putRawPtr(tango::objhandle_t column_handle, const unsigned char* value, int length)
 {
     return false;
 }
 
-bool HttpRowInserter::putString(tango::objhandle_t column_handle, const std::string& value)
+bool ClientRowInserter::putString(tango::objhandle_t column_handle, const std::string& value)
 {
     return false;
 }
 
-bool HttpRowInserter::putWideString(tango::objhandle_t column_handle, const std::wstring& value)
+bool ClientRowInserter::putWideString(tango::objhandle_t column_handle, const std::wstring& value)
 {
     return false;
 }
 
-bool HttpRowInserter::putDouble(tango::objhandle_t column_handle, double value)
+bool ClientRowInserter::putDouble(tango::objhandle_t column_handle, double value)
 {
     return false;
 }
 
-bool HttpRowInserter::putInteger(tango::objhandle_t column_handle, int value)
+bool ClientRowInserter::putInteger(tango::objhandle_t column_handle, int value)
 {
     return false;
 }
 
-bool HttpRowInserter::putBoolean(tango::objhandle_t column_handle, bool value)
+bool ClientRowInserter::putBoolean(tango::objhandle_t column_handle, bool value)
 {
     return false;
 }
 
-bool HttpRowInserter::putDateTime(tango::objhandle_t column_handle, tango::datetime_t datetime)
+bool ClientRowInserter::putDateTime(tango::objhandle_t column_handle, tango::datetime_t datetime)
 {
     return false;
 }
 
-bool HttpRowInserter::putNull(tango::objhandle_t column_handle)
+bool ClientRowInserter::putNull(tango::objhandle_t column_handle)
 {
     return false;
 }
 
-bool HttpRowInserter::startInsert(const std::wstring& col_list)
+bool ClientRowInserter::startInsert(const std::wstring& col_list)
 {
     return false;
 }
 
-bool HttpRowInserter::insertRow()
+bool ClientRowInserter::insertRow()
 {
     return false;
 }
 
-void HttpRowInserter::finishInsert()
+void ClientRowInserter::finishInsert()
 {
 }
 
-bool HttpRowInserter::flush()
+bool ClientRowInserter::flush()
 {
     return false;
 }
