@@ -301,6 +301,16 @@ void Controller::apiFileInfo(RequestInfo& req)
         file_info["is_mount"].setBoolean(finfo->isMount());
         file_info["primary_key"] = finfo->getPrimaryKey();
         file_info["size"] = (double)finfo->getSize();
+        
+        if (finfo->getType() == tango::filetypeSet)
+        {
+            tango::ISetPtr set = db->openSet(path);
+            if (set.isOk() && set->getSetFlags() & tango::sfFastRowCount)
+            {
+                file_info["row_count"] = (double)set->getRowCount();
+                file_info["fast_row_count"].setBoolean(true);
+            }
+        }
     }
      else
     {
@@ -586,61 +596,77 @@ void Controller::apiDescribeTable(RequestInfo& req)
     if (!session)
         return;
 
+
+    JsonNode response;
+    
+    
+    tango::IStructurePtr structure;
+        
     std::wstring handle = req.getValue(L"handle");
-    if (handle.length() > 0)
+    std::wstring path = req.getValue(L"path");
+    
+    if (path.length() > 0)
     {
-        tango::IStructurePtr structure;
+        tango::ISetPtr set = db->openSet(path);
+        if (set.isOk())
+            structure = set->getStructure();
+    }
+     else if (handle.length() > 0)
+    {
         std::map<std::wstring, QueryResult>::iterator it;
         it = session->iters.find(handle);
         if (it != session->iters.end())
             structure = it->second.iter->getStructure();
-        
-        if (structure.isNull())
-        {
-            returnApiError(req, "Invalid handle");
-            return;
-        }
-
-
-        JsonNode response;
-        response["success"].setBoolean(true);
-        
-        // set the total number of items
-        int idx;
-        int count = structure->getColumnCount();
-        
-        // set the items
-        JsonNode columns = response["columns"];
-        for (idx = 0; idx < count; ++idx)
-        {
-            JsonNode item = columns.appendElement();
-            
-            tango::IColumnInfoPtr info = structure->getColumnInfoByIdx(idx);
-            item["name"] = info->getName();
-            
-            switch (info->getType())
-            {
-                default:
-                case tango::typeUndefined:     item["type"] = "undefined";      break;
-                case tango::typeInvalid:       item["type"] = "invalid";        break;
-                case tango::typeCharacter:     item["type"] = "character";      break; 
-                case tango::typeWideCharacter: item["type"] = "widecharacter";  break;
-                case tango::typeNumeric:       item["type"] = "numeric";        break;
-                case tango::typeDouble:        item["type"] = "double";         break;
-                case tango::typeInteger:       item["type"] = "integer";        break;
-                case tango::typeDate:          item["type"] = "date";           break;
-                case tango::typeDateTime:      item["type"] = "datetime";       break;
-                case tango::typeBoolean:       item["type"] = "boolean";        break;
-                case tango::typeBinary:        item["type"] = "binary";         break;
-            }
-            
-            item["width"].setInteger(info->getWidth());
-            item["scale"].setInteger(info->getScale());    
-            item["expression"] = info->getExpression();    
-        }
-
-        req.write(response.toString());
     }
+     else
+    {
+        returnApiError(req, "Missing parameter");
+        return;
+    }
+    
+        
+    if (structure.isNull())
+    {
+        returnApiError(req, "Invalid handle");
+        return;
+    }
+
+
+
+    response["success"].setBoolean(true);
+    int idx, count = structure->getColumnCount();
+    
+    // set the items
+    JsonNode columns = response["columns"];
+    for (idx = 0; idx < count; ++idx)
+    {
+        JsonNode item = columns.appendElement();
+        
+        tango::IColumnInfoPtr info = structure->getColumnInfoByIdx(idx);
+        item["name"] = info->getName();
+        
+        switch (info->getType())
+        {
+            default:
+            case tango::typeUndefined:     item["type"] = "undefined";      break;
+            case tango::typeInvalid:       item["type"] = "invalid";        break;
+            case tango::typeCharacter:     item["type"] = "character";      break; 
+            case tango::typeWideCharacter: item["type"] = "widecharacter";  break;
+            case tango::typeNumeric:       item["type"] = "numeric";        break;
+            case tango::typeDouble:        item["type"] = "double";         break;
+            case tango::typeInteger:       item["type"] = "integer";        break;
+            case tango::typeDate:          item["type"] = "date";           break;
+            case tango::typeDateTime:      item["type"] = "datetime";       break;
+            case tango::typeBoolean:       item["type"] = "boolean";        break;
+            case tango::typeBinary:        item["type"] = "binary";         break;
+        }
+        
+        item["width"].setInteger(info->getWidth());
+        item["scale"].setInteger(info->getScale());    
+        item["expression"] = info->getExpression();    
+    }
+
+    req.write(response.toString());
 }
 
 void Controller::apiFetchRows(RequestInfo& req)
