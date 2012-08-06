@@ -26,7 +26,7 @@ typedef kscript::JsonNode JsonNode;
 
 xcm_interface IClientDatabase : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("xdmysql.IClientDatabase")
+    XCM_INTERFACE_NAME("xdclient.IClientDatabase")
 
 public:
 
