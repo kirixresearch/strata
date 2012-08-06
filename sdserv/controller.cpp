@@ -598,7 +598,7 @@ void Controller::apiQuery(RequestInfo& req)
             returnApiError(req, "SQL syntax error");
             return;
         }
-        
+          
         std::wstring handle = createHandle();
         session->iters[handle].iter = iter;
         session->iters[handle].rowpos = 1;
@@ -607,6 +607,13 @@ void Controller::apiQuery(RequestInfo& req)
         JsonNode response;
         response["success"].setBoolean(true);
         response["handle"] = handle;
+        
+        
+        tango::ISetPtr set = iter->getSet();
+        if (set.isOk() && (set->getSetFlags() & tango::sfFastRowCount))
+        {
+            response["row_count"] = (double)set->getRowCount();
+        }
         
         req.write(response.toString());
     }
