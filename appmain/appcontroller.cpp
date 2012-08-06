@@ -4983,7 +4983,7 @@ static void onCreateExternalConnectionWizardFinished(ConnectionWizard* dlg)
                 conn_name.RemoveLast();
             break;
 
-        case dbtypeHttp:
+        case dbtypeClient:
             conn_name = dlg->getConnectionInfo().server;
             break;
     }

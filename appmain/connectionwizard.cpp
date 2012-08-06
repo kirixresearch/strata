@@ -37,8 +37,8 @@ int getConnectionBarType(int connection_type)
     if (connection_type == dbtypeOdbc)
         return ConnectionBar::typeOdbc;
 
-    if (connection_type == dbtypeHttp)
-        return ConnectionBar::typeHttp;
+    if (connection_type == dbtypeClient)
+        return ConnectionBar::typeClient;
 
     return ConnectionBar::typeFolder;
 }
@@ -169,9 +169,9 @@ void ConnectionBar::populate()
             default_item = item;
     }
 
-    if (m_types & dbtypeHttp)
+    if (m_types & dbtypeClient)
     {
-        item = addItem(ConnectionBar::typeHttp,
+        item = addItem(ConnectionBar::typeClient,
                        GETBMP(gf_globe_32),
                        _("Http"));
         if (default_item == NULL)
@@ -359,8 +359,8 @@ wxString ConnectionWizard::getConnectionString()
             result += wxT("Xdprovider=xdfs;");
             database = m_ci.path;
             break;
-        case dbtypeHttp:
-            result += wxT("Xdprovider=xdhttp;");
+        case dbtypeClient:
+            result += wxT("Xdprovider=xdclient;");
             database = m_ci.path;
             break;
         case dbtypeXbase:
@@ -433,8 +433,8 @@ void ConnectionWizard::setConnectionString(const wxString& str)
         else if (cstr->getLowerValue(L"Xdfiletype") == L"fixedlengthtext")
             ci.type = dbtypeFixedLengthText;
     }
-    else if (cstr->getLowerValue(L"Xdprovider") == L"xdhttp")
-        ci.type = dbtypeHttp;
+    else if (cstr->getLowerValue(L"Xdprovider") == L"xdclient")
+        ci.type = dbtypeClient;
     else if (cstr->getLowerValue(L"Xdprovider") == L"xdodbc")
     {
         if (cstr->getLowerValue(L"Xddbtype") == L"dsn")
@@ -529,7 +529,7 @@ void ConnectionWizard::onConnectionTypeChanged(int type)
         case ConnectionBar::typeDb2:       conn_type = dbtypeDb2;        break;
         case ConnectionBar::typeOdbc:      conn_type = dbtypeOdbc;       break;
         case ConnectionBar::typeFolder:    conn_type = dbtypeFilesystem; break;
-        case ConnectionBar::typeHttp:      conn_type = dbtypeHttp;       break;
+        case ConnectionBar::typeClient:    conn_type = dbtypeClient;     break;
     }
     
     // something went wrong, bail out
@@ -554,7 +554,7 @@ void ConnectionWizard::onConnectionTypeChanged(int type)
         if (conn_type == dbtypeSqlServer) { m_ci.port = 1433;  }
         if (conn_type == dbtypeOracle)    { m_ci.port = 1521;  }
         if (conn_type == dbtypeDb2)       { m_ci.port = 50000; }
-        if (conn_type == dbtypeHttp)      { m_ci.port = 80;    }
+        if (conn_type == dbtypeClient)    { m_ci.port = 80;    }
     }
 
     // -- handle wizard layout --
@@ -565,7 +565,7 @@ void ConnectionWizard::onConnectionTypeChanged(int type)
         case dbtypeSqlServer:
         case dbtypeOracle:
         case dbtypeDb2:
-        case dbtypeHttp:
+        case dbtypeClient:
         {
             m_wizard->setPageOrder(m_server_properties_page);
 
@@ -621,7 +621,7 @@ void ConnectionWizard::onConnectionTypeChanged(int type)
         conn_type == dbtypeSqlServer ||
         conn_type == dbtypeOracle ||
         conn_type == dbtypeDb2 ||
-        conn_type == dbtypeHttp)
+        conn_type == dbtypeClient)
     {
         m_server_properties_page->loadPageData();
     }

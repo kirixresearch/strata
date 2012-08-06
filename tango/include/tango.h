@@ -131,7 +131,7 @@ enum
     dbtypePostgres = 9,
     dbtypeFirebird = 10,
     dbtypeSqlite = 11,
-    dbtypeHttp = 12,
+    dbtypeClient = 12,
     dbtypeFilesystem = 80
 };
 

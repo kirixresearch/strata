@@ -35,7 +35,7 @@ enum
     dbtypeFixedLengthText = 0x2000,
     dbtypeSqlite = 0x4000,
     dbtypePostgres = 0x8000,
-    dbtypeHttp = 0x100000,
+    dbtypeClient = 0x100000,
     dbtypeAll = 0x0fffffff
 };
 

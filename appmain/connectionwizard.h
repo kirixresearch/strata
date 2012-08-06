@@ -63,7 +63,7 @@ enum ConnectionTypes
         dbtypeDb2 |
         dbtypeOdbc |
         dbtypeFilesystem | 
-        dbtypeHttp
+        dbtypeClient
 };
 
 
@@ -182,7 +182,7 @@ public:
         typeDb2,
         typeOracle,
         typeOdbc,
-        typeHttp
+        typeClient
     };
     
     ConnectionBar(wxWindow* parent, wxWindowID id, int conn_types);

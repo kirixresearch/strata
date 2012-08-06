@@ -78,7 +78,7 @@ public:
             case dbtypeOracle:       provider = wxT("xdoracle"); break;
             case dbtypeOdbc:         provider = wxT("xdodbc"); dbtype = wxT("dsn"); break;
             case dbtypeDb2:          provider = wxT("xdodbc"); dbtype = wxT("db2"); break;
-            case dbtypeHttp:         provider = wxT("xdhttp"); break;
+            case dbtypeClient:       provider = wxT("xdclient"); break;
             case dbtypeFilesystem:
             case dbtypeXbase:
             case dbtypeDelimitedText:

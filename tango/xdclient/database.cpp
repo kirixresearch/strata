@@ -219,7 +219,7 @@ std::wstring ClientDatabase::getDatabaseName()
 
 int ClientDatabase::getDatabaseType()
 {
-    return tango::dbtypeHttp;
+    return tango::dbtypeClient;
 }
 
 tango::IAttributesPtr ClientDatabase::getAttributes()
