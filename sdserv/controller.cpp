@@ -580,6 +580,36 @@ void Controller::apiQuery(RequestInfo& req)
         
         req.write(response.toString());
     }
+     else if (req.getValue(L"mode") == L"sql")
+    {
+        std::wstring sql = req.getValue(L"sql");
+        if (sql.length() == 0)
+        {
+            returnApiError(req, "Invalid or missing sql parameter");
+            return;
+        }
+        
+        xcm::IObjectPtr obj;
+        db->execute(sql, 0, obj, NULL);
+
+        tango::IIteratorPtr iter = obj;
+        if (iter.isNull())
+        {
+            returnApiError(req, "SQL syntax error");
+            return;
+        }
+        
+        std::wstring handle = createHandle();
+        session->iters[handle].iter = iter;
+        session->iters[handle].rowpos = 1;
+        
+        // return success to caller
+        JsonNode response;
+        response["success"].setBoolean(true);
+        response["handle"] = handle;
+        
+        req.write(response.toString());
+    }
      else
     {
         returnApiError(req, "Invalid query mode");
