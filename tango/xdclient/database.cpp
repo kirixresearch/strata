@@ -13,6 +13,7 @@
 #include "database.h"
 #include "request.h"
 #include "set.h"
+#include "iterator.h"
 #include "stream.h"
 #include "../xdcommon/xdcommon.h"
 #include "../xdcommon/dbattr.h"
@@ -523,8 +524,48 @@ bool ClientDatabase::execute(const std::wstring& command,
     m_error.clearError();
     result.clear();
 
+
+    ServerCallParams params;
+    params.setParam(L"mode", L"sql");
+    params.setParam(L"sql", command);
+
+
+    std::wstring sres = serverCall(L"/api/query", &params);
+    JsonNode response;
+    response.fromString(sres);
+
+    if (!response["success"].getBoolean())
+    {
+        return false;
+    }
+
+
+
+    // initialize a placeholder set
+    std::wstring path = getTableNameFromSql(command);
+    ClientSet* set = new ClientSet(this);
+    if (!set->init(path))
+    {
+        return xcm::null;
+    }
+
+    // initialize the iterator
+    ClientIterator* iter = new ClientIterator(this, set);
+    if (!iter->init(response["handle"], L""))
+    {
+        delete iter;
+        return xcm::null;
+    }
+    
+
+    tango::IIteratorPtr sp_iter = static_cast<tango::IIterator*>(iter);
+    result = sp_iter;
+    return true;
+
+    /*
     return doSQL(static_cast<tango::IDatabase*>(this),
                  command, flags, result, m_error, job);
+    */
 }
 
 tango::ISetPtr ClientDatabase::runGroupQuery(tango::ISetPtr set,
