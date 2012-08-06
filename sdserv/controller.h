@@ -21,6 +21,7 @@ struct QueryResult
 {
     tango::IIteratorPtr iter;
     std::vector<tango::objhandle_t> handles;
+    tango::rowpos_t rowpos;
 };
 
 class SdservSession : public ServerSessionObject

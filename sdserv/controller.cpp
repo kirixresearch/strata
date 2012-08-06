@@ -571,6 +571,7 @@ void Controller::apiQuery(RequestInfo& req)
         // add object to session
         std::wstring handle = createHandle();
         session->iters[handle].iter = iter;
+        session->iters[handle].rowpos = 1;
         
         // return success to caller
         JsonNode response;
@@ -711,7 +712,20 @@ void Controller::apiFetchRows(RequestInfo& req)
     str.reserve(limit*100);
     
     if (start == 1)
+    {
         iter->goFirst();
+        qr.rowpos = 1;
+    }
+     else
+    {
+        tango::tango_int64_t newpos = start;
+        newpos -= ((tango::tango_int64_t)qr.rowpos);
+        if (newpos != 0)
+        {
+            iter->skip((int)newpos);
+            qr.rowpos = (tango::rowpos_t)start;
+        }
+    }
     
     str = L"{ \"success\": true, \"rows\": [ ";
     
@@ -731,6 +745,7 @@ void Controller::apiFetchRows(RequestInfo& req)
         }
         
         iter->skip(1);
+        qr.rowpos++;
     }
     
     str += L"] ] }";
