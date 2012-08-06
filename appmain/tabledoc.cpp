@@ -3797,6 +3797,9 @@ static bool isDeleteAllowed(TableDoc* tabledoc, bool deleting_rows)
 
 void TableDoc::onGridColumnRightClick(kcl::GridEvent& evt)
 {
+    wxPoint pt_mouse = ::wxGetMousePosition();
+    pt_mouse = ScreenToClient(pt_mouse);
+
     m_frame->setActiveChild(m_doc_site);
 
     m_grid->moveCursor(m_grid->getCursorRow(), evt.GetColumn());
@@ -3918,8 +3921,7 @@ void TableDoc::onGridColumnRightClick(kcl::GridEvent& evt)
     menuPopup.AppendSeparator();
     menuPopup.Append(ID_Data_Summary, _("Summari&ze"));
 
-    wxPoint pt_mouse = ::wxGetMousePosition();
-    pt_mouse = ScreenToClient(pt_mouse);
+
     cfw::CommandCapture* cc = new cfw::CommandCapture;
     PushEventHandler(cc);
     PopupMenu(&menuPopup, pt_mouse);
