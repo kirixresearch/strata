@@ -161,6 +161,48 @@ std::wstring ClientDatabase::serverCall(const std::wstring& call_path,
     return g_httprequest.getResponseString();
 }
 
+tango::IStructurePtr ClientDatabase::jsonToStructure(JsonNode& node)
+{
+    Structure* s = new Structure;
+
+    JsonNode columns = node["columns"];
+    size_t i = 0, cnt = columns.getCount();
+
+    for (i = 0; i < cnt; ++i)
+    {
+        JsonNode column = columns[i];
+        std::wstring type = column["type"];
+        int ntype;
+
+             if (type == L"undefined")     ntype = tango::typeUndefined;
+        else if (type == L"invalid")       ntype = tango::typeInvalid;
+        else if (type == L"character")     ntype = tango::typeCharacter;
+        else if (type == L"widecharacter") ntype = tango::typeWideCharacter;
+        else if (type == L"numeric")       ntype = tango::typeNumeric;
+        else if (type == L"double")        ntype = tango::typeDouble;
+        else if (type == L"integer")       ntype = tango::typeInteger;
+        else if (type == L"date")          ntype = tango::typeDate;
+        else if (type == L"datetime")      ntype = tango::typeDateTime;
+        else if (type == L"boolean")       ntype = tango::typeBoolean;
+        else if (type == L"binary")        ntype = tango::typeBinary;
+        else ntype = tango::typeUndefined;
+
+        tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+        col->setName(column["name"]);
+        col->setType(ntype);
+        col->setWidth(column["width"].getInteger());
+        col->setScale(column["scale"].getInteger());
+        col->setColumnOrdinal(i);
+        col->setExpression(column["expression"]);
+        col->setCalculated(column["expression"].getString().length() > 0 ? true : false);
+
+        s->addColumn(col);
+    }
+
+    return static_cast<tango::IStructure*>(s);
+}
+
+
 void ClientDatabase::close()
 {
 }

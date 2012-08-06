@@ -91,6 +91,7 @@ private:
     std::wstring m_tablename;
     std::wstring m_path;
     int m_set_flags;
+    tango::IStructurePtr m_structure;
 };
 
 

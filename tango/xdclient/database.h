@@ -140,6 +140,10 @@ public:
                                  const std::wstring& having,
                                  tango::IJob* job);
 
+public:
+
+    tango::IStructurePtr jsonToStructure(JsonNode& node);
+
 private:
 
     std::wstring m_host;
