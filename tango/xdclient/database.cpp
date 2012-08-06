@@ -549,6 +549,11 @@ bool ClientDatabase::execute(const std::wstring& command,
         return xcm::null;
     }
 
+    if (response["row_count"].isOk())
+    {
+        set->m_known_row_count = (tango::rowpos_t)response["row_count"].getDouble();
+    }
+
     // initialize the iterator
     ClientIterator* iter = new ClientIterator(this, set);
     if (!iter->init(response["handle"], L""))

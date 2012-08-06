@@ -47,6 +47,7 @@ ClientSet::ClientSet(ClientDatabase* database)
     m_database = database;
     m_database->ref();
     m_set_flags = 0;
+    m_known_row_count = (tango::rowpos_t)-1;
 }
 
 ClientSet::~ClientSet()
@@ -261,6 +262,12 @@ tango::IIteratorPtr ClientSet::createIterator(const std::wstring& columns,
 
 tango::rowpos_t ClientSet::getRowCount()
 {
+    if (m_known_row_count != (tango::rowpos_t)-1)
+    {
+        return m_known_row_count;
+    }
+
+
     ServerCallParams params;
     params.setParam(L"path", m_path);
     std::wstring sres = m_database->serverCall(L"/api/fileinfo", &params);

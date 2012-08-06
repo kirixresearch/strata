@@ -27,6 +27,7 @@ const int cache_size = 50;
 ClientIterator::ClientIterator(ClientDatabase* database, ClientSet* set)
 {
     m_current_row = 0;
+    m_current_row_ptr = NULL;
     m_cache_row_count = 0;
     m_cache_start = 0;
 
