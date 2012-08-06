@@ -776,6 +776,9 @@ void Controller::apiFetchRows(RequestInfo& req)
         
         iter->skip(1);
         qr.rowpos++;
+        
+        if (iter->eof())
+            break;
     }
     
     str += L"] ] }";
