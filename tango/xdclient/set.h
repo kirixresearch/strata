@@ -34,7 +34,7 @@ public:
     ClientSet(ClientDatabase* database);
     virtual ~ClientSet();
     
-    bool init();
+    bool init(const std::wstring& path);
     
     // tango::ISet interface
     
@@ -90,6 +90,7 @@ private:
     ClientDatabase* m_database;
     std::wstring m_tablename;
     std::wstring m_path;
+    int m_set_flags;
 };
 
 

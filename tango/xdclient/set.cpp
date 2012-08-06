@@ -46,6 +46,7 @@ ClientSet::ClientSet(ClientDatabase* database)
 {
     m_database = database;
     m_database->ref();
+    m_set_flags = 0;
 }
 
 ClientSet::~ClientSet()
@@ -53,8 +54,31 @@ ClientSet::~ClientSet()
     m_database->unref();
 }
 
-bool ClientSet::init()
+bool ClientSet::init(const std::wstring& path)
 {
+    ServerCallParams params;
+    params.setParam(L"path", path);
+    std::wstring sres = m_database->serverCall(L"/api/fileinfo", &params);
+    JsonNode response;
+    response.fromString(sres);
+
+    if (!response["success"].getBoolean())
+        return false;
+
+    JsonNode file_info = response["file_info"];
+    if (file_info.isNull() || file_info["type"].getString() != L"table")
+        return false;
+
+    JsonNode fast_row_count = file_info["row_count"];
+    if (fast_row_count.isOk())
+    {
+        if (fast_row_count.getBoolean())
+            m_set_flags |= tango::sfFastRowCount;
+    }
+
+    m_path = path;
+    m_tablename = getTablenameFromOfsPath(path);
+
     return true;
 }
 
@@ -82,8 +106,8 @@ bool ClientSet::storeObject(const std::wstring& path)
 }
 
 unsigned int ClientSet::getSetFlags()
-{return 0;
-    return tango::sfFastRowCount;
+{
+    return m_set_flags;
 }
 
 std::wstring ClientSet::getSetId()
@@ -223,27 +247,24 @@ tango::IIteratorPtr ClientSet::createIterator(const std::wstring& columns,
 
 tango::rowpos_t ClientSet::getRowCount()
 {
-    // get the set flags and row count if they exist
-    IClientDatabasePtr httpdb = m_database;
-    std::wstring path = httpdb->getRequestPath();
-    path.append(L"/");
+    ServerCallParams params;
+    params.setParam(L"path", m_path);
+    std::wstring sres = m_database->serverCall(L"/api/fileinfo", &params);
+    JsonNode response;
+    response.fromString(sres);
 
-    // TODO: use the ofs path instead of the tablename,
-    // but strip off the part of the path that represents
-    // the mount portion in the ofs
+    if (!response["success"].getBoolean())
+        return 0;
+    
+    JsonNode file_info = response["file_info"];
+    if (file_info.isNull())
+        return 0;
 
-    path.append(m_tablename);
-    path.append(L"?method=describe");
+    JsonNode row_count = file_info["row_count"];
+    if (row_count.isNull())
+        return 0;
 
-    g_httprequest.setLocation(path);
-    g_httprequest.send();
-    std::wstring response = g_httprequest.getResponseString();
-
-    kscript::JsonNode node;
-    node.fromString(response);
-
-    int row_count = node["row_count"].getInteger();
-    return row_count;
+    return row_count.getDouble();
 }
 
 

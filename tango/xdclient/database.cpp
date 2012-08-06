@@ -449,15 +449,10 @@ tango::IStreamPtr ClientDatabase::createStream(const std::wstring& path, const s
 
 tango::ISetPtr ClientDatabase::openSet(const std::wstring& path)
 {
-    tango::IFileInfoPtr finfo = getFileInfo(path);
-    if (finfo->getType() != tango::filetypeSet)
-        return xcm::null;
-
     ClientSet* set = new ClientSet(this);
-    set->m_path = path;
-    set->m_tablename = getTablenameFromOfsPath(path);
 
-    if (!set->init())
+
+    if (!set->init(path))
     {
         delete set;
         return xcm::null;
