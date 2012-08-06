@@ -560,7 +560,7 @@ void Controller::apiQuery(RequestInfo& req)
         
         // add object to session
         std::wstring handle = createHandle();
-        session->iters[handle] = iter;
+        session->iters[handle].iter = iter;
         
         // return success to caller
         JsonNode response;
@@ -590,10 +590,10 @@ void Controller::apiDescribeTable(RequestInfo& req)
     if (handle.length() > 0)
     {
         tango::IStructurePtr structure;
-        std::map<std::wstring, tango::IIteratorPtr>::iterator it;
+        std::map<std::wstring, QueryResult>::iterator it;
         it = session->iters.find(handle);
         if (it != session->iters.end())
-            structure = it->second->getStructure();
+            structure = it->second.iter->getStructure();
         
         if (structure.isNull())
         {
@@ -645,44 +645,70 @@ void Controller::apiDescribeTable(RequestInfo& req)
 
 void Controller::apiFetchRows(RequestInfo& req)
 {
-    tango::IDatabasePtr db = getSessionDatabase(req);
-    if (db.isNull())
-        return;
-    
     SdservSession* session = getSdservSession(req);
     if (!session)
         return;
         
-    if (req.getValue(L"mode") == L"createiterator")
+    if (!req.getValueExists(L"start") || !req.getValueExists(L"limit"))
     {
-        tango::ISetPtr set = db->openSet(req.getValue(L"path"));
-        if (!set.isOk())
+        returnApiError(req, "Missing parameter");
+        return;
+    }
+    
+    std::wstring handle = req.getValue(L"handle");
+    int start = kl::wtoi(req.getValue(L"start"));
+    int limit = kl::wtoi(req.getValue(L"limit"));
+    
+
+    std::map<std::wstring, QueryResult>::iterator it;
+    it = session->iters.find(handle);
+    if (it == session->iters.end())
+    {
+        returnApiError(req, "Invalid handle");
+        return;
+    }
+    
+    QueryResult& qr = it->second;
+    tango::IIterator* iter = it->second.iter.p;
+    
+    if (qr.handles.size() == 0)
+    {
+        // init handles;
+        tango::IStructurePtr s = iter->getStructure();
+        for (int i = 0; i < s->getColumnCount(); ++i)
         {
-            returnApiError(req, "Invalid path");
-            return;
+            qr.handles.push_back(iter->getHandle(s->getColumnName(i)));
+        }
+    }
+    
+    std::wstring str;
+    str.reserve(limit*100);
+    
+    if (start == 1)
+        iter->goFirst();
+    
+    str = L"{ \"success\": true, \"rows\": [ ";
+    
+    int row = 0, col;
+    for (row = 0; row < limit; ++row)
+    {
+        if (row != 0)
+            str += L"],[";
+             else
+            str += L"[";
+        
+        for (col = 0; col < (int)qr.handles.size(); ++col)
+        {
+            if (col > 0)
+                str += L",";
+            str += L"\"" + iter->getWideString(qr.handles[col]) + L"\"";
         }
         
-        tango::IIteratorPtr iter = set->createIterator(req.getValue(L"columns"), req.getValue(L"expr"), NULL);
-        if (!set.isOk())
-        {
-            returnApiError(req, "Could not create iterator");
-            return;
-        }
-        
-        // add object to session
-        std::wstring handle = createHandle();
-        session->iters[handle] = iter;
-        
-        // return success to caller
-        JsonNode response;
-        response["success"].setBoolean(true);
-        response["handle"] = handle;
-        
-        req.write(response.toString());
+        iter->skip(1);
     }
-     else
-    {
-        returnApiError(req, "Invalid query mode");
-    }
+    
+    str += L"] ] }";
+    
+    req.write(kl::tostring(str));
 }
 

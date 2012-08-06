@@ -17,6 +17,12 @@
 
 
 
+struct QueryResult
+{
+    tango::IIteratorPtr iter;
+    std::vector<tango::objhandle_t> handles;
+};
+
 class SdservSession : public ServerSessionObject
 {
 public:
@@ -33,7 +39,7 @@ public:
 
     tango::IDatabasePtr db;
     std::map<std::wstring, tango::IStreamPtr> streams;
-    std::map<std::wstring, tango::IIteratorPtr> iters;
+    std::map<std::wstring, QueryResult> iters;
 };
 
 
