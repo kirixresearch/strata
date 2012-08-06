@@ -93,12 +93,11 @@ void ClientIterator::skip(int delta)
 
 
 
-    if (new_row >= m_cache_start && new_row <= m_cache_start + m_cache_row_count)
+    if (m_cache_start != 0 && new_row >= m_cache_start && new_row <= m_cache_start + m_cache_row_count - 1)
     {
         // row is in cache
         m_current_row_ptr = m_current_row_ptr = &(m_cache_rows[new_row - m_cache_start]);
         m_current_row = new_row;
-        return;
     }
      else
     {
@@ -117,6 +116,31 @@ void ClientIterator::skip(int delta)
             return;
         }
 
+
+        JsonNode rows = response["rows"];
+        size_t rown, rowcnt = rows.getCount();
+        size_t coln, colcnt;
+
+        m_cache_rows.clear();
+        m_cache_rows.resize(rowcnt);
+
+        for (rown = 0; rown < rowcnt; ++rown)
+        {
+            JsonNode row = rows[rown];
+            colcnt = row.getCount();
+
+            ClientCacheRow& cache_row = m_cache_rows[rown];
+            cache_row.values.resize(colcnt);
+            for (coln = 0; coln < colcnt; ++coln)
+                cache_row.values[coln] = row[coln].getString();
+        }
+
+        m_cache_start = new_row;
+        m_cache_row_count = rowcnt;
+
+
+        m_current_row_ptr = m_current_row_ptr = &(m_cache_rows[new_row - m_cache_start]);
+        m_current_row = new_row;
     }
 
     
@@ -134,7 +158,7 @@ void ClientIterator::goLast()
 
 double ClientIterator::getPos()
 {
-    return 0;
+    return m_current_row;
 }
 
 tango::rowid_t ClientIterator::getRowId()
@@ -619,11 +643,6 @@ bool ClientIterator::refreshDataAccessInfo()
     // clear out any existing data access info
     clearDataAccessInfo();
 
-    // get the structure from the set
-    tango::ISetPtr set = getSet();
-    if (set.isNull())
-        return false;
-        
     tango::IStructurePtr structure = getStructure();
     if (structure.isNull())
         return false;

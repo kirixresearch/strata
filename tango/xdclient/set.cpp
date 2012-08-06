@@ -82,7 +82,7 @@ bool ClientSet::storeObject(const std::wstring& path)
 }
 
 unsigned int ClientSet::getSetFlags()
-{
+{return 0;
     return tango::sfFastRowCount;
 }
 
