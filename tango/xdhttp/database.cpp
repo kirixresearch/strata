@@ -115,7 +115,7 @@ std::wstring HttpDatabase::getDatabaseName()
 
 int HttpDatabase::getDatabaseType()
 {
-    return tango::dbtypeHttp;
+    return tango::dbtypeClient;
 }
 
 tango::IAttributesPtr HttpDatabase::getAttributes()

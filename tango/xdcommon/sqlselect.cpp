@@ -1906,7 +1906,7 @@ bool convertToNativeTables(tango::IDatabasePtr db,
         kl::makeLower(class_name);
         if (class_name.find("xdnative.") != -1 ||
             class_name.find("xdfs.") != -1 ||
-            class_name.find("xdclient.") != -1) ||
+            class_name.find("xdclient.") != -1 ||
             class_name.find("xdhttp.") != -1)
         {
             // class has good support for the kinds of things
