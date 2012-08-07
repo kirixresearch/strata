@@ -1441,6 +1441,12 @@ int mg_read(struct mg_connection *conn, void *buf, size_t len) {
   return nread;
 }
 
+void mg_must_close(struct mg_connection *conn)
+{
+    conn->must_close = 1;
+}
+
+
 int mg_write(struct mg_connection *conn, const void *buf, size_t len) {
   return (int) push(NULL, conn->client.sock, conn->ssl, (const char *) buf,
                     (int64_t) len);

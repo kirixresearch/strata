@@ -680,8 +680,15 @@ void RequestInfo::checkHeaderSent()
     
     
     
-    //reply += "Connection: close\r\n\r\n";
-    reply += "Connection: Keep-Alive\r\n\r\n";
+    if (m_content_length == -1)
+    {
+        mg_must_close(m_conn);
+        reply += "Connection: close\r\n\r\n";
+    }
+     else
+    {
+        reply += "Connection: Keep-Alive\r\n\r\n";
+    }
     
     mg_write(m_conn, reply.c_str(), reply.length());
 }

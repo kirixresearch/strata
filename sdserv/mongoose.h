@@ -176,6 +176,8 @@ void mg_send_file(struct mg_connection *conn, const char *path);
 int mg_read(struct mg_connection *, void *buf, size_t len);
 
 
+void mg_must_close(struct mg_connection *);
+
 // Get the value of particular HTTP header.
 //
 // This is a helper function. It traverses request_info->http_headers array,
