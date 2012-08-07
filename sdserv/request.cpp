@@ -690,6 +690,8 @@ void RequestInfo::checkHeaderSent()
 
 size_t RequestInfo::write(const void* ptr, size_t length)
 {
+    setContentLength((int)length);
+
     checkHeaderSent();
     
     return (size_t)mg_write(m_conn, ptr, (int)length);
@@ -697,12 +699,36 @@ size_t RequestInfo::write(const void* ptr, size_t length)
 
 size_t RequestInfo::write(const std::string& str)
 {
+    setContentLength((int)str.length());
+
     checkHeaderSent();
     
     return (size_t)mg_write(m_conn, str.c_str(), (int)str.length());
 }
 
 size_t RequestInfo::write(const std::wstring& str)
+{
+    setContentLength((int)str.length());
+
+    return write(kl::tostring(str));
+}
+
+
+size_t RequestInfo::writePiece(const void* ptr, size_t length)
+{
+    checkHeaderSent();
+    
+    return (size_t)mg_write(m_conn, ptr, (int)length);
+}
+
+size_t RequestInfo::writePiece(const std::string& str)
+{
+    checkHeaderSent();
+    
+    return (size_t)mg_write(m_conn, str.c_str(), (int)str.length());
+}
+
+size_t RequestInfo::writePiece(const std::wstring& str)
 {
     return write(kl::tostring(str));
 }

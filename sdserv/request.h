@@ -95,6 +95,10 @@ public:
     size_t write(const std::string& str);
     size_t write(const std::wstring& str);
 
+    size_t writePiece(const void* ptr, size_t length);
+    size_t writePiece(const std::string& str);
+    size_t writePiece(const std::wstring& str);
+
     std::wstring getMethod() const;
     bool isMethodGet() const;
     bool isMethodPost() const;
