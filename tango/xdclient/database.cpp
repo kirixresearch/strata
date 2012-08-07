@@ -204,6 +204,46 @@ tango::IStructurePtr ClientDatabase::jsonToStructure(JsonNode& node)
 }
 
 
+std::wstring ClientDatabase::structureToJson(tango::IStructurePtr structure)
+{
+    // set the total number of items
+    int idx, count = structure->getColumnCount();
+
+    // set the items
+    kscript::JsonNode columns;
+    columns.setArray();
+    for (idx = 0; idx < count; ++idx)
+    {
+        kscript::JsonNode column = columns.appendElement();
+            
+        tango::IColumnInfoPtr info = structure->getColumnInfoByIdx(idx);
+        column["name"] = info->getName();
+
+        switch (info->getType())
+        {
+            default:
+            case tango::typeUndefined:     column["type"] = L"undefined";      break;
+            case tango::typeInvalid:       column["type"] = L"invalid";        break;
+            case tango::typeCharacter:     column["type"] = L"character";      break; 
+            case tango::typeWideCharacter: column["type"] = L"widecharacter";  break;
+            case tango::typeNumeric:       column["type"] = L"numeric";        break;
+            case tango::typeDouble:        column["type"] = L"double";         break;
+            case tango::typeInteger:       column["type"] = L"integer";        break;
+            case tango::typeDate:          column["type"] = L"date";           break;
+            case tango::typeDateTime:      column["type"] = L"datetime";       break;
+            case tango::typeBoolean:       column["type"] = L"boolean";        break;
+            case tango::typeBinary:        column["type"] = L"binary";         break;
+        }
+
+        column["width"].setInteger(info->getWidth());
+        column["scale"].setInteger(info->getScale());   
+        column["expression"] = info->getExpression();     
+    }
+
+    return columns.toString();
+}
+
+
 void ClientDatabase::close()
 {
 }
@@ -450,14 +490,38 @@ bool ClientDatabase::getMountPoint(const std::wstring& path,
 
 tango::IStructurePtr ClientDatabase::createStructure()
 {
-    return xcm::null;
+    Structure* s = new Structure;
+    return static_cast<tango::IStructure*>(s);
 }
 
 tango::ISetPtr ClientDatabase::createSet(const std::wstring& path,
-                                         tango::IStructurePtr struct_config,
+                                         tango::IStructurePtr structure,
                                          tango::FormatInfo* format_info)
 {
-    return xcm::null;
+
+    std::wstring columns = structureToJson(structure);
+
+
+    ServerCallParams params;
+    params.setParam(L"path", path);
+    params.setParam(L"columns", columns);
+    std::wstring sres = serverCall(L"/api/createtable", &params);
+    JsonNode response;
+    response.fromString(sres);
+
+    if (!response["success"].getBoolean())
+        return xcm::null;
+
+
+    ClientSet* set = new ClientSet(this);
+
+    if (!set->init(path))
+    {
+        delete set;
+        return xcm::null;
+    }
+
+    return static_cast<tango::ISet*>(set);
 }
 
 tango::IStreamPtr ClientDatabase::openStream(const std::wstring& path)

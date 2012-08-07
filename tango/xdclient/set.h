@@ -106,6 +106,7 @@ public:
     int m_tango_scale;
 
     std::wstring m_text;
+    bool m_specified;
 };
 
 
@@ -118,7 +119,7 @@ class ClientRowInserter : public tango::IRowInserter
 
 public:
 
-    ClientRowInserter(ClientSet* set);
+    ClientRowInserter(ClientDatabase* database, ClientSet* set, const std::wstring& path);
     ~ClientRowInserter();
 
     tango::objhandle_t getHandle(const std::wstring& column_name);
@@ -141,6 +142,16 @@ public:
 
 private:
 
+    ClientDatabase* m_database;
+    tango::IStructurePtr m_structure;
+
+    std::wstring m_path;
+    std::wstring m_handle;
+    bool m_inserting;
+    std::wstring m_rows;
+    int m_buffer_row_count;
+
+    std::vector<ClientInsertData> m_insert_data;
 };
 
 

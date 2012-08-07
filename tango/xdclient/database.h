@@ -54,6 +54,8 @@ public:
 class ClientDatabase : public tango::IDatabase,
                      public IClientDatabase
 {
+    friend class ClientSet;
+
     XCM_CLASS_NAME("xdclient.Database")
     XCM_BEGIN_INTERFACE_MAP(ClientDatabase)
         XCM_INTERFACE_ENTRY(tango::IDatabase)
@@ -143,6 +145,7 @@ public:
 public:
 
     tango::IStructurePtr jsonToStructure(JsonNode& node);
+    std::wstring structureToJson(tango::IStructurePtr structure);
 
 private:
 

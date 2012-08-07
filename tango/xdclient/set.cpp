@@ -113,7 +113,7 @@ unsigned int ClientSet::getSetFlags()
 
 std::wstring ClientSet::getSetId()
 {
-    return kl::md5str(m_tablename);
+    return kl::md5str(m_database->m_host + L":" + m_tablename);
 }
 
 tango::IStructurePtr ClientSet::getStructure()
@@ -144,7 +144,7 @@ bool ClientSet::modifyStructure(tango::IStructure* struct_config, tango::IJob* j
 
 tango::IRowInserterPtr ClientSet::getRowInserter()
 {
-    return xcm::null;
+    return static_cast<tango::IRowInserter*>(new ClientRowInserter(m_database, this, m_path));
 }
 
 tango::IRowDeleterPtr ClientSet::getRowDeleter()
@@ -285,86 +285,336 @@ tango::rowpos_t ClientSet::getRowCount()
     if (row_count.isNull())
         return 0;
 
-    return row_count.getDouble();
+    return (tango::rowpos_t)row_count.getDouble();
 }
 
 
 
 
-ClientRowInserter::ClientRowInserter(ClientSet* set)
+ClientRowInserter::ClientRowInserter(ClientDatabase* database, ClientSet* set, const std::wstring& path)
 {
+    m_database = database;
+    m_database->ref();
+
+    m_structure = set->getStructure();
+
+    m_path = path;
+    m_inserting = false;
+    m_rows = L"";
+    m_buffer_row_count = 0;
 }
 
 ClientRowInserter::~ClientRowInserter()
 {
+    m_database->unref();
 }
 
 tango::objhandle_t ClientRowInserter::getHandle(const std::wstring& column_name)
 {
+    std::vector<ClientInsertData>::iterator it;
+
+    for (it = m_insert_data.begin(); it != m_insert_data.end(); ++it)
+    {
+        if (!wcscasecmp(it->m_col_name.c_str(), column_name.c_str()))
+            return (tango::objhandle_t)&(*it);
+    }
+
     return 0;
 }
 
 tango::IColumnInfoPtr ClientRowInserter::getInfo(tango::objhandle_t column_handle)
 {
-    return xcm::null;
+    ClientInsertData* data = (ClientInsertData*)column_handle;
+
+    if (!data)
+        return xcm::null;
+
+    return m_structure->getColumnInfo(data->m_col_name);
 }
 
-bool ClientRowInserter::putRawPtr(tango::objhandle_t column_handle, const unsigned char* value, int length)
+
+
+bool ClientRowInserter::putRawPtr(tango::objhandle_t column_handle,
+                                   const unsigned char* value,
+                                   int length)
 {
-    return false;
+    return true;
 }
 
-bool ClientRowInserter::putString(tango::objhandle_t column_handle, const std::string& value)
+static void escapedQuoteCopy(std::wstring& output, const std::string& input)
 {
-    return false;
+    size_t i, input_length = input.length();
+
+    while (input_length > 0 && isspace((unsigned char)input[input_length-1]))
+        input_length--;
+
+    output.reserve((input_length*2)+5);
+
+    output = L"\"";
+
+    for (i = 0; i < input_length; ++i)
+    {
+        if (input[i] == '\\' || input[i] == '"')
+            output += L'\\';
+
+        output += input[i];
+    }
+    
+    output += L'"';
 }
 
-bool ClientRowInserter::putWideString(tango::objhandle_t column_handle, const std::wstring& value)
+bool ClientRowInserter::putString(tango::objhandle_t column_handle,
+                                  const std::string& value)
 {
-    return false;
+    ClientInsertData* data = (ClientInsertData*)column_handle;
+
+    if (!data)
+        return false;
+
+    escapedQuoteCopy(data->m_text, value);
+    data->m_specified = true;
+    return true;
+}
+
+bool ClientRowInserter::putWideString(tango::objhandle_t column_handle,
+                                     const std::wstring& value)
+{
+    return putString(column_handle, kl::tostring(value));
 }
 
 bool ClientRowInserter::putDouble(tango::objhandle_t column_handle, double value)
 {
-    return false;
+    ClientInsertData* data = (ClientInsertData*)column_handle;
+
+    wchar_t buf[64];
+    swprintf(buf, 64, L"\"%.*f\"", data->m_tango_scale, value);
+
+    data->m_text = buf;
+    data->m_specified = true;
+    
+    return true;
 }
 
 bool ClientRowInserter::putInteger(tango::objhandle_t column_handle, int value)
 {
-    return false;
+    ClientInsertData* data = (ClientInsertData*)column_handle;
+    
+    if (!data)
+        return false;
+
+    wchar_t buf[64];
+    swprintf(buf, 64, L"\"%d\"", value);
+
+    data->m_text = buf;
+    data->m_specified = true;
+
+    return true;
 }
 
 bool ClientRowInserter::putBoolean(tango::objhandle_t column_handle, bool value)
 {
-    return false;
+    ClientInsertData* data = (ClientInsertData*)column_handle;
+
+    if (!data)
+    {
+        return false;
+    }
+
+    wchar_t buf[8];
+
+    if (value)
+        swprintf(buf, 8, L"\"%d\"", 1);
+          else
+        swprintf(buf, 8, L"\"%d\"", 0);
+
+    data->m_text = buf;
+    data->m_specified = true;
+
+    return true;
 }
 
-bool ClientRowInserter::putDateTime(tango::objhandle_t column_handle, tango::datetime_t datetime)
+bool ClientRowInserter::putDateTime(tango::objhandle_t column_handle,
+                                   tango::datetime_t datetime)
 {
-    return false;
+    ClientInsertData* data = (ClientInsertData*)column_handle;
+
+    if (!data)
+    {
+        return false;
+    }
+
+    tango::DateTime dt(datetime);
+
+    if (dt.isNull())
+    {
+        data->m_text = L"null";
+        data->m_specified = true;
+    }
+     else
+    {
+        wchar_t buf[64];
+        swprintf(buf, 64, L"\"%d/%d/%d %02d:%02d:%02d\"", 
+                      dt.getYear(), dt.getMonth(), dt.getDay(), 
+                      dt.getHour(), dt.getMinute(), dt.getSecond());
+
+        data->m_text = buf;
+        data->m_specified = true;
+    }
+
+    return true;
 }
+
 
 bool ClientRowInserter::putNull(tango::objhandle_t column_handle)
 {
-    return false;
+    ClientInsertData* data = (ClientInsertData*)column_handle;
+
+    if (!data)
+    {
+        return false;
+    }
+
+    data->m_text = L"null";
+    data->m_specified = true;
+
+    return true;
 }
+
+
+
 
 bool ClientRowInserter::startInsert(const std::wstring& col_list)
 {
-    return false;
+    ServerCallParams params;
+    params.setParam(L"path", m_path);
+    std::wstring sres = m_database->serverCall(L"/api/startbulkinsert", &params);
+    JsonNode response;
+    response.fromString(sres);
+
+    if (!response["success"].getBoolean())
+        return false;
+
+    m_handle = response["handle"];
+
+
+
+    std::vector<std::wstring> columns;
+    std::vector<std::wstring>::iterator it;
+    std::wstring field_list;
+
+    parseDelimitedList(col_list, columns, L',');
+
+
+    if (!wcscmp(col_list.c_str(), L"*"))
+    {
+        columns.clear();
+
+        int i, col_count = m_structure->getColumnCount();
+
+        for (i = 0; i < col_count; ++i)
+            columns.push_back(m_structure->getColumnName(i));
+    }
+
+    m_insert_data.clear();
+
+    for (it = columns.begin(); it != columns.end(); ++it)
+    {
+        tango::IColumnInfoPtr col_info = m_structure->getColumnInfo(*it);
+
+        if (col_info.isNull())
+            return false;
+
+        field_list += col_info->getName();
+
+        if (it+1 != columns.end())
+            field_list += L",";
+
+        ClientInsertData d;
+        d.m_col_name = col_info->getName();
+        d.m_tango_type = col_info->getType();
+        d.m_tango_width = col_info->getWidth();
+        d.m_tango_scale = col_info->getScale();
+        d.m_text = L"null";
+        d.m_specified = false;
+
+        m_insert_data.push_back(d);
+    }
+
+
+    m_inserting = true;
+    m_rows.reserve(16384);
+    m_rows = L"[";
+    m_buffer_row_count = 0;
+
+    return true;
 }
 
 bool ClientRowInserter::insertRow()
 {
-    return false;
+    // make the insert statement
+    std::vector<ClientInsertData>::iterator it;
+    std::vector<ClientInsertData>::iterator begin_it = m_insert_data.begin();
+    std::vector<ClientInsertData>::iterator end_it = m_insert_data.end();
+
+
+    m_rows += L"[";
+
+    // clear out values for the next row
+    for (it = begin_it; it != end_it; ++it)
+    {
+        if (it != begin_it)
+            m_rows += L",";
+        m_rows += it->m_text;
+    }
+
+    m_rows += L"]";
+    m_buffer_row_count++;
+
+
+
+    if (m_buffer_row_count == 100)
+    {
+        if (!flush())
+            return false;
+    }
+
+    // clear out values for the next row
+    for (it = begin_it; it != end_it; ++it)
+    {
+        it->m_text = L"null";
+        it->m_specified = false;
+    }
+
+ 
+
+    return true;
 }
 
 void ClientRowInserter::finishInsert()
 {
+    
+    ServerCallParams params;
+    params.setParam(L"handle", m_handle);
+    std::wstring sres = m_database->serverCall(L"/api/finishbulkinsert", &params);
 }
 
 bool ClientRowInserter::flush()
 {
-    return false;
+    m_rows += L"]";
+
+    ServerCallParams params;
+    params.setParam(L"rows", m_rows);
+    params.setParam(L"handle", m_handle);
+    std::wstring sres = m_database->serverCall(L"/api/bulkinsert", &params);
+    JsonNode response;
+    response.fromString(sres);
+
+    if (!response["success"].getBoolean())
+        return false;
+
+    m_rows = L"[";
+    m_buffer_row_count = 0;
+
+    return true;
 }
 
