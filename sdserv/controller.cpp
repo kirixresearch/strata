@@ -429,21 +429,16 @@ void Controller::apiCreateTable(RequestInfo& req)
 
 
     
-    tango::IStreamPtr stream = db->createSet(path, structure, NULL);
-    if (stream.isNull())
+    tango::ISetPtr set = db->createSet(path, structure, NULL);
+    if (set.isNull())
     {
-        returnApiError(req, "Cannot open object");
+        returnApiError(req, "Cannot create table");
         return;
     }
-    
-    // add object to session
-    std::wstring handle = createHandle();
-    session->streams[handle] = stream;
-        
+
     // return success to caller
     JsonNode response;
     response["success"].setBoolean(true);
-    response["handle"] = handle;
     
     req.write(response.toString());
 }
