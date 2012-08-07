@@ -885,12 +885,50 @@ void Controller::apiFetchRows(RequestInfo& req)
     
 void Controller::apiStartBulkInsert(RequestInfo& req)
 {
+    SdservSession* session = getSdservSession(req);
+    if (!session)
+        return;
+    
     tango::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
         return;
     
-    std::wstring handle = createHandle();
     
+    if (!req.getValueExists(L"path"))
+    {
+        returnApiError(req, "Missing path parameter");
+        return;
+    }
+    
+    if (!req.getValueExists(L"columns"))
+    {
+        returnApiError(req, "Missing columns parameter");
+        return;
+    }
+    
+    std::wstring path = req.getValue(L"path");
+    
+    tango::ISetPtr set = db->openSet(path);
+    tango::IRowInserterPtr inserter;
+    if (set.isOk())
+        inserter = set->getRowInserter();
+        
+    if (inserter.isNull())
+    {
+        returnApiError(req, "Cannot open table for writing");
+        return;
+    }
+    
+    if (!inserter->startInsert(req.getValue(L"columns")))
+    {
+        returnApiError(req, "Cannot not initialize inserter");
+        return;
+    }
+    
+    
+    std::wstring handle = createHandle();
+    session->inserters[L"handle"] = inserter;
+
     // return success to caller
     JsonNode response;
     response["success"].setBoolean(true);

@@ -40,6 +40,7 @@ public:
 
     tango::IDatabasePtr db;
     std::map<std::wstring, tango::IStreamPtr> streams;
+    std::map<std::wstring, tango::IRowInserterPtr> inserters;
     std::map<std::wstring, QueryResult> iters;
 };
 
