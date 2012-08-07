@@ -30,17 +30,21 @@ bool Controller::onRequest(RequestInfo& req)
     if (uri.length() > 0 && uri[uri.length()-1] == '/')
        uri = uri.substr(0, uri.length()-1);
     
-         if (uri == L"/api/login")         apiLogin(req);
-    else if (uri == L"/api/selectdb")      apiSelectDb(req);
-    else if (uri == L"/api/folderinfo")    apiFolderInfo(req);
-    else if (uri == L"/api/fileinfo")      apiFileInfo(req);
-    else if (uri == L"/api/createstream")  apiCreateStream(req);
-    else if (uri == L"/api/openstream")    apiOpenStream(req);
-    else if (uri == L"/api/readstream")    apiReadStream(req);
-    else if (uri == L"/api/writestream")   apiWriteStream(req);
-    else if (uri == L"/api/query")         apiQuery(req);
-    else if (uri == L"/api/describetable") apiDescribeTable(req);
-    else if (uri == L"/api/fetchrows")     apiFetchRows(req);
+         if (uri == L"/api/login")            apiLogin(req);
+    else if (uri == L"/api/selectdb")         apiSelectDb(req);
+    else if (uri == L"/api/folderinfo")       apiFolderInfo(req);
+    else if (uri == L"/api/fileinfo")         apiFileInfo(req);
+    else if (uri == L"/api/createstream")     apiCreateStream(req);
+    else if (uri == L"/api/createtable")      apiCreateTable(req);
+    else if (uri == L"/api/openstream")       apiOpenStream(req);
+    else if (uri == L"/api/readstream")       apiReadStream(req);
+    else if (uri == L"/api/writestream")      apiWriteStream(req);
+    else if (uri == L"/api/query")            apiQuery(req);
+    else if (uri == L"/api/describetable")    apiDescribeTable(req);
+    else if (uri == L"/api/fetchrows")        apiFetchRows(req);
+    else if (uri == L"/api/startbulkinsert")  apiStartBulkInsert(req);
+    else if (uri == L"/api/finishbulkinsert") apiFinishBulkInsert(req);
+    else if (uri == L"/api/bulkinsert")       apiBulkInsert(req);
     else return false;
 
     return true;
@@ -360,6 +364,89 @@ void Controller::apiCreateStream(RequestInfo& req)
     req.write(response.toString());
 }
 
+void Controller::apiCreateTable(RequestInfo& req)
+{
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+        return;
+    
+    SdservSession* session = getSdservSession(req);
+    if (!session)
+        return;
+    
+    if (!req.getValueExists(L"path"))
+    {
+        returnApiError(req, "Missing path parameter");
+        return;
+    }
+    
+    if (!req.getValueExists(L"columns"))
+    {
+        returnApiError(req, "Missing path parameter");
+        return;
+    }
+    
+    std::wstring path = req.getValue(L"path");
+    std::wstring s_columns = req.getValue(L"columns");
+    
+    JsonNode columns;
+    columns.fromString(s_columns);
+    
+    
+    
+    tango::IStructurePtr structure = db->createStructure();
+
+    int i, cnt = columns.getCount();
+    for (i = 0; i < cnt; ++i)
+    {
+        tango::IColumnInfoPtr col = structure->createColumn();
+        
+        JsonNode column = columns[i];
+        std::wstring type = column["type"];
+        int ntype;
+
+             if (type == L"undefined")     ntype = tango::typeUndefined;
+        else if (type == L"invalid")       ntype = tango::typeInvalid;
+        else if (type == L"character")     ntype = tango::typeCharacter;
+        else if (type == L"widecharacter") ntype = tango::typeWideCharacter;
+        else if (type == L"numeric")       ntype = tango::typeNumeric;
+        else if (type == L"double")        ntype = tango::typeDouble;
+        else if (type == L"integer")       ntype = tango::typeInteger;
+        else if (type == L"date")          ntype = tango::typeDate;
+        else if (type == L"datetime")      ntype = tango::typeDateTime;
+        else if (type == L"boolean")       ntype = tango::typeBoolean;
+        else if (type == L"binary")        ntype = tango::typeBinary;
+        else ntype = tango::typeUndefined;
+
+        col->setName(column["name"]);
+        col->setType(ntype);
+        col->setWidth(column["width"].getInteger());
+        col->setScale(column["scale"].getInteger());
+        col->setColumnOrdinal(i);
+        col->setExpression(column["expression"]);
+        col->setCalculated(column["expression"].getString().length() > 0 ? true : false);
+    }
+
+
+    
+    tango::IStreamPtr stream = db->createSet(path, structure, NULL);
+    if (stream.isNull())
+    {
+        returnApiError(req, "Cannot open object");
+        return;
+    }
+    
+    // add object to session
+    std::wstring handle = createHandle();
+    session->streams[handle] = stream;
+        
+    // return success to caller
+    JsonNode response;
+    response["success"].setBoolean(true);
+    response["handle"] = handle;
+    
+    req.write(response.toString());
+}
 
 void Controller::apiOpenStream(RequestInfo& req)
 {
@@ -765,6 +852,7 @@ void Controller::apiFetchRows(RequestInfo& req)
     }
     
     str = L"{ \"success\": true, \"rows\": [ ";
+    std::wstring cell;
     
     int row = 0, col;
     for (row = 0; row < limit; ++row)
@@ -778,7 +866,9 @@ void Controller::apiFetchRows(RequestInfo& req)
         {
             if (col > 0)
                 str += L",";
-            str += L"\"" + iter->getWideString(qr.handles[col]) + L"\"";
+            cell = iter->getWideString(qr.handles[col]);
+            kl::replaceStr(cell, L"\"", L"\\\"");
+            str += L"\"" + cell + L"\"";
         }
         
         iter->skip(1);
@@ -791,5 +881,58 @@ void Controller::apiFetchRows(RequestInfo& req)
     str += L"] ] }";
     
     req.write(kl::tostring(str));
+}
+
+
+
+
+
+    
+void Controller::apiStartBulkInsert(RequestInfo& req)
+{
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+        return;
+    
+    std::wstring handle = createHandle();
+    
+    // return success to caller
+    JsonNode response;
+    response["success"].setBoolean(true);
+    response["handle"] = handle;
+    
+    req.write(response.toString());
+}
+
+void Controller::apiFinishBulkInsert(RequestInfo& req)
+{
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+        return;
+    
+    std::wstring handle = createHandle();
+    
+    // return success to caller
+    JsonNode response;
+    response["success"].setBoolean(true);
+    response["handle"] = handle;
+    
+    req.write(response.toString());
+}
+
+void Controller::apiBulkInsert(RequestInfo& req)
+{
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+        return;
+    
+    std::wstring handle = createHandle();
+    
+    // return success to caller
+    JsonNode response;
+    response["success"].setBoolean(true);
+    response["handle"] = handle;
+    
+    req.write(response.toString());
 }
 

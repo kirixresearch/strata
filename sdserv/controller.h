@@ -72,13 +72,17 @@ private:
     void apiFolderInfo(RequestInfo& req);
     void apiFileInfo(RequestInfo& req);
     void apiCreateStream(RequestInfo& req);
+    void apiCreateTable(RequestInfo& req);
     void apiOpenStream(RequestInfo& req);
     void apiReadStream(RequestInfo& req);
     void apiWriteStream(RequestInfo& req);
     void apiQuery(RequestInfo& req);
     void apiDescribeTable(RequestInfo& req);
     void apiFetchRows(RequestInfo& req);
-    
+    void apiStartBulkInsert(RequestInfo& req);
+    void apiFinishBulkInsert(RequestInfo& req);
+    void apiBulkInsert(RequestInfo& req);
+
 private:
 
     std::map< std::wstring , ServerSessionObject* > m_session_objects;

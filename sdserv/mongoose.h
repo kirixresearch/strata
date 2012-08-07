@@ -21,6 +21,8 @@
 #ifndef MONGOOSE_HEADER_INCLUDED
 #define  MONGOOSE_HEADER_INCLUDED
 
+#define NO_SSL_DL 1
+
 #include <stddef.h>
 
 #ifdef __cplusplus
