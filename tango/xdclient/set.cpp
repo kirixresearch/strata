@@ -85,13 +85,13 @@ bool ClientSet::init(const std::wstring& path)
 
 void ClientSet::setObjectPath(const std::wstring& path)
 {
-    m_path = path;
+    m_object_path = path;
 }
 
 std::wstring ClientSet::getObjectPath()
 {
-    if (!m_path.empty())
-        return m_path;
+    if (!m_object_path.empty())
+        return m_object_path;
 
     return m_tablename;
 }
