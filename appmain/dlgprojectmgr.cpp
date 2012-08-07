@@ -459,7 +459,7 @@ public:
         // -- check when adding an existing project --
         
         m_info->name = wxEmptyString;
-        m_info->location = m_add_loc_textctrl->GetValue();
+        m_info->location = m_add_loc_textctrl->GetValue().Trim(true).Trim(false);
 
 
         // -- empty path, bail out --
@@ -472,9 +472,11 @@ public:
             return false;
         }
 
-        // if we're not using a raw connection string, do some checks on
-        // the location that's been provided
-        if (m_info->location.Find(L"xdprovider=") == -1)
+        // if we're not using a raw connection string or a remote location, 
+        // do some checks on the location that's been provided
+        if (m_info->location.Find(L"xdprovider=") == -1 && 
+            m_info->location.SubString(0,6) != wxT("http://") && 
+            m_info->location.SubString(0,7) != wxT("https://"))
         {
             if (!xf_get_directory_exist(towstr(m_info->location)))
             {
@@ -951,33 +953,7 @@ void DlgProjectMgr::onOpenProject(wxCommandEvent& evt)
 {
     if (m_grid->isEditing())
         m_grid->endEdit(true);
-    
-    ProjectInfo info = getSelectedProject();
 
-    if (info.location.Find(L"xdprovider=") == -1)
-    {
-        if (!xf_get_directory_exist(towstr(info.location)))
-        {
-            cfw::appMessageBox(_("The specified project could not be opened.  The path does not exist or is invalid."),
-                               APPLICATION_NAME,
-                               wxOK | wxICON_EXCLAMATION | wxCENTER);
-            return;
-        }
-
-        wxString ofs_path = info.location;
-        if (ofs_path.Last() != PATH_SEPARATOR_CHAR)
-            ofs_path += PATH_SEPARATOR_STR;
-        ofs_path += wxT("ofs");
-
-        if (!xf_get_directory_exist(towstr(info.location)))
-        {
-            cfw::appMessageBox(_("The specified path does not contain a valid project."),
-                               APPLICATION_NAME,
-                               wxOK | wxICON_EXCLAMATION | wxCENTER);
-            return;
-        }
-    }
-    
     EndModal(wxID_OK);
 }
 

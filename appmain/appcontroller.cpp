@@ -5919,7 +5919,9 @@ bool AppController::openProject(const wxString& location,
 
 
 #ifndef USE_XDSL
-    if (location.Find(L"xdprovider=") == -1)
+    if (location.Find(L"xdprovider=") == -1 && 
+        location.SubString(0,6) != wxT("http://") && 
+        location.SubString(0,7) != wxT("https://"))
     {
         if (!xf_get_directory_exist(towstr(location)))
         {
@@ -5987,6 +5989,32 @@ bool AppController::openProject(const wxString& location,
             cstr += password;
             cstr += wxT(";");
         }
+    }
+     else if (location.SubString(0,6) == wxT("http://"))
+    {
+        // TODO: extract out database from path
+        wxString database = wxT("default");
+        wxString port = wxT("80");
+
+        cstr = wxT("xdprovider=xdclient;");
+        cstr += wxT("host=");
+        cstr += location.Mid(7);
+        cstr += wxT(";");
+        cstr += wxT("port=");
+        cstr += port;
+        cstr += wxT(";");
+        cstr += wxT("database=");
+        cstr += database;
+        cstr += wxT(";");
+        cstr += wxT("user id=");
+        cstr += uid;
+        cstr += wxT(";");
+        cstr += wxT("password=");
+        cstr += password;
+        cstr += wxT(";");
+    }
+     else if (location.SubString(0,7) == wxT("https://"))
+    {
     }
      else
     {
