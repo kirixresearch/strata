@@ -461,6 +461,7 @@ public:
         m_info->name = wxEmptyString;
         m_info->location = m_add_loc_textctrl->GetValue();
 
+
         // -- empty path, bail out --
         if (m_info->location.Length() == 0)
         {
@@ -470,27 +471,32 @@ public:
             resetFocus();
             return false;
         }
-        
-        if (!xf_get_directory_exist(towstr(m_info->location)))
-        {
-            cfw::appMessageBox(_("The specified folder does not exist or is invalid."),
-                               APPLICATION_NAME,
-                               wxOK | wxICON_EXCLAMATION | wxCENTER);
-            resetFocus();
-            return false;
-        }
-    
-        wxString test_path = m_info->location;
-        test_path += PATH_SEPARATOR_STR;
-        test_path += wxT("ofs");
 
-        if (!xf_get_directory_exist(towstr(test_path)))
+        // if we're not using a raw connection string, do some checks on
+        // the location that's been provided
+        if (m_info->location.Find(L"xdprovider=") == -1)
         {
-            cfw::appMessageBox(_("The specified folder does not contain a valid project."),
-                               APPLICATION_NAME,
-                               wxOK | wxICON_EXCLAMATION | wxCENTER);
-            resetFocus();
-            return false;
+            if (!xf_get_directory_exist(towstr(m_info->location)))
+            {
+                cfw::appMessageBox(_("The specified folder does not exist or is invalid."),
+                                   APPLICATION_NAME,
+                                   wxOK | wxICON_EXCLAMATION | wxCENTER);
+                resetFocus();
+                return false;
+            }
+        
+            wxString test_path = m_info->location;
+            test_path += PATH_SEPARATOR_STR;
+            test_path += wxT("ofs");
+
+            if (!xf_get_directory_exist(towstr(test_path)))
+            {
+                cfw::appMessageBox(_("The specified folder does not contain a valid project."),
+                                   APPLICATION_NAME,
+                                   wxOK | wxICON_EXCLAMATION | wxCENTER);
+                resetFocus();
+                return false;
+            }
         }
         
         // now check to see if this project already
