@@ -78,7 +78,7 @@ bool ClientSet::init(const std::wstring& path)
     }
 
     m_path = path;
-    m_tablename = getTablenameFromOfsPath(path);
+    m_tablename = path;
 
     return true;
 }
