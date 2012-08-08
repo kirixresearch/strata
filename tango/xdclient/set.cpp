@@ -453,7 +453,7 @@ bool ClientRowInserter::putDateTime(tango::objhandle_t column_handle,
      else
     {
         wchar_t buf[64];
-        swprintf(buf, 64, L"\"%d/%d/%d %02d:%02d:%02d\"", 
+        swprintf(buf, 64, L"\"%04d/%02d/%02d %02d:%02d:%02d\"", 
                       dt.getYear(), dt.getMonth(), dt.getDay(), 
                       dt.getHour(), dt.getMinute(), dt.getSecond());
 
@@ -566,10 +566,12 @@ bool ClientRowInserter::insertRow()
     std::vector<ClientInsertData>::iterator begin_it = m_insert_data.begin();
     std::vector<ClientInsertData>::iterator end_it = m_insert_data.end();
 
+    if (m_buffer_row_count == 0)
+        m_rows += L"[";
+         else
+        m_rows += L",[";
 
-    m_rows += L"[";
 
-    // clear out values for the next row
     for (it = begin_it; it != end_it; ++it)
     {
         if (it != begin_it)
@@ -602,7 +604,6 @@ bool ClientRowInserter::insertRow()
 
 void ClientRowInserter::finishInsert()
 {
-    
     ServerCallParams params;
     params.setParam(L"handle", m_handle);
     std::wstring sres = m_database->serverCall(L"/api/finishbulkinsert", &params);
