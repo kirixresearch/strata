@@ -36,6 +36,9 @@ bool Controller::onRequest(RequestInfo& req)
     else if (uri == L"/api/fileinfo")         apiFileInfo(req);
     else if (uri == L"/api/createstream")     apiCreateStream(req);
     else if (uri == L"/api/createtable")      apiCreateTable(req);
+    else if (uri == L"/api/createfolder")     apiCreateFolder(req);
+    else if (uri == L"/api/movefile")         apiMoveFile(req);
+    else if (uri == L"/api/renamefile")       apiRenameFile(req);
     else if (uri == L"/api/deletefile")       apiDeleteFile(req);
     else if (uri == L"/api/openstream")       apiOpenStream(req);
     else if (uri == L"/api/readstream")       apiReadStream(req);
@@ -442,6 +445,118 @@ void Controller::apiCreateTable(RequestInfo& req)
     response["success"].setBoolean(true);
     
     req.write(response.toString());
+}
+
+
+void Controller::apiCreateFolder(RequestInfo& req)
+{
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+        return;
+    
+    SdservSession* session = getSdservSession(req);
+    if (!session)
+        return;
+    
+    if (!req.getValueExists(L"path"))
+    {
+        returnApiError(req, "Missing path parameter");
+        return;
+    }
+    
+    std::wstring path = req.getValue(L"path");
+    
+    if (db->createFolder(path))
+    {
+        // return success to caller
+        JsonNode response;
+        response["success"].setBoolean(true);
+        req.write(response.toString());
+    }
+     else
+    {
+        returnApiError(req, "Could not create folder");
+    }
+}
+
+
+
+void Controller::apiMoveFile(RequestInfo& req)
+{
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+        return;
+    
+    SdservSession* session = getSdservSession(req);
+    if (!session)
+        return;
+    
+    if (!req.getValueExists(L"path"))
+    {
+        returnApiError(req, "Missing path parameter");
+        return;
+    }
+    
+    if (!req.getValueExists(L"destination"))
+    {
+        returnApiError(req, "Missing path parameter");
+        return;
+    }
+    
+    std::wstring path = req.getValue(L"path");
+    std::wstring destination = req.getValue(L"destination");
+
+    if (db->moveFile(path,destination))
+    {
+        // return success to caller
+        JsonNode response;
+        response["success"].setBoolean(true);
+        req.write(response.toString());
+    }
+     else
+    {
+        returnApiError(req, "Could not move file");
+    }
+}
+
+
+
+void Controller::apiRenameFile(RequestInfo& req)
+{
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+        return;
+    
+    SdservSession* session = getSdservSession(req);
+    if (!session)
+        return;
+    
+    if (!req.getValueExists(L"path"))
+    {
+        returnApiError(req, "Missing path parameter");
+        return;
+    }
+    
+    if (!req.getValueExists(L"new_name"))
+    {
+        returnApiError(req, "Missing new_name parameter");
+        return;
+    }
+    
+    std::wstring path = req.getValue(L"path");
+    std::wstring new_name = req.getValue(L"new_name");
+
+    if (db->renameFile(path, new_name))
+    {
+        // return success to caller
+        JsonNode response;
+        response["success"].setBoolean(true);
+        req.write(response.toString());
+    }
+     else
+    {
+        returnApiError(req, "Could not rename file");
+    }
 }
 
 

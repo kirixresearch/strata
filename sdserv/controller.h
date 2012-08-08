@@ -94,6 +94,9 @@ private:
     void apiFileInfo(RequestInfo& req);
     void apiCreateStream(RequestInfo& req);
     void apiCreateTable(RequestInfo& req);
+    void apiCreateFolder(RequestInfo& req);
+    void apiMoveFile(RequestInfo& req);
+    void apiRenameFile(RequestInfo& req);
     void apiDeleteFile(RequestInfo& req);
     void apiOpenStream(RequestInfo& req);
     void apiReadStream(RequestInfo& req);
