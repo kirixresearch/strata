@@ -16,11 +16,18 @@
 #include "request.h"
 
 
+struct SessionQueryResultColumn
+{
+    tango::objhandle_t handle;
+    int type;
+    int width;
+    int scale;
+};
 
 struct SessionQueryResult
 {
     tango::IIteratorPtr iter;
-    std::vector<tango::objhandle_t> handles;
+    std::vector<SessionQueryResultColumn> columns;
     tango::rowpos_t rowpos;
 };
 

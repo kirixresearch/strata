@@ -817,13 +817,21 @@ void Controller::apiFetchRows(RequestInfo& req)
     SessionQueryResult& qr = it->second;
     tango::IIterator* iter = it->second.iter.p;
     
-    if (qr.handles.size() == 0)
+    if (qr.columns.size() == 0)
     {
         // init handles;
         tango::IStructurePtr s = iter->getStructure();
         for (int i = 0; i < s->getColumnCount(); ++i)
         {
-            qr.handles.push_back(iter->getHandle(s->getColumnName(i)));
+            tango::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
+            
+            SessionQueryResultColumn qrc;
+            qrc.handle = iter->getHandle(colinfo->getName());
+            qrc.type = colinfo->getType();
+            qrc.width = colinfo->getWidth();
+            qrc.scale = colinfo->getScale();
+            
+            qr.columns.push_back(qrc);
         }
     }
     
@@ -857,12 +865,40 @@ void Controller::apiFetchRows(RequestInfo& req)
              else
             str += L"[";
         
-        for (col = 0; col < (int)qr.handles.size(); ++col)
+        for (col = 0; col < (int)qr.columns.size(); ++col)
         {
             if (col > 0)
                 str += L",";
             
-            cell = iter->getWideString(qr.handles[col]);
+            switch (qr.columns[col].type)
+            {
+                default:
+                    cell = iter->getWideString(qr.columns[col].handle);
+                    break;
+                    
+                case tango::typeDate:
+                {
+                    wchar_t buf[64];
+                    buf[0] = 0;
+                    tango::DateTime dt = iter->getDateTime(qr.columns[col].handle);
+                    if (!dt.isNull())
+                        swprintf(buf, 64, L"%04d-%02d-%02d", dt.getYear(), dt.getMonth(), dt.getDay());
+                    cell = buf;
+                }
+                break;
+                
+                case tango::typeDateTime:
+                {
+                    wchar_t buf[64];
+                    buf[0] = 0;
+                    tango::DateTime dt = iter->getDateTime(qr.columns[col].handle);
+                    if (!dt.isNull())
+                        swprintf(buf, 64, L"%04d-%02d-%02d %02d:%02d:%02d", dt.getYear(), dt.getMonth(), dt.getDay(), dt.getHour(), dt.getMinute(), dt.getSecond());
+                    cell = buf;
+                }
+                break;
+            }
+            
             kl::replaceStr(cell, L"\"", L"\\\"");
             str += L"\"" + cell + L"\"";
         }
