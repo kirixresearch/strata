@@ -248,6 +248,21 @@ void Controller::apiFolderInfo(RequestInfo& req)
                 case tango::filetypeStream: item["type"] = "stream"; break;
                 default: continue;
             }
+            
+            switch (finfo->getFormat())
+            {
+                case tango::formatNative:          item["format"] = "native";            break;
+                case tango::formatXbase:           item["format"] = "xbase";             break;
+                case tango::formatDelimitedText:   item["format"] = "delimited_text";    break;
+                case tango::formatFixedLengthText: item["format"] = "fixedlength_text";  break;
+                case tango::formatText:            item["format"] = "fixed_length_text"; break;
+                default: item["type"] = "unknown"; break;
+            }
+
+            item["mime_type"] = finfo->getMimeType();
+            item["is_mount"].setBoolean(finfo->isMount());
+            item["primary_key"] = finfo->getPrimaryKey();
+            item["size"] = (double)finfo->getSize();
         }
     }
      else
