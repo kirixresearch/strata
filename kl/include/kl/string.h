@@ -28,6 +28,7 @@
 #include <string>
 #include <algorithm>
 #include <functional>
+#include <vector>
 
 
 #ifdef __APPLE__
@@ -177,6 +178,11 @@ inline std::wstring afterLast(const std::wstring& str, wchar_t ch)
 }
 
 std::wstring itowstring(int val);
+
+void parseDelimitedList(const std::wstring& s,
+                        std::vector<std::wstring>& vec,
+                        wchar_t delimiter,
+                        bool zero_level = false);
 
 
 size_t replaceStr(std::wstring& str,

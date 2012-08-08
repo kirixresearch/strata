@@ -1448,7 +1448,7 @@ static tango::ISetPtr doJoin(tango::IDatabasePtr db,
         std::vector<std::wstring>::iterator it;
         tango::IColumnInfoPtr colinfo;
 
-        parseDelimitedList(jparse.left, left_parts, ',', true);
+        kl::parseDelimitedList(jparse.left, left_parts, ',', true);
 
         SourceTable* tbl = NULL;
         SourceTable* last_tbl = NULL;
@@ -1499,7 +1499,7 @@ static tango::ISetPtr doJoin(tango::IDatabasePtr db,
         std::vector<std::wstring>::iterator it;
 
         std::wstring right_sort;
-        parseDelimitedList(jit->right, right_parts, L',', true);
+        kl::parseDelimitedList(jit->right, right_parts, L',', true);
         for (it = right_parts.begin(); it != right_parts.end(); ++it)
         {
             if (!right_sort.empty())
@@ -1566,8 +1566,8 @@ static tango::ISetPtr doJoin(tango::IDatabasePtr db,
         std::vector<std::wstring> right_parts;
         std::vector<std::wstring>::iterator it;
 
-        parseDelimitedList(jit->left, left_parts, L',', true);
-        parseDelimitedList(jit->right, right_parts, L',', true);
+        kl::parseDelimitedList(jit->left, left_parts, L',', true);
+        kl::parseDelimitedList(jit->right, right_parts, L',', true);
 
         if (left_parts.size() != right_parts.size())
             return xcm::null;
@@ -2261,7 +2261,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         SourceTable st;
 
         std::vector<std::wstring> set_paths;
-        parseDelimitedList(p_from, set_paths, L',');
+        kl::parseDelimitedList(p_from, set_paths, L',');
 
         if (set_paths.size() != 1)
         {
@@ -2295,7 +2295,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
 
     std::vector<std::wstring> field_strs;
 
-    parseDelimitedList(p_select, field_strs, L',', true);
+    kl::parseDelimitedList(p_select, field_strs, L',', true);
 
     if (field_strs.size() == 0)
     {
@@ -2442,7 +2442,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
     {
         std::vector<std::wstring>::iterator it;
 
-        parseDelimitedList(p_group_by, group_by_fields, L',', true);
+        kl::parseDelimitedList(p_group_by, group_by_fields, L',', true);
     
         for (it = group_by_fields.begin();
              it != group_by_fields.end(); ++it)
@@ -2469,7 +2469,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         std::vector<std::wstring> order_vec;
         std::vector<std::wstring>::iterator it;
 
-        parseDelimitedList(p_order_by, order_vec, L',', true);
+        kl::parseDelimitedList(p_order_by, order_vec, L',', true);
 
         for (it = order_vec.begin(); it != order_vec.end(); ++it)
         {

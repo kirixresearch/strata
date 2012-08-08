@@ -53,11 +53,6 @@ wchar_t* zl_stristr(wchar_t* str,
 
 std::wstring getUniqueString();
 
-void parseDelimitedList(const std::wstring& s,
-                    std::vector<std::wstring>& vec,
-                    wchar_t delimiter,
-                    bool zero_level = false);
-
 void doubleQuoteCopy(std::wstring& output,
                     const wchar_t* input,
                     int input_length);

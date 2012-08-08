@@ -526,7 +526,7 @@ void splitSQL(const std::wstring& _sql,
 {
     std::wstring sql = _sql;
     removeComments(sql);
-    parseDelimitedList(sql, commands, L';', true);
+    kl::parseDelimitedList(sql, commands, L';', true);
 }
            
 
@@ -543,7 +543,7 @@ bool doSQL(tango::IDatabasePtr db,
     removeComments(sql);
 
     std::vector<std::wstring> commands;
-    parseDelimitedList(sql, commands, L';', true);
+    kl::parseDelimitedList(sql, commands, L';', true);
 
     std::vector<std::wstring>::iterator it;
     

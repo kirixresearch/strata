@@ -626,7 +626,7 @@ std::wstring FsDatabase::makeFullPath(const std::wstring& _path)
         // /|cardiff/sys1/dump/ap_hist.csv = \\cardiff\sys1\dump\ap_hist.csv
         
         std::vector<std::wstring> path_parts;
-        parseDelimitedList(path, path_parts, PATH_SEPARATOR_CHAR);
+        kl::parseDelimitedList(path, path_parts, PATH_SEPARATOR_CHAR);
         
         // if the path started with a /, the first element
         // will be empty; remove it
@@ -712,7 +712,7 @@ bool FsDatabase::detectMountPoint(const std::wstring& path,
     bool found = true;
     
         
-    parseDelimitedList(path, parts, L'/', false);
+    kl::parseDelimitedList(path, parts, L'/', false);
     
     std::wstring fpath = L"/";
     

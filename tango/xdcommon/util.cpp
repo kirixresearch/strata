@@ -27,45 +27,6 @@
 #include "exprfuncs.h"
 
 
-void parseDelimitedList(const std::wstring& s,
-                        std::vector<std::wstring>& vec,
-                        wchar_t delimiter,
-                        bool zero_level)
-{
-    const wchar_t* piece = s.c_str();
-    const wchar_t* comma;
-
-    while (1)
-    {
-        while (iswspace(*piece))
-            piece++;
-
-        if (zero_level)
-        {
-            comma = zl_strchr((wchar_t*)piece, delimiter);
-        }
-         else
-        {
-            comma = wcschr(piece, delimiter);
-        }
-
-        if (!comma)
-        {
-            std::wstring out = piece;
-            kl::trimRight(out);
-            vec.push_back(out);
-            return;
-        }
-         else
-        {
-            std::wstring out(piece, comma-piece);
-            kl::trimRight(out);
-            vec.push_back(out);
-            piece = comma+1;
-        }
-    }
-}
-
 
 void doubleQuoteCopy(std::wstring& output,
                      const wchar_t* input,
@@ -826,7 +787,7 @@ tango::IIndexInfoPtr lookupIndex(tango::IIndexInfoEnumPtr idx_enum,
     int idx_count;
     tango::IIndexInfoPtr result;
 
-    parseDelimitedList(expr, expr_cols, L',', true);
+    kl::parseDelimitedList(expr, expr_cols, L',', true);
     
     idx_count = idx_enum->size();
     
@@ -835,7 +796,7 @@ tango::IIndexInfoPtr lookupIndex(tango::IIndexInfoEnumPtr idx_enum,
         std::vector<std::wstring> idx_cols;
         tango::IIndexInfoPtr idx = idx_enum->getItem(i);
 
-        parseDelimitedList(idx->getExpression(), idx_cols, L',', true);
+        kl::parseDelimitedList(idx->getExpression(), idx_cols, L',', true);
 
         if (idx_cols.size() != expr_cols.size())
             continue;

@@ -23,63 +23,6 @@
 #endif
 
 
-static void parseDelimitedList(const wxString& s,
-                               std::vector<wxString>& vec,
-                               wxChar delimiter,
-                               bool zero_level)
-{
-    wxString parse_str = s;
-    if (parse_str.Find(wxT('"')) == wxNOT_FOUND)
-    {
-        parse_str.Prepend(wxT("\""));
-        parse_str.Append(wxT("\""));
-    }
-
-    const wxChar* piece = parse_str.c_str();
-    const wxChar* comma = NULL;
-
-    while (1)
-    {
-        while (iswspace(*piece))
-            piece++;
-
-        if (zero_level)
-        {
-            comma = zl_strchr((wxChar*)piece, delimiter);
-        }
-         else
-        {
-            comma = wcschr(piece, delimiter);
-        }
-
-        if (!comma)
-        {
-            // remove all " marks.  Note that this line was
-            // triggering a bug in wx:
-            //out.Replace(wxT("\""), wxEmptyString, true);
-            
-            wxString out = removeChar(piece, '"');
-            out.Trim(false);
-            out.Trim();
-            vec.push_back(out);
-            return;
-        }
-         else
-        {
-            // remove all " marks.  Note that this line was
-            // triggering a bug in wx:
-            //out.Replace(wxT("\""), wxEmptyString, true);
-            
-            wxString out(piece, comma-piece);
-            out = removeChar(out, '"');
-            out.Trim(false);
-            out.Trim();
-            vec.push_back(out);
-            piece = comma+1;
-        }
-    }
-}
-
 
 // -- ImportWizard class implementation --
 
@@ -387,19 +330,19 @@ void ImportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
     m_template.m_ii.tables.clear();
 
     // get an array of strings from the space-delimited string
-    std::vector<wxString> paths;
-    parseDelimitedList(m_template.m_ii.path, paths, wxT(' '), true);
+    std::vector<std::wstring> paths;
+    kl::parseDelimitedList(towstr(m_template.m_ii.path), paths, wxT(' '), true);
 
     // if no strings were added to the array, add the whole path
     if (paths.size() == 0)
-        paths.push_back(m_template.m_ii.path);
+        paths.push_back(towstr(m_template.m_ii.path));
 
     // check to make sure all of the files exist
     
-    std::vector<wxString>::iterator it;
+    std::vector<std::wstring>::iterator it;
     for (it = paths.begin(); it != paths.end(); ++it)
     {
-        if (!xf_get_file_exist(towstr(*it)))
+        if (!xf_get_file_exist(*it))
         {
             if (paths.size() > 1)
             {
@@ -426,7 +369,7 @@ void ImportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
     // check to make sure all the types are the same
     for (it = paths.begin(); it != paths.end(); ++it)
     {
-        wxString name = *it;
+        wxString name = towx(*it);
         
         if (first_ext.IsEmpty())
             first_ext = name.AfterLast(wxT('.'));
@@ -488,7 +431,7 @@ void ImportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
     
     for (it = paths.begin(); it != paths.end(); ++it)
     {
-        wxString name = *it;
+        wxString name = towx(*it);
         ext = name.AfterLast(wxT('.'));
 
         // we can only import one of these types of files at a time

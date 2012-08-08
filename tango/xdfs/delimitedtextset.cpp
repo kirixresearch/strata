@@ -404,7 +404,7 @@ bool DelimitedTextSet::loadConfigurationFromDataFile()
         kl::replaceStr(params_str, L"\t", L" ");
         
         std::vector<std::wstring> params;
-        parseDelimitedList(params_str, params, L' ');
+        kl::parseDelimitedList(params_str, params, L' ');
         
         // remove all empty elements from the parameters array; 
         // this takes care of multiple whitespaces in the parameters string
@@ -1151,7 +1151,7 @@ static std::wstring makeValidFieldName(const std::wstring& name,
     if (keywords.size() == 0)
     {
         std::vector<std::wstring> vec;
-        parseDelimitedList(keyword_list, vec, L',');
+        kl::parseDelimitedList(keyword_list, vec, L',');
 
         size_t i, count = vec.size();
         for (i = 0; i < count; ++i)

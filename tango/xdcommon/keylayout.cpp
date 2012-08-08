@@ -43,7 +43,7 @@ bool KeyLayout::setKeyExpr(tango::IIteratorPtr iter,
     std::vector<std::wstring> expr_vec;
     std::vector<std::wstring>::iterator it;
 
-    parseDelimitedList(expr, expr_vec, L',', true);
+    kl::parseDelimitedList(expr, expr_vec, L',', true);
 
     for (it = expr_vec.begin();
          it != expr_vec.end(); ++it)

@@ -682,7 +682,7 @@ bool DrizzleRowInserter::startInsert(const std::wstring& col_list)
     std::vector<std::wstring>::iterator it;
     std::wstring field_list;
 
-    parseDelimitedList(col_list, columns, L',');
+    kl::parseDelimitedList(col_list, columns, L',');
 
 
     if (!wcscmp(col_list.c_str(), L"*"))

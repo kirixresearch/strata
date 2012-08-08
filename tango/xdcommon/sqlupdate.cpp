@@ -50,7 +50,7 @@ static int doUpdate(tango::ISetPtr set,
     // -- parse the replace params --
     std::vector<std::wstring> params;
     std::vector<std::wstring>::iterator p_it;
-    parseDelimitedList(_params, params, L',', true);
+    kl::parseDelimitedList(_params, params, L',', true);
 
     if (params.size() == 0)
     {

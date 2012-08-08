@@ -291,7 +291,7 @@ bool FixedLengthTextIterator::init(tango::IDatabasePtr db,
         std::vector<std::wstring> colvec;
         std::vector<std::wstring>::iterator it;
 
-        parseDelimitedList(m_columns_string, colvec, L',', true);
+        kl::parseDelimitedList(m_columns_string, colvec, L',', true);
 
         tango::IStructurePtr structure = getParserStructure();
         

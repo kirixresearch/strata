@@ -459,9 +459,9 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
 
     std::vector<std::wstring> left_list, right_list, idx_list;
 
-    parseDelimitedList(rel->getLeftExpression(), left_list, L',');
-    parseDelimitedList(rel->getRightExpression(), right_list, L',');
-    parseDelimitedList(idx->getExpression(), idx_list, L',');
+    kl::parseDelimitedList(rel->getLeftExpression(), left_list, L',');
+    kl::parseDelimitedList(rel->getRightExpression(), right_list, L',');
+    kl::parseDelimitedList(idx->getExpression(), idx_list, L',');
 
     if (left_list.size() != right_list.size() ||
         right_list.size() != idx_list.size())
@@ -724,7 +724,7 @@ bool BaseIterator::initStructure()
         std::vector<std::wstring> colvec;
         std::vector<std::wstring>::iterator it;
 
-        parseDelimitedList(m_columns, colvec, L',', true);
+        kl::parseDelimitedList(m_columns, colvec, L',', true);
 
         Structure* s = new Structure;
 

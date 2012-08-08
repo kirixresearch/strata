@@ -145,8 +145,8 @@ bool sqlInsert(tango::IDatabasePtr db,
     std::vector<std::wstring> fieldvec;
     std::vector<std::wstring> valuesvec;
 
-    parseDelimitedList(fields, fieldvec, L',', true);
-    parseDelimitedList(values, valuesvec, L',', true);
+    kl::parseDelimitedList(fields, fieldvec, L',', true);
+    kl::parseDelimitedList(values, valuesvec, L',', true);
 
     if (fieldvec.size() != valuesvec.size())
     {

@@ -652,7 +652,7 @@ bool runGroupQuery(tango::IDatabasePtr db,
     // parse output fields
 
     std::vector<std::wstring> tmp_outputfields;
-    parseDelimitedList(output, tmp_outputfields, L',', true);
+    kl::parseDelimitedList(output, tmp_outputfields, L',', true);
     int tmp_i;
 
     for (tmp_i = 0; tmp_i < (int)tmp_outputfields.size(); ++tmp_i)

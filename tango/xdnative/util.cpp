@@ -53,8 +53,8 @@ bool getOrderExpressionMatch(const std::wstring& expr1,
     std::vector<std::wstring> elements1;
     std::vector<std::wstring> elements2;
 
-    parseDelimitedList(expr1, elements1, L',');
-    parseDelimitedList(expr2, elements2, L',');
+    kl::parseDelimitedList(expr1, elements1, L',');
+    kl::parseDelimitedList(expr2, elements2, L',');
 
     int e1s = elements1.size();
     
@@ -252,7 +252,7 @@ static void _findFieldsInExpr(const std::wstring& expr,
     std::vector<std::wstring> parts;
     std::vector<std::wstring>::iterator pit;
 
-    parseDelimitedList(expr, parts, L',', true);
+    kl::parseDelimitedList(expr, parts, L',', true);
 
     for (pit = parts.begin(); pit != parts.end(); ++pit)
     {

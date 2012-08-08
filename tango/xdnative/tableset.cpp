@@ -781,7 +781,7 @@ bool TableSet::prepareIndexEntry(IndexEntry& e)
         
     e.active_columns.resize(structure->getColumnCount(), false);
     std::vector<std::wstring> cols;
-    parseDelimitedList(e.expr, cols, L',', true);
+    kl::parseDelimitedList(e.expr, cols, L',', true);
 
 
 

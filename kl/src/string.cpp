@@ -95,6 +95,103 @@ std::wstring itowstring(int val)
 }
 
 
+
+static wchar_t* zl_strchr(wchar_t* str,
+                          wchar_t ch,
+                          const wchar_t* open_parens = L"(",
+                          const wchar_t* close_parens = L")")
+{
+    int paren_level = 0;
+    wchar_t quote_char = 0;
+    wchar_t* start = str;
+
+    while (*str)
+    {
+        if (quote_char)
+        {
+            if (*str == quote_char)
+            {            
+                if (*(str+1) == quote_char)
+                {
+                    // double quote ex. "Test "" String";
+                    str += 2;
+                    continue;
+                }
+
+                quote_char = 0;
+                str++;
+                continue;
+            }
+        }
+         else
+        {
+            if (*str == L'\'')
+            {
+                quote_char = L'\'';
+            }
+             else if (*str == L'"')
+            {
+                quote_char = L'\"';
+            }
+
+            if (open_parens && close_parens)
+            {
+                if (wcschr(open_parens, *str))
+                    paren_level++;
+                else if (wcschr(close_parens, *str))
+                    paren_level--;
+            }
+
+            if (paren_level == 0 && *str == ch)
+                return str;
+        }
+        
+        str++;
+    }
+
+    return NULL;
+}
+
+void parseDelimitedList(const std::wstring& s,
+                        std::vector<std::wstring>& vec,
+                        wchar_t delimiter,
+                        bool zero_level)
+{
+    const wchar_t* piece = s.c_str();
+    const wchar_t* comma;
+
+    while (1)
+    {
+        while (iswspace(*piece))
+            piece++;
+
+        if (zero_level)
+        {
+            comma = zl_strchr((wchar_t*)piece, delimiter);
+        }
+         else
+        {
+            comma = wcschr(piece, delimiter);
+        }
+
+        if (!comma)
+        {
+            std::wstring out = piece;
+            kl::trimRight(out);
+            vec.push_back(out);
+            return;
+        }
+         else
+        {
+            std::wstring out(piece, comma-piece);
+            kl::trimRight(out);
+            vec.push_back(out);
+            piece = comma+1;
+        }
+    }
+}
+
+
 size_t replaceStr(std::wstring& str,
                   const std::wstring& search,
                   const std::wstring& replace,

@@ -80,7 +80,7 @@ bool sqlAlter(tango::IDatabasePtr db,
     
     std::vector<std::wstring> commands;
     std::vector<std::wstring>::iterator it;
-    parseDelimitedList(params, commands, ',', true);
+    kl::parseDelimitedList(params, commands, ',', true);
 
     for (it = commands.begin(); it != commands.end(); ++it)
     {
@@ -262,7 +262,7 @@ bool sqlAlter(tango::IDatabasePtr db,
             
             std::vector<std::wstring> colvec;
             std::vector<std::wstring>::iterator col_it;
-            parseDelimitedList(columns, colvec, L',', true);
+            kl::parseDelimitedList(columns, colvec, L',', true);
 
             for (col_it = colvec.begin(); col_it != colvec.end(); ++col_it)
             {

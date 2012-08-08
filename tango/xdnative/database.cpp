@@ -362,7 +362,7 @@ static bool correctFilenameCase(std::wstring& fn)
     std::vector<std::wstring>::iterator it;
     bool found = true;
     
-    parseDelimitedList(fn, parts, L'/', false);
+    kl::parseDelimitedList(fn, parts, L'/', false);
     
     for (it = parts.begin(); it != parts.end(); ++it)
     {
@@ -2398,7 +2398,7 @@ bool Database::detectMountPoint(const std::wstring& path,
     if (0 == path.compare(0, 8, L"/.system"))
         return false;
     
-    parseDelimitedList(path, parts, L'/', false);
+    kl::parseDelimitedList(path, parts, L'/', false);
     
     std::wstring fpath = L"/";
     

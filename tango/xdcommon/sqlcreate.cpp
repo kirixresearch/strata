@@ -363,7 +363,7 @@ bool sqlCreate(tango::IDatabasePtr db,
         std::wstring columns = kl::beforeLast(params, L')');
         std::vector<std::wstring> colvec;
 
-        parseDelimitedList(columns, colvec, L',', true);
+        kl::parseDelimitedList(columns, colvec, L',', true);
 
 
         Structure* s = new Structure;

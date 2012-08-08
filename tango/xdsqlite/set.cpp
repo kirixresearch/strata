@@ -341,7 +341,7 @@ bool SlRowInserter::startInsert(const std::wstring& col_list)
     }
      else
     {
-        parseDelimitedList(col_list, cols, L',', true);
+        kl::parseDelimitedList(col_list, cols, L',', true);
     }
 
 

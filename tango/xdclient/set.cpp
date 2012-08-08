@@ -485,8 +485,34 @@ bool ClientRowInserter::putNull(tango::objhandle_t column_handle)
 
 bool ClientRowInserter::startInsert(const std::wstring& col_list)
 {
+    std::vector<std::wstring> columns;
+    std::vector<std::wstring>::iterator it;
+    std::wstring field_list;
+
+    kl::parseDelimitedList(col_list, columns, L',');
+
+    if (!wcscmp(col_list.c_str(), L"*"))
+    {
+        columns.clear();
+
+        int i, col_count = m_structure->getColumnCount();
+        for (i = 0; i < col_count; ++i)
+            columns.push_back(m_structure->getColumnName(i));
+    }
+
+
+    std::wstring scols;
+    size_t c, cn = columns.size();
+    for (c = 0; c < cn; ++c)
+    {
+        if (c > 0) scols += L",";
+        scols += columns[c];
+    }
+
+
     ServerCallParams params;
     params.setParam(L"path", m_path);
+    params.setParam(L"columns", scols);
     std::wstring sres = m_database->serverCall(L"/api/startbulkinsert", &params);
     JsonNode response;
     response.fromString(sres);
@@ -498,22 +524,6 @@ bool ClientRowInserter::startInsert(const std::wstring& col_list)
 
 
 
-    std::vector<std::wstring> columns;
-    std::vector<std::wstring>::iterator it;
-    std::wstring field_list;
-
-    parseDelimitedList(col_list, columns, L',');
-
-
-    if (!wcscmp(col_list.c_str(), L"*"))
-    {
-        columns.clear();
-
-        int i, col_count = m_structure->getColumnCount();
-
-        for (i = 0; i < col_count; ++i)
-            columns.push_back(m_structure->getColumnName(i));
-    }
 
     m_insert_data.clear();
 

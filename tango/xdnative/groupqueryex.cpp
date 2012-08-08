@@ -719,7 +719,7 @@ tango::ISetPtr Database::runGroupQuery(tango::ISetPtr set,
 
     std::vector<std::wstring> output_columns;
     std::vector<std::wstring>::iterator outcol_it;
-    parseDelimitedList(output, output_columns, L',', true);
+    kl::parseDelimitedList(output, output_columns, L',', true);
 
     for (outcol_it = output_columns.begin();
          outcol_it != output_columns.end();
