@@ -482,6 +482,53 @@ const std::wstring& ClientIterator::getWideString(tango::objhandle_t data_handle
     return handle->wstr_result;
 }
 
+static tango::datetime_t parseDateTime2(const std::wstring& wstr)
+{
+    char buf[32];
+    int parts[6] = { 0,0,0,0,0,0 };
+    size_t len = wstr.length();
+    if (len > 30)
+        return 0;
+        
+    std::string str = kl::tostring(wstr);
+    strcpy(buf, str.c_str());
+    
+    size_t i = 0;
+    char* start = buf;
+    size_t partcnt = 0;
+    bool last = false;
+    for (i = 0; i <= sizeof(buf); ++i)
+    {
+        if (buf[i] == '/' || buf[i] == '-' || buf[i] == ':' || buf[i] == '.' || buf[i] == ' ' || buf[i] == 0)
+        {
+            if (buf[i] == 0)
+                last = true;
+            buf[i] = 0;
+            parts[partcnt++] = atoi(start);
+            start = buf+i+1;
+            if (partcnt == 6 || last)
+                break;
+        }
+    }
+
+    if (partcnt < 3)
+    {
+        return 0;
+    }
+     else if (partcnt == 6)
+    {
+        tango::DateTime dt(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5]);
+        return dt.getDateTime();
+    }
+     else if (partcnt >= 3)
+    {
+        tango::DateTime dt(parts[0], parts[1], parts[2]);
+        return dt.getDateTime();
+    }
+
+    return 0;
+}
+
 tango::datetime_t ClientIterator::getDateTime(tango::objhandle_t data_handle)
 {
     HttpDataAccessInfo* handle = (HttpDataAccessInfo*)data_handle;
@@ -502,31 +549,10 @@ tango::datetime_t ClientIterator::getDateTime(tango::objhandle_t data_handle)
         return dt;
     }
 
-    return 0;
-
-    /*
-    if (m_cache_rows.empty())
+    if (!m_current_row_ptr)
         return 0;
 
-    int cache_offset = m_current_row - m_cache_start;
-    ClientCacheRow* row = m_cache_rows[cache_offset];
-
-    int yy, mm, dd, h, m, s;
-    if (!parseDateTime(row->values[handle->ordinal], &yy, &mm, &dd, &h, &m, &s))
-        return 0;
-
-    // if we don't have an hour, minute, and second, set them to zero
-    if (h == -1)
-        h = 0;
-    if (m == -1)
-        m = 0;
-    if (s == -1)
-        s = 0;
-
-    tango::DateTime dt(yy, mm, dd, h, m, s);
-    m_result_date = dt;
-    return m_result_date;
-    */
+    return parseDateTime2(m_current_row_ptr->values[handle->ordinal]);
 }
 
 double ClientIterator::getDouble(tango::objhandle_t data_handle)
