@@ -489,6 +489,12 @@ tango::IFileInfoEnumPtr ClientDatabase::getFolderInfo(const std::wstring& path)
         else if (format == L"xbase")           f->format = tango::formatXbase;            
         else f->format = tango::formatNative;
 
+        
+        f->mime_type = item["mime_type"];
+        f->is_mount = item["is_mount"].getBoolean();
+        f->primary_key = item["primary_key"];
+        f->size = (tango::tango_int64_t)item["size"].getDouble();
+
         retval->append(f);
     }
 
