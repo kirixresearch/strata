@@ -861,6 +861,7 @@ void Controller::apiFetchRows(RequestInfo& req)
         {
             if (col > 0)
                 str += L",";
+            
             cell = iter->getWideString(qr.handles[col]);
             kl::replaceStr(cell, L"\"", L"\\\"");
             str += L"\"" + cell + L"\"";
@@ -880,6 +881,55 @@ void Controller::apiFetchRows(RequestInfo& req)
 
 
 
+
+
+
+static tango::datetime_t parseDateTime(const std::wstring& wstr)
+{
+    char buf[32];
+    int parts[6] = { 0,0,0,0,0,0 };
+    size_t len = wstr.length();
+    if (len > 30)
+        return 0;
+        
+    std::string str = kl::tostring(wstr);
+    strcpy(buf, str.c_str());
+    
+    size_t i = 0;
+    char* start = buf;
+    size_t partcnt = 0;
+    bool last = false;
+    for (i = 0; i <= sizeof(buf); ++i)
+    {
+        if (buf[i] == '/' || buf[i] == '-' || buf[i] == ':' || buf[i] == '.' || buf[i] == ' ' || buf[i] == 0)
+        {
+            if (buf[i] == 0)
+                last = true;
+            buf[i] = 0;
+            parts[partcnt++] = atoi(start);
+            start = buf+i+1;
+            if (partcnt == 6 || last)
+                break;
+        }
+    }
+
+    if (partcnt < 3)
+    {
+        return 0;
+    }
+     else if (partcnt == 6)
+    {
+        tango::DateTime dt(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5]);
+        return dt.getDateTime();
+    }
+     else if (partcnt >= 3)
+    {
+        tango::DateTime dt(parts[0], parts[1], parts[2]);
+        return dt.getDateTime();
+    }
+
+    return 0;
+}
 
 
     
@@ -1010,6 +1060,13 @@ void Controller::apiBulkInsert(RequestInfo& req)
         for (coln = 0; coln < col_cnt; ++coln)
         {
             JsonNode col = row[coln];
+            
+            if (col.isNull())
+            {
+                ri.inserter->putNull(ri.columns[coln].handle);
+                continue;
+            }
+            
             switch (ri.columns[coln].type)
             {
                 default:
@@ -1017,12 +1074,12 @@ void Controller::apiBulkInsert(RequestInfo& req)
                 case tango::typeInvalid:       break;
                 case tango::typeCharacter:     ri.inserter->putWideString(ri.columns[coln].handle, col.getString()); break; 
                 case tango::typeWideCharacter: ri.inserter->putWideString(ri.columns[coln].handle, col.getString()); break;
-                case tango::typeNumeric:       ri.inserter->putWideString(ri.columns[coln].handle, col.getString()); break;
-                case tango::typeDouble:        ri.inserter->putWideString(ri.columns[coln].handle, kl::nolocale_wtof(col.getString())); break;      break;
-                case tango::typeInteger:       ri.inserter->putWideString(ri.columns[coln].handle, kl::wtoi(col.getString())); break;
-                case tango::typeDate:          break;
-                case tango::typeDateTime:      break;
-                case tango::typeBoolean:       break;
+                case tango::typeNumeric:       ri.inserter->putDouble(ri.columns[coln].handle, kl::nolocale_wtof(col.getString())); break;
+                case tango::typeDouble:        ri.inserter->putDouble(ri.columns[coln].handle, kl::nolocale_wtof(col.getString())); break;      break;
+                case tango::typeInteger:       ri.inserter->putInteger(ri.columns[coln].handle, kl::wtoi(col.getString())); break;
+                case tango::typeDate:          ri.inserter->putDateTime(ri.columns[coln].handle, parseDateTime(col.getString())); break;
+                case tango::typeDateTime:      ri.inserter->putDateTime(ri.columns[coln].handle, parseDateTime(col.getString())); break;
+                case tango::typeBoolean:       ri.inserter->putBoolean(ri.columns[coln].handle, col.getBoolean()); break;
                 case tango::typeBinary:        break;
             }
         }
