@@ -17,11 +17,24 @@
 
 
 
-struct QueryResult
+struct SessionQueryResult
 {
     tango::IIteratorPtr iter;
     std::vector<tango::objhandle_t> handles;
     tango::rowpos_t rowpos;
+};
+
+
+struct SessionRowInserterColumn
+{
+    tango::objhandle_t handle;
+    int type;
+};
+
+struct SessionRowInserter
+{
+    tango::IRowInserterPtr inserter;
+    std::vector<SessionRowInserterColumn> columns;
 };
 
 class SdservSession : public ServerSessionObject
@@ -40,8 +53,8 @@ public:
 
     tango::IDatabasePtr db;
     std::map<std::wstring, tango::IStreamPtr> streams;
-    std::map<std::wstring, tango::IRowInserterPtr> inserters;
-    std::map<std::wstring, QueryResult> iters;
+    std::map<std::wstring, SessionRowInserter> inserters;
+    std::map<std::wstring, SessionQueryResult> iters;
 };
 
 

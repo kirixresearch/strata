@@ -733,7 +733,7 @@ void Controller::apiDescribeTable(RequestInfo& req)
     }
      else if (handle.length() > 0)
     {
-        std::map<std::wstring, QueryResult>::iterator it;
+        std::map<std::wstring, SessionQueryResult>::iterator it;
         it = session->iters.find(handle);
         if (it != session->iters.end())
             structure = it->second.iter->getStructure();
@@ -806,7 +806,7 @@ void Controller::apiFetchRows(RequestInfo& req)
     int limit = kl::wtoi(req.getValue(L"limit"));
     
 
-    std::map<std::wstring, QueryResult>::iterator it;
+    std::map<std::wstring, SessionQueryResult>::iterator it;
     it = session->iters.find(handle);
     if (it == session->iters.end())
     {
@@ -814,7 +814,7 @@ void Controller::apiFetchRows(RequestInfo& req)
         return;
     }
     
-    QueryResult& qr = it->second;
+    SessionQueryResult& qr = it->second;
     tango::IIterator* iter = it->second.iter.p;
     
     if (qr.handles.size() == 0)
@@ -910,10 +910,15 @@ void Controller::apiStartBulkInsert(RequestInfo& req)
     
     tango::ISetPtr set = db->openSet(path);
     tango::IRowInserterPtr inserter;
+    tango::IStructurePtr structure;
+    
     if (set.isOk())
+    {
         inserter = set->getRowInserter();
+        structure = set->getStructure();
+    }
         
-    if (inserter.isNull())
+    if (inserter.isNull() || structure.isNull())
     {
         returnApiError(req, "Cannot open table for writing");
         return;
@@ -925,10 +930,106 @@ void Controller::apiStartBulkInsert(RequestInfo& req)
         return;
     }
     
-    
-    std::wstring handle = createHandle();
-    session->inserters[L"handle"] = inserter;
 
+    std::wstring handle = createHandle();
+    SessionRowInserter& ri = session->inserters[handle];
+    ri.inserter = inserter;
+    
+    std::vector<std::wstring> cols;
+    kl::parseDelimitedList(req.getValue(L"columns"), cols, ',');
+    std::vector<std::wstring>::iterator it;
+    for (it = cols.begin(); it != cols.end(); ++it)
+    {
+        SessionRowInserterColumn ric;
+        ric.handle = inserter->getHandle(*it);
+        if (!ric.handle)
+        {
+            returnApiError(req, "Cannot not initialize inserter");
+            return;
+        }
+        
+        tango::IColumnInfoPtr colinfo = structure->getColumnInfo(*it);
+        if (colinfo.isNull())
+        {
+            returnApiError(req, "Cannot not initialize inserter");
+            return;
+        }
+        
+        ric.type = colinfo->getType();
+        
+        ri.columns.push_back(ric);
+    }
+
+    // return success to caller
+    JsonNode response;
+    response["success"].setBoolean(true);
+    response["handle"] = handle;
+    
+    req.write(response.toString());
+}
+
+
+void Controller::apiBulkInsert(RequestInfo& req)
+{
+    SdservSession* session = getSdservSession(req);
+    if (!session)
+        return;
+    
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+        return;
+    
+
+    std::wstring handle = req.getValue(L"handle");
+
+    std::map<std::wstring, SessionRowInserter>::iterator it;
+    it = session->inserters.find(handle);
+    if (it == session->inserters.end())
+    {
+        returnApiError(req, "Invalid handle");
+        return;
+    }
+    
+    SessionRowInserter& ri = it->second;
+    
+    std::wstring s_rows = req.getValue(L"rows");
+    JsonNode rows;
+    rows.fromString(s_rows);
+    
+    size_t rown, row_cnt = rows.getCount();
+    size_t coln, col_cnt = ri.columns.size();
+    for (rown = 0; rown < row_cnt; ++rown)
+    {
+        JsonNode row = rows[rown];
+        if (row.getCount() != col_cnt)
+        {
+            returnApiError(req, "Column count mismatch");
+            return;
+        }
+        
+        for (coln = 0; coln < col_cnt; ++coln)
+        {
+            JsonNode col = row[coln];
+            switch (ri.columns[coln].type)
+            {
+                default:
+                case tango::typeUndefined:     break;
+                case tango::typeInvalid:       break;
+                case tango::typeCharacter:     ri.inserter->putWideString(ri.columns[coln].handle, col.getString()); break; 
+                case tango::typeWideCharacter: ri.inserter->putWideString(ri.columns[coln].handle, col.getString()); break;
+                case tango::typeNumeric:       ri.inserter->putWideString(ri.columns[coln].handle, col.getString()); break;
+                case tango::typeDouble:        ri.inserter->putWideString(ri.columns[coln].handle, kl::nolocale_wtof(col.getString())); break;      break;
+                case tango::typeInteger:       ri.inserter->putWideString(ri.columns[coln].handle, kl::wtoi(col.getString())); break;
+                case tango::typeDate:          break;
+                case tango::typeDateTime:      break;
+                case tango::typeBoolean:       break;
+                case tango::typeBinary:        break;
+            }
+        }
+        
+        ri.inserter->insertRow();
+    }
+    
     // return success to caller
     JsonNode response;
     response["success"].setBoolean(true);
@@ -939,33 +1040,31 @@ void Controller::apiStartBulkInsert(RequestInfo& req)
 
 void Controller::apiFinishBulkInsert(RequestInfo& req)
 {
+    SdservSession* session = getSdservSession(req);
+    if (!session)
+        return;
+    
     tango::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
         return;
     
-    std::wstring handle = createHandle();
-    
-    // return success to caller
-    JsonNode response;
-    response["success"].setBoolean(true);
-    response["handle"] = handle;
-    
-    req.write(response.toString());
-}
 
-void Controller::apiBulkInsert(RequestInfo& req)
-{
-    tango::IDatabasePtr db = getSessionDatabase(req);
-    if (db.isNull())
+    std::wstring handle = req.getValue(L"handle");
+
+    std::map<std::wstring, SessionRowInserter>::iterator it;
+    it = session->inserters.find(handle);
+    if (it == session->inserters.end())
+    {
+        returnApiError(req, "Invalid handle");
         return;
-    
-    std::wstring handle = createHandle();
+    }
+            
+    it->second.inserter->finishInsert();
+    session->inserters.erase(it);
     
     // return success to caller
     JsonNode response;
     response["success"].setBoolean(true);
-    response["handle"] = handle;
-    
+
     req.write(response.toString());
 }
-
