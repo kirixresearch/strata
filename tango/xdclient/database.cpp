@@ -369,7 +369,13 @@ bool ClientDatabase::copyFile(const std::wstring& src_path, const std::wstring& 
 
 bool ClientDatabase::deleteFile(const std::wstring& path)
 {
-    return false;
+    ServerCallParams params;
+    params.setParam(L"path", path);
+    std::wstring sres = serverCall(L"/api/deletefile", &params);
+    JsonNode response;
+    response.fromString(sres);
+
+    return response["success"].getBoolean();
 }
 
 bool ClientDatabase::getFileExist(const std::wstring& path)
