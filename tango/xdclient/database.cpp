@@ -339,7 +339,13 @@ tango::IJobPtr ClientDatabase::getJob(tango::jobid_t job_id)
 
 bool ClientDatabase::createFolder(const std::wstring& path)
 {
-    return false;
+    ServerCallParams params;
+    params.setParam(L"path", path);
+    std::wstring sres = serverCall(L"/api/createfolder", &params);
+    JsonNode response;
+    response.fromString(sres);
+
+    return response["success"].getBoolean();
 }
 
 tango::INodeValuePtr ClientDatabase::createNodeFile(const std::wstring& path)
@@ -354,12 +360,26 @@ tango::INodeValuePtr ClientDatabase::openNodeFile(const std::wstring& path)
 
 bool ClientDatabase::renameFile(const std::wstring& path, const std::wstring& new_name)
 {
-    return false;
+    ServerCallParams params;
+    params.setParam(L"path", path);
+    params.setParam(L"new_name", new_name);
+    std::wstring sres = serverCall(L"/api/renamefile", &params);
+    JsonNode response;
+    response.fromString(sres);
+
+    return response["success"].getBoolean();
 }
 
-bool ClientDatabase::moveFile(const std::wstring& path, const std::wstring& new_folder)
+bool ClientDatabase::moveFile(const std::wstring& path, const std::wstring& destination_folder)
 {
-    return false;
+    ServerCallParams params;
+    params.setParam(L"path", path);
+    params.setParam(L"destination", destination_folder);
+    std::wstring sres = serverCall(L"/api/movefile", &params);
+    JsonNode response;
+    response.fromString(sres);
+
+    return response["success"].getBoolean();
 }
 
 bool ClientDatabase::copyFile(const std::wstring& src_path, const std::wstring& dest_path)
