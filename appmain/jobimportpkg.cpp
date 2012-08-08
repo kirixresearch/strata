@@ -360,12 +360,13 @@ bool ImportPkgJob::importSet(PkgStreamReader* reader,
 
     inserter->finishInsert();
 
-    delete reader;
 
     if (failed)
     {
         return false;
     }
+
+    delete reader;
 
     if (isCancelling())
     {
