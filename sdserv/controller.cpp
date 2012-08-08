@@ -36,6 +36,7 @@ bool Controller::onRequest(RequestInfo& req)
     else if (uri == L"/api/fileinfo")         apiFileInfo(req);
     else if (uri == L"/api/createstream")     apiCreateStream(req);
     else if (uri == L"/api/createtable")      apiCreateTable(req);
+    else if (uri == L"/api/deletefile")       apiDeleteFile(req);
     else if (uri == L"/api/openstream")       apiOpenStream(req);
     else if (uri == L"/api/readstream")       apiReadStream(req);
     else if (uri == L"/api/writestream")      apiWriteStream(req);
@@ -442,6 +443,39 @@ void Controller::apiCreateTable(RequestInfo& req)
     
     req.write(response.toString());
 }
+
+
+void Controller::apiDeleteFile(RequestInfo& req)
+{
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+        return;
+    
+    SdservSession* session = getSdservSession(req);
+    if (!session)
+        return;
+    
+    if (!req.getValueExists(L"path"))
+    {
+        returnApiError(req, "Missing path parameter");
+        return;
+    }
+    
+    std::wstring path = req.getValue(L"path");
+    
+    if (db->deleteFile(path))
+    {
+        // return success to caller
+        JsonNode response;
+        response["success"].setBoolean(true);
+        req.write(response.toString());
+    }
+     else
+    {
+        returnApiError(req, "Could not delete file");
+    }
+}
+
 
 void Controller::apiOpenStream(RequestInfo& req)
 {
