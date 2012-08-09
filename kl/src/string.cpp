@@ -96,6 +96,14 @@ std::wstring itowstring(int val)
 
 
 
+std::string itostring(int val)
+{
+    char buf[80];
+    sprintf(buf, "%d", val);
+    return buf;
+}
+
+
 static wchar_t* zl_strchr(wchar_t* str,
                           wchar_t ch,
                           const wchar_t* open_parens = L"(",

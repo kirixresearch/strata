@@ -178,6 +178,7 @@ inline std::wstring afterLast(const std::wstring& str, wchar_t ch)
 }
 
 std::wstring itowstring(int val);
+std::string itostring(int val);
 
 void parseDelimitedList(const std::wstring& s,
                         std::vector<std::wstring>& vec,
