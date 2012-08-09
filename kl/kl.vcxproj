@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -138,6 +138,7 @@
     <ClInclude Include="include\kl\crypt.h" />
     <ClInclude Include="include\kl\file.h" />
     <ClInclude Include="include\kl\klib.h" />
+    <ClInclude Include="include\kl\json.h" />
     <ClInclude Include="include\kl\math.h" />
     <ClInclude Include="include\kl\md5.h" />
     <ClInclude Include="include\kl\memory.h" />
@@ -172,6 +173,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="src\file_win32.cpp" />
+    <ClCompile Include="src\json.cpp" />
     <ClCompile Include="src\math.cpp" />
     <ClCompile Include="src\md5.cpp" />
     <ClCompile Include="src\memory.cpp" />

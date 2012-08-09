@@ -285,6 +285,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\kl\json.h"
+				>
+			</File>
+			<File
 				RelativePath="include\kl\klib.h"
 				>
 			</File>
@@ -436,6 +440,10 @@
 			</File>
 			<File
 				RelativePath=".\src\file_win32.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\json.cpp"
 				>
 			</File>
 			<File

@@ -22,9 +22,11 @@ OBJECTS = \
 	base64.o \
 	crypt.o \
 	file_ix.o \
+	json.o \
 	math.o \
 	md5.o \
 	memory.o \
+	string.h \
 	url.o \
 	utf8.o \
 	xcm.o \
