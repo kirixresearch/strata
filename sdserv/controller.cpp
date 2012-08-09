@@ -44,6 +44,7 @@ bool Controller::onRequest(RequestInfo& req)
     else if (uri == L"/api/readstream")       apiReadStream(req);
     else if (uri == L"/api/writestream")      apiWriteStream(req);
     else if (uri == L"/api/query")            apiQuery(req);
+    else if (uri == L"/api/groupquery")       apiGroupQuery(req);
     else if (uri == L"/api/describetable")    apiDescribeTable(req);
     else if (uri == L"/api/fetchrows")        apiFetchRows(req);
     else if (uri == L"/api/startbulkinsert")  apiStartBulkInsert(req);
@@ -880,6 +881,45 @@ void Controller::apiQuery(RequestInfo& req)
     {
         returnApiError(req, "Invalid query mode");
     }
+}
+
+
+
+void Controller::apiGroupQuery(RequestInfo& req)
+{
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+        return;
+    
+    SdservSession* session = getSdservSession(req);
+    if (!session)
+        return;
+
+    std::wstring path = req.getValue(L"path");
+    std::wstring group = req.getValue(L"group");
+    std::wstring output = req.getValue(L"output");
+    std::wstring wherep = req.getValue(L"where");
+    std::wstring having = req.getValue(L"having");
+
+    tango::ISetPtr input_set = db->openSet(path);
+    if (input_set.isNull())
+    {
+        returnApiError(req, "Invalid input path.");
+    }
+    
+    
+    tango::ISetPtr set = db->runGroupQuery(input_set, group, output, wherep, having, NULL);
+    
+    std::wstring handle = createHandle();
+    
+    set->storeObject(handle);
+    
+    // return success to caller
+    JsonNode response;
+    response["success"].setBoolean(true);
+    response["path"] = handle;
+    
+    req.write(response.toString());
 }
 
 

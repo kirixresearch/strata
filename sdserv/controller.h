@@ -102,6 +102,7 @@ private:
     void apiReadStream(RequestInfo& req);
     void apiWriteStream(RequestInfo& req);
     void apiQuery(RequestInfo& req);
+    void apiGroupQuery(RequestInfo& req);
     void apiDescribeTable(RequestInfo& req);
     void apiFetchRows(RequestInfo& req);
     void apiStartBulkInsert(RequestInfo& req);
