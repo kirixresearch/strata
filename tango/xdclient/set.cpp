@@ -245,9 +245,10 @@ tango::IIteratorPtr ClientSet::createIterator(const std::wstring& columns,
         return xcm::null;
     }
 
-
-
-
+    if (response["row_count"].isOk())
+    {
+        m_known_row_count = (tango::rowpos_t)response["row_count"].getDouble();
+    }
 
     // initialize the iterator
     ClientIterator* iter = new ClientIterator(m_database, this);
