@@ -669,13 +669,37 @@ bool ClientDatabase::execute(const std::wstring& command,
     */
 }
 
-tango::ISetPtr ClientDatabase::runGroupQuery(tango::ISetPtr set,
-                                           const std::wstring& group,
-                                           const std::wstring& output,
-                                           const std::wstring& where,
-                                           const std::wstring& having,
-                                           tango::IJob* job)
+tango::ISetPtr ClientDatabase::runGroupQuery(tango::ISetPtr sp_set,
+                                             const std::wstring& group,
+                                             const std::wstring& output,
+                                             const std::wstring& where,
+                                             const std::wstring& having,
+                                             tango::IJob* job)
 {
-    return xcm::null;
+    ClientSet* set = (ClientSet*)sp_set.p;
+
+    ServerCallParams params;
+    params.setParam(L"path", set->m_path);
+    params.setParam(L"group", group);
+    params.setParam(L"output", output);
+    params.setParam(L"where", where);
+    params.setParam(L"having", having);
+
+    std::wstring sres = serverCall(L"/api/groupquery", &params);
+    JsonNode response;
+    response.fromString(sres);
+
+    if (!response["success"].getBoolean())
+        return xcm::null;
+
+
+    
+    ClientSet* result_set = new ClientSet(this);
+    if (!result_set->init(response["path"]))
+    {
+        return xcm::null;
+    }
+
+    return static_cast<tango::ISet*>(result_set);
 }
 
