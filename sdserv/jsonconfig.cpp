@@ -17,6 +17,10 @@
 
 std::wstring JsonNode::toString()
 {
+    kscript::Value* v = getValuePtr();
+    if (v->isString())
+        return v->getString();
+    
     kscript::Value p1;
     kscript::Value p2;
     p1.setNull();

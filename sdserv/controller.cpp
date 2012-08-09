@@ -26,12 +26,6 @@ Controller::~Controller()
 bool Controller::onRequest(RequestInfo& req)
 {
     std::wstring uri = req.getURI();
-
-// DEBUG:
-//printf(kl::tostring(uri).c_str());
-//printf("\n");
-
-
     uri = kl::beforeFirst(uri, '?');
     if (uri.length() > 0 && uri[uri.length()-1] == '/')
        uri = uri.substr(0, uri.length()-1);
@@ -198,7 +192,15 @@ void Controller::apiSelectDb(RequestInfo& req)
         return;
     }
 
-    session->db = dbmgr->open(L"xdprovider=xdnative;database=D:\\data\\demo;user id=admin;password=;");
+    std::wstring cstr = g_server.getDatabaseConnectionString(L"default");
+    if (cstr.length() == 0)
+    {
+        returnApiError(req, "Database not found");
+        return;
+    }
+    
+    
+    session->db = dbmgr->open(cstr);
 
     if (session->db)
     {
@@ -829,8 +831,7 @@ void Controller::apiQuery(RequestInfo& req)
         JsonNode response;
         response["success"].setBoolean(true);
         response["handle"] = handle;
-
-
+        
         if (set.isOk() && (set->getSetFlags() & tango::sfFastRowCount))
         {
             response["row_count"] = (double)set->getRowCount();

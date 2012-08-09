@@ -31,16 +31,17 @@ struct mg_request_info;
 class Server
 {
 public:
-
-    void setConfigFilename(const std::wstring& filename);
-    std::wstring getConfigFilename();
+    
+    Server();
+    ~Server();
     
     bool initOptions(int argc, const char* argv[]);
     int runServer();
-
+    std::wstring getDatabaseConnectionString(const std::wstring& database);
+    
 private:
 
-    bool readConfigFile(const std::wstring& config_file);
+    bool useConfigFile(const std::wstring& config_file);
     
     static void* callback(enum mg_event evt,
                           struct mg_connection* conn,

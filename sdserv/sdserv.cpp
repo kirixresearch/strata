@@ -21,16 +21,15 @@ Server g_server;
 Controller c;
 
 
-bool Server::readConfigFile(const std::wstring& config_file)
+static JsonNode getJsonNodeFromFile(const std::wstring& filename)
 {
-    static char s_ports[255];
-    size_t i;
-    size_t options_arr_size = 0;
+    xf_off_t size = xf_get_file_size(filename);
+    if (size < 0 || size > 1000000)
+        return JsonNode();
     
+    char* buf = new char[((int)size)+1];
     
-    char* buf = new char[16384];
-    
-    xf_file_t f = xf_open(config_file, xfOpen, xfRead, xfShareNone);
+    xf_file_t f = xf_open(filename, xfOpen, xfRead, xfShareNone);
     if (!f)
     {
         printf("Could not open config file for reading.\n");
@@ -38,7 +37,7 @@ bool Server::readConfigFile(const std::wstring& config_file)
     }
     
     buf[0] = 0;
-    size_t read_bytes = xf_read(f, buf, 1, 16000);
+    xf_off_t read_bytes = xf_read(f, buf, 1, (unsigned int)size);
     buf[read_bytes] = 0;
     xf_close(f);
     
@@ -46,6 +45,43 @@ bool Server::readConfigFile(const std::wstring& config_file)
     config.fromString(kl::towstring(buf));
     delete[] buf;
     
+    return config;
+}
+
+Server::Server()
+{
+    m_options[0] = 0;
+}
+
+Server::~Server()
+{
+}
+
+
+std::wstring Server::getDatabaseConnectionString(const std::wstring& database_name)
+{
+    JsonNode config = getJsonNodeFromFile(m_config_file);
+    if (config.isNull())
+        return L"";
+
+    JsonNode databases = config["databases"];
+    JsonNode database = databases[database_name];
+    JsonNode connection_string = database["connection_string"];
+    
+    return connection_string.toString();
+}
+
+
+bool Server::useConfigFile(const std::wstring& config_file)
+{
+    static char s_ports[255];
+    size_t i;
+    size_t options_arr_size = 0;
+    
+    
+    JsonNode config = getJsonNodeFromFile(config_file);
+    if (config.isNull())
+        return L"";
     
     JsonNode server = config["server"];
     if (server.isNull())
@@ -68,7 +104,7 @@ bool Server::readConfigFile(const std::wstring& config_file)
     }
     
     JsonNode ssl_ports_node = server["ssl_ports"];
-    for (i = 0; i < ports_node.getCount(); ++i)
+    for (i = 0; i < ssl_ports_node.getCount(); ++i)
     {
         if (tmps.length() > 0)
             tmps += ",";
@@ -92,6 +128,8 @@ bool Server::readConfigFile(const std::wstring& config_file)
    
     // terminator
     m_options[options_arr_size++] = NULL;
+    
+    m_config_file = config_file;
     
     return true;
 }
@@ -121,6 +159,9 @@ int Server::runServer()
 {
     struct mg_context *ctx;
 
+    if (m_options[0] == 0)
+        return 0;
+        
     ctx = mg_start(&Server::callback, NULL, m_options);
     
     while (1)
@@ -139,20 +180,36 @@ bool Server::initOptions(int argc, const char* argv[])
     
     const char* options[255];
     options[0] = NULL;
-                            
+    
+
+    std::wstring cfg_file;
+    
+#ifdef WIN32
+    cfg_file = _wgetenv(L"HOMEDRIVE");
+    cfg_file += _wgetenv(L"HOMEPATH");
+    cfg_file += L"\\sdserv.conf";
+#endif
+
+              
     if (argc >= 3 && 0 == strcmp(argv[1], "-f"))
     {
-        if (!readConfigFile(kl::towstring(argv[2])))
+        if (!useConfigFile(kl::towstring(argv[2])))
             return false;
     }
      else if (xf_get_file_exist(L"sdserv.conf"))
     {
-        if (!readConfigFile(kl::towstring(argv[2])))
+        if (!useConfigFile(L"sdserv.conf"))
+            return false;
+    }
+     else if (cfg_file.length() > 0 && xf_get_file_exist(cfg_file))
+    {
+        if (!useConfigFile(cfg_file))
             return false;
     }
      else
     {
         printf("Missing config file.  Please specify a config file with the -f option");
+        return false;
     }
     
     return true;
