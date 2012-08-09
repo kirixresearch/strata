@@ -1,18 +1,15 @@
-
 {
-
-    "server":
-    {
-        "ports":     [ 4800 ],
-        "ssl_ports": [ ]
+    "server": 
+	{
+        "ports": [ 4800 ],
+        "ssl_ports": []
+    },
+	
+    "databases":
+	{
+        "default":
+		{
+            "connection_string": "xdprovider=xdnative;database=C:\\Project;user id=admin;password=;"
+        }
     }
-
-
-    "projects":
-    [
-
-
-
-    ]
 }
-
