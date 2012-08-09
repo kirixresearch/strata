@@ -28,8 +28,8 @@ bool Controller::onRequest(RequestInfo& req)
     std::wstring uri = req.getURI();
 
 // DEBUG:
-printf(kl::tostring(uri).c_str());
-printf("\n");
+//printf(kl::tostring(uri).c_str());
+//printf("\n");
 
 
     uri = kl::beforeFirst(uri, '?');
