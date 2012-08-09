@@ -22,3 +22,36 @@
 #include <kl/base64.h>
 #include <kl/portable.h>
 #include <kl/memory.h>
+#include <kl/file.h>
+
+
+struct mg_connection;
+struct mg_request_info;
+
+class Server
+{
+public:
+
+    void setConfigFilename(const std::wstring& filename);
+    std::wstring getConfigFilename();
+    
+    bool initOptions(int argc, const char* argv[]);
+    int runServer();
+
+private:
+
+    bool readConfigFile(const std::wstring& config_file);
+    
+    static void* callback(enum mg_event evt,
+                          struct mg_connection* conn,
+                          const struct mg_request_info* request_info);
+                       
+private:
+
+    std::wstring m_config_file;
+    
+    const char* m_options[255];
+};
+
+
+extern Server g_server;

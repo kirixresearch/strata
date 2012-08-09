@@ -1,0 +1,18 @@
+
+{
+
+    "server":
+    {
+        "ports":     [ 4800 ],
+        "ssl_ports": [ ]
+    }
+
+
+    "projects":
+    [
+
+
+
+    ]
+}
+
