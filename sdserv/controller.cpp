@@ -32,6 +32,7 @@ bool Controller::onRequest(RequestInfo& req)
  
  
     // debugging code
+    clock_t start = clock(), end;
     static time_t last_time = 0;
     time_t t = time(NULL);
     
@@ -42,12 +43,14 @@ bool Controller::onRequest(RequestInfo& req)
     std::wstring str;
     if (req.getValueExists(L"path"))
         str = L"path: " + req.getValue(L"path");
+    else if (req.getValueExists(L"handle"))
+        str = L"handle: " + req.getValue(L"handle");
     
     struct tm tm;
     localtime_r(&t, &tm);
     char timestamp[255];
     strftime(timestamp, 255, "%H:%M:%S", &tm);
-    printf("%s - %-23ls %ls\n", timestamp, uri.c_str(), str.c_str());
+    printf("%s %-18ls %-44ls", timestamp, uri.substr(5).c_str(), str.c_str());
     // end debugging code
  
  
@@ -74,6 +77,9 @@ bool Controller::onRequest(RequestInfo& req)
     else if (uri == L"/api/bulkinsert")       apiBulkInsert(req);
     else return false;
 
+    end = clock();
+    printf("%4d ms\n", (end-start));
+    
     return true;
 }
 
