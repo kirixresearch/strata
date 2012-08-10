@@ -29,6 +29,28 @@ bool Controller::onRequest(RequestInfo& req)
     uri = kl::beforeFirst(uri, '?');
     if (uri.length() > 0 && uri[uri.length()-1] == '/')
        uri = uri.substr(0, uri.length()-1);
+ 
+ 
+    // debugging code
+    static time_t last_time = 0;
+    time_t t = time(NULL);
+    
+    if (t-last_time >= 2) // if more than two seconds have passed, add a blank line
+        printf("\n");
+    last_time = t;
+    
+    std::wstring str;
+    if (req.getValueExists(L"path"))
+        str = L"path: " + req.getValue(L"path");
+    
+    struct tm tm;
+    localtime_r(&t, &tm);
+    char timestamp[255];
+    strftime(timestamp, 255, "%H:%M:%S", &tm);
+    printf("%s - %-23ls %ls\n", timestamp, uri.c_str(), str.c_str());
+    // end debugging code
+ 
+ 
     
          if (uri == L"/api/login")            apiLogin(req);
     else if (uri == L"/api/selectdb")         apiSelectDb(req);
