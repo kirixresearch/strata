@@ -5994,7 +5994,7 @@ bool AppController::openProject(const wxString& location,
     {
         // TODO: extract out database from path
         wxString database = wxT("default");
-        wxString port = wxT("80");
+        wxString port = wxT("4800");
 
         cstr = wxT("xdprovider=xdclient;");
         cstr += wxT("host=");
