@@ -107,10 +107,14 @@ void ClientIterator::skip(int delta)
         ServerCallParams params;
         params.setParam(L"handle", m_handle);
         params.setParam(L"start", kl::itowstring(new_row));
-        params.setParam(L"limit", L"50");
+        params.setParam(L"limit", L"100");
         std::wstring sres = m_database->serverCall(L"/api/fetchrows", &params);
+
+        clock_t c1,c2;
+        c1 = clock();
         JsonNode response;
         response.fromString(sres);
+        c2 = clock();
 
         if (!response["success"].getBoolean())
         {

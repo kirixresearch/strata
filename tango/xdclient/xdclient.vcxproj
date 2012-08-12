@@ -149,6 +149,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="iterator.cpp" />
+    <ClCompile Include="nodefile.cpp" />
     <ClCompile Include="request.cpp" />
     <ClCompile Include="set.cpp" />
     <ClCompile Include="stream.cpp" />
@@ -163,6 +164,7 @@
     <ClInclude Include="database.h" />
     <ClInclude Include="iterator.h" />
     <ClInclude Include="jsonutil.h" />
+    <ClInclude Include="nodefile.h" />
     <ClInclude Include="request.h" />
     <ClInclude Include="set.h" />
     <ClInclude Include="stream.h" />
