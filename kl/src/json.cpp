@@ -19,6 +19,11 @@ namespace kl
 
 JsonNode::JsonNode()
 {
+    m_double = 0.0f;
+    m_integer = 0;
+    m_boolean = false;
+    m_isnull = true;
+    m_type = nodetypeNull;
 }
 
 JsonNode::~JsonNode()
@@ -27,18 +32,28 @@ JsonNode::~JsonNode()
 
 JsonNode::JsonNode(const JsonNode& _c)
 {
-    // TODO: fill out
+    m_child_nodes = _c.m_child_nodes;
+    m_string = _c.m_string;
+    m_double = _c.m_double;
+    m_integer = _c.m_integer;
+    m_boolean = _c.m_boolean;
+    m_isnull = _c.m_isnull;
+    m_type = _c.m_type;
 }
 
 JsonNode& JsonNode::operator=(const JsonNode& _c)
 {
-    // TODO: fill out
-    return *this;
-}
+    if (this == &_c)
+        return *this;
 
-JsonNode& JsonNode::operator=(const std::wstring& str)
-{
-    setString(str);
+    m_child_nodes = _c.m_child_nodes;
+    m_string = _c.m_string;
+    m_double = _c.m_double;
+    m_integer = _c.m_integer;
+    m_boolean = _c.m_boolean;
+    m_isnull = _c.m_isnull;
+    m_type = _c.m_type;
+
     return *this;
 }
 
@@ -54,9 +69,14 @@ JsonNode& JsonNode::operator=(double d)
     return *this;
 }
 
+JsonNode& JsonNode::operator=(const std::wstring& str)
+{
+    setString(str);
+    return *this;
+}
+
 JsonNode JsonNode::operator[](int i)
 {
-    // TODO: implement differently
     char buf[20];
     sprintf(buf, "%d", i);
     return getChild(kl::towstring(buf));
@@ -72,108 +92,208 @@ JsonNode JsonNode::operator[](const std::wstring& str)
     return getChild(str);
 }
 
-JsonNode JsonNode::appendElement()
+bool JsonNode::childExists(const std::wstring& _str)
 {
-    // TODO: should return appended element
-    return (*this)[0];
+    std::vector<std::pair<std::wstring,JsonNode>>::iterator it, it_end;
+    it_end = m_child_nodes.end();
+
+    for (it = m_child_nodes.begin(); it != it_end; ++it)
+    {
+        if (it->first != _str)
+            continue;
+
+        return true;
+    }
+
+    return false;
 }
 
 JsonNode JsonNode::getChild(const std::wstring& _str)
 {
-    // TODO: fill out
-    JsonNode result;
-    return result;
-}
+    // reset the node type
+    m_type = nodetypeObject;
 
-size_t JsonNode::getCount()
-{
-    // TODO: fill out
-    return 0;
+    // get the child
+    std::vector<std::pair<std::wstring,JsonNode>>::iterator it, it_end;
+    it_end = m_child_nodes.end();
+
+    for (it = m_child_nodes.begin(); it != it_end; ++it)
+    {
+        if (it->first != _str)
+            continue;
+            
+        return it->second;
+    }
+
+    // if the node doesn't exist, add it
+    JsonNode node;
+    std::pair<std::wstring,JsonNode> named_node;
+    named_node.first = _str;
+    named_node.second = node;    
+    m_child_nodes.push_back(named_node);
+
+    return named_node.second;
 }
 
 std::vector<std::wstring> JsonNode::getChildKeys()
 {
-    // TODO: fill out
-    size_t i, count = 0;
-    
-    std::vector<std::wstring> keys;
-    keys.reserve(count);
+    std::vector<std::wstring> result;
+    result.reserve(m_child_nodes.size());
 
-    for (i = 0; i < count; ++i)
+    std::vector<std::pair<std::wstring,JsonNode>>::iterator it, it_end;
+    it_end = m_child_nodes.end();
+
+    for (it = m_child_nodes.begin(); it != it_end; ++it)
     {
+        result.push_back(it->first);
     }
 
-    return keys;
+    return result;
+}
+
+std::vector<JsonNode> JsonNode::getChildren()
+{
+    std::vector<JsonNode> result;
+    result.reserve(m_child_nodes.size());
+
+    std::vector<std::pair<std::wstring,JsonNode>>::iterator it, it_end;
+    it_end = m_child_nodes.end();
+
+    for (it = m_child_nodes.begin(); it != it_end; ++it)
+    {
+        result.push_back(it->second);
+    }
+
+    return result;
+}
+
+size_t JsonNode::getChildCount()
+{
+    return m_child_nodes.size();
+}
+
+void JsonNode::setArray()
+{
+    m_child_nodes.clear();
+    m_string.clear();
+    m_double = 0.0f;
+    m_integer = 0;
+    m_boolean = false;
+    m_isnull = false;
+    m_type = nodetypeArray;
+}
+
+JsonNode JsonNode::appendElement()
+{
+    // if the node type was anything besides an array, clear it out
+    if (m_type != nodetypeArray)
+    {
+        m_child_nodes.clear();
+        m_string.clear();
+        m_double = 0.0f;
+        m_integer = 0;
+        m_boolean = false;
+        m_isnull = false;
+    }
+
+    // reset the node type
+    m_type = nodetypeArray;
+    return (*this)[getChildCount()];
 }
 
 void JsonNode::setString(const std::wstring& str)
 {
-    // TODO: fill out
+    m_child_nodes.clear();
+    m_string = str;
+    m_double = 0.0f;
+    m_integer = 0;
+    m_boolean = false;
+    m_isnull = false;
+    m_type = nodetypeString;
 }
 
 void JsonNode::setBoolean(bool b)
 {
-    // TODO: fill out
+    m_child_nodes.clear();
+    m_string.clear();
+    m_double = 0.0f;
+    m_integer = 0;
+    m_boolean = b;
+    m_isnull = false;
+    m_type = nodetypeBoolean;
 }
 
 void JsonNode::setDouble(double num)
 {
-    // TODO: fill out
+    m_child_nodes.clear();
+    m_string.clear();
+    m_double = num;
+    m_integer = 0;
+    m_boolean = false;
+    m_isnull = false;
+    m_type = nodetypeDouble;
 }
 
 void JsonNode::setInteger(int num)
 {
-    // TODO: fill out
+    m_child_nodes.clear();
+    m_string.clear();
+    m_double = 0.0f;
+    m_integer = num;
+    m_boolean = false;
+    m_isnull = false;
+    m_type = nodetypeInteger;
+}
+
+void JsonNode::setNull()
+{
+    m_child_nodes.clear();
+    m_string.clear();
+    m_double = 0.0f;
+    m_integer = 0;
+    m_boolean = false;
+    m_isnull = true;
+    m_type = nodetypeNull;    
 }
 
 std::wstring JsonNode::getString()
 {
-    // TODO: fill out
-    std::wstring result;
-    return result;
+    return m_string;
 }
 
 bool JsonNode::getBoolean()
 {
-    // TODO: fill out
-    return false;
+    return m_boolean;
 }
 
 double JsonNode::getDouble()
 {
-    // TODO: fill out
-    return 0.0f;
+    return m_double;
 }
 
 int JsonNode::getInteger()
 {
-    // TODO: fill out
-    return 0;
+    return m_integer;
 }
 
 bool JsonNode::isNull()
 {
-    // TODO: fill out
-    return false;
+    return m_isnull;
 }
 
 bool JsonNode::isOk()
 {
-    // TODO: fill out
-    return false;
+    return !isNull();
 }
 
 JsonNode::operator std::wstring()
 {
-    // TODO: fill out
     return getString();
 }
 
 std::wstring JsonNode::toString()
 {
-    // TODO: fill out
-    std::wstring result;
-    return result;
+    return stringify();
 }
 
 bool JsonNode::fromString(const std::wstring& str)

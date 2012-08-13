@@ -20,6 +20,7 @@
 namespace kl
 {
 
+class JsonNode;
 
 class JsonNode
 {
@@ -31,23 +32,28 @@ public:
     JsonNode(const JsonNode& _c);
 
     JsonNode& operator=(const JsonNode& _c);
-    JsonNode& operator=(const std::wstring& str);
     JsonNode& operator=(int i);
     JsonNode& operator=(double d);
+    JsonNode& operator=(const std::wstring& str);    
     JsonNode operator[](int i);
     JsonNode operator[](const char* str);
     JsonNode operator[](const std::wstring& str);
-
-    JsonNode appendElement();
+    
+    bool childExists(const std::wstring& _str);
     JsonNode getChild(const std::wstring& _str);
 
-    size_t getCount();
     std::vector<std::wstring> getChildKeys();
+    std::vector<JsonNode> getChildren();
+    size_t getChildCount();
+
+    void setArray();
+    JsonNode appendElement();
 
     void setString(const std::wstring& str);
     void setBoolean(bool b);
     void setDouble(double num);
     void setInteger(int num);
+    void setNull();
 
     std::wstring getString();
     bool getBoolean();
@@ -67,6 +73,28 @@ private:
     bool parse(wchar_t* expr, wchar_t** endloc);
     std::wstring stringify();
 
+private:
+
+    // JsonNode value types
+    enum NodeType
+    {
+        nodetypeNull = 0,
+        nodetypeObject = 1,
+        nodetypeArray = 2,
+        nodetypeString = 3,
+        nodetypeDouble = 4,
+        nodetypeInteger = 5,
+        nodetypeBoolean = 6
+    };
+
+    std::vector<std::pair<std::wstring,JsonNode>> m_child_nodes;
+    std::wstring m_string;
+    double m_double;
+    int m_integer;
+    bool m_boolean;
+    bool m_isnull;
+
+    int m_type;
 };
 
 
