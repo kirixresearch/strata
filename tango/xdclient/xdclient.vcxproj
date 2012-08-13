@@ -168,6 +168,7 @@
     <ClInclude Include="request.h" />
     <ClInclude Include="set.h" />
     <ClInclude Include="stream.h" />
+    <ClInclude Include="xdclient.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="xdclient.rc">

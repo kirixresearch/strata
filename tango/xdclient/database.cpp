@@ -9,19 +9,11 @@
  */
 
 
-#include "tango.h"
-#include "database.h"
+#include "xdclient.h"
 #include "request.h"
-#include "set.h"
-#include "iterator.h"
 #include "stream.h"
-#include "../xdcommon/xdcommon.h"
-#include "../xdcommon/dbattr.h"
-#include "../xdcommon/fileinfo.h"
-#include "../xdcommon/sqlcommon.h"
-#include "../xdcommon/util.h"
-#include "../../kscript/kscript.h"
-#include "../../kscript/json.h"
+#include "nodefile.h"
+
 
 
 const wchar_t* xdclient_keywords =
@@ -350,12 +342,24 @@ bool ClientDatabase::createFolder(const std::wstring& path)
 
 tango::INodeValuePtr ClientDatabase::createNodeFile(const std::wstring& path)
 {
-    return xcm::null;
+    NodeFile* file = NodeFile::createFile(this, path);
+    if (!file)
+        return xcm::null;
+    file->ref();
+    tango::INodeValuePtr value = file->getRootNode();
+    file->unref();
+    return value;
 }
 
 tango::INodeValuePtr ClientDatabase::openNodeFile(const std::wstring& path)
 {
-    return xcm::null;
+    NodeFile* file = NodeFile::openFile(this, path);
+    if (!file)
+        return xcm::null;
+    file->ref();
+    tango::INodeValuePtr value = file->getRootNode();
+    file->unref();
+    return value;
 }
 
 bool ClientDatabase::renameFile(const std::wstring& path, const std::wstring& new_name)

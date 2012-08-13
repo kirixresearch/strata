@@ -13,15 +13,10 @@
 #define __XDCLIENT_DATABASE_H
 
 
-#include "../xdcommon/errorinfo.h"
-
 
 // forward declarations
 class HttpRequest;
 class JobInfo;
-
-namespace kscript { class JsonNode; }
-typedef kscript::JsonNode JsonNode;
 
 
 xcm_interface IClientDatabase : public xcm::IObject

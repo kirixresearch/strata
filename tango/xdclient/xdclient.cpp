@@ -9,9 +9,7 @@
  */
 
 
-#include <kl/klib.h>
-#include "tango.h"
-#include "database.h"
+#include "xdclient.h"
 #include "../xdcommon/connectionstr.h"
 #include "../xdcommon/errorinfo.h"
 

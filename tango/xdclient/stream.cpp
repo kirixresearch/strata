@@ -9,8 +9,7 @@
  */
 
  
-#include "tango.h"
-#include "database.h"
+#include "xdclient.h"
 #include "stream.h"
 #include "../../kscript/kscript.h"
 #include "../../kscript/json.h"

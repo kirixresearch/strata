@@ -9,8 +9,7 @@
  */
 
 
-#include "tango.h"
-#include "database.h"
+#include "xdclient.h"
 #include "set.h"
 #include "iterator.h"
 #include "request.h"

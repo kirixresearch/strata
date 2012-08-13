@@ -9,15 +9,16 @@
  */
 
 
-#ifndef __XDCLIENT_NODEFILE_H
-#define __XDCLIENT_NODEFILE_H
+#ifndef __XDNATIVE_OFS_H
+#define __XDNATIVE_OFS_H
 
 
 #include <map>
 
 
+// -- forward declarations --
 
-class ClientDatabase;
+class Database;
 class NodeFile;
 
 
@@ -52,7 +53,7 @@ public:
 
 class NodeValue : public tango::INodeValue
 {
-    XCM_CLASS_NAME_CUSTOMREFCOUNT("xdnative.NodeValue")
+    XCM_CLASS_NAME_CUSTOMREFCOUNT("xdclient.NodeValue")
     XCM_BEGIN_INTERFACE_MAP(NodeValue)
         XCM_INTERFACE_ENTRY(tango::INodeValue)
     XCM_END_INTERFACE_MAP()
@@ -61,6 +62,8 @@ public:
 
     NodeValue(NodeFile* file, InternalNodeValue* iv);
     virtual ~NodeValue();
+
+    bool write() { return true; }
 
     void setDirty();
 
@@ -108,19 +111,18 @@ class NodeFile : public xcm::IObject
 {
     friend class NodeValue;
     
-    XCM_CLASS_NAME("xdnative.NodeFile")
+    XCM_CLASS_NAME("xdclient.NodeFile")
     XCM_BEGIN_INTERFACE_MAP(NodeFile)
     XCM_END_INTERFACE_MAP()
     
 public:
 
     static NodeFile* createFile(ClientDatabase* db,
-                               const std::wstring& path,
-                               int type);
+                                const std::wstring& path);
 
     static NodeFile* openFile(ClientDatabase* db,
                               const std::wstring& path);
-                                       
+
     tango::INodeValuePtr getRootNode();
     std::wstring getPath();
     void setType(int new_type);
@@ -138,13 +140,13 @@ private:
 
 private:
 
-    xcm::mutex m_object_mutex;
-    ClientDatabase* m_database;
-    std::wstring m_key_path;     // path of this registry node
+    std::wstring m_path;
     std::wstring m_ofs_root;
     InternalNodeValue* m_root_node;
     bool m_dirty;
     int m_type;
+    xcm::mutex m_object_mutex;
+    ClientDatabase* m_database;
 };
 
 

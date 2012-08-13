@@ -63,6 +63,8 @@ public:
     OfsValue(OfsFile* file, InternalOfsValue* iv);
     virtual ~OfsValue();
 
+    bool write() { return true; }
+
     void setDirty();
 
     // -- INodeValue interface --

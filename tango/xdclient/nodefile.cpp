@@ -8,12 +8,8 @@
  *
  */
 
-
-#include "tango.h"
-#include "database.h"
+#include "xdclient.h"
 #include "nodefile.h"
-#include "../xdcommon/xdcommon.h"
-#include <kl/klib.h>
 
 
 NodeValue::NodeValue(NodeFile* file, InternalNodeValue* value)
@@ -426,34 +422,22 @@ static std::wstring fileTypeToStringType(int type)
 
 
 
-static InternalNodeValue* xmlToNodeValue(NodeFile* file, kl::xmlnode& node)
+static InternalNodeValue* jsonToNodeValue(JsonNode& jn)
 {
-    int name_prop_idx = node.getPropertyIdx(L"name");
-    if (name_prop_idx == -1)
-        return NULL;
-
     InternalNodeValue* value = new InternalNodeValue;
 
-    value->m_name = node.getProperty(name_prop_idx).value;
+    std::vector<std::wstring> keys = jn.getChildKeys();
 
-    int value_idx = node.getChildIdx(L"value");
-    if (value_idx != -1)
+    if (keys.size() > 0)
     {
-        kl::xmlnode& value_node = node.getChild(value_idx);
-        value->m_value = value_node.getNodeValue();
-    }
+        std::vector<std::wstring>::iterator it;
 
-    int entries_idx = node.getChildIdx(L"entries");
-    if (entries_idx != -1)
-    {
-        kl::xmlnode& entries_node = node.getChild(entries_idx);
-        int entry_count = entries_node.getChildCount();
-
-        for (int i = 0; i < entry_count; ++i)
+        for (it = keys.begin(); it < keys.end(); ++it)
         {
-            kl::xmlnode& entry = entries_node.getChild(i);
-            InternalNodeValue* child_value = xmlToNodeValue(file, entry);
+            JsonNode child = jn[*it];
 
+            InternalNodeValue* child_value = jsonToNodeValue(child);
+            child_value->m_name = *it;
             if (!child_value)
             {
                 delete value;
@@ -463,45 +447,35 @@ static InternalNodeValue* xmlToNodeValue(NodeFile* file, kl::xmlnode& node)
             value->m_children.push_back(child_value);
         }
     }
+     else
+    {
+        value->m_value = jn.getString();
+    }
 
     return static_cast<InternalNodeValue*>(value);
 }
 
 
-static void NodeValueToXml(kl::xmlnode& node, const InternalNodeValue* value)
+static void nodeValueToJson(const InternalNodeValue* value, JsonNode& node)
 {
-    kl::xmlnode& base = node.addChild();
-    base.setNodeName(L"ofs_node");
+    if (!value)
+        return;
 
-    kl::xmlproperty& name_prop = base.appendProperty();
-    name_prop.name = L"name";
-    name_prop.value = value->m_name;
-
-    kl::xmlnode& value_node = base.addChild();
-    value_node.setNodeName(L"value");
-
-    if (value)
+    if (value->m_children.size() > 0)
     {
-        value_node.setNodeValue(value->m_value);
-    }
-
-
-    if (value && value->m_children.size() > 0)
-    {
-        kl::xmlnode& entries_node = base.addChild();
-        entries_node.setNodeName(L"entries");
-        
         std::vector<InternalNodeValue*>::const_iterator it;
         
-        for (it = value->m_children.begin();
-             it != value->m_children.end();
-             ++it)
+        for (it = value->m_children.begin(); it != value->m_children.end(); ++it)
         {
-            NodeValueToXml(entries_node, *it);
+            JsonNode child = node[(*it)->m_name];
+            nodeValueToJson(*it, child);
         }
     }
+     else
+    {
+        node.setString(value->m_value);
+    }
 }
-
 
 
 
@@ -532,14 +506,64 @@ NodeFile::~NodeFile()
 
 
 
+
 bool NodeFile::readFile()
 {
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    ServerCallParams params;
+    params.setParam(L"path", m_path);
+    std::wstring sres = m_database->serverCall(L"/api/readnodefile", &params);
+
+    JsonNode response_node;
+    response_node.fromString(sres);
+
+    if (!response_node["success"].getBoolean())
+        return false;
+
+
+    JsonNode data = response_node["data"];
+
+
+    if (m_root_node)
+    {
+        m_root_node->clear();
+        delete m_root_node;
+        m_root_node = NULL;
+    }
+
+    m_root_node = jsonToNodeValue(data);
+
+    if (!m_root_node)
+        return false;
+
+    m_root_node->m_name = L"root";
+    m_root_node->m_value = L"";
+
     return true;
 }
 
 bool NodeFile::writeFile()
 {
-    return true;
+    XCM_AUTO_LOCK(m_object_mutex);
+
+    if (!m_dirty)
+        return true;
+
+    JsonNode json;
+    nodeValueToJson(m_root_node, json);
+
+    std::wstring data = json.toString();
+
+    ServerCallParams params;
+    params.setParam(L"path", m_path);
+    params.setParam(L"data", data);
+    std::wstring sres = m_database->serverCall(L"/api/writenodefile", &params);
+
+    JsonNode response_node;
+    response_node.fromString(sres);
+
+    return response_node["success"].getBoolean();
 }
 
 void NodeFile::setDirty(bool new_value)
@@ -553,7 +577,7 @@ std::wstring NodeFile::getPath()
 {
     XCM_AUTO_LOCK(m_object_mutex);
 
-    return m_key_path;
+    return m_path;
 }
 
 int NodeFile::getType()
@@ -582,21 +606,25 @@ tango::INodeValuePtr NodeFile::getRootNode()
 
 
 NodeFile* NodeFile::createFile(ClientDatabase* db,
-                               const std::wstring& key_path,
-                               int type)
+                               const std::wstring& path)
 {
     NodeFile* file = new NodeFile(db);
-    file->ref();
+    file->m_path = path;
     return file;
 }
 
 
 
 NodeFile* NodeFile::openFile(ClientDatabase* db,
-                             const std::wstring& _key_path)
+                             const std::wstring& path)
 {
     NodeFile* file = new NodeFile(db);
-    file->ref();
+    file->m_path = path;
+    if (!file->readFile())
+    {
+        delete file;
+        return NULL;
+    }
+
     return file;
 }
-

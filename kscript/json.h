@@ -161,6 +161,21 @@ public:
         return (*this)[(int)value->getObject()->getHighestIndex()];
     }
     
+    bool getChildExists(const std::wstring& _str)
+    {
+        kscript::Value* value = getValuePtr();
+        if (value->lookupMember(_str, false) != NULL)
+            return true;
+             else
+            return false;
+    }
+
+    std::wstring getChildName(size_t child_idx)
+    {
+        kscript::ValueObject* vobj = getValuePtr()->getObject();
+        return vobj->getRawMemberName(child_idx);
+    }
+
     JsonNode getChild(const std::wstring& _str)
     {
         std::wstring str = _str;

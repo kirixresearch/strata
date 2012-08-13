@@ -318,6 +318,8 @@ xcm_interface INodeValue : public xcm::IObject
 
 public:
 
+    virtual bool write() = 0;
+
     virtual const std::wstring& getName() = 0;
     virtual int getType() = 0;
 
