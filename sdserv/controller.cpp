@@ -49,7 +49,15 @@ bool Controller::onRequest(RequestInfo& req)
         str = req.getValue(L"path");
     else if (req.getValueExists(L"handle"))
         str = req.getValue(L"handle");
-    str = str.substr(0,44);
+        
+    if (str.length() > 43)
+    {
+        int ending_start = (int)str.length();
+        ending_start -= 30;
+        if (ending_start < 10)
+            ending_start = 10;
+        str = str.substr(0, 10) + L"..." + str.substr(ending_start,30);
+    }
     
     struct tm tm;
     localtime_r(&t, &tm);
