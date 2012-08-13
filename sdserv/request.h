@@ -86,6 +86,7 @@ public:
     void setStatusCode(int code, const char* msg = NULL);
     void setContentType(const char* content_type);
     void setContentLength(int length = -1);
+    int getContentLength() const { return m_content_length; }
     void redirect(const char* location, int http_code = 301);
     void addHeader(const char* header);
     void addCookie(ResponseCookie& cookie);

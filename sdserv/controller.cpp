@@ -42,15 +42,16 @@ bool Controller::onRequest(RequestInfo& req)
     
     std::wstring str;
     if (req.getValueExists(L"path"))
-        str = L"path: " + req.getValue(L"path");
+        str = req.getValue(L"path");
     else if (req.getValueExists(L"handle"))
-        str = L"handle: " + req.getValue(L"handle");
+        str = req.getValue(L"handle");
+    str = str.substr(0,44);
     
     struct tm tm;
     localtime_r(&t, &tm);
     char timestamp[255];
     strftime(timestamp, 255, "%H:%M:%S", &tm);
-    printf("%s %-18ls %-44ls", timestamp, uri.substr(5).c_str(), str.c_str());
+    printf("%s %-13ls %-44ls", timestamp, uri.substr(5).c_str(), str.c_str());
     // end debugging code
  
  
@@ -80,7 +81,7 @@ bool Controller::onRequest(RequestInfo& req)
     else return false;
 
     end = clock();
-    printf("%4d ms\n", (end-start));
+    printf("%5d %4dms\n", req.getContentLength(), (end-start));
     
     return true;
 }
