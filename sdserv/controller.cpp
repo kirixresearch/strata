@@ -59,6 +59,8 @@ bool Controller::onRequest(RequestInfo& req)
     else if (uri == L"/api/selectdb")         apiSelectDb(req);
     else if (uri == L"/api/folderinfo")       apiFolderInfo(req);
     else if (uri == L"/api/fileinfo")         apiFileInfo(req);
+    else if (uri == L"/api/readnodefile")     apiReadNodeFile(req);
+    else if (uri == L"/api/writenodefile")    apiWriteNodeFile(req);
     else if (uri == L"/api/createstream")     apiCreateStream(req);
     else if (uri == L"/api/createtable")      apiCreateTable(req);
     else if (uri == L"/api/createfolder")     apiCreateFolder(req);
@@ -641,6 +643,125 @@ void Controller::apiDeleteFile(RequestInfo& req)
     {
         returnApiError(req, "Could not delete file");
     }
+}
+
+
+static void tangoNodeToJsonNode(tango::INodeValuePtr nv, JsonNode& jn)
+{
+    size_t i, cnt;
+    cnt = nv->getChildCount();
+    if (cnt > 0)
+    {
+        for (i = 0; i < cnt; ++i)
+        {
+            JsonNode child = jn[nv->getChildName(i)];
+            tangoNodeToJsonNode(nv->getChildByIdx(i), child);
+        }
+    }
+     else
+    {
+        jn.setString(nv->getString());
+    }
+}
+
+
+
+
+static void jsonNodeToTangoNode(JsonNode& jn, tango::INodeValuePtr nv)
+{
+    std::vector<std::wstring> keys = jn.getChildKeys();
+
+    if (keys.size() > 0)
+    {
+        std::vector<std::wstring>::iterator it;
+
+        for (it = keys.begin(); it < keys.end(); ++it)
+        {
+            tango::INodeValuePtr child = nv->createChild(*it);
+            JsonNode jchild = jn[*it];
+            
+            jsonNodeToTangoNode(jchild, child);
+        }
+    }
+     else
+    {
+        nv->setString(jn.getString());
+    }
+}
+
+
+void Controller::apiReadNodeFile(RequestInfo& req)
+{
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+        return;
+    
+    if (!req.getValueExists(L"path"))
+    {
+        returnApiError(req, "Missing path parameter");
+        return;
+    }
+    
+    std::wstring path = req.getValue(L"path");
+    
+    tango::INodeValuePtr nv = db->openNodeFile(path);
+    if (nv.isNull())
+    {
+        returnApiError(req, "Cannot open node file");
+        return;
+    }
+    
+
+ 
+    // return success to caller
+    JsonNode response;
+    response["success"].setBoolean(true);
+    tangoNodeToJsonNode(nv, response["data"]);
+
+    
+    req.write(response.toString());
+}
+
+void Controller::apiWriteNodeFile(RequestInfo& req)
+{
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+        return;
+    
+    if (!req.getValueExists(L"path"))
+    {
+        returnApiError(req, "Missing path parameter");
+        return;
+    }
+    
+    std::wstring path = req.getValue(L"path");
+
+
+    JsonNode node;
+    if (!node.fromString(req.getValue(L"data")))
+    {
+        returnApiError(req, "Malformed data");
+        return;
+    }
+    
+
+    db->deleteFile(path);
+    
+    tango::INodeValuePtr root = db->createNodeFile(path);
+    if (root.isNull())
+    {
+        returnApiError(req, "Could not create node file");
+        return;
+    }
+
+
+    jsonNodeToTangoNode(node, root);
+    
+
+    // return success to caller
+    JsonNode response;
+    response["success"].setBoolean(true);
+    req.write(response.toString());
 }
 
 
