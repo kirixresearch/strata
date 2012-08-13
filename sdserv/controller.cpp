@@ -32,6 +32,7 @@ bool Controller::onRequest(RequestInfo& req)
  
  
     // debugging code
+
     clock_t start = clock(), end;
     static time_t last_time = 0;
     time_t t = time(NULL);
@@ -39,6 +40,9 @@ bool Controller::onRequest(RequestInfo& req)
     if (t-last_time >= 2) // if more than two seconds have passed, add a blank line
         printf("\n");
     last_time = t;
+    
+    if (uri == L"/api/login")
+        printf("\n-- New connection ---------------------------------------------------\n\n");
     
     std::wstring str;
     if (req.getValueExists(L"path"))
