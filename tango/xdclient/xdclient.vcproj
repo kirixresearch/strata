@@ -452,6 +452,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\nodefile.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\request.cpp"
 				>
 			</File>
@@ -518,6 +522,10 @@
 			</File>
 			<File
 				RelativePath=".\jsonutil.h"
+				>
+			</File>
+			<File
+				RelativePath=".\nodefile.h"
 				>
 			</File>
 			<File
