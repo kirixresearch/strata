@@ -206,6 +206,9 @@ void ClientIterator::goRow(const tango::rowid_t& rowid)
 
 tango::IStructurePtr ClientIterator::getStructure()
 {
+    if (m_structure.isOk())
+        return m_structure->clone();
+
     ServerCallParams params;
     params.setParam(L"handle", m_handle);
     std::wstring sres = m_database->serverCall(L"/api/describetable", &params);
@@ -215,7 +218,9 @@ tango::IStructurePtr ClientIterator::getStructure()
     if (!response["success"].getBoolean())
         return xcm::null;
 
-    return m_database->jsonToStructure(response);
+    m_structure = m_database->jsonToStructure(response);
+
+    return m_structure->clone();
 }
 
 void ClientIterator::refreshStructure()

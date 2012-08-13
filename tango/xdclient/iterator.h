@@ -155,6 +155,8 @@ private:
     ClientSet* m_set;
     std::wstring m_handle;
 
+    tango::IStructurePtr m_structure;
+
     tango::rowid_t m_current_row;
     tango::rowid_t m_cache_row_count;
     tango::rowid_t m_cache_start;
