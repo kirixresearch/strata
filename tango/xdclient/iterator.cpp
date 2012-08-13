@@ -87,6 +87,26 @@ void ClientIterator::setIteratorFlags(unsigned int mask, unsigned int value)
 {
 }
 
+static void dequote(std::wstring& str)
+{
+    size_t len = str.length();
+    if (len > 1)
+    {
+        if (str[0] == '"' && str[len-1] == '"')
+        {
+            str.erase(len-1, 1);
+            str.erase(0, 1);
+
+            if (str.find('\\') != str.npos)
+            {
+                kl::replaceStr(str, L"\\\"", L"\"");
+                kl::replaceStr(str, L"\\\\", L"\\");
+            }
+        }
+    }
+}
+
+
 void ClientIterator::skip(int delta)
 {
     int new_row = (int)m_current_row + delta;
@@ -109,6 +129,59 @@ void ClientIterator::skip(int delta)
         params.setParam(L"limit", L"100");
         std::wstring sres = m_database->serverCall(L"/api/fetchrows", &params);
 
+
+
+        m_cache_rows.clear();
+        m_cache_rows.resize(100);
+
+        std::vector<std::wstring> colvec;
+        std::wstring rowstr;
+
+        wchar_t* data = (wchar_t*)sres.c_str();
+        wchar_t* start;
+        wchar_t* end;
+
+        size_t coln, colcnt, rown = 0;
+    
+        start = wcschr(data, '[');
+        if (start)
+            start = wcschr(start+1, '[');
+        while (start)
+        {
+            start++;
+            end = zl_strchr(start, L']', NULL, NULL);
+            if (!end)
+                break;
+
+            rowstr.assign(start,end);
+            colvec.clear();
+            kl::parseDelimitedList(rowstr, colvec, ',', true);
+
+            ClientCacheRow& cache_row = m_cache_rows[rown];
+
+            colcnt = colvec.size();
+            cache_row.values.resize(colcnt);
+            for (coln = 0; coln < colcnt; ++coln)
+            {
+                kl::trim(colvec[coln]);
+                dequote(colvec[coln]);
+                cache_row.values[coln] = colvec[coln];
+            }
+            
+            rown++;
+            start = wcschr(end, '[');
+        }
+
+
+        m_cache_rows.resize(rown);
+
+        m_cache_start = new_row;
+        m_cache_row_count = rown;
+
+        m_current_row_ptr = m_current_row_ptr = &(m_cache_rows[new_row - m_cache_start]);
+        m_current_row = new_row;
+
+        /*
         clock_t c1,c2;
         c1 = clock();
         JsonNode response;
@@ -145,6 +218,8 @@ void ClientIterator::skip(int delta)
 
         m_current_row_ptr = m_current_row_ptr = &(m_cache_rows[new_row - m_cache_start]);
         m_current_row = new_row;
+        */
+
     }
 
     
