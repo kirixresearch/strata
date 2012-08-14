@@ -45,10 +45,10 @@ public:
     std::vector<std::wstring> getChildKeys();
     std::vector<JsonNode> getChildren();
     size_t getChildCount();
-
-    void setArray();
     JsonNode appendElement();
 
+    void setObject();
+    void setArray();
     void setString(const std::wstring& str);
     void setBoolean(bool b);
     void setDouble(double num);
@@ -65,12 +65,13 @@ public:
     
     operator std::wstring();
     std::wstring toString();
-
     bool fromString(const std::wstring& str);
+    
+    void init();
 
 private:
 
-    bool parse(wchar_t* expr, wchar_t** endloc);
+    bool parse(wchar_t* expr);
     std::wstring stringify();
 
 private:
