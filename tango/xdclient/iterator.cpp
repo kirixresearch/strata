@@ -284,17 +284,31 @@ tango::IStructurePtr ClientIterator::getStructure()
     if (m_structure.isOk())
         return m_structure->clone();
 
-    ServerCallParams params;
-    params.setParam(L"handle", m_handle);
-    std::wstring sres = m_database->serverCall(L"/api/describetable", &params);
-    JsonNode response;
-    response.fromString(sres);
+    Structure* s = new Structure;
 
-    if (!response["success"].getBoolean())
-        return xcm::null;
+    std::vector<HttpDataAccessInfo*>::iterator it;
+    for (it = m_fields.begin(); it != m_fields.end(); ++it)
+    {
+        tango::IColumnInfoPtr col;
 
-    m_structure = m_database->jsonToStructure(response);
+        col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+        col->setName((*it)->name);
+        col->setType((*it)->type);
+        col->setWidth((*it)->width);
+        col->setScale((*it)->scale);
 
+        col->setColumnOrdinal((*it)->ordinal - 1);
+
+        if ((*it)->isCalculated())
+        {
+            col->setExpression((*it)->expr_text);
+            col->setCalculated(true);
+        }
+
+        s->addColumn(col);
+    }
+    
+    m_structure = static_cast<tango::IStructure*>(s);
     return m_structure->clone();
 }
 
@@ -421,6 +435,10 @@ bool ClientIterator::modifyStructure(tango::IStructure* struct_config, tango::IJ
         }
     }
     
+
+    // the next call to getStructure() will refresh m_structure
+    m_structure.clear();
+
     return true;
 }
 
@@ -702,21 +720,35 @@ bool ClientIterator::isNull(tango::objhandle_t data_handle)
 }
 
 bool ClientIterator::updateCacheRow(tango::rowid_t rowid,
-                                  tango::ColumnUpdateInfo* info,
-                                  size_t info_size)
+                                   tango::ColumnUpdateInfo* info,
+                                   size_t info_size)
 {
     return false;
 }
 
 bool ClientIterator::refreshDataAccessInfo()
 {
+    m_structure.clear();
+
     // clear out any existing data access info
     clearDataAccessInfo();
 
-    tango::IStructurePtr structure = getStructure();
-    if (structure.isNull())
-        return false;
+    // get the iterator structure
 
+    ServerCallParams params;
+    params.setParam(L"handle", m_handle);
+    std::wstring sres = m_database->serverCall(L"/api/describetable", &params);
+    JsonNode response;
+    response.fromString(sres);
+
+    if (!response["success"].getBoolean())
+        return xcm::null;
+
+    tango::IStructurePtr structure = m_database->jsonToStructure(response);
+
+
+
+    // fill out the data access information array
     int idx;
     int count = structure->getColumnCount();
 
