@@ -242,6 +242,7 @@ enum
     dbattrKeywords = 1000,
     dbattrTempDirectory = 1001,
     dbattrDefinitionDirectory = 1002,
+    dbattrDatabaseUrl = 1003,
     
     dbattrIdentifierQuoteOpenChar = 1900,
     dbattrIdentifierQuoteCloseChar = 1901,

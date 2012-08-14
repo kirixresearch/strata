@@ -393,7 +393,7 @@ bool TableDoc::isExternalTable()
     
     if (m_external_table == -1)
     {
-        m_external_table = (getDbDriver() != wxT("xdnative")) ? 1 : 0;
+        m_external_table = (getDbDriver() != wxT("xdnative") && getDbDriver() != wxT("xdclient")) ? 1 : 0;
     }
     
     return (m_external_table == 1) ? true : false;
@@ -651,7 +651,7 @@ wxString TableDoc::getDocumentLocation()
     
     if (m_source_url.Length() > 0)
         return m_source_url;
-        
+    
     return m_dbpath;
 }
 
@@ -2240,6 +2240,23 @@ bool TableDoc::setBaseSet(tango::ISetPtr set, tango::IIteratorPtr iter)
          else
         m_temporary = false;
     
+
+    // if the set/table displayed has a url associated with it,
+    // display it
+
+
+    tango::IDatabasePtr db = g_app->getDatabase();
+    if (db.isOk() && m_set.isOk())
+    {
+        tango::IAttributesPtr attr = db->getAttributes();
+        wxString url = towx(attr->getStringAttribute(tango::dbattrDatabaseUrl));
+        if (url.Length() > 0)
+        {
+            url += towx(m_set->getObjectPath());
+            setSourceUrl(url);
+        }
+    }
+
 
     // update caption
     updateCaption();

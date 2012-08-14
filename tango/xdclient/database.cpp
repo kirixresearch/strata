@@ -105,6 +105,14 @@ bool ClientDatabase::open(const std::wstring& host,
         if (!response["success"].getBoolean())
             return false;
 
+        std::wstring url = L"sdserv://";
+        url += m_host;
+        url += L":";
+        url += m_port;
+        url += L"/";
+        url += m_database;
+        m_attr->setStringAttribute(tango::dbattrDatabaseUrl, url);
+
 
         return true;
     }
