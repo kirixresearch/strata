@@ -15,6 +15,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 
 namespace kl
@@ -63,7 +64,9 @@ public:
 
 private:
 
-    std::vector<std::pair<std::wstring,JsonNode>> m_child_nodes;
+    std::map<std::wstring,JsonNode> m_child_nodes;
+    std::vector<std::pair<std::wstring,JsonNode>> m_child_nodes_ordered;
+
     std::wstring m_string;
     double m_double;
     int m_integer;

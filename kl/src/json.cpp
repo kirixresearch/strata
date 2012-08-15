@@ -509,16 +509,9 @@ JsonNode JsonNode::operator[](const std::wstring& str)
 
 bool JsonNode::childExists(const std::wstring& _str)
 {
-    std::vector<std::pair<std::wstring,JsonNode>>::iterator it, it_end;
-    it_end = m_value->m_child_nodes.end();
-
-    for (it = m_value->m_child_nodes.begin(); it != it_end; ++it)
-    {
-        if (it->first != _str)
-            continue;
-
+    std::map<std::wstring,JsonNode>::iterator it = m_value->m_child_nodes.find(_str);
+    if (it != m_value->m_child_nodes.end())
         return true;
-    }
 
     return false;
 }
@@ -528,63 +521,59 @@ JsonNode JsonNode::getChild(const std::wstring& _str)
     // reset the node type
     m_value->m_type = nodetypeObject;
 
-    // get the child
-    std::vector<std::pair<std::wstring,JsonNode>>::iterator it, it_end;
-    it_end = m_value->m_child_nodes.end();
-
-    for (it = m_value->m_child_nodes.begin(); it != it_end; ++it)
-    {
-        if (it->first != _str)
-            continue;
-            
+    // try to find the child in the mapped container
+    std::map<std::wstring,JsonNode>::iterator it = m_value->m_child_nodes.find(_str);
+    if (it != m_value->m_child_nodes.end())
         return it->second;
-    }
 
-    // if the node doesn't exist, add it
-    JsonNode node;
-    std::pair<std::wstring,JsonNode> named_node;
-    named_node.first = _str;
-    named_node.second = node;
-    m_value->m_child_nodes.push_back(named_node);
+    // if we can't find the child, create a new one and store it in both
+    // containers for ready access
+    JsonNode new_child;
+    std::pair<std::wstring,JsonNode> m_child_keyvalue(_str, new_child);
 
-    return named_node.second;
+    m_value->m_child_nodes[_str] = new_child;
+    m_value->m_child_nodes_ordered.push_back(m_child_keyvalue);
+
+    return new_child;
 }
 
 std::vector<std::wstring> JsonNode::getChildKeys()
 {
-    std::vector<std::wstring> result;
-    result.reserve(m_value->m_child_nodes.size());
+    // return an ordered list of keys
+    std::vector<std::wstring> child_keys;
+    child_keys.reserve(m_value->m_child_nodes_ordered.size());
 
     std::vector<std::pair<std::wstring,JsonNode>>::iterator it, it_end;
-    it_end = m_value->m_child_nodes.end();
-
-    for (it = m_value->m_child_nodes.begin(); it != it_end; ++it)
+    it_end = m_value->m_child_nodes_ordered.end();
+    
+    for (it = m_value->m_child_nodes_ordered.begin(); it != it_end; ++it)
     {
-        result.push_back(it->first);
+        child_keys.push_back(it->second);
     }
 
-    return result;
+    return child_keys;
 }
 
 std::vector<JsonNode> JsonNode::getChildren()
 {
-    std::vector<JsonNode> result;
-    result.reserve(m_value->m_child_nodes.size());
+    // return an ordered list of children
+    std::vector<JsonNode> child_nodes;
+    child_nodes.reserve(m_value->m_child_nodes_ordered.size());
 
     std::vector<std::pair<std::wstring,JsonNode>>::iterator it, it_end;
-    it_end = m_value->m_child_nodes.end();
-
-    for (it = m_value->m_child_nodes.begin(); it != it_end; ++it)
+    it_end = m_value->m_child_nodes_ordered.end();
+    
+    for (it = m_value->m_child_nodes_ordered.begin(); it != it_end; ++it)
     {
-        result.push_back(it->second);
+        child_nodes.push_back(it->second);
     }
 
-    return result;
+    return child_nodes;
 }
 
 size_t JsonNode::getChildCount()
 {
-    return m_value->m_child_nodes.size();
+    return m_value->m_child_nodes_ordered.size();
 }
 
 JsonNode JsonNode::appendElement()
@@ -604,6 +593,7 @@ JsonNode JsonNode::appendElement()
 void JsonNode::setObject()
 {
     m_value->m_child_nodes.clear();
+    m_value->m_child_nodes_ordered.clear();
     m_value->m_string.clear();
     m_value->m_double = 0.0f;
     m_value->m_integer = 0;
@@ -615,6 +605,7 @@ void JsonNode::setObject()
 void JsonNode::setArray()
 {
     m_value->m_child_nodes.clear();
+    m_value->m_child_nodes_ordered.clear();    
     m_value->m_string.clear();
     m_value->m_double = 0.0f;
     m_value->m_integer = 0;
@@ -626,6 +617,7 @@ void JsonNode::setArray()
 void JsonNode::setString(const std::wstring& str)
 {
     m_value->m_child_nodes.clear();
+    m_value->m_child_nodes_ordered.clear();    
     m_value->m_string = str;
     m_value->m_double = 0.0f;
     m_value->m_integer = 0;
@@ -637,6 +629,7 @@ void JsonNode::setString(const std::wstring& str)
 void JsonNode::setBoolean(bool b)
 {
     m_value->m_child_nodes.clear();
+    m_value->m_child_nodes_ordered.clear();    
     m_value->m_string.clear();
     m_value->m_double = 0.0f;
     m_value->m_integer = 0;
@@ -648,6 +641,7 @@ void JsonNode::setBoolean(bool b)
 void JsonNode::setDouble(double num)
 {
     m_value->m_child_nodes.clear();
+    m_value->m_child_nodes_ordered.clear();
     m_value->m_string.clear();
     m_value->m_double = num;
     m_value->m_integer = 0;
@@ -659,6 +653,7 @@ void JsonNode::setDouble(double num)
 void JsonNode::setInteger(int num)
 {
     m_value->m_child_nodes.clear();
+    m_value->m_child_nodes_ordered.clear();    
     m_value->m_string.clear();
     m_value->m_double = 0.0f;
     m_value->m_integer = num;
@@ -670,6 +665,7 @@ void JsonNode::setInteger(int num)
 void JsonNode::setNull()
 {
     m_value->m_child_nodes.clear();
+    m_value->m_child_nodes_ordered.clear();    
     m_value->m_string.clear();
     m_value->m_double = 0.0f;
     m_value->m_integer = 0;
@@ -726,6 +722,7 @@ bool JsonNode::fromString(const std::wstring& str)
 void JsonNode::copyFrom(const JsonNode& node)
 {
     m_value->m_child_nodes = node.m_value->m_child_nodes;
+    m_value->m_child_nodes_ordered = node.m_value->m_child_nodes_ordered;    
     m_value->m_string = node.m_value->m_string;
     m_value->m_double = node.m_value->m_double;
     m_value->m_integer = node.m_value->m_integer;
@@ -737,6 +734,7 @@ void JsonNode::copyFrom(const JsonNode& node)
 void JsonNode::init()
 {
     m_value->m_child_nodes.clear();
+    m_value->m_child_nodes_ordered.clear();
     m_value->m_string.clear();
     m_value->m_double = 0.0f;
     m_value->m_integer = 0;
@@ -797,10 +795,10 @@ std::wstring JsonNode::stringify()
         result += L"[";
         
         std::vector<std::pair<std::wstring,JsonNode>>::iterator it, it_end;
-        it_end = m_value->m_child_nodes.end();
-        
+        it_end = m_value->m_child_nodes_ordered.end();
+
         bool first = true;
-        for (it = m_value->m_child_nodes.begin(); it != it_end; ++it)
+        for (it = m_value->m_child_nodes_ordered.begin(); it != it_end; ++it)
         {
             if (!first)
                 result += L",";
@@ -819,10 +817,10 @@ std::wstring JsonNode::stringify()
         result += L"{";
 
         std::vector<std::pair<std::wstring,JsonNode>>::iterator it, it_end;
-        it_end = m_value->m_child_nodes.end();
+        it_end = m_value->m_child_nodes_ordered.end();
 
         bool first = true;
-        for (it = m_value->m_child_nodes.begin(); it != it_end; ++it)
+        for (it = m_value->m_child_nodes_ordered.begin(); it != it_end; ++it)
         {
             if (!first)
                 result += L",";
