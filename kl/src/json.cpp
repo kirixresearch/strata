@@ -291,6 +291,8 @@ bool parseJsonString(wchar_t* expr, wchar_t** endloc, JsonNode& node)
                 value += L"\"";
             else if (*expr == '\\')
                 value += L"\\";
+            else if (*expr == '/')  // "\/" is allowed even though "/" is valid
+                value += L"/";                
             else if (*expr == 'b')
                 value += L"\b";
             else if (*expr == 't')
