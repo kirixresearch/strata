@@ -1382,6 +1382,17 @@ void Controller::apiAlter(RequestInfo& req)
             tango::IColumnInfoPtr colinfo = structure->createColumn();
             jsonNodeToColumn(action, colinfo);
         }
+         else if (action["action"].getString() == L"insert")
+        {
+            tango::IColumnInfoPtr colinfo = structure->inseryColumn(action["position"].getInteger());
+            if (colinfo.isNull())
+            {
+                returnApiError(req, "Invalid insert position");
+                return;
+            }
+            
+            jsonNodeToColumn(action, colinfo);
+        }
          else if (action["action"].getString() == L"modify")
         {
             tango::IColumnInfoPtr colinfo = structure->modifyColumn(action["target_column"]);
@@ -1400,7 +1411,8 @@ void Controller::apiAlter(RequestInfo& req)
                 returnApiError(req, "Invalid target column for modify operation");
                 return;
             }
-        }        
+        }
+
     }
     
     
