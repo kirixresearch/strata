@@ -18,6 +18,30 @@
 namespace kl
 {
 
+// numeric test cases
+/*
+
+Not Allowed:
+
+[+1,01,-01,1.,-.1,1e,1e+,1e-,e1,e-1,e+1,-e1,.1e1,1.e1,e,e.1,1.1.1,-1-1,1.23e,1.23e-,1.23e+,1e01]
+
+
+Allowed:
+
+int:
+[0,9,123,-0,-9,-123]
+
+int frac:
+[0.0,0.9,9.0,9.9,123.0,123.9,-0.0,-0.9,-9.0,-9.9,-123.0,-123.9,1.01,1.23,-1.01,-1.23]
+
+int exp:
+[0e0,9e1,123e23,-0e456,-9e789,-123e1,0e+0,9e+1,123e+23,-0e+456,-9e+789,-123e+1,0e-0,9e -1,123e-23,-0e-456,-9e-789,-123e-1,2E2,2E+3,2E-4]
+
+int frac exp:
+[0.0e0,1.0e1,0.1e1,-0.0e-0,-0.0e+0,-0.0E+1,1.23e5]
+
+*/
+
 
 inline bool isWhiteSpaceOrLS(wchar_t ch)
 {
@@ -381,33 +405,109 @@ bool parseJsonString(wchar_t* expr, wchar_t** endloc, JsonNode& node)
 bool parseJsonNumber(wchar_t* expr, wchar_t** endloc, JsonNode& node)
 {
     std::wstring value;
-    
+
+    bool decimal_part = false;
+    bool exponent_part = false;
+
+    // check for a starting negative sign
     if (*expr == '-')
     {
         value += *expr;
         expr++;
+        
+        // if we have a negative sign, the next character has to
+        // be a digit
+        if (*expr < '0' || *expr > '9')
+        {
+            node.init();
+            *endloc = expr;
+            return false;
+        }
     }
 
-    bool period = false;
+    // check for numeric digits
     while (1)
     {
-        // TODO: implement better numeric parsing
-        if ((*expr < '0' || *expr > '9') && *expr != '.')
-            break;
-
+        // digits
+        if (*expr >= '0' && *expr <= '9')
+        {
+            value += *expr;
+            expr++;
+            continue;
+        }
+        
+        // period
         if (*expr == '.')
-            period = true;
+        {
+            // if we've encountered more than one period, 
+            // the number's invalid
+            if (decimal_part)
+            {
+                node.init();
+                *endloc = expr;
+                return false;            
+            }
+
+            decimal_part = true;        
+            value += *expr;
+            expr++;
             
-        value += *expr;
-        expr++;
+            // the period must be followed by at least one digit
+            if (*expr < '0' || *expr > '9')
+            {
+                node.init();
+                *endloc = expr;
+                return false;
+            }
+
+            continue;
+        }
+
+        // exponent
+        if (*expr == 'e' || *expr == 'E')
+        {
+            // if we've encountered more than one exponent,
+            // the number's invalid
+            if (exponent_part)
+            {
+                node.init();
+                *endloc = expr;
+                return false;
+            }
+
+            exponent_part = true;
+            value += *expr;
+            expr++;
+            
+            // the exponent part may be followed by a plus or minus
+            if (*expr == '-' || *expr == '+')
+            {
+                value += *expr;
+                expr++;
+            }
+            
+            // the exponent must be followed by at least one digit
+            if (*expr < '0' || *expr > '9')
+            {
+                node.init();
+                *endloc = expr;
+                return false;
+            }
+
+            continue;
+        }
+
+        break;
     }
+    
 
     *endloc = expr;
 
-    double dbl_val = nolocale_wtof(value.c_str());
-    if (!period)
+    // if we don't have a decimal part or an exponent part,
+    // see if the number will work as an integer
+    double dbl_val = nolocale_wtof(value.c_str());    
+    if (!decimal_part && !exponent_part)
     {
-        // -- see if it will work as an integer --
         if (fabs(dbl_val) < 2147483647.9)
         {
             node.setInteger(wtoi(value.c_str()));
@@ -440,6 +540,8 @@ bool parseJsonWord(wchar_t* expr, wchar_t** endloc, JsonNode& node)
         return true;
     }
 
+    node.init();
+    *endloc = expr;
     return false;
 }
 
