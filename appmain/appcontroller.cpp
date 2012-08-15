@@ -4665,7 +4665,23 @@ bool AppController::openDataLink(const wxString& location, int* site_id)
     }
 
 
-    return openSet(mnt_database + path, site_id);
+    int tabledoc_site_id = 0;
+    bool res = openSet(mnt_database + path, &tabledoc_site_id);
+    if (!res)
+        return false;
+    
+    if (site_id)
+        *site_id = tabledoc_site_id;
+
+    cfw::IDocumentSitePtr site = g_app->getMainFrame()->lookupSiteById(tabledoc_site_id);
+    ITableDocPtr doc = site->getDocument();
+    if (doc.isOk())
+    {
+        doc->setSourceUrl(location);
+        updateURLToolbar();
+    }
+    
+    return true;
 }
 
 
