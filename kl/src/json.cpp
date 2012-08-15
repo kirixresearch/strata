@@ -168,8 +168,7 @@ bool parseJsonObject(wchar_t* expr, wchar_t** endloc, JsonNode& node)
         if (!result)
             return false;
 
-        // set the member; TODO: following is inefficient since getChild()
-        // checks for the existence of a member element before setting it
+        // set the member
         JsonNode child_node = node.getChild(key);
         child_node.copyFrom(value_node);
 
