@@ -107,6 +107,8 @@ private:
     void apiGroupQuery(RequestInfo& req);
     void apiDescribeTable(RequestInfo& req);
     void apiFetchRows(RequestInfo& req);
+    void apiAlter(RequestInfo& req);
+    void apiRefresh(RequestInfo& req);
     void apiStartBulkInsert(RequestInfo& req);
     void apiFinishBulkInsert(RequestInfo& req);
     void apiBulkInsert(RequestInfo& req);

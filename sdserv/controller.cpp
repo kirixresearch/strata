@@ -87,6 +87,8 @@ bool Controller::onRequest(RequestInfo& req)
     else if (uri == L"/api/groupquery")       apiGroupQuery(req);
     else if (uri == L"/api/describetable")    apiDescribeTable(req);
     else if (uri == L"/api/fetchrows")        apiFetchRows(req);
+    else if (uri == L"/api/alter")            apiAlter(req);
+    else if (uri == L"/api/refresh")          apiRefresh(req);
     else if (uri == L"/api/startbulkinsert")  apiStartBulkInsert(req);
     else if (uri == L"/api/finishbulkinsert") apiFinishBulkInsert(req);
     else if (uri == L"/api/bulkinsert")       apiBulkInsert(req);
@@ -157,8 +159,32 @@ std::wstring Controller::createHandle() const
     return kl::towstring(kl::md5str(buf));
 }
 
+static void jsonNodeToColumn(JsonNode& column, tango::IColumnInfoPtr col)
+{
+    std::wstring type = column["type"];
+    int ntype;
 
+         if (type == L"undefined")     ntype = tango::typeUndefined;
+    else if (type == L"invalid")       ntype = tango::typeInvalid;
+    else if (type == L"character")     ntype = tango::typeCharacter;
+    else if (type == L"widecharacter") ntype = tango::typeWideCharacter;
+    else if (type == L"numeric")       ntype = tango::typeNumeric;
+    else if (type == L"double")        ntype = tango::typeDouble;
+    else if (type == L"integer")       ntype = tango::typeInteger;
+    else if (type == L"date")          ntype = tango::typeDate;
+    else if (type == L"datetime")      ntype = tango::typeDateTime;
+    else if (type == L"boolean")       ntype = tango::typeBoolean;
+    else if (type == L"binary")        ntype = tango::typeBinary;
+    else ntype = tango::typeUndefined;
 
+    col->setName(column["name"]);
+    col->setType(ntype);
+    col->setWidth(column["width"].getInteger());
+    col->setScale(column["scale"].getInteger());
+    //col->setColumnOrdinal(i);
+    col->setExpression(column["expression"]);
+    col->setCalculated(column["expression"].getString().length() > 0 ? true : false);
+}
 
 
 
@@ -1254,7 +1280,16 @@ void Controller::apiFetchRows(RequestInfo& req)
                 default:
                     cell = iter->getWideString(qr.columns[col].handle);
                     break;
-                    
+                
+                case tango::typeNumeric:
+                case tango::typeDouble:
+                {
+                    wchar_t buf[255];
+                    swprintf(buf, 255, L"%.*f", qr.columns[col].scale, iter->getDouble(qr.columns[col].handle));
+                    cell = buf;
+                }
+                break;
+                
                 case tango::typeDate:
                 {
                     wchar_t buf[64];
@@ -1295,6 +1330,127 @@ void Controller::apiFetchRows(RequestInfo& req)
 }
 
 
+
+
+
+void Controller::apiAlter(RequestInfo& req)
+{
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+        return;
+    
+    if (!req.getValueExists(L"path"))
+    {
+        returnApiError(req, "Missing path parameter");
+        return;
+    }
+    
+    if (!req.getValueExists(L"actions"))
+    {
+        returnApiError(req, "Missing actions parameter");
+        return;
+    }
+    
+    std::wstring path = req.getValue(L"path");
+    std::wstring s_actions = req.getValue(L"actions");
+    
+    
+    tango::ISetPtr set = db->openSet(path);
+    tango::IStructurePtr structure;
+    if (set.isOk())
+        structure = set->getStructure();
+    if (structure.isNull())
+    {
+        returnApiError(req, "Could not open table");
+        return;
+    }
+    
+
+    
+    
+    
+    JsonNode actions;
+    actions.fromString(s_actions);
+    
+    size_t i, cnt = actions.getCount();
+    for (i = 0; i < cnt; ++i)
+    {
+        JsonNode action = actions[i];
+        
+        if (action["action"].getString() == L"create")
+        {
+            tango::IColumnInfoPtr colinfo = structure->createColumn();
+            jsonNodeToColumn(action, colinfo);
+        }
+         else if (action["action"].getString() == L"modify")
+        {
+            tango::IColumnInfoPtr colinfo = structure->modifyColumn(action["target_column"]);
+            if (colinfo.isNull())
+            {
+                returnApiError(req, "Invalid target column for modify operation");
+                return;
+            }
+            
+            jsonNodeToColumn(action, colinfo);
+        }
+         else if (action["action"].getString() == L"delete")
+        {
+            if (!structure->deleteColumn(action["target_column"]))
+            {
+                returnApiError(req, "Invalid target column for modify operation");
+                return;
+            }
+        }        
+    }
+    
+    
+    set->modifyStructure(structure, NULL);
+    
+    // return success to caller
+    JsonNode response;
+    response["success"].setBoolean(true);
+    
+    req.write(response.toString());
+}
+
+
+
+
+void Controller::apiRefresh(RequestInfo& req)
+{
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+        return;
+    
+    SdservSession* session = getSdservSession(req);
+    if (!session)
+        return;
+
+    std::wstring handle = req.getValue(L"handle");
+    if (handle.length() == 0)
+    {
+        returnApiError(req, "Missing handle parameter");
+        return;
+    }
+    
+
+    std::map<std::wstring, SessionQueryResult>::iterator it;
+    it = session->iters.find(handle);
+    if (it == session->iters.end())
+    {
+        returnApiError(req, "Invalid handle parameter");
+        return;
+    }
+
+    it->second.iter->refreshStructure();
+    it->second.columns.clear();
+    
+    // return success to caller
+    JsonNode response;
+    response["success"].setBoolean(true);
+
+    req.write(response.toString());
+}
 
 
 
