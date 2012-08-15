@@ -119,12 +119,20 @@ static std::wstring escape_string(std::wstring& str)
     return result;
 }
 
+bool parseFail(wchar_t* expr, wchar_t** endloc, JsonNode& node);
 bool parseJsonValue(wchar_t* expr, wchar_t** endloc, JsonNode& node);
 bool parseJsonObject(wchar_t* expr, wchar_t** endloc, JsonNode& node);
 bool parseJsonArray(wchar_t* expr, wchar_t** endloc, JsonNode& node);
 bool parseJsonString(wchar_t* expr, wchar_t** endloc, JsonNode& node);
 bool parseJsonNumber(wchar_t* expr, wchar_t** endloc, JsonNode& node);
 bool parseJsonWord(wchar_t* expr, wchar_t** endloc, JsonNode& node);
+
+bool parseFail(wchar_t* expr, wchar_t** endloc, JsonNode& node)
+{
+    node.init();
+    *endloc = expr;
+    return false;
+}
 
 bool parseJsonValue(wchar_t* expr, wchar_t** endloc, JsonNode& node)
 {
@@ -149,7 +157,7 @@ bool parseJsonValue(wchar_t* expr, wchar_t** endloc, JsonNode& node)
 bool parseJsonObject(wchar_t* expr, wchar_t** endloc, JsonNode& node)
 {
     if (*expr != '{')
-        return false;
+        return parseFail(expr, endloc, node);
 
     expr++;
     skipWhiteSpaceOrLS(expr);
@@ -171,7 +179,7 @@ bool parseJsonObject(wchar_t* expr, wchar_t** endloc, JsonNode& node)
         JsonNode key_node;
         result = parseJsonString(expr, endloc, key_node);
         if (!result)
-            return false;
+            return parseFail(expr, endloc, node);
 
         key = key_node.getString();
 
@@ -180,7 +188,7 @@ bool parseJsonObject(wchar_t* expr, wchar_t** endloc, JsonNode& node)
         skipWhiteSpaceOrLS(expr);
 
         if (*expr != ':')
-            return false;
+            return parseFail(expr, endloc, node);
 
         // skip past the colon
         expr++;
@@ -190,7 +198,7 @@ bool parseJsonObject(wchar_t* expr, wchar_t** endloc, JsonNode& node)
         JsonNode value_node;
         result = parseJsonValue(expr, endloc, value_node);
         if (!result)
-            return false;
+            return parseFail(expr, endloc, node);
 
         // set the member
         JsonNode child_node = node.getChild(key);
@@ -215,16 +223,14 @@ bool parseJsonObject(wchar_t* expr, wchar_t** endloc, JsonNode& node)
         }
         
         // unterminated JSON
-        node.init();
-        *endloc = expr;
-        return false;
+        return parseFail(expr, endloc, node);
     }
 }
 
 bool parseJsonArray(wchar_t* expr, wchar_t** endloc, JsonNode& node)
 {
     if (*expr != '[')
-        return false;
+        return parseFail(expr, endloc, node);
 
     expr++;
     skipWhiteSpaceOrLS(expr);
@@ -248,7 +254,7 @@ bool parseJsonArray(wchar_t* expr, wchar_t** endloc, JsonNode& node)
         JsonNode value_node;
         result = parseJsonValue(expr, endloc, value_node);
         if (!result)
-            return false;
+            return parseFail(expr, endloc, node);
 
         // set the member
         JsonNode child_node = node.appendElement();
@@ -273,16 +279,14 @@ bool parseJsonArray(wchar_t* expr, wchar_t** endloc, JsonNode& node)
         }
         
         // unterminated JSON
-        node.init();
-        *endloc = expr;
-        return false;
+        return parseFail(expr, endloc, node);
     }
 }
 
 bool parseJsonString(wchar_t* expr, wchar_t** endloc, JsonNode& node)
 {
     if (*expr != '"')
-        return false;
+        return parseFail(expr, endloc, node);
 
     expr++;
 
@@ -370,9 +374,7 @@ bool parseJsonString(wchar_t* expr, wchar_t** endloc, JsonNode& node)
                     else
                     {
                         // invalid unicode escape sequence
-                        node.init();
-                        *endloc = expr;
-                        return false;
+                        return parseFail(expr, endloc, node);
                     }
                     
                     hex_converted = hex_converted*16 + hex_value;
@@ -383,9 +385,7 @@ bool parseJsonString(wchar_t* expr, wchar_t** endloc, JsonNode& node)
             else
             {
                 // unknown escape sequence
-                node.init();
-                *endloc = expr;
-                return false;
+                return parseFail(expr, endloc, node);
             }
             
             expr++;
@@ -397,9 +397,7 @@ bool parseJsonString(wchar_t* expr, wchar_t** endloc, JsonNode& node)
     }
 
     // unterminated JSON or unkown escape sequence
-    node.init();
-    *endloc = expr;
-    return false;
+    return parseFail(expr, endloc, node);
 }
 
 bool parseJsonNumber(wchar_t* expr, wchar_t** endloc, JsonNode& node)
@@ -418,11 +416,7 @@ bool parseJsonNumber(wchar_t* expr, wchar_t** endloc, JsonNode& node)
         // if we have a negative sign, the next character has to
         // be a digit
         if (*expr < '0' || *expr > '9')
-        {
-            node.init();
-            *endloc = expr;
-            return false;
-        }
+            return parseFail(expr, endloc, node);
     }
 
     // check for numeric digits
@@ -442,11 +436,7 @@ bool parseJsonNumber(wchar_t* expr, wchar_t** endloc, JsonNode& node)
             // if we've encountered more than one period, 
             // the number's invalid
             if (decimal_part)
-            {
-                node.init();
-                *endloc = expr;
-                return false;            
-            }
+                return parseFail(expr, endloc, node);
 
             decimal_part = true;        
             value += *expr;
@@ -454,11 +444,7 @@ bool parseJsonNumber(wchar_t* expr, wchar_t** endloc, JsonNode& node)
             
             // the period must be followed by at least one digit
             if (*expr < '0' || *expr > '9')
-            {
-                node.init();
-                *endloc = expr;
-                return false;
-            }
+                return parseFail(expr, endloc, node);
 
             continue;
         }
@@ -469,11 +455,7 @@ bool parseJsonNumber(wchar_t* expr, wchar_t** endloc, JsonNode& node)
             // if we've encountered more than one exponent,
             // the number's invalid
             if (exponent_part)
-            {
-                node.init();
-                *endloc = expr;
-                return false;
-            }
+                return parseFail(expr, endloc, node);
 
             exponent_part = true;
             value += *expr;
@@ -488,11 +470,7 @@ bool parseJsonNumber(wchar_t* expr, wchar_t** endloc, JsonNode& node)
             
             // the exponent must be followed by at least one digit
             if (*expr < '0' || *expr > '9')
-            {
-                node.init();
-                *endloc = expr;
-                return false;
-            }
+                return parseFail(expr, endloc, node);
 
             continue;
         }
@@ -540,9 +518,7 @@ bool parseJsonWord(wchar_t* expr, wchar_t** endloc, JsonNode& node)
         return true;
     }
 
-    node.init();
-    *endloc = expr;
-    return false;
+    return parseFail(expr, endloc, node);
 }
 
 JsonNode::JsonNode()
