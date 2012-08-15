@@ -285,8 +285,83 @@ bool parseJsonString(wchar_t* expr, wchar_t** endloc, JsonNode& node)
         }
          else
         {
-            // TODO: escaped string; special handling
-            value += *expr;
+            // escaped string; find out what's next
+            expr++;
+            if (*expr == '"')
+                value += L"\"";
+            else if (*expr == '\\')
+                value += L"\\";
+            else if (*expr == 'b')
+                value += L"\b";
+            else if (*expr == 't')
+                value += L"\t";
+            else if (*expr == 'n')
+                value += L"\n";
+            else if (*expr == 'f')
+                value += L"\f";
+            else if (*expr == 'r')
+                value += L"\r";
+            else if (*expr == 'u')
+            {
+                // unicode escape sequence; special handling
+                int hex_converted = 0;
+                for (int i = 0; i < 4; ++i)
+                {
+                    *expr++;
+                    int hex_value = 0;
+                    if (*expr == '0')
+                        hex_value = 0;
+                    else if (*expr == '1')
+                        hex_value = 1;
+                    else if (*expr == '2')
+                        hex_value = 2;
+                    else if (*expr == '3')
+                        hex_value = 3;
+                    else if (*expr == '4')
+                        hex_value = 4;
+                    else if (*expr == '5')
+                        hex_value = 5;
+                    else if (*expr == '6')
+                        hex_value = 6;
+                    else if (*expr == '7')
+                        hex_value = 7;
+                    else if (*expr == '8')
+                        hex_value = 8;
+                    else if (*expr == '9')
+                        hex_value = 9;
+                    else if (*expr == 'a' || *expr == 'A')
+                        hex_value = 10;
+                    else if (*expr == 'b' || *expr == 'B')
+                        hex_value = 11;
+                    else if (*expr == 'c' || *expr == 'C')
+                        hex_value = 12;
+                    else if (*expr == 'd' || *expr == 'D')
+                        hex_value = 13;
+                    else if (*expr == 'e' || *expr == 'E')
+                        hex_value = 14;
+                    else if (*expr == 'f' || *expr == 'F')
+                        hex_value = 15;
+                    else
+                    {
+                        // invalid unicode escape sequence
+                        node.init();
+                        *endloc = expr;
+                        return false;
+                    }
+                    
+                    hex_converted = hex_converted*16 + hex_value;
+                }
+                
+                value += (wchar_t)hex_converted;
+            }
+            else
+            {
+                // unknown escape sequence
+                node.init();
+                *endloc = expr;
+                return false;
+            }
+            
             expr++;
             continue;
         }
@@ -295,7 +370,7 @@ bool parseJsonString(wchar_t* expr, wchar_t** endloc, JsonNode& node)
             break;
     }
 
-    // unterminated JSON
+    // unterminated JSON or unkown escape sequence
     node.init();
     *endloc = expr;
     return false;
