@@ -632,7 +632,7 @@ std::vector<std::wstring> JsonNode::getChildKeys()
     
     for (it = m_value->m_child_nodes_ordered.begin(); it != it_end; ++it)
     {
-        child_keys.push_back(it->second);
+        child_keys.push_back(it->first);
     }
 
     return child_keys;
