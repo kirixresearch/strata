@@ -498,9 +498,9 @@ JsonNode& JsonNode::operator=(const std::wstring& str)
 
 JsonNode JsonNode::operator[](int i)
 {
-    char buf[20];
-    sprintf(buf, "%d", i);
-    return getChild(kl::towstring(buf));
+    wchar_t buf[30];
+    swprintf(buf, 30, L"%d", i);
+    return getChild(buf);
 }
 
 JsonNode JsonNode::operator[](const char* str)
@@ -712,15 +712,12 @@ bool JsonNode::isOk()
 
 JsonNode::operator std::wstring()
 {
-    return toString();
+    return getString();
 }
 
 std::wstring JsonNode::toString()
 {
-    if (m_value->m_type == nodetypeString)
-        return getString();
-         else
-        return stringify();
+    return stringify();
 }
 
 bool JsonNode::fromString(const std::wstring& str)

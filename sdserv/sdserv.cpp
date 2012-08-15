@@ -71,7 +71,7 @@ std::wstring Server::getDatabaseConnectionString(const std::wstring& database_na
     kl::JsonNode database = databases[database_name];
     kl::JsonNode connection_string = database["connection_string"];
     
-    return connection_string.toString();
+    return connection_string.getString();
 }
 
 
