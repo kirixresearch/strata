@@ -33,6 +33,67 @@ inline void skipWhiteSpaceOrLS(wchar_t*& ch)
         ++ch;
 }
 
+static std::wstring escape_string(std::wstring& str)
+{
+    std::wstring result = L"";
+
+    std::wstring::iterator it, it_end;
+    it_end = str.end();
+
+    for (it = str.begin(); it != it_end; ++it)
+    {
+        wchar_t ch = *it;
+
+        switch (ch)
+        {
+            default:
+                {
+                    // TODO: check range of values allowed without
+                    // unicode escaping
+                    if (ch >= 32 && ch <= 126)
+                        result += ch;
+                    else
+                    {
+                        wchar_t buf[25];
+                        swprintf(buf, 25, L"\\u%04x", (int)ch);
+                        result.append(buf);
+                    }
+                }
+                break;
+
+            case L'"':
+                result.append(L"\\\"");
+                break;
+
+            case L'\\':
+                result.append(L"\\\\");
+                break;
+
+            case L'\b':
+                result.append(L"\\b");
+                break;
+
+            case L'\t':
+                result.append(L"\\t");
+                break;
+
+            case L'\n':
+                result.append(L"\\n");
+                break;
+
+            case L'\f':
+                result.append(L"\\f");
+                break;
+
+            case L'\r':
+                result.append(L"\\r");
+                break;
+        };
+    }
+
+    return result;
+}
+
 bool parseJsonValue(wchar_t* expr, wchar_t** endloc, JsonNode& node);
 bool parseJsonObject(wchar_t* expr, wchar_t** endloc, JsonNode& node);
 bool parseJsonArray(wchar_t* expr, wchar_t** endloc, JsonNode& node);
@@ -109,7 +170,7 @@ bool parseJsonObject(wchar_t* expr, wchar_t** endloc, JsonNode& node)
         // set the member; TODO: following is inefficient since getChild()
         // checks for the existence of a member element before setting it
         JsonNode child_node = node.getChild(key);
-        child_node = value_node;
+        child_node.copyFrom(value_node);
 
         expr = *endloc;
         skipWhiteSpaceOrLS(expr);
@@ -167,7 +228,7 @@ bool parseJsonArray(wchar_t* expr, wchar_t** endloc, JsonNode& node)
 
         // set the member
         JsonNode child_node = node.appendElement();
-        child_node = value_node;
+        child_node.copyFrom(value_node);
 
         expr = *endloc;
         skipWhiteSpaceOrLS(expr);
@@ -264,9 +325,7 @@ bool parseJsonNumber(wchar_t* expr, wchar_t** endloc, JsonNode& node)
         expr++;
     }
 
-    if (!isWhiteSpaceOrLS(*expr))
-        return false;
-
+    *endloc = expr;
 
     double dbl_val = nolocale_wtof(value.c_str());
     if (!period)
@@ -309,22 +368,20 @@ bool parseJsonWord(wchar_t* expr, wchar_t** endloc, JsonNode& node)
 
 JsonNode::JsonNode()
 {
+    m_value = new JsonValue;
+    m_value->ref();
     init();
 }
 
 JsonNode::~JsonNode()
 {
+    m_value->unref();
 }
 
 JsonNode::JsonNode(const JsonNode& _c)
 {
-    m_child_nodes = _c.m_child_nodes;
-    m_string = _c.m_string;
-    m_double = _c.m_double;
-    m_integer = _c.m_integer;
-    m_boolean = _c.m_boolean;
-    m_isnull = _c.m_isnull;
-    m_type = _c.m_type;
+    m_value = _c.m_value;
+    m_value->ref();
 }
 
 JsonNode& JsonNode::operator=(const JsonNode& _c)
@@ -332,13 +389,8 @@ JsonNode& JsonNode::operator=(const JsonNode& _c)
     if (this == &_c)
         return *this;
 
-    m_child_nodes = _c.m_child_nodes;
-    m_string = _c.m_string;
-    m_double = _c.m_double;
-    m_integer = _c.m_integer;
-    m_boolean = _c.m_boolean;
-    m_isnull = _c.m_isnull;
-    m_type = _c.m_type;
+    m_value = _c.m_value;
+    m_value->ref();
 
     return *this;
 }
@@ -381,9 +433,9 @@ JsonNode JsonNode::operator[](const std::wstring& str)
 bool JsonNode::childExists(const std::wstring& _str)
 {
     std::vector<std::pair<std::wstring,JsonNode>>::iterator it, it_end;
-    it_end = m_child_nodes.end();
+    it_end = m_value->m_child_nodes.end();
 
-    for (it = m_child_nodes.begin(); it != it_end; ++it)
+    for (it = m_value->m_child_nodes.begin(); it != it_end; ++it)
     {
         if (it->first != _str)
             continue;
@@ -397,13 +449,13 @@ bool JsonNode::childExists(const std::wstring& _str)
 JsonNode JsonNode::getChild(const std::wstring& _str)
 {
     // reset the node type
-    m_type = nodetypeObject;
+    m_value->m_type = nodetypeObject;
 
     // get the child
     std::vector<std::pair<std::wstring,JsonNode>>::iterator it, it_end;
-    it_end = m_child_nodes.end();
+    it_end = m_value->m_child_nodes.end();
 
-    for (it = m_child_nodes.begin(); it != it_end; ++it)
+    for (it = m_value->m_child_nodes.begin(); it != it_end; ++it)
     {
         if (it->first != _str)
             continue;
@@ -415,8 +467,8 @@ JsonNode JsonNode::getChild(const std::wstring& _str)
     JsonNode node;
     std::pair<std::wstring,JsonNode> named_node;
     named_node.first = _str;
-    named_node.second = node;    
-    m_child_nodes.push_back(named_node);
+    named_node.second = node;
+    m_value->m_child_nodes.push_back(named_node);
 
     return named_node.second;
 }
@@ -424,12 +476,12 @@ JsonNode JsonNode::getChild(const std::wstring& _str)
 std::vector<std::wstring> JsonNode::getChildKeys()
 {
     std::vector<std::wstring> result;
-    result.reserve(m_child_nodes.size());
+    result.reserve(m_value->m_child_nodes.size());
 
     std::vector<std::pair<std::wstring,JsonNode>>::iterator it, it_end;
-    it_end = m_child_nodes.end();
+    it_end = m_value->m_child_nodes.end();
 
-    for (it = m_child_nodes.begin(); it != it_end; ++it)
+    for (it = m_value->m_child_nodes.begin(); it != it_end; ++it)
     {
         result.push_back(it->first);
     }
@@ -440,12 +492,12 @@ std::vector<std::wstring> JsonNode::getChildKeys()
 std::vector<JsonNode> JsonNode::getChildren()
 {
     std::vector<JsonNode> result;
-    result.reserve(m_child_nodes.size());
+    result.reserve(m_value->m_child_nodes.size());
 
     std::vector<std::pair<std::wstring,JsonNode>>::iterator it, it_end;
-    it_end = m_child_nodes.end();
+    it_end = m_value->m_child_nodes.end();
 
-    for (it = m_child_nodes.begin(); it != it_end; ++it)
+    for (it = m_value->m_child_nodes.begin(); it != it_end; ++it)
     {
         result.push_back(it->second);
     }
@@ -455,123 +507,123 @@ std::vector<JsonNode> JsonNode::getChildren()
 
 size_t JsonNode::getChildCount()
 {
-    return m_child_nodes.size();
+    return m_value->m_child_nodes.size();
 }
 
 JsonNode JsonNode::appendElement()
 {
     // if the node type was anything besides an array, clear it out
-    if (m_type != nodetypeArray)
+    if (m_value->m_type != nodetypeArray)
         init();
 
     // make sure the type is an array (getChild currently
     // converts node to object type)
     JsonNode child = (*this)[getChildCount()];
-    m_type = nodetypeArray;
+    m_value->m_type = nodetypeArray;
     
     return child;    
 }
 
 void JsonNode::setObject()
 {
-    m_child_nodes.clear();
-    m_string.clear();
-    m_double = 0.0f;
-    m_integer = 0;
-    m_boolean = false;
-    m_isnull = false;
-    m_type = nodetypeObject;
+    m_value->m_child_nodes.clear();
+    m_value->m_string.clear();
+    m_value->m_double = 0.0f;
+    m_value->m_integer = 0;
+    m_value->m_boolean = false;
+    m_value->m_isnull = false;
+    m_value->m_type = nodetypeObject;
 }
 
 void JsonNode::setArray()
 {
-    m_child_nodes.clear();
-    m_string.clear();
-    m_double = 0.0f;
-    m_integer = 0;
-    m_boolean = false;
-    m_isnull = false;
-    m_type = nodetypeArray;
+    m_value->m_child_nodes.clear();
+    m_value->m_string.clear();
+    m_value->m_double = 0.0f;
+    m_value->m_integer = 0;
+    m_value->m_boolean = false;
+    m_value->m_isnull = false;
+    m_value->m_type = nodetypeArray;
 }
 
 void JsonNode::setString(const std::wstring& str)
 {
-    m_child_nodes.clear();
-    m_string = str;
-    m_double = 0.0f;
-    m_integer = 0;
-    m_boolean = false;
-    m_isnull = false;
-    m_type = nodetypeString;
+    m_value->m_child_nodes.clear();
+    m_value->m_string = str;
+    m_value->m_double = 0.0f;
+    m_value->m_integer = 0;
+    m_value->m_boolean = false;
+    m_value->m_isnull = false;
+    m_value->m_type = nodetypeString;
 }
 
 void JsonNode::setBoolean(bool b)
 {
-    m_child_nodes.clear();
-    m_string.clear();
-    m_double = 0.0f;
-    m_integer = 0;
-    m_boolean = b;
-    m_isnull = false;
-    m_type = nodetypeBoolean;
+    m_value->m_child_nodes.clear();
+    m_value->m_string.clear();
+    m_value->m_double = 0.0f;
+    m_value->m_integer = 0;
+    m_value->m_boolean = b;
+    m_value->m_isnull = false;
+    m_value->m_type = nodetypeBoolean;
 }
 
 void JsonNode::setDouble(double num)
 {
-    m_child_nodes.clear();
-    m_string.clear();
-    m_double = num;
-    m_integer = 0;
-    m_boolean = false;
-    m_isnull = false;
-    m_type = nodetypeDouble;
+    m_value->m_child_nodes.clear();
+    m_value->m_string.clear();
+    m_value->m_double = num;
+    m_value->m_integer = 0;
+    m_value->m_boolean = false;
+    m_value->m_isnull = false;
+    m_value->m_type = nodetypeDouble;
 }
 
 void JsonNode::setInteger(int num)
 {
-    m_child_nodes.clear();
-    m_string.clear();
-    m_double = 0.0f;
-    m_integer = num;
-    m_boolean = false;
-    m_isnull = false;
-    m_type = nodetypeInteger;
+    m_value->m_child_nodes.clear();
+    m_value->m_string.clear();
+    m_value->m_double = 0.0f;
+    m_value->m_integer = num;
+    m_value->m_boolean = false;
+    m_value->m_isnull = false;
+    m_value->m_type = nodetypeInteger;
 }
 
 void JsonNode::setNull()
 {
-    m_child_nodes.clear();
-    m_string.clear();
-    m_double = 0.0f;
-    m_integer = 0;
-    m_boolean = false;
-    m_isnull = true;
-    m_type = nodetypeNull;    
+    m_value->m_child_nodes.clear();
+    m_value->m_string.clear();
+    m_value->m_double = 0.0f;
+    m_value->m_integer = 0;
+    m_value->m_boolean = false;
+    m_value->m_isnull = true;
+    m_value->m_type = nodetypeNull;    
 }
 
 std::wstring JsonNode::getString()
 {
-    return m_string;
+    return m_value->m_string;
 }
 
 bool JsonNode::getBoolean()
 {
-    return m_boolean;
+    return m_value->m_boolean;
 }
 
 double JsonNode::getDouble()
 {
-    return m_double;
+    return m_value->m_double;
 }
 
 int JsonNode::getInteger()
 {
-    return m_integer;
+    return m_value->m_integer;
 }
 
 bool JsonNode::isNull()
 {
-    return m_isnull;
+    return m_value->m_isnull;
 }
 
 bool JsonNode::isOk()
@@ -594,21 +646,37 @@ bool JsonNode::fromString(const std::wstring& str)
     return parse((wchar_t*)str.c_str());
 }
 
+void JsonNode::copyFrom(const JsonNode& node)
+{
+    m_value->m_child_nodes = node.m_value->m_child_nodes;
+    m_value->m_string = node.m_value->m_string;
+    m_value->m_double = node.m_value->m_double;
+    m_value->m_integer = node.m_value->m_integer;
+    m_value->m_boolean = node.m_value->m_boolean;
+    m_value->m_isnull = node.m_value->m_isnull;
+    m_value->m_type = node.m_value->m_type;
+}
+
 void JsonNode::init()
 {
-    m_child_nodes.clear();
-    m_string.clear();
-    m_double = 0.0f;
-    m_integer = 0;
-    m_boolean = false;
-    m_isnull = true;
-    m_type = nodetypeNull;
+    m_value->m_child_nodes.clear();
+    m_value->m_string.clear();
+    m_value->m_double = 0.0f;
+    m_value->m_integer = 0;
+    m_value->m_boolean = false;
+    m_value->m_isnull = true;
+    m_value->m_type = nodetypeNull;
 }
 
 bool JsonNode::parse(wchar_t* expr)
 {
     wchar_t* endloc = NULL;
     bool success = parseJsonValue(expr, &endloc, *this);
+    
+    // make sure there's nothing left over
+    skipWhiteSpaceOrLS(endloc);
+    if (*endloc != NULL)
+        success = false;
 
     if (!success)
     {
@@ -622,31 +690,40 @@ bool JsonNode::parse(wchar_t* expr)
 
 std::wstring JsonNode::stringify()
 {
-    if (m_type == nodetypeNull)
+    if (m_value->m_type == nodetypeNull)
         return L"null";
 
-    if (m_type == nodetypeBoolean)
+    if (m_value->m_type == nodetypeBoolean)
         return getBoolean() ? L"true" : L"false";
 
-    if (m_type == nodetypeString)
-        return L'"' + getString() + L'"';   // TODO: escape string
+    if (m_value->m_type == nodetypeString)
+        return L'"' + escape_string(getString()) + L'"';
 
-    if (m_type == nodetypeInteger)  // TODO: implement
-        return L"0";
+    if (m_value->m_type == nodetypeInteger)
+    {
+        char buf[20];
+        sprintf(buf, "%d", getInteger());
+        return kl::towstring(buf);
+    }
         
-    if (m_type == nodetypeDouble)   // TODO: implement
-        return L"0";
+    if (m_value->m_type == nodetypeDouble)
+    {
+        // TODO: determine how to return the number with the same precision as entered    
+        char buf[20];
+        sprintf(buf, "%f", getDouble());
+        return kl::towstring(buf);
+    }
 
-    if (m_type == nodetypeArray)
+    if (m_value->m_type == nodetypeArray)
     {
         std::wstring result;
         result += L"[";
         
         std::vector<std::pair<std::wstring,JsonNode>>::iterator it, it_end;
-        it_end = m_child_nodes.end();
+        it_end = m_value->m_child_nodes.end();
         
         bool first = true;
-        for (it = m_child_nodes.begin(); it != it_end; ++it)
+        for (it = m_value->m_child_nodes.begin(); it != it_end; ++it)
         {
             if (!first)
                 result += L",";
@@ -659,23 +736,23 @@ std::wstring JsonNode::stringify()
         return result;
     }
     
-    if (m_type == nodetypeObject)
+    if (m_value->m_type == nodetypeObject)
     {
         std::wstring result;
         result += L"{";
 
         std::vector<std::pair<std::wstring,JsonNode>>::iterator it, it_end;
-        it_end = m_child_nodes.end();
+        it_end = m_value->m_child_nodes.end();
 
         bool first = true;
-        for (it = m_child_nodes.begin(); it != it_end; ++it)
+        for (it = m_value->m_child_nodes.begin(); it != it_end; ++it)
         {
             if (!first)
                 result += L",";
             first = false;
 
             // stringify the key
-            result += (L'"' + it->first + L'"');    // TODO: escape the key
+            result += (L'"' + escape_string(it->first) + L'"');
             
             // separator
             result += L":";

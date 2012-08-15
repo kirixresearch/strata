@@ -20,7 +20,62 @@
 namespace kl
 {
 
+class JsonValue;
 class JsonNode;
+
+
+class JsonValue
+{
+friend JsonNode;
+
+public:
+
+    JsonValue()
+    {
+        m_child_nodes.clear();
+        m_string.clear();
+        m_double = 0.0f;
+        m_integer = 0;
+        m_boolean = false;
+        m_isnull = true;
+        m_type = 0;
+
+        m_refcount = 0;
+    }
+    
+    ~JsonValue()
+    {
+    }
+
+    void ref()
+    {
+        m_refcount++;
+    }
+
+    void unref()
+    {
+        if(--m_refcount == 0)
+        {
+            delete this;
+            return;
+        }
+    }
+
+private:
+
+    std::vector<std::pair<std::wstring,JsonNode>> m_child_nodes;
+    std::wstring m_string;
+    double m_double;
+    int m_integer;
+    bool m_boolean;
+    bool m_isnull;
+
+    int m_type;
+
+private:
+
+    int m_refcount;
+};
 
 class JsonNode
 {
@@ -66,7 +121,8 @@ public:
     operator std::wstring();
     std::wstring toString();
     bool fromString(const std::wstring& str);
-    
+
+    void copyFrom(const JsonNode& node);
     void init();
 
 private:
@@ -88,14 +144,7 @@ private:
         nodetypeBoolean = 6
     };
 
-    std::vector<std::pair<std::wstring,JsonNode>> m_child_nodes;
-    std::wstring m_string;
-    double m_double;
-    int m_integer;
-    bool m_boolean;
-    bool m_isnull;
-
-    int m_type;
+    JsonValue* m_value; 
 };
 
 
