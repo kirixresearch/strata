@@ -92,7 +92,8 @@ public:
     JsonNode& operator=(const JsonNode& _c);
     JsonNode& operator=(int i);
     JsonNode& operator=(double d);
-    JsonNode& operator=(const std::wstring& str);    
+    JsonNode& operator=(const std::string& str);
+    JsonNode& operator=(const std::wstring& str);
     JsonNode operator[](int i);
     JsonNode operator[](const char* str);
     JsonNode operator[](const std::wstring& str);

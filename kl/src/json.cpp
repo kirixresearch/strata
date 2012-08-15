@@ -12,6 +12,7 @@
 #include <math.h>
 #include "kl/json.h"
 #include "kl/string.h"
+#include "kl/math.h"
 
 
 namespace kl
@@ -392,7 +393,7 @@ bool parseJsonNumber(wchar_t* expr, wchar_t** endloc, JsonNode& node)
     while (1)
     {
         // TODO: implement better numeric parsing
-        if ((*expr <= '0' || *expr >= '9') && *expr != '.')
+        if ((*expr < '0' || *expr > '9') && *expr != '.')
             break;
 
         if (*expr == '.')
@@ -481,6 +482,12 @@ JsonNode& JsonNode::operator=(int i)
 JsonNode& JsonNode::operator=(double d)
 {
     setDouble(d);
+    return *this;
+}
+
+JsonNode& JsonNode::operator=(const std::string& str)
+{
+    setString(kl::towstring(str));
     return *this;
 }
 
@@ -706,12 +713,15 @@ bool JsonNode::isOk()
 
 JsonNode::operator std::wstring()
 {
-    return getString();
+    return toString();
 }
 
 std::wstring JsonNode::toString()
 {
-    return stringify();
+    if (m_value->m_type == nodetypeString)
+        return getString();
+         else
+        return stringify();
 }
 
 bool JsonNode::fromString(const std::wstring& str)
@@ -776,17 +786,14 @@ std::wstring JsonNode::stringify()
 
     if (m_value->m_type == nodetypeInteger)
     {
-        char buf[20];
-        sprintf(buf, "%d", getInteger());
-        return kl::towstring(buf);
+        wchar_t buf[30];
+        swprintf(buf, 30, L"%d", getInteger());
+        return buf;
     }
         
     if (m_value->m_type == nodetypeDouble)
     {
-        // TODO: determine how to return the number with the same precision as entered    
-        char buf[20];
-        sprintf(buf, "%f", getDouble());
-        return kl::towstring(buf);
+        return kl::dbltostr(getDouble());
     }
 
     if (m_value->m_type == nodetypeArray)

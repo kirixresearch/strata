@@ -72,6 +72,7 @@ inline int dblcompare(double x1, double x2)
         return 0;  // x1 == x2
 }
 
+std::wstring dbltostr(double d);
 
 
 // Statistics class for calculating mean, variance, and 
