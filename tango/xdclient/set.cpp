@@ -175,10 +175,14 @@ bool ClientSet::modifyStructure(tango::IStructure* struct_config, tango::IJob* j
             json_action[L"target_column"] = it->m_colname;
         }
 
+        if (it->m_action == StructureAction::actionInsert)
+        {
+            json_action[L"position"] = it->m_pos;
+        }
+
+
         if (it->m_params.isOk())
             m_database->columnToJsonNode(it->m_params, json_action);
-
-        json_action[L"position"] = it->m_pos;
     }
 
 

@@ -100,6 +100,7 @@ public:
     bool openQuery(const wxString& location, int* site_id = NULL);
     bool openScript(const wxString& location, int* site_id = NULL);
     bool openSet(const wxString& location, int* site_id = NULL);
+    bool openDataLink(const wxString& location, int* site_id = NULL);
     bool openTemplate(const wxString& location);
     bool openWeb(const wxString& location,
                  wxWebPostData* post_data = NULL,

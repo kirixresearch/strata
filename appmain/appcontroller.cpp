@@ -4118,6 +4118,9 @@ bool AppController::openAny(const wxString& _location,
     wxString protocol = location.BeforeFirst(wxT(':'));
     protocol.MakeLower();
 
+    if (protocol == wxT("sdserv") || protocol == wxT("sdservs"))
+        return openDataLink(location, site_id);
+
     // if the open as table flag is set, open the location
     // with the table browser
     if (open_mask & appOpenAsTable)
@@ -4586,6 +4589,85 @@ bool AppController::openSet(const wxString& _location, int* site_id)
 
     return true;
 }
+
+
+bool AppController::openDataLink(const wxString& location, int* site_id)
+{
+    std::wstring url = towstr(location);
+
+    int url_sign = url.find(L"://");
+    if (url_sign == -1)
+        return false;
+    
+    tango::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return false;
+
+    // parse url
+    std::wstring protocol;
+    std::wstring server;
+    std::wstring port;
+    std::wstring path;
+    std::wstring database;
+
+    protocol = url.substr(0, url_sign);
+    server = url.substr(url_sign+3);
+
+    if (server.find('/') != server.npos)
+    {
+        path = kl::afterFirst(server, '/');
+        server = kl::beforeFirst(server, '/');
+    }
+
+    if (server.find(':') != server.npos)
+    {
+        port = kl::afterFirst(server, ':');
+        server = kl::beforeFirst(server, ':');
+    }
+    
+    if (path.find('/') == path.npos)
+    {
+        database = path;
+        path = '/';
+    }
+     else
+    {
+        database = kl::beforeFirst(path, '/');
+        path = kl::afterFirst(path, '/');
+    }
+
+
+    if (path.length() == 0 || path[0] != '/')
+        path = L"/" + path;
+
+
+
+    if (!db->getFileExist(L"/.mnt"))
+        db->createFolder(L"/.mnt");
+
+    std::wstring mnt_server = L"/.mnt/" + server;
+    if (!db->getFileExist(mnt_server))
+        db->createFolder(mnt_server);
+
+    std::wstring mnt_database = mnt_server + L"/" + database;
+
+    if (!db->getFileExist(mnt_database))
+    {
+        if (port.length() == 0)
+            port = L"4800";
+
+        std::wstring conn_str = L"xdprovider=xdclient;";
+        conn_str += L"host=" + server + L";";
+        conn_str += L"port=" + port + L";";
+        conn_str += L"database=default;user id=admin;password=";
+
+        db->setMountPoint(mnt_database, conn_str, L"/");
+    }
+
+
+    return openSet(mnt_database + path, site_id);
+}
+
 
 bool AppController::openTemplate(const wxString& location)
 {

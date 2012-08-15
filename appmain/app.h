@@ -64,6 +64,8 @@ public:
     tango::IDatabasePtr getDatabase();
     void setDatabase(tango::IDatabasePtr database);
 
+    std::wstring getDbDriver();
+
     void setDatabaseLocation(const wxString& string);
     wxString getDatabaseLocation();
 

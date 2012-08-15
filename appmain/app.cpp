@@ -1213,6 +1213,17 @@ void MainApp::setDatabase(tango::IDatabasePtr database)
 }
 
 
+std::wstring MainApp::getDbDriver()
+{
+    if (m_database.isNull())
+        return L"";
+
+    xcm::class_info* class_info = xcm::get_class_info(m_database.p);
+    std::wstring class_name = kl::towstring(class_info->get_name());
+
+    return kl::beforeFirst(class_name,'.');
+}
+
 void MainApp::setDatabaseLocation(const wxString& string)
 {
     m_db_location = string;

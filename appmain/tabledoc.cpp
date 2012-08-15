@@ -4678,7 +4678,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
     }
 
     // can't update -- table doesn't have a primary key or a rowid
-    if (primary_key.empty() && getDbDriver() != wxT("xdnative"))
+    if (primary_key.empty() && getDbDriver() != wxT("xdnative") && getDbDriver() != wxT("xdclient"))
     {
         cfw::deferredAppMessageBox(_("The database table does not have a primary key specified, which is required for editing data values."),
                                    APPLICATION_NAME,
@@ -4689,7 +4689,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
     wxString col_name = model_colinfo->getName();
 
     tango::rowid_t rowid = tango_grid_model->getRowId(m_grid->getCursorRow());
-    if (getDbDriver() == wxT("xdnative") && rowid == 0)
+    if ((getDbDriver() == wxT("xdnative") || getDbDriver() == wxT("xdclient")) && rowid == 0)
         return;
 
     // quote identifier to use
@@ -6003,8 +6003,6 @@ wxString TableDoc::getDbDriver()
     
     return towx(class_info->get_name()).BeforeFirst('.');
 }
-    
-
 
 
 void TableDoc::onCut(wxCommandEvent& evt)
