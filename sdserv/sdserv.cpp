@@ -13,7 +13,7 @@
 #include "mongoose.h"
 #include "request.h"
 #include "controller.h"
-#include "jsonconfig.h"
+
 
 
 
@@ -21,11 +21,11 @@ Server g_server;
 Controller c;
 
 
-static JsonNode getJsonNodeFromFile(const std::wstring& filename)
+static kl::JsonNode getJsonNodeFromFile(const std::wstring& filename)
 {
     xf_off_t size = xf_get_file_size(filename);
     if (size < 0 || size > 1000000)
-        return JsonNode();
+        return kl::JsonNode();
     
     char* buf = new char[((int)size)+1];
     
@@ -33,7 +33,9 @@ static JsonNode getJsonNodeFromFile(const std::wstring& filename)
     if (!f)
     {
         printf("Could not open config file for reading.\n");
-        return false;
+        
+        kl::JsonNode null_return;
+        return null_return;
     }
     
     buf[0] = 0;
@@ -41,12 +43,13 @@ static JsonNode getJsonNodeFromFile(const std::wstring& filename)
     buf[read_bytes] = 0;
     xf_close(f);
     
-    JsonNode config;
+    kl::JsonNode config;
     config.fromString(kl::towstring(buf));
     delete[] buf;
     
     return config;
 }
+
 
 Server::Server()
 {
@@ -60,13 +63,13 @@ Server::~Server()
 
 std::wstring Server::getDatabaseConnectionString(const std::wstring& database_name)
 {
-    JsonNode config = getJsonNodeFromFile(m_config_file);
+    kl::JsonNode config = getJsonNodeFromFile(m_config_file);
     if (config.isNull())
         return L"";
 
-    JsonNode databases = config["databases"];
-    JsonNode database = databases[database_name];
-    JsonNode connection_string = database["connection_string"];
+    kl::JsonNode databases = config["databases"];
+    kl::JsonNode database = databases[database_name];
+    kl::JsonNode connection_string = database["connection_string"];
     
     return connection_string.toString();
 }
@@ -79,11 +82,11 @@ bool Server::useConfigFile(const std::wstring& config_file)
     size_t options_arr_size = 0;
     
     
-    JsonNode config = getJsonNodeFromFile(config_file);
+    kl::JsonNode config = getJsonNodeFromFile(config_file);
     if (config.isNull())
         return L"";
     
-    JsonNode server = config["server"];
+    kl::JsonNode server = config["server"];
     if (server.isNull())
     {
         printf("Missing server node in configuration file.\n");
@@ -95,16 +98,16 @@ bool Server::useConfigFile(const std::wstring& config_file)
     // handle 'ports' and 'ssl_ports'
     std::string tmps;
     
-    JsonNode ports_node = server["ports"];
-    for (i = 0; i < ports_node.getCount(); ++i)
+    kl::JsonNode ports_node = server["ports"];
+    for (i = 0; i < ports_node.getChildCount(); ++i)
     {
         if (tmps.length() > 0)
             tmps += ",";
         tmps += kl::itostring(ports_node[i].getInteger());
     }
     
-    JsonNode ssl_ports_node = server["ssl_ports"];
-    for (i = 0; i < ssl_ports_node.getCount(); ++i)
+    kl::JsonNode ssl_ports_node = server["ssl_ports"];
+    for (i = 0; i < ssl_ports_node.getChildCount(); ++i)
     {
         if (tmps.length() > 0)
             tmps += ",";

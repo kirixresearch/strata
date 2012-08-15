@@ -181,10 +181,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\jsonconfig.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\mongoose.c"
 				>
 			</File>
@@ -204,10 +200,6 @@
 			>
 			<File
 				RelativePath=".\controller.h"
-				>
-			</File>
-			<File
-				RelativePath=".\jsonconfig.h"
 				>
 			</File>
 			<File

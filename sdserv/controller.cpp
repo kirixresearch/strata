@@ -11,7 +11,7 @@
 #include "sdserv.h"
 #include "controller.h"
 #include "request.h"
-#include "jsonconfig.h"
+
 
 
 Controller::Controller()
@@ -159,7 +159,7 @@ std::wstring Controller::createHandle() const
     return kl::towstring(kl::md5str(buf));
 }
 
-static void jsonNodeToColumn(JsonNode& column, tango::IColumnInfoPtr col)
+static void JsonNodeToColumn(kl::JsonNode& column, tango::IColumnInfoPtr col)
 {
     std::wstring type = column["type"];
     int ntype;
@@ -190,7 +190,7 @@ static void jsonNodeToColumn(JsonNode& column, tango::IColumnInfoPtr col)
 
 void Controller::returnApiError(RequestInfo& req, const char* msg, const char* code)
 {
-    JsonNode response;
+    kl::JsonNode response;
     response["success"].setBoolean(false);
     response["error_code"] = code;
     response["msg"] = msg;
@@ -239,7 +239,7 @@ void Controller::apiLogin(RequestInfo& req)
     addServerSessionObject(session_id, session);
 
     // return success and session information to caller
-    JsonNode response;
+    kl::JsonNode response;
     response["success"].setBoolean(true);
     response["session_id"] = session_id;
     req.write(response.toString());
@@ -275,7 +275,7 @@ void Controller::apiSelectDb(RequestInfo& req)
     if (session->db)
     {
         // return success to caller
-        JsonNode response;
+        kl::JsonNode response;
         response["success"].setBoolean(true);
         req.write(response.toString());
     } 
@@ -303,9 +303,9 @@ void Controller::apiFolderInfo(RequestInfo& req)
     
 
     // return success to caller
-    JsonNode response;
+    kl::JsonNode response;
     response["success"].setBoolean(true);
-    JsonNode items = response["items"];
+    kl::JsonNode items = response["items"];
 
     tango::IFileInfoEnumPtr folder_info = db->getFolderInfo(path);
     if (folder_info.isOk())
@@ -313,7 +313,7 @@ void Controller::apiFolderInfo(RequestInfo& req)
         size_t i, cnt = folder_info->size();
         for (i = 0; i < cnt; ++i)
         {
-            JsonNode item = items.appendElement();
+            kl::JsonNode item = items.appendElement();
 
             tango::IFileInfoPtr finfo = folder_info->getItem(i);
             item["name"] = finfo->getName();
@@ -370,9 +370,9 @@ void Controller::apiFileInfo(RequestInfo& req)
     
 
     // return success to caller
-    JsonNode response;
+    kl::JsonNode response;
     response["success"].setBoolean(true);
-    JsonNode file_info = response["file_info"];
+    kl::JsonNode file_info = response["file_info"];
 
     tango::IFileInfoPtr finfo = db->getFileInfo(path);
     if (finfo.isOk())
@@ -454,7 +454,7 @@ void Controller::apiCreateStream(RequestInfo& req)
     session->streams[handle] = stream;
         
     // return success to caller
-    JsonNode response;
+    kl::JsonNode response;
     response["success"].setBoolean(true);
     response["handle"] = handle;
     
@@ -486,19 +486,19 @@ void Controller::apiCreateTable(RequestInfo& req)
     std::wstring path = req.getValue(L"path");
     std::wstring s_columns = req.getValue(L"columns");
     
-    JsonNode columns;
+    kl::JsonNode columns;
     columns.fromString(s_columns);
     
     
     
     tango::IStructurePtr structure = db->createStructure();
 
-    int i, cnt = columns.getCount();
+    int i, cnt = columns.getChildCount();
     for (i = 0; i < cnt; ++i)
     {
         tango::IColumnInfoPtr col = structure->createColumn();
         
-        JsonNode column = columns[i];
+        kl::JsonNode column = columns[i];
         std::wstring type = column["type"];
         int ntype;
 
@@ -534,7 +534,7 @@ void Controller::apiCreateTable(RequestInfo& req)
     }
 
     // return success to caller
-    JsonNode response;
+    kl::JsonNode response;
     response["success"].setBoolean(true);
     
     req.write(response.toString());
@@ -562,7 +562,7 @@ void Controller::apiCreateFolder(RequestInfo& req)
     if (db->createFolder(path))
     {
         // return success to caller
-        JsonNode response;
+        kl::JsonNode response;
         response["success"].setBoolean(true);
         req.write(response.toString());
     }
@@ -602,7 +602,7 @@ void Controller::apiMoveFile(RequestInfo& req)
     if (db->moveFile(path,destination))
     {
         // return success to caller
-        JsonNode response;
+        kl::JsonNode response;
         response["success"].setBoolean(true);
         req.write(response.toString());
     }
@@ -642,7 +642,7 @@ void Controller::apiRenameFile(RequestInfo& req)
     if (db->renameFile(path, new_name))
     {
         // return success to caller
-        JsonNode response;
+        kl::JsonNode response;
         response["success"].setBoolean(true);
         req.write(response.toString());
     }
@@ -674,7 +674,7 @@ void Controller::apiDeleteFile(RequestInfo& req)
     if (db->deleteFile(path))
     {
         // return success to caller
-        JsonNode response;
+        kl::JsonNode response;
         response["success"].setBoolean(true);
         req.write(response.toString());
     }
@@ -685,7 +685,7 @@ void Controller::apiDeleteFile(RequestInfo& req)
 }
 
 
-static void tangoNodeToJsonNode(tango::INodeValuePtr nv, JsonNode& jn)
+static void tangoNodeToJsonNode(tango::INodeValuePtr nv, kl::JsonNode& jn)
 {
     size_t i, cnt;
     cnt = nv->getChildCount();
@@ -693,7 +693,7 @@ static void tangoNodeToJsonNode(tango::INodeValuePtr nv, JsonNode& jn)
     {
         for (i = 0; i < cnt; ++i)
         {
-            JsonNode child = jn[nv->getChildName(i)];
+            kl::JsonNode child = jn[nv->getChildName(i)];
             tangoNodeToJsonNode(nv->getChildByIdx(i), child);
         }
     }
@@ -706,7 +706,7 @@ static void tangoNodeToJsonNode(tango::INodeValuePtr nv, JsonNode& jn)
 
 
 
-static void jsonNodeToTangoNode(JsonNode& jn, tango::INodeValuePtr nv)
+static void JsonNodeToTangoNode(kl::JsonNode& jn, tango::INodeValuePtr nv)
 {
     std::vector<std::wstring> keys = jn.getChildKeys();
 
@@ -717,9 +717,9 @@ static void jsonNodeToTangoNode(JsonNode& jn, tango::INodeValuePtr nv)
         for (it = keys.begin(); it < keys.end(); ++it)
         {
             tango::INodeValuePtr child = nv->createChild(*it);
-            JsonNode jchild = jn[*it];
+            kl::JsonNode jchild = jn[*it];
             
-            jsonNodeToTangoNode(jchild, child);
+            JsonNodeToTangoNode(jchild, child);
         }
     }
      else
@@ -753,7 +753,7 @@ void Controller::apiReadNodeFile(RequestInfo& req)
 
  
     // return success to caller
-    JsonNode response;
+    kl::JsonNode response;
     response["success"].setBoolean(true);
     tangoNodeToJsonNode(nv, response["data"]);
 
@@ -776,7 +776,7 @@ void Controller::apiWriteNodeFile(RequestInfo& req)
     std::wstring path = req.getValue(L"path");
 
 
-    JsonNode node;
+    kl::JsonNode node;
     if (!node.fromString(req.getValue(L"data")))
     {
         returnApiError(req, "Malformed data");
@@ -794,11 +794,11 @@ void Controller::apiWriteNodeFile(RequestInfo& req)
     }
 
 
-    jsonNodeToTangoNode(node, root);
+    JsonNodeToTangoNode(node, root);
     
 
     // return success to caller
-    JsonNode response;
+    kl::JsonNode response;
     response["success"].setBoolean(true);
     req.write(response.toString());
 }
@@ -834,7 +834,7 @@ void Controller::apiOpenStream(RequestInfo& req)
     session->streams[handle] = stream;
         
     // return success to caller
-    JsonNode response;
+    kl::JsonNode response;
     response["success"].setBoolean(true);
     response["handle"] = handle;
     
@@ -903,7 +903,7 @@ void Controller::apiReadStream(RequestInfo& req)
 
 
     // return success to caller
-    JsonNode response;
+    kl::JsonNode response;
     response["success"].setBoolean(true);
     response["data"] = base64_buf;
     
@@ -974,7 +974,7 @@ void Controller::apiWriteStream(RequestInfo& req)
     delete[] buf;
     
     // return success to caller
-    JsonNode response;
+    kl::JsonNode response;
     response["success"].setBoolean(true);
     response["written"] = (int)written;
     
@@ -1017,7 +1017,7 @@ void Controller::apiQuery(RequestInfo& req)
         session->iters[handle].rowpos = 1;
         
         // return success to caller
-        JsonNode response;
+        kl::JsonNode response;
         response["success"].setBoolean(true);
         response["handle"] = handle;
         
@@ -1052,7 +1052,7 @@ void Controller::apiQuery(RequestInfo& req)
         session->iters[handle].rowpos = 1;
         
         // return success to caller
-        JsonNode response;
+        kl::JsonNode response;
         response["success"].setBoolean(true);
         response["handle"] = handle;
         
@@ -1103,7 +1103,7 @@ void Controller::apiGroupQuery(RequestInfo& req)
     set->storeObject(handle);
     
     // return success to caller
-    JsonNode response;
+    kl::JsonNode response;
     response["success"].setBoolean(true);
     response["path"] = handle;
     
@@ -1122,7 +1122,7 @@ void Controller::apiDescribeTable(RequestInfo& req)
         return;
 
 
-    JsonNode response;
+    kl::JsonNode response;
     
     
     tango::IStructurePtr structure;
@@ -1162,10 +1162,10 @@ void Controller::apiDescribeTable(RequestInfo& req)
     int idx, count = structure->getColumnCount();
     
     // set the items
-    JsonNode columns = response["columns"];
+    kl::JsonNode columns = response["columns"];
     for (idx = 0; idx < count; ++idx)
     {
-        JsonNode item = columns.appendElement();
+        kl::JsonNode item = columns.appendElement();
         
         tango::IColumnInfoPtr info = structure->getColumnInfoByIdx(idx);
         item["name"] = info->getName();
@@ -1369,18 +1369,18 @@ void Controller::apiAlter(RequestInfo& req)
     
     
     
-    JsonNode actions;
+    kl::JsonNode actions;
     actions.fromString(s_actions);
     
-    size_t i, cnt = actions.getCount();
+    size_t i, cnt = actions.getChildCount();
     for (i = 0; i < cnt; ++i)
     {
-        JsonNode action = actions[i];
+        kl::JsonNode action = actions[i];
         
         if (action["action"].getString() == L"create")
         {
             tango::IColumnInfoPtr colinfo = structure->createColumn();
-            jsonNodeToColumn(action, colinfo);
+            JsonNodeToColumn(action, colinfo);
         }
          else if (action["action"].getString() == L"insert")
         {
@@ -1391,7 +1391,7 @@ void Controller::apiAlter(RequestInfo& req)
                 return;
             }
             
-            jsonNodeToColumn(action, colinfo);
+            JsonNodeToColumn(action, colinfo);
         }
          else if (action["action"].getString() == L"modify")
         {
@@ -1402,7 +1402,7 @@ void Controller::apiAlter(RequestInfo& req)
                 return;
             }
             
-            jsonNodeToColumn(action, colinfo);
+            JsonNodeToColumn(action, colinfo);
         }
          else if (action["action"].getString() == L"delete")
         {
@@ -1419,7 +1419,7 @@ void Controller::apiAlter(RequestInfo& req)
     set->modifyStructure(structure, NULL);
     
     // return success to caller
-    JsonNode response;
+    kl::JsonNode response;
     response["success"].setBoolean(true);
     
     req.write(response.toString());
@@ -1458,7 +1458,7 @@ void Controller::apiRefresh(RequestInfo& req)
     it->second.columns.clear();
     
     // return success to caller
-    JsonNode response;
+    kl::JsonNode response;
     response["success"].setBoolean(true);
 
     req.write(response.toString());
@@ -1594,7 +1594,7 @@ void Controller::apiStartBulkInsert(RequestInfo& req)
     }
 
     // return success to caller
-    JsonNode response;
+    kl::JsonNode response;
     response["success"].setBoolean(true);
     response["handle"] = handle;
     
@@ -1626,15 +1626,15 @@ void Controller::apiBulkInsert(RequestInfo& req)
     SessionRowInserter& ri = it->second;
     
     std::wstring s_rows = req.getValue(L"rows");
-    JsonNode rows;
+    kl::JsonNode rows;
     rows.fromString(s_rows);
     
-    size_t rown, row_cnt = rows.getCount();
+    size_t rown, row_cnt = rows.getChildCount();
     size_t coln, col_cnt = ri.columns.size();
     for (rown = 0; rown < row_cnt; ++rown)
     {
-        JsonNode row = rows[rown];
-        if (row.getCount() != col_cnt)
+        kl::JsonNode row = rows[rown];
+        if (row.getChildCount() != col_cnt)
         {
             returnApiError(req, "Column count mismatch");
             return;
@@ -1642,7 +1642,7 @@ void Controller::apiBulkInsert(RequestInfo& req)
         
         for (coln = 0; coln < col_cnt; ++coln)
         {
-            JsonNode col = row[coln];
+            kl::JsonNode col = row[coln];
             
             if (col.isNull())
             {
@@ -1671,7 +1671,7 @@ void Controller::apiBulkInsert(RequestInfo& req)
     }
     
     // return success to caller
-    JsonNode response;
+    kl::JsonNode response;
     response["success"].setBoolean(true);
     response["handle"] = handle;
     
@@ -1703,7 +1703,7 @@ void Controller::apiFinishBulkInsert(RequestInfo& req)
     session->inserters.erase(it);
     
     // return success to caller
-    JsonNode response;
+    kl::JsonNode response;
     response["success"].setBoolean(true);
 
     req.write(response.toString());
