@@ -1384,7 +1384,7 @@ void Controller::apiAlter(RequestInfo& req)
         }
          else if (action["action"].getString() == L"insert")
         {
-            tango::IColumnInfoPtr colinfo = structure->inseryColumn(action["position"].getInteger());
+            tango::IColumnInfoPtr colinfo = structure->insertColumn(action["position"].getInteger());
             if (colinfo.isNull())
             {
                 returnApiError(req, "Invalid insert position");
