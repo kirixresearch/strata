@@ -579,7 +579,7 @@ void ExprBuilderPanel::construct()
                                         ID_Expr,
                                         wxDefaultPosition,
                                         wxSize(100,40),
-                                        kcl::DEFAULT_BORDER | wxVSCROLL | wxALWAYS_SHOW_SB);
+                                        kcl::DEFAULT_BORDER | wxVSCROLL);
 
     // make the m_expr_text text control a drop target for these grids
     kcl::GridDataDropTarget* drop_target = new kcl::GridDataDropTarget(NULL);
