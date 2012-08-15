@@ -139,7 +139,7 @@ private:
 
     bool refreshDataAccessInfo();
     void clearDataAccessInfo();
-
+    void clearCache();
 
 private:
 

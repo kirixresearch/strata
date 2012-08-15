@@ -137,8 +137,63 @@ tango::IStructurePtr ClientSet::getStructure()
 
 bool ClientSet::modifyStructure(tango::IStructure* struct_config, tango::IJob* job)
 {
-    bool done_flag = false;
-    CommonBaseSet::modifyStructure(struct_config, &done_flag);
+    if (!struct_config)
+        return false;
+
+    m_structure.clear();
+
+
+    tango::IStructurePtr structure = struct_config;
+    IStructureInternalPtr struct_internal = structure;
+    if (struct_internal.isNull())
+        return false;
+
+
+    JsonNode json_actions;
+    json_actions.setArray();
+
+    std::vector<StructureAction>& actions = struct_internal->getStructureActions();
+    std::vector<StructureAction>::iterator it;
+    for (it = actions.begin(); it != actions.end(); ++it)
+    {
+        JsonNode json_action = json_actions.appendElement();
+        
+        switch (it->m_action)
+        {
+            case StructureAction::actionCreate:  json_action[L"action"] = L"create"; break;
+            case StructureAction::actionModify:  json_action[L"action"] = L"modify"; break;
+            case StructureAction::actionDelete:  json_action[L"action"] = L"delete"; break;
+            case StructureAction::actionMove:    json_action[L"action"] = L"move";   break;
+            case StructureAction::actionInsert:  json_action[L"action"] = L"insert"; break;
+        }
+
+        if (it->m_action == StructureAction::actionModify ||
+            it->m_action == StructureAction::actionDelete ||
+            it->m_action == StructureAction::actionMove ||
+            it->m_action == StructureAction::actionInsert)
+        {
+            json_action[L"target_column"] = it->m_colname;
+        }
+
+        if (it->m_params.isOk())
+            m_database->columnToJsonNode(it->m_params, json_action);
+
+        json_action[L"position"] = it->m_pos;
+    }
+
+
+
+    ServerCallParams params;
+    params.setParam(L"path", m_path);
+    params.setParam(L"actions", json_actions.toString());
+    
+    std::wstring sres = m_database->serverCall(L"/api/alter", &params);
+    JsonNode response;
+    response.fromString(sres);
+
+    if (!response["success"].getBoolean())
+        return false;
+
     return true;
 }
 

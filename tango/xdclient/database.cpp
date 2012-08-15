@@ -204,6 +204,34 @@ tango::IStructurePtr ClientDatabase::jsonToStructure(JsonNode& node)
 }
 
 
+void ClientDatabase::columnToJsonNode(tango::IColumnInfoPtr info, JsonNode& column)
+{  
+    column["name"] = info->getName();
+
+    switch (info->getType())
+    {
+        default:
+        case tango::typeUndefined:     column["type"] = L"undefined";      break;
+        case tango::typeInvalid:       column["type"] = L"invalid";        break;
+        case tango::typeCharacter:     column["type"] = L"character";      break; 
+        case tango::typeWideCharacter: column["type"] = L"widecharacter";  break;
+        case tango::typeNumeric:       column["type"] = L"numeric";        break;
+        case tango::typeDouble:        column["type"] = L"double";         break;
+        case tango::typeInteger:       column["type"] = L"integer";        break;
+        case tango::typeDate:          column["type"] = L"date";           break;
+        case tango::typeDateTime:      column["type"] = L"datetime";       break;
+        case tango::typeBoolean:       column["type"] = L"boolean";        break;
+        case tango::typeBinary:        column["type"] = L"binary";         break;
+    }
+
+    column["width"].setInteger(info->getWidth());
+    column["scale"].setInteger(info->getScale());   
+    column["expression"] = info->getExpression();     
+}
+
+
+
+
 std::wstring ClientDatabase::structureToJson(tango::IStructurePtr structure)
 {
     // set the total number of items

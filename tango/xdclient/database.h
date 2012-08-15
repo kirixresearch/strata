@@ -141,6 +141,7 @@ public:
 
     tango::IStructurePtr jsonToStructure(JsonNode& node);
     std::wstring structureToJson(tango::IStructurePtr structure);
+    void columnToJsonNode(tango::IColumnInfoPtr colinfo, JsonNode& column);
 
 private:
 

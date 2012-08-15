@@ -314,6 +314,14 @@ tango::IStructurePtr ClientIterator::getStructure()
 
 void ClientIterator::refreshStructure()
 {
+    clearCache();
+
+    ServerCallParams params;
+    params.setParam(L"handle", m_handle);
+    std::wstring sres = m_database->serverCall(L"/api/refresh", &params);
+    JsonNode response;
+    response.fromString(sres);
+
     refreshDataAccessInfo();
 }
 
@@ -385,6 +393,7 @@ bool ClientIterator::modifyStructure(tango::IStructure* struct_config, tango::IJ
                         delete (*it2)->expr;
                     (*it2)->expr_text = it->m_params->getExpression();
                     (*it2)->expr = parse(it->m_params->getExpression());
+                    (*it2)->calculated = true;
                 }
             }
         }
@@ -406,6 +415,7 @@ bool ClientIterator::modifyStructure(tango::IStructure* struct_config, tango::IJ
             dai->ordinal = m_fields.size();
             dai->expr_text = it->m_params->getExpression();
             dai->expr = parse(it->m_params->getExpression());
+            dai->calculated = true;
             m_fields.push_back(dai);
         }
     }
@@ -431,6 +441,7 @@ bool ClientIterator::modifyStructure(tango::IStructure* struct_config, tango::IJ
             dai->ordinal = m_fields.size();
             dai->expr_text = it->m_params->getExpression();
             dai->expr = parse(it->m_params->getExpression());
+            dai->calculated = true;
             m_fields.insert(m_fields.begin()+insert_idx, dai);
         }
     }
@@ -782,4 +793,12 @@ void ClientIterator::clearDataAccessInfo()
     }
     
     m_fields.clear();
+}
+
+void ClientIterator::clearCache()
+{
+    m_cache_row_count = 0;
+    m_cache_start = 0;
+    m_current_row_ptr = NULL;
+    m_cache_rows.clear();
 }

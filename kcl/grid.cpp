@@ -4159,7 +4159,7 @@ CellData* Grid::getCellData(int row, int col)
 {
     row -= m_row_offset;
 
-    if (row < 0 || row >= (int)m_rowdata.size())
+    if (row < 0 || row >= (int)m_rowdata.size() || col < 0)
     {
         return &m_empty_cell;
     }
