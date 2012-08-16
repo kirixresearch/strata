@@ -15,8 +15,7 @@
 #include "request.h"
 #include <kl/portable.h>
 #include "../xdcommon/xdcommon.h"
-#include "../../kscript/json.h"
-
+#include <kl/json.h>
 
 const std::string empty_string = "";
 const std::wstring empty_wstring = L"";
@@ -87,6 +86,63 @@ void ClientIterator::setIteratorFlags(unsigned int mask, unsigned int value)
 {
 }
 
+
+
+static wchar_t* js_zl_strchr(wchar_t* str,
+                             wchar_t ch,
+                             const wchar_t* open_parens,
+                             const wchar_t* close_parens)
+{
+    int paren_level = 0;
+    wchar_t quote_char = 0;
+    wchar_t* start = str;
+
+    while (*str)
+    {
+        if (quote_char)
+        {
+            if (*str == L'\\')
+            {
+                // escaped character
+                str++;
+                if (!*str)
+                    break;
+                str++;
+                continue;
+            }   
+            
+            if (*str == quote_char)
+            {
+                quote_char = 0;
+                str++;
+                continue;
+            }
+        }
+         else
+        {
+            if (*str == L'\'')
+                quote_char = L'\'';
+            else if (*str == L'"')
+                quote_char = L'\"';
+
+            if (open_parens && close_parens)
+            {
+                if (wcschr(open_parens, *str))
+                    paren_level++;
+                else if (wcschr(close_parens, *str))
+                    paren_level--;
+            }
+
+            if (paren_level == 0 && *str == ch)
+                return str;
+        }
+        
+        str++;
+    }
+
+    return NULL;
+}
+
 static void dequote(std::wstring& str)
 {
     size_t len = str.length();
@@ -130,7 +186,63 @@ void ClientIterator::skip(int delta)
         std::wstring sres = m_database->serverCall(L"/api/fetchrows", &params);
 
 
+        m_cache_rows.clear();
+        m_cache_rows.resize(100);
 
+        wchar_t* data = (wchar_t*)sres.c_str();
+        wchar_t* start;
+        wchar_t* end;
+
+        wchar_t* col_start;
+        wchar_t* col_end;
+
+        std::wstring colvalue;
+
+        size_t coln, colcnt, rown = 0;
+    
+        start = wcschr(data, '[');
+        if (start)
+            start = wcschr(start+1, '[');
+        while (start)
+        {
+            start++;
+            end = js_zl_strchr(start, ']', NULL, NULL);
+            if (!end)
+                break;
+
+            ClientCacheRow& cache_row = m_cache_rows[rown];
+            cache_row.values.clear();
+
+            col_start = start;
+            col_end = NULL;
+            while (col_end != end)
+            {
+                col_end = js_zl_strchr(col_start, ',', NULL, NULL);
+                if (col_end == NULL || col_end > end)
+                    col_end = end;
+
+                colvalue.assign(col_start, col_end);
+                kl::trim(colvalue);
+                dequote(colvalue);
+                cache_row.values.push_back(colvalue);
+
+                col_start = col_end+1;
+            }
+            
+            rown++;
+            start = wcschr(end, '[');
+        }
+
+
+        m_cache_rows.resize(rown);
+
+        m_cache_start = new_row;
+        m_cache_row_count = rown;
+
+        m_current_row_ptr = m_current_row_ptr = &(m_cache_rows[new_row - m_cache_start]);
+        m_current_row = new_row;
+
+        /*
         m_cache_rows.clear();
         m_cache_rows.resize(100);
 
@@ -180,11 +292,12 @@ void ClientIterator::skip(int delta)
 
         m_current_row_ptr = m_current_row_ptr = &(m_cache_rows[new_row - m_cache_start]);
         m_current_row = new_row;
+        */
 
         /*
         clock_t c1,c2;
         c1 = clock();
-        JsonNode response;
+        kl::JsonNode response;
         response.fromString(sres);
         c2 = clock();
 
@@ -194,8 +307,8 @@ void ClientIterator::skip(int delta)
         }
 
 
-        JsonNode rows = response["rows"];
-        size_t rown, rowcnt = rows.getCount();
+        kl::JsonNode rows = response["rows"];
+        size_t rown, rowcnt = rows.getChildCount();
         size_t coln, colcnt;
 
         m_cache_rows.clear();
@@ -203,8 +316,8 @@ void ClientIterator::skip(int delta)
 
         for (rown = 0; rown < rowcnt; ++rown)
         {
-            JsonNode row = rows[rown];
-            colcnt = row.getCount();
+            kl::JsonNode row = rows[rown];
+            colcnt = row.getChildCount();
 
             ClientCacheRow& cache_row = m_cache_rows[rown];
             cache_row.values.resize(colcnt);
@@ -219,7 +332,6 @@ void ClientIterator::skip(int delta)
         m_current_row_ptr = m_current_row_ptr = &(m_cache_rows[new_row - m_cache_start]);
         m_current_row = new_row;
         */
-
     }
 
     
