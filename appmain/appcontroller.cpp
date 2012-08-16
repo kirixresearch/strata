@@ -182,6 +182,7 @@ BEGIN_EVENT_TABLE(AppController, wxEvtHandler)
     
     //EVT_MENU(ID_Special_RemoveDupRecs, AppController::onRemoveDupRecs)
 
+    EVT_AUITOOLBAR_TOOL_DROPDOWN(ID_File_Bookmark, AppController::onBookmarkDropDown)
     EVT_AUITOOLBAR_TOOL_DROPDOWN(ID_View_ViewSwitcher, AppController::onViewSwitcherDropDown)
     EVT_AUITOOLBAR_TOOL_DROPDOWN(ID_Format_FillColor, AppController::onFillColorDropDown)
     EVT_AUITOOLBAR_TOOL_DROPDOWN(ID_Format_LineColor, AppController::onLineColorDropDown)
@@ -2496,6 +2497,53 @@ void AppController::onViewSwitcher(wxCommandEvent& evt)
 {
     doViewSwitcher(false);
 }
+
+void AppController::onBookmarkDropDown(wxAuiToolBarEvent& evt)
+{
+    if (evt.IsDropDownClicked())
+    {
+        wxFrame* main_window = g_app->getMainWindow();
+
+        wxMenu menuPopup;
+
+        menuPopup.Append(9800, _("&New Bookmark..."));
+        menuPopup.Append(9801, _("Share Data View..."));
+
+        m_project_toolbar->SetToolSticky(ID_File_Bookmark, true);
+        
+        // FIXME: The positioning of this menu is troublesome.  On Windows,
+        //        if the menu is going to go offscreen, Windows moves
+        //        the menu so that the menu no longer goes offscreen,
+        //        however, this means that the menu no longer lines up
+        //        with the toolbar item.  Ideally, we should measure
+        //        the menu ourselves and determine if it should be
+        //        popped up from the bottom left or bottom right
+        
+        // the dropdown arrow was clicked, show the view choices to the user
+        wxRect rect = m_project_toolbar->GetToolRect(ID_File_Bookmark);
+        wxPoint pt(rect.GetRight()+1, rect.GetBottom());
+
+        cfw::CommandCapture* cc = new cfw::CommandCapture;
+        main_window->PushEventHandler(cc);
+        main_window->PopupMenu(&menuPopup, pt);
+        int command = cc->getLastCommandId();
+        main_window->PopEventHandler(true);
+
+
+        if (command == 9800)
+        {
+            wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED, ID_File_Bookmark);
+            ::wxPostEvent(this, e);
+        }
+
+        m_project_toolbar->SetToolSticky(ID_View_ViewSwitcher, false);
+    }
+     else
+    {
+        evt.Skip();
+    }
+}
+
 
 void AppController::onViewSwitcherDropDown(wxAuiToolBarEvent& evt)
 {

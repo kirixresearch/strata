@@ -15,8 +15,6 @@
 #include "dbdoc.h"
 
 
-// -- create the popup control for the URL combo box --
-
 // this typedef is a workaround for the C2352 problem in VC++ 6.0
 typedef kcl::BitmapComboPopup UrlComboPopupBase;
 
@@ -46,7 +44,6 @@ class UrlComboPopup : public kcl::BitmapComboPopup
 };
 
 
-// -- create the bitmap id to bitmap map --
 
 void initIdBitmapMap()
 {
@@ -91,13 +88,13 @@ StandardToolbar::StandardToolbar(wxWindow* parent,
 {
     SetToolPacking(0);
     
-    // -- find combo box --
+    // find combo box
     FindComboPopup* find_popup = new FindComboPopup;
     m_find = new FindComboControl(this, ID_Frame_FindCtrl, find_popup);
     m_find->setSingleClickSelect(true);
     m_find->setOverlayText(_("Find/Filter..."));
     
-    // -- url combo box --
+    // url combo box
     UrlComboPopup* url_popup = new UrlComboPopup;
     m_url = new kcl::BitmapComboControl(this, ID_Frame_UrlCtrl, url_popup);
     m_url->setDefaultBitmap(GETBMP(gf_blank_document_16));
@@ -160,6 +157,7 @@ void StandardToolbar::setSmallIcons(bool small_icons)
     SetToolProportion(ID_Frame_FindCtrl, 1);
 
     SetToolDropDown(ID_Project_New, true);
+    SetToolDropDown(ID_File_Bookmark, true);
     SetToolDropDown(ID_View_ViewSwitcher, true);
     
     SetToolLabel(ID_File_Back, _("Back"));
@@ -367,10 +365,10 @@ FormatToolbar::FormatToolbar(wxWindow* parent,
     SetArtProvider(new FormatToolbarArt);
     SetToolPacking(0);
 
-    // -- zoom combo box --
+    // zoom combo box
     m_zoom_combo = new ZoomComboControl(this, ID_View_ZoomCombo);
     
-    // -- font combo box --
+    // font combo box
     m_fontface_combo = new FontComboControl(this, ID_Format_FontFace_Combo);
 
     // we need to allow an empty string in this combobox because it
@@ -378,7 +376,7 @@ FormatToolbar::FormatToolbar(wxWindow* parent,
     // want to show an empty string in this control
     m_fontface_combo->Append(wxEmptyString);
 
-    // -- font size combo box --
+    // font size combo box
     m_fontsize_combo = new FontSizeComboControl(this, ID_Format_FontSize_Combo);
     
     setEmbedded(false);

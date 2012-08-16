@@ -274,6 +274,7 @@ private:
     void onViewChanged(wxCommandEvent& evt);
     void onViewSwitcher(wxCommandEvent& evt);
     void onCutCopyPaste(wxCommandEvent& evt);
+    void onBookmarkDropDown(wxAuiToolBarEvent& evt);
     void onViewSwitcherDropDown(wxAuiToolBarEvent& evt);
     void onFillColorDropDown(wxAuiToolBarEvent& evt);
     void onLineColorDropDown(wxAuiToolBarEvent& evt);
