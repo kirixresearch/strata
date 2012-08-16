@@ -1290,13 +1290,18 @@ void Controller::apiFetchRows(RequestInfo& req)
     str = L"{ \"success\": true, \"rows\": [ ";
     std::wstring cell;
     
-    int row = 0, col;
+    int row = 0, col, rowcnt = 0;
     for (row = 0; row < limit; ++row)
     {
-        if (row != 0)
+        if (iter->eof())
+            break;
+        
+        if (rowcnt > 0)
             str += L"],[";
              else
             str += L"[";
+        
+        rowcnt++;
         
         for (col = 0; col < (int)qr.columns.size(); ++col)
         {
@@ -1347,12 +1352,12 @@ void Controller::apiFetchRows(RequestInfo& req)
         
         iter->skip(1);
         qr.rowpos++;
-        
-        if (iter->eof())
-            break;
     }
     
-    str += L"] ] }";
+    if (rowcnt == 0)
+        str += L"] }";
+         else
+        str += L"] ] }";
     
     req.write(kl::tostring(str));
 }
