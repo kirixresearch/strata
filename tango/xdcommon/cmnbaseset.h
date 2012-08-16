@@ -29,7 +29,6 @@ public:
     std::wstring getObjectPath();
     
     bool isTemporary() { return false; }
-    bool storeObject(const std::wstring& ofs_path) { return false; }
 
 protected:
 

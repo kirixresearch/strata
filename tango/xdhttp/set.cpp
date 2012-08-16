@@ -73,11 +73,6 @@ bool HttpSet::isTemporary()
     return false;
 }
 
-bool HttpSet::storeObject(const std::wstring& ofs_path)
-{
-    return false;
-}
-
 unsigned int HttpSet::getSetFlags()
 {
     if (m_structure.isNull())

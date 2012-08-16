@@ -3360,10 +3360,12 @@ bool Database::storeObject(xcm::IObject* _obj, const std::wstring& ofs_path)
 
     // get the ISet interface
     tango::ISetPtr obj = _obj;
-    if (!obj)
-    {
+    if (obj.isNull())
         return false;
-    }
+
+    ISetInternalPtr intset = obj;
+    if (intset.isNull())
+        return false;
 
     // check path validity
 
@@ -3389,8 +3391,7 @@ bool Database::storeObject(xcm::IObject* _obj, const std::wstring& ofs_path)
     }
 
     // store the object
-
-    return obj->storeObject(ofs_path);
+    return intset->storeObject(ofs_path);
 }
 
 

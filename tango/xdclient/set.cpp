@@ -98,12 +98,10 @@ std::wstring ClientSet::getObjectPath()
 
 bool ClientSet::isTemporary()
 {
-    return false;
-}
-
-bool ClientSet::storeObject(const std::wstring& path)
-{
-    return false;
+    if (m_path.find(L"/.temp/") != m_path.npos)
+        return true;
+         else
+        return false;
 }
 
 unsigned int ClientSet::getSetFlags()

@@ -36,7 +36,6 @@ public:
     void setObjectPath(const std::wstring& path) { }
     std::wstring getObjectPath() { return L""; }
     bool isTemporary() { return false; }
-    bool storeObject(const std::wstring& ofs_path) { return false; }
     
     // -- index functions --
     tango::IIndexInfoEnumPtr getIndexEnum();

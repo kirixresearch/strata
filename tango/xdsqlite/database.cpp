@@ -344,7 +344,7 @@ bool SlDatabase::storeObject(xcm::IObject* _obj,
 
     // -- store the object --
 
-    return obj->storeObject(ofs_path);
+    return moveFile(obj->getObjectPath(), ofs_path);
 }
 
 tango::IJobPtr SlDatabase::createJob()

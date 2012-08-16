@@ -67,12 +67,6 @@ bool SlSet::isTemporary()
     return false;
 }
 
-bool SlSet::storeObject(const std::wstring& ofs_path)
-{
-    return m_dbint->moveFile(getObjectPath(), ofs_path);
-}
-
-
 // -- tango::ISet interface implementation --
 
 unsigned int SlSet::getSetFlags()

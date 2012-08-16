@@ -569,7 +569,6 @@ public:
     virtual void setObjectPath(const std::wstring& path) = 0;
     virtual std::wstring getObjectPath() = 0;
     virtual bool isTemporary() = 0;
-    virtual bool storeObject(const std::wstring& path) = 0;
 
     virtual unsigned int getSetFlags() = 0;
     virtual std::wstring getSetId() = 0;

@@ -117,24 +117,6 @@ bool CommonFilterSet::isTemporary()
     return (wcsstr(ofs_path.c_str(), L".temp") != NULL ? true : false);
 }
 
-bool CommonFilterSet::storeObject(const std::wstring& _ofs_path)
-{
-    if (_ofs_path.empty() || iswspace(*(_ofs_path.c_str())))
-        return false;
-  
-    // -- prepend a slash if it is missing --
-    std::wstring ofs_path;
-    if (*(_ofs_path.c_str()) != L'/')
-        ofs_path = L"/";
-    ofs_path += _ofs_path;
-
-    if (!m_database->moveFile(m_ofspath, ofs_path))
-        return false;
-
-    m_temporary = false;
-
-    return true;
-}
 
 
 std::wstring CommonFilterSet::getSetId()

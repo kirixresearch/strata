@@ -43,7 +43,6 @@ public:
     void setObjectPath(const std::wstring& path);
     std::wstring getObjectPath();
     bool isTemporary();
-    bool storeObject(const std::wstring& ofs_path);
     
     unsigned int getSetFlags();
     std::wstring getSetId();

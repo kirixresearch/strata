@@ -51,7 +51,6 @@ public:
     void setObjectPath(const std::wstring& new_path);
     std::wstring getObjectPath();
     bool isTemporary();
-    bool storeObject(const std::wstring& ofs_path);
 
     // -- ICommonFilterSet --
     tango::ISetPtr getBaseSet();

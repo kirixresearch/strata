@@ -233,6 +233,8 @@ public:
 
     virtual void appendCalcFields(tango::IStructure* s) = 0;
     virtual void onOfsPathChanged(const std::wstring& new_path) = 0;
+
+    virtual bool storeObject(const std::wstring& path) = 0;
 };
 
 

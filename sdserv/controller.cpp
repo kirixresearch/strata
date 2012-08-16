@@ -1100,7 +1100,7 @@ void Controller::apiGroupQuery(RequestInfo& req)
     
     std::wstring handle = createHandle();
     
-    set->storeObject(handle);
+    db->storeObject(set, handle);
     
     // return success to caller
     kl::JsonNode response;

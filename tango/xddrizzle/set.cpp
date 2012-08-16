@@ -70,12 +70,7 @@ bool DrizzleSet::isTemporary()
     return false;
 }
 
-bool DrizzleSet::storeObject(const std::wstring& ofs_path)
-{
-    return false;
-}
 
-    
 
 unsigned int DrizzleSet::getSetFlags()
 {

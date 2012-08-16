@@ -70,6 +70,7 @@ public:
                    tango::ColumnUpdateInfo* info,
                    size_t info_size);
 
+    bool storeObject(const std::wstring& path) { return false; }
 
     // -- ISetEvents --
     void onSetDomainUpdated();
@@ -151,7 +152,9 @@ public:
                const std::wstring& where_condition,
                int max_rows,
                tango::IJob* job);
-    
+
+    bool storeObject(const std::wstring& path) { return false; }
+
     // -- ISetEvents --
     void onSetDomainUpdated();
     void onSetStructureUpdated();
