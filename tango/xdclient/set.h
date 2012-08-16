@@ -89,9 +89,11 @@ private:
     ClientDatabase* m_database;
     std::wstring m_path;         // server object path
     std::wstring m_object_path;  // logical object path (e.g. mounts)
+    std::wstring m_set_id;
     int m_set_flags;
     tango::rowpos_t m_known_row_count;
     tango::IStructurePtr m_structure;
+    
 };
 
 

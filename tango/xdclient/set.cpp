@@ -48,6 +48,7 @@ ClientSet::ClientSet(ClientDatabase* database)
     m_database->ref();
     m_set_flags = 0;
     m_known_row_count = (tango::rowpos_t)-1;
+    m_set_id = L"";
 }
 
 ClientSet::~ClientSet()
@@ -76,6 +77,8 @@ bool ClientSet::init(const std::wstring& path)
         if (fast_row_count.getBoolean())
             m_set_flags |= tango::sfFastRowCount;
     }
+
+    m_set_id = file_info["object_id"].getString();
 
     m_path = path;
 
@@ -110,7 +113,10 @@ unsigned int ClientSet::getSetFlags()
 
 std::wstring ClientSet::getSetId()
 {
-    return kl::md5str(m_database->m_host + L":" + m_path);
+    if (m_set_id.length() == 0)
+        m_set_id = kl::md5str(m_database->m_host + L":" + m_path);
+
+    return m_set_id;
 }
 
 tango::IStructurePtr ClientSet::getStructure()
