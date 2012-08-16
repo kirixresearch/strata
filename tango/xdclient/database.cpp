@@ -137,29 +137,52 @@ std::wstring ClientDatabase::getRequestPath()
     return path;
 }
 
+HttpRequest* ClientDatabase::getHttpObject()
+{
+    XCM_AUTO_LOCK(m_http_mutex);
+
+    xcm::threadid_t thread_id = xcm::get_current_thread_id();
+
+    std::map<xcm::threadid_t, HttpRequest*>::iterator it;
+    it = m_http_objects.find(thread_id);
+    if (it != m_http_objects.end())
+    {
+        return it->second;
+    }
+     else
+    {
+        HttpRequest* req = new HttpRequest;
+        m_http_objects[thread_id] = req;
+        return req;
+    }
+}
+
+
 std::wstring ClientDatabase::serverCall(const std::wstring& call_path,
                                         const ServerCallParams* params,
                                         bool use_multipart)
 {
     std::vector<std::pair<std::wstring, std::wstring> >::const_iterator it;
 
-    g_httprequest.resetPostParameters();
+    HttpRequest* http = getHttpObject();
+
+    http->resetPostParameters();
     if (use_multipart)
-        g_httprequest.useMultipartPost();
-    g_httprequest.setLocation(getRequestPath() + call_path);
+        http->useMultipartPost();
+    http->setLocation(getRequestPath() + call_path);
 
     if (params)
     {
         for (it = params->m_params.begin(); it != params->m_params.end(); ++it)
-            g_httprequest.setPostValue(it->first, it->second);
+            http->setPostValue(it->first, it->second);
     }
 
     if (m_session_id.length() > 0)
-        g_httprequest.setPostValue(L"sid", m_session_id);
+        http->setPostValue(L"sid", m_session_id);
     
-    g_httprequest.send();
+    http->send();
 
-    return g_httprequest.getResponseString();
+    return http->getResponseString();
 }
 
 tango::IStructurePtr ClientDatabase::jsonToStructure(JsonNode& node)

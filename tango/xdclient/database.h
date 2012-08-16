@@ -69,6 +69,7 @@ public:
               const std::wstring& password);
 
     std::wstring getRequestPath();
+    HttpRequest* getHttpObject();
     std::wstring serverCall(const std::wstring& call_path, const ServerCallParams* params = NULL, bool use_multipart = false);
 
     // tango::IDatabase interface
@@ -159,6 +160,9 @@ private:
 
     tango::IAttributesPtr m_attr;
     ThreadErrorInfo m_error;
+
+    xcm::mutex m_http_mutex;
+    std::map<xcm::threadid_t, HttpRequest*> m_http_objects;
 };
 
 

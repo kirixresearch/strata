@@ -142,8 +142,5 @@ private:
 };
 
 
-extern HttpRequest g_httprequest;
-
-
 #endif
 

@@ -8,7 +8,7 @@
  *
  */
 
-
+#include "xdclient.h"
 #include "request.h"
 #include <curl/curl.h>
 #include <kl/string.h>
@@ -17,7 +17,6 @@
 #include <kl/url.h>
 
 
-HttpRequest g_httprequest;
 
 
 static bool isUtf8(const std::string& header, const std::string& content)

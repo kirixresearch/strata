@@ -1,5 +1,6 @@
 
 #include <kl/klib.h>
+#include <xcm/xcm.h>
 #include "../../kscript/kscript.h"
 #include "../../kscript/json.h"
 
@@ -18,6 +19,8 @@ typedef kscript::JsonNode JsonNode;
 #include "database.h"
 #include "set.h"
 #include "iterator.h"
+
+
 
 
 
