@@ -1791,7 +1791,7 @@ void AppController::onCreateBookmark(wxCommandEvent& evt)
     dlg.setName(s);
     dlg.SetTitle(_("New Bookmark"));
     dlg.SetSize(360,145);
-    dlg.SetMinSize(wxSize(360,145));
+    dlg.SetMinSize(wxSize(370,165));
     dlg.CenterOnScreen();
     
     if (dlg.ShowModal() != wxID_OK)
@@ -2502,6 +2502,10 @@ void AppController::onViewSwitcherDropDown(wxAuiToolBarEvent& evt)
     if (evt.IsDropDownClicked())
     {
         doViewSwitcher(true);
+    }
+     else
+    {
+        evt.Skip();
     }
 }
 
