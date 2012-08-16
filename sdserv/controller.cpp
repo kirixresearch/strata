@@ -538,7 +538,7 @@ void Controller::apiCreateTable(RequestInfo& req)
     if (path.length() == 0)
     {
         path = L"/.temp/" + createHandle();
-        if (!set->storeObject(path))
+        if (!db->storeObject(set, path))
         {
             returnApiError(req, "Cannot create table");
             return;
