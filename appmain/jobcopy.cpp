@@ -178,15 +178,14 @@ int CopyJob::runJob()
         {
             source_iter = it->m_source_iter;
 
-            // -- create condition set --
-
             if (it->m_condition.length() != 0)
             {
-                // -- check validity of boolean expression --
+                // check validity of boolean expression
                 tango::objhandle_t h = source_iter->getHandle(towstr(it->m_condition));
                 if (h == 0)
                 {
                     m_job_info->setState(cfw::jobStateFailed);
+                    m_job_info->setProgressString(_("ERROR: Invalid condition."));
                     return 0;
                 }
                 source_iter->releaseHandle(h);

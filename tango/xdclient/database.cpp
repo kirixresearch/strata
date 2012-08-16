@@ -599,7 +599,7 @@ tango::ISetPtr ClientDatabase::createSet(const std::wstring& path,
 
     ClientSet* set = new ClientSet(this);
 
-    if (!set->init(path))
+    if (!set->init(response["path"]))
     {
         delete set;
         return xcm::null;

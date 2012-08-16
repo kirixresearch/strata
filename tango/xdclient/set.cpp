@@ -213,7 +213,21 @@ int ClientSet::insert(tango::IIteratorPtr source_iter,
                       int max_rows,
                       tango::IJob* job)
 {
-    return 0;
+    ClientIterator* iter = (ClientIterator*)source_iter.p;
+
+    ServerCallParams params;
+    params.setParam(L"path", m_path);
+    params.setParam(L"source_handle", iter->m_handle);
+    params.setParam(L"where", where_condition);
+    params.setParam(L"max_rows", kl::itowstring(max_rows));
+    std::wstring sres = m_database->serverCall(L"/api/insertrows", &params);
+    JsonNode response;
+    response.fromString(sres);
+
+    if (!response["success"].getBoolean())
+        return 0;
+
+    return response["row_count"].getInteger();
 }
 
 tango::IIndexInfoEnumPtr ClientSet::getIndexEnum()

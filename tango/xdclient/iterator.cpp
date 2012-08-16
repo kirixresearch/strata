@@ -74,7 +74,23 @@ tango::IDatabasePtr ClientIterator::getDatabase()
 
 tango::IIteratorPtr ClientIterator::clone()
 {
-    return xcm::null;
+    ServerCallParams params;
+    params.setParam(L"handle", m_handle);
+    std::wstring sres = m_database->serverCall(L"/api/clone", &params);
+    JsonNode response;
+    response.fromString(sres);
+
+    if (!response["success"].getBoolean())
+        return xcm::null;
+
+    ClientIterator* iter = new ClientIterator(m_database, m_set);
+    if (!iter->init(response["handle"], L""))
+    {
+        delete iter;
+        return xcm::null;
+    }
+
+    return static_cast<tango::IIterator*>(iter);
 }
 
 unsigned int ClientIterator::getIteratorFlags()
@@ -198,7 +214,7 @@ void ClientIterator::skip(int delta)
 
         std::wstring colvalue;
 
-        size_t coln, colcnt, rown = 0;
+        size_t rown = 0;
     
         start = wcschr(data, '[');
         if (start)
@@ -234,13 +250,7 @@ void ClientIterator::skip(int delta)
         }
 
 
-        m_cache_rows.resize(rown);
 
-        m_cache_start = new_row;
-        m_cache_row_count = rown;
-
-        m_current_row_ptr = m_current_row_ptr = &(m_cache_rows[new_row - m_cache_start]);
-        m_current_row = new_row;
 
         /*
         m_cache_rows.clear();
@@ -284,14 +294,6 @@ void ClientIterator::skip(int delta)
             start = wcschr(end, '[');
         }
 
-
-        m_cache_rows.resize(rown);
-
-        m_cache_start = new_row;
-        m_cache_row_count = rown;
-
-        m_current_row_ptr = m_current_row_ptr = &(m_cache_rows[new_row - m_cache_start]);
-        m_current_row = new_row;
         */
 
         /*
@@ -324,14 +326,20 @@ void ClientIterator::skip(int delta)
             for (coln = 0; coln < colcnt; ++coln)
                 cache_row.values[coln] = row[coln].getString();
         }
+        */
+
+
+        m_cache_rows.resize(rown);
 
         m_cache_start = new_row;
-        m_cache_row_count = rowcnt;
+        m_cache_row_count = rown;
 
+        if (new_row - m_cache_start >= m_cache_row_count)
+            m_current_row_ptr = NULL;
+             else
+            m_current_row_ptr = &(m_cache_rows[new_row - m_cache_start]);
 
-        m_current_row_ptr = m_current_row_ptr = &(m_cache_rows[new_row - m_cache_start]);
         m_current_row = new_row;
-        */
     }
 
     
@@ -364,6 +372,11 @@ bool ClientIterator::bof()
 
 bool ClientIterator::eof()
 {
+    if (m_current_row == 0)
+        return true;
+    if (!m_current_row_ptr)
+        return true;
+
    // if (m_current_row > m_cache_row_count)
    //     return true;
 
