@@ -675,6 +675,11 @@ bool ClientRowInserter::insertRow()
 
 void ClientRowInserter::finishInsert()
 {
+    if (m_buffer_row_count > 0)
+    {
+        flush();
+    }
+
     ServerCallParams params;
     params.setParam(L"handle", m_handle);
     std::wstring sres = m_database->serverCall(L"/api/finishbulkinsert", &params);
