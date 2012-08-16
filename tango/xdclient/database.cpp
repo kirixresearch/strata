@@ -332,6 +332,18 @@ bool ClientDatabase::cleanup()
 
 bool ClientDatabase::storeObject(xcm::IObject* obj, const std::wstring& path)
 {
+    tango::ISetPtr sp_set = obj;
+    if (sp_set.isNull())
+        return false;
+
+    ClientSet* set = (ClientSet*)obj;
+    
+    if (moveFile(set->m_path, path))
+    {
+        set->m_path = path;
+        return true;
+    }
+
     return false;
 }
 

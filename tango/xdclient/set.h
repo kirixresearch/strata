@@ -87,7 +87,6 @@ public:
 private:
     
     ClientDatabase* m_database;
-    std::wstring m_tablename;
     std::wstring m_path;         // server object path
     std::wstring m_object_path;  // logical object path (e.g. mounts)
     int m_set_flags;

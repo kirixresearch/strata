@@ -78,7 +78,6 @@ bool ClientSet::init(const std::wstring& path)
     }
 
     m_path = path;
-    m_tablename = path;
 
     return true;
 }
@@ -93,7 +92,7 @@ std::wstring ClientSet::getObjectPath()
     if (!m_object_path.empty())
         return m_object_path;
 
-    return m_tablename;
+    return m_path;
 }
 
 bool ClientSet::isTemporary()
@@ -111,7 +110,7 @@ unsigned int ClientSet::getSetFlags()
 
 std::wstring ClientSet::getSetId()
 {
-    return kl::md5str(m_database->m_host + L":" + m_tablename);
+    return kl::md5str(m_database->m_host + L":" + m_path);
 }
 
 tango::IStructurePtr ClientSet::getStructure()
