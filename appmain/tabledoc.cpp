@@ -6203,6 +6203,8 @@ static void onSummaryJobFinished(cfw::IJobPtr job)
     if (!output_inserter)
         return;
 
+    output_inserter->startInsert(L"*");
+
     i = 0;
     while (fields[i])
     {
@@ -6225,8 +6227,6 @@ static void onSummaryJobFinished(cfw::IJobPtr job)
     wxString field_name;
     wxString col_name;
     
-    output_inserter->startInsert(L"*");
-
 
     tango::objhandle_t total_count_handle = result_iter->getHandle(L"total_count");
     double total_count = result_iter->getDouble(total_count_handle);
