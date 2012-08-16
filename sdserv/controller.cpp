@@ -87,6 +87,8 @@ bool Controller::onRequest(RequestInfo& req)
     else if (uri == L"/api/groupquery")       apiGroupQuery(req);
     else if (uri == L"/api/describetable")    apiDescribeTable(req);
     else if (uri == L"/api/fetchrows")        apiFetchRows(req);
+    else if (uri == L"/api/insertrows")       apiInsertRows(req);
+    else if (uri == L"/api/clone")            apiClone(req);
     else if (uri == L"/api/alter")            apiAlter(req);
     else if (uri == L"/api/refresh")          apiRefresh(req);
     else if (uri == L"/api/startbulkinsert")  apiStartBulkInsert(req);
@@ -533,9 +535,20 @@ void Controller::apiCreateTable(RequestInfo& req)
         return;
     }
 
+    if (path.length() == 0)
+    {
+        path = L"/.temp/" + createHandle();
+        if (!set->storeObject(path))
+        {
+            returnApiError(req, "Cannot create table");
+            return;
+        }
+    }
+    
     // return success to caller
     kl::JsonNode response;
     response["success"].setBoolean(true);
+    response["path"] = path;
     
     req.write(response.toString());
 }
@@ -1098,14 +1111,13 @@ void Controller::apiGroupQuery(RequestInfo& req)
     
     tango::ISetPtr set = db->runGroupQuery(input_set, group, output, wherep, having, NULL);
     
-    std::wstring handle = createHandle();
-    
-    db->storeObject(set, handle);
+    std::wstring output_path = L"/.temp/" + createHandle();
+    db->storeObject(set, output_path);
     
     // return success to caller
     kl::JsonNode response;
     response["success"].setBoolean(true);
-    response["path"] = handle;
+    response["path"] = output_path;
     
     req.write(response.toString());
 }
@@ -1345,6 +1357,105 @@ void Controller::apiFetchRows(RequestInfo& req)
     req.write(kl::tostring(str));
 }
 
+
+void Controller::apiInsertRows(RequestInfo& req)
+{
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+        return;
+    
+    SdservSession* session = getSdservSession(req);
+    if (!session)
+        return;
+
+    std::wstring path = req.getValue(L"path");
+    if (path.length() == 0)
+    {
+        returnApiError(req, "Missing path parameter");
+        return;
+    }
+    
+    std::wstring source_handle = req.getValue(L"source_handle");
+    if (source_handle.length() == 0)
+    {
+        returnApiError(req, "Missing source_handle parameter");
+        return;
+    }
+    
+    std::map<std::wstring, SessionQueryResult>::iterator it;
+    it = session->iters.find(source_handle);
+    if (it == session->iters.end())
+    {
+        returnApiError(req, "Invalid source_handle parameter");
+        return;
+    }
+
+    tango::ISetPtr set = db->openSet(path);
+    if (set.isNull())
+    {
+        returnApiError(req, "Could not open destination table");
+        return;
+    }
+
+
+    int row_count = set->insert(it->second.iter, req.getValue(L"where"), kl::wtoi(req.getValue(L"max_rows")), NULL);
+ 
+                      
+    // return success to caller
+    kl::JsonNode response;
+    response["success"].setBoolean(true);
+    response["row_count"].setInteger(row_count);
+    
+    req.write(response.toString());
+}
+
+
+
+void Controller::apiClone(RequestInfo& req)
+{
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+        return;
+    
+    SdservSession* session = getSdservSession(req);
+    if (!session)
+        return;
+
+    std::wstring handle = req.getValue(L"handle");
+    if (handle.length() == 0)
+    {
+        returnApiError(req, "Missing handle parameter");
+        return;
+    }
+    
+    std::map<std::wstring, SessionQueryResult>::iterator it;
+    it = session->iters.find(handle);
+    if (it == session->iters.end())
+    {
+        returnApiError(req, "Invalid handle parameter");
+        return;
+    }
+    
+    tango::IIteratorPtr iter = it->second.iter->clone();
+    if (iter.isNull())
+    {
+        returnApiError(req, "Clone not supported");
+        return;
+    }
+
+
+    std::wstring new_handle = createHandle();
+    session->iters[new_handle].iter = iter;
+    session->iters[new_handle].rowpos = it->second.rowpos;
+    
+    
+    // return success to caller
+    kl::JsonNode response;
+    response["success"].setBoolean(true);
+    response["handle"] = new_handle;
+    
+    req.write(response.toString());
+}
 
 
 
