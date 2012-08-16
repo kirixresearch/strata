@@ -1194,6 +1194,22 @@ void Controller::apiDescribeTable(RequestInfo& req)
     req.write(response.toString());
 }
 
+static void quotedAppend(std::wstring& str, const std::wstring& cell)
+{
+    str += '"';
+
+    const wchar_t* ch = cell.c_str();
+    while (*ch)
+    {
+        if (*ch == '"' || *ch == '\\')
+            str += L'\\';
+        str += *ch;
+        ch++;
+    }
+
+    str += '"';
+}
+
 void Controller::apiFetchRows(RequestInfo& req)
 {
     SdservSession* session = getSdservSession(req);
@@ -1241,7 +1257,7 @@ void Controller::apiFetchRows(RequestInfo& req)
     }
     
     std::wstring str;
-    str.reserve(limit*100);
+    str.reserve(limit*180);
     
     if (start == 1)
     {
@@ -1313,8 +1329,8 @@ void Controller::apiFetchRows(RequestInfo& req)
                 break;
             }
             
-            kl::replaceStr(cell, L"\"", L"\\\"");
-            str += L"\"" + cell + L"\"";
+			quotedAppend(str, cell);
+
         }
         
         iter->skip(1);
