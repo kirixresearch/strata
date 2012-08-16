@@ -1397,7 +1397,7 @@ void Controller::apiInsertRows(RequestInfo& req)
         return;
     }
 
-
+    it->second.iter->goFirst();
     int row_count = set->insert(it->second.iter, req.getValue(L"where"), kl::wtoi(req.getValue(L"max_rows")), NULL);
  
                       
