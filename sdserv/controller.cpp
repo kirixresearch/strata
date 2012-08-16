@@ -404,7 +404,7 @@ void Controller::apiFileInfo(RequestInfo& req)
         file_info["is_mount"].setBoolean(finfo->isMount());
         file_info["primary_key"] = finfo->getPrimaryKey();
         file_info["size"] = (double)finfo->getSize();
-        
+
         if (finfo->getType() == tango::filetypeSet)
         {
             tango::ISetPtr set = db->openSet(path);
@@ -412,6 +412,7 @@ void Controller::apiFileInfo(RequestInfo& req)
             {
                 file_info["row_count"] = (double)set->getRowCount();
                 file_info["fast_row_count"].setBoolean(true);
+                file_info["object_id"] = set->getSetId();
             }
         }
     }
