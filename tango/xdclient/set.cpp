@@ -303,14 +303,14 @@ bool ClientSet::deleteAllRelations()
 }
 
 tango::IIteratorPtr ClientSet::createIterator(const std::wstring& columns,
-                                              const std::wstring& expr,
+                                              const std::wstring& order,
                                               tango::IJob* job)
 {
     ServerCallParams params;
     params.setParam(L"mode", L"createiterator");
     params.setParam(L"path", m_path);
     params.setParam(L"columns", columns);
-    params.setParam(L"expr", expr);
+    params.setParam(L"order", order);
 
     std::wstring sres = m_database->serverCall(L"/api/query", &params);
     JsonNode response;
