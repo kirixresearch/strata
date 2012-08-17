@@ -2049,7 +2049,8 @@ void TableDoc::onShareUrlRequested(wxString& url)
     unsigned int c = ((unsigned int)clock()) & 0xffffff;
     #endif
     wchar_t rand[255];
-    unsigned char counter = 0;
+
+    static unsigned char counter = 0;
     counter++;
     swprintf(rand, 255, L"%06x%02x", c, counter);
 
@@ -2296,17 +2297,53 @@ void TableDoc::onColumnsDropped(kcl::GridDataDropTarget* drop_target)
 
 
 bool TableDoc::setBaseSet(tango::IDatabasePtr db,
-                          const wxString& table,
+                          const wxString& _path,
                           tango::ISetPtr optional_set,
                           tango::IIteratorPtr optional_iterator)
 {
+    std::wstring path = towstr(_path);
+
+    if (db.isNull())
+    {
+        db = g_app->getDatabase();
+        if (db.isNull())
+            return false;
+    }
+    
+
     tango::ISetPtr set = optional_set;
     if (set.isNull())
-        set = db->openSet(towstr(table));
+    {
+        tango::IFileInfoPtr finfo = db->getFileInfo(towstr(path));
+        if (finfo->getType() == tango::filetypeSet)
+        {
+            set = db->openSet(towstr(path));
+        }
+         else if (finfo->getMimeType() == L"application/vnd.kx.view-link")
+        {
+            std::wstring json;
+            if (!readStreamTextFile(db, path, json))
+                return false;
+
+            kl::JsonNode root;
+            root.fromString(json);
+
+            path = root["data"]["table"];
+            std::wstring filter = root["data"]["table"];
+            std::wstring sort = root["data"]["table"];
+
+            set = db->openSet(path);
+        }
+
+
+        if (set.isNull())
+            return false;
+
+    }
     
     m_db_type = db->getDatabaseType();
     
-    m_mount_db = db->getMountDatabase(towstr(table));
+    m_mount_db = db->getMountDatabase(towstr(path));
     if (m_mount_db)
     {
         m_db_type = m_mount_db->getDatabaseType();

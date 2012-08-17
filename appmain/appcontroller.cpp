@@ -4675,6 +4675,16 @@ bool AppController::openDataLink(const wxString& location, int* site_id)
     if (path.length() == 0 || path[0] != '/')
         path = L"/" + path;
 
+    if (port.length() == 0)
+        port = L"4800";
+
+    // make a connection string
+    std::wstring conn_str = L"xdprovider=xdclient;";
+    conn_str += L"host=" + server + L";";
+    conn_str += L"port=" + port + L";";
+    conn_str += L"database=default;user id=admin;password=";
+
+
 
 
     if (!db->getFileExist(L"/.mnt"))
@@ -4687,35 +4697,31 @@ bool AppController::openDataLink(const wxString& location, int* site_id)
     std::wstring mnt_database = mnt_server + L"/" + database;
 
     if (!db->getFileExist(mnt_database))
-    {
-        if (port.length() == 0)
-            port = L"4800";
-
-        std::wstring conn_str = L"xdprovider=xdclient;";
-        conn_str += L"host=" + server + L";";
-        conn_str += L"port=" + port + L";";
-        conn_str += L"database=default;user id=admin;password=";
-
         db->setMountPoint(mnt_database, conn_str, L"/");
-    }
 
 
-    int tabledoc_site_id = 0;
-    bool res = openSet(mnt_database + path, &tabledoc_site_id);
-    if (!res)
+
+    path = mnt_database + path;
+
+
+    // open all normal table docs
+    ITableDocPtr doc = TableDocMgr::createTableDoc();
+    if (!doc->setBaseSet(db, towx(path)))
         return false;
-    
-    if (site_id)
-        *site_id = tabledoc_site_id;
 
-    cfw::IDocumentSitePtr site = g_app->getMainFrame()->lookupSiteById(tabledoc_site_id);
-    ITableDocPtr doc = site->getDocument();
-    if (doc.isOk())
-    {
-        doc->setSourceUrl(location);
-        updateURLToolbar();
-    }
-    
+    if (doc->getCaption().Length() == 0)
+        doc->setCaption(location, wxEmptyString);
+
+    doc->setSourceUrl(location);
+
+    unsigned int site_type = cfw::sitetypeNormal;
+
+    cfw::IDocumentSitePtr doc_site;
+    doc_site = g_app->getMainFrame()->createSite(doc, site_type, -1, -1, -1, -1);
+            
+    if (site_id)
+        *site_id = doc_site->getId();
+
     return true;
 }
 
