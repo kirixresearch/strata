@@ -1018,7 +1018,7 @@ void Controller::apiQuery(RequestInfo& req)
             return;
         }
         
-        tango::IIteratorPtr iter = set->createIterator(req.getValue(L"columns"), req.getValue(L"expr"), NULL);
+        tango::IIteratorPtr iter = set->createIterator(req.getValue(L"columns"), req.getValue(L"order"), NULL);
         if (!set.isOk())
         {
             returnApiError(req, "Could not create iterator");
