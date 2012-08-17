@@ -2283,6 +2283,7 @@ tango::IFileInfoPtr Database::getFileInfo(const std::wstring& _path)
             int file_type = tango::filetypeSet;
             int file_format = tango::formatNative;
             int is_mount = -1;
+            std::wstring file_mime_type;
             
             if (getLocalFileExist(path))
                 is_mount = 1;
@@ -2298,6 +2299,7 @@ tango::IFileInfoPtr Database::getFileInfo(const std::wstring& _path)
                         file_type = file_info->getType();
                         file_format = file_info->getFormat();
                         file_primary_key = file_info->getPrimaryKey();
+                        file_mime_type = file_info->getMimeType();
                         if (is_mount == -1)
                             is_mount = file_info->isMount() ? 1 : 0;
                     }
@@ -2310,6 +2312,7 @@ tango::IFileInfoPtr Database::getFileInfo(const std::wstring& _path)
             f->format = file_format;
             f->is_mount = (is_mount == 1 ? true : false);
             f->primary_key = file_primary_key;
+            f->mime_type = file_mime_type;
             
             return static_cast<tango::IFileInfo*>(f);
         }
