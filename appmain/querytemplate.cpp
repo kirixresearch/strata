@@ -241,7 +241,7 @@ static void onQueryJobFinished(cfw::IJobPtr job)
                     // none exists yet, create one  
                     tabledoc = TableDocMgr::createTableDoc();
                     tabledoc->setTemporaryModel(true);
-                    tabledoc->setBaseSet(result_set, result_iter);
+                    tabledoc->open(result_set, result_iter);
                     
                     wxWindow* container = querydoc_site->getContainerWindow();
                     g_app->getMainFrame()->createSite(container,
@@ -252,7 +252,7 @@ static void onQueryJobFinished(cfw::IJobPtr job)
                 {
                     // switch to the table view
                     tabledoc->getGrid()->Freeze();
-                    tabledoc->setBaseSet(result_set, result_iter);
+                    tabledoc->open(result_set, result_iter);
                     tabledoc->refreshActiveView();
                     tabledoc->getGrid()->Thaw();
 
@@ -263,7 +263,7 @@ static void onQueryJobFinished(cfw::IJobPtr job)
             {
                 ITableDocPtr doc = TableDocMgr::createTableDoc();
                 doc->setTemporaryModel(true);
-                doc->setBaseSet(result_set, result_iter);
+                doc->open(result_set, result_iter);
 
                 g_app->getMainFrame()->createSite(doc, cfw::sitetypeNormal,
                                                   -1, -1, -1, -1);

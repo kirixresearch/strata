@@ -226,7 +226,7 @@ void TableDoc::scriptfuncOpen(kscript::ExprEnv* env,
     tango::ISetPtr set = g_app->getDatabase()->openSet(env->getParam(0)->getString());
     if (set)
     {
-        pThis->setBaseSet(set, xcm::null);
+        pThis->open(set, xcm::null);
         retval->setBoolean(true);
     }
      else

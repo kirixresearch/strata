@@ -97,12 +97,12 @@ public:
 
     // -- ITableDoc --
     
-    bool setBaseSet(tango::IDatabasePtr db,
+    bool open(tango::IDatabasePtr db,
                     const wxString& table,
                     tango::ISetPtr optional_set = xcm::null,
                     tango::IIteratorPtr optional_iterator = xcm::null);
 
-    bool setBaseSet(tango::ISetPtr set, tango::IIteratorPtr iter);
+    bool open(tango::ISetPtr set, tango::IIteratorPtr iter);
     tango::ISetPtr getBaseSet();
 
     bool setBrowseSet(tango::ISetPtr set, tango::IIteratorPtr iter);

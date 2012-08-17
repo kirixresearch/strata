@@ -797,7 +797,7 @@ public:
 
         cfw::IDocumentSitePtr site;
         ITableDocPtr doc = TableDocMgr::createTableDoc();
-        doc->setBaseSet(set, xcm::null);
+        doc->open(set, xcm::null);
         doc->setSourceUrl(m_url);
         doc->setSourceMimeType(wxT("application/rss+xml"));
 
@@ -2185,7 +2185,7 @@ void WebDoc::onShowContextMenu(wxWebEvent& evt)
                     
                 ITableDocPtr doc = TableDocMgr::createTableDoc();
 
-                doc->setBaseSet(set, xcm::null);
+                doc->open(set, xcm::null);
                 doc->setSourceUrl(m_url);
                 g_app->getMainFrame()->createSite(doc,
                                                   cfw::sitetypeNormal,

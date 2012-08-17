@@ -4599,9 +4599,9 @@ bool AppController::openSet(const wxString& _location, int* site_id)
         {
             // open all normal table docs
             ITableDocPtr doc = TableDocMgr::createTableDoc();
-            if (!doc->setBaseSet(database, location, set))
+            if (!doc->open(database, location, set))
             {
-                wxFAIL_MSG(wxT("ITableDoc::setBaseSet() returned false"));
+                wxFAIL_MSG(wxT("ITableDoc::open() returned false"));
                 return false;
             }
 
@@ -4706,7 +4706,7 @@ bool AppController::openDataLink(const wxString& location, int* site_id)
 
     // open all normal table docs
     ITableDocPtr doc = TableDocMgr::createTableDoc();
-    if (!doc->setBaseSet(db, towx(path)))
+    if (!doc->open(db, towx(path)))
         return false;
 
     if (doc->getCaption().Length() == 0)

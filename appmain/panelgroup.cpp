@@ -617,7 +617,7 @@ static void onGroupJobFinished(cfw::IJobPtr job)
         if (result_set)
         {
             ITableDocPtr doc = TableDocMgr::createTableDoc();
-            doc->setBaseSet(result_set, xcm::null);
+            doc->open(result_set, xcm::null);
             g_app->getMainFrame()->createSite(doc, cfw::sitetypeNormal,
                                               -1, -1, -1, -1);
             success = true;

@@ -752,7 +752,7 @@ void ConsolePanel::onQueryJobFinished(cfw::IJobPtr job)
         {
             ITableDocPtr doc = TableDocMgr::createTableDoc();
             doc->setTemporaryModel(true);
-            doc->setBaseSet(result_set, result_iter);
+            doc->open(result_set, result_iter);
             g_app->getMainFrame()->createSite(doc,
                                               cfw::sitetypeNormal,
                                               -1, -1, -1, -1);

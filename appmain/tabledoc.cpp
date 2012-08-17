@@ -1448,7 +1448,7 @@ void TableDoc::onSaveAsJobFinished(cfw::IJobPtr job)
     setSourceMimeType(wxEmptyString);
     
     // set the base set to the result set
-    setBaseSet(copy_job->getResultSet(0), xcm::null);
+    open(copy_job->getResultSet(0), xcm::null);
     
     // the copy job copies the TableDocModel for the table; when doing so,
     // all of the TableDocObjects have a new ID assigned to them, thus the
@@ -1837,7 +1837,7 @@ void TableDoc::onDoReloadRefresh(wxCommandEvent& evt)
         // reload grid
         createModel();
         m_grid->setModel(m_grid_model);
-        setBaseSet(textdoc->getTextSet(), xcm::null);
+        open(textdoc->getTextSet(), xcm::null);
         setEnabled(true);
         
         if (error)
@@ -1866,7 +1866,7 @@ void TableDoc::onDoReloadRefresh(wxCommandEvent& evt)
         
         TableDocMgr::copyModel(old_set, new_set);
         
-        setBaseSet(new_set, xcm::null);
+        open(new_set, xcm::null);
         
         TableDocMgr::deleteModel(old_set_id);
     }
@@ -2296,10 +2296,10 @@ void TableDoc::onColumnsDropped(kcl::GridDataDropTarget* drop_target)
 
 
 
-bool TableDoc::setBaseSet(tango::IDatabasePtr db,
-                          const wxString& _path,
-                          tango::ISetPtr optional_set,
-                          tango::IIteratorPtr optional_iterator)
+bool TableDoc::open(tango::IDatabasePtr db,
+                    const wxString& _path,
+                    tango::ISetPtr optional_set,
+                    tango::IIteratorPtr optional_iterator)
 {
     std::wstring path = towstr(_path);
 
@@ -2329,16 +2329,41 @@ bool TableDoc::setBaseSet(tango::IDatabasePtr db,
             root.fromString(json);
 
             path = root["data"]["table"];
-            std::wstring filter = root["data"]["table"];
-            std::wstring sort = root["data"]["table"];
+            std::wstring filter = root["data"]["where"];
+            std::wstring sort = root["data"]["order"];
 
             set = db->openSet(path);
-        }
+            if (!open(set, xcm::null))
+                return false;
 
+            if (filter.length() > 0)
+            {
+                m_sort_order = sort;
+                setFilter(filter);
+            }
+             else
+            {
+                if (sort.length() > 0)
+                    setSortOrder(sort);
+            }
+
+            //std::wstring group_break = root["display"]["group_break"];
+            //if (group_break.length() > 0)
+            //    setGroupBreak(towx(group_break));
+
+            m_db_type = db->getDatabaseType();
+    
+            m_mount_db = db->getMountDatabase(towstr(path));
+            if (m_mount_db)
+            {
+                m_db_type = m_mount_db->getDatabaseType();
+            }
+
+            return true;
+        }
 
         if (set.isNull())
             return false;
-
     }
     
     m_db_type = db->getDatabaseType();
@@ -2349,11 +2374,11 @@ bool TableDoc::setBaseSet(tango::IDatabasePtr db,
         m_db_type = m_mount_db->getDatabaseType();
     }
     
-    return setBaseSet(set, optional_iterator);
+    return open(set, optional_iterator);
 }
 
 
-bool TableDoc::setBaseSet(tango::ISetPtr set, tango::IIteratorPtr iter)
+bool TableDoc::open(tango::ISetPtr set, tango::IIteratorPtr iter)
 {
     m_filter = wxT("");
     m_sort_order = wxT("");
@@ -3341,7 +3366,7 @@ void TableDoc::onModifyStructJobFinished(cfw::IJobPtr job)
 
     createModel();
     m_grid->setModel(m_grid_model);
-    setBaseSet(modify_job->getActionSet(), xcm::null);
+    open(modify_job->getActionSet(), xcm::null);
     
     // remove the "Filtered" suffix
     setCaption(wxEmptyString, wxEmptyString);
@@ -6507,7 +6532,7 @@ static void onSummaryJobFinished(cfw::IJobPtr job)
     output_inserter->finishInsert();
 
     TableDoc* doc = new TableDoc;
-    doc->setBaseSet(output, xcm::null);
+    doc->open(output, xcm::null);
     g_app->getMainFrame()->createSite(doc, cfw::sitetypeNormal,
                                       -1, -1, -1, -1);
 }
@@ -7616,7 +7641,7 @@ void onCopyRecordsJobFinished(cfw::IJobPtr job)
     for (i = 0; i < copy_count; ++i)
     {
         TableDoc* doc = new TableDoc;
-        doc->setBaseSet(copy_job->getResultSet(i), xcm::null);
+        doc->open(copy_job->getResultSet(i), xcm::null);
 
         g_app->getMainFrame()->createSite(doc, cfw::sitetypeNormal,
                                           -1, -1, -1, -1);

@@ -380,7 +380,7 @@ static void onRemoveDupRecJobFinished(cfw::IJobPtr job)
             if (output_path.IsEmpty())
             {
                 ITableDocPtr doc = TableDocMgr::createTableDoc();
-                doc->setBaseSet(result_set, xcm::null);
+                doc->open(result_set, xcm::null);
                 g_app->getMainFrame()->createSite(doc,
                                                   cfw::sitetypeNormal,
                                                   -1, -1, -1, -1);

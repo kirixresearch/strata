@@ -225,12 +225,12 @@ xcm_interface ITableDoc : public xcm::IObject
 
 public:
 
-    virtual bool setBaseSet(tango::IDatabasePtr db,
+    virtual bool open(tango::IDatabasePtr db,
                             const wxString& table,
                             tango::ISetPtr optional_set = xcm::null,
                             tango::IIteratorPtr optional_iterator = xcm::null) = 0;
 
-    virtual bool setBaseSet(tango::ISetPtr set,
+    virtual bool open(tango::ISetPtr set,
                             tango::IIteratorPtr iter) = 0;
 
     virtual bool setBrowseSet(tango::ISetPtr set,

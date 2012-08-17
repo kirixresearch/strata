@@ -579,7 +579,7 @@ void MultiFileInfoPanel::onSave(wxCommandEvent& event)
     output_inserter->finishInsert();
     
     ITableDocPtr doc = TableDocMgr::createTableDoc();
-    doc->setBaseSet(output, xcm::null);
+    doc->open(output, xcm::null);
     g_app->getMainFrame()->createSite(doc, cfw::sitetypeNormal, -1, -1, -1, -1);
     g_app->getMainFrame()->closeSite(m_doc_site);
 }

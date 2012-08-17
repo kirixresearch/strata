@@ -1076,7 +1076,7 @@ bool StructureDoc::doSave()
         
         // create a tabledoc and open it
         table_doc = TableDocMgr::createTableDoc();
-        table_doc->setBaseSet(m_modify_set, xcm::null);
+        table_doc->open(m_modify_set, xcm::null);
 
         if (table_doc->getCaption().Length() == 0)
         {
@@ -1651,7 +1651,7 @@ void StructureDoc::onFrameEvent(cfw::Event& evt)
                     
                     // create a tabledoc and open it
                     ITableDocPtr doc = TableDocMgr::createTableDoc();
-                    doc->setBaseSet(m_modify_set, xcm::null);
+                    doc->open(m_modify_set, xcm::null);
 
                     if (doc->getCaption().Length() == 0)
                     {

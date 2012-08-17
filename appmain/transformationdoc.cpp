@@ -1555,7 +1555,7 @@ void TransformationDoc::onFrameEvent(cfw::Event& evt)
                 {
                     // create a tabledoc and open it
                     ITableDocPtr doc = TableDocMgr::createTableDoc();
-                    doc->setBaseSet(m_init_set, xcm::null);
+                    doc->open(m_init_set, xcm::null);
 
                     if (doc->getCaption().Length() == 0)
                     {
@@ -1804,7 +1804,7 @@ bool TransformationDoc::doSave()
     if (tabledoc)
     {
         // update the TableDoc's base set
-        tabledoc->setBaseSet(text_set, xcm::null);
+        tabledoc->open(text_set, xcm::null);
         
         ITableDocViewPtr tabledocview = tabledoc->getActiveView();
         if (tabledocview)
