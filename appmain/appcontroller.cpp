@@ -20,6 +20,7 @@
 #include "scriptapp.h"
 #include "dlgprojectmgr.h"
 #include "dlgdatabasefile.h"
+#include "dlgshareview.h"
 #include "extensionmgr.h"
 #include "extensionpkg.h"
 #include "moduleremoveduprec.h"
@@ -179,8 +180,7 @@ BEGIN_EVENT_TABLE(AppController, wxEvtHandler)
     EVT_MENU(ID_TreeRefresh, AppController::onTreeRefresh)
     EVT_MENU(ID_LinkBarRefresh, AppController::onTreeRefresh)
     EVT_MENU(ID_PrintConsoleText, AppController::onPrintConsoleText)
-    
-    //EVT_MENU(ID_Special_RemoveDupRecs, AppController::onRemoveDupRecs)
+    EVT_MENU(ID_File_ShareView, AppController::onShareView)
 
     EVT_AUITOOLBAR_TOOL_DROPDOWN(ID_File_Bookmark, AppController::onBookmarkDropDown)
     EVT_AUITOOLBAR_TOOL_DROPDOWN(ID_View_ViewSwitcher, AppController::onViewSwitcherDropDown)
@@ -2529,19 +2529,31 @@ void AppController::onBookmarkDropDown(wxAuiToolBarEvent& evt)
         int command = cc->getLastCommandId();
         main_window->PopEventHandler(true);
 
+        m_project_toolbar->SetToolSticky(ID_File_Bookmark, false);
 
         if (command == 9800)
         {
             wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED, ID_File_Bookmark);
             ::wxPostEvent(this, e);
         }
+         else if (command == 9801)
+        {
+            wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED, ID_File_ShareView);
+            ::wxPostEvent(this, e);
+        }
 
-        m_project_toolbar->SetToolSticky(ID_View_ViewSwitcher, false);
     }
      else
     {
         evt.Skip();
     }
+}
+
+
+void AppController::onShareView(wxCommandEvent& evt)
+{
+    DlgShareView dlg(g_app->getMainWindow());
+    dlg.ShowModal();
 }
 
 
