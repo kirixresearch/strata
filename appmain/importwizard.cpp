@@ -329,17 +329,56 @@ void ImportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
     // clear out existing structures
     m_template.m_ii.tables.clear();
 
-    // get an array of strings from the space-delimited string
-    std::vector<std::wstring> paths;
-    kl::parseDelimitedList(towstr(m_template.m_ii.path), paths, wxT(' '), true);
 
-    // if no strings were added to the array, add the whole path
-    if (paths.size() == 0)
+    // NOTE: "path" input is either a single, non-quoted filename 
+    // or a series of multiple quoted, space-delimited filenames:
+    // examples:
+    // 1. C:\data.kpg
+    // 2. C:\Documents and Settings\username\Desktop\data.kpg
+    // 3. "C:\data.kpg" "C:\Documents and Settings\username\Desktop\data.kpg"
+    // As a result, if we have a quote, we parse based on space and remove
+    // the quotes from the parsed pieces, or else we take the input as is
+    std::vector<std::wstring> paths;
+    std::vector<std::wstring>::iterator it, it_end;
+
+    // quick space cleanup; then see if we have a delimited list or not; 
+    // delimited list is characterized by a quote in the path (see #3 above)
+    m_template.m_ii.path.Trim(true);
+    m_template.m_ii.path.Trim(false);
+    size_t pos = m_template.m_ii.path.find(L"\"");
+    if (pos == m_template.m_ii.path.npos)
+    {
+        // no delimter; just save the string
         paths.push_back(towstr(m_template.m_ii.path));
+    }
+     else
+    {
+        // get an array of strings from the space-delimited string
+        kl::parseDelimitedList(towstr(m_template.m_ii.path), paths, wxT(' '), true);
+
+        // if no strings were added to the array, add the whole path
+        if (paths.size() == 0)
+            paths.push_back(towstr(m_template.m_ii.path));
+    }
+
+
+    // remove the quotes from each of the paths along with
+    // any leading/trailing spaces
+    it_end = paths.end();
+    for (it = paths.begin(); it != it_end; ++it)
+    {
+        kl::replaceStr(*it, L"\"", L"", true);
+        kl::trimLeft(*it);
+        kl::trimRight(*it);
+    }
+
+    // if we only have one element in the array, replace
+    // the template path with the cleaned up version
+    if (paths.size() == 1)
+        m_template.m_ii.path = paths[0];
+
 
     // check to make sure all of the files exist
-    
-    std::vector<std::wstring>::iterator it;
     for (it = paths.begin(); it != paths.end(); ++it)
     {
         if (!xf_get_file_exist(*it))
