@@ -2296,6 +2296,28 @@ void TableDoc::onColumnsDropped(kcl::GridDataDropTarget* drop_target)
 
 
 
+
+static std::wstring getMountRoot(tango::IDatabasePtr db, const std::wstring _path)
+{
+    std::wstring path = _path;
+    size_t old_len = 0;
+
+    while (1)
+    {
+        if (path.length() <= 1)
+            return L"";
+            
+        std::wstring cstr, rpath;
+        if (db->getMountPoint(path, cstr, rpath))
+            return path;
+
+        old_len = path.length();
+        path = kl::beforeLast(path, '/');
+        if (path.length() == old_len)
+            return L"";
+    }
+}
+
 bool TableDoc::open(tango::IDatabasePtr db,
                     const wxString& _path,
                     tango::ISetPtr optional_set,
@@ -2314,7 +2336,7 @@ bool TableDoc::open(tango::IDatabasePtr db,
     tango::ISetPtr set = optional_set;
     if (set.isNull())
     {
-        tango::IFileInfoPtr finfo = db->getFileInfo(towstr(path));
+        tango::IFileInfoPtr finfo = db->getFileInfo(path);
         if (finfo->getType() == tango::filetypeSet)
         {
             set = db->openSet(towstr(path));
@@ -2325,6 +2347,8 @@ bool TableDoc::open(tango::IDatabasePtr db,
             if (!readStreamTextFile(db, path, json))
                 return false;
 
+            std::wstring mount_root = getMountRoot(db, path);
+
             kl::JsonNode root;
             root.fromString(json);
 
@@ -2332,7 +2356,7 @@ bool TableDoc::open(tango::IDatabasePtr db,
             std::wstring filter = root["data"]["where"];
             std::wstring sort = root["data"]["order"];
 
-            set = db->openSet(path);
+            set = db->openSet(mount_root + L"/" + path);
             if (!open(set, xcm::null))
                 return false;
 
