@@ -38,6 +38,7 @@
 #include "panelfind.h"
 #include "reportdoc.h"
 #include "dlgdatabasefile.h"
+#include "dlgshareview.h"
 #include "toolbars.h"
 #include "textdoc.h"
 #include "transformationdoc.h"
@@ -98,7 +99,8 @@ BEGIN_EVENT_TABLE(TableDoc, wxWindow)
     EVT_MENU(ID_File_SaveAsExternal, TableDoc::onSaveAsExternal)
     EVT_MENU(ID_File_Reload, TableDoc::onReload)
     EVT_MENU(ID_File_Print, TableDoc::onPrint)
-    
+    EVT_MENU(ID_File_ShareView, TableDoc::onShareView)
+
     EVT_MENU(ID_Format_ToggleWrapText, TableDoc::onFormatChanged)
     EVT_MENU(ID_Format_ToggleMergeCells, TableDoc::onFormatChanged)
     EVT_MENU(ID_Format_ToggleFontWeight, TableDoc::onFormatChanged)
@@ -1976,6 +1978,98 @@ void TableDoc::onPrint(wxCommandEvent& evt)
 {
     print();
 }
+
+
+
+
+void TableDoc::onShareUrlRequested(wxString& url)
+{
+    tango::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+    {
+        url = wxT("Invalid database");
+        return;
+    }
+
+    tango::ISetPtr set = getBaseSet();
+    if (set.isNull())
+    {
+        url = wxT("Invalid table");
+        return;
+    }
+
+    if (g_app->getDbDriver() != L"xdclient")
+    {
+        tango::IDatabasePtr mount_db = db->getMountDatabase(set->getObjectPath());
+        if (mount_db.isNull())
+        {
+            url = wxT("Table is not stored in a centrally accessible location");
+            return;
+        }
+
+        db = mount_db;
+    }
+
+
+    std::wstring dburl;
+
+
+    tango::IAttributesPtr attr = db->getAttributes();
+    dburl = attr->getStringAttribute(tango::dbattrDatabaseUrl);
+
+    if (dburl.length() == 0)
+    {
+        url = wxT("Table is not stored in a centrally accessible location");
+        return;
+    }
+
+    wxBusyCursor bc;
+
+    // create view information in json format
+
+    kl::JsonNode root;
+    root["data"]["table"] = getBaseSet()->getObjectPath();
+    root["data"]["where"] = towstr(getFilter());
+    root["data"]["order"] = towstr(getSortOrder());
+
+    root["display"]["group_break"] = towstr(getGroupBreak());
+
+    std::wstring json = root.toString();
+
+
+
+    // store it on the server
+    
+    db->createFolder(L"/.views");
+
+    // FIXME: need better random number generator here
+    #ifdef __WXWINCE__
+    unsigned int c = ((unsigned int)GetTickCount()) & 0xffffff;
+    #else
+    unsigned int c = ((unsigned int)clock()) & 0xffffff;
+    #endif
+    wchar_t rand[255];
+    unsigned char counter = 0;
+    counter++;
+    swprintf(rand, 255, L"%06x%02x", c, counter);
+
+    std::wstring path = L"/.views/";
+    path += rand;
+
+    writeStreamTextFile(db, path, json, L"application/vnd.kx.view-link");
+
+    url = towx(dburl + path);
+}
+
+void TableDoc::onShareView(wxCommandEvent& evt)
+{
+    DlgShareView dlg(g_app->getMainWindow());
+    dlg.sigRequestShareUrl.connect(this, &TableDoc::onShareUrlRequested);
+    dlg.ShowModal();
+}
+
+
+
 
 void TableDoc::updateStatusSelectionSum()
 {

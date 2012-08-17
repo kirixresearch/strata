@@ -54,6 +54,7 @@
 // -- database/utility includes --
 #include <xcm/xcm.h>
 #include <kl/klib.h>
+#include <kl/json.h>
 #include "tango.h"
 #include "commands.h"
 

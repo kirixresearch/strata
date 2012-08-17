@@ -30,14 +30,14 @@ END_EVENT_TABLE()
 DlgShareView::DlgShareView(wxWindow* parent)
                     : wxDialog(parent, -1, _("Share"),
                          wxDefaultPosition,
-                         wxSize(480,300),
+                         wxSize(500,280),
                          wxDEFAULT_DIALOG_STYLE |
                          wxNO_FULL_REPAINT_ON_RESIZE |
                          wxCLIP_CHILDREN |
                          wxCENTER |
                          wxRESIZE_BORDER)
 {
-    SetMinSize(wxSize(480,360));
+    SetMinSize(wxSize(500,280));
     SetMaxSize(wxSize(640,480));
     
     // create vertical sizer
@@ -123,7 +123,7 @@ DlgShareView::~DlgShareView()
 
 void DlgShareView::onShare(wxCommandEvent& evt)
 {
-    wxString url = wxT("sdserv://data.sample.com/public/4jtnsn4jk5");
+    wxString url;
     sigRequestShareUrl(url);
 
     m_url_text->SetValue(url);

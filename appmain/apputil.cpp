@@ -1717,7 +1717,7 @@ bool writeStreamTextFile(tango::IDatabasePtr db,
     }
 
 
-    tango::IStreamPtr stream = g_app->getDatabase()->createStream(towstr(path), mime_type);
+    tango::IStreamPtr stream = db->createStream(towstr(path), mime_type);
     if (!stream)
     {
         delete[] buf;

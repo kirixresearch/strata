@@ -21,6 +21,8 @@ public:
     DlgShareView(wxWindow* parent);
     ~DlgShareView();
     
+    xcm::signal1<wxString&> sigRequestShareUrl;
+
 private:
 
     void onShare(wxCommandEvent& evt);
@@ -33,7 +35,7 @@ private:
     kcl::Button* m_share_button;
     wxButton* m_copy_button;
     wxButton* m_ok_button;
-    xcm::signal1<wxString&> sigRequestShareUrl;
+
 
     DECLARE_EVENT_TABLE()
 };

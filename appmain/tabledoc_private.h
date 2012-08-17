@@ -303,9 +303,12 @@ private:
     void onGridKeyDown(kcl::GridEvent& evt);
     void onColumnsDropped(kcl::GridDataDropTarget* drop);
     
+    void onShareUrlRequested(wxString& url);
+
     // -- model event handlers --
     void onRequestRowColors(wxColor& fgcolor, wxColor& bgcolor);
     
+
     // -- frame event handlers --
     void onFrameEvent(cfw::Event& evt);
     void onActiveChildChanged(cfw::IDocumentSitePtr doc_site);
@@ -371,7 +374,8 @@ private:
     void onCreateNewMark(wxCommandEvent& evt);
     void onInsertColumnSeparator(wxCommandEvent& evt);
     void onFormatChanged(wxCommandEvent& evt);
-    
+    void onShareView(wxCommandEvent& evt);
+
     void onUpdateUI_EnableAlways(wxUpdateUIEvent& evt);
     void onUpdateUI_DisableAlways(wxUpdateUIEvent& evt);
     void onUpdateUI(wxUpdateUIEvent& evt);
