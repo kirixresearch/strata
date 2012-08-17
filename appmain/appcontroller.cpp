@@ -4712,7 +4712,8 @@ bool AppController::openDataLink(const wxString& location, int* site_id)
     if (doc->getCaption().Length() == 0)
         doc->setCaption(location, wxEmptyString);
 
-    doc->setSourceUrl(location);
+    if (location.Find(wxT(".views/")) == -1)
+        doc->setSourceUrl(location);
 
     unsigned int site_type = cfw::sitetypeNormal;
 
