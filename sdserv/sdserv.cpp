@@ -129,7 +129,11 @@ bool Server::useConfigFile(const std::wstring& config_file)
     m_options[options_arr_size++] = "enable_keep_alive";
     m_options[options_arr_size++] = "yes";
    
-    // terminator
+    // enable keep alive by default
+    m_options[options_arr_size++] = "num_threads";
+    m_options[options_arr_size++] = "50";
+    
+       // terminator
     m_options[options_arr_size++] = NULL;
     
     m_config_file = config_file;
