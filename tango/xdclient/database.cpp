@@ -99,6 +99,7 @@ bool ClientDatabase::open(const std::wstring& host,
             return false;
 
         ServerCallParams params;
+        params.setParam(L"database", m_database);
         std::wstring sres = serverCall(L"/api/selectdb", &params);
         JsonNode response;
         response.fromString(sres);
