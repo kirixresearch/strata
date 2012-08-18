@@ -250,7 +250,8 @@ void ClientDatabase::columnToJsonNode(tango::IColumnInfoPtr info, JsonNode& colu
 
     column["width"].setInteger(info->getWidth());
     column["scale"].setInteger(info->getScale());   
-    column["expression"] = info->getExpression();     
+    column["expression"] = info->getExpression();
+    column["calculated"].setBoolean(info->getCalculated());
 }
 
 
