@@ -265,8 +265,8 @@ void Controller::apiSelectDb(RequestInfo& req)
     }
 
     std::wstring database = req.getValue(L"database");
-    if (database == L"")
-        database = L"default";
+    //if (database == L"")
+    //    database = L"default";
     
     std::wstring cstr = g_server.getDatabaseConnectionString(database);
     if (cstr.length() == 0)
