@@ -361,7 +361,6 @@ wxString ConnectionWizard::getConnectionString()
             break;
         case dbtypeClient:
             result += wxT("Xdprovider=xdclient;");
-            database = m_ci.path;
             break;
         case dbtypeXbase:
             result += wxT("Xdprovider=xdfs;Xdfiletype=xbase;");

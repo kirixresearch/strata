@@ -30,14 +30,14 @@ END_EVENT_TABLE()
 DlgShareView::DlgShareView(wxWindow* parent)
                     : wxDialog(parent, -1, _("Share"),
                          wxDefaultPosition,
-                         wxSize(500,280),
+                         wxSize(560,280),
                          wxDEFAULT_DIALOG_STYLE |
                          wxNO_FULL_REPAINT_ON_RESIZE |
                          wxCLIP_CHILDREN |
                          wxCENTER |
                          wxRESIZE_BORDER)
 {
-    SetMinSize(wxSize(500,280));
+    SetMinSize(wxSize(560,280));
     SetMaxSize(wxSize(640,480));
     
     // create vertical sizer
