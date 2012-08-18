@@ -4704,51 +4704,58 @@ bool AppController::openDataLink(const wxString& location, int* site_id)
     path = mnt_database + path;
 
 
+
     tango::IFileInfoPtr finfo = db->getFileInfo(path);
-    if (finfo.isNull() || finfo->getMimeType() != L"application/vnd.kx.view-link")
+    if (finfo.isNull())
     {
-        cfw::appMessageBox(wxT("A valid data view was not found at the specified location."), wxT("Error"));
+        cfw::appMessageBox(wxT("A valid data view or link was not found at the specified location."), wxT("Error"));
         return false;
     }
-
-
-    std::wstring json;
-    if (!readStreamTextFile(db, path, json))
-        return false;
-
-    std::wstring mount_root = getMountRoot(db, path);
-
-    kl::JsonNode root;
-    root.fromString(json);
-
-    path = root["data"]["table"];
-    std::wstring filter = root["data"]["where"];
-    std::wstring sort = root["data"]["order"];
-
-    if (filter.length() == 0 && sort.length() == 0)
+    
+    if (finfo->getMimeType() == L"application/vnd.kx.view-link")
     {
-        return openSet(path);
-    }
-     else
-    {
-        tango::ISetPtr set = db->openSet(mount_root + L"/" + path);
-        if (set.isNull())
-        {
-            cfw::appMessageBox(wxT("The data file referenced by the data view cannot be opened."), wxT("Error"));
+        std::wstring json;
+        if (!readStreamTextFile(db, path, json))
             return false;
+
+        kl::JsonNode root;
+        root.fromString(json);
+
+        path = root["data"]["table"];
+        std::wstring filter = root["data"]["where"];
+        std::wstring sort = root["data"]["order"];
+
+        if (filter.length() == 0 && sort.length() == 0)
+        {
+            return openSet(path);
         }
+         else
+        {
+            std::wstring mount_root = getMountRoot(db, path);
+
+            tango::ISetPtr set = db->openSet(mount_root + L"/" + path);
+            if (set.isNull())
+            {
+                cfw::appMessageBox(wxT("The data file referenced by the data view cannot be opened."), wxT("Error"));
+                return false;
+            }
 
 
-        SortFilterJob* query_job = new SortFilterJob;
-        query_job->getJobInfo()->setTitle(_("Opening data view..."));
-        query_job->setInstructions(set, filter, sort);
+            SortFilterJob* query_job = new SortFilterJob;
+            query_job->getJobInfo()->setTitle(_("Opening data view..."));
+            query_job->setInstructions(set, filter, sort);
 
-        query_job->sigJobFinished().connect(this, &AppController::onOpenDataViewFinished);
+            query_job->sigJobFinished().connect(this, &AppController::onOpenDataViewFinished);
 
-        g_app->getJobQueue()->addJob(query_job, cfw::jobStateRunning);
+            g_app->getJobQueue()->addJob(query_job, cfw::jobStateRunning);
 
-        if (site_id)
-            *site_id = 0;
+            if (site_id)
+                *site_id = 0;
+        }
+    }
+     else if (finfo->getType() == tango::filetypeSet)
+    {
+        return openSet(path, site_id);
     }
 
     return true;
