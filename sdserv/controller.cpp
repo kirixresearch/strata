@@ -185,7 +185,7 @@ static void JsonNodeToColumn(kl::JsonNode& column, tango::IColumnInfoPtr col)
     col->setScale(column["scale"].getInteger());
     //col->setColumnOrdinal(i);
     col->setExpression(column["expression"]);
-    col->setCalculated(column["expression"].getString().length() > 0 ? true : false);
+    col->setCalculated(column[L"calculated"].getBoolean());
 }
 
 
