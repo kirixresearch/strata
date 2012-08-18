@@ -109,6 +109,7 @@ wxString dequoteIdentifier(const wxString& identifier);
 
 wxString getObjectPathFromMountPath(const wxString& database_path);
 wxString getPhysPathFromMountPath(const wxString& database_path);
+std::wstring getMountRoot(tango::IDatabasePtr db, const std::wstring path);
 
 // gets the filename from the path
 wxString getFilenameFromPath(const wxString& path, bool include_extension = true);

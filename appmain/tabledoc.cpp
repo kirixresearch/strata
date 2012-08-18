@@ -1998,16 +1998,27 @@ void TableDoc::onShareUrlRequested(wxString& url)
         return;
     }
 
+    
+    std::wstring path = set->getObjectPath();
+
     if (g_app->getDbDriver() != L"xdclient")
     {
-        tango::IDatabasePtr mount_db = db->getMountDatabase(set->getObjectPath());
+        tango::IDatabasePtr mount_db = db->getMountDatabase(path);
         if (mount_db.isNull())
         {
             url = wxT("Table is not stored in a centrally accessible location");
             return;
         }
 
+        std::wstring mount_path = getMountRoot(db, path);
+        if (mount_path.length() == 0)
+            return;
+
         db = mount_db;
+
+
+
+        path = path.substr(mount_path.length());
     }
 
 
@@ -2025,10 +2036,11 @@ void TableDoc::onShareUrlRequested(wxString& url)
 
     wxBusyCursor bc;
 
+
     // create view information in json format
 
     kl::JsonNode root;
-    root["data"]["table"] = getBaseSet()->getObjectPath();
+    root["data"]["table"] = path;
     root["data"]["where"] = towstr(getFilter());
     root["data"]["order"] = towstr(getSortOrder());
 
@@ -2054,12 +2066,12 @@ void TableDoc::onShareUrlRequested(wxString& url)
     counter++;
     swprintf(rand, 255, L"%06x%02x", c, counter);
 
-    std::wstring path = L"/.views/";
-    path += rand;
+    std::wstring view_path = L"/.views/";
+    view_path += rand;
 
-    writeStreamTextFile(db, path, json, L"application/vnd.kx.view-link");
+    writeStreamTextFile(db, view_path, json, L"application/vnd.kx.view-link");
 
-    url = towx(dburl + path);
+    url = towx(dburl + view_path);
 }
 
 void TableDoc::onShareView(wxCommandEvent& evt)
@@ -2296,27 +2308,6 @@ void TableDoc::onColumnsDropped(kcl::GridDataDropTarget* drop_target)
 
 
 
-
-static std::wstring getMountRoot(tango::IDatabasePtr db, const std::wstring _path)
-{
-    std::wstring path = _path;
-    size_t old_len = 0;
-
-    while (1)
-    {
-        if (path.length() <= 1)
-            return L"";
-            
-        std::wstring cstr, rpath;
-        if (db->getMountPoint(path, cstr, rpath))
-            return path;
-
-        old_len = path.length();
-        path = kl::beforeLast(path, '/');
-        if (path.length() == old_len)
-            return L"";
-    }
-}
 
 bool TableDoc::open(tango::IDatabasePtr db,
                     const wxString& _path,

@@ -1487,6 +1487,31 @@ wxString getPhysPathFromMountPath(const wxString& database_path)
     return res;
 }
 
+
+
+std::wstring getMountRoot(tango::IDatabasePtr db, const std::wstring _path)
+{
+    std::wstring path = _path;
+    size_t old_len = 0;
+
+    while (1)
+    {
+        if (path.length() <= 1)
+            return L"";
+            
+        std::wstring cstr, rpath;
+        if (db->getMountPoint(path, cstr, rpath))
+            return path;
+
+        old_len = path.length();
+        path = kl::beforeLast(path, '/');
+        if (path.length() == old_len)
+            return L"";
+    }
+}
+
+
+
 // gets the filename from the path
 wxString getFilenameFromPath(const wxString& path, bool include_extension)
 {
