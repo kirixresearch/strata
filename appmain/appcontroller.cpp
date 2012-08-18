@@ -4718,6 +4718,8 @@ bool AppController::openDataLink(const wxString& location, int* site_id)
         if (!readStreamTextFile(db, path, json))
             return false;
 
+        std::wstring mount_root = getMountRoot(db, path);
+
         kl::JsonNode root;
         root.fromString(json);
 
@@ -4731,7 +4733,7 @@ bool AppController::openDataLink(const wxString& location, int* site_id)
         }
          else
         {
-            std::wstring mount_root = getMountRoot(db, path);
+
 
             tango::ISetPtr set = db->openSet(mount_root + L"/" + path);
             if (set.isNull())
