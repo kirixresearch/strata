@@ -674,12 +674,35 @@ tango::ISetPtr Database::runGroupQuery(tango::ISetPtr set,
                                        const std::wstring& having,
                                        tango::IJob* job)
 {
+
     if (group.empty() &&
         !where.empty())
     {
         // this scenario isn't supported yet
         return xcm::null;
     }
+
+
+    // check if we are running this job on an xdclient mount
+    std::wstring set_path = set->getObjectPath();
+    std::wstring cstr, rpath;
+    if (detectMountPoint(set_path, cstr, rpath))
+    {
+        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return xcm::null;
+        
+        tango::IAttributesPtr attr = db->getAttributes();
+        if (attr->getStringAttribute(tango::dbattrDatabaseUrl).substr(0,6) == L"sdserv")
+        {
+            tango::ISetPtr rset = db->openSet(rpath);
+            if (rset.isOk())
+                return db->runGroupQuery(rset, group, output, where, having, job);
+        }
+    }
+
+
+
 
     GroupQueryInfo gi;
     std::vector<GroupOutputInfo> output_fields;
