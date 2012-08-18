@@ -264,7 +264,11 @@ void Controller::apiSelectDb(RequestInfo& req)
         return;
     }
 
-    std::wstring cstr = g_server.getDatabaseConnectionString(L"default");
+    std::wstring database = req.getValue(L"database");
+    if (database == L"")
+        database = L"default";
+    
+    std::wstring cstr = g_server.getDatabaseConnectionString(database);
     if (cstr.length() == 0)
     {
         returnApiError(req, "Database not found");
