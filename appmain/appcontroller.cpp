@@ -4704,26 +4704,78 @@ bool AppController::openDataLink(const wxString& location, int* site_id)
     path = mnt_database + path;
 
 
-    // open all normal table docs
-    ITableDocPtr doc = TableDocMgr::createTableDoc();
-    if (!doc->open(db, towx(path)))
+    tango::IFileInfoPtr finfo = db->getFileInfo(path);
+    if (finfo.isNull() || finfo->getMimeType() != L"application/vnd.kx.view-link")
+    {
+        cfw::appMessageBox(wxT("A valid data view was not found at the specified location."), wxT("Error"));
+        return false;
+    }
+
+
+    std::wstring json;
+    if (!readStreamTextFile(db, path, json))
         return false;
 
-    if (doc->getCaption().Length() == 0)
-        doc->setCaption(location, wxEmptyString);
+    std::wstring mount_root = getMountRoot(db, path);
 
-    if (location.Find(wxT(".views/")) == -1)
-        doc->setSourceUrl(location);
+    kl::JsonNode root;
+    root.fromString(json);
 
-    unsigned int site_type = cfw::sitetypeNormal;
+    path = root["data"]["table"];
+    std::wstring filter = root["data"]["where"];
+    std::wstring sort = root["data"]["order"];
 
-    cfw::IDocumentSitePtr doc_site;
-    doc_site = g_app->getMainFrame()->createSite(doc, site_type, -1, -1, -1, -1);
-            
-    if (site_id)
-        *site_id = doc_site->getId();
+    if (filter.length() == 0 && sort.length() == 0)
+    {
+        return openSet(path);
+    }
+     else
+    {
+        tango::ISetPtr set = db->openSet(mount_root + L"/" + path);
+        if (set.isNull())
+        {
+            cfw::appMessageBox(wxT("The data file referenced by the data view cannot be opened."), wxT("Error"));
+            return false;
+        }
+
+
+        SortFilterJob* query_job = new SortFilterJob;
+        query_job->getJobInfo()->setTitle(_("Opening data view..."));
+        query_job->setInstructions(set, filter, sort);
+
+        query_job->sigJobFinished().connect(this, &AppController::onOpenDataViewFinished);
+
+        g_app->getJobQueue()->addJob(query_job, cfw::jobStateRunning);
+
+        if (site_id)
+            *site_id = 0;
+    }
 
     return true;
+}
+
+
+void AppController::onOpenDataViewFinished(cfw::IJobPtr query_job)
+{
+    ISortFilterJobPtr job = query_job;
+
+    tango::ISetPtr set = job->getResultSet();
+    tango::IIteratorPtr iter = job->getResultIterator();
+
+    if (set.isOk() && iter.isOk())
+    {
+        ITableDocPtr doc = TableDocMgr::createTableDoc();
+        if (!doc->open(set, iter))
+        {
+            wxFAIL_MSG(wxT("ITableDoc::open() returned false"));
+            return;
+        }
+
+        unsigned int site_type = cfw::sitetypeNormal;
+
+        cfw::IDocumentSitePtr doc_site;
+        doc_site = g_app->getMainFrame()->createSite(doc, site_type, -1, -1, -1, -1);
+    }
 }
 
 

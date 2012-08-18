@@ -2327,55 +2327,7 @@ bool TableDoc::open(tango::IDatabasePtr db,
     tango::ISetPtr set = optional_set;
     if (set.isNull())
     {
-        tango::IFileInfoPtr finfo = db->getFileInfo(path);
-        if (finfo->getType() == tango::filetypeSet)
-        {
-            set = db->openSet(towstr(path));
-        }
-         else if (finfo->getMimeType() == L"application/vnd.kx.view-link")
-        {
-            std::wstring json;
-            if (!readStreamTextFile(db, path, json))
-                return false;
-
-            std::wstring mount_root = getMountRoot(db, path);
-
-            kl::JsonNode root;
-            root.fromString(json);
-
-            path = root["data"]["table"];
-            std::wstring filter = root["data"]["where"];
-            std::wstring sort = root["data"]["order"];
-
-            set = db->openSet(mount_root + L"/" + path);
-            if (!open(set, xcm::null))
-                return false;
-
-            if (filter.length() > 0)
-            {
-                m_sort_order = sort;
-                setFilter(filter);
-            }
-             else
-            {
-                if (sort.length() > 0)
-                    setSortOrder(sort);
-            }
-
-            //std::wstring group_break = root["display"]["group_break"];
-            //if (group_break.length() > 0)
-            //    setGroupBreak(towx(group_break));
-
-            m_db_type = db->getDatabaseType();
-    
-            m_mount_db = db->getMountDatabase(towstr(path));
-            if (m_mount_db)
-            {
-                m_db_type = m_mount_db->getDatabaseType();
-            }
-
-            return true;
-        }
+        set = db->openSet(towstr(path));
 
         if (set.isNull())
             return false;
