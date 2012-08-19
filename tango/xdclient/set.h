@@ -92,8 +92,6 @@ private:
     std::wstring m_set_id;
     int m_set_flags;
     tango::rowpos_t m_known_row_count;
-    tango::IStructurePtr m_structure;
-    
 };
 
 

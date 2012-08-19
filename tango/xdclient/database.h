@@ -138,6 +138,9 @@ public:
                                  const std::wstring& having,
                                  tango::IJob* job);
 
+    tango::IStructurePtr describeTable(const std::wstring& path);
+    void clearDescribeTableCache(const std::wstring& path);
+
 public:
 
     tango::IStructurePtr jsonToStructure(JsonNode& node);
@@ -165,6 +168,9 @@ private:
 
     xcm::mutex m_http_mutex;
     std::map<xcm::threadid_t, HttpRequest*> m_http_objects;
+
+    xcm::mutex m_describe_mutex;
+    std::map<std::wstring, tango::IStructurePtr> m_describe;
 
     xcm::threadid_t m_connection_thread_id;
 };

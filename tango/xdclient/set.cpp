@@ -121,21 +121,10 @@ std::wstring ClientSet::getSetId()
 
 tango::IStructurePtr ClientSet::getStructure()
 {
-    if (m_structure.isOk())
-        return m_structure;
-
-    ServerCallParams params;
-    params.setParam(L"path", m_path);
-    std::wstring sres = m_database->serverCall(L"/api/describetable", &params);
-    JsonNode response;
-    response.fromString(sres);
-
-    if (!response["success"].getBoolean())
+    tango::IStructurePtr structure = m_database->describeTable(m_path);
+    if (structure.isNull())
         return xcm::null;
-
-    m_structure = m_database->jsonToStructure(response);
-
-    return m_structure->clone();
+    return structure->clone();
 }
 
 bool ClientSet::modifyStructure(tango::IStructure* struct_config, tango::IJob* job)
@@ -147,7 +136,7 @@ bool ClientSet::modifyStructure(tango::IStructure* struct_config, tango::IJob* j
     if (orig_structure.isNull())
         return false;
 
-    m_structure.clear();
+    m_database->clearDescribeTableCache(m_path);
 
 
     tango::IStructurePtr structure = struct_config;

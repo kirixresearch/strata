@@ -540,6 +540,8 @@ tango::IFileInfoPtr ClientDatabase::getFileInfo(const std::wstring& path)
     return static_cast<tango::IFileInfo*>(f);
 }
 
+
+
 tango::IFileInfoEnumPtr ClientDatabase::getFolderInfo(const std::wstring& path)
 {
     ServerCallParams params;
@@ -592,6 +594,29 @@ tango::IFileInfoEnumPtr ClientDatabase::getFolderInfo(const std::wstring& path)
 
     return retval;
 }
+
+
+tango::IStructurePtr ClientDatabase::describeTable(const std::wstring& path)
+{
+    ServerCallParams params;
+    params.setParam(L"path", path);
+    std::wstring sres = serverCall(L"/api/describetable", &params);
+
+    JsonNode response;
+    response.fromString(sres);
+
+    if (!response["success"].getBoolean())
+        return xcm::null;
+
+    return jsonToStructure(response);
+}
+
+
+void ClientDatabase::clearDescribeTableCache(const std::wstring& path)
+{
+}
+
+
 
 tango::IDatabasePtr ClientDatabase::getMountDatabase(const std::wstring& path)
 {
