@@ -1540,7 +1540,9 @@ void Controller::apiAlter(RequestInfo& req)
         if (action["action"].getString() == L"create")
         {
             tango::IColumnInfoPtr colinfo = structure->createColumn();
-            JsonNodeToColumn(action, colinfo);
+
+            kl::JsonNode params = action["params"];
+            JsonNodeToColumn(params, colinfo);
         }
          else if (action["action"].getString() == L"insert")
         {
@@ -1551,7 +1553,8 @@ void Controller::apiAlter(RequestInfo& req)
                 return;
             }
             
-            JsonNodeToColumn(action, colinfo);
+            kl::JsonNode params = action["params"];
+            JsonNodeToColumn(params, colinfo);
         }
          else if (action["action"].getString() == L"modify")
         {
@@ -1562,8 +1565,8 @@ void Controller::apiAlter(RequestInfo& req)
                 return;
             }
             
-            kl::JsonNode changes = action["changes"];
-            JsonNodeToColumn(changes, colinfo);
+            kl::JsonNode params = action["params"];
+            JsonNodeToColumn(params, colinfo);
         }
          else if (action["action"].getString() == L"delete")
         {
