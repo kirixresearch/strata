@@ -850,7 +850,7 @@ bool ClientIterator::isNull(tango::objhandle_t data_handle)
 {
     HttpDataAccessInfo* handle = (HttpDataAccessInfo*)data_handle;
     if (handle == NULL)
-        return false;
+        return true;
 
     return false;
 }

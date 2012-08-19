@@ -143,6 +143,10 @@ bool ClientSet::modifyStructure(tango::IStructure* struct_config, tango::IJob* j
     if (!struct_config)
         return false;
 
+    tango::IStructurePtr orig_structure = getStructure();
+    if (orig_structure.isNull())
+        return false;
+
     m_structure.clear();
 
 
@@ -185,7 +189,27 @@ bool ClientSet::modifyStructure(tango::IStructure* struct_config, tango::IJob* j
 
 
         if (it->m_params.isOk())
-            m_database->columnToJsonNode(it->m_params, json_action);
+        {
+            tango::IColumnInfoPtr orig_colinfo = orig_structure->getColumnInfo(it->m_colname);
+
+            if (it->m_params->getName().length() > 0)
+                json_action["changes"]["name"] = it->m_params->getName();
+
+            if (it->m_params->getType() != -1)
+                json_action["changes"]["type"] = m_database->dbtypeToString(it->m_params->getType());
+
+            if (it->m_params->getWidth() != -1)
+                json_action["changes"]["width"].setInteger(it->m_params->getWidth());
+
+            if (it->m_params->getScale() != -1)
+                json_action["changes"]["scale"].setInteger(it->m_params->getScale());   
+
+            if (it->m_params->getExpression().length() > 0)
+                json_action["changes"]["expression"] = it->m_params->getExpression();
+
+            if (it->m_params->getCalculated() != orig_colinfo->getCalculated())
+                json_action["changes"]["calculated"].setBoolean(it->m_params->getCalculated());
+        }
     }
 
 
