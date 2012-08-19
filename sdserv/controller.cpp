@@ -163,29 +163,44 @@ std::wstring Controller::createHandle() const
 
 static void JsonNodeToColumn(kl::JsonNode& column, tango::IColumnInfoPtr col)
 {
-    std::wstring type = column["type"];
-    int ntype;
+    if (column.childExists("name"))
+        col->setName(column["name"]);
+    
+    if (column.childExists("type"))
+    {
+        std::wstring type = column["type"];
+        int ntype;
 
-         if (type == L"undefined")     ntype = tango::typeUndefined;
-    else if (type == L"invalid")       ntype = tango::typeInvalid;
-    else if (type == L"character")     ntype = tango::typeCharacter;
-    else if (type == L"widecharacter") ntype = tango::typeWideCharacter;
-    else if (type == L"numeric")       ntype = tango::typeNumeric;
-    else if (type == L"double")        ntype = tango::typeDouble;
-    else if (type == L"integer")       ntype = tango::typeInteger;
-    else if (type == L"date")          ntype = tango::typeDate;
-    else if (type == L"datetime")      ntype = tango::typeDateTime;
-    else if (type == L"boolean")       ntype = tango::typeBoolean;
-    else if (type == L"binary")        ntype = tango::typeBinary;
-    else ntype = tango::typeUndefined;
+             if (type == L"undefined")     ntype = tango::typeUndefined;
+        else if (type == L"invalid")       ntype = tango::typeInvalid;
+        else if (type == L"character")     ntype = tango::typeCharacter;
+        else if (type == L"widecharacter") ntype = tango::typeWideCharacter;
+        else if (type == L"numeric")       ntype = tango::typeNumeric;
+        else if (type == L"double")        ntype = tango::typeDouble;
+        else if (type == L"integer")       ntype = tango::typeInteger;
+        else if (type == L"date")          ntype = tango::typeDate;
+        else if (type == L"datetime")      ntype = tango::typeDateTime;
+        else if (type == L"boolean")       ntype = tango::typeBoolean;
+        else if (type == L"binary")        ntype = tango::typeBinary;
+        else ntype = tango::typeUndefined;
+        
+        col->setType(ntype);
+    }
+    
+    if (column.childExists("width"))
+        col->setWidth(column["width"].getInteger());
 
-    col->setName(column["name"]);
-    col->setType(ntype);
-    col->setWidth(column["width"].getInteger());
-    col->setScale(column["scale"].getInteger());
-    //col->setColumnOrdinal(i);
-    col->setExpression(column["expression"]);
-    col->setCalculated(column[L"calculated"].getBoolean());
+    if (column.childExists("scale")) 
+        col->setScale(column["scale"].getInteger());
+        
+    if (column.childExists("expression")) 
+        col->setExpression(column["expression"]);
+        
+    if (column.childExists("calculated")) 
+        col->setCalculated(column["calculated"].getBoolean());
+    
+    
+    //col->setColumnOrdinal(i); // add this later if necessary
 }
 
 
@@ -1319,6 +1334,14 @@ void Controller::apiFetchRows(RequestInfo& req)
                     cell = iter->getWideString(qr.columns[col].handle);
                     break;
                 
+                case tango::typeInteger:
+                    cell = kl::itowstring(iter->getInteger(qr.columns[col].handle));
+                    break;
+                
+                case tango::typeBoolean:
+                    cell = ((iter->getBoolean(qr.columns[col].handle)) ? L"true" : L"false");
+                    break;
+                
                 case tango::typeNumeric:
                 case tango::typeDouble:
                 {
@@ -1539,7 +1562,8 @@ void Controller::apiAlter(RequestInfo& req)
                 return;
             }
             
-            JsonNodeToColumn(action, colinfo);
+            kl::JsonNode changes = action["changes"];
+            JsonNodeToColumn(changes, colinfo);
         }
          else if (action["action"].getString() == L"delete")
         {
