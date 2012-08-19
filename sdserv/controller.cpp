@@ -89,6 +89,7 @@ bool Controller::onRequest(RequestInfo& req)
     else if (uri == L"/api/fetchrows")        apiFetchRows(req);
     else if (uri == L"/api/insertrows")       apiInsertRows(req);
     else if (uri == L"/api/clone")            apiClone(req);
+    else if (uri == L"/api/close")            apiClose(req);
     else if (uri == L"/api/alter")            apiAlter(req);
     else if (uri == L"/api/refresh")          apiRefresh(req);
     else if (uri == L"/api/startbulkinsert")  apiStartBulkInsert(req);
@@ -1490,6 +1491,40 @@ void Controller::apiClone(RequestInfo& req)
     req.write(response.toString());
 }
 
+void Controller::apiClose(RequestInfo& req)
+{
+    SdservSession* session = getSdservSession(req);
+    if (!session)
+        return;
+        
+    std::wstring handle = req.getValue(L"handle");
+    if (handle.length() == 0)
+    {
+        returnApiError(req, "Missing handle parameter");
+        return;
+    }
+     
+    std::map<std::wstring, SessionQueryResult>::iterator it;
+    it = session->iters.find(handle);
+    if (it == session->iters.end())
+    {
+        returnApiError(req, "Invalid handle parameter");
+        return;
+    }
+    
+    
+    std::vector<SessionQueryResultColumn>::iterator cit;
+    for (cit = it->second.columns.begin(); cit != it->second.columns.end(); ++cit)
+        it->second.iter->releaseHandle(cit->handle);
+
+    session->iters.erase(it);
+    
+    // return success to caller
+    kl::JsonNode response;
+    response["success"].setBoolean(true);
+    
+    req.write(response.toString());
+}
 
 
 

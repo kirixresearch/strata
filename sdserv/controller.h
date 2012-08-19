@@ -86,6 +86,7 @@ private:
 
     void returnApiError(RequestInfo& req, const char* msg, const char* code = "ERR0000");
     tango::IDatabasePtr getSessionDatabase(RequestInfo& req);
+    tango::IIteratorPtr getSessionIterator(RequestInfo& req);
     SdservSession* getSdservSession(RequestInfo& req);
     
     void apiLogin(RequestInfo& req);
@@ -109,6 +110,7 @@ private:
     void apiFetchRows(RequestInfo& req);
     void apiInsertRows(RequestInfo& req);
     void apiClone(RequestInfo& req);
+    void apiClose(RequestInfo& req);
     void apiAlter(RequestInfo& req);
     void apiRefresh(RequestInfo& req);
     void apiStartBulkInsert(RequestInfo& req);
