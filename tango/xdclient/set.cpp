@@ -193,22 +193,22 @@ bool ClientSet::modifyStructure(tango::IStructure* struct_config, tango::IJob* j
             tango::IColumnInfoPtr orig_colinfo = orig_structure->getColumnInfo(it->m_colname);
 
             if (it->m_params->getName().length() > 0)
-                json_action["changes"]["name"] = it->m_params->getName();
+                json_action["params"]["name"] = it->m_params->getName();
 
             if (it->m_params->getType() != -1)
-                json_action["changes"]["type"] = m_database->dbtypeToString(it->m_params->getType());
+                json_action["params"]["type"] = m_database->dbtypeToString(it->m_params->getType());
 
             if (it->m_params->getWidth() != -1)
-                json_action["changes"]["width"].setInteger(it->m_params->getWidth());
+                json_action["params"]["width"].setInteger(it->m_params->getWidth());
 
             if (it->m_params->getScale() != -1)
-                json_action["changes"]["scale"].setInteger(it->m_params->getScale());   
+                json_action["params"]["scale"].setInteger(it->m_params->getScale());   
 
             if (it->m_params->getExpression().length() > 0)
-                json_action["changes"]["expression"] = it->m_params->getExpression();
+                json_action["params"]["expression"] = it->m_params->getExpression();
 
-            if (it->m_params->getCalculated() != orig_colinfo->getCalculated())
-                json_action["changes"]["calculated"].setBoolean(it->m_params->getCalculated());
+            if (orig_colinfo.isNull() || it->m_params->getCalculated() != orig_colinfo->getCalculated())
+                json_action["params"]["calculated"].setBoolean(it->m_params->getCalculated());
         }
     }
 
