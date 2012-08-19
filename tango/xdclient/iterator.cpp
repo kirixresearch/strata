@@ -448,6 +448,8 @@ void ClientIterator::refreshStructure()
     response.fromString(sres);
 
     refreshDataAccessInfo();
+
+    skip(0);  // reload data into cache
 }
 
 bool ClientIterator::modifyStructure(tango::IStructure* struct_config, tango::IJob* job)
