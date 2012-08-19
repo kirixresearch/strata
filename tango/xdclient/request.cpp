@@ -70,87 +70,6 @@ static std::wstring multipartEncode(const std::wstring& input)
 
 
 
-RpcConnectionHttp::RpcConnectionHttp()
-{
-    m_response_bytes = 0;
-    
-    // initialize CURL
-    if (0 != curl_global_init(CURL_GLOBAL_ALL))
-        return;
-
-    m_curl = curl_easy_init();
-
-    if (m_curl == NULL)
-        return;
-
-    CURLcode curl_result;
-
-    // from the curl documentation:  "When using multiple threads you 
-    // should set the CURLOPT_NOSIGNAL option to TRUE for all handles. 
-    // Everything will or might work fine except that timeouts are not 
-    // honored during the DNS lookup ... On some platforms, libcurl simply 
-    // will not function properly multi-threaded unless this option is set."
-    curl_easy_setopt(m_curl, CURLOPT_NOSIGNAL, TRUE);
-        
-    // see http://curl.haxx.se/lxr/source/docs/examples/https.c
-    // these are necessary unless we want to include a certificate bundle
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYHOST, 0);
-    
-    // follow redirects
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_FOLLOWLOCATION, TRUE);
-    
-    // when redirecting, set the referer
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_AUTOREFERER, TRUE);
-    
-    // set the maximimum number of redirects to infinity
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_MAXREDIRS, -1);
-    
-    // set the default proxy type
-    //curl_result = curl_easy_setopt(m_curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
-    
-    // set the default authentication methods
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
-    
-    // allow cookies
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_COOKIEFILE, "");
-    
-    // include headers in body output
-    //curl_result = curl_easy_setopt(m_curl, CURLOPT_HEADER, TRUE);
-    
-    curl_version_info_data* a = curl_version_info(CURLVERSION_NOW);
-}
-
-RpcConnectionHttp::~RpcConnectionHttp()
-{
-    if (m_curl != NULL)
-        curl_easy_cleanup(m_curl);
-        
-    freeResponsePieces();
-}
-
-void RpcConnectionHttp::freeResponsePieces()
-{
-    std::list<HttpResponsePiece>::iterator it, it_end;
-    it_end = m_response_pieces.end();
-    for (it = m_response_pieces.begin(); it != it_end; ++it)
-        delete[] it->buf;
-    m_response_pieces.clear();
-    m_response_bytes = 0;
-}
-
-MethodResponse RpcConnectionHttp::call(const MethodCall& call)
-{
-    MethodResponse m;
-    return m;
-}
-
-
-
-
-
-
 HttpRequest::HttpRequest()
 {
     m_response_bytes = 0;
@@ -158,11 +77,25 @@ HttpRequest::HttpRequest()
     m_post_multipart = false;
     m_formfields = NULL;
     m_formfieldslast = NULL;
+    m_curl = NULL;
 
     // initialize CURL
-    if (0 != curl_global_init(CURL_GLOBAL_ALL))
-        return;
+    static bool global_init = true;
+    if (global_init)
+    {
+        if (0 != curl_global_init(CURL_GLOBAL_ALL))
+            return;
+        global_init = false;
+    }
+}
 
+HttpRequest::~HttpRequest()
+{
+    close();
+}
+
+void HttpRequest::init()
+{
     m_curl = curl_easy_init();
 
     if (m_curl == NULL)
@@ -207,7 +140,9 @@ HttpRequest::HttpRequest()
     curl_version_info_data* a = curl_version_info(CURLVERSION_NOW);
 }
 
-HttpRequest::~HttpRequest()
+
+
+void HttpRequest::close()
 {
     resetPostParameters();
 
@@ -215,7 +150,10 @@ HttpRequest::~HttpRequest()
         curl_easy_cleanup(m_curl);
         
     freeResponsePieces();
+    
+    m_curl = NULL;
 }
+
 
 void HttpRequest::send()
 {
@@ -223,7 +161,10 @@ void HttpRequest::send()
     
     // free any previous request
     freeResponsePieces();
+    m_response_bytes = 0;
 
+    if (m_curl == NULL)
+        init();
 
     curl_result = curl_easy_setopt(m_curl, CURLOPT_URL, m_location.c_str());
     if (curl_result != CURLE_OK)
