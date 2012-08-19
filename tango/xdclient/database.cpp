@@ -46,6 +46,7 @@ const wchar_t* xdclient_invalid_object_starting_chars =
 ClientDatabase::ClientDatabase()
 {
     m_last_job = 0;
+    m_connection_thread_id = 0;
 
     m_attr = static_cast<tango::IAttributes*>(new DatabaseAttributes);
     m_attr->setStringAttribute(tango::dbattrKeywords, xdclient_keywords);
@@ -78,6 +79,8 @@ bool ClientDatabase::open(const std::wstring& host,
                           const std::wstring& uid, 
                           const std::wstring& password)
 {
+    m_connection_thread_id = xcm::get_current_thread_id();
+
     m_host = host;
     m_port = kl::itowstring(port);
     m_database = database;
@@ -183,7 +186,15 @@ std::wstring ClientDatabase::serverCall(const std::wstring& call_path,
     
     http->send();
 
-    return http->getResponseString();
+    std::wstring result = http->getResponseString();
+
+    if (xcm::get_current_thread_id() != m_connection_thread_id)
+    {
+        // keep connection open only on main database connection
+        http->close();
+    }
+
+    return result;
 }
 
 std::wstring ClientDatabase::dbtypeToString(int type)

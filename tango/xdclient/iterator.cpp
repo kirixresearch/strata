@@ -39,6 +39,16 @@ ClientIterator::ClientIterator(ClientDatabase* database, ClientSet* set)
 
 ClientIterator::~ClientIterator()
 {
+    // let server know that we no longer need this resource
+
+    ServerCallParams params;
+    params.setParam(L"handle", m_handle);
+    std::wstring sres = m_database->serverCall(L"/api/close", &params);
+    JsonNode response;
+    response.fromString(sres);
+
+
+
     // clear the data access info
     std::vector<HttpDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)

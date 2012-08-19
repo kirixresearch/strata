@@ -165,6 +165,8 @@ private:
 
     xcm::mutex m_http_mutex;
     std::map<xcm::threadid_t, HttpRequest*> m_http_objects;
+
+    xcm::threadid_t m_connection_thread_id;
 };
 
 
