@@ -98,8 +98,11 @@ public:
     JsonNode operator[](const char* str);
     JsonNode operator[](const std::wstring& str);
     
-    bool childExists(const std::wstring& _str);
-    JsonNode getChild(const std::wstring& _str);
+    bool childExists(const std::wstring& str);
+    bool childExists(const std::string& str);
+    
+    JsonNode getChild(const std::wstring& str);
+    JsonNode getChild(const std::string& str);
 
     std::vector<std::wstring> getChildKeys();
     std::vector<JsonNode> getChildren();

@@ -591,9 +591,14 @@ JsonNode JsonNode::operator[](const std::wstring& str)
     return getChild(str);
 }
 
-bool JsonNode::childExists(const std::wstring& _str)
+bool JsonNode::childExists(const std::string& str)
 {
-    std::map<std::wstring,JsonNode>::iterator it = m_value->m_child_nodes.find(_str);
+    return childExists(kl::towstring(str));
+}
+
+bool JsonNode::childExists(const std::wstring& str)
+{
+    std::map<std::wstring,JsonNode>::iterator it = m_value->m_child_nodes.find(str);
     if (it != m_value->m_child_nodes.end())
         return true;
 
@@ -620,6 +625,12 @@ JsonNode JsonNode::getChild(const std::wstring& _str)
 
     return new_child;
 }
+
+JsonNode JsonNode::getChild(const std::string& str)
+{
+    return getChild(kl::towstring(str));
+}
+
 
 std::vector<std::wstring> JsonNode::getChildKeys()
 {
