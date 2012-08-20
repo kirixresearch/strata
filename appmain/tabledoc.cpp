@@ -46,6 +46,7 @@
 #include "querydoc.h"
 #include "sqldoc.h"
 #include "webdoc.h"
+#include "bookmark.h"
 #include "../kcl/griddnd.h"
 #include <algorithm>
 #include <set>
@@ -1557,6 +1558,28 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
         }
     }
 
+
+    {
+        tango::ISetPtr set = getBaseSet();
+        if (set.isOk())
+        {
+            std::wstring path = set->getObjectPath();
+
+            // is the source location itself a mount?
+            std::wstring root = getMountRoot(g_app->getDatabase(), path);
+            if (root.length() > 0)
+            {
+                Bookmark::create(dlg.getPath(), path);
+                g_app->getAppController()->refreshDbDoc();
+                return;
+            }
+        }
+    }
+
+
+
+
+
     // copy the file
     if (m_iter.isNull())
         return;
@@ -1623,7 +1646,7 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
     }
      else
     {
-            // this type of copy must requery, because no clone() is available
+        // this type of copy must requery, because no clone() is available
         copy_job->addCopyInstruction(g_app->getDatabase(),
                                      getBaseSet(),
                                      L"",
