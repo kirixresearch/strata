@@ -212,7 +212,22 @@ void Bookmark::create(const wxString& path,
         tango::IDatabasePtr db = g_app->getDatabase();
         if (db.isOk())
         {
-            db->setMountPoint(towstr(path), L"", towstr(loc));
+            std::wstring cstr = L"";
+            std::wstring mloc = towstr(loc);
+
+            // is the source location itself a mount?
+            std::wstring root = getMountRoot(db, mloc);
+            if (root.length() > 0)
+            {
+                std::wstring mpath;
+                if (!db->getMountPoint(root, cstr, mpath))
+                    return;
+
+                mloc = mloc.substr(root.length());
+            }
+
+
+            db->setMountPoint(towstr(path), cstr, mloc);
         
             // we need to save bookmark information as well
             if (tags.Length() > 0 || desc.Length() > 0)
