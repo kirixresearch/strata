@@ -130,7 +130,12 @@ bool ClientDatabase::open(const std::wstring& host,
 std::wstring ClientDatabase::getRequestPath()
 {
     std::wstring path;
-    path.append(L"http://");
+
+    if (m_port == L"4820")
+        path.append(L"https://");
+         else
+        path.append(L"http://");
+
     path.append(m_host);
     if (m_port.length() > 0)
     {

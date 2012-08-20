@@ -88,6 +88,8 @@ bool ClientSet::init(const std::wstring& path)
 void ClientSet::setObjectPath(const std::wstring& path)
 {
     m_object_path = path;
+
+    m_set_id = kl::md5str(m_database->m_host + L"/" + m_database->m_database + L"/" + m_set_id);
 }
 
 std::wstring ClientSet::getObjectPath()
