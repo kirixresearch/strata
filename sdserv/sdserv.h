@@ -50,6 +50,7 @@ private:
 private:
 
     std::wstring m_config_file;
+    char m_cert_file_path[255];
     
     const char* m_options[255];
 };

@@ -111,7 +111,7 @@ bool Server::useConfigFile(const std::wstring& config_file)
     {
         if (tmps.length() > 0)
             tmps += ",";
-        tmps += kl::itostring(ports_node[i].getInteger());
+        tmps += kl::itostring(ssl_ports_node[i].getInteger());
         tmps += "s";
     }
     
@@ -121,6 +121,7 @@ bool Server::useConfigFile(const std::wstring& config_file)
         return false;
     }
     strcpy(s_ports, tmps.c_str());
+    
     
     m_options[options_arr_size++] = "listening_ports";
     m_options[options_arr_size++] = s_ports;
@@ -133,7 +134,27 @@ bool Server::useConfigFile(const std::wstring& config_file)
     m_options[options_arr_size++] = "num_threads";
     m_options[options_arr_size++] = "30";
     
-       // terminator
+    
+    
+    kl::JsonNode ssl_cert = server["ssl_cert"];
+    if (ssl_cert.isOk())
+    {
+        std::wstring cert_file = ssl_cert.getString();
+        if (!xf_get_file_exist(cert_file))
+        {
+            printf("Certificate %ls does not exist.\n", cert_file.c_str());
+            return false;
+        }
+        
+        std::string cert_file_asc = kl::tostring(cert_file);
+        strcpy(m_cert_file_path, cert_file_asc.c_str());
+        
+        m_options[options_arr_size++] = "ssl_certificate";
+        m_options[options_arr_size++] = m_cert_file_path;
+    }
+    
+    
+    // terminator
     m_options[options_arr_size++] = NULL;
     
     m_config_file = config_file;
