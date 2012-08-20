@@ -152,6 +152,7 @@ bool Database::execute(const std::wstring& command,
     {
         if (detectMountPoint(*it, cstr, rpath))
         {
+
             // remove any leading slash -- but if there are any remaining
             // slashes, put it back, because the target engine will process
             // it further
@@ -162,11 +163,15 @@ bool Database::execute(const std::wstring& command,
             
             if (rpath.find(L" ") != -1)
                 rpath = quote_openchar + rpath + quote_closechar;
+
+
+            std::wstring table_name = kl::afterLast(*it,'/');
+            std::wstring new_table_name = kl::afterLast(rpath,'/');
             
             kl::replaceStr(new_command, L"[" + *it + L"]", rpath);
             kl::replaceStr(new_command, quote_openchar + *it + quote_closechar, rpath);
             kl::replaceStr(new_command, L" " + *it, L" " + rpath);
-            kl::replaceStr(new_command, *it + L".", rpath + L".");
+            kl::replaceStr(new_command, table_name + L".", new_table_name + L".");
         }
     }
 
