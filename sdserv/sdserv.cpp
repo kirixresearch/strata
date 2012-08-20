@@ -157,6 +157,10 @@ void* Server::callback(enum mg_event evt,
             req.write("<html><body><h2>Not found</h2></body></html>");
         }
     }
+     else if (evt == MG_EVENT_LOG)
+    {
+        printf("ERROR: %s\n", request_info->log_message);
+    }
 
     return "processed";
 }
