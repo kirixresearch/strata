@@ -166,6 +166,7 @@ bool Database::execute(const std::wstring& command,
             kl::replaceStr(new_command, L"[" + *it + L"]", rpath);
             kl::replaceStr(new_command, quote_openchar + *it + quote_closechar, rpath);
             kl::replaceStr(new_command, L" " + *it, L" " + rpath);
+            kl::replaceStr(new_command, *it + L".", rpath + L".");
         }
     }
 
