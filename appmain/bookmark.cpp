@@ -223,7 +223,15 @@ void Bookmark::create(const wxString& path,
                 if (!db->getMountPoint(root, cstr, mpath))
                     return;
 
-                mloc = mloc.substr(root.length());
+                if (root == mloc)
+                {
+                    // mount root is an object-mount itself
+                    mloc = mpath;
+                }
+                 else
+                {
+                    mloc = mloc.substr(root.length());
+                }
             }
 
 
