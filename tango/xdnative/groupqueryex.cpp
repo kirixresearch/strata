@@ -699,7 +699,21 @@ tango::ISetPtr Database::runGroupQuery(tango::ISetPtr set,
             if (rset.isOk())
             {
                 tango::ISetPtr result_rset = db->runGroupQuery(rset, group, output, where, having, job);
-                return result_rset;
+                if (result_rset.isNull())
+                    return xcm::null;
+
+                std::wstring remote_output_path = L"/.temp/" + getUniqueString();
+                if (!db->storeObject(result_rset, remote_output_path))
+                    return xcm::null;
+
+                std::wstring link_output_path;
+                if (link_output_path.length() == 0)
+                    link_output_path = L"/.temp/" + getUniqueString();
+
+                if (!setMountPoint(link_output_path, cstr, remote_output_path))
+                    return xcm::null;
+
+                return openSet(link_output_path);
             }
         }
     }

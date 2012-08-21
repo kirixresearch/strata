@@ -3357,44 +3357,49 @@ tango::ISetPtr Database::openSetEx(const std::wstring& _path,
     return openSet(path);
 }
 
-bool Database::storeObject(xcm::IObject* _obj, const std::wstring& ofs_path)
+bool Database::storeObject(xcm::IObject* _obj, const std::wstring& new_path)
 {
     XCM_AUTO_LOCK(m_object_mutex);
+
+    // check path validity
+    if (new_path.length() == 0)
+        return false;
+
+    if (iswspace(new_path[0]))
+        return false;
 
     // get the ISet interface
     tango::ISetPtr obj = _obj;
     if (obj.isNull())
         return false;
+    
+    std::wstring obj_path = obj->getObjectPath();
+
+    std::wstring cstr,rpath;
+    if (getMountPoint(obj_path, cstr, rpath))
+    {
+        if (!moveFile(obj_path, new_path))
+            return false;
+
+        obj->setObjectPath(new_path);
+        return true;
+    }
+
 
     ISetInternalPtr intset = obj;
     if (intset.isNull())
         return false;
 
-    // check path validity
+    // remove any old object stored at 'new_path'
 
-    if (ofs_path.length() == 0)
+    if (wcscasecmp(obj_path.c_str(), new_path.c_str()) != 0)
     {
-        return false;
-    }
-
-    if (iswspace(ofs_path[0]))
-    {
-        return false;
-    }
-
-
-    // remove old object stored at 'ofs_path'
-
-    if (wcscasecmp(obj->getObjectPath().c_str(), ofs_path.c_str()) != 0)
-    {
-        if (getFileExist(ofs_path))
-        {
-            deleteFile(ofs_path);
-        }
+        if (getFileExist(new_path))
+            deleteFile(new_path);
     }
 
     // store the object
-    return intset->storeObject(ofs_path);
+    return intset->storeObject(new_path);
 }
 
 
