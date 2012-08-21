@@ -1571,9 +1571,15 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
             std::wstring root = getMountRoot(g_app->getDatabase(), path);
             if (root.length() > 0)
             {
-                Bookmark::create(dlg.getPath(), path);
-                g_app->getAppController()->refreshDbDoc();
-                return;
+                std::wstring cstr, rpath;
+                g_app->getDatabase()->getMountPoint(root, cstr, rpath);
+                kl::makeLower(cstr);
+                if (cstr.find(L"xdclient") != -1)
+                {
+                    Bookmark::create(dlg.getPath(), path);
+                    g_app->getAppController()->refreshDbDoc();
+                    return;
+                }
             }
         }
     }
