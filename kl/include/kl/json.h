@@ -25,6 +25,10 @@ class JsonValue;
 class JsonNode;
 
 
+// helper function
+std::wstring escape_string(std::wstring& str);
+
+
 class JsonValue
 {
 friend JsonNode;

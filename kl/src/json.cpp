@@ -58,7 +58,7 @@ inline void skipWhiteSpaceOrLS(wchar_t*& ch)
         ++ch;
 }
 
-static std::wstring escape_string(std::wstring& str)
+std::wstring escape_string(std::wstring& str)
 {
     std::wstring result = L"";
 
