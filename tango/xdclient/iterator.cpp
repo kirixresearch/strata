@@ -681,15 +681,31 @@ bool ClientIterator::releaseHandle(tango::objhandle_t data_handle)
     return false;
 }
 
-const unsigned char* ClientIterator::getRawPtr(tango::objhandle_t data_handle)
+int ClientIterator::getRawWidth(tango::objhandle_t data_handle)
 {
+    HttpDataAccessInfo* dai = (HttpDataAccessInfo*)data_handle;
+    if (dai && dai->key_layout)
+    {
+        return dai->key_layout->getKeyLength();
+    }
+    
     return 0;
 }
 
-int ClientIterator::getRawWidth(tango::objhandle_t data_handle)
+const unsigned char* ClientIterator::getRawPtr(tango::objhandle_t data_handle)
 {
-    return 0;
+    HttpDataAccessInfo* dai = (HttpDataAccessInfo*)data_handle;
+    if (dai == NULL)
+        return NULL;
+    
+    if (dai->key_layout)
+    {
+        return dai->key_layout->getKey();
+    }
+
+    return NULL;
 }
+
 
 const std::string& ClientIterator::getString(tango::objhandle_t data_handle)
 {
