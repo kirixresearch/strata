@@ -1687,6 +1687,8 @@ void WebDoc::openURI(const wxString& uri, wxWebPostData* post_data)
         return;
     }
     
+
+
     if (isViewingSource())
     {
         cfw::IDocumentSitePtr other_site;
@@ -2485,6 +2487,14 @@ void WebDoc::onOpenURI(wxWebEvent& evt)
         return;
     }
     
+    if (loc.Left(7) == wxT("sdserv:") || loc.Left(8) == wxT("sdservs:"))
+    {
+        g_app->getAppController()->openDataLink(loc);
+        evt.Veto();
+        return;
+    }
+
+
     // see WebDoc::openURI() for some oddball cases that
     // get handled before this function processes them
     
