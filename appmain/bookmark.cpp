@@ -198,9 +198,78 @@ void Bookmark::create(const wxString& path,
         b.setFavIcon(favicon);
         b.save(path);
     }
+     else if (loc.Left(7).MakeLower() == wxT("sdserv:") ||
+              loc.Left(8).MakeLower() == wxT("sdservs:"))
+    {
+        std::wstring url = towstr(loc);
+
+        int url_sign = url.find(L"://");
+        if (url_sign == -1)
+            return;
+
+        // parse url
+
+        std::wstring protocol;
+        std::wstring server;
+        std::wstring port;
+        std::wstring path;
+        std::wstring database;
+
+        protocol = url.substr(0, url_sign);
+        server = url.substr(url_sign+3);
+
+        if (server.find('/') != server.npos)
+        {
+            path = kl::afterFirst(server, '/');
+            server = kl::beforeFirst(server, '/');
+        }
+
+        if (server.find(':') != server.npos)
+        {
+            port = kl::afterFirst(server, ':');
+            server = kl::beforeFirst(server, ':');
+        }
+    
+        if (path.find('/') == path.npos)
+        {
+            database = path;
+            path = '/';
+        }
+         else
+        {
+            database = kl::beforeFirst(path, '/');
+            path = kl::afterFirst(path, '/');
+        }
+
+
+        if (path.length() == 0 || path[0] != '/')
+            path = L"/" + path;
+
+        if (port.length() == 0)
+        {
+            if (loc.Left(8).MakeLower() == wxT("sdservs:"))
+                port = L"4820";
+                 else
+                port = L"4800";
+        }
+
+        // make a connection string
+        std::wstring conn_str = L"xdprovider=xdclient;";
+        conn_str += L"host=" + server + L";";
+        conn_str += L"port=" + port + L";";
+        conn_str += L"database=default;user id=admin;password=";
+
+
+
+        // create a mount node file
+        tango::IDatabasePtr db = g_app->getDatabase();
+        if (db.isOk())
+        {
+            db->setMountPoint(towstr(path), conn_str, path);
+        }
+    }
      else
     {
-        
         if (xf_get_file_exist(towstr(loc)))
         {
             // it's a real filename, convert it to a url
