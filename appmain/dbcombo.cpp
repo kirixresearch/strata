@@ -63,9 +63,11 @@ bool DbComboPopup::Create(wxWindow* parent)
     m_dbdoc->setDatabase(g_app->getDatabase(), wxT("/"));
     
     m_dbdoc->refresh();
+    m_dbdoc->getFsPanel()->setDragDrop(false);
     m_dbdoc->getFsPanel()->sigItemActivated().disconnect();
-    m_dbdoc->getFsPanel()->sigItemActivated().connect(this, &DbComboPopup::onItemActivated);
-    
+    m_dbdoc->getFsPanel()->sigItemSelected().disconnect();
+    m_dbdoc->getFsPanel()->sigItemSelected().connect(this, &DbComboPopup::onItemActivated);
+
     if (m_init_value.IsEmpty() || m_init_value == wxT("/"))
     {
         cfw::IFsItemPtr item = m_dbdoc->getFsPanel()->getRootItem();

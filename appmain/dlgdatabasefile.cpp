@@ -598,9 +598,13 @@ void DlgDatabaseFile::onItemActivated(cfw::IFsItemPtr item)
 void DlgDatabaseFile::onComboItemSelected()
 {
     // item in dropdown combo box was changed
-    m_name_ctrl->SetFocus();
-    m_name_ctrl->SetInsertionPointEnd();
-    m_name_ctrl->SetSelection(-1, -1);
+
+    if (m_name_ctrl)
+    {
+        m_name_ctrl->SetFocus();
+        m_name_ctrl->SetInsertionPointEnd();
+        m_name_ctrl->SetSelection(-1, -1);
+    }
 }
     
 
