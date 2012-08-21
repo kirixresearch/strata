@@ -50,6 +50,8 @@
 #include "../kcl/griddnd.h"
 #include <algorithm>
 #include <set>
+#include <kl/utf8.h>
+#include <kl/json.h>
 
 
 enum
@@ -1670,6 +1672,8 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
     // list, make sure you adjust the case statement
     // below, because it affects which file type the
     // target will be
+    filter += _("Package Files");
+    filter += wxT(" (*.kpg)|*.kpg|");
     filter += _("Comma-Delimited Files");
     filter += wxT(" (*.csv)|*.csv|");
     filter += _("Comma-Delimited Interchange Files");
@@ -1684,8 +1688,8 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
     filter += wxT(" (*.mdb)|*.mdb|");
     filter += _("Microsoft Excel Files");
     filter += wxT(" (*.xls)|*.xls|");
-    filter += _("Package Files");
-    filter += wxT(" (*.kpg)|*.kpg|");
+    filter += _("Structure Files");
+    filter += wxT(" (*.txt)|*.txt|");
     filter.RemoveLast(); // get rid of the last pipe sign
 
     wxString filename = getFilenameFromPath(m_dbpath, false);
@@ -1703,25 +1707,62 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
     if (dlg.ShowModal() != wxID_OK)
         return;
 
-    int type = 0;
-    
+    int export_type = 0;
+    int dbtype = 0;
     wxString delimiters = wxT("");
+
+    enum
+    {
+        exportPackage,
+        exportDelimitedText,
+        exportFixedLength,
+        exportXbase,
+        exportAccess,
+        exportExcel,
+        exportStructure
+    };
+
     switch (dlg.GetFilterIndex())
     {
-        case 0: type = dbtypeDelimitedText;
+        case 0: 
+            export_type = exportPackage;
+            dbtype = dbtypePackage;
+            break;        
+        case 1:
+            export_type = exportDelimitedText;
+            dbtype = dbtypeDelimitedText;
             delimiters = L",";
             break;
-        case 1: type = dbtypeDelimitedText;
+        case 2:
+            export_type = exportDelimitedText;
+            dbtype = dbtypeDelimitedText;
             delimiters = L",";
             break;
-        case 2: type = dbtypeDelimitedText;
+        case 3:
+            export_type = exportDelimitedText;
+            dbtype = dbtypeDelimitedText;
             delimiters = L"\t";
             break;
-        case 3: type = dbtypeFixedLengthText; break;
-        case 4: type = dbtypeXbase; break;
-        case 5: type = dbtypeAccess; break;
-        case 6: type = dbtypeExcel; break;
-        case 7: type = dbtypePackage; break;
+        case 4:
+            export_type = exportFixedLength;
+            dbtype = dbtypeFixedLengthText;
+            break;
+        case 5:
+            export_type = exportXbase;
+            dbtype = dbtypeXbase;
+            break;
+        case 6:
+            export_type = exportAccess;
+            dbtype = dbtypeAccess;
+            break;
+        case 7:
+            export_type = exportExcel;
+            dbtype = dbtypeExcel;
+            break;
+        case 8:
+            export_type = exportStructure;
+            // no databse type
+            break;
         default:
             wxFAIL_MSG(wxT("invalid filter index"));
             return;
@@ -1731,7 +1772,12 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
     
     // -- create an export job --
     
-    if (type == dbtypePackage)
+    if (export_type == exportStructure)
+    {
+        saveAsStructure(dlg.GetPath());
+        return;
+    }
+     else if (export_type == exportPackage)
     {
         wxString stream_name = m_caption;
         if (stream_name == _("(Untitled)"))
@@ -1749,7 +1795,7 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
                              this->m_dbpath,
                              true /* compress */);
 
-        g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+        g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);    
     }
      else
     {
@@ -1759,21 +1805,21 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
 
         ExportJob* job = new ExportJob;
         job->getJobInfo()->setTitle(title);
-        job->setExportType(type);
+        job->setExportType(dbtype);
 
         ExportJobInfo job_export_info;
         job_export_info.input_path = this->m_dbpath;
         job_export_info.output_path = dlg.GetPath();
         job_export_info.append = false;
 
-        if (type == dbtypeDelimitedText)
+        if (dbtype == dbtypeDelimitedText)
         {
             job->setDelimiters(delimiters);
             job->setTextQualifier(L"\"");
             job->setFirstRowHeader(true);
         }
         
-        if (type == dbtypeAccess || type == dbtypeExcel)
+        if (dbtype == dbtypeAccess || dbtype == dbtypeExcel)
         {
             job->setFilename(dlg.GetPath());
             job_export_info.output_path = this->m_dbpath.AfterLast(wxT('/')).BeforeLast(wxT('.'));
@@ -7181,6 +7227,210 @@ bool TableDoc::print(const wxString& caption)
 
 bool TableDoc::saveAsPdf(const wxString& path)
 {
+    return false;
+}
+
+static std::wstring tangoTypeToOutputType(int type)
+{
+    const wchar_t* result = L"";
+    switch (type)
+    {
+        default:
+        case tango::typeUndefined:
+            result = L"DbType.Undefined";
+            break;
+    
+        case tango::typeInvalid:
+            result = L"DbType.Invalid";
+            break;
+    
+        case tango::typeCharacter:
+            result = L"DbType.Character";
+            break;
+            
+        case tango::typeWideCharacter:
+            result = L"DbType.WideCharacter";
+            break;
+            
+        case tango::typeNumeric:
+            result = L"DbType.Numeric";
+            break;
+
+        case tango::typeDouble:
+            result = L"DbType.Double";
+            break;
+            
+        case tango::typeInteger:
+            result = L"DbType.Integer";
+            break;
+
+        case tango::typeDate:
+            result = L"DbType.Date";
+            break;
+            
+        case tango::typeDateTime:
+            result = L"DbType.DateTime";
+            break;
+
+        case tango::typeBoolean:
+            result = L"DbType.Boolean";
+            break;
+            
+        case tango::typeBinary:
+            result = L"DbType.Binary";
+            break;
+    }
+    
+    return kl::towstring(result);
+}
+
+bool TableDoc::saveAsStructure(const wxString& path)
+{
+    // note: saves structure with table definition; e.g.:
+    //  {
+    //  fields :
+    //  [
+    //      { name: "field1", type: DbType.Character, width: 6, scale: 0 },
+    //      { name: "field2", type: DbType.Numeric, width: 13, scale: 2 }
+    //  ]
+    //  }
+    // TODO: note, this should be made to be strict JSON once import templates
+    // can read this format:
+    //  "fields" :
+    //  [
+    //      { "name" : "field1", "type" : "character", "width" : 6, "scale" : 0 },
+    //      { "name" : "field2", "type" : "numeric", "width" : 13, "scale" : 2 }
+    //  ]
+    //  }    
+
+    tango::ISetPtr set = getBaseSet();
+    if (set.isNull())
+        return false;
+    
+    tango::IStructurePtr structure = set->getStructure();
+    if (structure.isNull())
+        return false;
+
+
+    // build up a string that we'll save
+    std::wstring result_text = L"";
+
+
+    int col_count = structure->getColumnCount();
+    tango::IColumnInfoPtr colinfo;
+
+
+    // TODO: we could use the kl::JsonNode library here if
+    // we had a pretty formatting; since the following will be
+    // used a lot in templates, etc, build the JSON with formatting
+    
+
+    result_text += L"{\n";
+    result_text += L"    fields:";
+    result_text += L"\n    [\n";
+
+    bool first = true;
+    int i;
+    for (i = 0; i < col_count; ++i)
+    {
+        colinfo = structure->getColumnInfoByIdx(i);    
+    
+        if (!first)
+            result_text += L",\n";
+        first = false;
+ 
+        // initial tab space (use spaces instead of tab)
+        std::wstring name = colinfo->getName();
+        std::wstring type = tangoTypeToOutputType(colinfo->getType());
+
+        wchar_t buf[30];
+        swprintf(buf, 30, L"%d", colinfo->getWidth());
+        std::wstring width(buf);
+        swprintf(buf, 30, L"%d", colinfo->getScale());
+        std::wstring scale(buf);
+
+        result_text += L"        ";
+        result_text += L"{";
+        result_text += (L"name: \"" + name + L"\"");
+        result_text += (L", type: " + type);
+        result_text += (L", width: " + width);
+        result_text += (L", scale: " + scale);
+        
+        if (colinfo->getCalculated())
+            result_text += (L", formula: \"" + kl::escape_string(colinfo->getExpression()) + L"\"");
+            true;
+        
+        result_text += L"}";
+    }
+    
+    result_text += L"\n    ]";
+    result_text += L"\n}\n";
+
+
+
+
+    // save the text
+    std::wstring val = result_text;
+    bool uses_unicode = false;
+
+    const wchar_t* p = val.c_str();
+    while (*p)
+    {
+        if (*p > 127)
+        {
+            uses_unicode = true;
+            break;
+        }    
+        ++p;
+    }
+    
+    size_t buf_len = (val.size() * 4) + 3;
+    unsigned char* buf = new unsigned char[buf_len];
+    
+    if (uses_unicode)
+    {
+        // convert to utf8
+        kl::utf8_wtoutf8((char*)buf+3, buf_len-3, val.c_str(), val.length(), &buf_len);
+        
+        if (buf_len > 0 && (buf+3)[buf_len-1] == 0)
+            buf_len--;
+            
+        // add space for the byte order mark
+        buf_len += 3;
+        
+        // add byte order mark
+        buf[0] = 0xef;
+        buf[1] = 0xbb;
+        buf[2] = 0xbf;
+    }
+    /* else ( if we want to save in ucs2 le )
+    {
+        // little endian byte order mark
+        buf[0] = 0xff;
+        buf[1] = 0xfe;
+        kl::wstring2ucsle(buf+2, val, val.length());
+        buf_len = (val.length() * 2) + 2;
+    }*/
+     else
+    {
+        // just save as 7-bit ascii because we don't use
+        // any characters > char code 127
+        std::string s = kl::tostring(val);
+        buf_len = val.length();
+        memcpy(buf, s.c_str(), buf_len);
+    }
+
+    // -- file is not in project, try disk filesystem --
+    xf_file_t f = xf_open(towstr(path), xfCreate, xfWrite, xfShareNone);
+    if (!f)
+    {
+        delete[] buf;
+        return false;
+    }
+
+    xf_write(f, buf, 1, buf_len);
+    xf_close(f);
+
     return false;
 }
 

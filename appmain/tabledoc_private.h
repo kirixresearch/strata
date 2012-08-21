@@ -265,6 +265,7 @@ private:
     void getReportCreateInfo(ReportCreateInfo& data);
     bool print(const wxString& caption = wxT(""));
     bool saveAsPdf(const wxString& path);
+    bool saveAsStructure(const wxString& path);
 
     void onWatchExprChanged(TableDocWatch* watch);
     void onSaveAsJobFinished(cfw::IJobPtr saveas_job);
