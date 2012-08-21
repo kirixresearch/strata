@@ -2441,13 +2441,47 @@ bool TableDoc::open(tango::ISetPtr set, tango::IIteratorPtr iter)
     if (db.isOk() && m_set.isOk())
     {
         tango::IAttributesPtr attr = db->getAttributes();
-        wxString url = towx(attr->getStringAttribute(tango::dbattrDatabaseUrl));
-        if (url.Length() > 0)
+        std::wstring url = attr->getStringAttribute(tango::dbattrDatabaseUrl);
+        if (url.length() > 0)
         {
-            url += towx(m_set->getObjectPath());
+            // project is a remote project
+            url += m_set->getObjectPath();
             setSourceUrl(url);
         }
+         else
+        {
+            std::wstring set_path = m_set->getObjectPath();
+            std::wstring mount_root = getMountRoot(db, set_path);
+
+            std::wstring url;
+            tango::IDatabasePtr mount_db = db->getMountDatabase(mount_root);
+            if (mount_db.isOk())
+            {
+                attr = mount_db->getAttributes();
+                if (attr)
+                    url = attr->getStringAttribute(tango::dbattrDatabaseUrl);
+            }
+
+            if (url.length() > 0)
+            {
+                if (set_path == mount_root)
+                {
+                    std::wstring cstr, rpath;
+                    if (db->getMountPoint(set_path, cstr, rpath))
+                    {
+                        setSourceUrl(url + rpath);
+                    }
+                }
+                 else
+                {
+                    set_path.erase(0, mount_root.length());
+                    setSourceUrl(url + set_path);
+                }
+            }
+        }
     }
+
+
 
 
     // update caption

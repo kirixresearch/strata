@@ -697,7 +697,10 @@ tango::ISetPtr Database::runGroupQuery(tango::ISetPtr set,
         {
             tango::ISetPtr rset = db->openSet(rpath);
             if (rset.isOk())
-                return db->runGroupQuery(rset, group, output, where, having, job);
+            {
+                tango::ISetPtr result_rset = db->runGroupQuery(rset, group, output, where, having, job);
+                return result_rset;
+            }
         }
     }
 
