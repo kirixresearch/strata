@@ -170,6 +170,9 @@ void HttpRequest::send()
     if (curl_result != CURLE_OK)
         return;
 
+    curl_result = curl_easy_setopt(m_curl, CURLOPT_TIMEOUT, m_timeout);
+    if (curl_result != CURLE_OK)
+        return;
 
     // set the result functions
     curl_result = curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, (void*)this);
@@ -234,6 +237,11 @@ void HttpRequest::send()
 void HttpRequest::setLocation(const std::wstring& location)
 {
     m_location = kl::tostring(location);
+}
+
+void HttpRequest::setTimeout(int timeout)
+{
+    m_timeout = timeout;
 }
 
 void HttpRequest::resetPostParameters()

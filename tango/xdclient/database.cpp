@@ -91,7 +91,7 @@ bool ClientDatabase::open(const std::wstring& host,
     ServerCallParams params;
     params.setParam(L"username", L"admin");
     params.setParam(L"password", L"");
-    std::wstring sres = serverCall(L"/api/login", &params);
+    std::wstring sres = serverCall(L"/api/login", &params, false, 15 /*seconds*/);
     JsonNode response;
     response.fromString(sres);
 
@@ -169,12 +169,14 @@ HttpRequest* ClientDatabase::getHttpObject()
 
 std::wstring ClientDatabase::serverCall(const std::wstring& call_path,
                                         const ServerCallParams* params,
-                                        bool use_multipart)
+                                        bool use_multipart,
+                                        int timeout)
 {
     std::vector<std::pair<std::wstring, std::wstring> >::const_iterator it;
 
     HttpRequest* http = getHttpObject();
 
+    http->setTimeout(timeout);
     http->resetPostParameters();
     if (use_multipart)
         http->useMultipartPost();

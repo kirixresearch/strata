@@ -40,6 +40,7 @@ public:
     virtual ~HttpRequest();
 
     void setLocation(const std::wstring& location);
+    void setTimeout(int timeout);
     void setPostValue(const std::wstring& key, const std::wstring& value);
     void resetPostParameters();
 
@@ -72,6 +73,7 @@ private:
     struct curl_httppost* m_formfieldslast;  // only used by multipart post
     std::string m_post_string;               // only used by regular post
     bool m_post_multipart;
+    int m_timeout;
 };
 
 
