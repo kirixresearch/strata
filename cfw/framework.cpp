@@ -83,7 +83,6 @@ bool FrameCommandDispatch::ProcessEvent(wxEvent& event)
 
     WXTYPE event_type = event.GetEventType();
 
-
     if (event_type == wxEVT_UPDATE_UI ||
         event_type == wxEVT_COMMAND_MENU_SELECTED ||
         event_type == wxEVT_COMMAND_COMBOBOX_SELECTED ||
@@ -95,7 +94,7 @@ bool FrameCommandDispatch::ProcessEvent(wxEvent& event)
         event_type == wxEVT_COMMAND_AUITOOLBAR_OVERFLOW_CLICK ||
         event_type == wxEVT_COMMAND_AUITOOLBAR_BEGIN_DRAG)
     {
-        // -- make sure event object is visible, if its a toolbar --
+        // make sure event object is visible, if its a toolbar
         if (event_type == wxEVT_UPDATE_UI)
         {
             wxObject* evt_object = event.GetEventObject();
@@ -106,8 +105,8 @@ bool FrameCommandDispatch::ProcessEvent(wxEvent& event)
                     wxWindow* wnd = (wxWindow*)evt_object;
                     if (!wnd->IsShown())
                     {
-                        // -- do not process these types of commands
-                        //    for hidden windows --
+                        // do not process these types of commands
+                        // for hidden windows
                         return true;
                     }
                 }
@@ -1491,7 +1490,7 @@ public:
 BEGIN_EVENT_TABLE(MainFrame, wxMDIParentFrame)
     EVT_IDLE(MainFrame::onIdle)
     EVT_CLOSE(MainFrame::onCloseEvent)
-    EVT_MENU_OPEN(MainFrame::onMenuOpen)
+    //EVT_MENU_OPEN(MainFrame::onMenuOpen)  // causing problems with UpdateUI handlers not being called in appcontroller (with wx 2.9)
     EVT_SIZE(MainFrame::onSize)
     EVT_AUI_PANE_CLOSE(MainFrame::onAuiPaneClose)
     EVT_AUINOTEBOOK_TAB_RIGHT_UP(-1, MainFrame::onChildRightClick)
