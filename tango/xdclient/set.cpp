@@ -237,7 +237,7 @@ int ClientSet::insert(tango::IIteratorPtr source_iter,
 {
 
     IClientIteratorPtr client_iter = source_iter;
-    if (client_iter.isOk())
+    if (client_iter.isOk() && client_iter->getClientDatabase() == m_database)
     {
         // perform the copy on the server
 

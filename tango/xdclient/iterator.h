@@ -79,6 +79,7 @@ xcm_interface IClientIterator : public xcm::IObject
 public:
 
     virtual std::wstring getHandle() = 0;
+    virtual ClientDatabase* getClientDatabase() = 0;
 };
 
 
@@ -154,6 +155,7 @@ public:
     // IClientIterator
 
     std::wstring getHandle() { return m_handle; }
+    ClientDatabase* getClientDatabase() { return m_database; }
 
 private:
 
