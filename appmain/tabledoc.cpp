@@ -1646,7 +1646,8 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
 
     if (source_iter)
     {
-        copy_job->addCopyInstruction(source_iter,
+        copy_job->addCopyInstruction(g_app->getDatabase(),
+                                     source_iter,
                                      L"",
                                      L"",
                                      g_app->getDatabase(),
@@ -7975,11 +7976,32 @@ void TableDoc::copyRecords(const wxString& condition)
     
     if (source_iter)
     {
-        copy_job->addCopyInstruction(source_iter,
+        wxString dest_cstr = wxT("");
+        tango::IDatabasePtr dest_db = g_app->getDatabase();
+
+        tango::ISetPtr set = getBaseSet();
+        if (set.isOk())
+        {
+            std::wstring mount_root = getMountRoot(g_app->getDatabase(), set->getObjectPath());
+            if (mount_root.length() > 0)
+            {
+                std::wstring cstr, rpath;
+                if (g_app->getDatabase()->getMountPoint(mount_root, cstr, rpath))
+                {
+                    dest_db = g_app->getDatabase()->getMountDatabase(mount_root);
+                    dest_cstr = towx(cstr);
+                }
+            }
+            
+        }
+
+        copy_job->addCopyInstruction(g_app->getDatabase(),
+                                     source_iter,
                                      condition,
                                      columns,
-                                     g_app->getDatabase(),
-                                     wxEmptyString);
+                                     dest_db,
+                                     wxEmptyString,
+                                     dest_cstr);
     }
      else
     {

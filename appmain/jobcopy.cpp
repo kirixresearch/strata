@@ -43,19 +43,23 @@ void CopyJob::addCopyInstruction(tango::IDatabasePtr source_db,
 }
 
 
-void CopyJob::addCopyInstruction(tango::IIteratorPtr source_iter,
+void CopyJob::addCopyInstruction(tango::IDatabasePtr source_db,
+                                 tango::IIteratorPtr source_iter,
                                  const wxString& condition,
                                  const wxString& columns,
                                  tango::IDatabasePtr dest_db,
-                                 const wxString& dest_path)
+                                 const wxString& dest_path,
+                                 const wxString& cstr)
 {
     CopyInstruction ci;
     ci.m_mode = CopyInstruction::modeIterator;
+    ci.m_source_db = source_db;
     ci.m_source_iter = source_iter;
     ci.m_columns = columns;
     ci.m_condition = condition;
     ci.m_dest_db = dest_db;
     ci.m_dest_path = dest_path;
+    ci.m_dest_cstr = cstr;
 
     m_instructions.push_back(ci);
 }
@@ -217,50 +221,6 @@ int CopyJob::runJob()
             continue;
         }
 
-        
-        if (it->m_mode == CopyInstruction::modeIterator ||
-            it->m_mode == CopyInstruction::modeFilterSort)
-        {
-            // -- determine output structure --
-            
-            if (it->m_columns.IsEmpty())
-            {
-                // -- copy all fields --
-                copy_structure = source_iter->getStructure();
-            }
-             else
-            {
-                tango::IStructurePtr iter_structure = source_iter->getStructure();
-
-                copy_structure = g_app->getDatabase()->createStructure();
-
-                wxStringTokenizer t(it->m_columns, wxT(","));
-                while (t.HasMoreTokens())
-                {
-                    wxString col = t.GetNextToken();
-
-                    tango::IColumnInfoPtr colinfo;
-                    colinfo = iter_structure->getColumnInfo(towstr(col));
-                    if (colinfo.isNull())
-                    {
-                        getJobInfo()->setState(cfw::jobStateFailed);
-                        return 0;
-                    }
-
-                    tango::IColumnInfoPtr newcol = copy_structure->createColumn();
-                    newcol->setName(colinfo->getName());
-                    newcol->setType(colinfo->getType());
-                    newcol->setWidth(colinfo->getWidth());
-                    newcol->setScale(colinfo->getScale());
-                    newcol->setExpression(colinfo->getExpression());
-                    newcol->setCalculated(colinfo->getCalculated());
-                }
-            }
-        }
-
-
-
-
         // if we're copying a stream, do it here
         if (is_stream)
         {
@@ -323,6 +283,51 @@ int CopyJob::runJob()
             continue;
         }
         
+
+        
+        if (it->m_mode == CopyInstruction::modeIterator ||
+            it->m_mode == CopyInstruction::modeFilterSort)
+        {
+            // determine output structure
+            
+            if (it->m_columns.IsEmpty())
+            {
+                // copy all fields
+                copy_structure = source_iter->getStructure();
+            }
+             else
+            {
+                tango::IStructurePtr iter_structure = source_iter->getStructure();
+
+                copy_structure = g_app->getDatabase()->createStructure();
+
+                wxStringTokenizer t(it->m_columns, wxT(","));
+                while (t.HasMoreTokens())
+                {
+                    wxString col = t.GetNextToken();
+
+                    tango::IColumnInfoPtr colinfo;
+                    colinfo = iter_structure->getColumnInfo(towstr(col));
+                    if (colinfo.isNull())
+                    {
+                        getJobInfo()->setState(cfw::jobStateFailed);
+                        return 0;
+                    }
+
+                    tango::IColumnInfoPtr newcol = copy_structure->createColumn();
+                    newcol->setName(colinfo->getName());
+                    newcol->setType(colinfo->getType());
+                    newcol->setWidth(colinfo->getWidth());
+                    newcol->setScale(colinfo->getScale());
+                    newcol->setExpression(colinfo->getExpression());
+                    newcol->setCalculated(colinfo->getCalculated());
+                }
+            }
+        }
+
+
+
+
         
         
         // on fields where the width cannot be known, set it to some high value
@@ -364,12 +369,29 @@ int CopyJob::runJob()
             m_job_info->setProgressString(_("ERROR: Insufficient disk space"));
             return 0;
         }
+
+
+        if (it->m_dest_cstr.Length() > 0 && it->m_source_db.isOk())
+        {
+            std::wstring link_output_path;
+            if (link_output_path.length() == 0)
+                link_output_path = L"/.temp/" + towstr(makeUniqueString());
+
+            if (!it->m_source_db->setMountPoint(link_output_path, towstr(it->m_dest_cstr), it->m_result_set->getObjectPath()))
+                return xcm::null;
+
+            tango::ISetPtr link_set = it->m_source_db->openSet(link_output_path);
+            if (link_set.isOk())
+            {
+                it->m_result_set = link_set;
+            }
+        }
     }
 
 
     for (it = m_instructions.begin(); it != m_instructions.end(); ++it)
     {
-        // -- copy the old table doc model, if any, to the new set --
+        // copy the old table doc model, if any, to the new set
         if (it->m_source_iter)
         {
             tango::ISetPtr source_set = it->m_source_iter->getSet();

@@ -29,23 +29,24 @@ public:
 
     int m_mode;
 
-    // -- query mode parameters --
+    // query mode parameters
     tango::IDatabasePtr m_source_db;
     wxString m_query;
 
-    // -- iterator mode parameters --
+    // iterator mode parameters
     tango::IIteratorPtr m_source_iter;
     wxString m_condition;
     wxString m_columns;
     
-    // -- sort/filter mode parameters --
+    // sort/filter mode parameters
     wxString m_order;       // (used along with m_condition above)
     tango::ISetPtr m_source_set;
 
-    // -- output parameters --
+    // output parameters
     tango::IDatabasePtr m_dest_db;
     tango::ISetPtr m_result_set;
     wxString m_dest_path;
+    wxString m_dest_cstr;
 };
 
 
@@ -81,11 +82,13 @@ public:
                             tango::IDatabasePtr dest_db,
                             const wxString& dest_path = wxEmptyString);
                                                         
-    void addCopyInstruction(tango::IIteratorPtr source_iter,
+    void addCopyInstruction(tango::IDatabasePtr source_db,
+                            tango::IIteratorPtr source_iter,
                             const wxString& condition,
                             const wxString& columns,
                             tango::IDatabasePtr dest_db,
-                            const wxString& dest_path = wxEmptyString);
+                            const wxString& dest_path = wxEmptyString,
+                            const wxString& cstr = wxEmptyString);
 
     void addCopyInstruction(tango::IDatabasePtr source_db,
                             tango::ISetPtr source_set,
@@ -96,6 +99,7 @@ public:
                             const wxString& dest_path = wxEmptyString);
 
     size_t getInstructionCount();
+    CopyInstruction* getInstruction(size_t idx) { return &m_instructions[idx]; }
     tango::ISetPtr getResultSet(size_t idx);
 
     int runJob();

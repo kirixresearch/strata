@@ -253,12 +253,14 @@ private:
         
         
         #if wxCHECK_VERSION(2,9,0)
+        /*
             wxString temps;
             wxChar* name = (wxChar*)wxApp::GetRegisteredClassName(wxT("wxWindow"));
             temps = name;
             wxStrcpy(name, dropshadow_class_name);
             Create(parent, flags);
             wxStrcpy(name, temps.c_str());
+        */
         #else
             const wxChar* temps = wxCanvasClassName;
             wxCanvasClassName = dropshadow_class_name;
