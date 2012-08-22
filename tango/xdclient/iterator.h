@@ -71,8 +71,23 @@ struct ClientCacheRow
 };
 
 
+
+xcm_interface IClientIterator : public xcm::IObject
+{
+    XCM_INTERFACE_NAME("xdclient.IClientIterator")
+
+public:
+
+    virtual std::wstring getHandle() = 0;
+};
+
+
+XCM_DECLARE_SMARTPTR(IClientIterator)
+
+
 class ClientIterator : public CommonBaseIterator,
-                       public tango::ICacheRowUpdate
+                       public tango::ICacheRowUpdate,
+                       public IClientIterator
 {
 friend class ClientDatabase;
 friend class ClientSet;
@@ -81,6 +96,7 @@ friend class ClientSet;
     XCM_BEGIN_INTERFACE_MAP(ClientIterator)
         XCM_INTERFACE_ENTRY(tango::IIterator)
         XCM_INTERFACE_ENTRY(tango::ICacheRowUpdate)
+        XCM_INTERFACE_ENTRY(IClientIterator)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -134,6 +150,10 @@ public:
     bool updateCacheRow(tango::rowid_t rowid,
                         tango::ColumnUpdateInfo* info,
                         size_t info_size);
+
+    // IClientIterator
+
+    std::wstring getHandle() { return m_handle; }
 
 private:
 
