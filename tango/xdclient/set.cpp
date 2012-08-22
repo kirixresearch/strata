@@ -17,6 +17,7 @@
 #include "jsonutil.h"
 #include "kl/url.h"
 #include "kl/md5.h"
+#include "../xdcommon/dbfuncs.h"
 
 
 static std::wstring buildOrderParams(const std::wstring& expr)
@@ -238,6 +239,8 @@ int ClientSet::insert(tango::IIteratorPtr source_iter,
     IClientIteratorPtr client_iter = source_iter;
     if (client_iter.isOk())
     {
+        // perform the copy on the server
+
         ServerCallParams params;
         params.setParam(L"path", m_path);
         params.setParam(L"source_handle", client_iter->getHandle());
@@ -252,8 +255,10 @@ int ClientSet::insert(tango::IIteratorPtr source_iter,
 
         return response["row_count"].getInteger();
     }
-
-    return 0;
+     else
+    {
+        return xdcmnInsert(source_iter, this, where_condition, max_rows, job);
+    }
 }
 
 tango::IIndexInfoEnumPtr ClientSet::getIndexEnum()
