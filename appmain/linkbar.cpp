@@ -139,19 +139,87 @@ LRESULT WXDLLEXPORT APIENTRY wxWndProc(HWND, UINT, WPARAM, LPARAM);
 
 std::wstring xf_get_win32_error_msg();
 
-class LinkBarPopupWindow : public wxPopupTransientWindow
+
+#if wxCHECK_VERSION(2,9,0)
+class DropShadowPopupTransientWindow : public wxPopupTransientWindow
+{
+
+public:
+
+    DropShadowPopupTransientWindow()
+    {
+        Init();
+    }
+
+    DropShadowPopupTransientWindow(wxWindow *parent, int style = wxBORDER_NONE)
+    {
+        Init();
+
+        (void)Create(parent, style);
+    }
+
+
+    bool Create(wxWindow *parent, int flags)
+    {
+        // popup windows are created hidden by default
+        Hide();
+
+        return wxPopupWindowBase::Create(parent) &&
+                   CreateWithDropShadow(parent, wxID_ANY,
+                                    wxDefaultPosition, wxDefaultSize,
+                                    flags | wxPOPUP_WINDOW);
+    }
+
+    bool CreateWithDropShadow(wxWindow *parent,
+                             wxWindowID id,
+                             const wxPoint& pos,
+                             const wxSize& size,
+                             long style,
+                             const wxString& name = wxPanelNameStr)
+    {
+        if (!CreateBase(parent, id, pos, size, style, wxDefaultValidator, name))
+            return false;
+
+        parent->AddChild(this);
+
+        WXDWORD exstyle;
+        DWORD msflags = MSWGetCreateWindowFlags(&exstyle);
+
+        if (IsShown())
+            msflags |= WS_VISIBLE;
+
+        if (!MSWCreate(wxApp::GetRegisteredClassName(wxT("wxKxDrop"), COLOR_BTNFACE, 0x00020000 /* CS_DROPSHADOW */),
+                        NULL, pos, size, msflags, exstyle))
+        {
+            return false;
+        }
+
+        InheritAttributes();
+
+        return true;
+    }
+};
+
+
+
+#define PopupTransientBase DropShadowPopupTransientWindow
+
+#else
+
+#define PopupTransientBase wxPopupTransientWindow
+
+#endif
+
+
+
+class LinkBarPopupWindow : public PopupTransientBase
 {
 public:
 
-    LinkBarPopupWindow(LinkBar* parent, int flags) : wxPopupTransientWindow()               
+    LinkBarPopupWindow(LinkBar* parent, int flags) : PopupTransientBase()             
     {
-        #ifdef __WXMSW__
-        CreateWithDropShadow(parent, flags);
-        #else
         Create(parent, flags);
-        #endif
-    
-    
+
         m_linkbar = parent;
         m_popup_id = -1;
         
@@ -192,96 +260,6 @@ public:
         dc.SetBrush(*wxTRANSPARENT_BRUSH);
         dc.DrawRectangle(0,0,cli_w,cli_h);
     }
-
-private:
-
-#ifdef __WXMSW__
-    void CreateWithDropShadow(wxWindow* parent, int flags)
-    {
-        // only windows XP and above support 
-        int major, minor;
-        ::wxGetOsVersion(&major, &minor);
-        if (major < 5 || (major == 5 && minor < 1))
-        {
-            // windows 2000 doesn't support CS_DROPSHADOW, so
-            // just create the window in the normal way
-            Create(parent, flags);
-            return;
-        }
-
-        static const wxChar* dropshadow_class_name = wxT("wxKxDrop");
-        static const wxChar* dropshadow_class_name_nr = wxT("wxKxDropNR");
-        
-        static bool first_time = true;
-        if (first_time)
-        {
-            WNDCLASSEX wndclass;
-            
-            ZeroMemory(&wndclass, sizeof(WNDCLASSEX));
-            wndclass.cbSize = sizeof(WNDCLASSEX);
-            wndclass.style = 0x00020000 /* CS_DROPSHADOW */ | CS_HREDRAW | CS_VREDRAW;
-            wndclass.lpszClassName = dropshadow_class_name;
-            wndclass.hInstance = wxGetInstance();
-            wndclass.lpfnWndProc = (WNDPROC)wxWndProc;
-            wndclass.hCursor = LoadCursor (NULL, IDC_ARROW);
-            wndclass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
-
-            if (!RegisterClassEx(&wndclass))
-            {
-                // simple create
-                Create(parent, flags);
-                return;
-            }
-            
-            wndclass.style &= ~(CS_HREDRAW | CS_VREDRAW);
-            wndclass.lpszClassName = dropshadow_class_name_nr;
-            if (!RegisterClassEx(&wndclass))
-            {
-                // simple create
-                Create(parent, flags);
-                return;
-            }
-                   
-            first_time = false;
-        }
-        
-        
-        // switch out the win32 window class name with our
-        // own custom window class with drop shadow style;
-        // this tricks wxWidgets into creating a window based
-        // on our own win32 window class with CS_DROPSHADOW
-        
-        
-        #if wxCHECK_VERSION(2,9,0)
-        /*
-            wxString temps;
-            wxChar* name = (wxChar*)wxApp::GetRegisteredClassName(wxT("wxWindow"));
-            temps = name;
-            wxStrcpy(name, dropshadow_class_name);
-            Create(parent, flags);
-            wxStrcpy(name, temps.c_str());
-        */
-        #else
-            const wxChar* temps = wxCanvasClassName;
-            wxCanvasClassName = dropshadow_class_name;
-            Create(parent, flags);
-            wxCanvasClassName = temps;
-        #endif
-    }
-    
-    void InheritAttributes()
-    {
-        // overridding this function is for the sole purpose of 
-        // setting m_oldWndProc to null.  Because we are creating
-        // a window with our own custom win32 class 'wxKxDropShadow',
-        // wxWidgets thinks we need to subclass it -- it's wrong, so
-        // fix the error it committed.
-        m_oldWndProc = NULL;
-        
-        wxPopupTransientWindow::InheritAttributes();
-    }
-#endif
-
 
 public:
 
