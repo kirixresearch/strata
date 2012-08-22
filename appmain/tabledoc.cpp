@@ -2835,7 +2835,7 @@ void TableDoc::updateCaption()
         
         if (m_set->isTemporary())
         {
-            if (temps.Find("/.temp") != -1)
+            if (temps.Find(wxT("/.temp")) != -1)
                 m_caption = _("(Untitled)");
                  else
                 m_caption = temps;
