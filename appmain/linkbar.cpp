@@ -211,7 +211,6 @@ public:
 #endif
 
 
-
 class LinkBarPopupWindow : public PopupTransientBase
 {
 public:
@@ -689,9 +688,10 @@ void LinkBar::showPopupWindow(int id,
     recalcPopupWindowSize();
     
     m_popup_dbdoc->refresh();
+    m_popup_dbdoc->getFsPanel()->setDragDrop(true);
     m_popup_dbdoc->getFsPanel()->sigItemSelected().disconnect();
     m_popup_dbdoc->getFsPanel()->sigItemActivated().disconnect();
-    m_popup_dbdoc->getFsPanel()->sigItemActivated().connect(this, &LinkBar::onItemActivated);
+    m_popup_dbdoc->getFsPanel()->sigItemSelected().connect(this, &LinkBar::onItemActivated);
     m_popup_dbdoc->getFsPanel()->sigItemMiddleClicked().connect(this, &LinkBar::onItemMiddleClicked);
     m_popup_dbdoc->getFsPanel()->sigMouseMove().disconnect();
     m_popup_dbdoc->getFsPanel()->sigMouseMove().connect(this, &LinkBar::onPopupMouseMove);
