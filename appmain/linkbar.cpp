@@ -982,8 +982,10 @@ void LinkBar::onToolDropDownClick(wxAuiToolBarEvent& evt)
             
         showPopupWindow(id, true);
     }
-    
-    evt.Skip();
+     else
+    {
+        evt.Skip();
+    }
 }
 
 void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
