@@ -164,7 +164,7 @@ static wxColour getActiveCaptionColor()
     result = wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT);
 
 #ifdef __WXGTK__
-    // -- darken the color a bit on GTK --
+    // darken the color a bit on GTK
     int r = result.Red();
     int g = result.Green();
     int b = result.Blue();
@@ -310,7 +310,7 @@ public:
                     m_border_width+20,
                     m_border_width+((m_caption_height-ty)/2));
                     
-        // -- draw buttons on the right --
+        // draw buttons on the right
 
         int i;
         for (i = 0; i < sizeof(m_buttons)/sizeof(wxGxMDIButtonInfo); ++i)
@@ -319,7 +319,7 @@ public:
         }        
     }
 
-    void OnSize(wxSizeEvent& event)
+    void OnSize(wxSizeEvent& evt)
     {
         GetClientSize(&m_cliwidth, &m_cliheight);
 
@@ -330,23 +330,23 @@ public:
                          0x0fffffff);
     }
 
-    void OnEraseBackground(wxEraseEvent& event)
+    void OnEraseBackground(wxEraseEvent& evt)
     {
-        // -- do nothing --
+        // do nothing
     }
 
-    void OnMouse(wxMouseEvent& event)
+    void OnMouse(wxMouseEvent& evt)
     {
-        int event_type = event.GetEventType();
+        int event_type = evt.GetEventType();
 
         if (event_type == wxEVT_LEFT_DOWN)
         {
             m_client->ActivateChild(this);
 
-            wxCoord x = event.GetX();
-            wxCoord y = event.GetY();
-
-            // -- test if a button was clicked --
+            wxCoord x = evt.GetX();
+            wxCoord y = evt.GetY();
+            
+            // test if a button was clicked
             wxGxMDIButtonInfo* button = ButtonHitTest(x, y);
             if (button)
             {
@@ -386,8 +386,8 @@ public:
         }
          else if (event_type == wxEVT_LEFT_UP)
         {
-            wxCoord x = event.GetX();
-            wxCoord y = event.GetY();
+            wxCoord x = evt.GetX();
+            wxCoord y = evt.GetY();
             
             if (GetCapture() == this)
             {
@@ -401,8 +401,8 @@ public:
                 wxClientDC dc(this);
                 DrawButton(&dc, m_action_button);
                 
-                // -- if the button is still depressed on mouse
-                //    button up, dispatch a command event --
+                // if the button is still depressed on mouse
+                // button up, dispatch a command event
                 if (ButtonHitTest(x, y) == m_action_button)
                 {
                     OnButtonClicked(m_action_button);
@@ -415,16 +415,16 @@ public:
         }
          else if (event_type == wxEVT_LEFT_DCLICK)
         {
-            wxCoord x = event.GetX();
-            wxCoord y = event.GetY();
+            wxCoord x = evt.GetX();
+            wxCoord y = evt.GetY();
 
             if (x < 20 && y < m_caption_height+m_border_width)
                 m_child->Close();
         }
          else if (event_type == wxEVT_MOTION)
         {
-            wxCoord x = event.GetX();
-            wxCoord y = event.GetY();
+            wxCoord x = evt.GetX();
+            wxCoord y = evt.GetY();
 
             if (m_action == actionMove)
             {
@@ -522,14 +522,14 @@ public:
             }
              else if (m_action == actionButtonClick)
             {
-                // -- see if the button is still depressed --
+                // see if the button is still depressed
                 wxGxMDIButtonInfo* button = ButtonHitTest(x, y);
                 
                 bool last_state = m_action_button->depressed;
                 m_action_button->depressed = (button == m_action_button) ?
                                                   true : false;
                       
-                // -- if the button pressed state changed, redraw it --                            
+                // if the button pressed state changed, redraw it                           
                 if (last_state != m_action_button->depressed)
                 {
                     wxClientDC dc(this);
@@ -638,7 +638,7 @@ public:
             m_maximized = false;
         }
         
-        // -- update any maximize buttons with maximize state info --
+        // update any maximize buttons with maximize state info
         int i;
         for (i = 0; i < sizeof(m_buttons)/sizeof(wxGxMDIButtonInfo); ++i)
         {
@@ -706,7 +706,7 @@ private:
         
         if (y < XMDI_EDGE_SIZE)
         {
-            // -- top --
+            // top 
             if (x < XMDI_EDGE_SIZE)
             {
                 if (x < m_border_width)
@@ -743,7 +743,7 @@ private:
         }
          else if (y < m_cliheight-XMDI_EDGE_SIZE)
         {
-            // -- middle --
+            // middle
             if (x <= m_border_width)
             {
                 return edgeLeft;
@@ -759,7 +759,7 @@ private:
         }
          else
         {
-            // -- bottom --
+            // bottom
             if (x < XMDI_EDGE_SIZE)
             {
                 return edgeBottomLeft;
@@ -1356,13 +1356,13 @@ void wxGxMDIClientWindow::Tile(wxOrientation orient) const
         wxWindowList children = GetChildren();
         wxWindowList::compatibility_iterator node;
 
-        // -- put the active child first --
+        // put the active child first
         if (children.DeleteObject(GetActiveChild()))
         {
             children.Insert(GetActiveChild());
         }
 
-        // -- count visible children --
+        // count visible children
         int child_count = 0;
 
         for (node = children.GetFirst(); node; node = node->GetNext())
@@ -1375,7 +1375,7 @@ void wxGxMDIClientWindow::Tile(wxOrientation orient) const
         if (child_count == 0)
             return;
 
-        // -- partition client area --
+        // partition client area
         int cli_width, cli_height;
         GetClientSize(&cli_width, &cli_height);
 
@@ -1397,13 +1397,13 @@ void wxGxMDIClientWindow::Tile(wxOrientation orient) const
         wxWindowList children = GetChildren();
         wxWindowList::compatibility_iterator node;
 
-        // -- put the active child first --
+        // put the active child first
         if (children.DeleteObject(GetActiveChild()))
         {
             children.Insert(GetActiveChild());
         }
         
-        // -- count visible children --
+        // count visible children
         int child_count = 0;
 
         for (node = children.GetFirst(); node; node = node->GetNext())
@@ -1416,7 +1416,7 @@ void wxGxMDIClientWindow::Tile(wxOrientation orient) const
         if (child_count == 0)
             return;
 
-        // -- partition client area --
+        // partition client area
         int cli_width, cli_height;
         GetClientSize(&cli_width, &cli_height);
 
@@ -1440,13 +1440,13 @@ void wxGxMDIClientWindow::Cascade() const
     wxWindowList children = GetChildren();
     wxWindowList::compatibility_iterator node;
 
-    // -- put the active child last --
+    // put the active child last
     if (children.DeleteObject(GetActiveChild()))
     {
         children.Append(GetActiveChild());
     }
     
-    // -- count visible children --
+    // count visible children
     int child_count = 0;
 
     for (node = children.GetFirst(); node; node = node->GetNext())
@@ -1459,7 +1459,7 @@ void wxGxMDIClientWindow::Cascade() const
     if (child_count == 0)
         return;
 
-    // -- partition client area --
+    // partition client area
     int cli_width, cli_height;
     GetClientSize(&cli_width, &cli_height);
 

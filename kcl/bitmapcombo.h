@@ -52,7 +52,7 @@ public:
         ShowItemBitmap = 0x01
     };
     
-    // -- wxComboPopup overrides --
+    // wxComboPopup overrides
     
     virtual void Init();
     virtual bool Create(wxWindow* parent);
@@ -178,7 +178,7 @@ private:
 
 
 
-// -- event machinery --
+// event machinery
 
 BEGIN_DECLARE_EVENT_TYPES()
     DECLARE_EVENT_TYPE(wxEVT_KCLBITMAPCOMBO_BEGIN_DRAG, 2200)

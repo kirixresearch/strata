@@ -463,7 +463,7 @@ int GridMemModel::createColumn(int position,
         }
     }
 
-    // -- add column to grid --
+    // add column to grid
 
     kcl::IModelColumnPtr newcol = static_cast<kcl::IModelColumn*>(new kcl::ModelColumn);
 
@@ -475,13 +475,13 @@ int GridMemModel::createColumn(int position,
     m_columns.insert(insert_it, newcol);
 
 
-    // -- add column properties --
+    // add column properties
 
     std::vector<MemColumnProperties>::iterator propit;
     propit = m_colprops.insert(position == -1 ? m_colprops.end() : (m_colprops.begin() + position), MemColumnProperties());
     propit->mask = 0;
 
-    // -- add column to existing rows --
+    // add column to existing rows
 
     std::list<MemRow>::iterator row_it;
 
@@ -517,7 +517,7 @@ bool GridMemModel::modifyColumn(int position,
         }
     }
 
-    // -- modify the specified column properties --
+    // modify the specified column properties
 
     kcl::IModelColumnPtr col = *modify_it;
 
@@ -590,7 +590,7 @@ int GridMemModel::insertRow(int position)
     new_row->cols.resize(m_columns.size());
     new_row->rowdata = 0;
 
-    // -- if this is our first row, set the iterator to that row --
+    // if this is our first row, set the iterator to that row
     if (m_rows.size() == 1)
     {
         m_rows_it = new_row;
@@ -598,7 +598,7 @@ int GridMemModel::insertRow(int position)
 
     m_current_row = -1;
 
-    // -- return the row number of the new row --
+    // return the row number of the new row
     return retval;
 }
 

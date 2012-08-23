@@ -105,7 +105,7 @@ void ColorDropDown::onColorSelected(wxColor color, int mode)
 
 void ColorDropDown::onCustomColorDialogOk()
 {
-    // -- get the custom colors from the Color Dialog --
+    // get the custom colors from the Color Dialog
     m_color_panel->getCustomColors(m_custom_colors);
     sigCustomColorDialogOk(this);
 }

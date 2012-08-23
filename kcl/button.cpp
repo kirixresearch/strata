@@ -766,7 +766,7 @@ void Button::drawButtonFrame(wxDC& dc,
     y1 = y;
     y2 = y+height;
 
-    // -- handle the drawing of the button when the user interacts with it --
+    // handle the drawing of the button when the user interacts with it
     if (m_mode == modeXP && mouse_over)
     {
         dc.SetPen(m_hover_pen);
@@ -832,7 +832,7 @@ void Button::drawButtonFrame(wxDC& dc,
         }
          else
         {
-            // -- draw a stipple background for the button --
+            // draw a stipple background for the button
             int w, h, stipple_xoff;
             bool pix_offset = false;
             dc.SetPen(*wxWHITE_PEN);
@@ -858,13 +858,13 @@ void Button::drawButtonFrame(wxDC& dc,
 }
 
 
-void Button::onEraseBackground(wxEraseEvent& event)
+void Button::onEraseBackground(wxEraseEvent& evt)
 {
-    // -- do nothing --
+    // do nothing
 }
 
 
-void Button::onPaint(wxPaintEvent& event)
+void Button::onPaint(wxPaintEvent& evt)
 {
     wxPaintDC dc(this);
 
@@ -878,7 +878,7 @@ void Button::onPaint(wxPaintEvent& event)
     if (sigCustomRender.isActive())
         return;
     
-    // -- make sure we have the most current font --
+    // make sure we have the most current font
     wxFont font = GetFont();
     if (font != m_font)
     {
@@ -931,7 +931,7 @@ void Button::onPaint(wxPaintEvent& event)
     int text_xoff = 0;
     int spacer = 0;
 
-    // -- get the size of the bitmap if there is one --
+    // get the size of the bitmap if there is one
     int bitmap_width = 0;
     int bitmap_height = 0;
 
@@ -946,13 +946,13 @@ void Button::onPaint(wxPaintEvent& event)
         dc.GetTextExtent(m_text, &m_text_width, &m_text_height);
     }
 
-    // -- add 3 pixels between the bitmap and text if both exist --
+    // add 3 pixels between the bitmap and text if both exist
     if (m_bitmap_visible && m_text_visible)
     {
         spacer = m_spacer;
     }
 
-    // -- handle the overall alignment of the bitmap and/or text --
+    // handle the overall alignment of the bitmap and/or text
 
     int temp_width = bitmap_width + spacer;
     int temp_height = bitmap_height;
@@ -985,7 +985,7 @@ void Button::onPaint(wxPaintEvent& event)
             break;
     }
 
-    // -- add one pixel to compensate for the shaded border on the button --
+    // add one pixel to compensate for the shaded border on the button
     xoff += 1;
     bitmap_yoff += 1;
     text_yoff += 1;
@@ -1020,7 +1020,7 @@ void Button::onPaint(wxPaintEvent& event)
 
     if (draw_frame)
     {
-        // -- clear out our window --
+        // clear out our window
         dc.SetBrush(m_bk_brush);
         dc.SetPen(*wxTRANSPARENT_PEN);
         dc.DrawRectangle(0, 0, cli_width, cli_height);
@@ -1130,7 +1130,9 @@ void Button::setDimensions(int width, int height)
     int w = 14;
     int h = 6;
 
-    // -- if you don't specify one of the parameters, just keep the flatbutton's current size for that parameter --
+    // if you don't specify one of the parameters, just keep the flatbutton's
+    // current size for that parameter
+
     if (width == -1 || height == -1)
     {
         if (width == -1 && height == -1)
@@ -1200,28 +1202,28 @@ void Button::makeMinSize()
     
     SetSize(w, h);
 
-    // -- set wx's min size variables, which are used by sizers --
+    // set wx's min size variables, which are used by sizers
     m_minWidth = w;
     m_minHeight = h;
 
     Refresh(true);
 }
 
-void Button::onSize(wxSizeEvent& event)
+void Button::onSize(wxSizeEvent& evt)
 {
     Refresh(true);
 }
 
 
-void Button::onMove(wxMoveEvent& event)
+void Button::onMove(wxMoveEvent& evt)
 {
     Refresh(true);
 }
 
-void Button::onMouseButtonDown(wxMouseEvent& event)
+void Button::onMouseButtonDown(wxMouseEvent& evt)
 {
-    if ((event.GetEventType() == wxEVT_RIGHT_DOWN ||
-         event.GetEventType() == wxEVT_RIGHT_DCLICK) &&
+    if ((evt.GetEventType() == wxEVT_RIGHT_DOWN ||
+         evt.GetEventType() == wxEVT_RIGHT_DCLICK) &&
         !m_right_click_allowed)
     {
         return;
@@ -1243,7 +1245,7 @@ void Button::onMouseButtonDown(wxMouseEvent& event)
 
         GetClientSize(&cli_width, &cli_height);
 
-        if (event.m_x >= cli_width-dropdown_width)
+        if (evt.m_x >= cli_width-dropdown_width)
         {
             m_dropdown_down = true;
             Refresh(true);
@@ -1258,11 +1260,11 @@ void Button::onMouseButtonDown(wxMouseEvent& event)
     }
 }
 
-void Button::onMouseButtonUp(wxMouseEvent& event)
+void Button::onMouseButtonUp(wxMouseEvent& evt)
 {
     bool right_button = false;
 
-    if (event.GetEventType() == wxEVT_RIGHT_UP)
+    if (evt.GetEventType() == wxEVT_RIGHT_UP)
     {
         right_button = true;
     }
@@ -1306,7 +1308,7 @@ void Button::onMouseButtonUp(wxMouseEvent& event)
     }
 }
 
-void Button::onMouseEnterWindow(wxMouseEvent& event)
+void Button::onMouseEnterWindow(wxMouseEvent& evt)
 {
     m_mouse_over = true;
     if (!m_pushed_in || m_button_down || (m_mode == modeXP && m_toggle_mode))
@@ -1315,7 +1317,7 @@ void Button::onMouseEnterWindow(wxMouseEvent& event)
     }
 }
 
-void Button::onMouseLeaveWindow(wxMouseEvent& event)
+void Button::onMouseLeaveWindow(wxMouseEvent& evt)
 {
     m_mouse_over = false;
     if (!m_pushed_in || m_button_down || (m_mode == modeXP && m_toggle_mode))
@@ -1324,13 +1326,13 @@ void Button::onMouseLeaveWindow(wxMouseEvent& event)
     }
 }
 
-void Button::onMouseMotion(wxMouseEvent& event)
+void Button::onMouseMotion(wxMouseEvent& evt)
 {
     if (m_button_down && !m_pushed_in)
     {
         int w, h;
         GetClientSize(&w, &h);
-        if (event.m_x >= 0 && event.m_x < w && event.m_y >= 0 && event.m_y < h)
+        if (evt.m_x >= 0 && evt.m_x < w && evt.m_y >= 0 && evt.m_y < h)
         {
             if (!m_mouse_over)
             {
@@ -1351,10 +1353,10 @@ void Button::onMouseMotion(wxMouseEvent& event)
 
 bool Button::SendClickEvent()
 {
-    wxCommandEvent event(wxEVT_COMMAND_BUTTON_CLICKED, GetId());
-    event.SetEventObject(this);
+    wxCommandEvent evt(wxEVT_COMMAND_BUTTON_CLICKED, GetId());
+    evt.SetEventObject(this);
 
-    return GetEventHandler()->ProcessEvent(event);
+    return GetEventHandler()->ProcessEvent(evt);
 }
 
 int Button::getHeight()

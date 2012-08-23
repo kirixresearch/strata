@@ -117,7 +117,7 @@ NotebookControl::NotebookControl(wxWindow* parent,
     m_extra_panel_width = 0;
 
 
-    // -- create a default tab scroll control --
+    // create a default tab scroll control
 
     m_tabscroll_panel = new wxPanel(this, -1);
     m_tabscroll_panel->SetSize(0, 0, 40, 16);
@@ -425,7 +425,7 @@ void NotebookControl::drawTab(wxDC& dc, int page)
 
     wxPoint points[4];
 
-    // -- fill out the hit rectangle --
+    // fill out the hit rectangle
     it->m_hitrect.x = x1 - notebook_tab_angle_offset;
     it->m_hitrect.y = y1;
     it->m_hitrect.width = it->m_tab_width + notebook_tab_angle_offset;
@@ -446,7 +446,7 @@ void NotebookControl::drawTab(wxDC& dc, int page)
 
     if (it->m_bitmap.Ok())
     {
-        // -- find out height of bitmap --
+        // find out height of bitmap
         int bitmap_height;
         bitmap_height = it->m_bitmap.GetHeight();
         
@@ -491,7 +491,7 @@ void NotebookControl::onPaint(wxPaintEvent& event)
 
     if (m_active_index == -1)
     {
-        // -- if there are no active pages, don't draw anything --
+        // if there are no active pages, don't draw anything
         return;
     }
 
@@ -502,7 +502,7 @@ void NotebookControl::onPaint(wxPaintEvent& event)
     dc.SetPen(*wxBLACK_PEN);
     dc.DrawLine(0, client_height-m_tab_height, client_width, client_height-m_tab_height);
 
-    // -- draw tabs --
+    // draw tabs
     int page_count = m_pages.size();
     for (int page = 0; page < page_count; page++)
     {
@@ -685,7 +685,7 @@ void NotebookControl::onMouse(wxMouseEvent& event)
 {
     if (event.GetEventType() == wxEVT_LEFT_DOWN)
     {
-        // -- check to see where we clicked --
+        // check to see where we clicked
         std::vector<NotebookPage>::iterator it;
         int idx = 0;
         for (it = m_pages.begin(); it != m_pages.end(); ++it)
@@ -701,7 +701,7 @@ void NotebookControl::onMouse(wxMouseEvent& event)
 
     if (event.GetEventType() == wxEVT_RIGHT_DOWN)
     {
-        // -- check to see where we clicked --
+        // check to see where we clicked
         std::vector<NotebookPage>::iterator it;
         int idx = 0;
         for (it = m_pages.begin(); it != m_pages.end(); ++it)

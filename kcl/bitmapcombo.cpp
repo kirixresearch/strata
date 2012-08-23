@@ -47,7 +47,7 @@ static const char* xpm_vistadropdown_button[] = {
 
 
 
-// -- event definitions --
+// event definitions
 
 DEFINE_EVENT_TYPE(wxEVT_KCLBITMAPCOMBO_BEGIN_DRAG)
 

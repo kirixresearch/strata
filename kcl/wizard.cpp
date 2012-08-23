@@ -326,19 +326,19 @@ wxSizer* Wizard::getExtraSizer()
     return (wxSizer*)m_extra_sizer;
 }
 
-// -- event handlers --
+// event handlers
 
-void Wizard::onPrevPage(wxCommandEvent& event)
+void Wizard::onPrevPage(wxCommandEvent& evt)
 {
     goPrevPage();
 }
 
-void Wizard::onNextPage(wxCommandEvent& event)
+void Wizard::onNextPage(wxCommandEvent& evt)
 {
     goNextPage();
 }
 
-void Wizard::onFinish(wxCommandEvent& event)
+void Wizard::onFinish(wxCommandEvent& evt)
 {
     // looks like we are done with the wizard; get permission
     // to close it out from the current page, and then fire signal
@@ -349,12 +349,12 @@ void Wizard::onFinish(wxCommandEvent& event)
     sigFinishPressed(this);
 }
 
-void Wizard::onCancel(wxCommandEvent& event)
+void Wizard::onCancel(wxCommandEvent& evt)
 {
     sigCancelPressed(this);
 }
 
-void Wizard::onSize(wxSizeEvent& event)
+void Wizard::onSize(wxSizeEvent& evt)
 {
     Layout();
 }

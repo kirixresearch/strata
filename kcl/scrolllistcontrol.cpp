@@ -593,7 +593,7 @@ void ScrollListControl::drawItem(kcl::ScrollListItem* item, int item_y)
         m_memdc.DrawRectangle(0, y, m_cli_width, item->getHeight());
     }
     
-    // -- draw the item's elements --
+    // draw the item's elements
     std::vector<ScrollListElement*>::iterator it;
     for (it = item->m_elements.begin(); it != item->m_elements.end(); ++it)
     {
@@ -608,7 +608,7 @@ void ScrollListControl::drawItem(kcl::ScrollListItem* item, int item_y)
         rpad = element->getPaddingRight();
         bpad = element->getPaddingBottom();
         
-        // -- size and position controls --
+        // size and position controls
         
         wxControl* control = element->getControl();
         if (control != NULL)
@@ -668,7 +668,7 @@ void ScrollListControl::drawItem(kcl::ScrollListItem* item, int item_y)
             continue;
         }
         
-        // -- draw bitmaps --
+        // draw bitmaps
         
         if (element->getBitmap().Ok())
         {
@@ -690,7 +690,7 @@ void ScrollListControl::drawItem(kcl::ScrollListItem* item, int item_y)
             continue;
         }
         
-        // -- draw text --
+        // draw text
         
         int text_x = x+pt.x+lpad;
         int text_y = y+pt.y+tpad;
@@ -777,18 +777,18 @@ void ScrollListControl::drawItems()
 
 void ScrollListControl::render()
 {
-    // -- allocate the bitmap to draw on --
+    // allocate the bitmap to draw on
     allocBitmap(m_cli_width+50, m_cli_height+50);
 
-    // -- draw background --
+    // draw background
     m_memdc.SetPen(*wxWHITE);
     m_memdc.SetBrush(*wxWHITE);
     m_memdc.DrawRectangle(-1, -1, m_bmp_width, m_bmp_height);
     
-    // -- draw items --
+    // draw items
     drawItems();
     
-    // -- draw overlay text --
+    // draw overlay text
     drawOverlayText();
 }
 
@@ -842,7 +842,7 @@ void ScrollListControl::repaint(wxDC* dc)
     {
         if (dc)
         {
-            // -- if there is no bitmap --
+            // if there is no bitmap
             dc->SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
             dc->SetPen(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
             dc->DrawRectangle(x,y,w,h);
@@ -976,7 +976,7 @@ void ScrollListControl::onPaint(wxPaintEvent& evt)
 
 void ScrollListControl::onSize(wxSizeEvent& evt)
 {
-    // -- update our client size member variables --
+    // update our client size member variables
     GetClientSize(&m_cli_width, &m_cli_height);
     refresh();
 }

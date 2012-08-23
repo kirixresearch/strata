@@ -612,7 +612,6 @@ bool TestModel::getGroupBreaksActive()
 // -- cell editor controls --
 
 
-
 class GridTextCtrl : public wxTextCtrl
 {
 

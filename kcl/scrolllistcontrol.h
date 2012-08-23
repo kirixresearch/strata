@@ -266,7 +266,7 @@ private:
     void drawItems();
     void drawOverlayText();
     
-    // -- events --
+    // event handlers
     void onMouseLeftClick(wxMouseEvent& evt);
     void onScroll(wxScrollWinEvent& evt);
     void onPaint(wxPaintEvent& evt);

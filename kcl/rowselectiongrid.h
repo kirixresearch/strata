@@ -64,7 +64,7 @@ public:
     size_t getSelectedRowCount();
     std::vector<int> getSelectedRows();
     
-    // -- event handlers --
+    //  event handlers
     void onSize(wxSizeEvent& evt);
     void onKeyDown(kcl::GridEvent& evt);
     void onEndEdit(kcl::GridEvent& evt);

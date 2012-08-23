@@ -108,8 +108,7 @@ public:
     void onScrollLeft(wxCommandEvent& event);
     void onScrollRight(wxCommandEvent& event);
 
-public:
-// -- signals --
+public: // signals 
 
     xcm::signal1<int> sigActivePageChanged;
     xcm::signal1<int> sigTabRightClicked;

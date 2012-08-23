@@ -91,9 +91,9 @@ public:
     void render();
     void repaint(wxDC* dc = NULL);
 
-    void onSize(wxSizeEvent& event);
-    void onPaint(wxPaintEvent& event);
-    void onMouse(wxMouseEvent& event);
+    void onSize(wxSizeEvent& evt);
+    void onPaint(wxPaintEvent& evt);
+    void onMouse(wxMouseEvent& evt);
 
 public: // signals
 

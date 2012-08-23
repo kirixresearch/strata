@@ -80,7 +80,7 @@ ColorPanel::ColorPanel(wxWindow* parent,
     SetClientSize(cli_width, cli_height);
     
 
-    // -- create color grid --
+    // create color grid
     
     int cols = (cli_width-(BORDER_PADDING*2))/BUTTON_SIZE;
     m_grid_sizer = new wxGridSizer(cols);
@@ -419,8 +419,8 @@ void ColorPanel::onMoreColorsClicked(kcl::Button* button, int b)
 
         if (cd.GetColour().Ok())
         {
-            // -- pass the dialog's custom colors
-            //    back to the m_custom_colors vector --
+            // pass the dialog's custom colors
+            // back to the m_custom_colors vector
             i = 0;
             for (it = m_custom_colors.begin();
                  it != m_custom_colors.end();
@@ -439,7 +439,7 @@ void ColorPanel::onMoreColorsClicked(kcl::Button* button, int b)
     
     if (popup)
     {
-        // -- we are responsible for deleting ourselves --
+        // we are responsible for deleting ourselves
         popup->Destroy();
     }
 }

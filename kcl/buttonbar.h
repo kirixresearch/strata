@@ -140,7 +140,7 @@ private:
     
     bool SendClickEvent(wxWindowID id);
     
-    // -- events --
+    // events
     void onMouseLeftDown(wxMouseEvent& evt);
     void onMouseLeftUp(wxMouseEvent& evt);
     void onEraseBackground(wxEraseEvent& evt);

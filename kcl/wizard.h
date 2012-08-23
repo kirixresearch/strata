@@ -90,11 +90,11 @@ private:
     void updateButtons(bool do_layout = true);
 
     // -- event handlers --
-    void onPrevPage(wxCommandEvent& event);
-    void onNextPage(wxCommandEvent& event);
-    void onFinish(wxCommandEvent& event);
-    void onCancel(wxCommandEvent& event);
-    void onSize(wxSizeEvent& event);
+    void onPrevPage(wxCommandEvent& evt);
+    void onNextPage(wxCommandEvent& evt);
+    void onFinish(wxCommandEvent& evt);
+    void onCancel(wxCommandEvent& evt);
+    void onSize(wxSizeEvent& evt);
 
 private:
 

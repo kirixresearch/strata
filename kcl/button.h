@@ -28,7 +28,7 @@ class Button : public wxControl
 {
 public:
 
-    // -- for overall alignment of bitmap and text in the button --
+    //for overall alignment of bitmap and text in the button
     enum
     {
         alignCenter = 0,
@@ -120,8 +120,8 @@ public: // signals
     // custom rendering hook
     xcm::signal3<Button*, wxDC*, int /* flags */> sigCustomRender;
 
-    // -- button pressed signal --
-    //      parameters = this, button number (1 = left, 2 = middle, 3 = right)
+    // button pressed signal
+    //     parameters = this, button number (1 = left, 2 = middle, 3 = right)
     xcm::signal2<Button*, int> sigButtonClicked;
 
 protected:
@@ -190,8 +190,8 @@ private:
     bool m_drop_down;
     bool m_indent;
 
-    // -- this window does not accept focus, and should
-    //    not be included in tab traversal lists --
+    // this window does not accept focus, and should
+    // not be included in tab traversal lists
     bool AcceptsFocus() const { return FALSE; }
 
     wxBitmap getDisabledBitmap();

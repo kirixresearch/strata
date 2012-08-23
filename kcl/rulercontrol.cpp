@@ -56,7 +56,7 @@ RulerControl::RulerControl(wxWindow* parent,
                               wxCLIP_CHILDREN |
                               wxNO_BORDER)
 {
-    // -- intialize bitmap variables --
+    // intialize bitmap variables
     m_bmp_alloc_width = 0;
     m_bmp_alloc_height = 0;
 
@@ -150,21 +150,21 @@ void RulerControl::setOrigin(int origin)
     if (origin == m_origin)
         return;
 
-    // -- clamp at origin --
+    // clamp at origin
     if (origin <= 0)
     {
         m_origin = 0;
         return;
     }
 
-    // -- clamp at maximum length --
+    // clamp at maximum length
     if (mtod(origin) > m_length)
     {
         m_origin = dtom(m_length);
         return;
     }
 
-    // -- snap to scale --
+    // snap to scale
     int precision;
     precision = wxMin(m_number_tick_interval,
                 wxMin(m_major_tick_interval, m_minor_tick_interval));
@@ -246,7 +246,7 @@ void RulerControl::render()
 
     allocBitmap(tot_width, tot_height);
 
-    // -- draw grey background --
+    // draw grey background
     m_memdc.SetPen(m_bkpen);
     m_memdc.SetBrush(m_bkbrush);
     m_memdc.DrawRectangle(0, 0, tot_width, tot_height);
@@ -256,47 +256,47 @@ void RulerControl::render()
     int tick_threshold = RULER_MIN_TICK_SPACE;
     int length = m_length;
 
-    // -- draw ruler background --
+    // draw ruler background
     if (tot_width > tot_height)
     {
-        // -- limit the length to the screen area --
+        // limit the length to the screen area
         length = wxMin(length, tot_width);
     
-        // -- draw white background --
+        // draw white background
         m_memdc.SetPen(*wxWHITE_PEN);
         m_memdc.SetBrush(*wxWHITE_BRUSH);
         m_memdc.DrawRectangle(m_offset, (tot_height-m_width)/2, length, m_width);
 
-        // -- draw grey background for pre-origin area --
+        // draw grey background for pre-origin area
         m_memdc.SetPen(*wxGREY_PEN);
         m_memdc.SetBrush(*wxGREY_BRUSH);
         m_memdc.DrawRectangle(m_offset, (tot_height-m_width)/2, mtod(m_origin), m_width);
     }
     else
     {
-        // -- limit the length to the screen area --
+        // limit the length to the screen area
         length = wxMin(length, tot_height);
     
-        // -- draw white background --
+        // draw white background
         m_memdc.SetPen(*wxWHITE_PEN);
         m_memdc.SetBrush(*wxWHITE_BRUSH);
         m_memdc.DrawRectangle((tot_width-m_width)/2, m_offset, m_width, length);
 
-        // -- draw grey background for pre-origin area --
+        // draw grey background for pre-origin area
         m_memdc.SetPen(*wxGREY_PEN);
         m_memdc.SetBrush(*wxGREY_BRUSH);
         m_memdc.DrawRectangle((tot_width-m_width)/2, m_offset, m_width, mtod(m_origin));
     }
 
-    // -- major tick mark size --
+    // major tick mark size
     int a1 = scale_margin + 5;
     int a2 = scale_margin + scale_width - 4;
 
-    // -- minor tick mark size --
+    // minor tick mark size
     int b1 = scale_margin + 6;
     int b2 = scale_margin + scale_width - 6;
 
-    // -- tick count --
+    // tick count
     int minor_tick_count = 0;
     int major_tick_count = 0;
     int number_tick_count = 0;
@@ -310,7 +310,7 @@ void RulerControl::render()
         tick_count = wxMax(minor_tick_count, wxMax(major_tick_count, number_tick_count));
     }
 
-    // -- draw tick marks --
+    // draw tick marks
     m_memdc.SetPen(*wxBLACK_PEN);
     m_memdc.SetFont(wxFont(7, wxSWISS, wxNORMAL, wxNORMAL));
 
@@ -320,7 +320,7 @@ void RulerControl::render()
         {
             int x_pos, x_neg, x, y;
 
-            // -- draw numbers --
+            // draw numbers
             x_pos = m_offset + mtod(m_origin + i*m_number_tick_interval);
             x_neg = m_offset + mtod(m_origin - i*m_number_tick_interval);
 
@@ -334,7 +334,7 @@ void RulerControl::render()
                 m_memdc.DrawText(wxString::Format(wxT("%d"), i),
                     x_neg - x/2, scale_margin + scale_width/2 - y/2 + 1);
 
-            // -- draw major tick marks --
+            // draw major tick marks
             if (m_major_tick_interval*i % m_number_tick_interval > 0)
             {
                 x_pos = m_offset + mtod(m_origin + i*m_major_tick_interval);
@@ -347,7 +347,7 @@ void RulerControl::render()
                     m_memdc.DrawLine(x_neg, a1, x_neg, a2);
             }
 
-            // -- draw minor tick marks --
+            // draw minor tick marks
             if (m_minor_tick_interval*i % m_number_tick_interval > 0 &&
                 m_minor_tick_interval*i % m_major_tick_interval > 0)
             {
@@ -368,7 +368,7 @@ void RulerControl::render()
         {
             int x_pos, x_neg, x, y;
 
-            // -- draw numbers --
+            // draw numbers
             x_pos = m_offset + mtod(m_origin + i*m_number_tick_interval);
             x_neg = m_offset + mtod(m_origin - i*m_number_tick_interval);
 
@@ -384,7 +384,7 @@ void RulerControl::render()
                     scale_margin + scale_width/2 - y/2, x_neg + x/2 + 1, 90);
 
 
-            // -- draw major tick marks --
+            // draw major tick marks
             if (m_major_tick_interval*i % m_number_tick_interval > 0)
             {
                 x_pos = m_offset + mtod(m_origin + i*m_major_tick_interval);
@@ -397,7 +397,7 @@ void RulerControl::render()
                     m_memdc.DrawLine(a1, x_neg, a2, x_neg);
             }
 
-            // -- draw minor tick marks --
+            // draw minor tick marks
             if (m_minor_tick_interval*i % m_number_tick_interval > 0 &&
                 m_minor_tick_interval*i % m_major_tick_interval > 0)
             {
@@ -427,38 +427,38 @@ void RulerControl::repaint(wxDC* dc)
     }
 }
 
-void RulerControl::onSize(wxSizeEvent& event)
+void RulerControl::onSize(wxSizeEvent& evt)
 {
     render();
     repaint();
 }
 
-void RulerControl::onPaint(wxPaintEvent& event)
+void RulerControl::onPaint(wxPaintEvent& evt)
 {
     wxPaintDC dc(this);
     repaint(&dc);
 }
 
-void RulerControl::onMouse(wxMouseEvent& event)
+void RulerControl::onMouse(wxMouseEvent& evt)
 {
     int tot_width, tot_height;
     GetClientSize(&tot_width, &tot_height);
 
-    event.GetPosition(&m_mouse_x, &m_mouse_y);
+    evt.GetPosition(&m_mouse_x, &m_mouse_y);
 
     int origin = m_offset + mtod(m_origin);
 
     int tol = 5;
 
-    // -- set the focus --
-    if (event.GetEventType() == wxEVT_LEFT_DOWN ||
-        event.GetEventType() == wxEVT_RIGHT_DOWN ||
-        event.GetEventType() == wxEVT_MIDDLE_DOWN)
+    // set the focus
+    if (evt.GetEventType() == wxEVT_LEFT_DOWN ||
+        evt.GetEventType() == wxEVT_RIGHT_DOWN ||
+        evt.GetEventType() == wxEVT_MIDDLE_DOWN)
     {
         SetFocus();
     }
 
-    if (event.GetEventType() == wxEVT_LEFT_DOWN)
+    if (evt.GetEventType() == wxEVT_LEFT_DOWN)
     {
         if ((tot_width > tot_height && abs(m_mouse_x - origin) <= tol) ||
             (tot_width <= tot_height && abs(m_mouse_y - origin) <= tol))
@@ -470,21 +470,21 @@ void RulerControl::onMouse(wxMouseEvent& event)
             m_mouse_ylast = m_mouse_y;
             m_origin_old = getOrigin();
 
-            // -- set the cursor --
+            // set the cursor
             SetCursor(*wxSTANDARD_CURSOR);
 
-            // -- pass -1 for origin --
+            // pass -1 for origin
             sigMoveGuideStart(this, -1);
         }
 
         CaptureMouse();
     }
 
-    if (event.GetEventType() == wxEVT_LEFT_UP)
+    if (evt.GetEventType() == wxEVT_LEFT_UP)
     {
         if (m_mouse_action == actionMoveOrigin)
         {
-            // -- pass -1 for origin --
+            // pass -1 for origin
             sigMoveGuideEnd(this, -1);
         }
 
@@ -498,14 +498,14 @@ void RulerControl::onMouse(wxMouseEvent& event)
         sigReturnFocus();
     }
 
-    if (event.GetEventType() == wxEVT_LEFT_DCLICK)
+    if (evt.GetEventType() == wxEVT_LEFT_DCLICK)
     {
         CaptureMouse();
     }
 
-    if (event.GetEventType() == wxEVT_MOTION)
+    if (evt.GetEventType() == wxEVT_MOTION)
     {
-        // -- set the cursor --
+        // set the cursor
         if (m_mouse_action == actionNone)
         {
             int x, y;
@@ -527,7 +527,7 @@ void RulerControl::onMouse(wxMouseEvent& event)
             }
         }
 
-        // -- move the origin --
+        // move the origin
         if (m_mouse_action == actionMoveOrigin)
         {
             if (tot_width > tot_height)
@@ -539,7 +539,7 @@ void RulerControl::onMouse(wxMouseEvent& event)
                 setOrigin(dtom(m_mouse_y - m_action_y) + m_origin_old);
             }
 
-            // -- pass -1 for origin --
+            // pass -1 for origin
             sigMoveGuide(this, -1);
 
             render();

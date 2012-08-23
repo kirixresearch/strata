@@ -567,7 +567,7 @@ void ButtonBar::drawItem(ButtonBarItem* item, int x, int y)
     if (item->bitmap.IsOk())
         m_memdc.DrawBitmap(item->bitmap, bmp_x, bmp_y, true);
     
-    // -- draw the text --
+    // draw the text
     
     if (!m_multiline)
     {

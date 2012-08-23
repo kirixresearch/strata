@@ -52,7 +52,7 @@ public:
 
     BannerControl(wxWindow* parent, const wxString& text, const wxPoint& point, const wxSize& size);
 
-    // -- accessor methods --
+    // accessor methods
     void setFont(const wxFont& font);
     void setStartColor(const wxColour& new_value);
     void setEndColor(const wxColour& new_value);
@@ -64,14 +64,14 @@ public:
     void setBorder(int border_sides = borderAll);
     void setBorderColor(const wxColour& new_value);
 
-    // -- event handlers --
+    // event handlers
     void onPaint(wxPaintEvent& event);
     void onSize(wxSizeEvent& event);
 
 private:
 
-    // -- this window does not accept focus, and should
-    //    not be included in tab traversal lists --
+    // this window does not accept focus, and should
+    // not be included in tab traversal lists
     bool AcceptsFocus() const { return FALSE; }
 
 private:

@@ -50,7 +50,7 @@ public: // signals
 
 private:
 
-    // -- event handlers --
+    //  event handlers
     void onPaint(wxPaintEvent& evt);
     void onSize(wxSizeEvent& evt);
     void onMove(wxMoveEvent& evt);
@@ -58,7 +58,7 @@ private:
     void onMouseButtonUp(wxMouseEvent& evt);
     void onEraseBackground(wxEraseEvent& evt);
 
-    // -- color panel events --
+    // color panel events
     void onColorPanelDestructing(kcl::ColorPanel* panel);
     void onCustomColorsRequested(std::vector<wxColor>& colors);
     void onCustomColorsChanged(std::vector<wxColor> colors);

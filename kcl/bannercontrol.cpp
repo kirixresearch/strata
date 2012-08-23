@@ -181,7 +181,7 @@ void BannerControl::onPaint(wxPaintEvent& event)
     dc.SetTextForeground(m_text_color);
     dc.DrawText(m_text, xoff, yoff);
     
-    // -- if there is a border, draw it last --
+    // if there is a border, draw it last
     
     dc.SetPen(wxPen(m_border_color));
     

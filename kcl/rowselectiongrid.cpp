@@ -14,7 +14,7 @@
 #include "util.h"
 
 
-// -- helper function --
+// helper function
 
 static bool rowInVector(int row, std::vector<int> rows)
 {
@@ -154,7 +154,7 @@ void RowSelectionGrid::onKeyDown(kcl::GridEvent& evt)
     // selections that only contain one row)
     
     
-    // -- handle the key that was pressed --
+    // handle the key that was pressed
     
     int key_code = evt.GetKeyEvent().GetKeyCode();
     int shift_down = evt.GetKeyEvent().ShiftDown();

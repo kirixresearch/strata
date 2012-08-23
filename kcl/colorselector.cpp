@@ -231,7 +231,6 @@ void ColorSelector::onEraseBackground(wxEraseEvent& evt)
 
 }
 
-// -- manage color panel events --
 
 void ColorSelector::onColorPanelDestructing(kcl::ColorPanel* panel)
 {

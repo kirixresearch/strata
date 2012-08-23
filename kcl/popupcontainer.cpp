@@ -46,8 +46,7 @@ static int getTaskBarHeight()
     return abd.rc.bottom - abd.rc.top;
 
 #else
-    // -- default task bar height --
-    return 50;
+    return 50; // default task bar height
 #endif
 }
 
@@ -115,7 +114,7 @@ void PopupContainer::doPopup(wxWindow* child, bool auto_size)
         Move(pt.x - size.GetWidth() + 38, pt.y);
     }
 
-    // -- create the child inside a sizer --
+    // create the child inside a sizer
     wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
     sizer->Add(child, 1, wxEXPAND);
     SetSizer(sizer);
@@ -142,7 +141,7 @@ void PopupContainer::onKillFocus(wxFocusEvent& event)
         }
          else
         {
-            // -- set the focus back to us --
+            // set the focus back to us
             SetFocus();
         }
         #else

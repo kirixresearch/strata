@@ -84,7 +84,7 @@ bool GridActionValidator::validateColumn(int col, bool mark_rows)
     
     if (mark_rows)
     {
-        // -- clear marked rows --
+        // clear marked rows
         
         std::vector<GridActionRule*>::iterator it;
         for (it = m_rules.begin(); it != m_rules.end(); ++it)
@@ -111,7 +111,7 @@ bool GridActionValidator::validateColumn(int col, bool mark_rows)
     std::vector<GridActionRule*>::iterator it;
     for (it = m_rules.begin(); it != m_rules.end(); ++it)
     {
-        // -- find (and mark) rows that break any rules --
+        // find (and mark) rows that break any rules
         
         GridActionRule* rule = (*it);
         int error_col = rule->getErrorColumn();

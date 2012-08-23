@@ -44,9 +44,9 @@ public:
     
     void setDestroyChild(bool b);
 
-    // -- event handlers --
-    void onKillFocus(wxFocusEvent& event);
-    void onActivate(wxActivateEvent& event);
+    // event handlers
+    void onKillFocus(wxFocusEvent& evt);
+    void onActivate(wxActivateEvent& evt);
     
 private:
 
