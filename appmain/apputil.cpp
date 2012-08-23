@@ -1512,6 +1512,53 @@ std::wstring getMountRoot(tango::IDatabasePtr db, const std::wstring _path)
 
 
 
+bool getMountPointHelper(tango::IDatabasePtr& db, const wxString& _path, wxString& cstr, wxString& rpath)
+{
+    std::vector<wxString> parts;
+
+    wxString path = _path;
+    path.Trim(true);
+    path.Trim(false);
+    
+    if (path.Length() == 0 || path[0] != wxT('/'))
+        path.Prepend(wxT("/"));
+    if (path.Length() > 0 && path.Last() == wxT('/'))
+        path.RemoveLast();
+    
+    while (path.Length() > 0)
+    {
+        std::wstring wcstr, wrpath;
+        if (db->getMountPoint(towstr(path), wcstr, wrpath))
+        {
+            rpath = wxT("");
+            cstr = towx(wcstr);
+            
+            std::vector<wxString>::iterator it;
+            for (it = parts.begin(); it != parts.end(); ++it)
+            {
+                rpath += wxT("/");
+                rpath += *it;
+            }
+            
+            if (wrpath != L"" && wrpath != wxT("/"))
+                rpath.Prepend(towx(wrpath));
+            return true;
+        }
+
+
+        if (path.Freq(wxT('/')) <= 1)
+            return false;
+        parts.push_back(path.AfterLast('/'));
+        path = path.BeforeLast('/');
+    }
+    
+    return false;
+}
+
+
+
+
+
 // gets the filename from the path
 wxString getFilenameFromPath(const wxString& path, bool include_extension)
 {

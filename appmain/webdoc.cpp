@@ -24,11 +24,13 @@
 #include <wx/fs_inet.h>
 #include <wx/stdpaths.h>
 #include <wx/artprov.h>
+#include <wx/webview.h>
 #include <kl/regex.h>
 #include <kl/md5.h>
 
 
 const int wxID_WEB = 9001;
+const int wxID_WEBVIEW = 9002;
 
 const int ID_Open = 18001;
 const int ID_OpenNewTab = 18002;
@@ -1142,14 +1144,946 @@ END_EVENT_TABLE()
 
 
 
+struct HtmlTableFieldInfo
+{
+    wxString name;
+    size_t max_len;
+    tango::objhandle_t handle;
+    int type;
+    int max_dec;
+    int date_faults;
+    int numeric_faults;
+    bool empty;
+        
+    HtmlTableFieldInfo()
+    {
+        name = wxT("");
+        max_len = 0;
+        handle = 0;
+        type = tango::typeDate; // fall back in this order Date -> Numeric -> Character
+        max_dec = 0;
+        date_faults = 0;
+        numeric_faults = 0;
+        empty = true;
+    }
+    
+    HtmlTableFieldInfo(const HtmlTableFieldInfo& c)
+    {
+        name = c.name;
+        max_len = c.max_len;
+        handle = c.handle;
+        type = c.type;
+        max_dec = c.max_dec;
+        date_faults = c.date_faults;
+        numeric_faults = c.numeric_faults;
+        empty = c.empty;
+    }
+    
+    HtmlTableFieldInfo& operator=(const HtmlTableFieldInfo& c)
+    {
+        name = c.name;
+        max_len = c.max_len;
+        handle = c.handle;
+        type = c.type;
+        max_dec = c.max_dec;
+        date_faults = c.date_faults;
+        numeric_faults = c.numeric_faults;
+        empty = c.empty;
+        return *this;
+    }
+};
+
+
+// NOTE: this code is from xdfs, if you modify/improve it here, merge
+// your changes in xdfs as well.  Thanks.
+
+static bool extractMatchResults(klregex::match_results<wxChar>& matchres,
+                                int* yy,
+                                int* mm,
+                                int* dd)
+{
+    const klregex::sub_match<wxChar>& year_match = matchres[wxT("year")];
+    const klregex::sub_match<wxChar>& month_match = matchres[wxT("month")];
+    const klregex::sub_match<wxChar>& day_match = matchres[wxT("day")];
+
+    if (!year_match.isValid())
+        return false;
+    if (!month_match.isValid())
+        return false;
+    if (!day_match.isValid())
+        return false;
+    
+    static const wxChar* months[] = { wxT("JAN"), wxT("FEB"), wxT("MAR"),
+                                      wxT("APR"), wxT("MAY"), wxT("JUN"),
+                                      wxT("JUL"), wxT("AUG"), wxT("SEP"),
+                                      wxT("OCT"), wxT("NOV"), wxT("DEC") };
+                                
+
+    if (yy)
+    {
+        *yy = wxAtoi(year_match.str().c_str());
+        if (*yy < 100)
+        {
+            if (*yy < 70)
+                *yy += 2000;
+                 else
+                *yy += 1900;
+        }
+    }
+
+    if (mm)
+    {
+        wxString month = wxString(towx(month_match.str())).Left(3);
+        if (month.length() == 0)
+            return false;
+        month.MakeUpper();
+         
+        if (iswdigit(month[0]))
+        {
+            *mm = wxAtoi(month.c_str());
+        }
+         else
+        {            
+            int j;
+            bool found = false;
+            for (j = 0; j < 12; ++j)
+            {
+                if (0 == month.Cmp(months[j]))
+                {
+                    *mm = j+1;
+                    found = true;
+                    break;
+                }
+            }
+            
+            if (!found)
+            {
+                // unknown month name
+                return false;
+            }
+        }
+    }
+    
+    if (dd)
+    {
+        *dd = wxAtoi(day_match.str().c_str());
+    }
+
+    return true;
+}
 
 
 
-tango::ISetPtr makeTableFromDom(wxDOMNode& _node);
+
+static bool parseDelimitedStringDate(const wxString& str,
+                                     int* year = NULL,
+                                     int* month = NULL,
+                                     int* day = NULL)
+{
+    if (str.length() == 0)
+        return false;
+
+    if (year)
+    {
+        *year = 0;
+        *month = 0;
+        *day = 0;
+    }
+    
+    // CCYY-MM-DD this format is so commonly a date format that
+    // we don't need to do further validation.  It does however check to make
+    // sure the first digit is between 0 and 3 (should be enough for years 0 - 3999)
+    static const klregex::basic_regex<wxChar> fmt1(wxT("(?<year>[0-3]\\d{3})[-/. ](?<month>\\d{1,2})[-/. ](?<day>\\d{1,2})"));
+    
+    // this format checks for CCYYMMDD, but does numerical range checking on the month and day portions
+    static const klregex::basic_regex<wxChar> fmt2(wxT("(?<year>[[0-9]{4})(?<month>0[1-9]|1[0-2])(?<day>0[1-9]|[12][0-9]|3[01])"));
+
+    // this format checks for MM/DD/CCYY
+    static const klregex::basic_regex<wxChar> fmt3(wxT("(?<month>0?[1-9]|1[0-2])[-/. ](?<day>0?[1-9]|[12][0-9]|3[01])[-/. ](?<year>[0-9]{2,4})"));
+
+    // this format checks for DD/MM/CCYY
+    static const klregex::basic_regex<wxChar> fmt4(wxT("(?<day>0?[1-9]|[12][0-9]|3[01])[-/. ](?<month>0?[1-9]|1[0-2])[-/. ](?<year>[0-9]{2,4})"));
+
+    // this format checks for DD-MMM-CCYY
+    static const klregex::basic_regex<wxChar> fmt5(wxT("(?<day>0?[1-9]|[12][0-9]|3[01])[-/., ]+(?<month>[A-Za-z]+)[-/., ]+(?<year>[0-9]{2,4})"));
+    
+    // this format checks for MMM DD CCYY
+    static const klregex::basic_regex<wxChar> fmt6(wxT("(?i)(?<month>jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\\w*[-/., ]+(?<day>0?[1-9]|[12][0-9]|3[01])[-/., ]+(?<year>[0-9]{2,4})"));
+
+    // this format checks for Friday, 9 July, 11:10:00 GMT+0130
+    static const klregex::basic_regex<wxChar> fmt7(L"^((?<dow>\\[A-Za-z]*)[, ]+)?(?<day>0?[1-9]|[12][0-9]|3[01])\\s+(?<month>[A-Za-z]*)(\\s+(?<year>\\d{4}))?[ ,]+(?<hour>\\d+)[:. ](?<minute>\\d+)(?:[:. ](?<second>\\d+))?");
+
+    klregex::match_results<wxChar> matchres;
+    
+    const wxChar* start = str.c_str();
+    const wxChar* end = start + str.length();
+    
+    if (fmt1.match(start, end, matchres) || 
+        fmt2.match(start, end, matchres))
+    {
+        if (year)
+            extractMatchResults(matchres, year, month, day);
+        return true;
+    }
+    
+    if (fmt3.match(start, end, matchres))
+    {
+        // using MDY order
+        if (year)
+            extractMatchResults(matchres, year, month, day);
+        return true;
+    }
+    
+    if (fmt4.match(start, end, matchres))
+    {
+        // using YMD order
+        if (year)
+            extractMatchResults(matchres, year, month, day);
+        return true;
+    }
+    
+    if (fmt5.match(start, end, matchres) ||
+        fmt6.match(start, end, matchres) ||
+        fmt7.match(start, end, matchres)) 
+    {
+        if (year)
+            extractMatchResults(matchres, year, month, day);
+        return true;
+    }
+  
+    return false;
+}
+
+
+static void nodeToString(wxDOMNode& cell, wxString& output)
+{
+    if (cell.GetNodeType() == wxWEB_NODETYPE_COMMENT_NODE)
+        return;
+    output += cell.GetNodeValue();
+    wxDOMNodeList children = cell.GetChildNodes();
+    size_t i, count = children.GetLength();
+    for (i = 0; i < count; ++i)
+    {
+        wxDOMNode node = children.Item(i);
+        nodeToString(node, output);
+    }
+    
+    // now get rid of space(s) used to format html code
+    output.Replace(wxT("\t"), wxT(" "));
+    output.Replace(wxT("\n"), wxT(" "));
+    output.Replace(wxT("\r"), wxT(" "));
+    
+    while (output.Find(wxT("  ")) != -1)
+        output.Replace(wxT("  "), wxT(" "));
+    output.Replace(wxT("\t"), wxT(" "));
+}
 
 
 
-//static DelimitedTextContentHandler* g_delimited_text_content_handler = NULL;
+
+// HTML Table to Data Table routines
+
+static int lookupNodeIdx(wxDOMNodeList& list, const wxString& node_name)
+{
+    size_t i, len = list.GetLength();
+    for (i = 0; i < len; ++i)
+    {
+        wxDOMNode node = list.Item(i);
+        if (0 == node.GetNodeName().CmpNoCase(node_name))
+            return (int)i;
+    }
+    
+    return -1;
+}
+
+
+static bool isNumericValue(const wxString& s)
+{
+    int dec_count = 0;
+    
+    size_t i, len = s.Length();
+    for (i = 0; i < len; ++i)
+    {
+        wxChar ch = s.GetChar(i);
+        
+        if (ch == '-')
+        {
+            // minus is ok if it's at the beginning
+            if (i == 0)
+                continue;
+        }
+                
+        
+        if (ch == '.')
+            dec_count++;
+            
+        if (dec_count > 1)
+        {
+            // strings with more than one period aren't to be
+            // treated as numbers
+            return false;
+        }
+        
+        if (!wcschr(L"0123456789$%,.+", ch))
+            return false;
+    }
+    
+    return true;
+}
+
+static double extractNumber(const wxString& num, int* dec_places = NULL)
+{
+    wxString s = num;
+    s.Replace(wxT("$"), wxT(""));
+    s.Replace(wxT("%"), wxT(""));
+    s.Replace(wxT(","), wxT(""));
+    
+    int dec_pos = s.Find(wxT('.'), true);
+    if (dec_places)
+    {
+        if (dec_pos == -1)
+            *dec_places = 0;
+             else
+            *dec_places = (s.Length() - dec_pos - 1);
+    }
+    
+    return kl::nolocale_wtof(towstr(s));
+}
+
+
+
+tango::ISetPtr makeTableFromDom(wxDOMNode& _node)
+{
+    std::vector<HtmlTableFieldInfo> fields;
+    tango::IStructurePtr dest_struct;
+    tango::ISetPtr dest_set;
+    wxDOMNode node = _node;
+    wxDOMNode table_node;
+    size_t i, count;
+    
+    
+    tango::IDatabasePtr dest_db = g_app->getDatabase();
+    
+    if (dest_db.isNull())
+        return xcm::null;
+    
+    // first, find the table element
+    while (1)
+    {
+        wxString node_name = node.GetNodeName();
+        
+        if (0 == node_name.CmpNoCase(wxT("TABLE")))
+            break;
+            
+        node = node.GetParentNode();
+        if (!node.IsOk())
+            return xcm::null;
+    }
+    
+    table_node = node;
+    
+    
+    // first make sure we have the node that contains the TR entries
+    wxDOMNodeList table_node_children = table_node.GetChildNodes();
+    
+    std::vector<wxDOMNode> row_nodes;
+    
+    
+    count = table_node_children.GetLength();
+    for (i = 0; i < count; ++i)
+    {
+        wxDOMNode node = table_node_children.Item(i);
+        if (0 == node.GetNodeName().CmpNoCase(wxT("TBODY")))
+        {
+            wxDOMNodeList rows= node.GetChildNodes();
+
+            size_t rown, row_count = rows.GetLength();
+            for (rown = 0; rown < row_count; ++rown)
+            {
+                wxDOMNode row = rows.Item(rown);
+                
+                // only take TR's
+                if (0 == row.GetNodeName().CmpNoCase(wxT("TR")))
+                {
+                    row_nodes.push_back(row);
+                }
+            }
+        }
+    }
+
+
+
+
+    // measure the table's data, so we can create a data table of the right
+    // size.  We will also measure the field types, to determine whether
+    // certain fields should be numeric
+    
+    size_t rown, row_count = row_nodes.size();
+    for (rown = 0; rown < row_count; ++rown)
+    {
+        wxDOMNode row = row_nodes[rown];
+        
+        // only take TR's
+        if (0 != row.GetNodeName().CmpNoCase(wxT("TR")))
+            continue;
+        
+        wxDOMNodeList col_nodes = row.GetChildNodes();
+        size_t coln, col_count = col_nodes.GetLength();
+        
+
+        size_t td_count = 0;
+        for (coln = 0; coln < col_count; ++coln)
+        {
+            wxDOMNode cell = col_nodes.Item(coln);
+            
+            // only take TD's
+            if (0 != cell.GetNodeName().CmpNoCase(wxT("TD")))
+                continue;
+                
+            // make sure our fields vector can fit all the columns
+            td_count++;
+            if (td_count >= fields.size())
+                fields.resize(td_count);
+                      
+            HtmlTableFieldInfo& info = fields[td_count-1];
+             
+            wxString val;
+            nodeToString(cell, val);
+
+            // trim leading and trailing spaces before determining the type
+            while (val.Length() > 0 && iswspace(val[0]))
+                val.Remove(0, 1);
+            while (val.Length() > 0 && iswspace(val.Last()))
+                val.RemoveLast();
+
+            if (!val.IsEmpty())
+                info.empty = false;
+
+
+            info.name = wxString::Format(wxT("FIELD%d"), td_count);
+            
+            
+            if (info.type == tango::typeDate && !parseDelimitedStringDate(val))
+            {
+                if (rown > 0) // first row might/likely is a header, so don't count it as a fault
+                    info.date_faults++;
+                if (info.date_faults >= 2 || row_count <= 3)
+                {
+                    info.type = tango::typeNumeric;
+                }
+            }
+            
+            if (info.type == tango::typeNumeric && !isNumericValue(val))
+            {      
+                if (rown > 0) // first row might/likely is a header, so don't count it as a fault
+                    info.numeric_faults++;
+                if (info.numeric_faults >= 2 || row_count <= 3)
+                {
+                    info.type = tango::typeWideCharacter;
+                }
+            }
+            
+            // determine the number of decimal places in this cell value;
+            // update the field's maximum # of decimal places
+            if (info.type == tango::typeNumeric)
+            {
+                int dec_places = 0;
+                double d = extractNumber(val, &dec_places);
+                if (dec_places > info.max_dec)
+                {
+                    info.max_dec = dec_places;
+                    if (info.max_dec > tango::max_numeric_scale)
+                        info.max_dec = tango::max_numeric_scale;
+                }
+            }
+            
+            if (val.Length() > info.max_len)
+                info.max_len = val.Length();
+            
+            if (info.type == tango::typeNumeric)
+            {
+                if (info.max_len > tango::max_numeric_width)
+                    info.max_len = tango::max_numeric_width;
+            }
+            
+            // fields should always be at least one character
+            if (info.max_len <= 0)
+                info.max_len = 1;
+        }
+    }
+    
+    
+    // find table column headers, if any
+    
+    
+    // lazy header is set to true below if the html code
+    // uses regular <TR><TD>'s for field headers; normally
+    // the html programmer should use THEAD
+    bool lazy_header = false;
+
+    wxDOMNode thead_node;
+    wxDOMNode thead_row;
+    
+    count = table_node_children.GetLength();
+    for (i = 0; i < count; ++i)
+    {
+        wxDOMNode node = table_node_children.Item(i);
+        if (0 == node.GetNodeName().CmpNoCase(wxT("THEAD")))
+        {
+            thead_node = node;
+            break;
+        }
+    }
+    
+    if (thead_node.IsOk())
+    {
+        // we have a THEAD -- look for a TR underneath
+        wxDOMNodeList thead_children = thead_node.GetChildNodes();
+        count = thead_children.GetLength();
+        for (i = 0; i < count; ++i)
+        {
+            wxDOMNode node = thead_children.Item(i);
+            if (0 == node.GetNodeName().CmpNoCase(wxT("TR")))
+            {
+                thead_row = node;
+                break;
+            }
+        }
+        
+        if (!thead_row.IsOk())
+        {
+            thead_node = wxDOMNode();
+        }
+    }
+    
+    if (!thead_node.IsOk())
+    {
+        std::vector<wxString> first_row_values;
+        
+        // there is no THEAD, find TH's in the table rows
+        // find the row with the most TH's in it
+        
+        size_t thead_max_cell_count = 0;
+        
+        for (rown = 0; rown < row_count; ++rown)
+        {
+            wxDOMNode row = row_nodes[rown];
+        
+            // only take TR's
+            if (0 != row.GetNodeName().CmpNoCase(wxT("TR")))
+                continue;
+            
+            wxDOMNodeList col_nodes = row.GetChildNodes();
+            size_t coln, col_count = col_nodes.GetLength();
+            for (coln = 0; coln < col_count; ++coln)
+            {
+                wxDOMNode cell = col_nodes.Item(coln);
+                if (0 == cell.GetNodeName().CmpNoCase(wxT("TH")))
+                {
+                    if (thead_max_cell_count < col_count)
+                    {
+                        thead_row = row;
+                        thead_max_cell_count = col_count;
+                    }
+                    break;
+                }
+            }
+        }
+        
+        
+        if (!thead_row.IsOk())
+        {
+            // no headers (THs) -- check if perhaps it could be
+            // a lazy table header (headers in the first row using TR)
+            
+            std::vector<wxString> first_row_values;
+            bool first_row_data_captured = false;
+            wxDOMNode row;
+            
+            // get the first row
+            for (rown = 0; rown < row_count; ++rown)
+            {
+                wxDOMNode test_row = row_nodes[rown];
+            
+                // only take TR's
+                if (0 != test_row.GetNodeName().CmpNoCase(wxT("TR")))
+                    continue;
+                row = test_row;
+                break;
+            }
+            
+            if (row.IsOk())
+            {      
+                wxDOMNodeList col_nodes = row.GetChildNodes();
+                size_t coln, col_count = col_nodes.GetLength();
+                for (coln = 0; coln < col_count; ++coln)
+                {
+                    wxDOMNode cell = col_nodes.Item(coln);
+                    wxString node_name = cell.GetNodeName();
+                    
+                    if (0 == node_name.CmpNoCase(wxT("TD")))
+                    {
+                        wxString str;
+                        nodeToString(cell, str);
+                        first_row_values.push_back(str);
+                    }
+                }
+            }
+                
+            
+            size_t i = 0, field_count = fields.size();
+            std::vector<wxString>::iterator it;
+            for (it = first_row_values.begin(); it != first_row_values.end(); ++it, ++i)
+            {
+                if (i >= field_count)
+                    break;
+                    
+                if (fields[i].type == tango::typeNumeric)
+                {
+                    if (!isNumericValue(*it))
+                    {
+                        lazy_header = true;
+                        thead_row = row;
+                        break;
+                    }
+                }
+                
+                if (fields[i].type == tango::typeDate)
+                {
+                    if (!parseDelimitedStringDate(*it))
+                    {
+                        lazy_header = true;
+                        thead_row = row;
+                        break;
+                    }
+                }
+            }     
+        }
+    }
+    
+    
+    if (thead_row.IsOk())
+    {
+        // we have row headers, let's extract them into our
+        // output field structure
+        size_t header_count = 0;
+        
+        wxDOMNodeList col_nodes = thead_row.GetChildNodes();
+        size_t coln, col_count = col_nodes.GetLength();
+        for (coln = 0; coln < col_count; ++coln)
+        {
+            wxDOMNode cell = col_nodes.Item(coln);
+            
+            if (0 != cell.GetNodeName().CmpNoCase(lazy_header ? wxT("TD") : wxT("TH")))
+                continue;
+            
+            if (header_count < fields.size())
+            {
+                wxString s;
+                nodeToString(cell, s);
+                
+                // this is the same as trim, but better because
+                // iswspace catches more blank characters
+                while (s.Length() > 0 && iswspace(s[0]))
+                    s.Remove(0, 1);
+                while (s.Length() > 0 && iswspace(s.Last()))
+                    s.RemoveLast();
+                    
+                size_t i, l = s.Length();
+                for (i = 0; i < l; ++i)
+                {
+                    if (iswspace(s[i]))
+                        s.SetChar(i, wxT('_'));
+                }
+                
+                // for now, make the field name more 'usable'
+
+                s.Replace(wxT(" "), wxT("_"));
+                s.Replace(wxT("\r"), wxT("_"));
+                s.Replace(wxT("\n"), wxT("_"));
+                s.Replace(wxT(","), wxT("_"));
+                s.Replace(wxT("."), wxT("_"));
+                s.Replace(wxT("("), wxT("_"));
+                s.Replace(wxT(")"), wxT("_"));
+                s.Replace(wxT("'"), wxT("_"));
+                s.Replace(wxT(":"), wxT("_"));
+                s.Replace(wxT("\""), wxT("_"));
+                s.Replace(wxT("-"), wxT("_"));
+                s.Replace(wxT("+"), wxT("_"));
+                s.Replace(wxT("/"), wxT("_"));
+                s.Replace(wxT("*"), wxT("_"));
+                s.Replace(wxT("%"), wxT("_"));
+                
+                // if first digit is number, prepend an underscore
+                if (s.Length() > 0 && ::iswdigit(s[0]))
+                    s.Prepend(wxT("_"));
+                              
+                // get rid of duplicate __
+                while (s.Find(wxT("__")) != -1)
+                    s.Replace(wxT("__"), wxT("_"));
+   
+                fields[header_count].name = s;
+            }
+            
+            header_count++;
+        }
+    }
+    
+    
+    // make sure there are no empty field names
+    
+    count = fields.size();
+    for (i = 0; i < count; ++i)
+    {
+        fields[i].name.Trim(false);
+        fields[i].name.Trim(true);
+        
+        if (fields[i].name.IsEmpty())
+        {
+            fields[i].name = wxString::Format(wxT("FIELD%d"), i+1);
+        } 
+    }
+    
+    // make sure there are no super-long field names
+    for (i = 0; i < count; ++i)
+    {
+        if (fields[i].name.Length() > 75)
+            fields[i].name = fields[i].name.Left(75);
+    }
+    
+    // fix up field names that are key words
+    
+    std::set<wxString> keywords;
+    tango::IAttributesPtr attr = dest_db->getAttributes();
+    wxStringTokenizer t(towx(attr->getStringAttribute(tango::dbattrKeywords)), wxT(","));
+    while (t.HasMoreTokens())
+    {
+        wxString s = t.GetNextToken();
+        s.Trim();
+        s.Trim(FALSE);
+        s.MakeUpper();
+        keywords.insert(s);
+    }
+    
+    for (i = 0; i < count; ++i)
+    {
+        wxString s = fields[i].name;
+        s.MakeUpper();
+        if (keywords.find(s) != keywords.end())
+            fields[i].name += wxT("_");
+    }
+    
+    // make sure there are no duplicated field names
+    std::set<wxString> dup_check;
+    for (i = 0; i < count; ++i)
+    {
+        wxString base_name = fields[i].name;
+        wxString new_name = base_name;
+        
+        wxString s = new_name;
+        s.MakeUpper();
+        int cnt = 1;
+        while (dup_check.find(s) != dup_check.end())
+        {
+            new_name = wxString::Format(wxT("%s%d"), base_name.c_str(), ++cnt);
+            s = new_name;
+            s.MakeUpper();
+        }
+        
+        dup_check.insert(s);
+        fields[i].name = new_name;
+    }
+    
+    
+    // force empty fields to have a character type
+    for (i = 0; i < count; ++i)
+    {
+        if (fields[i].empty)
+        {
+            fields[i].type = tango::typeWideCharacter;
+            fields[i].max_len = 1;
+            fields[i].max_dec = 0;
+        }
+    } 
+    
+    
+       
+    // create the output data table
+    
+    dest_struct = dest_db->createStructure();
+
+                                           
+    std::vector<HtmlTableFieldInfo>::iterator field_it;
+    for (field_it = fields.begin(); field_it != fields.end(); ++field_it)
+    {
+        tango::IColumnInfoPtr col_info = dest_struct->createColumn();
+        col_info->setName(towstr(field_it->name));
+        col_info->setType(field_it->type);
+        col_info->setWidth(field_it->max_len);
+        col_info->setScale(field_it->type == tango::typeNumeric ? field_it->max_dec : 0);
+    }
+
+    dest_set = dest_db->createSet(L"", dest_struct, NULL);
+    
+    if (dest_set.isNull())
+        return xcm::null;
+    
+    tango::IRowInserterPtr row_inserter = dest_set->getRowInserter();
+    if (row_inserter.isNull())
+        return xcm::null;
+        
+    row_inserter->startInsert(L"");
+                                       
+    for (field_it = fields.begin(); field_it != fields.end(); ++field_it)
+    {
+        field_it->handle = row_inserter->getHandle(towstr(field_it->name));
+        if (!field_it->handle)
+            return xcm::null;
+    }
+    
+    // populate the data table rows from the html table
+    
+    bool first_row = true;
+    
+    for (rown = 0; rown < row_count; ++rown)
+    {
+        wxDOMNode row = row_nodes[rown];
+        
+        // only take TR's
+        if (0 != row.GetNodeName().CmpNoCase(wxT("TR")))
+            continue;
+        
+        // lazy header tables must have the first row skipped
+        // as this is the header row
+        if (first_row)
+        {
+            first_row = false;
+            if (lazy_header)
+                continue;
+        }
+        
+        // assume that the row is empty
+        bool row_empty = true;
+        
+         
+        wxDOMNodeList col_nodes = row.GetChildNodes();
+        size_t coln, col_count = col_nodes.GetLength();
+
+        size_t td_count = 0;
+        for (coln = 0; coln < col_count; ++coln)
+        {
+            wxDOMNode cell = col_nodes.Item(coln);
+            
+            
+            // skip rows with header elements (TH)
+            if (0 == cell.GetNodeName().CmpNoCase(wxT("TH")))
+            {
+                td_count = 0;
+                break;
+            }
+            
+            // only take TD's
+            if (0 != cell.GetNodeName().CmpNoCase(wxT("TD")))
+                continue;
+            
+            // skip any cell with a rowspan attribute
+            wxDOMNamedNodeMap attr = cell.GetAttributes();
+            wxDOMNode rowspan_node = attr.GetNamedItem(wxT("rowspan"));
+            if (rowspan_node.IsOk())
+                continue;
+            
+            
+            
+            td_count++;
+
+            HtmlTableFieldInfo& info = fields[td_count-1];
+            
+            wxString val;
+            nodeToString(cell, val);
+
+            // next, trim leading and trailing spaces; in a strict conversion
+            // from a database system, we wouldn't necessarily want to remove
+            // padding; however, in the case of an HTML table, spaces/tabs are
+            // sometimes used to format the values and adjust the spacing,
+            // leaving large amounts of space after the table is imported and 
+            // making the data less immediately useful without this step; note: 
+            // the following is the same as trim, but better because iswspace 
+            // catches more blank characters
+            while (val.Length() > 0 && iswspace(val[0]))
+                val.Remove(0, 1);
+            while (val.Length() > 0 && iswspace(val.Last()))
+                val.RemoveLast();
+
+
+            if (!val.IsEmpty())
+                row_empty = false;
+                
+            switch (info.type)
+            {
+                case tango::typeNumeric:
+                {
+                    row_inserter->putDouble(info.handle, extractNumber(val));
+                    break;
+                }
+                
+                case tango::typeDate:
+                case tango::typeDateTime:
+                {
+                    int y = 0, m = 0, d = 0;
+                    if (parseDelimitedStringDate(val, &y, &m, &d))
+                    {
+                        tango::DateTime dt(y, m, d);
+                        row_inserter->putDateTime(info.handle, dt);
+                    }
+                    break;
+                }
+                
+                default:
+                {
+                    row_inserter->putWideString(info.handle, towstr(val));
+                    break;
+                }
+
+            }
+        }
+        
+        
+        // write out the row, if there were TD entries; if there
+        // were no TD entries in the row, don't write it out
+        if (td_count > 0 && !row_empty)
+        {
+            if (!row_inserter->insertRow())
+                break;
+        }
+         else
+        {
+            // clear out write buffer
+            for (field_it = fields.begin(); field_it != fields.end(); ++field_it)
+            {
+                if (field_it->type == tango::typeNumeric)
+                    row_inserter->putDouble(field_it->handle, 0.0);
+                     else
+                    row_inserter->putWideString(field_it->handle, L"");
+            }
+        }
+    }
+    
+    
+    row_inserter->finishInsert();
+    
+    return dest_set;
+}
+
+
+
+
+
+
+
+
+
+
+
 static FeedContentHandler* g_feed_content_handler = NULL;
 static AppExtensionContentHandler* g_app_extension_content_handler = NULL;
 
@@ -1191,6 +2125,10 @@ BEGIN_EVENT_TABLE(WebDoc, wxWindow)
     EVT_WEB_DOMCONTENTLOADED(wxID_WEB, WebDoc::onDOMContentLoaded)
     EVT_WEB_DRAGDROP(wxID_WEB, WebDoc::onFsDataDropped)
     
+    // for wxWebView alternative component
+    EVT_WEB_VIEW_LOADED(wxID_WEBVIEW, WebDoc::onWebViewDocumentLoaded)
+    EVT_WEB_VIEW_TITLE_CHANGED(wxID_WEBVIEW, WebDoc::onWebViewTitleChanged)
+
     // disable the data items
     EVT_UPDATE_UI_RANGE(ID_Data_First, ID_Data_Last, WebDoc::onUpdateUI_DisableAlways)
 
@@ -1232,6 +2170,8 @@ END_EVENT_TABLE()
 WebDoc::WebDoc()
 {
     m_webcontrol = NULL;
+    m_webview = NULL;
+    m_web = NULL;
 }
 
 WebDoc::~WebDoc()
@@ -1274,6 +2214,11 @@ bool WebDoc::initDoc(cfw::IFramePtr frame,
         return false;
     }
 
+    m_frame = frame;
+    m_site_id = doc_site->getId();
+
+    frame->sigFrameEvent().connect(this, &WebDoc::onFrameEvent);
+
     // set the caption
     doc_site->setCaption(_("(Untitled)"));
     doc_site->setBitmap(GETBMP(gf_document_16));
@@ -1281,30 +2226,63 @@ bool WebDoc::initDoc(cfw::IFramePtr frame,
     
     m_bitmap_updater.setDocSite(m_doc_site);
     
-    m_webcontrol = new wxWebControl(this, wxID_WEB, wxPoint(0,0), docsite_wnd->GetClientSize());
+    // create the web component itself
+    if (wxWebControl::IsEngineOk())
+    {
+        m_webcontrol = new wxWebControl(this, wxID_WEB, wxPoint(0,0), docsite_wnd->GetClientSize());
+        m_web = m_webview;
+
+        if (!g_app_extension_content_handler)
+        {
+            //g_delimited_text_content_handler = new DelimitedTextContentHandler;
+            g_feed_content_handler = new FeedContentHandler;
+            g_app_extension_content_handler = new AppExtensionContentHandler;
+        
+            //wxWebControl::AddContentHandler(g_delimited_text_content_handler, true);
+            wxWebControl::AddContentHandler(g_feed_content_handler, true);
+            wxWebControl::AddContentHandler(g_app_extension_content_handler, true);
+        }
+    }
+     else
+    {
+
+#ifdef __WXMSW__
+
+        // on windows, we want to be using at least IE version 9.0 or later.  By default
+        // wxWebView will use IE 7.  We need to set the following registry value to
+        // make wxWebView use the newer embedded browser components
+
+        static bool first_time = true;
+        if (first_time)
+        {
+            first_time = false;
+         
+            wxRegKey* pRegKey = new wxRegKey(wxT("HKEY_CURRENT_USER\\Software\\Microsoft\\Internet Explorer\\Main\\FeatureControl\\FEATURE_BROWSER_EMULATION"));
+
+            if (!pRegKey->Exists())
+            {
+                pRegKey->Create();
+            }
+
+            wxStandardPaths& stdpaths = wxStandardPaths::Get();
+            wxString prog = stdpaths.GetExecutablePath();
+            prog = prog.AfterLast(PATH_SEPARATOR_CHAR);
+            pRegKey->SetValue(prog, (long)9000);
+
+            delete pRegKey;
+        }
+#endif
+
+        m_webview = wxWebView::New(this, wxID_WEBVIEW, wxWebViewDefaultURLStr, wxPoint(0,0), docsite_wnd->GetClientSize(), wxWEB_VIEW_BACKEND_DEFAULT, wxBORDER_NONE);
+        m_web = m_webview;
+    }
+
+
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
-    main_sizer->Add(m_webcontrol, 1, wxEXPAND);
+    main_sizer->Add(m_web, 1, wxEXPAND);
     SetSizer(main_sizer);
     Layout();
     
-    m_frame = frame;
-    m_site_id = doc_site->getId();
-
-    // add frame event handlers
-    frame->sigFrameEvent().connect(this, &WebDoc::onFrameEvent);
-
-    if (!g_app_extension_content_handler)
-    {
-        //g_delimited_text_content_handler = new DelimitedTextContentHandler;
-        g_feed_content_handler = new FeedContentHandler;
-        g_app_extension_content_handler = new AppExtensionContentHandler;
-        
-        //wxWebControl::AddContentHandler(g_delimited_text_content_handler, true);
-        wxWebControl::AddContentHandler(g_feed_content_handler, true);
-        wxWebControl::AddContentHandler(g_app_extension_content_handler, true);
-    }
-    
-
     return true;
 }
 
@@ -1325,7 +2303,7 @@ wxWindow* WebDoc::getDocumentWindow()
 
 void WebDoc::setDocumentFocus()
 {
-    m_webcontrol->SetFocus();
+    m_web->SetFocus();
 }
 
 static void clearStatusBarTextItem()
@@ -1355,9 +2333,14 @@ bool WebDoc::onSiteClosing(bool force)
 
 bool WebDoc::isWebBrowserOk() const
 {
-    if (!m_webcontrol)
-        return false;
-    return m_webcontrol->IsOk();
+    if (m_webcontrol)
+    {
+        return m_webcontrol->IsOk();
+    }
+     else
+    {
+        return m_webview ? true : false;
+    }
 }
 
 bool WebDoc::findNextMatch(const wxString& text,
@@ -1377,7 +2360,18 @@ bool WebDoc::findNextMatch(const wxString& text,
     flags |= wxWEB_FIND_WRAP;
     flags |= wxWEB_FIND_SEARCH_FRAMES;
     
-    return m_webcontrol->Find(text, flags);
+    if (m_webcontrol)
+    {
+        return m_webcontrol->Find(text, flags);
+    }
+     else if (m_webview)
+    {
+        return false;
+    }
+     else
+    {
+        return false;
+    }
 }
 
 bool WebDoc::findReplaceWith(const wxString& find_val,
@@ -1455,54 +2449,11 @@ void WebDoc::onFrameEvent(cfw::Event& evt)
     }
 }
 
-
-static bool getMountPointHelper(tango::IDatabasePtr& db, const wxString& _path, wxString& cstr, wxString& rpath)
-{
-    std::vector<wxString> parts;
-
-    wxString path = _path;
-    path.Trim(true);
-    path.Trim(false);
-    
-    if (path.Length() == 0 || path[0] != wxT('/'))
-        path.Prepend(wxT("/"));
-    if (path.Length() > 0 && path.Last() == wxT('/'))
-        path.RemoveLast();
-    
-    while (path.Length() > 0)
-    {
-        std::wstring wcstr, wrpath;
-        if (db->getMountPoint(towstr(path), wcstr, wrpath))
-        {
-            rpath = wxT("");
-            cstr = towx(wcstr);
-            
-            std::vector<wxString>::iterator it;
-            for (it = parts.begin(); it != parts.end(); ++it)
-            {
-                rpath += wxT("/");
-                rpath += *it;
-            }
-            
-            if (wrpath != L"" && wrpath != wxT("/"))
-                rpath.Prepend(towx(wrpath));
-            return true;
-        }
-
-
-        if (path.Freq(wxT('/')) <= 1)
-            return false;
-        parts.push_back(path.AfterLast('/'));
-        path = path.BeforeLast('/');
-    }
-    
-    return false;
-}
-
-
-
 void WebDoc::onFsDataDropped(wxWebEvent& evt)
 {
+    if (!m_webcontrol)
+        return;
+
     // for now, assume that the dragging was done from the tree --
     // The drag drop event was initialized by gecko, so we'll
     // need to work harder to be able to get the data object
@@ -1647,6 +2598,9 @@ void WebDoc::switchToSource()
 
 void WebDoc::savePageAsExternal()
 {
+    if (!m_webcontrol)
+        return;
+
     wxString filter;
 
     // NOTE: if you add or remove items from this
@@ -1677,6 +2631,24 @@ void WebDoc::savePageAsExternal()
 
 void WebDoc::openURI(const wxString& uri, wxWebPostData* post_data)
 {
+    if (m_webview)
+    {
+        m_url = uri;
+
+        if (m_frame)
+        {
+            cfw::IDocumentSitePtr doc_site = m_frame->getActiveChild();
+            if (doc_site.isOk() && doc_site == m_doc_site)
+            {
+                m_frame->postEvent(new cfw::Event(wxT("cfw.locationChanged")));
+            }
+        }
+
+        m_webview->LoadURL(uri);
+        return;
+    }
+
+
     // don't allow thse locations to be loaded -- most restricted locations are handled
     // in WebDoc::onOpenURI(), however, by the time these locations get to that function,
     // they've already been processed by the Gecko engine and translated to something like
@@ -1815,7 +2787,14 @@ void WebDoc::onSaveAsExternal(wxCommandEvent& evt)
 
 void WebDoc::onPrint(wxCommandEvent& evt)
 {
-    m_webcontrol->Print();
+    if (m_webcontrol)
+    {
+        m_webcontrol->Print();
+    }
+     else
+    {
+        m_webview->Print();
+    }
 }
 
 void WebDoc::onPageSetup(wxCommandEvent& evt)
@@ -1856,71 +2835,174 @@ void WebDoc::onPageSetup(wxCommandEvent& evt)
 
 void WebDoc::onCutSelection(wxCommandEvent& evt)
 {
-    m_webcontrol->CutSelection();
+    if (m_webcontrol)
+    {
+        m_webcontrol->CutSelection();
+    }
+     else if (m_webview)
+    {
+        m_webview->Cut();
+    }
 }
 
 void WebDoc::onCopySelection(wxCommandEvent& evt)
 {
-    m_webcontrol->CopySelection();
+    if (m_webcontrol)
+    {
+        m_webcontrol->CopySelection();
+    }
+     else if (m_webview)
+    {
+        m_webview->Copy();
+    }
 }
 
 void WebDoc::onCopyLinkLocation(wxCommandEvent& evt)
 {
-    m_webcontrol->CopyLinkLocation();
+    if (m_webcontrol)
+    {
+        m_webcontrol->CopyLinkLocation();
+    }
 }
 
 void WebDoc::onPaste(wxCommandEvent& evt)
 {
-    m_webcontrol->Paste();
+    if (m_webcontrol)
+    {
+        m_webcontrol->Paste();
+    }
+     else if (m_webview)
+    {
+        m_webview->Paste();
+    }
 }
 
 void WebDoc::onDelete(wxCommandEvent& evt)
 {
-    m_webcontrol->CutSelection();
+    if (m_webcontrol)
+    {
+        m_webcontrol->CutSelection();
+    }
+     else if (m_webview)
+    {
+        m_webview->DeleteSelection();
+    }
 }
 
 void WebDoc::onSelectAll(wxCommandEvent& evt)
 {
-    m_webcontrol->SelectAll();
+    if (m_webcontrol)
+    {
+        m_webcontrol->SelectAll();
+    }
+     else if (m_webview)
+    {
+        m_webview->SelectAll();
+    }
 }
 
 void WebDoc::onGoBackward(wxCommandEvent& evt)
 {
-    m_webcontrol->GoBack();
+    if (m_webcontrol)
+    {
+        m_webcontrol->GoBack();
+    }
+     else if (m_webview)
+    {
+        m_webview->GoBack();
+    }
 }
 
 void WebDoc::onGoForward(wxCommandEvent& evt)
 {
-    m_webcontrol->GoForward();
+    if (m_webcontrol)
+    {
+        m_webcontrol->GoForward();
+    }
+     else if (m_webview)
+    {
+        m_webview->GoForward();
+    }
 }
 
 void WebDoc::onReload(wxCommandEvent& evt)
 {
-    m_webcontrol->Reload();
+    if (m_webcontrol)
+    {
+        m_webcontrol->Reload();
+    }
+     else if (m_webview)
+    {
+        m_webview->Reload();
+    }
 }
 
 void WebDoc::onStop(wxCommandEvent& evt)
 {
-    m_webcontrol->Stop();
+    if (m_webcontrol)
+    {
+        m_webcontrol->Stop();
+    }
+     else if (m_webview)
+    {
+        m_webview->Stop();
+    }
 }
 
 void WebDoc::onZoomIn(wxCommandEvent& evt)
 {
-    float zoom;
-    m_webcontrol->GetTextZoom(&zoom);
-    m_webcontrol->SetTextZoom(zoom + ZOOM_CHANGE_PERC);
+    if (m_webcontrol)
+    {
+        float zoom;
+        m_webcontrol->GetTextZoom(&zoom);
+        m_webcontrol->SetTextZoom(zoom + ZOOM_CHANGE_PERC);
+    }
+     else if (m_webview)
+    {
+        switch (m_webview->GetZoom())
+        {
+            case wxWEB_VIEW_ZOOM_TINY:      m_webview->SetZoom(wxWEB_VIEW_ZOOM_SMALL);   break;
+            case wxWEB_VIEW_ZOOM_SMALL:     m_webview->SetZoom(wxWEB_VIEW_ZOOM_MEDIUM);  break;
+            default:
+            case wxWEB_VIEW_ZOOM_MEDIUM:    m_webview->SetZoom(wxWEB_VIEW_ZOOM_LARGE);   break;
+            case wxWEB_VIEW_ZOOM_LARGE:	    m_webview->SetZoom(wxWEB_VIEW_ZOOM_LARGEST); break;
+            case wxWEB_VIEW_ZOOM_LARGEST:   break;
+        }
+    }
 }
 
 void WebDoc::onZoomOut(wxCommandEvent& evt)
 {
-    float zoom;
-    m_webcontrol->GetTextZoom(&zoom);
-    m_webcontrol->SetTextZoom(zoom - ZOOM_CHANGE_PERC);
+    if (m_webcontrol)
+    {
+        float zoom;
+        m_webcontrol->GetTextZoom(&zoom);
+        m_webcontrol->SetTextZoom(zoom - ZOOM_CHANGE_PERC);
+    }
+     else if (m_webview)
+    {
+        switch (m_webview->GetZoom())
+        {
+            case wxWEB_VIEW_ZOOM_TINY:      break;
+            case wxWEB_VIEW_ZOOM_SMALL:     m_webview->SetZoom(wxWEB_VIEW_ZOOM_TINY);  break;
+            default:
+            case wxWEB_VIEW_ZOOM_MEDIUM:    m_webview->SetZoom(wxWEB_VIEW_ZOOM_SMALL);  break;
+            case wxWEB_VIEW_ZOOM_LARGE:	    m_webview->SetZoom(wxWEB_VIEW_ZOOM_MEDIUM); break;
+            case wxWEB_VIEW_ZOOM_LARGEST:   m_webview->SetZoom(wxWEB_VIEW_ZOOM_LARGE);  break;
+        }
+    }
 }
 
 void WebDoc::onZoomToActual(wxCommandEvent& evt)
 {
-    m_webcontrol->SetTextZoom(ZOOM_DEFAULT);
+    if (m_webcontrol)
+    {
+        m_webcontrol->SetTextZoom(ZOOM_DEFAULT);
+    } 
+     else
+    {
+        m_webview->SetZoom(wxWEB_VIEW_ZOOM_MEDIUM);
+    }
 }
 
 void WebDoc::onSize(wxSizeEvent& evt)
@@ -2871,933 +3953,36 @@ void WebDoc::onMiddleUp(wxWebEvent& evt)
 
 
 
-
-
-
-// HTML Table to Data Table routines
-
-static int lookupNodeIdx(wxDOMNodeList& list, const wxString& node_name)
+void WebDoc::onWebViewTitleChanged(wxWebViewEvent& evt)
 {
-    size_t i, len = list.GetLength();
-    for (i = 0; i < len; ++i)
-    {
-        wxDOMNode node = list.Item(i);
-        if (0 == node.GetNodeName().CmpNoCase(node_name))
-            return (int)i;
-    }
+    wxString title = evt.GetString();
+
+    if (title.IsEmpty())
+        title = _("(Untitled)");
     
-    return -1;
-}
-
-struct HtmlTableFieldInfo
-{
-    wxString name;
-    size_t max_len;
-    tango::objhandle_t handle;
-    int type;
-    int max_dec;
-    int date_faults;
-    int numeric_faults;
-    bool empty;
-        
-    HtmlTableFieldInfo()
-    {
-        name = wxT("");
-        max_len = 0;
-        handle = 0;
-        type = tango::typeDate; // fall back in this order Date -> Numeric -> Character
-        max_dec = 0;
-        date_faults = 0;
-        numeric_faults = 0;
-        empty = true;
-    }
+    cfw::IDocumentSitePtr doc_site = m_frame->lookupSiteById(m_site_id);
+    if (doc_site.isOk())
+        doc_site->setCaption(title);
     
-    HtmlTableFieldInfo(const HtmlTableFieldInfo& c)
-    {
-        name = c.name;
-        max_len = c.max_len;
-        handle = c.handle;
-        type = c.type;
-        max_dec = c.max_dec;
-        date_faults = c.date_faults;
-        numeric_faults = c.numeric_faults;
-        empty = c.empty;
-    }
+    m_title = title;
     
-    HtmlTableFieldInfo& operator=(const HtmlTableFieldInfo& c)
-    {
-        name = c.name;
-        max_len = c.max_len;
-        handle = c.handle;
-        type = c.type;
-        max_dec = c.max_dec;
-        date_faults = c.date_faults;
-        numeric_faults = c.numeric_faults;
-        empty = c.empty;
-        return *this;
-    }
-};
-
-
-static void nodeToString(wxDOMNode& cell, wxString& output)
-{
-    if (cell.GetNodeType() == wxWEB_NODETYPE_COMMENT_NODE)
-        return;
-    output += cell.GetNodeValue();
-    wxDOMNodeList children = cell.GetChildNodes();
-    size_t i, count = children.GetLength();
-    for (i = 0; i < count; ++i)
-    {
-        wxDOMNode node = children.Item(i);
-        nodeToString(node, output);
-    }
-    
-    // now get rid of space(s) used to format html code
-    output.Replace(wxT("\t"), wxT(" "));
-    output.Replace(wxT("\n"), wxT(" "));
-    output.Replace(wxT("\r"), wxT(" "));
-    
-    while (output.Find(wxT("  ")) != -1)
-        output.Replace(wxT("  "), wxT(" "));
-    output.Replace(wxT("\t"), wxT(" "));
-}
-
-static bool isNumericValue(const wxString& s)
-{
-    int dec_count = 0;
-    
-    size_t i, len = s.Length();
-    for (i = 0; i < len; ++i)
-    {
-        wxChar ch = s.GetChar(i);
-        
-        if (ch == '-')
-        {
-            // minus is ok if it's at the beginning
-            if (i == 0)
-                continue;
-        }
-                
-        
-        if (ch == '.')
-            dec_count++;
-            
-        if (dec_count > 1)
-        {
-            // strings with more than one period aren't to be
-            // treated as numbers
-            return false;
-        }
-        
-        if (!wcschr(L"0123456789$%,.+", ch))
-            return false;
-    }
-    
-    return true;
-}
-
-static double extractNumber(const wxString& num, int* dec_places = NULL)
-{
-    wxString s = num;
-    s.Replace(wxT("$"), wxT(""));
-    s.Replace(wxT("%"), wxT(""));
-    s.Replace(wxT(","), wxT(""));
-    
-    int dec_pos = s.Find(wxT('.'), true);
-    if (dec_places)
-    {
-        if (dec_pos == -1)
-            *dec_places = 0;
-             else
-            *dec_places = (s.Length() - dec_pos - 1);
-    }
-    
-    return kl::nolocale_wtof(towstr(s));
-}
-
-
-
-// NOTE: this code is from xdfs, if you modify/improve it here, merge
-// your changes in xdfs as well.  Thanks.
-
-static bool extractMatchResults(klregex::match_results<wxChar>& matchres,
-                                int* yy,
-                                int* mm,
-                                int* dd)
-{
-    const klregex::sub_match<wxChar>& year_match = matchres[wxT("year")];
-    const klregex::sub_match<wxChar>& month_match = matchres[wxT("month")];
-    const klregex::sub_match<wxChar>& day_match = matchres[wxT("day")];
-
-    if (!year_match.isValid())
-        return false;
-    if (!month_match.isValid())
-        return false;
-    if (!day_match.isValid())
-        return false;
-    
-    static const wxChar* months[] = { wxT("JAN"), wxT("FEB"), wxT("MAR"),
-                                      wxT("APR"), wxT("MAY"), wxT("JUN"),
-                                      wxT("JUL"), wxT("AUG"), wxT("SEP"),
-                                      wxT("OCT"), wxT("NOV"), wxT("DEC") };
-                                
-
-    if (yy)
-    {
-        *yy = wxAtoi(year_match.str().c_str());
-        if (*yy < 100)
-        {
-            if (*yy < 70)
-                *yy += 2000;
-                 else
-                *yy += 1900;
-        }
-    }
-
-    if (mm)
-    {
-        wxString month = wxString(towx(month_match.str())).Left(3);
-        if (month.length() == 0)
-            return false;
-        month.MakeUpper();
-         
-        if (iswdigit(month[0]))
-        {
-            *mm = wxAtoi(month.c_str());
-        }
-         else
-        {            
-            int j;
-            bool found = false;
-            for (j = 0; j < 12; ++j)
-            {
-                if (0 == month.Cmp(months[j]))
-                {
-                    *mm = j+1;
-                    found = true;
-                    break;
-                }
-            }
-            
-            if (!found)
-            {
-                // unknown month name
-                return false;
-            }
-        }
-    }
-    
-    if (dd)
-    {
-        *dd = wxAtoi(day_match.str().c_str());
-    }
-
-    return true;
+    // make sure the application's titlebar is updated
+    g_app->getAppController()->updateTitle();
 }
 
 
 
 
-static bool parseDelimitedStringDate(const wxString& str,
-                                     int* year = NULL,
-                                     int* month = NULL,
-                                     int* day = NULL)
+void WebDoc::onWebViewDocumentLoaded(wxWebViewEvent& evt)
 {
-    if (str.length() == 0)
-        return false;
+    m_url = m_webview->GetCurrentURL();
 
-    if (year)
+    if (m_frame)
     {
-        *year = 0;
-        *month = 0;
-        *day = 0;
+        cfw::IDocumentSitePtr doc_site = m_frame->getActiveChild();
+        if (doc_site.isOk() && doc_site == m_doc_site)
+        {
+            m_frame->postEvent(new cfw::Event(wxT("cfw.locationChanged")));
+        }
     }
-    
-    // CCYY-MM-DD this format is so commonly a date format that
-    // we don't need to do further validation.  It does however check to make
-    // sure the first digit is between 0 and 3 (should be enough for years 0 - 3999)
-    static const klregex::basic_regex<wxChar> fmt1(wxT("(?<year>[0-3]\\d{3})[-/. ](?<month>\\d{1,2})[-/. ](?<day>\\d{1,2})"));
-    
-    // this format checks for CCYYMMDD, but does numerical range checking on the month and day portions
-    static const klregex::basic_regex<wxChar> fmt2(wxT("(?<year>[[0-9]{4})(?<month>0[1-9]|1[0-2])(?<day>0[1-9]|[12][0-9]|3[01])"));
-
-    // this format checks for MM/DD/CCYY
-    static const klregex::basic_regex<wxChar> fmt3(wxT("(?<month>0?[1-9]|1[0-2])[-/. ](?<day>0?[1-9]|[12][0-9]|3[01])[-/. ](?<year>[0-9]{2,4})"));
-
-    // this format checks for DD/MM/CCYY
-    static const klregex::basic_regex<wxChar> fmt4(wxT("(?<day>0?[1-9]|[12][0-9]|3[01])[-/. ](?<month>0?[1-9]|1[0-2])[-/. ](?<year>[0-9]{2,4})"));
-
-    // this format checks for DD-MMM-CCYY
-    static const klregex::basic_regex<wxChar> fmt5(wxT("(?<day>0?[1-9]|[12][0-9]|3[01])[-/., ]+(?<month>[A-Za-z]+)[-/., ]+(?<year>[0-9]{2,4})"));
-    
-    // this format checks for MMM DD CCYY
-    static const klregex::basic_regex<wxChar> fmt6(wxT("(?i)(?<month>jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\\w*[-/., ]+(?<day>0?[1-9]|[12][0-9]|3[01])[-/., ]+(?<year>[0-9]{2,4})"));
-
-    // this format checks for Friday, 9 July, 11:10:00 GMT+0130
-    static const klregex::basic_regex<wxChar> fmt7(L"^((?<dow>\\[A-Za-z]*)[, ]+)?(?<day>0?[1-9]|[12][0-9]|3[01])\\s+(?<month>[A-Za-z]*)(\\s+(?<year>\\d{4}))?[ ,]+(?<hour>\\d+)[:. ](?<minute>\\d+)(?:[:. ](?<second>\\d+))?");
-
-    klregex::match_results<wxChar> matchres;
-    
-    const wxChar* start = str.c_str();
-    const wxChar* end = start + str.length();
-    
-    if (fmt1.match(start, end, matchres) || 
-        fmt2.match(start, end, matchres))
-    {
-        if (year)
-            extractMatchResults(matchres, year, month, day);
-        return true;
-    }
-    
-    if (fmt3.match(start, end, matchres))
-    {
-        // using MDY order
-        if (year)
-            extractMatchResults(matchres, year, month, day);
-        return true;
-    }
-    
-    if (fmt4.match(start, end, matchres))
-    {
-        // using YMD order
-        if (year)
-            extractMatchResults(matchres, year, month, day);
-        return true;
-    }
-    
-    if (fmt5.match(start, end, matchres) ||
-        fmt6.match(start, end, matchres) ||
-        fmt7.match(start, end, matchres)) 
-    {
-        if (year)
-            extractMatchResults(matchres, year, month, day);
-        return true;
-    }
-  
-    return false;
 }
-
-
-tango::ISetPtr makeTableFromDom(wxDOMNode& _node)
-{
-    std::vector<HtmlTableFieldInfo> fields;
-    tango::IStructurePtr dest_struct;
-    tango::ISetPtr dest_set;
-    wxDOMNode node = _node;
-    wxDOMNode table_node;
-    size_t i, count;
-    
-    
-    tango::IDatabasePtr dest_db = g_app->getDatabase();
-    
-    if (dest_db.isNull())
-        return xcm::null;
-    
-    // first, find the table element
-    while (1)
-    {
-        wxString node_name = node.GetNodeName();
-        
-        if (0 == node_name.CmpNoCase(wxT("TABLE")))
-            break;
-            
-        node = node.GetParentNode();
-        if (!node.IsOk())
-            return xcm::null;
-    }
-    
-    table_node = node;
-    
-    
-    // first make sure we have the node that contains the TR entries
-    wxDOMNodeList table_node_children = table_node.GetChildNodes();
-    
-    std::vector<wxDOMNode> row_nodes;
-    
-    
-    count = table_node_children.GetLength();
-    for (i = 0; i < count; ++i)
-    {
-        wxDOMNode node = table_node_children.Item(i);
-        if (0 == node.GetNodeName().CmpNoCase(wxT("TBODY")))
-        {
-            wxDOMNodeList rows= node.GetChildNodes();
-
-            size_t rown, row_count = rows.GetLength();
-            for (rown = 0; rown < row_count; ++rown)
-            {
-                wxDOMNode row = rows.Item(rown);
-                
-                // only take TR's
-                if (0 == row.GetNodeName().CmpNoCase(wxT("TR")))
-                {
-                    row_nodes.push_back(row);
-                }
-            }
-        }
-    }
-
-
-
-
-    // measure the table's data, so we can create a data table of the right
-    // size.  We will also measure the field types, to determine whether
-    // certain fields should be numeric
-    
-    size_t rown, row_count = row_nodes.size();
-    for (rown = 0; rown < row_count; ++rown)
-    {
-        wxDOMNode row = row_nodes[rown];
-        
-        // only take TR's
-        if (0 != row.GetNodeName().CmpNoCase(wxT("TR")))
-            continue;
-        
-        wxDOMNodeList col_nodes = row.GetChildNodes();
-        size_t coln, col_count = col_nodes.GetLength();
-        
-
-        size_t td_count = 0;
-        for (coln = 0; coln < col_count; ++coln)
-        {
-            wxDOMNode cell = col_nodes.Item(coln);
-            
-            // only take TD's
-            if (0 != cell.GetNodeName().CmpNoCase(wxT("TD")))
-                continue;
-                
-            // make sure our fields vector can fit all the columns
-            td_count++;
-            if (td_count >= fields.size())
-                fields.resize(td_count);
-                      
-            HtmlTableFieldInfo& info = fields[td_count-1];
-             
-            wxString val;
-            nodeToString(cell, val);
-
-            // trim leading and trailing spaces before determining the type
-            while (val.Length() > 0 && iswspace(val[0]))
-                val.Remove(0, 1);
-            while (val.Length() > 0 && iswspace(val.Last()))
-                val.RemoveLast();
-
-            if (!val.IsEmpty())
-                info.empty = false;
-
-
-            info.name = wxString::Format(wxT("FIELD%d"), td_count);
-            
-            
-            if (info.type == tango::typeDate && !parseDelimitedStringDate(val))
-            {
-                if (rown > 0) // first row might/likely is a header, so don't count it as a fault
-                    info.date_faults++;
-                if (info.date_faults >= 2 || row_count <= 3)
-                {
-                    info.type = tango::typeNumeric;
-                }
-            }
-            
-            if (info.type == tango::typeNumeric && !isNumericValue(val))
-            {      
-                if (rown > 0) // first row might/likely is a header, so don't count it as a fault
-                    info.numeric_faults++;
-                if (info.numeric_faults >= 2 || row_count <= 3)
-                {
-                    info.type = tango::typeWideCharacter;
-                }
-            }
-            
-            // determine the number of decimal places in this cell value;
-            // update the field's maximum # of decimal places
-            if (info.type == tango::typeNumeric)
-            {
-                int dec_places = 0;
-                double d = extractNumber(val, &dec_places);
-                if (dec_places > info.max_dec)
-                {
-                    info.max_dec = dec_places;
-                    if (info.max_dec > tango::max_numeric_scale)
-                        info.max_dec = tango::max_numeric_scale;
-                }
-            }
-            
-            if (val.Length() > info.max_len)
-                info.max_len = val.Length();
-            
-            if (info.type == tango::typeNumeric)
-            {
-                if (info.max_len > tango::max_numeric_width)
-                    info.max_len = tango::max_numeric_width;
-            }
-            
-            // fields should always be at least one character
-            if (info.max_len <= 0)
-                info.max_len = 1;
-        }
-    }
-    
-    
-    // find table column headers, if any
-    
-    
-    // lazy header is set to true below if the html code
-    // uses regular <TR><TD>'s for field headers; normally
-    // the html programmer should use THEAD
-    bool lazy_header = false;
-
-    wxDOMNode thead_node;
-    wxDOMNode thead_row;
-    
-    count = table_node_children.GetLength();
-    for (i = 0; i < count; ++i)
-    {
-        wxDOMNode node = table_node_children.Item(i);
-        if (0 == node.GetNodeName().CmpNoCase(wxT("THEAD")))
-        {
-            thead_node = node;
-            break;
-        }
-    }
-    
-    if (thead_node.IsOk())
-    {
-        // we have a THEAD -- look for a TR underneath
-        wxDOMNodeList thead_children = thead_node.GetChildNodes();
-        count = thead_children.GetLength();
-        for (i = 0; i < count; ++i)
-        {
-            wxDOMNode node = thead_children.Item(i);
-            if (0 == node.GetNodeName().CmpNoCase(wxT("TR")))
-            {
-                thead_row = node;
-                break;
-            }
-        }
-        
-        if (!thead_row.IsOk())
-        {
-            thead_node = wxDOMNode();
-        }
-    }
-    
-    if (!thead_node.IsOk())
-    {
-        std::vector<wxString> first_row_values;
-        
-        // there is no THEAD, find TH's in the table rows
-        // find the row with the most TH's in it
-        
-        size_t thead_max_cell_count = 0;
-        
-        for (rown = 0; rown < row_count; ++rown)
-        {
-            wxDOMNode row = row_nodes[rown];
-        
-            // only take TR's
-            if (0 != row.GetNodeName().CmpNoCase(wxT("TR")))
-                continue;
-            
-            wxDOMNodeList col_nodes = row.GetChildNodes();
-            size_t coln, col_count = col_nodes.GetLength();
-            for (coln = 0; coln < col_count; ++coln)
-            {
-                wxDOMNode cell = col_nodes.Item(coln);
-                if (0 == cell.GetNodeName().CmpNoCase(wxT("TH")))
-                {
-                    if (thead_max_cell_count < col_count)
-                    {
-                        thead_row = row;
-                        thead_max_cell_count = col_count;
-                    }
-                    break;
-                }
-            }
-        }
-        
-        
-        if (!thead_row.IsOk())
-        {
-            // no headers (THs) -- check if perhaps it could be
-            // a lazy table header (headers in the first row using TR)
-            
-            std::vector<wxString> first_row_values;
-            bool first_row_data_captured = false;
-            wxDOMNode row;
-            
-            // get the first row
-            for (rown = 0; rown < row_count; ++rown)
-            {
-                wxDOMNode test_row = row_nodes[rown];
-            
-                // only take TR's
-                if (0 != test_row.GetNodeName().CmpNoCase(wxT("TR")))
-                    continue;
-                row = test_row;
-                break;
-            }
-            
-            if (row.IsOk())
-            {      
-                wxDOMNodeList col_nodes = row.GetChildNodes();
-                size_t coln, col_count = col_nodes.GetLength();
-                for (coln = 0; coln < col_count; ++coln)
-                {
-                    wxDOMNode cell = col_nodes.Item(coln);
-                    wxString node_name = cell.GetNodeName();
-                    
-                    if (0 == node_name.CmpNoCase(wxT("TD")))
-                    {
-                        wxString str;
-                        nodeToString(cell, str);
-                        first_row_values.push_back(str);
-                    }
-                }
-            }
-                
-            
-            size_t i = 0, field_count = fields.size();
-            std::vector<wxString>::iterator it;
-            for (it = first_row_values.begin(); it != first_row_values.end(); ++it, ++i)
-            {
-                if (i >= field_count)
-                    break;
-                    
-                if (fields[i].type == tango::typeNumeric)
-                {
-                    if (!isNumericValue(*it))
-                    {
-                        lazy_header = true;
-                        thead_row = row;
-                        break;
-                    }
-                }
-                
-                if (fields[i].type == tango::typeDate)
-                {
-                    if (!parseDelimitedStringDate(*it))
-                    {
-                        lazy_header = true;
-                        thead_row = row;
-                        break;
-                    }
-                }
-            }     
-        }
-    }
-    
-    
-    if (thead_row.IsOk())
-    {
-        // we have row headers, let's extract them into our
-        // output field structure
-        size_t header_count = 0;
-        
-        wxDOMNodeList col_nodes = thead_row.GetChildNodes();
-        size_t coln, col_count = col_nodes.GetLength();
-        for (coln = 0; coln < col_count; ++coln)
-        {
-            wxDOMNode cell = col_nodes.Item(coln);
-            
-            if (0 != cell.GetNodeName().CmpNoCase(lazy_header ? wxT("TD") : wxT("TH")))
-                continue;
-            
-            if (header_count < fields.size())
-            {
-                wxString s;
-                nodeToString(cell, s);
-                
-                // this is the same as trim, but better because
-                // iswspace catches more blank characters
-                while (s.Length() > 0 && iswspace(s[0]))
-                    s.Remove(0, 1);
-                while (s.Length() > 0 && iswspace(s.Last()))
-                    s.RemoveLast();
-                    
-                size_t i, l = s.Length();
-                for (i = 0; i < l; ++i)
-                {
-                    if (iswspace(s[i]))
-                        s.SetChar(i, wxT('_'));
-                }
-                
-                // for now, make the field name more 'usable'
-
-                s.Replace(wxT(" "), wxT("_"));
-                s.Replace(wxT("\r"), wxT("_"));
-                s.Replace(wxT("\n"), wxT("_"));
-                s.Replace(wxT(","), wxT("_"));
-                s.Replace(wxT("."), wxT("_"));
-                s.Replace(wxT("("), wxT("_"));
-                s.Replace(wxT(")"), wxT("_"));
-                s.Replace(wxT("'"), wxT("_"));
-                s.Replace(wxT(":"), wxT("_"));
-                s.Replace(wxT("\""), wxT("_"));
-                s.Replace(wxT("-"), wxT("_"));
-                s.Replace(wxT("+"), wxT("_"));
-                s.Replace(wxT("/"), wxT("_"));
-                s.Replace(wxT("*"), wxT("_"));
-                s.Replace(wxT("%"), wxT("_"));
-                
-                // if first digit is number, prepend an underscore
-                if (s.Length() > 0 && ::iswdigit(s[0]))
-                    s.Prepend(wxT("_"));
-                              
-                // get rid of duplicate __
-                while (s.Find(wxT("__")) != -1)
-                    s.Replace(wxT("__"), wxT("_"));
-   
-                fields[header_count].name = s;
-            }
-            
-            header_count++;
-        }
-    }
-    
-    
-    // make sure there are no empty field names
-    
-    count = fields.size();
-    for (i = 0; i < count; ++i)
-    {
-        fields[i].name.Trim(false);
-        fields[i].name.Trim(true);
-        
-        if (fields[i].name.IsEmpty())
-        {
-            fields[i].name = wxString::Format(wxT("FIELD%d"), i+1);
-        } 
-    }
-    
-    // make sure there are no super-long field names
-    for (i = 0; i < count; ++i)
-    {
-        if (fields[i].name.Length() > 75)
-            fields[i].name = fields[i].name.Left(75);
-    }
-    
-    // fix up field names that are key words
-    
-    std::set<wxString> keywords;
-    tango::IAttributesPtr attr = dest_db->getAttributes();
-    wxStringTokenizer t(towx(attr->getStringAttribute(tango::dbattrKeywords)), wxT(","));
-    while (t.HasMoreTokens())
-    {
-        wxString s = t.GetNextToken();
-        s.Trim();
-        s.Trim(FALSE);
-        s.MakeUpper();
-        keywords.insert(s);
-    }
-    
-    for (i = 0; i < count; ++i)
-    {
-        wxString s = fields[i].name;
-        s.MakeUpper();
-        if (keywords.find(s) != keywords.end())
-            fields[i].name += wxT("_");
-    }
-    
-    // make sure there are no duplicated field names
-    std::set<wxString> dup_check;
-    for (i = 0; i < count; ++i)
-    {
-        wxString base_name = fields[i].name;
-        wxString new_name = base_name;
-        
-        wxString s = new_name;
-        s.MakeUpper();
-        int cnt = 1;
-        while (dup_check.find(s) != dup_check.end())
-        {
-            new_name = wxString::Format(wxT("%s%d"), base_name.c_str(), ++cnt);
-            s = new_name;
-            s.MakeUpper();
-        }
-        
-        dup_check.insert(s);
-        fields[i].name = new_name;
-    }
-    
-    
-    // force empty fields to have a character type
-    for (i = 0; i < count; ++i)
-    {
-        if (fields[i].empty)
-        {
-            fields[i].type = tango::typeWideCharacter;
-            fields[i].max_len = 1;
-            fields[i].max_dec = 0;
-        }
-    } 
-    
-    
-       
-    // create the output data table
-    
-    dest_struct = dest_db->createStructure();
-
-                                           
-    std::vector<HtmlTableFieldInfo>::iterator field_it;
-    for (field_it = fields.begin(); field_it != fields.end(); ++field_it)
-    {
-        tango::IColumnInfoPtr col_info = dest_struct->createColumn();
-        col_info->setName(towstr(field_it->name));
-        col_info->setType(field_it->type);
-        col_info->setWidth(field_it->max_len);
-        col_info->setScale(field_it->type == tango::typeNumeric ? field_it->max_dec : 0);
-    }
-
-    dest_set = dest_db->createSet(L"", dest_struct, NULL);
-    
-    if (dest_set.isNull())
-        return xcm::null;
-    
-    tango::IRowInserterPtr row_inserter = dest_set->getRowInserter();
-    if (row_inserter.isNull())
-        return xcm::null;
-        
-    row_inserter->startInsert(L"");
-                                       
-    for (field_it = fields.begin(); field_it != fields.end(); ++field_it)
-    {
-        field_it->handle = row_inserter->getHandle(towstr(field_it->name));
-        if (!field_it->handle)
-            return xcm::null;
-    }
-    
-    // populate the data table rows from the html table
-    
-    bool first_row = true;
-    
-    for (rown = 0; rown < row_count; ++rown)
-    {
-        wxDOMNode row = row_nodes[rown];
-        
-        // only take TR's
-        if (0 != row.GetNodeName().CmpNoCase(wxT("TR")))
-            continue;
-        
-        // lazy header tables must have the first row skipped
-        // as this is the header row
-        if (first_row)
-        {
-            first_row = false;
-            if (lazy_header)
-                continue;
-        }
-        
-        // assume that the row is empty
-        bool row_empty = true;
-        
-         
-        wxDOMNodeList col_nodes = row.GetChildNodes();
-        size_t coln, col_count = col_nodes.GetLength();
-
-        size_t td_count = 0;
-        for (coln = 0; coln < col_count; ++coln)
-        {
-            wxDOMNode cell = col_nodes.Item(coln);
-            
-            
-            // skip rows with header elements (TH)
-            if (0 == cell.GetNodeName().CmpNoCase(wxT("TH")))
-            {
-                td_count = 0;
-                break;
-            }
-            
-            // only take TD's
-            if (0 != cell.GetNodeName().CmpNoCase(wxT("TD")))
-                continue;
-            
-            // skip any cell with a rowspan attribute
-            wxDOMNamedNodeMap attr = cell.GetAttributes();
-            wxDOMNode rowspan_node = attr.GetNamedItem(wxT("rowspan"));
-            if (rowspan_node.IsOk())
-                continue;
-            
-            
-            
-            td_count++;
-
-            HtmlTableFieldInfo& info = fields[td_count-1];
-            
-            wxString val;
-            nodeToString(cell, val);
-
-            // next, trim leading and trailing spaces; in a strict conversion
-            // from a database system, we wouldn't necessarily want to remove
-            // padding; however, in the case of an HTML table, spaces/tabs are
-            // sometimes used to format the values and adjust the spacing,
-            // leaving large amounts of space after the table is imported and 
-            // making the data less immediately useful without this step; note: 
-            // the following is the same as trim, but better because iswspace 
-            // catches more blank characters
-            while (val.Length() > 0 && iswspace(val[0]))
-                val.Remove(0, 1);
-            while (val.Length() > 0 && iswspace(val.Last()))
-                val.RemoveLast();
-
-
-            if (!val.IsEmpty())
-                row_empty = false;
-                
-            switch (info.type)
-            {
-                case tango::typeNumeric:
-                {
-                    row_inserter->putDouble(info.handle, extractNumber(val));
-                    break;
-                }
-                
-                case tango::typeDate:
-                case tango::typeDateTime:
-                {
-                    int y = 0, m = 0, d = 0;
-                    if (parseDelimitedStringDate(val, &y, &m, &d))
-                    {
-                        tango::DateTime dt(y, m, d);
-                        row_inserter->putDateTime(info.handle, dt);
-                    }
-                    break;
-                }
-                
-                default:
-                {
-                    row_inserter->putWideString(info.handle, towstr(val));
-                    break;
-                }
-
-            }
-        }
-        
-        
-        // write out the row, if there were TD entries; if there
-        // were no TD entries in the row, don't write it out
-        if (td_count > 0 && !row_empty)
-        {
-            if (!row_inserter->insertRow())
-                break;
-        }
-         else
-        {
-            // clear out write buffer
-            for (field_it = fields.begin(); field_it != fields.end(); ++field_it)
-            {
-                if (field_it->type == tango::typeNumeric)
-                    row_inserter->putDouble(field_it->handle, 0.0);
-                     else
-                    row_inserter->putWideString(field_it->handle, L"");
-            }
-        }
-    }
-    
-    
-    row_inserter->finishInsert();
-    
-    return dest_set;
-}
-
-

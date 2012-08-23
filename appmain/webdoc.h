@@ -18,6 +18,8 @@
 class wxWebControl;
 class wxWebEvent;
 class wxWebPostData;
+class wxWebView;
+class wxWebViewEvent;
 
 
 xcm_interface IWebDoc : public xcm::IObject
@@ -267,12 +269,17 @@ private:
     void onUpdateUI_DisableAlways(wxUpdateUIEvent& evt);
     void onUpdateUI(wxUpdateUIEvent& evt);
 
+    void onWebViewDocumentLoaded(wxWebViewEvent& evt);
+    void onWebViewTitleChanged(wxWebViewEvent& evt);
+
     void onFrameEvent(cfw::Event& evt);
 
 private:
 
     cfw::IDocumentSitePtr m_doc_site;
+    wxWindow* m_web;
     wxWebControl* m_webcontrol;
+    wxWebView* m_webview;
     wxStatusBar* m_status_bar;
     int m_site_id;
     cfw::IFramePtr m_frame;
@@ -281,6 +288,8 @@ private:
     ProgressBitmapUpdater m_bitmap_updater;
     wxString m_last_clicked_bookmark_path;
     wxImage m_favicon;
+
+
     
 private:
 
