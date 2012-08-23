@@ -2573,7 +2573,7 @@ IDocumentSitePtr MainFrame::createSite(IDocumentPtr document,
                                            -1,
                                            wxT(""),
                                            wxPoint(4000, 4000),
-                                           wxSize(400,400),
+                                           wxSize(site_width,site_height),
                                            frame_style);
         container->Show(false);
 
