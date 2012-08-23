@@ -16,10 +16,6 @@
 
 
 #include <wx/wx.h>
-
-
-// -- Include Files for Frame Docking --
-
 #include <xcm/xcm.h>
 #include <kl/klib.h>
 #include <queue>
@@ -29,7 +25,6 @@
 #include "artprovider.h"
 #include "../kcl/kcl.h"
 
-//#include "manager.h"
 #include <wx/aui/aui.h>
 #include <wx/minifram.h>
 
@@ -77,11 +72,11 @@ void FrameCommandDispatch::setReceiver(wxWindow* receiver)
     m_receiver = receiver;
 }
 
-bool FrameCommandDispatch::ProcessEvent(wxEvent& event)
+bool FrameCommandDispatch::ProcessEvent(wxEvent& evt)
 {
     bool processed = false;
 
-    WXTYPE event_type = event.GetEventType();
+    WXTYPE event_type = evt.GetEventType();
 
     if (event_type == wxEVT_UPDATE_UI ||
         event_type == wxEVT_COMMAND_MENU_SELECTED ||
@@ -97,7 +92,7 @@ bool FrameCommandDispatch::ProcessEvent(wxEvent& event)
         // make sure event object is visible, if its a toolbar
         if (event_type == wxEVT_UPDATE_UI)
         {
-            wxObject* evt_object = event.GetEventObject();
+            wxObject* evt_object = evt.GetEventObject();
             if (evt_object)
             {
                 if (evt_object->IsKindOf(CLASSINFO(wxWindow)))
@@ -119,8 +114,8 @@ bool FrameCommandDispatch::ProcessEvent(wxEvent& event)
                     wxToolBar* tb = (wxToolBar*)evt_object;
                     if (!tb->IsShown())
                     {
-                        // -- do not process these types of commands
-                        //    for hidden windows --
+                        // do not process these types of commands
+                        // for hidden windows
                         return true;
                     }
                 }
@@ -133,19 +128,19 @@ bool FrameCommandDispatch::ProcessEvent(wxEvent& event)
             int i = 5;
         }
         
-        // -- let child process the command first --
+        // let child process the command first
         if (m_receiver)
         {
-            if (m_receiver->GetEventHandler()->ProcessEvent(event))
+            if (m_receiver->GetEventHandler()->ProcessEvent(evt))
             {
                 processed = true;
             }
         }
 
-        // -- give event sinks a chance, too --
+        // give event sinks a chance, too
         if (m_frame)
         {
-            wxCommandEvent* cmd = (wxCommandEvent*)&event;
+            wxCommandEvent* cmd = (wxCommandEvent*)&evt;
             m_frame->fire_onFrameCommand(cmd->GetId(),
                                          cmd->GetInt(),
                                          &processed);
@@ -161,7 +156,7 @@ bool FrameCommandDispatch::ProcessEvent(wxEvent& event)
     // Try going down the event handler chain
     if (GetNextHandler())
     {
-        if (GetNextHandler()->ProcessEvent(event))
+        if (GetNextHandler()->ProcessEvent(evt))
             return true;
     }
 
@@ -197,7 +192,7 @@ public:
 
     virtual ~UIContext()
     {
-        // -- delete menus before destruction --
+        // delete menus before destruction
         for (std::vector<MenuInfo>::iterator it = m_menus.begin();
              it != m_menus.end(); ++it)
         {
@@ -296,8 +291,7 @@ public:
         sigContainerDestructing(static_cast<wxWindow*>(this));
     }
 
-    // -- Container methods --
-    
+
     unsigned int getSiteType()
     {
         return sitetypeModeless | (getVisible() ? 0 : siteHidden);
@@ -388,9 +382,8 @@ public:
         }
     }
 
-    // -- window events --
 
-    void onSize(wxSizeEvent& event)
+    void onSize(wxSizeEvent& evt)
     {
         if (m_child)
         {
@@ -399,19 +392,19 @@ public:
         }
     }
 
-    void onClose(wxCloseEvent& event)
+    void onClose(wxCloseEvent& evt)
     {
         if (m_document.isNull())
             return;
 
-        bool res = m_document->onSiteClosing(event.CanVeto() ? false : true);
-        if (event.CanVeto() && !res)
+        bool res = m_document->onSiteClosing(evt.CanVeto() ? false : true);
+        if (evt.CanVeto() && !res)
         {
-            event.Veto();
+            evt.Veto();
             return;
         }
 
-        event.Skip();
+        evt.Skip();
     }
 
 
@@ -511,7 +504,7 @@ public:
         sigContainerDestructing(static_cast<wxWindow*>(this));
     }
 
-    // -- container methods --
+
 
     unsigned int getSiteType()
     {
@@ -599,9 +592,8 @@ public:
         return Close(force);
     }
 
-    // -- window events --
 
-    void onSize(wxSizeEvent& event)
+    void onSize(wxSizeEvent& evt)
     {
         if (m_child)
         {
@@ -610,20 +602,21 @@ public:
         }
     }
 
-    void onClose(wxCloseEvent& event)
+    void onClose(wxCloseEvent& evt)
     {
         if (m_document.isNull())
             return;
 
-        bool res = m_document->onSiteClosing(event.CanVeto() ? false : true);
-        if (event.CanVeto() && !res)
+        bool res = m_document->onSiteClosing(evt.CanVeto() ? false : true);
+        if (evt.CanVeto() && !res)
         {
-            event.Veto();
+            evt.Veto();
             return;
         }
 
-        event.Skip();
+        evt.Skip();
     }
+
 
 private:
 
@@ -837,8 +830,6 @@ public:
         evt.Skip();
     }
 
-
-    // -- panel container methods --
 
     void onSize(wxSizeEvent& evt)
     {
@@ -1214,7 +1205,10 @@ private:
 
 
 
+
+
 // -- ChildFrame implementation --
+
 IMPLEMENT_CLASS(ChildFrame, wxMDIChildFrame)
 
 BEGIN_EVENT_TABLE(ChildFrame, wxMDIChildFrame)
@@ -1328,7 +1322,7 @@ IUIContextPtr ChildFrame::getUIContext()
 
 
 
-void ChildFrame::onSize(wxSizeEvent& event)
+void ChildFrame::onSize(wxSizeEvent& evt)
 {
     wxWindow* wnd = getDocumentWindow();
     if (wnd)
@@ -1336,13 +1330,13 @@ void ChildFrame::onSize(wxSizeEvent& event)
         wnd->SetSize(GetClientSize());
     }
 
-    event.Skip();
+    evt.Skip();
 }
 
 
-void ChildFrame::onActivate(wxActivateEvent& event)
+void ChildFrame::onActivate(wxActivateEvent& evt)
 {
-    if (event.GetActive())
+    if (evt.GetActive())
     {
         //wxString s = wxT("Activated - ");
         //s += GetTitle();
@@ -1365,20 +1359,20 @@ void ChildFrame::onActivate(wxActivateEvent& event)
     }
 }
 
-void ChildFrame::onClose(wxCloseEvent& event)
+void ChildFrame::onClose(wxCloseEvent& evt)
 {
     cfw::IDocumentPtr doc = getDocument();
     
     if (doc.isOk())
     {
-        bool result = doc->onSiteClosing(event.CanVeto() ? false : true);
+        bool result = doc->onSiteClosing(evt.CanVeto() ? false : true);
         doc.clear();
         
         if (!result)
         {
-            if (event.CanVeto())
+            if (evt.CanVeto())
             {
-                event.Veto();
+                evt.Veto();
                 return;
             }
         }
@@ -1386,10 +1380,10 @@ void ChildFrame::onClose(wxCloseEvent& event)
 
     Show(false);
 
-    // -- At least under win32, the child window must be closed before
-    //    deactivation.  Otherwise, menu un-merging happens incorrectly
-    //    because all menubar items are offset by 1 (due to the document
-    //    icon being menubar item zero) --
+    // At least under win32, the child window must be closed before
+    // deactivation.  Otherwise, menu un-merging happens incorrectly
+    // because all menubar items are offset by 1 (due to the document
+    // icon being menubar item zero)
 
     if (IsMaximized())
     {
@@ -1405,7 +1399,7 @@ void ChildFrame::onClose(wxCloseEvent& event)
     Destroy();
 }
 
-void ChildFrame::onMove(wxMoveEvent& event)
+void ChildFrame::onMove(wxMoveEvent& evt)
 {
     sigFrameMoved(this);
 }
@@ -1446,15 +1440,12 @@ void ChildFrame::setMaxSize(int width, int height)
 
 
 
-// -- wxToolBarBase cheat --
+// wxCfwToolBar is a fake derived class to allow access to m_tools
+
 class wxCfwToolBar : public wxToolBar
 {
 public:
-
-    wxToolBarToolsList& getToolsList()
-    {
-        return m_tools;
-    }
+    wxToolBarToolsList& getToolsList() { return m_tools; }
 };
 
 
@@ -1465,16 +1456,15 @@ class SizingHook : public wxEvtHandler
 {
 public:
 
-    // -- signals --
     xcm::signal0 sigOnSizeEvent;
 
 public:
     
-    bool ProcessEvent(wxEvent& event)
+    bool ProcessEvent(wxEvent& evt)
     {
-        bool result = GetNextHandler()->ProcessEvent(event);
+        bool result = GetNextHandler()->ProcessEvent(evt);
 
-        if (event.GetEventType() == wxEVT_SIZE)
+        if (evt.GetEventType() == wxEVT_SIZE)
         {
             sigOnSizeEvent();
         }
@@ -1547,7 +1537,7 @@ bool MainFrame::create(wxWindow* parent,
                        int width,
                        int height)
 {
-    // -- first, create our window --
+    // first, create our window
     if (!Create(parent, -1, caption, wxPoint(x,y), wxSize(width, height),
                    wxDEFAULT_FRAME_STYLE |
                    wxFRAME_NO_WINDOW_MENU |
@@ -1588,7 +1578,7 @@ bool MainFrame::create(wxWindow* parent,
 #endif
 
 
-    // -- TODO: set manager flags; following is a sample --
+    // TODO: set manager flags; following is a sample
     int flags;
     flags = 0;
     flags |= wxAUI_MGR_TRANSPARENT_DRAG;
@@ -1605,7 +1595,7 @@ bool MainFrame::create(wxWindow* parent,
     
     m_mgr.Update();
 
-    // -- TODO: set notebook flags; following is a sample -- 
+    // TODO: set notebook flags; following is a sample
     flags = 0;
     flags |= wxAUI_NB_WINDOWLIST_BUTTON;
     flags |= wxAUI_NB_TAB_FIXED_WIDTH;
@@ -1626,7 +1616,7 @@ bool MainFrame::create(wxWindow* parent,
         }
     }
     
-    // -- add event handler --
+    // add event handler
 
     m_dispatcher_child = new FrameCommandDispatch;
 
@@ -1657,30 +1647,30 @@ void MainFrame::onCloseEvent(wxCloseEvent& evt)
     if (evt.GetVeto())
         return;
 
-    // -- close out all child windows --
+    //  close out all child windows
     closeAll(true);
     ::wxYield();
     wxAppHack* app = (wxAppHack*)wxTheApp;
     app->deletePendingObjects();
 
-    // -- if a child refused to close, don't close frame --
+    // if a child refused to close, don't close frame
     if (GetActiveChild())
         return;
 
 
-    // -- make sure we don't get any more signals --
+    // make sure we don't get any more signals
     disconnectAllSignals();
 
-    // -- notify everybody that there is no more active container --
+    // notify everybody that there is no more active container
     m_active_ui = xcm::null;
     fire_onActiveChildChanged(xcm::null);
     dispatchAllEvents();
 
 
-    // -- deinitialize wxAUI --
+    // deinitialize wxAUI
     m_mgr.UnInit();
     
-    // -- destroy the main frame --
+    // destroy the main frame
     Destroy();
 }
 
@@ -1760,7 +1750,7 @@ wxAuiManager& MainFrame::getAuiManager()
 
 void MainFrame::setStatusBar(cfw::IStatusBarPtr statusbar)
 {
-    // -- remove any previous statusbar that may have existed --
+    // remove any previous statusbar that may have existed
     if (m_statusbar.isOk())
         m_statusbar.clear();
     
@@ -1897,7 +1887,7 @@ void MainFrame::dockWindow(wxWindow* wnd,
                 tool_bitmap_size.y = 16;
             }
 
-            // -- manually get the size of toolbars --
+            // manually get the size of toolbars
             height = tool_bitmap_size.GetY() + 16;
             width = 20;
 
@@ -2370,7 +2360,7 @@ void MainFrame::onModelessContainerDestructing(wxWindow* window)
 
 wxString MainFrame::getUniqueSiteName()
 {
-    // -- this code is originally from tango/util.h --
+    // this code is originally from tango/util.h
     static unsigned int seed = (unsigned)time(NULL);
     srand(++seed);
 
@@ -2564,10 +2554,10 @@ IDocumentSitePtr MainFrame::createSite(IDocumentPtr document,
             GetClientWindow()->Freeze();
         #endif
 
-        // -- initially, the window is created off-screen so that no flicker
-        //    can be seen while the window initializes.  After successful
-        //    document instantiation, the window is moved to its final
-        //    starting position --
+        // initially, the window is created off-screen so that no flicker
+        // can be seen while the window initializes.  After successful
+        // document instantiation, the window is moved to its final
+        // starting position
 
         ChildFrame* container = new ChildFrame(this,
                                            -1,
@@ -2585,7 +2575,7 @@ IDocumentSitePtr MainFrame::createSite(IDocumentPtr document,
         raw_site->setSiteType(sitetypeNormal);
         cfw::IDocumentSitePtr site = static_cast<cfw::IDocumentSite*>(raw_site);
         
-        // -- initialize child --
+        // initialize child
         container->sigFrameActivated.connect(this, &MainFrame::onChildFrameActivated);
         container->sigFrameDeactivated.connect(this, &MainFrame::onChildFrameDeactivated);
         container->sigFrameDestructing.connect(this, &MainFrame::onChildFrameDestructing);
@@ -2593,7 +2583,7 @@ IDocumentSitePtr MainFrame::createSite(IDocumentPtr document,
 
         m_last_child = m_active_child;
 
-        // -- get UI context information --
+        // get UI context information
         cfw::IUIContextPtr ui_context = static_cast<cfw::IUIContext*>(new UIContext);
 
 
@@ -2649,7 +2639,7 @@ IDocumentSitePtr MainFrame::createSite(IDocumentPtr document,
         container->sigContainerNameChanged.connect(this, &MainFrame::onContainerNameChanged);
 
 
-        // -- dispatch activate event to child --
+        // dispatch activate event to child
         
         if (!(site_type & siteNoInitialActivate) || current_child_count == 0)
         {
@@ -2670,7 +2660,7 @@ IDocumentSitePtr MainFrame::createSite(IDocumentPtr document,
             site_height = height;
         }
 
-        // -- move child to its final position --
+        // move child to its final position
         container->SetSize(site_x, site_y, site_width, site_height);
 
         #endif
@@ -2719,7 +2709,7 @@ IDocumentSitePtr MainFrame::createSite(IDocumentPtr document,
         cfw::IDocumentSitePtr site = static_cast<cfw::IDocumentSite*>(raw_site);
         
         
-        // -- get UI context information (this is not used here [yet]) --
+        // get UI context information (this is not used here [yet])
         cfw::IUIContextPtr ui_context = static_cast<cfw::IUIContext*>(new UIContext);
 
         if (!document->initDoc(this, site, container, NULL))
@@ -2769,7 +2759,7 @@ IDocumentSitePtr MainFrame::createSite(IDocumentPtr document,
         raw_site->setSiteType(sitetypeMiniModeless);
         cfw::IDocumentSitePtr site = static_cast<cfw::IDocumentSite*>(raw_site);
         
-        // -- get UI context information (this is not used here [yet]) --
+        // get UI context information (this is not used here [yet])
         cfw::IUIContextPtr ui_context = static_cast<cfw::IUIContext*>(new UIContext);
 
         if (!document->initDoc(this, site, container, NULL))
@@ -2808,27 +2798,19 @@ IDocumentSitePtr MainFrame::createSite(IDocumentPtr document,
             site_width = (width == -1 ? 400 : width);
             site_height = (height == -1 ? 150 : height);
 
-            // -- calculate dimensions if defaults were passed --
+            // calculate dimensions if defaults were passed
 
             wxRect window_rect = GetRect();
 
             if (x == -1)
-            {
                 site_x = (window_rect.GetWidth()/2) - (site_width/2) - 5;
-            }
-             else
-            {
+                 else
                 site_x = x;
-            }
 
             if (y == -1)
-            {
                 site_y = (window_rect.GetHeight()/2) - (site_height/2) - 20;
-            }
-             else
-            {
+                 else
                 site_y = y;
-            }
         }
 
         PanelContainer* container = new PanelContainer(
@@ -2877,7 +2859,7 @@ IDocumentSitePtr MainFrame::createSite(IDocumentPtr document,
 
 
 
-// -- User Interface merging --
+// User Interface merging
 
 void MainFrame::doMenuMerge(IUIContextPtr ui)
 {
@@ -2944,10 +2926,10 @@ void MainFrame::activateUI(IUIContextPtr ui)
     }
 
 
-    // -- first, activate the UI's menu --
+    // first, activate the UI's menu
     doMenuMerge(ui);
 
-    // -- restore the tile lock setting --
+    // restore the tile lock setting
     m_tile_lock = save_tile_lock;
 
     m_active_ui = ui;
@@ -2977,7 +2959,7 @@ void MainFrame::onChildFrameActivated(ChildFrame* child)
         return;
     }
 
-    // -- if the frame is already activated, don't do it again --
+    // if the frame is already activated, don't do it again
     if (m_active_child == child)
     {
         return;
@@ -3016,11 +2998,11 @@ void MainFrame::onChildFrameDestructing(ChildFrame* child)
         m_dispatcher_child->setReceiver(NULL);
     }
     
-    // -- for child frames, unregister here, since the site is
-    //    rendered useless once this destruction sequence is started --
+    // for child frames, unregister here, since the site is
+    // rendered useless once this destruction sequence is started
     onContainerDestructing(child);
 
-    // -- if this was the last pane, remove the UI --
+    // if this was the last pane, remove the UI
     if (getChildCount() == 0)
     {
         activateUI(xcm::null);
@@ -3034,13 +3016,13 @@ void MainFrame::onChildFrameDestructing(ChildFrame* child)
 
 void MainFrame::onChildFrameMoved(ChildFrame*)
 {
-    // -- a child frame was moved, so turn of tile locking --
+    // a child frame was moved, so turn of tile locking
     m_tile_lock = TileLock_None;
 }
 
 
 
-// -- event handling --
+// event handling
 
 void MainFrame::fire_onFrameCommand(int id, int int_param, bool* processed)
 {
@@ -3080,7 +3062,7 @@ void MainFrame::fire_onFrameBarRightClick()
 
 void MainFrame::dispatchAllEvents()
 {
-    // -- this onIdle handler dispatches all pending frame events --
+    // this onIdle handler dispatches all pending frame events
     cfw::Event* cfw_event;
     while (!m_event_queue.empty())
     {
