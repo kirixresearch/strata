@@ -349,6 +349,7 @@ friend class WebControlRefreshTimer;
 public:
 
     static bool InitEngine(const wxString& path);
+    static bool IsEngineOk();
     static bool AddContentHandler(wxWebContentHandler* handler, bool take_ownership = false);
     static void AddPluginPath(const wxString& path);
     static void SetProfilePath(const wxString& path);
