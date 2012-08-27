@@ -422,7 +422,7 @@ static std::wstring fileTypeToStringType(int type)
 
 
 
-static InternalNodeValue* jsonToNodeValue(JsonNode& jn)
+static InternalNodeValue* jsonToNodeValue(kl::JsonNode& jn)
 {
     InternalNodeValue* value = new InternalNodeValue;
 
@@ -434,7 +434,7 @@ static InternalNodeValue* jsonToNodeValue(JsonNode& jn)
 
         for (it = keys.begin(); it < keys.end(); ++it)
         {
-            JsonNode child = jn[*it];
+            kl::JsonNode child = jn[*it];
 
             InternalNodeValue* child_value = jsonToNodeValue(child);
             child_value->m_name = *it;
@@ -456,7 +456,7 @@ static InternalNodeValue* jsonToNodeValue(JsonNode& jn)
 }
 
 
-static void nodeValueToJson(const InternalNodeValue* value, JsonNode& node)
+static void nodeValueToJson(const InternalNodeValue* value, kl::JsonNode& node)
 {
     if (!value)
         return;
@@ -467,7 +467,7 @@ static void nodeValueToJson(const InternalNodeValue* value, JsonNode& node)
         
         for (it = value->m_children.begin(); it != value->m_children.end(); ++it)
         {
-            JsonNode child = node[(*it)->m_name];
+            kl::JsonNode child = node[(*it)->m_name];
             nodeValueToJson(*it, child);
         }
     }
@@ -515,14 +515,14 @@ bool NodeFile::readFile()
     params.setParam(L"path", m_path);
     std::wstring sres = m_database->serverCall(L"/api/readnodefile", &params);
 
-    JsonNode response_node;
+    kl::JsonNode response_node;
     response_node.fromString(sres);
 
     if (!response_node["success"].getBoolean())
         return false;
 
 
-    JsonNode data = response_node["data"];
+    kl::JsonNode data = response_node["data"];
 
 
     if (m_root_node)
@@ -550,7 +550,7 @@ bool NodeFile::writeFile()
     if (!m_dirty)
         return true;
 
-    JsonNode json;
+    kl::JsonNode json;
     nodeValueToJson(m_root_node, json);
 
     std::wstring data = json.toString();
@@ -560,7 +560,7 @@ bool NodeFile::writeFile()
     params.setParam(L"data", data);
     std::wstring sres = m_database->serverCall(L"/api/writenodefile", &params);
 
-    JsonNode response_node;
+    kl::JsonNode response_node;
     response_node.fromString(sres);
 
     return response_node["success"].getBoolean();

@@ -44,7 +44,7 @@ ClientIterator::~ClientIterator()
     ServerCallParams params;
     params.setParam(L"handle", m_handle);
     std::wstring sres = m_database->serverCall(L"/api/close", &params);
-    JsonNode response;
+    kl::JsonNode response;
     response.fromString(sres);
 
 
@@ -87,7 +87,7 @@ tango::IIteratorPtr ClientIterator::clone()
     ServerCallParams params;
     params.setParam(L"handle", m_handle);
     std::wstring sres = m_database->serverCall(L"/api/clone", &params);
-    JsonNode response;
+    kl::JsonNode response;
     response.fromString(sres);
 
     if (!response["success"].getBoolean())
@@ -454,7 +454,7 @@ void ClientIterator::refreshStructure()
     ServerCallParams params;
     params.setParam(L"handle", m_handle);
     std::wstring sres = m_database->serverCall(L"/api/refresh", &params);
-    JsonNode response;
+    kl::JsonNode response;
     response.fromString(sres);
 
     refreshDataAccessInfo();
@@ -902,7 +902,7 @@ bool ClientIterator::refreshDataAccessInfo()
     ServerCallParams params;
     params.setParam(L"handle", m_handle);
     std::wstring sres = m_database->serverCall(L"/api/describetable", &params);
-    JsonNode response;
+    kl::JsonNode response;
     response.fromString(sres);
 
     if (!response["success"].getBoolean())

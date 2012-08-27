@@ -3,10 +3,6 @@
 #include <kl/json.h>
 #include <xcm/xcm.h>
 #include "../../kscript/kscript.h"
-#include "../../kscript/json.h"
-
-namespace kscript { class JsonNode; }
-typedef kscript::JsonNode JsonNode;
 
 #include "tango.h"
 

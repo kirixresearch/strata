@@ -239,16 +239,16 @@ int ClientDatabase::stringToDbtype(const std::wstring& type)
     else return tango::typeUndefined;
 }
 
-tango::IStructurePtr ClientDatabase::jsonToStructure(JsonNode& node)
+tango::IStructurePtr ClientDatabase::jsonToStructure(kl::JsonNode& node)
 {
     Structure* s = new Structure;
 
-    JsonNode columns = node["columns"];
-    size_t i = 0, cnt = columns.getCount();
+    kl::JsonNode columns = node["columns"];
+    size_t i = 0, cnt = columns.getChildCount();
 
     for (i = 0; i < cnt; ++i)
     {
-        JsonNode column = columns[i];
+        kl::JsonNode column = columns[i];
 
         tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
         col->setName(column["name"]);
@@ -266,7 +266,7 @@ tango::IStructurePtr ClientDatabase::jsonToStructure(JsonNode& node)
 }
 
 
-void ClientDatabase::columnToJsonNode(tango::IColumnInfoPtr info, JsonNode& column)
+void ClientDatabase::columnToJsonNode(tango::IColumnInfoPtr info, kl::JsonNode& column)
 {  
     column["name"] = info->getName();
     column["type"] = dbtypeToString(info->getType());
@@ -285,11 +285,11 @@ std::wstring ClientDatabase::structureToJson(tango::IStructurePtr structure)
     int idx, count = structure->getColumnCount();
 
     // set the items
-    kscript::JsonNode columns;
+    kl::JsonNode columns;
     columns.setArray();
     for (idx = 0; idx < count; ++idx)
     {
-        kscript::JsonNode column = columns.appendElement();
+        kl::JsonNode column = columns.appendElement();
             
         tango::IColumnInfoPtr info = structure->getColumnInfoByIdx(idx);
         column["name"] = info->getName();
@@ -429,7 +429,7 @@ bool ClientDatabase::createFolder(const std::wstring& path)
     ServerCallParams params;
     params.setParam(L"path", path);
     std::wstring sres = serverCall(L"/api/createfolder", &params);
-    JsonNode response;
+    kl::JsonNode response;
     response.fromString(sres);
 
     return response["success"].getBoolean();
@@ -609,7 +609,7 @@ tango::IStructurePtr ClientDatabase::describeTable(const std::wstring& path)
     params.setParam(L"path", path);
     std::wstring sres = serverCall(L"/api/describetable", &params);
 
-    JsonNode response;
+    kl::JsonNode response;
     response.fromString(sres);
 
     if (!response["success"].getBoolean())
@@ -662,7 +662,7 @@ tango::ISetPtr ClientDatabase::createSet(const std::wstring& path,
     params.setParam(L"path", path);
     params.setParam(L"columns", columns);
     std::wstring sres = serverCall(L"/api/createtable", &params);
-    JsonNode response;
+    kl::JsonNode response;
     response.fromString(sres);
 
     if (!response["success"].getBoolean())
@@ -685,7 +685,7 @@ tango::IStreamPtr ClientDatabase::openStream(const std::wstring& path)
     ServerCallParams params;
     params.setParam(L"path", path);
     std::wstring sres = serverCall(L"/api/openstream", &params);
-    JsonNode response;
+    kl::JsonNode response;
     response.fromString(sres);
 
     if (!response["success"].getBoolean())
@@ -700,7 +700,7 @@ tango::IStreamPtr ClientDatabase::createStream(const std::wstring& path, const s
     params.setParam(L"path", path);
     params.setParam(L"mime_type", mime_type);
     std::wstring sres = serverCall(L"/api/createstream", &params);
-    JsonNode response;
+    kl::JsonNode response;
     response.fromString(sres);
 
     if (!response["success"].getBoolean())
@@ -751,7 +751,7 @@ bool ClientDatabase::execute(const std::wstring& command,
 
 
     std::wstring sres = serverCall(L"/api/query", &params);
-    JsonNode response;
+    kl::JsonNode response;
     response.fromString(sres);
 
     if (!response["success"].getBoolean())
@@ -810,7 +810,7 @@ tango::ISetPtr ClientDatabase::runGroupQuery(tango::ISetPtr sp_set,
     params.setParam(L"having", having);
 
     std::wstring sres = serverCall(L"/api/groupquery", &params);
-    JsonNode response;
+    kl::JsonNode response;
     response.fromString(sres);
 
     if (!response["success"].getBoolean())

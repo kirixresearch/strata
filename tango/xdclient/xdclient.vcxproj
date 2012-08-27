@@ -293,7 +293,6 @@
   <ItemGroup>
     <ClInclude Include="database.h" />
     <ClInclude Include="iterator.h" />
-    <ClInclude Include="jsonutil.h" />
     <ClInclude Include="nodefile.h" />
     <ClInclude Include="request.h" />
     <ClInclude Include="set.h" />

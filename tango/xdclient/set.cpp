@@ -14,7 +14,6 @@
 #include "set.h"
 #include "iterator.h"
 #include "request.h"
-#include "jsonutil.h"
 #include "kl/url.h"
 #include "kl/md5.h"
 #include "../xdcommon/dbfuncs.h"
@@ -62,17 +61,17 @@ bool ClientSet::init(const std::wstring& path)
     ServerCallParams params;
     params.setParam(L"path", path);
     std::wstring sres = m_database->serverCall(L"/api/fileinfo", &params);
-    JsonNode response;
+    kl::JsonNode response;
     response.fromString(sres);
 
     if (!response["success"].getBoolean())
         return false;
 
-    JsonNode file_info = response["file_info"];
+    kl::JsonNode file_info = response["file_info"];
     if (file_info.isNull() || file_info["type"].getString() != L"table")
         return false;
 
-    JsonNode fast_row_count = file_info["row_count"];
+    kl::JsonNode fast_row_count = file_info["row_count"];
     if (fast_row_count.isOk())
     {
         if (fast_row_count.getBoolean())
@@ -148,14 +147,14 @@ bool ClientSet::modifyStructure(tango::IStructure* struct_config, tango::IJob* j
         return false;
 
 
-    JsonNode json_actions;
+    kl::JsonNode json_actions;
     json_actions.setArray();
 
     std::vector<StructureAction>& actions = struct_internal->getStructureActions();
     std::vector<StructureAction>::iterator it;
     for (it = actions.begin(); it != actions.end(); ++it)
     {
-        JsonNode json_action = json_actions.appendElement();
+        kl::JsonNode json_action = json_actions.appendElement();
         
         switch (it->m_action)
         {
@@ -211,7 +210,7 @@ bool ClientSet::modifyStructure(tango::IStructure* struct_config, tango::IJob* j
     params.setParam(L"actions", json_actions.toString());
     
     std::wstring sres = m_database->serverCall(L"/api/alter", &params);
-    JsonNode response;
+    kl::JsonNode response;
     response.fromString(sres);
 
     if (!response["success"].getBoolean())
@@ -247,7 +246,7 @@ int ClientSet::insert(tango::IIteratorPtr source_iter,
         params.setParam(L"where", where_condition);
         params.setParam(L"max_rows", kl::itowstring(max_rows));
         std::wstring sres = m_database->serverCall(L"/api/insertrows", &params);
-        JsonNode response;
+        kl::JsonNode response;
         response.fromString(sres);
 
         if (!response["success"].getBoolean())
@@ -338,7 +337,7 @@ tango::IIteratorPtr ClientSet::createIterator(const std::wstring& columns,
     params.setParam(L"order", order);
 
     std::wstring sres = m_database->serverCall(L"/api/query", &params);
-    JsonNode response;
+    kl::JsonNode response;
     response.fromString(sres);
 
     if (!response["success"].getBoolean())
@@ -373,17 +372,17 @@ tango::rowpos_t ClientSet::getRowCount()
     ServerCallParams params;
     params.setParam(L"path", m_path);
     std::wstring sres = m_database->serverCall(L"/api/fileinfo", &params);
-    JsonNode response;
+    kl::JsonNode response;
     response.fromString(sres);
 
     if (!response["success"].getBoolean())
         return 0;
     
-    JsonNode file_info = response["file_info"];
+    kl::JsonNode file_info = response["file_info"];
     if (file_info.isNull())
         return 0;
 
-    JsonNode row_count = file_info["row_count"];
+    kl::JsonNode row_count = file_info["row_count"];
     if (row_count.isNull())
         return 0;
 
@@ -616,7 +615,7 @@ bool ClientRowInserter::startInsert(const std::wstring& col_list)
     params.setParam(L"path", m_path);
     params.setParam(L"columns", scols);
     std::wstring sres = m_database->serverCall(L"/api/startbulkinsert", &params);
-    JsonNode response;
+    kl::JsonNode response;
     response.fromString(sres);
 
     if (!response["success"].getBoolean())
@@ -724,7 +723,7 @@ bool ClientRowInserter::flush()
     params.setParam(L"rows", m_rows);
     params.setParam(L"handle", m_handle);
     std::wstring sres = m_database->serverCall(L"/api/bulkinsert", &params);
-    JsonNode response;
+    kl::JsonNode response;
     response.fromString(sres);
 
     if (!response["success"].getBoolean())

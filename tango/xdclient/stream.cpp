@@ -40,7 +40,7 @@ bool ClientStream::read(void* pv,
     params.setParam(L"handle", m_handle);
     params.setParam(L"read_size", s_read_size);
     std::wstring sres = m_database->serverCall(L"/api/readstream", &params);
-    JsonNode response;
+    kl::JsonNode response;
     response.fromString(sres);
 
     if (!response["success"].getBoolean())
@@ -93,7 +93,7 @@ bool ClientStream::write(const void* pv,
     delete[] base64_buf;
 
     std::wstring sres = m_database->serverCall(L"/api/writestream", &params, true);
-    JsonNode response;
+    kl::JsonNode response;
     response.fromString(sres);
 
     if (!response["success"].getBoolean())
