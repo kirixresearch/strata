@@ -1,5 +1,6 @@
 
 #include <kl/klib.h>
+#include <kl/json.h>
 #include <xcm/xcm.h>
 #include "../../kscript/kscript.h"
 #include "../../kscript/json.h"

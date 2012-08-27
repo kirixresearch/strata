@@ -92,7 +92,7 @@ bool ClientDatabase::open(const std::wstring& host,
     params.setParam(L"username", L"admin");
     params.setParam(L"password", L"");
     std::wstring sres = serverCall(L"/api/login", &params, false, 15 /*seconds*/);
-    JsonNode response;
+    kl::JsonNode response;
     response.fromString(sres);
 
     if (response["success"].getBoolean())
@@ -104,7 +104,7 @@ bool ClientDatabase::open(const std::wstring& host,
         ServerCallParams params;
         params.setParam(L"database", m_database);
         std::wstring sres = serverCall(L"/api/selectdb", &params);
-        JsonNode response;
+        kl::JsonNode response;
         response.fromString(sres);
         if (!response["success"].getBoolean())
             return false;
@@ -463,7 +463,7 @@ bool ClientDatabase::renameFile(const std::wstring& path, const std::wstring& ne
     params.setParam(L"path", path);
     params.setParam(L"new_name", new_name);
     std::wstring sres = serverCall(L"/api/renamefile", &params);
-    JsonNode response;
+    kl::JsonNode response;
     response.fromString(sres);
 
     return response["success"].getBoolean();
@@ -475,7 +475,7 @@ bool ClientDatabase::moveFile(const std::wstring& path, const std::wstring& dest
     params.setParam(L"path", path);
     params.setParam(L"destination", destination_folder);
     std::wstring sres = serverCall(L"/api/movefile", &params);
-    JsonNode response;
+    kl::JsonNode response;
     response.fromString(sres);
 
     return response["success"].getBoolean();
@@ -491,7 +491,7 @@ bool ClientDatabase::deleteFile(const std::wstring& path)
     ServerCallParams params;
     params.setParam(L"path", path);
     std::wstring sres = serverCall(L"/api/deletefile", &params);
-    JsonNode response;
+    kl::JsonNode response;
     response.fromString(sres);
 
     return response["success"].getBoolean();
@@ -512,13 +512,13 @@ tango::IFileInfoPtr ClientDatabase::getFileInfo(const std::wstring& path)
     ServerCallParams params;
     params.setParam(L"path", path);
     std::wstring sres = serverCall(L"/api/fileinfo", &params);
-    JsonNode response;
+    kl::JsonNode response;
     response.fromString(sres);
 
     if (!response["success"].getBoolean())
         return xcm::null;
 
-    JsonNode file_info = response["file_info"];
+    kl::JsonNode file_info = response["file_info"];
 
     xdcommon::FileInfo* f = new xdcommon::FileInfo;
     f->name = file_info["name"];
@@ -554,21 +554,21 @@ tango::IFileInfoEnumPtr ClientDatabase::getFolderInfo(const std::wstring& path)
     ServerCallParams params;
     params.setParam(L"path", path);
     std::wstring sres = serverCall(L"/api/folderinfo", &params);
-    JsonNode response;
+    kl::JsonNode response;
     response.fromString(sres);
 
     if (!response["success"].getBoolean())
         return xcm::null;
 
     size_t i, count;
-    JsonNode items = response["items"];
-    count = items.getCount();
+    kl::JsonNode items = response["items"];
+    count = items.getChildCount();
 
     xcm::IVectorImpl<tango::IFileInfoPtr>* retval = new xcm::IVectorImpl<tango::IFileInfoPtr>;
 
     for (i = 0; i < count; ++i)
     {
-        JsonNode item = items[i];
+        kl::JsonNode item = items[i];
     
         xdcommon::FileInfo* f = new xdcommon::FileInfo;
         f->name = item["name"];
