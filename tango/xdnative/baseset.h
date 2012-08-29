@@ -50,19 +50,6 @@ public:
     bool renameIndex(const std::wstring& name,
                      const std::wstring& new_name);
 
-    // -- relationship functions --
-
-    tango::IRelationEnumPtr getRelationEnum();
-    tango::IRelationPtr createRelation(const std::wstring& tag,
-                                       const std::wstring& right_set_path,
-                                       const std::wstring& left_expr,
-                                       const std::wstring& right_expr);
-
-    tango::IRelationPtr getRelation(const std::wstring& tag);
-    int getRelationCount();
-    bool deleteRelation(const std::wstring& tag);
-    bool deleteAllRelations();
-
     unsigned int getSetFlags();
     void setSetFlags(unsigned int new_val);
     void setSetId(const std::wstring& new_val);
@@ -107,7 +94,6 @@ protected:
     void onOfsPathChanged(const std::wstring& new_path);
     void onRelationshipsUpdated();
 
-    void checkRelInit();
 
     void fire_onSetDomainUpdated();
     void fire_onSetStructureUpdated();
@@ -124,7 +110,6 @@ private:
     
     xcm::mutex m_object_mutex;
     std::wstring m_set_id;
-    std::vector<tango::IRelationPtr> m_relations;
     std::vector<ISetEvents*> m_event_handlers;
     std::vector<tango::IColumnInfoPtr> m_calc_fields;
     tango::tango_uint64_t m_calcrefresh_time;
