@@ -115,8 +115,16 @@ public:
     tango::ISetPtr openSet(const std::wstring& path);
     tango::ISetPtr openSetEx(const std::wstring& path,
                              int format);
-    tango::IRelationEnumPtr getRelationEnum();
-                                 
+
+    tango::IRelationPtr createRelation(const std::wstring& tag,
+                                       const std::wstring& left_set_path,
+                                       const std::wstring& right_set_path,
+                                       const std::wstring& left_expr,
+                                       const std::wstring& right_expr);
+    bool deleteRelation(const std::wstring& relation_id);
+    tango::IRelationPtr getRelation(const std::wstring& relation_id);
+    tango::IRelationEnumPtr getRelationEnum(const std::wstring& path);
+         
     bool execute(const std::wstring& command,
                  unsigned int flags,
                  xcm::IObjectPtr& result,

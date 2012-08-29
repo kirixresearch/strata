@@ -729,12 +729,33 @@ tango::ISetPtr ClientDatabase::openSetEx(const std::wstring& path, int format)
     return openSet(path);
 }
 
-tango::IRelationEnumPtr ClientDatabase::getRelationEnum()
+tango::IRelationEnumPtr ClientDatabase::getRelationEnum(const std::wstring& path)
 {
     xcm::IVectorImpl<tango::IRelationPtr>* relations;
     relations = new xcm::IVectorImpl<tango::IRelationPtr>;
     return relations;
 }
+
+
+tango::IRelationPtr ClientDatabase::getRelation(const std::wstring& relation_id)
+{
+    return xcm::null;
+}
+
+tango::IRelationPtr ClientDatabase::createRelation(const std::wstring& tag,
+                                                   const std::wstring& left_set_path,
+                                                   const std::wstring& right_set_path,
+                                                   const std::wstring& left_expr,
+                                                   const std::wstring& right_expr)
+{
+    return xcm::null;
+}
+
+bool ClientDatabase::deleteRelation(const std::wstring& relation_id)
+{
+    return false;
+}
+
 
 bool ClientDatabase::execute(const std::wstring& command,
                              unsigned int flags,

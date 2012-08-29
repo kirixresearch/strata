@@ -810,41 +810,6 @@ bool OdbcSet::renameIndex(const std::wstring& name,
 }
 
 
-tango::IRelationEnumPtr OdbcSet::getRelationEnum()
-{
-    xcm::IVectorImpl<tango::IRelationPtr>* relations;
-    relations = new xcm::IVectorImpl<tango::IRelationPtr>;
-    return relations;
-}
-
-tango::IRelationPtr OdbcSet::createRelation(const std::wstring& tag,
-                                            const std::wstring& right_set_path,
-                                            const std::wstring& left_expr,
-                                            const std::wstring& right_expr)
-{
-    return xcm::null;
-}
-
-tango::IRelationPtr OdbcSet::getRelation(const std::wstring& rel_tag)
-{
-    return xcm::null;
-}
-
-int OdbcSet::getRelationCount()
-{
-    return xcm::null;
-}
-
-bool OdbcSet::deleteRelation(const std::wstring& tag)
-{
-    return false;
-}
-
-bool OdbcSet::deleteAllRelations()
-{
-    return false;
-}
-
 tango::IIteratorPtr OdbcSet::createIterator(const std::wstring& columns,
                                             const std::wstring& expr,
                                             tango::IJob* job)

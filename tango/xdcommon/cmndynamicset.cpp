@@ -479,43 +479,6 @@ bool CommonDynamicSet::modifyStructure(tango::IStructure* struct_config,
 }
 
 
-tango::IRelationPtr CommonDynamicSet::createRelation(
-                                    const std::wstring& tag,
-                                    const std::wstring& right_set_path,
-                                    const std::wstring& left_expr,
-                                    const std::wstring& right_expr)
-{
-    return m_base_set->createRelation(tag,
-                                      right_set_path,
-                                      left_expr,
-                                      right_expr);
-}
-
-tango::IRelationPtr CommonDynamicSet::getRelation(const std::wstring& rel_tag)
-{
-    return m_base_set->getRelation(rel_tag);
-}
-
-int CommonDynamicSet::getRelationCount()
-{
-    return m_base_set->getRelationCount();
-}
-
-tango::IRelationEnumPtr CommonDynamicSet::getRelationEnum()
-{
-    return m_base_set->getRelationEnum();
-}
-
-bool CommonDynamicSet::deleteRelation(const std::wstring& tag)
-{
-    return m_base_set->deleteRelation(tag);
-}
-
-bool CommonDynamicSet::deleteAllRelations()
-{
-    return m_base_set->deleteAllRelations();
-}
-
 
 // -- Indexing routines --
 

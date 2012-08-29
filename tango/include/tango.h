@@ -594,17 +594,6 @@ public:
     virtual tango::IIndexInfoPtr lookupIndex(const std::wstring& expr,
                                              bool exact_column_order) = 0;
 
-
-    virtual IRelationPtr createRelation(const std::wstring& tag,
-                                        const std::wstring& right_set_path,
-                                        const std::wstring& left_expr,
-                                        const std::wstring& right_expr) = 0;
-    virtual IRelationEnumPtr getRelationEnum() = 0;
-    virtual IRelationPtr getRelation(const std::wstring& tag) = 0;
-    virtual int getRelationCount() = 0;
-    virtual bool deleteRelation(const std::wstring& tag) = 0;
-    virtual bool deleteAllRelations() = 0;
-
     virtual IIteratorPtr createIterator(const std::wstring& columns,
                                         const std::wstring& expr,
                                         IJob* job) = 0;
@@ -769,7 +758,14 @@ public:
                                std::wstring& connection_str,
                                std::wstring& remote_path) = 0;
                              
-    virtual IRelationEnumPtr getRelationEnum() = 0;
+    virtual IRelationPtr createRelation(const std::wstring& tag,
+                                        const std::wstring& left_set_path,
+                                        const std::wstring& right_set_path,
+                                        const std::wstring& left_expr,
+                                        const std::wstring& right_expr) = 0;
+    virtual bool deleteRelation(const std::wstring& relation_id) = 0;
+    virtual IRelationPtr getRelation(const std::wstring& relation_id) = 0;
+    virtual IRelationEnumPtr getRelationEnum(const std::wstring& path) = 0;
 
     virtual bool execute(const std::wstring& command,
                          unsigned int flags,

@@ -86,16 +86,6 @@ public:
     bool renameIndex(const std::wstring& name,
                      const std::wstring& new_name);
 
-    tango::IRelationEnumPtr getRelationEnum();
-    tango::IRelationPtr createRelation(const std::wstring& tag,
-                                       const std::wstring& right_set_path,
-                                       const std::wstring& left_expr,
-                                       const std::wstring& right_expr);
-    tango::IRelationPtr getRelation(const std::wstring& tag);
-    int getRelationCount();
-    bool deleteRelation(const std::wstring& tag);
-    bool deleteAllRelations();
-
     tango::IIteratorPtr createIterator(const std::wstring& columns,
                                        const std::wstring& expr,
                                        tango::IJob* job);

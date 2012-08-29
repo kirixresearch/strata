@@ -174,41 +174,6 @@ bool SlSet::renameIndex(const std::wstring& name,
 }
 
 
-tango::IRelationEnumPtr SlSet::getRelationEnum()
-{
-    xcm::IVectorImpl<tango::IRelationPtr>* relations;
-    relations = new xcm::IVectorImpl<tango::IRelationPtr>;
-    return relations;
-}
-
-tango::IRelationPtr SlSet::createRelation(const std::wstring& tag,
-                                          const std::wstring& right_set_path,
-                                          const std::wstring& left_expr,
-                                          const std::wstring& right_expr)
-{
-    return xcm::null;
-}
-
-tango::IRelationPtr SlSet::getRelation(const std::wstring& rel_tag)
-{
-    return xcm::null;
-}
-
-int SlSet::getRelationCount()
-{
-    return xcm::null;
-}
-
-bool SlSet::deleteRelation(const std::wstring& tag)
-{
-    return false;
-}
-
-bool SlSet::deleteAllRelations()
-{
-    return false;
-}
-
 tango::IIteratorPtr SlSet::createIterator(const std::wstring& columns,
                                           const std::wstring& expr,
                                           tango::IJob* job)

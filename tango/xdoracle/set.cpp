@@ -424,41 +424,6 @@ bool OracleSet::renameIndex(const std::wstring& name,
 }
 
 
-tango::IRelationEnumPtr OracleSet::getRelationEnum()
-{
-    xcm::IVectorImpl<tango::IRelationPtr>* relations;
-    relations = new xcm::IVectorImpl<tango::IRelationPtr>;
-    return relations;
-}
-
-tango::IRelationPtr OracleSet::createRelation(const std::wstring& tag,
-                                              const std::wstring& right_set_path,
-                                              const std::wstring& left_expr,
-                                              const std::wstring& right_expr)
-{
-    return xcm::null;
-}
-
-tango::IRelationPtr OracleSet::getRelation(const std::wstring& tag)
-{
-    return xcm::null;
-}
-
-int OracleSet::getRelationCount()
-{
-    return 0;
-}
-
-bool OracleSet::deleteRelation(const std::wstring& tag)
-{
-    return false;
-}
-
-bool OracleSet::deleteAllRelations()
-{
-    return false;
-}
-
 tango::IIteratorPtr OracleSet::createIterator(const std::wstring& columns,
                                               const std::wstring& expr,
                                               tango::IJob* job)

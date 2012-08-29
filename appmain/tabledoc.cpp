@@ -3187,7 +3187,7 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
     tango::ISetPtr right_set;
     tango::IStructurePtr right_structure;
 
-    tango::IRelationEnumPtr rel_enum = set->getRelationEnum();
+    tango::IRelationEnumPtr rel_enum = g_app->getDatabase()->getRelationEnum(set->getObjectPath());
     tango::IRelationPtr rel;
     int rel_count = rel_enum->size();
 
@@ -4364,18 +4364,24 @@ static void setColumnProps(wxColor* fill_color,
 
 void TableDoc::resetChildWindows()
 {
-    if (m_browse_set->getRelationCount() == 0)
+    tango::ISetPtr set = getBaseSet();
+    if (set.isNull())
+        return;
+
+    tango::IRelationEnumPtr rel_enum;
+    rel_enum = g_app->getDatabase()->getRelationEnum(set->getObjectPath());
+
+    if (rel_enum->size() == 0)
         return;
 
     wxString site_name;
     cfw::IDocumentSitePtr site;
     ITableDocPtr table_doc;
     tango::IRelationPtr rel;
-    tango::IRelationEnumPtr rel_enum;
-    rel_enum = m_browse_set->getRelationEnum();
-    int rel_count = rel_enum->size();
+    
+    size_t i,rel_count = rel_enum->size();
 
-    for (int i = 0; i < rel_count; ++i)
+    for (i = 0; i < rel_count; ++i)
     {
         rel = rel_enum->getItem(i);
         site_name = wxString::Format(wxT("%s-%s"),
@@ -4511,7 +4517,14 @@ void TableDoc::updateChildWindows()
     if (m_relationship_sync == tabledocRelationshipSyncNone)
         return;
 
-    if (m_browse_set->getRelationCount() == 0)
+    tango::ISetPtr set = getBaseSet();
+    if (set.isNull())
+        return;
+    
+    tango::IRelationEnumPtr rel_enum;
+    rel_enum = g_app->getDatabase()->getRelationEnum(set->getObjectPath());
+
+    if (rel_enum->size() == 0)
         return;
 
     // this will ensure that our iterator is positioned
@@ -4530,15 +4543,13 @@ void TableDoc::updateChildWindows()
     cfw::IDocumentSitePtr site;
     ITableDocPtr table_doc;
     tango::IRelationPtr rel;
-    tango::IRelationEnumPtr rel_enum;
-    rel_enum = m_browse_set->getRelationEnum();
-    int rel_count = rel_enum->size();
+    size_t i, rel_count = rel_enum->size();
 
 
     cfw::IDocumentSiteEnumPtr doc_sites;
     doc_sites = g_app->getMainFrame()->getDocumentSites(cfw::sitetypeNormal);
 
-    for (int i = 0; i < rel_count; ++i)
+    for (i = 0; i < rel_count; ++i)
     {
         rel = rel_enum->getItem(i);
         site_name = wxString::Format(wxT("%s-%s"),
@@ -4555,8 +4566,8 @@ void TableDoc::updateChildWindows()
 
             bool found = false;
                         
-            int site_count = doc_sites->size();
-            for (int i = 0; i < site_count; ++i)
+            size_t i, site_count = doc_sites->size();
+            for (i = 0; i < site_count; ++i)
             {
                 site = doc_sites->getItem(i);
                 table_doc = site->getDocument();
@@ -5769,12 +5780,12 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
     if (set.isOk())
     {
     
-        // -- add fields from child file(s) --
+        // add fields from child file(s)
 
         tango::ISetPtr right_set;
         tango::IStructurePtr right_structure;
 
-        tango::IRelationEnumPtr rel_enum = set->getRelationEnum();
+        tango::IRelationEnumPtr rel_enum = g_app->getDatabase()->getRelationEnum(set->getObjectPath());
         tango::IRelationPtr rel;
         size_t r, rel_count = rel_enum->size();
         
@@ -6188,7 +6199,8 @@ void TableDoc::deleteAllRelations()
     if (set.isNull())
         return;
 
-    set->deleteAllRelations();
+    //set->deleteAllRelations();
+    //TODO: make sure the above line gets re-implemented
 }
 
 void TableDoc::onRemoveAllRelationships(wxCommandEvent& evt)

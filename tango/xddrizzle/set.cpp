@@ -335,34 +335,6 @@ tango::IRelationEnumPtr DrizzleSet::getRelationEnum()
     return relations;
 }
 
-tango::IRelationPtr DrizzleSet::createRelation(const std::wstring& tag,
-                                             const std::wstring& right_set_path,
-                                             const std::wstring& left_expr,
-                                             const std::wstring& right_expr)
-{
-    return xcm::null;
-}
-
-tango::IRelationPtr DrizzleSet::getRelation(const std::wstring& tag)
-{
-    return xcm::null;
-}
-
-int DrizzleSet::getRelationCount()
-{
-    return xcm::null;
-}
-
-bool DrizzleSet::deleteRelation(const std::wstring& tag)
-{
-    return false;
-}
-
-bool DrizzleSet::deleteAllRelations()
-{
-    return false;
-}
-
 tango::IIteratorPtr DrizzleSet::createIterator(const std::wstring& columns,
                                                const std::wstring& expr,
                                                tango::IJob* job)

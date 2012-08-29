@@ -463,44 +463,6 @@ bool CommonFilterSet::modifyStructure(tango::IStructure* struct_config,
 }
 
 
-tango::IRelationPtr CommonFilterSet::createRelation(
-                                    const std::wstring& tag,
-                                    const std::wstring& right_set_path,
-                                    const std::wstring& left_expr,
-                                    const std::wstring& right_expr)
-{
-    return m_base_set->createRelation(tag,
-                                      right_set_path,
-                                      left_expr,
-                                      right_expr);
-}
-
-tango::IRelationPtr CommonFilterSet::getRelation(const std::wstring& rel_tag)
-{
-    return m_base_set->getRelation(rel_tag);
-}
-
-int CommonFilterSet::getRelationCount()
-{
-    return m_base_set->getRelationCount();
-}
-
-tango::IRelationEnumPtr CommonFilterSet::getRelationEnum()
-{
-    return m_base_set->getRelationEnum();
-}
-
-bool CommonFilterSet::deleteRelation(const std::wstring& tag)
-{
-    return m_base_set->deleteRelation(tag);
-}
-
-bool CommonFilterSet::deleteAllRelations()
-{
-    return m_base_set->deleteAllRelations();
-}
-
-
 // -- Indexing routines --
 
 tango::IIndexInfoEnumPtr CommonFilterSet::getIndexEnum()

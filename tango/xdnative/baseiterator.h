@@ -83,6 +83,7 @@ struct BaseIteratorTableEntry
 
 struct BaseIteratorRelInfo
 {
+    std::wstring relation_id;
     std::wstring tag;
     tango::IIteratorPtr right_iter;
     IIteratorKeyAccessPtr right_iter_int;

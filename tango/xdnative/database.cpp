@@ -1204,9 +1204,9 @@ bool Database::deleteSet(const std::wstring& ofs_path)
 
 
     // update the global relationship table. note
-    // that this routine takes care of it's own cleanup
+    // that this routine takes care of its own cleanup
     tango::IRelationEnumPtr rel_enum;
-    rel_enum = getRelationEnum();
+    rel_enum = getRelationEnum(L"");
 
     return true;
 }
@@ -3573,13 +3573,16 @@ private:
 };
 
 
-tango::IRelationEnumPtr Database::getRelationEnum()
+tango::IRelationEnumPtr Database::getRelationEnum(const std::wstring& path)
 {
     XCM_AUTO_LOCK(m_relations_mutex);
 
     xcm::IVectorImpl<tango::IRelationPtr>* vec;
     vec = new xcm::IVectorImpl<tango::IRelationPtr>;
 
+    std::wstring filter_set_id = getSetIdFromPath(path);
+    if (path.length() > 0 && filter_set_id.length() == 0)
+        return vec;
 
     tango::INodeValuePtr file;
 
@@ -3630,6 +3633,8 @@ tango::IRelationEnumPtr Database::getRelationEnum()
             continue;
         right_expr = right_expr_node->getString();
 
+        if (filter_set_id.length() > 0 && filter_set_id != left_set_id)
+            continue;
 
         // check to make sure both the left set and the right set still exist
         std::wstring temps;
@@ -3670,9 +3675,22 @@ tango::IRelationEnumPtr Database::getRelationEnum()
     return vec;
 }
 
+tango::IRelationPtr Database::getRelation(const std::wstring& relation_id)
+{
+    tango::IRelationEnumPtr rel_enum = getRelationEnum(L"");
+    size_t i, rel_count = rel_enum->size();
+    for (i = 0; i < rel_count; ++i)
+    {
+        if (rel_enum->getItem(i)->getRelationId() == relation_id)
+            return rel_enum->getItem(i);
+    }
+
+    return xcm::null;
+}
+
 tango::IRelationPtr Database::createRelation(const std::wstring& tag,
-                                             const std::wstring& left_set_id,
-                                             const std::wstring& right_set_id,
+                                             const std::wstring& left_set_path,
+                                             const std::wstring& right_set_path,
                                              const std::wstring& left_expr,
                                              const std::wstring& right_expr)
 {
@@ -3695,9 +3713,13 @@ tango::IRelationPtr Database::createRelation(const std::wstring& tag,
         return xcm::null;
     }
 
-    
     std::wstring rel_id = getUniqueString();
 
+    std::wstring left_set_id = getSetIdFromPath(left_set_path);
+    std::wstring right_set_id = getSetIdFromPath(right_set_path);
+
+    if (left_set_id.length() == 0 || right_set_id.length() == 0)
+        return xcm::null;
 
     // create a new entry in our relationship table file
     tango::INodeValuePtr rel_node, left_setid_node, right_setid_node,
@@ -3732,28 +3754,51 @@ tango::IRelationPtr Database::createRelation(const std::wstring& tag,
     relation->setLeftExpression(left_expr);
     relation->setRightExpression(right_expr);
 
+    tango::ISetPtr left_set = openSet(left_set_path);
+    if (left_set.isOk())
+    {
+        ISetInternalPtr set_int = left_set;
+        if (set_int)
+            set_int->onRelationshipsUpdated();
+    }
+
+
     return static_cast<tango::IRelation*>(relation);
 }
 
-bool Database::deleteRelation(tango::IRelationPtr rel)
+
+bool Database::deleteRelation(const std::wstring& relation_id)
 {
     XCM_AUTO_LOCK(m_relations_mutex);
 
+    tango::IRelationPtr rel = getRelation(relation_id);
+    if (rel.isNull())
+        return false;
 
     tango::INodeValuePtr root;
 
     if (!getFileExist(L"/.system/rel_table"))
-    {
         return false;
-    }
 
     root = openNodeFile(L"/.system/rel_table");
 
     if (!root)
-    {
         return false;
+    
+
+    if (!root->deleteChild(relation_id))
+        return false;
+
+    
+    std::wstring left_set_path = rel->getLeftSet();
+    tango::ISetPtr left_set = openSet(left_set_path);
+    if (left_set)
+    {
+        ISetInternalPtr set_int = left_set;
+        if (set_int)
+            set_int->onRelationshipsUpdated();
     }
 
-    return root->deleteChild(rel->getRelationId());
-}
 
+    return true;
+}

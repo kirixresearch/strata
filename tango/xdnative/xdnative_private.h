@@ -233,6 +233,7 @@ public:
 
     virtual void appendCalcFields(tango::IStructure* s) = 0;
     virtual void onOfsPathChanged(const std::wstring& new_path) = 0;
+    virtual void onRelationshipsUpdated() = 0;
 
     virtual bool storeObject(const std::wstring& path) = 0;
 };
@@ -277,13 +278,6 @@ public:
 
     virtual IJobInternalPtr createJobEntry() = 0;
     
-    virtual bool deleteRelation(tango::IRelationPtr rel) = 0;
-    virtual tango::IRelationPtr createRelation(const std::wstring& tag,
-                                               const std::wstring& left_set_id,
-                                               const std::wstring& right_set_id,
-                                               const std::wstring& left_expr,
-                                               const std::wstring& right_expr) = 0;
-
     virtual void addFileToTrash(const std::wstring& filename) = 0;
     virtual void emptyTrash() = 0;
     

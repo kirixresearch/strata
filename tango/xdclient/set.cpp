@@ -291,40 +291,6 @@ bool ClientSet::renameIndex(const std::wstring& name,
     return false;
 }
 
-tango::IRelationEnumPtr ClientSet::getRelationEnum()
-{
-    xcm::IVectorImpl<tango::IRelationPtr>* relations;
-    relations = new xcm::IVectorImpl<tango::IRelationPtr>;
-    return relations;
-}
-
-tango::IRelationPtr ClientSet::createRelation(const std::wstring& tag,
-                                              const std::wstring& right_set_path,
-                                              const std::wstring& left_expr,
-                                              const std::wstring& right_expr)
-{
-    return xcm::null;
-}
-
-tango::IRelationPtr ClientSet::getRelation(const std::wstring& tag)
-{
-    return xcm::null;
-}
-
-int ClientSet::getRelationCount()
-{
-    return 0;
-}
-
-bool ClientSet::deleteRelation(const std::wstring& tag)
-{
-    return false;
-}
-
-bool ClientSet::deleteAllRelations()
-{
-    return false;
-}
 
 tango::IIteratorPtr ClientSet::createIterator(const std::wstring& columns,
                                               const std::wstring& order,

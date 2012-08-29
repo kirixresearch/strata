@@ -678,10 +678,29 @@ tango::ISetPtr SqlServerDatabase::openSetEx(const std::wstring& ofs_path,
     return openSet(ofs_path);
 }
 
-tango::IRelationEnumPtr SqlServerDatabase::getRelationEnum()
+tango::IRelationEnumPtr SqlServerDatabase::getRelationEnum(const std::wstring& path)
 {
     xcm::IVectorImpl<tango::IRelationPtr>* relations = new xcm::IVectorImpl<tango::IRelationPtr>;
     return relations;
+}
+
+tango::IRelationPtr SqlServerDatabase::getRelation(const std::wstring& relation_id)
+{
+    return xcm::null;
+}
+
+tango::IRelationPtr SqlServerDatabase::createRelation(const std::wstring& tag,
+                                                      const std::wstring& left_set_path,
+                                                      const std::wstring& right_set_path,
+                                                      const std::wstring& left_expr,
+                                                      const std::wstring& right_expr)
+{
+    return xcm::null;
+}
+
+bool SqlServerDatabase::deleteRelation(const std::wstring& relation_id)
+{
+    return false;
 }
 
 bool SqlServerDatabase::execute(const std::wstring& command,

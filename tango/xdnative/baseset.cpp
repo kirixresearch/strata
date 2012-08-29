@@ -160,10 +160,11 @@ bool BaseSet::renameIndex(const std::wstring& name,
 
 void BaseSet::checkRelInit()
 {
-    // -- load our set-local relation table for the database's master copy --
+    // load our set-local relation table for the database's master copy
+
     if (!m_rel_init)
     {
-        tango::IRelationEnumPtr relations = m_database->getRelationEnum();
+        tango::IRelationEnumPtr relations = m_database->getRelationEnum(getObjectPath());
         
         int i;
         int count = relations->size();
@@ -203,12 +204,11 @@ tango::IRelationPtr BaseSet::createRelation(const std::wstring& tag,
 
     
     tango::IRelationPtr rel;
-    rel = dbi->createRelation(tag,
-                              left_set_id,
-                              right_set_id,
-                              left_expr,
-                              right_expr);
-
+    rel = m_database->createRelation(tag,
+                                     left_set_id,
+                                     right_set_id,
+                                     left_expr,
+                                     right_expr);
     if (!rel)
     {
         return xcm::null;
@@ -267,14 +267,12 @@ bool BaseSet::deleteRelation(const std::wstring& tag)
 
     checkRelInit();
 
-    IDatabaseInternalPtr dbi = m_database;
-
     std::vector<tango::IRelationPtr>::iterator it;
     for (it = m_relations.begin(); it != m_relations.end(); ++it)
     {
         if (!wcscasecmp((*it)->getTag().c_str(), tag.c_str()))
         {
-            dbi->deleteRelation(*it);
+            m_database->deleteRelation((*it)->getRelationId());
 
             m_relations.erase(it);
             fire_onSetRelationshipsUpdated();
@@ -291,12 +289,10 @@ bool BaseSet::deleteAllRelations()
 
     checkRelInit();
 
-    IDatabaseInternalPtr dbi = m_database;
-
     std::vector<tango::IRelationPtr>::iterator it;
     for (it = m_relations.begin(); it != m_relations.end(); ++it)
     {
-        dbi->deleteRelation(*it);
+        m_database->deleteRelation((*it)->getRelationId());
     }
 
     m_relations.clear();
@@ -307,7 +303,7 @@ bool BaseSet::deleteAllRelations()
 }
 
 
-// -- Calculated Field routines --
+// calculated Field routines
 
 bool BaseSet::createCalcField(tango::IColumnInfoPtr colinfo)
 {
@@ -317,7 +313,7 @@ bool BaseSet::createCalcField(tango::IColumnInfoPtr colinfo)
     if (file.isNull())
         return false;
 
-    // -- load calculated fields --
+    // load calculated fields
     tango::INodeValuePtr folder_node = file->getChild(L"calc_fields", true);
     if (!folder_node)
         return false;
@@ -365,7 +361,7 @@ bool BaseSet::modifyCalcField(const std::wstring& _name,
     if (file.isNull())
         return false;
 
-    // -- load calculated fields --
+    // load calculated fields
     tango::INodeValuePtr folder_node = file->getChild(L"calc_fields", true);
     if (!folder_node)
         return false;
@@ -381,7 +377,7 @@ bool BaseSet::modifyCalcField(const std::wstring& _name,
     
     if (!colinfo->getCalculated())
     {
-        // -- this is a make permanent operation --
+        // this is a make permanent operation
         return false;
     }
 
@@ -437,7 +433,7 @@ bool BaseSet::deleteCalcField(const std::wstring& _name)
     if (file.isNull())
         return false;
 
-    // -- load calculated fields --
+    // load calculated fields
     tango::INodeValuePtr folder_node = file->getChild(L"calc_fields", true);
     if (!folder_node)
         return false;
@@ -476,7 +472,7 @@ void BaseSet::appendCalcFields(tango::IStructure* structure)
         if (file.isNull())
             return;
 
-        // -- load calculated fields --
+        // load calculated fields
         tango::INodeValuePtr folder_node = file->getChild(L"calc_fields", true);
         if (!folder_node)
             return;
@@ -545,10 +541,10 @@ void BaseSet::onOfsPathChanged(const std::wstring& new_path)
 {
 }
 
-
-// -- modify structure stuff --
-
-
+void BaseSet::onRelationshipsUpdated()
+{
+    fire_onSetRelationshipsUpdated();
+}
 
 
 
@@ -559,7 +555,7 @@ bool BaseSet::modifyStructure(tango::IStructure* struct_config,
 
     *done_flag = false;
 
-    // -- keep the file open --
+    // keep the file open
     tango::INodeValuePtr file = openSetDefinition(true);
     if (file.isNull())
         return false;
@@ -570,7 +566,7 @@ bool BaseSet::modifyStructure(tango::IStructure* struct_config,
     std::vector<StructureAction>::iterator it;
     int processed_action_count = 0;
 
-    // -- handle delete --
+    // handle delete
     for (it = actions.begin(); it != actions.end(); ++it)
     {
         if (it->m_action != StructureAction::actionDelete)
@@ -580,7 +576,7 @@ bool BaseSet::modifyStructure(tango::IStructure* struct_config,
             processed_action_count++;
     }
 
-    // -- handle modify --
+    // handle modify
     for (it = actions.begin(); it != actions.end(); ++it)
     {
         if (it->m_action != StructureAction::actionModify)
@@ -590,7 +586,7 @@ bool BaseSet::modifyStructure(tango::IStructure* struct_config,
             processed_action_count++;
     }
 
-    // -- handle create --
+    // handle create
     for (it = actions.begin(); it != actions.end(); ++it)
     {
         if (it->m_action != StructureAction::actionCreate)
@@ -618,7 +614,7 @@ bool BaseSet::modifyStructure(tango::IStructure* struct_config,
 
     if (processed_action_count == actions.size())
     {
-        // -- we have handled all actions, so we're done --
+        // we have handled all actions, so we're done
         *done_flag = true;
     }
 
@@ -628,21 +624,11 @@ bool BaseSet::modifyStructure(tango::IStructure* struct_config,
 
 
 
-
-
-// -- bookmark creation --
-
-
 tango::rowpos_t BaseSet::getRowCount()
 {
-    // -- we don't know how many rows are in the set --
+    // we don't know how many rows are in the set
     return 0;
 }
-
-
-
-
-
 
 
 

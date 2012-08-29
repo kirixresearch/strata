@@ -319,41 +319,6 @@ bool FixedLengthTextSet::renameIndex(const std::wstring& name,
     return false;
 }
 
-tango::IRelationEnumPtr FixedLengthTextSet::getRelationEnum()
-{
-    xcm::IVectorImpl<tango::IRelationPtr>* relations;
-    relations = new xcm::IVectorImpl<tango::IRelationPtr>;
-    return relations;
-}
-
-tango::IRelationPtr FixedLengthTextSet::createRelation(
-                                        const std::wstring& tag,
-                                        const std::wstring& right_set_path,
-                                        const std::wstring& left_expr,
-                                        const std::wstring& right_expr)
-{
-    return xcm::null;
-}
-
-tango::IRelationPtr FixedLengthTextSet::getRelation(const std::wstring& tag)
-{
-    return xcm::null;
-}
-
-int FixedLengthTextSet::getRelationCount()
-{
-    return 0;
-}
-
-bool FixedLengthTextSet::deleteRelation(const std::wstring& tag)
-{
-    return false;
-}
-
-bool FixedLengthTextSet::deleteAllRelations()
-{
-    return false;
-}
 
 tango::IIteratorPtr FixedLengthTextSet::createIterator(
                                         const std::wstring& columns,

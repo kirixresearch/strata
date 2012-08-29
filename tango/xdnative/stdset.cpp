@@ -168,44 +168,6 @@ bool IterWrapperSet::updateRow(tango::rowid_t rowid,
 }
 
 
-tango::IRelationPtr IterWrapperSet::createRelation(const std::wstring& tag,
-                                               const std::wstring& right_set_path,
-                                               const std::wstring& left_expr,
-                                               const std::wstring& right_expr)
-{
-    return m_base_set->createRelation(tag,
-                                      right_set_path,
-                                      left_expr,
-                                      right_expr);
-}
-
-tango::IRelationPtr IterWrapperSet::getRelation(const std::wstring& rel_tag)
-{
-    return m_base_set->getRelation(rel_tag);
-}
-
-int IterWrapperSet::getRelationCount()
-{
-    return m_base_set->getRelationCount();
-}
-
-tango::IRelationEnumPtr IterWrapperSet::getRelationEnum()
-{
-    return m_base_set->getRelationEnum();
-}
-
-bool IterWrapperSet::deleteRelation(const std::wstring& tag)
-{
-    return m_base_set->deleteRelation(tag);
-}
-
-bool IterWrapperSet::deleteAllRelations()
-{
-    return m_base_set->deleteAllRelations();
-}
-
-
-
 void IterWrapperSet::onSetDomainUpdated()
 {
 }

@@ -189,40 +189,6 @@ bool XbaseSet::renameIndex(const std::wstring& name,
     return false;
 }
 
-tango::IRelationEnumPtr XbaseSet::getRelationEnum()
-{
-    xcm::IVectorImpl<tango::IRelationPtr>* relations;
-    relations = new xcm::IVectorImpl<tango::IRelationPtr>;
-    return relations;
-}
-
-tango::IRelationPtr XbaseSet::createRelation(const std::wstring& tag,
-                                             const std::wstring& right_set_path,
-                                             const std::wstring& left_expr,
-                                             const std::wstring& right_expr)
-{
-    return xcm::null;
-}
-
-tango::IRelationPtr XbaseSet::getRelation(const std::wstring& tag)
-{
-    return xcm::null;
-}
-
-int XbaseSet::getRelationCount()
-{
-    return 0;
-}
-
-bool XbaseSet::deleteRelation(const std::wstring& tag)
-{
-    return false;
-}
-
-bool XbaseSet::deleteAllRelations()
-{
-    return false;
-}
 
 tango::IIteratorPtr XbaseSet::createIterator(const std::wstring& columns,
                                              const std::wstring& expr,

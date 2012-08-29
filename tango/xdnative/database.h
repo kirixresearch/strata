@@ -167,11 +167,12 @@ public:
     bool deleteSet(const std::wstring& ofs_path);
     bool deleteStream(const std::wstring& ofs_path);
     
-    tango::IRelationEnumPtr getRelationEnum();
-    bool deleteRelation(tango::IRelationPtr rel);
+    tango::IRelationEnumPtr getRelationEnum(const std::wstring& path);
+    tango::IRelationPtr getRelation(const std::wstring& relation_id);
+    bool deleteRelation(const std::wstring& relation_id);
     tango::IRelationPtr createRelation(const std::wstring& tag,
-                                       const std::wstring& left_set_id,
-                                       const std::wstring& right_set_id,
+                                       const std::wstring& left_set_path,
+                                       const std::wstring& right_set_path,
                                        const std::wstring& left_expr,
                                        const std::wstring& right_expr);
 

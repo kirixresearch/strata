@@ -67,16 +67,6 @@ public:
     bool modifyStructure(tango::IStructure* struct_config, 
                          tango::IJob* job);
 
-    tango::IRelationPtr getRelation(const std::wstring& rel_tag);
-    int getRelationCount();
-    tango::IRelationEnumPtr getRelationEnum();
-    bool deleteRelation(const std::wstring& tag);
-    bool deleteAllRelations();
-    tango::IRelationPtr createRelation(const std::wstring& tag,
-                                       const std::wstring& right_set_path,
-                                       const std::wstring& left_expr,
-                                       const std::wstring& right_expr);
-
     tango::IRowInserterPtr getRowInserter();
     tango::IRowDeleterPtr getRowDeleter();
     tango::IIteratorPtr createIterator(const std::wstring& columns,

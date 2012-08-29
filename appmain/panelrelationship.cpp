@@ -463,10 +463,11 @@ static void addRelationships(UpdateInfo* info)
     for (it = info->relations.begin();
          it != info->relations.end(); ++it)
     {
-        it->left_set->createRelation(towstr(it->tag),
-                                     towstr(it->right_path),
-                                     towstr(it->left_expr),
-                                     towstr(it->right_expr));
+        g_app->getDatabase()->createRelation(towstr(it->tag),
+                                             towstr(it->left_set->getObjectPath()),
+                                             towstr(it->right_path),
+                                             towstr(it->left_expr),
+                                             towstr(it->right_expr));
     }
 
     g_app->getMainFrame()->postEvent(new cfw::Event(wxT("appmain.relationshipsUpdated")));
@@ -485,6 +486,21 @@ static void onIndexJobFinished(cfw::IJobPtr job)
         addRelationships(info);
 
     delete info;
+}
+
+static tango::IRelationPtr lookupSetRelation(tango::IDatabasePtr& db, tango::ISetPtr set, const std::wstring& tag)
+{
+    tango::IRelationEnumPtr rel_enum = db->getRelationEnum(set->getObjectPath());
+    size_t i, n = rel_enum->size();
+    for (i = 0; i < n; ++i)
+    {
+        tango::IRelationPtr rel = rel_enum->getItem(i);
+
+        if (0 == wcscasecmp(rel->getTag().c_str(), tag.c_str()))
+            return rel;
+    }
+
+    return xcm::null;
 }
 
 void RelationshipPanel::onUpdateRelationships(wxCommandEvent& evt)
@@ -560,14 +576,23 @@ void RelationshipPanel::onUpdateRelationships(wxCommandEvent& evt)
 
             if (!found)
             {
-                set->deleteRelation(towstr(oi_it->tag));
+                tango::IRelationPtr rel = lookupSetRelation(db, set, towstr(oi_it->tag));
+                if (rel)
+                    db->deleteRelation(rel->getRelationId());
             }
         }
 
         // create the relationships
         
         if (new_info.size() > 0)
-            set->deleteAllRelations();
+        {
+            // delete all existing relationships for this table
+
+            tango::IRelationEnumPtr rel_enum = db->getRelationEnum(set->getObjectPath());
+            size_t i, rel_count = rel_enum->size();
+            for (i = 0; i < rel_count; ++i)
+                db->deleteRelation(rel_enum->getItem(i)->getRelationId());
+        }
 
         for (ni_it = new_info.begin(); ni_it != new_info.end(); ++ni_it)
         {
@@ -653,7 +678,7 @@ void RelationshipPanel::loadRelationships()
     m_diagram->deleteAllLines();
 
     tango::IDatabasePtr db = g_app->getDatabase();
-    tango::IRelationEnumPtr rel_enum = db->getRelationEnum();
+    tango::IRelationEnumPtr rel_enum = db->getRelationEnum(L"");
 
     bool update_button = false;
 
@@ -779,12 +804,21 @@ void RelationshipPanel::saveRelationships()
             }
 
             if (!found)
-                set->deleteRelation(towstr(oi_it->tag));
+            {
+                tango::IRelationPtr rel = lookupSetRelation(db, set, towstr(oi_it->tag));
+                if (rel)
+                    db->deleteRelation(rel->getRelationId());
+            }
         }
 
         // create the relationships
         if (new_info.size() > 0)
-            set->deleteAllRelations();
+        {
+            tango::IRelationEnumPtr rel_enum = db->getRelationEnum(set->getObjectPath());
+            size_t i, rel_count = rel_enum->size();
+            for (i = 0; i < rel_count; ++i)
+                db->deleteRelation(rel_enum->getItem(i)->getRelationId());
+        }
 
         for (ni_it = new_info.begin(); ni_it != new_info.end(); ++ni_it)
         {
@@ -805,11 +839,12 @@ void RelationshipPanel::saveRelationships()
                 right_str += line_it->right_expr;
             }
 
-            set->createRelation(towstr(ni_it->tag),
-                                towstr(ni_it->right_path),
-                                towstr(left_str),
-                                towstr(right_str)
-                               );
+            db->createRelation(towstr(ni_it->tag),
+                               set->getObjectPath(),
+                               towstr(ni_it->right_path),
+                               towstr(left_str),
+                               towstr(right_str)
+                              );
         }
     }
 

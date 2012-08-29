@@ -239,42 +239,6 @@ bool DelimitedTextSet::renameIndex(const std::wstring& name,
     return false;
 }
 
-tango::IRelationEnumPtr DelimitedTextSet::getRelationEnum()
-{
-    xcm::IVectorImpl<tango::IRelationPtr>* relations;
-    relations = new xcm::IVectorImpl<tango::IRelationPtr>;
-    return relations;
-}
-
-tango::IRelationPtr DelimitedTextSet::createRelation(
-                                        const std::wstring& tag,
-                                        const std::wstring& right_set_path,
-                                        const std::wstring& left_expr,
-                                        const std::wstring& right_expr)
-{
-    return xcm::null;
-}
-
-tango::IRelationPtr DelimitedTextSet::getRelation(const std::wstring& tag)
-{
-    return xcm::null;
-}
-
-int DelimitedTextSet::getRelationCount()
-{
-    return 0;
-}
-
-bool DelimitedTextSet::deleteRelation(const std::wstring& tag)
-{
-    return false;
-}
-
-bool DelimitedTextSet::deleteAllRelations()
-{
-    return false;
-}
-
 tango::IIteratorPtr DelimitedTextSet::createSourceIterator(tango::IJob* job)
 {
     DelimitedTextIterator* iter = new DelimitedTextIterator;

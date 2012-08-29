@@ -2074,11 +2074,30 @@ tango::ISetPtr OdbcDatabase::openSet(const std::wstring& path)
     return static_cast<tango::ISet*>(set);
 }
 
-tango::IRelationEnumPtr OdbcDatabase::getRelationEnum()
+tango::IRelationEnumPtr OdbcDatabase::getRelationEnum(const std::wstring& path)
 {
     xcm::IVectorImpl<tango::IRelationPtr>* relations;
     relations = new xcm::IVectorImpl<tango::IRelationPtr>;
     return relations;
+}
+
+tango::IRelationPtr OdbcDatabase::getRelation(const std::wstring& relation_id)
+{
+    return xcm::null;
+}
+
+tango::IRelationPtr OdbcDatabase::createRelation(const std::wstring& tag,
+                                                 const std::wstring& left_set_path,
+                                                 const std::wstring& right_set_path,
+                                                 const std::wstring& left_expr,
+                                                 const std::wstring& right_expr)
+{
+    return xcm::null;
+}
+
+bool OdbcDatabase::deleteRelation(const std::wstring& relation_id)
+{
+    return false;
 }
 
 bool OdbcDatabase::execute(const std::wstring& command,

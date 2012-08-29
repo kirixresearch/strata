@@ -303,40 +303,6 @@ bool SqlServerSet::renameIndex(const std::wstring& name,
     return false;
 }
 
-tango::IRelationEnumPtr SqlServerSet::getRelationEnum()
-{
-    xcm::IVectorImpl<tango::IRelationPtr>* relations = new xcm::IVectorImpl<tango::IRelationPtr>;
-    return relations;
-}
-
-tango::IRelationPtr SqlServerSet::createRelation(const std::wstring& tag,
-                                                 const std::wstring& right_set_path,
-                                                 const std::wstring& left_expr,
-                                                 const std::wstring& right_expr)
-{
-    return xcm::null;
-}
-
-tango::IRelationPtr SqlServerSet::getRelation(const std::wstring& tag)
-{
-    return xcm::null;
-}
-
-int SqlServerSet::getRelationCount()
-{
-    return xcm::null;
-}
-
-bool SqlServerSet::deleteRelation(const std::wstring& tag)
-{
-    return false;
-}
-
-bool SqlServerSet::deleteAllRelations()
-{
-    return false;
-}
-
 tango::IIteratorPtr SqlServerSet::createIterator(const std::wstring& columns,
                                                  const std::wstring& expr,
                                                  tango::IJob* job)

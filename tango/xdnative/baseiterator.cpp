@@ -423,21 +423,31 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
     {
         delete info.kl;
         info.kl = NULL;
+        info.relation_id = L"";
+    }
+    
+    tango::IRelationPtr rel;
+
+    // try to find the correct relation id
+    tango::IRelationEnumPtr rel_enum = m_database->getRelationEnum(m_set->getObjectPath());
+    size_t i, rel_count = rel_enum->size();
+    for (i = 0; i < rel_count; ++i)
+    {
+        rel = rel_enum->getItem(i);
+        if (0 == wcscasecmp(rel->getTag().c_str(), info.tag.c_str()))
+        {
+            info.relation_id = rel->getRelationId();
+            break;
+        }
     }
 
-    // find relationship
-    tango::IRelationPtr rel = m_set->getRelation(info.tag);
-    if (!rel)
-    {
+    if (info.relation_id.length() == 0)
         return false;
-    }
 
     // get right set
     tango::ISetPtr right_set = rel->getRightSetPtr();
     if (!right_set)
-    {
         return false;
-    }
 
     // lookup the index on the right set
     tango::IIndexInfoEnumPtr idx_enum = right_set->getIndexEnum();
@@ -445,9 +455,7 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
 
     idx = lookupIndex(idx_enum, rel->getRightExpression(), false);
     if (!idx)
-    {
         return false;
-    }
 
     tango::IStructurePtr right_structure = right_set->getStructure();
 
@@ -455,7 +463,7 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
     // construct final left expression.  This will be based off of the order
     // of the fields in the right set's index expression.  The order of the
     // fields in the index expression may be arbitrary, for example:
-    // field1, field2 -or- field2, field1. --
+    // field1, field2 -or- field2, field1
 
     std::vector<std::wstring> left_list, right_list, idx_list;
 
@@ -469,13 +477,12 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
         return false;
     }
 
-    int count = left_list.size();
+    size_t x, j, count = left_list.size();
 
 
     info.kl = new KeyLayout;
     info.kl->setIterator(static_cast<tango::IIterator*>(this), false);
 
-    int x,j;
 
     for (x = 0; x < count; ++x)
     {
@@ -660,7 +667,7 @@ tango::ISetPtr BaseIterator::getChildSet(const std::wstring& rel_tag)
     IIteratorKeyAccessPtr iter_int = right_iter;
     if (!iter_int.p)
     {
-        tango::IRelationPtr rel = m_set->getRelation(rel_tag);
+        tango::IRelationPtr rel = m_database->getRelation(rel_tag);
         if (!rel.p)
             return xcm::null;
         tango::ISetPtr right_set = rel->getRightSetPtr();
@@ -853,17 +860,6 @@ bool BaseIterator::initStructure()
 
 void BaseIterator::refreshStructure()
 {
-/*
-    std::vector<BaseIteratorRelInfo>::iterator r_it;
-    for (r_it = m_relations.begin(); r_it != m_relations.end(); ++r_it)
-    {
-        delete r_it->kl;
-    }
-
-    m_relations.clear();
-*/
-
-
     std::vector<BaseIteratorRelInfo>::iterator r_it;
     for (r_it = m_relations.begin(); r_it != m_relations.end(); ++r_it)
     {
@@ -1031,7 +1027,8 @@ public:
     {
     }
 
-    bool init(tango::ISetPtr set,
+    bool init(tango::IDatabasePtr database,
+              tango::ISetPtr set,
               int agg_func,
               const std::wstring& expr)
     {
@@ -1069,9 +1066,9 @@ public:
         tango::IRelationEnumPtr rel_enum;
         tango::IRelationPtr rel;
 
-        rel_enum = set->getRelationEnum();
-        int rel_count = rel_enum->size();
-        for (int i = 0; i < rel_count; ++i)
+        rel_enum = database->getRelationEnum(set->getObjectPath());
+        size_t i, rel_count = rel_enum->size();
+        for (i = 0; i < rel_count; ++i)
         {
             rel = rel_enum->getItem(i);
             if (!wcscasecmp(rel->getTag().c_str(), m_link_tag.c_str()))
@@ -1249,7 +1246,7 @@ AggregateResult* BaseIterator::getAggResultObject(int agg_func,
     // no suitable aggregate result object was found, so initialize a new one
 
     AggregateResult* agg_res = new AggregateResult;
-    if (!agg_res->init(m_set, agg_func, expr))
+    if (!agg_res->init(m_database, m_set, agg_func, expr))
     {
         delete agg_res;
         return NULL;
@@ -1300,9 +1297,9 @@ void BaseIterator::recalcAggResults()
     }
 
 
-    tango::IRelationEnumPtr rel_enum = m_set->getRelationEnum();
+    tango::IRelationEnumPtr rel_enum = m_database->getRelationEnum(m_set->getObjectPath());
 
-    int rel_count = rel_enum->size();
+    size_t rel_count = rel_enum->size();
     if (rel_count == 0)
         return;
 
@@ -1324,7 +1321,7 @@ void BaseIterator::recalcAggResults()
 
 
 
-    for (int i = 0; i < rel_count; ++i)
+    for (size_t i = 0; i < rel_count; ++i)
     {
         rel = rel_enum->getItem(i);
         

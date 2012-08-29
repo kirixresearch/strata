@@ -54,17 +54,6 @@ public:
                int max_rows,
                tango::IJob* job);
 
-    tango::IRelationPtr createRelation(const std::wstring& tag,
-                                       const std::wstring& right_set_path,
-                                       const std::wstring& left_expr,
-                                       const std::wstring& right_expr);
-
-    tango::IRelationPtr getRelation(const std::wstring& rel_tag);
-    int getRelationCount();
-    tango::IRelationEnumPtr getRelationEnum();
-    bool deleteRelation(const std::wstring& tag);
-    bool deleteAllRelations();
-
 
     bool updateRow(tango::rowid_t rowid,
                    tango::ColumnUpdateInfo* info,
