@@ -2230,7 +2230,7 @@ bool WebDoc::initDoc(cfw::IFramePtr frame,
     if (wxWebControl::IsEngineOk())
     {
         m_webcontrol = new wxWebControl(this, wxID_WEB, wxPoint(0,0), docsite_wnd->GetClientSize());
-        m_web = m_webview;
+        m_web = m_webcontrol;
 
         if (!g_app_extension_content_handler)
         {
