@@ -145,6 +145,55 @@ void dequote(std::wstring& str, wchar_t ch1, wchar_t ch2)
     }
 }
 
+std::wstring quoteIdentifier(tango::IDatabasePtr db, const std::wstring& identifier)
+{
+    size_t pos = identifier.find_last_of(L"");
+    if (pos == identifier.npos)
+        return identifier;
+
+    if (db.isOk())
+    {
+        tango::IAttributesPtr attr = db->getAttributes();
+        if (attr)
+        {
+            std::wstring result;
+            result += attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
+            result += identifier;
+            result += attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
+            return result;
+        }
+    }
+    
+    return identifier;
+}
+
+std::wstring dequoteIdentifier(tango::IDatabasePtr db, const std::wstring& identifier)
+{
+    if (db.isOk())
+    {
+        tango::IAttributesPtr attr = db->getAttributes();
+        if (attr)
+        {
+            size_t length = identifier.size();
+            wchar_t open_char = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar)[0];
+            wchar_t close_char = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar)[0];
+            wchar_t first_char = identifier[0];
+            wchar_t last_char = identifier[length-1];
+
+            if (length > 1 && first_char == open_char && last_char == close_char)
+            {
+                if (length == 2)
+                    return L"";
+            
+                std::wstring part = identifier.substr(0, length-1);
+                return part.substr(1);
+            }      
+        }
+    }
+
+    return identifier;
+}
+
 bool parseDateTime(const std::wstring& input,
                    int* year,
                    int* month,
