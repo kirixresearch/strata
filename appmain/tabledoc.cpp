@@ -4940,11 +4940,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
     if ((getDbDriver() == wxT("xdnative") || getDbDriver() == wxT("xdclient")) && rowid == 0)
         return;
 
-    // quote identifier to use
-    wxString left_quote_identifier = wxT("[");
-    wxString right_quote_identifier = wxT("]");
 
-    
     // first, we need to build a where clause
     std::wstring where_str;
     
@@ -4981,9 +4977,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
             
             std::wstring piece;
             piece = L"(";
-            piece += left_quote_identifier;
-            piece += towstr(*it);
-            piece += right_quote_identifier;
+            piece += towstr(quoteIdentifier(db, *it));
             piece += L"=";
             
             switch (type)
@@ -5059,10 +5053,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
         return;
 
 
-    wxString quoted_col_name = col_name;
-    
-    if (::wxStrpbrk(quoted_col_name, wxT(" \t./\\[]{}-!@#$%^&*()")))
-        quoted_col_name = left_quote_identifier + col_name + right_quote_identifier;
+    wxString quoted_col_name = quoteIdentifier(db, col_name);
 
 
     // update_info is used by ICacheRowUpdate below, however only
@@ -5213,9 +5204,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
 
 
     wxString cmd = wxT("UPDATE ");
-    cmd += left_quote_identifier;
-    cmd += towx(getBaseSet()->getObjectPath());
-    cmd += right_quote_identifier;
+    cmd += quoteIdentifier(db, getBaseSet()->getObjectPath());
     cmd += wxT(" SET ");
     cmd += str;
     cmd += where_str;
