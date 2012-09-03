@@ -61,9 +61,9 @@ int IndexJob::runJob()
         wxString path = towx(it->set->getObjectPath());
         
         std::wstring sql = L"CREATE INDEX [";
-        sql += towstr(dequoteIdentifier(it->tag));
+        sql += towstr(dequoteIdentifier(db, it->tag));
         sql += L"] ON [";
-        sql += towstr(dequoteIdentifier(path));
+        sql += towstr(dequoteIdentifier(db, path));
         sql += L"](";
         sql += towstr(it->expr);
         

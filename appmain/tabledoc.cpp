@@ -4907,6 +4907,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
     if (model_col == -1)
         return;
 
+    tango::IDatabasePtr db = g_app->getDatabase();
     kcl::IModelPtr model = m_grid->getModel();
 
     ITangoGridModelPtr tango_grid_model = model;
@@ -4918,7 +4919,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
         return;
         
     std::wstring primary_key;
-    tango::IFileInfoPtr info = g_app->getDatabase()->getFileInfo(getBaseSet()->getObjectPath());
+    tango::IFileInfoPtr info = db->getFileInfo(getBaseSet()->getObjectPath());
     if (info.isOk())
     {
         primary_key = info->getPrimaryKey();
@@ -4966,7 +4967,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
             wxString s = t.GetNextToken();
             s.Trim();
             s.Trim(FALSE);
-            prikeys.push_back(dequoteIdentifier(s));
+            prikeys.push_back(dequoteIdentifier(db, s));
         }
         
         std::vector<wxString>::iterator it;

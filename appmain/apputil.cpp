@@ -1390,17 +1390,30 @@ wxString quoteIdentifier(tango::IDatabasePtr db, const wxString& identifier)
 }
 
 
-wxString dequoteIdentifier(const wxString& identifier)
+wxString dequoteIdentifier(tango::IDatabasePtr db, const wxString& identifier)
 {
-    if (identifier.Length() > 0 && identifier[0] == '[' && identifier.Last() == ']')
+    if (db.isOk())
     {
-        wxString result = identifier;
-        result.RemoveLast();
-        if (result.Length() > 0)
-            result.erase(0, 1);
-        return result;
+        tango::IAttributesPtr attr = db->getAttributes();
+        if (attr)
+        {
+            size_t length = identifier.size();
+            wchar_t open_char = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar)[0];
+            wchar_t close_char = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar)[0];
+            wchar_t first_char = identifier[0];
+            wchar_t last_char = identifier[length-1];
+
+            if (length > 1 && first_char == open_char && last_char == close_char)
+            {
+                if (length == 2)
+                    return L"";
+            
+                wxString part = identifier.Mid(0, length-1);
+                return part.Mid(1);
+            }      
+        }
     }
-    
+
     return identifier;
 }
 

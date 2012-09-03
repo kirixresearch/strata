@@ -4207,12 +4207,13 @@ void CompReportDesign::setGroupsFromSortExpr(const wxString& sort_expr)
     // insert a group for each field in reverse order,
     // since the last field corresponds to the innermost
     // group
+    tango::IDatabasePtr db = g_app->getDatabase();
     std::vector< std::pair<wxString, bool> >::reverse_iterator itr, itr_end;
     itr_end = sort_fields.rend();
     
     for (itr = sort_fields.rbegin(); itr != itr_end; ++itr)
     {
-        wxString field = dequoteIdentifier(itr->first);
+        wxString field = dequoteIdentifier(db, itr->first);
         insertGroup(wxT(""), field, itr->second, false);
     }
 }
