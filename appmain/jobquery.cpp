@@ -20,27 +20,8 @@ wxString writeQueryFromFilterSort(tango::IDatabasePtr db,
                                   const wxString& sort)
 {
     wxString query = wxT("SELECT * FROM ");
-    
-    if (table_name.Find(wxT(' ')) > 0)
-    {
-        // space in the table name
-        tango::IAttributesPtr attr = db->getAttributes();
-        if (attr)
-        {
-            query += towx(attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar));
-            query += table_name;
-            query += towx(attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar));
-        }
-         else
-        {
-            query += table_name;
-        }
-    }
-     else
-    {
-        query += table_name;
-    }
-    
+    query += quoteIdentifier(db, table_name);
+
     if (filter.Length() > 0)
     {
         query += wxT(" WHERE ");
