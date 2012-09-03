@@ -76,7 +76,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib ../xdcommon/lib/xdcommonud.lib ../../kl/lib/klud.lib ../../kscript/lib/kscriptud.lib ../../supp/curl/lib/libcurld.lib ../../supp/libssh2/win32/Debug_lib/libssh2d.lib ../../supp/openssl/out32.dbg/libeay32.lib ../../supp/openssl/out32.dbg/ssleay32.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib ../xdcommon/lib/xdcommonud.lib ../../kl/lib/klud.lib ../../kscript/lib/kscriptud.lib ../../supp/curl/builds/libcurl-debug-static-ssl-static-ipv6-sspi/lib/libcurl_a_debug.lib ../../supp/libssh2/win32/Debug_lib/libssh2d.lib ../../supp/openssl/out32.dbg/libeay32.lib ../../supp/openssl/out32.dbg/ssleay32.lib"
 				OutputFile="../../debugu/xdclient.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -173,7 +173,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib ../xdcommon/lib/xdcommonu.lib ../../kl/lib/klu.lib ../../kscript/lib/kscriptu.lib ../../supp/curl/lib/libcurl.lib ../../supp/libssh2/win32/Release_lib/libssh.lib ../../supp/openssl/out32/libeay32.lib ../../supp/openssl/out32/ssleay32.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib ../xdcommon/lib/xdcommonu.lib ../../kl/lib/klu.lib ../../kscript/lib/kscriptu.lib ../../supp/curl/builds/libcurl-release-static-ssl-static-ipv6-sspi/lib/libcurl_a.lib ../../supp/libssh2/win32/Release_lib/libssh.lib ../../supp/openssl/out32/libeay32.lib ../../supp/openssl/out32/ssleay32.lib"
 				OutputFile="../../releaseu/xdclient.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

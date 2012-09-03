@@ -375,10 +375,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\cmnfilterset.cpp"
-				>
-			</File>
-			<File
 				RelativePath="columninfo.cpp"
 				>
 				<FileConfiguration
@@ -913,10 +909,6 @@
 			</File>
 			<File
 				RelativePath=".\cmndynamicset.h"
-				>
-			</File>
-			<File
-				RelativePath=".\cmnfilterset.h"
 				>
 			</File>
 			<File
