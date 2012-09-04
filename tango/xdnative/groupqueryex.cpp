@@ -539,8 +539,11 @@ bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
     }
      else
     {
+        std::wstring lookup_colname = result->m_param_text;
+        dequote(lookup_colname, '[', ']');
+
         tango::IColumnInfoPtr colinfo;
-        colinfo = info->m_set_structure->getColumnInfo(result->m_param_text);
+        colinfo = info->m_set_structure->getColumnInfo(lookup_colname);
 
         if (colinfo.isNull())
         {
