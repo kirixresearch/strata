@@ -3855,3 +3855,9 @@ tango::IIndexInfoEnumPtr Database::getIndexEnum(const std::wstring& path)
     return set_int->getIndexEnum();
 }
 
+
+
+tango::IStructurePtr Database::describeTable(const std::wstring& path)
+{
+    return xcm::null;
+}

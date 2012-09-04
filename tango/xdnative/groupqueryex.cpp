@@ -508,9 +508,9 @@ bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
 
     
         // identifiers by themselves are considered FIRST()
-        text = L"FIRST(";
+        text = L"FIRST([";
         text += hook_info.expr_text;
-        text += L")";
+        text += L"])";
     }
 
 
@@ -817,9 +817,9 @@ tango::ISetPtr Database::runGroupQuery(tango::ISetPtr set,
             {
                 colinfo = structure->getColumnInfoByIdx(i);
 
-                std::wstring part2 = L"FIRST(";
+                std::wstring part2 = L"FIRST([";
                 part2 += colinfo->getName();
-                part2 += L")";
+                part2 += L"])";
 
                 // parse a group expr - this will add a GroupResult object to |gi.m_results|
                 kscript::ExprParser* parser = createExprParser();
@@ -861,9 +861,9 @@ tango::ISetPtr Database::runGroupQuery(tango::ISetPtr set,
                 if (structure->getColumnExist(*outcol_it))
                 {
                     part1 = *outcol_it;
-                    part2 = L"FIRST(";
+                    part2 = L"FIRST([";
                     part2 += *outcol_it;
-                    part2 += L")";
+                    part2 += L"])";
                 }
                  else
                 {
@@ -884,9 +884,9 @@ tango::ISetPtr Database::runGroupQuery(tango::ISetPtr set,
                 if (structure->getColumnExist(part2))
                 {
                     std::wstring temps;
-                    temps = L"FIRST(";
+                    temps = L"FIRST([";
                     temps += part2;
-                    temps += L")";
+                    temps += L"])";
                     part2 = temps;
                 }
             }
