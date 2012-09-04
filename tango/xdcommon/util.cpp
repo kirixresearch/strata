@@ -827,18 +827,19 @@ void crc64(const unsigned char* s, int length, tango::tango_uint64_t* result)
 }
 
 
-tango::IIndexInfoPtr lookupIndex(tango::IIndexInfoEnumPtr idx_enum,
+
+tango::IIndexInfoPtr xdLookupIndex(tango::IIndexInfoEnumPtr idx_enum,
                                  const std::wstring& expr,
                                  bool exact_column_order)
 {
+    if (idx_enum.isNull())
+        return xcm::null;
+
     std::vector<std::wstring> expr_cols;
-    int i;
-    int idx_count;
+    size_t i, idx_count = idx_enum->size();
     tango::IIndexInfoPtr result;
 
     kl::parseDelimitedList(expr, expr_cols, L',', true);
-    
-    idx_count = idx_enum->size();
     
     for (i = 0; i < idx_count; ++i)
     {
@@ -910,6 +911,7 @@ tango::IIndexInfoPtr lookupIndex(tango::IIndexInfoEnumPtr idx_enum,
 
     return result;
 }
+
 
 
 // this function is also used for creating unique temporary fieldnames,

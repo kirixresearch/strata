@@ -714,6 +714,42 @@ bool SlDatabase::deleteRelation(const std::wstring& relation_id)
     return false;
 }
 
+
+
+tango::IIndexInfoPtr SlDatabase::createIndex(const std::wstring& path,
+                                             const std::wstring& name,
+                                             const std::wstring& expr,
+                                             tango::IJob* job)
+{
+    return xcm::null;
+}
+
+
+bool SlDatabase::renameIndex(const std::wstring& path,
+                             const std::wstring& name,
+                             const std::wstring& new_name)
+{
+    return false;
+}
+
+
+bool SlDatabase::deleteIndex(const std::wstring& path,
+                             const std::wstring& name)
+{
+    return false;
+}
+
+
+tango::IIndexInfoEnumPtr SlDatabase::getIndexEnum(const std::wstring& path)
+{
+    xcm::IVectorImpl<tango::IIndexInfoEnumPtr>* vec;
+    vec = new xcm::IVectorImpl<tango::IIndexInfoEnumPtr>;
+
+    return vec;
+}
+
+
+
 tango::IDatabasePtr SlDatabase::getMountDatabase(const std::wstring& path)
 {
     return xcm::null;

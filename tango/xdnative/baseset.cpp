@@ -114,45 +114,10 @@ int BaseSet::insert(tango::IIteratorPtr source_iter,
                     int max_rows,
                     tango::IJob* job)
 {
-    // -- default does nothing --
+    // default does nothing
     return 0;
 }
 
-
-
-// -- Indexing routines --
-
-tango::IIndexInfoEnumPtr BaseSet::getIndexEnum()
-{
-    xcm::IVectorImpl<tango::IIndexInfoPtr>* indexes;
-    indexes = new xcm::IVectorImpl<tango::IIndexInfoPtr>;
-    return indexes;
-}
-
-tango::IIndexInfoPtr BaseSet::createIndex(const std::wstring& name,
-                                          const std::wstring& expr,
-                                          tango::IJob* job)
-{
-    return xcm::null;
-}
-
-tango::IIndexInfoPtr BaseSet::lookupIndex(const std::wstring& expr,
-                                          bool exact_column_order)
-{
-    tango::IIndexInfoEnumPtr indexes = getIndexEnum();
-    return ::lookupIndex(indexes, expr, exact_column_order);
-}
-
-bool BaseSet::deleteIndex(const std::wstring& name)
-{
-    return false;
-}
-
-bool BaseSet::renameIndex(const std::wstring& name,
-                          const std::wstring& new_name)
-{
-    return false;
-}
 
 
 

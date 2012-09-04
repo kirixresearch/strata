@@ -1262,6 +1262,44 @@ bool OracleDatabase::deleteRelation(const std::wstring& relation_id)
     return false;
 }
 
+
+
+
+tango::IIndexInfoPtr OracleDatabase::createIndex(const std::wstring& path,
+                                                 const std::wstring& name,
+                                                 const std::wstring& expr,
+                                                 tango::IJob* job)
+{
+    return xcm::null;
+}
+
+
+bool OracleDatabase::renameIndex(const std::wstring& path,
+                                 const std::wstring& name,
+                                 const std::wstring& new_name)
+{
+    return false;
+}
+
+
+bool OracleDatabase::deleteIndex(const std::wstring& path,
+                                 const std::wstring& name)
+{
+    return false;
+}
+
+
+tango::IIndexInfoEnumPtr OracleDatabase::getIndexEnum(const std::wstring& path)
+{
+    xcm::IVectorImpl<tango::IIndexInfoEnumPtr>* vec;
+    vec = new xcm::IVectorImpl<tango::IIndexInfoEnumPtr>;
+
+    return vec;
+}
+
+
+
+
 bool OracleDatabase::execute(const std::wstring& _command,
                              unsigned int flags,
                              xcm::IObjectPtr& result,

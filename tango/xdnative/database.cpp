@@ -3802,3 +3802,56 @@ bool Database::deleteRelation(const std::wstring& relation_id)
 
     return true;
 }
+
+
+
+
+tango::IIndexInfoPtr Database::createIndex(const std::wstring& path,
+                                           const std::wstring& name,
+                                           const std::wstring& expr,
+                                           tango::IJob* job)
+{
+    tango::ISetPtr set = openSet(path);
+    ISetInternalPtr set_int = set;
+    if (set_int.isNull())
+        return xcm::null;
+
+    return set_int->createIndex(name, expr, job);
+}
+
+
+bool Database::renameIndex(const std::wstring& path,
+                           const std::wstring& name,
+                           const std::wstring& new_name)
+{
+    tango::ISetPtr set = openSet(path);
+    ISetInternalPtr set_int = set;
+    if (set_int.isNull())
+        return xcm::null;
+
+    return set_int->renameIndex(name, new_name);
+}
+
+
+bool Database::deleteIndex(const std::wstring& path,
+                           const std::wstring& name)
+{
+    tango::ISetPtr set = openSet(path);
+    ISetInternalPtr set_int = set;
+    if (set_int.isNull())
+        return xcm::null;
+
+    return set_int->deleteIndex(name);
+}
+
+
+tango::IIndexInfoEnumPtr Database::getIndexEnum(const std::wstring& path)
+{
+    tango::ISetPtr set = openSet(path);
+    ISetInternalPtr set_int = set;
+    if (set_int.isNull())
+        return xcm::null;
+
+    return set_int->getIndexEnum();
+}
+

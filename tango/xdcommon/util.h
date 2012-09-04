@@ -87,9 +87,9 @@ kscript::ExprParser* createExprParser();
 int kscript2tangoType(int type);
 int tango2kscriptType(int type);
 
-tango::IIndexInfoPtr lookupIndex(tango::IIndexInfoEnumPtr enums,
-                                 const std::wstring& expr,
-                                 bool exact_column_order);
+tango::IIndexInfoPtr xdLookupIndex(tango::IIndexInfoEnumPtr enums,
+                                   const std::wstring& expr,
+                                   bool exact_column_order);
 
 bool parseDateTime(const std::wstring& input,
                    int* year,

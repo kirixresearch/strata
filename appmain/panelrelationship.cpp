@@ -617,8 +617,9 @@ void RelationshipPanel::onUpdateRelationships(wxCommandEvent& evt)
             if (!right_set)
                 continue;
 
-            tango::IIndexInfoPtr idx = right_set->lookupIndex(towstr(right_str),
-                                                              false);
+            tango::IIndexInfoEnumPtr right_set_indexes = db->getIndexEnum(towstr(ni_it->right_path));
+
+            tango::IIndexInfoPtr idx = lookupIndex(right_set_indexes, towstr(right_str), false);
             if (!idx)
             {
                 UpdateIdx i;
@@ -708,9 +709,10 @@ void RelationshipPanel::loadRelationships()
             tango::ISetPtr right_set = rel->getRightSetPtr();
             if (right_set)
             {
+                tango::IIndexInfoEnumPtr right_set_indexes = db->getIndexEnum(right_set->getObjectPath());
+
                 tango::IIndexInfoPtr idx;
-                idx = right_set->lookupIndex(rel->getRightExpression(),
-                                             false);
+                idx = lookupIndex(right_set_indexes, rel->getRightExpression(), false);
 
                 if (idx.isNull())
                 {

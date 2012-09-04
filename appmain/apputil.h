@@ -16,8 +16,7 @@
 // checks an output path for g_app->getDatabase().  It will
 // pop up an error message if something is wrong.
 
-bool doOutputPathCheck(const wxString& output_path,
-                       wxWindow* parent = NULL);
+bool doOutputPathCheck(const wxString& output_path, wxWindow* parent = NULL);
 
 // displays a generic 'invalid' message box
 
@@ -49,13 +48,32 @@ void makeSizerLabelsSameSize(wxBoxSizer* sizer1,
                              wxBoxSizer* sizer7 = NULL);
 
 
-// -- wxColor converters --
 
-int color2int(const wxColor& color);
-wxColor int2color(int int_color);
+int color2int(const wxColor& color);     // convert wxColor to int
+wxColor int2color(int int_color);        // convert int to wxColor
 void setFocusDeferred(wxWindow* focus);
 void autoSizeListHeader(wxListCtrl* ctrl);
 bool windowOrChildHasFocus(wxWindow* wnd);
+
+int getTaskBarHeight();  // get OS's taskbar height
+
+
+// utilities which looking and/or activate a specified documentsite
+
+cfw::IDocumentSitePtr lookupOtherDocumentSite(
+                           cfw::IDocumentSitePtr site,
+                           const std::string& doc_class_name);
+
+cfw::IDocumentPtr lookupOtherDocument(
+                           cfw::IDocumentSitePtr site,
+                           const std::string& doc_class_name);
+
+void switchToOtherDocument(cfw::IDocumentSitePtr site,
+                           const std::string& doc_class_name);
+
+wxWindow* getDocumentSiteWindow(cfw::IDocumentSitePtr site);
+
+
 
 
 // -- database helper classes and functions ----------------------------------
@@ -119,12 +137,10 @@ wxString getExtensionFromPath(const wxString& path);
 wxString getMimeTypeFromExtension(const wxString& path);
 wxString determineMimeType(const wxString& path);
 
-// utility for adding a filesystem extension to a path if the
-// path is a mounted filesystem database and the path doesn't
-// specify an extension
+// utility for adding a filesystem extension to a path if the path is a
+// mounted filesystem database and the path doesn't specify an extension
+
 wxString addExtensionIfExternalFsDatabase(const wxString& path, const wxString& ext);
-
-
 
 // stream text file loading and saving routines
 
@@ -137,26 +153,18 @@ bool writeStreamTextFile(tango::IDatabasePtr db,
                         const std::wstring& text,
                         const std::wstring& mime_type = L"text/plain");
 
+// function to handle (sub)folder creation gracefully
+
+bool tryCreateFolderStructure(const wxString& folder_path);
+bool createFolderStructure(const wxString& folder_path,
+                           bool delete_on_success = false);
+
+tango::IIndexInfoPtr lookupIndex(tango::IIndexInfoEnumPtr indexes, const std::wstring& fields, bool order_matters);
+
+
+// string helper functions
+
 bool isUnicodeString(const std::wstring& val);
-
-// -- utilities which activate a specified site --
-
-cfw::IDocumentSitePtr lookupOtherDocumentSite(
-                           cfw::IDocumentSitePtr site,
-                           const std::string& doc_class_name);
-
-cfw::IDocumentPtr lookupOtherDocument(
-                           cfw::IDocumentSitePtr site,
-                           const std::string& doc_class_name);
-
-void switchToOtherDocument(cfw::IDocumentSitePtr site,
-                           const std::string& doc_class_name);
-
-wxWindow* getDocumentSiteWindow(cfw::IDocumentSitePtr site);
-
-
-
-// -- string helper functions --
 
 wxString filenameToUrl(const wxString& _filename);
 wxString urlToFilename(const wxString& _url);
@@ -168,41 +176,21 @@ wxString urlEscape(const wxString& input);
 wxString multipartEncode(const wxString& input);
 
 wxString removeChar(const wxString& s, wxChar c);
-
-// "zero-level" utility function, for determining if a given
-// character is inside a quote or not
 wxChar* zl_strchr(wxChar* str, wxChar ch);
 
 wxString makeUniqueString();
 
 // helper functions to convert vectors of wxStrings
 // into comma-delimited lists, and vice versa
+
 wxString vectorToString(const std::vector<wxString>& list);
 std::vector<wxString> stringToVector(const wxString& string);
 std::vector< std::pair<wxString, bool> > sortExprToVector(const wxString& sort_expr);
 
+wxString getWebFile(const wxString& urlstring);      // get small web files, returning them as strings
+double getProjectSize(const wxString& project_path); // returns the approximate size of a project
+wxString getDefaultProjectsPath();                   // returns the default location where projects are created
 
-// get small web files, returning them as strings
-
-wxString getWebFile(const wxString& urlstring);
-
-// returns a good approximation of the size of a project
-
-double getProjectSize(const wxString& project_path);
-
-// returns the default location where projects are created
-
-wxString getDefaultProjectsPath();
-
-// function to handle (sub)folder creation gracefully
-
-bool tryCreateFolderStructure(const wxString& folder_path);
-bool createFolderStructure(const wxString& folder_path,
-                           bool delete_on_success = false);
-
-// function to get the height of the taskbar
-
-int getTaskBarHeight();
 
 
 void int2buf(unsigned char* buf, unsigned int i);
@@ -212,7 +200,7 @@ int buf2int(const unsigned char* buf);
 
 
 
-// -- utility classes --
+//  utility classes
 
 class wxDoubleClickGauge : public wxGauge
 {
@@ -368,7 +356,6 @@ private:
 #if APP_GUI==1
     wxBusyCursor m_bc;
 #endif
-
 };
 
 

@@ -450,10 +450,8 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
         return false;
 
     // lookup the index on the right set
-    tango::IIndexInfoEnumPtr idx_enum = right_set->getIndexEnum();
-    tango::IIndexInfoPtr idx;
-
-    idx = lookupIndex(idx_enum, rel->getRightExpression(), false);
+    tango::IIndexInfoEnumPtr idx_enum = m_database->getIndexEnum(right_set->getObjectPath());
+    tango::IIndexInfoPtr idx = xdLookupIndex(idx_enum, rel->getRightExpression(), false);
     if (!idx)
         return false;
 

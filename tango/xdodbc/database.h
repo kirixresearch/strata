@@ -177,7 +177,6 @@ public:
     tango::ISetPtr openSetEx(const std::wstring& path,
                              int format);
 
-    tango::IRelationEnumPtr getRelationEnum(const std::wstring& path);
     tango::IRelationPtr createRelation(const std::wstring& tag,
                                        const std::wstring& left_set_path,
                                        const std::wstring& right_set_path,
@@ -185,6 +184,20 @@ public:
                                        const std::wstring& right_expr);
     bool deleteRelation(const std::wstring& relation_id);
     tango::IRelationPtr getRelation(const std::wstring& relation_id);
+    tango::IRelationEnumPtr getRelationEnum(const std::wstring& path);
+
+    tango::IIndexInfoPtr createIndex(const std::wstring& path,
+                                     const std::wstring& name,
+                                     const std::wstring& expr,
+                                     tango::IJob* job);
+    bool renameIndex(const std::wstring& path,
+                     const std::wstring& name,
+                     const std::wstring& new_name);
+    bool deleteIndex(const std::wstring& path,
+                     const std::wstring& name);
+    tango::IIndexInfoEnumPtr getIndexEnum(const std::wstring& path);
+
+
 
     bool execute(const std::wstring& command,
                  unsigned int flags,

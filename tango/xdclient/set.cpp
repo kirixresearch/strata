@@ -260,37 +260,6 @@ int ClientSet::insert(tango::IIteratorPtr source_iter,
     }
 }
 
-tango::IIndexInfoEnumPtr ClientSet::getIndexEnum()
-{
-    xcm::IVectorImpl<tango::IIndexInfoPtr>* indexes;
-    indexes = new xcm::IVectorImpl<tango::IIndexInfoPtr>;
-    return indexes;
-}
-
-tango::IIndexInfoPtr ClientSet::createIndex(const std::wstring& tag,
-                                            const std::wstring& expr,
-                                            tango::IJob* job)
-{
-    return xcm::null;
-}
-                                 
-tango::IIndexInfoPtr ClientSet::lookupIndex(const std::wstring& expr,
-                                            bool exact_column_order)
-{
-    return xcm::null;
-}
-                                 
-bool ClientSet::deleteIndex(const std::wstring& name)
-{
-    return false;
-}
-
-bool ClientSet::renameIndex(const std::wstring& name,
-                            const std::wstring& new_name)
-{
-    return false;
-}
-
 
 tango::IIteratorPtr ClientSet::createIterator(const std::wstring& columns,
                                               const std::wstring& order,

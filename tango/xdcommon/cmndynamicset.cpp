@@ -480,40 +480,6 @@ bool CommonDynamicSet::modifyStructure(tango::IStructure* struct_config,
 
 
 
-// -- Indexing routines --
-
-tango::IIndexInfoEnumPtr CommonDynamicSet::getIndexEnum()
-{
-    xcm::IVectorImpl<tango::IIndexInfoPtr>* indexes;
-    indexes = new xcm::IVectorImpl<tango::IIndexInfoPtr>;
-    return indexes;
-}
-
-tango::IIndexInfoPtr CommonDynamicSet::createIndex(const std::wstring& name,
-                                          const std::wstring& expr,
-                                          tango::IJob* job)
-{
-    return xcm::null;
-}
-
-tango::IIndexInfoPtr CommonDynamicSet::lookupIndex(const std::wstring& expr,
-                                          bool exact_column_order)
-{
-    return xcm::null;
-}
-
-bool CommonDynamicSet::deleteIndex(const std::wstring& name)
-{
-    return false;
-}
-
-bool CommonDynamicSet::renameIndex(const std::wstring& name,
-                                   const std::wstring& new_name)
-{
-    return false;
-}
-
-
 
 
 

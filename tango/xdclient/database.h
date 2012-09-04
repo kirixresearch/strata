@@ -133,7 +133,18 @@ public:
     bool deleteRelation(const std::wstring& relation_id);
     tango::IRelationPtr getRelation(const std::wstring& relation_id);
     tango::IRelationEnumPtr getRelationEnum(const std::wstring& path);
-          
+    
+    tango::IIndexInfoPtr createIndex(const std::wstring& path,
+                                     const std::wstring& name,
+                                     const std::wstring& expr,
+                                     tango::IJob* job);
+    bool renameIndex(const std::wstring& path,
+                     const std::wstring& name,
+                     const std::wstring& new_name);
+    bool deleteIndex(const std::wstring& path,
+                     const std::wstring& name);
+    tango::IIndexInfoEnumPtr getIndexEnum(const std::wstring& path);
+
     bool execute(const std::wstring& command,
                  unsigned int flags,
                  xcm::IObjectPtr& result,

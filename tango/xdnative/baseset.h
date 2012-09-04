@@ -36,19 +36,6 @@ public:
     void setObjectPath(const std::wstring& path) { }
     std::wstring getObjectPath() { return L""; }
     bool isTemporary() { return false; }
-    
-    // -- index functions --
-    tango::IIndexInfoEnumPtr getIndexEnum();
-    tango::IIndexInfoPtr createIndex(const std::wstring& name,
-                                     const std::wstring& expr,
-                                     tango::IJob* job);
-
-    tango::IIndexInfoPtr lookupIndex(const std::wstring& expr,
-                                     bool exact_column_order);
-
-    bool deleteIndex(const std::wstring& name);
-    bool renameIndex(const std::wstring& name,
-                     const std::wstring& new_name);
 
     unsigned int getSetFlags();
     void setSetFlags(unsigned int new_val);
@@ -69,6 +56,37 @@ public:
 
     bool addEventHandler(ISetEvents* handler);
     bool removeEventHandler(ISetEvents* handler);
+
+
+    
+    tango::IIndexInfoPtr createIndex(const std::wstring& name,
+                                     const std::wstring& expr,
+                                     tango::IJob* job)
+    {
+        return xcm::null;
+    }
+
+
+    bool renameIndex(const std::wstring& name,
+                     const std::wstring& new_name)
+    {
+        return false;
+    }
+
+
+    bool deleteIndex(const std::wstring& name)
+    {
+        return false;
+    }
+
+
+    tango::IIndexInfoEnumPtr getIndexEnum()
+    {
+        xcm::IVectorImpl<tango::IIndexInfoEnumPtr>* vec;
+        vec = new xcm::IVectorImpl<tango::IIndexInfoEnumPtr>;
+        return vec;
+    }
+
 
     // -- ISetUpdate --
     

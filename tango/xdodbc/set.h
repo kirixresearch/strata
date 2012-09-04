@@ -60,18 +60,6 @@ public:
                int max_rows,
                tango::IJob* job);
 
-    tango::IIndexInfoEnumPtr getIndexEnum();
-    tango::IIndexInfoPtr createIndex(const std::wstring& tag,
-                                     const std::wstring& expr,
-                                     tango::IJob* job);
-
-    tango::IIndexInfoPtr lookupIndex(const std::wstring& expr,
-                                     bool exact_column_order);
-
-    bool deleteIndex(const std::wstring& name);
-    bool renameIndex(const std::wstring& name,
-                     const std::wstring& new_name);
-
     tango::IIteratorPtr createIterator(const std::wstring& columns,
                                        const std::wstring& expr,
                                        tango::IJob* job);

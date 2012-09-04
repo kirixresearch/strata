@@ -92,6 +92,19 @@ public:
                                        const std::wstring& right_expr);
     bool deleteRelation(const std::wstring& relation_id);
 
+
+    tango::IIndexInfoPtr createIndex(const std::wstring& path,
+                                     const std::wstring& name,
+                                     const std::wstring& expr,
+                                     tango::IJob* job);
+    bool renameIndex(const std::wstring& path,
+                     const std::wstring& name,
+                     const std::wstring& new_name);
+    bool deleteIndex(const std::wstring& path,
+                     const std::wstring& name);
+    tango::IIndexInfoEnumPtr getIndexEnum(const std::wstring& path);
+
+
     tango::IDatabasePtr getMountDatabase(const std::wstring& path);
     
     bool setMountPoint(const std::wstring& path,

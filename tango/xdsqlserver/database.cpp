@@ -703,6 +703,41 @@ bool SqlServerDatabase::deleteRelation(const std::wstring& relation_id)
     return false;
 }
 
+
+
+tango::IIndexInfoPtr SqlServerDatabase::createIndex(const std::wstring& path,
+                                                    const std::wstring& name,
+                                                    const std::wstring& expr,
+                                                    tango::IJob* job)
+{
+    return xcm::null;
+}
+
+
+bool SqlServerDatabase::renameIndex(const std::wstring& path,
+                                    const std::wstring& name,
+                                    const std::wstring& new_name)
+{
+    return false;
+}
+
+
+bool SqlServerDatabase::deleteIndex(const std::wstring& path,
+                                    const std::wstring& name)
+{
+    return false;
+}
+
+
+tango::IIndexInfoEnumPtr SqlServerDatabase::getIndexEnum(const std::wstring& path)
+{
+    xcm::IVectorImpl<tango::IIndexInfoEnumPtr>* vec;
+    vec = new xcm::IVectorImpl<tango::IIndexInfoEnumPtr>;
+
+    return vec;
+}
+
+
 bool SqlServerDatabase::execute(const std::wstring& command,
                                 unsigned int flags,
                                 xcm::IObjectPtr& result,

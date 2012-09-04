@@ -83,19 +83,6 @@ public:
     bool updateRow(tango::rowid_t rowid,
                    tango::ColumnUpdateInfo* info,
                    size_t info_size);
-    
-    // -- index functions --
-    tango::IIndexInfoEnumPtr getIndexEnum();
-    tango::IIndexInfoPtr createIndex(const std::wstring& name,
-                                     const std::wstring& expr,
-                                     tango::IJob* job);
-
-    tango::IIndexInfoPtr lookupIndex(const std::wstring& expr,
-                                     bool exact_column_order);
-
-    bool deleteIndex(const std::wstring& name);
-    bool renameIndex(const std::wstring& name,
-                     const std::wstring& new_name);
                      
     // -- ISetEvents --
     void onSetDomainUpdated();

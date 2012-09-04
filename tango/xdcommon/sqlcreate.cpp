@@ -316,24 +316,15 @@ bool sqlCreate(tango::IDatabasePtr db,
         std::wstring col_list = kl::beforeLast(command, L')');
         
         
-        tango::ISetPtr set = db->openSet(table);
-        if (set.isNull())
-        {
-            // non-existant or locked table
-            wchar_t buf[1024]; // some paths might be long
-            swprintf(buf, 1024, L"Unable to open table [%ls]", table.c_str()); 
-            error.setError(tango::errorGeneral, buf);            
-            return false;
-        }
-        
+
         tango::IIndexInfoPtr index;
         
-        index = set->createIndex(name, col_list, job);
+        index = db->createIndex(table, name, col_list, job);
         
         if (index.isNull())
         {
             wchar_t buf[1024]; // some paths might be long
-            swprintf(buf, 1024, L"Unable to create index [%ls]", name.c_str()); 
+            swprintf(buf, 1024, L"Unable to create index [%ls] on table [%ls]", name.c_str(), table.c_str()); 
             error.setError(tango::errorGeneral, buf);         
             return false;
         }

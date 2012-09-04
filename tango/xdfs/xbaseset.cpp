@@ -158,37 +158,6 @@ int XbaseSet::insert(tango::IIteratorPtr source_iter,
     return xdcmnInsert(source_iter, this, where_condition, max_rows, job);
 }
 
-tango::IIndexInfoEnumPtr XbaseSet::getIndexEnum()
-{
-    xcm::IVectorImpl<tango::IIndexInfoPtr>* indexes;
-    indexes = new xcm::IVectorImpl<tango::IIndexInfoPtr>;
-    return indexes;
-}
-
-tango::IIndexInfoPtr XbaseSet::createIndex(const std::wstring& tag,
-                                           const std::wstring& expr,
-                                           tango::IJob* job)
-{
-    return xcm::null;
-}
-
-tango::IIndexInfoPtr XbaseSet::lookupIndex(const std::wstring& expr,
-                                           bool exact_column_order)
-{
-    return xcm::null;
-}
-
-bool XbaseSet::deleteIndex(const std::wstring& name)
-{
-    return false;
-}
-
-bool XbaseSet::renameIndex(const std::wstring& name,
-                           const std::wstring& new_name)
-{
-    return false;
-}
-
 
 tango::IIteratorPtr XbaseSet::createIterator(const std::wstring& columns,
                                              const std::wstring& expr,

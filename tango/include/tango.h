@@ -20,7 +20,7 @@ namespace tango
 {
 
 
-// -- int64 support --
+// int64 support
 #ifdef _MSC_VER
 typedef __int64 tango_int64_t;
 typedef unsigned __int64 tango_uint64_t;
@@ -30,7 +30,8 @@ typedef unsigned long long tango_uint64_t;
 #endif
 
 
-// -- tango type definitions --
+// tango type definitions
+
 typedef void* objhandle_t;
 typedef unsigned int jobid_t;
 typedef tango_uint64_t tableord_t;
@@ -39,13 +40,15 @@ typedef tango_uint64_t rowid_t;
 typedef tango_uint64_t datetime_t;
 
 
-// -- tango data metric constants --
+// data metric constants
+
 const int max_character_width = 65535;
 const int max_numeric_width = 18;
 const int max_numeric_scale = 12;
 
 
-// -- forward declarations --
+// forward declarations
+
 xcm_interface IAttributes;
 xcm_interface IColumnInfo;
 xcm_interface IConnectionStr;
@@ -71,7 +74,8 @@ xcm_interface IStructure;
 xcm_interface IIteratorRelation;
 
 
-// -- smart pointer declarations --
+// smart pointer declarations
+
 XCM_DECLARE_SMARTPTR(IAttributes)
 XCM_DECLARE_SMARTPTR(INodeValue)
 XCM_DECLARE_SMARTPTR(IFileInfo)
@@ -102,7 +106,7 @@ XCM_DECLARE_SMARTPTR2(xcm::IVector<IDatabaseEntryPtr>, IDatabaseEntryEnumPtr)
 
 
 
-// -- common connection string parameters --
+// common connection string parameters
 
 // Provider    - database provider (xdnative, xdfs, xdodbc, etc.)
 // Server      - name or IP of the database server
@@ -115,7 +119,7 @@ XCM_DECLARE_SMARTPTR2(xcm::IVector<IDatabaseEntryPtr>, IDatabaseEntryEnumPtr)
 
 
 
-// -- database types --
+// database types
 
 enum
 {
@@ -137,7 +141,7 @@ enum
 
 
 
-// -- format types --
+// format types
 
 enum
 {
@@ -149,7 +153,7 @@ enum
 };
 
 
-// -- encoding types --
+// encoding types
 
 // IMPORTANT NOTE: The following encoding type numbers are immutable.
 //     This means that they never may be changed.  New types must
@@ -173,7 +177,7 @@ enum
 
 
 
-// -- column types --
+// column types
 
 // IMPORTANT NOTE: The following column type numbers are immutable.
 //     This means that they never may be changed.  New types must
@@ -195,7 +199,7 @@ enum
 };
 
 
-// -- job status --
+// job status
 
 enum
 {
@@ -208,7 +212,7 @@ enum
 
 
 
-// -- error types --
+// error types
 
 enum
 {
@@ -235,7 +239,7 @@ enum
 
 
 
-// -- database attributes --
+// database attributes
 
 enum
 {
@@ -247,12 +251,12 @@ enum
     dbattrIdentifierQuoteOpenChar = 1900,
     dbattrIdentifierQuoteCloseChar = 1901,
     
-    // -- columns --
+    // columns
     dbattrColumnMaxNameLength = 2000,
     dbattrColumnInvalidChars = 2001,
     dbattrColumnInvalidStartingChars = 2002,
 
-    // -- tables --
+    // tables
     dbattrTableMaxNameLength = 3000,
     dbattrTableInvalidChars = 3001,
     dbattrTableInvalidStartingChars = 3002
@@ -261,7 +265,7 @@ enum
 
 
 
-// -- set flags --
+// set flags
 
 enum
 {
@@ -271,7 +275,7 @@ enum
 
 
 
-// -- iterator flags --
+// iterator flags
 
 enum
 {
@@ -286,7 +290,7 @@ enum
 
 
 
-// -- file type flags --
+// file type flags
 
 enum
 {
@@ -298,7 +302,7 @@ enum
 
 
 
-// -- execute() flags --
+// flags for execute()
 
 enum
 {
@@ -309,8 +313,6 @@ enum
 
 
 
-
-// -- main tango interfaces --
 
 
 xcm_interface INodeValue : public xcm::IObject
@@ -475,8 +477,6 @@ public:
 
 
 
-// -- iterator interface --
-
 xcm_interface IIterator : public xcm::IObject
 {
     XCM_INTERFACE_NAME("tango.IIterator")
@@ -583,16 +583,6 @@ public:
                        const std::wstring& where_condition,
                        int max_rows,
                        IJob* job) = 0;
-
-    virtual IIndexInfoPtr createIndex(const std::wstring& name,
-                                      const std::wstring& expr,
-                                      IJob* job) = 0;
-    virtual IIndexInfoEnumPtr getIndexEnum() = 0;
-    virtual bool deleteIndex(const std::wstring& name) = 0;
-    virtual bool renameIndex(const std::wstring& name,
-                             const std::wstring& new_name) = 0;
-    virtual tango::IIndexInfoPtr lookupIndex(const std::wstring& expr,
-                                             bool exact_column_order) = 0;
 
     virtual IIteratorPtr createIterator(const std::wstring& columns,
                                         const std::wstring& expr,
@@ -766,6 +756,19 @@ public:
     virtual bool deleteRelation(const std::wstring& relation_id) = 0;
     virtual IRelationPtr getRelation(const std::wstring& relation_id) = 0;
     virtual IRelationEnumPtr getRelationEnum(const std::wstring& path) = 0;
+
+
+    virtual IIndexInfoPtr createIndex(const std::wstring& path,
+                                      const std::wstring& name,
+                                      const std::wstring& expr,
+                                      IJob* job) = 0;
+    virtual bool renameIndex(const std::wstring& path,
+                             const std::wstring& name,
+                             const std::wstring& new_name) = 0;
+    virtual bool deleteIndex(const std::wstring& path,
+                             const std::wstring& name) = 0;
+    virtual IIndexInfoEnumPtr getIndexEnum(const std::wstring& path) = 0;
+
 
     virtual bool execute(const std::wstring& command,
                          unsigned int flags,

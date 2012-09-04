@@ -296,36 +296,6 @@ int DrizzleSet::insert(tango::IIteratorPtr source_iter,
     return xdcmnInsert(source_iter, this, where_condition, max_rows, job);
 }
 
-tango::IIndexInfoEnumPtr DrizzleSet::getIndexEnum()
-{
-    xcm::IVectorImpl<tango::IIndexInfoPtr>* indexes;
-    indexes = new xcm::IVectorImpl<tango::IIndexInfoPtr>;
-    return indexes;
-}
-
-tango::IIndexInfoPtr DrizzleSet::createIndex(const std::wstring& tag,
-                                           const std::wstring& expr,
-                                           tango::IJob* job)
-{
-    return xcm::null;
-}
-
-tango::IIndexInfoPtr DrizzleSet::lookupIndex(const std::wstring& expr,
-                                           bool exact_column_order)
-{
-    return xcm::null;
-}
-
-bool DrizzleSet::deleteIndex(const std::wstring& name)
-{
-    return false;
-}
-
-bool DrizzleSet::renameIndex(const std::wstring& name,
-                           const std::wstring& new_name)
-{
-    return false;
-}
 
                      
 tango::IRelationEnumPtr DrizzleSet::getRelationEnum()

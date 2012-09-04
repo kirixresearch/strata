@@ -1016,7 +1016,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
     }
 
     tango::IIndexInfoEnumPtr old_indexes;
-    old_indexes = m_tabledoc->getBaseSet()->getIndexEnum();
+    old_indexes = g_app->getDatabase()->getIndexEnum(m_tabledoc->getBaseSet()->getObjectPath());
 
     if (!m_set->modifyStructure(structure, NULL))
     {
@@ -1029,17 +1029,17 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
     }
 
 
-    // -- refresh the iterator with the set's new structure information --
+    // refresh the iterator with the set's new structure information
     m_iter->refreshStructure();
 
-    // -- refresh the target tabledoc's grid information --
+    // refresh the target tabledoc's grid information
     kcl::Grid* grid = m_tabledoc->getGrid();
     if (grid)
     {
         grid->refreshModel();
     }
 
-    // -- let the tabledoc know that a column name has changed --
+    // let the tabledoc know that a column name has changed
     if (m_orig_name.CmpNoCase(m_last_name) != 0)
     {
         m_tabledoc->onColumnNameChanged(m_orig_name, m_last_name);
@@ -1054,12 +1054,11 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
     g_app->getMainFrame()->postEvent(evt);
 
 
-    // -- find out if various indexes need to be recreated.
-    //    some of the indexes may have been deleted during
-    //    the modifyStructure() operation --
+    // find out if various indexes need to be recreated.
+    // some of the indexes may have been deleted during
+    // the modifyStructure() operation
 
-    tango::IIndexInfoEnumPtr new_indexes;
-    new_indexes = m_tabledoc->getBaseSet()->getIndexEnum();
+    tango::IIndexInfoEnumPtr new_indexes = g_app->getDatabase()->getIndexEnum(m_tabledoc->getBaseSet()->getObjectPath());
 
     std::vector<tango::IIndexInfoPtr> to_recreate;
     int i, j, old_cnt, new_cnt;

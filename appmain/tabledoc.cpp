@@ -4146,13 +4146,15 @@ void TableDoc::onGridColumnRightClick(kcl::GridEvent& evt)
         }
     }
     
+
+    tango::IIndexInfoEnumPtr index_enum = g_app->getDatabase()->getIndexEnum(getBaseSet()->getObjectPath());
+
     wxMenu menuPopup;
 
     menuPopup.Append(ID_Data_SortAscending, _("Sort &Ascending"));
     menuPopup.Append(ID_Data_SortDescending, _("&Sort Descending"));
     menuPopup.AppendSeparator();
-    menuPopup.Append(27700, _("Sort &Orders"),
-                     createIndexesMenu(getBaseSet()->getIndexEnum(), getSortOrder(), 27700));
+    menuPopup.Append(27700, _("Sort &Orders"), createIndexesMenu(index_enum, getSortOrder(), 27700));
     menuPopup.Append(ID_Data_RemoveSortFilter, _("&Remove Sort/Filter"));
     menuPopup.AppendSeparator();
     menuPopup.Append(ID_Table_InsertGroupBreak, _("Insert &Group Break"));
@@ -4209,8 +4211,11 @@ void TableDoc::onGridColumnRightClick(kcl::GridEvent& evt)
             setSortOrder(wxEmptyString);
             return;
         }
+
+
+        tango::IIndexInfoEnumPtr indexes;
+        indexes = g_app->getDatabase()->getIndexEnum(getBaseSet()->getObjectPath());
         
-        tango::IIndexInfoEnumPtr indexes = getBaseSet()->getIndexEnum();
         if (i >= (int)(indexes->size()+1))
         {
             // user clicked the "Edit..." menu item
@@ -8471,8 +8476,10 @@ void TableDoc::showViewPanel()
 
 void TableDoc::onIndexEditFinished(IndexPanel* panel)
 {
+    tango::IDatabasePtr db = g_app->getDatabase();
+
     // get the original indexes that exist on this set
-    tango::IIndexInfoEnumPtr orig_indexes = m_set->getIndexEnum();
+    tango::IIndexInfoEnumPtr orig_indexes = db->getIndexEnum(m_set->getObjectPath());
     bool found;
     
     // get all of the indexes that were created/updated in the IndexPanel
@@ -8503,13 +8510,15 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
         
         // delete the index if it's not found
         if (!found)
-            m_set->deleteIndex(index->getTag());
+        {
+            db->deleteIndex(m_set->getObjectPath(), index->getTag());
+        }
     }
     
     
     // we may have deleted some of the original indexes;
     // get the list of indexes again
-    orig_indexes = m_set->getIndexEnum();
+    orig_indexes = db->getIndexEnum(m_set->getObjectPath());
     count = (int)orig_indexes->size();
     
     // rename indexes
@@ -8535,8 +8544,9 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
                 if (info->name.CmpNoCase(info->orig_name) != 0)
                 {
                     // have the set rename this index
-                    getBaseSet()->renameIndex(towstr(index_tag),
-                                              towstr(info->name));
+                    db->renameIndex(getBaseSet()->getObjectPath(),
+                                    towstr(index_tag),
+                                    towstr(info->name));
                     
                     // we also need to update the IndexInfo structure
                     info->orig_name = info->name;
@@ -8559,7 +8569,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
     
     // we may have deleted some of the original indexes;
     // get the list of indexes again
-    orig_indexes = m_set->getIndexEnum();
+    orig_indexes = db->getIndexEnum(m_set->getObjectPath());
     count = (int)orig_indexes->size();
     bool index_deleted = false;
     
@@ -8583,7 +8593,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
         // get the list of indexes again
         if (index_deleted)
         {
-            orig_indexes = m_set->getIndexEnum();
+            orig_indexes = db->getIndexEnum(m_set->getObjectPath());
             count = (int)orig_indexes->size();
             index_deleted = false;
         }
@@ -8620,7 +8630,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
         job->addInstruction(getBaseSet(), info->name, info->expr);
         if (index.isOk())
         {
-            m_set->deleteIndex(index->getTag());
+            db->deleteIndex(m_set->getObjectPath(), index->getTag());
             index_deleted = true;
         }
     }

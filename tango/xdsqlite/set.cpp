@@ -129,56 +129,12 @@ int SlSet::insert(tango::IIteratorPtr source_iter,
     return xdcmnInsert(source_iter, this, where_condition, max_rows, job);
 }
 
-int SlSet::update(tango::ISetPtr constraint,
-                      const std::wstring& params,
-                      tango::IJob* job)
-{
-    return 0;
-}
-
-int SlSet::remove(tango::ISetPtr constraint, tango::IJob* job)
-{
-    return 0;
-}
-
-tango::IIndexInfoEnumPtr SlSet::getIndexEnum()
-{
-    xcm::IVectorImpl<tango::IIndexInfoPtr>* indexes;
-    indexes = new xcm::IVectorImpl<tango::IIndexInfoPtr>;
-    return indexes;
-}
-
-tango::IIndexInfoPtr SlSet::createIndex(const std::wstring& tag,
-                                            const std::wstring& expr,
-                                            tango::IJob* job)
-{
-    return xcm::null;
-}
-
-tango::IIndexInfoPtr SlSet::lookupIndex(const std::wstring& expr,
-                                            bool exact_column_order)
-{
-    return xcm::null;
-}
-
-bool SlSet::deleteIndex(const std::wstring& name)
-{
-    return false;
-}
-
-
-bool SlSet::renameIndex(const std::wstring& name,
-                            const std::wstring& new_name)
-{
-    return false;
-}
-
 
 tango::IIteratorPtr SlSet::createIterator(const std::wstring& columns,
                                           const std::wstring& expr,
                                           tango::IJob* job)
 {
-    // -- create an iterator based on our select statement --
+    // create an iterator based on our select statement
     SlIterator* iter = new SlIterator;
     iter->m_db = m_db;
     iter->m_dbint = m_dbint;

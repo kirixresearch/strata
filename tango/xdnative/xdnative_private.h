@@ -236,6 +236,14 @@ public:
     virtual void onRelationshipsUpdated() = 0;
 
     virtual bool storeObject(const std::wstring& path) = 0;
+
+    virtual tango::IIndexInfoEnumPtr getIndexEnum() = 0;
+    virtual tango::IIndexInfoPtr createIndex(const std::wstring& name,
+                                             const std::wstring& expr,
+                                             tango::IJob* job) = 0;
+    virtual bool renameIndex(const std::wstring& name,
+                             const std::wstring& new_name) = 0;
+   virtual  bool deleteIndex(const std::wstring& name) = 0;
 };
 
 

@@ -1874,6 +1874,43 @@ bool FsDatabase::execute(const std::wstring& command,
                  command, flags, result, m_error, job);
 }
 
+
+
+
+tango::IIndexInfoPtr FsDatabase::createIndex(const std::wstring& path,
+                                             const std::wstring& name,
+                                             const std::wstring& expr,
+                                             tango::IJob* job)
+{
+    return xcm::null;
+}
+
+
+bool FsDatabase::renameIndex(const std::wstring& path,
+                             const std::wstring& name,
+                             const std::wstring& new_name)
+{
+    return false;
+}
+
+
+bool FsDatabase::deleteIndex(const std::wstring& path,
+                             const std::wstring& name)
+{
+    return false;
+}
+
+
+tango::IIndexInfoEnumPtr FsDatabase::getIndexEnum(const std::wstring& path)
+{
+    xcm::IVectorImpl<tango::IIndexInfoEnumPtr>* vec;
+    vec = new xcm::IVectorImpl<tango::IIndexInfoEnumPtr>;
+
+    return vec;
+}
+
+
+
 tango::ISetPtr FsDatabase::runGroupQuery(tango::ISetPtr set,
                                          const std::wstring& group,
                                          const std::wstring& output,

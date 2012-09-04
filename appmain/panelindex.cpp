@@ -24,9 +24,9 @@ enum
 };
 
 
-// -- rule definition functions for validating a GridActionRule --
+// rule definition functions for validating a GridActionRule
 
-void onCheckInvalidChars(kcl::Grid* grid,
+static void onCheckInvalidChars(kcl::Grid* grid,
                          int col,
                          std::vector<int>& retval)
 {
@@ -48,9 +48,9 @@ void onCheckInvalidChars(kcl::Grid* grid,
     }
 }
 
-void onCheckInvalidStartingChars(kcl::Grid* grid,
-                                 int col,
-                                 std::vector<int>& retval)
+static void onCheckInvalidStartingChars(kcl::Grid* grid,
+                                        int col,
+                                        std::vector<int>& retval)
 {
     retval.clear();
     
@@ -73,9 +73,9 @@ void onCheckInvalidStartingChars(kcl::Grid* grid,
 }
 
 
-// -- functions to add a GridActionRule to a validator --
+// functions to add a GridActionRule to a validator
 
-kcl::GridActionRule* addCheckInvalidCharsRule(kcl::GridActionValidator* validator,
+static kcl::GridActionRule* addCheckInvalidCharsRule(kcl::GridActionValidator* validator,
                                               int col)
 {
     wxString error_text = _("Index names cannot contain the following characters:");
@@ -91,7 +91,7 @@ kcl::GridActionRule* addCheckInvalidCharsRule(kcl::GridActionValidator* validato
     return rule;
 }
 
-kcl::GridActionRule* addCheckInvalidStartingCharsRule(kcl::GridActionValidator* validator,
+static kcl::GridActionRule* addCheckInvalidStartingCharsRule(kcl::GridActionValidator* validator,
                                                       int col)
 {
     wxString error_text = _("Index names cannot begin with the following characters:");
@@ -146,7 +146,7 @@ IndexPanel::~IndexPanel()
     m_ok_button = NULL;
 }
 
-// -- IDocument --
+
 bool IndexPanel::initDoc(cfw::IFramePtr frame,
                          cfw::IDocumentSitePtr site,
                          wxWindow* docsite_wnd,
@@ -173,6 +173,7 @@ bool IndexPanel::initDoc(cfw::IFramePtr frame,
     m_doc_site->setCaption(caption);
     
     // create indexes list
+
     m_indexes_list = new kcl::RowSelectionGrid(this,
                                                ID_IndexesList,
                                                wxDefaultPosition,
@@ -188,7 +189,7 @@ bool IndexPanel::initDoc(cfw::IFramePtr frame,
     m_indexes_list->setColumnProportionalSize(0, 1);
     populateIndexesList();
     
-    // -- add rules for validating index names (and do an initial check) --
+    // add rules for validating index names (and do an initial check)
     
     m_indexes_list_validator = new kcl::GridActionValidator(m_indexes_list, GETBMP(gf_exclamation_16));
     
@@ -281,7 +282,7 @@ bool IndexPanel::initDoc(cfw::IFramePtr frame,
     horz_sizer->Add(m_index_fields, 1, wxEXPAND);
     
     
-    // -- create a platform standards-compliant OK/Cancel sizer --
+    // create a platform standards-compliant OK/Cancel sizer --
     
     m_ok_button = new wxButton(this, wxID_OK);
     
@@ -419,7 +420,7 @@ void IndexPanel::populateIndexesList()
     
     tango::IIndexInfoPtr index;
     tango::IIndexInfoEnumPtr indexes;
-    indexes = m_set->getIndexEnum();
+    indexes = g_app->getDatabase()->getIndexEnum(m_set->getObjectPath());
     
     // temporary vector for sorting
     std::vector<IndexInfo*> info_vec;
@@ -532,7 +533,7 @@ void IndexPanel::insertIndexColumn(int row,
     if (colinfo.isOk())
         dynamic = colinfo->getCalculated();
     
-    // -- set the cell text and bitmap information --
+    // set the cell text and bitmap information
     
     m_index_fields->setCellString(row, 0, col_name);
     m_index_fields->setCellBitmap(row, 0, dynamic ? GETBMP(gf_lightning_16) :

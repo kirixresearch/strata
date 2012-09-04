@@ -141,16 +141,7 @@ bool sqlDrop(tango::IDatabasePtr db,
         std::wstring on = stmt.getKeywordParam(L"ON");
         dequote(on, '[', ']');
         
-        tango::ISetPtr set = db->openSet(on);
-        if (set.isNull())
-        {
-            wchar_t buf[1024]; // some paths might be long
-            swprintf(buf, 1024, L"Unable to drop index because table [%ls] in ON clause cannot be opened", on.c_str());
-            error.setError(tango::errorGeneral, buf);
-            return false;
-        }
-        
-        result = set->deleteIndex(param);
+        result = db->deleteIndex(on, param);
         
         // if the if_exists flag is false, drop item must be
         // deleted, or else there's an error
