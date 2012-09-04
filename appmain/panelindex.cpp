@@ -172,6 +172,7 @@ bool IndexPanel::initDoc(cfw::IFramePtr frame,
     m_doc_site = site;
     m_doc_site->setCaption(caption);
     
+
     // create indexes list
 
     m_indexes_list = new kcl::RowSelectionGrid(this,
@@ -181,6 +182,7 @@ bool IndexPanel::initDoc(cfw::IFramePtr frame,
                                                kcl::DEFAULT_BORDER,
                                                false,
                                                false);
+
     m_indexes_list->setAllowInvalidAreaInserts(true);
     m_indexes_list->setAllowDeletes(true);
     m_indexes_list->setOptionState(kcl::Grid::optColumnResize, false);
@@ -189,6 +191,7 @@ bool IndexPanel::initDoc(cfw::IFramePtr frame,
     m_indexes_list->setColumnProportionalSize(0, 1);
     populateIndexesList();
     
+
     // add rules for validating index names (and do an initial check)
     
     m_indexes_list_validator = new kcl::GridActionValidator(m_indexes_list, GETBMP(gf_exclamation_16));
@@ -205,12 +208,15 @@ bool IndexPanel::initDoc(cfw::IFramePtr frame,
     
     m_indexes_list_validator->validate();
     
+
     // create available fields list
+
     m_available_fields = new FieldListControl(this, ID_AvailableFieldsList);
     m_available_fields->setDragFormat(wxT("indexpanel_fields"));
     m_available_fields->setColumnCaption(FieldListControl::ColNameIdx, _("Available Fields"));
     m_available_fields->setStructure(m_structure);
     
+
     // create index fields list
     m_index_fields = new kcl::RowSelectionGrid(this);
     m_index_fields->setAllowDeletes(true);
@@ -228,12 +234,15 @@ bool IndexPanel::initDoc(cfw::IFramePtr frame,
                                       0);
     m_index_fields->createDefaultView();
     
+
     // the list of field names should not be editable
+
     kcl::CellProperties props;
     props.mask = kcl::CellProperties::cpmaskEditable;
     props.editable = false;
     m_index_fields->setModelColumnProperties(0, &props);
     
+
     // the sort order should be a drop list
     props.mask = kcl::CellProperties::cpmaskCtrlType |
                  kcl::CellProperties::cpmaskCbChoices;
@@ -245,6 +254,7 @@ bool IndexPanel::initDoc(cfw::IFramePtr frame,
     int index_row_height = m_index_fields->getRowHeight()-2;
     m_index_fields->setRowHeight(index_row_height);
     
+
     // create add index button
     wxButton* add_index_button = new wxButton(this,
                                              ID_AddIndexButton,
@@ -256,6 +266,7 @@ bool IndexPanel::initDoc(cfw::IFramePtr frame,
     s.SetWidth(s.GetWidth()+10);
     add_index_button->SetMinSize(s);
     
+
     // create delete index button
     m_delete_index_button = new wxButton(this,
                                          ID_DeleteIndexButton,
@@ -267,13 +278,16 @@ bool IndexPanel::initDoc(cfw::IFramePtr frame,
     s.SetWidth(s.GetWidth()+10);
     m_delete_index_button->SetMinSize(s);
     
+
     // create the drop target for the grid and connect the signal
     kcl::GridDataDropTarget* drop_target = new kcl::GridDataDropTarget(m_index_fields);
     drop_target->sigDropped.connect(this, &IndexPanel::onGridDataDropped);
     drop_target->setGridDataObjectFormats(wxT("indexpanel_fields"), wxT("indexpanel_output"));
     m_index_fields->SetDropTarget(drop_target);
     
+
     // create horizontal sizer
+
     wxBoxSizer* horz_sizer = new wxBoxSizer(wxHORIZONTAL);
     horz_sizer->Add(m_indexes_list, 1, wxEXPAND);
     horz_sizer->AddSpacer(8);
@@ -294,11 +308,13 @@ bool IndexPanel::initDoc(cfw::IFramePtr frame,
     ok_cancel_sizer->Prepend(add_index_button, 0, wxALIGN_CENTER | wxLEFT, 8);
     ok_cancel_sizer->AddSpacer(5);
     
+
     // this code is necessary to get the OK/Cancel sizer's bottom margin to 8
     wxSize min_size = ok_cancel_sizer->GetMinSize();
     min_size.SetHeight(min_size.GetHeight()+16);
     ok_cancel_sizer->SetMinSize(min_size);
     
+
     // create main sizer
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
     main_sizer->AddSpacer(8);
@@ -306,6 +322,7 @@ bool IndexPanel::initDoc(cfw::IFramePtr frame,
     main_sizer->Add(ok_cancel_sizer, 0, wxEXPAND);
     SetSizer(main_sizer);
     Layout();
+
 
     // create pseudo-proportional columns in the index fields list
     int w, h;
@@ -805,7 +822,4 @@ void IndexPanel::onDeletedIndexFields(std::vector<int> rows)
     //       kcl::RowSelectedGrid after this signal is processed
     checkOverlayText();
 }
-
-
-
 

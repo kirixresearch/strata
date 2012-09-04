@@ -2427,7 +2427,7 @@ bool TableDoc::open(tango::ISetPtr set, tango::IIteratorPtr iter)
     m_sort_order = wxT("");
     m_caption_suffix = wxT("");
 
-    // -- save set pointer --
+    // save set pointer
     m_set = set;
     m_browse_set = set;
     
@@ -2832,7 +2832,7 @@ void TableDoc::updateCaption()
         wxString temps = towx(m_set->getObjectPath());
         
         m_dbpath = temps;
-        
+
         if (m_set->isTemporary())
         {
             if (temps.Find(wxT("/.temp")) != -1)
@@ -6651,8 +6651,7 @@ void TableDoc::onSummary(wxCommandEvent& evt)
 
     if (summary_columns.size() == 0)
     {
-        int col_count = structure->getColumnCount();
-        int i;
+        size_t i, col_count = structure->getColumnCount();
 
         for (i = 0; i < col_count; ++i)
         {
@@ -6693,10 +6692,10 @@ void TableDoc::onSummary(wxCommandEvent& evt)
         if (colinfo->getType() == tango::typeCharacter ||
             colinfo->getType() == tango::typeWideCharacter)
         {
-            outcol.Printf(wxT("%s_0result0_minlength=min(length(%s)),"), it->c_str(), it->c_str());
+            outcol.Printf(wxT("%s_0result0_minlength=min(length([%s])),"), it->c_str(), it->c_str());
             group_funcs += outcol;
 
-            outcol.Printf(wxT("%s_0result0_maxlength=max(length(%s)),"), it->c_str(), it->c_str());
+            outcol.Printf(wxT("%s_0result0_maxlength=max(length([%s])),"), it->c_str(), it->c_str());
             group_funcs += outcol;        
         }
 
@@ -6708,20 +6707,20 @@ void TableDoc::onSummary(wxCommandEvent& evt)
             if (scale > max_scale)
                 max_scale = scale;
             
-            outcol.Printf(wxT("%s_0result0_sum=sum(%s),"), it->c_str(), it->c_str());
+            outcol.Printf(wxT("%s_0result0_sum=sum([%s]),"), it->c_str(), it->c_str());
             group_funcs += outcol;
 
-            outcol.Printf(wxT("%s_0result0_avg=avg(%s),"), it->c_str(), it->c_str());
+            outcol.Printf(wxT("%s_0result0_avg=avg([%s]),"), it->c_str(), it->c_str());
             group_funcs += outcol;
         }
 
-        outcol.Printf(wxT("%s_0result0_min=min(%s),"), it->c_str(), it->c_str());
+        outcol.Printf(wxT("%s_0result0_min=min([%s]),"), it->c_str(), it->c_str());
         group_funcs += outcol;
 
-        outcol.Printf(wxT("%s_0result0_max=max(%s),"), it->c_str(), it->c_str());
+        outcol.Printf(wxT("%s_0result0_max=max([%s]),"), it->c_str(), it->c_str());
         group_funcs += outcol;
 
-        outcol.Printf(wxT("%s_0result0_empty=count(empty(%s)),"), it->c_str(), it->c_str());
+        outcol.Printf(wxT("%s_0result0_empty=count(empty([%s])),"), it->c_str(), it->c_str());
         group_funcs += outcol;
     }
 
@@ -6737,13 +6736,13 @@ void TableDoc::onSummary(wxCommandEvent& evt)
     job->setExtraLong(max_scale);
     job->sigJobFinished().connect(&onSummaryJobFinished);
 
-    // -- add and start job --
+    // add and start job
     g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
 }
 
 
 
-// -- Find Next Row Implementation --
+// Find Next Row Implementation
 
 
 class DlgSearchWait : public wxDialog
