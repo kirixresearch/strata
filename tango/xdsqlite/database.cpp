@@ -740,6 +740,14 @@ bool SlDatabase::deleteIndex(const std::wstring& path,
 }
 
 
+
+tango::IStructurePtr SlDatabase::describeTable(const std::wstring& path)
+{
+    return xcm::null;
+}
+
+
+
 tango::IIndexInfoEnumPtr SlDatabase::getIndexEnum(const std::wstring& path)
 {
     xcm::IVectorImpl<tango::IIndexInfoEnumPtr>* vec;

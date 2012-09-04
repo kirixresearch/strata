@@ -1862,6 +1862,15 @@ bool FsDatabase::deleteRelation(const std::wstring& relation_id)
 }
 
 
+
+
+tango::IStructurePtr FsDatabase::describeTable(const std::wstring& path)
+{
+    return xcm::null;
+}
+
+
+
 bool FsDatabase::execute(const std::wstring& command,
                          unsigned int flags,
                          xcm::IObjectPtr& result,

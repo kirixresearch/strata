@@ -769,6 +769,7 @@ public:
                              const std::wstring& name) = 0;
     virtual IIndexInfoEnumPtr getIndexEnum(const std::wstring& path) = 0;
 
+    virtual tango::IStructurePtr describeTable(const std::wstring& path) = 0;
 
     virtual bool execute(const std::wstring& command,
                          unsigned int flags,

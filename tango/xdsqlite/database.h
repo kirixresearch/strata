@@ -115,6 +115,8 @@ public:
                        std::wstring& connection_str,
                        std::wstring& remote_path);
                        
+    tango::IStructurePtr describeTable(const std::wstring& path);
+
     bool execute(const std::wstring& command,
                  unsigned int flags,
                  xcm::IObjectPtr& result,

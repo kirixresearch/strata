@@ -738,6 +738,13 @@ tango::IIndexInfoEnumPtr SqlServerDatabase::getIndexEnum(const std::wstring& pat
 }
 
 
+
+tango::IStructurePtr SqlServerDatabase::describeTable(const std::wstring& path)
+{
+    return xcm::null;
+}
+
+
 bool SqlServerDatabase::execute(const std::wstring& command,
                                 unsigned int flags,
                                 xcm::IObjectPtr& result,

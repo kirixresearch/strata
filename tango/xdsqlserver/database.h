@@ -116,6 +116,7 @@ public:
                      const std::wstring& name);
     tango::IIndexInfoEnumPtr getIndexEnum(const std::wstring& path);
 
+    tango::IStructurePtr describeTable(const std::wstring& path);
 
     bool execute(const std::wstring&,
                  unsigned int flags,

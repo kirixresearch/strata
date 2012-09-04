@@ -1298,6 +1298,12 @@ tango::IIndexInfoEnumPtr OracleDatabase::getIndexEnum(const std::wstring& path)
 }
 
 
+tango::IStructurePtr OracleDatabase::describeTable(const std::wstring& path)
+{
+    return xcm::null;
+}
+
+
 
 
 bool OracleDatabase::execute(const std::wstring& _command,

@@ -2137,6 +2137,13 @@ tango::IIndexInfoEnumPtr OdbcDatabase::getIndexEnum(const std::wstring& path)
 
 
 
+tango::IStructurePtr OdbcDatabase::describeTable(const std::wstring& path)
+{
+    return xcm::null;
+}
+
+
+
 bool OdbcDatabase::execute(const std::wstring& command,
                            unsigned int flags,
                            xcm::IObjectPtr& result,
