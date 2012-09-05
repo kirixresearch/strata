@@ -867,12 +867,15 @@ void GroupPanel::onExecute(wxCommandEvent& event)
         if (m_grid->getCellComboSel(i, GroupCol_GroupFunc) != GroupFunc_GroupBy)
             continue;
 
-        colinfo = m_structure->getColumnInfo(towstr(m_grid->getCellString(i, GroupCol_InputExpr)));
+        wxString input_colname = m_grid->getCellString(i, GroupCol_InputExpr);
+        input_colname.MakeUpper();
+        input_colname.Trim(true);
+        wxString quoted_colname = quoteIdentifier(g_app->getDatabase(), input_colname);
 
         wxString temps;
         temps.Printf(wxT("%s%s"),
                      keypart_count == 0 ? wxT("") : wxT(","),
-                     colinfo->getName().c_str());
+                     quoted_colname.c_str());
 
         group += temps;
         keypart_count++;
@@ -902,14 +905,20 @@ void GroupPanel::onExecute(wxCommandEvent& event)
         // in addition to the aggregate results.  This makes all "Group By"
         // fields redundant.  Therefore we want to leave those out,
         // as they are already taken care of by the 'include detail' function
-        
-        wxString str = m_grid->getCellString(i, GroupCol_OutputField);
-        str.MakeUpper();
-        str.Trim(true);
-        
+
+        wxString groupcol_inputfield = m_grid->getCellString(i, GroupCol_InputExpr);
+        groupcol_inputfield.MakeUpper();
+        groupcol_inputfield.Trim(true);
+        wxString quoted_inputfield = quoteIdentifier(g_app->getDatabase(), groupcol_inputfield);
+
+        wxString groupcol_outputfield = m_grid->getCellString(i, GroupCol_OutputField);
+        groupcol_outputfield.MakeUpper();
+        groupcol_outputfield.Trim(true);
+        wxString quoted_outputfield = quoteIdentifier(g_app->getDatabase(), groupcol_outputfield);
+
         if (include_detail &&
             combo_sel == GroupFunc_GroupBy &&
-            orig_field_set.find(str) != orig_field_set.end())
+            orig_field_set.find(groupcol_outputfield) != orig_field_set.end())
         {
             continue;
         }
@@ -917,11 +926,13 @@ void GroupPanel::onExecute(wxCommandEvent& event)
         // construct the output field specifier
         wxString temps;
 
+        
+
         temps.Printf(wxT("%s%s=%s(%s)"),
                      outputpart_count == 0 ? wxT("") : wxT(","),        
-                     m_grid->getCellString(i, GroupCol_OutputField).c_str(),
+                     quoted_outputfield.c_str(),
                      groupfunc2str(combo_sel).c_str(),
-                     m_grid->getCellString(i, GroupCol_InputExpr).c_str());
+                     quoted_inputfield.c_str());
 
         output_columns += temps;
         outputpart_count++;
