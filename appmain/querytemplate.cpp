@@ -17,179 +17,6 @@
 #include "jsonconfig.h"
 
 
-static bool needsQuoting(const wxString& str)
-{
-    if (str.Freq(' ') > 0 || str.Freq('.') > 0 ||
-        str.Freq('/') > 0 || str.Freq('\\') > 0 ||
-        str.Freq(':') > 0)
-    {
-        return true;
-    }
-    
-    return false;
-}
-
-static wxString quoteTable(const wxString& _str)
-{
-    if (!needsQuoting(_str))
-        return _str;
-        
-    wxString str = _str;
-    
-    tango::IDatabasePtr db = g_app->getDatabase();
-    if (db.isNull())
-        return str;
-    
-    tango::IAttributesPtr attr = db->getAttributes();
-    if (attr.isNull())
-        return str;
-        
-    str.Prepend(towx(attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar)));
-    str.Append(towx(attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar)));
-    
-    return str;
-}
-
-static wxString quoteAlias(const wxString& _str)
-{
-    if (!needsQuoting(_str))
-        return _str;
-        
-    wxString str = _str;
-    
-    tango::IDatabasePtr db = g_app->getDatabase();
-    if (db.isNull())
-        return str;
-    
-    tango::IAttributesPtr attr = db->getAttributes();
-    if (attr.isNull())
-        return str;
- 
-    str.Prepend(towx(attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar)));
-    str.Append(towx(attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar)));
-
-    return str;
-}
-
-static wxString quoteField(const wxString& _str)
-{
-    wxString str = _str;
-    
-    tango::IDatabasePtr db = g_app->getDatabase();
-    if (db.isNull())
-        return str;
-    
-    tango::IAttributesPtr attr = db->getAttributes();
-    if (attr.isNull())
-        return str;
-   
-    if (::wxStrpbrk(str, wxT("+-*/()[]<>")))
-    {
-        // looks like a calculated formula, we don't want to touch that
-        return str;
-    }
-   
-    if (str.Freq('.') > 0)
-    {
-        wxString alias = str.BeforeLast('.');
-        wxString field = str.AfterLast('.');
-        
-        if (needsQuoting(alias))
-        {
-            alias.Prepend(towx(attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar)));
-            alias.Append(towx(attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar)));
-        }
-        
-        if (needsQuoting(field))
-        {
-            field.Prepend(towx(attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar)));
-            field.Append(towx(attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar)));
-        }
-        
-        str = alias + wxT(".") + field;
-    }
-     else
-    {
-        if (!needsQuoting(str))
-            return str;
-        
-        str.Prepend(towx(attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar)));
-        str.Append(towx(attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar)));
-    }
-    
-    return str;
-}
-
-// this function formats a table name to remove the leading slash
-// if the table is in the root.  Thus "/mytbl" becomes "mytbl",
-// and "/myfolder/mytbl" remains the same
-static wxString formatTableName(const wxString& _table_path)
-{
-    wxString table_path = quoteTable(_table_path);
-    
-    if (table_path.Freq('/') == 1 && table_path.GetChar(0) == '/')
-    {
-        wxString result = table_path;
-        result.Remove(0,1);
-        return result;
-    }
-    
-    return table_path;
-}
-
-static wxString makeQueryGroupFunction(const wxString& _input_expr, int group_func)
-{
-    wxString expr;
-    wxString input_expr = quoteField(_input_expr);
-
-    switch (group_func)
-    {
-        default:
-        case QueryGroupFunction_GroupBy:
-        case QueryGroupFunction_First:
-        case QueryGroupFunction_None:
-            expr = input_expr;
-            break;
-
-        case QueryGroupFunction_Last:
-            expr.Printf(wxT("LAST(%s)"), input_expr.c_str());
-            break;
-
-        case QueryGroupFunction_Min:
-            expr.Printf(wxT("MIN(%s)"), input_expr.c_str());
-            break;
-
-        case QueryGroupFunction_Max:
-            expr.Printf(wxT("MAX(%s)"), input_expr.c_str());
-            break;
-
-        case QueryGroupFunction_Sum:
-            expr.Printf(wxT("SUM(%s)"), input_expr.c_str());
-            break;
-
-        case QueryGroupFunction_Avg:
-            expr.Printf(wxT("AVG(%s)"), input_expr.c_str());
-            break;
-
-        case QueryGroupFunction_Count:
-            expr.Printf(wxT("COUNT(*)"));
-            break;
-
-        case QueryGroupFunction_Stddev:
-            expr.Printf(wxT("STDDEV(%s)"), input_expr.c_str());
-            break;
-
-        case QueryGroupFunction_Variance:
-            expr.Printf(wxT("VARIANCE(%s)"), input_expr.c_str());
-            break;
-
-        case QueryGroupFunction_GroupID:
-            expr.Printf(wxT("GROUPID()"));
-            break;
-    }
-
-    return expr;
-}
 
 static void onQueryJobFinished(cfw::IJobPtr job)
 {
@@ -828,7 +655,7 @@ wxString QueryTemplate::buildJoinString(QueryBuilderSourceTable& tbl)
         {
             wxString fld;
 
-            fld = quoteAlias(tbl.alias);
+            fld = quoteTable(tbl.alias);
             fld += wxT(".");
             fld += quoteField(left.GetNextToken());
 
@@ -840,7 +667,7 @@ wxString QueryTemplate::buildJoinString(QueryBuilderSourceTable& tbl)
         {
             wxString fld;
 
-            fld = quoteAlias(right_tbl->alias);
+            fld = quoteTable(right_tbl->alias);
             fld += wxT(".");
             fld += quoteField(right.GetNextToken());
 
@@ -2007,3 +1834,145 @@ bool QueryTemplate::loadXml(const wxString& path)
     return true;
 }
 
+wxString QueryTemplate::quoteTable(const wxString& _str)
+{
+    wxString str = _str;
+
+    tango::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return str;
+
+    str = towx(tango::quoteIdentifier(g_app->getDatabase(), towstr(str)));
+    return str;
+}
+
+wxString QueryTemplate::quoteField(const wxString& _str)
+{
+    wxString str = _str;
+    tango::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return str;
+
+    // create a unique list of column names with both a qualified and 
+    // unqualified variant; we'll use these to determine whether or 
+    // not an input is an expression
+    std::map<wxString,int> fieldlist;
+    
+    std::vector<QueryBuilderSourceTable>::iterator it, it_end;
+    it_end = m_source_tables.end();
+    for (it = m_source_tables.begin(); it != it_end; ++it)
+    {
+        tango::IStructurePtr structure = it->structure;
+        if (structure.isNull())
+            continue;
+        
+        int col_count = structure->getColumnCount();
+        for (int idx = 0; idx < col_count; ++idx)
+        {
+            wxString table_name = it->alias;
+            wxString col_name = towx(structure->getColumnName(idx));
+            
+            table_name.MakeUpper();
+            col_name.MakeUpper();
+
+            fieldlist[table_name + wxT(".") + col_name] = 1;
+            fieldlist[col_name] = 1;
+        }
+    }   
+
+    // if the string isn't in the list of fields, don't try to quote it
+    // because it's either an expression, or something we don't know what
+    // to do with
+    wxString s = _str.Upper();
+    std::map<wxString,int>::iterator it_fields = fieldlist.find(s);
+    if (it_fields == fieldlist.end())
+        return str;
+
+
+    if (str.Freq('.') == 0)
+    {
+        str = towx(tango::quoteIdentifier(g_app->getDatabase(), towstr(str)));
+    }
+     else
+    {
+        wxString alias = str.BeforeLast('.');
+        wxString field = str.AfterLast('.');
+
+        alias = towx(tango::quoteIdentifier(db, towstr(alias)));
+        field = towx(tango::quoteIdentifier(db, towstr(field)));
+        str = alias + wxT(".") + field;
+    }
+
+    return str;
+}
+
+wxString QueryTemplate::formatTableName(const wxString& _table_path)
+{
+    // this function formats a table name to remove the leading slash
+    // if the table is in the root.  Thus "/mytbl" becomes "mytbl",
+    // and "/myfolder/mytbl" remains the same
+
+    wxString table_path = quoteTable(_table_path);
+    if (table_path.Freq('/') == 1 && table_path.GetChar(0) == '/')
+    {
+        wxString result = table_path;
+        result.Remove(0,1);
+        return result;
+    }
+    
+    return table_path;
+}
+
+wxString QueryTemplate::makeQueryGroupFunction(const wxString& _input_expr, int group_func)
+{
+    wxString expr;
+    wxString input_expr = quoteField(_input_expr);
+
+    switch (group_func)
+    {
+        default:
+        case QueryGroupFunction_GroupBy:
+        case QueryGroupFunction_First:
+        case QueryGroupFunction_None:
+            expr = input_expr;
+            break;
+
+        case QueryGroupFunction_Last:
+            expr.Printf(wxT("LAST(%s)"), input_expr.c_str());
+            break;
+
+        case QueryGroupFunction_Min:
+            expr.Printf(wxT("MIN(%s)"), input_expr.c_str());
+            break;
+
+        case QueryGroupFunction_Max:
+            expr.Printf(wxT("MAX(%s)"), input_expr.c_str());
+            break;
+
+        case QueryGroupFunction_Sum:
+            expr.Printf(wxT("SUM(%s)"), input_expr.c_str());
+            break;
+
+        case QueryGroupFunction_Avg:
+            expr.Printf(wxT("AVG(%s)"), input_expr.c_str());
+            break;
+
+        case QueryGroupFunction_Count:
+            expr.Printf(wxT("COUNT(*)"));
+            break;
+
+        case QueryGroupFunction_Stddev:
+            expr.Printf(wxT("STDDEV(%s)"), input_expr.c_str());
+            break;
+
+        case QueryGroupFunction_Variance:
+            expr.Printf(wxT("VARIANCE(%s)"), input_expr.c_str());
+            break;
+
+        case QueryGroupFunction_GroupID:
+            expr.Printf(wxT("GROUPID()"));
+            break;
+    }
+
+    return expr;
+}
