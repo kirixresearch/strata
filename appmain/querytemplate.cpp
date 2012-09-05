@@ -140,29 +140,15 @@ static wxString formatTableName(const wxString& _table_path)
 static wxString makeQueryGroupFunction(const wxString& _input_expr, int group_func)
 {
     wxString expr;
+    wxString input_expr = quoteField(_input_expr);
 
-    
-    
-    // TODO: currently, the SQL parser can't handle quoted field
-    // names within aggregate functions; for example, the following
-    // will fail:
-    //     select sum([field with space]) from t;
-    // however, the parser is flexible enough to correctly process the
-    // result when the quoting is absent; so for now, don't quote
-    // fields within aggregate functions; when aliases are supported,
-    // uncomment the following:
-
-    wxString input_expr = _input_expr;
-    //wxString input_expr = quoteField(_input_expr);
-    
-    
     switch (group_func)
     {
         default:
         case QueryGroupFunction_GroupBy:
         case QueryGroupFunction_First:
         case QueryGroupFunction_None:
-            expr = quoteField(input_expr);  // TODO: remove quoting when above quoting is reinstated
+            expr = input_expr;
             break;
 
         case QueryGroupFunction_Last:
