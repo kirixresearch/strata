@@ -122,7 +122,7 @@ int StructureValidator::validateExpression(tango::IStructurePtr structure,
      else
     {
         if (match_fieldtype != tango::typeUndefined &&
-            !isTypeCompatible(match_fieldtype, expr_type))
+            !tango::isTypeCompatible(match_fieldtype, expr_type))
         {
             // the expression return type and specified type differ
             return ExpressionTypeMismatch;

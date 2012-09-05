@@ -975,7 +975,7 @@ bool ExprBuilderPanel::validate()
     valid_text = getTypeText(type);
 
     if (m_type_only != tango::typeUndefined &&
-        !isTypeCompatible(type, m_type_only))
+        !tango::isTypeCompatible(type, m_type_only))
     {
         valid_text = _("Invalid");
     }
@@ -998,7 +998,7 @@ bool ExprBuilderPanel::validate()
 
         if (m_type_only != tango::typeUndefined)
         {
-            if (!isTypeCompatible(type, m_type_only))
+            if (!tango::isTypeCompatible(type, m_type_only))
                 valid = false;
         }
     }

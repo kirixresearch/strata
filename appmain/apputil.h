@@ -112,9 +112,6 @@ wxString makeValidObjectName(
                const wxString& str,
                tango::IDatabasePtr db = xcm::null);
 
-// determines if two tango types are compatible
-bool isTypeCompatible(int type1, int type2);
-
 // returns a localized name for a given type
 wxString getTypeText(int tango_type);
 

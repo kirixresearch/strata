@@ -61,6 +61,50 @@ inline void bindExprParser(void* parser)
 }
 
 
+// -- general utility functions --
+
+inline bool isTypeCompatible(int type1, int type2)
+{
+    // determines if two tango types are compatible
+
+    if (type1 == type2)
+        return true;
+
+    switch (type1)
+    {
+        case tango::typeCharacter:
+        case tango::typeWideCharacter:
+
+            if (type2 == tango::typeCharacter ||
+                type2 == tango::typeWideCharacter)
+            {
+                return true;
+            }
+            break;
+
+        case tango::typeNumeric:
+        case tango::typeDouble:
+        case tango::typeInteger:
+
+            if (type2 == tango::typeNumeric ||
+                type2 == tango::typeDouble ||
+                type2 == tango::typeInteger)
+            {
+                return true;
+            }
+            break;
+
+        case tango::typeDate:
+        case tango::typeDateTime:
+
+            if (type2 == tango::typeDate || type2 == tango::typeDateTime)
+                return true;
+            break;
+    }
+
+    return false;
+}
+
 
 // -- DateTime support --
 
@@ -224,8 +268,6 @@ public:
 protected:
     int yy, mm, dd, h, m, s, ms;
 };
-
-
 
 
 

@@ -264,7 +264,7 @@ bool ReplaceRowsPanel::validate(bool* value)
             tango::objhandle_t handle = m_iter->getHandle(towstr(replace_value));
             if (handle)
             {
-                valid = isTypeCompatible(m_iter->getType(handle), colinfo->getType());
+                valid = tango::isTypeCompatible(m_iter->getType(handle), colinfo->getType());
                 m_iter->releaseHandle(handle);
             }
         }

@@ -172,7 +172,7 @@ static int doUpdate(tango::ISetPtr set,
 
         if (rit->col_type != rit->replace_type)
         {
-            if (!isTypeCompatible(rit->col_type, rit->replace_type))
+            if (!tango::isTypeCompatible(rit->col_type, rit->replace_type))
             {
                 error.setError(tango::errorSyntax, L"Invalid syntax: replace expression type incompatible with column type being replaced");              
             
