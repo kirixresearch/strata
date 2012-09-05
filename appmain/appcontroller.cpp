@@ -56,6 +56,7 @@
 #include "transformationdoc.h"
 #include "../paladin/paladin.h"
 #include "dlgauth.h"
+#include "dlgcustomprompt.h"
 #include "inetauth.h"
 #include "updater.h"
 #include <wx/artprov.h>

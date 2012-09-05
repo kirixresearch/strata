@@ -16,6 +16,7 @@
 #include "exportpages.h"
 #include "pkgfile.h"
 #include "structurevalidator.h"
+#include "dlgcustomprompt.h"
 #include <wx/filename.h>
 #include <wx/stdpaths.h>
 #include <wx/artprov.h>

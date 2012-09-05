@@ -2440,10 +2440,9 @@ bool TableDoc::open(tango::ISetPtr set, tango::IIteratorPtr iter)
          else
         m_temporary = false;
     
+    m_dbpath = m_set->getObjectPath();
 
-    // if the set/table displayed has a url associated with it,
-    // display it
-
+    // if the set/table displayed has a url associated with it, display it
 
     tango::IDatabasePtr db = g_app->getDatabase();
     if (db.isOk() && m_set.isOk())
@@ -2831,8 +2830,6 @@ void TableDoc::updateCaption()
     if (m_set.isOk())
     {
         wxString temps = towx(m_set->getObjectPath());
-        
-        m_dbpath = temps;
 
         if (m_set->isTemporary())
         {

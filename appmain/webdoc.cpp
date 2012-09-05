@@ -20,6 +20,7 @@
 #include "bookmark.h"
 #include "dlgpagesetup.h"
 #include "dbdoc.h"
+#include "dlgcustomprompt.h"
 #include "../webconnect/webcontrol.h"
 #include <wx/fs_inet.h>
 #include <wx/stdpaths.h>
