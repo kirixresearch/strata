@@ -477,6 +477,13 @@ static std::wstring exprReplaceToken(const std::wstring& str,
 static std::wstring normalizeFieldNames(std::vector<SourceTable>& source_tables,
                                         const std::wstring& expr)
 {
+    // when a fieldname is unique, replace the fully qualified fieldname
+    // with just the fieldname; e.g:
+    //     alias.fieldname => fieldname
+    //     alias.[fieldname] => [fieldname]
+    //     [alias].fieldname => fieldname
+    //     [alias].[fieldname] => [fieldname]
+
     std::wstring result = expr;
     std::vector<SourceTable>::iterator st_it;
     std::wstring temps;
@@ -488,27 +495,38 @@ static std::wstring normalizeFieldNames(std::vector<SourceTable>& source_tables,
         int col_count = st_it->structure->getColumnCount();
         int i;
         
-        // replace alias with brackets around it
-        temps = L"[" + st_it->alias + L"]";
-        kl::replaceStrNoCase(result, temps, st_it->alias);
-
         for (i = 0; i < col_count; ++i)
         {
+            std::wstring full_name;
             std::wstring colname = st_it->structure->getColumnName(i);
+            std::wstring q_colname = L"[" + colname + L"]";
             tango::IColumnInfoPtr colinfo;
 
             if (isUniqueFieldName(source_tables, colname))
-            {
-                // replace column name with brackets around it
-                temps = L"[" + colname + L"]";
-                kl::replaceStrNoCase(result, temps, colname);
-                
+            {       
                 // replace alias.fieldname with fieldname
-                std::wstring full_name = st_it->alias;
+                full_name = st_it->alias;
                 full_name += L".";
                 full_name += colname;
-
                 result = exprReplaceToken(result, full_name, colname);
+                
+                // replace [alias].fieldname with fieldname
+                full_name = L"[" + st_it->alias + L"]";
+                full_name += L".";
+                full_name += colname;
+                result = exprReplaceToken(result, full_name, colname);
+
+                // replace alias.[fieldname] with [fieldname]
+                full_name = st_it->alias;
+                full_name += L".";
+                full_name += q_colname;
+                result = exprReplaceToken(result, full_name, q_colname);
+
+                // replace [alias].[fieldname] with [fieldname]
+                full_name = L"[" + st_it->alias + L"]";
+                full_name += L".";
+                full_name += q_colname;
+                result = exprReplaceToken(result, full_name, q_colname);
             }
         }
     }
