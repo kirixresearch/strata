@@ -2115,6 +2115,9 @@ void AppController::onOpenProject(wxCommandEvent& evt)
 
 void AppController::onCloseProject(wxCommandEvent& evt)
 {
+    if (!checkForRunningJobs())
+        return;
+
     cfw::IDocumentSiteEnumPtr docsites;
     cfw::IDocumentSitePtr site;
     ITableDocPtr table_doc;
@@ -6375,11 +6378,12 @@ public:
 };
 
 
-bool AppController::checkForRunningJobs()
+bool AppController::checkForRunningJobs(bool exit_message)
 {
     int ID_CancelAndExit = 100;
     int ID_KeepJobsRunning = 101;
-    
+    int ID_ExitAnyway = 101;
+
     cfw::IJobQueuePtr job_queue = g_app->getJobQueue();
     if (job_queue->getJobsActive())
     {
@@ -6390,8 +6394,10 @@ bool AppController::checkForRunningJobs()
                             message);
         dlg.setButton1(ID_CancelAndExit, _("Cancel Jobs and Continue"));
         dlg.setButton2(ID_KeepJobsRunning, _("Don't Continue"));
+        dlg.setButton3(ID_ExitAnyway, _("Exit Anyway"));
         dlg.showButtons(CustomPromptDlg::showButton1 |
-                        CustomPromptDlg::showButton2);
+                        CustomPromptDlg::showButton2 |
+                        CustomPromptDlg::showButton3);
 
         int result = dlg.ShowModal();
         if (result == ID_CancelAndExit)
@@ -6438,6 +6444,10 @@ bool AppController::checkForRunningJobs()
             wait_dlg->Destroy();
             return true;
         }
+         else if (result == ID_ExitAnyway)
+        {
+            return true;
+        }
 
         // don't cancel jobs or close the application
         return false;
@@ -6476,9 +6486,6 @@ bool AppController::checkForTemporaryFiles()
 
 bool AppController::closeProject()
 {
-    if (!checkForRunningJobs())
-        return false;
-
     if (m_frame)
     {
         if (!m_frame->closeAll(false))

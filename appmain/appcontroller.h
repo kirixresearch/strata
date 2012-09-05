@@ -321,7 +321,7 @@ private:
     void onStatusBarItemLeftDblClick(cfw::IStatusBarItemPtr item);
     void onStatusBarRefresh();
     
-    bool checkForRunningJobs();
+    bool checkForRunningJobs(bool exit_message = false);
     bool checkForTemporaryFiles();
     void doViewSwitcher(bool drop_down_menu);
 
