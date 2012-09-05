@@ -884,6 +884,8 @@ tango::ISetPtr Database::runGroupQuery(tango::ISetPtr set,
                 kl::trim(part1);
                 kl::trim(part2);
 
+                dequote(part1, '[', ']');
+                
                 if (structure->getColumnExist(part2))
                 {
                     std::wstring temps;
