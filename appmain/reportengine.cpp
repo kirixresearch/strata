@@ -42,7 +42,7 @@ static wxString getSortExprFromGroups(const std::vector<ReportSection>& sections
         if (!first)
             sort_expr += wxT(",");
 
-        wxString group_field = quoteIdentifier(g_app->getDatabase(), it->m_group_field);
+        wxString group_field = towx(tango::quoteIdentifier(g_app->getDatabase(), towstr(it->m_group_field)));
         sort_expr += group_field;
 
         if (it->m_sort_desc)
@@ -1451,7 +1451,7 @@ void ReportLayoutEngine::populateDataModel()
         // construct a query from the path
         query_string.Append(wxT("SELECT * FROM "));
         
-        wxString quoted_data_source = quoteIdentifier(g_app->getDatabase(), data_source);        
+        wxString quoted_data_source = towx(tango::quoteIdentifier(g_app->getDatabase(), towstr(data_source)));        
         query_string.Append(quoted_data_source);
 
         wxString data_filter = m_data_filter;

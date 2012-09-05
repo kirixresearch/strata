@@ -115,10 +115,6 @@ wxString makeValidObjectName(
 // returns a localized name for a given type
 wxString getTypeText(int tango_type);
 
-// quotes a database identifier
-wxString quoteIdentifier(tango::IDatabasePtr db, const wxString& identifier);
-wxString dequoteIdentifier(tango::IDatabasePtr db, const wxString& identifier);
-
 // for mounted folders or singleton mounts, these functions get
 // the actual object path or actual filename, respectively
 

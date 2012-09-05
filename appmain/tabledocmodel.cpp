@@ -1524,7 +1524,7 @@ bool TableDocMgr::newFile(const wxString& _path)
     if (db.isNull())
         return false;
 
-    wxString path = dequoteIdentifier(db, _path);
+    wxString path = towx(tango::dequoteIdentifier(db, towstr(_path)));
     wxString sql = wxT("CREATE TABLE [");
     sql += path;
     sql += wxT("] (field1 VARCHAR(40))");

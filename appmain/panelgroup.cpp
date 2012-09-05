@@ -870,7 +870,7 @@ void GroupPanel::onExecute(wxCommandEvent& event)
         wxString input_colname = m_grid->getCellString(i, GroupCol_InputExpr);
         input_colname.MakeUpper();
         input_colname.Trim(true);
-        wxString quoted_colname = quoteIdentifier(g_app->getDatabase(), input_colname);
+        wxString quoted_colname = towx(tango::quoteIdentifier(g_app->getDatabase(), towstr(input_colname)));
 
         wxString temps;
         temps.Printf(wxT("%s%s"),
@@ -909,12 +909,12 @@ void GroupPanel::onExecute(wxCommandEvent& event)
         wxString groupcol_inputfield = m_grid->getCellString(i, GroupCol_InputExpr);
         groupcol_inputfield.MakeUpper();
         groupcol_inputfield.Trim(true);
-        wxString quoted_inputfield = quoteIdentifier(g_app->getDatabase(), groupcol_inputfield);
+        wxString quoted_inputfield = towx(tango::quoteIdentifier(g_app->getDatabase(), towstr(groupcol_inputfield)));
 
         wxString groupcol_outputfield = m_grid->getCellString(i, GroupCol_OutputField);
         groupcol_outputfield.MakeUpper();
         groupcol_outputfield.Trim(true);
-        wxString quoted_outputfield = quoteIdentifier(g_app->getDatabase(), groupcol_outputfield);
+        wxString quoted_outputfield = towx(tango::quoteIdentifier(g_app->getDatabase(), towstr(groupcol_outputfield)));
 
         if (include_detail &&
             combo_sel == GroupFunc_GroupBy &&

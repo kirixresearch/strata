@@ -4213,7 +4213,7 @@ void CompReportDesign::setGroupsFromSortExpr(const wxString& sort_expr)
     
     for (itr = sort_fields.rbegin(); itr != itr_end; ++itr)
     {
-        wxString field = dequoteIdentifier(db, itr->first);
+        wxString field = towx(tango::dequoteIdentifier(db, towstr(itr->first)));
         insertGroup(wxT(""), field, itr->second, false);
     }
 }

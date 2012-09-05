@@ -222,7 +222,8 @@ static wxString buildSelectedColumnExpression(kcl::Grid* grid, bool descending =
                 expr += wxT(",");
 
             // add the column
-            expr += quoteIdentifier(g_app->getDatabase(), model->getColumnInfo(model_idx)->getName());
+            std::wstring col_name = towstr(model->getColumnInfo(model_idx)->getName());
+            expr += towx(tango::quoteIdentifier(g_app->getDatabase(), col_name));
 
             // if the descending flag is set, add the
             // descending keyword
@@ -3550,7 +3551,7 @@ static bool getMenuItemExpr(const wxString& field,
                             const wxString& value,
                             wxString& result)
 {
-    wxString lhs = quoteIdentifier(g_app->getDatabase(), field);
+    wxString lhs = towx(tango::quoteIdentifier(g_app->getDatabase(), towstr(field)));
     wxString rhs = value;
 
     if (type == tango::typeBoolean)
@@ -4458,7 +4459,7 @@ static wxString generateContextSyncMarkExpression(
         if (!rh)
             return wxT("");
         
-        part = quoteIdentifier(g_app->getDatabase(), *it);
+        part = towx(tango::quoteIdentifier(g_app->getDatabase(), towstr(*it)));
         part += wxT("=");
         
         tango::IColumnInfoPtr info = right_iter->getInfo(rh);
@@ -4968,7 +4969,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
             wxString s = t.GetNextToken();
             s.Trim();
             s.Trim(FALSE);
-            prikeys.push_back(dequoteIdentifier(db, s));
+            prikeys.push_back(towx(tango::dequoteIdentifier(db, towstr(s))));
         }
         
         std::vector<wxString>::iterator it;
@@ -4982,7 +4983,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
             
             std::wstring piece;
             piece = L"(";
-            piece += towstr(quoteIdentifier(db, *it));
+            piece += tango::quoteIdentifier(db, towstr(*it));
             piece += L"=";
             
             switch (type)
@@ -5058,7 +5059,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
         return;
 
 
-    wxString quoted_col_name = quoteIdentifier(db, col_name);
+    wxString quoted_col_name = towx(tango::quoteIdentifier(db, towstr(col_name)));
 
 
     // update_info is used by ICacheRowUpdate below, however only
@@ -5209,7 +5210,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
 
 
     wxString cmd = wxT("UPDATE ");
-    cmd += quoteIdentifier(db, getBaseSet()->getObjectPath());
+    cmd += towx(tango::quoteIdentifier(db, getBaseSet()->getObjectPath()));
     cmd += wxT(" SET ");
     cmd += str;
     cmd += where_str;
@@ -6917,7 +6918,7 @@ wxString TableDoc::getFindExprFromValue(const wxString& _search,
     for (it = search_cols.begin(); it != search_cols.end(); ++it)
     {
         wxString piece, left, right;
-        wxString colname = quoteIdentifier(g_app->getDatabase(), towx((*it)->getName()));        
+        wxString colname = towx(tango::quoteIdentifier(g_app->getDatabase(), (*it)->getName()));        
         
         switch ((*it)->getType())
         {
@@ -7815,7 +7816,7 @@ void TableDoc::onSetOrderAscending(wxCommandEvent& evt)
         model_colinfo = model->getColumnInfo(model_idx);
         col_name = model_colinfo->getName();
 
-        expr = quoteIdentifier(g_app->getDatabase(), col_name);
+        expr = towx(tango::quoteIdentifier(g_app->getDatabase(), towstr(col_name)));
     }
 
 
@@ -7853,7 +7854,7 @@ void TableDoc::onSetOrderDescending(wxCommandEvent& evt)
         model_colinfo = model->getColumnInfo(model_idx);
         col_name = model_colinfo->getName();
 
-        expr = quoteIdentifier(g_app->getDatabase(), col_name);
+        expr = towx(tango::quoteIdentifier(g_app->getDatabase(), towstr(col_name)));
         expr += wxT(" DESC");
     }
 

@@ -20,7 +20,7 @@ wxString writeQueryFromFilterSort(tango::IDatabasePtr db,
                                   const wxString& sort)
 {
     wxString query = wxT("SELECT * FROM ");
-    query += quoteIdentifier(db, table_name);
+    query += towx(tango::quoteIdentifier(db, towstr(table_name)));
 
     if (filter.Length() > 0)
     {

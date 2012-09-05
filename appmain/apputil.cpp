@@ -1324,58 +1324,6 @@ wxString getTypeText(int tango_type)
 
 
 
-
-
-
-wxString quoteIdentifier(tango::IDatabasePtr db, const wxString& identifier)
-{
-    if (db.isOk())
-    {
-        tango::IAttributesPtr attr = db->getAttributes();
-        if (attr)
-        {
-            wxString result = wxT("");
-            result += towx(attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar));
-            result += identifier;
-            result += towx(attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar));
-            return result;
-        }
-    }
-    
-    return identifier;
-}
-
-
-wxString dequoteIdentifier(tango::IDatabasePtr db, const wxString& identifier)
-{
-    if (db.isOk())
-    {
-        tango::IAttributesPtr attr = db->getAttributes();
-        if (attr)
-        {
-            size_t length = identifier.size();
-            wchar_t open_char = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar)[0];
-            wchar_t close_char = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar)[0];
-            wchar_t first_char = identifier[0];
-            wchar_t last_char = identifier[length-1];
-
-            if (length > 1 && first_char == open_char && last_char == close_char)
-            {
-                if (length == 2)
-                    return L"";
-            
-                wxString part = identifier.Mid(0, length-1);
-                return part.Mid(1);
-            }      
-        }
-    }
-
-    return identifier;
-}
-
-
-
-
 // for singleton mounts, this function gets the actual object path
 
 wxString getObjectPathFromMountPath(const wxString& database_path)
