@@ -3827,7 +3827,7 @@ bool Database::renameIndex(const std::wstring& path,
     tango::ISetPtr set = openSet(path);
     ISetInternalPtr set_int = set;
     if (set_int.isNull())
-        return xcm::null;
+        return false;
 
     return set_int->renameIndex(name, new_name);
 }
@@ -3839,7 +3839,9 @@ bool Database::deleteIndex(const std::wstring& path,
     tango::ISetPtr set = openSet(path);
     ISetInternalPtr set_int = set;
     if (set_int.isNull())
+    {
         return xcm::null;
+    }
 
     return set_int->deleteIndex(name);
 }
@@ -3850,8 +3852,13 @@ tango::IIndexInfoEnumPtr Database::getIndexEnum(const std::wstring& path)
     tango::ISetPtr set = openSet(path);
     ISetInternalPtr set_int = set;
     if (set_int.isNull())
-        return xcm::null;
-
+    {
+        // ISetInternal not supported -- return no indexes
+        xcm::IVectorImpl<tango::IIndexInfoEnumPtr>* vec;
+        vec = new xcm::IVectorImpl<tango::IIndexInfoEnumPtr>;
+        return vec;
+    }
+    
     return set_int->getIndexEnum();
 }
 
