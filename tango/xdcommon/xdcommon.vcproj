@@ -1016,6 +1016,10 @@
 			RelativePath=".\tango_private.h"
 			>
 		</File>
+		<File
+			RelativePath="..\include\xdutil.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
