@@ -1373,7 +1373,7 @@ wxString getTypeText(int tango_type)
 
 wxString quoteIdentifier(tango::IDatabasePtr db, const wxString& identifier)
 {
-    if (db.isOk() && identifier.Freq(wxT(' ')) > 0)
+    if (db.isOk())
     {
         tango::IAttributesPtr attr = db->getAttributes();
         if (attr)
