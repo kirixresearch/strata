@@ -250,6 +250,7 @@ enum
     
     dbattrIdentifierQuoteOpenChar = 1900,
     dbattrIdentifierQuoteCloseChar = 1901,
+    dbattrIdentifierCharsNeedingQuote = 1902,
     
     // columns
     dbattrColumnMaxNameLength = 2000,

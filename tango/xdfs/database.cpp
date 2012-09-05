@@ -75,15 +75,30 @@ FsDatabase::FsDatabase()
     kws += xdfs_keywords;
     kws += L",";
     kws += xdfs_keywords2;
+
+    // note: official filename restrictions on windows systems: \/:*?<>|
+    // additional restrictions for quoting and items that would cause
+    // parsing-related issues (e.g. [],"'=)
     
     m_attr = static_cast<tango::IAttributes*>(new DatabaseAttributes);
-    m_attr->setStringAttribute(tango::dbattrKeywords, kws);
     m_attr->setIntAttribute(tango::dbattrColumnMaxNameLength, 80);
     m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 80);
-    m_attr->setStringAttribute(tango::dbattrTempDirectory, xf_get_temp_path());
-    m_attr->setStringAttribute(tango::dbattrDefinitionDirectory, xf_get_temp_path());
+    m_attr->setStringAttribute(tango::dbattrKeywords, kws);    
+    m_attr->setStringAttribute(tango::dbattrColumnInvalidChars,
+                               L"*|:\"<>?[]\\;'=,/\x00\x09\x0A\x0B\x0C\x0D\xFF");
+    m_attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars,
+                               L"*|:\"<>?[]\\;'=,/\x00\x09\x0A\x0B\x0C\x0D\xFF");
+    m_attr->setStringAttribute(tango::dbattrTableInvalidChars,
+                               L"*|:\"<>?[]\\;'=,/\x00\x09\x0A\x0B\x0C\x0D\xFF");
+    m_attr->setStringAttribute(tango::dbattrTableInvalidStartingChars,
+                               L"*|:\"<>?[]\\;'=,/\x00\x09\x0A\x0B\x0C\x0D\xFF");
     m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"[");
     m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"]");
+    m_attr->setStringAttribute(tango::dbattrIdentifierCharsNeedingQuote, L"`~# $!@%^&(){}-+.");    
+
+    m_attr->setStringAttribute(tango::dbattrTempDirectory, xf_get_temp_path());
+    m_attr->setStringAttribute(tango::dbattrDefinitionDirectory, xf_get_temp_path());
+
     
     m_db_mgr = tango::getDatabaseMgr();
 }

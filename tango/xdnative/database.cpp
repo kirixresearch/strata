@@ -54,15 +54,6 @@ const wchar_t* xdnative_keywords =
 
 const wchar_t* xdnative_keywords2 = L"";
 
-const wchar_t* xdnative_invalid_column_chars =
-                             L"~!@#$%^&*()+{}|:\"<>?`-=[]\\;',./";
-const wchar_t* xdnative_invalid_column_starting_chars =
-                             L"~!@#$%^&*()+{}|:\"<>?`-=[]\\;',./ 0123456789";
-const wchar_t* xdnative_invalid_object_chars =
-                             L"~!@#$%^&*()+{}|:\"<>?`-=[]\\;',/";
-const wchar_t* xdnative_invalid_object_starting_chars =
-                             L"~!@#$%^&*()+{}|:\"<>?`-=[]\\;',./ 0123456789";
-
 
 
 // -- Database class implementation --
@@ -78,19 +69,20 @@ Database::Database()
     kws += xdnative_keywords2;
 
     m_attr = static_cast<tango::IAttributes*>(new DatabaseAttributes);
-    m_attr->setStringAttribute(tango::dbattrKeywords, kws);
     m_attr->setIntAttribute(tango::dbattrColumnMaxNameLength, 80);
     m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 80);
+    m_attr->setStringAttribute(tango::dbattrKeywords, kws);
     m_attr->setStringAttribute(tango::dbattrColumnInvalidChars,
-                               xdnative_invalid_column_chars);
+                               L"*|:\"<>?[]\\;'=,/\x00\x09\x0A\x0B\x0C\x0D\xFF");
     m_attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars,
-                               xdnative_invalid_column_starting_chars);
+                               L"*|:\"<>?[]\\;'=,/\x00\x09\x0A\x0B\x0C\x0D\xFF");
     m_attr->setStringAttribute(tango::dbattrTableInvalidChars,
-                               xdnative_invalid_object_chars);
+                               L"*|:\"<>?[]\\;'=,/\x00\x09\x0A\x0B\x0C\x0D\xFF");
     m_attr->setStringAttribute(tango::dbattrTableInvalidStartingChars,
-                               xdnative_invalid_object_starting_chars);
+                               L"*|:\"<>?[]\\;'=,/\x00\x09\x0A\x0B\x0C\x0D\xFF");
     m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"[");
     m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"]");
+    m_attr->setStringAttribute(tango::dbattrIdentifierCharsNeedingQuote, L"`~# $!@%^&(){}-+.");
 
     m_db_mgr = static_cast<tango::IDatabaseMgr*>(new DatabaseMgr);
 }

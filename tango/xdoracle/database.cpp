@@ -438,18 +438,21 @@ OracleDatabase::OracleDatabase()
     kws += L",";
     kws += oracle_keywords2;
 
-    m_attr = new DatabaseAttributes;
+    m_attr = static_cast<tango::IAttributes*>(new DatabaseAttributes);
     m_attr->setIntAttribute(tango::dbattrColumnMaxNameLength, 30);
     m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 30);
     m_attr->setStringAttribute(tango::dbattrKeywords, kws);
     m_attr->setStringAttribute(tango::dbattrColumnInvalidChars,
-                               L"~`!@%^&*()-=+{[}]|\\:;\"'<,>.?/ \t");
+                               L"~`!@%^&*()-=+{}[]|\\:;\"'<,>.?/ \t");
     m_attr->setStringAttribute(tango::dbattrTableInvalidChars,
-                               L"~`!@%^&*()-=+{[}]|\\:;\"'<,>.?/ \t");
+                               L"~`!@%^&*()-=+{}[]|\\:;\"'<,>.?/ \t");
     m_attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars,
-                               L"~`!@#$%^&*()-_=+{[}]|\\:;\"'<,>.?/0123456789 \t");
+                               L"~`!@#$%^&*()-_=+{}[]|\\:;\"'<,>.?/0123456789 \t");
     m_attr->setStringAttribute(tango::dbattrTableInvalidStartingChars,
-                               L"~`!@#$%^&*()-_=+{[}]|\\:;\"'<,>.?/0123456789 \t");
+                               L"~`!@#$%^&*()-_=+{}[]|\\:;\"'<,>.?/0123456789 \t");
+    m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"\"");
+    m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"\"");
+    m_attr->setStringAttribute(tango::dbattrIdentifierCharsNeedingQuote, L"");    
 }
 
 OracleDatabase::~OracleDatabase()

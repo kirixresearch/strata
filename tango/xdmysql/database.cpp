@@ -32,7 +32,7 @@
 #include "iterator.h"
 
 
-const wchar_t* mysql_keywords =
+const wchar_t* kws =
                 L"ADD,ALL,ALTER,ANALYZE,AND,AS,ASC,ASENSITIVE,"
                 L"AUTO_INCREMENT,BDB,BEFORE,BERKELEYDB,BETWEEN,"
                 L"BIGINT,BINARY,BLOB,BOTH,BY,CALL,CASCADE,CASE,"
@@ -241,15 +241,25 @@ MySqlDatabase::MySqlDatabase()
     m_database = L"";
     m_username = L"";
     m_password = L"";
+
+    // illegal characters in a table name include \/. and characters illegal
+    // in filenames, the superset of which includes: \/:*?<>|
     
-    m_attr = new DatabaseAttributes;
-    m_attr->setStringAttribute(tango::dbattrKeywords, mysql_keywords);
+    m_attr = static_cast<tango::IAttributes*>(new DatabaseAttributes);
     m_attr->setIntAttribute(tango::dbattrColumnMaxNameLength, 64);
     m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 64);
-    m_attr->setStringAttribute(tango::dbattrColumnInvalidChars, L"`\\./ \x00\xFF");
-    m_attr->setStringAttribute(tango::dbattrTableInvalidChars, L"`\\./ \x00\xFF");
+    m_attr->setStringAttribute(tango::dbattrKeywords, kws);    
+    m_attr->setStringAttribute(tango::dbattrColumnInvalidChars, 
+                               L"\\./\x00\xFF");
+    m_attr->setStringAttribute(tango::dbattrTableInvalidChars, 
+                               L"\\./:*?<>|\x00\xFF");
+    m_attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars,
+                               L"\\./\x00\xFF");
+    m_attr->setStringAttribute(tango::dbattrTableInvalidStartingChars,
+                               L"\\./:*?<>|\x00\xFF");
     m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"`");
     m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"`");
+    m_attr->setStringAttribute(tango::dbattrIdentifierCharsNeedingQuote, L"`~# $!@%^&(){}-+.");
 }
 
 MySqlDatabase::~MySqlDatabase()
