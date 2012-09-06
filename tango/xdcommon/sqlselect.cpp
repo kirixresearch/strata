@@ -97,7 +97,7 @@ struct JoinInfo
 
 static bool isDelimiterChar(wchar_t ch)
 {
-    if (wcschr(L"+-*/%:;|\\()[]<>,!='\"\t ", ch))
+    if (wcschr(L"+-*/%:;|\\()<>,!='\"\t ", ch))
         return true;
     return false;
 }
