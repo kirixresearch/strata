@@ -307,7 +307,7 @@ wxString QueryTemplate::getQueryString()
         {
             columns += wxT(" AS ");
             
-            wxString output_field = quoteField(param_it->output_field);
+            wxString output_field = quoteAlias(param_it->output_field);
             columns += output_field;
         }
     }
@@ -1843,6 +1843,32 @@ wxString QueryTemplate::quoteTable(const wxString& _str)
         return str;
 
     str = towx(tango::quoteIdentifier(g_app->getDatabase(), towstr(str)));
+    return str;
+}
+
+wxString QueryTemplate::quoteAlias(const wxString& _str)
+{
+    // note: quote alias is used for output fieldnames
+
+    wxString str = _str;
+    tango::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return str;
+
+    if (str.Freq('.') == 0)
+    {
+        str = towx(tango::quoteIdentifier(g_app->getDatabase(), towstr(str)));
+    }
+     else
+    {
+        wxString alias = str.BeforeLast('.');
+        wxString field = str.AfterLast('.');
+
+        alias = towx(tango::quoteIdentifier(db, towstr(alias)));
+        field = towx(tango::quoteIdentifier(db, towstr(field)));
+        str = alias + wxT(".") + field;
+    }
+
     return str;
 }
 

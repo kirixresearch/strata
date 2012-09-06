@@ -108,6 +108,7 @@ private:
 private:
 
     wxString quoteTable(const wxString& _str);
+    wxString quoteAlias(const wxString& _str);    
     wxString quoteField(const wxString& _str);
     wxString formatTableName(const wxString& _table_path);
     wxString makeQueryGroupFunction(const wxString& _input_expr, int group_func);
