@@ -506,10 +506,12 @@ bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
             return false;
         }
 
-    
+        std::wstring expr_text = hook_info.expr_text;
+        dequote(expr_text, '[', ']');
+        
         // identifiers by themselves are considered FIRST()
         text = L"FIRST([";
-        text += hook_info.expr_text;
+        text += expr_text;
         text += L"])";
     }
 
