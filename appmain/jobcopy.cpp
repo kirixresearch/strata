@@ -304,7 +304,9 @@ int CopyJob::runJob()
                 wxStringTokenizer t(it->m_columns, wxT(","));
                 while (t.HasMoreTokens())
                 {
+                    // get the column; remove quotes if they're there
                     wxString col = t.GetNextToken();
+                    col = towx(tango::dequoteIdentifier(g_app->getDatabase(), towstr(col)));
 
                     tango::IColumnInfoPtr colinfo;
                     colinfo = iter_structure->getColumnInfo(towstr(col));
