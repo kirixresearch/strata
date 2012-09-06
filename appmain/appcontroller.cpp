@@ -2110,6 +2110,9 @@ void AppController::onOpenLocationComplete(wxCommandEvent& evt)
 
 void AppController::onOpenProject(wxCommandEvent& evt)
 {
+    if (!checkForRunningJobs())
+        return;
+
     showProjectManager();
 }
 
@@ -3449,7 +3452,7 @@ void AppController::onFrameClose(wxCloseEvent& evt)
     }
 
 
-    if (!checkForRunningJobs())
+    if (!checkForRunningJobs(true))
     {
         evt.Veto();
         return;
@@ -6382,22 +6385,37 @@ bool AppController::checkForRunningJobs(bool exit_message)
 {
     int ID_CancelAndExit = 100;
     int ID_KeepJobsRunning = 101;
-    int ID_ExitAnyway = 101;
+    int ID_ForceExit = 102;
 
     cfw::IJobQueuePtr job_queue = g_app->getJobQueue();
     if (job_queue->getJobsActive())
     {
         wxString appname = APPLICATION_NAME;
-        wxString message = wxString::Format(_("There are currently jobs running.  Would you like to cancel all running jobs and continue?"));
+        wxString message;
+        
+        if (exit_message)
+            message =  _("There are currently jobs running.  Would you like to cancel all running jobs and exit?");
+             else
+            message = _("There are currently jobs running.  Would you like to cancel all running jobs and continue?");
+
         CustomPromptDlg dlg(m_frame->getFrameWindow(),
                             APPLICATION_NAME,
                             message);
-        dlg.setButton1(ID_CancelAndExit, _("Cancel Jobs and Continue"));
-        dlg.setButton2(ID_KeepJobsRunning, _("Don't Continue"));
-        dlg.setButton3(ID_ExitAnyway, _("Exit Anyway"));
-        dlg.showButtons(CustomPromptDlg::showButton1 |
-                        CustomPromptDlg::showButton2 |
-                        CustomPromptDlg::showButton3);
+        dlg.setButton1(ID_CancelAndExit, exit_message ? _("Cancel Jobs and Exit") : _("Cancel Jobs and Continue"));
+        dlg.setButton2(ID_KeepJobsRunning, exit_message ? _("Don't Exit") : _("Don't Continue"));
+        dlg.setButton3(ID_ForceExit, _("Force Exit"));
+
+        if (exit_message)
+        {
+            dlg.showButtons(CustomPromptDlg::showButton1 |
+                            CustomPromptDlg::showButton2 |
+                            CustomPromptDlg::showButton3);
+        }
+         else
+        {
+            dlg.showButtons(CustomPromptDlg::showButton1 |
+                            CustomPromptDlg::showButton2);
+        }
 
         int result = dlg.ShowModal();
         if (result == ID_CancelAndExit)
@@ -6444,12 +6462,15 @@ bool AppController::checkForRunningJobs(bool exit_message)
             wait_dlg->Destroy();
             return true;
         }
-         else if (result == ID_ExitAnyway)
+         else if (result == ID_KeepJobsRunning)
+        {
+            return false;
+        }
+         else if (result == ID_ForceExit)
         {
             return true;
         }
 
-        // don't cancel jobs or close the application
         return false;
     }
 
