@@ -21,7 +21,7 @@ wxString InetAuth::getAuthServer()
 {
     wxString server = APP_INETAUTH_SERVER;
 
-    // -- first, get the list of authorization servers from the main authorization server --
+    // first, get the list of authorization servers from the main authorization server
     wxString auth_servers_xml = getWebFile(APP_INETAUTH_AUTHSERVERLIST);
         
     if (!auth_servers_xml.IsEmpty())
@@ -229,16 +229,15 @@ int InetAuth::authorize(paladin::Authentication* auth,
                         const wxString& license_login,
                         const wxString& license_password)
 {
-    // -- get product_tag and site_code from paladin --
+    // get product_tag and site_code from paladin
     wxString product_tag = towx(auth->getAppTag());
     paladin::sitecode_t code = auth->getSiteCode();
     char szcode[255];
     paladin::getStringFromCode(code, szcode, false);
     wxString site_code = wxString::From8BitData(szcode);
 
-    // -- create a check variable.  A check variable is
-    //    a CRC32 of the site code.  This will prevent
-    //    undesired manual access to this url --
+    // create a check variable.  A check variable isa CRC32 of the site code.
+    // This will make undesired manual access to this url more difficult
 
     unsigned int crc = paladin::crc32((unsigned char*)szcode, strlen(szcode));
     wxString check;
@@ -285,8 +284,8 @@ int InetAuth::authorize(paladin::Authentication* auth,
 
 /*
 #ifdef WIN32
-    // -- for Terminal Server and Citrix environments,
-    //    we will enforce per-user licensing --
+    // for Terminal Server and Citrix environments,
+    // we will enforce per-user licensing
 
     // 0x1000 = SM_REMOTESESSION
     if (GetSystemMetrics(0x1000 ))

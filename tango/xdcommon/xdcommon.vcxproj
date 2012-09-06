@@ -336,6 +336,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\xdutil.h" />
     <ClInclude Include="block.h" />
     <ClInclude Include="cmnbaseiterator.h" />
     <ClInclude Include="cmnbaseset.h" />

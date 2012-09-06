@@ -19,16 +19,18 @@
 #endif
 
 
-// -- version information --
+// version information
 
 #include "appversion.h"
 
-// -- c/c++ library includes --
+// c/c++ library includes
 #include <cmath>
 #include <clocale>
+#include <string>
+#include <vector>
 
 
-// -- wxWindows includes --
+// wxWidgets includes
 
 #include <wx/wx.h>
 #include <wx/tokenzr.h>
@@ -51,20 +53,20 @@
 #endif
 
 
-// -- database/utility includes --
+// database/utility includes
 #include <xcm/xcm.h>
 #include <kl/klib.h>
 #include <kl/json.h>
 #include "tango.h"
 #include "commands.h"
 
-// -- framework/control includes --
+// framework/control includes
 #include "../kcl/kcl.h"
 #include "../cfw/cfw.h"
 #include "../webconnect/webcontrol.h"
 #include "../webconnect/webframe.h"
 
-// -- application includes --
+// application includes
 #include "connectionmgr.h"
 #include "app.h"
 #include "apputil.h"

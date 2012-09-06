@@ -2045,12 +2045,16 @@ wxString getWebFile(const wxString& urlstring)
     curl_result = curl_easy_setopt(curl, CURLOPT_URL, fetch_url.c_str());
     
     // get http proxy info from the registry
-    std::string proxy = tostr(getAppPrefsString(wxT("internet.proxy.http")));
-    long proxy_port = g_app->getAppPreferences()->getLong(wxT("internet.proxy.http_port"), 8080);
-    
-    // set the curl proxy info
-    curl_result = curl_easy_setopt(curl, CURLOPT_PROXY, proxy.c_str());
-    curl_result = curl_easy_setopt(curl, CURLOPT_PROXYPORT, proxy_port);
+    if (g_app->getAppPreferences()->getLong(wxT("internet.proxy.type"), prefProxyDirect) != prefProxyDirect)
+    {
+        std::string proxy = tostr(getAppPrefsString(wxT("internet.proxy.http")));
+        long proxy_port = g_app->getAppPreferences()->getLong(wxT("internet.proxy.http_port"), 8080);
+
+        // set the curl proxy info
+        curl_result = curl_easy_setopt(curl, CURLOPT_PROXY, proxy.c_str());
+        curl_result = curl_easy_setopt(curl, CURLOPT_PROXYPORT, proxy_port);
+    }
+
     
     //if (m_basic_auth.length() > 0)
     //    curl_result = curl_easy_setopt(curl, CURLOPT_USERPWD, m_basic_auth.c_str());
