@@ -277,6 +277,7 @@ public:
         param = kl::beforeLast(param, L')');
 
         kl::trim(param);
+        dequote(param, '[', ']');
 
         // now attempt to find an existing, suitable result object
 
