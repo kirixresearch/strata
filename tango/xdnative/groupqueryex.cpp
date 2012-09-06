@@ -277,7 +277,6 @@ public:
         param = kl::beforeLast(param, L')');
 
         kl::trim(param);
-        dequote(param, '[', ']');
 
         // now attempt to find an existing, suitable result object
 
@@ -372,9 +371,21 @@ public:
     }
 
     bool addOrLookupStoreField(tango::IIteratorPtr iter,
-                               const std::wstring& field,
+                               const std::wstring& _field,
                                int* out_offset)
     {
+        std::wstring field = _field;
+        
+        // if the 'field' parameter represented a valid column name, quoted or not,
+        // just use that in its dequoted form to avoid parsing it as an expression
+        // (this solves a problem of type confusion between date and datetime)
+        // problem sql was: select inv_date from ap_hist group by inv_date
+        std::wstring deq_field = field;
+        dequote(deq_field, '[', ']');
+        if (m_iter_structure->getColumnExist(deq_field))
+            field = deq_field;
+
+
         std::wstring uppercase_field = field;
         kl::makeUpper(uppercase_field);
 
@@ -507,12 +518,10 @@ bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
             return false;
         }
 
-        std::wstring expr_text = hook_info.expr_text;
-        dequote(expr_text, '[', ']');
-        
+    
         // identifiers by themselves are considered FIRST()
         text = L"FIRST([";
-        text += expr_text;
+        text += hook_info.expr_text;
         text += L"])";
     }
 

@@ -781,6 +781,14 @@ static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
 
 int Structure::getExprType(const std::wstring& expression)
 {
+    // if the expression is a column name, simply look it up via getColumnInfo
+    std::wstring dequoted_expression = expression;
+    dequote(dequoted_expression, '[', ']');
+    tango::IColumnInfoPtr colinfo = getColumnInfo(dequoted_expression);
+    if (colinfo.isOk())
+        return colinfo->getType();
+
+
     kscript::ExprParser* parser = createExprParser();
     
     // we added this here so that the expression
@@ -793,7 +801,7 @@ int Structure::getExprType(const std::wstring& expression)
     parser->addFunction(L"reccrc", false, NULL, false, L"x()", this);
     
     
-    // -- create field bindings and add them to the expression parser --
+    // create field bindings and add them to the expression parser
 
     parser->setParseHook(kscript::ExprParseHookInfo::typeFunction |
                          kscript::ExprParseHookInfo::typeIdentifier,
