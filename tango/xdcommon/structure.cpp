@@ -575,9 +575,29 @@ static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
             hook_info.expr_text[0] == '[' &&
             hook_info.expr_text[hook_info.expr_text.length()-1] == ']')
         {
-            // remove brackets from beginning and end e.g. [Field Name] => Field Name
-            hook_info.expr_text = hook_info.expr_text.substr(0, hook_info.expr_text.length()-1);
-            hook_info.expr_text.erase(0, 1);
+            // remove brackets from identifier; i.e.:
+            //     [field] => field
+            //     table.[field] => table.field
+            //     [table].field => table.field
+            //     [table].[field] => table.field
+            
+            // get the two parts separated by the period, if there is one
+            std::wstring part1, part2;
+            unsigned offset = hook_info.expr_text.find(L".");
+            if (offset == -1)
+            {
+                part1 = hook_info.expr_text;
+                dequote(part1, '[', ']');
+                hook_info.expr_text = part1;
+            }
+            else
+            {
+                part1 = hook_info.expr_text.substr(0, offset);
+                part2 = hook_info.expr_text.substr(offset+1);
+                dequote(part1, '[', ']');
+                dequote(part2, '[', ']');
+                hook_info.expr_text = part1 + L"." + part2;
+            }
         }
 
 
