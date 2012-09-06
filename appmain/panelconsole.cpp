@@ -856,30 +856,8 @@ bool ConsolePanel::processSet(const std::vector<wxString> tokens)
     wxString preference = tokens[1];
     wxString value = tokens[2];
 
-    // set the preference
-    if (0 == preference.CmpNoCase(wxT("WEBSERVER.ACTIVE")))
-    {
-        // set the preference
-        bool value_bool = value.CmpNoCase(wxT("TRUE")) == 0 ? true : false;
-        g_app->getAppPreferences()->setBoolean(preference, value_bool);
-
-        // turn on/off the server
-        if (value_bool)
-            g_app->startWebServer();
-             else
-            g_app->stopWebServer();
-    }
-
-    if (0 == preference.CmpNoCase(wxT("WEBSERVER.ECHO")))
-    {
-        bool value_bool = value.CmpNoCase(wxT("TRUE")) == 0 ? true : false;
-        g_app->getAppPreferences()->setBoolean(preference, value_bool);
-    }
-    
-    if (0 == preference.CmpNoCase(wxT("WEBSERVER.ROOT")))
-    {
-        g_app->getAppPreferences()->setString(preference, value);
-    }
+    // TODO: I don't believe this method actually does anything anymore,
+    // now that webserver.* is gone
 
     return true;
 }

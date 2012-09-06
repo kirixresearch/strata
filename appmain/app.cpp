@@ -20,7 +20,6 @@
 #include "connectionmgr.h"
 #include "extensionmgr.h"
 #include "toolbars.h"
-#include "webserver.h"
 #include "scripthost.h"
 #include <wx/fs_zip.h>
 #include <wx/url.h>
@@ -665,9 +664,6 @@ bool MainApp::OnInit()
     // initialize web client engine
     initWebClient();
 
-    // initialize web server (if active)
-    initWebServer();
-
     // create the application's controller
     m_app_controller = new AppController;
     
@@ -790,13 +786,6 @@ void MainApp::initWebClient()
 }
 
 
-void MainApp::initWebServer()
-{
-    if (m_app_preferences->getBoolean(wxT("webserver.active"), false))
-    {
-        startWebServer();
-    }
-}
 
 
 void MainApp::populatePaperDatabaseClean()
@@ -1014,26 +1003,6 @@ void MainApp::stopUpdateTimer()
 }
 
 
-void MainApp::startWebServer()
-{
-    if (m_web_server)
-        return;
-    m_web_server = new WebServer;
-    m_web_server->start();
-}
-
-void MainApp::stopWebServer()
-{
-    WebServer* w = m_web_server;
-    m_web_server = NULL;
-    m_web_server->stop();
-    delete w;
-}
-
-WebServer* MainApp::getWebServer()
-{
-    return m_web_server;
-}
 
 void MainApp::onActivateApp(wxActivateEvent& evt)
 {

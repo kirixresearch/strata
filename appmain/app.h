@@ -84,10 +84,6 @@ public:
     void startUpdateTimer();    // 'check for updates' timer
     void stopUpdateTimer();
     
-    void startWebServer();
-    void stopWebServer();
-    WebServer* getWebServer();
-    
 #ifdef WIN32
     // this function either hides or shows the application
     // and allows background processing with the app icon
@@ -100,7 +96,6 @@ public:
 private:
 
     void initWebClient();
-    void initWebServer();
     void populatePaperDatabaseClean();
     bool runCommandLineScript();
     
