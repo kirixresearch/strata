@@ -84,6 +84,7 @@ public:
         {
             // create an XLS file
             
+
             std::wstring cmd = L"DRIVER={Microsoft Excel Driver (*.xls)};";
             cmd += L"DSN='';READONLY=FALSE;";
             cmd += L"DBQ=";
@@ -185,7 +186,7 @@ public:
                     return xcm::null;
                 }
             }
-             else if (ext == L"XLS")
+             else if (ext == L"XLS" || ext == L"XLSX")
             {
                 if (!db->open(tango::dbtypeExcel, L"", 0, L"", uid, password, database))
                 {

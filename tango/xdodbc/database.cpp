@@ -994,8 +994,7 @@ bool OdbcDatabase::open(int type,
 
             std::vector<std::wstring> drivers;
             getOdbcDriverNames(drivers);
-
-            const wchar_t* driver = L"";
+            const wchar_t* driver = L"Microsoft Access Driver (*.mdb)";
             std::vector<std::wstring>::iterator driver_it;
             for (driver_it = drivers.begin(); driver_it != drivers.end(); ++driver_it)
             {
@@ -1021,10 +1020,22 @@ bool OdbcDatabase::open(int type,
         {
             m_db_type = tango::dbtypeExcel;
 
+            std::vector<std::wstring> drivers;
+            getOdbcDriverNames(drivers);
+            const wchar_t* driver = L"Microsoft Excel Driver (*.xls)";
+            std::vector<std::wstring>::iterator driver_it;
+            for (driver_it = drivers.begin(); driver_it != drivers.end(); ++driver_it)
+            {
+                std::wstring d = *driver_it;
+                kl::makeUpper(d);
+                if (d.find(L"EXCEL DRIVER") != d.npos)
+                    driver = driver_it->c_str();
+            }
+
             swprintf(db_label_buf, 1024, L"Microsoft Excel (%ls)", path.c_str());
             swprintf(conn_buf, 4096,
-                     L"Driver={Microsoft Excel Driver (*.xls)};DriverId=790;ExtendedAnsiSQL=1;Dbq=%ls;DefaultDir=c:\\;READONLY=FALSE",
-                     path.c_str());
+                     L"Driver={%ls};DriverId=790;ExtendedAnsiSQL=1;Dbq=%ls;DefaultDir=c:\\;READONLY=FALSE",
+                     driver, path.c_str());
             m_conn_str = conn_buf;
             
             // attempt a connection
@@ -1039,7 +1050,6 @@ bool OdbcDatabase::open(int type,
 
             std::vector<std::wstring> drivers;
             getOdbcDriverNames(drivers);
-
             const wchar_t* driver = L"";
             std::vector<std::wstring>::iterator driver_it;
             for (driver_it = drivers.begin(); driver_it != drivers.end(); ++driver_it)
