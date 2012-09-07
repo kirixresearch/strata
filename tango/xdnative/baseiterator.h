@@ -144,9 +144,9 @@ public:
     unsigned int getIteratorFlags();
     void setIteratorFlags(unsigned int new_val);
 
-    tango::ISetPtr getChildSet(const std::wstring& rel_tag);
-    tango::IIteratorPtr getChildIterator(const std::wstring& relation_tag);
-    tango::IIteratorPtr getFilteredChildIterator(const std::wstring& rel_tag);
+    tango::ISetPtr getChildSet(const std::wstring& relation_id);
+    tango::IIteratorPtr getChildIterator(const std::wstring& relation_id);
+    tango::IIteratorPtr getFilteredChildIterator(const std::wstring& relation_id);
 
     tango::objhandle_t getHandle(const std::wstring& expr);
     int getType(tango::objhandle_t data_handle);

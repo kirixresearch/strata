@@ -434,14 +434,14 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
     for (i = 0; i < rel_count; ++i)
     {
         rel = rel_enum->getItem(i);
-        if (0 == wcscasecmp(rel->getTag().c_str(), info.tag.c_str()))
+        if (rel->getRelationId() == info.relation_id)
         {
-            info.relation_id = rel->getRelationId();
+            info.tag = rel->getTag();
             break;
         }
     }
 
-    if (info.relation_id.length() == 0)
+    if (info.tag.length() == 0)
         return false;
 
     // get right set
@@ -518,7 +518,7 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
     return true;
 }
 
-tango::IIteratorPtr BaseIterator::getChildIterator(const std::wstring& rel_tag)
+tango::IIteratorPtr BaseIterator::getChildIterator(const std::wstring& relation_id)
 {
     XCM_AUTO_LOCK(m_rel_mutex);
 
@@ -528,7 +528,7 @@ tango::IIteratorPtr BaseIterator::getChildIterator(const std::wstring& rel_tag)
     std::vector<BaseIteratorRelInfo>::iterator it;
     for (it = m_relations.begin(); it != m_relations.end(); ++it)
     {
-        if (!wcscasecmp(rel_tag.c_str(), it->tag.c_str()))
+        if (it->relation_id == relation_id)
         {
             info = &(*it);
             break;
@@ -542,7 +542,7 @@ tango::IIteratorPtr BaseIterator::getChildIterator(const std::wstring& rel_tag)
     if (!info || !info->kl)
     {
         BaseIteratorRelInfo i;
-        i.tag = rel_tag;
+        i.relation_id = relation_id;
         i.kl = NULL;
 
         if (!refreshRelInfo(i))
@@ -580,7 +580,7 @@ tango::IIteratorPtr BaseIterator::getChildIterator(const std::wstring& rel_tag)
 }
 
 
-tango::IIteratorPtr BaseIterator::getFilteredChildIterator(const std::wstring& rel_tag)
+tango::IIteratorPtr BaseIterator::getFilteredChildIterator(const std::wstring& relation_id)
 {
     XCM_AUTO_LOCK(m_rel_mutex);
 
@@ -590,7 +590,7 @@ tango::IIteratorPtr BaseIterator::getFilteredChildIterator(const std::wstring& r
     std::vector<BaseIteratorRelInfo>::iterator it;
     for (it = m_relations.begin(); it != m_relations.end(); ++it)
     {
-        if (!wcscasecmp(rel_tag.c_str(), it->tag.c_str()))
+        if (it->relation_id == relation_id)
         {
             info = &(*it);
             break;
@@ -604,7 +604,7 @@ tango::IIteratorPtr BaseIterator::getFilteredChildIterator(const std::wstring& r
     if (!info || !info->kl)
     {
         BaseIteratorRelInfo i;
-        i.tag = rel_tag;
+        i.relation_id = relation_id;
         i.kl = NULL;
 
         if (!refreshRelInfo(i))
@@ -659,27 +659,12 @@ tango::IIteratorPtr BaseIterator::getFilteredChildIterator(const std::wstring& r
 }
 
 
-tango::ISetPtr BaseIterator::getChildSet(const std::wstring& rel_tag)
+tango::ISetPtr BaseIterator::getChildSet(const std::wstring& relation_id)
 {
-    tango::IIteratorPtr right_iter = getFilteredChildIterator(rel_tag);
+    tango::IIteratorPtr right_iter = getFilteredChildIterator(relation_id);
     IIteratorKeyAccessPtr iter_int = right_iter;
     if (!iter_int.p)
     {
-        // lookup the relationship id
-        std::wstring relation_id;
-        std::vector<BaseIteratorRelInfo>::iterator it;
-        for (it = m_relations.begin(); it != m_relations.end(); ++it)
-        {
-            if (!wcscasecmp(rel_tag.c_str(), it->tag.c_str()))
-            {
-                relation_id = it->relation_id;
-                break;
-            }
-        }
-
-        if (relation_id.length() == 0)
-            return xcm::null;
-
         tango::IRelationPtr rel = m_database->getRelation(relation_id);
         if (!rel.p)
             return xcm::null;
@@ -1359,7 +1344,7 @@ void BaseIterator::recalcAggResults()
         if (result_count == 0)
             continue;
 
-        sp_iter = getFilteredChildIterator(rel->getTag());
+        sp_iter = getFilteredChildIterator(rel->getRelationId());
         if (sp_iter.isNull())
             continue;
 

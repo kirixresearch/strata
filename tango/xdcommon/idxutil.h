@@ -103,8 +103,8 @@ public:
     tango::IStructurePtr getStructure();
     bool modifyStructure(tango::IStructure* struct_config, tango::IJob* job);
 
-    tango::ISetPtr getChildSet(const std::wstring& relation_tag);
-    tango::IIteratorPtr getChildIterator(const std::wstring& relation_tag);
+    tango::ISetPtr getChildSet(const std::wstring& relation_id);
+    tango::IIteratorPtr getChildIterator(const std::wstring& relation_id);
 
     tango::objhandle_t getHandle(const std::wstring& expr);
     tango::IColumnInfoPtr getInfo(tango::objhandle_t data_handle);

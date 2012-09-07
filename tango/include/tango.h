@@ -907,8 +907,8 @@ xcm_interface IIteratorRelation : public xcm::IObject
 
 public:
     
-    virtual ISetPtr getChildSet(const std::wstring& relation_tag) = 0;
-    virtual IIteratorPtr getChildIterator(const std::wstring& relation_tag) = 0;
+    virtual ISetPtr getChildSet(const std::wstring& relation_id) = 0;
+    virtual IIteratorPtr getChildIterator(const std::wstring& relation_id) = 0;
 };
 
 
