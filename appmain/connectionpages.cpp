@@ -505,7 +505,7 @@ void PathSelectionPage::onFileTypeSelectionChanged(wxCommandEvent& evt)
      else if (m_ci->type == dbtypeExcel)
     {
         filter += _("Microsoft Excel Files");
-        filter += wxT(" (*.xls)|*.xls|");
+        filter += wxT(" (*.xls, *.xlsx)|*.xls;*.xlsx|");
     }
      else if (m_ci->type == dbtypeXbase)
     {

@@ -1825,6 +1825,7 @@ static bool isValidOpenExtension(const wxString& ext)
         ext.CmpNoCase(wxT("mdb"))  == 0 ||
         ext.CmpNoCase(wxT("accdb")) == 0 ||
         ext.CmpNoCase(wxT("xls"))  == 0 ||
+        ext.CmpNoCase(wxT("xlsx"))  == 0 ||
         ext.CmpNoCase(wxT("kpg"))  == 0 ||
         ext.CmpNoCase(wxT("phtml")) == 0 ||
         ext.CmpNoCase(wxT("html")) == 0 ||
@@ -1972,7 +1973,7 @@ void AppController::onOpenFile(wxCommandEvent& evt)
     filter += _("Microsoft Access Files");
     filter += wxT(" (*.mdb, *.accdb)|*.mdb;*.accdb|");
     filter += _("Microsoft Excel Files");
-    filter += wxT(" (*.xls)|*.xls|");
+    filter += wxT(" (*.xls, *.xlsx)|*.xls;*.xlsx|");
     filter += _("Package Files");
     filter += wxT(" (*.kpg)|*.kpg|");
     filter += _("Sqlite databases");
@@ -4294,7 +4295,7 @@ bool AppController::openAny(const wxString& _location,
  
     // if we have an excel file (XLS extension), open a dialog asking
     // the user which tables they would like to open (read-only)
-    if (ext == wxT("XLS"))
+    if (ext == wxT("XLS") || ext == wxT("XLSX"))
         return openExcel(location, site_id);
 
     // if we have an access file (MDB extension),

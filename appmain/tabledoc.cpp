@@ -1695,7 +1695,7 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
     filter += _("Microsoft Access Files");
     filter += wxT(" (*.mdb, *.accdb)|*.mdb;*.accdb|");
     filter += _("Microsoft Excel Files");
-    filter += wxT(" (*.xls)|*.xls|");
+    filter += wxT(" (*.xls, *.xlsx)|*.xls;*.xlsx|");
     filter += _("Structure Files");
     filter += wxT(" (*.txt)|*.txt|");
     filter.RemoveLast(); // get rid of the last pipe sign

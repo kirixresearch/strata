@@ -137,7 +137,7 @@ bool ImportWizard::initDoc(cfw::IFramePtr frame,
     filter += _("Microsoft Access Files");
     filter += wxT(" (*.mdb, *.accdb)|*.mdb;*.accdb|");
     filter += _("Microsoft Excel Files");
-    filter += wxT(" (*.xls)|*.xls|");
+    filter += wxT(" (*.xls, *.xlsx)|*.xls;*.xlsx|");
     filter += _("Package Files");
     filter += wxT(" (*.kpg)|*.kpg|");
     filter.RemoveLast(); // get rid of the last pipe sign
