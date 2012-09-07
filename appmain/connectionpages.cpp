@@ -500,7 +500,7 @@ void PathSelectionPage::onFileTypeSelectionChanged(wxCommandEvent& evt)
      else if (m_ci->type == dbtypeAccess)
     {
         filter += _("Microsoft Access Files");
-        filter += wxT(" (*.mdb)|*.mdb|");
+        filter += wxT(" (*.mdb, *.accdb)|*.mdb;*.accdb|");
     }
      else if (m_ci->type == dbtypeExcel)
     {

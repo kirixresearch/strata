@@ -1693,7 +1693,7 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
     filter += _("Microsoft FoxPro/Xbase Files");
     filter += wxT(" (*.dbf)|*.dbf|");
     filter += _("Microsoft Access Files");
-    filter += wxT(" (*.mdb)|*.mdb|");
+    filter += wxT(" (*.mdb, *.accdb)|*.mdb;*.accdb|");
     filter += _("Microsoft Excel Files");
     filter += wxT(" (*.xls)|*.xls|");
     filter += _("Structure Files");
