@@ -665,7 +665,22 @@ tango::ISetPtr BaseIterator::getChildSet(const std::wstring& rel_tag)
     IIteratorKeyAccessPtr iter_int = right_iter;
     if (!iter_int.p)
     {
-        tango::IRelationPtr rel = m_database->getRelation(rel_tag);
+        // lookup the relationship id
+        std::wstring relation_id;
+        std::vector<BaseIteratorRelInfo>::iterator it;
+        for (it = m_relations.begin(); it != m_relations.end(); ++it)
+        {
+            if (!wcscasecmp(rel_tag.c_str(), it->tag.c_str()))
+            {
+                relation_id = it->relation_id;
+                break;
+            }
+        }
+
+        if (relation_id.length() == 0)
+            return xcm::null;
+
+        tango::IRelationPtr rel = m_database->getRelation(relation_id);
         if (!rel.p)
             return xcm::null;
         tango::ISetPtr right_set = rel->getRightSetPtr();
