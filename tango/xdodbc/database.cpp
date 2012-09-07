@@ -992,10 +992,23 @@ bool OdbcDatabase::open(int type,
         {
             m_db_type = tango::dbtypeAccess;
 
+            std::vector<std::wstring> drivers;
+            getOdbcDriverNames(drivers);
+
+            const wchar_t* driver = L"";
+            std::vector<std::wstring>::iterator driver_it;
+            for (driver_it = drivers.begin(); driver_it != drivers.end(); ++driver_it)
+            {
+                std::wstring d = *driver_it;
+                kl::makeUpper(d);
+                if (d.find(L"ACCESS DRIVER") != d.npos)
+                    driver = driver_it->c_str();
+            }
+
             swprintf(db_label_buf, 1024, L"Microsoft Access (%ls)", path.c_str());
             swprintf(conn_buf, 4096,
-                     L"Driver={Microsoft Access Driver (*.mdb)};Dbq=%ls;ExtendedAnsiSQL=1;Uid=admin;Pwd=",
-                     path.c_str());
+                     L"Driver={%ls};Dbq=%ls;ExtendedAnsiSQL=1;Uid=admin;Pwd=",
+                     driver, path.c_str());
             m_conn_str = conn_buf;
 
             // attempt a connection
