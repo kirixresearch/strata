@@ -737,12 +737,28 @@ bool BaseIterator::initStructure()
 
         for (it = colvec.begin(); it != colvec.end(); ++it)
         {
-            tango::IColumnInfoPtr col = m_set_structure->getColumnInfo(*it);
+            std::wstring part = *it;
+            kl::trim(part);
+
+            tango::IColumnInfoPtr col = m_set_structure->getColumnInfo(part);
             if (col)
             {
                 s->addColumn(col);
+                continue;
             }
-             else
+            
+            if (part.length() > 0 && part[0] == '[')
+            {
+                std::wstring dequote_part = part;
+                dequote(dequote_part, '[', ']');
+                col = m_set_structure->getColumnInfo(dequote_part);
+                if (col)
+                {
+                    s->addColumn(col);
+                    continue;
+                }
+            }
+
             {
                 // look for 'AS' keyword
                 wchar_t* temp = zl_stristr((wchar_t*)it->c_str(),
@@ -766,6 +782,8 @@ bool BaseIterator::initStructure()
                     
                     kl::trim(colname);
                     kl::trim(expr);
+
+                    dequote(colname, '[', ']');
                 }
                  else
                 {
