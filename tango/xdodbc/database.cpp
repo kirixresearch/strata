@@ -718,6 +718,30 @@ private:
 
 
 
+void getOdbcDriverNames(std::vector<std::wstring>& drivers)
+{
+    drivers.clear();
+    
+    HENV env;
+    SQLAllocEnv(&env);
+
+    SQLRETURN retcode;
+    SQLTCHAR driver_desc[255];
+    SQLTCHAR driver_attr[255];
+    SQLSMALLINT desc_len, attr_len;
+
+    driver_desc[0] = 0;
+    driver_attr[0] = 0;
+
+    retcode = SQLDrivers(env, SQL_FETCH_FIRST, driver_desc, 255, &desc_len, driver_attr, 255, &attr_len);
+    while (retcode == SQL_SUCCESS)
+    {
+        drivers.push_back(sql2wstring(driver_desc));
+        retcode = SQLDrivers(env, SQL_FETCH_NEXT, driver_desc, 255, &desc_len, driver_attr, 255, &attr_len);
+    }
+
+    SQLFreeEnv(env);
+}
 
 
 // OdbcDatabase class implementation
@@ -884,27 +908,6 @@ std::wstring OdbcDatabase::getDefinitionDirectory()
     }
     
     return result;
-}
-
-
-void OdbcDatabase::getOdbcDriverNames(std::vector<std::wstring>& drivers)
-{
-    drivers.clear();
-    
-    SQLRETURN retcode;
-    SQLTCHAR driver_desc[255];
-    SQLTCHAR driver_attr[255];
-    SQLSMALLINT desc_len, attr_len;
-
-    driver_desc[0] = 0;
-    driver_attr[0] = 0;
-
-    retcode = SQLDrivers(m_env, SQL_FETCH_FIRST, driver_desc, 255, &desc_len, driver_attr, 255, &attr_len);
-    while (retcode == SQL_SUCCESS)
-    {
-        drivers.push_back(sql2wstring(driver_desc));
-        retcode = SQLDrivers(m_env, SQL_FETCH_NEXT, driver_desc, 255, &desc_len, driver_attr, 255, &attr_len);
-    }
 }
 
 

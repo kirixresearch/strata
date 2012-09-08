@@ -215,8 +215,7 @@ public:
 private:
 
     tango::IFileInfoEnumPtr getTreeFolderInfo(const std::wstring& path);
-    void getOdbcDriverNames(std::vector<std::wstring>& drivers);
-    
+ 
     void errorSqlStmt(HSTMT stmt);
     void errorSqlConn(HDBC hdbc);
     

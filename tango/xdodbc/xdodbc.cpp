@@ -16,6 +16,7 @@
 
 #include <odbcinst.h>
 
+void getOdbcDriverNames(std::vector<std::wstring>& drivers);
 
 class DatabaseMgr : public tango::IDatabaseMgr
 {
@@ -80,12 +81,30 @@ public:
             db->unref();
             return ret;
         }
-         else if (ext == L"XLS")
+         else if (ext == L"XLS" || ext == L"XLSX")
         {
             // create an XLS file
             
 
-            std::wstring cmd = L"DRIVER={Microsoft Excel Driver (*.xls)};";
+            std::vector<std::wstring> drivers;
+            getOdbcDriverNames(drivers);
+            const wchar_t* driver = L"Microsoft Excel Driver (*.xls)";
+            std::vector<std::wstring>::iterator driver_it;
+            for (driver_it = drivers.begin(); driver_it != drivers.end(); ++driver_it)
+            {
+                std::wstring d = *driver_it;
+                kl::makeUpper(d);
+                if (d.find(L"EXCEL DRIVER") != d.npos)
+                    driver = driver_it->c_str();
+            }
+
+
+
+            std::wstring cmd;
+            
+            cmd = L"DRIVER={";
+            cmd += driver;
+            cmd += L"};";
             cmd += L"DSN='';READONLY=FALSE;";
             cmd += L"DBQ=";
             cmd += location;
