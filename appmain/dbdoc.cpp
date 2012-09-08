@@ -1977,10 +1977,9 @@ void DbDoc::onItemProperties(wxCommandEvent& evt)
             {   
                 // get connection string
                 std::wstring cstr, rpath;
-                db->getMountPoint(path, cstr, rpath);
-                if (cstr.empty())
+                if (!db->getMountPoint(path, cstr, rpath))
                     return;
-                
+
                 cfw::IDocumentSitePtr site;
                 
                 m_edit_item = folder;
