@@ -236,7 +236,7 @@ private:
     
 private:
     
-    tango::IStructurePtr m_structure;
+    std::vector<wxString> m_source_columns;
     
     OrientationPanel* m_orientation_panel;
     PageSizePanel* m_pagesize_panel;

@@ -13,6 +13,7 @@
 #include "dlgpagesetup.h"
 #include "dlgdatabasefile.h"
 #include "dlgreportprops.h"
+#include "querytemplate.h"
 
 
 // these values correspond match 1-to-1 with the grid (and must stay that way)
@@ -69,7 +70,83 @@ static int combo2sort(int combo_idx)
     return ReportGroupItem::SortAsc;
 }
 
+static std::vector<wxString> getColumnsFromSource(const std::wstring& source)
+{
+    std::vector<wxString> columns; 
 
+    bool exists = g_app->getDatabase()->getFileExist(source);
+    if (!exists)
+        return columns;
+
+    tango::IFileInfoPtr info;
+    info = g_app->getDatabase()->getFileInfo(source);
+    
+    // table source
+    if (info->getType() == tango::filetypeSet)
+    {
+        tango::ISetPtr set = g_app->getDatabase()->openSet(source);
+        if (set.isNull())
+            return columns;
+
+        tango::IStructurePtr set_structure = set->getStructure();
+        if (set_structure.isNull())
+            return columns;
+
+        int column_count = set_structure->getColumnCount();
+        columns.reserve(column_count);
+
+        for (int i = 0; i < column_count; ++i)
+        {
+            tango::IColumnInfoPtr info = set_structure->getColumnInfoByIdx(i);
+            columns.push_back(info->getName());
+        }
+
+        return columns;
+    }
+
+    // query source, XML format
+    if (info->getType() == tango::filetypeNode)
+    {
+        tango::INodeValuePtr nodefile = g_app->getDatabase()->openNodeFile(source);
+        if (nodefile.isNull())
+            return columns;    
+
+        tango::INodeValuePtr template_root = nodefile->getChild(L"kpp_template", false);
+        if (template_root.isNull())
+            return columns;
+
+        tango::INodeValuePtr type_node = template_root->getChild(L"type", false);
+        if (type_node.isNull())
+            return columns;
+        
+        wxString type = towx(type_node->getString());
+        if (!type.CmpNoCase(wxT("query")))
+        {
+            QueryTemplate t;
+            if (!t.load(source))
+                return columns;
+
+            return t.getOutputFields();       
+        }
+    }
+    
+    // query source, JSON format
+    if (info->getType() == tango::filetypeStream)
+    {
+        std::wstring mime_type = info->getMimeType();
+        if (mime_type == L"application/vnd.kx.query")
+        {
+            QueryTemplate t;
+            if (!t.load(source))
+                return columns;
+
+            return t.getOutputFields();                
+        }
+    }
+
+    // unhandled
+    return columns;
+}
 
 
 // -- ReportPropsDialog class implementation --
@@ -339,19 +416,16 @@ ReportSettings ReportPropsDialog::getSettings() const
 
 void ReportPropsDialog::populateFieldNameDropDown()
 {
-    if (m_structure.isNull())
-        return;
-    
     wxArrayString fieldnames;
-        
-    // get the field names from the structure
-    int i, count = m_structure->getColumnCount();
-    for (i = 0; i < count; ++i)
-    {
-        tango::IColumnInfoPtr colinfo = m_structure->getColumnInfoByIdx(i);
-        fieldnames.Add(cfw::makeProper(towx(colinfo->getName())));
-    }
+
+    std::vector<wxString>::iterator it, it_end;
+    it_end = m_source_columns.end();
     
+    for (it = m_source_columns.begin(); it != it_end; ++it)
+    {
+        fieldnames.Add(cfw::makeProper(*it));
+    }
+
     // populate the field name dropdown in the grid
     kcl::CellProperties cellprops;
     cellprops.mask = kcl::CellProperties::cpmaskCtrlType |
@@ -359,17 +433,15 @@ void ReportPropsDialog::populateFieldNameDropDown()
     cellprops.ctrltype = kcl::Grid::ctrltypeDropList;
     
     fieldnames.Sort();
-    for (i = 0; i < count; ++i)
+    int count = fieldnames.GetCount();
+    for (int i = 0; i < count; ++i)
         cellprops.cbchoices.push_back(fieldnames.Item(i));
-    
+
     m_grid->setModelColumnProperties(colFieldName, &cellprops);
 }
 
 void ReportPropsDialog::validateFieldNames()
 {
-    if (m_structure.isNull())
-        return;
-    
     int row, row_count = m_grid->getRowCount();
     for (row = 0; row < row_count; ++row)
         validateFieldNameByRow(row);
@@ -381,16 +453,13 @@ void ReportPropsDialog::validateFieldNameByRow(int row)
 {
     bool found = false;
     wxString name = m_grid->getCellString(row, colFieldName);
+
+    std::vector<wxString>::iterator it, it_end;
+    it_end = m_source_columns.end();
     
-    int i, col_count = m_structure->getColumnCount();
-    for (i = 0; i < col_count; ++i)
+    for (it = m_source_columns.begin(); it != it_end; ++it)
     {
-        tango::IColumnInfoPtr col_info;
-        col_info = m_structure->getColumnInfoByIdx(i);
-        if (col_info.isNull())
-            continue;
-        
-        wxString col_name = towx(col_info->getName());
+        wxString col_name = *it;
         if (name.CmpNoCase(col_name) == 0)
         {
             found = true;
@@ -409,14 +478,12 @@ void ReportPropsDialog::validateFieldNameByRow(int row)
 void ReportPropsDialog::updateEnabled()
 {
     checkOverlayText();
-    m_grid->setVisibleState(m_structure.isOk() ? kcl::Grid::stateVisible
-                                               : kcl::Grid::stateDisabled);
     m_grid->refresh(kcl::Grid::refreshAll);
 }
 
 void ReportPropsDialog::checkOverlayText()
 {
-    if (m_grid->getRowCount() == 0 && m_structure.isOk())
+    if (m_grid->getRowCount() == 0)
         m_grid->setOverlayText(_("Double-click here to add a group"));
          else
         m_grid->setOverlayText(wxEmptyString);
@@ -440,26 +507,8 @@ void ReportPropsDialog::onSourceTextChanged(wxCommandEvent& evt)
 {
     m_settings.source = m_source->GetValue();
     std::wstring source = towstr(m_source->GetValue());
-    
-    bool exists = g_app->getDatabase()->getFileExist(source);
-    if (exists)
-    {
-        tango::IFileInfoPtr info;
-        info = g_app->getDatabase()->getFileInfo(source);
-        if (info->getType() == tango::filetypeSet)
-        {
-            tango::ISetPtr set = g_app->getDatabase()->openSet(source);
-            m_structure = set->getStructure();
-        }
-         else
-        {
-            m_structure = xcm::null;
-        }
-    }
-     else
-    {
-        m_structure = xcm::null;
-    }
+
+    m_source_columns = getColumnsFromSource(source);
     
     populateFieldNameDropDown();
     validateFieldNames();

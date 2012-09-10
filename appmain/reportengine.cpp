@@ -1445,10 +1445,30 @@ void ReportLayoutEngine::populateDataModel()
         QueryTemplate query_template;
         if (query_template.load(data_source))
             query_string = query_template.getQueryString();
+            
+        // the query may specify an order; but we need to order the data 
+        // according by the grouping parameters to ensure the data is
+        // properly displayed; so "rewrite" the order params to use any
+        // grouping params first, then append on whatever ORDER BY clause
+        // existed
+        if (m_data_order.Length() > 0)
+        {
+            // TODO: ideally, we should have better control over the following
+            // query rewriting so avoid problems with things like "ORDER BY" appearing
+            // in expressions, etc
+        
+            unsigned int order_by_pos = query_string.rfind(wxT("ORDER BY"));
+            wxString query_string_part1 = query_string.Mid(0,order_by_pos);
+            wxString query_string_part2 = order_by_pos != wxString::npos ? query_string.Mid(order_by_pos + 8) : wxT("");
+            
+            query_string = wxT("");
+            query_string += query_string_part1 + wxT(" ORDER BY ") + m_data_order;
+            query_string += query_string_part2.Length() > 0 ? wxT(",") + query_string_part2 : wxT("");
+        }
     }
     else
     {
-        // construct a query from the path
+        // we have a data set; construct a query from the path
         query_string.Append(wxT("SELECT * FROM "));
         
         wxString quoted_data_source = towx(tango::quoteIdentifier(g_app->getDatabase(), towstr(data_source)));        

@@ -81,6 +81,7 @@ public:
     bool load(const wxString& path);
     cfw::IJobPtr execute(int target_site_id = 0);
     
+    std::vector<wxString> getOutputFields();
     wxString getQueryString();
     int getDatabaseDisposition() { return m_disposition; }
     

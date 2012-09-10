@@ -193,6 +193,22 @@ cfw::IJobPtr QueryTemplate::execute(int site_id)
     return static_cast<cfw::IJob*>(job);
 }
 
+std::vector<wxString> QueryTemplate::getOutputFields()
+{
+    std::vector<wxString> output_fields;
+    output_fields.reserve(m_params.size());
+    
+    std::vector<QueryBuilderParam>::iterator it, it_end;
+    it_end = m_params.end();
+    
+    for (it = m_params.begin(); it != it_end; ++it)
+    {
+        output_fields.push_back(it->output_field);
+    }
+    
+    return output_fields;
+}
+
 wxString QueryTemplate::getQueryString()
 {
     wxString columns;
