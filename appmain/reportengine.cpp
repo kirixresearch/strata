@@ -842,12 +842,18 @@ void ReportLayoutEngine::init(const std::vector<ReportSection>& sections,
 
     for (it = sections.begin(); it != it_end; ++it)
     {
-        // if the section isn't active, move on
-        if (!it->m_active)
-            continue;
+        // copy the report section
+        ReportSection section;
+        section.copy(*it);
+
+        // if the section is inactive, set the table row count
+        // to zero; do this so that the sections aren't displayed
+        // but the logic, such as page breaks, is still represented
+        if (!section.m_active)
+            section.m_table_model->setRowCount(0);
 
         // save the section to the cache
-        m_sections.push_back(*it);
+        m_sections.push_back(section);
     }
 
     // set the data source
