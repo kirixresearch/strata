@@ -145,6 +145,25 @@ void dequote(std::wstring& str, wchar_t ch1, wchar_t ch2)
     }
 }
 
+void dequoteIfField(tango::IStructurePtr& structure, std::wstring& str, wchar_t ch1, wchar_t ch2)
+{
+    size_t len = str.length();
+    if (len > 1)
+    {
+        if (str[0] == ch1 && str[len-1] == ch2)
+        {
+            std::wstring deq = str;
+            dequote(deq, ch1, ch2);
+            if (structure->getColumnExist(deq))
+            {
+                str = deq;
+            }
+        }
+    }
+}
+
+
+
 bool parseDateTime(const std::wstring& input,
                    int* year,
                    int* month,

@@ -65,6 +65,7 @@ void requote(std::wstring& str, wchar_t ch1, wchar_t ch2,
                                 wchar_t new_ch1, wchar_t new_ch2);
 
 void dequote(std::wstring& str, wchar_t ch1, wchar_t ch2);
+void dequoteIfField(tango::IStructurePtr& structure, std::wstring& str, wchar_t ch1, wchar_t ch2);
 
 std::wstring makePathName(const std::wstring& base_dir,
                           const std::wstring& subdir,

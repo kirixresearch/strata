@@ -572,55 +572,55 @@ bool doSQL(tango::IDatabasePtr db,
         bool result = false;
 
         if (0 == wcsncasecmp(command_cstr, L"INSERT", 6) &&
-            iswspace(command[6]))
+            iswspace(command_cstr[6]))
         {
             result = sqlInsert(db, command, error, job);
         }
          else if (0 == wcsncasecmp(command_cstr, L"CREATE", 6) &&
-                  iswspace(command[6]))
+                  iswspace(command_cstr[6]))
         {
             result = sqlCreate(db, command, result_obj, error, job);
         }
          else if (0 == wcsncasecmp(command_cstr, L"SELECT", 6) &&
-                  iswspace(command[6]))
+                  iswspace(command_cstr[6]))
         {
             tango::IIteratorPtr iter = sqlSelect(db, command, flags, error, job);
             result = iter.isOk();
             result_obj = iter;
         }
          else if (0 == wcsncasecmp(command_cstr, L"UPDATE", 6) &&
-                  iswspace(command[6]))
+                  iswspace(command_cstr[6]))
         {
             result = sqlUpdate(db, command, error, job);
         }
          else if (0 == wcsncasecmp(command_cstr, L"DELETE", 6) &&
-                  iswspace(command[6]))
+                  iswspace(command_cstr[6]))
         {
             result = sqlDelete(db, command, error, job);
         }
          else if (0 == wcsncasecmp(command_cstr, L"RENAME", 6) &&
-                  iswspace(command[6]))
+                  iswspace(command_cstr[6]))
         {
             // move handles both MOVE and RENAME
             result = sqlMove(db, command, error, job);
         }
          else if (0 == wcsncasecmp(command_cstr, L"MOVE", 4) &&
-                  iswspace(command[4]))
+                  iswspace(command_cstr[4]))
         {
             result = sqlMove(db, command, error, job);
         }
          else if (0 == wcsncasecmp(command_cstr, L"DROP", 4) &&
-                  iswspace(command[4]))
+                  iswspace(command_cstr[4]))
         {
             result = sqlDrop(db, command, error, job);
         }
          else if (0 == wcsncasecmp(command_cstr, L"ALTER", 5) &&
-                  iswspace(command[5]))
+                  iswspace(command_cstr[5]))
         {
             result = sqlAlter(db, command, error, job);
         }
          else if (0 == wcsncasecmp(command_cstr, L"OPEN", 4) &&
-                  iswspace(command[4]))
+                  iswspace(command_cstr[4]))
         {
             result = sqlOpen(db, command, result_obj, error, job);
         }

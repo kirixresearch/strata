@@ -103,6 +103,18 @@ static bool isDelimiterChar(wchar_t ch)
 }
 
 
+static bool isSameField(const std::wstring& f1, const std::wstring& f2)
+{
+    if (0 == wcscasecmp(f1.c_str(), f2.c_str()))
+        return true;
+
+    std::wstring df1 = f1, df2 = f2;
+    
+    dequote(df1, '[', ']');
+    dequote(df2, '[', ']');
+
+    return (0 == wcscasecmp(df1.c_str(), df2.c_str()) ? true : false);
+}
 
 static void dequoteField(std::wstring& str)
 {
@@ -549,7 +561,9 @@ static void normalizeFieldNames(std::vector<SourceTable>& source_tables,
 
         for (i = 0; i < col_count; ++i)
         {
+            std::wstring full_name;
             std::wstring colname = st_it->structure->getColumnName(i);
+            std::wstring q_colname = L"[" + colname + L"]";
             tango::IColumnInfoPtr colinfo;
 
             if (isUniqueFieldName(source_tables, colname))
@@ -557,18 +571,41 @@ static void normalizeFieldNames(std::vector<SourceTable>& source_tables,
                 std::vector<SelectField>::iterator f_it;
                 for (f_it = fields.begin(); f_it != fields.end(); ++f_it)
                 {
-                    std::wstring full_name = st_it->alias;
+                    // replace alias.fieldname with fieldname
+                    full_name = st_it->alias;
                     full_name += L".";
                     full_name += colname;
-
                     if (f_it->expr.length() > 0)
-                    {
                         f_it->expr = exprReplaceToken(f_it->expr, full_name, colname);
-                    }
-                     else
-                    {
+                         else
                         f_it->name = exprReplaceToken(f_it->name, full_name, colname);
-                    }
+
+                    // replace [alias].fieldname with fieldname
+                    full_name = L"[" + st_it->alias + L"]";
+                    full_name += L".";
+                    full_name += colname;
+                    if (f_it->expr.length() > 0)
+                        f_it->expr = exprReplaceToken(f_it->expr, full_name, colname);
+                         else
+                        f_it->name = exprReplaceToken(f_it->name, full_name, colname);
+
+                    // replace alias.[fieldname] with [fieldname]
+                    full_name = st_it->alias;
+                    full_name += L".";
+                    full_name += q_colname;
+                    if (f_it->expr.length() > 0)
+                        f_it->expr = exprReplaceToken(f_it->expr, full_name, q_colname);
+                         else
+                        f_it->name = exprReplaceToken(f_it->name, full_name, q_colname);
+
+                    // replace [alias].[fieldname] with [fieldname]
+                    full_name = L"[" + st_it->alias + L"]";
+                    full_name += L".";
+                    full_name += q_colname;
+                    if (f_it->expr.length() > 0)
+                        f_it->expr = exprReplaceToken(f_it->expr, full_name, q_colname);
+                         else
+                        f_it->name = exprReplaceToken(f_it->name, full_name, q_colname);
                 }
             }
         }
@@ -2407,11 +2444,6 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
             
             kl::trim(f.name);
             kl::trim(f.expr);
-            
-            if (getColumnInfoMulti(source_tables, f.expr).isOk())
-            {
-                dequoteField(f.expr);
-            }
         }
          else
         {
@@ -2419,8 +2451,6 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
             {
                 f.name = *fstr_it;
                 f.expr = *fstr_it;
-                
-                dequoteField(f.expr);
 
                 // if the output field name is needlessly qualified
                 // with a table alias, remove the table alias
@@ -2433,6 +2463,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
                     if (isUniqueFieldName(source_tables, fname))
                     {
                         f.name = fname;
+                        f.expr = fname;
                     }
                 }
             }
@@ -2465,8 +2496,6 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         for (it = group_by_fields.begin();
              it != group_by_fields.end(); ++it)
         {
-            dequoteField(*it);
-            
             tango::IColumnInfoPtr colinfo;
             colinfo = getColumnInfoMulti(source_tables, *it);
             
@@ -2538,32 +2567,41 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
             colinfo = getColumnInfoMulti(source_tables, *it);
             
             if (colinfo.isOk())
+            {
                 f.input_name = colinfo->getName();
-
-            // now find the original column name
-            // (this is unfortunately another place where
-            // we require the input 'expression' to be a real
-            // field in the source file)
-
-            std::vector<SelectField>::iterator sf_it;
-            for (sf_it = fields.begin(); sf_it != fields.end(); ++sf_it)
+                order_by_fields.push_back(f);
+                continue;
+            }
+             else
             {
-                if (wcscasecmp(sf_it->name.c_str(), f.name.c_str()) == 0)
+                // not a plain field name;  try to find the original column name
+                // (this is unfortunately another place where we require the input
+                // 'expression' to be a real field in the source file)
+                std::wstring real_field_name = L"";
+
+                std::vector<SelectField>::iterator sf_it;
+                for (sf_it = fields.begin(); sf_it != fields.end(); ++sf_it)
                 {
-                    f.input_name = sf_it->expr;
-                    break;
+                    if (wcscasecmp(sf_it->name.c_str(), f.name.c_str()) == 0)
+                    {
+                        real_field_name = normalizeFieldNames(source_tables, sf_it->expr);
+                        dequote(real_field_name, '[', ']');
+                        break;
+                    }
                 }
-            }
 
-            if (colinfo.isNull() && f.input_name.empty())
-            {
-                wchar_t buf[255];            
-                swprintf(buf, 255, L"Invalid syntax; unknown column [%ls] in ORDER BY clause", (*it).c_str());
-                error.setError(tango::errorSyntax, buf);
-                return xcm::null;
-            }
+                colinfo = getColumnInfoMulti(source_tables, real_field_name);
+                if (colinfo.isNull())
+                {
+                    wchar_t buf[255];            
+                    swprintf(buf, 255, L"Invalid syntax; unknown column [%ls] in ORDER BY clause", (*it).c_str());
+                    error.setError(tango::errorSyntax, buf);
+                    return xcm::null;
+                }
 
-            order_by_fields.push_back(f);
+                f.input_name = real_field_name;
+                order_by_fields.push_back(f);
+            }
         }
     }
 
@@ -2924,15 +2962,15 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         if (!field_str.empty())
             field_str += L",";
         
-        if (!f_it->expr.empty() && 0 != wcscasecmp(f_it->expr.c_str(), f_it->name.c_str()))
+        if (!f_it->expr.empty() && !isSameField(f_it->expr, f_it->name))
         {
             field_str += f_it->expr;
             field_str += L" AS ";
-            field_str += f_it->name;
+            field_str += L"[" + f_it->name + L"]";
         }
          else
         {
-            field_str += f_it->name;
+            field_str += L"[" + f_it->name + L"]";
         }
     }
 
@@ -2951,11 +2989,11 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
 
         if (p_group_by || group_operation)
         {
-            order_by_str += order_by_it->name;
+            order_by_str += L"[" + order_by_it->name + L"]";
         }
          else
         {
-            order_by_str += order_by_it->input_name;
+            order_by_str += L"[" + order_by_it->input_name + L"]";
         }
 
 

@@ -740,7 +740,9 @@ bool BaseIterator::initStructure()
             std::wstring part = *it;
             kl::trim(part);
 
-            tango::IColumnInfoPtr col = m_set_structure->getColumnInfo(part);
+            tango::IColumnInfoPtr col;
+            
+            col = m_set_structure->getColumnInfo(part);
             if (col)
             {
                 s->addColumn(col);
@@ -759,109 +761,124 @@ bool BaseIterator::initStructure()
                 }
             }
 
+
+
+            // look for 'AS' keyword
+            wchar_t* temp = zl_stristr((wchar_t*)it->c_str(),
+                                        L"AS",
+                                        true,
+                                        false);
+            int as_pos = -1;
+
+            if (temp)
             {
-                // look for 'AS' keyword
-                wchar_t* temp = zl_stristr((wchar_t*)it->c_str(),
-                                           L"AS",
-                                           true,
-                                           false);
-                int as_pos = -1;
-
-                if (temp)
-                {
-                    as_pos = temp - it->c_str();
-                }
-
-                std::wstring colname;
-                std::wstring expr;
-
-                if (as_pos != -1)
-                {
-                    colname = it->substr(as_pos+2);
-                    expr = it->substr(0, as_pos);
-                    
-                    kl::trim(colname);
-                    kl::trim(expr);
-
-                    dequote(colname, '[', ']');
-                }
-                 else
-                {
-                    expr = *it;
-                    
-                    wchar_t buf[255];
-                    do
-                    {
-                        swprintf(buf, 255, L"EXPR%03d", ++colname_counter);
-                    } while (m_set_structure->getColumnExist(buf));
-
-                    colname = buf;
-                }
-
-
-                kscript::ExprParser* p = createExprParser();
-                ParserBindInfo bind_info(this, colname);
-                bindExprParser(p, &bind_info);
-
-                if (!p->parse(expr))
-                    return false;
-
-                int expr_type = p->getType();
-
-                delete p;
-
-                int tango_type = kscript2tangoType(expr_type);
-                if (tango_type == tango::typeInvalid ||
-                    tango_type == tango::typeUndefined)
-                {
-                    return false;
-                }
-
-                int width;
-                int scale = 0;
-
-                switch (tango_type)
-                {
-                    case tango::typeNumeric:
-                        width = 18;
-                        break;
-                    case tango::typeDate:
-                    case tango::typeInteger:
-                        width = 4;
-                        break;
-                    case tango::typeDateTime:
-                    case tango::typeDouble:
-                        width = 8;
-                        break;
-                    default:
-                        width = 254;
-                        break;
-                }
-
-
-                tango::IColumnInfoPtr col;
-                col = m_set_structure->getColumnInfo(expr);
-                if (col)
-                {
-                    tango_type = col->getType();
-                    width = col->getWidth();
-                    scale = col->getScale();
-                }
-
-
-
-                ColumnInfo* c = new ColumnInfo;
-                c->setName(colname);
-                c->setType(tango_type);
-                c->setWidth(width);
-                c->setScale(scale);
-                c->setExpression(expr);
-                c->setCalculated(true);
-
-                //s->addColumn(static_cast<tango::IColumnInfo*>(c));
-                m_calc_fields.push_back(static_cast<tango::IColumnInfo*>(c));
+                as_pos = temp - it->c_str();
             }
 
+            std::wstring colname;
+            std::wstring expr;
+
+            if (as_pos != -1)
+            {
+                colname = it->substr(as_pos+2);
+                expr = it->substr(0, as_pos);
+                    
+                kl::trim(colname);
+                kl::trim(expr);
+
+                dequote(colname, '[', ']');
+            }
+                else
+            {
+                expr = *it;
+                    
+                wchar_t buf[255];
+                do
+                {
+                    swprintf(buf, 255, L"EXPR%03d", ++colname_counter);
+                } while (m_set_structure->getColumnExist(buf));
+
+                colname = buf;
+            }
+
+
+            std::wstring dequote_expr = expr;
+            dequote(dequote_expr, '[', ']');
+
+            // check if we have a scenario where the field name is the same as the expression
+            // ex:  fld123 AS fld123
+            if (0 == wcscasecmp(dequote_expr.c_str(), colname.c_str()))
+            {
+                col = m_set_structure->getColumnInfo(colname);
+                if (col)
+                {
+                    s->addColumn(col);
+                    continue;
+                }
+            }
+
+
+            kscript::ExprParser* p = createExprParser();
+            ParserBindInfo bind_info(this, colname);
+            bindExprParser(p, &bind_info);
+
+            if (!p->parse(expr))
+                return false;
+
+            int expr_type = p->getType();
+
+            delete p;
+
+            int tango_type = kscript2tangoType(expr_type);
+            if (tango_type == tango::typeInvalid ||
+                tango_type == tango::typeUndefined)
+            {
+                return false;
+            }
+
+            int width;
+            int scale = 0;
+
+            switch (tango_type)
+            {
+                case tango::typeNumeric:
+                    width = 18;
+                    break;
+                case tango::typeDate:
+                case tango::typeInteger:
+                    width = 4;
+                    break;
+                case tango::typeDateTime:
+                case tango::typeDouble:
+                    width = 8;
+                    break;
+                default:
+                    width = 254;
+                    break;
+            }
+
+
+            // see if the expression is just a column and use its precise type info if it is
+            col = m_set_structure->getColumnInfo(dequote_expr);
+            if (col)
+            {
+                tango_type = col->getType();
+                width = col->getWidth();
+                scale = col->getScale();
+            }
+
+
+
+            ColumnInfo* c = new ColumnInfo;
+            c->setName(colname);
+            c->setType(tango_type);
+            c->setWidth(width);
+            c->setScale(scale);
+            c->setExpression(expr);
+            c->setCalculated(true);
+
+            //s->addColumn(static_cast<tango::IColumnInfo*>(c));
+            m_calc_fields.push_back(static_cast<tango::IColumnInfo*>(c));
         }
 
         m_iter_structure = s;
