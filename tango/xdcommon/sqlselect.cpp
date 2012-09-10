@@ -145,46 +145,6 @@ static void dequoteField(std::wstring& str)
     dequote(field, L'[', L']');
 
     str = alias + L"." + field;
-
-/*
-    klregex::wmatch matchres;
-    static const klregex::wregex regex_fieldtype1(L"^(?<p1>.*?)(?<p2>\\[)(?<p3>.+?)(?<p4>\\])(?<p5>\\.)(?<p6>\\[)(?<p7>.+?)(?<p8>\\])(?<p9>.*)$");   // [table].[field]
-    static const klregex::wregex regex_fieldtype2(L"^(?<p1>.*?)(?<p2>\\[)(?<p3>.+?)(?<p4>\\])(?<p5>.*)$");                                           // [table].field, table.[field], [field]
-
-    // perform the more specific case first
-    if (regex_fieldtype1.search(str, matchres))
-    {
-        const klregex::wsubmatch& p1 = matchres[L"p1"];
-        const klregex::wsubmatch& p3 = matchres[L"p3"];
-        const klregex::wsubmatch& p5 = matchres[L"p5"];
-        const klregex::wsubmatch& p7 = matchres[L"p7"];
-        const klregex::wsubmatch& p9 = matchres[L"p9"];
-
-        std::wstring result;
-        result.append(p1.first, p1.length());
-        result.append(p3.first, p3.length());
-        result.append(p5.first, p5.length());
-        result.append(p7.first, p7.length());
-        result.append(p9.first, p9.length());
-        str = result; 
-        return;
-    }
-
-    // more general case next
-    if (regex_fieldtype1.search(str, matchres))
-    {
-        const klregex::wsubmatch& p1 = matchres[L"p1"];
-        const klregex::wsubmatch& p3 = matchres[L"p3"];
-        const klregex::wsubmatch& p5 = matchres[L"p5"];
-
-        std::wstring result;
-        result.append(p1.first, p1.length());
-        result.append(p3.first, p3.length());
-        result.append(p5.first, p5.length());
-        str = result;
-        return;
-    }
-*/
 }
 
 static bool isFunction(const std::wstring& str, const std::wstring& func)
@@ -2579,10 +2539,12 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
                 // 'expression' to be a real field in the source file)
                 std::wstring real_field_name = L"";
 
+                std::wstring normalized = normalizeFieldNames(source_tables, f.name);
+
                 std::vector<SelectField>::iterator sf_it;
                 for (sf_it = fields.begin(); sf_it != fields.end(); ++sf_it)
                 {
-                    if (wcscasecmp(sf_it->name.c_str(), f.name.c_str()) == 0)
+                    if (wcscasecmp(sf_it->name.c_str(), normalized.c_str()) == 0)
                     {
                         real_field_name = normalizeFieldNames(source_tables, sf_it->expr);
                         dequote(real_field_name, '[', ']');
