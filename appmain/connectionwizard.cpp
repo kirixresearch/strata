@@ -169,6 +169,8 @@ void ConnectionBar::populate()
             default_item = item;
     }
 
+/*
+// disable temporarily
     if (m_types & dbtypeClient)
     {
         item = addItem(ConnectionBar::typeClient,
@@ -177,7 +179,7 @@ void ConnectionBar::populate()
         if (default_item == NULL)
             default_item = item;
     }
-
+*/
 
     m_default_item = default_item;
 }
