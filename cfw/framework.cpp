@@ -404,7 +404,7 @@ public:
             return;
         }
 
-        evt.Skip();
+        Destroy();
     }
 
 
