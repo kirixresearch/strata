@@ -161,14 +161,14 @@ private:
     void checkOverlayText();
     
     // error checking functions
-    void clearProblemRows();
-    void markProblemRow(int row, bool scroll_to);
-    int  checkDuplicateFieldnames(int check_flags);
-    int  checkInvalidFieldnames(int check_flags);
-    int  validateExpression(const wxString& expr, int type = tango::typeUndefined);
-    int  validateStructure();
     bool doErrorCheck();
-    
+    int  validateStructure();
+    int  validateExpression(const wxString& expr, int type = tango::typeUndefined);
+    int  checkInvalidFieldnames(int check_flags);
+    int  checkDuplicateFieldnames(int check_flags);
+    void markProblemRow(int row, bool scroll_to);    
+    void clearProblemRows();
+
     // structural
     bool createTable();
     ModifyStructJob* createModifyJob(size_t* action_count);

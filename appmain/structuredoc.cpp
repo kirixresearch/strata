@@ -1073,100 +1073,19 @@ void StructureDoc::checkOverlayText()
         m_grid->setOverlayText(wxEmptyString);
 }
 
-void StructureDoc::clearProblemRows()
+// this function encapsulates all of the logic/error checking
+// for when we want to save a document or switch views
+bool StructureDoc::doErrorCheck()
 {
-    int row, row_count = m_grid->getRowCount();
-    for (row = 0; row < row_count; ++row)
-    {
-        if (isFieldDynamic(m_grid, row))
-            m_grid->setCellBitmap(row, colRowNumber, GETBMP(gf_lightning_16));
-         else
-            m_grid->setCellBitmap(row, colRowNumber, GETBMP(xpm_blank_16));
-    }
-}
-
-void StructureDoc::markProblemRow(int row, bool scroll_to)
-{
-    m_grid->setCellBitmap(row, colRowNumber, GETBMP(gf_exclamation_16));
-
-    if (scroll_to)
-    {
-        m_grid->moveCursor(row, colFieldName, false);
-        if (!m_grid->isCursorVisible())
-        {
-            m_grid->scrollVertToCursor();
-        }
-    }
-}
-
-int StructureDoc::checkDuplicateFieldnames(int check_flags)
-{
-    // -- if we're editing, end the edit --
-    if (m_grid->isEditing())
-        m_grid->endEdit(true);
+    bool block = false;
+    int errorcode = validateStructure();
+    StructureValidator::showErrorMessage(errorcode, &block);
     
-    bool include_empty_fieldnames = false;
-    if (check_flags & CheckEmptyFieldnames)
-        include_empty_fieldnames = true;
+    // there is an error in the structure that must be fixed
+    if (block)
+        return false;
     
-    std::vector<RowErrorChecker> check_rows;
-    check_rows = getRowErrorCheckerVector(m_grid, include_empty_fieldnames);
-
-    bool mark_rows = (check_flags & CheckMarkRows);
-    bool errors_found = StructureValidator::findDuplicateFieldNames(check_rows);
-    if (errors_found && mark_rows)
-    {
-        std::vector<RowErrorChecker>::iterator it;
-        for (it = check_rows.begin(); it != check_rows.end(); ++it)
-        {
-            if (it->errors != StructureValidator::ErrorNone)
-                markProblemRow(it->row, false);
-        }
-    }
-
-    return (errors_found ? StructureValidator::ErrorDuplicateFieldNames
-                         : StructureValidator::ErrorNone);
-}
-
-int StructureDoc::checkInvalidFieldnames(int check_flags)
-{
-    // -- if we're editing, end the edit --
-    if (m_grid->isEditing())
-        m_grid->endEdit(true);
-    
-    bool include_empty_fieldnames = false;
-    if (check_flags & CheckEmptyFieldnames)
-        include_empty_fieldnames = true;
-    
-    std::vector<RowErrorChecker> check_rows;
-    check_rows = getRowErrorCheckerVector(m_grid, include_empty_fieldnames);
-
-    bool mark_rows = (check_flags & CheckMarkRows);
-    bool errors_found = StructureValidator::findInvalidFieldNames(check_rows);
-    if (errors_found && mark_rows)
-    {
-        std::vector<RowErrorChecker>::iterator it;
-        for (it = check_rows.begin(); it != check_rows.end(); ++it)
-        {
-            if (it->errors != StructureValidator::ErrorNone)
-                markProblemRow(it->row, false);
-        }
-    }
-
-    return (errors_found ? StructureValidator::ErrorInvalidFieldNames
-                         : StructureValidator::ErrorNone);
-}
-
-int StructureDoc::validateExpression(const wxString& expr, int type)
-{
-    // this is a conventient pass-through function which will make sure we
-    // have created a structure to pass to the structure validator function
-    
-    if (m_expr_edit_structure.isNull())
-        m_expr_edit_structure = createStructureFromGrid();
-    
-    return StructureValidator::validateExpression(m_expr_edit_structure,
-                                                  expr, type);
+    return true;
 }
 
 int StructureDoc::validateStructure()
@@ -1238,19 +1157,100 @@ int StructureDoc::validateStructure()
     return StructureValidator::ErrorNone;
 }
 
-// this function encapsulates all of the logic/error checking
-// for when we want to save a document or switch views
-bool StructureDoc::doErrorCheck()
+int StructureDoc::validateExpression(const wxString& expr, int type)
 {
-    bool block = false;
-    int errorcode = validateStructure();
-    StructureValidator::showErrorMessage(errorcode, &block);
+    // this is a conventient pass-through function which will make sure we
+    // have created a structure to pass to the structure validator function
     
-    // there is an error in the structure that must be fixed
-    if (block)
-        return false;
+    if (m_expr_edit_structure.isNull())
+        m_expr_edit_structure = createStructureFromGrid();
     
-    return true;
+    return StructureValidator::validateExpression(m_expr_edit_structure,
+                                                  expr, type);
+}
+
+int StructureDoc::checkInvalidFieldnames(int check_flags)
+{
+    // -- if we're editing, end the edit --
+    if (m_grid->isEditing())
+        m_grid->endEdit(true);
+    
+    bool include_empty_fieldnames = false;
+    if (check_flags & CheckEmptyFieldnames)
+        include_empty_fieldnames = true;
+    
+    std::vector<RowErrorChecker> check_rows;
+    check_rows = getRowErrorCheckerVector(m_grid, include_empty_fieldnames);
+
+    bool mark_rows = (check_flags & CheckMarkRows);
+    bool errors_found = StructureValidator::findInvalidFieldNames(check_rows);
+    if (errors_found && mark_rows)
+    {
+        std::vector<RowErrorChecker>::iterator it;
+        for (it = check_rows.begin(); it != check_rows.end(); ++it)
+        {
+            if (it->errors != StructureValidator::ErrorNone)
+                markProblemRow(it->row, false);
+        }
+    }
+
+    return (errors_found ? StructureValidator::ErrorInvalidFieldNames
+                         : StructureValidator::ErrorNone);
+}
+
+int StructureDoc::checkDuplicateFieldnames(int check_flags)
+{
+    // -- if we're editing, end the edit --
+    if (m_grid->isEditing())
+        m_grid->endEdit(true);
+    
+    bool include_empty_fieldnames = false;
+    if (check_flags & CheckEmptyFieldnames)
+        include_empty_fieldnames = true;
+    
+    std::vector<RowErrorChecker> check_rows;
+    check_rows = getRowErrorCheckerVector(m_grid, include_empty_fieldnames);
+
+    bool mark_rows = (check_flags & CheckMarkRows);
+    bool errors_found = StructureValidator::findDuplicateFieldNames(check_rows);
+    if (errors_found && mark_rows)
+    {
+        std::vector<RowErrorChecker>::iterator it;
+        for (it = check_rows.begin(); it != check_rows.end(); ++it)
+        {
+            if (it->errors != StructureValidator::ErrorNone)
+                markProblemRow(it->row, false);
+        }
+    }
+
+    return (errors_found ? StructureValidator::ErrorDuplicateFieldNames
+                         : StructureValidator::ErrorNone);
+}
+
+void StructureDoc::markProblemRow(int row, bool scroll_to)
+{
+    m_grid->setCellBitmap(row, colRowNumber, GETBMP(gf_exclamation_16));
+
+    if (scroll_to)
+    {
+        m_grid->moveCursor(row, colFieldName, false);
+        if (!m_grid->isCursorVisible())
+        {
+            m_grid->scrollVertToCursor();
+        }
+    }
+}
+
+void StructureDoc::clearProblemRows()
+{
+    int row, row_count = m_grid->getRowCount();
+    for (row = 0; row < row_count; ++row)
+    {
+        if (isFieldDynamic(m_grid, row))
+            m_grid->setCellBitmap(row, colRowNumber, GETBMP(gf_lightning_16));
+         else
+            m_grid->setCellBitmap(row, colRowNumber, GETBMP(xpm_blank_16));
+    }
 }
 
 bool StructureDoc::createTable()
