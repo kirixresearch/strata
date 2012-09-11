@@ -7017,7 +7017,7 @@ void TableDoc::gotoRecord()
                 cfw::dbl2fstr(row_count).c_str());
         wxTextEntryDialog dlg(this, message, _("Go To Record"),
                 cfw::dbl2fstr(m_grid->getCursorRow()+1));
-        dlg.SetSize(260,141);
+        dlg.SetSize(270,150);
         
         if (dlg.ShowModal() == wxID_OK)
         {
