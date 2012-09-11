@@ -131,7 +131,7 @@ static wxString groupfunc2str(int group_func, bool format_nice = false)
 
 void setGridInputOutputText(kcl::Grid* grid, int row, int function, bool refresh)
 {
-    // -- set the intpu and output field names --
+    // set the intpu and output field names
     
     wxString func_str = groupfunc2str(function, true);
 
@@ -194,7 +194,6 @@ GroupPanel::~GroupPanel()
 
 }
 
-// -- IDocument --
 bool GroupPanel::initDoc(cfw::IFramePtr frame,
                          cfw::IDocumentSitePtr site,
                          wxWindow* docsite_wnd,
@@ -216,13 +215,13 @@ bool GroupPanel::initDoc(cfw::IFramePtr frame,
     m_doc_site = site;
 
 
-    // -- create tablecol grid --
+    // create tablecol grid
     
     m_tablecols = new FieldListControl(this, ID_FieldListCtrl);
     m_tablecols->setDragFormat(wxT("grouppanel_fields"));
 
 
-    // -- create group parameter grid --
+    // create group parameter grid
     
     m_grid = new kcl::RowSelectionGrid(this,
                                        -1,
@@ -246,14 +245,14 @@ bool GroupPanel::initDoc(cfw::IFramePtr frame,
     // don't allow the hidden column to be resized
     m_grid->setColumnResizable(GroupCol_Hidden, false);
     
-    // -- drop target for moving rows up and down on the grid --
+    //  drop target for moving rows up and down on the grid
     kcl::GridDataDropTarget* drop_target = new kcl::GridDataDropTarget(m_grid);
     drop_target->sigDropped.connect(this, &GroupPanel::onGridDataDropped);
     drop_target->setGridDataObjectFormats(wxT("grouppanel_fields"), wxT("grouppanel_output"));
     m_grid->SetDropTarget(drop_target);
 
 
-    // -- create horizontal sizer --
+    // create horizontal sizer
     
     wxBoxSizer* horz_sizer = new wxBoxSizer(wxHORIZONTAL);
     horz_sizer->Add(m_tablecols, 1, wxEXPAND);
@@ -284,7 +283,7 @@ bool GroupPanel::initDoc(cfw::IFramePtr frame,
     advanced_options_sizer->Add(m_adv_checkbox, 0, wxALIGN_CENTER);
 
 
-    // -- create a platform standards-compliant OK/Cancel sizer --
+    // create a platform standards-compliant OK/Cancel sizer
     
     m_ok_button = new wxButton(this, wxID_OK, _("Run"));
     wxButton* cancel_button = new wxButton(this, wxID_CANCEL);
@@ -296,7 +295,7 @@ bool GroupPanel::initDoc(cfw::IFramePtr frame,
     ok_cancel_sizer->Realize();
     ok_cancel_sizer->AddSpacer(5);
 
-    // -- this code is necessary to get the sizer's bottom margin to 8 --
+    // this code is necessary to get the sizer's bottom margin to 8
     wxSize min_size = ok_cancel_sizer->GetMinSize();
     min_size.SetHeight(min_size.GetHeight()+16);
     ok_cancel_sizer->SetMinSize(min_size);
@@ -316,7 +315,7 @@ bool GroupPanel::initDoc(cfw::IFramePtr frame,
     Layout();
 
 
-    // -- size the colums in the grid --
+    // size the colums in the grid
     int w = m_grid->GetClientSize().GetWidth();
     m_grid->setColumnSize(GroupCol_Hidden, 0);
     m_grid->setColumnSize(GroupCol_GroupFunc, 90);
@@ -350,7 +349,7 @@ bool GroupPanel::initDoc(cfw::IFramePtr frame,
         caption += wxT("]");
     }
 
-    // -- save structure for later --
+    // save structure for later
     m_structure = m_set->getStructure();
     m_tablecols->addCustomItem(getCountLabel(), GETBMP(xpm_blank_16));
     m_tablecols->addCustomItem(getGroupIdLabel(), GETBMP(xpm_blank_16));
@@ -390,11 +389,11 @@ void GroupPanel::insertOutputField(int row,
     if (function == -1)
         function = GroupFunc_GroupBy;
 
-    // -- insert a row in the grid for this group parameter --
+    //  insert a row in the grid for this group parameter
     m_grid->insertRow(row);
     row = (row == -1) ? m_grid->getRowCount() - 1 : row;
 
-    // -- populate the group function dropdown --
+    // populate the group function dropdown
     kcl::CellProperties cellprops;
     cellprops.mask = kcl::CellProperties::cpmaskCtrlType |
                      kcl::CellProperties::cpmaskCbChoices;
@@ -405,7 +404,7 @@ void GroupPanel::insertOutputField(int row,
     }
     m_grid->setCellProperties(row, GroupCol_GroupFunc, &cellprops);
 
-    // -- set the values in the grid --
+    // set the values in the grid
     m_grid->setCellComboSel(row, GroupCol_GroupFunc, function);
 
     // save the input expression in the row data -- the input expression
@@ -421,8 +420,6 @@ void GroupPanel::insertOutputField(int row,
 }
 
 
-
-// -- event handlers --
 
 void GroupPanel::onAdvancedQueryText(wxCommandEvent& evt)
 {
@@ -686,7 +683,6 @@ void GroupPanel::onExecute(wxCommandEvent& event)
         return;
     }
     
-    
     std::set<wxString> output_field_set;
     std::set<wxString> orig_field_set;
     wxString str;
@@ -852,7 +848,7 @@ void GroupPanel::onExecute(wxCommandEvent& event)
 
 
 
-    // -- now create the GroupJob and its associated parameters --
+    // now create the GroupJob and its associated parameters
 
     GroupJob* job = new GroupJob;
 
@@ -860,7 +856,7 @@ void GroupPanel::onExecute(wxCommandEvent& event)
     wxString columns;
     wxString group;
 
-    // -- create the group sort/break key --
+    // create the group sort/break key
     int keypart_count = 0;
     for (i = 0; i < row_count; ++i)
     {
@@ -893,7 +889,7 @@ void GroupPanel::onExecute(wxCommandEvent& event)
 
 
 
-    // -- create the output functions string --
+    //  create the output functions string
     int outputpart_count = 0;
     for (i = 0; i < row_count; ++i)
     {
@@ -958,16 +954,16 @@ void GroupPanel::onExecute(wxCommandEvent& event)
 
     job->sigJobFinished().connect(&onGroupJobFinished);
 
-    // -- add and start job --
+    // add and start job
     g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
     
-    // -- close the site --
+    // close the site
     g_app->getMainFrame()->closeSite(m_doc_site);
 }
 
-void GroupPanel::onCancel(wxCommandEvent& event)
+void GroupPanel::onCancel(wxCommandEvent& evt)
 {
-    // -- close the site --
+    // close the site
     g_app->getMainFrame()->closeSite(m_doc_site);
 }
 
