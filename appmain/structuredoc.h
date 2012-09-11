@@ -169,6 +169,7 @@ private:
     int  validateStructure();
     bool doErrorCheck();
     
+    // structural
     bool createTable();
     ModifyStructJob* createModifyJob(size_t* action_count);
     
@@ -213,7 +214,7 @@ private:
     void onUpdateUI_EnableAlways(wxUpdateUIEvent& evt);
     void onUpdateUI_DisableAlways(wxUpdateUIEvent& evt);
     void onUpdateUI(wxUpdateUIEvent& evt);
-    
+
 private:
 
     tango::ISetPtr m_modify_set;

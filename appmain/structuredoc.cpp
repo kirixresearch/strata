@@ -146,6 +146,301 @@ StructureDoc::~StructureDoc()
 {
 }
 
+void StructureDoc::setModifySet(tango::ISetPtr modify_set)
+{
+    m_modify_set = modify_set;
+    m_modify = true;
+    
+    // set the changed flag
+    setChanged(false);
+
+    if (m_modify_set.isOk())
+    {
+        if (m_modify_set->isTemporary())
+        {
+            m_path = _("(Untitled)");
+        }
+         else
+        {
+            m_path = towx(m_modify_set->getObjectPath());
+
+            // fire this event so that the URL will be updated with the new path
+            if (m_frame.isOk())
+                m_frame->postEvent(new cfw::Event(wxT("cfw.locationChanged")));
+        }
+
+        m_readonly = false;
+    }
+     else
+    {
+        m_readonly = true;
+    }
+}
+
+tango::ISetPtr StructureDoc::getModifySet()
+{
+    return m_modify_set;
+}
+
+bool StructureDoc::doSave()
+{
+    // if we're editing, end the edit
+    if (m_grid->isEditing())
+        m_grid->endEdit(true);
+
+    // make sure everthing checks out
+    if (!doErrorCheck())
+        return false;
+
+    // as long as everything checks out, reset the changed flag 
+    // so that the document is clean; do this here so that if
+    // the document is dirtied simply by moving around the
+    // editor, the changed state is reset, even if no actual
+    // changes in the structure are saved
+    setChanged(false);
+
+    // since we're not modifying width/scale based on type dynamically --
+    // see note for updateWidthAndScale() -- we need to make sure they
+    // are set in conformity with our structure standards now
+    int row, row_count = m_grid->getRowCount();
+    for (row = 0; row < row_count; ++row)
+    {
+        int type = choice2tango(m_grid->getCellComboSel(row, colFieldType));
+        int width = -1;
+        int scale = -1;
+        
+        if (type == tango::typeCharacter ||
+            type == tango::typeWideCharacter)
+        {
+            scale = 0;
+        }
+        
+        if (type == tango::typeDouble)
+        {
+            width = 8;
+        }
+        
+        if (type == tango::typeDateTime)
+        {
+            width = 8;
+            scale = 0;
+        }
+        
+        if (type == tango::typeInteger ||
+            type == tango::typeDate)
+        {
+            width = 4;
+            scale = 0;
+        }
+        
+        if (type == tango::typeBoolean)
+        {
+            width = 1;
+            scale = 0;
+        }
+        
+        if (width != -1)
+            m_grid->setCellInteger(row, colFieldWidth, width);
+        if (scale != -1)
+            m_grid->setCellInteger(row, colFieldScale, scale);
+    }
+    
+    // if we're not modifying an existing table, submit a create table job
+    if (!m_modify)
+        return createTable();
+    
+    
+    // -- at this point, we know we're modifying an existing table --
+    
+    
+    // create the modify job
+    size_t action_count = 0;
+    ModifyStructJob* job = createModifyJob(&action_count);
+
+    // make sure there's something to do
+    if (action_count == 0)
+    {
+        delete job;
+        return true;
+    }
+    
+    
+    // -- make sure we've got a tabledoc in our container --
+    ITableDocPtr table_doc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
+    if (table_doc.isNull())
+    {
+        // -- this chunk of code exists in the view switcher code as well --
+        
+        // create a tabledoc and open it
+        table_doc = TableDocMgr::createTableDoc();
+        table_doc->open(m_modify_set, xcm::null);
+
+        if (table_doc->getCaption().Length() == 0)
+        {
+            // update the caption manually
+            wxString caption = m_path.AfterLast(wxT('/'));
+            table_doc->setCaption(caption, wxEmptyString);
+        }
+        
+        wxWindow* container = m_doc_site->getContainerWindow();
+        g_app->getMainFrame()->createSite(container,
+                                          table_doc, false);
+    }
+    
+    // check to see if this table is a child in a relationship sync situation
+    bool filtered_table = false;
+    if (table_doc.isOk())
+    {
+        // VC6 Bug: spelling out the smart ptr assignment and comparison here
+        // prevents a VC6 compiler bug.   When VC6 is no longer in use, this
+        // can be compacted into:
+        // if (m_modify_set == doc->getBaseSet() || m_modify_set == doc->getBrowseSet())
+
+        tango::ISetPtr base_set = table_doc->getBaseSet();
+        tango::ISetPtr browse_set = table_doc->getBrowseSet();
+
+        if (m_modify_set == base_set || m_modify_set == browse_set)
+        {
+            if (table_doc->getIsChildSet())
+            {
+                cfw::appMessageBox(_("The structure cannot be modified while the table is showing filtered related records."),
+                                   APPLICATION_NAME,
+                                   wxOK | wxICON_INFORMATION | wxCENTER);
+                delete job;
+                return false;
+            }
+            
+            if (table_doc->getFilter().Length() > 0)
+                filtered_table = true;
+        }
+    }
+    
+    cfw::IDocumentSiteEnumPtr sites;
+    sites = g_app->getMainFrame()->getDocumentSites(cfw::sitetypeNormal);
+    size_t i, site_count = sites->size();
+    for (i = 0; i < site_count; ++i)
+    {
+        cfw::IDocumentSitePtr site = sites->getItem(i);
+        if (site.isNull())
+            continue;
+        
+        ITableDocPtr doc = site->getDocument();
+        if (doc.isNull())
+            continue;
+        
+
+        {
+            // VC6 Bug: spelling out the smart ptr assignment and comparison here
+            // prevents a VC6 compiler bug.   When VC6 is no longer in use, this
+            // can be compacted into:
+            // if (m_modify_set == doc->getBaseSet() || m_modify_set == doc->getBrowseSet())
+
+            tango::ISetPtr base_set = doc->getBaseSet();
+            tango::ISetPtr browse_set = doc->getBrowseSet();
+
+            if (m_modify_set == base_set || m_modify_set == browse_set)
+            {
+                if (doc->getIsChildSet())
+                {
+                    cfw::appMessageBox(_("The structure cannot be modified while the table is showing filtered related records."),
+                                       APPLICATION_NAME,
+                                       wxOK | wxICON_INFORMATION | wxCENTER);
+                    delete job;
+                    return false;
+                }
+            
+                if (doc->getFilter().Length() > 0)
+                    filtered_table = true;
+            }
+        }
+    }
+
+    // if we're modifying a table that we've filtered,
+    // see if the user wants to continue
+    if (filtered_table)
+    {
+        CustomPromptDlg dlg(g_app->getMainWindow(), 
+                            APPLICATION_NAME,
+                            _("The table you want to modify is currently showing filtered records.  Modifying the table will remove the filter.  Would you like to continue?"),
+                            wxSize(380,200));
+        dlg.setBitmap(CustomPromptDlg::bitmapQuestion);
+        dlg.showButtons(CustomPromptDlg::showButton1 |
+                        CustomPromptDlg::showButton2);
+        
+        int result = dlg.ShowModal();
+        if (result != wxYES)
+        {
+            delete job;
+            return false;
+        }
+    }
+
+
+    // -- disable the structure editor grid --
+    
+    m_grid->setVisibleState(kcl::Grid::stateDisabled);
+    m_grid->refresh(kcl::Grid::refreshAll);
+    
+    
+    // -- close the sets --
+    std::vector<ITableDoc*> to_connect;
+    for (i = 0; i < site_count; ++i)
+    {
+        cfw::IDocumentSitePtr site = sites->getItem(i);
+        if (site.isNull())
+            continue;
+        
+        ITableDocPtr doc = site->getDocument();
+        if (doc.isNull())
+            continue;
+
+        // VC6 Bug: spelling out the smart ptr assignment and comparison here
+        // prevents a VC6 compiler bug.   When VC6 is no longer in use, this
+        // can be compacted into:
+        // if (m_modify_set == doc->getBaseSet() || m_modify_set == doc->getBrowseSet())
+        // N.B. This is where the problem was manifesting itself.  The ISetPtr's were
+        // being leaked and the set could not be deleted after structure modify
+
+        tango::ISetPtr base_set = doc->getBaseSet();
+        tango::ISetPtr browse_set = doc->getBrowseSet();
+        
+        if (m_modify_set == base_set || m_modify_set == browse_set)
+        {
+            to_connect.push_back(doc.p);
+            doc->closeSet();
+        }
+    }
+
+    // -- let the pending close events process --
+    
+    g_app->processIdle();
+    ::wxSafeYield();
+
+    
+    // -- start the job --
+    g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+
+    // connect the job finished signal to the structuredoc
+    job->sigJobFinished().connect(this, &StructureDoc::onModifyStructJobFinished);
+
+    // connect the job finished signal to the tabledoc
+    if (table_doc.isOk())
+        table_doc->connectModifyStructJob(job);
+    
+    // now, connect the job finished signal to all open
+    // tabledocs that are showing this set
+    std::vector<ITableDoc*>::iterator it;
+    for (it = to_connect.begin(); it != to_connect.end(); ++it)
+    {
+        if (table_doc.p == (*it))
+            continue;
+        
+        (*it)->connectModifyStructJob(job);
+    }
+
+    return true;
+}
+
 bool StructureDoc::initDoc(cfw::IFramePtr frame,
                            cfw::IDocumentSitePtr doc_site,
                            wxWindow* docsite_wnd,
@@ -413,295 +708,549 @@ void StructureDoc::onColumnListDblClicked(const std::vector<wxString>& items)
     updateStatusBar();
 }
 
-void StructureDoc::populateGridFromSet(tango::ISetPtr set)
+void StructureDoc::insertRow(int row, bool dynamic)
 {
-    m_grid->deleteAllRows();
+    if (row == -1)
+        row = m_grid->getRowCount();
     
-    if (set.isNull())
-        return;
+    StructureField* f = new StructureField;
+    f->name = wxEmptyString;
+    f->type = tango::typeCharacter;
+    f->width = 20;
+    f->scale = 0;
+    f->dynamic = dynamic;
+    f->expr = wxEmptyString;
+    f->original_dynamic = false;
+    f->original = false;
+    f->pos = -1;
     
-    // first, populate the grid with all the fields; do this before validating
-    // any of the calculated fields since some of the fields may be dependent
-    // on later fields in grid that need to be added to the validation structure
-    // before validation on previous fields in the grid is possible
-    tango::IStructurePtr structure = set->getStructure();
-    int i, col_count = structure->getColumnCount();
-    for (i = 0; i < col_count; ++i)
-    {
-        tango::IColumnInfoPtr col;
-        col = structure->getColumnInfoByIdx(i);
+    m_grid->insertRow(row);
+    m_grid->setRowData(row, (long)f);
+    m_grid->setCellBitmap(row, colRowNumber, dynamic ? GETBMP(gf_lightning_16)
+                                                     : GETBMP(xpm_blank_16));
+    m_grid->setCellComboSel(row, colFieldType, tango2choice(f->type));
+    m_grid->setCellInteger(row, colFieldWidth, f->width);
+    m_grid->setCellInteger(row, colFieldScale, f->scale);
+    m_grid->setCellBitmap(row, colFieldFormula, GETBMP(xpm_blank_16));
+    if (dynamic)
+        m_grid->setCellString(row, colFieldFormula, wxT("\"\""));
 
-        StructureField* f = new StructureField;
-        f->name = towx(col->getName());
-        f->type = col->getType();
-        f->width = col->getWidth();
-        f->scale = col->getScale();
-        f->dynamic = col->getCalculated() ? true : false;
-        f->expr = towx(col->getExpression());
-        f->original_dynamic = col->getCalculated() ? true : false;
-        f->original = true;
-        f->pos = i;
-
-        m_grid->insertRow(i);
-        m_grid->setRowData(i, (long)f);
-        m_grid->setCellBitmap(i, colRowNumber,
-                         col->getCalculated() ? GETBMP(gf_lightning_16)
-                                              : GETBMP(xpm_blank_16));
-        m_grid->setCellString(i, colFieldName,
-                         towx(col->getName()));
-        m_grid->setCellComboSel(i, colFieldType,
-                         tango2choice(col->getType()));
-        m_grid->setCellInteger(i, colFieldWidth, col->getWidth());
-        m_grid->setCellInteger(i, colFieldScale, col->getScale());
-        m_grid->setCellString(i, colFieldFormula,
-                         towx(col->getExpression()));
-        m_grid->setCellBitmap(i, colFieldFormula, GETBMP(xpm_blank_16));
-    }
-
-    // now that the grid is entirely populated, update the row cell 
-    // properties and validate any epxressions 
-    for (i = 0; i < col_count; ++i)
-    {
-        tango::IColumnInfoPtr col;
-        col = structure->getColumnInfoByIdx(i);    
-
-        updateRowCellProps(i);
-        if (isFieldDynamic(m_grid, i))
-        {
-            int res = validateExpression(col->getExpression(), col->getType());
-            updateExpressionIcon(i, false, res);
-        }
-    }
-}
-
-bool StructureDoc::isChanged()
-{
-    return m_changed;
-}
-
-void StructureDoc::setChanged(bool changed)
-{
-    // save the old changed flag
-    bool old_changed = m_changed;
-
-    // set the changed flag
-    m_changed = changed;
-
-    // if the changed flag has changed, update
-    // the caption
-    if (old_changed != m_changed)
-        updateCaption();
-}
-
-void StructureDoc::setModifySet(tango::ISetPtr modify_set)
-{
-    m_modify_set = modify_set;
-    m_modify = true;
-    
-    // set the changed flag
-    setChanged(false);
-
-    if (m_modify_set.isOk())
-    {
-        if (m_modify_set->isTemporary())
-        {
-            m_path = _("(Untitled)");
-        }
-         else
-        {
-            m_path = towx(m_modify_set->getObjectPath());
-
-            // fire this event so that the URL will be updated with the new path
-            if (m_frame.isOk())
-                m_frame->postEvent(new cfw::Event(wxT("cfw.locationChanged")));
-        }
-
-        m_readonly = false;
-    }
-     else
-    {
-        m_readonly = true;
-    }
-}
-
-tango::ISetPtr StructureDoc::getModifySet()
-{
-    return m_modify_set;
-}
-
-void StructureDoc::onUpdateUI_EnableAlways(wxUpdateUIEvent& evt)
-{
-    evt.Enable(true);
-}
-
-void StructureDoc::onUpdateUI_DisableAlways(wxUpdateUIEvent& evt)
-{
-    evt.Enable(false);
-}
-
-void StructureDoc::onUpdateUI(wxUpdateUIEvent& evt)
-{
-    int id = evt.GetId();
-    
-    // disable undo/redo
-    if (id == ID_Edit_Undo ||
-        id == ID_Edit_Redo)
-    {
-        evt.Enable(false);
-        return;
-    }
-    
-    // disable cut/copylink/paste (for now)
-    if (id == ID_Edit_Cut ||
-        id == ID_Edit_CopyLink ||
-        id == ID_Edit_Paste)
-    {
-        evt.Enable(false);
-        return;
-    }
-    
-    // enable copy/delete if there's a selection
-    if (id == ID_Edit_Copy ||
-        id == ID_Edit_Delete)
-    {
-        if (m_grid->getSelectionCount() > 0)
-            evt.Enable(true);
-        else
-            evt.Enable(false);
-        return;
-    }
-    
-    // disable find/replace (for now)
-    if (id == ID_Edit_Find ||
-        id == ID_Edit_Replace)
-    {
-        evt.Enable(false);
-        return;
-    }
-    
-    // disable find next/find prev
-    if (id == ID_Edit_FindPrev || id == ID_Edit_FindNext)
-    {
-        evt.Enable(false);
-        return;
-    }
-
-    // disable goto
-    if (id == ID_Edit_GoTo)
-    {
-        evt.Enable(false);
-        return;
-    }
-    
-    // enable other items by default
-    evt.Enable(true);
-    return;
-}
-
-void StructureDoc::onSave(wxCommandEvent& evt)
-{
-    // we must check for no rows in the grid here because if the structuredoc
-    // has just been opened for the first time and no rows have been added,
-    // the dirty flag will not be set, however we still need to try the
-    // save here because of the error handling in the doSave() function
-    if (isChanged() || m_grid->getRowCount() == 0)
-        doSave();
-}
-
-void StructureDoc::onCopy(wxCommandEvent& evt)
-{
-    if (!windowOrChildHasFocus(m_doc_site->getContainerWindow()))
-    {
-        evt.Skip();
-        return;
-    }
-
-    AppBusyCursor c;
-    m_grid->copySelection();
-}
-
-void StructureDoc::onInsertField(wxCommandEvent& evt)
-{
-    // set the changed flag
-    setChanged(true);
-
-    // insert the selected rows
-    insertSelectedRows(false /* dynamic */);
-}
-
-void StructureDoc::onInsertDynamicField(wxCommandEvent& evt)
-{
-    // set the changed flag
-    setChanged(true);
-
-    // insert the selected rows
-    insertSelectedRows(true /* dynamic */);
-}
-
-void StructureDoc::onConvertDynamicToFixed(wxCommandEvent& evt)
-{
-    std::vector<int> selected_rows = m_grid->getSelectedRows();
-    std::vector<int>::iterator it;
-    for (it = selected_rows.begin(); it != selected_rows.end(); ++it)
-    {
-        int row = (*it);
-        StructureField* f = (StructureField*)m_grid->getRowData(row);
-        
-        // for now, don't allow newly created dynamic fields
-        // (in the StructureDoc) to be converted to fixed fields -- doing
-        // so results in the field being empty since the dynamic field's
-        // expression is disregarded in the ModifyStructJob
-        if (f->dynamic && !f->original_dynamic)
-        {
-            cfw::appMessageBox(_("One or more of the calculated fields that is selected is new to the table's structure.  Only calculated fields that already exist in the table's structure can be converted to fixed fields."),
-                               APPLICATION_NAME,
-                               wxOK | wxICON_EXCLAMATION | wxCENTER);
-            return;
-        }
-    }
-
-    // set the changed flag
-    setChanged(true);
-
-    for (it = selected_rows.begin(); it != selected_rows.end(); ++it)
-    {
-        int row = (*it);
-        if (isFieldDynamic(m_grid, row))
-        {
-            StructureField* f = (StructureField*)m_grid->getRowData(row);
-            if (!f)
-                continue;
-            
-            // update the row data
-            f->dynamic = false;
-            
-            // remove the lightning bitmap and gray out the formula text
-            m_grid->setCellBitmap(row, colRowNumber, GETBMP(xpm_blank_16));
-            updateRowCellProps(row);
-        }
-    }
-    
-    // refresh the grid
-    if (selected_rows.size() > 0)
-        m_grid->refresh(kcl::Grid::refreshAll);
-}
-
-void StructureDoc::onDeleteField(wxCommandEvent& evt)
-{
-    // set the changed flag
-    setChanged(true);
-
-    // delete the selected rows
-    m_grid->deleteSelectedRows(false);
+    updateRowCellProps(row);
     checkOverlayText();
+}
+
+void StructureDoc::insertSelectedRows(bool dynamic)
+{
+    kcl::SelectionRect rect;
+    int sel_count = m_grid->getSelectionCount();
+    
+    // insert the selected number of rows into the grid
+    for (int i = 0; i < sel_count; ++i)
+    {
+        m_grid->getSelection(i, &rect);
+        int start_row = rect.m_start_row;
+        int row = rect.m_end_row;
+        
+        while (row-- >= start_row)
+            insertRow(start_row, dynamic);
+    }
+    
+    // the grid is empty, insert a starter row
+    if (sel_count == 0 && m_grid->getRowCount() == 0)
+    {
+        insertRow(0, dynamic);
+        m_grid->setRowSelected(0, true);
+    }
+    
     updateNumberColumn();
     m_grid->refresh(kcl::Grid::refreshAll);
     updateStatusBar();
 }
 
-void StructureDoc::onSelectAll(wxCommandEvent& evt)
+void StructureDoc::updateNumberColumn()
 {
-    m_grid->selectAll();
+    // -- resize row number column based on it's max text size --
+    wxClientDC cdc(this);
+    wxString text;
+    int w, h, descent, leading;
+    int max_width = 0;
+    wxFont font = m_grid->GetFont();
+    
+    int row_count = m_grid->getRowCount();
+    for (int i = 0; i < row_count; ++i)
+    {
+        text = wxString::Format(wxT("%d"), i+1);
+        m_grid->setCellString(i, colRowNumber, text);
+        cdc.GetTextExtent(text, &w, &h, &descent, &leading, &font);
+        if (w > max_width)
+            max_width = w;
+    }
+    
+    if (row_count == 0)
+    {
+        cdc.GetTextExtent(wxT("1"), &w, &h, &descent, &leading, &font);
+        if (w > max_width)
+            max_width = w;
+    }
+    
+    max_width += 16;    // this accounts for the bitmap width
+    max_width += 12;    // this accounts for the bitmap and cell padding
+    
+    if (m_grid->getColumnSize(colRowNumber) < max_width)
+        m_grid->setColumnSize(colRowNumber, max_width);
+}
+
+void StructureDoc::updateExpressionIcon(int row, bool editing, int validation_res)
+{
+    if (validation_res == StructureValidator::ExpressionInvalid)
+    {
+        m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_x_16));
+    }
+     else if (validation_res == StructureValidator::ExpressionTypeMismatch)
+    {
+        m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_exclamation_16));
+    }
+     else if (validation_res == StructureValidator::ExpressionValid)
+    {
+        int cursor_col = m_grid->getCursorColumn();
+        if (editing && cursor_col == colFieldFormula)
+            m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_checkmark_16));
+         else
+            m_grid->setCellBitmap(row, colFieldFormula, GETBMP(xpm_blank_16));
+    }
+     else
+    {
+        m_grid->setCellBitmap(row, colFieldFormula, GETBMP(xpm_blank_16));
+    }
+}
+
+void StructureDoc::updateRowWidthAndScale(int row)
+{
+    // NOTE: now that we hide default field widths and scales (e.g. width
+    //       is hidden for date, double, etc. because it is standard), we
+    //       actually don't need to update these values until we actually
+    //       save the structure (this will help greatly when switching
+    //       back and forth between types because existing info will
+    //       not be lost every time the type changes
+    
+    if (m_last_selected_fieldtype == -1)
+        return;
+    
+    int last_tango_type = choice2tango(m_last_selected_fieldtype);
+    int tango_type = choice2tango(m_grid->getCellComboSel(row, colFieldType));
+    
+    StructureField* f = (StructureField*)(m_grid->getRowData(row));
+
+
+    if (tango_type == tango::typeCharacter || 
+        tango_type == tango::typeWideCharacter)
+    {
+        // if we're moving from one character type to another, leave
+        // everything as the user set it    
+        if (last_tango_type == tango::typeWideCharacter ||
+            last_tango_type == tango::typeCharacter)
+        {
+            return;
+        }
+        
+        // if the original type is a character type and we're coming from
+        // a non-character type, restore the original width
+        if (f->type == tango::typeCharacter || 
+            f->type == tango::typeWideCharacter)
+        {
+            m_grid->setCellInteger(row, colFieldWidth, f->width);
+        }
+    }
+
+    // if the original type is a numeric type and we're coming from
+    // a different type, restore the original width
+    if (f->type == tango::typeNumeric && last_tango_type != tango::typeNumeric)
+    {
+        m_grid->setCellInteger(row, colFieldWidth, f->width);
+        return;
+    }
+
+    // handle default widths when we're converting to a
+    // character type
+    if (tango_type == tango::typeCharacter ||
+        tango_type == tango::typeWideCharacter)
+    {
+        // if we're converting from a date type, allow enough room 
+        // for the date to be represented as a string
+        if (f->type == tango::typeDate)
+        {
+            // YYYY-MM-DD = 10 characters
+            int new_width = 10;
+            m_grid->setCellInteger(row, colFieldWidth, new_width);
+        }
+
+        // if we're converting from a datetime type, allow enough room 
+        // for the datetime to be represented as a string
+        if (f->type == tango::typeDateTime)
+        {
+            // YYYY-MM-DD HH:MM:SS = 19 characters; round to 20
+            int new_width = 20;
+            m_grid->setCellInteger(row, colFieldWidth, new_width);
+        }
+
+        // if we're converting from a number type, allow enough room 
+        // for the number to be represented as a string
+        if (f->type == tango::typeNumeric)
+        { 
+            // width = numeric_width + 2 (for decimal place and sign)
+            int new_width = f->width + 2;
+            m_grid->setCellInteger(row, colFieldWidth, new_width);
+        }
+
+        // if we're converting from a double type, allow enough room 
+        // for the double to be represented as a string
+        if (f->type == tango::typeDouble)
+        {
+            // width = 20 (large enough for double); parallels
+            // code in tango\xdfs\delimitedtextset.cpp
+            int new_width = 20;
+            m_grid->setCellInteger(row, colFieldWidth, new_width);
+        }
+
+        // if we're converting from an integer type, allow enough room 
+        // for the integer to be represented as a string
+        if (f->type == tango::typeInteger)
+        {
+            // width = 12 (size of 2^32 + sign + 1 to round to 12);
+            // parallels code in tango\xdfs\delimitedtextset.cpp
+            int new_width = 12;
+            m_grid->setCellInteger(row, colFieldWidth, new_width);
+        }
+    }
+
+    if (tango_type == tango::typeNumeric)
+    {
+        // if we're converting from a double type, allow enough room
+        // for the double to fit
+        if (f->type == tango::typeDouble)
+        {
+            int new_width = 18;
+            m_grid->setCellInteger(row, colFieldWidth, new_width);
+        }
+
+        // if we're converting from an integer type, allow enough room
+        // for the integer to fit
+        if (f->type == tango::typeInteger)
+        {
+            // width = 10 (size of 2^32)
+            int new_width = 10;
+            m_grid->setCellInteger(row, colFieldWidth, new_width);
+        }    
+
+        // in any case, if the width of the field was set to something 
+        // above the max numeric width, cap it off
+        int width = m_grid->getCellInteger(row, colFieldWidth);
+        if (width > tango::max_numeric_width)
+        {
+            m_grid->setCellInteger(row, colFieldWidth,
+                                   tango::max_numeric_width);
+        }
+    }
+}
+
+void StructureDoc::updateRowCellProps(int row)
+{
+    int combo_sel = m_grid->getCellComboSel(row, colFieldType);
+    int type = choice2tango(combo_sel);
+    
+    bool width_editable = true;
+    bool decimal_editable = true;
+    bool formula_editable = true;
+
+    switch (type)
+    {
+        case tango::typeWideCharacter:
+        case tango::typeCharacter:
+            decimal_editable = false;
+            break;
+
+        case tango::typeNumeric:
+            break;
+
+        case tango::typeDouble:
+            width_editable = false;
+            break;
+
+        case tango::typeBoolean:
+        case tango::typeDateTime:
+        case tango::typeDate:
+        case tango::typeInteger:
+            width_editable = false;
+            decimal_editable = false;
+            break;
+
+        default:
+            break;
+    }
+    
+    // gray out dynamic field formulas for dynamic fields
+    // that are being converted to static fields
+    wxString expr = m_grid->getCellString(row, colFieldFormula);
+    StructureField* f = (StructureField*)m_grid->getRowData(row);
+    if (!f->dynamic && expr.Length() > 0)
+        formula_editable = false;
+    
+    kcl::CellProperties cellprops;
+    cellprops.mask = kcl::CellProperties::cpmaskEditable |
+                     kcl::CellProperties::cpmaskVisible;
+    
+    // if the width can't be edited, don't show it
+    cellprops.visible = width_editable;
+    cellprops.editable = width_editable;
+    m_grid->setCellProperties(row, colFieldWidth, &cellprops);
+    
+    // if the scale can't be edited, don't show it
+    cellprops.visible = decimal_editable;
+    cellprops.editable = decimal_editable;
+    m_grid->setCellProperties(row, colFieldScale, &cellprops);
+    
+    // if the formula can't be edited, gray it out
+    cellprops.mask = kcl::CellProperties::cpmaskEditable |
+                     kcl::CellProperties::cpmaskFgColor;
+    cellprops.editable = formula_editable;
+    cellprops.fgcolor = formula_editable ? *wxBLACK : *wxLIGHT_GREY;
+    m_grid->setCellProperties(row, colFieldFormula, &cellprops);
+}
+
+void StructureDoc::updateCaption()
+{
+    wxString caption = _("(Untitled)");
+    if (m_path.Length() == 0)
+        m_doc_site->setCaption(caption);
+    else
+    {
+        caption = m_path.AfterLast(wxT('/'));
+        caption.Append(isChanged() ? wxT("*") : wxT(""));
+
+        m_doc_site->setCaption(caption);
+    }
+}
+
+void StructureDoc::updateStatusBar()
+{
+    // -- if the grid hasn't been created yet, bail out --
+    if (!m_grid)
+        return;
+
+    // -- field count --
+    int row, row_count = m_grid->getRowCount();
+    
+    // -- row width --
+    int total_width = 0;
+    for (row = 0; row < row_count; ++row)
+    {
+        if (isFieldDynamic(m_grid, row))
+            continue;
+            
+        total_width += m_grid->getCellInteger(row, colFieldWidth);
+    }
+    
+    wxString field_count_str = wxString::Format(_("Field Count: %d"), row_count);
+    wxString row_width_str = wxString::Format(_("Record Width: %d"), total_width);
+    
+    cfw::IStatusBarItemPtr item;
+    item = m_frame->getStatusBar()->getItem(wxT("structuredoc_field_count"));
+    if (item.isOk())
+        item->setValue(field_count_str);
+    item = m_frame->getStatusBar()->getItem(wxT("structuredoc_row_width"));
+    if (item.isOk())
+        item->setValue(row_width_str);
+
+    // refresh the statusbar
+    g_app->getMainFrame()->getStatusBar()->refresh();
+}
+
+void StructureDoc::checkOverlayText()
+{
+    if (m_grid->getRowCount() == 0)
+        m_grid->setOverlayText(_("To add fields to this table, drag in fields\nfrom the Fields Panel or double-click here"));
+         else
+        m_grid->setOverlayText(wxEmptyString);
+}
+
+void StructureDoc::clearProblemRows()
+{
+    int row, row_count = m_grid->getRowCount();
+    for (row = 0; row < row_count; ++row)
+    {
+        if (isFieldDynamic(m_grid, row))
+            m_grid->setCellBitmap(row, colRowNumber, GETBMP(gf_lightning_16));
+         else
+            m_grid->setCellBitmap(row, colRowNumber, GETBMP(xpm_blank_16));
+    }
+}
+
+void StructureDoc::markProblemRow(int row, bool scroll_to)
+{
+    m_grid->setCellBitmap(row, colRowNumber, GETBMP(gf_exclamation_16));
+
+    if (scroll_to)
+    {
+        m_grid->moveCursor(row, colFieldName, false);
+        if (!m_grid->isCursorVisible())
+        {
+            m_grid->scrollVertToCursor();
+        }
+    }
+}
+
+int StructureDoc::checkDuplicateFieldnames(int check_flags)
+{
+    // -- if we're editing, end the edit --
+    if (m_grid->isEditing())
+        m_grid->endEdit(true);
+    
+    bool include_empty_fieldnames = false;
+    if (check_flags & CheckEmptyFieldnames)
+        include_empty_fieldnames = true;
+    
+    std::vector<RowErrorChecker> check_rows;
+    check_rows = getRowErrorCheckerVector(m_grid, include_empty_fieldnames);
+
+    bool mark_rows = (check_flags & CheckMarkRows);
+    bool errors_found = StructureValidator::findDuplicateFieldNames(check_rows);
+    if (errors_found && mark_rows)
+    {
+        std::vector<RowErrorChecker>::iterator it;
+        for (it = check_rows.begin(); it != check_rows.end(); ++it)
+        {
+            if (it->errors != StructureValidator::ErrorNone)
+                markProblemRow(it->row, false);
+        }
+    }
+
+    return (errors_found ? StructureValidator::ErrorDuplicateFieldNames
+                         : StructureValidator::ErrorNone);
+}
+
+int StructureDoc::checkInvalidFieldnames(int check_flags)
+{
+    // -- if we're editing, end the edit --
+    if (m_grid->isEditing())
+        m_grid->endEdit(true);
+    
+    bool include_empty_fieldnames = false;
+    if (check_flags & CheckEmptyFieldnames)
+        include_empty_fieldnames = true;
+    
+    std::vector<RowErrorChecker> check_rows;
+    check_rows = getRowErrorCheckerVector(m_grid, include_empty_fieldnames);
+
+    bool mark_rows = (check_flags & CheckMarkRows);
+    bool errors_found = StructureValidator::findInvalidFieldNames(check_rows);
+    if (errors_found && mark_rows)
+    {
+        std::vector<RowErrorChecker>::iterator it;
+        for (it = check_rows.begin(); it != check_rows.end(); ++it)
+        {
+            if (it->errors != StructureValidator::ErrorNone)
+                markProblemRow(it->row, false);
+        }
+    }
+
+    return (errors_found ? StructureValidator::ErrorInvalidFieldNames
+                         : StructureValidator::ErrorNone);
+}
+
+int StructureDoc::validateExpression(const wxString& expr, int type)
+{
+    // this is a conventient pass-through function which will make sure we
+    // have created a structure to pass to the structure validator function
+    
+    if (m_expr_edit_structure.isNull())
+        m_expr_edit_structure = createStructureFromGrid();
+    
+    return StructureValidator::validateExpression(m_expr_edit_structure,
+                                                  expr, type);
+}
+
+int StructureDoc::validateStructure()
+{
+    // CHECK: check for empty structure
+    if (m_grid->getRowCount() == 0)
+        return StructureValidator::ErrorNoFields;
+
+    // CHECK: check for invalid expressions
+    wxString expr;
+    int type, valid;
+    bool type_mismatch = false;
+    int row, row_count = m_grid->getRowCount();
+    for (row = 0; row < row_count; ++row)
+    {
+        if (!isFieldDynamic(m_grid, row))
+            continue;
+        
+        type = choice2tango(m_grid->getCellComboSel(row, colFieldType));
+        expr = m_grid->getCellString(row, colFieldFormula);
+        
+        valid = validateExpression(expr, type);
+        if (valid == StructureValidator::ExpressionValid)
+            continue;
+        
+        if (valid == StructureValidator::ExpressionTypeMismatch)
+        {
+            type_mismatch = true;
+            continue;
+        }
+        
+        // make sure we clear out this smart pointer
+        if (!m_expr_edit_structure.isNull())
+            m_expr_edit_structure = xcm::null;
+        
+        return StructureValidator::ErrorInvalidExpressions;
+    }
+    
+    // make sure we clear out this smart pointer
+    if (!m_expr_edit_structure.isNull())
+        m_expr_edit_structure = xcm::null;
+
+    // CHECK: check for expression/field type mismatches
+    if (type_mismatch)
+        return StructureValidator::ErrorExpressionTypeMismatch;
+
+    // clear rows that have exlamation mark icons in them
+    clearProblemRows();
+
+    // CHECK: check for duplicate and invalid field names
+    int duplicatefields_errorcode = checkDuplicateFieldnames(
+                                        CheckMarkRows | CheckEmptyFieldnames);
+    int invalidfields_errorcode = checkInvalidFieldnames(
+                                        CheckMarkRows | CheckEmptyFieldnames);
+    
+    if (duplicatefields_errorcode != StructureValidator::ErrorNone)
+    {
+        m_grid->refresh(kcl::Grid::refreshAll);
+        return duplicatefields_errorcode;
+    }
+    
+    if (invalidfields_errorcode != StructureValidator::ErrorNone)
+    {
+        m_grid->refresh(kcl::Grid::refreshAll);
+        return invalidfields_errorcode;
+    }
+
+    m_grid->refreshColumn(kcl::Grid::refreshAll, colRowNumber);
+    return StructureValidator::ErrorNone;
+}
+
+// this function encapsulates all of the logic/error checking
+// for when we want to save a document or switch views
+bool StructureDoc::doErrorCheck()
+{
+    bool block = false;
+    int errorcode = validateStructure();
+    StructureValidator::showErrorMessage(errorcode, &block);
+    
+    // there is an error in the structure that must be fixed
+    if (block)
+        return false;
+    
+    return true;
 }
 
 bool StructureDoc::createTable()
@@ -776,49 +1325,6 @@ bool StructureDoc::createTable()
 
     return true;
 }
-
-
-tango::IStructurePtr StructureDoc::createStructureFromGrid()
-{
-    // -- create the tango::IStructure --
-    tango::IStructurePtr s = g_app->getDatabase()->createStructure();
-
-    int row, row_count = m_grid->getRowCount();
-    for (row = 0; row < row_count; ++row)
-    {
-        tango::IColumnInfoPtr col = s->createColumn();
-        col->setName(towstr(m_grid->getCellString(row, colFieldName)));
-        col->setType(choice2tango(m_grid->getCellComboSel(row, colFieldType)));
-        col->setWidth(m_grid->getCellInteger(row, colFieldWidth));
-        col->setScale(m_grid->getCellInteger(row, colFieldScale));
-        col->setExpression(towstr(m_grid->getCellString(row, colFieldFormula)));
-        col->setCalculated(isFieldDynamic(m_grid, row));
-    }
-    
-    return s;
-}
-
-
-void StructureDoc::onModifyStructJobFinished(cfw::IJobPtr job)
-{
-    // update the modify set
-    IModifyStructJobPtr modify_job = job;
-    m_modify_set = modify_job->getActionSet();
-    
-    // enable the structure editor grid
-    m_grid->setVisibleState(kcl::Grid::stateVisible);
-
-    // update the row data in the grid by repopulating it
-    populateGridFromSet(m_modify_set);
-    m_grid->moveCursor(0, colFieldName, false);
-    m_grid->clearSelection();
-    if (m_grid->getRowCount() > 0)
-        m_grid->setRowSelected(0, true);
-    updateNumberColumn();
-    checkOverlayText();
-    m_grid->refresh(kcl::Grid::refreshAll);
-}
-
 
 ModifyStructJob* StructureDoc::createModifyJob(size_t* _action_count)
 {  
@@ -980,548 +1486,124 @@ ModifyStructJob* StructureDoc::createModifyJob(size_t* _action_count)
     return job;
 }
 
-
-// this function encapsulates all of the logic/error checking
-// for when we want to save a document or switch views
-bool StructureDoc::doErrorCheck()
+tango::IStructurePtr StructureDoc::createStructureFromGrid()
 {
-    bool block = false;
-    int errorcode = validateStructure();
-    StructureValidator::showErrorMessage(errorcode, &block);
-    
-    // there is an error in the structure that must be fixed
-    if (block)
-        return false;
-    
-    return true;
-}
+    // -- create the tango::IStructure --
+    tango::IStructurePtr s = g_app->getDatabase()->createStructure();
 
-
-bool StructureDoc::doSave()
-{
-    // if we're editing, end the edit
-    if (m_grid->isEditing())
-        m_grid->endEdit(true);
-
-    // make sure everthing checks out
-    if (!doErrorCheck())
-        return false;
-
-    // as long as everything checks out, reset the changed flag 
-    // so that the document is clean; do this here so that if
-    // the document is dirtied simply by moving around the
-    // editor, the changed state is reset, even if no actual
-    // changes in the structure are saved
-    setChanged(false);
-
-    // since we're not modifying width/scale based on type dynamically --
-    // see note for updateWidthAndScale() -- we need to make sure they
-    // are set in conformity with our structure standards now
     int row, row_count = m_grid->getRowCount();
     for (row = 0; row < row_count; ++row)
     {
-        int type = choice2tango(m_grid->getCellComboSel(row, colFieldType));
-        int width = -1;
-        int scale = -1;
-        
-        if (type == tango::typeCharacter ||
-            type == tango::typeWideCharacter)
-        {
-            scale = 0;
-        }
-        
-        if (type == tango::typeDouble)
-        {
-            width = 8;
-        }
-        
-        if (type == tango::typeDateTime)
-        {
-            width = 8;
-            scale = 0;
-        }
-        
-        if (type == tango::typeInteger ||
-            type == tango::typeDate)
-        {
-            width = 4;
-            scale = 0;
-        }
-        
-        if (type == tango::typeBoolean)
-        {
-            width = 1;
-            scale = 0;
-        }
-        
-        if (width != -1)
-            m_grid->setCellInteger(row, colFieldWidth, width);
-        if (scale != -1)
-            m_grid->setCellInteger(row, colFieldScale, scale);
+        tango::IColumnInfoPtr col = s->createColumn();
+        col->setName(towstr(m_grid->getCellString(row, colFieldName)));
+        col->setType(choice2tango(m_grid->getCellComboSel(row, colFieldType)));
+        col->setWidth(m_grid->getCellInteger(row, colFieldWidth));
+        col->setScale(m_grid->getCellInteger(row, colFieldScale));
+        col->setExpression(towstr(m_grid->getCellString(row, colFieldFormula)));
+        col->setCalculated(isFieldDynamic(m_grid, row));
     }
     
-    // if we're not modifying an existing table, submit a create table job
-    if (!m_modify)
-        return createTable();
-    
-    
-    // -- at this point, we know we're modifying an existing table --
-    
-    
-    // create the modify job
-    size_t action_count = 0;
-    ModifyStructJob* job = createModifyJob(&action_count);
-
-    // make sure there's something to do
-    if (action_count == 0)
-    {
-        delete job;
-        return true;
-    }
-    
-    
-    // -- make sure we've got a tabledoc in our container --
-    ITableDocPtr table_doc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
-    if (table_doc.isNull())
-    {
-        // -- this chunk of code exists in the view switcher code as well --
-        
-        // create a tabledoc and open it
-        table_doc = TableDocMgr::createTableDoc();
-        table_doc->open(m_modify_set, xcm::null);
-
-        if (table_doc->getCaption().Length() == 0)
-        {
-            // update the caption manually
-            wxString caption = m_path.AfterLast(wxT('/'));
-            table_doc->setCaption(caption, wxEmptyString);
-        }
-        
-        wxWindow* container = m_doc_site->getContainerWindow();
-        g_app->getMainFrame()->createSite(container,
-                                          table_doc, false);
-    }
-    
-    // check to see if this table is a child in a relationship sync situation
-    bool filtered_table = false;
-    if (table_doc.isOk())
-    {
-        // VC6 Bug: spelling out the smart ptr assignment and comparison here
-        // prevents a VC6 compiler bug.   When VC6 is no longer in use, this
-        // can be compacted into:
-        // if (m_modify_set == doc->getBaseSet() || m_modify_set == doc->getBrowseSet())
-
-        tango::ISetPtr base_set = table_doc->getBaseSet();
-        tango::ISetPtr browse_set = table_doc->getBrowseSet();
-
-        if (m_modify_set == base_set || m_modify_set == browse_set)
-        {
-            if (table_doc->getIsChildSet())
-            {
-                cfw::appMessageBox(_("The structure cannot be modified while the table is showing filtered related records."),
-                                   APPLICATION_NAME,
-                                   wxOK | wxICON_INFORMATION | wxCENTER);
-                delete job;
-                return false;
-            }
-            
-            if (table_doc->getFilter().Length() > 0)
-                filtered_table = true;
-        }
-    }
-    
-    cfw::IDocumentSiteEnumPtr sites;
-    sites = g_app->getMainFrame()->getDocumentSites(cfw::sitetypeNormal);
-    size_t i, site_count = sites->size();
-    for (i = 0; i < site_count; ++i)
-    {
-        cfw::IDocumentSitePtr site = sites->getItem(i);
-        if (site.isNull())
-            continue;
-        
-        ITableDocPtr doc = site->getDocument();
-        if (doc.isNull())
-            continue;
-        
-
-        {
-            // VC6 Bug: spelling out the smart ptr assignment and comparison here
-            // prevents a VC6 compiler bug.   When VC6 is no longer in use, this
-            // can be compacted into:
-            // if (m_modify_set == doc->getBaseSet() || m_modify_set == doc->getBrowseSet())
-
-            tango::ISetPtr base_set = doc->getBaseSet();
-            tango::ISetPtr browse_set = doc->getBrowseSet();
-
-            if (m_modify_set == base_set || m_modify_set == browse_set)
-            {
-                if (doc->getIsChildSet())
-                {
-                    cfw::appMessageBox(_("The structure cannot be modified while the table is showing filtered related records."),
-                                       APPLICATION_NAME,
-                                       wxOK | wxICON_INFORMATION | wxCENTER);
-                    delete job;
-                    return false;
-                }
-            
-                if (doc->getFilter().Length() > 0)
-                    filtered_table = true;
-            }
-        }
-    }
-
-    // if we're modifying a table that we've filtered,
-    // see if the user wants to continue
-    if (filtered_table)
-    {
-        CustomPromptDlg dlg(g_app->getMainWindow(), 
-                            APPLICATION_NAME,
-                            _("The table you want to modify is currently showing filtered records.  Modifying the table will remove the filter.  Would you like to continue?"),
-                            wxSize(380,200));
-        dlg.setBitmap(CustomPromptDlg::bitmapQuestion);
-        dlg.showButtons(CustomPromptDlg::showButton1 |
-                        CustomPromptDlg::showButton2);
-        
-        int result = dlg.ShowModal();
-        if (result != wxYES)
-        {
-            delete job;
-            return false;
-        }
-    }
-
-
-    // -- disable the structure editor grid --
-    
-    m_grid->setVisibleState(kcl::Grid::stateDisabled);
-    m_grid->refresh(kcl::Grid::refreshAll);
-    
-    
-    // -- close the sets --
-    std::vector<ITableDoc*> to_connect;
-    for (i = 0; i < site_count; ++i)
-    {
-        cfw::IDocumentSitePtr site = sites->getItem(i);
-        if (site.isNull())
-            continue;
-        
-        ITableDocPtr doc = site->getDocument();
-        if (doc.isNull())
-            continue;
-
-        // VC6 Bug: spelling out the smart ptr assignment and comparison here
-        // prevents a VC6 compiler bug.   When VC6 is no longer in use, this
-        // can be compacted into:
-        // if (m_modify_set == doc->getBaseSet() || m_modify_set == doc->getBrowseSet())
-        // N.B. This is where the problem was manifesting itself.  The ISetPtr's were
-        // being leaked and the set could not be deleted after structure modify
-
-        tango::ISetPtr base_set = doc->getBaseSet();
-        tango::ISetPtr browse_set = doc->getBrowseSet();
-        
-        if (m_modify_set == base_set || m_modify_set == browse_set)
-        {
-            to_connect.push_back(doc.p);
-            doc->closeSet();
-        }
-    }
-
-    // -- let the pending close events process --
-    
-    g_app->processIdle();
-    ::wxSafeYield();
-
-    
-    // -- start the job --
-    g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
-
-    // connect the job finished signal to the structuredoc
-    job->sigJobFinished().connect(this, &StructureDoc::onModifyStructJobFinished);
-
-    // connect the job finished signal to the tabledoc
-    if (table_doc.isOk())
-        table_doc->connectModifyStructJob(job);
-    
-    // now, connect the job finished signal to all open
-    // tabledocs that are showing this set
-    std::vector<ITableDoc*>::iterator it;
-    for (it = to_connect.begin(); it != to_connect.end(); ++it)
-    {
-        if (table_doc.p == (*it))
-            continue;
-        
-        (*it)->connectModifyStructJob(job);
-    }
-
-    return true;
+    return s;
 }
 
-void StructureDoc::updateCaption()
+void StructureDoc::populateGridFromSet(tango::ISetPtr set)
 {
-    wxString caption = _("(Untitled)");
-    if (m_path.Length() == 0)
-        m_doc_site->setCaption(caption);
-    else
-    {
-        caption = m_path.AfterLast(wxT('/'));
-        caption.Append(isChanged() ? wxT("*") : wxT(""));
-
-        m_doc_site->setCaption(caption);
-    }
-}
-
-void StructureDoc::updateStatusBar()
-{
-    // -- if the grid hasn't been created yet, bail out --
-    if (!m_grid)
+    m_grid->deleteAllRows();
+    
+    if (set.isNull())
         return;
-
-    // -- field count --
-    int row, row_count = m_grid->getRowCount();
     
-    // -- row width --
-    int total_width = 0;
-    for (row = 0; row < row_count; ++row)
+    // first, populate the grid with all the fields; do this before validating
+    // any of the calculated fields since some of the fields may be dependent
+    // on later fields in grid that need to be added to the validation structure
+    // before validation on previous fields in the grid is possible
+    tango::IStructurePtr structure = set->getStructure();
+    int i, col_count = structure->getColumnCount();
+    for (i = 0; i < col_count; ++i)
     {
-        if (isFieldDynamic(m_grid, row))
-            continue;
-            
-        total_width += m_grid->getCellInteger(row, colFieldWidth);
+        tango::IColumnInfoPtr col;
+        col = structure->getColumnInfoByIdx(i);
+
+        StructureField* f = new StructureField;
+        f->name = towx(col->getName());
+        f->type = col->getType();
+        f->width = col->getWidth();
+        f->scale = col->getScale();
+        f->dynamic = col->getCalculated() ? true : false;
+        f->expr = towx(col->getExpression());
+        f->original_dynamic = col->getCalculated() ? true : false;
+        f->original = true;
+        f->pos = i;
+
+        m_grid->insertRow(i);
+        m_grid->setRowData(i, (long)f);
+        m_grid->setCellBitmap(i, colRowNumber,
+                         col->getCalculated() ? GETBMP(gf_lightning_16)
+                                              : GETBMP(xpm_blank_16));
+        m_grid->setCellString(i, colFieldName,
+                         towx(col->getName()));
+        m_grid->setCellComboSel(i, colFieldType,
+                         tango2choice(col->getType()));
+        m_grid->setCellInteger(i, colFieldWidth, col->getWidth());
+        m_grid->setCellInteger(i, colFieldScale, col->getScale());
+        m_grid->setCellString(i, colFieldFormula,
+                         towx(col->getExpression()));
+        m_grid->setCellBitmap(i, colFieldFormula, GETBMP(xpm_blank_16));
     }
-    
-    wxString field_count_str = wxString::Format(_("Field Count: %d"), row_count);
-    wxString row_width_str = wxString::Format(_("Record Width: %d"), total_width);
-    
-    cfw::IStatusBarItemPtr item;
-    item = m_frame->getStatusBar()->getItem(wxT("structuredoc_field_count"));
-    if (item.isOk())
-        item->setValue(field_count_str);
-    item = m_frame->getStatusBar()->getItem(wxT("structuredoc_row_width"));
-    if (item.isOk())
-        item->setValue(row_width_str);
 
-    // refresh the statusbar
-    g_app->getMainFrame()->getStatusBar()->refresh();
-}
-
-void StructureDoc::checkOverlayText()
-{
-    if (m_grid->getRowCount() == 0)
-        m_grid->setOverlayText(_("To add fields to this table, drag in fields\nfrom the Fields Panel or double-click here"));
-         else
-        m_grid->setOverlayText(wxEmptyString);
-}
-
-void StructureDoc::clearProblemRows()
-{
-    int row, row_count = m_grid->getRowCount();
-    for (row = 0; row < row_count; ++row)
+    // now that the grid is entirely populated, update the row cell 
+    // properties and validate any epxressions 
+    for (i = 0; i < col_count; ++i)
     {
-        if (isFieldDynamic(m_grid, row))
-            m_grid->setCellBitmap(row, colRowNumber, GETBMP(gf_lightning_16));
-         else
-            m_grid->setCellBitmap(row, colRowNumber, GETBMP(xpm_blank_16));
-    }
-}
+        tango::IColumnInfoPtr col;
+        col = structure->getColumnInfoByIdx(i);    
 
-void StructureDoc::markProblemRow(int row, bool scroll_to)
-{
-    m_grid->setCellBitmap(row, colRowNumber, GETBMP(gf_exclamation_16));
-
-    if (scroll_to)
-    {
-        m_grid->moveCursor(row, colFieldName, false);
-        if (!m_grid->isCursorVisible())
+        updateRowCellProps(i);
+        if (isFieldDynamic(m_grid, i))
         {
-            m_grid->scrollVertToCursor();
+            int res = validateExpression(col->getExpression(), col->getType());
+            updateExpressionIcon(i, false, res);
         }
     }
 }
 
-int StructureDoc::checkDuplicateFieldnames(int check_flags)
+bool StructureDoc::isChanged()
 {
-    // -- if we're editing, end the edit --
-    if (m_grid->isEditing())
-        m_grid->endEdit(true);
-    
-    bool include_empty_fieldnames = false;
-    if (check_flags & CheckEmptyFieldnames)
-        include_empty_fieldnames = true;
-    
-    std::vector<RowErrorChecker> check_rows;
-    check_rows = getRowErrorCheckerVector(m_grid, include_empty_fieldnames);
-
-    bool mark_rows = (check_flags & CheckMarkRows);
-    bool errors_found = StructureValidator::findDuplicateFieldNames(check_rows);
-    if (errors_found && mark_rows)
-    {
-        std::vector<RowErrorChecker>::iterator it;
-        for (it = check_rows.begin(); it != check_rows.end(); ++it)
-        {
-            if (it->errors != StructureValidator::ErrorNone)
-                markProblemRow(it->row, false);
-        }
-    }
-
-    return (errors_found ? StructureValidator::ErrorDuplicateFieldNames
-                         : StructureValidator::ErrorNone);
+    return m_changed;
 }
 
-int StructureDoc::checkInvalidFieldnames(int check_flags)
+void StructureDoc::setChanged(bool changed)
 {
-    // -- if we're editing, end the edit --
-    if (m_grid->isEditing())
-        m_grid->endEdit(true);
-    
-    bool include_empty_fieldnames = false;
-    if (check_flags & CheckEmptyFieldnames)
-        include_empty_fieldnames = true;
-    
-    std::vector<RowErrorChecker> check_rows;
-    check_rows = getRowErrorCheckerVector(m_grid, include_empty_fieldnames);
+    // save the old changed flag
+    bool old_changed = m_changed;
 
-    bool mark_rows = (check_flags & CheckMarkRows);
-    bool errors_found = StructureValidator::findInvalidFieldNames(check_rows);
-    if (errors_found && mark_rows)
-    {
-        std::vector<RowErrorChecker>::iterator it;
-        for (it = check_rows.begin(); it != check_rows.end(); ++it)
-        {
-            if (it->errors != StructureValidator::ErrorNone)
-                markProblemRow(it->row, false);
-        }
-    }
+    // set the changed flag
+    m_changed = changed;
 
-    return (errors_found ? StructureValidator::ErrorInvalidFieldNames
-                         : StructureValidator::ErrorNone);
+    // if the changed flag has changed, update
+    // the caption
+    if (old_changed != m_changed)
+        updateCaption();
 }
 
-int StructureDoc::validateStructure()
+void StructureDoc::onModifyStructJobFinished(cfw::IJobPtr job)
 {
-    // CHECK: check for empty structure
-    if (m_grid->getRowCount() == 0)
-        return StructureValidator::ErrorNoFields;
-
-    // CHECK: check for invalid expressions
-    wxString expr;
-    int type, valid;
-    bool type_mismatch = false;
-    int row, row_count = m_grid->getRowCount();
-    for (row = 0; row < row_count; ++row)
-    {
-        if (!isFieldDynamic(m_grid, row))
-            continue;
-        
-        type = choice2tango(m_grid->getCellComboSel(row, colFieldType));
-        expr = m_grid->getCellString(row, colFieldFormula);
-        
-        valid = validateExpression(expr, type);
-        if (valid == StructureValidator::ExpressionValid)
-            continue;
-        
-        if (valid == StructureValidator::ExpressionTypeMismatch)
-        {
-            type_mismatch = true;
-            continue;
-        }
-        
-        // make sure we clear out this smart pointer
-        if (!m_expr_edit_structure.isNull())
-            m_expr_edit_structure = xcm::null;
-        
-        return StructureValidator::ErrorInvalidExpressions;
-    }
+    // update the modify set
+    IModifyStructJobPtr modify_job = job;
+    m_modify_set = modify_job->getActionSet();
     
-    // make sure we clear out this smart pointer
-    if (!m_expr_edit_structure.isNull())
-        m_expr_edit_structure = xcm::null;
+    // enable the structure editor grid
+    m_grid->setVisibleState(kcl::Grid::stateVisible);
 
-    // CHECK: check for expression/field type mismatches
-    if (type_mismatch)
-        return StructureValidator::ErrorExpressionTypeMismatch;
-
-    // clear rows that have exlamation mark icons in them
-    clearProblemRows();
-
-    // CHECK: check for duplicate and invalid field names
-    int duplicatefields_errorcode = checkDuplicateFieldnames(
-                                        CheckMarkRows | CheckEmptyFieldnames);
-    int invalidfields_errorcode = checkInvalidFieldnames(
-                                        CheckMarkRows | CheckEmptyFieldnames);
-    
-    if (duplicatefields_errorcode != StructureValidator::ErrorNone)
-    {
-        m_grid->refresh(kcl::Grid::refreshAll);
-        return duplicatefields_errorcode;
-    }
-    
-    if (invalidfields_errorcode != StructureValidator::ErrorNone)
-    {
-        m_grid->refresh(kcl::Grid::refreshAll);
-        return invalidfields_errorcode;
-    }
-
-    m_grid->refreshColumn(kcl::Grid::refreshAll, colRowNumber);
-    return StructureValidator::ErrorNone;
-}
-
-void StructureDoc::insertRow(int row, bool dynamic)
-{
-    if (row == -1)
-        row = m_grid->getRowCount();
-    
-    StructureField* f = new StructureField;
-    f->name = wxEmptyString;
-    f->type = tango::typeCharacter;
-    f->width = 20;
-    f->scale = 0;
-    f->dynamic = dynamic;
-    f->expr = wxEmptyString;
-    f->original_dynamic = false;
-    f->original = false;
-    f->pos = -1;
-    
-    m_grid->insertRow(row);
-    m_grid->setRowData(row, (long)f);
-    m_grid->setCellBitmap(row, colRowNumber, dynamic ? GETBMP(gf_lightning_16)
-                                                     : GETBMP(xpm_blank_16));
-    m_grid->setCellComboSel(row, colFieldType, tango2choice(f->type));
-    m_grid->setCellInteger(row, colFieldWidth, f->width);
-    m_grid->setCellInteger(row, colFieldScale, f->scale);
-    m_grid->setCellBitmap(row, colFieldFormula, GETBMP(xpm_blank_16));
-    if (dynamic)
-        m_grid->setCellString(row, colFieldFormula, wxT("\"\""));
-
-    updateRowCellProps(row);
-    checkOverlayText();
-}
-
-void StructureDoc::insertSelectedRows(bool dynamic)
-{
-    kcl::SelectionRect rect;
-    int sel_count = m_grid->getSelectionCount();
-    
-    // insert the selected number of rows into the grid
-    for (int i = 0; i < sel_count; ++i)
-    {
-        m_grid->getSelection(i, &rect);
-        int start_row = rect.m_start_row;
-        int row = rect.m_end_row;
-        
-        while (row-- >= start_row)
-            insertRow(start_row, dynamic);
-    }
-    
-    // the grid is empty, insert a starter row
-    if (sel_count == 0 && m_grid->getRowCount() == 0)
-    {
-        insertRow(0, dynamic);
+    // update the row data in the grid by repopulating it
+    populateGridFromSet(m_modify_set);
+    m_grid->moveCursor(0, colFieldName, false);
+    m_grid->clearSelection();
+    if (m_grid->getRowCount() > 0)
         m_grid->setRowSelected(0, true);
-    }
-    
     updateNumberColumn();
+    checkOverlayText();
     m_grid->refresh(kcl::Grid::refreshAll);
-    updateStatusBar();
 }
 
 void StructureDoc::onFrameEvent(cfw::Event& evt)
@@ -1757,6 +1839,113 @@ void StructureDoc::onEraseBackground(wxEraseEvent& evt)
 {
 }
 
+
+void StructureDoc::onSave(wxCommandEvent& evt)
+{
+    // we must check for no rows in the grid here because if the structuredoc
+    // has just been opened for the first time and no rows have been added,
+    // the dirty flag will not be set, however we still need to try the
+    // save here because of the error handling in the doSave() function
+    if (isChanged() || m_grid->getRowCount() == 0)
+        doSave();
+}
+
+void StructureDoc::onCopy(wxCommandEvent& evt)
+{
+    if (!windowOrChildHasFocus(m_doc_site->getContainerWindow()))
+    {
+        evt.Skip();
+        return;
+    }
+
+    AppBusyCursor c;
+    m_grid->copySelection();
+}
+
+void StructureDoc::onInsertField(wxCommandEvent& evt)
+{
+    // set the changed flag
+    setChanged(true);
+
+    // insert the selected rows
+    insertSelectedRows(false /* dynamic */);
+}
+
+void StructureDoc::onInsertDynamicField(wxCommandEvent& evt)
+{
+    // set the changed flag
+    setChanged(true);
+
+    // insert the selected rows
+    insertSelectedRows(true /* dynamic */);
+}
+
+void StructureDoc::onConvertDynamicToFixed(wxCommandEvent& evt)
+{
+    std::vector<int> selected_rows = m_grid->getSelectedRows();
+    std::vector<int>::iterator it;
+    for (it = selected_rows.begin(); it != selected_rows.end(); ++it)
+    {
+        int row = (*it);
+        StructureField* f = (StructureField*)m_grid->getRowData(row);
+        
+        // for now, don't allow newly created dynamic fields
+        // (in the StructureDoc) to be converted to fixed fields -- doing
+        // so results in the field being empty since the dynamic field's
+        // expression is disregarded in the ModifyStructJob
+        if (f->dynamic && !f->original_dynamic)
+        {
+            cfw::appMessageBox(_("One or more of the calculated fields that is selected is new to the table's structure.  Only calculated fields that already exist in the table's structure can be converted to fixed fields."),
+                               APPLICATION_NAME,
+                               wxOK | wxICON_EXCLAMATION | wxCENTER);
+            return;
+        }
+    }
+
+    // set the changed flag
+    setChanged(true);
+
+    for (it = selected_rows.begin(); it != selected_rows.end(); ++it)
+    {
+        int row = (*it);
+        if (isFieldDynamic(m_grid, row))
+        {
+            StructureField* f = (StructureField*)m_grid->getRowData(row);
+            if (!f)
+                continue;
+            
+            // update the row data
+            f->dynamic = false;
+            
+            // remove the lightning bitmap and gray out the formula text
+            m_grid->setCellBitmap(row, colRowNumber, GETBMP(xpm_blank_16));
+            updateRowCellProps(row);
+        }
+    }
+    
+    // refresh the grid
+    if (selected_rows.size() > 0)
+        m_grid->refresh(kcl::Grid::refreshAll);
+}
+
+void StructureDoc::onDeleteField(wxCommandEvent& evt)
+{
+    // set the changed flag
+    setChanged(true);
+
+    // delete the selected rows
+    m_grid->deleteSelectedRows(false);
+    checkOverlayText();
+    updateNumberColumn();
+    m_grid->refresh(kcl::Grid::refreshAll);
+    updateStatusBar();
+}
+
+void StructureDoc::onSelectAll(wxCommandEvent& evt)
+{
+    m_grid->selectAll();
+}
+
 void StructureDoc::onGridNeedTooltipText(kcl::GridEvent& evt)
 {
     int row_count = m_grid->getRowCount();
@@ -1861,42 +2050,6 @@ void StructureDoc::onGridPreInvalidAreaInsert(kcl::GridEvent& evt)
     m_grid->setRowSelected(row, true);
     m_grid->refresh(kcl::Grid::refreshAll);
     updateStatusBar();
-}
-
-int StructureDoc::validateExpression(const wxString& expr, int type)
-{
-    // this is a conventient pass-through function which will make sure we
-    // have created a structure to pass to the structure validator function
-    
-    if (m_expr_edit_structure.isNull())
-        m_expr_edit_structure = createStructureFromGrid();
-    
-    return StructureValidator::validateExpression(m_expr_edit_structure,
-                                                  expr, type);
-}
-
-void StructureDoc::updateExpressionIcon(int row, bool editing, int validation_res)
-{
-    if (validation_res == StructureValidator::ExpressionInvalid)
-    {
-        m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_x_16));
-    }
-     else if (validation_res == StructureValidator::ExpressionTypeMismatch)
-    {
-        m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_exclamation_16));
-    }
-     else if (validation_res == StructureValidator::ExpressionValid)
-    {
-        int cursor_col = m_grid->getCursorColumn();
-        if (editing && cursor_col == colFieldFormula)
-            m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_checkmark_16));
-         else
-            m_grid->setCellBitmap(row, colFieldFormula, GETBMP(xpm_blank_16));
-    }
-     else
-    {
-        m_grid->setCellBitmap(row, colFieldFormula, GETBMP(xpm_blank_16));
-    }
 }
 
 void StructureDoc::onGridBeginEdit(kcl::GridEvent& evt)
@@ -2270,230 +2423,73 @@ void StructureDoc::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
     }
 }
 
-void StructureDoc::updateNumberColumn()
+void StructureDoc::onUpdateUI_EnableAlways(wxUpdateUIEvent& evt)
 {
-    // -- resize row number column based on it's max text size --
-    wxClientDC cdc(this);
-    wxString text;
-    int w, h, descent, leading;
-    int max_width = 0;
-    wxFont font = m_grid->GetFont();
-    
-    int row_count = m_grid->getRowCount();
-    for (int i = 0; i < row_count; ++i)
-    {
-        text = wxString::Format(wxT("%d"), i+1);
-        m_grid->setCellString(i, colRowNumber, text);
-        cdc.GetTextExtent(text, &w, &h, &descent, &leading, &font);
-        if (w > max_width)
-            max_width = w;
-    }
-    
-    if (row_count == 0)
-    {
-        cdc.GetTextExtent(wxT("1"), &w, &h, &descent, &leading, &font);
-        if (w > max_width)
-            max_width = w;
-    }
-    
-    max_width += 16;    // this accounts for the bitmap width
-    max_width += 12;    // this accounts for the bitmap and cell padding
-    
-    if (m_grid->getColumnSize(colRowNumber) < max_width)
-        m_grid->setColumnSize(colRowNumber, max_width);
+    evt.Enable(true);
 }
 
-void StructureDoc::updateRowWidthAndScale(int row)
+void StructureDoc::onUpdateUI_DisableAlways(wxUpdateUIEvent& evt)
 {
-    // NOTE: now that we hide default field widths and scales (e.g. width
-    //       is hidden for date, double, etc. because it is standard), we
-    //       actually don't need to update these values until we actually
-    //       save the structure (this will help greatly when switching
-    //       back and forth between types because existing info will
-    //       not be lost every time the type changes
+    evt.Enable(false);
+}
+
+void StructureDoc::onUpdateUI(wxUpdateUIEvent& evt)
+{
+    int id = evt.GetId();
     
-    if (m_last_selected_fieldtype == -1)
+    // disable undo/redo
+    if (id == ID_Edit_Undo ||
+        id == ID_Edit_Redo)
+    {
+        evt.Enable(false);
         return;
-    
-    int last_tango_type = choice2tango(m_last_selected_fieldtype);
-    int tango_type = choice2tango(m_grid->getCellComboSel(row, colFieldType));
-    
-    StructureField* f = (StructureField*)(m_grid->getRowData(row));
-
-
-    if (tango_type == tango::typeCharacter || 
-        tango_type == tango::typeWideCharacter)
-    {
-        // if we're moving from one character type to another, leave
-        // everything as the user set it    
-        if (last_tango_type == tango::typeWideCharacter ||
-            last_tango_type == tango::typeCharacter)
-        {
-            return;
-        }
-        
-        // if the original type is a character type and we're coming from
-        // a non-character type, restore the original width
-        if (f->type == tango::typeCharacter || 
-            f->type == tango::typeWideCharacter)
-        {
-            m_grid->setCellInteger(row, colFieldWidth, f->width);
-        }
     }
-
-    // if the original type is a numeric type and we're coming from
-    // a different type, restore the original width
-    if (f->type == tango::typeNumeric && last_tango_type != tango::typeNumeric)
+    
+    // disable cut/copylink/paste (for now)
+    if (id == ID_Edit_Cut ||
+        id == ID_Edit_CopyLink ||
+        id == ID_Edit_Paste)
     {
-        m_grid->setCellInteger(row, colFieldWidth, f->width);
+        evt.Enable(false);
+        return;
+    }
+    
+    // enable copy/delete if there's a selection
+    if (id == ID_Edit_Copy ||
+        id == ID_Edit_Delete)
+    {
+        if (m_grid->getSelectionCount() > 0)
+            evt.Enable(true);
+        else
+            evt.Enable(false);
+        return;
+    }
+    
+    // disable find/replace (for now)
+    if (id == ID_Edit_Find ||
+        id == ID_Edit_Replace)
+    {
+        evt.Enable(false);
+        return;
+    }
+    
+    // disable find next/find prev
+    if (id == ID_Edit_FindPrev || id == ID_Edit_FindNext)
+    {
+        evt.Enable(false);
         return;
     }
 
-    // handle default widths when we're converting to a
-    // character type
-    if (tango_type == tango::typeCharacter ||
-        tango_type == tango::typeWideCharacter)
+    // disable goto
+    if (id == ID_Edit_GoTo)
     {
-        // if we're converting from a date type, allow enough room 
-        // for the date to be represented as a string
-        if (f->type == tango::typeDate)
-        {
-            // YYYY-MM-DD = 10 characters
-            int new_width = 10;
-            m_grid->setCellInteger(row, colFieldWidth, new_width);
-        }
-
-        // if we're converting from a datetime type, allow enough room 
-        // for the datetime to be represented as a string
-        if (f->type == tango::typeDateTime)
-        {
-            // YYYY-MM-DD HH:MM:SS = 19 characters; round to 20
-            int new_width = 20;
-            m_grid->setCellInteger(row, colFieldWidth, new_width);
-        }
-
-        // if we're converting from a number type, allow enough room 
-        // for the number to be represented as a string
-        if (f->type == tango::typeNumeric)
-        { 
-            // width = numeric_width + 2 (for decimal place and sign)
-            int new_width = f->width + 2;
-            m_grid->setCellInteger(row, colFieldWidth, new_width);
-        }
-
-        // if we're converting from a double type, allow enough room 
-        // for the double to be represented as a string
-        if (f->type == tango::typeDouble)
-        {
-            // width = 20 (large enough for double); parallels
-            // code in tango\xdfs\delimitedtextset.cpp
-            int new_width = 20;
-            m_grid->setCellInteger(row, colFieldWidth, new_width);
-        }
-
-        // if we're converting from an integer type, allow enough room 
-        // for the integer to be represented as a string
-        if (f->type == tango::typeInteger)
-        {
-            // width = 12 (size of 2^32 + sign + 1 to round to 12);
-            // parallels code in tango\xdfs\delimitedtextset.cpp
-            int new_width = 12;
-            m_grid->setCellInteger(row, colFieldWidth, new_width);
-        }
-    }
-
-    if (tango_type == tango::typeNumeric)
-    {
-        // if we're converting from a double type, allow enough room
-        // for the double to fit
-        if (f->type == tango::typeDouble)
-        {
-            int new_width = 18;
-            m_grid->setCellInteger(row, colFieldWidth, new_width);
-        }
-
-        // if we're converting from an integer type, allow enough room
-        // for the integer to fit
-        if (f->type == tango::typeInteger)
-        {
-            // width = 10 (size of 2^32)
-            int new_width = 10;
-            m_grid->setCellInteger(row, colFieldWidth, new_width);
-        }    
-
-        // in any case, if the width of the field was set to something 
-        // above the max numeric width, cap it off
-        int width = m_grid->getCellInteger(row, colFieldWidth);
-        if (width > tango::max_numeric_width)
-        {
-            m_grid->setCellInteger(row, colFieldWidth,
-                                   tango::max_numeric_width);
-        }
-    }
-}
-
-void StructureDoc::updateRowCellProps(int row)
-{
-    int combo_sel = m_grid->getCellComboSel(row, colFieldType);
-    int type = choice2tango(combo_sel);
-    
-    bool width_editable = true;
-    bool decimal_editable = true;
-    bool formula_editable = true;
-
-    switch (type)
-    {
-        case tango::typeWideCharacter:
-        case tango::typeCharacter:
-            decimal_editable = false;
-            break;
-
-        case tango::typeNumeric:
-            break;
-
-        case tango::typeDouble:
-            width_editable = false;
-            break;
-
-        case tango::typeBoolean:
-        case tango::typeDateTime:
-        case tango::typeDate:
-        case tango::typeInteger:
-            width_editable = false;
-            decimal_editable = false;
-            break;
-
-        default:
-            break;
+        evt.Enable(false);
+        return;
     }
     
-    // gray out dynamic field formulas for dynamic fields
-    // that are being converted to static fields
-    wxString expr = m_grid->getCellString(row, colFieldFormula);
-    StructureField* f = (StructureField*)m_grid->getRowData(row);
-    if (!f->dynamic && expr.Length() > 0)
-        formula_editable = false;
-    
-    kcl::CellProperties cellprops;
-    cellprops.mask = kcl::CellProperties::cpmaskEditable |
-                     kcl::CellProperties::cpmaskVisible;
-    
-    // if the width can't be edited, don't show it
-    cellprops.visible = width_editable;
-    cellprops.editable = width_editable;
-    m_grid->setCellProperties(row, colFieldWidth, &cellprops);
-    
-    // if the scale can't be edited, don't show it
-    cellprops.visible = decimal_editable;
-    cellprops.editable = decimal_editable;
-    m_grid->setCellProperties(row, colFieldScale, &cellprops);
-    
-    // if the formula can't be edited, gray it out
-    cellprops.mask = kcl::CellProperties::cpmaskEditable |
-                     kcl::CellProperties::cpmaskFgColor;
-    cellprops.editable = formula_editable;
-    cellprops.fgcolor = formula_editable ? *wxBLACK : *wxLIGHT_GREY;
-    m_grid->setCellProperties(row, colFieldFormula, &cellprops);
+    // enable other items by default
+    evt.Enable(true);
+    return;
 }
 
 
