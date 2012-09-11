@@ -1492,6 +1492,7 @@ void DbDoc::setDatabase(tango::IDatabasePtr db, const wxString& root_path)
 
 // this function sets a specific root item for the DbDoc, insteaad of
 // creating a root item based on the path as is the case in setDatabase()
+
 void DbDoc::setRootItem(IDbFolderFsItemPtr root_folder)
 {
     m_fspanel->setRootItem(root_folder);

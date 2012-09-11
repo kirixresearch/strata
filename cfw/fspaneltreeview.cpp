@@ -178,6 +178,36 @@ wxTreeItemId FsPanelTreeView::getHighlightItem()
     return m_highlight_item;
 }
 
+// getNextVisibleItem() and getPrevVisibleItem() exist because wxTreeCtrl->GetPrevVisibleItem()
+// doesn't work during drag and drop anymore.  To solve this, we implemented similar
+// functionality ourselves.   See doScroll() below.
+
+static wxTreeItemId getNextVisibleItem(CfwTreeCtrl* tree, wxTreeItemId item)
+{
+    wxTreeItemIdValue cookie;
+
+    if (tree->ItemHasChildren(item) && tree->IsExpanded(item))
+        return tree->GetFirstChild(item, cookie);
+         else
+        return tree->GetNextSibling(item);
+}
+
+static wxTreeItemId getPrevVisibleItem(CfwTreeCtrl* tree, wxTreeItemId item)
+{
+    wxTreeItemIdValue cookie;
+
+    wxTreeItemId t;
+    t = tree->GetPrevSibling(item);
+    if (!t.IsOk())
+        return tree->GetItemParent(item);
+         else
+        item = t;
+
+    while (item.IsOk() && tree->ItemHasChildren(item) && tree->IsExpanded(item))
+        item = tree->GetLastChild(item);
+
+    return item;
+}
 
 void FsPanelTreeView::doScroll(int direction)
 {
@@ -191,16 +221,16 @@ void FsPanelTreeView::doScroll(int direction)
 
     if (direction > 0)
     {
-        wxTreeItemId id = GetNextVisible(curitem);
-        if (id)
+        wxTreeItemId id = getNextVisibleItem(this, curitem);
+        if (id.IsOk())
         {
             EnsureVisible(id);
         }
     }
      else if (direction < 0)
     {
-        wxTreeItemId id = GetPrevVisible(curitem);
-        if (id)
+        wxTreeItemId id = getPrevVisibleItem(this, curitem);
+        if (id.IsOk())
         {
             EnsureVisible(id);
         }
@@ -259,9 +289,9 @@ void FsPanelTreeView::selectItem(IFsItemPtr item)
 
 #ifdef __WXMSW__
 
-    // -- this function will set the focus to this tree item --
+    // this function will set the focus to this tree item
     
-    // i'm not sure as to the extent that this is necessary anymore
+    // I'm not sure as to the extent that this is necessary anymore
     // vista tree's add some spin on this issue with the g_unlockedItem
     // global in treectrl.cpp
 

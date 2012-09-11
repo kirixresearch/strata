@@ -164,9 +164,8 @@ public:
         if (!m_tree)
             return;
 
-        // -- on linux, sometimes spurious OnLeave() calls
-        //    are made on the drop target.  This code does
-        //    a double-check --
+        // on linux, sometimes spurious OnLeave() calls are made on the
+        // drop target.  This code checks for and takes care of this
         
         wxPoint pt = ::wxGetMousePosition();
         pt = m_tree->ScreenToClient(pt);
