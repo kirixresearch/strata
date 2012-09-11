@@ -1105,18 +1105,8 @@ bool AppController::init()
     m_data_locked = g_app->getAppPreferences()->getBoolean(wxT("app.data_locked"), true);
     
 
-    // we need to add the find panel here (hidden, of course),
-    // because we want to be able to add items to the find combobox
-    FindPanel* find_panel = new FindPanel;
-    
     cfw::IDocumentSitePtr site;
-    site = m_frame->createSite(find_panel,
-                               cfw::sitetypeModeless | cfw::siteHidden,
-                               -1, -1, 340, 190);
-    site->setMinSize(340,190);
-    site->setName(wxT("FindPanel"));
-    
-    
+
     // create console
     ConsolePanel* panel = new ConsolePanel;
     site = m_frame->createSite(panel,
@@ -1235,6 +1225,22 @@ bool AppController::init()
     // on Oct 9th 2007 when work commenced on the new status bar;
     if (maximized)
         m_frame->refreshFrameLayout();
+    
+
+    // we need to add the find panel here (hidden, of course),
+    // because we want to be able to add items to the find combobox;
+    // this panel has to be created after the main frame, otherwise
+    // it will get a task bar selector because it is the first top-
+    // level window to be created
+    FindPanel* find_panel = new FindPanel;
+    
+    site = m_frame->createSite(find_panel,
+                               cfw::sitetypeModeless | cfw::siteHidden,
+                               -1, -1, 340, 190);
+    site->setMinSize(340,190);
+    site->setName(wxT("FindPanel"));
+    
+    
 
     // create the default project if it doesn't already exist
     bool default_project_created = getAppPrefsBoolean(wxT("general.default_project_created"));
