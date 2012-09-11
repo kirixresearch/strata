@@ -420,9 +420,13 @@ void StructureDoc::populateGridFromSet(tango::ISetPtr set)
     if (set.isNull())
         return;
     
+    // first, populate the grid with all the fields; do this before validating
+    // any of the calculated fields since some of the fields may be dependent
+    // on later fields in grid that need to be added to the validation structure
+    // before validation on previous fields in the grid is possible
     tango::IStructurePtr structure = set->getStructure();
-    int col_count = structure->getColumnCount();
-    for (int i = 0; i < col_count; ++i)
+    int i, col_count = structure->getColumnCount();
+    for (i = 0; i < col_count; ++i)
     {
         tango::IColumnInfoPtr col;
         col = structure->getColumnInfoByIdx(i);
@@ -452,9 +456,16 @@ void StructureDoc::populateGridFromSet(tango::ISetPtr set)
         m_grid->setCellString(i, colFieldFormula,
                          towx(col->getExpression()));
         m_grid->setCellBitmap(i, colFieldFormula, GETBMP(xpm_blank_16));
-        
+    }
+
+    // now that the grid is entirely populated, update the row cell 
+    // properties and validate any epxressions 
+    for (i = 0; i < col_count; ++i)
+    {
+        tango::IColumnInfoPtr col;
+        col = structure->getColumnInfoByIdx(i);    
+
         updateRowCellProps(i);
-        
         if (isFieldDynamic(m_grid, i))
         {
             int res = validateExpression(col->getExpression(), col->getType());
