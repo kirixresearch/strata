@@ -182,7 +182,7 @@ BEGIN_EVENT_TABLE(AppController, wxEvtHandler)
     EVT_MENU(ID_LinkBarRefresh, AppController::onTreeRefresh)
     EVT_MENU(ID_PrintConsoleText, AppController::onPrintConsoleText)
 
-    EVT_AUITOOLBAR_TOOL_DROPDOWN(ID_File_Bookmark, AppController::onBookmarkDropDown)
+    //EVT_AUITOOLBAR_TOOL_DROPDOWN(ID_File_Bookmark, AppController::onBookmarkDropDown)
     EVT_AUITOOLBAR_TOOL_DROPDOWN(ID_View_ViewSwitcher, AppController::onViewSwitcherDropDown)
     EVT_AUITOOLBAR_TOOL_DROPDOWN(ID_Format_FillColor, AppController::onFillColorDropDown)
     EVT_AUITOOLBAR_TOOL_DROPDOWN(ID_Format_LineColor, AppController::onLineColorDropDown)

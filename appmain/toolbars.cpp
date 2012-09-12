@@ -157,7 +157,7 @@ void StandardToolbar::setSmallIcons(bool small_icons)
     SetToolProportion(ID_Frame_FindCtrl, 1);
 
     SetToolDropDown(ID_Project_New, true);
-    SetToolDropDown(ID_File_Bookmark, true);
+    //SetToolDropDown(ID_File_Bookmark, true);
     SetToolDropDown(ID_View_ViewSwitcher, true);
     
     SetToolLabel(ID_File_Back, _("Back"));
