@@ -230,6 +230,11 @@ BEGIN_EVENT_TABLE(AppController, wxEvtHandler)
     EVT_UPDATE_UI(ID_File_Stop, AppController::onUpdateUI_DisableIfNoJobs)
     EVT_UPDATE_UI_RANGE(ID_File_First, ID_File_Last, AppController::onUpdateUI_DisableIfNoChildren)
 
+    // check current view in the view menu
+    EVT_UPDATE_UI(ID_View_SwitchToSourceView, AppController::onUpdateUI_ViewSource)
+    EVT_UPDATE_UI(ID_View_SwitchToDesignView, AppController::onUpdateUI_ViewDesign)
+    EVT_UPDATE_UI(ID_View_SwitchToLayoutView, AppController::onUpdateUI_ViewLayout)
+    
     // disable the view commands if there's isn't a child
     EVT_UPDATE_UI_RANGE(ID_View_First, ID_View_Last, AppController::onUpdateUI_DisableIfNoChildren)
 
@@ -251,11 +256,7 @@ BEGIN_EVENT_TABLE(AppController, wxEvtHandler)
     // disable the data commands if there's isn't a child
     EVT_UPDATE_UI_RANGE(ID_Format_First, ID_Format_Last, AppController::onUpdateUI_DisableIfNoChildren)
     
-    // check current view in the view menu
-    EVT_UPDATE_UI(ID_View_SwitchToSourceView, AppController::onUpdateUI_ViewSource)
-    EVT_UPDATE_UI(ID_View_SwitchToDesignView, AppController::onUpdateUI_ViewDesign)
-    EVT_UPDATE_UI(ID_View_SwitchToLayoutView, AppController::onUpdateUI_ViewLayout)
-    
+
     // explicity disable the save, save as and bookmark if we don't have a project; this will
     // allow us to use the webdoc without the project, if we chose, but only be able to
     // save externally; TODO: this is mostly working, except with the web tables, which 
@@ -857,7 +858,6 @@ bool AppController::init()
     m_view_menu = new wxMenu;
     // NOTE: the document view switcher menu items will be prepended
     //       to this menu in the updateViewMenu() function
-    m_view_menu->AppendSeparator();
     m_view_menu->AppendSubMenu(menuViewTabs, _("&Tabs"));
     m_view_menu->AppendSubMenu(menuViewZoom, _("&Zoom"));
     m_view_menu->AppendSeparator();
