@@ -78,6 +78,8 @@ public:
     static bool findDuplicateObjectNames(std::vector<RowErrorChecker>& vec);
     static bool findInvalidObjectNames(std::vector<RowErrorChecker>& vec,
                                        tango::IDatabasePtr db = xcm::null);
+                                       
+    static void limitFieldWidthAndScale(int type, int* width, int* scale);                                    
 };
 
 

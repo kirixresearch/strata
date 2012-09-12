@@ -2095,12 +2095,17 @@ void StructureDoc::onGridBeginEdit(kcl::GridEvent& evt)
 
 void StructureDoc::onGridEndEdit(kcl::GridEvent& evt)
 {
+    wxString expr = evt.GetString();
+    if (evt.GetEditCancelled())
+        return;
+
+    evt.Veto(); // take over handling manually
+
     int row = evt.GetRow();
     int col = evt.GetColumn();
     int type = choice2tango(m_grid->getCellComboSel(row, colFieldType));
     
     m_last_selected_fieldtype = -1;
-
 
     // if a structure smart pointer exists, clear it out; this will
     // cause subsequent logic to get the structure as it exists at
@@ -2108,149 +2113,75 @@ void StructureDoc::onGridEndEdit(kcl::GridEvent& evt)
     if (!m_expr_edit_structure.isNull())
         m_expr_edit_structure = xcm::null;
 
+    // set the changed flag
+    setChanged(true);
 
+    // in following, force the cell's text to be the text that we just
+    // entered (this is necessary because we use getCellString() in the
+    // checkDuplicateFieldnames() function below and the cell's text has 
+    // not yet changed)
     if (col == colFieldName)
     {
-        if (evt.GetEditCancelled())
-            return;
-
-        // set the changed flag
-        setChanged(true);
-
-        // this will force the cell's text to be the text that we just
-        // entered (this is necessary because we use getCellString()
-        // in the checkDuplicateFieldnames() function below and the
-        // cell's text has not yet changed)
-        m_grid->setCellString(row, colFieldName, evt.GetString());
-        
-        clearProblemRows();
-        checkInvalidExpressions(CheckMarkRows);        
-        checkInvalidFieldnames(CheckMarkRows);
-        checkDuplicateFieldnames(CheckMarkRows);
-
-        m_grid->refreshColumn(kcl::Grid::refreshAll, colRowNumber);
-        m_grid->refreshColumn(kcl::Grid::refreshAll, colFieldFormula);        
+        wxString name = evt.GetString();
+        m_grid->setCellString(row, colFieldName, name);
     }
-     else if (col == colFieldWidth)
+
+    if (col == colFieldWidth)
     {
-        if (evt.GetEditCancelled())
-            return;
-
-        // set the changed flag
-        setChanged(true);
-
-        // conform to max character field width
-        if (type == tango::typeCharacter || type == tango::typeWideCharacter)
-        {
-            int width = evt.GetInt();
-            if (width > tango::max_character_width)
-            {
-                evt.Veto();
-                width = tango::max_character_width;
-                m_grid->setCellInteger(row, colFieldWidth, width);
-                m_grid->refreshColumn(kcl::Grid::refreshAll, colFieldWidth);
-            }
-
-            if (width < 1)
-            {
-                evt.Veto();
-                width = 1;
-                m_grid->setCellInteger(row, colFieldWidth, width);
-                m_grid->refreshColumn(kcl::Grid::refreshAll, colFieldWidth);
-            }
-        }
-
-        if (type == tango::typeNumeric)
-        {
-            int width = evt.GetInt();
-            int scale = m_grid->getCellInteger(row, colFieldScale);
-
-            // conform to max numeric field width
-            if (width > tango::max_numeric_width)
-            {
-                evt.Veto();
-                width = tango::max_numeric_width;
-                m_grid->setCellInteger(row, colFieldWidth, width);
-                m_grid->refreshColumn(kcl::Grid::refreshAll, colFieldWidth);
-            }
-            
-            // conform to min numeric field width
-            if (width < 1)
-            {
-                evt.Veto();
-                width = 1;
-                m_grid->setCellInteger(row, colFieldWidth, width);
-                m_grid->refreshColumn(kcl::Grid::refreshAll, colFieldWidth);
-            }
-            
-            // make sure scale doesn't exceed width
-            if (width < scale)
-            {
-                scale = width-1;
-                m_grid->setCellInteger(row, colFieldScale, scale);
-                m_grid->refreshColumn(kcl::Grid::refreshAll, colFieldScale);
-            }
-        }
-        
-        // check invalid expressions for type mismatch
-        clearProblemRows();        
-        checkInvalidExpressions(CheckMarkRows);
+        int width = evt.GetInt();
+        int scale = m_grid->getCellInteger(row, colFieldScale);
+        StructureValidator::limitFieldWidthAndScale(type, &width, &scale);
+        m_grid->setCellInteger(row, colFieldWidth, width);
+        m_grid->setCellInteger(row, colFieldScale, scale);                
     }
-     else if (col == colFieldScale)
+
+    if (col == colFieldScale)
     {
-        if (evt.GetEditCancelled())
-            return;
-
-        // set the changed flag
-        setChanged(true);
-
-        if (type == tango::typeDouble || type == tango::typeNumeric)
-        {
-            int scale = evt.GetInt();
-            int width = m_grid->getCellInteger(row, colFieldWidth);
-
-            // conform to max double/numeric field scale
-            if (scale > tango::max_numeric_scale)
-            {
-                evt.Veto();
-                scale = tango::max_numeric_scale;
-                m_grid->setCellInteger(row, colFieldScale, scale);
-                m_grid->refreshColumn(kcl::Grid::refreshAll, colFieldScale);
-            }
-            
-            // conform to min double/numeric field scale
-            if (scale < 0)
-            {
-                evt.Veto();
-                scale = 0;
-                m_grid->setCellInteger(row, colFieldScale, scale);
-                m_grid->refreshColumn(kcl::Grid::refreshAll, colFieldScale);
-            }
-            
-            // make sure scale doesn't exceed width
-            if (width < scale)
-            {
-                evt.Veto();
-                scale = width-1;
-                m_grid->setCellInteger(row, colFieldScale, scale);
-                m_grid->refreshColumn(kcl::Grid::refreshAll, colFieldScale);
-            }
-        }
+        int width = m_grid->getCellInteger(row, colFieldWidth);
+        int scale = evt.GetInt();
+        StructureValidator::limitFieldWidthAndScale(type, &width, &scale);
+        m_grid->setCellInteger(row, colFieldWidth, width);
+        m_grid->setCellInteger(row, colFieldScale, scale);        
     }
-     else if (col == colFieldFormula)
+
+    if (col == colFieldFormula)
     {
+        wxString formula = evt.GetString();
+        m_grid->setCellString(row, colFieldFormula, formula);
+    }
+
+    clearProblemRows();
+    checkInvalidExpressions(CheckMarkRows);
+    checkInvalidFieldnames(CheckMarkRows);
+    checkDuplicateFieldnames(CheckMarkRows);
+
+    m_grid->refresh(kcl::Grid::refreshAll);
+    updateStatusBar();        
+
+
+/*
+// old logic
         wxString expr = evt.GetString();
         if (evt.GetEditCancelled())
-            return;
+        {
+            // currently, when an event is cancelled, the string value is empty,
+            // so we have to use getCellString() here
+            expr = m_grid->getCellString(row, col);
+        }
         
         // set the changed flag
         setChanged(true);
-        clearProblemRows();         
-        checkInvalidExpressions(CheckMarkRows);
-        m_grid->refreshColumn(kcl::Grid::refreshAll, colFieldFormula);        
-    }
 
-    updateStatusBar();
+        // if the expression is valid, don't show
+        // an icon next to the expression
+        if (isFieldDynamic(m_grid, row))
+        {
+            int res = validateExpression(expr, type);
+            updateExpressionIcon(row, false, res);
+            m_grid->refreshColumn(kcl::Grid::refreshAll, colFieldFormula);
+        }
+
+*/
 }
 
 void StructureDoc::onGridEditChange(kcl::GridEvent& evt)

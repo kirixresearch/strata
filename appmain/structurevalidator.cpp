@@ -79,6 +79,14 @@ int StructureValidator::showErrorMessage(int errorcode, bool* block)
                                   wxOK | wxICON_EXCLAMATION | wxCENTER,
                                   g_app->getMainWindow());
     }
+/*
+    // NOTE: these messages end up getting in the way more than helping; sometimes,
+    // it might be useful to create a structure with some placeholder calculated
+    // fields or just get to the table view without validating every calculated field;
+    //  also, invalid calculated fields can happen in table view anyway by deleting 
+    // a calculated field that is used in other calculated fields, rendering those
+    // other fields invalid; in short, don't stop the user from going to the table
+    // view, but keep this code here for reference
 
     if (errorcode == ErrorInvalidExpressions)
     {
@@ -101,7 +109,7 @@ int StructureValidator::showErrorMessage(int errorcode, bool* block)
         
         return retcode;
     }
-
+*/
     *block = false;
     return -1;
 }
@@ -326,4 +334,63 @@ bool StructureValidator::findInvalidObjectNames(std::vector<RowErrorChecker>& ve
     }
     
     return found;
+}
+
+void StructureValidator::limitFieldWidthAndScale(int type, int* width, int* scale)
+{
+    if (type == tango::typeCharacter || type == tango::typeWideCharacter)
+    {
+        if (*width < tango::min_character_width)
+            *width = tango::min_character_width;
+        if (*width > tango::max_character_width)
+            *width = tango::max_character_width;
+        *scale = 0;
+    }
+
+    if (type == tango::typeNumeric)
+    {
+        if (*width < tango::min_numeric_width)
+            *width = tango::min_numeric_width;
+        if (*width > tango::max_numeric_width)
+            *width = tango::max_numeric_width;
+        if (*width <= *scale)
+            *scale = *width - 1;
+        if (*scale > tango::max_numeric_scale)
+            *scale = tango::max_numeric_scale;
+        if (*scale < tango::min_numeric_scale)
+            *scale = tango::min_numeric_scale;
+    }
+
+    if (type == tango::typeDouble)
+    {
+        *width = 8;
+        if (*scale > tango::max_numeric_scale)
+            *scale = tango::max_numeric_scale;
+        if (*scale < tango::min_numeric_scale)
+            *scale = tango::min_numeric_scale;
+    }
+
+    if (type == tango::typeInteger)
+    {
+        *width = 4;
+        *scale = 0;
+    }
+
+    if (type == tango::typeDate)
+    {
+        *width = 4;
+        *scale = 0;
+    }
+
+    if (type == tango::typeDateTime)
+    {
+        *width = 8;
+        *scale = 0;
+    }
+
+    if (type == tango::typeBoolean)
+    {
+        *width = 1;
+        *scale = 0;
+    }
 }
