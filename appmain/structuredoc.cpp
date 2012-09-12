@@ -205,50 +205,17 @@ bool StructureDoc::doSave()
     // changes in the structure are saved
     setChanged(false);
 
-    // since we're not modifying width/scale based on type dynamically --
-    // see note for updateWidthAndScale() -- we need to make sure they
+    // since we're not modifying width/scale based on type dynamically 
+    // (see note for updateWidthAndScale()) we need to make sure they
     // are set in conformity with our structure standards now
     int row, row_count = m_grid->getRowCount();
     for (row = 0; row < row_count; ++row)
     {
         int type = choice2tango(m_grid->getCellComboSel(row, colFieldType));
-        int width = -1;
-        int scale = -1;
-        
-        if (type == tango::typeCharacter ||
-            type == tango::typeWideCharacter)
-        {
-            scale = 0;
-        }
-        
-        if (type == tango::typeDouble)
-        {
-            width = 8;
-        }
-        
-        if (type == tango::typeDateTime)
-        {
-            width = 8;
-            scale = 0;
-        }
-        
-        if (type == tango::typeInteger ||
-            type == tango::typeDate)
-        {
-            width = 4;
-            scale = 0;
-        }
-        
-        if (type == tango::typeBoolean)
-        {
-            width = 1;
-            scale = 0;
-        }
-        
-        if (width != -1)
-            m_grid->setCellInteger(row, colFieldWidth, width);
-        if (scale != -1)
-            m_grid->setCellInteger(row, colFieldScale, scale);
+        int width, scale;
+        StructureValidator::limitFieldWidthAndScale(type, &width, &scale);
+        m_grid->setCellInteger(row, colFieldWidth, width);
+        m_grid->setCellInteger(row, colFieldScale, scale);
     }
     
     // if we're not modifying an existing table, submit a create table job
@@ -1356,7 +1323,7 @@ bool StructureDoc::createTable()
 }
 
 ModifyStructJob* StructureDoc::createModifyJob(size_t* _action_count)
-{  
+{
     wxString caption = m_doc_site->getCaption();
     wxString title = wxString::Format(_("Modifying Structure of '%s'"),
                                       caption.c_str());
