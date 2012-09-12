@@ -166,7 +166,7 @@ ExprEditorControl::ExprEditorControl(wxWindow *parent,
     StyleSetFont(wxSTC_STYLE_DEFAULT, font);
     StyleClearAll();
 
-    // -- set selection foreground and background color --
+    // set selection foreground and background color
     SetSelForeground(true, wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHTTEXT));
     SetSelBackground(true, wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT));
 
@@ -425,8 +425,8 @@ void ExprEditorControl::onCharAdded(wxStyledTextEvent& evt)
 
 void ExprEditorControl::onChanged(wxStyledTextEvent& evt)
 {
-    // -- for some reason we are receiving this event twice --
-    // -- this code will prevent that --
+    // for some reason we are receiving this event twice;
+    // this code will prevent that
 
     wxString value = GetValue();
     if (value != m_text)
@@ -476,8 +476,6 @@ void ExprEditorControl::SetInsertionPoint(int pos)
 // 4:22 am: another discovery...Red Bull helps greatly in this circumstance.
 
 
-
-// -- ExprBuilderPanel class implementation --
 
 enum
 {
@@ -728,7 +726,7 @@ void ExprBuilderPanel::construct()
 
     //button_sizer->SetItemMinSize(m_valid_control, okcancel_sizer->CalcMin());
 
-    // -- create function list --
+    // create function list
     m_func_list = new kcl::RowSelectionGrid(this,
                                             ID_ExprBuilderFunctionList,
                                             wxDefaultPosition,
@@ -763,7 +761,7 @@ void ExprBuilderPanel::construct()
         m_func_list->setCellBitmap(i, 0, GETBMP(gf_function_16));
     }
     
-    // -- create column list --
+    // create column list
     m_col_list = new FieldListControl(this, ID_ExprBuilderFieldListCtrl, wxDefaultPosition, wxSize(140,30));
     m_col_list->setDragFormat(wxT("exprbuilder_fieldlist"));
     m_col_list->sigFieldDblClicked.connect(this, &ExprBuilderPanel::onColumnActivated);
@@ -782,7 +780,7 @@ void ExprBuilderPanel::construct()
     bottom_sizer->Add(button_sizer, 0, wxEXPAND | wxLEFT, 8);
     bottom_sizer->SetItemMinSize(m_func_list, 150, 1);
 
-    // -- create helper sizer --
+    // create helper sizer
     
     m_func_syntax_label = new wxStaticText(this, -1, wxEmptyString);
 
@@ -799,7 +797,7 @@ void ExprBuilderPanel::construct()
     m_helper_sizer->Add(m_learn_more_hyperlink, 0, wxALIGN_CENTER);
     m_helper_sizer->AddStretchSpacer();
 
-    // -- create a platform standards-compliant OK/Cancel sizer --
+    // create a platform standards-compliant OK/Cancel sizer
     
     wxStdDialogButtonSizer* ok_cancel_sizer = new wxStdDialogButtonSizer;
     ok_cancel_sizer->AddButton(m_ok_button);
@@ -808,7 +806,7 @@ void ExprBuilderPanel::construct()
     ok_cancel_sizer->Prepend(m_helper_sizer, 1, wxEXPAND | wxLEFT, 8);
     ok_cancel_sizer->AddSpacer(5);
     
-    // -- this code is necessary to get the sizer's bottom margin to 8 --
+    // this code is necessary to get the sizer's bottom margin to 8
     wxSize min_size = ok_cancel_sizer->GetMinSize();
     min_size.SetHeight(min_size.GetHeight()+16);
     ok_cancel_sizer->SetMinSize(min_size);
@@ -868,11 +866,9 @@ void ExprBuilderPanel::setEnabled(bool enabled)
 }
 
 
-// -- type only causes the expression builder to only
-//    accept expression types that are equal to that
-//    which is passed in the "type" parameter.  If
-//    tango::typeUndefined is passed, all types are
-//    allowed again --
+// type only causes the expression builder to accept only expression types
+// that are equal to that which is passed in the "type" parameter.  If
+// tango::typeUndefined is passed, all types are allowed again
 
 void ExprBuilderPanel::setTypeOnly(int type)
 {
@@ -880,7 +876,7 @@ void ExprBuilderPanel::setTypeOnly(int type)
 
     if (m_ok_button)
     {
-        // -- if the window already exists, recheck validation --
+        // if the window already exists, recheck validation
         validate();
     }
 }
@@ -891,7 +887,7 @@ void ExprBuilderPanel::setEmptyOk(bool empty_ok)
 
     if (m_ok_button)
     {
-        // -- if the window already exists, recheck validation --
+        // if the window already exists, recheck validation
         validate();
     }
 }
@@ -1276,7 +1272,7 @@ void KeyBuilderPanel::construct()
     SetWindowStyle(GetWindowStyle() & ~wxTAB_TRAVERSAL);
 
 
-    // -- create column list --
+    // create column list
 
     m_col_list = new FieldListControl(this,
                                       ID_KeyBuilderFieldListCtrl,
@@ -1286,7 +1282,7 @@ void KeyBuilderPanel::construct()
     m_col_list->sigFieldDblClicked.connect(this, &KeyBuilderPanel::onColumnActivated);
 
 
-    // -- create sort order grid --
+    // create sort order grid
 
     m_grid = new kcl::RowSelectionGrid(this);
     m_grid->setOptionState(kcl::Grid::optEditBoxBorder |
@@ -1322,17 +1318,17 @@ void KeyBuilderPanel::construct()
     if (m_with_orders)
         m_grid->setColumnSize(1, 120);
 
-    // -- create the drop target for the grid and connect the signal --
+    // create the drop target for the grid and connect the signal
     kcl::GridDataDropTarget* drop_target = new kcl::GridDataDropTarget(m_grid);
     drop_target->setGridDataObjectFormats(wxT("keybuilder_fields"), wxT("keybuilder_sortlist"));
     drop_target->sigDropped.connect(this, &KeyBuilderPanel::onGridDataDropped);
     m_grid->SetDropTarget(drop_target);
 
-    // -- connect other signals --
+    // connect other signals
     m_grid->sigDeletedRows.connect(this, &KeyBuilderPanel::onGridDeletedRows);
     
 
-    // -- create horizontal sizer --
+    // create horizontal sizer
     
     wxBoxSizer* horz_sizer = new wxBoxSizer(wxHORIZONTAL);
     horz_sizer->Add(m_col_list, 0, wxEXPAND);
@@ -1340,7 +1336,7 @@ void KeyBuilderPanel::construct()
     horz_sizer->Add(m_grid, 1, wxEXPAND);
 
 
-    // -- create a platform standards-compliant OK/Cancel sizer --
+    // create a platform standards-compliant OK/Cancel sizer
     
     m_ok_button = new wxButton(this, wxID_OK, m_ok_text);
     m_cancel_button = new wxButton(this, wxID_CANCEL);
@@ -1351,13 +1347,13 @@ void KeyBuilderPanel::construct()
     ok_cancel_sizer->Realize();
     ok_cancel_sizer->AddSpacer(5);
     
-    // -- this code is necessary to get the sizer's bottom margin to 8 --
+    // this code is necessary to get the sizer's bottom margin to 8
     wxSize min_size = ok_cancel_sizer->GetMinSize();
     min_size.SetHeight(min_size.GetHeight()+16);
     ok_cancel_sizer->SetMinSize(min_size);
 
 
-    // -- create main sizer --
+    // create main sizer
     
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
     main_sizer->AddSpacer(8);
@@ -1458,7 +1454,7 @@ void KeyBuilderPanel::parseExpr()
 
     std::vector<wxString> pieces;
 
-    // -- parse pieces --
+    // parse pieces
 
     const wxChar* start = m_expr.c_str();
     const wxChar* end;
@@ -1495,7 +1491,7 @@ void KeyBuilderPanel::parseExpr()
         }
     }
 
-    // -- populate grid --
+    // populate grid
 
     int row = 0;
     
