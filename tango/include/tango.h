@@ -42,8 +42,13 @@ typedef tango_uint64_t datetime_t;
 
 // data metric constants
 
+const int min_character_width = 1;
 const int max_character_width = 65535;
+
+const int min_numeric_width = 1;
 const int max_numeric_width = 18;
+
+const int min_numeric_scale = 0;
 const int max_numeric_scale = 12;
 
 
