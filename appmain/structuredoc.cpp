@@ -64,11 +64,13 @@ static std::vector<RowErrorChecker> getRowErrorCheckerVector(
     for (row = 0; row < row_count; ++row)
     {
         wxString fieldname = grid->getCellString(row, colFieldName);
+        wxString expression = grid->getCellString(row, colFieldFormula);
+        int type = choice2tango(grid->getCellComboSel(row, colFieldType));
         
         if (fieldname.IsEmpty() && !include_empty_fieldnames)
             continue;
             
-        vec.push_back(RowErrorChecker(row, fieldname));
+        vec.push_back(RowErrorChecker(row, fieldname, expression, type));
     }
 
     return vec;
@@ -548,9 +550,10 @@ bool StructureDoc::initDoc(cfw::IFramePtr frame,
     m_grid->setColumnSize(colFieldFormula, w*70/100);
     
     checkOverlayText();
+    checkInvalidExpressions(CheckMarkRows | CheckEmptyFieldnames);    
+    checkInvalidFieldnames(CheckMarkRows | CheckEmptyFieldnames);    
     checkDuplicateFieldnames(CheckMarkRows | CheckEmptyFieldnames);
-    checkInvalidFieldnames(CheckMarkRows | CheckEmptyFieldnames);
-    
+
     // refresh the row selection grid
     if (m_grid->getRowCount() > 0)
         m_grid->setRowSelected(0, true);
@@ -1094,63 +1097,36 @@ int StructureDoc::validateStructure()
     if (m_grid->getRowCount() == 0)
         return StructureValidator::ErrorNoFields;
 
-    // CHECK: check for invalid expressions
-    wxString expr;
-    int type, valid;
-    bool type_mismatch = false;
-    int row, row_count = m_grid->getRowCount();
-    for (row = 0; row < row_count; ++row)
-    {
-        if (!isFieldDynamic(m_grid, row))
-            continue;
-        
-        type = choice2tango(m_grid->getCellComboSel(row, colFieldType));
-        expr = m_grid->getCellString(row, colFieldFormula);
-        
-        valid = validateExpression(expr, type);
-        if (valid == StructureValidator::ExpressionValid)
-            continue;
-        
-        if (valid == StructureValidator::ExpressionTypeMismatch)
-        {
-            type_mismatch = true;
-            continue;
-        }
-        
-        // make sure we clear out this smart pointer
-        if (!m_expr_edit_structure.isNull())
-            m_expr_edit_structure = xcm::null;
-        
-        return StructureValidator::ErrorInvalidExpressions;
-    }
-    
-    // make sure we clear out this smart pointer
-    if (!m_expr_edit_structure.isNull())
-        m_expr_edit_structure = xcm::null;
-
-    // CHECK: check for expression/field type mismatches
-    if (type_mismatch)
-        return StructureValidator::ErrorExpressionTypeMismatch;
+    // make sure we clear out the structure cache
+    m_expr_edit_structure = xcm::null;
 
     // clear rows that have exlamation mark icons in them
     clearProblemRows();
 
     // CHECK: check for duplicate and invalid field names
-    int duplicatefields_errorcode = checkDuplicateFieldnames(
-                                        CheckMarkRows | CheckEmptyFieldnames);
+    int invalidexpressions_errorcode = checkInvalidExpressions(
+                                        CheckMarkRows | CheckEmptyFieldnames);    
     int invalidfields_errorcode = checkInvalidFieldnames(
                                         CheckMarkRows | CheckEmptyFieldnames);
+    int duplicatefields_errorcode = checkDuplicateFieldnames(
+                                        CheckMarkRows | CheckEmptyFieldnames);
+
+    if (invalidexpressions_errorcode != StructureValidator::ErrorNone)
+    {
+        m_grid->refresh(kcl::Grid::refreshAll);
+        return invalidexpressions_errorcode;
+    }
+
+    if (invalidfields_errorcode != StructureValidator::ErrorNone)
+    {
+        m_grid->refresh(kcl::Grid::refreshAll);
+        return invalidfields_errorcode;
+    }
     
     if (duplicatefields_errorcode != StructureValidator::ErrorNone)
     {
         m_grid->refresh(kcl::Grid::refreshAll);
         return duplicatefields_errorcode;
-    }
-    
-    if (invalidfields_errorcode != StructureValidator::ErrorNone)
-    {
-        m_grid->refresh(kcl::Grid::refreshAll);
-        return invalidfields_errorcode;
     }
 
     m_grid->refreshColumn(kcl::Grid::refreshAll, colRowNumber);
@@ -1167,6 +1143,35 @@ int StructureDoc::validateExpression(const wxString& expr, int type)
     
     return StructureValidator::validateExpression(m_expr_edit_structure,
                                                   expr, type);
+}
+
+int StructureDoc::checkInvalidExpressions(int check_flags)
+{
+    // -- if we're editing, end the edit --
+    if (m_grid->isEditing())
+        m_grid->endEdit(true);
+
+    // populate the validation structure
+    if (m_expr_edit_structure.isNull())
+        m_expr_edit_structure = createStructureFromGrid();
+
+    std::vector<RowErrorChecker> check_rows;
+    check_rows = getRowErrorCheckerVector(m_grid, true); // include expressions with empty fieldnames
+
+    bool mark_rows = (check_flags & CheckMarkRows);
+    bool errors_found = StructureValidator::findInvalidExpressions(check_rows, m_expr_edit_structure);
+    if (errors_found && mark_rows)
+    {
+        std::vector<RowErrorChecker>::iterator it;
+        for (it = check_rows.begin(); it != check_rows.end(); ++it)
+        {
+            if (it->errors != StructureValidator::ErrorNone)
+                markProblemFormula(it->row, false);
+        }
+    }
+
+    return (errors_found ? StructureValidator::ErrorInvalidExpressions
+                         : StructureValidator::ErrorNone);
 }
 
 int StructureDoc::checkInvalidFieldnames(int check_flags)
@@ -1190,7 +1195,7 @@ int StructureDoc::checkInvalidFieldnames(int check_flags)
         for (it = check_rows.begin(); it != check_rows.end(); ++it)
         {
             if (it->errors != StructureValidator::ErrorNone)
-                markProblemRow(it->row, false);
+                markProblemField(it->row, false);
         }
     }
 
@@ -1219,7 +1224,7 @@ int StructureDoc::checkDuplicateFieldnames(int check_flags)
         for (it = check_rows.begin(); it != check_rows.end(); ++it)
         {
             if (it->errors != StructureValidator::ErrorNone)
-                markProblemRow(it->row, false);
+                markProblemField(it->row, false);
         }
     }
 
@@ -1227,7 +1232,7 @@ int StructureDoc::checkDuplicateFieldnames(int check_flags)
                          : StructureValidator::ErrorNone);
 }
 
-void StructureDoc::markProblemRow(int row, bool scroll_to)
+void StructureDoc::markProblemField(int row, bool scroll_to)
 {
     m_grid->setCellBitmap(row, colRowNumber, GETBMP(gf_exclamation_16));
 
@@ -1241,15 +1246,35 @@ void StructureDoc::markProblemRow(int row, bool scroll_to)
     }
 }
 
+void StructureDoc::markProblemFormula(int row, bool scroll_to)
+{
+    m_grid->setCellBitmap(row, colFieldFormula, GETBMP(gf_x_16));
+
+    if (scroll_to)
+    {
+        m_grid->moveCursor(row, colFieldFormula, false);
+        if (!m_grid->isCursorVisible())
+        {
+            m_grid->scrollVertToCursor();
+        }
+    }
+}
+
 void StructureDoc::clearProblemRows()
 {
     int row, row_count = m_grid->getRowCount();
     for (row = 0; row < row_count; ++row)
     {
-        if (isFieldDynamic(m_grid, row))
-            m_grid->setCellBitmap(row, colRowNumber, GETBMP(gf_lightning_16));
-         else
+        if (!isFieldDynamic(m_grid, row))
+        {
             m_grid->setCellBitmap(row, colRowNumber, GETBMP(xpm_blank_16));
+        }
+         else
+        {
+            m_grid->setCellBitmap(row, colRowNumber, GETBMP(gf_lightning_16));
+            m_grid->setCellBitmap(row, colFieldFormula, GETBMP(xpm_blank_16));
+        }
+
     }
 }
 
@@ -1551,20 +1576,7 @@ void StructureDoc::populateGridFromSet(tango::ISetPtr set)
         m_grid->setCellBitmap(i, colFieldFormula, GETBMP(xpm_blank_16));
     }
 
-    // now that the grid is entirely populated, update the row cell 
-    // properties and validate any epxressions 
-    for (i = 0; i < col_count; ++i)
-    {
-        tango::IColumnInfoPtr col;
-        col = structure->getColumnInfoByIdx(i);    
-
-        updateRowCellProps(i);
-        if (isFieldDynamic(m_grid, i))
-        {
-            int res = validateExpression(col->getExpression(), col->getType());
-            updateExpressionIcon(i, false, res);
-        }
-    }
+    validateStructure();
 }
 
 bool StructureDoc::isChanged()
@@ -1827,6 +1839,7 @@ void StructureDoc::onDeletedRows(std::vector<int> rows)
     //       so it will take care of the grid refresh for us
     checkOverlayText();
     updateNumberColumn();
+    validateStructure();
     updateStatusBar();
 }
 
@@ -2087,7 +2100,15 @@ void StructureDoc::onGridEndEdit(kcl::GridEvent& evt)
     int type = choice2tango(m_grid->getCellComboSel(row, colFieldType));
     
     m_last_selected_fieldtype = -1;
-    
+
+
+    // if a structure smart pointer exists, clear it out; this will
+    // cause subsequent logic to get the structure as it exists at
+    // the end of the edit
+    if (!m_expr_edit_structure.isNull())
+        m_expr_edit_structure = xcm::null;
+
+
     if (col == colFieldName)
     {
         if (evt.GetEditCancelled())
@@ -2103,9 +2124,12 @@ void StructureDoc::onGridEndEdit(kcl::GridEvent& evt)
         m_grid->setCellString(row, colFieldName, evt.GetString());
         
         clearProblemRows();
-        checkDuplicateFieldnames(CheckMarkRows);
+        checkInvalidExpressions(CheckMarkRows);        
         checkInvalidFieldnames(CheckMarkRows);
+        checkDuplicateFieldnames(CheckMarkRows);
+
         m_grid->refreshColumn(kcl::Grid::refreshAll, colRowNumber);
+        m_grid->refreshColumn(kcl::Grid::refreshAll, colFieldFormula);        
     }
      else if (col == colFieldWidth)
     {
@@ -2167,6 +2191,10 @@ void StructureDoc::onGridEndEdit(kcl::GridEvent& evt)
                 m_grid->refreshColumn(kcl::Grid::refreshAll, colFieldScale);
             }
         }
+        
+        // check invalid expressions for type mismatch
+        clearProblemRows();        
+        checkInvalidExpressions(CheckMarkRows);
     }
      else if (col == colFieldScale)
     {
@@ -2213,28 +2241,14 @@ void StructureDoc::onGridEndEdit(kcl::GridEvent& evt)
     {
         wxString expr = evt.GetString();
         if (evt.GetEditCancelled())
-        {
-            // currently, when an event is cancelled, the string value is empty,
-            // so we have to use getCellString() here
-            expr = m_grid->getCellString(row, col);
-        }
+            return;
         
         // set the changed flag
         setChanged(true);
-
-        // if the expression is valid, don't show
-        // an icon next to the expression
-        if (isFieldDynamic(m_grid, row))
-        {
-            int res = validateExpression(expr, type);
-            updateExpressionIcon(row, false, res);
-            m_grid->refreshColumn(kcl::Grid::refreshAll, colFieldFormula);
-        }
+        clearProblemRows();         
+        checkInvalidExpressions(CheckMarkRows);
+        m_grid->refreshColumn(kcl::Grid::refreshAll, colFieldFormula);        
     }
-
-    // if a structure smart pointer exists, clear it out
-    if (!m_expr_edit_structure.isNull())
-        m_expr_edit_structure = xcm::null;
 
     updateStatusBar();
 }
@@ -2415,8 +2429,9 @@ void StructureDoc::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
             }
 
             updateNumberColumn();
+            checkInvalidExpressions(CheckMarkRows);            
+            checkInvalidFieldnames(CheckMarkRows);            
             checkDuplicateFieldnames(CheckMarkRows);
-            checkInvalidFieldnames(CheckMarkRows);
             m_grid->refresh(kcl::Grid::refreshAll);
             updateStatusBar();
         }

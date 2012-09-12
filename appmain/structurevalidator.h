@@ -49,6 +49,13 @@ public:
     static int validateExpression(tango::IStructurePtr structure,
                                   const wxString& expr,
                                   int match_fieldtype = tango::typeUndefined);
+
+    // finds invald expressions in the row check vector, specifies
+    // a corresponding error code for each row in the vector and returns 
+    // true/false based on if any are found (should be used
+    // when you have a list of expressions)    
+    static bool findInvalidExpressions(std::vector<RowErrorChecker>& vec,
+                                       tango::IStructurePtr structure);
     
     // returns true/false if any invalid field names exist
     // in the specified structure based on the attributes
@@ -63,7 +70,7 @@ public:
     static bool findDuplicateFieldNames(std::vector<RowErrorChecker>& vec);
     static bool findInvalidFieldNames(std::vector<RowErrorChecker>& vec,
                                       tango::IDatabasePtr db = xcm::null);
-    
+
     // finds invalid/duplicate objects in the row checker vector,
     // specifies a corresponding error code for each row in the vector
     // and returns true/false based on if any are found (should be used
@@ -82,6 +89,7 @@ public:
     {
         row = -1;
         name = wxEmptyString;
+        type = tango::typeInvalid;
         errors = StructureValidator::ErrorNone;
     }
     
@@ -89,6 +97,17 @@ public:
     {
         row = _row;
         name = _name;
+        type = tango::typeInvalid;
+        expression = wxEmptyString;
+        errors = StructureValidator::ErrorNone;
+    }
+
+    RowErrorChecker(int _row, const wxString& _name, const wxString& _expression, int _type)
+    {
+        row = _row;
+        name = _name;
+        type = _type;
+        expression = _expression;
         errors = StructureValidator::ErrorNone;
     }
     
@@ -96,7 +115,10 @@ public:
 
     int row;
     int errors;
+    
     wxString name;
+    wxString expression;    
+    int type;
 };
 
 

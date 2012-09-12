@@ -162,11 +162,13 @@ private:
     
     // error checking functions
     bool doErrorCheck();
-    int  validateStructure();
-    int  validateExpression(const wxString& expr, int type = tango::typeUndefined);
-    int  checkInvalidFieldnames(int check_flags);
-    int  checkDuplicateFieldnames(int check_flags);
-    void markProblemRow(int row, bool scroll_to);    
+    int validateStructure();
+    int validateExpression(const wxString& expr, int type = tango::typeUndefined);
+    int checkInvalidExpressions(int check_flags);    
+    int checkInvalidFieldnames(int check_flags);
+    int checkDuplicateFieldnames(int check_flags);
+    void markProblemField(int row, bool scroll_to);
+    void markProblemFormula(int row, bool scroll_to);     
     void clearProblemRows();
 
     // structural

@@ -136,6 +136,32 @@ int StructureValidator::validateExpression(tango::IStructurePtr structure,
     return -1;
 }
 
+bool StructureValidator::findInvalidExpressions(std::vector<RowErrorChecker>& vec,
+                                                tango::IStructurePtr structure)
+{
+    bool found = false;
+    std::vector<RowErrorChecker>::iterator it;
+    for (it = vec.begin(); it != vec.end(); ++it)
+    {
+        if (it->expression.Length() == 0)
+            continue;
+
+        int result = validateExpression(structure, it->expression, it->type);
+        if (result == ExpressionInvalid)
+        {
+            it->errors |= StructureValidator::ErrorInvalidExpressions;
+            found = true;
+        }
+        if (result == ExpressionTypeMismatch)
+        {
+            it->errors |= StructureValidator::ErrorExpressionTypeMismatch;
+            found = true;
+        }        
+    }
+    
+    return found;
+}
+
 bool StructureValidator::findDuplicateFieldNames(std::vector<RowErrorChecker>& vec)
 {
     int idx1 = 0, idx2 = 0;
