@@ -212,7 +212,9 @@ bool StructureDoc::doSave()
     for (row = 0; row < row_count; ++row)
     {
         int type = choice2tango(m_grid->getCellComboSel(row, colFieldType));
-        int width, scale;
+        int width = m_grid->getCellInteger(row, colFieldWidth);
+        int scale = m_grid->getCellInteger(row, colFieldScale);
+
         StructureValidator::limitFieldWidthAndScale(type, &width, &scale);
         m_grid->setCellInteger(row, colFieldWidth, width);
         m_grid->setCellInteger(row, colFieldScale, scale);
