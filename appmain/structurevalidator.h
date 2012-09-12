@@ -92,6 +92,8 @@ public:
         row = -1;
         name = wxEmptyString;
         type = tango::typeInvalid;
+        expression = wxEmptyString;
+        calculated_field = false;        
         errors = StructureValidator::ErrorNone;
     }
     
@@ -101,15 +103,17 @@ public:
         name = _name;
         type = tango::typeInvalid;
         expression = wxEmptyString;
+        calculated_field = false;
         errors = StructureValidator::ErrorNone;
     }
 
-    RowErrorChecker(int _row, const wxString& _name, const wxString& _expression, int _type)
+    RowErrorChecker(int _row, const wxString& _name, int _type, const wxString& _expression, bool _calculated_field)
     {
         row = _row;
         name = _name;
         type = _type;
         expression = _expression;
+        calculated_field = _calculated_field;
         errors = StructureValidator::ErrorNone;
     }
     
@@ -121,6 +125,7 @@ public:
     wxString name;
     wxString expression;    
     int type;
+    bool calculated_field;
 };
 
 

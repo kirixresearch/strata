@@ -120,6 +120,10 @@ int StructureValidator::validateExpression(tango::IStructurePtr structure,
 {
     if (structure.isNull())
         return -1;
+
+    // right now, empty expressions are regarded as invalid
+    if (expr.Length() == 0)
+        return ExpressionInvalid;
     
     int expr_type = structure->getExprType(towstr(expr));
     if (expr_type == tango::typeInvalid ||
@@ -151,7 +155,7 @@ bool StructureValidator::findInvalidExpressions(std::vector<RowErrorChecker>& ve
     std::vector<RowErrorChecker>::iterator it;
     for (it = vec.begin(); it != vec.end(); ++it)
     {
-        if (it->expression.Length() == 0)
+        if (!it->calculated_field)
             continue;
 
         int result = validateExpression(structure, it->expression, it->type);
@@ -182,33 +186,27 @@ bool StructureValidator::findDuplicateFieldNames(std::vector<RowErrorChecker>& v
         s1 = it->name;
         s1.Trim();
         s1.Trim(true);
-        
+        idx1++;
+
         // don't compare empty strings
         if (s1.IsEmpty())
-        {
-            idx1++;
             continue;
-        }
         
         idx2 = 0;
         for (it2 = vec.begin(); it2 != vec.end(); ++it2)
-        {
-            if (idx1 == idx2)
-            {
-                idx2++;
-                continue;
-            }
-            
+        {            
             s2 = it2->name;
             s2.Trim();
             s2.Trim(true);
+            idx2++;
             
             // don't compare empty strings
             if (s2.IsEmpty())
-            {
-                idx1++;
                 continue;
-            }
+
+            // don't compare the same string
+            if (idx1 == idx2)
+                continue;
             
             if (s1.CmpNoCase(s2) == 0)
             {
@@ -217,11 +215,7 @@ bool StructureValidator::findDuplicateFieldNames(std::vector<RowErrorChecker>& v
                 found = true;
                 break;
             }
-            
-            idx2++;
         }
-        
-        idx1++;
     }
     
     return found;

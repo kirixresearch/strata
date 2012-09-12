@@ -66,11 +66,15 @@ static std::vector<RowErrorChecker> getRowErrorCheckerVector(
         wxString fieldname = grid->getCellString(row, colFieldName);
         wxString expression = grid->getCellString(row, colFieldFormula);
         int type = choice2tango(grid->getCellComboSel(row, colFieldType));
+        bool calculated_field = false;
+        StructureField* f = (StructureField*)(grid->getRowData(row));
+        if (f->dynamic)
+            calculated_field = true;
         
         if (fieldname.IsEmpty() && !include_empty_fieldnames)
             continue;
             
-        vec.push_back(RowErrorChecker(row, fieldname, expression, type));
+        vec.push_back(RowErrorChecker(row, fieldname, type, expression, calculated_field));
     }
 
     return vec;
@@ -1574,6 +1578,8 @@ void StructureDoc::populateGridFromSet(tango::ISetPtr set)
         m_grid->setCellString(i, colFieldFormula,
                          towx(col->getExpression()));
         m_grid->setCellBitmap(i, colFieldFormula, GETBMP(xpm_blank_16));
+
+        updateRowCellProps(i);
     }
 
     validateStructure();
@@ -1961,6 +1967,9 @@ void StructureDoc::onSelectAll(wxCommandEvent& evt)
 
 void StructureDoc::onGridNeedTooltipText(kcl::GridEvent& evt)
 {
+    // NOTE: disable tooltip logic; a lot of overhead that isn't necessarily useful
+    return;
+/*
     int row_count = m_grid->getRowCount();
     int row = evt.GetRow();
     int col = evt.GetColumn();
@@ -1969,7 +1978,7 @@ void StructureDoc::onGridNeedTooltipText(kcl::GridEvent& evt)
         return;
     
     std::vector<RowErrorChecker> check_rows;
-    check_rows = getRowErrorCheckerVector(m_grid, false /* don't check empty fieldnames */);
+    check_rows = getRowErrorCheckerVector(m_grid, false);    // don't check empty fieldnames
     StructureValidator::findDuplicateFieldNames(check_rows);
     StructureValidator::findInvalidFieldNames(check_rows);
     
@@ -2019,6 +2028,7 @@ void StructureDoc::onGridNeedTooltipText(kcl::GridEvent& evt)
             }
         }
     }
+*/    
 }
 
 void StructureDoc::onGridPreGhostRowInsert(kcl::GridEvent& evt)
@@ -2151,37 +2161,12 @@ void StructureDoc::onGridEndEdit(kcl::GridEvent& evt)
     }
 
     clearProblemRows();
-    checkInvalidExpressions(CheckMarkRows);
-    checkInvalidFieldnames(CheckMarkRows);
-    checkDuplicateFieldnames(CheckMarkRows);
+    checkInvalidExpressions(CheckMarkRows | CheckEmptyFieldnames);
+    checkInvalidFieldnames(CheckMarkRows | CheckEmptyFieldnames);
+    checkDuplicateFieldnames(CheckMarkRows | CheckEmptyFieldnames);
 
     m_grid->refresh(kcl::Grid::refreshAll);
-    updateStatusBar();        
-
-
-/*
-// old logic
-        wxString expr = evt.GetString();
-        if (evt.GetEditCancelled())
-        {
-            // currently, when an event is cancelled, the string value is empty,
-            // so we have to use getCellString() here
-            expr = m_grid->getCellString(row, col);
-        }
-        
-        // set the changed flag
-        setChanged(true);
-
-        // if the expression is valid, don't show
-        // an icon next to the expression
-        if (isFieldDynamic(m_grid, row))
-        {
-            int res = validateExpression(expr, type);
-            updateExpressionIcon(row, false, res);
-            m_grid->refreshColumn(kcl::Grid::refreshAll, colFieldFormula);
-        }
-
-*/
+    updateStatusBar();
 }
 
 void StructureDoc::onGridEditChange(kcl::GridEvent& evt)

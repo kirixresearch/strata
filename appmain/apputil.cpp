@@ -886,9 +886,7 @@ bool isKeyword(const wxString& str,
                tango::IDatabasePtr db)
 {
     if (db.isNull())
-    {
         db = g_app->getDatabase();
-    }
 
     tango::IAttributesPtr attr = db->getAttributes();
     if (!attr)
@@ -925,10 +923,12 @@ bool isValidFieldName(const wxString& str,
                       tango::IDatabasePtr db,
                       int* err_idx)
 {
+    // if the string is empty, it's invalid
+    if (str.Length() == 0)
+        return false;
+
     if (db.isNull())
-    {
         db = g_app->getDatabase();
-    }
 
     tango::IAttributesPtr attr = db->getAttributes();
     if (!attr)
@@ -961,10 +961,12 @@ bool isValidObjectName(const wxString& str,
                        tango::IDatabasePtr db,
                        int* err_idx)
 {
+    // if the string is empty, it's invalid
+    if (str.Length() == 0)
+        return false;
+
     if (db.isNull())
-    {
         db = g_app->getDatabase();
-    }
 
     tango::IAttributesPtr attr = db->getAttributes();
     if (!attr)
@@ -998,10 +1000,12 @@ bool isValidObjectPath(const wxString& str,
                        tango::IDatabasePtr db,
                        int* err_idx)
 {
+    // if the string is empty, it's invalid
+    if (str.Length() == 0)
+        return false;
+
     if (db.isNull())
-    {
         db = g_app->getDatabase();
-    }
 
     wxStringTokenizer tkz(str, wxT("/"));
     wxString stub = wxT("/");
@@ -1028,12 +1032,9 @@ wxString makeValidFieldName(const wxString& str,
                             tango::IDatabasePtr db)
 {
     if (db.isNull())
-    {
         db = g_app->getDatabase();
-    }
 
     wxString work_str = str;
-
     unsigned int i = 0;
 
     while (1)
@@ -1075,9 +1076,7 @@ wxString makeValidObjectName(const wxString& str,
                              tango::IDatabasePtr db)
 {
     if (db.isNull())
-    {
         db = g_app->getDatabase();
-    }
 
     wxString work_str = str;
 
