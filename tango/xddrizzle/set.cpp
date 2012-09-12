@@ -297,13 +297,6 @@ int DrizzleSet::insert(tango::IIteratorPtr source_iter,
 }
 
 
-                     
-tango::IRelationEnumPtr DrizzleSet::getRelationEnum()
-{
-    xcm::IVectorImpl<tango::IRelationPtr>* relations;
-    relations = new xcm::IVectorImpl<tango::IRelationPtr>;
-    return relations;
-}
 
 tango::IIteratorPtr DrizzleSet::createIterator(const std::wstring& columns,
                                                const std::wstring& expr,

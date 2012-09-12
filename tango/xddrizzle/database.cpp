@@ -895,7 +895,47 @@ tango::ISetPtr DrizzleDatabase::openSetEx(const std::wstring& ofs_path,
 {
     return openSet(ofs_path);
 }
-                             
+
+
+
+tango::IIndexInfoPtr DrizzleDatabase::createIndex(const std::wstring& path,
+                                                  const std::wstring& name,
+                                                  const std::wstring& expr,
+                                                  tango::IJob* job)
+{
+    return xcm::null;
+}
+
+
+bool DrizzleDatabase::renameIndex(const std::wstring& path,
+                                  const std::wstring& name,
+                                  const std::wstring& new_name)
+{
+    return false;
+}
+
+
+bool DrizzleDatabase::deleteIndex(const std::wstring& path,
+                                  const std::wstring& name)
+{
+    return false;
+}
+
+
+tango::IIndexInfoEnumPtr DrizzleDatabase::getIndexEnum(const std::wstring& path)
+{
+    xcm::IVectorImpl<tango::IIndexInfoEnumPtr>* vec;
+    vec = new xcm::IVectorImpl<tango::IIndexInfoEnumPtr>;
+
+    return vec;
+}
+
+tango::IStructurePtr DrizzleDatabase::describeTable(const std::wstring& path)
+{
+	return xcm::null;
+}
+
+
 tango::IRelationEnumPtr DrizzleDatabase::getRelationEnum(const std::wstring& path)
 {
     xcm::IVectorImpl<tango::IRelationPtr>* relations = new xcm::IVectorImpl<tango::IRelationPtr>;
