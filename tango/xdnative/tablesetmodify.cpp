@@ -657,6 +657,12 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
 
     for (it_sa = actions.begin(); it_sa != actions.end(); ++it_sa)
     {
+        // we've already handled calculated fields upstream, so
+        // don't duplicate the work here or we'll end up with a
+        // shadown real field corresponding to the duplicate
+        if (it_sa->m_params->getCalculated())
+            continue;
+
         switch (it_sa->m_action)
         {
             case StructureAction::actionCreate:
