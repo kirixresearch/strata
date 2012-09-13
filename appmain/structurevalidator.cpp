@@ -21,7 +21,7 @@ int StructureValidator::showErrorMessage(int errorcode, bool* block)
         return -1;
     }
     
-    if (errorcode == ErrorNoFields)
+    if (errorcode & ErrorNoFields)
     {
         *block = true;
         return cfw::appMessageBox(_("There are no fields in the table structure.  Add at least one field to the table to continue."),
@@ -30,7 +30,7 @@ int StructureValidator::showErrorMessage(int errorcode, bool* block)
                                   g_app->getMainWindow());
     }
 
-    if (errorcode == ErrorInvalidStructure)
+    if (errorcode & ErrorInvalidStructure)
     {
         // NOTE: This error message should never be shown to the user
         *block = true;
@@ -88,7 +88,7 @@ int StructureValidator::showErrorMessage(int errorcode, bool* block)
     // other fields invalid; in short, don't stop the user from going to the table
     // view, but keep this code here for reference
 
-    if (errorcode == ErrorInvalidExpressions)
+    if (errorcode & ErrorInvalidExpressions)
     {
         *block = true;
         return cfw::appMessageBox(_("One or more formulas has invalid syntax.  Check to make sure all formulas have valid syntax to continue."),
@@ -97,7 +97,7 @@ int StructureValidator::showErrorMessage(int errorcode, bool* block)
                                   g_app->getMainWindow());
     }
 
-    if (errorcode == ErrorExpressionTypeMismatch)
+    if (errorcode & ErrorExpressionTypeMismatch)
     {
         *block = false;
         int retcode = cfw::appMessageBox(_("One or more of the formulas has a return type that does not match the field type.  Would you like to continue?"),

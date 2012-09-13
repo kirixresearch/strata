@@ -1084,22 +1084,12 @@ int StructureDoc::validateStructure()
     int duplicatefields_errorcode = checkDuplicateFieldnames(
                                         CheckMarkRows | CheckEmptyFieldnames);
 
-    if (invalidexpressions_errorcode != StructureValidator::ErrorNone)
-    {
-        m_grid->refresh(kcl::Grid::refreshAll);
-        return invalidexpressions_errorcode;
-    }
+    int error = invalidexpressions_errorcode | invalidfields_errorcode | duplicatefields_errorcode;
 
-    if (invalidfields_errorcode != StructureValidator::ErrorNone)
+    if (error != StructureValidator::ErrorNone)
     {
         m_grid->refresh(kcl::Grid::refreshAll);
-        return invalidfields_errorcode;
-    }
-    
-    if (duplicatefields_errorcode != StructureValidator::ErrorNone)
-    {
-        m_grid->refresh(kcl::Grid::refreshAll);
-        return duplicatefields_errorcode;
+        return error;
     }
 
     m_grid->refreshColumn(kcl::Grid::refreshAll, colRowNumber);
