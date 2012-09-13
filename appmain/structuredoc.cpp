@@ -215,7 +215,7 @@ bool StructureDoc::doSave()
         int width = m_grid->getCellInteger(row, colFieldWidth);
         int scale = m_grid->getCellInteger(row, colFieldScale);
 
-        StructureValidator::limitFieldWidthAndScale(type, &width, &scale);
+        StructureValidator::updateFieldWidthAndScale(type, &width, &scale);
         m_grid->setCellInteger(row, colFieldWidth, width);
         m_grid->setCellInteger(row, colFieldScale, scale);
     }
@@ -2078,27 +2078,18 @@ void StructureDoc::onGridEndEdit(kcl::GridEvent& evt)
     if (evt.GetEditCancelled())
         return;
 
-    evt.Veto(); // take over handling manually
-
     int row = evt.GetRow();
     int col = evt.GetColumn();
     int type = choice2tango(m_grid->getCellComboSel(row, colFieldType));
-    
     m_last_selected_fieldtype = -1;
-
-    // if a structure smart pointer exists, clear it out; this will
-    // cause subsequent logic to get the structure as it exists at
-    // the end of the edit
-    if (!m_expr_edit_structure.isNull())
-        m_expr_edit_structure = xcm::null;
 
     // set the changed flag
     setChanged(true);
 
-    // in following, force the cell's text to be the text that we just
-    // entered (this is necessary because we use getCellString() in the
-    // checkDuplicateFieldnames() function below and the cell's text has 
-    // not yet changed)
+    // NOTE: in following, force the cell's text to be the text that we 
+    // just entered (this is necessary for the validation function below
+    // to work properly since it gets it's value from the grid, which hasn't
+    // updated yet)
     if (col == colFieldName)
     {
         wxString name = evt.GetString();
@@ -2107,20 +2098,46 @@ void StructureDoc::onGridEndEdit(kcl::GridEvent& evt)
 
     if (col == colFieldWidth)
     {
+        // make sure the width falls with the acceptable limits; if
+        // it doesn't, reset it and Veto() the event so the correct
+        // value is set; note: in this situation the cursor won't
+        // advance down, but that's ok since it gives users a chance
+        // to change any value that's overridden
         int width = evt.GetInt();
         int scale = m_grid->getCellInteger(row, colFieldScale);
-        StructureValidator::limitFieldWidthAndScale(type, &width, &scale);
+        bool updated = StructureValidator::updateFieldWidthAndScale(type, &width, &scale);
+        
+        // if it's been updated, the event is carrying the wrong value, so
+        // we have to Veto() the event so the correct value is set; note: 
+        // in this situation the cursor won't advance down, but that's ok 
+        // since it gives users a chance to change any value that's overridden
+        if (updated)
+            evt.Veto();
+        
+        // set the width, scale manually, similar to name field
         m_grid->setCellInteger(row, colFieldWidth, width);
-        m_grid->setCellInteger(row, colFieldScale, scale);                
+        m_grid->setCellInteger(row, colFieldScale, scale);
+        m_grid->refresh(kcl::Grid::refreshAll);
     }
 
     if (col == colFieldScale)
     {
+        // make sure the scale falls with the acceptable limits   
         int width = m_grid->getCellInteger(row, colFieldWidth);
         int scale = evt.GetInt();
-        StructureValidator::limitFieldWidthAndScale(type, &width, &scale);
+        bool updated = StructureValidator::updateFieldWidthAndScale(type, &width, &scale);
+
+        // if it's been updated, the event is carrying the wrong value, so
+        // we have to Veto() the event so the correct value is set; note: 
+        // in this situation the cursor won't advance down, but that's ok 
+        // since it gives users a chance to change any value that's overridden
+        if (updated)
+            evt.Veto();
+        
+        // set the width, scale manually, similar to name field
         m_grid->setCellInteger(row, colFieldWidth, width);
-        m_grid->setCellInteger(row, colFieldScale, scale);        
+        m_grid->setCellInteger(row, colFieldScale, scale);
+        m_grid->refresh(kcl::Grid::refreshAll);
     }
 
     if (col == colFieldFormula)
@@ -2129,12 +2146,7 @@ void StructureDoc::onGridEndEdit(kcl::GridEvent& evt)
         m_grid->setCellString(row, colFieldFormula, formula);
     }
 
-    clearProblemRows();
-    checkInvalidExpressions(CheckMarkRows | CheckEmptyFieldnames);
-    checkInvalidFieldnames(CheckMarkRows | CheckEmptyFieldnames);
-    checkDuplicateFieldnames(CheckMarkRows | CheckEmptyFieldnames);
-
-    m_grid->refresh(kcl::Grid::refreshAll);
+    validateStructure();
     updateStatusBar();
 }
 

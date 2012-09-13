@@ -330,8 +330,11 @@ bool StructureValidator::findInvalidObjectNames(std::vector<RowErrorChecker>& ve
     return found;
 }
 
-void StructureValidator::limitFieldWidthAndScale(int type, int* width, int* scale)
+bool StructureValidator::updateFieldWidthAndScale(int type, int* width, int* scale)
 {
+    int old_width = *width;
+    int old_scale = *scale;
+
     if (type == tango::typeCharacter || type == tango::typeWideCharacter)
     {
         if (*width < tango::min_character_width)
@@ -387,4 +390,11 @@ void StructureValidator::limitFieldWidthAndScale(int type, int* width, int* scal
         *width = 1;
         *scale = 0;
     }
+    
+    // if nothing's been updated
+    if (old_width == *width && old_scale == *scale)
+        return false;
+
+    // return true for "updated"      
+    return true;
 }

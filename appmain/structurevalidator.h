@@ -79,7 +79,7 @@ public:
     static bool findInvalidObjectNames(std::vector<RowErrorChecker>& vec,
                                        tango::IDatabasePtr db = xcm::null);
                                        
-    static void limitFieldWidthAndScale(int type, int* width, int* scale);                                    
+    static bool updateFieldWidthAndScale(int type, int* width, int* scale);
 };
 
 
