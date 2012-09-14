@@ -118,7 +118,7 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;comctl32.lib;wsock32.lib;rpcrt4.lib;wxbase29ud.lib;wxbase29ud_net.lib;wxbase29ud_xml.lib;wxmsw29ud_core.lib;wxmsw29ud_adv.lib;wxmsw29ud_aui.lib;wxmsw29ud_html.lib;wxmsw29ud_stc.lib;wxexpatd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxscintillad.lib;../supp/haru/lib/harud.lib;../supp/curl/builds/libcurl-debug-static-ssl-static-ipv6-sspi/lib/libcurl_a_debug.lib;../supp/libssh2/win32/Debug_lib/libssh2d.lib;../supp/openssl/out32.dbg/libeay32.lib;../supp/openssl/out32.dbg/ssleay32.lib;../kl/lib/klud.lib;../kcl/lib/kclud.lib;../cfw/lib/cfwud.lib;../paladin/lib/paladinud.lib;../kscript/lib/kscriptud.lib;../kcanvas/lib/kcanvasud.lib;../webconnect/lib/webconnectud.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;comctl32.lib;wsock32.lib;rpcrt4.lib;wxbase29ud.lib;wxbase29ud_net.lib;wxbase29ud_xml.lib;wxmsw29ud_core.lib;wxmsw29ud_adv.lib;wxmsw29ud_aui.lib;wxmsw29ud_html.lib;wxmsw29ud_stc.lib;wxmsw29ud_webview.lib;wxexpatd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxscintillad.lib;../supp/haru/lib/harud.lib;../supp/curl/builds/libcurl-debug-static-ssl-static-ipv6-sspi/lib/libcurl_a_debug.lib;../supp/libssh2/win32/Debug_lib/libssh2d.lib;../supp/openssl/out32.dbg/libeay32.lib;../supp/openssl/out32.dbg/ssleay32.lib;../kl/lib/klud.lib;../kcl/lib/kclud.lib;../cfw/lib/cfwud.lib;../paladin/lib/paladinud.lib;../kscript/lib/kscriptud.lib;../kcanvas/lib/kcanvasud.lib;../webconnect/lib/webconnectud.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../supp/wxWidgets/lib/vc_lib;../supp/wxpdfdoc/lib;../supp/curl/lib/debug-ssl;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -227,7 +227,7 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;comctl32.lib;wsock32.lib;rpcrt4.lib;wxbase29u.lib;wxbase29u_net.lib;wxbase29u_xml.lib;wxmsw29u_core.lib;wxmsw29u_adv.lib;wxmsw29u_aui.lib;wxmsw29u_html.lib;wxmsw29u_stc.lib;wxexpat.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;wxscintilla.lib;../supp/haru/lib/haru.lib;../supp/curl/builds/libcurl-release-static-ssl-static-ipv6-sspi/lib/libcurl_a.lib;../supp/libssh2/win32/Release_lib/libssh.lib;../supp/openssl/out32/libeay32.lib;../supp/openssl/out32/ssleay32.lib;../kl/lib/klu.lib;../kcl/lib/kclu.lib;../cfw/lib/cfwu.lib;../paladin/lib/paladinu.lib;../kscript/lib/kscriptu.lib;../kcanvas/lib/kcanvasu.lib;../webconnect/lib/webconnectu.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;comctl32.lib;wsock32.lib;rpcrt4.lib;wxbase29u.lib;wxbase29u_net.lib;wxbase29u_xml.lib;wxmsw29u_core.lib;wxmsw29u_adv.lib;wxmsw29u_aui.lib;wxmsw29u_html.lib;wxmsw29u_stc.lib;wxmsw29u_webview.lib;wxexpat.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;wxscintilla.lib;../supp/haru/lib/haru.lib;../supp/curl/builds/libcurl-release-static-ssl-static-ipv6-sspi/lib/libcurl_a.lib;../supp/libssh2/win32/Release_lib/libssh.lib;../supp/openssl/out32/libeay32.lib;../supp/openssl/out32/ssleay32.lib;../kl/lib/klu.lib;../kcl/lib/kclu.lib;../cfw/lib/cfwu.lib;../paladin/lib/paladinu.lib;../kscript/lib/kscriptu.lib;../kcanvas/lib/kcanvasu.lib;../webconnect/lib/webconnectu.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../supp/wxWidgets/lib/vc_lib;../supp/wxpdfdoc/lib;../supp/curl/lib/release-ssl;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -348,6 +348,7 @@
     <ClCompile Include="..\appmain\dbcombo.cpp" />
     <ClCompile Include="..\appmain\dbdoc.cpp" />
     <ClCompile Include="..\appmain\dlgauth.cpp" />
+    <ClCompile Include="..\appmain\dlgcustomprompt.cpp" />
     <ClCompile Include="..\appmain\dlgdatabasefile.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -885,7 +886,6 @@
     <ClCompile Include="..\appmain\transformationdoc.cpp" />
     <ClCompile Include="..\appmain\updater.cpp" />
     <ClCompile Include="..\appmain\webdoc.cpp" />
-    <ClCompile Include="..\appmain\webserver.cpp" />
     <ClCompile Include="..\appmain\mongoose.cpp" />
     <ClCompile Include="appstrata.cpp" />
   </ItemGroup>
@@ -908,6 +908,7 @@
     <ClInclude Include="..\appmain\dbcombo.h" />
     <ClInclude Include="..\appmain\dbdoc.h" />
     <ClInclude Include="..\appmain\dlgauth.h" />
+    <ClInclude Include="..\appmain\dlgcustomprompt.h" />
     <ClInclude Include="..\appmain\dlgdatabasefile.h" />
     <ClInclude Include="..\appmain\dlglinkprops.h" />
     <ClInclude Include="..\appmain\dlgpagesetup.h" />
@@ -1031,7 +1032,6 @@
     <ClInclude Include="..\appmain\transformationdoc.h" />
     <ClInclude Include="..\appmain\updater.h" />
     <ClInclude Include="..\appmain\webdoc.h" />
-    <ClInclude Include="..\appmain\webserver.h" />
     <ClInclude Include="..\appmain\mongoose.h" />
     <ClInclude Include="config\appversion.h" />
   </ItemGroup>
