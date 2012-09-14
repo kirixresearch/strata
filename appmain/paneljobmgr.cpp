@@ -69,11 +69,11 @@ JobListCtrl::JobListCtrl(wxWindow* parent) : kcl::ScrollListControl(parent)
 {
     checkIfInMainThread();
 
-    // -- connect job queue update signal --
+    // connect job queue update signal
     m_job_queue = g_app->getJobQueue();
     m_job_queue->sigQueueChanged().connect(this, &JobListCtrl::onJobQueueChanged);
 
-    // -- start an update timer --
+    // start an update timer
     m_timer = new JobListCtrlTimer;
     m_timer->m_owner = this;
     m_timer->Start(100);
@@ -102,13 +102,13 @@ void JobListCtrl::addJobItem(cfw::IJobInfoPtr job_info)
     
     kcl::ScrollListItem* item = new kcl::ScrollListItem;
     
-    // -- create bitmap element --
+    // create bitmap element
     kcl::ScrollListElement* bitmap;
     bitmap = item->addElement(GETBMP(gf_gear_32), wxPoint(15,15));
     bitmap->setPadding(0,0,0,15);
     bitmap->setName(wxT("bitmap"));
 
-    // -- create title text element --
+    // create title text element
     kcl::ScrollListElement* title;
     title = item->addElement(job_info->getTitle(), wxPoint(60,15));
     title->setPadding(0,0,15,8);
@@ -116,7 +116,7 @@ void JobListCtrl::addJobItem(cfw::IJobInfoPtr job_info)
     title->setTextWrap(false);
     title->setName(wxT("title"));
     
-    // -- create progress gauge element --
+    // create progress gauge element
     wxGauge* progress_gauge = new wxGauge(this,
                                           -1,
                                           100,
@@ -134,7 +134,7 @@ void JobListCtrl::addJobItem(cfw::IJobInfoPtr job_info)
     gauge->setStretchable(true);
     gauge->setName(wxT("progress_gauge"));
 
-    // -- create cancel button element --
+    // create cancel button element
     wxButton* cancel_button = new wxButton(this,
                                            ID_CancelButton,
                                            _("Cancel"),
@@ -151,7 +151,7 @@ void JobListCtrl::addJobItem(cfw::IJobInfoPtr job_info)
                                 kcl::ScrollListElement::alignRight);
     cancel->setName(wxT("cancel_button"));
 
-    // -- create record count text element --
+    // create record count text element
     kcl::ScrollListElement* record_count;
     record_count = item->addElement(job_info->getProgressString());
     record_count->setPadding(0,0,0,5);
@@ -159,7 +159,7 @@ void JobListCtrl::addJobItem(cfw::IJobInfoPtr job_info)
                                       kcl::ScrollListElement::positionBelow);
     record_count->setName(wxT("record_count_text"));
     
-    // -- create description text element --
+    // create description text element
     kcl::ScrollListElement* job_state;
     job_state = item->addElement(wxEmptyString);
     job_state->setPadding(0,0,0,15);
@@ -168,7 +168,7 @@ void JobListCtrl::addJobItem(cfw::IJobInfoPtr job_info)
     job_state->setStretchable(true);
     job_state->setName(wxT("job_state_text"));
     
-    // -- assign the job id to the item --
+    // assign the job id to the item
     item->setExtraLong(job_info->getJobId());
     addItem(item);
 }
@@ -252,7 +252,7 @@ void JobListCtrl::refreshItems()
     std::set<int> processed;
     int job_id;
     
-    // -- first process jobs already in the job list control --
+    // first process jobs already in the job list control
     std::vector<kcl::ScrollListItem*>::iterator it;
     for (it = m_items.begin(); it != m_items.end(); ++it)
     {
@@ -261,7 +261,7 @@ void JobListCtrl::refreshItems()
             
         job_id = (*it)->getExtraLong();
         
-        // -- try to locate the job info in the job queue --
+        // try to locate the job info in the job queue
         cfw::IJobInfoPtr info;
         info = m_job_queue->getJobInfo(job_id);
         if (!info)
@@ -274,10 +274,10 @@ void JobListCtrl::refreshItems()
             state == cfw::jobStateCancelled ||
             state == cfw::jobStateFailed)
         {
-            // -- make joblist not update this job anymore --
+            // make job list not update this job anymore
             (*it)->setUpdated(false);
             
-            // -- hide the progress gauge and cancel button  --
+            // hide the progress gauge and cancel button 
             kcl::ScrollListElement* element;
             element = (*it)->getElement(wxT("progress_gauge"));
             element->setVisible(false);
@@ -285,11 +285,11 @@ void JobListCtrl::refreshItems()
             element->setVisible(false);
         }
 
-        // -- don't look for this job below --
+        // don't look for this job below
         processed.insert(job_id);
     }
 
-    // -- now look for new jobs --
+    // now look for new jobs
     cfw::IJobInfoEnumPtr jobs = m_job_queue->getJobInfoEnum(cfw::jobStateAll);
     bool item_count_changed = false;
     int job_count = jobs->size();
@@ -309,7 +309,7 @@ void JobListCtrl::refreshItems()
             continue;
         }
         
-        // -- this job has already been added --
+        // this job has already been added
         if (processed.find(job_id) != processed.end())
             continue;
 
@@ -319,7 +319,7 @@ void JobListCtrl::refreshItems()
 
     if (item_count_changed)
     {
-        // -- calculate the virtual height for the control --
+        // calculate the virtual height for the control
         calcVirtualHeight();
     }
 }
@@ -350,7 +350,7 @@ void JobListCtrl::clearInactiveJobs()
         }
     }
     
-    // -- populate the job info vector from the job queue --
+    // populate the job info vector from the job queue
     populate();
     refreshItems();
     checkOverlayText();
@@ -372,16 +372,15 @@ void JobListCtrl::populate()
 
     cfw::IJobInfoEnumPtr jobs = m_job_queue->getJobInfoEnum(cfw::jobStateAll);
     cfw::IJobInfoPtr job_info;
-    int job_count = jobs->size();
-    int i;
+    size_t i, job_count = jobs->size();
 
-    // -- clear out the job items vector --
+    // clear out the job items vector
     clearItems();
     
-    // -- populate the job info vector from the job queue --
+    // populate the job info vector from the job queue
     for (i = 0; i < job_count; i++)
     {
-        // -- only populate the control with visible job infos --
+        // only populate the control with visible job infos
         cfw::IJobInfoPtr job_info = jobs->getItem(i);
         if (!job_info->getVisible())
             continue;
@@ -389,24 +388,24 @@ void JobListCtrl::populate()
         addJobItem(job_info);
     }
     
-    // -- calculate the virtual height for the control --
+    // calculate the virtual height for the control
     calcVirtualHeight();
 
-    // -- scroll to the top of the job list --
+    // scroll to the top of the job list
     Scroll(0,0);
 }
 
-void JobListCtrl::onCancelButtonClicked(wxCommandEvent& event)
+void JobListCtrl::onCancelButtonClicked(wxCommandEvent& evt)
 {
     checkIfInMainThread();
 
-    wxButton* button = (wxButton*)(event.GetEventObject());
+    wxButton* button = (wxButton*)(evt.GetEventObject());
     kcl::ScrollListItem* item = (kcl::ScrollListItem*)(button->GetExtraStyle());
 
     if (!item)
     {
-        // -- something is not right, we still have a cancel button,
-        //    but we can't find the job list item, so bail out --
+        // something is not right, we still have a cancel button,
+        // but we can't find the job list item, so bail out
         return;
     }
 
@@ -485,7 +484,7 @@ JobManagerPanel::~JobManagerPanel()
 
 }
 
-// -- IDocument --
+
 bool JobManagerPanel::initDoc(cfw::IFramePtr frame,
                               cfw::IDocumentSitePtr site,
                               wxWindow* docsite_wnd,
@@ -508,7 +507,7 @@ bool JobManagerPanel::initDoc(cfw::IFramePtr frame,
     m_doc_site->setMinSize(200,150);
     m_doc_site->setCaption(_("Jobs"));
 
-    // -- create controls for the panel --
+    // create controls for the panel
     m_job_list = new JobListCtrl(this);
     m_cleanup_button = new wxButton(this, ID_CleanupButton, _("Clean Up"));
     
@@ -517,12 +516,12 @@ bool JobManagerPanel::initDoc(cfw::IFramePtr frame,
     wxButton* close_button;
     close_button = new wxButton(this, wxID_CANCEL, wxEmptyString, wxDefaultPosition, wxSize(0,0));
     
-    // -- create the button sizer --
+    // create the button sizer
     wxBoxSizer* button_sizer = new wxBoxSizer(wxHORIZONTAL);
     button_sizer->Add(m_cleanup_button, 0, wxALIGN_CENTER);
     button_sizer->Add(close_button, 0, wxALIGN_CENTER);
     
-    // -- create the main sizer --
+    // create the main sizer
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
     main_sizer->AddSpacer(8);
     main_sizer->Add(m_job_list, 1, wxEXPAND | wxLEFT | wxRIGHT, 8);
