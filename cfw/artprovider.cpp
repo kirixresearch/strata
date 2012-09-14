@@ -515,7 +515,7 @@ void CfwTabArt::DrawTab(wxDC& dc,
 
     if (page.active)
     {
-        // -- draw active tab --
+        // draw active tab
 
         wxRect tab_rect(tab_x+1, tab_y, tab_width-1, tab_height);
 
@@ -544,7 +544,7 @@ void CfwTabArt::DrawTab(wxDC& dc,
     }
      else
     {
-        // -- draw inactive tab --
+        // draw inactive tab
 
         wxPen border_pen2(wxAuiStepColour(m_base_colour, 160));
         wxRect tab_rect(tab_x, tab_y, tab_width, tab_height-1);

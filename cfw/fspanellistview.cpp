@@ -87,20 +87,20 @@ void FsPanelListView::setImageListLarge(bool val)
 
 void FsPanelListView::refresh()
 {
-    // -- make sure the list is shown before we freeze it...
-    //    this eliminates flicker on the first show --
+    // make sure the list is shown before we freeze it...
+    // this eliminates flicker on the first show
     Show();
 
-    // -- don't show the list while we populate it --
+    // don't show the list while we populate it
     Freeze();
 
-    // -- delete all list items --
+    // delete all list items
     deleteAllItems();
 
-    // -- populate the list --
+    // populate the list
     populate();
 
-    // -- now we can show the list --
+    // now we can show the list
     Thaw();
 }
 
@@ -120,7 +120,7 @@ int FsPanelListView::getImageListIdx(const wxBitmap& bitmap,
     if (!large_bitmap.Ok() ||
         large_bitmap.GetWidth() != 32)
     {
-        // -- scale the small bitmap to a big one --
+        // scale the small bitmap to a big one
         img = bitmap.ConvertToImage();
         img.Rescale(32, 32);
         
@@ -151,7 +151,7 @@ void FsPanelListView::insertItem(IFsItemPtr item)
     int imagelist_idx = getImageListIdx(item->getBitmap(fsbmpSmall),
                                         item->getBitmap(fsbmpLarge));
                                          
-    // -- add the item to the list --
+    // add the item to the list
     long id = InsertItem(GetItemCount(),
                          item->getLabel(),
                          imagelist_idx);
@@ -174,8 +174,8 @@ void FsPanelListView::deleteAllItems()
         FsItemData* data;
         data = (FsItemData*)GetItemData(i);
 
-        // -- we need to make sure we delete any FsItemData that
-        //    was associated with the list item --
+        // we need to make sure we delete any FsItemData that
+        // was associated with the list item
         if (data)
             delete data;
     }
@@ -189,18 +189,17 @@ void FsPanelListView::populate()
     if (m_root.isNull())
         return;
 
-    // -- if m_parent is uninitialized, start things off by
-    //    making it the m_root item --
+    // if m_parent is uninitialized, start things off by
+    // making it the m_root item
     if (m_parent.isNull())
         setParentItem(m_root);
 
-    // -- clear out the list --
+    // clear out the list
     deleteAllItems();
 
-    // -- populate the list --
+    // populate the list
     IFsItemEnumPtr items = m_parent->getChildren();
-    int count = items->size();
-    int i;
+    size_t i, count = items->size();
 
     for (i = 0; i < count; ++i)
     {

@@ -70,7 +70,7 @@ public:
     void setDefaultFolderBitmap(const wxBitmap& bitmap);
     void setFileTypeBitmap(const wxString& file_type, const wxBitmap& bitmap);
 
-    // -- FsItem derived functions --
+    // FsItem derived functions
 
     IFsItemEnumPtr getChildren();
     

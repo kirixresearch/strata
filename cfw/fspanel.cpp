@@ -38,7 +38,6 @@ namespace cfw
 {
 
 
-// -- XPM's --
 
 /* XPM */
 const static char* xpm_folder_closed[] = {
@@ -94,7 +93,7 @@ const static char* xpm_folder_open[] = {
 
 
 
-// -- Drag and Drop functionality --
+// Drag and Drop functionality
 
 class FsTreeDropTarget : public wxDropTarget
 {
@@ -250,7 +249,7 @@ BEGIN_EVENT_TABLE(FsPanel, wxWindow)
     EVT_ERASE_BACKGROUND(FsPanel::onEraseBackground)
     EVT_CHILD_FOCUS(FsPanel::onChildFocus)
     
-    // -- treeview events --
+    // treeview events
     EVT_TREE_ITEM_RIGHT_CLICK(ID_TreeView, FsPanel::onFsTreeItemRightClicked)
     EVT_TREE_ITEM_MIDDLE_CLICK(ID_TreeView, FsPanel::onFsTreeItemMiddleClicked)
     EVT_TREE_ITEM_ACTIVATED(ID_TreeView, FsPanel::onFsTreeItemActivated)
@@ -262,7 +261,7 @@ BEGIN_EVENT_TABLE(FsPanel, wxWindow)
     EVT_TREE_BEGIN_DRAG(ID_TreeView, FsPanel::onFsTreeBeginDrag)
     EVT_TREE_SEL_CHANGED(ID_TreeView, FsPanel::onFsTreeSelectionChanged)
 
-    // -- listview events --
+    // listview events
     EVT_LIST_ITEM_RIGHT_CLICK(ID_ListView, FsPanel::onFsListItemRightClicked)
     EVT_LIST_ITEM_MIDDLE_CLICK(ID_ListView, FsPanel::onFsListItemMiddleClicked)
     EVT_LIST_ITEM_ACTIVATED(ID_ListView, FsPanel::onFsListItemActivated)
@@ -308,7 +307,7 @@ FsPanel::~FsPanel()
 
 void FsPanel::createLocationBar()
 {
-    // -- if we've already created a treeview, don't do anything --
+    // if we've already created a treeview, don't do anything
     if (m_location_bar)
         return;
 
@@ -336,7 +335,7 @@ void FsPanel::createLocationBar()
                                            wxT(""),
                                            bmp_folder_closed);
 
-    // -- create the location bar --
+    // create the location bar
     m_location_bar = new wxBoxSizer(wxHORIZONTAL);
     m_location_bar->Add(static_lookin, 0, wxALIGN_CENTER | wxLEFT | wxRIGHT, 5);
     m_location_bar->Add(m_location_choice, 1, wxALIGN_CENTER | wxRIGHT, 5);
@@ -346,7 +345,7 @@ void FsPanel::createLocationBar()
 
 void FsPanel::createTreeView()
 {
-    // -- if we've already created a treeview, don't do anything --
+    // if we've already created a treeview, don't do anything
     if (m_treeview)
         return;
 
@@ -402,7 +401,7 @@ void FsPanel::createTreeView()
 
 void FsPanel::createListView()
 {
-    // -- if we've already created a listview, don't do anything --
+    // if we've already created a listview, don't do anything
     if (m_listview)
         return;
 
@@ -430,7 +429,7 @@ void FsPanel::createListView()
 
 void FsPanel::destroyTreeView()
 {
-    // -- if there is no treeview, don't do anything --
+    // if there is no treeview, don't do anything
     if (!m_treeview)
         return;
 
@@ -441,7 +440,7 @@ void FsPanel::destroyTreeView()
 
 void FsPanel::destroyListView()
 {
-    // -- if there is no listview, don't do anything --
+    // if there is no listview, don't do anything
     if (!m_listview)
         return;
 
@@ -493,7 +492,7 @@ bool FsPanel::create(wxWindow* parent,
                      const wxSize& size,
                      int flags)
 {
-    // -- create document's window --
+    // create document's window
     bool result = Create(parent,
                          -1,
                          position,
@@ -532,7 +531,7 @@ bool FsPanel::initDoc(cfw::IFramePtr frame,
                       wxWindow* docsite_wnd,
                       wxWindow* panesite_wnd)
 {
-    // -- create document's window --
+    // create document's window
     bool result = create(docsite_wnd,
                          -1,
                          wxDefaultPosition,
@@ -930,18 +929,21 @@ void FsPanel::refreshLocationBar()
     {
         FsItemData* data = (FsItemData*)m_location_choice->GetClientData(0);
     
-        // -- if we've switched root items, we need
-        //    to repopulate the choice control --
+        // if we've switched root items, we need
+        // to repopulate the choice control
+
         if (m_root != data->m_fsitem)
             m_location_choice->Clear();
     }
     
-    // -- if the location choice is empty, get things started --   
+
+    // if the location choice is empty, get things started
+
     if (count == 0)
     {
         m_location_choice->Append(m_root->getLabel());
         
-        // -- create our intial FsItemData --
+        // create our intial FsItemData
         FsItemData* data = new FsItemData;
         data->m_deferred = true;
         data->m_fsitem = m_root;
@@ -954,8 +956,8 @@ void FsPanel::refreshLocationBar()
 
 void FsPanel::changeLocation(IFsItemPtr item)
 {
-    // -- if the item we clicked on is not a directory item,
-    //    we can't change the location --
+    // if the item we clicked on is not a directory item,
+    // we can't change the location
     
     IDirectoryFsItemPtr dir_item = item;
     if (!dir_item)
@@ -986,7 +988,7 @@ void FsPanel::changeLocation(IFsItemPtr item)
             {
                 FsItemData* data = (FsItemData*)m_location_choice->GetClientData(idx);
                 
-                // -- only look at directory items --
+                // only look at directory items
                 IDirectoryFsItemPtr choice_dir_item = data->m_fsitem;
                 if (!choice_dir_item)
                     continue;
@@ -1101,7 +1103,8 @@ bool FsPanel::isDragDropEnabled()
     return m_dragdrop_enabled;
 }
 
-// -- event handlers --
+
+// event handlers
 
 void FsPanel::onSize(wxSizeEvent& evt)
 {
@@ -1233,7 +1236,7 @@ void FsPanel::onMouseMiddleUp(wxMouseEvent& evt)
 
 
 
-// -- treeview event handlers --
+// treeview event handlers
 
 void FsPanel::onFsTreeItemRightClicked(wxTreeEvent& evt)
 {
@@ -1386,35 +1389,14 @@ void FsPanel::onFsTreeBeginDrag(wxTreeEvent& event)
 }
 
 
-void FsPanel::onDoExpandFolder(wxCommandEvent& event)
+void FsPanel::onDoExpandFolder(wxCommandEvent& evt)
 {
-/*
-    not used anymore - see note below
-    
-    
-    FsItemData* data = (FsItemData*)event.GetExtraLong();
-    if (data->m_fsitem.isNull())
-    {
-        wxFAIL_MSG(wxT("FsPanel::onDoExpandFolder(): NULL tree item!"));
-        return;
-    }
-    
-    wxTreeItemId id = data->m_fsitem->getTreeItemId();
-    
-    // -- don't try to expand the root item if it's hidden --
-    bool do_expand = true;
-    if (id == m_treeview->GetRootItem() && GetWindowStyle() & wxTR_HIDE_ROOT)
-        do_expand = false;
-
-    if (do_expand)
-        m_treeview->Expand(id);
-*/
 }
 
-void FsPanel::onFsTreeItemExpanding(wxTreeEvent& event)
+void FsPanel::onFsTreeItemExpanding(wxTreeEvent& evt)
 {
     // if we are expanding a deferred folder, populate its children first
-    wxTreeItemId id = event.GetItem();
+    wxTreeItemId id = evt.GetItem();
 
     // -- don't try to expand the root item if it's hidden --
     bool do_expand = true;
@@ -1432,56 +1414,19 @@ void FsPanel::onFsTreeItemExpanding(wxTreeEvent& event)
             
         m_treeview->Thaw();
     }
-    
-    
-    
-/*
-    this is the old version -- I don't believe it's necessary anymore
-    because I couldn't ascertain any flickering
-    
-    please note that this code is defective, because, when called via
-    refresh/expandFolders, the pointers that are sent with that post
-    message are sometimes (always?) not valid.  It crashes.
-    
-    wxTreeItemId id = event.GetItem();
-
-    // -- don't try to expand the root item if it's hidden --
-    bool do_expand = true;
-    if (id == m_treeview->GetRootItem() && GetWindowStyle() & wxTR_HIDE_ROOT)
-        do_expand = false;
-
-    FsItemData* data = (FsItemData*)m_treeview->GetItemData(id);
-    if (data->m_deferred)
-    {
-        m_treeview->Freeze();
-        m_treeview->populateDeferred(id);
-        
-        if (do_expand)
-            m_treeview->Expand(id);
-            
-        m_treeview->Thaw();
-
-        // -- doing the expanding later prevents flicker --
-        event.Veto();
-        
-        wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED, ID_DoExpandFolder);
-        e.SetExtraLong((long)data);
-        ::wxPostEvent(this, e);
-    }
-*/
 }
 
 
-void FsPanel::onFsTreeItemCollapsing(wxTreeEvent& event)
+void FsPanel::onFsTreeItemCollapsing(wxTreeEvent& evt)
 {
-    // -- prevent collapsing of the root item --
-    if (event.GetItem() == m_treeview->GetRootItem())
+    // prevent collapsing of the root item
+    if (evt.GetItem() == m_treeview->GetRootItem())
     {
-        event.Veto();
+        evt.Veto();
         return;
     }
 
-    event.Skip();
+    evt.Skip();
 }
 
 
@@ -1531,7 +1476,7 @@ void FsPanel::onFsTreeSelectionChanged(wxTreeEvent& evt)
 }
 
 
-// -- listview event handlers --
+// listview event handlers
 
 void FsPanel::onFsListItemRightClicked(wxListEvent& evt)
 {

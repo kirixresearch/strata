@@ -188,7 +188,7 @@ public:
     
     virtual ~ChildFrame();
     
-    // -- container methods --
+    // container methods
     void setBitmap(const wxBitmap& bitmap);
     cfw::IUIContextPtr getUIContext();
 
@@ -210,7 +210,7 @@ public:
     void setMinSize(int width, int height);
     void setMaxSize(int width, int height);
 
-    // -- window event handlers --
+    // window event handlers
     void onSize(wxSizeEvent& evt);
     void onActivate(wxActivateEvent& evt);
     void onClose(wxCloseEvent& evt);
@@ -350,7 +350,7 @@ public:
     void goNextChild();
     void goPreviousChild();
 
-    // -- event methods --
+    // event methods
     void updateWindowEventHandlers();
     void addWindowEventHandler(wxEvtHandler* event_handler);
     void removeWindowEventHandler(wxEvtHandler* event_handler);
@@ -365,7 +365,7 @@ public:
     
 public:
 
-    // -- events firing --
+    // events firing
     void fire_onFrameCommand(int id, int int_param, bool* processed);
     void fire_onFrameSize(wxSizeEvent& size);
     void fire_onFrameClose(wxCloseEvent& evt);
@@ -376,10 +376,10 @@ public:
     
 private:
 
-    // -- actions --
+    // actions
     void onMdiClientSize();
     
-    // -- pane slots --
+    // pane slots
     void onChildFrameActivated(ChildFrame* frame);
     void onChildFrameDeactivated(ChildFrame* frame);
     void onChildFrameDestructing(ChildFrame* frame);
@@ -397,13 +397,14 @@ private:
     void onChildRightClick(wxAuiNotebookEvent& evt);
     void onAuiPaneClose(wxAuiManagerEvent& evt);
     
-    // -- menu members --
+    // menu members
 
     void prepareToolBar(wxToolBar* toolbar);
     void doMenuMerge(IUIContextPtr ui);
     void activateUI(IUIContextPtr ui);
 
-    // -- other methods --
+    // other methods
+
     wxString getUniqueSiteName();
 
 private:

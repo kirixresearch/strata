@@ -262,7 +262,7 @@ IFsItemEnumPtr DirectoryFsItem::getChildren()
 {
     xcm::IVectorImpl<IFsItemPtr>* vec = new xcm::IVectorImpl<IFsItemPtr>;
 
-    // -- get the visible extensions --
+    // get the visible extensions
     std::vector<wxString> extensions;
     wxStringTokenizer t(m_file_types, wxT(",;\n\t. "));
     while (t.HasMoreTokens())
@@ -313,7 +313,7 @@ IFsItemEnumPtr DirectoryFsItem::getChildren()
         {
             bool visible = true;
 
-            // -- get the file extension --
+            // get the file extension
             const wchar_t* e;
             e = wcsrchr(info.m_name.c_str(), L'.');
             if (!e)

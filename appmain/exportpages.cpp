@@ -20,8 +20,6 @@
 #include "dbdoc.h"
 
 
-// -- control ids --
-
 enum
 {
     // table selection page
@@ -39,7 +37,7 @@ enum
     APPEND_IDX = 2
 };
 
-// -- utility functions --
+// utility functions
 
 inline wxString createFullFilePath(const wxString& base_path,
                                    const wxString& tablename)
@@ -82,7 +80,7 @@ static std::vector<RowErrorChecker> getRowErrorCheckerVector(kcl::Grid* grid,
 
 
 
-// -- ExportTemplate class implementation --
+// ExportTemplate class implementation
 
 ExportTemplate::ExportTemplate()
 {
@@ -91,7 +89,7 @@ ExportTemplate::ExportTemplate()
 
 bool ExportTemplate::load(const wxString& path)
 {
-    // -- create an ofs file with the run information --
+    // create an ofs file with the run information
     tango::IDatabasePtr db = g_app->getDatabase();
 
     tango::INodeValuePtr file = db->openNodeFile(towstr(path));
@@ -114,110 +112,110 @@ bool ExportTemplate::load(const wxString& path)
         return false;
 
 
-    // -- type --
+    // type
     tango::INodeValuePtr type_val = data_root->getChild(L"type", false);
     if (!type_val)
         return false;
     m_ei.type = type_val->getInteger();
     m_ei.last_type = type_val->getInteger();
 
-    // -- description --
+    // description
     tango::INodeValuePtr desc_val = data_root->getChild(L"description", false);
     if (!desc_val)
         return false;
     m_ei.description = towx(desc_val->getString());
 
-    // -- path --
+    // path
     tango::INodeValuePtr path_val = data_root->getChild(L"path", false);
     if (!path_val)
         return false;
     m_ei.path = towx(path_val->getString());
 
-    // -- version (for package files) --
+    // version (for package files)
     tango::INodeValuePtr kpg_version_val = data_root->getChild(L"kpg_version", false);
     if (!kpg_version_val)
         return false;
     m_ei.kpg_version = kpg_version_val->getInteger();
 
-    // -- compressed (for package files) --
+    // compressed (for package files)
     tango::INodeValuePtr kpg_compressed_val = data_root->getChild(L"kpg_compressed", true);
     if (!kpg_compressed_val)
         return false;
     m_ei.kpg_compressed = kpg_compressed_val->getBoolean();
 
-    // -- filter --
+    // filter
     tango::INodeValuePtr filter_val = data_root->getChild(L"filter", false);
     if (!filter_val)
         return false;
     m_ei.filter = towx(filter_val->getString());
 
-    // -- server --
+    // server
     tango::INodeValuePtr server_val = data_root->getChild(L"server", false);
     if (!server_val)
         return false;
     m_ei.server = towx(server_val->getString());
 
-    // -- port --
+    // port
     tango::INodeValuePtr port_val = data_root->getChild(L"port", false);
     if (!port_val)
         return false;
     m_ei.port = port_val->getInteger();
     
-    // -- database --
+    // database
     tango::INodeValuePtr database_val = data_root->getChild(L"database", false);
     if (!database_val)
         return false;
     m_ei.database = towx(database_val->getString());
 
-    // -- username --
+    // username
     tango::INodeValuePtr username_val = data_root->getChild(L"username", false);
     if (!username_val)
         return false;
     m_ei.username = towx(username_val->getString());
 
-    // -- password --
+    // password
     tango::INodeValuePtr password_val = data_root->getChild(L"password", false);
     if (!password_val)
         return false;
     m_ei.password = towx(password_val->getString());
 
-    // -- save password --
+    // save password
     tango::INodeValuePtr save_password_val = data_root->getChild(L"save_password", false);
     if (!save_password_val)
         return false;
     m_ei.save_password = save_password_val->getBoolean();
 
-    // -- base path (for table selection page) --
+    // base path (for table selection page)
     tango::INodeValuePtr basepath_val = data_root->getChild(L"base_path", false);
     if (!basepath_val)
         return false;
     m_ei.base_path = towx(basepath_val->getString());
 
-    // -- tables base --
+    // tables base
     tango::INodeValuePtr tables_base = data_root->getChild(L"tables", false);
     if (!tables_base)
         return false;
 
     int table_count = tables_base->getChildCount();
 
-    // -- try to load the tables that were saved --
+    // try to load the tables that were saved
 
     int table_counter;
     for (table_counter = 0; table_counter < table_count; ++table_counter)
     {
         tango::INodeValuePtr table_node = tables_base->getChildByIdx(table_counter);
 
-        // -- input tablename --
+        // input tablename
         tango::INodeValuePtr input_tn = table_node->getChild(L"input_tablename", false);
         if (!input_tn)
             return false;
 
-        // -- output tablename --
+        // output tablename
         tango::INodeValuePtr output_tn = table_node->getChild(L"output_tablename", false);
         if (!output_tn)
             return false;
 
-        // -- append --
+        // append
         tango::INodeValuePtr append = table_node->getChild(L"append", false);
         if (!append)
             return false;
@@ -236,7 +234,7 @@ bool ExportTemplate::load(const wxString& path)
 
 bool ExportTemplate::save(const wxString& path)
 {
-    // -- create an ofs file with the run information --
+    // create an ofs file with the run information
     tango::IDatabasePtr db = g_app->getDatabase();
 
     wxString file_path = path;
@@ -245,7 +243,7 @@ bool ExportTemplate::save(const wxString& path)
         db->deleteFile(towstr(file_path));
     }
 
-    // -- set up the template root --
+    // set up the template root
     tango::INodeValuePtr file = db->createNodeFile(towstr(file_path));
 
     tango::INodeValuePtr kpp_template = file->createChild(L"kpp_template");
@@ -259,47 +257,47 @@ bool ExportTemplate::save(const wxString& path)
     tango::INodeValuePtr data_root = kpp_template->createChild(L"data");
 
 
-    // -- type --
+    // type
     tango::INodeValuePtr type_val = data_root->createChild(L"type");
     type_val->setInteger(m_ei.type);
 
-    // -- description --
+    // description
     tango::INodeValuePtr desc_val = data_root->createChild(L"description");
     desc_val->setString(towstr(m_ei.description));
 
-    // -- path --
+    // path
     tango::INodeValuePtr path_val = data_root->createChild(L"path");
     path_val->setString(towstr(m_ei.path));
 
-    // -- version (for package files) --
+    // version (for package files)
     tango::INodeValuePtr kpg_version_val = data_root->createChild(L"kpg_version");
     kpg_version_val->setInteger(m_ei.kpg_version);
 
-    // -- compressed (for package files) --
+    // compressed (for package files)
     tango::INodeValuePtr kpg_compressed_val = data_root->createChild(L"kpg_compressed");
     kpg_compressed_val->setBoolean(m_ei.kpg_compressed);
 
-    // -- filter --
+    // filter
     tango::INodeValuePtr filter_val = data_root->createChild(L"filter");
     filter_val->setString(towstr(m_ei.filter));
 
-    // -- server --
+    // server
     tango::INodeValuePtr server_val = data_root->createChild(L"server");
     server_val->setString(towstr(m_ei.server));
 
-    // -- port --
+    // port
     tango::INodeValuePtr port_val = data_root->createChild(L"port");
     port_val->setInteger(m_ei.port);
     
-    // -- database --
+    // database
     tango::INodeValuePtr database_val = data_root->createChild(L"database");
     database_val->setString(towstr(m_ei.database));
 
-    // -- username --
+    // username
     tango::INodeValuePtr username_val = data_root->createChild(L"username");
     username_val->setString(towstr(m_ei.username));
 
-    // -- password --
+    // password
     tango::INodeValuePtr password_val = data_root->createChild(L"password");
     if (m_ei.save_password)
     {
@@ -310,15 +308,15 @@ bool ExportTemplate::save(const wxString& path)
         password_val->setString(L"");
     }
 
-    // -- save password --
+    // save password
     tango::INodeValuePtr save_password_val = data_root->createChild(L"save_password");
     save_password_val->setBoolean(m_ei.save_password);
 
-    // -- base path (for table selection page) --
+    // base path (for table selection page
     tango::INodeValuePtr basepath_val = data_root->createChild(L"base_path");
     basepath_val->setString(towstr(m_ei.base_path));
 
-    // -- write out table info --
+    // write out table info
     tango::INodeValuePtr tables_base = data_root->createChild(L"tables");
 
     int table_counter = 0;
@@ -330,15 +328,15 @@ bool ExportTemplate::save(const wxString& path)
 
         tango::INodeValuePtr table_node = tables_base->createChild(table_buf);
 
-        // -- input tablename --
+        // input tablename
         tango::INodeValuePtr input_tn = table_node->createChild(L"input_tablename");
         input_tn->setString(towstr(table_it->input_tablename));
 
-        // -- output tablename --
+        // output tablename
         tango::INodeValuePtr output_tn = table_node->createChild(L"output_tablename");
         output_tn->setString(towstr(table_it->output_tablename));
 
-        // -- append --
+        // append
         tango::INodeValuePtr append = table_node->createChild(L"append");
         append->setBoolean(table_it->append);
     }
@@ -348,7 +346,7 @@ bool ExportTemplate::save(const wxString& path)
 
 cfw::IJobPtr ExportTemplate::execute()
 {
-    // -- check for package file export --
+    // check for package file export
     if (m_ei.type == dbtypePackage)
     {
         ExportPkgJob* job = new ExportPkgJob;
@@ -413,9 +411,6 @@ cfw::IJobPtr ExportTemplate::execute()
 
 
 
-
-// -- ExportTableSelectionPage class implementation --
-
 BEGIN_EVENT_TABLE(ExportTableSelectionPage, kcl::WizardPage)
     EVT_KCLGRID_END_EDIT(ExportTableSelectionPage::onGridEndEdit)
     EVT_KCLGRID_NEED_TOOLTIP_TEXT(ExportTableSelectionPage::onGridNeedTooltipText)
@@ -463,7 +458,7 @@ ExportTableSelectionPage::ExportTableSelectionPage(kcl::Wizard* parent,
     m_grid->setColumnSize(DEST_TABLENAME_IDX, 120);
     m_grid->setColumnSize(APPEND_IDX, 50);
 
-    // -- set our drop targets --
+    // set our drop targets
 
     kcl::GridDataObjectComposite* drop_data;
     drop_data = new kcl::GridDataObjectComposite(NULL, wxT("exporttables_list"));
@@ -496,14 +491,15 @@ ExportTableSelectionPage::ExportTableSelectionPage(kcl::Wizard* parent,
     m_last_type = dbtypeUndefined;
 }
 
-// -- wizard event handlers --
+
+// wizard event handlers
 
 void ExportTableSelectionPage::onPageChanged()
 {
     if (m_ei->type == m_last_type)
         return;
 
-    // -- handle grid layout --
+    // handle grid layout
     
     m_grid->hideAllColumns();
     
@@ -558,7 +554,7 @@ void ExportTableSelectionPage::onPageChanged()
 
     Layout();
     
-    // -- we've switch export types so delete all rows in the grid --
+    // we've switch export types so delete all rows in the grid
     
     m_grid->deleteAllRows();
     checkOverlayText();
@@ -595,7 +591,7 @@ bool ExportTableSelectionPage::onPageChanging(bool forward)
         return false;
     */
 
-    // -- populate the tables vector and attempt to begin the export --
+    // populate the tables vector and attempt to begin the export
     
     bool append_column_visible =
             (m_grid->getColumnViewIdx(APPEND_IDX)) != -1 ? true : false;
@@ -645,7 +641,7 @@ void ExportTableSelectionPage::onGridDataDropped(kcl::GridDataDropTarget* drop_t
         return;
     }
 
-    // -- we're dragging from the tree --
+    // we're dragging from the tree
     
     
     // only accept tree data objects here
@@ -677,7 +673,7 @@ void ExportTableSelectionPage::onGridDataDropped(kcl::GridDataDropTarget* drop_t
 
     DbDoc* dbdoc = g_app->getDbDoc();
 
-    // -- do error checking --
+    // do error checking
     
     int i, count = items->size();
     for (i = 0; i < count; ++i)
@@ -728,7 +724,7 @@ void ExportTableSelectionPage::onGridDataDropped(kcl::GridDataDropTarget* drop_t
         dragging_only_folders = false;
     
 
-    // -- add tables to the grid --
+    // add tables to the grid
     
     for (it = res.begin(); it != res.end(); ++it)
     {
@@ -867,7 +863,7 @@ void ExportTableSelectionPage::markProblemRow(int row, bool scroll_to)
 
 int ExportTableSelectionPage::checkDuplicateTablenames(bool mark_rows)
 {
-    // -- if we're editing, end the edit --
+    // if we're editing, end the edit
     if (m_grid->isEditing())
         m_grid->endEdit(true);
     
@@ -894,7 +890,7 @@ int ExportTableSelectionPage::checkInvalidTablenames(bool mark_rows)
     return StructureValidator::ErrorNone;
     
 /*
-    // -- if we're editing, end the edit --
+    // if we're editing, end the edit
     if (m_grid->isEditing())
         m_grid->endEdit(true);
     
@@ -938,7 +934,7 @@ void ExportTableSelectionPage::refreshGrid()
 }
 
 
-// -- DelimitedTextSettingsPage class implementation --
+// DelimitedTextSettingsPage class implementation
 
 
 BEGIN_EVENT_TABLE(ExportDelimitedTextSettingsPage, kcl::WizardPage)
@@ -965,7 +961,7 @@ ExportDelimitedTextSettingsPage::ExportDelimitedTextSettingsPage(kcl::Wizard* pa
     cfw::resizeStaticText(text);
 
 
-    // -- create main delimiters sizer --
+    // create main delimiters sizer
     
     m_comma_radio = new wxRadioButton(this,
                                       -1,
@@ -1007,7 +1003,7 @@ ExportDelimitedTextSettingsPage::ExportDelimitedTextSettingsPage(kcl::Wizard* pa
     left_options_sizer->AddSpacer(10);
 
 
-    // -- create main text qualifier sizer --
+    // create main text qualifier sizer
     
     m_doublequote_radio = new wxRadioButton(this,
                                             -1,

@@ -79,7 +79,7 @@ void PropertyBase::onPBFrameEvent(Event& evt)
 {
     if (evt.name == wxT("cfw.propertyChanged"))
     {
-        // -- identify if we are the active window or not --
+        // identify if we are the active window or not
         
         cfw::IDocumentPtr doc = this;
         
@@ -94,11 +94,11 @@ void PropertyBase::onPBFrameEvent(Event& evt)
             return;
         }
         
-        // -- update our own model --
+        // update our own model
         PropertyValue* data = static_cast<PropertyValue*>(evt.o_param);
         setProperty(evt.s_param, *data);
         
-        // -- let derived class know that a property changed --
+        // let derived class know that a property changed
         onPropertyChanged(evt.s_param);
     }
 }

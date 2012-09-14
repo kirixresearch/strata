@@ -157,8 +157,7 @@ ExtensionInfo ExtensionMgr::getInfo(const wxString& path)
     }
     
     
-    // -- simple text file extension --
-    
+    // simple text file extension
     
     ExtensionInfo info;
     info.path = path;
@@ -611,7 +610,7 @@ bool ExtensionMgr::loadEntries()
 {
     m_extensions.clear();
 
-    // -- read all data from the sysconfig --
+    // read all data from the sysconfig
     wxConfig* config = new wxConfig(APP_CONFIG_KEY, APP_COMPANY_KEY);
     config->SetPath(wxT("/Extensions"));
     

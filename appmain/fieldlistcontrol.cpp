@@ -19,7 +19,7 @@ enum
 };
 
 
-// -- utility functions --
+// utility functions
 
 wxString tango2text(int tango_type)
 {
@@ -78,7 +78,7 @@ int text2tango(const wxString& text)
 }
 
 
-// -- predicate helper function for sorting the FieldListItem class --
+// predicate helper function for sorting the FieldListItem class
 
 static bool sortByNameA(const FieldListItem& l, const FieldListItem& r)
 {
@@ -131,11 +131,11 @@ FieldListControl::FieldListControl(wxWindow* parent,
 
     m_grid->setRowHeight(m_grid->getRowHeight()-2);
 
-    // -- only show the name column by default --
+    // only show the name column by default
     showColumns(ColName);
 
 
-    // -- create main sizer --
+    // create main sizer
     
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
     main_sizer->Add(m_grid, 1, wxEXPAND);
@@ -197,7 +197,7 @@ void FieldListControl::showColumns(unsigned int col_mask,
     {
         m_grid->setOptionState(kcl::Grid::optColumnResize, true);
 
-        // -- harden the proportional size --
+        // harden the proportional size
         int col_count = m_grid->getColumnCount();
         int i;
         

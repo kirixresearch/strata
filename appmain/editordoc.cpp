@@ -125,7 +125,7 @@ public:
         StyleSetFont(wxSTC_STYLE_DEFAULT, font);
         StyleClearAll();
         
-        // -- set selection foreground and background color --
+        // set selection foreground and background color
         SetSelForeground(true, wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHTTEXT));
         SetSelBackground(true, wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT));
         
@@ -432,7 +432,7 @@ public:
         // set the line number margin width
         updateLineNumberMarginWidth();
         
-        // -- auto indent lines based on the previous line --
+        // auto indent lines based on the previous line
         
         int cur_line = GetCurrentLine();
         int line_length = LineLength(cur_line);
@@ -476,7 +476,7 @@ public:
     
     void onKeyDown(wxKeyEvent& evt)
     {
-        // -- back-tab --
+        // back-tab
         if (evt.GetKeyCode() == '\t' && evt.ShiftDown())
         {
             int sel_start = GetSelectionStart();
@@ -534,7 +534,7 @@ public:
             int anchor_pos = GetAnchor();
             wxString replace_text;
             
-            // -- selection starts or ends "outside" the line text --
+            // selection starts or ends "outside" the line text
             
             if (line_text.GetChar(offset-1) == wxT('\t'))
             {
@@ -1021,8 +1021,6 @@ EditorDoc::~EditorDoc()
 }
 
 
-// -- IDocument --
-
 bool EditorDoc::initDoc(cfw::IFramePtr frame,
                         cfw::IDocumentSitePtr doc_site,
                         wxWindow* docsite_wnd,
@@ -1047,7 +1045,7 @@ bool EditorDoc::initDoc(cfw::IFramePtr frame,
     doc_site->setBitmap(GETBMP(gf_script_16));
     
     
-    // -- create editor control --
+    // create editor control
     
     m_text = new EditorCtrl(this,
                             ID_Text,
@@ -1057,18 +1055,18 @@ bool EditorDoc::initDoc(cfw::IFramePtr frame,
     m_text->SetFont(wxFont(wxNORMAL_FONT->GetPointSize()+2, wxMODERN, wxNORMAL, wxNORMAL));
 
     
-    // -- when the cursor is moved, the status bar should be updated --
+    // when the cursor is moved, the status bar should be updated
     m_text->sigCursorMoved.connect(this, &EditorDoc::updateStatusBar);
     
-    // -- when the document becomes dirty, the title should get an * --
+    // when the document becomes dirty, the title should get an *
     m_text->sigModified.connect(this, &EditorDoc::updateCaption);
     
-    // -- when the document gets focus, check to see if the file has
-    //    been updated externally --
+    // when the document gets focus, check to see if the file has
+    // been updated externally
     m_text->sigFocus.connect(this, &EditorDoc::updateContent);
 
 
-    // -- create main sizer --
+    // create main sizer
     
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
     main_sizer->Add(m_text, 1, wxEXPAND);
@@ -1809,7 +1807,7 @@ bool EditorDoc::saveFile()
 
     if (m_external)
     {
-        // -- file is not in project, try disk filesystem --
+        // file is not in project, try disk filesystem
         xf_file_t f = xf_open(towstr(m_path), xfCreate, xfWrite, xfShareNone);
         if (!f)
         {
@@ -2333,7 +2331,7 @@ void EditorDoc::updateStatusBar()
         item = items->getItem(i);
         old_value = item->getValue();
 
-        // -- update the line number --
+        // update the line number
         if (item->getName().CmpNoCase(wxT("editordoc_line_number")) == 0)
         {
             if (line_number != old_value)
@@ -2343,7 +2341,7 @@ void EditorDoc::updateStatusBar()
             }
         }
         
-        // -- update the column number --
+        // update the column number
         if (item->getName().CmpNoCase(wxT("editordoc_column_number")) == 0)
         {
             if (column_number != old_value)
@@ -2355,8 +2353,8 @@ void EditorDoc::updateStatusBar()
     }
 
 /*
-    // -- the area we'll display the error message is a global item, so
-    //    do the lookup for that item in the statusbar --
+    // the area we'll display the error message is a global item, so
+    // do the lookup for that item in the statusbar
     item = m_frame->getStatusBar()->getItem(wxT("app_statusbar_text"));
     if (item.isOk())
     {
@@ -2369,7 +2367,7 @@ void EditorDoc::updateStatusBar()
     }
 */
 
-    // -- post an event to update the statusbar --
+    // post an event to update the statusbar
     if (update)
     {
         // refresh the statusbar
