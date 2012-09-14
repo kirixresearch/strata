@@ -3107,6 +3107,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
 
 
 
+    /*
     // change all periods to underscores
     tango::IStructurePtr os = output_set->getStructure();
     tango::IStructurePtr ms = output_set->getStructure();
@@ -3142,7 +3143,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
     {
         output_set->modifyStructure(ms, NULL);
     }
-
+    */
 
     // create iterator, done.
 
