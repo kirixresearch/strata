@@ -3451,7 +3451,15 @@ ExprElement* ExprParser::parseStringLiteral(ExprParserEnv* penv,
     
     *dest = 0;
     
-    
+    if (!*src)
+    {
+        delete v;
+        if (endloc)
+            *endloc = src;
+        return NULL;
+    }
+
+
     // check after the string content for unwanted tokens
     src++;
    
