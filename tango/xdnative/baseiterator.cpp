@@ -705,6 +705,31 @@ void BaseIterator::appendCalcFields(tango::IStructure* structure)
 }
 
 
+static void dequoteField(std::wstring& str)
+{
+    const wchar_t* pstr = str.c_str();
+    const wchar_t* period = zl_strchr((wchar_t*)pstr, '.', L"[", L"]");
+    
+    if (!period)
+    {
+        dequote(str, L'[', L']');
+        return;
+    }
+    
+    int period_pos = -1;
+    if (period)
+        period_pos = period - pstr;
+    
+    std::wstring alias = str.substr(0, period_pos);
+    std::wstring field = str.substr(period_pos+1);
+    
+    dequote(alias, L'[', L']');
+    dequote(field, L'[', L']');
+
+    str = alias + L"." + field;
+}
+
+
 bool BaseIterator::initStructure()
 {
     XCM_AUTO_LOCK(m_obj_mutex);
@@ -746,7 +771,7 @@ bool BaseIterator::initStructure()
             if (part.length() > 0 && part[0] == '[')
             {
                 std::wstring dequote_part = part;
-                dequote(dequote_part, '[', ']');
+                dequoteField(dequote_part);
                 col = m_set_structure->getColumnInfo(dequote_part);
                 if (col)
                 {

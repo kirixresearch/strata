@@ -107,25 +107,18 @@ static bool isDelimiterChar(wchar_t ch)
 
 static void dequoteField(std::wstring& str)
 {
-    // TODO: bad logic; this logic didn't account for fields with table
-    // aliases inside of aggregate functions or other expressions; e.g.:
-    //     sum([table].field)
-    //     sum(table].[field])
-    //     upper([table].[field])
-    // following is a possible solution using regexes
-
     const wchar_t* pstr = str.c_str();
     const wchar_t* period = zl_strchr((wchar_t*)pstr, '.', L"[", L"]");
-    
-    int period_pos = -1;
-    if (period)
-        period_pos = period - pstr;
     
     if (!period)
     {
         dequote(str, L'[', L']');
         return;
     }
+    
+    int period_pos = -1;
+    if (period)
+        period_pos = period - pstr;
     
     std::wstring alias = str.substr(0, period_pos);
     std::wstring field = str.substr(period_pos+1);
@@ -135,6 +128,22 @@ static void dequoteField(std::wstring& str)
 
     str = alias + L"." + field;
 }
+
+static void quoteField(std::wstring& str)
+{
+    int period_pos = str.find('.');
+    if (period_pos == -1)
+    {
+        str = L"[" + str + L"]";
+        return;
+    }
+
+    std::wstring alias = str.substr(0, period_pos);
+    std::wstring field = str.substr(period_pos+1);
+    
+    str = L"[" + alias + L"].[" + field + L"]";
+}
+
 
 static bool isSameField(const std::wstring& f1, const std::wstring& f2)
 {
@@ -2934,7 +2943,9 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         }
          else
         {
-            field_str += L"[" + f_it->name + L"]";
+            std::wstring f = f_it->name;
+            quoteField(f);
+            field_str += f;
         }
     }
 
