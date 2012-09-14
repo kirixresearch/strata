@@ -644,7 +644,17 @@ static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
             func_name == L"MIN" ||
             func_name == L"MAX")
         {
-            tango::IColumnInfoPtr colinfo = structure->getColumnInfo(param);
+            tango::IColumnInfoPtr colinfo;
+            
+            colinfo = structure->getColumnInfo(param);
+            if (colinfo.isNull())
+            {
+                // try the parameter dequoted
+                std::wstring dequoted_param = param;
+                dequote(dequoted_param, '[', ']');
+                colinfo = structure->getColumnInfo(dequoted_param);
+            }
+
             if (colinfo.isNull())
             {
                 kscript::Value* v = new kscript::Value;
@@ -698,7 +708,18 @@ static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
                   func_name == L"STDDEV" ||
                   func_name == L"VARIANCE")
         {
-            tango::IColumnInfoPtr colinfo = structure->getColumnInfo(param);
+            tango::IColumnInfoPtr colinfo;
+            
+            colinfo = structure->getColumnInfo(param);
+
+            if (colinfo.isNull())
+            {
+                // try the parameter dequoted
+                std::wstring dequoted_param = param;
+                dequote(dequoted_param, '[', ']');
+                colinfo = structure->getColumnInfo(dequoted_param);
+            }
+
             if (colinfo.isNull())
             {
                 if (param.find(L'.') != -1)
@@ -735,7 +756,18 @@ static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
         }
          else if (func_name == L"MERGE")
         {
-            tango::IColumnInfoPtr colinfo = structure->getColumnInfo(param);
+            tango::IColumnInfoPtr colinfo;
+            
+            colinfo = structure->getColumnInfo(param);
+
+            if (colinfo.isNull())
+            {
+                // try the parameter dequoted
+                std::wstring dequoted_param = param;
+                dequote(dequoted_param, '[', ']');
+                colinfo = structure->getColumnInfo(dequoted_param);
+            }
+
             if (colinfo.isNull())
             {
                 if (param.find(L'.') != -1)
