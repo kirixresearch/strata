@@ -47,8 +47,6 @@ const std::wstring empty_wstring = L"";
 
 
 
-// -- ParserBindInfo --
-
 struct ParserBindInfo
 {
     ParserBindInfo(BaseIterator* _iter, const std::wstring& _column)
@@ -56,12 +54,6 @@ struct ParserBindInfo
     std::wstring column;
     BaseIterator* iter;
 };
-
-
-
-
-
-// -- DataAccessInfo class implementation --
 
 
 DataAccessInfo::DataAccessInfo()
@@ -118,7 +110,8 @@ bool DataAccessInfo::eval(kscript::Value* result)
 
 
 
-// -- BaseIterator class implementation --
+
+
 
 BaseIterator::BaseIterator()
 {
@@ -565,6 +558,7 @@ tango::IIteratorPtr BaseIterator::getChildIterator(const std::wstring& relation_
     // if the left key was truncated at all, that
     // means that no record can be found on the right side
     // which satisfies the left expression
+
     if (info->kl->getTruncation())
     {
         return xcm::null;
@@ -1009,7 +1003,6 @@ void BaseIterator::colinfo2dai(DataAccessInfo* dai,
 }
 
 
-// -- ISetEvents implementation --
 
 void BaseIterator::onSetDomainUpdated()
 {
@@ -1041,7 +1034,8 @@ tango::ISetPtr BaseIterator::getSet()
 
 
 
-// -- aggregate function stuff --
+
+
 
 class AggregateResult
 {
@@ -1077,23 +1071,30 @@ public:
         {
             m_link_tag = expr;
             kl::trim(m_link_tag);
+            dequote(m_link_tag, '[', ']');
 
             if (m_link_tag.empty())
                 return false;
         }
          else
         {
-            int period = expr.find(L'.');
+            const wchar_t* pstr = expr.c_str();
+            const wchar_t* pperiod = zl_strchr((wchar_t*)pstr, '.', L"[", L"]");
+
+            int period_pos = pperiod ? (pperiod-pstr) : -1;
 
             // if no period was found, or it's in the wrong
             // place, the parse was bad
-            if (period <= 0)
+            if (period_pos <= 0)
                 return false;
 
-            m_link_tag.assign(expr.c_str(), period);
+            m_link_tag.assign(expr.c_str(), period_pos);
             kl::trim(m_link_tag);
+            dequote(m_link_tag, '[', ']');
 
-            column = expr.substr(period+1);
+            column = expr.substr(period_pos+1);
+            kl::trim(column);
+            dequote(column, '[', ']');
         }
 
         tango::IRelationEnumPtr rel_enum;
@@ -2884,7 +2885,7 @@ bool BaseIterator::putInteger(tango::objhandle_t column_handle,
     // check null
     if (dai->nulls_allowed)
     {
-        // -- remove the null bit, if any --
+        // remove the null bit, if any
         *(m_rowptr + dai->offset - 1) &= 0xfe;
     }
 
