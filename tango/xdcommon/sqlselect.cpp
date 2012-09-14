@@ -103,18 +103,7 @@ static bool isDelimiterChar(wchar_t ch)
 }
 
 
-static bool isSameField(const std::wstring& f1, const std::wstring& f2)
-{
-    if (0 == wcscasecmp(f1.c_str(), f2.c_str()))
-        return true;
 
-    std::wstring df1 = f1, df2 = f2;
-    
-    dequote(df1, '[', ']');
-    dequote(df2, '[', ']');
-
-    return (0 == wcscasecmp(df1.c_str(), df2.c_str()) ? true : false);
-}
 
 static void dequoteField(std::wstring& str)
 {
@@ -145,6 +134,19 @@ static void dequoteField(std::wstring& str)
     dequote(field, L'[', L']');
 
     str = alias + L"." + field;
+}
+
+static bool isSameField(const std::wstring& f1, const std::wstring& f2)
+{
+    if (0 == wcscasecmp(f1.c_str(), f2.c_str()))
+        return true;
+
+    std::wstring df1 = f1, df2 = f2;
+    
+    dequoteField(df1);
+    dequoteField(df2);
+
+    return (0 == wcscasecmp(df1.c_str(), df2.c_str()) ? true : false);
 }
 
 static bool isFunction(const std::wstring& str, const std::wstring& func)
