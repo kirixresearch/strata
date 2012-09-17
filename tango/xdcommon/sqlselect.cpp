@@ -2468,6 +2468,8 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         for (it = group_by_fields.begin();
              it != group_by_fields.end(); ++it)
         {
+            dequoteField(*it);
+
             tango::IColumnInfoPtr colinfo;
             colinfo = getColumnInfoMulti(source_tables, *it);
             
@@ -2877,7 +2879,18 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
             if (!f_it->expr.empty())
             {
                 field_str += L"=";
-                field_str += f_it->expr;
+
+                if (isSameField(f_it->expr, f_it->name))
+                {
+                    field_str += f_it->name; // use unquoted variety after equals sign;
+                                             // note something more substantial will be
+                                             // needed for select max(alias.[fieldname])
+                                             // to convert it to max([alias.fieldname])
+                }
+                 else
+                {
+                    field_str += f_it->expr;
+                }
             }
         }
 
