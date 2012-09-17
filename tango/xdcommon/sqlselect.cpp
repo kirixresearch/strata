@@ -50,7 +50,6 @@ struct SelectField
 struct OrderByField
 {
     std::wstring name;
-    std::wstring input_name;
     bool descending;
 };
 
@@ -2537,13 +2536,17 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
             dequoteField(*it);
             f.name = *it;
 
+            if (p_group_by)
+            {
+                order_by_fields.push_back(f);
+                continue;
+            }
+
             colinfo = getColumnInfoMulti(source_tables, *it);
             
             if (colinfo.isOk())
             {
-                f.input_name = colinfo->getName();
                 order_by_fields.push_back(f);
-                continue;
             }
              else
             {
@@ -2557,10 +2560,10 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
                 std::vector<SelectField>::iterator sf_it;
                 for (sf_it = fields.begin(); sf_it != fields.end(); ++sf_it)
                 {
-                    if (wcscasecmp(sf_it->name.c_str(), normalized.c_str()) == 0)
+                    if (isSameField(sf_it->name, f.name))
                     {
-                        real_field_name = normalizeFieldNames(source_tables, sf_it->expr);
-                        dequote(real_field_name, '[', ']');
+                        real_field_name = sf_it->expr;
+                        dequoteField(real_field_name);
                         break;
                     }
                 }
@@ -2574,7 +2577,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
                     return xcm::null;
                 }
 
-                f.input_name = real_field_name;
+                f.name = real_field_name;
                 order_by_fields.push_back(f);
             }
         }
@@ -2590,7 +2593,6 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
              o_it != order_by_fields.end(); ++o_it)
         {
             o_it->name = normalizeFieldNames(source_tables, o_it->name);
-            o_it->input_name = normalizeFieldNames(source_tables, o_it->input_name);
         }
 
         std::vector<std::wstring>::iterator g_it;
@@ -2977,15 +2979,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         // grouping operation already renamed the field
         // to it's final output name
 
-        if (p_group_by || group_operation || join_operation)
-        {
-            order_by_str += L"[" + order_by_it->name + L"]";
-        }
-         else
-        {
-            order_by_str += L"[" + order_by_it->input_name + L"]";
-        }
-
+        order_by_str += L"[" + order_by_it->name + L"]";
 
         if (order_by_it->descending)
         {
