@@ -210,6 +210,8 @@ Pen::Pen(const Color& color, int width, int style)
     m_color = color;
     m_width = width;
     m_style = style;
+    m_cap = wxCAP_BUTT;
+    m_miter = wxJOIN_MITER;    
 }
 
 Pen::~Pen()
