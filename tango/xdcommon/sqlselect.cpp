@@ -1711,6 +1711,8 @@ static tango::ISetPtr doJoin(tango::IDatabasePtr db,
             }
         }
 
+        dequoteField(jf.name);
+
         // get the column info for the join field
         colinfo = getColumnInfoMulti(source_tables, jf.name, &src_table);
         if (colinfo.isNull() || !src_table)
@@ -2937,15 +2939,28 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         
         if (!f_it->expr.empty() && !isSameField(f_it->expr, f_it->name))
         {
-            field_str += f_it->expr;
-            field_str += L" AS ";
-            field_str += L"[" + f_it->name + L"]";
+            std::wstring f = f_it->expr;
+            tango::IColumnInfoPtr colinfo = getColumnInfoMulti(source_tables, f);
+            if (colinfo.isOk())
+            {
+                dequoteField(f);
+                field_str += L"[" + f + L"]";
+                field_str += L" AS ";
+                field_str += L"[" + f_it->name + L"]";
+            }
+             else
+            {
+                field_str += f_it->expr;
+                field_str += L" AS ";
+                field_str += L"[" + f_it->name + L"]";
+            }
         }
          else
         {
             std::wstring f = f_it->name;
-            quoteField(f);
-            field_str += f;
+            dequoteField(f);
+
+            field_str += L"[" + f + L"]";
         }
     }
 
