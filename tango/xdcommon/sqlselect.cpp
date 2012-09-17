@@ -2977,7 +2977,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         // grouping operation already renamed the field
         // to it's final output name
 
-        if (p_group_by || group_operation)
+        if (p_group_by || group_operation || join_operation)
         {
             order_by_str += L"[" + order_by_it->name + L"]";
         }
