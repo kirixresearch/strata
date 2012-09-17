@@ -7137,7 +7137,7 @@ ExprParser::ExprParser(unsigned int flags)
 #ifdef _DEBUG
     m_max_depth = 700;
 #else
-    m_max_depth = 5000;
+    m_max_depth = 2000;
 #endif
     m_current_depth = 0;
 
