@@ -230,6 +230,7 @@ private:
     std::wstring getTempFileDirectory();
     std::wstring getDefinitionDirectory();
     
+    void setAttributes(HDBC connection = NULL);
     
 private:
 

@@ -765,7 +765,6 @@ OdbcDatabase::OdbcDatabase()
     m_password = L"";
     
     m_attr = static_cast<tango::IAttributes*>(new DatabaseAttributes);
-
 }
 
 OdbcDatabase::~OdbcDatabase()
@@ -910,6 +909,129 @@ std::wstring OdbcDatabase::getDefinitionDirectory()
     return result;
 }
 
+void OdbcDatabase::setAttributes(HDBC connection)
+{
+    std::wstring kws = sql92_keywords;
+
+    if (m_db_type == tango::dbtypeAccess)
+    {
+        kws += L",";
+        kws += access_keywords;
+
+        m_attr->setIntAttribute(tango::dbattrColumnMaxNameLength, 64);
+        m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 64);
+        m_attr->setStringAttribute(tango::dbattrColumnInvalidChars, L"./\":!#&-`*[]");
+        m_attr->setStringAttribute(tango::dbattrTableInvalidChars, L"./\":!#&-`*[]");
+        m_attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars, L" ");
+        m_attr->setStringAttribute(tango::dbattrTableInvalidStartingChars, L" ");
+        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"[");
+        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"]");
+        m_attr->setStringAttribute(tango::dbattrIdentifierCharsNeedingQuote, L"");        
+    }
+     else if (m_db_type == tango::dbtypeExcel)
+    {
+        kws += L",";
+        kws += excel_keywords;
+
+        m_attr->setIntAttribute(tango::dbattrColumnMaxNameLength, 31);
+        m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 31);
+        m_attr->setStringAttribute(tango::dbattrColumnInvalidChars, L":\\/?*[]");
+        m_attr->setStringAttribute(tango::dbattrTableInvalidChars, L":\\/?*[]");
+        m_attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars, L" ");
+        m_attr->setStringAttribute(tango::dbattrTableInvalidStartingChars, L" ");
+        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"[");
+        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"]");
+        m_attr->setStringAttribute(tango::dbattrIdentifierCharsNeedingQuote, L"");        
+    }
+     else if (m_db_type == tango::dbtypeMySql)
+    {
+        // illegal characters in a table name include \/. and characters illegal
+        // in filenames, the superset of which includes: \/:*?<>|    
+    
+        kws += L",";
+        kws += mysql_keywords;
+
+        m_attr->setIntAttribute(tango::dbattrColumnMaxNameLength, 64);
+        m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 64);
+        m_attr->setStringAttribute(tango::dbattrColumnInvalidChars, 
+                                   L"\\./\x00\xFF");
+        m_attr->setStringAttribute(tango::dbattrTableInvalidChars, 
+                                   L"\\./:*?<>|\x00\xFF");
+        m_attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars,
+                                   L"\\./\x00\xFF");
+        m_attr->setStringAttribute(tango::dbattrTableInvalidStartingChars,
+                                   L"\\./:*?<>|\x00\xFF");                               
+        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"`");
+        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"`");
+        m_attr->setStringAttribute(tango::dbattrIdentifierCharsNeedingQuote, L"`~# $!@%^&(){}-+.");
+    }
+     else if (m_db_type == tango::dbtypeSqlServer)
+    {
+        kws += L",";
+        kws += sqlserver_keywords;
+        kws += L",";
+        kws += sqlserver_keywords2;
+
+        m_attr->setIntAttribute(tango::dbattrColumnMaxNameLength, 128);
+        m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 128);
+        m_attr->setStringAttribute(tango::dbattrColumnInvalidChars, L"");
+        m_attr->setStringAttribute(tango::dbattrTableInvalidChars, L"");
+        m_attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars, L" ");
+        m_attr->setStringAttribute(tango::dbattrTableInvalidStartingChars, L" ");
+        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"[");
+        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"]");
+        m_attr->setStringAttribute(tango::dbattrIdentifierCharsNeedingQuote, L"");        
+    }
+	 else if (m_db_type == tango::dbtypePostgres)
+    {
+        kws += L",";
+        kws += sqlserver_keywords;
+        kws += L",";
+        kws += sqlserver_keywords2;
+
+        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"\"");
+        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"\"");
+    }
+     else
+    {
+        if (connection)
+        {
+            // we don't know the attributes; get them from the connection info
+            SQLRETURN retval;
+            SQLTCHAR dbms_quote[16];
+            std::wstring dbms_quote_str;
+            short out_length = 0;
+        
+            retval = SQLGetInfo(m_conn, SQL_IDENTIFIER_QUOTE_CHAR, dbms_quote, 16, &out_length);;
+            dbms_quote_str = sql2wstring(dbms_quote);
+
+            m_attr->setStringAttribute(tango::dbattrColumnInvalidChars, 
+                                       L"\\./\x00\xFF");
+            m_attr->setStringAttribute(tango::dbattrTableInvalidChars,
+                                       L"\\./:*?<>|\x00\xFF");
+            m_attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars,
+                                       L"\\./\x00\xFF");
+            m_attr->setStringAttribute(tango::dbattrTableInvalidStartingChars,
+                                       L"\\./:*?<>|\x00\xFF");
+
+            m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, dbms_quote_str);
+            m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, dbms_quote_str);
+            m_attr->setStringAttribute(tango::dbattrIdentifierCharsNeedingQuote, L"`~# $!@%^&(){}-+.");
+        }
+         else
+        {
+            // set default quote identifiers to nothing, so that if we don't 
+            // explicitly know the quote identifier (e.g. some ODBC drivers), 
+            // SQL statements using quote identifiers will still work in most 
+            // cases
+            m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"");
+            m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"");
+        }
+    }
+
+    m_attr->setStringAttribute(tango::dbattrKeywords, kws);
+    m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 32);
+}
 
 bool OdbcDatabase::open(int type,
                         const std::wstring& server,
@@ -1228,12 +1350,15 @@ bool OdbcDatabase::open(int type,
     
 
     setDatabaseName(db_label_buf);
+    setAttributes(m_conn);
 
     m_port = port;
     m_server = server;
     m_username = username;
     m_password = password;
     m_path = path;
+
+    // set the database attributes
 
     return true;
 }
@@ -1324,100 +1449,6 @@ std::wstring OdbcDatabase::getActiveUid()
 
 tango::IAttributesPtr OdbcDatabase::getAttributes()
 {
-    std::wstring kws = sql92_keywords;
-
-    if (m_db_type == tango::dbtypeAccess)
-    {
-        kws += L",";
-        kws += access_keywords;
-
-        m_attr->setIntAttribute(tango::dbattrColumnMaxNameLength, 64);
-        m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 64);
-        m_attr->setStringAttribute(tango::dbattrColumnInvalidChars, L"./\":!#&-`*[]");
-        m_attr->setStringAttribute(tango::dbattrTableInvalidChars, L"./\":!#&-`*[]");
-        m_attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars, L" ");
-        m_attr->setStringAttribute(tango::dbattrTableInvalidStartingChars, L" ");
-        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"[");
-        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"]");
-        m_attr->setStringAttribute(tango::dbattrIdentifierCharsNeedingQuote, L"");        
-    }
-     else if (m_db_type == tango::dbtypeExcel)
-    {
-        kws += L",";
-        kws += excel_keywords;
-
-        m_attr->setIntAttribute(tango::dbattrColumnMaxNameLength, 31);
-        m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 31);
-        m_attr->setStringAttribute(tango::dbattrColumnInvalidChars, L":\\/?*[]");
-        m_attr->setStringAttribute(tango::dbattrTableInvalidChars, L":\\/?*[]");
-        m_attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars, L" ");
-        m_attr->setStringAttribute(tango::dbattrTableInvalidStartingChars, L" ");
-        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"[");
-        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"]");
-        m_attr->setStringAttribute(tango::dbattrIdentifierCharsNeedingQuote, L"");        
-    }
-     else if (m_db_type == tango::dbtypeMySql)
-    {
-        // illegal characters in a table name include \/. and characters illegal
-        // in filenames, the superset of which includes: \/:*?<>|    
-    
-        kws += L",";
-        kws += mysql_keywords;
-
-        m_attr->setIntAttribute(tango::dbattrColumnMaxNameLength, 64);
-        m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 64);
-        m_attr->setStringAttribute(tango::dbattrColumnInvalidChars, 
-                                   L"\\./\x00\xFF");
-        m_attr->setStringAttribute(tango::dbattrTableInvalidChars, 
-                                   L"\\./:*?<>|\x00\xFF");
-        m_attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars,
-                                   L"\\./\x00\xFF");
-        m_attr->setStringAttribute(tango::dbattrTableInvalidStartingChars,
-                                   L"\\./:*?<>|\x00\xFF");                               
-        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"`");
-        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"`");
-        m_attr->setStringAttribute(tango::dbattrIdentifierCharsNeedingQuote, L"`~# $!@%^&(){}-+.");
-    }
-     else if (m_db_type == tango::dbtypeSqlServer)
-    {
-        kws += L",";
-        kws += sqlserver_keywords;
-        kws += L",";
-        kws += sqlserver_keywords2;
-
-        m_attr->setIntAttribute(tango::dbattrColumnMaxNameLength, 128);
-        m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 128);
-        m_attr->setStringAttribute(tango::dbattrColumnInvalidChars, L"");
-        m_attr->setStringAttribute(tango::dbattrTableInvalidChars, L"");
-        m_attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars, L" ");
-        m_attr->setStringAttribute(tango::dbattrTableInvalidStartingChars, L" ");
-        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"[");
-        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"]");
-        m_attr->setStringAttribute(tango::dbattrIdentifierCharsNeedingQuote, L"");        
-    }
-	 else if (m_db_type == tango::dbtypePostgres)
-    {
-        kws += L",";
-        kws += sqlserver_keywords;
-        kws += L",";
-        kws += sqlserver_keywords2;
-
-        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"\"");
-        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"\"");
-    }
-     else
-    {
-        // set default quote identifiers to nothing, so that if we don't 
-        // explicitly know the quote identifier (e.g. some ODBC drivers), 
-        // SQL statements using quote identifiers will still work in most 
-        // cases
-        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"");
-        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"");
-    }
-
-    m_attr->setStringAttribute(tango::dbattrKeywords, kws);
-    m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 32);
-    
     return m_attr;
 }
 
