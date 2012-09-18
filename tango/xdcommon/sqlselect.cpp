@@ -517,6 +517,64 @@ static std::wstring normalizeFieldNames(std::vector<SourceTable>& source_tables,
 }
                                 
 
+
+static std::wstring renameJoinFields(std::vector<SourceTable>& source_tables,
+                                     const std::wstring& expr)
+{
+    // when a fieldname is unique, replace the fully qualified fieldname
+    // with just the fieldname; e.g:
+    //     alias.fieldname => fieldname
+    //     alias.[fieldname] => [fieldname]
+    //     [alias].fieldname => fieldname
+    //     [alias].[fieldname] => [fieldname]
+
+    std::wstring result = expr;
+    std::vector<SourceTable>::iterator st_it;
+    std::wstring temps;
+    
+    for (st_it = source_tables.begin();
+         st_it != source_tables.end();
+         ++st_it)
+    {
+        int i, col_count = st_it->structure->getColumnCount();
+        
+        for (i = 0; i < col_count; ++i)
+        {
+            std::wstring full_name;
+            std::wstring colname = st_it->structure->getColumnName(i);
+            std::wstring q_colname = L"[" + colname + L"]";
+            std::wstring replace_with = L"[" + st_it->alias + L"." + colname + L"]";
+     
+            // replace alias.fieldname with [alias.fieldname]
+            full_name = st_it->alias;
+            full_name += L".";
+            full_name += colname;
+            result = exprReplaceToken(result, full_name, replace_with);
+                
+            // replace [alias].fieldname with [alias.fieldname]
+            full_name = L"[" + st_it->alias + L"]";
+            full_name += L".";
+            full_name += colname;
+            result = exprReplaceToken(result, full_name, replace_with);
+
+            // replace alias.[fieldname] with [alias.fieldname]
+            full_name = st_it->alias;
+            full_name += L".";
+            full_name += q_colname;
+            result = exprReplaceToken(result, full_name, replace_with);
+
+            // replace [alias].[fieldname] with [alias.fieldname]
+            full_name = L"[" + st_it->alias + L"]";
+            full_name += L".";
+            full_name += q_colname;
+            result = exprReplaceToken(result, full_name, replace_with);
+        }
+    }
+
+    return result;
+}
+
+
 static void normalizeFieldNames(std::vector<SourceTable>& source_tables,
                                 std::vector<SelectField>& fields)
 {
@@ -2461,6 +2519,8 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
     
     if (p_group_by)
     {
+        group_operation = true;
+
         std::vector<std::wstring>::iterator it;
 
         kl::parseDelimitedList(p_group_by, group_by_fields, L',', true);
@@ -2661,7 +2721,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
     if (where_cond.length() > 0 && !join_operation)
         phase_count++;
 
-    if (p_group_by || group_operation)
+    if (group_operation)
         phase_count++;
 
     if (order_by_fields.size() > 0)
@@ -2843,7 +2903,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
 
     // do grouping operation (if necessary)
 
-    if (p_group_by || group_operation)
+    if (group_operation)
     {
         std::wstring group_by_str;
         
@@ -2856,7 +2916,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
                 if (!group_by_str.empty())
                     group_by_str += L",";
 
-                group_by_str += *g_it;
+                group_by_str += L"[" + *g_it + L"]";
             }
 
             if (group_by_str.length() == 0)
@@ -2880,12 +2940,9 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
             {
                 field_str += L"=";
 
-                if (isSameField(f_it->expr, f_it->name))
+                if (join_operation)
                 {
-                    field_str += f_it->name; // use unquoted variety after equals sign;
-                                             // note something more substantial will be
-                                             // needed for select max(alias.[fieldname])
-                                             // to convert it to max([alias.fieldname])
+                    field_str += renameJoinFields(source_tables, f_it->expr);
                 }
                  else
                 {
