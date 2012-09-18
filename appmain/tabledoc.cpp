@@ -8352,9 +8352,7 @@ void TableDoc::onDeleteRecords(wxCommandEvent& evt)
 void TableDoc::showReplacePanel(const wxString& def_condition, const wxString& def_field)
 {
     if (!g_app->getAppController()->doReadOnlyCheck())
-    {
         return;
-    }
 
     cfw::IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("UpdatePanel"));

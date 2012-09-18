@@ -194,6 +194,10 @@ bool StructureDoc::doSave()
     if (m_grid->isEditing())
         m_grid->endEdit(true);
 
+    // do a read-only check
+    if (!g_app->getAppController()->doReadOnlyCheck())
+        return false;
+
     // make sure everthing checks out
     if (!doErrorCheck())
         return false;
