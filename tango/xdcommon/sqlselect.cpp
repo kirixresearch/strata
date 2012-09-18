@@ -1441,6 +1441,7 @@ static void joinIterLoop(tango::IIterator* left,
 static tango::ISetPtr doJoin(tango::IDatabasePtr db, 
                              std::vector<SourceTable>& source_tables,
                              std::vector<SelectField>& columns,
+                             std::vector<std::wstring>& group_by_fields,
                              const std::wstring& where,
                              tango::IJob* job)
 {
@@ -1630,9 +1631,7 @@ static tango::ISetPtr doJoin(tango::IDatabasePtr db,
 
         if (jit->right_iter.isNull())
             return xcm::null;
-            
-            
-            
+        
         // now prepare the right side's key
         jit->right_key.setKeyExpr(jit->right_iter, right_sort);
     }
@@ -1721,6 +1720,8 @@ static tango::ISetPtr doJoin(tango::IDatabasePtr db,
     // populate join fields vector
 
     std::vector<SelectField>::iterator sf_it;
+    std::vector<JoinField>::iterator jf_it;
+
     for (sf_it = columns.begin(); sf_it != columns.end(); ++sf_it)
     {
         // this stuff is not really done; what needs to happen is the join
@@ -1731,8 +1732,6 @@ static tango::ISetPtr doJoin(tango::IDatabasePtr db,
 
         JoinField jf;
         jf.name = sf_it->expr;
-        //if (jf.name.empty())
-        //    jf.name = sf_it->name;
         jf.source_handle = 0;
         jf.dest_handle = 0;
 
@@ -1740,10 +1739,6 @@ static tango::ISetPtr doJoin(tango::IDatabasePtr db,
         {
             jf.alias = sf_it->name;
         }
-
-
-        SourceTable* src_table = NULL;
-        tango::IColumnInfoPtr colinfo;
 
         // this is a temporary measure
         if (isGroupFunction(sf_it->name))
@@ -1770,26 +1765,53 @@ static tango::ISetPtr doJoin(tango::IDatabasePtr db,
 
         dequoteField(jf.name);
 
+        jfields.push_back(jf);
+    }
+
+
+    // make sure group fields are in output -- we will need this
+    // in the output for the grouping operation, which
+    // is executed after the join
+
+    std::vector<std::wstring>::iterator g_it;
+    for (g_it = group_by_fields.begin();
+         g_it != group_by_fields.end(); ++g_it)
+    {
+        JoinField jf;
+        jf.name = *g_it;
+        jf.source_handle = 0;
+        jf.dest_handle = 0;
+
+        dequoteField(jf.name);
+        jfields.push_back(jf);
+    }
+
+
+    for (jf_it = jfields.begin(); jf_it != jfields.end(); ++jf_it)
+    {
+        SourceTable* src_table = NULL;
+        tango::IColumnInfoPtr colinfo;
+
         // get the column info for the join field
-        colinfo = getColumnInfoMulti(source_tables, jf.name, &src_table);
+        colinfo = getColumnInfoMulti(source_tables, jf_it->name, &src_table);
         if (colinfo.isNull() || !src_table)
         {
             return xcm::null;
         }
 
 
-        jf.type = colinfo->getType();
-        jf.width = colinfo->getWidth();
-        jf.scale = colinfo->getScale();
+        jf_it->type = colinfo->getType();
+        jf_it->width = colinfo->getWidth();
+        jf_it->scale = colinfo->getScale();
 
-        jf.orig_name = colinfo->getName();
-        jf.source_table = src_table;
+        jf_it->orig_name = colinfo->getName();
+        jf_it->source_table = src_table;
 
         // find join field's source iterator
 
         if (src_table->set == left)
         {
-            jf.source_iter = left_iter;
+            jf_it->source_iter = left_iter;
         }
          else
         {
@@ -1797,25 +1819,26 @@ static tango::ISetPtr doJoin(tango::IDatabasePtr db,
             {
                 if (src_table->set == jit->right_set)
                 {
-                    jf.source_iter = jit->right_iter;
+                    jf_it->source_iter = jit->right_iter;
                     break;
                 }
             }
         }
 
-        if (jf.source_iter.isNull())
+        if (jf_it->source_iter.isNull())
             return xcm::null;
 
         // get our source handle
-        jf.source_handle = jf.source_iter->getHandle(colinfo->getName());
-
-        jfields.push_back(jf);
+        jf_it->source_handle = jf_it->source_iter->getHandle(colinfo->getName());
     }
+
+
+
 
     // create output structure
     tango::IStructurePtr output_structure = db->createStructure();
 
-    std::vector<JoinField>::iterator jf_it;
+
     for (jf_it = jfields.begin(); jf_it != jfields.end(); ++jf_it)
     {
         tango::IColumnInfoPtr colinfo = output_structure->createColumn();
@@ -2767,6 +2790,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         set = doJoin(static_cast<tango::IDatabase*>(db),
                      source_tables,
                      fields,
+                     group_by_fields,
                      where_cond,
                      job);
 
