@@ -709,7 +709,8 @@ DataSourceSelectionPage::DataSourceSelectionPage(kcl::Wizard* parent,
                            kcl::Grid::optVertGridLines |
                            kcl::Grid::optColumnMove |
                            kcl::Grid::optColumnResize |
-                           kcl::Grid::optSelect, false);
+                           kcl::Grid::optSelect |
+                           kcl::Grid::optActivateHyperlinks, false);
     m_grid->createModelColumn(-1, _("Data Source"), kcl::Grid::typeCharacter, 256, 0);
     m_grid->createModelColumn(-1, _("Description"), kcl::Grid::typeCharacter, 1024, 0);
     m_grid->setRowLabelSize(0);

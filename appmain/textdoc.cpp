@@ -375,7 +375,8 @@ bool TextDoc::initDoc(cfw::IFramePtr frame,
     m_grid->setOptionState(kcl::Grid::optColumnMove |
                            kcl::Grid::optHorzGridLines |
                            kcl::Grid::optEdit |
-                           kcl::Grid::optSelect,
+                           kcl::Grid::optSelect |
+                           kcl::Grid::optActivateHyperlinks,
                            false);
     m_grid->setOptionState(kcl::Grid::optCaptionsEditable |
                            kcl::Grid::optSingleClickEdit, true);

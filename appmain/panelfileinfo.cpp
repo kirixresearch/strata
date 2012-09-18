@@ -295,7 +295,8 @@ bool MultiFileInfoPanel::initDoc(cfw::IFramePtr frame,
                            kcl::Grid::optColumnMove |
                            kcl::Grid::optColumnResize |
                            kcl::Grid::optEdit |
-                           kcl::Grid::optSelect, false);
+                           kcl::Grid::optSelect |
+                           kcl::Grid::optActivateHyperlinks, false);
     m_grid->setOptionState(kcl::Grid::optContinuousScrolling, true);
     m_grid->setCursorVisible(false);
     m_grid->setBorderType(kcl::DEFAULT_BORDER);

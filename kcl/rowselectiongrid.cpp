@@ -81,7 +81,8 @@ RowSelectionGrid::RowSelectionGrid(wxWindow* parent,
                    kcl::Grid::optColumnMove |
                    kcl::Grid::optGhostRow |
                    kcl::Grid::optInvalidAreaClickable |
-                   kcl::Grid::optSelect, false);
+                   kcl::Grid::optSelect |
+                   kcl::Grid::optActivateHyperlinks, false);
                        
     setOptionState(kcl::Grid::optContinuousScrolling |
                    kcl::Grid::optSelectionList |

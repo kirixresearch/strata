@@ -194,8 +194,6 @@ static wxTreeItemId getNextVisibleItem(CfwTreeCtrl* tree, wxTreeItemId item)
 
 static wxTreeItemId getPrevVisibleItem(CfwTreeCtrl* tree, wxTreeItemId item)
 {
-    wxTreeItemIdValue cookie;
-
     wxTreeItemId t;
     t = tree->GetPrevSibling(item);
     if (!t.IsOk())

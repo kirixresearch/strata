@@ -579,22 +579,23 @@ public:
 
     enum GridOption
     {
-        optSelect = 0x0001,
-        optEdit = 0x0002,
-        optColumnMove = 0x0004,
-        optColumnResize = 0x0008,
-        optRowResize = 0x0010,
-        optHorzGridLines = 0x0020,
-        optVertGridLines = 0x0040,
-        optGhostRow = 0x0080,
-        optContinuousScrolling = 0x0100,
-        optEditBoxBorder = 0x0200,
-        optSingleClickEdit = 0x0400,
-        optSelectionList = 0x0800,
-        optInvalidAreaClickable = 0x1000,
-        optCaptionsEditable = 0x2000,
-        optFullGreenbar = 0x4000,
-        optCursorRowMarker = 0x8000
+        optSelect = 0x00001,
+        optEdit = 0x00002,
+        optColumnMove = 0x00004,
+        optColumnResize = 0x00008,
+        optRowResize = 0x00010,
+        optHorzGridLines = 0x00020,
+        optVertGridLines = 0x00040,
+        optGhostRow = 0x00080,
+        optContinuousScrolling = 0x00100,
+        optEditBoxBorder = 0x00200,
+        optSingleClickEdit = 0x00400,
+        optSelectionList = 0x00800,
+        optInvalidAreaClickable = 0x01000,
+        optCaptionsEditable = 0x02000,
+        optFullGreenbar = 0x04000,
+        optCursorRowMarker = 0x08000,
+        optActivateHyperlinks = 0x10000
     };
 
     enum GridVisibleState

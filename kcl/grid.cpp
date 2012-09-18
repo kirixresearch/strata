@@ -1523,7 +1523,8 @@ void Grid::construct()
                 optColumnResize |
                 optRowResize |
                 optHorzGridLines |
-                optVertGridLines;
+                optVertGridLines |
+                optActivateHyperlinks;
     m_cursor_type = cursorNormal;
     m_rowlabel_width = 12;
     m_border_type = wxNO_BORDER;
@@ -5015,18 +5016,20 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
                     }
 
 
-                    // identify urls
+                    // identify urls; if the hyperlink option is active,
+                    // them draw them with a special font
                     bool is_url = false;
-                    int url_pos = text.Find(wxT("://"));
-                    if (url_pos >= 4 && url_pos <= 10)
+                    if (m_options & optActivateHyperlinks)
                     {
-                        // text is a url
-                        is_url = true;
-                        fgcolor = wxColour(0,0,255);
-                        m_memdc.SetFont(m_underlined_font);
+                        int url_pos = text.Find(wxT("://"));
+                        if (url_pos >= 4 && url_pos <= 10)
+                        {
+                            // text is a url
+                            is_url = true;
+                            fgcolor = wxColour(0,0,255);
+                            m_memdc.SetFont(m_underlined_font);
+                        }
                     }
-
-
 
                     int text_width, text_height;
                     int textx, texty;
@@ -7302,15 +7305,21 @@ void Grid::onMouse(wxMouseEvent& event)
                 {
                     wxString cell_str = getCellString(row, model_col);
                     
-                    int url_pos = cell_str.Find(wxT("://"));
-                    if (url_pos >= 4 && url_pos <= 10)
+                    // if the hyperlink option is active and we find something
+                    // that looks like a hyperlink, then trigger a left-click
+                    // event on a link if the link is clicked on
+                    if (m_options & optActivateHyperlinks)
                     {
-                        GridEvent evt;
-                        evt.SetColumn(model_col);
-                        evt.SetRow(row);
-                        evt.SetString(cell_str);
-                        evt.SetUserEvent(true);
-                        fireEvent(wxEVT_KCLGRID_LINK_LEFTCLICK, evt);
+                        int url_pos = cell_str.Find(wxT("://"));
+                        if (url_pos >= 4 && url_pos <= 10)
+                        {
+                            GridEvent evt;
+                            evt.SetColumn(model_col);
+                            evt.SetRow(row);
+                            evt.SetString(cell_str);
+                            evt.SetUserEvent(true);
+                            fireEvent(wxEVT_KCLGRID_LINK_LEFTCLICK, evt);
+                        }
                     }
                 }
             }
@@ -7443,16 +7452,22 @@ void Grid::onMouse(wxMouseEvent& event)
         if (row != -1 && model_col != -1)
         {
             wxString cell_str = getCellString(row, model_col);
-            
-            int url_pos = cell_str.Find(wxT("://"));
-            if (url_pos >= 4 && url_pos <= 10)
+
+            // if the hyperlink option is active and we find something
+            // that looks like a hyperlink, then trigger a left-click
+            // event on a link if the link is clicked on
+            if (m_options & optActivateHyperlinks)
             {
-                GridEvent evt;
-                evt.SetColumn(model_col);
-                evt.SetRow(row);
-                evt.SetString(cell_str);
-                evt.SetUserEvent(true);
-                fireEvent(wxEVT_KCLGRID_LINK_MIDDLECLICK, evt);
+                int url_pos = cell_str.Find(wxT("://"));
+                if (url_pos >= 4 && url_pos <= 10)
+                {
+                    GridEvent evt;
+                    evt.SetColumn(model_col);
+                    evt.SetRow(row);
+                    evt.SetString(cell_str);
+                    evt.SetUserEvent(true);
+                    fireEvent(wxEVT_KCLGRID_LINK_MIDDLECLICK, evt);
+                }
             }
         }
     }
@@ -8249,17 +8264,20 @@ void Grid::onMouse(wxMouseEvent& event)
                 int model_col = getColumnModelIdx(col);
                 if (model_col != -1)
                 {
-                    wxString text = getCellString(row, model_col);
-                    int url_pos = text.Find(wxT("://"));
-                    if (url_pos >= 4 && url_pos <= 10)
+                    // if the user is hovering over a hyperlink, show an
+                    // appropriate cursor
+                    if (m_options & optActivateHyperlinks)
                     {
-                        cursor = wxCursor(wxCURSOR_HAND);
+                        wxString text = getCellString(row, model_col);
+                        int url_pos = text.Find(wxT("://"));
+                        if (url_pos >= 4 && url_pos <= 10)
+                        {
+                            cursor = wxCursor(wxCURSOR_HAND);
+                        }
                     }
                 }
             }
-            
         }
-
 
 
         SetCursor(cursor);
