@@ -1838,7 +1838,6 @@ static tango::ISetPtr doJoin(tango::IDatabasePtr db,
     // create output structure
     tango::IStructurePtr output_structure = db->createStructure();
 
-
     for (jf_it = jfields.begin(); jf_it != jfields.end(); ++jf_it)
     {
         tango::IColumnInfoPtr colinfo = output_structure->createColumn();
@@ -2128,6 +2127,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
     wchar_t* p_order_by = zl_stristr(command, L"ORDER BY", true, true);
     wchar_t* p_into = zl_stristr(command, L"INTO", true, true);
     wchar_t* p_distinct = zl_stristr(command, L"DISTINCT", true,true);
+    wchar_t* p_join = zl_stristr(command, L"JOIN", true,true);
 
     if (p_select)
     {
@@ -2201,6 +2201,13 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
     {
         // WHERE clause can't be before FROM
         error.setError(tango::errorSyntax, L"Invalid syntax; WHERE clause is before FROM clause");        
+        return xcm::null;
+    }
+    
+    if (p_where && p_where < p_join)
+    {
+        // WHERE clause can't be before FROM
+        error.setError(tango::errorSyntax, L"Invalid syntax; WHERE clause is before JOIN clause");        
         return xcm::null;
     }
     
