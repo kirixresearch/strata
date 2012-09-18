@@ -2898,7 +2898,13 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         {
             error.setError(tango::errorGeneral, L"Unable to process JOIN statement");
             return xcm::null;
-        }                     
+        }
+
+        std::vector<SelectField>::iterator f_it;
+        for (f_it = fields.begin(); f_it != fields.end(); ++f_it)
+        {
+            f_it->expr = renameJoinFields(source_tables, f_it->expr);
+        }
     }
 
     if (set.isNull())
@@ -3063,15 +3069,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
             if (!f_it->expr.empty())
             {
                 field_str += L"=";
-
-                if (join_operation)
-                {
-                    field_str += renameJoinFields(source_tables, f_it->expr);
-                }
-                 else
-                {
-                    field_str += f_it->expr;
-                }
+                field_str += f_it->expr;
             }
         }
 
