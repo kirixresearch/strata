@@ -172,7 +172,15 @@ inline void doCopy(tango::IRowInserter* dest,
 
                 case tango::typeBoolean:
                 {
-                    dest->putBoolean(ci.dest_handle, src->getString(ci.src_handle) == "T" ? true : false);
+                    // get the value and convert it to upper for a case-insensitive comparison
+                    std::string value = src->getString(ci.src_handle);
+                    kl::makeUpper(value);
+                    
+                    // T, TRUE and related case variants go to true; others go to false
+                    if (value == "T" || value == "TRUE")
+                        dest->putBoolean(ci.dest_handle, true);
+                          else
+                        dest->putBoolean(ci.dest_handle, false);
                 }
                 break;
             }
