@@ -1084,7 +1084,7 @@ bool OdbcDatabase::open(int type,
     {
         case tango::dbtypeSqlServer:
         {
-            m_db_type = tango::dbtypeAccess;
+            m_db_type = tango::dbtypeSqlServer;
 
             swprintf(db_label_buf, 1024, L"Microsoft SQL Server (%ls)", server.c_str());
             swprintf(conn_buf, 4096,
