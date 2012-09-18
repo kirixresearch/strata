@@ -96,12 +96,11 @@ struct JoinInfo
 
 static bool isDelimiterChar(wchar_t ch)
 {
+    if (!ch) return true;
     if (wcschr(L"+-*/%:;|\\()<>,!='\"\t ", ch))
         return true;
     return false;
 }
-
-
 
 
 static void dequoteField(std::wstring& str)
@@ -232,6 +231,7 @@ static wchar_t* zl_strrchr(wchar_t* str,
     
     return ret;
 }
+
 
 static tango::IColumnInfoPtr getColumnInfoMulti(std::vector<SourceTable>& s,
                                                 const std::wstring& field_name,
@@ -1184,8 +1184,7 @@ static bool join_parse_hook(kscript::ExprParseHookInfo& hook_info)
     return true;
 }
 
-static kscript::ExprParser* createJoinExprParser(
-                                      std::vector<JoinField>& all_fields)
+static kscript::ExprParser* createJoinExprParser(std::vector<JoinField>& all_fields)
 
 {
     kscript::ExprParser* parser;
@@ -1273,6 +1272,120 @@ static kscript::ExprParser* createJoinExprParser(
 
     return parser;
 }
+
+
+
+wchar_t* zl_find_field(wchar_t* str,
+                       const wchar_t* search_str)
+{
+    int str_len = wcslen(search_str);
+    wchar_t quote_char = 0;
+    wchar_t* ptr = NULL;
+    wchar_t* ch;
+
+    ch = str;
+    while (*ch)
+    {
+        if (*ch == quote_char)
+        {
+            quote_char = 0;
+            ch++;
+            continue;
+        }
+
+        if (*ch == L'\'' && !quote_char)
+            quote_char = L'\'';
+        
+        if (*ch == L'"' && !quote_char)
+            quote_char = L'\"';
+
+        if (!quote_char)
+        {
+            if (!wcsncasecmp(ch, search_str, str_len))
+            {
+                bool valid = true;
+                if (ch > str)
+                {
+                    if (!isDelimiterChar(*(ch-1)))
+                        valid = false;
+                }
+                if (*(ch+str_len))
+                {
+                    if (!isDelimiterChar(*(ch+str_len)))
+                        valid = false;
+                }
+                if (valid)
+                {
+                    ptr = ch;
+                }
+                 else
+                {
+                    ch++;
+                    continue;
+                }
+            }
+        }
+
+        ch++;
+    }
+
+    return ptr;
+}
+
+
+static void getReferencedFields(std::vector<SourceTable>& s,
+                                const std::wstring expr,
+                                std::vector<std::wstring>& flds)
+
+{
+    flds.clear();
+
+    std::wstring full_name;
+
+    std::vector<SourceTable>::iterator it;
+    for (it = s.begin(); it != s.end(); ++it)
+    {
+        int i, cnt = it->structure->getColumnCount();
+        for (i = 0; i < cnt; ++i)
+        {
+            std::wstring alias = it->alias;
+            std::wstring colname = it->structure->getColumnName(i);
+
+            // alias.fieldname
+            full_name = alias + L"." + colname;
+            if (zl_find_field((wchar_t*)expr.c_str(), full_name.c_str()))
+            {
+                flds.push_back(L"[" + alias + L"].[" + colname + L"]");
+                continue;
+            }
+
+            // [alias].fieldname
+            full_name = L"[" + alias + L"]." + colname;
+            if (zl_find_field((wchar_t*)expr.c_str(), full_name.c_str()))
+            {
+                flds.push_back(L"[" + alias + L"].[" + colname + L"]");
+                continue;
+            }
+
+            // alias.[fieldname]
+            full_name = alias + L".[" + colname + L"]";
+            if (zl_find_field((wchar_t*)expr.c_str(), full_name.c_str()))
+            {
+                flds.push_back(L"[" + alias + L"].[" + colname + L"]");
+                continue;
+            }
+
+            // [alias].[fieldname]
+            full_name = L"[" + alias + L"].[" + colname + L"]";
+            if (zl_find_field((wchar_t*)expr.c_str(), full_name.c_str()))
+            {
+                flds.push_back(L"[" + alias + L"].[" + colname + L"]");
+                continue;
+            }
+        }
+    }
+}
+
 
 static void joinDoInsert(tango::IRowInserter* output,
                          std::vector<JoinField>& fields,
@@ -1724,48 +1837,28 @@ static tango::ISetPtr doJoin(tango::IDatabasePtr db,
 
     for (sf_it = columns.begin(); sf_it != columns.end(); ++sf_it)
     {
-        // this stuff is not really done; what needs to happen is the join
-        // expressions need to be parsed to find out which fields are
-        // referenced in the join expressions; all reference fields should
-        // then be included in the output join structure, and dynamic fields
-        // should be created for constructions like "T1.F1 + T2.F1 AS Dynfield"
+        std::vector<std::wstring> flds;
+        std::vector<std::wstring>::iterator fit;
 
-        JoinField jf;
-        jf.name = sf_it->expr;
-        jf.source_handle = 0;
-        jf.dest_handle = 0;
+        getReferencedFields(source_tables, sf_it->expr, flds);
 
-        if (jf.name != sf_it->name)
+        for (fit = flds.begin(); fit != flds.end(); ++fit)
         {
-            jf.alias = sf_it->name;
-        }
+            JoinField jf;
+            jf.name = *fit;
+            jf.source_handle = 0;
+            jf.dest_handle = 0;
 
-        // this is a temporary measure
-        if (isGroupFunction(sf_it->name))
-            continue;
-
-        if (isGroupFunction(sf_it->expr))
-        {
-            jf.name = sf_it->expr;
-            jf.name = kl::afterFirst(jf.name, L'(');
-            jf.name = kl::beforeLast(jf.name, L')');
-            kl::trim(jf.name);
-
-
-            std::wstring func_name = kl::beforeFirst(sf_it->expr, L'(');
-            kl::trim(func_name);
-            kl::makeUpper(func_name);
-            if (func_name == L"COUNT" ||
-                func_name == L"GROUPID")
+            if (jf.name != sf_it->name)
             {
-                // we don't need any additional output for this
-                continue;
+                jf.alias = sf_it->name;
             }
+
+            dequoteField(jf.name);
+
+            jfields.push_back(jf);
         }
 
-        dequoteField(jf.name);
-
-        jfields.push_back(jf);
     }
 
 
