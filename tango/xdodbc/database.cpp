@@ -1020,12 +1020,12 @@ void OdbcDatabase::setAttributes(HDBC connection)
         }
          else
         {
-            // set default quote identifiers to nothing, so that if we don't 
+            // set default quote identifiers to a quote, so that if we don't 
             // explicitly know the quote identifier (e.g. some ODBC drivers), 
-            // SQL statements using quote identifiers will still work in most 
-            // cases
-            m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"");
-            m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"");
+            // SQL statements using quote identifiers will still work if the 
+            // driver supports SQL92 (quote is the quoting character in SQL92)
+            m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"\"");
+            m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"\"");
         }
     }
 
