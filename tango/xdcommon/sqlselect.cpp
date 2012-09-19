@@ -1555,7 +1555,7 @@ static tango::ISetPtr doJoin(tango::IDatabasePtr db,
                              std::vector<SourceTable>& source_tables,
                              std::vector<SelectField>& columns,
                              std::vector<std::wstring>& group_by_fields,
-                             const std::wstring& where,
+                             const std::wstring& where_expr,
                              tango::IJob* job)
 {
     tango::ISetPtr left;
@@ -2034,11 +2034,11 @@ static tango::ISetPtr doJoin(tango::IDatabasePtr db,
 
     kscript::ExprParser* parser = NULL;
 
-    if (!where.empty())
+    if (!where_expr.empty())
     {
         parser = createJoinExprParser(all_fields);
 
-        if (!parser->parse(where))
+        if (!parser->parse(where_expr))
         {
             delete parser;
             return xcm::null;
