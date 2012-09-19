@@ -1184,13 +1184,37 @@ static bool join_parse_hook(kscript::ExprParseHookInfo& hook_info)
     return true;
 }
 
-static kscript::ExprParser* createJoinExprParser(std::vector<JoinField>& all_fields)
 
+
+
+static bool join_where_parse_hook(kscript::ExprParseHookInfo& hook_info)
+{
+    if (hook_info.element_type == kscript::ExprParseHookInfo::typeIdentifier)
+    {
+        if (hook_info.expr_text.length() > 1 &&
+            hook_info.expr_text[0] == '[')
+        {
+            dequoteField(hook_info.expr_text);
+            hook_info.res_element = hook_info.parser->createVariableLookup(hook_info.penv, hook_info.expr_text);
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+
+
+static kscript::ExprParser* createJoinExprParser(std::vector<JoinField>& all_fields)
 {
     kscript::ExprParser* parser;
     std::vector<JoinField>::iterator jf_it;
 
     parser = createExprParser();
+
+    parser->setParseHook(kscript::ExprParseHookInfo::typeIdentifier,
+                         join_where_parse_hook,
+                         NULL);
 
     for (jf_it = all_fields.begin();
          jf_it != all_fields.end();
