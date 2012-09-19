@@ -583,8 +583,12 @@ static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
             
             // get the two parts separated by the period, if there is one
             std::wstring part1, part2;
-            unsigned offset = hook_info.expr_text.find(L".");
-            if (offset == -1)
+
+            const wchar_t* pstr = hook_info.expr_text.c_str();
+            const wchar_t* pperiod = zl_strchr((wchar_t*)pstr, '.', L"[", L"]");
+            int period_pos = pperiod ? (pperiod-pstr) : -1;
+
+            if (period_pos == -1)
             {
                 part1 = hook_info.expr_text;
                 dequote(part1, '[', ']');
@@ -592,8 +596,8 @@ static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
             }
             else
             {
-                part1 = hook_info.expr_text.substr(0, offset);
-                part2 = hook_info.expr_text.substr(offset+1);
+                part1 = hook_info.expr_text.substr(0, period_pos);
+                part2 = hook_info.expr_text.substr(period_pos + 1);
                 dequote(part1, '[', ']');
                 dequote(part2, '[', ']');
                 hook_info.expr_text = part1 + L"." + part2;
