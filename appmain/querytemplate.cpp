@@ -492,11 +492,11 @@ wxString QueryTemplate::getQueryString()
 
             if (m_params[param_idx].output_field.length() > 0)
             {
-                order_by += quoteField(m_params[param_idx].output_field);
+                order_by += quoteAlias(m_params[param_idx].output_field);
             }
              else
             {
-                order_by += quoteField(m_params[param_idx].input_expr);
+                order_by += quoteAlias(m_params[param_idx].input_expr);
             }
 
             if (sort_order < 0)
