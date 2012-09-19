@@ -3747,6 +3747,7 @@ ExprElement* ExprParser::parseElement(ExprParserEnv* penv,
         {
             ExprParseHookInfo info;
             info.parser = this;
+            info.penv = penv;
             info.hook_param = m_parse_hook_param;
             info.expr_text = xtrim(expr);
             info.element_type = ExprParseHookInfo::typeFunction;
@@ -3851,6 +3852,7 @@ ExprElement* ExprParser::parseElement(ExprParserEnv* penv,
         {
             ExprParseHookInfo info;
             info.parser = this;
+            info.penv = penv;
             info.hook_param = m_parse_hook_param;
             info.expr_text = xtrim(expr);
             info.element_type = ExprParseHookInfo::typeOperator;
@@ -4118,6 +4120,7 @@ ExprElement* ExprParser::parseElement(ExprParserEnv* penv,
     {
         ExprParseHookInfo info;
         info.parser = this;
+        info.penv = penv;
         info.hook_param = m_parse_hook_param;
         info.expr_text = ch;
         info.element_type = ExprParseHookInfo::typeIdentifier;
@@ -5674,6 +5677,7 @@ ExprElement* ExprParser::parseStatement(ExprParserEnv* penv,
             
             ExprParseHookInfo info;
             info.parser = this;
+            info.penv = penv;
             info.hook_param = m_parse_hook_param;
             info.expr_text = std::wstring(fname, end_quote-fname);
             info.element_type = ExprParseHookInfo::typeInclude;
@@ -5724,6 +5728,7 @@ ExprElement* ExprParser::parseStatement(ExprParserEnv* penv,
             {
                 ExprParseHookInfo info;
                 info.parser = this;
+                info.penv = penv;
                 info.hook_param = m_parse_hook_param;
                 info.expr_text = L"";
                 info.element_type = ExprParseHookInfo::typeIncludePop;
@@ -7764,6 +7769,24 @@ Function* ExprParser::createFunction(Value* prototype)
     return f;
 }
 
+
+ExprElement* ExprParser::createVariableLookup(ExprParserEnv* penv, const std::wstring& identifier)
+{
+    ExprParserToken* var_token = penv->lookupToken(identifier);
+
+    if (var_token)
+    {
+        ExprVarLookup* varlookup = new ExprVarLookup;
+        varlookup->m_var_id = var_token->id;
+        varlookup->m_symbol = identifier;
+        if (var_token->binding)
+            varlookup->m_retval_type = var_token->binding->m_var_type;
+
+        return varlookup;
+    }
+
+    return NULL;
+}
 
 bool ExprParser::createObject(const std::wstring& class_name,
                               kscript::Value* obj)

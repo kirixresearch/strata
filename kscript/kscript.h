@@ -152,6 +152,7 @@ struct ExprParseHookInfo
     // -- information about the text being parsed --
     
     ExprParser* parser;      // ptr to the expression parser
+    ExprParserEnv* penv;     // expression parser environment
     int element_type;        // type of expression
     void* hook_param;        // parameter passed to setParseHook
     std::wstring expr_text;  // full text of the expression
@@ -915,6 +916,8 @@ public:
     static int allocateClassId();
     
     Function* createFunction(Value* prototype = NULL);
+
+    ExprElement* createVariableLookup(ExprParserEnv* penv, const std::wstring& symbol);
 
     void setRuntimeError(int rterror_code,
                          Value* exception_obj,
