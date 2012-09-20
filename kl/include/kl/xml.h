@@ -57,6 +57,13 @@ public:
         parseRelaxed = 0x0001
     };
     
+    enum
+    {
+        filemodeShareRead = 1,
+        filemodeExclusive = 2,
+        filemodeExclusiveWait = 3
+    };
+
 public:
 
     xmlnode();
@@ -67,8 +74,8 @@ public:
     bool parse(const std::wstring& xml_text, int parse_flags = 0);
     bool parse(const std::string& xml_text, int parse_flags = 0);
 
-    bool load(const std::wstring& filename, int parse_flags = 0);
-    bool save(const std::wstring& filename, int flags = 0);
+    bool load(const std::wstring& filename, int parse_flags = 0, int file_mode = filemodeShareRead);
+    bool save(const std::wstring& filename, int formatting_flags = 0);
 
     xmlnode& copy(xmlnode& node, bool deep = true);
     xmlnode& clone(bool deep = true);

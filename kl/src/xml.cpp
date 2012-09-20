@@ -17,6 +17,12 @@
 #include <kl/file.h>
 #include <kl/string.h>
 
+#ifdef WIN32
+#include <Windows.h>
+#else
+#include <unistd.h>
+#endif
+
 
 const wchar_t* KL_XML_HEADER = L"<?xml version=\"1.0\"?>";
 
@@ -195,16 +201,47 @@ bool xmlnode::parse(const std::string& xml_text, int parse_flags)
 
 
 
-bool xmlnode::load(const std::wstring& filename, int parse_flags)
+bool xmlnode::load(const std::wstring& filename, int parse_flags, int file_mode)
 {
     if (!xf_get_file_exist(filename))
         return false;
 
     xf_file_t f;
 
-    f = xf_open(filename, xfOpen, xfRead, xfShareRead);
-    if (!f)
+    if (file_mode == filemodeShareRead)
+    {
+        f = xf_open(filename, xfOpen, xfRead, xfShareRead);
+        if (!f)
+            return false;
+    }
+     else if (file_mode == filemodeExclusive)
+    {
+        f = xf_open(filename, xfOpen, xfRead, xfShareNone);
+        if (!f)
+            return false;
+    }
+     else if (file_mode == filemodeExclusiveWait)
+    {
+        for (int i = 0; i < 70; ++i)
+        {
+            f = xf_open(filename, xfOpen, xfRead, xfShareNone);
+            if (f)
+                break;
+
+#ifdef WIN32
+            ::Sleep(100);
+#else
+            ::usleep(100000);
+#endif
+        }
+
+        if (!f)
+            return false;
+    }
+     else
+    {
         return false;
+    }
 
     int file_size = (int)xf_get_file_size(filename);
 
