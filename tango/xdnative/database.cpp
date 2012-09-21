@@ -1170,10 +1170,9 @@ bool Database::deleteStream(const std::wstring& ofs_path)
         path.reserve(80);
         path = L"/.system/objects/";
         path += object_id;
+        deleteOfsFile(path);
     }
 
-    deleteOfsFile(path);
-    
     // delete stream pointer file
     deleteOfsFile(ofs_path);
     
