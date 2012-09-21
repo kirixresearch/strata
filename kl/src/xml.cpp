@@ -16,12 +16,7 @@
 #include <sys/stat.h>
 #include <kl/file.h>
 #include <kl/string.h>
-
-#ifdef WIN32
-#include <Windows.h>
-#else
-#include <unistd.h>
-#endif
+#include <kl/system.h>
 
 
 const wchar_t* KL_XML_HEADER = L"<?xml version=\"1.0\"?>";
@@ -228,11 +223,7 @@ bool xmlnode::load(const std::wstring& filename, int parse_flags, int file_mode)
             if (f)
                 break;
 
-#ifdef WIN32
-            ::Sleep(100);
-#else
-            ::usleep(100000);
-#endif
+            kl::millisleep(100);
         }
 
         if (!f)
@@ -308,7 +299,7 @@ bool xmlnode::load(const std::wstring& filename, int parse_flags, int file_mode)
     }
      else
     {
-        // -- for now default to regular ASCII --
+        // for now default to regular ASCII
         res = parse((const char*)buf, parse_flags);
     }
 
@@ -317,13 +308,37 @@ bool xmlnode::load(const std::wstring& filename, int parse_flags, int file_mode)
     return res;
 }
 
-bool xmlnode::save(const std::wstring& filename, int flags)
+bool xmlnode::save(const std::wstring& filename, int flags, int file_mode)
 {
     xf_remove(filename);
 
-    xf_file_t file = xf_open(filename, xfCreate, xfReadWrite, xfShareNone);
-    if (!file)
+    xf_file_t file;
+    
+    if (file_mode == filemodeExclusive)
+    {
+        file = xf_open(filename, xfCreate, xfReadWrite, xfShareNone);
+        if (!file)
+            return false;
+    }
+     else if (file_mode == filemodeExclusiveWait)
+    {
+        for (int i = 0; i < 70; ++i)
+        {
+            file = xf_open(filename, xfCreate, xfReadWrite, xfShareNone);
+            if (file)
+                break;
+
+            kl::millisleep(100);
+        }
+
+        if (!file)
+            return false;
+    }
+     else
+    {
         return false;
+    }
+
 
     std::wstring str;
 
@@ -339,7 +354,7 @@ bool xmlnode::save(const std::wstring& filename, int flags)
     internalGetXML(str, flags);
     
 
-    // -- write out unicode Byte Order Mark --
+    // write out unicode byte order mark
     unsigned char bom[2];
     bom[0] = 0xff;
     bom[1] = 0xfe;

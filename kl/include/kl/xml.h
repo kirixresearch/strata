@@ -75,7 +75,7 @@ public:
     bool parse(const std::string& xml_text, int parse_flags = 0);
 
     bool load(const std::wstring& filename, int parse_flags = 0, int file_mode = filemodeShareRead);
-    bool save(const std::wstring& filename, int formatting_flags = 0);
+    bool save(const std::wstring& filename, int formatting_flags = 0, int file_mode = filemodeExclusive);
 
     xmlnode& copy(xmlnode& node, bool deep = true);
     xmlnode& clone(bool deep = true);
