@@ -3114,8 +3114,6 @@ tango::ISet* Database::lookupSet(const std::wstring& set_id)
 
 tango::IStructurePtr Database::createStructure()
 {
-    XCM_AUTO_LOCK(m_object_mutex);
-
     Structure* s = new Structure;
     return static_cast<tango::IStructure*>(s);
 }
