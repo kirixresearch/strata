@@ -2488,12 +2488,13 @@ tango::IDatabasePtr Database::lookupOrOpenMountDb(const std::wstring& cstr)
 
     tango::IDatabasePtr db;
     
+    m_mountdbs_mutex.lock();
     std::map<std::wstring, tango::IDatabasePtr>::iterator it;
     it = m_mounted_dbs.find(cstr);
     if (it != m_mounted_dbs.end())
-    {
         db = it->second;
-    }
+    m_mountdbs_mutex.unlock();
+
     
     
     if (db.isNull())
@@ -2513,7 +2514,9 @@ tango::IDatabasePtr Database::lookupOrOpenMountDb(const std::wstring& cstr)
             }
         }      
         
+        m_mountdbs_mutex.lock();
         m_mounted_dbs[cstr] = db;
+        m_mountdbs_mutex.unlock();
     }
     
     return db;
