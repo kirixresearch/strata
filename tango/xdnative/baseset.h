@@ -127,11 +127,14 @@ protected:
 private:
     
     xcm::mutex m_object_mutex;
+    xcm::mutex m_setattributes_mutex; // for m_set_id and m_set_flags
+
     std::wstring m_set_id;
+    unsigned int m_set_flags;
+
     std::vector<ISetEvents*> m_event_handlers;
     std::vector<tango::IColumnInfoPtr> m_calc_fields;
     tango::tango_uint64_t m_calcrefresh_time;
-    unsigned int m_set_flags;
     bool m_rel_init;
 };
 

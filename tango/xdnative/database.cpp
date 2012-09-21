@@ -3562,8 +3562,6 @@ private:
 
 tango::IRelationEnumPtr Database::getRelationEnum(const std::wstring& path)
 {
-    XCM_AUTO_LOCK(m_relations_mutex);
-
     xcm::IVectorImpl<tango::IRelationPtr>* vec;
     vec = new xcm::IVectorImpl<tango::IRelationPtr>;
 
@@ -3680,10 +3678,7 @@ tango::IRelationPtr Database::createRelation(const std::wstring& tag,
                                              const std::wstring& right_set_path,
                                              const std::wstring& left_expr,
                                              const std::wstring& right_expr)
-{
-    XCM_AUTO_LOCK(m_relations_mutex);
-    
-
+{    
     tango::INodeValuePtr root;
 
     if (!getFileExist(L"/.system/rel_table"))
@@ -3756,8 +3751,6 @@ tango::IRelationPtr Database::createRelation(const std::wstring& tag,
 
 bool Database::deleteRelation(const std::wstring& relation_id)
 {
-    XCM_AUTO_LOCK(m_relations_mutex);
-
     tango::IRelationPtr rel = getRelation(relation_id);
     if (rel.isNull())
         return false;

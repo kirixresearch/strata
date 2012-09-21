@@ -66,46 +66,44 @@ tango::INodeValuePtr BaseSet::openSetDefinition(bool create_if_not_exist)
 
 unsigned int BaseSet::getSetFlags()
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    XCM_AUTO_LOCK(m_setattributes_mutex);
 
     return m_set_flags;
 }
 
 void BaseSet::setSetFlags(unsigned int new_val)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    XCM_AUTO_LOCK(m_setattributes_mutex);
 
     m_set_flags = new_val;
 }
 
 void BaseSet::setSetId(const std::wstring& new_val)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    XCM_AUTO_LOCK(m_setattributes_mutex);
     
     m_set_id = new_val;
 }
 
 std::wstring BaseSet::getSetId()
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    XCM_AUTO_LOCK(m_setattributes_mutex);
 
     if (m_set_id.length() == 0)
-    {
         m_set_id = getUniqueString();
-    }
 
     return m_set_id;
 }
 
 tango::IRowInserterPtr BaseSet::getRowInserter()
 {
-    // -- default does nothing --
+    // default does nothing
     return xcm::null;
 }
 
 tango::IRowDeleterPtr BaseSet::getRowDeleter()
 {
-    // -- default does nothing --
+    // default does nothing
     return xcm::null;
 }
 

@@ -240,7 +240,6 @@ private:
 
 private:
 
-    xcm::mutex m_relations_mutex;
     xcm::mutex m_objregistry_mutex;
     xcm::mutex m_mountdbs_mutex;
     xcm::mutex m_jobs_mutex;
