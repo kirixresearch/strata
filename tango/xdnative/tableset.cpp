@@ -497,6 +497,9 @@ bool TableSet::create(tango::IStructure* struct_config)
 
     // allocate an ordinal for us
     m_ordinal = dbi->allocOrdinal();
+    if (m_ordinal == 0)
+        return false;
+
     if (!dbi->setOrdinalTable(m_ordinal, table_filename))
         return false;
 
