@@ -1163,13 +1163,15 @@ bool Database::deleteStream(const std::wstring& ofs_path)
     objectid_node.clear();
     
     
-    
     // delete file in objects folder
-    std::wstring path;
-    path.reserve(80);
-    path = L"/.system/objects/";
-    path += object_id;
-    
+    if (object_id.length() > 0)
+    {
+        std::wstring path;
+        path.reserve(80);
+        path = L"/.system/objects/";
+        path += object_id;
+    }
+
     deleteOfsFile(path);
     
     // delete stream pointer file
@@ -2179,6 +2181,8 @@ tango::tango_int64_t Database::getFileSize(const std::wstring& ofs_path)
         return 0;
 
     std::wstring set_id = setid_node->getString();
+    if (set_id.length() == 0)
+        return 0;
 
     // generate set filename
     std::wstring path;
