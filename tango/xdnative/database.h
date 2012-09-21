@@ -87,6 +87,7 @@ public:
     bool getSetLocked(const std::wstring& set_id);
 
     tango::tableord_t allocOrdinal();
+    tango::tableord_t getMaximumOrdinal();
     bool deleteOrdinal(tango::tableord_t);
     bool setOrdinalTable(tango::tableord_t ordinal,
                          const std::wstring& table_filename);
@@ -256,6 +257,7 @@ private:
 
     std::wstring m_base_dir;
     std::wstring m_ofs_root;
+    std::wstring m_ordinal_counter_path;
     std::wstring m_dbname;
     std::wstring m_uid;
     tango::jobid_t m_last_job;

@@ -18,6 +18,7 @@
 #include <kl/klib.h>
 #include <kl/crypt.h>
 #include <kl/url.h>
+#include <kl/system.h>
 #include "tango.h"
 #include "../xdcommon/xdcommon.h"
 #include "../xdcommon/dbattr.h"
@@ -135,6 +136,8 @@ bool Database::setBaseDirectory(const std::wstring& base_dir)
 
     m_ofs_root = m_base_dir;
     m_ofs_root += L"ofs";
+
+    m_ordinal_counter_path = ofsToPhysFilename(L"/.system/ordinal_counter", false);
 
     // update these database attributes
     m_attr->setStringAttribute(tango::dbattrTempDirectory, getTempPath());
@@ -557,11 +560,6 @@ bool Database::createDatabase(const std::wstring& db_name,
     if (!node)
         return false;
 
-    node = createNodeFile(L"/.system/ordinal_counter");
-    if (!node)
-        return false;
-    node->setInteger(1);
-
     node = createNodeFile(L"/.system/database_name");
     if (!node)
         return false;
@@ -574,6 +572,9 @@ bool Database::createDatabase(const std::wstring& db_name,
 
     m_dbname = db_name;
     m_uid = L"admin";
+
+    // create an ordinal file
+    tango::tableord_t ord = allocOrdinal();
 
     // create a mount point for external files
     setMountPoint(L"/.fs", L"Xdprovider=xdfs;Database=;User ID=;Password=;", L"/");
@@ -772,8 +773,144 @@ bool Database::getUserExist(const std::wstring& uid)
     return getFileExist(path);
 }
 
+tango::tableord_t Database::getMaximumOrdinal()
+{
+    kl::xmlnode ofs_file;
+
+    if (!ofs_file.load(m_ordinal_counter_path, 0, kl::xmlnode::filemodeExclusiveWait))
+        return 0;
+
+    kl::xmlnode& ofs_node = ofs_file.getChild(L"ofs_node");
+    if (ofs_file.isEmpty())
+        return 0;
+
+    kl::xmlnode& value = ofs_node.getChild(L"value");
+    if (value.isEmpty())
+        return 0;
+
+    return kl::wtoi(value.getNodeValue());
+}
+
 tango::tableord_t Database::allocOrdinal()
 {
+    if (!xf_get_file_exist(m_ordinal_counter_path))
+    {
+        kl::xmlnode ofs_file;
+        ofs_file.setNodeName(L"ofs_file");
+        ofs_file.appendProperty(L"version", L"1.0");
+        ofs_file.addChild(L"file_type", L"generic");
+
+        kl::xmlnode& ofs_node = ofs_file.addChild(L"ofs_node");
+        ofs_node.appendProperty(L"name", L"root");
+        ofs_node.addChild(L"value", L"1");
+
+        if (!ofs_file.save(m_ordinal_counter_path, 0, kl::xmlnode::filemodeExclusiveWait))
+            return 0;
+
+        return 1;
+    }
+    
+
+    // obtain an exclusive lock on the counter file
+    xf_file_t f = (xf_file_t)0;
+    
+    for (int i = 0; i < 300; ++i)
+    {
+        f = xf_open(m_ordinal_counter_path, xfOpen, xfReadWrite, xfShareNone);
+        if (f)
+            break;
+        kl::millisleep(100);
+    }
+
+   
+    if (!f)
+    {
+        // could not open ordinal file
+        return 0;
+    }
+
+
+
+    // get file length
+    xf_seek(f, 0, xfSeekEnd);
+    int read_length = (int)xf_get_file_pos(f);
+
+    std::wstring xml;
+    bool ucs2 = false;
+
+    int buf_size = read_length + 64;
+    unsigned char* buf = new unsigned char[buf_size];
+
+    xf_seek(f, 0, xfSeekSet);
+
+    int len = xf_read(f, buf, 1, read_length);
+    buf[len] = 0;
+    buf[len+1] = 0;
+
+    if (buf[0] == 0xff && buf[1] == 0xfe && (buf[2] != 0x00 || buf[3] != 0x00))
+    {
+        kl::ucsle2wstring(xml, buf+2, len-2);
+        ucs2 = true;
+    }
+     else
+    {
+        xml = kl::towstring((char*)buf);
+    }
+
+    kl::xmlnode ofs_file;
+    if (!ofs_file.parse(xml))
+    {
+        xf_close(f);
+        delete[] buf;
+        return 0;
+    }
+
+    kl::xmlnode& ofs_node = ofs_file.getChild(L"ofs_node");
+    if (ofs_file.isEmpty())
+    {
+        xf_close(f);
+        delete[] buf;
+        return 0;
+    }
+
+    kl::xmlnode& value = ofs_node.getChild(L"value");
+    if (value.isEmpty())
+    {
+        xf_close(f);
+        delete[] buf;
+        return 0;
+    }
+
+    std::wstring v = value.getNodeValue();
+    int ordinal = kl::wtoi(v);
+    value.setNodeValue(ordinal + 1);
+
+    xml = ofs_file.getXML();
+
+
+    xf_seek(f, 0, xfSeekSet);
+
+    if (ucs2)
+    {
+        buf[0] = 0xff;
+        buf[1] = 0xfe;
+        kl::wstring2ucsle(buf+2, xml, xml.length());
+        xf_write(f, buf, 1, 2 + (xml.length()*2));
+    }
+     else
+    {
+        memset(buf, ' ', buf_size);
+        std::string sxml = kl::tostring(xml);
+        strcpy((char*)buf, sxml.c_str()); 
+        xf_write(f, buf, 1, sxml.length());
+    }
+
+    xf_close(f);
+    delete[] buf;
+
+    return ordinal;
+
+/*
     XCM_AUTO_LOCK(m_object_mutex);
 
     tango::tableord_t ordinal_counter;
@@ -803,6 +940,7 @@ tango::tableord_t Database::allocOrdinal()
     ord_file->setInteger(ordinal_counter + 1);
 
     return ordinal_counter;
+    */
 }
 
 bool Database::setOrdinalTable(tango::tableord_t ordinal,
@@ -2762,15 +2900,7 @@ void Database::getFolderUsedOrdinals(const std::wstring& folder_path,
 bool Database::cleanup()
 {
     std::set<int> used_ordinals;
-    int max_ordinal = 0;
-
-    tango::INodeValuePtr ord_file;
-
-    ord_file = openNodeFile(L"/.system/ordinal_counter");
-    if (!ord_file)
-        return false;
-    max_ordinal = ord_file->getInteger();
-
+    int max_ordinal = (int)getMaximumOrdinal();
 
     getFolderUsedOrdinals(L"/", used_ordinals);
 
