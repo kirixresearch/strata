@@ -317,6 +317,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\kl\system.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\kl\url.h"
 				>
 			</File>
@@ -460,6 +464,10 @@
 			</File>
 			<File
 				RelativePath=".\src\string.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\system.cpp"
 				>
 			</File>
 			<File
