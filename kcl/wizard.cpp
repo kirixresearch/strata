@@ -122,11 +122,6 @@ bool Wizard::startWizard(int idx)
     return true;
 }
 
-void Wizard::finishWizard()
-{
-    sigFinishPressed(this);
-}
-
 WizardPage* Wizard::getPage(int idx)
 {
     if (idx < 0 || (size_t)idx >= m_pages.size())

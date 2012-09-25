@@ -501,9 +501,6 @@ void ConnectionWizard::onDataSourceSelectionPageChanging(bool forward,
     {
         m_wizard->setPageOrder(m_datasource_selection_page);
         *allow = true;
-        
-        // we're done
-        m_wizard->finishWizard();
         return;
     }
      else

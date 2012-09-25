@@ -53,7 +53,6 @@ public:
 
     bool startWizard(WizardPage* page);
     bool startWizard(int idx = 0);
-    void finishWizard();
 
     WizardPage* getPage(int idx);
     int getPageIdx(WizardPage* page);
