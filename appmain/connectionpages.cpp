@@ -19,6 +19,16 @@
 
 // control ids
 
+// flag for disabling the "save password" check box in the connection page;
+// turn off for now
+
+// TODO: this is a temporary measure since the UI is sometimes showing the
+// checkbox and sometimes isn't; since there's various code in various
+// places (such as save/load) that relies on the "save password" checkbox, it's 
+// safest to set a flag that turns on/off all the features at the same time
+// that can be reviewed later
+bool enable_save_password = false;
+
 enum
 {
     // data source selection page
@@ -1027,15 +1037,19 @@ ServerPropertiesPage::ServerPropertiesPage(kcl::Wizard* parent,
     label_size.x += 10;
     
     // create the save password sizer
-    m_savepassword_checkbox = new wxCheckBox(this, 
-                                             ID_SavePasswordCheckBox,
-                                             _("Save Password"));
     
-    m_savepassword_sizer = new wxBoxSizer(wxHORIZONTAL);
-    m_savepassword_sizer->Add(50,15);
-    m_savepassword_sizer->Add(label_size.x, 0);
-    m_savepassword_sizer->Add(m_savepassword_checkbox, 0, wxALIGN_CENTER);
-    m_savepassword_sizer->Add(50,15);
+    if (enable_save_password)
+    {
+        m_savepassword_checkbox = new wxCheckBox(this, 
+                                                 ID_SavePasswordCheckBox,
+                                                 _("Save Password"));
+
+        m_savepassword_sizer = new wxBoxSizer(wxHORIZONTAL);
+        m_savepassword_sizer->Add(50,15);
+        m_savepassword_sizer->Add(label_size.x, 0);
+        m_savepassword_sizer->Add(m_savepassword_checkbox, 0, wxALIGN_CENTER);
+        m_savepassword_sizer->Add(50,15);
+    }        
 
     m_server_sizer->SetItemMinSize(label_server, label_size);
     m_database_sizer->SetItemMinSize(label_database, label_size);
@@ -1056,7 +1070,9 @@ ServerPropertiesPage::ServerPropertiesPage(kcl::Wizard* parent,
     m_main_sizer->Add(m_port_sizer, 0, wxEXPAND | wxTOP, 10);
     m_main_sizer->Add(m_username_sizer, 0, wxEXPAND | wxTOP, 10);
     m_main_sizer->Add(m_password_sizer, 0, wxEXPAND | wxTOP, 10);
-    m_main_sizer->Add(m_savepassword_sizer, 0, wxEXPAND | wxTOP, 10);
+    
+    if (enable_save_password)
+        m_main_sizer->Add(m_savepassword_sizer, 0, wxEXPAND | wxTOP, 10);
     
     SetSizer(m_main_sizer);
 
@@ -1084,7 +1100,9 @@ void ServerPropertiesPage::showElements(unsigned int options)
     m_main_sizer->Show(m_username_sizer, false, true);
     m_main_sizer->Show(m_password_sizer, false, true);
     m_main_sizer->Show(m_port_sizer, false, true);
-    m_main_sizer->Show(m_savepassword_sizer, false, true);
+    
+    if (enable_save_password)
+        m_main_sizer->Show(m_savepassword_sizer, false, true);
     
     if (options & ServerPropertiesPage::showServer)
         m_main_sizer->Show(m_server_sizer, true, true);
@@ -1096,7 +1114,7 @@ void ServerPropertiesPage::showElements(unsigned int options)
         m_main_sizer->Show(m_password_sizer, true, true);
     if (options & ServerPropertiesPage::showPort)
         m_main_sizer->Show(m_port_sizer, true, true);
-    if (options & ServerPropertiesPage::showSavePassword)
+    if (options & ServerPropertiesPage::showSavePassword && enable_save_password)
         m_main_sizer->Show(m_savepassword_sizer, true, true);
     
     handleFocus();
@@ -1227,7 +1245,9 @@ void ServerPropertiesPage::loadPageData()
     m_port_textctrl->SetValue(wxString::Format(wxT("%d"), m_ci->port));
     m_username_textctrl->SetValue(m_ci->username);
     m_password_textctrl->SetValue(m_ci->password);
-    m_savepassword_checkbox->SetValue(m_ci->save_password);
+    
+    if (enable_save_password)
+        m_savepassword_checkbox->SetValue(m_ci->save_password);
 }
 
 void ServerPropertiesPage::savePageData()
