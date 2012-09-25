@@ -58,8 +58,6 @@ AppPrinter::AppPrinter(wxPrintDialogData* printdata) : wxTimer()
 
 AppPrinter::~AppPrinter()
 {
-    delete m_printout;
-    delete m_dc;
 }
 
 void AppPrinter::PrintDialog(wxWindow* parent, wxPrintDialogData* printdata)
@@ -284,10 +282,18 @@ void AppPrinter::Notify()
 
 void AppPrinter::Destroy()
 {
-    if (IsRunning())
-        Stop();
-    
-    if (!wxPendingDelete.Member(this))
-        wxPendingDelete.Append(this);
+/*
+    // destroy the printout object
+    if (m_printout)
+        delete m_printout;
+
+    // destroy the DC
+    if (m_dc)
+        delete m_dc;
+
+    // destroy this
+    delete this;
+*/
 }
+
 
