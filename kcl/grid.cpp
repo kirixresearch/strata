@@ -1526,6 +1526,7 @@ void Grid::construct()
                 optVertGridLines |
                 optActivateHyperlinks;
     m_cursor_type = cursorNormal;
+    m_row_height = 0;
     m_rowlabel_width = 12;
     m_border_type = wxNO_BORDER;
     m_bmp_alloc_width = 0;
