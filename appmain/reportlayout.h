@@ -137,7 +137,7 @@ private:
 
 
 // helper classes for outputting results to a PDF or a printer
-class ReportOutputBase : public xcm::signal_sink
+class ReportOutputBase : public wxObject, public xcm::signal_sink
 {
 public:
 

@@ -1890,6 +1890,9 @@ void Canvas::handleEvent(IEventPtr evt)
     canvas = target;
     if (!canvas.isNull())
     {
+        target.clear();
+        canvas.clear();
+
         evt->setPhase(EVENT_AT_TARGET);
         m_event_target.dispatchEvent(evt);
         return;

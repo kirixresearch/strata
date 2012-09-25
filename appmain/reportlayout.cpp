@@ -899,6 +899,8 @@ ReportOutputPrinter::ReportOutputPrinter(const std::vector<ReportLayoutEngine>& 
 
 ReportOutputPrinter::~ReportOutputPrinter()
 {
+    if (m_printout_ptr)
+        m_printout_ptr->destroy();
 }
 
 void ReportOutputPrinter::create()
@@ -1112,6 +1114,7 @@ void ReportOutputPrinter::init()
 
 void ReportOutputPrinter::destroyObject()
 {
+/*
     // destroy the pdf canvas manually, since it isn't 
     // reference counted
     if (m_printout_ptr)
@@ -1119,6 +1122,9 @@ void ReportOutputPrinter::destroyObject()
 
     // delete the current object
     delete this;
+    */
+        if (!wxPendingDelete.Member(this))
+            wxPendingDelete.Append(this);
 }
 
 bool ReportOutputPrinter::doCreatePage()
