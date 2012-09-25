@@ -576,20 +576,32 @@ bool DelimitedTextFile::insertRow(const DelimitedTextRow& row)
     if (m_file.isReadOnly())
         return false;
 
+    wchar_t delimiter = ',';
+    wchar_t quote = 0;
+    if (m_delimiters.length() > 0)
+        delimiter = m_delimiters[0];
+    if (m_text_qualifiers.length() > 0)
+        quote = m_text_qualifiers[0];
+
     size_t i, cnt = row.getValueCount();
     for (i = 0; i < cnt; ++i)
     {
         if (i > 0)
-            m_insert_buf += L',';
+            m_insert_buf += delimiter;
         
         const std::wstring& value = row.getValue(i);
-        if (value.find(',') != value.npos || value.find('"') != value.npos)
+        if (quote != 0 && (value.find(delimiter) != value.npos || value.find(quote) != value.npos))
         {
+            std::wstring quote_search, quote_replace;
+            quote_search = quote;
+            quote_replace = quote;
+            quote_replace += quote;
+
             std::wstring v = value;
-            kl::replaceStr(v, L"\"", L"\"\"");
-            m_insert_buf += L"\"";
+            kl::replaceStr(v, quote_search, quote_replace);
+            m_insert_buf += quote;
             m_insert_buf += v;
-            m_insert_buf += L"\"";
+            m_insert_buf += quote;
         }
          else
         {

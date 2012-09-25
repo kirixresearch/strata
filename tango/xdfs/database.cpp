@@ -1784,16 +1784,39 @@ tango::ISetPtr FsDatabase::createSet(const std::wstring& _path,
         file.createFile(path, fields, encoding);
         file.closeFile();
         
+
+        if (ext != L"icsv")
+        {
+            tango::ISetPtr set = openSetEx(path, tango::formatDelimitedText);
+            if (set.isNull())
+                return xcm::null;
         
-        tango::ISetPtr set = openSetEx(path, tango::formatDelimitedText);
-        if (set.isNull())
-            return xcm::null;
-        
-        DelimitedTextSet* tset = static_cast<DelimitedTextSet*>(set.p);
-        tset->setCreateStructure(struct_config);
-        tset->saveConfiguration();
-        
-        
+            DelimitedTextSet* tset = static_cast<DelimitedTextSet*>(set.p);
+            tset->setCreateStructure(struct_config);
+
+            if (ext == L"tsv")
+            {
+                tset->setDelimiters(L"\t", false);
+                tset->setTextQualifier(L"", false);
+            }
+             else
+            {
+                // use the csv defaults as specified in
+                // the DelimitedTextFile constructor
+                if (format_info && format_info->line_delimiters.length() > 0)
+                    tset->setLineDelimiters(format_info->line_delimiters, false);
+                if (format_info && format_info->delimiters.length() > 0)
+                    tset->setDelimiters(format_info->delimiters, false);
+                if (format_info && format_info->text_qualifiers.length() > 0)
+                    tset->setTextQualifier(format_info->text_qualifiers, false);
+            }
+
+            tset->saveConfiguration();
+
+            set.clear();
+        }
+
+
         // return the DelimitedTextSet
         return openSetEx(path, format);
     }
