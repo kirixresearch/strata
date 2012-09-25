@@ -3937,7 +3937,12 @@ static void lightenMemDC(wxMemoryDC& dc, wxBitmap& bmp)
     
     int height = img.GetHeight();
     int width = img.GetWidth();
-    
+
+#if wxCHECK_VERSION(2,9,0)
+    if (img.HasAlpha())
+        img.ClearAlpha();
+#endif
+
     int x, y;
     wxColour col;
     for (y = 0; y < height; y++)
