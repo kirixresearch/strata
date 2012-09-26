@@ -126,7 +126,8 @@ protected:
     
 private:
     
-    xcm::mutex m_object_mutex;
+    xcm::mutex m_event_mutex;         // for m_event_handlers
+    xcm::mutex m_structure_mutex;     // for structure mods and m_calc_fields
     xcm::mutex m_setattributes_mutex; // for m_set_id and m_set_flags
 
     std::wstring m_set_id;

@@ -1398,16 +1398,15 @@ tango::INodeValuePtr Database::createNodeFile(const std::wstring& path)
 
 tango::INodeValuePtr Database::openLocalNodeFile(const std::wstring& path)
 {
-    XCM_AUTO_LOCK(m_objregistry_mutex);
-
-
-    // lookup in our list to see if the file is already open
-    std::vector<OfsFile*>::iterator it;
-    for (it = m_ofs_files.begin(); it != m_ofs_files.end(); ++it)
     {
-        if (!wcscasecmp((*it)->getPath().c_str(), path.c_str()))
+        XCM_AUTO_LOCK(m_objregistry_mutex);
+
+        // lookup in our list to see if the file is already open
+        std::vector<OfsFile*>::iterator it;
+        for (it = m_ofs_files.begin(); it != m_ofs_files.end(); ++it)
         {
-            return (*it)->getRootNode();
+            if (!wcscasecmp((*it)->getPath().c_str(), path.c_str()))
+                return (*it)->getRootNode();
         }
     }
 
@@ -1425,8 +1424,6 @@ tango::INodeValuePtr Database::openLocalNodeFile(const std::wstring& path)
 
 tango::INodeValuePtr Database::openNodeFile(const std::wstring& _path)
 {
-    XCM_AUTO_LOCK(m_objregistry_mutex);
-
     if (_path.empty())
         return xcm::null;
         
@@ -1434,14 +1431,15 @@ tango::INodeValuePtr Database::openNodeFile(const std::wstring& _path)
     if (kl::isFileUrl(_path))
         path = urlToOfsFilename(_path);
 
-
-    // lookup in our list to see if the file is already open
-    std::vector<OfsFile*>::iterator it;
-    for (it = m_ofs_files.begin(); it != m_ofs_files.end(); ++it)
     {
-        if (!wcscasecmp((*it)->getPath().c_str(), path.c_str()))
+        XCM_AUTO_LOCK(m_objregistry_mutex);
+
+        // lookup in our list to see if the file is already open
+        std::vector<OfsFile*>::iterator it;
+        for (it = m_ofs_files.begin(); it != m_ofs_files.end(); ++it)
         {
-            return (*it)->getRootNode();
+            if (!wcscasecmp((*it)->getPath().c_str(), path.c_str()))
+                return (*it)->getRootNode();
         }
     }
 
@@ -2222,8 +2220,6 @@ bool Database::setFileType(const std::wstring& path, int type)
 
 bool Database::getFileType(const std::wstring& path, int* type, bool* is_mount)
 {
-    XCM_AUTO_LOCK(m_objregistry_mutex);
-
     if (path.empty() || path == L"/")
     {
         // caller wants file type information for root folder
@@ -2234,32 +2230,35 @@ bool Database::getFileType(const std::wstring& path, int* type, bool* is_mount)
         return true;
     }
 
-
-    OfsFile* file = NULL;
-
-    // lookup in our list to see if the file is already open
-    std::vector<OfsFile*>::iterator it;
-    for (it = m_ofs_files.begin(); it != m_ofs_files.end(); ++it)
     {
-        if (!wcscasecmp((*it)->getPath().c_str(), path.c_str()))
+        XCM_AUTO_LOCK(m_objregistry_mutex);
+
+        OfsFile* file = NULL;
+
+        // lookup in our list to see if the file is already open
+        std::vector<OfsFile*>::iterator it;
+        for (it = m_ofs_files.begin(); it != m_ofs_files.end(); ++it)
         {
-            file = *it;
-            
-            if (type)
-                *type = (*it)->getType();
-            if (is_mount)
+            if (!wcscasecmp((*it)->getPath().c_str(), path.c_str()))
             {
-                *is_mount = false;
-                tango::INodeValuePtr root = file->getRootNode();
-                if (root.isOk())
-                {
-                    tango::INodeValuePtr cs = root->getChild(L"connection_str", false);
-                    if (cs.isOk())
-                        *is_mount = true;
-                }
-            }
+                file = *it;
             
-            break;
+                if (type)
+                    *type = (*it)->getType();
+                if (is_mount)
+                {
+                    *is_mount = false;
+                    tango::INodeValuePtr root = file->getRootNode();
+                    if (root.isOk())
+                    {
+                        tango::INodeValuePtr cs = root->getChild(L"connection_str", false);
+                        if (cs.isOk())
+                            *is_mount = true;
+                    }
+                }
+            
+                break;
+            }
         }
     }
 

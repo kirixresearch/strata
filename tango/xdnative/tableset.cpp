@@ -412,16 +412,12 @@ TableSet::TableSet(tango::IDatabase* database) : BaseSet(database)
     m_idxrefresh_time = 0;
 
     setSetFlags(tango::sfFastRowCount);
-    
-    m_dbi->registerSet(this);
 }
 
 
 TableSet::~TableSet()
 {
     XCM_AUTO_LOCK(m_update_mutex);
-
-    m_dbi->unregisterSet(this);
 
     // release table
 
@@ -559,6 +555,8 @@ bool TableSet::create(tango::IStructure* struct_config)
     updateRowCount();
     m_temporary = true;
 
+        
+    m_dbi->registerSet(this);
     return true;
 }
 
@@ -629,6 +627,9 @@ bool TableSet::load(tango::INodeValuePtr set_file)
 
     refreshIndexEntries();
     
+    m_dbi->registerSet(this);
+
+
     return true;
 }
 

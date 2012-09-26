@@ -123,7 +123,7 @@ int BaseSet::insert(tango::IIteratorPtr source_iter,
 
 bool BaseSet::createCalcField(tango::IColumnInfoPtr colinfo)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    XCM_AUTO_LOCK(m_structure_mutex);
 
     tango::INodeValuePtr file = openSetDefinition(true);
     if (file.isNull())
@@ -171,7 +171,7 @@ bool BaseSet::createCalcField(tango::IColumnInfoPtr colinfo)
 bool BaseSet::modifyCalcField(const std::wstring& _name,
                               tango::IColumnInfoPtr colinfo)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    XCM_AUTO_LOCK(m_structure_mutex);
 
     tango::INodeValuePtr file = openSetDefinition(true);
     if (file.isNull())
@@ -243,7 +243,7 @@ bool BaseSet::modifyCalcField(const std::wstring& _name,
 
 bool BaseSet::deleteCalcField(const std::wstring& _name)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    XCM_AUTO_LOCK(m_structure_mutex);
 
     tango::INodeValuePtr file = openSetDefinition(true);
     if (file.isNull())
@@ -272,13 +272,13 @@ bool BaseSet::deleteCalcField(const std::wstring& _name)
 
 void BaseSet::appendCalcFields(tango::IStructure* structure)
 {
-    // do this before the m_object_mutex of BaseSet is locked;
+    // do this before the m_structure_mutex of BaseSet is locked;
     // this will avoid interlocking the mutexes of NativeTable
     // and BaseSet.  This problem won't exist anymore once we
     // make getStructureModifyTime in NativeTable take no mutex.
     tango::tango_uint64_t t = getStructureModifyTime();
     
-    XCM_AUTO_LOCK(m_object_mutex);
+    XCM_AUTO_LOCK(m_structure_mutex);
 
     if (t == 0 || t != m_calcrefresh_time)
     {
@@ -367,7 +367,7 @@ void BaseSet::onRelationshipsUpdated()
 bool BaseSet::modifyStructure(tango::IStructure* struct_config,
                               bool* done_flag)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    XCM_AUTO_LOCK(m_structure_mutex);
 
     *done_flag = false;
 
@@ -450,14 +450,14 @@ tango::rowpos_t BaseSet::getRowCount()
 
 bool BaseSet::addEventHandler(ISetEvents* handler)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    XCM_AUTO_LOCK(m_event_mutex);
     m_event_handlers.push_back(handler);
     return true;
 }
 
 bool BaseSet::removeEventHandler(ISetEvents* handler)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    XCM_AUTO_LOCK(m_event_mutex);
     std::vector<ISetEvents*>::iterator it;
     it = std::find(m_event_handlers.begin(),
                    m_event_handlers.end(),
@@ -484,7 +484,7 @@ tango::tango_uint64_t BaseSet::getStructureModifyTime()
 
 void BaseSet::fire_onSetDomainUpdated()
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    XCM_AUTO_LOCK(m_event_mutex);
 
     std::vector<ISetEvents*>::iterator it;
     for (it = m_event_handlers.begin();
@@ -497,7 +497,7 @@ void BaseSet::fire_onSetDomainUpdated()
 
 void BaseSet::fire_onSetStructureUpdated()
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    XCM_AUTO_LOCK(m_event_mutex);
 
     std::vector<ISetEvents*>::iterator it;
     for (it = m_event_handlers.begin();
@@ -510,7 +510,7 @@ void BaseSet::fire_onSetStructureUpdated()
 
 void BaseSet::fire_onSetRelationshipsUpdated()
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    XCM_AUTO_LOCK(m_event_mutex);
 
     std::vector<ISetEvents*>::iterator it;
     for (it = m_event_handlers.begin();
@@ -523,7 +523,7 @@ void BaseSet::fire_onSetRelationshipsUpdated()
 
 void BaseSet::fire_onSetRowUpdated(tango::rowid_t rowid)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    XCM_AUTO_LOCK(m_event_mutex);
 
     std::vector<ISetEvents*>::iterator it;
     for (it = m_event_handlers.begin();
@@ -536,7 +536,7 @@ void BaseSet::fire_onSetRowUpdated(tango::rowid_t rowid)
 
 void BaseSet::fire_onSetRowDeleted(tango::rowid_t rowid)
 {
-    XCM_AUTO_LOCK(m_object_mutex);
+    XCM_AUTO_LOCK(m_event_mutex);
 
     std::vector<ISetEvents*>::iterator it;
     for (it = m_event_handlers.begin();

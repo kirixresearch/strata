@@ -111,10 +111,38 @@ class OfsFile : public xcm::IObject
 {
     friend class OfsValue;
     
-    XCM_CLASS_NAME("xdnative.OfsFile")
+    XCM_CLASS_NAME_CUSTOMREFCOUNT("xdnative.OfsFile")
     XCM_BEGIN_INTERFACE_MAP(OfsFile)
     XCM_END_INTERFACE_MAP()
+
+
+    virtual void ref()
+    {
+        m_database->lockObjectRegistryMutex();
+        m_refcount_holder.xcm_ref_count++;
+        m_database->unlockObjectRegistryMutex();
+    }
     
+    virtual void unref()
+    {
+        m_database->lockObjectRegistryMutex();
+        if (--m_refcount_holder.xcm_ref_count == 0)
+        {
+            IDatabaseInternalPtr dbi = m_database;
+            dbi->unregisterNodeFile(this);
+            delete this;
+            dbi->unlockObjectRegistryMutex();
+            return;
+        }
+        m_database->unlockObjectRegistryMutex();
+    }
+    
+    virtual int get_ref_count()
+    {
+        return 10;
+    }
+    
+
 public:
 
     static OfsFile* createFile(tango::IDatabase* db,
@@ -130,7 +158,7 @@ public:
                             bool* is_mount);
                             
     tango::INodeValuePtr getRootNode();
-    std::wstring getPath();
+    const std::wstring& getPath();
     void setType(int new_type);
     int getType();
     

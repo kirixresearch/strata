@@ -17,6 +17,26 @@
 #include "../xdcommon/xdcommon.h"
 
 
+/*
+// good for checking object lifetime
+#include <windows.h>
+
+int countt = 0;
+
+class Munch
+{
+public:
+    ~Munch()
+    {
+        wchar_t b[255];
+        swprintf(b, 255, L"%d", countt);
+        ::MessageBox(NULL, b, L"", MB_OK);
+    }
+};
+Munch m;
+*/
+
+
 OfsValue::OfsValue(OfsFile* file, InternalOfsValue* value)
 {
     m_file = file;
@@ -504,10 +524,6 @@ static void ofsValueToXml(kl::xmlnode& node, const InternalOfsValue* value)
 }
 
 
-
-
-int countt = 0;
-
 OfsFile::OfsFile(tango::IDatabase* db)
 {
     m_root_node = new InternalOfsValue;
@@ -521,8 +537,6 @@ OfsFile::OfsFile(tango::IDatabase* db)
 
 OfsFile::~OfsFile()
 {
-    m_database->unregisterNodeFile(this);
-
     if (m_dirty)
     {
         writeFile();
@@ -634,10 +648,13 @@ void OfsFile::setDirty(bool new_value)
     m_dirty = new_value;
 }
 
-std::wstring OfsFile::getPath()
+const std::wstring& OfsFile::getPath()
 {
-    XCM_AUTO_LOCK(m_object_mutex);
-
+    // don't lock m_object_mutex here -- it causes an interlocking
+    // deadlock in ofs lookup mechanism for example in the for loop
+    // in Database::openLocalNodeFile(); besides, it's not necessary
+    // because m_key_path doesn't change during the lifetime of
+    // an OfsFile object
     return m_key_path;
 }
 
@@ -659,8 +676,7 @@ void OfsFile::setType(int new_type)
 
 tango::INodeValuePtr OfsFile::getRootNode()
 {
-    XCM_AUTO_LOCK(m_object_mutex);
-
+    // don't lock here; see comment in OfsFile::getPath()
     OfsValue* v = new OfsValue(this, m_root_node);
     return static_cast<tango::INodeValue*>(v);
 }
