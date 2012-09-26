@@ -936,19 +936,66 @@ bool AppController::init()
     menuTools->AppendSeparator();
     menuTools->Append(ID_App_Options, _("&Options..."));
     
-
+    // note: for online items, some menu items may not have target URLs 
+    // (depending on application definitions in appversion.h; only show 
+    // the menu items that have actual URLs associated with them
     wxMenu* menuHelp = new wxMenu;
-    menuHelp->Append(ID_Project_Help, _("&Help Contents\tF1"));
-    menuHelp->Append(ID_Project_Reference, _("&Online Help"));
-    menuHelp->Append(ID_Project_Resources, _("&Developer Resources"));
-    menuHelp->AppendSeparator();
-    menuHelp->Append(ID_Project_Support, _("Support &Forums"));
-    menuHelp->Append(ID_Project_ContactUs, _("&Contact Us"));
-    menuHelp->AppendSeparator();
-    menuHelp->Append(ID_App_LicenseManager, _("&Activate..."));
-    menuHelp->Append(ID_App_CheckForUpdates, _("Check for &Updates..."));
-    menuHelp->AppendSeparator();
+    bool append_help_contents_separator = false;
+    bool append_help_resources_separator = false;
+    bool append_help_update_separator = false;
+    
+    // local help contents should always exist; other help-related
+    // items may or may not exist
+    if (true)
+    {
+        menuHelp->Append(ID_Project_Help, _("&Help Contents\tF1"));
+        append_help_contents_separator = true;
+    }
+    if (APP_WEBLOCATION_HELP != wxT(""))
+    {
+        menuHelp->Append(ID_Project_Reference, _("&Online Help"));
+        append_help_contents_separator = true;
+    }
+    if (APP_WEBLOCATION_DEVELOPER != wxT(""))
+    {
+        menuHelp->Append(ID_Project_Resources, _("&Developer Resources"));
+        append_help_contents_separator = true;
+    }
+    if (append_help_contents_separator)
+        menuHelp->AppendSeparator();
+    
+    // help resources info
+    if (APP_WEBLOCATION_SUPPORT != wxT(""))
+    {
+        menuHelp->Append(ID_Project_Support, _("Support &Forums"));
+        append_help_resources_separator = true;
+    }
+    if (APP_WEBLOCATION_CONTACT != wxT(""))
+    {
+        menuHelp->Append(ID_Project_ContactUs, _("&Contact Us"));
+        append_help_resources_separator = true;
+    }
+    if (append_help_resources_separator)        
+        menuHelp->AppendSeparator();
+
+    // help update info
+    if (APP_INETAUTH_AUTHSERVERLIST != wxT(""))
+    {
+        menuHelp->Append(ID_App_LicenseManager, _("&Activate..."));
+        append_help_update_separator = true;        
+    }
+    if (APP_UPDATE_URL != wxT(""))
+    {
+        menuHelp->Append(ID_App_CheckForUpdates, _("Check for &Updates..."));
+        append_help_update_separator = true;
+    }
+    if (append_help_update_separator)
+        menuHelp->AppendSeparator();
+
+    // help about info; always include
     menuHelp->Append(ID_App_About, _("A&bout..."));
+
+
     
     wxMenuBar* menuBar = new wxMenuBar;
     menuBar->Append(menuFile, _("&File"));
