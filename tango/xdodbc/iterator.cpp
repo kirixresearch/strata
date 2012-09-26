@@ -225,14 +225,6 @@ bool OdbcIterator::init(const std::wstring& query)
             col_scale = 0;
         }
 
-        // handle column width
-        if (col_tango_type == tango::typeCharacter ||
-            col_tango_type == tango::typeWideCharacter)
-        {
-            // we must allow room for the null terminator
-            col_width += 1;
-        }
-
         if (col_tango_type == tango::typeNumeric)
         {
             // numeric fields have a max width of 18
@@ -275,7 +267,7 @@ bool OdbcIterator::init(const std::wstring& query)
                                     (*it)->ordinal,
                                     SQL_C_CHAR,
                                     (*it)->str_val,
-                                    (*it)->width*sizeof(char),
+                                    ((*it)->width+1)*sizeof(char),
                                     &(*it)->indicator);
                 break;
             }
@@ -286,7 +278,7 @@ bool OdbcIterator::init(const std::wstring& query)
                                     (*it)->ordinal,
                                     SQL_C_WCHAR,
                                     (*it)->wstr_val,
-                                    (*it)->width*sizeof(wchar_t),
+                                    ((*it)->width+1)*sizeof(wchar_t),
                                     &(*it)->indicator);
                 break;
             }
