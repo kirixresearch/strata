@@ -1781,7 +1781,17 @@ tango::ISetPtr FsDatabase::createSet(const std::wstring& _path,
         }
         
 
-        file.createFile(path, fields, encoding);
+        if (format_info && !format_info->first_row_column_names)
+        {
+            // no field names
+            std::vector<std::wstring> f;
+            file.createFile(path, f, encoding);
+        }
+         else
+        {
+            file.createFile(path, fields, encoding);
+        }
+
         file.closeFile();
         
 
@@ -1809,6 +1819,8 @@ tango::ISetPtr FsDatabase::createSet(const std::wstring& _path,
                     tset->setDelimiters(format_info->delimiters, false);
                 if (format_info && format_info->text_qualifiers.length() > 0)
                     tset->setTextQualifier(format_info->text_qualifiers, false);
+                if (format_info && !format_info->first_row_column_names)
+                    tset->setFirstRowColumnNames(false);
             }
 
             tset->saveConfiguration();
