@@ -1753,6 +1753,13 @@ void DelimitedTextSet::updateColumnNames()
     std::vector<std::wstring> old_names;
     int i;
 
+    // if we don't have a column match vector filled out (such
+    // as when we create a csv without a header row, this function
+    // shouldn't be run (as far as I can tell)
+
+    if (m_colname_matches.size() != src_colcount)
+        return;
+
     // switch all of the column names to their unique match name
     for (i = 0; i < src_colcount; ++i)
     {
