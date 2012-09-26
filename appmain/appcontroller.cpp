@@ -940,6 +940,7 @@ bool AppController::init()
     // (depending on application definitions in appversion.h; only show 
     // the menu items that have actual URLs associated with them
     wxMenu* menuHelp = new wxMenu;
+    wxString help_item;
     bool append_help_contents_separator = false;
     bool append_help_resources_separator = false;
     bool append_help_update_separator = false;
@@ -951,12 +952,15 @@ bool AppController::init()
         menuHelp->Append(ID_Project_Help, _("&Help Contents\tF1"));
         append_help_contents_separator = true;
     }
-    if (APP_WEBLOCATION_HELP != wxT(""))
+    
+    help_item = APP_WEBLOCATION_HELP;
+    if (help_item.Length() > 0)
     {
         menuHelp->Append(ID_Project_Reference, _("&Online Help"));
         append_help_contents_separator = true;
     }
-    if (APP_WEBLOCATION_DEVELOPER != wxT(""))
+    help_item = APP_WEBLOCATION_DEVELOPER;
+    if (help_item.Length() > 0)
     {
         menuHelp->Append(ID_Project_Resources, _("&Developer Resources"));
         append_help_contents_separator = true;
@@ -965,12 +969,14 @@ bool AppController::init()
         menuHelp->AppendSeparator();
     
     // help resources info
-    if (APP_WEBLOCATION_SUPPORT != wxT(""))
+    help_item = APP_WEBLOCATION_SUPPORT;
+    if (help_item.Length() > 0)
     {
         menuHelp->Append(ID_Project_Support, _("Support &Forums"));
         append_help_resources_separator = true;
     }
-    if (APP_WEBLOCATION_CONTACT != wxT(""))
+    help_item = APP_WEBLOCATION_CONTACT;
+    if (help_item.Length() > 0)
     {
         menuHelp->Append(ID_Project_ContactUs, _("&Contact Us"));
         append_help_resources_separator = true;
@@ -979,12 +985,14 @@ bool AppController::init()
         menuHelp->AppendSeparator();
 
     // help update info
-    if (APP_INETAUTH_AUTHSERVERLIST != wxT(""))
+    help_item = APP_INETAUTH_AUTHSERVERLIST;
+    if (help_item.Length() > 0)
     {
         menuHelp->Append(ID_App_LicenseManager, _("&Activate..."));
         append_help_update_separator = true;        
     }
-    if (APP_UPDATE_URL != wxT(""))
+    help_item = APP_UPDATE_URL;
+    if (help_item.Length() > 0)
     {
         menuHelp->Append(ID_App_CheckForUpdates, _("Check for &Updates..."));
         append_help_update_separator = true;
