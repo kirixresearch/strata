@@ -20,8 +20,8 @@
 
 #ifndef APP_VERSION_MAJOR
 #define APP_VERSION_MAJOR           4    // between 00 and 99, inclusive
-#define APP_VERSION_MINOR           4    // between  0 and 9, inclusive
-#define APP_VERSION_SUBMINOR        2    // between  0 and 9, inclusive
+#define APP_VERSION_MINOR           5    // between  0 and 9, inclusive
+#define APP_VERSION_SUBMINOR        0    // between  0 and 9, inclusive
 #define APP_VERSION_BUILDSERIAL     0    // between 0000 and 9999, inclusive
 #endif
 
@@ -36,8 +36,8 @@
 
 
 #define APPLICATION_NAME                wxT("Kirix Strata")
-#define APP_COMPANY_NAME                wxT("Kirix Corporation")
-#define APP_COPYRIGHT                   wxT("Copyright (c) 2002-2011, Kirix Research, LLC.  All rights reserved.")
+#define APP_COMPANY_NAME                wxT("Kirix Research")
+#define APP_COPYRIGHT                   wxT("Copyright (c) 2002-2012, Kirix Research, LLC.  All rights reserved.")
 #define APP_WEBLOCATION_HOME            wxT("http://www.kirix.com/strata/portal.html")
 #define APP_WEBLOCATION_HELP            wxT("http://www.kirix.com/strata/help")
 #define APP_WEBLOCATION_STORE           wxT("http://www.kirix.com/store")

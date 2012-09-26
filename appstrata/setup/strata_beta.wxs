@@ -5,12 +5,12 @@
         Id="%GUID%"
         UpgradeCode="1499DE09-1D0C-40be-9EF3-BA106AEC73B7" 
         Version="%VERSION%"
-        Manufacturer="Kirix Corporation"
+        Manufacturer="Kirix Research"
         Language="1033">
         
     <Package Id="%GUID%" 
         Comments="This MSI installation file installs Kirix Strata Beta"
-        Manufacturer="Kirix Corporation"
+        Manufacturer="Kirix Research"
         InstallerVersion="200" 
         Description="Kirix Strata Beta"
         Languages="1033" Compressed="yes"/>
