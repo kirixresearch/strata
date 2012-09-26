@@ -1384,7 +1384,7 @@ const std::wstring& OdbcIterator::getWideString(tango::objhandle_t data_handle)
     if (dai->indicator == SQL_NTS)
         width = wcslen(dai->wstr_val);
          else
-        width = dai->indicator;
+        width = (dai->indicator/sizeof(wchar_t));
 
     if (dai->type == tango::typeCharacter)
     {
