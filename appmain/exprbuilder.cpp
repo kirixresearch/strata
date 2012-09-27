@@ -1064,7 +1064,7 @@ void ExprBuilderPanel::onFunctionListCursorMove(kcl::GridEvent& evt)
         m_learn_more_hyperlink->SetURL(func_info_list[row].helpurl);
     }
     
-    m_helper_sizer->Layout();
+    Layout();
 }
 
 void ExprBuilderPanel::onFunctionListNeedTooltipText(kcl::GridEvent& evt)
