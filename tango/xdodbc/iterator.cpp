@@ -506,15 +506,15 @@ void OdbcIterator::saveRowToCache()
 
             case tango::typeWideCharacter:
                 if ((*it)->indicator == SQL_NTS)
-                    width = strlen((*it)->str_val);
+                    width = wcslen((*it)->wstr_val) * sizeof(wchar_t);
                      else
                     width = (*it)->indicator;
                 
-                if (width >= (*it)->width)
-                    width = (*it)->width;
+                if (width >= (*it)->width*sizeof(wchar_t))
+                    width = (*it)->width*sizeof(wchar_t);
                     
                 m_cache.appendColumnData((unsigned char*)((*it)->wstr_val),
-                                          width*sizeof(wchar_t));
+                                          width);
                 break;
 
             case tango::typeNumeric:
@@ -595,7 +595,7 @@ void OdbcIterator::readRowFromCache(tango::rowpos_t row)
 
             case tango::typeWideCharacter:
                 memcpy((*it)->wstr_val, data, data_size);
-                data_size /= sizeof(wchar_t);
+                //data_size /= sizeof(wchar_t);
                 (*it)->indicator = data_size;
                 break;
 
