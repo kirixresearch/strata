@@ -872,6 +872,10 @@ void DlgProjectMgr::populate()
     std::vector<ProjectInfo>::iterator it;
     int row = 0;
     
+    // timers for making sure that the populate routine doesn't take too much time
+    time_t t1, t2;
+    t1 = time(NULL);
+
     std::sort(connections.begin(), connections.end(), ConnectionInfoLess());
     for (it = connections.begin(); it != connections.end(); ++it)
     {
@@ -884,10 +888,12 @@ void DlgProjectMgr::populate()
                 name = name.Mid(idx+1);
         }
         
+
         // calculate the project size
         wxString size_str = wxT("");
         
-        if (display_project_size)
+        t2 = time(NULL);
+        if (display_project_size && (t2-t1) < 8)
         {
             double size = getProjectSize(it->location);
             double mb_size = size/1048576.0;
