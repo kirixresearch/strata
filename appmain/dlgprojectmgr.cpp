@@ -17,7 +17,7 @@
 #include <wx/dir.h>
 
 
-// -- ProjectMgr class implementation --
+// ProjectMgr class implementation
 
 ProjectMgr::ProjectMgr()
 {
@@ -26,14 +26,16 @@ ProjectMgr::ProjectMgr()
 
 ProjectMgr::~ProjectMgr()
 {
-
 }
 
 void ProjectMgr::refresh()
 {
     m_projects.clear();
 
-    // -- read all data from the sysconfig --
+    // setting for displaying project size
+    bool display_project_size = g_app->getAppPreferences()->getBoolean(wxT("app.project_mgr.display_project_size"), true);
+
+    // read all data from the sysconfig
     wxConfig* config = new wxConfig(APP_CONFIG_KEY, APP_COMPANY_KEY);
 
     config->SetPath(wxT("/RecentDatabases"));
@@ -209,7 +211,7 @@ int ProjectMgr::getIdxFromLocation(const wxString& location)
 
 
 
-// -- Add Project Dialog class implementation --
+// Add Project Dialog class implementation
 
 enum
 {
@@ -244,11 +246,11 @@ public:
     {
         SetMinSize(wxSize(500,320));
 
-        // -- create 'create project' radio button --
+
+        // create 'create project' radio button
         m_create_radio = new wxRadioButton(this, ID_Create_Radio, _("Create a new project"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
-        
-        // -- create 'create project' name sizer --
-        
+
+        // create 'create project' name sizer
         wxStaticText* label_create_name = new wxStaticText(this, -1, _("Name:"));
         m_create_name_textctrl = new wxTextCtrl(this, -1, _("New Project"));
 
@@ -256,8 +258,7 @@ public:
         create_name_sizer->Add(label_create_name, 0, wxALIGN_CENTER | wxLEFT, 30);
         create_name_sizer->Add(m_create_name_textctrl, 1, wxALIGN_CENTER);
 
-        // -- create 'create project' loc sizer --
-        
+        // create 'create project' loc sizer
         wxStaticText* label_create_loc = new wxStaticText(this, -1, _("Location:"));
         m_create_loc_textctrl = new wxTextCtrl(this, -1, getDefaultProjectsPath());
         m_create_browse_button = new wxButton(this,
@@ -270,10 +271,10 @@ public:
         create_loc_sizer->AddSpacer(5);
         create_loc_sizer->Add(m_create_browse_button, 0);
 
-        // -- create 'add project' radio button --
+        // create 'add project' radio button
         m_add_radio = new wxRadioButton(this, ID_Add_Radio, _("Add an existing project to the project manager list"));
         
-        // -- create 'add project' location sizer --
+        // create 'add project' location sizer
         
         wxStaticText* label_add_loc = new wxStaticText(this, -1, _("Location:"));
         m_add_loc_textctrl = new wxTextCtrl(this, -1);
@@ -299,7 +300,7 @@ public:
         create_name_sizer->SetItemMinSize(label_create_name, label_size);
         
 
-        // -- create vertical sizer --
+        // create vertical sizer
         
         wxStaticText* message = new wxStaticText(this, -1, _("Please select whether you would like to create a new project or add an existing project to the project manager list."));
         wxStaticBitmap* bmp = new wxStaticBitmap(this, -1, GETBMP(gf_project_32));
@@ -318,7 +319,7 @@ public:
         vert_sizer->Add(add_loc_sizer, 0, wxEXPAND);
 
 
-        // -- create top sizer --
+        // create top sizer
         
         wxBoxSizer* top_sizer = new wxBoxSizer(wxHORIZONTAL);
         top_sizer->AddSpacer(7);
@@ -326,11 +327,11 @@ public:
         top_sizer->AddSpacer(15);
         top_sizer->Add(vert_sizer, 1, wxEXPAND | wxTOP, 7);
 
-        // -- set some initial values --
+        // set some initial values
         m_add_loc_textctrl->SetValue(m_info->location);
         m_add_loc_textctrl->SetFocus();
 
-        // -- create a platform standards-compliant OK/Cancel sizer --
+        // create a platform standards-compliant OK/Cancel sizer
         
         wxButton* ok_button = new wxButton(this, wxID_OK);
         wxButton* cancel_button = new wxButton(this, wxID_CANCEL);
@@ -341,13 +342,13 @@ public:
         ok_cancel_sizer->Realize();
         ok_cancel_sizer->AddSpacer(5);
         
-        // -- this code is necessary to get the sizer's bottom margin to 8 --
+        // this code is necessary to get the sizer's bottom margin to 8
         wxSize min_size = ok_cancel_sizer->GetMinSize();
         min_size.SetHeight(min_size.GetHeight()+16);
         ok_cancel_sizer->SetMinSize(min_size);
 
 
-        // -- create main sizer --
+        // create main sizer
         wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
         main_sizer->AddSpacer(8);
         main_sizer->Add(top_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 8);
@@ -456,13 +457,13 @@ public:
 
     bool isAddPathOk()
     {
-        // -- check when adding an existing project --
+        //  check when adding an existing project
         
         m_info->name = wxEmptyString;
         m_info->location = m_add_loc_textctrl->GetValue().Trim(true).Trim(false);
 
 
-        // -- empty path, bail out --
+        // empty path, bail out
         if (m_info->location.Length() == 0)
         {
             cfw::appMessageBox(_("The specified location is empty.  Please enter the location of the project you would like to add."),
@@ -524,7 +525,7 @@ public:
     
     bool isCreatePathOk()
     {
-        // -- check when creating a new project --
+        // check when creating a new project
         
         wxString location = m_create_loc_textctrl->GetValue();
         if (location.Last() != PATH_SEPARATOR_CHAR)
@@ -534,7 +535,8 @@ public:
         m_info->name = m_create_name_textctrl->GetValue();
         m_info->location = location;
         
-        // -- empty path, bail out --
+        // empty path, bail out
+
         if (m_info->location.Length() == 0)
         {
             cfw::appMessageBox(_("The specified location is empty.  Please enter the location of the project you would like to create."),
@@ -570,7 +572,7 @@ public:
         }
          else
         {
-            // -- check to see if this is a database project folder --
+            // check to see if this is a database project folder
             
             wxString ofs_path = m_info->location;
             ofs_path += PATH_SEPARATOR_STR;
@@ -585,7 +587,7 @@ public:
                 return false;
             }
 
-            // -- check to see if the folder is empty --
+            // check to see if the folder is empty
             
             bool has_children = false;
             
@@ -616,7 +618,7 @@ public:
             }
         }
         
-        // -- try to create the new project folder --
+        // try to create the new project folder
         
         if (!g_app->getAppController()->createProject(m_info->location, m_info->name))
         {
@@ -719,7 +721,7 @@ DlgProjectMgr::DlgProjectMgr(wxWindow* parent, wxWindowID id) :
 {
     SetMinSize(wxSize(520,340));
     
-    // -- create grid --
+    // create grid
     m_grid = new kcl::RowSelectionGrid(this,
                                        wxID_ANY,
                                        wxDefaultPosition,
@@ -756,7 +758,7 @@ DlgProjectMgr::DlgProjectMgr(wxWindow* parent, wxWindowID id) :
     props.alignment = kcl::Grid::alignRight;
     m_grid->setModelColumnProperties(colSize, &props);
     
-    // -- create a platform standards-compliant OK/Cancel sizer --
+    // create a platform standards-compliant OK/Cancel sizer
     
     wxButton* add_button = new wxButton(this,
                                         ID_AddProject,
@@ -779,7 +781,7 @@ DlgProjectMgr::DlgProjectMgr(wxWindow* parent, wxWindowID id) :
     ok_cancel_sizer->Prepend(add_button, 0, wxALIGN_CENTER | wxLEFT, 8);
     ok_cancel_sizer->AddSpacer(5);
     
-    // -- this code is necessary to get the sizer's bottom margin to 8 --
+    // this code is necessary to get the sizer's bottom margin to 8
     wxSize min_size = ok_cancel_sizer->GetMinSize();
     min_size.SetHeight(min_size.GetHeight()+16);
     ok_cancel_sizer->SetMinSize(min_size);
@@ -797,16 +799,30 @@ DlgProjectMgr::DlgProjectMgr(wxWindow* parent, wxWindowID id) :
     // non-proportionally sized, which will make the grid fill
     // the client window size initially, but still allow the user
     // to resize each column)
+
+    bool display_project_size = g_app->getAppPreferences()->getBoolean(wxT("project_mgr.display_project_size"), true);
+
+    // set the size of the location column
     int w, h;
     m_grid->GetClientSize(&w, &h);
-    w -= m_grid->getColumnSize(colName);
-    w -= m_grid->getColumnSize(colSize);
-    m_grid->setColumnSize(colLocation, w);
+    w -= m_grid->getColumnSize(m_grid->getColumnViewIdx(colName));
+    if (display_project_size)
+    {
+        w -= m_grid->getColumnSize(m_grid->getColumnViewIdx(colSize));
+    }
+    m_grid->setColumnSize(m_grid->getColumnViewIdx(colLocation), w);
 
-    m_grid->hideColumn(colUser);      // hide user column for version 1.x
-    m_grid->hideColumn(colType);      // hide location column for version 1.x
+    m_grid->hideColumn(m_grid->getColumnViewIdx(colUser));      // hide user column for version 1.x
+    m_grid->hideColumn(m_grid->getColumnViewIdx(colType));      // hide location column for version 1.x
 
-    // -- populate grid --
+    // if we don't want to display the project size (because it takes
+    // a long time to populate in some circumstances, e.g. network drives),
+    // hide the column
+    if (!display_project_size)
+        m_grid->hideColumn(m_grid->getColumnViewIdx(colSize));
+
+
+    // populate grid
     populate();
     m_grid->clearSelection();
     if (m_grid->getRowCount() > 0)
@@ -847,7 +863,10 @@ void DlgProjectMgr::populate()
 {
     m_grid->deleteAllRows();
     
-    // -- now populate the grid --
+    // retrieve setting for displaying project size
+    bool display_project_size = g_app->getAppPreferences()->getBoolean(wxT("project_mgr.display_project_size"), true);
+
+    // now populate the grid
     m_projmgr.refresh();
     std::vector<ProjectInfo>& connections = m_projmgr.getProjectEntries();
     std::vector<ProjectInfo>::iterator it;
@@ -866,15 +885,19 @@ void DlgProjectMgr::populate()
         }
         
         // calculate the project size
-        wxString size_str;
-        double size = getProjectSize(it->location);
-        double mb_size = size/1048576.0;
-        double gb_size = size/1073741824.0;
-        if (gb_size >= 1.0)
-            size_str = wxString::Format(wxT("%.2f GB"), gb_size);
-             else
-            size_str = wxString::Format(wxT("%.2f MB"), mb_size);
+        wxString size_str = wxT("");
         
+        if (display_project_size)
+        {
+            double size = getProjectSize(it->location);
+            double mb_size = size/1048576.0;
+            double gb_size = size/1073741824.0;
+            if (gb_size >= 1.0)
+                size_str = wxString::Format(wxT("%.2f GB"), gb_size);
+                 else
+                size_str = wxString::Format(wxT("%.2f MB"), mb_size);
+        }
+
         m_grid->insertRow(-1);
         m_grid->setCellString(row, colName, name);
         m_grid->setCellBitmap(row, colName, GETBMP(gf_project_16), kcl::Grid::alignLeft);
