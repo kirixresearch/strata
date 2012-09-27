@@ -1578,7 +1578,7 @@ bool MainFrame::create(wxWindow* parent,
 #endif
 
 
-    // TODO: set manager flags; following is a sample
+    // set manager flags
     int flags;
     flags = 0;
     flags |= wxAUI_MGR_TRANSPARENT_DRAG;
@@ -1595,7 +1595,7 @@ bool MainFrame::create(wxWindow* parent,
     
     m_mgr.Update();
 
-    // TODO: set notebook flags; following is a sample
+    // set notebook flags
     flags = 0;
     flags |= wxAUI_NB_WINDOWLIST_BUTTON;
     flags |= wxAUI_NB_TAB_FIXED_WIDTH;
