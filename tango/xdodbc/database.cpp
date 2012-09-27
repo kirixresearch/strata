@@ -306,6 +306,7 @@ std::wstring createOdbcFieldString(std::wstring name,
 
         case tango::typeWideCharacter:
         {
+            bool character_set = false;
             bool compression = false;
             
             if (db_type == tango::dbtypeSqlServer)
@@ -315,6 +316,10 @@ std::wstring createOdbcFieldString(std::wstring name,
                                     width,
                                     allow_nulls ? L" NULL" : L"");
                 return buf;
+            }
+             else if (db_type == tango::dbtypeMySql)
+            {
+                character_set = true;
             }
              else if (db_type == tango::dbtypeAccess)
             {
@@ -329,6 +334,7 @@ std::wstring createOdbcFieldString(std::wstring name,
             swprintf(buf, 255, L"%ls varchar (%d)%ls%ls",
                                 name.c_str(),
                                 width,
+                                character_set ? L" CHARACTER SET UTF8" : L"",
                                 compression ? L" WITH COMPRESSION" : L"",
                                 allow_nulls ? L"" : L" NOT NULL");
             return buf;
