@@ -25,7 +25,6 @@
 #include <ctime>
 
 
-// -- CommonDynamicSet Implementation --
 
 CommonDynamicSet::CommonDynamicSet()
 {
@@ -48,7 +47,7 @@ CommonDynamicSet::~CommonDynamicSet()
     }
 
 
-    // -- release all indexes --
+    // release all indexes
     std::vector<CommonDynamicSetIndexEntry>::iterator it;
     for (it = m_indexes.begin(); it != m_indexes.end(); ++it)
     {
@@ -62,9 +61,9 @@ CommonDynamicSet::~CommonDynamicSet()
             delete it->key_expr;
         }
 
-        // -- try to delete the index file itself:
-        //    right now all indexes on CommonDynamicSets are
-        //    considered 'temporary' --
+        // try to delete the index file itself:
+        // right now all indexes on CommonDynamicSets are
+        // considered 'temporary'
 
         std::wstring full_index_filename;
         full_index_filename = makePathName(m_temp_path,
@@ -77,8 +76,6 @@ CommonDynamicSet::~CommonDynamicSet()
 
 }
 
-
-// -- IStorable --
 
 void CommonDynamicSet::onOfsPathChanged(const std::wstring& new_path)
 {
@@ -148,7 +145,7 @@ bool CommonDynamicSet::create(tango::IDatabasePtr database,
                                          L".dyn");
     
 
-    // -- filename specified, so create a disk index --
+    // filename specified, so create a disk index
     ExIndex* di = new ExIndex;
     di->setTempFilePath(m_temp_path);
     if (!di->create(filename, sizeof(tango::rowid_t), 0, false))
@@ -296,8 +293,8 @@ int CommonDynamicSet::insert(tango::IIteratorPtr source_iter,
 
     m_index->startBulkInsert(max_count);
 
-    // -- if the constraint set is a filter set, we can perform the
-    //    operation faster by just parsing the filter expression locally --
+    // if the constraint set is a filter set, we can perform the
+    // operation faster by just parsing the filter expression locally
     tango::objhandle_t filter_handle = 0;
     if (condition.length() > 0)
     {
