@@ -1368,8 +1368,8 @@ bool AppController::init()
     g_app->getMainFrame()->getStatusBar()->populate();
 
     // start any extensions that are supposed to be run on startup
-    // but only if --noext is not specified
-    if (!g_app->getCommandLine()->Found(wxT("noext")))
+    // but only if -n or --noext is not specified
+    if (!g_app->getCommandLine()->Found(wxT("n")))
     {
         ExtensionMgr* ext_mgr = g_app->getExtensionMgr();
         ext_mgr->startAllExtensions();

@@ -623,13 +623,16 @@ bool MainApp::OnInit()
         // this is used in wxmsw mode to allow the GUI version of the program
         // to run scripts from the command line
 
+        if (xf_get_file_exist(towstr(argv[1])))
+        {
 #if APP_GUI==1
-        wxFrame* f = new wxFrame(NULL, -1, wxT(""));
-        if (!runCommandLineScript())
-            return FALSE;
-        SetExitOnFrameDelete(false);
-        return TRUE;
+            wxFrame* f = new wxFrame(NULL, -1, wxT(""));
+            if (!runCommandLineScript())
+                return FALSE;
+            SetExitOnFrameDelete(false);
+            return TRUE;
 #endif
+        }
     }
     
     if (!m_app_controller->init())
@@ -859,6 +862,7 @@ bool MainApp::runCommandLineScript()
             path += PATH_SEPARATOR_CHAR;
         path += argv[1];
     }
+
 
     tango::IDatabasePtr db = getDatabase();
     if (db.isNull())
@@ -1115,7 +1119,14 @@ wxCmdLineParser* MainApp::getCommandLine()
     if (m_command_line)
         return m_command_line;
 
-    m_command_line = new wxCmdLineParser(argc, argv);
+    static const wxCmdLineEntryDesc cmd_line_desc[] =
+    {
+        { wxCMD_LINE_SWITCH, "n", "noext",   "don't start extensions automatically" },
+        { wxCMD_LINE_NONE }
+    };
+
+    m_command_line = new wxCmdLineParser(cmd_line_desc, argc, argv);
+    m_command_line->Parse(false);
     return m_command_line;
 }
 
