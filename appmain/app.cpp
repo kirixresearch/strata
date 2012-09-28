@@ -705,7 +705,10 @@ void MainApp::initWebClient()
     // add some common plugin directories to MOZ_PLUGIN_PATH
     #ifdef __WXMSW__
     wxString program_files_dir;
-    ::wxGetEnv(wxT("ProgramFiles"), &program_files_dir);
+    if (!::wxGetEnv(wxT("ProgramFiles(x86)"), &program_files_dir))
+    {
+        ::wxGetEnv(wxT("ProgramFiles"), &program_files_dir);
+    }
     if (program_files_dir.Length() == 0 || program_files_dir.Last() != '\\')
         program_files_dir += wxT("\\");
     
