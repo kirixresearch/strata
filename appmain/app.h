@@ -52,6 +52,7 @@ public:
     wxHelpControllerBase* getHelpController();
     wxPrintPaperDatabase* getPaperDatabase();
     ExtensionMgr* getExtensionMgr();
+    wxCmdLineParser* getCommandLine();
     
     wxArrayString getFontNames();
     wxString getBookmarkFolder();
@@ -119,6 +120,7 @@ private:
     ExtensionMgr* m_extension_mgr;
     WebServer* m_web_server;
     wxFrame* m_frame_wnd;
+    wxCmdLineParser* m_command_line;
     DbDoc* m_dbdoc;
     
     wxArrayString m_font_names;

@@ -42,8 +42,8 @@
 #include <wx/statline.h>
 #include <wx/spinctrl.h>
 #include <wx/sashwin.h>
-
-
+#include <wx/cmdline.h>
+#include <wx/combo.h>
 
 #ifdef WIN32
 #include <wx/msw/helpchm.h>

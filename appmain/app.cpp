@@ -50,49 +50,6 @@ time_t g_app_start_time = 0;
 #include "appmain.h"
 
 
-static wxString getProgramPath()
-{
-    char buf[512];
-    char* slash;
-
-#if defined(__WXMSW__)
-    GetModuleFileNameA(NULL, buf, 511);
-    slash = strrchr(buf, '\\');
-    if (slash)
-    {
-        *slash = 0;
-    }
-#elif defined(__linux__)
-    int res;
-    res = readlink("/proc/self/exe", buf, 512);
-    if (res == -1)
-        return wxT("");
-    buf[res] = 0;
-    slash = strrchr(buf, '/');
-    if (slash)
-    {
-        *slash = 0;
-    }
-#elif defined(__APPLE__)
-    unsigned int len = 512;
-    if (_NSGetExecutablePath(buf, &len) == -1)
-        return wxT("");
-    buf[len] = 0;
-    slash = strrchr(buf, '/');
-    if (slash)
-    {
-        *slash = 0;
-    }
-#else
-    return wxT("");
-#endif
-
-    return towx(buf);
-}
-
-
-
-
 static wxString getAppDataPath()
 {
     // try to get the application data path from the registry
@@ -331,23 +288,18 @@ void UpdateTimer::Notify()
 // -- app instantiation --
 
 #if APP_CONSOLE==0
-
     IMPLEMENT_APP(MainApp)
     BEGIN_EVENT_TABLE(MainApp, wxApp)
         EVT_ACTIVATE_APP(MainApp::onActivateApp)
     END_EVENT_TABLE()
-
 #else
-
     IMPLEMENT_APP_CONSOLE(MainApp)
     BEGIN_EVENT_TABLE(MainApp, wxAppConsole)
     END_EVENT_TABLE()
-
 #endif
 
 MainApp::MainApp()
 {
-    // -- initialize variables --
     m_frame = NULL;
     m_app_controller = NULL;
     m_frame_wnd = NULL;
@@ -358,6 +310,7 @@ MainApp::MainApp()
     m_web_server = NULL;
     m_paper_database = NULL;
     m_dbdoc = NULL;
+    m_command_line = NULL;
 #ifdef __WXMSW__
     m_taskbar_icon = NULL;
 #endif
@@ -472,7 +425,8 @@ bool MainApp::OnInit()
     g_app = this;
 
     // get our install location
-    m_install_path = getProgramPath();
+    wxStandardPaths sp;
+    m_install_path = sp.GetExecutablePath().BeforeLast(PATH_SEPARATOR_CHAR);
 
     // initialize the paladin object (checks for license authenticity)
     g_auth = paladin::createAuthObject(kl::tostring(APP_COMPANY_KEY).c_str(),
@@ -490,9 +444,6 @@ bool MainApp::OnInit()
     }
 
 
-
-
-    
 #if APP_GUI==1
     // the below code is necessary for xdoracle to load properly
     // but it's not a good solution to change the directory just
@@ -734,7 +685,7 @@ void MainApp::initWebClient()
 
 
     // find out web controls engine path
-    wxString web_engine_path = getProgramPath();
+    wxString web_engine_path = m_install_path;
     web_engine_path = web_engine_path.BeforeLast(PATH_SEPARATOR_CHAR);
     web_engine_path += PATH_SEPARATOR_CHAR;
     web_engine_path += wxT("xr");
@@ -842,6 +793,7 @@ int MainApp::OnExit()
     delete m_paper_database;
     delete m_app_controller;
     delete m_extension_mgr;
+    delete m_command_line;
 
 #ifdef __WXMSW__
     if (m_taskbar_icon)
@@ -1156,6 +1108,15 @@ wxString MainApp::getInstallPath()
 wxString MainApp::getAppDataPath()
 {
     return ::getAppDataPath();
+}
+
+wxCmdLineParser* MainApp::getCommandLine()
+{
+    if (m_command_line)
+        return m_command_line;
+
+    m_command_line = new wxCmdLineParser(argc, argv);
+    return m_command_line;
 }
 
 void MainApp::setMainFrame(cfw::IFramePtr frame)

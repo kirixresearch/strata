@@ -13,7 +13,7 @@
 #define __APP_DBCOMBO_H
 
 
-#include <wx/combo.h>
+
 #include "dbdoc.h"
 
 
