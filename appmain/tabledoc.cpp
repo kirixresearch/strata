@@ -3792,6 +3792,11 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
     tango::IColumnInfoPtr colinfo = m_iter->getInfo(colhandle);
     if (colinfo.isNull())
         return;
+    
+    // use the correct spelling of the column name with regards to
+    // upper/lower case, because some databases such as oracle
+    // are case sensitive
+    colname = towx(colinfo->getName());
 
     int coltype = colinfo->getType();
     
