@@ -28,12 +28,15 @@
 
 // -- OracleSet class implementation --
 
-OracleSet::OracleSet()
+OracleSet::OracleSet(OracleDatabase* database)
 {
     m_env = NULL;
     m_svc = NULL;
     m_stmt = NULL;
     m_err = NULL;
+
+    m_database = database;
+    m_database->ref();
 }
 
 OracleSet::~OracleSet()
@@ -47,6 +50,8 @@ OracleSet::~OracleSet()
     {
         OCIHandleFree((dvoid*)m_err, OCI_HTYPE_ERROR);
     }
+
+    m_database->unref();
 }
 
 bool OracleSet::init()
@@ -165,7 +170,7 @@ tango::IStructurePtr OracleSet::getStructure()
                    (ub4)OCI_DEFAULT);
 
     // execute sql statement
-    if (OCI_SUCCESS != checkerr(m_err, OCIStmtExecute(
+    if (OCI_SUCCESS != m_database->checkerr(m_err, OCIStmtExecute(
                                            m_svc,
                                            m_stmt,
                                            m_err,
@@ -409,10 +414,9 @@ tango::IIteratorPtr OracleSet::createIterator(const std::wstring& columns,
         query += expr;
     }
 
-    OracleIterator* iter = new OracleIterator;
+    OracleIterator* iter = new OracleIterator(m_database);
     iter->m_env = m_env;
     iter->m_svc = m_svc;
-    iter->m_database = m_database;
     iter->m_set = this;
     iter->m_name = m_tablename;
     if (!iter->init(query))
@@ -803,7 +807,7 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
 
     // prepare the statement
     std::string asc_insert_stmt = kl::tostring(insert_stmt);
-    checkerr(m_err, OCIStmtPrepare(m_stmt,
+    m_set->m_database->checkerr(m_err, OCIStmtPrepare(m_stmt,
                                    m_err,
                                    (text*)asc_insert_stmt.c_str(),
                                    (ub4)asc_insert_stmt.length(),
@@ -828,7 +832,7 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
         var_name += (*it2)->m_name.c_str();
         asc_var_name = kl::tostring(var_name);
 
-        checkerr(m_err, OCIBindByName(m_stmt,
+        if (OCI_SUCCESS != m_set->m_database->checkerr(m_err, OCIBindByName(m_stmt,
                                       &(*it2)->m_bind,
                                       m_err,
                                       (text*)asc_var_name.c_str(),
@@ -841,13 +845,16 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
                                       (ub2*)0,
                                       (ub4)0,
                                       (ub4*)0,
-                                      OCI_DEFAULT));
+                                      OCI_DEFAULT)))
+        {
+            return false;
+        }
         
         // if this field is a unicode string,
         // set the bind attribute to OCI_UCS2ID
         if ((*it2)->m_tango_type == tango::typeCharacter)
         {
-            checkerr(m_err, OCIAttrSet((*it2)->m_bind,
+            m_set->m_database->checkerr(m_err, OCIAttrSet((*it2)->m_bind,
                                OCI_HTYPE_BIND,
                                &csid_iso8859_1,
                                sizeof(csid_iso8859_1),
@@ -856,13 +863,13 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
         }
          else if ((*it2)->m_tango_type == tango::typeWideCharacter)
         {
-            checkerr(m_err, OCIAttrSet((*it2)->m_bind,
+            m_set->m_database->checkerr(m_err, OCIAttrSet((*it2)->m_bind,
                                        (ub4)OCI_HTYPE_BIND,
                                        &csform_nchar,
                                        sizeof(csform_nchar),
                                        OCI_ATTR_CHARSET_FORM,
                                        m_err));
-            checkerr(m_err, OCIAttrSet((*it2)->m_bind,
+            m_set->m_database->checkerr(m_err, OCIAttrSet((*it2)->m_bind,
                                        OCI_HTYPE_BIND,
                                        &csid_ucs2,
                                        sizeof(csid_ucs2),
@@ -870,7 +877,7 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
                                        m_err));
         }
 
-        checkerr(m_err, OCIBindArrayOfStruct((*it2)->m_bind,
+        m_set->m_database->checkerr(m_err, OCIBindArrayOfStruct((*it2)->m_bind,
                                              m_err,
                                              (ub4)m_row_width,
                                              0,
@@ -904,7 +911,7 @@ bool OracleRowInserter::flushRows()
     sword ret1, ret2;
 
     // insert the max_insert_rows number of rows into the table
-    ret1 = checkerr(m_err, OCIStmtExecute(m_svc,
+    ret1 = m_set->m_database->checkerr(m_err, OCIStmtExecute(m_svc,
                                    m_stmt,
                                    m_err,
                                    (ub4)m_cur_buf_row,
@@ -913,7 +920,7 @@ bool OracleRowInserter::flushRows()
                                    (OCISnapshot*)0,
                                    (ub4)OCI_DEFAULT));
 
-    ret2 = checkerr(m_err, OCITransCommit(m_svc, m_err, (ub4)0));
+    ret2 = m_set->m_database->checkerr(m_err, OCITransCommit(m_svc, m_err, (ub4)0));
     memset(m_buf, 0, m_row_width*insert_rows_per_buf);
     m_cur_buf_row = 0;
 

@@ -51,7 +51,7 @@ friend class OracleRowInserter;
 
 public:
 
-    OracleSet();
+    OracleSet(OracleDatabase* database);
     ~OracleSet();
 
     bool init();
@@ -85,7 +85,7 @@ public:
 
 private:
 
-    tango::IDatabasePtr m_database;
+    OracleDatabase* m_database;
 
     OCIEnv* m_env;
     OCISvcCtx* m_svc;

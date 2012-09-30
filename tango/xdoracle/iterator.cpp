@@ -28,8 +28,11 @@ const std::string empty_string = "";
 const std::wstring empty_wstring = L"";
 
 
-OracleIterator::OracleIterator()
+OracleIterator::OracleIterator(OracleDatabase* database)
 {
+    m_database = database;
+    m_database->ref();
+
     m_eof = false;
     m_cache_active = false;
     m_row_pos = 0;
@@ -56,12 +59,15 @@ OracleIterator::~OracleIterator()
 
     for (it = m_exprs.begin(); it != m_exprs.end(); ++it)
         delete (*it);
+
+    // release database ref
+    m_database->unref();
 }
 
 bool OracleIterator::init(const std::wstring& query)
 {
     // allocate error handle
-    if (OCI_SUCCESS != checkerr(m_err, OCIHandleAlloc((dvoid*)m_env,
+    if (OCI_SUCCESS != m_database->checkerr(m_err, OCIHandleAlloc((dvoid*)m_env,
                                                       (dvoid**)&m_err,
                                                       OCI_HTYPE_ERROR,
                                                       (size_t)0,
@@ -72,7 +78,7 @@ bool OracleIterator::init(const std::wstring& query)
 
 
     // allocate statement handle
-    if (OCI_SUCCESS != checkerr(m_err, OCIHandleAlloc((dvoid*)m_env,
+    if (OCI_SUCCESS != m_database->checkerr(m_err, OCIHandleAlloc((dvoid*)m_env,
                                                       (dvoid**)&m_stmt,
                                                       OCI_HTYPE_STMT,
                                                       (size_t)0,
@@ -84,7 +90,7 @@ bool OracleIterator::init(const std::wstring& query)
 
     // prepare sql statement
     std::string q = kl::tostring(query);
-    if (OCI_SUCCESS != checkerr(m_err, OCIStmtPrepare(m_stmt,
+    if (OCI_SUCCESS != m_database->checkerr(m_err, OCIStmtPrepare(m_stmt,
                                                       m_err,
                                                       (text*)q.c_str(),
                                                       (ub4)q.length(),
@@ -96,7 +102,7 @@ bool OracleIterator::init(const std::wstring& query)
 
 
     // execute sql statement
-    if (OCI_SUCCESS != checkerr(m_err, OCIStmtExecute(m_svc,
+    if (OCI_SUCCESS != m_database->checkerr(m_err, OCIStmtExecute(m_svc,
                                                       m_stmt,
                                                       m_err,
                                                       (ub4)0,
@@ -256,7 +262,7 @@ bool OracleIterator::init(const std::wstring& query)
         switch (field->tango_type)
         {
             case tango::typeWideCharacter:
-                checkerr(m_err, OCIDefineByPos(m_stmt,
+                m_database->checkerr(m_err, OCIDefineByPos(m_stmt,
                                                &field->define,
                                                m_err,
                                                counter,
@@ -268,12 +274,12 @@ bool OracleIterator::init(const std::wstring& query)
                                                (ub2*)0,
                                                (ub4)OCI_DEFAULT));
                 
-                checkerr(m_err, OCIAttrSet(field->define, OCI_HTYPE_DEFINE, &csform_nchar, sizeof(csform_nchar), OCI_ATTR_CHARSET_FORM, (OCIError*)m_err));
-                checkerr(m_err, OCIAttrSet(field->define, OCI_HTYPE_DEFINE, &csid_ucs2, sizeof(csid_ucs2), OCI_ATTR_CHARSET_ID, (OCIError*)m_err));
+                m_database->checkerr(m_err, OCIAttrSet(field->define, OCI_HTYPE_DEFINE, &csform_nchar, sizeof(csform_nchar), OCI_ATTR_CHARSET_FORM, (OCIError*)m_err));
+                m_database->checkerr(m_err, OCIAttrSet(field->define, OCI_HTYPE_DEFINE, &csid_ucs2, sizeof(csid_ucs2), OCI_ATTR_CHARSET_ID, (OCIError*)m_err));
                 break;
                 
             case tango::typeCharacter:
-                checkerr(m_err, OCIDefineByPos(m_stmt, 
+                m_database->checkerr(m_err, OCIDefineByPos(m_stmt, 
                                                &field->define,
                                                m_err,
                                                counter,
@@ -284,12 +290,12 @@ bool OracleIterator::init(const std::wstring& query)
                                                &field->str_len,
                                                (ub2*)0,
                                                (ub4)OCI_DEFAULT));
-                checkerr(m_err, OCIAttrSet(field->define, OCI_HTYPE_DEFINE, &csid_iso8859_1, sizeof(csid_iso8859_1), OCI_ATTR_CHARSET_ID, (OCIError*)m_err));
+                m_database->checkerr(m_err, OCIAttrSet(field->define, OCI_HTYPE_DEFINE, &csid_iso8859_1, sizeof(csid_iso8859_1), OCI_ATTR_CHARSET_ID, (OCIError*)m_err));
                 break;
 
             case tango::typeDouble:
             case tango::typeNumeric:
-                checkerr(m_err, OCIDefineByPos(m_stmt,
+                m_database->checkerr(m_err, OCIDefineByPos(m_stmt,
                                                &field->define,
                                                m_err,
                                                counter,
@@ -303,7 +309,7 @@ bool OracleIterator::init(const std::wstring& query)
                 break;
 
             case tango::typeInteger:
-                checkerr(m_err, OCIDefineByPos(m_stmt,
+                m_database->checkerr(m_err, OCIDefineByPos(m_stmt,
                                                &field->define,
                                                m_err,
                                                counter,
@@ -318,7 +324,7 @@ bool OracleIterator::init(const std::wstring& query)
 
             case tango::typeDate:
             case tango::typeDateTime:
-                checkerr(m_err, OCIDefineByPos(m_stmt,
+                m_database->checkerr(m_err, OCIDefineByPos(m_stmt,
                                                &field->define,
                                                m_err,
                                                counter,
@@ -332,7 +338,7 @@ bool OracleIterator::init(const std::wstring& query)
                 break;
 
             case tango::typeBoolean:
-                checkerr(m_err, OCIDefineByPos(m_stmt,
+                m_database->checkerr(m_err, OCIDefineByPos(m_stmt,
                                                &field->define,
                                                m_err,
                                                counter,
@@ -367,7 +373,7 @@ bool OracleIterator::init(const std::wstring& query)
                                      OCI_FETCH_NEXT,
                                      OCI_DEFAULT);
     
-    checkerr(m_err, status);
+    m_database->checkerr(m_err, status);
                              
     if (status != OCI_SUCCESS && status != OCI_SUCCESS_WITH_INFO)
     {
@@ -379,10 +385,9 @@ bool OracleIterator::init(const std::wstring& query)
     if (m_set.isNull())
     {
         // create set and initialize variables
-        OracleSet* set = new OracleSet;
+        OracleSet* set = new OracleSet(m_database);
         set->m_env = m_env;
         set->m_svc = m_svc;
-        set->m_database = m_database;
         set->m_tablename = getTableNameFromSql(query);
 
         // initialize Odbc connection for this set

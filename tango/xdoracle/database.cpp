@@ -82,12 +82,13 @@ const wchar_t* oracle_keywords2 =
 
 // -- utility functions --
 
-std::wstring createOracleFieldString(const std::wstring& name,
+std::wstring createOracleFieldString(const std::wstring& _name,
                                      int type,
                                      int width,
                                      int scale,
                                      bool null)
 {
+    std::wstring name = L"\"" + _name + L"\"";
     wchar_t buf[255];
 
     if (width < 1)
@@ -329,7 +330,7 @@ tango::IColumnInfoPtr createColInfo(const std::wstring& col_name,
 // -- utility function to test oracle function calls --
 
 
-sword checkerr(OCIError* err, sword status, char* msg, size_t msgbuf_size)
+static sword checkerr(OCIError* err, sword status, char* msg, size_t msgbuf_size)
 {
     text errbuf[512];
     sb4 errcode = 0;
@@ -960,10 +961,9 @@ tango::IFileInfoEnumPtr OracleDatabase::getFolderInfo(const std::wstring& path)
         std::wstring query = L"SELECT DISTINCT OWNER FROM ALL_TABLES "
                              L"WHERE TABLESPACE_NAME <> 'SYSAUX'";
 
-        OracleIterator* iter = new OracleIterator;
+        OracleIterator* iter = new OracleIterator(this);
         iter->m_env = m_env;
         iter->m_svc = m_svc;
-        iter->m_database = static_cast<tango::IDatabase*>(this);
         iter->m_set = xcm::null;
         iter->m_name = query;
         if (!iter->init(query))
@@ -1010,10 +1010,9 @@ tango::IFileInfoEnumPtr OracleDatabase::getFolderInfo(const std::wstring& path)
                              L"       FROM ALL_VIEWS WHERE OWNER='%s' ";
         kl::replaceStr(query, L"%s", owner);
 
-        OracleIterator* iter = new OracleIterator;
+        OracleIterator* iter = new OracleIterator(this);
         iter->m_env = m_env;
         iter->m_svc = m_svc;
-        iter->m_database = static_cast<tango::IDatabase*>(this);
         iter->m_set = xcm::null;
         iter->m_name = query;
         if (!iter->init(query))
@@ -1164,10 +1163,9 @@ tango::ISetPtr OracleDatabase::createSet(const std::wstring& path,
     if (!execute(command, 0, result_obj, NULL))
         return xcm::null;
 
-    OracleSet* set = new OracleSet;
+    OracleSet* set = new OracleSet(this);
     set->m_env = m_env;
     set->m_svc = m_svc;
-    set->m_database = static_cast<tango::IDatabase*>(this);
     set->m_path = path;
     set->m_tablename = getTablenameFromOfsPath(path);
     if (!set->init())
@@ -1207,11 +1205,10 @@ tango::ISetPtr OracleDatabase::openSet(const std::wstring& path)
     query += tablename;
     query += L" WHERE 1=0";
 
-    OracleIterator* iter = new OracleIterator;
+    OracleIterator* iter = new OracleIterator(this);
     iter->ref();
     iter->m_env = m_env;
     iter->m_svc = m_svc;
-    iter->m_database = static_cast<tango::IDatabase*>(this);
     iter->m_name = tablename;
     if (!iter->init(query))
     {
@@ -1224,10 +1221,9 @@ tango::ISetPtr OracleDatabase::openSet(const std::wstring& path)
 
     // we can access this table, so continue
 
-    OracleSet* set = new OracleSet;
+    OracleSet* set = new OracleSet(this);
     set->m_env = m_env;
     set->m_svc = m_svc;
-    set->m_database = static_cast<tango::IDatabase*>(this);
     set->m_path = path;
     set->m_tablename = tablename;
     if (!set->init())
@@ -1335,10 +1331,9 @@ bool OracleDatabase::execute(const std::wstring& _command,
     if (0 == wcscasecmp(first_word.c_str(), L"SELECT"))
     {
         // create an iterator based on our select statement
-        OracleIterator* iter = new OracleIterator;
+        OracleIterator* iter = new OracleIterator(this);
         iter->m_env = m_env;
         iter->m_svc = m_svc;
-        iter->m_database = static_cast<tango::IDatabase*>(this);
         iter->m_set = xcm::null;
         iter->m_name = command;
         

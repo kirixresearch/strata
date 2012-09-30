@@ -90,7 +90,7 @@ friend class OracleSet;
 
 public:
 
-    OracleIterator();
+    OracleIterator(OracleDatabase* database);
     ~OracleIterator();
     bool init(const std::wstring& query);
 
@@ -147,7 +147,7 @@ private:
                         size_t info_size);
 private:
 
-    tango::IDatabasePtr m_database;
+    OracleDatabase* m_database;
     tango::ISetPtr m_set;
 
     OCIEnv* m_env;

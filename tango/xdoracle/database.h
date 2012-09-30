@@ -18,6 +18,7 @@
 
 // utility functions
 
+
 int oracle2tangoType(int oracle_type, int oracle_charset = SQLCS_IMPLICIT);
 int tango2oracleType(int tango_type);
 
@@ -35,12 +36,6 @@ tango::IColumnInfoPtr createColInfo(const std::wstring& col_name,
                                     int precision,
                                     int scale,
                                     const std::wstring& expr = L"");
-
-sword checkerr(OCIError* err,
-               sword status,
-               char* msg = NULL,
-               size_t msgbuf_size = 0);
-               
 
 xcm_interface IOracleDatabase : public xcm::IObject
 {
@@ -60,6 +55,10 @@ XCM_DECLARE_SMARTPTR(IOracleDatabase)
 class OracleDatabase : public tango::IDatabase,
                        public IOracleDatabase
 {
+    friend class OracleSet;
+    friend class OracleIterator;
+    friend class OracleRowInserter;
+
     XCM_CLASS_NAME("xdoracle.Database")
     XCM_BEGIN_INTERFACE_MAP(OracleDatabase)
         XCM_INTERFACE_ENTRY(tango::IDatabase)
