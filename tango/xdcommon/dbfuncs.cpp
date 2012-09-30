@@ -55,7 +55,7 @@ int xdcmnInsert(tango::IIteratorPtr sp_source_iter,
 
     tango::IRowInserter* insert = sp_insert.p;
 
-    // -- get set structure --
+    // get set structure
     tango::IColumnInfoPtr src_colinfo, dest_colinfo;
     tango::IStructurePtr dest_structure = dest_set->getStructure();
     tango::IStructurePtr src_structure = source_iter->getStructure();
@@ -63,11 +63,17 @@ int xdcmnInsert(tango::IIteratorPtr sp_source_iter,
     int i;
     int col_count = dest_structure->getColumnCount();
 
-    insert->startInsert(L"*");
+    if (!insert->startInsert(L"*"))
+    {
+        IJobInternalPtr ijob = job;
+        if (ijob)
+            ijob->setError(tango::errorGeneral, L"cannot initialize inserter object");
+        return 0; // error encountered
+    }
 
     InsertInfo* insert_info = new InsertInfo[col_count];
 
-    // -- allocate column arrays --
+    // allocate column arrays
 
     int out_idx;
     out_idx = 0;
@@ -109,7 +115,8 @@ int xdcmnInsert(tango::IIteratorPtr sp_source_iter,
 
     col_count = out_idx;
 
-    // -- set up job --
+
+    // set up job
 
     IJobInternalPtr ijob;
     tango::rowpos_t cur_count;
@@ -149,8 +156,8 @@ int xdcmnInsert(tango::IIteratorPtr sp_source_iter,
 
 
 
-    // -- if the constraint set is a filter set, we can perform the
-    //    operation faster by just parsing the filter expression locally --
+    // if the constraint set is a filter set, we can perform the
+    // operation faster by just parsing the filter expression locally
     tango::objhandle_t filter_handle = 0;
     bool result = true;
 
@@ -166,7 +173,7 @@ int xdcmnInsert(tango::IIteratorPtr sp_source_iter,
 
 
 
-    // -- insertation loop --
+    // insertation loop
     while (!source_iter->eof())
     {
         if (filter_handle)
@@ -309,7 +316,7 @@ bool physStructureEqual(tango::IStructurePtr s1, tango::IStructurePtr s2)
     std::vector<tango::IColumnInfoPtr> s1_fields;
     std::vector<tango::IColumnInfoPtr> s2_fields;
 
-    // -- copy physical column infos --
+    // copy physical column infos
     for (i = 0; i < s1_col_count; ++i)
     {
         colinfo = s1->getColumnInfoByIdx(i);
