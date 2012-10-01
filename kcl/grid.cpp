@@ -3436,8 +3436,13 @@ void Grid::copySelection()
 
                 if (*p == wxT('"'))
                 {
+                    // if we're using a text qualifier, double quote any embedded
+                    // quotes; otherwise, simply add the character, since there's
+                    // not conflict
                     if (use_text_qualifier)
                         result += wxT("\"\"");
+                         else
+                        result += *p;
                 }
                  else
                 {
