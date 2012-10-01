@@ -708,15 +708,15 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
     m_row_width = 0;
 
     int buf_offset = 0;
-    
+    int field_counter = 0;
+    std::string var_name;  // bind the fields to variables
+
     std::vector<std::wstring>::iterator it;
     for (it = insert_fields.begin(); it != insert_fields.end(); ++it)
     {
         tango::IColumnInfoPtr col_info = s->getColumnInfo(*it);
         if (col_info.isNull())
-        {
             return false;
-        }
 
         OracleInsertData* field = new OracleInsertData;
         field->m_name = col_info->getName();
@@ -780,8 +780,9 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
             value_str += L", ";
         }
         field_str += (L"\"" + field->m_name + L"\"");
-        value_str += L":";
-        value_str += field->m_name;
+
+        // add a binding variable name
+        value_str += L":F" + kl::itowstring(++field_counter);
 
         buf_offset += field->m_oracle_width;
     }
@@ -814,9 +815,7 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
                                    (ub4)OCI_NTV_SYNTAX,
                                    (ub4)OCI_DEFAULT));
 
-    // bind the fields to variables
-    std::wstring var_name;
-    std::string asc_var_name;
+
 
     // ids for unicode fields
     //ub2 csid = OCI_UCS2ID;
@@ -825,18 +824,19 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
     ub1 csform_nchar = SQLCS_NCHAR;
 
 
+
+    field_counter = 0;
+
     std::vector<OracleInsertData*>::iterator it2;
     for (it2 = m_fields.begin(); it2 != m_fields.end(); ++it2)
     {
-        var_name = L":";
-        var_name += (*it2)->m_name.c_str();
-        asc_var_name = kl::tostring(var_name);
+        var_name = ":F" + kl::itostring(++field_counter);
 
         if (OCI_SUCCESS != m_set->m_database->checkerr(m_err, OCIBindByName(m_stmt,
                                       &(*it2)->m_bind,
                                       m_err,
-                                      (text*)asc_var_name.c_str(),
-                                      asc_var_name.length(),
+                                      (text*)var_name.c_str(),
+                                      var_name.length(),
                                       (dvoid*)(m_buf+(*it2)->m_buf_offset),
                                       (*it2)->m_oracle_width,
                                       (ub2)(*it2)->m_oracle_type,
