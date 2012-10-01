@@ -18,7 +18,6 @@
 #include "tangogridmodel.h"
 
 
-// -- TangoGridModel class implementation --
 
 TangoGridModel::TangoGridModel()
 {
@@ -198,19 +197,17 @@ void TangoGridModel::goRow(int row)
         return;
     }
 
-    // -- determine if we should do a long jump --
+    // determine if we should do a long jump
 
     if (abs(row-m_current_row) > 100000)
     {
-        // -- (this code is ok even if m_current_row is -1; it is
-        //    just an approximation --
+        // (this code is ok even if m_current_row is -1; it is just an approximation
 
         tango::ISetPtr set = m_it->getSet();
         if (set->getSetFlags() & tango::sfFastRowCount)
         {
 
-            // -- if a large skip runs fast, we don't need to to the
-            //    long jump approximation --
+            // if a large skip runs fast, we don't need to to the long jump approximation
             if (!(m_it->getIteratorFlags() & tango::ifFastSkip))
             {
                 if (m_current_row < 0)
@@ -222,8 +219,8 @@ void TangoGridModel::goRow(int row)
 
                 if (row_count-dest < 100000)
                 {
-                    // -- if we are near the end of the set, we can
-                    //    count back from the end --
+                    // if we are near the end of the set, we can
+                    // count back from the end
 
                     int rows_from_end = int(row_count) - (row+1);
 
@@ -235,7 +232,7 @@ void TangoGridModel::goRow(int row)
 
                 if (pos < 0.005)
                 {
-                    // -- go to the first row --
+                    // go to the first row
                     m_it->goFirst();
                     m_current_row = 0;
                     return;
@@ -420,29 +417,16 @@ void TangoGridModel::setIterator(tango::IIterator* it)
 
         m_forward_only = (it->getIteratorFlags() & tango::ifForwardOnly) ? true : false;
 
-        // -- we commented this chunk of code out on 10/12/2005...
-        //    it is unnecessary because refresh() is being called
-        //    below, which will overwrite this info anyway --
-/*
-        std::vector<TangoGridColumnInfo>::iterator it;
-        for (it = m_columns.begin(); it != m_columns.end(); ++it)
-        {
-            it->m_col_handle = m_it->getHandle(towstr(it->m_col_name));
-        }
-*/
-
         if (m_grid)
         {
             m_grid->reset();
         }
-
 
         if (m_break_expr.length())
         {
             m_break_handle = m_it->getHandle(towstr(m_break_expr));
         }
         
-
         refresh();
     }
 }
@@ -558,7 +542,7 @@ int TangoGridModel::getColumnIndex(const wxString& col_name)
 {
     if (m_column_lookup.size() != m_columns.size())
     {
-        // -- create a column lookup cache --
+        // create a column lookup cache
         int idx = 0;
         std::vector<TangoGridColumnInfo>::iterator col_it;
         for (col_it = m_columns.begin(); col_it != m_columns.end(); ++col_it)
@@ -613,7 +597,7 @@ void TangoGridModel::setColumnBitmap(int col,
 bool TangoGridModel::setColumnProperties(int col,
                                          kcl::CellProperties* cell_props)
 {
-    // -- this model does not support this operation --
+    // this model does not support this operation
     return false;
 }
 
@@ -709,7 +693,7 @@ bool TangoGridModel::setCellProperties(int row,
                                        int col,
                                        kcl::CellProperties* cell_props)
 {
-    // -- this model does not support this operation --
+    // this model does not support this operation
     return false;
 }
 
@@ -918,7 +902,7 @@ int TangoGridModel::createColumn(int position,
                                  int width,
                                  int scale)
 {
-    // -- this model does not support column insertion --
+    // this model does not support column insertion
     return -1;
 }
 
@@ -928,31 +912,31 @@ bool TangoGridModel::modifyColumn(int position,
                                   int width,
                                   int scale)
 {
-    // -- this model does not support column modification --
+    // this model does not support column modification
     return false;
 }
 
 bool TangoGridModel::deleteColumn(int position)
 {
-    // -- this model does not support column deletion --
+    // this model does not support column deletion
     return false;
 }
 
 int TangoGridModel::insertRow(int position)
 {
-    // -- this model does not yet support row insertion --
+    // this model does not yet support row insertion
     return -1;
 }
 
 bool TangoGridModel::deleteRow(int position)
 {
-    // -- this model does not yet support row deletion --
+    // this model does not yet support row deletion
     return false;
 }
 
 bool TangoGridModel::deleteAllRows()
 {
-    // -- this model does not yet support row deletion --
+    // this model does not yet support row deletion
     return false;
 }
 
