@@ -119,7 +119,7 @@ std::wstring createOracleFieldString(const std::wstring& _name,
                 width = 2000;
             }
 
-            swprintf(buf, 255, L"%ls nvarchar2(%d char)%ls",
+            swprintf(buf, 255, L"%ls nvarchar2(%d)%ls",
                                     name.c_str(),
                                     width,
                                     null ? L" NULL" : L"");

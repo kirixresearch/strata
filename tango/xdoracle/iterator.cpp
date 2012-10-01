@@ -267,7 +267,7 @@ bool OracleIterator::init(const std::wstring& query)
                                                m_err,
                                                counter,
                                                (dvoid*)field->wstr_val,
-                                               col_width+1,
+                                               (col_width+1)*sizeof(wchar_t),
                                                field->oracle_type,
                                                (dvoid*)&field->indicator,
                                                &field->str_len,
@@ -626,11 +626,11 @@ void OracleIterator::skipWithCache(int delta)
         {
             saveRowToCache();
             
-            if (OCIStmtFetch(m_stmt,
+            if (!oraSucceeded(m_database->checkerr(m_err, OCIStmtFetch(m_stmt,
                              m_err,
                              1,
                              OCI_FETCH_NEXT,
-                             OCI_DEFAULT) != OCI_SUCCESS)
+                             OCI_DEFAULT))))
             {
                 m_row_pos++;
                 m_eof = true;
@@ -660,11 +660,11 @@ void OracleIterator::skip(int delta)
         int i;
         for (i = 0; i < delta; ++i)
         {
-            if (OCIStmtFetch(m_stmt,
+            if (!oraSucceeded(m_database->checkerr(m_err, OCIStmtFetch(m_stmt,
                              m_err,
                              1,
                              OCI_FETCH_NEXT,
-                             OCI_DEFAULT) != OCI_SUCCESS)
+                             OCI_DEFAULT))))
             {
                 m_eof = true;
                 break;

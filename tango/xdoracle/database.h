@@ -19,6 +19,11 @@
 // utility functions
 
 
+inline bool oraSucceeded(sword res)
+{
+    return (res == OCI_SUCCESS || res == OCI_SUCCESS_WITH_INFO) ? true : false;
+}
+
 int oracle2tangoType(int oracle_type, int oracle_charset = SQLCS_IMPLICIT);
 int tango2oracleType(int tango_type);
 
