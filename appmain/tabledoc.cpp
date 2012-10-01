@@ -3792,11 +3792,6 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
     tango::IColumnInfoPtr colinfo = m_iter->getInfo(colhandle);
     if (colinfo.isNull())
         return;
-    
-    // use the correct spelling of the column name with regards to
-    // upper/lower case, because some databases such as oracle
-    // are case sensitive
-    colname = towx(colinfo->getName());
 
     int coltype = colinfo->getType();
     
@@ -9021,7 +9016,7 @@ void TableDoc::refreshActiveView(bool repaint)
             if (col_name.IsEmpty())
             {
                 // there is no column name, which means that this
-                // entry is a column separators
+                // entry is a column separator
                 int colpos = m_grid->insertColumnSeparator(-1);
                 m_grid->setColumnSize(colpos, viewcol->getSize());
                 m_grid->setColumnColors(colpos, viewcol->getForegroundColor(),
@@ -9043,7 +9038,10 @@ void TableDoc::refreshActiveView(bool repaint)
 
             if (model_idx >= 0)
             {
+                wxString caption = cfw::makeProperIfNecessary(col_name);
+
                 int colpos = m_grid->insertColumn(-1, model_idx);
+                m_grid->setColumnCaption(colpos, caption);
                 m_grid->setColumnSize(colpos, viewcol->getSize());
                 m_grid->setColumnColors(colpos,
                                         viewcol->getForegroundColor(),

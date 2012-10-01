@@ -336,7 +336,7 @@ void TangoGridModel::refresh()
         {
             TangoGridColumnInfo& gci = m_columns[i];
 
-            gci.m_col_name = cfw::makeProperIfNecessary(towx(structure->getColumnName(i)));
+            gci.m_col_name = towx(structure->getColumnName(i));
             gci.m_col_handle = m_it->getHandle(towstr(gci.m_col_name));
             spCol = m_it->getInfo(gci.m_col_handle);
             gci.m_col_type = spCol->getType();
