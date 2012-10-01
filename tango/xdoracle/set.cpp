@@ -779,9 +779,9 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
             field_str += L", ";
             value_str += L", ";
         }
-        field_str += field->m_name.c_str();
+        field_str += (L"\"" + field->m_name + L"\"");
         value_str += L":";
-        value_str += field->m_name.c_str();
+        value_str += field->m_name;
 
         buf_offset += field->m_oracle_width;
     }
