@@ -2722,7 +2722,11 @@ void WebDoc::openURI(const wxString& uri, wxWebPostData* post_data)
                                                     APP_VERSION_MINOR,
                                                     APP_VERSION_SUBMINOR,
                                                     APP_VERSION_BUILDSERIAL);
-        
+
+        // add an indicator if this is a 64-bit build
+        if (sizeof(void*) == 8)
+            build_str += wxT(" 64-bit");
+
         // inject information into the about and license pages
         
         wxDOMDocument domdoc = m_webcontrol->GetDOMDocument();

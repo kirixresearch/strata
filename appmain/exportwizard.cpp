@@ -842,7 +842,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
             // of the directories that we created
             deleteDirs(dirs_created);
             
-            cfw::appMessageBox(_("One or more of the filenames specified for export is invalid.  Please rename these files to continue."),
+            cfw::appMessageBox(_("One or more files specified for export is invalid.  Please rename these files to continue."),
                                _("Export Wizard"),
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
@@ -966,7 +966,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
             // show what rows contain errors
             m_table_selection_page->refreshGrid();
             
-            int result = cfw::appMessageBox(_("One or more of the filenames specified for export already exists.  Would you like to overwrite these files?"),
+            int result = cfw::appMessageBox(_("One or more files specified for export already exists.  Would you like to overwrite these files?"),
                                             _("Export Wizard"),
                                             wxYES_NO | wxNO_DEFAULT | wxICON_EXCLAMATION | wxCENTER);
             if (result == wxNO)
