@@ -39,7 +39,7 @@ enum
 };
 
 
-// -- utility functions for TextView --
+// utility functions for TextView
 
 static int offsetToPixels(int offset_idx, int scroll_offset_idx, int char_width)
 {
@@ -106,8 +106,6 @@ static unsigned char ebcdic2ascii(unsigned char c)
 }
 
     
-    
-// -- TextModel class implementation --
 
 TextViewModel::TextViewModel()
 {
@@ -128,7 +126,7 @@ TextViewModel::TextViewModel()
     m_chunk_size = 0;
     m_chunk_offset = 0;
 
-    // -- initialize the buffer --
+    // initialize the buffer 
     m_buf = new unsigned char[TEXTVIEW_BUF_SIZE];
     memset(m_buf, 0, TEXTVIEW_BUF_SIZE);
 }
@@ -138,8 +136,7 @@ TextViewModel::~TextViewModel()
 {
     closeFile();
 
-    if (m_buf)
-        delete[] m_buf;
+    delete[] m_buf;
 }
 
 
@@ -154,7 +151,7 @@ bool TextViewModel::isOpen()
 
 bool TextViewModel::openFile(const wxString& filename)
 {
-    // -- we can only open one file at a time --
+    // we can only open one file at a time
     if (isOpen())
         return false;
 
@@ -163,16 +160,16 @@ bool TextViewModel::openFile(const wxString& filename)
     m_file_size = xf_get_file_size(wfilename);
     m_file = xf_open(wfilename, xfOpen, xfRead, xfShareReadWrite);
 
-    // -- if opening the file failed, bail out --
+    // if opening the file failed, bail out
     if (!m_file)
         return false;
 
     m_file_name = filename;
 
-    // -- try to guess the file type --
+    // try to guess the file type
     m_file_type = guessFileType();
 
-    // -- try to guess the row width --
+    // try to guess the row width
     m_row_width = guessRowWidth();
 
     return true;
@@ -206,12 +203,6 @@ int TextViewModel::guessFileType()
 
         if (m_line_delimiters.Find(getCharAtOffset(i)) != -1)
             delim_count++;
-
-        /*
-        // -- skip consecutive delimiters ("0x0d 0x0a") --
-        if (m_line_delimiters.Find(getCharAtOffset(i+1)) != -1)
-            i++;
-        */
     }
 
     if (delim_count > 20)
@@ -262,16 +253,16 @@ xf_off_t TextViewModel::guessFixedRowWidth()
 
     for (i = 0; i < max_char_read; ++i)
     {
-        // -- linux format --
+        //  *ix text file format
         if (getCharAtOffset(i) == 0x0a)
             return i+1;
 
-        // -- mac format --
+        // mac text file format
         if (getCharAtOffset(i) == 0x0d)
         {
             if (i+1 < max_char_read)
             {
-                // -- windows format --
+                // windows format
                 if (getCharAtOffset(i+1) == 0x0a)
                     return i+2;
             }
@@ -292,13 +283,12 @@ wxChar TextViewModel::getCharAtOffset(xf_off_t offset)
     if (off >= m_file_size)
         return wxT('\0');
 
-    // -- if the character is in memory, return it --
+    // if the character is in memory, return it
     if (off >= m_chunk_offset && off < m_chunk_offset+m_chunk_size)
         return (m_char_encoding == tango::encodingEBCDIC) ? ebcdic2ascii(m_buf[off-m_chunk_offset])
                                                        : m_buf[off-m_chunk_offset];
 
-    // -- character was not in the buffer, so we need to read
-    //    in a new chunk --
+    // character was not in the buffer, so we need to read in a new chunk
 
     memset(m_buf, 0, TEXTVIEW_BUF_SIZE);
 
@@ -309,7 +299,7 @@ wxChar TextViewModel::getCharAtOffset(xf_off_t offset)
 
     m_chunk_size = xf_read(m_file, m_buf, 1, TEXTVIEW_BUF_SIZE);
 
-    // -- return the character (if not beyond EOF) --
+    // return the character (if not beyond EOF)
     if (off >= m_chunk_offset && off < m_chunk_offset+m_chunk_size)
         return (m_char_encoding == tango::encodingEBCDIC) ? ebcdic2ascii(m_buf[off-m_chunk_offset])
                                                        : m_buf[off-m_chunk_offset];
@@ -355,9 +345,9 @@ wxChar TextViewModel::getDelimitedChar(xf_off_t row, xf_off_t col)
         return getCharAtOffset(m_cur_row_offset + col);
     }
 
-    // -- this next chunk of code will scroll to the correct line.
-    //    if the desired line is ahead, we need to scroll forward,
-    //    otherwise we need to scroll backward --
+    // this next chunk of code will scroll to the correct line.
+    // if the desired line is ahead, we need to scroll forward,
+    // otherwise we need to scroll backward
 
     xf_off_t off = m_cur_row_offset;
     int diff = row-m_cur_row;
@@ -554,7 +544,7 @@ xf_off_t TextViewModel::calcRowCount()
 
     
     
-// -- CaptionTextCtrl class implementation --
+// CaptionTextCtrl class implementation
 
 class CaptionTextCtrl : public wxTextCtrl
 {
@@ -673,7 +663,7 @@ BEGIN_EVENT_TABLE(CaptionTextCtrl, wxTextCtrl)
 END_EVENT_TABLE()
     
     
-// -- TextView class implementation --
+// TextView class implementation
 
 BEGIN_EVENT_TABLE(TextView, wxWindow)
     EVT_PAINT(TextView::onPaint)
@@ -1543,7 +1533,7 @@ void TextView::drawColumnCaptions(wxMemoryDC* memdc)
  
         memdc->SetTextForeground(*wxBLACK);
 
-        // -- if we're dragging a break, draw the header slightly lighter --
+        // if we're dragging a break, draw the header slightly lighter
         if (m_offset_dragged && (it == m_dragged) && !isEditing())
         {
             wxColor lighter = kcl::stepColor(*wxBLACK, 170);

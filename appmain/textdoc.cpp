@@ -314,7 +314,6 @@ TextDoc::~TextDoc()
     }
 }
 
-// -- IDocument interface --
 
 bool TextDoc::initDoc(cfw::IFramePtr frame,
                       cfw::IDocumentSitePtr doc_site,
@@ -1103,11 +1102,11 @@ void TextDoc::refreshGrid()
 
 void TextDoc::updateStatusBar()
 {
-    // -- if the textview hasn't been created yet, bail out --
+    // if the textview hasn't been created yet, bail out
     if (!m_textview)
         return;
         
-    // -- if the grid hasn't been created yet, bail out --
+    // if the grid hasn't been created yet, bail out
     if (!m_grid)
         return;
 
@@ -1120,7 +1119,7 @@ void TextDoc::updateStatusBar()
         if (m_fixedlength_set.isNull())
             return;
         
-        // -- field count --
+        // field count
         int col = m_textview->getCursorOffset();
         int field_count = m_fixedlength_set->getRowCount();
         
@@ -1530,7 +1529,7 @@ void TextDoc::onUpdateUI(wxUpdateUIEvent& evt)
     return;
 }
 
-// -- event handling --
+
 
 void TextDoc::onSize(wxSizeEvent& evt)
 {
