@@ -1562,6 +1562,7 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
     }
 
 
+    // for xdclient, rather than copying the table, create a local "bookmark"
     {
         tango::ISetPtr set = getBaseSet();
         if (set.isOk())
@@ -1584,8 +1585,6 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
             }
         }
     }
-
-
 
 
 
