@@ -2326,16 +2326,6 @@ public:
 void AppController::onAbout(wxCommandEvent& evt)
 {
     showAbout();
-    
-    /*
-    for (int i = 0; i < 2; ++i)
-    {
-        MunchThread* t = new MunchThread;
-        if (t->Create() == wxTHREAD_NO_ERROR)
-        {
-            t->Run();
-        }
-    }*/
 }
 
 void AppController::onToggleFullScreen(wxCommandEvent& evt)
@@ -7085,16 +7075,26 @@ void AppController::showAbout()
     WebDoc* doc = new WebDoc;
     m_frame->createSite(doc, cfw::sitetypeNormal, -1, -1, -1, -1);
 
-    if (!doc->isWebBrowserOk())
+    // show the about dialog box if we have a valid web browser;
+    // if we are on a 64-bit build, the embedded browser is probably
+    // not wxWebConnect, therefore display the simple dialog box
+    // on 64-bit builds as well
+
+    if (!doc->isWebBrowserOk() || sizeof(void*) == 8)
     {
+        wxString bit = wxT("");
+        if (sizeof(void*) == 8)
+            bit = wxT(" (64-bit)");
+
         wxString appname = APPLICATION_NAME;
         wxString message;
-        message.Printf(wxT("%s %d.%d.%d.%d - %s\n\nThis software contains an unmodified binary version of the open-source XULRunner engine as provided by the Mozilla Foundation.  Please read the about:license screen for more information."),
+        message.Printf(wxT("%s %d.%d.%d.%d%s - %s\n\nThis software contains an unmodified binary version of the open-source XULRunner engine as provided by the Mozilla Foundation.  Please read the about:license screen for more information."),
                  appname.c_str(),
                  APP_VERSION_MAJOR,
                  APP_VERSION_MINOR,
                  APP_VERSION_SUBMINOR,
                  APP_VERSION_BUILDSERIAL,
+                 bit.c_str(),
                  APP_COPYRIGHT);
 
         cfw::appMessageBox(message,
