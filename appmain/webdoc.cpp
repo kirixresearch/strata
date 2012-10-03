@@ -3613,6 +3613,11 @@ void WebDoc::onOpenURI(wxWebEvent& evt)
             evt.Veto();
         }
     } 
+     else if (loc.Find(wxT("omni.jar")) != -1 && loc.Find(wxT("license.")) != -1)
+    {
+        showWebRes(webresLicense);
+        evt.Veto();
+    }
      else
     {
         // about: pages not in toolkit.jar
