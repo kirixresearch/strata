@@ -4290,7 +4290,7 @@ void ReportDoc::gotoPage()
     
     wxString message = wxString::Format(_("Page number (1 - %d):"), page_count);
     wxTextEntryDialog dlg(this, message, _("Go To Page"), default_val);
-    dlg.SetSize(260,141);
+    dlg.SetSize(260,143);
     
     if (dlg.ShowModal() == wxID_OK)
     {
