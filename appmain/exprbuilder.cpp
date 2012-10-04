@@ -66,6 +66,7 @@ static void populateFuncInfoList()
     func_info_list.push_back(FuncInfo(wxT("atan"),      _("ATAN(number)"),                                   _("Returns the arc tangent of a number in units of radians")));
     func_info_list.push_back(FuncInfo(wxT("avg"),       _("AVG(number1 [, number2, ...])"),                  _("Returns the average number of an input list")));
     func_info_list.push_back(FuncInfo(wxT("ceiling"),   _("CEILING(number [, precision])"),                  _("Returns the smallest number, to the specified precision, that is greater than or equal to the input number")));
+    func_info_list.push_back(FuncInfo(wxT("chr"),       _("CHR(number)"),                                    _("Returns the ASCII character corresponding to the input number")));
     func_info_list.push_back(FuncInfo(wxT("contains"),  _("CONTAINS(string, search string)"),                _("Returns true if the search string is contained in the string, false otherwise")));
     func_info_list.push_back(FuncInfo(wxT("cos"),       _("COS(number)"),                                    _("Returns the cosine of a number, where the input number is in units of radians")));
     func_info_list.push_back(FuncInfo(wxT("curdate"),   _("CURDATE()"),                                      _("Returns the current system date and time")));
@@ -79,6 +80,7 @@ static void populateFuncInfoList()
     func_info_list.push_back(FuncInfo(wxT("hour"),      _("HOUR(date)"),                                     _("Returns the hour corresponding to a date")));
     func_info_list.push_back(FuncInfo(wxT("iif"),       _("IIF(boolean test, true value, false value)"),     _("If the boolean test is true, the function returns the true value, otherwise it returns the false value")));
     func_info_list.push_back(FuncInfo(wxT("instr"),     _("INSTR(string, search string [, occurrence])"),    _("Returns the nth occurrence of the search string in the string, starting from the left side of the string")));
+    func_info_list.push_back(FuncInfo(wxT("isnull"),    _("ISNULL(value)"),                                  _("Returns true if an input string or date is null, false otherwise")));
     func_info_list.push_back(FuncInfo(wxT("left"),      _("LEFT(string, length)"),                           _("Returns the leftmost characters of a string to the specified length")));
     func_info_list.push_back(FuncInfo(wxT("length"),    _("LENGTH(string)"),                                 _("Returns the number of characters in a string")));
     func_info_list.push_back(FuncInfo(wxT("lfind"),     _("LFIND(string, search string [, occurrence])"),    _("Returns the nth occurrence of the search string in the string, starting from the left side of the string")));
