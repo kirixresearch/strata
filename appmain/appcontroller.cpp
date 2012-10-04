@@ -6980,14 +6980,24 @@ void AppController::showStartupPage()
     #if APP_WELCOME_PAGES == 1
     if (counter == 1)
     {
-        home_pages = APP_WEBLOCATION_WELCOME1;
+        // if a welcome page is defined, show it
+        wxString welcome_page = APP_WEBLOCATION_WELCOME1;
+        if (welcome_page.Length() > 0)
+        {
+            home_pages = welcome_page;
+        }
     }
      else if (counter == 5)
     {
-        activate_last = true;
-        if (home_pages.Length() > 0)
-            home_pages += wxT("|");
-        home_pages += APP_WEBLOCATION_WELCOME2;
+        // if a welcome page is defined, show it
+        wxString welcome_page = APP_WEBLOCATION_WELCOME2;
+        if (welcome_page.Length() > 0)
+        {
+            activate_last = true;
+            if (home_pages.Length() > 0)
+                home_pages += wxT("|");
+            home_pages += welcome_page;
+        }
     }
     #endif
     
@@ -6996,9 +7006,14 @@ void AppController::showStartupPage()
     // if there 5 or less days left, show the 'about to expire' page
     if (g_auth->getDaysLeft() <= 5)
     {
-        if (home_pages.Length() > 0)
-            home_pages += wxT("|");
-        home_pages += APP_WEBLOCATION_LICENSEEXPIRING;
+        // if a license expiration page is defined, show it
+        wxString license_expiration = APP_WEBLOCATION_LICENSEEXPIRING;
+        if (license_expiration.Length() > 0)
+        {
+            if (home_pages.Length() > 0)
+                home_pages += wxT("|");
+            home_pages += license_expiration;
+        }
     }
     
     
