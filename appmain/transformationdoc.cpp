@@ -1124,6 +1124,7 @@ wxString TransformationDoc::createDestinationExpression(int row)
     int tango_type = choice2tango(m_grid->getCellComboSel(row, colFieldType));
     int format_comboidx = m_grid->getCellComboSel(row, colFieldFormula);
     wxString source_name = m_grid->getCellString(row, colSourceName);
+    wxString quoted_source_name = towx(tango::quoteIdentifier(g_app->getDatabase(), towstr(source_name)));
     
     // translate from the combobox index and tango type
     // to the expression format index
@@ -1133,7 +1134,7 @@ wxString TransformationDoc::createDestinationExpression(int row)
     // we couldn't find the expression index for the lookup below, so
     // we'll just use the source name of the field as the expression
     if (expr_format == -1)
-        return source_name;
+        return quoted_source_name;
     
     // lookup the expression in our lookup array
     int i, count = sizeof(expr_lookup_arr)/sizeof(ExpressionLookupInfo);
@@ -1142,13 +1143,13 @@ wxString TransformationDoc::createDestinationExpression(int row)
         if (expr_lookup_arr[i].format == expr_format)
         {
             retval = towx(expr_lookup_arr[i].expr);
-            retval.Replace(wxT("%s"), source_name, true);
+            retval.Replace(wxT("%s"), quoted_source_name, true);
             return retval;
         }
     }
 
-    // something wen't wrong, return the source name as the expression
-    return source_name;
+    // something went wrong, return the source name as the expression
+    return quoted_source_name;
 }
 
 bool TransformationDoc::getInfoFromDestinationExpression(
