@@ -132,7 +132,7 @@ GenerationPage::GenerationPage(wxWindow* parent) : wxPanel(parent, -1)
     wxStaticBoxSizer* exp_sizer = new wxStaticBoxSizer(exp_static_box, wxVERTICAL);
     wxBoxSizer* exp_horz_sizer = new wxBoxSizer(wxHORIZONTAL);
 
-    m_exp_date = new wxCalendarCtrl(this, ID_Calendar, wxDefaultDateTime, wxDefaultPosition, wxSize(200,160));
+    m_exp_date = new wxCalendarCtrl(this, ID_Calendar, wxDefaultDateTime);
 
 
     wxCheckBox* perpetual = new wxCheckBox(this, ID_Perpetual, _("Perpetual"));

@@ -29,11 +29,11 @@ IMPLEMENT_APP(PalGenApp)
 
 static const wxCmdLineEntryDesc cmdLineDesc[] =
 {
-    { wxCMD_LINE_OPTION, wxT("a"), wxT("apptag"),  wxT("application tag"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
-    { wxCMD_LINE_OPTION, wxT("s"), wxT("sitecode"), wxT("site code"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
-    { wxCMD_LINE_OPTION, wxT("x"), wxT("valsitecode"), wxT("validate site code"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
-    { wxCMD_LINE_OPTION, wxT("e"), wxT("expdate"),  wxT("expiration date (yyyymmdd)"), wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL},
-    { wxCMD_LINE_SWITCH, wxT("c"), wxT("computerid"), wxT("generate a computer id") },
+    { wxCMD_LINE_OPTION, "a", "apptag",  "application tag", wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
+    { wxCMD_LINE_OPTION, "s", "sitecode", "site code", wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
+    { wxCMD_LINE_OPTION, "x", "valsitecode", "validate site code", wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
+    { wxCMD_LINE_OPTION, "e", "expdate",  "expiration date (yyyymmdd)", wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL},
+    { wxCMD_LINE_SWITCH, "c", "computerid", "generate a computer id" },
     { wxCMD_LINE_NONE }
 };
 
@@ -134,31 +134,4 @@ int PalGenApp::OnExit()
     return 0;
 }
 
-
-/*
-#if wxUSE_GUI==0
-int main(int argc, char* argv[])
-{
-    wxString strs[10];
-    wxChar* new_argv[10];
-    if (argc >= 10)
-        return 0;
-
-    int i;
-    for (i = 0; i < argc; ++i)
-    {
-        strs[i] = wxString::From8BitData(argv[i]);
-        new_argv[i] = (wxChar*)(strs[i].c_str());
-    }
-
-    if (argc > 1)
-    {
-        processCmdLine(argc, new_argv);
-        return 0;
-    }
-
-    return wxEntry(argc, argv);
-}
-#endif
-*/
 

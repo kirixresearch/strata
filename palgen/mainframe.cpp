@@ -34,7 +34,7 @@ END_EVENT_TABLE()
 
 
 MainFrame::MainFrame() : wxFrame(NULL, -1, _("Paladin Code Generator"),
-                                 wxPoint(100,100), wxSize(700,520), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxCLIP_CHILDREN | wxNO_FULL_REPAINT_ON_RESIZE)
+                                 wxPoint(100,100), wxSize(700,540), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxCLIP_CHILDREN | wxNO_FULL_REPAINT_ON_RESIZE)
 {
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
 
