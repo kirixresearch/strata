@@ -2,15 +2,15 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 <!--<Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">-->
     
-    <Product Name="Kirix Strata"
+    <Product Name="Kirix Strata (64-bit)"
         Id="*"
-        UpgradeCode="53839292-94DC-4849-A4A9-7373BAC4EF1A" 
+        UpgradeCode="1B839292-34DC-484A-A4A9-7374BAC4CD1B" 
         Version="%VERSION%"
         Manufacturer="Kirix Research, LLC"
         Language="1033">
         
     <Package
-        Comments="This MSI installation file installs Kirix Strata" 
+        Comments="This MSI installation file installs Kirix Strata (64-bit)" 
         Manufacturer="Kirix Research, LLC"
 		InstallerVersion="300" 
 		Platform="x64"
@@ -20,7 +20,7 @@
     <Media Id="1" EmbedCab="yes" Cabinet="kxinst.cab"/>
         
 
-    <Upgrade Id="53839292-94DC-4849-A4A9-7373BAC4EF1A">
+    <Upgrade Id="1B839292-34DC-484A-A4A9-7374BAC4CD1B">
         <UpgradeVersion Property="PREVIOUSVERSIONFOUND"
             Minimum="0.0.1"
             Maximum="%VERSION%"
@@ -66,11 +66,11 @@
 						<File Id="appstrata" Name="appstrata.exe" DiskId="1" Source="$(env.buildsrc)\bin\appstrata.exe" KeyPath="yes" ProcessorArchitecture="x64">
 							<Shortcut Id="KirixStrataProgramMenuShortcut"
 								Directory="ProgramMenuDir"
-								Name="Kirix Strata"
+								Name="Kirix Strata (64-bit)"
 								Advertise="yes"/>
 							<Shortcut Id="AppmainDesktopShortcut"
 								Directory="DesktopFolder"
-								Name="Kirix Strata"
+								Name="Kirix Strata (64-bit)"
 								Advertise="yes"/>
 						</File>
 
@@ -178,7 +178,7 @@
 
 
         <Directory Id="ProgramMenuFolder" Name="Programs">
-            <Directory Id="ProgramMenuDir" Name="Kirix Strata"/>
+            <Directory Id="ProgramMenuDir" Name="Kirix Strata (64-bit)"/>
         </Directory>
 
         <Directory Id="DesktopFolder" Name="Desktop"/>
