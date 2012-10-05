@@ -93,7 +93,7 @@ int CustomPromptDlg::ShowModal()
         button_sizer->AddSpacer(5);
         button_sizer->Add(cancel_button, 0);
     }
-    button_sizer->AddStretchSpacer();
+    button_sizer->AddSpacer(8);
 
 
 
@@ -124,7 +124,7 @@ int CustomPromptDlg::ShowModal()
     main_sizer->Add(top_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 16);
     main_sizer->AddStretchSpacer();
     main_sizer->AddSpacer(5);
-    main_sizer->Add(button_sizer, 0, wxLEFT | wxRIGHT, 16);
+    main_sizer->Add(button_sizer, 0, wxEXPAND, 16);
     main_sizer->AddSpacer(8);
             
     SetSizer(main_sizer);
