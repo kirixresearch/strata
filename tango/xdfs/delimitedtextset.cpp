@@ -1500,6 +1500,14 @@ bool DelimitedTextSet::determineColumns(int check_rows, tango::IJob* job)
             const std::wstring& str = m_file.getString(j);
             width = str.length();
 
+            // note: extra blank lines in a delimited file can cause the field
+            // type of the first row to be changed to character (e.g. if the 
+            // first field is comprised of dates, extra blank lines at the end
+            // will cause this field to be interpreted as a character field);
+            // ignore blank lines in determining the structure
+            if (row_cell_count <= 1 && width == 0)
+                continue;
+
             // if the width of this cell is greater than the column width
             // in the structure, update the column width accordingly
             if (width > col_stats[j].max_width)
