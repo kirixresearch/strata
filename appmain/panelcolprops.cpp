@@ -1182,8 +1182,11 @@ bool ColPropsPanel::onSiteClosing(bool force)
 {
     if (!m_ok_pressed)
     {
-        revertChanges();
-        sigCancelPressed(this);
+        if (m_tabledoc.isOk())
+        {
+            revertChanges();
+            sigCancelPressed(this);
+        }
     }
 
     return true;
