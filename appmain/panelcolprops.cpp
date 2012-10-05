@@ -86,6 +86,8 @@ ColPropsPanel::ColPropsPanel()
     m_orig_width = -1;
     m_orig_scale = -1;
     m_orig_existed = false;
+
+    m_ok_pressed = false;
 }
 
 ColPropsPanel::~ColPropsPanel()
@@ -93,7 +95,6 @@ ColPropsPanel::~ColPropsPanel()
 }
 
 
-// -- IDocument --
 bool ColPropsPanel::initDoc(cfw::IFramePtr frame,
                             cfw::IDocumentSitePtr site,
                             wxWindow* docsite_wnd,
@@ -202,12 +203,12 @@ bool ColPropsPanel::initDoc(cfw::IFramePtr frame,
 
     SetSizer(main_sizer);
 
-    // -- add frame event handlers --
+    // add frame event handlers
     frame->sigSiteClose().connect(this, &ColPropsPanel::onSiteClose);
     frame->sigFrameEvent().connect(this, &ColPropsPanel::onFrameEvent);
 
 
-    // -- keep track of which document we are working on --
+    // keep track of which document we are working on
 
     m_iter = xcm::null;
     m_set = xcm::null;
@@ -232,7 +233,7 @@ bool ColPropsPanel::initDoc(cfw::IFramePtr frame,
         return false;
     }
     
-    // -- make panel caption --
+    // make panel caption
     wxString caption = _("Calculated Field");
 
     if (m_set.isOk())
@@ -253,7 +254,7 @@ bool ColPropsPanel::initDoc(cfw::IFramePtr frame,
 
     m_expr_panel->setIterator(m_iter);
 
-    // -- populate --
+    // populate
     populate();
 
     return true;
@@ -268,8 +269,11 @@ void ColPropsPanel::setDocumentFocus()
 {
 }
 
-
-// -- frame events --
+void ColPropsPanel::closeSite(bool ok)
+{
+    m_ok_pressed = ok;
+    g_app->getMainFrame()->closeSite(m_doc_site);
+}
 
 void ColPropsPanel::onSiteClose(cfw::IDocumentSitePtr site)
 {
@@ -277,10 +281,9 @@ void ColPropsPanel::onSiteClose(cfw::IDocumentSitePtr site)
     {
         m_tabledoc.clear();
         m_tabledoc_site.clear();
-        g_app->getMainFrame()->closeSite(m_doc_site);
+        closeSite(false);
     }
 }
-
 
 void ColPropsPanel::onFrameEvent(cfw::Event& evt)
 {
@@ -294,7 +297,7 @@ void ColPropsPanel::onFrameEvent(cfw::Event& evt)
                 // if the table doc we are working on is closing,
                 // we need to cancel our edit
 
-                doCancel();
+                revertChanges();
             }
         }
     }
@@ -362,7 +365,7 @@ void ColPropsPanel::populate()
     setWidth(colinfo->getWidth());
     setScale(colinfo->getScale());
 
-    // -- a kludge to pacify Nate...he didn't like the "" --
+    // a kludge to pacify Nate...he didn't like the ""
     wxString expr = towx(colinfo->getExpression());
 
     if (expr == wxT("\"\""))
@@ -410,7 +413,7 @@ void ColPropsPanel::setExpression(const wxString& expr)
     m_expr_panel->setExpression(expr);
 }
 
-void ColPropsPanel::onNameChanged(wxCommandEvent& event)
+void ColPropsPanel::onNameChanged(wxCommandEvent& evt)
 {
     if (!m_tabledoc)
         return;
@@ -425,7 +428,7 @@ void ColPropsPanel::onNameChanged(wxCommandEvent& event)
     if (name.Length() == 0)
         return;
 
-    // -- we cannot set the name to an existing column --
+    // we cannot set the name to an existing column
     kcl::Grid* grid = m_tabledoc->getGrid();
     kcl::IModelPtr model = grid->getModel();
     int model_idx = model->getColumnIndex(name);
@@ -433,7 +436,7 @@ void ColPropsPanel::onNameChanged(wxCommandEvent& event)
         return;
 
 
-    // -- we cannot set the name to an invalid value --
+    // we cannot set the name to an invalid value
     if (!isValidFieldName(name))
     {
         return;
@@ -448,7 +451,7 @@ void ColPropsPanel::onNameChanged(wxCommandEvent& event)
     }
 }
 
-void ColPropsPanel::onTypeChanged(wxCommandEvent& event)
+void ColPropsPanel::onTypeChanged(wxCommandEvent& evt)
 {
     if (!m_tabledoc)
         return;
@@ -461,7 +464,7 @@ void ColPropsPanel::onTypeChanged(wxCommandEvent& event)
 
     if (combo_selection == 0)
     {
-        // -- auto type; tell expression builder to allow all types --
+        // auto type; tell expression builder to allow all types
         m_expr_panel->setTypeOnly(tango::typeUndefined);
         m_expr_panel->validate();
 
@@ -498,7 +501,7 @@ void ColPropsPanel::onTypeChanged(wxCommandEvent& event)
             }
 
 
-            // -- limit numeric width, if necessary --
+            // limit numeric width, if necessary
             if (type == tango::typeNumeric &&
                 m_last_width > tango::max_numeric_width)
             {
@@ -521,7 +524,7 @@ void ColPropsPanel::onTypeChanged(wxCommandEvent& event)
 }
 
 
-void ColPropsPanel::onWidthChanged(wxCommandEvent& event)
+void ColPropsPanel::onWidthChanged(wxCommandEvent& evt)
 {
     if (!m_tabledoc)
         return;
@@ -529,14 +532,12 @@ void ColPropsPanel::onWidthChanged(wxCommandEvent& event)
     if (!m_colwidth_text)
         return;
 
-    // -- calling wxSpinCtrl::GetValue() in gtk causes
-    //    an infinite loop and a call stack overflow,
-    //    because this function causes this same
-    //    event to be fired again.  This should
-    //    be fixed in wxWidgets --
+    // calling wxSpinCtrl::GetValue() in gtk causes an infinite loop and a
+    // call stack overflow, because this function causes this same event to
+    // be fired again.  This should be fixed in wxWidgets
     
     //int width = m_colwidth_text->GetValue();
-    int width = event.GetInt();
+    int width = evt.GetInt();
 
     if (width <= 0)
     {
@@ -553,7 +554,7 @@ void ColPropsPanel::onWidthChanged(wxCommandEvent& event)
         m_saved_character_width = width;
     }
 
-    // -- check for maximum allowed numeric width --
+    // check for maximum allowed numeric width
     if (m_last_type == tango::typeNumeric ||
         m_expr_panel->getExpressionType() == tango::typeNumeric)
     {
@@ -587,7 +588,7 @@ void ColPropsPanel::onWidthChanged(wxCommandEvent& event)
     }
 }
 
-void ColPropsPanel::onScaleChanged(wxCommandEvent& event)
+void ColPropsPanel::onScaleChanged(wxCommandEvent& evt)
 {
     if (!m_tabledoc)
         return;
@@ -595,14 +596,12 @@ void ColPropsPanel::onScaleChanged(wxCommandEvent& event)
     if (!m_colscale_text)
         return;
 
-    // -- calling wxSpinCtrl::GetValue() in gtk causes
-    //    an infinite loop and a call stack overflow,
-    //    because this function causes this same
-    //    event to be fired again.  This should
-    //    be fixed in wxWidgets --
+    // calling wxSpinCtrl::GetValue() in gtk causes an infinite loop and a
+    // call stack overflow, because this function causes this same event
+    // to be fired again.  This should be fixed in wxWidgets
     
     //int scale = m_colscale_text->GetValue();
-    int scale = event.GetInt();
+    int scale = evt.GetInt();
     if (scale < 0)
         scale = 0;
 
@@ -642,16 +641,16 @@ void ColPropsPanel::onScaleChanged(wxCommandEvent& event)
     }
 }
 
-void ColPropsPanel::onWidthSpinChanged(wxSpinEvent& event)
+void ColPropsPanel::onWidthSpinChanged(wxSpinEvent& evt)
 {
-    // -- gtk only event (see event map above) --
-    onWidthChanged(event);
+    // gtk only event (see event map above)
+    onWidthChanged(evt);
 }
 
-void ColPropsPanel::onScaleSpinChanged(wxSpinEvent& event)
+void ColPropsPanel::onScaleSpinChanged(wxSpinEvent& evt)
 {
-    // -- gtk only event (see event map above) --
-    onScaleChanged(event);
+    // gtk only event (see event map above)
+    onScaleChanged(evt);
 }
 
 void ColPropsPanel::onExpressionChanged(ExprBuilderPanel*)
@@ -668,7 +667,7 @@ void ColPropsPanel::onExpressionChanged(ExprBuilderPanel*)
     {
         m_last_expr = expr;
 
-        // -- update the calcfield in the grid --
+        // update the calcfield in the grid
         tango::IStructurePtr structure = m_iter->getStructure();
         tango::IColumnInfoPtr colinfo;
         colinfo = structure->modifyColumn(towstr(m_modify_field));
@@ -694,7 +693,7 @@ void ColPropsPanel::onExpressionChanged(ExprBuilderPanel*)
                     colinfo->setType(cur_type);
                     type_changed = true;
 
-                    // -- limit numeric width, if necessary --
+                    // limit numeric width, if necessary
                     if (cur_type == tango::typeNumeric &&
                         m_last_width > tango::max_numeric_width)
                     {
@@ -717,8 +716,8 @@ void ColPropsPanel::onExpressionChanged(ExprBuilderPanel*)
                         setScale(m_saved_numeric_scale);
                     }
 
-                    // -- if the last type was some fixed-width type
-                    //    and the new type is numeric, update the width --
+                    // if the last type was some fixed-width type
+                    // and the new type is numeric, update the width
 
                     if ((cur_type == tango::typeCharacter ||
                          cur_type == tango::typeWideCharacter) &&
@@ -755,7 +754,8 @@ void ColPropsPanel::onExpressionChanged(ExprBuilderPanel*)
 
 void ColPropsPanel::changeColumnCaption(const wxString& new_caption)
 {
-    // -- we cannot set the name to an existing column --
+    // we cannot set the name to an existing column
+
     kcl::Grid* grid = m_tabledoc->getGrid();
     kcl::IModelPtr model = grid->getModel();
     int model_idx = model->getColumnIndex(m_orig_name);
@@ -791,9 +791,8 @@ void ColPropsPanel::refreshDynamicFields()
         return;
 
 
-    // -- if there are queries/marks, we must refresh the
-    //    entire grid because the expression change could
-    //    cause more or less rows to be marked --
+    // if there are queries/marks, we must refresh the entire grid because
+    // the expression change could cause more or less rows to be marked
 
     ITableDocModelPtr tbldoc_model = m_tabledoc->getModel();
     if (tbldoc_model->getMarkEnum()->size() > 0 ||
@@ -824,7 +823,7 @@ void ColPropsPanel::refreshDynamicFields()
 
 void ColPropsPanel::updateSpinBoxes()
 {
-    // -- handle column width spin box --
+    // handle column width spin box
     int type = m_expr_panel->getExpressionType();
     bool enable;
 
@@ -832,7 +831,7 @@ void ColPropsPanel::updateSpinBoxes()
     int combo_selection = m_coltype_combo->GetSelection();
     if (combo_selection > 0)
     {
-        // -- we are not on auto, so use the type from the combo box --
+        // we are not on auto, so use the type from the combo box
         type = dlgtype2tangotype(m_coltype_combo->GetSelection());
     }
 
@@ -882,7 +881,7 @@ void ColPropsPanel::updateSpinBoxes()
     }
 
 
-    // -- handle column scale spin box --
+    // handle column scale spin box
 
     enable = false;
 
@@ -906,7 +905,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
 {
     changeColumnCaption(wxEmptyString);
     
-    // -- check for valid field name --
+    // check for valid field name
 
     if (!isValidFieldName(m_colname_text->GetValue()))
     {
@@ -921,7 +920,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
     }
 
 
-    // -- do final set modify --
+    // do final set modify
 
     bool auto_type = (m_coltype_combo->GetSelection() == 0 ? true : false);
 
@@ -937,7 +936,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
     {
         new_type = m_expr_panel->getExpressionType();
 
-        // -- implicit typing prefers 'Date' to 'DateTime' --
+        // implicit typing prefers 'Date' to 'DateTime'
         if (new_type == tango::typeDateTime)
         {
             new_type = tango::typeDate;
@@ -947,7 +946,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
     }
 
 
-    // -- scale/width sanity check --
+    // scale/width sanity check
     if (new_type == tango::typeNumeric ||
         new_type == tango::typeDouble)
     {
@@ -964,7 +963,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
         m_orig_scale == new_scale &&
         m_orig_expr == m_last_expr)
     {
-        g_app->getMainFrame()->closeSite(m_doc_site);
+        closeSite();
         return;
     }
 
@@ -984,7 +983,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
         colinfo = structure->modifyColumn(towstr(m_orig_name));
         if (!colinfo)
         {
-            g_app->getMainFrame()->closeSite(m_doc_site);
+            closeSite();
             return;
         }
 
@@ -1004,7 +1003,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
         tango::IColumnInfoPtr colinfo = structure->createColumn();
         if (!colinfo)
         {
-            g_app->getMainFrame()->closeSite(m_doc_site);
+            closeSite();
             return;
         }
 
@@ -1046,7 +1045,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
     }
 
     sigOkPressed(this);
-    g_app->getMainFrame()->closeSite(m_doc_site);
+    closeSite();
 
     // let other windows know that the structure was modified
     cfw::Event* evt = new cfw::Event(wxT("tabledoc.structureModified"));
@@ -1109,7 +1108,6 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
         if (result == wxYES)
         {
             IndexJob* job = new IndexJob;
-            //job->sigJobFinished().connect(this, &TableDoc::onIndexJobFinished);
 
             std::vector<tango::IIndexInfoPtr>::iterator it;
             for (it = to_recreate.begin();
@@ -1129,8 +1127,11 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
 
 
 
-void ColPropsPanel::doCancel()
+void ColPropsPanel::revertChanges()
 {
+    if (!m_tabledoc.isOk())
+        return;
+    
     changeColumnCaption(wxEmptyString);
 
     if (m_orig_name.CmpNoCase(m_last_name) == 0 &&
@@ -1139,11 +1140,10 @@ void ColPropsPanel::doCancel()
         m_orig_scale == m_last_scale &&
         m_orig_expr == m_last_expr)
     {
-        g_app->getMainFrame()->closeSite(m_doc_site);
         return;
     }
 
-    // -- restore dynamic field --
+    // restore dynamic field
 
     tango::IStructurePtr structure = m_iter->getStructure();
     tango::IColumnInfoPtr colinfo;
@@ -1151,7 +1151,6 @@ void ColPropsPanel::doCancel()
     colinfo = structure->modifyColumn(towstr(m_modify_field));
     if (!colinfo)
     {
-        g_app->getMainFrame()->closeSite(m_doc_site);
         return;
     }
 
@@ -1179,18 +1178,28 @@ void ColPropsPanel::doCancel()
 }
 
 
-void ColPropsPanel::onCancelPressed(ExprBuilderPanel*)
+bool ColPropsPanel::onSiteClosing(bool force)
 {
-    doCancel();
-    sigCancelPressed(this);
-    g_app->getMainFrame()->closeSite(m_doc_site);
+    if (!m_ok_pressed)
+    {
+        revertChanges();
+        sigCancelPressed(this);
+    }
+
+    return true;
 }
 
 
-void ColPropsPanel::onCancel(wxCommandEvent& event)
+void ColPropsPanel::onCancelPressed(ExprBuilderPanel*)
 {
-    doCancel();
-    sigCancelPressed(this);
+    // cancel was pressed on ExprBuilder panel
+    closeSite(false /* ok = false */);
+}
+
+
+void ColPropsPanel::onCancel(wxCommandEvent& evt)
+{
+    closeSite(false /* ok = false */);
 }
 
 

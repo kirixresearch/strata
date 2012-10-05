@@ -50,6 +50,7 @@ private:
 
     wxWindow* getDocumentWindow();
     void setDocumentFocus();
+    bool onSiteClosing(bool force);
 
     // -- panel methods --
 
@@ -63,7 +64,7 @@ private:
 
     void refreshDynamicFields();
     void updateSpinBoxes();
-    void doCancel();
+    void revertChanges();
 
     void populate();
 
@@ -84,6 +85,8 @@ private:
 
     void onCancel(wxCommandEvent& evt);
 
+    void closeSite(bool ok = true);
+
 private:
 
     // -- container context info --
@@ -92,6 +95,7 @@ private:
     tango::IIteratorPtr m_iter;             // tabledoc's iterator
     cfw::IDocumentSitePtr m_tabledoc_site;  // tabledoc's site
     ITableDocPtr m_tabledoc;                // tabledoc ptr
+    bool m_ok_pressed;
 
     wxString m_edit_column;
     wxString m_modify_field;
