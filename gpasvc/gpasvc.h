@@ -15,7 +15,7 @@
 #include <windows.h>
 
 extern const TCHAR* g_service_id;
-extern const TCHAR* g_service_desc;
+extern const TCHAR* g_service_description;
 extern const TCHAR* g_service_appexe;
 
 #endif

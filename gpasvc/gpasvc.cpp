@@ -15,21 +15,26 @@
 #include <windows.h>
 #include <tchar.h>
 #include <cstdio>
-#include "../build_config.h"
+#include <kl/json.h>
+#include <kl/string.h>
+#include <kl/file.h>
 
 
-// default is APP_STRATA
-#if !defined(APP_STRATA)
-#define APP_STRATA 1
-#endif
+
+const TCHAR* g_service_id = _T("SampleSvc");
+const TCHAR* g_service_description = _T("General Purpose Application Service");
+const TCHAR* g_service_appexe = _T("sample.exe");
 
 
-#if APP_STRATA == 1
-const TCHAR* g_service_id = _T("KirixStrataSvc");
-const TCHAR* g_service_desc = _T("Kirix Strata");
-const TCHAR* g_service_appexe = _T("kstrata.exe");
-#endif
+/* sample config file
 
+{
+    "service_id":           "SampleSvc",
+    "service_description":  "Sample Service",
+    "service_appexe":       "sample.exe"
+}
+
+*/
 
 
 
@@ -75,7 +80,7 @@ void SvcInstall()
     svc = CreateService(
                     scmgr,                     // SCM database
                     g_service_id,              // name of service
-                    g_service_desc,            // service name to display
+                    g_service_description,     // service name to display
                     SERVICE_ALL_ACCESS,        // desired access
                     SERVICE_WIN32_OWN_PROCESS, // service type
                     SERVICE_DEMAND_START,      // start type
@@ -124,7 +129,7 @@ void SvcUninstall()
             // try to stop the service
             if (ControlService(schService, SERVICE_CONTROL_STOP, &ssStatus))
             {
-                _tprintf(_T("Stopping service '%s'..."), g_service_desc);
+                _tprintf(_T("Stopping service '%s'..."), g_service_description);
                 Sleep(2000);
 
                 while (QueryServiceStatus(schService, &ssStatus))
@@ -139,7 +144,7 @@ void SvcUninstall()
 
             // now remove the service
             if (DeleteService(schService))
-                _tprintf(_T("'%s' service removed.\n"), g_service_desc);
+                _tprintf(_T("'%s' service removed.\n"), g_service_description);
                  else
                 _tprintf(_T("DeleteService failed (%d)\n"), GetLastError());
 
@@ -147,7 +152,7 @@ void SvcUninstall()
         }
          else
         {
-            _tprintf(_T("Service '%s' could not be opened -- it's likely not installed.\n"), g_service_desc);
+            _tprintf(_T("Service '%s' could not be opened -- it's likely not installed.\n"), g_service_description);
         }
     }
 
@@ -318,12 +323,60 @@ void WINAPI SvcMain(DWORD dwArgc, LPTSTR* lpszArgv)
 }
 
 
+bool LoadConfig()
+{
+    TCHAR buf[512];
+
+    GetModuleFileName(NULL, buf, 511);
+    TCHAR* slash = _tcsrchr(buf, '\\');
+    if (slash)
+        *slash = 0;
+
+
+    std::wstring config_file = kl::towstring(buf) + L"\\gpasvc.conf";
+
+    std::wstring contents = xf_get_file_contents(config_file);
+    if (contents.length() == 0)
+        return false;
+
+    kl::JsonNode node;
+    if (!node.fromString(contents))
+        return false; // bad parse
+
+
+    kl::JsonNode node_service_id = node["service_id"];
+    kl::JsonNode node_service_description = node["service_description"];
+    kl::JsonNode node_service_appexe = node["service_appexe"];
+
+    if (node_service_id.isNull() || node_service_description.isNull() || node_service_appexe.isNull())
+        return false;
+
+    
+    TCHAR* service_id = new TCHAR[255];
+    TCHAR* service_description = new TCHAR[255];
+    TCHAR* service_appexe = new TCHAR[255];
+
+    _tcscpy(service_id, kl::tstr(node_service_id.getString()));
+    _tcscpy(service_description, kl::tstr(node_service_description.getString()));
+    _tcscpy(service_appexe, kl::tstr(node_service_appexe.getString()));
+
+    g_service_id = service_id;
+    g_service_description = service_description;
+    g_service_appexe = service_appexe;
+
+    return true;
+}
 
 
 void __cdecl _tmain(int argc, TCHAR *argv[])
 {
-    //ServiceExecutionThread(NULL);
-    //return;
+    if (!LoadConfig())
+    {
+        
+    }
+
+    ServiceExecutionThread(NULL);
+    return;
     
     // passing 'install' on the command line will register
     // this with the SCM database.  It will then appear in
