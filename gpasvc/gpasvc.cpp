@@ -372,7 +372,8 @@ void __cdecl _tmain(int argc, TCHAR *argv[])
 {
     if (!LoadConfig())
     {
-        
+        printf("Could not load configuration file gpasvc.conf - File was either missing or was not in valid JSON format\n");
+        return;
     }
 
     ServiceExecutionThread(NULL);
