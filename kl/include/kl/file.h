@@ -122,7 +122,7 @@ xf_off_t xf_get_free_disk_space(const std::wstring& _path);
 std::wstring xf_get_temp_path();
 std::wstring xf_get_temp_filename(const std::wstring& prefix, const std::wstring& extension);
 std::wstring xf_get_network_path(const std::wstring& filename);
-std::wstring xf_get_file_contents(const std::wstring& filename, bool* success);
+std::wstring xf_get_file_contents(const std::wstring& filename, bool* success = NULL);
 bool xf_put_file_contents(const std::wstring& filename, const std::wstring& contents);
 
 
