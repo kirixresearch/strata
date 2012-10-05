@@ -196,6 +196,16 @@ std::wstring getProgramPath()
     {
         *slash = 0;
     }
+#elif defined(__APPLE__)
+    unsigned int len = 512;
+    if (_NSGetExecutablePath(buf, &len) == -1)
+        return wxT("");
+    buf[len] = 0;
+    slash = strrchr(buf, '/');
+    if (slash)
+    {
+        *slash = 0;
+    }
 #else
     return L"";
 #endif

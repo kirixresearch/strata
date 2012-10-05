@@ -167,6 +167,7 @@
   <ItemGroup>
     <ClCompile Include="src\base64.cpp" />
     <ClCompile Include="src\crypt.cpp" />
+    <ClCompile Include="src\file_common.cpp" />
     <ClCompile Include="src\file_ix.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
