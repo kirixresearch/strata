@@ -93,7 +93,7 @@ int CustomPromptDlg::ShowModal()
         button_sizer->AddSpacer(5);
         button_sizer->Add(cancel_button, 0);
     }
-    button_sizer->AddSpacer(8);
+    button_sizer->AddSpacer(8); // per convention, buttons should be right-justified
 
 
 
@@ -130,7 +130,7 @@ int CustomPromptDlg::ShowModal()
     SetSizer(main_sizer);
     Layout();
     
-    // recalculate the size of the dialog so it doesn't look stupid
+    // re-calculate the size of the dialog so it doesn't look stupid
     
     int w = GetClientSize().GetWidth();
     
