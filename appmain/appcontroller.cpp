@@ -2680,6 +2680,11 @@ void AppController::onTextColorDropDown(wxAuiToolBarEvent& evt)
         wxPoint pt(rect.GetLeft(), rect.GetBottom());
         pt = format_toolbar->ClientToScreen(pt);
 
+        format_toolbar->SetToolSticky(ID_Format_Border, false);
+        format_toolbar->SetToolSticky(ID_Format_TextColor, false);
+        format_toolbar->SetToolSticky(ID_Format_FillColor, false);
+        format_toolbar->SetToolSticky(ID_Format_LineColor, false);
+
         m_colorpanel_helper = new ColorPanelHelper(
             pt,
             kcl::PopupContainer::fromTopLeft,
@@ -2731,7 +2736,12 @@ void AppController::onFillColorDropDown(wxAuiToolBarEvent& evt)
         wxRect rect = evt.GetItemRect();
         wxPoint pt(rect.GetLeft(), rect.GetBottom());
         pt = format_toolbar->ClientToScreen(pt);
-        
+
+        format_toolbar->SetToolSticky(ID_Format_Border, false);
+        format_toolbar->SetToolSticky(ID_Format_TextColor, false);
+        format_toolbar->SetToolSticky(ID_Format_FillColor, false);
+        format_toolbar->SetToolSticky(ID_Format_LineColor, false);
+
         m_colorpanel_helper = new ColorPanelHelper(
             pt,
             kcl::PopupContainer::fromTopLeft,
@@ -2759,7 +2769,12 @@ void AppController::onLineColorDropDown(wxAuiToolBarEvent& evt)
         wxRect rect = evt.GetItemRect();
         wxPoint pt(rect.GetLeft(), rect.GetBottom());
         pt = format_toolbar->ClientToScreen(pt);
-        
+
+        format_toolbar->SetToolSticky(ID_Format_Border, false);
+        format_toolbar->SetToolSticky(ID_Format_TextColor, false);
+        format_toolbar->SetToolSticky(ID_Format_FillColor, false);
+        format_toolbar->SetToolSticky(ID_Format_LineColor, false);
+
         m_colorpanel_helper = new ColorPanelHelper(
             pt,
             kcl::PopupContainer::fromTopLeft,

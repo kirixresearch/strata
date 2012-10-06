@@ -48,6 +48,8 @@ public:
     void onKillFocus(wxFocusEvent& evt);
     void onActivate(wxActivateEvent& evt);
     
+    bool AcceptsFocus() const { return true; }
+
 private:
 
     wxWindow* m_child;

@@ -124,10 +124,14 @@ void PopupContainer::doPopup(wxWindow* child, bool auto_size)
     Show(true);
 
     SetFocus();
+
+    child->Connect(wxEVT_KILL_FOCUS, (wxObjectEventFunction)&PopupContainer::onKillFocus, NULL, this);
 }
 
-void PopupContainer::onKillFocus(wxFocusEvent& event)
+void PopupContainer::onKillFocus(wxFocusEvent& evt)
 {
+    evt.Skip();
+
     if (m_close_option == closeOnKillFocus)
     {
         #ifdef __WXMSW__
@@ -144,8 +148,6 @@ void PopupContainer::onKillFocus(wxFocusEvent& event)
             // set the focus back to us
             SetFocus();
         }
-        #else
-        event.Skip();
         #endif
     }
      else if (m_close_option == closeOnClickOutside)
@@ -188,8 +190,6 @@ void PopupContainer::onKillFocus(wxFocusEvent& event)
                 Destroy();
             }
         }
-        #else
-        event.Skip();
         #endif    
     }
 }
