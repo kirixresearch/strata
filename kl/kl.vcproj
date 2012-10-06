@@ -407,6 +407,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\file_common.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\file_ix.cpp"
 				>
 				<FileConfiguration
