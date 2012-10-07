@@ -43,7 +43,7 @@
     </InstallExecuteSequence>
 
 
-    <Icon Id="kstrata.exe" SourceFile="$(env.buildsrc)\bin\appstrata.exe"/>
+    <Icon Id="kstrata.exe" SourceFile="$(env.buildsrc)\bin\kstrata.exe"/>
 
     <Property Id="ARPPRODUCTICON">kstrata.exe</Property>
     <Property Id="ARPURLINFOABOUT"><![CDATA[http://www.kirix.com]]></Property>
@@ -63,15 +63,17 @@
 					-->
 
 					<Component Id="Core" Guid="B081FEDE-736F-541C-26EA-BA1015D31B38" Win64="yes">
-						<File Id="appstrata" Name="appstrata.exe" DiskId="1" Source="$(env.buildsrc)\bin\appstrata.exe" KeyPath="yes" ProcessorArchitecture="x64">
+						<File Id="kstrata" Name="kstrata.exe" DiskId="1" Source="$(env.buildsrc)\bin\kstrata.exe" KeyPath="yes" ProcessorArchitecture="x64">
 							<Shortcut Id="KirixStrataProgramMenuShortcut"
 								Directory="ProgramMenuDir"
 								Name="Kirix Strata (64-bit)"
-								Advertise="yes"/>
+								Advertise="yes"
+								Icon="kstrata.exe"/>
 							<Shortcut Id="AppmainDesktopShortcut"
 								Directory="DesktopFolder"
 								Name="Kirix Strata (64-bit)"
-								Advertise="yes"/>
+								Advertise="yes"
+								Icon="kstrata.exe"/>
 						</File>
 
 						<File Id="imgres"   Name="imgres.zip"   DiskId="1" Source="$(env.buildsrc)\bin\imgres.zip"   ProcessorArchitecture="x64"/>
