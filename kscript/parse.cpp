@@ -6789,8 +6789,15 @@ ExprElement* ExprParser::parseVar(ExprParserEnv* penv,
     {
         if (end)
         {
-            if (semicolon && end == semicolon)
-                end++;
+
+            if (semicolon)
+            {
+                // get rid of whitespace between end of statement and semicolon
+                while (*end && iswspace(*end) && end < semicolon)
+                    end++;
+                if (end == semicolon)
+                    end++;
+            }
             *endloc = end;
         }
          else
