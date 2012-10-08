@@ -432,12 +432,26 @@ static bool isVersionHit(const std::wstring& app,
     std::wstring uplatform = platform;
     kl::makeUpper(uplatform);
     
-    #if defined(__WIN32__)
-        if (uplatform != L"WIN32")
-            return false;
+    #if defined(_MSC_VER)
+
+        if (sizeof(void*) == 8)
+        {
+            // 64-bit windows
+            if (uplatform != L"WIN64")
+                return false;
+        }
+         else
+        {
+            // 32-bit windows
+            if (uplatform != L"WIN32")
+                return false;
+        }
+
     #elif defined(__linux__)
+
         if (uplatform != L"LINUX32")
             return false;
+
     #else
         // unknown platform
         return false;
