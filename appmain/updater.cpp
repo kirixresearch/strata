@@ -449,8 +449,18 @@ static bool isVersionHit(const std::wstring& app,
 
     #elif defined(__linux__)
 
-        if (uplatform != L"LINUX32")
-            return false;
+        if (sizeof(void*) == 8)
+        {
+            // 64-bit linux
+            if (uplatform != L"LINUX64")
+                return false;
+        }
+         else
+        {
+            // 32-bit linux
+            if (uplatform != L"LINUX32")
+                return false;
+        }
 
     #else
         // unknown platform
