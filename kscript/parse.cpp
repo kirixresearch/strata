@@ -5463,6 +5463,17 @@ ExprElement* ExprParser::parseStatement(ExprParserEnv* penv,
             if (!e)
                 return NULL;
 
+            if (endloc && semicolon)
+            {
+                // make sure the endloc is after the semicolon
+                wchar_t* ch = *endloc;
+                while (ch < semicolon && isWhiteSpaceOrLS(*ch))
+                    ch++;
+                if (ch == semicolon)
+                    ch++;
+                *endloc = ch;
+            }
+
             ExprThrow* ethrow = new ExprThrow;
             ethrow->m_expr = e;
             
