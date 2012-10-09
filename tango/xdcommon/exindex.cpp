@@ -2073,8 +2073,9 @@ void ExIndex::startBulkInsert(tango::rowpos_t total_keys)
     total_required_pool_size *= total_keys;
 
     int pool_bytes = 64000000;
-    if (free_mem > 400000000)
+    if (free_mem > 500000000)
         pool_bytes = 128000000;
+
 
     if (total_required_pool_size < max_pool_bytes &&
         total_required_pool_size > 0)

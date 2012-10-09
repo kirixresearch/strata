@@ -118,10 +118,31 @@ static void do_sort(unsigned char* arr[],
 
 ExKeyPool::ExKeyPool(int size_bytes, int entry_size, int compare_size)
 {
-    size_bytes = size_bytes/entry_size;
-    m_entries_per_buf = size_bytes;
-    size_bytes *= entry_size;
-    m_data = new unsigned char[size_bytes];
+    m_data = NULL;
+
+    int try_size;
+    for (int cnt = 0; cnt < 6; ++cnt)
+    {
+        try_size = size_bytes;
+
+        try_size = try_size/entry_size;
+        m_entries_per_buf = try_size;
+        try_size *= entry_size;
+
+        try
+        {
+            m_data = new unsigned char[try_size];
+            if (m_data)
+                break;
+        }
+        catch(...)
+        {
+        }
+
+        // could not allocate that much memory -- try halving the requested amount
+        size_bytes /= 2;
+    }
+
     m_entry_size = entry_size;
     m_compare_size = compare_size;
     m_pos = 0;
@@ -137,7 +158,7 @@ ExKeyPool::~ExKeyPool()
 
 bool ExKeyPool::appendData(unsigned char* data)
 {
-    if (m_pos >= m_entries_per_buf)
+    if (m_pos >= m_entries_per_buf || m_data == NULL)
         return false;
     memcpy(m_data+(m_pos*m_entry_size), data, m_entry_size);
     m_pos++;
@@ -147,7 +168,7 @@ bool ExKeyPool::appendData(unsigned char* data)
 
 bool ExKeyPool::appendData2(unsigned char* data1, int data1_len, unsigned char* data2, int data2_len)
 {
-    if (m_pos >= m_entries_per_buf)
+    if (m_pos >= m_entries_per_buf || m_data == NULL)
         return false;
     unsigned char* off = m_data+(m_pos*m_entry_size);
     memcpy(off, data1, data1_len);
