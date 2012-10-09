@@ -55,7 +55,7 @@ TextBox::~TextBox()
 
 void TextBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- initialize the component --
+    // initialize the component
     initComponent(env);
 
     // -- add some properties --
@@ -72,7 +72,7 @@ void TextBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     
     size_t param_count = env->getParamCount();
 
-    // -- get user input values --
+    // get user input values
     if (param_count > 0)
         text = towx(env->getParam(0)->getString());
     if (param_count > 1)
@@ -94,7 +94,7 @@ void TextBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     
     if (param_count < 2)
     {
-        // -- create the control --
+        // create the control
         m_ctrl = new wxTextCtrl(getApp()->getTempParent(),
                                 -1,
                                 text,
@@ -111,7 +111,7 @@ void TextBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     }
      else
     {
-        // -- create the control --
+        // create the control
         m_ctrl = new wxTextCtrl(getApp()->getTempParent(),
                                 -1,
                                 text,
@@ -730,7 +730,7 @@ Label::~Label()
 
 void Label::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- initialize the component --
+    // initialize the component
     initComponent(env);
 
     // -- set default values --
@@ -742,7 +742,7 @@ void Label::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     
     size_t param_count = env->getParamCount();
     
-    // -- get user input values --
+    // get user input values
     if (param_count > 0)
         label = towx(env->getParam(0)->getString());
     if (param_count > 1)
@@ -756,7 +756,7 @@ void Label::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 
     if (param_count < 2)
     {
-        // -- create the control --
+        // create the control
         m_ctrl = new wxStaticText(getApp()->getTempParent(),
                                   -1,
                                   label,
@@ -772,7 +772,7 @@ void Label::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     }
      else
     {
-        // -- create the control --
+        // create the control
         m_ctrl = new wxStaticText(getApp()->getTempParent(),
                                   -1,
                                   label,

@@ -1114,7 +1114,7 @@ int StructureDoc::validateExpression(const wxString& expr, int type)
 
 int StructureDoc::checkInvalidExpressions(int check_flags)
 {
-    // -- if we're editing, end the edit --
+    // if we're editing, end the edit
     if (m_grid->isEditing())
         m_grid->endEdit(true);
 
@@ -1143,7 +1143,7 @@ int StructureDoc::checkInvalidExpressions(int check_flags)
 
 int StructureDoc::checkInvalidFieldnames(int check_flags)
 {
-    // -- if we're editing, end the edit --
+    // if we're editing, end the edit
     if (m_grid->isEditing())
         m_grid->endEdit(true);
     
@@ -1172,7 +1172,7 @@ int StructureDoc::checkInvalidFieldnames(int check_flags)
 
 int StructureDoc::checkDuplicateFieldnames(int check_flags)
 {
-    // -- if we're editing, end the edit --
+    // if we're editing, end the edit
     if (m_grid->isEditing())
         m_grid->endEdit(true);
     
@@ -1708,7 +1708,7 @@ void StructureDoc::onFrameEvent(cfw::Event& evt)
                     // creating a new one -- so do error checking here
                     if (!m_modify)
                     {
-                        // -- if we're editing, end the edit --
+                        // if we're editing, end the edit
                         if (m_grid->isEditing())
                             m_grid->endEdit(true);
                         

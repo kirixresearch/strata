@@ -534,7 +534,7 @@ void BoxLayout::add(kscript::ExprEnv* env, kscript::Value* retval)
     if (param_count > 3)
         item->m_border = param4->getInteger();
 
-    // -- add the item --
+    // add the item
     Layout::add(item);
 }
 
@@ -594,7 +594,7 @@ void BoxLayout::addSpacer(kscript::ExprEnv* env, kscript::Value* retval)
         }
     }
  
-    // -- add the item --
+    // add the item
     Layout::add(item);
 }
 
@@ -626,7 +626,7 @@ void BoxLayout::addStretchSpacer(kscript::ExprEnv* env, kscript::Value* retval)
         item->m_proportion = param1->getInteger();
     }
  
-    // -- add the item --
+    // add the item
     Layout::add(item);
 }
 
@@ -669,7 +669,7 @@ void BoxLayout::addStretchSpacer(kscript::ExprEnv* env, kscript::Value* retval)
 
 void BoxLayout::insert(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- get the parameter count --
+    // get the parameter count
     size_t param_count = env->getParamCount();
     
     // if no parameters were passed, bail out
@@ -767,7 +767,7 @@ void BoxLayout::insert(kscript::ExprEnv* env, kscript::Value* retval)
 
 void BoxLayout::insertSpacer(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- get the parameter count --
+    // get the parameter count
     size_t param_count = env->getParamCount();
     kscript::Value* param1 = env->getParam(0);
     kscript::Value* param2 = env->getParam(1);
@@ -802,7 +802,7 @@ void BoxLayout::insertSpacer(kscript::ExprEnv* env, kscript::Value* retval)
         return;
     }
 
-    // -- add the item --
+    // add the item
     Layout::insert(item, insert_idx);
 }
 
@@ -827,7 +827,7 @@ void BoxLayout::insertSpacer(kscript::ExprEnv* env, kscript::Value* retval)
 
 void BoxLayout::insertStretchSpacer(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- get the parameter count --
+    // get the parameter count
     size_t param_count = env->getParamCount();
     kscript::Value* param1 = env->getParam(0);
     kscript::Value* param2 = env->getParam(1);
@@ -861,7 +861,7 @@ void BoxLayout::insertStretchSpacer(kscript::ExprEnv* env, kscript::Value* retva
         return;
     }
 
-    // -- add the item --
+    // add the item
     Layout::insert(item, insert_idx);
 }
 

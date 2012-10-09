@@ -547,7 +547,7 @@ const std::string& XbaseIterator::getString(tango::objhandle_t data_handle)
     
     if (dai->isCalculated())
     {
-        // -- calculated field with bad expr --
+        // calculated field with bad expr
         return empty_string;
     }
 
@@ -579,7 +579,7 @@ const std::wstring& XbaseIterator::getWideString(tango::objhandle_t data_handle)
         
         if (dai->isCalculated())
         {
-            // -- calculated field with bad expr --
+            // calculated field with bad expr
             return empty_wstring;
         }
 
@@ -616,7 +616,7 @@ tango::datetime_t XbaseIterator::getDateTime(tango::objhandle_t data_handle)
     
     if (dai->isCalculated())
     {
-        // -- calculated field with bad expr --
+        // calculated field with bad expr
         return 0;
     }
 
@@ -650,7 +650,7 @@ double XbaseIterator::getDouble(tango::objhandle_t data_handle)
     
     if (dai->isCalculated())
     {
-        // -- calculated field with bad expr --
+        // calculated field with bad expr
         return 0.0;
     }
 
@@ -673,7 +673,7 @@ int XbaseIterator::getInteger(tango::objhandle_t data_handle)
     
     if (dai->isCalculated())
     {
-        // -- calculated field with bad expr --
+        // calculated field with bad expr
         return 0;
     }
 
@@ -696,7 +696,7 @@ bool XbaseIterator::getBoolean(tango::objhandle_t data_handle)
     
     if (dai->isCalculated())
     {
-        // -- calculated field with bad expr --
+        // calculated field with bad expr
         return false;
     }
 
@@ -719,7 +719,7 @@ bool XbaseIterator::isNull(tango::objhandle_t data_handle)
     
     if (dai->isCalculated())
     {
-        // -- calculated field with bad expr --
+        // calculated field with bad expr
         return true;
     }
             

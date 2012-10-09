@@ -1283,7 +1283,7 @@ void TransformationDoc::markProblemRow(int row, bool scroll_to)
 
 int TransformationDoc::checkDuplicateFieldnames(int check_flags)
 {
-    // -- if we're editing, end the edit --
+    // if we're editing, end the edit
     if (m_grid->isEditing())
         m_grid->endEdit(true);
     
@@ -1312,7 +1312,7 @@ int TransformationDoc::checkDuplicateFieldnames(int check_flags)
 
 int TransformationDoc::checkInvalidFieldnames(int check_flags)
 {
-    // -- if we're editing, end the edit --
+    // if we're editing, end the edit
     if (m_grid->isEditing())
         m_grid->endEdit(true);
     

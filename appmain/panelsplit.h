@@ -36,7 +36,7 @@ public:
     wxWindow* getDocumentWindow();
     void setDocumentFocus();
 
-    // -- event handlers --
+    // event handlers
     void onSplitTypeChanged(wxCommandEvent& event);
     void onPrefixTextChanged(wxCommandEvent& event);
     void onSourceTableTextChanged(wxCommandEvent& event);

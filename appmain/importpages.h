@@ -41,7 +41,7 @@ private:
     void onPageChanged();
     bool onPageChanging(bool forward);
 
-    // -- event handlers --
+    // event handlers
     void onGridNeedTooltipText(kcl::GridEvent& evt);
     void onGridEndEdit(kcl::GridEvent& evt);
     void onBrowse(wxCommandEvent& evt);

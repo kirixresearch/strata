@@ -137,7 +137,7 @@ private:
 
 private:
 
-    // -- event handlers --
+    // event handlers
     void onOK(wxCommandEvent& evt);
     void onCancel(wxCommandEvent& evt);
     void onFrequencySelected(wxCommandEvent& evt);

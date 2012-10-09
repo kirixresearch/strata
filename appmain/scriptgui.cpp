@@ -23,15 +23,15 @@
 #include <wx/evtloop.h>
 
 
-// -- utility functions --
+// utility functions
 
-int getUniqueScriptControlId()
+static int getUniqueScriptControlId()
 {
     static int id = ID_FirstScriptControlId;
     return id++;
 }
 
-int getUniqueScriptCommandId()
+static int getUniqueScriptCommandId()
 {
     static int id = ID_FirstScriptCommandId;
     return id++;
@@ -44,7 +44,8 @@ BEGIN_DECLARE_EVENT_TYPES()
 END_DECLARE_EVENT_TYPES()
 
 
-// -- FormEventHandler class implementation --
+// FormEventHandler class implementation
+
 DEFINE_EVENT_TYPE(wxEVT_FORMEVENTHANDLER_DESTROYSELF)
 
 FormEventHandler::FormEventHandler(FormComponent* owner)
@@ -91,7 +92,7 @@ void FormEventHandler::onEvent(wxEvent& evt)
 
 
 
-// -- FormComponent class implementation --
+// FormComponent class implementation
 
 FormComponent::FormComponent()
 {
@@ -168,7 +169,7 @@ void FormComponent::deinitializeControl()
 
 
 
-// -- FormPanel class --
+// FormPanel class
 
 class FormPanel : public wxPanel
 {
@@ -195,7 +196,7 @@ END_EVENT_TABLE()
 
 
 
-// -- FormFrame class implementation --
+// FormFrame class implementation
 
 BEGIN_EVENT_TABLE(FormFrame, wxFrame)
     EVT_CLOSE(FormFrame::onClose)
@@ -289,7 +290,7 @@ void FormFrame::safeOwnerDestroy()
         m_owner = NULL;
     }
 
-    // -- fire an event to ourselves --
+    // fire an event to ourselves
     wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED, ID_DoDestroy);
     ::wxPostEvent(this, e);
 }
@@ -302,7 +303,7 @@ void FormFrame::onDoDestroy(wxCommandEvent& evt)
 
 
 
-// -- FormControl class implementation --
+// FormControl class implementation
 
 // (CLASS) FormControl
 // Category: Form
@@ -338,7 +339,7 @@ void FormControl::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     paint_evt->setParser(env->getParser());
     getParser()->bindObject(paint_evt);
     
-    // -- add some properties --
+    // add form control properties
     getMember(L"sizeChanged")->setObject(Event::createObject(env));
     getMember(L"paint")->setObject(paint_evt);
     getMember(L"mouseMove")->setObject(Event::createObject(env));
@@ -460,7 +461,7 @@ void FormControl::setPosition(kscript::ExprEnv* env, kscript::Value* retval)
 {
     if (env->getParamCount() < 1)
     {
-        // -- incorrect syntax used, bail out --
+        // incorrect syntax used; leave
         return;
     }
     
@@ -479,7 +480,7 @@ void FormControl::setPosition(kscript::ExprEnv* env, kscript::Value* retval)
         }
          else
         {
-            // -- incorrect syntax used, bail out --
+            // incorrect syntax used; leave
             return;
         }
     }
@@ -566,7 +567,7 @@ void FormControl::setSize(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() < 1 ||
         env->getParamCount() > 2)
     {
-        // -- incorrect syntax used, bail out --
+        // incorrect syntax used; leave
         return;
     }
     
@@ -580,7 +581,7 @@ void FormControl::setSize(kscript::ExprEnv* env, kscript::Value* retval)
         }
          else
         {
-            // -- incorrect syntax used, bail out --
+            // incorrect syntax used; leave
             return;
         }
     }
@@ -639,7 +640,7 @@ void FormControl::setMinSize(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() < 1 ||
         env->getParamCount() > 2)
     {
-        // -- incorrect syntax used, bail out --
+        // incorrect syntax used; leave
         return;
     }
     
@@ -653,7 +654,7 @@ void FormControl::setMinSize(kscript::ExprEnv* env, kscript::Value* retval)
         }
          else
         {
-            // -- incorrect syntax used, bail out --
+            // incorrect syntax used; leave
             return;
         }
     }
@@ -713,7 +714,7 @@ void FormControl::setMaxSize(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() < 1 ||
         env->getParamCount() > 2)
     {
-        // -- incorrect syntax used, bail out --
+        // incorrect syntax used; leave
         return;
     }
     
@@ -727,7 +728,7 @@ void FormControl::setMaxSize(kscript::ExprEnv* env, kscript::Value* retval)
         }
          else
         {
-            // -- incorrect syntax used, bail out --
+            // incorrect syntax used; leave
             return;
         }
     }
@@ -787,7 +788,7 @@ void FormControl::setClientSize(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() < 1 ||
         env->getParamCount() > 2)
     {
-        // -- incorrect syntax used, bail out --
+        // incorrect syntax used; leave
         return;
     }
     
@@ -801,7 +802,7 @@ void FormControl::setClientSize(kscript::ExprEnv* env, kscript::Value* retval)
         }
          else
         {
-            // -- incorrect syntax used, bail out --
+            // incorrect syntax used; leave
             return;
         }
     }
@@ -1371,7 +1372,7 @@ void FormControl::onEvent(wxEvent& event)
         event_type == wxEVT_RIGHT_DOWN ||
         event_type == wxEVT_RIGHT_UP)
     {
-        // -- this whole chunk of code is devoted to mouse events --
+        // this whole chunk of code is devoted to mouse events
         
         wxMouseEvent& evt = (wxMouseEvent&)event;
         kscript::Value* event_args = new kscript::Value;
@@ -1442,7 +1443,7 @@ void FormControl::onEvent(wxEvent& event)
 
 
 
-// -- Form class implementation --
+// Form class implementation
 
 // (CLASS) Form
 // Category: Form
@@ -1508,14 +1509,14 @@ void Form::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     // call base class constructor
     FormControl::constructor(env, retval);
 
-    // -- set default values --
+    // set default values
     wxString caption = wxT("");
     m_x = 100;
     m_y = 100;
     m_width = 800;
     m_height = 600;
     
-    // -- get user input values --
+    // get user input values
     if (env->getParamCount() > 0)
     {
         caption = towx(env->getParam(0)->getString());
@@ -1542,10 +1543,10 @@ void Form::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     m_wnd = m_form_frame;
     m_form_panel = m_form_frame->getPanel();
 
-    // -- set default icon --
+    //set default icon
     m_form_frame->SetIcon(g_app->getMainFrame()->getFrameWindow()->GetIcon());
 
-    // -- listen for events --
+    // listen for events
     //listenEvent(wxEVT_CLOSE_WINDOW);
     listenEvent(wxEVT_COMMAND_MENU_SELECTED, 30000, 31999);
     listenEvent(m_form_panel, wxEVT_SIZE);
@@ -1750,7 +1751,7 @@ void Form::setMenuBar(kscript::ExprEnv* env, kscript::Value* retval)
         MenuBar* m = (MenuBar*)obj;
         m_form_frame->SetMenuBar(m->getWxMenuBar());
         
-        // -- store the menubar for menuitem lookup --
+        // store the menubar for menuitem lookup
         m_menubar = m;
     }
 }
@@ -1796,9 +1797,9 @@ void Form::setStatusBar(kscript::ExprEnv* env, kscript::Value* retval)
         s->setFormWindow(m_form_frame);
         s->realize();
         
-        // -- we are calling Reparent() here because the StatusBar class
-        //    doesn't have access to the FormFrame object because m_form_wnd
-        //    is actually the wxPanel inside of FormFrame --
+        // we are calling Reparent() here because the StatusBar class
+        // doesn't have access to the FormFrame object because m_form_wnd
+        // is actually the wxPanel inside of FormFrame
         s->getWxStatusBar()->Reparent(m_form_frame);
 
         s->realize();
@@ -2170,7 +2171,7 @@ void Form::destroy()
 
 
 
-// -- BusyCursor class implementation --
+// BusyCursor class implementation
 
 class EndBusyCursor : public wxEvtHandler
 {
@@ -2209,7 +2210,7 @@ void zBusyCursor::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 }
 
 
-// -- Control class implementation --
+// Control class implementation
 
 // (CLASS) Control
 // Category: Control
@@ -2265,13 +2266,13 @@ void Control::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
     FormControl::constructor(env, retval);
      
-    // -- set default values --
+    // set default values
     m_x = 0;
     m_y = 0;
     m_width = 100;
     m_height = 100;
     
-    // -- get user input values --
+    // get user input values
     if (env->getParamCount() > 0)
         m_x = env->getParam(0)->getInteger();
     if (env->getParamCount() > 1)
@@ -2281,7 +2282,7 @@ void Control::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() > 3)
         m_height = env->getParam(3)->getInteger();
 
-    // -- create the control --
+    // create the control
     m_wnd = new wxWindow(getApp()->getTempParent(),
                           -1,
                           wxPoint(m_x, m_y),
@@ -2421,7 +2422,7 @@ void Control::onEvent(wxEvent& _evt)
 
 
 
-// -- DialogResult class implementation --
+// DialogResult class implementation
 
 // TODO: see note in header
 
@@ -2444,7 +2445,7 @@ void DialogResult::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 }
 
 
-// -- Point class implementation --
+// Point class implementation
 
 // (CLASS) Point
 // Category: Graphics
@@ -2488,7 +2489,7 @@ void Point::constructor(kscript::ExprEnv* env, kscript::Value* retval)
         y_member->setInteger(env->getParam(1)->getInteger());
 }
 
-// -- Size class implementation --
+// -Size class implementation
 
 // (CLASS) Size
 // Category: Graphics
@@ -2532,7 +2533,7 @@ void Size::constructor(kscript::ExprEnv* env, kscript::Value* retval)
         height_member->setInteger(env->getParam(1)->getInteger());
 }
 
-// -- Color class implementation --
+// Color class implementation
 
 // (CLASS) Color
 // Category: Graphics
@@ -2588,7 +2589,7 @@ void Color::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 
 
 
-// -- Line class implementation --
+// Line class implementation
 
 // (CLASS) Line
 // Category: Control
@@ -2630,13 +2631,13 @@ Line::~Line()
 
 void Line::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- initialize the component --
+    // initialize the component
     initComponent(env);
  
-    // -- default style --
+    // default style
     int orientation = Line::Horizontal;
     
-    // -- set default values --
+    // set default values
     m_x = 0;
     m_y = 0;
     m_width = -1;
@@ -2644,7 +2645,7 @@ void Line::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     
     size_t param_count = env->getParamCount();
     
-    // -- get user input values --
+    // get user input values
     if (param_count > 0)
         orientation = env->getParam(0)->getInteger();
     if (param_count > 1)
@@ -2664,7 +2665,7 @@ void Line::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     if (orientation == Line::Vertical && m_height == -1)
         m_height = 100;
 
-    // -- create the control --
+    // create the control
     m_ctrl = new wxStaticLine(getApp()->getTempParent(),
                               -1,
                               wxPoint(m_x, m_y),
@@ -2692,7 +2693,7 @@ void Line::realize()
 }
 
 
-// -- BorderBox class implementation --
+// BorderBox class implementation
 
 // (CLASS) BorderBox
 // Category: Control
@@ -2730,10 +2731,10 @@ BorderBox::~BorderBox()
 
 void BorderBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- initialize the component --
+    // initialize the component
     initComponent(env);
 
-    // -- set default values --
+    // set default values
     wxString label = wxEmptyString;
     m_x = 0;
     m_y = 0;
@@ -2742,7 +2743,7 @@ void BorderBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     
     size_t param_count = env->getParamCount();
     
-    // -- get user input values --
+    // get user input values
     if (param_count > 0)
         label = towx(env->getParam(0)->getString());
     if (param_count > 1)
@@ -2754,7 +2755,7 @@ void BorderBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     if (param_count > 4)
         m_height = env->getParam(4)->getInteger();
 
-    // -- create the control --
+    // create the control
     m_ctrl = new wxStaticBox(getApp()->getTempParent(),
                              -1,
                              label,
@@ -2782,7 +2783,7 @@ void BorderBox::realize()
 
 
 
-// -- PictureBox class implementation --
+// PictureBox class implementation
 
 // (CLASS) PictureBox
 // Category: Control
@@ -2818,10 +2819,10 @@ PictureBox::~PictureBox()
 
 void PictureBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- initialize the component --
+    // initialize the component
     initComponent(env);
 
-    // -- set default values --
+    // set default values
     m_x = 0;
     m_y = 0;
     m_width = 100;
@@ -2829,7 +2830,7 @@ void PictureBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     
     size_t param_count = env->getParamCount();
     
-    // -- get user input values --
+    // get user input values
     if (param_count > 0)
         m_x = env->getParam(0)->getInteger();
     if (param_count > 1)
@@ -2839,7 +2840,7 @@ void PictureBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     if (param_count > 3)
         m_height = env->getParam(3)->getInteger();
 
-    // -- create the control --
+    // create the control
     m_ctrl = new wxStaticBitmap(getApp()->getTempParent(),
                                 -1,
                                 wxNullBitmap,
@@ -2899,7 +2900,7 @@ void PictureBox::setImage(kscript::ExprEnv* env, kscript::Value* retval)
         if (!bbmp.Ok())
             return;
             
-        // -- we have to do this to copy the bitmap --
+        // we have to do this to copy the bitmap
         wxBitmap bmp = bbmp.GetSubBitmap(wxRect(0,
                                                 0,
                                                 bbmp.GetWidth(),
@@ -2956,16 +2957,20 @@ void PictureBox::onEvent(wxEvent& event)
 {
     if (event.GetEventType())
     {
-        // -- stretch the bitmap --
+        // stretch the bitmap
         m_form_wnd->Freeze();
+
         wxSize clisize = m_ctrl->GetClientSize();
+
         if (clisize.x <= 0)
             clisize.x = 20;
         if (clisize.y <= 0)
             clisize.y = 20;
+
         wxImage img = m_img.Scale(clisize.x, clisize.y);
         m_bmp = wxBitmap(img);
         m_ctrl->SetBitmap(m_bmp);
+
         m_form_wnd->Thaw();
     }
 }

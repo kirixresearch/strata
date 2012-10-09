@@ -66,10 +66,10 @@ std::vector<ImportJobInfo> ImportJob::getImportSets()
 
 bool ImportJob::handleFieldInfo(FieldTransInfo* info)
 {
-    // -- this function handles type, width, and scale info
-    //    for the output field.  If the output type is not the same
-    //    as the input type, it will try to convert it, and it will
-    //    also try to handle possible invalid widths and scales --
+    // this function handles type, width, and scale info
+    // for the output field.  If the output type is not the same
+    // as the input type, it will try to convert it, and it will
+    // also try to handle possible invalid widths and scales
 
     wxString current_expression = wxT("");
     if (info->expression.length() > 0)
@@ -147,7 +147,7 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
                 dest_type == tango::typeInteger ||
                 dest_type == tango::typeBoolean)
             {
-                // -- cannot convert to these types --
+                // cannot convert to these types
                 return false;
             }
 
@@ -174,7 +174,7 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
             if (dest_type == tango::typeDate ||
                 dest_type == tango::typeDateTime)
             {
-                // -- cannot convert to these types --
+                // cannot convert to these types
                 return false;
             }
 
@@ -214,7 +214,7 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
             if (dest_type == tango::typeDate ||
                 dest_type == tango::typeDateTime)
             {
-                // -- cannot convert to these types --
+                // cannot convert to these types
                 return false;
             }
 
@@ -254,7 +254,7 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
             if (dest_type == tango::typeDate ||
                 dest_type == tango::typeDateTime)
             {
-                // -- cannot convert to these types --
+                // cannot convert to these types
                 return false;
             }
 
@@ -291,7 +291,7 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
             if (dest_type == tango::typeDate ||
                 dest_type == tango::typeDateTime)
             {
-                // -- cannot convert to these types --
+                // cannot convert to these types
                 return false;
             }
 
@@ -520,7 +520,7 @@ tango::tango_int64_t ImportJob::getTotalRowCount(tango::IDatabasePtr db)
                 return 0;
             }
 
-            // -- get total row count --
+            // get total row count
             if (src_set->getSetFlags() & tango::sfFastRowCount)
             {
                 max_count += src_set->getRowCount();
@@ -612,7 +612,7 @@ int ImportJob::runJob()
         m_job_info->setProgressString(_("Reading file..."));
     }              
     
-    // -- create a connection to the source database --
+    // create a connection to the source database
     IConnectionPtr conn = createUnmanagedConnection();
     conn->setType(m_import_type);
     conn->setHost(m_host);
@@ -622,7 +622,7 @@ int ImportJob::runJob()
     conn->setPassword(m_password);
     conn->setPath(m_filename);
 
-    // -- we couldn't open the connection, bail out --
+    // we couldn't open the connection, bail out
     if (!conn->open())
     {
         if (m_import_type == dbtypeSqlServer ||
@@ -658,7 +658,7 @@ int ImportJob::runJob()
     tango::tango_int64_t total_row_count = 0;
 
 
-    // -- determine the total row count --
+    // determine the total row count
     tango::tango_int64_t max_row_count = getTotalRowCount(src_db);
     
     if (max_row_count == 0)
@@ -671,12 +671,12 @@ int ImportJob::runJob()
     std::vector<ImportJobInfo>::iterator it;
     std::vector<ImportCopyInfo> copy_info;
 
-    // -- import each set --
+    // import each set
     for (it = m_imports.begin(); it != m_imports.end(); ++it)
     {
         updateJobTitle(it->input_path);
 
-        // -- clear the copy info at the beginning of each set's import --
+        // clear the copy info at the beginning of each set's import
         copy_info.clear();
 
 
@@ -692,7 +692,8 @@ int ImportJob::runJob()
 
 
 
-        // -- the input path is filled out and there is no query --
+        // the input path is filled out and there is no query
+
         if (!it->input_path.IsEmpty() && it->query.IsEmpty())
         {
             // every time we open a text-delimited set, we need to read some
@@ -702,7 +703,7 @@ int ImportJob::runJob()
 
             src_set = src_db->openSetEx(towstr(it->input_path), format);
 
-            // -- if we can't open the source set, bail out --
+            // if we can't open the source set, bail out
             if (src_set.isNull())
             {
                 m_job_info->setProgressString(wxEmptyString);
@@ -710,7 +711,7 @@ int ImportJob::runJob()
                 return 0;
             }
 
-            // -- set the parameters for a delimited text import --
+            // set the parameters for a delimited text import
             tango::IDelimitedTextSetPtr td_set = src_set;
             if (td_set.isOk())
             {
@@ -756,13 +757,13 @@ int ImportJob::runJob()
                                             _("$c of $m records processed ($p1%)"));
             }
 
-            // -- set the parameters for a fixed-length text import --
+            // set the parameters for a fixed-length text import
             tango::IFixedLengthDefinitionPtr flt_set = src_set;
             if (flt_set.isOk())
             {
                 flt_set->setRowWidth(it->row_width);
                 
-                // -- insert the field info into the set --
+                // insert the field info into the set
                 std::vector<FieldTransInfo>::iterator field_it;
                 for (field_it = it->field_info.begin();
                      field_it != it->field_info.end();
@@ -808,7 +809,7 @@ int ImportJob::runJob()
                 it->field_info.clear();
             }
 
-            // -- create an iterator on the source set --
+            // create an iterator on the source set
             src_iter = src_set->createIterator(L"", L"", NULL);
         }
          else
@@ -867,7 +868,7 @@ int ImportJob::runJob()
         }
 
 
-        // -- if we couldn't create an iterator on our source set, bail out --
+        // if we couldn't create an iterator on our source set, bail out
         if (src_iter.isNull())
         {
             m_job_info->setProgressString(wxEmptyString);
@@ -876,16 +877,16 @@ int ImportJob::runJob()
         }
 
 
-        // -- try to open the destination set (to see if it already exists) --
+        // try to open the destination set (to see if it already exists)
         dest_set = dest_db->openSet(towstr(it->output_path));
 
 
-        // -- use this opportunity of having the set open
-        //    to fill out the field map, if one is not already
-        //    present.  An empty field map indicates that the
-        //    caller desires all fields to be copied.  A field
-        //    map that is already populated indicates that some
-        //    kind of transformation is happening --
+        // use this opportunity of having the set open to fill out the
+        // field map, if one is not already present.  An empty field map
+        // indicates that the caller desires all fields to be copied.
+        // A field map that is already populated indicates that some
+        // kind of transformation is happening 
+
         if (it->field_info.empty())
         {
             tango::IStructurePtr src_struct = src_iter->getStructure();
@@ -898,8 +899,9 @@ int ImportJob::runJob()
             FieldTransInfo fs;
             wxString out_fieldname;
 
-            // -- if we are appending and can locate the destination set,
-            //    get the output structure info from that set --
+            // if we are appending and can locate the destination set,
+            // get the output structure info from that set
+
             if (it->append && dest_set.isOk())
             {
                 tango::IStructurePtr dest_struct = dest_set->getStructure();
@@ -915,8 +917,9 @@ int ImportJob::runJob()
                     src_colinfo = src_struct->getColumnInfoByIdx(i);
                     dest_colinfo = dest_struct->getColumnInfo(src_colinfo->getName());
 
-                    // -- only add this field to the TransformField vector
-                    //    if we can locate the field in the destination set --
+                    // only add this field to the TransformField vector
+                    // if we can locate the field in the destination set
+
                     if (dest_colinfo)
                     {
                         fs.input_name = towx(src_colinfo->getName());
@@ -970,8 +973,8 @@ int ImportJob::runJob()
         std::set<wxString> dup_check;
 
 
-        // -- add destination database keywords to the dup_check
-        //    to prevent keywords from ending up in the output field --
+        // add destination database keywords to the dup_check
+        // to prevent keywords from ending up in the output field
         
         tango::IAttributesPtr attr = dest_db->getAttributes();
         if (attr.isOk())
@@ -986,7 +989,8 @@ int ImportJob::runJob()
         }
 
 
-        // -- now check for duplicate field names --
+        // now check for duplicate field names
+
         for (field_it = it->field_info.begin();
              field_it != it->field_info.end();
              ++field_it)
@@ -999,7 +1003,7 @@ int ImportJob::runJob()
             wxString new_name;
             while (dup_check_it != dup_check.end())
             {
-                // -- field has a duplicate name; correct it --
+                // field has a duplicate name; correct it
                 new_name = field_it->output_name;
                 new_name += wxString::Format(wxT("%d"), counter++);
                 s = new_name;
@@ -1007,8 +1011,8 @@ int ImportJob::runJob()
                 dup_check_it = dup_check.find(s);
             }
 
-            // -- change the output fieldname in the vector for
-            //    later use in the import job --
+            // change the output fieldname in the vector for
+            // later use in the import job
             if (!new_name.IsEmpty())
             {
                 field_it->output_name = new_name;
@@ -1018,20 +1022,20 @@ int ImportJob::runJob()
         }
 
 
-        // -- clear out our progress string --
+        // clear out our progress string
         m_job_info->setProgressString(wxEmptyString);
 
 
         if (it->append && dest_set.isOk())
         {
-            // -- if we are appending to a set and the destination set exists,
-            //    get the structure from that set --
+            // if we are appending to a set and the destination set exists,
+            // get the structure from that set
 
             dest_struct = dest_set->getStructure();
         }
          else
         {
-            // -- create the output structure --
+            // create the output structure
             dest_struct = dest_db->createStructure();
 
 
@@ -1052,15 +1056,15 @@ int ImportJob::runJob()
         }
 
         
-        // -- if our destination set doesn't exist, bail out --
+        // if our destination set doesn't exist, bail out
         if (dest_set.isNull())
         {
             getJobInfo()->setState(cfw::jobStateFailed);
             return 0;
         }
 
-
-        // -- if our source structure doesn't exist, bail out --
+        
+        // if our source structure doesn't exist, bail out
         src_struct = src_iter->getStructure();
         if (src_struct.isNull())
         {
@@ -1069,8 +1073,8 @@ int ImportJob::runJob()
         }
 
 
-        // -- now that we have created the destination set,
-        //    insert rows into that set --
+        // now that we have created the destination set,
+        // insert rows into that set
 
         tango::IRowInserterPtr ri;
         ri = dest_set->getRowInserter();
@@ -1079,7 +1083,7 @@ int ImportJob::runJob()
         std::vector<ImportCopyInfo>::iterator copyinfo_it;
         ImportCopyInfo ci;
 
-        // -- populate our copy info vector so we know what fields to import --
+        // populate our copy info vector so we know what fields to import
         for (field_it = it->field_info.begin();
              field_it != it->field_info.end();
              ++field_it)
@@ -1233,7 +1237,7 @@ int ImportJob::runJob()
 
         ri->finishInsert();
 
-        // -- free handles --
+        // free handles
         for (copyinfo_it = copy_info.begin();
              copyinfo_it != copy_info.end();
              ++copyinfo_it)
@@ -1261,7 +1265,9 @@ int ImportJob::runJob()
             base_path += kl::beforeFirst(remainder, L'/');
             remainder = kl::afterFirst(remainder, L'/');
 
-            // -- if the remainder returns the same result twice, there are no more path separators --
+            // if the remainder returns the same result twice,
+            // there are no more path separators
+
             if (!wcscasecmp(remainder.c_str(), old_remainder.c_str()))
             {
                 break;
@@ -1269,13 +1275,13 @@ int ImportJob::runJob()
         }
 
 
-        // -- store sets --
+        // store sets
         if (!isCancelling() && dest_set.isOk())
         {
             dest_db->storeObject(dest_set, towstr(it->output_path));
         }
 
-        // -- close out the sets --
+        // close out the sets
         src_set.clear();
         dest_set.clear();
     }

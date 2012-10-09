@@ -37,7 +37,7 @@ public:
 
     void setAppend(const wxString& append_path);
     
-    // -- event handlers --
+    // event handlers
     void onOK(wxCommandEvent& event);
     void onCancel(wxCommandEvent& event);
     void onBrowse(wxCommandEvent& event);
@@ -48,7 +48,7 @@ private:
     // -- signal events --
     void onDeletedRows(std::vector<int> rows);
 
-    // -- event handlers --
+    // event handlers
     void onGridDataDropped(kcl::GridDataDropTarget* drop_target);
     void onOutputPathDropped(wxDragResult& drag_result, cfw::FsDataObject* data);
     void checkOverlayText();

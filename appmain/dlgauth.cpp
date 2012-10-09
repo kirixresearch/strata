@@ -142,7 +142,7 @@ public:
         cfw::limitFontSize(label4, 12);
         cfw::limitFontSize(label5, 12);
 
-        // -- create vertical sizer --
+        // create vertical sizer
         
         wxBitmap help_bmp = wxArtProvider::GetBitmap(wxART_INFORMATION, wxART_MESSAGE_BOX);
         wxStaticBitmap* bmp = new wxStaticBitmap(this, -1, help_bmp);
@@ -165,7 +165,7 @@ public:
         vert_sizer->Add(label8, 0, wxEXPAND | wxRIGHT, 12);
         
         
-        // -- create top sizer --
+        // create top sizer
         
         wxBoxSizer* top_sizer = new wxBoxSizer(wxHORIZONTAL);
         top_sizer->AddSpacer(7);
@@ -188,7 +188,7 @@ public:
         ok_cancel_sizer->SetMinSize(min_size);
         
         
-        // -- create main sizer --
+        // create main sizer
         wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
         main_sizer->AddSpacer(8);
         main_sizer->Add(top_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 8);
@@ -344,7 +344,7 @@ DlgAuth::DlgAuth(wxWindow* parent,
     cfw::makeFontBold(status_label);
     
     
-    // -- create vertical sizer --
+    // create vertical sizer
     
     wxString appname = APPLICATION_NAME;
     wxString email = APP_CONTACT_SALESEMAIL;
@@ -384,7 +384,7 @@ DlgAuth::DlgAuth(wxWindow* parent,
     vert_sizer->Add(authcode_sizer, 0, wxEXPAND | wxRIGHT, 60);
     
     
-    // -- create top sizer --
+    // create top sizer
     
     wxBoxSizer* top_sizer = new wxBoxSizer(wxHORIZONTAL);
     top_sizer->AddSpacer(5);
@@ -428,7 +428,7 @@ DlgAuth::DlgAuth(wxWindow* parent,
     ok_cancel_sizer->SetMinSize(min_size);
     
     
-    // -- create main sizer --
+    // create main sizer
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
     main_sizer->AddSpacer(8);
     main_sizer->Add(top_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 8);

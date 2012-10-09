@@ -201,7 +201,7 @@ private:
 
     void populate();
     
-    // -- event handlers --
+    // event handlers
     void onItemClicked(wxCommandEvent& evt);
 
 private:

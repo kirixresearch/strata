@@ -220,7 +220,7 @@ private:
     // -- frame event handlers --
     void onFrameEvent(cfw::Event& evt);
 
-    // -- event handlers --
+    // event handlers
     void onSize(wxSizeEvent& evt);
     void onEraseBackground(wxEraseEvent& evt);
     void onSelectAll(wxCommandEvent& evt);

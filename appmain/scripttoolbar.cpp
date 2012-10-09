@@ -76,7 +76,7 @@ void ToolBarItem::onEvent(wxEvent& event)
 
 void ToolBarItem::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- initialize the component --
+    // initialize the component
     initComponent(env);
 
     // -- add some properties --
@@ -92,7 +92,7 @@ void ToolBarItem::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     //wxImage img(10,10, false);
     m_bitmap = wxBitmap(0,0);
     
-    // -- get user input values --
+    // get user input values
     if (env->getParamCount() > 0)
     {
         kscript::ValueObject* obj = env->getParam(0)->getObject();
@@ -332,7 +332,7 @@ void ToolBar::addItemToWxToolBar(ToolBarItem* item)
 
 void ToolBar::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- initialize the component --
+    // initialize the component
     initComponent(env);
 
     m_ctrl = new wxToolBar(getApp()->getTempParent(),

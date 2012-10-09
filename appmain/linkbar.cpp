@@ -1032,7 +1032,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
     if (obj.isOk())
         obj_type = obj->getType();
 
-    // -- create and populate the popup menu --
+    // create and populate the popup menu
     
     wxMenu menuPopup;
     if (item.isNull())
@@ -1837,17 +1837,19 @@ void LinkBar::link2ToolIndex(int& link_idx)
     link_idx = (link_idx+first_idx);
 }
 
+
 // BE CAREFUL! -- This function returns the (tool-based) insert index,
 // not the link-based insert index
+
 int LinkBar::getInsertIndex(const wxPoint& pt, bool ignore_ypos)
 {
-    // -- check to make sure we have at least one item in the linkbar --
+    // check to make sure we have at least one item in the linkbar
     
     int tool_count = (int)GetToolCount();
     if (tool_count == 0)
         return 0;
     
-    // -- check to make sure we have at least one link in the linkBar --
+    // check to make sure we have at least one link in the linkBar
     
     int first_idx = GetToolIndex(ID_FirstLinkBarId);
     if (first_idx == -1)
@@ -1861,7 +1863,7 @@ int LinkBar::getInsertIndex(const wxPoint& pt, bool ignore_ypos)
     if (ignore_ypos)
         y = GetClientSize().GetHeight()/2;
     
-    // -- check to see if we're hovering over an item --
+    // check to see if we're hovering over an item
     
     LinkBarItem* hover_item = FindToolByPosition(x, y);
     if (hover_item != NULL)
@@ -1885,7 +1887,8 @@ int LinkBar::getInsertIndex(const wxPoint& pt, bool ignore_ypos)
         return insert_idx;
     }
     
-    // -- check to see if we're hovering in between items --
+
+    // check to see if we're hovering in between items
     
     int insert_idx = 0;
 
@@ -1894,7 +1897,7 @@ int LinkBar::getInsertIndex(const wxPoint& pt, bool ignore_ypos)
     // have to find a non-separator item because separators all have the
     // same id, thus GetItemIndex() returns an invalid index
 
-    // -- check to the left --
+    // check to the left
     
     int left_x = x, left_offset_count = 0;
     LinkBarItem* left_item = FindToolByPosition(left_x, y);
@@ -1933,7 +1936,7 @@ int LinkBar::getInsertIndex(const wxPoint& pt, bool ignore_ypos)
         return insert_idx;
     }
 
-    // -- check to the right --
+    // check to the right
     
     int right_x = x, right_offset_count = 0;
     LinkBarItem* right_item = FindToolByPosition(right_x, y);
@@ -2348,7 +2351,7 @@ void LinkBar::onFsDataDrop(wxDragResult& def, cfw::FsDataObject* data)
     
     if (data->getSourceId() == ID_Toolbar_Link)
     {
-        // -- dragging from the linkbar to the linkbar --
+        // dragging from the linkbar to the linkbar
         
         // we can't drag more than one item at a time from the linkbar
         if (items->size() != 1)
@@ -2360,7 +2363,7 @@ void LinkBar::onFsDataDrop(wxDragResult& def, cfw::FsDataObject* data)
             m_drop_idx != drag_idx+1 &&
             drop_folder_path.IsEmpty())
         {
-            // -- repositioning an item in the linkbar --
+            // repositioning an item in the linkbar
         
             // if we drop the item to the right of itself, we have to compensate
             // for the fact that it's gone when we calculate the drop index
@@ -2376,7 +2379,7 @@ void LinkBar::onFsDataDrop(wxDragResult& def, cfw::FsDataObject* data)
         }
          else if (drop_folder_path.Length() > 0)
         {
-            // -- dragging an item into a folder in the linkbar --
+            // dragging an item into a folder in the linkbar
             
             // get the full path of the source item
             wxString src_path = DbDoc::getFsItemPath(items->getItem(0));
@@ -2400,7 +2403,7 @@ void LinkBar::onFsDataDrop(wxDragResult& def, cfw::FsDataObject* data)
     }
      else if (data->getSourceId() == ID_Frame_UrlCtrl)
     {
-        // -- dragging from the url combobox to the linkbar --
+        // dragging from the url combobox to the linkbar
 
         // we can't drag more than one item at a time from the url combobox
         if (items->size() != 1)
@@ -2481,7 +2484,7 @@ void LinkBar::onFsDataDrop(wxDragResult& def, cfw::FsDataObject* data)
     }
      else
     {
-        // -- dragging from the project panel to the linkbar --
+        // dragging from the project panel to the linkbar
         
         size_t i, count = items->size();
         for (i = 0; i < count; ++i)

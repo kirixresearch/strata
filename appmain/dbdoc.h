@@ -248,7 +248,7 @@ public:
     
 private:
 
-    // -- event handlers --
+    // event handlers
 
     void onCreateExternalConnection(wxCommandEvent& evt);
     void onCreateTable(wxCommandEvent& evt);

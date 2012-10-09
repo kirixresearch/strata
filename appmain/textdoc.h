@@ -136,7 +136,7 @@ private:
 
 private:
 
-    // -- event handlers --
+    // event handlers
     void onOptionsMenu(wxCommandEvent& evt);
     void onSave(wxCommandEvent& evt);
     void onSize(wxSizeEvent& evt);

@@ -619,8 +619,7 @@ void ProcessOutputStream::readLine(kscript::ExprEnv* env, kscript::Value* retval
 
 
 
-// -- ProcessInternal helper class --
-
+// ProcessInternal helper class
 
 ProcessInternal::ProcessInternal()
 {

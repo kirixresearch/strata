@@ -1845,7 +1845,7 @@ int QueryDoc::checkDuplicateFieldnames(int check_flags)
 
 int QueryDoc::checkInvalidFieldnames(int check_flags)
 {
-    // -- if we're editing, end the edit --
+    // if we're editing, end the edit
     if (m_grid->isEditing())
         m_grid->endEdit(true);
     

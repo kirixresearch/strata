@@ -480,7 +480,7 @@ void ListView::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     
     size_t param_count = env->getParamCount();
     
-    // -- get user input values --
+    // get user input values
     if (param_count > 0)
         m_x = env->getParam(0)->getInteger();
     if (param_count > 1)
@@ -492,7 +492,7 @@ void ListView::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 
     if (param_count < 1)
     {
-        // -- create the control --
+        // create the control
         m_ctrl = new wxListCtrl(getApp()->getTempParent(),
                                 -1,
                                 wxDefaultPosition,
@@ -509,7 +509,7 @@ void ListView::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     }
      else
     {
-        // -- create the control --
+        // create the control
         m_ctrl = new wxListCtrl(getApp()->getTempParent(),
                                 -1,
                                 wxPoint(m_x, m_y),

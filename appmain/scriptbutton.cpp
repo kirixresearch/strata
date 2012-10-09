@@ -57,7 +57,7 @@ Button::~Button()
 
 void Button::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- initialize the component --
+    // initialize the component
     initComponent(env);
 
     // -- add some properties --
@@ -72,7 +72,7 @@ void Button::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     
     size_t param_count = env->getParamCount();
     
-    // -- get user input values --
+    // get user input values
     if (param_count > 0)
         label = towx(env->getParam(0)->getString());
     if (param_count > 1)
@@ -86,7 +86,7 @@ void Button::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 
     if (param_count < 2)
     {
-        // -- create the control --
+        // create the control
         m_ctrl = new wxButton(getApp()->getTempParent(),
                               -1,
                               label,
@@ -102,7 +102,7 @@ void Button::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     }
      else
     {
-        // -- create the control --
+        // create the control
         m_ctrl = new wxButton(getApp()->getTempParent(),
                               -1,
                               label,
@@ -241,7 +241,7 @@ BitmapButton::~BitmapButton()
 
 void BitmapButton::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- initialize the component --
+    // initialize the component
     initComponent(env);
     
     // -- add some properties --
@@ -256,7 +256,7 @@ void BitmapButton::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     
     size_t param_count = env->getParamCount();
     
-    // -- get user input values --
+    // get user input values
     if (param_count > 0)
     {
         kscript::ValueObject* obj = env->getParam(0)->getObject();
@@ -281,7 +281,7 @@ void BitmapButton::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     
     if (param_count < 2)
     {
-        // -- create the control --
+        // create the control
         m_ctrl = new wxBitmapButton(getApp()->getTempParent(),
                                     -1,
                                     bitmap,
@@ -297,7 +297,7 @@ void BitmapButton::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     }
      else
     {
-        // -- create the control --
+        // create the control
         m_ctrl = new wxBitmapButton(getApp()->getTempParent(),
                                     -1,
                                     bitmap,
@@ -457,7 +457,7 @@ void RadioButton::setOwner(RadioButtonGroup* owner)
 
 void RadioButton::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- initialize the component --
+    // initialize the component
     initComponent(env);
 
     // -- add some properties --
@@ -475,7 +475,7 @@ void RadioButton::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     
     size_t param_count = env->getParamCount();
 
-    // -- get user input values --
+    // get user input values
     if (param_count > 0)
         label = towx(env->getParam(0)->getString());
     if (param_count > 1)
@@ -489,7 +489,7 @@ void RadioButton::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     
     if (param_count < 2)
     {
-        // -- create the control --
+        // create the control
         m_ctrl = new wxRadioButton(getApp()->getTempParent(),
                                    -1,
                                    label,
@@ -506,7 +506,7 @@ void RadioButton::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     }
      else
     {
-        // -- create the control --
+        // create the control
         m_ctrl = new wxRadioButton(getApp()->getTempParent(),
                                    -1,
                                    label,
@@ -636,7 +636,7 @@ RadioButtonGroup::~RadioButtonGroup()
 
 void RadioButtonGroup::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- initialize the component --
+    // initialize the component
     initComponent(env);
 
     // -- set default values --
@@ -647,7 +647,7 @@ void RadioButtonGroup::constructor(kscript::ExprEnv* env, kscript::Value* retval
     
     size_t param_count = env->getParamCount();
 
-    // -- get user input values --
+    // get user input values
     if (param_count > 0)
         m_orientation = env->getParam(0)->getInteger();
     if (param_count > 1)
@@ -661,7 +661,7 @@ void RadioButtonGroup::constructor(kscript::ExprEnv* env, kscript::Value* retval
     
     if (param_count < 2)
     {
-        // -- create the control --
+        // create the control
         m_ctrl = new wxPanel(getApp()->getTempParent(),
                              -1,
                              wxDefaultPosition,
@@ -676,7 +676,7 @@ void RadioButtonGroup::constructor(kscript::ExprEnv* env, kscript::Value* retval
     }
      else
     {
-        // -- create the control --
+        // create the control
         m_ctrl = new wxPanel(getApp()->getTempParent(),
                              -1,
                              wxPoint(m_x, m_y),
@@ -814,7 +814,7 @@ CheckBox::~CheckBox()
 
 void CheckBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- initialize the component --
+    // initialize the component
     initComponent(env);
 
     // -- add some properties --
@@ -829,7 +829,7 @@ void CheckBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     
     size_t param_count = env->getParamCount();
     
-    // -- get user input values --
+    // get user input values
     if (param_count > 0)
         label = towx(env->getParam(0)->getString());
     if (param_count > 1)
@@ -843,7 +843,7 @@ void CheckBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 
     if (param_count < 2)
     {
-        // -- create the control --
+        // create the control
         m_ctrl = new wxCheckBox(getApp()->getTempParent(),
                                 -1,
                                 label,
@@ -859,7 +859,7 @@ void CheckBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     }
      else
     {
-        // -- create the control --
+        // create the control
         m_ctrl = new wxCheckBox(getApp()->getTempParent(),
                                 -1,
                                 label,

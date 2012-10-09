@@ -82,7 +82,7 @@ private:
     // -- panel methods --
     void populate();
     
-    // -- event handlers --
+    // event handlers
     void onGridCellDblClick(kcl::GridEvent& evt);
     void onGridColumnClick(kcl::GridEvent& evt);
     void onSize(wxSizeEvent& evt);

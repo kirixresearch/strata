@@ -241,7 +241,7 @@ bool SqlDoc::initDoc(cfw::IFramePtr frame,
     m_textctrl->SetText(m_sql_text);
     m_textctrl->SetReadOnly(true);
 
-    // -- create main sizer --
+    // create main sizer
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
     main_sizer->Add(m_textctrl, 1, wxEXPAND);
     SetSizer(main_sizer);

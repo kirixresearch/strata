@@ -232,7 +232,7 @@ private:
     void updateScrollbars(int scrollbar = -1);
     void recalcScrollbars();
         
-    // -- event handlers --
+    // event handlers
     void onPaint(wxPaintEvent& evt);
     void onScroll(wxScrollWinEvent& evt);
     void onMouseMove(wxMouseEvent& evt);

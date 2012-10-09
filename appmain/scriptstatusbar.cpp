@@ -49,7 +49,7 @@ StatusBarItem::~StatusBarItem()
 
 void StatusBarItem::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- initialize the component --
+    // initialize the component
     initComponent(env);
 
     if (env->getParamCount() > 0)
@@ -157,7 +157,7 @@ wxStatusBar* StatusBar::getWxStatusBar()
 
 void StatusBar::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- initialize the component --
+    // initialize the component
     initComponent(env);
 
     m_ctrl = new wxStatusBar(getApp()->getTempParent(), -1);

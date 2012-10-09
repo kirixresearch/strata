@@ -199,7 +199,7 @@ public:
 
 private:
 
-    // -- event handlers --
+    // event handlers
 
     void onNew(wxCommandEvent& evt);
     void onNewTab(wxCommandEvent& evt);

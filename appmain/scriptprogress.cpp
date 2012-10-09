@@ -36,7 +36,8 @@ private:
     ProgressBar* m_progress;
 };
 
-// -- ProgressBar class implementation --
+
+// ProgressBar class implementation
 
 // (CLASS) ProgressBar
 // Category: Control
@@ -53,7 +54,7 @@ ProgressBar::ProgressBar()
     m_indeterminate = false;
     m_value = 0;
     
-    // -- create a timer that will be used if
+    // create a timer that will be used for indeterminate progress bars
     m_timer = new ProgressBarTimer(this);
 }
 
@@ -89,16 +90,16 @@ ProgressBar::~ProgressBar()
 
 void ProgressBar::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- initialize the component --
+    // initialize the component
     initComponent(env);
 
-    // -- default progress value --
+    // default progress value
     m_value = 0;
     
-    // -- default style --
+    // default style
     int orientation = ProgressBar::Horizontal;
     
-    // -- set default values --
+    // set default values
     m_x = 0;
     m_y = 0;
     m_width = -1;
@@ -106,7 +107,7 @@ void ProgressBar::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     
     size_t param_count = env->getParamCount();
     
-    // -- get user input values --
+    // get user input values
     if (param_count > 0)
         orientation = env->getParam(0)->getInteger();
     if (param_count > 1)
@@ -120,7 +121,7 @@ void ProgressBar::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 
     if (param_count < 1)
     {
-        // -- create the control --
+        // create the control
         m_ctrl = new wxGauge(getApp()->getTempParent(),
                              -1,
                              100,
@@ -139,7 +140,7 @@ void ProgressBar::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     }
      else
     {
-        // -- create the control --
+        // create the control
         m_ctrl = new wxGauge(getApp()->getTempParent(),
                              -1,
                              100,

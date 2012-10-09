@@ -256,7 +256,7 @@ int LinkPropsDialog::ShowModal()
     min_size.SetHeight(min_size.GetHeight()+16);
     ok_cancel_sizer->SetMinSize(min_size);
 
-    // -- create main sizer --
+    // create main sizer
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
     main_sizer->Add(message_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 8);
     main_sizer->Add(create_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 8);

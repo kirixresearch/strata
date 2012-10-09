@@ -1205,7 +1205,7 @@ const std::string& FixedLengthTextIterator::getString(tango::objhandle_t data_ha
 
     if (dai->isCalculated())
     {
-        // -- calculated field with bad expr --
+        // calculated field with bad expr
         return empty_string;
     }
 
@@ -1258,7 +1258,7 @@ const std::wstring& FixedLengthTextIterator::getWideString(tango::objhandle_t da
 
     if (dai->isCalculated())
     {
-        // -- calculated field with bad expr --
+        // calculated field with bad expr
         return empty_wstring;
     }
 
@@ -1295,7 +1295,7 @@ tango::datetime_t FixedLengthTextIterator::getDateTime(tango::objhandle_t data_h
 
     if (dai->isCalculated())
     {
-        // -- calculated field with bad expr --
+        // calculated field with bad expr
         return 0;
     }
 
@@ -1317,7 +1317,7 @@ double FixedLengthTextIterator::getDouble(tango::objhandle_t data_handle)
 
     if (dai->isCalculated())
     {
-        // -- calculated field with bad expr --
+        // calculated field with bad expr
         return 0.0;
     }
 
@@ -1339,7 +1339,7 @@ int FixedLengthTextIterator::getInteger(tango::objhandle_t data_handle)
 
     if (dai->isCalculated())
     {
-        // -- calculated field with bad expr --
+        // calculated field with bad expr
         return 0;
     }
 
@@ -1361,7 +1361,7 @@ bool FixedLengthTextIterator::getBoolean(tango::objhandle_t data_handle)
 
     if (dai->isCalculated())
     {
-        // -- calculated field with bad expr --
+        // calculated field with bad expr
         return false;
     }
 
@@ -1394,7 +1394,7 @@ bool FixedLengthTextIterator::isNull(tango::objhandle_t data_handle)
             
     if (dai->isCalculated())
     {
-        // -- calculated field with bad expr --
+        // calculated field with bad expr
         return true;
     }
 

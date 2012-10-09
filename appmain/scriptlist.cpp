@@ -59,7 +59,7 @@ zListBox::~zListBox()
 
 void zListBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- initialize the component --
+    // initialize the component
     initComponent(env);
 
     // initialize event objects
@@ -74,7 +74,7 @@ void zListBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     
     size_t param_count = env->getParamCount();
     
-    // -- get user input values --
+    // get user input values
     if (param_count > 0)
         m_x = env->getParam(0)->getInteger();
     if (param_count > 1)
@@ -86,7 +86,7 @@ void zListBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 
     if (param_count < 1)
     {
-        // -- create the control --
+        // create the control
         wxArrayString empty_array;
         m_ctrl = new wxListBox(getApp()->getTempParent(),
                                -1,
@@ -104,7 +104,7 @@ void zListBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     }
      else
     {
-        // -- create the control --
+        // create the control
         wxArrayString empty_array;
         m_ctrl = new wxListBox(getApp()->getTempParent(),
                                -1,

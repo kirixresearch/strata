@@ -199,7 +199,7 @@ DlgDatabaseFile::DlgDatabaseFile(wxWindow* parent, int mode) :
     spacer_sizer->AddStretchSpacer();
     
     
-    // -- create main sizer --
+    // create main sizer
     
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
     main_sizer->AddSpacer(8);

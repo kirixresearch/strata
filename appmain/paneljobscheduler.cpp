@@ -633,7 +633,7 @@ wxBoxSizer* JobSchedulerPanel::createVerticalSizer()
     m_starttime_sizer->SetItemMinSize(label_start, label_size);
     m_finishtime_sizer->SetItemMinSize(label_finish, label_size);
 
-    // -- create top sizer --
+    // create top sizer
     m_top_sizer = new wxBoxSizer(wxVERTICAL);
     m_top_sizer->Add(frequency_sizer, 0, wxEXPAND);
     m_top_sizer->AddSpacer(8);

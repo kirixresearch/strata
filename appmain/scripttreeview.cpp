@@ -16,7 +16,7 @@
 #include "scripttreeview.h"
 
 
-// -- class for storing data in tree items --
+// class for storing data in tree items
 
 class TreeViewItemData : public wxTreeItemData
 {
@@ -54,7 +54,7 @@ public:
 
 
 
-// -- TreeViewItem class implementation --
+// TreeViewItem class implementation
 
 // (CLASS) TreeViewItem
 // Category: Control
@@ -122,8 +122,8 @@ void TreeViewItem::setLabel(kscript::ExprEnv* env, kscript::Value* retval)
     
     m_label = towx(env->getParam(0)->getString());
     
-    // -- the item has been added to a TreeView, so we can
-    //    set the label for the item in the wxTreeCtrl --
+    // the item has been added to a TreeView, so we can
+    // set the label for the item in the wxTreeCtrl
     if (m_id.IsOk() && m_owner != NULL)
     {
         wxTreeCtrl* wxtree = m_owner->getWxTreeCtrl();
@@ -142,8 +142,8 @@ void TreeViewItem::setLabel(kscript::ExprEnv* env, kscript::Value* retval)
 
 void TreeViewItem::getLabel(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- the item has been added to a TreeView, so we can
-    //    get the label from the item in the wxTreeCtrl --
+    // the item has been added to a TreeView, so we can
+    // get the label from the item in the wxTreeCtrl
     if (m_id.IsOk() && m_owner != NULL)
     {
         wxTreeCtrl* wxtree = m_owner->getWxTreeCtrl();
@@ -176,8 +176,8 @@ void TreeViewItem::setBitmap(kscript::ExprEnv* env, kscript::Value* retval)
         m_bitmap = b->getWxBitmap();
     }
     
-    // -- the item has been added to a TreeView, so we can
-    //    set the bitmap for the item in the wxTreeCtrl --
+    // the item has been added to a TreeView, so we can
+    // set the bitmap for the item in the wxTreeCtrl
     if (m_id.IsOk() && m_owner != NULL)
     {
         wxTreeCtrl* wxtree = m_owner->getWxTreeCtrl();
@@ -199,8 +199,8 @@ void TreeViewItem::setBitmap(kscript::ExprEnv* env, kscript::Value* retval)
 
 void TreeViewItem::getParent(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- the item has not been added to a TreeView,
-    //    return an empty TreeViewItem --
+    // the item has not been added to a TreeView,
+    // return an empty TreeViewItem
     if (!m_id.IsOk() || m_owner == NULL)
     {
         kscript::Value val;
@@ -214,19 +214,19 @@ void TreeViewItem::getParent(kscript::ExprEnv* env, kscript::Value* retval)
     
     if (!parent_id.IsOk())
     {
-        // -- couldn't find a parent item, return an empty TreeViewItem --
+        // couldn't find a parent item, return an empty TreeViewItem
         kscript::Value val;
         env->createObject(L"TreeViewItem", &val);
         retval->setValue(val);
         return;
     }
 
-    // -- get the TreeViewItemData associated with the root tree item --
+    // get the TreeViewItemData associated with the root tree item
     TreeViewItemData* data = (TreeViewItemData*)wxtree->GetItemData(parent_id);
     
     if (data)
     {
-        // -- return the TreeViewItem from the TreeViewItemData --
+        // return the TreeViewItem from the TreeViewItemData
         kscript::Value val;
         val.setObject(data->getItem());
         retval->setValue(val);
@@ -252,7 +252,7 @@ void TreeViewItem::getParent(kscript::ExprEnv* env, kscript::Value* retval)
 
 void TreeViewItem::getChildCount(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- the item has not been added to a TreeView, return 0 --
+    // the item has not been added to a TreeView, return 0
     if (!m_id.IsOk() || m_owner == NULL)
     {
         retval->setInteger(0);
@@ -282,8 +282,8 @@ void TreeViewItem::getChildCount(kscript::ExprEnv* env, kscript::Value* retval)
 
 void TreeViewItem::getFirstChild(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- the item has not been added to a TreeView,
-    //    return an empty TreeViewItem --
+    // the item has not been added to a TreeView,
+    // return an empty TreeViewItem
     if (!m_id.IsOk() || m_owner == NULL)
     {
         kscript::Value val;
@@ -297,19 +297,19 @@ void TreeViewItem::getFirstChild(kscript::ExprEnv* env, kscript::Value* retval)
     
     if (!child_id.IsOk())
     {
-        // -- couldn't find a child item, return an empty TreeViewItem --
+        // couldn't find a child item, return an empty TreeViewItem
         kscript::Value val;
         env->createObject(L"TreeViewItem", &val);
         retval->setValue(val);
         return;
     }
 
-    // -- get the TreeViewItemData associated with the child item --
+    // get the TreeViewItemData associated with the child item
     TreeViewItemData* data = (TreeViewItemData*)wxtree->GetItemData(child_id);
     
     if (data)
     {
-        // -- return the TreeViewItem from the TreeViewItemData --
+        // return the TreeViewItem from the TreeViewItemData
         kscript::Value val;
         val.setObject(data->getItem());
         retval->setValue(val);
@@ -331,8 +331,9 @@ void TreeViewItem::getFirstChild(kscript::ExprEnv* env, kscript::Value* retval)
 
 void TreeViewItem::getNextChild(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- the item has not been added to a TreeView,
-    //    return an empty TreeViewItem --
+    // the item has not been added to a TreeView,
+    // return an empty TreeViewItem
+
     if (!m_id.IsOk() || m_owner == NULL)
     {
         kscript::Value val;
@@ -346,19 +347,21 @@ void TreeViewItem::getNextChild(kscript::ExprEnv* env, kscript::Value* retval)
     
     if (!child_id.IsOk())
     {
-        // -- couldn't find a child item, return an empty TreeViewItem --
+        // couldn't find a child item, return an empty TreeViewItem
+
         kscript::Value val;
         env->createObject(L"TreeViewItem", &val);
         retval->setValue(val);
         return;
     }
 
-    // -- get the TreeViewItemData associated with the child item --
+    // get the TreeViewItemData associated with the child item
     TreeViewItemData* data = (TreeViewItemData*)wxtree->GetItemData(child_id);
     
     if (data)
     {
-        // -- return the TreeViewItem from the TreeViewItemData --
+        // return the TreeViewItem from the TreeViewItemData
+
         kscript::Value val;
         val.setObject(data->getItem());
         retval->setValue(val);
@@ -378,8 +381,9 @@ void TreeViewItem::getNextChild(kscript::ExprEnv* env, kscript::Value* retval)
 
 void TreeViewItem::getLastChild(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- the item has not been added to a TreeView,
-    //    return an empty TreeViewItem --
+    // the item has not been added to a TreeView,
+    // return an empty TreeViewItem
+
     if (!m_id.IsOk() || m_owner == NULL)
     {
         kscript::Value val;
@@ -393,19 +397,19 @@ void TreeViewItem::getLastChild(kscript::ExprEnv* env, kscript::Value* retval)
     
     if (!child_id.IsOk())
     {
-        // -- couldn't find a child item, return an empty TreeViewItem --
+        // couldn't find a child item, return an empty TreeViewItem
         kscript::Value val;
         env->createObject(L"TreeViewItem", &val);
         retval->setValue(val);
         return;
     }
 
-    // -- get the TreeViewItemData associated with the child item --
+    // get the TreeViewItemData associated with the child item
     TreeViewItemData* data = (TreeViewItemData*)wxtree->GetItemData(child_id);
     
     if (data)
     {
-        // -- return the TreeViewItem from the TreeViewItemData --
+        // return the TreeViewItem from the TreeViewItemData
         kscript::Value val;
         val.setObject(data->getItem());
         retval->setValue(val);
@@ -426,8 +430,8 @@ void TreeViewItem::getLastChild(kscript::ExprEnv* env, kscript::Value* retval)
 
 void TreeViewItem::getPreviousSibling(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- the item has not been added to a TreeView,
-    //    return an empty TreeViewItem --
+    // the item has not been added to a TreeView,
+    //  return an empty TreeViewItem
     if (!m_id.IsOk() || m_owner == NULL)
     {
         kscript::Value val;
@@ -441,19 +445,19 @@ void TreeViewItem::getPreviousSibling(kscript::ExprEnv* env, kscript::Value* ret
     
     if (!sibling_id.IsOk())
     {
-        // -- couldn't find the sibling item, return an empty TreeViewItem --
+        // couldn't find the sibling item, return an empty TreeViewItem
         kscript::Value val;
         env->createObject(L"TreeViewItem", &val);
         retval->setValue(val);
         return;
     }
 
-    // -- get the TreeViewItemData associated with the sibling item --
+    // get the TreeViewItemData associated with the sibling item
     TreeViewItemData* data = (TreeViewItemData*)wxtree->GetItemData(sibling_id);
     
     if (data)
     {
-        // -- return the TreeViewItem from the TreeViewItemData --
+        // return the TreeViewItem from the TreeViewItemData
         kscript::Value val;
         val.setObject(data->getItem());
         retval->setValue(val);
@@ -474,8 +478,8 @@ void TreeViewItem::getPreviousSibling(kscript::ExprEnv* env, kscript::Value* ret
 
 void TreeViewItem::getNextSibling(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- the item has not been added to a TreeView,
-    //    return an empty TreeViewItem --
+    // the item has not been added to a TreeView,
+    // return an empty TreeViewItem
     if (!m_id.IsOk() || m_owner == NULL)
     {
         kscript::Value val;
@@ -489,19 +493,19 @@ void TreeViewItem::getNextSibling(kscript::ExprEnv* env, kscript::Value* retval)
     
     if (!sibling_id.IsOk())
     {
-        // -- couldn't find the sibling item, return an empty TreeViewItem --
+        // couldn't find the sibling item, return an empty TreeViewItem
         kscript::Value val;
         env->createObject(L"TreeViewItem", &val);
         retval->setValue(val);
         return;
     }
 
-    // -- get the TreeViewItemData associated with the sibling item --
+    // get the TreeViewItemData associated with the sibling item
     TreeViewItemData* data = (TreeViewItemData*)wxtree->GetItemData(sibling_id);
     
     if (data)
     {
-        // -- return the TreeViewItem from the TreeViewItemData --
+        // return the TreeViewItem from the TreeViewItemData
         kscript::Value val;
         val.setObject(data->getItem());
         retval->setValue(val);
@@ -522,7 +526,7 @@ void TreeViewItem::getNextSibling(kscript::ExprEnv* env, kscript::Value* retval)
 
 void TreeViewItem::hasChildren(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- the item has not been added to a TreeView, bail out --
+    // the item has not been added to a TreeView, bail out
     if (!m_id.IsOk() || m_owner == NULL)
     {
         retval->setBoolean(false);
@@ -549,7 +553,7 @@ void TreeViewItem::hasChildren(kscript::ExprEnv* env, kscript::Value* retval)
 
 void TreeViewItem::isExpanded(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- the item has not been added to a TreeView, bail out --
+    // the item has not been added to a TreeView, bail out
     if (!m_id.IsOk() || m_owner == NULL)
     {
         retval->setBoolean(false);
@@ -574,7 +578,7 @@ void TreeViewItem::isExpanded(kscript::ExprEnv* env, kscript::Value* retval)
 
 void TreeViewItem::isSelected(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- the item has not been added to a TreeView, bail out --
+    // the item has not been added to a TreeView, bail out
     if (!m_id.IsOk() || m_owner == NULL)
     {
         retval->setBoolean(false);
@@ -600,7 +604,7 @@ void TreeViewItem::isSelected(kscript::ExprEnv* env, kscript::Value* retval)
 
 void TreeViewItem::isVisible(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- the item has not been added to a TreeView, bail out --
+    // the item has not been added to a TreeView, bail out
     if (!m_id.IsOk() || m_owner == NULL)
     {
         retval->setBoolean(false);
@@ -612,7 +616,7 @@ void TreeViewItem::isVisible(kscript::ExprEnv* env, kscript::Value* retval)
 }
 
 
-// -- TreeView class implementation --
+// TreeView class implementation
 
 // (CLASS) TreeView
 // Category: Control
@@ -674,10 +678,10 @@ int TreeView::getImageListIdx(const wxBitmap& bitmap)
 
 void TreeView::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- initialize the component --
+    // initialize the component
     initComponent(env);
 
-    // -- add some properties --
+    // add some properties
     getMember(L"keyDown")->setObject(Event::createObject(env));
     getMember(L"selectionChanged")->setObject(Event::createObject(env));
     getMember(L"selectionChanging")->setObject(Event::createObject(env));
@@ -691,7 +695,7 @@ void TreeView::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     getMember(L"itemActivate")->setObject(Event::createObject(env));
     getMember(L"itemRightClick")->setObject(Event::createObject(env));
     
-    // -- set default values --
+    // set default values
     m_x = 0;
     m_y = 0;
     m_width = -1;
@@ -699,7 +703,7 @@ void TreeView::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     
     size_t param_count = env->getParamCount();
     
-    // -- get user input values --
+    // get user input values
     if (param_count > 0)
         m_x = env->getParam(0)->getInteger();
     if (param_count > 1)
@@ -711,7 +715,7 @@ void TreeView::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 
     if (param_count < 1)
     {
-        // -- create the control --
+        // create the control
         m_ctrl = new wxTreeCtrl(getApp()->getTempParent(),
                                 -1,
                                 wxDefaultPosition,
@@ -730,7 +734,7 @@ void TreeView::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     }
      else
     {
-        // -- create the control --
+        // create the control
         m_ctrl = new wxTreeCtrl(getApp()->getTempParent(),
                                 -1,
                                 wxPoint(m_x, m_y),
@@ -789,7 +793,7 @@ void TreeView::setRootItem(kscript::ExprEnv* env, kscript::Value* retval)
 
     kscript::ValueObject* obj = env->getParam(0)->getObject();
     
-    // -- only accept a TreeViewItem object as the parameter --
+    // only accept a TreeViewItem object as the parameter
     if (obj->getClassName() != L"TreeViewItem")
         return;
 
@@ -801,8 +805,7 @@ void TreeView::setRootItem(kscript::ExprEnv* env, kscript::Value* retval)
     {
         if (!m_imagelist)
         {
-            // -- if our tree control doesn't have an imagelist,
-            //    create one --
+            // if our tree control doesn't have an imagelist, create one
             m_imagelist = new wxImageList(item->m_bitmap.GetWidth(),
                                           item->m_bitmap.GetHeight(),
                                           true,
@@ -813,14 +816,15 @@ void TreeView::setRootItem(kscript::ExprEnv* env, kscript::Value* retval)
         bmp_idx = getImageListIdx(item->m_bitmap);
     }
     
-    // -- set the item's m_owner variable to this TreeView --
+    // set the item's m_owner variable to this TreeView
     item->m_owner = this;
     
     item->m_id = m_ctrl->AddRoot(item->m_label,
                                  bmp_idx);
                                 
-    // -- associate the TreeViewItem class with the wxTreeItemId so we can
-    //    retrive the TreeViewItem class when an event is fired --
+    // associate the TreeViewItem class with the wxTreeItemId so we can
+    // retrive the TreeViewItem class when an event is fired
+
     TreeViewItemData* data = new TreeViewItemData;
     data->setItem(item);
     m_ctrl->SetItemData(item->m_id, data);
@@ -844,18 +848,18 @@ void TreeView::getRootItem(kscript::ExprEnv* env, kscript::Value* retval)
     
     if (!root_id.IsOk())
     {
-        // -- couldn't find a root item on the wxTreeCtrl, so set
-        //    the return value to null and bail out --
+        // couldn't find a root item on the wxTreeCtrl, so set
+        // the return value to null and bail out
         retval->setNull();
         return;
     }
 
-    // -- get the TreeViewItemData associated with the root tree item --
+    // get the TreeViewItemData associated with the root tree item
     TreeViewItemData* data = (TreeViewItemData*)m_ctrl->GetItemData(root_id);
     
     if (data)
     {
-        // -- return the TreeViewItem from the TreeViewItemData --
+        // return the TreeViewItem from the TreeViewItemData
         kscript::Value val;
         val.setObject(data->getItem());
         retval->setValue(val);
@@ -885,13 +889,13 @@ void TreeView::addItem(kscript::ExprEnv* env, kscript::Value* retval)
 
     kscript::ValueObject* obj = env->getParam(0)->getObject();
     
-    // -- only accept a TreeViewItem object as the parameter --
+    // only accept a TreeViewItem object as the parameter
     if (!obj->isKindOf(L"TreeViewItem"))
         return;
 
-    // -- if the tree doesn't have a root item yet, we need to add one,
-    //    so the item that was going to be added is now going
-    //    to become the root node --
+    // if the tree doesn't have a root item yet, we need to add one,
+    // so the item that was going to be added is now going
+    // to become the root node
     if (!m_root)
     {
         setRootItem(env, retval);
@@ -905,8 +909,8 @@ void TreeView::addItem(kscript::ExprEnv* env, kscript::Value* retval)
     {
         if (!m_imagelist)
         {
-            // -- if our tree control doesn't have an imagelist,
-            //    create one --
+            // if our tree control doesn't have an imagelist, create one
+
             m_imagelist = new wxImageList(item->m_bitmap.GetWidth(),
                                           item->m_bitmap.GetHeight(),
                                           true,
@@ -917,17 +921,18 @@ void TreeView::addItem(kscript::ExprEnv* env, kscript::Value* retval)
         bmp_idx = getImageListIdx(item->m_bitmap);
     }
     
-    // -- if no second parameter is specified,
-    //    add this item to the root --
+    // if no second parameter is specified, add this item to the root
+
     wxTreeItemId parent_id = m_root->getId();
     
-    // -- (optional) the second parameter is the item
-    //               to which this item will be added --
+    // (optional) the second parameter is the item
+    // to which this item will be added
+
     if (env->getParamCount() > 1)
     {
         kscript::ValueObject* obj2 = env->getParam(1)->getObject();
         
-        // -- only accept a TreeViewItem object as the parameter --
+        // only accept a TreeViewItem object as the parameter
         if (obj2->isKindOf(L"TreeViewItem"))
         {
             TreeViewItem* parent_item = (TreeViewItem*)obj2;
@@ -935,15 +940,15 @@ void TreeView::addItem(kscript::ExprEnv* env, kscript::Value* retval)
         }
     }
     
-    // -- set the item's m_owner variable to this TreeView --
+    // set the item's m_owner variable to this TreeView
     item->m_owner = this;
     
     item->m_id = m_ctrl->AppendItem(parent_id,
                                     item->m_label,
                                     bmp_idx);
                                     
-    // -- associate the TreeViewItem class with the wxTreeItemId so we can
-    //    retrive the TreeViewItem class when an event is fired --
+    // associate the TreeViewItem class with the wxTreeItemId so we can
+    // retrive the TreeViewItem class when an event is fired
     TreeViewItemData* data = new TreeViewItemData;
     data->setItem(item);
     m_ctrl->SetItemData(item->m_id, data);
@@ -969,7 +974,7 @@ void TreeView::deleteItem(kscript::ExprEnv* env, kscript::Value* retval)
 
     kscript::ValueObject* obj = env->getParam(0)->getObject();
     
-    // -- only accept a TreeViewItem object as the parameter --
+    // only accept a TreeViewItem object as the parameter
     if (!obj->isKindOf(L"TreeViewItem"))
         return;
         
@@ -1009,7 +1014,7 @@ void TreeView::editItemLabel(kscript::ExprEnv* env, kscript::Value* retval)
 
     kscript::ValueObject* obj = env->getParam(0)->getObject();
     
-    // -- only accept a TreeViewItem object as the parameter --
+    // only accept a TreeViewItem object as the parameter
     if (!obj->isKindOf(L"TreeViewItem"))
         return;
         
@@ -1034,7 +1039,7 @@ void TreeView::scrollToItem(kscript::ExprEnv* env, kscript::Value* retval)
 
     kscript::ValueObject* obj = env->getParam(0)->getObject();
     
-    // -- only accept a TreeViewItem object as the parameter --
+    // only accept a TreeViewItem object as the parameter
     if (!obj->isKindOf(L"TreeViewItem"))
         return;
         
@@ -1059,7 +1064,7 @@ void TreeView::expandItem(kscript::ExprEnv* env, kscript::Value* retval)
 
     kscript::ValueObject* obj = env->getParam(0)->getObject();
     
-    // -- only accept a TreeViewItem object as the parameter --
+    // only accept a TreeViewItem object as the parameter
     if (!obj->isKindOf(L"TreeViewItem"))
         return;
         
@@ -1084,7 +1089,7 @@ void TreeView::collapseItem(kscript::ExprEnv* env, kscript::Value* retval)
 
     kscript::ValueObject* obj = env->getParam(0)->getObject();
     
-    // -- only accept a TreeViewItem object as the parameter --
+    // only accept a TreeViewItem object as the parameter
     if (!obj->isKindOf(L"TreeViewItem"))
         return;
         
@@ -1111,7 +1116,7 @@ void TreeView::toggleItemExpanded(kscript::ExprEnv* env, kscript::Value* retval)
 
     kscript::ValueObject* obj = env->getParam(0)->getObject();
     
-    // -- only accept a TreeViewItem object as the parameter --
+    // only accept a TreeViewItem object as the parameter
     if (!obj->isKindOf(L"TreeViewItem"))
         return;
         
@@ -1138,7 +1143,7 @@ void TreeView::toggleItemSelected(kscript::ExprEnv* env, kscript::Value* retval)
 
     kscript::ValueObject* obj = env->getParam(0)->getObject();
     
-    // -- only accept a TreeViewItem object as the parameter --
+    // only accept a TreeViewItem object as the parameter
     if (!obj->isKindOf(L"TreeViewItem"))
         return;
         
@@ -1162,7 +1167,7 @@ void TreeView::selectItem(kscript::ExprEnv* env, kscript::Value* retval)
 
     kscript::ValueObject* obj = env->getParam(0)->getObject();
     
-    // -- only accept a TreeViewItem object as the parameter --
+    // only accept a TreeViewItem object as the parameter
     if (!obj->isKindOf(L"TreeViewItem"))
         return;
         
@@ -1186,7 +1191,7 @@ void TreeView::deselectItem(kscript::ExprEnv* env, kscript::Value* retval)
 
     kscript::ValueObject* obj = env->getParam(0)->getObject();
     
-    // -- only accept a TreeViewItem object as the parameter --
+    // only accept a TreeViewItem object as the parameter
     if (!obj->isKindOf(L"TreeViewItem"))
         return;
         
@@ -1254,9 +1259,10 @@ void TreeView::getSelectedItem(kscript::ExprEnv* env, kscript::Value* retval)
 
     wxTreeItemId id;
     
-    // -- we need this bit of code here because wx will throw an ASSERT
-    //    failure if GetSelections() is called without the wxTR_MULTIPLE
-    //    flag specified and vice versa for GetSelection() --
+    // we need this bit of code here because wx will throw an ASSERT
+    // failure if GetSelections() is called without the wxTR_MULTIPLE
+    // flag specified and vice versa for GetSelection()
+
     if (m_ctrl->GetWindowStyle() & wxTR_MULTIPLE)
     {
         wxArrayTreeItemIds a;
@@ -1276,12 +1282,12 @@ void TreeView::getSelectedItem(kscript::ExprEnv* env, kscript::Value* retval)
         return;
     }
        
-    // -- get the TreeViewItemData associated with this wxTreeItemId --
+    // get the TreeViewItemData associated with this wxTreeItemId
     TreeViewItemData* data = (TreeViewItemData*)m_ctrl->GetItemData(id);
     
     if (data)
     {
-        // -- return the TreeViewItem from the TreeViewItemData --
+        // return the TreeViewItem from the TreeViewItemData
         kscript::Value val;
         val.setObject(data->getItem());
         retval->setValue(val);
@@ -1303,15 +1309,16 @@ void TreeView::getSelectedItem(kscript::ExprEnv* env, kscript::Value* retval)
 
 void TreeView::getSelectedItems(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- set our return type to be an array --
+    // set our return type to be an array
     retval->setArray(env);
 
     if (!isControlValid())
         return;
 
-    // -- we need this bit of code here because wx will throw an ASSERT
-    //    failure if GetSelection() is called without the wxTR_SINGLE
-    //    flag specified and vice versa for GetSelections() --
+    // we need this bit of code here because wx will throw an ASSERT
+    // failure if GetSelection() is called without the wxTR_SINGLE
+    // flag specified and vice versa for GetSelections()
+
     if (m_ctrl->GetWindowStyle() & wxTR_SINGLE)
     {
         wxTreeItemId id = m_ctrl->GetSelection();
@@ -1319,7 +1326,7 @@ void TreeView::getSelectedItems(kscript::ExprEnv* env, kscript::Value* retval)
         if (!id.IsOk())
             return;
             
-        // -- get the TreeViewItemData associated with this wxTreeItemId --
+        // get the TreeViewItemData associated with this wxTreeItemId
         TreeViewItemData* data = (TreeViewItemData*)m_ctrl->GetItemData(id);
         
         kscript::Value val;
@@ -1339,7 +1346,7 @@ void TreeView::getSelectedItems(kscript::ExprEnv* env, kscript::Value* retval)
         if (!id.IsOk())
             continue;
            
-        // -- get the TreeViewItemData associated with this wxTreeItemId --
+        // get the TreeViewItemData associated with this wxTreeItemId
         TreeViewItemData* data = (TreeViewItemData*)m_ctrl->GetItemData(id);
         
         if (data)

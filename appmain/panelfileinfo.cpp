@@ -252,7 +252,7 @@ bool MultiFileInfoPanel::initDoc(cfw::IFramePtr frame,
     m_doc_site = site;
 
 
-    // -- create top sizer --
+    // create top sizer
 
     wxStaticBitmap* folder_bitmap = new wxStaticBitmap(this, -1, GETBMP(gf_folder_open_24));
     wxStaticBitmap* table_bitmap = new wxStaticBitmap(this, -1, GETBMP(gf_table_24));
@@ -333,7 +333,7 @@ bool MultiFileInfoPanel::initDoc(cfw::IFramePtr frame,
     min_size.SetHeight(min_size.GetHeight()+16);
     ok_cancel_sizer->SetMinSize(min_size);
     
-    // -- create main sizer --
+    // create main sizer
     
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
     main_sizer->AddSpacer(8);

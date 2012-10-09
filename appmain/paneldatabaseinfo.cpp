@@ -144,7 +144,7 @@ bool DatabaseInfoPanel::initDoc(cfw::IFramePtr frame,
     project_size_sizer->SetMinSize(-1, 20);
 
 
-    // -- create main sizer --
+    // create main sizer
     
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
     main_sizer->AddSpacer(12);

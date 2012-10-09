@@ -121,7 +121,7 @@ private:
     void loadPrefs(PrefInfo* info);
     void savePrefs(PrefInfo* info);
     
-    // -- event handlers --
+    // event handlers
     
     void onOK(wxCommandEvent& evt);
     void onCancel(wxCommandEvent& evt);

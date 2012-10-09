@@ -43,7 +43,7 @@ public:
     
 private:
 
-    // -- event handlers --
+    // event handlers
     
     void onOK(wxCommandEvent& event);
     void onCancel(wxCommandEvent& event);

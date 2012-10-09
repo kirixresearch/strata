@@ -64,7 +64,7 @@ WebBrowser::~WebBrowser()
 
 void WebBrowser::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- initialize the component --
+    // initialize the component
     FormControl::constructor(env, retval);
     
     // -- add some properties --
@@ -79,7 +79,7 @@ void WebBrowser::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     
     size_t param_count = env->getParamCount();
     
-    // -- get user input values --
+    // get user input values
     if (param_count > 0)
         m_x = env->getParam(0)->getInteger();
     if (param_count > 1)

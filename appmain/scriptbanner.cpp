@@ -64,7 +64,7 @@ BannerBox::~BannerBox()
 
 void BannerBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- initialize the component --
+    // initialize the component
     initComponent(env);
 
     // -- set default values --
@@ -76,7 +76,7 @@ void BannerBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     
     size_t param_count = env->getParamCount();
     
-    // -- get user input values --
+    // get user input values
     if (param_count > 0)
         text = towx(env->getParam(0)->getString());
     if (param_count > 1)
@@ -90,7 +90,7 @@ void BannerBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     
     if (param_count < 2)
     {
-        // -- create the control --
+        // create the control
         m_ctrl = new kcl::BannerControl(getApp()->getTempParent(),
                                         text,
                                         wxDefaultPosition,
@@ -105,7 +105,7 @@ void BannerBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     }
      else
     {
-        // -- create the control --
+        // create the control
         m_ctrl = new kcl::BannerControl(getApp()->getTempParent(),
                                         text,
                                         wxPoint(m_x, m_y),

@@ -145,7 +145,7 @@ private:
     bool isLinked(const wxString& expr);
     void diagramRefresh();
 
-    // -- event handlers --
+    // event handlers
     void onCreateLink(wxDragResult& drag_result, RelationLineDataObject* data);
     void onBeginDrag(kcl::GridEvent& event);
     void onLeftClick(kcl::GridEvent& event);

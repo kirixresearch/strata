@@ -62,7 +62,7 @@
 					</Component>
 					-->
 
-					<Component Id="Core" Guid="B081FEDE-736F-541C-26EA-BA1015D31B38" Win64="yes">
+					<Component Id="Core" Guid="C081FEDE-336F-541C-20EA-BA1015D31B38" Win64="yes">
 						<File Id="kstrata" Name="kstrata.exe" DiskId="1" Source="$(env.buildsrc)\bin\kstrata.exe" KeyPath="yes" ProcessorArchitecture="x64">
 							<Shortcut Id="KirixStrataProgramMenuShortcut"
 								Directory="ProgramMenuDir"
@@ -90,7 +90,7 @@
 					
 					
                     <!-- core registry items for things like license keys -->
-                    <Component Id="CoreRegistry" Guid="0357E732-340A-4AE1-BAD2-01CF9A3F89E5" KeyPath="yes" SharedDllRefCount="no" Permanent="yes" Win64="yes">
+                    <Component Id="CoreRegistry" Guid="1A57E732-340A-4AE1-B0D2-01CF9A3F89E6" KeyPath="yes" SharedDllRefCount="no" Permanent="yes" Win64="yes">
 
  
 
@@ -144,7 +144,7 @@
 				</Directory>
 				
 				<Directory Id="PKG_HELPDIR" Name="help">
-                    <Component Id="Help" Guid="53928A7C-4566-4535-B42C-5EAB8C651068" Win64="yes">
+                    <Component Id="Help" Guid="44408A7C-4566-4535-B42C-5ECB8C651022" Win64="yes">
                         <File Id="help" Name="help.chm" DiskId="1" Source="$(env.buildsrc)\help\help.chm" KeyPath="yes" ProcessorArchitecture="x64">
                             <Shortcut Id="KirixStrataHelpMenuShortcut"
                                 Directory="ProgramMenuDir"
@@ -162,7 +162,7 @@
 
                 <Directory Id="PKG_I18N" Name="i18n">
                     <Directory Id="PKG_I18N_DE" Name="de">
-                        <Component Id="Translation_de" Guid="53928C8D-3566-75f5-B42C-6BAA8C651068" Win64="yes">
+                        <Component Id="Translation_de" Guid="50AA8C8D-4466-75f5-B42C-6BAA8C651069" Win64="yes">
                             <File Id="messages_de"  Name="messages.mo" DiskId="1" Source="$(env.buildsrc)\i18n\messages.mo" KeyPath="yes" ProcessorArchitecture="x64"/>
                         </Component>
                     </Directory>
@@ -170,7 +170,7 @@
 
 
                 <Directory Id="PKG_SAMPLEDIR" Name="samples">
-                    <Component Id="Samples" Guid="13938A7B-4566-45f5-B42C-5FAA8C652068" Win64="yes">
+                    <Component Id="Samples" Guid="99950A7B-4566-45f5-B42C-5F008C652068" Win64="yes">
                         <File Id="startup"   Name="startup.kpg"   DiskId="1" Source="$(env.buildsrc)\samples\startup.kpg" KeyPath="yes" ProcessorArchitecture="x64"/>
                     </Component>
                 </Directory>

@@ -210,7 +210,7 @@ public:
                                              _("Automatically check for updates (recommended)"));
         
         
-        // -- create main sizer --
+        // create main sizer
         
         wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
         main_sizer->Add(startup_sizer, 0, wxEXPAND);
@@ -901,7 +901,7 @@ public:
         top_sizer->SetItemMinSize(top_left_sizer, top_left_minsize);
         
         
-        // -- create main sizer --
+        // create main sizer
 
         wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
         main_sizer->Add(top_sizer, 0, wxEXPAND);
@@ -1477,7 +1477,7 @@ public:
         proxy_sizer->Add(m_proxy_socks_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 10);
         proxy_sizer->AddSpacer(10);
 
-        // -- create main sizer --
+        // create main sizer
         
         wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
         main_sizer->Add(proxy_sizer, 0, wxEXPAND);
@@ -1751,7 +1751,7 @@ public:
         clear_private_data_sizer->Add(m_clear_private_data);
         
         
-        // -- create main sizer --
+        // create main sizer
         
         wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
         main_sizer->Add(popup_sizer, 0, wxEXPAND);
@@ -1900,7 +1900,7 @@ public:
         m_margins_panel = new MarginsPanel(this);
 
         
-        // -- create top sizer --
+        // create top sizer
         
         wxFlexGridSizer* top_sizer = new wxFlexGridSizer(2,2,10,10);
         top_sizer->Add(m_orientation_panel, 0, wxEXPAND);
@@ -1910,7 +1910,7 @@ public:
         top_sizer->AddGrowableCol(0, 1);
         
         
-        // -- create main sizer --
+        // create main sizer
             
         wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
         main_sizer->Add(top_sizer, 0, wxEXPAND);
@@ -2142,7 +2142,7 @@ public:
         tabs_sizer->AddSpacer(10);
 
 
-        // -- create main sizer --
+        // create main sizer
         
         wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
         main_sizer->Add(general_sizer, 0, wxEXPAND);
@@ -2389,7 +2389,7 @@ bool OptionsPanel::initDoc(cfw::IFramePtr frame,
     ok_cancel_sizer->SetMinSize(min_size);
     
     
-    // -- create main sizer --
+    // create main sizer
     
     m_sizer = new wxBoxSizer(wxVERTICAL);
     m_sizer->Add(button_bar, 0, wxEXPAND);

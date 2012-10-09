@@ -16,7 +16,7 @@
 #include "scriptmenu.h"
 
 
-// -- MenuItem class implementation --
+// MenuItem class implementation
 
 // (CLASS) MenuItem
 // Category: Form
@@ -66,12 +66,12 @@ void MenuItem::setWxMenuItem(wxMenuItem* item)
 
 void MenuItem::setWxMenu(wxMenu* menu)
 {
-    // -- if we've already created a control, that means we've already
-    //    added this menuitem to a different menu, so don't do anything --
+    // if we've already created a control, that means we've already
+    // added this menuitem to a different menu, so don't do anything
     if (m_ctrl)
         return;
     
-    // -- create the control --
+    // create the control
     m_ctrl = new wxMenuItem(menu,
                             m_id,
                             m_label,
@@ -104,21 +104,21 @@ void MenuItem::onEvent(wxEvent& event)
 
 void MenuItem::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- initialize the component --
+    // initialize the component
     initComponent(env);
 
-    // -- add some properties --
+    // add some properties
     kscript::Value obj;
     
     getMember(L"click")->setObject(Event::createObject(env));
 
-    // -- if a label was supplied, use it --
+    // if a label was supplied, use it
     m_label = towx(env->getParam(0)->getString());
     
-    // -- if a help string was supplied, use it --
+    // if a help string was supplied, use it
     m_help_str = towx(env->getParam(1)->getString());
     
-    // -- set the ID for this menu --
+    // set the ID for this menu
     m_id = getUniqueScriptCommandId();
     
     g_app->getAppController()->getScriptCommandRouter()->registerCommandReceiver(m_id, this);
@@ -217,7 +217,7 @@ void MenuItem::getHelpString(kscript::ExprEnv* env, kscript::Value* retval)
 
 
 
-// -- zMenu class implementation --
+// zMenu class implementation
 
 // (CLASS) Menu
 // Category: Form
@@ -274,16 +274,16 @@ void zMenu::setMenuOwner(kscript::ValueObject* owner)
 
 void zMenu::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- initialize the component --
+    // initialize the component
     initComponent(env);
 
-    // -- if a title was supplied, use it --
+    // if a title was supplied, use it
     m_title = towx(env->getParam(0)->getString());
     
-    // -- set the ID for this menu --
+    // set the ID for this menu
     m_id = getUniqueScriptCommandId();
     
-    // -- create the control --
+    // create the control
     m_ctrl = new wxMenu;
 }
 
@@ -633,8 +633,9 @@ void zMenu::setEnabled(kscript::ExprEnv* env, kscript::Value* retval)
         m_enabled = false;
     }
 
-    // -- if the menu hasn't been added to a menubar or another menu yet,
-    //    we can't officially make it enabled or disabled --
+    // if the menu hasn't been added to a menubar or another menu yet,
+    // we can't officially make it enabled or disabled
+
     if (!m_owner)
         return;
         
@@ -643,7 +644,7 @@ void zMenu::setEnabled(kscript::ExprEnv* env, kscript::Value* retval)
         MenuBar* mb = (MenuBar*)m_owner;
         int pos = mb->getMenuPositionFromId(m_id);
         
-        // -- the menu was not found --
+        // the menu was not found
         if (pos == -1)
             return;
             
@@ -702,7 +703,7 @@ void zMenu::findMenuItem(kscript::ExprEnv* env, kscript::Value* retval)
         return;
     }
     
-    // -- find the submenu or menu item based on its label --
+    // find the submenu or menu item based on its label
     size_t i, count = getJsMenuItemCount();
     for (i = 0; i < count; ++i)
     {
@@ -862,7 +863,7 @@ void zMenu::popup(kscript::ExprEnv* env, kscript::Value* retval)
     
     wxWindow* wnd = NULL;
     
-    // -- get the wxWindow* from the Form object --
+    // get the wxWindow* from the Form object
     kscript::ValueObject* obj = env->getParam(0)->getObject();
     if (obj->isKindOf(L"FormControl"))
     {
@@ -873,8 +874,8 @@ void zMenu::popup(kscript::ExprEnv* env, kscript::Value* retval)
     if (!wnd)
         return;
 
-    // -- if a Point parameter was passed, get its x and y coordinates
-    //    and do the popup at those coordinates --
+    // if a Point parameter was passed, get its x and y coordinates
+    // and do the popup at those coordinates
     if (env->getParamCount() > 1)
     {
         int x = -1, y = -1;
@@ -900,7 +901,7 @@ void zMenu::popup(kscript::ExprEnv* env, kscript::Value* retval)
 
 
 
-// -- MenuBar class implementation --
+// MenuBar class implementation
 
 // (CLASS) MenuBar
 // Category: Form
@@ -1004,7 +1005,7 @@ zMenu* MenuBar::getJsMenuObject(kscript::ExprEnv* env, int idx)
 
 void MenuBar::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- initialize the component --
+    // initialize the component
     initComponent(env);
 
     m_ctrl = new wxMenuBar;
@@ -1250,7 +1251,7 @@ void MenuBar::remove(kscript::ExprEnv* env, kscript::Value* retval)
 /*
 MenuItem* MenuBar::getMenuItemFromId(int id)
 {
-    // -- look for the selected menuitem in the menubar's menus --
+    // look for the selected menuitem in the menubar's menus
     std::vector<zMenu*>::iterator it;
     for (it = m_menus.begin(); it != m_menus.end(); ++it)
     {

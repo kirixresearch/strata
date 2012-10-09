@@ -52,7 +52,7 @@ ComboBox::~ComboBox()
 
 void ComboBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- initialize the component --
+    // initialize the component
     initComponent(env);
 
     // -- add some properties --
@@ -71,7 +71,7 @@ void ComboBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     
     size_t param_count = env->getParamCount();
     
-    // -- get user input values --
+    // get user input values
     if (param_count > 0)
         m_x = env->getParam(0)->getInteger();
     if (param_count > 1)
@@ -83,7 +83,7 @@ void ComboBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 
     if (param_count < 1)
     {
-        // -- create the control --
+        // create the control
         m_ctrl = new wxComboBox(getApp()->getTempParent(),
                                 -1,
                                 wxEmptyString,
@@ -102,7 +102,7 @@ void ComboBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     }
      else
     {
-        // -- create the control --
+        // create the control
         m_ctrl = new wxComboBox(getApp()->getTempParent(),
                                 -1,
                                 wxEmptyString,
@@ -511,7 +511,7 @@ ChoiceBox::~ChoiceBox()
 
 void ChoiceBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // -- initialize the component --
+    // initialize the component
     initComponent(env);
 
     // -- add some properties --
@@ -527,7 +527,7 @@ void ChoiceBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     
     size_t param_count = env->getParamCount();
     
-    // -- get user input values --
+    // get user input values
     if (param_count > 0)
         m_x = env->getParam(0)->getInteger();
     if (param_count > 1)
@@ -539,7 +539,7 @@ void ChoiceBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 
     if (param_count < 1)
     {
-        // -- create the control --
+        // create the control
         m_ctrl = new wxChoice(getApp()->getTempParent(),
                               -1,
                               wxDefaultPosition,
@@ -554,7 +554,7 @@ void ChoiceBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     }
      else
     {
-        // -- create the control --
+        // create the control
         m_ctrl = new wxChoice(getApp()->getTempParent(),
                               -1,
                               wxPoint(m_x, m_y),

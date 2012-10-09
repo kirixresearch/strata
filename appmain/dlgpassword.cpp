@@ -115,7 +115,7 @@ bool DlgPassword::initDoc(cfw::IFramePtr frame,
     password_sizer->SetItemMinSize(label_password, max_size);
 
 
-    // -- create main sizer --
+    // create main sizer
     
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
     main_sizer->AddSpacer(8);

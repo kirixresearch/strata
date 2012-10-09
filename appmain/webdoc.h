@@ -232,7 +232,7 @@ private:
     
 private:
  
-    // -- event handlers --
+    // event handlers
     
     void onPrint(wxCommandEvent& evt);
     void onPageSetup(wxCommandEvent& ev);
