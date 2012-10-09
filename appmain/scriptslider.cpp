@@ -14,7 +14,7 @@
 #include "scriptslider.h"
 
 
-// -- Slider class implementation --
+// Slider class implementation
 
 // (CLASS) Slider
 // Category: Control
@@ -108,7 +108,7 @@ void Slider::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     // initialize the component
     initComponent(env);
 
-    // -- add some properties --
+    // add some properties
     kscript::Value obj;
     
     getMember(L"scroll")->setObject(Event::createObject(env));
@@ -121,10 +121,10 @@ void Slider::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     getMember(L"track")->setObject(Event::createObject(env));
     getMember(L"trackRelease")->setObject(Event::createObject(env));
  
-    // -- default style --
+    // default style
     int orientation = Slider::Horizontal;
     
-    // -- set default values --
+    // set default values
     m_x = 0;
     m_y = 0;
     m_width = -1;

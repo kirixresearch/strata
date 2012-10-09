@@ -67,7 +67,7 @@ void BannerBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     // initialize the component
     initComponent(env);
 
-    // -- set default values --
+    // set default values
     wxString text = wxEmptyString;
     m_x = 0;
     m_y = 0;

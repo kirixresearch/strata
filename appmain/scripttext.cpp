@@ -14,7 +14,7 @@
 #include "scripttext.h"
 
 
-// -- TextBox class implementation --
+// TextBox class implementation
 
 // (CLASS) TextBox
 // Category: Control
@@ -58,12 +58,12 @@ void TextBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     // initialize the component
     initComponent(env);
 
-    // -- add some properties --
+    // add some properties
     getMember(L"textChanged")->setObject(Event::createObject(env));
     getMember(L"enterPressed")->setObject(Event::createObject(env));
     getMember(L"maxLengthExceeded")->setObject(Event::createObject(env));
 
-    // -- set default values --
+    // set default values
     wxString text = wxEmptyString;
     m_x = 0;
     m_y = 0;
@@ -691,7 +691,7 @@ void TextBox::onEvent(wxEvent& event)
 }
 
 
-// -- Label class implementation --
+// Label class implementation
 
 // (CLASS) Label
 // Category: Control
@@ -733,7 +733,7 @@ void Label::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     // initialize the component
     initComponent(env);
 
-    // -- set default values --
+    // set default values
     wxString label = wxEmptyString;
     m_x = 0;
     m_y = 0;

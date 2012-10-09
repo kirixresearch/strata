@@ -60,10 +60,10 @@ void Button::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     // initialize the component
     initComponent(env);
 
-    // -- add some properties --
+    // add some properties
     getMember(L"click")->setObject(Event::createObject(env));
 
-    // -- set default values --
+    // set default values
     wxString label = wxEmptyString;
     m_x = 0;
     m_y = 0;
@@ -244,10 +244,10 @@ void BitmapButton::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     // initialize the component
     initComponent(env);
     
-    // -- add some properties --
+    // add some properties
     getMember(L"click")->setObject(Event::createObject(env));
     
-    // -- set default values --
+    // set default values
     wxBitmap bitmap;
     m_x = 0;
     m_y = 0;
@@ -400,7 +400,7 @@ void BitmapButton::onEvent(wxEvent& event)
 
 
 
-// -- RadioButton class implementation --
+// RadioButton class implementation
 
 // (CLASS) RadioButton
 // Category: Control
@@ -460,13 +460,13 @@ void RadioButton::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     // initialize the component
     initComponent(env);
 
-    // -- add some properties --
+    // add some properties 
     getMember(L"click")->setObject(Event::createObject(env));
 
-    // -- set the ID for this control --
+    // set the ID for this control
     m_id = getUniqueScriptControlId();
     
-    // -- set default values --
+    // set default values
     wxString label = wxEmptyString;
     m_x = 0;
     m_y = 0;
@@ -597,7 +597,7 @@ void RadioButton::onEvent(wxEvent& event)
 
 
 /*
-// -- RadioButtonGroup class implementation --
+// RadioButtonGroup class implementation
 
 // ( CLASS ) RadioButtonGroup
 // Category: Control
@@ -639,7 +639,7 @@ void RadioButtonGroup::constructor(kscript::ExprEnv* env, kscript::Value* retval
     // initialize the component
     initComponent(env);
 
-    // -- set default values --
+    // set default values
     m_x = 0;
     m_y = 0;
     m_width = -1;
@@ -777,7 +777,7 @@ void RadioButtonGroup::handleSelection(int id)
 
 
 
-// -- CheckBox class implementation --
+// CheckBox class implementation
 
 // (CLASS) CheckBox
 // Category: Control
@@ -817,10 +817,10 @@ void CheckBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     // initialize the component
     initComponent(env);
 
-    // -- add some properties --
+    // add some properties
     getMember(L"click")->setObject(Event::createObject(env));
 
-    // -- set default values --
+    // set default values
     wxString label = wxEmptyString;
     m_x = 0;
     m_y = 0;

@@ -16,7 +16,7 @@
 #include "scripttoolbar.h"
 
 
-// -- ToolBarItem class implementation --
+// ToolBarItem class implementation
 
 // (CLASS) ToolBarItem
 // Category: Form
@@ -79,17 +79,16 @@ void ToolBarItem::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     // initialize the component
     initComponent(env);
 
-    // -- add some properties --
+    // add some properties
     kscript::Value obj;
     
     getMember(L"click")->setObject(Event::createObject(env));
 
-    // -- set the ID for this toolbar item --
+    // set the ID for this toolbar item
     m_id = getUniqueScriptCommandId();
 
-    // -- we need to create a default bitmap so that wxWidgets does not throw
-    //    an assert failure if there is no bitmap for the toolbar item --
-    //wxImage img(10,10, false);
+    // we need to create a default bitmap so that wxWidgets does not throw
+    // an assert failure if there is no bitmap for the toolbar item
     m_bitmap = wxBitmap(0,0);
     
     // get user input values
@@ -268,7 +267,7 @@ void ToolBarItem::setDisabledBitmap(kscript::ExprEnv* env, kscript::Value* retva
 
 
 
-// -- ToolBar class implementation --
+// ToolBar class implementation
 
 // (CLASS) ToolBar
 // Category: Form
@@ -293,7 +292,7 @@ wxToolBar* ToolBar::getWxToolBar()
 
 ToolBarItem* ToolBar::getToolBarItemFromId(int id)
 {
-    // -- find the menuitem based on it's id --
+    // find the menuitem based on it's id
     std::vector<ToolBarItem*>::iterator it;
     for (it = m_items.begin(); it != m_items.end(); ++it)
     {
@@ -306,14 +305,14 @@ ToolBarItem* ToolBar::getToolBarItemFromId(int id)
 
 void ToolBar::addItemToWxToolBar(ToolBarItem* item)
 {
-    // -- if the item is a separator, add it to the toolbar --
+    // if the item is a separator, add it to the toolbar
     if (item->m_separator)
     {
         m_ctrl->AddSeparator();
         return;
     }
 
-    // -- add the toolbaritem to the toolbar --
+    // add the toolbaritem to the toolbar
     m_ctrl->AddTool(item->m_id,
                     item->m_label,
                     item->m_bitmap,
@@ -346,7 +345,7 @@ void ToolBar::realize()
 {
     m_ctrl->Reparent(m_form_wnd);
     
-    // -- get the toolbar's bitmap size --
+    // get the toolbar's bitmap size
     wxSize s = m_ctrl->GetToolBitmapSize();
     
     std::vector<ToolBarItem*>::iterator it;
@@ -354,12 +353,12 @@ void ToolBar::realize()
     {
         ToolBarItem* item = (*it);
 
-        // -- get the toolbaritems's bitmap size --
+        // get the toolbaritems's bitmap size
         wxSize s2 = wxSize(item->m_bitmap.GetWidth(),
                            item->m_bitmap.GetHeight());
 
-        // -- if the toolbaritem's bitmap size is greater than the toolbar's
-        //    bitmap size, increase the toolbar's bitmaps size to match --                           
+        // if the toolbaritem's bitmap size is greater than the toolbar's
+        // bitmap size, increase the toolbar's bitmaps size to match                         
         s.IncTo(s2);
         m_ctrl->SetToolBitmapSize(s);
     }
@@ -370,8 +369,9 @@ void ToolBar::realize()
         addItemToWxToolBar(item);
     }
 
-    // -- realize must be called on the wxToolBar after
-    //    all items have been added to it --
+    // realize must be called on the wxToolBar after
+    // all items have been added to it
+
     m_ctrl->Realize();
         
     if (!m_enabled)
@@ -403,8 +403,8 @@ void ToolBar::add(kscript::ExprEnv* env, kscript::Value* retval)
             m_items.push_back(item);
         }
         
-        // -- if we've already created and shown the toolbar, add the item
-        //    and call Realize() on the wxToolBar so the item is shown --
+        // if we've already created and shown the toolbar, add the item
+        // and call Realize() on the wxToolBar so the item is shown
         if (m_realized)
         {
             addItemToWxToolBar(item);
@@ -419,8 +419,9 @@ void ToolBar::addSeparator(kscript::ExprEnv* env, kscript::Value* retval)
     item->m_separator = true;
     m_items.push_back(item);
     
-    // -- if we've already created and shown the toolbar, add the item
-    //    and call Realize() on the wxToolBar so the item is shown --
+    // if we've already created and shown the toolbar, add the item
+    // and call Realize() on the wxToolBar so the item is shown
+
     if (m_realized)
     {
         addItemToWxToolBar(item);

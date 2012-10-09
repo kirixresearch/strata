@@ -16,7 +16,7 @@
 #include "scriptlistview.h"
 
 
-// -- ListViewItem class implementation --
+// ListViewItem class implementation
 
 // (CLASS) ListViewItem
 // Category: Control
@@ -313,7 +313,7 @@ int ListViewItem::getIndexInternal()
 
 
 
-// -- ListView class implementation --
+// ListView class implementation
 
 // (CLASS) ListView
 // Category: Control
@@ -410,8 +410,7 @@ int ListView::getImageListIdx(const wxBitmap& bitmap)
             h = 16;
         }
         
-        // -- if our list control doesn't have an imagelist,
-        //    create one --
+        // if our list control doesn't have an imagelist, create one
         m_imagelist = new wxImageList(w, h, true, 0);
         
         // add an empty image as image zero
@@ -472,7 +471,7 @@ void ListView::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     getMember(L"columnClick")->setObject(Event::createObject(env));
     getMember(L"columnRightClick")->setObject(Event::createObject(env));
 
-    // -- set default values --
+    // set default values
     m_x = 0;
     m_y = 0;
     m_width = -1;

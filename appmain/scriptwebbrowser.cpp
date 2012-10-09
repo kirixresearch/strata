@@ -18,7 +18,7 @@
 #include "scriptwebdom.h"
 
 
-// -- WebBrowser class implementation --
+// WebBrowser class implementation
 
 // (CLASS) WebBrowser
 // Category: Control
@@ -67,11 +67,11 @@ void WebBrowser::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     // initialize the component
     FormControl::constructor(env, retval);
     
-    // -- add some properties --
+    // add some properties
     getMember(L"navigated")->setObject(Event::createObject(env));
     getMember(L"domContentLoaded")->setObject(Event::createObject(env));
     
-    // -- set default values --
+    // set default values
     m_x = 0;
     m_y = 0;
     m_width = 100;

@@ -25,13 +25,13 @@
 
 // utility functions
 
-static int getUniqueScriptControlId()
+int getUniqueScriptControlId()
 {
     static int id = ID_FirstScriptControlId;
     return id++;
 }
 
-static int getUniqueScriptCommandId()
+int getUniqueScriptCommandId()
 {
     static int id = ID_FirstScriptCommandId;
     return id++;

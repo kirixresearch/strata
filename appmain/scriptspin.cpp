@@ -15,7 +15,7 @@
 #include "scriptapp.h"
 
 
-// -- SpinButton class implementation --
+// SpinButton class implementation
 
 // (CLASS) SpinButton
 // Category: Control
@@ -55,14 +55,14 @@ void SpinButton::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     // initialize the component
     initComponent(env);
 
-    // -- add some properties --
+    // add some properties
     kscript::Value obj;
     
     getMember(L"changed")->setObject(Event::createObject(env));
     getMember(L"spinUp")->setObject(Event::createObject(env));
     getMember(L"spinDown")->setObject(Event::createObject(env));
     
-    // -- set default values --
+    // set default values
     m_x = 0;
     m_y = 0;
     m_width = -1;
@@ -268,7 +268,7 @@ void SpinButton::onEvent(wxEvent& event)
 
 
 
-// -- SpinBox class implementation --
+// SpinBox class implementation
 
 // (CLASS) SpinBox
 // Category: Control
@@ -309,14 +309,14 @@ void SpinBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     // initialize the component
     initComponent(env);
 
-    // -- add some properties --
+    // add some properties
     getMember(L"changed")->setObject(Event::createObject(env));
     getMember(L"spinUp")->setObject(Event::createObject(env));
     getMember(L"spinDown")->setObject(Event::createObject(env));
     getMember(L"textChanged")->setObject(Event::createObject(env));
     getMember(L"enterPressed")->setObject(Event::createObject(env));
     
-    // -- set default values --
+    // set default values
     m_x = 0;
     m_y = 0;
     m_width = -1;

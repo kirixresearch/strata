@@ -14,7 +14,7 @@
 #include "scriptlist.h"
 
 
-// -- ListBox class implementation --
+// ListBox class implementation
 
 // (CLASS) ListBox
 // Category: Control
@@ -66,7 +66,7 @@ void zListBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     getMember(L"itemActivate")->setObject(Event::createObject(env));
     getMember(L"itemSelect")->setObject(Event::createObject(env));
     
-    // -- set default values --
+    // set default values
     m_x = 0;
     m_y = 0;
     m_width = -1;

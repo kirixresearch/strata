@@ -16,7 +16,7 @@
 #include "scriptcombo.h"
 
 
-// -- ComboBox class implementation --
+// ComboBox class implementation
 
 // (CLASS) ComboBox
 // Category: Control
@@ -55,14 +55,14 @@ void ComboBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     // initialize the component
     initComponent(env);
 
-    // -- add some properties --
+    // add some properties
     kscript::Value obj;
     
     getMember(L"selectionChanged")->setObject(Event::createObject(env));
     getMember(L"textChanged")->setObject(Event::createObject(env));
     getMember(L"enterPressed")->setObject(Event::createObject(env));
 
-    // -- set default values --
+    // set default values
     wxString text = wxEmptyString;
     m_x = 0;
     m_y = 0;
@@ -514,12 +514,12 @@ void ChoiceBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     // initialize the component
     initComponent(env);
 
-    // -- add some properties --
+    // add some properties
     kscript::Value obj;
     
     getMember(L"selectionChanged")->setObject(Event::createObject(env));
 
-    // -- set default values --
+    // set default values
     m_x = 0;
     m_y = 0;
     m_width = -1;

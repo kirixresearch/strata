@@ -20,7 +20,7 @@
 #include <set>
 
 
-// -- forward declarations --
+// forward declarations
 
 class FormComponent;
 class FormPanel;
@@ -30,7 +30,7 @@ class ToolBar;
 class Layout;
 
 
-// -- utility functions --
+// utility functions
 
 int getUniqueScriptControlId();
 int getUniqueScriptCommandId();
@@ -624,7 +624,7 @@ private:
 
     FormControl* m_owner;
 
-    // -- different pieces of data that can be set --
+    // different pieces of data that can be set
     std::vector<TreeViewItem*> m_treeitems;
     wxString m_text;
 };
