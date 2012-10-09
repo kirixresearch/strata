@@ -22,7 +22,7 @@ set WXS_NAME=strata64
 set WEBRES_DIR=%SOURCE_PATH%\appstrata\webres
 set BUILD_PROJECT=appstrata
 set BUILD_SLN=build64.sln
-set BUILDUTIL=cscript /nologo %SOURCE_PATH%\appmain\buildutil.vbs %CONFIG_PATH% 
+set BUILDUTIL=cscript /nologo d:\buildcmn\buildutil.vbs d:\buildcmn
 
 REM -- these variables are used by the WIX source files --
 set BUILDSRC=d:\build64\buildsrc
@@ -123,7 +123,7 @@ REM -- make .mo translation files from the .po files
 
 REM -- copy the files to build source --
 
-copy %VC_OUTPUT_PATH%\appstrata.exe %BUILDSRC%\bin /Y
+copy %VC_OUTPUT_PATH%\appstrata.exe %BUILDSRC%\bin\kstrata.exe /Y
 copy %VC_OUTPUT_PATH%\gpasvc.exe %BUILDSRC%\bin /Y
 copy %VC_OUTPUT_PATH%\xdnative.dll %BUILDSRC%\bin /Y
 copy %VC_OUTPUT_PATH%\xdodbc.dll %BUILDSRC%\bin /Y
@@ -140,7 +140,7 @@ copy %SOURCE_PATH%\appmain\i18n\de\messages.mo %BUILDSRC%\i18n\de
 REM -- sign the files --
 
 echo Signing build output files...
-%SIGNCMD% %BUILDSRC%\bin\appstrata.exe
+%SIGNCMD% %BUILDSRC%\bin\kstrata.exe
 %SIGNCMD% %BUILDSRC%\bin\gpasvc.exe
 %SIGNCMD% %BUILDSRC%\bin\xdnative.dll
 %SIGNCMD% %BUILDSRC%\bin\xdfs.dll
@@ -202,10 +202,6 @@ copy %SOURCE_PATH%\tango\xdodbc\ReleaseUnicode\*.map %BUILD_OUTPUT_PATH%\info
 
 
 
-REM -- increment the build number for the next build --
-
-%BUILDUTIL% increment
-
 REM -- open the build folder in explorer --
 echo Build %BUILD_CURRENT% Complete at:
 date /t
@@ -214,4 +210,3 @@ time /t
 
 
 :end
-pause
