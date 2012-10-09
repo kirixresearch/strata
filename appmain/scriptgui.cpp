@@ -1682,6 +1682,9 @@ void Form::onFormFrameDestructing()
     deinitializeControl();
     
     m_form_frame = NULL;
+    m_form_panel = NULL;
+    m_form_wnd = NULL;
+    m_wnd = NULL;
 }
 
 void Form::enableForm(bool enabled)
