@@ -883,7 +883,8 @@ public:
             return matchSucceeded;
         }
 
-        // -- prevent feedback loop --
+        // prevent feedback loop
+
         if (matchres.partdata[regpart<charT>::m_id].start == start)
         {
             int matches = matchres.stack.top();
@@ -946,7 +947,8 @@ public:
 
             if (!greedy && regpart<charT>::m_next_part && num_matches >= min_matches)
             {
-                // -- try to match the rest of the regular expression --
+                // try to match the rest of the regular expression
+
                 const charT* n;
                 int res = regpart<charT>::m_parent->tryRest(start, end, &n, matchres);
 
@@ -1123,8 +1125,8 @@ public:
 
         snext = start;
 
-        // -- if the match string is longer than the input
-        //    string, there is no match; stop here --
+        // if the match string is longer than the input
+        // string, there is no match; stop here
 
         if (match_str.length() > (size_t)(end - start))
             return matchFailed;
@@ -1251,12 +1253,13 @@ public:
 
     bool getState(unsigned int ch)
     {
-        // -- check the speedy 0..255 array --
+        // check the speedy 0..255 array
 
         if (ch < 256 && states1[ch])
             return true;
 
-        // -- check the builtin arrays --
+        // check the builtin arrays
+
         if (builtin[builtinSpace] && ::iswspace(ch))
             return true;
         if (builtin[builtinDigit] && ::iswdigit(ch))
@@ -1397,8 +1400,8 @@ public:
         const charT* s_it = start;
         const charT* snext = start;
 
-        // -- if the match string is longer than the input
-        //    string, there is no match; stop here --
+        // if the match string is longer than the input
+        // string, there is no match; stop here
 
         if (m_end - m_it > end - start)
             return matchFailed;
@@ -1774,7 +1777,7 @@ public:
 
     std::vector<regpart<charT>*> m_parts;
 
-    // -- back references --
+    // back references
     int m_match_idx;
     std::basic_string<charT> m_match_tag;
 };
@@ -2146,7 +2149,8 @@ private:
 
 
 
-        // -- add begin expression term (used for recording match indexes) --
+        // add begin expression term (used for recording match indexes)
+
         //if (m_match_idx != -1 || m_match_tag.length() > 0)
         {
             reg_exprbegin<charT>* expr_begin = new reg_exprbegin<charT>(seq);
@@ -2154,7 +2158,7 @@ private:
         }
 
 
-        // -- parse terms, one by one --
+        // parse terms, one by one
 
 
         int match_idx = 1;    // used for enumerating backrefs in the top level
@@ -2189,7 +2193,7 @@ private:
                 if (term.length() > 2 && term[1] == L'?' &&
                     (term[2] == L'=' || term[2] == L'!'))
                 {
-                    // -- lookahead subexpression --
+                    // lookahead subexpression
                     reg_lookahead<charT>* look = new reg_lookahead<charT>(seq);
                     look->negate = (term[2] == L'!' ? true:false);
 
@@ -2211,7 +2215,7 @@ private:
                 if (term.length() > 3 && term[1] == L'?' && term[2] == L'<' &&
                     (term[3] == L'=' || term[3] == L'!'))
                 {
-                    // -- lookbehind subexpression --
+                    // lookbehind subexpression
                     reg_lookbehind<charT>* look = new reg_lookbehind<charT>(seq);
                     look->negate = (term[3] == L'!' ? true:false);
 
@@ -2237,7 +2241,7 @@ private:
                     const charT* matchname_begin = NULL;
                     const charT* matchname_end = NULL;
                     
-                    // -- normal subexpression --
+                    // normal subexpression
                     bool backref = false;
                     int ignore_case = -1;
                     int single_line = -1;
@@ -2437,7 +2441,7 @@ private:
                 
                 if (error)
                 {
-                    // -- return parse error --
+                    // return parse error
                     return false;
                 }
             }
@@ -2511,14 +2515,15 @@ private:
             }
 
 
-            // -- finally, add the part --
+            // finally, add the part
             if (seq->m_parts.size() > 0)
                 seq->m_parts[seq->m_parts.size() - 1]->setNextPart(part);
 
             seq->m_parts.push_back(part);
         }
 
-        // -- add end expression term (used for recording match indexes) --
+        // add end expression term (used for recording match indexes)
+
         //if (m_match_idx != -1 || m_match_tag.length() > 0)
         {
             reg_exprend<charT>* expr_end = new reg_exprend<charT>(seq);
@@ -2619,7 +2624,7 @@ private:
 
         const charT* p = start;
 
-        // -- look for an operator --
+        // look for an operator
         switch (*p)
         {
             case L'|':
@@ -2716,7 +2721,8 @@ private:
                 break;
         }
 
-        // -- look for a group --
+        // look for a group
+
         if (quickStrchr<wchar_t>(L"({[", *p))
         {
             switch (*p)
@@ -2755,7 +2761,7 @@ private:
             return true;
         }
 
-        // -- else, look for a literal --
+        // else, look for a literal
 
         while (0 == quickStrchr<wchar_t>(L"\\^$|.?*+({[", *p))
         {
@@ -2764,8 +2770,8 @@ private:
             ++p;
         }
 
-        // -- if there is a single char before an operator
-        //    don't include it --
+        // if there is a single char before an operator, don't include it
+
         if (*p && p-start > 1 && quickStrchr<wchar_t>(L"?*+{", *p))
             --p;
 
@@ -2785,7 +2791,7 @@ private:
         for (i = 0; i < 10; ++i)
             levels[i] = 0;
 
-        // -- this is an exception to allow "[[]" or "[]]" --
+        // this is an exception to allow "[[]" or "[]]"
         if (ch == L']' && *str == L'[')
         {
             const charT* p = str+1;
@@ -2855,7 +2861,7 @@ private:
     const charT* zl_closebracket(const charT* start,
                                    const charT* end)
     {
-        // -- this is an exception to allow "[[]" or "[]]"
+        // this is an exception to allow "[[]" or "[]]"
         const charT* p = start+1;
         if (*p == L']')
             ++p;
@@ -2919,7 +2925,7 @@ private:
 
         reg_charclass<charT>* r = new reg_charclass<charT>(parent);
 
-        // -- check for charset negation --
+        // check for charset negation
         r->negated = false;
 
         if (*s == L'^')
@@ -2928,10 +2934,12 @@ private:
             ++s;
         }
 
-        // -- add stuff to the charset --
+        // add stuff to the charset
+
         while (*s)
         {
-            // -- look for end bracket --
+            // look for end bracket
+
             if (*s == ']')
             {
                 if (s-1 == begin)
@@ -2946,7 +2954,9 @@ private:
                 }
             }
 
-            // -- check for posix character class --
+
+            // check for posix character class
+
             if (*s == L'[' && *(s+1) == L':')
             {
                 if (0 == quickStrncmp(s, L"[:alpha:]", 9))
@@ -2987,7 +2997,8 @@ private:
                 continue;
             }
 
-            // -- check for backslash --
+            // check for backslash
+
             if (*s == L'\\')
             {
                 switch (*(s+1))
@@ -3021,7 +3032,7 @@ private:
                 }
             }
 
-            // -- get next character --
+            // get next character
             ch = parseEscapeCode(s, &next);
             if (next == s)
             {
@@ -3030,7 +3041,7 @@ private:
                 return NULL;
             }
 
-            // -- check for hyphen --
+            // check for hyphen
             if (*next == L'-' && *(next+1) != L']')
             {
                 const charT* next2;

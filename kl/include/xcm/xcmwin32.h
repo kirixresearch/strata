@@ -42,13 +42,15 @@
 
 #define NOMINMAX
 
-// -- if we are compiling with mingw --
+// if we are compiling with mingw 
+
 /*
 #ifndef _MSC_VER
 #define _ANONYMOUS_UNION __extension__
 #define _ANONYMOUS_STRUCT __extension__
 #endif
 */
+
 //#include <windef.h>
 //#include <winnt.h>
 //#include <winbase.h>

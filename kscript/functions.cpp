@@ -37,7 +37,7 @@ namespace kscript
 {
 
 
-// -- date comparison helper --
+// date comparison helper function
 
 // < 0 date1 less than date2 
 // 0 date1 identical to date2 
@@ -143,7 +143,8 @@ void oper_array(ExprEnv* env, void* param, Value* retval)
     }
 }
 
-// -- bitwise operators --
+
+// bitwise operators
 
 void oper_bitwise_and(ExprEnv* env, void* param, Value* retval)
 {
@@ -189,7 +190,8 @@ void oper_shift_right_zf(ExprEnv* env, void* param, Value* retval)
     retval->setDouble((double)(p0 >> p1));
 }
 
-// -- logical operators --
+
+// logical operators
 
 void oper_negate(ExprEnv* env, void* param, Value* retval)
 {
@@ -237,7 +239,7 @@ void oper_unary_plus(ExprEnv* env, void* param, Value* retval)
 
 void oper_not(ExprEnv* env, void* param, Value* retval)
 {
-    // -- unary boolean reversing operator --
+    // unary boolean reversing operator
 
     retval->setBoolean(!env->m_eval_params[0]->getBoolean());
 }
@@ -632,7 +634,7 @@ void oper_equals(ExprEnv* env, void* param, Value* retval)
                 }
             }
             
-            // -- +/-0 comparison goes here; see ECMA-262 section 11.9.3 --
+            // +/-0 comparison goes here; see ECMA-262 section 11.9.3
             
             retval->setBoolean(false);
             return;
@@ -1078,7 +1080,7 @@ void oper_subtract(ExprEnv* env, void* param, Value* retval)
 }
 
 
-// -- Javascript functions/operators --
+// Javascript functions/operators
 
 
 void oper_strict_equals(ExprEnv* env, void* param, Value* retval)
@@ -1410,9 +1412,8 @@ void js_toString(ExprEnv* env, void* param, Value* retval)
     vthis->toString(retval);
 }
 
-// -- Javascript objects --
 
-
+// Javascript operators
 
 
 void oper_typeof(ExprEnv* env, void* param, Value* retval)

@@ -261,10 +261,10 @@ bool xmlnode::load(const std::wstring& filename, int parse_flags, int file_mode)
     if (buf[0] == 0xff && buf[1] == 0xfe &&
         (buf[2] != 0x00 || buf[3] != 0x00))
     {
-        // -- little endian unicode --
+        // little endian unicode
 
-        // -- this code will only work on little endian machines
-        //    where sizeof(wchar_t) == 2 --
+        // this code will only work on little endian machines
+        // where sizeof(wchar_t) == 2
 
         if (sizeof(wchar_t) == 2)
         {
@@ -755,7 +755,7 @@ void xmlnode::detokenize(std::wstring& dest, const wchar_t* src, int src_len)
     wchar_t ch;
     int i;
 
-    // -- detokenize &quot; &amp; &lt; and &gt; entities --
+    // detokenize &quot; &amp; &lt; and &gt; entities
     
     for (i = 0; i < src_len; i++)
     {
@@ -864,7 +864,7 @@ void xmlnode::detokenize(std::wstring& dest, const wchar_t* src, int src_len)
 
     bool in_cdata = false;
     
-    // -- detokenize &quot; &amp; &lt; and &gt; entities --
+    // detokenize &quot; &amp; &lt; and &gt; entities
     
     for (i = 0; i < src_len; i++)
     {
@@ -1006,12 +1006,12 @@ bool xmlnode::parseProperty(const wchar_t* p, const wchar_t** endpos)
             {
                 name_end = p-1;
 
-                // -- ok...we need to find the equal sign --
+                // ok...we need to find the equal sign
                 while (iswspace(*p))
                     p++;
                 if (*p != L'=')
                 {
-                    // -- parse error -- 
+                    // parse error
                     return false;
                 }
                 p++;
@@ -1021,7 +1021,7 @@ bool xmlnode::parseProperty(const wchar_t* p, const wchar_t** endpos)
                 break;
             }
 
-            // -- parse error --
+            // parse error
             return false;
         }
         p++;
@@ -1032,7 +1032,7 @@ bool xmlnode::parseProperty(const wchar_t* p, const wchar_t** endpos)
     prop->name.assign(name_start, name_end-name_start+1);
 
 
-    // -- now grab the value --
+    // now grab the value
     wchar_t quote_char = 0;
     
     if (*p == L'"' || *p == L'\'')
@@ -1090,8 +1090,7 @@ bool xmlnode::internalParse(const wchar_t* xml_text, const wchar_t** next_start,
         while (iswspace(*xml_text))
             xml_text++;
 
-        // -- internal parser requires that '<'
-        //    is the first character --
+        // internal parser requires that '<' is the first character
         if (*xml_text != L'<')
             return false;
 
@@ -1099,25 +1098,25 @@ bool xmlnode::internalParse(const wchar_t* xml_text, const wchar_t** next_start,
         while (iswspace(*p))
             p++;
 
-        // -- check for comment --
+        // check for comment
         if (wcsncmp(p, L"!--", 3) != 0)
             break;
 
 
-        // -- it is a comment --
+        // it is a comment
         while (1)
         {
             p++;
 
             if (!*p)
             {
-                // -- premature eof --
+                // premature eof
                 return false;
             }
 
             if (wcsncmp(p, L"--", 2) == 0)
             {
-                // -- end of comment, look for close bracket --
+                // end of comment, look for close bracket
                 while (1)
                 {
                     p++;
@@ -1140,7 +1139,7 @@ bool xmlnode::internalParse(const wchar_t* xml_text, const wchar_t** next_start,
 
     p = xml_text+1;
     
-    // -- get our tag name --
+    // get our tag name
     const wchar_t* tag_name;
     while (iswspace(*p))
         p++;
@@ -1161,7 +1160,7 @@ bool xmlnode::internalParse(const wchar_t* xml_text, const wchar_t** next_start,
         }
         if (!iswalnum(*p) && *p != L'_' && *p != L':')
         {
-            // -- premature tag close or invalid syntax --
+            // premature tag close or invalid syntax
             return false;
         }
 
@@ -1170,7 +1169,7 @@ bool xmlnode::internalParse(const wchar_t* xml_text, const wchar_t** next_start,
     }
     if (!*p)
     {
-        // -- premature EOF --
+        // premature EOF
         return false;
     }
 
@@ -1180,7 +1179,7 @@ bool xmlnode::internalParse(const wchar_t* xml_text, const wchar_t** next_start,
     m_tag_name.assign(tag_name, tag_name_len);
 
 
-    // -- parse properties, if present --
+    // parse properties, if present
     while (1)
     {
         while (iswspace(*p))
@@ -1216,7 +1215,7 @@ bool xmlnode::internalParse(const wchar_t* xml_text, const wchar_t** next_start,
     bool cdata_only = false;
 
 
-    // -- find the next tag --
+    // find the next tag
     while (1)
     {
         while (1)
@@ -1336,7 +1335,7 @@ void xmlnode::internalPrint(std::wstring& output,
     int cur_len = output.length();
     int cur_cap = output.capacity();
 
-    // -- reserve output space --
+    // reserve output space
     if (cur_len == 0 && ((format_flags & formattingOmitPrologue) == 0))
     {
         output += KL_XML_HEADER;
@@ -1441,7 +1440,7 @@ void xmlnode::internalGetXML(std::wstring& result,
 {
     wchar_t cr[3];
 
-    // -- create CR buffer --
+    // create CR buffer
 
     cr[0] = 0;
 
@@ -1454,7 +1453,7 @@ void xmlnode::internalGetXML(std::wstring& result,
         wcscpy(cr, L"\n");
     }
 
-    // -- create indentation buffer --
+    // create indentation buffer
     wchar_t indent_char = 0;
 
     if (format_flags & formattingTabs)
@@ -1469,7 +1468,7 @@ void xmlnode::internalGetXML(std::wstring& result,
     int len_estimate = getLengthEstimate(0);
     result.reserve(len_estimate);
 
-    // -- get the xml string --
+    // get the xml string
     internalPrint(result, format_flags, 0, cr, indent_char);
 }
 

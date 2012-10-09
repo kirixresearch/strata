@@ -146,7 +146,7 @@ public:
     {
         if (p)
         {
-            // -- release old ptr --
+            // release old ptr
             p->unref();
         }
 
@@ -167,7 +167,7 @@ public:
     {
         if (p)
         {
-            // -- release old ptr --
+            // release old ptr
             p->unref();
         }
 
@@ -183,7 +183,7 @@ public:
     {
         if (p)
         {
-            // -- release old ptr --
+            // release old ptr
             p->unref();
         }
 
@@ -201,7 +201,7 @@ public:
     {
         if (p)
         {
-            // -- release old ptr --
+            // release old ptr
             p->unref();
         }
 
@@ -421,7 +421,7 @@ public:
     {
         if (p)
         {
-            // -- release old ptr --
+            // release old ptr
             p->unref();
         }
 
@@ -442,7 +442,7 @@ public:
     {
         if (p)
         {
-            // -- release old ptr --
+            // release old ptr
             p->unref();
         }
 
@@ -458,7 +458,7 @@ public:
     {
         if (p)
         {
-            // -- release old ptr --
+            // release old ptr
             p->unref();
         }
 

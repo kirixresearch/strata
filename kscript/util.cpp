@@ -78,7 +78,7 @@ inline bool isRegexLiteral(wchar_t* ch, wchar_t* start_border)
 
 
 
-// -- helper functions for ExprParser --
+// helper functions for ExprParser
 
 wchar_t* ExprParser::zl_strchr(wchar_t* str,
                                wchar_t ch,
@@ -710,7 +710,7 @@ void str2date(ExprDateTime* dt,
               const wchar_t* str,
               const wchar_t* format)
 {
-    // -- implicit conversion from string --
+    // implicit conversion from string
     const wchar_t* separators = L"/-.:*,;\\!$ ";
 
     const wchar_t* months[] = { L"JAN", L"FEB", L"MAR",
@@ -750,7 +750,7 @@ void str2date(ExprDateTime* dt,
     ms = 0;
 
 
-    // -- parse the different pieces --
+    // parse the different pieces
 
     const wchar_t* p;
     const wchar_t* d;
@@ -760,7 +760,7 @@ void str2date(ExprDateTime* dt,
     int arr[7];
     int arr_size = 0;
 
-    // -- find next delimiter --
+    // find next delimiter
     p = str;
     last = false;
     while (1)
@@ -811,7 +811,7 @@ void str2date(ExprDateTime* dt,
 
             if (!found)
             {
-                // -- invalid character inside the date --
+                // invalid character inside the date
                 dt->date = 0;
                 dt->time = 0;
                 return;
@@ -820,11 +820,11 @@ void str2date(ExprDateTime* dt,
 
         arr_size++;
 
-        // -- if this is the last value, we are done --
+        // if this is the last value, we are done
         if (last)
             break;
 
-        // -- if we've read 7 values, we are done --
+        // if we've read 7 values, we are done
         if (arr_size == 7)
             break;
     }
@@ -851,7 +851,7 @@ void str2date(ExprDateTime* dt,
             {
                 if (*p && wcschr(separators, *p))
                 {
-                    // -- skip format separator characters --
+                    // skip format separator characters
                     p++;
                     continue;
                 }
@@ -1433,7 +1433,7 @@ bool parseDecimalConstant(const wchar_t* ch, Value* retval, const wchar_t** endl
 
     if (period)
     {
-        // -- make sure there are not multiple periods --
+        // make sure there are not multiple periods
         const wchar_t* testc = wcschr(period+1, L'.');
         if (testc)
         {
@@ -1450,7 +1450,7 @@ bool parseDecimalConstant(const wchar_t* ch, Value* retval, const wchar_t** endl
 
     if (!period && !expch)
     {
-        // -- see if it will work as an integer --
+        // see if it will work as an integer
         if (fabs(dbl_val) < 2147483647.9)
         {
             retval->setInteger(wtoi(ch));

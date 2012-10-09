@@ -223,7 +223,8 @@ inline double wtof(const std::wstring& s)
 }
 
 
-// -- string conversion helpers --
+
+// string conversion helper functions
 
 inline std::wstring towstring(const char* src)
 {

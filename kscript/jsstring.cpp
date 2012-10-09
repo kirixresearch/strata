@@ -198,7 +198,7 @@ Value* String::getMember(const std::wstring& name)
     if (ValueObject::getMemberExists(name))
         return ValueObject::getMember(name);
         
-    // -- look for length --
+    // look for length
     if (name == L"length")
     {
         Value* v = getValueReturn();
@@ -1133,11 +1133,11 @@ void String::substring(ExprEnv* env, void* param, Value* retval)
         return;
     }
 
-    // -- get the input string length --
+    // get the input string length
     wchar_t* src = vthis->getString();
     int src_len = vthis->getDataLen();
 
-    // -- if there aren't any input parameters, return the string --
+    // if there aren't any input parameters, return the string
     int num_params = env->m_param_count;
     if (env->m_param_count < 1)
     {
@@ -1145,13 +1145,13 @@ void String::substring(ExprEnv* env, void* param, Value* retval)
         return;
     }
     
-    // -- declare the start and end parameters --
+    // declare the start and end parameters
     int copy_start;
     int copy_end;
     
-    // -- get the start parameter; if it's NaN or negative, set it to zero;
-    //    if it's greater than the length of the string, set it to the length
-    //    of the string --
+    // get the start parameter; if it's NaN or negative, set it to zero;
+    // if it's greater than the length of the string, set it to the length
+    // of the string
     
     Value copy_start_val;
     env->m_eval_params[0]->toNumber(&copy_start_val);
@@ -1164,10 +1164,12 @@ void String::substring(ExprEnv* env, void* param, Value* retval)
     if (copy_start > src_len)
         copy_start = src_len;
     
-    // -- get the end parameter; if it's undefined, set it equal
-    //    to the length of the string; otherwise, if it's NaN or negative,
-    //    set it to zero, or if it's greater than the length of the string,
-    //    set it to the length of the string --
+
+    // get the end parameter; if it's undefined, set it equal
+    // to the length of the string; otherwise, if it's NaN or negative,
+    // set it to zero, or if it's greater than the length of the string,
+    // set it to the length of the string
+
     if (env->m_param_count < 2)
     {
         copy_end = src_len;
@@ -1186,7 +1188,7 @@ void String::substring(ExprEnv* env, void* param, Value* retval)
             copy_end = src_len;
     }
 
-    // -- if copy_start is greater than copy_end, swap them --
+    // if copy_start is greater than copy_end, swap them
     if (copy_start > copy_end)
     {
         int t = copy_end;
@@ -1367,11 +1369,11 @@ void String::substr(ExprEnv* env, void* param, Value* retval)
         return;
     }
 
-    // -- get the input string length --
+    // get the input string length
     wchar_t* src = vthis->getString();
     int src_len = vthis->getDataLen();
 
-    // -- if there aren't any input parameters, return the string --
+    // if there aren't any input parameters, return the string
     int num_params = env->m_param_count;
     if (env->m_param_count < 1)
     {
@@ -1379,16 +1381,16 @@ void String::substr(ExprEnv* env, void* param, Value* retval)
         return;
     }
     
-    // -- declare the start and copy length parameters --
+    // declare the start and copy length parameters
     int copy_start;
     int copy_length;
     
-    // -- get the start parameter; if it's NaN, set it to zero --
+    // get the start parameter; if it's NaN, set it to zero
     env->m_eval_params[0]->toNumber(env->m_eval_params[0]);
     copy_start = env->m_eval_params[0]->getInteger();
 
-    // -- get the copy length parameter; if it's undefined, set it equal
-    //    to the length of the string; if it's NaN, set it to zero --
+    // get the copy length parameter; if it's undefined, set it equal
+    // to the length of the string; if it's NaN, set it to zero
     if (env->m_param_count < 2)
     {
         copy_length = src_len;
@@ -1399,28 +1401,31 @@ void String::substr(ExprEnv* env, void* param, Value* retval)
         copy_length = env->m_eval_params[1]->getInteger();
     }
     
-    // -- if the start is greater or equal to the string length 
-    //    or the copy length is less than or equal to zero, 
-    //    we're done --
+
+    // if the start is greater or equal to the string length 
+    // or the copy length is less than or equal to zero, we're done
+
     if (copy_start >= src_len || copy_length <= 0)
     {
         retval->setString(L"");
         return;
     }
     
-    // -- if the start is less than zero, wrap around the end of
-    //    the string until the beginning of the string, then stop
-    //    wrapping --
+    // if the start is less than zero, wrap around the end of
+    // the string until the beginning of the string, then stop wrapping
+
     if (copy_start < 0)
     {
         copy_start = src_len + copy_start;
         if (copy_start < 0)
             copy_start = 0;
     }
-    
-    // -- if the start plus the copy length is greater than the string 
-    //    length, set the copy length so that the start plus the 
-    //    copy length returns the start to the end of the string --
+
+
+    // if the start plus the copy length is greater than the string 
+    // length, set the copy length so that the start plus the 
+    // copy length returns the start to the end of the string
+
     if (copy_start + copy_length > src_len)
         copy_length = src_len - copy_start;
  

@@ -147,7 +147,8 @@ inline int doubleToInt32(double d)
     return (int)(unsigned int)d;
 }
 
-// -- date routines --
+
+// date routines
 
 inline int dateToJulian(int year, int month, int day)
 {
@@ -196,7 +197,7 @@ inline int getDayOfWeek(int year, int month, int day)
 }
 
 
-// -- string routines --
+// string routines
 
 inline std::wstring towstring(const std::string& src)
 {

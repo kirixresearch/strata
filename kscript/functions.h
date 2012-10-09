@@ -17,7 +17,7 @@ namespace kscript
 {
 
 
-// -- built-in operators, functions and classes --
+// built-in operators, functions and classes
 void oper_array(ExprEnv* env, void* param, Value* retval);
 void oper_bitwise_and(ExprEnv* env, void* param, Value* retval);
 void oper_bitwise_xor(ExprEnv* env, void* param, Value* retval);

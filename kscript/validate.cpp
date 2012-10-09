@@ -96,7 +96,8 @@ static int _getSingleRetValType(const wchar_t* format,
                                 ExprElement* elements[],
                                 int element_count)
 {
-    // -- prototype variables --
+    // prototype variables
+
     int pttypes[255];
     int ptcount;
     int ptretval;
@@ -154,12 +155,12 @@ static int _getSingleRetValType(const wchar_t* format,
             return Value::typeNull;
     }
 
-    // -- ok, now that we have parsed the prototype, we can see if the
-    //    parameters passed match up to the prototype --
+    // ok, now that we have parsed the prototype, we can see if the
+    // parameters passed match up to the prototype
 
     if (ptvarparam == Value::typeNull)
     {
-        // -- check to see if we have too many parameters --
+        // check to see if we have too many parameters
         if (element_count > ptcount)
         {
             return Value::typeNull;
@@ -167,19 +168,19 @@ static int _getSingleRetValType(const wchar_t* format,
 
         if (opt_offset == -1)
         {
-            // -- if there are no optional parameters, the param count
-            //      must match up exactly --
+            // if there are no optional parameters, the param count
+            // must match up exactly
+
             if (ptcount != element_count)
                 return Value::typeNull;
         }
          else
         {
-            // -- check to see if there are at least the required number
-            //      of obligitory parameters --
+            // check to see if there are at least the required number
+            // of obligitory parameters
+
             if (element_count < opt_offset)
-            {
                 return Value::typeNull;
-            }
         }
     }
      else
@@ -220,7 +221,7 @@ static int _getSingleRetValType(const wchar_t* format,
         }
     }
 
-    // -- everything checked out ok --
+    // everything checked out ok
     return ptretval;
 }
 

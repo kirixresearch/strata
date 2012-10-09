@@ -30,7 +30,6 @@ namespace kscript
 {
 
 
-// -- enums --
 
 enum ExprDialects
 {
@@ -107,7 +106,8 @@ enum ExprRuntimeError
 
 
 
-// -- forward decalarations --
+// forward decalarations
+
 class ValueObjectEvents;
 class ValueObject;
 class Value;
@@ -125,7 +125,7 @@ class ExprSequence;
 class ExprSwitch;
 
 
-// -- int64 support --
+// int64 support
 
 #ifdef _MSC_VER
 typedef __int64 ks_int64_t;
@@ -136,7 +136,7 @@ typedef unsigned long long ks_uint64_t;
 #endif
 
 
-// -- parse hook info --
+// parse hook info
 
 struct ExprParseHookInfo
 {
@@ -149,7 +149,8 @@ struct ExprParseHookInfo
         typeIncludePop = 1 << 4
     };
 
-    // -- information about the text being parsed --
+
+    // information about the text being parsed
     
     ExprParser* parser;      // ptr to the expression parser
     ExprParserEnv* penv;     // expression parser environment
@@ -157,7 +158,8 @@ struct ExprParseHookInfo
     void* hook_param;        // parameter passed to setParseHook
     std::wstring expr_text;  // full text of the expression
 
-    // -- other information if element_type is equal to typeOperator --
+
+    // other information if element_type is equal to typeOperator
 
     ExprOperator* oper_info; // operator info
     std::wstring oper_text;  // operator text
@@ -166,13 +168,14 @@ struct ExprParseHookInfo
     bool oper_unary;         // true if the operator is unary
     bool oper_prefix;        // true if the unary operator prefixes the argument
     
-    // -- result of the parse hook goes here --
+
+    // result of the parse hook goes here
     ExprElement* res_element; // element result goes here
     std::wstring res_string;  // string result goes here (for typeInclude)
 };
 
 
-// -- function typedefs --
+// function typedefs
 
 typedef void (*ExprBindFunc)(ExprEnv* env, void* param, Value* retval);
 
@@ -188,7 +191,7 @@ inline void debugBreak() { }
 #endif
 
 
-// -- class declarations --
+// class declarations
 
 class ExprElement
 {
@@ -205,8 +208,8 @@ public:
 class ExprDateTime
 {
 public:
-    int date;      // -- julian day --
-    int time;      // -- milliseconds since midnight
+    int date;      // julian day
+    int time;      // milliseconds since midnight
 };
 
 
@@ -1229,7 +1232,7 @@ public:
 };
 
 
-// -- helper functions for the parser --
+// helper functions for the parser
 
 void str2date(ExprDateTime* dt,
               const wchar_t* str,
@@ -1237,7 +1240,7 @@ void str2date(ExprDateTime* dt,
 
 
 
-// -- ugly macros that make binding to a C++ object easy --
+// ugly macros that make binding to a C++ object easy
 
 
 // base class for all BoundMemberInfo objects -- this aids us

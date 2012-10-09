@@ -186,7 +186,7 @@ static void kscript_object_constructor(ExprEnv* env,
 }
 
 
-// -- ExprEnv implementation --
+// ExprEnv implementation
 
 ExprEnv::ExprEnv()
 {
@@ -377,7 +377,7 @@ void ExprEnv::reserveParams(size_t param_count)
 {
     size_t i;
     
-    // -- make sure we have enough space in the arrays --
+    // make sure we have enough space in the arrays
     if (param_count <= m_param_array_size)
         return;
 
@@ -400,20 +400,20 @@ void ExprEnv::reserveParams(size_t param_count)
             eval_params[i] = new Value;
     }
     
-    // -- delete the old arrays --
+    // delete the old arrays
     delete[] m_params;
     delete[] m_eval_params;
     
     m_params = params;
     m_eval_params = eval_params;
     
-    // -- set new array size --
+    // set new array size
     m_param_array_size = param_count;
 }
 
 
 
-// -- ExprEmptyStatement class implementation --
+// ExprEmptyStatement class implementation
 
 ExprEmptyStatement::ExprEmptyStatement()
 {
@@ -436,7 +436,7 @@ int ExprEmptyStatement::getType()
 
 
 
-// -- ExprNew class implementation --
+// ExprNew class implementation
 
 ExprNew::ExprNew()
 {
@@ -471,7 +471,7 @@ int ExprNew::getType()
 
 
 
-// -- ExprVarDefine implementation --
+// ExprVarDefine implementation
 
 ExprVarDefine::ExprVarDefine()
 {
@@ -533,7 +533,7 @@ int ExprVarDefine::getType()
 
 
 
-// -- ExprVarAssign implementation --
+// ExprVarAssign implementation
 
 ExprVarAssign::ExprVarAssign()
 {
@@ -721,7 +721,7 @@ int ExprSimpleArrayLookup::getType()
 
 
 
-// -- ExprArrayInit implementations --
+// ExprArrayInit implementations
 
 ExprFunctionInit::ExprFunctionInit(Function* func)
 {
@@ -752,7 +752,7 @@ int ExprFunctionInit::getType()
 
 
 
-// -- ExprArrayInit implementations --
+// ExprArrayInit implementations
 
 ExprArrayInit::ExprArrayInit()
 {
@@ -791,8 +791,7 @@ int ExprArrayInit::getType()
 
 
 
-// -- ExprObjectLiteralInit implementations --
-
+// ExprObjectLiteralInit implementations
 
 ExprObjectLiteralInit::ExprObjectLiteralInit()
 {
@@ -833,7 +832,7 @@ int ExprObjectLiteralInit::getType()
 
 
 
-// -- ExprThis implementation --
+// ExprThis implementation
 
 ExprThis::ExprThis()
 {
@@ -868,7 +867,7 @@ Value* ExprThis::getLvalue(ExprEnv* env)
 
 
 
-// -- ExprSuper implementation --
+// ExprSuper implementation
 
 ExprSuper::ExprSuper()
 {
@@ -918,7 +917,7 @@ Value* ExprSuper::getLvalue(ExprEnv* env)
 
 
 
-// -- ExprVarLookup implementation --
+// ExprVarLookup implementation
 
 ExprVarLookup::ExprVarLookup()
 {
@@ -1083,7 +1082,7 @@ Value* ExprVarLookup::getLvalue(ExprEnv* env)
 
 
 
-// -- ExprWith implementation --
+// ExprWith implementation
 
 ExprWith::ExprWith()
 {
@@ -1137,7 +1136,9 @@ int ExprWith::getType()
 }
 
 
-// -- ExprIf implementation --
+
+
+// ExprIf implementation
 
 ExprIf::ExprIf()
 {
@@ -1189,7 +1190,8 @@ int ExprIf::getType()
 }
 
 
-// -- ExprForWhile implementation --
+
+// ExprForWhile implementation
 
 ExprForWhile::ExprForWhile()
 {
@@ -1283,7 +1285,7 @@ int ExprForWhile::getType()
 
 
 
-// -- ExprForIn implementation --
+// ExprForIn implementation
 
 ExprForIn::ExprForIn()
 {
@@ -1374,8 +1376,8 @@ int ExprForIn::getType()
 
 
 
-// -- ExprSwitch implementation --
 
+// ExprSwitch implementation
 
 ExprSwitch::ExprSwitch()
 {
@@ -1477,7 +1479,7 @@ int ExprSwitch::getType()
 }
 
 
-// -- ExprInstruction implementation --
+// ExprInstruction implementation
 
 ExprInstruction::ExprInstruction()
 {
@@ -1519,7 +1521,7 @@ int ExprInstruction::eval(ExprEnv* env, Value* retval)
 {
     if (env->m_parser->m_language == optionLanguageECMAScript)
     {
-        // -- this version is required for recursive calls --
+        // this version is required for recursive calls
 
         ExprEnv* func_env = env->m_parser->createEnv();
         func_env->setParent(env);
@@ -1597,7 +1599,7 @@ int ExprInstruction::eval(ExprEnv* env, Value* retval)
 
         if (env->getRuntimeError())
         {
-            // -- runtime error encountered --
+            // runtime error encountered
             return evalFailed;
         }
 
@@ -1656,7 +1658,7 @@ Value* ExprInstruction::getLvalue(ExprEnv* env)
 
 
 
-// -- ExprFunctionCall implementation --
+// ExprFunctionCall implementation
 
 ExprFunctionCall::ExprFunctionCall()
 {
@@ -1898,7 +1900,7 @@ int ExprFunctionCall::getType()
 
 
 
-// -- ExprFunctionReturn implementation --
+// ExprFunctionReturn implementation
 
 ExprFunctionReturn::ExprFunctionReturn()
 {
@@ -1932,7 +1934,8 @@ int ExprFunctionReturn::getType()
 }
 
 
-// -- ExprBreak implementation --
+
+// ExprBreak implementation
 
 ExprBreak::ExprBreak()
 {
@@ -1956,7 +1959,8 @@ int ExprBreak::getType()
 
 
 
-// -- ExprContinue implementation --
+
+// ExprContinue implementation
 
 ExprContinue::ExprContinue()
 {
@@ -1980,8 +1984,7 @@ int ExprContinue::getType()
 
 
 
-// -- ExprTryCatch implementation --
-
+// ExprTryCatch implementation
 
 ExprTryCatch::ExprTryCatch()
 {
@@ -2072,7 +2075,7 @@ int ExprTryCatch::getType()
 }
 
 
-// -- ExprThrow implementation --
+// ExprThrow implementation
 
 ExprThrow::ExprThrow()
 {
@@ -2101,7 +2104,7 @@ int ExprThrow::getType()
 
 
 
-// -- ExprArguments implementation --
+// ExprArguments implementation
 
 ExprArguments::ExprArguments()
 {
@@ -2160,8 +2163,7 @@ int ExprArguments::getType()
 
 
 
-// -- ExprSequence implementation --
-
+// ExprSequence implementation
 
 ExprSequence::ExprSequence()
 {
@@ -2319,8 +2321,7 @@ int ExprSequence::getType()
 
 
 
-// -- ExprParserEnv implementation --
-
+// ExprParserEnv implementation
 
 ExprParserEnv::ExprParserEnv(ExprParserEnv* parent)
 {
@@ -2613,7 +2614,7 @@ bool ExprParserEnv::getSuperCalled()
 }
 
 
-// -- ExprClassInfo implementation --
+// ExprClassInfo implementation
 
 ExprClassInfo::ExprClassInfo(ExprParser* parser)
 {
@@ -2827,7 +2828,7 @@ bool ExprParser::parseParams(ExprParserEnv* penv,
     bool error = false;
     bool res;
 
-    // -- parse the parameters, if any --
+    // parse the parameters, if any
     while (1)
     {
         wchar_t* param_end;
@@ -2890,7 +2891,7 @@ bool ExprParser::parseParams(ExprParserEnv* penv,
     }
 
 
-    // -- do some extra error checking --
+    // do some extra error checking
 
     if (!error)
     {    
@@ -3524,7 +3525,7 @@ ExprElement* ExprParser::parseElement(ExprParserEnv* penv,
     //}
 
 
-    // -- check for an operator --
+    // check for an operator
     wchar_t* oper = NULL;
     ExprOperator* entry = NULL;
 
@@ -4632,7 +4633,7 @@ ExprElement* ExprParser::parseStatement(ExprParserEnv* penv,
                 return NULL;
             }
 
-            // -- get the first (and perhaps only) statement --
+            // get the first (and perhaps only) statement
             e_if->m_iftrue = parseStatement(penv, end+1, &expr);
 
             if (!e_if->m_iftrue)
@@ -5268,7 +5269,7 @@ ExprElement* ExprParser::parseStatement(ExprParserEnv* penv,
                 return NULL;
             }
             
-            // -- look for "while" --
+            // look for "while"
             wchar_t* p = end_block;
             
             while (iswspace(*p))
@@ -6419,7 +6420,7 @@ ExprElement* ExprParser::parseFunction(ExprParserEnv* penv,
     
     
     
-    // -- parse the function body --
+    // parse the function body
     wchar_t* body = paren+1;
     while (iswspace(*body))
         body++;
@@ -6916,7 +6917,7 @@ ExprElement* ExprParser::parseClass(ExprParserEnv* penv,
     penv = new_penv;
 
 
-    // -- parse the class sequence --
+    // parse the class sequence
     *end = 0;
 
     {
@@ -7275,7 +7276,7 @@ ExprParser::ExprParser(unsigned int flags)
             addFunction(L"decodeURIComponent", true, js_decodeURIComponent, false, L"", this);
 
 
-            // -- bind JS classes --
+            // bind JS classes
             
             Array::compiletimeBind(this);
             Boolean::compiletimeBind(this);
@@ -8002,7 +8003,7 @@ void ExprParser::calcErrorInfo()
     m_error_file = L"";
     m_error_offset = 0;
 
-    // -- figure out which file the error happened in --
+    // figure out which file the error happened in
     size_t last_offset = 0xffffffff;
     std::vector<ExprParserSource>::iterator src_it;
     for (src_it = m_sources.begin(); src_it != m_sources.end(); ++src_it)
@@ -8110,7 +8111,7 @@ bool ExprParser::parse(const std::wstring& _expr)
 
     m_root_penv->reserve(m_bindings.size());
     
-    // -- add bindings to the parser's environment --
+    // add bindings to the parser's environment
     std::vector<ExprVarBinding>::iterator it, bindings_end;
     bindings_end = m_bindings.end();
     for (it = m_bindings.begin(); it != bindings_end; ++it)
@@ -8123,7 +8124,8 @@ bool ExprParser::parse(const std::wstring& _expr)
 
 
 
-    // -- parse the expression --
+    // parse the expression
+
     m_entrypt = parseSequence(m_root_penv, expr);
 
 

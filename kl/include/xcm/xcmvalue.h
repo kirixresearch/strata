@@ -221,7 +221,7 @@ public:
         val_bool = b;
     }
 
-    // -- error checking --
+    // error checking
     void setException(int exception_type)
     {
         if (exception_type == exNoException)
@@ -246,7 +246,7 @@ public:
         return (type == typeException);
     }
 
-    // -- array/structure support --
+    // array/structure support
 
     size_t getArraySize()
     {
@@ -287,7 +287,7 @@ public:
         return NULL;
     }
 
-    // -- object support --
+    // object support
     template <class T>
     void setObjectRef(T* obj)
     {

@@ -107,23 +107,23 @@ public:
 
         p = decl;
 
-        // -- go to the first letter of the type token --
+        // go to the first letter of the type token
         while (isspace(*p))
             p++;
         
         m_retval_type = get_type_from_str(p);
-            
-        // -- go to the end of the type token --
+
+        // go to the end of the type token
         while (!isspace(*p))
             p++;
         while (isspace(*p))
             p++;
 
-        // -- get method name --
+        // get method name
         name = p;
         if (!isalpha(*p) && *p != '_')
         {
-            // -- method name must start with alpha char --
+            // method name must start with alpha char
             return false;
         }
 
@@ -137,13 +137,13 @@ public:
 
         if (*p != '(')
         {
-            // -- open paren is mandatory after name;
+            // open paren is mandatory after name
             return false;
         }
 
         p++;
-
-        // -- parse parameters --
+        
+        // parse parameters 
         parameter param;
         while (1)
         {
@@ -158,7 +158,7 @@ public:
 
             param.m_type = get_type_from_str(p);
 
-            // -- go to the end of the type token --
+            // go to the end of the type token
             while (!isspace(*p))
             {
                 if (*p == ',' || *p == ')')
@@ -172,7 +172,7 @@ public:
             while (isspace(*p))
                 p++;
 
-            // -- get parameter name (if any)
+            // get parameter name (if any)
             name = p;
             while (1)
             {

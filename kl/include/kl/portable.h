@@ -24,7 +24,7 @@
 #endif
 
 
-// -- API compatability --
+// API compatability defines
 
 #ifdef _MSC_VER
 

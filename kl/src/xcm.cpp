@@ -441,7 +441,7 @@ xcm::class_info* get_class_info(IObject* instance)
 
 
 
-// -- xcm_thread implemetation --
+// xcm_thread implemetation
 
 
 #ifdef WIN32

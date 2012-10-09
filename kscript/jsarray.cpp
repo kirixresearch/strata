@@ -106,7 +106,7 @@ void Array::constructor(ExprEnv* env, Value* retval)
 
         if (idx > 0)
         {
-            // -- auto resize result --
+            // auto resize result
             getMemberI(idx-1);
             return;
         }
@@ -139,7 +139,7 @@ void Array::staticConstructor(ExprEnv* env, void* param, Value* retval)
 
         if (idx > 0)
         {
-            // -- auto resize result --
+            // auto resize result
             retval->getMemberI(idx-1);
             return;
         }

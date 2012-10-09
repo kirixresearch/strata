@@ -1549,7 +1549,7 @@ void Value::getDateTime(ExprDateTime* dest)
 
     if (m_type == typeString)
     {
-        // -- implicit string-to-date conversion --
+        // implicit string-to-date conversion
         str2date(dest, getString());
     }
 }
