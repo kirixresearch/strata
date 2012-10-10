@@ -1,0 +1,3 @@
+Run this command after changing the version information:
+
+svn copy https://code.kirix.com/svn/strata/trunk https://code.kirix.com/svn/strata/tags/app_4_5_0 -m "tagged version 4.5.0"
