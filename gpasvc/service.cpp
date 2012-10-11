@@ -19,22 +19,22 @@
 #include "gpasvc.h"
 
 
-DWORD g_app_process_id = 0;
+HANDLE g_app_process = NULL;
+HANDLE g_app_thread = NULL;
 DWORD g_last_hang = 0;
 
-
-typedef DWORD (WINAPI *PFN_GetProcessImageFileName)(HANDLE hProcess, LPTSTR lpImageFileName, DWORD nSize);
-typedef DWORD (WINAPI *PFN_GetVolumePathName)(LPCTSTR lpszFileName, LPTSTR lpszVolumePathName, DWORD cchBufferLength);
-typedef DWORD (WINAPI *PFN_GetModuleFileNameEx)(HANDLE, HMODULE, LPTSTR, DWORD);
-
-PFN_GetProcessImageFileName pGetProcessImageFileName = NULL;
-PFN_GetVolumePathName       pGetVolumePathName = NULL;
-PFN_GetModuleFileNameEx     pGetModuleFileNameEx = NULL;
 
 
 extern const TCHAR* g_service_appexe;
 TCHAR g_service_appexe_fullpath[MAX_PATH];
 
+
+static void logInfo(const char* msg)
+{
+#ifdef _DEBUG
+    printf(msg);
+#endif
+}
 
 bool DoesFileExist(LPCTSTR file_path)
 {
@@ -47,26 +47,6 @@ bool DoesFileExist(LPCTSTR file_path)
     return true;
 }
 
-static bool LoadNeededDllFunctions()
-{
-    HMODULE hpsapi = LoadLibraryA("psapi.dll");
-    HMODULE hKernel32 = LoadLibraryA("kernel32.dll");
-    
-    pGetModuleFileNameEx = (PFN_GetModuleFileNameEx)GetProcAddress(hpsapi, "GetModuleFileNameExW");
-    pGetProcessImageFileName = (PFN_GetProcessImageFileName)GetProcAddress(hpsapi, "GetProcessImageFileNameW");
-    pGetVolumePathName = (PFN_GetVolumePathName)GetProcAddress(hKernel32, "GetVolumePathNameW");
-    if ((pGetVolumePathName != NULL && pGetProcessImageFileName != NULL) ||
-         pGetModuleFileNameEx != NULL)
-    {
-        // we have what we need...
-        return true;
-    }
-     else
-    {
-        printf("Couldn't get procedure address...");
-        return false;
-    }
-}
 
 
 static void DetermineFullFilename()
@@ -96,81 +76,27 @@ static void DetermineFullFilename()
 }
 
 
-
-
-bool GetCommandLine(LPTSTR cmd_line, size_t maxlen)
+bool IsApplicationRunning()
 {
+    if (!g_app_process)
+        return false;
 
-    return true;
+    DWORD exit_code = 0;
+    GetExitCodeProcess(g_app_process, &exit_code);
+
+    return (exit_code == STILL_ACTIVE ? true : false);
 }
 
-
-bool GetProcessImageName(DWORD pid, LPTSTR cmdline, size_t maxlen)
+DWORD RunApplicationProcess(LPCTSTR _cmd_line)
 {
-    if (maxlen == 0)
-        return false;
-    if (cmdline)
-        cmdline[0] = 0;
-    
-    
-    HANDLE h = NULL;
-    bool success = false;
-    
-    if (pGetProcessImageFileName && pGetVolumePathName)
+    if (g_app_process)
     {
-        h = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, pid);
-        if (!h)
-            return false;
-
-        TCHAR image_name[MAX_PATH], path[MAX_PATH];
-        pGetProcessImageFileName(h, image_name, MAX_PATH);
-        
-        pGetVolumePathName(image_name, path, MAX_PATH-1);
-
-        size_t len = _tcslen(path);
-        if (len > 0 && path[len-1] != '\\')
-            _tcscat(path, _T("\\"));
-
-        // find third slash in image_name
-        TCHAR* sl;
-        sl = _tcschr(image_name, '\\');
-        if (sl)
-            sl = _tcschr(sl+1, '\\');
-        if (sl)
-            sl = _tcschr(sl+1, '\\');
-        if (sl)
-            _tcscat(path, sl+1);
-        _tcsncpy(cmdline, path, maxlen-1);
-        cmdline[maxlen-1] = 0;
-    }
-     else if (pGetModuleFileNameEx)
-    {
-        h = OpenProcess(PROCESS_QUERY_INFORMATION|PROCESS_VM_READ, FALSE, pid);
-        if (!h)
-            return false;
-
-        if (0 == pGetModuleFileNameEx(h, (HMODULE)0, cmdline, (DWORD)maxlen))
-        {
-            CloseHandle(h);
-            return false;
-        }
-    }
-     else
-    {
-        CloseHandle(h);
-        return false;
+        CloseHandle(g_app_process);
+        CloseHandle(g_app_thread);
+        g_app_process = NULL;
+        g_app_thread = NULL;
     }
 
-
-    
-    CloseHandle(h);
-    
-    return true;
-}
-
-
-DWORD RunProcess(LPCTSTR _cmd_line, DWORD* process_id)
-{
     DWORD result = 0;
     
     TCHAR* cmd_line = _tcsdup(_cmd_line);
@@ -181,9 +107,6 @@ DWORD RunProcess(LPCTSTR _cmd_line, DWORD* process_id)
     memset(&process_info, 0, sizeof(PROCESS_INFORMATION));
     startup_info.cb = sizeof(STARTUPINFO);
 
-    if (process_id)
-        *process_id = 0;
-    
     if (CreateProcess(NULL,
                       cmd_line,
                       0, 0, false,
@@ -193,8 +116,6 @@ DWORD RunProcess(LPCTSTR _cmd_line, DWORD* process_id)
                       &process_info) != false)
     {
         result = ERROR_SUCCESS;
-        if (process_id)
-            *process_id = process_info.dwProcessId;
     }
      else
     {
@@ -203,264 +124,100 @@ DWORD RunProcess(LPCTSTR _cmd_line, DWORD* process_id)
     
     free(cmd_line);
 
-    CloseHandle(process_info.hProcess);
-    CloseHandle(process_info.hThread);
+    g_app_process = process_info.hProcess;
+    g_app_thread = process_info.hThread;
 
     return result;
 }
 
 
-bool TerminateProcessById(DWORD process_id)
+bool StopApplicationProcess()
 {
-    bool success = false;
-    
-    HANDLE h = OpenProcess(PROCESS_TERMINATE, FALSE, process_id);
-    
-    if (h)
-    {
-        success = (FALSE == TerminateProcess(h, (UINT)-1)) ? false : true;
+    if (!g_app_process)
+        return false;
 
-        CloseHandle(h);
+    bool success = (FALSE == TerminateProcess(g_app_process, (UINT)-1)) ? false : true;
+
+    if (success)
+    {
+        CloseHandle(g_app_thread);
+        CloseHandle(g_app_process);
+        g_app_process = NULL;
+        g_app_thread = NULL;
     }
-    
+
     return success;
 }
 
 
-
-// IsCorrectProcess() returns 'true' if the pid specified
-// refers to the application being monitored.  Returns 'false'
-// if the pid is either not running or reflects another process
-// which is not the application
-
-bool IsCorrectProcess(DWORD pid)
+static BOOL CALLBACK EnumThreadWindowsCallback(HWND hwnd, LPARAM lParam)
 {
-    TCHAR path[MAX_PATH];
-    
-    if (!GetProcessImageName(pid, path, MAX_PATH-1))
-        return false;
-    
-    _tcsupr(path);
-    
-    if (0 != lstrcmpi(path, g_service_appexe))
-        return true;
-    
-    return false;
-}
+    HWND* ptr = (HWND*)lParam;
 
-
-
-class Info
-{
-public:
-    std::vector<HWND> windows;
-};
-
-
-static BOOL CALLBACK EnumAllProcessWindowsProc(HWND hwnd, LPARAM lParam)
-{
-    if (g_app_process_id == 0)
-        return FALSE;
-    
-    Info* info = (Info*)lParam;
-    
-    DWORD pid;      // process id
-    DWORD tid;      // thread id
-    
-    tid = GetWindowThreadProcessId(hwnd, &pid);
-    
-    if (pid == g_app_process_id)
-    {
-        if (::IsWindowVisible(hwnd) && ::IsWindowEnabled(hwnd))
-        {
-            info->windows.push_back(hwnd);
-        }
-    }
-
-    return TRUE;
-}
-
-
-
-static BOOL CALLBACK EnumAllCrashWindowsProc(HWND hwnd, LPARAM lParam)
-{
-    if (g_app_process_id == 0)
-        return FALSE;
-        
-    Info* info = (Info*)lParam;
-    
+    // get the first visible window
     if (::IsWindowVisible(hwnd) && ::IsWindowEnabled(hwnd))
-    {    
-        DWORD pid;      // process id
-        DWORD tid;      // thread id
-        
-        tid = GetWindowThreadProcessId(hwnd, &pid);
-        
-        TCHAR path[MAX_PATH];
-        if (GetProcessImageName(pid, path, MAX_PATH-1))
-        {
-            _tcsupr(path);
-            if (NULL != _tcsstr(path, _T("DWWIN.EXE")) ||
-                NULL != _tcsstr(path, _T("DRWTSN32.EXE")))
-            {
-                TCHAR clsname[255];
-                GetClassName(hwnd, clsname, 254);
-                if (0 == _tcscmp(clsname, _T("#32770")))
-                    info->windows.push_back(hwnd);
-            }
-        }
-    }
-    
+        *ptr = hwnd;
+
     return TRUE;
 }
 
-
-void CloseAllCrashWindows()
+HWND GetApplicationMainWindow()
 {
-    Info info;
-    EnumWindows(EnumAllCrashWindowsProc, (LPARAM)&info);
-
-    std::vector<HWND>::iterator it;
-    for (it = info.windows.begin(); it != info.windows.end(); ++it)
-    {
-        ::SendMessage(*it, WM_CLOSE, 0, 0);
-    }
+    HWND hwnd = NULL;   
+    EnumThreadWindows(GetThreadId(g_app_thread), EnumThreadWindowsCallback, (LPARAM)&hwnd);
+    return hwnd;
 }
 
-BOOL IsHung(HWND hwnd)
+bool IsApplicationHanging()
 {
-#if defined(__LP64__) || defined(_M_X64)
-	DWORD_PTR d = 1;
-#else
-    DWORD d = 1;
-#endif
+    HWND hwnd = GetApplicationMainWindow();
+    if (!hwnd)
+        return false;
 
-    LRESULT res = SendMessageTimeout(hwnd,
-                                     WM_NULL,
-                                     0,
-                                     0,
-                                     SMTO_NORMAL,
-                                     1000,
-                                     &d);
-    if (res == 0)
-        return true;
-        
-    if (d != 0)
-        return true;
-        
-    return false;
-}
+    // try five times to determine whether the
+    // application is hung
 
-
-bool IsProcessHanging()
-{
-    Info info;
-    EnumWindows(EnumAllProcessWindowsProc, (LPARAM)&info);
-    
-    size_t hung_window_count = 0;
-    std::vector<HWND>::iterator it;
-    for (it = info.windows.begin(); it != info.windows.end(); ++it)
+    size_t i, hung_count = 0;
+    for (i = 0; i < 5; i++)
     {
-        if (IsHung(*it))
-        {
-            ++hung_window_count;
-        }
+        if (!IsHungAppWindow(hwnd))
+            return false;
+        logInfo("Hanging...\n");
+        ::Sleep(2000);
     }
-    
-    
-    if (hung_window_count > 0 && hung_window_count == info.windows.size())
-    {
-        return true;
-    }
-    
-    return false;
-}
 
-
-
-void CheckProcessHealth()
-{
-    if (!g_app_process_id)
-        return;
-    
-    size_t i, hang_count;
-    
-    for (hang_count = 0; hang_count < 10; ++hang_count)
-    {
-        if (!IsProcessHanging())
-            return;
-        
-        printf("Process is hanging (%d)...\n", (hang_count+1));
-        Sleep(6000);
-    }
-    
-    printf("Process has been hanging for at least a minute...\n");
-    
-    // it's been a minute, and the application is still hanging;
-    // shut it down and restart it
-    
-    bool succeeded = false;
-    for (i = 0; i < 3; ++i)
-    {
-        if (TerminateProcessById(g_app_process_id))
-        {
-            succeeded = true;
-            break;
-        }
-    }
-    
-    if (!succeeded)
-    {
-        printf("Process could not be terminated.\n");
-        return;
-    }
-    
-    CloseAllCrashWindows();
-    
-    // restart it
-    g_app_process_id = 0;
+    return true;
 }
 
 
 void Pulse()
 {
-    if (g_app_process_id != 0)
+    static int counter = 0;
+
+    if (!IsApplicationRunning())
     {
-        if (IsCorrectProcess(g_app_process_id))
-        {
-            // we are monitoring the correct process, make sure
-            // it's healthy
-            
-            CheckProcessHealth();
-        }
-         else
-        {
-            // we are monitoring a process, but it either is not
-            // running, or is not the process we wanted to be monitoring
-            
-            // cause the application to be (re)started
-            g_app_process_id = 0;
-        }
-    }
-
-
-
-    if (g_app_process_id == 0)
-    {
-        printf("Process not running... running it now\n");
-        RunProcess(g_service_appexe_fullpath, &g_app_process_id);
+        logInfo("Process not running... running it now\n");
+        RunApplicationProcess(g_service_appexe_fullpath);
         Sleep(10000);
     }
-    
-    
-    CheckProcessHealth();
-}
 
+
+    // once every five minutes, check to see if the application is hanging
+    if (++counter == 30)
+    {
+        counter = 0;
+
+        if (IsApplicationHanging())
+        {
+            logInfo("Application is hanging... terminating.\n");
+            StopApplicationProcess();
+        }
+    }
+}
 
 
 DWORD ServiceExecutionThread(DWORD* param)
 {
-    LoadNeededDllFunctions();
     DetermineFullFilename();
     
     while (1)
@@ -470,11 +227,4 @@ DWORD ServiceExecutionThread(DWORD* param)
         Sleep(10000);
     }
 }
-
-
-void StopApplicationProcess()
-{
-    TerminateProcessById(g_app_process_id);
-}
-
 
