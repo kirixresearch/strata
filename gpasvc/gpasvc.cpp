@@ -191,35 +191,33 @@ void ReportSvcStatus(DWORD dwCurrentState,
 
 
 
-void SvcReportEvent(LPTSTR szFunction)
+void SvcReportEvent(LPTSTR message)
 {
 /*
     HANDLE hEventSource;
     LPCTSTR lpszStrings[2];
     TCHAR Buffer[80];
 
-    hEventSource = RegisterEventSource(NULL, g_service_id);
+    hEventSource = RegisterEventSource(NULL, _T("Application"));
 
     if (NULL != hEventSource)
     {
-        StringCchPrintf(Buffer, 80, TEXT("%s failed with %d"), szFunction, GetLastError());
-
         lpszStrings[0] = g_service_id;
-        lpszStrings[1] = Buffer;
+        lpszStrings[1] = message;
 
-        ReportEvent(hEventSource,        // event log handle
-                    EVENTLOG_ERROR_TYPE, // event type
-                    0,                   // event category
-                    SVC_ERROR,           // event identifier
-                    NULL,                // no security identifier
-                    2,                   // size of lpszStrings array
-                    0,                   // no binary data
-                    lpszStrings,         // array of strings
-                    NULL);               // no binary data
+        ReportEvent(hEventSource,              // event log handle
+                    EVENTLOG_INFORMATION_TYPE, // event type
+                    0,                         // event category
+                    SVC_ERROR,                 // event identifier
+                    NULL,                      // no security identifier
+                    2,                         // size of lpszStrings array
+                    0,                         // no binary data
+                    lpszStrings,               // array of strings
+                    NULL);                     // no binary data
 
         DeregisterEventSource(hEventSource);
     }
-*/
+    */
 }
 
 
@@ -377,8 +375,8 @@ void __cdecl _tmain(int argc, TCHAR *argv[])
     }
 
 
-    ServiceExecutionThread(NULL);
-    return;
+    //ServiceExecutionThread(NULL);
+    //return;
     
     // passing 'install' on the command line will register
     // this with the SCM database.  It will then appear in

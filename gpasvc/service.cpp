@@ -16,6 +16,7 @@
 #include <tchar.h>
 #include <cstdio>
 #include <vector>
+#include <kl/string.h>
 #include "gpasvc.h"
 
 
@@ -27,6 +28,7 @@ DWORD g_last_hang = 0;
 
 extern const TCHAR* g_service_appexe;
 TCHAR g_service_appexe_fullpath[MAX_PATH];
+void SvcReportEvent(LPTSTR szFunction);
 
 
 static void logInfo(const char* msg)
