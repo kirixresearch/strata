@@ -5285,10 +5285,10 @@ ExprElement* ExprParser::parseStatement(ExprParserEnv* penv,
                 
             if (0 != wcsncmp(p, L"while", 5))
             {
-                delete e_while;
                 m_error_loc = expr; // end
                 m_error_code = errorMalformedStatement;
                 m_error_text = L"";
+                delete e_while;
                 return NULL;
             }
             
@@ -5301,7 +5301,7 @@ ExprElement* ExprParser::parseStatement(ExprParserEnv* penv,
                 m_error_loc = p; // end
                 m_error_code = errorMissingOpenParenthesis;
                 m_error_text = L"";
-
+                delete e_while;
                 return NULL;
             }
             
@@ -5312,7 +5312,7 @@ ExprElement* ExprParser::parseStatement(ExprParserEnv* penv,
                 m_error_loc = p; // end
                 m_error_code = errorMissingCloseParenthesis;
                 m_error_text = L"";
-
+                delete e_while;
                 return NULL;
             }
             
@@ -5340,11 +5340,12 @@ ExprElement* ExprParser::parseStatement(ExprParserEnv* penv,
             // STRICT: require semicolon here
             if (*p != L';')
             {
-                delete e_while;
+
                 // malformed do/while statement
                 m_error_loc = close_paren+1; // end
                 m_error_code = errorMissingSemicolon;
                 m_error_text = L"";
+                delete e_while;
                 return NULL;
             }
 
