@@ -184,12 +184,24 @@ public:
 
 class Application : public kscript::ValueObject
 {
+    enum
+    {
+        ShutdownDefault = 1,
+        ShutdownOff = 2,
+        ShutdownAfterAllFormsClose = 3
+    };
+
     BEGIN_KSCRIPT_CLASS("Application", Application)
         KSCRIPT_GUI_METHOD("constructor", Application::constructor)
+        KSCRIPT_METHOD("setShutdownStyle", Application::setShutdownStyle)
         KSCRIPT_METHOD("execute", Application::execute)
         KSCRIPT_METHOD("run", Application::run)
         KSCRIPT_METHOD("exit", Application::exit)
         KSCRIPT_STATIC_METHOD("getStartupPath", Application::getStartupPath)
+
+        KSCRIPT_CONSTANT_INTEGER("ShutdownDefault",            ShutdownDefault)
+        KSCRIPT_CONSTANT_INTEGER("ShutdownOff",                ShutdownOff)
+        KSCRIPT_CONSTANT_INTEGER("ShutdownAfterAllFormsClose", ShutdownAfterAllFormsClose)
     END_KSCRIPT_CLASS()
 
 public:
@@ -200,6 +212,7 @@ public:
     ~Application();
 
     void constructor(kscript::ExprEnv* env, kscript::Value* retval);
+    void setShutdownStyle(kscript::ExprEnv* env, kscript::Value* retval);
     void execute(kscript::ExprEnv* env, kscript::Value* retval);
     void run(kscript::ExprEnv* env, kscript::Value* retval);
     void exit(kscript::ExprEnv* env, kscript::Value* retval);
@@ -246,6 +259,8 @@ public:
     bool m_exit;
     bool m_exit_modal;
     bool m_wakeup;
+
+    int m_shutdown_mode;
 };
 
 

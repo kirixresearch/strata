@@ -17,7 +17,8 @@
 #include "toolbars.h"
 
 
-// these id's are used internally by the Application class
+// id number for internal use by the Application class
+
 enum
 {
     ID_AppExit = 8001,
@@ -27,7 +28,6 @@ enum
 
 
 // -- Event class implementation --
-
 
 // (CLASS) Event
 // Category: Application
@@ -44,6 +44,7 @@ Event::~Event()
     for (it = m_sinks.begin(); it != m_sinks.end(); ++it)
         delete *it;
 }
+
 
 // (CONSTRUCTOR) Event.constructor
 //
@@ -92,6 +93,7 @@ void Event::connect(kscript::ExprEnv* env, kscript::Value* retval)
         connectInternal(env->getParam(0), env->getParam(1));
     }
 }
+
 
 // (METHOD) Event.disconnect
 //
@@ -313,7 +315,7 @@ size_t Event::getSinkCountInternal() const
 
 
 
-// -- PaintEvent specialization --
+// PaintEvent specialization
 
 void PaintEvent::fire(kscript::ExprEnv* env,
                  kscript::ValueObject* sender,
@@ -538,6 +540,7 @@ Application::Application()
     m_exit = false;
     m_exit_modal = false;
     m_wakeup = false;
+    m_shutdown_mode = ShutdownDefault;
     
     m_evt_sink.m_app = this;
 }
@@ -556,7 +559,25 @@ void Application::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 }
 
 
+// (METHOD) Application.setShutdownStyle
+//
+// Description: Allows caller to configure the script application's shutdown style
+//
+// Syntax: static function Application.setShutdownStyle(shutdown_style)
+//
+// Remarks: Setting the shutdown style determines when the Application.run()
+//    function will exit.   If a form is created before Application.run()
+//    is invoked, by default Application.run() will return to the caller
+//    when all forms are closed.   Otherwise, Application.run() will only
+//    return once Application.exit() is called.  Possible values are:
+//    Application.ShutdownOff and Application.ShutdownAfterAllFormsClose
 
+
+void Application::setShutdownStyle(kscript::ExprEnv* env, kscript::Value* retval)
+{
+    if (env->getParamCount() > 0)
+        m_shutdown_mode = env->getParam(0)->getInteger();
+}
 
 
 // Application.execute(String) - executes script code
@@ -633,20 +654,22 @@ void Application::execute(kscript::ExprEnv* env, kscript::Value* retval)
 
 void Application::run(kscript::ExprEnv* env, kscript::Value* retval)
 {
-/*
-    if (m_forms.size() < 1)
+    if (m_shutdown_mode == ShutdownDefault)
     {
-        // -- no forms, immediately exit --
-        return;
+        if (m_forms.size() > 0)
+            m_shutdown_mode = ShutdownAfterAllFormsClose;
+             else
+            m_shutdown_mode = ShutdownOff;
     }
-*/
+
+
     m_obj_mutex.Lock();
     m_exit = false;
     m_obj_mutex.Unlock();
     
     bool wakeup;
     
-    // -- wait for events --
+    // wait for events
     while (1)
     {
         m_obj_mutex.Lock();
@@ -754,6 +777,12 @@ void Application::registerForm(Form* f)
 void Application::unregisterForm(Form* f)
 {
     m_forms.erase(f);
+
+    if (m_shutdown_mode == ShutdownAfterAllFormsClose && m_forms.size() == 0)
+    {
+        m_exit = true;
+        wakeUpQueue();
+    }
 }
 
 
@@ -902,8 +931,6 @@ bool AppEvtHandler::ProcessEvent(wxEvent& _evt)
     return false;
 }
 
-
-// -- ScriptCommandEventRouter implementation --
 
 void ScriptCommandEventRouter::registerCommandReceiver(int id, ScriptHostBase* comp)
 {
