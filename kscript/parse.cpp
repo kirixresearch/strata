@@ -3995,12 +3995,14 @@ ExprElement* ExprParser::parseElement(ExprParserEnv* penv,
             {
                 // allocate m_params array
                 inst->m_params = new ExprElement*[1];
+                inst->m_params[0] = NULL;
                 inst->m_eval_params = new Value*[1];
                 inst->m_eval_params[0] = new Value;
 
                 // check for prefix or postfix
                 inst->m_prefix = (oper == ch);
                 inst->m_param_count = 1;
+
 
                 if (inst->m_prefix)
                 {
@@ -4021,6 +4023,8 @@ ExprElement* ExprParser::parseElement(ExprParserEnv* penv,
                         m_error_loc = end+1;
                         m_error_code = errorMissingSemicolon;
                         m_error_text = L"";
+
+                        delete inst;
                         return NULL;
                     }
 
@@ -4528,7 +4532,7 @@ inline wchar_t* lookForLabel(wchar_t* expr)
 }
 
 
-wchar_t* skipSemicolon(wchar_t* p)
+inline wchar_t* skipSemicolon(wchar_t* p)
 {
     if (!p) return p;
     while (*p)
