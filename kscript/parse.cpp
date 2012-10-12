@@ -3792,7 +3792,10 @@ ExprElement* ExprParser::parseElement(ExprParserEnv* penv,
 
         // first check to see if we are calling a script function
         if (!parseParams(penv, func, params, endloc))
+        {
+            delete func_ptr;
             return NULL;
+        }
 
         // check out the param types to make sure type fit
         // the function binding's types
@@ -3822,6 +3825,7 @@ ExprElement* ExprParser::parseElement(ExprParserEnv* penv,
             m_error_code = errorInvalidParameterTypes;
             m_error_text = identifier;
 
+            delete func_ptr;
             return NULL;
         }
 
