@@ -6781,6 +6781,7 @@ ExprElement* ExprParser::parseVar(ExprParserEnv* penv,
             if (!e->m_init)
             {
                 delete e;
+                delete sequence;
                 return NULL;
             }
             
