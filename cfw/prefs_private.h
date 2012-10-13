@@ -19,10 +19,6 @@
 namespace cfw
 {
 
-// -- app preferences implementation --
-
-
-
 
 
 class AppPreferences : public IAppPreferences

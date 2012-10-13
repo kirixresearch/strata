@@ -1304,10 +1304,11 @@ void FsPanel::onFsTreeItemBeginLabelEdit(wxTreeEvent& evt)
         return;
     }
 #endif
+    
         
-    // -- this next section is really a band-aid for the fact
-    //    that the wx tree control starts an item rename when
-    //    multiple tree items are selected. --
+    // this next section is really a band-aid for the fact
+    // that the wx tree control starts an item rename when
+    // multiple tree items are selected
     IFsItemEnumPtr sel_items = getSelectedItems();
     if (sel_items->size() > 1)
     {
@@ -1324,7 +1325,8 @@ void FsPanel::onFsTreeItemBeginLabelEdit(wxTreeEvent& evt)
         evt.Veto();
         return;
     }
-    // -- end band-aid --
+    // end band-aid
+
 
     FsItemData* data = (FsItemData*)m_treeview->GetItemData(evt.GetItem());
 
@@ -1347,9 +1349,8 @@ void FsPanel::onFsTreeItemEndLabelEdit(wxTreeEvent& evt)
     /*
     if (event.GetItem() == m_delete_item)
     {
-        // -- see remove() --
-        // -- this item is being deleted, so don't notify
-        //    the caller --
+        // see remove() - this item is being deleted, so don't notify
+        // the caller
         m_delete_item.Unset();
         return;
     }
@@ -1398,7 +1399,7 @@ void FsPanel::onFsTreeItemExpanding(wxTreeEvent& evt)
     // if we are expanding a deferred folder, populate its children first
     wxTreeItemId id = evt.GetItem();
 
-    // -- don't try to expand the root item if it's hidden --
+    // don't try to expand the root item if it's hidden
     bool do_expand = true;
     if (id == m_treeview->GetRootItem() && GetWindowStyle() & wxTR_HIDE_ROOT)
         do_expand = false;

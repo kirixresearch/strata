@@ -19,8 +19,7 @@
 
 
 /*
-// -- use our own custom MDI if we are running
-//    on GTK --
+// use our own custom MDI if we are running on GTK
 #ifdef __WXGTK__
 #define CFW_USE_XMDI
 #endif

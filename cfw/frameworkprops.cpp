@@ -48,7 +48,7 @@ wxString propName(const wxString& level_1_name,
 }
 
 
-// -- PropertyBase class implementation --
+// PropertyBase class implementation
 
 PropertyBase::PropertyBase()
 {

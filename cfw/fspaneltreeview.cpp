@@ -50,7 +50,7 @@ static wxString _getStringPath(CfwTreeCtrl* tree, wxTreeItemId& id)
 {
     wxString result;
 
-    // -- get base --
+    // get base
     result = tree->GetItemText(id);
     wxTreeItemId parent = tree->GetItemParent(id);
     while (parent.IsOk())
@@ -307,7 +307,7 @@ void FsPanelTreeView::selectItem(IFsItemPtr item)
 
         if (oldfocus_item)
         {
-            // -- find out if the old focus item was selected --
+            // find out if the old focus item was selected
             TV_ITEM tvi;
             tvi.mask = TVIF_STATE | TVIF_HANDLE;
             tvi.stateMask = TVIS_SELECTED;
@@ -342,7 +342,7 @@ IFsItemPtr FsPanelTreeView::appendItem(IFsItemPtr parent,
 {
     int image_list_idx = getImageListIdx(bitmap);
 
-    // -- add the item to the tree --
+    // add the item to the tree
     wxTreeItemId id = AppendItem(parent->getTreeItemId(),
                                  text,
                                  image_list_idx);
@@ -352,7 +352,7 @@ IFsItemPtr FsPanelTreeView::appendItem(IFsItemPtr parent,
     item->setLabel(text);
     item->setBitmap(bitmap, fsbmpSmall);
 
-    // -- set the tree control's FsItemData --
+    // set the tree control's FsItemData
     FsItemData* data;
     data = new FsItemData;
     data->m_fsitem = item;
@@ -376,7 +376,7 @@ IFsItemPtr FsPanelTreeView::insertItem(IFsItemPtr parent,
         previous_id = previous_item->getTreeItemId();
     }
 
-    // -- add the item to the tree --
+    // add the item to the tree
     wxTreeItemId id;
     
     if (previous_id.IsOk())
@@ -398,7 +398,7 @@ IFsItemPtr FsPanelTreeView::insertItem(IFsItemPtr parent,
     item->setLabel(text);
     item->setBitmap(bitmap, fsbmpSmall);
 
-    // -- set the tree control's FsItemData --
+    // set the tree control's FsItemData
     FsItemData* data;
     data = new FsItemData;
     data->m_fsitem = item;
@@ -441,8 +441,9 @@ void FsPanelTreeView::populate(IFsItemEnumPtr items,
     {
         IFsItemPtr item = items->getItem(i);
 
-        // -- get the corresponding imagelist
-        //    index from bitmap of the FsItem -- 
+        // get the corresponding imagelist
+        // index from bitmap of the FsItem
+
         wxBitmap normal_bitmap = item->getBitmap(cfw::fsbmpSmall);
         wxBitmap expanded_bitmap = item->getBitmap(cfw::fsbmpSmallExpanded);
         
@@ -451,13 +452,13 @@ void FsPanelTreeView::populate(IFsItemEnumPtr items,
 
         if (!parent_id)
         {
-            // -- if no root exists, add the root --
+            // if no root exists, add the root
             id = AddRoot(item->getLabel(),
                          normal_image_idx);
         }
          else
         {
-            // -- add the item to the tree --
+            // add the item to the tree
             id = AppendItem(parent_id,
                             item->getLabel(),
                             normal_image_idx);
@@ -468,10 +469,10 @@ void FsPanelTreeView::populate(IFsItemEnumPtr items,
             SetItemImage(id, expanded_image_idx, wxTreeItemIcon_Expanded);
         }
         
-        // -- set the FsItem's wxTreeItemId --
+        // set the FsItem's wxTreeItemId
         item->setTreeItemId(id);
 
-        // -- set the tree control's FsItemData --
+        // set the tree control's FsItemData
         data = new FsItemData;
         data->m_fsitem = item;
         data->m_deferred = false;
@@ -480,19 +481,19 @@ void FsPanelTreeView::populate(IFsItemEnumPtr items,
 
         if (parent_id && item->isDeferred())
         {
-            // -- deferred item --
+            // deferred item
             data->m_deferred = true;
 
             if (item->hasChildren())
             {
-                // -- add a place-holder item --
+                // add a place-holder item
                 AppendItem(id, wxT(""), 0);
             }
         }
          else
         {
-            // -- recursively populate the tree with the
-            //    children of the current FsItem --
+            // recursively populate the tree with the
+            // children of the current FsItem
             populate(item->getChildren(), id);
         }
     }
@@ -507,7 +508,7 @@ void FsPanelTreeView::populateDeferred(wxTreeItemId& id)
 
     data->m_deferred = false;
 
-    // -- delete place holder item --
+    // delete place holder item
     wxTreeItemIdValue l;
     wxTreeItemId place_holder_item = GetFirstChild(id, l);
     if (place_holder_item.IsOk())
@@ -528,7 +529,7 @@ void FsPanelTreeView::expand(IFsItemPtr item)
 {
     wxTreeItemId id = item->getTreeItemId();
 
-    // -- don't try to expand the root item if it's hidden --
+    // don't try to expand the root item if it's hidden
     bool do_expand = true;
     if (id == GetRootItem() && GetWindowStyle() & wxTR_HIDE_ROOT)
         do_expand = false;
@@ -577,17 +578,17 @@ void FsPanelTreeView::refresh()
         }
     }
     
-    // -- make sure the tree is shown before we freeze it...
-    //    this eliminates flicker on the first show --
+    // make sure the tree is shown before we freeze it...
+    // this eliminates flicker on the first show
     Show();
 
-    // -- don't show the tree while we populate it --
+    // don't show the tree while we populate it
     Freeze();
 
-    // -- delete all tree items --
+    // delete all tree items
     DeleteAllItems();
     
-    // -- recursively populate the tree --
+    // recursively populate the tree
     if (m_root)
     {
         wxTreeItemId id;
@@ -599,7 +600,7 @@ void FsPanelTreeView::refresh()
         populate(vec, id);
     }
 
-    // -- if there is a root item for this tree, expand it --
+    // if there is a root item for this tree, expand it
     if (!(GetWindowStyle() & wxTR_HIDE_ROOT))
     {
         wxTreeItemId root = GetRootItem();
@@ -607,7 +608,7 @@ void FsPanelTreeView::refresh()
             Expand(root);
     }
 
-    // -- now we can show the tree --
+    // now we can show the tree
     Thaw();
 }
 
@@ -673,19 +674,19 @@ void FsPanelTreeView::refreshItem(IFsItemPtr item)
         return;
     }
 
-    // -- get folder status --
+    // get folder status
     std::set<wxString> expanded_folders;
     _populateFolderStatus(this, id, expanded_folders);
 
 
-    // -- don't show the tree while we populate it --
+    // don't show the tree while we populate it
     Freeze();
 
-    // -- update the item's label --
+    // update the item's label
     SetItemText(id, item->getLabel());
 
 
-    // -- remove all children of the item --
+    // remove all children of the item
     std::vector<wxTreeItemId> to_remove;
 
     wxTreeItemIdValue cookie;
@@ -707,11 +708,11 @@ void FsPanelTreeView::refreshItem(IFsItemPtr item)
 
     _expandFolders(this, id, expanded_folders);
 
-    // -- if there is a root item for this tree, expand it --
+    // if there is a root item for this tree, expand it
     if (!(GetWindowStyle() & wxTR_HIDE_ROOT))
         Expand(GetRootItem());
     
-    // -- now we can show the tree --
+    // now we can show the tree
     Thaw();
 }
 
@@ -814,14 +815,14 @@ IFsItemEnumPtr FsPanelTreeView::getItemChildren(IFsItemPtr item)
     FsItemData* data;
     wxTreeItemId parent = item->getTreeItemId();
 
-    // -- check to make sure a deferred item is populated --
+    // check to make sure a deferred item is populated
     data = (FsItemData*)GetItemData(parent);
     if (data && data->m_deferred)
     {
         populateDeferred(parent);
     }
 
-    // -- get the item's children --
+    // get the item's children
     wxTreeItemIdValue cookie;
     wxTreeItemId id = GetFirstChild(parent, cookie);
     while (id.IsOk())

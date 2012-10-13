@@ -80,7 +80,7 @@ namespace cfw
 {
 
 
-// -- GenericFsItem class implementation --
+// GenericFsItem class implementation
 
 
 void GenericFsItem::addFsItem(IFsItemPtr item)
@@ -116,7 +116,7 @@ IFsItemEnumPtr GenericFsItem::getChildren()
 
 
 
-// -- FileFsItem class implementation --
+// FileFsItem class implementation
 
 
 class FileFsItem : public FsItemBase,
@@ -149,7 +149,7 @@ public:
 
 
 
-// -- DirectoryFsItem class implementation --
+// DirectoryFsItem class implementation
 
 
 DirectoryFsItem::DirectoryFsItem()

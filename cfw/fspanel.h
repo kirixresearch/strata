@@ -294,7 +294,7 @@ public:
         m_base_item_string = s;
     }
 
-    // -- event handlers --
+    // event handlers
 
     void onRenamed(wxString label)
     {
@@ -315,7 +315,7 @@ public:
 
     void onCommandEvent(wxCommandEvent& event)
     {
-        // -- forward this info to the treemodel --
+        // forward this info to the treemodel
         wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED, event.GetId());
         e.SetEventObject(this);
         ProcessEvent(e);

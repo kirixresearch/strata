@@ -22,7 +22,6 @@ namespace cfw
 const int ID_JobFinishedNotify = 59984;
 
 
-// -- JobThread class --
 
 class JobThread : public wxThread
 {
@@ -98,8 +97,6 @@ public:
 };
 
 
-
-// -- JobQueue implementation --
 
 
 BEGIN_EVENT_TABLE(JobQueue, wxEvtHandler)

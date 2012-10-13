@@ -136,7 +136,8 @@ bool Locale::parseDateTime(const wxString& input,
 
     int y = 0, m = 0, d = 0, hh = -1, mm = -1, ss = 0;
 
-    // -- date part positions --
+
+    // date part positions
     int year_pos = 2;
     int month_pos = 0;
     int day_pos = 1;
@@ -149,7 +150,7 @@ bool Locale::parseDateTime(const wxString& input,
     }
 
 
-    // -- first assign date portion --
+    // first assign date portion
     y = parts[year_pos];
     m = parts[month_pos];
     d = parts[day_pos];
@@ -159,7 +160,7 @@ bool Locale::parseDateTime(const wxString& input,
 
     if (part_count >= 5)
     {
-        // -- time is included --
+        // time is included
         hh = parts[3];
         mm = parts[4];
 
@@ -170,7 +171,7 @@ bool Locale::parseDateTime(const wxString& input,
     }
 
 
-    // -- check validity --
+    // check validity
     if (m <= 0 || m > 12)
     {
         return false;
@@ -229,8 +230,7 @@ bool Locale::parseDateTime(const wxString& input,
 
 
 
-// -- getDefaultFont() returns the default font for
-//    window contents --
+// getDefaultFont() returns the default font for window contents
 
 wxFont getDefaultWindowFont()
 {
@@ -250,10 +250,9 @@ wxFont getDefaultWindowFont()
 }
 
 
-// -- getUserDocumentFolder() returns the default location
-//    for the user's document storage.  On Windows, this will normally
-//    be the user's "My Documents" directory.  On other systems, the
-//    user's home folder --
+// getUserDocumentFolder() returns the default location for the user's
+// document storage.  On Windows, this will normally be the user's
+// "My Documents" directory.  On other systems, the user's home folder
 
 
 wxString getUserDocumentFolder()
@@ -493,8 +492,8 @@ int appMessageBox(const wxString& message,
 
     if (0 != gtk_check_version(2,4,0))
     {
-        // -- we have an old version of GTK, we must
-        //    use a different parent window --
+        // we have an old version of GTK, we must
+        // use a different parent window
 
         int i;
         int cnt = wxTopLevelWindows.GetCount();
@@ -648,7 +647,7 @@ void setTextWrap(wxStaticText* text, bool wrap)
 #endif
 }
 
-// -- this function only works on Windows --
+// this function only works on Windows
 
 void setTreeItemHeight(wxTreeCtrl* ctrl, int height)
 {
@@ -658,7 +657,7 @@ void setTreeItemHeight(wxTreeCtrl* ctrl, int height)
 #endif
 }
 
-// -- this function only works on Windows --
+// this function only works on Windows
 
 int getTreeItemHeight(wxTreeCtrl* ctrl)
 {
@@ -683,7 +682,7 @@ void null_log_function(const gchar* log_domain,
 
 void suppressConsoleLogging()
 {
-    // -- no logging on wx --
+    // no logging on wx
     wxLog::EnableLogging(false);
 
 #ifdef __WXGTK__
@@ -723,7 +722,7 @@ void resizeStaticText(wxStaticText* text, int width)
         intended_width = width;
     }
 
-    // -- by default --
+    // by default
     wxString label = text->GetLabel();
     wxCoord text_width, text_height;
     
@@ -731,7 +730,7 @@ void resizeStaticText(wxStaticText* text, int width)
     dc.SetFont(text->GetFont());
     dc.GetTextExtent(label, &text_width, &text_height);
 
-    // -- add 5% to the text width --
+    // add 5% to the text width
     text_width = (text_width*100)/95;
     
     if (intended_width < 50)
@@ -791,8 +790,8 @@ wxSize getMaxTextSize(wxStaticText* st0,
     return wxSize(x, y);
 }
 
-// -- simple password encryption/decryption --
-//    please note that these functions are NOT unicode-friendly --
+// simple password encryption/decryption --
+// please note that these functions are NOT unicode-friendly
 
 const char* password_randomizer = "1lBgi3kjsAbv04386kDm,bvjG9604937L5ifk8lfmdjsuxy30dalskdjfurn2lfkgmbjgk4jfndkcjf2";
 const char* hex_digits = "0123456789ABCDEF";

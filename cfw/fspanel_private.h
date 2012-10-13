@@ -25,10 +25,10 @@ class FsPanelListView;
 class FsPanelLocationBar;
 
 
-// -- this class is used to store item data for CfwTreeCtrls
-//    and CfwListCtrls... it is derived from wxTreeItemData
-//    for compatibility with the CfwTreeCtrl, but will work
-//    with list controls as well --
+// this class is used to store item data for CfwTreeCtrls
+// and CfwListCtrls... it is derived from wxTreeItemData
+// for compatibility with the CfwTreeCtrl, but will work
+// with list controls as well
 
 class FsItemData : public wxTreeItemData
 {
@@ -81,7 +81,7 @@ private:
                 int flags);
     void destroy();
     
-    // -- IDocument interface implementation --
+    // IDocument interface implementation
 
     bool initDoc(cfw::IFramePtr frame,
                  cfw::IDocumentSitePtr doc_site,
@@ -90,7 +90,7 @@ private:
     wxWindow* getDocumentWindow();
     void setDocumentFocus();
 
-    // -- IFsPanel interface implementation --
+    // IFsPanel interface implementation
 
     void setView(int val);
     void setMultiSelect(bool val);
@@ -155,7 +155,7 @@ private:
 
 private:
     
-    // -- event handlers --
+    // event handlers
     
     void onSize(wxSizeEvent& evt);
     void onEraseBackground(wxEraseEvent& evt);
@@ -170,7 +170,7 @@ private:
     void onMouseMiddleUp(wxMouseEvent& evt);
     void onChildFocus(wxChildFocusEvent& evt);
     
-    // -- treeview evts --
+    // treeview evts
     void onFsTreeItemActivated(wxTreeEvent& evt);
     void onFsTreeItemRightClicked(wxTreeEvent& evt);
     void onFsTreeItemMiddleClicked(wxTreeEvent& evt);
@@ -182,7 +182,7 @@ private:
     void onFsTreeKeyDown(wxTreeEvent& evt);
     void onFsTreeBeginDrag(wxTreeEvent& evt);
     
-    // -- listview evts --
+    // listview evts
     void onFsListItemActivated(wxListEvent& evt);
     void onFsListItemRightClicked(wxListEvent& evt);
     void onFsListItemMiddleClicked(wxListEvent& evt);
@@ -199,7 +199,7 @@ private:
     FsPanelTreeView* m_treeview;
     FsPanelListView* m_listview;
 
-    // -- for the location bar --
+    // for the location bar
     wxChoice* m_location_choice;
     kcl::Button* m_up_level_button;
     kcl::Button* m_change_view_button;

@@ -324,9 +324,8 @@ void AppPreferences::refresh()
     if (m_app_name.IsEmpty() ||
         m_vendor_name.IsEmpty())
     {
-        // -- if you are here, you forgot to call
-        //    init() to specify your vendor name and
-        //    application name --
+        // if you are here, you forgot to call init() to specify
+        // your vendor name and application name
         return;
     }
     
@@ -423,9 +422,8 @@ void AppPreferences::flush()
     if (m_app_name.IsEmpty() ||
         m_vendor_name.IsEmpty())
     {
-        // -- if you are here, you forgot to call
-        //    init() to specify your vendor name and
-        //    application name --
+        // if you are here, you forgot to call init() to specify
+        // your vendor name and application name
         return;
     }
 

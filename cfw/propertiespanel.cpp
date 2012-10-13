@@ -72,7 +72,7 @@ bool PropertiesPanel::initDoc(cfw::IFramePtr frame,
     SetAutoLayout(true);
     SetSizer(sizer);
 
-    // -- add frame event handler --
+    // add frame event handler
     frame->sigActiveChildChanged().connect(this, &PropertiesPanel::onActiveChildChanged);
     frame->sigFrameEvent().connect(this, &PropertiesPanel::onFrameEvent);
     m_frame = frame;
@@ -159,7 +159,7 @@ void PropertiesPanel::populate()
         return;
     }
         
-    // -- if there is no active child, delete all present items --
+    // if there is no active child, delete all present items
     cfw::IDocumentSitePtr doc_site = m_frame->getActiveChild();
     cfw::IPropertiesPtr sp_props;
     if (doc_site)
@@ -179,12 +179,10 @@ void PropertiesPanel::populate()
     
     bool must_add_props = false;
     
-    // -- find out if the properties already
-    //    in the grid are the right ones;  if
-    //    they aren't, we should clear out the
-    //    property grid and start fresh.  If they
-    //    are the right ones, just use the existing
-    //    property entries --
+    // find out if the properties already in the grid are the right ones;  if
+    // they aren't, we should clear out the property grid and start fresh.
+    // If they are the right ones, just use the existing property entries
+
     wxString cur_string;
     for (i = 0; i < count; ++i)
     {
@@ -199,7 +197,7 @@ void PropertiesPanel::populate()
     {
         m_last_string = cur_string;
      
-        // -- clear and populate properties --
+        // clear and populate properties
         m_pg->Clear();
         
         for (i = 0; i < count; ++i)
@@ -306,7 +304,7 @@ void PropertiesPanel::populate()
     }
     
     
-    // -- update existing properties --
+    // update existing properties
     for (i = 0; i < count; ++i)
     {
         cfw::IPropertyInfoPtr prop = all_props->getItem(i);

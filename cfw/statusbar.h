@@ -67,7 +67,7 @@ public:
         }
     }
 
-    // -- cfw::IStatusBarItem interface --
+    // cfw::IStatusBarItem interface
     
     wxString   getName()    { return m_name;    }
     wxString   getValue()   { return m_value;   }
@@ -115,7 +115,7 @@ public:
         m_show = show;
     }
     
-    // -- accessor functions --
+    // accessor functions
     
     int getId()                 { return m_id;            }
     int getWidth()              { return m_width;         }
@@ -178,7 +178,7 @@ public:
     StatusBar(cfw::IFramePtr frame);
     ~StatusBar();
 
-    // -- cfw::IStatusBar --
+    // cfw::IStatusBar
     wxAuiToolBar* getStatusBarCtrl();
     
     cfw::IStatusBarItemPtr addItem(
@@ -239,11 +239,11 @@ protected:
 
     StatusBarProviderBase()
     {
-        // -- create the statusbar item enumerator --
+        // create the statusbar item enumerator
         m_items = new xcm::IVectorImpl<cfw::IStatusBarItemPtr>;
     }
     
-    // -- IStatusBarProvider --
+    // IStatusBarProvider methods
     
     cfw::IStatusBarItemEnumPtr getStatusBarItemEnum()
     {

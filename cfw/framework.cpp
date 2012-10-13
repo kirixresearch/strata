@@ -59,7 +59,7 @@ namespace cfw
 wxWindow* g_invisible = NULL;
 
 
-// -- FrameCommandDispatch implementation --
+// FrameCommandDispatch implementation
 
 FrameCommandDispatch::FrameCommandDispatch()
 {
@@ -905,7 +905,7 @@ ContainerBase* getContainerFromSite(cfw::IDocumentSitePtr site)
 
 
 
-// -- DocumentDeleteWatcher --
+// DocumentDeleteWatcher
 
 // this class watches for the document window destruction.  This is facilitated
 // by wxWidgets wxClientData class and Set/GetClientObject().  The document's
@@ -931,7 +931,7 @@ public:
 
 
 
-// -- DocumentSite implementation --
+// DocumentSite implementation
 
 class DocumentSite : public cfw::IDocumentSite,
                      public xcm::signal_sink
@@ -1207,7 +1207,7 @@ private:
 
 
 
-// -- ChildFrame implementation --
+// ChildFrame implementation
 
 IMPLEMENT_CLASS(ChildFrame, wxMDIChildFrame)
 
@@ -1472,9 +1472,9 @@ public:
         return result;
     }
 };
-    
 
-// -- MainFrame implementation --
+
+// MainFrame implementation
 
 
 BEGIN_EVENT_TABLE(MainFrame, wxMDIParentFrame)

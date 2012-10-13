@@ -190,7 +190,7 @@ bool DrawUxThemeCloseButton(wxDC& dc,
 
 
 
-// -- CfwDockArt class implementation --
+// CfwDockArt class implementation
 
 void CfwDockArt::DrawPaneButton(wxDC& dc,
                                 wxWindow* wnd,
@@ -269,7 +269,7 @@ void CfwDockArt::DrawCaption(wxDC& dc,
 
 
 
-// -- CfwTabArt class implementation --
+// CfwTabArt class implementation
 
 
 #if wxCHECK_VERSION(2,9,3)
