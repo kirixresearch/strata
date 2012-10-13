@@ -106,6 +106,7 @@ public:
         KSCRIPT_GUI_METHOD("sendWebRequest", HostApp::sendWebRequest);
         KSCRIPT_GUI_METHOD("close", HostApp::close);
         KSCRIPT_GUI_METHOD("getDocuments", HostApp::getDocuments);
+        KSCRIPT_GUI_METHOD("getDocumentById", HostApp::getDocumentById);
         KSCRIPT_GUI_METHOD("getActiveDocument", HostApp::getActiveDocument);
         KSCRIPT_GUI_METHOD("createPane", HostApp::createPane);
         KSCRIPT_GUI_METHOD("createDocument", HostApp::createDocument);

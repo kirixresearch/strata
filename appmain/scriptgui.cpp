@@ -90,6 +90,21 @@ void FormEventHandler::onEvent(wxEvent& evt)
         m_owner->onEvent(evt);
 }
 
+void FormEventHandler::onFormClose(bool* allow)   // only used for Form components
+{
+    if (m_owner)
+    {
+        *allow = ((Form*)m_owner)->onFormFrameClose();
+    }
+}
+
+void FormEventHandler::onFormDestructing()        // only used for Form components
+{
+    if (m_owner)
+    {
+        ((Form*)m_owner)->onFormFrameDestructing();
+    }
+}
 
 
 // FormComponent class implementation
@@ -217,8 +232,8 @@ FormFrame::FormFrame(Form* owner,
                                 wxNO_FULL_REPAINT_ON_RESIZE |
                                 wxFRAME_FLOAT_ON_PARENT)
 {
-    m_owner = owner;
-    m_owner->baseRef();
+    //m_owner = owner;
+    //m_owner->baseRef();
     
     m_panel = new FormPanel(this, -1,
                             wxDefaultPosition,
@@ -228,11 +243,13 @@ FormFrame::FormFrame(Form* owner,
 
 FormFrame::~FormFrame()
 {
-    if (m_owner)
-    {
-        m_owner->onFormFrameDestructing();
-        m_owner->baseUnref();
-    }
+    sigFormDestructing();
+
+   // if (m_owner)
+   // {
+   //     m_owner->onFormFrameDestructing();
+   //     m_owner->baseUnref();
+   // }
 }
 
 wxPanel* FormFrame::getPanel()
@@ -271,7 +288,8 @@ void FormFrame::onClose(wxCloseEvent& evt)
 {
     if (!m_form_enabled)
         return;
-        
+
+/*
     if (m_owner)
     {
         bool allow = m_owner->onFormFrameClose();
@@ -280,15 +298,23 @@ void FormFrame::onClose(wxCloseEvent& evt)
     }
 
     Destroy();
+*/
+
+    bool allow = true;
+    sigFormClose(&allow);
+    if (allow)
+    {
+        Destroy();
+    }
 }
 
 void FormFrame::safeOwnerDestroy()
 {
-    if (m_owner)
-    {
-        m_owner->baseUnref();
-        m_owner = NULL;
-    }
+    //if (m_owner)
+    //{
+    //    m_owner->baseUnref();
+    //    m_owner = NULL;
+    //}
 
     // fire an event to ourselves
     wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED, ID_DoDestroy);
@@ -1467,11 +1493,6 @@ Form::Form()
 Form::~Form()
 {
     deinitializeControl();
-    
-    if (m_form_frame)
-    {
-        m_form_frame->safeOwnerDestroy();
-    }
 }
 
 
@@ -1540,6 +1561,9 @@ void Form::constructor(kscript::ExprEnv* env, kscript::Value* retval)
                            wxPoint(m_x, m_y),
                            wxSize(m_width, m_height));
 
+    m_form_frame->sigFormClose.connect(m_evt_handler, &FormEventHandler::onFormClose);
+    m_form_frame->sigFormDestructing.connect(m_evt_handler, &FormEventHandler::onFormDestructing);
+
     m_wnd = m_form_frame;
     m_form_panel = m_form_frame->getPanel();
 
@@ -1582,6 +1606,8 @@ void Form::realize()
     }
     
     m_form_frame->m_owner = NULL;
+    m_form_frame->sigFormClose.disconnect();
+    m_form_frame->sigFormDestructing.disconnect();
     m_form_frame->Destroy();
     
     m_form_panel->Show();
@@ -1635,13 +1661,13 @@ void Form::setSite(cfw::IDocumentSitePtr site)
     }
 }
 
-void Form::onEvent(wxEvent& event)
+void Form::onEvent(wxEvent& evt)
 {
-    if (event.GetEventType() == wxEVT_SIZE)
+    if (evt.GetEventType() == wxEVT_SIZE)
     {
         if (m_form_frame)
         {
-            m_form_frame->onSize((wxSizeEvent&)event);
+            m_form_frame->onSize((wxSizeEvent&)evt);
         }
         
         if (0 == invokeJsEvent(L"sizeChanged", NULL, eventFlagNoGuiBlock))
@@ -1655,7 +1681,7 @@ void Form::onEvent(wxEvent& event)
         return;
     }
     
-    FormControl::onEvent(event);
+    FormControl::onEvent(evt);
 }
 
 

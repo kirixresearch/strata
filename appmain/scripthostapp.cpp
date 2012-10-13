@@ -2028,6 +2028,7 @@ void HostApp::onFrameEvent(cfw::Event& evt)
 void HostApp::onFrameDestroy()
 {
     invokeJsEvent(L"frameDestroyed");
+    m_frame.clear();
 }
 
 

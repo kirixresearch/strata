@@ -322,8 +322,6 @@ void MainApp::processIdle()
     this->ProcessIdle();
 #endif
 }
-    
-// -- app initialization --
 
 static void registerLicenseFile(const wxChar* filename)
 {
@@ -790,7 +788,7 @@ void MainApp::populatePaperDatabaseClean()
 int MainApp::OnExit()
 {
     BitmapMgr::uninitBitmapMgr();
-    
+   
     delete m_job_scheduler;
     delete m_help_controller;
     delete m_paper_database;

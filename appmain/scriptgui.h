@@ -75,12 +75,18 @@ private:
     FormPanel* m_panel;
     bool m_form_enabled;
     
+    xcm::signal1<bool*> sigFormClose;
+    xcm::signal0 sigFormDestructing;
+
     DECLARE_EVENT_TABLE()
 };
 
 
-class FormEventHandler : public wxEvtHandler
+class FormEventHandler : public wxEvtHandler,
+                         public xcm::signal_sink
 {
+    friend Form;
+
 public:
 
     FormEventHandler(FormComponent* owner);
@@ -88,6 +94,9 @@ public:
     void safeDestroy();
     
     void onEvent(wxEvent& evt);
+
+    void onFormClose(bool* allow); // only used for Form components
+    void onFormDestructing();      // only used for Form components
 
 public:
 
@@ -132,7 +141,7 @@ public:
     int m_height;
     bool m_enabled;
 
-private:
+protected:
 
     FormEventHandler* m_evt_handler;
 };
