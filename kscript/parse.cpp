@@ -721,7 +721,7 @@ int ExprSimpleArrayLookup::getType()
 
 
 
-// ExprArrayInit implementations
+// ExprFunctionInit implementations
 
 ExprFunctionInit::ExprFunctionInit(Function* func)
 {
