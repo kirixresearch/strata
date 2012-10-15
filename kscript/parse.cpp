@@ -1782,9 +1782,6 @@ int ExprFunctionCall::eval(ExprEnv* env, Value* retval)
                 if (proto)
                     env->m_newobj->setPrototype(proto);
             }
-            
-            Value* val_constructor = env->m_newobj->getMember(L"constructor");
-            val_constructor->setFunction(func_info, func_scope);
         }
 
         env->m_newobj = NULL;
