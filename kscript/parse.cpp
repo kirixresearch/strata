@@ -3472,6 +3472,22 @@ ExprElement* ExprParser::parseElement(ExprParserEnv* penv,
                                       wchar_t* expr,
                                       wchar_t** endloc)
 {
+#ifdef _DEBUG
+    // allow test suite to work in debug mode (which chews up way more stack space during recursion)
+    ExprDepthCounter cnt(&m_current_depth);
+    if (m_current_depth >= 220)
+    {
+        if (endloc)
+            *endloc = expr;
+        
+        m_error_loc = expr;
+        m_error_code = errorUnexpectedToken;
+        m_error_text = L"";
+
+        return NULL;
+    }
+#endif
+
     while (iswspace(*expr))
         expr++;
 
