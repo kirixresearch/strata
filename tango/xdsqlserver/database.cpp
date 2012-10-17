@@ -754,11 +754,9 @@ bool SqlServerDatabase::execute(const std::wstring& command,
     result.clear();
 
     wchar_t* p = (wchar_t*)command.c_str();
+    while (::iswspace(*p)) ++p;
+
     std::wstring first_word;
-
-    while (iswspace(*p))
-        ++p;
-
     while (*p && !iswspace(*p))
     {
         first_word += *p;

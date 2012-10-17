@@ -2210,8 +2210,9 @@ bool OdbcDatabase::execute(const std::wstring& command,
     result.clear();
         
     wchar_t* p = (wchar_t*)command.c_str();
-    std::wstring first_word;
+    while (::iswspace(*p)) ++p;
 
+    std::wstring first_word;
     while (*p && !iswspace(*p))
     {
         first_word += *p;

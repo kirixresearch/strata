@@ -1316,8 +1316,9 @@ bool OracleDatabase::execute(const std::wstring& _command,
     std::wstring command = _command;
     
     wchar_t* p = (wchar_t*)command.c_str();
+    while (::iswspace(*p)) ++p;
+    
     std::wstring first_word;
-
     while (*p && !iswspace(*p))
     {
         first_word += *p;
