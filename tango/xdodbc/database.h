@@ -60,7 +60,6 @@ void testSqlConn(HDBC hdbc);
 SQLSMALLINT tango2sqlType(int tango_type);
 SQLSMALLINT tango2sqlCType(int tango_type);
 int sql2tangoType(SQLSMALLINT sql_type);
-std::wstring createExcelFieldname(int col_idx);
 
 std::wstring createOdbcFieldString(std::wstring name,
                                    int type,

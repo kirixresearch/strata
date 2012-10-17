@@ -533,29 +533,6 @@ int sql2tangoType(SQLSMALLINT sql_type)
     return tango::typeInvalid;
 }
 
-std::wstring createExcelFieldname(int col_idx)
-{
-    std::wstring retval;
-    wchar_t c1, c2;
-    
-    c1 = L'A';
-    c2 = L'A';
-
-    if (col_idx < 26)
-    {
-        retval = (c1 + col_idx);
-    }
-     else
-    {
-        c1 = c1 + (col_idx / 26) - 1;
-        c2 = c2 + (col_idx % 26);
-
-        retval = c1;
-        retval += c2;
-    }
-
-    return retval;
-}
 
 // this function consolidates all the rules for creating a
 // tango column info structure from odbc field information
@@ -750,35 +727,6 @@ void getOdbcDriverNames(std::vector<std::wstring>& drivers)
 }
 
 
-// OdbcDatabase class implementation
-
-
-
-OdbcDatabase::OdbcDatabase()
-{
-    m_env = 0;
-    m_conn = 0;
-
-    m_db_name = L"";
-    m_conn_str = L"";
-
-    m_using_dsn = false;
-    m_db_type = -1;
-    m_port = 0;
-    m_server = L"";
-    m_database = L"";
-    m_username = L"";
-    m_password = L"";
-    
-    m_attr = static_cast<tango::IAttributes*>(new DatabaseAttributes);
-}
-
-OdbcDatabase::~OdbcDatabase()
-{
-    close();
-}
-
-
 static int odbcStateToTangoError(SQLTCHAR* _s)
 {
 #ifdef _UNICODE
@@ -809,6 +757,35 @@ static int odbcStateToTangoError(SQLTCHAR* _s)
     
     return tango::errorGeneral;
 }
+
+
+// OdbcDatabase class implementation
+
+OdbcDatabase::OdbcDatabase()
+{
+    m_env = 0;
+    m_conn = 0;
+
+    m_db_name = L"";
+    m_conn_str = L"";
+
+    m_using_dsn = false;
+    m_db_type = -1;
+    m_port = 0;
+    m_server = L"";
+    m_database = L"";
+    m_username = L"";
+    m_password = L"";
+    
+    m_attr = static_cast<tango::IAttributes*>(new DatabaseAttributes);
+}
+
+OdbcDatabase::~OdbcDatabase()
+{
+    close();
+}
+
+
 
 void OdbcDatabase::errorSqlStmt(HSTMT stmt)
 {

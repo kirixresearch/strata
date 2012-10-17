@@ -30,9 +30,6 @@ int sql2tangoType(SQLSMALLINT sql_type);
 SQLSMALLINT tango2sqlType(int tango_type);
 SQLSMALLINT tango2sqlCType(int tango_type);
 
-// quick function to create excel fieldnames
-std::wstring createExcelFieldname(int col_idx);
-
 
 
 struct OdbcDataAccessInfo
