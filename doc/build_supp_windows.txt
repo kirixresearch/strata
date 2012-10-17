@@ -5,10 +5,10 @@ Openssl 32-bit
 
 1) Download Activestate Perl
 2) Open Visual Studio Command Prompt and go to the openssl dir
-3) perl Configure debug-VC-WIN32 --prefix=d:\build32\src\trunk\supp\openssl no-asm
+3) perl Configure debug-VC-WIN32 --prefix=%CD% no-asm
 4) ms\do_ms
 5) nmake -f ms\nt.mak clean all
-6) perl Configure VC-WIN32 --prefix=d:\build32\src\trunk\supp\openssl no-asm
+6) perl Configure VC-WIN32 --prefix=%CD% no-asm
 7) ms\do_ms
 8) nmake -f ms\nt.mak clean all
 
@@ -16,7 +16,7 @@ Openssl 32-bit
 Curl 32-bit
 -----------
 
-1) Go you your supp directory
+1) Go to your supp directory
 2) rmdir deps /s /q 2> nul
 3) mkdir deps\include\openssl
 3) mkdir deps\lib
@@ -33,12 +33,12 @@ Openssl 64-bit
 
 1) Download Activestate Perl
 2) Open Visual Studio Command Prompt and go to the openssl dir
-3) perl Configure debug-VC-WIN64A --prefix=d:\build64\src\trunk\supp\openssl no-asm
+3) perl Configure debug-VC-WIN64A --prefix=%CD% no-asm
 4) ms\do_ms
 5) remove all references to unicows.lib from ms\nt.mak
 6) nmake -f ms\nt.mak clean
 7) nmake -f ms\nt.mak all
-8) perl Configure VC-WIN64A --prefix=d:\build64\src\trunk\supp\openssl no-asm
+8) perl Configure VC-WIN64A --prefix=%CD% no-asm
 9) ms\do_ms
 A) remove all references to unicows.lib from ms\nt.mak
 B) nmake -f ms\nt.mak clean
@@ -48,7 +48,7 @@ C) nmake -f ms\nt.mak all
 Curl 64-bit
 -----------
 
-1) Go you your supp directory
+1) Go to your supp directory
 2) rmdir deps /s /q 2> nul
 3) mkdir deps\include\openssl
 3) mkdir deps\lib
