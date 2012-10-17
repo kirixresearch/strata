@@ -510,8 +510,8 @@ void OdbcIterator::saveRowToCache()
                      else
                     width = (*it)->indicator;
                 
-                if (width >= (*it)->width*sizeof(wchar_t))
-                    width = (*it)->width*sizeof(wchar_t);
+                if (width >= (*it)->width * (int)sizeof(wchar_t))
+                    width = (*it)->width * (int)sizeof(wchar_t);
                     
                 m_cache.appendColumnData((unsigned char*)((*it)->wstr_val),
                                           width);
