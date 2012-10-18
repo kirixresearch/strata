@@ -819,7 +819,10 @@ bool BaseIterator::initStructure()
             bindExprParser(p, &bind_info);
 
             if (!p->parse(expr))
+            {
+                delete p;
                 return false;
+            }
 
             int expr_type = p->getType();
 
