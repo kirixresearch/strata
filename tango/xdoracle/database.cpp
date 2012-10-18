@@ -89,6 +89,7 @@ std::wstring createOracleFieldString(const std::wstring& _name,
                                      bool null)
 {
     std::wstring name = L"\"" + _name + L"\"";
+    kl::makeUpper(name);
     wchar_t buf[255];
 
     if (width < 1)
