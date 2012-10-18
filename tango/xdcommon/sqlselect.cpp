@@ -1658,7 +1658,10 @@ static tango::ISetPtr doJoin(tango::IDatabasePtr db,
                              (void*)&jparse);
 
         if (!parser->parse(st_it->join_expr))
+        {
+            delete parser;
             return xcm::null;
+        }
 
         delete parser;
 
