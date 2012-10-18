@@ -1,5 +1,67 @@
 
 
+
+Curl 32-bit and 64-bit
+----------------------
+
+
+1) cd <supp>curl\winbuild
+2) nmake /f makefile.vc mode=static VC=10 DEBUG=no
+3) nmake /f makefile.vc mode=static VC=10 DEBUG=yes
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// -- obsolete old steps for reference ---------------------------
+
+
 Openssl 32-bit
 --------------
 
@@ -11,21 +73,6 @@ Openssl 32-bit
 6) perl Configure VC-WIN32 --prefix=%CD% no-asm
 7) ms\do_ms
 8) nmake -f ms\nt.mak clean all
-
-
-Curl 32-bit
------------
-
-1) Go to your supp directory
-2) rmdir deps /s /q 2> nul
-3) mkdir deps\include\openssl
-3) mkdir deps\lib
-4) xcopy openssl\inc32\*.* deps\include /e
-5) xcopy openssl\out32\*.lib deps\lib
-6) cd curl\winbuild
-7) nmake /f makefile.vc mode=static VC=10 WITH_SSL=static DEBUG=no USE_IDN=no
-8) nmake /f makefile.vc mode=static VC=10 WITH_SSL=static DEBUG=yes USE_IDN=no
-
 
 
 Openssl 64-bit
@@ -45,6 +92,22 @@ B) nmake -f ms\nt.mak clean
 C) nmake -f ms\nt.mak all
 
 
+
+
+Curl 32-bit
+-----------
+
+1) Go to your supp directory
+2) rmdir deps /s /q 2> nul
+3) mkdir deps\include\openssl
+3) mkdir deps\lib
+4) xcopy openssl\inc32\*.* deps\include /e
+5) xcopy openssl\out32\*.lib deps\lib
+6) cd curl\winbuild
+7) nmake /f makefile.vc mode=static VC=10 DEBUG=no
+8) nmake /f makefile.vc mode=static VC=10 DEBUG=yes
+
+
 Curl 64-bit
 -----------
 
@@ -58,6 +121,10 @@ Curl 64-bit
 7) open MakefileBuild.vc and change the value of MACHINE to X64
 8) nmake /f makefile.vc mode=static VC=10 WITH_SSL=static DEBUG=no USE_IDN=no
 9) nmake /f makefile.vc mode=static VC=10 WITH_SSL=static DEBUG=yes USE_IDN=no
+
+
+
+
 
 
 
