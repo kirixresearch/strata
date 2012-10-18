@@ -787,6 +787,8 @@ void MainApp::populatePaperDatabaseClean()
 
 int MainApp::OnExit()
 {
+    apphookOnExit();
+
     BitmapMgr::uninitBitmapMgr();
    
     delete m_job_scheduler;
