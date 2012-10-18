@@ -1,8 +1,8 @@
 
 
 
-Curl 32-bit and 64-bit
-----------------------
+Curl 32-bit
+-----------
 
 
 1) cd <supp>curl\winbuild
@@ -10,6 +10,15 @@ Curl 32-bit and 64-bit
 3) nmake /f makefile.vc mode=static VC=10 DEBUG=yes
 
 
+
+Curl 64-bit
+-----------
+
+
+1) cd <supp>curl\winbuild
+2) open MakefileBuild.vc and change the value of MACHINE to X64
+3) nmake /f makefile.vc mode=static VC=10 DEBUG=no
+4) nmake /f makefile.vc mode=static VC=10 DEBUG=yes
 
 
 
