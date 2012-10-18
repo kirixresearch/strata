@@ -784,7 +784,7 @@ bool BaseIterator::initStructure()
 
                 dequote(colname, '[', ']');
             }
-                else
+             else
             {
                 expr = *it;
                     
@@ -820,6 +820,7 @@ bool BaseIterator::initStructure()
 
             if (!p->parse(expr))
             {
+                delete s;
                 delete p;
                 return false;
             }
@@ -832,6 +833,7 @@ bool BaseIterator::initStructure()
             if (tango_type == tango::typeInvalid ||
                 tango_type == tango::typeUndefined)
             {
+                delete s;
                 return false;
             }
 
