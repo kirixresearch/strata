@@ -28,6 +28,7 @@ cfw::IJobPtr apphookExecute(const wxString& location,
                             tango::INodeValuePtr file_root,
                             bool* handled);
 
+void apphookUninitFrame();
 void apphookOnExit();
 
 

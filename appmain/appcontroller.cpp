@@ -3603,6 +3603,7 @@ void AppController::onFrameDestroy()
     g_app->getExtensionMgr()->removeUninstalledExtensions();
 
     // remove event handlers
+    apphookUninitFrame();
     m_frame->removeWindowEventHandler(m_script_command_router);
     m_frame->removeWindowEventHandler(this);
 
