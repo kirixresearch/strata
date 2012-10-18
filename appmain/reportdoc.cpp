@@ -3397,9 +3397,13 @@ void ReportDoc::onCanvasDropEvent(kcanvas::IEventPtr evt)
         int idx = 0;
         for (it = cells.begin(); it != it_end; ++it)
         {
-            wxString value = wxT("=") + (*it)->m_strvalue;
-            value.Trim(true);
-            value.Trim(false);
+            wxString fieldname = (*it)->m_strvalue;
+            fieldname.Trim(true);
+            fieldname.Trim(false);
+            
+            wxString qfieldname = towx(tango::quoteIdentifier(g_app->getDatabase(), towstr(fieldname)));
+            wxString value = wxT("=") + qfieldname;
+
             kcanvas::CellRange range(row_end, col_end);
             table->setCellProperty(range, kcanvas::PROP_CONTENT_VALUE, value);
             col_end++;
