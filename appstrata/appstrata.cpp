@@ -45,3 +45,11 @@ cfw::IJobPtr apphookExecute(const wxString& path,
     return xcm::null;
 }
 
+void apphookUninitFrame()
+{
+}
+
+void apphookOnExit()
+{
+}
+
