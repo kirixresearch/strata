@@ -781,7 +781,10 @@ bool JsonNode::getBoolean()
 
 double JsonNode::getDouble()
 {
-    return m_value->m_double;
+    if (m_value->m_type == nodetypeInteger)
+        return m_value->m_integer;
+         else
+        return m_value->m_double;
 }
 
 int JsonNode::getInteger()
