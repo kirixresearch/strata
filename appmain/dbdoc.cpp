@@ -3816,9 +3816,14 @@ void DbDoc::onFsItemRightClicked(cfw::IFsItemPtr item)
             menuPopup.Append(ID_Open, _("&Open"));
 
             if (!fs_mount)
+            {
                 menuPopup.Append(ID_ModifyStructure, _("&Edit Structure"));
-                  else
+                delete submenuOpenWith; // we aren't using this submenu, so delete it to prevent memory leak
+            }
+             else
+            {
                 menuPopup.AppendSubMenu(submenuOpenWith, _("Open &With"));
+            }
 
             menuPopup.AppendSeparator();
             menuPopup.Append(ID_Cut, _("Cu&t"));
