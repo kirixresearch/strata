@@ -24,7 +24,6 @@ namespace cfw
 {
 
 
-// -- GUI helper classes and functions --
 
 class CommandCapture : public wxEvtHandler
 {
@@ -32,7 +31,7 @@ class CommandCapture : public wxEvtHandler
 
 public:
 
-    // -- signals --
+    // signals 
     xcm::signal2<int, int> sigCommandFired;
 
 public:
@@ -47,11 +46,11 @@ public:
         return m_last_id;
     }
 
-    bool ProcessEvent(wxEvent& event)
+    bool ProcessEvent(wxEvent& evt)
     {
         bool processed = false;
 
-        int event_type = event.GetEventType();
+        int event_type = evt.GetEventType();
 
         if (event_type == wxEVT_COMMAND_MENU_SELECTED ||
             event_type == wxEVT_COMMAND_BUTTON_CLICKED ||
@@ -59,9 +58,9 @@ public:
             event_type == wxEVT_COMMAND_TEXT_UPDATED)
         {
             processed = true;
-            m_last_id = event.GetId();
+            m_last_id = evt.GetId();
 
-            sigCommandFired(event.GetEventType(), event.GetId());
+            sigCommandFired(evt.GetEventType(), evt.GetId());
         }
 
         if (processed)
@@ -69,7 +68,7 @@ public:
 
         if (GetNextHandler())
         {
-            return GetNextHandler()->ProcessEvent(event);
+            return GetNextHandler()->ProcessEvent(evt);
         }
 
         return false;
@@ -126,8 +125,6 @@ public:
 
 
 
-// -- locale settings class --
-
 class Locale
 {
 public:
@@ -141,42 +138,13 @@ public:
 
 public:
 
-    static const Locale* getSettings()
-    {
-        static Locale* s = NULL;
-        if (!s)
-        {
-            s = new Locale;
-        }
+    static const Locale* getSettings();
 
-        return s;
-    }
-
-    static wxChar getDecimalPoint()
-    {
-        return getSettings()->decimal_point;
-    }
-
-    static wxChar getThousandsSeparator()
-    {
-        return getSettings()->thousands_separator;
-    }
-
-    static wxChar getDateSeparator()
-    {
-        return getSettings()->date_separator;
-    }
-
-    static DateOrder getDateOrder()
-    {
-        return getSettings()->date_order;
-    }
-
-    static int getDefaultPaperType()
-    {
-        return getSettings()->paper_type;
-    }
-
+    static wxChar getDecimalPoint()        { return getSettings()->decimal_point; }
+    static wxChar getThousandsSeparator()  { return getSettings()->thousands_separator; }
+    static wxChar getDateSeparator()       { return getSettings()->date_separator; }
+    static DateOrder getDateOrder()        { return getSettings()->date_order; }
+    static int getDefaultPaperType()       { return getSettings()->paper_type; }
 
     static wxString formatDate(int year,
                                int month,
@@ -195,39 +163,8 @@ public:
 
 public:
 
-    Locale()
-    {
-        lconv* l = localeconv();
-        decimal_point = (unsigned char)*l->decimal_point;
-        thousands_separator = (unsigned char)*l->thousands_sep;
-        paper_type = wxPAPER_LETTER;
-
-        // get date format
-#ifdef WIN32
-        TCHAR s[32];
-        GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_IDATE, s, 32);
-        if (*s == wxT('1'))
-            date_order = DateOrderDDMMYY;
-             else
-            date_order = DateOrderMMDDYY;
-
-        GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SDATE, s, 32);
-        date_separator = s[0];
-#else
-        date_separator = '/';
-        date_order = DateOrderMMDDYY;
-#endif
-
-        // get default paper size
-#ifdef WIN32
-        GetLocaleInfo(LOCALE_USER_DEFAULT, 0x0000100A, s, 32);
-        if (*s == wxT('1'))
-            paper_type = wxPAPER_LETTER;
-             else
-            paper_type = wxPAPER_A4;
-#endif
-
-    }
+    Locale();
+    ~Locale();
 
 public:
 
@@ -240,7 +177,7 @@ public:
 
 
 
-// -- other functions --
+// other utility functions
 
 wxFont getDefaultWindowFont();
 wxString getUserDocumentFolder();
@@ -287,7 +224,7 @@ wxString getProxyServer();
 
 
 
-// -- platform definitions --
+// platform definitions
 
 
 #ifdef WIN32
@@ -300,8 +237,7 @@ wxString getProxyServer();
 
 
 
-// -- string conversion functions --
-
+// string conversion functions
 
 inline wxString towx(const char* s)
 {

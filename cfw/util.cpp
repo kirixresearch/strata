@@ -38,6 +38,76 @@ namespace cfw
 {
 
 
+struct LocalePtrContainer
+{
+    LocalePtrContainer()
+    {
+        m_ptr = NULL;
+    }
+
+    ~LocalePtrContainer()
+    {
+        delete m_ptr;
+    }
+
+    Locale* getLocalePtr()
+    {
+        if (m_ptr)
+            return m_ptr;
+        m_ptr = new Locale;
+        return m_ptr;
+    }
+
+    Locale* m_ptr;
+};
+
+LocalePtrContainer g_locale_ptr_container;
+
+
+Locale::Locale()
+{
+    lconv* l = localeconv();
+    decimal_point = (unsigned char)*l->decimal_point;
+    thousands_separator = (unsigned char)*l->thousands_sep;
+    paper_type = wxPAPER_LETTER;
+
+    // get date format
+#ifdef WIN32
+    TCHAR s[32];
+    GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_IDATE, s, 32);
+    if (*s == wxT('1'))
+        date_order = DateOrderDDMMYY;
+            else
+        date_order = DateOrderMMDDYY;
+
+    GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SDATE, s, 32);
+    date_separator = s[0];
+#else
+    date_separator = '/';
+    date_order = DateOrderMMDDYY;
+#endif
+
+    // get default paper size
+#ifdef WIN32
+    GetLocaleInfo(LOCALE_USER_DEFAULT, 0x0000100A, s, 32);
+    if (*s == wxT('1'))
+        paper_type = wxPAPER_LETTER;
+            else
+        paper_type = wxPAPER_A4;
+#endif
+}
+
+Locale::~Locale()
+{
+}
+
+// static
+const Locale* Locale::getSettings()
+{
+    return g_locale_ptr_container.getLocalePtr();
+}
+
+
 wxString Locale::formatDate(int year,
                             int month,
                             int day,
