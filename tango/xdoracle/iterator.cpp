@@ -393,6 +393,7 @@ bool OracleIterator::init(const std::wstring& query)
         // initialize Odbc connection for this set
         if (!set->init())
         {
+            delete set;
             return false;
         }
 
