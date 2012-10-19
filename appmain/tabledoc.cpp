@@ -5717,11 +5717,13 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
 {
     list.clear();
     
+    tango::ISetPtr base_set;
     tango::ISetPtr set;
     tango::IStructurePtr structure;
     
     if (getDbDriver() == wxT("xdnative"))
     {
+        base_set = getBaseSet();
         set = getBrowseSet();
         if (set.isOk())
             structure = set->getStructure();
@@ -5769,15 +5771,14 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
     }
     
     
-    if (set.isOk())
+    if (base_set.isOk())
     {
-    
         // add fields from child file(s)
 
         tango::ISetPtr right_set;
         tango::IStructurePtr right_structure;
 
-        tango::IRelationEnumPtr rel_enum = g_app->getDatabase()->getRelationEnum(set->getObjectPath());
+        tango::IRelationEnumPtr rel_enum = g_app->getDatabase()->getRelationEnum(base_set->getObjectPath());
         tango::IRelationPtr rel;
         size_t r, rel_count = rel_enum->size();
         
