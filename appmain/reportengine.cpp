@@ -23,6 +23,28 @@
 const int REPORT_MARGIN_TOLERANCE       = (int)(kcanvas::CANVAS_MODEL_DPI*0.25);
 
 
+static wxString getOrderByField(const wxString& field)
+{
+    std::wstring query_field = towstr(field);
+
+    // convert to upper case and remove spaces
+    kl::makeUpper(query_field);
+    kl::trim(query_field);
+    
+    // remove any training DESC and ASC qualifiers and spaces
+    // that separate those qualifiers from the fieldname
+    size_t length = query_field.length();
+    if (query_field.substr(length - 4) == L"DESC")
+        query_field = query_field.erase(length - 4);
+    else if (query_field.substr(length - 3) == L"ASC")
+        query_field = query_field.erase(length - 3);
+    kl::trim(query_field);
+
+    // remove any quotes and return    
+    return tango::dequoteIdentifier(g_app->getDatabase(), query_field);
+}
+
+
 static wxString getSortExprFromGroups(const std::vector<ReportSection>& sections)
 {
     wxString sort_expr = wxEmptyString;
@@ -52,6 +74,99 @@ static wxString getSortExprFromGroups(const std::vector<ReportSection>& sections
     }
 
     return sort_expr;
+}
+
+static wxString insertReportOrderByIntoQuery(const wxString& _query_string, const wxString& _report_order)
+{
+    wxString query_string = _query_string;
+    wxString report_order = _report_order;
+
+    // see if we already have an order by clause; if not, simply add 
+    // the clause, and we're done; TODO: we should do a "zero level"
+    // search for "ORDER BY" to avoid possibly picking it up as part
+    // of a fieldname or expression; this is, however fairly unlikely,
+    // so this suffices for now
+    unsigned int order_by_pos = query_string.rfind(wxT("ORDER BY"));
+    if (order_by_pos == wxString::npos)
+    {
+        query_string += wxT(" ORDER BY ") + report_order;
+        return query_string;
+    }
+
+    // we have an order by in the query_string, so we need to merge 
+    // the order by from the report conditions with the query string
+    wxString query_string_part1 = query_string.Mid(0,order_by_pos);
+    wxString query_string_part2 = query_string.Mid(order_by_pos + 8);
+
+    // get a the order fields from the "ORDER BY" part of the query
+    // and the report order fields
+    std::vector<std::wstring> query_order_fields_clean;
+    std::vector<std::wstring> query_order_fields;
+    std::vector<std::wstring> report_order_fields;
+
+    kl::parseDelimitedList(towstr(query_string_part2), query_order_fields, L',', true);
+    kl::parseDelimitedList(towstr(report_order), report_order_fields, L',', true);
+
+    // we might be feeding this query to some external database which 
+    // doesn't support ORDER BYs with the same field list twice, once
+    // in ascending order and again in descending order:
+    //     ORDER BY field1 desc, field2, field1
+    // so remove duplicate fields that appear earlier in the ORDER BY
+    // clause
+    std::vector<std::wstring>::iterator it, it_end;
+    it_end = query_order_fields.end();
+    
+    std::vector<std::wstring>::iterator it_search, it_search_end;
+    it_search_end = report_order_fields.end();
+
+    for (it = query_order_fields.begin(); it != it_end; ++it)
+    {
+        // look for the query order field in the report order field;
+        // if we can't find it, then it's safe to add to the list
+        bool found = false;
+
+        std::wstring query_field = *it;
+        query_field = getOrderByField(query_field);
+
+        for (it_search = report_order_fields.begin(); it_search != it_search_end; ++it_search)
+        {
+            std::wstring report_field = *it_search;
+            report_field = getOrderByField(report_field);
+
+            if (wcscasecmp(report_field.c_str(), query_field.c_str()) == 0)
+                found = true;
+        }
+
+        if (!found)
+            query_order_fields_clean.push_back(*it);
+    }
+
+    // build the new order by clause, first with the report
+    // order fields, then the query fields
+    query_string = query_string_part1 + wxT(" ORDER BY ");
+    bool first = true;
+
+    it_end = report_order_fields.end();
+    for (it = report_order_fields.begin(); it != it_end; ++it)
+    {
+        if (!first)
+            query_string += wxT(",");
+
+        first = false;
+        query_string += towx(*it);
+    }
+
+    it_end = query_order_fields_clean.end();
+    for (it = query_order_fields_clean.begin(); it != it_end; ++it)
+    {
+        if (!first)
+            query_string += wxT(",");
+
+        first = false;
+        query_string += towx(*it);
+    }
+
+    return query_string;
 }
 
 static void layoutRows(kcanvas::ICompTablePtr target,
@@ -1452,25 +1567,13 @@ void ReportLayoutEngine::populateDataModel()
         if (query_template.load(data_source))
             query_string = query_template.getQueryString();
             
-        // the query may specify an order; but we need to order the data 
+        // the query may specify an order; but we need to order the data
         // according by the grouping parameters to ensure the data is
         // properly displayed; so "rewrite" the order params to use any
         // grouping params first, then append on whatever ORDER BY clause
         // existed
         if (m_data_order.Length() > 0)
-        {
-            // TODO: ideally, we should have better control over the following
-            // query rewriting so avoid problems with things like "ORDER BY" appearing
-            // in expressions, etc
-        
-            unsigned int order_by_pos = query_string.rfind(wxT("ORDER BY"));
-            wxString query_string_part1 = query_string.Mid(0,order_by_pos);
-            wxString query_string_part2 = order_by_pos != wxString::npos ? query_string.Mid(order_by_pos + 8) : wxT("");
-            
-            query_string = wxT("");
-            query_string += query_string_part1 + wxT(" ORDER BY ") + m_data_order;
-            query_string += query_string_part2.Length() > 0 ? wxT(",") + query_string_part2 : wxT("");
-        }
+            query_string = insertReportOrderByIntoQuery(query_string, m_data_order);
     }
     else
     {
