@@ -71,12 +71,21 @@ bool ClientSet::init(const std::wstring& path)
     if (file_info.isNull() || file_info["type"].getString() != L"table")
         return false;
 
-    kl::JsonNode fast_row_count = file_info["row_count"];
+    kl::JsonNode fast_row_count = file_info["fast_row_count"];
     if (fast_row_count.isOk())
     {
         if (fast_row_count.getBoolean())
-            m_set_flags |= tango::sfFastRowCount;
+        {
+            kl::JsonNode row_count = file_info["row_count"];
+            if (row_count.isOk())
+            {
+                m_set_flags |= tango::sfFastRowCount;
+                m_known_row_count = row_count.getInteger();
+            }
+        }
     }
+
+
 
     m_set_id = file_info["object_id"].getString();
 
@@ -278,11 +287,6 @@ tango::IIteratorPtr ClientSet::createIterator(const std::wstring& columns,
     if (!response["success"].getBoolean())
     {
         return xcm::null;
-    }
-
-    if (response["row_count"].isOk())
-    {
-        m_known_row_count = (tango::rowpos_t)response["row_count"].getDouble();
     }
 
     // initialize the iterator
