@@ -27,6 +27,7 @@ class FileInfo : public tango::IFileInfo
 public:
 
     FileInfo();
+    virtual ~FileInfo() { }
 
     const std::wstring& getName();
     int getType();
