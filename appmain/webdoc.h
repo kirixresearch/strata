@@ -271,6 +271,7 @@ private:
 
     void onWebViewDocumentLoaded(wxWebViewEvent& evt);
     void onWebViewTitleChanged(wxWebViewEvent& evt);
+    void onWebViewNavigating(wxWebViewEvent& evt);
 
     void onFrameEvent(cfw::Event& evt);
 

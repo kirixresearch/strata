@@ -2129,6 +2129,7 @@ BEGIN_EVENT_TABLE(WebDoc, wxWindow)
     // for wxWebView alternative component
     EVT_WEB_VIEW_LOADED(wxID_WEBVIEW, WebDoc::onWebViewDocumentLoaded)
     EVT_WEB_VIEW_TITLE_CHANGED(wxID_WEBVIEW, WebDoc::onWebViewTitleChanged)
+    EVT_WEB_VIEW_NAVIGATING(wxID_WEBVIEW, WebDoc::onWebViewNavigating)
 
     // disable the data items
     EVT_UPDATE_UI_RANGE(ID_Data_First, ID_Data_Last, WebDoc::onUpdateUI_DisableAlways)
@@ -3994,5 +3995,17 @@ void WebDoc::onWebViewDocumentLoaded(wxWebViewEvent& evt)
         {
             m_frame->postEvent(new cfw::Event(wxT("cfw.locationChanged")));
         }
+    }
+}
+
+
+void WebDoc::onWebViewNavigating(wxWebViewEvent& evt)
+{
+    wxString loc = evt.GetURL();
+
+    if (loc.Left(7) == wxT("sdserv:") || loc.Left(8) == wxT("sdservs:"))
+    {
+        g_app->getAppController()->openDataLink(loc);
+        evt.Veto();
     }
 }
