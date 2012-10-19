@@ -24,6 +24,7 @@ class LocalRow
 public:
 
     LocalRow();
+    ~LocalRow();
  
     unsigned char* getColumnData(int col_idx, unsigned int* size, bool* is_null);
     size_t getColumnCount() const;

@@ -35,7 +35,7 @@ CommonBaseIterator::CommonBaseIterator()
 
 CommonBaseIterator::~CommonBaseIterator()
 {
-    // -- clear out all of our cruft --
+    // clear out binding info structures that were created in our parse hook
     std::vector<CmnBaseIteratorBindInfo*>::iterator it;
     for (it = m_bindings.begin();
          it != m_bindings.end(); ++it)
@@ -133,7 +133,8 @@ struct CommonBaseIteratorParseHookInfo
 };
 
 
-static bool script_parse_hook(kscript::ExprParseHookInfo& hook_info)
+// static
+bool CommonBaseIterator::script_parse_hook(kscript::ExprParseHookInfo& hook_info)
 {
     if (hook_info.element_type == kscript::ExprParseHookInfo::typeIdentifier)
     {
@@ -162,6 +163,7 @@ static bool script_parse_hook(kscript::ExprParseHookInfo& hook_info)
         CmnBaseIteratorBindInfo* bind_info = new CmnBaseIteratorBindInfo;
         bind_info->iter = iter;
         bind_info->handle = handle;
+        iter->m_bindings.push_back(bind_info); // free up the object later
         
         
         kscript::Value* val = new kscript::Value;
@@ -226,7 +228,7 @@ kscript::ExprParser* CommonBaseIterator::parse(const std::wstring& expr)
     info.structure = getParserStructure();
     
     parser->setParseHook(kscript::ExprParseHookInfo::typeIdentifier,
-                         script_parse_hook,
+                         &CommonBaseIterator::script_parse_hook,
                          (void*)&info);
     
     if (!parser->parse(expr))

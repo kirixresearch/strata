@@ -13,11 +13,12 @@
 #define __XDCOMMON_CMNBASEITERATOR_H
 
 
-// -- forwards --
+// forwards
 class CmnBaseIteratorBindInfo;
 namespace kscript
 {
     class ExprParser;
+    struct ExprParseHookInfo;
 }
 
 
@@ -38,6 +39,7 @@ public:
 private:
 
     std::vector<CmnBaseIteratorBindInfo*> m_bindings;
+    static bool script_parse_hook(kscript::ExprParseHookInfo& hook_info);
 };
 
 

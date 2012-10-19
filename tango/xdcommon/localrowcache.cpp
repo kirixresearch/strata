@@ -51,6 +51,11 @@ LocalRow::LocalRow()
     m_buf = NULL;
 }
 
+LocalRow::~LocalRow()
+{
+    delete[] m_buf;
+}
+
 // helper functions
 inline unsigned char* getColumnDataPtr(unsigned char* col_ptr)
 {
@@ -182,6 +187,8 @@ LocalRowCache::LocalRowCache()
 
 LocalRowCache::~LocalRowCache()
 {
+    delete[] m_append_data;
+
     if (m_f)
     {
         xf_close(m_f);
