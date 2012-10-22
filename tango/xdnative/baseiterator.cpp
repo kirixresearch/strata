@@ -416,8 +416,8 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
     {
         delete info.kl;
         info.kl = NULL;
-        info.relation_id = L"";
     }
+    info.tag = L"";
     
     tango::IRelationPtr rel;
 
@@ -902,10 +902,20 @@ void BaseIterator::refreshStructure()
         {
             p->refreshStructure();
         }
-
-        refreshRelInfo(*r_it);
     }
 
+
+    // refresh the relation info structures
+    int idx;
+    for (idx = 0; idx < m_relations.size(); ++idx)
+    {
+        if (!refreshRelInfo(m_relations[idx]))
+        {
+            // relation is no longer valid, delete it
+            m_relations.erase(m_relations.begin() + idx);
+            idx--;
+        }
+    }
 
 
     initStructure();
