@@ -141,6 +141,7 @@ private:
     kcl::RowSelectionGrid* m_grid;
     tango::IStructurePtr m_structure;
     std::vector<FieldListItem> m_custom_items;
+    std::vector<FieldListItem*> m_to_delete;
 
     DECLARE_EVENT_TABLE()
 };

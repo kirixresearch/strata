@@ -151,7 +151,8 @@ FieldListControl::FieldListControl(wxWindow* parent,
 
 FieldListControl::~FieldListControl()
 {
-
+    for (std::vector<FieldListItem*>::iterator fit = m_to_delete.begin(); fit != m_to_delete.end(); ++fit)
+        delete (*fit);
 }
 
 void FieldListControl::refresh()
@@ -312,6 +313,10 @@ std::vector<FieldListItem> FieldListControl::getAllItems()
 
 void FieldListControl::populate()
 {
+    for (std::vector<FieldListItem*>::iterator fit = m_to_delete.begin(); fit != m_to_delete.end(); ++fit)
+        delete (*fit);
+    m_to_delete.clear();
+
     // if no structure has been set, we can't continue
     if (m_structure.isNull())
         return;
@@ -392,6 +397,7 @@ void FieldListControl::populate()
         f->width = it->width;
         f->scale = it->scale;
         f->enabled = it->enabled;
+        m_to_delete.push_back(f);
         m_grid->setRowData(idx, (long)f);
         
         idx++;
@@ -425,6 +431,7 @@ void FieldListControl::populate()
         f->width = it->width;
         f->scale = it->scale;
         f->enabled = it->enabled;
+        m_to_delete.push_back(f);
         m_grid->setRowData(idx, (long)f);
         
         idx++;
