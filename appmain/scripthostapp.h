@@ -122,7 +122,8 @@ public:
         KSCRIPT_METHOD("getApplicationId", HostApp::getApplicationId)
         KSCRIPT_METHOD("getCommandLineArguments", HostApp::getCommandLineArguments)
         KSCRIPT_METHOD("isGuiActive", HostApp::isGuiActive)
-        
+        KSCRIPT_METHOD("isService", HostApp::isService)
+
         // -- to be deprecated --
         KSCRIPT_GUI_METHOD("showJobManager", HostApp::showJobManager)         
         
@@ -186,6 +187,7 @@ public:
     void executeAndWait(kscript::ExprEnv* env, kscript::Value* retval);
     void evalExpression(kscript::ExprEnv* env, kscript::Value* retval);
     void isGuiActive(kscript::ExprEnv* env, kscript::Value* retval);
+    void isService(kscript::ExprEnv* env, kscript::Value* retval);
 
 public:
 

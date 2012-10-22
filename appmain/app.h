@@ -78,6 +78,7 @@ public:
 
     bool isDatabaseOpen();
     bool isDatabaseReadOnly();
+    bool isService() const { return m_is_service; }
 
     void startLicenseTimer();   // 'check for valid license' timer
     void stopLicenseTimer();
@@ -130,6 +131,7 @@ private:
     
     wxString m_install_path;
     bool m_inited;
+    bool m_is_service;
 
 #ifdef __WXMSW__
     wxCHMHelpController* m_help_controller;

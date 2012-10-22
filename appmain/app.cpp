@@ -311,6 +311,7 @@ MainApp::MainApp()
     m_paper_database = NULL;
     m_dbdoc = NULL;
     m_command_line = NULL;
+    m_is_service = false;
 #ifdef __WXMSW__
     m_taskbar_icon = NULL;
 #endif
@@ -321,95 +322,6 @@ void MainApp::processIdle()
 #if APP_CONSOLE==0
     this->ProcessIdle();
 #endif
-}
-
-static void registerLicenseFile(const wxChar* filename)
-{
-    kl::xmlnode root;
-
-    char text[2048];
-
-    FILE* f = fopen(kl::tstr(filename), "rb");
-    if (!f)
-        return;
-
-    int read_bytes = fread(text, 1, 2040, f);
-    text[read_bytes] = 0;
-
-    fclose(f);
-
-    // -- check signature --
-    if (text[0] != 0x00 ||
-        text[1] != 0x1a)
-    {
-        cfw::appMessageBox(_("The specified license file is not valid."),
-                           _("License Manager"),
-                           wxOK | wxICON_EXCLAMATION | wxCENTER);
-        return;
-    }
-
-
-    if (!root.parse(text+2))
-    {
-        cfw::appMessageBox(_("The specified license file does not exist."),
-                           _("License Manager"),
-                           wxOK | wxICON_EXCLAMATION | wxCENTER);
-        return;
-    }
-        
-
-    kl::xmlnode& apptag_node = root.getChild(L"app_tag");
-    kl::xmlnode& actcode_node = root.getChild(L"act_code");
-
-    if (apptag_node.isEmpty() || actcode_node.isEmpty())
-    {
-        cfw::appMessageBox(_("The specified license file is not valid."),
-                           _("License Manager"),
-                           wxOK | wxICON_EXCLAMATION | wxCENTER);
-        return;
-    }
-
-    if (0 != strcasecmp(kl::tostring(apptag_node.getNodeValue()).c_str(), PALADIN_APP_TAG))
-    {
-        cfw::appMessageBox(_("The specified license file is not valid for this application."),
-                           _("License Manager"),
-                           wxOK | wxICON_EXCLAMATION | wxCENTER);
-        return;
-    }
-
-    bool success = false;
-
-    paladin::actcode_t act_code = paladin::getCodeFromString(towx(actcode_node.getNodeValue()).mbc_str());
-
-    paladin::Authentication* auth = paladin::createAuthObject(
-                                                  kl::tostring(APP_COMPANY_KEY).c_str(),
-                                                  PALADIN_APP_TAG,
-                                                  PALADIN_APP_TAG APP_PALADIN_TEMP_LICENSE_COUNTER,
-                                                  paladin::modeLocal);
-    auth->setActivationCode(act_code);
-    if (auth->checkAuth() == paladin::errNone)
-    {
-        g_auth->setActivationCode(act_code);
-
-        if (g_auth->checkAuth() == paladin::errNone)
-        {
-            int days_left = g_auth->getDaysLeft();
-
-            cfw::appMessageBox(_("Your product license has been activated successfully."),
-                               _("License Manager"),
-                               wxOK | wxICON_INFORMATION | wxCENTER);
-            success = true;
-        }
-    }
-
-    delete auth;
-
-    if (!success)
-    {
-        cfw::appMessageBox(_("The specified license file is not valid for this application, or this license has already been activated."),
-                           _("License Manager"),
-                           wxOK | wxICON_EXCLAMATION | wxCENTER);
-    }
 }
 
 
@@ -431,13 +343,11 @@ bool MainApp::OnInit()
                                        PALADIN_APP_TAG,
                                        PALADIN_APP_TAG APP_PALADIN_TEMP_LICENSE_COUNTER);
     
-    // check for a '-r' parameter, which registers a license file
     if (argc > 1)
     {
-        if (::wxStrcmp(argv[1], wxT("-r")) == 0 && argc >= 3)
+        if (g_app->getCommandLine()->Found(wxT("s")))
         {
-            registerLicenseFile(argv[2]);
-            return false;
+            m_is_service = true;
         }
     }
 
@@ -1122,6 +1032,7 @@ wxCmdLineParser* MainApp::getCommandLine()
     static const wxCmdLineEntryDesc cmd_line_desc[] =
     {
         { wxCMD_LINE_SWITCH, "n", "noext",   "don't start extensions automatically" },
+        { wxCMD_LINE_SWITCH, "s", "svc",     "used when starting application in service mode" },
         { wxCMD_LINE_NONE }
     };
 

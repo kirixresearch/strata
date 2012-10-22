@@ -1862,6 +1862,23 @@ void HostApp::isGuiActive(kscript::ExprEnv* env, kscript::Value* retval)
     #endif
 }
 
+// (METHOD) HostApp.isService
+//
+// Description: Returns true if a user interface is present
+//
+// Syntax: function HostApp.isService() : Boolean
+//
+// Remarks: This method returns true is the software is running
+//     as a service.   If the software is run as a desktop application
+//     with a graphical user interface, the method returns false.
+//
+// Returns: True if the software is being run as a service, false otherwise
+    
+void HostApp::isService(kscript::ExprEnv* env, kscript::Value* retval)
+{
+    retval->setBoolean(g_app->isService());
+}
+
 
 // HostApp::evalExpression is private for testing: don't document
 void HostApp::evalExpression(kscript::ExprEnv* env, kscript::Value* retval)
