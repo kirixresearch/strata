@@ -24,6 +24,7 @@
 const TCHAR* g_service_id = _T("SampleSvc");
 const TCHAR* g_service_description = _T("General Purpose Application Service");
 const TCHAR* g_service_appexe = _T("sample.exe");
+const TCHAR* g_service_cmdline = _T("");
 
 
 /* sample config file
@@ -32,6 +33,7 @@ const TCHAR* g_service_appexe = _T("sample.exe");
     "service_id":           "SampleSvc",
     "service_description":  "Sample Service",
     "service_appexe":       "sample.exe"
+    "service_cmdline":      ""
 }
 
 */
@@ -345,22 +347,26 @@ bool LoadConfig()
     kl::JsonNode node_service_id = node["service_id"];
     kl::JsonNode node_service_description = node["service_description"];
     kl::JsonNode node_service_appexe = node["service_appexe"];
+    kl::JsonNode node_service_cmdline = node["service_cmdline"];
 
-    if (node_service_id.isNull() || node_service_description.isNull() || node_service_appexe.isNull())
+    if (node_service_id.isNull() || node_service_description.isNull() || node_service_appexe.isNull() || node_service_cmdline.isNull())
         return false;
 
     
-    TCHAR* service_id = new TCHAR[255];
-    TCHAR* service_description = new TCHAR[255];
-    TCHAR* service_appexe = new TCHAR[255];
+    TCHAR* service_id = new TCHAR[node_service_id.getString().length() + 1];
+    TCHAR* service_description = new TCHAR[node_service_description.getString().length() + 1];
+    TCHAR* service_appexe = new TCHAR[node_service_appexe.getString().length() + 1];
+    TCHAR* service_cmdline = new TCHAR[node_service_cmdline.getString().length() + 1];
 
     _tcscpy(service_id, kl::tstr(node_service_id.getString()));
     _tcscpy(service_description, kl::tstr(node_service_description.getString()));
     _tcscpy(service_appexe, kl::tstr(node_service_appexe.getString()));
+    _tcscpy(service_cmdline, kl::tstr(node_service_cmdline.getString()));
 
     g_service_id = service_id;
     g_service_description = service_description;
     g_service_appexe = service_appexe;
+    g_service_cmdline = service_cmdline;
 
     return true;
 }

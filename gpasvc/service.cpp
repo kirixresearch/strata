@@ -199,7 +199,13 @@ void Pulse()
     if (!IsApplicationRunning())
     {
         logInfo("Process not running... running it now\n");
-        RunApplicationProcess(g_service_appexe_fullpath);
+
+        TCHAR cmdline[MAX_PATH];
+        _tcscpy(cmdline, g_service_appexe_fullpath);
+        _tcscat(cmdline, _T(" "));
+        _tcscat(cmdline, g_service_cmdline);
+
+        RunApplicationProcess(cmdline);
         Sleep(10000);
     }
 
