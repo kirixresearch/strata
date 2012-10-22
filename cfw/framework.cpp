@@ -273,6 +273,7 @@ public:
                             wxSYSTEM_MENU |
                             wxNO_FULL_REPAINT_ON_RESIZE |
                             wxCLIP_CHILDREN |
+                            wxWANTS_CHARS |
                             flags)
     {
         m_child = NULL;
