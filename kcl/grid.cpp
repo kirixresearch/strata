@@ -43,16 +43,7 @@
 
 
 #ifdef __WXMSW__
-
-
-#if wxCHECK_VERSION(2,9,0)
-#include "wx/msw/dc.h"
-#endif
-
-
 #include <wx/msw/uxtheme.h>
-
-
 #endif
 
 // -- event definitions --

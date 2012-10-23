@@ -9,6 +9,11 @@
  */
 
 #include <wx/wx.h>
+
+#if wxCHECK_VERSION(2,9,0)
+#include "wx/msw/dc.h"
+#endif
+
 #include "util.h"
 
 
@@ -142,6 +147,4 @@ void* getHdcFrom(wxDC& dc)
 
 };  // namespace kcl
 
-
-#endif
 
