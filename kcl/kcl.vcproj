@@ -715,6 +715,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\util.cpp"
+				>
+			</File>
+			<File
 				RelativePath="validcontrol.cpp"
 				>
 				<FileConfiguration
