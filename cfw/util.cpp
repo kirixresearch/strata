@@ -9,18 +9,18 @@
  */
 
 
-#ifdef WIN32
-#include "wx/fontutil.h"
-#endif
-
 
 #include <wx/wx.h>
 #include <wx/tokenzr.h>
+#include <wx/treectrl.h>
+#include <wx/config.h>
 #include <xcm/xcm.h>
-#include <kl/klib.h>
-#include "cfw.h"
+#include <kl/math.h>
 #include "util.h"
 
+#ifdef WIN32
+#include "wx/fontutil.h"
+#endif
 
 #ifdef __WXGTK__
 #include <gtk/gtk.h>

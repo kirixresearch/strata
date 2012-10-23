@@ -13,9 +13,6 @@
 #define __CFW_PREFS_H
 
 
-#include <wx/wx.h>
-#include <wx/config.h>
-
 
 namespace cfw
 {

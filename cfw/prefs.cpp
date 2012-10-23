@@ -15,6 +15,7 @@
 
 
 #include <wx/wx.h>
+#include <wx/msw/registry.h>
 #include <xcm/xcm.h>
 #include "prefs.h"
 #include "prefs_private.h"

@@ -13,7 +13,7 @@
 #define __KCL_WIZARD_H
 
 
-#include <wx/wx.h>
+
 #include <xcm/signal.h>
 #include <vector>
 

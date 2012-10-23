@@ -17,7 +17,6 @@
 #define __CFW_PROPERTIESPANEL_H
 
 
-#include <xcm/xcm.h>
 #include "framework.h"
 
 
@@ -44,7 +43,7 @@ public:
 
 private:
 
-    // -- IDocument --
+    // IDocument
     bool initDoc(cfw::IFramePtr frame,
                  cfw::IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,
@@ -53,7 +52,7 @@ private:
     wxWindow* getDocumentWindow();
     void setDocumentFocus();
 
-    // -- frame events --
+    // frame events
     void onActiveChildChanged(cfw::IDocumentSitePtr doc_site);
     void onFrameEvent(cfw::Event& evt);
     
