@@ -227,22 +227,7 @@ wxColor getDefaultGreenBarColor(const wxColor& color, int ialpha)
     return c;
 }
 
-#if defined(__WXMSW__)
-void* getHdcFrom(wxDC& dc)
-{
-    #if wxCHECK_VERSION(2,9,0)
-    wxMSWDCImpl* msw_dc = (wxMSWDCImpl*)dc.GetImpl();
-    return (void*)msw_dc->GetHDC();
-    #else
-    return (void*)dc.GetHDC();
-    #endif
-}
-#else
-void* getHdcFrom(wxDC& dc)
-{
-    return (void*)0;
-}
-#endif
+
 
 
 static bool DrawUxThemeCheckBox(wxWindow* wnd,
