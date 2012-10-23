@@ -13,8 +13,10 @@
 #define __CFW_FSPANEL_PRIVATE_H
 
 
-#include "../kcl/kcl.h"
-
+namespace kcl
+{
+    class Button;
+}
 
 namespace cfw
 {

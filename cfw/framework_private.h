@@ -14,7 +14,6 @@
 
 
 #include <queue>
-#include "../kcl/kcl.h"
 #include <wx/aui/aui.h>
 
 

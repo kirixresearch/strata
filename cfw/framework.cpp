@@ -23,7 +23,6 @@
 #include "framework_private.h"
 #include "statusbar.h"
 #include "artprovider.h"
-#include "../kcl/kcl.h"
 
 #include <wx/aui/aui.h>
 #include <wx/minifram.h>

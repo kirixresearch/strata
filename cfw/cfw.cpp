@@ -16,8 +16,6 @@
 
 #include <wx/wx.h>
 #include <xcm/xcm.h>
-#include <kl/klib.h>
-#include "../kcl/kcl.h"
 
 #include "prefs.h"
 #include "framework.h"

@@ -17,8 +17,8 @@
 #include <wx/wx.h>
 #include <wx/dnd.h>
 #include <xcm/xcm.h>
+#include "../kcl/button.h"
 #include "cfw.h"
-#include "../kcl/kcl.h"
 #include "fspanel_private.h"
 #include "fsitems_private.h"
 #include "fspaneltreeview.h"
