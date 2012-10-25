@@ -1053,6 +1053,13 @@ int ExportPkgJob::runJob()
     for (it = m_info.begin(); it != m_info.end(); ++it)
     {
         tango::IFileInfoPtr finfo = db->getFileInfo(towstr(it->src_path));
+
+        if (finfo.isNull())
+        {
+            getJobInfo()->setState(cfw::jobStateFailed);
+            return 0;
+        }
+
         if ((finfo->getType() == tango::filetypeFolder) && !finfo->isMount())
         {
             addFolder(info, db, towstr(it->src_path), towstr(it->stream_name), it->compressed);
