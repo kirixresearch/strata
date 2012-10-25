@@ -1369,10 +1369,20 @@ bool AppController::init()
     // if we don't have an open database yet, the user did not start with
     // a project open and exited the Project Manager dialog without
     // selecting a project, so bail out and exit the application
+
     if (g_app->getDatabase().isNull())
     {
-        m_frame->getFrameWindow()->Close();
-        return false;
+        // post the event instead of calling Close().  This solves a problem
+        // with an assertion while/after removing event handlers
+
+        //m_frame->getFrameWindow()->Close(true);
+
+        wxCloseEvent evt(wxEVT_CLOSE_WINDOW, m_frame->getFrameWindow()->GetId());
+        evt.SetEventObject(m_frame->getFrameWindow());
+        evt.SetCanVeto(false);
+        ::wxPostEvent(m_frame->getFrameWindow(), evt);
+
+        return true;
     }
 
     // populate the statusbar
