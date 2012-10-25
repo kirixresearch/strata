@@ -1201,6 +1201,7 @@ bool OdbcDatabase::open(int type,
         default:
         case tango::dbtypeOdbc: // (dsn)
         {
+
             m_using_dsn = true;
             m_db_type = tango::dbtypeOdbc;
             
@@ -1211,10 +1212,12 @@ bool OdbcDatabase::open(int type,
             if (database.length() > 0)
             {
                 m_conn_str += database;
+                swprintf(db_label_buf, 1024, L"ODBC DSN %ls", database.c_str());
             }
              else
             {
                 m_conn_str += server;
+                swprintf(db_label_buf, 1024, L"ODBC DSN %ls", server.c_str());
             }
             
             if (username.length() > 0)

@@ -1,3 +1,8 @@
 Run this command after changing the version information:
 
-svn copy https://code.kirix.com/svn/strata/trunk https://code.kirix.com/svn/strata/tags/app_4_5_0 -m "tagged version 4.5.0"
+svn copy https://code.kirix.com/svn/strata/trunk https://code.kirix.com/svn/strata/tags/app_4_5_1 -m "tagged version 4.5.1"
+
+
+To delete an svn:externals property, run
+
+svn propget svn:externals
