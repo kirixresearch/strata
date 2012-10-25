@@ -69,6 +69,7 @@
 
 // application includes
 #include "connectionmgr.h"
+#include "appconfig.h"
 #include "app.h"
 #include "apputil.h"
 #include "appprefs.h"

@@ -49,6 +49,7 @@ public:
     AppController* getAppController();
     cfw::IAppPreferencesPtr getAppPreferences();
     cfw::IAppPreferencesPtr getAppDefaultPreferences();
+    IAppConfigPtr getAppConfig();
     wxHelpControllerBase* getHelpController();
     wxPrintPaperDatabase* getPaperDatabase();
     ExtensionMgr* getExtensionMgr();
@@ -79,6 +80,7 @@ public:
     bool isDatabaseOpen();
     bool isDatabaseReadOnly();
     bool isService() const { return m_is_service; }
+    bool isServiceConfig() const { return m_is_service_config; }
 
     void startLicenseTimer();   // 'check for valid license' timer
     void stopLicenseTimer();
@@ -132,6 +134,7 @@ private:
     wxString m_install_path;
     bool m_inited;
     bool m_is_service;
+    bool m_is_service_config;
 
 #ifdef __WXMSW__
     wxCHMHelpController* m_help_controller;

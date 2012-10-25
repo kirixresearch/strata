@@ -344,6 +344,7 @@ private:
     ScriptCommandEventRouter* m_script_command_router;
 
     wxMenu* m_view_menu;    // stored so we can insert/remove items
+    wxString m_frame_caption;
 
     BorderPanelHelper* m_borderpanel_helper;  // helper for border panel popups    
     ColorPanelHelper* m_colorpanel_helper;  // helper for color panel popups

@@ -235,9 +235,12 @@ ExtensionInfo& ExtensionMgr::installExtension(const wxString& path)
         return empty_info;
         
     // copy the extension to the extensions folder
+    wxString guid = info.guid;
+    guid.MakeLower();
+
     wxString dest_path = dir;
     dest_path += PATH_SEPARATOR_CHAR;
-    dest_path += info.guid;
+    dest_path += guid;
     
     if (info.copy_on_install)
     {
@@ -611,38 +614,30 @@ bool ExtensionMgr::loadEntries()
     m_extensions.clear();
 
     // read all data from the sysconfig
-    wxConfig* config = new wxConfig(APP_CONFIG_KEY, APP_COMPANY_KEY);
-    config->SetPath(wxT("/Extensions"));
+    IAppConfigPtr config = g_app->getAppConfig();
+    config->setPath(L"/Extensions");
+
+    std::vector<std::wstring> guids = config->getGroups();
+    std::vector<std::wstring>::iterator it;
     
-    std::vector<wxString> guids;
-    std::vector<wxString>::iterator it;
-    
-    wxString guid;
-    long counter = 0;
-    bool group_cont = config->GetFirstGroup(guid, counter);
-    while (group_cont)
-    {
-        guids.push_back(guid);
-        group_cont = config->GetNextGroup(guid, counter);
-    }
-    
-    
+    std::wstring str;
+
     for (it = guids.begin(); it != guids.end(); ++it)
     {
-        config->SetPath(wxString::Format(wxT("/Extensions/%s"),(const wxChar*)*it));
+        config->setPath(L"/Extensions/" + *it);
         
         ExtensionInfo info;
         info.guid = *it;
-        config->Read(wxT("Path"), &info.path);
-        config->Read(wxT("Name"), &info.name);
-        config->Read(wxT("Author"), &info.author);
-        config->Read(wxT("Bitmap"), &info.bitmap_path);
-        config->Read(wxT("Startup"), &info.startup_path);
-        config->Read(wxT("Description"), &info.description);
-        config->Read(wxT("MajorVersion"), &info.major_version);
-        config->Read(wxT("MinorVersion"), &info.minor_version);
-        config->Read(wxT("SubminorVersion"), &info.subminor_version);
-        config->Read(wxT("RunAtStartup"), &info.run_at_startup);
+        config->read(L"Path",            str, L"");                     info.path = towx(str);
+        config->read(L"Name",            str, L"");                     info.name = towx(str);
+        config->read(L"Author",          str, L"");                     info.author = towx(str);
+        config->read(L"Bitmap",          str, L"");                     info.bitmap_path = towx(str);
+        config->read(L"Startup",         str, L"");                     info.startup_path = towx(str);
+        config->read(L"Description",     str, L"");                     info.description = towx(str);
+        config->read(L"MajorVersion",    &info.major_version, 0);
+        config->read(L"MinorVersion",    &info.minor_version, 0);
+        config->read(L"SubminorVersion", &info.subminor_version, 0);
+        config->read(L"RunAtStartup",    &info.run_at_startup, 0);
 
         m_extensions.push_back(info);
     }
@@ -651,8 +646,6 @@ bool ExtensionMgr::loadEntries()
     // now sort them
     std::sort(m_extensions.begin(), m_extensions.end(), sortByName);
 
-
-    delete config;
     return true;
 }
 
@@ -662,22 +655,21 @@ bool ExtensionMgr::saveEntry(const ExtensionInfo& info)
     wxString guid = info.guid;
     guid.MakeLower();
     
-    wxConfig* config = new wxConfig(APP_CONFIG_KEY, APP_COMPANY_KEY);
-    config->SetPath(wxT("/Extensions"));
-    config->SetPath(guid);
+    IAppConfigPtr config = g_app->getAppConfig();
+    config->setPath(L"/Extensions");
+    config->setPath(towstr(guid));
     
-    config->Write(wxT("Path"), info.path);
-    config->Write(wxT("Name"), info.name);
-    config->Write(wxT("Author"), info.author);
-    config->Write(wxT("Bitmap"), info.bitmap_path);
-    config->Write(wxT("Startup"), info.startup_path);
-    config->Write(wxT("Description"), info.description);
-    config->Write(wxT("MajorVersion"), info.major_version);
-    config->Write(wxT("MinorVersion"), info.minor_version);
-    config->Write(wxT("SubminorVersion"), info.subminor_version);
-    config->Write(wxT("RunAtStartup"), info.run_at_startup);
+    config->write(wxT("Path"),            towstr(info.path));
+    config->write(wxT("Name"),            towstr(info.name));
+    config->write(wxT("Author"),          towstr(info.author));
+    config->write(wxT("Bitmap"),          towstr(info.bitmap_path));
+    config->write(wxT("Startup"),         towstr(info.startup_path));
+    config->write(wxT("Description"),     towstr(info.description));
+    config->write(wxT("MajorVersion"),    info.major_version);
+    config->write(wxT("MinorVersion"),    info.minor_version);
+    config->write(wxT("SubminorVersion"), info.subminor_version);
+    config->write(wxT("RunAtStartup"),    info.run_at_startup);
 
-    delete config;
     return true;
 }
 
@@ -686,11 +678,7 @@ bool ExtensionMgr::removeEntry(const ExtensionInfo& info)
     wxString guid = info.guid;
     guid.MakeLower();
     
-    wxConfig* config = new wxConfig(APP_CONFIG_KEY, APP_COMPANY_KEY);
-    config->SetPath(wxT("/"));
-    config->DeleteGroup(wxString::Format(wxT("/Extensions/%s"),(const wxChar*)guid));
-    
-    delete config;
-    return true;
+    IAppConfigPtr config = g_app->getAppConfig();
+    return config->deleteGroup(L"/Extensions/" + towstr(guid));
 }
 

@@ -312,6 +312,7 @@ MainApp::MainApp()
     m_dbdoc = NULL;
     m_command_line = NULL;
     m_is_service = false;
+    m_is_service_config = false;
 #ifdef __WXMSW__
     m_taskbar_icon = NULL;
 #endif
@@ -348,6 +349,11 @@ bool MainApp::OnInit()
         if (g_app->getCommandLine()->Found(wxT("s")))
         {
             m_is_service = true;
+        }
+
+        if (g_app->getCommandLine()->Found(wxT("svccfg")))
+        {
+            m_is_service_config = true;
         }
     }
 
@@ -994,6 +1000,11 @@ cfw::IAppPreferencesPtr MainApp::getAppDefaultPreferences()
     return m_app_default_preferences;
 }
 
+IAppConfigPtr MainApp::getAppConfig()
+{
+    return createAppConfigObject();
+}
+
 wxFrame* MainApp::getMainWindow()
 {
     return m_frame_wnd;
@@ -1033,6 +1044,7 @@ wxCmdLineParser* MainApp::getCommandLine()
     {
         { wxCMD_LINE_SWITCH, "n", "noext",   "don't start extensions automatically" },
         { wxCMD_LINE_SWITCH, "s", "svc",     "used when starting application in service mode" },
+        { wxCMD_LINE_SWITCH, "c", "svccfg",  "configure the service (windows only)" },
         { wxCMD_LINE_NONE }
     };
 

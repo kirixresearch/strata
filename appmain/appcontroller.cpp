@@ -579,6 +579,7 @@ AppController::AppController()
     m_view_menu = NULL;
     m_script_command_router = NULL;
     m_data_locked = true;
+    m_frame_caption = APPLICATION_NAME;
 }
 
 AppController::~AppController()
@@ -635,28 +636,28 @@ bool AppController::init()
     // get saved windows dimensions
     long x, y, w, h, screen_x, screen_y;
     bool maximized;
-    wxString perspective;
-    int clear_perspective_counter = 0;
+    std::wstring perspective;
+    long clear_perspective_counter = 0;
     
     screen_x = wxSystemSettings::GetMetric(wxSYS_SCREEN_X);
     screen_y = wxSystemSettings::GetMetric(wxSYS_SCREEN_Y);
     screen_y -= getTaskBarHeight();
 
-    wxConfig* config = new wxConfig(APP_CONFIG_KEY, APP_COMPANY_KEY);
-    config->SetPath(wxT("/WindowDimensions"));
-    config->Read(wxT("XPos"), &x, 0);
-    config->Read(wxT("YPos"), &y, 0);
-    config->Read(wxT("Width"), &w, screen_x);
-    config->Read(wxT("Height"), &h, screen_y);
-    config->Read(wxT("Maximized"), &maximized, false);
-    config->Read(wxT("MainPerspective"), &perspective, wxEmptyString);
-    config->Read(wxT("ClearPerspectiveCounter"), &clear_perspective_counter, 0);
-    delete config;
+    IAppConfigPtr config = g_app->getAppConfig();
+    config->setPath(L"/WindowDimensions");
+    config->read(L"XPos",                    &x,                         0);
+    config->read(L"YPos",                    &y,                         0);
+    config->read(L"Width",                   &w,                         screen_x);
+    config->read(L"Height",                  &h,                         screen_y);
+    config->read(L"Maximized",               &maximized,                 false);
+    config->read(L"MainPerspective",         perspective,                L"");
+    config->read(L"ClearPerspectiveCounter", &clear_perspective_counter, 0);
+
 
     // if there is a new perspective version out there,
     // don't use any existing one
     if (clear_perspective_counter < ClearPerspectiveCounter)
-        perspective = wxEmptyString;
+        perspective = L"";
 
     if (x < 0 || x > screen_x-100)
         x = 0;
@@ -671,6 +672,16 @@ bool AppController::init()
     if (h > screen_y)
         h = screen_y;
 
+    // set frame caption value
+    if (g_app->isServiceConfig())
+    {
+        m_frame_caption = APPLICATION_NAME;
+        m_frame_caption += wxT(" [Service Configuration]");
+    }
+     else
+    {
+        m_frame_caption = APPLICATION_NAME;
+    }
 
     // must be initialized to NULL (we check these often)
     m_borderpanel_helper = NULL;    
@@ -681,7 +692,7 @@ bool AppController::init()
     if (m_frame.isNull())
         return false;
     
-    m_frame->create(NULL, APPLICATION_NAME, x, y, w, h);
+    m_frame->create(NULL, m_frame_caption, x, y, w, h);
 
 #if defined(__WXMSW__)
 
@@ -1221,8 +1232,8 @@ bool AppController::init()
 
     // load frame perspective
     
-    if (perspective.Length() > 0)
-        m_frame->getAuiManager().LoadPerspective(perspective, false);
+    if (perspective.length() > 0)
+        m_frame->getAuiManager().LoadPerspective(towx(perspective), false);
     
     
     // create the relationship diagram watcher (watches for files that are
@@ -1388,8 +1399,8 @@ void AppController::resetToDefaultPerspective()
     g_app->getAppPreferences()->setLong(wxT("general.toolbar.style"), default_toolbar_style);
     g_app->getAppPreferences()->flush();
     
-    wxString perspective;
-    int x, y, w, h, screen_x, screen_y;
+    std::wstring perspective;
+    long x, y, w, h, screen_x, screen_y;
     bool maximized;
     
     screen_x = wxSystemSettings::GetMetric(wxSYS_SCREEN_X);
@@ -1397,14 +1408,14 @@ void AppController::resetToDefaultPerspective()
     screen_y -= getTaskBarHeight();
     
     // read the default values (if they exist)
-    wxConfig* config = new wxConfig(APP_CONFIG_KEY, APP_COMPANY_KEY);
-    config->SetPath(wxT("/WindowDimensions"));
-    config->Read(wxT("DefaultXPos"), &x, 0);
-    config->Read(wxT("DefaultYPos"), &y, 0);
-    config->Read(wxT("DefaultWidth"), &w, screen_x);
-    config->Read(wxT("DefaultHeight"), &h, screen_y);
-    config->Read(wxT("DefaultMaximized"), &maximized, false);
-    config->Read(wxT("DefaultPerspective"), &perspective, wxEmptyString);
+    IAppConfigPtr config = g_app->getAppConfig();
+    config->setPath(L"/WindowDimensions");
+    config->read(L"DefaultXPos",        &x,           0);
+    config->read(L"DefaultYPos",        &y,           0);
+    config->read(L"DefaultWidth",       &w,           screen_x);
+    config->read(L"DefaultHeight",      &h,           screen_y);
+    config->read(L"DefaultMaximized",   &maximized,   false);
+    config->read(L"DefaultPerspective", perspective,  L"");
     
     // load the default perspective
     g_app->getMainWindow()->SetSize(x,y,w,h);
@@ -1414,15 +1425,12 @@ void AppController::resetToDefaultPerspective()
     perspective = m_frame->getAuiManager().SavePerspective();
     
     // write out the default values
-    config->Write(wxT("DefaultXPos"), x);
-    config->Write(wxT("DefaultYPos"), y);
-    config->Write(wxT("DefaultWidth"), w);
-    config->Write(wxT("DefaultHeight"), h);
-    config->Write(wxT("DefaultMaximized"), maximized);
-    config->Write(wxT("DefaultPerspective"), perspective);
-    
-    // make sure we delete the config
-    delete config;
+    config->write(L"DefaultXPos",        x);
+    config->write(L"DefaultYPos",        y);
+    config->write(L"DefaultWidth",       w);
+    config->write(L"DefaultHeight",      h);
+    config->write(L"DefaultMaximized",   maximized);
+    config->write(L"DefaultPerspective", perspective);
     
     frame->Thaw();
 }
@@ -3578,7 +3586,7 @@ void AppController::onFrameDestroy()
 
 
     wxAuiManager& mgr = m_frame->getAuiManager();
-    wxString perspective = mgr.SavePerspective();
+    std::wstring perspective = towstr(mgr.SavePerspective());
     
 
     // main window dimensions
@@ -3587,16 +3595,16 @@ void AppController::onFrameDestroy()
     wxSize size = frame_wnd->GetSize();
     bool maximized = frame_wnd->IsMaximized();
 
-    wxConfig* config = new wxConfig(APP_CONFIG_KEY, APP_COMPANY_KEY);
-    config->SetPath(wxT("/WindowDimensions"));
-    config->Write(wxT("XPos"), pos.x);
-    config->Write(wxT("YPos"), pos.y);
-    config->Write(wxT("Width"), size.GetWidth());
-    config->Write(wxT("Height"), size.GetHeight());
-    config->Write(wxT("Maximized"), maximized);
-    config->Write(wxT("MainPerspective"), perspective);
-    config->Write(wxT("ClearPerspectiveCounter"), (long)ClearPerspectiveCounter);
-    delete config;
+    IAppConfigPtr config = g_app->getAppConfig();
+    config->setPath(L"/WindowDimensions");
+    config->write(L"XPos",                    (long)pos.x);
+    config->write(L"YPos",                    (long)pos.y);
+    config->write(L"Width",                   (long)size.GetWidth());
+    config->write(L"Height",                  (long)size.GetHeight());
+    config->write(L"Maximized",               maximized);
+    config->write(L"MainPerspective",         perspective);
+    config->write(L"ClearPerspectiveCounter", (long)ClearPerspectiveCounter);
+
 
     // give extensions a chance to stop
     frame_wnd->Show(false);
@@ -3667,7 +3675,7 @@ void AppController::updateTitle()
     cfw::IDocumentSitePtr doc_site = g_app->getMainFrame()->getActiveChild();
     if (doc_site.isNull())
     {
-        title = APPLICATION_NAME;
+        title = m_frame_caption;
     }
      else
     {
@@ -3679,11 +3687,11 @@ void AppController::updateTitle()
             title = doc->getDocumentTitle();
             if (title.Length() > 0)
                 title += wxT(" - ");
-            title += APPLICATION_NAME;
+            title += m_frame_caption;
         }
          else
         {
-            title = APPLICATION_NAME;
+            title = m_frame_caption;
         }
     }
     

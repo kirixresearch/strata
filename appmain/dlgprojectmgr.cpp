@@ -36,37 +36,33 @@ void ProjectMgr::refresh()
     bool display_project_size = g_app->getAppPreferences()->getBoolean(wxT("app.project_mgr.display_project_size"), true);
 
     // read all data from the sysconfig
-    wxConfig* config = new wxConfig(APP_CONFIG_KEY, APP_COMPANY_KEY);
+    IAppConfigPtr config = g_app->getAppConfig();
+    config->setPath(L"/RecentDatabases");
 
-    config->SetPath(wxT("/RecentDatabases"));
+    std::vector<std::wstring> project_keys = config->getGroups();
+    std::vector<std::wstring>::iterator it;
 
-    wxString str;
+
+    std::wstring dbname, dblocation, dbuser, dbpasswd;
     bool local;
-    wxString dbname, dblocation, dbuser, dbpasswd;
     ProjectInfo c;
 
-    long counter;
-    bool group_cont = config->GetFirstGroup(str, counter);
-    while (group_cont)
+    for (it = project_keys.begin(); it != project_keys.end(); ++it)
     {
-        local = true;
-        dbname = wxT("");
-        dblocation = wxT("");
-        dbuser = wxT("");
-        dbpasswd = wxT("");
+        config->setPath(L"/RecentDatabases/" + *it);
 
-        config->Read(wxString::Format(wxT("%s/Local"), (const wxChar*)str), &local);
-        config->Read(wxString::Format(wxT("%s/Name"), (const wxChar*)str), &dbname);
-        config->Read(wxString::Format(wxT("%s/Location"), (const wxChar*)str), &dblocation);
-        config->Read(wxString::Format(wxT("%s/User"), (const wxChar*)str), &dbuser);
-        config->Read(wxString::Format(wxT("%s/Password"), (const wxChar*)str), &dbpasswd);
+        config->read(L"Local",    &local,     true);
+        config->read(L"Name",     dbname,     L"");
+        config->read(L"Location", dblocation, L"");
+        config->read(L"User",     dbuser,     L"");
+        config->read(L"Password", dbpasswd,   L"");
 
-        c.entry_name = str;
+        c.entry_name = towx(*it);
         c.local = local;
-        c.name = dbname;
-        c.location = dblocation;
-        c.user_id = dbuser;
-        c.passwd = dbpasswd;
+        c.name = towx(dbname);
+        c.location = towx(dblocation);
+        c.user_id = towx(dbuser);
+        c.passwd = towx(dbpasswd);
 
         if (c.name.Length() == 0)
         {
@@ -88,11 +84,7 @@ void ProjectMgr::refresh()
             c.passwd = wxT("");
 
         m_projects.push_back(c);
-
-        group_cont = config->GetNextGroup(str, counter);
     }
-
-    delete config;
 }
 
 bool ProjectMgr::addProjectEntry(const wxString& name,
@@ -101,55 +93,52 @@ bool ProjectMgr::addProjectEntry(const wxString& name,
                                  const wxString& password,
                                  bool local)
 {
-    wxConfig* config = new wxConfig(APP_CONFIG_KEY, APP_COMPANY_KEY);
-    config->SetPath(wxT("/RecentDatabases"));
+    IAppConfigPtr config = g_app->getAppConfig();
+    config->setPath(L"/RecentDatabases");
 
     wxString new_connection;
     int counter = 0;
     while (1)
     {
         new_connection = wxString::Format(wxT("connection%03d"), counter++);
-        if (!config->Exists(new_connection))
+        if (!config->exists(towstr(new_connection)))
             break;
     }
 
-    config->SetPath(new_connection);
-    config->Write(wxT("Local"), local);
-    config->Write(wxT("Name"), name);
-    config->Write(wxT("Location"), location);
-    config->Write(wxT("User"), user_id);
-    config->Write(wxT("Password"), password);
-
-    delete config;
+    config->setPath(towstr(new_connection));
+    config->write(wxT("Local"), local);
+    config->write(wxT("Name"), towstr(name));
+    config->write(wxT("Location"), towstr(location));
+    config->write(wxT("User"), towstr(user_id));
+    config->write(wxT("Password"), towstr(password));
 
     refresh();
 
     return true;
 }
 
-bool ProjectMgr::modifyProjectEntry(int idx, const wxString& name,
+bool ProjectMgr::modifyProjectEntry(int idx,
+                                    const wxString& name,
                                     const wxString& location,
                                     const wxString& user_id,
                                     const wxString& password)
 {
-    wxConfig* config = new wxConfig(APP_CONFIG_KEY, APP_COMPANY_KEY);
-    config->SetPath(wxT("/RecentDatabases"));
-    config->SetPath(m_projects[idx].entry_name);
+    IAppConfigPtr config = g_app->getAppConfig();
+    config->setPath(L"/RecentDatabases");
+    config->setPath(towstr(m_projects[idx].entry_name));
 
     if (name.Length() > 0)
-        config->Write(wxT("Name"), name);
+        config->write(wxT("Name"), towstr(name));
 
     if (location.Length() > 0)
-        config->Write(wxT("Location"), location);
+        config->write(wxT("Location"), towstr(location));
 
     if (user_id.Length() > 0)
-        config->Write(wxT("User"), user_id);
+        config->write(wxT("User"), towstr(user_id));
 
     if (password.Length() > 0)
-        config->Write(wxT("Password"), password);
-
-    delete config;
-
+        config->write(wxT("Password"), towstr(password));
+    
     refresh();
 
     return true;
@@ -157,10 +146,9 @@ bool ProjectMgr::modifyProjectEntry(int idx, const wxString& name,
 
 bool ProjectMgr::deleteProjectEntry(int idx)
 {
-    wxConfig* config = new wxConfig(APP_CONFIG_KEY, APP_COMPANY_KEY);
-    config->SetPath(wxT("/RecentDatabases"));
-    config->DeleteGroup(m_projects[idx].entry_name);
-    delete config;
+    IAppConfigPtr config = g_app->getAppConfig();
+    config->setPath(L"/RecentDatabases");
+    config->deleteGroup(towstr(m_projects[idx].entry_name));
 
     refresh();
 
