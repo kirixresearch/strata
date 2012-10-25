@@ -21,7 +21,6 @@
 #endif
 
 
-// -- XPM's --
 
 /* XPM */
 static const char* xpm_relationshipbox_close[] = {
@@ -357,7 +356,7 @@ int RelationBox::getItemY(const wxString& expr)
         {
             if (i < row_offset)
             {
-                // -- before the begin --
+                // before the begin
                 return BOX_BORDER_SIZE+(BOX_CAPTION_HEIGHT/2);
             }
 
@@ -376,7 +375,7 @@ int RelationBox::getItemY(const wxString& expr)
 
     if (!found)
     {
-        // -- before the begin --
+        // before the begin
         return BOX_BORDER_SIZE+(BOX_CAPTION_HEIGHT/2);
     }
 
@@ -386,9 +385,9 @@ int RelationBox::getItemY(const wxString& expr)
     m_grid->ClientToScreen(&x, &y);
     ScreenToClient(&x, &y);
 
-    // -- if it's close enough to the bottom, just put it
-    //    completely at the bottom.  This cleans up the way
-    //    it looks when multiple lines go to the same location  --
+    // if it's close enough to the bottom, just put it
+    // completely at the bottom.  This cleans up the way
+    // it looks when multiple lines go to the same location
 
     if (abs(cli_height - y) <= 2)
     {
@@ -464,7 +463,7 @@ void RelationBox::onPaint(wxPaintEvent& evt)
     GetClientSize(&cli_width, &cli_height);
 
 
-    // -- draw the background area for the fields --
+    // draw the background area for the fields
     
     dc.SetPen(m_border_pen);
     dc.SetBrush(*wxWHITE);
@@ -474,13 +473,13 @@ void RelationBox::onPaint(wxPaintEvent& evt)
                      cli_height-(BOX_CAPTION_HEIGHT+BOX_BORDER_SIZE-1));
 
 
-    // -- draw the caption background --
+    // draw the caption background
 
     wxRect r(1, 1, cli_width, BOX_CAPTION_HEIGHT+BOX_BORDER_SIZE);
     r.height /= 2;
     r.height++;
 
-    // -- caption top gradient --
+    // caption top gradient
     wxColor top_color = m_base_color;
     wxColor bottom_color = kcl::stepColor(top_color, 170);
     dc.GradientFillLinear(r, bottom_color, top_color, wxNORTH);
@@ -488,12 +487,12 @@ void RelationBox::onPaint(wxPaintEvent& evt)
     r.y += r.height;
     r.y--;
     
-    // -- caption bottom fill --
+    // caption bottom fill
     top_color = kcl::getBaseColor();
     bottom_color = top_color;
     dc.GradientFillLinear(r, top_color, bottom_color, wxSOUTH);
 
-    // -- caption border --
+    // caption border
     dc.SetPen(m_border_pen);
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
     dc.DrawRectangle(0,0, cli_width, BOX_CAPTION_HEIGHT+BOX_BORDER_SIZE+1);
@@ -567,7 +566,7 @@ void RelationBox::doSizing()
     int cli_width, cli_height;
     GetClientSize(&cli_width, &cli_height);
 
-    // -- handle redraw issues outside the grid --
+    // handle redraw issues outside the grid
 
     wxSize oldsize = GetClientSize();
 
@@ -579,7 +578,7 @@ void RelationBox::doSizing()
 
     recalcCaption();
 
-    // -- redraw grid --
+    // redraw grid
 
     m_grid->SetSize(1,
                     BOX_CAPTION_HEIGHT+BOX_BORDER_SIZE+1,
@@ -591,7 +590,7 @@ void RelationBox::doSizing()
 
 void RelationBox::recalcCaption()
 {
-    // -- handle long captions with ellipses --
+    // handle long captions with ellipses
 
     wxSize oldsize = GetClientSize();
 
@@ -1164,7 +1163,7 @@ void RelationBox::populate()
     }
      else
     {
-        // -- no sort --
+        // no sort
     }
 
     std::vector<wxString>::iterator it;
@@ -1314,7 +1313,7 @@ void RelationBox::onCreateLink(wxDragResult& drag_result,
     right_expr = m_grid->getCellString(row, 0);
 
 
-    // -- make sure the line does not already exist --
+    // make sure the line does not already exist
     std::vector<RelationLine*> existing_lines;
     std::vector<RelationLine*>::iterator line_it;
     m_diagram->getLines(left_path, right_path, existing_lines);
@@ -1330,7 +1329,7 @@ void RelationBox::onCreateLink(wxDragResult& drag_result,
         }
     }
 
-    // -- add the line to the diagram --
+    // add the line to the diagram
     m_diagram->addLine(left_path,
                        left_expr,
                        right_path,
@@ -1443,7 +1442,7 @@ bool RelationBox::isLinked(const wxString& expr)
 
 void RelationBox::diagramRefresh()
 { 
-    // -- win32 can redraw this stuff faster than other platforms --
+    // win32 can redraw this stuff faster than other platforms
     
     #ifdef WIN32
         m_diagram->refresh();
@@ -1461,7 +1460,7 @@ void RelationBox::diagramRefresh()
 
 
 
-// -- RelationshipDiagram class implementation --
+// RelationshipDiagram class implementation
 
 enum
 {
@@ -1540,7 +1539,7 @@ void RelationDiagram::save()
     if (db.isNull())
         return;
 
-    // -- save views --
+    // save views
     wxString path;
     path = wxString::Format(wxT("/.appdata/%s/dcfe/relmgrpanel"),
                             towx(g_app->getDatabase()->getActiveUid()).c_str());
@@ -1590,7 +1589,7 @@ void RelationDiagram::load()
 {
     tango::IDatabasePtr db = g_app->getDatabase();
     
-    // -- save views --
+    // save views
     wxString path;
     path = wxString::Format(wxT("/.appdata/%s/dcfe/relmgrpanel"),
                             towx(g_app->getDatabase()->getActiveUid()).c_str());
@@ -1941,8 +1940,8 @@ void RelationDiagram::getOrigRelationInfo(const wxString& left_path,
 
 void RelationDiagram::onBoxClosing(RelationBox* box, bool* allow)
 {
-    // -- if the box is included twice, close the box without
-    //    thinking twice about it --
+    // if the box is included twice, close the box without
+    // thinking twice about it
     wxString box_path = box->getSetPath();
 
     int box_count = 0;
@@ -1960,8 +1959,8 @@ void RelationDiagram::onBoxClosing(RelationBox* box, bool* allow)
     }
 
 
-    // -- if closing the box will delete some lines, ask
-    //    the user's permission --
+    // if closing the box will delete some lines, ask
+    // the user's permission
 
     std::vector<RelationLine*> lines1, lines2;
 
@@ -1990,8 +1989,8 @@ void RelationDiagram::onBoxClosing(RelationBox* box, bool* allow)
 
 static double distFromLine(int x1, int y1, int x2, int y2, int px1, int py1)
 {
-    // -- find the point on the line where the dot
-    //    product with the mouse click will be zero --
+    // find the point on the line where the dot
+    // product with the mouse click will be zero
 
     double pt_dist, x3, y3, dist_from_line;
     int t1, t2;
@@ -2007,8 +2006,9 @@ static double distFromLine(int x1, int y1, int x2, int y2, int px1, int py1)
     x3 = x1 + pt_dist*(x2-x1);
     y3 = y1 + pt_dist*(y2-y1);
 
-    // -- calculate the distance between the
-    //    point above and the mouse click --
+    // calculate the distance between the
+    // point above and the mouse click
+
     dist_from_line = sqrt((px1-x3)*(px1-x3) + (py1-y3)*(py1-y3));
 
     return dist_from_line;
@@ -2069,7 +2069,7 @@ bool RelationDiagram::addBox(const wxString& path,
                              int width,
                              int height)
 {
-    // -- don't allow a set to be added twice (for now?) --
+    // don't allow a table to be added twice (for now?)
     std::vector<RelationBox*>::iterator it;
     for (it = m_boxes.begin(); it != m_boxes.end(); ++it)
     {
@@ -2088,7 +2088,7 @@ bool RelationDiagram::addBox(const wxString& path,
 
     if (x <= 0 && y <= 0)
     {
-        // -- look for a free spot --
+        // look for a free spot
         
         x = 10;
         y = 10;
@@ -2171,7 +2171,7 @@ void RelationDiagram::onKeyDown(wxKeyEvent& evt)
         {
             deleteLine(m_selected_line);
 
-            // -- redraw all the boxes --
+            // redraw all the boxes
             std::vector<RelationBox*>::iterator it;
             for (it = m_boxes.begin(); it != m_boxes.end(); ++it)
                 (*it)->repopulate();
@@ -2402,7 +2402,7 @@ void RelationDiagram::onSetStructureChanged(const wxString& set_path)
         fieldnames.push_back(towx(colinfo->getName()));
     }
     
-    // -- check to see if we need to delete any relationship lines --
+    // check to see if we need to delete any relationship lines
     
     std::vector<RelationLine*>::iterator it;
     std::vector<RelationLine*> lines, to_delete;
@@ -2480,7 +2480,7 @@ void RelationDiagram::drawConnectingLine(wxDC* dc,
         dc->SetBrush(thick_pen->GetColour());
     }
 
-    // -- draw thick lines extending out from relationship boxes --
+    // draw thick lines extending out from relationship boxes
     
     dc->SetPen(*thick_pen);
 
@@ -2514,7 +2514,7 @@ void RelationDiagram::drawConnectingLine(wxDC* dc,
         endx = x2-TAB_LEN;
     }
 
-    // -- draw thin line connecting relationship boxes --
+    // draw thin line connecting relationship boxes
     
     if (bold)
         dc->SetPen(*thick_pen);
@@ -2535,7 +2535,7 @@ void RelationDiagram::drawConnectingLine(wxDC* dc,
         out_pt2->y = y2;
     }
 
-    // -- draw arrows --
+    // draw arrows
     
     dc->SetPen(*thin_pen);
 
@@ -2583,7 +2583,7 @@ void RelationDiagram::refresh()
     if (!m_bmp.Ok())
         return;
 
-    // -- win32 can redraw this stuff faster than other platforms --
+    // win32 can redraw this stuff faster than other platforms
 
     //Refresh();
     //Update();
@@ -2593,7 +2593,7 @@ void RelationDiagram::refresh()
 
 void RelationDiagram::refreshBoxes()
 {
-    // -- repopulate and redraw all the boxes --
+    // repopulate and redraw all the boxes
     std::vector<RelationBox*>::iterator it;
     for (it = m_boxes.begin(); it != m_boxes.end(); ++it)
         (*it)->repopulate();
@@ -2602,7 +2602,7 @@ void RelationDiagram::refreshBoxes()
 
 void RelationDiagram::redrawBoxes()
 {
-    // -- repopulate and redraw all the boxes --
+    // repopulate and redraw all the boxes
     std::vector<RelationBox*>::iterator it;
     for (it = m_boxes.begin(); it != m_boxes.end(); ++it)
         (*it)->redraw();
@@ -2629,7 +2629,7 @@ void RelationDiagram::repaint(wxDC* dest_dc, bool render, wxRect* rect)
         dc->SetBrush(GetBackgroundColour());
         dc->SetPen(*wxTRANSPARENT_PEN);
 
-        // -- draw background --
+        // draw background
         dc->DrawRectangle(0, 0, cli_width, cli_height);
 
 
@@ -2684,7 +2684,7 @@ void RelationDiagram::repaint(wxDC* dest_dc, bool render, wxRect* rect)
                 continue;
 
             
-            // -- determine validity of the line --
+            // determine validity of the line
 
             if (!from_box->getItemExists(line_it->left_expr))
                 valid = false;
@@ -2693,7 +2693,7 @@ void RelationDiagram::repaint(wxDC* dest_dc, bool render, wxRect* rect)
                 valid = false;
             
 
-            // -- find out the direction of the line --
+            // find out the direction of the line
 
             if (from_box_x+from_box_width < to_box_x)
             {
@@ -2741,7 +2741,7 @@ void RelationDiagram::repaint(wxDC* dest_dc, bool render, wxRect* rect)
         }
 
 
-        // -- draw overlay text --
+        // draw overlay text
         int tx, ty;
         GetViewStart(&tx, &ty);
 
@@ -2822,10 +2822,11 @@ void RelationDiagram::onSize(wxSizeEvent& evt)
         cli_height = 10;
  
 #ifdef __WXGTK__
-    // -- this needs to be investigated more thoroughly;
-    //    for some reason the code below with the if
-    //    statement is causing problems on gtk when the
-    //    window is reduced in size --
+
+    // this needs to be investigated more thoroughly;
+    // for some reason the code below with the if
+    // statement is causing problems on gtk when the
+    // window is reduced in size
     
     m_memdc.SelectObject(wxNullBitmap);
     m_bmp.Create(cli_width, cli_height, -1);
@@ -2912,7 +2913,8 @@ void RelationDiagram::onMouse(wxMouseEvent& evt)
         {
             deleteLine(line);
 
-            // -- redraw all the boxes --
+            // redraw all the boxes
+
             std::vector<RelationBox*>::iterator it;
             for (it = m_boxes.begin(); it != m_boxes.end(); ++it)
                 (*it)->repopulate();
