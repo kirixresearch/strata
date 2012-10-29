@@ -4611,7 +4611,7 @@ void TableDoc::updateChildWindows()
                     
             if (m_relationship_sync == tabledocRelationshipSyncFilter)
             {       
-                tango::ISetPtr child_set = iter_r->getChildSet(rel->getRelationId());
+                tango::ISetPtr child_set = iter_r->getChildSet(rel);
                 if (child_set)
                 {
                     table_doc->setBrowseSet(child_set, xcm::null);
@@ -4628,7 +4628,7 @@ void TableDoc::updateChildWindows()
             }
              else if (m_relationship_sync == tabledocRelationshipSyncSeek)
             {
-                tango::IIteratorPtr right_iter = iter_r->getChildIterator(rel->getRelationId());
+                tango::IIteratorPtr right_iter = iter_r->getChildIterator(rel);
                 if (right_iter)
                 {
                     wxString expr = generateContextSyncMarkExpression(

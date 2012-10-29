@@ -3456,7 +3456,7 @@ public:
         m_relation_id = new_val;
     }
 
-    std::wstring getRelationId()
+    const std::wstring& getRelationId()
     {
         return m_relation_id;
     }

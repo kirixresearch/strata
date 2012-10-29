@@ -511,7 +511,7 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
     return true;
 }
 
-tango::IIteratorPtr BaseIterator::getChildIterator(const std::wstring& relation_id)
+tango::IIteratorPtr BaseIterator::getChildIterator(tango::IRelationPtr relation)
 {
     XCM_AUTO_LOCK(m_rel_mutex);
 
@@ -521,7 +521,7 @@ tango::IIteratorPtr BaseIterator::getChildIterator(const std::wstring& relation_
     std::vector<BaseIteratorRelInfo>::iterator it;
     for (it = m_relations.begin(); it != m_relations.end(); ++it)
     {
-        if (it->relation_id == relation_id)
+        if (it->relation_id == relation->getRelationId())
         {
             info = &(*it);
             break;
@@ -535,7 +535,7 @@ tango::IIteratorPtr BaseIterator::getChildIterator(const std::wstring& relation_
     if (!info || !info->kl)
     {
         BaseIteratorRelInfo i;
-        i.relation_id = relation_id;
+        i.relation_id = relation->getRelationId();
         i.kl = NULL;
 
         if (!refreshRelInfo(i))
@@ -574,7 +574,7 @@ tango::IIteratorPtr BaseIterator::getChildIterator(const std::wstring& relation_
 }
 
 
-tango::IIteratorPtr BaseIterator::getFilteredChildIterator(const std::wstring& relation_id)
+tango::IIteratorPtr BaseIterator::getFilteredChildIterator(tango::IRelationPtr relation)
 {
     XCM_AUTO_LOCK(m_rel_mutex);
 
@@ -584,7 +584,7 @@ tango::IIteratorPtr BaseIterator::getFilteredChildIterator(const std::wstring& r
     std::vector<BaseIteratorRelInfo>::iterator it;
     for (it = m_relations.begin(); it != m_relations.end(); ++it)
     {
-        if (it->relation_id == relation_id)
+        if (it->relation_id == relation->getRelationId())
         {
             info = &(*it);
             break;
@@ -598,7 +598,7 @@ tango::IIteratorPtr BaseIterator::getFilteredChildIterator(const std::wstring& r
     if (!info || !info->kl)
     {
         BaseIteratorRelInfo i;
-        i.relation_id = relation_id;
+        i.relation_id = relation->getRelationId();
         i.kl = NULL;
 
         if (!refreshRelInfo(i))
@@ -653,16 +653,13 @@ tango::IIteratorPtr BaseIterator::getFilteredChildIterator(const std::wstring& r
 }
 
 
-tango::ISetPtr BaseIterator::getChildSet(const std::wstring& relation_id)
+tango::ISetPtr BaseIterator::getChildSet(tango::IRelationPtr relation)
 {
-    tango::IIteratorPtr right_iter = getFilteredChildIterator(relation_id);
+    tango::IIteratorPtr right_iter = getFilteredChildIterator(relation);
     IIteratorKeyAccessPtr iter_int = right_iter;
     if (!iter_int.p)
     {
-        tango::IRelationPtr rel = m_database->getRelation(relation_id);
-        if (!rel.p)
-            return xcm::null;
-        tango::ISetPtr right_set = rel->getRightSetPtr();
+        tango::ISetPtr right_set = relation->getRightSetPtr();
         if (!right_set.p)
             return xcm::null;
         return createEofSet(m_database, right_set);
@@ -1397,7 +1394,7 @@ void BaseIterator::recalcAggResults()
         if (result_count == 0)
             continue;
 
-        sp_iter = getFilteredChildIterator(rel->getRelationId());
+        sp_iter = getFilteredChildIterator(rel);
         if (sp_iter.isNull())
             continue;
 

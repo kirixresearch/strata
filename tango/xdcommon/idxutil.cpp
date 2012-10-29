@@ -678,20 +678,20 @@ bool CommonIndexIterator::modifyStructure(tango::IStructure* struct_config, tang
     return m_data_iter->modifyStructure(struct_config, job);
 }
 
-tango::ISetPtr CommonIndexIterator::getChildSet(const std::wstring& relation_id)
+tango::ISetPtr CommonIndexIterator::getChildSet(tango::IRelationPtr relation)
 {
     tango::IIteratorRelationPtr iter = m_data_iter;
     if (!iter)
         return xcm::null;
-    return iter->getChildSet(relation_id);
+    return iter->getChildSet(relation);
 }
 
-tango::IIteratorPtr CommonIndexIterator::getChildIterator(const std::wstring& relation_id)
+tango::IIteratorPtr CommonIndexIterator::getChildIterator(tango::IRelationPtr relation)
 {
     tango::IIteratorRelationPtr iter = m_data_iter;
     if (!iter)
         return xcm::null;
-    return iter->getChildIterator(relation_id);
+    return iter->getChildIterator(relation);
 }
 
 tango::objhandle_t CommonIndexIterator::getHandle(const std::wstring& expr)

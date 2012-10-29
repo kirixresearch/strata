@@ -1579,13 +1579,13 @@ bool OdbcIterator::isNull(tango::objhandle_t data_handle)
 }
 
 
-tango::ISetPtr OdbcIterator::getChildSet(const std::wstring& relation_id)
+tango::ISetPtr OdbcIterator::getChildSet(tango::IRelationPtr relation)
 {
     return xcm::null;
 }
 
 
-tango::IIteratorPtr OdbcIterator::getChildIterator(const std::wstring& relation_id)
+tango::IIteratorPtr OdbcIterator::getChildIterator(tango::IRelationPtr relation)
 {
     return xcm::null;
 }

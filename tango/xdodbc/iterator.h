@@ -171,8 +171,8 @@ public:
 
     // tango::IIteratorRelation
 
-    tango::ISetPtr getChildSet(const std::wstring& relation_id);
-    tango::IIteratorPtr getChildIterator(const std::wstring& relation_id);
+    tango::ISetPtr getChildSet(tango::IRelationPtr relation);
+    tango::IIteratorPtr getChildIterator(tango::IRelationPtr relation);
 
     // tango::ICacheRowUpdate
 

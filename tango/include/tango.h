@@ -471,7 +471,7 @@ xcm_interface IRelation : public xcm::IObject
 
 public:
 
-    virtual std::wstring getRelationId() = 0;
+    virtual const std::wstring& getRelationId() = 0;
     virtual const std::wstring& getTag() = 0;
     virtual std::wstring getLeftExpression() = 0;
     virtual std::wstring getRightExpression() = 0;
@@ -912,8 +912,8 @@ xcm_interface IIteratorRelation : public xcm::IObject
 
 public:
     
-    virtual ISetPtr getChildSet(const std::wstring& relation_id) = 0;
-    virtual IIteratorPtr getChildIterator(const std::wstring& relation_id) = 0;
+    virtual ISetPtr getChildSet(tango::IRelationPtr relation) = 0;
+    virtual IIteratorPtr getChildIterator(tango::IRelationPtr relation) = 0;
 };
 
 
