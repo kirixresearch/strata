@@ -4583,7 +4583,10 @@ void TableDoc::updateChildWindows()
                 if (table_doc)
                 {
                     tango::ISetPtr base_set = table_doc->getBaseSet();
-                    if (base_set == rel->getRightSetPtr())
+                    std::wstring path = L"";
+                    if (base_set.isOk())
+                        path = base_set->getObjectPath();
+                    if (0 == wcscasecmp(path.c_str(), rel->getRightSet().c_str()))
                     {
                         found = true;
                         site->setName(site_name);

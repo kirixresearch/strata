@@ -505,6 +505,8 @@ static tango::IRelationPtr lookupSetRelation(tango::IDatabasePtr& db, tango::ISe
 
 void RelationshipPanel::onUpdateRelationships(wxCommandEvent& evt)
 {
+    bool external = false;
+
     // remove relationship syncing for the duration
     // of the relationship setup operation
     if (g_app->getAppController()->getRelationshipSync() != tabledocRelationshipSyncNone)
@@ -616,18 +618,24 @@ void RelationshipPanel::onUpdateRelationships(wxCommandEvent& evt)
             tango::ISetPtr right_set = db->openSet(towstr(ni_it->right_path));
             if (!right_set)
                 continue;
+            
+
+          
 
             tango::IIndexInfoEnumPtr right_set_indexes = db->getIndexEnum(towstr(ni_it->right_path));
 
-            tango::IIndexInfoPtr idx = lookupIndex(right_set_indexes, towstr(right_str), false);
-            if (!idx)
+            if (getMountRoot(db, towstr(ni_it->right_path)).length() == 0) // only auto-create indexes on xdnative or equivalent
             {
-                UpdateIdx i;
-                i.set = right_set;
-                i.idx_expr = right_str;
-                i.idx_name = right_str;
-                i.idx_name.Replace(wxT(","), wxT("_"));
-                info->indexes.push_back(i);
+                tango::IIndexInfoPtr idx = lookupIndex(right_set_indexes, towstr(right_str), false);
+                if (!idx)
+                {
+                    UpdateIdx i;
+                    i.set = right_set;
+                    i.idx_expr = right_str;
+                    i.idx_name = right_str;
+                    i.idx_name.Replace(wxT(","), wxT("_"));
+                    info->indexes.push_back(i);
+                }
             }
 
             UpdateRel r;
@@ -709,15 +717,20 @@ void RelationshipPanel::loadRelationships()
             tango::ISetPtr right_set = rel->getRightSetPtr();
             if (right_set)
             {
-                tango::IIndexInfoEnumPtr right_set_indexes = db->getIndexEnum(right_set->getObjectPath());
-
-                tango::IIndexInfoPtr idx;
-                idx = lookupIndex(right_set_indexes, rel->getRightExpression(), false);
-
-                if (idx.isNull())
+                std::wstring driver = getDbDriverFromSet(right_set);
+                
+                if (driver == L"xdnative" || driver == L"xdfs")
                 {
-                    valid = false;
-                    update_button = true;
+                    tango::IIndexInfoEnumPtr right_set_indexes = db->getIndexEnum(right_set->getObjectPath());
+
+                    tango::IIndexInfoPtr idx;
+                    idx = lookupIndex(right_set_indexes, rel->getRightExpression(), false);
+
+                    if (idx.isNull())
+                    {
+                        valid = false;
+                        update_button = true;
+                    }
                 }
             }
 

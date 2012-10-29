@@ -3243,9 +3243,7 @@ std::wstring Database::getSetIdFromPath(const std::wstring& set_path)
 
     tango::INodeValuePtr set_file = openNodeFile(fixed_name);
     if (!set_file)
-    {
         return L"";
-    }
 
     // load the set id
     tango::INodeValuePtr setid_node = set_file->getChild(L"set_id", false);
@@ -3453,96 +3451,112 @@ public:
         m_dbi = db;
     }
 
-
     void setRelationId(const std::wstring& new_val)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
         m_relation_id = new_val;
     }
 
     std::wstring getRelationId()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
         return m_relation_id;
     }
 
     void setTag(const std::wstring& new_val)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
         m_tag = new_val;
     }
 
     const std::wstring& getTag()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
         return m_tag;
+    }
+
+    void setLeftSet(const std::wstring& new_value)
+    {
+        m_left_path = new_value;
+        m_left_setid = L"";
+    }
+    
+    std::wstring getLeftSet()
+    {
+        if (m_left_path.length() > 0)
+            return m_left_path;
+             else
+            return m_dbi->getSetPathFromId(m_left_setid);
     }
 
     void setLeftSetId(const std::wstring& new_value)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
+        m_left_path = L"";
         m_left_setid = new_value;
     }
 
     std::wstring getLeftSetId()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
         return m_left_setid;
-    }
-
-    std::wstring getLeftSet()
-    {
-        XCM_AUTO_LOCK(m_obj_mutex);
-        return m_dbi->getSetPathFromId(m_left_setid);
-    }
-
-    void setRightSetId(const std::wstring& new_value)
-    {
-        XCM_AUTO_LOCK(m_obj_mutex);
-        m_right_setid = new_value;
-    }
-    
-    std::wstring getRightSetId()
-    {
-        XCM_AUTO_LOCK(m_obj_mutex);
-        return m_right_setid;
-    }
-
-    std::wstring getRightSet()
-    {
-        XCM_AUTO_LOCK(m_obj_mutex);
-        return m_dbi->getSetPathFromId(m_right_setid);
     }
 
     void setLeftExpression(const std::wstring& new_value)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
         m_left_expression = new_value;
     }
 
     std::wstring getLeftExpression()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
         return m_left_expression;
+    }
+
+
+    
+    void setRightSet(const std::wstring& new_value)
+    {
+        m_right_path = new_value;
+        m_right_setid = L"";
+    }
+
+    void setRightSetId(const std::wstring& new_value)
+    {
+        m_right_path = L"";
+        m_right_setid = new_value;
+    }
+    
+    std::wstring getRightSetId()
+    {
+        return m_right_setid;
+    }
+
+    std::wstring getRightSet()
+    {
+        if (m_right_path.length() > 0)
+            return m_right_path;
+             else
+            return m_dbi->getSetPathFromId(m_right_setid);
+    }
+
+    tango::ISetPtr getRightSetPtr()
+    {
+        if (m_right_path.length() > 0)
+        {
+            tango::IDatabasePtr db = static_cast<xcm::IObject*>(m_dbi);
+            return db->openSet(m_right_path);
+        }
+         else
+        {
+            return m_dbi->openSetById(m_right_setid);
+        }
     }
 
     void setRightExpression(const std::wstring& new_value)
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
         m_right_expression = new_value;
     }
 
     std::wstring getRightExpression()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
         return m_right_expression;
     }
 
-    tango::ISetPtr getRightSetPtr()
-    {
-        XCM_AUTO_LOCK(m_obj_mutex);
-        return m_dbi->openSetById(m_right_setid);
-    }
+
 
 
 private:
@@ -3550,12 +3564,14 @@ private:
     IDatabaseInternal* m_dbi;
     std::wstring m_relation_id;
     std::wstring m_tag;
-    std::wstring m_left_setid;
-    std::wstring m_right_setid;
-    std::wstring m_left_expression;
-    std::wstring m_right_expression;
 
-    xcm::mutex m_obj_mutex;
+    std::wstring m_left_path;
+    std::wstring m_left_setid;
+    std::wstring m_left_expression;
+
+    std::wstring m_right_path;
+    std::wstring m_right_setid;
+    std::wstring m_right_expression;
 };
 
 
@@ -3564,9 +3580,10 @@ tango::IRelationEnumPtr Database::getRelationEnum(const std::wstring& path)
     xcm::IVectorImpl<tango::IRelationPtr>* vec;
     vec = new xcm::IVectorImpl<tango::IRelationPtr>;
 
+    bool filter_active = path.length() > 0 ? true : false;
     std::wstring filter_set_id = getSetIdFromPath(path);
-    if (path.length() > 0 && filter_set_id.length() == 0)
-        return vec;
+    std::wstring filter_set_path = path;
+    
 
     tango::INodeValuePtr file;
 
@@ -3577,12 +3594,11 @@ tango::IRelationEnumPtr Database::getRelationEnum(const std::wstring& path)
     if (!file)
         return vec;
 
-    int count = file->getChildCount();
-    int i;
+    size_t i, count = file->getChildCount();
 
-    std::wstring tag, left_set_id, right_set_id, left_expr, right_expr;
+    std::wstring tag, left_set_id, right_set_id, left_set_path, right_set_path, left_expr, right_expr;
 
-    tango::INodeValuePtr rel_node, left_setid_node, right_setid_node,
+    tango::INodeValuePtr rel_node, left_setid_node, right_setid_node, left_setpath_node, right_setpath_node,
                         left_expr_node, right_expr_node, tag_node;
 
 
@@ -3602,10 +3618,22 @@ tango::IRelationEnumPtr Database::getRelationEnum(const std::wstring& path)
             continue;
         left_set_id = left_setid_node->getString();
 
+        left_setpath_node = rel_node->getChild(L"left_set_path", false);
+        if (left_setpath_node.isOk())
+            left_set_path = left_setpath_node->getString();
+             else
+            left_set_path = L"";
+
         right_setid_node = rel_node->getChild(L"right_set_id", false);
         if (!right_setid_node)
             continue;
         right_set_id = right_setid_node->getString();
+
+        right_setpath_node = rel_node->getChild(L"right_set_path", false);
+        if (right_setpath_node.isOk())
+            right_set_path = right_setpath_node->getString();
+             else
+            right_set_path = L"";
 
         left_expr_node = rel_node->getChild(L"left_expression", false);
         if (!left_expr_node)
@@ -3617,21 +3645,27 @@ tango::IRelationEnumPtr Database::getRelationEnum(const std::wstring& path)
             continue;
         right_expr = right_expr_node->getString();
 
-        if (filter_set_id.length() > 0 && filter_set_id != left_set_id)
-            continue;
+        if (filter_active)
+        {
+            if (filter_set_id.length() > 0 && filter_set_id != left_set_id)
+                continue;
+
+            if (filter_set_path.length() > 0 && 0 != wcscasecmp(filter_set_path.c_str(), left_set_path.c_str()))
+                continue;
+        }
 
         // check to make sure both the left set and the right set still exist
         std::wstring temps;
         
         temps = getSetPathFromId(left_set_id);
-        if (temps.length() == 0)
+        if (temps.length() == 0 && left_set_path.length() == 0)
         {
             to_delete.push_back(rel_node->getName());
             continue;
         }
 
         temps = getSetPathFromId(right_set_id);
-        if (temps.length() == 0)
+        if (temps.length() == 0 && right_set_path.length() == 0)
         {
             to_delete.push_back(rel_node->getName());
             continue;
@@ -3641,8 +3675,14 @@ tango::IRelationEnumPtr Database::getRelationEnum(const std::wstring& path)
         relation = new RelationInfo(static_cast<IDatabaseInternal*>(this));
         relation->setRelationId(rel_node->getName());
         relation->setTag(tag);
-        relation->setLeftSetId(left_set_id);
-        relation->setRightSetId(right_set_id);
+        if (left_set_id.length() > 0)
+            relation->setLeftSetId(left_set_id);
+             else
+            relation->setLeftSet(left_set_path);
+        if (right_set_id.length() > 0)
+            relation->setRightSetId(right_set_id);
+             else
+            relation->setRightSet(right_set_path);
         relation->setLeftExpression(left_expr);
         relation->setRightExpression(right_expr);
 
@@ -3681,26 +3721,17 @@ tango::IRelationPtr Database::createRelation(const std::wstring& tag,
     tango::INodeValuePtr root;
 
     if (!getFileExist(L"/.system/rel_table"))
-    {
         root = createNodeFile(L"/.system/rel_table");
-    }
-     else
-    {
+         else
         root = openNodeFile(L"/.system/rel_table");
-    }
 
     if (!root)
-    {
         return xcm::null;
-    }
 
     std::wstring rel_id = getUniqueString();
 
     std::wstring left_set_id = getSetIdFromPath(left_set_path);
     std::wstring right_set_id = getSetIdFromPath(right_set_path);
-
-    if (left_set_id.length() == 0 || right_set_id.length() == 0)
-        return xcm::null;
 
     // create a new entry in our relationship table file
     tango::INodeValuePtr rel_node, left_setid_node, right_setid_node,
@@ -3716,8 +3747,14 @@ tango::IRelationPtr Database::createRelation(const std::wstring& tag,
     left_setid_node = rel_node->getChild(L"left_set_id", true);
     left_setid_node->setString(left_set_id);
 
+    left_setid_node = rel_node->getChild(L"left_set_path", true);
+    left_setid_node->setString(left_set_path);
+
     right_setid_node = rel_node->getChild(L"right_set_id", true);
     right_setid_node->setString(right_set_id);
+
+    right_setid_node = rel_node->getChild(L"right_set_path", true);
+    right_setid_node->setString(right_set_path);
 
     left_expr_node = rel_node->getChild(L"left_expression", true);
     left_expr_node->setString(left_expr);
@@ -3730,10 +3767,18 @@ tango::IRelationPtr Database::createRelation(const std::wstring& tag,
     RelationInfo* relation = new RelationInfo(static_cast<IDatabaseInternal*>(this));
     relation->setRelationId(rel_id);
     relation->setTag(tag);
-    relation->setLeftSetId(left_set_id);
-    relation->setRightSetId(right_set_id);
     relation->setLeftExpression(left_expr);
     relation->setRightExpression(right_expr);
+
+    if (left_set_id.length() > 0)
+        relation->setLeftSetId(left_set_id);
+         else
+        relation->setLeftSet(left_set_path);
+
+    if (right_set_id.length() > 0)
+        relation->setRightSetId(right_set_id);
+         else
+        relation->setRightSetId(right_set_path);
 
     tango::ISetPtr left_set = openSet(left_set_path);
     if (left_set.isOk())
@@ -3742,7 +3787,6 @@ tango::IRelationPtr Database::createRelation(const std::wstring& tag,
         if (set_int)
             set_int->onRelationshipsUpdated();
     }
-
 
     return static_cast<tango::IRelation*>(relation);
 }

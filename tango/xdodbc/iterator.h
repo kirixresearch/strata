@@ -109,7 +109,8 @@ struct OdbcDataAccessInfo
 
 
 class OdbcIterator : public CommonBaseIterator,
-                     public tango::ICacheRowUpdate
+                     public tango::ICacheRowUpdate,
+                     public tango::IIteratorRelation
 {
     friend class OdbcDatabase;
     friend class OdbcSet;
@@ -118,6 +119,7 @@ class OdbcIterator : public CommonBaseIterator,
     XCM_BEGIN_INTERFACE_MAP(OdbcIterator)
         XCM_INTERFACE_ENTRY(tango::IIterator)
         XCM_INTERFACE_ENTRY(tango::ICacheRowUpdate)
+        XCM_INTERFACE_ENTRY(tango::IIteratorRelation)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -167,6 +169,10 @@ public:
     bool getBoolean(tango::objhandle_t data_handle);
     bool isNull(tango::objhandle_t data_handle);
 
+    // tango::IIteratorRelation
+
+    tango::ISetPtr getChildSet(const std::wstring& relation_id);
+    tango::IIteratorPtr getChildIterator(const std::wstring& relation_id);
 
     // tango::ICacheRowUpdate
 

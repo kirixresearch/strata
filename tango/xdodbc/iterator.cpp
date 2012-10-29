@@ -1579,6 +1579,19 @@ bool OdbcIterator::isNull(tango::objhandle_t data_handle)
 }
 
 
+tango::ISetPtr OdbcIterator::getChildSet(const std::wstring& relation_id)
+{
+    return xcm::null;
+}
+
+
+tango::IIteratorPtr OdbcIterator::getChildIterator(const std::wstring& relation_id)
+{
+    return xcm::null;
+}
+
+
+
 // tango::ICacheRowUpdate::updateCacheRow()
 
 bool OdbcIterator::updateCacheRow(tango::rowid_t rowid,
