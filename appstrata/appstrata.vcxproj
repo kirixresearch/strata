@@ -314,6 +314,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="..\appmain\appconfig.cpp" />
     <ClCompile Include="..\appmain\appcontroller.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -891,6 +892,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\appmain\app.h" />
+    <ClInclude Include="..\appmain\appconfig.h" />
     <ClInclude Include="..\appmain\appcontroller.h" />
     <ClInclude Include="..\appmain\appmain.h" />
     <ClInclude Include="..\appmain\appprefs.h" />
