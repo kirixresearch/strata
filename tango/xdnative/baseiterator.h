@@ -64,8 +64,7 @@ struct DataAccessInfo
     unsigned char* raw_buf;
     KeyLayout* key_layout;
 
-    // -- methods --
-
+    // methods
     DataAccessInfo();
     ~DataAccessInfo();
 

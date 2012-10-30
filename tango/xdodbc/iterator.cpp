@@ -44,6 +44,20 @@ OdbcIterator::OdbcIterator()
 
 OdbcIterator::~OdbcIterator()
 {
+    // free up each structure containing relation info
+    std::vector<OdbcIteratorRelInfo>::iterator rit;
+    for (rit = m_relations.begin(); rit != m_relations.end(); ++rit)
+    {
+        std::vector<OdbcIteratorRelField>::iterator fit;
+
+        // free up each field part making up a relationship
+        for (fit = rit->fields.begin(); fit != rit->fields.end(); ++fit)
+            releaseHandle(fit->left_handle);
+    }
+
+
+    // free up odbc handles
+
     if (m_stmt)
     {
         SQLCloseCursor(m_stmt);
@@ -56,6 +70,7 @@ OdbcIterator::~OdbcIterator()
         SQLFreeConnect(m_conn);
         m_conn = 0;
     }
+
 
     // clean up field vector and expression vector
 
@@ -1581,13 +1596,104 @@ bool OdbcIterator::isNull(tango::objhandle_t data_handle)
 
 tango::ISetPtr OdbcIterator::getChildSet(tango::IRelationPtr relation)
 {
-    return xcm::null;
+    tango::ISetPtr setptr = relation->getRightSetPtr();
+    IOdbcSetPtr set = setptr;
+    if (set.isNull())
+        return xcm::null;
+
+
+    OdbcIteratorRelInfo* info = NULL;
+    std::vector<OdbcIteratorRelInfo>::iterator it;
+    for (it = m_relations.begin(); it != m_relations.end(); ++it)
+    {
+        if (it->relation_id == relation->getRelationId())
+        {
+            info = &(*it);
+            break;
+        }
+    }
+
+    if (!info)
+    {
+        OdbcIteratorRelInfo relinfo;
+        relinfo.relation_id = relation->getRelationId();
+
+
+        std::vector<std::wstring> left_parts, right_parts;
+        size_t i, cnt;
+
+        kl::parseDelimitedList(relation->getLeftExpression(),  left_parts, L',', true);
+        kl::parseDelimitedList(relation->getRightExpression(), right_parts, L',', true);
+
+        // the number of parts in the left expression must match the count in the right expression
+        if (left_parts.size() != right_parts.size())
+            return xcm::null; 
+
+        cnt = right_parts.size();
+        for (i = 0; i < cnt; ++i)
+        {
+            OdbcIteratorRelField f;
+            f.right_field = right_parts[i];
+            f.left_handle = getHandle(left_parts[i]);
+            if (!f.left_handle)
+                return xcm::null;
+            f.left_type = ((OdbcDataAccessInfo*)(f.left_handle))->type;
+            
+            relinfo.fields.push_back(f);
+        }
+
+        m_relations.push_back(relinfo);
+        info = &(*m_relations.rbegin());
+    }
+
+
+    std::wstring expr;
+
+    // build expression
+    std::vector<OdbcIteratorRelField>::iterator fit;
+    for (fit = info->fields.begin(); fit != info->fields.end(); ++fit)
+    {
+        if (expr.length() > 0)
+            expr += L" AND ";
+        expr += fit->right_field + L"=";
+
+
+
+        switch (fit->left_type)
+        {
+            case tango::typeCharacter:
+            case tango::typeWideCharacter:
+                expr += L"'";
+                expr += getWideString(fit->left_handle);
+                expr += L"'";
+                break;
+            case tango::typeInteger:
+                expr += kl::itowstring(getInteger(fit->left_handle));
+                break;
+            case tango::typeNumeric:
+            case tango::typeDouble:
+                expr += kl::dbltostr(getDouble(fit->left_handle));
+                break;
+        }
+
+    }
+
+
+
+    set->setWhereCondition(expr);
+
+    return setptr;
 }
 
 
 tango::IIteratorPtr OdbcIterator::getChildIterator(tango::IRelationPtr relation)
 {
-    return xcm::null;
+    tango::ISetPtr set = getChildSet(relation);
+
+    if (set.isNull())
+        return xcm::null;
+
+    return set->createIterator(L"", L"", NULL);
 }
 
 

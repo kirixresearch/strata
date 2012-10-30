@@ -870,6 +870,12 @@ tango::IIteratorPtr OdbcSet::createIterator(const std::wstring& columns,
         query += quote_closechar;
     }
 
+    if (m_where_condition.length() > 0)
+    {
+        query += L" WHERE ";
+        query += m_where_condition;
+    }
+
     if (expr.length() > 0)
     {
         query += L" ORDER BY ";
@@ -976,7 +982,10 @@ tango::rowpos_t OdbcSet::getRowCount()
 
 
 
-
+void OdbcSet::setWhereCondition(const std::wstring& condition)
+{
+    m_where_condition = condition;
+}
 
 
 

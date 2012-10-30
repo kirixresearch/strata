@@ -35,7 +35,7 @@ protected:
     bool modifyStructure(tango::IStructure* struct_config,
                                         bool* done_flag);
 
-    // -- calculated field routines --
+    // calculated field routines
     bool createCalcField(tango::IColumnInfoPtr colinfo);
     bool deleteCalcField(const std::wstring& _name);
     bool modifyCalcField(const std::wstring& name,

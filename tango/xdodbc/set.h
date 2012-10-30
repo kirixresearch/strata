@@ -21,8 +21,19 @@
 
 #include "../xdcommon/cmnbaseset.h"
 
+xcm_interface IOdbcSet : public xcm::IObject
+{
+    XCM_INTERFACE_NAME("xdodbc.IOdbcSet")
 
-class OdbcSet : public CommonBaseSet
+public:
+
+    virtual void setWhereCondition(const std::wstring& condition) = 0;
+};
+XCM_DECLARE_SMARTPTR(IOdbcSet)
+
+
+class OdbcSet : public CommonBaseSet,
+                public IOdbcSet
 {
 
 friend class OdbcDatabase;
@@ -31,6 +42,7 @@ friend class OdbcRowInserter;
 
     XCM_CLASS_NAME("xdodbc.Set")
     XCM_BEGIN_INTERFACE_MAP(OdbcSet)
+        XCM_INTERFACE_ENTRY(IOdbcSet)
         XCM_INTERFACE_ENTRY(CommonBaseSet)
     XCM_END_INTERFACE_MAP()
 
@@ -66,6 +78,8 @@ public:
 
     tango::rowpos_t getRowCount();
 
+    void setWhereCondition(const std::wstring& condition);
+
 private:
 
     void fixAccessStructure(tango::IStructurePtr& s);
@@ -82,6 +96,7 @@ private:
     std::wstring m_path;
     std::wstring m_conn_str;
     std::wstring m_set_id;
+    std::wstring m_where_condition;
 
     HENV m_env;
     HDBC m_conn;

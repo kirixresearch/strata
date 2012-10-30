@@ -107,6 +107,20 @@ struct OdbcDataAccessInfo
 };
 
 
+struct OdbcIteratorRelField
+{
+    tango::objhandle_t left_handle;
+    int left_type;
+    std::wstring right_field;
+};
+
+class OdbcIteratorRelInfo
+{
+public:
+
+    std::wstring relation_id;
+    std::vector<OdbcIteratorRelField> fields;
+};
 
 class OdbcIterator : public CommonBaseIterator,
                      public tango::ICacheRowUpdate,
@@ -192,6 +206,7 @@ private:
 
     std::vector<OdbcDataAccessInfo*> m_fields;
     std::vector<OdbcDataAccessInfo*> m_exprs;
+    std::vector<OdbcIteratorRelInfo> m_relations;
 
     tango::IDatabasePtr m_database;
     tango::ISetPtr m_set;
