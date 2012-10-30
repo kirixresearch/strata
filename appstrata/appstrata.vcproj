@@ -677,6 +677,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\appmain\appconfig.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\appmain\appcontroller.cpp"
 				>
 				<FileConfiguration
@@ -3819,6 +3823,10 @@
 			>
 			<File
 				RelativePath="..\appmain\app.h"
+				>
+			</File>
+			<File
+				RelativePath="..\appmain\appconfig.h"
 				>
 			</File>
 			<File
