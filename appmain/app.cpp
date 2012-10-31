@@ -19,6 +19,7 @@
 #include "../webconnect/webcontrol.h"
 #include "connectionmgr.h"
 #include "extensionmgr.h"
+#include "panelconsole.h"
 #include "toolbars.h"
 #include "scripthost.h"
 #include <wx/fs_zip.h>
@@ -1194,6 +1195,78 @@ void MainApp::showApp(bool show)
 #endif
 
 
+
+AppMacroRecorder::AppMacroRecorder()
+{
+    m_indent = 0;
+    m_recording = false;
+}
+
+AppMacroRecorder& AppMacroRecorder::operator<<(const wxString& s)
+{
+    if (!m_recording)
+        return *this;
+        
+    addLine(s);
+    return *this;
+}
+
+AppMacroRecorder& AppMacroRecorder::operator<<(const char* s)
+{
+    if (!m_recording)
+        return *this;
+
+    wxString line = wxString::From8BitData(s);
+    addLine(line);
+
+    return *this;
+}
+
+bool AppMacroRecorder::isRecording()
+{
+    return m_recording;
+}
+
+void AppMacroRecorder::setRecording(bool recording)
+{
+    m_recording = recording;
+}
+
+void AppMacroRecorder::setIndent(int indent)
+{
+    m_indent = indent;
+}
+
+std::vector<wxString>& AppMacroRecorder::getLines()
+{
+    return m_lines;
+}
+
+void AppMacroRecorder::reset()
+{
+    m_lines.clear();
+}
+
+void AppMacroRecorder::addLine(const wxString& s)
+{
+    wxString line;
+    line.Append(wxT(' '), m_indent);
+    line += s;
+    m_lines.push_back(line);
+
+    // TODO: temporary echo to console; remove later
+    cfw::IFramePtr frame = g_app->getMainFrame();
+    if (frame.isOk())
+    {
+        cfw::IDocumentSitePtr site = frame->lookupSite(wxT("ConsolePanel"));
+        if (site.isOk())
+        {
+            IConsolePanelPtr console = site->getDocument();
+            if (console.isOk())
+                console->print(line + wxT("\n"));
+        }
+    }
+}
 
 
 

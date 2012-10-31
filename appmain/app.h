@@ -151,36 +151,20 @@ class AppMacroRecorder
 {
 public:
 
-    AppMacroRecorder() { m_indent = 0; m_recording = false; }
-    AppMacroRecorder& operator<<(const wxString& s)
-    {
-        if (!m_recording)
-            return *this;
-            
-        wxString line;
-        line.Append(wxT(' '), m_indent);
-        line += s;
-        m_lines.push_back(line);
-        return *this;
-    }
-    AppMacroRecorder& operator<<(const char* s)
-    {
-        if (!m_recording)
-            return *this;
+    AppMacroRecorder();
+    AppMacroRecorder& operator<<(const wxString& s);
+    AppMacroRecorder& operator<<(const char* s);
 
-        wxString line;
-        line.Append(wxT(' '), m_indent);
-        line += wxString::From8BitData(s);
-        m_lines.push_back(line);
-        return *this;
-    }
-
-    bool isRecording() {return m_recording;}
-    void setRecording(bool recording) { m_recording = recording; }
-    void setIndent(int indent) { m_indent = indent; }
-    std::vector<wxString>& getLines() { return m_lines; }
-    void reset() { m_lines.clear(); }
+    bool isRecording();
+    void setRecording(bool recording);
+    void setIndent(int indent);
+    std::vector<wxString>& getLines();
+    void reset();
     
+private:
+
+    void addLine(const wxString& s);
+
 private:
 
     std::vector<wxString> m_lines;

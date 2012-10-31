@@ -747,7 +747,7 @@ bool AppController::init()
     // NOTE: first parameter is a flag field indicating the state of 
     // the ALT, SHIFT, and CTRL keys; one of wxACCEL_ALT, wxACCEL_SHIFT, 
     // wxACCEL_CTRL or wxACCEL_NORMAL
-    wxAcceleratorEntry entries[29];
+    wxAcceleratorEntry entries[31];
 
     entries[0].Set(wxACCEL_SHIFT, WXK_DELETE, ID_Edit_Cut);   // alternate cut accelerator
     entries[1].Set(wxACCEL_CTRL, WXK_INSERT, ID_Edit_Copy);   // alternate copy accelerator
@@ -785,7 +785,15 @@ bool AppController::init()
     entries[27].Set(wxACCEL_CTRL, (int)';', ID_Frame_ShowConsolePanel);                     // alternate for show console panel
     entries[28].Set(wxACCEL_CTRL | wxACCEL_SHIFT, (int)';', ID_Frame_ShowConsolePanel);     // alternate for show console panel
 
-    wxAcceleratorTable accel(29, entries);
+
+    // TODO: experimental accelerators for startings/stopping recording;
+    // currently, these functions are for development only and not available 
+    // in the menu
+    entries[29].Set(wxACCEL_ALT, WXK_F1, ID_App_StartRecord);
+    entries[30].Set(wxACCEL_ALT, WXK_F2, ID_App_StopRecord);
+
+
+    wxAcceleratorTable accel(31, entries);
     m_frame->getFrameWindow()->SetAcceleratorTable(accel);
 
     // create menus
