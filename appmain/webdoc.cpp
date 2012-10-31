@@ -3579,6 +3579,13 @@ void WebDoc::onOpenURI(wxWebEvent& evt)
     {
         g_app->getAppController()->openDataLink(loc);
         evt.Veto();
+
+
+        g_macro << "";
+        g_macro << "// open a location";
+        g_macro << wxString::Format(wxT("HostApp.open('%s');"), wxcstr(loc));
+        
+        
         return;
     }
 
@@ -3634,6 +3641,11 @@ void WebDoc::onOpenURI(wxWebEvent& evt)
             evt.Veto();
         }
     }
+
+
+    g_macro << "";
+    g_macro << "// open a location";
+    g_macro << wxString::Format(wxT("HostApp.open('%s');"), wxcstr(loc));
 }
 
 
@@ -4007,5 +4019,9 @@ void WebDoc::onWebViewNavigating(wxWebViewEvent& evt)
     {
         g_app->getAppController()->openDataLink(loc);
         evt.Veto();
+
+        g_macro << "";
+        g_macro << "// open a file";
+        g_macro << wxString::Format(wxT("HostApp.open('%s');"), wxcstr(loc));
     }
 }
