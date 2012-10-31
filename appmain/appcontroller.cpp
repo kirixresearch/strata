@@ -4520,6 +4520,12 @@ bool AppController::openAny(const wxString& _location,
 
 bool AppController::openReport(const wxString& location, int* site_id)
 {
+    g_macro << "";
+    g_macro << "// open a file";
+    g_macro << wxString::Format(wxT("HostApp.open('%s');"), wxcstr(location));
+
+
+
     // if the document is open, set the focus to that document
     if (setActiveChildByLocation(location, site_id))
         return true;
@@ -4551,6 +4557,12 @@ bool AppController::openReport(const wxString& location, int* site_id)
 
 bool AppController::openQuery(const wxString& location, int* site_id)
 {
+    g_macro << "";
+    g_macro << "// open a file";
+    g_macro << wxString::Format(wxT("HostApp.open('%s');"), wxcstr(location));
+
+
+
     QueryDoc* doc = new QueryDoc;
     if (location.Length() > 0)
     {
@@ -4584,6 +4596,12 @@ bool AppController::openQuery(const wxString& location, int* site_id)
 
 bool AppController::openScript(const wxString& _location, int* site_id)
 {
+    g_macro << "";
+    g_macro << "// open a file";
+    g_macro << wxString::Format(wxT("HostApp.open('%s');"), wxcstr(_location));
+
+
+
     // if the file is already open, just set that site as the
     // active site, to prevent the text file from being opened
     // multiple times
@@ -4663,6 +4681,12 @@ bool AppController::openScript(const wxString& _location, int* site_id)
         
 bool AppController::openSet(const wxString& _location, int* site_id)
 {
+    g_macro << "";
+    g_macro << "// open a file";
+    g_macro << wxString::Format(wxT("HostApp.open('%s');"), wxcstr(_location));
+
+
+
     if (site_id)
         *site_id = 0;
         
@@ -4734,6 +4758,12 @@ bool AppController::openSet(const wxString& _location, int* site_id)
 
 bool AppController::openDataLink(const wxString& location, int* site_id)
 {
+    g_macro << "";
+    g_macro << "// open a file";
+    g_macro << wxString::Format(wxT("HostApp.open('%s');"), wxcstr(location));
+
+
+
     std::wstring url = towstr(location);
 
     int url_sign = url.find(L"://");
@@ -4896,6 +4926,12 @@ void AppController::onOpenDataViewFinished(cfw::IJobPtr query_job)
 
 bool AppController::openTemplate(const wxString& location)
 {
+    g_macro << "";
+    g_macro << "// open a file";
+    g_macro << wxString::Format(wxT("HostApp.open('%s');"), wxcstr(location));
+
+
+
     AppBusyCursor bc;
 
     tango::IDatabasePtr db = g_app->getDatabase();
@@ -4988,6 +5024,12 @@ bool AppController::openBookmark(const wxString& location,
                                  int open_mask,
                                  int* site_id)
 {
+    g_macro << "";
+    g_macro << "// open a file";
+    g_macro << wxString::Format(wxT("HostApp.open('%s');"), wxcstr(location));
+
+
+
     // check if the location specified is a bookmark in the project.
     // If so, load the url location from the bookmark
     
@@ -5034,6 +5076,12 @@ bool AppController::openWeb(const wxString& _location,
                             int open_mask,
                             int* site_id)
 {
+    g_macro << "";
+    g_macro << "// open a file";
+    g_macro << wxString::Format(wxT("HostApp.open('%s');"), wxcstr(_location));
+
+
+
     if (site_id)
         *site_id = 0;
         

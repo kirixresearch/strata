@@ -1557,11 +1557,6 @@ void DbDoc::actionActivate(cfw::IFsItemPtr item, int open_mask)
                        wxOK | wxICON_EXCLAMATION | wxCENTER);
         return;
     }
-    
-    
-    g_macro << "";
-    g_macro << "// open a file";
-    g_macro << wxString::Format(wxT("HostApp.open('%s');"), wxcstr(obj_path));
 }
 
 
