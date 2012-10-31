@@ -225,6 +225,7 @@ private:
     std::vector<AggregateResult*> m_aggregate_results;
     std::vector<tango::IColumnInfoPtr> m_calc_fields;
     std::vector<BaseIteratorRelInfo> m_relations;
+    tango::IRelationEnumPtr m_relenum;
 
     tango::ISetPtr m_set;                   // set associated with this iterator
     tango::IStructurePtr m_iter_structure;  // iter structure

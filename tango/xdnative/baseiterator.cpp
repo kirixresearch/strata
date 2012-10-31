@@ -555,15 +555,11 @@ tango::IIteratorPtr BaseIterator::getChildIterator(tango::IRelationPtr relation)
     const unsigned char* left_key = info->kl->getKey();
     int left_keylen = info->kl->getKeyLength();
 
-    // if the left key was truncated at all, that
-    // means that no record can be found on the right side
-    // which satisfies the left expression
+    // if the left key was truncated at all, that means that no record
+    // can be found on the right side which satisfies the left expression
 
     if (info->kl->getTruncation())
-    {
         return xcm::null;
-    }
-
 
     info->right_iter_int->setKeyFilter(NULL, 0);
 
@@ -591,9 +587,8 @@ tango::IIteratorPtr BaseIterator::getFilteredChildIterator(tango::IRelationPtr r
         }
     }
 
-    // if the relationship info was not found, attempt
-    // to initialize a new structure and add it to our
-    // m_relations array
+    // if the relationship info was not found, attempt to initialize
+    // a new structure and add it to our m_relations array
 
     if (!info || !info->kl)
     {
@@ -618,15 +613,14 @@ tango::IIteratorPtr BaseIterator::getFilteredChildIterator(tango::IRelationPtr r
     const unsigned char* left_key = info->kl->getKey();
     int left_keylen = info->kl->getKeyLength();
 
-    // if the left key was truncated at all, that
-    // means that no record can be found on the right side
-    // which satisfies the left expression
+    // if the left key was truncated at all, that means that no record
+    // can be found on the right side which satisfies the left expression
+
     if (info->kl->getTruncation())
-    {
         return xcm::null;
-    }
 
     // check if the iterator is already positioned on the current key
+
     const void* cur_key_filter;
     int cur_key_filter_len;
     info->right_iter_int->getKeyFilter(&cur_key_filter, &cur_key_filter_len);
@@ -642,9 +636,7 @@ tango::IIteratorPtr BaseIterator::getFilteredChildIterator(tango::IRelationPtr r
     info->right_iter_int->setKeyFilter(NULL, 0);
 
     if (!info->right_iter->seek(left_key, left_keylen, false))
-    {
         return xcm::null;
-    }
 
     info->right_iter_int->setKeyFilter(left_key, left_keylen);
     info->right_iter_int->setFirstKey();
@@ -1250,15 +1242,17 @@ public:
 
 void BaseIterator::onSetRelationshipsUpdated()
 {
-    XCM_AUTO_LOCK(m_rel_mutex);
+    m_rel_mutex.lock();
 
     std::vector<BaseIteratorRelInfo>::iterator r_it;
     for (r_it = m_relations.begin(); r_it != m_relations.end(); ++r_it)
-    {
         delete r_it->kl;
-    }
-
     m_relations.clear();
+    m_relenum.clear();
+
+    m_rel_mutex.unlock();
+
+
 
 
     m_agg_mutex.lock();
@@ -1268,7 +1262,7 @@ void BaseIterator::onSetRelationshipsUpdated()
     {
         (*it)->m_handle = 0;
     }
-    m_rel_mutex.lock();
+    m_agg_mutex.unlock();
 
 }
 
@@ -1332,6 +1326,7 @@ void BaseIterator::recalcAggResults()
 
     std::vector<AggregateResult*>::iterator it;
 
+    m_agg_mutex.lock();
     for (it = m_aggregate_results.begin();
          it != m_aggregate_results.end(); ++it)
     {
@@ -1343,16 +1338,20 @@ void BaseIterator::recalcAggResults()
 
         (*it)->m_valid_rowid = m_rowid;
     }
+    m_agg_mutex.unlock();
 
 
-    tango::IRelationEnumPtr rel_enum = m_database->getRelationEnum(m_set->getObjectPath());
+    m_rel_mutex.lock();
+    if (m_relenum.isNull())
+        m_relenum = m_database->getRelationEnum(m_set->getObjectPath());
+    tango::IRelationEnumPtr rel_enum = m_relenum;
+    m_rel_mutex.unlock();
 
     size_t rel_count = rel_enum->size();
     if (rel_count == 0)
         return;
 
     XCM_AUTO_LOCK(m_agg_mutex);
-
 
     std::vector<AggregateResult*> results;
     results.resize(m_aggregate_results.size());
@@ -1401,9 +1400,7 @@ void BaseIterator::recalcAggResults()
         iter = sp_iter.p;
 
         if (iter->eof())
-        {
             continue;
-        }
         
         if (only_first)
         {
@@ -1573,13 +1570,9 @@ void BaseIterator::recalcAggResults()
                         break;
                     case GroupFunc_Avg:
                         if (kl::dblcompare(group_row_count, 0.0) == 0)
-                        {
                             results[r]->m_dbl_result = 0.0;
-                        }
-                         else
-                        {
+                             else
                             results[r]->m_dbl_result /= group_row_count;
-                        }
                         break;
                     case GroupFunc_Stddev:
                         results[r]->m_dbl_result = stats.stddev();
@@ -1595,7 +1588,7 @@ void BaseIterator::recalcAggResults()
 
 
 
-// Field Binding helper functions for the expression parser
+// field Binding helper functions for the expression parser
 
 static void _bindFieldString(kscript::ExprEnv*,
                              void* param,
