@@ -422,6 +422,8 @@ void ImportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
             m_template.m_ii.type = dbtypeAccess;
          else if (first_ext.CmpNoCase(wxT("xls")) == 0)
             m_template.m_ii.type = dbtypeExcel;
+         else if (first_ext.CmpNoCase(wxT("xlsx")) == 0)
+            m_template.m_ii.type = dbtypeExcel;
          else if (first_ext.CmpNoCase(wxT("dbf")) == 0)
             m_template.m_ii.type = dbtypeXbase;
          else
@@ -495,7 +497,7 @@ void ImportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
             *allow = false;
             return;
         }
-         else if (ext.CmpNoCase(wxT("xls")) == 0 && paths.size() > 1)
+         else if ((ext.CmpNoCase(wxT("xls")) == 0 || ext.CmpNoCase(wxT("xlsx")) == 0) && paths.size() > 1)
         {
             cfw::appMessageBox(_("Only one Microsoft Excel file can be imported at a time.  Please choose only one Microsoft Excel file to continue."),
                                _("Too many files"),
@@ -559,11 +561,11 @@ void ImportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
         if (!conn->open())
         {
             wxString error_message;
-            if (m_template.m_ii.type = dbtypeAccess)
+            if (m_template.m_ii.type == dbtypeAccess)
                 error_message = _("There was an error opening the specified Microsoft Access file.  Make sure the file is not open by another application.");
-             else if (m_template.m_ii.type = dbtypeExcel)
+             else if (m_template.m_ii.type == dbtypeExcel)
                 error_message = _("There was an error opening the specified Microsoft Excel file.  Make sure the file is not open by another application.");
-             else if (m_template.m_ii.type = dbtypeAccess)
+             else if (m_template.m_ii.type == dbtypeAccess)
                 error_message = _("There was an error connecting to the specified database.");
             error_message += wxT("  ");
             error_message += conn->getErrorString();
