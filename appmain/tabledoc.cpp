@@ -1533,9 +1533,10 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
 
         if (!g_app->getDatabase()->getMountPoint(folder, cstr, rpath))
         {
+            std::wstring save_path = towstr(dlg.getPath());
             tango::ISetPtr save_set = m_set;
 
-            if (!g_app->getDatabase()->storeObject(save_set, towstr(dlg.getPath())))
+            if (!g_app->getDatabase()->storeObject(save_set, save_path))
             {
                 cfw::appMessageBox(_("The file could not be saved in the specified location.  The destination location may by in use."),
                                    APPLICATION_NAME,
@@ -1552,11 +1553,12 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
             setSourceUrl(wxEmptyString);
             setSourceMimeType(wxEmptyString);
 
+            m_dbpath = save_path;
+
             updateCaption();
             updateStatusBar();
             g_app->getAppController()->updateURLToolbar();        
-        
-        
+
             return;
         }
     }
@@ -1598,6 +1600,7 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
     // extension; this is a usability issue since without the
     // extension, the user usually ends up adding this as the 
     // first item of business after saving
+
     wxString path = dlg.getPath();
     path = addExtensionIfExternalFsDatabase(path, wxT(".csv"));
 
