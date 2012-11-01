@@ -764,7 +764,6 @@ static int odbcStateToTangoError(SQLTCHAR* _s)
 OdbcDatabase::OdbcDatabase()
 {
     m_env = 0;
-    m_conn = 0;
 
     m_db_name = L"";
     m_conn_str = L"";
@@ -985,7 +984,7 @@ void OdbcDatabase::setAttributes(HDBC connection)
             std::wstring dbms_quote_str;
             short out_length = 0;
         
-            retval = SQLGetInfo(m_conn, SQL_IDENTIFIER_QUOTE_CHAR, dbms_quote, 16, &out_length);;
+            retval = SQLGetInfo(connection, SQL_IDENTIFIER_QUOTE_CHAR, dbms_quote, 16, &out_length);;
             dbms_quote_str = sql2wstring(dbms_quote);
 
             m_attr->setStringAttribute(tango::dbattrColumnInvalidChars, 
@@ -1027,6 +1026,8 @@ bool OdbcDatabase::open(int type,
 
     m_error.clearError();
     
+    HDBC conn = NULL;
+
     // turn connection pooling on
     SQLSetEnvAttr(NULL,
                   SQL_ATTR_CONNECTION_POOLING,
@@ -1038,9 +1039,6 @@ bool OdbcDatabase::open(int type,
 
     // set ODBC version to 3.0
     SQLSetEnvAttr(m_env, SQL_ATTR_ODBC_VERSION, (SQLPOINTER)SQL_OV_ODBC3, 0);
-
-    // allocate connection
-    SQLAllocConnect(m_env, &m_conn);
 
     SQLSetEnvAttr(m_env,
                   SQL_ATTR_CP_MATCH,
@@ -1091,7 +1089,7 @@ bool OdbcDatabase::open(int type,
             m_conn_str = conn_buf;
 
             // attempt a connection
-            retval = connect(m_conn);
+            conn = createConnection(&retval);
             
             break;
         }
@@ -1119,7 +1117,7 @@ bool OdbcDatabase::open(int type,
             m_conn_str = conn_buf;
 
             // attempt a connection
-            retval = connect(m_conn);
+            conn = createConnection(&retval);
             
             break;
         }
@@ -1147,7 +1145,7 @@ bool OdbcDatabase::open(int type,
             m_conn_str = conn_buf;
             
             // attempt a connection
-            retval = connect(m_conn);
+            conn = createConnection(&retval);
 
             break;
         }
@@ -1175,7 +1173,7 @@ bool OdbcDatabase::open(int type,
             m_conn_str = conn_buf;
 
             // attempt a connection
-            retval = connect(m_conn);
+            conn = createConnection(&retval);
 
             break;
         }
@@ -1195,13 +1193,12 @@ bool OdbcDatabase::open(int type,
             m_conn_str = conn_buf;
             
             // attempt a connection
-            retval = connect(m_conn);
+            conn = createConnection(&retval);
         }
 
         default:
         case tango::dbtypeOdbc: // (dsn)
         {
-
             m_using_dsn = true;
             m_db_type = tango::dbtypeOdbc;
             
@@ -1233,25 +1230,13 @@ bool OdbcDatabase::open(int type,
             }
             
             // attempt a connection
-            retval = connect(m_conn);
-            
-            //  m_using_dsn = true;
-            //  m_db_type = tango::dbtypeOdbc;
-            //
-            //  swprintf(db_label_buf, 1024, L"ODBC (%ls)", server.c_str());
-            //  retval = SQLConnect(m_conn,
-            //                      sqlt(server),
-            //                      server.length(),
-            //                      sqlt(username),
-            //                      username.length(),
-            //                      sqlt(password),
-            //                      password.length());
+            conn = createConnection(&retval);
         }
     }
 
     if (retval == SQL_SUCCESS_WITH_INFO)
     {
-        errorSqlConn(m_conn);
+        errorSqlConn(conn);
     }
 
 
@@ -1259,16 +1244,17 @@ bool OdbcDatabase::open(int type,
         retval == SQL_ERROR ||
         retval == SQL_INVALID_HANDLE)
     {
-        errorSqlConn(m_conn);
+        errorSqlConn(conn);
 
         // failed
+        closeConnection(conn);
         return false;
     }
 
     short out_length = 0;
-    retval = SQLGetInfo(m_conn, SQL_DATABASE_NAME, db_name, 1024, &out_length);
-    retval = SQLGetInfo(m_conn, SQL_DBMS_VER, dbms_version, 1024, &out_length);
-    retval = SQLGetInfo(m_conn, SQL_DBMS_NAME, dbms_name, 1024, &out_length);
+    retval = SQLGetInfo(conn, SQL_DATABASE_NAME, db_name, 1024, &out_length);
+    retval = SQLGetInfo(conn, SQL_DBMS_VER, dbms_version, 1024, &out_length);
+    retval = SQLGetInfo(conn, SQL_DBMS_NAME, dbms_name, 1024, &out_length);
 
     db_name_str = sql2wstring(db_name);
     dbms_version_str = sql2wstring(dbms_version);
@@ -1335,8 +1321,10 @@ bool OdbcDatabase::open(int type,
     }
     
 
+    // set the database attributes
+    
     setDatabaseName(db_label_buf);
-    setAttributes(m_conn);
+    setAttributes(conn);
 
     m_port = port;
     m_server = server;
@@ -1344,7 +1332,8 @@ bool OdbcDatabase::open(int type,
     m_password = password;
     m_path = path;
 
-    // set the database attributes
+
+    closeConnection(conn);
 
     return true;
 }
@@ -1352,13 +1341,6 @@ bool OdbcDatabase::open(int type,
 
 void OdbcDatabase::close()
 {
-    if (m_conn)
-    {
-        SQLDisconnect(m_conn);
-        SQLFreeConnect(m_conn);
-        m_conn = 0;
-    }
-
     SQLFreeEnv(m_env);
     m_env = 0;
 
@@ -1374,41 +1356,34 @@ void OdbcDatabase::close()
 }
 
 
-HDBC OdbcDatabase::createConnection()
+HDBC OdbcDatabase::createConnection(SQLRETURN* retval)
 {
-    // we've only been having this problem with SQL server,
-    // so only do it for this db type
-    if (m_db_type == tango::dbtypeSqlServer)
+    HDBC conn = NULL;
+    SQLRETURN r;
+
+    // allocate connection
+    SQLAllocConnect(m_env, &conn);
+
+    r = connect(conn);
+    if (retval) *retval = r;
+
+    if (SQL_SUCCEEDED(r))
     {
-        HDBC conn = NULL;
-        
-        // allocate connection
-        SQLAllocConnect(m_env, &conn);
-        if (SQL_SUCCEEDED(connect(conn)))
-        {
-            return conn;
-        }
-         else
-        {
-            SQLDisconnect(conn);
-            SQLFreeConnect(conn);
-            return NULL;
-        }
+        return conn;
     }
      else
     {
-        return m_conn;
+        SQLDisconnect(conn);
+        SQLFreeConnect(conn);
+        return NULL;
     }
 }
 
 
 void OdbcDatabase::closeConnection(HDBC conn)
 {
-    if (conn != m_conn)
-    {
-        SQLDisconnect(conn);
-        SQLFreeConnect(conn);
-    }
+    SQLDisconnect(conn);
+    SQLFreeConnect(conn);
 }
 
 
@@ -1681,7 +1656,7 @@ tango::IFileInfoEnumPtr OdbcDatabase::getTreeFolderInfo(const std::wstring& path
 
         SQLRETURN r;
 
-        HDBC conn = createConnection();
+        HDBC conn = createConnection(&r);
         if (!conn)
             return retval;
             
@@ -1751,7 +1726,7 @@ tango::IFileInfoEnumPtr OdbcDatabase::getTreeFolderInfo(const std::wstring& path
 
         SQLRETURN r;
 
-        HDBC conn = createConnection();
+        HDBC conn = createConnection(&r);
         if (!conn)
             return retval;
 
@@ -1829,7 +1804,7 @@ tango::IFileInfoEnumPtr OdbcDatabase::getFolderInfo(const std::wstring& path)
 
     SQLRETURN r;
 
-    HSTMT conn = createConnection();
+    HSTMT conn = createConnection(&r);
     if (!conn)
     {
         // no connection
@@ -1937,15 +1912,22 @@ tango::IFileInfoEnumPtr OdbcDatabase::getFolderInfo(const std::wstring& path)
 
 std::wstring OdbcDatabase::getPrimaryKey(const std::wstring _path)
 {
+    HDBC conn = createConnection();
+    if (!conn)
+        return L"";
+
     std::wstring path = kl::afterFirst(_path, L'/');
     std::wstring result;
     
     SQLRETURN r;
     HSTMT stmt = 0;
-    r = SQLAllocHandle(SQL_HANDLE_STMT, m_conn, &stmt);
+    r = SQLAllocHandle(SQL_HANDLE_STMT, conn, &stmt);
 
     if (!stmt)
+    {
+        closeConnection(conn);
         return L"";
+    }
         
     r = SQLSetStmtAttr(stmt,
                        SQL_ATTR_CURSOR_TYPE,
@@ -1966,6 +1948,7 @@ std::wstring OdbcDatabase::getPrimaryKey(const std::wstring _path)
         #endif
         
         SQLFreeHandle(SQL_HANDLE_STMT, stmt);
+        closeConnection(conn);
         return L"";
     }
     
@@ -2012,6 +1995,8 @@ std::wstring OdbcDatabase::getPrimaryKey(const std::wstring _path)
     SQLCloseCursor(stmt);
     SQLFreeHandle(SQL_HANDLE_STMT, stmt);
     
+    closeConnection(conn);
+
     return result;
 }
 
@@ -2252,7 +2237,7 @@ bool OdbcDatabase::execute(const std::wstring& command,
         }
 
         HSTMT stmt;
-        SQLAllocStmt(m_conn, &stmt);
+        SQLAllocStmt(conn, &stmt);
 
         SQLRETURN retval;
         retval = SQLExecDirect(stmt, sqlt(command), SQL_NTS);

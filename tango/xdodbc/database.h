@@ -219,7 +219,7 @@ private:
     void errorSqlConn(HDBC hdbc);
     
     SQLRETURN connect(HDBC conn);
-    HDBC createConnection();
+    HDBC createConnection(SQLRETURN* retval = NULL);
     void closeConnection(HDBC conn);
     
     bool getUsingDsn();
@@ -236,7 +236,6 @@ private:
     tango::IAttributesPtr m_attr;
     
     HENV m_env;
-    HDBC m_conn;
 
     std::wstring m_db_name;
     std::wstring m_conn_str;
