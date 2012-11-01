@@ -1674,6 +1674,34 @@ tango::ISetPtr OdbcIterator::getChildSet(tango::IRelationPtr relation)
             case tango::typeDouble:
                 expr += kl::dbltostr(getDouble(fit->left_handle));
                 break;
+            case tango::typeDate:
+            {
+                tango::datetime_t dt = getDateTime(fit->left_handle);
+                if (dt == 0)
+                {
+                    expr += L"NULL";
+                }
+                 else
+                {
+                    tango::DateTime d(dt);
+                    expr += kl::stdswprintf(L"{d '%04d-%02d-%02d'}", d.getYear(), d.getMonth(), d.getDay());
+                }
+                break;
+            }
+            case tango::typeDateTime:
+            {
+                tango::datetime_t dt = getDateTime(fit->left_handle);
+                if (dt == 0)
+                {
+                    expr += L"NULL";
+                }
+                 else
+                {
+                    tango::DateTime d(dt);
+                    expr += kl::stdswprintf(L"{ts '%04d-%02d-%02d %02d:%02d:%02d.%03d'}", d.getYear(), d.getMonth(), d.getDay(), d.getHour(), d.getMinute(), d.getSecond(), d.getMillisecond());
+                }
+                break;
+            }
         }
 
     }

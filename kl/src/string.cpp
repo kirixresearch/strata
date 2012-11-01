@@ -10,7 +10,7 @@
 
 
 #include "kl/string.h"
-
+#include <cstdarg>
 
 namespace kl
 {
@@ -102,6 +102,34 @@ std::string itostring(int val)
     sprintf(buf, "%d", val);
     return buf;
 }
+
+
+std::string stdsprintf(const char* fmt, ...)
+{
+    char str[512];
+
+    va_list args;
+    va_start(args, fmt);
+    vsnprintf(str, 512, fmt, args);
+    va_end(args);
+
+    return str;
+}
+
+
+std::wstring stdswprintf(const wchar_t* fmt, ...)
+{
+    wchar_t str[512];
+
+    va_list args;
+    va_start(args, fmt);
+    vswprintf(str, 512, fmt, args);
+    va_end(args);
+
+    return str;
+}
+
+
 
 
 static wchar_t* zl_strchr(wchar_t* str,

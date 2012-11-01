@@ -180,6 +180,10 @@ inline std::wstring afterLast(const std::wstring& str, wchar_t ch)
 std::wstring itowstring(int val);
 std::string itostring(int val);
 
+std::string stdsprintf(const char* fmt, ...);
+std::wstring stdswprintf(const wchar_t* fmt, ...);
+
+
 void parseDelimitedList(const std::wstring& s,
                         std::vector<std::wstring>& vec,
                         wchar_t delimiter,
