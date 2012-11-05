@@ -162,7 +162,7 @@
                 <Directory Id="PKG_I18N" Name="i18n">
                     <Directory Id="PKG_I18N_DE" Name="de">
                         <Component Id="Translation_de" Guid="53928C8D-3566-75f5-B42C-6BAA8C651068">
-                            <File Id="messages_de"  Name="messages.mo" DiskId="1" Source="$(env.buildsrc)\i18n\messages.mo" KeyPath="yes"/>
+                            <File Id="messages_de"  Name="messages.mo" DiskId="1" Source="$(env.buildsrc)\i18n\de\messages.mo" KeyPath="yes"/>
                         </Component>
                     </Directory>
                 </Directory>
