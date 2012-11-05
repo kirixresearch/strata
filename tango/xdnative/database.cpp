@@ -3650,7 +3650,7 @@ tango::IRelationEnumPtr Database::getRelationEnum(const std::wstring& path)
             if (filter_set_id.length() > 0 && filter_set_id != left_set_id)
                 continue;
 
-            if (filter_set_path.length() > 0 && 0 != wcscasecmp(filter_set_path.c_str(), left_set_path.c_str()))
+            if (filter_set_path.length() > 0 && left_set_path.length() > 0 && 0 != wcscasecmp(filter_set_path.c_str(), left_set_path.c_str()))
                 continue;
         }
 
