@@ -2797,6 +2797,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
 
 
     // normalize field names which are needlessly qualified with an alias
+    if (!join_operation)
     {
         normalizeFieldNames(source_tables, fields);
 
