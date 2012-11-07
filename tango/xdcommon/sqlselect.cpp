@@ -2645,7 +2645,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
                 // with a table alias, remove the table alias
 
                 const wchar_t* period = wcschr(f.name.c_str(), L'.');
-                if (period)
+                if (period && !join_operation)
                 {
                     std::wstring fname = period+1;
 
