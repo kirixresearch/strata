@@ -323,7 +323,10 @@ static void parseTableAndAlias(const std::wstring& input,
     if (as_pos != -1)
     {        
         table = input.substr(0, as_pos);
-        alias = input.substr(as_pos+3);
+        alias = input.substr(as_pos+2);
+
+        kl::trim(table);
+        kl::trim(alias);
     }
      else
     {
@@ -2619,11 +2622,17 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
 
         if (as_pos != -1)
         {
-            f.name = fstr_it->substr(as_pos+3);
+            f.name = fstr_it->substr(as_pos+2);
             f.expr = fstr_it->substr(0, as_pos);
             
             kl::trim(f.name);
             kl::trim(f.expr);
+
+            if (f.name.length() == 0)
+            {
+                error.setError(tango::errorSyntax, L"missing AS parameter");
+                return xcm::null;
+            }
         }
          else
         {

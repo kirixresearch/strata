@@ -91,6 +91,12 @@ int xdcmnInsert(tango::IIteratorPtr sp_source_iter,
             continue;
 
         insert_info[out_idx].src_handle = source_iter->getHandle(dest_colinfo->getName());
+        if (!insert_info[out_idx].src_handle)
+        {
+            delete[] insert_info;
+            return 0;
+        }
+
         insert_info[out_idx].src_type = src_colinfo->getType();
         insert_info[out_idx].src_width = src_colinfo->getWidth();
 
