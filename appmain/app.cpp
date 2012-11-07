@@ -1046,6 +1046,7 @@ wxCmdLineParser* MainApp::getCommandLine()
         { wxCMD_LINE_SWITCH, "n", "noext",   "don't start extensions automatically" },
         { wxCMD_LINE_SWITCH, "s", "svc",     "used when starting application in service mode" },
         { wxCMD_LINE_SWITCH, "c", "svccfg",  "configure the service (windows only)" },
+        { wxCMD_LINE_PARAM,  NULL, NULL, "input file", wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_MULTIPLE | wxCMD_LINE_PARAM_OPTIONAL },
         { wxCMD_LINE_NONE }
     };
 
