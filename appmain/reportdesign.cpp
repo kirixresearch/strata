@@ -1060,7 +1060,10 @@ bool CompReportDesign::load(const ReportCreateInfo& data)
     col_idx = 0;
     for (it = data.content_fields.begin(); it != it_end; ++it)
     {
-        wxString value = wxT("=") + it->field_name;
+        std::wstring quoted_field_name;
+        quoted_field_name = tango::quoteIdentifier(g_app->getDatabase(), towstr(it->field_name));
+
+        wxString value = wxT("=") + towx(quoted_field_name);
         value.Trim(true);
         value.Trim(false);
         kcanvas::CellRange range(row_idx, col_idx);
