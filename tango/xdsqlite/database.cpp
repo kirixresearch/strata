@@ -743,7 +743,11 @@ bool SlDatabase::deleteIndex(const std::wstring& path,
 
 tango::IStructurePtr SlDatabase::describeTable(const std::wstring& path)
 {
-    return xcm::null;
+    tango::ISetPtr set = openSet(path);
+    if (set.isNull())
+        return xcm::null;
+
+    return set->getStructure();
 }
 
 

@@ -741,7 +741,11 @@ tango::IIndexInfoEnumPtr SqlServerDatabase::getIndexEnum(const std::wstring& pat
 
 tango::IStructurePtr SqlServerDatabase::describeTable(const std::wstring& path)
 {
-    return xcm::null;
+    tango::ISetPtr set = openSet(path);
+    if (set.isNull())
+        return xcm::null;
+
+    return set->getStructure();
 }
 
 

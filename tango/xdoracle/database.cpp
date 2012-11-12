@@ -1300,7 +1300,11 @@ tango::IIndexInfoEnumPtr OracleDatabase::getIndexEnum(const std::wstring& path)
 
 tango::IStructurePtr OracleDatabase::describeTable(const std::wstring& path)
 {
-    return xcm::null;
+    tango::ISetPtr set = openSet(path);
+    if (set.isNull())
+        return xcm::null;
+
+    return set->getStructure();
 }
 
 
