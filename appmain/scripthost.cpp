@@ -54,7 +54,6 @@
 #include "dlgdatabasefile.h"
 #include "jobmodifystruct.h"
 #include "jobcopy.h"
-#include "jobftp.h"
 #include "jobquery.h"
 #include "jobscript.h"
 #include "extensionmgr.h"
