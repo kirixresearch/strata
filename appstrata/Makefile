@@ -88,7 +88,6 @@ OBJECTS = \
 	jobexportpkg.o \
 	jobgroup.o \
 	jobfindinfiles.o \
-	jobftp.o \
 	jobimport.o \
 	jobimportpkg.o \
 	jobindex.o \
