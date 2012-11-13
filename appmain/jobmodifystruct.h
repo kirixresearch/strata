@@ -68,7 +68,6 @@ private:
 
     tango::ISetPtr m_action_set;
     tango::IStructurePtr m_struct_config;
-    tango::IJobPtr m_tango_job;
 
     std::vector<std::pair<wxString, wxString> > m_to_rename;
     std::vector<std::pair<wxString, int> > m_to_insert;

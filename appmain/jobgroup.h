@@ -62,8 +62,8 @@ public:
     void runPostJob();
 
 private:
+
     xcm::mutex m_obj_mutex;
-    tango::IJobPtr m_tango_job;
 
     // -- parameters --
     tango::ISetPtr m_source_set;
