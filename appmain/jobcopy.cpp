@@ -99,8 +99,6 @@ tango::ISetPtr CopyJob::getResultSet(size_t idx)
     return m_instructions[idx].m_result_set;
 }
 
-
-
 int CopyJob::runJob()
 {
     std::vector<CopyInstruction>::iterator it;
@@ -410,3 +408,6 @@ int CopyJob::runJob()
     return 0;
 }
 
+void CopyJob::runPostJob()
+{
+}

@@ -31,6 +31,7 @@ public:
                          const std::vector<wxString>& paths);
     
     int runJob();
+    void runPostJob();
 
 private:
 

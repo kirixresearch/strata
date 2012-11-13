@@ -41,7 +41,6 @@ std::vector<IndexJobInstruction> IndexJob::getInstructions()
     return m_instructions;
 }
 
-
 int IndexJob::runJob()
 {
     tango::IDatabasePtr db = g_app->getDatabase();
@@ -74,5 +73,8 @@ int IndexJob::runJob()
     return 0;
 }
 
+void IndexJob::runPostJob()
+{
+}
 
 

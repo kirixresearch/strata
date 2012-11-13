@@ -70,7 +70,22 @@ void QueryJob::setQueryParts(tango::ISetPtr set,
                    const wxString& sort)
 {
 }
-                   
+
+tango::ISetPtr QueryJob::getResultSet()
+{
+    XCM_AUTO_LOCK(m_obj_mutex);
+
+    return m_result_set;
+}
+
+
+tango::IIteratorPtr QueryJob::getResultIterator()
+{
+    XCM_AUTO_LOCK(m_obj_mutex);
+
+    return m_result_iter;
+}
+
 int QueryJob::runJob()
 {
     // if a database to use is specified, use it; otherwise use
@@ -128,23 +143,6 @@ int QueryJob::runJob()
 void QueryJob::runPostJob()
 {
 }
-
-
-tango::ISetPtr QueryJob::getResultSet()
-{
-    XCM_AUTO_LOCK(m_obj_mutex);
-
-    return m_result_set;
-}
-
-
-tango::IIteratorPtr QueryJob::getResultIterator()
-{
-    XCM_AUTO_LOCK(m_obj_mutex);
-
-    return m_result_iter;
-}
-
 
 
 

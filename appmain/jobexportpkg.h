@@ -57,6 +57,7 @@ public:
     void setRawExport(bool b) { m_raw = b; }
     
     int runJob();
+    void runPostJob();
 
 private:
 

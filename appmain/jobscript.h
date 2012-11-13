@@ -30,9 +30,9 @@ public:
     virtual ~ScriptJob();
 
     void setScriptHost(ScriptHost* script_host);
-    int runJob();
-    void runPostJob();
     bool cancel();
+    int runJob();
+    void runPostJob();    
 
 private:
 

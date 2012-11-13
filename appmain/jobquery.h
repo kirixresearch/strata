@@ -59,12 +59,12 @@ public:
                        const wxString& columns,
                        const wxString& filter,
                        const wxString& sort);
-                       
-    int runJob();
-    void runPostJob();
 
     tango::ISetPtr getResultSet();
     tango::IIteratorPtr getResultIterator();
+
+    int runJob();
+    void runPostJob();
 
 private:
 

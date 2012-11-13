@@ -103,6 +103,7 @@ public:
     tango::ISetPtr getResultSet(size_t idx);
 
     int runJob();
+    void runPostJob();    
 
 private:
 

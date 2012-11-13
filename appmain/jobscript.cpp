@@ -101,6 +101,20 @@ void ScriptJob::setScriptHost(ScriptHost* script_host)
     m_script_host->sigJobChanged.connect(this, &ScriptJob::onScriptHostJobChanged);
 }
 
+bool ScriptJob::cancel()
+{
+    JobBase::cancel();
+
+    m_script_host->cancel();
+
+    if (m_script_job)
+    {
+        m_script_job->cancel();
+        m_script_job.clear();
+    }
+
+    return true;
+}
 
 int ScriptJob::runJob()
 {
@@ -128,23 +142,6 @@ void ScriptJob::runPostJob()
         g_app->getAppController()->printConsoleText(s);
     }
 }
-
-
-bool ScriptJob::cancel()
-{
-    JobBase::cancel();
-
-    m_script_host->cancel();
-
-    if (m_script_job)
-    {
-        m_script_job->cancel();
-        m_script_job.clear();
-    }
-
-    return true;
-}
-
 
 
 

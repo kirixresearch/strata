@@ -126,6 +126,11 @@ public:
     virtual ~UpdateCheckJob()
     {
     }
+
+    const UpdaterInfo& getUpdaterInfo()
+    {
+        return m_update_info;
+    }
     
     int runJob()
     {
@@ -155,11 +160,6 @@ public:
     
     void runPostJob()
     {
-    }
-    
-    const UpdaterInfo& getUpdaterInfo()
-    {
-        return m_update_info;
     }
     
 private:

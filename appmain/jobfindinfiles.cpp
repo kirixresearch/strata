@@ -186,3 +186,7 @@ int FindInFilesJob::runJob()
     
     return 0;
 }
+
+void FindInFilesJob::runPostJob()
+{
+}

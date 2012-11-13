@@ -62,6 +62,7 @@ public:
     std::vector<IndexJobInstruction> getInstructions();
 
     int runJob();
+    void runPostJob();
 
 private:
 
