@@ -321,6 +321,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\kl\thread.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\kl\url.h"
 				>
 			</File>
@@ -472,6 +476,10 @@
 			</File>
 			<File
 				RelativePath=".\src\system.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\thread.cpp"
 				>
 			</File>
 			<File
