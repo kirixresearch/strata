@@ -15,6 +15,23 @@
 
 namespace kl
 {
+
+
+typedef unsigned long thread_t;
+
+
+enum ThreadCreateReturn
+{
+    tcrOK = 0,
+    tcrEAGAIN = 1,
+    tcrEINVAL = 2,
+    tcrEPERM = 3
+};
+
+
+int thread_create(thread_t *thread, const thread_t *attr,
+                  void *(*start_routine) (void *), void *arg);
+
 };
 
 

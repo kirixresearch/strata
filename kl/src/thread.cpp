@@ -14,5 +14,24 @@
 
 namespace kl
 {
+
+#ifdef WIN32
+
+int thread_create(thread_t *thread, const thread_t *attr,
+                  void *(*start_routine) (void *), void *arg)
+{
+    return tcrOK;
+}
+
+#else
+
+int thread_create(thread_t *thread, const thread_t *attr,
+                  void *(*start_routine) (void *), void *arg)
+{
+    return tcrOK;
+}
+
+#endif
+
 };
 
