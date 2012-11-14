@@ -65,6 +65,88 @@ BEGIN_EVENT_TABLE(JobListCtrl, kcl::ScrollListControl)
 END_EVENT_TABLE()
 
 
+
+static wxString getJobElapsedTimeString(cfw::IJobInfoPtr job_info)
+{
+    int job_state = job_info->getState();
+    if (job_state == cfw::jobStatePaused)
+        return _("Paused");
+         else if (job_state == cfw::jobStateQueued)
+        return _("Queued");
+
+    // calcuate the duration of the job
+    time_t start_time = job_info->getStartTime();
+    time_t finish_time = job_info->getFinishTime();
+    time_t duration, current_time = time(NULL);
+    
+    if (job_state == cfw::jobStateCancelled ||
+        job_state == cfw::jobStateFinished ||
+        job_state == cfw::jobStateFailed)
+    {
+        time_t finish_time = job_info->getFinishTime();
+        duration = finish_time - start_time;
+    }
+     else if (job_state == cfw::jobStateQueued)
+    {
+        duration = 0;
+    }
+     else
+    {
+        duration = current_time - start_time;
+    }
+    
+    // create the elapsed time string
+    int hours = (duration/3600);
+    duration -= (hours*3600);
+    int minutes = (duration/60);
+    int seconds = duration%60;
+    
+    // make sure there is at least a 1 second duration
+    if (hours == 0 && minutes == 0 && seconds == 0)
+        seconds = 1;
+        
+    wxString time_str = wxString::Format(_("%02d:%02d:%02d elapsed"),
+                                         hours, minutes, seconds);
+    
+    // create the finish date and time string
+    wxString finish_time_str, finish_date_str;
+    if (finish_time > 0)
+    {
+        wxDateTime now = wxDateTime(finish_time);
+        finish_date_str = now.Format(wxT("%A, %B %d, %Y"));
+        finish_time_str = now.Format(wxT("%X"));
+    }
+    
+    switch (job_state)
+    {
+        case cfw::jobStateRunning:
+            return wxString::Format(_("Running (%s)"), time_str.c_str());
+
+        case cfw::jobStateFinished:
+            return wxString::Format(_("Finished on %s at %s (%s)"),
+                                    finish_date_str.c_str(),
+                                    finish_time_str.c_str(),
+                                    time_str.c_str());
+
+        case cfw::jobStateCancelling:
+            return wxString::Format(_("Cancelling (%s)"), time_str.c_str());
+
+        case cfw::jobStateCancelled:
+            return wxString::Format(_("Cancelled on %s at %s (%s)"),
+                                    finish_date_str.c_str(),
+                                    finish_time_str.c_str(),
+                                    time_str.c_str());
+        case cfw::jobStateFailed:
+            return wxString::Format(_("Failed on %s at %s (%s)"),
+                                    finish_date_str.c_str(),
+                                    finish_time_str.c_str(),
+                                    time_str.c_str());
+    }
+
+    return cfw::dbl2fstr(job_info->getPercentage(), 1) + wxT("%");
+}
+
+
 JobListCtrl::JobListCtrl(wxWindow* parent) : kcl::ScrollListControl(parent)
 {
     checkIfInMainThread();
@@ -233,12 +315,8 @@ void JobListCtrl::updateJobItem(kcl::ScrollListItem* item)
     }
     
     // update job state and elapsed time
-    cfw::IJobStatPtr job_stat = job_info->getStatById(cfw::jobStatElapsedTime);
-    if (job_stat.isOk())
-    {
-        element = item->getElement(wxT("job_state_text"));
-        element->setText(job_stat->getValue());
-    }
+    element = item->getElement(wxT("job_state_text"));
+    element->setText(getJobElapsedTimeString(job_info));
     
     // update record count
     element = item->getElement(wxT("record_count_text"));

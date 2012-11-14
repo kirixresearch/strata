@@ -28,7 +28,6 @@ XCM_DECLARE_SMARTPTR(IJobStat)
 XCM_DECLARE_SMARTPTR(IJobInfo)
 XCM_DECLARE_SMARTPTR(IJobQueue)
 XCM_DECLARE_SMARTPTR2(xcm::IVector<IJobInfoPtr>, IJobInfoEnumPtr)
-XCM_DECLARE_SMARTPTR2(xcm::IVector<IJobStatPtr>, IJobStatEnumPtr)
 
 
 
@@ -56,15 +55,6 @@ enum
     jobMaskPercentage = 0x20,
     jobMaskProgressString = 0x40,
     jobMaskProgressBar = 0x80
-};
-
-
-enum
-{
-    jobStatCurrentCount = -1,
-    jobStatMaxCount = -2,
-    jobStatPercentage = -3,
-    jobStatElapsedTime = -4
 };
 
 
@@ -100,27 +90,6 @@ public:
 };
 
 
-
-xcm_interface IJobStat : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("cfw.IJobStat")
-
-public:
-
-    virtual void setIndex(int new_val) = 0;
-    virtual int getIndex() = 0;
-
-    virtual void setId(int id) = 0;
-    virtual int getId() = 0;
-
-    virtual void setCaption(const wxString& new_val) = 0;
-    virtual wxString getCaption() = 0;
-
-    virtual void setValue(const wxString& new_val) = 0;
-    virtual wxString getValue() = 0;
-};
-
-
 xcm_interface IJobInfo : public xcm::IObject
 {
     XCM_INTERFACE_NAME("cfw.IJobInfo")
@@ -132,13 +101,6 @@ public:
 
     virtual void setInfoMask(int mask) = 0;
     virtual int getInfoMask() = 0;
-
-    virtual IJobStatEnumPtr getStatInfo() = 0;
-    virtual int getStatCount() = 0;
-    virtual IJobStatPtr getStatById(int id) = 0;
-    virtual IJobStatPtr insertStat(int position) = 0;
-    virtual bool deleteStat(unsigned int position) = 0;
-    virtual bool deleteStatById(int id) = 0;
 
     virtual void setCancelAllowed(bool new_val) = 0;
     virtual bool getCancelAllowed() = 0;
@@ -164,9 +126,6 @@ public:
     virtual void setDescription(const wxString& new_val) = 0;
     virtual wxString getDescription() = 0;
 
-    virtual void setBitmap(const wxBitmap& new_val) = 0;
-    virtual wxBitmap getBitmap() = 0;
-
     virtual void setStartTime(time_t new_val) = 0;
     virtual time_t getStartTime() = 0;
 
@@ -181,7 +140,6 @@ public:
     virtual double getMaxCount() = 0;
 
     virtual double getPercentage() = 0;
-    virtual double getProgressBarPos() = 0;
 
     XCM_DECLARE_SIGNAL1(sigOnGetCurrentCount, double*)
     XCM_DECLARE_SIGNAL1(sigOnGetMaxCount, double*)

@@ -20,245 +20,6 @@
 namespace cfw
 {
 
-
-
-JobStat::JobStat()
-{
-    m_id = 0;
-    m_index = 0;
-    m_caption = wxEmptyString;
-    m_value = wxEmptyString;
-}
-
-
-void JobStat::setIndex(int new_val)
-{
-    m_index = new_val;
-}
-
-int JobStat::getIndex()
-{
-    return m_index;
-}
-
-void JobStat::setId(int id)
-{
-    m_id = id;
-}
-
-int JobStat::getId()
-{
-    return m_id;
-}
-
-void JobStat::setCaption(const wxString& new_val)
-{
-    m_caption = new_val;
-}
-
-wxString JobStat::getCaption()
-{
-    return m_caption;
-}
-
-void JobStat::setValue(const wxString& new_val)
-{
-    m_value = new_val;
-}
-
-wxString JobStat::getValue()
-{
-    return m_value;
-}
-
-
-
-
-class JobCurrentCountStat : public JobStat
-{
-    XCM_CLASS_NAME("cfw.JobCurrentCountStat")
-    XCM_BEGIN_INTERFACE_MAP(JobStat)
-        XCM_INTERFACE_CHAIN(JobStat)
-    XCM_END_INTERFACE_MAP()
-
-public:
-
-    JobCurrentCountStat(JobInfo* info)
-    {
-        m_job_info = info;
-        setCaption(_("Records Processed:"));
-        setId(jobStatCurrentCount);
-    }
-
-    wxString getValue()
-    {
-        return dbl2fstr(m_job_info->getCurrentCount(), 0);
-    }
-
-private:
-    
-    JobInfo* m_job_info;
-};
-
-
-class JobMaxCountStat : public JobStat
-{
-    XCM_CLASS_NAME("cfw.JobMaxCountStat")
-    XCM_BEGIN_INTERFACE_MAP(JobStat)
-        XCM_INTERFACE_CHAIN(JobStat)
-    XCM_END_INTERFACE_MAP()
-
-public:
-
-    JobMaxCountStat(JobInfo* info)
-    {
-        m_job_info = info;
-        setCaption(_("Total Records:"));
-        setId(jobStatMaxCount);
-    }
-
-    wxString getValue()
-    {
-        return dbl2fstr(m_job_info->getMaxCount(), 0);
-    }
-
-private:
-    
-    JobInfo* m_job_info;
-};
-
-
-class JobPercentageStat : public JobStat
-{
-    XCM_CLASS_NAME("cfw.JobPercentageStat")
-    XCM_BEGIN_INTERFACE_MAP(JobStat)
-        XCM_INTERFACE_CHAIN(JobStat)
-    XCM_END_INTERFACE_MAP()
-
-public:
-
-    JobPercentageStat(JobInfo* info)
-    {
-        m_job_info = info;
-        setCaption(_("Percentage:"));
-        setId(jobStatPercentage);
-    }
-
-    wxString getValue()
-    {
-        return dbl2fstr(m_job_info->getPercentage(), 1) + wxT("%");
-    }
-
-private:
-    
-    JobInfo* m_job_info;
-};
-
-
-class JobElapsedTimeStat : public JobStat
-{
-    XCM_CLASS_NAME("cfw.JobElapsedTimeStat")
-    XCM_BEGIN_INTERFACE_MAP(JobStat)
-        XCM_INTERFACE_CHAIN(JobStat)
-    XCM_END_INTERFACE_MAP()
-
-public:
-
-    JobElapsedTimeStat(JobInfo* info)
-    {
-        m_job_info = info;
-        setCaption(_("Elapsed Time:"));
-        setId(jobStatElapsedTime);
-    }
-
-    wxString getValue()
-    {
-        int job_state = m_job_info->getState();
-        if (job_state == cfw::jobStatePaused)
-            return _("Paused");
-             else if (job_state == cfw::jobStateQueued)
-            return _("Queued");
-
-        // calcuate the duration of the job
-        time_t start_time = m_job_info->getStartTime();
-        time_t finish_time = m_job_info->getFinishTime();
-        time_t duration, current_time = time(NULL);
-        
-        if (job_state == cfw::jobStateCancelled ||
-            job_state == cfw::jobStateFinished ||
-            job_state == cfw::jobStateFailed)
-        {
-            time_t finish_time = m_job_info->getFinishTime();
-            duration = finish_time - start_time;
-        }
-         else if (job_state == cfw::jobStateQueued)
-        {
-            duration = 0;
-        }
-         else
-        {
-            duration = current_time - start_time;
-        }
-        
-        // create the elapsed time string
-        int hours = (duration/3600);
-        duration -= (hours*3600);
-        int minutes = (duration/60);
-        int seconds = duration%60;
-        
-        // make sure there is at least a 1 second duration
-        if (hours == 0 && minutes == 0 && seconds == 0)
-            seconds = 1;
-            
-        wxString time_str = wxString::Format(_("%02d:%02d:%02d elapsed"),
-                                             hours, minutes, seconds);
-        
-        // create the finish date and time string
-        wxString finish_time_str, finish_date_str;
-        if (finish_time > 0)
-        {
-            wxDateTime now = wxDateTime(finish_time);
-            finish_date_str = now.Format(wxT("%A, %B %d, %Y"));
-            finish_time_str = now.Format(wxT("%X"));
-        }
-        
-        switch (job_state)
-        {
-            case cfw::jobStateRunning:
-                return wxString::Format(_("Running (%s)"), time_str.c_str());
-
-            case cfw::jobStateFinished:
-                return wxString::Format(_("Finished on %s at %s (%s)"),
-                                        finish_date_str.c_str(),
-                                        finish_time_str.c_str(),
-                                        time_str.c_str());
-
-            case cfw::jobStateCancelling:
-                return wxString::Format(_("Cancelling (%s)"), time_str.c_str());
-
-            case cfw::jobStateCancelled:
-                return wxString::Format(_("Cancelled on %s at %s (%s)"),
-                                        finish_date_str.c_str(),
-                                        finish_time_str.c_str(),
-                                        time_str.c_str());
-            case cfw::jobStateFailed:
-                return wxString::Format(_("Failed on %s at %s (%s)"),
-                                        finish_date_str.c_str(),
-                                        finish_time_str.c_str(),
-                                        time_str.c_str());
-        }
-        
-        return dbl2fstr(m_job_info->getPercentage(), 1) + wxT("%");
-    }
-
-private:
-    
-    JobInfo* m_job_info;
-};
-
-
-
-
 JobInfo::JobInfo()
 {
     m_job_id = 0;
@@ -277,14 +38,7 @@ JobInfo::JobInfo()
                   jobMaskFinishTime | jobMaskCurrentCount |
                   jobMaskMaxCount | jobMaskProgressString |
                   jobMaskPercentage | jobMaskProgressBar;
-
-    m_stats.push_back(static_cast<IJobStat*>(new JobCurrentCountStat(this)));
-    m_stats.push_back(static_cast<IJobStat*>(new JobMaxCountStat(this)));
-    m_stats.push_back(static_cast<IJobStat*>(new JobPercentageStat(this)));
-    m_stats.push_back(static_cast<IJobStat*>(new JobElapsedTimeStat(this)));
 }
-
-
 
 void JobInfo::setJobId(int job_id)
 {
@@ -300,7 +54,6 @@ int JobInfo::getJobId()
     return m_job_id;
 }
 
-
 void JobInfo::setInfoMask(int mask)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
@@ -313,89 +66,6 @@ int JobInfo::getInfoMask()
     XCM_AUTO_LOCK(m_obj_mutex);
 
     return m_info_mask;
-}
-
-IJobStatEnumPtr JobInfo::getStatInfo()
-{
-    XCM_AUTO_LOCK(m_obj_mutex);
-
-    xcm::IVectorImpl<IJobStatPtr>* vec = new xcm::IVectorImpl<IJobStatPtr>;
-
-    std::vector<IJobStatPtr>::iterator it;
-    for (it = m_stats.begin(); it != m_stats.end(); ++it)
-    {
-        vec->append(*it);
-    }
-
-    return vec;
-}
-
-int JobInfo::getStatCount()
-{
-    XCM_AUTO_LOCK(m_obj_mutex);
-
-    return m_stats.size();
-}
-
-IJobStatPtr JobInfo::getStatById(int id)
-{
-    XCM_AUTO_LOCK(m_obj_mutex);
-
-    std::vector<IJobStatPtr>::iterator it;
-    for (it = m_stats.begin(); it != m_stats.end(); ++it)
-    {
-        if ((*it)->getId() == id)
-            return (*it);
-    }
-
-    return xcm::null;
-}
-
-IJobStatPtr JobInfo::insertStat(int position)
-{
-    XCM_AUTO_LOCK(m_obj_mutex);
-    
-    IJobStatPtr stat = static_cast<IJobStat*>(new JobStat);
-
-    if (position >= 0)
-    {
-        m_stats.insert(m_stats.begin() + position, stat);
-    }
-     else
-    {
-        m_stats.push_back(stat);
-    }
-
-    return stat;
-}
-
-bool JobInfo::deleteStat(unsigned int position)
-{
-    XCM_AUTO_LOCK(m_obj_mutex);
-
-    if (position >= m_stats.size())
-        return false;
-
-    m_stats.erase(m_stats.begin() + position);
-
-    return true;
-}
-
-bool JobInfo::deleteStatById(int id)
-{
-    XCM_AUTO_LOCK(m_obj_mutex);
-
-    std::vector<IJobStatPtr>::iterator it;
-    for (it = m_stats.begin(); it != m_stats.end(); ++it)
-    {
-        if ((*it)->getId() == id)
-        {
-            m_stats.erase(it);
-            return true;
-        }
-    }
-
-    return false;
 }
 
 void JobInfo::setCancelAllowed(bool new_val)
@@ -470,20 +140,6 @@ wxString JobInfo::getDescription()
     XCM_AUTO_LOCK(m_obj_mutex);
 
     return m_description;
-}
-
-void JobInfo::setBitmap(const wxBitmap& bitmap)
-{
-    XCM_AUTO_LOCK(m_obj_mutex);
-
-    m_bitmap = bitmap;
-}
-
-wxBitmap JobInfo::getBitmap()
-{
-    XCM_AUTO_LOCK(m_obj_mutex);
-
-    return m_bitmap;
 }
 
 void JobInfo::setProgressString(const wxString& new_val)
@@ -692,11 +348,6 @@ double JobInfo::getPercentage()
         return 0.0;
 
     return (cur_count*100)/max_rows;
-}
-
-double JobInfo::getProgressBarPos()
-{
-    return getPercentage();
 }
 
 

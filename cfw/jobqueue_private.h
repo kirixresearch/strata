@@ -17,38 +17,6 @@ namespace cfw
 {
 
 
-class JobStat : public IJobStat
-{
-    XCM_CLASS_NAME("cfw.JobStat")
-    XCM_BEGIN_INTERFACE_MAP(JobStat)
-        XCM_INTERFACE_ENTRY(IJobStat)
-    XCM_END_INTERFACE_MAP()
-
-public:
-
-    JobStat();
-
-    void setId(int id);
-    int getId();
-
-    void setIndex(int new_val);
-    int getIndex();
-
-    void setCaption(const wxString& new_val);
-    wxString getCaption();
-
-    void setValue(const wxString& new_val);
-    wxString getValue();
-
-private:
-
-    int m_id;
-    int m_index;
-    wxString m_caption;
-    wxString m_value;
-};
-
-
 /*
     progress format string parameters:
 
@@ -86,13 +54,6 @@ public:
     void setId(int id);
     int getId();
 
-    IJobStatEnumPtr getStatInfo();
-    int getStatCount();
-    IJobStatPtr getStatById(int id);
-    IJobStatPtr insertStat(int position);
-    bool deleteStat(unsigned int position);
-    bool deleteStatById(int id);
-
     void setCancelAllowed(bool new_val);
     bool getCancelAllowed();
 
@@ -107,9 +68,6 @@ public:
 
     void setDescription(const wxString& new_val);
     wxString getDescription();
-
-    void setBitmap(const wxBitmap& new_val);
-    wxBitmap getBitmap();
 
     // see note above on how to create a format string
     void setProgressStringFormat(const wxString& no_max_count_format,
@@ -135,7 +93,6 @@ public:
     double getMaxCount();
 
     double getPercentage();
-    double getProgressBarPos();
 
 private:
 
@@ -146,7 +103,6 @@ private:
     bool m_visible;
     wxString m_title;
     wxString m_description;
-    wxBitmap m_bitmap;
     wxString m_progress_string;
     wxString m_progress_string_format_nomax;
     wxString m_progress_string_format_max;
@@ -158,7 +114,6 @@ private:
     double m_max_count;
     bool m_cancel_allowed;
     int m_info_mask;
-    std::vector<IJobStatPtr> m_stats;
 };
 
 
