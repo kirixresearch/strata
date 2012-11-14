@@ -18,7 +18,7 @@ const int MAX_STREAM_SIZE = 2000000;
 
 FindInFilesJob::FindInFilesJob()
 {
-    m_job_info->setTitle(_("Find In Files"));
+    m_job_info->setTitle(towstr(_("Find In Files")));
     m_buf = new unsigned char[MAX_STREAM_SIZE+25];
     m_whole_word = false;
     m_match_case = false;

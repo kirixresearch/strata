@@ -29,7 +29,7 @@ void TableDoc::setFilter(const wxString& filter)
                                       getCaption().c_str());
 
     SortFilterJob* query_job = new SortFilterJob;
-    query_job->getJobInfo()->setTitle(title);
+    query_job->getJobInfo()->setTitle(towstr(title));
     query_job->setInstructions(m_set, filter, m_sort_order);
     query_job->sigJobFinished().connect(this, &TableDoc::onSortFilterJobFinished);
 
@@ -98,7 +98,7 @@ void TableDoc::setSortOrder(const wxString& expr)
                                           getCaption().c_str());
 
         SortFilterJob* job = new SortFilterJob;
-        job->getJobInfo()->setTitle(title);
+        job->getJobInfo()->setTitle(towstr(title));
         job->setInstructions(getBaseSet(), getFilter(), expr);
 
         job->sigJobFinished().connect(this, &TableDoc::onSetOrderFinished);
@@ -127,7 +127,7 @@ void TableDoc::setSortOrder(const wxString& expr)
                                       getCaption().c_str());
 
     SortFilterJob* job = new SortFilterJob;
-    job->getJobInfo()->setTitle(title);
+    job->getJobInfo()->setTitle(towstr(title));
     job->setInstructions(m_browse_set, wxT(""), expr);
 
     job->sigJobFinished().connect(this, &TableDoc::onSetOrderFinished);

@@ -86,10 +86,10 @@ public:
         wxString title = wxString::Format(_("Downloading '%s' to '%s'"),
                                           filename.c_str(),
                                           suggested_filename.c_str());
-        m_job_info->setTitle(title);
+        m_job_info->setTitle(towstr(title));
         m_job_info->setProgressStringFormat(
-                                    _("$C KB downloaded"),
-                                    _("$C of $M KB downloaded ($p1%)"));
+                                    towstr(_("$C KB downloaded")),
+                                    towstr(_("$C of $M KB downloaded ($p1%)")));
     }
 
     virtual void OnStart()
@@ -527,10 +527,10 @@ public:
         wxString title = wxString::Format(_("Downloading '%s' to '%s'"),
                                           filename.c_str(),
                                           suggested_filename.c_str());
-        m_job_info->setTitle(title);
+        m_job_info->setTitle(towstr(title));
         m_job_info->setProgressStringFormat(
-                                    _("$C KB downloaded"),
-                                    _("$C of $M KB downloaded ($p1%)"));
+                                    towstr(_("$C KB downloaded")),
+                                    towstr(_("$C of $M KB downloaded ($p1%)")));
     }
 
     void setTargetSiteId(int site_id)

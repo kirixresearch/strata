@@ -17,7 +17,7 @@
 ScriptJob::ScriptJob()
 {
     m_script_host = NULL;
-    m_job_info->setTitle(_("Script"));
+    m_job_info->setTitle(towstr(_("Script")));
 
     m_job_info->setInfoMask(cfw::jobMaskTitle |
                             cfw::jobMaskStartTime |
@@ -91,7 +91,7 @@ void ScriptJob::onScriptHostJobChanged()
         }
     }
 
-    m_job_info->setTitle(caption);
+    m_job_info->setTitle(towstr(caption));
 }
 
 

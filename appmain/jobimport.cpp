@@ -549,20 +549,20 @@ void ImportJob::updateJobTitle(const wxString& tablename)
         m_import_type == dbtypeDb2)
     {
         title = getImportTitle(m_import_type, tablename, wxEmptyString, m_host);
-        m_job_info->setTitle(title);
+        m_job_info->setTitle(towstr(title));
     }
      else if (m_import_type == dbtypeAccess ||
               m_import_type == dbtypeExcel)
     {
         title = getImportTitle(m_import_type, tablename, m_filename);
-        m_job_info->setTitle(title);
+        m_job_info->setTitle(towstr(title));
     }
      else if (m_import_type == dbtypeFixedLengthText ||
               m_import_type == dbtypeDelimitedText   ||
               m_import_type == dbtypeXbase)
     {
         title = getImportTitle(m_import_type, tablename);
-        m_job_info->setTitle(title);
+        m_job_info->setTitle(towstr(title));
     }              
 }
 
@@ -601,7 +601,7 @@ int ImportJob::runJob()
         m_import_type == dbtypeOdbc      ||
         m_import_type == dbtypeDb2)
     {
-        m_job_info->setProgressString(_("Opening database connection..."));
+        m_job_info->setProgressString(towstr(_("Opening database connection...")));
     }
      else if (m_import_type == dbtypeFixedLengthText ||
               m_import_type == dbtypeDelimitedText ||
@@ -609,7 +609,7 @@ int ImportJob::runJob()
               m_import_type == dbtypeExcel ||
               m_import_type == dbtypeAccess)
     {
-        m_job_info->setProgressString(_("Reading file..."));
+        m_job_info->setProgressString(towstr(_("Reading file...")));
     }              
     
     // create a connection to the source database
@@ -631,7 +631,7 @@ int ImportJob::runJob()
             m_import_type == dbtypeOdbc      ||
             m_import_type == dbtypeDb2)
         {
-            m_job_info->setProgressString(_("The database connection could not be opened."));
+            m_job_info->setProgressString(towstr(_("The database connection could not be opened.")));
         }
          else if (m_import_type == dbtypeAccess        ||
                   m_import_type == dbtypeExcel         ||
@@ -639,7 +639,7 @@ int ImportJob::runJob()
                   m_import_type == dbtypeDelimitedText ||
                   m_import_type == dbtypeFixedLengthText)
         {
-            m_job_info->setProgressString(_("The file could not be opened."));
+            m_job_info->setProgressString(towstr(_("The file could not be opened.")));
         }              
 
         m_job_info->setState(cfw::jobStateFailed);
@@ -699,7 +699,7 @@ int ImportJob::runJob()
             // every time we open a text-delimited set, we need to read some
             // of the file -- let the user know this is happening
             if (m_import_type == dbtypeDelimitedText)
-                m_job_info->setProgressString(_("Reading file..."));
+                m_job_info->setProgressString(towstr(_("Reading file...")));
 
             src_set = src_db->openSetEx(towstr(it->input_path), format);
 
@@ -730,8 +730,8 @@ int ImportJob::runJob()
                 
                 m_job_info->setProgressString(wxEmptyString);
                 m_job_info->setProgressStringFormat(
-                                            _("Determining table structure: $c records processed"),
-                                            _("Determining table structure: $c of $m records processed ($p1%)"));
+                                            towstr(_("Determining table structure: $c records processed")),
+                                            towstr(_("Determining table structure: $c of $m records processed ($p1%)")));
 
                 tango::IJobPtr tango_job = src_db->createJob();
                 setTangoJob(tango_job);
@@ -753,8 +753,8 @@ int ImportJob::runJob()
                 // set the progress string format back to its default
                 m_job_info->setProgressString(wxEmptyString);
                 m_job_info->setProgressStringFormat(
-                                            _("$c records processed"),
-                                            _("$c of $m records processed ($p1%)"));
+                                            towstr(_("$c records processed")),
+                                            towstr(_("$c of $m records processed ($p1%)")));
             }
 
             // set the parameters for a fixed-length text import
@@ -1228,7 +1228,7 @@ int ImportJob::runJob()
             if (!ri->insertRow())
             {
                 m_job_info->setState(cfw::jobStateFailed);
-                m_job_info->setProgressString(_("ERROR: Insufficient disk space"));
+                m_job_info->setProgressString(towstr(_("ERROR: Insufficient disk space")));
                 return 0;
             }
           

@@ -2539,7 +2539,7 @@ void DbDoc::doPaste()
             CopyJob* job = new CopyJob;
             
             // set folder to refresh after paste operation
-            job->setExtraString(target_location);
+            job->setExtraString(towstr(target_location));
             
             for (it = g_cutcopy_items.begin(); it != g_cutcopy_items.end(); ++it)
             {
@@ -4119,7 +4119,7 @@ void DbDoc::onDragDrop(cfw::IFsItemPtr target,
                         job = new CopyJob;
 
                         // set folder to be refreshed when copy job is finished
-                        job->setExtraString(dest_location);
+                        job->setExtraString(towstr(dest_location));
                     }
                     
                     job->addCopyInstruction(source_db,

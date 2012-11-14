@@ -1637,7 +1637,7 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
                               path.AfterLast('/').c_str());
     
     CopyJob* copy_job = new CopyJob;
-    copy_job->getJobInfo()->setTitle(title);
+    copy_job->getJobInfo()->setTitle(towstr(title));
     copy_job->setExtraLong(m_doc_site->getId());
 
     if (is_indeterminate)
@@ -1798,7 +1798,7 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
                       dlg.GetPath().AfterLast(PATH_SEPARATOR_CHAR).c_str());
         
         ExportPkgJob* job = new ExportPkgJob;
-        job->getJobInfo()->setTitle(title);
+        job->getJobInfo()->setTitle(towstr(title));
         job->setPkgFilename(dlg.GetPath(), ExportPkgJob::modeOverwrite);
 
         job->addExportObject(stream_name,
@@ -1814,7 +1814,7 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
                       dlg.GetPath().AfterLast(PATH_SEPARATOR_CHAR).c_str());
 
         ExportJob* job = new ExportJob;
-        job->getJobInfo()->setTitle(title);
+        job->getJobInfo()->setTitle(towstr(title));
         job->setExportType(dbtype);
 
         ExportJobInfo job_export_info;
@@ -2043,7 +2043,7 @@ void TableDoc::onReload(wxCommandEvent& evt)
                                               getCaption().c_str());
 
             SortFilterJob* query_job = new SortFilterJob;
-            query_job->getJobInfo()->setTitle(title);
+            query_job->getJobInfo()->setTitle(towstr(title));
             query_job->setInstructions(m_set, m_filter, m_sort_order);
 
             query_job->sigJobFinished().connect(this, &TableDoc::onSortFilterJobFinished);
@@ -5674,7 +5674,7 @@ void TableDoc::onMakePermanent(wxCommandEvent& evt)
                                       getCaption().c_str());
 
     ModifyStructJob* job = new ModifyStructJob;
-    job->getJobInfo()->setTitle(title);
+    job->getJobInfo()->setTitle(towstr(title));
     
     for (it = cols.begin(); it != cols.end(); ++it)
     {
@@ -6081,7 +6081,7 @@ void TableDoc::deleteSelectedColumns()
                                           getCaption().c_str());
 
         ModifyStructJob* job = new ModifyStructJob;
-        job->getJobInfo()->setTitle(title);
+        job->getJobInfo()->setTitle(towstr(title));
         job->setInstructions(m_set, structure);
         connectModifyStructJob(job);
         closeSet();
@@ -6670,7 +6670,7 @@ void TableDoc::onSummary(wxCommandEvent& evt)
                                       getCaption().c_str());
 
     GroupJob* job = new GroupJob;
-    job->getJobInfo()->setTitle(title);
+    job->getJobInfo()->setTitle(towstr(title));
 
     wxString group_funcs;
 
@@ -7982,7 +7982,7 @@ void TableDoc::copyRecords(const wxString& condition)
                                       getCaption().c_str());
 
     CopyJob* copy_job = new CopyJob;
-    copy_job->getJobInfo()->setTitle(title);
+    copy_job->getJobInfo()->setTitle(towstr(title));
     
     if (source_iter)
     {
@@ -8273,7 +8273,7 @@ void TableDoc::deleteRecords(const wxString& condition)
                                       getCaption().c_str());
 
     QueryJob* delete_job = new QueryJob;
-    delete_job->getJobInfo()->setTitle(title);
+    delete_job->getJobInfo()->setTitle(towstr(title));
     
     wxString cmd;
         

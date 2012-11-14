@@ -202,7 +202,7 @@ void ExportJob::updateJobTitle(ExportJobInfo* info)
     if (!info)
     {
         title = getExportTitle(m_export_type);
-        m_job_info->setTitle(title);
+        m_job_info->setTitle(towstr(title));
         return;
     }
        
@@ -214,7 +214,7 @@ void ExportJob::updateJobTitle(ExportJobInfo* info)
     {
         tablename = info->input_path.AfterLast(wxT('/'));
         title = getExportTitle(m_export_type, tablename, wxEmptyString, m_host);
-        m_job_info->setTitle(title);
+        m_job_info->setTitle(towstr(title));
     }
      else if (m_export_type == dbtypeAccess ||
               m_export_type == dbtypeExcel)
@@ -222,7 +222,7 @@ void ExportJob::updateJobTitle(ExportJobInfo* info)
         tablename = info->input_path.AfterLast(wxT('/'));
         filename = m_filename.AfterLast(PATH_SEPARATOR_CHAR);
         title = getExportTitle(m_export_type, tablename, filename);
-        m_job_info->setTitle(title);
+        m_job_info->setTitle(towstr(title));
     }
      else if (m_export_type == dbtypeFixedLengthText ||
               m_export_type == dbtypeDelimitedText   ||
@@ -231,7 +231,7 @@ void ExportJob::updateJobTitle(ExportJobInfo* info)
         tablename = info->input_path.AfterLast(wxT('/'));
         filename = info->output_path.AfterLast(PATH_SEPARATOR_CHAR);
         title = getExportTitle(m_export_type, tablename, filename);
-        m_job_info->setTitle(title);
+        m_job_info->setTitle(towstr(title));
     }              
 }
 

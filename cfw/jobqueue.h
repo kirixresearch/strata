@@ -73,8 +73,8 @@ public:
     virtual long getExtraLong() = 0;
     virtual void setExtraLong(long value) = 0;
     
-    virtual void setExtraString(const wxString& s) = 0;
-    virtual wxString getExtraString() = 0;
+    virtual void setExtraString(const std::wstring& s) = 0;
+    virtual std::wstring getExtraString() = 0;
 
     virtual bool cancel() = 0;
 
@@ -111,17 +111,17 @@ public:
     virtual void setVisible(bool new_val) = 0;
     virtual bool getVisible() = 0;
     
-    virtual void setProgressStringFormat(const wxString& no_max_count_format,
-                                         const wxString& max_count_format) = 0;
-    virtual void setProgressString(const wxString& new_val) = 0;
-    virtual wxString getProgressString() = 0;
+    virtual void setProgressStringFormat(const std::wstring& no_max_count_format,
+                                         const std::wstring& max_count_format) = 0;
+    virtual void setProgressString(const std::wstring& new_val) = 0;
+    virtual std::wstring getProgressString() = 0;
     
-    virtual void setError(int error_code, const wxString& error_string) = 0;
+    virtual void setError(int error_code, const std::wstring& error_string) = 0;
     virtual int getErrorCode() = 0;
-    virtual wxString getErrorString() = 0;
+    virtual std::wstring getErrorString() = 0;
     
-    virtual void setTitle(const wxString& new_val) = 0;
-    virtual wxString getTitle() = 0;
+    virtual void setTitle(const std::wstring& new_val) = 0;
+    virtual std::wstring getTitle() = 0;
 
     virtual void setStartTime(time_t new_val) = 0;
     virtual time_t getStartTime() = 0;
@@ -186,9 +186,9 @@ public:
         m_job_info = m_sp_job_info.p;
         m_cancelling = false;
 
-        getJobInfo()->setProgressStringFormat(
-                                    _("$c records processed"),
-                                    _("$c of $m records processed ($p1%)"));
+        std::wstring str1 = _("$c records processed");
+        std::wstring str2 = _("$c of $m records processed ($p1%)");
+        getJobInfo()->setProgressStringFormat(str1, str2);
     }
 
     int getJobId()
@@ -227,13 +227,13 @@ public:
         m_extra_long = value;
     }
 
-    void setExtraString(const wxString& s)
+    void setExtraString(const std::wstring& s)
     {
         XCM_AUTO_LOCK(m_jobbase_mutex);
         m_extra_string = s;
     }
 
-    wxString getExtraString()
+    std::wstring getExtraString()
     {
         XCM_AUTO_LOCK(m_jobbase_mutex);
         return m_extra_string;
@@ -276,7 +276,7 @@ public:
 protected:
     cfw::IJobInfoPtr m_sp_job_info;
     cfw::IJobInfo* m_job_info;
-    wxString m_extra_string;
+    std::wstring m_extra_string;
     long m_extra_long;
 
 private:

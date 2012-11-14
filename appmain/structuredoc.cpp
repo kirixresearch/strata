@@ -1325,7 +1325,7 @@ ModifyStructJob* StructureDoc::createModifyJob(size_t* _action_count)
                                       caption.c_str());
     
     ModifyStructJob* job = new ModifyStructJob;
-    job->getJobInfo()->setTitle(title);
+    job->getJobInfo()->setTitle(towstr(title));
     
     tango::IStructurePtr structure = m_modify_set->getStructure();
     tango::IColumnInfoPtr col;

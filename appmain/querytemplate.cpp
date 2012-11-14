@@ -186,7 +186,7 @@ cfw::IJobPtr QueryTemplate::execute(int site_id)
     QueryJob* job = new QueryJob;
     job->setExtraLong(site_id);
     job->sigJobFinished().connect(&onQueryJobFinished);
-    job->getJobInfo()->setTitle(_("Query"));
+    job->getJobInfo()->setTitle(towstr(_("Query")));
     job->setQuery(sql, flags);
 
     g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);

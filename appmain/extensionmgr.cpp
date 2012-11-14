@@ -430,7 +430,7 @@ bool ExtensionMgr::startAllExtensions()
                 job_info->getState() == cfw::jobStateRunning)
             {
                 job->sigJobFinished().connect(&onScriptJobFinished);
-                job->setExtraString(it->guid);
+                job->setExtraString(towstr(it->guid));
                 it->state = ExtensionInfo::stateRunning;
             }
         }
@@ -555,7 +555,7 @@ bool ExtensionMgr::startExtension(const wxString& guid)
         if (job_info.isOk() && job_info->getState() == cfw::jobStateRunning)
         {
             job->sigJobFinished().connect(&onScriptJobFinished);
-            job->setExtraString(info.guid);
+            job->setExtraString(towstr(info.guid));
             info.state = ExtensionInfo::stateRunning;
             
             // fire a signal that we've started this extension

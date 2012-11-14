@@ -1214,7 +1214,7 @@ cfw::IJobPtr ImportTemplate::execute()
         wxString job_title = wxString::Format(_("Importing from '%s'"),
                                               title.c_str());
         
-        job->getJobInfo()->setTitle(job_title);
+        job->getJobInfo()->setTitle(towstr(job_title));
     }
      else if (m_ii.type == dbtypeSqlServer ||
               m_ii.type == dbtypeMySql     ||
@@ -1235,7 +1235,7 @@ cfw::IJobPtr ImportTemplate::execute()
         wxString job_title = wxString::Format(_("Importing from %s on '%s'"),
                                               db_name.c_str(), m_ii.server.c_str());
         
-        job->getJobInfo()->setTitle(job_title);
+        job->getJobInfo()->setTitle(towstr(job_title));
     }
 
     for (it = m_ii.tables.begin(); it != m_ii.tables.end(); ++it)

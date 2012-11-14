@@ -378,7 +378,7 @@ ExportPkgJob::ExportPkgJob()
     m_version = -1;         // default version
     m_buf = NULL;
     m_raw = false;
-    m_job_info->setTitle(_("Export to Package"));
+    m_job_info->setTitle(towstr(_("Export to Package")));
 }
 
 ExportPkgJob::~ExportPkgJob()

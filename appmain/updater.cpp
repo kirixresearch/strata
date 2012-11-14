@@ -203,10 +203,10 @@ public:
         m_fetched_content_length = false;
         
         // set the job title and format the job progress string
-        m_job_info->setTitle(_("Downloading Update"));
+        m_job_info->setTitle(towstr(_("Downloading Update")));
         m_job_info->setProgressStringFormat(
-                                    _("$C KB downloaded"),
-                                    _("$C of $M KB downloaded ($p1%)"));
+                                    towstr(_("$C KB downloaded")),
+                                    towstr(_("$C of $M KB downloaded ($p1%)")));
         
         if (getAppPrefsLong(wxT("internet.proxy.type")) == prefProxyManual)
         {

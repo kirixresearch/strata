@@ -20,7 +20,7 @@
 
 CopyJob::CopyJob()
 {
-    m_job_info->setTitle(_("Copy Records"));
+    m_job_info->setTitle(towstr(_("Copy Records")));
 }
 
 CopyJob::~CopyJob()
@@ -115,11 +115,11 @@ int CopyJob::runJob()
             {
                 xcm::IObjectPtr result;
                 
-                m_job_info->setProgressString(_("Querying..."));
+                m_job_info->setProgressString(towstr(_("Querying...")));
                 if (!it->m_source_db->execute(towstr(it->m_query), tango::sqlPassThrough, result, NULL))
                 {
                     m_job_info->setState(cfw::jobStateFailed);
-                    m_job_info->setProgressString(_("ERROR: Source table busy."));
+                    m_job_info->setProgressString(towstr(_("ERROR: Source table busy.")));
                     return 0;
                 }
                 
@@ -128,7 +128,7 @@ int CopyJob::runJob()
                 if (!source_iter)
                 {
                     m_job_info->setState(cfw::jobStateFailed);
-                    m_job_info->setProgressString(_("ERROR: Source table busy."));
+                    m_job_info->setProgressString(towstr(_("ERROR: Source table busy.")));
                     return 0;
                 }
 
@@ -138,7 +138,7 @@ int CopyJob::runJob()
             }
              else
             {
-                m_job_info->setProgressString(_("Querying..."));
+                m_job_info->setProgressString(towstr(_("Querying...")));
                 tango::ISetPtr set = it->m_source_db->openSet(towstr(it->m_query));
                 m_job_info->setProgressString(wxEmptyString);
 
@@ -150,7 +150,7 @@ int CopyJob::runJob()
                     if (!source_iter)
                     {
                         m_job_info->setState(cfw::jobStateFailed);
-                        m_job_info->setProgressString(_("ERROR: Source table busy."));
+                        m_job_info->setProgressString(towstr(_("ERROR: Source table busy.")));
                         return 0;
                     }
                     
@@ -170,7 +170,7 @@ int CopyJob::runJob()
                     if (!is_stream && set.isNull())
                     {
                         m_job_info->setState(cfw::jobStateFailed);
-                        m_job_info->setProgressString(_("ERROR: Source table busy."));
+                        m_job_info->setProgressString(towstr(_("ERROR: Source table busy.")));
                         return 0;
                     }
                 }
@@ -187,7 +187,7 @@ int CopyJob::runJob()
                 if (h == 0)
                 {
                     m_job_info->setState(cfw::jobStateFailed);
-                    m_job_info->setProgressString(_("ERROR: Invalid condition."));
+                    m_job_info->setProgressString(towstr(_("ERROR: Invalid condition.")));
                     return 0;
                 }
                 source_iter->releaseHandle(h);
@@ -200,7 +200,7 @@ int CopyJob::runJob()
                                                     it->m_condition,
                                                     it->m_order);
                                                     
-            m_job_info->setProgressString(_("Querying..."));
+            m_job_info->setProgressString(towstr(_("Querying...")));
             xcm::IObjectPtr result;
             it->m_source_db->execute(towstr(sql), tango::sqlPassThrough, result, NULL);
             source_iter = result;
@@ -209,7 +209,7 @@ int CopyJob::runJob()
             if (source_iter.isNull())
             {
                 m_job_info->setState(cfw::jobStateFailed);
-                m_job_info->setProgressString(_("ERROR: Query failed."));
+                m_job_info->setProgressString(towstr(_("ERROR: Query failed.")));
                 return 0;
             }
         }
@@ -239,14 +239,14 @@ int CopyJob::runJob()
             if (src.isNull())
             {
                 m_job_info->setState(cfw::jobStateFailed);
-                m_job_info->setProgressString(_("ERROR: Could not create input file"));
+                m_job_info->setProgressString(towstr(_("ERROR: Could not create input file")));
                 return 0;
             }
                     
             if (dest.isNull())
             {
                 m_job_info->setState(cfw::jobStateFailed);
-                m_job_info->setProgressString(_("ERROR: Could not create output file"));
+                m_job_info->setProgressString(towstr(_("ERROR: Could not create output file")));
                 return 0;
             }
             
@@ -269,7 +269,7 @@ int CopyJob::runJob()
                     if (written != read)
                     {
                         m_job_info->setState(cfw::jobStateFailed);
-                        m_job_info->setProgressString(_("ERROR: Could not create output file"));
+                        m_job_info->setProgressString(towstr(_("ERROR: Could not create output file")));
                         break;
                     }
                     
@@ -349,7 +349,7 @@ int CopyJob::runJob()
         if (it->m_result_set.isNull())
         {
             m_job_info->setState(cfw::jobStateFailed);
-            m_job_info->setProgressString(_("ERROR: Could not create output table"));
+            m_job_info->setProgressString(towstr(_("ERROR: Could not create output table")));
             return 0;
         }
 
@@ -366,7 +366,7 @@ int CopyJob::runJob()
         if (tango_job->getStatus() == tango::jobFailed)
         {
             m_job_info->setState(cfw::jobStateFailed);
-            m_job_info->setProgressString(_("ERROR: Insufficient disk space"));
+            m_job_info->setProgressString(towstr(_("ERROR: Insufficient disk space")));
             return 0;
         }
 

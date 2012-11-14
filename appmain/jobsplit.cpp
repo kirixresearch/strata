@@ -20,7 +20,7 @@
 SplitJob::SplitJob()
 {
     m_si = NULL;
-    m_job_info->setTitle(_("Divide"));
+    m_job_info->setTitle(towstr(_("Divide")));
 }
 
 SplitJob::~SplitJob()

@@ -17,7 +17,7 @@
 
 AppendJob::AppendJob() : TangoJobBase(TangoJobBase::useTangoCurrentCount)
 {
-    m_job_info->setTitle(_("Append Records"));
+    m_job_info->setTitle(towstr(_("Append Records")));
     m_max_count = 0.0;
 }
 
@@ -78,7 +78,7 @@ int AppendJob::runJob()
         if (tango_job->getStatus() == tango::jobFailed)
         {
             m_job_info->setState(cfw::jobStateFailed);
-            m_job_info->setProgressString(_("ERROR: Insufficient disk space"));
+            m_job_info->setProgressString(towstr(_("ERROR: Insufficient disk space")));
             break;
         }
 

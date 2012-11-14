@@ -98,18 +98,18 @@ public:
         
         wxString filename = m_filename.AfterLast(PATH_SEPARATOR_CHAR);
         wxString title = wxString::Format(_("Printing '%s'"), filename.c_str());
-        m_job_info->setTitle(title);
+        m_job_info->setTitle(towstr(title));
         if (m_max_page_count > 1)
         {
             m_job_info->setProgressStringFormat(
-                                        _("$c pages printed"),
-                                        _("$c of $m pages printed ($p1%)"));
+                                        towstr(_("$c pages printed")),
+                                        towstr(_("$c of $m pages printed ($p1%)")));
         }
          else
         {
             m_job_info->setProgressStringFormat(
-                                        _("$c page printed"),
-                                        _("$c of $m pages printed ($p1%)"));
+                                        towstr(_("$c page printed")),
+                                        towstr(_("$c of $m pages printed ($p1%)")));
         }
     }
 

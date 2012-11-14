@@ -483,9 +483,9 @@ int ImportPkgJob::runJob()
     wxString title = wxString::Format(_("Importing from '%s'"), fn.c_str());
     
     if (fn.Length() > 0)
-        m_job_info->setTitle(title);
+        m_job_info->setTitle(towstr(title));
          else
-        m_job_info->setTitle(_("Importing from package file"));
+        m_job_info->setTitle(towstr(_("Importing from package file")));
 
     PkgFile pkg;
     if (!pkg.open(towstr(m_filename), PkgFile::modeRead))
@@ -516,9 +516,9 @@ int ImportPkgJob::runJob()
                                           fn.c_str());
         
         if (tn.IsEmpty() || fn.IsEmpty())
-            m_job_info->setTitle(_("Importing from package file"));
+            m_job_info->setTitle(towstr(_("Importing from package file")));
              else
-            m_job_info->setTitle(title);
+            m_job_info->setTitle(towstr(title));
 
 
         PkgStreamReader* reader = pkg.readStream(towstr(it->stream_name));

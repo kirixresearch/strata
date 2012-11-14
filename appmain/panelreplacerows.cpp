@@ -461,9 +461,9 @@ void ReplaceRowsPanel::onOKPressed(ExprBuilderPanel* panel)
     }
 
     QueryJob* job = new QueryJob;
-    job->getJobInfo()->setTitle(_("Update Values"));
+    job->getJobInfo()->setTitle(towstr(_("Update Values")));
     job->sigJobFinished().connect(&onReplaceJobFinished);
-    job->setExtraString(towx(m_set->getSetId()));
+    job->setExtraString(m_set->getSetId());
     job->setQuery(cmd, tango::sqlPassThrough);
     
     g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);

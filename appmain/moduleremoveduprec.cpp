@@ -424,7 +424,7 @@ void RemoveDupRecWizard::onWizardFinished(kcl::Wizard* wizard)
     sql += m_info->m_input_path;
 
     QueryJob* job = new QueryJob;
-    job->getJobInfo()->setTitle(_("Remove Duplicate Records"));
+    job->getJobInfo()->setTitle(towstr(_("Remove Duplicate Records")));
     job->sigJobFinished().connect(&onRemoveDupRecJobFinished);
     job->setQuery(sql, tango::sqlAlwaysCopy);
 

@@ -16,7 +16,7 @@
 
 ModifyStructJob::ModifyStructJob()
 {
-    m_job_info->setTitle(_("Modify Structure"));
+    m_job_info->setTitle(towstr(_("Modify Structure")));
 }
 
 ModifyStructJob::~ModifyStructJob()
@@ -93,7 +93,7 @@ int ModifyStructJob::runJob()
 
     if (tango_job->getStatus() == tango::jobFailed || !res)
     {
-        m_job_info->setProgressString(_("Modify failed: The table may be in use by another user."));
+        m_job_info->setProgressString(towstr(_("Modify failed: The table may be in use by another user.")));
         m_job_info->setState(cfw::jobStateFailed);
     }
 

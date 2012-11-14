@@ -150,7 +150,7 @@ void QueryJob::runPostJob()
 
 SortFilterJob::SortFilterJob()
 {
-    m_job_info->setTitle(_("Query"));
+    m_job_info->setTitle(towstr(_("Query")));
 }
 
 SortFilterJob::~SortFilterJob()

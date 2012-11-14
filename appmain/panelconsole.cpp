@@ -1067,7 +1067,7 @@ void ConsolePanel::runCommand(wxString& command)
     if (mount_db.isOk())
         job->setDatabase(mount_db);
     
-    job->getJobInfo()->setTitle(_("Query"));
+    job->getJobInfo()->setTitle(towstr(_("Query")));
     job->sigJobFinished().connect(this, &ConsolePanel::onQueryJobFinished);
     job->setQuery(command, flags);
 

@@ -63,18 +63,18 @@ public:
     void setVisible(bool new_val);
     bool getVisible();
 
-    void setTitle(const wxString& new_val);
-    wxString getTitle();
+    void setTitle(const std::wstring& new_val);
+    std::wstring getTitle();
 
     // see note above on how to create a format string
-    void setProgressStringFormat(const wxString& no_max_count_format,
-                                 const wxString& max_count_format);
-    void setProgressString(const wxString& new_val);
-    wxString getProgressString();
+    void setProgressStringFormat(const std::wstring& no_max_count_format,
+                                 const std::wstring& max_count_format);
+    void setProgressString(const std::wstring& new_val);
+    std::wstring getProgressString();
 
-    void setError(int error_code, const wxString& error_string);
+    void setError(int error_code, const std::wstring& error_string);
     int getErrorCode();
-    wxString getErrorString();
+    std::wstring getErrorString();
     
     void setStartTime(time_t new_val);
     time_t getStartTime();
@@ -98,11 +98,11 @@ private:
     int m_job_id;
     int m_job_state;
     bool m_visible;
-    wxString m_title;
-    wxString m_progress_string;
-    wxString m_progress_string_format_nomax;
-    wxString m_progress_string_format_max;
-    wxString m_error_string;
+    std::wstring m_title;
+    std::wstring m_progress_string;
+    std::wstring m_progress_string_format_nomax;
+    std::wstring m_progress_string_format_max;
+    std::wstring m_error_string;
     int m_error_code;
     time_t m_finish_time;
     time_t m_current_time;

@@ -1201,7 +1201,7 @@ void TangoModel::execute(bool block)
         
         QueryJob* job = new QueryJob;
         m_job = static_cast<cfw::IJob*>(job);
-        job->getJobInfo()->setTitle(_("Query"));
+        job->getJobInfo()->setTitle(towstr(_("Query")));
         job->sigJobFinished().connect(this, &TangoModel::onQueryJobFinished);
         job->setQuery(m_query, tango::sqlPassThrough);
         

@@ -19,7 +19,7 @@
 
 GroupJob::GroupJob()
 {
-    m_job_info->setTitle(_("Grouping Records"));
+    m_job_info->setTitle(towstr(_("Grouping Records")));
     m_unique_records_only = false;
 }
 
@@ -79,7 +79,7 @@ int GroupJob::runJob()
     // set the job title
     wxString path = towx(m_source_set->getObjectPath());
     path = path.AfterLast(wxT('/'));
-    m_job_info->setTitle(wxString::Format(_("Grouping '%s'"), path.c_str()));
+    m_job_info->setTitle(towstr(wxString::Format(_("Grouping '%s'"), path.c_str())));
 
     if (!m_unique_records_only)
     {
@@ -104,7 +104,7 @@ int GroupJob::runJob()
         if (tango_job->getStatus() == tango::jobFailed)
         {
             m_job_info->setState(cfw::jobStateFailed);
-            m_job_info->setProgressString(_("ERROR: Insufficient disk space"));
+            m_job_info->setProgressString(towstr(_("ERROR: Insufficient disk space")));
             m_result_set.clear();
             m_result_iter.clear();
             return 0;
@@ -140,7 +140,7 @@ int GroupJob::runJob()
         if (tango_job->getStatus() == tango::jobFailed)
         {
             m_job_info->setState(cfw::jobStateFailed);
-            m_job_info->setProgressString(_("ERROR: Insufficient disk space"));
+            m_job_info->setProgressString(towstr(_("ERROR: Insufficient disk space")));
             return 0;
         }
 
@@ -215,7 +215,7 @@ int GroupJob::runJob()
         if (tango_job->getStatus() == tango::jobFailed)
         {
             m_job_info->setState(cfw::jobStateFailed);
-            m_job_info->setProgressString(_("ERROR: Insufficient disk space"));
+            m_job_info->setProgressString(towstr(_("ERROR: Insufficient disk space")));
             m_result_set.clear();
             m_result_iter.clear();
             return 0;

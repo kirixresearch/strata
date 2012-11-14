@@ -12,6 +12,7 @@
 #include <wx/wx.h>
 #include <xcm/xcm.h>
 #include <kl/math.h>
+#include <kl/string.h>
 #include "jobqueue.h"
 #include "jobqueue_private.h"
 #include "util.h"
@@ -30,9 +31,9 @@ JobInfo::JobInfo()
     m_finish_time = 0;
     m_current_count = 0.0;
     m_max_count = 0.0;
-    m_progress_string_format_nomax = wxEmptyString;
-    m_progress_string_format_max = wxEmptyString;
-    m_error_string = wxEmptyString;
+    m_progress_string_format_nomax = L"";
+    m_progress_string_format_max = L"";
+    m_error_string = L"";
     m_error_code = 0;
     m_info_mask = jobMaskTitle | jobMaskStartTime |
                   jobMaskFinishTime | jobMaskCurrentCount |
@@ -114,21 +115,21 @@ bool JobInfo::getVisible()
     return m_visible;
 }
 
-void JobInfo::setTitle(const wxString& title)
+void JobInfo::setTitle(const std::wstring& title)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
     m_title = title;
 }
 
-wxString JobInfo::getTitle()
+std::wstring JobInfo::getTitle()
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
     return m_title;
 }
 
-void JobInfo::setProgressString(const wxString& new_val)
+void JobInfo::setProgressString(const std::wstring& new_val)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
@@ -137,83 +138,83 @@ void JobInfo::setProgressString(const wxString& new_val)
 
 // NOTE: in order for getProgressString() to return an empty string,
 //       both the progress string and the format string must be empty
-wxString JobInfo::getProgressString()
+std::wstring JobInfo::getProgressString()
 {
     XCM_AUTO_LOCK(m_obj_mutex);
     
     // if a progress string has explicitly been specified, show it
-    if (m_progress_string.Length() > 0)
+    if (m_progress_string.size() > 0)
         return m_progress_string;
     
-    wxString format_str;
+    std::wstring format_str;
     if (kl::dblcompare(getMaxCount(), 0.0) > 0)
         format_str = m_progress_string_format_max;
          else
         format_str = m_progress_string_format_nomax;
     
     // if a format string has been set, translate the format string and show it
-    if (format_str.Length() > 0)
+    if (format_str.size() > 0)
     {
-        wxString str, repl;
-        wxString progress_str = format_str;
+        std::wstring str, repl;
+        std::wstring progress_str = format_str;
 
-        if (progress_str.Contains(wxT("$c")))
+        if (progress_str.find(L"$c") != progress_str.npos)
         {
-            str  = wxT("$c");
+            str  = L"$c";
             repl = cfw::dbl2fstr(ceil(getCurrentCount()));
-            progress_str.Replace(str.c_str(), repl.c_str());
+            kl::replaceStr(progress_str, str.c_str(), repl.c_str());
         }
         
-        if (progress_str.Contains(wxT("$C")))
+        if (progress_str.find(L"$C") != progress_str.npos)
         {
-            str  = wxT("$C");
+            str  = L"$C";
             repl = cfw::dbl2fstr(ceil(getCurrentCount()/1024));
-            progress_str.Replace(str.c_str(), repl.c_str());
+            kl::replaceStr(progress_str, str.c_str(), repl.c_str());
         }
         
-        if (progress_str.Contains(wxT("$m")))
+        if (progress_str.find(L"$m") != progress_str.npos)
         {
-            str  = wxT("$m");
+            str  = L"$m";
             repl = cfw::dbl2fstr(ceil(getMaxCount()));
-            progress_str.Replace(str.c_str(), repl.c_str());
+            kl::replaceStr(progress_str, str.c_str(), repl.c_str());
         }
         
-        if (progress_str.Contains(wxT("$M")))
+        if (progress_str.find(L"$M") != progress_str.npos)
         {
-            str  = wxT("$M");
+            str  = L"$M";
             repl = cfw::dbl2fstr(ceil(getMaxCount()/1024));
-            progress_str.Replace(str.c_str(), repl.c_str());
+            kl::replaceStr(progress_str, str.c_str(), repl.c_str());
         }
         
-        if (progress_str.Contains(wxT("$p0")))
+        if (progress_str.find(L"$p0") != progress_str.npos)
         {
-            str  = wxT("$p0");
+            str  = L"$p0";
             repl = cfw::dbl2fstr(getPercentage(), 0);
-            progress_str.Replace(str.c_str(), repl.c_str());
+            kl::replaceStr(progress_str, str.c_str(), repl.c_str());
         }
         
-        if (progress_str.Contains(wxT("$p1")))
+        if (progress_str.find(L"$p1") != progress_str.npos)
         {
-            str  = wxT("$p1");
+            str  = L"$p1";
             repl = cfw::dbl2fstr(getPercentage(), 1);
-            progress_str.Replace(str.c_str(), repl.c_str());
+            kl::replaceStr(progress_str, str.c_str(), repl.c_str());
         }
         
-        if (progress_str.Contains(wxT("$p2")))
+        if (progress_str.find(L"$p2") != progress_str.npos)
         {
-            str  = wxT("$p2");
+            str  = L"$p2";
             repl = cfw::dbl2fstr(getPercentage(), 2);
-            progress_str.Replace(str.c_str(), repl.c_str());
+            kl::replaceStr(progress_str, str.c_str(), repl.c_str());
         }
         
         return progress_str;
     }
     
-    return wxEmptyString;
+    return L"";
 }
 
-void JobInfo::setProgressStringFormat(const wxString& no_max_count_format,
-                                      const wxString& max_count_format)
+void JobInfo::setProgressStringFormat(const std::wstring& no_max_count_format,
+                                      const std::wstring& max_count_format)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
@@ -221,7 +222,7 @@ void JobInfo::setProgressStringFormat(const wxString& no_max_count_format,
     m_progress_string_format_max = max_count_format;
 }
 
-void JobInfo::setError(int error_code, const wxString& error_string)
+void JobInfo::setError(int error_code, const std::wstring& error_string)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
@@ -236,7 +237,7 @@ int JobInfo::getErrorCode()
     return m_error_code;
 }
 
-wxString JobInfo::getErrorString()
+std::wstring JobInfo::getErrorString()
 {
     XCM_AUTO_LOCK(m_obj_mutex);
     

@@ -4850,7 +4850,7 @@ bool AppController::openDataLink(const wxString& location, int* site_id)
 
 
             SortFilterJob* query_job = new SortFilterJob;
-            query_job->getJobInfo()->setTitle(_("Opening data view..."));
+            query_job->getJobInfo()->setTitle(towstr(_("Opening data view...")));
             query_job->setInstructions(set, filter, sort);
 
             query_job->sigJobFinished().connect(this, &AppController::onOpenDataViewFinished);
@@ -5390,7 +5390,7 @@ bool AppController::openExcel(const wxString& location, int* site_id)
             job->addImportSet(job_import_info);
         }
 
-        job->getJobInfo()->setTitle(job_title);
+        job->getJobInfo()->setTitle(towstr(job_title));
         job->sigJobFinished().connect(&onOpenExcelJobFinished);
         g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
     }

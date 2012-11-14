@@ -15,7 +15,7 @@
 
 IndexJob::IndexJob()
 {
-    m_job_info->setTitle(_("Creating Index"));
+    m_job_info->setTitle(towstr(_("Creating Index")));
 }
 
 IndexJob::~IndexJob()
