@@ -111,11 +111,9 @@ JobQueue::JobQueue()
     m_active_jobs = 0;
 }
 
-
 JobQueue::~JobQueue()
 {
 }
-
 
 int JobQueue::addJob(IJobPtr job, int initial_state)
 {
@@ -164,25 +162,6 @@ int JobQueue::addJob(IJobPtr job, int initial_state)
     return new_job_id;
 }
 
-
-
-
-void JobQueue::onJobInfoEntryStateChanged(IJobInfoPtr job_info)
-{
-    int state = job_info->getState();
-    if (state == cfw::jobStateRunning)
-    {
-        incrementActiveJobs();
-    }
-     else if (state == cfw::jobStateFailed ||
-              state == cfw::jobStateCancelled ||
-              state == cfw::jobStateFinished)
-    {
-        decrementActiveJobs();
-    }
-}
-
-
 int JobQueue::addJobInfo(IJobInfoPtr job_info, int initial_state)
 {
     int new_job_id;
@@ -205,8 +184,6 @@ int JobQueue::addJobInfo(IJobInfoPtr job_info, int initial_state)
     return new_job_id;
 }
 
-
-
 IJobPtr JobQueue::lookupJob(int job_id)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
@@ -228,6 +205,43 @@ bool JobQueue::startJob(int job_id)
         return false;
 
     return startJob(job);
+}
+
+IJobInfoPtr JobQueue::getJobInfo(int job_id)
+{
+    XCM_AUTO_LOCK(m_obj_mutex);
+
+    std::vector<IJobInfoPtr>::iterator it;
+    for (it = m_job_info.begin(); it != m_job_info.end(); ++it)
+    {
+        if (it->p->getJobId() == job_id)
+            return *it;
+    }
+
+    return xcm::null;
+}
+
+IJobInfoEnumPtr JobQueue::getJobInfoEnum(int job_state_mask)
+{
+    XCM_AUTO_LOCK(m_obj_mutex);
+
+    xcm::IVectorImpl<cfw::IJobInfoPtr>* vec = new xcm::IVectorImpl<cfw::IJobInfoPtr>;
+
+    std::vector<IJobInfoPtr>::iterator it;
+    for (it = m_job_info.begin(); it != m_job_info.end(); ++it)
+    {
+        if (job_state_mask & it->p->getState())
+            vec->append(*it);
+    }
+
+    return vec;
+}
+
+bool JobQueue::getJobsActive()
+{    
+    // note I left the mutex out of here on purpose;
+    // avoiding the mutex lock can save some time here
+    return (m_active_jobs > 0) ? true : false;
 }
 
 bool JobQueue::startJob(IJobPtr& job)
@@ -270,48 +284,6 @@ void JobQueue::decrementActiveJobs()
     m_active_jobs_mutex.unlock();
 }
 
-
-IJobInfoPtr JobQueue::getJobInfo(int job_id)
-{
-    XCM_AUTO_LOCK(m_obj_mutex);
-
-    std::vector<IJobInfoPtr>::iterator it;
-    for (it = m_job_info.begin(); it != m_job_info.end(); ++it)
-    {
-        if (it->p->getJobId() == job_id)
-            return *it;
-    }
-
-    return xcm::null;
-}
-
-
-
-IJobInfoEnumPtr JobQueue::getJobInfoEnum(int job_state_mask)
-{
-    XCM_AUTO_LOCK(m_obj_mutex);
-
-    xcm::IVectorImpl<cfw::IJobInfoPtr>* vec = new xcm::IVectorImpl<cfw::IJobInfoPtr>;
-
-    std::vector<IJobInfoPtr>::iterator it;
-    for (it = m_job_info.begin(); it != m_job_info.end(); ++it)
-    {
-        if (job_state_mask & it->p->getState())
-            vec->append(*it);
-    }
-
-    return vec;
-}
-
-bool JobQueue::getJobsActive()
-{    
-    // note I left the mutex out of here on purpose;
-    // avoiding the mutex lock can save some time here
-    return (m_active_jobs > 0) ? true : false;
-}
-
-
-
 void JobQueue::onJobFinished(wxCommandEvent& event)
 {
     std::vector<IJobPtr>::iterator it;
@@ -348,6 +320,20 @@ void JobQueue::onJobFinished(wxCommandEvent& event)
     sigQueueChanged().fire();
 }
 
+void JobQueue::onJobInfoEntryStateChanged(IJobInfoPtr job_info)
+{
+    int state = job_info->getState();
+    if (state == cfw::jobStateRunning)
+    {
+        incrementActiveJobs();
+    }
+     else if (state == cfw::jobStateFailed ||
+              state == cfw::jobStateCancelled ||
+              state == cfw::jobStateFinished)
+    {
+        decrementActiveJobs();
+    }
+}
 
 
 };
