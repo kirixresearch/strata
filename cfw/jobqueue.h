@@ -123,9 +123,6 @@ public:
     virtual void setTitle(const wxString& new_val) = 0;
     virtual wxString getTitle() = 0;
 
-    virtual void setDescription(const wxString& new_val) = 0;
-    virtual wxString getDescription() = 0;
-
     virtual void setStartTime(time_t new_val) = 0;
     virtual time_t getStartTime() = 0;
 

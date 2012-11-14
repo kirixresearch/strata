@@ -66,9 +66,6 @@ public:
     void setTitle(const wxString& new_val);
     wxString getTitle();
 
-    void setDescription(const wxString& new_val);
-    wxString getDescription();
-
     // see note above on how to create a format string
     void setProgressStringFormat(const wxString& no_max_count_format,
                                  const wxString& max_count_format);
@@ -102,7 +99,6 @@ private:
     int m_job_state;
     bool m_visible;
     wxString m_title;
-    wxString m_description;
     wxString m_progress_string;
     wxString m_progress_string_format_nomax;
     wxString m_progress_string_format_max;

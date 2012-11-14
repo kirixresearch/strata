@@ -128,20 +128,6 @@ wxString JobInfo::getTitle()
     return m_title;
 }
 
-void JobInfo::setDescription(const wxString& desc)
-{
-    XCM_AUTO_LOCK(m_obj_mutex);
-
-    m_description = desc;
-}
-
-wxString JobInfo::getDescription()
-{
-    XCM_AUTO_LOCK(m_obj_mutex);
-
-    return m_description;
-}
-
 void JobInfo::setProgressString(const wxString& new_val)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
