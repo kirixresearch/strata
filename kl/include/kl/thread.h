@@ -32,6 +32,21 @@ enum ThreadCreateReturn
 int thread_create(thread_t *thread, const thread_t *attr,
                   void *(*start_routine) (void *), void *arg);
 
+void thread_sleep(unsigned int milliseconds);
+
+
+
+class Thread
+{
+public:
+    
+    static void sleep(unsigned int milliseconds)
+    {
+        thread_sleep(milliseconds);
+    }
+};
+
+
 };
 
 

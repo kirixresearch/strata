@@ -11,6 +11,12 @@
 
 #include "kl/thread.h"
 
+#ifdef WIN32
+#include <windows.h>
+#else
+#include <pthread.h>
+#endif
+
 
 namespace kl
 {
@@ -23,12 +29,22 @@ int thread_create(thread_t *thread, const thread_t *attr,
     return tcrOK;
 }
 
+void thread_sleep(unsigned int milliseconds)
+{
+    ::Sleep(milliseconds);
+}
+
 #else
 
 int thread_create(thread_t *thread, const thread_t *attr,
                   void *(*start_routine) (void *), void *arg)
 {
-    return tcrOK;
+    // TODO: implement
+}
+
+void thread_sleep(unsigned int milliseconds)
+{
+    // TODO: implement
 }
 
 #endif
