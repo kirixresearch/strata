@@ -34,6 +34,10 @@ class Thread
 public:
     Thread();
     virtual ~Thread();
+
+    int create();
+    int run();
+    virtual void entry() = 0;
    
     static void sleep(unsigned int milliseconds);
     static bool isMain();

@@ -44,6 +44,16 @@ Thread::~Thread()
 {
 }
 
+int Thread::create()
+{
+    return tcrOK;
+}
+
+int Thread::run()
+{
+    return tcrOK;
+}
+
 void Thread::sleep(unsigned int milliseconds)
 {
     thread_sleep(milliseconds);
@@ -69,7 +79,7 @@ int thread_create(thread_t *thread, const thread_t *attr,
     *thread = ::_beginthreadex(NULL, 0, start_routine, arg, 0, NULL);
 #else
     // TODO: implement CreateThread()
-#endif    
+#endif
 
     // TODO: get error code for thread and return it
     return tcrOK;
