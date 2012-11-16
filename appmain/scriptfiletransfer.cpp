@@ -26,7 +26,7 @@ public:
     FileTransfer* m_request;
     int m_method;
 
-    FileTransferThread(FileTransfer* request) : wxThread(wxTHREAD_DETACHED)
+    FileTransferThread(FileTransfer* request) : wxThread()
     {
         m_request = request;
         m_request->baseRef();

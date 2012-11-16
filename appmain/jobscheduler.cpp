@@ -27,7 +27,7 @@ class JobSchedulerThread : public wxThread,
 public:
 
     JobSchedulerThread(const JobSchedulerEntry& entry)
-                        : wxThread(wxTHREAD_DETACHED)
+                        : wxThread()
     {
         m_entry = entry;
 

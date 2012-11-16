@@ -35,7 +35,7 @@ public:
     bool* m_started_flag;
 
 
-    JobThread(JobQueue* queue, IJobPtr job, bool* started_flag) : wxThread(wxTHREAD_DETACHED)
+    JobThread(JobQueue* queue, IJobPtr job, bool* started_flag) : wxThread()
     {
         m_job = job;
         m_job_info = job->getJobInfo();

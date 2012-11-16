@@ -2306,7 +2306,7 @@ public:
     
     tango::IDatabasePtr db;
     
-    MunchThread() : wxThread(wxTHREAD_DETACHED)
+    MunchThread() : wxThread()
     {
         db = g_app->getDatabase();
     }

@@ -28,7 +28,7 @@ public:
     HttpRequest* m_request;
     int m_method;
 
-    HttpRequestThread(HttpRequest* request) : wxThread(wxTHREAD_DETACHED)
+    HttpRequestThread(HttpRequest* request) : wxThread()
     {
         m_request = request;
         m_request->baseRef();

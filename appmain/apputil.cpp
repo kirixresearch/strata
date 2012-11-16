@@ -641,7 +641,7 @@ class TestWindowExist : public wxThread
 public:
     wxTimer m_timer;
 
-    TestWindowExist() : wxThread(wxTHREAD_DETACHED)
+    TestWindowExist() : wxThread()
     {
     }
 
