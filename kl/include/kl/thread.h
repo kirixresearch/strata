@@ -29,23 +29,26 @@ enum ThreadCreateReturn
 };
 
 
-int thread_create(thread_t *thread, const thread_t *attr,
-                  void *(*start_routine) (void *), void *arg);
-
-void thread_sleep(unsigned int milliseconds);
-
-
-
 class Thread
 {
 public:
-    
-    static void sleep(unsigned int milliseconds)
-    {
-        thread_sleep(milliseconds);
-    }
+    Thread();
+    virtual ~Thread();
+   
+    static void sleep(unsigned int milliseconds);
+    static bool isMain();
 };
 
+
+int thread_create(thread_t *thread, const thread_t *attr,
+                  unsigned (__stdcall *start_routine) (void *), void *arg);
+
+void thread_sleep(unsigned int milliseconds);
+
+unsigned int thread_getcurrentid();
+unsigned int thread_getid(thread_t *thread);
+
+bool thread_ismain();
 
 };
 
