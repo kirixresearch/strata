@@ -64,6 +64,7 @@
 #include <wx/wfstream.h>
 #include <wx/txtstrm.h>
 #include <kl/utf8.h>
+#include <kl/thread.h>
 
 
 enum
@@ -134,7 +135,7 @@ void GuiMarshal::func_guiMarshal(kscript::ExprEnv* env,
 {
     GuiMarshalFunc* p = (GuiMarshalFunc*)param;
 
-    if (wxThread::IsMain())
+    if (kl::Thread::isMain())
     {
         // if we are in the main thread, no marshaling is necessary
         p->func(env, p->param, retval);

@@ -28,6 +28,7 @@
 #include <wx/webview.h>
 #include <kl/regex.h>
 #include <kl/md5.h>
+#include <kl/thread.h>
 
 
 const int wxID_WEB = 9001;
@@ -2695,7 +2696,7 @@ void WebDoc::openURI(const wxString& uri, wxWebPostData* post_data)
         // wait for the page to load
         while (!m_webcontrol->IsContentLoaded())
         {
-            wxThread::Sleep(100);
+            kl::Thread::sleep(100);
             ::wxSafeYield();
             
             // 5-second timeout (these are local files...)

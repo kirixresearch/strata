@@ -15,6 +15,7 @@
 #include "scriptmenu.h"
 #include "scriptgraphics.h"
 #include "toolbars.h"
+#include <kl/thread.h>
 
 
 // id number for internal use by the Application class
@@ -741,7 +742,7 @@ void Application::exitModal()
 {
     m_exit_modal = true;
     
-    if (wxThread::IsMain())
+    if (kl::Thread::isMain())
     {
         wakeUpQueue();
     }

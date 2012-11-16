@@ -16,6 +16,7 @@
 #include "scriptgui.h"
 #include "scriptwebbrowser.h"
 #include "scriptwebdom.h"
+#include <kl/thread.h>
 
 
 // WebBrowser class implementation
@@ -240,7 +241,7 @@ void WebBrowser::waitUntilReady(kscript::ExprEnv* env, kscript::Value* retval)
     
     while (!m_ctrl->IsContentLoaded())
     {
-        wxThread::Sleep(20);
+        kl::Thread::sleep(20);
         ::wxSafeYield();
         
         if (max_ms > 0)

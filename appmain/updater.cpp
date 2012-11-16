@@ -14,6 +14,7 @@
 #include "curlutil.h"
 #include <curl/curl.h>
 #include <kl/crypt.h>
+#include <kl/thread.h>
 
 
 // encryption key for the update service
@@ -153,7 +154,7 @@ public:
         // that check actually worked
         
         while (sw.Time() < 2000)
-            wxThread::Sleep(100);
+            kl::Thread::sleep(100);
         
         return 0;
     }
@@ -645,7 +646,7 @@ static void onUpdateDownloadFinished(cfw::IJobPtr job)
             
             ::wxYield();
             AppBusyCursor bc;
-            wxThread::Sleep(2000);
+            kl::Thread::sleep(2000);
             
             // close the application so the install works well
             g_app->getMainFrame()->closeAll(true);

@@ -11,6 +11,7 @@
 
 #include <wx/wx.h>
 #include <xcm/xcm.h>
+#include <kl/thread.h>
 #include "jobqueue.h"
 #include "jobqueue_private.h"
 
@@ -265,7 +266,7 @@ bool JobQueue::startJob(IJobPtr& job)
         return false;
 
     while (!started_flag)
-        wxThread::Sleep(10);
+        kl::Thread::sleep(10);
         
     return true;
 }

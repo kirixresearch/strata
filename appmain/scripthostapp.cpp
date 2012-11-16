@@ -33,6 +33,7 @@
 #include "panelconsole.h"
 #include "jsonconfig.h"
 #include <kl/url.h>
+#include <kl/thread.h>
 
 
 
@@ -1370,7 +1371,7 @@ void HostApp::hang(kscript::ExprEnv* env, kscript::Value* retval)
 {
     while (1)
     {
-        wxThread::Sleep(10000);
+        kl::Thread::sleep(10000);
     }
 }
 
@@ -1778,7 +1779,7 @@ void HostApp::execute(kscript::ExprEnv* env, kscript::Value* retval)
     {
         if (wait < 50)
             wait++;
-        wxThread::Sleep(wait);
+        kl::Thread::sleep(wait);
     }
     
     cfw::IJobInfoPtr job_info = r->m_job_info;
@@ -1798,7 +1799,7 @@ void HostApp::execute(kscript::ExprEnv* env, kscript::Value* retval)
         {
             if (wait < 1000)
                 wait++;
-            wxThread::Sleep(wait);
+            kl::Thread::sleep(wait);
         } while (job_info->getState() == cfw::jobStateRunning);
     }
      else
@@ -4137,7 +4138,7 @@ void HostAutomation::waitForRunningJobs(kscript::ExprEnv* env, kscript::Value* r
     cfw::IJobQueuePtr job_queue = g_app->getJobQueue();
     while (job_queue->getJobsActive())
     {
-        wxThread::Sleep(wait_ms);
+        kl::Thread::sleep(wait_ms);
         if (wait_ms < 1000)
             wait_ms++;
     }

@@ -14,6 +14,7 @@
 #include <kl/url.h>
 #include <kl/utf8.h>
 #include <kl/regex.h>
+#include <kl/thread.h>
 #include "curlutil.h"
 #include <curl/curl.h>
 #include <wx/stdpaths.h>
@@ -647,7 +648,7 @@ public:
     wxThread::ExitCode Entry()
     {
 
-        wxThread::Sleep(5000);
+        kl::Thread::sleep(5000);
 
         wxWindowList::const_iterator i;
         const wxWindowList::const_iterator end = wxTopLevelWindows.end();
@@ -715,7 +716,7 @@ public:
 
         wxTheApp->ExitMainLoop();
 
-        wxThread::Sleep(2000);
+        kl::Thread::sleep(2000);
 
         if (wxTheApp->IsMainLoopRunning())
         {

@@ -12,6 +12,7 @@
 #include "appmain.h"
 #include "paneljobmgr.h"
 #include "appcontroller.h"
+#include <kl/thread.h>
 #include <set>
 
 
@@ -520,7 +521,7 @@ void JobListCtrl::onDoJobQueueRefresh(wxCommandEvent&)
     // queue gui component gets refreshed, and this needs to happen
     // in the gui/main thread.
     
-    wxASSERT(wxThread::IsMain());
+    wxASSERT(kl::Thread::isMain());
     
     refreshItems();
     checkOverlayText();
@@ -529,7 +530,7 @@ void JobListCtrl::onDoJobQueueRefresh(wxCommandEvent&)
 
 void JobListCtrl::onJobQueueChanged()
 {
-    if (wxThread::IsMain())
+    if (kl::Thread::isMain())
     {
         refreshItems();
         checkOverlayText();

@@ -13,6 +13,7 @@
 #include "jobscheduler.h"
 #include "appcontroller.h"
 #include <wx/datectrl.h>
+#include <kl/thread.h>
 
 
 const int SECONDS_IN_DAY = 86400;
@@ -47,7 +48,7 @@ public:
         {
             while (1)
             {
-                wxThread::Sleep(1000);
+                kl::Thread::sleep(1000);
                 
                 m_obj_mutex.lock();
                 if (m_exit)

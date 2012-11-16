@@ -15,6 +15,7 @@
 #include "scriptfont.h"
 #include "scriptsystem.h"
 #include <wx/settings.h>
+#include <kl/thread.h>
 
 
 // (CLASS) SystemColors
@@ -447,12 +448,12 @@ void System::sleep(kscript::ExprEnv* env, void* param, kscript::Value* retval)
                 
             if (amt < 1000)
             {
-                wxThread::Sleep(amt);
+                kl::Thread::sleep(amt);
                 amt = 0;
             }
              else
             {
-                wxThread::Sleep(1000);
+                kl::Thread::sleep(1000);
                 amt -= 1000;
             }
             

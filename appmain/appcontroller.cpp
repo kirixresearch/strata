@@ -69,6 +69,7 @@
 #include <wx/paper.h>
 #include <wx/print.h>
 #include <kl/utf8.h>
+#include <kl/thread.h>
 #include "dbdoc.h"
 #include "linkbar.h"
 #include "dlglinkprops.h"
@@ -3759,7 +3760,7 @@ void AppController::updateURLToolbar()
 
 void AppController::updateQuickFilterToolBarItem()
 {
-    wxASSERT(wxThread::IsMain());
+    wxASSERT(kl::Thread::isMain());
 
     if (!m_frame)
     {
@@ -6417,7 +6418,7 @@ void AppController::printConsoleText(const wxString& text)
     printf("%s", (const char*)text.mbc_str());
     #else
     
-    if (wxThread::IsMain())
+    if (kl::Thread::isMain())
     {
         wxCommandEvent e;
         e.SetString(text);
@@ -7675,7 +7676,7 @@ void AppController::refreshDbDoc()
     // we will check to make sure that we are running in the
     // main thread
     
-    if (wxThread::IsMain())
+    if (kl::Thread::isMain())
     {
         // running in the main thread, simply invoke the refresh
         wxCommandEvent e;
@@ -7699,7 +7700,7 @@ void AppController::refreshLinkBar()
     // we will check to make sure that we are running in the
     // main thread
     
-    if (wxThread::IsMain())
+    if (kl::Thread::isMain())
     {
         // running in the main thread, simply invoke the refresh
         wxCommandEvent e;

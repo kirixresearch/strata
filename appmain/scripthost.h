@@ -18,6 +18,7 @@
 #include "../kscript/kscript.h"
 #include "../kscript/jsobject.h"
 #include "../kscript/jsarray.h"
+#include <kl/thread.h>
 
 // class forwards
 
@@ -337,7 +338,7 @@ void setMember(const std::wstring& name, kscript::Value* value) \
     GuiPropertyInfo* method = lookupScriptProperty(name); \
     if (method) \
     { \
-        if (method->gui && !wxThread::IsMain()) \
+        if (method->gui && !kl::Thread::isMain()) \
         { \
             GuiPropertyMarshal* m = new GuiPropertyMarshal; \
             m->obj = this; \
@@ -348,7 +349,7 @@ void setMember(const std::wstring& name, kscript::Value* value) \
             wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, 19000); \
             ::wxPostEvent(m, evt); \
             while (!m->done) \
-                wxThread::Sleep(1); \
+                kl::Thread::sleep(1); \
         } \
          else \
         { \
@@ -373,7 +374,7 @@ kscript::Value* getMember(const std::wstring& name) \
     GuiPropertyInfo* method = lookupScriptProperty(name); \
     if (method) \
     { \
-        if (method->gui && !wxThread::IsMain()) \
+        if (method->gui && !kl::Thread::isMain()) \
         { \
             kscript::Value* retval = NULL; \
             GuiPropertyMarshal* m = new GuiPropertyMarshal; \
@@ -385,7 +386,7 @@ kscript::Value* getMember(const std::wstring& name) \
             wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, 19000); \
             ::wxPostEvent(m, evt); \
             while (!m->done) \
-                wxThread::Sleep(1); \
+                kl::Thread::sleep(1); \
             return retval; \
         } \
          else \

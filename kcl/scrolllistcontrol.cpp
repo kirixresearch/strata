@@ -17,6 +17,7 @@
 #include <wx/tokenzr.h>
 #include "scrolllistcontrol.h"
 #include "util.h"
+#include <kl/thread.h>
 
 
 const int SCROLL_STEP = 1;
@@ -476,7 +477,7 @@ void ScrollListControl::removeItem(ScrollListItem* item)
 
 void ScrollListControl::refresh()
 {
-    wxASSERT_MSG(wxThread::IsMain(), wxT("Can't call this function from a thread, only from the gui/main thread!"));
+    wxASSERT_MSG(kl::Thread::isMain(), wxT("Can't call this function from a thread, only from the gui/main thread!"));
 
     calcVirtualHeight();
     render();

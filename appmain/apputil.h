@@ -13,6 +13,9 @@
 #define __APP_APPUTIL_H
 
 
+#include <kl/thread.h>
+
+
 // checks an output path for g_app->getDatabase().  It will
 // pop up an error message if something is wrong.
 
@@ -315,7 +318,7 @@ public:
     {
 #if APP_GUI==1
         m_bc = NULL;
-        if (wxThread::IsMain())
+        if (kl::Thread::isMain())
             m_bc = new wxBusyCursor;
 #endif
     }

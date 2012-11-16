@@ -18,6 +18,7 @@
 #include <wx/wx.h>
 #include <xcm/xcm.h>
 #include <kl/klib.h>
+#include <kl/thread.h>
 #include <queue>
 #include "framework.h"
 #include "framework_private.h"
@@ -3083,7 +3084,7 @@ void MainFrame::onIdle(wxIdleEvent& evt)
 
 void MainFrame::updateWindowEventHandlers()
 {
-    wxASSERT_MSG(wxThread::IsMain(), wxT("Call allowed only from main thread"));
+    wxASSERT_MSG(kl::Thread::isMain(), wxT("Call allowed only from main thread"));
 
 #if wxCHECK_VERSION(2,9,0)
 
@@ -3137,7 +3138,7 @@ void MainFrame::updateWindowEventHandlers()
 
 void MainFrame::addWindowEventHandler(wxEvtHandler* event_handler)
 {
-    wxASSERT_MSG(wxThread::IsMain(), wxT("Call allowed only from main thread"));
+    wxASSERT_MSG(kl::Thread::isMain(), wxT("Call allowed only from main thread"));
 
     std::vector<wxEvtHandler*>::iterator it;
 
@@ -3154,7 +3155,7 @@ void MainFrame::addWindowEventHandler(wxEvtHandler* event_handler)
 
 void MainFrame::removeWindowEventHandler(wxEvtHandler* event_handler)
 {
-    wxASSERT_MSG(wxThread::IsMain(), wxT("Call allowed only from main thread"));
+    wxASSERT_MSG(kl::Thread::isMain(), wxT("Call allowed only from main thread"));
 
     std::vector<wxEvtHandler*>::iterator it;
 
@@ -3191,7 +3192,7 @@ public:
 
 void MainFrame::postEvent(cfw::Event* evt)
 {
-    if (wxThread::IsMain())
+    if (kl::Thread::isMain())
     {
         m_event_queue.push(evt);
     }

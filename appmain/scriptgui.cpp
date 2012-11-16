@@ -21,6 +21,7 @@
 #include "scriptlayout.h"
 #include "scriptfont.h"
 #include <wx/evtloop.h>
+#include <kl/thread.h>
 
 
 // utility functions
@@ -2027,7 +2028,7 @@ void Form::showDialog(kscript::ExprEnv* env, kscript::Value* retval)
     
     // wait until it's running
     while (!loop->IsRunning())
-        wxThread::Sleep(50);
+        kl::Thread::sleep(50);
     
     // ...meanwhile, start a new Application event pump in
     // the script's thread
@@ -2042,7 +2043,7 @@ void Form::showDialog(kscript::ExprEnv* env, kscript::Value* retval)
     
     // wait until it's not running
     while (loop->IsRunning())
-        wxThread::Sleep(50);
+        kl::Thread::sleep(50);
     
     if (!wxPendingDelete.Member(loop))
         wxPendingDelete.Append(loop);

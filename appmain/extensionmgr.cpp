@@ -15,6 +15,7 @@
 #include "extensionpkg.h"
 #include <wx/wfstream.h>
 #include <wx/txtstrm.h>
+#include <kl/thread.h>
 
 
 ExtensionInfo empty_info;
@@ -497,7 +498,7 @@ bool ExtensionMgr::stopAllExtensions()
     
     while (1)
     {
-        wxThread::Sleep(100);
+        kl::Thread::sleep(100);
         ::wxSafeYield();
         
         
