@@ -3445,7 +3445,6 @@ void HostData::importData(kscript::ExprEnv* env, kscript::Value* retval)
             return;
         }
         
-        job->runPreJob();
         job->runJob();
         job->runPostJob();
 
@@ -3464,7 +3463,6 @@ void HostData::importData(kscript::ExprEnv* env, kscript::Value* retval)
         import_job->addImportSet(info);
         import_job->setImportType(extensionToDbtype(info.input_path));
         
-        import_job->runPreJob();
         import_job->runJob();
         import_job->runPostJob();
         
@@ -3644,7 +3642,6 @@ void HostData::exportData(kscript::ExprEnv* env, kscript::Value* retval)
             return;
         }
         
-        job->runPreJob();
         job->runJob();
         //job->runPostJob(); // runPostJob() refreshes the tree, which we don't want
 
@@ -3663,7 +3660,6 @@ void HostData::exportData(kscript::ExprEnv* env, kscript::Value* retval)
 
         export_job->addExportSet(info);
         
-        export_job->runPreJob();
         export_job->runJob();
         //job->runPostJob(); // runPostJob() refreshes the tree, which we don't want
         

@@ -3393,6 +3393,19 @@ bool Database::storeObject(xcm::IObject* _obj, const std::wstring& new_path)
 }
 
 
+
+tango::IIteratorPtr Database::createIterator(const std::wstring& path,
+                                             const std::wstring& columns,
+                                             const std::wstring& sort,
+                                             tango::IJob* job)
+{
+    tango::ISetPtr set = openSet(path);
+    if (set.isNull())
+        return xcm::null;
+    return set->createIterator(columns, sort, job);
+}
+
+
 bool Database::lockSet(const std::wstring& set_id)
 {
     XCM_AUTO_LOCK(m_lockedsets_mutex);

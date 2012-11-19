@@ -1214,7 +1214,6 @@ void TangoModel::execute(bool block)
         job->ref();
 
         job->setQuery(m_query, tango::sqlPassThrough);
-        job->runPreJob();
         job->runJob();
         job->runPostJob();
 

@@ -13,7 +13,7 @@
 #include "jobappend.h"
 
 
-// -- AppendJob implementation --
+// AppendJob implementation
 
 AppendJob::AppendJob() : TangoJobBase(TangoJobBase::useTangoCurrentCount)
 {

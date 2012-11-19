@@ -678,6 +678,20 @@ tango::ISetPtr SqlServerDatabase::openSetEx(const std::wstring& ofs_path,
     return openSet(ofs_path);
 }
 
+
+
+tango::IIteratorPtr SqlServerDatabase::createIterator(const std::wstring& path,
+                                                      const std::wstring& columns,
+                                                      const std::wstring& sort,
+                                                      tango::IJob* job)
+{
+    tango::ISetPtr set = openSet(path);
+    if (set.isNull())
+        return xcm::null;
+    return set->createIterator(columns, sort, job);
+}
+
+
 tango::IRelationEnumPtr SqlServerDatabase::getRelationEnum(const std::wstring& path)
 {
     xcm::IVectorImpl<tango::IRelationPtr>* relations = new xcm::IVectorImpl<tango::IRelationPtr>;

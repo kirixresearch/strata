@@ -247,9 +247,6 @@ bool JobQueue::getJobsActive()
 
 bool JobQueue::startJob(IJobPtr& job)
 {
-    // run pre job
-    job->runPreJob();
-
     bool started_flag = false;
     
     // start the job in a thread

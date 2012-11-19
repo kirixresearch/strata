@@ -369,7 +369,7 @@ void MergePanel::onDeletedRows(std::vector<int> rows)
     checkOverlayText();
 }
 
-void MergePanel::onSize(wxSizeEvent& event)
+void MergePanel::onSize(wxSizeEvent& evt)
 {
     if (GetAutoLayout())
     {
@@ -399,7 +399,7 @@ static void onAppendJobFinished(cfw::IJobPtr job)
         if (target_set.isNull())
             return;
 
-        // -- iterate through document sites, and update tabledocs --
+        // iterate through document sites, and update tabledocs
         cfw::IDocumentSiteEnumPtr docsites;
         cfw::IDocumentSitePtr site;
         ITableDocPtr table_doc;
@@ -422,7 +422,7 @@ static void onAppendJobFinished(cfw::IJobPtr job)
             }
         }
     
-            return;
+        return;
     }
      else
     {
@@ -444,7 +444,7 @@ static void onAppendJobFinished(cfw::IJobPtr job)
     }
 }
 
-void MergePanel::onOK(wxCommandEvent& event)
+void MergePanel::onOK(wxCommandEvent& evt)
 {
     if (m_grid->getRowCount() < 1)
     {
@@ -545,7 +545,7 @@ void MergePanel::onOK(wxCommandEvent& event)
         }
     }
 
-    // -- create the append job --
+    // create the append job
     
     AppendJob* job = new AppendJob;
     tango::ISetPtr target_set = m_set;
@@ -583,7 +583,7 @@ void MergePanel::onOK(wxCommandEvent& event)
 }
 
 
-void MergePanel::onCancel(wxCommandEvent& event)
+void MergePanel::onCancel(wxCommandEvent& evt)
 {
     m_frame->closeSite(m_doc_site);
 }

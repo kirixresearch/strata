@@ -782,6 +782,11 @@ public:
                          xcm::IObjectPtr& result,
                          IJob* job) = 0;
 
+    virtual IIteratorPtr createIterator(const std::wstring& path,
+                                        const std::wstring& columns,
+                                        const std::wstring& sort,
+                                        IJob* job) = 0;
+
     virtual ISetPtr runGroupQuery(ISetPtr set,
                                   const std::wstring& group,
                                   const std::wstring& output,

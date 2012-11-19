@@ -83,6 +83,11 @@ public:
     tango::ISetPtr openSet(const std::wstring& path);
     tango::ISetPtr openSetEx(const std::wstring& path, int format);
 
+    tango::IIteratorPtr createIterator(const std::wstring& path,
+                                       const std::wstring& columns,
+                                       const std::wstring& sort,
+                                       tango::IJob* job);
+
     tango::IRelationEnumPtr getRelationEnum(const std::wstring& path);
     tango::IRelationPtr getRelation(const std::wstring& relation_id);
     tango::IRelationPtr createRelation(const std::wstring& tag,

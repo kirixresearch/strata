@@ -78,12 +78,10 @@ public:
 
     virtual bool cancel() = 0;
 
-    virtual void runPreJob() = 0;
     virtual int runJob() = 0;
     virtual void runPostJob() = 0;
     
-    // runNowAndBlock() calls runPreJob(), runJob(),
-    // and runPostJob() immediately
+    // runNowAndBlock() calls runJob() and runPostJob() immediately
     virtual void runNowAndBlock() = 0;
 
     XCM_DECLARE_SIGNAL1(sigJobFinished, IJobPtr)
@@ -257,17 +255,12 @@ public:
         return m_cancelling ? true : false;
     }
 
-    void runPreJob()
-    {
-    }
-
     void runPostJob()
     {
     }
     
     void runNowAndBlock()
     {
-        runPreJob();
         runJob();
         runPostJob();
     }

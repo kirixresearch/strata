@@ -897,6 +897,17 @@ tango::ISetPtr DrizzleDatabase::openSetEx(const std::wstring& ofs_path,
 }
 
 
+tango::IIteratorPtr DrizzleDatabase::createIterator(const std::wstring& path,
+                                                    const std::wstring& columns,
+                                                    const std::wstring& sort,
+                                                    tango::IJob* job)
+{
+    tango::ISetPtr set = openSet(path);
+    if (set.isNull())
+        return xcm::null;
+    return set->createIterator(columns, sort, job);
+}
+
 
 tango::IIndexInfoPtr DrizzleDatabase::createIndex(const std::wstring& path,
                                                   const std::wstring& name,

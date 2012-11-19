@@ -2119,6 +2119,19 @@ tango::ISetPtr OdbcDatabase::openSet(const std::wstring& path)
     return static_cast<tango::ISet*>(set);
 }
 
+
+tango::IIteratorPtr OdbcDatabase::createIterator(const std::wstring& path,
+                                                 const std::wstring& columns,
+                                                 const std::wstring& sort,
+                                                 tango::IJob* job)
+{
+    tango::ISetPtr set = openSet(path);
+    if (set.isNull())
+        return xcm::null;
+    return set->createIterator(columns, sort, job);
+}
+
+
 tango::IRelationEnumPtr OdbcDatabase::getRelationEnum(const std::wstring& path)
 {
     xcm::IVectorImpl<tango::IRelationPtr>* relations;

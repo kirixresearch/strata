@@ -1557,6 +1557,15 @@ tango::ISetPtr FsDatabase::openSetEx(const std::wstring& path, int format)
 }
 
 
+tango::IIteratorPtr FsDatabase::createIterator(const std::wstring& path,
+                                               const std::wstring& columns,
+                                               const std::wstring& sort,
+                                               tango::IJob* job)
+{
+    return xcm::null;
+}
+
+
 tango::IStructurePtr FsDatabase::createStructure()
 {
     Structure* s = new Structure;

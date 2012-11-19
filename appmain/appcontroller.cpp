@@ -6066,7 +6066,6 @@ static void addDefaultItemsToProject(const wxString& project_path)
     cfw::IJobPtr job = static_cast<cfw::IJob*>(import_job);
     if (job.isOk())
     {
-        job->runPreJob();
         job->runJob();
         job->runPostJob();
     }
