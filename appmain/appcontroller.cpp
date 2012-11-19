@@ -2300,13 +2300,13 @@ void AppController::onQuit(wxCommandEvent& evt)
 
 
 
-class MunchThread : public wxThread
+class MunchThread : public kl::Thread
 {
 public:
     
     tango::IDatabasePtr db;
     
-    MunchThread() : wxThread()
+    MunchThread() : kl::Thread()
     {
         db = g_app->getDatabase();
     }
@@ -2315,9 +2315,8 @@ public:
     {
     }
 
-    wxThread::ExitCode Entry()
+    unsigned int entry()
     {
-        
         #ifdef _MSC_VER
         static int counter = 0;
         counter += 100;
@@ -2344,7 +2343,6 @@ public:
                 //job.clear();
             }
         }
-        
     }
 };
 

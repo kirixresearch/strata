@@ -19,14 +19,14 @@
 
 // -- FileTransferThread class --
 
-class FileTransferThread : public wxThread
+class FileTransferThread : public kl::Thread
 {
 public:
 
     FileTransfer* m_request;
     int m_method;
 
-    FileTransferThread(FileTransfer* request) : wxThread()
+    FileTransferThread(FileTransfer* request) : kl::Thread()
     {
         m_request = request;
         m_request->baseRef();
@@ -37,7 +37,7 @@ public:
         m_request->baseUnref();
     }
 
-    wxThread::ExitCode Entry()
+    unsigned int entry()
     {
         m_request->doAction();
         
@@ -49,7 +49,7 @@ public:
         // fire 'finished' signal
         m_request->fireFinishedEvent();
         
-        return (wxThread::ExitCode)0;
+        return 0;
     }
 };
 
@@ -284,12 +284,9 @@ void FileTransfer::download(kscript::ExprEnv* env, kscript::Value* retval)
         m_state_mutex.unlock();
             
         FileTransferThread* thread = new FileTransferThread(this);
-        if (thread->Create() != wxTHREAD_NO_ERROR)
+        if (thread->create() != 0)
             return;
-            
-        if (thread->Run() != wxTHREAD_NO_ERROR)
-            return;
-            
+
         retval->setBoolean(true);
     }
      else
@@ -338,12 +335,9 @@ void FileTransfer::upload(kscript::ExprEnv* env, kscript::Value* retval)
         m_state_mutex.unlock();
             
         FileTransferThread* thread = new FileTransferThread(this);
-        if (thread->Create() != wxTHREAD_NO_ERROR)
+        if (thread->create() != 0)
             return;
-            
-        if (thread->Run() != wxTHREAD_NO_ERROR)
-            return;
-            
+
         retval->setBoolean(true);
     }
      else

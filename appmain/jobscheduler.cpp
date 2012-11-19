@@ -21,13 +21,12 @@ const int SECONDS_IN_DAY = 86400;
 
 // -- JobSchedulerThread class --
 
-class JobSchedulerThread : public wxThread,
+class JobSchedulerThread : public kl::Thread,
                            public xcm::signal_sink
 {
 public:
 
-    JobSchedulerThread(const JobSchedulerEntry& entry)
-                        : wxThread()
+    JobSchedulerThread(const JobSchedulerEntry& entry) : kl::Thread()
     {
         m_entry = entry;
 
@@ -39,7 +38,7 @@ public:
     {
     }
 
-    wxThread::ExitCode Entry()
+    unsigned int entry()
     {
         std::vector<wxString>::iterator it;
 
@@ -184,12 +183,7 @@ void JobScheduler::addJob(const JobSchedulerEntry& _e)
 void JobScheduler::runJob(JobSchedulerEntry& e)
 {
     JobSchedulerThread* job_thread = new JobSchedulerThread(e);
-
-    if (job_thread->Create() != wxTHREAD_NO_ERROR)
-        return;
-
-    if (job_thread->Run() != wxTHREAD_NO_ERROR)
-        return;
+    job_thread->create();
 }
 
 void JobScheduler::calcNextRun(JobSchedulerEntry& job)

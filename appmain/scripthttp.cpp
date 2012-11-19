@@ -21,14 +21,14 @@
 
 // -- HttpRequestThread class --
 
-class HttpRequestThread : public wxThread
+class HttpRequestThread : public kl::Thread
 {
 public:
 
     HttpRequest* m_request;
     int m_method;
 
-    HttpRequestThread(HttpRequest* request) : wxThread()
+    HttpRequestThread(HttpRequest* request) : kl::Thread()
     {
         m_request = request;
         m_request->baseRef();
@@ -39,7 +39,7 @@ public:
         m_request->baseUnref();
     }
 
-    wxThread::ExitCode Entry()
+    unsigned int entry()
     {
         m_request->doSend();
         
@@ -51,7 +51,7 @@ public:
         // fire 'finished' signal
         m_request->fireFinishedEvent();
         
-        return (wxThread::ExitCode)0;
+        return 0;
     }
 };
 
@@ -245,10 +245,7 @@ void HttpRequest::send(kscript::ExprEnv* env, kscript::Value* retval)
             m_location = kl::tostring(env->getParam(0)->getString());
         
         HttpRequestThread* thread = new HttpRequestThread(this);
-        if (thread->Create() != wxTHREAD_NO_ERROR)
-            return;
-            
-        if (thread->Run() != wxTHREAD_NO_ERROR)
+        if (thread->create() != 0)
             return;
     }
      else
@@ -1169,10 +1166,7 @@ void HttpRequest::get(kscript::ExprEnv* env, kscript::Value* retval)
             m_location = kl::tostring(env->getParam(0)->getString());
         
         HttpRequestThread* thread = new HttpRequestThread(this);
-        if (thread->Create() != wxTHREAD_NO_ERROR)
-            return;
-            
-        if (thread->Run() != wxTHREAD_NO_ERROR)
+        if (thread->create() != 0)
             return;
     }
      else
@@ -1215,10 +1209,7 @@ void HttpRequest::post(kscript::ExprEnv* env, kscript::Value* retval)
             m_location = kl::tostring(env->getParam(0)->getString());
 
         HttpRequestThread* thread = new HttpRequestThread(this);
-        if (thread->Create() != wxTHREAD_NO_ERROR)
-            return;
-            
-        if (thread->Run() != wxTHREAD_NO_ERROR)
+        if (thread->create() != 0)
             return;
     }
      else

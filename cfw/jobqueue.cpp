@@ -24,7 +24,7 @@ const int ID_JobFinishedNotify = 59984;
 
 
 
-class JobThread : public wxThread
+class JobThread : public kl::Thread
 {
 public:
 
@@ -35,7 +35,7 @@ public:
     bool* m_started_flag;
 
 
-    JobThread(JobQueue* queue, IJobPtr job, bool* started_flag) : wxThread()
+    JobThread(JobQueue* queue, IJobPtr job, bool* started_flag) : kl::Thread()
     {
         m_job = job;
         m_job_info = job->getJobInfo();
@@ -51,7 +51,7 @@ public:
         m_job_queue->unref();
     }
 
-    wxThread::ExitCode Entry()
+    unsigned int entry()
     {
         m_job_queue->incrementActiveJobs();
         
@@ -86,10 +86,10 @@ public:
             m_job_info->setState(jobStateCancelled);
         }
 
-        return (wxThread::ExitCode)res;
+        return 0;
     }
 
-    void OnExit()
+    void exit()
     {
         wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED, ID_JobFinishedNotify);
         event.SetInt(m_job_id);
@@ -254,12 +254,9 @@ bool JobQueue::startJob(IJobPtr& job)
     job_thread->m_job = job;
     job_thread->m_job_id = job->getJobId();
 
-    if (job_thread->Create() != wxTHREAD_NO_ERROR)
-        return false;
-        
-    job->getJobInfo()->setState(jobStateRunning);
 
-    if (job_thread->Run() != wxTHREAD_NO_ERROR)
+    job->getJobInfo()->setState(jobStateRunning);
+    if (job_thread->create() != 0)
         return false;
 
     while (!started_flag)

@@ -636,16 +636,16 @@ g_app->ExitMainLoop() call to AppController::onFrameDestroying().
 However, if we want to investigate the problem further, the
 class below is useful
 
-class TestWindowExist : public wxThread
+class TestWindowExist : public kl::Thread
 {
 public:
     wxTimer m_timer;
 
-    TestWindowExist() : wxThread()
+    TestWindowExist() : kl::Thread()
     {
     }
 
-    wxThread::ExitCode Entry()
+    unsigned int entry()
     {
 
         kl::Thread::sleep(5000);
