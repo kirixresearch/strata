@@ -79,7 +79,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
-				AdditionalDependencies="odbc32.lib odbccp32.lib comctl32.lib wsock32.lib rpcrt4.lib wxbase28ud.lib wxbase28ud_net.lib wxbase28ud_xml.lib wxmsw28ud_core.lib wxmsw28ud_adv.lib wxmsw28ud_aui.lib wxmsw28ud_html.lib wxmsw28ud_stc.lib wxpdfdocud.lib wxexpatd.lib wxjpegd.lib wxpngd.lib wxzlibd.lib ../supp/haru/lib/harud.lib ../supp/curl/lib/libcurld.lib ../supp/libssh2/win32/Debug_lib/libssh2d.lib ../supp/openssl/out32.dbg/libeay32.lib ../supp/openssl/out32.dbg/ssleay32.lib ../kl/lib/klud.lib ../kcl/lib/kclud.lib ../cfw/lib/cfwud.lib ../paladin/lib/paladinud.lib ../kscript/lib/kscriptud.lib ../kcanvas/lib/kcanvasud.lib ../webconnect/lib/webconnectud.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib comctl32.lib wsock32.lib rpcrt4.lib wxbase28ud.lib wxbase28ud_net.lib wxbase28ud_xml.lib wxmsw28ud_core.lib wxmsw28ud_adv.lib wxmsw28ud_aui.lib wxmsw28ud_html.lib wxmsw28ud_stc.lib wxpdfdocud.lib wxexpatd.lib wxjpegd.lib wxpngd.lib wxzlibd.lib ../supp/haru/lib/harud.lib ../supp/curl/lib/libcurld.lib ../supp/libssh2/win32/Debug_lib/libssh2d.lib ../supp/openssl/out32.dbg/libeay32.lib ../supp/openssl/out32.dbg/ssleay32.lib ../kl/lib/klud.lib ../kcl/lib/kclud.lib ../paladin/lib/paladinud.lib ../kscript/lib/kscriptud.lib ../kcanvas/lib/kcanvasud.lib ../webconnect/lib/webconnectud.lib"
 				OutputFile="../debugu/kstrata.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -178,7 +178,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib comctl32.lib wsock32.lib rpcrt4.lib wxbase28d.lib wxbase28d_net.lib wxbase28d_xml.lib wxmsw28d_core.lib wxmsw28d_adv.lib wxmsw28d_aui.lib wxmsw28d_propgrid.lib wxmsw28d_stc.lib wxexpatd.lib wxjpegd.lib wxpngd.lib wxzlibd.lib wxpdfdocd.lib ../kl/lib/kld.lib ../kcl/lib/kcld.lib ../cfw/lib/cfwd.lib ../paladin/lib/paladind.lib ../kscript/lib/kscriptd.lib ../kcanvas/lib/kcanvasd.lib ../webconnect/lib/webconnectd.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib comctl32.lib wsock32.lib rpcrt4.lib wxbase28d.lib wxbase28d_net.lib wxbase28d_xml.lib wxmsw28d_core.lib wxmsw28d_adv.lib wxmsw28d_aui.lib wxmsw28d_propgrid.lib wxmsw28d_stc.lib wxexpatd.lib wxjpegd.lib wxpngd.lib wxzlibd.lib wxpdfdocd.lib ../kl/lib/kld.lib ../kcl/lib/kcld.lib ../paladin/lib/paladind.lib ../kscript/lib/kscriptd.lib ../kcanvas/lib/kcanvasd.lib ../webconnect/lib/webconnectd.lib"
 				OutputFile="../debug/appstrata.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -275,7 +275,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib comctl32.lib wsock32.lib rpcrt4.lib wxbase28.lib wxbase28_net.lib wxbase28_xml.lib wxmsw28_core.lib wxmsw28_adv.lib wxmsw28_aui.lib wxmsw28_propgrid.lib wxmsw28_stc.lib wxexpat.lib wxjpeg.lib wxpng.lib wxzlib.lib wxpdfdoc.lib ../kl/lib/kl.lib ../kcl/lib/kcl.lib ../cfw/lib/cfw.lib ../paladin/lib/paladin.lib ../kscript/lib/kscript.lib ../weconnect/lib/webconnect.lib ../supp/haru/lib/haru.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib comctl32.lib wsock32.lib rpcrt4.lib wxbase28.lib wxbase28_net.lib wxbase28_xml.lib wxmsw28_core.lib wxmsw28_adv.lib wxmsw28_aui.lib wxmsw28_propgrid.lib wxmsw28_stc.lib wxexpat.lib wxjpeg.lib wxpng.lib wxzlib.lib wxpdfdoc.lib ../kl/lib/kl.lib ../kcl/lib/kcl.lib ../paladin/lib/paladin.lib ../kscript/lib/kscript.lib ../weconnect/lib/webconnect.lib ../supp/haru/lib/haru.lib"
 				OutputFile="../release/appstrata.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -373,7 +373,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
-				AdditionalDependencies="odbc32.lib odbccp32.lib comctl32.lib wsock32.lib rpcrt4.lib wxbase28u.lib wxbase28u_net.lib wxbase28u_xml.lib wxmsw28u_core.lib wxmsw28u_adv.lib wxmsw28u_aui.lib wxmsw28u_html.lib wxmsw28u_stc.lib wxpdfdocu.lib wxexpat.lib wxjpeg.lib wxpng.lib wxzlib.lib ../supp/haru/lib/haru.lib ../supp/curl/lib/libcurl.lib ../supp/libssh2/win32/Release_lib/libssh.lib ../supp/openssl/out32/libeay32.lib ../supp/openssl/out32/ssleay32.lib ../kl/lib/klu.lib ../kcl/lib/kclu.lib ../cfw/lib/cfwu.lib ../paladin/lib/paladinu.lib ../kscript/lib/kscriptu.lib ../kcanvas/lib/kcanvasu.lib ../webconnect/lib/webconnectu.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib comctl32.lib wsock32.lib rpcrt4.lib wxbase28u.lib wxbase28u_net.lib wxbase28u_xml.lib wxmsw28u_core.lib wxmsw28u_adv.lib wxmsw28u_aui.lib wxmsw28u_html.lib wxmsw28u_stc.lib wxpdfdocu.lib wxexpat.lib wxjpeg.lib wxpng.lib wxzlib.lib ../supp/haru/lib/haru.lib ../supp/curl/lib/libcurl.lib ../supp/libssh2/win32/Release_lib/libssh.lib ../supp/openssl/out32/libeay32.lib ../supp/openssl/out32/ssleay32.lib ../kl/lib/klu.lib ../kcl/lib/kclu.lib ../paladin/lib/paladinu.lib ../kscript/lib/kscriptu.lib ../kcanvas/lib/kcanvasu.lib ../webconnect/lib/webconnectu.lib"
 				OutputFile="../releaseu/kstrata.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -473,7 +473,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib comctl32.lib wsock32.lib rpcrt4.lib wxbase29ud.lib wxbase29ud_net.lib wxbase29ud_xml.lib wxmsw29ud_core.lib wxmsw29ud_adv.lib wxmsw29ud_aui.lib wxmsw29ud_html.lib wxmsw29ud_stc.lib wxscintillad.lib wxpdfdocud.lib wxexpatd.lib wxjpegd.lib wxpngd.lib wxzlibd.lib ../supp/haru/lib/harud.lib ../supp/curl/lib/libcurld.lib ../supp/libssh2/win32/Debug_lib/libssh2d.lib ../supp/openssl/out32.dbg/libeay32.lib ../supp/openssl/out32.dbg/ssleay32.lib ../kl/lib/klud.lib ../kcl/lib/kclud.lib ../cfw/lib/cfwud.lib ../paladin/lib/paladinud.lib ../kscript/lib/kscriptud.lib ../kcanvas/lib/kcanvasud.lib ../webconnect/lib/webconnectud.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib comctl32.lib wsock32.lib rpcrt4.lib wxbase29ud.lib wxbase29ud_net.lib wxbase29ud_xml.lib wxmsw29ud_core.lib wxmsw29ud_adv.lib wxmsw29ud_aui.lib wxmsw29ud_html.lib wxmsw29ud_stc.lib wxscintillad.lib wxpdfdocud.lib wxexpatd.lib wxjpegd.lib wxpngd.lib wxzlibd.lib ../supp/haru/lib/harud.lib ../supp/curl/lib/libcurld.lib ../supp/libssh2/win32/Debug_lib/libssh2d.lib ../supp/openssl/out32.dbg/libeay32.lib ../supp/openssl/out32.dbg/ssleay32.lib ../kl/lib/klud.lib ../kcl/lib/kclud.lib ../paladin/lib/paladinud.lib ../kscript/lib/kscriptud.lib ../kcanvas/lib/kcanvasud.lib ../webconnect/lib/webconnectud.lib"
 				OutputFile="../debugu/appstrata.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -573,7 +573,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib comctl32.lib wsock32.lib rpcrt4.lib wxbase29u.lib wxbase29u_net.lib wxbase29u_xml.lib wxmsw29u_core.lib wxmsw29u_adv.lib wxmsw29u_aui.lib wxmsw29u_html.lib wxmsw29u_stc.lib wxscintilla.lib wxpdfdocu.lib wxexpat.lib wxjpeg.lib wxpng.lib wxzlib.lib ../supp/haru/lib/haru.lib ../supp/curl/lib/libcurl.lib ../supp/libssh2/win32/Release_lib/libssh.lib ../supp/openssl/out32/libeay32.lib ../supp/openssl/out32/ssleay32.lib ../kl/lib/klu.lib ../kcl/lib/kclu.lib ../cfw/lib/cfwu.lib ../paladin/lib/paladinu.lib ../kscript/lib/kscriptu.lib ../kcanvas/lib/kcanvasu.lib ../webconnect/lib/webconnectu.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib comctl32.lib wsock32.lib rpcrt4.lib wxbase29u.lib wxbase29u_net.lib wxbase29u_xml.lib wxmsw29u_core.lib wxmsw29u_adv.lib wxmsw29u_aui.lib wxmsw29u_html.lib wxmsw29u_stc.lib wxscintilla.lib wxpdfdocu.lib wxexpat.lib wxjpeg.lib wxpng.lib wxzlib.lib ../supp/haru/lib/haru.lib ../supp/curl/lib/libcurl.lib ../supp/libssh2/win32/Release_lib/libssh.lib ../supp/openssl/out32/libeay32.lib ../supp/openssl/out32/ssleay32.lib ../kl/lib/klu.lib ../kcl/lib/kclu.lib ../paladin/lib/paladinu.lib ../kscript/lib/kscriptu.lib ../kcanvas/lib/kcanvasu.lib ../webconnect/lib/webconnectu.lib"
 				OutputFile="../releaseu/appstrata.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
