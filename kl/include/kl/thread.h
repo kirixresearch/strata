@@ -36,11 +36,12 @@ public:
     virtual ~Thread();
 
     int create();
-    int run();
-    virtual void entry() = 0;
    
     static void sleep(unsigned int milliseconds);
     static bool isMain();
+
+    virtual unsigned int entry();
+    virtual void exit();
 };
 
 

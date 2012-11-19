@@ -36,6 +36,18 @@ unsigned int g_mainthread_id = 0;   // TODO: implement
 #endif
 
 
+static unsigned int __stdcall thread_entry_proxy(void *thread)
+{
+    Thread* lthread = static_cast<Thread*>(thread);
+    lthread->entry();
+    lthread->exit();
+    delete lthread;
+    
+    // TODO: more comprehensive return code
+    return 0;
+}
+
+
 Thread::Thread()
 {
 }
@@ -46,12 +58,8 @@ Thread::~Thread()
 
 int Thread::create()
 {
-    return tcrOK;
-}
-
-int Thread::run()
-{
-    return tcrOK;
+    thread_t handle;
+    return thread_create(&handle, NULL, thread_entry_proxy, this);
 }
 
 void Thread::sleep(unsigned int milliseconds)
@@ -64,6 +72,14 @@ bool Thread::isMain()
     return thread_ismain();
 }
 
+unsigned int Thread::entry()
+{
+    return 0;
+}
+
+void Thread::exit()
+{
+}
 
 
 #ifdef WIN32
