@@ -14,9 +14,6 @@
 
 
 
-namespace cfw
-{
-
 
 class AppPreference
 {
@@ -68,7 +65,5 @@ public:
 
 XCM_DECLARE_SMARTPTR(IAppPreferences)
 
-
-};  // namespace cfw
 
 #endif

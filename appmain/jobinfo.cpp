@@ -9,7 +9,7 @@
  */
 
 
-#include <wx/wx.h>
+#include "appmain.h"
 #include <xcm/xcm.h>
 #include <kl/math.h>
 #include <kl/string.h>
@@ -18,8 +18,6 @@
 #include "util.h"
 
 
-namespace cfw
-{
 
 JobInfo::JobInfo()
 {
@@ -97,7 +95,7 @@ void JobInfo::setState(int new_state)
     if (m_job_state != new_state)
     {
         m_job_state = new_state;
-        sigStateChanged().fire(static_cast<cfw::IJobInfo*>(this));
+        sigStateChanged().fire(static_cast<IJobInfo*>(this));
     }
 }
 
@@ -161,49 +159,49 @@ std::wstring JobInfo::getProgressString()
         if (progress_str.find(L"$c") != progress_str.npos)
         {
             str  = L"$c";
-            repl = cfw::dbl2fstr(ceil(getCurrentCount()));
+            repl = dbl2fstr(ceil(getCurrentCount()));
             kl::replaceStr(progress_str, str.c_str(), repl.c_str());
         }
         
         if (progress_str.find(L"$C") != progress_str.npos)
         {
             str  = L"$C";
-            repl = cfw::dbl2fstr(ceil(getCurrentCount()/1024));
+            repl = dbl2fstr(ceil(getCurrentCount()/1024));
             kl::replaceStr(progress_str, str.c_str(), repl.c_str());
         }
         
         if (progress_str.find(L"$m") != progress_str.npos)
         {
             str  = L"$m";
-            repl = cfw::dbl2fstr(ceil(getMaxCount()));
+            repl = dbl2fstr(ceil(getMaxCount()));
             kl::replaceStr(progress_str, str.c_str(), repl.c_str());
         }
         
         if (progress_str.find(L"$M") != progress_str.npos)
         {
             str  = L"$M";
-            repl = cfw::dbl2fstr(ceil(getMaxCount()/1024));
+            repl = dbl2fstr(ceil(getMaxCount()/1024));
             kl::replaceStr(progress_str, str.c_str(), repl.c_str());
         }
         
         if (progress_str.find(L"$p0") != progress_str.npos)
         {
             str  = L"$p0";
-            repl = cfw::dbl2fstr(getPercentage(), 0);
+            repl = dbl2fstr(getPercentage(), 0);
             kl::replaceStr(progress_str, str.c_str(), repl.c_str());
         }
         
         if (progress_str.find(L"$p1") != progress_str.npos)
         {
             str  = L"$p1";
-            repl = cfw::dbl2fstr(getPercentage(), 1);
+            repl = dbl2fstr(getPercentage(), 1);
             kl::replaceStr(progress_str, str.c_str(), repl.c_str());
         }
         
         if (progress_str.find(L"$p2") != progress_str.npos)
         {
             str  = L"$p2";
-            repl = cfw::dbl2fstr(getPercentage(), 2);
+            repl = dbl2fstr(getPercentage(), 2);
             kl::replaceStr(progress_str, str.c_str(), repl.c_str());
         }
         
@@ -336,7 +334,4 @@ double JobInfo::getPercentage()
 
     return (cur_count*100)/max_rows;
 }
-
-
-};
 

@@ -18,8 +18,7 @@ namespace kcl
     class Button;
 }
 
-namespace cfw
-{
+
 
 
 class FsPanelTreeView;
@@ -42,15 +41,15 @@ public:
 
 
 class FsPanel : public wxWindow,
-                public cfw::IFsPanel,
-                public cfw::IDocument
+                public IFsPanel,
+                public IDocument
 {
 friend class FsTreeDropTarget;
 
     XCM_CLASS_NAME_NOREFCOUNT("cfw.FsPanel")
     XCM_BEGIN_INTERFACE_MAP(FsPanel)
-        XCM_INTERFACE_ENTRY(cfw::IDocument)
-        XCM_INTERFACE_ENTRY(cfw::IFsPanel)
+        XCM_INTERFACE_ENTRY(IDocument)
+        XCM_INTERFACE_ENTRY(IFsPanel)
     XCM_END_INTERFACE_MAP()
 
 
@@ -85,8 +84,8 @@ private:
     
     // IDocument interface implementation
 
-    bool initDoc(cfw::IFramePtr frame,
-                 cfw::IDocumentSitePtr doc_site,
+    bool initDoc(IFramePtr frame,
+                 IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,
                  wxWindow* panesite_wnd);
     wxWindow* getDocumentWindow();
@@ -222,8 +221,6 @@ private:
     DECLARE_EVENT_TABLE()
 };
 
-
-};  // namespace cfw
 
 
 #endif

@@ -107,7 +107,7 @@ DlgShareView::DlgShareView(wxWindow* parent)
     SetSizer(main_sizer);
     Layout();
     
-    cfw::resizeStaticText(message, message->GetClientSize().GetWidth());
+    resizeStaticText(message, message->GetClientSize().GetWidth());
     Center();
     
     // set the ok button as the default

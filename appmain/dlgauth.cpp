@@ -135,12 +135,12 @@ public:
         wxStaticText* label7 = new wxStaticText(this, -1, str7);
         wxStaticText* label8 = new wxStaticText(this, -1, str8);
 
-        cfw::makeFontBold(label2);
-        cfw::makeFontBold(label4);
-        cfw::makeFontBold(label7);
-        cfw::limitFontSize(label2, 12);
-        cfw::limitFontSize(label4, 12);
-        cfw::limitFontSize(label5, 12);
+        makeFontBold(label2);
+        makeFontBold(label4);
+        makeFontBold(label7);
+        limitFontSize(label2, 12);
+        limitFontSize(label4, 12);
+        limitFontSize(label5, 12);
 
         // create vertical sizer
         
@@ -197,14 +197,14 @@ public:
         SetSizer(main_sizer);
         Layout();
         
-        cfw::resizeStaticText(label1, label1->GetClientSize().GetWidth());
-        cfw::resizeStaticText(label2, label2->GetClientSize().GetWidth());
-        cfw::resizeStaticText(label3, label3->GetClientSize().GetWidth());
-        cfw::resizeStaticText(label4, label4->GetClientSize().GetWidth());
-        cfw::resizeStaticText(label5, label5->GetClientSize().GetWidth());
-        cfw::resizeStaticText(label6, label6->GetClientSize().GetWidth());
-        cfw::resizeStaticText(label7, label7->GetClientSize().GetWidth());
-        cfw::resizeStaticText(label8, label8->GetClientSize().GetWidth());
+        resizeStaticText(label1, label1->GetClientSize().GetWidth());
+        resizeStaticText(label2, label2->GetClientSize().GetWidth());
+        resizeStaticText(label3, label3->GetClientSize().GetWidth());
+        resizeStaticText(label4, label4->GetClientSize().GetWidth());
+        resizeStaticText(label5, label5->GetClientSize().GetWidth());
+        resizeStaticText(label6, label6->GetClientSize().GetWidth());
+        resizeStaticText(label7, label7->GetClientSize().GetWidth());
+        resizeStaticText(label8, label8->GetClientSize().GetWidth());
         Center();
         
         // set the ok button as the default
@@ -323,7 +323,7 @@ DlgAuth::DlgAuth(wxWindow* parent,
     
     
     // measure the label widths
-    wxSize label_size = cfw::getMaxTextSize(label_serial,
+    wxSize label_size = getMaxTextSize(label_serial,
                                             label_sitecode,
                                             label_authcode);
     label_size.x += 10;
@@ -341,7 +341,7 @@ DlgAuth::DlgAuth(wxWindow* parent,
     activation_str += getActivationStatusText(m_global_auth);
     
     wxStaticText* status_label = new wxStaticText(this, -1, activation_str);
-    cfw::makeFontBold(status_label);
+    makeFontBold(status_label);
     
     
     // create vertical sizer
@@ -437,7 +437,7 @@ DlgAuth::DlgAuth(wxWindow* parent,
     SetSizer(main_sizer);
     Layout();
     
-    cfw::resizeStaticText(message, message->GetClientSize().GetWidth());
+    resizeStaticText(message, message->GetClientSize().GetWidth());
     Center();
     
     // start the dialog out on the "Activate automatically" radio button
@@ -462,7 +462,7 @@ static void licenseServerError(wxWindow* parent)
                                         account_webpage.c_str(),
                                         compname.c_str());
 
-    cfw::appMessageBox(message,
+    appMessageBox(message,
                        APPLICATION_NAME,
                        wxOK | wxICON_EXCLAMATION | wxCENTER,
                        parent);
@@ -470,7 +470,7 @@ static void licenseServerError(wxWindow* parent)
 
 static void licenseClockUnsyncedError(wxWindow* parent)
 {
-    cfw::appMessageBox(_("Your computer's clock is set to the wrong date or time.  Please set your computer's clock to the correct date and time and try again."),
+    appMessageBox(_("Your computer's clock is set to the wrong date or time.  Please set your computer's clock to the correct date and time and try again."),
                        APPLICATION_NAME,
                        wxOK | wxICON_EXCLAMATION | wxCENTER,
                        parent);
@@ -485,7 +485,7 @@ static void licenseLoginInvalid(wxWindow* parent)
                                         appname.c_str(),
                                         account_webpage.c_str(),
                                         compname.c_str());
-    cfw::appMessageBox(message,
+    appMessageBox(message,
                        APPLICATION_NAME,
                        wxOK | wxICON_EXCLAMATION | wxCENTER,
                        parent);
@@ -499,7 +499,7 @@ static void licenseInvalidError(wxWindow* parent)
                                         account_webpage.c_str(),
                                         compname.c_str());
 
-    cfw::appMessageBox(message,
+    appMessageBox(message,
                        APPLICATION_NAME,
                        wxOK | wxICON_EXCLAMATION | wxCENTER,
                        parent);
@@ -511,7 +511,7 @@ static void licenseAppTagMismatchError(wxWindow* parent)
     wxString message = wxString::Format(_("The serial number entered is not associated with this product.  Please contact %s or your system administrator for more information."),
                                         compname.c_str());
 
-    cfw::appMessageBox(message,
+    appMessageBox(message,
                        APPLICATION_NAME,
                        wxOK | wxICON_EXCLAMATION | wxCENTER,
                        parent);
@@ -524,7 +524,7 @@ static void licenseNotAvailError(wxWindow* parent)
     wxString message = wxString::Format(_("The maximum number of installations for this license has been reached.  Please contact %s for more information."),
                                         compname.c_str());
 
-    cfw::appMessageBox(message,
+    appMessageBox(message,
                        APPLICATION_NAME,
                        wxOK | wxICON_EXCLAMATION | wxCENTER,
                        parent);
@@ -627,7 +627,7 @@ void DlgAuth::onOK(wxCommandEvent& evt)
             wxString compname = APP_COMPANY_NAME;
             wxString message = wxString::Format(_("%s could not be activated with the activation code provided.  Please check to make sure the activation code matches the one you were given and try again.  If activation still does not work, either go to %s to generate a new activation code or contact %s for further information."),
                                                 appname.c_str(), account_webpage.c_str(), compname.c_str());
-            cfw::appMessageBox(message,
+            appMessageBox(message,
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER,
                                this);
@@ -646,7 +646,7 @@ void DlgAuth::onOK(wxCommandEvent& evt)
         wxString license_login = m_serial_textctrl->GetValue();
         if (license_login.IsEmpty())
         {
-            cfw::appMessageBox(_("Please enter your serial number to continue."),
+            appMessageBox(_("Please enter your serial number to continue."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER,
                                this);
@@ -724,7 +724,7 @@ void DlgAuth::onOK(wxCommandEvent& evt)
             return;
         }
 
-        cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+        IAppPreferencesPtr prefs = g_app->getAppPreferences();
         if (prefs)
         {
             // -- save the license login --
@@ -734,7 +734,7 @@ void DlgAuth::onOK(wxCommandEvent& evt)
     }
     
     Show(false);
-    cfw::appMessageBox(_("Your license is now activated.  Thank you."),
+    appMessageBox(_("Your license is now activated.  Thank you."),
                        APPLICATION_NAME,
                        wxOK | wxICON_INFORMATION | wxCENTER);
     EndModal(wxID_OK);

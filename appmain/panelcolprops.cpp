@@ -95,8 +95,8 @@ ColPropsPanel::~ColPropsPanel()
 }
 
 
-bool ColPropsPanel::initDoc(cfw::IFramePtr frame,
-                            cfw::IDocumentSitePtr site,
+bool ColPropsPanel::initDoc(IFramePtr frame,
+                            IDocumentSitePtr site,
                             wxWindow* docsite_wnd,
                             wxWindow* panesite_wnd)
 {
@@ -275,7 +275,7 @@ void ColPropsPanel::closeSite(bool ok)
     g_app->getMainFrame()->closeSite(m_doc_site);
 }
 
-void ColPropsPanel::onSiteClose(cfw::IDocumentSitePtr site)
+void ColPropsPanel::onSiteClose(IDocumentSitePtr site)
 {
     if (site == m_tabledoc_site)
     {
@@ -285,7 +285,7 @@ void ColPropsPanel::onSiteClose(cfw::IDocumentSitePtr site)
     }
 }
 
-void ColPropsPanel::onFrameEvent(cfw::Event& evt)
+void ColPropsPanel::onFrameEvent(FrameworkEvent& evt)
 {
     if (evt.name == wxT("tabledoc.onSiteClosing"))
     {
@@ -352,7 +352,7 @@ void ColPropsPanel::populate()
     }
 
 
-    setName(cfw::makeProper(m_orig_name));
+    setName(makeProper(m_orig_name));
     if (m_orig_type == tango::typeDateTime)
     {
         setType(tango::typeDateTime);
@@ -909,7 +909,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
 
     if (!isValidFieldName(m_colname_text->GetValue()))
     {
-        cfw::appMessageBox(_("The specified field name is invalid.  Please choose a different field name."),
+        appMessageBox(_("The specified field name is invalid.  Please choose a different field name."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
 
@@ -972,7 +972,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
     {
         if (!m_orig_existed)
         {
-            cfw::appMessageBox(_("The field with the specified name already exists.  Please choose a different field name."),
+            appMessageBox(_("The field with the specified name already exists.  Please choose a different field name."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
@@ -1019,7 +1019,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
 
     if (!m_set->modifyStructure(structure, NULL))
     {
-        cfw::appMessageBox(_("The structure of the table could not be modified, due to an invalid parameter."),
+        appMessageBox(_("The structure of the table could not be modified, due to an invalid parameter."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
 
@@ -1048,7 +1048,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
     closeSite();
 
     // let other windows know that the structure was modified
-    cfw::Event* evt = new cfw::Event(wxT("tabledoc.structureModified"));
+    FrameworkEvent* evt = new FrameworkEvent(wxT("tabledoc.structureModified"));
     evt->s_param = towx(m_set->getObjectPath());
     g_app->getMainFrame()->postEvent(evt);
 
@@ -1091,7 +1091,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
     {
         wxString message = _("One or more indexes must be regenerated due to changes made in the table structure.\nWould you like to do this now?");
 
-        int result = cfw::appMessageBox(message,
+        int result = appMessageBox(message,
                                         APPLICATION_NAME,
                                         wxYES_NO |
                                         wxCENTRE |
@@ -1119,7 +1119,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
                                     towx((*it)->getExpression()));
             }
 
-            g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+            g_app->getJobQueue()->addJob(job, jobStateRunning);
         }
     }
 

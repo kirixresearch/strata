@@ -309,7 +309,7 @@ private:
     void onMouse(wxMouseEvent& evt);
     void onSize(wxSizeEvent& evt);
     void onScroll(wxScrollWinEvent& evt);
-    void onTreeDataDropped(wxDragResult& drag_result, cfw::FsDataObject* data);
+    void onTreeDataDropped(wxDragResult& drag_result, FsDataObject* data);
     void onDragOver(wxDragResult& drag_result);
     void onDragLeave();
 

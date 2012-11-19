@@ -243,8 +243,8 @@ QueryDoc::~QueryDoc()
 
 
 // -- IDocument --
-bool QueryDoc::initDoc(cfw::IFramePtr frame,
-                       cfw::IDocumentSitePtr doc_site,
+bool QueryDoc::initDoc(IFramePtr frame,
+                       IDocumentSitePtr doc_site,
                        wxWindow* docsite_wnd,
                        wxWindow* panesite_wnd)
 {
@@ -476,7 +476,7 @@ bool QueryDoc::initDoc(cfw::IFramePtr frame,
     frame->sigFrameEvent().connect(this, &QueryDoc::onFrameEvent);
 
     // create the statusbar items for this document
-    cfw::IStatusBarItemPtr item;
+    IStatusBarItemPtr item;
     item = addStatusBarItem(wxT("querydoc_field_count"));
     item->setWidth(120);
     item->show(false);
@@ -524,7 +524,7 @@ bool QueryDoc::onSiteClosing(bool force)
     if (isChanged())
     {
         int result;
-        result = cfw::appMessageBox(_("Would you like to save the changes made to this document?"),
+        result = appMessageBox(_("Would you like to save the changes made to this document?"),
                                     APPLICATION_NAME,
                                     wxYES_NO | wxCANCEL | wxICON_QUESTION | wxCENTER);
         
@@ -773,7 +773,7 @@ void QueryDoc::getColumnListItems(std::vector<ColumnListItem>& items)
             ColumnListItem item;
             item.text = it->alias;
             item.text += wxT(".");
-            item.text += cfw::makeProperIfNecessary(towx(colinfo->getName()));
+            item.text += makeProperIfNecessary(towx(colinfo->getName()));
             if (colinfo->getCalculated())
             {
                 item.bitmap = GETBMP(gf_lightning_16);
@@ -972,7 +972,7 @@ void QueryDoc::onGridCellRightClick(kcl::GridEvent& evt)
 
     wxPoint pt_mouse = ::wxGetMousePosition();
     pt_mouse = ScreenToClient(pt_mouse);
-    cfw::CommandCapture* cc = new cfw::CommandCapture;
+    CommandCapture* cc = new CommandCapture;
     PushEventHandler(cc);
     PopupMenu(&menuPopup, pt_mouse);
     int command = cc->getLastCommandId();
@@ -1115,13 +1115,13 @@ void QueryDoc::onBrowse(wxCommandEvent& evt)
         m_outputpath_textctrl->SetValue(dlg.getPath());
 }
 
-void QueryDoc::onTreeDataDropped(cfw::FsDataObject* data)
+void QueryDoc::onTreeDataDropped(FsDataObject* data)
 {
     // set the changed flag
     setChanged(true);
     setChangedExecute(true);
     
-    cfw::IFsItemEnumPtr items = data->getFsItems();
+    IFsItemEnumPtr items = data->getFsItems();
     
     std::vector<wxString>::iterator it;
     std::vector<wxString> res;
@@ -1135,14 +1135,14 @@ void QueryDoc::onTreeDataDropped(cfw::FsDataObject* data)
     int i, count = items->size();
     for (i = 0; i < count; ++i)
     {
-        cfw::IFsItemPtr item = items->getItem(i);
+        IFsItemPtr item = items->getItem(i);
         if (item.isNull())
             continue;
 
         IDbFolderFsItemPtr folder = item;
         if (folder.isOk())
         {
-            cfw::appMessageBox(_("One or more of the items is a folder.  Folders cannot be added to the relationship diagram."),
+            appMessageBox(_("One or more of the items is a folder.  Folders cannot be added to the relationship diagram."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
@@ -1150,7 +1150,7 @@ void QueryDoc::onTreeDataDropped(cfw::FsDataObject* data)
         
         if (dbdoc->isFsItemExternal(item))
         {
-            cfw::appMessageBox(_("One or more of the items is an external table.  External tables cannot be added to the relationship diagram."),
+            appMessageBox(_("One or more of the items is an external table.  External tables cannot be added to the relationship diagram."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
@@ -1161,7 +1161,7 @@ void QueryDoc::onTreeDataDropped(cfw::FsDataObject* data)
         {
             if (obj->getType() != dbobjtypeSet)
             {
-                cfw::appMessageBox(_("One or more of the items is not a table.  Items that are not tables cannot be added to the relationship diagram."),
+                appMessageBox(_("One or more of the items is not a table.  Items that are not tables cannot be added to the relationship diagram."),
                                    APPLICATION_NAME,
                                    wxOK | wxICON_EXCLAMATION | wxCENTER);
 
@@ -1181,7 +1181,7 @@ void QueryDoc::onTreeDataDropped(cfw::FsDataObject* data)
         if (!g_app->getDatabase()->getFileExist(towstr(path)))
         {
             // some of the paths couldn't be found, bail out
-            cfw::appMessageBox(_("One or more of the items could not be found in the project."),
+            appMessageBox(_("One or more of the items could not be found in the project."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
@@ -1223,7 +1223,7 @@ void QueryDoc::onDiagramSetAdded(wxString path, bool* allow)
         {
             m_diagram->refresh();
 
-            cfw::appMessageBox(_("The data set already exists in the diagram."),
+            appMessageBox(_("The data set already exists in the diagram."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
 
@@ -1376,7 +1376,7 @@ void QueryDoc::onDiagramLineRightClicked(RelationLine* line, int* command)
         
     wxPoint pt_mouse = ::wxGetMousePosition();
     pt_mouse = ScreenToClient(pt_mouse);
-    cfw::CommandCapture* cc = new cfw::CommandCapture;
+    CommandCapture* cc = new CommandCapture;
     PushEventHandler(cc);
     PopupMenu(&menuPopup, pt_mouse);
     *command = cc->getLastCommandId();
@@ -1465,7 +1465,7 @@ void QueryDoc::updateCaption()
     }
 
     // if we have a sqldoc, update its caption
-    cfw::IDocumentSitePtr sqldoc_site;
+    IDocumentSitePtr sqldoc_site;
     sqldoc_site = lookupOtherDocumentSite(m_doc_site, "appmain.SqlDoc");
     if (sqldoc_site.isOk())
         sqldoc_site->setCaption(caption);
@@ -1482,7 +1482,7 @@ void QueryDoc::updateStatusBar()
     int row_count = m_grid->getRowCount();
     wxString field_count_str = wxString::Format(_("Field Count: %d"), row_count);
     
-    cfw::IStatusBarItemPtr item;
+    IStatusBarItemPtr item;
     item = m_frame->getStatusBar()->getCell(wxT("querydoc_field_count"));
     if (item.isOk())
         item->setValue(field_count_str);
@@ -1494,7 +1494,7 @@ void QueryDoc::updateStatusBar()
 
 void QueryDoc::updateColumnList()
 {
-    g_app->getMainFrame()->postEvent(new cfw::Event(wxT("ColumnListPanel.update")));
+    g_app->getMainFrame()->postEvent(new FrameworkEvent(wxT("ColumnListPanel.update")));
 }
 
 void QueryDoc::updateJoinStructure(const wxString& left_path)
@@ -1924,7 +1924,7 @@ bool QueryDoc::load(const wxString& path)
 
     // fire this event so that the URL will be updated with the new path
     if (m_frame.isOk())
-        m_frame->postEvent(new cfw::Event(wxT("cfw.locationChanged")));
+        m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
 
     // reset the changed flag and return
     setChanged(false);
@@ -1932,7 +1932,7 @@ bool QueryDoc::load(const wxString& path)
     return true;
 }
 
-void QueryDoc::onFrameEvent(cfw::Event& evt)
+void QueryDoc::onFrameEvent(FrameworkEvent& evt)
 {
     // if a file is renamed, update this file with the new file path
     if (evt.name == wxT("treepanel.ofsFileRenamed"))
@@ -1945,19 +1945,19 @@ void QueryDoc::onFrameEvent(cfw::Event& evt)
             updateCaption();
 
             //  fire a frame event    
-            cfw::IDocumentSitePtr doc_site = m_frame->getActiveChild();
+            IDocumentSitePtr doc_site = m_frame->getActiveChild();
             if (doc_site.isOk() && doc_site == m_doc_site)
             {
                 // fire this event so that the URL combobox will be updated
                 // with the new path if this is the active child
-                m_frame->postEvent(new cfw::Event(wxT("cfw.locationChanged")));
+                m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
             }
         }
     }
 
     if (evt.name == wxT("appmain.view_switcher.query_available_views"))
     {
-        cfw::IDocumentSitePtr active_child;
+        IDocumentSitePtr active_child;
         active_child = g_app->getMainFrame()->getActiveChild();
         
         if (active_child.isNull() || m_doc_site.isNull())
@@ -1970,8 +1970,8 @@ void QueryDoc::onFrameEvent(cfw::Event& evt)
             return;
 
         // site ptrs to check the active site
-        cfw::IDocumentSitePtr tabledoc_site;
-        cfw::IDocumentSitePtr sqldoc_site;
+        IDocumentSitePtr tabledoc_site;
+        IDocumentSitePtr sqldoc_site;
         sqldoc_site = lookupOtherDocumentSite(m_doc_site, "appmain.SqlDoc");
         tabledoc_site = lookupOtherDocumentSite(m_doc_site, "appmain.TableDoc");
         
@@ -2008,7 +2008,7 @@ void QueryDoc::onFrameEvent(cfw::Event& evt)
                 bool* is_allowed = (bool*)evt.l_param2;
                 *is_allowed = false;
                 
-                cfw::appMessageBox(_("A query is already running.  Please wait until the query has finished running or cancel the job."));
+                appMessageBox(_("A query is already running.  Please wait until the query has finished running or cancel the job."));
                 return;
             }
         }
@@ -2027,7 +2027,7 @@ void QueryDoc::onFrameEvent(cfw::Event& evt)
         int id = (int)(evt.l_param);
         
         // -- make sure we are in the active container --
-        cfw::IDocumentSitePtr active_site;
+        IDocumentSitePtr active_site;
         active_site = g_app->getMainFrame()->getActiveChild();
         if (active_site.isNull() || m_doc_site.isNull())
             return;
@@ -2056,7 +2056,7 @@ void QueryDoc::onFrameEvent(cfw::Event& evt)
          else if (id == ID_View_SwitchToLayoutView)
         {
             // if we are on structure doc, we might need to prompt for saving
-            cfw::IDocumentSitePtr tabledoc_site, sqldoc_site;
+            IDocumentSitePtr tabledoc_site, sqldoc_site;
             
             sqldoc_site = lookupOtherDocumentSite(m_doc_site, "appmain.SqlDoc");
             tabledoc_site = lookupOtherDocumentSite(m_doc_site, "appmain.TableDoc");
@@ -2109,9 +2109,9 @@ bool QueryDoc::createSqlDoc()
         
         wxWindow* container = m_doc_site->getContainerWindow();
         
-        cfw::IDocumentSitePtr site;
+        IDocumentSitePtr site;
         site = g_app->getMainFrame()->createSite(container,
-                                         static_cast<cfw::IDocument*>(doc),
+                                         static_cast<IDocument*>(doc),
                                          true);
         site->setVisible(true);
     }
@@ -2175,7 +2175,7 @@ bool QueryDoc::doSave(bool force)
 
         // fire this event so that the URL will be updated with the new path
         if (m_frame.isOk())
-            m_frame->postEvent(new cfw::Event(wxT("cfw.locationChanged")));
+            m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
     }
     
     // put the work from the UI into the template
@@ -2184,7 +2184,7 @@ bool QueryDoc::doSave(bool force)
     // try to save the template
     if (!m_info.save(m_path))
     {
-        cfw::appMessageBox(_("There was an error saving the specified query."),
+        appMessageBox(_("There was an error saving the specified query."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
         return false;
@@ -2262,7 +2262,7 @@ void QueryDoc::onSaveAsExternal(wxCommandEvent& evt)
                              m_path,
                              true /* compress */);
 
-        g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+        g_app->getJobQueue()->addJob(job, jobStateRunning);
     }
      else
     {
@@ -2278,7 +2278,7 @@ void QueryDoc::onExecute(wxCommandEvent& evt)
 
 bool QueryDoc::isRunning()
 {
-    return (m_job_info.isOk() && m_job_info->getState() == cfw::jobStateRunning) ? true : false;
+    return (m_job_info.isOk() && m_job_info->getState() == jobStateRunning) ? true : false;
 }
 
 bool QueryDoc::execute()
@@ -2312,7 +2312,7 @@ bool QueryDoc::execute()
 
     if (top_paths.size() == 0)
     {
-        cfw::appMessageBox(_("Please specify a primary selection table."),
+        appMessageBox(_("Please specify a primary selection table."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
         return false;
@@ -2324,7 +2324,7 @@ bool QueryDoc::execute()
 
     if (top_paths.size() != 1)
     {
-        cfw::appMessageBox(_("Please specify at the most one primary selection table."),
+        appMessageBox(_("Please specify at the most one primary selection table."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
         return false;
@@ -2333,7 +2333,7 @@ bool QueryDoc::execute()
 
     if (m_info.m_params.size() == 0)
     {
-        cfw::appMessageBox(_("No query parameters are currently specified.  Please add at least one parameter to the query definition."),
+        appMessageBox(_("No query parameters are currently specified.  Please add at least one parameter to the query definition."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
         return false;
@@ -2370,7 +2370,7 @@ bool QueryDoc::execute()
             it->group_func != QueryGroupFunction_GroupID &&
             it->input_expr.empty())
         {
-            cfw::appMessageBox(_("An input field or formula is missing."),
+            appMessageBox(_("An input field or formula is missing."),
                                APPLICATION_NAME,
                                wxICON_EXCLAMATION | wxOK);
             return false;
@@ -2397,7 +2397,7 @@ bool QueryDoc::execute()
                                   GETBMP(gf_exclamation_16));
             m_grid->refresh(kcl::Grid::refreshAll);
 
-            cfw::appMessageBox(_("Two or more fields have the same output name.  Please make sure that the name of each output field is unique."),
+            appMessageBox(_("Two or more fields have the same output name.  Please make sure that the name of each output field is unique."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             return false;
@@ -2439,7 +2439,7 @@ bool QueryDoc::execute()
                 if (found)
                 {
                     // two identical sort specifiers found: this is not allowed
-                    cfw::appMessageBox(_("The sort order has an error.  Two or more identical sort specifiers have been found."),
+                    appMessageBox(_("The sort order has an error.  Two or more identical sort specifiers have been found."),
                                        APPLICATION_NAME,
                                        wxOK | wxICON_EXCLAMATION | wxCENTER);
                     return false;
@@ -2484,7 +2484,7 @@ bool QueryDoc::execute()
                     m_grid->refresh(kcl::Grid::refreshAll);
 
                     // two identical sort specifiers found: this is not allowed
-                    cfw::appMessageBox(_("The query condition contains an error."),
+                    appMessageBox(_("The query condition contains an error."),
                                        APPLICATION_NAME,
                                        wxOK | wxICON_EXCLAMATION | wxCENTER);
                     return false;
@@ -2500,7 +2500,7 @@ bool QueryDoc::execute()
     wxString sql = m_info.getQueryString();
     if (sql.IsEmpty())
     {
-        cfw::appMessageBox(_("The constructed SQL statement is empty."),
+        appMessageBox(_("The constructed SQL statement is empty."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
         return false;
@@ -2508,7 +2508,7 @@ bool QueryDoc::execute()
     
     setChangedExecute(false);
 
-    cfw::IJobPtr job = m_info.execute(m_doc_site->getId());
+    IJobPtr job = m_info.execute(m_doc_site->getId());
     if (job.isOk())
     {
         m_job_info = job->getJobInfo();

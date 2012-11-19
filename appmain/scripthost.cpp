@@ -415,7 +415,7 @@ void func_alert(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
     // -- fire an event to ourselves --
 
-    int res = cfw::appMessageBox(message, caption, msg_style);
+    int res = appMessageBox(message, caption, msg_style);
     
     switch (res)
     {
@@ -468,12 +468,12 @@ public:
 
     void baseMethod(kscript::ExprEnv* env, kscript::Value* retval)
     {
-        cfw::appMessageBox(wxT("TestBaseClass::baseMethod"));
+        appMessageBox(wxT("TestBaseClass::baseMethod"));
     }
     
     void testOverride(kscript::ExprEnv* env, kscript::Value* retval)
     {
-        cfw::appMessageBox(wxT("TestBaseClass::testOverride"));
+        appMessageBox(wxT("TestBaseClass::testOverride"));
     }
 };
 
@@ -514,11 +514,11 @@ public:
         BoundMemberInfo* bmi;
         size_t i = 0;
         while (NULL != (bmi = get_bound_method(i++))) {
-            cfw::appMessageBox(wxString::Format(wxT("%s %d"), bmi->method_name, bmi->class_id));
+            appMessageBox(wxString::Format(wxT("%s %d"), bmi->method_name, bmi->class_id));
         }
     
-        cfw::appMessageBox(wxString::Format(wxT("%d"), staticGetClassId()));
-        cfw::appMessageBox(wxString::Format(wxT("%d"), staticGetClassId()));
+        appMessageBox(wxString::Format(wxT("%d"), staticGetClassId()));
+        appMessageBox(wxString::Format(wxT("%d"), staticGetClassId()));
         m_i = 2;
      */
     }
@@ -538,12 +538,12 @@ public:
     void msgBox(kscript::ExprEnv* env, kscript::Value* retval)
     {
         wxString msg = towx(env->getParam(0)->getString());
-        cfw::appMessageBox(msg);
+        appMessageBox(msg);
     }
     
     void testOverride(kscript::ExprEnv* env, kscript::Value* retval)
     {
-        cfw::appMessageBox(wxT("TestClass::testOverride"));
+        appMessageBox(wxT("TestClass::testOverride"));
     }
     
 public:
@@ -637,8 +637,8 @@ ScriptHost::ScriptHost()
     Slider::compiletimeBind(m_expr);
     SpinButton::compiletimeBind(m_expr);
     SpinBox::compiletimeBind(m_expr);
-    StatusBarItem::compiletimeBind(m_expr);
-    StatusBar::compiletimeBind(m_expr);
+    zStatusBarItem::compiletimeBind(m_expr);
+    zStatusBar::compiletimeBind(m_expr);
     TableBox::compiletimeBind(m_expr);
     TextBox::compiletimeBind(m_expr);
     ToolBarItem::compiletimeBind(m_expr);
@@ -1501,7 +1501,7 @@ kscript::Value* ScriptHost::getRetval()
 }
 
 
-void ScriptHost::setCurrentJob(cfw::IJobPtr job)
+void ScriptHost::setCurrentJob(IJobPtr job)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
     m_curjob = job;
@@ -1510,7 +1510,7 @@ void ScriptHost::setCurrentJob(cfw::IJobPtr job)
 }
 
 
-cfw::IJobPtr ScriptHost::getCurrentJob()
+IJobPtr ScriptHost::getCurrentJob()
 {
     XCM_AUTO_LOCK(m_obj_mutex);
     return m_curjob;

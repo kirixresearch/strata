@@ -195,8 +195,8 @@ SqlDoc::~SqlDoc()
 
 // -- IDocument --
 
-bool SqlDoc::initDoc(cfw::IFramePtr frame,
-                     cfw::IDocumentSitePtr doc_site,
+bool SqlDoc::initDoc(IFramePtr frame,
+                     IDocumentSitePtr doc_site,
                      wxWindow* docsite_wnd,
                      wxWindow* panesite_wnd)
 {
@@ -255,7 +255,7 @@ bool SqlDoc::initDoc(cfw::IFramePtr frame,
 
 wxString SqlDoc::getDocumentLocation()
 {
-    cfw::IDocumentPtr doc = lookupOtherDocument(m_doc_site, "appmain.QueryDoc");
+    IDocumentPtr doc = lookupOtherDocument(m_doc_site, "appmain.QueryDoc");
     if (doc.isOk())
         return doc->getDocumentLocation();
 
@@ -287,7 +287,7 @@ bool SqlDoc::onSiteClosing(bool force)
     IQueryDocPtr querydoc = lookupOtherDocument(m_doc_site, "appmain.QueryDoc");
     if (querydoc.isOk())
     {
-        cfw::IDocumentPtr doc = querydoc;
+        IDocumentPtr doc = querydoc;
         return doc->onSiteClosing(force);
     }
 
@@ -429,7 +429,7 @@ void SqlDoc::setText(const wxString& text)
     }
 }
 
-void SqlDoc::onFrameEvent(cfw::Event& evt)
+void SqlDoc::onFrameEvent(Event& evt)
 {
     // if a file is renamed, update this file with the new file path
     if (evt.name == wxT("treepanel.ofsFileRenamed"))
@@ -442,19 +442,19 @@ void SqlDoc::onFrameEvent(cfw::Event& evt)
             wxString caption = path.AfterLast(wxT('/'));
             m_doc_site->setCaption(caption);
             
-            cfw::IDocumentSitePtr doc_site = m_frame->getActiveChild();
+            IDocumentSitePtr doc_site = m_frame->getActiveChild();
             if (doc_site.isOk() && doc_site == m_doc_site)
             {
                 // fire this event so that the URL combobox will be updated
                 // with the new path if this is the active child
-                m_frame->postEvent(new cfw::Event(wxT("cfw.locationChanged")));
+                m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
             }
         }
     }
 
     if (evt.name == wxT("appmain.view_switcher.query_available_views"))
     {
-        cfw::IDocumentSitePtr active_child;
+        IDocumentSitePtr active_child;
         active_child = g_app->getMainFrame()->getActiveChild();
         
         if (active_child.isNull() || m_doc_site.isNull())
@@ -467,9 +467,9 @@ void SqlDoc::onFrameEvent(cfw::Event& evt)
             return;
         
         // site ptrs to check the active site
-        cfw::IDocumentSitePtr active_site;
-        cfw::IDocumentSitePtr querydoc_site;
-        cfw::IDocumentSitePtr tabledoc_site;
+        IDocumentSitePtr active_site;
+        IDocumentSitePtr querydoc_site;
+        IDocumentSitePtr tabledoc_site;
         querydoc_site = lookupOtherDocumentSite(m_doc_site, "appmain.QueryDoc");
         tabledoc_site = lookupOtherDocumentSite(m_doc_site, "appmain.TableDoc");
         active_site = g_app->getMainFrame()->getActiveChild();
@@ -503,7 +503,7 @@ void SqlDoc::onFrameEvent(cfw::Event& evt)
         int id = (int)(evt.l_param);
         
         // -- make sure we are in the active container --
-        cfw::IDocumentSitePtr active_site;
+        IDocumentSitePtr active_site;
         active_site = g_app->getMainFrame()->getActiveChild();
         if (active_site.isNull() || m_doc_site.isNull())
             return;

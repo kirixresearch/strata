@@ -14,12 +14,12 @@
 
 
 class MergePanel :  public wxPanel,
-                    public cfw::IDocument,
+                    public IDocument,
                     public xcm::signal_sink
 {
     XCM_CLASS_NAME_NOREFCOUNT("appmain.MergePanel")
     XCM_BEGIN_INTERFACE_MAP(MergePanel)
-        XCM_INTERFACE_ENTRY(cfw::IDocument)
+        XCM_INTERFACE_ENTRY(IDocument)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -28,8 +28,8 @@ public:
     ~MergePanel();
 
     // -- IDocument --
-    bool initDoc(cfw::IFramePtr frame,
-                 cfw::IDocumentSitePtr doc_site,
+    bool initDoc(IFramePtr frame,
+                 IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,
                  wxWindow* panesite_wnd);
     wxWindow* getDocumentWindow();
@@ -50,13 +50,13 @@ private:
 
     // event handlers
     void onGridDataDropped(kcl::GridDataDropTarget* drop_target);
-    void onOutputPathDropped(wxDragResult& drag_result, cfw::FsDataObject* data);
+    void onOutputPathDropped(wxDragResult& drag_result, FsDataObject* data);
     void checkOverlayText();
 
 private:
 
-    cfw::IFramePtr m_frame;
-    cfw::IDocumentSitePtr m_doc_site;
+    IFramePtr m_frame;
+    IDocumentSitePtr m_doc_site;
     tango::ISetPtr m_set;
     
     wxTextCtrl* m_output_table;

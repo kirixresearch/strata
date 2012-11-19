@@ -426,7 +426,7 @@ bool CellExpression::getResult(wxString& result)
                             int year, month, day;
                             kscript::julianToDate(dt.date, &year, &month, &day);
 
-                            result = cfw::Locale::formatDate(year, 
+                            result = Locale::formatDate(year, 
                                                              month, 
                                                              day).c_str();
                         }
@@ -450,7 +450,7 @@ bool CellExpression::getResult(wxString& result)
                             second = second - (second/60000)*60000;
                             second = second/1000;
 
-                            result = cfw::Locale::formatDate(year,
+                            result = Locale::formatDate(year,
                                                              month,
                                                              day,
                                                              hour,
@@ -1200,12 +1200,12 @@ void TangoModel::execute(bool block)
         // handle everything else when the job is finished
         
         QueryJob* job = new QueryJob;
-        m_job = static_cast<cfw::IJob*>(job);
+        m_job = static_cast<IJob*>(job);
         job->getJobInfo()->setTitle(towstr(_("Query")));
         job->sigJobFinished().connect(this, &TangoModel::onQueryJobFinished);
         job->setQuery(m_query, tango::sqlPassThrough);
         
-        g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+        g_app->getJobQueue()->addJob(job, jobStateRunning);
     }
      else
     {
@@ -1695,11 +1695,11 @@ bool TangoModel::getBoolean(int col_idx, int function)
     return value;
 }
 
-void TangoModel::onQueryJobFinished(cfw::IJobPtr job)
+void TangoModel::onQueryJobFinished(IJobPtr job)
 {
     m_job.clear();
     
-    if (job->getJobInfo()->getState() != cfw::jobStateFinished)
+    if (job->getJobInfo()->getState() != jobStateFinished)
         return;
 
     IQueryJobPtr query_job = job;

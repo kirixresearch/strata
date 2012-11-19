@@ -79,7 +79,7 @@ public:
 
     bool save(const wxString& path, bool refresh_tree_if_necessary = true);
     bool load(const wxString& path);
-    cfw::IJobPtr execute(int target_site_id = 0);
+    IJobPtr execute(int target_site_id = 0);
     
     std::vector<wxString> getOutputFields();
     wxString getQueryString();

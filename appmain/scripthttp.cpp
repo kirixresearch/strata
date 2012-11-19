@@ -192,7 +192,7 @@ void HttpRequest::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
     initComponent(env);
     
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
     if (prefs)
     {
         if (prefs->getLong(wxT("internet.proxy.type"), prefProxyDirect) == prefProxyManual)

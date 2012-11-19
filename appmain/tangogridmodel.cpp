@@ -761,7 +761,7 @@ wxString TangoGridModel::getCellString(int row, int col)
 
             dt = d;
 
-            return cfw::Locale::formatDate(dt.getYear(),
+            return Locale::formatDate(dt.getYear(),
                                            dt.getMonth(),
                                            dt.getDay());
         }
@@ -779,7 +779,7 @@ wxString TangoGridModel::getCellString(int row, int col)
 
             dt = d;
             
-            return cfw::Locale::formatDate(dt.getYear(),
+            return Locale::formatDate(dt.getYear(),
                                            dt.getMonth(),
                                            dt.getDay(),
                                            dt.getHour(),

@@ -40,20 +40,20 @@ XCM_DECLARE_SMARTPTR(IEditorDoc)
 
 
 class EditorDoc : public wxWindow,
-                  public cfw::IDocument,
+                  public IDocument,
                   public IEditorDoc,
                   public IFindTarget,
-                  public cfw::StatusBarProviderBase,
+                  public StatusBarProviderBase,
                   public xcm::signal_sink
 {
     friend class EditorDocExternalUpdateTimer;
 
     XCM_CLASS_NAME_NOREFCOUNT("appmain.EditorDoc")
     XCM_BEGIN_INTERFACE_MAP(EditorDoc)
-        XCM_INTERFACE_ENTRY(cfw::IDocument)
+        XCM_INTERFACE_ENTRY(IDocument)
         XCM_INTERFACE_ENTRY(IEditorDoc)
         XCM_INTERFACE_ENTRY(IFindTarget)
-        XCM_INTERFACE_CHAIN(cfw::StatusBarProviderBase)
+        XCM_INTERFACE_CHAIN(StatusBarProviderBase)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -69,8 +69,8 @@ public:
     bool saveFile();
 
     // -- IDocument --
-    bool initDoc(cfw::IFramePtr frame,
-                 cfw::IDocumentSitePtr doc_site,
+    bool initDoc(IFramePtr frame,
+                 IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,
                  wxWindow* panesite_wnd);
     wxWindow* getDocumentWindow();
@@ -145,10 +145,10 @@ private:
     void onUpdateUI(wxUpdateUIEvent& evt);
 
     // frame event handlers
-    void onFrameEvent(cfw::Event& evt);
+    void onFrameEvent(FrameworkEvent& evt);
     
     // statusbar event handlers
-    void onStatusBarItemLeftDblClick(cfw::IStatusBarItemPtr item);
+    void onStatusBarItemLeftDblClick(IStatusBarItemPtr item);
 
     // function for reading a file
     bool readFile(const wxString _path, 
@@ -170,8 +170,8 @@ private:
     int m_eol_mode;           // end of line mode -- CR, LF, or CRLF
     wxTimer* m_timer;
 
-    cfw::IFramePtr m_frame;
-    cfw::IDocumentSitePtr m_doc_site;
+    IFramePtr m_frame;
+    IDocumentSitePtr m_doc_site;
 
     // stores a hash of the file when it was last loaded
     // or saved to determine if the file has changed

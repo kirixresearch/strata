@@ -9,7 +9,7 @@
  */
 
 
-#include <wx/wx.h>
+#include "appmain.h"
 #include <wx/tokenzr.h>
 #include <xcm/xcm.h>
 #include "frameworkprops.h"
@@ -56,7 +56,7 @@ PropertyBase::PropertyBase()
 }
 
 
-void PropertyBase::initProperties(cfw::IFrame* frame)
+void PropertyBase::initProperties(IFrame* frame)
 {
     m_frame = frame;
     m_frame->sigFrameEvent().connect(this, &PropertyBase::onPBFrameEvent);
@@ -71,20 +71,20 @@ void PropertyBase::refreshPropertiesPanel()
 {
     wxASSERT_MSG(m_frame, wxT("you need to call initProperties() first"));
     
-    m_frame->postEvent(new cfw::Event(wxT("cfw.propertiesChanged")));
+    m_frame->postEvent(new FrameworkEvent(wxT("cfw.propertiesChanged")));
 }
 
 
-void PropertyBase::onPBFrameEvent(Event& evt)
+void PropertyBase::onPBFrameEvent(FrameworkEvent& evt)
 {
     if (evt.name == wxT("cfw.propertyChanged"))
     {
         // identify if we are the active window or not
         
-        cfw::IDocumentPtr doc = this;
+        IDocumentPtr doc = this;
         
-        cfw::IDocumentSitePtr active_child = m_frame->getActiveChild();
-        cfw::IDocumentPtr active_doc;
+        IDocumentSitePtr active_child = m_frame->getActiveChild();
+        IDocumentPtr active_doc;
         if (active_child)
             active_doc = active_child->getDocument();
             

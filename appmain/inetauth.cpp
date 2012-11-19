@@ -363,7 +363,7 @@ int InetAuth::deauthorize(paladin::Authentication* auth,
     wxString result;
     result = getWebFile(urlstring);
     
-    //cfw::appMessageBox(result, urlstring);
+    //appMessageBox(result, urlstring);
 
     if (result.IsEmpty())
     {

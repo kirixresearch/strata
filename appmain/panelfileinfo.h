@@ -48,12 +48,12 @@ public:
 
 
 class MultiFileInfoPanel : public wxPanel,
-                           public cfw::IDocument,
+                           public IDocument,
                            public xcm::signal_sink
 {
     XCM_CLASS_NAME_NOREFCOUNT("appmain.MultiFileInfoPanel")
     XCM_BEGIN_INTERFACE_MAP(MultiFileInfoPanel)
-        XCM_INTERFACE_ENTRY(cfw::IDocument)
+        XCM_INTERFACE_ENTRY(IDocument)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -66,8 +66,8 @@ public:
 private:
 
     // -- IDocument --
-    bool initDoc(cfw::IFramePtr frame,
-                 cfw::IDocumentSitePtr site,
+    bool initDoc(IFramePtr frame,
+                 IDocumentSitePtr site,
                  wxWindow* doc_site,
                  wxWindow* pane_site);
     wxWindow* getDocumentWindow();
@@ -81,7 +81,7 @@ private:
 
 private:
 
-    cfw::IDocumentSitePtr m_doc_site;
+    IDocumentSitePtr m_doc_site;
     
     wxStaticText* m_folder_text;
     wxStaticText* m_table_text;

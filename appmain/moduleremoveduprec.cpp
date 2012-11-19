@@ -77,7 +77,7 @@ public:
         outputfile_sizer->AddSpacer(8);
         outputfile_sizer->Add(output_browse_button);
 
-        wxSize label_size = cfw::getMaxTextSize(label_inputfile,
+        wxSize label_size = getMaxTextSize(label_inputfile,
                                                 label_outputfile);
         label_size.x += 8;
         
@@ -101,27 +101,27 @@ public:
         Layout();
 
         // make the text controls drop targets for the project panel
-        cfw::FsDataDropTarget* input_drop_target = new cfw::FsDataDropTarget;
+        FsDataDropTarget* input_drop_target = new FsDataDropTarget;
         input_drop_target->sigDragDrop.connect(this, &DupRecInputOutputPage::onInputTextDropped);
         m_input_textctrl->SetDropTarget(input_drop_target);
         
-        cfw::FsDataDropTarget* output_drop_target = new cfw::FsDataDropTarget;
+        FsDataDropTarget* output_drop_target = new FsDataDropTarget;
         output_drop_target->sigDragDrop.connect(this, &DupRecInputOutputPage::onOutputTextDropped);
         m_output_textctrl->SetDropTarget(output_drop_target);
 
         setFocusDeferred(m_input_textctrl);
-        cfw::resizeStaticText(message, message->GetClientSize().GetWidth());
+        resizeStaticText(message, message->GetClientSize().GetWidth());
     }
 
-    void onInputTextDropped(wxDragResult& drag_result, cfw::FsDataObject* data)
+    void onInputTextDropped(wxDragResult& drag_result, FsDataObject* data)
     {
-        cfw::IFsItemEnumPtr items = data->getFsItems();
+        IFsItemEnumPtr items = data->getFsItems();
         std::vector<wxString> res;
         DbDoc::getFsItemPaths(items, res, true);
 
         if (res.size() > 1)
         {
-            cfw::appMessageBox(_("You have selected either a folder or more than one data set.  Please select only one data set."),
+            appMessageBox(_("You have selected either a folder or more than one data set.  Please select only one data set."),
                                APPLICATION_NAME,
                                wxOK | wxICON_INFORMATION | wxCENTER);
             return;
@@ -129,7 +129,7 @@ public:
 
 
         DbDoc* dbdoc = g_app->getDbDoc();
-        cfw::IFsItemPtr item = items->getItem(0);
+        IFsItemPtr item = items->getItem(0);
 
         if (res.size() == 0)
             return;
@@ -140,15 +140,15 @@ public:
     }
 
 
-    void onOutputTextDropped(wxDragResult& drag_result, cfw::FsDataObject* data)
+    void onOutputTextDropped(wxDragResult& drag_result, FsDataObject* data)
     {
-        cfw::IFsItemEnumPtr items = data->getFsItems();
+        IFsItemEnumPtr items = data->getFsItems();
         std::vector<wxString> res;
         DbDoc::getFsItemPaths(items, res, true);
 
         if (res.size() > 1)
         {
-            cfw::appMessageBox(_("You have selected either a folder or more than one data set.  Please select only one data set."),
+            appMessageBox(_("You have selected either a folder or more than one data set.  Please select only one data set."),
                                APPLICATION_NAME,
                                wxOK | wxICON_INFORMATION | wxCENTER);
             return;
@@ -156,7 +156,7 @@ public:
 
 
         DbDoc* dbdoc = g_app->getDbDoc();
-        cfw::IFsItemPtr item = items->getItem(0);
+        IFsItemPtr item = items->getItem(0);
 
         if (res.size() == 0)
             return;
@@ -235,7 +235,7 @@ public:
             m_info->m_input_path = wxT("");
 
             // -- could not open input transation file, bail out. --
-            cfw::appMessageBox(_("The specified input transaction set could not be opened."),
+            appMessageBox(_("The specified input transaction set could not be opened."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
 
@@ -284,8 +284,8 @@ RemoveDupRecWizard::~RemoveDupRecWizard()
     delete m_info;
 }
 
-bool RemoveDupRecWizard::initDoc(cfw::IFramePtr frame,
-                                 cfw::IDocumentSitePtr doc_site,
+bool RemoveDupRecWizard::initDoc(IFramePtr frame,
+                                 IDocumentSitePtr doc_site,
                                  wxWindow* docsite_wnd,
                                  wxWindow* panesite_wnd)
 {
@@ -305,7 +305,7 @@ bool RemoveDupRecWizard::initDoc(cfw::IFramePtr frame,
     m_doc_site = doc_site;
 
     // grab default input file
-    cfw::IDocumentSitePtr site = g_app->getMainFrame()->getActiveChild();
+    IDocumentSitePtr site = g_app->getMainFrame()->getActiveChild();
     if (site.isOk())
     {
         ITableDocPtr table_doc = site->getDocument();
@@ -356,9 +356,9 @@ void RemoveDupRecWizard::onWizardCancelled(kcl::Wizard* wizard)
 }
 
 
-static void onRemoveDupRecJobFinished(cfw::IJobPtr job)
+static void onRemoveDupRecJobFinished(IJobPtr job)
 {
-    if (job->getJobInfo()->getState() != cfw::jobStateFinished)
+    if (job->getJobInfo()->getState() != jobStateFinished)
         return;
 
     IQueryJobPtr group_job = job;
@@ -382,7 +382,7 @@ static void onRemoveDupRecJobFinished(cfw::IJobPtr job)
                 ITableDocPtr doc = TableDocMgr::createTableDoc();
                 doc->open(result_set, xcm::null);
                 g_app->getMainFrame()->createSite(doc,
-                                                  cfw::sitetypeNormal,
+                                                  sitetypeNormal,
                                                   -1, -1, -1, -1);
             }
              else
@@ -397,7 +397,7 @@ static void onRemoveDupRecJobFinished(cfw::IJobPtr job)
 
     if (!success)
     {
-        cfw::appMessageBox(_("An output set could not be created."),
+        appMessageBox(_("An output set could not be created."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
     }
@@ -429,7 +429,7 @@ void RemoveDupRecWizard::onWizardFinished(kcl::Wizard* wizard)
     job->setQuery(sql, tango::sqlAlwaysCopy);
 
     // -- add and start job --
-    g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
 }
 
 void RemoveDupRecWizard::onSize(wxSizeEvent& event)

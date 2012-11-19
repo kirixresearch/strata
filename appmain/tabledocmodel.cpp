@@ -1540,7 +1540,7 @@ ITableDocPtr TableDocMgr::createTableDoc()
 
 ITableDocPtr TableDocMgr::getActiveTableDoc(int* site_id)
 {
-    cfw::IDocumentSitePtr active_site;
+    IDocumentSitePtr active_site;
     
     active_site = g_app->getMainFrame()->getActiveChild();
     if (active_site.isNull())

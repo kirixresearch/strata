@@ -13,8 +13,7 @@
 #define __CFW_JOBQUEUE_PRIVATE_H
 
 
-namespace cfw
-{
+
 
 
 /*
@@ -126,7 +125,7 @@ class JobQueue : public wxEvtHandler,
     XCM_END_INTERFACE_MAP()
 
     XCM_IMPLEMENT_SIGNAL0(sigQueueChanged);
-    XCM_IMPLEMENT_SIGNAL1(sigJobAdded, cfw::IJobInfoPtr);
+    XCM_IMPLEMENT_SIGNAL1(sigJobAdded, IJobInfoPtr);
 
 public:
     
@@ -166,7 +165,6 @@ private:
 };
 
 
-};
 
 
 #endif

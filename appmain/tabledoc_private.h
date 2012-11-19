@@ -55,25 +55,25 @@ enum
 
 
 class TableDoc : public wxWindow,
-                 public cfw::IDocument,
+                 public IDocument,
                  public ITableDoc,
                  public ITableDocPrivate,
                  public IColumnListTarget,
                  public IFindTarget,
                  public IDocumentScriptBinding,
-                 public cfw::PropertyBase,
-                 public cfw::StatusBarProviderBase
+                 public PropertyBase,
+                 public StatusBarProviderBase
 {
     XCM_CLASS_NAME_NOREFCOUNT("appmain.TableDoc")
     XCM_BEGIN_INTERFACE_MAP(TableDoc)
-        XCM_INTERFACE_ENTRY(cfw::IDocument)
+        XCM_INTERFACE_ENTRY(IDocument)
         XCM_INTERFACE_ENTRY(ITableDoc)
         XCM_INTERFACE_ENTRY(ITableDocPrivate)
         XCM_INTERFACE_ENTRY(IColumnListTarget)
         XCM_INTERFACE_ENTRY(IFindTarget)
         XCM_INTERFACE_ENTRY(IDocumentScriptBinding)
-        XCM_INTERFACE_CHAIN(cfw::PropertyBase)
-        XCM_INTERFACE_CHAIN(cfw::StatusBarProviderBase)
+        XCM_INTERFACE_CHAIN(PropertyBase)
+        XCM_INTERFACE_CHAIN(StatusBarProviderBase)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -82,8 +82,8 @@ public:
     virtual ~TableDoc();
 
     // -- IDocument --
-    bool initDoc(cfw::IFramePtr frame,
-                 cfw::IDocumentSitePtr doc_site,
+    bool initDoc(IFramePtr frame,
+                 IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,
                  wxWindow* panesite_wnd);
 
@@ -232,7 +232,7 @@ private:
 
     // -- internal methods --
     
-    cfw::IUIContextPtr getUserInterface();
+    IUIContextPtr getUserInterface();
     void createModel();
     void updateCaption();
     wxString makeCaption(const wxString& title);
@@ -268,14 +268,14 @@ private:
     bool saveAsStructure(const wxString& path);
 
     void onWatchExprChanged(TableDocWatch* watch);
-    void onSaveAsJobFinished(cfw::IJobPtr saveas_job);
-    void onSortFilterJobFinished(cfw::IJobPtr query_job);
-    void onSetOrderFinished(cfw::IJobPtr query_job);
-    void onDeleteJobFinished(cfw::IJobPtr delete_job);
-    void onIndexJobFinished(cfw::IJobPtr index_job);
-    void onReplaceJobFinished(cfw::IJobPtr replace_job);
-    void onAppendRecordsFinished(cfw::IJobPtr append_job);
-    void onModifyStructJobFinished(cfw::IJobPtr modify_job);
+    void onSaveAsJobFinished(IJobPtr saveas_job);
+    void onSortFilterJobFinished(IJobPtr query_job);
+    void onSetOrderFinished(IJobPtr query_job);
+    void onDeleteJobFinished(IJobPtr delete_job);
+    void onIndexJobFinished(IJobPtr index_job);
+    void onReplaceJobFinished(IJobPtr replace_job);
+    void onAppendRecordsFinished(IJobPtr append_job);
+    void onModifyStructJobFinished(IJobPtr modify_job);
     void onEditDynamicFieldOk(ColPropsPanel* panel);
     void onCreateDynamicFieldOk(ColPropsPanel* panel);
     void onCreateDynamicFieldCancelled(ColPropsPanel* panel);
@@ -311,15 +311,15 @@ private:
     
 
     // -- frame event handlers --
-    void onFrameEvent(cfw::Event& evt);
-    void onActiveChildChanged(cfw::IDocumentSitePtr doc_site);
+    void onFrameEvent(Event& evt);
+    void onActiveChildChanged(IDocumentSitePtr doc_site);
     void onPropertyChanged(const wxString& prop_name);
     
     // -- statusbar event handlers --
-    void onStatusBarItemLeftDblClick(cfw::IStatusBarItemPtr item);
+    void onStatusBarItemLeftDblClick(IStatusBarItemPtr item);
     
     // -- reload handlers --
-    void onReloadDownloadFinished(cfw::IJobInfoPtr job_info);
+    void onReloadDownloadFinished(IJobInfoPtr job_info);
     void onDoReloadRefresh(wxCommandEvent& evt);
     
     // -- repaint handler --
@@ -389,8 +389,8 @@ private:
     ITableDocViewPtr m_active_view;
     IModifyStructJobPtr m_structure_job;
 
-    cfw::IFramePtr m_frame;                             // ptr to the application frame
-    cfw::IDocumentSitePtr m_doc_site;                   // ptr to our document site
+    IFramePtr m_frame;                             // ptr to the application frame
+    IDocumentSitePtr m_doc_site;                   // ptr to our document site
     ITangoGridModelPtr m_grid_model;                    // grid's model
     ITableDocModelPtr m_model;                          // our model (stores queries, marks, views, etc)
     kcl::Grid* m_grid;                                  // grid control

@@ -354,9 +354,9 @@ std::vector<ExtensionInfo>& ExtensionMgr::getExtensions()
     return m_extensions;
 }
 
-void onScriptJobFinished(cfw::IJobPtr job)
+void onScriptJobFinished(IJobPtr job)
 {
-    if (job->getJobInfo()->getState() != cfw::jobStateFinished)
+    if (job->getJobInfo()->getState() != jobStateFinished)
         return;
 
     wxString script_job_guid = job->getExtraString();
@@ -423,12 +423,12 @@ bool ExtensionMgr::startAllExtensions()
             continue;
         }
         
-        cfw::IJobPtr job = g_app->getAppController()->executeScript(it->path);
+        IJobPtr job = g_app->getAppController()->executeScript(it->path);
         if (job.isOk())
         {
-            cfw::IJobInfoPtr job_info = job->getJobInfo();
+            IJobInfoPtr job_info = job->getJobInfo();
             if (job_info.isOk() &&
-                job_info->getState() == cfw::jobStateRunning)
+                job_info->getState() == jobStateRunning)
             {
                 job->sigJobFinished().connect(&onScriptJobFinished);
                 job->setExtraString(towstr(it->guid));
@@ -442,14 +442,14 @@ bool ExtensionMgr::startAllExtensions()
 
 bool ExtensionMgr::stopAllExtensions()
 {
-    std::vector<cfw::IJobInfoPtr> job_infos_to_watch;
+    std::vector<IJobInfoPtr> job_infos_to_watch;
     
     
-    cfw::IJobQueuePtr job_queue = g_app->getScriptJobQueue();
+    IJobQueuePtr job_queue = g_app->getScriptJobQueue();
     if (job_queue.isNull())
         return false;
     
-    cfw::IJobInfoEnumPtr job_info_enum = job_queue->getJobInfoEnum(cfw::jobStateRunning);
+    IJobInfoEnumPtr job_info_enum = job_queue->getJobInfoEnum(jobStateRunning);
     if (job_info_enum.isNull())
         return false;
         
@@ -458,8 +458,8 @@ bool ExtensionMgr::stopAllExtensions()
     {
         bool found = false;
         
-        cfw::IJobPtr job;
-        cfw::IJobInfoPtr job_info;
+        IJobPtr job;
+        IJobInfoPtr job_info;
         size_t i, job_count = job_info_enum->size();
         for (i = 0; i < job_count; ++i)
         {
@@ -504,16 +504,16 @@ bool ExtensionMgr::stopAllExtensions()
         
         size_t finish_count = 0;
         
-        std::vector<cfw::IJobInfoPtr>::iterator it;
+        std::vector<IJobInfoPtr>::iterator it;
         for (it = job_infos_to_watch.begin();
              it != job_infos_to_watch.end();
              ++it)
         {
             int job_state = (*it)->getState();
             
-            if (job_state == cfw::jobStateFinished ||
-                job_state == cfw::jobStateFailed ||
-                job_state == cfw::jobStateCancelled)
+            if (job_state == jobStateFinished ||
+                job_state == jobStateFailed ||
+                job_state == jobStateCancelled)
             {
                 finish_count++;
             }
@@ -549,11 +549,11 @@ bool ExtensionMgr::startExtension(const wxString& guid)
     if (info.state == ExtensionInfo::stateRunning)
         return false;
     
-    cfw::IJobPtr job = g_app->getAppController()->executeScript(info.path);
+    IJobPtr job = g_app->getAppController()->executeScript(info.path);
     if (job.isOk())
     {
-        cfw::IJobInfoPtr job_info = job->getJobInfo();
-        if (job_info.isOk() && job_info->getState() == cfw::jobStateRunning)
+        IJobInfoPtr job_info = job->getJobInfo();
+        if (job_info.isOk() && job_info->getState() == jobStateRunning)
         {
             job->sigJobFinished().connect(&onScriptJobFinished);
             job->setExtraString(towstr(info.guid));
@@ -570,16 +570,16 @@ bool ExtensionMgr::startExtension(const wxString& guid)
 
 bool ExtensionMgr::stopExtension(const wxString& guid)
 {
-    cfw::IJobQueuePtr job_queue = g_app->getScriptJobQueue();
+    IJobQueuePtr job_queue = g_app->getScriptJobQueue();
     if (job_queue.isNull())
         return false;
     
-    cfw::IJobInfoEnumPtr job_info_enum = job_queue->getJobInfoEnum(cfw::jobStateRunning);
+    IJobInfoEnumPtr job_info_enum = job_queue->getJobInfoEnum(jobStateRunning);
     if (job_info_enum.isNull())
         return false;
     
-    cfw::IJobPtr job;
-    cfw::IJobInfoPtr job_info;
+    IJobPtr job;
+    IJobInfoPtr job_info;
     size_t i, job_count = job_info_enum->size();
     for (i = 0; i < job_count; ++i)
     {

@@ -13,10 +13,6 @@
 #define __CFW_JOBQUEUE_H
 
 
-namespace cfw
-{
-
-
 xcm_interface IJob;
 xcm_interface IJobStat;
 xcm_interface IJobInfo;
@@ -156,17 +152,17 @@ public:
     virtual bool getJobsActive() = 0;
 
     XCM_DECLARE_SIGNAL0(sigQueueChanged);
-    XCM_DECLARE_SIGNAL1(sigJobAdded, cfw::IJobInfoPtr);
+    XCM_DECLARE_SIGNAL1(sigJobAdded, IJobInfoPtr);
 };
 
 
 
-class JobBase : public cfw::IJob
+class JobBase : public IJob
 {
 
 XCM_CLASS_NAME("cfw.JobBase")
 XCM_BEGIN_INTERFACE_MAP(JobBase)
-    XCM_INTERFACE_ENTRY(cfw::IJob)
+    XCM_INTERFACE_ENTRY(IJob)
 XCM_END_INTERFACE_MAP()
 
 XCM_IMPLEMENT_SIGNAL1(sigJobFinished, IJobPtr)
@@ -257,8 +253,8 @@ public:
     }
     
 protected:
-    cfw::IJobInfoPtr m_sp_job_info;
-    cfw::IJobInfo* m_job_info;
+    IJobInfoPtr m_sp_job_info;
+    IJobInfo* m_job_info;
     std::wstring m_extra_string;
     long m_extra_long;
 
@@ -268,10 +264,6 @@ private:
     bool m_cancelling;
 };
 
-
-
-
-};  // namespace cfw
 
 
 #endif

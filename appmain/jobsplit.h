@@ -41,7 +41,7 @@ class SplitJob : public TangoJobBase
 {
     XCM_CLASS_NAME("appmain.SplitJob")
     XCM_BEGIN_INTERFACE_MAP(SplitJob)
-        XCM_INTERFACE_CHAIN(cfw::JobBase)
+        XCM_INTERFACE_CHAIN(JobBase)
     XCM_END_INTERFACE_MAP()
 
 public:

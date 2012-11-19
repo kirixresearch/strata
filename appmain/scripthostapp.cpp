@@ -90,10 +90,10 @@ void Console::show(kscript::ExprEnv* env, void*, kscript::Value* retval)
 void Console::write(kscript::ExprEnv* env, void*, kscript::Value* retval)
 {
     wxString message = towx(env->m_eval_params[0]->getString());
-    cfw::IFramePtr frame = g_app->getMainFrame();
+    IFramePtr frame = g_app->getMainFrame();
     if (frame.isOk())
     {
-        cfw::IDocumentSitePtr site = frame->lookupSite(wxT("ConsolePanel"));
+        IDocumentSitePtr site = frame->lookupSite(wxT("ConsolePanel"));
         if (site.isOk())
         {
             IConsolePanelPtr console = site->getDocument();
@@ -118,10 +118,10 @@ void Console::writeLine(kscript::ExprEnv* env, void*, kscript::Value* retval)
     wxString message = towx(env->m_eval_params[0]->getString());
     message += wxT("\n");
     
-    cfw::IFramePtr frame = g_app->getMainFrame();
+    IFramePtr frame = g_app->getMainFrame();
     if (frame.isOk())
     {
-        cfw::IDocumentSitePtr site = frame->lookupSite(wxT("ConsolePanel"));
+        IDocumentSitePtr site = frame->lookupSite(wxT("ConsolePanel"));
         if (site.isOk())
         {
             IConsolePanelPtr console = site->getDocument();
@@ -140,10 +140,10 @@ void Console::writeLine(kscript::ExprEnv* env, void*, kscript::Value* retval)
 
 void Console::clear(kscript::ExprEnv* env, void*, kscript::Value* retval)
 {
-    cfw::IFramePtr frame = g_app->getMainFrame();
+    IFramePtr frame = g_app->getMainFrame();
     if (frame.isOk())
     {
-        cfw::IDocumentSitePtr site = frame->lookupSite(wxT("ConsolePanel"));
+        IDocumentSitePtr site = frame->lookupSite(wxT("ConsolePanel"));
         if (site.isOk())
         {
             IConsolePanelPtr console = site->getDocument();
@@ -633,10 +633,10 @@ void HostApp::getCurrentLocation(kscript::ExprEnv* env, kscript::Value* retval)
     }
 
     // return the location of the active document
-    cfw::IDocumentSitePtr doc_site = m_frame->getActiveChild();
+    IDocumentSitePtr doc_site = m_frame->getActiveChild();
     if (doc_site.isOk())
     {
-        cfw::IDocumentPtr doc = doc_site->getDocument();
+        IDocumentPtr doc = doc_site->getDocument();
         if (doc.isOk())
         {
             wxString location, caption;
@@ -820,7 +820,7 @@ void HostApp::newDocument(kscript::ExprEnv* env, kscript::Value* retval)
 {
     retval->setNull();
     
-    cfw::IFramePtr frame = g_app->getMainFrame();
+    IFramePtr frame = g_app->getMainFrame();
     if (frame.isNull())
         return;
     
@@ -870,7 +870,7 @@ void HostApp::open(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() < 1)
         return;
     
-    cfw::IFramePtr frame = g_app->getMainFrame();
+    IFramePtr frame = g_app->getMainFrame();
     if (frame.isNull())
         return;
     
@@ -1058,7 +1058,7 @@ void HostApp::close(kscript::ExprEnv* env, kscript::Value* retval)
     
     
     HostDocument* doc = (HostDocument*)env->getParam(0)->getObject();
-    bool success = m_frame->closeSite(doc->m_site, force_close ? cfw::closeForce : 0);
+    bool success = m_frame->closeSite(doc->m_site, force_close ? closeForce : 0);
     
     retval->setBoolean(success);
 }
@@ -1084,7 +1084,7 @@ void HostApp::getDocuments(kscript::ExprEnv* env, kscript::Value* retval)
         return;
     }
     
-    cfw::IDocumentSiteEnumPtr sites = m_frame->getShownDocumentSites(cfw::sitetypeNormal);
+    IDocumentSiteEnumPtr sites = m_frame->getShownDocumentSites(sitetypeNormal);
     
     retval->setArray(env);
     
@@ -1122,7 +1122,7 @@ void HostApp::getDocumentById(kscript::ExprEnv* env, kscript::Value* retval)
         return;
     }
     
-    cfw::IDocumentSitePtr site = m_frame->lookupSiteById(env->getParam(0)->getInteger());
+    IDocumentSitePtr site = m_frame->lookupSiteById(env->getParam(0)->getInteger());
     
     HostDocument* doc = HostDocument::createObject(env);
     doc->m_site = site;
@@ -1145,7 +1145,7 @@ void HostApp::getDocumentById(kscript::ExprEnv* env, kscript::Value* retval)
 
 void HostApp::getActiveDocument(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    cfw::IDocumentSitePtr site = m_frame->getActiveChild();
+    IDocumentSitePtr site = m_frame->getActiveChild();
     if (site.isNull())
     {
         retval->setNull();
@@ -1163,11 +1163,11 @@ void HostApp::getActiveDocument(kscript::ExprEnv* env, kscript::Value* retval)
 
 
 
-class HostAppContainerDoc : public cfw::IDocument
+class HostAppContainerDoc : public IDocument
 {
     XCM_CLASS_NAME("appmain.HostAppContainerDoc")
     XCM_BEGIN_INTERFACE_MAP(HostAppContainerDoc)
-        XCM_INTERFACE_ENTRY(cfw::IDocument)
+        XCM_INTERFACE_ENTRY(IDocument)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -1185,8 +1185,8 @@ public:
     }
 
     // -- IDocument --
-    bool initDoc(cfw::IFramePtr frame,
-                 cfw::IDocumentSitePtr doc_site,
+    bool initDoc(IFramePtr frame,
+                 IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,
                  wxWindow* panesite_wnd)
     {
@@ -1243,8 +1243,8 @@ void HostApp::createDocument(kscript::ExprEnv* env, kscript::Value* retval)
     Form* form = (Form*)env->getParam(0)->getObject();
     HostAppContainerDoc* doc = new HostAppContainerDoc(form);
     
-    cfw::IDocumentSitePtr site;
-    site = g_app->getMainFrame()->createSite(doc, cfw::sitetypeNormal, -1, -1, -1, -1);
+    IDocumentSitePtr site;
+    site = g_app->getMainFrame()->createSite(doc, sitetypeNormal, -1, -1, -1, -1);
     form->setSite(site);
 }
 
@@ -1259,17 +1259,17 @@ void HostApp::createPane(kscript::ExprEnv* env, kscript::Value* retval)
     }
     
     
-    int dock = cfw::dockFloating;
+    int dock = dockFloating;
     
     if (env->getParamCount() <= 2)
     {
         switch (env->getParam(1)->getInteger())
         {
-            case DockLeft: dock = cfw::dockLeft; break;
-            case DockTop: dock = cfw::dockTop; break;
-            case DockRight: dock = cfw::dockRight; break;
-            case DockBottom: dock = cfw::dockBottom; break;
-            case DockFloating: dock = cfw::dockFloating; break;
+            case DockLeft: dock = dockLeft; break;
+            case DockTop: dock = dockTop; break;
+            case DockRight: dock = dockRight; break;
+            case DockBottom: dock = dockBottom; break;
+            case DockFloating: dock = dockFloating; break;
         }
     }    
 
@@ -1285,9 +1285,9 @@ void HostApp::createPane(kscript::ExprEnv* env, kscript::Value* retval)
     int dock_height = (form->m_height >= 0 ? form->m_height : 0);
 
     // create the docked site
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = g_app->getMainFrame()->createSite(doc,
-                                             cfw::sitetypeDockable | dock,
+                                             sitetypeDockable | dock,
                                              form->m_x, form->m_y,
                                              dock_width, dock_height);
     g_app->getMainFrame()->getAuiManager().GetPane(form->getFormPanel()).Caption(wxT("x")).FloatingSize(dock_width, dock_height);
@@ -1325,7 +1325,7 @@ void HostApp::showPane(kscript::ExprEnv* env, kscript::Value* retval)
     if (host_doc->m_site.isNull())
         return;
         
-    cfw::IDocumentPtr doc = host_doc->m_site->getDocument();
+    IDocumentPtr doc = host_doc->m_site->getDocument();
     if (doc.isNull())
         return;
     
@@ -1667,7 +1667,7 @@ public:
     
     bool ProcessEvent(wxEvent& evt)
     {   
-        cfw::IJobPtr job;
+        IJobPtr job;
         
         if (m_flags & HostApp::ExecuteSource)
         {
@@ -1718,7 +1718,7 @@ public:
 
     wxString m_target;
     int m_flags;
-    cfw::IJobInfoPtr m_job_info;
+    IJobInfoPtr m_job_info;
     
     int m_ready;
 };
@@ -1782,7 +1782,7 @@ void HostApp::execute(kscript::ExprEnv* env, kscript::Value* retval)
         kl::Thread::sleep(wait);
     }
     
-    cfw::IJobInfoPtr job_info = r->m_job_info;
+    IJobInfoPtr job_info = r->m_job_info;
     
     delete r;
     r = NULL;
@@ -1800,7 +1800,7 @@ void HostApp::execute(kscript::ExprEnv* env, kscript::Value* retval)
             if (wait < 1000)
                 wait++;
             kl::Thread::sleep(wait);
-        } while (job_info->getState() == cfw::jobStateRunning);
+        } while (job_info->getState() == jobStateRunning);
     }
      else
     {
@@ -1960,12 +1960,12 @@ size_t HostApp::invokeJsEvent(const std::wstring& evt,
     return sink_count;
 }
 
-void HostApp::onActiveChildChanged(cfw::IDocumentSitePtr doc_site)
+void HostApp::onActiveChildChanged(IDocumentSitePtr doc_site)
 {
     // -- get the name of the child --
     if (doc_site.isOk())
     {
-        cfw::IDocumentPtr doc = doc_site->getDocument();
+        IDocumentPtr doc = doc_site->getDocument();
         if (doc.isOk())
         {
             wxString location, caption;
@@ -1997,7 +1997,7 @@ void HostApp::onActiveChildChanged(cfw::IDocumentSitePtr doc_site)
     }
 }
 
-void HostApp::onFrameEvent(cfw::Event& evt)
+void HostApp::onFrameEvent(FrameworkEvent& evt)
 {
     if (evt.name == wxT("consolepanel.command"))
     {
@@ -2013,10 +2013,10 @@ void HostApp::onFrameEvent(cfw::Event& evt)
 
     if (evt.name == wxT("cfw.locationChanged"))
     {
-        cfw::IDocumentSitePtr doc_site = m_frame->getActiveChild();
+        IDocumentSitePtr doc_site = m_frame->getActiveChild();
         if (doc_site.isOk())
         {
-            cfw::IDocumentPtr doc = doc_site->getDocument();
+            IDocumentPtr doc = doc_site->getDocument();
             if (doc.isOk())
             {
                 wxString location, caption;
@@ -2130,7 +2130,7 @@ void HostDocument::getCaption(kscript::ExprEnv* env, kscript::Value* retval)
 
 void HostDocument::getLocation(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    cfw::IDocumentPtr doc;
+    IDocumentPtr doc;
     if (m_site.isOk())
         doc = m_site->getDocument();
         
@@ -2151,7 +2151,7 @@ void HostDocument::getDOMDocument(kscript::ExprEnv* env, kscript::Value* retval)
     retval->setNull();
 
     // get the document
-    cfw::IDocumentPtr doc;
+    IDocumentPtr doc;
     if (m_site.isOk())
         doc = m_site->getDocument();
 
@@ -2199,7 +2199,7 @@ void HostDocument::getType(kscript::ExprEnv* env, kscript::Value* retval)
     retval->setNull();
 
     // get the document
-    cfw::IDocumentPtr doc;
+    IDocumentPtr doc;
     if (m_site.isOk())
         doc = m_site->getDocument();
 
@@ -2236,7 +2236,7 @@ void HostDocument::getId(kscript::ExprEnv* env, kscript::Value* retval)
 kscript::Value* HostDocument::getMember(const std::wstring& name)
 {
     // get the document
-    cfw::IDocumentPtr doc;
+    IDocumentPtr doc;
     if (m_site)
     {
         doc = m_site->getDocument();
@@ -2273,13 +2273,13 @@ HostJob::HostJob()
     m_job_info->setTitle(wxT(""));
     m_job_info->setMaxCount(100);
     
-    m_job_info->setInfoMask(cfw::jobMaskTitle |
-                        cfw::jobMaskStartTime |
-                        cfw::jobMaskFinishTime |
-                        cfw::jobMaskPercentage |
-                        cfw::jobMaskProgressString |
-                        cfw::jobMaskProgressBar |
-                        cfw::jobMaskCurrentCount);
+    m_job_info->setInfoMask(jobMaskTitle |
+                        jobMaskStartTime |
+                        jobMaskFinishTime |
+                        jobMaskPercentage |
+                        jobMaskProgressString |
+                        jobMaskProgressBar |
+                        jobMaskCurrentCount);
 }
 
 HostJob::~HostJob()
@@ -2298,7 +2298,7 @@ void HostJob::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 void HostJob::cancel(kscript::ExprEnv* env, kscript::Value* retval)
 {
     m_job_info->setFinishTime(time(NULL));
-    m_job_info->setState(cfw::jobStateCancelled);
+    m_job_info->setState(jobStateCancelled);
 }
 
 
@@ -2308,7 +2308,7 @@ void HostJob::cancel(kscript::ExprEnv* env, kscript::Value* retval)
 
 void HostJob::isCancelling(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    retval->setBoolean(m_job_info->getState() == cfw::jobStateCancelling ? true : false);
+    retval->setBoolean(m_job_info->getState() == jobStateCancelling ? true : false);
 }
 
 
@@ -2319,7 +2319,7 @@ void HostJob::isCancelling(kscript::ExprEnv* env, kscript::Value* retval)
 void HostJob::start(kscript::ExprEnv* env, kscript::Value* retval)
 {
     m_job_info->setStartTime(time(NULL));
-    g_app->getJobQueue()->addJobInfo(m_job_info, cfw::jobStateRunning);
+    g_app->getJobQueue()->addJobInfo(m_job_info, jobStateRunning);
 }
 
 
@@ -2330,7 +2330,7 @@ void HostJob::start(kscript::ExprEnv* env, kscript::Value* retval)
 void HostJob::finish(kscript::ExprEnv* env, kscript::Value* retval)
 {
     m_job_info->setFinishTime(time(NULL));
-    m_job_info->setState(cfw::jobStateFinished);
+    m_job_info->setState(jobStateFinished);
 }
 
 
@@ -2694,7 +2694,7 @@ void HostPreferences::setValue(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() < 2)
         return;
     
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
     if (prefs.isNull())
         return;
     
@@ -2744,7 +2744,7 @@ void HostPreferences::getValue(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() < 1)
         return;
     
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
     if (prefs.isNull())
         return;
         
@@ -2753,7 +2753,7 @@ void HostPreferences::getValue(kscript::ExprEnv* env, kscript::Value* retval)
     if (!prefs->exists(pref_name))
         return;
     
-    if (prefs->getType(pref_name) == cfw::AppPreference::typeLong)
+    if (prefs->getType(pref_name) == AppPreference::typeLong)
     {
         retval->setInteger(prefs->getLong(pref_name, 0));
     }
@@ -2783,7 +2783,7 @@ void HostPreferences::deleteValue(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() < 1)
         return;
     
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
     if (prefs.isNull())
         return;
         
@@ -2811,7 +2811,7 @@ void HostPreferences::exists(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() < 1)
         return;
     
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
     if (prefs.isNull())
         return;
         
@@ -2838,20 +2838,20 @@ void HostPreferences::getAll(kscript::ExprEnv* env, kscript::Value* retval)
 {
     retval->setNull();
     
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
     if (prefs.isNull())
         return;
         
     retval->setArray(env);
     
-    std::vector<cfw::AppPreference> pref_vec;
-    std::vector<cfw::AppPreference>::iterator it;
+    std::vector<AppPreference> pref_vec;
+    std::vector<AppPreference>::iterator it;
     
     prefs->getAll(pref_vec);
     
     for (it = pref_vec.begin(); it != pref_vec.end(); ++it)
     {
-        if (it->type == cfw::AppPreference::typeLong)
+        if (it->type == AppPreference::typeLong)
         {
             retval->getMember(towstr(it->pref))->setInteger(it->longval);
         }
@@ -3394,7 +3394,7 @@ void HostData::importData(kscript::ExprEnv* env, kscript::Value* retval)
         
         
 
-        cfw::IJobPtr job;
+        IJobPtr job;
         if (database_type == dbtypePackage)
         {
             ImportPkgJob* import_job = new ImportPkgJob;
@@ -3407,7 +3407,7 @@ void HostData::importData(kscript::ExprEnv* env, kscript::Value* retval)
                                             appendPath(towx(target_path), it->dest_path));
             }
             
-            job = static_cast<cfw::IJob*>(import_job);
+            job = static_cast<IJob*>(import_job);
         }
          else
         {
@@ -3436,7 +3436,7 @@ void HostData::importData(kscript::ExprEnv* env, kscript::Value* retval)
                 import_job->addImportSet(info);
             }
             
-            job = static_cast<cfw::IJob*>(import_job);
+            job = static_cast<IJob*>(import_job);
         }
         
         if (job.isNull())
@@ -3467,7 +3467,7 @@ void HostData::importData(kscript::ExprEnv* env, kscript::Value* retval)
         import_job->runPostJob();
         
         // need to make sure that the states are working before re-enabling this line 7/18/07
-        //retval->setBoolean((export_job->getJobInfo()->getState() == cfw::jobStateFinished) ? true : false);
+        //retval->setBoolean((export_job->getJobInfo()->getState() == jobStateFinished) ? true : false);
         retval->setBoolean(true);
         
                 
@@ -3590,7 +3590,7 @@ void HostData::exportData(kscript::ExprEnv* env, kscript::Value* retval)
             }
         }
         
-        cfw::IJobPtr job;
+        IJobPtr job;
         if (database_type == dbtypePackage)
         {
             ExportPkgJob* export_job = new ExportPkgJob;
@@ -3605,7 +3605,7 @@ void HostData::exportData(kscript::ExprEnv* env, kscript::Value* retval)
                                             it->compress);
             }
             
-            job = static_cast<cfw::IJob*>(export_job);
+            job = static_cast<IJob*>(export_job);
         }
          else
         {
@@ -3633,7 +3633,7 @@ void HostData::exportData(kscript::ExprEnv* env, kscript::Value* retval)
                 export_job->addExportSet(info);
             }
             
-            job = static_cast<cfw::IJob*>(export_job);
+            job = static_cast<IJob*>(export_job);
         }
         
         if (job.isNull())
@@ -3664,7 +3664,7 @@ void HostData::exportData(kscript::ExprEnv* env, kscript::Value* retval)
         //job->runPostJob(); // runPostJob() refreshes the tree, which we don't want
         
         // need to make sure that the states are working before re-enabling this line 7/18/07
-        // retval->setBoolean((export_job->getJobInfo()->getState() == cfw::jobStateFinished) ? true : false);
+        // retval->setBoolean((export_job->getJobInfo()->getState() == jobStateFinished) ? true : false);
         retval->setBoolean(true);
         
         delete export_job;
@@ -3813,10 +3813,10 @@ void HostData::copyFile(kscript::ExprEnv* env, kscript::Value* retval)
         CopyJob* job = new CopyJob;
         job->addCopyInstruction(db, set, wxT(""), wxT(""), wxT(""), db, param2);
         job->runJob();
-        cfw::IJobInfoPtr info = job->getJobInfo();
+        IJobInfoPtr info = job->getJobInfo();
         delete job;
         
-        if (info->getState() == cfw::jobStateFinished)
+        if (info->getState() == jobStateFinished)
             retval->setBoolean(true);
     }
      else
@@ -4110,11 +4110,11 @@ kscript::Value* HostAutomation::getMember(const std::wstring& name)
     {
         m_retval.setNull();
         
-        cfw::IFramePtr frame = g_app->getMainFrame();
+        IFramePtr frame = g_app->getMainFrame();
         if (frame.isNull())
             return &m_retval;
             
-        cfw::IDocumentSitePtr site = frame->getActiveChild();
+        IDocumentSitePtr site = frame->getActiveChild();
         if (site.isNull())
             return &m_retval;
         
@@ -4131,7 +4131,7 @@ kscript::Value* HostAutomation::getMember(const std::wstring& name)
 void HostAutomation::waitForRunningJobs(kscript::ExprEnv* env, kscript::Value* retval)
 {
     int wait_ms = 10;
-    cfw::IJobQueuePtr job_queue = g_app->getJobQueue();
+    IJobQueuePtr job_queue = g_app->getJobQueue();
     while (job_queue->getJobsActive())
     {
         kl::Thread::sleep(wait_ms);

@@ -35,13 +35,13 @@ RelDiagramWatcher::RelDiagramWatcher()
     g_app->getMainFrame()->sigFrameEvent().connect(this, &RelDiagramWatcher::onFrameEvent);
 }
 
-void RelDiagramWatcher::onFrameEvent(cfw::Event& evt)
+void RelDiagramWatcher::onFrameEvent(FrameworkEvent& evt)
 {
     if (evt.name == wxT("treepanel.ofsFileRenamed"))
     {
         onSetRenamed(evt.s_param, evt.s_param2);
 
-        cfw::IDocumentSitePtr site;
+        IDocumentSitePtr site;
         site = g_app->getMainFrame()->lookupSite(wxT("RelationshipsPanel"));
         if (site.isOk())
         {
@@ -51,7 +51,7 @@ void RelDiagramWatcher::onFrameEvent(cfw::Event& evt)
     }
      else if (evt.name == wxT("appmain.tableStructureModified"))
     {
-        cfw::IDocumentSitePtr site;
+        IDocumentSitePtr site;
         site = g_app->getMainFrame()->lookupSite(wxT("RelationshipsPanel"));
         if (site.isOk())
         {
@@ -61,7 +61,7 @@ void RelDiagramWatcher::onFrameEvent(cfw::Event& evt)
     }
      else if (evt.name == wxT("tabledoc.structureModified"))
     {
-        cfw::IDocumentSitePtr site;
+        IDocumentSitePtr site;
         site = g_app->getMainFrame()->lookupSite(wxT("RelationshipsPanel"));
         if (site.isOk())
         {
@@ -151,7 +151,7 @@ RelationshipPanel::~RelationshipPanel()
         // if the whole package is closing, prefs and parent pointers will
         // be null at this point.  Only save the preference panel location
         // if the user closes it while the package is not shutting down
-        cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+        IAppPreferencesPtr prefs = g_app->getAppPreferences();
         if (prefs.isNull())
             return;
         wxWindow* parent = GetParent();
@@ -178,8 +178,8 @@ RelationshipPanel::~RelationshipPanel()
 
 // -- IDocument methods --
 
-bool RelationshipPanel::initDoc(cfw::IFramePtr frame,
-                                cfw::IDocumentSitePtr site,
+bool RelationshipPanel::initDoc(IFramePtr frame,
+                                IDocumentSitePtr site,
                                 wxWindow* docsite_wnd,
                                 wxWindow* panesite_wnd)
 {
@@ -285,13 +285,13 @@ bool RelationshipPanel::onSiteClosing(bool force)
     
     if (m_diagram->getBoxCount() > 0 && lines.size() > 0)
     {
-        res = cfw::appMessageBox(_("Would you like to save your changes and activate the specified relationships?"),
+        res = appMessageBox(_("Would you like to save your changes and activate the specified relationships?"),
                                  APPLICATION_NAME,
                                  wxYES_NO | wxCANCEL | wxICON_QUESTION | wxCENTER);
     }
      else
     {
-        res = cfw::appMessageBox(_("Would you like to save the changes made to the relationships?"),
+        res = appMessageBox(_("Would you like to save the changes made to the relationships?"),
                                  APPLICATION_NAME,
                                  wxYES_NO | wxCANCEL | wxICON_QUESTION | wxCENTER);
     }
@@ -386,7 +386,7 @@ void RelationshipPanel::onLineAdded(RelationLine* line, bool* allowed)
 {
     if (checkCircular())
     {
-        cfw::appMessageBox(_("Circular relationships cannot be created."),
+        appMessageBox(_("Circular relationships cannot be created."),
                            APPLICATION_NAME,
                            wxOK | wxCENTRE | wxICON_EXCLAMATION);
 
@@ -470,7 +470,7 @@ static void addRelationships(UpdateInfo* info)
                                              towstr(it->right_expr));
     }
 
-    g_app->getMainFrame()->postEvent(new cfw::Event(wxT("appmain.relationshipsUpdated")));
+    g_app->getMainFrame()->postEvent(new FrameworkEvent(wxT("appmain.relationshipsUpdated")));
 
     // update the relationship syncing (if it was enabled)
     int synctype = g_app->getAppController()->getRelationshipSync();
@@ -478,11 +478,11 @@ static void addRelationships(UpdateInfo* info)
         g_app->getAppController()->updateTableDocRelationshipSync(synctype);        
 }
 
-static void onIndexJobFinished(cfw::IJobPtr job)
+static void onIndexJobFinished(IJobPtr job)
 {
     UpdateInfo* info = (UpdateInfo*)job->getExtraLong();
 
-    if (job->getJobInfo()->getState() == cfw::jobStateFinished)
+    if (job->getJobInfo()->getState() == jobStateFinished)
         addRelationships(info);
 
     delete info;
@@ -666,7 +666,7 @@ void RelationshipPanel::onUpdateRelationships(wxCommandEvent& evt)
             job->addInstruction(it->set, it->idx_name, it->idx_expr);
         }
 
-        g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+        g_app->getJobQueue()->addJob(job, jobStateRunning);
     }
      else
     {

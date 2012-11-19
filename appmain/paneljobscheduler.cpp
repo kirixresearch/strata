@@ -304,8 +304,8 @@ JobSchedulerPanel::~JobSchedulerPanel()
 
 }
 
-bool JobSchedulerPanel::initDoc(cfw::IFramePtr frame,
-                                cfw::IDocumentSitePtr site,
+bool JobSchedulerPanel::initDoc(IFramePtr frame,
+                                IDocumentSitePtr site,
                                 wxWindow* doc_site,
                                 wxWindow* pane_site)
 {
@@ -433,7 +433,7 @@ bool JobSchedulerPanel::initDoc(cfw::IFramePtr frame,
 
     kcl::GridDataObjectComposite* drop_data2;
     drop_data2 = new kcl::GridDataObjectComposite(NULL, wxT("jobscheduler_commandlist"));
-    drop_data2->Add(new cfw::FsDataObject);
+    drop_data2->Add(new FsDataObject);
     
     kcl::GridDataDropTarget* drop_target2 = new kcl::GridDataDropTarget(m_commandlist_grid);
     drop_target2->SetDataObject(drop_data2);
@@ -627,7 +627,7 @@ wxBoxSizer* JobSchedulerPanel::createVerticalSizer()
     m_starttime_sizer->Add(m_starttime_datectrl, 1, wxEXPAND);
     
     // measure the label widths
-    wxSize label_size = cfw::getMaxTextSize(label_start,
+    wxSize label_size = getMaxTextSize(label_start,
                                             label_finish);
     label_size.x += 5;
     m_starttime_sizer->SetItemMinSize(label_start, label_size);
@@ -744,7 +744,7 @@ void JobSchedulerPanel::populateCommandList(JobSchedulerPanelEntry& entry)
     std::vector<wxString>::iterator it;
     for (it = entry.commands.begin(); it != entry.commands.end(); ++it)
     {
-        cfw::IFsItemPtr item;
+        IFsItemPtr item;
         if (dbdoc)
             item = dbdoc->getFsItemFromPath(*it);
             
@@ -1328,7 +1328,7 @@ void JobSchedulerPanel::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
     
     
     // only accept tree data objects here
-    if (fmt.GetId().CmpNoCase(cfw::FS_DATA_OBJECT_FORMAT) != 0)
+    if (fmt.GetId().CmpNoCase(FS_DATA_OBJECT_FORMAT) != 0)
         return;
 
     // get the row number where we dropped the data
@@ -1340,8 +1340,8 @@ void JobSchedulerPanel::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
     drop_data->GetDataHere(fmt, data);
     
     // copy the data from the wxDataObjectComposite to this new
-    // cfw::FsDataObject so we can use it's accessor functions
-    cfw::FsDataObject* fs_data_obj = new cfw::FsDataObject;
+    // FsDataObject so we can use it's accessor functions
+    FsDataObject* fs_data_obj = new FsDataObject;
     fs_data_obj->SetData(fmt, len, data);
 
 
@@ -1352,7 +1352,7 @@ void JobSchedulerPanel::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
         return;
         
 
-    cfw::IFsItemEnumPtr items = fs_data_obj->getFsItems();
+    IFsItemEnumPtr items = fs_data_obj->getFsItems();
 
     std::vector<wxString>::iterator it;
     std::vector<wxString> res;
@@ -1363,11 +1363,11 @@ void JobSchedulerPanel::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
     int i, count = items->size();
     for (i = 0; i < count; ++i)
     {
-        cfw::IFsItemPtr item = items->getItem(i);
+        IFsItemPtr item = items->getItem(i);
 
         if (dbdoc->isFsItemExternal(item))
         {
-            cfw::appMessageBox(_("One or more of the items dragged from the project panel is an external object and cannot be added to the command list."),
+            appMessageBox(_("One or more of the items dragged from the project panel is an external object and cannot be added to the command list."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
 
@@ -1405,7 +1405,7 @@ void JobSchedulerPanel::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
             
         if (bad)
         {
-            cfw::appMessageBox(_("One or more of the items dragged from the project panel is not a batchable command.  Only scripts, queries and job templates can been added to a scheduled job."),
+            appMessageBox(_("One or more of the items dragged from the project panel is not a batchable command.  Only scripts, queries and job templates can been added to a scheduled job."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
@@ -1417,7 +1417,7 @@ void JobSchedulerPanel::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
     int insert_row = drop_row;
     for (i = 0; i < count; ++i)
     {
-        cfw::IFsItemPtr item = items->getItem(i);
+        IFsItemPtr item = items->getItem(i);
 
         m_commandlist_grid->insertRow(insert_row);
         if (item.isOk())
@@ -1535,14 +1535,14 @@ void JobSchedulerPanel::onOK(wxCommandEvent& evt)
     scheduler->save();
 
     // if there are any scheduled jobs, show a job icon in the statusbar
-    cfw::IStatusBarPtr statusbar = g_app->getMainFrame()->getStatusBar();
+    IStatusBarPtr statusbar = g_app->getMainFrame()->getStatusBar();
     bool show = false;
     
     /*
     // REMOVED ON 12/06/2007: Too many items being added to the statusbar;
     //                         we can add it back later, if we want
     
-    cfw::IStatusBarItemPtr job_schedule_item;
+    IStatusBarItemPtr job_schedule_item;
     job_schedule_item = statusbar->getItem(wxT("app_job_schedule"));
     if (job_schedule_item.isOk())
     {

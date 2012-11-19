@@ -70,9 +70,9 @@ private:
     void forceRedraw();
     
     // signal handlers
-    void onItemSelected(cfw::IFsItemPtr item);
-    void onItemActivated(cfw::IFsItemPtr item);
-    void onItemMiddleClicked(cfw::IFsItemPtr item);
+    void onItemSelected(IFsItemPtr item);
+    void onItemActivated(IFsItemPtr item);
+    void onItemMiddleClicked(IFsItemPtr item);
     void onPopupMouseMove(wxCoord x, wxCoord y);
     void onPopupDestructing();
     
@@ -82,7 +82,7 @@ private:
     // drag and drop signal handlers
     void onFsDataLeave();
     void onFsDataDragOver(wxDragResult& def);
-    void onFsDataDrop(wxDragResult& def, cfw::FsDataObject* data);
+    void onFsDataDrop(wxDragResult& def, FsDataObject* data);
     
 private:
 
@@ -92,7 +92,7 @@ private:
     bool m_popup_during_drag;
     int m_popup_id;
     wxString m_base_path;
-    std::vector<cfw::IFsItemPtr> m_items;
+    std::vector<IFsItemPtr> m_items;
     
     // drag and drop
     int m_exclude_id_begin;         // beginning of the range of items where data can't be dropped

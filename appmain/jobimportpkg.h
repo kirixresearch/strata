@@ -25,11 +25,11 @@ public:
 };
 
 
-class ImportPkgJob : public cfw::JobBase
+class ImportPkgJob : public JobBase
 {
     XCM_CLASS_NAME("appmain.ImportPkgJob")
     XCM_BEGIN_INTERFACE_MAP(ImportPkgJob)
-        XCM_INTERFACE_CHAIN(cfw::JobBase)
+        XCM_INTERFACE_CHAIN(JobBase)
     XCM_END_INTERFACE_MAP()
 
 public:

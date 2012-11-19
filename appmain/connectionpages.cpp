@@ -132,7 +132,7 @@ PathSelectionPage::PathSelectionPage(kcl::Wizard* parent,
     // create message
     m_default_message = _("Please enter the location of the folder to which you would like to connect.");
     m_message = new wxStaticText(this, -1, m_default_message);
-    cfw::resizeStaticText(m_message);
+    resizeStaticText(m_message);
 
     // create filetype sizer
     m_default_filetype_label = _("File Type:");
@@ -298,7 +298,7 @@ bool PathSelectionPage::onPageChanging(bool forward)
     if (m_ci->path.IsEmpty())
     {
         // the path was empty
-        cfw::appMessageBox(_("A valid location needs to be specified to continue."),
+        appMessageBox(_("A valid location needs to be specified to continue."),
                            _("Invalid Location"),
                            wxOK | wxICON_EXCLAMATION | wxCENTER,
                            g_app->getMainWindow());
@@ -321,7 +321,7 @@ bool PathSelectionPage::onPageChanging(bool forward)
          else
         {
             // we could not open the directory
-            cfw::appMessageBox(_("The specified folder does not exist or is invalid.  Please choose a valid folder to continue."),
+            appMessageBox(_("The specified folder does not exist or is invalid.  Please choose a valid folder to continue."),
                                _("Invalid Path"),
                                wxOK | wxICON_EXCLAMATION | wxCENTER,
                                g_app->getMainWindow());
@@ -575,7 +575,7 @@ void PathSelectionPage::setMessage(const wxString& message)
      else
         m_message->SetLabel(message);
     
-    cfw::resizeStaticText(m_message);
+    resizeStaticText(m_message);
     Layout();
 }
 
@@ -625,7 +625,7 @@ wxString PathSelectionPage::getPath()
 
 void PathSelectionPage::resizeLabelWidths()
 {
-    wxSize label_size = cfw::getMaxTextSize(
+    wxSize label_size = getMaxTextSize(
                 m_path_label->IsShown()     ? m_path_label     : NULL,
                 m_filetype_label->IsShown() ? m_filetype_label : NULL,
                 m_filter_label->IsShown()   ? m_filter_label   : NULL,
@@ -709,7 +709,7 @@ DataSourceSelectionPage::DataSourceSelectionPage(kcl::Wizard* parent,
     // create message
     m_default_message = _("Please select the ODBC data source to which you would like to connect.");
     m_message = new wxStaticText(this, -1, m_default_message);
-    cfw::resizeStaticText(m_message);
+    resizeStaticText(m_message);
 
     // create grid
     m_grid = new kcl::Grid;
@@ -897,7 +897,7 @@ void DataSourceSelectionPage::setMessage(const wxString& message)
      else
         m_message->SetLabel(message);
     
-    cfw::resizeStaticText(m_message);
+    resizeStaticText(m_message);
     Layout();
 }
 
@@ -930,7 +930,7 @@ ServerPropertiesPage::ServerPropertiesPage(kcl::Wizard* parent,
     // create message
     m_default_message = _("Please enter the connection settings for the database to which you would like to connect.");
     m_message = new wxStaticText(this, -1, m_default_message);
-    cfw::resizeStaticText(m_message);
+    resizeStaticText(m_message);
 
     // create the server sizer
     wxStaticText* label_server = new wxStaticText(this,
@@ -1029,7 +1029,7 @@ ServerPropertiesPage::ServerPropertiesPage(kcl::Wizard* parent,
     m_password_sizer->Add(50,23);
 
     // measure the label widths
-    wxSize label_size = cfw::getMaxTextSize(label_server,
+    wxSize label_size = getMaxTextSize(label_server,
                                             label_database,
                                             label_username,
                                             label_password,
@@ -1200,7 +1200,7 @@ bool ServerPropertiesPage::onPageChanging(bool forward)
                 }
                 
                           
-                cfw::appMessageBox(error_message,
+                appMessageBox(error_message,
                                    _("Error"),
                                    wxOK | wxICON_EXCLAMATION | wxCENTER,
                                    g_app->getMainWindow());
@@ -1234,7 +1234,7 @@ void ServerPropertiesPage::setMessage(const wxString& message)
      else
         m_message->SetLabel(message);
     
-    cfw::resizeStaticText(m_message);
+    resizeStaticText(m_message);
     Layout();
 }
 
@@ -1309,7 +1309,7 @@ SavePage::SavePage(kcl::Wizard* parent,
     // create message (to be filled out later -- this page is just a template)
     m_message = new wxStaticText(this, -1,
                                  _("<Enter page message here>"));
-    cfw::resizeStaticText(m_message);
+    resizeStaticText(m_message);
 
     // create the save button sizer
     m_save_button = new wxButton(this,
@@ -1337,7 +1337,7 @@ SavePage::SavePage(kcl::Wizard* parent,
 void SavePage::setMessage(const wxString& message)
 {
     m_message->SetLabel(message);
-    cfw::resizeStaticText(m_message);
+    resizeStaticText(m_message);
     Layout();
 }
 

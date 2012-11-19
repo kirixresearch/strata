@@ -72,8 +72,8 @@ public:
 
     bool init();
 
-    cfw::IDocumentSitePtr getColumnListPanelSite();
-    cfw::IDocumentSitePtr getMarkManagerPanelSite();
+    IDocumentSitePtr getColumnListPanelSite();
+    IDocumentSitePtr getMarkManagerPanelSite();
     ScriptCommandEventRouter* getScriptCommandRouter();
     StandardToolbar* getStandardToolbar();
     FormatToolbar* getFormatToolbar();
@@ -87,7 +87,7 @@ public:
     void updateTitle();
     void updateURLToolbar();
     void updateQuickFilterToolBarItem();
-    void updateViewMenu(cfw::IDocumentSitePtr doc_site);
+    void updateViewMenu(IDocumentSitePtr doc_site);
     
     // -- open commands --
     bool openAny(const wxString& location,
@@ -118,14 +118,14 @@ public:
     bool newScript(int* site_id = NULL);
     
     // -- execute commands --
-    cfw::IJobPtr executeScript(const wxString& location,
+    IJobPtr executeScript(const wxString& location,
                                ScriptHostParams* params = NULL,
                                AppScriptError* error = NULL,
                                bool async = true);
-    cfw::IJobPtr executeCode(const wxString& source_code,
+    IJobPtr executeCode(const wxString& source_code,
                              ScriptHostParams* params = NULL,
                              AppScriptError* error = NULL);
-    cfw::IJobPtr execute(const wxString& location);
+    IJobPtr execute(const wxString& location);
 
     // -- print commands --
     bool print(const wxString& location);
@@ -195,7 +195,7 @@ public:
     void onCustomColorsRequested(std::vector<wxColor>& colors);
     void onCustomColorsChanged(std::vector<wxColor> colors);
 
-    void onOpenDataViewFinished(cfw::IJobPtr query_job);
+    void onOpenDataViewFinished(IJobPtr query_job);
 
 private:
 
@@ -314,11 +314,11 @@ private:
     void onFrameSize(wxSizeEvent& evt);
     void onFrameDestroy();
     void onFrameBarRightClick();
-    void onFrameEvent(cfw::Event& evt);
-    void onActiveChildChanged(cfw::IDocumentSitePtr doc_site);
-    void onFrameChildContextMenu(cfw::IDocumentSitePtr doc_site);
-    void onStatusBarItemLeftClick(cfw::IStatusBarItemPtr item);
-    void onStatusBarItemLeftDblClick(cfw::IStatusBarItemPtr item);
+    void onFrameEvent(FrameworkEvent& evt);
+    void onActiveChildChanged(IDocumentSitePtr doc_site);
+    void onFrameChildContextMenu(IDocumentSitePtr doc_site);
+    void onStatusBarItemLeftClick(IStatusBarItemPtr item);
+    void onStatusBarItemLeftDblClick(IStatusBarItemPtr item);
     void onStatusBarRefresh();
     
     bool checkForRunningJobs(bool exit_message = false);
@@ -327,13 +327,13 @@ private:
 
 private:
 
-    cfw::IFramePtr m_frame;
-    cfw::IDocumentSitePtr m_columnlistpanel_site;
-    cfw::IDocumentSitePtr m_markmanagerpanel_site;
+    IFramePtr m_frame;
+    IDocumentSitePtr m_columnlistpanel_site;
+    IDocumentSitePtr m_markmanagerpanel_site;
     
-    cfw::IStatusBarItemPtr m_doc_text_item;
-    cfw::IStatusBarItemPtr m_job_text_item;
-    cfw::IStatusBarItemPtr m_job_separator_item;
+    IStatusBarItemPtr m_doc_text_item;
+    IStatusBarItemPtr m_job_text_item;
+    IStatusBarItemPtr m_job_separator_item;
     
     DbDoc* m_dbdoc;
     StandardToolbar* m_project_toolbar;

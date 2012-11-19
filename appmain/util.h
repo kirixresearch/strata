@@ -20,10 +20,6 @@
 class wxTreeCtrl;
 
 
-namespace cfw
-{
-
-
 
 class CommandCapture : public wxEvtHandler
 {
@@ -218,9 +214,6 @@ wxString simpleDecryptString(const wxString& s);
 
 void suppressConsoleLogging();
 wxString getProxyServer();
-
-
-};   // namespace cfw
 
 
 

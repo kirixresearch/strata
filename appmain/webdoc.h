@@ -67,7 +67,7 @@ public:
         m_bitmaps[11] = GETBMP(kx_progress12_16);
     }
     
-    void setDocSite(cfw::IDocumentSitePtr doc_site)
+    void setDocSite(IDocumentSitePtr doc_site)
     {
         m_doc_site = doc_site;
     }
@@ -129,7 +129,7 @@ private:
     
 private:
 
-    cfw::IDocumentSitePtr m_doc_site;
+    IDocumentSitePtr m_doc_site;
     wxBitmap m_bitmaps[12];
     wxBitmap m_orig_bitmap;
     wxBitmap m_finish_bitmap;
@@ -150,16 +150,16 @@ private:
 class WebDoc : public wxWindow,
                public IWebDoc,
                public IFindTarget,
-               public cfw::IDocument,
-               public cfw::StatusBarProviderBase,
+               public IDocument,
+               public StatusBarProviderBase,
                public xcm::signal_sink
 {
     XCM_CLASS_NAME_NOREFCOUNT("appmain.WebDoc")
     XCM_BEGIN_INTERFACE_MAP(WebDoc)
-        XCM_INTERFACE_ENTRY(cfw::IDocument)
+        XCM_INTERFACE_ENTRY(IDocument)
         XCM_INTERFACE_ENTRY(IWebDoc)
         XCM_INTERFACE_ENTRY(IFindTarget)
-        XCM_INTERFACE_CHAIN(cfw::StatusBarProviderBase)
+        XCM_INTERFACE_CHAIN(StatusBarProviderBase)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -190,13 +190,13 @@ public:
     
     static bool downloadFile(const wxString& url,
                              const wxString& filename,
-                             cfw::IJobInfoPtr job_info);
+                             IJobInfoPtr job_info);
     
 private:
 
     // -- IDocument --
-    bool initDoc(cfw::IFramePtr frame,
-                 cfw::IDocumentSitePtr doc_site,
+    bool initDoc(IFramePtr frame,
+                 IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,
                  wxWindow* panesite_wnd);
     
@@ -273,17 +273,17 @@ private:
     void onWebViewTitleChanged(wxWebViewEvent& evt);
     void onWebViewNavigating(wxWebViewEvent& evt);
 
-    void onFrameEvent(cfw::Event& evt);
+    void onFrameEvent(FrameworkEvent& evt);
 
 private:
 
-    cfw::IDocumentSitePtr m_doc_site;
+    IDocumentSitePtr m_doc_site;
     wxWindow* m_web;
     wxWebControl* m_webcontrol;
     wxWebView* m_webview;
     wxStatusBar* m_status_bar;
     int m_site_id;
-    cfw::IFramePtr m_frame;
+    IFramePtr m_frame;
     wxString m_url;
     wxString m_title;
     ProgressBitmapUpdater m_bitmap_updater;

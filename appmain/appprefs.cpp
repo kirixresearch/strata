@@ -51,12 +51,12 @@ wxFont getDefaultWindowsFont()
 void initDefaultPreferences()
 {
     // we don't have a default preferences object, bail out
-    cfw::IAppPreferencesPtr prefs = g_app->getAppDefaultPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppDefaultPreferences();
     if (prefs.isNull())
         return;
     
     // default preferences have already been added, bail out
-    std::vector<cfw::AppPreference> pref_vec;
+    std::vector<AppPreference> pref_vec;
     prefs->getAll(pref_vec);
     if (pref_vec.size() > 0)
         return;
@@ -233,7 +233,7 @@ long getAppPrefsLong(const wxString& pref_name)
 
 void getAppPrefsCustomColors(std::vector<wxColor>& custom_colors)
 {
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
     wxString pref_name = wxT("colorpanel.custom_color0");
 
     custom_colors.clear();
@@ -246,7 +246,7 @@ void getAppPrefsCustomColors(std::vector<wxColor>& custom_colors)
 
 void setAppPrefsCustomColors(std::vector<wxColor> custom_colors)
 {
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
     wxString pref_name;
     int i = 0;
 
@@ -269,21 +269,21 @@ void setAppPrefsCustomColors(std::vector<wxColor> custom_colors)
 
 void getAppPrefsFindMatchCase(bool* match_case)
 {
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
     wxString pref_name = wxT("find.match_case");
     *match_case = prefs->getBoolean(pref_name, false);
 }
 
 void getAppPrefsFindMatchWholeWord(bool* whole_word)
 {
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
     wxString pref_name = wxT("find.whole_cells");
     *whole_word = prefs->getBoolean(pref_name, false);
 }
 
 void getAppPrefsFindInAllOpenDocuments(bool* all_open_documents)
 {
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
     wxString pref_name = wxT("find.all_open_documents");
     *all_open_documents = prefs->getBoolean(pref_name, false);
 }

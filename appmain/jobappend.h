@@ -34,7 +34,7 @@ class AppendJob : public TangoJobBase,
     XCM_CLASS_NAME("appmain.AppendJob")
     XCM_BEGIN_INTERFACE_MAP(AppendJob)
         XCM_INTERFACE_ENTRY(IAppendJob)
-        XCM_INTERFACE_CHAIN(cfw::JobBase)
+        XCM_INTERFACE_CHAIN(JobBase)
     XCM_END_INTERFACE_MAP()
 
 public:

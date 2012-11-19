@@ -350,7 +350,7 @@ protected:
 
 private:
 
-    void onQueryJobFinished(cfw::IJobPtr job);
+    void onQueryJobFinished(IJobPtr job);
 
 private:
 
@@ -380,7 +380,7 @@ private:
     wxString m_group_label;
     int m_rowpos;
     
-    cfw::IJobPtr m_job;
+    IJobPtr m_job;
 };
 
 

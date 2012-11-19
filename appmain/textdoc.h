@@ -43,18 +43,18 @@ XCM_DECLARE_SMARTPTR(ITextDoc)
 
 
 class TextDoc : public wxWindow,
-                public cfw::IDocument,
-                public cfw::StatusBarProviderBase,
+                public IDocument,
+                public StatusBarProviderBase,
                 public ITextDoc,
                 public IColumnListTarget,
                 public xcm::signal_sink
 {
     XCM_CLASS_NAME_NOREFCOUNT("appmain.TextDoc")
     XCM_BEGIN_INTERFACE_MAP(TextDoc)
-        XCM_INTERFACE_ENTRY(cfw::IDocument)
+        XCM_INTERFACE_ENTRY(IDocument)
         XCM_INTERFACE_ENTRY(ITextDoc)
         XCM_INTERFACE_ENTRY(IColumnListTarget)
-        XCM_INTERFACE_CHAIN(cfw::StatusBarProviderBase)
+        XCM_INTERFACE_CHAIN(StatusBarProviderBase)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -77,8 +77,8 @@ public:
     virtual ~TextDoc();
 
     // -- IDocument --
-    bool initDoc(cfw::IFramePtr frame,
-                 cfw::IDocumentSitePtr doc_site,
+    bool initDoc(IFramePtr frame,
+                 IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,
                  wxWindow* panesite_wnd);
     wxWindow* getDocumentWindow();
@@ -172,8 +172,8 @@ private:
     
 private:
 
-    cfw::IFramePtr m_frame;             // ptr to the application frame
-    cfw::IDocumentSitePtr m_doc_site;   // ptr to our document site
+    IFramePtr m_frame;             // ptr to the application frame
+    IDocumentSitePtr m_doc_site;   // ptr to our document site
 
     wxBoxSizer* m_main_sizer;
     wxBoxSizer* m_main_settings_sizer;

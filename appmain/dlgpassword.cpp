@@ -37,8 +37,8 @@ DlgPassword::~DlgPassword()
 
 }
 
-bool DlgPassword::initDoc(cfw::IFramePtr frame,
-                          cfw::IDocumentSitePtr doc_site,
+bool DlgPassword::initDoc(IFramePtr frame,
+                          IDocumentSitePtr doc_site,
                           wxWindow* docsite_wnd,
                           wxWindow* panesite_wnd)
 {
@@ -58,7 +58,7 @@ bool DlgPassword::initDoc(cfw::IFramePtr frame,
 
 
     wxStaticText* label_message = new wxStaticText(this, -1, m_message);
-    cfw::resizeStaticText(label_message);
+    resizeStaticText(label_message);
     
     
     // -- create the username sizer --
@@ -108,7 +108,7 @@ bool DlgPassword::initDoc(cfw::IFramePtr frame,
     
     
     // -- code to allow us to line up the static text elements --
-    wxSize max_size = cfw::getMaxTextSize(label_username,
+    wxSize max_size = getMaxTextSize(label_username,
                                           label_password);
     max_size.x += 20;
     username_sizer->SetItemMinSize(label_username, max_size);

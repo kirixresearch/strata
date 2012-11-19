@@ -69,7 +69,7 @@ class CopyJob : public TangoJobBase,
     XCM_CLASS_NAME("appmain.CopyJob")
     XCM_BEGIN_INTERFACE_MAP(CopyJob)
         XCM_INTERFACE_ENTRY(ICopyJob)
-        XCM_INTERFACE_CHAIN(cfw::JobBase)
+        XCM_INTERFACE_CHAIN(JobBase)
     XCM_END_INTERFACE_MAP()
 
 public:

@@ -213,8 +213,8 @@ ConnectionWizard::~ConnectionWizard()
 
 }
 
-bool ConnectionWizard::initDoc(cfw::IFramePtr frame,
-                               cfw::IDocumentSitePtr doc_site,
+bool ConnectionWizard::initDoc(IFramePtr frame,
+                               IDocumentSitePtr doc_site,
                                wxWindow* docsite_wnd,
                                wxWindow* panesite_wnd)
 {

@@ -17,12 +17,12 @@ class FieldListControl;
 
 
 class GroupPanel :  public wxPanel,
-                    public cfw::IDocument,
+                    public IDocument,
                     public xcm::signal_sink
 {
     XCM_CLASS_NAME_NOREFCOUNT("appmain.GroupPanel")
     XCM_BEGIN_INTERFACE_MAP(GroupPanel)
-        XCM_INTERFACE_ENTRY(cfw::IDocument)
+        XCM_INTERFACE_ENTRY(IDocument)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -31,8 +31,8 @@ public:
     ~GroupPanel();
 
     // -- IDocument --
-    bool initDoc(cfw::IFramePtr frame,
-                 cfw::IDocumentSitePtr site,
+    bool initDoc(IFramePtr frame,
+                 IDocumentSitePtr site,
                  wxWindow* doc_site,
                  wxWindow* pane_site);
 
@@ -74,7 +74,7 @@ private:
 
 private:
 
-    cfw::IDocumentSitePtr m_doc_site;
+    IDocumentSitePtr m_doc_site;
     tango::IStructurePtr m_structure;
     tango::ISetPtr m_set;
 

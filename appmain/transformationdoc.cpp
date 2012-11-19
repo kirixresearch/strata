@@ -239,7 +239,7 @@ static std::vector<RowErrorChecker> getRowErrorCheckerVector(
     return vec;
 }
 
-tango::IStructurePtr getTextSourceStructure(cfw::IDocumentSitePtr doc_site)
+tango::IStructurePtr getTextSourceStructure(IDocumentSitePtr doc_site)
 {
     tango::IStructurePtr source_struct;
     
@@ -381,8 +381,8 @@ inline void resizeAllGridColumnsToFitDoc(kcl::Grid* grid)
     grid->refresh(kcl::Grid::refreshAll);
 }
 
-bool TransformationDoc::initDoc(cfw::IFramePtr frame,
-                                cfw::IDocumentSitePtr doc_site,
+bool TransformationDoc::initDoc(IFramePtr frame,
+                                IDocumentSitePtr doc_site,
                                 wxWindow* docsite_wnd,
                                 wxWindow* panesite_wnd)
 {
@@ -496,7 +496,7 @@ bool TransformationDoc::initDoc(cfw::IFramePtr frame,
     m_grid->sigDeletedRows.connect(this, &TransformationDoc::onDeletedRows);
 
     // create the statusbar items for this document
-    cfw::IStatusBarItemPtr item;
+    IStatusBarItemPtr item;
 
     item = addStatusBarItem(wxT("transformationdoc_field_count"));
     item->setWidth(120);
@@ -509,7 +509,7 @@ bool TransformationDoc::initDoc(cfw::IFramePtr frame,
 
 wxString TransformationDoc::getDocumentLocation()
 {
-    cfw::IDocumentPtr textdoc = lookupOtherDocument(m_doc_site, "appmain.TextDoc");
+    IDocumentPtr textdoc = lookupOtherDocument(m_doc_site, "appmain.TextDoc");
     if (textdoc)
         return textdoc->getDocumentLocation();
 
@@ -530,7 +530,7 @@ bool TransformationDoc::onSiteClosing(bool force)
 
     if (m_dirty)
     {
-        int result = cfw::appMessageBox(_("Would you like to save the changes made to the table's structure?"),
+        int result = appMessageBox(_("Would you like to save the changes made to the table's structure?"),
                                         APPLICATION_NAME,
                                         wxYES_NO | wxCANCEL | wxICON_QUESTION | wxCENTER);
 
@@ -847,7 +847,7 @@ void TransformationDoc::insertRowFromColumnInfo(int row,
     f->input_width = colinfo->getWidth();
     f->input_scale = colinfo->getScale();
     f->input_offset = colinfo->getOffset();
-    f->output_name = cfw::makeProper(towx(colinfo->getName()));
+    f->output_name = makeProper(towx(colinfo->getName()));
     f->output_type = colinfo->getType();
     f->output_width = colinfo->getWidth();
     f->output_scale = colinfo->getScale();
@@ -1107,7 +1107,7 @@ void TransformationDoc::updateStatusBar()
     wxString field_count_str = wxString::Format(_("Field Count: %d"), row_count);
     wxString row_width_str = wxString::Format(_("Record Width: %d"), total_width);
     
-    cfw::IStatusBarItemPtr item;
+    IStatusBarItemPtr item;
     item = m_frame->getStatusBar()->getItem(wxT("transformationdoc_field_count"));
     if (item.isOk())
         item->setValue(field_count_str);
@@ -1491,14 +1491,14 @@ void TransformationDoc::onDeletedRows(std::vector<int> rows)
     updateStatusBar();
 }
 
-void TransformationDoc::onFrameEvent(cfw::Event& evt)
+void TransformationDoc::onFrameEvent(Event& evt)
 {
     if (evt.name == wxT("appmain.view_switcher.active_view_changing"))
     {
         int id = (int)(evt.l_param);
         
         // -- make sure we are in the active container --
-        cfw::IDocumentSitePtr active_site;
+        IDocumentSitePtr active_site;
         active_site = g_app->getMainFrame()->getActiveChild();
         if (active_site.isNull() || m_doc_site.isNull())
             return;
@@ -1508,7 +1508,7 @@ void TransformationDoc::onFrameEvent(cfw::Event& evt)
         if (id == ID_View_SwitchToLayoutView)
         {
             // if we are on transformation doc, we might need to prompt for saving
-            cfw::IDocumentSitePtr tabledoc_site;
+            IDocumentSitePtr tabledoc_site;
 
             tabledoc_site = lookupOtherDocumentSite(m_doc_site, "appmain.TableDoc");
             active_site = g_app->getMainFrame()->getActiveChild();
@@ -1517,7 +1517,7 @@ void TransformationDoc::onFrameEvent(cfw::Event& evt)
             {
                 if (m_dirty)
                 {
-                    int result = cfw::appMessageBox(_("Would you like to save the changes made to the table's structure?"),
+                    int result = appMessageBox(_("Would you like to save the changes made to the table's structure?"),
                                                     APPLICATION_NAME,
                                                     wxYES_NO | wxCANCEL | wxICON_QUESTION | wxCENTER);
                     if (result == wxCANCEL)
@@ -1563,9 +1563,9 @@ void TransformationDoc::onFrameEvent(cfw::Event& evt)
                         //doc->setCaption(m_path, wxEmptyString);
                     }
                     
-                    unsigned int site_type = cfw::sitetypeNormal;
+                    unsigned int site_type = sitetypeNormal;
 
-                    cfw::IDocumentSitePtr doc_site;
+                    IDocumentSitePtr doc_site;
                     doc_site = g_app->getMainFrame()->createSite(
                                                   m_doc_site->getContainerWindow(),
                                                   doc,
@@ -1715,7 +1715,7 @@ bool TransformationDoc::doSave()
     #ifdef _DEBUG
     if (textdoc.isNull())
     {
-        cfw::appMessageBox(wxT("Debug Message from Ben: The bug that happens while closing text doc has occurred. Set your breakpoint."));
+        appMessageBox(wxT("Debug Message from Ben: The bug that happens while closing text doc has occurred. Set your breakpoint."));
     }
     #else
     if (textdoc.isNull())
@@ -2219,7 +2219,7 @@ void TransformationDoc::onGridCellRightClick(kcl::GridEvent& evt)
 
     wxPoint pt_mouse = ::wxGetMousePosition();
     pt_mouse = ScreenToClient(pt_mouse);
-    cfw::CommandCapture* cc = new cfw::CommandCapture;
+    CommandCapture* cc = new CommandCapture;
     PushEventHandler(cc);
     PopupMenu(&menuPopup, pt_mouse);
     int command = cc->getLastCommandId();

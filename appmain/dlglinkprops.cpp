@@ -202,7 +202,7 @@ int LinkPropsDialog::ShowModal()
         m_mode == LinkPropsDialog::ModeEdit)
     {
         // measure the label widths
-        wxSize label_size = cfw::getMaxTextSize(label_name,
+        wxSize label_size = getMaxTextSize(label_name,
                                                 label_location,
                                                 label_tags,
                                                 label_description);
@@ -217,7 +217,7 @@ int LinkPropsDialog::ShowModal()
      else if (m_mode == LinkPropsDialog::ModeEditNoDesc)
     {
         // measure the label widths
-        wxSize label_size = cfw::getMaxTextSize(label_name,
+        wxSize label_size = getMaxTextSize(label_name,
                                                 label_location,
                                                 label_tags);
         label_size.x += 10;
@@ -230,7 +230,7 @@ int LinkPropsDialog::ShowModal()
      else if (m_mode == LinkPropsDialog::ModeCreateSmall)
     {
         // measure the label widths
-        wxSize label_size = cfw::getMaxTextSize(label_create,
+        wxSize label_size = getMaxTextSize(label_create,
                                                 label_name);
         label_size.x += 10;
         

@@ -130,8 +130,8 @@ SplitPanel::~SplitPanel()
 
 // -- IDocument --
 
-bool SplitPanel::initDoc(cfw::IFramePtr frame,
-                         cfw::IDocumentSitePtr doc_site,
+bool SplitPanel::initDoc(IFramePtr frame,
+                         IDocumentSitePtr doc_site,
                          wxWindow* docsite_wnd,
                          wxWindow* panesite_wnd)
 {
@@ -254,7 +254,7 @@ bool SplitPanel::initDoc(cfw::IFramePtr frame,
     ok_cancel_sizer->SetMinSize(min_size);
     
     // resize labels to same width
-    wxSize max_size = cfw::getMaxTextSize(label_splitby, label_prefix,
+    wxSize max_size = getMaxTextSize(label_splitby, label_prefix,
                                           label_sourcetable, label_tablecount,
                                           label_rowcount, label_tablesize,
                                           label_expression);
@@ -268,7 +268,7 @@ bool SplitPanel::initDoc(cfw::IFramePtr frame,
     m_tablesize_sizer->SetItemMinSize(label_tablesize, max_size);
     m_expression_sizer->SetItemMinSize(label_expression, max_size);
 
-    max_size = cfw::getMaxTextSize(label_tables, label_records, label_mb);
+    max_size = getMaxTextSize(label_tables, label_records, label_mb);
     m_rowcount_sizer->SetItemMinSize(label_records, max_size);
     m_tablecount_sizer->SetItemMinSize(label_tables, max_size);
     m_tablesize_sizer->SetItemMinSize(label_mb, max_size);
@@ -304,7 +304,7 @@ bool SplitPanel::initDoc(cfw::IFramePtr frame,
     SetSizer(m_main_sizer);
     
     // -- connect signals --
-    cfw::FsDataDropTarget* sourcetable_droptarget = new cfw::FsDataDropTarget;
+    FsDataDropTarget* sourcetable_droptarget = new FsDataDropTarget;
     sourcetable_droptarget->sigDragDrop.connect(this, &SplitPanel::onSourceTableDropped);
     m_sourcetable_textctrl->SetDropTarget(sourcetable_droptarget);
 
@@ -361,7 +361,7 @@ void SplitPanel::onOK(wxCommandEvent& event)
 {
     if (m_set.isNull())
     {
-        cfw::appMessageBox(_("The source table specified is invalid.  Please specify a valid table to continue."),
+        appMessageBox(_("The source table specified is invalid.  Please specify a valid table to continue."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
         return;
@@ -398,7 +398,7 @@ void SplitPanel::onOK(wxCommandEvent& event)
     
     SplitJob* split_job = new SplitJob;
     split_job->setInstructions(si);
-    g_app->getJobQueue()->addJob(split_job, cfw::jobStateRunning);
+    g_app->getJobQueue()->addJob(split_job, jobStateRunning);
 
     m_frame->closeSite(m_doc_site);
 }
@@ -792,26 +792,26 @@ void SplitPanel::onTableSizeTextChanged(wxCommandEvent& event)
     m_ok_button->Enable(valid ? true : false);
 }
 
-void SplitPanel::onSourceTableDropped(wxDragResult& drag_result, cfw::FsDataObject* data)
+void SplitPanel::onSourceTableDropped(wxDragResult& drag_result, FsDataObject* data)
 {
-    cfw::IFsItemEnumPtr items = data->getFsItems();
+    IFsItemEnumPtr items = data->getFsItems();
     std::vector<wxString> res;
     DbDoc::getFsItemPaths(items, res, true);
 
     if (res.size() > 1)
     {
-        cfw::appMessageBox(_("You have selected either a folder or more than one table.  Please select only one table."),
+        appMessageBox(_("You have selected either a folder or more than one table.  Please select only one table."),
                            APPLICATION_NAME,
                            wxOK | wxICON_INFORMATION | wxCENTER);
         return;
     }
 
     DbDoc* dbdoc = g_app->getDbDoc();
-    cfw::IFsItemPtr item = items->getItem(0);
+    IFsItemPtr item = items->getItem(0);
 
     if (dbdoc->isFsItemExternal(item))
     {
-            cfw::appMessageBox(_("One or more of the items dragged from the project panel is an external table and cannot be specified as the source table."),
+            appMessageBox(_("One or more of the items dragged from the project panel is an external table and cannot be specified as the source table."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
 

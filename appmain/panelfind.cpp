@@ -103,8 +103,8 @@ FindPanel::~FindPanel()
 }
 
 // -- IDocument --
-bool FindPanel::initDoc(cfw::IFramePtr frame,
-                        cfw::IDocumentSitePtr site,
+bool FindPanel::initDoc(IFramePtr frame,
+                        IDocumentSitePtr site,
                         wxWindow* docsite_wnd,
                         wxWindow* panesite_wnd)
 {
@@ -354,21 +354,21 @@ void FindPanel::setMode(int mode, bool layout)
         wxSize label_size;
         if (m_mode == ModeFindReplace)
         {
-            label_size = cfw::getMaxTextSize(m_find_mode_label, m_find_label, m_replace_label);
+            label_size = getMaxTextSize(m_find_mode_label, m_find_label, m_replace_label);
             m_find_mode_sizer->SetItemMinSize(m_find_mode_label, label_size);
             m_find_sizer->SetItemMinSize(m_find_label, label_size);
             m_replace_sizer->SetItemMinSize(m_replace_label, label_size);
         }
          else if (m_mode == ModeFindInFiles)
         {
-            label_size = cfw::getMaxTextSize(m_find_mode_label, m_find_label, m_find_in_label);
+            label_size = getMaxTextSize(m_find_mode_label, m_find_label, m_find_in_label);
             m_find_mode_sizer->SetItemMinSize(m_find_mode_label, label_size);
             m_find_sizer->SetItemMinSize(m_find_label, label_size);
             m_find_in_sizer->SetItemMinSize(m_find_in_label, label_size);
         }
          else
         {
-            label_size = cfw::getMaxTextSize(m_find_mode_label, m_find_label);
+            label_size = getMaxTextSize(m_find_mode_label, m_find_label);
             m_find_mode_sizer->SetItemMinSize(m_find_mode_label, label_size);
             m_find_sizer->SetItemMinSize(m_find_label, label_size);
         }
@@ -530,7 +530,7 @@ bool FindPanel::onSiteClosing(bool force)
     return false;
 }
 
-void FindPanel::onFrameEvent(cfw::Event& evt)
+void FindPanel::onFrameEvent(FrameworkEvent& evt)
 {
     if (evt.name == wxT("appmain.addFindComboItem"))
     {
@@ -578,7 +578,7 @@ void FindPanel::addReplaceComboItem()
 
 void FindPanel::savePrefs()
 {
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
 
     prefs->setBoolean(wxT("find.match_case"), m_matchcase_checkbox->IsChecked());
     prefs->setBoolean(wxT("find.whole_cells"), m_wholecell_checkbox->IsChecked());
@@ -649,7 +649,7 @@ void FindPanel::onComboTabPressed(wxKeyEvent& evt)
         // the m_doc_site member variable as we're not connecting the
         // events to a specific instance of the FindPanel -- since this
         // is the case, m_doc_site is always NULL here
-        cfw::IDocumentSitePtr site;
+        IDocumentSitePtr site;
         site = g_app->getMainFrame()->lookupSite(wxT("FindPanel"));
         if (site.isOk())
             site->setVisible(false);
@@ -704,7 +704,7 @@ void FindPanel::onFindPrevNext(wxCommandEvent& evt)
     wxString find_val = m_find_combo->GetValue();
     
     // fire an event to add this string to the find combobox dropdowns
-    cfw::Event* cfw_evt = new cfw::Event(wxT("appmain.addFindComboItem"));
+    FrameworkEvent* cfw_evt = new FrameworkEvent(wxT("appmain.addFindComboItem"));
     cfw_evt->s_param = find_val;
     g_app->getMainFrame()->postEvent(cfw_evt);
 
@@ -721,7 +721,7 @@ void FindPanel::onFindPrevNext(wxCommandEvent& evt)
     // actually using this panel to do the finding
     savePrefs();
 
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = g_app->getMainFrame()->getActiveChild();
     if (site.isNull())
         return;
@@ -739,7 +739,7 @@ void FindPanel::onFindPrevNext(wxCommandEvent& evt)
 void FindPanel::onFindAll(wxCommandEvent& evt)
 {
     // clear console
-    cfw::IDocumentSitePtr site = g_app->getMainFrame()->lookupSite(wxT("ConsolePanel"));
+    IDocumentSitePtr site = g_app->getMainFrame()->lookupSite(wxT("ConsolePanel"));
     if (site.isOk())
     {
         IConsolePanelPtr console = site->getDocument();
@@ -752,7 +752,7 @@ void FindPanel::onFindAll(wxCommandEvent& evt)
     
     if (find_in.Length() == 0)
     {
-        cfw::appMessageBox(_("Please enter a search location."),
+        appMessageBox(_("Please enter a search location."),
                            APPLICATION_NAME,
                            wxOK | wxICON_INFORMATION | wxCENTER);
         return;
@@ -778,7 +778,7 @@ void FindPanel::onFindAll(wxCommandEvent& evt)
                          m_wholecell_checkbox->IsChecked(),
                          vec);
     
-    g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
     
     site = g_app->getMainFrame()->lookupSite(wxT("FindPanel"));
     if (site)
@@ -795,11 +795,11 @@ void FindPanel::onReplace(wxCommandEvent& evt)
     wxString replace_val = m_replace_combo->GetValue();
     
     // fire an event to add this string to the find combobox dropdowns
-    cfw::Event* cfw_evt = new cfw::Event(wxT("appmain.addFindComboItem"));
+    FrameworkEvent* cfw_evt = new FrameworkEvent(wxT("appmain.addFindComboItem"));
     cfw_evt->s_param = find_val;
     g_app->getMainFrame()->postEvent(cfw_evt);
     
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = g_app->getMainFrame()->getActiveChild();
     if (site.isNull())
         return;
@@ -824,11 +824,11 @@ void FindPanel::onReplaceAll(wxCommandEvent& evt)
     wxString replace_val = m_replace_combo->GetValue();
     
     // fire an event to add this string to the find combobox dropdowns
-    cfw::Event* cfw_evt = new cfw::Event(wxT("appmain.addFindComboItem"));
+    FrameworkEvent* cfw_evt = new FrameworkEvent(wxT("appmain.addFindComboItem"));
     cfw_evt->s_param = find_val;
     g_app->getMainFrame()->postEvent(cfw_evt);
     
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = g_app->getMainFrame()->getActiveChild();
     if (site.isNull())
         return;
@@ -851,7 +851,7 @@ void FindPanel::onKeyDown(wxKeyEvent& evt)
         // the m_doc_site member variable as we're not connecting the
         // events to a specific instance of the FindPanel -- since this
         // is the case, m_doc_site is always NULL here
-        cfw::IDocumentSitePtr site;
+        IDocumentSitePtr site;
         site = g_app->getMainFrame()->lookupSite(wxT("FindPanel"));
         if (site.isOk())
             site->setVisible(false);
@@ -890,11 +890,11 @@ void FindComboControl::onFind(wxCommandEvent& evt)
     
     // fire an event to add this string to the find combobox dropdowns
     
-    cfw::Event* cfw_evt = new cfw::Event(wxT("appmain.addFindComboItem"));
+    FrameworkEvent* cfw_evt = new FrameworkEvent(wxT("appmain.addFindComboItem"));
     cfw_evt->s_param = val;
     g_app->getMainFrame()->postEvent(cfw_evt);
 
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = g_app->getMainFrame()->getActiveChild();
     if (site.isNull())
         return;

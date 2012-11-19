@@ -434,10 +434,10 @@ MarginsPanel::MarginsPanel(wxWindow* parent)
     marginbottom_sizer->Add(m_marginbottom_textctrl, 1, wxALIGN_CENTER);
 
     // make the labels the same width
-    wxSize s1 = cfw::getMaxTextSize(label_marginleft,
+    wxSize s1 = getMaxTextSize(label_marginleft,
                                     label_marginright);
     
-    wxSize s2 = cfw::getMaxTextSize(label_margintop,
+    wxSize s2 = getMaxTextSize(label_margintop,
                                     label_marginbottom);
     
     s1.x += 5;

@@ -28,7 +28,7 @@ public:
 private:
 
     void populate();
-    void addJobItem(cfw::IJobInfoPtr job_info);
+    void addJobItem(IJobInfoPtr job_info);
     void updateJobItem(kcl::ScrollListItem* item);
     
     // -- signal events --
@@ -41,7 +41,7 @@ private:
 private:
 
     JobListCtrlTimer* m_timer;
-    cfw::IJobQueuePtr m_job_queue;
+    IJobQueuePtr m_job_queue;
 
     DECLARE_EVENT_TABLE()
 };
@@ -50,12 +50,12 @@ private:
 
 
 class JobManagerPanel : public wxPanel,
-                        public cfw::IDocument,
+                        public IDocument,
                         public xcm::signal_sink
 {
     XCM_CLASS_NAME_NOREFCOUNT("appmain.JobManagerPanel")
     XCM_BEGIN_INTERFACE_MAP(JobManagerPanel)
-        XCM_INTERFACE_ENTRY(cfw::IDocument)
+        XCM_INTERFACE_ENTRY(IDocument)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -65,8 +65,8 @@ public:
 public:
 
     // -- IDocument --
-    bool initDoc(cfw::IFramePtr frame,
-                 cfw::IDocumentSitePtr doc_site,
+    bool initDoc(IFramePtr frame,
+                 IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,
                  wxWindow* panesite_wnd);
 
@@ -80,7 +80,7 @@ private:
 
 private:
 
-    cfw::IDocumentSitePtr m_doc_site;
+    IDocumentSitePtr m_doc_site;
     
     JobListCtrl* m_job_list;
     wxButton* m_cleanup_button;

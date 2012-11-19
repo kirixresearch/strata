@@ -444,9 +444,9 @@ bool TableDoc::canDeleteColumns(std::vector<int>& view_cols)
     return true;
 }
 
-cfw::IUIContextPtr TableDoc::getUserInterface()
+IUIContextPtr TableDoc::getUserInterface()
 {
-    cfw::IUIContextPtr ui_context;
+    IUIContextPtr ui_context;
 
     // see if a user interface of this type already exists
     ui_context = m_frame->lookupUIContext(wxT("TableDocUI"));
@@ -460,8 +460,8 @@ cfw::IUIContextPtr TableDoc::getUserInterface()
 
 
 
-bool TableDoc::initDoc(cfw::IFramePtr frame,
-                       cfw::IDocumentSitePtr doc_site,
+bool TableDoc::initDoc(IFramePtr frame,
+                       IDocumentSitePtr doc_site,
                        wxWindow* docsite_wnd,
                        wxWindow* panesite_wnd)
 {
@@ -556,8 +556,8 @@ bool TableDoc::initDoc(cfw::IFramePtr frame,
     initProperties(frame);
     
     defineProperty(wxT("tabledoc.fieldinfo.name"),
-                   cfw::proptypeString,
-                   cfw::propName(_("Field Info"), _("Name")));
+                   proptypeString,
+                   propName(_("Field Info"), _("Name")));
 
     wxArrayString type_strings;
     type_strings.Add(_("Undefined"));
@@ -586,30 +586,30 @@ bool TableDoc::initDoc(cfw::IFramePtr frame,
     type_ints.Add(tango::typeBoolean);
         
     defineProperty(wxT("tabledoc.fieldinfo.type"),
-                   cfw::proptypeInteger,
-                   cfw::propName(_("Field Info"), _("Type")),
+                   proptypeInteger,
+                   propName(_("Field Info"), _("Type")),
                    &type_strings,
                    &type_ints);
 
     defineProperty(wxT("tabledoc.fieldinfo.width"),
-                   cfw::proptypeInteger,
-                   cfw::propName(_("Field Info"), _("Width")));
+                   proptypeInteger,
+                   propName(_("Field Info"), _("Width")));
                    
     defineProperty(wxT("tabledoc.fieldinfo.scale"),
-                   cfw::proptypeInteger,
-                   cfw::propName(_("Field Info"), _("Decimal Places")));
+                   proptypeInteger,
+                   propName(_("Field Info"), _("Decimal Places")));
                    
     defineProperty(wxT("tabledoc.column_fgcolor"),
-                   cfw::proptypeColor,
-                   cfw::propName(_("Column Foreground")));
+                   proptypeColor,
+                   propName(_("Column Foreground")));
 
     defineProperty(wxT("tabledoc.column_bgcolor"),
-                   cfw::proptypeColor,
-                   cfw::propName(_("Column Background")));
+                   proptypeColor,
+                   propName(_("Column Background")));
                    
     defineProperty(wxT("tabledoc.column_pixwidth"),
-                   cfw::proptypeInteger,
-                   cfw::propName(_("Column Width (pixels)")));
+                   proptypeInteger,
+                   propName(_("Column Width (pixels)")));
 
     wxArrayString alignment_strings;
     alignment_strings.Add(_("Default"));
@@ -618,12 +618,12 @@ bool TableDoc::initDoc(cfw::IFramePtr frame,
     alignment_strings.Add(_("Right"));
     
     defineProperty(wxT("tabledoc.column_alignment"),
-                   cfw::proptypeInteger,
-                   cfw::propName(_("Column Alignment")),
+                   proptypeInteger,
+                   propName(_("Column Alignment")),
                    &alignment_strings);
 
     // create the statusbar items for this document
-    cfw::IStatusBarItemPtr item;
+    IStatusBarItemPtr item;
     
     item = addStatusBarItem(wxT("tabledoc_sum"));
     item->setWidth(110);
@@ -648,11 +648,11 @@ void TableDoc::setDocumentFocus()
 
 wxString TableDoc::getDocumentLocation()
 {
-    cfw::IDocumentPtr textdoc = lookupOtherDocument(m_doc_site, "appmain.TextDoc");
+    IDocumentPtr textdoc = lookupOtherDocument(m_doc_site, "appmain.TextDoc");
     if (textdoc)
         return textdoc->getDocumentLocation();
     
-    cfw::IDocumentPtr querydoc = lookupOtherDocument(m_doc_site, "appmain.QueryDoc");
+    IDocumentPtr querydoc = lookupOtherDocument(m_doc_site, "appmain.QueryDoc");
     if (querydoc)
         return querydoc->getDocumentLocation();
     
@@ -699,7 +699,7 @@ bool TableDoc::onSiteClosing(bool force)
         int result = wxNO;
         /*
         int result;
-        result = cfw::appMessageBox(
+        result = appMessageBox(
                                _("Would you like to save this table?"),
                                APPLICATION_NAME,
                                wxYES_NO | wxCANCEL | wxICON_QUESTION | wxCENTER);
@@ -732,7 +732,7 @@ bool TableDoc::onSiteClosing(bool force)
 
     // if we're viewing a text file, save the view information in the OFS
     // so we can resume in this view the next time we open up this text file
-    cfw::IDocumentPtr doc;
+    IDocumentPtr doc;
     doc = lookupOtherDocument(m_doc_site, "appmain.TextDoc");
     ITextDocPtr textdoc = doc;
     if (textdoc)
@@ -741,7 +741,7 @@ bool TableDoc::onSiteClosing(bool force)
 
 
     // let the column props (dynamic) field panel know that we are closing
-    cfw::Event* e = new cfw::Event(wxT("tabledoc.onSiteClosing"), (long)(ITableDoc*)this);
+    Event* e = new FrameworkEvent(wxT("tabledoc.onSiteClosing"), (long)(ITableDoc*)this);
     m_frame->sendEvent(e);
 
 
@@ -804,11 +804,11 @@ void TableDoc::onSiteActivated()
     ::wxPostEvent(this, evt);
 }
 
-void TableDoc::onStatusBarItemLeftDblClick(cfw::IStatusBarItemPtr item)
+void TableDoc::onStatusBarItemLeftDblClick(IStatusBarItemPtr item)
 {
     // only pop open the "Go To Record" dialog for the active table
     
-    cfw::IDocumentSitePtr doc_site = m_frame->getActiveChild();
+    IDocumentSitePtr doc_site = m_frame->getActiveChild();
     if (doc_site.isOk() && doc_site == m_doc_site)
     {
         if (item->getName() == wxT("tabledoc_position") ||
@@ -819,7 +819,7 @@ void TableDoc::onStatusBarItemLeftDblClick(cfw::IStatusBarItemPtr item)
     }
 }
 
-void TableDoc::onFrameEvent(cfw::Event& evt)
+void TableDoc::onFrameEvent(Event& evt)
 {
     if (evt.name == wxT("tabledoc.doViewReload") &&
         evt.l_param != (unsigned long)this)
@@ -869,12 +869,12 @@ void TableDoc::onFrameEvent(cfw::Event& evt)
     {
         updateCaption();
         
-        cfw::IDocumentSitePtr doc_site = m_frame->getActiveChild();
+        IDocumentSitePtr doc_site = m_frame->getActiveChild();
         if (doc_site.isOk() && doc_site == m_doc_site)
         {
             // fire this event so that the URL combobox will be updated
             // with the new path if this is the active child
-            m_frame->postEvent(new cfw::Event(wxT("cfw.locationChanged")));
+            m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
         }
     }
      else if (evt.name == wxT("appmain.relationshipsUpdated"))
@@ -883,7 +883,7 @@ void TableDoc::onFrameEvent(cfw::Event& evt)
     }
      else if (evt.name == wxT("appmain.view_switcher.query_available_views"))
     {
-        cfw::IDocumentSitePtr active_child;
+        IDocumentSitePtr active_child;
         active_child = g_app->getMainFrame()->getActiveChild();
         
         if (active_child.isNull() || m_doc_site.isNull())
@@ -893,19 +893,19 @@ void TableDoc::onFrameEvent(cfw::Event& evt)
             return;
 
         // site ptrs to check the active site
-        cfw::IDocumentSitePtr textdoc_site;
-        cfw::IDocumentSitePtr transdoc_site;
-        cfw::IDocumentSitePtr structdoc_site;
-        cfw::IDocumentSitePtr querydoc_site;
-        cfw::IDocumentSitePtr sqldoc_site;
-        cfw::IDocumentSitePtr active_site;
+        IDocumentSitePtr textdoc_site;
+        IDocumentSitePtr transdoc_site;
+        IDocumentSitePtr structdoc_site;
+        IDocumentSitePtr querydoc_site;
+        IDocumentSitePtr sqldoc_site;
+        IDocumentSitePtr active_site;
         active_site = g_app->getMainFrame()->getActiveChild();
         
         // populate the view switcher list with the available views
         ViewSwitcherList* list = (ViewSwitcherList*)(evt.o_param);
         
         ITextDocPtr textdoc = lookupOtherDocument(m_doc_site, "appmain.TextDoc");
-        cfw::IDocumentPtr querydoc = lookupOtherDocument(m_doc_site, "appmain.QueryDoc");
+        IDocumentPtr querydoc = lookupOtherDocument(m_doc_site, "appmain.QueryDoc");
         
         
         // querydoc's have a sql view, query view and a table view
@@ -954,7 +954,7 @@ void TableDoc::onFrameEvent(cfw::Event& evt)
         int id = (int)(evt.l_param);
         
         // -- make sure we are in the active container --
-        cfw::IDocumentSitePtr active_site;
+        IDocumentSitePtr active_site;
         active_site = g_app->getMainFrame()->getActiveChild();
         if (active_site.isNull() || m_doc_site.isNull())
             return;
@@ -965,7 +965,7 @@ void TableDoc::onFrameEvent(cfw::Event& evt)
         if (id == ID_View_SwitchToLayoutView)
         {
             // if we are on structure doc, we might need to prompt for saving
-            cfw::IDocumentSitePtr structdoc_site;
+            IDocumentSitePtr structdoc_site;
 
             structdoc_site = lookupOtherDocumentSite(m_doc_site, "appmain.StructureDoc");
             active_site = g_app->getMainFrame()->getActiveChild();
@@ -1043,7 +1043,7 @@ void TableDoc::onFrameEvent(cfw::Event& evt)
 
 void TableDoc::onPropertyChanged(const wxString& prop_name)
 {
-    cfw::PropertyValue data;
+    PropertyValue data;
     if (!getProperty(prop_name, data))
         return;
 
@@ -1086,7 +1086,7 @@ void TableDoc::onPropertyChanged(const wxString& prop_name)
     }
 }
 
-void TableDoc::onActiveChildChanged(cfw::IDocumentSitePtr doc_site)
+void TableDoc::onActiveChildChanged(IDocumentSitePtr doc_site)
 {
     if (doc_site.isNull())
         return;
@@ -1424,12 +1424,12 @@ void TableDoc::onSave(wxCommandEvent& evt)
     wxMilliSleep(500);
 }
 
-void TableDoc::onSaveAsJobFinished(cfw::IJobPtr job)
+void TableDoc::onSaveAsJobFinished(IJobPtr job)
 {
     // re-enabled the GUI
     setEnabled(true);
     
-    if (job->getJobInfo()->getState() != cfw::jobStateFinished)
+    if (job->getJobInfo()->getState() != jobStateFinished)
         return;
     
     g_app->getAppController()->refreshDbDoc();
@@ -1439,7 +1439,7 @@ void TableDoc::onSaveAsJobFinished(cfw::IJobPtr job)
     if (copy_count != 1)
         return;
     
-    cfw::IDocumentSitePtr site = g_app->getMainFrame()->lookupSiteById(job->getExtraLong());
+    IDocumentSitePtr site = g_app->getMainFrame()->lookupSiteById(job->getExtraLong());
     if (site.isNull())
         return;
     
@@ -1490,9 +1490,9 @@ void TableDoc::onSaveAsJobFinished(cfw::IJobPtr job)
     }
     
     // get rid of other extranneous document types
-    cfw::IDocumentSitePtr textdoc_site;
-    cfw::IDocumentSitePtr transdoc_site;
-    cfw::IDocumentSitePtr structuredoc_site;
+    IDocumentSitePtr textdoc_site;
+    IDocumentSitePtr transdoc_site;
+    IDocumentSitePtr structuredoc_site;
     textdoc_site = lookupOtherDocumentSite(site, "appmain.TextDoc");
     transdoc_site = lookupOtherDocumentSite(site, "appmain.TransformationDoc");
     structuredoc_site = lookupOtherDocumentSite(site, "appmain.StructureDoc");
@@ -1539,7 +1539,7 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
 
             if (!g_app->getDatabase()->storeObject(save_set, save_path))
             {
-                cfw::appMessageBox(_("The file could not be saved in the specified location.  The destination location may by in use."),
+                appMessageBox(_("The file could not be saved in the specified location.  The destination location may by in use."),
                                    APPLICATION_NAME,
                                    wxOK | wxICON_EXCLAMATION | wxCENTER);
                 return;
@@ -1643,7 +1643,7 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
 
     if (is_indeterminate)
     {
-        cfw::IJobInfoPtr job_info = copy_job->getJobInfo();
+        IJobInfoPtr job_info = copy_job->getJobInfo();
         job_info->setMaxCount(0.0);
     }
 
@@ -1670,7 +1670,7 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
     }
     
     copy_job->sigJobFinished().connect(this, &TableDoc::onSaveAsJobFinished);
-    g_app->getJobQueue()->addJob(copy_job, cfw::jobStateRunning);
+    g_app->getJobQueue()->addJob(copy_job, jobStateRunning);
 }
 
 
@@ -1806,7 +1806,7 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
                              this->m_dbpath,
                              true /* compress */);
 
-        g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);    
+        g_app->getJobQueue()->addJob(job, jobStateRunning);    
     }
      else
     {
@@ -1843,7 +1843,7 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
        
         job->addExportSet(job_export_info);
 
-        g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+        g_app->getJobQueue()->addJob(job, jobStateRunning);
     }
 }
 
@@ -1851,13 +1851,13 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
 
 
      
-void TableDoc::onReloadDownloadFinished(cfw::IJobInfoPtr job_info)
+void TableDoc::onReloadDownloadFinished(IJobInfoPtr job_info)
 {
     // this is in the main thread, but truly, only because
     // of the way xulrunner thread marshals the call;
     // we want to handle this later, so fire another signal
     
-    if (job_info->getState() != cfw::jobStateFinished)
+    if (job_info->getState() != jobStateFinished)
         return;
 
     wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, ID_DoReloadRefresh);
@@ -1922,7 +1922,7 @@ void TableDoc::onDoReloadRefresh(wxCommandEvent& evt)
         
         if (error)
         {
-            cfw::appMessageBox(_("The file could not be reloaded, because the file is locked or marked as read only"));
+            appMessageBox(_("The file could not be reloaded, because the file is locked or marked as read only"));
         }
     }
      else if (m_source_mimetype == wxT("application/rss+xml"))
@@ -2002,7 +2002,7 @@ void TableDoc::onReload(wxCommandEvent& evt)
         transdoc.clear();
 
 
-        cfw::IJobInfoPtr job_info;
+        IJobInfoPtr job_info;
         job_info.create_instance("cfw.JobInfo");
         if (job_info.isNull())
             return;
@@ -2016,7 +2016,7 @@ void TableDoc::onReload(wxCommandEvent& evt)
     }
      else if (m_source_mimetype == wxT("application/rss+xml"))
     {
-        cfw::IJobInfoPtr job_info;
+        IJobInfoPtr job_info;
         job_info.create_instance("cfw.JobInfo");
         if (job_info.isNull())
             return;
@@ -2049,7 +2049,7 @@ void TableDoc::onReload(wxCommandEvent& evt)
 
             query_job->sigJobFinished().connect(this, &TableDoc::onSortFilterJobFinished);
 
-            g_app->getJobQueue()->addJob(query_job, cfw::jobStateRunning);
+            g_app->getJobQueue()->addJob(query_job, jobStateRunning);
         }
     }
 }
@@ -2263,7 +2263,7 @@ void TableDoc::updateStatusSelectionSum()
     wxString text = wxEmptyString;
     if (show)
     {
-        text = wxString::Format(_("Sum: %s"), cfw::dbl2fstr(sum, scale).c_str());
+        text = wxString::Format(_("Sum: %s"), dbl2fstr(sum, scale).c_str());
     } 
      else
     {
@@ -2271,7 +2271,7 @@ void TableDoc::updateStatusSelectionSum()
     }
 
     // get the tabledoc's sum statusbar cell
-    cfw::IStatusBarItemPtr item;
+    IStatusBarItemPtr item;
     item = m_frame->getStatusBar()->getItem(wxT("tabledoc_sum"));
     if (item.isNull())
         return;
@@ -2314,7 +2314,7 @@ void TableDoc::updateStatusBar(bool row_count_update)
     wxString currow_text;
     if (m_filter.Length() + m_sort_order.Length() > 0)
         currow_text = wxT("~");
-    currow_text += cfw::dbl2fstr(m_grid->getCursorRow()+1);
+    currow_text += dbl2fstr(m_grid->getCursorRow()+1);
 
     if (m_browse_set.isOk())
     {
@@ -2334,7 +2334,7 @@ void TableDoc::updateStatusBar(bool row_count_update)
         {
             position_text = wxString::Format(_("Position: %s"), currow_text.c_str());
             reccount_text = wxString::Format(_("Record Count: %s"),
-                cfw::dbl2fstr((tango::tango_int64_t)m_stat_row_count).c_str());
+                dbl2fstr((tango::tango_int64_t)m_stat_row_count).c_str());
         }
          else
         {
@@ -2343,8 +2343,8 @@ void TableDoc::updateStatusBar(bool row_count_update)
         }
     }
 
-    cfw::IStatusBarItemPtr item;
-    cfw::IStatusBarPtr statusbar = g_app->getMainFrame()->getStatusBar();
+    IStatusBarItemPtr item;
+    IStatusBarPtr statusbar = g_app->getMainFrame()->getStatusBar();
     if (statusbar.isNull())
         return;
         
@@ -2586,7 +2586,7 @@ void TableDoc::setEnabled(bool new_val)
 
     m_grid->refresh(kcl::Grid::refreshAll);
 
-    m_frame->postEvent(new cfw::Event(wxT("tabledoc.enabledStateChanged")));
+    m_frame->postEvent(new FrameworkEvent(wxT("tabledoc.enabledStateChanged")));
     wxTheApp->ProcessIdle();
 }
 
@@ -2601,7 +2601,7 @@ bool TableDoc::getEnabled()
 
 void TableDoc::reloadSettings(bool redraw)
 {
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
 
     // font info
     int font_ptsize;
@@ -2811,7 +2811,7 @@ void TableDoc::updateCaption()
 {
     // we're in a query (even though we're viewing the table),
     // so we need to show the querydoc's caption
-    cfw::IDocumentPtr querydoc = lookupOtherDocument(m_doc_site, "appmain.QueryDoc");
+    IDocumentPtr querydoc = lookupOtherDocument(m_doc_site, "appmain.QueryDoc");
     if (querydoc)
     {
         wxString loc = querydoc->getDocumentLocation();
@@ -3077,10 +3077,10 @@ void TableDoc::insertColumnSeparator(int insert_pos)
 
     m_grid->refresh(kcl::Grid::refreshAll);
 
-    m_frame->postEvent(new cfw::Event(wxT("tabledoc.viewModified"), 0));
+    m_frame->postEvent(new FrameworkEvent(wxT("tabledoc.viewModified"), 0));
 
     // update other windows that are showing the same view
-    cfw::Event* e = new cfw::Event(wxT("tabledoc.doViewReload"),
+    Event* e = new FrameworkEvent(wxT("tabledoc.doViewReload"),
                                    (unsigned long)this);
     e->l_param2 = (unsigned long)m_active_view.p;
     m_frame->postEvent(e);
@@ -3131,10 +3131,10 @@ void TableDoc::insertColumnInternal(int insert_pos,
 
     m_grid->refresh(kcl::Grid::refreshAll);
 
-    m_frame->postEvent(new cfw::Event(wxT("tabledoc.viewModified"), 0));
+    m_frame->postEvent(new FrameworkEvent(wxT("tabledoc.viewModified"), 0));
 
     // update other windows that are showing the same view
-    cfw::Event* e = new cfw::Event(wxT("tabledoc.doViewReload"),
+    Event* e = new FrameworkEvent(wxT("tabledoc.doViewReload"),
                                   (unsigned long)this);
     e->l_param2 = (unsigned long)m_active_view.p;
     m_frame->postEvent(e);
@@ -3216,7 +3216,7 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
         }
     }
 
-    wxString column_name = cfw::makeProperIfNecessary(col_name);
+    wxString column_name = makeProperIfNecessary(col_name);
     wxString column_expr;
 
 
@@ -3256,7 +3256,7 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
         insertColumn(insert_pos, column_name);
 
         // let other windows know that the structure was modified
-        cfw::Event* evt = new cfw::Event(wxT("tabledoc.structureModified"));
+        Event* evt = new FrameworkEvent(wxT("tabledoc.structureModified"));
         evt->s_param = m_dbpath;
         m_frame->postEvent(evt);
     }
@@ -3270,17 +3270,17 @@ void TableDoc::hideColumn(int idx)
     m_grid->hideColumn(idx);
     m_active_view->deleteColumn(idx);
     m_grid->refresh(kcl::Grid::refreshAll);
-    m_frame->postEvent(new cfw::Event(wxT("tabledoc.viewModified"), 0));
+    m_frame->postEvent(new FrameworkEvent(wxT("tabledoc.viewModified"), 0));
 
     // update other windows that are showing the same view
-    cfw::Event* e = new cfw::Event(wxT("tabledoc.doViewReload"),
+    Event* e = new FrameworkEvent(wxT("tabledoc.doViewReload"),
                                    (unsigned long)this);
     e->l_param2 = (unsigned long)m_active_view.p;
     m_frame->postEvent(e);
 }
 
 
-void TableDoc::onSortFilterJobFinished(cfw::IJobPtr job)
+void TableDoc::onSortFilterJobFinished(IJobPtr job)
 {
     if (job.isOk())
     {
@@ -3291,12 +3291,12 @@ void TableDoc::onSortFilterJobFinished(cfw::IJobPtr job)
             m_quick_filter_jobid = quickFilterNotPending;
     }
 
-    if (job->getJobInfo()->getState() != cfw::jobStateFinished)
+    if (job->getJobInfo()->getState() != jobStateFinished)
     {
         // if the job is cancelled or failed, update the filter toolbar item
         // and we're done
-        if (job->getJobInfo()->getState() == cfw::jobStateCancelled ||
-            job->getJobInfo()->getState() == cfw::jobStateFailed)
+        if (job->getJobInfo()->getState() == jobStateCancelled ||
+            job->getJobInfo()->getState() == jobStateFailed)
         {
             g_app->getAppController()->updateQuickFilterToolBarItem();    
         }
@@ -3324,9 +3324,9 @@ void TableDoc::onSortFilterJobFinished(cfw::IJobPtr job)
     setCaption(wxEmptyString, suffix);
 }
 
-void TableDoc::onSetOrderFinished(cfw::IJobPtr job)
+void TableDoc::onSetOrderFinished(IJobPtr job)
 {
-    if (job->getJobInfo()->getState() != cfw::jobStateFinished)
+    if (job->getJobInfo()->getState() != jobStateFinished)
         return;
 
     ISortFilterJobPtr query_job = job;
@@ -3377,14 +3377,14 @@ void TableDoc::onSetOrderFinished(cfw::IJobPtr job)
     updateStatusBar();
 }
 
-void TableDoc::onDeleteJobFinished(cfw::IJobPtr delete_job)
+void TableDoc::onDeleteJobFinished(IJobPtr delete_job)
 {
     m_grid->reset();
     m_grid->refresh(kcl::Grid::refreshAll);
     updateStatusBar();
 }
 
-void TableDoc::onIndexJobFinished(cfw::IJobPtr job)
+void TableDoc::onIndexJobFinished(IJobPtr job)
 {
     // set as the active order
     AppBusyCursor bc;
@@ -3417,25 +3417,25 @@ void TableDoc::onIndexJobFinished(cfw::IJobPtr job)
     updateStatusBar();
 }
 
-void TableDoc::onReplaceJobFinished(cfw::IJobPtr replace_job)
+void TableDoc::onReplaceJobFinished(IJobPtr replace_job)
 {
     m_grid->refresh(kcl::Grid::refreshAll);
 }
 
-void TableDoc::onAppendRecordsFinished(cfw::IJobPtr append_job)
+void TableDoc::onAppendRecordsFinished(IJobPtr append_job)
 {
     m_grid->refresh(kcl::Grid::refreshAll);
     updateStatusBar();
 }
 
-void TableDoc::onModifyStructJobFinished(cfw::IJobPtr job)
+void TableDoc::onModifyStructJobFinished(IJobPtr job)
 {
     IModifyStructJobPtr modify_job = job;
 
     // doStructureUpdate() will update the views and such
     // when setBaseSet is called
 
-    if (job->getJobInfo()->getState() == cfw::jobStateFinished)
+    if (job->getJobInfo()->getState() == jobStateFinished)
         m_structure_job = modify_job;
          else
         m_structure_job.clear();
@@ -3443,7 +3443,7 @@ void TableDoc::onModifyStructJobFinished(cfw::IJobPtr job)
     // -- unlock this window --
     m_enabled = true;
     m_grid->setVisibleState(kcl::Grid::stateVisible);
-    m_frame->postEvent(new cfw::Event(wxT("tabledoc.enabledStateChanged")));
+    m_frame->postEvent(new FrameworkEvent(wxT("tabledoc.enabledStateChanged")));
 
     createModel();
     m_grid->setModel(m_grid_model);
@@ -3452,7 +3452,7 @@ void TableDoc::onModifyStructJobFinished(cfw::IJobPtr job)
     // remove the "Filtered" suffix
     setCaption(wxEmptyString, wxEmptyString);
     
-    if (job->getJobInfo()->getState() != cfw::jobStateFinished)
+    if (job->getJobInfo()->getState() != jobStateFinished)
         return;
 
     // do inserts for each new field
@@ -3488,10 +3488,10 @@ void TableDoc::onModifyStructJobFinished(cfw::IJobPtr job)
     // write out all of changes
     m_model->writeObject(m_active_view);
 
-    m_frame->postEvent(new cfw::Event(wxT("tabledoc.viewModified"), 0));
+    m_frame->postEvent(new FrameworkEvent(wxT("tabledoc.viewModified"), 0));
 
     // update other windows that are showing the same view
-    cfw::Event* e = new cfw::Event(wxT("tabledoc.doViewReload"),
+    Event* e = new FrameworkEvent(wxT("tabledoc.doViewReload"),
                                    (unsigned long)this);
     e->l_param2 = (unsigned long)m_active_view.p;
     m_frame->postEvent(e);
@@ -3500,7 +3500,7 @@ void TableDoc::onModifyStructJobFinished(cfw::IJobPtr job)
     g_app->getAppController()->updateQuickFilterToolBarItem();
     
     // let other windows know that the structure was modified
-    cfw::Event* evt = new cfw::Event(wxT("tabledoc.structureModified"));
+    Event* evt = new FrameworkEvent(wxT("tabledoc.structureModified"));
     evt->s_param = m_dbpath;
     m_frame->postEvent(evt);
 }
@@ -3598,7 +3598,7 @@ static bool getMenuItemExpr(const wxString& field,
     if (type == tango::typeCharacter || type == tango::typeWideCharacter)
     {
         // double single quotes
-        rhs = cfw::doubleQuote(rhs, L'\'');
+        rhs = doubleQuote(rhs, L'\'');
         
         if (oper != ID_ExprMenuItem_Contains)
         {
@@ -3938,7 +3938,7 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
 
     wxPoint pt_mouse = ::wxGetMousePosition();
     pt_mouse = ScreenToClient(pt_mouse);
-    cfw::CommandCapture* cc = new cfw::CommandCapture;
+    CommandCapture* cc = new CommandCapture;
     PushEventHandler(cc);
     PopupMenu(&menuPopup, pt_mouse);
     int command = cc->getLastCommandId();
@@ -4178,7 +4178,7 @@ void TableDoc::onGridColumnRightClick(kcl::GridEvent& evt)
     menuPopup.Append(ID_Data_Summary, _("Summari&ze"));
 
 
-    cfw::CommandCapture* cc = new cfw::CommandCapture;
+    CommandCapture* cc = new CommandCapture;
     PushEventHandler(cc);
     PopupMenu(&menuPopup, pt_mouse);
     int command = cc->getLastCommandId();
@@ -4241,7 +4241,7 @@ void TableDoc::onGridCursorMove(kcl::GridEvent& evt)
 {
     if (evt.GetColumn() != evt.GetDestinationColumn())
     {
-        m_frame->postEvent(new cfw::Event(wxT("tabledoc.cursorColumnChanged")));
+        m_frame->postEvent(new FrameworkEvent(wxT("tabledoc.cursorColumnChanged")));
     }
 
     if (evt.GetRow() != evt.GetDestinationRow())
@@ -4249,7 +4249,7 @@ void TableDoc::onGridCursorMove(kcl::GridEvent& evt)
         updateStatusBar(false);
         updateChildWindows();
 
-        m_frame->postEvent(new cfw::Event(wxT("tabledoc.cursorRowChanged")));
+        m_frame->postEvent(new FrameworkEvent(wxT("tabledoc.cursorRowChanged")));
     }
 }
 
@@ -4261,7 +4261,7 @@ static void setColumnProps(wxColor* fill_color,
 {
     ITableDocPtr table_doc;
 
-    cfw::IDocumentSitePtr doc_site = g_app->getMainFrame()->getActiveChild();
+    IDocumentSitePtr doc_site = g_app->getMainFrame()->getActiveChild();
     if (doc_site.isNull())
         return;
 
@@ -4381,7 +4381,7 @@ void TableDoc::resetChildWindows()
         return;
 
     wxString site_name;
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     ITableDocPtr table_doc;
     tango::IRelationPtr rel;
     
@@ -4471,7 +4471,7 @@ static wxString generateContextSyncMarkExpression(
             case tango::typeCharacter:
             case tango::typeWideCharacter:
                 part += wxT("'");
-                part += cfw::doubleQuote(towx(left_iter->getWideString(lh)), '\'');
+                part += doubleQuote(towx(left_iter->getWideString(lh)), '\'');
                 part += wxT("'");
                 break;
             
@@ -4546,14 +4546,14 @@ void TableDoc::updateChildWindows()
 
 
     wxString site_name;
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     ITableDocPtr table_doc;
     tango::IRelationPtr rel;
     size_t i, rel_count = rel_enum->size();
 
 
-    cfw::IDocumentSiteEnumPtr doc_sites;
-    doc_sites = g_app->getMainFrame()->getDocumentSites(cfw::sitetypeNormal);
+    IDocumentSiteEnumPtr doc_sites;
+    doc_sites = g_app->getMainFrame()->getDocumentSites(sitetypeNormal);
 
     for (i = 0; i < rel_count; ++i)
     {
@@ -4672,7 +4672,7 @@ void TableDoc::onGridColumnResize(kcl::GridEvent& evt)
 
     if (evt.GetUserEvent())
     {
-        cfw::Event* e = new cfw::Event(wxT("tabledoc.doViewReload"),
+        Event* e = new FrameworkEvent(wxT("tabledoc.doViewReload"),
                                        (unsigned long)this);
         e->l_param2 = (unsigned long)m_active_view.p;
         m_frame->postEvent(e);
@@ -4744,7 +4744,7 @@ void TableDoc::onGridRowSashDblClick(kcl::GridEvent& evt)
 {
     if (m_active_view)
     {
-        cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+        IAppPreferencesPtr prefs = g_app->getAppPreferences();
         int row_height = getAppPrefsLong(wxT("grid.row_height"));
         
         m_active_view->setRowSize(row_height);
@@ -4756,15 +4756,15 @@ void TableDoc::onGridRowSashDblClick(kcl::GridEvent& evt)
 
 void TableDoc::onGridColumnMove(kcl::GridEvent& evt)
 {
-    cfw::Event* e;
+    Event* e;
 
     m_active_view->moveColumn(evt.GetColumn(), evt.GetDestinationColumn());
 
-    e = new cfw::Event(wxT("tabledoc.viewModified"), 0);
+    e = new FrameworkEvent(wxT("tabledoc.viewModified"), 0);
     e->s_param = wxT("colmove");
     m_frame->postEvent(e);
 
-    e = new cfw::Event(wxT("tabledoc.doViewReload"), (unsigned long)this);
+    e = new FrameworkEvent(wxT("tabledoc.doViewReload"), (unsigned long)this);
     e->l_param2 = (unsigned long)m_active_view.p;
     m_frame->postEvent(e);
 }
@@ -4805,7 +4805,7 @@ void TableDoc::onGridNeedTooltipText(kcl::GridEvent& event)
             return;
 
         event.SetString(wxString::Format(_("Name: %s, Type: %s, Width: %d, Decimals: %d"),
-                            cfw::makeProperIfNecessary(towx(colinfo->getName())).c_str(),
+                            makeProperIfNecessary(towx(colinfo->getName())).c_str(),
                             getTypeText(colinfo->getType()).c_str(),
                             colinfo->getWidth(),
                             colinfo->getScale()));
@@ -4937,7 +4937,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
     // can't update -- table doesn't have a primary key or a rowid
     if (primary_key.empty() && getDbDriver() != wxT("xdnative") && getDbDriver() != wxT("xdclient"))
     {
-        cfw::deferredAppMessageBox(_("The database table does not have a primary key specified, which is required for editing data values."),
+        deferredAppMessageBox(_("The database table does not have a primary key specified, which is required for editing data values."),
                                    APPLICATION_NAME,
                                    wxOK | wxICON_INFORMATION | wxCENTER);
         return;
@@ -5148,7 +5148,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
         case tango::typeDate:
         {
             int y, m, d, hh, mm, ss;
-            bool valid = cfw::Locale::parseDateTime(evt.GetString(),
+            bool valid = Locale::parseDateTime(evt.GetString(),
                                                     &y, &m, &d,
                                                     &hh, &mm, &ss);
 
@@ -5156,7 +5156,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
             {
                 if (evt.GetUserEvent())
                 {
-                    cfw::appMessageBox(_("The date entered was not formatted correctly."),
+                    appMessageBox(_("The date entered was not formatted correctly."),
                                        APPLICATION_NAME,
                                        wxOK | wxICON_EXCLAMATION | wxCENTER);
 
@@ -5445,7 +5445,7 @@ void TableDoc::onCreateDynamicFieldCancelled(ColPropsPanel* panel)
         m_grid->refresh(kcl::Grid::refreshAll);
 
         // let other windows know that the structure was modified
-        cfw::Event* evt = new cfw::Event(wxT("tabledoc.structureModified"));
+        Event* evt = new FrameworkEvent(wxT("tabledoc.structureModified"));
         evt->s_param = m_dbpath;
         m_frame->postEvent(evt);
     }
@@ -5455,7 +5455,7 @@ void TableDoc::onCreateDynamicFieldCancelled(ColPropsPanel* panel)
 void TableDoc::showCreateDynamicField()
 {
     // see if any other dynamic field frames are visible
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("CalculatedFieldPropertiesPanel"));
     if (site.isOk())
     {
@@ -5494,7 +5494,7 @@ void TableDoc::showCreateDynamicField()
 
         panel->setModifyField(column_name);
 
-        site = m_frame->createSite(panel, cfw::sitetypeModeless,
+        site = m_frame->createSite(panel, sitetypeModeless,
                                    -1, -1, 560, 310);
         site->setMinSize(560,310);
         site->setName(wxT("CalculatedFieldPropertiesPanel"));
@@ -5503,7 +5503,7 @@ void TableDoc::showCreateDynamicField()
 
 void TableDoc::showEditDynamicField(const wxString& column_name)
 {
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("CalculatedFieldPropertiesPanel"));
     if (site.isOk())
     {
@@ -5519,7 +5519,7 @@ void TableDoc::showEditDynamicField(const wxString& column_name)
                         &TableDoc::onEditDynamicFieldOk);
 
         site = m_frame->createSite(panel,
-                                   cfw::sitetypeModeless,
+                                   sitetypeModeless,
                                    -1, -1, 560, 310);
         site->setMinSize(560,310);
         site->setName(wxT("CalculatedFieldPropertiesPanel"));
@@ -5575,7 +5575,7 @@ void TableDoc::onCreateNewMark(wxCommandEvent& evt)
     createNewMark(wxT(""));
 
     // find the marks panel and tell it to repopulate its list
-    cfw::IDocumentSitePtr markmanager_site;
+    IDocumentSitePtr markmanager_site;
     markmanager_site = g_app->getAppController()->getMarkManagerPanelSite();
     if (markmanager_site.isNull())
         return;
@@ -5649,7 +5649,7 @@ void TableDoc::onMakePermanent(wxCommandEvent& evt)
 
         if (colinfo.isNull())
         {
-            cfw::appMessageBox(_("One or more of the selected calculated fields does not exist."),
+            appMessageBox(_("One or more of the selected calculated fields does not exist."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
@@ -5657,7 +5657,7 @@ void TableDoc::onMakePermanent(wxCommandEvent& evt)
 
         if (!colinfo->getCalculated())
         {
-            cfw::appMessageBox(_("This operation may only be performed on calculated fields."),
+            appMessageBox(_("This operation may only be performed on calculated fields."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
 
@@ -5687,7 +5687,7 @@ void TableDoc::onMakePermanent(wxCommandEvent& evt)
 
     connectModifyStructJob(job);
 
-    g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
 }
 
 
@@ -5764,7 +5764,7 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
         }
         
         ColumnListItem item;
-        item.text = cfw::makeProperIfNecessary(towx(colinfo->getName()));
+        item.text = makeProperIfNecessary(towx(colinfo->getName()));
         if (colinfo->getCalculated())
         {
             item.bitmap = in_view ? GETBMP(gf_lightning_16) : GETDISBMP(gf_lightning_16);
@@ -5813,8 +5813,8 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
                 colinfo = right_structure->getColumnInfoByIdx(i);
 
                 s = wxString::Format(wxT("%s.%s"),
-                           cfw::makeProperIfNecessary(towx(rel->getTag())).c_str(),
-                           cfw::makeProperIfNecessary(towx(colinfo->getName())).c_str());
+                           makeProperIfNecessary(towx(rel->getTag())).c_str(),
+                           makeProperIfNecessary(towx(colinfo->getName())).c_str());
                 
                 ColumnListItem item;
                 item.text = s;
@@ -6049,7 +6049,7 @@ void TableDoc::deleteSelectedColumns()
     for (it = cols.begin(); it != cols.end(); ++it)
     {
         message += wxT("\n\t");
-        message += cfw::makeProperIfNecessary(*it);
+        message += makeProperIfNecessary(*it);
     }
     
     int res = wxMessageBox(message,
@@ -6087,7 +6087,7 @@ void TableDoc::deleteSelectedColumns()
         connectModifyStructJob(job);
         closeSet();
 
-        g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+        g_app->getJobQueue()->addJob(job, jobStateRunning);
 
         return;
     }
@@ -6118,7 +6118,7 @@ void TableDoc::deleteSelectedColumns()
         }
 
         // let other windows know that the structure was modified
-        cfw::Event* evt = new cfw::Event(wxT("tabledoc.structureModified"));
+        Event* evt = new FrameworkEvent(wxT("tabledoc.structureModified"));
         evt->s_param = m_dbpath;
         m_frame->postEvent(evt);
     }
@@ -6266,7 +6266,7 @@ void TableDoc::onCut(wxCommandEvent& evt)
 
     if (m_grid->getSelectionCount() != 0)
     {
-        cfw::appMessageBox(_("Only a single cell may be cut."),
+        appMessageBox(_("Only a single cell may be cut."),
                            APPLICATION_NAME,
                            wxICON_INFORMATION | wxOK);
         return;
@@ -6373,14 +6373,14 @@ void TableDoc::onGridSelectionChange(kcl::GridEvent& evt)
 // -- Field Summary Implementation --
 
 
-static void onSummaryJobFinished(cfw::IJobPtr job)
+static void onSummaryJobFinished(IJobPtr job)
 {
     // pivot output table
 
     IGroupJobPtr group_job = job;
     if (!group_job)
     {
-        cfw::appMessageBox(_("An output set could not be created."),
+        appMessageBox(_("An output set could not be created."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
         return;
@@ -6534,7 +6534,7 @@ static void onSummaryJobFinished(cfw::IJobPtr job)
             last_field_name = field_name;
 
             output_inserter->putWideString(field_handles[0],
-                                         towstr(cfw::makeProperIfNecessary(field_name)));
+                                         towstr(makeProperIfNecessary(field_name)));
 
             // total count
             output_inserter->putDouble(field_handles[8], total_count);
@@ -6565,7 +6565,7 @@ static void onSummaryJobFinished(cfw::IJobPtr job)
 
                 if (!dt.isNull())
                 {
-                    s = cfw::Locale::formatDate(dt.getYear(), dt.getMonth(), dt.getDay());
+                    s = Locale::formatDate(dt.getYear(), dt.getMonth(), dt.getDay());
                 }
 
                 output_inserter->putWideString(h, towstr(s));
@@ -6579,7 +6579,7 @@ static void onSummaryJobFinished(cfw::IJobPtr job)
 
                 if (!dt.isNull())
                 {
-                    s = cfw::Locale::formatDate(dt.getYear(), dt.getMonth(), dt.getDay(), dt.getHour(), dt.getMinute(), dt.getSecond());
+                    s = Locale::formatDate(dt.getYear(), dt.getMonth(), dt.getDay(), dt.getHour(), dt.getMinute(), dt.getSecond());
                 }
 
                 output_inserter->putWideString(h, towstr(s));
@@ -6625,7 +6625,7 @@ static void onSummaryJobFinished(cfw::IJobPtr job)
 
     TableDoc* doc = new TableDoc;
     doc->open(output, xcm::null);
-    g_app->getMainFrame()->createSite(doc, cfw::sitetypeNormal,
+    g_app->getMainFrame()->createSite(doc, sitetypeNormal,
                                       -1, -1, -1, -1);
 }
 
@@ -6742,7 +6742,7 @@ void TableDoc::onSummary(wxCommandEvent& evt)
     job->sigJobFinished().connect(&onSummaryJobFinished);
 
     // add and start job
-    g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
 }
 
 
@@ -6771,7 +6771,7 @@ public:
 
         wxStaticBitmap* bitmap = new wxStaticBitmap(this, -1, GETBMP(gf_find_16));
         wxStaticText* text = new wxStaticText(this, -1, _("Please wait while the data is being searched..."));
-        cfw::resizeStaticText(text);
+        resizeStaticText(text);
 
         wxButton* cancel_button;
         cancel_button = new wxButton(this, wxID_CANCEL, _("Cancel"));
@@ -6903,7 +6903,7 @@ wxString TableDoc::getFindExprFromValue(const wxString& _search,
 
     bool is_date = false;
     int y, m, d, hh, mm, ss;
-    is_date = cfw::Locale::parseDateTime(search,
+    is_date = Locale::parseDateTime(search,
                                          &y, &m, &d,
                                          &hh, &mm, &ss);
 
@@ -6990,12 +6990,12 @@ wxString TableDoc::getFindExprFromValue(const wxString& _search,
 
         if (whole_cell)
         {
-            right = wxT("\'") + cfw::doubleQuote(right, L'\'') + wxT("\'");
+            right = wxT("\'") + doubleQuote(right, L'\'') + wxT("\'");
             piece.Printf(wxT("%s = %s"), left.c_str(), right.c_str());
         }
          else
         {
-            right = wxT("\'%") + cfw::doubleQuote(right, L'\'') + wxT("%\'");
+            right = wxT("\'%") + doubleQuote(right, L'\'') + wxT("%\'");
             piece.Printf(wxT("%s LIKE %s"), left.c_str(), right.c_str());
         }
 
@@ -7021,9 +7021,9 @@ void TableDoc::gotoRecord()
         tango::tango_int64_t row_count = (tango::tango_int64_t)m_stat_row_count;
         
         wxString message = wxString::Format(_("Record number (1 - %s):"),
-                cfw::dbl2fstr(row_count).c_str());
+                dbl2fstr(row_count).c_str());
         wxTextEntryDialog dlg(this, message, _("Go To Record"),
-                cfw::dbl2fstr(m_grid->getCursorRow()+1));
+                dbl2fstr(m_grid->getCursorRow()+1));
         dlg.SetSize(270,143);
         
         if (dlg.ShowModal() == wxID_OK)
@@ -7089,7 +7089,7 @@ bool TableDoc::findNextCell(const wxString& search,
 
     bool is_date = false;
     int y, m, d, hh, mm, ss;
-    is_date = cfw::Locale::parseDateTime(search,
+    is_date = Locale::parseDateTime(search,
                                          &y, &m, &d,
                                          &hh, &mm, &ss);
     if (hh == -1)
@@ -7158,7 +7158,7 @@ bool TableDoc::findNextCell(const wxString& search,
                     col->getType() == kcl::Grid::typeDateTime)
                 {
                     int cy, cm, cd, chh, cmm, css;
-                    bool b = cfw::Locale::parseDateTime(value,
+                    bool b = Locale::parseDateTime(value,
                                                         &cy, &cm, &cd,
                                                         &chh, &cmm, &css);
                     if (chh == -1)
@@ -7264,7 +7264,7 @@ void TableDoc::getReportCreateInfo(ReportCreateInfo& data)
 
             ReportCreateField field;
             field.field_name = model->getColumnInfo(model_idx)->getName();
-            field.caption = cfw::makeProperIfNecessary(field.field_name);
+            field.caption = makeProperIfNecessary(field.field_name);
             field.column_width = m_grid->getColumnSize(i)*(kcanvas::CANVAS_MODEL_DPI/kcanvas::CANVAS_SCREEN_DPI);
             data.content_fields.push_back(field);
         }
@@ -7643,13 +7643,13 @@ bool TableDoc::findNextMatch(const wxString& _expr,
     {
         if (!forward)
         {
-            cfw::appMessageBox(_("The beginning of the data has been reached."),
+            appMessageBox(_("The beginning of the data has been reached."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
         }
          else
         {
-            cfw::appMessageBox(_("The end of the data has been reached."),
+            appMessageBox(_("The end of the data has been reached."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
         }
@@ -7702,7 +7702,7 @@ static void onSetOrderExprEditFinished(KeyBuilderPanel* builder)
 
     // close panel site
 
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = g_app->getMainFrame()->lookupSite(wxT("SortPanel"));
     if (site.isOk())
     {
@@ -7712,10 +7712,10 @@ static void onSetOrderExprEditFinished(KeyBuilderPanel* builder)
 
     // set the order on the appropriate table doc
 
-    cfw::IDocumentSiteEnumPtr docsites;
+    IDocumentSiteEnumPtr docsites;
     ITableDocPtr table_doc;
 
-    docsites = g_app->getMainFrame()->getDocumentSites(cfw::sitetypeNormal);
+    docsites = g_app->getMainFrame()->getDocumentSites(sitetypeNormal);
 
     int site_count = docsites->size();
     for (int i = 0; i < site_count; ++i)
@@ -7735,14 +7735,14 @@ static void onSetOrderExprEditFinished(KeyBuilderPanel* builder)
 
 void TableDoc::onSetOrder(wxCommandEvent& evt)
 {
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("SortPanel"));
     if (site.isNull())
     {
         KeyBuilderDocPanel* panel = new KeyBuilderDocPanel;
         panel->setOKText(_("Run"));
         panel->setOverlayText(_("Select fields from the list on the left and\ndrag them here to define the table sort order"));
-        site = m_frame->createSite(panel, cfw::sitetypeModeless,
+        site = m_frame->createSite(panel, sitetypeModeless,
                                    -1, -1, 600, 360);
         site->setMinSize(520,300);
         site->setName(wxT("SortPanel"));
@@ -7921,9 +7921,9 @@ void TableDoc::onInsertColumnSeparator(wxCommandEvent& evt)
     insertColumnSeparator(m_grid->getCursorColumn());
 }
 
-void onCopyRecordsJobFinished(cfw::IJobPtr job)
+void onCopyRecordsJobFinished(IJobPtr job)
 {
-    if (job->getJobInfo()->getState() != cfw::jobStateFinished)
+    if (job->getJobInfo()->getState() != jobStateFinished)
         return;
 
     // open the result set in a new child window
@@ -7938,7 +7938,7 @@ void onCopyRecordsJobFinished(cfw::IJobPtr job)
         TableDoc* doc = new TableDoc;
         doc->open(copy_job->getResultSet(i), xcm::null);
 
-        g_app->getMainFrame()->createSite(doc, cfw::sitetypeNormal,
+        g_app->getMainFrame()->createSite(doc, sitetypeNormal,
                                           -1, -1, -1, -1);
     }
     
@@ -7948,7 +7948,7 @@ void onCopyRecordsJobFinished(cfw::IJobPtr job)
 void TableDoc::onCopyRecordsOk(ExprBuilderPanel* expr_panel)
 {
     // close panel site
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = g_app->getMainFrame()->lookupSite(wxT("CopyPanel"));
     if (site.isOk())
     {
@@ -8042,14 +8042,14 @@ void TableDoc::copyRecords(const wxString& condition)
     
     copy_job->sigJobFinished().connect(&onCopyRecordsJobFinished);
 
-    g_app->getJobQueue()->addJob(copy_job, cfw::jobStateRunning);
+    g_app->getJobQueue()->addJob(copy_job, jobStateRunning);
 }
 
 
 
 void TableDoc::onCopyRecords(wxCommandEvent& evt)
 {
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("CopyPanel"));
     if (site.isNull())
     {
@@ -8060,8 +8060,8 @@ void TableDoc::onCopyRecords(wxCommandEvent& evt)
             panel->setValidationEnabled(m_db_type == tango::dbtypeXdnative ? true : false);
             panel->setOKText(_("Run"));
             site = m_frame->createSite(panel,
-                                       cfw::sitetypeModeless |
-                                       cfw::siteHidden,
+                                       sitetypeModeless |
+                                       siteHidden,
                                        -1, -1, 560, 310);
             site->setMinSize(560,310);
             site->setCaption(makeCaption(_("Copy")));
@@ -8092,14 +8092,14 @@ void TableDoc::onAppendRecords(wxCommandEvent& evt)
     if (!g_app->getAppController()->doReadOnlyCheck())
         return;
 
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = g_app->getMainFrame()->lookupSite(wxT("AppendPanel"));
     if (site.isNull())
     {
         MergePanel* panel = new MergePanel;
         panel->setAppend(towx(getBaseSet()->getObjectPath()));
         site = g_app->getMainFrame()->createSite(panel, 
-                                                 cfw::sitetypeModeless,
+                                                 sitetypeModeless,
                                                  -1, -1, 460, 420);
         site->setMinSize(460,420);
         site->setName(wxT("AppendPanel"));
@@ -8127,7 +8127,7 @@ void TableDoc::onFilterOk(ExprBuilderPanel* expr_panel)
     }
 
     // close panel site
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = g_app->getMainFrame()->lookupSite(wxT("FilterPanel"));
     if (site.isOk())
     {
@@ -8169,7 +8169,7 @@ void TableDoc::onQuickFilter(wxCommandEvent& evt)
     // is clicked
     if (m_quick_filter_jobid > 0)
     {
-        cfw::IJobPtr job = g_app->getJobQueue()->lookupJob(m_quick_filter_jobid);
+        IJobPtr job = g_app->getJobQueue()->lookupJob(m_quick_filter_jobid);
         if (job.isOk())
         {
             job->cancel();
@@ -8195,7 +8195,7 @@ void TableDoc::onQuickFilter(wxCommandEvent& evt)
 
     // running a quick filter needs to add the value
     // to the find/filter combo control dropdown
-    cfw::Event* cfw_evt = new cfw::Event(wxT("appmain.addFindComboItem"));
+    Event* cfw_evt = new FrameworkEvent(wxT("appmain.addFindComboItem"));
     cfw_evt->s_param = val;
     g_app->getMainFrame()->postEvent(cfw_evt);
 }
@@ -8203,7 +8203,7 @@ void TableDoc::onQuickFilter(wxCommandEvent& evt)
 
 void TableDoc::onFilter(wxCommandEvent& evt)
 {
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("FilterPanel"));
     if (site.isNull())
     {
@@ -8214,8 +8214,8 @@ void TableDoc::onFilter(wxCommandEvent& evt)
             panel->setOKText(_("Run"));
             panel->setValidationEnabled(m_db_type == tango::dbtypeXdnative ? true : false);
             site = m_frame->createSite(panel,
-                                       cfw::sitetypeModeless |
-                                       cfw::siteHidden,
+                                       sitetypeModeless |
+                                       siteHidden,
                                        -1, -1, 560, 310);
             site->setMinSize(560,310);
             site->setCaption(makeCaption(_("Filter")));
@@ -8257,7 +8257,7 @@ void TableDoc::onDeleteRecordsOk(ExprBuilderPanel* expr_panel)
     }
 
     // close panel site
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = g_app->getMainFrame()->lookupSite(wxT("DeletePanel"));
     if (site.isOk())
     {
@@ -8309,7 +8309,7 @@ void TableDoc::deleteRecords(const wxString& condition)
     delete_job->setQuery(cmd, tango::sqlPassThrough);
     delete_job->sigJobFinished().connect(this, &TableDoc::onDeleteJobFinished);
 
-    g_app->getJobQueue()->addJob(delete_job, cfw::jobStateRunning);
+    g_app->getJobQueue()->addJob(delete_job, jobStateRunning);
 }
 
 
@@ -8318,7 +8318,7 @@ void TableDoc::onDeleteRecords(wxCommandEvent& evt)
     if (!g_app->getAppController()->doReadOnlyCheck())
         return;
 
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("DeletePanel"));
     if (site.isNull())
     {
@@ -8329,8 +8329,8 @@ void TableDoc::onDeleteRecords(wxCommandEvent& evt)
             panel->setOKText(_("Run"));
             panel->setValidationEnabled(m_db_type == tango::dbtypeXdnative ? true : false);
             site = m_frame->createSite(panel,
-                                       cfw::sitetypeModeless |
-                                       cfw::siteHidden,
+                                       sitetypeModeless |
+                                       siteHidden,
                                        -1, -1, 560, 310);
             site->setMinSize(560,310);
             site->setCaption(makeCaption(_("Delete")));
@@ -8361,7 +8361,7 @@ void TableDoc::showReplacePanel(const wxString& def_condition, const wxString& d
     if (!g_app->getAppController()->doReadOnlyCheck())
         return;
 
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("UpdatePanel"));
     if (site.isNull())
     {
@@ -8371,8 +8371,8 @@ void TableDoc::showReplacePanel(const wxString& def_condition, const wxString& d
             ReplaceRowsPanel* panel = new ReplaceRowsPanel;
 
             site = m_frame->createSite(panel,
-                                       cfw::sitetypeModeless |
-                                       cfw::siteHidden,
+                                       sitetypeModeless |
+                                       siteHidden,
                                        -1, -1, 560, 340);
             site->setMinSize(560,340);
             site->setName(wxT("UpdatePanel"));
@@ -8412,7 +8412,7 @@ void TableDoc::createOrShowStructureDoc()
             // structuredoc contains a different set that the tabledoc,
             // remove the existing structuredoc and fall through to the
             // code below to create a new one
-            cfw::IDocumentSitePtr site;
+            IDocumentSitePtr site;
             site = lookupOtherDocumentSite(m_doc_site, "appmain.StructureDoc");
             if (site.isOk())
                 g_app->getMainFrame()->closeSite(site);
@@ -8428,9 +8428,9 @@ void TableDoc::createOrShowStructureDoc()
         
         wxWindow* container = m_doc_site->getContainerWindow();
 
-        cfw::IDocumentSitePtr site;
+        IDocumentSitePtr site;
         site = g_app->getMainFrame()->createSite(container,
-                                    static_cast<cfw::IDocument*>(doc),
+                                    static_cast<IDocument*>(doc),
                                     true);
         site->setVisible(true);
     }
@@ -8455,7 +8455,7 @@ void TableDoc::showViewPanel()
     // flush the active view, if any changes were made
     flushActiveView();
     
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = g_app->getMainFrame()->lookupSite(wxT("ColumnViewsPanel"));
 
     if (site.isNull())
@@ -8464,7 +8464,7 @@ void TableDoc::showViewPanel()
         panel->sigOkPressed.connect(this, &TableDoc::onViewEditFinished);
 
         site = g_app->getMainFrame()->createSite(panel,
-                                                 cfw::sitetypeModeless,
+                                                 sitetypeModeless,
                                                  -1, -1, 600, 400);
         site->setMinSize(600,400);
         site->setName(wxT("ColumnViewsPanel"));
@@ -8645,12 +8645,12 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
     }
     
     // the index job has some instructions; start the job
-    g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
 }
 
 void TableDoc::showIndexPanel()
 {
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = g_app->getMainFrame()->lookupSite(wxT("IndexPanel"));
     
     if (site.isNull())
@@ -8659,7 +8659,7 @@ void TableDoc::showIndexPanel()
         panel->sigOkPressed.connect(this, &TableDoc::onIndexEditFinished);
         
         site = g_app->getMainFrame()->createSite(panel,
-                                                 cfw::sitetypeModeless,
+                                                 sitetypeModeless,
                                                  -1, -1, 640, 400);
         site->setMinSize(640,400);
         site->setName(wxT("IndexPanel"));
@@ -8740,13 +8740,13 @@ static void setGroupFields(kcl::Grid* grid, GroupPanel* panel)
 
 void TableDoc::onGroup(wxCommandEvent& evt)
 {
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("GroupPanel"));
     if (site.isNull())
     {
         GroupPanel* panel = new GroupPanel;
         site = g_app->getMainFrame()->createSite(panel,
-                                                 cfw::sitetypeModeless,
+                                                 sitetypeModeless,
                                                  -1, -1, 600, 360);
 
         site->setMinSize(600,360);
@@ -8889,13 +8889,13 @@ void TableDoc::setActiveView(ITableDocViewPtr active_view)
     // find out if any other window is displaying this view object.
     // If so, use their local object instead
 
-    cfw::IDocumentSiteEnumPtr docsites;
-    docsites = g_app->getMainFrame()->getDocumentSites(cfw::sitetypeNormal);
+    IDocumentSiteEnumPtr docsites;
+    docsites = g_app->getMainFrame()->getDocumentSites(sitetypeNormal);
 
     int site_count = docsites->size();
     for (int i = 0; i < site_count; ++i)
     {
-        cfw::IDocumentSitePtr site;
+        IDocumentSitePtr site;
         ITableDocPtr table_doc;
 
         site = docsites->getItem(i);
@@ -8949,7 +8949,7 @@ void TableDoc::setActiveView(ITableDocViewPtr active_view)
 
     // fire a signal that indicates that the view has been set
     if (m_frame)
-        m_frame->postEvent(new cfw::Event(wxT("tabledoc.viewChanged")));
+        m_frame->postEvent(new FrameworkEvent(wxT("tabledoc.viewChanged")));
 }
 
 ITableDocViewPtr TableDoc::getActiveView()
@@ -8964,10 +8964,10 @@ void TableDoc::refreshActiveView(bool repaint)
     bool bad_column_check_performed = false;
 
     ITableDocPtr table_doc;
-    cfw::IDocumentSitePtr site;
-    cfw::IDocumentSiteEnumPtr sites;
+    IDocumentSitePtr site;
+    IDocumentSiteEnumPtr sites;
 
-    sites = g_app->getMainFrame()->getDocumentSites(cfw::sitetypeNormal);
+    sites = g_app->getMainFrame()->getDocumentSites(sitetypeNormal);
     int site_count = sites->size();
     for (int i = 0; i < site_count; ++i)
     {
@@ -9000,7 +9000,7 @@ void TableDoc::refreshActiveView(bool repaint)
         int row_height = m_active_view->getRowSize();
         if (row_height == -1)
         { 
-            cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+            IAppPreferencesPtr prefs = g_app->getAppPreferences();
             row_height = getAppPrefsLong(wxT("grid.row_height"));
         }
         m_grid->setRowHeight(row_height);
@@ -9045,7 +9045,7 @@ void TableDoc::refreshActiveView(bool repaint)
 
             if (model_idx >= 0)
             {
-                wxString caption = cfw::makeProperIfNecessary(col_name);
+                wxString caption = makeProperIfNecessary(col_name);
 
                 int colpos = m_grid->insertColumn(-1, model_idx);
                 m_grid->setColumnCaption(colpos, caption);

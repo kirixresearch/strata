@@ -199,14 +199,14 @@ public:
 private:
 
     // signal handlers for host app events
-    void onActiveChildChanged(cfw::IDocumentSitePtr doc_site);
-    void onFrameEvent(cfw::Event& evt);
+    void onActiveChildChanged(IDocumentSitePtr doc_site);
+    void onFrameEvent(FrameworkEvent& evt);
     void onFrameDestroy();
 
 private:
 
     ApplicationWeakReference m_app;
-    cfw::IFramePtr m_frame;
+    IFramePtr m_frame;
     wxString m_location;
 };
 
@@ -238,7 +238,7 @@ public:
 
 public:
 
-    cfw::IDocumentSitePtr m_site;
+    IDocumentSitePtr m_site;
 };
 
 
@@ -301,7 +301,7 @@ public:
     
 private:
 
-    cfw::IJobInfoPtr m_job_info;
+    IJobInfoPtr m_job_info;
 };
 
 

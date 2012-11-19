@@ -13,7 +13,7 @@
 #define __APP_TANGOJOBBASE_H
 
 
-class TangoJobBase : public cfw::JobBase,
+class TangoJobBase : public JobBase,
                      public xcm::signal_sink
 {
 public:
@@ -28,7 +28,7 @@ public:
 
 public:
 
-    TangoJobBase(int usage = useTangoAll) : cfw::JobBase()
+    TangoJobBase(int usage = useTangoAll) : JobBase()
     {
         sigJobFinished().connect(this, &TangoJobBase::onJobFinished);
 
@@ -132,7 +132,7 @@ private:
         }
     }
 
-    void onJobFinished(cfw::IJobPtr job)
+    void onJobFinished(IJobPtr job)
     {
         m_job_info->sigOnGetCurrentCount().disconnect();
         m_job_info->sigOnGetMaxCount().disconnect();

@@ -47,7 +47,7 @@ ExportWizard::ExportWizard()
     m_delimitedtext_settings_page = NULL;
 
     // save the base path to the registry
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
     prefs->remove(wxT("exportwizard.default_kpg_compressed"));  // old registry entry (2005.1 and older)
     prefs->flush();
     
@@ -59,8 +59,8 @@ ExportWizard::~ExportWizard()
 {
 }
 
-bool ExportWizard::initDoc(cfw::IFramePtr frame,
-                           cfw::IDocumentSitePtr doc_site,
+bool ExportWizard::initDoc(IFramePtr frame,
+                           IDocumentSitePtr doc_site,
                            wxWindow* docsite_wnd,
                            wxWindow* panesite_wnd)
 {
@@ -276,7 +276,7 @@ void ExportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
     if (ei->path.IsEmpty())
     {
         // an empty path is not a valid path
-        cfw::appMessageBox(_("A valid location needs to be specified to continue."),
+        appMessageBox(_("A valid location needs to be specified to continue."),
                            _("Invalid Location"),
                            wxOK | wxICON_EXCLAMATION | wxCENTER,
                            g_app->getMainWindow());
@@ -289,7 +289,7 @@ void ExportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
         // a directory path is not a valid file path
         if (xf_get_directory_exist(towstr(ei->path)))
         {
-            cfw::appMessageBox(_("The specified location is a folder.  Please specify a valid file location to continue."),
+            appMessageBox(_("The specified location is a folder.  Please specify a valid file location to continue."),
                                _("Invalid Location"),
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             *allow = false;
@@ -353,7 +353,7 @@ void ExportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
             
             if (!xf_is_valid_file_path(towstr(ei->path)))
             {
-                cfw::appMessageBox(_("The specified file path is invalid.  Please specify a valid file path to continue."),
+                appMessageBox(_("The specified file path is invalid.  Please specify a valid file path to continue."),
                                    _("Invalid File"),
                                    wxOK | wxICON_EXCLAMATION | wxCENTER);
                 *allow = false;
@@ -372,7 +372,7 @@ void ExportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
         // do we have a valid folder path?
         if (!xf_get_directory_exist(towstr(ei->path)))
         {
-            cfw::appMessageBox(_("The specified folder path is invalid.  Please specify a valid folder path to continue."),
+            appMessageBox(_("The specified folder path is invalid.  Please specify a valid folder path to continue."),
                                _("Invalid Folder"),
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             *allow = false;
@@ -611,7 +611,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
     // CHECK: check to make sure a database exists and is open
     if (!g_app->isDatabaseOpen())
     {
-        cfw::appMessageBox(_("Please create or open a project to continue."),
+        appMessageBox(_("Please create or open a project to continue."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
         return;
@@ -620,7 +620,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
     // CHECK: check to make sure we're exporting at least one table
     if (m_template.m_ei.tables.size() == 0)
     {
-        cfw::appMessageBox(_("You must select at least one table to export."),
+        appMessageBox(_("You must select at least one table to export."),
                            _("Export Wizard"),
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
         return;
@@ -646,7 +646,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         PkgFile pkgfile;
         if (!pkgfile.open(towstr(m_template.m_ei.path), PkgFile::modeRead))
         {
-            cfw::appMessageBox(_("There was an error connecting to the specified package file.\nPlease make sure that the file exists and that it is not currently in use."),
+            appMessageBox(_("There was an error connecting to the specified package file.\nPlease make sure that the file exists and that it is not currently in use."),
                                _("Export Wizard"),
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
@@ -656,7 +656,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         PkgStreamEnum* stream_enum = pkgfile.getStreamEnum();
         if (!stream_enum)
         {
-            cfw::appMessageBox(_("The specified package file is either empty or corrupt."),
+            appMessageBox(_("The specified package file is either empty or corrupt."),
                                _("Export Wizard"),
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
@@ -698,7 +698,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
             // show what rows contain errors
             m_table_selection_page->refreshGrid();
             
-            int result = cfw::appMessageBox(_("One or more of the table names specified for export already exists.  Would you like to overwrite these tables?"),
+            int result = appMessageBox(_("One or more of the table names specified for export already exists.  Would you like to overwrite these tables?"),
                                             _("Export Wizard"),
                                             wxYES_NO | wxNO_DEFAULT | wxICON_EXCLAMATION | wxCENTER);
             if (result == wxNO)
@@ -727,7 +727,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         // CHECK: is the path of the destination folder empty?
         if (m_template.m_ei.base_path.IsEmpty())
         {
-            cfw::appMessageBox(_("The specified destination folder is invalid.  Please specify a valid destination folder to continue."),
+            appMessageBox(_("The specified destination folder is invalid.  Please specify a valid destination folder to continue."),
                                _("Export Wizard"),
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
@@ -736,7 +736,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         // CHECK: does the destination folder exist?
         if (!xf_get_directory_exist(towstr(m_template.m_ei.base_path)))
         {
-            int result = cfw::appMessageBox(_("The specified destination folder does not exist.  Would you like to create it?"),
+            int result = appMessageBox(_("The specified destination folder does not exist.  Would you like to create it?"),
                                             _("Export Wizard"),
                                             wxYES_NO | wxICON_QUESTION | wxCENTER);
             if (result == wxYES)
@@ -760,7 +760,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
                             // of the directories that we created
                             deleteDirs(dirs_created);
                             
-                            cfw::appMessageBox(_("The specified destination folder could not be created.  Please make sure the specified destination folder is valid."),
+                            appMessageBox(_("The specified destination folder could not be created.  Please make sure the specified destination folder is valid."),
                                                _("Export Wizard"),
                                                wxOK | wxICON_EXCLAMATION | wxCENTER);
                             return;
@@ -842,7 +842,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
             // of the directories that we created
             deleteDirs(dirs_created);
             
-            cfw::appMessageBox(_("One or more files specified for export is invalid.  Please rename these files to continue."),
+            appMessageBox(_("One or more files specified for export is invalid.  Please rename these files to continue."),
                                _("Export Wizard"),
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
@@ -890,7 +890,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
             // of the directories that we created
             deleteDirs(dirs_created);
 
-            int result = cfw::appMessageBox(_("One or more of the tables no longer exists.  Please remove these tables from the export to continue."),
+            int result = appMessageBox(_("One or more of the tables no longer exists.  Please remove these tables from the export to continue."),
                                             _("Export Wizard"),
                                             wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
@@ -966,7 +966,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
             // show what rows contain errors
             m_table_selection_page->refreshGrid();
             
-            int result = cfw::appMessageBox(_("One or more files specified for export already exists.  Would you like to overwrite these files?"),
+            int result = appMessageBox(_("One or more files specified for export already exists.  Would you like to overwrite these files?"),
                                             _("Export Wizard"),
                                             wxYES_NO | wxNO_DEFAULT | wxICON_EXCLAMATION | wxCENTER);
             if (result == wxNO)
@@ -1027,7 +1027,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         if (db_mgr.isNull())
         {
             wxString appname = APPLICATION_NAME;
-            cfw::appMessageBox(wxString::Format(_("%s is missing a software component.  To correct this problem, please reinstall %s."),
+            appMessageBox(wxString::Format(_("%s is missing a software component.  To correct this problem, please reinstall %s."),
                                                 appname.c_str(), appname.c_str()),
                                APPLICATION_NAME,
                                wxOK | wxICON_INFORMATION | wxCENTER);
@@ -1060,7 +1060,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
                                     conn_path,
                                     existing_file_temp_loc);
                 
-                cfw::appMessageBox(wxString::Format(_("There specified %s is currently in use or you may not have permission to overwrite it.\nPlease make sure that the file to be overwritten is not currently in use."),
+                appMessageBox(wxString::Format(_("There specified %s is currently in use or you may not have permission to overwrite it.\nPlease make sure that the file to be overwritten is not currently in use."),
                                                     filetype_name.c_str()),
                                    _("Export Wizard"),
                                    wxOK | wxICON_EXCLAMATION | wxCENTER);
@@ -1078,7 +1078,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
                                 conn_path,
                                 existing_file_temp_loc);
             
-            cfw::appMessageBox(wxString::Format(_("There was an error connecting to the specified %s.\nPlease make sure that the file exists and that it is not currently in use."),
+            appMessageBox(wxString::Format(_("There was an error connecting to the specified %s.\nPlease make sure that the file exists and that it is not currently in use."),
                                                 filetype_name.c_str()),
                                _("Export Wizard"),
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
@@ -1098,7 +1098,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
                                 conn_path,
                                 existing_file_temp_loc);
             
-            cfw::appMessageBox(wxString::Format(_("There was an error connecting to the specified %s.\nPlease make sure that the file exists and that it is not currently in use."),
+            appMessageBox(wxString::Format(_("There was an error connecting to the specified %s.\nPlease make sure that the file exists and that it is not currently in use."),
                                                 filetype_name.c_str()),
                                _("Export Wizard"),
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
@@ -1110,7 +1110,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         // CHECK: can we open the existing database?
         if (!conn->open())
         {
-            cfw::appMessageBox(_("There was an error connecting to the specified database.\nPlease make sure that the connection information for the database is correct."),
+            appMessageBox(_("There was an error connecting to the specified database.\nPlease make sure that the connection information for the database is correct."),
                                _("Export Wizard"),
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
@@ -1152,7 +1152,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         // show what rows contain errors
         m_table_selection_page->refreshGrid();
         
-        cfw::appMessageBox(_("One or more of the tables specified for export has an invalid name."),
+        appMessageBox(_("One or more of the tables specified for export has an invalid name."),
                            _("Export Wizard"),
                            wxICON_EXCLAMATION | wxCENTER);
         return;
@@ -1188,7 +1188,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         // show what rows contain errors
         m_table_selection_page->refreshGrid();
         
-        cfw::appMessageBox(_("One or more of the tables specified for export no longer exists.\nRemove these tables from the list to continue."),
+        appMessageBox(_("One or more of the tables specified for export no longer exists.\nRemove these tables from the list to continue."),
                            _("Export Wizard"),
                            wxICON_EXCLAMATION | wxCENTER);
         return;
@@ -1237,7 +1237,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         // show what rows contain errors
         m_table_selection_page->refreshGrid();
         
-        cfw::appMessageBox(_("One or more of the tables specified for export contains invalid fieldnames."),
+        appMessageBox(_("One or more of the tables specified for export contains invalid fieldnames."),
                            _("Export Wizard"),
                            wxICON_EXCLAMATION | wxCENTER);
         return;
@@ -1298,7 +1298,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
             // show what rows contain errors
             m_table_selection_page->refreshGrid();
             
-            int result = cfw::appMessageBox(_("One or more of the table names specified for export already exists.  Would you like to overwrite these tables?"),
+            int result = appMessageBox(_("One or more of the table names specified for export already exists.  Would you like to overwrite these tables?"),
                                             _("Export Wizard"),
                                             wxYES_NO | wxNO_DEFAULT | wxICON_EXCLAMATION | wxCENTER);
             if (result == wxNO)
@@ -1368,7 +1368,7 @@ void ExportWizard::setDefaultExportPath(const wxString& _path)
     }
 
     // try to get the default export path path from the registry
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
     prefs->setString(wxT("general.last_export_path"), path);
     prefs->flush();
 }
@@ -1378,7 +1378,7 @@ wxString ExportWizard::getDefaultExportPath()
     wxString default_path = wxStandardPaths::Get().GetDocumentsDir();
 
     // try to get the default export path path from the registry
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
     if (prefs->exists(wxT("general.last_export_path")))
         return prefs->getString(wxT("general.last_export_path"), default_path);
 

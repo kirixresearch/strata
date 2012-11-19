@@ -101,16 +101,16 @@ XCM_DECLARE_SMARTPTR(IStructureDoc)
 class StructureDoc : public wxWindow,
                      public IStructureDoc,
                      public IColumnListTarget,
-                     public cfw::IDocument,
-                     public cfw::StatusBarProviderBase,
+                     public IDocument,
+                     public StatusBarProviderBase,
                      public xcm::signal_sink
 {
     XCM_CLASS_NAME_NOREFCOUNT("appmain.StructureDoc")
     XCM_BEGIN_INTERFACE_MAP(StructureDoc)
         XCM_INTERFACE_ENTRY(IStructureDoc)
         XCM_INTERFACE_ENTRY(IColumnListTarget)
-        XCM_INTERFACE_ENTRY(cfw::IDocument)
-        XCM_INTERFACE_CHAIN(cfw::StatusBarProviderBase)
+        XCM_INTERFACE_ENTRY(IDocument)
+        XCM_INTERFACE_CHAIN(StatusBarProviderBase)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -135,8 +135,8 @@ public:
 private:
 
     // -- IDocument --
-    bool initDoc(cfw::IFramePtr frame,
-                 cfw::IDocumentSitePtr doc_site,
+    bool initDoc(IFramePtr frame,
+                 IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,
                  wxWindow* panesite_wnd);
     wxWindow* getDocumentWindow() { return static_cast<wxWindow*>(this); }
@@ -183,10 +183,10 @@ private:
     
 private:
 
-    void onModifyStructJobFinished(cfw::IJobPtr job);
+    void onModifyStructJobFinished(IJobPtr job);
     
     // -- frame event handlers --
-    void onFrameEvent(cfw::Event& evt);
+    void onFrameEvent(FrameworkEvent& evt);
     
     // -- signal events --
     void onInsertingRows(std::vector<int> rows);
@@ -222,9 +222,9 @@ private:
     tango::ISetPtr m_modify_set;
     tango::IStructurePtr m_expr_edit_structure;
     
-    cfw::IFramePtr m_frame;
-    cfw::IDocumentSitePtr m_doc_site;
-    cfw::IDocumentSitePtr m_target_site;
+    IFramePtr m_frame;
+    IDocumentSitePtr m_doc_site;
+    IDocumentSitePtr m_target_site;
 
     wxString m_path;
     bool m_changed;

@@ -48,7 +48,7 @@ const int EDITBUTTON_COL_WIDTH = 35;
 
 static ITableDocPtr getActiveTableDoc()
 {
-    cfw::IDocumentSitePtr site = g_app->getMainFrame()->getActiveChild();
+    IDocumentSitePtr site = g_app->getMainFrame()->getActiveChild();
     if (site.isNull())
         return xcm::null;
     
@@ -125,8 +125,8 @@ MarkMgrPanel::~MarkMgrPanel()
 
 // -- IDocument --
 
-bool MarkMgrPanel::initDoc(cfw::IFramePtr frame,
-                           cfw::IDocumentSitePtr doc_site,
+bool MarkMgrPanel::initDoc(IFramePtr frame,
+                           IDocumentSitePtr doc_site,
                            wxWindow* docsite_wnd,
                            wxWindow* panesite_wnd)
 {
@@ -224,7 +224,7 @@ void MarkMgrPanel::setDocumentFocus()
         m_grid->SetFocus();
 }
 
-void MarkMgrPanel::onActiveChildChanged(cfw::IDocumentSitePtr doc_site)
+void MarkMgrPanel::onActiveChildChanged(IDocumentSitePtr doc_site)
 {
     m_grid->endEdit(false);
     
@@ -232,9 +232,9 @@ void MarkMgrPanel::onActiveChildChanged(cfw::IDocumentSitePtr doc_site)
     populate();
 }
 
-void MarkMgrPanel::onFrameEvent(cfw::Event& event)
+void MarkMgrPanel::onFrameEvent(FrameworkEvent& evt)
 {
-    if (event.name == wxT("tabledoc.markCreated"))
+    if (evt.name == wxT("tabledoc.markCreated"))
     {
         Freeze();
         populate(false);

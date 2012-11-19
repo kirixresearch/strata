@@ -48,12 +48,12 @@ public: // signals
     
 private:
     
-    void onItemActivated(cfw::IFsItemPtr item);
+    void onItemActivated(IFsItemPtr item);
     
 private:
 
     DbDoc* m_dbdoc;
-    cfw::IFsItemPtr m_selected_item;
+    IFsItemPtr m_selected_item;
     wxString m_root_path;
     wxString m_root_label;
     wxString m_selected_path;

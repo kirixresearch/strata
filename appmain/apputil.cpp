@@ -30,8 +30,8 @@ END_EVENT_TABLE()
 
 
 JobGaugeUpdateTimer::JobGaugeUpdateTimer(
-                    cfw::IStatusBarPtr statusbar,
-                    cfw::IJobQueuePtr job_queue,
+                    IStatusBarPtr statusbar,
+                    IJobQueuePtr job_queue,
                     wxGauge* gauge)
 {
     m_statusbar = statusbar;
@@ -115,7 +115,7 @@ void JobGaugeUpdateTimer::Notify()
     bool is_indeterminate = false;
     
     // determine the overall progress
-    cfw::IJobInfoEnumPtr jobs = m_job_queue->getJobInfoEnum(cfw::jobStateRunning);
+    IJobInfoEnumPtr jobs = m_job_queue->getJobInfoEnum(jobStateRunning);
     size_t i, job_count = jobs->size();
     
     // this check is here because sometimes the running job count is
@@ -139,11 +139,11 @@ void JobGaugeUpdateTimer::Notify()
     
     for (i = 0; i < job_count; i++)
     {
-        cfw::IJobInfoPtr job_info = jobs->getItem(i);
+        IJobInfoPtr job_info = jobs->getItem(i);
         
         // update the total percentage
         double pct = job_info->getPercentage();
-        if ((job_info->getInfoMask() & cfw::jobMaskPercentage) && pct >= 0.0)
+        if ((job_info->getInfoMask() & jobMaskPercentage) && pct >= 0.0)
             tot_pct_done += pct;
 
         // determine if the job is indeterminate or not
@@ -198,7 +198,7 @@ void JobGaugeUpdateTimer::Notify()
     }
 }
 
-void JobGaugeUpdateTimer::onJobAdded(cfw::IJobInfoPtr job_info)
+void JobGaugeUpdateTimer::onJobAdded(IJobInfoPtr job_info)
 {
     // post an event that a job has been added; we need to send
     // an event rather than rely on the job state because some
@@ -221,7 +221,7 @@ void JobGaugeUpdateTimer::onJobAdded(cfw::IJobInfoPtr job_info)
     job_info->sigStateChanged().connect(this, &JobGaugeUpdateTimer::onJobStateChanged);
 }
 
-void JobGaugeUpdateTimer::onJobStateChanged(cfw::IJobInfoPtr job_info)
+void JobGaugeUpdateTimer::onJobStateChanged(IJobInfoPtr job_info)
 {
     // post an event that a particular job status has changed
     wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, 10001);
@@ -255,8 +255,8 @@ void JobGaugeUpdateTimer::onJobStateChangedInMainThread(wxCommandEvent& evt)
 {
     wxASSERT_MSG(::wxIsMainThread(), wxT("Being called outside of main/gui thread!"));
 
-    cfw::IJobInfoPtr job_info = (cfw::IJobInfo*)evt.GetExtraLong();
-    if (job_info->getState() == cfw::jobStateFailed)
+    IJobInfoPtr job_info = (IJobInfo*)evt.GetExtraLong();
+    if (job_info->getState() == jobStateFailed)
     {
         // if any of the jobs in the queue fail,
         // show a job failed icon
@@ -379,7 +379,7 @@ bool doOutputPathCheck(const wxString& output_path, wxWindow* parent)
 
         if (file_info->getType() != tango::filetypeFolder)
         {
-            cfw::appMessageBox(_("The specified output path is invalid because it does not specify a valid folder."),
+            appMessageBox(_("The specified output path is invalid because it does not specify a valid folder."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER,
                                parent);
@@ -393,7 +393,7 @@ bool doOutputPathCheck(const wxString& output_path, wxWindow* parent)
     fn = fn.AfterLast(wxT('/'));
     if (!isValidObjectName(fn))
     {
-        cfw::appMessageBox(_("The specified output path is invalid because it specifies an invalid filename."),
+        appMessageBox(_("The specified output path is invalid because it specifies an invalid filename."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER,
                            parent);
@@ -414,7 +414,7 @@ bool doOutputPathCheck(const wxString& output_path, wxWindow* parent)
 
     if (file_type == tango::filetypeFolder)
     {
-        cfw::appMessageBox(_("The specified output path is invalid because it specifies a folder that already exists."),
+        appMessageBox(_("The specified output path is invalid because it specifies a folder that already exists."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER,
                            parent);
@@ -423,7 +423,7 @@ bool doOutputPathCheck(const wxString& output_path, wxWindow* parent)
      else if (file_type == tango::filetypeSet)
     {
         int result;
-        result = cfw::appMessageBox(_("The specified output file name already exists.  Would you like to overwrite it?"),
+        result = appMessageBox(_("The specified output file name already exists.  Would you like to overwrite it?"),
                                     APPLICATION_NAME,
                                     wxYES_NO | wxNO_DEFAULT | wxICON_EXCLAMATION | wxCENTER,
                                     parent);
@@ -453,7 +453,7 @@ void appInvalidObjectMessageBox(const wxString& name,
                                    name.c_str());
     }
 
-    cfw::deferredAppMessageBox(message,
+    deferredAppMessageBox(message,
                        _("Invalid Object Name"),
                        wxOK | wxICON_EXCLAMATION | wxCENTER,
                        parent);
@@ -475,7 +475,7 @@ void appInvalidFieldMessageBox(const wxString& name,
                                    name.c_str());
     }
 
-    cfw::deferredAppMessageBox(message,
+    deferredAppMessageBox(message,
                        _("Invalid Field Name"),
                        wxOK | wxICON_EXCLAMATION | wxCENTER,
                        parent);
@@ -580,7 +580,7 @@ void makeSizerLabelsSameSize(wxBoxSizer* sizer1,
                   if (item && wnd && wnd->IsKindOf(CLASSINFO(wxStaticText))) { st7 = (wxStaticText*)wnd; }
                 }
     
-    wxSize s = cfw::getMaxTextSize(st1, st2, st3, st4, st5, st6, st7);
+    wxSize s = getMaxTextSize(st1, st2, st3, st4, st5, st6, st7);
     if (sizer1 && st1)
         sizer1->SetItemMinSize(st1, s);
     if (sizer2 && st2)
@@ -735,30 +735,30 @@ public:
 
 
 
-cfw::IDocumentSitePtr lookupOtherDocumentSite(
-                           cfw::IDocumentSitePtr site,
+IDocumentSitePtr lookupOtherDocumentSite(
+                           IDocumentSitePtr site,
                            const std::string& doc_class_name)
 {
     if (site.isNull())
         return xcm::null;
     
-    cfw::IFramePtr frame = g_app->getMainFrame();
+    IFramePtr frame = g_app->getMainFrame();
     if (frame.isNull())
         return xcm::null;
     
-    cfw::IDocumentSitePtr active_hit;
-    cfw::IDocumentSitePtr inactive_hit;
+    IDocumentSitePtr active_hit;
+    IDocumentSitePtr inactive_hit;
         
-    cfw::IDocumentSiteEnumPtr sites;
+    IDocumentSiteEnumPtr sites;
     sites = frame->getDocumentSitesByContainer(site->getContainerWindow());
     size_t i, count = sites->size();
     for (i = 0; i < count; ++i)
     {
-        cfw::IDocumentSitePtr site = sites->getItem(i);
+        IDocumentSitePtr site = sites->getItem(i);
         if (site.isNull())
             continue;
             
-        cfw::IDocumentPtr doc = site->getDocument();
+        IDocumentPtr doc = site->getDocument();
         if (doc.isNull())
             continue;
             
@@ -794,11 +794,11 @@ cfw::IDocumentSitePtr lookupOtherDocumentSite(
     return xcm::null;
 }
                                   
-cfw::IDocumentPtr lookupOtherDocument(
-                           cfw::IDocumentSitePtr site,
+IDocumentPtr lookupOtherDocument(
+                           IDocumentSitePtr site,
                            const std::string& doc_class_name)
 {
-    cfw::IDocumentSitePtr s = lookupOtherDocumentSite(site, doc_class_name);
+    IDocumentSitePtr s = lookupOtherDocumentSite(site, doc_class_name);
     if (s)
     {
         return s->getDocument();
@@ -807,22 +807,22 @@ cfw::IDocumentPtr lookupOtherDocument(
     return xcm::null;
 }
 
-void switchToOtherDocument(cfw::IDocumentSitePtr site,
+void switchToOtherDocument(IDocumentSitePtr site,
                            const std::string& doc_class_name)
 {
-    cfw::IDocumentSitePtr s = lookupOtherDocumentSite(site, doc_class_name);
+    IDocumentSitePtr s = lookupOtherDocumentSite(site, doc_class_name);
     if (s)
     {
         g_app->getMainFrame()->activateInPlace(s);
     }
 }
 
-wxWindow* getDocumentSiteWindow(cfw::IDocumentSitePtr site)
+wxWindow* getDocumentSiteWindow(IDocumentSitePtr site)
 {
     if (site.isNull())
         return NULL;
     
-    cfw::IDocumentPtr doc = site->getDocument();
+    IDocumentPtr doc = site->getDocument();
     if (doc.isNull())
         return NULL;
     

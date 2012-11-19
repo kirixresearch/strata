@@ -63,20 +63,25 @@
 
 // framework/control includes
 #include "../kcl/kcl.h"
-#include "../cfw/cfw.h"
 #include "../webconnect/webcontrol.h"
 #include "../webconnect/webframe.h"
 
 // application includes
 #include "connectionmgr.h"
+#include "jobqueue.h"
+#include "framework.h"
+#include "propertiespanel.h"
+#include "prefs.h"
+#include "util.h"
+#include "fspanel.h"
+#include "statusbar.h"
 #include "appconfig.h"
-#include "app.h"
 #include "apputil.h"
 #include "appprefs.h"
 #include "commandmgr.h"
 #include "bitmapmgr.h"
 #include "dociface.h"
-
+#include "app.h"
 
 #endif
 

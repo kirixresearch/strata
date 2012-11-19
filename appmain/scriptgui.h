@@ -281,7 +281,7 @@ public:
     ~Form();
     
     void realize();
-    void setSite(cfw::IDocumentSitePtr site);
+    void setSite(IDocumentSitePtr site);
     
     void destroy();
 
@@ -323,7 +323,7 @@ public:
     
     FormFrame* m_form_frame;
     wxPanel* m_form_panel;
-    cfw::IDocumentSitePtr m_site;  // site, if any
+    IDocumentSitePtr m_site;  // site, if any
             
     bool m_showdialog_run;      // true of showDialog has ever been invoked
     bool m_showdialog_running;  // true of showDialog is running

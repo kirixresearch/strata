@@ -19,10 +19,6 @@
 class wxAuiToolBar;
 
 
-namespace cfw
-{
-
-
 xcm_interface IUIContext;
 xcm_interface IFrame;
 xcm_interface IDocument;
@@ -62,9 +58,9 @@ const int FirstDocCommandId = 7000;
 // ----------------------------------------------------------------------------
 
 
-struct Event
+struct FrameworkEvent
 {
-    Event(const wxString& _name,
+    FrameworkEvent(const wxString& _name,
           unsigned long _l_param = 0,
           const wxString& _s_param = wxEmptyString) :
                 name(_name),
@@ -303,8 +299,8 @@ public:
     virtual void populate() = 0;
     virtual void refresh()  = 0;
     
-    XCM_DECLARE_SIGNAL1(sigItemLeftDblClick, cfw::IStatusBarItemPtr)
-    XCM_DECLARE_SIGNAL1(sigItemLeftClick, cfw::IStatusBarItemPtr)
+    XCM_DECLARE_SIGNAL1(sigItemLeftDblClick, IStatusBarItemPtr)
+    XCM_DECLARE_SIGNAL1(sigItemLeftClick, IStatusBarItemPtr)
     XCM_DECLARE_SIGNAL0(sigRefresh)
 };
 
@@ -406,8 +402,8 @@ public:
     virtual wxWindow* getInvisibleWindow() = 0;
     virtual wxAuiManager& getAuiManager() = 0;
 
-    virtual void setStatusBar(cfw::IStatusBarPtr statusbar) = 0;
-    virtual cfw::IStatusBarPtr getStatusBar() = 0;
+    virtual void setStatusBar(IStatusBarPtr statusbar) = 0;
+    virtual IStatusBarPtr getStatusBar() = 0;
     
     virtual void setMenuBar(wxMenuBar* menubar, int menu_merge_position) = 0;
     virtual void moveWindow(int x, int y, int width, int height) = 0;
@@ -467,7 +463,7 @@ public:
                     int height) = 0;
 
     virtual bool closeAll(bool force) = 0;
-    virtual bool closeSite(cfw::IDocumentSitePtr site, int flags = 0) = 0;
+    virtual bool closeSite(IDocumentSitePtr site, int flags = 0) = 0;
     
     virtual void cascade() = 0;
     virtual void tileHorizontal() = 0;
@@ -478,23 +474,21 @@ public:
     virtual void addWindowEventHandler(wxEvtHandler* event_handler) = 0;
     virtual void removeWindowEventHandler(wxEvtHandler* event_handler) = 0;
 
-    virtual void postEvent(Event* evt) = 0;
-    virtual void sendEvent(Event* evt) = 0;
+    virtual void postEvent(FrameworkEvent* evt) = 0;
+    virtual void sendEvent(FrameworkEvent* evt) = 0;
 
-    XCM_DECLARE_SIGNAL1(sigFrameEvent, cfw::Event&)
+    XCM_DECLARE_SIGNAL1(sigFrameEvent, FrameworkEvent&)
     XCM_DECLARE_SIGNAL1(sigFrameClose, wxCloseEvent&)
     XCM_DECLARE_SIGNAL1(sigFrameSize, wxSizeEvent&)
     XCM_DECLARE_SIGNAL0(sigFrameDestroy)
     XCM_DECLARE_SIGNAL0(sigFrameBarRightClick)
     XCM_DECLARE_SIGNAL3(sigFrameCommand, int, int, bool*)
-    XCM_DECLARE_SIGNAL1(sigActiveChildChanged, cfw::IDocumentSitePtr)
-    XCM_DECLARE_SIGNAL1(sigSiteClose, cfw::IDocumentSitePtr)
-    XCM_DECLARE_SIGNAL1(sigSiteContextMenu, cfw::IDocumentSitePtr)
+    XCM_DECLARE_SIGNAL1(sigActiveChildChanged, IDocumentSitePtr)
+    XCM_DECLARE_SIGNAL1(sigSiteClose, IDocumentSitePtr)
+    XCM_DECLARE_SIGNAL1(sigSiteContextMenu, IDocumentSitePtr)
 };
 
 
-
-}; // namespace cfw
 
 
 #endif

@@ -53,8 +53,8 @@ ColumnListPanel::~ColumnListPanel()
 
 
 // -- IDocument --
-bool ColumnListPanel::initDoc(cfw::IFramePtr frame,
-                         cfw::IDocumentSitePtr site,
+bool ColumnListPanel::initDoc(IFramePtr frame,
+                         IDocumentSitePtr site,
                          wxWindow* docsite_wnd,
                          wxWindow* panesite_wnd)
 {
@@ -118,7 +118,7 @@ void ColumnListPanel::setDocumentFocus()
     m_grid->SetFocus();
 }
 
-void ColumnListPanel::onActiveChildChanged(cfw::IDocumentSitePtr doc_site)
+void ColumnListPanel::onActiveChildChanged(IDocumentSitePtr doc_site)
 {
     m_grid->clearSelection();
     populate();
@@ -126,7 +126,7 @@ void ColumnListPanel::onActiveChildChanged(cfw::IDocumentSitePtr doc_site)
 
 bool ColumnListPanel::onSiteClosing(bool force)
 {
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = g_app->getMainFrame()->lookupSiteById(m_site_id);
     
     site->setVisible(false);
@@ -139,7 +139,7 @@ bool ColumnListPanel::onSiteClosing(bool force)
     return true;
 }
 
-void ColumnListPanel::onFrameEvent(cfw::Event& evt)
+void ColumnListPanel::onFrameEvent(FrameworkEvent& evt)
 {
     if (evt.name == wxT("tabledoc.structureModified") ||
         evt.name == wxT("appmain.relationshipsUpdated") ||
@@ -176,7 +176,7 @@ void ColumnListPanel::populate()
         return;
     }
 
-    cfw::IDocumentSitePtr doc_site = g_app->getMainFrame()->getActiveChild();
+    IDocumentSitePtr doc_site = g_app->getMainFrame()->getActiveChild();
     if (doc_site.isNull())
     {
         m_grid->setColumnBitmap(0, wxNullBitmap,
@@ -255,7 +255,7 @@ void ColumnListPanel::populate()
 
 void ColumnListPanel::onGridCellDblClick(kcl::GridEvent& evt)
 {
-    cfw::IDocumentSitePtr doc_site = g_app->getMainFrame()->getActiveChild();
+    IDocumentSitePtr doc_site = g_app->getMainFrame()->getActiveChild();
     if (!doc_site)
         return;
         

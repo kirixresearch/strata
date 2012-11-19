@@ -18,15 +18,15 @@
 
 
 
-static void onQueryJobFinished(cfw::IJobPtr job)
+static void onQueryJobFinished(IJobPtr job)
 {
-    if (job->getJobInfo()->getState() != cfw::jobStateFinished)
+    if (job->getJobInfo()->getState() != jobStateFinished)
         return;
 
     IQueryJobPtr query_job = job;
     bool refresh_tree = false;
     int querydoc_site_id = job->getExtraLong();
-    cfw::IDocumentSitePtr querydoc_site;
+    IDocumentSitePtr querydoc_site;
     if (querydoc_site_id != 0)
         querydoc_site = g_app->getMainFrame()->lookupSiteById(querydoc_site_id);
     
@@ -78,7 +78,7 @@ static void onQueryJobFinished(cfw::IJobPtr job)
                 doc->setTemporaryModel(true);
                 doc->open(result_set, result_iter);
 
-                g_app->getMainFrame()->createSite(doc, cfw::sitetypeNormal,
+                g_app->getMainFrame()->createSite(doc, sitetypeNormal,
                                                   -1, -1, -1, -1);
                 refresh_tree = true;
             }
@@ -165,7 +165,7 @@ bool QueryTemplate::load(const wxString& path)
     return loadXml(path);
 }
 
-cfw::IJobPtr QueryTemplate::execute(int site_id)
+IJobPtr QueryTemplate::execute(int site_id)
 {
     // create and run the query job
     wxString sql = getQueryString();
@@ -189,8 +189,8 @@ cfw::IJobPtr QueryTemplate::execute(int site_id)
     job->getJobInfo()->setTitle(towstr(_("Query")));
     job->setQuery(sql, flags);
 
-    g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
-    return static_cast<cfw::IJob*>(job);
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
+    return static_cast<IJob*>(job);
 }
 
 std::vector<wxString> QueryTemplate::getOutputFields()
@@ -887,7 +887,7 @@ wxString QueryTemplate::completeFilter(const wxString& _expr,
         case tango::typeDateTime:
         {
             int y, m, d, hh, mm, ss;
-            bool valid = cfw::Locale::parseDateTime(expr,
+            bool valid = Locale::parseDateTime(expr,
                                                     &y, &m, &d,
                                                     &hh, &mm, &ss);
 

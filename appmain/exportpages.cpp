@@ -344,7 +344,7 @@ bool ExportTemplate::save(const wxString& path)
     return true;
 }
 
-cfw::IJobPtr ExportTemplate::execute()
+IJobPtr ExportTemplate::execute()
 {
     // check for package file export
     if (m_ei.type == dbtypePackage)
@@ -370,9 +370,9 @@ cfw::IJobPtr ExportTemplate::execute()
                                  m_ei.kpg_compressed);
         }
 
-        g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+        g_app->getJobQueue()->addJob(job, jobStateRunning);
 
-        return static_cast<cfw::IJob*>(job);
+        return static_cast<IJob*>(job);
     }
 
 
@@ -404,9 +404,9 @@ cfw::IJobPtr ExportTemplate::execute()
         job->addExportSet(job_export_info);
     }
 
-    g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
 
-    return static_cast<cfw::IJob*>(job);
+    return static_cast<IJob*>(job);
 }
 
 
@@ -426,7 +426,7 @@ ExportTableSelectionPage::ExportTableSelectionPage(kcl::Wizard* parent,
     m_message = new wxStaticText(this,
                                  -1,
                                  _("Add tables by dragging them from the project panel to the export list."));
-    cfw::resizeStaticText(m_message);
+    resizeStaticText(m_message);
 
     m_label_exportpath = new wxStaticText(this, -1, _("Export to"));
     
@@ -462,7 +462,7 @@ ExportTableSelectionPage::ExportTableSelectionPage(kcl::Wizard* parent,
 
     kcl::GridDataObjectComposite* drop_data;
     drop_data = new kcl::GridDataObjectComposite(NULL, wxT("exporttables_list"));
-    drop_data->Add(new cfw::FsDataObject);
+    drop_data->Add(new FsDataObject);
 
     kcl::GridDataDropTarget* drop_target = new kcl::GridDataDropTarget(m_grid);
     drop_target->SetDataObject(drop_data);
@@ -645,7 +645,7 @@ void ExportTableSelectionPage::onGridDataDropped(kcl::GridDataDropTarget* drop_t
     
     
     // only accept tree data objects here
-    if (fmt.GetId().CmpNoCase(cfw::FS_DATA_OBJECT_FORMAT) != 0)
+    if (fmt.GetId().CmpNoCase(FS_DATA_OBJECT_FORMAT) != 0)
         return;
 
     // get the row number where we dropped the data
@@ -657,12 +657,12 @@ void ExportTableSelectionPage::onGridDataDropped(kcl::GridDataDropTarget* drop_t
     drop_data->GetDataHere(fmt, data);
     
     // copy the data from the wxDataObjectComposite to this new
-    // cfw::FsDataObject so we can use it's accessor functions
-    cfw::FsDataObject* fs_data_obj = new cfw::FsDataObject;
+    // FsDataObject so we can use it's accessor functions
+    FsDataObject* fs_data_obj = new FsDataObject;
     fs_data_obj->SetData(fmt, len, data);
 
 
-    cfw::IFsItemEnumPtr items = fs_data_obj->getFsItems();
+    IFsItemEnumPtr items = fs_data_obj->getFsItems();
 
     bool dragging_only_folders = true;      // determine below if we are dragging only folders
     wxString base_path = wxT("");
@@ -678,11 +678,11 @@ void ExportTableSelectionPage::onGridDataDropped(kcl::GridDataDropTarget* drop_t
     int i, count = items->size();
     for (i = 0; i < count; ++i)
     {
-        cfw::IFsItemPtr item = items->getItem(0);
+        IFsItemPtr item = items->getItem(0);
 
         if (dbdoc->isFsItemExternal(item))
         {
-            cfw::appMessageBox(_("One or more of the items dragged from the project panel is an external table.  Only native database\ntables can be dragged from the project panel."),
+            appMessageBox(_("One or more of the items dragged from the project panel is an external table.  Only native database\ntables can be dragged from the project panel."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
@@ -698,7 +698,7 @@ void ExportTableSelectionPage::onGridDataDropped(kcl::GridDataDropTarget* drop_t
         {
             if (obj_type != dbobjtypeSet)
             {
-                cfw::appMessageBox(_("One or more of the items dragged from the project panel is not a table.  If you would like to export objects other than tables,\nselect 'File' as your export type and export as 'Package File'."),
+                appMessageBox(_("One or more of the items dragged from the project panel is not a table.  If you would like to export objects other than tables,\nselect 'File' as your export type and export as 'Package File'."),
                                    APPLICATION_NAME,
                                    wxOK | wxICON_EXCLAMATION | wxCENTER);
                 return;
@@ -958,7 +958,7 @@ ExportDelimitedTextSettingsPage::ExportDelimitedTextSettingsPage(kcl::Wizard* pa
     wxStaticText* text = new wxStaticText(this,
                                           -1,
                                           _("Modify the settings below to determine how the text-delimited files should be written."));
-    cfw::resizeStaticText(text);
+    resizeStaticText(text);
 
 
     // create main delimiters sizer

@@ -49,9 +49,9 @@ public:
 private:
 
     void onComboItemSelected();
-    void onItemActivated(cfw::IFsItemPtr item);
-    void onItemSelected(cfw::IFsItemPtr item);
-    void onItemBeginLabelEdit(cfw::IFsItemPtr item, bool* allow);
+    void onItemActivated(IFsItemPtr item);
+    void onItemSelected(IFsItemPtr item);
+    void onItemBeginLabelEdit(IFsItemPtr item, bool* allow);
 
 private:
 

@@ -23,7 +23,7 @@ bool apphookOpenTemplate(const wxString& location,
                          tango::INodeValuePtr file_root,
                          bool* handled);
                          
-cfw::IJobPtr apphookExecute(const wxString& location,
+IJobPtr apphookExecute(const wxString& location,
                             tango::IFileInfoPtr file_info,
                             tango::INodeValuePtr file_root,
                             bool* handled);

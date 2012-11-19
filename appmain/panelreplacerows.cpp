@@ -42,8 +42,8 @@ ReplaceRowsPanel::~ReplaceRowsPanel()
 }
 
 // -- IDocument --
-bool ReplaceRowsPanel::initDoc(cfw::IFramePtr frame,
-                               cfw::IDocumentSitePtr site,
+bool ReplaceRowsPanel::initDoc(IFramePtr frame,
+                               IDocumentSitePtr site,
                                wxWindow* docsite_wnd,
                                wxWindow* panesite_wnd)
 {
@@ -157,7 +157,7 @@ void ReplaceRowsPanel::populate()
     for (i = 0; i < col_count; ++i)
     {
         colinfo = structure->getColumnInfoByIdx(i);
-        fields.push_back(cfw::makeProper(towx(colinfo->getName())));
+        fields.push_back(makeProper(towx(colinfo->getName())));
     }
 
     std::sort(fields.begin(), fields.end());
@@ -191,7 +191,7 @@ bool ReplaceRowsPanel::isValidValue()
         case tango::typeDateTime:
         {
             int y, m, d, hh, mm, ss;
-            if (cfw::Locale::parseDateTime(replace_value, &y, &m, &d, &hh, &mm, &ss))
+            if (Locale::parseDateTime(replace_value, &y, &m, &d, &hh, &mm, &ss))
                 return true;
 
             return false;
@@ -300,16 +300,16 @@ void ReplaceRowsPanel::onFieldChoiceChanged(wxCommandEvent& evt)
 }
 
 
-static void onReplaceJobFinished(cfw::IJobPtr job)
+static void onReplaceJobFinished(IJobPtr job)
 {
     wxString target_set_id = job->getExtraString();
 
     // -- iterate through document sites, and update tabledocs --
-    cfw::IDocumentSiteEnumPtr docsites;
-    cfw::IDocumentSitePtr site;
+    IDocumentSiteEnumPtr docsites;
+    IDocumentSitePtr site;
     ITableDocPtr table_doc;
 
-    docsites = g_app->getMainFrame()->getDocumentSites(cfw::sitetypeNormal);
+    docsites = g_app->getMainFrame()->getDocumentSites(sitetypeNormal);
 
     int site_count = docsites->size();
     for (int i = 0; i < site_count; ++i)
@@ -348,7 +348,7 @@ void ReplaceRowsPanel::onOKPressed(ExprBuilderPanel* panel)
     
     if (replace_field.IsEmpty())
     {
-        cfw::appMessageBox(_("No field has been selected to update.  Please select a valid field to update to continue."),
+        appMessageBox(_("No field has been selected to update.  Please select a valid field to update to continue."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
         return;
@@ -356,7 +356,7 @@ void ReplaceRowsPanel::onOKPressed(ExprBuilderPanel* panel)
     
     if (colinfo.isNull())
     {
-        cfw::appMessageBox(_("The selected field to update does not exist or is invalid.  Please select a valid field to update to continue."),
+        appMessageBox(_("The selected field to update does not exist or is invalid.  Please select a valid field to update to continue."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
         return;
@@ -364,7 +364,7 @@ void ReplaceRowsPanel::onOKPressed(ExprBuilderPanel* panel)
     
     if (!validate(&is_value))
     {
-        cfw::appMessageBox(_("The replace value is not valid for the selected field.  Please enter a valid replace value for this field to continue."),
+        appMessageBox(_("The replace value is not valid for the selected field.  Please enter a valid replace value for this field to continue."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
         return;
@@ -373,7 +373,7 @@ void ReplaceRowsPanel::onOKPressed(ExprBuilderPanel* panel)
     wxString condition = m_expr_panel->getExpression();
     if (condition.IsEmpty())
     {
-        int res =  cfw::appMessageBox(_("The formula entered for updating matching records is empty.  All values in the selected field will be replaced with\nthe specified replace value.  Are you sure you want to continue?"),
+        int res =  appMessageBox(_("The formula entered for updating matching records is empty.  All values in the selected field will be replaced with\nthe specified replace value.  Are you sure you want to continue?"),
                                       APPLICATION_NAME,
                                       wxYES_NO | wxICON_EXCLAMATION | wxCENTER);
         if (res != wxYES)
@@ -420,7 +420,7 @@ void ReplaceRowsPanel::onOKPressed(ExprBuilderPanel* panel)
         {
             int y, m, d, hh, mm, ss;
 
-            if (!cfw::Locale::parseDateTime(replace_value,
+            if (!Locale::parseDateTime(replace_value,
                                   &y, &m, &d, &hh, &mm, &ss))
                 return;
 
@@ -466,7 +466,7 @@ void ReplaceRowsPanel::onOKPressed(ExprBuilderPanel* panel)
     job->setExtraString(m_set->getSetId());
     job->setQuery(cmd, tango::sqlPassThrough);
     
-    g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
     g_app->getMainFrame()->closeSite(m_doc_site);
 }
 

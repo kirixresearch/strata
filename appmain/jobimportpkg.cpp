@@ -344,7 +344,7 @@ bool ImportPkgJob::importSet(PkgStreamReader* reader,
 
             if (!inserter->insertRow())
             {
-                m_job_info->setState(cfw::jobStateFailed);
+                m_job_info->setState(jobStateFailed);
                 failed = true;
                 break;
             }
@@ -491,7 +491,7 @@ int ImportPkgJob::runJob()
     if (!pkg.open(towstr(m_filename), PkgFile::modeRead))
     {
         // could not open package file
-        m_job_info->setState(cfw::jobStateFailed);
+        m_job_info->setState(jobStateFailed);
         return 0;
     }
 
@@ -662,7 +662,7 @@ int ImportPkgJob::runJob()
         kl::xmlnode& version_node = stream_info.getChild(L"version");
         if (version_node.getNodeValue() != L"1")
         {
-            m_job_info->setState(cfw::jobStateFailed);
+            m_job_info->setState(jobStateFailed);
             delete reader;
             failed = true;
             break;
@@ -675,7 +675,7 @@ int ImportPkgJob::runJob()
         {
             if (!importSet(reader, &(*it), stream_info))
             {
-                m_job_info->setState(cfw::jobStateFailed);
+                m_job_info->setState(jobStateFailed);
                 delete reader;
                 failed = true;
                 break;
@@ -685,7 +685,7 @@ int ImportPkgJob::runJob()
         {
             if (!importStream(reader, &(*it), stream_info))
             {
-                m_job_info->setState(cfw::jobStateFailed);
+                m_job_info->setState(jobStateFailed);
                 delete reader;
                 failed = true;
                 break;
@@ -695,7 +695,7 @@ int ImportPkgJob::runJob()
         {
             if (!importOfsFile(reader, &(*it), stream_info))
             {
-                m_job_info->setState(cfw::jobStateFailed);
+                m_job_info->setState(jobStateFailed);
                 delete reader;
                 failed = true;
                 break;
@@ -705,7 +705,7 @@ int ImportPkgJob::runJob()
         {
             if (!importMount(reader, &(*it), stream_info))
             {
-                m_job_info->setState(cfw::jobStateFailed);
+                m_job_info->setState(jobStateFailed);
                 delete reader;
                 failed = true;
                 break;
@@ -746,7 +746,7 @@ void ImportPkgJob::runPostJob()
 {
     m_info.clear();
 
-    if (m_job_info->getState() == cfw::jobStateFinished)
+    if (m_job_info->getState() == jobStateFinished)
     {
         g_app->getAppController()->refreshDbDoc();
     }

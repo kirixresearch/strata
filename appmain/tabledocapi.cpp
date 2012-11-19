@@ -33,7 +33,7 @@ void TableDoc::setFilter(const wxString& filter)
     query_job->setInstructions(m_set, filter, m_sort_order);
     query_job->sigJobFinished().connect(this, &TableDoc::onSortFilterJobFinished);
 
-    g_app->getJobQueue()->addJob(query_job, cfw::jobStateRunning);
+    g_app->getJobQueue()->addJob(query_job, jobStateRunning);
     
     // if the job is a quick filter job, track the ID
     if (m_quick_filter_jobid == quickFilterPending)
@@ -104,7 +104,7 @@ void TableDoc::setSortOrder(const wxString& expr)
         job->sigJobFinished().connect(this, &TableDoc::onSetOrderFinished);
 
         // submit job
-        g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+        g_app->getJobQueue()->addJob(job, jobStateRunning);
         
         return;
     }
@@ -133,7 +133,7 @@ void TableDoc::setSortOrder(const wxString& expr)
     job->sigJobFinished().connect(this, &TableDoc::onSetOrderFinished);
 
     // submit job
-    g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
 }
 
 wxString TableDoc::getSortOrder()
@@ -180,7 +180,7 @@ void TableDoc::createNewMark(const wxString& expr)
 
     // let other windows know that a mark was created
     // and make sure the marks panel is shown
-    m_frame->postEvent(new cfw::Event(wxT("tabledoc.markCreated")));
+    m_frame->postEvent(new Event(wxT("tabledoc.markCreated")));
 }
 
 

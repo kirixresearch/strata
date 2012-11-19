@@ -13,11 +13,11 @@
 #define __APP_JOBFINDINFILES_H
 
 
-class FindInFilesJob : public cfw::JobBase
+class FindInFilesJob : public JobBase
 {
     XCM_CLASS_NAME("appmain.FindInFilesJob")
     XCM_BEGIN_INTERFACE_MAP(FindInFilesJob)
-        XCM_INTERFACE_CHAIN(cfw::JobBase)
+        XCM_INTERFACE_CHAIN(JobBase)
     XCM_END_INTERFACE_MAP()
 
 public:

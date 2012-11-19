@@ -90,7 +90,7 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
                 wxString s;
 
                 s.Printf(wxT("date(%s)"),
-                         cfw::makeProper(info->input_name).c_str());
+                         makeProper(info->input_name).c_str());
 
                 info->expression = current_expression.length() > 0 ?
                                               current_expression : s;
@@ -104,7 +104,7 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
                 wxString s;
 
                 s.Printf(wxT("val(%s)"),
-                         cfw::makeProper(info->input_name).c_str());
+                         makeProper(info->input_name).c_str());
 
                 info->expression = current_expression.length() > 0 ?
                                               current_expression : s;
@@ -116,7 +116,7 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
                 wxString s;
 
                 s.Printf(wxT("iif(%s = \"T\", true, false)"),
-                         cfw::makeProper(info->input_name).c_str());
+                         makeProper(info->input_name).c_str());
 
                 info->expression = current_expression.length() > 0 ?
                                               current_expression : s;
@@ -135,7 +135,7 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
                 wxString s;
 
                 s.Printf(wxT("str(%s)"),
-                         cfw::makeProper(info->input_name).c_str());
+                         makeProper(info->input_name).c_str());
 
                 info->expression = current_expression.length() > 0 ?
                                               current_expression : s;
@@ -162,7 +162,7 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
                 wxString s;
 
                 s.Printf(wxT("str(%s, %d, %d)"),
-                         cfw::makeProper(info->input_name).c_str(),
+                         makeProper(info->input_name).c_str(),
                          info->input_width,
                          info->input_scale);
 
@@ -183,7 +183,7 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
                 wxString s;
 
                 s.Printf(wxT("iif(%s != 0, true, false)"),
-                         cfw::makeProper(info->input_name).c_str());
+                         makeProper(info->input_name).c_str());
 
                 info->expression = current_expression.length() > 0 ?
                                               current_expression : s;
@@ -201,7 +201,7 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
                 wxString s;
 
                 s.Printf(wxT("str(%s, %d, %d)"),
-                         cfw::makeProper(info->input_name).c_str(),
+                         makeProper(info->input_name).c_str(),
                          info->output_width > 20 ? 20 : info->output_width,
                          info->input_scale);
 
@@ -223,7 +223,7 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
                 wxString s;
 
                 s.Printf(wxT("iif(%s != 0, true, false)"),
-                         cfw::makeProper(info->input_name).c_str());
+                         makeProper(info->input_name).c_str());
 
                 info->expression = current_expression.length() > 0 ?
                                               current_expression : s;
@@ -241,7 +241,7 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
                 wxString s;
 
                 s.Printf(wxT("str(%s, %d, %d)"),
-                         cfw::makeProper(info->input_name).c_str(),
+                         makeProper(info->input_name).c_str(),
                          info->output_width > 10 ? 10 : info->output_width,
                          info->input_scale);
 
@@ -263,7 +263,7 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
                 wxString s;
 
                 s.Printf(wxT("iif(%s != 0, true, false)"),
-                         cfw::makeProper(info->input_name).c_str());
+                         makeProper(info->input_name).c_str());
 
                 info->expression = current_expression.length() > 0 ?
                                               current_expression : s;
@@ -281,7 +281,7 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
                 wxString s;
 
                 s.Printf(wxT("iif(%s, \"T\", \"F\")"),
-                         cfw::makeProper(info->input_name).c_str());
+                         makeProper(info->input_name).c_str());
 
                 info->expression = current_expression.length() > 0 ?
                                               current_expression : s;
@@ -302,7 +302,7 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
                 wxString s;
 
                 s.Printf(wxT("iif(%s, 1, 0)"),
-                         cfw::makeProper(info->input_name).c_str());
+                         makeProper(info->input_name).c_str());
 
                 info->expression = current_expression.length() > 0 ?
                                               current_expression : s;
@@ -516,7 +516,7 @@ tango::tango_int64_t ImportJob::getTotalRowCount(tango::IDatabasePtr db)
             src_set = db->openSetEx(towstr(it->input_path), format);
             if (!src_set)
             {
-                m_job_info->setState(cfw::jobStateFailed);
+                m_job_info->setState(jobStateFailed);
                 return 0;
             }
 
@@ -571,7 +571,7 @@ int ImportJob::runJob()
     if (!isValidImportType(m_import_type))
     {
         // unknown import type -- fail the job
-        m_job_info->setState(cfw::jobStateFailed);
+        m_job_info->setState(jobStateFailed);
         return 0;
     }
     
@@ -642,7 +642,7 @@ int ImportJob::runJob()
             m_job_info->setProgressString(towstr(_("The file could not be opened.")));
         }              
 
-        m_job_info->setState(cfw::jobStateFailed);
+        m_job_info->setState(jobStateFailed);
         return 0;
     }
 
@@ -707,7 +707,7 @@ int ImportJob::runJob()
             if (src_set.isNull())
             {
                 m_job_info->setProgressString(wxEmptyString);
-                m_job_info->setState(cfw::jobStateFailed);
+                m_job_info->setState(jobStateFailed);
                 return 0;
             }
 
@@ -741,7 +741,7 @@ int ImportJob::runJob()
                 if (tango_job->getCancelled())
                 {
                     m_job_info->setProgressString(wxEmptyString);
-                    m_job_info->setState(cfw::jobStateCancelled);
+                    m_job_info->setState(jobStateCancelled);
                 }
                 m_job_info->setCurrentCount(0);
                 if (td_set->isFirstRowColumnNames())
@@ -792,7 +792,7 @@ int ImportJob::runJob()
                 if (tango_job->getCancelled())
                 {
                     m_job_info->setProgressString(wxEmptyString);
-                    m_job_info->setState(cfw::jobStateCancelled);
+                    m_job_info->setState(jobStateCancelled);
                 }
                 m_job_info->setCurrentCount(0);
                 m_job_info->setMaxCount((tango::tango_int64_t)tango_job->getMaxCount());
@@ -872,7 +872,7 @@ int ImportJob::runJob()
         if (src_iter.isNull())
         {
             m_job_info->setProgressString(wxEmptyString);
-            m_job_info->setState(cfw::jobStateFailed);
+            m_job_info->setState(jobStateFailed);
             return 0;
         }
 
@@ -1059,7 +1059,7 @@ int ImportJob::runJob()
         // if our destination set doesn't exist, bail out
         if (dest_set.isNull())
         {
-            getJobInfo()->setState(cfw::jobStateFailed);
+            getJobInfo()->setState(jobStateFailed);
             return 0;
         }
 
@@ -1068,7 +1068,7 @@ int ImportJob::runJob()
         src_struct = src_iter->getStructure();
         if (src_struct.isNull())
         {
-            getJobInfo()->setState(cfw::jobStateFailed);
+            getJobInfo()->setState(jobStateFailed);
             return 0;
         }
 
@@ -1227,7 +1227,7 @@ int ImportJob::runJob()
 
             if (!ri->insertRow())
             {
-                m_job_info->setState(cfw::jobStateFailed);
+                m_job_info->setState(jobStateFailed);
                 m_job_info->setProgressString(towstr(_("ERROR: Insufficient disk space")));
                 return 0;
             }

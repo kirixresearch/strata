@@ -36,12 +36,12 @@ struct ViewInfo
 
 class FieldListControl;
 class ViewPanel : public wxPanel,
-                  public cfw::IDocument,
+                  public IDocument,
                   public xcm::signal_sink
 {
     XCM_CLASS_NAME_NOREFCOUNT("appmain.ViewPanel")
     XCM_BEGIN_INTERFACE_MAP(ViewPanel)
-        XCM_INTERFACE_ENTRY(cfw::IDocument)
+        XCM_INTERFACE_ENTRY(IDocument)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -57,8 +57,8 @@ public:
 private:
 
     // -- IDocument --
-    bool initDoc(cfw::IFramePtr frame,
-                 cfw::IDocumentSitePtr site,
+    bool initDoc(IFramePtr frame,
+                 IDocumentSitePtr site,
                  wxWindow* docsite_wnd,
                  wxWindow* panesite_wnd);
     wxWindow* getDocumentWindow();
@@ -110,7 +110,7 @@ private:
     ITableDocViewEnumPtr m_views;
     ITableDocViewPtr m_original_view;
     tango::IStructurePtr m_structure;
-    cfw::IDocumentSitePtr m_doc_site;
+    IDocumentSitePtr m_doc_site;
     
     DECLARE_EVENT_TABLE()
 };

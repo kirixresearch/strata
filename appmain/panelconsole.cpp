@@ -522,8 +522,8 @@ ConsolePanel::~ConsolePanel()
 {
 }
 
-bool ConsolePanel::initDoc(cfw::IFramePtr frame,
-                           cfw::IDocumentSitePtr doc_site,
+bool ConsolePanel::initDoc(IFramePtr frame,
+                           IDocumentSitePtr doc_site,
                            wxWindow* docsite_wnd,
                            wxWindow* panesite_wnd)
 {
@@ -667,7 +667,7 @@ void ConsolePanel::onLeftDblClick(wxStyledTextEvent& evt)
         
         int site_id = 0;
         IEditorDocPtr editor;
-        cfw::IDocumentSitePtr site;
+        IDocumentSitePtr site;
         
         g_app->getAppController()->setActiveChildByLocation(towx(filename), &site_id);
         if (site_id)
@@ -679,7 +679,7 @@ void ConsolePanel::onLeftDblClick(wxStyledTextEvent& evt)
                 if (editor)
                 {
                     editor->goLine(line);
-                    cfw::IDocumentPtr doc = editor;
+                    IDocumentPtr doc = editor;
                     doc->setDocumentFocus();
                     return;
                 }
@@ -694,7 +694,7 @@ void ConsolePanel::onLeftDblClick(wxStyledTextEvent& evt)
             if (editor)
             {
                 editor->goLine(line);
-                cfw::IDocumentPtr doc = editor;
+                IDocumentPtr doc = editor;
                 doc->setDocumentFocus();
             }
         }
@@ -713,12 +713,12 @@ void ConsolePanel::onCommandEntered(wxString& command)
 void ConsolePanel::onCommand(wxString& command)
 {
     if (m_frame.isOk())
-        m_frame->postEvent(new cfw::Event(wxT("consolepanel.command"), 0, command));
+        m_frame->postEvent(new FrameworkEvent(wxT("consolepanel.command"), 0, command));
 }
 
-void ConsolePanel::onQueryJobFinished(cfw::IJobPtr job)
+void ConsolePanel::onQueryJobFinished(IJobPtr job)
 {
-    if (job->getJobInfo()->getState() == cfw::jobStateFailed)
+    if (job->getJobInfo()->getState() == jobStateFailed)
     {
         // the job failed; add an error code and populate the text
         wxString error_string = job->getJobInfo()->getErrorString();
@@ -735,7 +735,7 @@ void ConsolePanel::onQueryJobFinished(cfw::IJobPtr job)
         return;
     }
 
-    if (job->getJobInfo()->getState() != cfw::jobStateFinished)
+    if (job->getJobInfo()->getState() != jobStateFinished)
         return;
 
     IQueryJobPtr query_job = job;
@@ -754,7 +754,7 @@ void ConsolePanel::onQueryJobFinished(cfw::IJobPtr job)
             doc->setTemporaryModel(true);
             doc->open(result_set, result_iter);
             g_app->getMainFrame()->createSite(doc,
-                                              cfw::sitetypeNormal,
+                                              sitetypeNormal,
                                               -1, -1, -1, -1);
         }
 
@@ -770,7 +770,7 @@ void ConsolePanel::onQueryJobFinished(cfw::IJobPtr job)
     {
         g_app->getAppController()->refreshDbDoc();
 
-        cfw::IDocumentSitePtr site;
+        IDocumentSitePtr site;
         site = g_app->getMainFrame()->lookupSite(wxT("ConsolePanel"));
         if (site)
         {
@@ -828,7 +828,7 @@ bool ConsolePanel::processClose(const std::vector<wxString> tokens)
     //     from the command line
     // params: no parameters
 
-    cfw::IDocumentSitePtr site = g_app->getMainFrame()->getActiveChild();
+    IDocumentSitePtr site = g_app->getMainFrame()->getActiveChild();
     if (site.isOk())
         g_app->getMainFrame()->closeSite(site);
 
@@ -1071,7 +1071,7 @@ void ConsolePanel::runCommand(wxString& command)
     job->sigJobFinished().connect(this, &ConsolePanel::onQueryJobFinished);
     job->setQuery(command, flags);
 
-    g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
     SetFocus();
 }
 

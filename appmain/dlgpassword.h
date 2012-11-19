@@ -14,12 +14,12 @@
 
 
 class DlgPassword : public wxWindow,
-                       public cfw::IDocument
+                       public IDocument
 {
 
 XCM_CLASS_NAME_NOREFCOUNT("appmain.DlgPassword")
 XCM_BEGIN_INTERFACE_MAP(DlgPassword)
-    XCM_INTERFACE_ENTRY(cfw::IDocument)
+    XCM_INTERFACE_ENTRY(IDocument)
 XCM_END_INTERFACE_MAP()
 
 public:
@@ -28,8 +28,8 @@ public:
     ~DlgPassword();
 
     // -- IDocument --
-    bool initDoc(cfw::IFramePtr frame,
-                 cfw::IDocumentSitePtr doc_site,
+    bool initDoc(IFramePtr frame,
+                 IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,
                  wxWindow* panesite_wnd);
     wxWindow* getDocumentWindow();
@@ -50,7 +50,7 @@ private:
 
 private:
 
-    cfw::IDocumentSitePtr m_doc_site;
+    IDocumentSitePtr m_doc_site;
     
     wxString m_message;
     wxString m_username;

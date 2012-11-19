@@ -13,10 +13,6 @@
 #define __CFW_FSPANELTREEVIEW_H
 
 
-namespace cfw
-{
-
-
 class FsPanelTreeView : public CfwTreeCtrl
 {
 
@@ -85,8 +81,6 @@ private:
     DECLARE_EVENT_TABLE()
 };
 
-
-};  // namespace cfw
 
 
 #endif

@@ -1056,7 +1056,7 @@ int ExportPkgJob::runJob()
 
         if (finfo.isNull())
         {
-            getJobInfo()->setState(cfw::jobStateFailed);
+            getJobInfo()->setState(jobStateFailed);
             return 0;
         }
 
@@ -1083,7 +1083,7 @@ int ExportPkgJob::runJob()
         tango::IFileInfoPtr file_info = db->getFileInfo(towstr(it->src_path));
         if (file_info.isNull())
         {
-            getJobInfo()->setState(cfw::jobStateFailed);
+            getJobInfo()->setState(jobStateFailed);
             return 0;
         }
 
@@ -1103,7 +1103,7 @@ int ExportPkgJob::runJob()
 
             if (set.isNull())
             {
-                getJobInfo()->setState(cfw::jobStateFailed);
+                getJobInfo()->setState(jobStateFailed);
                 return 0;
             }
 
@@ -1120,7 +1120,7 @@ int ExportPkgJob::runJob()
             
             if (stream.isNull())
             {
-                getJobInfo()->setState(cfw::jobStateFailed);
+                getJobInfo()->setState(jobStateFailed);
                 return 0;
             }    
         }
@@ -1147,7 +1147,7 @@ int ExportPkgJob::runJob()
                                    &(*it),
                                    &cancelled))
             {
-                m_job_info->setState(cfw::jobStateFailed);
+                m_job_info->setState(jobStateFailed);
                 cancelled = true;
                 break;
             }
@@ -1159,7 +1159,7 @@ int ExportPkgJob::runJob()
                                 &(*it),
                                 &cancelled))
             {
-                m_job_info->setState(cfw::jobStateFailed);
+                m_job_info->setState(jobStateFailed);
                 cancelled = true;
                 break;
             }
@@ -1171,7 +1171,7 @@ int ExportPkgJob::runJob()
                                   &(*it),
                                   &cancelled))
             {
-                m_job_info->setState(cfw::jobStateFailed);
+                m_job_info->setState(jobStateFailed);
                 cancelled = true;
                 break;
             }
@@ -1183,7 +1183,7 @@ int ExportPkgJob::runJob()
                                     &(*it),
                                     &cancelled))
             {
-                m_job_info->setState(cfw::jobStateFailed);
+                m_job_info->setState(jobStateFailed);
                 cancelled = true;
                 break;
             }

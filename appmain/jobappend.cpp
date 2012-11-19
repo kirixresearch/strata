@@ -54,7 +54,7 @@ int AppendJob::runJob()
     tango::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
     {
-        m_job_info->setState(cfw::jobStateFailed);
+        m_job_info->setState(jobStateFailed);
         return 0;
     }
     
@@ -77,7 +77,7 @@ int AppendJob::runJob()
 
         if (tango_job->getStatus() == tango::jobFailed)
         {
-            m_job_info->setState(cfw::jobStateFailed);
+            m_job_info->setState(jobStateFailed);
             m_job_info->setProgressString(towstr(_("ERROR: Insufficient disk space")));
             break;
         }

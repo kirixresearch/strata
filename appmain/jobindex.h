@@ -47,7 +47,7 @@ class IndexJob : public TangoJobBase,
     XCM_CLASS_NAME("appmain.IndexJob")
     XCM_BEGIN_INTERFACE_MAP(IndexJob)
         XCM_INTERFACE_ENTRY(IIndexJob)
-        XCM_INTERFACE_CHAIN(cfw::JobBase)
+        XCM_INTERFACE_CHAIN(JobBase)
     XCM_END_INTERFACE_MAP()
 
 public:

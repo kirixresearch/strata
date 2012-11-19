@@ -45,7 +45,7 @@
 
 
 std::map<std::wstring, wxBitmap> g_custom_icons; // image md5/bitmap hash
-std::vector<cfw::IFsItemPtr> g_cutcopy_items;
+std::vector<IFsItemPtr> g_cutcopy_items;
 int g_cutcopy_action = 0;
 
 
@@ -750,10 +750,10 @@ ExtensionBitmapMgr g_ext_bitmaps;
 // bitmap, if the file is a mount, or the regular bitmap if not
 #define DECIDE_BMP(bmp) ((info.isOk() && info->isMount()) ? (getShortcutBitmap(GETBMP(bmp))) : (GETBMP(bmp)))
 
-cfw::IFsItemEnumPtr DbFolderFsItem::getChildren()
+IFsItemEnumPtr DbFolderFsItem::getChildren()
 {
-    xcm::IVectorImpl<cfw::IFsItemPtr>* vec;
-    vec = new xcm::IVectorImpl<cfw::IFsItemPtr>;
+    xcm::IVectorImpl<IFsItemPtr>* vec;
+    vec = new xcm::IVectorImpl<IFsItemPtr>;
 
     if (m_conn)
     {
@@ -868,9 +868,9 @@ cfw::IFsItemEnumPtr DbFolderFsItem::getChildren()
         {
             DbFolderFsItem* item = new DbFolderFsItem;
             item->setLinkBarMode(m_link_bar_mode);
-            item->setBitmap(DECIDE_BMP(gf_folder_closed_16), cfw::fsbmpSmall);
-            item->setBitmap(DECIDE_BMP(gf_folder_open_16), cfw::fsbmpSmallExpanded);
-            item->setBitmap(DECIDE_BMP(gf_folder_closed_16), cfw::fsbmpLarge);
+            item->setBitmap(DECIDE_BMP(gf_folder_closed_16), fsbmpSmall);
+            item->setBitmap(DECIDE_BMP(gf_folder_open_16), fsbmpSmallExpanded);
+            item->setBitmap(DECIDE_BMP(gf_folder_closed_16), fsbmpLarge);
             item->setLabel(item_name);
             item->setPath(appendPath(m_path, item_name));
             item->setDatabase(m_db);
@@ -884,7 +884,7 @@ cfw::IFsItemEnumPtr DbFolderFsItem::getChildren()
                 item->setDeferred(true);
             }
             
-            vec->append(static_cast<cfw::IFsItem*>(item));
+            vec->append(static_cast<IFsItem*>(item));
         }
          else if (item_type == tango::filetypeSet)
         {
@@ -923,13 +923,13 @@ cfw::IFsItemEnumPtr DbFolderFsItem::getChildren()
 
 
             DbObjectFsItem* item = new DbObjectFsItem;
-            item->setBitmap(bmp, cfw::fsbmpSmall);
-            item->setBitmap(bmp, cfw::fsbmpLarge);
+            item->setBitmap(bmp, fsbmpSmall);
+            item->setBitmap(bmp, fsbmpLarge);
             item->setLabel(item_name);
             item->setPath(appendPath(m_path, item_name));
             item->setType(dbobject_type);
             item->setOwner(this);
-            vec->append(static_cast<cfw::IFsItem*>(item));
+            vec->append(static_cast<IFsItem*>(item));
         }
          else if (item_type == tango::filetypeNode)
         {
@@ -1004,32 +1004,32 @@ cfw::IFsItemEnumPtr DbFolderFsItem::getChildren()
 
             if (bookmark)
             {
-                item->setBitmap(GETBMP(gf_document_16), cfw::fsbmpSmall);
-                item->setBitmap(GETBMP(gf_document_16), cfw::fsbmpLarge);
+                item->setBitmap(GETBMP(gf_document_16), fsbmpSmall);
+                item->setBitmap(GETBMP(gf_document_16), fsbmpLarge);
                 item->setType(dbobjtypeBookmark);
             }
              else if (script)
             {
-                item->setBitmap(DECIDE_BMP(gf_script_16), cfw::fsbmpSmall);
-                item->setBitmap(DECIDE_BMP(gf_script_16), cfw::fsbmpLarge);
+                item->setBitmap(DECIDE_BMP(gf_script_16), fsbmpSmall);
+                item->setBitmap(DECIDE_BMP(gf_script_16), fsbmpLarge);
                 item->setType(dbobjtypeScript);
             }
              else if (report)
             {
-                item->setBitmap(DECIDE_BMP(gf_report_16), cfw::fsbmpSmall);
-                item->setBitmap(DECIDE_BMP(gf_report_16), cfw::fsbmpLarge);
+                item->setBitmap(DECIDE_BMP(gf_report_16), fsbmpSmall);
+                item->setBitmap(DECIDE_BMP(gf_report_16), fsbmpLarge);
                 item->setType(dbobjtypeReport);
             }
              else if (query)
             {
-                item->setBitmap(DECIDE_BMP(gf_query_16), cfw::fsbmpSmall);
-                item->setBitmap(DECIDE_BMP(gf_query_16), cfw::fsbmpLarge);
+                item->setBitmap(DECIDE_BMP(gf_query_16), fsbmpSmall);
+                item->setBitmap(DECIDE_BMP(gf_query_16), fsbmpLarge);
                 item->setType(dbobjtypeTemplate);
             }
              else
             {
-                item->setBitmap(DECIDE_BMP(gf_gear_16), cfw::fsbmpSmall);
-                item->setBitmap(DECIDE_BMP(gf_gear_16), cfw::fsbmpLarge);
+                item->setBitmap(DECIDE_BMP(gf_gear_16), fsbmpSmall);
+                item->setBitmap(DECIDE_BMP(gf_gear_16), fsbmpLarge);
                 item->setType(dbobjtypeTemplate);
             }
             
@@ -1060,13 +1060,13 @@ cfw::IFsItemEnumPtr DbFolderFsItem::getChildren()
                 
                 if (bmp.IsOk())
                 {
-                    item->setBitmap(bmp, cfw::fsbmpSmall);
-                    item->setBitmap(bmp, cfw::fsbmpLarge);
+                    item->setBitmap(bmp, fsbmpSmall);
+                    item->setBitmap(bmp, fsbmpLarge);
                 }
                 
             }
 
-            vec->append(static_cast<cfw::IFsItem*>(item));
+            vec->append(static_cast<IFsItem*>(item));
         }
          else if (item_type == tango::filetypeStream)
         {
@@ -1077,10 +1077,10 @@ cfw::IFsItemEnumPtr DbFolderFsItem::getChildren()
                 item->setLabel(item_name);
                 item->setPath(appendPath(m_path, item_name));
                 item->setOwner(this);
-                item->setBitmap(DECIDE_BMP(gf_report_16), cfw::fsbmpSmall);
-                item->setBitmap(DECIDE_BMP(gf_report_16), cfw::fsbmpLarge);
+                item->setBitmap(DECIDE_BMP(gf_report_16), fsbmpSmall);
+                item->setBitmap(DECIDE_BMP(gf_report_16), fsbmpLarge);
                 item->setType(dbobjtypeReport);
-                vec->append(static_cast<cfw::IFsItem*>(item));
+                vec->append(static_cast<IFsItem*>(item));
             }
              else if (mime_type == L"application/vnd.kx.query")
             {
@@ -1088,10 +1088,10 @@ cfw::IFsItemEnumPtr DbFolderFsItem::getChildren()
                 item->setLabel(item_name);
                 item->setPath(appendPath(m_path, item_name));
                 item->setOwner(this);
-                item->setBitmap(DECIDE_BMP(gf_query_16), cfw::fsbmpSmall);
-                item->setBitmap(DECIDE_BMP(gf_query_16), cfw::fsbmpLarge);
+                item->setBitmap(DECIDE_BMP(gf_query_16), fsbmpSmall);
+                item->setBitmap(DECIDE_BMP(gf_query_16), fsbmpLarge);
                 item->setType(dbobjtypeTemplate);
-                vec->append(static_cast<cfw::IFsItem*>(item));
+                vec->append(static_cast<IFsItem*>(item));
             }
              else if (mime_type.substr(0, 19) == L"application/vnd.kx.")
             {
@@ -1099,10 +1099,10 @@ cfw::IFsItemEnumPtr DbFolderFsItem::getChildren()
                 item->setLabel(item_name);
                 item->setPath(appendPath(m_path, item_name));
                 item->setOwner(this);
-                item->setBitmap(DECIDE_BMP(gf_gear_16), cfw::fsbmpSmall);
-                item->setBitmap(DECIDE_BMP(gf_gear_16), cfw::fsbmpLarge);
+                item->setBitmap(DECIDE_BMP(gf_gear_16), fsbmpSmall);
+                item->setBitmap(DECIDE_BMP(gf_gear_16), fsbmpLarge);
                 item->setType(dbobjtypeTemplate);
-                vec->append(static_cast<cfw::IFsItem*>(item));
+                vec->append(static_cast<IFsItem*>(item));
             }
              else
             {
@@ -1110,10 +1110,10 @@ cfw::IFsItemEnumPtr DbFolderFsItem::getChildren()
                 item->setLabel(item_name);
                 item->setPath(appendPath(m_path, item_name));
                 item->setOwner(this);
-                item->setBitmap(DECIDE_BMP(gf_script_16), cfw::fsbmpSmall);
-                item->setBitmap(DECIDE_BMP(gf_script_16), cfw::fsbmpLarge);
+                item->setBitmap(DECIDE_BMP(gf_script_16), fsbmpSmall);
+                item->setBitmap(DECIDE_BMP(gf_script_16), fsbmpLarge);
                 item->setType(dbobjtypeScript);
-                vec->append(static_cast<cfw::IFsItem*>(item));
+                vec->append(static_cast<IFsItem*>(item));
             }
         }
         
@@ -1123,7 +1123,7 @@ cfw::IFsItemEnumPtr DbFolderFsItem::getChildren()
             // in link bar mode, chop very long lables down a bit
             if (vec->size() > 0)
             {
-                cfw::IFsItemPtr item = vec->getItem(vec->size()-1);
+                IFsItemPtr item = vec->getItem(vec->size()-1);
                 if (item.isOk())
                 {
                     wxString label = item->getLabel();
@@ -1346,7 +1346,7 @@ bool DbDoc::initAsWindow(wxWindow* window,
                          const wxPoint& position,
                          const wxSize& size,
                          int flags,
-                         cfw::IFsItemPtr item)
+                         IFsItemPtr item)
 {
     // set the root item
     IDbFolderFsItemPtr db_item = item;
@@ -1385,14 +1385,14 @@ bool DbDoc::initAsWindow(wxWindow* window,
     m_fspanel->sigDragDrop().connect(this, &DbDoc::onDragDrop);
 
     m_fspanel->setRootItem(m_root_item);
-    m_fspanel->setView(cfw::fsviewTree);
+    m_fspanel->setView(fsviewTree);
     m_fspanel->refresh();
     
     return true;
 }
 
 
-bool DbDoc::initAsDocument(cfw::IFsItemPtr item)
+bool DbDoc::initAsDocument(IFsItemPtr item)
 {
     // set the root item
     IDbFolderFsItemPtr db_item = item;
@@ -1415,7 +1415,7 @@ bool DbDoc::initAsDocument(cfw::IFsItemPtr item)
         return false;
     }
     
-    int x = 0, y = 0, w = 220, h = 80, state = cfw::sitetypeDockable | cfw::dockLeft;
+    int x = 0, y = 0, w = 220, h = 80, state = sitetypeDockable | dockLeft;
     m_fspanel->setStyle(m_style);
     m_dbdoc_site = g_app->getMainFrame()->createSite(m_fspanel, state, x, y, w, h);
     
@@ -1440,26 +1440,26 @@ bool DbDoc::initAsDocument(cfw::IFsItemPtr item)
     m_fspanel->sigDragDrop().connect(this, &DbDoc::onDragDrop);
 
     m_fspanel->setRootItem(m_root_item);
-    m_fspanel->setView(cfw::fsviewTree);
+    m_fspanel->setView(fsviewTree);
     m_fspanel->refresh();
     
     return true;
 }
 
 
-cfw::IDocumentSitePtr DbDoc::getDbDocSite()
+IDocumentSitePtr DbDoc::getDbDocSite()
 {
     return m_dbdoc_site;
 }
 
-cfw::IFsPanelPtr DbDoc::getFsPanel()
+IFsPanelPtr DbDoc::getFsPanel()
 {
     return m_fspanel;
 }
 
 wxWindow* DbDoc::getDocWindow()
 {
-    cfw::IDocumentPtr doc = m_fspanel;
+    IDocumentPtr doc = m_fspanel;
     if (doc.isNull())
         return NULL;
     return doc->getDocumentWindow();
@@ -1500,7 +1500,7 @@ void DbDoc::setRootItem(IDbFolderFsItemPtr root_folder)
     g_cutcopy_items.clear();
 }
 
-bool DbDoc::isFsItemExternal(cfw::IFsItemPtr item)
+bool DbDoc::isFsItemExternal(IFsItemPtr item)
 {
     tango::IDatabasePtr db = getItemDatabase(item);
     if (db != g_app->getDatabase())
@@ -1516,7 +1516,7 @@ void DbDoc::refresh()
         return;
         
     // make sure the root label is updated
-    cfw::IFsItemPtr root = m_fspanel->getRootItem();
+    IFsItemPtr root = m_fspanel->getRootItem();
     
     if (!root)
         return;
@@ -1530,7 +1530,7 @@ void DbDoc::refresh()
 }
 
 
-void DbDoc::actionActivate(cfw::IFsItemPtr item, int open_mask)
+void DbDoc::actionActivate(IFsItemPtr item, int open_mask)
 {
     AppBusyCursor bc;
 
@@ -1552,7 +1552,7 @@ void DbDoc::actionActivate(cfw::IFsItemPtr item, int open_mask)
 
     if (!app_cont->openAny(obj_path, open_mask))
     {
-        cfw::appMessageBox(_("The file cannot be opened.  Please check to make sure that the file\nexists, that you have the necessary permissions to access it, and \nit is not currently being modified."),
+        appMessageBox(_("The file cannot be opened.  Please check to make sure that the file\nexists, that you have the necessary permissions to access it, and \nit is not currently being modified."),
                        APPLICATION_NAME,
                        wxOK | wxICON_EXCLAMATION | wxCENTER);
         return;
@@ -1575,7 +1575,7 @@ friend class DbDoc;
 
 private:
     
-    DbDocItemActivate(cfw::IFsItemPtr item, int open_mask)
+    DbDocItemActivate(IFsItemPtr item, int open_mask)
     {
         m_item = item;
         m_open_mask = open_mask;
@@ -1591,12 +1591,12 @@ private:
     
 private:
 
-    cfw::IFsItemPtr m_item;
+    IFsItemPtr m_item;
     int m_open_mask;
 };
 
 
-void DbDoc::actionActivateDeferred(cfw::IFsItemPtr item, int open_mask)
+void DbDoc::actionActivateDeferred(IFsItemPtr item, int open_mask)
 {
     DbDocItemActivate* act = new DbDocItemActivate(item, open_mask);
     wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED, 10000);
@@ -1604,7 +1604,7 @@ void DbDoc::actionActivateDeferred(cfw::IFsItemPtr item, int open_mask)
 }
 
 
-void DbDoc::getFsItemPaths(cfw::IFsItemEnumPtr source,
+void DbDoc::getFsItemPaths(IFsItemEnumPtr source,
                            std::vector<wxString>& result,
                            bool expand_subfolders)
 {
@@ -1614,7 +1614,7 @@ void DbDoc::getFsItemPaths(cfw::IFsItemEnumPtr source,
     size_t i, size = source->size();
     for (i = 0; i < size; ++i)
     {
-        cfw::IFsItemPtr item = source->getItem(i);
+        IFsItemPtr item = source->getItem(i);
         IDbFolderFsItemPtr db_folder_item = item;
         
         if (db_folder_item.isOk())
@@ -1656,7 +1656,7 @@ void DbDoc::getFsItemPaths(cfw::IFsItemEnumPtr source,
     }
 }
 
-wxString DbDoc::getFsItemPath(cfw::IFsItemPtr source)
+wxString DbDoc::getFsItemPath(IFsItemPtr source)
 {
     IDbFolderFsItemPtr db_folder_item = source;
 
@@ -1718,7 +1718,7 @@ void DbDoc::setFileVisualLocation(const wxString& path, int insert_index)
 }
 
 
-bool DbDoc::isItemMount(cfw::IFsItemPtr _item)
+bool DbDoc::isItemMount(IFsItemPtr _item)
 {
     IDbObjectFsItemPtr item = _item;
     if (item.isNull())
@@ -1726,7 +1726,7 @@ bool DbDoc::isItemMount(cfw::IFsItemPtr _item)
     return item->getIsMount();
 }
 
-bool DbDoc::isItemInMount(cfw::IFsItemPtr item)
+bool DbDoc::isItemInMount(IFsItemPtr item)
 {
     IDbObjectFsItemPtr dbitem = item;
     
@@ -1746,7 +1746,7 @@ bool DbDoc::isItemInMount(cfw::IFsItemPtr item)
     }
 }
 
-tango::IDatabasePtr DbDoc::getItemDatabase(cfw::IFsItemPtr _item)
+tango::IDatabasePtr DbDoc::getItemDatabase(IFsItemPtr _item)
 {
     IDbObjectFsItemPtr item = _item;
     
@@ -1759,11 +1759,11 @@ tango::IDatabasePtr DbDoc::getItemDatabase(cfw::IFsItemPtr _item)
         if (!dbdoc)
             return xcm::null;
             
-        cfw::IFsPanelPtr fspanel = dbdoc->getFsPanel();
+        IFsPanelPtr fspanel = dbdoc->getFsPanel();
         if (fspanel.isNull())
             return xcm::null;
             
-        cfw::IFsItemPtr parent = fspanel->getItemParent(_item);
+        IFsItemPtr parent = fspanel->getItemParent(_item);
         if (!parent)
             return xcm::null;
         
@@ -1788,7 +1788,7 @@ tango::IDatabasePtr DbDoc::getItemDatabase(cfw::IFsItemPtr _item)
     }
 }
 
-cfw::IFsItemPtr DbDoc::getFsItemFromPath(const wxString& path)
+IFsItemPtr DbDoc::getFsItemFromPath(const wxString& path)
 {
     wxString s = path;
     s.Trim();
@@ -1815,12 +1815,12 @@ void DbDoc::onKeyDown(const wxKeyEvent& evt)
 
 void DbDoc::onCreateExternalConnection(wxCommandEvent& evt)
 {
-    cfw::IFsItemEnumPtr items;
+    IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
     if (items->size() != 1)
         return;
 
-    cfw::IFsItemPtr item = items->getItem(0);
+    IFsItemPtr item = items->getItem(0);
 
     IDbFolderFsItemPtr folder = item;
     if (!folder)
@@ -1831,12 +1831,12 @@ void DbDoc::onCreateExternalConnection(wxCommandEvent& evt)
 
 void DbDoc::onCreateTable(wxCommandEvent& evt)
 {
-    cfw::IFsItemEnumPtr items;
+    IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
     if (items->size() != 1)
         return;
 
-    cfw::IFsItemPtr item = items->getItem(0);
+    IFsItemPtr item = items->getItem(0);
 
     IDbFolderFsItemPtr folder = item;
     if (!folder)
@@ -1847,12 +1847,12 @@ void DbDoc::onCreateTable(wxCommandEvent& evt)
 
 void DbDoc::onImportData(wxCommandEvent& evt)
 {
-    cfw::IFsItemEnumPtr items;
+    IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
     if (items->size() != 1)
         return;
 
-    cfw::IFsItemPtr item = items->getItem(0);
+    IFsItemPtr item = items->getItem(0);
 
     IDbFolderFsItemPtr folder = item;
     if (!folder)
@@ -1866,7 +1866,7 @@ void DbDoc::onImportData(wxCommandEvent& evt)
 
 void DbDoc::onExportData(wxCommandEvent& evt)
 {
-    cfw::IFsItemEnumPtr items;
+    IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
 
     int i;
@@ -1877,7 +1877,7 @@ void DbDoc::onExportData(wxCommandEvent& evt)
 
     for (i = 0; i < count; ++i)
     {
-        cfw::IFsItemPtr item = items->getItem(i);
+        IFsItemPtr item = items->getItem(i);
         wxString path = getFsItemPath(item);
 
         ts.input_tablename = path;
@@ -1895,12 +1895,12 @@ void DbDoc::onOpenProject(wxCommandEvent& evt)
 
 void DbDoc::onProjectProperties(wxCommandEvent& evt)
 {
-    cfw::IFsItemEnumPtr items;
+    IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
     if (items->size() != 1)
         return;
 
-    cfw::IFsItemPtr item = items->getItem(0);
+    IFsItemPtr item = items->getItem(0);
 
     IDbFolderFsItemPtr folder = item;
     if (!folder)
@@ -1911,7 +1911,7 @@ void DbDoc::onProjectProperties(wxCommandEvent& evt)
 
 void DbDoc::onItemProperties(wxCommandEvent& evt)
 {
-    cfw::IFsItemEnumPtr items;
+    IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
     size_t i,count = items->size();
 
@@ -1981,7 +1981,7 @@ void DbDoc::onItemProperties(wxCommandEvent& evt)
                 if (!db->getMountPoint(path, cstr, rpath))
                     return;
 
-                cfw::IDocumentSitePtr site;
+                IDocumentSitePtr site;
                 
                 m_edit_item = folder;
                 
@@ -1991,7 +1991,7 @@ void DbDoc::onItemProperties(wxCommandEvent& evt)
                 wizard->setConnectionString(towx(cstr));
                 wizard->sigConnectionWizardFinished.connect(this, &DbDoc::onSetConnectionPropertiesFinished);
                 
-                site = g_app->getMainFrame()->createSite(wizard, cfw::sitetypeModeless,
+                site = g_app->getMainFrame()->createSite(wizard, sitetypeModeless,
                                                          -1, -1, 540, 480);
                 site->setMinSize(540,480);
                 site->setName(wxT("ConnectionPropertiesPanel"));
@@ -2008,8 +2008,8 @@ void DbDoc::onItemProperties(wxCommandEvent& evt)
     for (i = 0; i < count; ++i)
         panel->addFile(getFsItemPath(items->getItem(i)));
 
-    cfw::IDocumentSitePtr site;
-    site = g_app->getMainFrame()->createSite(panel, cfw::sitetypeModeless,
+    IDocumentSitePtr site;
+    site = g_app->getMainFrame()->createSite(panel, sitetypeModeless,
                                              -1, -1, 600, 520);
     site->setMinSize(600,320);
     site->setName(wxT("FilePropertiesPanel"));
@@ -2022,11 +2022,11 @@ void DbDoc::onRefreshProject(wxCommandEvent& evt)
 
 void DbDoc::onRefreshItem(wxCommandEvent& evt)
 {
-    cfw::IFsItemEnumPtr items;
+    IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
     if (items->size() != 1)
         return;
-    cfw::IFsItemPtr item = items->getItem(0);
+    IFsItemPtr item = items->getItem(0);
 
     m_fspanel->refreshItem(item);
 }
@@ -2044,7 +2044,7 @@ void DbDoc::onRemoveItem(wxCommandEvent& evt)
     wxString message;
     int i;
 
-    cfw::IFsItemEnumPtr items;
+    IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
     int count = items->size();
     if (count < 1)
@@ -2052,7 +2052,7 @@ void DbDoc::onRemoveItem(wxCommandEvent& evt)
 
     for (i = 0; i < count; ++i)
     {
-        cfw::IFsItemPtr item = items->getItem(i);
+        IFsItemPtr item = items->getItem(i);
         
         if (!isItemMount(item))
             all_mounts = false;
@@ -2086,7 +2086,7 @@ void DbDoc::onRemoveItem(wxCommandEvent& evt)
 
     for (i = 0; i < count; ++i)
     {
-        cfw::IFsItemPtr item = items->getItem(i);
+        IFsItemPtr item = items->getItem(i);
 
         wxString path = getFsItemPath(item);
         path = path.AfterLast(L'/');
@@ -2110,7 +2110,7 @@ void DbDoc::onRemoveItem(wxCommandEvent& evt)
 
     if (mcount > 0 && !external_database_item)
     {
-        int result = cfw::appMessageBox(message,
+        int result = appMessageBox(message,
                                         APPLICATION_NAME,
                                         wxYES_NO | wxICON_EXCLAMATION | wxCENTER);
         if (result != wxYES)
@@ -2123,13 +2123,13 @@ void DbDoc::onRemoveItem(wxCommandEvent& evt)
     
     if (external_database_item)
     {
-        cfw::IFsItemPtr item = items->getItem(0);
+        IFsItemPtr item = items->getItem(0);
         
         message = _("You are about to remove the following external connection.\nAre you sure?\n\n");
         message += wxT("     ");
         message += item->getLabel();
 
-        int result = cfw::appMessageBox(message,
+        int result = appMessageBox(message,
                                         APPLICATION_NAME,
                                         wxYES_NO | wxICON_EXCLAMATION | wxCENTER);
         if (result != wxYES)
@@ -2169,7 +2169,7 @@ void DbDoc::onRemoveItem(wxCommandEvent& evt)
             message += wxT("\n");
         }
 
-        cfw::appMessageBox(message,
+        appMessageBox(message,
                            APPLICATION_NAME,
                            wxOK| wxICON_EXCLAMATION | wxCENTER);
     }
@@ -2178,7 +2178,7 @@ void DbDoc::onRemoveItem(wxCommandEvent& evt)
     // refocus the project tree; note: deleting a bookmarked webpage from a
     // folder in the link bar folder was causing a crash since doc was null; 
     // check to see if doc is null before deleting to prevent the crash
-    cfw::IDocumentPtr doc = m_fspanel;
+    IDocumentPtr doc = m_fspanel;
     
     if (doc.isOk())
         doc->setDocumentFocus();
@@ -2186,11 +2186,11 @@ void DbDoc::onRemoveItem(wxCommandEvent& evt)
 
 void DbDoc::onRenameItem(wxCommandEvent& evt)
 {
-    cfw::IFsItemEnumPtr items;
+    IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
     if (items->size() != 1)
         return;
-    cfw::IFsItemPtr item = items->getItem(0);
+    IFsItemPtr item = items->getItem(0);
         
     if (m_link_bar_mode)
     {
@@ -2244,7 +2244,7 @@ void DbDoc::onOpenAsWeb(wxCommandEvent& evt)
 
 void DbDoc::onRunQuery(wxCommandEvent& event)
 {
-    cfw::IFsItemEnumPtr items;
+    IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
 
     int i, count;
@@ -2252,7 +2252,7 @@ void DbDoc::onRunQuery(wxCommandEvent& event)
 
     for (i = 0; i < count; ++i)
     {
-        cfw::IFsItemPtr item = items->getItem(i);
+        IFsItemPtr item = items->getItem(i);
 
         IDbObjectFsItemPtr obj;
         obj = item;
@@ -2266,20 +2266,20 @@ void DbDoc::onRunQuery(wxCommandEvent& event)
 
 void DbDoc::onRunScript(wxCommandEvent& event)
 {
-    cfw::IFsItemEnumPtr items;
+    IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
     if (items->size() != 1)
         return;
-    cfw::IFsItemPtr item = items->getItem(0);
+    IFsItemPtr item = items->getItem(0);
     wxString item_path = getFsItemPath(item);
     
-    cfw::IDocumentSiteEnumPtr docsites;
-    cfw::IDocumentSitePtr site;
+    IDocumentSiteEnumPtr docsites;
+    IDocumentSitePtr site;
     IEditorDocPtr editor_doc;
     
     // if we're running a script from the project panel, make sure
     // all open scripts (except untitled scripts) are saved first
-    docsites = g_app->getMainFrame()->getDocumentSites(cfw::sitetypeNormal);
+    docsites = g_app->getMainFrame()->getDocumentSites(sitetypeNormal);
     int site_count = docsites->size();
     for (int i = 0; i < site_count; ++i)
     {
@@ -2306,7 +2306,7 @@ void DbDoc::onRunScript(wxCommandEvent& event)
         if (!g_app->getAppController()->openScript(script_path, &doc_id))
             return;
         
-        cfw::IDocumentSitePtr site = g_app->getMainFrame()->lookupSiteById(doc_id);
+        IDocumentSitePtr site = g_app->getMainFrame()->lookupSiteById(doc_id);
         if (site.isNull())
             return;
         
@@ -2326,7 +2326,7 @@ void DbDoc::onRunScript(wxCommandEvent& event)
                                             error_str.c_str());
         
         // alert the user that the script couldn't be run
-        cfw::appMessageBox(message,
+        appMessageBox(message,
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
     }
@@ -2334,7 +2334,7 @@ void DbDoc::onRunScript(wxCommandEvent& event)
 
 void DbDoc::onPrintReport(wxCommandEvent& evt)
 {
-    cfw::IFsItemEnumPtr items;
+    IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
 
     int i, count;
@@ -2342,7 +2342,7 @@ void DbDoc::onPrintReport(wxCommandEvent& evt)
 
     for (i = 0; i < count; ++i)
     {
-        cfw::IFsItemPtr item = items->getItem(i);
+        IFsItemPtr item = items->getItem(i);
 
         IDbObjectFsItemPtr obj;
         obj = item;
@@ -2356,11 +2356,11 @@ void DbDoc::onPrintReport(wxCommandEvent& evt)
 
 void DbDoc::onModifyStructure(wxCommandEvent& event)
 {
-    cfw::IFsItemEnumPtr items;
+    IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
     if (items->size() != 1)
         return;
-    cfw::IFsItemPtr item = items->getItem(0);
+    IFsItemPtr item = items->getItem(0);
     
     IDbObjectFsItemPtr obj = item;
     if (!obj)
@@ -2376,8 +2376,8 @@ void DbDoc::onModifyStructure(wxCommandEvent& event)
 
     StructureDoc* doc = new StructureDoc;
     doc->setModifySet(modify_set);
-    g_app->getMainFrame()->createSite(static_cast<cfw::IDocument*>(doc),
-                                      cfw::sitetypeNormal,
+    g_app->getMainFrame()->createSite(static_cast<IDocument*>(doc),
+                                      sitetypeNormal,
                                       -1, -1, -1, -1);
 }
 
@@ -2387,14 +2387,14 @@ void DbDoc::doCut()
     g_cutcopy_items.clear();
     g_cutcopy_action = actionCut;
     
-    cfw::IFsItemEnumPtr items;
+    IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
     
     size_t i, count = items->size();
 
     for (i = 0; i < count; ++i)
     {
-        cfw::IFsItemPtr item = items->getItem(i);
+        IFsItemPtr item = items->getItem(i);
         g_cutcopy_items.push_back(item);
         m_fspanel->setItemBitmap(item, lightenBitmap(item->getBitmap()));
     }
@@ -2405,14 +2405,14 @@ void DbDoc::doCopy()
     g_cutcopy_items.clear();
     g_cutcopy_action = actionCopy;
 
-    cfw::IFsItemEnumPtr items;
+    IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
     int count = items->size();
     int i;
 
     for (i = 0; i < count; ++i)
     {
-        cfw::IFsItemPtr item = items->getItem(i);
+        IFsItemPtr item = items->getItem(i);
         g_cutcopy_items.push_back(item);
     }
 }
@@ -2425,12 +2425,12 @@ void DbDoc::doPaste()
     if (g_cutcopy_items.size() == 0)
         return;
 
-    cfw::IFsItemEnumPtr items;
+    IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
     if (items->size() != 1)
         return;
 
-    cfw::IFsItemPtr target = items->getItem(0);
+    IFsItemPtr target = items->getItem(0);
     
     while (target)
     {
@@ -2449,7 +2449,7 @@ void DbDoc::doPaste()
     
     tango::IDatabasePtr target_database = getItemDatabase(target);
 
-    std::vector<cfw::IFsItemPtr>::iterator it;
+    std::vector<IFsItemPtr>::iterator it;
 
     if (g_cutcopy_action == actionCut)
     {
@@ -2458,7 +2458,7 @@ void DbDoc::doPaste()
         {
             if (target == *it)
             {
-                cfw::appMessageBox(_("One or more source and/or destination files are the same."),
+                appMessageBox(_("One or more source and/or destination files are the same."),
                                    APPLICATION_NAME,
                                    wxOK | wxICON_EXCLAMATION | wxCENTER);
                 return;
@@ -2500,7 +2500,7 @@ void DbDoc::doPaste()
                 // post a command that lets everyone know that
                 // an ofs item has been moved
 
-                cfw::Event* cfw_event = new cfw::Event(wxT("treepanel.ofsFileRenamed"));
+                FrameworkEvent* cfw_event = new FrameworkEvent(wxT("treepanel.ofsFileRenamed"));
                 cfw_event->s_param = src_path;
                 cfw_event->s_param2 = target_path;
                 g_app->getMainFrame()->postEvent(cfw_event);
@@ -2521,10 +2521,10 @@ void DbDoc::doPaste()
     {
         bool external_copy = false;
 
-        std::vector<cfw::IFsItemPtr>::iterator it;
+        std::vector<IFsItemPtr>::iterator it;
         for (it = g_cutcopy_items.begin(); it != g_cutcopy_items.end(); ++it)
         {
-            cfw::IFsItemPtr item = *it;
+            IFsItemPtr item = *it;
 
             if (isFsItemExternal(item))
             {
@@ -2616,7 +2616,7 @@ void DbDoc::doPaste()
                 tango::IFileInfoPtr file_info = db->getFileInfo(towstr(src_path));
                 if (!file_info)
                 {
-                    cfw::appMessageBox(_("One or more source files are in use, and cannot be accessed at this time."),
+                    appMessageBox(_("One or more source files are in use, and cannot be accessed at this time."),
                                        APPLICATION_NAME,
                                        wxOK | wxICON_EXCLAMATION | wxCENTER);
                     delete job;
@@ -2644,7 +2644,7 @@ void DbDoc::doPaste()
 
             if (job->getInstructionCount() > 0)
             {
-                g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+                g_app->getJobQueue()->addJob(job, jobStateRunning);
                 
                 job->sigJobFinished().connect(this, &DbDoc::onCopyJobFinished);
             }
@@ -2673,12 +2673,12 @@ void DbDoc::onPaste(wxCommandEvent& evt)
 
 void DbDoc::onNewShortcut(wxCommandEvent& evt)
 {
-    cfw::IFsItemEnumPtr items;
+    IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
     if (items->size() != 1)
         return;
 
-    cfw::IFsItemPtr parent_item = items->getItem(0);
+    IFsItemPtr parent_item = items->getItem(0);
 
     DlgDatabaseFile dlg(g_app->getMainWindow(), DlgDatabaseFile::modeOpen);
     dlg.setCaption(_("Select Item Location"));
@@ -2696,7 +2696,7 @@ void DbDoc::onNewShortcut(wxCommandEvent& evt)
     
     m_fspanel->refreshItem(parent_item);
 
-    cfw::IFsItemPtr target = getFsItemFromPath(path);
+    IFsItemPtr target = getFsItemFromPath(path);
     if (target.isOk())
     {
         m_fspanel->unselectAll();
@@ -2705,13 +2705,13 @@ void DbDoc::onNewShortcut(wxCommandEvent& evt)
     
 }
 
-cfw::IFsItemPtr DbDoc::getNewFileParent()
+IFsItemPtr DbDoc::getNewFileParent()
 {
     tango::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return xcm::null;
     
-    cfw::IFsItemEnumPtr items;
+    IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
     if (items->size() != 1)
         return xcm::null;
@@ -2719,7 +2719,7 @@ cfw::IFsItemPtr DbDoc::getNewFileParent()
     return items->getItem(0);
 }
     
-wxString DbDoc::getDefaultNewFileName(cfw::IFsItemPtr parent, const wxString& name)
+wxString DbDoc::getDefaultNewFileName(IFsItemPtr parent, const wxString& name)
 {
     wxASSERT(parent.isOk());
     
@@ -2753,7 +2753,7 @@ wxString DbDoc::getDefaultNewFileName(cfw::IFsItemPtr parent, const wxString& na
 void DbDoc::onNewFolder(wxCommandEvent& evt)
 {
 /*
-    cfw::IFsItemEnumPtr items;
+    IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
     if (items->size() != 1)
         return;
@@ -2763,8 +2763,8 @@ void DbDoc::onNewFolder(wxCommandEvent& evt)
     // find the last folder and put our temporary
     // edit item directly under there
 
-    cfw::IFsItemPtr previous_item;
-    cfw::IFsItemEnumPtr all_items;
+    IFsItemPtr previous_item;
+    IFsItemEnumPtr all_items;
     
     all_items = m_fspanel->getItemChildren(m_newitem_parent);
 
@@ -2773,7 +2773,7 @@ void DbDoc::onNewFolder(wxCommandEvent& evt)
 
     for (i = 0; i < count; ++i)
     {
-        cfw::IFsItemPtr item = all_items->getItem(i);
+        IFsItemPtr item = all_items->getItem(i);
         IDbFolderFsItemPtr folder = item;
         if (!folder)
             break;
@@ -2781,7 +2781,7 @@ void DbDoc::onNewFolder(wxCommandEvent& evt)
         previous_item = item;
     }
 
-    cfw::IFsItemPtr new_item;
+    IFsItemPtr new_item;
     new_item = m_fspanel->insertItem(m_newitem_parent,
                                      previous_item,
                                      wxT(""),
@@ -2792,7 +2792,7 @@ void DbDoc::onNewFolder(wxCommandEvent& evt)
     m_fspanel->editLabel(new_item);
 */
 
-    cfw::IFsItemPtr parent = getNewFileParent();
+    IFsItemPtr parent = getNewFileParent();
     if (parent.isNull())
         return;
         
@@ -2801,7 +2801,7 @@ void DbDoc::onNewFolder(wxCommandEvent& evt)
     tango::IDatabasePtr db = g_app->getDatabase();
     if (!db->createFolder(towstr(path)))
     {
-        cfw::appMessageBox(_("A folder could not be created in this location."),
+        appMessageBox(_("A folder could not be created in this location."),
                            APPLICATION_NAME,
                            wxOK | wxICON_ERROR | wxCENTER);
         return;
@@ -2812,7 +2812,7 @@ void DbDoc::onNewFolder(wxCommandEvent& evt)
     if (!m_fspanel->isItemExpanded(parent))
         m_fspanel->expand(parent);
     
-    cfw::IFsItemPtr new_item = getFsItemFromPath(path);
+    IFsItemPtr new_item = getFsItemFromPath(path);
     if (new_item)
     {
         m_fspanel->expand(new_item);
@@ -2824,7 +2824,7 @@ void DbDoc::onNewFolder(wxCommandEvent& evt)
 
 void DbDoc::onNewTable(wxCommandEvent& evt)
 {
-    cfw::IFsItemPtr parent = getNewFileParent();
+    IFsItemPtr parent = getNewFileParent();
     if (parent.isNull())
         return;
         
@@ -2832,7 +2832,7 @@ void DbDoc::onNewTable(wxCommandEvent& evt)
     
     if (!TableDocMgr::newFile(path))
     {
-        cfw::appMessageBox(_("A file could not be created in this folder."),
+        appMessageBox(_("A file could not be created in this folder."),
                            APPLICATION_NAME,
                            wxOK | wxICON_ERROR | wxCENTER);
         return;
@@ -2843,7 +2843,7 @@ void DbDoc::onNewTable(wxCommandEvent& evt)
     if (!m_fspanel->isItemExpanded(parent))
         m_fspanel->expand(parent);
     
-    cfw::IFsItemPtr new_item = getFsItemFromPath(path);
+    IFsItemPtr new_item = getFsItemFromPath(path);
     if (new_item)
     {
         m_edit_mode = editRename;
@@ -2853,14 +2853,14 @@ void DbDoc::onNewTable(wxCommandEvent& evt)
 
 void DbDoc::onNewReport(wxCommandEvent& evt)
 {
-    cfw::IFsItemPtr parent = getNewFileParent();
+    IFsItemPtr parent = getNewFileParent();
     if (parent.isNull())
         return;
         
     wxString path = getDefaultNewFileName(parent, _("New Report"));
     if (!ReportDoc::newFile(path))
     {
-        cfw::appMessageBox(_("A file could not be created in this folder."),
+        appMessageBox(_("A file could not be created in this folder."),
                            APPLICATION_NAME,
                            wxOK | wxICON_ERROR | wxCENTER);
         return;
@@ -2871,7 +2871,7 @@ void DbDoc::onNewReport(wxCommandEvent& evt)
     if (!m_fspanel->isItemExpanded(parent))
         m_fspanel->expand(parent);
     
-    cfw::IFsItemPtr new_item = getFsItemFromPath(path);
+    IFsItemPtr new_item = getFsItemFromPath(path);
     if (new_item)
     {
         m_edit_mode = editRename;
@@ -2881,14 +2881,14 @@ void DbDoc::onNewReport(wxCommandEvent& evt)
 
 void DbDoc::onNewQuery(wxCommandEvent& evt)
 {
-    cfw::IFsItemPtr parent = getNewFileParent();
+    IFsItemPtr parent = getNewFileParent();
     if (parent.isNull())
         return;
         
     wxString path = getDefaultNewFileName(parent, _("New Query"));
     if (!QueryDoc::newFile(path))
     {
-        cfw::appMessageBox(_("A file could not be created in this folder."),
+        appMessageBox(_("A file could not be created in this folder."),
                            APPLICATION_NAME,
                            wxOK | wxICON_ERROR | wxCENTER);
         return;
@@ -2899,7 +2899,7 @@ void DbDoc::onNewQuery(wxCommandEvent& evt)
     if (!m_fspanel->isItemExpanded(parent))
         m_fspanel->expand(parent);
     
-    cfw::IFsItemPtr new_item = getFsItemFromPath(path);
+    IFsItemPtr new_item = getFsItemFromPath(path);
     if (new_item)
     {
         m_edit_mode = editRename;
@@ -2909,14 +2909,14 @@ void DbDoc::onNewQuery(wxCommandEvent& evt)
 
 void DbDoc::onNewScript(wxCommandEvent& evt)
 {
-    cfw::IFsItemPtr parent = getNewFileParent();
+    IFsItemPtr parent = getNewFileParent();
     if (parent.isNull())
         return;
         
     wxString path = getDefaultNewFileName(parent, _("New Script"));
     if (!EditorDoc::newFile(path))
     {
-        cfw::appMessageBox(_("A file could not be created in this folder."),
+        appMessageBox(_("A file could not be created in this folder."),
                            APPLICATION_NAME,
                            wxOK | wxICON_ERROR | wxCENTER);
         return;
@@ -2927,7 +2927,7 @@ void DbDoc::onNewScript(wxCommandEvent& evt)
     if (!m_fspanel->isItemExpanded(parent))
         m_fspanel->expand(parent);
     
-    cfw::IFsItemPtr new_item = getFsItemFromPath(path);
+    IFsItemPtr new_item = getFsItemFromPath(path);
     if (new_item)
     {
         m_edit_mode = editRename;
@@ -2943,13 +2943,13 @@ void DbDoc::onNewItemFinished(wxCommandEvent& evt)
     updateCutCopyItems();
     
     // now select the new folder
-    cfw::IFsItemEnumPtr children = m_fspanel->getItemChildren(m_newitem_parent);
+    IFsItemEnumPtr children = m_fspanel->getItemChildren(m_newitem_parent);
     int child_count = children->size();
     int i;
     
     for (i = 0; i < child_count; ++i)
     {
-        cfw::IFsItemPtr child = children->getItem(i);
+        IFsItemPtr child = children->getItem(i);
         IDbFolderFsItemPtr folder = child;
         if (folder.isNull())
             continue;
@@ -2986,7 +2986,7 @@ void DbDoc::openSelectedItems(int open_mask)
     if (open_mask == -1)
         open_mask = appOpenDefault;
 
-    cfw::IFsItemEnumPtr items;
+    IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
 
     int i, count;
@@ -2994,7 +2994,7 @@ void DbDoc::openSelectedItems(int open_mask)
 
     for (i = 0; i < count; ++i)
     {
-        cfw::IFsItemPtr item = items->getItem(i);
+        IFsItemPtr item = items->getItem(i);
 
         IDbObjectFsItemPtr obj;
         obj = item;
@@ -3008,7 +3008,7 @@ void DbDoc::openSelectedItems(int open_mask)
 
 void DbDoc::toggleExpandOnSelectedItems()
 {
-    cfw::IFsItemEnumPtr items;
+    IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
 
     size_t i, count = items->size();
@@ -3017,7 +3017,7 @@ void DbDoc::toggleExpandOnSelectedItems()
 
     for (i = 0; i < count; ++i)
     {
-        cfw::IFsItemPtr item = items->getItem(i);
+        IFsItemPtr item = items->getItem(i);
         if (m_fspanel->isItemExpanded(item))
             m_fspanel->collapse(item);
              else
@@ -3027,13 +3027,13 @@ void DbDoc::toggleExpandOnSelectedItems()
 
 void DbDoc::updateCutCopyItems()
 {
-    std::vector<cfw::IFsItemPtr> new_cutcopy_items;
+    std::vector<IFsItemPtr> new_cutcopy_items;
 
-    std::vector<cfw::IFsItemPtr>::iterator it;
+    std::vector<IFsItemPtr>::iterator it;
     for (it = g_cutcopy_items.begin(); it != g_cutcopy_items.end(); ++it)
     {
         wxString path = getFsItemPath(*it);
-        cfw::IFsItemPtr new_item = getFsItemFromPath(path);
+        IFsItemPtr new_item = getFsItemFromPath(path);
         if (new_item)
         {
             if (new_item != *it)
@@ -3054,8 +3054,8 @@ void DbDoc::updateCutCopyItems()
 // This function deletes a folder in the tree as well
 // as recursively deletes its contents
 
-void DbDoc::deleteFsItem(cfw::IFsPanelPtr tree,
-                         cfw::IFsItemPtr item,
+void DbDoc::deleteFsItem(IFsPanelPtr tree,
+                         IFsItemPtr item,
                          std::vector<wxString>& problem_items)
 {    
     IDbFolderFsItemPtr folder = item;
@@ -3098,7 +3098,7 @@ void DbDoc::deleteFsItem(cfw::IFsPanelPtr tree,
     
         int problem_item_count = problem_items.size();
 
-        cfw::IFsItemEnumPtr child_items = tree->getItemChildren(item);
+        IFsItemEnumPtr child_items = tree->getItemChildren(item);
         
         size_t i, child_count = child_items->size();
 
@@ -3184,7 +3184,7 @@ void DbDoc::deleteFsItem(cfw::IFsPanelPtr tree,
     }
 }
 
-cfw::IFsItemPtr DbDoc::_findFsItem(cfw::IFsItemPtr item,
+IFsItemPtr DbDoc::_findFsItem(IFsItemPtr item,
                                    const wxString& _path)
 {
     wxString path = _path;
@@ -3205,14 +3205,14 @@ cfw::IFsItemPtr DbDoc::_findFsItem(cfw::IFsItemPtr item,
         last_piece = true;
     }
     
-    cfw::IFsItemEnumPtr items = m_fspanel->getItemChildren(item);
+    IFsItemEnumPtr items = m_fspanel->getItemChildren(item);
     if (items.isNull())
         return xcm::null;
 
     int i, count = items->size();
     for (i = 0; i < count; ++i)
     {
-        cfw::IFsItemPtr t = items->getItem(i);
+        IFsItemPtr t = items->getItem(i);
 
         wxString label = t->getLabel();
         if (0 == label.CmpNoCase(piece))
@@ -3231,12 +3231,12 @@ cfw::IFsItemPtr DbDoc::_findFsItem(cfw::IFsItemPtr item,
     return xcm::null;
 }
 
-void DbDoc::onFsItemActivated(cfw::IFsItemPtr item)
+void DbDoc::onFsItemActivated(IFsItemPtr item)
 {
     actionActivateDeferred(item, appOpenDefault);
 }
 
-void DbDoc::onFsItemBeginLabelEdit(cfw::IFsItemPtr item,
+void DbDoc::onFsItemBeginLabelEdit(IFsItemPtr item,
                                    bool* allow)
 {
     if (m_no_edit)
@@ -3278,7 +3278,7 @@ void DbDoc::onFsItemBeginLabelEdit(cfw::IFsItemPtr item,
     }
 }
 
-void DbDoc::onFsItemEndLabelEdit(cfw::IFsItemPtr item,
+void DbDoc::onFsItemEndLabelEdit(IFsItemPtr item,
                                  wxString text,
                                  bool cancelled,
                                  bool* allow)
@@ -3377,7 +3377,7 @@ void DbDoc::onFsItemEndLabelEdit(cfw::IFsItemPtr item,
             
             wxString message = wxString::Format(_("An object with the name '%s' already exists.  Please choose a different name."),
                                                 label.c_str());
-            cfw::deferredAppMessageBox(message,
+            deferredAppMessageBox(message,
                                        APPLICATION_NAME,
                                        wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
@@ -3442,7 +3442,7 @@ void DbDoc::onFsItemEndLabelEdit(cfw::IFsItemPtr item,
             wxString message = wxString::Format(_("An object with the name '%s' already exists.  Please choose a different name."),
                                                 label.c_str());
 
-            cfw::deferredAppMessageBox(message,
+            deferredAppMessageBox(message,
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             
@@ -3486,10 +3486,10 @@ void DbDoc::onFsItemEndLabelEdit(cfw::IFsItemPtr item,
             // post a command that lets everyone know that
             // an ofs item has been renamed
 
-            cfw::Event* event = new cfw::Event(wxT("treepanel.ofsFileRenamed"));
-            event->s_param = old_path;
-            event->s_param2 = new_path;
-            g_app->getMainFrame()->postEvent(event);
+            FrameworkEvent* evt = new FrameworkEvent(wxT("treepanel.ofsFileRenamed"));
+            evt->s_param = old_path;
+            evt->s_param2 = new_path;
+            g_app->getMainFrame()->postEvent(evt);
         }
          else
         {
@@ -3499,7 +3499,7 @@ void DbDoc::onFsItemEndLabelEdit(cfw::IFsItemPtr item,
             message += wxT("\n");
             message += db->getErrorString();
             
-            cfw::deferredAppMessageBox(message,
+            deferredAppMessageBox(message,
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             
@@ -3513,14 +3513,14 @@ void DbDoc::onFsItemEndLabelEdit(cfw::IFsItemPtr item,
     m_edit_mode = editNone;
 }
 
-void DbDoc::onFsItemRightClicked(cfw::IFsItemPtr item)
+void DbDoc::onFsItemRightClicked(IFsItemPtr item)
 {
     // if we've right-clicked on an item that was not already selected,
     // we need to deselect all selected items and select the right-click
     // item because, for some reason, the FsPanelTreeView does not
     // already take care of this for us
     
-    cfw::IFsItemEnumPtr items;
+    IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
 
     int i, count;
@@ -3529,7 +3529,7 @@ void DbDoc::onFsItemRightClicked(cfw::IFsItemPtr item)
     bool rightclick_item_selected = false;
     for (i = 0; i < count; ++i)
     {
-        cfw::IFsItemPtr selected_item = items->getItem(i);
+        IFsItemPtr selected_item = items->getItem(i);
 
         if (selected_item == item)
             rightclick_item_selected = true;
@@ -3544,7 +3544,7 @@ void DbDoc::onFsItemRightClicked(cfw::IFsItemPtr item)
     wxMenu menuPopup, menuNew, menuProjects;
     bool root_selected = false;
 
-    cfw::IFsItemEnumPtr tree_items = m_fspanel->getSelectedItems();
+    IFsItemEnumPtr tree_items = m_fspanel->getSelectedItems();
     int selected_count = tree_items->size();
 
 
@@ -3559,7 +3559,7 @@ void DbDoc::onFsItemRightClicked(cfw::IFsItemPtr item)
         int i;
         for (i = 0; i < selected_count; ++i)
         {
-            cfw::IFsItemPtr item = tree_items->getItem(i);
+            IFsItemPtr item = tree_items->getItem(i);
             tango::IDatabasePtr db = getItemDatabase(item);
             
             if (!isItemMount(item))
@@ -3914,7 +3914,7 @@ void DbDoc::onFsItemRightClicked(cfw::IFsItemPtr item)
     }
 }
 
-void DbDoc::onFsItemHighlightRequest(cfw::IFsItemPtr& item)
+void DbDoc::onFsItemHighlightRequest(IFsItemPtr& item)
 {
     IDbFolderFsItemPtr folder = item;
     if (!folder)
@@ -3923,7 +3923,7 @@ void DbDoc::onFsItemHighlightRequest(cfw::IFsItemPtr& item)
     }
 }
 
-void DbDoc::onDragDrop(cfw::IFsItemPtr target,
+void DbDoc::onDragDrop(IFsItemPtr target,
                        wxDataObject* data,
                        wxDragResult* result)
 {
@@ -3937,7 +3937,7 @@ void DbDoc::onDragDrop(cfw::IFsItemPtr target,
     IDbFolderFsItemPtr folder = target;
     if (!folder)
     {
-        cfw::appMessageBox(_("Files can only be dragged into folders"),
+        appMessageBox(_("Files can only be dragged into folders"),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
 
@@ -3949,8 +3949,8 @@ void DbDoc::onDragDrop(cfw::IFsItemPtr target,
     wxString target_path = getFsItemPath(target);
 
 
-    cfw::FsDataObject* tree_data = (cfw::FsDataObject*)data;
-    cfw::IFsItemEnumPtr items = tree_data->getFsItems();
+    FsDataObject* tree_data = (FsDataObject*)data;
+    IFsItemEnumPtr items = tree_data->getFsItems();
 
     size_t i, count = items->size();
 
@@ -3959,7 +3959,7 @@ void DbDoc::onDragDrop(cfw::IFsItemPtr target,
     // itself cancel the drag operation
     for (i = 0; i < count; ++i)
     {
-        cfw::IFsItemPtr item = items->getItem(i);
+        IFsItemPtr item = items->getItem(i);
         if (item == target)
         {
             *result = wxDragNone;
@@ -3973,7 +3973,7 @@ void DbDoc::onDragDrop(cfw::IFsItemPtr target,
     bool ok = false;
     for (i = 0; i < count; ++i)
     {
-        cfw::IFsItemPtr item = items->getItem(i);
+        IFsItemPtr item = items->getItem(i);
         if (m_fspanel->getItemParent(item) != target)
         {
             ok = true;
@@ -3995,10 +3995,10 @@ void DbDoc::onDragDrop(cfw::IFsItemPtr target,
             // Set it's visual position
             int x, y;
             ::wxGetMousePosition(&x, &y);
-            cfw::IDocumentPtr doc = m_fspanel;
+            IDocumentPtr doc = m_fspanel;
             doc->getDocumentWindow()->ScreenToClient(&x, &y);
             
-            cfw::IFsItemPtr item = m_fspanel->hitTest(x,y);
+            IFsItemPtr item = m_fspanel->hitTest(x,y);
             if (item.isOk())
             {
                 int idx = m_fspanel->getItemIndex(item);
@@ -4006,7 +4006,7 @@ void DbDoc::onDragDrop(cfw::IFsItemPtr target,
                 {
                     for (i = 0; i < count; ++i)
                     {
-                        cfw::IFsItemPtr item = items->getItem(i);
+                        IFsItemPtr item = items->getItem(i);
                         DbDoc::setFileVisualLocation(getFsItemPath(item), idx+i);
                     }
                 }
@@ -4029,7 +4029,7 @@ void DbDoc::onDragDrop(cfw::IFsItemPtr target,
 
     for (i = 0; i < count; ++i)
     {
-        cfw::IFsItemPtr item = items->getItem(i);
+        IFsItemPtr item = items->getItem(i);
 
         wxString src_path = getFsItemPath(item);
         wxString dest_location = getFsItemPath(target);
@@ -4145,10 +4145,10 @@ void DbDoc::onDragDrop(cfw::IFsItemPtr target,
                 // post a command that lets everyone know that
                 // an ofs item has been moved
 
-                cfw::Event* event = new cfw::Event(wxT("treepanel.ofsFileRenamed"));
-                event->s_param = src_path;
-                event->s_param2 = dest_path;
-                g_app->getMainFrame()->postEvent(event);
+                FrameworkEvent* evt = new FrameworkEvent(wxT("treepanel.ofsFileRenamed"));
+                evt->s_param = src_path;
+                evt->s_param2 = dest_path;
+                g_app->getMainFrame()->postEvent(evt);
             }
         }
     }
@@ -4162,18 +4162,18 @@ void DbDoc::onDragDrop(cfw::IFsItemPtr target,
     {
         // add and start job
         job->sigJobFinished().connect(this, &DbDoc::onCopyJobFinished);
-        g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+        g_app->getJobQueue()->addJob(job, jobStateRunning);
     }
      else
     {
-        cfw::IFsItemPtr target = getFsItemFromPath(target_path);
+        IFsItemPtr target = getFsItemFromPath(target_path);
         if (target)
         {
             m_fspanel->expand(target);
             m_fspanel->unselectAll();
             
             // this if says 'don't select root item if it's hidden'
-            if ((m_style & cfw::fsstyleTreeHideRoot) == 0 ||
+            if ((m_style & fsstyleTreeHideRoot) == 0 ||
                  m_fspanel->getRootItem() != target)
             {
                 m_fspanel->selectItem(target);
@@ -4182,15 +4182,15 @@ void DbDoc::onDragDrop(cfw::IFsItemPtr target,
     }
 }
 
-static void onImportJobFinished(cfw::IJobPtr job)
+static void onImportJobFinished(IJobPtr job)
 {
-    if (job->getJobInfo()->getState() != cfw::jobStateFinished)
+    if (job->getJobInfo()->getState() != jobStateFinished)
         return;
 
     g_app->getAppController()->refreshDbDoc();
 }
 
-void DbDoc::doImportJob(std::vector<cfw::IFsItemPtr>& items,
+void DbDoc::doImportJob(std::vector<IFsItemPtr>& items,
                         const wxString& dest_location)
 {
     if (items.size() == 0)
@@ -4219,10 +4219,10 @@ void DbDoc::doImportJob(std::vector<cfw::IFsItemPtr>& items,
 
     // set default values for text-delimited import
 
-    std::vector<cfw::IFsItemPtr>::iterator it;
+    std::vector<IFsItemPtr>::iterator it;
     for (it = items.begin(); it != items.end(); ++it)
     {
-        cfw::IFsItemPtr item = *it;
+        IFsItemPtr item = *it;
 
         wxString src_path = getFsItemPath(item);
 
@@ -4335,12 +4335,12 @@ void DbDoc::doImportJob(std::vector<cfw::IFsItemPtr>& items,
         job->addImportSet(job_import_info);
     }
 
-    g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
 }
 
 
-void DbDoc::doExportJob(std::vector<cfw::IFsItemPtr>& items,
-                        cfw::IFsItemPtr dest_item)
+void DbDoc::doExportJob(std::vector<IFsItemPtr>& items,
+                        IFsItemPtr dest_item)
 {
     if (items.size() == 0)
         return;
@@ -4365,7 +4365,7 @@ void DbDoc::doExportJob(std::vector<cfw::IFsItemPtr>& items,
             msg += wxT("  ");
             msg += conn->getErrorString();
             
-            cfw::appMessageBox(msg,
+            appMessageBox(msg,
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
@@ -4398,10 +4398,10 @@ void DbDoc::doExportJob(std::vector<cfw::IFsItemPtr>& items,
 
     ExportJobInfo job_export_info;
 
-    std::vector<cfw::IFsItemPtr>::iterator it;
+    std::vector<IFsItemPtr>::iterator it;
     for (it = items.begin(); it != items.end(); ++it)
     {
-        cfw::IFsItemPtr item = *it;
+        IFsItemPtr item = *it;
 
         wxString src_path = getFsItemPath(item);
         wxString dest_stub = src_path.AfterLast(wxT('/'));
@@ -4454,15 +4454,15 @@ void DbDoc::doExportJob(std::vector<cfw::IFsItemPtr>& items,
         job->addExportSet(job_export_info);
     }
 
-    g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
 }
 
-void DbDoc::onCopyJobFinished(cfw::IJobPtr job)
+void DbDoc::onCopyJobFinished(IJobPtr job)
 {
     wxString folder_to_refresh = job->getExtraString();
     if (folder_to_refresh.Length() > 0)
     {
-        cfw::IFsItemPtr item = getFsItemFromPath(folder_to_refresh);
+        IFsItemPtr item = getFsItemFromPath(folder_to_refresh);
         if (item)
         {
             m_fspanel->refreshItem(item);

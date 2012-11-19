@@ -292,9 +292,9 @@ static wxString getLinkBarItemPath(const wxString& label)
     return retval;
 }
 
-static std::vector<cfw::IFsItemPtr> enum2vec(cfw::IFsItemEnumPtr fs_enum)
+static std::vector<IFsItemPtr> enum2vec(IFsItemEnumPtr fs_enum)
 {
-    std::vector<cfw::IFsItemPtr> vec;
+    std::vector<IFsItemPtr> vec;
     
     size_t i, count = fs_enum->size();
     for (i = 0; i < count; ++i)
@@ -303,12 +303,12 @@ static std::vector<cfw::IFsItemPtr> enum2vec(cfw::IFsItemEnumPtr fs_enum)
     return vec;
 }
 
-static bool hasLinkItems(std::vector<cfw::IFsItemPtr>& vec)
+static bool hasLinkItems(std::vector<IFsItemPtr>& vec)
 {
-    std::vector<cfw::IFsItemPtr>::iterator it;
+    std::vector<IFsItemPtr>::iterator it;
     for (it = vec.begin(); it != vec.end(); ++it)
     {
-        cfw::IFsItemPtr item = *it;
+        IFsItemPtr item = *it;
         IDbFolderFsItemPtr folder = item;
         if (folder.isNull())
             return true;
@@ -317,11 +317,11 @@ static bool hasLinkItems(std::vector<cfw::IFsItemPtr>& vec)
     return false;
 }
 
-static void openItems(std::vector<cfw::IFsItemPtr>& vec)
+static void openItems(std::vector<IFsItemPtr>& vec)
 {
     bool first = true;
     
-    std::vector<cfw::IFsItemPtr>::iterator it;
+    std::vector<IFsItemPtr>::iterator it;
     for (it = vec.begin(); it != vec.end(); ++it)
     {
         IDbFolderFsItemPtr folder = *it;
@@ -416,7 +416,7 @@ LinkBar::LinkBar(wxWindow* parent,
     m_hover_stopwatch.Pause();
 
     // set up the linkbar as a drop target
-    cfw::FsDataDropTarget* drop_target = new cfw::FsDataDropTarget;
+    FsDataDropTarget* drop_target = new FsDataDropTarget;
     drop_target->sigDragLeave.connect(this, &LinkBar::onFsDataLeave);
     drop_target->sigDragOver.connect(this, &LinkBar::onFsDataDragOver);
     drop_target->sigDragDrop.connect(this, &LinkBar::onFsDataDrop);
@@ -463,7 +463,7 @@ LinkBarItem* LinkBar::getItemFromCurrentPosition(bool ignore_ypos)
     return item;
 }
 
-void LinkBar::onItemActivated(cfw::IFsItemPtr item)
+void LinkBar::onItemActivated(IFsItemPtr item)
 {
     if (!m_popup_window)
         return;
@@ -473,7 +473,7 @@ void LinkBar::onItemActivated(cfw::IFsItemPtr item)
     {
         m_popup_window->Freeze();
         
-        cfw::IFsPanelPtr panel = m_popup_dbdoc->getFsPanel();
+        IFsPanelPtr panel = m_popup_dbdoc->getFsPanel();
         if (panel->isItemExpanded(item))
             panel->collapse(item);
              else
@@ -525,7 +525,7 @@ void LinkBar::onItemActivated(cfw::IFsItemPtr item)
     closePopupWindow();
 }
 
-void LinkBar::onItemMiddleClicked(cfw::IFsItemPtr item)
+void LinkBar::onItemMiddleClicked(IFsItemPtr item)
 {
     if (!m_popup_window)
         return;
@@ -554,7 +554,7 @@ void LinkBar::onItemMiddleClicked(cfw::IFsItemPtr item)
     if (folder)
     {
         // middle-click on a folder opens all link items in the folder
-        std::vector<cfw::IFsItemPtr> vec = enum2vec(item->getChildren());
+        std::vector<IFsItemPtr> vec = enum2vec(item->getChildren());
         openItems(vec);
     }
      else
@@ -578,7 +578,7 @@ bool LinkBar::isFolderItem(int id)
     if ((size_t)item_idx >= m_items.size())
         return false;
     
-    cfw::IFsItemPtr item = m_items[item_idx];
+    IFsItemPtr item = m_items[item_idx];
     IDbFolderFsItemPtr folder = item;
     
     if (folder.isOk())
@@ -673,7 +673,7 @@ void LinkBar::showPopupWindow(int id,
     m_popup_window = new LinkBarPopupWindow(this, wxBORDER_NONE);
     m_popup_dbdoc = new DbDoc;
     m_popup_dbdoc->setLinkBarMode(true);
-    m_popup_dbdoc->setStyle(cfw::fsstyleTreeHideRoot | cfw::fsstyleTrackSelect);
+    m_popup_dbdoc->setStyle(fsstyleTreeHideRoot | fsstyleTrackSelect);
     m_popup_dbdoc->initAsWindow(m_popup_window,
                              -1,
                              wxPoint(1,1),
@@ -863,7 +863,7 @@ void LinkBar::onBeginDrag(wxAuiToolBarEvent& evt)
         }
         
         int item_idx = id-ID_FirstLinkBarId;
-        cfw::IFsItemPtr item = m_items[item_idx];
+        IFsItemPtr item = m_items[item_idx];
         IDbFolderFsItemPtr folder = item;
         
         // only allow folder drags if the control key
@@ -896,10 +896,10 @@ void LinkBar::onBeginDrag(wxAuiToolBarEvent& evt)
         drawDropHighlight();
         
         item->setItemData((long)id);
-        xcm::IVectorImpl<cfw::IFsItemPtr>* items = new xcm::IVectorImpl<cfw::IFsItemPtr>;
+        xcm::IVectorImpl<IFsItemPtr>* items = new xcm::IVectorImpl<IFsItemPtr>;
         items->append(item);
         
-        cfw::FsDataObject data;
+        FsDataObject data;
         data.setSourceId(ID_Toolbar_Link);
         data.setFsItems(items);
         wxDropSource dragSource(data, this);
@@ -920,7 +920,7 @@ void LinkBar::onToolButtonClick(wxCommandEvent& evt)
         }
         
         int item_idx = id-ID_FirstLinkBarId;
-        cfw::IFsItemPtr item = m_items[item_idx];
+        IFsItemPtr item = m_items[item_idx];
 
         // folder clicks are handled in onToolDropDownClick()
         if (isFolderItem(id))
@@ -1021,8 +1021,8 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
         idx = getInsertIndex(pt);
     tool2LinkIndex(idx);
     
-    // get the cfw::IFsItemPtr from the index
-    cfw::IFsItemPtr item;
+    // get the IFsItemPtr from the index
+    IFsItemPtr item;
     if (idx >= 0 && idx < (int)m_items.size())
         item = m_items[idx];
 
@@ -1044,7 +1044,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
     {
         if (is_folder_clicked)
         {
-            std::vector<cfw::IFsItemPtr> vec = enum2vec(item->getChildren());
+            std::vector<IFsItemPtr> vec = enum2vec(item->getChildren());
             menuPopup.Append(ID_LinkBar_OpenAllFolder, _("&Open All in Tabs"));
             menuPopup.Enable(ID_LinkBar_OpenAllFolder, hasLinkItems(vec) ? true : false);
         }
@@ -1075,7 +1075,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
     }
     
     // capture the event result
-    cfw::CommandCapture* cc = new cfw::CommandCapture;
+    CommandCapture* cc = new CommandCapture;
     PushEventHandler(cc);
 
 #if wxCHECK_VERSION(2,9,3)
@@ -1113,7 +1113,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
         {
             if (item.isOk())
             {
-                std::vector<cfw::IFsItemPtr> vec = enum2vec(item->getChildren());
+                std::vector<IFsItemPtr> vec = enum2vec(item->getChildren());
                 openItems(vec);
             }
             break;
@@ -1455,8 +1455,8 @@ void LinkBar::onMiddleClick(wxAuiToolBarEvent& evt)
     int idx = GetToolIndex(tool_id);
     tool2LinkIndex(idx);
     
-    // get the cfw::IFsItemPtr from the index
-    cfw::IFsItemPtr item;
+    // get the IFsItemPtr from the index
+    IFsItemPtr item;
     if (idx >= 0 && idx < (int)m_items.size())
         item = m_items[idx];
 
@@ -1466,7 +1466,7 @@ void LinkBar::onMiddleClick(wxAuiToolBarEvent& evt)
     if (is_folder)
     {
         // middle-click on a folder opens all link items in the folder
-        std::vector<cfw::IFsItemPtr> vec = enum2vec(item->getChildren());
+        std::vector<IFsItemPtr> vec = enum2vec(item->getChildren());
         openItems(vec);
     }    
      else
@@ -1477,8 +1477,8 @@ void LinkBar::onMiddleClick(wxAuiToolBarEvent& evt)
     }
 }
 
-// this function converts a cfw::IFsItemPtr into a tango::IFileInfoPtr
-static tango::IFileInfoPtr fsItemToFileInfo(cfw::IFsItemPtr item)
+// this function converts a IFsItemPtr into a tango::IFileInfoPtr
+static tango::IFileInfoPtr fsItemToFileInfo(IFsItemPtr item)
 {
     wxString path = DbDoc::getFsItemPath(item);
     tango::IFileInfoPtr info = g_app->getDatabase()->getFileInfo(towstr(path));
@@ -1630,7 +1630,7 @@ void LinkBar::refresh()
         m_base_path = g_app->getBookmarkFolder();
 
     DbDoc* dbdoc = g_app->getDbDoc();
-    cfw::IFsItemPtr root_item;
+    IFsItemPtr root_item;
     
     if (dbdoc)
     {
@@ -1653,11 +1653,11 @@ void LinkBar::refresh()
         return;
     }
     
-    cfw::IFsItemEnumPtr children = root_item->getChildren();
+    IFsItemEnumPtr children = root_item->getChildren();
     size_t i, count = children->size();
     for (i = 0; i < count; ++i)
     {
-        cfw::IFsItemPtr item = children->getItem(i);
+        IFsItemPtr item = children->getItem(i);
         
         int id = ID_FirstLinkBarId + i;
         wxBitmap bmp = item->getBitmap();
@@ -2148,8 +2148,8 @@ void LinkBar::onFsDataDragOver(wxDragResult& def)
             int idx = GetToolIndex(item->GetId());
             tool2LinkIndex(idx);
             
-            // get the cfw::IFsItemPtr from the index
-            cfw::IFsItemPtr fs_item;
+            // get the IFsItemPtr from the index
+            IFsItemPtr fs_item;
             if (idx >= 0 && idx < (int)m_items.size())
                 fs_item = m_items[idx];
             
@@ -2214,7 +2214,7 @@ void LinkBar::onFsDataDragOver(wxDragResult& def)
 // this function handles all drag and drop to the linkbar
 // from the project panel (or any existing object in the project,
 // in the case of the dragging from the url combobox)
-static void doProjectTreeDragDrop(cfw::IFsItemPtr item,
+static void doProjectTreeDragDrop(IFsItemPtr item,
                                   wxString drop_folder_path,
                                   int link_drop_idx = -1)
 {
@@ -2297,7 +2297,7 @@ static void doProjectTreeDragDrop(cfw::IFsItemPtr item,
     }
 }
 
-void LinkBar::onFsDataDrop(wxDragResult& def, cfw::FsDataObject* data)
+void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
 {
     DbDoc* dbdoc = g_app->getDbDoc();
     if (dbdoc == NULL)
@@ -2309,7 +2309,7 @@ void LinkBar::onFsDataDrop(wxDragResult& def, cfw::FsDataObject* data)
         return;
     }
 
-    cfw::IFsItemEnumPtr items = data->getFsItems();
+    IFsItemEnumPtr items = data->getFsItems();
     if (items->size() == 0)
     {
         // no items to drop, bail out
@@ -2412,7 +2412,7 @@ void LinkBar::onFsDataDrop(wxDragResult& def, cfw::FsDataObject* data)
         // doing a lookup in the DbDoc will determine if the item
         // actually exists in our project
         IDbObjectFsItemPtr obj = items->getItem(0);
-        cfw::IFsItemPtr item;
+        IFsItemPtr item;
         item = g_app->getDbDoc()->getFsItemFromPath(obj->getPath());
         if (item.isOk())
         {
@@ -2454,7 +2454,7 @@ void LinkBar::onFsDataDrop(wxDragResult& def, cfw::FsDataObject* data)
             // grab favicon -- since we're dragging from the url bar, the
             // current document should handily provide us with the right icon
             wxImage favicon;
-            cfw::IDocumentSitePtr site = g_app->getMainFrame()->getActiveChild();
+            IDocumentSitePtr site = g_app->getMainFrame()->getActiveChild();
             IWebDocPtr webdoc;
             if (site)
                 webdoc = site->getDocument();
@@ -2489,7 +2489,7 @@ void LinkBar::onFsDataDrop(wxDragResult& def, cfw::FsDataObject* data)
         size_t i, count = items->size();
         for (i = 0; i < count; ++i)
         {
-            cfw::IFsItemPtr item = items->getItem(i);
+            IFsItemPtr item = items->getItem(i);
             if (item.isNull())
                 continue;
             
@@ -2517,7 +2517,7 @@ void LinkBar::onUpdateUI_RelationshipSync(wxUpdateUIEvent& evt)
     if (g_app->getMainFrame().isNull())
         return;
 
-    cfw::IDocumentSitePtr& doc_site = g_app->getMainFrame()->getActiveChild();
+    IDocumentSitePtr& doc_site = g_app->getMainFrame()->getActiveChild();
     if (doc_site.isNull())
     {
         evt.Enable(false);

@@ -13,22 +13,22 @@
 #define __APP_SCRIPTSTATUSBAR_H
 
 
-class StatusBarItem : public FormComponent
+class zStatusBarItem : public FormComponent
 {
 friend class StatusBar;
 
-    BEGIN_KSCRIPT_CLASS("StatusBarItem", StatusBarItem)
-        KSCRIPT_GUI_METHOD("constructor", StatusBarItem::constructor)
-        KSCRIPT_GUI_METHOD("setText", StatusBarItem::setText)
-        KSCRIPT_GUI_METHOD("getText", StatusBarItem::getText)
-        KSCRIPT_GUI_METHOD("setWidth", StatusBarItem::setWidth)
-        KSCRIPT_GUI_METHOD("setStretchProportion", StatusBarItem::setStretchProportion)
+    BEGIN_KSCRIPT_CLASS("StatusBarItem", zStatusBarItem)
+        KSCRIPT_GUI_METHOD("constructor", zStatusBarItem::constructor)
+        KSCRIPT_GUI_METHOD("setText", zStatusBarItem::setText)
+        KSCRIPT_GUI_METHOD("getText", zStatusBarItem::getText)
+        KSCRIPT_GUI_METHOD("setWidth", zStatusBarItem::setWidth)
+        KSCRIPT_GUI_METHOD("setStretchProportion", zStatusBarItem::setStretchProportion)
     END_KSCRIPT_CLASS()
     
 public:
 
-    StatusBarItem();
-    ~StatusBarItem();
+    zStatusBarItem();
+    ~zStatusBarItem();
     
     void constructor(kscript::ExprEnv* env, kscript::Value* retval);
     void setText(kscript::ExprEnv* env, kscript::Value* retval);
@@ -46,17 +46,17 @@ private:
 };
 
 
-class StatusBar : public FormComponent
+class zStatusBar : public FormComponent
 {
-    BEGIN_KSCRIPT_CLASS("StatusBar", StatusBar)
-        KSCRIPT_GUI_METHOD("constructor", StatusBar::constructor)
-        KSCRIPT_GUI_METHOD("add", StatusBar::add)
+    BEGIN_KSCRIPT_CLASS("StatusBar", zStatusBar)
+        KSCRIPT_GUI_METHOD("constructor", zStatusBar::constructor)
+        KSCRIPT_GUI_METHOD("add", zStatusBar::add)
     END_KSCRIPT_CLASS()
     
 public:
 
-    StatusBar();
-    ~StatusBar();
+    zStatusBar();
+    ~zStatusBar();
     void realize();
     
     wxStatusBar* getWxStatusBar();

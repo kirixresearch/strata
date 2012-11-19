@@ -194,8 +194,8 @@ GroupPanel::~GroupPanel()
 
 }
 
-bool GroupPanel::initDoc(cfw::IFramePtr frame,
-                         cfw::IDocumentSitePtr site,
+bool GroupPanel::initDoc(IFramePtr frame,
+                         IDocumentSitePtr site,
                          wxWindow* docsite_wnd,
                          wxWindow* panesite_wnd)
 {
@@ -325,7 +325,7 @@ bool GroupPanel::initDoc(cfw::IFramePtr frame,
     m_grid->setColumnSize(GroupCol_OutputField, w);
 
 
-    cfw::IDocumentSitePtr active_site;
+    IDocumentSitePtr active_site;
     active_site = g_app->getMainFrame()->getActiveChild();
     if (active_site.isNull())
         return false;
@@ -596,9 +596,9 @@ bool GroupPanel::validateGroupQuery()
     return valid;
 }
 
-static void onGroupJobFinished(cfw::IJobPtr job)
+static void onGroupJobFinished(IJobPtr job)
 {
-    if (job->getJobInfo()->getState() != cfw::jobStateFinished)
+    if (job->getJobInfo()->getState() != jobStateFinished)
         return;
 
 
@@ -615,7 +615,7 @@ static void onGroupJobFinished(cfw::IJobPtr job)
         {
             ITableDocPtr doc = TableDocMgr::createTableDoc();
             doc->open(result_set, xcm::null);
-            g_app->getMainFrame()->createSite(doc, cfw::sitetypeNormal,
+            g_app->getMainFrame()->createSite(doc, sitetypeNormal,
                                               -1, -1, -1, -1);
             success = true;
         }
@@ -624,7 +624,7 @@ static void onGroupJobFinished(cfw::IJobPtr job)
 
     if (!success)
     {
-        cfw::appMessageBox(_("The output table could not be created."),
+        appMessageBox(_("The output table could not be created."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
     }
@@ -669,7 +669,7 @@ void GroupPanel::onExecute(wxCommandEvent& event)
 
     if (row_count == 0)
     {
-        cfw::appMessageBox(_("Please specify at least one output field."),
+        appMessageBox(_("Please specify at least one output field."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
         return;
@@ -677,7 +677,7 @@ void GroupPanel::onExecute(wxCommandEvent& event)
 
     if (!validateGroupQuery())
     {
-        cfw::appMessageBox(_("The specified group query must return a boolean (true/false) result."),
+        appMessageBox(_("The specified group query must return a boolean (true/false) result."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
         return;
@@ -719,7 +719,7 @@ void GroupPanel::onExecute(wxCommandEvent& event)
         if (output_name.IsEmpty())
         {
             wxString message = _("One or more of the output fields is empty.  Please specify a valid field name to continue.");
-            cfw::appMessageBox(message,
+            appMessageBox(message,
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
@@ -732,7 +732,7 @@ void GroupPanel::onExecute(wxCommandEvent& event)
             if (func != GroupFunc_Count && func != GroupFunc_GroupID)
             {
                 wxString message = _("One or more of the input fields is empty.  Please specify an existing field to continue.");
-                cfw::appMessageBox(message,
+                appMessageBox(message,
                                    APPLICATION_NAME,
                                    wxOK | wxICON_EXCLAMATION | wxCENTER);
                 return;
@@ -747,7 +747,7 @@ void GroupPanel::onExecute(wxCommandEvent& event)
                 wxString message = wxString::Format(_("The specified input field '%s' does not exist."),
                                                     input_name.c_str());
                                                 
-                cfw::appMessageBox(message,
+                appMessageBox(message,
                                    APPLICATION_NAME,
                                    wxOK | wxICON_EXCLAMATION | wxCENTER);
                 return;
@@ -776,7 +776,7 @@ void GroupPanel::onExecute(wxCommandEvent& event)
 
             if (!valid)
             {
-                cfw::appMessageBox(_("Parameters for the count function must evaluate to either true or false."),
+                appMessageBox(_("Parameters for the count function must evaluate to either true or false."),
                                    APPLICATION_NAME,
                                    wxOK | wxICON_EXCLAMATION | wxCENTER);
                 return;
@@ -793,7 +793,7 @@ void GroupPanel::onExecute(wxCommandEvent& event)
                 input_type != tango::typeNumeric &&
                 input_type != tango::typeInteger)
             {
-                cfw::appMessageBox(_("One or more group field definitions has an invalid function type."),
+                appMessageBox(_("One or more group field definitions has an invalid function type."),
                                    APPLICATION_NAME,
                                    wxOK | wxICON_EXCLAMATION | wxCENTER);
                 return;
@@ -829,13 +829,13 @@ void GroupPanel::onExecute(wxCommandEvent& event)
 
             if (m_adv_checkbox->GetValue())
             {
-                cfw::appMessageBox(_("Two or more fields have the same output name, or may be conflicting with one of the fields in the detail output.  Please make sure that the name of each output field is unique."),
+                appMessageBox(_("Two or more fields have the same output name, or may be conflicting with one of the fields in the detail output.  Please make sure that the name of each output field is unique."),
                                    APPLICATION_NAME,
                                    wxOK | wxICON_EXCLAMATION | wxCENTER);
             }
              else
             {
-                cfw::appMessageBox(_("Two or more fields have the same output name.  Please make sure that the name of each output field is unique."),
+                appMessageBox(_("Two or more fields have the same output name.  Please make sure that the name of each output field is unique."),
                                    APPLICATION_NAME,
                                    wxOK | wxICON_EXCLAMATION | wxCENTER);
             }
@@ -879,7 +879,7 @@ void GroupPanel::onExecute(wxCommandEvent& event)
 
     if (keypart_count == 0)
     {
-        int result = cfw::appMessageBox(_("No key grouping fields have been defined.  The group operation will treat the entire data set as one group. Click 'Ok' if you would like to continue, or 'Cancel' if you would like to go back and specify one or more group fields."),
+        int result = appMessageBox(_("No key grouping fields have been defined.  The group operation will treat the entire data set as one group. Click 'Ok' if you would like to continue, or 'Cancel' if you would like to go back and specify one or more group fields."),
                                         APPLICATION_NAME,
                                         wxOK | wxCANCEL | wxICON_INFORMATION | wxCENTER);
 
@@ -955,7 +955,7 @@ void GroupPanel::onExecute(wxCommandEvent& event)
     job->sigJobFinished().connect(&onGroupJobFinished);
 
     // add and start job
-    g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
     
     // close the site
     g_app->getMainFrame()->closeSite(m_doc_site);

@@ -40,7 +40,7 @@ class ModifyStructJob : public TangoJobBase,
     XCM_CLASS_NAME("appmain.ModifyStructJob")
     XCM_BEGIN_INTERFACE_MAP(ModifyStructJob)
         XCM_INTERFACE_ENTRY(IModifyStructJob)
-        XCM_INTERFACE_CHAIN(cfw::JobBase)
+        XCM_INTERFACE_CHAIN(JobBase)
     XCM_END_INTERFACE_MAP()
 
 public:

@@ -19,12 +19,12 @@
 class ExprBuilderPanel;
 
 class ColPropsPanel :  public wxPanel,
-                       public cfw::IDocument,
+                       public IDocument,
                        public xcm::signal_sink
 {
     XCM_CLASS_NAME_NOREFCOUNT("appmain.ColPropsPanel")
     XCM_BEGIN_INTERFACE_MAP(ColPropsPanel)
-        XCM_INTERFACE_ENTRY(cfw::IDocument)
+        XCM_INTERFACE_ENTRY(IDocument)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -43,8 +43,8 @@ public: // signals
 private:
 
     // -- IDocument --
-    bool initDoc(cfw::IFramePtr frame,
-                 cfw::IDocumentSitePtr site,
+    bool initDoc(IFramePtr frame,
+                 IDocumentSitePtr site,
                  wxWindow* doc_site,
                  wxWindow* pane_site);
 
@@ -69,8 +69,8 @@ private:
     void populate();
 
     // -- frame events --
-    void onFrameEvent(cfw::Event& evt);
-    void onSiteClose(cfw::IDocumentSitePtr site);
+    void onFrameEvent(FrameworkEvent& evt);
+    void onSiteClose(IDocumentSitePtr site);
 
     void onOkPressed(ExprBuilderPanel*);
     void onCancelPressed(ExprBuilderPanel*);
@@ -90,10 +90,10 @@ private:
 private:
 
     // -- container context info --
-    cfw::IDocumentSitePtr m_doc_site;       // our document's site
+    IDocumentSitePtr m_doc_site;       // our document's site
     tango::ISetPtr m_set;                   // tabledoc's set
     tango::IIteratorPtr m_iter;             // tabledoc's iterator
-    cfw::IDocumentSitePtr m_tabledoc_site;  // tabledoc's site
+    IDocumentSitePtr m_tabledoc_site;  // tabledoc's site
     ITableDocPtr m_tabledoc;                // tabledoc ptr
     bool m_ok_pressed;
 

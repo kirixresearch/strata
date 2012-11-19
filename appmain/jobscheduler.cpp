@@ -65,7 +65,7 @@ public:
                 m_obj_mutex.unlock();
             }
 
-            cfw::IJobPtr job = g_app->getAppController()->execute(*it);
+            IJobPtr job = g_app->getAppController()->execute(*it);
             if (job.isNull())
                 return 0;
 
@@ -75,11 +75,11 @@ public:
         return 0;
     }
 
-    void onJobFinished(cfw::IJobPtr job)
+    void onJobFinished(IJobPtr job)
     {
         XCM_AUTO_LOCK(m_obj_mutex);
 
-        if (job->getJobInfo()->getState() == cfw::jobStateCancelled)
+        if (job->getJobInfo()->getState() == jobStateCancelled)
         {
             m_exit = true;
         }

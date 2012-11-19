@@ -41,11 +41,11 @@ public:
 
 
 
-class PropertyInfo : public cfw::IPropertyInfo
+class PropertyInfo : public IPropertyInfo
 {
     XCM_CLASS_NAME("cfw.PropertyInfo")
     XCM_BEGIN_INTERFACE_MAP(PropertyInfo)
-        XCM_INTERFACE_ENTRY(cfw::IPropertyInfo)
+        XCM_INTERFACE_ENTRY(IPropertyInfo)
     XCM_END_INTERFACE_MAP()
     
 public:
@@ -110,19 +110,19 @@ private:
 };
 
 
-class PropertyBase : public cfw::IProperties,
+class PropertyBase : public IProperties,
                      public xcm::signal_sink
 {
     XCM_CLASS_NAME("cfw.PropertyBase")
     XCM_BEGIN_INTERFACE_MAP(PropertyBase)
-        XCM_INTERFACE_ENTRY(cfw::IProperties)
+        XCM_INTERFACE_ENTRY(IProperties)
     XCM_END_INTERFACE_MAP()
 
 public:
 
     PropertyBase();
 
-    void initProperties(cfw::IFrame* frame);
+    void initProperties(IFrame* frame);
     void refreshPropertiesPanel();
     
     void defineProperty(const wxString& prop_name,
@@ -142,12 +142,12 @@ public:
     
 private:
 
-    void onPBFrameEvent(Event& evt);
+    void onPBFrameEvent(FrameworkEvent& evt);
 
 private:
     
     std::map<wxString, PropEntry> m_pb_props;
-    cfw::IFrame* m_frame;
+    IFrame* m_frame;
 };
 
 

@@ -336,7 +336,7 @@ void FieldListControl::populate()
         bool dynamic = colinfo->getCalculated();
 
         FieldListItem fli;
-        fli.name = cfw::makeProperIfNecessary(towx(colinfo->getName()));
+        fli.name = makeProperIfNecessary(towx(colinfo->getName()));
         fli.bitmap = dynamic ? GETBMP(gf_lightning_16) : GETBMP(gf_field_16);
         fli.type = colinfo->getType();
         fli.width = colinfo->getWidth();

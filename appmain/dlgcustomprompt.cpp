@@ -139,7 +139,7 @@ int CustomPromptDlg::ShowModal()
         w = button_sizer->GetMinSize().GetWidth()+80;
     
     // 75 = 16*3 (left, right and inner padding) + 32 (bitmap width) - 5 (labels look better just a little closer to the dialog window border)
-    cfw::resizeStaticText(label_message, w-75);
+    resizeStaticText(label_message, w-75);
     
 
     int h = 0;

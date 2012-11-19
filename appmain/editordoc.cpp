@@ -1021,8 +1021,8 @@ EditorDoc::~EditorDoc()
 }
 
 
-bool EditorDoc::initDoc(cfw::IFramePtr frame,
-                        cfw::IDocumentSitePtr doc_site,
+bool EditorDoc::initDoc(IFramePtr frame,
+                        IDocumentSitePtr doc_site,
                         wxWindow* docsite_wnd,
                         wxWindow* panesite_wnd)
 {
@@ -1083,7 +1083,7 @@ bool EditorDoc::initDoc(cfw::IFramePtr frame,
                                 this, &EditorDoc::onStatusBarItemLeftDblClick);
 
     // create the statusbar items for this document
-    cfw::IStatusBarItemPtr item;
+    IStatusBarItemPtr item;
     
     item = addStatusBarItem(wxT("editordoc_line_number"));
     item->setWidth(90);
@@ -1381,8 +1381,8 @@ void EditorDoc::onUpdateUI(wxUpdateUIEvent& evt)
 static void clearStatusBarTextItem()
 {
     // clear out statusbar text
-    cfw::IStatusBarPtr statusbar = g_app->getMainFrame()->getStatusBar();
-    cfw::IStatusBarItemPtr item = statusbar->getItem(wxT("app_statusbar_text"));
+    IStatusBarPtr statusbar = g_app->getMainFrame()->getStatusBar();
+    IStatusBarItemPtr item = statusbar->getItem(wxT("app_statusbar_text"));
     if (item.isNull())
         return;
 
@@ -1415,7 +1415,7 @@ bool EditorDoc::onSiteClosing(bool force)
     if (m_text->IsModified())
     {
         int result;
-        result = cfw::appMessageBox(_("Would you like to save the changes made to this document?"),
+        result = appMessageBox(_("Would you like to save the changes made to this document?"),
                                     APPLICATION_NAME,
                                     wxYES_NO | wxCANCEL | wxICON_QUESTION | wxCENTER);
 
@@ -1523,7 +1523,7 @@ bool EditorDoc::loadFile(const wxString& _path)
     updateCaption();
 
     // fire this event so that the URL will be updated with the new path
-    m_frame->postEvent(new cfw::Event(wxT("cfw.locationChanged")));
+    m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
 
 
     setCurrentEolMode(value);
@@ -1700,7 +1700,7 @@ void EditorDoc::checkForExternalChanges()
         return;
     
     int result;
-    result = cfw::appMessageBox(_("This file has been changed outside the source editor.\nWould you like to discard changes and reload the file?"),
+    result = appMessageBox(_("This file has been changed outside the source editor.\nWould you like to discard changes and reload the file?"),
                                 APPLICATION_NAME,
                                 wxYES_NO | wxNO | wxICON_QUESTION | wxCENTER);
 
@@ -1889,7 +1889,7 @@ bool EditorDoc::doSave()
             g_app->getAppController()->refreshDbDoc();
 
             // fire this event so that the URL will be updated with the new path
-            m_frame->postEvent(new cfw::Event(wxT("cfw.locationChanged")));
+            m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
 
             return true;
         }
@@ -1919,7 +1919,7 @@ bool EditorDoc::doSave()
             g_app->getAppController()->refreshDbDoc();
             
             // fire this event so that the URL will be updated with the new path
-            m_frame->postEvent(new cfw::Event(wxT("cfw.locationChanged")));
+            m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
 
             return true;
         }
@@ -1945,10 +1945,10 @@ void EditorDoc::setText(const wxString& text)
     m_text->SetValue(text);
 }
 
-void EditorDoc::onStatusBarItemLeftDblClick(cfw::IStatusBarItemPtr item)
+void EditorDoc::onStatusBarItemLeftDblClick(IStatusBarItemPtr item)
 {
     // only pop open the "Go To Line" dialog for the active table
-    cfw::IDocumentSitePtr doc_site = m_frame->getActiveChild();
+    IDocumentSitePtr doc_site = m_frame->getActiveChild();
     if (doc_site.isOk() && doc_site == m_doc_site)
     {
         if (item->getName() == wxT("editordoc_line_number") ||
@@ -1959,7 +1959,7 @@ void EditorDoc::onStatusBarItemLeftDblClick(cfw::IStatusBarItemPtr item)
     }
 }
 
-void EditorDoc::onFrameEvent(cfw::Event& evt)
+void EditorDoc::onFrameEvent(FrameworkEvent& evt)
 {
     // if a file is renamed, update this file with the new file path
     if (evt.name == wxT("treepanel.ofsFileRenamed"))
@@ -1969,12 +1969,12 @@ void EditorDoc::onFrameEvent(cfw::Event& evt)
             m_path = evt.s_param2;
             updateCaption();
             
-            cfw::IDocumentSitePtr doc_site = m_frame->getActiveChild();
+            IDocumentSitePtr doc_site = m_frame->getActiveChild();
             if (doc_site.isOk() && doc_site == m_doc_site)
             {
                 // fire this event so that the URL combobox will be updated
                 // with the new path if this is the active child
-                m_frame->postEvent(new cfw::Event(wxT("cfw.locationChanged")));
+                m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
             }
         }
     }
@@ -2106,13 +2106,13 @@ void EditorDoc::onExecute(wxCommandEvent& evt)
     if (!saveFile())
         return;
 
-    cfw::IDocumentSiteEnumPtr docsites;
-    cfw::IDocumentSitePtr site;
+    IDocumentSiteEnumPtr docsites;
+    IDocumentSitePtr site;
     IEditorDocPtr editor_doc;
 
     // make sure all open scripts (except untitled scripts)
     // are saved before we run this script
-    docsites = g_app->getMainFrame()->getDocumentSites(cfw::sitetypeNormal);
+    docsites = g_app->getMainFrame()->getDocumentSites(sitetypeNormal);
 
     size_t i, site_count = docsites->size();
     for (i = 0; i < site_count; ++i)
@@ -2138,7 +2138,7 @@ void EditorDoc::onExecute(wxCommandEvent& evt)
             if (!g_app->getAppController()->openScript(error.file, &doc_id))
                 return;
             
-            cfw::IDocumentSitePtr site = g_app->getMainFrame()->lookupSiteById(doc_id);
+            IDocumentSitePtr site = g_app->getMainFrame()->lookupSiteById(doc_id);
             if (site.isNull())
                 return;
                 
@@ -2276,7 +2276,7 @@ void EditorDoc::reportError(size_t offset,
 
 void EditorDoc::refreshControlPreferences()
 {
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
     if (prefs.isNull())
         return;
     
@@ -2322,8 +2322,8 @@ void EditorDoc::updateStatusBar()
     wxString line_number = wxString::Format(_("Line: %d"), line);
     wxString column_number = wxString::Format(_("Column: %d"), column);
 
-    cfw::IStatusBarItemPtr item;
-    cfw::IStatusBarItemEnumPtr items = getStatusBarItemEnum();
+    IStatusBarItemPtr item;
+    IStatusBarItemEnumPtr items = getStatusBarItemEnum();
     
     size_t i, count = items->size();
     for (i = 0; i < count; ++i)

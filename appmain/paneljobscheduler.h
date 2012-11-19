@@ -90,12 +90,12 @@ public:
 
 
 class JobSchedulerPanel : public wxPanel,
-                          public cfw::IDocument,
+                          public IDocument,
                           public xcm::signal_sink
 {
     XCM_CLASS_NAME_NOREFCOUNT("appmain.JobSchedulerPanel")
     XCM_BEGIN_INTERFACE_MAP(JobSchedulerPanel)
-        XCM_INTERFACE_ENTRY(cfw::IDocument)
+        XCM_INTERFACE_ENTRY(IDocument)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -105,9 +105,9 @@ public:
 
 private:
 
-    // -- cfw::IDocument --
-    bool initDoc(cfw::IFramePtr frame,
-                 cfw::IDocumentSitePtr site,
+    // -- IDocument --
+    bool initDoc(IFramePtr frame,
+                 IDocumentSitePtr site,
                  wxWindow* doc_site,
                  wxWindow* pane_site);
 
@@ -166,7 +166,7 @@ private: // utilities
     
 private:
 
-    cfw::IDocumentSitePtr m_doc_site;
+    IDocumentSitePtr m_doc_site;
     
     kcl::RowSelectionGrid* m_joblist_grid;
     kcl::RowSelectionGrid* m_commandlist_grid;

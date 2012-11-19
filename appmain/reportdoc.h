@@ -79,18 +79,18 @@ public:
 class ReportDoc : public wxWindow,
                   public IReportDoc,
                   public IColumnListTarget,
-                  public cfw::IDocument,
-                  public cfw::IProperties,
-                  public cfw::StatusBarProviderBase,
+                  public IDocument,
+                  public IProperties,
+                  public StatusBarProviderBase,
                   public xcm::signal_sink
 {
     XCM_CLASS_NAME_NOREFCOUNT("appmain.ReportDoc")
     XCM_BEGIN_INTERFACE_MAP(ReportDoc)
         XCM_INTERFACE_ENTRY(IReportDoc)
         XCM_INTERFACE_ENTRY(IColumnListTarget)
-        XCM_INTERFACE_ENTRY(cfw::IDocument)
-        XCM_INTERFACE_ENTRY(cfw::IProperties)
-        XCM_INTERFACE_CHAIN(cfw::StatusBarProviderBase)
+        XCM_INTERFACE_ENTRY(IDocument)
+        XCM_INTERFACE_ENTRY(IProperties)
+        XCM_INTERFACE_CHAIN(StatusBarProviderBase)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -187,9 +187,9 @@ private:
     bool initStatusBar();
     bool initSettings();
 
-    // cfw::IDocument
-    bool initDoc(cfw::IFramePtr frame,
-                 cfw::IDocumentSitePtr doc_site,
+    // IDocument
+    bool initDoc(IFramePtr frame,
+                 IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,
                  wxWindow* panesite_wnd);
 
@@ -200,21 +200,21 @@ private:
     void onSiteDeactivated();
     void onSiteActivated();
 
-    // cfw::IUIContext
-    cfw::IUIContextPtr getUserInterface();
+    // IUIContext
+    IUIContextPtr getUserInterface();
 
-    // cfw::IProperties
-    cfw::IPropertyInfoEnumPtr getPropertyEnum();
-    bool setProperty(const wxString& prop_name, const cfw::PropertyValue& value);
-    bool getProperty(const wxString& prop_name, cfw::PropertyValue& value);
+    // IProperties
+    IPropertyInfoEnumPtr getPropertyEnum();
+    bool setProperty(const wxString& prop_name, const PropertyValue& value);
+    bool getProperty(const wxString& prop_name, PropertyValue& value);
 
     // IColumnListTarget
     void getColumnListItems(std::vector<ColumnListItem>& list);
     void onColumnListDblClicked(const std::vector<wxString>& list);
 
     // signal sink for frame and status bar events
-    void onFrameEvent(cfw::Event& evt);
-    void onStatusBarItemLeftDblClick(cfw::IStatusBarItemPtr item);
+    void onFrameEvent(FrameworkEvent& evt);
+    void onStatusBarItemLeftDblClick(IStatusBarItemPtr item);
     
     // signal sink for custom formula builder
     void onCustomFormulaOk(ExprBuilderPanel* expr_panel);
@@ -355,12 +355,12 @@ private:
     AppPrintProgressListener* m_print_progress;
 
     // doc site and frame variables
-    cfw::IDocumentSitePtr m_doc_site;
-    cfw::IFramePtr m_frame;
+    IDocumentSitePtr m_doc_site;
+    IFramePtr m_frame;
 
     // drag and drop data data objects
     kcl::GridDataObject* m_grid_data_object;
-    cfw::FsDataObject* m_fs_data_object;
+    FsDataObject* m_fs_data_object;
     kcanvas::CanvasDataObjectComposite* m_canvas_data_object;
 
     // sizers

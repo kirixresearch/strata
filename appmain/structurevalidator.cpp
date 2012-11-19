@@ -24,7 +24,7 @@ int StructureValidator::showErrorMessage(int errorcode, bool* block)
     if (errorcode & ErrorNoFields)
     {
         *block = true;
-        return cfw::appMessageBox(_("There are no fields in the table structure.  Add at least one field to the table to continue."),
+        return appMessageBox(_("There are no fields in the table structure.  Add at least one field to the table to continue."),
                                   _("Invalid Table Structure"),
                                   wxOK | wxICON_EXCLAMATION | wxCENTER,
                                   g_app->getMainWindow());
@@ -34,7 +34,7 @@ int StructureValidator::showErrorMessage(int errorcode, bool* block)
     {
         // NOTE: This error message should never be shown to the user
         *block = true;
-        return cfw::appMessageBox(_("The source table structure is invalid or corrupt.  This file cannot be opened in the Table View."),
+        return appMessageBox(_("The source table structure is invalid or corrupt.  This file cannot be opened in the Table View."),
                                   _("Invalid Table Structure"),
                                   wxOK | wxICON_EXCLAMATION | wxCENTER,
                                   g_app->getMainWindow());
@@ -44,7 +44,7 @@ int StructureValidator::showErrorMessage(int errorcode, bool* block)
     if (errorcode & ErrorDuplicateFieldNames)
     {
         *block = true;
-        return cfw::appMessageBox(_("Two or more fields have the same name.  Check to make sure all field names are unique to continue."),
+        return appMessageBox(_("Two or more fields have the same name.  Check to make sure all field names are unique to continue."),
                                   _("Invalid Table Structure"),
                                   wxOK | wxICON_EXCLAMATION | wxCENTER,
                                   g_app->getMainWindow());
@@ -54,7 +54,7 @@ int StructureValidator::showErrorMessage(int errorcode, bool* block)
     if (errorcode & ErrorDuplicateTableNames)
     {
         *block = true;
-        return cfw::appMessageBox(_("Two or more tables have the same name.  Check to make sure all table names are unique to continue."),
+        return appMessageBox(_("Two or more tables have the same name.  Check to make sure all table names are unique to continue."),
                                   _("Duplicate Table Names"),
                                   wxOK | wxICON_EXCLAMATION | wxCENTER,
                                   g_app->getMainWindow());
@@ -64,7 +64,7 @@ int StructureValidator::showErrorMessage(int errorcode, bool* block)
     if (errorcode & ErrorInvalidFieldNames)
     {
         *block = true;
-        return cfw::appMessageBox(_("One or more field names are invalid.  Check to make sure all field names are valid to continue."),
+        return appMessageBox(_("One or more field names are invalid.  Check to make sure all field names are valid to continue."),
                                   _("Invalid Table Structure"),
                                   wxOK | wxICON_EXCLAMATION | wxCENTER,
                                   g_app->getMainWindow());
@@ -74,7 +74,7 @@ int StructureValidator::showErrorMessage(int errorcode, bool* block)
     if (errorcode & ErrorInvalidTableNames)
     {
         *block = true;
-        return cfw::appMessageBox(_("One or more table names are invalid.  Check to make sure all table names are valid to continue."),
+        return appMessageBox(_("One or more table names are invalid.  Check to make sure all table names are valid to continue."),
                                   _("Invalid Table Names"),
                                   wxOK | wxICON_EXCLAMATION | wxCENTER,
                                   g_app->getMainWindow());
@@ -91,7 +91,7 @@ int StructureValidator::showErrorMessage(int errorcode, bool* block)
     if (errorcode & ErrorInvalidExpressions)
     {
         *block = true;
-        return cfw::appMessageBox(_("One or more formulas has invalid syntax.  Check to make sure all formulas have valid syntax to continue."),
+        return appMessageBox(_("One or more formulas has invalid syntax.  Check to make sure all formulas have valid syntax to continue."),
                                   _("Invalid Formula(s)"),
                                   wxOK | wxICON_EXCLAMATION | wxCENTER,
                                   g_app->getMainWindow());
@@ -100,7 +100,7 @@ int StructureValidator::showErrorMessage(int errorcode, bool* block)
     if (errorcode & ErrorExpressionTypeMismatch)
     {
         *block = false;
-        int retcode = cfw::appMessageBox(_("One or more of the formulas has a return type that does not match the field type.  Would you like to continue?"),
+        int retcode = appMessageBox(_("One or more of the formulas has a return type that does not match the field type.  Would you like to continue?"),
                                          _("Invalid Formula(s)"),
                                          wxYES_NO | wxICON_QUESTION | wxCENTER,
                                          g_app->getMainWindow());

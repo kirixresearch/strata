@@ -49,16 +49,16 @@ XCM_DECLARE_SMARTPTR(IQueryDoc)
 class QueryDoc : public wxWindow,
                  public IQueryDoc,
                  public IColumnListTarget,
-                 public cfw::IDocument,
-                 public cfw::StatusBarProviderBase,
+                 public IDocument,
+                 public StatusBarProviderBase,
                  public xcm::signal_sink
 {
     XCM_CLASS_NAME_NOREFCOUNT("appmain.QueryDoc")
     XCM_BEGIN_INTERFACE_MAP(QueryDoc)
         XCM_INTERFACE_ENTRY(IQueryDoc)
         XCM_INTERFACE_ENTRY(IColumnListTarget)    
-        XCM_INTERFACE_ENTRY(cfw::IDocument)
-        XCM_INTERFACE_CHAIN(cfw::StatusBarProviderBase)
+        XCM_INTERFACE_ENTRY(IDocument)
+        XCM_INTERFACE_CHAIN(StatusBarProviderBase)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -91,8 +91,8 @@ public:
 private:
 
     // -- IDocument --
-    bool initDoc(cfw::IFramePtr frame,
-                 cfw::IDocumentSitePtr doc_site,
+    bool initDoc(IFramePtr frame,
+                 IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,
                  wxWindow* panesite_wnd);
     wxWindow* getDocumentWindow();
@@ -158,7 +158,7 @@ private:
     void onDiagramBoxSizedMoved(wxString path, wxRect rect);
 
     // -- frame event handlers --
-    void onFrameEvent(cfw::Event& evt);
+    void onFrameEvent(FrameworkEvent& evt);
 
     // -- other events --
     void onCopy(wxCommandEvent& evt);
@@ -169,7 +169,7 @@ private:
     void onSelectDistinctChecked(wxCommandEvent& evt);
     void onOutputPathTextChanged(wxCommandEvent& evt);
     void onBrowse(wxCommandEvent& evt);
-    void onTreeDataDropped(cfw::FsDataObject* data);
+    void onTreeDataDropped(FsDataObject* data);
     void onSashDragged(wxSashEvent& evt);
     void onExecute(wxCommandEvent& evt);
     void onSave(wxCommandEvent& evt);
@@ -182,8 +182,8 @@ private:
 
 private:
 
-    cfw::IFramePtr m_frame;
-    cfw::IDocumentSitePtr m_doc_site;
+    IFramePtr m_frame;
+    IDocumentSitePtr m_doc_site;
     
     QueryTemplate m_info;
     wxString m_path;
@@ -200,7 +200,7 @@ private:
     RelationDiagram* m_diagram;
     kcl::RowSelectionGrid* m_grid;
 
-    cfw::IJobInfoPtr m_job_info;
+    IJobInfoPtr m_job_info;
     
     DECLARE_EVENT_TABLE()
 };

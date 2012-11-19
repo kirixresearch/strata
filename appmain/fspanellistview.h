@@ -13,9 +13,6 @@
 #define __CFW_FSPANELLISTVIEW_H
 
 
-namespace cfw
-{
-
 
 class FsPanelListView : public CfwListCtrl
 {
@@ -57,8 +54,6 @@ private:
     DECLARE_EVENT_TABLE()
 };
 
-
-};  // namespace cfw
 
 
 #endif

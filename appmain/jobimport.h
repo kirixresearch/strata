@@ -114,7 +114,7 @@ class ImportJob : public TangoJobBase,
     XCM_CLASS_NAME("appmain.ImportJob")
     XCM_BEGIN_INTERFACE_MAP(ImportJob)
         XCM_INTERFACE_ENTRY(IImportJob)
-        XCM_INTERFACE_CHAIN(cfw::JobBase)
+        XCM_INTERFACE_CHAIN(JobBase)
     XCM_END_INTERFACE_MAP()
 
 public:

@@ -335,7 +335,7 @@ bool ReportDoc::newFile(const wxString& path)
     design_component_raw->setActiveSectionByName(PROP_REPORT_DETAIL);
 
     // set the default page settings based on the preferences
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
     if (prefs.isNull())
         return false;
 
@@ -449,7 +449,7 @@ bool ReportDoc::create(const ReportCreateInfo& data)
     updateFormatItems();
 
     // update the column list
-    g_app->getMainFrame()->postEvent(new cfw::Event(wxT("ColumnListPanel.update")));
+    g_app->getMainFrame()->postEvent(new FrameworkEvent(wxT("ColumnListPanel.update")));
 
     return true;
 }
@@ -578,7 +578,7 @@ bool ReportDoc::saveFile(const wxString& path)
     updateCaption();
 
     // fire this event so that the URL will be updated with the report's path
-    m_frame->postEvent(new cfw::Event(wxT("cfw.locationChanged")));
+    m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
 
     // render the canvas
     getCanvas()->render();
@@ -598,7 +598,7 @@ bool ReportDoc::loadFile(const wxString& path)
     updateCaption();
 
     // fire this event so that the URL will be updated with the report's path
-    m_frame->postEvent(new cfw::Event(wxT("cfw.locationChanged")));
+    m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
 
     // clear the layout component
     getLayoutComponentRaw()->clear();
@@ -644,7 +644,7 @@ bool ReportDoc::loadFile(const wxString& path)
     updateFormatItems();
 
     // update the column list
-    g_app->getMainFrame()->postEvent(new cfw::Event(wxT("ColumnListPanel.update")));
+    g_app->getMainFrame()->postEvent(new FrameworkEvent(wxT("ColumnListPanel.update")));
     
     return true;
 }
@@ -715,7 +715,7 @@ void ReportDoc::onSaveAsExternal(wxCommandEvent& evt)
                              m_file_path,
                              true /* compress */);
 
-        g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+        g_app->getJobQueue()->addJob(job, jobStateRunning);
     }
 }
 
@@ -725,7 +725,7 @@ void ReportDoc::onReload(wxCommandEvent& evt)
     updateCanvas();
 
     // update the column list
-    g_app->getMainFrame()->postEvent(new cfw::Event(wxT("ColumnListPanel.update")));
+    g_app->getMainFrame()->postEvent(new FrameworkEvent(wxT("ColumnListPanel.update")));
 }
 
 void ReportDoc::onPrint(wxCommandEvent& evt)
@@ -1837,11 +1837,11 @@ bool ReportDoc::initDragAndDrop(kcanvas::ICanvasPtr canvas)
              static_cast<kcanvas::CanvasDropTarget*>(canvas_window->GetDropTarget());
              
     m_grid_data_object = new kcl::GridDataObject(NULL, wxT("fieldspanel"));
-    m_fs_data_object = new cfw::FsDataObject;
+    m_fs_data_object = new FsDataObject;
     m_canvas_data_object = drop_target->GetDataObject();
 
     m_canvas_data_object->AddDataObject(kcl::getGridDataFormat(wxT("fieldspanel")), m_grid_data_object);
-    m_canvas_data_object->AddDataObject(cfw::FS_DATA_OBJECT_FORMAT, m_fs_data_object);
+    m_canvas_data_object->AddDataObject(FS_DATA_OBJECT_FORMAT, m_fs_data_object);
     
     return true;
 }
@@ -1906,7 +1906,7 @@ bool ReportDoc::initFormatToolbar()
 bool ReportDoc::initStatusBar()
 {
     // create the statusbar items for this document
-    cfw::IStatusBarItemPtr item;
+    IStatusBarItemPtr item;
     
     item = addStatusBarItem(wxT("reportdoc_data_source"));
     item->setWidth(200);
@@ -1926,7 +1926,7 @@ bool ReportDoc::initStatusBar()
 
 bool ReportDoc::initSettings()
 {
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
     if (prefs.isNull())
         return false;
 
@@ -1995,8 +1995,8 @@ bool ReportDoc::initSettings()
     return true;
 }
 
-bool ReportDoc::initDoc(cfw::IFramePtr frame,
-                        cfw::IDocumentSitePtr doc_site,
+bool ReportDoc::initDoc(IFramePtr frame,
+                        IDocumentSitePtr doc_site,
                         wxWindow* docsite_wnd,
                         wxWindow* panesite_wnd)
 {
@@ -2097,7 +2097,7 @@ bool ReportDoc::onSiteClosing(bool force)
     if (isChanged())
     {
         int result;
-        result = cfw::appMessageBox(_("Would you like to save the changes made to this document?"),
+        result = appMessageBox(_("Would you like to save the changes made to this document?"),
                                     APPLICATION_NAME,
                                     wxYES_NO | wxCANCEL | wxICON_QUESTION | wxCENTER);
 
@@ -2126,9 +2126,9 @@ void ReportDoc::onSiteActivated()
     updatePropertiesPanel();
 }
 
-cfw::IUIContextPtr ReportDoc::getUserInterface()
+IUIContextPtr ReportDoc::getUserInterface()
 {
-    cfw::IUIContextPtr ui_context;
+    IUIContextPtr ui_context;
 
     // see if a user interface of this type already exists
     ui_context = g_app->getMainFrame()->lookupUIContext(wxT("ReportUI"));
@@ -2140,11 +2140,11 @@ cfw::IUIContextPtr ReportDoc::getUserInterface()
     return ui_context;
 }
 
-// cfw::IProperties implementation
-cfw::IPropertyInfoEnumPtr ReportDoc::getPropertyEnum()
+// IProperties implementation
+IPropertyInfoEnumPtr ReportDoc::getPropertyEnum()
 {
-    xcm::IVectorImpl<cfw::IPropertyInfoPtr>* vec;
-    vec = new xcm::IVectorImpl<cfw::IPropertyInfoPtr>;
+    xcm::IVectorImpl<IPropertyInfoPtr>* vec;
+    vec = new xcm::IVectorImpl<IPropertyInfoPtr>;
 
     // TODO: actually get the properties; probably similar
     // to updateFormItems()
@@ -2159,16 +2159,16 @@ cfw::IPropertyInfoEnumPtr ReportDoc::getPropertyEnum()
     for (it = property_enum.begin(); it != it_end; ++it)
     {
         kcanvas::Property canvas_info = *it;
-        cfw::IPropertyInfoPtr cfw_info = new cfw::PropertyInfo;
+        IPropertyInfoPtr cfw_info = new PropertyInfo;
         
         cfw_info->setName(canvas_info.getName());
         switch (canvas_info.getType())
         {
             default:
-            case kcanvas::proptypeString:  cfw_info->setType(cfw::proptypeString);  break;
-            case kcanvas::proptypeColor:   cfw_info->setType(cfw::proptypeColor);   break;
-            case kcanvas::proptypeInteger: cfw_info->setType(cfw::proptypeInteger); break;
-            case kcanvas::proptypeBoolean: cfw_info->setType(cfw::proptypeBoolean); break;
+            case kcanvas::proptypeString:  cfw_info->setType(proptypeString);  break;
+            case kcanvas::proptypeColor:   cfw_info->setType(proptypeColor);   break;
+            case kcanvas::proptypeInteger: cfw_info->setType(proptypeInteger); break;
+            case kcanvas::proptypeBoolean: cfw_info->setType(proptypeBoolean); break;
             // TODO: add in fonts
         }
         
@@ -2182,12 +2182,12 @@ cfw::IPropertyInfoEnumPtr ReportDoc::getPropertyEnum()
     return vec;
 }
 
-bool ReportDoc::setProperty(const wxString& prop_name, const cfw::PropertyValue& value)
+bool ReportDoc::setProperty(const wxString& prop_name, const PropertyValue& value)
 {
     return false;
 }
 
-bool ReportDoc::getProperty(const wxString& prop_name, cfw::PropertyValue& value)
+bool ReportDoc::getProperty(const wxString& prop_name, PropertyValue& value)
 {
     return false;
 }
@@ -2321,7 +2321,7 @@ void ReportDoc::getColumnListItems(std::vector<ColumnListItem>& list)
             tango::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
 
             ColumnListItem item;
-            item.text = cfw::makeProperIfNecessary(towx(colinfo->getName()));
+            item.text = makeProperIfNecessary(towx(colinfo->getName()));
             if (colinfo->getCalculated())
             {
                 item.bitmap = GETBMP(gf_lightning_16);
@@ -2367,7 +2367,7 @@ void ReportDoc::getColumnListItems(std::vector<ColumnListItem>& list)
 
         // ad the field to the list
         ColumnListItem item;
-        item.text = cfw::makeProperIfNecessary(it->output_field);
+        item.text = makeProperIfNecessary(it->output_field);
         item.bitmap = GETBMP(gf_field_16);  // query output always static
 
         item.active = true;
@@ -2418,7 +2418,7 @@ void ReportDoc::onColumnListDblClicked(const std::vector<wxString>& list)
     setDocumentFocus();
 }
 
-void ReportDoc::onFrameEvent(cfw::Event& evt)
+void ReportDoc::onFrameEvent(FrameworkEvent& evt)
 {
     // if a file is renamed, update this file with the new file path
     if (evt.name == wxT("treepanel.ofsFileRenamed"))
@@ -2428,12 +2428,12 @@ void ReportDoc::onFrameEvent(cfw::Event& evt)
             m_file_path = evt.s_param2;
             updateCaption();
             
-            cfw::IDocumentSitePtr doc_site = m_frame->getActiveChild();
+            IDocumentSitePtr doc_site = m_frame->getActiveChild();
             if (doc_site.isOk() && doc_site == m_doc_site)
             {
                 // fire this event so that the URL combobox will be updated
                 // with the new path if this is the active child
-                m_frame->postEvent(new cfw::Event(wxT("cfw.locationChanged")));
+                m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
             }
         }
     }
@@ -2442,7 +2442,7 @@ void ReportDoc::onFrameEvent(cfw::Event& evt)
     // property
     if (evt.name == wxT("cfw.propertyChanged"))
     {
-        cfw::PropertyValue* data = static_cast<cfw::PropertyValue*>(evt.o_param);
+        PropertyValue* data = static_cast<PropertyValue*>(evt.o_param);
         setProperty(evt.s_param, *data);
     }
 
@@ -2450,7 +2450,7 @@ void ReportDoc::onFrameEvent(cfw::Event& evt)
     if (evt.name == wxT("appmain.view_switcher.query_available_views"))
     {
         // make sure we are in the active container before replying
-        cfw::IDocumentSitePtr active_site;
+        IDocumentSitePtr active_site;
         active_site = g_app->getMainFrame()->getActiveChild();
         if (active_site.isNull() || m_doc_site.isNull())
             return;
@@ -2473,7 +2473,7 @@ void ReportDoc::onFrameEvent(cfw::Event& evt)
     if (evt.name == wxT("appmain.view_switcher.active_view_changed"))
     {
         // -- make sure we are in the active container --
-        cfw::IDocumentSitePtr active_site;
+        IDocumentSitePtr active_site;
         active_site = g_app->getMainFrame()->getActiveChild();
         if (active_site.isNull() || m_doc_site.isNull())
             return;
@@ -2519,11 +2519,11 @@ void ReportDoc::onFrameEvent(cfw::Event& evt)
     }
 }
 
-void ReportDoc::onStatusBarItemLeftDblClick(cfw::IStatusBarItemPtr item)
+void ReportDoc::onStatusBarItemLeftDblClick(IStatusBarItemPtr item)
 {
     // if the data source status bar item is double-clicked, open
     // the report settings dialog
-    cfw::IDocumentSitePtr docsite = m_frame->getActiveChild();
+    IDocumentSitePtr docsite = m_frame->getActiveChild();
     if (docsite.isOk() && docsite == m_doc_site)
     {
         if (item->getName() == wxT("reportdoc_data_source"))
@@ -2542,7 +2542,7 @@ void ReportDoc::onStatusBarItemLeftDblClick(cfw::IStatusBarItemPtr item)
 void ReportDoc::onCustomFormulaOk(ExprBuilderPanel* expr_panel)
 {
     // close panel site
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = g_app->getMainFrame()->lookupSite(wxT("Formula"));
     if (site.isOk())
     {
@@ -2716,13 +2716,13 @@ void ReportDoc::updateStatusBar()
     wxString data_source = _("Source: ") + getDataSource();
 
     wxString page_number_text = wxString::Format(_("Page: %s"),
-                                    cfw::dbl2fstr(page_idx).c_str());
+                                    dbl2fstr(page_idx).c_str());
                                     
     wxString page_count_text = wxString::Format(_("Page Count: %s"),
-                                    cfw::dbl2fstr(page_count).c_str());
+                                    dbl2fstr(page_count).c_str());
 
-    cfw::IStatusBarItemPtr item;
-    cfw::IStatusBarPtr statusbar = g_app->getMainFrame()->getStatusBar();
+    IStatusBarItemPtr item;
+    IStatusBarPtr statusbar = g_app->getMainFrame()->getStatusBar();
     if (!statusbar)
         return;
 
@@ -2754,7 +2754,7 @@ void ReportDoc::updateStatusBar()
 void ReportDoc::updatePropertiesPanel()
 {
     // let the properties panel know that it should refresh itself
-    m_frame->postEvent(new cfw::Event(wxT("cfw.propertiesChanged")));
+    m_frame->postEvent(new FrameworkEvent(wxT("cfw.propertiesChanged")));
 }
 
 void ReportDoc::updateDesignComponentMargins()
@@ -3288,11 +3288,11 @@ void ReportDoc::onCanvasDropEvent(kcanvas::IEventPtr evt)
 
     // if the drop data is from the file system, get the 
     // file info
-    if (format == wxDataFormat(cfw::FS_DATA_OBJECT_FORMAT))
+    if (format == wxDataFormat(FS_DATA_OBJECT_FORMAT))
     {
         // get the file system drop item
-        cfw::IFsItemEnumPtr fs_items = m_fs_data_object->getFsItems();
-        cfw::IFsItemPtr fs_item = fs_items->getItem(0);
+        IFsItemEnumPtr fs_items = m_fs_data_object->getFsItems();
+        IFsItemPtr fs_item = fs_items->getItem(0);
         IDbObjectFsItemPtr item = fs_item;
         
         std::vector<wxString> res;
@@ -3307,7 +3307,7 @@ void ReportDoc::onCanvasDropEvent(kcanvas::IEventPtr evt)
         if (res.size() != 1)
         {
             // more than one item was dragged in, bail out
-            cfw::appMessageBox(_("Only one item can be selected as the source for a report."),
+            appMessageBox(_("Only one item can be selected as the source for a report."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             
@@ -3324,7 +3324,7 @@ void ReportDoc::onCanvasDropEvent(kcanvas::IEventPtr evt)
             item.isNull())
         {
             // the path couldn't be found, bail out
-            cfw::appMessageBox(_("The selected item could not be found in the project."),
+            appMessageBox(_("The selected item could not be found in the project."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             
@@ -3343,7 +3343,7 @@ void ReportDoc::onCanvasDropEvent(kcanvas::IEventPtr evt)
         if (item->getType() != dbobjtypeSet)
         {
             // the item is not a table, bail out
-            cfw::appMessageBox(_("Only tables can be selected as the source for a report."),
+            appMessageBox(_("Only tables can be selected as the source for a report."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             
@@ -3694,7 +3694,7 @@ void ReportDoc::onCanvasRightClick(kcanvas::IEventPtr evt)
     pt_mouse = ScreenToClient(pt_mouse);
 
     // show the popup menu and capture the result
-    cfw::CommandCapture* cc = new cfw::CommandCapture;
+    CommandCapture* cc = new CommandCapture;
     PushEventHandler(cc);
     PopupMenu(&menuPopup, pt_mouse);
     int command = cc->getLastCommandId();
@@ -4225,7 +4225,7 @@ bool ReportDoc::setDataSource(const wxString& path)
     getDesignComponentRaw()->setDataSource(path);
 
     // update the column list
-    g_app->getMainFrame()->postEvent(new cfw::Event(wxT("ColumnListPanel.update")));
+    g_app->getMainFrame()->postEvent(new FrameworkEvent(wxT("ColumnListPanel.update")));
     
     return true;
 }
@@ -4783,7 +4783,7 @@ void ReportDoc::insertFormula(int command_id)
         }
     }
     
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("FormulaBuilder"));
     if (site.isNull())
     {
@@ -4792,8 +4792,8 @@ void ReportDoc::insertFormula(int command_id)
 
             ExprBuilderDocPanel* panel = new ExprBuilderDocPanel;
             site = m_frame->createSite(panel,
-                                       cfw::sitetypeModeless |
-                                       cfw::siteHidden,
+                                       sitetypeModeless |
+                                       siteHidden,
                                        -1, -1, 560, 300);
             site->setMinSize(560,300);
             site->setCaption(_("Formula"));

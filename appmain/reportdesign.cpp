@@ -407,7 +407,7 @@ static void setDefaultTableFont(kcanvas::ICompTablePtr table)
     if (table.isNull())
         return;
 
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
     if (!prefs.isNull())
     {
         // create a suitable default font to ensure we have
@@ -602,7 +602,7 @@ static void getMaxColumnSizes(std::map<int,int>& existing_sizes,
 CompReportDesign::CompReportDesign()
 {
     // create default page dimensions and margins
-    if (cfw::Locale::getDefaultPaperType() == wxPAPER_A4)
+    if (Locale::getDefaultPaperType() == wxPAPER_A4)
     {    
         m_page_width = A4_PAGE_WIDTH;
         m_page_height = A4_PAGE_HEIGHT;
@@ -3921,7 +3921,7 @@ wxString CompReportDesign::getGroupFields(const wxString& group_name, bool all)
         if (!first)
             group_fields += wxT(", ");
             
-        group_fields += cfw::makeProper(it->m_group_field);
+        group_fields += makeProper(it->m_group_field);
         first = false;
 
         if (it->m_name == group_name)

@@ -74,7 +74,7 @@ enum TextQualifierIdx
 
 static int showOverwriteTransformationChangesDialog()
 {
-    int result = cfw::appMessageBox(_("Performing this operation will overwrite any changes that have already been made to the table structure.\nAre you sure you want to continue?"),
+    int result = appMessageBox(_("Performing this operation will overwrite any changes that have already been made to the table structure.\nAre you sure you want to continue?"),
                                     APPLICATION_NAME,
                                     wxYES_NO | wxICON_QUESTION | wxCENTER);
     return result;
@@ -115,10 +115,10 @@ ITextDocPtr createTextDoc(const wxString& filename,
     if (site_id)
         *site_id = 0;
     
-    cfw::IFramePtr frame = g_app->getMainFrame();
-    cfw::IDocumentSitePtr textdoc_site;
-    cfw::IDocumentSitePtr transdoc_site;
-    cfw::IDocumentSitePtr tabledoc_site;
+    IFramePtr frame = g_app->getMainFrame();
+    IDocumentSitePtr textdoc_site;
+    IDocumentSitePtr transdoc_site;
+    IDocumentSitePtr tabledoc_site;
 
     // create a new TextDoc
     TextDoc* textdoc = new TextDoc(filename);
@@ -146,7 +146,7 @@ ITextDocPtr createTextDoc(const wxString& filename,
      else
     {
         tabledoc_site = frame->createSite(tabledoc,
-                                          cfw::sitetypeNormal,
+                                          sitetypeNormal,
                                          -1, -1, -1, -1);
         container_wnd = tabledoc_site->getContainerWindow();
     }
@@ -159,11 +159,11 @@ ITextDocPtr createTextDoc(const wxString& filename,
 
 
     textdoc_site = frame->createSite(container_wnd,
-                                     static_cast<cfw::IDocument*>(textdoc),
+                                     static_cast<IDocument*>(textdoc),
                                      false);
 
     transdoc_site = frame->createSite(container_wnd,
-                                      static_cast<cfw::IDocument*>(transdoc),
+                                      static_cast<IDocument*>(transdoc),
                                       false);
     transdoc->initFromSet(textdoc->getTextSet());
 
@@ -315,8 +315,8 @@ TextDoc::~TextDoc()
 }
 
 
-bool TextDoc::initDoc(cfw::IFramePtr frame,
-                      cfw::IDocumentSitePtr doc_site,
+bool TextDoc::initDoc(IFramePtr frame,
+                      IDocumentSitePtr doc_site,
                       wxWindow* docsite_wnd,
                       wxWindow* panesite_wnd)
 {
@@ -407,7 +407,7 @@ bool TextDoc::initDoc(cfw::IFramePtr frame,
     Layout();
     
     // create the statusbar items for this document
-    cfw::IStatusBarItemPtr item;
+    IStatusBarItemPtr item;
 
     item = addStatusBarItem(wxT("textdoc_column_offset"));
     item->setWidth(120);
@@ -455,7 +455,7 @@ bool TextDoc::onSiteClosing(bool force)
 
     if (m_dirty)
     {
-        int result = cfw::appMessageBox(_("Would you like to save the changes you made to the configuration?"),
+        int result = appMessageBox(_("Would you like to save the changes you made to the configuration?"),
                                         APPLICATION_NAME,
                                         wxYES_NO | wxCANCEL | wxICON_QUESTION | wxCENTER);
 
@@ -499,7 +499,7 @@ void TextDoc::onSiteActivated()
 
 bool TextDoc::updateColumnList()
 {
-    g_app->getMainFrame()->postEvent(new cfw::Event(wxT("ColumnListPanel.update")));
+    g_app->getMainFrame()->postEvent(new FrameworkEvent(wxT("ColumnListPanel.update")));
     return true;
 }
 
@@ -617,7 +617,7 @@ void TextDoc::getColumnListItems(std::vector<ColumnListItem>& list)
             continue;
         
         ColumnListItem item;
-        item.text = cfw::makeProperIfNecessary(towx(colinfo->getName()));
+        item.text = makeProperIfNecessary(towx(colinfo->getName()));
         item.bitmap = GETBMP(gf_field_16);
         item.active = true;
         list.push_back(item);
@@ -1130,7 +1130,7 @@ void TextDoc::updateStatusBar()
         wxString offset_str = wxString::Format(_("Offset: %d"), col);
         wxString field_count_str = wxString::Format(_("Field Count: %d"), field_count);
         
-        cfw::IStatusBarItemPtr item;
+        IStatusBarItemPtr item;
         item = m_frame->getStatusBar()->getItem(wxT("textdoc_column_offset"));
         if (item.isOk())
         {

@@ -147,8 +147,8 @@ IndexPanel::~IndexPanel()
 }
 
 
-bool IndexPanel::initDoc(cfw::IFramePtr frame,
-                         cfw::IDocumentSitePtr site,
+bool IndexPanel::initDoc(IFramePtr frame,
+                         IDocumentSitePtr site,
                          wxWindow* docsite_wnd,
                          wxWindow* panesite_wnd)
 {
@@ -484,7 +484,7 @@ void IndexPanel::populateIndexFieldsList()
     int i, count = info->cols.size();
     for (i = 0; i < count; ++i)
     {
-        wxString col_name = cfw::makeProper(info->cols[i].name);
+        wxString col_name = makeProper(info->cols[i].name);
         insertIndexColumn(i, col_name, &(info->cols[i]));
     }
     
@@ -602,7 +602,7 @@ void IndexPanel::onOK(wxCommandEvent& evt)
 {
     if (!m_indexes_list_validator->validate())
     {
-        cfw::appMessageBox(_("One or more of the index names is invalid.  Please make sure all index names are valid to continue."),
+        appMessageBox(_("One or more of the index names is invalid.  Please make sure all index names are valid to continue."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
         return;
@@ -611,7 +611,7 @@ void IndexPanel::onOK(wxCommandEvent& evt)
     if (m_indexes_list->getRowCount() > 0 &&
         m_index_fields->getRowCount() == 0)
     {
-        cfw::appMessageBox(_("No fields exist in the selected index.  Please add at least one field to the index to continue."),
+        appMessageBox(_("No fields exist in the selected index.  Please add at least one field to the index to continue."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
         return;
@@ -775,7 +775,7 @@ void IndexPanel::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
         kcl::GridDraggedCells::iterator it;
         for (it = cells.begin(); it != cells.end(); ++it)
         {
-            insertIndexColumn(drop_row, cfw::makeProper((*it)->m_strvalue));
+            insertIndexColumn(drop_row, makeProper((*it)->m_strvalue));
             drop_row++;
         }
     }
@@ -791,7 +791,7 @@ void IndexPanel::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
 void IndexPanel::onAvailableFieldsDblClicked(int row, const wxString& text)
 {
     // double-clicked on a field item
-    insertIndexColumn(-1, cfw::makeProper(text));
+    insertIndexColumn(-1, makeProper(text));
     checkOverlayText();
     m_index_fields->refresh(kcl::Grid::refreshAll);
 }

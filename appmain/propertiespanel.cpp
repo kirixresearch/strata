@@ -8,12 +8,13 @@
  *
  */
 
+#include "appmain.h"
 
 //#define USE_PROPERTY_GRID
 #ifdef USE_PROPERTY_GRID
 
 
-#include <wx/wx.h>
+
 #include <wx/wupdlock.h>
 #include <wx/propgrid/propgrid.h>
 #include <wx/propgrid/propdev.h>
@@ -22,8 +23,6 @@
 #include "framework.h"
 
 
-namespace cfw
-{
 
 const int PropGridId = 14445;
 
@@ -42,8 +41,8 @@ PropertiesPanel::~PropertiesPanel()
 
 }
 
-bool PropertiesPanel::initDoc(cfw::IFramePtr frame,
-                              cfw::IDocumentSitePtr doc_site,
+bool PropertiesPanel::initDoc(IFramePtr frame,
+                              IDocumentSitePtr doc_site,
                               wxWindow* docsite_wnd,
                               wxWindow* panesite_wnd)
 {
@@ -92,12 +91,12 @@ void PropertiesPanel::setDocumentFocus()
     m_pg->SetFocus();
 }
 
-void PropertiesPanel::onActiveChildChanged(cfw::IDocumentSitePtr doc_site)
+void PropertiesPanel::onActiveChildChanged(IDocumentSitePtr doc_site)
 {
     populate();
 }
 
-void PropertiesPanel::onFrameEvent(cfw::Event& evt)
+void PropertiesPanel::onFrameEvent(Event& evt)
 {
     if (evt.name == wxT("cfw.propertiesChanged"))
     {
@@ -137,7 +136,7 @@ void PropertiesPanel::onPropertyChange(wxPropertyGridEvent& evt)
         val.m_color = *(const wxColour*)obj;
     }
     
-    cfw::Event* e = new cfw::Event(wxT("cfw.propertyChanged"));
+    Event* e = new Event(wxT("cfw.propertyChanged"));
     e->s_param = evt.GetPropertyName();
     e->o_param = &val;
     m_frame->sendEvent(e);
@@ -160,8 +159,8 @@ void PropertiesPanel::populate()
     }
         
     // if there is no active child, delete all present items
-    cfw::IDocumentSitePtr doc_site = m_frame->getActiveChild();
-    cfw::IPropertiesPtr sp_props;
+    IDocumentSitePtr doc_site = m_frame->getActiveChild();
+    IPropertiesPtr sp_props;
     if (doc_site)
         sp_props = doc_site->getDocument();
     if (sp_props.isNull())
@@ -173,7 +172,7 @@ void PropertiesPanel::populate()
     }
 
 
-    cfw::IPropertyInfoEnumPtr all_props = sp_props->getPropertyEnum();
+    IPropertyInfoEnumPtr all_props = sp_props->getPropertyEnum();
     size_t i, count = all_props->size();
     
     
@@ -186,7 +185,7 @@ void PropertiesPanel::populate()
     wxString cur_string;
     for (i = 0; i < count; ++i)
     {
-        cfw::IPropertyInfoPtr prop = all_props->getItem(i);
+        IPropertyInfoPtr prop = all_props->getItem(i);
         cur_string += prop->getName();
         cur_string += wxString::Format(wxT("(%d)"), prop->getType());
         cur_string += wxT("|");
@@ -202,7 +201,7 @@ void PropertiesPanel::populate()
         
         for (i = 0; i < count; ++i)
         {
-            cfw::IPropertyInfoPtr prop = all_props->getItem(i);
+            IPropertyInfoPtr prop = all_props->getItem(i);
             
             wxString prop_name = prop->getName();
             wxArrayString as = prop->getDisplayName();
@@ -240,7 +239,7 @@ void PropertiesPanel::populate()
             
             switch (prop->getType())
             {
-                case cfw::proptypeString:
+                case proptypeString:
                 {
                     item_id = m_pg->AppendIn(cat_id, wxStringProperty(item_caption,
                                                     wxPG_LABEL,
@@ -248,7 +247,7 @@ void PropertiesPanel::populate()
                 }
                 break;
                     
-                case cfw::proptypeInteger:
+                case proptypeInteger:
                 {
                     if (choice_strings.GetCount() == 0)
                     {
@@ -278,7 +277,7 @@ void PropertiesPanel::populate()
                 }
                 break;
                     
-                case cfw::proptypeBoolean:
+                case proptypeBoolean:
                 {
                     item_id = m_pg->AppendIn(cat_id, wxBoolProperty(item_caption,
                                                     wxPG_LABEL,
@@ -286,7 +285,7 @@ void PropertiesPanel::populate()
                 }
                 break;
                 
-                case cfw::proptypeColor:
+                case proptypeColor:
                 {
                     item_id = m_pg->AppendIn(cat_id, wxColourProperty(item_caption,
                                                     wxPG_LABEL,
@@ -307,7 +306,7 @@ void PropertiesPanel::populate()
     // update existing properties
     for (i = 0; i < count; ++i)
     {
-        cfw::IPropertyInfoPtr prop = all_props->getItem(i);
+        IPropertyInfoPtr prop = all_props->getItem(i);
         wxString prop_name = prop->getName();
 
         PropertyValue val;
@@ -316,19 +315,19 @@ void PropertiesPanel::populate()
             
         switch (prop->getType())
         {
-            case cfw::proptypeString:
+            case proptypeString:
                 m_pg->SetPropertyValue(prop_name, val.m_str);
                 break;
                 
-            case cfw::proptypeInteger:
+            case proptypeInteger:
                 m_pg->SetPropertyValue(prop_name, val.m_int);
                 break;
                 
-            case cfw::proptypeBoolean:
+            case proptypeBoolean:
                 m_pg->SetPropertyValue(prop_name, val.m_bool);
                 break;
             
-            case cfw::proptypeColor:
+            case proptypeColor:
                 m_pg->SetPropertyValue(prop_name, val.m_color);
                 break;
         }
@@ -339,6 +338,5 @@ void PropertiesPanel::populate()
 
 
 
-}; // namespace cfw
 
 #endif

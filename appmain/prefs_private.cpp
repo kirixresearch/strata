@@ -16,17 +16,13 @@
 #include <map>
 
 
-namespace cfw
-{
-
-
 
 class AppPreferences : public IAppPreferences
 {
 
     XCM_CLASS_NAME("cfw.AppPreferences")
     XCM_BEGIN_INTERFACE_MAP(AppPreferences)
-        XCM_INTERFACE_ENTRY(cfw::IAppPreferences)
+        XCM_INTERFACE_ENTRY(IAppPreferences)
     XCM_END_INTERFACE_MAP()
     
 public:
@@ -82,7 +78,7 @@ class MemoryAppPreferences : public IAppPreferences
 {
     XCM_CLASS_NAME("cfw.MemoryAppPreferences")
     XCM_BEGIN_INTERFACE_MAP(MemoryAppPreferences)
-        XCM_INTERFACE_ENTRY(cfw::IAppPreferences)
+        XCM_INTERFACE_ENTRY(IAppPreferences)
     XCM_END_INTERFACE_MAP()
     
 public:
@@ -126,10 +122,6 @@ private:
 };
 
 
-
-
-
-};  // namespace cfw
 
 
 

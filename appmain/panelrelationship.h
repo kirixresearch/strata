@@ -21,7 +21,7 @@ class RelDiagramWatcher : public xcm::signal_sink
 public:
     
     RelDiagramWatcher();
-    void onFrameEvent(cfw::Event& event);
+    void onFrameEvent(FrameworkEvent& evt);
 
 private:
 
@@ -51,13 +51,13 @@ class RelationLine;
 class RelationDiagram;
 class RelationLineDataObject;
 class RelationshipPanel : public wxPanel,
-                          public cfw::IDocument,
+                          public IDocument,
                           public IRelationshipPanel,
                           public xcm::signal_sink
 {
     XCM_CLASS_NAME_NOREFCOUNT("appmain.RelationshipPanel")
     XCM_BEGIN_INTERFACE_MAP(RelationshipPanel)
-        XCM_INTERFACE_ENTRY(cfw::IDocument)
+        XCM_INTERFACE_ENTRY(IDocument)
         XCM_INTERFACE_ENTRY(IRelationshipPanel)
     XCM_END_INTERFACE_MAP()
 
@@ -69,8 +69,8 @@ public:
 private:
 
     // -- IDocument --
-    bool initDoc(cfw::IFramePtr frame,
-                 cfw::IDocumentSitePtr site,
+    bool initDoc(IFramePtr frame,
+                 IDocumentSitePtr site,
                  wxWindow* doc_site,
                  wxWindow* pane_site);
     wxWindow* getDocumentWindow();
@@ -99,7 +99,7 @@ private:
 
 private:
 
-    cfw::IDocumentSitePtr m_doc_site;
+    IDocumentSitePtr m_doc_site;
     RelationDiagram* m_diagram;
     wxButton* m_add_button;
     wxButton* m_update_button;

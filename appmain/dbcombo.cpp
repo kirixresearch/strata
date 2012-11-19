@@ -54,7 +54,7 @@ bool DbComboPopup::Create(wxWindow* parent)
     // create popup control
     m_dbdoc = new DbDoc;
     m_dbdoc->setLinkBarMode(true);
-    m_dbdoc->setStyle(cfw::fsstyleTrackSelect);
+    m_dbdoc->setStyle(fsstyleTrackSelect);
     m_dbdoc->initAsWindow(parent,
                        -1,
                        wxPoint(0,0),
@@ -70,7 +70,7 @@ bool DbComboPopup::Create(wxWindow* parent)
 
     if (m_init_value.IsEmpty() || m_init_value == wxT("/"))
     {
-        cfw::IFsItemPtr item = m_dbdoc->getFsPanel()->getRootItem();
+        IFsItemPtr item = m_dbdoc->getFsPanel()->getRootItem();
         if (item.isOk())
         {
             m_dbdoc->getFsPanel()->selectItem(item);
@@ -79,7 +79,7 @@ bool DbComboPopup::Create(wxWindow* parent)
     }
      else
     {
-        cfw::IFsItemPtr item = m_dbdoc->getFsItemFromPath(m_init_value);
+        IFsItemPtr item = m_dbdoc->getFsItemFromPath(m_init_value);
         if (item.isOk())
         {
             m_dbdoc->getFsPanel()->selectItem(item);
@@ -115,13 +115,13 @@ void DbComboPopup::SetStringValue(const wxString& s)
     if (!m_dbdoc)
         return;
     
-    cfw::IFsPanelPtr fspanel = m_dbdoc->getFsPanel();
+    IFsPanelPtr fspanel = m_dbdoc->getFsPanel();
     if (fspanel.isNull())
         return;
     
     if (s.IsEmpty() || s == wxT("/"))
     {
-        cfw::IFsItemPtr item = fspanel->getRootItem();
+        IFsItemPtr item = fspanel->getRootItem();
         if (item.isOk())
         {
             fspanel->selectItem(item);
@@ -130,7 +130,7 @@ void DbComboPopup::SetStringValue(const wxString& s)
     }
      else
     {
-        cfw::IFsItemPtr item = m_dbdoc->getFsItemFromPath(s);
+        IFsItemPtr item = m_dbdoc->getFsItemFromPath(s);
         if (item.isOk())
         {
             fspanel->selectItem(item);
@@ -144,7 +144,7 @@ wxString DbComboPopup::GetStringValue() const
     if (!m_dbdoc)
         return wxEmptyString;
     
-    cfw::IFsPanelPtr fspanel = m_dbdoc->getFsPanel();
+    IFsPanelPtr fspanel = m_dbdoc->getFsPanel();
     if (fspanel.isNull())
         return wxEmptyString;
     
@@ -152,7 +152,7 @@ wxString DbComboPopup::GetStringValue() const
     wxString obj_path = getPath();
     
     // get the root path
-    cfw::IFsItemPtr root = fspanel->getRootItem();
+    IFsItemPtr root = fspanel->getRootItem();
     IDbObjectFsItemPtr obj = root;
     if (obj.isNull())
         return wxEmptyString;
@@ -186,12 +186,12 @@ void DbComboPopup::PaintComboControl(wxDC& dc, const wxRect& rect)
     if (!m_dbdoc)
         return;
     
-    cfw::IFsPanelPtr fspanel = m_dbdoc->getFsPanel();
+    IFsPanelPtr fspanel = m_dbdoc->getFsPanel();
     if (fspanel.isNull())
         return;
     
     // get the selected item's bitmap and label
-    cfw::IFsItemPtr item = m_selected_item;
+    IFsItemPtr item = m_selected_item;
     if (item.isNull())
         return;
     
@@ -316,7 +316,7 @@ void DbComboPopup::setRootFolder(const wxString& path, const wxString& root_labe
 
     m_dbdoc->getFsPanel()->setRootItem(root);
     m_dbdoc->getFsPanel()->setMultiSelect(false);
-    m_dbdoc->getFsPanel()->setView(cfw::fsviewTree);
+    m_dbdoc->getFsPanel()->setView(fsviewTree);
     m_dbdoc->getFsPanel()->refresh();
 }
 
@@ -337,7 +337,7 @@ wxString DbComboPopup::getPath() const
     return obj_path;
 }
 
-void DbComboPopup::onItemActivated(cfw::IFsItemPtr item)
+void DbComboPopup::onItemActivated(IFsItemPtr item)
 {
     m_selected_item = item;
     Dismiss();

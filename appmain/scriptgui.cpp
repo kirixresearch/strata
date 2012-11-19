@@ -1648,7 +1648,7 @@ void Form::deinitializeControl()
 }
 
 
-void Form::setSite(cfw::IDocumentSitePtr site)
+void Form::setSite(IDocumentSitePtr site)
 {
     m_site = site;
     
@@ -1820,7 +1820,7 @@ void Form::setStatusBar(kscript::ExprEnv* env, kscript::Value* retval)
     kscript::ValueObject* obj = env->getParam(0)->getObject();
     if (obj->getClassName() == L"StatusBar")
     {
-        StatusBar* s = (StatusBar*)obj;
+        zStatusBar* s = (zStatusBar*)obj;
         s->setFormWindow(m_form_frame);
         s->realize();
         

@@ -54,7 +54,7 @@ class DownloadProgressListener : public wxWebProgressBase
 {
 public:
 
-    DownloadProgressListener(cfw::IJobInfoPtr job_info = xcm::null)
+    DownloadProgressListener(IJobInfoPtr job_info = xcm::null)
     {
         m_job_id = -1;
         
@@ -68,13 +68,13 @@ public:
         }
         
         m_job_info->setTitle(wxT("Download"));
-        m_job_info->setInfoMask(cfw::jobMaskTitle |
-                            cfw::jobMaskStartTime |
-                            cfw::jobMaskFinishTime |
-                            cfw::jobMaskPercentage |
-                            cfw::jobMaskProgressString |
-                            cfw::jobMaskProgressBar |
-                            cfw::jobMaskCurrentCount);
+        m_job_info->setInfoMask(jobMaskTitle |
+                            jobMaskStartTime |
+                            jobMaskFinishTime |
+                            jobMaskPercentage |
+                            jobMaskProgressString |
+                            jobMaskProgressBar |
+                            jobMaskCurrentCount);
     }
 
     virtual void Init(const wxString& url,
@@ -96,14 +96,14 @@ public:
     virtual void OnStart()
     {
         m_job_info->setStartTime(time(NULL));
-        m_job_id = g_app->getJobQueue()->addJobInfo(m_job_info, cfw::jobStateRunning);
+        m_job_id = g_app->getJobQueue()->addJobInfo(m_job_info, jobStateRunning);
     }
 
     virtual void OnFinish()
     {
         // set job to finished
         m_job_info->setFinishTime(time(NULL));
-        m_job_info->setState(cfw::jobStateFinished);
+        m_job_info->setState(jobStateFinished);
 
         delete this;
     }
@@ -111,7 +111,7 @@ public:
     virtual void OnError(const wxString& message)
     {
         m_job_info->setFinishTime(time(NULL));
-        m_job_info->setState(cfw::jobStateFailed);
+        m_job_info->setState(jobStateFailed);
     }
     
     virtual void OnProgressChange(wxLongLong cur_progress,
@@ -120,11 +120,11 @@ public:
         m_job_info->setMaxCount(max_progress.ToDouble());
         m_job_info->setCurrentCount(cur_progress.ToDouble());
         
-        if (m_job_info->getState() == cfw::jobStateCancelling ||
-            m_job_info->getState() == cfw::jobStateCancelled)
+        if (m_job_info->getState() == jobStateCancelling ||
+            m_job_info->getState() == jobStateCancelled)
         {
             m_job_info->setFinishTime(time(NULL));
-            m_job_info->setState(cfw::jobStateCancelled);
+            m_job_info->setState(jobStateCancelled);
             Cancel();
         }
     }
@@ -133,7 +133,7 @@ private:
 
     wxString m_url;
     wxString m_filename;
-    cfw::IJobInfoPtr m_job_info;
+    IJobInfoPtr m_job_info;
     int m_job_id;
 };
 
@@ -272,7 +272,7 @@ public:
                 ExtensionInfo info = extmgr->installExtension(m_filename);
                 if (!info.isOk())
                 {
-                    cfw::appMessageBox(_("Installation of the extension was not possible, because the extension's format could not be determined."),
+                    appMessageBox(_("Installation of the extension was not possible, because the extension's format could not be determined."),
                                        APPLICATION_NAME,
                                        wxOK | wxICON_EXCLAMATION,
                                        g_app->getMainWindow());
@@ -434,7 +434,7 @@ public:
         
         if (target_id != -1)
         {
-            cfw::IDocumentSitePtr target_site;
+            IDocumentSitePtr target_site;
             target_site = g_app->getMainFrame()->lookupSiteById(target_id);
             if (target_site.isOk())
             {
@@ -455,7 +455,7 @@ public:
         if (createTextDoc(file_url, container_wnd, &site_id))
         {
             // make sure the site has the source url in the url bar
-            cfw::IDocumentSitePtr site = g_app->getMainFrame()->lookupSiteById(site_id);
+            IDocumentSitePtr site = g_app->getMainFrame()->lookupSiteById(site_id);
 
             ITextDocPtr text_doc = lookupOtherDocument(site, "appmain.TextDoc");
             if (text_doc)
@@ -509,13 +509,13 @@ public:
         
         m_job_info.create_instance("cfw.JobInfo");
         m_job_info->setTitle(wxT("Download"));
-        m_job_info->setInfoMask(cfw::jobMaskTitle |
-                            cfw::jobMaskStartTime |
-                            cfw::jobMaskFinishTime |
-                            cfw::jobMaskPercentage |
-                            cfw::jobMaskProgressString |
-                            cfw::jobMaskProgressBar |
-                            cfw::jobMaskCurrentCount);
+        m_job_info->setInfoMask(jobMaskTitle |
+                            jobMaskStartTime |
+                            jobMaskFinishTime |
+                            jobMaskPercentage |
+                            jobMaskProgressString |
+                            jobMaskProgressBar |
+                            jobMaskCurrentCount);
     }
 
     virtual void Init(const wxString& url,
@@ -542,7 +542,7 @@ public:
     virtual void OnStart()
     {
         // start the progress bitmap updater
-        cfw::IDocumentSitePtr target_site;
+        IDocumentSitePtr target_site;
         target_site = g_app->getMainFrame()->lookupSiteById(m_site_id);
         if (target_site.isOk())
         {
@@ -556,7 +556,7 @@ public:
         m_job_info->sigStateChanged().connect(this, &DelimitedTextProgressListener::onJobInfoStateChanged);
         
         m_job_info->setStartTime(time(NULL));
-        g_app->getJobQueue()->addJobInfo(m_job_info, cfw::jobStateRunning);
+        g_app->getJobQueue()->addJobInfo(m_job_info, jobStateRunning);
     }
 
     virtual void OnFinish()
@@ -569,7 +569,7 @@ public:
         
         if (m_site_id != -1)
         {
-            cfw::IDocumentSitePtr target_site;
+            IDocumentSitePtr target_site;
             target_site = g_app->getMainFrame()->lookupSiteById(m_site_id);
             if (target_site.isOk())
             {
@@ -582,7 +582,7 @@ public:
         wxString file_url = filenameToUrl(m_filename);
         createTextDoc(file_url, container_wnd, &site_id);
         
-        cfw::IDocumentSitePtr site = g_app->getMainFrame()->lookupSiteById(site_id);
+        IDocumentSitePtr site = g_app->getMainFrame()->lookupSiteById(site_id);
         ITextDocPtr text_doc = lookupOtherDocument(site, "appmain.TextDoc");
         if (text_doc)
         {
@@ -600,18 +600,18 @@ public:
         /*
         if (m_site_id != -1)
         {
-            cfw::IDocumentSitePtr webdoc_site = lookupOtherDocumentSite(site, "appmain.WebDoc");
+            IDocumentSitePtr webdoc_site = lookupOtherDocumentSite(site, "appmain.WebDoc");
             if (webdoc_site)
             {
                 webdoc_site->setVisible(false);
-                //g_app->getMainFrame()->closeSite(webdoc_site, cfw::closeForce);
+                //g_app->getMainFrame()->closeSite(webdoc_site, closeForce);
             }
         }
         */
         
         // set job to finished
         m_job_info->setFinishTime(time(NULL));
-        m_job_info->setState(cfw::jobStateFinished);
+        m_job_info->setState(jobStateFinished);
 
         
         delete this;
@@ -623,7 +623,7 @@ public:
         m_bitmap_updater.Stop();
 
         m_job_info->setFinishTime(time(NULL));
-        m_job_info->setState(cfw::jobStateFailed);
+        m_job_info->setState(jobStateFailed);
     }
     
     virtual void OnProgressChange(wxLongLong cur_progress,
@@ -643,16 +643,16 @@ public:
     }
     
     // cancel the job if the site is closed
-    void onSiteClose(cfw::IDocumentSitePtr doc_site)
+    void onSiteClose(IDocumentSitePtr doc_site)
     {
         if (doc_site->getId() == m_site_id)
             cancelDownload(false);
     }
     
     // close the site if the job is cancelled
-    void onJobInfoStateChanged(cfw::IJobInfoPtr job_info)
+    void onJobInfoStateChanged(IJobInfoPtr job_info)
     {
-        if (job_info->getState() == cfw::jobStateCancelling)
+        if (job_info->getState() == jobStateCancelling)
             cancelDownload(true);
     }
 
@@ -668,19 +668,19 @@ public:
         Cancel();
         
         // update the job info
-        if (m_job_info->getState() != cfw::jobStateCancelled)
+        if (m_job_info->getState() != jobStateCancelled)
         {
             m_job_info->setFinishTime(time(NULL));
-            m_job_info->setState(cfw::jobStateCancelled);
+            m_job_info->setState(jobStateCancelled);
         }
         
         // make sure the associated document site is closed
         if (close_site)
         {
-            cfw::IDocumentSitePtr doc_site;
+            IDocumentSitePtr doc_site;
             doc_site = g_app->getMainFrame()->lookupSiteById(m_site_id);
             if (doc_site.isOk())
-                g_app->getMainFrame()->closeSite(doc_site, cfw::closeForce);
+                g_app->getMainFrame()->closeSite(doc_site, closeForce);
         }
         
         m_cancelled = true;
@@ -690,7 +690,7 @@ private:
 
     wxString m_url;
     wxString m_filename;
-    cfw::IJobInfoPtr m_job_info;
+    IJobInfoPtr m_job_info;
     ProgressBitmapUpdater m_bitmap_updater;
     int m_site_id;
     bool m_cancelled;
@@ -799,7 +799,7 @@ public:
 
 
 
-        cfw::IDocumentSitePtr site;
+        IDocumentSitePtr site;
         ITableDocPtr doc = TableDocMgr::createTableDoc();
         doc->open(set, xcm::null);
         doc->setSourceUrl(m_url);
@@ -829,13 +829,13 @@ public:
         if (!created_in_existing_container)
         {
             site = g_app->getMainFrame()->createSite(doc,
-                                                     cfw::sitetypeNormal,
+                                                     sitetypeNormal,
                                                      -1, -1, -1, -1);
         }
         
         
         int width, height;
-        cfw::IDocumentPtr cdoc = doc;
+        IDocumentPtr cdoc = doc;
         cdoc->getDocumentWindow()->GetClientSize(&width, &height);
         
 
@@ -2189,7 +2189,7 @@ void WebDoc::setLastClickedBookmarkPath(const wxString& path)
 
 bool WebDoc::downloadFile(const wxString& url,
                           const wxString& filename,
-                          cfw::IJobInfoPtr job_info)
+                          IJobInfoPtr job_info)
 {
     DownloadProgressListener* listener = new DownloadProgressListener(job_info);
 
@@ -2198,8 +2198,8 @@ bool WebDoc::downloadFile(const wxString& url,
 
 
 
-bool WebDoc::initDoc(cfw::IFramePtr frame,
-                     cfw::IDocumentSitePtr doc_site,
+bool WebDoc::initDoc(IFramePtr frame,
+                     IDocumentSitePtr doc_site,
                      wxWindow* docsite_wnd,
                      wxWindow* panesite_wnd)
 {
@@ -2312,8 +2312,8 @@ void WebDoc::setDocumentFocus()
 static void clearStatusBarTextItem()
 {
     // clear out statusbar text
-    cfw::IStatusBarPtr statusbar = g_app->getMainFrame()->getStatusBar();
-    cfw::IStatusBarItemPtr item = statusbar->getItem(wxT("app_statusbar_text"));
+    IStatusBarPtr statusbar = g_app->getMainFrame()->getStatusBar();
+    IStatusBarItemPtr item = statusbar->getItem(wxT("app_statusbar_text"));
     if (item.isNull())
         return;
 
@@ -2407,7 +2407,7 @@ bool WebDoc::findIsReplaceAllowed()
 
 
 
-void WebDoc::onFrameEvent(cfw::Event& evt)
+void WebDoc::onFrameEvent(Event& evt)
 {
     if (evt.name == wxT("appmain.view_switcher.query_available_views"))
     {
@@ -2496,14 +2496,14 @@ void WebDoc::onFsDataDropped(wxWebEvent& evt)
     if (!dbdoc)
         return;
         
-    cfw::IFsItemEnumPtr items = dbdoc->getFsPanel()->getSelectedItems();
+    IFsItemEnumPtr items = dbdoc->getFsPanel()->getSelectedItems();
     
     wxString table_to_load;
     
     size_t i, count = items->size();
     for (i = 0; i < count; ++i)
     {
-        cfw::IFsItemPtr item = items->getItem(i);
+        IFsItemPtr item = items->getItem(i);
         wxString path = DbDoc::getFsItemPath(item);
         
         wxString cstr, rpath;
@@ -2535,7 +2535,7 @@ bool WebDoc::isViewingSource() const
 
 void WebDoc::switchToWeb()
 {
-    cfw::IDocumentSitePtr other_site;
+    IDocumentSitePtr other_site;
     other_site = lookupOtherDocumentSite(
                             m_doc_site,
                             "appmain.WebDoc");
@@ -2566,7 +2566,7 @@ void WebDoc::switchToSource()
         
     wxString source_url = wxT("view-source:") + m_url;
     
-    cfw::IDocumentSitePtr other_site;
+    IDocumentSitePtr other_site;
     other_site = lookupOtherDocumentSite(
                             m_doc_site,
                             "appmain.WebDoc");
@@ -2640,10 +2640,10 @@ void WebDoc::openURI(const wxString& uri, wxWebPostData* post_data)
 
         if (m_frame)
         {
-            cfw::IDocumentSitePtr doc_site = m_frame->getActiveChild();
+            IDocumentSitePtr doc_site = m_frame->getActiveChild();
             if (doc_site.isOk() && doc_site == m_doc_site)
             {
-                m_frame->postEvent(new cfw::Event(wxT("cfw.locationChanged")));
+                m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
             }
         }
 
@@ -2666,7 +2666,7 @@ void WebDoc::openURI(const wxString& uri, wxWebPostData* post_data)
 
     if (isViewingSource())
     {
-        cfw::IDocumentSitePtr other_site;
+        IDocumentSitePtr other_site;
         other_site = lookupOtherDocumentSite(
                                 m_doc_site,
                                 "appmain.WebDoc");
@@ -3027,8 +3027,8 @@ void WebDoc::onStatusChange(wxWebEvent& evt)
     // wxEVT_WEB_STATUSCHANGE is received when the status text
     // changes when a web page is loading
 
-    cfw::IStatusBarPtr statusbar = g_app->getMainFrame()->getStatusBar();
-    cfw::IStatusBarItemPtr item = statusbar->getItem(wxT("app_statusbar_text"));
+    IStatusBarPtr statusbar = g_app->getMainFrame()->getStatusBar();
+    IStatusBarItemPtr item = statusbar->getItem(wxT("app_statusbar_text"));
     if (item.isNull())
         return;
 
@@ -3071,10 +3071,10 @@ void WebDoc::onLocationChange(wxWebEvent& evt)
         
     if (m_frame)
     {
-        cfw::IDocumentSitePtr doc_site = m_frame->getActiveChild();
+        IDocumentSitePtr doc_site = m_frame->getActiveChild();
         if (doc_site.isOk() && doc_site == m_doc_site)
         {
-            m_frame->postEvent(new cfw::Event(wxT("cfw.locationChanged")));
+            m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
         }
     }
 }
@@ -3087,7 +3087,7 @@ void WebDoc::onTitleChange(wxWebEvent& evt)
     if (title.IsEmpty())
         title = _("(Untitled)");
     
-    cfw::IDocumentSitePtr doc_site = m_frame->lookupSiteById(m_site_id);
+    IDocumentSitePtr doc_site = m_frame->lookupSiteById(m_site_id);
     if (doc_site.isOk())
         doc_site->setCaption(title);
     
@@ -3171,7 +3171,7 @@ void WebDoc::onShowContextMenu(wxWebEvent& evt)
     pt_mouse = m_webcontrol->ScreenToClient(pt_mouse);
 
     // show the popup menu and capture the result
-    cfw::CommandCapture* cc = new cfw::CommandCapture;
+    CommandCapture* cc = new CommandCapture;
     PushEventHandler(cc);
     PopupMenu(&menuPopup, pt_mouse);
     int command = cc->getLastCommandId();
@@ -3246,7 +3246,7 @@ void WebDoc::onShowContextMenu(wxWebEvent& evt)
                 
                 if (dlg.ShowModal() == wxID_OK)
                 {
-                    cfw::IJobInfoPtr job_info;
+                    IJobInfoPtr job_info;
                     job_info.create_instance("cfw.JobInfo");
                     downloadFile(evt.GetHref(), dlg.GetPath(), job_info);
                 }
@@ -3261,7 +3261,7 @@ void WebDoc::onShowContextMenu(wxWebEvent& evt)
             {
                 if (g_app->getDatabase().isNull())
                 {
-                    cfw::appMessageBox(_("A project must be open to import a table."),
+                    appMessageBox(_("A project must be open to import a table."),
                                        APPLICATION_NAME,
                                        wxOK | wxICON_EXCLAMATION | wxCENTER);
                     return;
@@ -3279,7 +3279,7 @@ void WebDoc::onShowContextMenu(wxWebEvent& evt)
                 doc->open(set, xcm::null);
                 doc->setSourceUrl(m_url);
                 g_app->getMainFrame()->createSite(doc,
-                                                  cfw::sitetypeNormal,
+                                                  sitetypeNormal,
                                                   -1, -1, -1, -1);
             }
             break;
@@ -3357,11 +3357,11 @@ void WebDoc::onCreateBrowserRequest(wxWebEvent& evt)
      else
     {
 
-        cfw::IDocumentSitePtr site;
+        IDocumentSitePtr site;
         
         WebDoc* doc = new WebDoc;
-        site = m_frame->createSite(static_cast<cfw::IDocument*>(doc),
-                                   cfw::sitetypeNormal | cfw::siteNoInitialActivate,
+        site = m_frame->createSite(static_cast<IDocument*>(doc),
+                                   sitetypeNormal | siteNoInitialActivate,
                                    -1, -1, -1, -1);
         if (site.isOk())
         {
@@ -3447,7 +3447,7 @@ void WebDoc::onFavIconAvailable(wxWebEvent& evt)
     
     // fire a 'document bitmap updated' event
     
-    cfw::Event* cfw_evt = new cfw::Event(wxT("appmain.docBitmapUpdated"));
+    Event* cfw_evt = new FrameworkEvent(wxT("appmain.docBitmapUpdated"));
     cfw_evt->o_param = &bitmap;
     g_app->getMainFrame()->sendEvent(cfw_evt);
     
@@ -3749,17 +3749,17 @@ void WebDoc::onInitDownload(wxWebEvent& evt)
         {
             // file is in use -- check if it's open somewhere
             
-            cfw::IFramePtr frame = g_app->getMainFrame();
+            IFramePtr frame = g_app->getMainFrame();
             if (frame.isOk())
             {
-                cfw::IDocumentSiteEnumPtr docsites;
-                docsites = frame->getDocumentSites(cfw::sitetypeNormal);
+                IDocumentSiteEnumPtr docsites;
+                docsites = frame->getDocumentSites(sitetypeNormal);
 
                 size_t i, site_count = docsites->size();
                 for (i = 0; i < site_count; ++i)
                 {
-                    cfw::IDocumentSitePtr site = docsites->getItem(i);
-                    cfw::IDocumentPtr doc = site->getDocument();
+                    IDocumentSitePtr site = docsites->getItem(i);
+                    IDocumentPtr doc = site->getDocument();
                     if (doc.isNull())
                         continue;
                     ITableDocPtr tabledoc = doc;
@@ -3785,9 +3785,9 @@ void WebDoc::onInitDownload(wxWebEvent& evt)
          else
         {
             WebDoc* doc = new WebDoc;
-            cfw::IDocumentSitePtr site;
-            site = m_frame->createSite(static_cast<cfw::IDocument*>(doc),
-                                       cfw::sitetypeNormal,
+            IDocumentSitePtr site;
+            site = m_frame->createSite(static_cast<IDocument*>(doc),
+                                       sitetypeNormal,
                                        -1, -1, -1, -1);
             //doc->showWebRes(webresDownloading);
             site->setCaption(wxString::Format(_("Downloading '%s'"), filename.c_str()));
@@ -3984,7 +3984,7 @@ void WebDoc::onWebViewTitleChanged(wxWebViewEvent& evt)
     if (title.IsEmpty())
         title = _("(Untitled)");
     
-    cfw::IDocumentSitePtr doc_site = m_frame->lookupSiteById(m_site_id);
+    IDocumentSitePtr doc_site = m_frame->lookupSiteById(m_site_id);
     if (doc_site.isOk())
         doc_site->setCaption(title);
     
@@ -4003,10 +4003,10 @@ void WebDoc::onWebViewDocumentLoaded(wxWebViewEvent& evt)
 
     if (m_frame)
     {
-        cfw::IDocumentSitePtr doc_site = m_frame->getActiveChild();
+        IDocumentSitePtr doc_site = m_frame->getActiveChild();
         if (doc_site.isOk() && doc_site == m_doc_site)
         {
-            m_frame->postEvent(new cfw::Event(wxT("cfw.locationChanged")));
+            m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
         }
     }
 }

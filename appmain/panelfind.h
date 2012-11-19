@@ -29,13 +29,13 @@ public:
 
 
 class FindPanel : public wxPanel,
-                  public cfw::IDocument,
+                  public IDocument,
                   public IFindPanel,
                   public xcm::signal_sink
 {
     XCM_CLASS_NAME_NOREFCOUNT("appmain.FindPanel")
     XCM_BEGIN_INTERFACE_MAP(FindPanel)
-        XCM_INTERFACE_ENTRY(cfw::IDocument)
+        XCM_INTERFACE_ENTRY(IDocument)
         XCM_INTERFACE_ENTRY(IFindPanel)
     XCM_END_INTERFACE_MAP()
 
@@ -61,8 +61,8 @@ private:
     ~FindPanel();
 
     // -- IDocument --
-    bool initDoc(cfw::IFramePtr frame,
-                 cfw::IDocumentSitePtr site,
+    bool initDoc(IFramePtr frame,
+                 IDocumentSitePtr site,
                  wxWindow* doc_site,
                  wxWindow* pane_site);
 
@@ -85,11 +85,11 @@ private:
     void onComboChanged(wxCommandEvent& evt);
     void onComboEnter(wxCommandEvent& evt);
     void onComboTabPressed(wxKeyEvent& evt);
-    void onFrameEvent(cfw::Event& evt);
+    void onFrameEvent(FrameworkEvent& evt);
 
 private:
 
-    cfw::IDocumentSitePtr m_doc_site;
+    IDocumentSitePtr m_doc_site;
     
     wxBoxSizer* m_find_mode_sizer;
     wxBoxSizer* m_find_sizer;

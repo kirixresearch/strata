@@ -74,7 +74,7 @@ int ModifyStructJob::runJob()
     tango::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
     {
-        m_job_info->setState(cfw::jobStateFailed);
+        m_job_info->setState(jobStateFailed);
         return 0;
     }
     
@@ -94,7 +94,7 @@ int ModifyStructJob::runJob()
     if (tango_job->getStatus() == tango::jobFailed || !res)
     {
         m_job_info->setProgressString(towstr(_("Modify failed: The table may be in use by another user.")));
-        m_job_info->setState(cfw::jobStateFailed);
+        m_job_info->setState(jobStateFailed);
     }
 
     return 0;
@@ -102,10 +102,10 @@ int ModifyStructJob::runJob()
 
 void ModifyStructJob::runPostJob()
 {
-    if (getJobInfo()->getState() != cfw::jobStateFinished)
+    if (getJobInfo()->getState() != jobStateFinished)
         return;
     
-    cfw::Event* evt = new cfw::Event(wxT("appmain.tableStructureModified"));
+    FrameworkEvent* evt = new FrameworkEvent(wxT("appmain.tableStructureModified"));
     evt->s_param = towx(m_action_set->getObjectPath());
     g_app->getMainFrame()->postEvent(evt);
 }

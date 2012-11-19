@@ -185,7 +185,7 @@ void StandardToolbar::setSmallIcons(bool small_icons)
 
 void StandardToolbar::onUrlBeginDrag(kcl::BitmapComboEvent& evt)
 {
-    cfw::IDocumentSitePtr doc_site = g_app->getMainFrame()->getActiveChild();
+    IDocumentSitePtr doc_site = g_app->getMainFrame()->getActiveChild();
     if (doc_site.isNull())
         return;
     
@@ -195,13 +195,13 @@ void StandardToolbar::onUrlBeginDrag(kcl::BitmapComboEvent& evt)
     DbObjectFsItem* item_raw = new DbObjectFsItem;
     item_raw->setLabel(title);
     item_raw->setPath(path);
-    item_raw->setBitmap(m_url->getBitmap(), cfw::fsbmpSmall);
+    item_raw->setBitmap(m_url->getBitmap(), fsbmpSmall);
     IDbObjectFsItemPtr item = static_cast<IDbObjectFsItem*>(item_raw);
     
-    xcm::IVectorImpl<cfw::IFsItemPtr>* items = new xcm::IVectorImpl<cfw::IFsItemPtr>;
+    xcm::IVectorImpl<IFsItemPtr>* items = new xcm::IVectorImpl<IFsItemPtr>;
     items->append(item);
 
-    cfw::FsDataObject data;
+    FsDataObject data;
     data.setSourceId(ID_Frame_UrlCtrl);
     data.setFsItems(items);
     wxDropSource dragSource(data, this);

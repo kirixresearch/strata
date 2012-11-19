@@ -2329,7 +2329,7 @@ void TextView::onMouseRightDown(wxMouseEvent& evt)
             
             wxPoint pt_mouse = ::wxGetMousePosition();
             pt_mouse = ScreenToClient(pt_mouse);
-            cfw::CommandCapture* cc = new cfw::CommandCapture;
+            CommandCapture* cc = new CommandCapture;
             PushEventHandler(cc);
             PopupMenu(&menuPopup, pt_mouse);
             int command = cc->getLastCommandId();

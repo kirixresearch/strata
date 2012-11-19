@@ -240,7 +240,7 @@ int ExportJob::runJob()
     if (!isValidExportType(m_export_type))
     {
         // unknown export type -- fail the job
-        m_job_info->setState(cfw::jobStateFailed);
+        m_job_info->setState(jobStateFailed);
         return 0;
     }
     
@@ -261,7 +261,7 @@ int ExportJob::runJob()
 
             if (db_mgr.isNull())
             {
-                m_job_info->setState(cfw::jobStateFailed);
+                m_job_info->setState(jobStateFailed);
                 return 0;
             }
 
@@ -271,7 +271,7 @@ int ExportJob::runJob()
             if (db.isNull())
             {
                 // could not create mdb database.  permissions problem maybe?
-                m_job_info->setState(cfw::jobStateFailed);
+                m_job_info->setState(jobStateFailed);
                 return 0;
             }
         }
@@ -290,7 +290,7 @@ int ExportJob::runJob()
     if (!conn->open())
     {
         // we couldn't open the connection, bail out
-        m_job_info->setState(cfw::jobStateFailed);
+        m_job_info->setState(jobStateFailed);
         return 0;
     }
 
@@ -298,7 +298,7 @@ int ExportJob::runJob()
     if (src_db_ptr.isNull())
     {
         // no source database available
-        m_job_info->setState(cfw::jobStateFailed);
+        m_job_info->setState(jobStateFailed);
         return 0;
     }
 
@@ -345,14 +345,14 @@ int ExportJob::runJob()
         src_set = src_db_ptr->openSet(towstr(it->input_path));
         if (src_set.isNull())
         {
-            m_job_info->setState(cfw::jobStateFailed);
+            m_job_info->setState(jobStateFailed);
             return 0;
         }
 
         src_struct = src_set->getStructure();
         if (src_struct.isNull())
         {
-            m_job_info->setState(cfw::jobStateFailed);
+            m_job_info->setState(jobStateFailed);
             return 0;
         }
 
@@ -587,7 +587,7 @@ int ExportJob::runJob()
 
             if (!dest_set)
             {
-                m_job_info->setState(cfw::jobStateFailed);
+                m_job_info->setState(jobStateFailed);
                 return 0;
             }
         }
@@ -622,7 +622,7 @@ int ExportJob::runJob()
             dest_colinfo = dest_struct->getColumnInfo(towstr(copyinfo_it->dest_name));
             if (dest_colinfo.isNull())
             {
-                m_job_info->setState(cfw::jobStateFailed);
+                m_job_info->setState(jobStateFailed);
                 return 0;
             }
 
@@ -632,7 +632,7 @@ int ExportJob::runJob()
 
             if (!copyinfo_it->src_handle || !copyinfo_it->dest_handle)
             {
-                m_job_info->setState(cfw::jobStateFailed);
+                m_job_info->setState(jobStateFailed);
                 return 0;
             }
         }

@@ -16,9 +16,6 @@
 #include <wx/aui/aui.h>
 
 
-namespace cfw
-{
-
 
 class CfwDockArt : public wxAuiDefaultDockArt
 {
@@ -83,8 +80,6 @@ public:
     wxAuiTabArt* Clone();
 };
 
-
-};  // namespace cfw
 
 
 #endif  // __CFW_ARTPROVIDER_H

@@ -1533,7 +1533,7 @@ void ReportLayoutEngine::initReportVariables()
     time(&ts);
     localtime_r(&ts, &t);
 
-    m_report_variable_date = cfw::Locale::formatDate(1900+t.tm_year,
+    m_report_variable_date = Locale::formatDate(1900+t.tm_year,
                                                      t.tm_mon+1,
                                                      t.tm_mday);
 

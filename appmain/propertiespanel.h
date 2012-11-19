@@ -24,16 +24,14 @@ class wxPropertyGrid;
 class wxPropertyGridEvent;
 
 
-namespace cfw
-{
 
 class PropertiesPanel : public wxPanel,
-                        public cfw::IDocument,
+                        public IDocument,
                         public xcm::signal_sink
 {
     XCM_CLASS_NAME_NOREFCOUNT("cfw.PropertiesPanel")
     XCM_BEGIN_INTERFACE_MAP(PropertiesPanel)
-        XCM_INTERFACE_ENTRY(cfw::IDocument)
+        XCM_INTERFACE_ENTRY(IDocument)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -44,8 +42,8 @@ public:
 private:
 
     // IDocument
-    bool initDoc(cfw::IFramePtr frame,
-                 cfw::IDocumentSitePtr doc_site,
+    bool initDoc(IFramePtr frame,
+                 IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,
                  wxWindow* panesite_wnd);
 
@@ -53,8 +51,8 @@ private:
     void setDocumentFocus();
 
     // frame events
-    void onActiveChildChanged(cfw::IDocumentSitePtr doc_site);
-    void onFrameEvent(cfw::Event& evt);
+    void onActiveChildChanged(IDocumentSitePtr doc_site);
+    void onFrameEvent(Event& evt);
     
 private:
 
@@ -64,7 +62,7 @@ private:
 private:
 
     wxPropertyGrid* m_pg;
-    cfw::IFramePtr m_frame;
+    IFramePtr m_frame;
     wxString m_last_string;
   
     DECLARE_EVENT_TABLE()
@@ -73,7 +71,7 @@ private:
 #endif
 
 
-}; // namespace cfw
+
 
 #endif
 

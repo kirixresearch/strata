@@ -21,7 +21,7 @@
 // Description: A class that represents an item on a statusbar.
 // Remarks: The StatusBarItem represents an item on a statusbar. 
 
-StatusBarItem::StatusBarItem()
+zStatusBarItem::zStatusBarItem()
 {
     m_owner = NULL;
     m_text = wxT("");
@@ -29,7 +29,7 @@ StatusBarItem::StatusBarItem()
     m_idx = -1;
 }
 
-StatusBarItem::~StatusBarItem()
+zStatusBarItem::~zStatusBarItem()
 {
 
 }
@@ -47,7 +47,7 @@ StatusBarItem::~StatusBarItem()
 // Param(width): The fixed |width| of the newly created item.
 // Param(text): The default |text| for the newly created item.
 
-void StatusBarItem::constructor(kscript::ExprEnv* env, kscript::Value* retval)
+void zStatusBarItem::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
     // initialize the component
     initComponent(env);
@@ -67,7 +67,7 @@ void StatusBarItem::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 //
 // Param(text): The |text| to which to set the text of the status bar.
 
-void StatusBarItem::setText(kscript::ExprEnv* env, kscript::Value* retval)
+void zStatusBarItem::setText(kscript::ExprEnv* env, kscript::Value* retval)
 {
     m_text = env->getParam(0)->getString();
     
@@ -86,7 +86,7 @@ void StatusBarItem::setText(kscript::ExprEnv* env, kscript::Value* retval)
 //
 // Returns: Returns the text of the status bar item.
 
-void StatusBarItem::getText(kscript::ExprEnv* env, kscript::Value* retval)
+void zStatusBarItem::getText(kscript::ExprEnv* env, kscript::Value* retval)
 {
     std::wstring text = towstr(m_text);
     retval->setString(text);
@@ -101,7 +101,7 @@ void StatusBarItem::getText(kscript::ExprEnv* env, kscript::Value* retval)
 //
 // Param(width): The |width| to which to set the width of the status bar item.
 
-void StatusBarItem::setWidth(kscript::ExprEnv* env, kscript::Value* retval)
+void zStatusBarItem::setWidth(kscript::ExprEnv* env, kscript::Value* retval)
 {
     m_width = env->getParam(0)->getInteger();
 }
@@ -120,7 +120,7 @@ void StatusBarItem::setWidth(kscript::ExprEnv* env, kscript::Value* retval)
 // Param(value): The proportional |size| of the status bar item, relative
 //     to all other proportional items.
 
-void StatusBarItem::setStretchProportion(kscript::ExprEnv* env, kscript::Value* retval)
+void zStatusBarItem::setStretchProportion(kscript::ExprEnv* env, kscript::Value* retval)
 {
     m_width = env->getParam(0)->getInteger() * -1;
 }
@@ -133,17 +133,17 @@ void StatusBarItem::setStretchProportion(kscript::ExprEnv* env, kscript::Value* 
 // Description: A class that represents a status bar.
 // Remarks: The StatusBar class represents a status bar.
 
-StatusBar::StatusBar()
+zStatusBar::zStatusBar()
 {
     m_ctrl = NULL;
 }
 
-StatusBar::~StatusBar()
+zStatusBar::~zStatusBar()
 {
 
 }
 
-wxStatusBar* StatusBar::getWxStatusBar()
+wxStatusBar* zStatusBar::getWxStatusBar()
 {
     return m_ctrl;
 }
@@ -155,7 +155,7 @@ wxStatusBar* StatusBar::getWxStatusBar()
 //
 // Remarks: Creates a new status bar.
 
-void StatusBar::constructor(kscript::ExprEnv* env, kscript::Value* retval)
+void zStatusBar::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
     // initialize the component
     initComponent(env);
@@ -164,7 +164,7 @@ void StatusBar::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     m_wnd = m_ctrl;
 }
 
-void StatusBar::realize()
+void zStatusBar::realize()
 {
     m_ctrl->Reparent(m_form_wnd);
     
@@ -181,14 +181,15 @@ void StatusBar::realize()
         widths[i++] = (*it)->m_width;
     }
     
-    // -- create the status bar boxes --
+    // create the status bar boxes
     if (size > 0)
         m_ctrl->SetFieldsCount(size, widths);
      else
         m_ctrl->SetFieldsCount(1);
 
-    // -- now that we've created the status bar boxes,
-    //    let's add any default text that was set --
+    // now that we've created the status bar boxes,
+    // let's add any default text that was set
+
     for (it = m_items.begin(); it != m_items.end(); ++it)
     {
         m_ctrl->SetStatusText((*it)->m_text, (*it)->m_idx);
@@ -215,7 +216,7 @@ void StatusBar::realize()
 //
 // Param(item):  The status bar |item| to add to the status bar.
 
-void StatusBar::add(kscript::ExprEnv* env, kscript::Value* retval)
+void zStatusBar::add(kscript::ExprEnv* env, kscript::Value* retval)
 {
     kscript::ValueObject* obj = env->getParam(0)->getObject();
     if (obj)

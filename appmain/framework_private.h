@@ -37,9 +37,6 @@
 #define CFW_USE_TABMDI
 
 
-namespace cfw
-{
-
 
 
 struct MenuInfo
@@ -118,12 +115,12 @@ public:
     virtual void getPosition(int* x, int* y, int* width, int* height) = 0;
     virtual bool closeContainer(bool force = false) = 0;
     
-    cfw::IDocumentSitePtr getActiveSite()
+    IDocumentSitePtr getActiveSite()
     {
         return m_active_site;
     }
     
-    void setActiveSite(cfw::IDocumentSitePtr site)
+    void setActiveSite(IDocumentSitePtr site)
     {
         m_active_site = site;
         
@@ -134,7 +131,7 @@ public:
         }
     }
     
-    cfw::IDocumentPtr getDocument()
+    IDocumentPtr getDocument()
     {
         if (m_active_site)
         {
@@ -148,7 +145,7 @@ public:
     {
         if (m_active_site)
         {
-            cfw::IDocumentPtr doc = m_active_site->getDocument();
+            IDocumentPtr doc = m_active_site->getDocument();
             if (doc)
                 return doc->getDocumentWindow();
         }
@@ -162,7 +159,7 @@ public:
     
 private:
 
-    cfw::IDocumentSitePtr m_active_site;
+    IDocumentSitePtr m_active_site;
     wxString m_container_name;
 };
 
@@ -188,7 +185,7 @@ public:
     
     // container methods
     void setBitmap(const wxBitmap& bitmap);
-    cfw::IUIContextPtr getUIContext();
+    IUIContextPtr getUIContext();
 
     unsigned int getSiteType();
     bool getVisible();
@@ -242,23 +239,23 @@ enum TileLockSetting
 
 
 class MainFrame : public wxMDIParentFrame,
-                  public cfw::IFrame,
+                  public IFrame,
                   public xcm::signal_sink
 {
     XCM_CLASS_NAME_NOREFCOUNT("cfw.MainFrame")
     XCM_BEGIN_INTERFACE_MAP(MainFrame)
-        XCM_INTERFACE_ENTRY(cfw::IFrame)
+        XCM_INTERFACE_ENTRY(IFrame)
     XCM_END_INTERFACE_MAP()
 
-    XCM_IMPLEMENT_SIGNAL1(sigFrameEvent, cfw::Event&)
+    XCM_IMPLEMENT_SIGNAL1(sigFrameEvent, FrameworkEvent&)
     XCM_IMPLEMENT_SIGNAL1(sigFrameClose, wxCloseEvent&)
     XCM_IMPLEMENT_SIGNAL1(sigFrameSize, wxSizeEvent&)
     XCM_IMPLEMENT_SIGNAL0(sigFrameDestroy)
     XCM_IMPLEMENT_SIGNAL0(sigFrameBarRightClick)
     XCM_IMPLEMENT_SIGNAL3(sigFrameCommand, int, int, bool*)
-    XCM_IMPLEMENT_SIGNAL1(sigSiteContextMenu, cfw::IDocumentSitePtr)
-    XCM_IMPLEMENT_SIGNAL1(sigActiveChildChanged, cfw::IDocumentSitePtr)
-    XCM_IMPLEMENT_SIGNAL1(sigSiteClose, cfw::IDocumentSitePtr)
+    XCM_IMPLEMENT_SIGNAL1(sigSiteContextMenu, IDocumentSitePtr)
+    XCM_IMPLEMENT_SIGNAL1(sigActiveChildChanged, IDocumentSitePtr)
+    XCM_IMPLEMENT_SIGNAL1(sigSiteClose, IDocumentSitePtr)
     
 public:
 
@@ -278,9 +275,9 @@ public:
     wxWindow* getInvisibleWindow();
     wxAuiManager& getAuiManager();
     
-    cfw::IStatusBarPtr getStatusBar();
+    IStatusBarPtr getStatusBar();
 
-    void setStatusBar(cfw::IStatusBarPtr statusbar);
+    void setStatusBar(IStatusBarPtr statusbar);
     void setMenuBar(wxMenuBar* menubar, int menu_merge_position);
     void moveWindow(int x, int y, int width, int height);
     void setCaption(const wxString& caption);
@@ -291,23 +288,23 @@ public:
     IUIContextPtr createUIContext(const wxString& name);
     IUIContextPtr lookupUIContext(const wxString& name);
 
-    cfw::IDocumentSitePtr& getLastChild();
-    cfw::IDocumentSitePtr& getActiveChild();
+    IDocumentSitePtr& getLastChild();
+    IDocumentSitePtr& getActiveChild();
     
-    cfw::IDocumentSitePtr lookupSite(const wxString& site_name);
-    cfw::IDocumentSitePtr lookupSiteById(int id);
-    cfw::IDocumentSitePtr& lookupSiteByContainer(wxWindow* wnd);
-    cfw::IDocumentSiteEnumPtr getDocumentSites(unsigned int site_type);
-    cfw::IDocumentSiteEnumPtr getShownDocumentSites(unsigned int type);
+    IDocumentSitePtr lookupSite(const wxString& site_name);
+    IDocumentSitePtr lookupSiteById(int id);
+    IDocumentSitePtr& lookupSiteByContainer(wxWindow* wnd);
+    IDocumentSiteEnumPtr getDocumentSites(unsigned int site_type);
+    IDocumentSiteEnumPtr getShownDocumentSites(unsigned int type);
     IDocumentSiteEnumPtr getDocumentSitesByContainer(wxWindow* container);
     void setActiveChild(IDocumentSitePtr child);
     size_t getChildCount();
     
-    bool closeSite(cfw::IDocumentSitePtr site, int flags = 0);
+    bool closeSite(IDocumentSitePtr site, int flags = 0);
     bool closeAll(bool force);
 
     IDocumentSitePtr createSite(
-                  cfw::IDocumentPtr document,
+                  IDocumentPtr document,
                   int site_type,
                   int x,
                   int y,
@@ -322,7 +319,7 @@ public:
     void activateInPlace(
                   IDocumentSitePtr site);
                     
-    void dockSite(cfw::IDocumentSitePtr site,
+    void dockSite(IDocumentSitePtr site,
                   int dock,
                   int row,
                   int offset,
@@ -353,8 +350,8 @@ public:
     void addWindowEventHandler(wxEvtHandler* event_handler);
     void removeWindowEventHandler(wxEvtHandler* event_handler);
 
-    void postEvent(cfw::Event* evt);
-    void sendEvent(Event* evt);
+    void postEvent(FrameworkEvent* evt);
+    void sendEvent(FrameworkEvent* evt);
     void dispatchAllEvents();
 
     void propertiesUpdated();
@@ -369,8 +366,8 @@ public:
     void fire_onFrameClose(wxCloseEvent& evt);
     void fire_onFrameDestroy();
     void fire_onFrameBarRightClick();
-    void fire_onActiveChildChanged(cfw::IDocumentSitePtr container);
-    void fire_onSiteClose(cfw::IDocumentSitePtr site);
+    void fire_onActiveChildChanged(IDocumentSitePtr container);
+    void fire_onSiteClose(IDocumentSitePtr site);
     
 private:
 
@@ -410,17 +407,17 @@ private:
     wxAuiManager m_mgr;
     
     std::vector<wxEvtHandler*> m_winevent_handlers;
-    std::queue<cfw::Event*> m_event_queue;
-    std::vector<cfw::IDocumentSitePtr> m_doc_sites;
-    std::vector<cfw::IUIContextPtr> m_ui_contexts;
+    std::queue<FrameworkEvent*> m_event_queue;
+    std::vector<IDocumentSitePtr> m_doc_sites;
+    std::vector<IUIContextPtr> m_ui_contexts;
 
-    cfw::IDocumentSitePtr m_null_docsite;
+    IDocumentSitePtr m_null_docsite;
 
     wxWindow* m_invisible;
     ChildFrame* m_active_child;
     ChildFrame* m_last_child;
-    cfw::IUIContextPtr m_active_ui;
-    cfw::IStatusBarPtr m_statusbar;
+    IUIContextPtr m_active_ui;
+    IStatusBarPtr m_statusbar;
     FrameCommandDispatch* m_dispatcher_child;
     FrameCommandDispatch* m_dispatcher_frameevt;
     int m_unique_id;
@@ -431,8 +428,6 @@ private:
     DECLARE_EVENT_TABLE()
 };
 
-
-};  // namespace cfw
 
 
 #endif

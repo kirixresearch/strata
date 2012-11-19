@@ -63,18 +63,18 @@ int getTaskBarHeight();  // get OS's taskbar height
 
 // utilities which looking and/or activate a specified documentsite
 
-cfw::IDocumentSitePtr lookupOtherDocumentSite(
-                           cfw::IDocumentSitePtr site,
+IDocumentSitePtr lookupOtherDocumentSite(
+                           IDocumentSitePtr site,
                            const std::string& doc_class_name);
 
-cfw::IDocumentPtr lookupOtherDocument(
-                           cfw::IDocumentSitePtr site,
+IDocumentPtr lookupOtherDocument(
+                           IDocumentSitePtr site,
                            const std::string& doc_class_name);
 
-void switchToOtherDocument(cfw::IDocumentSitePtr site,
+void switchToOtherDocument(IDocumentSitePtr site,
                            const std::string& doc_class_name);
 
-wxWindow* getDocumentSiteWindow(cfw::IDocumentSitePtr site);
+wxWindow* getDocumentSiteWindow(IDocumentSitePtr site);
 
 
 
@@ -252,8 +252,8 @@ class JobGaugeUpdateTimer : public wxTimer,
 {
 public:
 
-    JobGaugeUpdateTimer(cfw::IStatusBarPtr _statusbar,
-                        cfw::IJobQueuePtr _job_queue,
+    JobGaugeUpdateTimer(IStatusBarPtr _statusbar,
+                        IJobQueuePtr _job_queue,
                         wxGauge* _gauge);
     
     ~JobGaugeUpdateTimer();
@@ -264,21 +264,21 @@ public:
     void UnInit();
     void Notify();
     
-    void onJobAdded(cfw::IJobInfoPtr job_info);
-    void onJobStateChanged(cfw::IJobInfoPtr job_info);
+    void onJobAdded(IJobInfoPtr job_info);
+    void onJobStateChanged(IJobInfoPtr job_info);
 
     void onJobAddedInMainThread(wxCommandEvent& evt);
     void onJobStateChangedInMainThread(wxCommandEvent& evt);
     
 private:
 
-    cfw::IStatusBarPtr m_statusbar;
-    cfw::IJobQueuePtr m_job_queue;
+    IStatusBarPtr m_statusbar;
+    IJobQueuePtr m_job_queue;
     
-    cfw::IStatusBarItemPtr m_job_text_item;
-    cfw::IStatusBarItemPtr m_job_separator_item;
-    cfw::IStatusBarItemPtr m_job_gauge_item;
-    cfw::IStatusBarItemPtr m_job_failed_item;
+    IStatusBarItemPtr m_job_text_item;
+    IStatusBarItemPtr m_job_separator_item;
+    IStatusBarItemPtr m_job_gauge_item;
+    IStatusBarItemPtr m_job_failed_item;
 
     wxGauge* m_gauge;
     

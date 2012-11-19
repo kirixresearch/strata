@@ -26,15 +26,13 @@
 //       the statusbar provider's items are added to the statusbar
 //       and then right-aligned global items are added at the end
 
-namespace cfw
-{
 
-class StatusBarItem : public cfw::IStatusBarItem
+class StatusBarItem : public IStatusBarItem
 {
 
 XCM_CLASS_NAME("cfw.StatusBarItem")
 XCM_BEGIN_INTERFACE_MAP(StatusBarItem)
-    XCM_INTERFACE_ENTRY(cfw::IStatusBarItem)
+    XCM_INTERFACE_ENTRY(IStatusBarItem)
 XCM_END_INTERFACE_MAP()
 
 public:
@@ -67,7 +65,7 @@ public:
         }
     }
 
-    // cfw::IStatusBarItem interface
+    // IStatusBarItem interface
     
     wxString   getName()    { return m_name;    }
     wxString   getValue()   { return m_value;   }
@@ -153,18 +151,18 @@ public:
 
 
 class StatusBar : public wxAuiToolBar,
-                  public cfw::IStatusBar,
+                  public IStatusBar,
                   public xcm::signal_sink
 {
 friend class StatusBarItemEvtHandler;
 
 XCM_CLASS_NAME_NOREFCOUNT("cfw.StatusBar")
 XCM_BEGIN_INTERFACE_MAP(StatusBar)
-    XCM_INTERFACE_ENTRY(cfw::IStatusBar)
+    XCM_INTERFACE_ENTRY(IStatusBar)
 XCM_END_INTERFACE_MAP()
 
-XCM_IMPLEMENT_SIGNAL1(sigItemLeftDblClick, cfw::IStatusBarItemPtr)
-XCM_IMPLEMENT_SIGNAL1(sigItemLeftClick, cfw::IStatusBarItemPtr)
+XCM_IMPLEMENT_SIGNAL1(sigItemLeftDblClick, IStatusBarItemPtr)
+XCM_IMPLEMENT_SIGNAL1(sigItemLeftClick, IStatusBarItemPtr)
 XCM_IMPLEMENT_SIGNAL0(sigRefresh)
 
 public:
@@ -175,33 +173,33 @@ public:
         LocationRight
     };
     
-    StatusBar(cfw::IFramePtr frame);
+    StatusBar(IFramePtr frame);
     ~StatusBar();
 
-    // cfw::IStatusBar
+    // IStatusBar
     wxAuiToolBar* getStatusBarCtrl();
     
-    cfw::IStatusBarItemPtr addItem(
+    IStatusBarItemPtr addItem(
                                 const wxString& item_name,
                                 int location = LocationLeft);
 
-    cfw::IStatusBarItemPtr addControl(
+    IStatusBarItemPtr addControl(
                                 wxControl* control,
                                 const wxString& item_name,
                                 int location = LocationLeft);
 
-    cfw::IStatusBarItemPtr addSeparator(
+    IStatusBarItemPtr addSeparator(
                                 const wxString& item_name,
                                 int location = LocationLeft);
 
-    cfw::IStatusBarItemPtr getItem(const wxString& item_name);
+    IStatusBarItemPtr getItem(const wxString& item_name);
     
     void showResizeGripper(bool show = true);
     void populate();
     void refresh();
 
     // frame events
-    void onActiveChildChanged(cfw::IDocumentSitePtr doc_site);
+    void onActiveChildChanged(IDocumentSitePtr doc_site);
     
     // event handlers
     void onMouseLeftDblClick(wxMouseEvent& evt);
@@ -209,17 +207,17 @@ public:
     
 private:
     
-    cfw::IStatusBarItemPtr getItemFromId(int id);
-    void refreshItems(cfw::IStatusBarItemEnumPtr items);
-    void addItems(cfw::IStatusBarItemEnumPtr items);
+    IStatusBarItemPtr getItemFromId(int id);
+    void refreshItems(IStatusBarItemEnumPtr items);
+    void addItems(IStatusBarItemEnumPtr items);
     
 private:
 
     int m_id_counter;
-    cfw::IFramePtr m_frame;
-    cfw::IStatusBarProviderPtr m_statusbar_provider;
-    cfw::IStatusBarItemEnumPtr m_left_items;
-    cfw::IStatusBarItemEnumPtr m_right_items;
+    IFramePtr m_frame;
+    IStatusBarProviderPtr m_statusbar_provider;
+    IStatusBarItemEnumPtr m_left_items;
+    IStatusBarItemEnumPtr m_right_items;
     
     DECLARE_EVENT_TABLE()
 };
@@ -227,12 +225,12 @@ private:
 
 
 
-class StatusBarProviderBase : public cfw::IStatusBarProvider
+class StatusBarProviderBase : public IStatusBarProvider
 {
 
 XCM_CLASS_NAME_NOREFCOUNT("cfw.StatusBarProviderBase")
 XCM_BEGIN_INTERFACE_MAP(StatusBarProviderBase)
-    XCM_INTERFACE_ENTRY(cfw::IStatusBarProvider)
+    XCM_INTERFACE_ENTRY(IStatusBarProvider)
 XCM_END_INTERFACE_MAP()
 
 protected:
@@ -240,28 +238,28 @@ protected:
     StatusBarProviderBase()
     {
         // create the statusbar item enumerator
-        m_items = new xcm::IVectorImpl<cfw::IStatusBarItemPtr>;
+        m_items = new xcm::IVectorImpl<IStatusBarItemPtr>;
     }
     
     // IStatusBarProvider methods
     
-    cfw::IStatusBarItemEnumPtr getStatusBarItemEnum()
+    IStatusBarItemEnumPtr getStatusBarItemEnum()
     {
         return m_items;
     }
     
-    cfw::IStatusBarItemPtr addStatusBarItem(const wxString& item_name)
+    IStatusBarItemPtr addStatusBarItem(const wxString& item_name)
     {
-        cfw::StatusBarItem* c = new cfw::StatusBarItem;
+        StatusBarItem* c = new StatusBarItem;
         c->m_name = item_name;
 
         m_items->append(c);
         return c;
     }
 
-    cfw::IStatusBarItemPtr addStatusBarSeparator(const wxString& item_name)
+    IStatusBarItemPtr addStatusBarSeparator(const wxString& item_name)
     {
-        cfw::StatusBarItem* c = new cfw::StatusBarItem;
+        StatusBarItem* c = new StatusBarItem;
         c->m_name = item_name;
         c->m_separator = true;
         
@@ -271,13 +269,8 @@ protected:
 
 protected:
 
-    cfw::IStatusBarItemEnumPtr m_items;
+    IStatusBarItemEnumPtr m_items;
 };
 
 
-};  // namespace cfw
-
-
 #endif
-
-

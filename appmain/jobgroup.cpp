@@ -95,7 +95,7 @@ int GroupJob::runJob()
 
         if (tango_job->getCancelled())
         {
-            m_job_info->setState(cfw::jobStateCancelling);
+            m_job_info->setState(jobStateCancelling);
             m_result_set.clear();
             m_result_iter.clear();
             return 0;
@@ -103,7 +103,7 @@ int GroupJob::runJob()
 
         if (tango_job->getStatus() == tango::jobFailed)
         {
-            m_job_info->setState(cfw::jobStateFailed);
+            m_job_info->setState(jobStateFailed);
             m_job_info->setProgressString(towstr(_("ERROR: Insufficient disk space")));
             m_result_set.clear();
             m_result_iter.clear();
@@ -131,7 +131,7 @@ int GroupJob::runJob()
 
         if (tango_job->getCancelled())
         {
-            m_job_info->setState(cfw::jobStateCancelling);
+            m_job_info->setState(jobStateCancelling);
             m_result_set.clear();
             m_result_iter.clear();
             return 0;
@@ -139,7 +139,7 @@ int GroupJob::runJob()
 
         if (tango_job->getStatus() == tango::jobFailed)
         {
-            m_job_info->setState(cfw::jobStateFailed);
+            m_job_info->setState(jobStateFailed);
             m_job_info->setProgressString(towstr(_("ERROR: Insufficient disk space")));
             return 0;
         }
@@ -147,7 +147,7 @@ int GroupJob::runJob()
         // -- the following is special code for the dup pay wizard --
         if (m_result_set.isNull())
         {
-            m_job_info->setState(cfw::jobStateFailed);
+            m_job_info->setState(jobStateFailed);
             m_result_set.clear();
             m_result_iter.clear();
             return 0;
@@ -169,7 +169,7 @@ int GroupJob::runJob()
 
         if (tango_job->getCancelled())
         {
-            m_job_info->setState(cfw::jobStateCancelling);
+            m_job_info->setState(jobStateCancelling);
             m_result_set.clear();
             m_result_iter.clear();
             return 0;
@@ -177,7 +177,7 @@ int GroupJob::runJob()
 
         if (iter.isNull())
         {
-            m_job_info->setState(cfw::jobStateFailed);
+            m_job_info->setState(jobStateFailed);
             m_result_set.clear();
             m_result_iter.clear();
             return 0;
@@ -186,7 +186,7 @@ int GroupJob::runJob()
         tango::ISetPtr set = iter->getSet();
         if (set.isNull())
         {
-            m_job_info->setState(cfw::jobStateFailed);
+            m_job_info->setState(jobStateFailed);
             m_result_set.clear();
             m_result_iter.clear();
             return 0;
@@ -206,7 +206,7 @@ int GroupJob::runJob()
 
         if (tango_job->getCancelled())
         {
-            m_job_info->setState(cfw::jobStateCancelling);
+            m_job_info->setState(jobStateCancelling);
             m_result_set.clear();
             m_result_iter.clear();
             return 0;
@@ -214,7 +214,7 @@ int GroupJob::runJob()
 
         if (tango_job->getStatus() == tango::jobFailed)
         {
-            m_job_info->setState(cfw::jobStateFailed);
+            m_job_info->setState(jobStateFailed);
             m_job_info->setProgressString(towstr(_("ERROR: Insufficient disk space")));
             m_result_set.clear();
             m_result_iter.clear();
@@ -229,8 +229,8 @@ int GroupJob::runJob()
 
 void GroupJob::runPostJob()
 {
-    if (m_job_info->getState() == cfw::jobStateCancelled ||
-        m_job_info->getState() == cfw::jobStateFailed)
+    if (m_job_info->getState() == jobStateCancelled ||
+        m_job_info->getState() == jobStateFailed)
     {
         m_source_set = xcm::null;
         m_result_set = xcm::null;

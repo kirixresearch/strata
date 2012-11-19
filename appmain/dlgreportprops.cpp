@@ -313,8 +313,8 @@ int ReportPropsDialog::ShowModal()
     // create header labels
     wxStaticText* source_title = new wxStaticText(this, -1, _("Source and Layout"));
     wxStaticText* sorting_title = new wxStaticText(this, -1, _("Sorting and Grouping"));
-    cfw::makeFontBold(source_title);
-    cfw::makeFontBold(sorting_title);
+    makeFontBold(source_title);
+    makeFontBold(sorting_title);
 
 
     // create main sizer
@@ -423,7 +423,7 @@ void ReportPropsDialog::populateFieldNameDropDown()
     
     for (it = m_source_columns.begin(); it != it_end; ++it)
     {
-        fieldnames.Add(cfw::makeProper(*it));
+        fieldnames.Add(makeProper(*it));
     }
 
     // populate the field name dropdown in the grid

@@ -23,13 +23,13 @@ struct DupRecInfo
 
 
 class RemoveDupRecWizard : public wxWindow,
-                           public cfw::IDocument,
+                           public IDocument,
                            public xcm::signal_sink                              
 {
 
 XCM_CLASS_NAME_NOREFCOUNT("appmain.RemoveDupRecWizard")
 XCM_BEGIN_INTERFACE_MAP(RemoveDupRecWizard)
-    XCM_INTERFACE_ENTRY(cfw::IDocument)
+    XCM_INTERFACE_ENTRY(IDocument)
 XCM_END_INTERFACE_MAP()
 
 
@@ -39,8 +39,8 @@ public:
     virtual ~RemoveDupRecWizard();
 
     // -- IDocument --
-    bool initDoc(cfw::IFramePtr frame,
-                 cfw::IDocumentSitePtr doc_site,
+    bool initDoc(IFramePtr frame,
+                 IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,
                  wxWindow* panesite_wnd);
     wxWindow* getDocumentWindow();
@@ -54,7 +54,7 @@ public:
 
 private:
 
-    cfw::IDocumentSitePtr m_doc_site;
+    IDocumentSitePtr m_doc_site;
     DupRecInfo* m_info;
 
 public:

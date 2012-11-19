@@ -36,7 +36,7 @@ class GroupJob : public TangoJobBase,
     XCM_CLASS_NAME("appmain.GroupJob")
     XCM_BEGIN_INTERFACE_MAP(GroupJob)
         XCM_INTERFACE_ENTRY(IGroupJob)
-        XCM_INTERFACE_CHAIN(cfw::JobBase)
+        XCM_INTERFACE_CHAIN(JobBase)
     XCM_END_INTERFACE_MAP()
 
 public:

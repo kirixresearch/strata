@@ -14,15 +14,12 @@
 #endif
 
 
-#include <wx/wx.h>
+#include "appmain.h"
 #include <wx/msw/registry.h>
 #include <xcm/xcm.h>
 #include "prefs.h"
 #include "prefs_private.h"
 
-
-namespace cfw
-{
 
 
 AppPreferences::AppPreferences()
@@ -809,12 +806,4 @@ void MemoryAppPreferences::getAll(std::vector<AppPreference>& prefs)
         prefs.push_back(pref);
     }
 }
-
-
-
-
-}; // namespace cfw
-
-
-
 

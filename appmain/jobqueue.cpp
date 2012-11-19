@@ -9,15 +9,12 @@
  */
 
 
-#include <wx/wx.h>
+#include "appmain.h"
 #include <xcm/xcm.h>
 #include <kl/thread.h>
 #include "jobqueue.h"
 #include "jobqueue_private.h"
 
-
-namespace cfw
-{
 
 
 const int ID_JobFinishedNotify = 59984;
@@ -226,7 +223,7 @@ IJobInfoEnumPtr JobQueue::getJobInfoEnum(int job_state_mask)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
-    xcm::IVectorImpl<cfw::IJobInfoPtr>* vec = new xcm::IVectorImpl<cfw::IJobInfoPtr>;
+    xcm::IVectorImpl<IJobInfoPtr>* vec = new xcm::IVectorImpl<IJobInfoPtr>;
 
     std::vector<IJobInfoPtr>::iterator it;
     for (it = m_job_info.begin(); it != m_job_info.end(); ++it)
@@ -318,18 +315,15 @@ void JobQueue::onJobFinished(wxCommandEvent& event)
 void JobQueue::onJobInfoEntryStateChanged(IJobInfoPtr job_info)
 {
     int state = job_info->getState();
-    if (state == cfw::jobStateRunning)
+    if (state == jobStateRunning)
     {
         incrementActiveJobs();
     }
-     else if (state == cfw::jobStateFailed ||
-              state == cfw::jobStateCancelled ||
-              state == cfw::jobStateFinished)
+     else if (state == jobStateFailed ||
+              state == jobStateCancelled ||
+              state == jobStateFinished)
     {
         decrementActiveJobs();
     }
 }
-
-
-};
 

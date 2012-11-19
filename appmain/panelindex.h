@@ -34,13 +34,13 @@ struct IndexInfo
 
 class FieldListControl;
 class IndexPanel :  public wxPanel,
-                    public cfw::IDocument,
+                    public IDocument,
                     public xcm::signal_sink
 {
 
 XCM_CLASS_NAME_NOREFCOUNT("appmain.IndexPanel")
 XCM_BEGIN_INTERFACE_MAP(IndexPanel)
-    XCM_INTERFACE_ENTRY(cfw::IDocument)
+    XCM_INTERFACE_ENTRY(IDocument)
 XCM_END_INTERFACE_MAP()
 
 public:
@@ -55,8 +55,8 @@ public:
 private:
 
     // -- IDocument --
-    bool initDoc(cfw::IFramePtr frame,
-                 cfw::IDocumentSitePtr site,
+    bool initDoc(IFramePtr frame,
+                 IDocumentSitePtr site,
                  wxWindow* doc_site,
                  wxWindow* pane_site);
     wxWindow* getDocumentWindow();
@@ -110,7 +110,7 @@ private:
     wxString m_set_path;
     tango::ISetPtr m_set;
     tango::IStructurePtr m_structure;
-    cfw::IDocumentSitePtr m_doc_site;
+    IDocumentSitePtr m_doc_site;
     
     DECLARE_EVENT_TABLE()
 };

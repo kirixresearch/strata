@@ -240,7 +240,7 @@ public:
                             const wxString& caption_suffix) = 0;
 
     // url that generated this tabledoc (rss, csv, etc.)
-    // this will override the value returned by cfw::IDocument::getDocumentLocation()
+    // this will override the value returned by IDocument::getDocumentLocation()
     virtual void setSourceUrl(const wxString& source_url) = 0;
     virtual void setSourceMimeType(const wxString& source_mimetype) = 0;
 

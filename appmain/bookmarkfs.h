@@ -15,11 +15,11 @@
 
 // -- DbFolderFsItem class implementation --
 
-class IEBookmarkItem : public cfw::FsItemBase
+class IEBookmarkItem : public FsItemBase
 {
     XCM_CLASS_NAME("appmain.IEBookmarkItem")
     XCM_BEGIN_INTERFACE_MAP(IEBookmarkItem)
-        XCM_INTERFACE_CHAIN(cfw::FsItemBase)
+        XCM_INTERFACE_CHAIN(FsItemBase)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -27,7 +27,7 @@ public:
     IEBookmarkItem();
     ~IEBookmarkItem();
 
-    cfw::IFsItemEnumPtr getChildren();
+    IFsItemEnumPtr getChildren();
 
     bool isDeferred() { return true; }
 

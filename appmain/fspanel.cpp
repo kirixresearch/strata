@@ -14,7 +14,7 @@
 #endif
 
 
-#include <wx/wx.h>
+#include "appmain.h"
 #include <wx/dnd.h>
 #include <xcm/xcm.h>
 #include "../kcl/button.h"
@@ -33,9 +33,6 @@
 
 const int LOCATION_BAR_HEIGHT = 25;
 
-
-namespace cfw
-{
 
 
 
@@ -139,7 +136,7 @@ public:
         
         if (id.IsOk())
         {
-            cfw::IFsItemPtr highlight_item = m_tree->getItemFromId(id);
+            IFsItemPtr highlight_item = m_tree->getItemFromId(id);
             if (!highlight_item)
                 return wxDragNone;
 
@@ -377,8 +374,8 @@ void FsPanel::createTreeView()
     m_treeview->Connect(wxEVT_MIDDLE_UP, wxMouseEventHandler(FsPanel::onMouseMiddleUp), NULL, this);
     
 #ifdef __WXMSW__
-    int treeitem_height = cfw::getTreeItemHeight(m_treeview);
-    cfw::setTreeItemHeight(m_treeview, treeitem_height+2);
+    int treeitem_height = getTreeItemHeight(m_treeview);
+    setTreeItemHeight(m_treeview, treeitem_height+2);
     
     if (m_style & fsstyleTrackSelect)
     {
@@ -526,8 +523,8 @@ bool FsPanel::create(wxWindow* parent,
     return true;
 }
                         
-bool FsPanel::initDoc(cfw::IFramePtr frame,
-                      cfw::IDocumentSitePtr doc_site,
+bool FsPanel::initDoc(IFramePtr frame,
+                      IDocumentSitePtr doc_site,
                       wxWindow* docsite_wnd,
                       wxWindow* panesite_wnd)
 {
@@ -1284,7 +1281,7 @@ void FsPanel::onFsTreeItemActivated(wxTreeEvent& evt)
 
         if (sel_items->size() == 1)
         {
-            cfw::IFsItemPtr item = sel_items->getItem(0);
+            IFsItemPtr item = sel_items->getItem(0);
             item->onActivated();
             sigItemActivated().fire(item);
         }
@@ -1342,7 +1339,7 @@ void FsPanel::onFsTreeItemBeginLabelEdit(wxTreeEvent& evt)
 void FsPanel::onFsTreeItemEndLabelEdit(wxTreeEvent& evt)
 {
     FsItemData* data = (FsItemData*)m_treeview->GetItemData(evt.GetItem());
-    cfw::IFsItemPtr edit_item = data->m_fsitem;
+    IFsItemPtr edit_item = data->m_fsitem;
 
 #ifdef CFW_USE_GENERIC_TREECTRL
     // FIXME: This code needs to be fixed on linux
@@ -1522,7 +1519,7 @@ void FsPanel::onFsListItemBeginLabelEdit(wxListEvent& evt)
 void FsPanel::onFsListItemEndLabelEdit(wxListEvent& event)
 {
     FsItemData* data = (FsItemData*)m_listview->GetItemData(event.GetIndex());
-    cfw::IFsItemPtr edit_item = data->m_fsitem;
+    IFsItemPtr edit_item = data->m_fsitem;
 
     bool allow = true;
     sigItemEndLabelEdit().fire(data->m_fsitem,
@@ -1559,8 +1556,5 @@ void FsPanel::onFsListKeyDown(wxListEvent& event)
 
     sigKeyDown().fire(e);
 }
-
-
-};  // namespace cfw
 
 

@@ -54,7 +54,7 @@ time_t g_app_start_time = 0;
 static wxString getAppDataPath()
 {
     // try to get the application data path from the registry
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
 
     // on windows by default, this directory is stored in the user's 
     // Application Data directory.  On English language systems, this 
@@ -213,14 +213,14 @@ public:
             default:
             case paladin::errAuthFailed:
                 this->Stop();
-                cfw::appMessageBox(_("Your license for this application has expired.  Please renew your license."),
+                appMessageBox(_("Your license for this application has expired.  Please renew your license."),
                               APPLICATION_NAME,
                               wxOK | wxICON_INFORMATION | wxCENTER);
                 break;
 
             case paladin::errClockModified:
                 this->Stop();
-                cfw::appMessageBox(_("The clock was set back on your computer.  Please reset the clock to the normal time or re-license this software."),
+                appMessageBox(_("The clock was set back on your computer.  Please reset the clock to the normal time or re-license this software."),
                               APPLICATION_NAME,
                               wxOK | wxICON_INFORMATION | wxCENTER);
                 break;
@@ -390,7 +390,7 @@ bool MainApp::OnInit()
     // no logging
 #ifndef _DEBUG
     wxLog::EnableLogging(false);
-    cfw::suppressConsoleLogging();
+    suppressConsoleLogging();
 #endif
 
 
@@ -493,7 +493,7 @@ bool MainApp::OnInit()
     m_app_default_preferences.create_instance("cfw.MemoryAppPreferences");
     if (!m_app_default_preferences)
     {
-        cfw::appMessageBox(wxT("Could not create a 'cfw.MemoryAppPreferences' object"));
+        appMessageBox(wxT("Could not create a 'cfw.MemoryAppPreferences' object"));
         return false;
     }
 
@@ -507,7 +507,7 @@ bool MainApp::OnInit()
     m_app_preferences.create_instance("cfw.AppPreferences");
     if (!m_app_preferences)
     {
-        cfw::appMessageBox(wxT("Could not create a 'cfw.AppPreferences' object"));
+        appMessageBox(wxT("Could not create a 'cfw.AppPreferences' object"));
         return FALSE;
     }
 
@@ -751,7 +751,7 @@ public:
 // "main script" finishes, it instructs the main thread's
 // event loop to exit
 
-static void onMainScriptFinished(cfw::IJobPtr job)
+static void onMainScriptFinished(IJobPtr job)
 {
     g_app->ExitMainLoop();
 }
@@ -792,7 +792,7 @@ bool MainApp::runCommandLineScript()
     ScriptHostParams* params = new ScriptHostParams;
     params->print_function.setFunction(func_console_print);
     AppScriptError error;
-    cfw::IJobPtr job = getAppController()->executeScript(path, params, &error);
+    IJobPtr job = getAppController()->executeScript(path, params, &error);
     if (error.code != 0)
     {
         if (error.file.length() == 0)
@@ -807,7 +807,7 @@ bool MainApp::runCommandLineScript()
 #else
         wchar_t str[512];
         swprintf(str, 512, L"%ls(%d) : %ls\n", (const wchar_t*)error.file.c_str(), error.line+1, (const wchar_t*)error.message.c_str());
-        cfw::appMessageBox(str);
+        appMessageBox(str);
 #endif
 
         return false;
@@ -887,10 +887,10 @@ void MainApp::onActivateApp(wxActivateEvent& evt)
     {
         if (m_frame)
         {
-            cfw::IDocumentSitePtr site = m_frame->getActiveChild();
+            IDocumentSitePtr site = m_frame->getActiveChild();
             if (site)
             {
-                cfw::IDocumentPtr doc = site->getDocument();
+                IDocumentPtr doc = site->getDocument();
                 if (doc)
                 {
                     doc->setDocumentFocus();
@@ -914,12 +914,12 @@ bool MainApp::getJobsActive()
     return m_job_queue->getJobsActive();
 }
 
-cfw::IJobQueuePtr MainApp::getJobQueue()
+IJobQueuePtr MainApp::getJobQueue()
 {
     return m_job_queue;
 }
 
-cfw::IJobQueuePtr MainApp::getScriptJobQueue()
+IJobQueuePtr MainApp::getScriptJobQueue()
 {
     return m_script_job_queue;
 }
@@ -981,7 +981,7 @@ wxString MainApp::getBookmarkFolder()
 }
 
     
-cfw::IFramePtr MainApp::getMainFrame()
+IFramePtr MainApp::getMainFrame()
 {
     return m_frame;
 }
@@ -991,12 +991,12 @@ AppController* MainApp::getAppController()
     return m_app_controller;
 }
 
-cfw::IAppPreferencesPtr MainApp::getAppPreferences()
+IAppPreferencesPtr MainApp::getAppPreferences()
 {
     return m_app_preferences;
 }
 
-cfw::IAppPreferencesPtr MainApp::getAppDefaultPreferences()
+IAppPreferencesPtr MainApp::getAppDefaultPreferences()
 {
     return m_app_default_preferences;
 }
@@ -1055,7 +1055,7 @@ wxCmdLineParser* MainApp::getCommandLine()
     return m_command_line;
 }
 
-void MainApp::setMainFrame(cfw::IFramePtr frame)
+void MainApp::setMainFrame(IFramePtr frame)
 {
     m_frame = frame;
 
@@ -1256,10 +1256,10 @@ void AppMacroRecorder::addLine(const wxString& s)
     m_lines.push_back(line);
 
     // TODO: temporary echo to console; remove later
-    cfw::IFramePtr frame = g_app->getMainFrame();
+    IFramePtr frame = g_app->getMainFrame();
     if (frame.isOk())
     {
-        cfw::IDocumentSitePtr site = frame->lookupSite(wxT("ConsolePanel"));
+        IDocumentSitePtr site = frame->lookupSite(wxT("ConsolePanel"));
         if (site.isOk())
         {
             IConsolePanelPtr console = site->getDocument();

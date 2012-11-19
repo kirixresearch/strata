@@ -43,13 +43,13 @@ class wxStyledTextEvent;
 
 class ConsolePanel : public wxWindow,
                      public IConsolePanel,
-                     public cfw::IDocument,
+                     public IDocument,
                      public xcm::signal_sink
 {
 
 XCM_CLASS_NAME_NOREFCOUNT("appmain.ConsolePanel")
 XCM_BEGIN_INTERFACE_MAP(ConsolePanel)
-    XCM_INTERFACE_ENTRY(cfw::IDocument)
+    XCM_INTERFACE_ENTRY(IDocument)
     XCM_INTERFACE_ENTRY(IConsolePanel)
 XCM_END_INTERFACE_MAP()
 
@@ -61,8 +61,8 @@ public:
     ~ConsolePanel();
 
     // IDocument interface implementation
-    bool initDoc(cfw::IFramePtr frame,
-                 cfw::IDocumentSitePtr site,
+    bool initDoc(IFramePtr frame,
+                 IDocumentSitePtr site,
                  wxWindow* docsite_wnd,
                  wxWindow* panesite_wnd);
     wxWindow* getDocumentWindow();
@@ -88,7 +88,7 @@ private:
     // signal handlers
     void onCommandEntered(wxString& command);
     void onCommand(wxString& command);
-    void onQueryJobFinished(cfw::IJobPtr job);
+    void onQueryJobFinished(IJobPtr job);
 
 private:
 
@@ -121,7 +121,7 @@ private:
 private:
 
     // controls
-    cfw::IFramePtr m_frame;
+    IFramePtr m_frame;
     CommandTextCtrl* m_text_ctrl;
 
     // database to use for processing commands

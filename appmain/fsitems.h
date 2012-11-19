@@ -13,9 +13,6 @@
 #define __CFW_FSITEMS_H
 
 
-namespace cfw
-{
-
 
 xcm_interface IGenericFsItem : public xcm::IObject
 {
@@ -58,8 +55,6 @@ XCM_DECLARE_SMARTPTR(IGenericFsItem)
 XCM_DECLARE_SMARTPTR(IFileFsItem)
 XCM_DECLARE_SMARTPTR(IDirectoryFsItem)
 
-
-};  // namespace cfw
 
 
 #endif

@@ -274,7 +274,7 @@ BEGIN_EVENT_TABLE(AppController, wxEvtHandler)
 END_EVENT_TABLE()
 
 
-static void postBorderSelectedEvent(cfw::IDocumentSitePtr active_child,
+static void postBorderSelectedEvent(IDocumentSitePtr active_child,
                                     wxAuiToolBarItem* item)
 {
     // send the selected border to the active document through a wx event
@@ -285,7 +285,7 @@ static void postBorderSelectedEvent(cfw::IDocumentSitePtr active_child,
     if (item == NULL)
         return;
         
-    cfw::IDocumentPtr doc = active_child->getDocument();
+    IDocumentPtr doc = active_child->getDocument();
     if (doc.isOk())
     {
         wxWindow* w = doc->getDocumentWindow();
@@ -406,7 +406,7 @@ static void postBorderSelectedEvent(cfw::IDocumentSitePtr active_child,
     }
 }
 
-static void postColorSelectedEvent(cfw::IDocumentSitePtr active_child,
+static void postColorSelectedEvent(IDocumentSitePtr active_child,
                                    wxAuiToolBarItem* item)
 {
     // send the selected color to the active document through a wx event
@@ -417,7 +417,7 @@ static void postColorSelectedEvent(cfw::IDocumentSitePtr active_child,
     if (item == NULL)
         return;
         
-    cfw::IDocumentPtr doc = active_child->getDocument();
+    IDocumentPtr doc = active_child->getDocument();
     if (doc.isOk())
     {
         wxWindow* w = doc->getDocumentWindow();
@@ -632,7 +632,7 @@ bool AppController::init()
     return true;
     #endif
 
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
 
     // get saved windows dimensions
     long x, y, w, h, screen_x, screen_y;
@@ -1043,9 +1043,9 @@ bool AppController::init()
     m_project_toolbar = new StandardToolbar(m_frame->getFrameWindow());
     m_frame->dockWindow(m_project_toolbar,
                         _("Navigation Toolbar"),
-                        cfw::sitetypeDockable |
-                        cfw::dockTop |
-                        cfw::siteNoResize,
+                        sitetypeDockable |
+                        dockTop |
+                        siteNoResize,
                         0, -1, 0, 0);
     m_frame->getAuiManager().GetPane(m_project_toolbar).Name(wxT("NavigationToolbar")).Resizable().DockFixed();
     
@@ -1053,9 +1053,9 @@ bool AppController::init()
     m_linkbar = new LinkBar(m_frame->getFrameWindow());
     m_frame->dockWindow(m_linkbar,
                         _("Bookmarks Toolbar"),
-                        cfw::sitetypeDockable |
-                        cfw::dockTop |
-                        cfw::siteNoResize,
+                        sitetypeDockable |
+                        dockTop |
+                        siteNoResize,
                         1, -1, 0, 0);
     m_frame->getAuiManager().GetPane(m_linkbar).Name(wxT("BookmarksToolbar")).Resizable().DockFixed();
     
@@ -1063,10 +1063,10 @@ bool AppController::init()
     m_format_toolbar = new FormatToolbar(m_frame->getFrameWindow());
     m_frame->dockWindow(m_format_toolbar,
                         _("Format Toolbar"),
-                        cfw::sitetypeDockable |
-                        cfw::dockTop |
-                        cfw::siteNoResize |
-                        cfw::siteHidden,
+                        sitetypeDockable |
+                        dockTop |
+                        siteNoResize |
+                        siteHidden,
                         2, -1, 0, 0);
     m_frame->getAuiManager().GetPane(m_format_toolbar).Name(wxT("FormatToolbar")).Resizable().DockFixed();
     
@@ -1075,9 +1075,9 @@ bool AppController::init()
 
 
 
-    // create and add global items to cfw::IStatusBar
-    cfw::IStatusBarPtr statusbar;
-    statusbar = static_cast<cfw::IStatusBar*>(new cfw::StatusBar(m_frame));
+    // create and add global items to IStatusBar
+    IStatusBarPtr statusbar;
+    statusbar = static_cast<IStatusBar*>(new StatusBar(m_frame));
     statusbar->sigItemLeftClick().connect(this, &AppController::onStatusBarItemLeftClick);
     statusbar->sigItemLeftDblClick().connect(this, &AppController::onStatusBarItemLeftDblClick);
     statusbar->sigRefresh().connect(this, &AppController::onStatusBarRefresh);
@@ -1095,38 +1095,38 @@ bool AppController::init()
     //       static items on the far left of the LinkBar
     
     // add panel toggle statusbar items
-    cfw::IStatusBarItemPtr item;
-    item = statusbar->addItem(wxT("app_toggle_projectpanel"), cfw::StatusBar::LocationLeft);
+    IStatusBarItemPtr item;
+    item = statusbar->addItem(wxT("app_toggle_projectpanel"), StatusBar::LocationLeft);
     item->setBitmap(GETBMP(gf_project_16));
     item->setToolTip(_("Show/Hide Project Panel"));
     item->setPadding(3,1);
     
-    item = statusbar->addItem(wxT("app_toggle_fieldspanel"), cfw::StatusBar::LocationLeft);
+    item = statusbar->addItem(wxT("app_toggle_fieldspanel"), StatusBar::LocationLeft);
     item->setBitmap(GETBMP(gf_field_16));
     item->setToolTip(_("Show/Hide Fields Panel"));
     item->setPadding(0,1);
     
-    item = statusbar->addItem(wxT("app_toggle_markspanel"), cfw::StatusBar::LocationLeft);
+    item = statusbar->addItem(wxT("app_toggle_markspanel"), StatusBar::LocationLeft);
     item->setBitmap(GETBMP(gf_highlight_16));
     item->setToolTip(_("Show/Hide Marks Panel"));
     item->setPadding(0,1);
     
-    item = statusbar->addItem(wxT("app_toggle_relationshipspanel"), cfw::StatusBar::LocationLeft);
+    item = statusbar->addItem(wxT("app_toggle_relationshipspanel"), StatusBar::LocationLeft);
     item->setBitmap(GETBMP(gf_related_field_16));
     item->setToolTip(_("Show/Hide Relationships Panel"));
     
     // add separator
-    item = statusbar->addSeparator(wxEmptyString, cfw::StatusBar::LocationLeft);
+    item = statusbar->addSeparator(wxEmptyString, StatusBar::LocationLeft);
     
     // add job statusbar items
-    item = statusbar->addItem(wxT("app_job_failed"), cfw::StatusBar::LocationLeft);
+    item = statusbar->addItem(wxT("app_job_failed"), StatusBar::LocationLeft);
     item->setBitmap(GETBMP(gf_exclamation_16));
     item->show(false);
     
-    item = statusbar->addControl(job_progress_gauge, wxT("app_job_gauge"), cfw::StatusBar::LocationLeft);
+    item = statusbar->addControl(job_progress_gauge, wxT("app_job_gauge"), StatusBar::LocationLeft);
     item->show(false);
     
-    item = statusbar->addItem(wxT("app_job_text"), cfw::StatusBar::LocationLeft);
+    item = statusbar->addItem(wxT("app_job_text"), StatusBar::LocationLeft);
     item->setWidth(180);
     item->show(false);
     
@@ -1134,14 +1134,14 @@ bool AppController::init()
     m_job_text_item = item;
 
     // add separator
-    item = statusbar->addSeparator(wxT("app_job_text_separator"), cfw::StatusBar::LocationLeft);
+    item = statusbar->addSeparator(wxT("app_job_text_separator"), StatusBar::LocationLeft);
     item->show(false);
     
     // store job separator item for later use
     m_job_separator_item = item;
     
     // add general text statusbar item
-    item = statusbar->addItem(wxT("app_statusbar_text"), cfw::StatusBar::LocationLeft);
+    item = statusbar->addItem(wxT("app_statusbar_text"), StatusBar::LocationLeft);
     item->setProportion(1);
     
     // store statusbar text item for later use
@@ -1153,8 +1153,8 @@ bool AppController::init()
     
     m_frame->dockWindow(statusbar->getStatusBarCtrl(),
                wxEmptyString,
-               cfw::sitetypeDockable |
-               cfw::dockBottom,
+               sitetypeDockable |
+               dockBottom,
                0, -1, 0, 0);
     m_frame->getAuiManager().GetPane(statusbar->getStatusBarCtrl()).Name(wxT("StatusBar")).Resizable().DockFixed(true);
 
@@ -1180,12 +1180,12 @@ bool AppController::init()
     m_data_locked = g_app->getAppPreferences()->getBoolean(wxT("app.data_locked"), true);
     
 
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
 
     // create console
     ConsolePanel* panel = new ConsolePanel;
     site = m_frame->createSite(panel,
-                               cfw::sitetypeDockable | cfw::dockBottom | cfw::siteHidden,
+                               sitetypeDockable | dockBottom | siteHidden,
                                0, 0, 600, 175);
     site->setCaption(_("Console"));
     site->setName(wxT("ConsolePanel"));
@@ -1216,7 +1216,7 @@ bool AppController::init()
     
 
     // create the column list panel
-    state = cfw::sitetypeDockable | cfw::dockLeft | cfw::siteHidden;
+    state = sitetypeDockable | dockLeft | siteHidden;
     ColumnListPanel* columnlist_panel = new ColumnListPanel;
     m_columnlistpanel_site = m_frame->createSite(columnlist_panel, state, 0, 0, 200, 360);
     m_columnlistpanel_site->setCaption(_("Fields"));
@@ -1231,7 +1231,7 @@ bool AppController::init()
     
     
     // create the marks panel
-    state = cfw::sitetypeDockable | cfw::dockRight | cfw::siteHidden;
+    state = sitetypeDockable | dockRight | siteHidden;
     MarkMgrPanel* markmgr_panel = new MarkMgrPanel;
     m_markmanagerpanel_site = m_frame->createSite(markmgr_panel, state, 0, 0, 200, 400);
     m_markmanagerpanel_site->setCaption(_("Marks"));
@@ -1310,7 +1310,7 @@ bool AppController::init()
     FindPanel* find_panel = new FindPanel;
     
     site = m_frame->createSite(find_panel,
-                               cfw::sitetypeModeless | cfw::siteHidden,
+                               sitetypeModeless | siteHidden,
                                -1, -1, 340, 190);
     site->setMinSize(340,190);
     site->setName(wxT("FindPanel"));
@@ -1458,7 +1458,7 @@ void AppController::doPreferenceRefresh()
 {
     // toolbar and button prefs
     
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
 
     long toolbar_prefs_setting, toolbar_style_flags;
     toolbar_prefs_setting = getAppPrefsLong(wxT("general.toolbar.style"));
@@ -1592,12 +1592,12 @@ void AppController::doPreferenceRefresh()
         webprefs.SetIntPref(wxT("privacy.popups.policy"), 1 /* accept popups */);
 }
 
-cfw::IDocumentSitePtr AppController::getColumnListPanelSite()
+IDocumentSitePtr AppController::getColumnListPanelSite()
 {
     return m_columnlistpanel_site;
 }
 
-cfw::IDocumentSitePtr AppController::getMarkManagerPanelSite()
+IDocumentSitePtr AppController::getMarkManagerPanelSite()
 {
     return m_markmanagerpanel_site;
 }
@@ -1619,7 +1619,7 @@ FormatToolbar* AppController::getFormatToolbar()
 
 void AppController::onNew(wxCommandEvent& evt)
 {
-    cfw::IFramePtr main_frame = g_app->getMainFrame();
+    IFramePtr main_frame = g_app->getMainFrame();
     wxFrame* main_window = g_app->getMainWindow();
 
     m_linkbar->SetToolSticky(evt.GetId(), true);
@@ -1651,7 +1651,7 @@ void AppController::onNew(wxCommandEvent& evt)
     wxPoint pt = m_linkbar->ClientToScreen(rect.GetBottomLeft());
     pt = main_window->ScreenToClient(pt);
     
-    cfw::CommandCapture* cc = new cfw::CommandCapture;
+    CommandCapture* cc = new CommandCapture;
     main_window->PushEventHandler(cc);
     main_window->PopupMenu(&menuPopup, pt);
     int command = cc->getLastCommandId();
@@ -1668,7 +1668,7 @@ void AppController::onNew(wxCommandEvent& evt)
 void AppController::onNewTab(wxCommandEvent& evt)
 {
     // create the new tab
-    int state = cfw::sitetypeNormal;
+    int state = sitetypeNormal;
     WebDoc* doc = new WebDoc;
     m_frame->createSite(doc, state, -1, -1, -1, -1);
     doc->openURI(wxT(""));
@@ -1684,7 +1684,7 @@ void AppController::onNewTable(wxCommandEvent& evt)
 
 
 
-static bool setReportCreateInfo(cfw::IDocumentSitePtr doc_site,
+static bool setReportCreateInfo(IDocumentSitePtr doc_site,
                                 ReportCreateInfo& data)
 {
     if (doc_site.isNull())
@@ -1741,7 +1741,7 @@ static bool setReportCreateInfo(cfw::IDocumentSitePtr doc_site,
             // set the field info
             ReportCreateField field;
             field.field_name = model->getColumnInfo(model_idx)->getName();
-            field.caption = cfw::makeProperIfNecessary(field.field_name);
+            field.caption = makeProperIfNecessary(field.field_name);
             field.alignment = alignment;
             field.column_width = grid->getColumnSize(i)*(kcanvas::CANVAS_MODEL_DPI/kcanvas::CANVAS_SCREEN_DPI);
             data.content_fields.push_back(field);
@@ -1844,7 +1844,7 @@ void AppController::onStopRecord(wxCommandEvent& evt)
     if (!newScript(&site_id))
         return;
         
-    cfw::IDocumentSitePtr site = g_app->getMainFrame()->lookupSiteById(site_id);
+    IDocumentSitePtr site = g_app->getMainFrame()->lookupSiteById(site_id);
     IEditorDocPtr doc = site->getDocument();
     if (doc.isNull())
         return;
@@ -1859,18 +1859,18 @@ void AppController::onCreateBookmark(wxCommandEvent& evt)
 {
     if (g_app->getDatabase().isNull())
     {
-        cfw::appMessageBox(_("A project must be open in order to create a bookmark."),
+        appMessageBox(_("A project must be open in order to create a bookmark."),
                    APPLICATION_NAME,
                    wxOK | wxICON_EXCLAMATION | wxCENTER);
         return;
     }
     
     // make sure we have an open document
-    cfw::IDocumentSitePtr site = m_frame->getActiveChild();
+    IDocumentSitePtr site = m_frame->getActiveChild();
     if (site.isNull())
         return;
     
-    cfw::IDocumentPtr doc = site->getDocument();
+    IDocumentPtr doc = site->getDocument();
     if (doc.isNull())
         return;
     
@@ -2112,7 +2112,7 @@ void AppController::onOpenFile(wxCommandEvent& evt)
         // if all of the extensions are not the same, bail out
         if (ext.CmpNoCase(first_ext))
         {
-            cfw::appMessageBox(_("More than one file type was selected.  Please select only one file type to continue."),
+            appMessageBox(_("More than one file type was selected.  Please select only one file type to continue."),
                                APPLICATION_NAME,
                                wxOK | wxICON_INFORMATION | wxCENTER);
             return;
@@ -2156,7 +2156,7 @@ void AppController::onOpenFile(wxCommandEvent& evt)
         wxString appname = APPLICATION_NAME;
         wxString msg = wxString::Format(_("One or more of the selected files could not be opened because it is not supported by %s."),
                                         appname.c_str());
-        cfw::appMessageBox(msg,
+        appMessageBox(msg,
                            APPLICATION_NAME,
                            wxOK | wxICON_INFORMATION | wxCENTER);
         return;
@@ -2165,7 +2165,7 @@ void AppController::onOpenFile(wxCommandEvent& evt)
     // let the user know if some of the files couldn't be opened
     if (error_occurred)
     {
-        cfw::appMessageBox(_("One or more of the selected files could not be opened either because they are already in use or no longer exist."),
+        appMessageBox(_("One or more of the selected files could not be opened either because they are already in use or no longer exist."),
                            APPLICATION_NAME,
                            wxOK | wxICON_INFORMATION | wxCENTER);
     }
@@ -2215,14 +2215,14 @@ void AppController::onCloseProject(wxCommandEvent& evt)
     if (!checkForRunningJobs())
         return;
 
-    cfw::IDocumentSiteEnumPtr docsites;
-    cfw::IDocumentSitePtr site;
+    IDocumentSiteEnumPtr docsites;
+    IDocumentSitePtr site;
     ITableDocPtr table_doc;
 
-    docsites = g_app->getMainFrame()->getDocumentSites(cfw::sitetypeModeless);
+    docsites = g_app->getMainFrame()->getDocumentSites(sitetypeModeless);
     if (docsites->size() > 0)
     {
-        cfw::appMessageBox(_("Please close all panels before closing the project."),
+        appMessageBox(_("Please close all panels before closing the project."),
                            APPLICATION_NAME,
                            wxICON_INFORMATION | wxCENTER | wxOK);
         return;
@@ -2255,7 +2255,7 @@ void AppController::onCloseAllChildren(wxCommandEvent& evt)
 
 void AppController::onCloseChild(wxCommandEvent& evt)
 {
-    cfw::IDocumentSitePtr site = m_frame->getActiveChild();
+    IDocumentSitePtr site = m_frame->getActiveChild();
     if (site)
     {
         g_app->getMainFrame()->closeSite(site);
@@ -2264,15 +2264,15 @@ void AppController::onCloseChild(wxCommandEvent& evt)
 
 void AppController::onStop(wxCommandEvent& evt)
 {
-    cfw::IJobQueuePtr job_queue = g_app->getJobQueue();
+    IJobQueuePtr job_queue = g_app->getJobQueue();
     if (job_queue.isNull())
         return;
     
     if (!job_queue->getJobsActive())
         return;
     
-    cfw::IJobInfoEnumPtr jobs;
-    jobs = job_queue->getJobInfoEnum(cfw::jobStateRunning);
+    IJobInfoEnumPtr jobs;
+    jobs = job_queue->getJobInfoEnum(jobStateRunning);
     if (jobs.isNull())
         return;
     
@@ -2282,11 +2282,11 @@ void AppController::onStop(wxCommandEvent& evt)
         return;
     }
     
-    cfw::IJobInfoPtr job_info = jobs->getItem(0);
+    IJobInfoPtr job_info = jobs->getItem(0);
     if (job_info.isNull())
         return;
     
-    cfw::IJobPtr job = job_queue->lookupJob(job_info->getJobId());
+    IJobPtr job = job_queue->lookupJob(job_info->getJobId());
     if (job.isOk())
         job->cancel();
 }
@@ -2330,7 +2330,7 @@ public:
         while (1)
         {
             {
-                //cfw::IJobInfoPtr ptr;
+                //IJobInfoPtr ptr;
                 
                 //ptr.create_instance("cfw.JobInfo");
                 
@@ -2359,7 +2359,7 @@ void AppController::onToggleFullScreen(wxCommandEvent& evt)
     if (!message_shown)
     {
         message_shown = true;
-        cfw::appMessageBox(_("To exit full screen mode, press F11."),
+        appMessageBox(_("To exit full screen mode, press F11."),
               APPLICATION_NAME,
               wxOK | wxICON_INFORMATION);
     }
@@ -2439,9 +2439,9 @@ void AppController::onShowConsolePanel(wxCommandEvent& evt)
 
 void AppController::onViewChanged(wxCommandEvent& evt)
 {
-    cfw::Event *e1, *e2;
+    FrameworkEvent *e1, *e2;
 
-    cfw::IFramePtr main_frame = g_app->getMainFrame();
+    IFramePtr main_frame = g_app->getMainFrame();
     wxFrame* main_window = g_app->getMainWindow();
     
     bool is_allowed = true;
@@ -2450,7 +2450,7 @@ void AppController::onViewChanged(wxCommandEvent& evt)
     int command = evt.GetId();
     if (command != 0)
     {
-        e1 = new cfw::Event(wxT("appmain.view_switcher.active_view_changing"));
+        e1 = new FrameworkEvent(wxT("appmain.view_switcher.active_view_changing"));
         e1->l_param = (unsigned long)command;
         e1->l_param2 = (unsigned long)(&is_allowed);
         main_frame->sendEvent(e1);
@@ -2463,7 +2463,7 @@ void AppController::onViewChanged(wxCommandEvent& evt)
     // switch to the view that was selected
     if (command != 0)
     {    
-        e2 = new cfw::Event(wxT("appmain.view_switcher.active_view_changed"));
+        e2 = new FrameworkEvent(wxT("appmain.view_switcher.active_view_changed"));
         e2->l_param = (unsigned long)command;
         main_frame->sendEvent(e2);
     }
@@ -2472,14 +2472,14 @@ void AppController::onViewChanged(wxCommandEvent& evt)
 
 void AppController::doViewSwitcher(bool drop_down_menu)
 {
-    cfw::Event *e1, *e2, *e3;
+    FrameworkEvent *e1, *e2, *e3;
     
-    cfw::IFramePtr main_frame = g_app->getMainFrame();
+    IFramePtr main_frame = g_app->getMainFrame();
     wxFrame* main_window = g_app->getMainWindow();
 
     // get the list of available views from the active document
     ViewSwitcherList* list = new ViewSwitcherList;
-    e1 = new cfw::Event(wxT("appmain.view_switcher.query_available_views"));
+    e1 = new FrameworkEvent(wxT("appmain.view_switcher.query_available_views"));
     e1->o_param = (wxObject*)list;
     main_frame->sendEvent(e1);
     
@@ -2537,7 +2537,7 @@ void AppController::doViewSwitcher(bool drop_down_menu)
         wxRect rect = m_project_toolbar->GetToolRect(ID_View_ViewSwitcher);
         wxPoint pt(rect.GetRight()+1, rect.GetBottom());
 
-        cfw::CommandCapture* cc = new cfw::CommandCapture;
+        CommandCapture* cc = new CommandCapture;
         main_window->PushEventHandler(cc);
         main_window->PopupMenu(&menuPopup, pt);
         command = cc->getLastCommandId();
@@ -2558,7 +2558,7 @@ void AppController::doViewSwitcher(bool drop_down_menu)
     // switch to the view that was selected
     if (command != 0)
     {
-        e2 = new cfw::Event(wxT("appmain.view_switcher.active_view_changing"));
+        e2 = new FrameworkEvent(wxT("appmain.view_switcher.active_view_changing"));
         e2->l_param = (unsigned long)command;
         e2->l_param2 = (unsigned long)(&is_allowed);
         main_frame->sendEvent(e2);
@@ -2571,7 +2571,7 @@ void AppController::doViewSwitcher(bool drop_down_menu)
     // switch to the view that was selected
     if (command != 0)
     {
-        e3 = new cfw::Event(wxT("appmain.view_switcher.active_view_changed"));
+        e3 = new FrameworkEvent(wxT("appmain.view_switcher.active_view_changed"));
         e3->l_param = (unsigned long)command;
         main_frame->sendEvent(e3);
     }
@@ -2843,7 +2843,7 @@ void AppController::onRelationshipSyncDropDown(wxAuiToolBarEvent& evt)
     pt = m_linkbar->ClientToScreen(pt);
     pt = main_window->ScreenToClient(pt);
 
-    cfw::CommandCapture* cc = new cfw::CommandCapture;
+    CommandCapture* cc = new CommandCapture;
     main_window->PushEventHandler(cc);
     main_window->PopupMenu(&menuPopup, pt);
     command = cc->getLastCommandId();
@@ -2870,7 +2870,7 @@ void AppController::onRelationshipSyncDropDown(wxAuiToolBarEvent& evt)
     if (m_relationship_sync == tabledocRelationshipSyncSeek)
         synctype = wxT("seek");
 
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
     prefs->setString(wxT("general.relationship.synctype"), synctype);
 }
 
@@ -2895,15 +2895,15 @@ void AppController::onFindPrev(wxCommandEvent& evt)
         return;
     
     // fire an event to add this string to the find combobox dropdowns
-    cfw::Event* cfw_evt = new cfw::Event(wxT("appmain.addFindComboItem"));
+    FrameworkEvent* cfw_evt = new FrameworkEvent(wxT("appmain.addFindComboItem"));
     cfw_evt->s_param = find_str;
     g_app->getMainFrame()->postEvent(cfw_evt);
 
-    cfw::IDocumentSitePtr doc_site = g_app->getMainFrame()->getActiveChild();
+    IDocumentSitePtr doc_site = g_app->getMainFrame()->getActiveChild();
     if (doc_site.isNull())
         return;
     
-    cfw::IDocumentPtr doc = doc_site->getDocument();
+    IDocumentPtr doc = doc_site->getDocument();
     if (doc.isNull())
         return;
     
@@ -2928,15 +2928,15 @@ void AppController::onFindNext(wxCommandEvent& evt)
         return;
     
     // fire an event to add this string to the find combobox dropdowns
-    cfw::Event* cfw_evt = new cfw::Event(wxT("appmain.addFindComboItem"));
+    FrameworkEvent* cfw_evt = new FrameworkEvent(wxT("appmain.addFindComboItem"));
     cfw_evt->s_param = find_str;
     g_app->getMainFrame()->postEvent(cfw_evt);
 
-    cfw::IDocumentSitePtr doc_site = g_app->getMainFrame()->getActiveChild();
+    IDocumentSitePtr doc_site = g_app->getMainFrame()->getActiveChild();
     if (doc_site.isNull())
         return;
     
-    cfw::IDocumentPtr doc = doc_site->getDocument();
+    IDocumentPtr doc = doc_site->getDocument();
     if (doc.isNull())
         return;
     
@@ -2956,12 +2956,12 @@ void AppController::onFindNext(wxCommandEvent& evt)
 
 void AppController::onMergeTable(wxCommandEvent& evt)
 {   
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("MergePanel"));
     if (site.isNull())
     {
         MergePanel* panel = new MergePanel;
-        site = g_app->getMainFrame()->createSite(panel, cfw::sitetypeModeless, -1, -1, 460, 420);
+        site = g_app->getMainFrame()->createSite(panel, sitetypeModeless, -1, -1, 460, 420);
         site->setMinSize(460,420);
         site->setName(wxT("MergePanel"));
     }
@@ -2980,11 +2980,11 @@ void AppController::onRelationshipManager(wxCommandEvent& evt)
 void AppController::updateTableDocRelationshipSync(int tabledoc_sync_state)
 {
     // iterate through document sites, and update tabledocs
-    cfw::IDocumentSiteEnumPtr docsites;
-    cfw::IDocumentSitePtr site;
+    IDocumentSiteEnumPtr docsites;
+    IDocumentSitePtr site;
     ITableDocPtr table_doc;
 
-    docsites = g_app->getMainFrame()->getDocumentSites(cfw::sitetypeNormal);
+    docsites = g_app->getMainFrame()->getDocumentSites(sitetypeNormal);
 
     size_t i, site_count = docsites->size();
     for (i = 0; i < site_count; ++i)
@@ -3019,12 +3019,12 @@ void AppController::onSetRelationshipSync(wxCommandEvent& evt)
 
 void AppController::onSplitTable(wxCommandEvent& evt)
 {
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("DividePanel"));
     if (site.isNull())
     {
         SplitPanel* panel = new SplitPanel;
-        site = g_app->getMainFrame()->createSite(panel, cfw::sitetypeModeless, -1, -1, 420, 360);
+        site = g_app->getMainFrame()->createSite(panel, sitetypeModeless, -1, -1, 420, 360);
         site->setMinSize(420,360);
         site->setName(wxT("DividePanel"));
     }
@@ -3037,12 +3037,12 @@ void AppController::onSplitTable(wxCommandEvent& evt)
 
 void AppController::onRemoveDupRecs(wxCommandEvent& evt)
 {
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("RemoveDuplicateRecordsWizard"));
     if (site.isNull())
     {
         RemoveDupRecWizard* wizard = new RemoveDupRecWizard;
-        site = g_app->getMainFrame()->createSite(wizard, cfw::sitetypeModeless, -1, -1, 540, 440);
+        site = g_app->getMainFrame()->createSite(wizard, sitetypeModeless, -1, -1, 540, 440);
         site->setMinSize(540,440);
         site->setName(wxT("RemoveDuplicateRecordsWizard"));
     }
@@ -3092,11 +3092,11 @@ void AppController::onCurrentChild(wxCommandEvent& evt)
     // when entering commands in the console and it's necessary
     // to get back to the main document quickly using a hotkey
 
-    cfw::IDocumentSitePtr active_child_site = g_app->getMainFrame()->getActiveChild();
+    IDocumentSitePtr active_child_site = g_app->getMainFrame()->getActiveChild();
 
     if (active_child_site.isOk())
     {
-        cfw::IDocumentPtr active_child_doc = active_child_site->getDocument();
+        IDocumentPtr active_child_doc = active_child_site->getDocument();
         if (active_child_doc.isOk())
             active_child_doc->setDocumentFocus();
     }
@@ -3174,7 +3174,7 @@ void AppController::onUpdateUI_ToggleStatusBar(wxUpdateUIEvent& evt)
     if (m_frame.isNull())
         return;
     
-    cfw::IStatusBarPtr statusbar = m_frame->getStatusBar();
+    IStatusBarPtr statusbar = m_frame->getStatusBar();
     if (statusbar.isOk())
     {
         wxAuiToolBar* wnd = statusbar->getStatusBarCtrl();
@@ -3195,7 +3195,7 @@ void AppController::onUpdateUI_ToggleProjectPanel(wxUpdateUIEvent& evt)
     
     bool check = false;
     
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = m_dbdoc->getDbDocSite();
     if (site.isOk())
         check = (site->getVisible() ? true : false);
@@ -3210,7 +3210,7 @@ void AppController::onUpdateUI_ToggleConsolePanel(wxUpdateUIEvent& evt)
     
     bool check = false;
     
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("ConsolePanel"));
     if (site.isOk())
         check = (site->getVisible() ? true : false);
@@ -3225,7 +3225,7 @@ void AppController::onUpdateUI_ToggleColumnListPanel(wxUpdateUIEvent& evt)
     
     bool check = false;
     
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("FieldsPanel"));
     if (site.isOk())
         check = (site->getVisible() ? true : false);
@@ -3240,7 +3240,7 @@ void AppController::onUpdateUI_ToggleMarkManagerPanel(wxUpdateUIEvent& evt)
     
     bool check = false;
     
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("MarksPanel"));
     if (site.isOk())
         check = (site->getVisible() ? true : false);
@@ -3255,7 +3255,7 @@ void AppController::onUpdateUI_ToggleRelationshipPanel(wxUpdateUIEvent& evt)
     
     bool check = false;
     
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("RelationshipsPanel"));
     if (site.isOk())
         check = (site->getVisible() ? true : false);
@@ -3292,11 +3292,11 @@ void AppController::onUpdateUI_ViewSource(wxUpdateUIEvent& evt)
     if (!m_frame)
         return;
         
-    cfw::IDocumentSitePtr doc_site = m_frame->getActiveChild();
+    IDocumentSitePtr doc_site = m_frame->getActiveChild();
     if (!doc_site)
         return;
         
-    cfw::IDocumentPtr doc = doc_site->getDocument();
+    IDocumentPtr doc = doc_site->getDocument();
     IWebDocPtr webdoc = doc;
     ITextDocPtr textdoc = doc;
     ISqlDocPtr sqldoc = doc;
@@ -3316,11 +3316,11 @@ void AppController::onUpdateUI_ViewDesign(wxUpdateUIEvent& evt)
     if (!m_frame)
         return;
         
-    cfw::IDocumentSitePtr doc_site = m_frame->getActiveChild();
+    IDocumentSitePtr doc_site = m_frame->getActiveChild();
     if (!doc_site)
         return;
         
-    cfw::IDocumentPtr doc = doc_site->getDocument();
+    IDocumentPtr doc = doc_site->getDocument();
     IReportDocPtr reportdoc = doc;
     ITransformationDocPtr transdoc = doc;
     IStructureDocPtr structdoc = doc;
@@ -3339,11 +3339,11 @@ void AppController::onUpdateUI_ViewLayout(wxUpdateUIEvent& evt)
     if (!m_frame)
         return;
         
-    cfw::IDocumentSitePtr doc_site = m_frame->getActiveChild();
+    IDocumentSitePtr doc_site = m_frame->getActiveChild();
     if (!doc_site)
         return;
         
-    cfw::IDocumentPtr doc = doc_site->getDocument();
+    IDocumentPtr doc = doc_site->getDocument();
     IWebDocPtr webdoc = doc;
     IReportDocPtr reportdoc = doc;
     ITableDocPtr tabledoc = doc;
@@ -3369,7 +3369,7 @@ void AppController::onUpdateUI_StopRecord(wxUpdateUIEvent& evt)
     evt.Enable(g_app->isDatabaseOpen() && g_macro.isRecording() ? true : false);
 }
 
-void AppController::onStatusBarItemLeftClick(cfw::IStatusBarItemPtr item)
+void AppController::onStatusBarItemLeftClick(IStatusBarItemPtr item)
 {
     wxString name = item->getName();
     
@@ -3385,7 +3385,7 @@ void AppController::onStatusBarItemLeftClick(cfw::IStatusBarItemPtr item)
         showJobManager();
 }
 
-void AppController::onStatusBarItemLeftDblClick(cfw::IStatusBarItemPtr item)
+void AppController::onStatusBarItemLeftDblClick(IStatusBarItemPtr item)
 {
     wxString name = item->getName();
     
@@ -3441,7 +3441,7 @@ void AppController::onStatusBarRefresh()
     }
 }
 
-void AppController::onFrameEvent(cfw::Event& evt)
+void AppController::onFrameEvent(FrameworkEvent& evt)
 {
     if (evt.name == wxT("appmain.addFindComboItem"))
     {
@@ -3535,7 +3535,7 @@ void AppController::onFrameClose(wxCloseEvent& evt)
                 wxString appname = APPLICATION_NAME;
                 wxString message = wxString::Format(_("There are currently jobs scheduled to run.  If you choose to exit %s, these jobs will not run as scheduled.  Are you sure you want to exit %s?"), appname.c_str(), appname.c_str());
                 
-                if (wxYES == cfw::appMessageBox(message,
+                if (wxYES == appMessageBox(message,
                                                 APPLICATION_NAME,
                                                 wxYES_NO))
                 {
@@ -3577,7 +3577,7 @@ void AppController::onFrameSize(wxSizeEvent& evt)
     wxFrame* frame_wnd = g_app->getMainWindow();
     bool maximized = frame_wnd->IsMaximized();
     
-    cfw::IStatusBarPtr statusbar = g_app->getMainFrame()->getStatusBar();
+    IStatusBarPtr statusbar = g_app->getMainFrame()->getStatusBar();
     if (statusbar.isNull())
         return;
     
@@ -3689,14 +3689,14 @@ void AppController::updateTitle()
     wxString title;
     
     // update the frame's titlebar
-    cfw::IDocumentSitePtr doc_site = g_app->getMainFrame()->getActiveChild();
+    IDocumentSitePtr doc_site = g_app->getMainFrame()->getActiveChild();
     if (doc_site.isNull())
     {
         title = m_frame_caption;
     }
      else
     {
-        cfw::IDocumentPtr doc = doc_site->getDocument();
+        IDocumentPtr doc = doc_site->getDocument();
         IWebDocPtr webdoc = doc;
         if (webdoc.isOk())
         {
@@ -3729,12 +3729,12 @@ void AppController::updateURLToolbar()
     wxBitmap bitmap;
     
     // get the name of the child
-    cfw::IDocumentSitePtr doc_site = m_frame->getActiveChild();
+    IDocumentSitePtr doc_site = m_frame->getActiveChild();
     if (doc_site.isOk())
     {
         bitmap = doc_site->getBitmap();
         
-        cfw::IDocumentPtr doc = doc_site->getDocument();
+        IDocumentPtr doc = doc_site->getDocument();
         if (doc.isOk())
             name = doc->getDocumentLocation();
         
@@ -3768,7 +3768,7 @@ void AppController::updateQuickFilterToolBarItem()
     }
     
     // get the name of the child
-    cfw::IDocumentSitePtr doc_site = m_frame->getActiveChild();
+    IDocumentSitePtr doc_site = m_frame->getActiveChild();
     if (doc_site.isNull())
     {
         m_project_toolbar->ToggleTool(ID_Data_QuickFilter, false);
@@ -3776,7 +3776,7 @@ void AppController::updateQuickFilterToolBarItem()
         return;
     }
     
-    cfw::IDocumentPtr doc = doc_site->getDocument();
+    IDocumentPtr doc = doc_site->getDocument();
     if (doc.isNull())
     {
         m_project_toolbar->ToggleTool(ID_Data_QuickFilter, false);
@@ -3806,7 +3806,7 @@ void AppController::updateQuickFilterToolBarItem()
     m_project_toolbar->Refresh();
 }
 
-void AppController::updateViewMenu(cfw::IDocumentSitePtr doc_site)
+void AppController::updateViewMenu(IDocumentSitePtr doc_site)
 {
     if (!m_view_menu)
         return;
@@ -3894,7 +3894,7 @@ void AppController::updateViewMenu(cfw::IDocumentSitePtr doc_site)
     }
 }
 
-void AppController::onActiveChildChanged(cfw::IDocumentSitePtr doc_site)
+void AppController::onActiveChildChanged(IDocumentSitePtr doc_site)
 {
     updateTitle();
     updateURLToolbar();
@@ -3903,7 +3903,7 @@ void AppController::onActiveChildChanged(cfw::IDocumentSitePtr doc_site)
 }
 
 
-void AppController::onFrameChildContextMenu(cfw::IDocumentSitePtr doc_site)
+void AppController::onFrameChildContextMenu(IDocumentSitePtr doc_site)
 {
     if (doc_site.isNull())
         return;
@@ -3932,13 +3932,13 @@ void AppController::onFrameChildContextMenu(cfw::IDocumentSitePtr doc_site)
     
     wxPoint pt_mouse = ::wxGetMousePosition();
     pt_mouse = main_window->ScreenToClient(pt_mouse);
-    cfw::CommandCapture* cc = new cfw::CommandCapture;
+    CommandCapture* cc = new CommandCapture;
     main_window->PushEventHandler(cc);
     main_window->PopupMenu(&menuPopup, pt_mouse);
     command = cc->getLastCommandId();
     main_window->PopEventHandler(true);
 
-    cfw::IFramePtr frame = g_app->getMainFrame();
+    IFramePtr frame = g_app->getMainFrame();
     
     switch (command)
     {
@@ -3952,7 +3952,7 @@ void AppController::onFrameChildContextMenu(cfw::IDocumentSitePtr doc_site)
         case (8001):
             {
                 // duplicate the tab
-                cfw::IDocumentPtr doc = doc_site->getDocument();
+                IDocumentPtr doc = doc_site->getDocument();
 
                 IWebDocPtr web_doc = doc;
                 if (web_doc.isOk())
@@ -3977,8 +3977,8 @@ void AppController::onFrameChildContextMenu(cfw::IDocumentSitePtr doc_site)
         case (8003):
             {
                 // refresh all tabs
-                cfw::IDocumentSitePtr site;
-                cfw::IDocumentSiteEnumPtr sites = frame->getDocumentSites(cfw::sitetypeNormal);
+                IDocumentSitePtr site;
+                IDocumentSiteEnumPtr sites = frame->getDocumentSites(sitetypeNormal);
                 size_t i, site_count = sites->size();
 
                 for (i = 0; i < site_count; ++i)
@@ -4012,8 +4012,8 @@ void AppController::onFrameChildContextMenu(cfw::IDocumentSitePtr doc_site)
         case (8006):
             {
                 // close the other tabs
-                cfw::IDocumentSitePtr site;
-                cfw::IDocumentSiteEnumPtr sites = frame->getDocumentSites(cfw::sitetypeNormal);
+                IDocumentSitePtr site;
+                IDocumentSiteEnumPtr sites = frame->getDocumentSites(sitetypeNormal);
                 size_t i, site_count = sites->size();
 
                 for (i = 0; i < site_count; ++i)
@@ -4146,7 +4146,7 @@ void AppController::onHome(wxCommandEvent& evt)
     if (home_pages.IsEmpty())
         home_pages = wxT("about:blank");
 
-    cfw::IDocumentSitePtr docsite = m_frame->getActiveChild();
+    IDocumentSitePtr docsite = m_frame->getActiveChild();
     IWebDocPtr webdoc;
     if (docsite.isOk())
         webdoc = docsite->getDocument();
@@ -4525,13 +4525,13 @@ bool AppController::openReport(const wxString& location, int* site_id)
 
     AppBusyCursor bc;
 
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     ReportDoc* doc = new ReportDoc;
-    site = m_frame->createSite(static_cast<cfw::IDocument*>(doc), cfw::sitetypeNormal, -1, -1, -1, -1);
+    site = m_frame->createSite(static_cast<IDocument*>(doc), sitetypeNormal, -1, -1, -1, -1);
 
     if (!doc->loadFile(location))
     {
-        cfw::appMessageBox(_("This report could not be opened.  It may have an invalid format or may have been created with a different version."),
+        appMessageBox(_("This report could not be opened.  It may have an invalid format or may have been created with a different version."),
                            APPLICATION_NAME,
                            wxOK | wxICON_INFORMATION | wxCENTER);
                            
@@ -4564,9 +4564,9 @@ bool AppController::openQuery(const wxString& location, int* site_id)
     if (setActiveChildByLocation(location, site_id))
         return true;
     
-    cfw::IDocumentSitePtr site;
-    site = m_frame->createSite(static_cast<cfw::IDocument*>(doc),
-                        cfw::sitetypeNormal,
+    IDocumentSitePtr site;
+    site = m_frame->createSite(static_cast<IDocument*>(doc),
+                        sitetypeNormal,
                         -1, -1, -1, -1);
     if (site.isOk())
     {
@@ -4631,10 +4631,10 @@ bool AppController::openScript(const wxString& _location, int* site_id)
     AppBusyCursor bc;
 
     EditorDoc* doc = new EditorDoc;
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     
-    site = m_frame->createSite(static_cast<cfw::IDocument*>(doc),
-                               cfw::sitetypeNormal | cfw::siteHidden,
+    site = m_frame->createSite(static_cast<IDocument*>(doc),
+                               sitetypeNormal | siteHidden,
                                -1, -1, -1, -1);
 
     if (site.isNull())
@@ -4647,7 +4647,7 @@ bool AppController::openScript(const wxString& _location, int* site_id)
             if (site_id)
                 *site_id = 0;
                 
-            m_frame->closeSite(site, cfw::closeForce);
+            m_frame->closeSite(site, closeForce);
             return false;
         }
     }
@@ -4713,9 +4713,9 @@ bool AppController::openSet(const wxString& _location, int* site_id)
             if (doc->getCaption().Length() == 0)
                 doc->setCaption(location, wxEmptyString);
             
-            unsigned int site_type = cfw::sitetypeNormal;
+            unsigned int site_type = sitetypeNormal;
 
-            cfw::IDocumentSitePtr doc_site;
+            IDocumentSitePtr doc_site;
             doc_site = g_app->getMainFrame()->createSite(doc, site_type, -1, -1, -1, -1);
             
             if (site_id)
@@ -4813,7 +4813,7 @@ bool AppController::openDataLink(const wxString& location, int* site_id)
     tango::IFileInfoPtr finfo = db->getFileInfo(path);
     if (finfo.isNull())
     {
-        cfw::appMessageBox(wxT("A valid data view or link was not found at the specified location."), wxT("Error"));
+        appMessageBox(wxT("A valid data view or link was not found at the specified location."), wxT("Error"));
         return false;
     }
     
@@ -4843,7 +4843,7 @@ bool AppController::openDataLink(const wxString& location, int* site_id)
             tango::ISetPtr set = db->openSet(mount_root + L"/" + path);
             if (set.isNull())
             {
-                cfw::appMessageBox(wxT("The data file referenced by the data view cannot be opened."), wxT("Error"));
+                appMessageBox(wxT("The data file referenced by the data view cannot be opened."), wxT("Error"));
                 return false;
             }
 
@@ -4854,7 +4854,7 @@ bool AppController::openDataLink(const wxString& location, int* site_id)
 
             query_job->sigJobFinished().connect(this, &AppController::onOpenDataViewFinished);
 
-            g_app->getJobQueue()->addJob(query_job, cfw::jobStateRunning);
+            g_app->getJobQueue()->addJob(query_job, jobStateRunning);
 
             if (site_id)
                 *site_id = 0;
@@ -4869,7 +4869,7 @@ bool AppController::openDataLink(const wxString& location, int* site_id)
 }
 
 
-void AppController::onOpenDataViewFinished(cfw::IJobPtr query_job)
+void AppController::onOpenDataViewFinished(IJobPtr query_job)
 {
     ISortFilterJobPtr job = query_job;
 
@@ -4885,9 +4885,9 @@ void AppController::onOpenDataViewFinished(cfw::IJobPtr query_job)
             return;
         }
 
-        unsigned int site_type = cfw::sitetypeNormal;
+        unsigned int site_type = sitetypeNormal;
 
-        cfw::IDocumentSitePtr doc_site;
+        IDocumentSitePtr doc_site;
         doc_site = g_app->getMainFrame()->createSite(doc, site_type, -1, -1, -1, -1);
     }
 }
@@ -5086,7 +5086,7 @@ bool AppController::openWeb(const wxString& _location,
     
     if (!(open_mask & appOpenForceNewWindow))
     {
-        cfw::IDocumentSitePtr active_site = m_frame->getActiveChild();
+        IDocumentSitePtr active_site = m_frame->getActiveChild();
         if (active_site)
         {
             doc = active_site->getDocument();
@@ -5098,11 +5098,11 @@ bool AppController::openWeb(const wxString& _location,
     // if we don't have a webdoc, create one     
     if (doc.isNull())
     {    
-        int state = cfw::sitetypeNormal;
+        int state = sitetypeNormal;
         if (!(open_mask & appOpenActivateNewWindow))
-            state |= cfw::siteNoInitialActivate;
+            state |= siteNoInitialActivate;
         doc = static_cast<IWebDoc*>(new WebDoc);
-        cfw::IDocumentSitePtr site;
+        IDocumentSitePtr site;
         site = m_frame->createSite(doc, state, -1, -1, -1, -1);
         if (site.isOk() && site_id)
             *site_id = site->getId();
@@ -5174,9 +5174,9 @@ static wxString getTempTablename(const wxString& filename, const wxString& table
     return retval;
 }
 
-static void onOpenExcelJobFinished(cfw::IJobPtr job)
+static void onOpenExcelJobFinished(IJobPtr job)
 {
-    if (job->getJobInfo()->getState() != cfw::jobStateFinished)
+    if (job->getJobInfo()->getState() != jobStateFinished)
         return;
 
     IImportJobPtr import_job = job;
@@ -5199,8 +5199,8 @@ static void onOpenExcelJobFinished(cfw::IJobPtr job)
     }
     
     // activate the tab which contains the first table in the file
-    cfw::IFramePtr frame = g_app->getMainFrame();
-    cfw::IDocumentSitePtr first_site = frame->lookupSiteById(first_site_id);
+    IFramePtr frame = g_app->getMainFrame();
+    IDocumentSitePtr first_site = frame->lookupSiteById(first_site_id);
     if (first_site.isOk())
         frame->setActiveChild(first_site);
         
@@ -5316,7 +5316,7 @@ bool AppController::openExcel(const wxString& location, int* site_id)
     if (!conn->open())
     {
         wxString error_message = _("There was an error opening the specified Microsoft Excel file.  Make sure the file is not open by another application.");
-        cfw::appMessageBox(error_message,
+        appMessageBox(error_message,
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
 
@@ -5368,7 +5368,7 @@ bool AppController::openExcel(const wxString& location, int* site_id)
         int i, count = selections.Count();
         if (count == 0)
         {
-            cfw::appMessageBox(_("No tables were opened from the Microsoft Excel file because no tables in the list were selected."),
+            appMessageBox(_("No tables were opened from the Microsoft Excel file because no tables in the list were selected."),
                                APPLICATION_NAME,
                                wxOK | wxICON_INFORMATION | wxCENTER);
 
@@ -5391,7 +5391,7 @@ bool AppController::openExcel(const wxString& location, int* site_id)
 
         job->getJobInfo()->setTitle(towstr(job_title));
         job->sigJobFinished().connect(&onOpenExcelJobFinished);
-        g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+        g_app->getJobQueue()->addJob(job, jobStateRunning);
     }
 
     return true;
@@ -5416,7 +5416,7 @@ bool AppController::openAccess(const wxString& location)
         if (!conn->open())
         {
             wxString error_message = _("There was an error opening the specified Microsoft Access file.  Make sure the file is not open by another application.");
-            cfw::appMessageBox(error_message,
+            appMessageBox(error_message,
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
 
@@ -5439,8 +5439,8 @@ bool AppController::openAccess(const wxString& location)
     import_template.m_ii.path = fn;
     wizard->sigImportWizardFinished.connect(&onImportWizardFinished);
 
-    cfw::IDocumentSitePtr site;
-    site = g_app->getMainFrame()->createSite(wizard, cfw::sitetypeModeless,
+    IDocumentSitePtr site;
+    site = g_app->getMainFrame()->createSite(wizard, sitetypeModeless,
                                              -1, -1, 540, 480);
     site->setMinSize(540, 480);
     return true;
@@ -5462,7 +5462,7 @@ bool AppController::openPackage(const wxString& location)
         if (!pkgfile.open(towstr(fn), PkgFile::modeRead))
         {
             wxString error_message = _("There was an error opening the specified package file.  Make sure the file is not open by another application.");
-            cfw::appMessageBox(error_message,
+            appMessageBox(error_message,
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
 
@@ -5485,8 +5485,8 @@ bool AppController::openPackage(const wxString& location)
     import_template.m_ii.path = fn;
     wizard->sigImportWizardFinished.connect(&onImportWizardFinished);
 
-    cfw::IDocumentSitePtr site;
-    site = g_app->getMainFrame()->createSite(wizard, cfw::sitetypeModeless,
+    IDocumentSitePtr site;
+    site = g_app->getMainFrame()->createSite(wizard, sitetypeModeless,
                                              -1, -1, 540, 480);
     site->setMinSize(540, 480);
     return true;
@@ -5494,14 +5494,14 @@ bool AppController::openPackage(const wxString& location)
 
 bool AppController::setActiveChildByLocation(const wxString& location, int* site_id)
 {
-    cfw::IDocumentSiteEnumPtr doc_sites;
-    doc_sites = g_app->getMainFrame()->getDocumentSites(cfw::sitetypeNormal);
+    IDocumentSiteEnumPtr doc_sites;
+    doc_sites = g_app->getMainFrame()->getDocumentSites(sitetypeNormal);
     
     size_t i, size = doc_sites->size();
     for (i = 0; i < size; ++i)
     {
-        cfw::IDocumentSitePtr site = doc_sites->getItem(i);
-        cfw::IDocumentPtr doc = site->getDocument();
+        IDocumentSitePtr site = doc_sites->getItem(i);
+        IDocumentPtr doc = site->getDocument();
         wxString loc = doc->getDocumentLocation();
         if (doc.isOk() && !loc.IsEmpty() && loc.CmpNoCase(location) == 0)
         {
@@ -5522,7 +5522,7 @@ bool AppController::newReport(int* site_id)
 
     // see if the currently active document has any
     // report creation info to send
-    cfw::IDocumentSitePtr doc_site = g_app->getMainFrame()->getActiveChild();
+    IDocumentSitePtr doc_site = g_app->getMainFrame()->getActiveChild();
     
     ReportCreateInfo tabledoc_data;
     if (setReportCreateInfo(doc_site, tabledoc_data))
@@ -5531,7 +5531,7 @@ bool AppController::newReport(int* site_id)
         // use the tabledoc data to create the report or
         // create a new report
 
-        int result = cfw::appMessageBox(_("Would you like to create a report from the selected columns?"),
+        int result = appMessageBox(_("Would you like to create a report from the selected columns?"),
                                         APPLICATION_NAME,
                                         wxYES_NO | wxICON_QUESTION | wxCENTER);
         if (result == wxYES)
@@ -5540,8 +5540,8 @@ bool AppController::newReport(int* site_id)
 
     // create a report
     ReportDoc* doc = new ReportDoc;
-    doc_site = g_app->getMainFrame()->createSite(static_cast<cfw::IDocument*>(doc),
-                                             cfw::sitetypeNormal, -1, -1, -1, -1);
+    doc_site = g_app->getMainFrame()->createSite(static_cast<IDocument*>(doc),
+                                             sitetypeNormal, -1, -1, -1, -1);
 
     if (doc_site.isNull() || !doc->create(data))
     {
@@ -5562,11 +5562,11 @@ bool AppController::newQuery(int* site_id)
 
 bool AppController::newTable(int* site_id)
 {
-    cfw::IDocumentSitePtr doc_site;
+    IDocumentSitePtr doc_site;
     
     StructureDoc* doc = new StructureDoc;
-    doc_site = m_frame->createSite(static_cast<cfw::IDocument*>(doc),
-                        cfw::sitetypeNormal,
+    doc_site = m_frame->createSite(static_cast<IDocument*>(doc),
+                        sitetypeNormal,
                         -1, -1, -1, -1);
     if (doc_site.isNull())
         return false;
@@ -5587,7 +5587,7 @@ bool AppController::newScript(int* site_id)
 
 
 
-cfw::IJobPtr AppController::executeScript(const wxString& _location,
+IJobPtr AppController::executeScript(const wxString& _location,
                                           ScriptHostParams* params,
                                           AppScriptError* error,
                                           bool async)
@@ -5806,14 +5806,14 @@ cfw::IJobPtr AppController::executeScript(const wxString& _location,
 
     ScriptJob* script_job = new ScriptJob;
     script_job->setScriptHost(script_host);
-    cfw::IJobPtr job = static_cast<cfw::IJob*>(script_job);
+    IJobPtr job = static_cast<IJob*>(script_job);
 
-    g_app->getScriptJobQueue()->addJob(job, cfw::jobStateRunning);
+    g_app->getScriptJobQueue()->addJob(job, jobStateRunning);
     return job;
 }
 
 
-cfw::IJobPtr AppController::executeCode(const wxString& value,
+IJobPtr AppController::executeCode(const wxString& value,
                                         ScriptHostParams* params,
                                         AppScriptError* error)
 {
@@ -5845,9 +5845,9 @@ cfw::IJobPtr AppController::executeCode(const wxString& value,
 
     ScriptJob* script_job = new ScriptJob;
     script_job->setScriptHost(script_host);
-    cfw::IJobPtr job = static_cast<cfw::IJob*>(script_job);
+    IJobPtr job = static_cast<IJob*>(script_job);
 
-    g_app->getScriptJobQueue()->addJob(job, cfw::jobStateRunning);
+    g_app->getScriptJobQueue()->addJob(job, jobStateRunning);
     return job;
 }
 
@@ -5855,7 +5855,7 @@ cfw::IJobPtr AppController::executeCode(const wxString& value,
 
 
 
-cfw::IJobPtr AppController::execute(const wxString& location)
+IJobPtr AppController::execute(const wxString& location)
 {
     tango::IDatabasePtr db = g_app->getDatabase();
     if (!db)
@@ -5878,7 +5878,7 @@ cfw::IJobPtr AppController::execute(const wxString& location)
     
     // give the application hook a chance to handle this call
     bool handled = false;
-    cfw::IJobPtr res = apphookExecute(location, file_info, nodefile, &handled);
+    IJobPtr res = apphookExecute(location, file_info, nodefile, &handled);
     if (handled)
     {
         // hook handled the call
@@ -5966,13 +5966,13 @@ bool AppController::print(const wxString& location)
 {
     AppBusyCursor bc;
 
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     ReportDoc* doc = new ReportDoc;
-    site = m_frame->createSite(static_cast<cfw::IDocument*>(doc), cfw::siteHidden, -1, -1, -1, -1);
+    site = m_frame->createSite(static_cast<IDocument*>(doc), siteHidden, -1, -1, -1, -1);
 
     if (!doc->loadFile(location))
     {
-        cfw::appMessageBox(_("This report could not be printed."),
+        appMessageBox(_("This report could not be printed."),
                            APPLICATION_NAME,
                            wxOK | wxICON_INFORMATION | wxCENTER);
                            
@@ -6061,7 +6061,7 @@ static void addDefaultItemsToProject(const wxString& project_path)
         import_job->addImportObject(*it, *it);
     
     // run the job
-    cfw::IJobPtr job = static_cast<cfw::IJob*>(import_job);
+    IJobPtr job = static_cast<IJob*>(import_job);
     if (job.isOk())
     {
         job->runJob();
@@ -6089,7 +6089,7 @@ bool AppController::createDefaultProject()
         addDefaultItemsToProject(project_path);
     
     // set a flag indicating that a default project has been created
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
     prefs->setBoolean(wxT("general.default_project_created"), created);
     
     if (created && !prefs->exists(wxT("general.startup.default_action")))
@@ -6135,7 +6135,7 @@ void AppController::createDefaultLinks()
     if (bookmarks_folder.IsEmpty() || bookmarks_folder.Last() != wxT('/'))
         bookmarks_folder += wxT("/");
     
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
     
     Bookmark::create(bookmarks_folder + wxT("Home Page"), getAppPrefsDefaultString(wxT("general.location.home")));
     Bookmark::create(bookmarks_folder + wxT("Online Help"), getAppPrefsDefaultString(wxT("general.location.help")));
@@ -6164,7 +6164,7 @@ bool AppController::createProject(const wxString& location,
 
     if (dbmgr.isNull())
     {
-        cfw::appMessageBox(_("Your system is missing a software component.  To correct this problem, please reinstall the software."),
+        appMessageBox(_("Your system is missing a software component.  To correct this problem, please reinstall the software."),
                            APPLICATION_NAME,
                            wxOK | wxICON_INFORMATION | wxCENTER);
 
@@ -6215,7 +6215,7 @@ bool AppController::openProject(const wxString& location,
     tango::IDatabaseMgrPtr dbmgr = tango::getDatabaseMgr();
     if (dbmgr.isNull())
     {
-        cfw::appMessageBox(_("Your system is missing a software component.  To correct this problem, please reinstall the software."),
+        appMessageBox(_("Your system is missing a software component.  To correct this problem, please reinstall the software."),
                            APPLICATION_NAME,
                            wxOK | wxICON_INFORMATION | wxCENTER);
 
@@ -6230,7 +6230,7 @@ bool AppController::openProject(const wxString& location,
     {
         if (!xf_get_directory_exist(towstr(location)))
         {
-            cfw::appMessageBox(_("The specified project could not be opened.  The path does not exist or is invalid."),
+            appMessageBox(_("The specified project could not be opened.  The path does not exist or is invalid."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
 
@@ -6244,7 +6244,7 @@ bool AppController::openProject(const wxString& location,
 
         if (!xf_get_directory_exist(towstr(ofs_path)))
         {
-            cfw::appMessageBox(_("The specified path does not contain a valid database project."),
+            appMessageBox(_("The specified path does not contain a valid database project."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
 
@@ -6265,7 +6265,7 @@ bool AppController::openProject(const wxString& location,
         if (!xf_get_file_exist(towstr(ver_file)))
         {
             int res;
-            res = cfw::appMessageBox(_("This project is currently stored in an older format and must be \nconverted to a newer format before it can be used by this application.\nAfter the project is converted to the newer format, it can no longer\nbe used by other applications that utilize the older format.\nWould you like to upgrade this project to the newer format?"),
+            res = appMessageBox(_("This project is currently stored in an older format and must be \nconverted to a newer format before it can be used by this application.\nAfter the project is converted to the newer format, it can no longer\nbe used by other applications that utilize the older format.\nWould you like to upgrade this project to the newer format?"),
                                      APPLICATION_NAME,
                                      wxYES_NO | wxICON_QUESTION | wxCENTER);
 
@@ -6338,7 +6338,7 @@ bool AppController::openProject(const wxString& location,
     tango::IDatabasePtr database = dbmgr->open(towstr(cstr));
     if (database.isNull())
     {
-        cfw::appMessageBox(_("The specified project could not be opened."),
+        appMessageBox(_("The specified project could not be opened."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
 
@@ -6363,7 +6363,7 @@ bool AppController::openProject(const wxString& location,
     // upgrade the database folder structure
     TableDocMgr::upgradeFrom2005_1();
     
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
     bool default_links_created = prefs->getBoolean(wxT("general.default_links_created"), false);
     if (!default_links_created)
     {
@@ -6399,7 +6399,7 @@ void AppController::onPrintConsoleText(wxCommandEvent& evt)
         return;
 
     g_app->getAppController()->showConsolePanel();
-    cfw::IDocumentSitePtr site = m_frame->lookupSite(wxT("ConsolePanel"));
+    IDocumentSitePtr site = m_frame->lookupSite(wxT("ConsolePanel"));
     if (site.isOk())
     {
         IConsolePanelPtr console = site->getDocument();
@@ -6467,7 +6467,7 @@ public:
         Layout();
         
         // 70 = 16*2 (outer border) + 16 (inner border) + 32 (bitmap width) - 10
-        cfw::resizeStaticText(label_message, GetClientSize().GetWidth()-70);
+        resizeStaticText(label_message, GetClientSize().GetWidth()-70);
         
         CenterOnParent();
     }
@@ -6484,7 +6484,7 @@ bool AppController::checkForRunningJobs(bool exit_message)
     int ID_KeepJobsRunning = 101;
     int ID_ForceExit = 102;
 
-    cfw::IJobQueuePtr job_queue = g_app->getJobQueue();
+    IJobQueuePtr job_queue = g_app->getJobQueue();
     if (job_queue->getJobsActive())
     {
         wxString appname = APPLICATION_NAME;
@@ -6531,14 +6531,14 @@ bool AppController::checkForRunningJobs(bool exit_message)
             wxMilliSleep(1500);
             
             // cancel all running jobs
-            cfw::IJobInfoEnumPtr jobs = job_queue->getJobInfoEnum(cfw::jobStateRunning);
+            IJobInfoEnumPtr jobs = job_queue->getJobInfoEnum(jobStateRunning);
             size_t i, job_count = jobs->size();
             for (i = 0; i < job_count; i++)
             {
-                cfw::IJobInfoPtr job_info = jobs->getItem(i);
+                IJobInfoPtr job_info = jobs->getItem(i);
                 int job_id = job_info->getJobId();
                 
-                cfw::IJobPtr job = job_queue->lookupJob(job_id);
+                IJobPtr job = job_queue->lookupJob(job_id);
                 if (job)
                     job->cancel();
             }
@@ -6547,7 +6547,7 @@ bool AppController::checkForRunningJobs(bool exit_message)
             bool cancelling = true;
             while (cancelling)
             {
-                jobs = job_queue->getJobInfoEnum(cfw::jobStateCancelling);
+                jobs = job_queue->getJobInfoEnum(jobStateCancelling);
                 if (jobs->size() == 0)
                 {
                     wait_dlg->Show(false);
@@ -6578,13 +6578,13 @@ bool AppController::checkForTemporaryFiles()
 {
     // check to make sure no untitled/temporary documents
     // are open
-    cfw::IDocumentSiteEnumPtr docsites;
-    docsites = g_app->getMainFrame()->getDocumentSites(cfw::sitetypeNormal);
+    IDocumentSiteEnumPtr docsites;
+    docsites = g_app->getMainFrame()->getDocumentSites(sitetypeNormal);
 
     size_t i, site_count = docsites->size();
     for (i = 0; i < site_count; ++i)
     {
-        cfw::IDocumentSitePtr site;
+        IDocumentSitePtr site;
         site = docsites->getItem(i);
 
         ITableDocPtr table_doc;
@@ -6612,9 +6612,9 @@ bool AppController::closeProject()
 
     // hide all modeless panels that were showing
 
-    cfw::IDocumentSitePtr doc_site;
-    cfw::IDocumentSiteEnumPtr sites;
-    sites = m_frame->getDocumentSites(cfw::sitetypeModeless);
+    IDocumentSitePtr doc_site;
+    IDocumentSiteEnumPtr sites;
+    sites = m_frame->getDocumentSites(sitetypeModeless);
 
     size_t i, site_count = sites->size();
     for (i = 0; i < site_count; ++i)
@@ -6646,7 +6646,7 @@ bool AppController::closeProject()
 
 bool AppController::cleanProject()
 {
-    int result = cfw::appMessageBox(_("Would you like to compact this project?"),
+    int result = appMessageBox(_("Would you like to compact this project?"),
                                     APPLICATION_NAME,
                                     wxYES_NO | wxICON_QUESTION | wxCENTER);
     if (result != wxYES)
@@ -6659,7 +6659,7 @@ bool AppController::cleanProject()
     AppBusyCursor bc;
     g_app->getDatabase()->cleanup();
     
-    cfw::appMessageBox(_("Project successfully compacted."),
+    appMessageBox(_("Project successfully compacted."),
                   APPLICATION_NAME,
                   wxOK | wxICON_INFORMATION);
     
@@ -6694,14 +6694,14 @@ static void onExportWizardFinished(ExportWizard* dlg)
 
 void AppController::showCreateExternalConnectionWizard()
 {
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = g_app->getMainFrame()->lookupSite(wxT("CreateConnectionWizard"));
     if (site.isNull())
     {
         ConnectionWizard* wizard = new ConnectionWizard;
         wizard->sigConnectionWizardFinished.connect(&onCreateExternalConnectionWizardFinished);
 
-        site = g_app->getMainFrame()->createSite(wizard, cfw::sitetypeModeless,
+        site = g_app->getMainFrame()->createSite(wizard, sitetypeModeless,
                                                  -1, -1, 540, 480);
         site->setMinSize(540,480);
         site->setName(wxT("CreateConnectionWizard"));
@@ -6719,7 +6719,7 @@ void AppController::showImportWizard(const ImportInfo& info,
 {
     AppBusyCursor bc;
     
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("ImportWizard"));
     if (site.isNull())
     {
@@ -6735,7 +6735,7 @@ void AppController::showImportWizard(const ImportInfo& info,
             wizard->setMode(ImportWizard::ModeOpen);
         }
 
-        site = g_app->getMainFrame()->createSite(wizard, cfw::sitetypeModeless,
+        site = g_app->getMainFrame()->createSite(wizard, sitetypeModeless,
                                                  -1, -1, 540, 480);
         site->setMinSize(540,480);
         site->setName(wxT("ImportWizard"));
@@ -6751,7 +6751,7 @@ void AppController::showImportWizard(const ImportInfo& info,
 void AppController::showExportWizard(const ExportInfo& info,
                                      const wxString& location)
 {
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("ExportWizard"));
     if (site.isNull())
     {
@@ -6761,7 +6761,7 @@ void AppController::showExportWizard(const ExportInfo& info,
         if (info.tables.size() > 0)
             wizard->getTemplate().m_ei = info;
 
-        site = g_app->getMainFrame()->createSite(wizard, cfw::sitetypeModeless,
+        site = g_app->getMainFrame()->createSite(wizard, sitetypeModeless,
                                                  -1, -1, 540, 480);
         site->setMinSize(540,480);
         site->setName(wxT("ExportWizard"));
@@ -6784,7 +6784,7 @@ void AppController::showLicenseManager()
 
     if (checkForTemporaryFiles())
     {
-        cfw::appMessageBox(_("Untitled documents must be either saved or closed before using the license manager."),
+        appMessageBox(_("Untitled documents must be either saved or closed before using the license manager."),
                       _("License Manager"),
                       wxOK | wxICON_INFORMATION);
         return;
@@ -6809,9 +6809,9 @@ void AppController::showLicenseManager()
     {
         // hide all modeless panels that were showing
 
-        cfw::IDocumentSitePtr doc_site;
-        cfw::IDocumentSiteEnumPtr sites;
-        sites = m_frame->getDocumentSites(cfw::sitetypeModeless);
+        IDocumentSitePtr doc_site;
+        IDocumentSiteEnumPtr sites;
+        sites = m_frame->getDocumentSites(sitetypeModeless);
 
         size_t i, site_count = sites->size();
         for (i = 0; i < site_count; ++i)
@@ -6835,11 +6835,11 @@ void AppController::showFindPanel()
     
     FindPanel* panel;
 
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("FindPanel"));
     if (site.isOk())
     {
-        cfw::IDocumentPtr doc = site->getDocument();
+        IDocumentPtr doc = site->getDocument();
         if (doc.isOk())
             panel = (FindPanel*)(doc->getDocumentWindow());
         
@@ -6859,7 +6859,7 @@ void AppController::showFindPanel()
         
         wxString val;
         
-        cfw::Event* e = new cfw::Event(wxT("appmain.find_panel.query_find_value"));
+        FrameworkEvent* e = new FrameworkEvent(wxT("appmain.find_panel.query_find_value"));
         e->l_param = (unsigned long)(&val);
         g_app->getMainFrame()->sendEvent(e);
         
@@ -6881,11 +6881,11 @@ void AppController::showFindInFilesPanel()
     
     FindPanel* panel;
 
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("FindPanel"));
     if (site.isOk())
     {
-        cfw::IDocumentPtr doc = site->getDocument();
+        IDocumentPtr doc = site->getDocument();
         if (doc.isOk())
             panel = (FindPanel*)(doc->getDocumentWindow());
         
@@ -6905,7 +6905,7 @@ void AppController::showFindInFilesPanel()
         
         wxString val;
         
-        cfw::Event* e = new cfw::Event(wxT("appmain.find_panel.query_find_value"));
+        FrameworkEvent* e = new FrameworkEvent(wxT("appmain.find_panel.query_find_value"));
         e->l_param = (unsigned long)(&val);
         g_app->getMainFrame()->sendEvent(e);
         
@@ -6925,11 +6925,11 @@ void AppController::showReplacePanel()
 {
     FindPanel* panel;
     
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("FindPanel"));
     if (site.isOk())
     {
-        cfw::IDocumentPtr doc = site->getDocument();
+        IDocumentPtr doc = site->getDocument();
         if (doc.isOk())
         {
             panel = (FindPanel*)(doc->getDocumentWindow());
@@ -6953,7 +6953,7 @@ void AppController::showReplacePanel()
         
         wxString val;
         
-        cfw::Event* e = new cfw::Event(wxT("appmain.find_panel.query_find_value"));
+        FrameworkEvent* e = new FrameworkEvent(wxT("appmain.find_panel.query_find_value"));
         e->l_param = (unsigned long)(&val);
         g_app->getMainFrame()->sendEvent(e);
         
@@ -6971,7 +6971,7 @@ void AppController::showReplacePanel()
 
 void AppController::showColumnListPanel()
 {
-    cfw::IDocumentSitePtr columnlist_site;
+    IDocumentSitePtr columnlist_site;
     columnlist_site = m_frame->lookupSite(wxT("FieldsPanel"));
     if (columnlist_site.isOk())
     {
@@ -6984,7 +6984,7 @@ void AppController::showColumnListPanel()
 
 void AppController::showMarkManagerPanel()
 {
-    cfw::IDocumentSitePtr markmanager_site;
+    IDocumentSitePtr markmanager_site;
     markmanager_site = m_frame->lookupSite(wxT("MarksPanel"));
     if (markmanager_site.isOk())
     {
@@ -6997,7 +6997,7 @@ void AppController::showMarkManagerPanel()
 
 void AppController::showStartupPage()
 {
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
     
     long counter = 0;
     
@@ -7082,7 +7082,7 @@ bool AppController::doReadOnlyCheck()
 {
     if (g_app->isDatabaseReadOnly())
     {
-        int result = cfw::appMessageBox(_("This project is currently set to 'read-only' status to protect your data from unintentional changes.  Would you like\nto temporarily remove the 'read-only' status to perform this operation?"),
+        int result = appMessageBox(_("This project is currently set to 'read-only' status to protect your data from unintentional changes.  Would you like\nto temporarily remove the 'read-only' status to perform this operation?"),
                                         APPLICATION_NAME,
                                         wxYES_NO | wxICON_QUESTION | wxCENTER);
         if (result != wxYES)
@@ -7095,7 +7095,7 @@ bool AppController::doReadOnlyCheck()
 
 void AppController::showOptionsDialog()
 {
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("OptionsPanel"));
     if (site.isNull())
     {
@@ -7112,7 +7112,7 @@ void AppController::showOptionsDialog()
         
         OptionsPanel* panel = new OptionsPanel;
         site = g_app->getMainFrame()->createSite(panel,
-                                                 cfw::sitetypeModeless,
+                                                 sitetypeModeless,
                                                  -1, -1,
                                                  w, h);
         site->setMinSize(w,h);
@@ -7128,7 +7128,7 @@ void AppController::showOptionsDialog()
 void AppController::showAbout()
 {
     WebDoc* doc = new WebDoc;
-    m_frame->createSite(doc, cfw::sitetypeNormal, -1, -1, -1, -1);
+    m_frame->createSite(doc, sitetypeNormal, -1, -1, -1, -1);
 
     // show the about dialog box if we have a valid web browser;
     // if we are on a 64-bit build, the embedded browser is probably
@@ -7152,7 +7152,7 @@ void AppController::showAbout()
                  bit.c_str(),
                  APP_COPYRIGHT);
 
-        cfw::appMessageBox(message,
+        appMessageBox(message,
                            _("About"),
                            wxICON_INFORMATION);
     }
@@ -7166,7 +7166,7 @@ void AppController::showCreateTable()
 {
     if (!g_app->isDatabaseOpen())
     {
-        ::cfw::appMessageBox(_("To create a database table, please create or open a project."),
+        ::appMessageBox(_("To create a database table, please create or open a project."),
                              APPLICATION_NAME,
                              wxOK | wxICON_EXCLAMATION | wxCENTER);
 
@@ -7206,14 +7206,14 @@ void AppController::showProjectManager()
 
 void AppController::showRelationshipManager()
 {
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
 
     site = m_frame->lookupSite(wxT("RelationshipsPanel"));
     if (site.isNull())
     {
         int x, y, width, height;
 
-        cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+        IAppPreferencesPtr prefs = g_app->getAppPreferences();
 
         x = prefs->getLong(wxT("window_dimensions.relationship_mgr.x"), -1);
         y = prefs->getLong(wxT("window_dimensions.relationship_mgr.y"), -1);
@@ -7227,8 +7227,8 @@ void AppController::showRelationshipManager()
         
         RelationshipPanel* panel = new RelationshipPanel;
         site = m_frame->createSite(panel,
-                                   cfw::sitetypeModeless |
-                                   cfw::siteMaximizeButton,
+                                   sitetypeModeless |
+                                   siteMaximizeButton,
                                    x, y, width, height);
         site->setMinSize(450,300);
         site->setCaption(_("Relationships"));
@@ -7253,7 +7253,7 @@ void AppController::showProjectPanel(bool show, bool focus)
     // method for showing hiding panels, its easier to implement 
     // this function for the need at hand
 
-    cfw::IDocumentSitePtr dbdoc_site;
+    IDocumentSitePtr dbdoc_site;
     if (m_dbdoc)
         dbdoc_site = m_dbdoc->getDbDocSite();
 
@@ -7267,17 +7267,17 @@ void AppController::showProjectPanel(bool show, bool focus)
     // active child
     if (dbdoc_site->getVisible())
     {
-        cfw::IDocumentPtr dbdoc = dbdoc_site->getDocument();
+        IDocumentPtr dbdoc = dbdoc_site->getDocument();
         if (focus && dbdoc.isOk())
             dbdoc->setDocumentFocus();
     }
     else
     {
-        cfw::IDocumentSitePtr active_child_site = g_app->getMainFrame()->getActiveChild();
+        IDocumentSitePtr active_child_site = g_app->getMainFrame()->getActiveChild();
         
         if (active_child_site.isOk())
         {
-            cfw::IDocumentPtr active_child_doc = active_child_site->getDocument();
+            IDocumentPtr active_child_doc = active_child_site->getDocument();
             if (focus && active_child_doc.isOk())
                 active_child_doc->setDocumentFocus();
         }
@@ -7289,18 +7289,18 @@ void AppController::showConsolePanel(bool show, bool focus)
 #if APP_GUI==1
     if (m_frame.isNull())
         return;
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("ConsolePanel"));
     if (site.isNull() && show)
     {
         ConsolePanel* panel = new ConsolePanel;
         site = m_frame->createSite(panel,
-                                   cfw::sitetypeDockable | cfw::dockBottom,
+                                   sitetypeDockable | dockBottom,
                                    0, 0, 600, 175);
         site->setCaption(_("Console"));
         site->setName(wxT("ConsolePanel"));
 
-        cfw::IDocumentPtr doc = site->getDocument();
+        IDocumentPtr doc = site->getDocument();
         if (focus && doc.isOk())
             doc->setDocumentFocus();
     }
@@ -7308,7 +7308,7 @@ void AppController::showConsolePanel(bool show, bool focus)
     {
         site->setVisible(show);
 
-        cfw::IDocumentPtr doc = site->getDocument();
+        IDocumentPtr doc = site->getDocument();
         if (show && focus && doc.isOk())
             doc->setDocumentFocus();
     }
@@ -7318,12 +7318,12 @@ void AppController::showConsolePanel(bool show, bool focus)
 
 void AppController::showJobScheduler()
 {
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = g_app->getMainFrame()->lookupSite(wxT("JobSchedulerPanel"));
     if (site.isNull())
     {
         JobSchedulerPanel* panel = new JobSchedulerPanel;
-        site = g_app->getMainFrame()->createSite(panel, cfw::sitetypeModeless,
+        site = g_app->getMainFrame()->createSite(panel, sitetypeModeless,
                                                  -1, -1, 640, 420);
         site->setMinSize(640,420);
         site->setName(wxT("JobSchedulerPanel"));
@@ -7338,12 +7338,12 @@ void AppController::showJobScheduler()
 
 void AppController::showJobManager(bool show)
 {
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = g_app->getMainFrame()->lookupSite(wxT("JobsPanel"));
     if (site.isNull())
     {
         JobManagerPanel* panel = new JobManagerPanel;
-        site = g_app->getMainFrame()->createSite(panel, cfw::sitetypeModeless,
+        site = g_app->getMainFrame()->createSite(panel, sitetypeModeless,
                                                  -1, -1, 520, 560);
         site->setMinSize(520,320);
         site->setName(wxT("JobsPanel"));
@@ -7360,12 +7360,12 @@ void AppController::showJobManager(bool show)
 
 void AppController::showExtensionManager()
 {
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = g_app->getMainFrame()->lookupSite(wxT("ExtensionsPanel"));
     if (site.isNull())
     {
         ExtensionManagerPanel* panel = new ExtensionManagerPanel;
-        site = g_app->getMainFrame()->createSite(panel, cfw::sitetypeModeless,
+        site = g_app->getMainFrame()->createSite(panel, sitetypeModeless,
                                                  -1, -1, 520, 560);
         site->setMinSize(520,320);
         site->setName(wxT("ExtensionsPanel"));
@@ -7382,18 +7382,18 @@ void AppController::showProjectProperties()
 {
     if (!g_app->isDatabaseOpen())
     {
-        cfw::appMessageBox(_("A project must first be opened to display project properties."),
+        appMessageBox(_("A project must first be opened to display project properties."),
                            APPLICATION_NAME,
                            wxOK | wxICON_INFORMATION);
         return;
     }
 
-    cfw::IDocumentSitePtr site;
+    IDocumentSitePtr site;
     site = g_app->getMainFrame()->lookupSite(wxT("ProjectPropertiesPanel"));
     if (site.isNull())
     {
         DatabaseInfoPanel* panel = new DatabaseInfoPanel;
-        site = g_app->getMainFrame()->createSite(panel, cfw::sitetypeModeless,
+        site = g_app->getMainFrame()->createSite(panel, sitetypeModeless,
                                                  -1, -1, 420, 200);
         site->setMinSize(420,200);
         site->setName(wxT("ProjectPropertiesPanel"));
@@ -7417,7 +7417,7 @@ void AppController::toggleFullScreen()
 
 void AppController::toggleLock()
 {
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
     m_data_locked = !m_data_locked;
     prefs->setBoolean(wxT("app.data_locked"), m_data_locked);
 }
@@ -7427,7 +7427,7 @@ void AppController::toggleAllPanels()
 {
     if (m_hidden_sites.size() > 0)
     {
-        cfw::IDocumentSitePtr site;
+        IDocumentSitePtr site;
 
         std::vector<HiddenSiteInfo>::iterator it;
         for (it = m_hidden_sites.begin();
@@ -7451,14 +7451,14 @@ void AppController::toggleAllPanels()
     }
      else
     {
-        cfw::IDocumentSiteEnumPtr docsites;
-        cfw::IDocumentSitePtr site;
-        cfw::IDocumentPtr doc;
+        IDocumentSiteEnumPtr docsites;
+        IDocumentSitePtr site;
+        IDocumentPtr doc;
         wxWindow* docwnd;
 
-        docsites = m_frame->getDocumentSites(cfw::sitetypeDockable);
+        docsites = m_frame->getDocumentSites(sitetypeDockable);
 
-        std::vector<cfw::IDocumentSitePtr> all_sites;
+        std::vector<IDocumentSitePtr> all_sites;
         bool show = true;
 
         size_t i, site_count = docsites->size();
@@ -7469,7 +7469,7 @@ void AppController::toggleAllPanels()
             if (!site->getVisible())
                 continue;
 
-            if (!(site->getSiteType() & (cfw::dockLeft | cfw::dockBottom | cfw::dockRight)))
+            if (!(site->getSiteType() & (dockLeft | dockBottom | dockRight)))
                 continue;
 
             wxString site_name = site->getName();
@@ -7500,7 +7500,7 @@ void AppController::toggleAllPanels()
 
         for (it = m_hidden_sites.begin(); it != m_hidden_sites.end(); ++it)
         {
-            cfw::IDocumentSitePtr site;
+            IDocumentSitePtr site;
             site = g_app->getMainFrame()->lookupSite(it->site_name);
             if (site)
             {
@@ -7512,7 +7512,7 @@ void AppController::toggleAllPanels()
 
 void AppController::toggleProjectPanel()
 {
-    cfw::IDocumentSitePtr dbdoc_site;
+    IDocumentSitePtr dbdoc_site;
     if (m_dbdoc)
         dbdoc_site = m_dbdoc->getDbDocSite();
 
@@ -7530,17 +7530,17 @@ void AppController::toggleProjectPanel()
     // active child
     if (dbdoc_site->getVisible())
     {
-        cfw::IDocumentPtr dbdoc = dbdoc_site->getDocument();
+        IDocumentPtr dbdoc = dbdoc_site->getDocument();
         if (dbdoc.isOk())
             dbdoc->setDocumentFocus();
     }
     else
     {
-        cfw::IDocumentSitePtr active_child_site = g_app->getMainFrame()->getActiveChild();
+        IDocumentSitePtr active_child_site = g_app->getMainFrame()->getActiveChild();
         
         if (active_child_site.isOk())
         {
-            cfw::IDocumentPtr active_child_doc = active_child_site->getDocument();
+            IDocumentPtr active_child_doc = active_child_site->getDocument();
             if (active_child_doc.isOk())
                 active_child_doc->setDocumentFocus();
         }
@@ -7549,7 +7549,7 @@ void AppController::toggleProjectPanel()
 
 void AppController::toggleConsolePanel()
 {
-    cfw::IDocumentSitePtr console_site;
+    IDocumentSitePtr console_site;
     console_site = m_frame->lookupSite(wxT("ConsolePanel"));
     if (console_site.isOk())
     {
@@ -7564,17 +7564,17 @@ void AppController::toggleConsolePanel()
         // active child
         if (console_site->getVisible())
         {
-            cfw::IDocumentPtr console_doc = console_site->getDocument();
+            IDocumentPtr console_doc = console_site->getDocument();
             if (console_doc.isOk())
                 console_doc->setDocumentFocus();
         }
         else
         {
-            cfw::IDocumentSitePtr active_child_site = g_app->getMainFrame()->getActiveChild();
+            IDocumentSitePtr active_child_site = g_app->getMainFrame()->getActiveChild();
             
             if (active_child_site.isOk())
             {
-                cfw::IDocumentPtr active_child_doc = active_child_site->getDocument();
+                IDocumentPtr active_child_doc = active_child_site->getDocument();
                 if (active_child_doc.isOk())
                     active_child_doc->setDocumentFocus();
             }
@@ -7584,7 +7584,7 @@ void AppController::toggleConsolePanel()
 
 void AppController::toggleColumnListPanel()
 {
-    cfw::IDocumentSitePtr columnlist_site;
+    IDocumentSitePtr columnlist_site;
     columnlist_site = m_frame->lookupSite(wxT("FieldsPanel"));
     if (columnlist_site.isOk())
     {
@@ -7595,7 +7595,7 @@ void AppController::toggleColumnListPanel()
 
 void AppController::toggleMarkManagerPanel()
 {
-    cfw::IDocumentSitePtr markmanager_site;
+    IDocumentSitePtr markmanager_site;
     markmanager_site = m_frame->lookupSite(wxT("MarksPanel"));
     if (markmanager_site.isOk())
     {
@@ -7606,7 +7606,7 @@ void AppController::toggleMarkManagerPanel()
 
 void AppController::toggleRelationshipPanel()
 {
-    cfw::IDocumentSitePtr relmanager_site;
+    IDocumentSitePtr relmanager_site;
     relmanager_site = m_frame->lookupSite(wxT("RelationshipsPanel"));
     if (relmanager_site.isOk())
     {
@@ -7620,7 +7620,7 @@ void AppController::toggleRelationshipPanel()
 
 void AppController::toggleStatusBar()
 {
-    cfw::IStatusBarPtr statusbar = m_frame->getStatusBar();
+    IStatusBarPtr statusbar = m_frame->getStatusBar();
     if (statusbar.isOk())
     {
         wxAuiToolBar* wnd = statusbar->getStatusBarCtrl();
@@ -7653,7 +7653,7 @@ void AppController::toggleToolbar(wxWindowID id)
     if (id == ID_Frame_ToggleFormatToolbar)
     {
         // let everyone know we've toggled the format toolbar on or off
-        cfw::Event* e = new cfw::Event(wxT("appmain.format_toolbar.toggled"));
+        FrameworkEvent* e = new FrameworkEvent(wxT("appmain.format_toolbar.toggled"));
         if (wnd->IsShown())
             e->l_param = 1;
              else

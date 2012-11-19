@@ -54,8 +54,8 @@ ImportWizard::~ImportWizard()
 {
 }
 
-bool ImportWizard::initDoc(cfw::IFramePtr frame,
-                           cfw::IDocumentSitePtr doc_site,
+bool ImportWizard::initDoc(IFramePtr frame,
+                           IDocumentSitePtr doc_site,
                            wxWindow* docsite_wnd,
                            wxWindow* panesite_wnd)
 {
@@ -318,7 +318,7 @@ void ImportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
     if (m_template.m_ii.path.IsEmpty())
     {
         // the path was empty
-        cfw::appMessageBox(_("A valid location needs to be specified to continue."),
+        appMessageBox(_("A valid location needs to be specified to continue."),
                            _("Invalid Location"),
                            wxOK | wxICON_EXCLAMATION | wxCENTER,
                            g_app->getMainWindow());
@@ -385,13 +385,13 @@ void ImportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
         {
             if (paths.size() > 1)
             {
-                cfw::appMessageBox(_("One of the specified files does not exist or is invalid.  Please choose a valid file to continue."),
+                appMessageBox(_("One of the specified files does not exist or is invalid.  Please choose a valid file to continue."),
                                    _("Invalid File"),
                                    wxOK | wxICON_EXCLAMATION | wxCENTER);
             }
              else
             {
-                cfw::appMessageBox(_("The specified file does not exist or is invalid.  Please choose a valid file to continue."),
+                appMessageBox(_("The specified file does not exist or is invalid.  Please choose a valid file to continue."),
                                    _("Invalid File"),
                                    wxOK | wxICON_EXCLAMATION | wxCENTER);
             }
@@ -461,7 +461,7 @@ void ImportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
     if (multiple_file_extensions &&
         m_template.m_ii.type != dbtypeDelimitedText)
     {
-        cfw::appMessageBox(_("More than one file type was specified.  Please choose only one file type to continue."),
+        appMessageBox(_("More than one file type was specified.  Please choose only one file type to continue."),
                            _("Multiple file types"),
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
                            
@@ -479,7 +479,7 @@ void ImportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
         
         if (ext.CmpNoCase(wxT("kpg")) == 0 && paths.size() > 1)
         {
-            cfw::appMessageBox(_("Only one package file can be imported at a time.  Please choose only one package file to continue."),
+            appMessageBox(_("Only one package file can be imported at a time.  Please choose only one package file to continue."),
                                _("Too many files"),
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
 
@@ -489,7 +489,7 @@ void ImportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
         }
          else if ((ext.CmpNoCase(wxT("mdb")) == 0 || ext.CmpNoCase(wxT("accdb")) == 0) && paths.size() > 1)
         {
-            cfw::appMessageBox(_("Only one Microsoft Access file can be imported at a time.  Please choose only one Microsoft Access file to continue."),
+            appMessageBox(_("Only one Microsoft Access file can be imported at a time.  Please choose only one Microsoft Access file to continue."),
                                _("Too many files"),
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
 
@@ -499,7 +499,7 @@ void ImportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
         }
          else if ((ext.CmpNoCase(wxT("xls")) == 0 || ext.CmpNoCase(wxT("xlsx")) == 0) && paths.size() > 1)
         {
-            cfw::appMessageBox(_("Only one Microsoft Excel file can be imported at a time.  Please choose only one Microsoft Excel file to continue."),
+            appMessageBox(_("Only one Microsoft Excel file can be imported at a time.  Please choose only one Microsoft Excel file to continue."),
                                _("Too many files"),
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
 
@@ -520,7 +520,7 @@ void ImportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
         {
             wxString msg = wxString::Format(_("The package file '%s' could not be read."),
                                             m_template.m_ii.path.c_str());
-            cfw::appMessageBox(msg,
+            appMessageBox(msg,
                                _("Import Wizard"),
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             m_template.m_ii.tables.clear();
@@ -534,7 +534,7 @@ void ImportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
         {
             wxString msg = wxString::Format(_("The package file '%s' is either empty or corrupt."),
                                             m_template.m_ii.path.c_str());
-            cfw::appMessageBox(msg,
+            appMessageBox(msg,
                                _("Import Wizard"),
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             m_template.m_ii.tables.clear();
@@ -570,7 +570,7 @@ void ImportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
             error_message += wxT("  ");
             error_message += conn->getErrorString();
             
-            cfw::appMessageBox(error_message,
+            appMessageBox(error_message,
                                _("Import Wizard"),
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             *allow = false;
@@ -668,7 +668,7 @@ void ImportWizard::onWizardFinished(kcl::Wizard* wizard)
     // CHECK: check to make sure a database exists and is open
     if (!g_app->isDatabaseOpen())
     {
-        cfw::appMessageBox(_("Please create or open a project to continue."),
+        appMessageBox(_("Please create or open a project to continue."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
         return;
@@ -699,7 +699,7 @@ void ImportWizard::onWizardFinished(kcl::Wizard* wizard)
             
             // the object is not a folder, don't allow the user to create
             // a folder that will overwrite an object in the database
-            cfw::appMessageBox(
+            appMessageBox(
                 _("The specified import folder is invalid.  Check to make sure the path does not contain any invalid characters\nand that it will not create a folder which will overwrite an item in the project."),
                 _("Import Wizard"),
                 wxOK | wxICON_EXCLAMATION | wxCENTER);
@@ -748,7 +748,7 @@ void ImportWizard::onWizardFinished(kcl::Wizard* wizard)
             // don't allow imported items to overwrite folders
             if (info->getType() == tango::filetypeFolder)
             {
-                cfw::appMessageBox(
+                appMessageBox(
                     _("One or more items has the same path as an existing folder in the project.  Please change the output paths of these items to continue."),
                     _("Import Wizard"),
                     wxOK | wxICON_EXCLAMATION | wxCENTER);
@@ -758,7 +758,7 @@ void ImportWizard::onWizardFinished(kcl::Wizard* wizard)
 
             if (!overwrite)
             {
-                int result = cfw::appMessageBox(
+                int result = appMessageBox(
                     _("One or more items has the same path as an existing item in the project.  Would you like to overwrite these items?"),
                     _("Import Wizard"),
                     wxYES_NO | wxCANCEL | wxICON_EXCLAMATION | wxCENTER,
@@ -804,7 +804,7 @@ void ImportWizard::onSave(wxCommandEvent& evt)
 {
     if (!g_app->isDatabaseOpen())
     {
-        cfw::appMessageBox(_("To save the import template, please create or open a project"),
+        appMessageBox(_("To save the import template, please create or open a project"),
                            _("Import Wizard"),
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
 

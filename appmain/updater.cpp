@@ -34,7 +34,7 @@ public:
                   wxCENTER)
     {
         wxStaticText* text = new wxStaticText(this, -1, _("Checking for updates..."));
-        cfw::resizeStaticText(text);
+        resizeStaticText(text);
 
         m_gauge = new wxGauge(this, -1, 0, wxPoint(0,0), wxSize(20,18));
         m_gauge->Pulse();
@@ -109,13 +109,13 @@ XCM_DECLARE_SMARTPTR(IUpdateCheckJob)
 
 
 
-class UpdateCheckJob : public cfw::JobBase,
+class UpdateCheckJob : public JobBase,
                        public IUpdateCheckJob
 {
     XCM_CLASS_NAME("appmain.UpdateCheckJob")
     XCM_BEGIN_INTERFACE_MAP(UpdateCheckJob)
         XCM_INTERFACE_ENTRY(IUpdateCheckJob)
-        XCM_INTERFACE_CHAIN(cfw::JobBase)
+        XCM_INTERFACE_CHAIN(JobBase)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -186,13 +186,13 @@ public:
 
 XCM_DECLARE_SMARTPTR(IUpdateDownloadJob)
 
-class UpdateDownloadJob : public cfw::JobBase,
+class UpdateDownloadJob : public JobBase,
                           public IUpdateDownloadJob
 {
     XCM_CLASS_NAME("appmain.UpdateDownloadJob")
     XCM_BEGIN_INTERFACE_MAP(UpdateDownloadJob)
         XCM_INTERFACE_ENTRY(IUpdateDownloadJob)
-        XCM_INTERFACE_CHAIN(cfw::JobBase)
+        XCM_INTERFACE_CHAIN(JobBase)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -249,7 +249,7 @@ public:
         m_curl = curlCreateHandle();
         if (!m_curl)
         {
-            m_job_info->setState(cfw::jobStateFailed);
+            m_job_info->setState(jobStateFailed);
             return 0;
         }
         
@@ -273,7 +273,7 @@ public:
         m_f = xf_open(output_filename, xfCreate, xfWrite, xfShareNone);
         if (!m_f)
         {
-            m_job_info->setState(cfw::jobStateFailed);
+            m_job_info->setState(jobStateFailed);
             return 0;
         }
         
@@ -576,28 +576,28 @@ bool Updater::parseUpdateFile(const wxString& xml, UpdaterInfo& info)
 }
 
 
-static void onUpdateDownloadFinished(cfw::IJobPtr job)
+static void onUpdateDownloadFinished(IJobPtr job)
 {
-    if (job->getJobInfo()->getState() != cfw::jobStateFinished)
+    if (job->getJobInfo()->getState() != jobStateFinished)
         return;
         
     IUpdateDownloadJobPtr u = job;
     wxASSERT(u.p);
     
     
-    cfw::IJobQueuePtr job_queue = g_app->getJobQueue();
+    IJobQueuePtr job_queue = g_app->getJobQueue();
     if (job_queue.isOk() && job_queue->getJobsActive())
     {
         wxString appname = APPLICATION_NAME;
         wxString message = wxString::Format(_("There are currently jobs running.  Please update %s after all running jobs are completed."),
                                             appname.c_str());
-        cfw::appMessageBox(message, APPLICATION_NAME);
+        appMessageBox(message, APPLICATION_NAME);
         return;
     }
     
     
     
-    int result = cfw::appMessageBox(_("The update has finished downloading.  Would you like to install the update now?"),
+    int result = appMessageBox(_("The update has finished downloading.  Would you like to install the update now?"),
                                     APPLICATION_NAME,
                                     wxYES_NO | wxICON_QUESTION,
                                     g_app->getMainWindow());
@@ -661,7 +661,7 @@ static void onUpdateDownloadFinished(cfw::IJobPtr job)
 CheckUpdatesWaitDlg* g_dlg = NULL;
 
 
-static void onUpdateCheckFinished(cfw::IJobPtr job)
+static void onUpdateCheckFinished(IJobPtr job)
 {
     bool full_gui = false;
     if (g_dlg)
@@ -671,7 +671,7 @@ static void onUpdateCheckFinished(cfw::IJobPtr job)
         g_dlg = NULL;
     }
     
-    if (job->getJobInfo()->getState() != cfw::jobStateFinished)
+    if (job->getJobInfo()->getState() != jobStateFinished)
         return;
     
     IUpdateCheckJobPtr u = job;
@@ -688,13 +688,13 @@ static void onUpdateCheckFinished(cfw::IJobPtr job)
     
     if (Updater::showAskForUpdate())
     {
-        cfw::IJobQueuePtr job_queue = g_app->getJobQueue();
+        IJobQueuePtr job_queue = g_app->getJobQueue();
         if (job_queue.isOk() && job_queue->getJobsActive())
         {
             wxString appname = APPLICATION_NAME;
             wxString message = wxString::Format(_("There are currently jobs running.  Please update %s after all running jobs are completed."),
                                                 appname.c_str());
-            cfw::appMessageBox(message, APPLICATION_NAME);
+            appMessageBox(message, APPLICATION_NAME);
             return;
         }
         
@@ -702,7 +702,7 @@ static void onUpdateCheckFinished(cfw::IJobPtr job)
         UpdateDownloadJob* job = new UpdateDownloadJob;
         job->setInformation(info.fetch_url, info.user_name, info.password);
         job->sigJobFinished().connect(&onUpdateDownloadFinished);
-        g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+        g_app->getJobQueue()->addJob(job, jobStateRunning);
     }
 }
 
@@ -721,7 +721,7 @@ void Updater::checkForUpdates(bool full_gui)
     // at the bottom
     UpdateCheckJob* job = new UpdateCheckJob;
     job->sigJobFinished().connect(&onUpdateCheckFinished);
-    g_app->getScriptJobQueue()->addJob(job, cfw::jobStateRunning);
+    g_app->getScriptJobQueue()->addJob(job, jobStateRunning);
 
     
     if (full_gui)
@@ -732,7 +732,7 @@ void Updater::checkForUpdates(bool full_gui)
 
 
     // make sure we update the 'last checked' time in the registry
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
     if (prefs.isOk())
     {
         time_t now_time = time(NULL);
@@ -763,7 +763,7 @@ void Updater::showNoUpdates()
                                         appname.c_str(),
                                         version_str.c_str());
     
-    cfw::appMessageBox(message, APPLICATION_NAME);
+    appMessageBox(message, APPLICATION_NAME);
 }
 
 
@@ -773,7 +773,7 @@ bool Updater::showAskForUpdate()
     wxString message = wxString::Format(_("A new version of %s is available.  Would you like to download it?"),
                                         appname.c_str());
                                         
-    int result = cfw::appMessageBox(message,
+    int result = appMessageBox(message,
                                     APPLICATION_NAME,
                                     wxYES_NO | wxICON_QUESTION,
                                     g_app->getMainWindow());

@@ -278,7 +278,7 @@ public:
 
 
         // measure the label widths
-        wxSize label_size = cfw::getMaxTextSize(label_add_loc,
+        wxSize label_size = getMaxTextSize(label_add_loc,
                                                 label_create_loc,
                                                 label_create_name);
         label_size.x += 10;
@@ -346,7 +346,7 @@ public:
         Layout();
         
         SetSize(500,320);
-        cfw::resizeStaticText(message, message->GetClientSize().GetWidth());
+        resizeStaticText(message, message->GetClientSize().GetWidth());
         Center();
         
         // start the dialog out on the "Add Existing Project" radio button
@@ -454,7 +454,7 @@ public:
         // empty path, bail out
         if (m_info->location.Length() == 0)
         {
-            cfw::appMessageBox(_("The specified location is empty.  Please enter the location of the project you would like to add."),
+            appMessageBox(_("The specified location is empty.  Please enter the location of the project you would like to add."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             resetFocus();
@@ -469,7 +469,7 @@ public:
         {
             if (!xf_get_directory_exist(towstr(m_info->location)))
             {
-                cfw::appMessageBox(_("The specified folder does not exist or is invalid."),
+                appMessageBox(_("The specified folder does not exist or is invalid."),
                                    APPLICATION_NAME,
                                    wxOK | wxICON_EXCLAMATION | wxCENTER);
                 resetFocus();
@@ -482,7 +482,7 @@ public:
 
             if (!xf_get_directory_exist(towstr(test_path)))
             {
-                cfw::appMessageBox(_("The specified folder does not contain a valid project."),
+                appMessageBox(_("The specified folder does not contain a valid project."),
                                    APPLICATION_NAME,
                                    wxOK | wxICON_EXCLAMATION | wxCENTER);
                 resetFocus();
@@ -500,7 +500,7 @@ public:
             wxString loc = it->location;
             if (loc.CmpNoCase(m_info->location) == 0)
             {
-                cfw::appMessageBox(_("The specified project already exists in the project manager list."),
+                appMessageBox(_("The specified project already exists in the project manager list."),
                                    APPLICATION_NAME,
                                    wxOK | wxICON_EXCLAMATION | wxCENTER);
                 resetFocus();
@@ -527,7 +527,7 @@ public:
 
         if (m_info->location.Length() == 0)
         {
-            cfw::appMessageBox(_("The specified location is empty.  Please enter the location of the project you would like to create."),
+            appMessageBox(_("The specified location is empty.  Please enter the location of the project you would like to create."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             resetFocus();
@@ -542,7 +542,7 @@ public:
                 // (this function deletes the created folders on success or failure)
                 if (!tryCreateFolderStructure(m_info->location))
                 {
-                    cfw::appMessageBox(_("The specified folder could not be created.  Please check to make sure the specified path is valid."),
+                    appMessageBox(_("The specified folder could not be created.  Please check to make sure the specified path is valid."),
                                        APPLICATION_NAME,
                                        wxOK | wxICON_EXCLAMATION | wxCENTER);
                     resetFocus();
@@ -551,7 +551,7 @@ public:
             }
              else
             {
-                cfw::appMessageBox(_("The specified folder could not be created.  Please check to make sure the specified path is valid."),
+                appMessageBox(_("The specified folder could not be created.  Please check to make sure the specified path is valid."),
                                    APPLICATION_NAME,
                                    wxOK | wxICON_EXCLAMATION | wxCENTER);
                 resetFocus();
@@ -568,7 +568,7 @@ public:
 
             if (xf_get_directory_exist(towstr(ofs_path)))
             {
-                cfw::appMessageBox(_("The specified folder already contains a project."),
+                appMessageBox(_("The specified folder already contains a project."),
                                    APPLICATION_NAME,
                                    wxOK | wxICON_EXCLAMATION | wxCENTER);
                 resetFocus();
@@ -595,7 +595,7 @@ public:
 
             if (has_children)
             {
-                int res = cfw::appMessageBox(_("The specified folder is not empty.  It is highly recommended that an empty folder is used when creating a new project.  Would you like to continue?"),
+                int res = appMessageBox(_("The specified folder is not empty.  It is highly recommended that an empty folder is used when creating a new project.  Would you like to continue?"),
                                              APPLICATION_NAME,
                                              wxYES_NO | wxICON_QUESTION | wxCENTER);
                 if (res != wxYES)
@@ -610,7 +610,7 @@ public:
         
         if (!g_app->getAppController()->createProject(m_info->location, m_info->name))
         {
-            cfw::appMessageBox(_("An error occurred while attempting to create the project.  The specified location is probably inaccessible or invalid."),
+            appMessageBox(_("An error occurred while attempting to create the project.  The specified location is probably inaccessible or invalid."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             resetFocus();
@@ -990,7 +990,7 @@ void DlgProjectMgr::onCancel(wxCommandEvent& evt)
         // it is important to make sure that this dialog is used as the parent,
         // otherwise, the main application window gets the focus and the user
         // can do things outside of this dialog -- even though it is modal
-        int res = cfw::appMessageBox(msg,
+        int res = appMessageBox(msg,
                                      APPLICATION_NAME,
                                      wxYES_NO |
                                      wxNO_DEFAULT |
@@ -1154,14 +1154,14 @@ void DlgProjectMgr::onDeleteProject(wxCommandEvent& evt)
     if (location == g_app->getDatabaseLocation())
 #endif
     {
-        cfw::appMessageBox(_("The selected project is currently open.  Please close the project before deleting it."),
+        appMessageBox(_("The selected project is currently open.  Please close the project before deleting it."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
         return;
     }
 
 
-    int res = cfw::appMessageBox(_("WARNING:  This operation will delete the selected project and all of its contents.  This includes all tables, queries, scripts, reports and other objects contained in the project.  Press 'Yes' only if you are absolutely certain you want to delete this project."),
+    int res = appMessageBox(_("WARNING:  This operation will delete the selected project and all of its contents.  This includes all tables, queries, scripts, reports and other objects contained in the project.  Press 'Yes' only if you are absolutely certain you want to delete this project."),
                                  APPLICATION_NAME,
                                  wxYES_NO | wxNO_DEFAULT | wxICON_EXCLAMATION | wxCENTER);
     if (res != wxYES)

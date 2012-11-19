@@ -17,8 +17,6 @@
 #include "fsitems.h"
 
 
-namespace cfw
-{
 
 
 class GenericFsItem : public FsItemBase,
@@ -83,8 +81,6 @@ private:
     wxBitmap m_default_folder_bitmap;
 };
 
-
-};  // namespace cfw
 
 
 #endif

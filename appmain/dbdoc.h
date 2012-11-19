@@ -87,7 +87,7 @@ public:
 
 // -- DbFolderFsItem class implementation --
 
-class DbFolderFsItem : public cfw::FsItemBase,
+class DbFolderFsItem : public FsItemBase,
                        public IDbFolderFsItem,
                        public IDbObjectFsItem
 {
@@ -95,7 +95,7 @@ class DbFolderFsItem : public cfw::FsItemBase,
     XCM_BEGIN_INTERFACE_MAP(DbFolderFsItem)
         XCM_INTERFACE_ENTRY(IDbFolderFsItem)
         XCM_INTERFACE_ENTRY(IDbObjectFsItem)
-        XCM_INTERFACE_CHAIN(cfw::FsItemBase)
+        XCM_INTERFACE_CHAIN(FsItemBase)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -127,7 +127,7 @@ public:
     void setFoldersOnly(bool new_val);
     void setTablesOnly(bool new_val);
 
-    cfw::IFsItemEnumPtr getChildren();
+    IFsItemEnumPtr getChildren();
 
     bool isDeferred() { return true; }
 
@@ -153,13 +153,13 @@ private:
 
 // -- DbObjectFsItem class implementation --
 
-class DbObjectFsItem : public cfw::FsItemBase,
+class DbObjectFsItem : public FsItemBase,
                        public IDbObjectFsItem
 {
     XCM_CLASS_NAME("appmain.DbObjectFsItem")
     XCM_BEGIN_INTERFACE_MAP(DbObjectFsItem)
         XCM_INTERFACE_ENTRY(IDbObjectFsItem)
-        XCM_INTERFACE_CHAIN(cfw::FsItemBase)
+        XCM_INTERFACE_CHAIN(FsItemBase)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -200,14 +200,14 @@ friend class LinkBar;
 public:
 
     // public API for DbDoc
-    static void actionActivate(cfw::IFsItemPtr item, int open_mask);
-    static void actionActivateDeferred(cfw::IFsItemPtr item, int open_mask);
+    static void actionActivate(IFsItemPtr item, int open_mask);
+    static void actionActivateDeferred(IFsItemPtr item, int open_mask);
     static void setFileVisualLocation(const wxString& path, int insert_index);
-    static tango::IDatabasePtr getItemDatabase(cfw::IFsItemPtr item);
-    static bool isItemMount(cfw::IFsItemPtr item);
-    static bool isItemInMount(cfw::IFsItemPtr item);
-    static wxString getFsItemPath(cfw::IFsItemPtr source);
-    static void getFsItemPaths(cfw::IFsItemEnumPtr source,
+    static tango::IDatabasePtr getItemDatabase(IFsItemPtr item);
+    static bool isItemMount(IFsItemPtr item);
+    static bool isItemInMount(IFsItemPtr item);
+    static wxString getFsItemPath(IFsItemPtr source);
+    static void getFsItemPaths(IFsItemEnumPtr source,
                                std::vector<wxString>& result,
                                bool expand_subfolders);
 public:
@@ -224,20 +224,20 @@ public:
     
     // call initAsDocument() if you want to use dbdoc as a cfw document,
     // or call initAsWindow() if you just want a raw window
-    bool initAsDocument(cfw::IFsItemPtr item = xcm::null);
+    bool initAsDocument(IFsItemPtr item = xcm::null);
     bool initAsWindow(wxWindow* window, 
                       wxWindowID id,
                       const wxPoint& position,
                       const wxSize& size,
                       int flags,
-                      cfw::IFsItemPtr item = xcm::null);
+                      IFsItemPtr item = xcm::null);
     
-    cfw::IDocumentSitePtr getDbDocSite();
-    cfw::IFsPanelPtr getFsPanel();
+    IDocumentSitePtr getDbDocSite();
+    IFsPanelPtr getFsPanel();
     wxWindow* getDocWindow();
     
-    cfw::IFsItemPtr getFsItemFromPath(const wxString& string);
-    bool isFsItemExternal(cfw::IFsItemPtr item);
+    IFsItemPtr getFsItemFromPath(const wxString& string);
+    bool isFsItemExternal(IFsItemPtr item);
     void setDatabase(tango::IDatabasePtr db, const wxString& root_path = wxEmptyString);
     void setRootItem(IDbFolderFsItemPtr root_folder);
     void refresh();
@@ -293,37 +293,37 @@ private:
 
     void updateCutCopyItems();
 
-    void deleteFsItem(cfw::IFsPanelPtr tree,
-                        cfw::IFsItemPtr item,
+    void deleteFsItem(IFsPanelPtr tree,
+                        IFsItemPtr item,
                         std::vector<wxString>& problem_items);
 
-    cfw::IFsItemPtr _findFsItem(cfw::IFsItemPtr item,
+    IFsItemPtr _findFsItem(IFsItemPtr item,
                                 const wxString& path);
 
-    void doImportJob(std::vector<cfw::IFsItemPtr>& items,
+    void doImportJob(std::vector<IFsItemPtr>& items,
                      const wxString& dest_location);
-    void doExportJob(std::vector<cfw::IFsItemPtr>& items,
-                     cfw::IFsItemPtr dest_item);
+    void doExportJob(std::vector<IFsItemPtr>& items,
+                     IFsItemPtr dest_item);
 
-    wxString getDefaultNewFileName(cfw::IFsItemPtr parent,
+    wxString getDefaultNewFileName(IFsItemPtr parent,
                                    const wxString& name);
-    cfw::IFsItemPtr getNewFileParent();
+    IFsItemPtr getNewFileParent();
 
-    void onFsItemActivated(cfw::IFsItemPtr item);
-    void onFsItemBeginLabelEdit(cfw::IFsItemPtr item,
+    void onFsItemActivated(IFsItemPtr item);
+    void onFsItemBeginLabelEdit(IFsItemPtr item,
                                 bool* allow);
-    void onFsItemEndLabelEdit(cfw::IFsItemPtr item,
+    void onFsItemEndLabelEdit(IFsItemPtr item,
                               wxString text,
                               bool cancelled,
                               bool* allow);
-    void onFsItemRightClicked(cfw::IFsItemPtr item);
-    void onFsItemHighlightRequest(cfw::IFsItemPtr& item);
+    void onFsItemRightClicked(IFsItemPtr item);
+    void onFsItemHighlightRequest(IFsItemPtr& item);
 
-    void onDragDrop(cfw::IFsItemPtr target,
+    void onDragDrop(IFsItemPtr target,
                     wxDataObject* data,
                     wxDragResult* result);
     
-    void onCopyJobFinished(cfw::IJobPtr job);
+    void onCopyJobFinished(IJobPtr job);
     void onSetConnectionPropertiesFinished(ConnectionWizard* dlg);
 
     
@@ -344,12 +344,12 @@ private:
 
 private:
 
-    cfw::IDocumentSitePtr m_dbdoc_site;
+    IDocumentSitePtr m_dbdoc_site;
     
-    cfw::IFsPanelPtr m_fspanel;
-    cfw::IFsItemPtr m_root_item;
-    cfw::IFsItemPtr m_newitem_parent;
-    cfw::IFsItemPtr m_edit_item;
+    IFsPanelPtr m_fspanel;
+    IFsItemPtr m_root_item;
+    IFsItemPtr m_newitem_parent;
+    IFsItemPtr m_edit_item;
     
     bool m_no_edit;
     bool m_link_bar_mode;

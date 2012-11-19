@@ -1120,16 +1120,16 @@ bool ImportTemplate::save(const wxString& path)
 */
 
 
-static void onImportJobFinished(cfw::IJobPtr job)
+static void onImportJobFinished(IJobPtr job)
 {
-    if (job->getJobInfo()->getState() != cfw::jobStateFinished)
+    if (job->getJobInfo()->getState() != jobStateFinished)
         return;
 
     g_app->getAppController()->refreshDbDoc();
 }
 
 
-cfw::IJobPtr ImportTemplate::execute()
+IJobPtr ImportTemplate::execute()
 {
     // -- concatenate the base path and the table name --
 
@@ -1182,9 +1182,9 @@ cfw::IJobPtr ImportTemplate::execute()
                                  it->output_tablename);
         }
 
-        g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+        g_app->getJobQueue()->addJob(job, jobStateRunning);
 
-        return static_cast<cfw::IJob*>(job);
+        return static_cast<IJob*>(job);
     }
 
     // we have to do this here, since the path selection page is now used
@@ -1359,9 +1359,9 @@ cfw::IJobPtr ImportTemplate::execute()
         job->addImportSet(job_import_info);
     }
 
-    g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
 
-    return static_cast<cfw::IJob*>(job);
+    return static_cast<IJob*>(job);
 }
 
 

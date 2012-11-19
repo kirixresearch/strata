@@ -81,13 +81,13 @@ public:
         
         m_job_info.create_instance("cfw.JobInfo");
         m_job_info->setTitle(wxT("Print"));
-        m_job_info->setInfoMask(cfw::jobMaskTitle |
-                            cfw::jobMaskStartTime |
-                            cfw::jobMaskFinishTime |
-                            cfw::jobMaskPercentage |
-                            cfw::jobMaskProgressString |
-                            cfw::jobMaskProgressBar |
-                            cfw::jobMaskCurrentCount);
+        m_job_info->setInfoMask(jobMaskTitle |
+                            jobMaskStartTime |
+                            jobMaskFinishTime |
+                            jobMaskPercentage |
+                            jobMaskProgressString |
+                            jobMaskProgressBar |
+                            jobMaskCurrentCount);
     }
 
     void Init(const wxString& url,
@@ -118,7 +118,7 @@ public:
         m_job_info->setStartTime(time(NULL));
         if (m_max_page_count != -1)
             m_job_info->setMaxCount(m_max_page_count);
-        m_job_id = g_app->getJobQueue()->addJobInfo(m_job_info, cfw::jobStateRunning);
+        m_job_id = g_app->getJobQueue()->addJobInfo(m_job_info, jobStateRunning);
     }
 
     void OnFinish()
@@ -127,7 +127,7 @@ public:
         if (!IsCancelled() && !IsFailed())
         {
             m_job_info->setFinishTime(time(NULL));
-            m_job_info->setState(cfw::jobStateFinished);
+            m_job_info->setState(jobStateFinished);
         }
 
         delete this;
@@ -136,7 +136,7 @@ public:
     void OnError(const wxString& message)
     {
         m_job_info->setFinishTime(time(NULL));
-        m_job_info->setState(cfw::jobStateFailed);
+        m_job_info->setState(jobStateFailed);
     }
     
     void OnProgressChange(wxLongLong cur_progress,
@@ -144,11 +144,11 @@ public:
     {
         m_job_info->setCurrentCount(cur_progress.ToDouble());
         
-        if (m_job_info->getState() == cfw::jobStateCancelling ||
-            m_job_info->getState() == cfw::jobStateCancelled)
+        if (m_job_info->getState() == jobStateCancelling ||
+            m_job_info->getState() == jobStateCancelled)
         {
             m_job_info->setFinishTime(time(NULL));
-            m_job_info->setState(cfw::jobStateCancelled);
+            m_job_info->setState(jobStateCancelled);
             
             // set the cancelled flag
             m_cancelled = true;
@@ -169,7 +169,7 @@ private:
 
     wxString m_url;
     wxString m_filename;
-    cfw::IJobInfoPtr m_job_info;
+    IJobInfoPtr m_job_info;
     int m_job_id;
     int m_max_page_count;
     bool m_cancelled;

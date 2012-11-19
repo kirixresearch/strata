@@ -46,13 +46,13 @@ XCM_DECLARE_SMARTPTR(IColumnListPanel);
 
 
 class ColumnListPanel : public wxPanel,
-                        public cfw::IDocument,
+                        public IDocument,
                         public IColumnListPanel,
                         public xcm::signal_sink
 {
     XCM_CLASS_NAME_NOREFCOUNT("appmain.ColumnListPanel")
     XCM_BEGIN_INTERFACE_MAP(ColumnListPanel)
-        XCM_INTERFACE_ENTRY(cfw::IDocument)
+        XCM_INTERFACE_ENTRY(IDocument)
         XCM_INTERFACE_ENTRY(IColumnListPanel)
     XCM_END_INTERFACE_MAP()
 
@@ -71,8 +71,8 @@ public:
 private:
 
     // -- IDocument --
-    bool initDoc(cfw::IFramePtr frame,
-                 cfw::IDocumentSitePtr site,
+    bool initDoc(IFramePtr frame,
+                 IDocumentSitePtr site,
                  wxWindow* doc_site,
                  wxWindow* pane_site);
 
@@ -92,8 +92,8 @@ private:
 private:
 
     // -- frame events --
-    void onActiveChildChanged(cfw::IDocumentSitePtr doc_site);
-    void onFrameEvent(cfw::Event& evt);
+    void onActiveChildChanged(IDocumentSitePtr doc_site);
+    void onFrameEvent(FrameworkEvent& evt);
     bool onSiteClosing(bool force);
 
 private:

@@ -14,7 +14,7 @@
 #endif
 
 
-#include <wx/wx.h>
+#include "appmain.h"
 #include <wx/tokenzr.h>
 #include <xcm/xcm.h>
 #include <kl/klib.h>
@@ -76,8 +76,6 @@ static const char* xpm_file[] = {
 "                "};
 
 
-namespace cfw
-{
 
 
 // GenericFsItem class implementation
@@ -385,8 +383,5 @@ IFsItemEnumPtr DirectoryFsItem::getChildren()
 
     return vec;
 }
-
-
-};  // namespace cfw
 
 

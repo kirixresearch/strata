@@ -131,7 +131,7 @@ DlgDatabaseFile::DlgDatabaseFile(wxWindow* parent, int mode) :
         m_dbdoc->setDatabase(g_app->getDatabase(), wxT("/"));
         
         m_dbdoc->getFsPanel()->setMultiSelect(false);
-        m_dbdoc->getFsPanel()->setView(cfw::fsviewTree);
+        m_dbdoc->getFsPanel()->setView(fsviewTree);
         m_dbdoc->getFsPanel()->sigItemActivated().disconnect();
         m_dbdoc->getFsPanel()->sigItemActivated().connect(this, &DlgDatabaseFile::onItemActivated);
         m_dbdoc->getFsPanel()->sigItemBeginLabelEdit().disconnect();
@@ -216,7 +216,7 @@ DlgDatabaseFile::DlgDatabaseFile(wxWindow* parent, int mode) :
         // measure the label widths
         if (label_create)
         {
-            wxSize label_size = cfw::getMaxTextSize(label_create,
+            wxSize label_size = getMaxTextSize(label_create,
                                                     label_name);
             label_size.x += 5;
             
@@ -273,7 +273,7 @@ void DlgDatabaseFile::setRootFolder(const wxString& path, const wxString& root_l
         root->setBitmap(GETBMP(gf_project_16));
         m_dbdoc->getFsPanel()->setRootItem(root);
         m_dbdoc->getFsPanel()->setMultiSelect(false);
-        m_dbdoc->getFsPanel()->setView(cfw::fsviewTree);
+        m_dbdoc->getFsPanel()->setView(fsviewTree);
         m_dbdoc->getFsPanel()->refresh();
     }
 }
@@ -321,7 +321,7 @@ void DlgDatabaseFile::setPath(const wxString& new_value, bool select_text)
     {
         if (m_dbdoc)
         {
-            cfw::IFsItemPtr item;
+            IFsItemPtr item;
             
             if (m_name_ctrl->IsShown())
                 item = m_dbdoc->getFsItemFromPath(m_folder);
@@ -416,7 +416,7 @@ void DlgDatabaseFile::onOK(wxCommandEvent& evt)
 
             if (file_info->getType() != tango::filetypeFolder)
             {
-                cfw::appMessageBox(_("The specified output path is invalid because it does not specify a valid folder."),
+                appMessageBox(_("The specified output path is invalid because it does not specify a valid folder."),
                                    APPLICATION_NAME,
                                    wxOK | wxICON_EXCLAMATION | wxCENTER);
 
@@ -444,7 +444,7 @@ void DlgDatabaseFile::onOK(wxCommandEvent& evt)
             {
                 if (file_info->getType() == tango::filetypeFolder)
                 {
-                    cfw::appMessageBox(_("The file name you have entered is a folder. A folder is not valid for this operation."),
+                    appMessageBox(_("The file name you have entered is a folder. A folder is not valid for this operation."),
                                        APPLICATION_NAME,
                                        wxOK | wxICON_EXCLAMATION | wxCENTER);
                     return;
@@ -454,7 +454,7 @@ void DlgDatabaseFile::onOK(wxCommandEvent& evt)
 
         if ((m_mode == modeOpen || m_mode == modeOpenTable) && !exists)
         {
-            cfw::appMessageBox(_("The file name you have entered does not exist."),
+            appMessageBox(_("The file name you have entered does not exist."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
@@ -468,7 +468,7 @@ void DlgDatabaseFile::onOK(wxCommandEvent& evt)
 
             if (file_info->getType() == tango::filetypeFolder)
             {
-                cfw::appMessageBox(_("The file name you have entered is a folder, and is not a valid target location."),
+                appMessageBox(_("The file name you have entered is a folder, and is not a valid target location."),
                                    APPLICATION_NAME,
                                    wxOK | wxICON_EXCLAMATION | wxCENTER);
                 return;
@@ -477,7 +477,7 @@ void DlgDatabaseFile::onOK(wxCommandEvent& evt)
             if (m_overwrite_prompt)
             {
                 int result;
-                result = cfw::appMessageBox(_("The file name you have entered already exists.  Would you like to overwrite it?"),
+                result = appMessageBox(_("The file name you have entered already exists.  Would you like to overwrite it?"),
                                             APPLICATION_NAME,
                                             wxYES_NO | wxCANCEL | wxICON_EXCLAMATION | wxCENTER);
 
@@ -549,7 +549,7 @@ wxString DlgDatabaseFile::getCaption()
     return m_caption;
 }
 
-void DlgDatabaseFile::onItemSelected(cfw::IFsItemPtr item)
+void DlgDatabaseFile::onItemSelected(IFsItemPtr item)
 {
     IDbFolderFsItemPtr folder = item;
     if (folder)
@@ -573,7 +573,7 @@ void DlgDatabaseFile::onItemSelected(cfw::IFsItemPtr item)
     }
 }
 
-void DlgDatabaseFile::onItemActivated(cfw::IFsItemPtr item)
+void DlgDatabaseFile::onItemActivated(IFsItemPtr item)
 {
     onItemSelected(item);
     
@@ -608,7 +608,7 @@ void DlgDatabaseFile::onComboItemSelected()
 }
     
 
-void DlgDatabaseFile::onItemBeginLabelEdit(cfw::IFsItemPtr item,
+void DlgDatabaseFile::onItemBeginLabelEdit(IFsItemPtr item,
                                            bool* allow)
 {
     *allow = false;

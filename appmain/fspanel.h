@@ -28,8 +28,6 @@
 #endif
 
 
-namespace cfw
-{
 
 
 #ifdef CFW_USE_GENERIC_TREECTRL
@@ -274,7 +272,7 @@ public:
         m_base_label = label;
     }
 
-    void setBitmap(const wxBitmap& bitmap, unsigned int bitmap_type = cfw::fsbmpSmall)
+    void setBitmap(const wxBitmap& bitmap, unsigned int bitmap_type = fsbmpSmall)
     {
         switch (bitmap_type)
         {
@@ -484,9 +482,6 @@ private:
 
     wxDataFormat m_format;
 };
-
-
-};  // namespace cfw
 
 
 #endif

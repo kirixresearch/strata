@@ -30,8 +30,8 @@ DatabaseInfoPanel::~DatabaseInfoPanel()
 }
 
 // -- IDocument --
-bool DatabaseInfoPanel::initDoc(cfw::IFramePtr frame,
-                                cfw::IDocumentSitePtr site,
+bool DatabaseInfoPanel::initDoc(IFramePtr frame,
+                                IDocumentSitePtr site,
                                 wxWindow* doc_site,
                                 wxWindow* pane_site)
 {
@@ -114,7 +114,7 @@ bool DatabaseInfoPanel::initDoc(cfw::IFramePtr frame,
 
 
     // -- resize label widths so they line up --
-    wxSize min = cfw::getMaxTextSize(project_name_label,
+    wxSize min = getMaxTextSize(project_name_label,
                                      project_location_label,
                                      project_size_label);
     min.x += 10;

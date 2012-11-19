@@ -234,8 +234,8 @@ void MultiFileInfoPanel::addFile(const wxString& path)
 
 
 // -- IDocument --
-bool MultiFileInfoPanel::initDoc(cfw::IFramePtr frame,
-                                 cfw::IDocumentSitePtr site,
+bool MultiFileInfoPanel::initDoc(IFramePtr frame,
+                                 IDocumentSitePtr site,
                                  wxWindow* doc_site,
                                  wxWindow* pane_site)
 {
@@ -432,7 +432,7 @@ void MultiFileInfoPanel::populate()
              else if (it->size == -1)
             m_grid->setCellString(row, 2, _("(Unknown)"));
              else
-            m_grid->setCellString(row, 2, cfw::dbl2fstr(it->size/1024.0) + wxT(" KB"));
+            m_grid->setCellString(row, 2, dbl2fstr(it->size/1024.0) + wxT(" KB"));
         
         // set the record count of the project item in the grid
         if (it->records == -2)
@@ -440,7 +440,7 @@ void MultiFileInfoPanel::populate()
              else if (it->records == -1)
             m_grid->setCellString(row, 3, _("(Unknown)"));
              else
-            m_grid->setCellString(row, 3, cfw::dbl2fstr(it->records));
+            m_grid->setCellString(row, 3, dbl2fstr(it->records));
         
         row++;
     }
@@ -581,7 +581,7 @@ void MultiFileInfoPanel::onSave(wxCommandEvent& event)
     
     ITableDocPtr doc = TableDocMgr::createTableDoc();
     doc->open(output, xcm::null);
-    g_app->getMainFrame()->createSite(doc, cfw::sitetypeNormal, -1, -1, -1, -1);
+    g_app->getMainFrame()->createSite(doc, sitetypeNormal, -1, -1, -1, -1);
     g_app->getMainFrame()->closeSite(m_doc_site);
 }
 

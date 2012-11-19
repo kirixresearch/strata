@@ -34,9 +34,6 @@
 #endif
 
 
-namespace cfw
-{
-
 
 struct LocalePtrContainer
 {
@@ -120,8 +117,8 @@ wxString Locale::formatDate(int year,
 
     if (date_order == -1)
     {
-        date_order = cfw::Locale::getSettings()->date_order;
-        date_separator = cfw::Locale::getSettings()->date_separator;
+        date_order = Locale::getSettings()->date_order;
+        date_separator = Locale::getSettings()->date_separator;
     }
 
     if (date_order == DateOrderMMDDYY)
@@ -212,7 +209,7 @@ bool Locale::parseDateTime(const wxString& input,
     int month_pos = 0;
     int day_pos = 1;
 
-    if (cfw::Locale::getDateOrder() == cfw::Locale::DateOrderDDMMYY)
+    if (Locale::getDateOrder() == Locale::DateOrderDDMMYY)
     {
         year_pos = 2;
         month_pos = 1;
@@ -634,7 +631,7 @@ public:
 
     bool ProcessEvent(wxEvent& event)
     {
-        cfw::appMessageBox(message, caption, style, parent, x, y);
+        appMessageBox(message, caption, style, parent, x, y);
         //delete this;
         return true;
     }
@@ -960,5 +957,3 @@ wxString getProxyServer()
 
 }
 
-
-};

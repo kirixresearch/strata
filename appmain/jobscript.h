@@ -16,12 +16,12 @@
 #include "scripthost.h"
 
 
-class ScriptJob : public cfw::JobBase,
+class ScriptJob : public JobBase,
                   public xcm::signal_sink
 {
     XCM_CLASS_NAME("appmain.ScriptJob")
     XCM_BEGIN_INTERFACE_MAP(ScriptJob)
-        XCM_INTERFACE_CHAIN(cfw::JobBase)
+        XCM_INTERFACE_CHAIN(JobBase)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -45,8 +45,8 @@ private:
 
     ScriptHost* m_script_host;
 
-    cfw::IJobInfoPtr m_script_jobinfo;
-    cfw::IJobPtr m_script_job;
+    IJobInfoPtr m_script_jobinfo;
+    IJobPtr m_script_job;
 
     int m_rterror_code;
     wxString m_rterror_string;

@@ -43,7 +43,7 @@ class QueryJob : public TangoJobBase,
 {
     XCM_CLASS_NAME("appmain.QueryJob")
     XCM_BEGIN_INTERFACE_MAP(QueryJob)
-        XCM_INTERFACE_CHAIN(cfw::JobBase)
+        XCM_INTERFACE_CHAIN(JobBase)
         XCM_INTERFACE_ENTRY(IQueryJob)
     XCM_END_INTERFACE_MAP()
 
@@ -105,7 +105,7 @@ class SortFilterJob : public TangoJobBase,
     XCM_CLASS_NAME("appmain.SortFilterJob")
     XCM_BEGIN_INTERFACE_MAP(SortFilterJob)
         XCM_INTERFACE_ENTRY(ISortFilterJob)
-        XCM_INTERFACE_CHAIN(cfw::JobBase)
+        XCM_INTERFACE_CHAIN(JobBase)
     XCM_END_INTERFACE_MAP()
 
 public:

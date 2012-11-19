@@ -67,12 +67,12 @@ END_EVENT_TABLE()
 
 
 
-static wxString getJobElapsedTimeString(cfw::IJobInfoPtr job_info)
+static wxString getJobElapsedTimeString(IJobInfoPtr job_info)
 {
     int job_state = job_info->getState();
-    if (job_state == cfw::jobStatePaused)
+    if (job_state == jobStatePaused)
         return _("Paused");
-         else if (job_state == cfw::jobStateQueued)
+         else if (job_state == jobStateQueued)
         return _("Queued");
 
     // calcuate the duration of the job
@@ -80,14 +80,14 @@ static wxString getJobElapsedTimeString(cfw::IJobInfoPtr job_info)
     time_t finish_time = job_info->getFinishTime();
     time_t duration, current_time = time(NULL);
     
-    if (job_state == cfw::jobStateCancelled ||
-        job_state == cfw::jobStateFinished ||
-        job_state == cfw::jobStateFailed)
+    if (job_state == jobStateCancelled ||
+        job_state == jobStateFinished ||
+        job_state == jobStateFailed)
     {
         time_t finish_time = job_info->getFinishTime();
         duration = finish_time - start_time;
     }
-     else if (job_state == cfw::jobStateQueued)
+     else if (job_state == jobStateQueued)
     {
         duration = 0;
     }
@@ -120,31 +120,31 @@ static wxString getJobElapsedTimeString(cfw::IJobInfoPtr job_info)
     
     switch (job_state)
     {
-        case cfw::jobStateRunning:
+        case jobStateRunning:
             return wxString::Format(_("Running (%s)"), time_str.c_str());
 
-        case cfw::jobStateFinished:
+        case jobStateFinished:
             return wxString::Format(_("Finished on %s at %s (%s)"),
                                     finish_date_str.c_str(),
                                     finish_time_str.c_str(),
                                     time_str.c_str());
 
-        case cfw::jobStateCancelling:
+        case jobStateCancelling:
             return wxString::Format(_("Cancelling (%s)"), time_str.c_str());
 
-        case cfw::jobStateCancelled:
+        case jobStateCancelled:
             return wxString::Format(_("Cancelled on %s at %s (%s)"),
                                     finish_date_str.c_str(),
                                     finish_time_str.c_str(),
                                     time_str.c_str());
-        case cfw::jobStateFailed:
+        case jobStateFailed:
             return wxString::Format(_("Failed on %s at %s (%s)"),
                                     finish_date_str.c_str(),
                                     finish_time_str.c_str(),
                                     time_str.c_str());
     }
 
-    return cfw::dbl2fstr(job_info->getPercentage(), 1) + wxT("%");
+    return dbl2fstr(job_info->getPercentage(), 1) + wxT("%");
 }
 
 
@@ -177,7 +177,7 @@ JobListCtrl::~JobListCtrl()
     }
 }
 
-void JobListCtrl::addJobItem(cfw::IJobInfoPtr job_info)
+void JobListCtrl::addJobItem(IJobInfoPtr job_info)
 {
     checkIfInMainThread();
 
@@ -261,7 +261,7 @@ void JobListCtrl::updateJobItem(kcl::ScrollListItem* item)
     checkIfInMainThread();
 
     int job_id = item->getExtraLong();
-    cfw::IJobInfoPtr job_info = m_job_queue->getJobInfo(job_id);
+    IJobInfoPtr job_info = m_job_queue->getJobInfo(job_id);
     int job_state = job_info->getState();
     
     kcl::ScrollListElement* element;
@@ -272,15 +272,15 @@ void JobListCtrl::updateJobItem(kcl::ScrollListItem* item)
     
     // update bitmap
     element = item->getElement(wxT("bitmap"));
-    if (job_state == cfw::jobStateFinished)
+    if (job_state == jobStateFinished)
         element->setBitmap(GETBMP(gf_checkmark_32));
-         else if (job_state == cfw::jobStateCancelled)
+         else if (job_state == jobStateCancelled)
         element->setBitmap(GETBMP(gf_x_32));
-         else if (job_state == cfw::jobStateFailed)
+         else if (job_state == jobStateFailed)
         element->setBitmap(GETBMP(gf_exclamation_32));
     
     // update progress gauge
-    if (job_state == cfw::jobStateRunning)
+    if (job_state == jobStateRunning)
     {
         double pct = job_info->getPercentage();
         bool is_indeterminate = false;
@@ -341,7 +341,7 @@ void JobListCtrl::refreshItems()
         job_id = (*it)->getExtraLong();
         
         // try to locate the job info in the job queue
-        cfw::IJobInfoPtr info;
+        IJobInfoPtr info;
         info = m_job_queue->getJobInfo(job_id);
         if (!info)
             continue;
@@ -349,9 +349,9 @@ void JobListCtrl::refreshItems()
         updateJobItem(*it);
         
         int state = info->getState();
-        if (state == cfw::jobStateFinished ||
-            state == cfw::jobStateCancelled ||
-            state == cfw::jobStateFailed)
+        if (state == jobStateFinished ||
+            state == jobStateCancelled ||
+            state == jobStateFailed)
         {
             // make job list not update this job anymore
             (*it)->setUpdated(false);
@@ -369,21 +369,21 @@ void JobListCtrl::refreshItems()
     }
 
     // now look for new jobs
-    cfw::IJobInfoEnumPtr jobs = m_job_queue->getJobInfoEnum(cfw::jobStateAll);
+    IJobInfoEnumPtr jobs = m_job_queue->getJobInfoEnum(jobStateAll);
     bool item_count_changed = false;
     int job_count = jobs->size();
     int i;
 
     for (i = 0; i < job_count; i++)
     {
-        cfw::IJobInfoPtr job_info = jobs->getItem(i);
+        IJobInfoPtr job_info = jobs->getItem(i);
 
         job_id = job_info->getJobId();
         int state = job_info->getState();
 
-        if (state == cfw::jobStateFinished ||
-            state == cfw::jobStateCancelled ||
-            state == cfw::jobStateFailed)
+        if (state == jobStateFinished ||
+            state == jobStateCancelled ||
+            state == jobStateFailed)
         {
             continue;
         }
@@ -407,8 +407,8 @@ void JobListCtrl::clearInactiveJobs()
 {
     checkIfInMainThread();
 
-    cfw::IJobInfoEnumPtr jobs = m_job_queue->getJobInfoEnum(cfw::jobStateAll);
-    cfw::IJobInfoPtr job_info;
+    IJobInfoEnumPtr jobs = m_job_queue->getJobInfoEnum(jobStateAll);
+    IJobInfoPtr job_info;
     int job_count = jobs->size();
     int i;
 
@@ -417,13 +417,13 @@ void JobListCtrl::clearInactiveJobs()
         // for all jobs that are done (meaning cancelled, finished, etc.),
         // set the job info's visible flag to false, since we'll use that
         // to determine whether to create a kcl::ScrollList item or not
-        cfw::IJobInfoPtr job_info = jobs->getItem(i);
+        IJobInfoPtr job_info = jobs->getItem(i);
         int state = job_info->getState();
         
-        if (state == cfw::jobStateFinished ||
-            state == cfw::jobStateCancelling ||
-            state == cfw::jobStateCancelled ||
-            state == cfw::jobStateFailed)
+        if (state == jobStateFinished ||
+            state == jobStateCancelling ||
+            state == jobStateCancelled ||
+            state == jobStateFailed)
         {
             job_info->setVisible(false);
         }
@@ -449,8 +449,8 @@ void JobListCtrl::populate()
 {
     checkIfInMainThread();
 
-    cfw::IJobInfoEnumPtr jobs = m_job_queue->getJobInfoEnum(cfw::jobStateAll);
-    cfw::IJobInfoPtr job_info;
+    IJobInfoEnumPtr jobs = m_job_queue->getJobInfoEnum(jobStateAll);
+    IJobInfoPtr job_info;
     size_t i, job_count = jobs->size();
 
     // clear out the job items vector
@@ -460,7 +460,7 @@ void JobListCtrl::populate()
     for (i = 0; i < job_count; i++)
     {
         // only populate the control with visible job infos
-        cfw::IJobInfoPtr job_info = jobs->getItem(i);
+        IJobInfoPtr job_info = jobs->getItem(i);
         if (!job_info->getVisible())
             continue;
 
@@ -489,11 +489,11 @@ void JobListCtrl::onCancelButtonClicked(wxCommandEvent& evt)
     }
 
     int job_id = item->getExtraLong();
-    cfw::IJobPtr job = m_job_queue->lookupJob(job_id);
+    IJobPtr job = m_job_queue->lookupJob(job_id);
 
     if (job)
     {
-        cfw::IJobInfoPtr info = job->getJobInfo();
+        IJobInfoPtr info = job->getJobInfo();
         if (info.isOk())
         {
             info->setFinishTime(time(NULL));
@@ -505,11 +505,11 @@ void JobListCtrl::onCancelButtonClicked(wxCommandEvent& evt)
     }
      else
     {
-        cfw::IJobInfoPtr job_info = m_job_queue->getJobInfo(job_id);
+        IJobInfoPtr job_info = m_job_queue->getJobInfo(job_id);
         if (job_info)
         {
             job_info->setFinishTime(time(NULL));
-            job_info->setState(cfw::jobStateCancelling);
+            job_info->setState(jobStateCancelling);
         }
     }
 }
@@ -564,8 +564,8 @@ JobManagerPanel::~JobManagerPanel()
 }
 
 
-bool JobManagerPanel::initDoc(cfw::IFramePtr frame,
-                              cfw::IDocumentSitePtr site,
+bool JobManagerPanel::initDoc(IFramePtr frame,
+                              IDocumentSitePtr site,
                               wxWindow* docsite_wnd,
                               wxWindow* panesite_wnd)
 {

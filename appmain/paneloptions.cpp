@@ -397,19 +397,19 @@ public:
     
     void onUseCurrentPageButtonClicked(wxCommandEvent& evt)
     {
-        cfw::IDocumentSitePtr active_child;
+        IDocumentSitePtr active_child;
         active_child = g_app->getMainFrame()->getActiveChild();
         if (active_child.isNull())
             return;
         
-        cfw::IDocumentPtr doc = active_child->getDocument();
+        IDocumentPtr doc = active_child->getDocument();
         if (doc.isNull())
             return;
 
         IWebDocPtr webdoc = doc;
         if (webdoc.isNull())
         {
-            cfw::appMessageBox(_("The current page is not a web document so it cannot be used as your home page."));
+            appMessageBox(_("The current page is not a web document so it cannot be used as your home page."));
             return;
         }
                         
@@ -423,7 +423,7 @@ public:
     
     void onResetPanelsButtonClicked(wxCommandEvent& evt)
     {
-        int res = cfw::appMessageBox(_("Are you sure you want to reset the location and size of all toolbars and panels?"),
+        int res = appMessageBox(_("Are you sure you want to reset the location and size of all toolbars and panels?"),
                                      _("Reset View?"),
                                      wxYES_NO |
                                      wxNO_DEFAULT |
@@ -441,7 +441,7 @@ public:
         m_toolbar_style->SetSelection(pref2toolbarChoice(m_pi->general_toolbar_style));
         
         // do preference refresh
-        cfw::Event* e = new cfw::Event(wxT("appmain.preferencesSaved"));
+        FrameworkEvent* e = new FrameworkEvent(wxT("appmain.preferencesSaved"));
         g_app->getMainFrame()->sendEvent(e);
     }
     
@@ -826,9 +826,9 @@ public:
         m_preview_grid->setCellDouble(1, 1, 456.789);
         m_preview_grid->setCellDouble(2, 1, -789.000);
 
-        m_preview_grid->setCellString(0, 2, cfw::Locale::formatDate(1970,01,01));
-        m_preview_grid->setCellString(1, 2, cfw::Locale::formatDate(2000,02,28));
-        m_preview_grid->setCellString(2, 2, cfw::Locale::formatDate(1979,12,25));
+        m_preview_grid->setCellString(0, 2, Locale::formatDate(1970,01,01));
+        m_preview_grid->setCellString(1, 2, Locale::formatDate(2000,02,28));
+        m_preview_grid->setCellString(2, 2, Locale::formatDate(1979,12,25));
 
         m_preview_grid->setCellBoolean(0, 3, true);
         m_preview_grid->setCellBoolean(1, 3, false);
@@ -1812,7 +1812,7 @@ public:
     
     void onClearPrivateData(wxCommandEvent& evt)
     {
-        int result = cfw::appMessageBox(_("Are you sure you want to clear all private data?"),
+        int result = appMessageBox(_("Are you sure you want to clear all private data?"),
                                         APPLICATION_NAME,
                                         wxYES_NO | wxICON_QUESTION | wxCENTER);
         if (result == wxYES)
@@ -2316,8 +2316,8 @@ OptionsPanel::~OptionsPanel()
 }
 
 // -- IDocument --
-bool OptionsPanel::initDoc(cfw::IFramePtr frame,
-                           cfw::IDocumentSitePtr doc_site,
+bool OptionsPanel::initDoc(IFramePtr frame,
+                           IDocumentSitePtr doc_site,
                            wxWindow* docsite_wnd,
                            wxWindow* panesite_wnd)
 {
@@ -2425,7 +2425,7 @@ void OptionsPanel::setDocumentFocus()
 
 void OptionsPanel::loadPrefs(PrefInfo* info)
 {
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
     
     // general preferences
     info->general_startup_location = getAppPrefsString(wxT("general.location.home"));
@@ -2497,7 +2497,7 @@ void OptionsPanel::loadPrefs(PrefInfo* info)
 
 void OptionsPanel::savePrefs(PrefInfo* info)
 {
-    cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
+    IAppPreferencesPtr prefs = g_app->getAppPreferences();
 
     // general preferences
     m_general_page->serializeValues();
@@ -2571,7 +2571,7 @@ void OptionsPanel::savePrefs(PrefInfo* info)
     
     prefs->flush();
     
-    cfw::Event* e = new cfw::Event(wxT("appmain.preferencesSaved"));
+    FrameworkEvent* e = new FrameworkEvent(wxT("appmain.preferencesSaved"));
     g_app->getMainFrame()->sendEvent(e);
 }
 
@@ -2612,7 +2612,7 @@ void OptionsPanel::onRestoreDefaultsClicked(wxCommandEvent& evt)
 {
     if (m_general_page->IsShown())
     {
-        int res = cfw::appMessageBox(_("Restoring the default general settings will cause you to lose your current settings.\nDo you want to continue?"),
+        int res = appMessageBox(_("Restoring the default general settings will cause you to lose your current settings.\nDo you want to continue?"),
                                      _("Restore Defaults?"),
                                      wxYES_NO |
                                      wxNO_DEFAULT |
@@ -2626,7 +2626,7 @@ void OptionsPanel::onRestoreDefaultsClicked(wxCommandEvent& evt)
     }
      else if (m_internet_page->IsShown())
     {
-        int res = cfw::appMessageBox(_("Restoring the default Internet settings will cause you to lose your current settings.\nDo you want to continue?"),
+        int res = appMessageBox(_("Restoring the default Internet settings will cause you to lose your current settings.\nDo you want to continue?"),
                                      _("Restore Defaults?"),
                                      wxYES_NO |
                                      wxNO_DEFAULT |
@@ -2640,7 +2640,7 @@ void OptionsPanel::onRestoreDefaultsClicked(wxCommandEvent& evt)
     }
      else if (m_privacy_page->IsShown())
     {
-        int res = cfw::appMessageBox(_("Restoring the default privacy settings will cause you to lose your current settings.\nDo you want to continue?"),
+        int res = appMessageBox(_("Restoring the default privacy settings will cause you to lose your current settings.\nDo you want to continue?"),
                                      _("Restore Defaults?"),
                                      wxYES_NO |
                                      wxNO_DEFAULT |
@@ -2654,7 +2654,7 @@ void OptionsPanel::onRestoreDefaultsClicked(wxCommandEvent& evt)
     }
      else if (m_datasheet_page->IsShown())
     {
-        int res = cfw::appMessageBox(_("Restoring the default datasheet settings will cause you to lose your current settings.\nDo you want to continue?"),
+        int res = appMessageBox(_("Restoring the default datasheet settings will cause you to lose your current settings.\nDo you want to continue?"),
                                      _("Restore Defaults?"),
                                      wxYES_NO |
                                      wxNO_DEFAULT |
@@ -2668,7 +2668,7 @@ void OptionsPanel::onRestoreDefaultsClicked(wxCommandEvent& evt)
     }
      else if (m_report_page->IsShown())
     {
-        int res = cfw::appMessageBox(_("Restoring the default report settings will cause you to lose your current settings.\nDo you want to continue?"),
+        int res = appMessageBox(_("Restoring the default report settings will cause you to lose your current settings.\nDo you want to continue?"),
                                      _("Restore Defaults?"),
                                      wxYES_NO |
                                      wxNO_DEFAULT |
@@ -2682,7 +2682,7 @@ void OptionsPanel::onRestoreDefaultsClicked(wxCommandEvent& evt)
     }
      else if (m_script_page->IsShown())
     {
-        int res = cfw::appMessageBox(_("Restoring the default script settings will cause you to lose your current settings.\nDo you want to continue?"),
+        int res = appMessageBox(_("Restoring the default script settings will cause you to lose your current settings.\nDo you want to continue?"),
                                      _("Restore Defaults?"),
                                      wxYES_NO |
                                      wxNO_DEFAULT |

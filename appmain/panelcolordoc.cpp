@@ -25,8 +25,8 @@ ColorDocPanel::~ColorDocPanel()
 }
 
 // -- IDocument --
-bool ColorDocPanel::initDoc(cfw::IFramePtr frame,
-                            cfw::IDocumentSitePtr site,
+bool ColorDocPanel::initDoc(IFramePtr frame,
+                            IDocumentSitePtr site,
                             wxWindow* doc_site,
                             wxWindow* pane_site)
 {

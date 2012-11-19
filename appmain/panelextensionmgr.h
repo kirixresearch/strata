@@ -15,12 +15,12 @@
 
 class ExtensionInfo;
 class ExtensionManagerPanel : public wxPanel,
-                              public cfw::IDocument,
+                              public IDocument,
                               public xcm::signal_sink
 {
     XCM_CLASS_NAME_NOREFCOUNT("appmain.ExtensionManagerPanel")
     XCM_BEGIN_INTERFACE_MAP(ExtensionManagerPanel)
-        XCM_INTERFACE_ENTRY(cfw::IDocument)
+        XCM_INTERFACE_ENTRY(IDocument)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -30,8 +30,8 @@ public:
 public:
 
     // -- IDocument --
-    bool initDoc(cfw::IFramePtr frame,
-                 cfw::IDocumentSitePtr doc_site,
+    bool initDoc(IFramePtr frame,
+                 IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,
                  wxWindow* panesite_wnd);
 
@@ -63,7 +63,7 @@ private:
     
 private:
 
-    cfw::IDocumentSitePtr m_doc_site;
+    IDocumentSitePtr m_doc_site;
     
     kcl::ScrollListControl* m_extension_list;
     wxButton* m_addextensions_button;

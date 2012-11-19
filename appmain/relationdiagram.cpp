@@ -187,7 +187,7 @@ void showAddTableDialog(RelationDiagram* diagram)
         }
          else
         {
-            cfw::appMessageBox(_("The table could not be opened. It may currently be in use."),
+            appMessageBox(_("The table could not be opened. It may currently be in use."),
                                APPLICATION_NAME,
                                wxOK | wxICON_INFORMATION | wxCENTER);
         }
@@ -1185,7 +1185,7 @@ void RelationBox::populate()
             icon = GETBMP(gf_field_16);
         }
         
-        wxString text = cfw::makeProper(towx(col_info->getName()));
+        wxString text = makeProper(towx(col_info->getName()));
 
 
         m_grid->insertRow(-1);
@@ -1282,7 +1282,7 @@ void RelationBox::onCreateLink(wxDragResult& drag_result,
 
     if (tot_selected_lines > 1)
     {
-        cfw::appMessageBox (_("Multi-field relationships cannot be created at one time.  Please connect each pair of fields individually."),
+        appMessageBox (_("Multi-field relationships cannot be created at one time.  Please connect each pair of fields individually."),
                               APPLICATION_NAME,
                               wxICON_EXCLAMATION | wxCENTER);
         src_box->clearSelection();
@@ -1513,7 +1513,7 @@ RelationDiagram::RelationDiagram(wxWindow* parent,
 
     m_changed = false;
 
-    cfw::FsDataDropTarget* drop_target = new cfw::FsDataDropTarget;
+    FsDataDropTarget* drop_target = new FsDataDropTarget;
     drop_target->sigDragDrop.connect(this, &RelationDiagram::onTreeDataDropped);
     drop_target->sigDragLeave.connect(this, &RelationDiagram::onDragLeave);
     drop_target->sigDragOver.connect(this, &RelationDiagram::onDragOver);
@@ -1972,7 +1972,7 @@ void RelationDiagram::onBoxClosing(RelationBox* box, bool* allow)
     if (lines1.size() == 0 && lines2.size() == 0)
         return;
 
-    int res = cfw::appMessageBox(_("Removing this table from the diagram will remove all relationships associated with this table.  Would you like to continue?"),
+    int res = appMessageBox(_("Removing this table from the diagram will remove all relationships associated with this table.  Would you like to continue?"),
                                  APPLICATION_NAME,
                                  wxYES_NO | wxICON_QUESTION | wxCENTER,
                                  g_app->getMainWindow());
@@ -2206,9 +2206,9 @@ void RelationDiagram::onDragOver(wxDragResult& drag_result)
 }
 
 void RelationDiagram::onTreeDataDropped(wxDragResult& drag_result,
-                                        cfw::FsDataObject* data)
+                                        FsDataObject* data)
 {
-    cfw::IFsItemEnumPtr items = data->getFsItems();
+    IFsItemEnumPtr items = data->getFsItems();
 
     DbDoc* dbdoc = g_app->getDbDoc();
 
@@ -2216,7 +2216,7 @@ void RelationDiagram::onTreeDataDropped(wxDragResult& drag_result,
     int i,count = items->size();
     for (i = 0; i < count; ++i)
     {
-        cfw::IFsItemPtr item = items->getItem(i);
+        IFsItemPtr item = items->getItem(i);
         if (item.isNull())
             continue;
 
@@ -2224,7 +2224,7 @@ void RelationDiagram::onTreeDataDropped(wxDragResult& drag_result,
         if (folder.isOk())
         {
             refresh();
-            cfw::appMessageBox(_("One or more of the items is a folder.  Folders cannot be added to the relationship diagram."),
+            appMessageBox(_("One or more of the items is a folder.  Folders cannot be added to the relationship diagram."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
@@ -2233,7 +2233,7 @@ void RelationDiagram::onTreeDataDropped(wxDragResult& drag_result,
         if (dbdoc->isFsItemExternal(item))
         {
             refresh();
-            cfw::appMessageBox(_("One or more of the items is an external table.  External tables cannot be added to the relationship diagram."),
+            appMessageBox(_("One or more of the items is an external table.  External tables cannot be added to the relationship diagram."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
 
@@ -2246,7 +2246,7 @@ void RelationDiagram::onTreeDataDropped(wxDragResult& drag_result,
             if (obj->getType() != dbobjtypeSet)
             {
                 refresh();
-                cfw::appMessageBox(_("One or more of the items is not a table.  Items that are not tables cannot be added to the relationship diagram."),
+                appMessageBox(_("One or more of the items is not a table.  Items that are not tables cannot be added to the relationship diagram."),
                                    APPLICATION_NAME,
                                    wxOK | wxICON_EXCLAMATION | wxCENTER);
 
@@ -2279,7 +2279,7 @@ void RelationDiagram::onTreeDataDropped(wxDragResult& drag_result,
         if (!g_app->getDatabase()->getFileExist(towstr(path)))
         {
             // some of the paths couldn't be found, bail out
-            cfw::appMessageBox(_("One or more of the items could not be found in the project."),
+            appMessageBox(_("One or more of the items could not be found in the project."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
@@ -2314,7 +2314,7 @@ void RelationDiagram::onTreeDataDropped(wxDragResult& drag_result,
     
     if (existing_set_added)
     {
-        cfw::appMessageBox(_("One or more of the tables was not added because it already exists in the relationship diagram."),
+        appMessageBox(_("One or more of the tables was not added because it already exists in the relationship diagram."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
     }
@@ -2902,7 +2902,7 @@ void RelationDiagram::onMouse(wxMouseEvent& evt)
 
             wxPoint pt_mouse = ::wxGetMousePosition();
             pt_mouse = ScreenToClient(pt_mouse);
-            cfw::CommandCapture* cc = new cfw::CommandCapture;
+            CommandCapture* cc = new CommandCapture;
             PushEventHandler(cc);
             PopupMenu(&menuPopup, pt_mouse);
             command = cc->getLastCommandId();

@@ -15,9 +15,7 @@
 
 
 
-#include <wx/wx.h>
-#include <xcm/xcm.h>
-#include <kl/klib.h>
+#include "appmain.h"
 #include <kl/thread.h>
 #include <queue>
 #include "framework.h"
@@ -51,9 +49,6 @@
 #endif
 
 
-
-namespace cfw
-{
 
 
 wxWindow* g_invisible = NULL;
@@ -167,13 +162,13 @@ bool FrameCommandDispatch::ProcessEvent(wxEvent& evt)
 
 
 
-class UIContext : public cfw::IUIContext,
-                  public cfw::IUIContextInternal
+class UIContext : public IUIContext,
+                  public IUIContextInternal
 {
     XCM_CLASS_NAME("cfw.UIContext")
     XCM_BEGIN_INTERFACE_MAP(UIContext)
-        XCM_INTERFACE_ENTRY(cfw::IUIContext)
-        XCM_INTERFACE_ENTRY(cfw::IUIContextInternal)
+        XCM_INTERFACE_ENTRY(IUIContext)
+        XCM_INTERFACE_ENTRY(IUIContextInternal)
     XCM_END_INTERFACE_MAP()
 
 private:
@@ -370,7 +365,7 @@ public:
                      m_max_height);
     }
 
-    void setDocument(cfw::IDocumentPtr document)
+    void setDocument(IDocumentPtr document)
     {  
         m_document = document;
 
@@ -575,7 +570,7 @@ public:
                      m_max_height);
     }
 
-    void setDocument(cfw::IDocumentPtr document)
+    void setDocument(IDocumentPtr document)
     {
         m_document = document;
 
@@ -775,7 +770,7 @@ public:
         if (height) *height = h1;
     }
     
-    void setDocument(cfw::IDocumentPtr document)
+    void setDocument(IDocumentPtr document)
     {
         m_document = document;
         m_child = NULL;
@@ -893,7 +888,7 @@ ContainerBase* getContainerFromWnd(wxWindow* wnd)
     return NULL;
 }
 
-ContainerBase* getContainerFromSite(cfw::IDocumentSitePtr site)
+ContainerBase* getContainerFromSite(IDocumentSitePtr site)
 {
     wxWindow* wnd = NULL;
     
@@ -934,12 +929,12 @@ public:
 
 // DocumentSite implementation
 
-class DocumentSite : public cfw::IDocumentSite,
+class DocumentSite : public IDocumentSite,
                      public xcm::signal_sink
 {
     XCM_CLASS_NAME("cfw.DocumentSite")
     XCM_BEGIN_INTERFACE_MAP(DocumentSite)
-        XCM_INTERFACE_ENTRY(cfw::IDocumentSite)
+        XCM_INTERFACE_ENTRY(IDocumentSite)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -1313,7 +1308,7 @@ bool ChildFrame::closeSite(bool force)
 
 IUIContextPtr ChildFrame::getUIContext()
 {
-    cfw::IDocumentSitePtr site = getActiveSite();
+    IDocumentSitePtr site = getActiveSite();
     if (site.isNull())
         return xcm::null;
         
@@ -1362,7 +1357,7 @@ void ChildFrame::onActivate(wxActivateEvent& evt)
 
 void ChildFrame::onClose(wxCloseEvent& evt)
 {
-    cfw::IDocumentPtr doc = getDocument();
+    IDocumentPtr doc = getDocument();
     
     if (doc.isOk())
     {
@@ -1697,7 +1692,7 @@ void MainFrame::onChildRightClick(wxAuiNotebookEvent& evt)
     ChildFrame* child = (ChildFrame*)GetClientWindow()->GetPage((size_t)selection);
     if (child)
     {
-        cfw::IDocumentSitePtr site = lookupSiteByContainer(child);
+        IDocumentSitePtr site = lookupSiteByContainer(child);
         if (site.isOk())
         {
             sigSiteContextMenu().fire(site);
@@ -1749,7 +1744,7 @@ wxAuiManager& MainFrame::getAuiManager()
     return m_mgr;
 }
 
-void MainFrame::setStatusBar(cfw::IStatusBarPtr statusbar)
+void MainFrame::setStatusBar(IStatusBarPtr statusbar)
 {
     // remove any previous statusbar that may have existed
     if (m_statusbar.isOk())
@@ -1758,7 +1753,7 @@ void MainFrame::setStatusBar(cfw::IStatusBarPtr statusbar)
     m_statusbar = statusbar;
 }
 
-cfw::IStatusBarPtr MainFrame::getStatusBar()
+IStatusBarPtr MainFrame::getStatusBar()
 {
     return m_statusbar;
 }
@@ -1817,7 +1812,7 @@ IUIContextPtr MainFrame::createUIContext(const wxString& name)
 
 IUIContextPtr MainFrame::lookupUIContext(const wxString& name)
 {
-    std::vector<cfw::IUIContextPtr>::iterator it;
+    std::vector<IUIContextPtr>::iterator it;
     for (it = m_ui_contexts.begin(); it != m_ui_contexts.end(); ++it)
     {
         if (!name.CmpNoCase((*it)->getName()))
@@ -1985,8 +1980,8 @@ void MainFrame::dockWindow(wxWindow* wnd,
          Direction(dock_direction).
          Row(row).
          FloatingSize(width, height+24).
-         Resizable((site_type & cfw::siteNoResize) ? false:true).
-         Show(site_type & cfw::siteHidden ? false:true).
+         Resizable((site_type & siteNoResize) ? false:true).
+         Show(site_type & siteHidden ? false:true).
          Caption(caption).
          MaximizeButton(false);
     
@@ -2016,12 +2011,12 @@ void MainFrame::refreshFrameLayout()
     m_mgr.Update();
 }
 
-cfw::IDocumentSitePtr& MainFrame::getLastChild()
+IDocumentSitePtr& MainFrame::getLastChild()
 {
     return lookupSiteByContainer(m_last_child);
 }
 
-cfw::IDocumentSitePtr& MainFrame::getActiveChild()
+IDocumentSitePtr& MainFrame::getActiveChild()
 {
     return lookupSiteByContainer(m_active_child);
 }
@@ -2036,14 +2031,14 @@ size_t MainFrame::getChildCount()
     std::vector<IDocumentSitePtr>::iterator it;
     for (it = m_doc_sites.begin(); it != m_doc_sites.end(); ++it)
     {
-        if ((*it)->getSiteType() & cfw::sitetypeNormal)
+        if ((*it)->getSiteType() & sitetypeNormal)
             res++;
     }
     
     return res;
 }
 
-cfw::IDocumentSitePtr MainFrame::lookupSite(const wxString& site_name)
+IDocumentSitePtr MainFrame::lookupSite(const wxString& site_name)
 {
     std::vector<IDocumentSitePtr>::iterator it;
     for (it = m_doc_sites.begin(); it != m_doc_sites.end(); ++it)
@@ -2075,7 +2070,7 @@ IDocumentSitePtr MainFrame::lookupSiteById(int id)
 
 IDocumentSitePtr& MainFrame::lookupSiteByContainer(wxWindow* wnd)
 {
-    cfw::IDocumentSitePtr* retval = NULL;
+    IDocumentSitePtr* retval = NULL;
     
     std::vector<IDocumentSitePtr>::iterator it;
     for (it = m_doc_sites.begin(); it != m_doc_sites.end(); ++it)
@@ -2098,7 +2093,7 @@ IDocumentSitePtr& MainFrame::lookupSiteByContainer(wxWindow* wnd)
     return *retval;
 }
 
-cfw::IDocumentSiteEnumPtr MainFrame::getDocumentSites(unsigned int site_type)
+IDocumentSiteEnumPtr MainFrame::getDocumentSites(unsigned int site_type)
 {
     xcm::IVectorImpl<IDocumentSitePtr>* vec;
     vec = new xcm::IVectorImpl<IDocumentSitePtr>;
@@ -2114,7 +2109,7 @@ cfw::IDocumentSiteEnumPtr MainFrame::getDocumentSites(unsigned int site_type)
 }
 
 
-cfw::IDocumentSiteEnumPtr MainFrame::getShownDocumentSites(unsigned int site_type)
+IDocumentSiteEnumPtr MainFrame::getShownDocumentSites(unsigned int site_type)
 {
     xcm::IVectorImpl<IDocumentSitePtr>* vec;
     vec = new xcm::IVectorImpl<IDocumentSitePtr>;
@@ -2187,7 +2182,7 @@ bool MainFrame::closeAll(bool force)
     }
 
 
-    IDocumentSiteEnumPtr sites = getDocumentSites(cfw::sitetypeNormal);
+    IDocumentSiteEnumPtr sites = getDocumentSites(sitetypeNormal);
     IDocumentSitePtr doc_site;
 
     size_t i, site_count = sites->size();
@@ -2223,7 +2218,7 @@ bool MainFrame::closeAll(bool force)
 }
 
 
-bool MainFrame::closeSite(cfw::IDocumentSitePtr site, int close_flags)
+bool MainFrame::closeSite(IDocumentSitePtr site, int close_flags)
 {
     if (!site)
         return false;
@@ -2242,7 +2237,7 @@ bool MainFrame::closeSite(cfw::IDocumentSitePtr site, int close_flags)
     }
      else
     {
-        cfw::IDocumentPtr doc = site->getDocument();
+        IDocumentPtr doc = site->getDocument();
         if (doc)
         {
             wxWindow* doc_wnd = doc->getDocumentWindow();
@@ -2255,7 +2250,7 @@ bool MainFrame::closeSite(cfw::IDocumentSitePtr site, int close_flags)
     }
 
     
-    std::vector<cfw::IDocumentSitePtr>::iterator it;
+    std::vector<IDocumentSitePtr>::iterator it;
     it = std::find(m_doc_sites.begin(), m_doc_sites.end(), site);
     if (it != m_doc_sites.end())
     {
@@ -2314,7 +2309,7 @@ void MainFrame::onMdiClientSize()
 
 void MainFrame::onContainerDestructing(wxWindow* window)
 {
-    cfw::IDocumentSiteEnumPtr sites = getDocumentSitesByContainer(window);
+    IDocumentSiteEnumPtr sites = getDocumentSitesByContainer(window);
     size_t i, size = sites->size();
     
     for (i = 0; i < size; ++i)
@@ -2400,7 +2395,7 @@ void MainFrame::activateInPlace(IDocumentSitePtr site)
     wxWindow* new_doc_wnd = NULL;
 
     // find out the new document window
-    cfw::IDocumentPtr doc = site->getDocument();
+    IDocumentPtr doc = site->getDocument();
     if (doc)
     {
         new_doc_wnd = doc->getDocumentWindow();
@@ -2413,7 +2408,7 @@ void MainFrame::activateInPlace(IDocumentSitePtr site)
         
     
     // deactivate old site
-    cfw::IDocumentPtr old_doc = container->getDocument();
+    IDocumentPtr old_doc = container->getDocument();
     if (old_doc)
     {
         old_doc->onSiteDeactivated();
@@ -2465,10 +2460,10 @@ IDocumentSitePtr MainFrame::createSite(wxWindow* wnd_container,
     // hide currently active site
     if (activate)
     {
-        cfw::IDocumentSitePtr cur_site = container->getActiveSite();
+        IDocumentSitePtr cur_site = container->getActiveSite();
         if (cur_site)
         {
-            cfw::IDocumentPtr doc = cur_site->getDocument();
+            IDocumentPtr doc = cur_site->getDocument();
             if (doc)
             {
                 wxWindow* wnd = doc->getDocumentWindow();
@@ -2489,11 +2484,11 @@ IDocumentSitePtr MainFrame::createSite(wxWindow* wnd_container,
     raw_site->setDocument(document);
     raw_site->setContainer(container);
     raw_site->setSiteType(sitetypeNormal);
-    cfw::IDocumentSitePtr site = raw_site;
+    IDocumentSitePtr site = raw_site;
     
     
     
-    if (!document->initDoc(static_cast<cfw::IFrame*>(this),
+    if (!document->initDoc(static_cast<IFrame*>(this),
                            site,
                            wnd_container,
                            m_invisible))
@@ -2574,7 +2569,7 @@ IDocumentSitePtr MainFrame::createSite(IDocumentPtr document,
         raw_site->setDocument(document);
         raw_site->setContainer(container);
         raw_site->setSiteType(sitetypeNormal);
-        cfw::IDocumentSitePtr site = static_cast<cfw::IDocumentSite*>(raw_site);
+        IDocumentSitePtr site = static_cast<IDocumentSite*>(raw_site);
         
         // initialize child
         container->sigFrameActivated.connect(this, &MainFrame::onChildFrameActivated);
@@ -2585,10 +2580,10 @@ IDocumentSitePtr MainFrame::createSite(IDocumentPtr document,
         m_last_child = m_active_child;
 
         // get UI context information
-        cfw::IUIContextPtr ui_context = static_cast<cfw::IUIContext*>(new UIContext);
+        IUIContextPtr ui_context = static_cast<IUIContext*>(new UIContext);
 
 
-        if (!document->initDoc(static_cast<cfw::IFrame*>(this),
+        if (!document->initDoc(static_cast<IFrame*>(this),
                                             site,
                                             container,
                                             m_invisible))
@@ -2629,7 +2624,7 @@ IDocumentSitePtr MainFrame::createSite(IDocumentPtr document,
         // currently in the mdi
         size_t current_child_count;
         {
-            IDocumentSiteEnumPtr sites = getDocumentSites(cfw::sitetypeNormal);
+            IDocumentSiteEnumPtr sites = getDocumentSites(sitetypeNormal);
             current_child_count = sites->size();
         }
         
@@ -2707,11 +2702,11 @@ IDocumentSitePtr MainFrame::createSite(IDocumentPtr document,
         raw_site->setDocument(document);
         raw_site->setSiteType(sitetypeModeless);
         raw_site->setContainer(container);
-        cfw::IDocumentSitePtr site = static_cast<cfw::IDocumentSite*>(raw_site);
+        IDocumentSitePtr site = static_cast<IDocumentSite*>(raw_site);
         
         
         // get UI context information (this is not used here [yet])
-        cfw::IUIContextPtr ui_context = static_cast<cfw::IUIContext*>(new UIContext);
+        IUIContextPtr ui_context = static_cast<IUIContext*>(new UIContext);
 
         if (!document->initDoc(this, site, container, NULL))
         {
@@ -2758,10 +2753,10 @@ IDocumentSitePtr MainFrame::createSite(IDocumentPtr document,
         raw_site->setDocument(document);
         raw_site->setContainer(container);
         raw_site->setSiteType(sitetypeMiniModeless);
-        cfw::IDocumentSitePtr site = static_cast<cfw::IDocumentSite*>(raw_site);
+        IDocumentSitePtr site = static_cast<IDocumentSite*>(raw_site);
         
         // get UI context information (this is not used here [yet])
-        cfw::IUIContextPtr ui_context = static_cast<cfw::IUIContext*>(new UIContext);
+        IUIContextPtr ui_context = static_cast<IUIContext*>(new UIContext);
 
         if (!document->initDoc(this, site, container, NULL))
         {
@@ -2825,7 +2820,7 @@ IDocumentSitePtr MainFrame::createSite(IDocumentPtr document,
         raw_site->setDocument(document);
         raw_site->setContainer(container);
         raw_site->setSiteType(sitetypeDockable);
-        cfw::IDocumentSitePtr site = static_cast<cfw::IDocumentSite*>(raw_site);
+        IDocumentSitePtr site = static_cast<IDocumentSite*>(raw_site);
         
         
         if (!document->initDoc(this, site, container, NULL))
@@ -2954,7 +2949,7 @@ void MainFrame::showWindow(wxWindow* wnd, bool show)
 
 void MainFrame::onChildFrameActivated(ChildFrame* child)
 {
-    cfw::IDocumentPtr doc = child->getDocument();
+    IDocumentPtr doc = child->getDocument();
     if (doc.isNull())
     {
         return;
@@ -2983,7 +2978,7 @@ void MainFrame::onChildFrameDeactivated(ChildFrame* child)
         m_dispatcher_child->setReceiver(NULL);
     }
 
-    cfw::IDocumentPtr doc = child->getDocument();
+    IDocumentPtr doc = child->getDocument();
     if (doc.isOk())
     {
         doc->onSiteDeactivated();
@@ -3030,7 +3025,7 @@ void MainFrame::fire_onFrameCommand(int id, int int_param, bool* processed)
     sigFrameCommand().fire(id, int_param, processed);
 }
 
-void MainFrame::fire_onActiveChildChanged(cfw::IDocumentSitePtr doc_site)
+void MainFrame::fire_onActiveChildChanged(IDocumentSitePtr doc_site)
 {
     sigActiveChildChanged().fire(doc_site);
 }
@@ -3040,7 +3035,7 @@ void MainFrame::fire_onFrameClose(wxCloseEvent& evt)
     sigFrameClose().fire(evt);
 }
 
-void MainFrame::fire_onSiteClose(cfw::IDocumentSitePtr site)
+void MainFrame::fire_onSiteClose(IDocumentSitePtr site)
 {
     sigSiteClose().fire(site);
 }
@@ -3064,7 +3059,7 @@ void MainFrame::fire_onFrameBarRightClick()
 void MainFrame::dispatchAllEvents()
 {
     // this onIdle handler dispatches all pending frame events
-    cfw::Event* cfw_event;
+    FrameworkEvent* cfw_event;
     while (!m_event_queue.empty())
     {
         cfw_event = m_event_queue.front();
@@ -3177,8 +3172,8 @@ class MainFrameEventMarshaler : public wxEvtHandler
 {
 public:
     
-    cfw::Event* m_evt;
-    std::queue<cfw::Event*>* m_queue;
+    FrameworkEvent* m_evt;
+    std::queue<FrameworkEvent*>* m_queue;
     
     bool ProcessEvent(wxEvent& evt)
     {
@@ -3190,7 +3185,7 @@ public:
 };
 
 
-void MainFrame::postEvent(cfw::Event* evt)
+void MainFrame::postEvent(FrameworkEvent* evt)
 {
     if (kl::Thread::isMain())
     {
@@ -3208,7 +3203,7 @@ void MainFrame::postEvent(cfw::Event* evt)
 }
 
 
-void MainFrame::sendEvent(Event* evt)
+void MainFrame::sendEvent(FrameworkEvent* evt)
 {
     sigFrameEvent().fire(*evt);
     delete evt;
@@ -3226,10 +3221,5 @@ void MainFrame::locationUpdated()
 {
 }
 
-
-
-
-
-};  // namespace cfw
 
 

@@ -172,7 +172,7 @@ void StructureDoc::setModifySet(tango::ISetPtr modify_set)
 
             // fire this event so that the URL will be updated with the new path
             if (m_frame.isOk())
-                m_frame->postEvent(new cfw::Event(wxT("cfw.locationChanged")));
+                m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
         }
 
         m_readonly = false;
@@ -282,7 +282,7 @@ bool StructureDoc::doSave()
         {
             if (table_doc->getIsChildSet())
             {
-                cfw::appMessageBox(_("The structure cannot be modified while the table is showing filtered related records."),
+                appMessageBox(_("The structure cannot be modified while the table is showing filtered related records."),
                                    APPLICATION_NAME,
                                    wxOK | wxICON_INFORMATION | wxCENTER);
                 delete job;
@@ -294,12 +294,12 @@ bool StructureDoc::doSave()
         }
     }
     
-    cfw::IDocumentSiteEnumPtr sites;
-    sites = g_app->getMainFrame()->getDocumentSites(cfw::sitetypeNormal);
+    IDocumentSiteEnumPtr sites;
+    sites = g_app->getMainFrame()->getDocumentSites(sitetypeNormal);
     size_t i, site_count = sites->size();
     for (i = 0; i < site_count; ++i)
     {
-        cfw::IDocumentSitePtr site = sites->getItem(i);
+        IDocumentSitePtr site = sites->getItem(i);
         if (site.isNull())
             continue;
         
@@ -321,7 +321,7 @@ bool StructureDoc::doSave()
             {
                 if (doc->getIsChildSet())
                 {
-                    cfw::appMessageBox(_("The structure cannot be modified while the table is showing filtered related records."),
+                    appMessageBox(_("The structure cannot be modified while the table is showing filtered related records."),
                                        APPLICATION_NAME,
                                        wxOK | wxICON_INFORMATION | wxCENTER);
                     delete job;
@@ -365,7 +365,7 @@ bool StructureDoc::doSave()
     std::vector<ITableDoc*> to_connect;
     for (i = 0; i < site_count; ++i)
     {
-        cfw::IDocumentSitePtr site = sites->getItem(i);
+        IDocumentSitePtr site = sites->getItem(i);
         if (site.isNull())
             continue;
         
@@ -397,7 +397,7 @@ bool StructureDoc::doSave()
 
     
     // -- start the job --
-    g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
 
     // connect the job finished signal to the structuredoc
     job->sigJobFinished().connect(this, &StructureDoc::onModifyStructJobFinished);
@@ -420,8 +420,8 @@ bool StructureDoc::doSave()
     return true;
 }
 
-bool StructureDoc::initDoc(cfw::IFramePtr frame,
-                           cfw::IDocumentSitePtr doc_site,
+bool StructureDoc::initDoc(IFramePtr frame,
+                           IDocumentSitePtr doc_site,
                            wxWindow* docsite_wnd,
                            wxWindow* panesite_wnd)
 {
@@ -538,7 +538,7 @@ bool StructureDoc::initDoc(cfw::IFramePtr frame,
     m_grid->refresh(kcl::Grid::refreshAll);
 
     // create the statusbar items for this document
-    cfw::IStatusBarItemPtr item;
+    IStatusBarItemPtr item;
     
     item = addStatusBarItem(wxT("structuredoc_field_count"));
     item->setWidth(120);
@@ -580,7 +580,7 @@ bool StructureDoc::onSiteClosing(bool force)
     if (!isChanged())
         return true;
         
-    int result = cfw::appMessageBox(_("Would you like to save the changes made to the table's structure?"),
+    int result = appMessageBox(_("Would you like to save the changes made to the table's structure?"),
                                     APPLICATION_NAME,
                                     wxYES_NO | wxCANCEL | wxICON_QUESTION | wxCENTER);
     
@@ -629,7 +629,7 @@ void StructureDoc::getColumnListItems(std::vector<ColumnListItem>& items)
         tango::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
      
         ColumnListItem item;
-        item.text = cfw::makeProperIfNecessary(towx(colinfo->getName()));
+        item.text = makeProperIfNecessary(towx(colinfo->getName()));
         if (colinfo->getCalculated())
         {
             item.bitmap = GETBMP(gf_lightning_16);
@@ -1033,7 +1033,7 @@ void StructureDoc::updateStatusBar()
     wxString field_count_str = wxString::Format(_("Field Count: %d"), row_count);
     wxString row_width_str = wxString::Format(_("Record Width: %d"), total_width);
     
-    cfw::IStatusBarItemPtr item;
+    IStatusBarItemPtr item;
     item = m_frame->getStatusBar()->getItem(wxT("structuredoc_field_count"));
     if (item.isOk())
         item->setValue(field_count_str);
@@ -1296,7 +1296,7 @@ bool StructureDoc::createTable()
 
     // fire this event so that the URL will be updated with the new path
     if (m_frame.isOk())
-        m_frame->postEvent(new cfw::Event(wxT("cfw.locationChanged")));
+        m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
 
     // set the modify set in case the user wants to further modify the set
     // they just created... this would be a modify structure job
@@ -1567,7 +1567,7 @@ void StructureDoc::setChanged(bool changed)
         updateCaption();
 }
 
-void StructureDoc::onModifyStructJobFinished(cfw::IJobPtr job)
+void StructureDoc::onModifyStructJobFinished(IJobPtr job)
 {
     // update the modify set
     IModifyStructJobPtr modify_job = job;
@@ -1587,7 +1587,7 @@ void StructureDoc::onModifyStructJobFinished(cfw::IJobPtr job)
     m_grid->refresh(kcl::Grid::refreshAll);
 }
 
-void StructureDoc::onFrameEvent(cfw::Event& evt)
+void StructureDoc::onFrameEvent(Event& evt)
 {
     // if a file is renamed, update this file with the new file path
     if (evt.name == wxT("treepanel.ofsFileRenamed"))
@@ -1600,19 +1600,19 @@ void StructureDoc::onFrameEvent(cfw::Event& evt)
             updateCaption();
             
             // fire a frame event
-            cfw::IDocumentSitePtr doc_site = m_frame->getActiveChild();
+            IDocumentSitePtr doc_site = m_frame->getActiveChild();
             if (doc_site.isOk() && doc_site == m_doc_site)
             {
                 // fire this event so that the URL combobox will be updated
                 // with the new path if this is the active child
-                m_frame->postEvent(new cfw::Event(wxT("cfw.locationChanged")));
+                m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
             }
         }
     }
 
     if (evt.name == wxT("appmain.view_switcher.query_available_views"))
     {
-        cfw::IDocumentSitePtr active_child;
+        IDocumentSitePtr active_child;
         active_child = g_app->getMainFrame()->getActiveChild();
         
         if (active_child.isNull() || m_doc_site.isNull())
@@ -1622,8 +1622,8 @@ void StructureDoc::onFrameEvent(cfw::Event& evt)
             return;
 
         // site ptrs to check the active site
-        cfw::IDocumentSitePtr tabledoc_site;
-        cfw::IDocumentSitePtr active_site;
+        IDocumentSitePtr tabledoc_site;
+        IDocumentSitePtr active_site;
         tabledoc_site = lookupOtherDocumentSite(m_doc_site, "appmain.TableDoc");
         active_site = g_app->getMainFrame()->getActiveChild();
         
@@ -1650,7 +1650,7 @@ void StructureDoc::onFrameEvent(cfw::Event& evt)
         int id = (int)(evt.l_param);
         
         // -- make sure we are in the active container --
-        cfw::IDocumentSitePtr active_site;
+        IDocumentSitePtr active_site;
         active_site = g_app->getMainFrame()->getActiveChild();
         if (active_site.isNull() || m_doc_site.isNull())
             return;
@@ -1660,7 +1660,7 @@ void StructureDoc::onFrameEvent(cfw::Event& evt)
         if (id == ID_View_SwitchToLayoutView)
         {
             // if we are on structure doc, we might need to prompt for saving
-            cfw::IDocumentSitePtr tabledoc_site;
+            IDocumentSitePtr tabledoc_site;
 
             tabledoc_site = lookupOtherDocumentSite(m_doc_site, "appmain.TableDoc");
             active_site = g_app->getMainFrame()->getActiveChild();
@@ -1669,7 +1669,7 @@ void StructureDoc::onFrameEvent(cfw::Event& evt)
             {
                 if (isChanged())
                 {
-                    int result = cfw::appMessageBox(_("Would you like to save the changes made to the table's structure?"),
+                    int result = appMessageBox(_("Would you like to save the changes made to the table's structure?"),
                                                     APPLICATION_NAME,
                                                     wxYES_NO | wxCANCEL | wxICON_QUESTION | wxCENTER);
                     if (result == wxCANCEL)
@@ -1877,7 +1877,7 @@ void StructureDoc::onConvertDynamicToFixed(wxCommandEvent& evt)
         // expression is disregarded in the ModifyStructJob
         if (f->dynamic && !f->original_dynamic)
         {
-            cfw::appMessageBox(_("One or more of the calculated fields that is selected is new to the table's structure.  Only calculated fields that already exist in the table's structure can be converted to fixed fields."),
+            appMessageBox(_("One or more of the calculated fields that is selected is new to the table's structure.  Only calculated fields that already exist in the table's structure can be converted to fixed fields."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
@@ -2241,7 +2241,7 @@ void StructureDoc::onGridCellRightClick(kcl::GridEvent& evt)
     
     wxPoint pt_mouse = ::wxGetMousePosition();
     pt_mouse = ScreenToClient(pt_mouse);
-    cfw::CommandCapture* cc = new cfw::CommandCapture;
+    CommandCapture* cc = new CommandCapture;
     PushEventHandler(cc);
     PopupMenu(&menuPopup, pt_mouse);
     int command = cc->getLastCommandId();

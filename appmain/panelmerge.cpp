@@ -51,8 +51,8 @@ MergePanel::~MergePanel()
 }
 
 // -- IDocument --
-bool MergePanel::initDoc(cfw::IFramePtr frame,
-                         cfw::IDocumentSitePtr doc_site,
+bool MergePanel::initDoc(IFramePtr frame,
+                         IDocumentSitePtr doc_site,
                          wxWindow* docsite_wnd,
                          wxWindow* panesite_wnd)
 {
@@ -179,14 +179,14 @@ bool MergePanel::initDoc(cfw::IFramePtr frame,
 
     kcl::GridDataObjectComposite* drop_data;
     drop_data = new kcl::GridDataObjectComposite(NULL, wxT("merge_tables"));
-    drop_data->Add(new cfw::FsDataObject);
+    drop_data->Add(new FsDataObject);
     
     kcl::GridDataDropTarget* drop_target = new kcl::GridDataDropTarget(m_grid);
     drop_target->SetDataObject(drop_data);
     drop_target->sigDropped.connect(this, &MergePanel::onGridDataDropped);
     m_grid->SetDropTarget(drop_target);
 
-    cfw::FsDataDropTarget* output_drop_target = new cfw::FsDataDropTarget;
+    FsDataDropTarget* output_drop_target = new FsDataDropTarget;
     output_drop_target->sigDragDrop.connect(this, &MergePanel::onOutputPathDropped);
     m_output_table->SetDropTarget(output_drop_target);
 
@@ -247,26 +247,26 @@ void MergePanel::checkOverlayText()
     m_grid->refresh(kcl::Grid::refreshAll);
 }
 
-void MergePanel::onOutputPathDropped(wxDragResult& drag_result, cfw::FsDataObject* data)
+void MergePanel::onOutputPathDropped(wxDragResult& drag_result, FsDataObject* data)
 {
-    cfw::IFsItemEnumPtr items = data->getFsItems();
+    IFsItemEnumPtr items = data->getFsItems();
     std::vector<wxString> res;
     DbDoc::getFsItemPaths(items, res, true);
 
     if (res.size() > 1)
     {
-        cfw::appMessageBox(_("You have selected either a folder or more than one table.  Please select only one table."),
+        appMessageBox(_("You have selected either a folder or more than one table.  Please select only one table."),
                            APPLICATION_NAME,
                            wxOK | wxICON_INFORMATION | wxCENTER);
         return;
     }
 
     DbDoc* dbdoc = g_app->getDbDoc();
-    cfw::IFsItemPtr item = items->getItem(0);
+    IFsItemPtr item = items->getItem(0);
 
     if (dbdoc->isFsItemExternal(item))
     {
-        cfw::appMessageBox(_("One or more of the items dragged from the project panel is an external table and cannot be specified as the output table."),
+        appMessageBox(_("One or more of the items dragged from the project panel is an external table and cannot be specified as the output table."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
         return;
@@ -305,7 +305,7 @@ void MergePanel::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
     
 
     // only accept tree data objects here
-    if (fmt.GetId().CmpNoCase(cfw::FS_DATA_OBJECT_FORMAT) != 0)
+    if (fmt.GetId().CmpNoCase(FS_DATA_OBJECT_FORMAT) != 0)
         return;
 
     // get the row number where we dropped the data
@@ -318,11 +318,11 @@ void MergePanel::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
     
     // -- copy the data from the wxDataObjectComposite to this new
     //    FsDataObject so we can use it's accessor functions --
-    cfw::FsDataObject* fs_data_obj = new cfw::FsDataObject;
+    FsDataObject* fs_data_obj = new FsDataObject;
     fs_data_obj->SetData(fmt, len, data);
 
 
-    cfw::IFsItemEnumPtr items = fs_data_obj->getFsItems();
+    IFsItemEnumPtr items = fs_data_obj->getFsItems();
 
     std::vector<wxString>::iterator it;
     std::vector<wxString> res;
@@ -335,7 +335,7 @@ void MergePanel::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
     {
         if (dbdoc->isFsItemExternal(items->getItem(i)))
         {
-            cfw::appMessageBox(_("One or more of the items dragged from the project panel is an external table and cannot be added to the output table."),
+            appMessageBox(_("One or more of the items dragged from the project panel is an external table and cannot be added to the output table."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
 
@@ -384,7 +384,7 @@ struct AppendInfo
     tango::ISetPtr target_set;
 };
 
-static void onAppendJobFinished(cfw::IJobPtr job)
+static void onAppendJobFinished(IJobPtr job)
 {
     IAppendJobPtr append_job = job;
     if (append_job.isNull())
@@ -400,11 +400,11 @@ static void onAppendJobFinished(cfw::IJobPtr job)
             return;
 
         // iterate through document sites, and update tabledocs
-        cfw::IDocumentSiteEnumPtr docsites;
-        cfw::IDocumentSitePtr site;
+        IDocumentSiteEnumPtr docsites;
+        IDocumentSitePtr site;
         ITableDocPtr table_doc;
 
-        docsites = g_app->getMainFrame()->getDocumentSites(cfw::sitetypeNormal);
+        docsites = g_app->getMainFrame()->getDocumentSites(sitetypeNormal);
 
         int site_count = docsites->size();
         for (int i = 0; i < site_count; ++i)
@@ -432,7 +432,7 @@ static void onAppendJobFinished(cfw::IJobPtr job)
         tango::ISetPtr target_set = info->target_set;
         delete info;
 
-        if (job->getJobInfo()->getState() != cfw::jobStateFinished)
+        if (job->getJobInfo()->getState() != jobStateFinished)
             return;
 
         // store the merged records in a table with the specified output path
@@ -448,7 +448,7 @@ void MergePanel::onOK(wxCommandEvent& evt)
 {
     if (m_grid->getRowCount() < 1)
     {
-        cfw::appMessageBox(_("Please specify at least one input table to be added to the output table."),
+        appMessageBox(_("Please specify at least one input table to be added to the output table."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
         return;
@@ -486,7 +486,7 @@ void MergePanel::onOK(wxCommandEvent& evt)
                 {
                     wxString message = wxString::Format(_("'%s' cannot be appended to itself.  Recursive append operations are not permitted."), set_path.c_str());
 
-                    cfw::appMessageBox(message,
+                    appMessageBox(message,
                                        APPLICATION_NAME,
                                        wxOK | wxICON_EXCLAMATION | wxCENTER);
                     return;
@@ -537,7 +537,7 @@ void MergePanel::onOK(wxCommandEvent& evt)
         {
             wxString message = wxString::Format(_("'%s' could not be opened.  Please make sure this is a valid table."), set_path.c_str());
 
-            cfw::appMessageBox(message,
+            appMessageBox(message,
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             
@@ -577,7 +577,7 @@ void MergePanel::onOK(wxCommandEvent& evt)
     }
 
     job->sigJobFinished().connect(&onAppendJobFinished);
-    g_app->getJobQueue()->addJob(job, cfw::jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
 
     m_frame->closeSite(m_doc_site);
 }

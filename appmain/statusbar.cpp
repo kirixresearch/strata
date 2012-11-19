@@ -41,9 +41,6 @@ static const char *xpm_window_resize_gripper[] = {
 };
 
 
-namespace cfw
-{
-
 
 class StatusBarArt : public wxAuiDefaultToolBarArt
 {
@@ -110,7 +107,7 @@ BEGIN_EVENT_TABLE(StatusBar, wxAuiToolBar)
 END_EVENT_TABLE()
 
 
-StatusBar::StatusBar(cfw::IFramePtr frame) :
+StatusBar::StatusBar(IFramePtr frame) :
                 wxAuiToolBar(frame->getFrameWindow(),
                              wxID_ANY,
                              wxDefaultPosition,
@@ -121,7 +118,7 @@ StatusBar::StatusBar(cfw::IFramePtr frame) :
                                wxNO_BORDER)
 {
     #ifdef __WXGTK__
-    cfw::limitFontSize(this, 10);
+    limitFontSize(this, 10);
     #endif
 
     // set wxAuiToolBar options
@@ -144,8 +141,8 @@ StatusBar::StatusBar(cfw::IFramePtr frame) :
     m_statusbar_provider = xcm::null;
     
     // create our global item vector
-    m_left_items = new xcm::IVectorImpl<cfw::IStatusBarItemPtr>;
-    m_right_items = new xcm::IVectorImpl<cfw::IStatusBarItemPtr>;
+    m_left_items = new xcm::IVectorImpl<IStatusBarItemPtr>;
+    m_right_items = new xcm::IVectorImpl<IStatusBarItemPtr>;
     
     populate();
 }
@@ -160,13 +157,13 @@ wxAuiToolBar* StatusBar::getStatusBarCtrl()
     return this;
 }
 
-cfw::IStatusBarItemPtr StatusBar::addItem(const wxString& item_name,
+IStatusBarItemPtr StatusBar::addItem(const wxString& item_name,
                                           int location)
 {
-    cfw::StatusBarItem* c = new cfw::StatusBarItem;
+    StatusBarItem* c = new StatusBarItem;
     c->m_name = item_name;
 
-    if (location == cfw::StatusBar::LocationLeft)
+    if (location == StatusBar::LocationLeft)
         m_left_items->append(c);
      else
         m_right_items->append(c);
@@ -174,14 +171,14 @@ cfw::IStatusBarItemPtr StatusBar::addItem(const wxString& item_name,
     return c;
 }
 
-cfw::IStatusBarItemPtr StatusBar::addSeparator(const wxString& item_name,
+IStatusBarItemPtr StatusBar::addSeparator(const wxString& item_name,
                                                int location)
 {
-    cfw::StatusBarItem* c = new cfw::StatusBarItem;
+    StatusBarItem* c = new StatusBarItem;
     c->m_name = item_name;
     c->m_separator = true;
     
-    if (location == cfw::StatusBar::LocationLeft)
+    if (location == StatusBar::LocationLeft)
         m_left_items->append(c);
      else
         m_right_items->append(c);
@@ -189,7 +186,7 @@ cfw::IStatusBarItemPtr StatusBar::addSeparator(const wxString& item_name,
     return c;
 }
 
-cfw::IStatusBarItemPtr StatusBar::addControl(wxControl* control,
+IStatusBarItemPtr StatusBar::addControl(wxControl* control,
                                              const wxString& item_name,
                                              int location)
 {
@@ -200,11 +197,11 @@ cfw::IStatusBarItemPtr StatusBar::addControl(wxControl* control,
     // we can handle its events in the statusbar event handlers
     control->PushEventHandler(new StatusBarItemEvtHandler(this));
     
-    cfw::StatusBarItem* c = new cfw::StatusBarItem;
+    StatusBarItem* c = new StatusBarItem;
     c->m_name = item_name;
     c->m_control = control;
     
-    if (location == cfw::StatusBar::LocationLeft)
+    if (location == StatusBar::LocationLeft)
         m_left_items->append(c);
      else
         m_right_items->append(c);
@@ -212,9 +209,9 @@ cfw::IStatusBarItemPtr StatusBar::addControl(wxControl* control,
     return c;
 }
 
-cfw::IStatusBarItemPtr StatusBar::getItem(const wxString& item_name)
+IStatusBarItemPtr StatusBar::getItem(const wxString& item_name)
 {
-    cfw::IStatusBarItemPtr item;
+    IStatusBarItemPtr item;
 
     // try to find the item in the left-aligned global items
     size_t i, count = m_left_items->size();
@@ -237,7 +234,7 @@ cfw::IStatusBarItemPtr StatusBar::getItem(const wxString& item_name)
     // if we have a statusbar provider, look through its items
     if (m_statusbar_provider.isOk())
     {
-        cfw::IStatusBarItemEnumPtr items;
+        IStatusBarItemEnumPtr items;
         items = m_statusbar_provider->getStatusBarItemEnum();
     
         count = items->size();
@@ -252,10 +249,10 @@ cfw::IStatusBarItemPtr StatusBar::getItem(const wxString& item_name)
     return xcm::null;
 }
 
-void StatusBar::addItems(cfw::IStatusBarItemEnumPtr items)
+void StatusBar::addItems(IStatusBarItemEnumPtr items)
 {
-    cfw::StatusBarItem* item_raw;
-    cfw::IStatusBarItemPtr item;
+    StatusBarItem* item_raw;
+    IStatusBarItemPtr item;
     
     bool toggled;
     bool toggle_mode;
@@ -267,7 +264,7 @@ void StatusBar::addItems(cfw::IStatusBarItemEnumPtr items)
     for (i = 0; i < count; i++)
     {
         item = items->getItem(i);
-        item_raw = (cfw::StatusBarItem*)item.p;
+        item_raw = (StatusBarItem*)item.p;
         
         // if the item isn't shown, don't add it to the toolbar
         if (!item_raw->isShown())
@@ -345,10 +342,10 @@ void StatusBar::addItems(cfw::IStatusBarItemEnumPtr items)
     }
 }
 
-void StatusBar::refreshItems(cfw::IStatusBarItemEnumPtr items)
+void StatusBar::refreshItems(IStatusBarItemEnumPtr items)
 {
-    cfw::StatusBarItem* item_raw;
-    cfw::IStatusBarItemPtr item;
+    StatusBarItem* item_raw;
+    IStatusBarItemPtr item;
     
     wxBitmap bmp;
     wxString str;
@@ -359,7 +356,7 @@ void StatusBar::refreshItems(cfw::IStatusBarItemEnumPtr items)
     for (i = 0; i < count; i++)
     {
         item = items->getItem(i);
-        item_raw = (cfw::StatusBarItem*)item.p;
+        item_raw = (StatusBarItem*)item.p;
         
         // the item does not need to be refreshed
         if (!item_raw->isDirty())
@@ -447,7 +444,7 @@ void StatusBar::refresh()
     sigRefresh().fire();
 }
 
-void StatusBar::onActiveChildChanged(cfw::IDocumentSitePtr doc_site)
+void StatusBar::onActiveChildChanged(IDocumentSitePtr doc_site)
 {
     // there's no active document
     if (!doc_site)
@@ -457,8 +454,8 @@ void StatusBar::onActiveChildChanged(cfw::IDocumentSitePtr doc_site)
         return;
     }
     
-    // can't get the cfw::IDocument from the active child
-    cfw::IDocumentPtr doc = doc_site->getDocument();
+    // can't get the IDocument from the active child
+    IDocumentPtr doc = doc_site->getDocument();
     if (!doc)
     {
         m_statusbar_provider = xcm::null;
@@ -467,7 +464,7 @@ void StatusBar::onActiveChildChanged(cfw::IDocumentSitePtr doc_site)
     }
     
     // the active child isn't a status bar provider
-    cfw::IStatusBarProviderPtr provider = doc;
+    IStatusBarProviderPtr provider = doc;
     if (!provider)
     {
         m_statusbar_provider = xcm::null;
@@ -480,30 +477,30 @@ void StatusBar::onActiveChildChanged(cfw::IDocumentSitePtr doc_site)
     populate();
 }
 
-cfw::IStatusBarItemPtr StatusBar::getItemFromId(int id)
+IStatusBarItemPtr StatusBar::getItemFromId(int id)
 {
-    cfw::StatusBarItem* item_raw;
-    cfw::IStatusBarItemPtr item;
+    StatusBarItem* item_raw;
+    IStatusBarItemPtr item;
     
     size_t i = 0, count = m_left_items->size();
     for (i = 0; i < count; i++)
     {
         item = m_left_items->getItem(i);
-        item_raw = (cfw::StatusBarItem*)item.p;
+        item_raw = (StatusBarItem*)item.p;
         if (item_raw->getId() == id)
             return item;
     }
     
     if (m_statusbar_provider.isOk())
     {
-        cfw::IStatusBarItemEnumPtr items;
+        IStatusBarItemEnumPtr items;
         items = m_statusbar_provider->getStatusBarItemEnum();
         
         count = items->size();
         for (i = 0; i < count; i++)
         {
             item = items->getItem(i);
-            item_raw = (cfw::StatusBarItem*)item.p;
+            item_raw = (StatusBarItem*)item.p;
             if (item_raw->getId() == id)
                 return item;
         }
@@ -513,7 +510,7 @@ cfw::IStatusBarItemPtr StatusBar::getItemFromId(int id)
     for (i = 0; i < count; i++)
     {
         item = m_right_items->getItem(i);
-        item_raw = (cfw::StatusBarItem*)item.p;
+        item_raw = (StatusBarItem*)item.p;
         if (item_raw->getId() == id)
             return item;
     }
@@ -524,12 +521,12 @@ cfw::IStatusBarItemPtr StatusBar::getItemFromId(int id)
 // this function allows us to get the screen coordinates of
 // the mouse event regardless of whether the event happened
 // on the statusbar or on a control in the statusbar
-static wxPoint getEventPosition(cfw::StatusBar* statusbar, wxMouseEvent& evt)
+static wxPoint getEventPosition(StatusBar* statusbar, wxMouseEvent& evt)
 {
     wxPoint pt;
     
     wxObject* evt_obj = evt.GetEventObject();
-    if (evt_obj->IsKindOf(CLASSINFO(cfw::StatusBar)))
+    if (evt_obj->IsKindOf(CLASSINFO(StatusBar)))
     {
         pt = evt.GetPosition();
     }
@@ -557,7 +554,7 @@ void StatusBar::onMouseLeftDblClick(wxMouseEvent& evt)
         return;
     
     // find the associated statusbar item
-    cfw::IStatusBarItemPtr item = getItemFromId(hit_item->GetId());
+    IStatusBarItemPtr item = getItemFromId(hit_item->GetId());
     if (item.isNull())
         return;
     
@@ -579,14 +576,9 @@ void StatusBar::onMouseLeftClick(wxMouseEvent& evt)
         return;
     
     // find the associated statusbar item
-    cfw::IStatusBarItemPtr item = getItemFromId(hit_item->GetId());
+    IStatusBarItemPtr item = getItemFromId(hit_item->GetId());
     if (item.isNull())
         return;
     
     sigItemLeftClick().fire(item);
 }
-
-
-};  // namespace cfw
-
-

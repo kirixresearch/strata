@@ -99,7 +99,7 @@ int QueryJob::runJob()
 
     if (db.isNull())
     {
-        m_job_info->setState(cfw::jobStateFailed);
+        m_job_info->setState(jobStateFailed);
         return 0;
     }
     
@@ -129,7 +129,7 @@ int QueryJob::runJob()
         
         if (tango_job->getStatus() != tango::jobCancelled)
         {
-            m_job_info->setState(cfw::jobStateFailed);
+            m_job_info->setState(jobStateFailed);
             m_job_info->setError(db->getErrorCode(), db->getErrorString());
         }
     }
@@ -195,7 +195,7 @@ int SortFilterJob::runJob()
     tango::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
     {
-        m_job_info->setState(cfw::jobStateFailed);
+        m_job_info->setState(jobStateFailed);
         return 0;
     }
             
@@ -226,7 +226,7 @@ int SortFilterJob::runJob()
 
         if (tango_job->getStatus() != tango::jobCancelled)
         {
-            m_job_info->setState(cfw::jobStateFailed);
+            m_job_info->setState(jobStateFailed);
         }
     }
 

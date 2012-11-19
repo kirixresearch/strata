@@ -8,7 +8,7 @@
  *
  */
 
-
+#include "appmain.h"
 #include <wx/wx.h>
 #include <wx/dc.h>
 #include <wx/settings.h>
@@ -124,8 +124,6 @@ inline bool IsUxThemed()
 }
 
 
-namespace cfw
-{
 
 
 bool DrawUxThemeCloseButton(wxDC& dc,
@@ -719,8 +717,4 @@ wxAuiTabArt* CfwTabArt::Clone()
 {
     return static_cast<wxAuiTabArt*>(new CfwTabArt);
 }
-
-
-
-};  // namespace cfw
 

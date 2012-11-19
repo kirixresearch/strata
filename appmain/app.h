@@ -41,14 +41,14 @@ public:
     MainApp();
 
     bool getJobsActive();
-    cfw::IJobQueuePtr getJobQueue();
-    cfw::IJobQueuePtr getScriptJobQueue();
+    IJobQueuePtr getJobQueue();
+    IJobQueuePtr getScriptJobQueue();
     
     wxFrame* getMainWindow();
     JobScheduler* getJobScheduler();
     AppController* getAppController();
-    cfw::IAppPreferencesPtr getAppPreferences();
-    cfw::IAppPreferencesPtr getAppDefaultPreferences();
+    IAppPreferencesPtr getAppPreferences();
+    IAppPreferencesPtr getAppDefaultPreferences();
     IAppConfigPtr getAppConfig();
     wxHelpControllerBase* getHelpController();
     wxPrintPaperDatabase* getPaperDatabase();
@@ -60,8 +60,8 @@ public:
     wxString getInstallPath();
     wxString getAppDataPath();
     
-    cfw::IFramePtr getMainFrame();
-    void setMainFrame(cfw::IFramePtr frame);
+    IFramePtr getMainFrame();
+    void setMainFrame(IFramePtr frame);
 
     tango::IDatabasePtr getDatabase();
     void setDatabase(tango::IDatabasePtr database);
@@ -111,12 +111,12 @@ private:
 
 private:
 
-    cfw::IAppPreferencesPtr m_app_preferences;
-    cfw::IAppPreferencesPtr m_app_default_preferences;
-    cfw::IJobQueuePtr m_job_queue;
-    cfw::IJobQueuePtr m_script_job_queue;
+    IAppPreferencesPtr m_app_preferences;
+    IAppPreferencesPtr m_app_default_preferences;
+    IJobQueuePtr m_job_queue;
+    IJobQueuePtr m_script_job_queue;
     
-    cfw::IFrame* m_frame;
+    IFrame* m_frame;
     JobScheduler* m_job_scheduler;
     AppController* m_app_controller;
     wxPrintPaperDatabase* m_paper_database;

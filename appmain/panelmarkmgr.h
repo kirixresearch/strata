@@ -37,13 +37,13 @@ XCM_DECLARE_SMARTPTR(IMarkMgr)
 
 class MarkMgrPanel  : public wxPanel,
                       public IMarkMgr,
-                      public cfw::IDocument,
+                      public IDocument,
                       public xcm::signal_sink
 {
     XCM_CLASS_NAME_NOREFCOUNT("appmain.MarkMgrPanel")
     XCM_BEGIN_INTERFACE_MAP(MarkMgrPanel)
         XCM_INTERFACE_ENTRY(IMarkMgr)
-        XCM_INTERFACE_ENTRY(cfw::IDocument)
+        XCM_INTERFACE_ENTRY(IDocument)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -52,8 +52,8 @@ public:
     ~MarkMgrPanel();
 
     // -- IDocument --
-    bool initDoc(cfw::IFramePtr frame,
-                 cfw::IDocumentSitePtr doc_site,
+    bool initDoc(IFramePtr frame,
+                 IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,
                  wxWindow* panesite_wnd);
     wxWindow* getDocumentWindow();
@@ -87,17 +87,17 @@ private:
     void onDeletedRows(std::vector<int> rows);
     
     // -- frame events --
-    void onActiveChildChanged(cfw::IDocumentSitePtr doc_site);
-    void onFrameEvent(cfw::Event& event);
+    void onActiveChildChanged(IDocumentSitePtr doc_site);
+    void onFrameEvent(FrameworkEvent& evt);
 
     // -- grid events --
-    void onGridPreGhostRowInsert(kcl::GridEvent& event);
-    void onGridPreInvalidAreaInsert(kcl::GridEvent& event);
-    void onGridModelChange(kcl::GridEvent& event);
-    void onGridEditExpressionClick(kcl::GridEvent& event);
-    void onGridColorClick(kcl::GridEvent& event);
-    void onGridCellRightClick(kcl::GridEvent& event);
-    void onGridBeginEdit(kcl::GridEvent& event);
+    void onGridPreGhostRowInsert(kcl::GridEvent& evt);
+    void onGridPreInvalidAreaInsert(kcl::GridEvent& evt);
+    void onGridModelChange(kcl::GridEvent& evt);
+    void onGridEditExpressionClick(kcl::GridEvent& evt);
+    void onGridColorClick(kcl::GridEvent& evt);
+    void onGridCellRightClick(kcl::GridEvent& evt);
+    void onGridBeginEdit(kcl::GridEvent& evt);
 
     // -- expr builder events --
     void onExprEditFinished(wxString);
@@ -109,8 +109,8 @@ private:
 
 private:
 
-    cfw::IFramePtr m_frame;
-    cfw::IDocumentSitePtr m_doc_site;
+    IFramePtr m_frame;
+    IDocumentSitePtr m_doc_site;
     
     ITableDocMarkEnumPtr m_markvec;
 

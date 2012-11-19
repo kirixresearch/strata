@@ -86,8 +86,8 @@ ViewPanel::~ViewPanel()
 }
 
 // -- IDocument --
-bool ViewPanel::initDoc(cfw::IFramePtr frame,
-                        cfw::IDocumentSitePtr site,
+bool ViewPanel::initDoc(IFramePtr frame,
+                        IDocumentSitePtr site,
                         wxWindow* docsite_wnd,
                         wxWindow* panesite_wnd)
 {
@@ -465,7 +465,7 @@ void ViewPanel::populateVisibleFieldsList()
     int i, count = info->cols.size();
     for (i = 0; i < count; ++i)
     {
-        wxString col_name = cfw::makeProper(info->cols[i].name);
+        wxString col_name = makeProper(info->cols[i].name);
         insertViewColumn(i, col_name, &(info->cols[i]));
     }
     
@@ -662,7 +662,7 @@ void ViewPanel::onOK(wxCommandEvent& evt)
 {
     if (m_visible_fields->getRowCount() == 0)
     {
-        cfw::appMessageBox(_("No fields exist in the selected view.  Please add at least one field to the view to continue."),
+        appMessageBox(_("No fields exist in the selected view.  Please add at least one field to the view to continue."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
         return;

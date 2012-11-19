@@ -136,7 +136,7 @@ ImportTableSelectionPage::ImportTableSelectionPage(kcl::Wizard* parent,
     m_message = new wxStaticText(this,
                                  -1,
                                  _("Please select the tables from the list that you would like to import."));
-    cfw::resizeStaticText(m_message);
+    resizeStaticText(m_message);
 
     m_grid = new kcl::RowSelectionGrid(this,
                                        ID_ImportTablesList,
@@ -388,7 +388,7 @@ void ImportTableSelectionPage::onPageChanged()
         {
             wxString msg = wxString::Format(_("The package file '%s' could not be read."),
                                             m_ii->path.c_str());
-            cfw::appMessageBox(msg,
+            appMessageBox(msg,
                                _("Import Wizard"),
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
@@ -400,7 +400,7 @@ void ImportTableSelectionPage::onPageChanged()
         {
             wxString msg = wxString::Format(_("The package file '%s' is either empty or corrupt."),
                                             m_ii->path.c_str());
-            cfw::appMessageBox(msg,
+            appMessageBox(msg,
                                _("Import Wizard"),
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
@@ -494,7 +494,7 @@ void ImportTableSelectionPage::onPageChanged()
             msg += wxT("  ");
             msg += conn->getErrorString();
             
-            cfw::appMessageBox(msg,
+            appMessageBox(msg,
                           _("Import Wizard"),
                           wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
@@ -625,7 +625,7 @@ bool ImportTableSelectionPage::onPageChanging(bool forward)
     
     if (!selected)
     {
-        cfw::appMessageBox(
+        appMessageBox(
             _("No items have been selected for import.  Please select at least one item to continue."),
             _("Import Wizard"),
             wxOK | wxICON_EXCLAMATION | wxCENTER);
@@ -642,7 +642,7 @@ void ImportTableSelectionPage::onBrowse(wxCommandEvent& evt)
 {
     if (!g_app->isDatabaseOpen())
     {
-        cfw::appMessageBox(_("To load an import template, please create or open a project"),
+        appMessageBox(_("To load an import template, please create or open a project"),
                       _("Import Wizard"),
                       wxOK | wxICON_EXCLAMATION | wxCENTER,
                       g_app->getMainWindow());
@@ -916,7 +916,7 @@ ImportDelimitedTextSettingsPage::ImportDelimitedTextSettingsPage(kcl::Wizard* pa
     wxStaticText* text = new wxStaticText(this,
                                           -1,
                                           _("Modify the settings below to determine how the text-delimited files should be read."));
-    cfw::resizeStaticText(text);
+    resizeStaticText(text);
 
 
     // create main delimiters sizer

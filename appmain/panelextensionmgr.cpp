@@ -100,8 +100,8 @@ ExtensionManagerPanel::~ExtensionManagerPanel()
 }
 
 // -- IDocument --
-bool ExtensionManagerPanel::initDoc(cfw::IFramePtr frame,
-                              cfw::IDocumentSitePtr site,
+bool ExtensionManagerPanel::initDoc(IFramePtr frame,
+                              IDocumentSitePtr site,
                               wxWindow* docsite_wnd,
                               wxWindow* panesite_wnd)
 {
@@ -527,7 +527,7 @@ void ExtensionManagerPanel::onAddExtensionsButtonClicked(wxCommandEvent& evt)
             message += *it;
         }
 
-        cfw::appMessageBox(message,
+        appMessageBox(message,
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION,
                            g_app->getMainWindow());
@@ -572,7 +572,7 @@ void ExtensionManagerPanel::onUninstallButtonClicked(wxCommandEvent& evt)
     {
         wxString message = wxString::Format(_("Are you sure you want to uninstall the '%s' extension?"),
                                             info.name.c_str());
-        int result = cfw::appMessageBox(message,
+        int result = appMessageBox(message,
                                         _("Extension Manager"),
                                         wxYES_NO | wxICON_QUESTION);
         if (result == wxYES)
