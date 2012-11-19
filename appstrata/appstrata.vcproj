@@ -3123,10 +3123,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\appmain\prefs_private.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\appmain\propertiespanel.cpp"
 				>
 			</File>
@@ -4185,6 +4181,10 @@
 			</File>
 			<File
 				RelativePath="..\appmain\prefs.h"
+				>
+			</File>
+			<File
+				RelativePath="..\appmain\prefs_private.h"
 				>
 			</File>
 			<File
