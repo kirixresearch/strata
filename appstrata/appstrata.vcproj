@@ -805,6 +805,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\appmain\artprovider.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\appmain\bitmapmgr.cpp"
 				>
 			</File>
@@ -814,6 +818,10 @@
 			</File>
 			<File
 				RelativePath="..\appmain\bookmarkfs.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\appmain\cfw.cpp"
 				>
 			</File>
 			<File
@@ -1180,6 +1188,30 @@
 			</File>
 			<File
 				RelativePath="..\appmain\fieldtypechoice.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\appmain\framework.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\appmain\frameworkprops.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\appmain\fsitems.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\appmain\fspanel.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\appmain\fspanellistview.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\appmain\fspaneltreeview.cpp"
 				>
 			</File>
 			<File
@@ -1775,6 +1807,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\appmain\jobinfo.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\appmain\jobmodifystruct.cpp"
 				>
 				<FileConfiguration
@@ -1889,6 +1925,10 @@
 						PreprocessorDefinitions=""
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\appmain\jobqueue.cpp"
+				>
 			</File>
 			<File
 				RelativePath="..\appmain\jobscheduler.cpp"
@@ -3079,6 +3119,18 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\appmain\prefs.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\appmain\prefs_private.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\appmain\propertiespanel.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\appmain\querydoc.cpp"
 				>
 			</File>
@@ -3437,6 +3489,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\appmain\statusbar.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\appmain\structuredoc.cpp"
 				>
 			</File>
@@ -3751,6 +3807,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\appmain\util.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\appmain\webdoc.cpp"
 				>
 			</File>
@@ -3792,6 +3852,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\appmain\artprovider.h"
+				>
+			</File>
+			<File
 				RelativePath="..\appmain\bitmapmgr.h"
 				>
 			</File>
@@ -3801,6 +3865,10 @@
 			</File>
 			<File
 				RelativePath="..\appmain\bookmarkfs.h"
+				>
+			</File>
+			<File
+				RelativePath="..\appmain\cfw.h"
 				>
 			</File>
 			<File
@@ -3904,6 +3972,42 @@
 				>
 			</File>
 			<File
+				RelativePath="..\appmain\framework.h"
+				>
+			</File>
+			<File
+				RelativePath="..\appmain\framework_private.h"
+				>
+			</File>
+			<File
+				RelativePath="..\appmain\frameworkprops.h"
+				>
+			</File>
+			<File
+				RelativePath="..\appmain\fsitems.h"
+				>
+			</File>
+			<File
+				RelativePath="..\appmain\fsitems_private.h"
+				>
+			</File>
+			<File
+				RelativePath="..\appmain\fspanel.h"
+				>
+			</File>
+			<File
+				RelativePath="..\appmain\fspanel_private.h"
+				>
+			</File>
+			<File
+				RelativePath="..\appmain\fspanellistview.h"
+				>
+			</File>
+			<File
+				RelativePath="..\appmain\fspaneltreeview.h"
+				>
+			</File>
+			<File
 				RelativePath="..\appmain\importpages.h"
 				>
 			</File>
@@ -3961,6 +4065,14 @@
 			</File>
 			<File
 				RelativePath="..\appmain\jobquery.h"
+				>
+			</File>
+			<File
+				RelativePath="..\appmain\jobqueue.h"
+				>
+			</File>
+			<File
+				RelativePath="..\appmain\jobqueue_private.h"
 				>
 			</File>
 			<File
@@ -4069,6 +4181,14 @@
 			</File>
 			<File
 				RelativePath="..\appmain\pkgfile.h"
+				>
+			</File>
+			<File
+				RelativePath="..\appmain\prefs.h"
+				>
+			</File>
+			<File
+				RelativePath="..\appmain\propertiespanel.h"
 				>
 			</File>
 			<File
@@ -4272,6 +4392,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\appmain\statusbar.h"
+				>
+			</File>
+			<File
 				RelativePath="..\appmain\structuredoc.h"
 				>
 			</File>
@@ -4317,6 +4441,10 @@
 			</File>
 			<File
 				RelativePath="..\appmain\updater.h"
+				>
+			</File>
+			<File
+				RelativePath="..\appmain\util.h"
 				>
 			</File>
 			<File
