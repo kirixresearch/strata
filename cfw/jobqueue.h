@@ -81,9 +81,6 @@ public:
     virtual int runJob() = 0;
     virtual void runPostJob() = 0;
     
-    // runNowAndBlock() calls runJob() and runPostJob() immediately
-    virtual void runNowAndBlock() = 0;
-
     XCM_DECLARE_SIGNAL1(sigJobFinished, IJobPtr)
 };
 
@@ -259,13 +256,6 @@ public:
     {
     }
     
-    void runNowAndBlock()
-    {
-        runJob();
-        runPostJob();
-    }
-
-
 protected:
     cfw::IJobInfoPtr m_sp_job_info;
     cfw::IJobInfo* m_job_info;
