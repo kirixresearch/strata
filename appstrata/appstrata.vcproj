@@ -3119,10 +3119,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\appmain\propertiespanel.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\appmain\querydoc.cpp"
 				>
 			</File>
@@ -4177,10 +4173,6 @@
 			</File>
 			<File
 				RelativePath="..\appmain\prefs_private.h"
-				>
-			</File>
-			<File
-				RelativePath="..\appmain\propertiespanel.h"
 				>
 			</File>
 			<File
