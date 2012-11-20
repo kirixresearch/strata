@@ -2140,24 +2140,6 @@ IUIContextPtr ReportDoc::getUserInterface()
     return ui_context;
 }
 
-// IProperties implementation
-IPropertyInfoEnumPtr ReportDoc::getPropertyEnum()
-{
-    xcm::IVectorImpl<IPropertyInfoPtr>* vec;
-    vec = new xcm::IVectorImpl<IPropertyInfoPtr>;
-    return vec;
-}
-
-bool ReportDoc::setProperty(const wxString& prop_name, const PropertyValue& value)
-{
-    return false;
-}
-
-bool ReportDoc::getProperty(const wxString& prop_name, PropertyValue& value)
-{
-    return false;
-}
-
 void ReportDoc::track()
 {
     // set the created flag to false
