@@ -15,7 +15,7 @@
 
 
 
-#include <wx/wx.h>
+#include "appmain.h"
 #include <wx/imaglist.h>
 #include <xcm/xcm.h>
 #include <set>
@@ -42,8 +42,6 @@
 #endif
 
 
-namespace cfw
-{
 
 
 static wxString _getStringPath(CfwTreeCtrl* tree, wxTreeItemId& id)
@@ -444,8 +442,8 @@ void FsPanelTreeView::populate(IFsItemEnumPtr items,
         // get the corresponding imagelist
         // index from bitmap of the FsItem
 
-        wxBitmap normal_bitmap = item->getBitmap(cfw::fsbmpSmall);
-        wxBitmap expanded_bitmap = item->getBitmap(cfw::fsbmpSmallExpanded);
+        wxBitmap normal_bitmap = item->getBitmap(fsbmpSmall);
+        wxBitmap expanded_bitmap = item->getBitmap(fsbmpSmallExpanded);
         
         normal_image_idx = getImageListIdx(normal_bitmap);
         expanded_image_idx = getImageListIdx(expanded_bitmap);
@@ -844,6 +842,5 @@ IFsItemEnumPtr FsPanelTreeView::getItemChildren(IFsItemPtr item)
 }
 
 
-};  // namespace cfw
 
 

@@ -36,10 +36,6 @@
 #endif
 
 
-XCM_USING_STATIC_MODULE(cfw)
-
-
-
 MainApp* g_app = NULL;
 AppMacroRecorder g_macro;
 paladin::Authentication* g_auth = NULL;

@@ -9,7 +9,7 @@
  */
 
 
-#include <wx/wx.h>
+#include "appmain.h"
 #include <wx/image.h>
 #include <wx/imaglist.h>
 #include <xcm/xcm.h>
@@ -19,9 +19,6 @@
 #include "fspanel_private.h"
 #include "fsitems_private.h"
 
-
-namespace cfw
-{
 
 
 BEGIN_EVENT_TABLE(FsPanelListView, CfwListCtrl)
@@ -230,8 +227,3 @@ IFsItemEnumPtr FsPanelListView::getSelectedItems()
     
     return vec;
 }
-
-
-};  // namespace cfw
-
-
