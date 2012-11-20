@@ -283,7 +283,8 @@ double getProjectSize(const wxString& project_path);
 // returns the default location where projects are created
 wxString getDefaultProjectsPath();
 
-tango::IIndexInfoPtr lookupIndex(tango::IIndexInfoEnumPtr indexes, const std::wstring& fields, bool order_matters);
+tango::IIndexInfoPtr lookupIndex(tango::IIndexInfoEnumPtr indexes, 
+                                 const std::wstring& fields, bool order_matters);
 
 
 
@@ -366,90 +367,6 @@ wxString getProxyServer();
 
 
 // -- utility classes ---------------------------------------------------------
-
-class wxDoubleClickGauge : public wxGauge
-{
-public:
-
-    wxDoubleClickGauge(wxWindow* parent,
-            wxWindowID id,
-            int range,
-            const wxPoint& pos = wxDefaultPosition,
-            const wxSize& size = wxDefaultSize,
-            long style = wxGA_HORIZONTAL) : wxGauge(parent, id, range, pos, size, style)
-    {
-        m_last_click = 0;
-    }
-
-private:
-
-#ifdef WIN32
-    WXLRESULT MSWWindowProc(WXUINT message, WXWPARAM wParam, WXLPARAM lParam)
-    {
-        if (message == WM_LBUTTONDOWN)
-        {
-            clock_t click_time = clock();
-            
-            double ms = click_time - m_last_click;
-            ms = (ms/((double)CLOCKS_PER_SEC))*1000;
-            
-            m_last_click = click_time;
-            
-            if (ms <= GetDoubleClickTime())
-            {
-                wxMouseEvent evt(wxEVT_LEFT_DCLICK);
-                InitMouseEvent(evt, LOWORD(lParam), HIWORD(lParam), wParam);
-                GetEventHandler()->ProcessEvent(evt);
-                return 0;
-            }
-        }
-        
-        return wxGauge::MSWWindowProc(message, wParam, lParam);
-    }
-#endif
-
-    clock_t m_last_click;
-};
-
-
-class JobGaugeUpdateTimer : public wxTimer,
-                            public xcm::signal_sink
-{
-public:
-
-    JobGaugeUpdateTimer(IStatusBarPtr _statusbar,
-                        IJobQueuePtr _job_queue,
-                        wxGauge* _gauge);
-    
-    ~JobGaugeUpdateTimer();
-
-    void hideJobFailedIcon();
-    void showJobFailedIcon();
-    
-    void UnInit();
-    void Notify();
-    
-    void onJobAdded(IJobInfoPtr job_info);
-    void onJobStateChanged(IJobInfoPtr job_info);
-
-    void onJobAddedInMainThread(wxCommandEvent& evt);
-    void onJobStateChangedInMainThread(wxCommandEvent& evt);
-    
-private:
-
-    IStatusBarPtr m_statusbar;
-    IJobQueuePtr m_job_queue;
-    
-    IStatusBarItemPtr m_job_text_item;
-    IStatusBarItemPtr m_job_separator_item;
-    IStatusBarItemPtr m_job_gauge_item;
-    IStatusBarItemPtr m_job_failed_item;
-
-    wxGauge* m_gauge;
-    
-    DECLARE_EVENT_TABLE()
-};
-
 
 // AppBusyCursor implements wxBusyCursor, but only when APP_GUI==1;
 // i.e. if the console mode is active, this does nothing
@@ -629,7 +546,6 @@ public:
                               int* hour,
                               int* minute,
                               int* second);
-
 public:
 
     Locale();
@@ -642,6 +558,90 @@ public:
     wxChar date_separator;
     DateOrder date_order;
     int paper_type;
+};
+
+
+class wxDoubleClickGauge : public wxGauge
+{
+public:
+
+    wxDoubleClickGauge(wxWindow* parent,
+            wxWindowID id,
+            int range,
+            const wxPoint& pos = wxDefaultPosition,
+            const wxSize& size = wxDefaultSize,
+            long style = wxGA_HORIZONTAL) : wxGauge(parent, id, range, pos, size, style)
+    {
+        m_last_click = 0;
+    }
+
+private:
+
+#ifdef WIN32
+    WXLRESULT MSWWindowProc(WXUINT message, WXWPARAM wParam, WXLPARAM lParam)
+    {
+        if (message == WM_LBUTTONDOWN)
+        {
+            clock_t click_time = clock();
+            
+            double ms = click_time - m_last_click;
+            ms = (ms/((double)CLOCKS_PER_SEC))*1000;
+            
+            m_last_click = click_time;
+            
+            if (ms <= GetDoubleClickTime())
+            {
+                wxMouseEvent evt(wxEVT_LEFT_DCLICK);
+                InitMouseEvent(evt, LOWORD(lParam), HIWORD(lParam), wParam);
+                GetEventHandler()->ProcessEvent(evt);
+                return 0;
+            }
+        }
+        
+        return wxGauge::MSWWindowProc(message, wParam, lParam);
+    }
+#endif
+
+    clock_t m_last_click;
+};
+
+
+class JobGaugeUpdateTimer : public wxTimer,
+                            public xcm::signal_sink
+{
+public:
+
+    JobGaugeUpdateTimer(IStatusBarPtr _statusbar,
+                        IJobQueuePtr _job_queue,
+                        wxGauge* _gauge);
+    
+    ~JobGaugeUpdateTimer();
+
+    void hideJobFailedIcon();
+    void showJobFailedIcon();
+    
+    void UnInit();
+    void Notify();
+    
+    void onJobAdded(IJobInfoPtr job_info);
+    void onJobStateChanged(IJobInfoPtr job_info);
+
+    void onJobAddedInMainThread(wxCommandEvent& evt);
+    void onJobStateChangedInMainThread(wxCommandEvent& evt);
+    
+private:
+
+    IStatusBarPtr m_statusbar;
+    IJobQueuePtr m_job_queue;
+    
+    IStatusBarItemPtr m_job_text_item;
+    IStatusBarItemPtr m_job_separator_item;
+    IStatusBarItemPtr m_job_gauge_item;
+    IStatusBarItemPtr m_job_failed_item;
+
+    wxGauge* m_gauge;
+    
+    DECLARE_EVENT_TABLE()
 };
 
 

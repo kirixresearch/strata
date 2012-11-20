@@ -10,6 +10,7 @@
 
 
 #include "appmain.h"
+#include "util.h"
 #include <wx/tokenzr.h>
 #include <wx/config.h>
 #include <wx/stdpaths.h>
@@ -19,7 +20,6 @@
 #include <kl/regex.h>
 #include <kl/thread.h>
 #include <kl/math.h>
-#include "util.h"
 
 #include "curlutil.h"
 #include <curl/curl.h>
@@ -41,253 +41,408 @@
 
 
 
-
-// -- GUI helper classes and functions ----------------------------------------
-
-
-BEGIN_EVENT_TABLE(JobGaugeUpdateTimer, wxTimer)
-    EVT_MENU(10000, JobGaugeUpdateTimer::onJobAddedInMainThread)
-    EVT_MENU(10001, JobGaugeUpdateTimer::onJobStateChangedInMainThread)
-END_EVENT_TABLE()
-
-
-JobGaugeUpdateTimer::JobGaugeUpdateTimer(
-                    IStatusBarPtr statusbar,
-                    IJobQueuePtr job_queue,
-                    wxGauge* gauge)
+wxString dbl2fstr(double d, int dec_places)
 {
-    m_statusbar = statusbar;
-    m_gauge = gauge;
-    
-    m_job_queue = job_queue;
-    m_job_queue->sigJobAdded().connect(this, &JobGaugeUpdateTimer::onJobAdded);
-    
-    m_job_text_item = m_statusbar->getItem(wxT("app_job_text"));
-    m_job_separator_item = m_statusbar->getItem(wxT("app_job_text_separator"));
-    m_job_gauge_item = m_statusbar->getItem(wxT("app_job_gauge"));
-    m_job_failed_item = m_statusbar->getItem(wxT("app_job_failed"));
-}
+    // the first time we are run, get locale information about
+    // the system's decimal point character and thousands
+    // separator character
 
-JobGaugeUpdateTimer::~JobGaugeUpdateTimer()
-{
-}
-
-void JobGaugeUpdateTimer::hideJobFailedIcon()
-{
-    if (m_job_failed_item->isShown())
+    static wxChar thousands_sep = 0;
+    static wxChar decimal_point = 0;
+    if (!decimal_point)
     {
-        m_job_failed_item->show(false);
-        m_statusbar->populate();
+        struct lconv* l = localeconv();
+        thousands_sep = (unsigned char)*(l->thousands_sep);
+        decimal_point = (unsigned char)*(l->decimal_point);
+
+        if (thousands_sep == 0)
+            thousands_sep = wxT(',');
+        if (decimal_point == 0)
+            decimal_point = wxT('.');
     }
-}
 
-void JobGaugeUpdateTimer::showJobFailedIcon()
-{
-    if (!m_job_failed_item->isShown())
+    // initialize result area
+    wxChar result[128];
+    wxChar* string_start;
+    memset(result, 0, sizeof(wxChar)*80);
+
+    double decp, intp;
+    int digit;
+    bool negative = false;
+
+    if (d < 0.0)
     {
-        m_job_failed_item->show(true);
-        m_statusbar->populate();
+        negative = true;
+        d = fabs(d);
     }
-}
 
-void JobGaugeUpdateTimer::UnInit()
-{
-    m_statusbar.p = NULL;
-    m_job_queue.clear();
-    m_gauge = NULL;
-}
+    // split the number up into integer and fraction portions
+    d = kl::dblround(d, dec_places);
+    decp = modf(d, &intp);
+    //decp = kl::dblround(decp, dec_places);
 
-void JobGaugeUpdateTimer::Notify()
-{
-    wxASSERT_MSG(::wxIsMainThread(), wxT("Being called outside of main/gui thread!"));
-    wxASSERT_MSG(m_statusbar.isOk(), wxT("Null statusbar!"));
-    wxASSERT_MSG(m_job_queue.isOk(), wxT("Null job queue!"));
-    wxASSERT_MSG(m_job_text_item.isOk(), wxT("Null status item!"));
-    wxASSERT_MSG(m_job_gauge_item.isOk(), wxT("Null status item!"));
-    wxASSERT_MSG(m_job_failed_item.isOk(), wxT("Null status item!"));
-    wxASSERT_MSG(m_gauge != NULL, wxT("Null gauge control!"));
-    
-    if (!m_job_queue->getJobsActive())
+    int i = 0;
+
+    int pos = 40;
+    while (1)
     {
-        // no running jobs, so hide the job gauge and text
-        if (m_job_text_item->isShown() || m_job_gauge_item->isShown())
+        digit = (int)((modf(intp/10, &intp)+0.01)*10);
+
+        result[pos] = wxT('0') + digit;
+        pos--;
+
+        if (intp < 1.0)
         {
-            m_job_text_item->show(false);
-            m_job_separator_item->show(false);
-            m_job_gauge_item->show(false);
-            m_job_text_item->setValue(wxEmptyString);
-            m_statusbar->populate();
-            
-            // make sure the statusbar's refresh signal is fired here
-            m_statusbar->refresh();
-        }
-        
-        return;
-    }
-
-
-
-    // job progress statusbar text
-    wxString job_text;
-
-    // this is the average of all of the job progress percentages
-    double tot_pct_done = 0.0;
-    
-    // this flag indicates whether the job gauge should pulse or not
-    bool is_indeterminate = false;
-    
-    // determine the overall progress
-    IJobInfoEnumPtr jobs = m_job_queue->getJobInfoEnum(jobStateRunning);
-    size_t i, job_count = jobs->size();
-    
-    // this check is here because sometimes the running job count is
-    // equal to zero before getJobsActive() is false -- when this happens,
-    // don't go past this point; instead, let the above check get processed
-    if (job_count == 0)
-        return;
-    
-    if (job_count > 0)
-    {
-        // there's at least one job running, make sure
-        // the job text and gauge are shown
-        if (!m_job_text_item->isShown() || !m_job_gauge_item->isShown())
-        {
-            m_job_text_item->show(true);
-            m_job_separator_item->show(true);
-            m_job_gauge_item->show(true);
-            m_statusbar->populate();
-        }
-    }
-    
-    for (i = 0; i < job_count; i++)
-    {
-        IJobInfoPtr job_info = jobs->getItem(i);
-        
-        // update the total percentage
-        double pct = job_info->getPercentage();
-        if ((job_info->getInfoMask() & jobMaskPercentage) && pct >= 0.0)
-            tot_pct_done += pct;
-
-        // determine if the job is indeterminate or not
-        if (kl::dblcompare(job_info->getMaxCount(), 0.0) == 0)
-        {
-            is_indeterminate = true;
             break;
         }
-         else
+
+        if (++i == 3)
         {
-            time_t start_time = job_info->getStartTime();
-            time_t current_time = time(NULL);
-            
-            // the job has been running for more than 3 seconds and
-            // is still stuck at 0%, so it's indeterminate right now
-            if ((current_time - start_time) >= 3 && pct == 0.0)
-            {
-                is_indeterminate = true;
-                break;
-            }
+            result[pos] = thousands_sep;
+            pos--;
+            i = 0;
         }
     }
-    
-    // make sure we average the total percetanges of all running jobs
-    tot_pct_done /= job_count;
-    
-    // create the job statusbar text
-    if (job_count == 1)
-        job_text = jobs->getItem(0)->getTitle();
-         else if (job_count > 1)
-        job_text = wxString::Format(_("%d jobs running"), job_count);
-    
-    // update the gauge and update job statusbar text where appropriate
-    if (is_indeterminate)
+
+    if (negative)
     {
-        m_gauge->Pulse();
+        result[pos] = wxT('-');
+        --pos;
+    }
+
+
+    string_start = result+pos+1;
+
+
+    if (dec_places > 0)
+    {
+        pos = 41;
+        result[pos] = decimal_point;
+        pos++;
+        wxSnprintf(result+pos, 40, wxT("%0*.0f"), dec_places, decp*kl::pow10(dec_places));
+    }
+
+    return string_start;
+}
+
+wxString doubleQuote(const wxString& src, wxChar quote)
+{
+    wxString ret;
+    ret.Alloc(src.Length() + 10);
+    const wxChar* ch;
+
+    ch = src.c_str();
+    while (*ch)
+    {
+        if (*ch != quote)
+            ret += *ch;
+              else
+            {
+                ret += quote;
+                ret += quote;
+            }
+
+        ++ch;
+    }
+
+    return ret;
+}
+
+wxString makeProper(const wxString& input)
+{
+    if (input.Length() == 0)
+        return input;
+    
+    wxString output = input;
+    const wxChar* ch = output.c_str();
+    int idx = 0;
+
+    while (*ch && !wxIsalpha(*ch))
+    {
+        ch++;
+        idx++;
+    }
+
+    if (!*ch)
+    {
+        return output;
+    }
+    
+    // make sure that all characters are 7-bit
+    // before trying to uppercase the first letter,
+    // which can destroy some character data in
+    // certain unicode cases
+    
+    ch = output.c_str();
+    while (*ch)
+    {
+        ch++;
+        if (*ch > 127)
+            return output;
+    }
+
+    output.MakeLower();
+    output.SetChar(idx, wxToupper(output.GetChar(idx)));
+
+    return output;
+}
+
+wxString makeProperIfNecessary(const wxString& input)
+{
+    if (input.Length() == 0)
+        return input;
         
-        // add a little space between job gauge and job text
-        job_text.Prepend(wxT(" "));
-    }
-     else
+    const wxChar* ch = input.c_str();
+    
+    while (*ch)
     {
-        m_gauge->SetValue((int)tot_pct_done);
-        job_text.Prepend(wxString::Format(wxT("%.1f%%  "), tot_pct_done));
+        if (*ch > 127)
+        {
+            // unicode strings should not be made 'proper'
+            return input;
+        }
+            
+        if (wxIsalpha(*ch) && *ch != towupper(*ch))
+        {
+            // input is mixed-case, return original
+            return input;
+        }
+        
+        ++ch;
     }
     
-    // if the statusbar text has changed, refresh the statusbar
-    if (m_job_text_item->getValue().Cmp(job_text) != 0)
+    // if the string is all upper case, lower-case it
+    // and capitalize the first letter
+    return makeProper(input);
+}
+
+bool isUnicodeString(const std::wstring& val)
+{
+    const wchar_t* p = val.c_str();
+    while (*p)
     {
-        m_job_text_item->setValue(job_text);
-        m_statusbar->refresh();
+        if (*p > 127)
+            return true;
+        ++p;
     }
+    
+    return false;
 }
 
-void JobGaugeUpdateTimer::onJobAdded(IJobInfoPtr job_info)
+// shortcut so we don't have to use towx everywhere
+// this should be able to go away in future versions of wx
+wxString filenameToUrl(const wxString& _filename)
 {
-    // post an event that a job has been added; we need to send
-    // an event rather than rely on the job state because some
-    // jobs process very quickly, and it's not possible to
-    // catch the job running before the job state is set to
-    // finished
-    wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, 10000);
-    evt.SetExtraLong((long)job_info.p);
-
-    // when a job sets its state, it may not be in the main thread, so it is
-    // important that we do this here since there are GUI operations involved
-    // and we can't have GUI stuff happening outside of the main thread
-    if (::wxIsMainThread())
-        onJobAddedInMainThread(evt);
-         else
-        ::wxPostEvent(this, evt);
-
-    // connect the job state changed function so we can track the
-    // state of individual jobs        
-    job_info->sigStateChanged().connect(this, &JobGaugeUpdateTimer::onJobStateChanged);
+    return towx(kl::filenameToUrl(towstr(_filename)));
 }
 
-void JobGaugeUpdateTimer::onJobStateChanged(IJobInfoPtr job_info)
+wxString urlToFilename(const wxString& _url)
 {
-    // post an event that a particular job status has changed
-    wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, 10001);
-    evt.SetExtraLong((long)job_info.p);
-
-    // when a job sets its state, it may not be in the main thread, so it is
-    // important that we do this here since there are GUI operations involved
-    // and we can't have GUI stuff happening outside of the main thread
-    if (::wxIsMainThread())
-        onJobStateChangedInMainThread(evt);
-         else
-        ::wxPostEvent(this, evt);
+    return towx(kl::urlToFilename(towstr(_url)));
 }
 
-void JobGaugeUpdateTimer::onJobAddedInMainThread(wxCommandEvent& evt)
+void trimUnwantedUrlChars(wxString& str)
 {
-    wxASSERT_MSG(::wxIsMainThread(), wxT("Being called outside of main/gui thread!"));
+    // trim windows filename invalid characters
+    str.Replace(wxT("*"), wxT(" "));
+    str.Replace(wxT("?"), wxT(" "));
+    str.Replace(wxT("\\"), wxT(" "));
+    str.Replace(wxT("/"), wxT(" "));
+    str.Replace(wxT(":"), wxT(" "));
+    str.Replace(wxT("\""), wxT(" "));
+    str.Replace(wxT("<"), wxT(" "));
+    str.Replace(wxT(">"), wxT(" "));
+    str.Replace(wxT("|"), wxT(" "));
 
-    // if a new job is added, hide the job failed icon;
-    // we want the user to know if any of the jobs running
-    // in the queue fails; however, when a new job is added 
-    // after a failure has occurred, we want the user to see 
-    // if the new job fails so they can see if the problem 
-    // has been fixed rather than seeing the failed state of 
-    // a previous job
-
-    hideJobFailedIcon();
+    // trim other unwanted cruft
+    str.Replace(wxT("\r"), wxT(" "));
+    str.Replace(wxT("\n"), wxT(" "));
+    str.Replace(wxT(","), wxT(" "));
+    str.Replace(wxT("."), wxT(" "));
+    str.Replace(wxT("("), wxT(" "));
+    str.Replace(wxT(")"), wxT(" "));
+    str.Replace(wxT("'"), wxT(" "));
+    str.Replace(wxT(":"), wxT(" "));
+    str.Replace(wxT("-"), wxT(" "));
+    str.Replace(wxT("+"), wxT(" "));
+    str.Replace(wxT("/"), wxT(" "));
+    str.Replace(wxT("*"), wxT(" "));
+    str.Replace(wxT("%"), wxT(" "));
+    str.Replace(wxT("["), wxT(" "));
+    str.Replace(wxT("]"), wxT(" "));
+    str.Replace(wxT("&"), wxT(" "));
+    str.Replace(wxT("@"), wxT(" "));
+    
+    // get rid of any double (or more) spaces
+    str.Replace(wxT("  "), wxT(" "));
+    str.Replace(wxT("  "), wxT(" "));
+    str.Replace(wxT("  "), wxT(" "));
+    str.Replace(wxT("  "), wxT(" "));
+    str.Replace(wxT("  "), wxT(" "));
+    str.Replace(wxT("  "), wxT(" "));
+    str.Replace(wxT("  "), wxT(" "));
+    str.Replace(wxT("  "), wxT(" "));
+    str.Replace(wxT("  "), wxT(" "));
+    
+    str.Trim(false);
+    str.Trim(true);
 }
 
-void JobGaugeUpdateTimer::onJobStateChangedInMainThread(wxCommandEvent& evt)
+wxString jsEscapeString(const wxString& input, wxChar quote)
 {
-    wxASSERT_MSG(::wxIsMainThread(), wxT("Being called outside of main/gui thread!"));
+    wxChar repstr1[2], repstr2[3];
+    repstr1[0] = quote;
+    repstr1[1] = 0;
+    repstr2[0] = '\\';
+    repstr2[1] = quote;
+    repstr2[2] = 0;
+    
+    wxString result = input;
+    result.Replace(wxT("\\"), wxT("\\\\"));
+    result.Replace(repstr1, repstr2);
+    
+    return result;
+}
 
-    IJobInfoPtr job_info = (IJobInfo*)evt.GetExtraLong();
-    if (job_info->getState() == jobStateFailed)
+wxString urlEscape(const wxString& input)
+{
+    wxString result;
+    result.Alloc(input.Length() + 10);
+    
+    const wxChar* ch = input.c_str();
+    unsigned int c;
+    
+    wxString u = wxT(" ");
+
+    while ((c = *ch))
     {
-        // if any of the jobs in the queue fail,
-        // show a job failed icon
-
-        showJobFailedIcon();
+        if (c >= 128)
+        {
+            // we need to utf-8 encode this character per RFC-3986
+            u.SetChar(0, *ch);
+            const wxCharBuffer utf8b = u.utf8_str();
+            const char* utf8 = (const char*)utf8b;
+            while (*utf8)
+            {
+                result += wxString::Format(wxT("%%%02X"), (unsigned char)*utf8);
+                ++utf8;
+            }
+            
+            ch++;
+            continue;
+        }
+        
+        if (c <= 0x1f ||
+            c == '%' || c == ' ' || c == '&' || c == '=' ||
+            c == '+' || c == '$' || c == '#' || c == '{' ||
+            c == '}' || c == '\\' ||c == '|' || c == '^' ||
+            c == '~' || c == '[' || c == ']' || c == '`' ||
+            c == '<' || c == '>')
+        {
+            result += wxString::Format(wxT("%%%02X"), c);
+        }
+         else
+        {
+            result += *ch;
+        }
+        
+        ++ch;
     }
+
+    return result;
 }
 
+wxString multipartEncode(const wxString& input)
+{
+    wxString result;
+    result.Alloc(input.Length() + 10);
+    
+    const wxChar* ch = input.c_str();
+    unsigned int c;
+    
+    while ((c = *ch))
+    {
+        if (c > 255)
+            result += wxString::Format(wxT("&#%d;"), c);
+             else
+            result += *ch;
+        ++ch;
+    }
 
+    return result;
+}
+
+// this function was necessary because wxString::Replace(..., wxEmptyString)
+// was truncating strings
+wxString removeChar(const wxString& s, wxChar c)
+{
+    wxString result;
+
+    const wxChar* ch = s.c_str();
+    while (*ch)
+    {
+        if (*ch != c)
+            result += *ch;
+        ch++;
+    }
+    return result;
+}
+
+// this is borrowed from expr_util in tango
+wxChar* zl_strchr(wxChar* str, wxChar ch)
+{
+    int paren_level = 0;
+    wxChar quote_char = 0;
+
+    while (*str)
+    {
+        if (*str == quote_char)
+        {
+            quote_char = 0;
+            str++;
+            continue;
+        }
+
+        if (*str == wxT('\'') && !quote_char)
+        {
+            quote_char = wxT('\'');
+        }
+        
+        if (*str == wxT('"') && !quote_char)
+        {
+            quote_char = wxT('\"');
+        }
+
+        if (!quote_char)
+        {
+            if (*str == wxT('('))
+                paren_level++;
+
+            if (*str == wxT(')'))
+                paren_level--;
+
+            if (paren_level == 0 && *str == ch)
+                return str;
+        }
+
+        str++;
+    }
+
+    return NULL;
+}
+
+wxString makeUniqueString()
+{
+    unsigned int part1 = ((unsigned int)time(NULL)) & 0xffffffff;
+    unsigned int part2 = rand();
+    static unsigned int part3 = rand();
+    
+    part3++;
+    
+    wxString result;
+    result.Printf(wxT("u%08x%04x%04x"), part1, (part2 & 0xffff), (part3 & 0xffff));
+    return result;
+}
 
 
 
@@ -311,7 +466,6 @@ public:
     }
 };
 
-
 void setFocusDeferred(wxWindow* focus)
 {
     FocusAgent* f = new FocusAgent;
@@ -332,7 +486,6 @@ bool windowOrChildHasFocus(wxWindow* wnd)
     }
     return false;
 }
-
 
 bool doOutputPathCheck(const wxString& output_path, wxWindow* parent)
 {
@@ -520,115 +673,6 @@ int getTaskBarHeight()
 #endif
 }
 
-
-
-
-/*
-This is a test class for the appmain.exe hanging problem.  Was originally
-in appcontroller.cpp.  The problem has been averted by adding an
-g_app->ExitMainLoop() call to AppController::onFrameDestroying().
-However, if we want to investigate the problem further, the
-class below is useful
-
-class TestWindowExist : public kl::Thread
-{
-public:
-    wxTimer m_timer;
-
-    TestWindowExist() : kl::Thread()
-    {
-    }
-
-    unsigned int entry()
-    {
-
-        kl::Thread::sleep(5000);
-
-        wxWindowList::const_iterator i;
-        const wxWindowList::const_iterator end = wxTopLevelWindows.end();
-
-        
-        std::vector<wxString> entries;
-
-        // then decide whether we should exit at all
-        for ( i = wxTopLevelWindows.begin(); i != end; ++i )
-        {
-            wxTopLevelWindow * const win = wx_static_cast(wxTopLevelWindow *, *i);
-            if ( win->ShouldPreventAppExit() )
-            {
-                wxClassInfo* info = win->GetClassInfo();
-                wxString s;
-                s = win->GetTitle();
-                s += wxT(",");
-                if (info)
-                    s += info->GetClassName();
-
-                entries.push_back(s);
-            }
-        }
-
-        std::vector<wxString>::iterator it;
-        for (it = entries.begin(); it != entries.end(); ++it)
-        {
-            ::wxMessageBox(*it);
-        }
-
-        if (entries.size() == 0)
-        {
-            ::wxMessageBox(wxT("No Windows"));
-        }
-
-        if (wxTheApp->IsMainLoopRunning())
-        {
-            ::wxMessageBox(wxT("Main loop is running."));
-        }
-         else
-        {
-            ::wxMessageBox(wxT("Main loop is not running."));
-        }
-
-
-        if (wxIsWaitingForThread())
-        {
-            ::wxMessageBox(wxT("Waiting for thread."));
-        }
-         else
-        {
-            ::wxMessageBox(wxT("Not waiting for thread."));
-        }
-
-
-        if (wxGuiOwnedByMainThread())
-        {
-            ::wxMessageBox(wxT("Gui owned by main thread."));
-        }
-         else
-        {
-            ::wxMessageBox(wxT("Gui not owned by main thread."));
-        }
-
-
-        wxTheApp->ExitMainLoop();
-
-        kl::Thread::sleep(2000);
-
-        if (wxTheApp->IsMainLoopRunning())
-        {
-            ::wxMessageBox(wxT("Main loop is running2."));
-        }
-         else
-        {
-            ::wxMessageBox(wxT("Main loop is not running2."));
-        }
-
-        return 0;
-    }
-
-};
-*/
-
-
-
 IDocumentSitePtr lookupOtherDocumentSite(
                            IDocumentSitePtr site,
                            const std::string& doc_class_name)
@@ -723,8 +767,6 @@ wxWindow* getDocumentSiteWindow(IDocumentSitePtr site)
     wxWindow* w = doc->getDocumentWindow();
     return w;
 }
-
-
 
 
 
@@ -1439,21 +1481,6 @@ bool writeStreamTextFile(tango::IDatabasePtr db,
     return true;
 }
 
-
-bool isUnicodeString(const std::wstring& val)
-{
-    const wchar_t* p = val.c_str();
-    while (*p)
-    {
-        if (*p > 127)
-            return true;
-        ++p;
-    }
-    
-    return false;
-}
-
-
 wxString determineMimeType(const wxString& path)
 {
     xf_file_t f = xf_open(towstr(path), xfOpen, xfRead, xfShareRead);
@@ -1701,227 +1728,6 @@ tango::IIndexInfoPtr lookupIndex(tango::IIndexInfoEnumPtr idx_enum, const std::w
 
     return result;
 }
-
-
-
-
-// shortcut so we don't have to use towx everywhere
-// this should be able to go away in future versions of wx
-wxString filenameToUrl(const wxString& _filename)
-{
-    return towx(kl::filenameToUrl(towstr(_filename)));
-}
-
-wxString urlToFilename(const wxString& _url)
-{
-    return towx(kl::urlToFilename(towstr(_url)));
-}
-
-void trimUnwantedUrlChars(wxString& str)
-{
-    // trim windows filename invalid characters
-    str.Replace(wxT("*"), wxT(" "));
-    str.Replace(wxT("?"), wxT(" "));
-    str.Replace(wxT("\\"), wxT(" "));
-    str.Replace(wxT("/"), wxT(" "));
-    str.Replace(wxT(":"), wxT(" "));
-    str.Replace(wxT("\""), wxT(" "));
-    str.Replace(wxT("<"), wxT(" "));
-    str.Replace(wxT(">"), wxT(" "));
-    str.Replace(wxT("|"), wxT(" "));
-
-    // trim other unwanted cruft
-    str.Replace(wxT("\r"), wxT(" "));
-    str.Replace(wxT("\n"), wxT(" "));
-    str.Replace(wxT(","), wxT(" "));
-    str.Replace(wxT("."), wxT(" "));
-    str.Replace(wxT("("), wxT(" "));
-    str.Replace(wxT(")"), wxT(" "));
-    str.Replace(wxT("'"), wxT(" "));
-    str.Replace(wxT(":"), wxT(" "));
-    str.Replace(wxT("-"), wxT(" "));
-    str.Replace(wxT("+"), wxT(" "));
-    str.Replace(wxT("/"), wxT(" "));
-    str.Replace(wxT("*"), wxT(" "));
-    str.Replace(wxT("%"), wxT(" "));
-    str.Replace(wxT("["), wxT(" "));
-    str.Replace(wxT("]"), wxT(" "));
-    str.Replace(wxT("&"), wxT(" "));
-    str.Replace(wxT("@"), wxT(" "));
-    
-    // get rid of any double (or more) spaces
-    str.Replace(wxT("  "), wxT(" "));
-    str.Replace(wxT("  "), wxT(" "));
-    str.Replace(wxT("  "), wxT(" "));
-    str.Replace(wxT("  "), wxT(" "));
-    str.Replace(wxT("  "), wxT(" "));
-    str.Replace(wxT("  "), wxT(" "));
-    str.Replace(wxT("  "), wxT(" "));
-    str.Replace(wxT("  "), wxT(" "));
-    str.Replace(wxT("  "), wxT(" "));
-    
-    str.Trim(false);
-    str.Trim(true);
-}
-
-wxString jsEscapeString(const wxString& input, wxChar quote)
-{
-    wxChar repstr1[2], repstr2[3];
-    repstr1[0] = quote;
-    repstr1[1] = 0;
-    repstr2[0] = '\\';
-    repstr2[1] = quote;
-    repstr2[2] = 0;
-    
-    wxString result = input;
-    result.Replace(wxT("\\"), wxT("\\\\"));
-    result.Replace(repstr1, repstr2);
-    
-    return result;
-}
-
-wxString urlEscape(const wxString& input)
-{
-    wxString result;
-    result.Alloc(input.Length() + 10);
-    
-    const wxChar* ch = input.c_str();
-    unsigned int c;
-    
-    wxString u = wxT(" ");
-
-    while ((c = *ch))
-    {
-        if (c >= 128)
-        {
-            // we need to utf-8 encode this character per RFC-3986
-            u.SetChar(0, *ch);
-            const wxCharBuffer utf8b = u.utf8_str();
-            const char* utf8 = (const char*)utf8b;
-            while (*utf8)
-            {
-                result += wxString::Format(wxT("%%%02X"), (unsigned char)*utf8);
-                ++utf8;
-            }
-            
-            ch++;
-            continue;
-        }
-        
-        if (c <= 0x1f ||
-            c == '%' || c == ' ' || c == '&' || c == '=' ||
-            c == '+' || c == '$' || c == '#' || c == '{' ||
-            c == '}' || c == '\\' ||c == '|' || c == '^' ||
-            c == '~' || c == '[' || c == ']' || c == '`' ||
-            c == '<' || c == '>')
-        {
-            result += wxString::Format(wxT("%%%02X"), c);
-        }
-         else
-        {
-            result += *ch;
-        }
-        
-        ++ch;
-    }
-
-    return result;
-}
-
-
-wxString multipartEncode(const wxString& input)
-{
-    wxString result;
-    result.Alloc(input.Length() + 10);
-    
-    const wxChar* ch = input.c_str();
-    unsigned int c;
-    
-    while ((c = *ch))
-    {
-        if (c > 255)
-            result += wxString::Format(wxT("&#%d;"), c);
-             else
-            result += *ch;
-        ++ch;
-    }
-
-    return result;
-}
-
-// this function was necessary because wxString::Replace(..., wxEmptyString)
-// was truncating strings
-wxString removeChar(const wxString& s, wxChar c)
-{
-    wxString result;
-
-    const wxChar* ch = s.c_str();
-    while (*ch)
-    {
-        if (*ch != c)
-            result += *ch;
-        ch++;
-    }
-    return result;
-}
-
-// this is borrowed from expr_util in tango
-wxChar* zl_strchr(wxChar* str, wxChar ch)
-{
-    int paren_level = 0;
-    wxChar quote_char = 0;
-
-    while (*str)
-    {
-        if (*str == quote_char)
-        {
-            quote_char = 0;
-            str++;
-            continue;
-        }
-
-        if (*str == wxT('\'') && !quote_char)
-        {
-            quote_char = wxT('\'');
-        }
-        
-        if (*str == wxT('"') && !quote_char)
-        {
-            quote_char = wxT('\"');
-        }
-
-        if (!quote_char)
-        {
-            if (*str == wxT('('))
-                paren_level++;
-
-            if (*str == wxT(')'))
-                paren_level--;
-
-            if (paren_level == 0 && *str == ch)
-                return str;
-        }
-
-        str++;
-    }
-
-    return NULL;
-}
-
-wxString makeUniqueString()
-{
-    unsigned int part1 = ((unsigned int)time(NULL)) & 0xffffffff;
-    unsigned int part2 = rand();
-    static unsigned int part3 = rand();
-    
-    part3++;
-    
-    wxString result;
-    result.Printf(wxT("u%08x%04x%04x"), part1, (part2 & 0xffff), (part3 & 0xffff));
-    return result;
-}
-
-
 
 
 // gets small web files, returning them as strings
@@ -2434,187 +2240,6 @@ wxString getUserDocumentFolder()
 }
 
 
-
-
-wxString dbl2fstr(double d, int dec_places)
-{
-    // the first time we are run, get locale information about
-    // the system's decimal point character and thousands
-    // separator character
-
-    static wxChar thousands_sep = 0;
-    static wxChar decimal_point = 0;
-    if (!decimal_point)
-    {
-        struct lconv* l = localeconv();
-        thousands_sep = (unsigned char)*(l->thousands_sep);
-        decimal_point = (unsigned char)*(l->decimal_point);
-
-        if (thousands_sep == 0)
-            thousands_sep = wxT(',');
-        if (decimal_point == 0)
-            decimal_point = wxT('.');
-    }
-
-    // initialize result area
-    wxChar result[128];
-    wxChar* string_start;
-    memset(result, 0, sizeof(wxChar)*80);
-
-    double decp, intp;
-    int digit;
-    bool negative = false;
-
-    if (d < 0.0)
-    {
-        negative = true;
-        d = fabs(d);
-    }
-
-    // split the number up into integer and fraction portions
-    d = kl::dblround(d, dec_places);
-    decp = modf(d, &intp);
-    //decp = kl::dblround(decp, dec_places);
-
-    int i = 0;
-
-    int pos = 40;
-    while (1)
-    {
-        digit = (int)((modf(intp/10, &intp)+0.01)*10);
-
-        result[pos] = wxT('0') + digit;
-        pos--;
-
-        if (intp < 1.0)
-        {
-            break;
-        }
-
-        if (++i == 3)
-        {
-            result[pos] = thousands_sep;
-            pos--;
-            i = 0;
-        }
-    }
-
-    if (negative)
-    {
-        result[pos] = wxT('-');
-        --pos;
-    }
-
-
-    string_start = result+pos+1;
-
-
-    if (dec_places > 0)
-    {
-        pos = 41;
-        result[pos] = decimal_point;
-        pos++;
-        wxSnprintf(result+pos, 40, wxT("%0*.0f"), dec_places, decp*kl::pow10(dec_places));
-    }
-
-    return string_start;
-}
-
-
-wxString doubleQuote(const wxString& src, wxChar quote)
-{
-    wxString ret;
-    ret.Alloc(src.Length() + 10);
-    const wxChar* ch;
-
-    ch = src.c_str();
-    while (*ch)
-    {
-        if (*ch != quote)
-            ret += *ch;
-              else
-            {
-                ret += quote;
-                ret += quote;
-            }
-
-        ++ch;
-    }
-
-    return ret;
-}
-
-wxString makeProper(const wxString& input)
-{
-    if (input.Length() == 0)
-        return input;
-    
-    wxString output = input;
-    const wxChar* ch = output.c_str();
-    int idx = 0;
-
-    while (*ch && !wxIsalpha(*ch))
-    {
-        ch++;
-        idx++;
-    }
-
-    if (!*ch)
-    {
-        return output;
-    }
-    
-    // make sure that all characters are 7-bit
-    // before trying to uppercase the first letter,
-    // which can destroy some character data in
-    // certain unicode cases
-    
-    ch = output.c_str();
-    while (*ch)
-    {
-        ch++;
-        if (*ch > 127)
-            return output;
-    }
-
-    output.MakeLower();
-    output.SetChar(idx, wxToupper(output.GetChar(idx)));
-
-    return output;
-}
-
-wxString makeProperIfNecessary(const wxString& input)
-{
-    if (input.Length() == 0)
-        return input;
-        
-    const wxChar* ch = input.c_str();
-    
-    while (*ch)
-    {
-        if (*ch > 127)
-        {
-            // unicode strings should not be made 'proper'
-            return input;
-        }
-            
-        if (wxIsalpha(*ch) && *ch != towupper(*ch))
-        {
-            // input is mixed-case, return original
-            return input;
-        }
-        
-        ++ch;
-    }
-    
-    // if the string is all upper case, lower-case it
-    // and capitalize the first letter
-    return makeProper(input);
-}
-
-
-
-
 #ifdef __WXGTK__
 
 int appMessageBox(const wxString& message,
@@ -2740,8 +2365,6 @@ void deferredAppMessageBox(const wxString& message,
     wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, 9000);
     ::wxPostEvent(data, evt);
 }
-
-
 
 void limitFontSize(wxWindow* wnd, int size)
 {
@@ -2911,71 +2534,6 @@ wxSize getMaxTextSize(wxStaticText* st0,
     return wxSize(x, y);
 }
 
-// simple password encryption/decryption --
-// please note that these functions are NOT unicode-friendly
-
-const char* password_randomizer = "1lBgi3kjsAbv04386kDm,bvjG9604937L5ifk8lfmdjsuxy30dalskdjfurn2lfkgmbjgk4jfndkcjf2";
-const char* hex_digits = "0123456789ABCDEF";
-
-
-static wxString char2hex(char c)
-{
-    wxString retval;
-    retval.Printf(wxT("%02X"), c);
-    return retval;
-}
-
-static char hex2char(const wxString& s)
-{
-    int b1, b2;
-    b1 = (strchr(hex_digits, toupper(s[0]))-hex_digits)*16;
-    b2 = strchr(hex_digits, towupper(s[1]))-hex_digits;
-    return (char)(b1+b2);
-}
-
-wxString simpleEncryptString(const wxString& s)
-{
-    wxString retval = wxT("X");
-
-    int i;
-    int len = s.Length();
-
-    for (i = 0; i < len; ++i)
-    {
-        retval += char2hex(((unsigned char)s[i]) ^ password_randomizer[i]);
-    }
-
-    return retval;
-}
-
-wxString simpleDecryptString(const wxString& _s)
-{
-    wxString retval;
-    
-    wxString s;
-
-    if (_s.Length() >= 1 && _s.GetChar(0) == wxT('X'))
-    {
-        s = _s.Mid(1);
-    }
-     else
-    {
-        s = _s;
-    }
-
-    int i;
-    int len = s.Length() / 2;   // two chars for every hex value
-    wxString hex_val;
-
-    for (i = 0; i < len; ++i)
-    {
-        hex_val = s.Mid(i*2, 2);
-        retval += hex2char(hex_val) ^ password_randomizer[i];
-    }
-
-    return retval;
-}
-
 wxString getProxyServer()
 {
     //wxT("10.1.1.1:3128");
@@ -3011,3 +2569,245 @@ wxString getProxyServer()
 
 }
 
+// -- GUI helper classes and functions ----------------------------------------
+
+BEGIN_EVENT_TABLE(JobGaugeUpdateTimer, wxTimer)
+    EVT_MENU(10000, JobGaugeUpdateTimer::onJobAddedInMainThread)
+    EVT_MENU(10001, JobGaugeUpdateTimer::onJobStateChangedInMainThread)
+END_EVENT_TABLE()
+
+JobGaugeUpdateTimer::JobGaugeUpdateTimer(
+                    IStatusBarPtr statusbar,
+                    IJobQueuePtr job_queue,
+                    wxGauge* gauge)
+{
+    m_statusbar = statusbar;
+    m_gauge = gauge;
+    
+    m_job_queue = job_queue;
+    m_job_queue->sigJobAdded().connect(this, &JobGaugeUpdateTimer::onJobAdded);
+    
+    m_job_text_item = m_statusbar->getItem(wxT("app_job_text"));
+    m_job_separator_item = m_statusbar->getItem(wxT("app_job_text_separator"));
+    m_job_gauge_item = m_statusbar->getItem(wxT("app_job_gauge"));
+    m_job_failed_item = m_statusbar->getItem(wxT("app_job_failed"));
+}
+
+JobGaugeUpdateTimer::~JobGaugeUpdateTimer()
+{
+}
+
+void JobGaugeUpdateTimer::hideJobFailedIcon()
+{
+    if (m_job_failed_item->isShown())
+    {
+        m_job_failed_item->show(false);
+        m_statusbar->populate();
+    }
+}
+
+void JobGaugeUpdateTimer::showJobFailedIcon()
+{
+    if (!m_job_failed_item->isShown())
+    {
+        m_job_failed_item->show(true);
+        m_statusbar->populate();
+    }
+}
+
+void JobGaugeUpdateTimer::UnInit()
+{
+    m_statusbar.p = NULL;
+    m_job_queue.clear();
+    m_gauge = NULL;
+}
+
+void JobGaugeUpdateTimer::Notify()
+{
+    wxASSERT_MSG(::wxIsMainThread(), wxT("Being called outside of main/gui thread!"));
+    wxASSERT_MSG(m_statusbar.isOk(), wxT("Null statusbar!"));
+    wxASSERT_MSG(m_job_queue.isOk(), wxT("Null job queue!"));
+    wxASSERT_MSG(m_job_text_item.isOk(), wxT("Null status item!"));
+    wxASSERT_MSG(m_job_gauge_item.isOk(), wxT("Null status item!"));
+    wxASSERT_MSG(m_job_failed_item.isOk(), wxT("Null status item!"));
+    wxASSERT_MSG(m_gauge != NULL, wxT("Null gauge control!"));
+    
+    if (!m_job_queue->getJobsActive())
+    {
+        // no running jobs, so hide the job gauge and text
+        if (m_job_text_item->isShown() || m_job_gauge_item->isShown())
+        {
+            m_job_text_item->show(false);
+            m_job_separator_item->show(false);
+            m_job_gauge_item->show(false);
+            m_job_text_item->setValue(wxEmptyString);
+            m_statusbar->populate();
+            
+            // make sure the statusbar's refresh signal is fired here
+            m_statusbar->refresh();
+        }
+        
+        return;
+    }
+
+
+
+    // job progress statusbar text
+    wxString job_text;
+
+    // this is the average of all of the job progress percentages
+    double tot_pct_done = 0.0;
+    
+    // this flag indicates whether the job gauge should pulse or not
+    bool is_indeterminate = false;
+    
+    // determine the overall progress
+    IJobInfoEnumPtr jobs = m_job_queue->getJobInfoEnum(jobStateRunning);
+    size_t i, job_count = jobs->size();
+    
+    // this check is here because sometimes the running job count is
+    // equal to zero before getJobsActive() is false -- when this happens,
+    // don't go past this point; instead, let the above check get processed
+    if (job_count == 0)
+        return;
+    
+    if (job_count > 0)
+    {
+        // there's at least one job running, make sure
+        // the job text and gauge are shown
+        if (!m_job_text_item->isShown() || !m_job_gauge_item->isShown())
+        {
+            m_job_text_item->show(true);
+            m_job_separator_item->show(true);
+            m_job_gauge_item->show(true);
+            m_statusbar->populate();
+        }
+    }
+    
+    for (i = 0; i < job_count; i++)
+    {
+        IJobInfoPtr job_info = jobs->getItem(i);
+        
+        // update the total percentage
+        double pct = job_info->getPercentage();
+        if ((job_info->getInfoMask() & jobMaskPercentage) && pct >= 0.0)
+            tot_pct_done += pct;
+
+        // determine if the job is indeterminate or not
+        if (kl::dblcompare(job_info->getMaxCount(), 0.0) == 0)
+        {
+            is_indeterminate = true;
+            break;
+        }
+         else
+        {
+            time_t start_time = job_info->getStartTime();
+            time_t current_time = time(NULL);
+            
+            // the job has been running for more than 3 seconds and
+            // is still stuck at 0%, so it's indeterminate right now
+            if ((current_time - start_time) >= 3 && pct == 0.0)
+            {
+                is_indeterminate = true;
+                break;
+            }
+        }
+    }
+    
+    // make sure we average the total percetanges of all running jobs
+    tot_pct_done /= job_count;
+    
+    // create the job statusbar text
+    if (job_count == 1)
+        job_text = jobs->getItem(0)->getTitle();
+         else if (job_count > 1)
+        job_text = wxString::Format(_("%d jobs running"), job_count);
+    
+    // update the gauge and update job statusbar text where appropriate
+    if (is_indeterminate)
+    {
+        m_gauge->Pulse();
+        
+        // add a little space between job gauge and job text
+        job_text.Prepend(wxT(" "));
+    }
+     else
+    {
+        m_gauge->SetValue((int)tot_pct_done);
+        job_text.Prepend(wxString::Format(wxT("%.1f%%  "), tot_pct_done));
+    }
+    
+    // if the statusbar text has changed, refresh the statusbar
+    if (m_job_text_item->getValue().Cmp(job_text) != 0)
+    {
+        m_job_text_item->setValue(job_text);
+        m_statusbar->refresh();
+    }
+}
+
+void JobGaugeUpdateTimer::onJobAdded(IJobInfoPtr job_info)
+{
+    // post an event that a job has been added; we need to send
+    // an event rather than rely on the job state because some
+    // jobs process very quickly, and it's not possible to
+    // catch the job running before the job state is set to
+    // finished
+    wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, 10000);
+    evt.SetExtraLong((long)job_info.p);
+
+    // when a job sets its state, it may not be in the main thread, so it is
+    // important that we do this here since there are GUI operations involved
+    // and we can't have GUI stuff happening outside of the main thread
+    if (::wxIsMainThread())
+        onJobAddedInMainThread(evt);
+         else
+        ::wxPostEvent(this, evt);
+
+    // connect the job state changed function so we can track the
+    // state of individual jobs        
+    job_info->sigStateChanged().connect(this, &JobGaugeUpdateTimer::onJobStateChanged);
+}
+
+void JobGaugeUpdateTimer::onJobStateChanged(IJobInfoPtr job_info)
+{
+    // post an event that a particular job status has changed
+    wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, 10001);
+    evt.SetExtraLong((long)job_info.p);
+
+    // when a job sets its state, it may not be in the main thread, so it is
+    // important that we do this here since there are GUI operations involved
+    // and we can't have GUI stuff happening outside of the main thread
+    if (::wxIsMainThread())
+        onJobStateChangedInMainThread(evt);
+         else
+        ::wxPostEvent(this, evt);
+}
+
+void JobGaugeUpdateTimer::onJobAddedInMainThread(wxCommandEvent& evt)
+{
+    wxASSERT_MSG(::wxIsMainThread(), wxT("Being called outside of main/gui thread!"));
+
+    // if a new job is added, hide the job failed icon;
+    // we want the user to know if any of the jobs running
+    // in the queue fails; however, when a new job is added 
+    // after a failure has occurred, we want the user to see 
+    // if the new job fails so they can see if the problem 
+    // has been fixed rather than seeing the failed state of 
+    // a previous job
+
+    hideJobFailedIcon();
+}
+
+void JobGaugeUpdateTimer::onJobStateChangedInMainThread(wxCommandEvent& evt)
+{
+    wxASSERT_MSG(::wxIsMainThread(), wxT("Being called outside of main/gui thread!"));
+
+    IJobInfoPtr job_info = (IJobInfo*)evt.GetExtraLong();
+    if (job_info->getState() == jobStateFailed)
+    {
+        // if any of the jobs in the queue fail,
+        // show a job failed icon
+
+        showJobFailedIcon();
+    }
+}
