@@ -22,6 +22,7 @@
 
 HANDLE g_app_process = NULL;
 HANDLE g_app_thread = NULL;
+DWORD g_app_thread_id = 0;
 DWORD g_last_hang = 0;
 
 
@@ -97,6 +98,7 @@ DWORD RunApplicationProcess(LPCTSTR _cmd_line)
         CloseHandle(g_app_thread);
         g_app_process = NULL;
         g_app_thread = NULL;
+        g_app_thread_id = 0;
     }
 
     DWORD result = 0;
@@ -128,6 +130,7 @@ DWORD RunApplicationProcess(LPCTSTR _cmd_line)
 
     g_app_process = process_info.hProcess;
     g_app_thread = process_info.hThread;
+    g_app_thread_id = process_info.dwThreadId;
 
     return result;
 }
@@ -146,6 +149,7 @@ bool StopApplicationProcess()
         CloseHandle(g_app_process);
         g_app_process = NULL;
         g_app_thread = NULL;
+        g_app_thread_id = 0;
     }
 
     return success;
@@ -166,7 +170,7 @@ static BOOL CALLBACK EnumThreadWindowsCallback(HWND hwnd, LPARAM lParam)
 HWND GetApplicationMainWindow()
 {
     HWND hwnd = NULL;   
-    EnumThreadWindows(GetThreadId(g_app_thread), EnumThreadWindowsCallback, (LPARAM)&hwnd);
+    EnumThreadWindows(g_app_thread_id, EnumThreadWindowsCallback, (LPARAM)&hwnd);
     return hwnd;
 }
 
