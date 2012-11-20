@@ -970,7 +970,7 @@ bool ExprBuilderPanel::validate()
     }
 
     wxString valid_text;
-    valid_text = getTypeText(type);
+    valid_text = getDbColumnTypeText(type);
 
     if (m_type_only != tango::typeUndefined &&
         !tango::isTypeCompatible(type, m_type_only))

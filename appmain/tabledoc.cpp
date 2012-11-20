@@ -4684,7 +4684,7 @@ void TableDoc::onGridNeedTooltipText(kcl::GridEvent& event)
 
         event.SetString(wxString::Format(_("Name: %s, Type: %s, Width: %d, Decimals: %d"),
                             makeProperIfNecessary(towx(colinfo->getName())).c_str(),
-                            getTypeText(colinfo->getType()).c_str(),
+                            getDbColumnTypeText(colinfo->getType()).c_str(),
                             colinfo->getWidth(),
                             colinfo->getScale()));
     }

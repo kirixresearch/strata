@@ -846,7 +846,7 @@ wxString makeValidObjectName(const wxString& str,
     return work_str;
 }
 
-wxString getTypeText(int tango_type)
+wxString getDbColumnTypeText(int tango_type)
 {
     switch (tango_type)
     {

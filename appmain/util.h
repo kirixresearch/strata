@@ -247,7 +247,7 @@ wxString makeValidObjectName(
                tango::IDatabasePtr db = xcm::null);
 
 // returns a localized name for a given type
-wxString getTypeText(int tango_type);
+wxString getDbColumnTypeText(int tango_type);
 
 // for mounted folders or singleton mounts, these functions get
 // the actual object path or actual filename, respectively
