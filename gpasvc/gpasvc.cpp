@@ -381,8 +381,8 @@ void __cdecl _tmain(int argc, TCHAR *argv[])
     }
 
 
-    ServiceExecutionThread(NULL);
-    return;
+    //ServiceExecutionThread(NULL);
+    //return;
     
     // passing 'install' on the command line will register
     // this with the SCM database.  It will then appear in
