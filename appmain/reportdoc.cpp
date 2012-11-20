@@ -2145,40 +2145,6 @@ IPropertyInfoEnumPtr ReportDoc::getPropertyEnum()
 {
     xcm::IVectorImpl<IPropertyInfoPtr>* vec;
     vec = new xcm::IVectorImpl<IPropertyInfoPtr>;
-
-    // TODO: actually get the properties; probably similar
-    // to updateFormItems()
-
-    std::vector<kcanvas::Property> property_enum;
-    if (property_enum.size() <= 0)
-        return vec;
-
-    // translate from kcanvas properties to cfw properties
-    std::vector<kcanvas::Property>::iterator it, it_end;
-    it_end = property_enum.end();
-    for (it = property_enum.begin(); it != it_end; ++it)
-    {
-        kcanvas::Property canvas_info = *it;
-        IPropertyInfoPtr cfw_info = new PropertyInfo;
-        
-        cfw_info->setName(canvas_info.getName());
-        switch (canvas_info.getType())
-        {
-            default:
-            case kcanvas::proptypeString:  cfw_info->setType(proptypeString);  break;
-            case kcanvas::proptypeColor:   cfw_info->setType(proptypeColor);   break;
-            case kcanvas::proptypeInteger: cfw_info->setType(proptypeInteger); break;
-            case kcanvas::proptypeBoolean: cfw_info->setType(proptypeBoolean); break;
-            // TODO: add in fonts
-        }
-        
-        wxArrayString as;
-        as.Add(canvas_info.getName());
-        cfw_info->setDisplayName(as);
-        
-        vec->append(cfw_info);
-    }
-
     return vec;
 }
 
