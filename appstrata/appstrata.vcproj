@@ -821,10 +821,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\appmain\cfw.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\appmain\commandmgr.cpp"
 				>
 			</File>
@@ -3861,10 +3857,6 @@
 			</File>
 			<File
 				RelativePath="..\appmain\bookmarkfs.h"
-				>
-			</File>
-			<File
-				RelativePath="..\appmain\cfw.h"
 				>
 			</File>
 			<File
