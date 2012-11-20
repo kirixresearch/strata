@@ -2,7 +2,7 @@
  *
  * Copyright (c) 2004-2011, Kirix Research, LLC.  All rights reserved.
  *
- * Project:  Application Client Framework
+ * Project:  Application Client
  * Author:   Benjamin I. Williams
  * Created:  2004-04-03
  *
@@ -12,7 +12,6 @@
 
 #include "appmain.h"
 #include <wx/tokenzr.h>
-#include <wx/treectrl.h>
 #include <wx/config.h>
 #include <xcm/xcm.h>
 #include <kl/math.h>
@@ -712,29 +711,6 @@ void setTextWrap(wxStaticText* text, bool wrap)
     text->GetBestSize();
     gtk_label_set_line_wrap(GTK_LABEL(text->m_widget), wrap);
 #endif
-}
-
-// this function only works on Windows
-
-void setTreeItemHeight(wxTreeCtrl* ctrl, int height)
-{
-#ifdef __WXMSW__
-    HWND hwnd = (HWND)ctrl->GetHandle();
-    SendMessage(hwnd, TVM_SETITEMHEIGHT, height, 0);
-#endif
-}
-
-// this function only works on Windows
-
-int getTreeItemHeight(wxTreeCtrl* ctrl)
-{
-#ifdef __WXMSW__
-    HWND hwnd = (HWND)ctrl->GetHandle();
-    int height = SendMessage(hwnd, TVM_GETITEMHEIGHT, 0, 0);
-    return height;
-#endif
-
-    return 0;
 }
 
 

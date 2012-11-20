@@ -2,22 +2,19 @@
  *
  * Copyright (c) 2003-2011, Kirix Research, LLC.  All rights reserved.
  *
- * Project:  Application Client Framework
+ * Project:  Application Client
  * Author:   Benjamin I. Williams
  * Created:  2003-05-19
  *
  */
 
 
-#ifndef __CFW_UTIL_H
-#define __CFW_UTIL_H
+#ifndef __APP_UTIL_H
+#define __APP_UTIL_H
 
 
 #include <cmath>
 #include <string>
-
-
-class wxTreeCtrl;
 
 
 
@@ -207,8 +204,6 @@ wxSize getMaxTextSize(wxStaticText* st0,
                       wxStaticText* st4 = NULL,
                       wxStaticText* st5 = NULL,
                       wxStaticText* st6 = NULL);
-void setTreeItemHeight(wxTreeCtrl* ctrl, int height);
-int getTreeItemHeight(wxTreeCtrl* ctrl);
 wxString simpleEncryptString(const wxString& s);
 wxString simpleDecryptString(const wxString& s);
 
