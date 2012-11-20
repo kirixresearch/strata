@@ -2437,14 +2437,6 @@ void ReportDoc::onFrameEvent(FrameworkEvent& evt)
             }
         }
     }
-    
-    // if a property has been changed, update the component 
-    // property
-    if (evt.name == wxT("cfw.propertyChanged"))
-    {
-        PropertyValue* data = static_cast<PropertyValue*>(evt.o_param);
-        setProperty(evt.s_param, *data);
-    }
 
     // populate the view switcher with the available views
     if (evt.name == wxT("appmain.view_switcher.query_available_views"))
