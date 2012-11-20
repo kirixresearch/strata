@@ -2,15 +2,15 @@
  *
  * Copyright (c) 2007-2011, Kirix Research, LLC.  All rights reserved.
  *
- * Project:  Application Client Framework
+ * Project:  Application Client
  * Author:   David Z. Williams
  * Created:  2007-04-03
  *
  */
 
 
-#ifndef __CFW_ARTPROVIDER_H
-#define __CFW_ARTPROVIDER_H
+#ifndef __APP_ARTPROVIDER_H
+#define __APP_ARTPROVIDER_H
 
 
 #include <wx/aui/aui.h>
@@ -82,5 +82,5 @@ public:
 
 
 
-#endif  // __CFW_ARTPROVIDER_H
+#endif  // __APP_ARTPROVIDER_H
 

@@ -2,15 +2,15 @@
  *
  * Copyright (c) 2003-2011, Kirix Research, LLC.  All rights reserved.
  *
- * Project:  Application Client Framework
+ * Project:  Application Client
  * Author:   Benjamin I. Williams
  * Created:  2003-05-06
  *
  */
 
 
-#ifndef __CFW_PREFS_H
-#define __CFW_PREFS_H
+#ifndef __APP_PREFS_H
+#define __APP_PREFS_H
 
 
 

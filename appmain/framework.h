@@ -2,15 +2,15 @@
  *
  * Copyright (c) 2002-2011, Kirix Research, LLC.  All rights reserved.
  *
- * Project:  Application Client Framework
+ * Project:  Application Client
  * Author:   Benjamin I. Williams
  * Created:  2002-03-06
  *
  */
 
 
-#ifndef __CFW_FRAMEWORK_H
-#define __CFW_FRAMEWORK_H
+#ifndef __APP_FRAMEWORK_H
+#define __APP_FRAMEWORK_H
 
 
 #include <wx/aui/aui.h>

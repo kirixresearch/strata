@@ -2,15 +2,15 @@
  *
  * Copyright (c) 2006-2011, Kirix Research, LLC.  All rights reserved.
  *
- * Project:  Application Client Framework
+ * Project:  Application Client
  * Author:   David Z. Williams
  * Created:  2006-09-27
  *
  */
 
 
-#ifndef __CFW_STATUSBAR_H
-#define __CFW_STATUSBAR_H
+#ifndef __APP_STATUSBAR_H
+#define __APP_STATUSBAR_H
 
 
 #include <xcm/xcm.h>

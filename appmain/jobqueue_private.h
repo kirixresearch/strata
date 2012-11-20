@@ -2,15 +2,15 @@
  *
  * Copyright (c) 2002-2011, Kirix Research, LLC.  All rights reserved.
  *
- * Project:  Application Client Framework
+ * Project:  Application Client
  * Author:   Benjamin I. Williams
  * Created:  2002-01-30
  *
  */
 
 
-#ifndef __CFW_JOBQUEUE_PRIVATE_H
-#define __CFW_JOBQUEUE_PRIVATE_H
+#ifndef __APP_JOBQUEUE_PRIVATE_H
+#define __APP_JOBQUEUE_PRIVATE_H
 
 
 

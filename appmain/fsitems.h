@@ -2,15 +2,15 @@
  *
  * Copyright (c) 2005-2011, Kirix Research, LLC.  All rights reserved.
  *
- * Project:  Application Client Framework
+ * Project:  Application Client
  * Author:   David Z. Williams
  * Created:  2005-11-08
  *
  */
 
 
-#ifndef __CFW_FSITEMS_H
-#define __CFW_FSITEMS_H
+#ifndef __APP_FSITEMS_H
+#define __APP_FSITEMS_H
 
 
 

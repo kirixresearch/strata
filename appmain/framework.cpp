@@ -2,7 +2,7 @@
  *
  * Copyright (c) 2001-2011, Kirix Research, LLC.  All rights reserved.
  *
- * Project:  Application Client Framework
+ * Project:  Application Client
  * Author:   Benjamin I. Williams
  * Created:  2001-11-15
  *
