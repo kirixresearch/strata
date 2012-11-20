@@ -80,7 +80,6 @@ class ReportDoc : public wxWindow,
                   public IReportDoc,
                   public IColumnListTarget,
                   public IDocument,
-                  public IProperties,
                   public StatusBarProviderBase,
                   public xcm::signal_sink
 {
@@ -89,7 +88,6 @@ class ReportDoc : public wxWindow,
         XCM_INTERFACE_ENTRY(IReportDoc)
         XCM_INTERFACE_ENTRY(IColumnListTarget)
         XCM_INTERFACE_ENTRY(IDocument)
-        XCM_INTERFACE_ENTRY(IProperties)
         XCM_INTERFACE_CHAIN(StatusBarProviderBase)
     XCM_END_INTERFACE_MAP()
 
@@ -202,11 +200,6 @@ private:
 
     // IUIContext
     IUIContextPtr getUserInterface();
-
-    // IProperties
-    IPropertyInfoEnumPtr getPropertyEnum();
-    bool setProperty(const wxString& prop_name, const PropertyValue& value);
-    bool getProperty(const wxString& prop_name, PropertyValue& value);
 
     // IColumnListTarget
     void getColumnListItems(std::vector<ColumnListItem>& list);
