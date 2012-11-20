@@ -1191,10 +1191,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\appmain\frameworkprops.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\appmain\fsitems.cpp"
 				>
 			</File>
@@ -3961,10 +3957,6 @@
 			</File>
 			<File
 				RelativePath="..\appmain\framework_private.h"
-				>
-			</File>
-			<File
-				RelativePath="..\appmain\frameworkprops.h"
 				>
 			</File>
 			<File
