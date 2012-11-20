@@ -11,7 +11,6 @@
 
 #include "appmain.h"
 #include "jsonconfig.h"
-#include "apputil.h"
 #include "../kscript/json.h"
 #include <kl/utf8.h>
 

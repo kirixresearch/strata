@@ -14,7 +14,6 @@
 #include "inetauth.h"
 #include "../paladin/paladin.h"
 #include "../paladin/crc.h"
-#include "apputil.h"
 
 
 wxString InetAuth::getAuthServer()

@@ -10,7 +10,6 @@
 
 
 #include "appmain.h"
-#include "apputil.h"
 #include "dlgprojectmgr.h"
 #include "appcontroller.h"
 #include "paneloptions.h"

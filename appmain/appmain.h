@@ -75,7 +75,6 @@
 #include "fspanel.h"
 #include "statusbar.h"
 #include "appconfig.h"
-#include "apputil.h"
 #include "appprefs.h"
 #include "commandmgr.h"
 #include "bitmapmgr.h"

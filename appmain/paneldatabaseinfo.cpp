@@ -10,7 +10,6 @@
 
 
 #include "appmain.h"
-#include "apputil.h"
 #include "paneldatabaseinfo.h"
 #include "appcontroller.h"
 
