@@ -38,6 +38,92 @@ enum
 inline wxString getLastOpenProjectLabel() { return _("<Last Open Project>"); }
 
 
+wxBoxSizer* createLabelTextControlSizer(wxWindow* parent,
+                                        const wxString& label,
+                                        wxTextCtrl** textctrl,
+                                        wxWindowID textctrl_id,
+                                        const wxString& textctrl_text,
+                                        int spacer)
+{
+    // we have to do this because of the way wx handles events...
+    // we don't want the text changed event to work yet
+    *textctrl = NULL;
+    *textctrl = new wxTextCtrl(parent, textctrl_id, textctrl_text);
+    
+    wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
+    sizer->Add(new wxStaticText(parent, -1, label), 0, wxALIGN_CENTER);
+    if (spacer > 0)
+        sizer->AddSpacer(spacer);
+    sizer->Add(*textctrl, 1, wxEXPAND);
+    
+    return sizer;
+}
+
+void makeSizerLabelsSameSize(wxBoxSizer* sizer1,
+                             wxBoxSizer* sizer2,
+                             wxBoxSizer* sizer3,
+                             wxBoxSizer* sizer4,
+                             wxBoxSizer* sizer5,
+                             wxBoxSizer* sizer6,
+                             wxBoxSizer* sizer7)
+{
+    size_t item0 = 0;
+    wxSizerItem* item;
+    wxWindow* wnd;
+    
+    wxStaticText *st1 = NULL,
+                 *st2 = NULL,
+                 *st3 = NULL,
+                 *st4 = NULL,
+                 *st5 = NULL,
+                 *st6 = NULL,
+                 *st7 = NULL;
+    
+    if (sizer1) { item = sizer1->GetItem(item0);
+                  if (item) { wnd = item->GetWindow(); }
+                  if (item && wnd && wnd->IsKindOf(CLASSINFO(wxStaticText))) { st1 = (wxStaticText*)wnd; }
+                }
+    if (sizer2) { item = sizer2->GetItem(item0);
+                  if (item) { wnd = item->GetWindow(); }
+                  if (item && wnd && wnd->IsKindOf(CLASSINFO(wxStaticText))) { st2 = (wxStaticText*)wnd; }
+                }
+    if (sizer3) { item = sizer3->GetItem(item0);
+                  if (item) { wnd = item->GetWindow(); }
+                  if (item && wnd && wnd->IsKindOf(CLASSINFO(wxStaticText))) { st3 = (wxStaticText*)wnd; }
+                }
+    if (sizer4) { item = sizer4->GetItem(item0);
+                  if (item) { wnd = item->GetWindow(); }
+                  if (item && wnd && wnd->IsKindOf(CLASSINFO(wxStaticText))) { st4 = (wxStaticText*)wnd; }
+                }
+    if (sizer5) { item = sizer5->GetItem(item0);
+                  if (item) { wnd = item->GetWindow(); }
+                  if (item && wnd && wnd->IsKindOf(CLASSINFO(wxStaticText))) { st5 = (wxStaticText*)wnd; }
+                }
+    if (sizer6) { item = sizer6->GetItem(item0);
+                  if (item) { wnd = item->GetWindow(); }
+                  if (item && wnd && wnd->IsKindOf(CLASSINFO(wxStaticText))) { st6 = (wxStaticText*)wnd; }
+                }
+    if (sizer7) { item = sizer7->GetItem(item0);
+                  if (item) { wnd = item->GetWindow(); }
+                  if (item && wnd && wnd->IsKindOf(CLASSINFO(wxStaticText))) { st7 = (wxStaticText*)wnd; }
+                }
+    
+    wxSize s = getMaxTextSize(st1, st2, st3, st4, st5, st6, st7);
+    if (sizer1 && st1)
+        sizer1->SetItemMinSize(st1, s);
+    if (sizer2 && st2)
+        sizer2->SetItemMinSize(st2, s);
+    if (sizer3 && st3)
+        sizer3->SetItemMinSize(st3, s);
+    if (sizer4 && st4)
+        sizer4->SetItemMinSize(st4, s);
+    if (sizer5 && st5)
+        sizer5->SetItemMinSize(st5, s);
+    if (sizer6 && st6)
+        sizer6->SetItemMinSize(st6, s);
+    if (sizer7 && st7)
+        sizer7->SetItemMinSize(st7, s);
+}
 
 
 // General Options page

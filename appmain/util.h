@@ -334,24 +334,7 @@ wxWindow* getDocumentSiteWindow(IDocumentSitePtr site);
 // creates a standard-looking banner control for all modules
 kcl::BannerControl* createModuleBanner(wxWindow* parent, const wxString& title);
 
-// creates a standard label-spacer-text control sizer 
-wxBoxSizer* createLabelTextControlSizer(wxWindow* parent,
-                                        const wxString& label,
-                                        wxTextCtrl** textctrl,
-                                        wxWindowID textctrl_id,
-                                        const wxString& textctrl_text,
-                                        int spacer = 0);
-
-void makeSizerLabelsSameSize(wxBoxSizer* sizer1,
-                             wxBoxSizer* sizer2,
-                             wxBoxSizer* sizer3 = NULL,
-                             wxBoxSizer* sizer4 = NULL,
-                             wxBoxSizer* sizer5 = NULL,
-                             wxBoxSizer* sizer6 = NULL,
-                             wxBoxSizer* sizer7 = NULL);
-
 void setFocusDeferred(wxWindow* focus);
-void autoSizeListHeader(wxListCtrl* ctrl);
 bool windowOrChildHasFocus(wxWindow* wnd);
 
 int getTaskBarHeight();  // get OS's taskbar height
