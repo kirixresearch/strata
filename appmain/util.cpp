@@ -229,8 +229,6 @@ bool isUnicodeString(const std::wstring& val)
     return false;
 }
 
-// shortcut so we don't have to use towx everywhere
-// this should be able to go away in future versions of wx
 wxString filenameToUrl(const wxString& _filename)
 {
     return towx(kl::filenameToUrl(towstr(_filename)));
@@ -372,8 +370,6 @@ wxString multipartEncode(const wxString& input)
     return result;
 }
 
-// this function was necessary because wxString::Replace(..., wxEmptyString)
-// was truncating strings
 wxString removeChar(const wxString& s, wxChar c)
 {
     wxString result;
@@ -388,7 +384,6 @@ wxString removeChar(const wxString& s, wxChar c)
     return result;
 }
 
-// this is borrowed from expr_util in tango
 wxChar* zl_strchr(wxChar* str, wxChar ch)
 {
     int paren_level = 0;
@@ -444,335 +439,136 @@ wxString makeUniqueString()
     return result;
 }
 
-
-
-// -- deferred focus helper --
-
-class FocusAgent : public wxEvtHandler
+void int2buf(unsigned char* buf, unsigned int i)
 {
+    *(buf)   = (i & 0x000000ff);
+    *(buf+1) = (i & 0x0000ff00) >> 8;
+    *(buf+2) = (i & 0x00ff0000) >> 16;
+    *(buf+3) = (i & 0xff000000) >> 24;
+}
 
-public:
+int buf2int(const unsigned char* buf)
+{
+    return buf[0] + (buf[1]*256) + (buf[2]*65536) + (buf[3] * 16777216);
+}
+
+wxString vectorToString(const std::vector<wxString>& list)
+{
+    // note: converts a vector of strings to a string 
+    // containing the fields as a comma-delimited list
+
+    wxString result;
+
+    std::vector<wxString>::const_iterator it, it_end;
+    it_end = list.end();
     
-    wxWindow* m_focus_target;
-
-    bool ProcessEvent(wxEvent& event)
+    for (it = list.begin(); it != it_end; ++it)
     {
-        m_focus_target->SetFocus();
-
-        if (!wxPendingDelete.Member(this))
-            wxPendingDelete.Append(this);
-
-        return true;
-    }
-};
-
-void setFocusDeferred(wxWindow* focus)
-{
-    FocusAgent* f = new FocusAgent;
-    f->m_focus_target = focus;
-
-    wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED, 10000);
-    ::wxPostEvent(f, event);
-}
-
-bool windowOrChildHasFocus(wxWindow* wnd)
-{
-    wxWindow* f = wxWindow::FindFocus();
-    while (f)
-    {
-        if (wnd == f)
-            return true;
-        f = f->GetParent();
-    }
-    return false;
-}
-
-bool doOutputPathCheck(const wxString& output_path, wxWindow* parent)
-{
-    if (!isValidObjectPath(output_path))
-    {
-        appInvalidObjectMessageBox(wxEmptyString, parent);
-        return false;
-    }
-
-    wxStringTokenizer tkz(output_path, wxT("/"));
-    wxString stub = wxT("/");
-    while (tkz.HasMoreTokens())
-    {
-        wxString token = tkz.GetNextToken();
-
-        if (token.IsEmpty())
-            continue;
-
-        if (!tkz.HasMoreTokens())
-            break;
-
-        stub += token;
-
-        tango::IFileInfoPtr file_info;
-        file_info = g_app->getDatabase()->getFileInfo(towstr(stub));
-        if (file_info.isNull())
-            break;
-
-        if (file_info->getType() != tango::filetypeFolder)
-        {
-            appMessageBox(_("The specified output path is invalid because it does not specify a valid folder."),
-                               APPLICATION_NAME,
-                               wxOK | wxICON_EXCLAMATION | wxCENTER,
-                               parent);
-            return false;
-        }
-    }
-
-    // check the validity of the output filename
-
-    wxString fn = output_path;
-    fn = fn.AfterLast(wxT('/'));
-    if (!isValidObjectName(fn))
-    {
-        appMessageBox(_("The specified output path is invalid because it specifies an invalid filename."),
-                           APPLICATION_NAME,
-                           wxOK | wxICON_EXCLAMATION | wxCENTER,
-                           parent);
-        return false;
-    }
-
-
-    // see if the file is there already
-    if (!g_app->getDatabase()->getFileExist(towstr(output_path)))
-        return true;
-
-    tango::IFileInfoPtr file_info;
-    file_info = g_app->getDatabase()->getFileInfo(towstr(output_path));
-    if (file_info.isNull())
-        return true;
-
-    int file_type = file_info->getType();
-
-    if (file_type == tango::filetypeFolder)
-    {
-        appMessageBox(_("The specified output path is invalid because it specifies a folder that already exists."),
-                           APPLICATION_NAME,
-                           wxOK | wxICON_EXCLAMATION | wxCENTER,
-                           parent);
-        return false;
-    }
-     else if (file_type == tango::filetypeSet)
-    {
-        int result;
-        result = appMessageBox(_("The specified output file name already exists.  Would you like to overwrite it?"),
-                                    APPLICATION_NAME,
-                                    wxYES_NO | wxNO_DEFAULT | wxICON_EXCLAMATION | wxCENTER,
-                                    parent);
-
-        if (result != wxYES)
-            return false;
-    }
-
-    return true;
-}
-
-
-
-
-void appInvalidObjectMessageBox(const wxString& name,
-                                wxWindow* parent)
-{
-    wxString message;
-
-    if (name.IsEmpty())
-    {
-        message = _("An object with an invalid name was specified.  Please rename the item(s) to continue.  Database object names, such as table names, must not be a reserved keyword, and must not contain any control characters.  For a listing of reserved keywords and invalid characters, please consult the user documentation.");
-    }
-     else
-    {
-        message = wxString::Format(_("The object name '%s' is invalid.  Please rename the item to continue.  Database object names, such as table names, must not be a reserved keyword, and must not contain any control characters.  For a listing of reserved keywords and invalid characters, please consult the user documentation."),
-                                   name.c_str());
-    }
-
-    deferredAppMessageBox(message,
-                       _("Invalid Object Name"),
-                       wxOK | wxICON_EXCLAMATION | wxCENTER,
-                       parent);
-}
-
-
-void appInvalidFieldMessageBox(const wxString& name,
-                               wxWindow* parent)
-{
-    wxString message;
-
-    if (name.IsEmpty())
-    {
-        message = _("A field with an invalid name was specified.  Please rename the field to continue.  A field name must not be a reserved keyword, and must not contain any control characters.  For a listing of reserved keywords and invalid characters, please consult the user documentation.");
-    }
-     else
-    {
-        message = wxString::Format(_("The field name '%s' is invalid.  Please rename the field to continue.  A field name must not be a reserved keyword, and must not contain any control characters.  For a listing of reserved keywords and invalid characters, please consult the user documentation."),
-                                   name.c_str());
-    }
-
-    deferredAppMessageBox(message,
-                       _("Invalid Field Name"),
-                       wxOK | wxICON_EXCLAMATION | wxCENTER,
-                       parent);
-}
-
-
-kcl::BannerControl* createModuleBanner(wxWindow* parent, const wxString& title)
-{
-    // font for drawing the banner
-    wxFont font = wxFont(10, wxSWISS, wxNORMAL, wxFONTWEIGHT_BOLD, false);
+        if (it != list.begin())
+            result += wxT(",");
     
-    // colors for drawing the banneruu
-    wxColour base_color = kcl::getBaseColor();
-    wxColour border_color = kcl::getBorderColor();
-    wxColor caption_color = kcl::getCaptionColor();
-
-    // create the banner
-    kcl::BannerControl* banner = new kcl::BannerControl(parent,
-                                                        title,
-                                                        wxPoint(0,0),
-                                                        wxSize(200, 40));
-    banner->setStartColor(kcl::stepColor(base_color, 170));
-    banner->setEndColor(kcl::stepColor(base_color, 90));
-    banner->setGradientDirection(kcl::BannerControl::gradientVertical);
-    banner->setBorderColor(border_color);
-    banner->setBorder(kcl::BannerControl::borderBottom);
-    banner->setTextColor(caption_color);
-    banner->setTextPadding(15);
-    banner->setFont(font);
-    return banner;
+        result += *it;
+    }
+    
+    return result;
 }
 
-
-// this function returns the height of the taskbar
-// on Windows or 50px for other operating systems
-int getTaskBarHeight()
+std::vector<wxString> stringToVector(const wxString& string)
 {
-#ifdef WIN32
-    APPBARDATA abd;
-    memset(&abd, 0, sizeof(APPBARDATA));
+    // note: converts a string containing a comma-delimited 
+    // list in a vector of individual strings
 
-    abd.cbSize = sizeof(APPBARDATA);
-    if (SHAppBarMessage(ABM_GETSTATE, &abd) & ABS_AUTOHIDE)
-        return 2;
+    std::vector<wxString> result;
 
-    HWND hWndAppBar = abd.hWnd;
-
-    memset(&abd, 0, sizeof(APPBARDATA));
-    abd.cbSize = sizeof(APPBARDATA);
-    abd.hWnd = hWndAppBar;
-    SHAppBarMessage(ABM_GETTASKBARPOS, &abd);
-
-    return abd.rc.bottom - abd.rc.top;
-
-#else
-    // default task bar height
-    return 50;
-#endif
+    // parse the group string and fill out the group fields
+    // for the section
+    wxStringTokenizer tokenizer(string, wxT(","));
+    while (tokenizer.HasMoreTokens())
+    {
+        // get the property name
+        wxString field_token = tokenizer.GetNextToken();
+        field_token.Trim(true);
+        field_token.Trim(false);
+        result.push_back(field_token);
+    }
+    
+    return result;
 }
 
-IDocumentSitePtr lookupOtherDocumentSite(
-                           IDocumentSitePtr site,
-                           const std::string& doc_class_name)
+std::vector< std::pair<wxString, bool> > sortExprToVector(const wxString& sort_expr)
 {
-    if (site.isNull())
-        return xcm::null;
-    
-    IFramePtr frame = g_app->getMainFrame();
-    if (frame.isNull())
-        return xcm::null;
-    
-    IDocumentSitePtr active_hit;
-    IDocumentSitePtr inactive_hit;
+    // note: this function takes an input sort expression
+    // and parses out the fieldnames that make up the sort 
+    // expression into a vector of pairs, where the first 
+    // part of the pair is the name of the field and the 
+    // second part of the field is a boolean value that 
+    // indicates the sort order: false = sort ascending 
+    // and true = sort descneding
+
+    // used throughout
+    std::vector< std::pair<wxString, bool> > sort_fields;
+
+    // get the fields from the sort expression
+    std::vector<wxString> expr_parts = stringToVector(sort_expr);
+    std::vector<wxString>::iterator it, it_end;
+    it_end = expr_parts.end();
+
+    for (it = expr_parts.begin(); it != it_end; ++it)
+    {
+        // get the string
+        wxString field = *it;
         
-    IDocumentSiteEnumPtr sites;
-    sites = frame->getDocumentSitesByContainer(site->getContainerWindow());
-    size_t i, count = sites->size();
-    for (i = 0; i < count; ++i)
-    {
-        IDocumentSitePtr site = sites->getItem(i);
-        if (site.isNull())
-            continue;
-            
-        IDocumentPtr doc = site->getDocument();
-        if (doc.isNull())
-            continue;
-            
-        xcm::class_info* doc_class_info = xcm::get_class_info(doc);
-        if (!doc_class_info)
-            continue;
-            
-        if (doc_class_name == doc_class_info->get_name())
+        // trim leading and trailing spaces
+        field.Trim(true);
+        field.Trim(false);
+        
+        // get the field name, which is separated
+        // from the ASC/DESC sort order qualifiers
+        // by a space
+        bool sort_desc = false;
+ 
+        // see if the ascending flag is included
+        int offset = field.Upper().Find(wxT("ASC"));
+        if (offset != wxNOT_FOUND)
         {
-            if (site->isInPlaceActive())
+            // if the ascending flag is included,
+            // strip it off and set the sort flag
+            field = field.Left(offset);
+            sort_desc = false;
+        }
+        else
+        {
+            // if the ascending flag isn't included,
+            // check for the descending flag
+            offset = field.Upper().Find(wxT("DESC"));
+            if (offset != wxNOT_FOUND)
             {
-                active_hit = site;
-            }
-             else
-            {
-                if (inactive_hit.isNull())
-                    inactive_hit = site;
+                // if the descending flag is included,
+                // strip it off and set the sort flag
+                field = field.Left(offset);
+                sort_desc = true;
             }
         }
+
+        // trim any remaining spaces
+        field.Trim(true);
+        field.Trim(false);
+
+        // set the fieldname and sort order, and
+        // save the pair
+        std::pair<wxString, bool> pair;
+        pair.first = field;
+        pair.second = sort_desc;
+    
+        sort_fields.push_back(pair);
     }
     
-    
-    // prefer to return the 'other' document
-    // i.e. if there are two documents of the
-    // same one, return the one that the user
-    // currently isn't on
-    if (inactive_hit.isOk())
-        return inactive_hit;
-    
-    if (active_hit.isOk())
-        return active_hit;
-    
-    return xcm::null;
-}
-                                  
-IDocumentPtr lookupOtherDocument(
-                           IDocumentSitePtr site,
-                           const std::string& doc_class_name)
-{
-    IDocumentSitePtr s = lookupOtherDocumentSite(site, doc_class_name);
-    if (s)
-    {
-        return s->getDocument();
-    }
-    
-    return xcm::null;
+    // return the pairs of fields and their 
+    // sort orders
+    return sort_fields;
 }
 
-void switchToOtherDocument(IDocumentSitePtr site,
-                           const std::string& doc_class_name)
-{
-    IDocumentSitePtr s = lookupOtherDocumentSite(site, doc_class_name);
-    if (s)
-    {
-        g_app->getMainFrame()->activateInPlace(s);
-    }
-}
-
-wxWindow* getDocumentSiteWindow(IDocumentSitePtr site)
-{
-    if (site.isNull())
-        return NULL;
-    
-    IDocumentPtr doc = site->getDocument();
-    if (doc.isNull())
-        return NULL;
-    
-    wxWindow* w = doc->getDocumentWindow();
-    return w;
-}
-
-
-
-// -- database helper classes and functions ----------------------------------
-
-
+// helper function
 static bool isValid(const wxString& str,
                     const wxString& invalid_starting_chars,
                     const wxString& invalid_chars,
@@ -855,7 +651,6 @@ bool isKeyword(const wxString& str,
     return false;
 }
 
-
 bool isValidFieldName(const wxString& str,
                       tango::IDatabasePtr db,
                       int* err_idx)
@@ -892,7 +687,6 @@ bool isValidFieldName(const wxString& str,
 
     return true;
 }
-
 
 bool isValidObjectName(const wxString& str,
                        tango::IDatabasePtr db,
@@ -1008,7 +802,6 @@ wxString makeValidFieldName(const wxString& str,
     return work_str;
 }
 
-
 wxString makeValidObjectName(const wxString& str,
                              tango::IDatabasePtr db)
 {
@@ -1053,7 +846,6 @@ wxString makeValidObjectName(const wxString& str,
     return work_str;
 }
 
-
 wxString getTypeText(int tango_type)
 {
     switch (tango_type)
@@ -1075,10 +867,6 @@ wxString getTypeText(int tango_type)
     return wxT("");
 }
 
-
-
-// for singleton mounts, this function gets the actual object path
-
 wxString getObjectPathFromMountPath(const wxString& database_path)
 {
     tango::IDatabasePtr db = g_app->getDatabase();
@@ -1098,9 +886,6 @@ wxString getObjectPathFromMountPath(const wxString& database_path)
     
     return path;
 }
-
-
-// for mounted folders, this function gets the actual filename
 
 wxString getPhysPathFromMountPath(const wxString& database_path)
 {
@@ -1157,8 +942,6 @@ wxString getPhysPathFromMountPath(const wxString& database_path)
     return res;
 }
 
-
-
 std::wstring getMountRoot(tango::IDatabasePtr db, const std::wstring _path)
 {
     std::wstring path = _path;
@@ -1179,8 +962,6 @@ std::wstring getMountRoot(tango::IDatabasePtr db, const std::wstring _path)
             return L"";
     }
 }
-
-
 
 bool getMountPointHelper(tango::IDatabasePtr& db, const wxString& _path, wxString& cstr, wxString& rpath)
 {
@@ -1225,8 +1006,6 @@ bool getMountPointHelper(tango::IDatabasePtr& db, const wxString& _path, wxStrin
     return false;
 }
 
-
-
 std::wstring getDbDriverFromSet(tango::ISetPtr set)
 {
     if (set.isNull())
@@ -1235,8 +1014,6 @@ std::wstring getDbDriverFromSet(tango::ISetPtr set)
     xcm::class_info* class_info = xcm::get_class_info(set.p);
     return kl::beforeFirst(towstr(class_info->get_name()), '.');
 }
-
-
 
 // gets the filename from the path
 wxString getFilenameFromPath(const wxString& path, bool include_extension)
@@ -1348,9 +1125,55 @@ wxString getMimeTypeFromExtension(const wxString& path)
     else                                               return wxT("application/octet-stream");
 }
 
-// utility for adding a filesystem extension to a path if the
-// path is a mounted filesystem database and the path doesn't
-// specify an extension
+wxString determineMimeType(const wxString& path)
+{
+    xf_file_t f = xf_open(towstr(path), xfOpen, xfRead, xfShareRead);
+    if (!f)
+        return wxT("");
+
+    unsigned char* buf = new unsigned char[520];
+    int buf_len = xf_read(f, buf, 1, 512);
+    if (buf_len < 16)
+        return getMimeTypeFromExtension(path);
+    buf[buf_len] = 0;
+
+    
+    std::wstring result_text;
+    
+
+    if (buf_len >= 2 && buf[0] == 0xff && buf[1] == 0xfe)
+    {
+        kl::ucsle2wstring(result_text, buf+2, (buf_len-2)/2);
+    }
+     else if (buf_len >= 3 && buf[0] == 0xef && buf[1] == 0xbb && buf[2] == 0xbf)
+    {
+        // utf-8
+        wchar_t* tempbuf = new wchar_t[buf_len+1];
+        kl::utf8_utf8tow(tempbuf, buf_len+1, (char*)buf+3, buf_len-3);
+        result_text = tempbuf;
+        delete[] tempbuf;
+    }
+     else
+    {
+        result_text = towstr((char*)buf);
+    }
+
+
+    static const klregex::wregex regex(L"\"(?<res>application[\\\\]?/vnd[.]kx[.].*?)\"");
+
+    klregex::wmatch matchres;
+    if (!regex.search(result_text, matchres))
+        return getMimeTypeFromExtension(path);
+
+    const klregex::wsubmatch& res_match = matchres[L"res"];
+    
+    // remove any backslash characters
+    std::wstring res = res_match.str();
+    kl::replaceStr(res, L"\\", L"");
+    
+    return towx(res);
+}
+
 wxString addExtensionIfExternalFsDatabase(const wxString& _path, const wxString& ext)
 {
     wxString path = _path;
@@ -1481,107 +1304,7 @@ bool writeStreamTextFile(tango::IDatabasePtr db,
     return true;
 }
 
-wxString determineMimeType(const wxString& path)
-{
-    xf_file_t f = xf_open(towstr(path), xfOpen, xfRead, xfShareRead);
-    if (!f)
-        return wxT("");
-
-    unsigned char* buf = new unsigned char[520];
-    int buf_len = xf_read(f, buf, 1, 512);
-    if (buf_len < 16)
-        return getMimeTypeFromExtension(path);
-    buf[buf_len] = 0;
-
-    
-    std::wstring result_text;
-    
-
-    if (buf_len >= 2 && buf[0] == 0xff && buf[1] == 0xfe)
-    {
-        kl::ucsle2wstring(result_text, buf+2, (buf_len-2)/2);
-    }
-     else if (buf_len >= 3 && buf[0] == 0xef && buf[1] == 0xbb && buf[2] == 0xbf)
-    {
-        // utf-8
-        wchar_t* tempbuf = new wchar_t[buf_len+1];
-        kl::utf8_utf8tow(tempbuf, buf_len+1, (char*)buf+3, buf_len-3);
-        result_text = tempbuf;
-        delete[] tempbuf;
-    }
-     else
-    {
-        result_text = towstr((char*)buf);
-    }
-
-
-    static const klregex::wregex regex(L"\"(?<res>application[\\\\]?/vnd[.]kx[.].*?)\"");
-
-    klregex::wmatch matchres;
-    if (!regex.search(result_text, matchres))
-        return getMimeTypeFromExtension(path);
-
-    const klregex::wsubmatch& res_match = matchres[L"res"];
-    
-    // remove any backslash characters
-    std::wstring res = res_match.str();
-    kl::replaceStr(res, L"\\", L"");
-    
-    return towx(res);
-}
-
-
-
-
-// this function does not recursively check the project's subfolders,
-// instead it approximates the project's size by calculating the size
-// of the "data" folder inside the project -- this is a fast operation
-
-double getProjectSize(const wxString& project_path)
-{
-    double total_size = 2000000.0;
-
-    wxString temp = project_path;
-    if (temp.Last() == PATH_SEPARATOR_CHAR)
-        temp.RemoveLast();
-    temp += PATH_SEPARATOR_CHAR;
-    temp += wxT("data");
-
-    std::wstring base_path = towstr(temp);
-    xf_dirhandle_t h = xf_opendir(base_path);
-    xf_direntry_t info;
-    
-    std::wstring path_sep = towstr(PATH_SEPARATOR_STR);
-    
-    while (xf_readdir(h, &info))
-    {
-        if (info.m_type == xfFileTypeNormal)
-        {
-            std::wstring path = base_path;
-            path += path_sep;
-            path += info.m_name;
-            total_size += xf_get_file_size(path);
-        }
-    }
-    xf_closedir(h);
-
-    return total_size;
-}
-
-
-wxString getDefaultProjectsPath()
-{
-    // choose a path in My Documents (or the home directory on linux)
-    wxString project_path = wxStandardPaths::Get().GetDocumentsDir();
-    if (project_path.Last() != PATH_SEPARATOR_CHAR)
-        project_path += PATH_SEPARATOR_CHAR;
-    project_path += APPLICATION_NAME;
-    project_path += wxT(" ");
-    project_path += wxT("Projects");
-    return project_path;
-}
-
-
+// helper function for createFolderStructure()
 static void deleteDirs(std::vector<wxString> dirs)
 {
     std::vector<wxString>::reverse_iterator it;
@@ -1592,10 +1315,10 @@ static void deleteDirs(std::vector<wxString> dirs)
     }
 }
 
-// this function simply attempts to create a folder that can be as many layers
-// deep as desired (a sub-sub-sub-folder) -- if the process fails or if the
-// "delete_on_success" flag is set to true, any folders that have been
-// created will be deleted before returning true or false
+bool tryCreateFolderStructure(const wxString& folder_path)
+{
+    return createFolderStructure(folder_path, true);
+}
 
 bool createFolderStructure(const wxString& folder_path,
                            bool delete_on_success)
@@ -1638,13 +1361,47 @@ bool createFolderStructure(const wxString& folder_path,
     return true;
 }
 
-// this function simply attempts to create a folder that can be as many layers
-// deep as desired (a sub-sub-sub-folder) -- regardless of whether or not
-// it succeeds, it deletes the folders it creates
-
-bool tryCreateFolderStructure(const wxString& folder_path)
+double getProjectSize(const wxString& project_path)
 {
-    return createFolderStructure(folder_path, true);
+    double total_size = 2000000.0;
+
+    wxString temp = project_path;
+    if (temp.Last() == PATH_SEPARATOR_CHAR)
+        temp.RemoveLast();
+    temp += PATH_SEPARATOR_CHAR;
+    temp += wxT("data");
+
+    std::wstring base_path = towstr(temp);
+    xf_dirhandle_t h = xf_opendir(base_path);
+    xf_direntry_t info;
+    
+    std::wstring path_sep = towstr(PATH_SEPARATOR_STR);
+    
+    while (xf_readdir(h, &info))
+    {
+        if (info.m_type == xfFileTypeNormal)
+        {
+            std::wstring path = base_path;
+            path += path_sep;
+            path += info.m_name;
+            total_size += xf_get_file_size(path);
+        }
+    }
+    xf_closedir(h);
+
+    return total_size;
+}
+
+wxString getDefaultProjectsPath()
+{
+    // choose a path in My Documents (or the home directory on linux)
+    wxString project_path = wxStandardPaths::Get().GetDocumentsDir();
+    if (project_path.Last() != PATH_SEPARATOR_CHAR)
+        project_path += PATH_SEPARATOR_CHAR;
+    project_path += APPLICATION_NAME;
+    project_path += wxT(" ");
+    project_path += wxT("Projects");
+    return project_path;
 }
 
 tango::IIndexInfoPtr lookupIndex(tango::IIndexInfoEnumPtr idx_enum, const std::wstring& expr, bool exact_column_order)
@@ -1729,8 +1486,268 @@ tango::IIndexInfoPtr lookupIndex(tango::IIndexInfoEnumPtr idx_enum, const std::w
     return result;
 }
 
+void appInvalidObjectMessageBox(const wxString& name,
+                                wxWindow* parent)
+{
+    wxString message;
 
-// gets small web files, returning them as strings
+    if (name.IsEmpty())
+    {
+        message = _("An object with an invalid name was specified.  Please rename the item(s) to continue.  Database object names, such as table names, must not be a reserved keyword, and must not contain any control characters.  For a listing of reserved keywords and invalid characters, please consult the user documentation.");
+    }
+     else
+    {
+        message = wxString::Format(_("The object name '%s' is invalid.  Please rename the item to continue.  Database object names, such as table names, must not be a reserved keyword, and must not contain any control characters.  For a listing of reserved keywords and invalid characters, please consult the user documentation."),
+                                   name.c_str());
+    }
+
+    deferredAppMessageBox(message,
+                       _("Invalid Object Name"),
+                       wxOK | wxICON_EXCLAMATION | wxCENTER,
+                       parent);
+}
+
+void appInvalidFieldMessageBox(const wxString& name,
+                               wxWindow* parent)
+{
+    wxString message;
+
+    if (name.IsEmpty())
+    {
+        message = _("A field with an invalid name was specified.  Please rename the field to continue.  A field name must not be a reserved keyword, and must not contain any control characters.  For a listing of reserved keywords and invalid characters, please consult the user documentation.");
+    }
+     else
+    {
+        message = wxString::Format(_("The field name '%s' is invalid.  Please rename the field to continue.  A field name must not be a reserved keyword, and must not contain any control characters.  For a listing of reserved keywords and invalid characters, please consult the user documentation."),
+                                   name.c_str());
+    }
+
+    deferredAppMessageBox(message,
+                       _("Invalid Field Name"),
+                       wxOK | wxICON_EXCLAMATION | wxCENTER,
+                       parent);
+}
+
+#ifdef __WXGTK__
+
+int appMessageBox(const wxString& message,
+                  const wxString& caption,
+                  int style,
+                  wxWindow *parent,
+                  int x, int y)
+{
+    long decorated_style = style;
+
+    if ( ( style & ( wxICON_EXCLAMATION |
+                     wxICON_HAND |
+                     wxICON_INFORMATION |
+                     wxICON_QUESTION ) ) == 0 )
+    {
+        decorated_style |= ( style & wxYES ) ? wxICON_QUESTION : wxICON_INFORMATION ;
+    }
+
+
+    if (0 != gtk_check_version(2,4,0))
+    {
+        // we have an old version of GTK, we must
+        // use a different parent window
+
+        int i;
+        int cnt = wxTopLevelWindows.GetCount();
+
+        wxWindow* main_wnd = wxTheApp->GetTopWindow();
+
+        if (parent == NULL)
+            parent = main_wnd;
+
+        for (i = 0; i < cnt; ++i)
+        {
+            wxWindow* wnd = (wxWindow*)wxTopLevelWindows.Item(i)->GetData();
+            if (wnd != main_wnd)
+                parent = wnd;
+        }
+    }
+
+
+    wxMessageDialog dialog(parent, message, caption, decorated_style);
+
+
+    if (0 == gtk_check_version(2,4,0))
+    {
+        gtk_window_set_keep_above(GTK_WINDOW(dialog.m_widget), true);
+    }
+
+    
+    int ans = dialog.ShowModal();
+    switch ( ans )
+    {
+        case wxID_OK:
+            return wxOK;
+        case wxID_YES:
+            return wxYES;
+        case wxID_NO:
+            return wxNO;
+        case wxID_CANCEL:
+            return wxCANCEL;
+    }
+
+    return wxCANCEL;
+}
+
+#else
+
+int appMessageBox(const wxString& message,
+                  const wxString& caption,
+                  int style,
+                  wxWindow *parent,
+                  int x, int y)
+{
+    if (parent == NULL)
+    {
+        parent = wxTheApp->GetTopWindow();
+    }
+
+    wxWindowDisabler wd((wxWindow*)NULL);
+
+    return wxMessageBox(message, caption, style, parent, x, y);
+}
+
+#endif
+
+// helper class for deferredAppMessageBox()
+class MsgBoxData : public wxEvtHandler
+{
+public:
+
+    bool ProcessEvent(wxEvent& event)
+    {
+        appMessageBox(message, caption, style, parent, x, y);
+        //delete this;
+        return true;
+    }
+    
+public:
+
+    wxString message;
+    wxString caption;
+    int style;
+    wxWindow* parent;
+    int x;
+    int y;
+};
+
+void deferredAppMessageBox(const wxString& message,
+                           const wxString& caption,
+                           int style,
+                           wxWindow *parent,
+                           int x, int y)
+{
+    MsgBoxData* data = new MsgBoxData;
+    data->message = message;
+    data->caption = caption;
+    data->style = style;
+    data->parent = parent;
+    data->x = x;
+    data->y = y;
+    
+    wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, 9000);
+    ::wxPostEvent(data, evt);
+}
+
+IDocumentSitePtr lookupOtherDocumentSite(
+                           IDocumentSitePtr site,
+                           const std::string& doc_class_name)
+{
+    if (site.isNull())
+        return xcm::null;
+    
+    IFramePtr frame = g_app->getMainFrame();
+    if (frame.isNull())
+        return xcm::null;
+    
+    IDocumentSitePtr active_hit;
+    IDocumentSitePtr inactive_hit;
+        
+    IDocumentSiteEnumPtr sites;
+    sites = frame->getDocumentSitesByContainer(site->getContainerWindow());
+    size_t i, count = sites->size();
+    for (i = 0; i < count; ++i)
+    {
+        IDocumentSitePtr site = sites->getItem(i);
+        if (site.isNull())
+            continue;
+            
+        IDocumentPtr doc = site->getDocument();
+        if (doc.isNull())
+            continue;
+            
+        xcm::class_info* doc_class_info = xcm::get_class_info(doc);
+        if (!doc_class_info)
+            continue;
+            
+        if (doc_class_name == doc_class_info->get_name())
+        {
+            if (site->isInPlaceActive())
+            {
+                active_hit = site;
+            }
+             else
+            {
+                if (inactive_hit.isNull())
+                    inactive_hit = site;
+            }
+        }
+    }
+    
+    
+    // prefer to return the 'other' document
+    // i.e. if there are two documents of the
+    // same one, return the one that the user
+    // currently isn't on
+    if (inactive_hit.isOk())
+        return inactive_hit;
+    
+    if (active_hit.isOk())
+        return active_hit;
+    
+    return xcm::null;
+}
+                                  
+IDocumentPtr lookupOtherDocument(
+                           IDocumentSitePtr site,
+                           const std::string& doc_class_name)
+{
+    IDocumentSitePtr s = lookupOtherDocumentSite(site, doc_class_name);
+    if (s)
+    {
+        return s->getDocument();
+    }
+    
+    return xcm::null;
+}
+
+void switchToOtherDocument(IDocumentSitePtr site,
+                           const std::string& doc_class_name)
+{
+    IDocumentSitePtr s = lookupOtherDocumentSite(site, doc_class_name);
+    if (s)
+    {
+        g_app->getMainFrame()->activateInPlace(s);
+    }
+}
+
+wxWindow* getDocumentSiteWindow(IDocumentSitePtr site)
+{
+    if (site.isNull())
+        return NULL;
+    
+    IDocumentPtr doc = site->getDocument();
+    if (doc.isNull())
+        return NULL;
+    
+    wxWindow* w = doc->getDocumentWindow();
+    return w;
+}
 
 wxString getWebFile(const wxString& urlstring)
 {
@@ -1791,136 +1808,434 @@ wxString getWebFile(const wxString& urlstring)
     return wxString::FromUTF8(result_string.c_str());
 }
 
-
-wxString vectorToString(const std::vector<wxString>& list)
+bool doOutputPathCheck(const wxString& output_path, wxWindow* parent)
 {
-    // note: converts a vector of strings to a string 
-    // containing the fields as a comma-delimited list
-
-    wxString result;
-
-    std::vector<wxString>::const_iterator it, it_end;
-    it_end = list.end();
-    
-    for (it = list.begin(); it != it_end; ++it)
+    if (!isValidObjectPath(output_path))
     {
-        if (it != list.begin())
-            result += wxT(",");
-    
-        result += *it;
+        appInvalidObjectMessageBox(wxEmptyString, parent);
+        return false;
     }
-    
-    return result;
-}
 
-std::vector<wxString> stringToVector(const wxString& string)
-{
-    // note: converts a string containing a comma-delimited 
-    // list in a vector of individual strings
-
-    std::vector<wxString> result;
-
-    // parse the group string and fill out the group fields
-    // for the section
-    wxStringTokenizer tokenizer(string, wxT(","));
-    while (tokenizer.HasMoreTokens())
+    wxStringTokenizer tkz(output_path, wxT("/"));
+    wxString stub = wxT("/");
+    while (tkz.HasMoreTokens())
     {
-        // get the property name
-        wxString field_token = tokenizer.GetNextToken();
-        field_token.Trim(true);
-        field_token.Trim(false);
-        result.push_back(field_token);
-    }
-    
-    return result;
-}
+        wxString token = tkz.GetNextToken();
 
-std::vector< std::pair<wxString, bool> > sortExprToVector(const wxString& sort_expr)
-{
-    // note: this function takes an input sort expression
-    // and parses out the fieldnames that make up the sort 
-    // expression into a vector of pairs, where the first 
-    // part of the pair is the name of the field and the 
-    // second part of the field is a boolean value that 
-    // indicates the sort order: false = sort ascending 
-    // and true = sort descneding
+        if (token.IsEmpty())
+            continue;
 
-    // used throughout
-    std::vector< std::pair<wxString, bool> > sort_fields;
+        if (!tkz.HasMoreTokens())
+            break;
 
-    // get the fields from the sort expression
-    std::vector<wxString> expr_parts = stringToVector(sort_expr);
-    std::vector<wxString>::iterator it, it_end;
-    it_end = expr_parts.end();
+        stub += token;
 
-    for (it = expr_parts.begin(); it != it_end; ++it)
-    {
-        // get the string
-        wxString field = *it;
-        
-        // trim leading and trailing spaces
-        field.Trim(true);
-        field.Trim(false);
-        
-        // get the field name, which is separated
-        // from the ASC/DESC sort order qualifiers
-        // by a space
-        bool sort_desc = false;
- 
-        // see if the ascending flag is included
-        int offset = field.Upper().Find(wxT("ASC"));
-        if (offset != wxNOT_FOUND)
+        tango::IFileInfoPtr file_info;
+        file_info = g_app->getDatabase()->getFileInfo(towstr(stub));
+        if (file_info.isNull())
+            break;
+
+        if (file_info->getType() != tango::filetypeFolder)
         {
-            // if the ascending flag is included,
-            // strip it off and set the sort flag
-            field = field.Left(offset);
-            sort_desc = false;
+            appMessageBox(_("The specified output path is invalid because it does not specify a valid folder."),
+                               APPLICATION_NAME,
+                               wxOK | wxICON_EXCLAMATION | wxCENTER,
+                               parent);
+            return false;
         }
-        else
-        {
-            // if the ascending flag isn't included,
-            // check for the descending flag
-            offset = field.Upper().Find(wxT("DESC"));
-            if (offset != wxNOT_FOUND)
-            {
-                // if the descending flag is included,
-                // strip it off and set the sort flag
-                field = field.Left(offset);
-                sort_desc = true;
-            }
-        }
-
-        // trim any remaining spaces
-        field.Trim(true);
-        field.Trim(false);
-
-        // set the fieldname and sort order, and
-        // save the pair
-        std::pair<wxString, bool> pair;
-        pair.first = field;
-        pair.second = sort_desc;
-    
-        sort_fields.push_back(pair);
     }
+
+    // check the validity of the output filename
+    wxString fn = output_path;
+    fn = fn.AfterLast(wxT('/'));
+    if (!isValidObjectName(fn))
+    {
+        appMessageBox(_("The specified output path is invalid because it specifies an invalid filename."),
+                           APPLICATION_NAME,
+                           wxOK | wxICON_EXCLAMATION | wxCENTER,
+                           parent);
+        return false;
+    }
+
+    // see if the file is there already
+    if (!g_app->getDatabase()->getFileExist(towstr(output_path)))
+        return true;
+
+    tango::IFileInfoPtr file_info;
+    file_info = g_app->getDatabase()->getFileInfo(towstr(output_path));
+    if (file_info.isNull())
+        return true;
+
+    int file_type = file_info->getType();
+
+    if (file_type == tango::filetypeFolder)
+    {
+        appMessageBox(_("The specified output path is invalid because it specifies a folder that already exists."),
+                           APPLICATION_NAME,
+                           wxOK | wxICON_EXCLAMATION | wxCENTER,
+                           parent);
+        return false;
+    }
+     else if (file_type == tango::filetypeSet)
+    {
+        int result;
+        result = appMessageBox(_("The specified output file name already exists.  Would you like to overwrite it?"),
+                                    APPLICATION_NAME,
+                                    wxYES_NO | wxNO_DEFAULT | wxICON_EXCLAMATION | wxCENTER,
+                                    parent);
+
+        if (result != wxYES)
+            return false;
+    }
+
+    return true;
+}
+
+kcl::BannerControl* createModuleBanner(wxWindow* parent, const wxString& title)
+{
+    // font for drawing the banner
+    wxFont font = wxFont(10, wxSWISS, wxNORMAL, wxFONTWEIGHT_BOLD, false);
     
-    // return the pairs of fields and their 
-    // sort orders
-    return sort_fields;
+    // colors for drawing the banneruu
+    wxColour base_color = kcl::getBaseColor();
+    wxColour border_color = kcl::getBorderColor();
+    wxColor caption_color = kcl::getCaptionColor();
+
+    // create the banner
+    kcl::BannerControl* banner = new kcl::BannerControl(parent,
+                                                        title,
+                                                        wxPoint(0,0),
+                                                        wxSize(200, 40));
+    banner->setStartColor(kcl::stepColor(base_color, 170));
+    banner->setEndColor(kcl::stepColor(base_color, 90));
+    banner->setGradientDirection(kcl::BannerControl::gradientVertical);
+    banner->setBorderColor(border_color);
+    banner->setBorder(kcl::BannerControl::borderBottom);
+    banner->setTextColor(caption_color);
+    banner->setTextPadding(15);
+    banner->setFont(font);
+    return banner;
 }
 
-
-void int2buf(unsigned char* buf, unsigned int i)
+// deferred focus helper
+class FocusAgent : public wxEvtHandler
 {
-    *(buf)   = (i & 0x000000ff);
-    *(buf+1) = (i & 0x0000ff00) >> 8;
-    *(buf+2) = (i & 0x00ff0000) >> 16;
-    *(buf+3) = (i & 0xff000000) >> 24;
+
+public:
+    
+    wxWindow* m_focus_target;
+
+    bool ProcessEvent(wxEvent& event)
+    {
+        m_focus_target->SetFocus();
+
+        if (!wxPendingDelete.Member(this))
+            wxPendingDelete.Append(this);
+
+        return true;
+    }
+};
+
+void setFocusDeferred(wxWindow* focus)
+{
+    FocusAgent* f = new FocusAgent;
+    f->m_focus_target = focus;
+
+    wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED, 10000);
+    ::wxPostEvent(f, event);
 }
 
-int buf2int(const unsigned char* buf)
+bool windowOrChildHasFocus(wxWindow* wnd)
 {
-    return buf[0] + (buf[1]*256) + (buf[2]*65536) + (buf[3] * 16777216);
+    wxWindow* f = wxWindow::FindFocus();
+    while (f)
+    {
+        if (wnd == f)
+            return true;
+        f = f->GetParent();
+    }
+    return false;
 }
+
+int getTaskBarHeight()
+{
+#ifdef WIN32
+    APPBARDATA abd;
+    memset(&abd, 0, sizeof(APPBARDATA));
+
+    abd.cbSize = sizeof(APPBARDATA);
+    if (SHAppBarMessage(ABM_GETSTATE, &abd) & ABS_AUTOHIDE)
+        return 2;
+
+    HWND hWndAppBar = abd.hWnd;
+
+    memset(&abd, 0, sizeof(APPBARDATA));
+    abd.cbSize = sizeof(APPBARDATA);
+    abd.hWnd = hWndAppBar;
+    SHAppBarMessage(ABM_GETTASKBARPOS, &abd);
+
+    return abd.rc.bottom - abd.rc.top;
+
+#else
+    // default task bar height
+    return 50;
+#endif
+}
+
+wxFont getDefaultWindowFont()
+{
+#ifdef WIN32
+    NONCLIENTMETRICS nm;
+    nm.cbSize = sizeof(NONCLIENTMETRICS);
+    SystemParametersInfoW(SPI_GETNONCLIENTMETRICS,0,&nm,0);
+
+    wxNativeFontInfo info;
+    memcpy(&info.lf, &nm.lfMessageFont, sizeof(LOGFONT));
+    wxFont font;
+    font.Create(info, 0);
+    return font;
+#else
+    return wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
+#endif
+}
+
+wxString getUserDocumentFolder()
+{
+#ifdef WIN32
+    TCHAR path[512];
+    LPITEMIDLIST pidl = NULL;
+    if (FAILED(SHGetSpecialFolderLocation(NULL, CSIDL_PERSONAL, &pidl)))
+    {
+        return _T("C:\\");
+    }
+    if (!pidl)
+    {
+        return _T("C:\\");
+    }
+    SHGetPathFromIDList(pidl, path);
+    LPMALLOC pIMalloc;
+    SHGetMalloc(&pIMalloc);
+    pIMalloc->Free(pidl);
+    pIMalloc->Release();
+    if (_tcslen(path) == 0)
+        return _T("C:\\");
+    return path;
+#else
+    char path[512];
+    char* home = getenv("HOME");
+    if (home == NULL || strlen(home) == 0)
+    {
+        return _T("/");
+    }
+    strcpy(path, home);
+    return towx(path);
+#endif
+
+}
+
+void limitFontSize(wxWindow* wnd, int size)
+{
+    wxFont font = wnd->GetFont();
+    if (font.GetPointSize() > size)
+    {
+        font.SetPointSize(size);
+        wnd->SetFont(font);
+    }
+}
+
+void makeTextCtrlLowerCase(wxTextCtrl* text)
+{
+#ifdef WIN32
+    HWND h = (HWND)text->GetHWND();
+    LONG l = GetWindowLongA(h, GWL_STYLE);
+    l |= ES_LOWERCASE;
+    SetWindowLongA(h, GWL_STYLE, l);
+#endif
+}
+
+void makeTextCtrlUpperCase(wxTextCtrl* text)
+{
+#ifdef WIN32
+    HWND h = (HWND)text->GetHWND();
+    LONG l = GetWindowLongA(h, GWL_STYLE);
+    l |= ES_UPPERCASE;
+    SetWindowLongA(h, GWL_STYLE, l);
+#endif
+}
+
+void makeFontBold(wxWindow* window)
+{
+    wxFont font = window->GetFont();
+    font.SetWeight(wxBOLD);
+    window->SetFont(font);
+}
+
+void setTextWrap(wxStaticText* text, bool wrap)
+{
+#ifdef WIN32
+#endif
+
+#ifdef __WXGTK__
+    text->GetBestSize();
+    gtk_label_set_line_wrap(GTK_LABEL(text->m_widget), wrap);
+#endif
+}
+
+void resizeStaticText(wxStaticText* text, int width)
+{
+    text->SetWindowStyleFlag(text->GetWindowStyleFlag() | wxST_NO_AUTORESIZE);
+    setTextWrap(text, true);
+    
+    wxWindow* parent = text->GetParent();
+
+    int intended_width;
+
+    if (width == -1)
+    {
+        wxSize s = parent->GetClientSize();
+        intended_width = s.GetWidth() - 10;
+    }
+     else
+    {
+        intended_width = width;
+    }
+
+    // by default
+    wxString label = text->GetLabel();
+    wxCoord text_width, text_height;
+    
+    wxClientDC dc(text->GetParent());
+    dc.SetFont(text->GetFont());
+    dc.GetTextExtent(label, &text_width, &text_height);
+
+    // add 5% to the text width
+    text_width = (text_width*100)/95;
+    
+    if (intended_width < 50)
+        intended_width = 50;
+        
+    int row_count = (text_width/intended_width)+1;
+    
+    const wxChar* c = label.c_str();
+    while (*c)
+    {
+        if (*c == L'\n')
+            row_count++;
+        ++c;
+    }
+
+    text->SetSize(intended_width, row_count*text_height);
+    text->SetSizeHints(intended_width, row_count*text_height);
+}
+
+wxSize getMaxTextSize(wxStaticText* st0,
+                      wxStaticText* st1,
+                      wxStaticText* st2,
+                      wxStaticText* st3,
+                      wxStaticText* st4,
+                      wxStaticText* st5,
+                      wxStaticText* st6)
+{
+    wxStaticText* ctrls[7];
+
+    ctrls[0] = st0;
+    ctrls[1] = st1;
+    ctrls[2] = st2;
+    ctrls[3] = st3;
+    ctrls[4] = st4;
+    ctrls[5] = st5;
+    ctrls[6] = st6;
+
+    int sx, sy;
+    int x, y;
+    x = 0;
+    y = 0;
+
+    for (int i = 0; i < 7; i++)
+    {
+        if (!ctrls[i])
+        {
+            continue;
+        }
+
+        ctrls[i]->GetBestSize(&sx, &sy);
+        if (sx > x)
+            x = sx;
+        if (sy > y)
+            y = sy;
+    }
+
+    return wxSize(x, y);
+}
+
+// helper for suppressConsoleLogging()
+#ifdef __WXGTK__
+void null_log_function(const gchar* log_domain,
+                       GLogLevelFlags log_level,
+                       const gchar* message,
+                       gpointer user_data)
+{
+}
+#endif
+
+void suppressConsoleLogging()
+{
+    // no logging on wx
+    wxLog::EnableLogging(false);
+
+#ifdef __WXGTK__
+    // no logging on gtk -- but only disable it
+    // if gtk is being used at all
+    if (gdk_screen_get_default())
+    {
+        g_log_set_handler("Gdk",
+                      (GLogLevelFlags)(
+                      G_LOG_LEVEL_WARNING |
+                      G_LOG_LEVEL_ERROR | 
+                      G_LOG_LEVEL_CRITICAL |
+                      G_LOG_FLAG_FATAL |
+                      G_LOG_FLAG_RECURSION),
+                      null_log_function,
+                      NULL);
+    }
+#endif
+}
+
+wxString getProxyServer()
+{
+    //wxT("10.1.1.1:3128");
+#ifdef __WXMSW__
+
+    wxRegKey *pRegKey = new wxRegKey(wxT("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings"));
+
+    if(!pRegKey->Exists())
+        return wxEmptyString;
+
+    long enable = 0;
+
+    if (!pRegKey->QueryValue(wxT("ProxyEnable"), &enable))
+        return wxEmptyString;
+
+    if (!enable)
+        return wxEmptyString;
+
+    wxString proxy;
+    if (!pRegKey->QueryValue(wxT("ProxyServer"), proxy))
+        return wxEmptyString;
+
+    return proxy;
+
+#else
+
+    wxString val;
+    if (!::wxGetEnv(wxT("HTTP_PROXY"), &val))
+        return wxEmptyString;
+    return val.AfterLast(wxT('/'));
+
+#endif
+
+}
+
 
 
 struct LocalePtrContainer
@@ -1947,7 +2262,6 @@ struct LocalePtrContainer
 };
 
 LocalePtrContainer g_locale_ptr_container;
-
 
 Locale::Locale()
 {
@@ -2048,7 +2362,6 @@ wxString Locale::formatDate(int year,
 
     return wxEmptyString;
 }
-
 
 bool Locale::parseDateTime(const wxString& input,
                            int* year,
@@ -2181,395 +2494,6 @@ bool Locale::parseDateTime(const wxString& input,
     return true;
 }
 
-// getDefaultFont() returns the default font for window contents
-
-wxFont getDefaultWindowFont()
-{
-#ifdef WIN32
-    NONCLIENTMETRICS nm;
-    nm.cbSize = sizeof(NONCLIENTMETRICS);
-    SystemParametersInfoW(SPI_GETNONCLIENTMETRICS,0,&nm,0);
-
-    wxNativeFontInfo info;
-    memcpy(&info.lf, &nm.lfMessageFont, sizeof(LOGFONT));
-    wxFont font;
-    font.Create(info, 0);
-    return font;
-#else
-    return wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
-#endif
-}
-
-
-// getUserDocumentFolder() returns the default location for the user's
-// document storage.  On Windows, this will normally be the user's
-// "My Documents" directory.  On other systems, the user's home folder
-
-wxString getUserDocumentFolder()
-{
-#ifdef WIN32
-    TCHAR path[512];
-    LPITEMIDLIST pidl = NULL;
-    if (FAILED(SHGetSpecialFolderLocation(NULL, CSIDL_PERSONAL, &pidl)))
-    {
-        return _T("C:\\");
-    }
-    if (!pidl)
-    {
-        return _T("C:\\");
-    }
-    SHGetPathFromIDList(pidl, path);
-    LPMALLOC pIMalloc;
-    SHGetMalloc(&pIMalloc);
-    pIMalloc->Free(pidl);
-    pIMalloc->Release();
-    if (_tcslen(path) == 0)
-        return _T("C:\\");
-    return path;
-#else
-    char path[512];
-    char* home = getenv("HOME");
-    if (home == NULL || strlen(home) == 0)
-    {
-        return _T("/");
-    }
-    strcpy(path, home);
-    return towx(path);
-#endif
-
-}
-
-
-#ifdef __WXGTK__
-
-int appMessageBox(const wxString& message,
-                  const wxString& caption,
-                  int style,
-                  wxWindow *parent,
-                  int x, int y)
-{
-    long decorated_style = style;
-
-    if ( ( style & ( wxICON_EXCLAMATION |
-                     wxICON_HAND |
-                     wxICON_INFORMATION |
-                     wxICON_QUESTION ) ) == 0 )
-    {
-        decorated_style |= ( style & wxYES ) ? wxICON_QUESTION : wxICON_INFORMATION ;
-    }
-
-
-    if (0 != gtk_check_version(2,4,0))
-    {
-        // we have an old version of GTK, we must
-        // use a different parent window
-
-        int i;
-        int cnt = wxTopLevelWindows.GetCount();
-
-        wxWindow* main_wnd = wxTheApp->GetTopWindow();
-
-        if (parent == NULL)
-            parent = main_wnd;
-
-        for (i = 0; i < cnt; ++i)
-        {
-            wxWindow* wnd = (wxWindow*)wxTopLevelWindows.Item(i)->GetData();
-            if (wnd != main_wnd)
-                parent = wnd;
-        }
-    }
-
-
-    wxMessageDialog dialog(parent, message, caption, decorated_style);
-
-
-    if (0 == gtk_check_version(2,4,0))
-    {
-        gtk_window_set_keep_above(GTK_WINDOW(dialog.m_widget), true);
-    }
-
-    
-    int ans = dialog.ShowModal();
-    switch ( ans )
-    {
-        case wxID_OK:
-            return wxOK;
-        case wxID_YES:
-            return wxYES;
-        case wxID_NO:
-            return wxNO;
-        case wxID_CANCEL:
-            return wxCANCEL;
-    }
-
-    return wxCANCEL;
-}
-
-#else
-
-int appMessageBox(const wxString& message,
-                  const wxString& caption,
-                  int style,
-                  wxWindow *parent,
-                  int x, int y)
-{
-    if (parent == NULL)
-    {
-        parent = wxTheApp->GetTopWindow();
-    }
-
-    wxWindowDisabler wd((wxWindow*)NULL);
-
-    return wxMessageBox(message, caption, style, parent, x, y);
-}
-
-#endif
-
-
-class MsgBoxData : public wxEvtHandler
-{
-public:
-
-    bool ProcessEvent(wxEvent& event)
-    {
-        appMessageBox(message, caption, style, parent, x, y);
-        //delete this;
-        return true;
-    }
-    
-public:
-
-    wxString message;
-    wxString caption;
-    int style;
-    wxWindow* parent;
-    int x;
-    int y;
-};
-
-void deferredAppMessageBox(const wxString& message,
-                           const wxString& caption,
-                           int style,
-                           wxWindow *parent,
-                           int x, int y)
-{
-    MsgBoxData* data = new MsgBoxData;
-    data->message = message;
-    data->caption = caption;
-    data->style = style;
-    data->parent = parent;
-    data->x = x;
-    data->y = y;
-    
-    wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, 9000);
-    ::wxPostEvent(data, evt);
-}
-
-void limitFontSize(wxWindow* wnd, int size)
-{
-    wxFont font = wnd->GetFont();
-    if (font.GetPointSize() > size)
-    {
-        font.SetPointSize(size);
-        wnd->SetFont(font);
-    }
-}
-
-void makeTextCtrlLowerCase(wxTextCtrl* text)
-{
-#ifdef WIN32
-    HWND h = (HWND)text->GetHWND();
-    LONG l = GetWindowLongA(h, GWL_STYLE);
-    l |= ES_LOWERCASE;
-    SetWindowLongA(h, GWL_STYLE, l);
-#endif
-}
-
-void makeTextCtrlUpperCase(wxTextCtrl* text)
-{
-#ifdef WIN32
-    HWND h = (HWND)text->GetHWND();
-    LONG l = GetWindowLongA(h, GWL_STYLE);
-    l |= ES_UPPERCASE;
-    SetWindowLongA(h, GWL_STYLE, l);
-#endif
-}
-
-void makeFontBold(wxWindow* window)
-{
-    wxFont font = window->GetFont();
-    font.SetWeight(wxBOLD);
-    window->SetFont(font);
-}
-
-void setTextWrap(wxStaticText* text, bool wrap)
-{
-#ifdef WIN32
-#endif
-
-#ifdef __WXGTK__
-    text->GetBestSize();
-    gtk_label_set_line_wrap(GTK_LABEL(text->m_widget), wrap);
-#endif
-}
-
-
-#ifdef __WXGTK__
-void null_log_function(const gchar* log_domain,
-                       GLogLevelFlags log_level,
-                       const gchar* message,
-                       gpointer user_data)
-{
-}
-#endif
-
-void suppressConsoleLogging()
-{
-    // no logging on wx
-    wxLog::EnableLogging(false);
-
-#ifdef __WXGTK__
-    // no logging on gtk -- but only disable it
-    // if gtk is being used at all
-    if (gdk_screen_get_default())
-    {
-        g_log_set_handler("Gdk",
-                      (GLogLevelFlags)(
-                      G_LOG_LEVEL_WARNING |
-                      G_LOG_LEVEL_ERROR | 
-                      G_LOG_LEVEL_CRITICAL |
-                      G_LOG_FLAG_FATAL |
-                      G_LOG_FLAG_RECURSION),
-                      null_log_function,
-                      NULL);
-    }
-#endif
-}
-
-void resizeStaticText(wxStaticText* text, int width)
-{
-    text->SetWindowStyleFlag(text->GetWindowStyleFlag() | wxST_NO_AUTORESIZE);
-    setTextWrap(text, true);
-    
-    wxWindow* parent = text->GetParent();
-
-    int intended_width;
-
-    if (width == -1)
-    {
-        wxSize s = parent->GetClientSize();
-        intended_width = s.GetWidth() - 10;
-    }
-     else
-    {
-        intended_width = width;
-    }
-
-    // by default
-    wxString label = text->GetLabel();
-    wxCoord text_width, text_height;
-    
-    wxClientDC dc(text->GetParent());
-    dc.SetFont(text->GetFont());
-    dc.GetTextExtent(label, &text_width, &text_height);
-
-    // add 5% to the text width
-    text_width = (text_width*100)/95;
-    
-    if (intended_width < 50)
-        intended_width = 50;
-        
-    int row_count = (text_width/intended_width)+1;
-    
-    const wxChar* c = label.c_str();
-    while (*c)
-    {
-        if (*c == L'\n')
-            row_count++;
-        ++c;
-    }
-
-    text->SetSize(intended_width, row_count*text_height);
-    text->SetSizeHints(intended_width, row_count*text_height);
-}
-
-wxSize getMaxTextSize(wxStaticText* st0,
-                      wxStaticText* st1,
-                      wxStaticText* st2,
-                      wxStaticText* st3,
-                      wxStaticText* st4,
-                      wxStaticText* st5,
-                      wxStaticText* st6)
-{
-    wxStaticText* ctrls[7];
-
-    ctrls[0] = st0;
-    ctrls[1] = st1;
-    ctrls[2] = st2;
-    ctrls[3] = st3;
-    ctrls[4] = st4;
-    ctrls[5] = st5;
-    ctrls[6] = st6;
-
-    int sx, sy;
-    int x, y;
-    x = 0;
-    y = 0;
-
-    for (int i = 0; i < 7; i++)
-    {
-        if (!ctrls[i])
-        {
-            continue;
-        }
-
-        ctrls[i]->GetBestSize(&sx, &sy);
-        if (sx > x)
-            x = sx;
-        if (sy > y)
-            y = sy;
-    }
-
-    return wxSize(x, y);
-}
-
-wxString getProxyServer()
-{
-    //wxT("10.1.1.1:3128");
-#ifdef __WXMSW__
-
-    wxRegKey *pRegKey = new wxRegKey(wxT("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings"));
-
-    if(!pRegKey->Exists())
-        return wxEmptyString;
-
-    long enable = 0;
-
-    if (!pRegKey->QueryValue(wxT("ProxyEnable"), &enable))
-        return wxEmptyString;
-
-    if (!enable)
-        return wxEmptyString;
-
-    wxString proxy;
-    if (!pRegKey->QueryValue(wxT("ProxyServer"), proxy))
-        return wxEmptyString;
-
-    return proxy;
-
-#else
-
-    wxString val;
-    if (!::wxGetEnv(wxT("HTTP_PROXY"), &val))
-        return wxEmptyString;
-    return val.AfterLast(wxT('/'));
-
-#endif
-
-}
-
-// -- GUI helper classes and functions ----------------------------------------
 
 BEGIN_EVENT_TABLE(JobGaugeUpdateTimer, wxTimer)
     EVT_MENU(10000, JobGaugeUpdateTimer::onJobAddedInMainThread)
@@ -2811,3 +2735,4 @@ void JobGaugeUpdateTimer::onJobStateChangedInMainThread(wxCommandEvent& evt)
         showJobFailedIcon();
     }
 }
+

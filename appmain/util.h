@@ -182,6 +182,8 @@ wxString makeProperIfNecessary(const wxString& input);
 
 bool isUnicodeString(const std::wstring& val);
 
+// shortcut so we don't have to use towx everywhere
+// this should be able to go away in future versions of wx
 wxString filenameToUrl(const wxString& _filename);
 wxString urlToFilename(const wxString& _url);
 
@@ -191,7 +193,12 @@ wxString jsEscapeString(const wxString& input, wxChar quote);
 wxString urlEscape(const wxString& input);
 wxString multipartEncode(const wxString& input);
 
+// this function was necessary because wxString::Replace(..., wxEmptyString)
+// was truncating strings
 wxString removeChar(const wxString& s, wxChar c);
+
+// TODO: borrowed from expr_util in tango; also exists in kscript
+// and parts of kl; should factor
 wxChar* zl_strchr(wxChar* str, wxChar ch);
 
 wxString makeUniqueString();
@@ -272,12 +279,21 @@ bool writeStreamTextFile(tango::IDatabasePtr db,
                         const std::wstring& text,
                         const std::wstring& mime_type = L"text/plain");
 
-// function to handle (sub)folder creation gracefully
+// this function simply attempts to create a folder that can be as many layers
+// deep as desired (a sub-sub-sub-folder) -- if the process fails or if the
+// "delete_on_success" flag is set to true, any folders that have been
+// created will be deleted before returning true or false
 bool tryCreateFolderStructure(const wxString& folder_path);
+
+// this function simply attempts to create a folder that can be as many layers
+// deep as desired (a sub-sub-sub-folder) -- regardless of whether or not
+// it succeeds, it deletes the folders it creates
 bool createFolderStructure(const wxString& folder_path,
                            bool delete_on_success = false);
 
-// returns the approximate size of a project
+// this function does not recursively check the project's subfolders,
+// instead it approximates the project's size by calculating the size
+// of the "data" folder inside the project -- this is a fast operation
 double getProjectSize(const wxString& project_path);
 
 // returns the default location where projects are created
@@ -342,9 +358,16 @@ kcl::BannerControl* createModuleBanner(wxWindow* parent, const wxString& title);
 void setFocusDeferred(wxWindow* focus);
 bool windowOrChildHasFocus(wxWindow* wnd);
 
-int getTaskBarHeight();  // get OS's taskbar height
+// this function returns the height of the taskbar
+// on Windows or 50px for other operating systems
+int getTaskBarHeight();
 
+// getDefaultFont() returns the default font for window contents
 wxFont getDefaultWindowFont();
+
+// getUserDocumentFolder() returns the default location for the user's
+// document storage.  On Windows, this will normally be the user's
+// "My Documents" directory.  On other systems, the user's home folder
 wxString getUserDocumentFolder();
 
 void limitFontSize(wxWindow* wnd, int size = 12);
