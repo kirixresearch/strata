@@ -1620,8 +1620,6 @@ bool tryCreateFolderStructure(const wxString& folder_path)
     return createFolderStructure(folder_path, true);
 }
 
-
-
 tango::IIndexInfoPtr lookupIndex(tango::IIndexInfoEnumPtr idx_enum, const std::wstring& expr, bool exact_column_order)
 {
     if (idx_enum.isNull())
@@ -2377,10 +2375,6 @@ bool Locale::parseDateTime(const wxString& input,
     return true;
 }
 
-
-
-
-
 // getDefaultFont() returns the default font for window contents
 
 wxFont getDefaultWindowFont()
@@ -2404,6 +2398,7 @@ wxFont getDefaultWindowFont()
 // getUserDocumentFolder() returns the default location for the user's
 // document storage.  On Windows, this will normally be the user's
 // "My Documents" directory.  On other systems, the user's home folder
+
 wxString getUserDocumentFolder()
 {
 #ifdef WIN32

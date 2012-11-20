@@ -277,15 +277,13 @@ bool tryCreateFolderStructure(const wxString& folder_path);
 bool createFolderStructure(const wxString& folder_path,
                            bool delete_on_success = false);
 
+// returns the approximate size of a project
+double getProjectSize(const wxString& project_path);
+
+// returns the default location where projects are created
+wxString getDefaultProjectsPath();
+
 tango::IIndexInfoPtr lookupIndex(tango::IIndexInfoEnumPtr indexes, const std::wstring& fields, bool order_matters);
-
-wxString getWebFile(const wxString& urlstring);      // get small web files, returning them as strings
-double getProjectSize(const wxString& project_path); // returns the approximate size of a project
-wxString getDefaultProjectsPath();                   // returns the default location where projects are created
-
-// checks an output path for g_app->getDatabase().  It will
-// pop up an error message if something is wrong.
-bool doOutputPathCheck(const wxString& output_path, wxWindow* parent = NULL);
 
 
 
@@ -330,6 +328,12 @@ wxWindow* getDocumentSiteWindow(IDocumentSitePtr site);
 
 // -- other utility functions -------------------------------------------------
 
+// get small web files, returning them as strings
+wxString getWebFile(const wxString& urlstring);
+
+// checks an output path for g_app->getDatabase().  It will
+// pop up an error message if something is wrong.
+bool doOutputPathCheck(const wxString& output_path, wxWindow* parent = NULL);
 
 // creates a standard-looking banner control for all modules
 kcl::BannerControl* createModuleBanner(wxWindow* parent, const wxString& title);
@@ -355,8 +359,6 @@ wxSize getMaxTextSize(wxStaticText* st0,
                       wxStaticText* st4 = NULL,
                       wxStaticText* st5 = NULL,
                       wxStaticText* st6 = NULL);
-wxString simpleEncryptString(const wxString& s);
-wxString simpleDecryptString(const wxString& s);
 
 void suppressConsoleLogging();
 wxString getProxyServer();
