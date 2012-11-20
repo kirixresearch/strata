@@ -61,8 +61,8 @@ class TableDoc : public wxWindow,
                  public IColumnListTarget,
                  public IFindTarget,
                  public IDocumentScriptBinding,
-                 public PropertyBase,
-                 public StatusBarProviderBase
+                 public StatusBarProviderBase,
+                 public xcm::signal_sink
 {
     XCM_CLASS_NAME_NOREFCOUNT("appmain.TableDoc")
     XCM_BEGIN_INTERFACE_MAP(TableDoc)
@@ -72,7 +72,6 @@ class TableDoc : public wxWindow,
         XCM_INTERFACE_ENTRY(IColumnListTarget)
         XCM_INTERFACE_ENTRY(IFindTarget)
         XCM_INTERFACE_ENTRY(IDocumentScriptBinding)
-        XCM_INTERFACE_CHAIN(PropertyBase)
         XCM_INTERFACE_CHAIN(StatusBarProviderBase)
     XCM_END_INTERFACE_MAP()
 
@@ -313,7 +312,6 @@ private:
     // -- frame event handlers --
     void onFrameEvent(FrameworkEvent& evt);
     void onActiveChildChanged(IDocumentSitePtr doc_site);
-    void onPropertyChanged(const wxString& prop_name);
     
     // -- statusbar event handlers --
     void onStatusBarItemLeftDblClick(IStatusBarItemPtr item);

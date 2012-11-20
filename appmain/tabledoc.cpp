@@ -551,77 +551,6 @@ bool TableDoc::initDoc(IFramePtr frame,
     g_app->getMainFrame()->getStatusBar()->sigItemLeftDblClick().connect(
                                 this, &TableDoc::onStatusBarItemLeftDblClick);
 
-    // properties
-    
-    initProperties(frame);
-    
-    defineProperty(wxT("tabledoc.fieldinfo.name"),
-                   proptypeString,
-                   propName(_("Field Info"), _("Name")));
-
-    wxArrayString type_strings;
-    type_strings.Add(_("Undefined"));
-    type_strings.Add(_("Invalid"));
-    type_strings.Add(_("Character"));
-    type_strings.Add(_("Wide Character"));
-    type_strings.Add(_("Binary"));
-    type_strings.Add(_("Numeric"));
-    type_strings.Add(_("Double"));
-    type_strings.Add(_("Integer"));
-    type_strings.Add(_("Date"));
-    type_strings.Add(_("DateTime"));
-    type_strings.Add(_("Boolean"));
-    
-    wxArrayInt type_ints;
-    type_ints.Add(tango::typeUndefined);
-    type_ints.Add(tango::typeInvalid);
-    type_ints.Add(tango::typeCharacter);
-    type_ints.Add(tango::typeWideCharacter);
-    type_ints.Add(tango::typeBinary);
-    type_ints.Add(tango::typeNumeric);
-    type_ints.Add(tango::typeDouble);
-    type_ints.Add(tango::typeInteger);
-    type_ints.Add(tango::typeDate);
-    type_ints.Add(tango::typeDateTime);
-    type_ints.Add(tango::typeBoolean);
-        
-    defineProperty(wxT("tabledoc.fieldinfo.type"),
-                   proptypeInteger,
-                   propName(_("Field Info"), _("Type")),
-                   &type_strings,
-                   &type_ints);
-
-    defineProperty(wxT("tabledoc.fieldinfo.width"),
-                   proptypeInteger,
-                   propName(_("Field Info"), _("Width")));
-                   
-    defineProperty(wxT("tabledoc.fieldinfo.scale"),
-                   proptypeInteger,
-                   propName(_("Field Info"), _("Decimal Places")));
-                   
-    defineProperty(wxT("tabledoc.column_fgcolor"),
-                   proptypeColor,
-                   propName(_("Column Foreground")));
-
-    defineProperty(wxT("tabledoc.column_bgcolor"),
-                   proptypeColor,
-                   propName(_("Column Background")));
-                   
-    defineProperty(wxT("tabledoc.column_pixwidth"),
-                   proptypeInteger,
-                   propName(_("Column Width (pixels)")));
-
-    wxArrayString alignment_strings;
-    alignment_strings.Add(_("Default"));
-    alignment_strings.Add(_("Left"));
-    alignment_strings.Add(_("Center"));
-    alignment_strings.Add(_("Right"));
-    
-    defineProperty(wxT("tabledoc.column_alignment"),
-                   proptypeInteger,
-                   propName(_("Column Alignment")),
-                   &alignment_strings);
-
     // create the statusbar items for this document
     IStatusBarItemPtr item;
     
@@ -1037,51 +966,6 @@ void TableDoc::onFrameEvent(FrameworkEvent& evt)
             default:
                 // something went wrong, do nothing
                 return;
-        }
-    }
-}
-
-void TableDoc::onPropertyChanged(const wxString& prop_name)
-{
-    PropertyValue data;
-    if (!getProperty(prop_name, data))
-        return;
-
-    wxColor data_color = data.m_color;
-    
-    if (prop_name == wxT("tabledoc.column_fgcolor"))
-    {
-        setColumnProps(NULL, &data_color);
-    }
-     else if (prop_name == wxT("tabledoc.column_bgcolor"))
-    {
-        setColumnProps(&data_color);
-    }
-     else if (prop_name == wxT("tabledoc.column_pixwidth"))
-    {
-        int col = m_grid->getCursorColumn();
-        if (col >= 0 || col < m_grid->getColumnCount())
-        {
-            m_grid->setColumnSize(col, data.m_int);
-            m_grid->refresh(kcl::Grid::refreshAll);
-        }
-    }
-     else if (prop_name == wxT("tabledoc.column_alignment"))
-    {
-        switch (data.m_int)
-        {
-            case 0:
-                setColumnProps(NULL, NULL, kcl::Grid::alignDefault);
-                break;
-            case 1:
-                setColumnProps(NULL, NULL, kcl::Grid::alignLeft);
-                break;
-            case 2:
-                setColumnProps(NULL, NULL, kcl::Grid::alignCenter);
-                break;
-            case 3:
-                setColumnProps(NULL, NULL, kcl::Grid::alignRight);
-                break;
         }
     }
 }
