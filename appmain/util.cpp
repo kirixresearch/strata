@@ -311,27 +311,6 @@ public:
     }
 };
 
-int color2int(const wxColor& color)
-{
-    if (color.Ok())
-    {
-        return (color.Red() << 16) | (color.Green() << 8) | color.Blue();
-    }
-    
-    return -1;
-}
-
-
-wxColor int2color(int int_color)
-{
-    if (int_color == -1)
-    {
-        return wxNullColour;
-    }
-
-    return wxColor(int_color >> 16, (int_color >> 8) & 0xff, int_color & 0xff);
-}
-
 
 void setFocusDeferred(wxWindow* focus)
 {

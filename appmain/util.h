@@ -19,8 +19,7 @@
 
 
 
-// platform definitions
-
+// -- platform definitions ----------------------------------------------------
 
 #ifdef WIN32
 #define PATH_SEPARATOR_CHAR    wxT('\\')
@@ -32,7 +31,7 @@
 
 
 
-// string conversion functions
+// -- conversion functions ----------------------------------------------------
 
 inline wxString towx(const char* s)
 {
@@ -106,13 +105,10 @@ inline wxString towx(wchar_t c)
     return s;
 }
 
-
 inline const wxChar* wxcstr(const wxString& s)
 {
     return (const wxChar*)s.c_str();
 }
-
-
 
 inline std::wstring towstr(const wxString& s)
 {
@@ -158,74 +154,58 @@ inline std::string tostr(const std::wstring& s)
     return ret;
 }
 
+inline int color2int(const wxColor& color)
+{
+    if (color.Ok())
+        return (color.Red() << 16) | (color.Green() << 8) | color.Blue();
+
+    return -1;
+}
+
+inline wxColor int2color(int int_color)
+{
+    if (int_color == -1)
+        return wxNullColour;
+
+    return wxColor(int_color >> 16, (int_color >> 8) & 0xff, int_color & 0xff);
+}
 
 
 
-// checks an output path for g_app->getDatabase().  It will
-// pop up an error message if something is wrong.
+// -- string helper functions -------------------------------------------------
 
-bool doOutputPathCheck(const wxString& output_path, wxWindow* parent = NULL);
+wxString dbl2fstr(double d, int dec_places = 0);
 
-// displays a generic 'invalid' message box
+wxString doubleQuote(const wxString& src, wxChar quote = L'\'');
+wxString makeProper(const wxString& input);
+wxString makeProperIfNecessary(const wxString& input);
 
-void appInvalidObjectMessageBox(const wxString& name = wxEmptyString,
-                                wxWindow* parent = NULL);
+bool isUnicodeString(const std::wstring& val);
 
-void appInvalidFieldMessageBox(const wxString& name = wxEmptyString,
-                               wxWindow* parent = NULL);
+wxString filenameToUrl(const wxString& _filename);
+wxString urlToFilename(const wxString& _url);
 
-// creates a standard-looking banner control for all modules
+void trimUnwantedUrlChars(wxString& str);
 
-kcl::BannerControl* createModuleBanner(wxWindow* parent, const wxString& title);
+wxString jsEscapeString(const wxString& input, wxChar quote);
+wxString urlEscape(const wxString& input);
+wxString multipartEncode(const wxString& input);
 
-// creates a standard label-spacer-text control sizer 
+wxString removeChar(const wxString& s, wxChar c);
+wxChar* zl_strchr(wxChar* str, wxChar ch);
 
-wxBoxSizer* createLabelTextControlSizer(wxWindow* parent,
-                                        const wxString& label,
-                                        wxTextCtrl** textctrl,
-                                        wxWindowID textctrl_id,
-                                        const wxString& textctrl_text,
-                                        int spacer = 0);
+wxString makeUniqueString();
 
-void makeSizerLabelsSameSize(wxBoxSizer* sizer1,
-                             wxBoxSizer* sizer2,
-                             wxBoxSizer* sizer3 = NULL,
-                             wxBoxSizer* sizer4 = NULL,
-                             wxBoxSizer* sizer5 = NULL,
-                             wxBoxSizer* sizer6 = NULL,
-                             wxBoxSizer* sizer7 = NULL);
+void int2buf(unsigned char* buf, unsigned int i);
+int buf2int(const unsigned char* buf);
+
+wxString vectorToString(const std::vector<wxString>& list);
+std::vector<wxString> stringToVector(const wxString& string);
+std::vector< std::pair<wxString, bool> > sortExprToVector(const wxString& sort_expr);
 
 
 
-int color2int(const wxColor& color);     // convert wxColor to int
-wxColor int2color(int int_color);        // convert int to wxColor
-void setFocusDeferred(wxWindow* focus);
-void autoSizeListHeader(wxListCtrl* ctrl);
-bool windowOrChildHasFocus(wxWindow* wnd);
-
-int getTaskBarHeight();  // get OS's taskbar height
-
-
-// utilities which looking and/or activate a specified documentsite
-
-IDocumentSitePtr lookupOtherDocumentSite(
-                           IDocumentSitePtr site,
-                           const std::string& doc_class_name);
-
-IDocumentPtr lookupOtherDocument(
-                           IDocumentSitePtr site,
-                           const std::string& doc_class_name);
-
-void switchToOtherDocument(IDocumentSitePtr site,
-                           const std::string& doc_class_name);
-
-wxWindow* getDocumentSiteWindow(IDocumentSitePtr site);
-
-
-
-
-// -- database helper classes and functions ----------------------------------
-
+// -- database helper functions -----------------------------------------------
 
 // checks if a string is a keyword
 bool isKeyword(const wxString& str,
@@ -243,8 +223,7 @@ bool isValidObjectName(
                tango::IDatabasePtr db = xcm::null,
                int* err_idx = NULL);
 
-// checks is a path name is valid
-// (same as isObjectNameValid() + slashes)
+// checks is a path name is valid (same as isObjectNameValid() + slashes)
 bool isValidObjectPath(
                const wxString& str,
                tango::IDatabasePtr db = xcm::null,
@@ -265,7 +244,6 @@ wxString getTypeText(int tango_type);
 
 // for mounted folders or singleton mounts, these functions get
 // the actual object path or actual filename, respectively
-
 wxString getObjectPathFromMountPath(const wxString& database_path);
 wxString getPhysPathFromMountPath(const wxString& database_path);
 std::wstring getMountRoot(tango::IDatabasePtr db, const std::wstring path);
@@ -282,11 +260,9 @@ wxString determineMimeType(const wxString& path);
 
 // utility for adding a filesystem extension to a path if the path is a
 // mounted filesystem database and the path doesn't specify an extension
-
 wxString addExtensionIfExternalFsDatabase(const wxString& path, const wxString& ext);
 
 // stream text file loading and saving routines
-
 bool readStreamTextFile(tango::IDatabasePtr db,
                         const std::wstring& path,
                         std::wstring& result_text);
@@ -297,53 +273,114 @@ bool writeStreamTextFile(tango::IDatabasePtr db,
                         const std::wstring& mime_type = L"text/plain");
 
 // function to handle (sub)folder creation gracefully
-
 bool tryCreateFolderStructure(const wxString& folder_path);
 bool createFolderStructure(const wxString& folder_path,
                            bool delete_on_success = false);
 
 tango::IIndexInfoPtr lookupIndex(tango::IIndexInfoEnumPtr indexes, const std::wstring& fields, bool order_matters);
 
-
-// string helper functions
-
-bool isUnicodeString(const std::wstring& val);
-
-wxString filenameToUrl(const wxString& _filename);
-wxString urlToFilename(const wxString& _url);
-
-void trimUnwantedUrlChars(wxString& str);
-
-wxString jsEscapeString(const wxString& input, wxChar quote);
-wxString urlEscape(const wxString& input);
-wxString multipartEncode(const wxString& input);
-
-wxString removeChar(const wxString& s, wxChar c);
-wxChar* zl_strchr(wxChar* str, wxChar ch);
-
-wxString makeUniqueString();
-
-// helper functions to convert vectors of wxStrings
-// into comma-delimited lists, and vice versa
-
-wxString vectorToString(const std::vector<wxString>& list);
-std::vector<wxString> stringToVector(const wxString& string);
-std::vector< std::pair<wxString, bool> > sortExprToVector(const wxString& sort_expr);
-
 wxString getWebFile(const wxString& urlstring);      // get small web files, returning them as strings
 double getProjectSize(const wxString& project_path); // returns the approximate size of a project
 wxString getDefaultProjectsPath();                   // returns the default location where projects are created
 
-
-
-void int2buf(unsigned char* buf, unsigned int i);
-int buf2int(const unsigned char* buf);
-
-
+// checks an output path for g_app->getDatabase().  It will
+// pop up an error message if something is wrong.
+bool doOutputPathCheck(const wxString& output_path, wxWindow* parent = NULL);
 
 
 
-//  utility classes
+// -- message box helpers -----------------------------------------------------
+
+void appInvalidObjectMessageBox(const wxString& name = wxEmptyString,
+                                wxWindow* parent = NULL);
+
+void appInvalidFieldMessageBox(const wxString& name = wxEmptyString,
+                               wxWindow* parent = NULL);
+
+int appMessageBox(const wxString& message,
+                  const wxString& caption = wxT("Message"),
+                  int style = wxOK | wxCENTRE,
+                  wxWindow *parent = NULL,
+                  int x = -1, int y = -1);
+
+void deferredAppMessageBox(const wxString& message,
+                           const wxString& caption = wxT("Message"),
+                           int style = wxOK | wxCENTRE,
+                           wxWindow *parent = NULL,
+                           int x = -1, int y = -1);
+
+
+
+// -- utilities which look for and/or activate a specified document site ------
+
+IDocumentSitePtr lookupOtherDocumentSite(
+                           IDocumentSitePtr site,
+                           const std::string& doc_class_name);
+
+IDocumentPtr lookupOtherDocument(
+                           IDocumentSitePtr site,
+                           const std::string& doc_class_name);
+
+void switchToOtherDocument(IDocumentSitePtr site,
+                           const std::string& doc_class_name);
+
+wxWindow* getDocumentSiteWindow(IDocumentSitePtr site);
+
+
+
+// -- other utility functions -------------------------------------------------
+
+
+// creates a standard-looking banner control for all modules
+kcl::BannerControl* createModuleBanner(wxWindow* parent, const wxString& title);
+
+// creates a standard label-spacer-text control sizer 
+wxBoxSizer* createLabelTextControlSizer(wxWindow* parent,
+                                        const wxString& label,
+                                        wxTextCtrl** textctrl,
+                                        wxWindowID textctrl_id,
+                                        const wxString& textctrl_text,
+                                        int spacer = 0);
+
+void makeSizerLabelsSameSize(wxBoxSizer* sizer1,
+                             wxBoxSizer* sizer2,
+                             wxBoxSizer* sizer3 = NULL,
+                             wxBoxSizer* sizer4 = NULL,
+                             wxBoxSizer* sizer5 = NULL,
+                             wxBoxSizer* sizer6 = NULL,
+                             wxBoxSizer* sizer7 = NULL);
+
+void setFocusDeferred(wxWindow* focus);
+void autoSizeListHeader(wxListCtrl* ctrl);
+bool windowOrChildHasFocus(wxWindow* wnd);
+
+int getTaskBarHeight();  // get OS's taskbar height
+
+wxFont getDefaultWindowFont();
+wxString getUserDocumentFolder();
+
+void limitFontSize(wxWindow* wnd, int size = 12);
+void makeTextCtrlLowerCase(wxTextCtrl* text);
+void makeTextCtrlUpperCase(wxTextCtrl* text);
+void makeFontBold(wxWindow* window);
+void setTextWrap(wxStaticText* text, bool wrap);
+void resizeStaticText(wxStaticText* text, int width = -1);
+wxSize getMaxTextSize(wxStaticText* st0,
+                      wxStaticText* st1,
+                      wxStaticText* st2 = NULL,
+                      wxStaticText* st3 = NULL,
+                      wxStaticText* st4 = NULL,
+                      wxStaticText* st5 = NULL,
+                      wxStaticText* st6 = NULL);
+wxString simpleEncryptString(const wxString& s);
+wxString simpleDecryptString(const wxString& s);
+
+void suppressConsoleLogging();
+wxString getProxyServer();
+
+
+
+// -- utility classes ---------------------------------------------------------
 
 class wxDoubleClickGauge : public wxGauge
 {
@@ -390,8 +427,6 @@ private:
 };
 
 
-
-
 class JobGaugeUpdateTimer : public wxTimer,
                             public xcm::signal_sink
 {
@@ -431,13 +466,8 @@ private:
 };
 
 
-
-
-
-
 // AppBusyCursor implements wxBusyCursor, but only when APP_GUI==1;
 // i.e. if the console mode is active, this does nothing
-
 class AppBusyCursor
 {
 public:
@@ -450,11 +480,9 @@ private:
 };
 
 
-
 // this class shows a busy cursor if the code is running in the
 // main thread.  If it's running in a thread which isn't the main 
 // thread, no action is performed
-
 class AppBusyCursorIfMainThread
 {
 public:
@@ -481,12 +509,6 @@ private:
     wxBusyCursor* m_bc;
 #endif
 };
-
-
-
-
-
-
 
 
 class CommandCapture : public wxEvtHandler
@@ -540,7 +562,6 @@ public:
 };
 
 
-
 class wxBitmapMenu : public wxMenu
 {
 
@@ -586,7 +607,6 @@ public:
         wxMenu::Append(m);
     }
 };
-
 
 
 class Locale
@@ -640,48 +660,5 @@ public:
 };
 
 
-
-// other utility functions
-
-wxFont getDefaultWindowFont();
-wxString getUserDocumentFolder();
-wxString dbl2fstr(double d, int dec_places = 0);
-wxString doubleQuote(const wxString& src, wxChar quote = L'\'');
-wxString makeProper(const wxString& input);
-wxString makeProperIfNecessary(const wxString& input);
-
-int appMessageBox(const wxString& message,
-                  const wxString& caption = wxT("Message"),
-                  int style = wxOK | wxCENTRE,
-                  wxWindow *parent = NULL,
-                  int x = -1, int y = -1);
-
-void deferredAppMessageBox(const wxString& message,
-                           const wxString& caption = wxT("Message"),
-                           int style = wxOK | wxCENTRE,
-                           wxWindow *parent = NULL,
-                           int x = -1, int y = -1);
-
-void limitFontSize(wxWindow* wnd, int size = 12);
-void makeTextCtrlLowerCase(wxTextCtrl* text);
-void makeTextCtrlUpperCase(wxTextCtrl* text);
-void makeFontBold(wxWindow* window);
-void setTextWrap(wxStaticText* text, bool wrap);
-void resizeStaticText(wxStaticText* text, int width = -1);
-wxSize getMaxTextSize(wxStaticText* st0,
-                      wxStaticText* st1,
-                      wxStaticText* st2 = NULL,
-                      wxStaticText* st3 = NULL,
-                      wxStaticText* st4 = NULL,
-                      wxStaticText* st5 = NULL,
-                      wxStaticText* st6 = NULL);
-wxString simpleEncryptString(const wxString& s);
-wxString simpleDecryptString(const wxString& s);
-
-void suppressConsoleLogging();
-wxString getProxyServer();
-
-
-
-#endif
+#endif // __APP_UTIL_H
 
