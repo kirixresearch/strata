@@ -61,11 +61,11 @@ wxBoxSizer* createLabelTextControlSizer(wxWindow* parent,
 
 void makeSizerLabelsSameSize(wxBoxSizer* sizer1,
                              wxBoxSizer* sizer2,
-                             wxBoxSizer* sizer3,
-                             wxBoxSizer* sizer4,
-                             wxBoxSizer* sizer5,
-                             wxBoxSizer* sizer6,
-                             wxBoxSizer* sizer7)
+                             wxBoxSizer* sizer3 = NULL,
+                             wxBoxSizer* sizer4 = NULL,
+                             wxBoxSizer* sizer5 = NULL,
+                             wxBoxSizer* sizer6 = NULL,
+                             wxBoxSizer* sizer7 = NULL)
 {
     size_t item0 = 0;
     wxSizerItem* item;
