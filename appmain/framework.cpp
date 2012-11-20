@@ -50,6 +50,12 @@
 
 
 
+IFramePtr createFrameObject()
+{
+    return static_cast<IFrame*>(new MainFrame);
+}
+
+
 
 wxWindow* g_invisible = NULL;
 

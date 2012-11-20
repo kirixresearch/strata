@@ -689,7 +689,7 @@ bool AppController::init()
     m_colorpanel_helper = NULL;
 
     // create the main frame
-    m_frame.create_instance("cfw.MainFrame");
+    m_frame = createFrameObject();
     if (m_frame.isNull())
         return false;
     
@@ -2332,7 +2332,7 @@ public:
             {
                 //IJobInfoPtr ptr;
                 
-                //ptr.create_instance("cfw.JobInfo");
+                //ptr = createJobInfoObject();
                 
                 //ptr.clear();
                 

@@ -79,7 +79,7 @@ public:
         m_cancelled = false;
         m_failed = false;
         
-        m_job_info.create_instance("cfw.JobInfo");
+        m_job_info = createJobInfoObject();
         m_job_info->setTitle(wxT("Print"));
         m_job_info->setInfoMask(jobMaskTitle |
                             jobMaskStartTime |

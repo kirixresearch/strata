@@ -2002,12 +2002,7 @@ void TableDoc::onReload(wxCommandEvent& evt)
         transdoc.clear();
 
 
-        IJobInfoPtr job_info;
-        job_info.create_instance("cfw.JobInfo");
-        if (job_info.isNull())
-            return;
-            
-
+        IJobInfoPtr job_info = createJobInfoObject();
         job_info->sigStateChanged().connect(this, &TableDoc::onReloadDownloadFinished);
         
         
@@ -2016,8 +2011,7 @@ void TableDoc::onReload(wxCommandEvent& evt)
     }
      else if (m_source_mimetype == wxT("application/rss+xml"))
     {
-        IJobInfoPtr job_info;
-        job_info.create_instance("cfw.JobInfo");
+        IJobInfoPtr job_info = createJobInfoObject();
         if (job_info.isNull())
             return;
         job_info->sigStateChanged().connect(this, &TableDoc::onReloadDownloadFinished);

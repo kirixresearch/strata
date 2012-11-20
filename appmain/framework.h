@@ -490,6 +490,9 @@ public:
 
 
 
+IFramePtr createFrameObject();
+
+
 
 #endif
 

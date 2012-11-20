@@ -66,4 +66,8 @@ public:
 XCM_DECLARE_SMARTPTR(IAppPreferences)
 
 
+IAppPreferencesPtr createAppPreferencesObject();
+IAppPreferencesPtr createMemoryAppPreferencesObject();
+
+
 #endif

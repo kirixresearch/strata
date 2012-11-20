@@ -1360,7 +1360,7 @@ bool DbDoc::initAsWindow(wxWindow* window,
     }
 
     // create the FsPanel
-    m_fspanel.create_instance("cfw.FsPanel");
+    m_fspanel = createFsPanelObject();
     
     if (m_fspanel.isNull())
     {
@@ -1407,7 +1407,7 @@ bool DbDoc::initAsDocument(IFsItemPtr item)
     
     
     // create the FsPanel
-    m_fspanel.create_instance("cfw.FsPanel");
+    m_fspanel = createFsPanelObject();
     
     if (m_fspanel.isNull())
     {

@@ -18,6 +18,11 @@
 #include "util.h"
 
 
+IJobInfoPtr createJobInfoObject()
+{
+    return static_cast<IJobInfo*>(new JobInfo);
+}
+
 
 JobInfo::JobInfo()
 {

@@ -34,6 +34,12 @@
 const int LOCATION_BAR_HEIGHT = 25;
 
 
+IFsPanelPtr createFsPanelObject()
+{
+    return static_cast<IFsPanel*>(new FsPanel);
+}
+
+
 
 
 /* XPM */
@@ -1134,7 +1140,7 @@ void FsPanel::onUpLevelClicked(wxCommandEvent& evt)
 }
 
 
-void FsPanel::onChangeViewClicked(wxCommandEvent& event)
+void FsPanel::onChangeViewClicked(wxCommandEvent& evt)
 {
     wxMenu menuPopup;
     menuPopup.Append(ID_ChangeView_LargeIcon, _("Large Icons"));
@@ -1147,9 +1153,9 @@ void FsPanel::onChangeViewClicked(wxCommandEvent& event)
     PopupMenu(&menuPopup, pt_mouse);
 }
 
-void FsPanel::onChangeView(wxCommandEvent& event)
+void FsPanel::onChangeView(wxCommandEvent& evt)
 {
-    switch (event.GetId())
+    switch (evt.GetId())
     {
         case ID_ChangeView_LargeIcon:   setView(fsviewLargeIcon);   break;
         case ID_ChangeView_SmallIcon:   setView(fsviewSmallIcon);   break;
@@ -1374,7 +1380,7 @@ void FsPanel::onFsTreeItemEndLabelEdit(wxTreeEvent& evt)
 }
 
 
-void FsPanel::onFsTreeBeginDrag(wxTreeEvent& event)
+void FsPanel::onFsTreeBeginDrag(wxTreeEvent& evt)
 {
     // if drag&drop is disabled, don't do anything
     if (!isDragDropEnabled())
@@ -1516,31 +1522,31 @@ void FsPanel::onFsListItemBeginLabelEdit(wxListEvent& evt)
 }
 
 
-void FsPanel::onFsListItemEndLabelEdit(wxListEvent& event)
+void FsPanel::onFsListItemEndLabelEdit(wxListEvent& evt)
 {
-    FsItemData* data = (FsItemData*)m_listview->GetItemData(event.GetIndex());
+    FsItemData* data = (FsItemData*)m_listview->GetItemData(evt.GetIndex());
     IFsItemPtr edit_item = data->m_fsitem;
 
     bool allow = true;
     sigItemEndLabelEdit().fire(data->m_fsitem,
-                               event.GetLabel(),
-                               event.IsEditCancelled(),
+                               evt.GetLabel(),
+                               evt.IsEditCancelled(),
                                &allow);
 
     if (!allow)
     {
-        event.Veto();
+        evt.Veto();
         return;
     }
 
     if (edit_item)
     {
-        edit_item->onRenamed(event.GetLabel());
+        edit_item->onRenamed(evt.GetLabel());
     }
 }
 
 
-void FsPanel::onFsListBeginDrag(wxListEvent& event)
+void FsPanel::onFsListBeginDrag(wxListEvent& evt)
 {
     FsDataObject data;
     data.setFsItems(getSelectedItems());
@@ -1549,10 +1555,10 @@ void FsPanel::onFsListBeginDrag(wxListEvent& event)
 }
 
 
-void FsPanel::onFsListKeyDown(wxListEvent& event)
+void FsPanel::onFsListKeyDown(wxListEvent& evt)
 {
     wxKeyEvent e;
-    e.m_keyCode = event.GetKeyCode();
+    e.m_keyCode = evt.GetKeyCode();
 
     sigKeyDown().fire(e);
 }

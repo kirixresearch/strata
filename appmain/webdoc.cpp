@@ -64,7 +64,7 @@ public:
         }
          else
         {
-            m_job_info.create_instance("cfw.JobInfo");
+            m_job_info = createJobInfoObject();
         }
         
         m_job_info->setTitle(wxT("Download"));
@@ -507,7 +507,7 @@ public:
         m_site_id = -1;
         m_cancelled = false;
         
-        m_job_info.create_instance("cfw.JobInfo");
+        m_job_info = createJobInfoObject();
         m_job_info->setTitle(wxT("Download"));
         m_job_info->setInfoMask(jobMaskTitle |
                             jobMaskStartTime |
@@ -3246,8 +3246,7 @@ void WebDoc::onShowContextMenu(wxWebEvent& evt)
                 
                 if (dlg.ShowModal() == wxID_OK)
                 {
-                    IJobInfoPtr job_info;
-                    job_info.create_instance("cfw.JobInfo");
+                    IJobInfoPtr job_info = createJobInfoObject();
                     downloadFile(evt.GetHref(), dlg.GetPath(), job_info);
                 }
             }

@@ -20,6 +20,15 @@
 #include "prefs.h"
 #include "prefs_private.h"
 
+IAppPreferencesPtr createAppPreferencesObject()
+{
+    return static_cast<IAppPreferences*>(new AppPreferences);
+}
+
+IAppPreferencesPtr createMemoryAppPreferencesObject()
+{
+    return static_cast<IAppPreferences*>(new MemoryAppPreferences);
+}
 
 
 AppPreferences::AppPreferences()

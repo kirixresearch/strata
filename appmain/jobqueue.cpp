@@ -95,6 +95,10 @@ public:
 };
 
 
+IJobQueuePtr createJobQueueObject()
+{
+    return static_cast<IJobQueue*>(new JobQueue);
+}
 
 
 BEGIN_EVENT_TABLE(JobQueue, wxEvtHandler)

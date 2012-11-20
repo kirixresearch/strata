@@ -486,10 +486,10 @@ bool MainApp::OnInit()
 
 
     // create an app preferences object for our defaults
-    m_app_default_preferences.create_instance("cfw.MemoryAppPreferences");
+    m_app_default_preferences = createMemoryAppPreferencesObject();
     if (!m_app_default_preferences)
     {
-        appMessageBox(wxT("Could not create a 'cfw.MemoryAppPreferences' object"));
+        appMessageBox(wxT("Could not create a MemoryAppPreferences object"));
         return false;
     }
 
@@ -500,10 +500,10 @@ bool MainApp::OnInit()
     
     
     // create an app preferences object
-    m_app_preferences.create_instance("cfw.AppPreferences");
+    m_app_preferences = createAppPreferencesObject();
     if (!m_app_preferences)
     {
-        appMessageBox(wxT("Could not create a 'cfw.AppPreferences' object"));
+        appMessageBox(wxT("Could not create an AppPreferences object"));
         return FALSE;
     }
 
@@ -511,8 +511,8 @@ bool MainApp::OnInit()
 
 
     // create job queues
-    m_job_queue.create_instance("cfw.JobQueue");
-    m_script_job_queue.create_instance("cfw.JobQueue");
+    m_job_queue = createJobQueueObject();
+    m_script_job_queue = createJobQueueObject();
     m_frame_wnd = NULL;
 
 
