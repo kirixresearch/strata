@@ -70,7 +70,6 @@
 #include "connectionmgr.h"
 #include "jobqueue.h"
 #include "framework.h"
-#include "frameworkprops.h"
 #include "prefs.h"
 #include "util.h"
 #include "fspanel.h"
