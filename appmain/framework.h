@@ -23,8 +23,6 @@ xcm_interface IUIContext;
 xcm_interface IFrame;
 xcm_interface IDocument;
 xcm_interface IDocumentSite;
-xcm_interface IPropertyInfo;
-xcm_interface IProperties;
 xcm_interface IStatusBarItem;
 xcm_interface IStatusBarProvider;
 xcm_interface IStatusBar;
@@ -33,13 +31,10 @@ XCM_DECLARE_SMARTPTR(IUIContext)
 XCM_DECLARE_SMARTPTR(IFrame)
 XCM_DECLARE_SMARTPTR(IDocument)
 XCM_DECLARE_SMARTPTR(IDocumentSite)
-XCM_DECLARE_SMARTPTR(IPropertyInfo)
-XCM_DECLARE_SMARTPTR(IProperties)
 XCM_DECLARE_SMARTPTR(IStatusBarItem)
 XCM_DECLARE_SMARTPTR(IStatusBarProvider)
 XCM_DECLARE_SMARTPTR(IStatusBar)
 XCM_DECLARE_SMARTPTR2(xcm::IVector<IDocumentSitePtr>, IDocumentSiteEnumPtr)
-XCM_DECLARE_SMARTPTR2(xcm::IVector<IPropertyInfoPtr>, IPropertyInfoEnumPtr)
 XCM_DECLARE_SMARTPTR2(xcm::IVector<IStatusBarItemPtr>, IStatusBarItemEnumPtr)
 
 const int FirstDocCommandId = 7000;
@@ -102,16 +97,6 @@ enum SiteState
 };
 
 
-enum PropType
-{
-    proptypeInvalid = 0,
-    proptypeInteger = 1,
-    proptypeBoolean = 2,
-    proptypeString = 3,
-    proptypeColor = 4
-};
-
-
 enum CloseType
 {
     closeForce = 1 << 0,    // force site to close without user intervention
@@ -120,117 +105,6 @@ enum CloseType
                             // the container.  If the closing site is the last
                             // site in the container, the container itself is
                             // also closed
-};
-
-
-xcm_interface IPropertyInfo : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("cfw.IPropertyInfo")
-
-public:
-
-    virtual void setName(const wxString& name) = 0;
-    virtual wxString getName() = 0;
-
-    virtual void setDisplayName(const wxArrayString& name) = 0;
-    virtual wxArrayString getDisplayName() = 0;
-
-    virtual void setType(int type) = 0;
-    virtual int getType() = 0;
-    
-    virtual void setChoiceInfo(const wxArrayString& choice_strings,
-                               const wxArrayInt& choice_ints) = 0;
-                               
-    virtual void getChoiceInfo(wxArrayString& choice_strings,
-                               wxArrayInt& choice_ints) = 0;
-};
-
-
-
-class PropertyValue : public wxObject
-{
-public:
-    
-    PropertyValue() : wxObject()
-    {
-        m_type = proptypeInvalid;
-        m_int = 0;
-        m_bool = false;
-    }
-    
-    PropertyValue(const PropertyValue& c) : wxObject(c)
-    {
-        m_type = c.m_type;
-        m_int = c.m_int;
-        m_bool = c.m_bool;
-        m_str = c.m_str;
-        m_color = c.m_color;
-    }
-    
-    PropertyValue& operator=(const PropertyValue& c)
-    {
-        m_type = c.m_type;
-        m_int = c.m_int;
-        m_bool = c.m_bool;
-        m_str = c.m_str;
-        m_color = c.m_color;
-        return *this;
-    }
-    
-    PropertyValue(const wxString& str) : wxObject()
-    {
-        m_type = proptypeString;
-        m_str = str;
-        m_int = 0;
-        m_bool = false;
-    }
-    
-    PropertyValue(const wxColour& color) : wxObject()
-    {
-        m_type = proptypeColor;
-        m_color = color;
-        m_int = 0;
-        m_bool = false;
-    }
-    
-    PropertyValue(int data) : wxObject()
-    {
-        m_type = proptypeInteger;
-        m_int = data;
-        m_bool = false;
-    }
-    
-    PropertyValue(bool data) : wxObject()
-    {
-        m_type = proptypeBoolean;
-        m_bool = data;
-        m_int = 0;
-    }
-        
-public:
-
-    wxString m_name;
-    int m_type;
-    wxString m_str;
-    wxColour m_color;
-    int m_int;
-    bool m_bool;
-};
-
-
-xcm_interface IProperties : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("cfw.IProperties")
-
-public:
-
-    virtual IPropertyInfoEnumPtr getPropertyEnum() = 0;
-
-    virtual bool setProperty(const wxString& prop_name,
-                             const PropertyValue& value) = 0;
-                             
-    virtual bool getProperty(const wxString& prop_name,
-                             PropertyValue& value) = 0;
 };
 
 
