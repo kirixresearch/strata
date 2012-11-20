@@ -741,7 +741,7 @@ bool TableDoc::onSiteClosing(bool force)
 
 
     // let the column props (dynamic) field panel know that we are closing
-    Event* e = new FrameworkEvent(wxT("tabledoc.onSiteClosing"), (long)(ITableDoc*)this);
+    FrameworkEvent* e = new FrameworkEvent(wxT("tabledoc.onSiteClosing"), (long)(ITableDoc*)this);
     m_frame->sendEvent(e);
 
 
@@ -819,7 +819,7 @@ void TableDoc::onStatusBarItemLeftDblClick(IStatusBarItemPtr item)
     }
 }
 
-void TableDoc::onFrameEvent(Event& evt)
+void TableDoc::onFrameEvent(FrameworkEvent& evt)
 {
     if (evt.name == wxT("tabledoc.doViewReload") &&
         evt.l_param != (unsigned long)this)
@@ -3080,8 +3080,8 @@ void TableDoc::insertColumnSeparator(int insert_pos)
     m_frame->postEvent(new FrameworkEvent(wxT("tabledoc.viewModified"), 0));
 
     // update other windows that are showing the same view
-    Event* e = new FrameworkEvent(wxT("tabledoc.doViewReload"),
-                                   (unsigned long)this);
+    FrameworkEvent* e = new FrameworkEvent(wxT("tabledoc.doViewReload"),
+                                           (unsigned long)this);
     e->l_param2 = (unsigned long)m_active_view.p;
     m_frame->postEvent(e);
 }
@@ -3134,8 +3134,8 @@ void TableDoc::insertColumnInternal(int insert_pos,
     m_frame->postEvent(new FrameworkEvent(wxT("tabledoc.viewModified"), 0));
 
     // update other windows that are showing the same view
-    Event* e = new FrameworkEvent(wxT("tabledoc.doViewReload"),
-                                  (unsigned long)this);
+    FrameworkEvent* e = new FrameworkEvent(wxT("tabledoc.doViewReload"),
+                                          (unsigned long)this);
     e->l_param2 = (unsigned long)m_active_view.p;
     m_frame->postEvent(e);
 }
@@ -3256,7 +3256,7 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
         insertColumn(insert_pos, column_name);
 
         // let other windows know that the structure was modified
-        Event* evt = new FrameworkEvent(wxT("tabledoc.structureModified"));
+        FrameworkEvent* evt = new FrameworkEvent(wxT("tabledoc.structureModified"));
         evt->s_param = m_dbpath;
         m_frame->postEvent(evt);
     }
@@ -3273,8 +3273,8 @@ void TableDoc::hideColumn(int idx)
     m_frame->postEvent(new FrameworkEvent(wxT("tabledoc.viewModified"), 0));
 
     // update other windows that are showing the same view
-    Event* e = new FrameworkEvent(wxT("tabledoc.doViewReload"),
-                                   (unsigned long)this);
+    FrameworkEvent* e = new FrameworkEvent(wxT("tabledoc.doViewReload"),
+                                           (unsigned long)this);
     e->l_param2 = (unsigned long)m_active_view.p;
     m_frame->postEvent(e);
 }
@@ -3491,7 +3491,7 @@ void TableDoc::onModifyStructJobFinished(IJobPtr job)
     m_frame->postEvent(new FrameworkEvent(wxT("tabledoc.viewModified"), 0));
 
     // update other windows that are showing the same view
-    Event* e = new FrameworkEvent(wxT("tabledoc.doViewReload"),
+    FrameworkEvent* e = new FrameworkEvent(wxT("tabledoc.doViewReload"),
                                    (unsigned long)this);
     e->l_param2 = (unsigned long)m_active_view.p;
     m_frame->postEvent(e);
@@ -3500,7 +3500,7 @@ void TableDoc::onModifyStructJobFinished(IJobPtr job)
     g_app->getAppController()->updateQuickFilterToolBarItem();
     
     // let other windows know that the structure was modified
-    Event* evt = new FrameworkEvent(wxT("tabledoc.structureModified"));
+    FrameworkEvent* evt = new FrameworkEvent(wxT("tabledoc.structureModified"));
     evt->s_param = m_dbpath;
     m_frame->postEvent(evt);
 }
@@ -4672,7 +4672,7 @@ void TableDoc::onGridColumnResize(kcl::GridEvent& evt)
 
     if (evt.GetUserEvent())
     {
-        Event* e = new FrameworkEvent(wxT("tabledoc.doViewReload"),
+        FrameworkEvent* e = new FrameworkEvent(wxT("tabledoc.doViewReload"),
                                        (unsigned long)this);
         e->l_param2 = (unsigned long)m_active_view.p;
         m_frame->postEvent(e);
@@ -4756,7 +4756,7 @@ void TableDoc::onGridRowSashDblClick(kcl::GridEvent& evt)
 
 void TableDoc::onGridColumnMove(kcl::GridEvent& evt)
 {
-    Event* e;
+    FrameworkEvent* e;
 
     m_active_view->moveColumn(evt.GetColumn(), evt.GetDestinationColumn());
 
@@ -5445,7 +5445,7 @@ void TableDoc::onCreateDynamicFieldCancelled(ColPropsPanel* panel)
         m_grid->refresh(kcl::Grid::refreshAll);
 
         // let other windows know that the structure was modified
-        Event* evt = new FrameworkEvent(wxT("tabledoc.structureModified"));
+        FrameworkEvent* evt = new FrameworkEvent(wxT("tabledoc.structureModified"));
         evt->s_param = m_dbpath;
         m_frame->postEvent(evt);
     }
@@ -6118,7 +6118,7 @@ void TableDoc::deleteSelectedColumns()
         }
 
         // let other windows know that the structure was modified
-        Event* evt = new FrameworkEvent(wxT("tabledoc.structureModified"));
+        FrameworkEvent* evt = new FrameworkEvent(wxT("tabledoc.structureModified"));
         evt->s_param = m_dbpath;
         m_frame->postEvent(evt);
     }
@@ -8195,7 +8195,7 @@ void TableDoc::onQuickFilter(wxCommandEvent& evt)
 
     // running a quick filter needs to add the value
     // to the find/filter combo control dropdown
-    Event* cfw_evt = new FrameworkEvent(wxT("appmain.addFindComboItem"));
+    FrameworkEvent* cfw_evt = new FrameworkEvent(wxT("appmain.addFindComboItem"));
     cfw_evt->s_param = val;
     g_app->getMainFrame()->postEvent(cfw_evt);
 }

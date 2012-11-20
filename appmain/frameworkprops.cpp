@@ -15,9 +15,6 @@
 #include "frameworkprops.h"
 
 
-namespace cfw
-{
-
 
 wxString propName(const wxString& level_1_name,
                   const wxString& level_2_name,
@@ -183,10 +180,5 @@ bool PropertyBase::getProperty(const wxString& prop_name, PropertyValue& value)
     return true;
 }
 
-
-
-
-
-};
 
 

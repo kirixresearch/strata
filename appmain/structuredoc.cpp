@@ -1587,7 +1587,7 @@ void StructureDoc::onModifyStructJobFinished(IJobPtr job)
     m_grid->refresh(kcl::Grid::refreshAll);
 }
 
-void StructureDoc::onFrameEvent(Event& evt)
+void StructureDoc::onFrameEvent(FrameworkEvent& evt)
 {
     // if a file is renamed, update this file with the new file path
     if (evt.name == wxT("treepanel.ofsFileRenamed"))

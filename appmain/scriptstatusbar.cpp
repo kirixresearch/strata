@@ -172,7 +172,7 @@ void zStatusBar::realize()
     int* widths = new int[size];
     
     int i = 0;
-    std::vector<StatusBarItem*>::iterator it;
+    std::vector<zStatusBarItem*>::iterator it;
     for (it = m_items.begin(); it != m_items.end(); ++it)
     {
         (*it)->m_owner = m_ctrl;
@@ -223,7 +223,7 @@ void zStatusBar::add(kscript::ExprEnv* env, kscript::Value* retval)
     {
         if (obj->getClassName() == L"StatusBarItem")
         {
-            StatusBarItem* item = (StatusBarItem*)obj;
+            zStatusBarItem* item = (zStatusBarItem*)obj;
             m_items.push_back(item);
         }
     }

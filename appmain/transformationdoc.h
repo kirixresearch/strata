@@ -218,7 +218,7 @@ private:
     void onDeletedRows(std::vector<int> rows);
 
     // -- frame event handlers --
-    void onFrameEvent(Event& evt);
+    void onFrameEvent(FrameworkEvent& evt);
 
     // event handlers
     void onSize(wxSizeEvent& evt);

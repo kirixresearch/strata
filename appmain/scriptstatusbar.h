@@ -15,7 +15,7 @@
 
 class zStatusBarItem : public FormComponent
 {
-friend class StatusBar;
+friend class zStatusBar;
 
     BEGIN_KSCRIPT_CLASS("StatusBarItem", zStatusBarItem)
         KSCRIPT_GUI_METHOD("constructor", zStatusBarItem::constructor)
@@ -66,7 +66,7 @@ public:
     
 private:
 
-    std::vector<StatusBarItem*> m_items;
+    std::vector<zStatusBarItem*> m_items;
     wxStatusBar* m_ctrl;
 };
 

@@ -10,7 +10,7 @@
 
 
 
-#include <wx/wx.h>
+#include "appmain.h"
 #include <wx/tokenzr.h>
 #include <wx/treectrl.h>
 #include <wx/config.h>

@@ -311,7 +311,7 @@ private:
     
 
     // -- frame event handlers --
-    void onFrameEvent(Event& evt);
+    void onFrameEvent(FrameworkEvent& evt);
     void onActiveChildChanged(IDocumentSitePtr doc_site);
     void onPropertyChanged(const wxString& prop_name);
     

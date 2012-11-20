@@ -9,7 +9,7 @@
  */
 
 
-#include <wx/wx.h>
+#include "appmain.h"
 #include "statusbar.h"
 #include "framework.h"
 #include "util.h"

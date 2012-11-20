@@ -2407,7 +2407,7 @@ bool WebDoc::findIsReplaceAllowed()
 
 
 
-void WebDoc::onFrameEvent(Event& evt)
+void WebDoc::onFrameEvent(FrameworkEvent& evt)
 {
     if (evt.name == wxT("appmain.view_switcher.query_available_views"))
     {
@@ -3447,7 +3447,7 @@ void WebDoc::onFavIconAvailable(wxWebEvent& evt)
     
     // fire a 'document bitmap updated' event
     
-    Event* cfw_evt = new FrameworkEvent(wxT("appmain.docBitmapUpdated"));
+    FrameworkEvent* cfw_evt = new FrameworkEvent(wxT("appmain.docBitmapUpdated"));
     cfw_evt->o_param = &bitmap;
     g_app->getMainFrame()->sendEvent(cfw_evt);
     

@@ -1491,7 +1491,7 @@ void TransformationDoc::onDeletedRows(std::vector<int> rows)
     updateStatusBar();
 }
 
-void TransformationDoc::onFrameEvent(Event& evt)
+void TransformationDoc::onFrameEvent(FrameworkEvent& evt)
 {
     if (evt.name == wxT("appmain.view_switcher.active_view_changing"))
     {

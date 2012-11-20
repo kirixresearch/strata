@@ -429,7 +429,7 @@ void SqlDoc::setText(const wxString& text)
     }
 }
 
-void SqlDoc::onFrameEvent(Event& evt)
+void SqlDoc::onFrameEvent(FrameworkEvent& evt)
 {
     // if a file is renamed, update this file with the new file path
     if (evt.name == wxT("treepanel.ofsFileRenamed"))

@@ -17,9 +17,6 @@
 #include "framework.h"
 
 
-namespace cfw
-{
-
 
 wxString propName(const wxString& level_1_name,
                   const wxString& level_2_name = wxEmptyString,
@@ -150,10 +147,6 @@ private:
     IFrame* m_frame;
 };
 
-
-
-
-};  // namespace cfw
 
 
 #endif
