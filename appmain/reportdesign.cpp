@@ -19,6 +19,8 @@
 #include "../kcanvas/componentpage.h"
 #include "../kcanvas/util.h"
 
+#include "kl/json.h"
+
 
 // sections
 const wxString PROP_REPORT_HEADER_LABEL         = wxT("Report Header");
@@ -44,7 +46,7 @@ const wxString ACTION_MOVESECTION   = wxT("grouptable.action.movesection");
 const wxString ACTION_EDITCONTENT   = wxT("grouptable.action.editcontent");
 
 
-static bool saveTablePropertiesToJson(kcanvas::ICompTablePtr table, JsonNode& node)
+static bool saveTablePropertiesToJson(kcanvas::ICompTablePtr table, kl::JsonNode& node)
 {
     if (table.isNull())
         return false;
@@ -55,7 +57,7 @@ static bool saveTablePropertiesToJson(kcanvas::ICompTablePtr table, JsonNode& no
     table->compact();
 
     node["properties"].setArray();
-    JsonNode properties = node["properties"];
+    kl::JsonNode properties = node["properties"];
 
     // save the cell properties
     std::vector<kcanvas::CellProperties> cell_properties;
@@ -67,23 +69,23 @@ static bool saveTablePropertiesToJson(kcanvas::ICompTablePtr table, JsonNode& no
     it_end = cell_properties.end();
     for (it = cell_properties.begin(); it != it_end; ++it)
     {
-        JsonNode prop = properties.appendElement();
+        kl::JsonNode prop = properties.appendElement();
 
 
         // add the range information
-        JsonNode range = prop["range"];
+        kl::JsonNode range = prop["range"];
         range.setArray();
         
-        JsonNode row1 = range.appendElement();
+        kl::JsonNode row1 = range.appendElement();
         row1.setInteger(it->range().row1());
 
-        JsonNode col1 = range.appendElement();
+        kl::JsonNode col1 = range.appendElement();
         col1.setInteger(it->range().col1());
 
-        JsonNode row2 = range.appendElement();
+        kl::JsonNode row2 = range.appendElement();
         row2.setInteger(it->range().row2());
 
-        JsonNode col2 = range.appendElement();
+        kl::JsonNode col2 = range.appendElement();
         col2.setInteger(it->range().col2());
 
 
@@ -106,14 +108,14 @@ static bool saveTablePropertiesToJson(kcanvas::ICompTablePtr table, JsonNode& no
             if (value_type == kcanvas::proptypeInvalid)
                 continue;
 
-            JsonNode value = prop[value_name];
+            kl::JsonNode value = prop[value_name];
 
 
             if (value_type == kcanvas::proptypeString)
-                value.setString(it_value->getString());
+                value.setString(towstr(it_value->getString()));
 
             if (value_type == kcanvas::proptypeColor)
-                value.setString(it_value->getColor().GetAsString());
+                value.setString(towstr(it_value->getColor().GetAsString()));
 
             if (value_type == kcanvas::proptypeInteger)
                 value.setInteger(it_value->getInteger());
@@ -133,28 +135,28 @@ static bool saveTablePropertiesToJson(kcanvas::ICompTablePtr table, JsonNode& no
     it_merge_end = merged_cells.end();
     for (it_merge = merged_cells.begin(); it_merge != it_merge_end; ++it_merge)
     {
-        JsonNode prop = properties.appendElement();
+        kl::JsonNode prop = properties.appendElement();
 
 
         // add the range information
-        JsonNode range = prop["range"];
+        kl::JsonNode range = prop["range"];
         range.setArray();
 
-        JsonNode row1 = range.appendElement();
+        kl::JsonNode row1 = range.appendElement();
         row1.setInteger(it_merge->row1());
 
-        JsonNode col1 = range.appendElement();
+        kl::JsonNode col1 = range.appendElement();
         col1.setInteger(it_merge->col1());
 
-        JsonNode row2 = range.appendElement();
+        kl::JsonNode row2 = range.appendElement();
         row2.setInteger(it_merge->row2());
 
-        JsonNode col2 = range.appendElement();
+        kl::JsonNode col2 = range.appendElement();
         col2.setInteger(it_merge->col2());
 
 
         // set the merged flag
-        JsonNode merged = prop["merged"];
+        kl::JsonNode merged = prop["merged"];
         merged.setBoolean(true);
     }
 
@@ -162,9 +164,9 @@ static bool saveTablePropertiesToJson(kcanvas::ICompTablePtr table, JsonNode& no
     return true;
 }
 
-static void loadCellProperties(kcanvas::ICompTablePtr table, kcanvas::CellRange range, JsonNode node)
+static void loadCellProperties(kcanvas::ICompTablePtr table, kcanvas::CellRange range, kl::JsonNode node)
 {
-    JsonNode value;
+    kl::JsonNode value;
     kcanvas::Properties properties;
     
     
@@ -201,55 +203,55 @@ static void loadCellProperties(kcanvas::ICompTablePtr table, kcanvas::CellRange 
     // set the string properties
     value = node[kcanvas::PROP_FONT_FACENAME];
     if (value.isOk())
-        properties.add(kcanvas::PROP_FONT_FACENAME, value.getString());
+        properties.add(kcanvas::PROP_FONT_FACENAME, towx(value.getString()));
 
     value = node[kcanvas::PROP_FONT_STYLE];
     if (value.isOk())
-        properties.add(kcanvas::PROP_FONT_STYLE, value.getString());
+        properties.add(kcanvas::PROP_FONT_STYLE, towx(value.getString()));
     
     value = node[kcanvas::PROP_FONT_WEIGHT];
     if (value.isOk())
-        properties.add(kcanvas::PROP_FONT_WEIGHT, value.getString());
+        properties.add(kcanvas::PROP_FONT_WEIGHT, towx(value.getString()));
     
     value = node[kcanvas::PROP_FONT_UNDERSCORE];
     if (value.isOk())
-        properties.add(kcanvas::PROP_FONT_UNDERSCORE, value.getString());            
+        properties.add(kcanvas::PROP_FONT_UNDERSCORE, towx(value.getString()));
 
     value = node[kcanvas::PROP_TEXT_HALIGN];
     if (value.isOk())
-        properties.add(kcanvas::PROP_TEXT_HALIGN, value.getString());
+        properties.add(kcanvas::PROP_TEXT_HALIGN, towx(value.getString()));
     
     value = node[kcanvas::PROP_TEXT_VALIGN];
     if (value.isOk())
-        properties.add(kcanvas::PROP_TEXT_VALIGN, value.getString());  
+        properties.add(kcanvas::PROP_TEXT_VALIGN, towx(value.getString()));
 
     value = node[kcanvas::PROP_CONTENT_VALUE];
     if (value.isOk())
-        properties.add(kcanvas::PROP_CONTENT_VALUE, value.getString());
+        properties.add(kcanvas::PROP_CONTENT_VALUE, towx(value.getString()));
     
     value = node[kcanvas::PROP_CONTENT_MIMETYPE];
     if (value.isOk())
-        properties.add(kcanvas::PROP_CONTENT_MIMETYPE, value.getString());  
+        properties.add(kcanvas::PROP_CONTENT_MIMETYPE, towx(value.getString()));
 
     value = node[kcanvas::PROP_CONTENT_ENCODING];
     if (value.isOk())
-        properties.add(kcanvas::PROP_CONTENT_ENCODING, value.getString());
+        properties.add(kcanvas::PROP_CONTENT_ENCODING, towx(value.getString()));
 
     value = node[kcanvas::PROP_BORDER_TOP_STYLE];
     if (value.isOk())
-        properties.add(kcanvas::PROP_BORDER_TOP_STYLE, value.getString());
+        properties.add(kcanvas::PROP_BORDER_TOP_STYLE, towx(value.getString()));
 
     value = node[kcanvas::PROP_BORDER_BOTTOM_STYLE];
     if (value.isOk())
-        properties.add(kcanvas::PROP_BORDER_BOTTOM_STYLE, value.getString());
+        properties.add(kcanvas::PROP_BORDER_BOTTOM_STYLE, towx(value.getString()));
         
     value = node[kcanvas::PROP_BORDER_LEFT_STYLE];
     if (value.isOk())
-        properties.add(kcanvas::PROP_BORDER_LEFT_STYLE, value.getString());
+        properties.add(kcanvas::PROP_BORDER_LEFT_STYLE, towx(value.getString()));
         
     value = node[kcanvas::PROP_BORDER_RIGHT_STYLE];
     if (value.isOk())
-        properties.add(kcanvas::PROP_BORDER_RIGHT_STYLE, value.getString());                        
+        properties.add(kcanvas::PROP_BORDER_RIGHT_STYLE, towx(value.getString()));
 
 
     // set the color properties
@@ -302,27 +304,27 @@ static void loadCellProperties(kcanvas::ICompTablePtr table, kcanvas::CellRange 
 
 
     // add the merged cells
-    JsonNode merged = node["merged"];
+    kl::JsonNode merged = node["merged"];
     if (merged.isOk())
         table->mergeCells(range);
 }
 
-static bool loadTablePropertiesFromJson(JsonNode& node, kcanvas::ICompTablePtr table)
+static bool loadTablePropertiesFromJson(kl::JsonNode& node, kcanvas::ICompTablePtr table)
 {
     if (table.isNull())
         return false;
 
-    JsonNode properties = node["properties"];
+    kl::JsonNode properties = node["properties"];
     if (properties.isOk())
     {
-        size_t prop_idx, prop_count = properties.getCount();
+        size_t prop_idx, prop_count = properties.getChildCount();
         for (prop_idx = 0; prop_idx < prop_count; ++prop_idx)
         {
             // get the range
-            JsonNode prop = properties[prop_idx];
+            kl::JsonNode prop = properties[prop_idx];
 
             // if a range isn't set, move on
-            JsonNode range = prop["range"];
+            kl::JsonNode range = prop["range"];
             if (range.isNull())
                 continue;
 
@@ -330,7 +332,7 @@ static bool loadTablePropertiesFromJson(JsonNode& node, kcanvas::ICompTablePtr t
             // either 2 or 4 parameters specified (row, col),
             // or (row1, col1, row2, col2), which can be used
             // to represent either a cell or a range of cells
-            size_t range_count = range.getCount();
+            size_t range_count = range.getChildCount();
             if (range_count != 2 && range_count != 4)
                 continue;
 
@@ -3406,20 +3408,20 @@ void CompReportDesign::resetAction()
 
 bool CompReportDesign::saveJson(const wxString& path)
 {
-    JsonNode root;
+    kl::JsonNode root;
 
 
     // report info
-    JsonNode metadata = root["metadata"];
+    kl::JsonNode metadata = root["metadata"];
     metadata["type"] = wxT("application/vnd.kx.report");
     metadata["version"] = 1;
     metadata["description"] = wxT("");
     
     
     // data source info
-    JsonNode input = root["input"];
-    input["table"].setString(getDataSource());
-    input["filter"].setString(getDataFilter()); // TODO: save filter like this?
+    kl::JsonNode input = root["input"];
+    input["table"].setString(towstr(getDataSource()));
+    input["filter"].setString(towstr(getDataFilter())); // TODO: save filter like this?
 
 
     // page info    
@@ -3428,7 +3430,7 @@ bool CompReportDesign::saveJson(const wxString& path)
     getPageSize(&pagewidth, &pageheight);
     getPageMargins(&leftmargin, &rightmargin, &topmargin, &bottommargin);
 
-    JsonNode page = root["page"];
+    kl::JsonNode page = root["page"];
     page["width"].setInteger(pagewidth);
     page["height"].setInteger(pageheight);
     page["leftmargin"].setInteger(leftmargin);
@@ -3439,7 +3441,7 @@ bool CompReportDesign::saveJson(const wxString& path)
 
     // section info
     root["sections"].setArray();
-    JsonNode sections = root["sections"];        
+    kl::JsonNode sections = root["sections"];        
 
     std::vector<SectionInfo>::const_iterator it, it_end;
     it_end = m_sections.end();
@@ -3451,12 +3453,12 @@ bool CompReportDesign::saveJson(const wxString& path)
         if (!it->m_active && it->m_group_field.Length() == 0)
             continue;
 
-        JsonNode section = sections.appendElement();
+        kl::JsonNode section = sections.appendElement();
 
         // type of group and whether or not it's visible
-        section["type"] = it->m_type;
-        section["name"] = it->m_name;
-        section["group_field"] = it->m_group_field;
+        section["type"] = towstr(it->m_type);
+        section["name"] = towstr(it->m_name);
+        section["group_field"] = towstr(it->m_group_field);
         section["page_break"] = it->m_page_break;
         section["sort_desc"] = it->m_sort_desc;
         section["active"] = it->m_active;
@@ -3474,7 +3476,7 @@ bool CompReportDesign::saveJson(const wxString& path)
 bool CompReportDesign::loadJson(const wxString& path)
 {
     // try to load the JSON string
-    JsonNode root = JsonConfig::loadFromDb(g_app->getDatabase(), path);
+    kl::JsonNode root = JsonConfig::loadFromDb(g_app->getDatabase(), path);
     if (!root.isOk())
         return false;
 
@@ -3487,7 +3489,7 @@ bool CompReportDesign::loadJson(const wxString& path)
 
 
     // data source info
-    JsonNode input = root["input"];
+    kl::JsonNode input = root["input"];
     wxString datasource = input["table"].getString();
     wxString datafilter = input["filter"].getString();
     setDataSource(datasource);
@@ -3495,7 +3497,7 @@ bool CompReportDesign::loadJson(const wxString& path)
 
 
     // page info    
-    JsonNode page = root["page"];
+    kl::JsonNode page = root["page"];
     if (page.isOk())
     {
         int pagewidth = page["width"].getInteger();
@@ -3509,22 +3511,22 @@ bool CompReportDesign::loadJson(const wxString& path)
     }
 
     // section info
-    JsonNode sections = root["sections"];
+    kl::JsonNode sections = root["sections"];
     if (sections.isOk())
     {
         std::vector<SectionInfo> section_info;
     
-        size_t i, count = sections.getCount();
+        size_t i, count = sections.getChildCount();
         for (i =  0; i < count; ++i)
         {
             // get the section
-            JsonNode section = sections[i];
+            kl::JsonNode section = sections[i];
 
             // create the section info
             SectionInfo info;
-            info.m_type = section["type"];
-            info.m_name = section["name"];
-            info.m_group_field = section["group_field"];
+            info.m_type = section["type"].getString();
+            info.m_name = section["name"].getString();
+            info.m_group_field = section["group_field"].getString();
             info.m_page_break = section["page_break"].getBoolean();
             info.m_sort_desc = section["sort_desc"].getBoolean();
             info.m_active = section["active"].getBoolean();

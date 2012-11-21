@@ -34,6 +34,8 @@
 #include "jsonconfig.h"
 #include <kl/url.h>
 #include <kl/thread.h>
+#include <kl/json.h>
+#include <../kscript/json.h>
 
 
 
@@ -1685,10 +1687,10 @@ public:
             path += makeUniqueString();
             
             // get template mime type
-            JsonNode node;
-            if (!node.fromString(m_target))
+            kl::JsonNode node;
+            if (!node.fromString(towstr(m_target)))
                 return 0;
-            JsonNode metadata = node["metadata"];
+            kl::JsonNode metadata = node["metadata"];
             wxString mime_type = metadata["type"];
             
             // write out temporary template
@@ -1764,8 +1766,9 @@ void HostApp::execute(kscript::ExprEnv* env, kscript::Value* retval)
     {
         if (env->getParam(0)->isObject() && r->m_target.Left(1) == wxT("["))
         {
-            // we need to stringify the object into json ourselves
-            JsonNode node(*env->getParam(0));
+            // we need to stringify the object into json ourselves;
+            // TODO: any way to use kl::JsonNode?
+            kscript::JsonNode node(*env->getParam(0));
             r->m_target = node.toString();
         }
     }

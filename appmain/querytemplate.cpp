@@ -15,6 +15,7 @@
 #include "tabledoc.h"
 #include "appcontroller.h"
 #include "jsonconfig.h"
+#include "kl/json.h"
 
 
 
@@ -1017,11 +1018,11 @@ void QueryTemplate::updateValidationStructure()
 
 bool QueryTemplate::saveJson(const wxString& path)
 {
-    JsonNode root;
+    kl::JsonNode root;
 
 
     // query info
-    JsonNode metadata = root["metadata"];
+    kl::JsonNode metadata = root["metadata"];
     metadata["type"] = wxT("application/vnd.kx.query");
     metadata["version"] = 1;
     metadata["description"] = wxT("");
@@ -1029,18 +1030,18 @@ bool QueryTemplate::saveJson(const wxString& path)
 
     // input info
     root["input"].setArray();
-    JsonNode input = root["input"];
+    kl::JsonNode input = root["input"];
 
     std::vector<QueryBuilderSourceTable>::iterator tbl_it;
     int tbl_counter = 0;
     for (tbl_it = m_source_tables.begin();
          tbl_it != m_source_tables.end(); ++tbl_it)
     {
-        JsonNode table = input.appendElement();
+        kl::JsonNode table = input.appendElement();
         
         // write alias
-        table["alias"] = tbl_it->alias;
-        table["path"] = tbl_it->path;
+        table["alias"] = towstr(tbl_it->alias);
+        table["path"] = towstr(tbl_it->path);
         table["x"] = tbl_it->x;
         table["y"] = tbl_it->y;
         table["width"] = tbl_it->width;
@@ -1050,16 +1051,16 @@ bool QueryTemplate::saveJson(const wxString& path)
         // if joins are specified, add the joins
         if (tbl_it->joins.size() > 0)
         {
-            JsonNode joins = table["joins"];
+            kl::JsonNode joins = table["joins"];
             joins.setArray();
 
             std::vector<QueryJoin>::iterator join_iter;
             for (join_iter = tbl_it->joins.begin();
                  join_iter != tbl_it->joins.end(); ++join_iter)
             {
-                JsonNode join = joins.appendElement();
+                kl::JsonNode join = joins.appendElement();
                 
-                JsonNode join_type = join["type"];
+                kl::JsonNode join_type = join["type"];
                 switch (join_iter->join_type)
                 {
                     default:
@@ -1070,27 +1071,27 @@ bool QueryTemplate::saveJson(const wxString& path)
                     case QueryJoinFullOuter:  join_type.setString(L"full_outer"); break;
                 }
 
-                JsonNode join_table = join["table"];
-                join_table.setString(join_iter->right_path);
+                kl::JsonNode join_table = join["table"];
+                join_table.setString(towstr(join_iter->right_path));
 
-                JsonNode left_columns = join["left_columns"];
-                left_columns.setString(join_iter->left_columns);
+                kl::JsonNode left_columns = join["left_columns"];
+                left_columns.setString(towstr(join_iter->left_columns));
                 
-                JsonNode right_columns = join["right_columns"];
-                right_columns.setString(join_iter->right_columns);
+                kl::JsonNode right_columns = join["right_columns"];
+                right_columns.setString(towstr(join_iter->right_columns));
             }
         }
     }
 
 
     // output info
-    JsonNode output = root["output"];
+    kl::JsonNode output = root["output"];
 
-    output["table"].setString(m_output_path);
+    output["table"].setString(towstr(m_output_path));
     output["distinct"].setBoolean(m_distinct);
 
     output["fields"].setArray();
-    JsonNode fields = output["fields"];
+    kl::JsonNode fields = output["fields"];
 
     std::vector<QueryBuilderParam>::iterator param_iter;
     int param_counter = 0;
@@ -1098,11 +1099,11 @@ bool QueryTemplate::saveJson(const wxString& path)
          param_iter != m_params.end();
          ++param_iter)
     {
-        JsonNode field = fields.appendElement();
+        kl::JsonNode field = fields.appendElement();
         
         field["output"].setBoolean(param_iter->output);
-        field["input"].setString(param_iter->input_expr);
-        field["name"].setString(param_iter->output_field);        
+        field["input"].setString(towstr(param_iter->input_expr));
+        field["name"].setString(towstr(param_iter->output_field));
 
         switch (param_iter->group_func)
         {
@@ -1126,7 +1127,7 @@ bool QueryTemplate::saveJson(const wxString& path)
         // if conditions are specified, add the conditions
         if (param_iter->conditions.size() > 0)
         {
-            JsonNode conditions = field["conditions"];
+            kl::JsonNode conditions = field["conditions"];
             conditions.setArray();
 
             std::vector<wxString>::iterator cond_it;
@@ -1138,8 +1139,8 @@ bool QueryTemplate::saveJson(const wxString& path)
                 // condition length is zero since the condition
                 // positions map to the "criteria" or one of the
                 // "or" cells in the display
-                JsonNode condition = conditions.appendElement();
-                condition.setString(*cond_it);
+                kl::JsonNode condition = conditions.appendElement();
+                condition.setString(towstr(*cond_it));
             }
         }
     }
@@ -1150,7 +1151,7 @@ bool QueryTemplate::saveJson(const wxString& path)
 bool QueryTemplate::loadJson(const wxString& path)
 {
     // try to load the JSON string
-    JsonNode root = JsonConfig::loadFromDb(g_app->getDatabase(), path);
+    kl::JsonNode root = JsonConfig::loadFromDb(g_app->getDatabase(), path);
     if (!root.isOk())
         return false;
 
@@ -1160,21 +1161,21 @@ bool QueryTemplate::loadJson(const wxString& path)
     m_params.clear();
 
     // input info
-    JsonNode input = root["input"];
+    kl::JsonNode input = root["input"];
     if (input.isOk())
     {
         QueryBuilderSourceTable query_table;
 
-        size_t i, input_count = input.getCount();
+        size_t i, input_count = input.getChildCount();
         for (i =  0; i < input_count; ++i)
         {
-            JsonNode table = input[i];
+            kl::JsonNode table = input[i];
             
             // TODO: check for existence of following elements
             // instead of assuming them
 
-            query_table.alias = table["alias"];
-            query_table.path = table["path"];
+            query_table.alias = table["alias"].getString();
+            query_table.path = table["path"].getString();
             query_table.x = table["x"].getInteger();
             query_table.y = table["y"].getInteger();
             query_table.width = table["width"].getInteger();
@@ -1188,14 +1189,14 @@ bool QueryTemplate::loadJson(const wxString& path)
                 query_table.structure = set->getStructure();
 
             // if joins are specified, load them                
-            JsonNode joins = table["joins"];
+            kl::JsonNode joins = table["joins"];
             if (joins.isOk())
             {
-                size_t j, join_count = joins.getCount();
+                size_t j, join_count = joins.getChildCount();
                 for (j = 0; j < join_count; ++j)
                 {
                     QueryJoin query_join;
-                    JsonNode join = joins[j];                
+                    kl::JsonNode join = joins[j];                
 
                     wxString type = join["type"];
                     query_join.join_type = QueryJoinNone;    // default
@@ -1214,9 +1215,9 @@ bool QueryTemplate::loadJson(const wxString& path)
                     // TODO: check for existence of following elements
                     // instead of assuming them
 
-                    query_join.right_path = join["table"];
-                    query_join.left_columns = join["left_columns"];
-                    query_join.right_columns = join["right_columns"];
+                    query_join.right_path = join["table"].getString();
+                    query_join.left_columns = join["left_columns"].getString();
+                    query_join.right_columns = join["right_columns"].getString();
 
                     // set the join info
                     query_table.joins.push_back(query_join);
@@ -1230,20 +1231,20 @@ bool QueryTemplate::loadJson(const wxString& path)
 
 
     // output info
-    JsonNode output = root["output"];
+    kl::JsonNode output = root["output"];
     if (output.isOk())
     {
         // TODO: check for existence of following
         m_output_path = output["table"].getString();
         m_distinct = output["distinct"].getBoolean();
         
-        JsonNode fields = output["fields"];
-        size_t f, field_count = fields.getCount();
+        kl::JsonNode fields = output["fields"];
+        size_t f, field_count = fields.getChildCount();
         
         for (f = 0; f < field_count; ++f)
         {
             QueryBuilderParam query_param;
-            JsonNode field = fields[f];
+            kl::JsonNode field = fields[f];
 
             query_param.output = field["output"].getBoolean();
             query_param.input_expr = field["input"].getString();
@@ -1279,13 +1280,13 @@ bool QueryTemplate::loadJson(const wxString& path)
 
             query_param.sort_order = field["order"].getInteger();
             
-            JsonNode conditions = field["conditions"];
+            kl::JsonNode conditions = field["conditions"];
             if (conditions.isOk())
             {
-                size_t c, condition_count = conditions.getCount();
+                size_t c, condition_count = conditions.getChildCount();
                 for (c = 0; c < condition_count; ++c)
                 {
-                    JsonNode condition = conditions[c];
+                    kl::JsonNode condition = conditions[c];
                     query_param.conditions.push_back(condition.getString());
                 }
             }

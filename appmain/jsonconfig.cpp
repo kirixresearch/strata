@@ -11,70 +11,19 @@
 
 #include "appmain.h"
 #include "jsonconfig.h"
-#include "../kscript/json.h"
 #include <kl/utf8.h>
 
 
-wxString JsonNode::toString()
+kl::JsonNode JsonConfig::loadFromFile(const wxString& path)
 {
-    kscript::Value p1;
-    kscript::Value p2;
-    p1.setNull();
-    p2.setString(L"    ");
-    
-    kscript::Json j;
-    kscript::ExprEnv e;
-    e.reserveParams(3);
-    e.m_eval_params[0] = getValuePtr();
-    e.m_eval_params[1] = &p1;
-    e.m_eval_params[2] = &p2;
-    e.m_param_count = 3;
-    
-    kscript::Value retval;
-    j.stringify(&e, NULL, &retval);
-    
-    wxString result;
-    result = towx(retval.getString());
-    e.m_eval_params[0] = NULL;
-    e.m_eval_params[1] = NULL;
-    e.m_eval_params[2] = NULL;
-    
-    return result;
-}
-
-bool JsonNode::fromString(const wxString& str)
-{
-    m_value.reset();
-    
-    kscript::ExprParser parser(kscript::optionLanguageECMAScript);
-    kscript::Value json_str;
-    json_str.setString(towstr(str));
-    
-    kscript::Json j;
-    kscript::ExprEnv e;
-    e.reserveParams(1);
-    e.m_parser = &parser;
-    e.m_eval_params[0] = &json_str;
-    e.m_param_count = 1;
-    
-    m_value.reset();
-    j.parse(&e, NULL, &m_value);
-    e.m_eval_params[0] = NULL;
-    
-    return m_value.isObject();
-}
-
-
-
-JsonNode JsonConfig::loadFromFile(const wxString& path)
-{
-    JsonNode node;
+    // TODO: implement
+    kl::JsonNode node;
     return node;
 }
 
-JsonNode JsonConfig::loadFromDb(tango::IDatabasePtr db, const wxString& path)
+kl::JsonNode JsonConfig::loadFromDb(tango::IDatabasePtr db, const wxString& path)
 {
-    JsonNode node;
+    kl::JsonNode node;
 
     std::wstring wval;
     if (!readStreamTextFile(db, towstr(path), wval))
@@ -84,17 +33,14 @@ JsonNode JsonConfig::loadFromDb(tango::IDatabasePtr db, const wxString& path)
     return node;
 }
 
-JsonNode JsonConfig::loadFromString(const wxString& json)
+kl::JsonNode JsonConfig::loadFromString(const wxString& json)
 {
-    JsonNode node;
-    node.fromString(json);
+    kl::JsonNode node;
+    node.fromString(towstr(json));
     return node;
 }
 
-
-
-
-bool JsonConfig::saveToString(JsonNode& node, wxString& dest)
+bool JsonConfig::saveToString(kl::JsonNode& node, wxString& dest)
 {
     wxString s = node.toString();
     if (s.Length() > 0)
@@ -106,12 +52,12 @@ bool JsonConfig::saveToString(JsonNode& node, wxString& dest)
     return false;
 }
 
-bool JsonConfig::saveToDb(JsonNode& node,
+bool JsonConfig::saveToDb(kl::JsonNode& node,
                           tango::IDatabasePtr db,
                           const wxString& path,
                           const wxString& mime_type)
 {
-    wxString text = node.toString();
+    wxString text = towx(node.toString());
     
     // add a trailing \n, because some editors complain
     // when this is missing
@@ -122,10 +68,12 @@ bool JsonConfig::saveToDb(JsonNode& node,
                                towstr(mime_type));
 }
 
-bool JsonConfig::saveToFile(JsonNode& node, const wxString& path, const wxString& mime_type)
+bool JsonConfig::saveToFile(kl::JsonNode& node, const wxString& path, const wxString& mime_type)
 {
+    // TODO: implement
     return false;
 }
+
 
 /*
 void jsonTest()

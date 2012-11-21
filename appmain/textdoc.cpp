@@ -18,6 +18,7 @@
 #include "transformationdoc.h"
 #include "tabledoc.h"
 #include "jsonconfig.h"
+#include "kl/json.h"
 #include <wx/filesys.h>
 
 
@@ -2304,19 +2305,19 @@ bool TextDoc::saveLayoutTemplate(const wxString& path)
     }
      else if (m_view == TextDelimitedView)
     {
-        JsonNode root;
+        kl::JsonNode root;
         
-        JsonNode metadata = root["metadata"];
+        kl::JsonNode metadata = root["metadata"];
         metadata["type"] = wxT("application/vnd.kx.text_format");
         metadata["version"] = 1;
         metadata["description"] = wxT("");
 
         root["type"] = wxT("delimited");
-        root["delimiters"] = m_last_delimiters;
+        root["delimiters"] = towstr(m_last_delimiters);
         root["line_delimiters"] = wxT("\n");
         root["first_row_column_names"] = m_firstrowfieldnames_checkbox->GetValue() ? true : false;
 
-        JsonNode fields = root["fields"];
+        kl::JsonNode fields = root["fields"];
 
         // if the set is not a text-delimited set, bail out
         tango::IDelimitedTextSetPtr tset = m_textdelimited_set;
@@ -2330,7 +2331,7 @@ bool TextDoc::saveLayoutTemplate(const wxString& path)
         {
             tango::IColumnInfoPtr e = s->getColumnInfoByIdx(i);
             
-            JsonNode field = fields.appendElement();
+            kl::JsonNode field = fields.appendElement();
             
             field["name"] = e->getName();
             

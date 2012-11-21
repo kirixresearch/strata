@@ -17,6 +17,7 @@
 #include "jobimport.h"
 #include "jobimportpkg.h"
 #include "jsonconfig.h"
+#include <kl/json.h>
 #include <kl/crypt.h>
 
 
@@ -107,7 +108,7 @@ bool ImportTemplate::load(const wxString& path)
 {
     m_ii.tables.clear();
     
-    JsonNode root = JsonConfig::loadFromDb(g_app->getDatabase(), path);
+    kl::JsonNode root = JsonConfig::loadFromDb(g_app->getDatabase(), path);
     if (!root.isOk())
     {
         return loadOldVersion(path);
@@ -115,24 +116,24 @@ bool ImportTemplate::load(const wxString& path)
     
     
     if (root.childExists(L"database_type"))
-        m_ii.type = stringToServerType(root["database_type"]);
+        m_ii.type = stringToServerType(root["database_type"].getString());
     else if (root.childExists(L"import_type"))
-        m_ii.type = stringToServerType(root["import_type"]); // deprecated
+        m_ii.type = stringToServerType(root["import_type"].getString()); // deprecated
             
 
-    JsonNode connection_string = root["connection_string"];
+    kl::JsonNode connection_string = root["connection_string"];
     if (connection_string.isOk())
     {
     }
      else
     {
-        JsonNode connection_info = root["connection_info"];
+        kl::JsonNode connection_info = root["connection_info"];
         if (connection_info.isOk())
         {
-            m_ii.server = connection_info["server"];
+            m_ii.server = connection_info["server"].getString();
             m_ii.port = connection_info["port"].getInteger();
-            m_ii.database = connection_info["database"];
-            m_ii.username = connection_info["username"];
+            m_ii.database = connection_info["database"].getString();
+            m_ii.username = connection_info["username"].getString();
             
             wxString pw = connection_info["password"];
             if (kl::isEncryptedString(towstr(pw)))
@@ -143,46 +144,46 @@ bool ImportTemplate::load(const wxString& path)
     }
     
     
-    JsonNode path_node = root["path"];
+    kl::JsonNode path_node = root["path"];
     if (path_node.isOk())
-        m_ii.path = path_node;
+        m_ii.path = path_node.getString();
          else
         m_ii.path = wxT("");
     
-    JsonNode target_path_node = root["target_path"];
+    kl::JsonNode target_path_node = root["target_path"];
     if (target_path_node.isOk())
-        m_ii.base_path = target_path_node;
+        m_ii.base_path = target_path_node.getString();
          else
         m_ii.base_path = wxT("");
         
-    JsonNode delimited_text = root["delimited_text"];
+    kl::JsonNode delimited_text = root["delimited_text"];
     if (delimited_text.isOk())
     {
-        m_ii.delimiters = delimited_text["delimiter"];
-        m_ii.text_qualifier = delimited_text["text_qualifier"];
+        m_ii.delimiters = delimited_text["delimiter"].getString();
+        m_ii.text_qualifier = delimited_text["text_qualifier"].getString();
         m_ii.first_row_header = delimited_text["first_row_header"].getBoolean();
     }
     
     
-    JsonNode objects = root["objects"];
+    kl::JsonNode objects = root["objects"];
     
     if (objects.isNull())
         objects = root["imports"];  // backward compatibility -- can be removed later
     
     if (objects.isOk())
     {
-        size_t i, count = objects.getCount();
+        size_t i, count = objects.getChildCount();
         for (i =  0; i < count; ++i)
         {
-            JsonNode object = objects[i];
+            kl::JsonNode object = objects[i];
             
             if (object["query"].isOk())
             {
                 // query-style entry
                 
-                JsonNode query_node = object["query"];
-                JsonNode output_node = object["output"];
-                JsonNode append_node = object["append"];
+                kl::JsonNode query_node = object["query"];
+                kl::JsonNode output_node = object["output"];
+                kl::JsonNode append_node = object["append"];
                 
                 if (query_node.isOk() && output_node.isOk())
                 {
@@ -190,8 +191,8 @@ bool ImportTemplate::load(const wxString& path)
                     ImportTableSelection its;
                     its.type = ImportTableSelection::typeTable;
                     its.selected = true;
-                    its.query = query_node;
-                    its.output_tablename = output_node;
+                    its.query = query_node.getString();
+                    its.output_tablename = output_node.getString();
                     its.append = false;
                     if (append_node.isOk())
                         its.append = append_node.getBoolean();
@@ -200,9 +201,9 @@ bool ImportTemplate::load(const wxString& path)
             }
              else
             {
-                JsonNode input_node = object["input"];
-                JsonNode output_node = object["output"];
-                JsonNode append_node = object["append"];
+                kl::JsonNode input_node = object["input"];
+                kl::JsonNode output_node = object["output"];
+                kl::JsonNode append_node = object["append"];
                 
                 if (input_node.isOk() && output_node.isOk())
                 {
@@ -210,8 +211,8 @@ bool ImportTemplate::load(const wxString& path)
                     ImportTableSelection its;
                     its.type = ImportTableSelection::typeTable;
                     its.selected = true;
-                    its.input_tablename = input_node;
-                    its.output_tablename = output_node;
+                    its.input_tablename = input_node.getString();
+                    its.output_tablename = output_node.getString();
                     its.append = false;
                     if (append_node.isOk())
                         its.append = append_node.getBoolean();
@@ -708,45 +709,45 @@ bool ImportTemplate::loadOldVersion(const wxString& path)
 
 bool ImportTemplate::save(const wxString& path)
 {
-    JsonNode root;
+    kl::JsonNode root;
     
-    JsonNode metadata = root["metadata"];
+    kl::JsonNode metadata = root["metadata"];
     metadata["type"] = wxT("application/vnd.kx.import");
     metadata["version"] = 1;
     metadata["description"] = wxT("");
 
-    root["database_type"] = serverTypeToString(m_ii.type);
+    root["database_type"] = towstr(serverTypeToString(m_ii.type));
 
     if (m_ii.server.Length() > 0)
     {
-        JsonNode connection_info = root["connection_info"];
-        connection_info["server"] = m_ii.server;
+        kl::JsonNode connection_info = root["connection_info"];
+        connection_info["server"] = towstr(m_ii.server);
         connection_info["port"] = m_ii.port;
-        connection_info["database"] = m_ii.database;
-        connection_info["username"] = m_ii.username;
-        connection_info["password"] = towx(kl::encryptString(towstr(m_ii.password), PASSWORD_KEY));
+        connection_info["database"] = towstr(m_ii.database);
+        connection_info["username"] = towstr(m_ii.username);
+        connection_info["password"] = kl::encryptString(towstr(m_ii.password), PASSWORD_KEY);
     }
 
     if (m_ii.path.Length() > 0)
     {
-        root["path"] = m_ii.path;
+        root["path"] = towstr(m_ii.path);
     }
     
     if (m_ii.base_path.Length() > 0)
     {
-        root["target_path"] = m_ii.base_path;
+        root["target_path"] = towstr(m_ii.base_path);
     }
 
     if (m_ii.type == dbtypeDelimitedText)
     {
-        JsonNode delimited_text = root["delimited_text"];
-        delimited_text["delimiter"] = m_ii.delimiters;
-        delimited_text["text_qualifier"] = m_ii.text_qualifier;
+        kl::JsonNode delimited_text = root["delimited_text"];
+        delimited_text["delimiter"] = towstr(m_ii.delimiters);
+        delimited_text["text_qualifier"] = towstr(m_ii.text_qualifier);
         delimited_text["first_row_header"].setBoolean(m_ii.first_row_header);
     }
     
     root["objects"].setArray();
-    JsonNode objects = root["objects"];
+    kl::JsonNode objects = root["objects"];
     
 
     int table_counter = 0;
@@ -760,20 +761,20 @@ bool ImportTemplate::save(const wxString& path)
         if (!table_it->selected)
             continue;
 
-        JsonNode objects_node = objects.appendElement();
+        kl::JsonNode objects_node = objects.appendElement();
 
 
         if (table_it->type == ImportTableSelection::typeTable)
         {
-            objects_node["input"] = table_it->input_tablename;
-            objects_node["output"] = table_it->output_tablename;
+            objects_node["input"] = towstr(table_it->input_tablename);
+            objects_node["output"] = towstr(table_it->output_tablename);
             if (table_it->append)
                 objects_node["append"].setBoolean(true);
         }
          else if (table_it->type == ImportTableSelection::typeQuery)
         {
-            objects_node["query"] = table_it->query;
-            objects_node["output"] = table_it->output_tablename;
+            objects_node["query"] = towstr(table_it->query);
+            objects_node["output"] = towstr(table_it->output_tablename);
             if (table_it->append)
                 objects_node["append"].setBoolean(true);
         }
