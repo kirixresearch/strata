@@ -31,7 +31,6 @@
 #include "editordoc.h"
 #include "reportdoc.h"
 #include "panelconsole.h"
-#include "jsonconfig.h"
 #include <kl/url.h>
 #include <kl/thread.h>
 #include <kl/json.h>
