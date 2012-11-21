@@ -33,7 +33,6 @@
 #include "panelconsole.h"
 #include <kl/url.h>
 #include <kl/thread.h>
-#include <kl/json.h>
 #include <../kscript/json.h>
 
 

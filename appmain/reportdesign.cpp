@@ -19,8 +19,6 @@
 #include "../kcanvas/componentpage.h"
 #include "../kcanvas/util.h"
 
-#include "kl/json.h"
-
 
 // sections
 const wxString PROP_REPORT_HEADER_LABEL         = wxT("Report Header");

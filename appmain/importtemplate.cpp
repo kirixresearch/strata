@@ -17,7 +17,6 @@
 #include "jobimport.h"
 #include "jobimportpkg.h"
 #include "jsonconfig.h"
-#include <kl/json.h>
 #include <kl/crypt.h>
 
 

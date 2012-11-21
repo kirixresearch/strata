@@ -13,9 +13,6 @@
 #define __APP_JSONCONFIG_H
 
 
-#include "kl/json.h"
-
-
 class JsonConfig
 {
 public:

@@ -51,7 +51,6 @@
 #include <algorithm>
 #include <set>
 #include <kl/utf8.h>
-#include <kl/json.h>
 #include <kl/thread.h>
 
 

@@ -18,7 +18,6 @@
 #include "transformationdoc.h"
 #include "tabledoc.h"
 #include "jsonconfig.h"
-#include "kl/json.h"
 #include <wx/filesys.h>
 
 

@@ -15,8 +15,6 @@
 #include "tabledoc.h"
 #include "appcontroller.h"
 #include "jsonconfig.h"
-#include "kl/json.h"
-
 
 
 static void onQueryJobFinished(IJobPtr job)
