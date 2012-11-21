@@ -189,7 +189,7 @@ public:
         return result;
     }
     
-    size_t getCount() { return (size_t)getValuePtr()->getObject()->getHighestIndex(); }
+    size_t getChildCount() { return (size_t)getValuePtr()->getObject()->getHighestIndex(); }
 
     std::vector<std::wstring> getChildKeys()
     {
