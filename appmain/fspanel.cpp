@@ -16,7 +16,6 @@
 
 #include "appmain.h"
 #include <wx/dnd.h>
-#include <xcm/xcm.h>
 #include "../kcl/button.h"
 #include "fspanel_private.h"
 #include "fsitems_private.h"
@@ -34,6 +33,11 @@
 #define CFW_USE_GENERIC_LISTCTRL
 #endif
 
+
+#ifdef __WXMSW__
+#include <windows.h>
+#include <commctrl.h>
+#endif
 
 const int LOCATION_BAR_HEIGHT = 25;
 
@@ -249,7 +253,28 @@ private:
 };
 
 
+// this function only works on Windows
 
+static void setTreeItemHeight(wxTreeCtrl* ctrl, int height)
+{
+#ifdef __WXMSW__
+    HWND hwnd = (HWND)ctrl->GetHandle();
+    SendMessage(hwnd, TVM_SETITEMHEIGHT, height, 0);
+#endif
+}
+
+// this function only works on Windows
+
+static int getTreeItemHeight(wxTreeCtrl* ctrl)
+{
+#ifdef __WXMSW__
+    HWND hwnd = (HWND)ctrl->GetHandle();
+    int height = SendMessage(hwnd, TVM_GETITEMHEIGHT, 0, 0);
+    return height;
+#endif
+
+    return 0;
+}
 
 enum
 {

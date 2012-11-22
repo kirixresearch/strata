@@ -1866,7 +1866,7 @@ void HostApp::isGuiActive(kscript::ExprEnv* env, kscript::Value* retval)
 
 // (METHOD) HostApp.isService
 //
-// Description: Returns true if a user interface is present
+// Description: Returns true if the software is running in service mode
 //
 // Syntax: function HostApp.isService() : Boolean
 //
