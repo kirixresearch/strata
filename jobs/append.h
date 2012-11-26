@@ -1,10 +1,10 @@
 /*!
  *
- * Copyright (c) 2002-2011, Kirix Research, LLC.  All rights reserved.
+ * Copyright (c) 2012, Kirix Research, LLC.  All rights reserved.
  *
- * Project:  Application Client
+ * Project:  Job Automation Library
  * Author:   Benjamin I. Williams
- * Created:  2002-09-28
+ * Created:  2012-11-26
  *
  */
 

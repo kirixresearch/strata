@@ -1,10 +1,10 @@
 /*!
  *
- * Copyright (c) 2003-2011, Kirix Research, LLC.  All rights reserved.
+ * Copyright (c) 2012, Kirix Research, LLC.  All rights reserved.
  *
- * Project:  Application Client
+ * Project:  Job Automation Library
  * Author:   Benjamin I. Williams
- * Created:  2003-06-14
+ * Created:  2012-11-26
  *
  */
 
@@ -30,7 +30,7 @@ public:
 
     XdJobBase(int usage = useTangoAll) : JobBase()
     {
-        sigJobFinished().connect(this, &TangoJobBase::onJobFinished);
+        sigJobFinished().connect(this, &XdJobBase::onJobFinished);
 
         m_base_count = 0.0;
         m_usage = usage;
@@ -59,17 +59,17 @@ protected:
         {
             if (m_usage & useTangoCurrentCount)
             {
-                m_job_info->sigOnGetCurrentCount().connect(this, &TangoJobBase::onGetCurrentCount);
+                m_job_info->sigOnGetCurrentCount().connect(this, &XdJobBase::onGetCurrentCount);
             }
 
             if (m_usage & useTangoMaxCount)
             {
-                m_job_info->sigOnGetMaxCount().connect(this, &TangoJobBase::onGetMaxCount);
+                m_job_info->sigOnGetMaxCount().connect(this, &XdJobBase::onGetMaxCount);
             }
 
             if (m_usage & useTangoPercentage)
             {
-                m_job_info->sigOnGetPercentage().connect(this, &TangoJobBase::onGetPercentage);
+                m_job_info->sigOnGetPercentage().connect(this, &XdJobBase::onGetPercentage);
             }
         }
          else
