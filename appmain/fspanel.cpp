@@ -103,28 +103,6 @@ const static char* xpm_folder_open[] = {
 "                "};
 
 
-// this function only works on Windows
-
-void setTreeItemHeight(wxTreeCtrl* ctrl, int height)
-{
-#ifdef __WXMSW__
-    HWND hwnd = (HWND)ctrl->GetHandle();
-    SendMessage(hwnd, TVM_SETITEMHEIGHT, height, 0);
-#endif
-}
-
-// this function only works on Windows
-
-int getTreeItemHeight(wxTreeCtrl* ctrl)
-{
-#ifdef __WXMSW__
-    HWND hwnd = (HWND)ctrl->GetHandle();
-    int height = SendMessage(hwnd, TVM_GETITEMHEIGHT, 0, 0);
-    return height;
-#endif
-
-    return 0;
-}
 
 
 // Drag and Drop functionality
