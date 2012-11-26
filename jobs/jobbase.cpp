@@ -9,9 +9,4 @@
  */
 
 
-#include "appmain.h"
-#include <xcm/xcm.h>
-#include <kl/thread.h>
-#include "jobqueue.h"
-#include "jobqueue_private.h"
-
+#include "jobint.h"
