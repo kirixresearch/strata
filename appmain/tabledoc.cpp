@@ -7251,9 +7251,10 @@ bool TableDoc::saveAsStructure(const wxString& path)
     tango::IColumnInfoPtr colinfo;
 
 
-    // TODO: we could use the kl::JsonNode library here if
-    // we had a pretty formatting; since the following will be
-    // used a lot in templates, etc, build the JSON with formatting
+    // TODO: we could use the kl::JsonNode library here if we had
+    // pretty formatting and if the import templates could read strict
+    // JSON (see above); since the following will be used a lot in 
+    // templates, etc, build the JSON with formatting
     
 
     result_text += L"{\n";
