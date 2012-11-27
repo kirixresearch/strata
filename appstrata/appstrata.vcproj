@@ -1741,10 +1741,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\appmain\jobinfo.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\appmain\jobmodifystruct.cpp"
 				>
 				<FileConfiguration
