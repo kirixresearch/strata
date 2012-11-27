@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="append.cpp" />
     <ClCompile Include="jobbase.cpp" />
+    <ClCompile Include="jobs.cpp" />
     <ClCompile Include="jobspch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>

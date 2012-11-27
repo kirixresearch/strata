@@ -10,3 +10,11 @@
 
 
 #include "jobspch.h"
+
+
+namespace jobs
+{
+
+void placeholder() {}  // avoid warning LNK4221
+
+};

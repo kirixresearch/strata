@@ -231,14 +231,15 @@ enum
     errorMemory = -7,
     errorCancelled = -8,
     errorTimeoutExceeded = -9,
+    errorDiskSpace = -10,
     
-    errorObjectNotFound = -10,
-    errorColumnNotFound = -11,
-    errorIndexNotFound = -12,
+    errorObjectNotFound = -100,
+    errorColumnNotFound = -101,
+    errorIndexNotFound = -102,
     
-    errorObjectAlreadyExists = -13,
-    errorColumnAlreadyExists = -14,
-    errorIndexAlreadyExists = -15,
+    errorObjectAlreadyExists = -103,
+    errorColumnAlreadyExists = -104,
+    errorIndexAlreadyExists = -105,
 };
 
 

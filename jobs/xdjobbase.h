@@ -9,9 +9,12 @@
  */
 
 
-#ifndef __JOBS_XDOBBASE_H
+#ifndef __JOBS_XDJOBBASE_H
 #define __JOBS_XDJOBBASE_H
 
+
+namespace jobs
+{
 
 class XdJobBase : public JobBase,
                   public xcm::signal_sink
@@ -163,6 +166,10 @@ private:
     double m_base_count;
     unsigned int m_usage;
 };
+
+
+
+}; // namespace jobs
 
 
 

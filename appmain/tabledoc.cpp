@@ -19,7 +19,6 @@
 #include "jobexport.h"
 #include "jobexportpkg.h"
 #include "jobquery.h"
-#include "jobappend.h"
 #include "jobgroup.h"
 #include "jobmodifystruct.h"
 #include "jobindex.h"

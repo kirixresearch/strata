@@ -11,7 +11,6 @@
 
 #include "appmain.h"
 #include "panelmerge.h"
-#include "jobappend.h"
 #include "appcontroller.h"
 #include "tabledoc.h"
 #include "dbdoc.h"
@@ -386,6 +385,7 @@ struct AppendInfo
 
 static void onAppendJobFinished(IJobPtr job)
 {
+/*
     IAppendJobPtr append_job = job;
     if (append_job.isNull())
         return;
@@ -442,6 +442,7 @@ static void onAppendJobFinished(IJobPtr job)
             g_app->getAppController()->openSet(output_path);
         }
     }
+    */
 }
 
 void MergePanel::onOK(wxCommandEvent& evt)
@@ -545,8 +546,32 @@ void MergePanel::onOK(wxCommandEvent& evt)
         }
     }
 
+
+
+    jobs::IJobPtr job = jobs::createJob(L"application/vnd.kx.append-data");
+
+
+    kl::JsonNode instructions;
+    instructions["input"].setArray();
+
+    if (m_append)
+        instructions["output"] = m_set->getObjectPath(); // this is an append job
+         else  
+        instructions["output"] = L"";                    // this is a merge job
+
+    // add all of the sets we're going to append
+    std::vector<tango::ISetPtr>::iterator set_it;
+    for (set_it = set_ptrs.begin(); set_it != set_ptrs.end(); ++set_it)
+    {
+        kl::JsonNode input_element = instructions["input"].appendElement();
+        input_element["path"] = (*set_it)->getObjectPath();
+    }
+
+
+    job->setInstructions(instructions.toString());
+
+    /*
     // create the append job
-    
     AppendJob* job = new AppendJob;
     tango::ISetPtr target_set = m_set;
     
@@ -580,6 +605,7 @@ void MergePanel::onOK(wxCommandEvent& evt)
     g_app->getJobQueue()->addJob(job, jobStateRunning);
 
     m_frame->closeSite(m_doc_site);
+    */
 }
 
 

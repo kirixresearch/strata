@@ -12,6 +12,9 @@
 #ifndef __JOBS_APPEND_H
 #define __JOBS_APPEND_H
 
+namespace jobs
+{
+
 
 xcm_interface IAppendJob : public xcm::IObject
 {
@@ -55,6 +58,9 @@ private:
     double m_max_count;
 };
 
+
+
+}; // namespace jobs
 
 #endif
 

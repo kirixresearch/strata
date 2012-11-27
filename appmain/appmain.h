@@ -63,6 +63,7 @@
 
 // framework/control includes
 #include "../kcl/kcl.h"
+#include "../jobs/jobs.h"
 #include "../webconnect/webcontrol.h"
 #include "../webconnect/webframe.h"
 

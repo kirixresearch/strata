@@ -12,6 +12,9 @@
 #include "jobspch.h"
 #include "append.h"
 
+namespace jobs
+{
+
 
 // AppendJob implementation
 
@@ -85,3 +88,6 @@ void AppendJob::runPostJob()
 {
 }
 
+
+
+};  // namespace jobs
