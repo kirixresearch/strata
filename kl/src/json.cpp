@@ -861,7 +861,18 @@ bool JsonNode::parse(wchar_t* expr)
     return true;
 }
 
-std::wstring JsonNode::stringify()
+static std::wstring addspaces(unsigned int indent_level)
+{
+    std::wstring spaces = L"";
+    int spaces_per_indent_level = 4;
+
+    for (int i = 0; i < indent_level*spaces_per_indent_level; ++i)
+        spaces += L" ";
+
+    return spaces;
+}
+
+std::wstring JsonNode::stringify(unsigned int indent_level)
 {
     if (m_value->m_type == nodetypeNull)
         return L"null";
@@ -884,11 +895,14 @@ std::wstring JsonNode::stringify()
         return kl::dbltostr(getDouble());
     }
 
+    // following are for formatting
+    std::wstring newline = L"\n";
+
     if (m_value->m_type == nodetypeArray)
     {
         std::wstring result;
-        result += L"[";
-        
+        result += L"[" + newline + addspaces(indent_level+1);
+
         std::vector<std::pair<std::wstring,JsonNode>>::iterator it, it_end;
         it_end = m_value->m_child_nodes_ordered.end();
 
@@ -896,20 +910,20 @@ std::wstring JsonNode::stringify()
         for (it = m_value->m_child_nodes_ordered.begin(); it != it_end; ++it)
         {
             if (!first)
-                result += L",";
+                result += L"," + newline + addspaces(indent_level+1);
             first = false;
-        
-            result += it->second.stringify();
+
+            result += it->second.stringify(indent_level+1);
         }
         
-        result += L"]";
+        result += newline + addspaces(indent_level) + L"]";
         return result;
     }
     
     if (m_value->m_type == nodetypeObject)
     {
         std::wstring result;
-        result += L"{";
+        result += L"{" + newline + addspaces(indent_level+1);
 
         std::vector<std::pair<std::wstring,JsonNode>>::iterator it, it_end;
         it_end = m_value->m_child_nodes_ordered.end();
@@ -918,7 +932,7 @@ std::wstring JsonNode::stringify()
         for (it = m_value->m_child_nodes_ordered.begin(); it != it_end; ++it)
         {
             if (!first)
-                result += L",";
+                result += L"," + newline + addspaces(indent_level+1);
             first = false;
 
             // stringify the key
@@ -926,12 +940,19 @@ std::wstring JsonNode::stringify()
             
             // separator
             result += L":";
-            
+
+            // if the value is an array or an object, add in a return
+            if (it->second.m_value->m_type == nodetypeArray || 
+                it->second.m_value->m_type == nodetypeObject)
+            {
+                result += newline + addspaces(indent_level+1);       
+            }
+
             // stringify the value
-            result += it->second.stringify();
+            result += it->second.stringify(indent_level+1);
         }
 
-        result += L"}";
+        result += newline + addspaces(indent_level) + L"}";
         return result;
     }
     

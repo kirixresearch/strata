@@ -139,7 +139,7 @@ public:
 private:
 
     bool parse(wchar_t* expr);
-    std::wstring stringify();
+    std::wstring stringify(unsigned int indent_level = 0);
 
 private:
 
