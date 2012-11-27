@@ -48,6 +48,14 @@ int AppendJob::runJob()
 
     tango::IIteratorPtr source_iter;
 
+/*
+    std::vector<tango::ISetPtr> sets;
+    kl::JsonNode input_arr = m_config['input'];
+    for (size_t i = 0; i < input_arr.getChildCount(); ++i)
+    {
+        tango::ISetPtr set = m_db->openSet(
+    }
+
     std::vector<tango::ISetPtr>::iterator it;
     for (it = m_append_sets.begin(); it != m_append_sets.end(); ++it)
     {
@@ -71,6 +79,7 @@ int AppendJob::runJob()
         if (tango_job->getCancelled())
             break;
     }
+        */
 
     return 0;
 }
