@@ -9,7 +9,7 @@
  */
 
 
-#include "jobsint.h"
+#include "jobspch.h"
 #include "append.h"
 
 
@@ -17,7 +17,6 @@
 
 AppendJob::AppendJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
 {
-    m_job_info->setTitle(towstr(_("Append Records")));
     m_max_count = 0.0;
 }
 
@@ -51,13 +50,6 @@ tango::ISetPtr AppendJob::getTargetSet()
 
 int AppendJob::runJob()
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
-    if (db.isNull())
-    {
-        m_job_info->setState(jobStateFailed);
-        return 0;
-    }
-    
     tango::IJobPtr tango_job;
 
     tango::IIteratorPtr source_iter;
@@ -65,7 +57,7 @@ int AppendJob::runJob()
     std::vector<tango::ISetPtr>::iterator it;
     for (it = m_append_sets.begin(); it != m_append_sets.end(); ++it)
     {
-        tango_job = db->createJob();
+        tango_job = m_db->createJob();
         setTangoJob(tango_job, false);
 
         source_iter = (*it)->createIterator(L"", L"", NULL);
@@ -78,7 +70,7 @@ int AppendJob::runJob()
         if (tango_job->getStatus() == tango::jobFailed)
         {
             m_job_info->setState(jobStateFailed);
-            m_job_info->setProgressString(towstr(_("ERROR: Insufficient disk space")));
+            m_job_info->setError(jobserrInsufficientDiskSpace, L"");
             break;
         }
 

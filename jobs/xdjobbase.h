@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_TANGOJOBBASE_H
-#define __APP_TANGOJOBBASE_H
+#ifndef __JOBS_XDOBBASE_H
+#define __JOBS_XDJOBBASE_H
 
 
 class XdJobBase : public JobBase,
@@ -34,6 +34,11 @@ public:
 
         m_base_count = 0.0;
         m_usage = usage;
+    }
+
+    void setDatabase(tango::IDatabasePtr db)
+    {
+        m_db = db;
     }
 
     bool cancel()
@@ -112,7 +117,7 @@ private:
     {
         if (m_tango_job.p)
         {
-            *result = (tango::tango_int64_t)m_tango_job.p->getMaxCount();
+            *result = (double)(tango::tango_int64_t)m_tango_job.p->getMaxCount();
         }
          else
         {
@@ -140,13 +145,17 @@ private:
         
         if (m_tango_job.p)
         {
-            m_job_info->setCurrentCount((tango::tango_int64_t)m_tango_job.p->getCurrentCount());
-            m_job_info->setMaxCount((tango::tango_int64_t)m_tango_job.p->getMaxCount());
+            m_job_info->setCurrentCount((double)m_tango_job.p->getCurrentCount());
+            m_job_info->setMaxCount((double)m_tango_job.p->getMaxCount());
         }
 
-        // -- free our tango job --
+        // free our job ptr
         m_tango_job.clear();
     }
+
+protected:
+
+    tango::IDatabasePtr m_db;
 
 private:
 

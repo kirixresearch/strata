@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_JOBAPPEND_H
-#define __APP_JOBAPPEND_H
+#ifndef __JOBS_APPEND_H
+#define __JOBS_APPEND_H
 
 
 xcm_interface IAppendJob : public xcm::IObject

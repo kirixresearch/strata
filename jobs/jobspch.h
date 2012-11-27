@@ -9,10 +9,10 @@
  */
 
 
-#ifndef __JOBS_JOBSINT_H
-#define __JOBS_JOBSINT_H
+#ifndef __JOBS_JOBSPCH_H
+#define __JOBS_JOBSPCH_H
 
-
+#include "jobs.h"
 #include <xcm/xcm.h>
 #include "tango.h"
 #include "jobbase.h"
