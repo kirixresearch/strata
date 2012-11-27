@@ -28,12 +28,7 @@ AppendJob::~AppendJob()
 }
 
 
-void AppendJob::setTargetSet(tango::ISetPtr target_set)
-{
-    m_target_set = target_set;
-}
-
-
+/*
 void AppendJob::addAppendSet(tango::ISetPtr append_set)
 {
     if (append_set->getSetFlags() & tango::sfFastRowCount)
@@ -44,12 +39,8 @@ void AppendJob::addAppendSet(tango::ISetPtr append_set)
 
     m_append_sets.push_back(append_set);
 }
+*/
 
-
-tango::ISetPtr AppendJob::getTargetSet()
-{
-    return m_target_set;
-}
 
 int AppendJob::runJob()
 {
