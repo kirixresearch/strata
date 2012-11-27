@@ -432,7 +432,7 @@ void MultiFileInfoPanel::populate()
              else if (it->size == -1)
             m_grid->setCellString(row, 2, _("(Unknown)"));
              else
-            m_grid->setCellString(row, 2, dbl2fstr(it->size/1024.0) + wxT(" KB"));
+            m_grid->setCellString(row, 2, kl::formattedNumber(it->size/1024.0) + wxT(" KB"));
         
         // set the record count of the project item in the grid
         if (it->records == -2)
@@ -440,7 +440,7 @@ void MultiFileInfoPanel::populate()
              else if (it->records == -1)
             m_grid->setCellString(row, 3, _("(Unknown)"));
              else
-            m_grid->setCellString(row, 3, dbl2fstr(it->records));
+            m_grid->setCellString(row, 3, kl::formattedNumber(it->records));
         
         row++;
     }

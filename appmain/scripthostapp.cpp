@@ -2269,7 +2269,7 @@ kscript::Value* HostDocument::getMember(const std::wstring& name)
 
 HostJob::HostJob()
 {
-    m_job_info = createJobInfoObject();
+    m_job_info = jobs::createJobInfoObject();
     
     m_job_info->setTitle(wxT(""));
     m_job_info->setMaxCount(100);

@@ -2656,10 +2656,10 @@ void ReportDoc::updateStatusBar()
     wxString data_source = _("Source: ") + getDataSource();
 
     wxString page_number_text = wxString::Format(_("Page: %s"),
-                                    dbl2fstr(page_idx).c_str());
+                                    kl::formattedNumber(page_idx).c_str());
                                     
     wxString page_count_text = wxString::Format(_("Page Count: %s"),
-                                    dbl2fstr(page_count).c_str());
+                                    kl::formattedNumber(page_count).c_str());
 
     IStatusBarItemPtr item;
     IStatusBarPtr statusbar = g_app->getMainFrame()->getStatusBar();

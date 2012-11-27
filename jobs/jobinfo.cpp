@@ -9,19 +9,13 @@
  */
 
 
-#include "appmain.h"
-#include <xcm/xcm.h>
-#include <kl/math.h>
-#include <kl/string.h>
-#include "jobqueue.h"
-#include "jobqueue_private.h"
-#include "util.h"
+
+#include "jobspch.h"
+#include "jobinfo.h"
 
 
-IJobInfoPtr createJobInfoObject()
+namespace jobs
 {
-    return static_cast<IJobInfo*>(new JobInfo);
-}
 
 
 JobInfo::JobInfo()
@@ -164,49 +158,49 @@ std::wstring JobInfo::getProgressString()
         if (progress_str.find(L"$c") != progress_str.npos)
         {
             str  = L"$c";
-            repl = dbl2fstr(ceil(getCurrentCount()));
+            repl = kl::formattedNumber(ceil(getCurrentCount()));
             kl::replaceStr(progress_str, str.c_str(), repl.c_str());
         }
         
         if (progress_str.find(L"$C") != progress_str.npos)
         {
             str  = L"$C";
-            repl = dbl2fstr(ceil(getCurrentCount()/1024));
+            repl = kl::formattedNumber(ceil(getCurrentCount()/1024));
             kl::replaceStr(progress_str, str.c_str(), repl.c_str());
         }
         
         if (progress_str.find(L"$m") != progress_str.npos)
         {
             str  = L"$m";
-            repl = dbl2fstr(ceil(getMaxCount()));
+            repl = kl::formattedNumber(ceil(getMaxCount()));
             kl::replaceStr(progress_str, str.c_str(), repl.c_str());
         }
         
         if (progress_str.find(L"$M") != progress_str.npos)
         {
             str  = L"$M";
-            repl = dbl2fstr(ceil(getMaxCount()/1024));
+            repl = kl::formattedNumber(ceil(getMaxCount()/1024));
             kl::replaceStr(progress_str, str.c_str(), repl.c_str());
         }
         
         if (progress_str.find(L"$p0") != progress_str.npos)
         {
             str  = L"$p0";
-            repl = dbl2fstr(getPercentage(), 0);
+            repl = kl::formattedNumber(getPercentage(), 0);
             kl::replaceStr(progress_str, str.c_str(), repl.c_str());
         }
         
         if (progress_str.find(L"$p1") != progress_str.npos)
         {
             str  = L"$p1";
-            repl = dbl2fstr(getPercentage(), 1);
+            repl = kl::formattedNumber(getPercentage(), 1);
             kl::replaceStr(progress_str, str.c_str(), repl.c_str());
         }
         
         if (progress_str.find(L"$p2") != progress_str.npos)
         {
             str  = L"$p2";
-            repl = dbl2fstr(getPercentage(), 2);
+            repl = kl::formattedNumber(getPercentage(), 2);
             kl::replaceStr(progress_str, str.c_str(), repl.c_str());
         }
         
@@ -340,3 +334,5 @@ double JobInfo::getPercentage()
     return (cur_count*100)/max_rows;
 }
 
+
+};

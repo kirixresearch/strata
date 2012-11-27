@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="append.cpp" />
     <ClCompile Include="jobbase.cpp" />
+    <ClCompile Include="jobinfo.cpp" />
     <ClCompile Include="jobs.cpp" />
     <ClCompile Include="jobspch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -21,6 +22,7 @@
   <ItemGroup>
     <ClInclude Include="append.h" />
     <ClInclude Include="jobbase.h" />
+    <ClInclude Include="jobinfo.h" />
     <ClInclude Include="jobs.h" />
     <ClInclude Include="jobspch.h" />
     <ClInclude Include="xdjobbase.h" />

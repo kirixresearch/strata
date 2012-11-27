@@ -174,7 +174,6 @@ inline wxColor int2color(int int_color)
 
 // -- string helper functions -------------------------------------------------
 
-wxString dbl2fstr(double d, int dec_places = 0);
 
 wxString doubleQuote(const wxString& src, wxChar quote = L'\'');
 wxString makeProper(const wxString& input);

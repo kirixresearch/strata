@@ -144,7 +144,7 @@ static wxString getJobElapsedTimeString(IJobInfoPtr job_info)
                                     time_str.c_str());
     }
 
-    return dbl2fstr(job_info->getPercentage(), 1) + wxT("%");
+    return kl::formattedNumber(job_info->getPercentage(), 1) + wxT("%");
 }
 
 

@@ -1884,7 +1884,7 @@ void TableDoc::onReload(wxCommandEvent& evt)
         transdoc.clear();
 
 
-        IJobInfoPtr job_info = createJobInfoObject();
+        IJobInfoPtr job_info = jobs::createJobInfoObject();
         job_info->sigStateChanged().connect(this, &TableDoc::onReloadDownloadFinished);
         
         
@@ -1893,7 +1893,7 @@ void TableDoc::onReload(wxCommandEvent& evt)
     }
      else if (m_source_mimetype == wxT("application/rss+xml"))
     {
-        IJobInfoPtr job_info = createJobInfoObject();
+        IJobInfoPtr job_info = jobs::createJobInfoObject();
         if (job_info.isNull())
             return;
         job_info->sigStateChanged().connect(this, &TableDoc::onReloadDownloadFinished);
@@ -2139,7 +2139,7 @@ void TableDoc::updateStatusSelectionSum()
     wxString text = wxEmptyString;
     if (show)
     {
-        text = wxString::Format(_("Sum: %s"), dbl2fstr(sum, scale).c_str());
+        text = wxString::Format(_("Sum: %s"), kl::formattedNumber(sum, scale).c_str());
     } 
      else
     {
@@ -2190,7 +2190,7 @@ void TableDoc::updateStatusBar(bool row_count_update)
     wxString currow_text;
     if (m_filter.Length() + m_sort_order.Length() > 0)
         currow_text = wxT("~");
-    currow_text += dbl2fstr(m_grid->getCursorRow()+1);
+    currow_text += kl::formattedNumber(m_grid->getCursorRow()+1);
 
     if (m_browse_set.isOk())
     {
@@ -2210,7 +2210,7 @@ void TableDoc::updateStatusBar(bool row_count_update)
         {
             position_text = wxString::Format(_("Position: %s"), currow_text.c_str());
             reccount_text = wxString::Format(_("Record Count: %s"),
-                dbl2fstr((tango::tango_int64_t)m_stat_row_count).c_str());
+                kl::formattedNumber((tango::tango_int64_t)m_stat_row_count).c_str());
         }
          else
         {
@@ -6897,9 +6897,9 @@ void TableDoc::gotoRecord()
         tango::tango_int64_t row_count = (tango::tango_int64_t)m_stat_row_count;
         
         wxString message = wxString::Format(_("Record number (1 - %s):"),
-                dbl2fstr(row_count).c_str());
+                kl::formattedNumber(row_count).c_str());
         wxTextEntryDialog dlg(this, message, _("Go To Record"),
-                dbl2fstr(m_grid->getCursorRow()+1));
+                towx(kl::formattedNumber(m_grid->getCursorRow()+1)));
         dlg.SetSize(270,143);
         
         if (dlg.ShowModal() == wxID_OK)

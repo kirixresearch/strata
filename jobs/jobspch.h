@@ -13,6 +13,8 @@
 #define __JOBS_JOBSPCH_H
 
 #include <xcm/xcm.h>
+#include <kl/string.h>
+#include <kl/math.h>
 #include <kl/json.h>
 #include "jobs.h"
 #include "tango.h"

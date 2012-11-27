@@ -2332,7 +2332,7 @@ public:
             {
                 //IJobInfoPtr ptr;
                 
-                //ptr = createJobInfoObject();
+                //ptr = jobs::createJobInfoObject();
                 
                 //ptr.clear();
                 

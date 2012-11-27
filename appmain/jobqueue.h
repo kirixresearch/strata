@@ -26,8 +26,6 @@ XCM_DECLARE_SMARTPTR(IJobQueue)
 XCM_DECLARE_SMARTPTR2(xcm::IVector<IJobInfoPtr>, IJobInfoEnumPtr)
 
 
-IJobInfoPtr createJobInfoObject();
-
 enum
 {
     jobStateNone = 0x0000,
@@ -173,7 +171,7 @@ public:
     {
         m_jobbase_jobid = 0;
         m_extra_long = 0;
-        m_sp_job_info = createJobInfoObject();
+        m_sp_job_info = jobs::createJobInfoObject();
         m_job_info = m_sp_job_info.p;
         m_cancelling = false;
 

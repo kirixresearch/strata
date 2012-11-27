@@ -183,6 +183,8 @@ std::string itostring(int val);
 std::string stdsprintf(const char* fmt, ...);
 std::wstring stdswprintf(const wchar_t* fmt, ...);
 
+std::wstring formattedNumber(double d, int dec = -1);
+
 
 void parseDelimitedList(const std::wstring& s,
                         std::vector<std::wstring>& vec,

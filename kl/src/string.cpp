@@ -10,6 +10,7 @@
 
 
 #include "kl/string.h"
+#include "kl/math.h"
 #include <cstdarg>
 
 namespace kl
@@ -127,6 +128,95 @@ std::wstring stdswprintf(const wchar_t* fmt, ...)
     va_end(args);
 
     return str;
+}
+
+std::wstring formattedNumber(double d, int dec_places)
+{
+    // the first time we are run, get locale information about
+    // the system's decimal point character and thousands
+    // separator character
+
+    static wchar_t thousands_sep = 0;
+    static wchar_t decimal_point = 0;
+    if (!decimal_point)
+    {
+        struct lconv* l = localeconv();
+        thousands_sep = (unsigned char)*(l->thousands_sep);
+        decimal_point = (unsigned char)*(l->decimal_point);
+
+        if (thousands_sep == 0)
+            thousands_sep = ',';
+        if (decimal_point == 0)
+            decimal_point = '.';
+    }
+
+    if (dec_places == -1)
+    {
+        // TODO: it'd be nice to sense the number of decimal places if dec == -1
+        dec_places = 0;
+    }
+
+    // initialize result area
+    wchar_t result[128];
+    wchar_t* string_start;
+    memset(result, 0, sizeof(wchar_t)*128);
+
+    double decp, intp;
+    int digit;
+    bool negative = false;
+
+    if (d < 0.0)
+    {
+        negative = true;
+        d = fabs(d);
+    }
+
+    // split the number up into integer and fraction portions
+    d = kl::dblround(d, dec_places);
+    decp = modf(d, &intp);
+
+    int i = 0;
+
+    int pos = 40;
+    while (1)
+    {
+        digit = (int)((modf(intp/10, &intp)+0.01)*10);
+
+        result[pos] = L'0' + digit;
+        pos--;
+
+        if (intp < 1.0)
+        {
+            break;
+        }
+
+        if (++i == 3)
+        {
+            result[pos] = thousands_sep;
+            pos--;
+            i = 0;
+        }
+    }
+
+    if (negative)
+    {
+        result[pos] = L'-';
+        --pos;
+    }
+
+
+    string_start = result+pos+1;
+
+
+    if (dec_places > 0)
+    {
+        pos = 41;
+        result[pos] = decimal_point;
+        pos++;
+        swprintf(result+pos, 40, L"%0*.0f", dec_places, decp * kl::pow10(dec_places));
+    }
+
+    return string_start;
 }
 
 
