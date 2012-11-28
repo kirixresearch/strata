@@ -39,7 +39,7 @@ public:
         m_usage = usage;
     }
 
-    void setDatabase(tango::IDatabasePtr db)
+    void setDatabase(tango::IDatabase* db)
     {
         m_db = db;
     }

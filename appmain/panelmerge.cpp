@@ -507,15 +507,21 @@ void MergePanel::onOK(wxCommandEvent& evt)
 
 
     jobs::IJobPtr job = jobs::createJob(L"application/vnd.kx.append-data");
-    
+    job->setDatabase(g_app->getDatabase());
 
     kl::JsonNode instructions;
     instructions["input"].setArray();
 
     if (m_append)
+    {
+        instructions["mode"].setString(L"append");
         instructions["output"] = m_set->getObjectPath(); // this is an append job
-         else  
-        instructions["output"] = L"";                    // this is a merge job
+    }
+     else  
+    {
+        instructions["mode"].setString(L"overwrite");
+        instructions["output"] = towstr(output_path);
+    }
 
     // add all of the sets we're going to append
     std::vector<tango::ISetPtr>::iterator set_it;

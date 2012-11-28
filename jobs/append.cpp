@@ -70,6 +70,8 @@ int AppendJob::runJob()
             m_job_info->setError(jobserrInvalidParameter, L"");
             return 0;
         }
+
+        sets.push_back(set);
     }
 
     if (sets.size() == 0)
@@ -82,6 +84,22 @@ int AppendJob::runJob()
 
     // output target
     std::wstring output_path = m_config["output"];
+
+    if (m_config["mode"].getString() == L"overwrite")
+    {
+        if (m_db->getFileExist(output_path))
+            m_db->deleteFile(output_path);
+
+        if (m_db->getFileExist(output_path))
+        {
+            // delete failed
+            m_job_info->setState(jobStateFailed);
+            m_job_info->setError(jobserrWriteError, L"");
+            return 0;
+        }
+    }
+
+
     if (m_db->getFileExist(output_path))
     {
         // append to existing table

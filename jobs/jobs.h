@@ -11,6 +11,11 @@
 #ifndef __JOBS_JOBS_H
 #define __JOBS_JOBS_H
 
+namespace tango
+{
+    xcm_interface IDatabase;
+};
+
 
 namespace jobs
 {
@@ -94,6 +99,7 @@ public:
 
     virtual void setParameter(const std::wstring& param, const std::wstring& value) = 0;
     virtual void setInstructions(const std::wstring& json) = 0;
+    virtual void setDatabase(tango::IDatabase* db) = 0;
 };
 
 
