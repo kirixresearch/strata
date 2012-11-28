@@ -15,6 +15,10 @@
 #include "relationdnd.h"
 #include "dbdoc.h"
 
+#if defined(__WXMSW__)
+    #include <wx/msw/uxtheme.h>
+#endif
+
 
 /* XPM */
 static const char* xpm_relationshipbox_close[] = {
@@ -98,10 +102,61 @@ static inline bool IsUxThemed()
     return false;
 }
 
-bool DrawUxThemeCloseButton(wxDC& dc,
+
+
+static bool DrawUxThemeCloseButton(wxDC& dc,
                             wxWindow* wnd,
                             const wxRect& rect,
-                            int button_state);  // in artprovider.cpp
+                            int button_state)
+{
+#if defined(__WXMSW__)
+#if wxUSE_UXTHEME
+
+    if (wxUxThemeEngine::Get())
+    {
+        wxUxThemeHandle hTheme(wnd, L"WINDOW");
+        if (hTheme)
+        {
+            int state = 1;
+            switch (button_state)
+            {
+                case RelationBox::ButtonStateNormal:
+                    state = 1; // CBS_NORMAL
+                    break;
+                case RelationBox::ButtonStateHover:
+                    state = 2; // CBS_HOT
+                    break;
+                case RelationBox::ButtonStatePressed:
+                    state = 3; // CBS_PUSHED
+                    break;
+                case RelationBox::ButtonStateDisabled:
+                    state = 4; //CBS_DISABLED
+                    break;
+                default:
+                    wxASSERT_MSG(false, wxT("Unknown state"));
+            }
+
+            RECT rc;
+            wxCopyRectToRECT(rect, rc);
+            rc.top += (rect.height-13)/2;
+            rc.right = rc.left+13;
+            rc.bottom = rc.top+13;
+            
+            // draw the themed close button
+            wxUxThemeEngine::Get()->DrawThemeBackground(
+                                hTheme, 
+                                (HDC)kcl::getHdcFrom(dc), 
+                                19 /*WP_SMALLCLOSEBUTTON*/,
+                                state, &rc, NULL);
+            return true;
+        }
+    }
+    
+#endif  // wxUSE_UXTHEME
+#endif  // defined(__WXMSW__)
+
+    return false;
+}
 
 void showAddTableDialog(RelationDiagram* diagram)
 {
