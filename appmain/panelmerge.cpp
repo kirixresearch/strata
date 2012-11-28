@@ -385,6 +385,48 @@ struct AppendInfo
 
 static void onAppendJobFinished(jobs::IJobPtr job)
 {
+    kl::JsonNode instructions;
+    instructions.fromString(job->getInstructions());
+
+    if (instructions["mode"].getString() == L"append")
+    {
+        std::wstring output_path = instructions["output"];
+
+        // iterate through document sites, and update tabledocs
+        IDocumentSiteEnumPtr docsites;
+        IDocumentSitePtr site;
+        ITableDocPtr table_doc;
+
+        docsites = g_app->getMainFrame()->getDocumentSites(sitetypeNormal);
+
+        int site_count = docsites->size();
+        for (int i = 0; i < site_count; ++i)
+        {
+            site = docsites->getItem(i);
+            table_doc = site->getDocument();
+            if (table_doc.isOk())
+            {
+                tango::ISetPtr base_set = table_doc->getBaseSet();
+                if (base_set.isOk() && 0 == wcscasecmp(base_set->getObjectPath().c_str(), output_path.c_str()))
+                {
+                    table_doc->getGrid()->refresh(kcl::Grid::refreshAll);
+                    table_doc->updateStatusBar();
+                }
+            }
+        }
+    }
+     else if (instructions["mode"].getString() == L"overwrite")
+    {
+        // this is a merge job
+        
+        if (job->getJobInfo()->getState() != jobStateFinished)
+            return;
+
+        std::wstring output_path = instructions["output"];
+        g_app->getAppController()->openSet(output_path);
+    }
+
+
 /*
     IAppendJobPtr append_job = job;
     if (append_job.isNull())
@@ -516,11 +558,13 @@ void MergePanel::onOK(wxCommandEvent& evt)
     {
         instructions["mode"].setString(L"append");
         instructions["output"] = m_set->getObjectPath(); // this is an append job
+        job->getJobInfo()->setTitle(towstr(_("Append Records")));
     }
      else  
     {
         instructions["mode"].setString(L"overwrite");
         instructions["output"] = towstr(output_path);
+        job->getJobInfo()->setTitle(towstr(_("Merge Tables")));
     }
 
     // add all of the sets we're going to append
