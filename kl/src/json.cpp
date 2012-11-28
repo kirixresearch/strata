@@ -771,16 +771,37 @@ void JsonNode::setNull()
 
 std::wstring JsonNode::getString()
 {
+    // TODO: add implicit type conversions
+
     return m_value->m_string;
 }
 
 bool JsonNode::getBoolean()
 {
-    return m_value->m_boolean;
+    switch (m_value->m_type)
+    {
+        case nodetypeBoolean:
+            return m_value->m_boolean;
+        case nodetypeInteger:
+            return (m_value->m_integer != 0 ? true : false);
+        case nodetypeDouble:
+            return (m_value->m_double != 0 ? true : false);
+        case nodetypeString:
+            return (m_value->m_string.size() > 0 ? true : false); // ECMAScript behavior
+        case nodetypeNull:
+            return false;
+        case nodetypeObject:
+        case nodetypeArray:
+            return true;
+    }
+
+    return false;
 }
 
 double JsonNode::getDouble()
 {
+    // TODO: add implicit type conversions
+
     if (m_value->m_type == nodetypeInteger)
         return m_value->m_integer;
          else
@@ -789,6 +810,8 @@ double JsonNode::getDouble()
 
 int JsonNode::getInteger()
 {
+    // TODO: add implicit type conversions
+
     return m_value->m_integer;
 }
 
