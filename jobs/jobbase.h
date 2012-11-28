@@ -142,14 +142,13 @@ protected:
     IJobInfo* m_job_info;
     std::wstring m_extra_string;
     long m_extra_long;
+    kl::JsonNode m_config;
 
 private:
 
     int m_jobbase_jobid;
     xcm::mutex m_jobbase_mutex;
     bool m_cancelling;
-
-    kl::JsonNode m_config;
 };
 
 }; // namespace jobs

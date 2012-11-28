@@ -34,7 +34,6 @@ public:
 
 private:
 
-    tango::ISetPtr m_target_set;
     double m_max_count;
 };
 

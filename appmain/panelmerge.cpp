@@ -383,7 +383,7 @@ struct AppendInfo
     tango::ISetPtr target_set;
 };
 
-static void onAppendJobFinished(IJobPtr job)
+static void onAppendJobFinished(jobs::IJobPtr job)
 {
 /*
     IAppendJobPtr append_job = job;
@@ -463,11 +463,7 @@ void MergePanel::onOK(wxCommandEvent& evt)
             return;
     }
     
-    tango::IStructurePtr input_structure = xcm::null;
-    tango::IStructurePtr output_structure = xcm::null;
-    tango::IColumnInfoPtr input_colinfo = xcm::null;
-    tango::IColumnInfoPtr output_colinfo = xcm::null;
-    tango::ISetPtr set = xcm::null;
+    tango::ISetPtr set;
     std::vector<tango::ISetPtr> set_ptrs;
 
     int col_idx = 0;
@@ -492,46 +488,6 @@ void MergePanel::onOK(wxCommandEvent& evt)
                                        wxOK | wxICON_EXCLAMATION | wxCENTER);
                     return;
                 }
-                
-                // push the set back
-                set_ptrs.push_back(set);
-            }
-             else
-            {
-                // merging tables -- merge their fields into one amalgamated
-                // output structure (NOTE: we don't do this for append because
-                // doing an append implies that the result set should have the
-                // same structure as the set we're appending to)
-                input_structure = set->getStructure();
-                
-                if (!output_structure)
-                {
-                    output_structure = set->getStructure();
-                }
-
-                col_idx = 0;
-                input_col_count = input_structure->getColumnCount();
-                output_col_count = output_structure->getColumnCount();
-
-
-                if (output_col_count < input_col_count)
-                {
-                    input_col_count = output_col_count;
-                }
-
-                for (col_idx = 0; col_idx < input_col_count; ++col_idx)
-                {
-                    input_colinfo = input_structure->getColumnInfoByIdx(col_idx);
-                    output_colinfo = output_structure->getColumnInfoByIdx(col_idx);
-
-                    if (input_colinfo->getWidth() > output_colinfo->getWidth())
-                    {
-                        output_colinfo->setWidth(input_colinfo->getWidth());
-                    }
-                }
-                
-                // push the set back
-                set_ptrs.push_back(set);
             }
         }
          else
@@ -544,12 +500,14 @@ void MergePanel::onOK(wxCommandEvent& evt)
             
             return;
         }
+
+        set_ptrs.push_back(set);
     }
 
 
 
     jobs::IJobPtr job = jobs::createJob(L"application/vnd.kx.append-data");
-
+    
 
     kl::JsonNode instructions;
     instructions["input"].setArray();
@@ -569,6 +527,13 @@ void MergePanel::onOK(wxCommandEvent& evt)
 
 
     job->setInstructions(instructions.toString());
+
+
+    job->sigJobFinished().connect(&onAppendJobFinished);
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
+
+    m_frame->closeSite(m_doc_site);
+
 
     /*
     // create the append job

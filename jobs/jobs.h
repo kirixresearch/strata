@@ -20,7 +20,9 @@ enum
 {
     jobserrNone = 0,
     jobserrFailed = 1,
-    jobserrInsufficientDiskSpace = 2
+    jobserrInsufficientDiskSpace = 2,
+    jobserrInvalidParameter = 3,
+    jobserrWriteError = 4
 };
 
 
