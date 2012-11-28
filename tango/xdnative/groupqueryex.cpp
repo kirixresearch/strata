@@ -520,8 +520,11 @@ bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
 
     
         // identifiers by themselves are considered FIRST()
+        std::wstring deq = hook_info.expr_text;
+        dequote(deq, '[', ']');
+
         text = L"FIRST([";
-        text += hook_info.expr_text;
+        text += deq;
         text += L"])";
     }
 
