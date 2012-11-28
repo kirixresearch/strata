@@ -1162,11 +1162,10 @@ bool QueryTemplate::loadJson(const wxString& path)
     kl::JsonNode input = root["input"];
     if (input.isOk())
     {
-        QueryBuilderSourceTable query_table;
-
         size_t i, input_count = input.getChildCount();
         for (i =  0; i < input_count; ++i)
         {
+            QueryBuilderSourceTable query_table;
             kl::JsonNode table = input[i];
             
             // TODO: check for existence of following elements
