@@ -94,6 +94,7 @@ public:
     JsonNode(const JsonNode& _c);
 
     JsonNode& operator=(const JsonNode& _c);
+    JsonNode& operator=(bool b);    
     JsonNode& operator=(int i);
     JsonNode& operator=(double d);
     JsonNode& operator=(const std::string& str);
