@@ -3439,7 +3439,7 @@ bool CompReportDesign::saveJson(const wxString& path)
 
     // section info
     root["sections"].setArray();
-    kl::JsonNode sections = root["sections"];        
+    kl::JsonNode sections = root["sections"];
 
     std::vector<SectionInfo>::const_iterator it, it_end;
     it_end = m_sections.end();
@@ -3457,12 +3457,12 @@ bool CompReportDesign::saveJson(const wxString& path)
         section["type"] = towstr(it->m_type);
         section["name"] = towstr(it->m_name);
         section["group_field"] = towstr(it->m_group_field);
-        section["page_break"] = it->m_page_break;
-        section["sort_desc"] = it->m_sort_desc;
-        section["active"] = it->m_active;
+        section["page_break"].setBoolean(it->m_page_break);
+        section["sort_desc"].setBoolean(it->m_sort_desc);
+        section["active"].setBoolean(it->m_active);
         
-        section["column_count"] = it->m_table->getColumnCount();
-        section["row_count"] = it->m_table->getRowCount();
+        section["column_count"].setInteger(it->m_table->getColumnCount());
+        section["row_count"].setInteger(it->m_table->getRowCount());
 
         // save the table properties
         saveTablePropertiesToJson(it->m_table, section);
