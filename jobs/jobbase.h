@@ -104,6 +104,15 @@ public:
         m_config.fromString(json);
     }
 
+    std::wstring getInstructions()
+    {
+        XCM_AUTO_LOCK(m_jobbase_mutex);
+
+        std::wstring res = m_config.toString();
+        return res;
+    }
+
+
     void setDatabase(tango::IDatabase* db)
     {
     }

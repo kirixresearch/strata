@@ -385,6 +385,8 @@ struct AppendInfo
 
 static void onAppendJobFinished(jobs::IJobPtr job)
 {
+    g_app->getAppController()->refreshDbDoc();
+
     kl::JsonNode instructions;
     instructions.fromString(job->getInstructions());
 
@@ -548,8 +550,7 @@ void MergePanel::onOK(wxCommandEvent& evt)
 
 
 
-    jobs::IJobPtr job = jobs::createJob(L"application/vnd.kx.append-data");
-    job->setDatabase(g_app->getDatabase());
+    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.append-data");
 
     kl::JsonNode instructions;
     instructions["input"].setArray();

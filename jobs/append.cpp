@@ -20,7 +20,6 @@ namespace jobs
 
 AppendJob::AppendJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
 {
-    m_max_count = 0.0;
 }
 
 AppendJob::~AppendJob()
@@ -49,6 +48,8 @@ int AppendJob::runJob()
     tango::IIteratorPtr source_iter;
     tango::ISetPtr target_set;
     std::vector<tango::ISetPtr>::iterator it;
+    tango::tango_int64_t max_count = 0;
+    bool valid_max_count = true;
 
 
     // get input data
@@ -71,6 +72,11 @@ int AppendJob::runJob()
             return 0;
         }
 
+        if (set->getSetFlags() & tango::sfFastRowCount)
+            max_count += set->getRowCount();
+             else
+            valid_max_count = false;  // can't get a reliable total number of records
+
         sets.push_back(set);
     }
 
@@ -81,6 +87,8 @@ int AppendJob::runJob()
         return 0;
     }
 
+    if (valid_max_count)
+        m_job_info->setMaxCount((double)max_count);
 
     // output target
     std::wstring output_path = m_config["output"];
@@ -190,7 +198,13 @@ int AppendJob::runJob()
         }
 
         if (tango_job->getCancelled())
+        {
+            target_set.clear();
+            if (m_config["mode"].getString() == L"overwrite")
+                m_db->deleteFile(output_path);
+
             break;
+        }
     }
 
 

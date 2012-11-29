@@ -31,10 +31,6 @@ public:
 
     int runJob();
     void runPostJob();
-
-private:
-
-    double m_max_count;
 };
 
 

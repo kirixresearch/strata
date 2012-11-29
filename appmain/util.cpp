@@ -1663,6 +1663,22 @@ wxWindow* getDocumentSiteWindow(IDocumentSitePtr site)
     return w;
 }
 
+jobs::IJobPtr appCreateJob(const std::wstring& job_id)
+{
+    jobs::IJobPtr job = jobs::createJob(job_id);
+
+    if (job.isNull())
+        return xcm::null;
+
+    job->setDatabase(g_app->getDatabase());
+    job->getJobInfo()->setProgressStringFormat(
+                                    towstr(_("$c records processed")),
+                                    towstr(_("$c of $m records processed ($p1%)")));
+
+    return job;
+}
+
+
 wxString getWebFile(const wxString& urlstring)
 {
     std::string fetch_url = (const char*)urlstring.mbc_str();

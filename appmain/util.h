@@ -340,7 +340,7 @@ void switchToOtherDocument(IDocumentSitePtr site,
 
 wxWindow* getDocumentSiteWindow(IDocumentSitePtr site);
 
-
+jobs::IJobPtr appCreateJob(const std::wstring& job_id);
 
 // -- other utility functions -------------------------------------------------
 
