@@ -2487,6 +2487,12 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
 
             if (right)
                 j.join_type = joinRightOuter;
+            
+            if (j.join_type == joinRightOuter || j.join_type == joinFullOuter)
+            {
+                error.setError(tango::errorSyntax, L"Invalid syntax; FULL and RIGHT OUTER joins are not supported");                 
+                return xcm::null;
+            }
 
             if (outer)
             {
