@@ -571,6 +571,12 @@ static std::wstring renameJoinFields(std::vector<SourceTable>& source_tables,
             full_name += L".";
             full_name += q_colname;
             result = exprReplaceToken(result, full_name, replace_with);
+
+            if (isUniqueFieldName(source_tables, colname))
+            {
+                result = exprReplaceToken(result, q_colname, replace_with);
+                result = exprReplaceToken(result, colname, replace_with);
+            }
         }
     }
 
@@ -1361,7 +1367,7 @@ wchar_t* zl_find_field(wchar_t* str,
 
 
 static void getReferencedFields(std::vector<SourceTable>& s,
-                                const std::wstring expr,
+                                const std::wstring& expr,
                                 std::vector<std::wstring>& flds)
 
 {
@@ -1408,6 +1414,28 @@ static void getReferencedFields(std::vector<SourceTable>& s,
             {
                 flds.push_back(L"[" + alias + L"].[" + colname + L"]");
                 continue;
+            }
+
+            // [fieldname]
+            full_name = L"[" + colname + L"]";
+            if (zl_find_field((wchar_t*)expr.c_str(), full_name.c_str()))
+            {
+                if (isUniqueFieldName(s, colname))
+                {
+                    flds.push_back(L"[" + alias + L"].[" + colname + L"]");
+                    continue;
+                }
+            }
+
+            // fieldname
+            full_name = colname;
+            if (zl_find_field((wchar_t*)expr.c_str(), full_name.c_str()))
+            {
+                if (isUniqueFieldName(s, colname))
+                {
+                    flds.push_back(L"[" + alias + L"].[" + colname + L"]");
+                    continue;
+                }
             }
         }
     }
@@ -2942,6 +2970,17 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         {
             f_it->expr = renameJoinFields(source_tables, f_it->expr);
         }
+
+        std::wstring order_by_str;
+        std::vector<OrderByField>::iterator order_by_it;
+        for (order_by_it = order_by_fields.begin();
+             order_by_it != order_by_fields.end();
+             ++order_by_it)
+        {
+            order_by_it->name = renameJoinFields(source_tables, order_by_it->name);
+        }
+
+
     }
 
     if (set.isNull())
