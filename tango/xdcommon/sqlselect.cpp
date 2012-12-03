@@ -1610,6 +1610,7 @@ static tango::ISetPtr doJoin(tango::IDatabasePtr db,
                              std::vector<SourceTable>& source_tables,
                              std::vector<SelectField>& columns,
                              std::vector<std::wstring>& group_by_fields,
+                             const std::wstring& having,
                              const std::wstring& where_expr,
                              tango::IJob* job)
 {
@@ -1908,9 +1909,7 @@ static tango::ISetPtr doJoin(tango::IDatabasePtr db,
             jf.dest_handle = 0;
 
             if (jf.name != sf_it->name)
-            {
                 jf.alias = sf_it->name;
-            }
 
             dequoteField(jf.name);
 
@@ -1936,6 +1935,30 @@ static tango::ISetPtr doJoin(tango::IDatabasePtr db,
         dequoteField(jf.name);
         jfields.push_back(jf);
     }
+
+    // make sure having fields are in output -- we will need this
+    // in the output for the grouping operation, which
+    // is executed after the join
+
+    if (having.length() > 0)
+    {
+        std::vector<std::wstring> flds;
+        std::vector<std::wstring>::iterator fit;
+
+        getReferencedFields(source_tables, having, flds);
+        for (fit = flds.begin(); fit != flds.end(); ++fit)
+        {
+            JoinField jf;
+            jf.name = *fit;
+            jf.source_handle = 0;
+            jf.dest_handle = 0;
+
+            dequoteField(jf.name);
+
+            jfields.push_back(jf);
+        }
+    }
+
 
 
     for (jf_it = jfields.begin(); jf_it != jfields.end(); ++jf_it)
@@ -2962,6 +2985,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
                      source_tables,
                      fields,
                      group_by_fields,
+                     having,
                      where_cond,
                      job);
 
@@ -2986,7 +3010,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
             order_by_it->name = renameJoinFields(source_tables, order_by_it->name);
         }
 
-
+        having = renameJoinFields(source_tables, having);
     }
 
     if (set.isNull())
