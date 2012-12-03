@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -118,7 +118,7 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;comctl32.lib;wsock32.lib;rpcrt4.lib;wxbase29ud.lib;wxbase29ud_net.lib;wxbase29ud_xml.lib;wxmsw29ud_core.lib;wxmsw29ud_adv.lib;wxmsw29ud_aui.lib;wxmsw29ud_html.lib;wxmsw29ud_stc.lib;wxmsw29ud_webview.lib;wxexpatd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxscintillad.lib;../supp/haru/lib/harud.lib;../supp/curl/builds/libcurl-debug-static-ipv6-sspi-spnego-winssl/lib/libcurl_a_debug.lib;../kl/lib/klud.lib;../kcl/lib/kclud.lib;../cfw/lib/cfwud.lib;../paladin/lib/paladinud.lib;../kscript/lib/kscriptud.lib;../kcanvas/lib/kcanvasud.lib;../webconnect/lib/webconnectud.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;comctl32.lib;wsock32.lib;rpcrt4.lib;wxbase29ud.lib;wxbase29ud_net.lib;wxbase29ud_xml.lib;wxmsw29ud_core.lib;wxmsw29ud_adv.lib;wxmsw29ud_aui.lib;wxmsw29ud_html.lib;wxmsw29ud_stc.lib;wxmsw29ud_webview.lib;wxexpatd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxscintillad.lib;../supp/haru/lib/harud.lib;../supp/curl/builds/libcurl-debug-static-ipv6-sspi-spnego-winssl/lib/libcurl_a_debug.lib;../kl/lib/klud.lib;../kcl/lib/kclud.lib;../jobs/lib/jobsud.lib;../paladin/lib/paladinud.lib;../kscript/lib/kscriptud.lib;../kcanvas/lib/kcanvasud.lib;../webconnect/lib/webconnectud.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../supp/wxWidgets/lib/vc_lib;../supp/wxpdfdoc/lib;../supp/curl/lib/debug-ssl;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -172,7 +172,7 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;comctl32.lib;wsock32.lib;rpcrt4.lib;wxbase29ud.lib;wxbase29ud_net.lib;wxbase29ud_xml.lib;wxmsw29ud_core.lib;wxmsw29ud_adv.lib;wxmsw29ud_aui.lib;wxmsw29ud_html.lib;wxmsw29ud_stc.lib;wxmsw29ud_webview.lib;wxexpatd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxscintillad.lib;../supp/haru/lib/harud.lib;../supp/curl/builds/libcurl-debug-static-ipv6-sspi-spnego-winssl/lib/libcurl_a_debug.lib;../kl/lib/klud.lib;../kcl/lib/kclud.lib;../cfw/lib/cfwud.lib;../paladin/lib/paladinud.lib;../kscript/lib/kscriptud.lib;../kcanvas/lib/kcanvasud.lib;../webconnect/lib/webconnectud.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;comctl32.lib;wsock32.lib;rpcrt4.lib;wxbase29ud.lib;wxbase29ud_net.lib;wxbase29ud_xml.lib;wxmsw29ud_core.lib;wxmsw29ud_adv.lib;wxmsw29ud_aui.lib;wxmsw29ud_html.lib;wxmsw29ud_stc.lib;wxmsw29ud_webview.lib;wxexpatd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxscintillad.lib;../supp/haru/lib/harud.lib;../supp/curl/builds/libcurl-debug-static-ipv6-sspi-spnego-winssl/lib/libcurl_a_debug.lib;../kl/lib/klud.lib;../kcl/lib/kclud.lib;../jobs/lib/jobsud.lib;../paladin/lib/paladinud.lib;../kscript/lib/kscriptud.lib;../kcanvas/lib/kcanvasud.lib;../webconnect/lib/webconnectud.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../supp/wxWidgets/lib/vc_lib;../supp/wxpdfdoc/lib;../supp/curl/lib/debug-ssl;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -227,7 +227,7 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;comctl32.lib;wsock32.lib;rpcrt4.lib;wxbase29u.lib;wxbase29u_net.lib;wxbase29u_xml.lib;wxmsw29u_core.lib;wxmsw29u_adv.lib;wxmsw29u_aui.lib;wxmsw29u_html.lib;wxmsw29u_stc.lib;wxmsw29u_webview.lib;wxexpat.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;wxscintilla.lib;../supp/haru/lib/haru.lib;../supp/curl/builds/libcurl-release-static-ipv6-sspi-spnego-winssl/lib/libcurl_a.lib;../kl/lib/klu.lib;../kcl/lib/kclu.lib;../cfw/lib/cfwu.lib;../paladin/lib/paladinu.lib;../kscript/lib/kscriptu.lib;../kcanvas/lib/kcanvasu.lib;../webconnect/lib/webconnectu.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;comctl32.lib;wsock32.lib;rpcrt4.lib;wxbase29u.lib;wxbase29u_net.lib;wxbase29u_xml.lib;wxmsw29u_core.lib;wxmsw29u_adv.lib;wxmsw29u_aui.lib;wxmsw29u_html.lib;wxmsw29u_stc.lib;wxmsw29u_webview.lib;wxexpat.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;wxscintilla.lib;../supp/haru/lib/haru.lib;../supp/curl/builds/libcurl-release-static-ipv6-sspi-spnego-winssl/lib/libcurl_a.lib;../kl/lib/klu.lib;../kcl/lib/kclu.lib;../jobs/lib/jobsu.lib;../paladin/lib/paladinu.lib;../kscript/lib/kscriptu.lib;../kcanvas/lib/kcanvasu.lib;../webconnect/lib/webconnectu.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../supp/wxWidgets/lib/vc_lib;../supp/wxpdfdoc/lib;../supp/curl/lib/release-ssl;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -281,7 +281,7 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;comctl32.lib;wsock32.lib;rpcrt4.lib;wxbase29u.lib;wxbase29u_net.lib;wxbase29u_xml.lib;wxmsw29u_core.lib;wxmsw29u_adv.lib;wxmsw29u_aui.lib;wxmsw29u_html.lib;wxmsw29u_stc.lib;wxmsw29u_webview.lib;wxexpat.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;wxscintilla.lib;../supp/haru/lib/haru.lib;../supp/curl/builds/libcurl-release-static-ipv6-sspi-spnego-winssl/lib/libcurl_a.lib;../kl/lib/klu.lib;../kcl/lib/kclu.lib;../cfw/lib/cfwu.lib;../paladin/lib/paladinu.lib;../kscript/lib/kscriptu.lib;../kcanvas/lib/kcanvasu.lib;../webconnect/lib/webconnectu.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;comctl32.lib;wsock32.lib;rpcrt4.lib;wxbase29u.lib;wxbase29u_net.lib;wxbase29u_xml.lib;wxmsw29u_core.lib;wxmsw29u_adv.lib;wxmsw29u_aui.lib;wxmsw29u_html.lib;wxmsw29u_stc.lib;wxmsw29u_webview.lib;wxexpat.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;wxscintilla.lib;../supp/haru/lib/haru.lib;../supp/curl/builds/libcurl-release-static-ipv6-sspi-spnego-winssl/lib/libcurl_a.lib;../kl/lib/klu.lib;../kcl/lib/kclu.lib;../jobs/lib/jobsu.lib;../paladin/lib/paladinu.lib;../kscript/lib/kscriptu.lib;../kcanvas/lib/kcanvasu.lib;../webconnect/lib/webconnectu.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../supp/wxWidgets/lib/vc_lib;../supp/wxpdfdoc/lib;../supp/curl/lib/release-ssl;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -327,16 +327,7 @@
     </ClCompile>
     <ClCompile Include="..\appmain\appprefs.cpp" />
     <ClCompile Include="..\appmain\appprint.cpp" />
-    <ClCompile Include="..\appmain\apputil.cpp">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
+    <ClCompile Include="..\appmain\artprovider.cpp" />
     <ClCompile Include="..\appmain\bitmapmgr.cpp" />
     <ClCompile Include="..\appmain\bookmark.cpp" />
     <ClCompile Include="..\appmain\bookmarkfs.cpp" />
@@ -411,6 +402,11 @@
     <ClCompile Include="..\appmain\feedparser.cpp" />
     <ClCompile Include="..\appmain\fieldlistcontrol.cpp" />
     <ClCompile Include="..\appmain\fieldtypechoice.cpp" />
+    <ClCompile Include="..\appmain\framework.cpp" />
+    <ClCompile Include="..\appmain\fsitems.cpp" />
+    <ClCompile Include="..\appmain\fspanel.cpp" />
+    <ClCompile Include="..\appmain\fspanellistview.cpp" />
+    <ClCompile Include="..\appmain\fspaneltreeview.cpp" />
     <ClCompile Include="..\appmain\importpages.cpp" />
     <ClCompile Include="..\appmain\importtemplate.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -534,6 +530,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="..\appmain\jobqueue.cpp" />
     <ClCompile Include="..\appmain\jobscheduler.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -741,6 +738,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="..\appmain\prefs.cpp" />
     <ClCompile Include="..\appmain\querydoc.cpp" />
     <ClCompile Include="..\appmain\querytemplate.cpp" />
     <ClCompile Include="..\appmain\relationdiagram.cpp" />
@@ -820,6 +818,7 @@
     <ClCompile Include="..\appmain\scriptwebdom.cpp" />
     <ClCompile Include="..\appmain\scriptxml.cpp" />
     <ClCompile Include="..\appmain\sqldoc.cpp" />
+    <ClCompile Include="..\appmain\statusbar.cpp" />
     <ClCompile Include="..\appmain\structuredoc.cpp" />
     <ClCompile Include="..\appmain\structurevalidator.cpp" />
     <ClCompile Include="..\appmain\tabledoc.cpp">
@@ -876,6 +875,7 @@
     </ClCompile>
     <ClCompile Include="..\appmain\transformationdoc.cpp" />
     <ClCompile Include="..\appmain\updater.cpp" />
+    <ClCompile Include="..\appmain\util.cpp" />
     <ClCompile Include="..\appmain\webdoc.cpp" />
     <ClCompile Include="..\appmain\mongoose.cpp" />
     <ClCompile Include="appstrata.cpp" />
@@ -884,10 +884,11 @@
     <ClInclude Include="..\appmain\app.h" />
     <ClInclude Include="..\appmain\appconfig.h" />
     <ClInclude Include="..\appmain\appcontroller.h" />
+    <ClInclude Include="..\appmain\apphook.h" />
     <ClInclude Include="..\appmain\appmain.h" />
     <ClInclude Include="..\appmain\appprefs.h" />
     <ClInclude Include="..\appmain\appprint.h" />
-    <ClInclude Include="..\appmain\apputil.h" />
+    <ClInclude Include="..\appmain\artprovider.h" />
     <ClInclude Include="..\appmain\bitmapmgr.h" />
     <ClInclude Include="..\appmain\bookmark.h" />
     <ClInclude Include="..\appmain\bookmarkfs.h" />
@@ -918,6 +919,14 @@
     <ClInclude Include="..\appmain\feedparser.h" />
     <ClInclude Include="..\appmain\fieldlistcontrol.h" />
     <ClInclude Include="..\appmain\fieldtypechoice.h" />
+    <ClInclude Include="..\appmain\framework.h" />
+    <ClInclude Include="..\appmain\framework_private.h" />
+    <ClInclude Include="..\appmain\fsitems.h" />
+    <ClInclude Include="..\appmain\fsitems_private.h" />
+    <ClInclude Include="..\appmain\fspanel.h" />
+    <ClInclude Include="..\appmain\fspanellistview.h" />
+    <ClInclude Include="..\appmain\fspaneltreeview.h" />
+    <ClInclude Include="..\appmain\fspanel_private.h" />
     <ClInclude Include="..\appmain\importpages.h" />
     <ClInclude Include="..\appmain\importtemplate.h" />
     <ClInclude Include="..\appmain\importwizard.h" />
@@ -933,6 +942,8 @@
     <ClInclude Include="..\appmain\jobindex.h" />
     <ClInclude Include="..\appmain\jobmodifystruct.h" />
     <ClInclude Include="..\appmain\jobquery.h" />
+    <ClInclude Include="..\appmain\jobqueue.h" />
+    <ClInclude Include="..\appmain\jobqueue_private.h" />
     <ClInclude Include="..\appmain\jobscheduler.h" />
     <ClInclude Include="..\appmain\jobscript.h" />
     <ClInclude Include="..\appmain\jobsplit.h" />
@@ -960,6 +971,8 @@
     <ClInclude Include="..\appmain\panelsplit.h" />
     <ClInclude Include="..\appmain\panelview.h" />
     <ClInclude Include="..\appmain\pkgfile.h" />
+    <ClInclude Include="..\appmain\prefs.h" />
+    <ClInclude Include="..\appmain\prefs_private.h" />
     <ClInclude Include="..\appmain\querydoc.h" />
     <ClInclude Include="..\appmain\querytemplate.h" />
     <ClInclude Include="..\appmain\relationdiagram.h" />
@@ -1010,6 +1023,7 @@
     <ClInclude Include="..\appmain\scriptwebdom.h" />
     <ClInclude Include="..\appmain\scriptxml.h" />
     <ClInclude Include="..\appmain\sqldoc.h" />
+    <ClInclude Include="..\appmain\statusbar.h" />
     <ClInclude Include="..\appmain\structuredoc.h" />
     <ClInclude Include="..\appmain\structurevalidator.h" />
     <ClInclude Include="..\appmain\tabledoc.h" />
@@ -1022,6 +1036,7 @@
     <ClInclude Include="..\appmain\toolbars.h" />
     <ClInclude Include="..\appmain\transformationdoc.h" />
     <ClInclude Include="..\appmain\updater.h" />
+    <ClInclude Include="..\appmain\util.h" />
     <ClInclude Include="..\appmain\webdoc.h" />
     <ClInclude Include="..\appmain\mongoose.h" />
     <ClInclude Include="config\appversion.h" />
