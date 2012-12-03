@@ -487,6 +487,26 @@ SQLSMALLINT tango2sqlCType(int tango_type)
     return 0;
 }
 
+int sql2tangoScale(SQLSMALLINT sql_type, int scale)
+{
+    // in sql2tangoType, we handle some integer types with the DOUBLE
+    // or NUMERIC data type; in these cases, the ODBC driver may return
+    // a non-zero precision because of the way the data is stored in the
+    // native database (SQLite sometimes stores numbers as REAL), and
+    // as a result, we're setting large decimal precisions for values
+    // that were originally integer but are now presented as DOUBLE or
+    // NUMERIC; however, in these cases, the precision should be zero
+
+    switch (sql_type)
+    {
+        case SQL_INTEGER:
+        case SQL_BIGINT:
+            return 0;
+    }
+
+    return scale;
+}
+
 int sql2tangoType(SQLSMALLINT sql_type)
 {
     switch (sql_type)
@@ -546,6 +566,7 @@ tango::IColumnInfoPtr createColInfo(int db_type,
                                     int datetime_sub)
 {
     int col_tango_type = sql2tangoType(col_odbc_type);
+    col_scale = sql2tangoScale(col_odbc_type, col_scale);
 
     if (col_tango_type == tango::typeInvalid)
     {
