@@ -318,8 +318,10 @@ static bool loadTablePropertiesFromJson(kl::JsonNode& node, kcanvas::ICompTableP
         size_t prop_idx, prop_count = properties.getChildCount();
         for (prop_idx = 0; prop_idx < prop_count; ++prop_idx)
         {
-            // get the range
+            // if the property isn't set, move on
             kl::JsonNode prop = properties[prop_idx];
+            if (prop.isNull())
+                continue;
 
             // if a range isn't set, move on
             kl::JsonNode range = prop["range"];
@@ -3495,8 +3497,13 @@ bool CompReportDesign::loadJson(const wxString& path)
 
     // data source info
     kl::JsonNode input = root["input"];
-    wxString datasource = input["table"].getString();
-    wxString datafilter = input["filter"].getString();
+    wxString datasource, datafilter;
+    
+    if (input.childExists("table"))
+        datasource = input["table"].getString();
+    if (input.childExists("filter"))
+        datafilter = input["filter"].getString();
+
     setDataSource(datasource);
     setDataFilter(datafilter);
 
@@ -3505,12 +3512,26 @@ bool CompReportDesign::loadJson(const wxString& path)
     kl::JsonNode page = root["page"];
     if (page.isOk())
     {
-        int pagewidth = page["width"].getInteger();
-        int pageheight = page["height"].getInteger();
-        int leftmargin = page["leftmargin"].getInteger();
-        int rightmargin = page["rightmargin"].getInteger();
-        int topmargin = page["topmargin"].getInteger();
-        int bottommargin = page["bottommargin"].getInteger();
+        int pagewidth = m_page_width;
+        int pageheight = m_page_height;
+        int leftmargin = m_left_margin;
+        int rightmargin = m_right_margin;
+        int topmargin = m_top_margin;
+        int bottommargin = m_bottom_margin;
+
+        if (page.childExists("width"))
+            pagewidth = page["width"].getInteger();
+        if (page.childExists("height"))
+            pageheight = page["height"].getInteger();
+        if (page.childExists("leftmargin"))
+            leftmargin = page["leftmargin"].getInteger();            
+        if (page.childExists("rightmargin"))
+            rightmargin = page["rightmargin"].getInteger();
+        if (page.childExists("topmargin"))
+            topmargin = page["topmargin"].getInteger();
+        if (page.childExists("bottommargin"))
+            bottommargin = page["bottommargin"].getInteger();
+
         setPageSize(pagewidth, pageheight);
         setPageMargins(leftmargin, rightmargin, topmargin, bottommargin);
     }
@@ -3529,16 +3550,34 @@ bool CompReportDesign::loadJson(const wxString& path)
 
             // create the section info
             SectionInfo info;
-            info.m_type = section["type"].getString();
-            info.m_name = section["name"].getString();
-            info.m_group_field = section["group_field"].getString();
-            info.m_page_break = section["page_break"].getBoolean();
-            info.m_sort_desc = section["sort_desc"].getBoolean();
-            info.m_active = section["active"].getBoolean();
+            info.m_page_break = false;
+            info.m_sort_desc = false;
+            info.m_active = false;            
+
+            if (section.childExists("type"))
+                info.m_type = section["type"].getString();
+            if (section.childExists("name"))                
+                info.m_name = section["name"].getString();
+            if (section.childExists("group_field"))                
+                info.m_group_field = section["group_field"].getString();
+            if (section.childExists("page_break"))                
+                info.m_page_break = section["page_break"].getBoolean();
+            if (section.childExists("sort_desc"))                
+                info.m_sort_desc = section["sort_desc"].getBoolean();
+            if (section.childExists("active"))                
+                info.m_active = section["active"].getBoolean();
+
+            int row_count = 0;
+            int column_count = 0;
+
+            if (section.childExists("row_count"))
+                row_count = section["row_count"].getInteger();
+            if (section.childExists("column_count"))
+                column_count = section["column_count"].getInteger();
 
             kcanvas::ICompTablePtr table = kcanvas::CompTable::create();
-            table->setRowCount(section["row_count"].getInteger());
-            table->setColumnCount(section["column_count"].getInteger());
+            table->setRowCount(row_count);
+            table->setColumnCount(column_count);
             loadTablePropertiesFromJson(section, table);
             
             info.m_table = table;
