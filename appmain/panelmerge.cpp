@@ -519,22 +519,7 @@ void MergePanel::onOK(wxCommandEvent& evt)
     {
         wxString set_path = m_grid->getCellString(row, 0);
         set = g_app->getDatabase()->openSet(towstr(set_path));
-        if (set.isOk())
-        {
-            if (m_append)
-            {
-                if (set == m_set)
-                {
-                    wxString message = wxString::Format(_("'%s' cannot be appended to itself.  Recursive append operations are not permitted."), set_path.c_str());
-
-                    appMessageBox(message,
-                                       APPLICATION_NAME,
-                                       wxOK | wxICON_EXCLAMATION | wxCENTER);
-                    return;
-                }
-            }
-        }
-         else
+        if (set.isNull())
         {
             wxString message = wxString::Format(_("'%s' could not be opened.  Please make sure this is a valid table."), set_path.c_str());
 
