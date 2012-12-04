@@ -1139,18 +1139,26 @@ bool QueryTemplate::loadJson(const wxString& path)
         for (i =  0; i < input_count; ++i)
         {
             QueryBuilderSourceTable query_table;
-            kl::JsonNode table = input[i];
-            
-            // TODO: check for existence of following elements
-            // instead of assuming them
+            query_table.x = 0;
+            query_table.y = 0;
+            query_table.width = 160;
+            query_table.height = 180;
 
-            query_table.alias = table["alias"].getString();
-            query_table.path = table["path"].getString();
-            query_table.x = table["x"].getInteger();
-            query_table.y = table["y"].getInteger();
-            query_table.width = table["width"].getInteger();
-            query_table.height = table["height"].getInteger();
-            
+            kl::JsonNode table = input[i];
+
+            if (table.childExists("alias"))
+                query_table.alias = table["alias"].getString();
+            if (table.childExists("path"))
+                query_table.path = table["path"].getString();
+            if (table.childExists("x"))
+                query_table.x = table["x"].getInteger();
+            if (table.childExists("y"))
+                query_table.y = table["y"].getInteger();
+            if (table.childExists("width"))
+                query_table.width = table["width"].getInteger();
+            if (table.childExists("height"))
+                query_table.height = table["height"].getInteger();
+
             // attempt to open the set and get it's structure
             tango::ISetPtr set = g_app->getDatabase()->openSet(towstr(query_table.path));
             if (set.isNull())
@@ -1158,7 +1166,7 @@ bool QueryTemplate::loadJson(const wxString& path)
                  else
                 query_table.structure = set->getStructure();
 
-            // if joins are specified, load them                
+            // if joins are specified, load them
             kl::JsonNode joins = table["joins"];
             if (joins.isOk())
             {
@@ -1166,11 +1174,14 @@ bool QueryTemplate::loadJson(const wxString& path)
                 for (j = 0; j < join_count; ++j)
                 {
                     QueryJoin query_join;
-                    kl::JsonNode join = joins[j];                
+                    kl::JsonNode join = joins[j];
 
-                    wxString type = join["type"];
+                    wxString type;                    
+                    if (join.childExists("type"))
+                        type = join["type"].getString();
+
                     query_join.join_type = QueryJoinNone;    // default
-                    
+
                     if (type == wxT("none"))
                         query_join.join_type = QueryJoinNone;
                     if (type == wxT("inner"))
@@ -1182,12 +1193,12 @@ bool QueryTemplate::loadJson(const wxString& path)
                     if (type == wxT("full_outer"))
                         query_join.join_type = QueryJoinFullOuter;
 
-                    // TODO: check for existence of following elements
-                    // instead of assuming them
-
-                    query_join.right_path = join["table"].getString();
-                    query_join.left_columns = join["left_columns"].getString();
-                    query_join.right_columns = join["right_columns"].getString();
+                    if (join.childExists("table"))
+                        query_join.right_path = join["table"].getString();
+                    if (join.childExists("left_columns"))
+                        query_join.left_columns = join["left_columns"].getString();
+                    if (join.childExists("right_columns"))
+                        query_join.right_columns = join["right_columns"].getString();
 
                     // set the join info
                     query_table.joins.push_back(query_join);
@@ -1204,64 +1215,77 @@ bool QueryTemplate::loadJson(const wxString& path)
     kl::JsonNode output = root["output"];
     if (output.isOk())
     {
-        // TODO: check for existence of following
-        m_output_path = output["table"].getString();
-        m_distinct = output["distinct"].getBoolean();
+        if (output.childExists("table"))
+            m_output_path = output["table"].getString();
+        if (output.childExists("distinct"))
+            m_distinct = output["distinct"].getBoolean();
         
         kl::JsonNode fields = output["fields"];
-        size_t f, field_count = fields.getChildCount();
-        
-        for (f = 0; f < field_count; ++f)
+        if (fields.isOk())
         {
-            QueryBuilderParam query_param;
-            kl::JsonNode field = fields[f];
-
-            query_param.output = field["output"].getBoolean();
-            query_param.input_expr = field["input"].getString();
-            query_param.output_field = field["name"].getString();
-
-            wxString group_function = field["group_function"].getString();
-            query_param.group_func = QueryGroupFunction_None;   // default
-
-            if (group_function == wxT("none"))
-                query_param.group_func = QueryGroupFunction_None;
-            if (group_function == wxT("group_by"))
-                query_param.group_func = QueryGroupFunction_GroupBy;
-            if (group_function == wxT("first"))
-                query_param.group_func = QueryGroupFunction_First;
-            if (group_function == wxT("last"))
-                query_param.group_func = QueryGroupFunction_Last;
-            if (group_function == wxT("min"))
-                query_param.group_func = QueryGroupFunction_Min;
-            if (group_function == wxT("max"))
-                query_param.group_func = QueryGroupFunction_Max;
-            if (group_function == wxT("sum"))
-                query_param.group_func = QueryGroupFunction_Sum;
-            if (group_function == wxT("avg"))
-                query_param.group_func = QueryGroupFunction_Avg;
-            if (group_function == wxT("count"))
-                query_param.group_func = QueryGroupFunction_Count;
-            if (group_function == wxT("stddev"))
-                query_param.group_func = QueryGroupFunction_Stddev;
-            if (group_function == wxT("variance"))
-                query_param.group_func = QueryGroupFunction_Variance;
-            if (group_function == wxT("group_id"))
-                query_param.group_func = QueryGroupFunction_GroupID;
-
-            query_param.sort_order = field["order"].getInteger();
+            size_t f, field_count = fields.getChildCount();
             
-            kl::JsonNode conditions = field["conditions"];
-            if (conditions.isOk())
+            for (f = 0; f < field_count; ++f)
             {
-                size_t c, condition_count = conditions.getChildCount();
-                for (c = 0; c < condition_count; ++c)
-                {
-                    kl::JsonNode condition = conditions[c];
-                    query_param.conditions.push_back(condition.getString());
-                }
-            }
+                QueryBuilderParam query_param;
 
-            m_params.push_back(query_param);
+                kl::JsonNode field = fields[f];
+                if (!field.isOk())
+                    continue;
+
+                if (field.childExists("output"))
+                    query_param.output = field["output"].getBoolean();
+                if (field.childExists("input"))
+                    query_param.input_expr = field["input"].getString();
+                if (field.childExists("name"))
+                    query_param.output_field = field["name"].getString();
+
+                wxString group_function;
+                if (field.childExists("group_function"))
+                    group_function = field["group_function"].getString();
+
+                query_param.group_func = QueryGroupFunction_None;   // default
+                if (group_function == wxT("none"))
+                    query_param.group_func = QueryGroupFunction_None;
+                if (group_function == wxT("group_by"))
+                    query_param.group_func = QueryGroupFunction_GroupBy;
+                if (group_function == wxT("first"))
+                    query_param.group_func = QueryGroupFunction_First;
+                if (group_function == wxT("last"))
+                    query_param.group_func = QueryGroupFunction_Last;
+                if (group_function == wxT("min"))
+                    query_param.group_func = QueryGroupFunction_Min;
+                if (group_function == wxT("max"))
+                    query_param.group_func = QueryGroupFunction_Max;
+                if (group_function == wxT("sum"))
+                    query_param.group_func = QueryGroupFunction_Sum;
+                if (group_function == wxT("avg"))
+                    query_param.group_func = QueryGroupFunction_Avg;
+                if (group_function == wxT("count"))
+                    query_param.group_func = QueryGroupFunction_Count;
+                if (group_function == wxT("stddev"))
+                    query_param.group_func = QueryGroupFunction_Stddev;
+                if (group_function == wxT("variance"))
+                    query_param.group_func = QueryGroupFunction_Variance;
+                if (group_function == wxT("group_id"))
+                    query_param.group_func = QueryGroupFunction_GroupID;
+
+                if (field.childExists("order"))
+                    query_param.sort_order = field["order"].getInteger();
+
+                kl::JsonNode conditions = field["conditions"];
+                if (conditions.isOk())
+                {
+                    size_t c, condition_count = conditions.getChildCount();
+                    for (c = 0; c < condition_count; ++c)
+                    {
+                        kl::JsonNode condition = conditions[c];
+                        query_param.conditions.push_back(condition.getString());
+                    }
+                }
+
+                m_params.push_back(query_param);
+            }
         }
     }
 
