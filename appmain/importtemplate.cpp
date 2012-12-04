@@ -143,16 +143,23 @@ bool ImportTemplate::load(const wxString& path)
         kl::JsonNode connection_info = root["connection_info"];
         if (connection_info.isOk())
         {
-            m_ii.server = connection_info["server"].getString();
-            m_ii.port = connection_info["port"].getInteger();
-            m_ii.database = connection_info["database"].getString();
-            m_ii.username = connection_info["username"].getString();
-            
-            wxString pw = connection_info["password"];
-            if (kl::isEncryptedString(towstr(pw)))
-                m_ii.password = kl::decryptString(towstr(pw), PASSWORD_KEY);
-                 else
-                m_ii.password = pw;
+            if (connection_info.childExists("server"))
+                m_ii.server = connection_info["server"].getString();
+            if (connection_info.childExists("port"))
+                m_ii.port = connection_info["port"].getInteger();
+            if (connection_info.childExists("database"))
+                m_ii.database = connection_info["database"].getString();
+            if (connection_info.childExists("username"))
+                m_ii.username = connection_info["username"].getString();
+
+            if (connection_info.childExists("password"))
+            {
+                wxString pw = connection_info["password"].getString();
+                if (kl::isEncryptedString(towstr(pw)))
+                    m_ii.password = kl::decryptString(towstr(pw), PASSWORD_KEY);
+                     else
+                    m_ii.password = pw;
+            }
         }
     }
     
@@ -172,9 +179,12 @@ bool ImportTemplate::load(const wxString& path)
     kl::JsonNode delimited_text = root["delimited_text"];
     if (delimited_text.isOk())
     {
-        m_ii.delimiters = delimited_text["delimiter"].getString();
-        m_ii.text_qualifier = delimited_text["text_qualifier"].getString();
-        m_ii.first_row_header = delimited_text["first_row_header"].getBoolean();
+        if (delimited_text.childExists("delimiter"))
+            m_ii.delimiters = delimited_text["delimiter"].getString();
+        if (delimited_text.childExists("text_qualifier"))
+            m_ii.text_qualifier = delimited_text["text_qualifier"].getString();
+        if (delimited_text.childExists("first_row_header"))
+            m_ii.first_row_header = delimited_text["first_row_header"].getBoolean();
     }
     
     
@@ -232,7 +242,7 @@ bool ImportTemplate::load(const wxString& path)
                     m_ii.tables.push_back(its);
                 }
             }
-        }   
+        }
     }
 
     return true;
