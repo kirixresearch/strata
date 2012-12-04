@@ -550,12 +550,6 @@ JsonNode& JsonNode::operator=(const JsonNode& _c)
     return *this;
 }
 
-JsonNode& JsonNode::operator=(bool b)
-{
-    setBoolean(b);
-    return *this;
-}
-
 JsonNode& JsonNode::operator=(int i)
 {
     setInteger(i);
