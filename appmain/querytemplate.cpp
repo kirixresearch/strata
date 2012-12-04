@@ -102,55 +102,13 @@ QueryTemplate::~QueryTemplate()
 
 bool QueryTemplate::save(const wxString& path, bool refresh_tree_if_necessary)
 {
-    // now create an ofs file with the run information
-    tango::IDatabasePtr db = g_app->getDatabase();
-    bool should_refresh_tree = true;
-    
-    if (db->getFileExist(towstr(path)))
-    {
-        // try to load a potentially existing template; the goal is to
-        // see if it already exists so we can avoid an unnecessary tree
-        // refresh, which can cause ugly flicker
-        tango::INodeValuePtr file = db->openNodeFile(towstr(path));
-        if (file.isOk())
-        {
-            tango::INodeValuePtr template_node = file->getChild(L"kpp_template", false);
-            if (template_node.isOk())
-            {
-                tango::INodeValuePtr type_node = template_node->getChild(L"type", false);
-                if (type_node.isOk() && type_node->getString() == L"query")
-                {
-                    should_refresh_tree = false;
-                }
-            }
-            file.clear();
-        }
-        
-        db->deleteFile(towstr(path));
-    }
-
-
-    // TODO: for now allow JSON to be saved by directly
-    // specifying it in the extension; this is to allow
-    // testing of the JSON format while still saving
-    // in the XML format as the primary format
-
-    // if the path ends in .json, save the file
-    // in the json format, otherwise, use XML
+    // if the path ends in .xml, save the file in the old xml format; 
+    // otherwise, use the new json format
     wxString ext = path.AfterLast(wxT('.'));
-    if (ext.Length() < path.Length() && ext.CmpNoCase(wxT("json")) == 0)
-        saveJson(path);
-         else
-        saveXml(path);
-    
+    if (ext.Length() < path.Length() && ext.CmpNoCase(wxT("xml")) == 0)
+        return saveXml(path);
 
-    // refresh tree
-    if (should_refresh_tree && refresh_tree_if_necessary)
-    {
-        g_app->getAppController()->refreshDbDoc();
-    }
-
-    return true;
+    return saveJson(path);
 }
 
 bool QueryTemplate::load(const wxString& path)

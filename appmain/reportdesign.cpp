@@ -992,19 +992,13 @@ bool CompReportDesign::load(kcanvas::IStoreValuePtr store)
 
 bool CompReportDesign::save(const wxString& path)
 {
-    // TODO: for now allow JSON to be saved by directly
-    // specifying it in the extension; this is to allow
-    // testing of the JSON format while still saving
-    // in the XML format as the primary means of report
-    // saving
-
-    // if the path ends in .json, save the file
-    // in the json format, otherwise, use XML
+    // if the path ends in .xml, save the file in the old xml format; 
+    // otherwise, use the new json format
     wxString ext = path.AfterLast(wxT('.'));
-    if (ext.Length() < path.Length() && ext.CmpNoCase(wxT("json")) == 0)
-        return saveJson(path);
+    if (ext.Length() < path.Length() && ext.CmpNoCase(wxT("xml")) == 0)
+        return saveXml(path);
 
-    return saveXml(path);
+    return saveJson(path);
 }
 
 bool CompReportDesign::load(const wxString& path)
