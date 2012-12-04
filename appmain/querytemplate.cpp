@@ -1153,7 +1153,22 @@ bool QueryTemplate::loadJson(const wxString& path)
     if (!root.isOk())
         return false;
 
-    // TODO: check version info
+
+    // make sure we have the appropriate mime type and version
+    kl::JsonNode metadata = root["metadata"];
+    if (!metadata.isOk())
+        return false;
+    kl::JsonNode type = metadata["type"];
+    if (!type.isOk())
+        return false;
+    kl::JsonNode version = metadata["version"];
+    if (!version.isOk())
+        return false;
+    if (type.getString() != wxT("application/vnd.kx.query"))
+        return false;
+    if (version.getInteger() != 1)
+        return false;
+
 
     m_source_tables.clear();
     m_params.clear();

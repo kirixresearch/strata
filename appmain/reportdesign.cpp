@@ -3479,7 +3479,20 @@ bool CompReportDesign::loadJson(const wxString& path)
         return false;
 
 
-    // TODO: check version info
+    // make sure we have the appropriate mime type and version
+    kl::JsonNode metadata = root["metadata"];
+    if (!metadata.isOk())
+        return false;
+    kl::JsonNode type = metadata["type"];
+    if (!type.isOk())
+        return false;
+    kl::JsonNode version = metadata["version"];
+    if (!version.isOk())
+        return false;
+    if (type.getString() != wxT("application/vnd.kx.report"))
+        return false;
+    if (version.getInteger() != 1)
+        return false;
 
 
     // remove all sections

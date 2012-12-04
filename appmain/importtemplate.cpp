@@ -109,11 +109,25 @@ bool ImportTemplate::load(const wxString& path)
     
     kl::JsonNode root = JsonConfig::loadFromDb(g_app->getDatabase(), path);
     if (!root.isOk())
-    {
         return loadOldVersion(path);
-    }
-    
-    
+
+
+    // make sure we have the appropriate mime type and version
+    kl::JsonNode metadata = root["metadata"];
+    if (!metadata.isOk())
+        return false;
+    kl::JsonNode type = metadata["type"];
+    if (!type.isOk())
+        return false;
+    kl::JsonNode version = metadata["version"];
+    if (!version.isOk())
+        return false;
+    if (type.getString() != wxT("application/vnd.kx.import"))
+        return false;
+    if (version.getInteger() != 1)
+        return false;
+
+
     if (root.childExists(L"database_type"))
         m_ii.type = stringToServerType(root["database_type"].getString());
     else if (root.childExists(L"import_type"))
