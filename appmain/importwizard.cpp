@@ -793,7 +793,7 @@ bool ImportWizard::loadTemplate(const wxString& path)
 
 bool ImportWizard::saveTemplate(const wxString& path)
 {
-    // update the import template before saving
+    // update the import template
     m_path_selection_page->savePageData();
     m_datasource_selection_page->savePageData();
     m_server_properties_page->savePageData();

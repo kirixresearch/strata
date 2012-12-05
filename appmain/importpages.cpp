@@ -287,6 +287,9 @@ void ImportTableSelectionPage::onPageChanged()
     m_grid->insertColumn(SOURCE_TABLENAME_IDX, SOURCE_TABLENAME_IDX);
     m_grid->insertColumn(DEST_TABLENAME_IDX, DEST_TABLENAME_IDX);
 
+    if (m_ii->type == dbtypeUndefined)
+        return;
+
     if (m_ii->type == dbtypePackage)
     {
         // resize columns to fit grid area

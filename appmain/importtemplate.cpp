@@ -728,7 +728,21 @@ bool ImportTemplate::loadOldVersion(const wxString& path)
     return true;
 }
 
-
+bool usesConnectionPage(int type)
+{
+    switch (type)
+    {
+        case dbtypeSqlServer:
+        case dbtypeMySql:
+        case dbtypeOracle:
+        case dbtypePostgres:
+        case dbtypeOdbc:
+        case dbtypeDb2:
+            return true;
+    }
+    
+    return false;
+}
 
 bool ImportTemplate::save(const wxString& path)
 {
@@ -739,9 +753,10 @@ bool ImportTemplate::save(const wxString& path)
     metadata["version"] = 1;
     metadata["description"] = wxT("");
 
-    root["database_type"] = towstr(serverTypeToString(m_ii.type));
+    std::wstring dbtype = towstr(serverTypeToString(m_ii.type));
+    root["database_type"] = dbtype;
 
-    if (m_ii.server.Length() > 0)
+    if (usesConnectionPage(m_ii.type))
     {
         kl::JsonNode connection_info = root["connection_info"];
         connection_info["server"] = towstr(m_ii.server);
@@ -750,12 +765,14 @@ bool ImportTemplate::save(const wxString& path)
         connection_info["username"] = towstr(m_ii.username);
         connection_info["password"] = kl::encryptString(towstr(m_ii.password), PASSWORD_KEY);
     }
-
-    if (m_ii.path.Length() > 0)
+    else
     {
-        root["path"] = towstr(m_ii.path);
+        if (m_ii.path.Length() > 0)
+        {
+            root["path"] = towstr(m_ii.path);
+        }
     }
-    
+
     if (m_ii.base_path.Length() > 0)
     {
         root["target_path"] = towstr(m_ii.base_path);
@@ -771,7 +788,7 @@ bool ImportTemplate::save(const wxString& path)
     
     root["objects"].setArray();
     kl::JsonNode objects = root["objects"];
-    
+
 
     int table_counter = 0;
     std::vector<ImportTableSelection>::iterator table_it;
