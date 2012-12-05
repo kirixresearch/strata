@@ -21,10 +21,10 @@
 #define MODVERSION_SUBMINOR         APP_VERSION_SUBMINOR
 #define MODVERSION_BUILDSERIAL      APP_VERSION_BUILDSERIAL
 #else
-#define MODVERSION_MAJOR            3
-#define MODVERSION_MINOR            9
-#define MODVERSION_SUBMINOR         1
-#define MODVERSION_BUILDSERIAL      71
+#define MODVERSION_MAJOR            4
+#define MODVERSION_MINOR            5
+#define MODVERSION_SUBMINOR         3
+#define MODVERSION_BUILDSERIAL      0
 #endif
 
 
