@@ -18,6 +18,22 @@ class wxCalendarCtrl;
 class wxCalendarEvent;
 
 
+inline std::wstring towstr(const wxString& s)
+{
+#ifdef _UNICODE
+    return (const wchar_t*)s.wc_str();
+#else
+    std::wstring result;
+    int i, len;
+    len = s.Length();
+    result.resize(len);
+    for (i = 0; i < len; ++i)
+        result[i] = (unsigned char)s[i];
+    return result;
+#endif
+}
+
+
 class GenerationPage : public wxPanel
 {
 

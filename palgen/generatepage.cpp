@@ -14,7 +14,6 @@
 #include <wx/notebook.h>
 #include <kl/klib.h>
 #include <xcm/xcm.h>
-#include "../cfw/util.h"
 #include "../paladin/paladin.h"
 #include "../paladin/crypt.h"
 #include "../paladin/crc.h"
@@ -70,6 +69,17 @@ BEGIN_EVENT_TABLE(GenerationPage, wxPanel)
 END_EVENT_TABLE()
 
 
+void makeTextCtrlUpperCase(wxTextCtrl* text)
+{
+#ifdef WIN32
+    HWND h = (HWND)text->GetHWND();
+    LONG l = GetWindowLongA(h, GWL_STYLE);
+    l |= ES_UPPERCASE;
+    SetWindowLongA(h, GWL_STYLE, l);
+#endif
+}
+
+
 GenerationPage::GenerationPage(wxWindow* parent) : wxPanel(parent, -1)
 {
     wxBoxSizer* vert_sizer = new wxBoxSizer(wxVERTICAL);
@@ -86,28 +96,28 @@ GenerationPage::GenerationPage(wxWindow* parent) : wxPanel(parent, -1)
     m_site_code = new wxTextCtrl(this, ID_SiteCode);
     site_code_sizer->Add(st1, 0, wxALIGN_CENTER | wxRIGHT, 3);
     site_code_sizer->Add(m_site_code, 1, wxEXPAND, 0);
-    cfw::makeTextCtrlUpperCase(m_site_code);
+    makeTextCtrlUpperCase(m_site_code);
 
     wxBoxSizer* app_tag_sizer = new wxBoxSizer(wxHORIZONTAL);
     wxStaticText* st2 = new wxStaticText(this, -1, _("Application Tag:"), wxDefaultPosition, wxDefaultSize);
     m_app_tag = new wxTextCtrl(this, ID_AppTag);
     app_tag_sizer->Add(st2, 0, wxALIGN_CENTER | wxRIGHT, 3);
     app_tag_sizer->Add(m_app_tag, 1, wxEXPAND, 0);
-    cfw::makeTextCtrlUpperCase(m_app_tag);
+    makeTextCtrlUpperCase(m_app_tag);
 
     wxBoxSizer* feature_id_sizer = new wxBoxSizer(wxHORIZONTAL);
     wxStaticText* st3 = new wxStaticText(this, -1, _("Feature ID:"), wxDefaultPosition, wxDefaultSize);
     m_feature_id = new wxTextCtrl(this, ID_FeatureID, wxT(""));
     feature_id_sizer->Add(st3, 0, wxALIGN_CENTER | wxRIGHT, 3);
     feature_id_sizer->Add(m_feature_id, 1, wxEXPAND, 0);
-    cfw::makeTextCtrlUpperCase(m_feature_id);
+    makeTextCtrlUpperCase(m_feature_id);
 
     wxBoxSizer* activation_key_sizer = new wxBoxSizer(wxHORIZONTAL);
     wxStaticText* st4 = new wxStaticText(this, -1, _("Activation Code:"), wxDefaultPosition, wxDefaultSize);
     m_activation_code = new wxTextCtrl(this, ID_ActivationCode, wxT(""), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
     activation_key_sizer->Add(st4, 0, wxALIGN_CENTER | wxRIGHT, 3);
     activation_key_sizer->Add(m_activation_code, 1, wxEXPAND, 0);
-    cfw::makeTextCtrlUpperCase(m_activation_code);
+    makeTextCtrlUpperCase(m_activation_code);
 
 
     site_code_sizer->SetItemMinSize(st1, wxSize(100,14));

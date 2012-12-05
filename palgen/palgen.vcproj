@@ -169,7 +169,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wxbase29ud.lib wxbase29ud_net.lib wxmsw29ud_core.lib wxmsw29ud_adv.lib wxpngd.lib wxzlibd.lib ../paladin/lib/paladinud.lib ../kcl/lib/kclud.lib ../kl/lib/klud.lib ../cfw/lib/cfwud.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wxbase29ud.lib wxbase29ud_net.lib wxmsw29ud_core.lib wxmsw29ud_adv.lib wxpngd.lib wxzlibd.lib ../paladin/lib/paladinud.lib ../kcl/lib/kclud.lib ../kl/lib/klud.lib"
 				OutputFile="../debugu/palgen.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -265,7 +265,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib comctl32.lib rpcrt4.lib wxbase28u.lib wxbase28u_net.lib wxmsw28u_core.lib wxmsw28u_adv.lib wxpng.lib wxzlib.lib ../kcl/lib/kclu.lib ../kl/lib/klu.lib ../paladin/lib/paladinu.lib ../cfw/lib/cfwu.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib comctl32.lib rpcrt4.lib wxbase29u.lib wxbase29u_net.lib wxmsw29u_core.lib wxmsw29u_adv.lib wxpng.lib wxzlib.lib ../kcl/lib/kclu.lib ../kl/lib/klu.lib ../paladin/lib/paladinu.lib"
 				OutputFile="../releaseu/palgen.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
