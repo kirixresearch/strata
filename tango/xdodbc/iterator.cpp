@@ -1596,6 +1596,9 @@ bool OdbcIterator::isNull(tango::objhandle_t data_handle)
 
 tango::ISetPtr OdbcIterator::getChildSet(tango::IRelationPtr relation)
 {
+    if (eof())
+        return xcm::null;
+
     tango::ISetPtr setptr = relation->getRightSetPtr();
     IOdbcSetPtr set = setptr;
     if (set.isNull())
@@ -1647,6 +1650,11 @@ tango::ISetPtr OdbcIterator::getChildSet(tango::IRelationPtr relation)
     }
 
 
+    tango::IAttributesPtr attr = m_database->getAttributes();
+    std::wstring quote_openchar = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
+    std::wstring quote_closechar = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
+
+
     std::wstring expr;
 
     // build expression
@@ -1655,7 +1663,7 @@ tango::ISetPtr OdbcIterator::getChildSet(tango::IRelationPtr relation)
     {
         if (expr.length() > 0)
             expr += L" AND ";
-        expr += fit->right_field + L"=";
+        expr += quote_openchar + fit->right_field + quote_closechar + L"=";
 
 
 
