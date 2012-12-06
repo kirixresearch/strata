@@ -3671,14 +3671,14 @@ tango::IRelationEnumPtr Database::getRelationEnum(const std::wstring& path)
         std::wstring temps;
         
         temps = getSetPathFromId(left_set_id);
-        if (temps.length() == 0 && left_set_path.length() == 0)
+        if (temps.length() == 0 && left_set_id.length() > 0)
         {
             to_delete.push_back(rel_node->getName());
             continue;
         }
 
         temps = getSetPathFromId(right_set_id);
-        if (temps.length() == 0 && right_set_path.length() == 0)
+        if (temps.length() == 0 && right_set_id.length() > 0)
         {
             to_delete.push_back(rel_node->getName());
             continue;
