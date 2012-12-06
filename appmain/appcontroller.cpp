@@ -5897,6 +5897,13 @@ IJobPtr AppController::execute(const wxString& location)
                 return xcm::null;
             return t.execute();
         }
+        else if (mime_type == L"application/vnd.kx.query")
+        {
+            QueryTemplate t;
+            if (!t.load(location))
+                return xcm::null;
+            return t.execute();
+        }        
          else
         {
             // most likely a script
