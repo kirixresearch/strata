@@ -1493,15 +1493,15 @@ bool Database::renameOfsFile(const std::wstring& _path,
 
     std::wstring s1 = ofsToPhysFilename(path, true);
     std::wstring s2 = ofsToPhysFilename(dest_path, true);
-    bool result1 = xf_move(s1, s2);
+    if (xf_get_directory_exist(s1))
+    {
+        if (!xf_move(s1, s2))
+            return false;
+    }
 
     s1 = ofsToPhysFilename(path, false);
     s2 = ofsToPhysFilename(dest_path, false);
-    bool result2 = xf_move(s1, s2);
-
-    bool success = (result1 || result2) ? true : false;
-
-    return success;
+    return xf_move(s1, s2);
 }
 
 
