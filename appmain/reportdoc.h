@@ -104,7 +104,7 @@ public:
     bool print(bool show_print_dialog = true);
 
     bool saveFile(const wxString& path);
-    bool loadFile(const wxString& path);
+    bool loadFile(const wxString& path, bool layout = false);
 
 private:
 

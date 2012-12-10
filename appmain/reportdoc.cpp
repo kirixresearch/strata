@@ -585,7 +585,7 @@ bool ReportDoc::saveFile(const wxString& path)
     return true;
 }
 
-bool ReportDoc::loadFile(const wxString& path)
+bool ReportDoc::loadFile(const wxString& path, bool layout)
 {
     // set the created/changed/editing flags
     m_created = false;
@@ -637,9 +637,13 @@ bool ReportDoc::loadFile(const wxString& path)
     focus = getDesignComponentRaw()->getActiveSectionTable();
     getCanvas()->setFocus(focus);
 
-    // update the canvas
-    updateCanvas();
-    
+    // if the layout flag is set, load the layout view;
+    // otherwise load the design view
+    if (layout)
+        loadLayoutView();
+          else
+        loadDesignView();
+
     // update the format items
     updateFormatItems();
 
