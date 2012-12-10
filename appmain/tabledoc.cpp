@@ -2258,7 +2258,17 @@ void TableDoc::onColumnsDropped(kcl::GridDataDropTarget* drop_target)
     for (it = cells.rbegin(); it != cells.rend(); ++it)
     {
         if ((*it)->m_col == 0)
-            insertColumn(idx, (*it)->m_strvalue);
+            insertColumnInternal(idx, (*it)->m_strvalue, false, cells.size() < 10 ? true : false);
+    }
+
+    if (cells.size() >= 10 && m_grid)
+    {
+        m_grid->refresh(kcl::Grid::refreshAll);
+    }
+
+    if (m_model.isOk() && m_active_view.isOk())
+    {
+        m_model->writeObject(m_active_view);
     }
 }
 
@@ -2965,12 +2975,13 @@ void TableDoc::insertColumnSeparator(int insert_pos)
 
 void TableDoc::insertColumn(int insert_pos, const wxString& expr)
 {
-    insertColumnInternal(insert_pos, expr, true);
+    insertColumnInternal(insert_pos, expr, true, true);
 }
 
 void TableDoc::insertColumnInternal(int insert_pos,
                                     const wxString& expr,
-                                    bool save_view)
+                                    bool save_view,
+                                    bool refresh)
 {
     wxString viewcol_name = expr;
 
@@ -3005,7 +3016,8 @@ void TableDoc::insertColumnInternal(int insert_pos,
     int idx = m_grid->insertColumn(insert_pos, colidx);
     m_grid->setColumnSize(idx, 80);
 
-    m_grid->refresh(kcl::Grid::refreshAll);
+    if (refresh)
+        m_grid->refresh(kcl::Grid::refreshAll);
 
     m_frame->postEvent(new FrameworkEvent(wxT("tabledoc.viewModified"), 0));
 
@@ -3316,7 +3328,7 @@ void TableDoc::onModifyStructJobFinished(IJobPtr job)
          else
         m_structure_job.clear();
 
-    // -- unlock this window --
+    // unlock this window
     m_enabled = true;
     m_grid->setVisibleState(kcl::Grid::stateVisible);
     m_frame->postEvent(new FrameworkEvent(wxT("tabledoc.enabledStateChanged")));
@@ -3340,7 +3352,7 @@ void TableDoc::onModifyStructJobFinished(IJobPtr job)
          insert_iter != to_insert.end(); ++insert_iter)
     {
         insertColumnInternal(insert_iter->second,
-                             insert_iter->first, false);
+                             insert_iter->first, false, true);
     }
     
     // do deletes in the view
@@ -5358,7 +5370,7 @@ void TableDoc::showCreateDynamicField()
                            30, 0, wxT("\"\""), false))
     {
         // insert column at cursor position
-        insertColumnInternal(m_grid->getCursorColumn(), column_name, false);
+        insertColumnInternal(m_grid->getCursorColumn(), column_name, false, true);
 
         ColPropsPanel* panel = new ColPropsPanel;
 

@@ -132,7 +132,7 @@ public:
     void onColumnNameChanged(const wxString& old_name, const wxString& new_name);
 
     void insertColumn(int insert_pos, const wxString& col_name);
-    void insertColumnInternal(int insert_pos, const wxString& col_name, bool save);
+    void insertColumnInternal(int insert_pos, const wxString& col_name, bool save, bool refresh);
     void insertColumnSeparator(int insert_pos);
     void insertChildColumn(int insert_pos, const wxString& expr);
     void hideColumn(int idx);
