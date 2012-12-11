@@ -2614,11 +2614,12 @@ IDocumentSitePtr MainFrame::createSite(IDocumentPtr document,
 
         GetClientWindow()->Thaw();
 
-        #ifndef __WXMSW
+        #ifndef __WXMSW__
         // on wxGTK, this additional step is necessary to make the
         // display show the tabs correctly.   Freeze/Thaw on wxGTK isn't
         // working properly.  Check later for an eventual fix.
-        ((wxAuiManager&)GetClientWindow()->GetAuiManager()).Update();
+        if (!(site_type & siteHidden))
+            ((wxAuiManager&)GetClientWindow()->GetAuiManager()).Update();
         #endif
 
         #endif
