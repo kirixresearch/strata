@@ -1880,14 +1880,17 @@ tango::IStreamPtr FsDatabase::createStream(const std::wstring& path, const std::
     
     // write out mime type
 
-    std::wstring config_file = ExtFileInfo::getConfigFilenameFromPath(getDefinitionDirectory(), phys_path);
+    if (mime_type.length() > 0)
+    {
+        std::wstring config_file = ExtFileInfo::getConfigFilenameFromPath(getDefinitionDirectory(), phys_path);
 
-    ExtFileInfo fileinfo;
-    fileinfo.load(config_file);
-    fileinfo.deleteGroup(L"file_info");
-    ExtFileEntry file_info_group = fileinfo.getGroup(L"file_info");
-    file_info_group.addChild(L"type", mime_type);
-    fileinfo.save(config_file);
+        ExtFileInfo fileinfo;
+        fileinfo.load(config_file);
+        fileinfo.deleteGroup(L"file_info");
+        ExtFileEntry file_info_group = fileinfo.getGroup(L"file_info");
+        file_info_group.addChild(L"type", mime_type);
+        fileinfo.save(config_file);
+    }
 
     return static_cast<tango::IStream*>(stream);
 }
