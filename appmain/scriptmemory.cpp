@@ -306,6 +306,49 @@ void MemoryBuffer::copy(kscript::ExprEnv* env, kscript::Value* retval)
 }
 
 
+
+// (METHOD) MemoryBuffer.toAsciiString
+//
+// Description: Copies either all or a portion of the buffer
+//     to a new MemoryBuffer object.
+//
+// Syntax: function MemoryBuffer.toAsciiString(offset : Integer,
+//                                             length : Integer) : String
+//
+// Remarks: Copies a portion of the buffer specified by the |offset|
+//     and |length| parameters into an ascii string.  If the |length| parameter
+//     is omitted, the remainder of the buffer is copied.  If no parameters
+//     are specified, the entire object is copied.
+//
+// Param(offset): Offset at which the copy should start.
+// Param(length): Number of bytes to copy.
+// Returns: A new MemoryBuffer object containing the data requested
+
+
+void MemoryBuffer::toAsciiString(kscript::ExprEnv* env, kscript::Value* retval)
+{
+    retval->setNull();
+
+    int offset = 0;
+    int length = -1;
+
+    if (env->getParamCount() > 0)
+        offset = env->getParam(0)->getInteger();
+    if (env->getParamCount() > 1)
+        length = env->getParam(1)->getInteger();
+
+    if (offset < 0)
+        return;
+
+    if (length == -1)
+        length = (int)(m_size - (size_t)offset);
+
+    std::string str(((const char*)m_buf)+offset, length);
+
+    retval->setString(str);
+}
+
+
 bool MemoryBuffer::setSizeInternal(int size)
 {
     if (size < 0)

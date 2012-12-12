@@ -22,6 +22,7 @@ class MemoryBuffer : public kscript::ValueObject
         KSCRIPT_METHOD("clear", MemoryBuffer::clear)
         KSCRIPT_METHOD("copy", MemoryBuffer::copy)
         KSCRIPT_METHOD("free", MemoryBuffer::free)
+        KSCRIPT_METHOD("toAsciiString", MemoryBuffer::toAsciiString)
     END_KSCRIPT_CLASS()
     
 public:
@@ -37,6 +38,7 @@ public:
     void clear(kscript::ExprEnv* env, kscript::Value* retval);
     void copy(kscript::ExprEnv* env, kscript::Value* retval);
     void free(kscript::ExprEnv* env, kscript::Value* retval);
+    void toAsciiString(kscript::ExprEnv* env, kscript::Value* retval);
     
     void setMember(const std::wstring& name, kscript::Value* value);
     kscript::Value* getMember(const std::wstring& name);
