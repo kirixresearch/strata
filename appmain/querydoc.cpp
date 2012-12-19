@@ -40,7 +40,6 @@ enum
 };
 
 
-// -- QueryDoc classes --
 
 const int colOutputFlag = 0;
 const int colInputExpr = 1;
@@ -242,7 +241,6 @@ QueryDoc::~QueryDoc()
 }
 
 
-// -- IDocument --
 bool QueryDoc::initDoc(IFramePtr frame,
                        IDocumentSitePtr doc_site,
                        wxWindow* docsite_wnd,
@@ -508,7 +506,7 @@ void QueryDoc::setDocumentFocus()
     }
 
 #ifdef WIN32
-    // -- for gtk, see QueryDoc::onIdle() note --
+    // for gtk, see QueryDoc::onIdle() note
     if (m_diagram)
     {
         m_diagram->refresh();
@@ -868,15 +866,16 @@ void QueryDoc::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
         unsigned char* data = new unsigned char[len];
         drop_data->GetDataHere(fmt, data);
         
-        // -- copy the data from the wxDataObjectComposite to this new
-        //    RelLinDataObject so we can use it's accessor functions --
+        // copy the data from the wxDataObjectComposite to this new
+        // RelLinDataObject so we can use it's accessor functions
+
         RelationLineDataObject* line_obj = new RelationLineDataObject;
         line_obj->SetData(fmt, len, data);
         
-        // -- clear the diagram selection --
+        // clear the diagram selection
         m_diagram->clearBoxSelection();
 
-        // -- insert rows into our output grid --
+        // insert rows into our output grid
         wxString fields = line_obj->getFields();
         wxStringTokenizer t(fields, wxT("\t"));
         while (t.HasMoreTokens())
@@ -895,7 +894,7 @@ void QueryDoc::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
 
 void QueryDoc::onGridPreGhostRowInsert(kcl::GridEvent& evt)
 {
-    // -- we'll handle the processing of this event ourselves --
+    // we'll handle the processing of this event ourselves
     evt.Veto();
 
     // make sure we're not editing the grid
@@ -917,7 +916,7 @@ void QueryDoc::onGridPreGhostRowInsert(kcl::GridEvent& evt)
 
 void QueryDoc::onGridPreInvalidAreaInsert(kcl::GridEvent& evt)
 {
-    // -- we'll handle the processing of this event ourselves --
+    // we'll handle the processing of this event ourselves
     evt.Veto();
 
     // make sure we're not editing the grid
@@ -946,8 +945,8 @@ void QueryDoc::onGridCellRightClick(kcl::GridEvent& evt)
         col < 0 || col >= m_grid->getColumnCount())
         return;
 
-    // -- if the user clicked on a row that was not
-    //    previously selected, select the row --
+    // if the user clicked on a row that was not
+    // previously selected, select the row
     if (!m_grid->isRowSelected(row))
     {
         m_grid->clearSelection();
@@ -978,7 +977,7 @@ void QueryDoc::onGridCellRightClick(kcl::GridEvent& evt)
     int command = cc->getLastCommandId();
     PopEventHandler(true);
 
-    // -- post the event to the event handler --
+    // post the event to the event handler
     wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED, command);
     ::wxPostEvent(this, e);
 }
@@ -1474,11 +1473,11 @@ void QueryDoc::updateCaption()
 void QueryDoc::updateStatusBar()
 {
 /*
-    // -- if the grid hasn't been created yet, bail out --
+    // if the grid hasn't been created yet, bail out
     if (!m_grid)
         return;
 
-    // -- field count --
+    // field count
     int row_count = m_grid->getRowCount();
     wxString field_count_str = wxString::Format(_("Field Count: %d"), row_count);
     
@@ -1502,7 +1501,7 @@ void QueryDoc::updateJoinStructure(const wxString& left_path)
     std::vector<RelationInfo> info;
     m_diagram->getRelationInfo(left_path, info);
 
-    // -- find the table in our list of tables --
+    // find the table in our list of tables
     std::vector<QueryBuilderSourceTable>::iterator tbl_it;
     for (tbl_it = m_info.m_source_tables.begin();
          tbl_it != m_info.m_source_tables.end(); ++tbl_it)
@@ -1579,7 +1578,7 @@ void QueryDoc::populateDiagramFromTemplate()
     if (!m_diagram)
         return;
 
-    // -- disconnect this signal for the duration of this function --
+    // disconnect this signal for the duration of this function
 
     m_diagram->sigLineAdded.disconnect();
 
@@ -1600,7 +1599,7 @@ void QueryDoc::populateDiagramFromTemplate()
                           it->height);
     }
 
-    // -- add joins --
+    // add joins
     for (it = m_info.m_source_tables.begin();
          it != m_info.m_source_tables.end(); ++it)
     {
@@ -1708,7 +1707,7 @@ void QueryDoc::populateTemplateFromInterface()
     m_info.m_params.clear();
 
 
-    // -- fill out the query template from the diagram --
+    // fill out the query template from the diagram
     int i, box_count = m_diagram->getBoxCount();
     for (i = 0; i < box_count; ++i)
     {
@@ -1731,7 +1730,7 @@ void QueryDoc::populateTemplateFromInterface()
 
     
 
-    // -- fill out the query template from the grid --
+    // fill out the query template from the grid
     int row_count = m_grid->getRowCount();
     for (int row = 0; row < row_count; ++row)
     {
@@ -2026,7 +2025,7 @@ void QueryDoc::onFrameEvent(FrameworkEvent& evt)
     {
         int id = (int)(evt.l_param);
         
-        // -- make sure we are in the active container --
+        // make sure we are in the active container
         IDocumentSitePtr active_site;
         active_site = g_app->getMainFrame()->getActiveChild();
         if (active_site.isNull() || m_doc_site.isNull())
@@ -2251,7 +2250,7 @@ void QueryDoc::onSaveAsExternal(wxCommandEvent& evt)
     
     
     
-    // -- create an export job --
+    // create an export job
     
     if (type == dbtypePackage)
     {
@@ -2291,12 +2290,11 @@ bool QueryDoc::execute()
     std::vector<wxString> boxes;
     std::vector<wxString> top_paths;
 
-    // -- find out which boxes are open in the diagram --
-
+    // find out which boxes are open in the diagram
     m_diagram->getBoxPaths(boxes);
 
 
-    // -- find "top" sets --
+    // find "top" sets
     std::vector<wxString>::iterator box_it;
     
     for (box_it = boxes.begin(); box_it != boxes.end(); ++box_it)
@@ -2318,9 +2316,8 @@ bool QueryDoc::execute()
         return false;
     }
     
-    // -- in the future, we should support more than
-    //    one source table, allowing for cross joins and
-    //    other features --
+    // in the future, we should support more than one source table,
+    // allowing for cross joins and other features
 
     if (top_paths.size() != 1)
     {
@@ -2376,7 +2373,7 @@ bool QueryDoc::execute()
             return false;
         }
 
-        // -- do a check --
+        // do a check
 
         wxString field_name;
 
@@ -2420,7 +2417,7 @@ bool QueryDoc::execute()
 
 
 
-    // -- check output order for errors --
+    // check output order for errors
     int order;
     for (order = 1; order <= 50; ++order)
     {
@@ -2453,7 +2450,7 @@ bool QueryDoc::execute()
     }
 
 
-    // -- check the condition string to make sure it works --
+    // check the condition string to make sure it works
 
     size_t i;
     for (i = 0; i < 255; ++i)
