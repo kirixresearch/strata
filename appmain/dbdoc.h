@@ -269,6 +269,7 @@ private:
     void onOpenAsWeb(wxCommandEvent& evt);
     void onRunQuery(wxCommandEvent& evt);
     void onRunScript(wxCommandEvent& evt);
+    void onRunReport(wxCommandEvent& evt);    
     void onPrintReport(wxCommandEvent& evt);
     void onModifyStructure(wxCommandEvent& evt);
     void onCut(wxCommandEvent& evt);

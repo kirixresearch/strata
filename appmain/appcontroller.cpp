@@ -4448,7 +4448,7 @@ bool AppController::openAny(const wxString& _location,
             std::wstring mime_type = file_info->getMimeType();
             if (mime_type.substr(0, 19) == L"application/vnd.kx.")
             {
-                if (openTemplate(location))
+                if (openTemplate(location, open_mask))
                     return true;
             }
              else
@@ -4500,7 +4500,7 @@ bool AppController::openAny(const wxString& _location,
             tango::INodeValuePtr report_node = file->getChild(L"kpp_report", false);
             if (report_node.isOk())
             {
-                if (openReport(location))
+                if (openReport(location, open_mask))
                     return true;
             }
 
@@ -4517,7 +4517,9 @@ bool AppController::openAny(const wxString& _location,
     return openWeb(location, NULL, appOpenDefault, site_id);
 }
 
-bool AppController::openReport(const wxString& location, int* site_id)
+bool AppController::openReport(const wxString& location,
+                               int open_mask,
+                               int* site_id)
 {
     // if the document is open, set the focus to that document
     if (setActiveChildByLocation(location, site_id))
@@ -4529,7 +4531,8 @@ bool AppController::openReport(const wxString& location, int* site_id)
     ReportDoc* doc = new ReportDoc;
     site = m_frame->createSite(static_cast<IDocument*>(doc), sitetypeNormal, -1, -1, -1, -1);
 
-    if (!doc->loadFile(location))
+    bool layout = (open_mask & appOpenInLayout) ? true : false;
+    if (!doc->loadFile(location, layout))
     {
         appMessageBox(_("This report could not be opened.  It may have an invalid format or may have been created with a different version."),
                            APPLICATION_NAME,
@@ -4893,7 +4896,8 @@ void AppController::onOpenDataViewFinished(IJobPtr query_job)
 }
 
 
-bool AppController::openTemplate(const wxString& location)
+bool AppController::openTemplate(const wxString& location,
+                                 int open_mask)
 {
     AppBusyCursor bc;
 
@@ -4933,7 +4937,7 @@ bool AppController::openTemplate(const wxString& location)
         std::wstring mime_type = file_info->getMimeType();
         if (mime_type == L"application/vnd.kx.report")
         {
-            openReport(location);
+            openReport(location, open_mask);
         }
          else if (mime_type == L"application/vnd.kx.query")
         {

@@ -55,7 +55,8 @@ enum
     appOpenAsTable = 1 << 3,
     appOpenAsText = 1 << 4,
     appOpenAsWeb = 1 << 5,
-    
+    appOpenInLayout = 1 << 6,
+
     appOpenDefault = appOpenActivateNewWindow
 };
 
@@ -96,12 +97,15 @@ public:
     bool openBookmark(const wxString& location,
                  int open_mask = appOpenDefault,
                  int* site_id = NULL);
-    bool openReport(const wxString& location, int* site_id = NULL);
+    bool openReport(const wxString& location, 
+                 int open_mask = appOpenDefault,
+                 int* site_id = NULL);
     bool openQuery(const wxString& location, int* site_id = NULL);
     bool openScript(const wxString& location, int* site_id = NULL);
     bool openSet(const wxString& location, int* site_id = NULL);
     bool openDataLink(const wxString& location, int* site_id = NULL);
-    bool openTemplate(const wxString& location);
+    bool openTemplate(const wxString& location,
+                      int open_mask = appOpenDefault);
     bool openWeb(const wxString& location,
                  wxWebPostData* post_data = NULL,
                  int open_mask = appOpenDefault,

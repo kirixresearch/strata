@@ -1262,6 +1262,7 @@ enum
     ID_OpenAsWeb,
     ID_RunQuery,
     ID_RunScript,
+    ID_RunReport,
     ID_PrintReport,
     ID_ModifyStructure,
     ID_NewShortcut,    
@@ -1296,6 +1297,7 @@ BEGIN_EVENT_TABLE(DbDoc, wxEvtHandler)
     EVT_MENU(ID_OpenAsWeb, DbDoc::onOpenAsWeb)
     EVT_MENU(ID_RunQuery, DbDoc::onRunQuery)
     EVT_MENU(ID_RunScript, DbDoc::onRunScript)
+    EVT_MENU(ID_RunReport, DbDoc::onRunReport)
     EVT_MENU(ID_PrintReport, DbDoc::onPrintReport)
     EVT_MENU(ID_ModifyStructure, DbDoc::onModifyStructure)
     EVT_MENU(ID_NewShortcut, DbDoc::onNewShortcut)    
@@ -2330,6 +2332,11 @@ void DbDoc::onRunScript(wxCommandEvent& event)
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
     }
+}
+
+void DbDoc::onRunReport(wxCommandEvent& evt)
+{
+    openSelectedItems(appOpenDefault | appOpenInLayout);
 }
 
 void DbDoc::onPrintReport(wxCommandEvent& evt)
@@ -3869,7 +3876,8 @@ void DbDoc::onFsItemRightClicked(IFsItemPtr item)
             menuPopup.Append(ID_Open, _("&Open"));
             menuPopup.AppendSubMenu(submenuOpenWith, _("Open &With"));
             menuPopup.AppendSeparator();
-            menuPopup.Append(ID_PrintReport, _("Pri&nt"));
+            menuPopup.Append(ID_RunReport, _("Ru&n"));
+            //menuPopup.Append(ID_PrintReport, _("Pri&nt"));
             menuPopup.AppendSeparator();
             menuPopup.Append(ID_Cut, _("Cu&t"));
             menuPopup.Append(ID_Copy, _("&Copy"));
