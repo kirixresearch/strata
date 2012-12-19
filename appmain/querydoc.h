@@ -90,7 +90,6 @@ public:
 
 private:
 
-    // -- IDocument --
     bool initDoc(IFramePtr frame,
                  IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,
@@ -101,11 +100,9 @@ private:
     bool onSiteClosing(bool force);
     void onSiteActivated();
 
-    // -- IColumnListTarget --
     void getColumnListItems(std::vector<ColumnListItem>& items);
     void onColumnListDblClicked(const std::vector<wxString>& items);
     
-    // -- panel methods --
     void updateCaption();
     void updateStatusBar();
     void updateColumnList();
@@ -135,11 +132,11 @@ private:
 
 private:
     
-    // -- signal events --
+    // signal events
     void onInsertingRows(std::vector<int> rows);
     void onDeletedRows(std::vector<int> rows);
     
-    // -- grid events --
+    // grid events
     void onGridDataDropped(kcl::GridDataDropTarget* drop_target);
     void onGridPreGhostRowInsert(kcl::GridEvent& evt);
     void onGridPreInvalidAreaInsert(kcl::GridEvent& evt);
@@ -147,7 +144,7 @@ private:
     void onGridEditChange(kcl::GridEvent& evt);
     void onGridEndEdit(kcl::GridEvent& evt);
 
-    // -- diagram events --
+    // diagram events
     void onDiagramSetAdded(wxString path, bool* allow);
     void onDiagramSetRemoved(wxString path);
     void onDiagramLineActivated(RelationLine* line);
@@ -157,10 +154,10 @@ private:
     void onDiagramFieldActivated(wxString path, wxString field);
     void onDiagramBoxSizedMoved(wxString path, wxRect rect);
 
-    // -- frame event handlers --
+    // frame event handlers
     void onFrameEvent(FrameworkEvent& evt);
 
-    // -- other events --
+    // other events
     void onCopy(wxCommandEvent& evt);
     void onInsertField(wxCommandEvent& evt);
     void onDeleteField(wxCommandEvent& evt);

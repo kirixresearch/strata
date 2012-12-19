@@ -15,7 +15,7 @@
 #include "tabledoc.h"
 #include "appcontroller.h"
 #include "jsonconfig.h"
-
+#include <set>
 
 static void onQueryJobFinished(IJobPtr job)
 {
@@ -684,13 +684,19 @@ wxString QueryTemplate::completeFilter(const wxString& _expr,
 {
     int type;
 
-    tango::IColumnInfoPtr colinfo;
-    colinfo = lookupColumnInfo(_input);
-    if (colinfo.isOk())
+    type = m_validation_struct->getExprType(towstr(_input));
+    
+    if (type == tango::typeInvalid || type == tango::typeUndefined)
     {
-        type = colinfo->getType();
+        tango::IColumnInfoPtr colinfo;
+        colinfo = lookupColumnInfo(_input);
+        if (colinfo.isOk())
+        {
+            type = colinfo->getType();
+        }
     }
-     else
+
+    if (type == tango::typeInvalid || type == tango::typeUndefined)
     {
         switch (group_func)
         {
@@ -923,11 +929,34 @@ void QueryTemplate::updateValidationStructure()
 
     std::vector<QueryBuilderSourceTable>::iterator tbl_it;
 
+    // find field names that are non-unique
+    std::set<std::wstring> idx, non_unique_field_names;
+    for (tbl_it = m_source_tables.begin();
+         tbl_it != m_source_tables.end(); ++tbl_it)
+    {
+        int i, col_count = tbl_it->structure->getColumnCount();
+
+        for (i = 0; i < col_count; ++i)
+        {
+            tango::IColumnInfoPtr colinfo;
+            colinfo = tbl_it->structure->getColumnInfoByIdx(i);
+            std::wstring fname = colinfo->getName();
+            kl::makeLower(fname);
+
+            if (idx.find(fname) == idx.end())
+                idx.insert(fname);
+                 else
+                non_unique_field_names.insert(fname);
+        }
+
+    }
+
+
+
     for (tbl_it = m_source_tables.begin();
          tbl_it != m_source_tables.end(); ++tbl_it)
     {   
-        int col_count = tbl_it->structure->getColumnCount();
-        int i;
+        int i, col_count = tbl_it->structure->getColumnCount();
 
         for (i = 0; i < col_count; ++i)
         {
@@ -946,6 +975,21 @@ void QueryTemplate::updateValidationStructure()
             newcol->setScale(colinfo->getScale());
             newcol->setCalculated(colinfo->getCalculated());
             newcol->setExpression(colinfo->getExpression());
+
+            // if the field name is unique, then represent it also in our validation structure
+            std::wstring fname = colinfo->getName();
+            kl::makeLower(fname);
+            if (non_unique_field_names.find(fname) == non_unique_field_names.end())
+            {
+                tango::IColumnInfoPtr newcol = m_validation_struct->createColumn();
+                newcol->setName(colinfo->getName());
+                newcol->setType(colinfo->getType());
+                newcol->setWidth(colinfo->getWidth());
+                newcol->setScale(colinfo->getScale());
+                newcol->setCalculated(colinfo->getCalculated());
+                newcol->setExpression(colinfo->getExpression());
+            }
+
         }
     }
 
