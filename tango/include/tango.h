@@ -429,6 +429,7 @@ public:
     virtual int getTableOrdinal() = 0;
 
     virtual IColumnInfoPtr clone() = 0;
+    virtual void copyTo(IColumnInfoPtr dest) = 0;
 };
 
 

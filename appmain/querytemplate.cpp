@@ -963,18 +963,30 @@ void QueryTemplate::updateValidationStructure()
             tango::IColumnInfoPtr colinfo;
             colinfo = tbl_it->structure->getColumnInfoByIdx(i);
 
-            wxString name;
-            name = tbl_it->alias;
-            name += wxT(".");
-            name += towx(colinfo->getName());
+            std::wstring alias = tbl_it->alias;
+            std::wstring column = colinfo->getName();
+            
+
 
             tango::IColumnInfoPtr newcol = m_validation_struct->createColumn();
-            newcol->setName(towstr(name));
+            newcol->setName(alias + L"." + column);
             newcol->setType(colinfo->getType());
             newcol->setWidth(colinfo->getWidth());
             newcol->setScale(colinfo->getScale());
             newcol->setCalculated(colinfo->getCalculated());
             newcol->setExpression(colinfo->getExpression());
+
+            tango::IColumnInfoPtr newcol1 = m_validation_struct->createColumn();
+            newcol->copyTo(newcol1);
+            newcol1->setName(L"[" + alias + L"]." + column);
+
+            tango::IColumnInfoPtr newcol2 = m_validation_struct->createColumn();
+            newcol->copyTo(newcol2);
+            newcol1->setName(alias + L".[" + column + L"]");
+
+            tango::IColumnInfoPtr newcol3 = m_validation_struct->createColumn();
+            newcol->copyTo(newcol3);
+            newcol1->setName(L"[" + alias + L"].[" + column + L"]");
 
             // if the field name is unique, then represent it also in our validation structure
             std::wstring fname = colinfo->getName();

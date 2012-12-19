@@ -59,6 +59,8 @@ public:
     int getTableOrdinal();
 
     tango::IColumnInfoPtr clone();
+    void copyTo(tango::IColumnInfoPtr dest);
+
 
 private:
 

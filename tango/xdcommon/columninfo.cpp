@@ -180,3 +180,18 @@ tango::IColumnInfoPtr ColumnInfo::clone()
     return static_cast<tango::IColumnInfo*>(p);
 }
 
+void ColumnInfo::copyTo(tango::IColumnInfoPtr dest)
+{
+    dest->setName(m_name);
+    dest->setType(m_type);
+    dest->setWidth(m_width);
+    dest->setScale(m_scale);
+    dest->setOffset(m_offset);
+    dest->setCalculated(m_calculated);
+    dest->setNullsAllowed(m_nulls_allowed);
+    if (m_expression)
+        dest->setExpression(m_expression);
+         else
+        dest->setExpression(L"");
+}
+
