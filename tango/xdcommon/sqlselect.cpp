@@ -268,6 +268,26 @@ static tango::IColumnInfoPtr getColumnInfoMulti(std::vector<SourceTable>& s,
 
 
     std::vector<SourceTable>::iterator it;
+
+    // first check if the field name requested has an exact match;
+    // This handles the case where a table
+    // has field names with a period in them
+    if (period_pos != -1)
+    {
+        for (it = s.begin(); it != s.end(); ++it)
+        {
+            tango::IColumnInfoPtr col_info = it->structure->getColumnInfo(field_name);
+            if (col_info)
+            {
+                if (tbl)
+                    *tbl = &(*it);
+
+                return col_info;
+            }
+        }
+    }
+
+    // now check only those tables where the alias matches
     for (it = s.begin(); it != s.end(); ++it)
     {
         if (!alias_part.empty())
