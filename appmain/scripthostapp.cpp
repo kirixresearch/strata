@@ -852,7 +852,8 @@ void HostApp::newDocument(kscript::ExprEnv* env, kscript::Value* retval)
 //
 // Description: Opens a database table, document, or web page
 //
-// Syntax: function HostApp.open() : HostDocument
+// Syntax: function HostApp.open(path : String, 
+//                               mode : String) : HostDocument
 //
 // Remarks: Opens and browses a database table, document, or web page.
 //     For some data types, such as text files, if the file is already
@@ -860,6 +861,11 @@ void HostApp::newDocument(kscript::ExprEnv* env, kscript::Value* retval)
 //     is returned.  If the document could not be opened, |null| is
 //     returned
 //
+// Param(path): The location of the document to open
+// Param(mode):  Optional.  Specifies how to open the document using
+//     either "layout" or "design".  If unspecified, the document is
+//     opened in the default view for that document.  Note: "mode" 
+//     currently only applies to reports.
 // Returns: A valid HostDocument object upon success, |null|
 //     in the case of an error.
 
@@ -873,10 +879,19 @@ void HostApp::open(kscript::ExprEnv* env, kscript::Value* retval)
     IFramePtr frame = g_app->getMainFrame();
     if (frame.isNull())
         return;
-    
+
     int site_id = 0;
+    std::wstring mode_string;
+    
     std::wstring path = env->getParam(0)->getString();
-    bool result = g_app->getAppController()->openAny(path, appOpenDefault, &site_id);
+    if (env->getParamCount() > 1)
+        mode_string = env->getParam(1)->getString();
+
+    int mode = appOpenDefault;
+    if (mode_string == L"layout")
+        mode |= appOpenInLayout;
+  
+    bool result = g_app->getAppController()->openAny(path, mode, &site_id);
 
     if (result && site_id != 0)
     {
@@ -884,27 +899,6 @@ void HostApp::open(kscript::ExprEnv* env, kscript::Value* retval)
         doc->m_site = frame->lookupSiteById(site_id);
         retval->setObject(doc);
     }
-
-    /*
-    if (env->getParamType(0) == kscript::Value::typeString)
-    {
-        wxString s = towx(env->getParam(0)->getString());
-        
-        s.Trim(true);
-        s.Trim(false);
-        
-        if (s.Left(5).MakeLower() == wxT("http:") ||
-            s.Right(5).MakeLower() == wxT(".html") ||
-            s.Right(4).MakeLower() == wxT(".htm"))
-        {
-            g_app->getAppController()->openWeb(s, NULL, appOpenForceNewWindow);
-        }
-         else
-        {
-            g_app->getAppController()->openSet(s);
-        }
-    }
-    */
 }
 
 
