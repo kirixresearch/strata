@@ -12,13 +12,13 @@
 #ifndef __JOBS_APPEND_H
 #define __JOBS_APPEND_H
 
+
 namespace jobs
 {
 
 
 class AppendJob : public XdJobBase
 {
-
     XCM_CLASS_NAME("jobs.AppendJob")
     XCM_BEGIN_INTERFACE_MAP(AppendJob)
         XCM_INTERFACE_CHAIN(JobBase)
@@ -29,13 +29,14 @@ public:
     AppendJob();
     virtual ~AppendJob();
 
+    bool isInputValid();
     int runJob();
     void runPostJob();
 };
 
 
-
 }; // namespace jobs
+
 
 #endif
 

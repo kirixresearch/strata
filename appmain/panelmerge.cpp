@@ -214,7 +214,6 @@ void MergePanel::setAppend(const wxString& append_path)
     m_append = (m_append_path.IsEmpty() ? false : true);
 }
 
-
 void MergePanel::onBrowse(wxCommandEvent& evt)
 {
     DlgDatabaseFile dlg(g_app->getMainWindow(), DlgDatabaseFile::modeSaveSmall);
@@ -225,7 +224,6 @@ void MergePanel::onBrowse(wxCommandEvent& evt)
         
     m_output_table->SetValue(dlg.getPath());
 }
-
 
 void MergePanel::checkOverlayText()
 {
@@ -427,66 +425,6 @@ static void onAppendJobFinished(jobs::IJobPtr job)
         std::wstring output_path = instructions["output"];
         g_app->getAppController()->openSet(output_path);
     }
-
-
-/*
-    IAppendJobPtr append_job = job;
-    if (append_job.isNull())
-        return;
-    
-    AppendInfo* info = (AppendInfo*)job->getExtraLong();
-    if (!info)
-    {
-        // this is an append job
-        
-        tango::ISetPtr target_set = append_job->getTargetSet();
-        if (target_set.isNull())
-            return;
-
-        // iterate through document sites, and update tabledocs
-        IDocumentSiteEnumPtr docsites;
-        IDocumentSitePtr site;
-        ITableDocPtr table_doc;
-
-        docsites = g_app->getMainFrame()->getDocumentSites(sitetypeNormal);
-
-        int site_count = docsites->size();
-        for (int i = 0; i < site_count; ++i)
-        {
-            site = docsites->getItem(i);
-            table_doc = site->getDocument();
-            if (table_doc.isOk())
-            {
-                if (table_doc->getBrowseSet() == target_set ||
-                    table_doc->getBaseSet() == target_set)
-                {
-                    table_doc->getGrid()->refresh(kcl::Grid::refreshAll);
-                    table_doc->updateStatusBar();
-                }
-            }
-        }
-    
-        return;
-    }
-     else
-    {
-        // this is a merge job
-        
-        wxString output_path = info->output_path;
-        tango::ISetPtr target_set = info->target_set;
-        delete info;
-
-        if (job->getJobInfo()->getState() != jobStateFinished)
-            return;
-
-        // store the merged records in a table with the specified output path
-        if (g_app->getDatabase()->storeObject(target_set, towstr(output_path)))
-        {
-            g_app->getAppController()->refreshDbDoc();
-            g_app->getAppController()->openSet(output_path);
-        }
-    }
-    */
 }
 
 void MergePanel::onOK(wxCommandEvent& evt)
@@ -558,7 +496,7 @@ void MergePanel::onOK(wxCommandEvent& evt)
     for (set_it = set_ptrs.begin(); set_it != set_ptrs.end(); ++set_it)
     {
         kl::JsonNode input_element = instructions["input"].appendElement();
-        input_element["path"] = (*set_it)->getObjectPath();
+        input_element.setString((*set_it)->getObjectPath());
     }
 
 
@@ -569,44 +507,6 @@ void MergePanel::onOK(wxCommandEvent& evt)
     g_app->getJobQueue()->addJob(job, jobStateRunning);
 
     m_frame->closeSite(m_doc_site);
-
-
-    /*
-    // create the append job
-    AppendJob* job = new AppendJob;
-    tango::ISetPtr target_set = m_set;
-    
-    if (!m_append)
-    {
-        // this is a merge job
-        target_set = g_app->getDatabase()->createSet(L"", output_structure, NULL);
-        if (target_set.isNull())
-        {
-            delete job;
-            return;
-        }
-
-        AppendInfo* info = new AppendInfo;
-        info->output_path = output_path;
-        info->target_set = target_set;
-        job->setExtraLong((long)info);
-    }
-
-    // set the target set for the job
-    job->setTargetSet(target_set);
-
-    // add all of the sets we're going to append
-    std::vector<tango::ISetPtr>::iterator set_it;
-    for (set_it = set_ptrs.begin(); set_it != set_ptrs.end(); ++set_it)
-    {
-        job->addAppendSet(*set_it);
-    }
-
-    job->sigJobFinished().connect(&onAppendJobFinished);
-    g_app->getJobQueue()->addJob(job, jobStateRunning);
-
-    m_frame->closeSite(m_doc_site);
-    */
 }
 
 
@@ -614,7 +514,4 @@ void MergePanel::onCancel(wxCommandEvent& evt)
 {
     m_frame->closeSite(m_doc_site);
 }
-
-
-
 

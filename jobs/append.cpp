@@ -12,6 +12,7 @@
 #include "jobspch.h"
 #include "append.h"
 
+
 namespace jobs
 {
 
@@ -26,23 +27,52 @@ AppendJob::~AppendJob()
 {
 }
 
-
-/*
-void AppendJob::addAppendSet(tango::ISetPtr append_set)
+bool AppendJob::isInputValid()
 {
-    if (append_set->getSetFlags() & tango::sfFastRowCount)
+/*
+    // example format:    
     {
-        m_max_count += (tango::tango_int64_t)append_set->getRowCount();
-        m_job_info->setMaxCount(m_max_count);
+        "metadata":
+        {
+            "type" : "application/vnd.kx.append-data",
+            "version" : 1,
+            "description" : ""
+        },
+        "input" : [<path1>, <path2>, ...],
+        "output" : <path>,      // optional;
+        "mode" : "overwrite"    // optional; if used, either "append" or "overwrite"; if undefined, uses "append"
     }
-
-    m_append_sets.push_back(append_set);
-}
 */
 
+    if (m_config.isNull())
+        return false;
+
+    // TODO: check job type and version
+
+    if (!m_config.childExists("input"))
+        return false;
+
+    kl::JsonNode input_arr = m_config["input"];
+    if (input_arr.getChildCount() == 0)
+        return false;
+
+    // TODO: check for file existence?  in general, how much
+    // work should the validator do?
+
+    return true;
+}
 
 int AppendJob::runJob()
 {
+    if (!isInputValid())
+    {
+        // TODO: correlate input validation with job error information
+    
+        m_job_info->setState(jobStateFailed);
+        m_job_info->setError(jobserrInvalidParameter, L"");
+        return 0;
+    }
+
     tango::IJobPtr tango_job;
 
     tango::IIteratorPtr source_iter;
@@ -57,14 +87,9 @@ int AppendJob::runJob()
     kl::JsonNode input_arr = m_config["input"];
     for (size_t i = 0; i < input_arr.getChildCount(); ++i)
     {
-        if (!input_arr[i].childExists("path"))
-        {
-            m_job_info->setState(jobStateFailed);
-            m_job_info->setError(jobserrInvalidParameter, L"");
-            return 0;
-        }
+        std::wstring path = input_arr[i].getString();
 
-        tango::ISetPtr set = m_db->openSet(input_arr[i]["path"]);
+        tango::ISetPtr set = m_db->openSet(path);
         if (set.isNull())
         {
             m_job_info->setState(jobStateFailed);
@@ -216,5 +241,5 @@ void AppendJob::runPostJob()
 }
 
 
-
 };  // namespace jobs
+
