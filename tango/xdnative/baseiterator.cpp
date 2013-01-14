@@ -1913,8 +1913,8 @@ bool BaseIterator::base_iterator_parse_hook(kscript::ExprParseHookInfo& hook_inf
             {
                 int scale = hook_info.expr_text.length() - (pos+1);
                 bind_param->max_scale = std::max(bind_param->max_scale, scale);
-                bind_param->max_scale = std::min(bind_param->max_scale, 4);
-
+                if (bind_param->max_scale > 10)
+                    bind_param->max_scale = std::min(bind_param->max_scale, 4);
             }
         }
             
@@ -1939,7 +1939,8 @@ bool BaseIterator::base_iterator_parse_hook(kscript::ExprParseHookInfo& hook_inf
         if (colinfo->getType() == tango::typeNumeric || colinfo->getType() == tango::typeDouble)
         {
             bind_param->max_scale = std::max(bind_param->max_scale, colinfo->getScale());
-            bind_param->max_scale = std::min(bind_param->max_scale, 4);
+            if (bind_param->max_scale > 10)
+                bind_param->max_scale = std::min(bind_param->max_scale, 4);
         }
 
         DataAccessInfo* dai = NULL;
