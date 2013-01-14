@@ -1905,6 +1905,19 @@ bool BaseIterator::base_iterator_parse_hook(kscript::ExprParseHookInfo& hook_inf
             hook_info.expr_text.erase(0, 1);
         }
 
+        // find out the scale for numeric constants
+        if (hook_info.expr_text.length() > 1 && iswdigit(hook_info.expr_text[0]))
+        {
+            size_t pos = hook_info.expr_text.find('.');
+            if (pos != std::wstring::npos)
+            {
+                int scale = hook_info.expr_text.length() - (pos+1);
+                bind_param->max_scale = std::max(bind_param->max_scale, scale);
+                bind_param->max_scale = std::min(bind_param->max_scale, 4);
+
+            }
+        }
+            
         tango::IColumnInfoPtr colinfo;
         colinfo = iter->m_set_structure->getColumnInfo(hook_info.expr_text);
         if (colinfo.isNull())
