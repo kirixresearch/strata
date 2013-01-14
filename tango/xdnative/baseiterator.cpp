@@ -50,9 +50,10 @@ const std::wstring empty_wstring = L"";
 struct ParserBindInfo
 {
     ParserBindInfo(BaseIterator* _iter, const std::wstring& _column)
-                   : column(_column), iter(_iter) { }
+                   : column(_column), iter(_iter), max_scale(0) { }
     std::wstring column;
     BaseIterator* iter;
+    int max_scale;
 };
 
 
@@ -833,13 +834,17 @@ bool BaseIterator::initStructure()
             {
                 case tango::typeNumeric:
                     width = 18;
+                    scale = bind_info.max_scale;
+                    break;
+                case tango::typeDouble:
+                    width = 8;
+                    scale = bind_info.max_scale;
                     break;
                 case tango::typeDate:
                 case tango::typeInteger:
                     width = 4;
                     break;
                 case tango::typeDateTime:
-                case tango::typeDouble:
                     width = 8;
                     break;
                 default:
@@ -1918,7 +1923,12 @@ bool BaseIterator::base_iterator_parse_hook(kscript::ExprParseHookInfo& hook_inf
         if (colinfo.isNull())
             return false;
         
-        
+        if (colinfo->getType() == tango::typeNumeric || colinfo->getType() == tango::typeDouble)
+        {
+            bind_param->max_scale = std::max(bind_param->max_scale, colinfo->getScale());
+            bind_param->max_scale = std::min(bind_param->max_scale, 4);
+        }
+
         DataAccessInfo* dai = NULL;
         
         if (0 == wcscasecmp(bind_param->column.c_str(), hook_info.expr_text.c_str()))
