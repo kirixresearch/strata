@@ -464,7 +464,7 @@ static std::wstring exprReplaceToken(const std::wstring& str,
             wchar_t ch = *(s-1);
             if (iswalpha(ch) || iswdigit(ch) || ch == L'_')
             {
-                result += ch;
+                result += *s;
                 s++;
                 continue;
             }
