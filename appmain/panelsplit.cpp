@@ -573,8 +573,8 @@ bool SplitPanel::validate()
         return true;
     }
     
-    // maximum table size value
-    double max_table_size = getSetSize(m_set)/1048576.0;
+    // maximum table size value (make sure it's at least the minimum too to avoid an endless loop)
+    double max_table_size = std::max(getSetSize(m_set)/1048576.0, 0.01);
     if (split_type == 2 && table_size_val > max_table_size)
     {
         m_tablesize_textctrl->SetValue(wxString::Format(wxT("%.02f"), max_table_size));
