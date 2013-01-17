@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="append.cpp" />
+    <ClCompile Include="divide.cpp" />
     <ClCompile Include="jobbase.cpp" />
     <ClCompile Include="jobinfo.cpp" />
     <ClCompile Include="jobs.cpp" />
@@ -30,6 +31,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="append.h" />
+    <ClInclude Include="divide.h" />
     <ClInclude Include="jobbase.h" />
     <ClInclude Include="jobinfo.h" />
     <ClInclude Include="jobs.h" />
