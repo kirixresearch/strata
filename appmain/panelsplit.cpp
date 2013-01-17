@@ -93,6 +93,11 @@ xf_off_t calculateSetRowCount(int col_count, int row_width, double file_size)
 }
 
 
+static void onDivideJobFinished(jobs::IJobPtr job)
+{
+    g_app->getAppController()->refreshDbDoc();
+}
+
 
 
 BEGIN_EVENT_TABLE(SplitPanel, wxPanel)
@@ -368,39 +373,47 @@ void SplitPanel::onOK(wxCommandEvent& event)
     }
 
     // create the split info for the split job
-    SplitInfo* si = new SplitInfo;
-    si->type = getSplitType(m_splittype_choice->GetSelection());
-    si->source_set = m_set;
-    si->prefix = m_prefix_textctrl->GetValue();
-    si->expression = m_expression_textctrl->GetValue();
-    m_rowcount_textctrl->GetValue().ToLong(&si->row_count);
-    m_tablecount_textctrl->GetValue().ToLong(&si->table_count);
+    SplitInfo si;
+    si.type = getSplitType(m_splittype_choice->GetSelection());
+    si.source_set = m_set;
+    si.prefix = m_prefix_textctrl->GetValue();
+    si.expression = m_expression_textctrl->GetValue();
+    m_rowcount_textctrl->GetValue().ToLong(&si.row_count);
+    m_tablecount_textctrl->GetValue().ToLong(&si.table_count);
+
 
     // check output paths
     wxString output_path;
-    for (int i = 0; i < si->table_count; ++i)
+    for (int i = 0; i < si.table_count; ++i)
     {
-        output_path = si->prefix;
+        output_path = si.prefix;
         
-        if (si->table_count < 10)
+        if (si.table_count < 10)
             output_path += wxString::Format(wxT("_%01d"), i+1);
-         else if (si->table_count >= 10 && si->table_count < 100)
+         else if (si.table_count >= 10 && si.table_count < 100)
             output_path += wxString::Format(wxT("_%02d"), i+1);
          else
             output_path += wxString::Format(wxT("_%03d"), i+1);
 
         if (!doOutputPathCheck(output_path))
-        {
-            delete si;
             return;
-        }
     }
-    
-    SplitJob* split_job = new SplitJob;
-    split_job->setInstructions(si);
-    g_app->getJobQueue()->addJob(split_job, jobStateRunning);
 
-    m_frame->closeSite(m_doc_site);
+
+    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.divide-data");
+
+    kl::JsonNode instructions;
+    instructions["input"].setString(towstr(si.source_set->getObjectPath()));
+    instructions["output"].setString(towstr(si.prefix));
+    instructions["row_count"].setInteger(si.row_count);
+    
+    job->getJobInfo()->setTitle(towstr(_("Divide Table")));
+    job->setInstructions(instructions.toString());
+
+    job->sigJobFinished().connect(&onDivideJobFinished);
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
+
+    m_frame->closeSite(m_doc_site);    
 }
 
 void SplitPanel::onCancel(wxCommandEvent& evt)
