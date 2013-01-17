@@ -157,6 +157,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\divide.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\jobbase.cpp"
 				>
 			</File>
@@ -180,6 +184,10 @@
 			>
 			<File
 				RelativePath=".\append.h"
+				>
+			</File>
+			<File
+				RelativePath=".\divide.h"
 				>
 			</File>
 			<File

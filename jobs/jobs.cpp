@@ -12,6 +12,7 @@
 #include "jobspch.h"
 #include "jobinfo.h"
 #include "append.h"
+#include "divide.h"
 
 namespace jobs
 {
@@ -21,8 +22,10 @@ IJobPtr createJob(const std::wstring job_class)
 {
     if (job_class == L"application/vnd.kx.append-data")
         return static_cast<IJob*>(new AppendJob);
-         else
-        return xcm::null;
+    if (job_class == L"application/vnd.kx.divide-data")
+        return static_cast<IJob*>(new DivideJob);
+
+        return xcm::null;        
 }
 
 
