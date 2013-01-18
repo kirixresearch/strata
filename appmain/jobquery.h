@@ -55,11 +55,6 @@ public:
     void setDatabase(tango::IDatabasePtr db);
     void setQuery(const wxString& query, unsigned int flags);
 
-    void setQueryParts(tango::ISetPtr set,
-                       const wxString& columns,
-                       const wxString& filter,
-                       const wxString& sort);
-
     tango::ISetPtr getResultSet();
     tango::IIteratorPtr getResultIterator();
 

@@ -64,20 +64,12 @@ void QueryJob::setQuery(const wxString& query, unsigned int flags)
     m_flags = flags;
 }
 
-void QueryJob::setQueryParts(tango::ISetPtr set,
-                   const wxString& columns,
-                   const wxString& filter,
-                   const wxString& sort)
-{
-}
-
 tango::ISetPtr QueryJob::getResultSet()
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
     return m_result_set;
 }
-
 
 tango::IIteratorPtr QueryJob::getResultIterator()
 {
