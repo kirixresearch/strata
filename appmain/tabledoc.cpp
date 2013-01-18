@@ -3272,39 +3272,6 @@ void TableDoc::onDeleteJobFinished(IJobPtr delete_job)
     updateStatusBar();
 }
 
-void TableDoc::onIndexJobFinished(IJobPtr job)
-{
-    // set as the active order
-    AppBusyCursor bc;
-
-    IIndexJobPtr index_job = job;
-    if (index_job.isNull())
-        return;
-
-    std::vector<IndexJobInstruction> instructions;
-    instructions = index_job->getInstructions();
-
-    if (instructions.size() != 1)
-        return;
-
-    tango::ISetPtr set = m_set;
-    tango::IIteratorPtr iter;
-
-    iter = set->createIterator(L"*",
-                               towstr(instructions[0].expr),
-                               NULL);
-
-    if (iter.isNull())
-        return;
-
-    m_filter = wxT("");
-    m_sort_order = instructions[0].expr;
-
-    setBrowseSet(set, iter);
-
-    updateStatusBar();
-}
-
 void TableDoc::onReplaceJobFinished(IJobPtr replace_job)
 {
     m_grid->refresh(kcl::Grid::refreshAll);
