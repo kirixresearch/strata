@@ -1107,22 +1107,29 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
 
         if (result == wxYES)
         {
-            IndexJob* job = new IndexJob;
+            jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.index-data");
+
+            kl::JsonNode instructions;
+            kl::JsonNode indexes = instructions["indexes"];
 
             std::vector<tango::IIndexInfoPtr>::iterator it;
             for (it = to_recreate.begin();
                  it != to_recreate.end();
                  ++it)
             {
-                job->addInstruction(m_tabledoc->getBaseSet(),
-                                    towx((*it)->getTag()),
-                                    towx((*it)->getExpression()));
+                kl::JsonNode index_item = indexes.appendElement();
+
+                index_item["input"].setString(m_tabledoc->getBaseSet()->getObjectPath());
+                index_item["name"].setString((*it)->getTag());
+                index_item["expression"].setString((*it)->getExpression());
             }
+
+            job->getJobInfo()->setTitle(towstr(_("Creating Index")));
+            job->setInstructions(instructions.toString());
 
             g_app->getJobQueue()->addJob(job, jobStateRunning);
         }
     }
-
 }
 
 

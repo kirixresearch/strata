@@ -385,7 +385,9 @@ static void expr2vec(IndexInfo* info)
                 c.name = c.name.BeforeLast(wxT(' '));
                 c.ascending = false;
             }
-            
+
+            // make sure the column name is dequoted
+            c.name = towx(tango::dequoteIdentifier(g_app->getDatabase(), towstr(c.name)));
             info->cols.push_back(c);
         }
     }
@@ -399,7 +401,8 @@ static void vec2expr(IndexInfo* info)
     std::vector<IndexColumnInfo>::iterator it;
     for (it = info->cols.begin(); it != info->cols.end(); ++it)
     {
-        expr += it->name;
+        wxString q_name = towx(tango::quoteIdentifier(g_app->getDatabase(), towstr(it->name)));
+        expr += q_name;
         
         if (!it->ascending)
             expr += wxT(" DESC");

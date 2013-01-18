@@ -8448,14 +8448,16 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
     }
     
     
-    // now that we've deleting and renamed indexes, we need
-    // to set up an index job to either reindex some of the original
-    // indexes (if their expression has changed) or create new indexes
-    // (if their tag name can't be found in the original list of indexes)
-    
-    
+    // now that we've deleted and renamed indexes, we need to set
+    // up an index job to either reindex some of the original indexes
+    // (if their expression has changed) or create new indexes (if
+    // their tag name can't be found in the original list of indexes)
+
     // create an index job
-    IndexJob* job = new IndexJob;
+    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.index-data");
+
+    kl::JsonNode instructions;
+    kl::JsonNode indexes = instructions["indexes"];
     
     
     // we may have deleted some of the original indexes;
@@ -8473,7 +8475,11 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
         if (info->orig_name.IsEmpty())
         {
             // this is a new index; add it to the IndexJob
-            job->addInstruction(getBaseSet(), info->name, info->expr);
+            kl::JsonNode index_item = indexes.appendElement();
+            index_item["input"].setString(towstr(getBaseSet()->getObjectPath()));
+            index_item["name"].setString(towstr(info->name));
+            index_item["expression"].setString(towstr(info->expr));
+
             continue;
         }
         
@@ -8505,7 +8511,11 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
         if (!found)
         {
             // we couldn't find the orginal index; create a new index
-            job->addInstruction(getBaseSet(), info->name, info->expr);
+            kl::JsonNode index_item = indexes.appendElement();
+            index_item["input"].setString(towstr(getBaseSet()->getObjectPath()));
+            index_item["name"].setString(towstr(info->name));
+            index_item["expression"].setString(towstr(info->expr));
+
             continue;
         }
         
@@ -8518,7 +8528,11 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
         
         // 2) the expression has changed; delete the old index
         //    and create a new one
-        job->addInstruction(getBaseSet(), info->name, info->expr);
+        kl::JsonNode index_item = indexes.appendElement();
+        index_item["input"].setString(towstr(getBaseSet()->getObjectPath()));
+        index_item["name"].setString(towstr(info->name));
+        index_item["expression"].setString(towstr(info->expr));        
+        
         if (index.isOk())
         {
             db->deleteIndex(m_set->getObjectPath(), index->getTag());
@@ -8527,13 +8541,12 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
     }
     
     // the index job has no instructions; we're done
-    if (job->getInstructions().size() == 0)
-    {
-        delete job;
+    if (indexes.getChildCount() == 0)
         return;
-    }
-    
-    // the index job has some instructions; start the job
+
+    job->getJobInfo()->setTitle(towstr(_("Creating Index")));
+    job->setInstructions(instructions.toString());
+
     g_app->getJobQueue()->addJob(job, jobStateRunning);
 }
 

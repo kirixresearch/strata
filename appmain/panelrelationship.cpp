@@ -435,8 +435,8 @@ void RelationshipPanel::onClose(wxCommandEvent& evt)
 
 struct UpdateRel
 {
-    tango::ISetPtr left_set;
     wxString tag;
+    wxString left_path;    
     wxString right_path;
     wxString left_expr;
     wxString right_expr;
@@ -444,7 +444,7 @@ struct UpdateRel
 
 struct UpdateIdx
 {
-    tango::ISetPtr set;
+    wxString set_path;
     wxString idx_name;
     wxString idx_expr;
 };
@@ -464,7 +464,7 @@ static void addRelationships(UpdateInfo* info)
          it != info->relations.end(); ++it)
     {
         g_app->getDatabase()->createRelation(towstr(it->tag),
-                                             towstr(it->left_set->getObjectPath()),
+                                             towstr(it->left_path),
                                              towstr(it->right_path),
                                              towstr(it->left_expr),
                                              towstr(it->right_expr));
@@ -478,14 +478,51 @@ static void addRelationships(UpdateInfo* info)
         g_app->getAppController()->updateTableDocRelationshipSync(synctype);        
 }
 
-static void onIndexJobFinished(IJobPtr job)
+static void onIndexJobFinished(jobs::IJobPtr job)
 {
-    UpdateInfo* info = (UpdateInfo*)job->getExtraLong();
+    if (job->getJobInfo()->getState() != jobStateFinished)
+        return;
 
-    if (job->getJobInfo()->getState() == jobStateFinished)
-        addRelationships(info);
+    // unpack the job instructions and save it to the update info        
+    UpdateInfo info;
 
-    delete info;
+    kl::JsonNode instructions;
+    instructions.fromString(job->getInstructions());
+
+    // note: no check; this is a local callback and these must exist
+    std::vector<kl::JsonNode> indexes = instructions["indexes"].getChildren();
+    std::vector<kl::JsonNode> relationships = instructions["relationships"].getChildren();
+    
+    std::vector<kl::JsonNode>::iterator it, it_end;
+    it_end = indexes.end();
+    
+    for (it = indexes.begin(); it != it_end; ++it)
+    {
+        UpdateIdx index;
+        index.set_path = it->getChild("input").getString();
+        index.idx_name = it->getChild("name").getString();
+        index.idx_expr = it->getChild("expression").getString();
+
+        info.indexes.push_back(index);
+    }
+
+    std::vector<kl::JsonNode>::iterator it_rel, it_rel_end;
+    it_rel_end = relationships.end();
+    
+    for (it_rel = relationships.begin(); it_rel != it_rel_end; ++it_rel)
+    {
+        UpdateRel relation;
+        relation.tag = it_rel->getChild("name").getString();
+        relation.left_path = it_rel->getChild("left_path").getString();
+        relation.left_expr = it_rel->getChild("left_expression").getString();
+        relation.right_path = it_rel->getChild("right_path").getString();
+        relation.right_expr = it_rel->getChild("right_expression").getString();
+
+        info.relations.push_back(relation);    
+    }    
+    
+    // add the relationship info
+    addRelationships(&info);
 }
 
 static tango::IRelationPtr lookupSetRelation(tango::IDatabasePtr& db, tango::ISetPtr set, const std::wstring& tag)
@@ -630,7 +667,7 @@ void RelationshipPanel::onUpdateRelationships(wxCommandEvent& evt)
                 if (!idx)
                 {
                     UpdateIdx i;
-                    i.set = right_set;
+                    i.set_path = right_set->getObjectPath();
                     i.idx_expr = right_str;
                     i.idx_name = right_str;
                     i.idx_name.Replace(wxT(","), wxT("_"));
@@ -639,12 +676,11 @@ void RelationshipPanel::onUpdateRelationships(wxCommandEvent& evt)
             }
 
             UpdateRel r;
-            r.left_set = set;
+            r.tag = ni_it->tag;            
+            r.left_path = set->getObjectPath();
             r.left_expr = left_str;
+            r.right_path = ni_it->right_path;            
             r.right_expr = right_str;
-            r.right_path = ni_it->right_path;
-            r.tag = ni_it->tag;
-            
             info->relations.push_back(r);
         }
     }
@@ -654,18 +690,44 @@ void RelationshipPanel::onUpdateRelationships(wxCommandEvent& evt)
     
     if (info->indexes.size() > 0)
     {
-        IndexJob* job = new IndexJob;
+        jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.index-data");
 
-        job->sigJobFinished().connect(&onIndexJobFinished);
-        job->setExtraLong((long)info);
+        kl::JsonNode instructions;
+        
+        kl::JsonNode indexes = instructions["indexes"];
+        kl::JsonNode relationships = instructions["relationships"];
 
+        // add the index information
         std::vector<UpdateIdx>::iterator it;
         for (it = info->indexes.begin();
              it != info->indexes.end(); ++it)
         {
-            job->addInstruction(it->set, it->idx_name, it->idx_expr);
+            kl::JsonNode index_item = indexes.appendElement();
+
+            index_item["input"].setString(towstr(it->set_path));
+            index_item["name"].setString(towstr(it->idx_name));
+            index_item["expression"].setString(towstr(it->idx_expr));
         }
 
+        // add extra relationship information; index job doesn't require
+        // this but we'll need it when the index jobs are finished
+        std::vector<UpdateRel>::iterator it_rel;
+        for (it_rel = info->relations.begin();
+             it_rel != info->relations.end(); ++it_rel)
+        {
+            kl::JsonNode relationship_item = relationships.appendElement();
+
+            relationship_item["name"].setString(towstr(it_rel->tag));
+            relationship_item["left_path"].setString(towstr(it_rel->left_path));
+            relationship_item["left_expression"].setString(towstr(it_rel->left_expr));
+            relationship_item["right_path"].setString(towstr(it_rel->right_path));
+            relationship_item["right_expression"].setString(towstr(it_rel->right_expr));
+        }
+
+        job->getJobInfo()->setTitle(towstr(_("Creating Index")));
+        job->setInstructions(instructions.toString());
+
+        job->sigJobFinished().connect(&onIndexJobFinished);
         g_app->getJobQueue()->addJob(job, jobStateRunning);
     }
      else
