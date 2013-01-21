@@ -23,7 +23,7 @@
 #else
 #define MODVERSION_MAJOR            4
 #define MODVERSION_MINOR            5
-#define MODVERSION_SUBMINOR         3
+#define MODVERSION_SUBMINOR         4
 #define MODVERSION_BUILDSERIAL      0
 #endif
 

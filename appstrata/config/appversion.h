@@ -21,7 +21,7 @@
 #ifndef APP_VERSION_MAJOR
 #define APP_VERSION_MAJOR           4    // between 00 and 99, inclusive
 #define APP_VERSION_MINOR           5    // between  0 and 9, inclusive
-#define APP_VERSION_SUBMINOR        3    // between  0 and 9, inclusive
+#define APP_VERSION_SUBMINOR        4    // between  0 and 9, inclusive
 #define APP_VERSION_BUILDSERIAL     0    // between 0000 and 9999, inclusive
 #endif
 
