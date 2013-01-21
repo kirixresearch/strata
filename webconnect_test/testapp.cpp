@@ -1,6 +1,6 @@
 /*!
  *
- * Copyright (c) 2009-2011, Kirix Research, LLC.  All rights reserved.
+ * Copyright (c) 2009-2013, Kirix Research, LLC.  All rights reserved.
  *
  * Project:  wxWebConnect Test Application
  * Author:   Benjamin I. Williams
@@ -759,7 +759,7 @@ void MyFrame::OnGoAbout(wxCommandEvent& evt)
     arr.Add(wxT("	<div id=\"main\">"));
     arr.Add(wxT("		<h3>wxWebConnect Test Application<br/></h3>"));
     arr.Add(wxT("		<h5>Version 1.0<br/></h5>"));
-    arr.Add(wxT("		<p class=\"copyright\">Copyright (c) 2009-2011, Kirix Research, LLC.  All rights reserved.<br/>"));
+    arr.Add(wxT("		<p class=\"copyright\">Copyright (c) 2009-2013, Kirix Research, LLC.  All rights reserved.<br/>"));
     arr.Add(wxT("		                       Licence:     wxWindows Library Licence, Version 3.1</p>"));
     arr.Add(wxT("		<p class=\"gray\">This software contains an unmodified binary version of the open-source XULRunner"));
     arr.Add(wxT("                         engine as provided by the Mozilla Foundation. Please read the"));

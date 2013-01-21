@@ -1,6 +1,6 @@
 #/*!
 # *
-# * Copyright (c) 2002-2011, Kirix Research, LLC.  All rights reserved.
+# * Copyright (c) 2002-2013, Kirix Research, LLC.  All rights reserved.
 # *
 # * Project:  Application Installation Utility
 # * Author:   Benjamin I. Williams

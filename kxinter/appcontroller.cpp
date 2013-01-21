@@ -1,6 +1,6 @@
 /*!
  *
- * Copyright (c) 2003-2011, Kirix Research, LLC.  All rights reserved.
+ * Copyright (c) 2003-2013, Kirix Research, LLC.  All rights reserved.
  *
  * Project:  Data Interchange Application
  * Author:   Benjamin I. Williams
@@ -316,7 +316,7 @@ TreeController* AppController::getTreeController()
 
 void AppController::onAbout(wxCommandEvent& event)
 {
-    cfw::appMessageBox(wxT(PRODUCT_NAME + " - Copyright (c) 2004, Kirix Research, LLC.  All rights reserved."),
+    cfw::appMessageBox(wxT(PRODUCT_NAME + " - Copyright (c) 2004-2013, Kirix Research, LLC.  All rights reserved."),
                   _("About"),
                   wxICON_INFORMATION);
 }

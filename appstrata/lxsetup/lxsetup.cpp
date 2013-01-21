@@ -1,6 +1,6 @@
 /*!
  *
- * Copyright (c) 2002-2011, Kirix Research, LLC.  All rights reserved.
+ * Copyright (c) 2002-2013, Kirix Research, LLC.  All rights reserved.
  *
  * Project:  Application Installation Utility
  * Author:   Benjamin I. Williams
@@ -251,7 +251,7 @@ public:
         cfw::resizeStaticText(legal_text2);
 
         wxStaticText* legal_text3 = new wxStaticText(this, -1,
-                _("Copyright (c) 2008-2011, Kirix Research, LLC.  All rights reserved."));
+                _("Copyright (c) 2008-2013, Kirix Research, LLC.  All rights reserved."));
         limitTextSize(legal_text3);
         cfw::resizeStaticText(legal_text3);
 

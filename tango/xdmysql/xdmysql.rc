@@ -1,6 +1,6 @@
 /*!
  *
- * Copyright (c) 2003-2011, Kirix Research, LLC.  All rights reserved.
+ * Copyright (c) 2003-2013, Kirix Research, LLC.  All rights reserved.
  *
  * Project:  XD Database Library
  * Author:   Benjamin I. Williams
@@ -35,7 +35,7 @@ BEGIN
             VALUE "FileDescription", "XD Database Engine (MySQL Driver)\0"
             VALUE "FileVersion", "4.x\0"
             VALUE "InternalName", "xdmysql\0"
-            VALUE "LegalCopyright", "Copyright (c) 2003-2011, Kirix Research, LLC.  All rights reserved.\0"
+            VALUE "LegalCopyright", "Copyright (c) 2003-2013, Kirix Research, LLC.  All rights reserved.\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "xdmysql.dll\0"
             VALUE "PrivateBuild", "\0"

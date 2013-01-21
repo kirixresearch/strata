@@ -1,6 +1,6 @@
 #/*!
 # *
-# * Copyright (c) 2007-2011, Kirix Research, LLC.  All rights reserved.
+# * Copyright (c) 2007-2013, Kirix Research, LLC.  All rights reserved.
 # *
 # * Project:  Strata Setup Utility
 # * Author:   Benjamin I. Williams

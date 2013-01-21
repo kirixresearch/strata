@@ -1,6 +1,6 @@
 /*!
  *
- * Copyright (c) 2012, Kirix Research, LLC.  All rights reserved.
+ * Copyright (c) 2012-2013, Kirix Research, LLC.  All rights reserved.
  *
  * Project:  SD Server
  * Author:   Benjamin I. Williams

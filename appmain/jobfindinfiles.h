@@ -1,6 +1,6 @@
 /*!
  *
- * Copyright (c) 2010-2011, Kirix Research, LLC.  All rights reserved.
+ * Copyright (c) 2010-2013, Kirix Research, LLC.  All rights reserved.
  *
  * Project:  Application Client
  * Author:   Benjamin I. Williams

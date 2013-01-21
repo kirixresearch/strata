@@ -1,6 +1,6 @@
 /*!
  *
- * Copyright (c) 2001-2011, Kirix Research, LLC.  All rights reserved.
+ * Copyright (c) 2001-2013, Kirix Research, LLC.  All rights reserved.
  *
  * Project:  Standard Library
  * Author:   Benjamin I. Williams

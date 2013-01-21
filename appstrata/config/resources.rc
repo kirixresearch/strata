@@ -30,7 +30,7 @@ BEGIN
             VALUE "FileDescription", "Kirix Strata Application\0"
             VALUE "FileVersion", "4.x\0"
             VALUE "InternalName", "kstrata\0"
-            VALUE "LegalCopyright", "Copyright (c) 2002-2011, Kirix Research, LLC.  All rights reserved.\0"
+            VALUE "LegalCopyright", "Copyright (c) 2002-2013, Kirix Research, LLC.  All rights reserved.\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "kstrata.exe\0"
             VALUE "PrivateBuild", "\0"

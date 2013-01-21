@@ -1,6 +1,6 @@
 /*!
  *
- * Copyright (c) 2003-2011, Kirix Research, LLC.  All rights reserved.
+ * Copyright (c) 2003-2013, Kirix Research, LLC.  All rights reserved.
  *
  * Project:  Paladin Security Library
  * Author:   Benjamin I. Williams

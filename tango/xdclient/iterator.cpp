@@ -1,6 +1,6 @@
 /*!
  *
- * Copyright (c) 2009-2011, Kirix Research, LLC.  All rights reserved.
+ * Copyright (c) 2009-2013, Kirix Research, LLC.  All rights reserved.
  *
  * Project:  XD Database Library
  * Author:   Aaron L. Williams

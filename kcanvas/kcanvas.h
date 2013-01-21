@@ -1,6 +1,6 @@
 /*!
  *
- * Copyright (c) 2004-2011, Kirix Research, LLC.  All rights reserved.
+ * Copyright (c) 2004-2013, Kirix Research, LLC.  All rights reserved.
  *
  * Project:  Canvas Control
  * Author:   Aaron L. Williams; Benjamin I. Williams

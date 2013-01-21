@@ -1,6 +1,6 @@
 /*!
  *
- * Copyright (c) 2009-2011, Kirix Research, LLC.  All rights reserved.
+ * Copyright (c) 2009-2013, Kirix Research, LLC.  All rights reserved.
  *
  * Project:  XD Database Library
  * Author:   Aaron L. Williams
@@ -34,7 +34,7 @@ BEGIN
             VALUE "FileDescription", "XD Database Engine (Client Driver)\0"
             VALUE "FileVersion", "4.x\0"
             VALUE "InternalName", "xdclient\0"
-            VALUE "LegalCopyright", "Copyright (c) 2002-2011, Kirix Research, LLC.  All rights reserved.\0"
+            VALUE "LegalCopyright", "Copyright (c) 2002-2013, Kirix Research, LLC.  All rights reserved.\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "xdclient.dll\0"
             VALUE "PrivateBuild", "\0"
