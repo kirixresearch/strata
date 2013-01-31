@@ -83,10 +83,6 @@ public:
         return res;
     }
 
-    void setDatabase(tango::IDatabase* db)
-    {
-    }
-
     bool cancel()
     {
         XCM_AUTO_LOCK(m_jobbase_mutex);
