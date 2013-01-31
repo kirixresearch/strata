@@ -9,7 +9,6 @@
  */
 
 
-
 #include "jobspch.h"
 #include "jobinfo.h"
 
@@ -336,3 +335,4 @@ double JobInfo::getPercentage()
 
 
 };
+

@@ -16,6 +16,7 @@
 namespace jobs
 {
 
+
 class XdJobBase : public JobBase,
                   public xcm::signal_sink
 {
@@ -168,9 +169,7 @@ private:
 };
 
 
-
 }; // namespace jobs
-
 
 
 #endif

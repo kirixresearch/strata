@@ -246,8 +246,8 @@ int GroupJob::runJob()
     }
 
 
-    if (output_path.length() > 0)
-        m_db->storeObject(output_set, output_path);
+//    if (output_path.length() > 0)
+//        m_db->storeObject(output_set, output_path);
 
 
     return 0;

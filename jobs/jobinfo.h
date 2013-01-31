@@ -8,13 +8,13 @@
  *
  */
 
+
 #ifndef __JOBS_JOBINFO_H
 #define __JOBS_JOBINFO_H
 
 
 namespace jobs
 {
-
 
 
 /*
@@ -113,9 +113,8 @@ private:
 };
 
 
-
 };
 
 
-
 #endif
+

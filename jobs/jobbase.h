@@ -12,10 +12,13 @@
 #ifndef __JOBS_JOBBASE_H
 #define __JOBS_JOBBASE_H
 
+
 #include <map>
+
 
 namespace jobs
 {
+
 
 class JobBase : public IJob
 {
@@ -32,7 +35,6 @@ public:
     JobBase()
     {
         m_jobbase_jobid = 0;
-        m_extra_long = 0;
         m_sp_job_info = createJobInfoObject();
         m_job_info = m_sp_job_info.p;
         m_cancelling = false;
@@ -66,37 +68,6 @@ public:
         m_job_info = new_val;
     }
 
-    long getExtraLong()
-    {
-        XCM_AUTO_LOCK(m_jobbase_mutex);
-        return m_extra_long;
-    }
-
-    void setExtraLong(long value)
-    {
-        XCM_AUTO_LOCK(m_jobbase_mutex);
-        m_extra_long = value;
-    }
-
-    void setExtraString(const std::wstring& s)
-    {
-        XCM_AUTO_LOCK(m_jobbase_mutex);
-        m_extra_string = s;
-    }
-
-    std::wstring getExtraString()
-    {
-        XCM_AUTO_LOCK(m_jobbase_mutex);
-        return m_extra_string;
-    }
-
-    void setParameter(const std::wstring& param, const std::wstring& value)
-    {
-        XCM_AUTO_LOCK(m_jobbase_mutex);
-        
-        m_config[param] = value;
-    }
-
     void setInstructions(const std::wstring& json)
     {
         XCM_AUTO_LOCK(m_jobbase_mutex);
@@ -112,21 +83,8 @@ public:
         return res;
     }
 
-
     void setDatabase(tango::IDatabase* db)
     {
-    }
-
-
-
-    std::wstring getParameter(const std::wstring& param)
-    {
-        XCM_AUTO_LOCK(m_jobbase_mutex);
-        
-        if (!m_config.childExists(param))
-            return L"";
-             else
-            m_config.getChild(param).getString();
     }
 
     bool cancel()
@@ -155,8 +113,6 @@ protected:
 
     IJobInfoPtr m_sp_job_info;
     IJobInfo* m_job_info;
-    std::wstring m_extra_string;
-    long m_extra_long;
     kl::JsonNode m_config;
 
 private:
@@ -166,6 +122,9 @@ private:
     bool m_cancelling;
 };
 
+
 }; // namespace jobs
 
+
 #endif
+

@@ -42,6 +42,5 @@ IJobInfoPtr createJobInfoObject()
 }
 
 
-
 };
 
