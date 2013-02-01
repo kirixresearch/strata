@@ -6228,8 +6228,264 @@ void TableDoc::onGridSelectionChange(kcl::GridEvent& evt)
 // -- Field Summary Implementation --
 
 
-static void onSummaryJobFinished(IJobPtr job)
+static void onSummaryJobFinished(jobs::IJobPtr job)
 {
+    kl::JsonNode instructions;
+    instructions.fromString(job->getInstructions());
+
+    std::wstring output_path = instructions["output"];
+    tango::ISetPtr output_set = g_app->getDatabase()->openSet(output_path);
+
+    if (output_set.isNull())
+    {
+        appMessageBox(_("An output set could not be created."),
+                           APPLICATION_NAME,
+                           wxOK | wxICON_EXCLAMATION | wxCENTER);
+        return;
+    }
+
+
+    tango::ISetPtr results = output_set;
+    int max_scale = instructions["max_scale"].getInteger();
+
+    tango::IStructurePtr output_structure = g_app->getDatabase()->createStructure();
+    tango::IColumnInfoPtr colinfo;
+
+    const wchar_t* fields[] = { L"Field",
+                                L"Minimum",
+                                L"Maximum",
+                                L"Sum_Amount",
+                                L"Average",
+                                L"Min_Length",
+                                L"Max_Length",
+                                L"Empty_Count",
+                                L"Total_Count",
+                                0 };
+
+    tango::objhandle_t field_handles[255];
+
+    int i;
+    
+    i = 0;
+    while (fields[i])
+    {
+        colinfo = output_structure->createColumn();
+        colinfo->setName(fields[i]);
+        colinfo->setType(tango::typeWideCharacter);
+        colinfo->setWidth(255);
+        colinfo->setScale(0);
+
+        if (0 == wcscasecmp(fields[i], L"Sum_Amount") ||
+            0 == wcscasecmp(fields[i], L"Average"))
+        {
+            colinfo->setType(tango::typeNumeric);
+            colinfo->setWidth(15);
+            colinfo->setScale(max_scale);
+        }
+        
+        if (0 == wcscasecmp(fields[i], L"Min_Length") ||
+            0 == wcscasecmp(fields[i], L"Max_Length") ||
+            0 == wcscasecmp(fields[i], L"Total_Count") ||
+            0 == wcscasecmp(fields[i], L"Empty_Count"))
+        {
+            colinfo->setType(tango::typeNumeric);
+            colinfo->setWidth(12);
+        }
+
+        ++i;
+    }
+
+
+    tango::ISetPtr output = g_app->getDatabase()->createSet(L"",
+                                                     output_structure,
+                                                     NULL);
+    if (!output)
+        return;
+
+    tango::IRowInserterPtr output_inserter = output->getRowInserter();
+    if (!output_inserter)
+        return;
+
+    output_inserter->startInsert(L"*");
+
+    i = 0;
+    while (fields[i])
+    {
+        field_handles[i] = output_inserter->getHandle(fields[i]);
+        i++;
+    }
+
+
+    tango::IStructurePtr result_structure = results->getStructure();
+    tango::IIteratorPtr result_iter = results->createIterator(L"", L"", NULL);
+    
+    if (result_iter.isNull())
+        return;
+
+    result_iter->goFirst();
+    if (result_iter->eof())
+        return;
+
+    wxString last_field_name = wxT("");
+    wxString field_name;
+    wxString col_name;
+    
+
+    tango::objhandle_t total_count_handle = result_iter->getHandle(L"total_count");
+    double total_count = result_iter->getDouble(total_count_handle);
+    result_iter->releaseHandle(total_count_handle);
+
+
+    int result_field_count = result_structure->getColumnCount();
+    for (i = 0; i < result_field_count; ++i)
+    {
+        colinfo = result_structure->getColumnInfoByIdx(i);
+
+        col_name = towx(colinfo->getName());
+        col_name.MakeUpper();
+        
+        int idx = col_name.Find(wxT("_0RESULT0_"));
+        if (idx == -1)
+        {
+            continue;
+        }
+
+        wxString type = col_name.Mid(idx+10);
+        type.MakeUpper();
+
+        field_name = col_name.Left(idx);
+
+
+        tango::objhandle_t h = 0;
+
+        if (type == wxT("MIN"))
+            h = field_handles[1];
+         else if (type == wxT("MAX"))
+            h = field_handles[2];
+         else if (type == wxT("SUM"))
+            h = field_handles[3];
+         else if (type == wxT("AVG"))
+            h = field_handles[4];
+         else if (type == wxT("MINLENGTH"))
+            h = field_handles[5];
+         else if (type == wxT("MAXLENGTH"))
+            h = field_handles[6];
+         else if (type == wxT("EMPTY"))
+            h = field_handles[7];
+
+        if (!h)
+        {
+            continue;
+        }
+
+
+        if (last_field_name != field_name)
+        {
+            if (i > 0)
+            {
+                output_inserter->insertRow();
+            }
+            
+            last_field_name = field_name;
+
+            output_inserter->putWideString(field_handles[0],
+                                         towstr(makeProperIfNecessary(field_name)));
+
+            // total count
+            output_inserter->putDouble(field_handles[8], total_count);
+        }
+
+
+        tango::objhandle_t result_col_handle = result_iter->getHandle(towstr(col_name));
+        tango::IColumnInfoPtr result_col_info = result_iter->getInfo(result_col_handle);
+    
+        // empty count    
+        if (h == field_handles[7])
+        {
+            output_inserter->putDouble(h, result_iter->getDouble(result_col_handle));
+            continue;
+        }
+
+        switch (result_col_info->getType())
+        {
+            case tango::typeWideCharacter:
+            case tango::typeCharacter:
+                output_inserter->putWideString(h, result_iter->getWideString(result_col_handle));
+                break;
+
+            case tango::typeDate:
+            {
+                tango::DateTime dt = result_iter->getDateTime(result_col_handle);
+                wxString s;
+
+                if (!dt.isNull())
+                {
+                    s = Locale::formatDate(dt.getYear(), dt.getMonth(), dt.getDay());
+                }
+
+                output_inserter->putWideString(h, towstr(s));
+            }
+            break;
+
+            case tango::typeDateTime:
+            {
+                tango::DateTime dt = result_iter->getDateTime(result_col_handle);
+                wxString s;
+
+                if (!dt.isNull())
+                {
+                    s = Locale::formatDate(dt.getYear(), dt.getMonth(), dt.getDay(), dt.getHour(), dt.getMinute(), dt.getSecond());
+                }
+
+                output_inserter->putWideString(h, towstr(s));
+            }
+            break;
+
+
+            case tango::typeDouble:
+            case tango::typeNumeric:
+            case tango::typeInteger:
+            {
+                if (type == wxT("SUM") || type == wxT("AVG"))
+                {
+                    output_inserter->putDouble(h, result_iter->getDouble(result_col_handle));
+                }
+                 else if (type == wxT("MINLENGTH") || type == wxT("MAXLENGTH"))
+                {
+                    output_inserter->putInteger(h, result_iter->getInteger(result_col_handle));
+                }
+                 else
+                {
+                    wchar_t buf[255];
+                    swprintf(buf, 255, L"%.*f", result_col_info->getScale(), result_iter->getDouble(result_col_handle));
+                    output_inserter->putWideString(h, buf);
+                }
+            }
+            break;
+
+            case tango::typeBoolean:
+            {
+                output_inserter->putWideString(h, result_iter->getBoolean(result_col_handle) ? L"TRUE" : L"FALSE");
+            }
+            break;
+        }
+    }
+    
+    if (i > 0)
+    {
+        output_inserter->insertRow();
+    }
+
+    output_inserter->finishInsert();
+
+    TableDoc* doc = new TableDoc;
+    doc->open(output, xcm::null);
+    g_app->getMainFrame()->createSite(doc, sitetypeNormal,
+                                      -1, -1, -1, -1);
+
+
+
+/*
     // pivot output table
 
     IGroupJobPtr group_job = job;
@@ -6482,6 +6738,7 @@ static void onSummaryJobFinished(IJobPtr job)
     doc->open(output, xcm::null);
     g_app->getMainFrame()->createSite(doc, sitetypeNormal,
                                       -1, -1, -1, -1);
+*/
 }
 
 
@@ -6496,30 +6753,103 @@ void TableDoc::onSummary(wxCommandEvent& evt)
     wxString outcol;
 
     // find out which columns are selected
-
     int i, col_count = m_grid->getColumnCount();
-
     for (i = 0; i < col_count; ++i)
     {
         if (m_grid->isColumnSelected(i))
-        {
             summary_columns.push_back(m_grid->getColumnCaption(i));
-        }
     }
 
     // if there was no selection, summarize all columns
-
     if (summary_columns.size() == 0)
     {
         size_t i, col_count = structure->getColumnCount();
 
         for (i = 0; i < col_count; ++i)
-        {
             summary_columns.push_back(towx(structure->getColumnName(i)));
-        }
     }
 
 
+    wxString group_funcs;
+
+
+    // record the max scale used by all fields -- this will be
+    // used in the sum and average columns in the output file
+    int max_scale = 0;
+
+    // create the group functions string
+    tango::IColumnInfoPtr colinfo;
+    bool last;
+    for (it = summary_columns.begin(); it != summary_columns.end(); ++it)
+    {
+        last = false;
+        if ((it+1) == summary_columns.end())
+            last = true;
+
+        colinfo = structure->getColumnInfo(towstr(*it));
+
+        if (colinfo.isNull())
+            continue;
+
+        if (colinfo->getType() == tango::typeCharacter ||
+            colinfo->getType() == tango::typeWideCharacter)
+        {
+            outcol.Printf(wxT("%s_0result0_minlength=min(length([%s])),"), it->c_str(), it->c_str());
+            group_funcs += outcol;
+
+            outcol.Printf(wxT("%s_0result0_maxlength=max(length([%s])),"), it->c_str(), it->c_str());
+            group_funcs += outcol;        
+        }
+
+        if (colinfo->getType() == tango::typeInteger ||
+            colinfo->getType() == tango::typeDouble ||
+            colinfo->getType() == tango::typeNumeric)
+        {
+            int scale = colinfo->getScale();
+            if (scale > max_scale)
+                max_scale = scale;
+            
+            outcol.Printf(wxT("%s_0result0_sum=sum([%s]),"), it->c_str(), it->c_str());
+            group_funcs += outcol;
+
+            outcol.Printf(wxT("%s_0result0_avg=avg([%s]),"), it->c_str(), it->c_str());
+            group_funcs += outcol;
+        }
+
+        outcol.Printf(wxT("%s_0result0_min=min([%s]),"), it->c_str(), it->c_str());
+        group_funcs += outcol;
+
+        outcol.Printf(wxT("%s_0result0_max=max([%s]),"), it->c_str(), it->c_str());
+        group_funcs += outcol;
+
+        outcol.Printf(wxT("%s_0result0_empty=count(empty([%s])),"), it->c_str(), it->c_str());
+        group_funcs += outcol;
+    }
+
+    group_funcs += wxT("total_count=count()");
+
+
+    // set up the job from the info we gathered
+    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.group-data");
+
+    kl::JsonNode instructions;
+    instructions["input"].setString(towstr(getBrowseSet()->getObjectPath()));
+    instructions["output"].setString(L"/.temp/" + towstr(makeUniqueString()));
+    instructions["group"].setString(L"");
+    instructions["columns"].setString(towstr(group_funcs));
+    instructions["max_scale"].setInteger(max_scale);
+
+    wxString title = wxString::Format(_("Summarizing '%s'"),
+                                      getCaption().c_str());
+
+    job->getJobInfo()->setTitle(towstr(title));
+    job->setInstructions(instructions.toString());
+
+    job->sigJobFinished().connect(&onSummaryJobFinished);
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
+
+
+/*
     // create a Grouping job and submit it to the job queue
 
     wxString title = wxString::Format(_("Summarizing '%s'"),
@@ -6528,7 +6858,36 @@ void TableDoc::onSummary(wxCommandEvent& evt)
     GroupJob* job = new GroupJob;
     job->getJobInfo()->setTitle(towstr(title));
 
+
+
+    tango::IStructurePtr structure = m_browse_set->getStructure();
+
+    std::vector<wxString> summary_columns;
+    std::vector<wxString> output_columns;
+    std::vector<wxString>::iterator it;
+
+    wxString outcol;
+
+    // find out which columns are selected
+    int i, col_count = m_grid->getColumnCount();
+    for (i = 0; i < col_count; ++i)
+    {
+        if (m_grid->isColumnSelected(i))
+            summary_columns.push_back(m_grid->getColumnCaption(i));
+    }
+
+    // if there was no selection, summarize all columns
+    if (summary_columns.size() == 0)
+    {
+        size_t i, col_count = structure->getColumnCount();
+
+        for (i = 0; i < col_count; ++i)
+            summary_columns.push_back(towx(structure->getColumnName(i)));
+    }
+
+
     wxString group_funcs;
+
 
 
     // record the max scale used by all fields -- this will be
@@ -6598,6 +6957,7 @@ void TableDoc::onSummary(wxCommandEvent& evt)
 
     // add and start job
     g_app->getJobQueue()->addJob(job, jobStateRunning);
+*/
 }
 
 
