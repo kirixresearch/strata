@@ -100,7 +100,7 @@ public:
     virtual void setParameter(const std::wstring& param, const std::wstring& value) {};
     virtual void setInstructions(const std::wstring& json) = 0;
     virtual std::wstring getInstructions() = 0;
-    virtual void setDatabase(tango::IDatabase* db) {}
+    virtual void setDatabase(tango::IDatabase* db) = 0;
 };
 
 
