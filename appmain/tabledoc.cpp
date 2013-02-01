@@ -6230,10 +6230,10 @@ void TableDoc::onGridSelectionChange(kcl::GridEvent& evt)
 
 static void onSummaryJobFinished(jobs::IJobPtr job)
 {
-    kl::JsonNode instructions;
-    instructions.fromString(job->getInstructions());
+    kl::JsonNode params;
+    params.fromString(job->getParameters());
 
-    std::wstring output_path = instructions["output"];
+    std::wstring output_path = params["output"];
     tango::ISetPtr output_set = g_app->getDatabase()->openSet(output_path);
 
     if (output_set.isNull())
@@ -6246,7 +6246,7 @@ static void onSummaryJobFinished(jobs::IJobPtr job)
 
 
     tango::ISetPtr results = output_set;
-    int max_scale = instructions["max_scale"].getInteger();
+    int max_scale = params["max_scale"].getInteger();
 
     tango::IStructurePtr output_structure = g_app->getDatabase()->createStructure();
     tango::IColumnInfoPtr colinfo;
@@ -6832,18 +6832,18 @@ void TableDoc::onSummary(wxCommandEvent& evt)
     // set up the job from the info we gathered
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.group-data");
 
-    kl::JsonNode instructions;
-    instructions["input"].setString(towstr(getBrowseSet()->getObjectPath()));
-    instructions["output"].setString(L"/.temp/" + towstr(makeUniqueString()));
-    instructions["group"].setString(L"");
-    instructions["columns"].setString(towstr(group_funcs));
-    instructions["max_scale"].setInteger(max_scale);
+    kl::JsonNode params;
+    params["input"].setString(towstr(getBrowseSet()->getObjectPath()));
+    params["output"].setString(L"/.temp/" + towstr(makeUniqueString()));
+    params["group"].setString(L"");
+    params["columns"].setString(towstr(group_funcs));
+    params["max_scale"].setInteger(max_scale);
 
     wxString title = wxString::Format(_("Summarizing '%s'"),
                                       getCaption().c_str());
 
     job->getJobInfo()->setTitle(towstr(title));
-    job->setInstructions(instructions.toString());
+    job->setParameters(params.toString());
 
     job->sigJobFinished().connect(&onSummaryJobFinished);
     g_app->getJobQueue()->addJob(job, jobStateRunning);
@@ -8783,8 +8783,8 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
     // create an index job
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.index-data");
 
-    kl::JsonNode instructions;
-    kl::JsonNode indexes = instructions["indexes"];
+    kl::JsonNode params;
+    kl::JsonNode indexes = params["indexes"];
     
     
     // we may have deleted some of the original indexes;
@@ -8867,12 +8867,12 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
         }
     }
     
-    // the index job has no instructions; we're done
+    // the index job has no parameters; we're done
     if (indexes.getChildCount() == 0)
         return;
 
     job->getJobInfo()->setTitle(towstr(_("Creating Index")));
-    job->setInstructions(instructions.toString());
+    job->setParameters(params.toString());
 
     g_app->getJobQueue()->addJob(job, jobStateRunning);
 }

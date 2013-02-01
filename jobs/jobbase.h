@@ -68,18 +68,33 @@ public:
         m_job_info = new_val;
     }
 
-    void setInstructions(const std::wstring& json)
+    void setParameters(const std::wstring& json)
     {
         XCM_AUTO_LOCK(m_jobbase_mutex);
 
         m_config.fromString(json);
     }
 
-    std::wstring getInstructions()
+    std::wstring getParameters()
     {
         XCM_AUTO_LOCK(m_jobbase_mutex);
 
         std::wstring res = m_config.toString();
+        return res;
+    }
+
+    void setResultObject(const std::wstring& json)
+    {
+        XCM_AUTO_LOCK(m_jobbase_mutex);
+
+        m_result.fromString(json);
+    }
+
+    std::wstring getResultObject()
+    {
+        XCM_AUTO_LOCK(m_jobbase_mutex);
+
+        std::wstring res = m_result.toString();
         return res;
     }
 
@@ -114,6 +129,7 @@ protected:
     IJobInfoPtr m_sp_job_info;
     IJobInfo* m_job_info;
     kl::JsonNode m_config;
+    kl::JsonNode m_result;
 
 private:
 

@@ -84,11 +84,11 @@ public:
     virtual IJobInfoPtr getJobInfo() = 0;
     virtual void setJobInfo(IJobInfoPtr new_val) = 0;
 
-    virtual long getExtraLong() { return 0; }
-    virtual void setExtraLong(long value) {}
+    virtual long getExtraLong() { return 0; }  // DEPRECATED
+    virtual void setExtraLong(long value) {}  // DEPRECATED
     
-    virtual void setExtraString(const std::wstring& s) {}
-    virtual std::wstring getExtraString() { return 0; }
+    virtual void setExtraString(const std::wstring& s) {}  // DEPRECATED
+    virtual std::wstring getExtraString() { return 0; }  // DEPRECATED
 
     virtual bool cancel() = 0;
 
@@ -97,9 +97,12 @@ public:
     
     XCM_DECLARE_SIGNAL1(sigJobFinished, IJobPtr)
 
-    virtual void setParameter(const std::wstring& param, const std::wstring& value) {};
-    virtual void setInstructions(const std::wstring& json) = 0;
-    virtual std::wstring getInstructions() = 0;
+    virtual void setParameters(const std::wstring& json) = 0;
+    virtual std::wstring getParameters() = 0;
+
+    virtual void setResultObject(const std::wstring& json) = 0;
+    virtual std::wstring getResultObject() = 0;
+
     virtual void setDatabase(tango::IDatabase* db) = 0;
 };
 

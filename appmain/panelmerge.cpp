@@ -385,12 +385,12 @@ static void onAppendJobFinished(jobs::IJobPtr job)
 {
     g_app->getAppController()->refreshDbDoc();
 
-    kl::JsonNode instructions;
-    instructions.fromString(job->getInstructions());
+    kl::JsonNode params;
+    params.fromString(job->getParameters());
 
-    if (instructions["mode"].getString() == L"append")
+    if (params["mode"].getString() == L"append")
     {
-        std::wstring output_path = instructions["output"];
+        std::wstring output_path = params["output"];
 
         // iterate through document sites, and update tabledocs
         IDocumentSiteEnumPtr docsites;
@@ -415,14 +415,14 @@ static void onAppendJobFinished(jobs::IJobPtr job)
             }
         }
     }
-     else if (instructions["mode"].getString() == L"overwrite")
+     else if (params["mode"].getString() == L"overwrite")
     {
         // this is a merge job
         
         if (job->getJobInfo()->getState() != jobStateFinished)
             return;
 
-        std::wstring output_path = instructions["output"];
+        std::wstring output_path = params["output"];
         g_app->getAppController()->openSet(output_path);
     }
 }
@@ -475,19 +475,19 @@ void MergePanel::onOK(wxCommandEvent& evt)
 
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.append-data");
 
-    kl::JsonNode instructions;
-    instructions["input"].setArray();
+    kl::JsonNode params;
+    params["input"].setArray();
 
     if (m_append)
     {
-        instructions["mode"].setString(L"append");
-        instructions["output"] = m_set->getObjectPath(); // this is an append job
+        params["mode"].setString(L"append");
+        params["output"] = m_set->getObjectPath(); // this is an append job
         job->getJobInfo()->setTitle(towstr(_("Append Records")));
     }
      else  
     {
-        instructions["mode"].setString(L"overwrite");
-        instructions["output"] = towstr(output_path);
+        params["mode"].setString(L"overwrite");
+        params["output"] = towstr(output_path);
         job->getJobInfo()->setTitle(towstr(_("Merge Tables")));
     }
 
@@ -495,12 +495,12 @@ void MergePanel::onOK(wxCommandEvent& evt)
     std::vector<tango::ISetPtr>::iterator set_it;
     for (set_it = set_ptrs.begin(); set_it != set_ptrs.end(); ++set_it)
     {
-        kl::JsonNode input_element = instructions["input"].appendElement();
+        kl::JsonNode input_element = params["input"].appendElement();
         input_element.setString((*set_it)->getObjectPath());
     }
 
 
-    job->setInstructions(instructions.toString());
+    job->setParameters(params.toString());
 
 
     job->sigJobFinished().connect(&onAppendJobFinished);

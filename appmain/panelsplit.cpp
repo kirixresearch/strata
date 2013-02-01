@@ -402,13 +402,13 @@ void SplitPanel::onOK(wxCommandEvent& event)
 
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.divide-data");
 
-    kl::JsonNode instructions;
-    instructions["input"].setString(towstr(si.source_set->getObjectPath()));
-    instructions["output"].setString(towstr(si.prefix));
-    instructions["row_count"].setInteger(si.row_count);
+    kl::JsonNode params;
+    params["input"].setString(towstr(si.source_set->getObjectPath()));
+    params["output"].setString(towstr(si.prefix));
+    params["row_count"].setInteger(si.row_count);
     
     job->getJobInfo()->setTitle(towstr(_("Divide Table")));
-    job->setInstructions(instructions.toString());
+    job->setParameters(params.toString());
 
     job->sigJobFinished().connect(&onDivideJobFinished);
     g_app->getJobQueue()->addJob(job, jobStateRunning);

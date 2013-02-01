@@ -1109,8 +1109,8 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
         {
             jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.index-data");
 
-            kl::JsonNode instructions;
-            kl::JsonNode indexes = instructions["indexes"];
+            kl::JsonNode params;
+            kl::JsonNode indexes = params["indexes"];
 
             std::vector<tango::IIndexInfoPtr>::iterator it;
             for (it = to_recreate.begin();
@@ -1125,7 +1125,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
             }
 
             job->getJobInfo()->setTitle(towstr(_("Creating Index")));
-            job->setInstructions(instructions.toString());
+            job->setParameters(params.toString());
 
             g_app->getJobQueue()->addJob(job, jobStateRunning);
         }

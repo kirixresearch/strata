@@ -483,15 +483,15 @@ static void onIndexJobFinished(jobs::IJobPtr job)
     if (job->getJobInfo()->getState() != jobStateFinished)
         return;
 
-    // unpack the job instructions and save it to the update info        
+    // unpack the job parameters and save it to the update info        
     UpdateInfo info;
 
-    kl::JsonNode instructions;
-    instructions.fromString(job->getInstructions());
+    kl::JsonNode params;
+    params.fromString(job->getParameters());
 
     // note: no check; this is a local callback and these must exist
-    std::vector<kl::JsonNode> indexes = instructions["indexes"].getChildren();
-    std::vector<kl::JsonNode> relationships = instructions["relationships"].getChildren();
+    std::vector<kl::JsonNode> indexes = params["indexes"].getChildren();
+    std::vector<kl::JsonNode> relationships = params["relationships"].getChildren();
     
     std::vector<kl::JsonNode>::iterator it, it_end;
     it_end = indexes.end();
@@ -692,10 +692,10 @@ void RelationshipPanel::onUpdateRelationships(wxCommandEvent& evt)
     {
         jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.index-data");
 
-        kl::JsonNode instructions;
+        kl::JsonNode params;
         
-        kl::JsonNode indexes = instructions["indexes"];
-        kl::JsonNode relationships = instructions["relationships"];
+        kl::JsonNode indexes = params["indexes"];
+        kl::JsonNode relationships = params["relationships"];
 
         // add the index information
         std::vector<UpdateIdx>::iterator it;
@@ -725,7 +725,7 @@ void RelationshipPanel::onUpdateRelationships(wxCommandEvent& evt)
         }
 
         job->getJobInfo()->setTitle(towstr(_("Creating Index")));
-        job->setInstructions(instructions.toString());
+        job->setParameters(params.toString());
 
         job->sigJobFinished().connect(&onIndexJobFinished);
         g_app->getJobQueue()->addJob(job, jobStateRunning);
