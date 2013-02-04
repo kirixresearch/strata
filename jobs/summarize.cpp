@@ -112,7 +112,7 @@ int SummarizeJob::runJob()
     it_end = summary_columns.end();
 
 
-    std::wstring group_funcs;
+    std::wstring group_param;
     int output_max_scale = 0;   // used to format the numeric summary output
 
     tango::IColumnInfoPtr input_colinfo;
@@ -134,10 +134,10 @@ int SummarizeJob::runJob()
             input_colinfo->getType() == tango::typeWideCharacter)
         {
             swprintf(outcol, 256, L"%s_0result0_minlength=min(length([%s])),", it->c_str(), it->c_str());
-            group_funcs += outcol;
+            group_param += outcol;
 
             swprintf(outcol, 256, L"%s_0result0_maxlength=max(length([%s])),", it->c_str(), it->c_str());
-            group_funcs += outcol;        
+            group_param += outcol;        
         }
 
         if (input_colinfo->getType() == tango::typeInteger ||
@@ -149,46 +149,51 @@ int SummarizeJob::runJob()
                 output_max_scale = scale;
             
             swprintf(outcol, 256, L"%s_0result0_sum=sum([%s]),", it->c_str(), it->c_str());
-            group_funcs += outcol;
+            group_param += outcol;
 
             swprintf(outcol, 256, L"%s_0result0_avg=avg([%s]),", it->c_str(), it->c_str());
-            group_funcs += outcol;
+            group_param += outcol;
         }
 
         swprintf(outcol, 256, L"%s_0result0_min=min([%s]),", it->c_str(), it->c_str());
-        group_funcs += outcol;
+        group_param += outcol;
 
         swprintf(outcol, 256, L"%s_0result0_max=max([%s]),", it->c_str(), it->c_str());
-        group_funcs += outcol;
+        group_param += outcol;
 
         swprintf(outcol, 256, L"%s_0result0_empty=count(empty([%s])),", it->c_str(), it->c_str());
-        group_funcs += outcol;
+        group_param += outcol;
     }
 
-    group_funcs += L"total_count=count()";
-
-
-    kl::JsonNode group_params;
-    group_params["input"].setString(m_config["input"].getString());
-    group_params["output"].setString(tango::getTemporaryPath());    // temporary table to hold intermediate result
-    group_params["group"].setString(L"");
-    group_params["columns"].setString(group_funcs);
-
-    std::wstring where_params;
-    if (m_config.childExists("where"))
-        group_params["where"].setString(m_config["where"].getString());
-
+    group_param += L"total_count=count()";
 
 
     // STEP 2: create a group job and pass the summarize parameters
 
-    IJobPtr group_job = static_cast<IJob*>(new GroupJob);
-    group_job->setDatabase(m_db);
-    group_job->setParameters(group_params.toString());
-    int result = group_job->runJob();
+    tango::ISetPtr group_output_set;
 
-    IJobInfoPtr job_info = group_job->getJobInfo();
-    if (job_info->getState() == jobStateFailed)
+    tango::IJobPtr tango_job;
+    tango_job = m_db->createJob();
+    setTangoJob(tango_job);
+
+    std::wstring where_param;
+    if (m_config.childExists("where"))
+        where_param = m_config["where"].getString();
+
+    group_output_set = m_db->runGroupQuery(input_set,
+                                           L"",
+                                           group_param,
+                                           where_param,
+                                           L"",
+                                           tango_job.p);
+
+    if (tango_job->getCancelled())
+    {
+        m_job_info->setState(jobStateCancelling);
+        return 0;
+    }
+
+    if (tango_job->getStatus() == tango::jobFailed)
     {
         m_job_info->setState(jobStateFailed);
         // TODO: error code?
@@ -196,11 +201,7 @@ int SummarizeJob::runJob()
     }
 
 
-
     // STEP 3: pivot the output
-
-    std::wstring group_output_path = group_params["output"];
-    tango::ISetPtr group_output_set = m_db->openSet(group_output_path);
 
     if (group_output_set.isNull())
     {
@@ -209,7 +210,6 @@ int SummarizeJob::runJob()
         return 0;
     }
 
-    tango::ISetPtr group_results = group_output_set;
     tango::IStructurePtr output_structure = m_db->createStructure();
     tango::IColumnInfoPtr output_colinfo;
 
@@ -453,9 +453,6 @@ int SummarizeJob::runJob()
 
     output_inserter->finishInsert();
 
-
-    // delete the temporary group table
-    m_db->deleteFile(group_output_path);
 
     // store the summary result table
     std::wstring output_path = m_config["output"].getString();
