@@ -877,18 +877,6 @@ void GroupPanel::onExecute(wxCommandEvent& event)
         keypart_count++;
     }
 
-    if (keypart_count == 0)
-    {
-        int result = appMessageBox(_("No key grouping fields have been defined.  The group operation will treat the entire data set as one group. Click 'Ok' if you would like to continue, or 'Cancel' if you would like to go back and specify one or more group fields."),
-                                        APPLICATION_NAME,
-                                        wxOK | wxCANCEL | wxICON_INFORMATION | wxCENTER);
-
-        if (result == wxCANCEL)
-            return;
-    }
-
-
-
     //  create the output functions string
     int outputpart_count = 0;
     for (i = 0; i < row_count; ++i)
