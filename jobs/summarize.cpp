@@ -13,6 +13,7 @@
 #include "jobspch.h"
 #include "group.h"
 #include "summarize.h"
+#include <set>
 
 
 namespace jobs
@@ -106,6 +107,7 @@ int SummarizeJob::runJob()
     }
 
     std::vector<std::wstring> summary_columns;
+    std::set<std::wstring> summary_columns_unique_list;
     kl::parseDelimitedList(input_columns, summary_columns, ',');
 
     std::vector<std::wstring>::iterator it, it_end;
@@ -116,13 +118,14 @@ int SummarizeJob::runJob()
     int output_max_scale = 0;   // used to format the numeric summary output
 
     tango::IColumnInfoPtr input_colinfo;
-    bool last;
-    for (it = summary_columns.begin(); it != summary_columns.end(); ++it)
+    for (it = summary_columns.begin(); it != it_end; ++it)
     {
-        last = false;
-        if ((it+1) == summary_columns.end())
-            last = true;
+        // see if we're already gathering information about the column
+        // in question; if so, move on
+        if (summary_columns_unique_list.find(*it) != summary_columns_unique_list.end())
+            continue;
 
+        summary_columns_unique_list.insert(*it);
         input_colinfo = input_structure->getColumnInfo(*it);
 
         if (input_colinfo.isNull())
