@@ -692,6 +692,11 @@ tango::ISetPtr Database::runGroupQuery(tango::ISetPtr set,
                                        const std::wstring& having,
                                        tango::IJob* job)
 {
+/*
+    // DEPRECATED: this restriction no longer seems applicable;
+    // when following is removed, existing test results show no
+    // regressions; in addition, table summary with filters is 
+    // working fine
 
     if (group.empty() &&
         !where.empty())
@@ -699,7 +704,7 @@ tango::ISetPtr Database::runGroupQuery(tango::ISetPtr set,
         // this scenario isn't supported yet
         return xcm::null;
     }
-
+*/
 
     // check if we are running this job on an xdclient mount
     std::wstring set_path = set->getObjectPath();
