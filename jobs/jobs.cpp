@@ -15,6 +15,7 @@
 #include "divide.h"
 #include "index.h"
 #include "group.h"
+#include "summarize.h"
 
 
 namespace jobs
@@ -31,6 +32,8 @@ IJobPtr createJob(const std::wstring job_class)
         return static_cast<IJob*>(new IndexJob);
     if (job_class == L"application/vnd.kx.group-data")
         return static_cast<IJob*>(new GroupJob);
+    if (job_class == L"application/vnd.kx.summarize-data")
+        return static_cast<IJob*>(new SummarizeJob);
 
     return xcm::null;        
 }
