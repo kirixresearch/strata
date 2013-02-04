@@ -44,7 +44,7 @@ bool GroupJob::isInputValid()
         "columns" : <string>,
         "where" : <string>,      // not required; default = ""
         "having" : <string>,     // not required; default = ""
-        "unique" : <boolean>    // not required; default = false
+        "unique" : <boolean>     // not required; default = false
     }
 */
     if (m_config.isNull())
