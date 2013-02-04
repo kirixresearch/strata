@@ -13,6 +13,8 @@
 #define __XDCOMMON_XDUTIL_H
 
 
+#include <ctime>    // getTemporaryName()
+
 
 namespace tango
 {
@@ -148,6 +150,36 @@ inline std::wstring dequoteIdentifier(tango::IDatabasePtr db, const std::wstring
     }
 
     return identifier;
+}
+
+inline std::wstring getTemporaryPath()
+{
+    static unsigned int seed = (unsigned)time(NULL);
+    srand(++seed);
+
+    int i;
+    wchar_t tempname[33];
+    memset(tempname, 0, 33 * sizeof(wchar_t));
+    
+    for (i = 0; i < 8; i++)
+    {
+        tempname[i] = L'a' + (rand() % 26);
+    }
+
+    unsigned int t = (unsigned int)time(NULL);
+    unsigned int div = 308915776;    // 26^6;
+    for (i = 8; i < 15; i++)
+    {
+        tempname[i] = L'a' + (t/div);
+        t -= ((t/div)*div);
+        div /= 26;
+    }
+
+    std::wstring temp_path;
+    temp_path.append(L"/.temp");
+    temp_path.append(tempname);
+
+    return temp_path;
 }
 
 
