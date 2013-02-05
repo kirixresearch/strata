@@ -152,6 +152,21 @@ inline std::wstring dequoteIdentifier(tango::IDatabasePtr db, const std::wstring
     return identifier;
 }
 
+inline void requoteAllIdentifiers(tango::IDatabasePtr db, std::vector<std::wstring>& identifiers)
+{
+    std::vector<std::wstring> identifiers_copy = identifiers;
+    std::vector<std::wstring>::iterator it, it_end;
+    it_end = identifiers_copy.end();
+
+    identifiers.clear();
+    for (it = identifiers_copy.begin(); it != it_end; ++it)
+    {
+        std::wstring identifier = tango::dequoteIdentifier(db, *it);
+        identifier = tango::quoteIdentifier(db, identifier);
+        identifiers.push_back(identifier);
+    }
+}
+
 inline std::wstring getTemporaryPath()
 {
     static unsigned int seed = (unsigned)time(NULL);
