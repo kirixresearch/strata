@@ -880,7 +880,12 @@ void GroupPanel::onExecute(wxCommandEvent& event)
         // already taken care of by the 'include detail' function
 
         std::wstring groupcol_inputfield = towstr(m_grid->getCellString(i, GroupCol_InputExpr));
+        kl::makeUpper(groupcol_inputfield);
+        kl::trim(groupcol_inputfield);
+
         std::wstring groupcol_outputfield = towstr(m_grid->getCellString(i, GroupCol_OutputField));
+        kl::makeUpper(groupcol_outputfield);
+        kl::trim(groupcol_outputfield);
 
         if (include_detail &&
             combo_sel == GroupFunc_GroupBy &&
@@ -889,12 +894,7 @@ void GroupPanel::onExecute(wxCommandEvent& event)
             continue;
         }
 
-        kl::makeUpper(groupcol_inputfield);
-        kl::trim(groupcol_inputfield);
         std::wstring quoted_inputfield = tango::quoteIdentifier(g_app->getDatabase(), groupcol_inputfield);
-
-        kl::makeUpper(groupcol_outputfield);
-        kl::trim(groupcol_outputfield);
         std::wstring quoted_outputfield = tango::quoteIdentifier(g_app->getDatabase(), groupcol_outputfield);
 
         // construct the output field specifier, which as the form <output_name>=<group_func>(<input_name>)
