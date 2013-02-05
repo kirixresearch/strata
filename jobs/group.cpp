@@ -127,8 +127,12 @@ int GroupJob::runJob()
     for (it_node = column_nodes.begin(); it_node != column_nodes.end(); ++it_node)
         column_values.push_back(it_node->getString());
 
-    tango::requoteAllIdentifiers(m_db, group_values);
-    tango::requoteAllIdentifiers(m_db, column_values);
+    // TODO: anyway to make sure format is properly quoted?
+    // following is a possibility, except that column values
+    // are of the form <output_name>=<group_func<input>, so
+    // requoting doesn't work:
+    //tango::requoteAllIdentifiers(m_db, group_values);
+    //tango::requoteAllIdentifiers(m_db, column_values);
 
     std::wstring group_params, column_params;
     jobs::vectorToDelimitedString(group_values, group_params);
