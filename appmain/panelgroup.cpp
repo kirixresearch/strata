@@ -849,7 +849,7 @@ void GroupPanel::onExecute(wxCommandEvent& event)
 
 
 
-    // now create the GroupJob and its associated parameters
+    // now create the group job and its associated parameters
     std::vector<std::wstring> group_columns;
     std::vector<std::wstring> output_columns;
 
