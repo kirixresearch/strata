@@ -35,7 +35,7 @@ bool GroupJob::isInputValid()
     {
         "metadata":
         {
-            "type" : "application/vnd.kx.group-data",
+            "type" : "application/vnd.kx.group-job",
             "version" : 1,
             "description" : ""
         },

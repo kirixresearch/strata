@@ -400,7 +400,7 @@ void SplitPanel::onOK(wxCommandEvent& event)
     }
 
 
-    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.divide-data");
+    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.divide-job");
 
     kl::JsonNode params;
     params["input"].setString(towstr(si.source_set->getObjectPath()));

@@ -34,7 +34,7 @@ bool IndexJob::isInputValid()
     {
         "metadata":
         {
-            "type" : "application/vnd.kx.index-data",
+            "type" : "application/vnd.kx.index-job",
             "version" : 1,
             "description" : ""
         },

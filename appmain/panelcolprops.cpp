@@ -1107,7 +1107,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
 
         if (result == wxYES)
         {
-            jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.index-data");
+            jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.index-job");
 
             kl::JsonNode params;
             kl::JsonNode indexes = params["indexes"];

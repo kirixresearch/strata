@@ -34,7 +34,7 @@ bool DivideJob::isInputValid()
     {
         "metadata":
         {
-            "type" : "application/vnd.kx.divide-data",
+            "type" : "application/vnd.kx.divide-job",
             "version" : 1,
             "description" : ""
         },

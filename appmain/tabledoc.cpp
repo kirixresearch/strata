@@ -6275,7 +6275,7 @@ void TableDoc::onSummary(wxCommandEvent& evt)
 
 
     // set up the job from the info we gathered
-    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.summarize-data");
+    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.summarize-job");
 
     kl::JsonNode params;
     params["input"].setString(towstr(getBrowseSet()->getObjectPath()));
@@ -8123,7 +8123,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
     // their tag name can't be found in the original list of indexes)
 
     // create an index job
-    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.index-data");
+    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.index-job");
 
     kl::JsonNode params;
     kl::JsonNode indexes = params["indexes"];

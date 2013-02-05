@@ -37,7 +37,7 @@ bool SummarizeJob::isInputValid()
     {
         "metadata":
         {
-            "type" : "application/vnd.kx.summarize-data",
+            "type" : "application/vnd.kx.summarize-job",
             "version" : 1,
             "description" : ""
         },

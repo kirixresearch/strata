@@ -34,7 +34,7 @@ bool AppendJob::isInputValid()
     {
         "metadata":
         {
-            "type" : "application/vnd.kx.append-data",
+            "type" : "application/vnd.kx.append-job",
             "version" : 1,
             "description" : ""
         },

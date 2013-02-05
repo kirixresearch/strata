@@ -690,7 +690,7 @@ void RelationshipPanel::onUpdateRelationships(wxCommandEvent& evt)
     
     if (info->indexes.size() > 0)
     {
-        jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.index-data");
+        jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.index-job");
 
         kl::JsonNode params;
         

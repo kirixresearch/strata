@@ -473,7 +473,7 @@ void MergePanel::onOK(wxCommandEvent& evt)
 
 
 
-    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.append-data");
+    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.append-job");
 
     kl::JsonNode params;
     params["input"].setArray();
