@@ -11,6 +11,7 @@
 
 #include "jobspch.h"
 #include "group.h"
+#include "util.h"
 
 
 namespace jobs
@@ -40,8 +41,8 @@ bool GroupJob::isInputValid()
         },
         "input" : <path>,
         "output" : <path>,
-        "group" : <string>,
-        "columns" : <string>,
+        "group" : <array>,
+        "columns" : <array>,
         "where" : <string>,      // not required; default = ""
         "having" : <string>,     // not required; default = ""
         "unique" : <boolean>     // not required; default = false
@@ -62,6 +63,14 @@ bool GroupJob::isInputValid()
         return false;
 
     if (!m_config.childExists("columns"))
+        return false;
+
+    kl::JsonNode group_node = m_config.getChild("group");
+    if (!group_node.isArray())
+        return false;
+
+    kl::JsonNode columns_node = m_config.getChild("columns");
+    if (!columns_node.isArray())
         return false;
 
     // TODO: check for file existence?  in general, how much
@@ -92,8 +101,8 @@ int GroupJob::runJob()
     // get the input parameters
     std::wstring input_path = m_config["input"].getString();
     std::wstring output_path = m_config["output"].getString();
-    std::wstring group_params = m_config["group"].getString();
-    std::wstring column_params = m_config["columns"].getString();
+    std::vector<kl::JsonNode> group_nodes = m_config["group"].getChildren();
+    std::vector<kl::JsonNode> column_nodes = m_config["columns"].getChildren();
 
     std::wstring where_params;
     if (m_config.childExists("where"))
@@ -106,6 +115,24 @@ int GroupJob::runJob()
     bool unique_records = false;
     if (m_config.childExists("unique"))
         unique_records = m_config["unique"].getBoolean();
+
+    std::vector<std::wstring> group_values, column_values;
+    std::vector<kl::JsonNode>::iterator it_node;
+
+    group_values.reserve(group_nodes.size());
+    for (it_node = group_nodes.begin(); it_node != group_nodes.end(); ++it_node)
+        group_values.push_back(it_node->getString());
+
+    column_values.reserve(column_nodes.size());
+    for (it_node = column_nodes.begin(); it_node != column_nodes.end(); ++it_node)
+        column_values.push_back(it_node->getString());
+
+    tango::requoteAllIdentifiers(m_db, group_values);
+    tango::requoteAllIdentifiers(m_db, column_values);
+
+    std::wstring group_params, column_params;
+    jobs::vectorToDelimitedString(group_values, group_params);
+    jobs::vectorToDelimitedString(column_values, column_params);
 
 
     tango::IJobPtr tango_job;
