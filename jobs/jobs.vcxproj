@@ -31,6 +31,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="summarize.cpp" />
+    <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="append.h" />
@@ -42,6 +43,7 @@
     <ClInclude Include="jobs.h" />
     <ClInclude Include="jobspch.h" />
     <ClInclude Include="summarize.h" />
+    <ClInclude Include="util.h" />
     <ClInclude Include="xdjobbase.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
