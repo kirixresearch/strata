@@ -43,7 +43,7 @@ bool SummarizeJob::isInputValid()
         },
         "input" : <path>,
         "output" : <path>,
-        "columns" : <string>,    // comma-delimited list of fieldnames to summarize
+        "columns" : <array>,     // array of fieldnames to summarize
         "where" : <string>,      // not required; default = ""
     }
 */
@@ -59,6 +59,10 @@ bool SummarizeJob::isInputValid()
         return false;
 
     if (!m_config.childExists("columns"))
+        return false;
+
+    kl::JsonNode columns_node = m_config.getChild("columns");
+    if (!columns_node.isArray())
         return false;
 
     // TODO: check for file existence?  in general, how much
@@ -90,7 +94,18 @@ int SummarizeJob::runJob()
     // STEP 1: build the group job parameters from the summarize parameters
 
     std::wstring input_path = m_config["input"].getString();
-    std::wstring input_columns = m_config["columns"].getString();
+    
+    std::vector<kl::JsonNode> input_columns = m_config["columns"].getChildren();
+    std::vector<kl::JsonNode>::iterator it_node, it_node_end;
+    it_node_end = input_columns.end();
+    
+    std::vector<std::wstring> summary_columns;
+    summary_columns.reserve(input_columns.size());
+
+    for (it_node = input_columns.begin(); it_node != it_node_end; ++it_node)
+    {
+        summary_columns.push_back(it_node->getString());
+    }
 
     tango::ISetPtr input_set = m_db->openSet(input_path);
     if (input_set.isNull())
@@ -106,13 +121,9 @@ int SummarizeJob::runJob()
         return 0;
     }
 
-    std::vector<std::wstring> summary_columns;
     std::set<std::wstring> summary_columns_unique_list;
-    kl::parseDelimitedList(input_columns, summary_columns, ',');
-
     std::vector<std::wstring>::iterator it, it_end;
     it_end = summary_columns.end();
-
 
     std::wstring group_param;
     int output_max_scale = 0;   // used to format the numeric summary output

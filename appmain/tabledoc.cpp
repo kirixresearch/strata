@@ -6253,14 +6253,14 @@ static void onSummaryJobFinished(jobs::IJobPtr job)
 
 void TableDoc::onSummary(wxCommandEvent& evt)
 {
-    std::vector<wxString> summary_columns;
+    std::vector<std::wstring> summary_columns;
 
     // find out which columns are selected
     int i, col_count = m_grid->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
         if (m_grid->isColumnSelected(i))
-            summary_columns.push_back(m_grid->getColumnCaption(i));
+            summary_columns.push_back(towstr(m_grid->getColumnCaption(i)));
     }
 
     // if there was no selection, summarize all columns
@@ -6270,10 +6270,8 @@ void TableDoc::onSummary(wxCommandEvent& evt)
         size_t i, col_count = structure->getColumnCount();
 
         for (i = 0; i < col_count; ++i)
-            summary_columns.push_back(towx(structure->getColumnName(i)));
+            summary_columns.push_back(towstr(structure->getColumnName(i)));
     }
-
-    wxString columns = vectorToString(summary_columns);
 
 
     // set up the job from the info we gathered
@@ -6282,8 +6280,17 @@ void TableDoc::onSummary(wxCommandEvent& evt)
     kl::JsonNode params;
     params["input"].setString(towstr(getBrowseSet()->getObjectPath()));
     params["output"].setString(tango::getTemporaryPath());
-    params["columns"].setString(towstr(columns));
+    params["columns"].setArray();
     params["where"].setString(towstr(getFilter()));
+
+    std::vector<std::wstring>::iterator it, it_end;
+    it_end = summary_columns.end();
+
+    for (it = summary_columns.begin(); it != it_end; ++it)
+    {
+        kl::JsonNode column_node = params["columns"].appendElement();
+        column_node.setString(*it);
+    }
 
     wxString title = wxString::Format(_("Summarizing '%s'"),
                                       getCaption().c_str());
