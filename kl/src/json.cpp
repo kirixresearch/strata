@@ -815,6 +815,16 @@ int JsonNode::getInteger()
     return m_value->m_integer;
 }
 
+bool JsonNode::isObject()
+{
+    return (m_value->m_type == nodetypeObject);
+}
+
+bool JsonNode::isArray()
+{
+    return (m_value->m_type == nodetypeArray);
+}
+
 bool JsonNode::isNull()
 {
     return m_value->m_isnull;

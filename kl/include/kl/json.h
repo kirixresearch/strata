@@ -126,6 +126,8 @@ public:
     double getDouble();
     int getInteger();
 
+    bool isObject();
+    bool isArray();
     bool isNull();
     bool isOk();
     
