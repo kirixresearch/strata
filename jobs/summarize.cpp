@@ -104,7 +104,12 @@ int SummarizeJob::runJob()
 
     for (it_node = input_columns.begin(); it_node != it_node_end; ++it_node)
     {
-        summary_columns.push_back(it_node->getString());
+        // make sure identifer is quoted
+        std::wstring col = it_node->getString();
+        tango::dequoteIdentifier(m_db, col);
+        tango::quoteIdentifier(m_db, col);
+
+        summary_columns.push_back(col);
     }
 
     tango::ISetPtr input_set = m_db->openSet(input_path);
@@ -125,7 +130,7 @@ int SummarizeJob::runJob()
     std::vector<std::wstring>::iterator it, it_end;
     it_end = summary_columns.end();
 
-    std::wstring group_param;
+    std::wstring column_param;
     int output_max_scale = 0;   // used to format the numeric summary output
 
     tango::IColumnInfoPtr input_colinfo;
@@ -148,10 +153,10 @@ int SummarizeJob::runJob()
             input_colinfo->getType() == tango::typeWideCharacter)
         {
             swprintf(outcol, 256, L"%s_0result0_minlength=min(length([%s])),", it->c_str(), it->c_str());
-            group_param += outcol;
+            column_param += outcol;
 
             swprintf(outcol, 256, L"%s_0result0_maxlength=max(length([%s])),", it->c_str(), it->c_str());
-            group_param += outcol;        
+            column_param += outcol;        
         }
 
         if (input_colinfo->getType() == tango::typeInteger ||
@@ -163,23 +168,23 @@ int SummarizeJob::runJob()
                 output_max_scale = scale;
             
             swprintf(outcol, 256, L"%s_0result0_sum=sum([%s]),", it->c_str(), it->c_str());
-            group_param += outcol;
+            column_param += outcol;
 
             swprintf(outcol, 256, L"%s_0result0_avg=avg([%s]),", it->c_str(), it->c_str());
-            group_param += outcol;
+            column_param += outcol;
         }
 
         swprintf(outcol, 256, L"%s_0result0_min=min([%s]),", it->c_str(), it->c_str());
-        group_param += outcol;
+        column_param += outcol;
 
         swprintf(outcol, 256, L"%s_0result0_max=max([%s]),", it->c_str(), it->c_str());
-        group_param += outcol;
+        column_param += outcol;
 
         swprintf(outcol, 256, L"%s_0result0_empty=count(empty([%s])),", it->c_str(), it->c_str());
-        group_param += outcol;
+        column_param += outcol;
     }
 
-    group_param += L"total_count=count()";
+    column_param += L"total_count=count()";
 
 
     // STEP 2: create a group job and pass the summarize parameters
@@ -196,7 +201,7 @@ int SummarizeJob::runJob()
 
     group_output_set = m_db->runGroupQuery(input_set,
                                            L"",
-                                           group_param,
+                                           column_param,
                                            where_param,
                                            L"",
                                            tango_job.p);
