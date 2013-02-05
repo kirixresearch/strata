@@ -29,6 +29,7 @@ void vectorToDelimitedString(const std::vector<std::wstring>& vec, std::wstring&
         if (!first)
             str += delimiter;
 
+        first = false;
         str += *it;
     }
 }
