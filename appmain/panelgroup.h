@@ -76,7 +76,10 @@ private:
 
     IDocumentSitePtr m_doc_site;
     tango::IStructurePtr m_structure;
-    tango::ISetPtr m_set;
+    
+    tango::ISetPtr m_base_set;
+    tango::ISetPtr m_browse_set;
+    wxString m_browse_filter;
 
     FieldListControl* m_tablecols;
     kcl::RowSelectionGrid* m_grid;

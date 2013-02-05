@@ -334,14 +334,17 @@ bool GroupPanel::initDoc(IFramePtr frame,
     if (tabledoc.isNull())
         return false;
 
-    m_set = tabledoc->getBrowseSet();
-    if (m_set.isNull())
+    m_base_set = tabledoc->getBaseSet();
+    m_browse_set = tabledoc->getBrowseSet();
+    m_browse_filter = tabledoc->getFilter();
+
+    if (m_browse_set.isNull())
         return false;
 
     wxString caption = _("Group");
-    if (!m_set->isTemporary())
+    if (!m_browse_set->isTemporary())
     {
-        wxString name = towx(m_set->getObjectPath());
+        wxString name = towx(m_browse_set->getObjectPath());
         name.AfterLast(wxT('/'));
         
         caption += wxT(" - [");
@@ -350,7 +353,7 @@ bool GroupPanel::initDoc(IFramePtr frame,
     }
 
     // save structure for later
-    m_structure = m_set->getStructure();
+    m_structure = m_browse_set->getStructure();
     m_tablecols->addCustomItem(getCountLabel(), GETBMP(xpm_blank_16));
     m_tablecols->addCustomItem(getGroupIdLabel(), GETBMP(xpm_blank_16));
     m_tablecols->setStructure(m_structure);
@@ -596,31 +599,27 @@ bool GroupPanel::validateGroupQuery()
     return valid;
 }
 
-static void onGroupJobFinished(IJobPtr job)
+static void onGroupJobFinished(jobs::IJobPtr job)
 {
     if (job->getJobInfo()->getState() != jobStateFinished)
         return;
 
-
-    IGroupJobPtr group_job = job;
-
     bool success = false;
 
-    // -- check if there is an output set --
-    if (group_job)
-    {
-        tango::ISetPtr result_set = group_job->getResultSet();
+    kl::JsonNode params;
+    params.fromString(job->getParameters());
 
-        if (result_set)
-        {
-            ITableDocPtr doc = TableDocMgr::createTableDoc();
-            doc->open(result_set, xcm::null);
-            g_app->getMainFrame()->createSite(doc, sitetypeNormal,
-                                              -1, -1, -1, -1);
-            success = true;
-        }
+    std::wstring output_path = params["output"];
+    tango::ISetPtr result_set = g_app->getDatabase()->openSet(output_path);
+
+    if (result_set.isOk())
+    {
+        ITableDocPtr doc = TableDocMgr::createTableDoc();
+        doc->open(result_set, xcm::null);
+        g_app->getMainFrame()->createSite(doc, sitetypeNormal,
+                                            -1, -1, -1, -1);
+        success = true;
     }
-    
 
     if (!success)
     {
@@ -683,13 +682,12 @@ void GroupPanel::onExecute(wxCommandEvent& event)
         return;
     }
     
-    std::set<wxString> output_field_set;
-    std::set<wxString> orig_field_set;
-    wxString str;
+    std::set<std::wstring> orig_field_set;
+    std::set<std::wstring> output_field_set;
     int func;
     
-    wxString output_name;
-    wxString input_name;
+    std::wstring input_name;
+    std::wstring output_name;
     int input_type;
 
     bool include_detail = m_adv_checkbox->GetValue();
@@ -701,22 +699,31 @@ void GroupPanel::onExecute(wxCommandEvent& event)
         int col_count = m_structure->getColumnCount();
         for (i = 0; i < col_count; ++i)
         {
-            wxString s = towx(m_structure->getColumnName(i));
-            s.MakeUpper();
-            output_field_set.insert(s);
+            std::wstring s = m_structure->getColumnName(i);
+            kl::makeUpper(s);
+            kl::trim(s);
+
             orig_field_set.insert(s);
+            output_field_set.insert(s);
         }
     }
-    
+
     for (i = 0; i < row_count; ++i)
     {
-        input_name = m_grid->getCellString(i, GroupCol_InputExpr);
-        output_name = m_grid->getCellString(i, GroupCol_OutputField);
+        input_name = towstr(m_grid->getCellString(i, GroupCol_InputExpr));
+        kl::makeUpper(input_name);
+        kl::trim(input_name);
+
+        output_name = towstr(m_grid->getCellString(i, GroupCol_OutputField));
+        kl::makeUpper(output_name);
+        kl::trim(output_name);
+
         func = m_grid->getCellComboSel(i, GroupCol_GroupFunc);
-        colinfo = m_structure->getColumnInfo(towstr(input_name));
-        
+        colinfo = m_structure->getColumnInfo(input_name);
+
+
         // check for empty output field names
-        if (output_name.IsEmpty())
+        if (output_name.size() == 0)
         {
             wxString message = _("One or more of the output fields is empty.  Please specify a valid field name to continue.");
             appMessageBox(message,
@@ -724,10 +731,10 @@ void GroupPanel::onExecute(wxCommandEvent& event)
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
         }
-        
+
         // check for empty input field names (excluding
         // 'group id' and 'count' grouping operations)
-        if (input_name.IsEmpty())
+        if (input_name.size() == 0)
         {
             if (func != GroupFunc_Count && func != GroupFunc_GroupID)
             {
@@ -738,7 +745,7 @@ void GroupPanel::onExecute(wxCommandEvent& event)
                 return;
             }
         }
-        
+
         // check for invalid input expressions
         if (colinfo.isNull())
         {
@@ -746,7 +753,7 @@ void GroupPanel::onExecute(wxCommandEvent& event)
             {
                 wxString message = wxString::Format(_("The specified input field '%s' does not exist."),
                                                     input_name.c_str());
-                                                
+
                 appMessageBox(message,
                                    APPLICATION_NAME,
                                    wxOK | wxICON_EXCLAMATION | wxCENTER);
@@ -761,7 +768,7 @@ void GroupPanel::onExecute(wxCommandEvent& event)
         if (func == GroupFunc_Count && input_name.length() > 0)
         {
             // check to make sure that count's parameter is boolean
-            tango::IIteratorPtr iter = m_set->createIterator(L"", L"", NULL);
+            tango::IIteratorPtr iter = m_browse_set->createIterator(L"", L"", NULL);
             if (iter.isNull())
                 return;
 
@@ -806,24 +813,18 @@ void GroupPanel::onExecute(wxCommandEvent& event)
             appInvalidFieldMessageBox();
             return;
         }
-        
-        str = output_name;
-        str.MakeUpper();
-        str.Trim(true);
-
-
 
         if (include_detail &&
-            orig_field_set.find(str) != orig_field_set.end() &&
+            orig_field_set.find(output_name) != orig_field_set.end() &&
             func == GroupFunc_GroupBy)
         {
-            // this is permissable because group_by fields with
+            // this is permissible because group_by fields with
             // 'include detail' checked are not duplicated in
             // the output structure -- this is taken care of below
             continue;
         }
 
-        if (output_field_set.find(str) != output_field_set.end())
+        if (output_field_set.find(output_name) != output_field_set.end())
         {
             markProblemRow(i, true, true);
 
@@ -843,42 +844,30 @@ void GroupPanel::onExecute(wxCommandEvent& event)
             return;
         }
 
-        output_field_set.insert(str);
+        output_field_set.insert(output_name);
     }
 
 
 
     // now create the GroupJob and its associated parameters
-
-    GroupJob* job = new GroupJob;
-
-    wxString output_columns;
-    wxString columns;
-    wxString group;
+    std::vector<std::wstring> group_columns;
+    std::vector<std::wstring> output_columns;
 
     // create the group sort/break key
-    int keypart_count = 0;
     for (i = 0; i < row_count; ++i)
     {
         if (m_grid->getCellComboSel(i, GroupCol_GroupFunc) != GroupFunc_GroupBy)
             continue;
 
-        wxString input_colname = m_grid->getCellString(i, GroupCol_InputExpr);
-        input_colname.MakeUpper();
-        input_colname.Trim(true);
-        wxString quoted_colname = towx(tango::quoteIdentifier(g_app->getDatabase(), towstr(input_colname)));
+        std::wstring input_colname = towstr(m_grid->getCellString(i, GroupCol_InputExpr));
+        kl::makeUpper(input_colname);
+        kl::trim(input_colname);
 
-        wxString temps;
-        temps.Printf(wxT("%s%s"),
-                     keypart_count == 0 ? wxT("") : wxT(","),
-                     quoted_colname.c_str());
-
-        group += temps;
-        keypart_count++;
+        std::wstring quoted_colname = tango::quoteIdentifier(g_app->getDatabase(), input_colname);
+        group_columns.push_back(quoted_colname);
     }
 
     //  create the output functions string
-    int outputpart_count = 0;
     for (i = 0; i < row_count; ++i)
     {
         combo_sel = m_grid->getCellComboSel(i, GroupCol_GroupFunc);
@@ -886,19 +875,12 @@ void GroupPanel::onExecute(wxCommandEvent& event)
             continue;
 
         // if detail records are included, all fields are brought in
-        // in addition to the aggregate results.  This makes all "Group By"
-        // fields redundant.  Therefore we want to leave those out,
-        // as they are already taken care of by the 'include detail' function
+        // in addition to the aggregate results; this makes all "Group By"
+        // fields redundant, so we want to leave those out, as they are
+        // already taken care of by the 'include detail' function
 
-        wxString groupcol_inputfield = m_grid->getCellString(i, GroupCol_InputExpr);
-        groupcol_inputfield.MakeUpper();
-        groupcol_inputfield.Trim(true);
-        wxString quoted_inputfield = towx(tango::quoteIdentifier(g_app->getDatabase(), towstr(groupcol_inputfield)));
-
-        wxString groupcol_outputfield = m_grid->getCellString(i, GroupCol_OutputField);
-        groupcol_outputfield.MakeUpper();
-        groupcol_outputfield.Trim(true);
-        wxString quoted_outputfield = towx(tango::quoteIdentifier(g_app->getDatabase(), towstr(groupcol_outputfield)));
+        std::wstring groupcol_inputfield = towstr(m_grid->getCellString(i, GroupCol_InputExpr));
+        std::wstring groupcol_outputfield = towstr(m_grid->getCellString(i, GroupCol_OutputField));
 
         if (include_detail &&
             combo_sel == GroupFunc_GroupBy &&
@@ -907,44 +889,70 @@ void GroupPanel::onExecute(wxCommandEvent& event)
             continue;
         }
 
-        // construct the output field specifier
-        wxString temps;
+        kl::makeUpper(groupcol_inputfield);
+        kl::trim(groupcol_inputfield);
+        std::wstring quoted_inputfield = tango::quoteIdentifier(g_app->getDatabase(), groupcol_inputfield);
 
-        
+        kl::makeUpper(groupcol_outputfield);
+        kl::trim(groupcol_outputfield);
+        std::wstring quoted_outputfield = tango::quoteIdentifier(g_app->getDatabase(), groupcol_outputfield);
 
-        temps.Printf(wxT("%s%s=%s(%s)"),
-                     outputpart_count == 0 ? wxT("") : wxT(","),        
-                     quoted_outputfield.c_str(),
-                     groupfunc2str(combo_sel).c_str(),
-                     quoted_inputfield.c_str());
+        // construct the output field specifier, which as the form <output_name>=<group_func>(<input_name>)
+        std::wstring output_col_expr;
+        output_col_expr += quoted_outputfield;
+        output_col_expr += L"=";
+        output_col_expr += towstr(groupfunc2str(combo_sel));
+        output_col_expr += L"(";
+        output_col_expr += quoted_inputfield;
+        output_col_expr += L")";
 
-        output_columns += temps;
-        outputpart_count++;
+        output_columns.push_back(output_col_expr);
     }
 
 
     if (include_detail)
+        output_columns.push_back(L"[DETAIL]");
+
+
+    std::wstring group_query = towstr(m_adv_group_query->GetValue());
+    kl::trim(group_query);
+
+
+    // set up the job from the info we gathered
+    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.group-job");
+
+    kl::JsonNode params;
+    params["input"].setString(towstr(m_browse_set->getObjectPath()));
+    params["output"].setString(tango::getTemporaryPath());
+    params["group"].setArray();
+    params["columns"].setArray();
+    params["where"].setString(towstr(m_browse_filter));
+    params["having"].setString(towstr(group_query));
+
+    std::vector<std::wstring>::iterator it, it_end;
+
+    for (it = group_columns.begin(); it != group_columns.end(); ++it)
     {
-        if (output_columns.Length() > 0)
-            output_columns += wxT(",");
-            
-        output_columns += wxT("[DETAIL]");
+        kl::JsonNode group_column_node = params["group"].appendElement();
+        group_column_node.setString(*it);
     }
 
-    wxString group_query = m_adv_group_query->GetValue();
-    group_query.Trim(true);
+    for (it = output_columns.begin(); it != output_columns.end(); ++it)
+    {
+        kl::JsonNode output_column_node = params["columns"].appendElement();
+        output_column_node.setString(*it);
+    }
 
-    job->setInstructions(m_set,
-                         group,
-                         output_columns,
-                         wxT(""),
-                         group_query);
+
+    wxString title = wxString::Format(_("Grouping '%s'"),
+                                      m_doc_site->getCaption().c_str());
+
+    job->getJobInfo()->setTitle(towstr(title));
+    job->setParameters(params.toString());
 
     job->sigJobFinished().connect(&onGroupJobFinished);
-
-    // add and start job
     g_app->getJobQueue()->addJob(job, jobStateRunning);
-    
+
     // close the site
     g_app->getMainFrame()->closeSite(m_doc_site);
 }
