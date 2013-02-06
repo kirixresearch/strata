@@ -246,7 +246,6 @@ private:
     void updateStatusBar();
     void resetChildWindows();
     void updateChildWindows();
-    void doStructureUpdate();
     void deleteSelectedRows();
     void deleteSelectedColumns();
     bool deleteSelectedRowsColumns();
@@ -385,7 +384,6 @@ private:
     tango::ISetPtr m_browse_set;
     tango::IIteratorPtr m_iter;
     ITableDocViewPtr m_active_view;
-    IModifyStructJobPtr m_structure_job;
 
     IFramePtr m_frame;                             // ptr to the application frame
     IDocumentSitePtr m_doc_site;                   // ptr to our document site

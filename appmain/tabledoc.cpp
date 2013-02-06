@@ -2413,9 +2413,6 @@ bool TableDoc::open(tango::ISetPtr set, tango::IIteratorPtr iter)
         return false;
     }
 
-    // do a structure update
-    doStructureUpdate();
-
     setIterator(browse_iter);
 
     return true;
@@ -3287,14 +3284,6 @@ void TableDoc::onModifyStructJobFinished(IJobPtr job)
 {
     IModifyStructJobPtr modify_job = job;
 
-    // doStructureUpdate() will update the views and such
-    // when setBaseSet is called
-
-    if (job->getJobInfo()->getState() == jobStateFinished)
-        m_structure_job = modify_job;
-         else
-        m_structure_job.clear();
-
     // unlock this window
     m_enabled = true;
     m_grid->setVisibleState(kcl::Grid::stateVisible);
@@ -3302,8 +3291,32 @@ void TableDoc::onModifyStructJobFinished(IJobPtr job)
 
     createModel();
     m_grid->setModel(m_grid_model);
+
+    // rename the columns; note: for the rename to work, we have to do this
+    // after we have a grid model, but before we open the set since the
+    // rename operation needs a model, but opening a set goes "too far" and
+    // will try to refresh the view with the old names, causing them to be
+    // removed if they aren't in sync with the model
+    if (job->getJobInfo()->getState() == jobStateFinished)
+    {
+        std::vector<std::pair<wxString, wxString> > to_rename;
+        std::vector<std::pair<wxString, wxString> >::iterator rename_iter;
+
+        modify_job->getToRename(to_rename);
+
+        for (rename_iter = to_rename.begin();
+             rename_iter != to_rename.end(); ++rename_iter)
+        {
+            onColumnNameChanged(rename_iter->first, rename_iter->second);
+        }
+
+        tango::IIteratorPtr iter = modify_job->getActionSet()->createIterator(L"", L"", NULL);
+        if (iter.isOk())
+            setIterator(iter);
+    }
+
     open(modify_job->getActionSet(), xcm::null);
-    
+
     // remove the "Filtered" suffix
     setCaption(wxEmptyString, wxEmptyString);
     
@@ -3359,29 +3372,6 @@ void TableDoc::onModifyStructJobFinished(IJobPtr job)
     evt->s_param = m_dbpath;
     m_frame->postEvent(evt);
 }
-
-
-
-void TableDoc::doStructureUpdate()
-{
-    if (m_structure_job.isNull())
-        return;
-
-    std::vector<std::pair<wxString, wxString> > to_rename;
-    std::vector<std::pair<wxString, wxString> >::iterator rename_iter;
-
-    m_structure_job->getToRename(to_rename);
-
-    for (rename_iter = to_rename.begin();
-         rename_iter != to_rename.end(); ++rename_iter)
-    {
-        onColumnNameChanged(rename_iter->first, rename_iter->second);
-    }
-
-
-    m_structure_job.clear();
-}
-
 
 
 
