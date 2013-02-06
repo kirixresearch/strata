@@ -3309,10 +3309,6 @@ void TableDoc::onModifyStructJobFinished(IJobPtr job)
         {
             onColumnNameChanged(rename_iter->first, rename_iter->second);
         }
-
-        tango::IIteratorPtr iter = modify_job->getActionSet()->createIterator(L"", L"", NULL);
-        if (iter.isOk())
-            setIterator(iter);
     }
 
     open(modify_job->getActionSet(), xcm::null);
