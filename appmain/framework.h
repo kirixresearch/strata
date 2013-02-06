@@ -16,6 +16,40 @@
 #include <wx/aui/aui.h>
 
 
+// framework events
+
+const wxString FRAMEWORK_EVT_APPMAIN_ADD_FIND_COMBO_ITEM                = wxT("appmain.addFindComboItem");
+const wxString FRAMEWORK_EVT_APPMAIN_DOC_BITMAP_UPDATED                 = wxT("appmain.docBitmapUpdated");
+const wxString FRAMEWORK_EVT_APPMAIN_FIND_PANEL_QUERY_FIND_VALUE        = wxT("appmain.find_panel.query_find_value");
+const wxString FRAMEWORK_EVT_APPMAIN_FORMAT_TOOLBAR_TOGGLED             = wxT("appmain.format_toolbar.toggled");
+const wxString FRAMEWORK_EVT_APPMAIN_PREFERENCES_SAVED                  = wxT("appmain.preferencesSaved");
+const wxString FRAMEWORK_EVT_APPMAIN_RELATIONSHIPS_UPDATED              = wxT("appmain.relationshipsUpdated");
+const wxString FRAMEWORK_EVT_APPMAIN_TABLE_STRUCTURE_MODIFIED           = wxT("appmain.tableStructureModified");
+const wxString FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_ACTIVE_VIEW_CHANGED  = wxT("appmain.view_switcher.active_view_changed");
+const wxString FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_ACTIVE_VIEW_CHANGING = wxT("appmain.view_switcher.active_view_changing");
+const wxString FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_QUERY_AVAILABLE_VIEW = wxT("appmain.view_switcher.query_available_views");
+
+const wxString FRAMEWORK_EVT_CFW_LOCATION_CHANGED                       = wxT("cfw.locationChanged");
+const wxString FRAMEWORK_EVT_CFW_PROPERTIES_CHANGED                     = wxT("cfw.propertiesChanged");
+
+const wxString FRAMEWORK_EVT_COLUMNLISTPANEL_UPDATE                     = wxT("ColumnListPanel.update");
+const wxString FRAMEWORK_EVT_CONSOLPANEL_COMMAND                        = wxT("consolepanel.command");
+
+const wxString FRAMEWORK_EVT_TABLEDOC_CURSOR_COLUMN_CHANGED             = wxT("tabledoc.cursorColumnChanged");
+const wxString FRAMEWORK_EVT_TABLEDOC_CURSOR_ROW_CHANGED                = wxT("tabledoc.cursorRowChanged");
+const wxString FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD                    = wxT("tabledoc.doViewReload");
+const wxString FRAMEWORK_EVT_TABLEDOC_ENABLED_STATE_CHANGED             = wxT("tabledoc.enabledStateChanged");
+const wxString FRAMEWORK_EVT_TABLEDOC_MARK_CREATED                      = wxT("tabledoc.markCreated");
+const wxString FRAMEWORK_EVT_TABLEDOC_ON_SITE_CLOSING                   = wxT("tabledoc.onSiteClosing");
+const wxString FRAMEWORK_EVT_TABLEDOC_STRUCTURE_MODIFIED                = wxT("tabledoc.structureModified");
+const wxString FRAMEWORK_EVT_TABLEDOC_VIEW_CHANGED                      = wxT("tabledoc.viewChanged");
+const wxString FRAMEWORK_EVT_TABLEDOC_VIEW_MODIFIED                     = wxT("tabledoc.viewModified");
+
+const wxString FRAMEWORK_EVT_TREEPANEL_OFS_FILE_RENAMED                 = wxT("treepanel.ofsFileRenamed");
+
+
+// forward declarations
+
 class wxAuiToolBar;
 
 
@@ -38,6 +72,7 @@ XCM_DECLARE_SMARTPTR2(xcm::IVector<IDocumentSitePtr>, IDocumentSiteEnumPtr)
 XCM_DECLARE_SMARTPTR2(xcm::IVector<IStatusBarItemPtr>, IStatusBarItemEnumPtr)
 
 const int FirstDocCommandId = 7000;
+
 
 
 // -- Frame events used by cfw ------------------------------------------------
