@@ -226,7 +226,6 @@ private:
     void updateCaption();
     void updateScrollBars();
     void updateStatusBar();
-    void updatePropertiesPanel();
     void updateDesignComponentMargins();
     void updateFormatToolbar();
     void updateFormatItems();

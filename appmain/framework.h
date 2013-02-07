@@ -30,13 +30,10 @@ const wxString FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_ACTIVE_VIEW_CHANGING = wxT("a
 const wxString FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_QUERY_AVAILABLE_VIEW = wxT("appmain.view_switcher.query_available_views");
 
 const wxString FRAMEWORK_EVT_CFW_LOCATION_CHANGED                       = wxT("cfw.locationChanged");
-const wxString FRAMEWORK_EVT_CFW_PROPERTIES_CHANGED                     = wxT("cfw.propertiesChanged");
 
 const wxString FRAMEWORK_EVT_COLUMNLISTPANEL_UPDATE                     = wxT("ColumnListPanel.update");
 const wxString FRAMEWORK_EVT_CONSOLEPANEL_COMMAND                       = wxT("consolepanel.command");
 
-const wxString FRAMEWORK_EVT_TABLEDOC_CURSOR_COLUMN_CHANGED             = wxT("tabledoc.cursorColumnChanged");
-const wxString FRAMEWORK_EVT_TABLEDOC_CURSOR_ROW_CHANGED                = wxT("tabledoc.cursorRowChanged");
 const wxString FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD                    = wxT("tabledoc.doViewReload");
 const wxString FRAMEWORK_EVT_TABLEDOC_ENABLED_STATE_CHANGED             = wxT("tabledoc.enabledStateChanged");
 const wxString FRAMEWORK_EVT_TABLEDOC_MARK_CREATED                      = wxT("tabledoc.markCreated");

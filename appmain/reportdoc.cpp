@@ -2127,7 +2127,6 @@ void ReportDoc::onSiteDeactivated()
 void ReportDoc::onSiteActivated()
 {
     updateStatusBar();
-    updatePropertiesPanel();
 }
 
 IUIContextPtr ReportDoc::getUserInterface()
@@ -2693,12 +2692,6 @@ void ReportDoc::updateStatusBar()
 
     // refresh the statusbar
     g_app->getMainFrame()->getStatusBar()->refresh();
-}
-
-void ReportDoc::updatePropertiesPanel()
-{
-    // let the properties panel know that it should refresh itself
-    m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_CFW_PROPERTIES_CHANGED));
 }
 
 void ReportDoc::updateDesignComponentMargins()

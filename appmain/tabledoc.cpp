@@ -4082,15 +4082,12 @@ void TableDoc::onGridCursorMove(kcl::GridEvent& evt)
 {
     if (evt.GetColumn() != evt.GetDestinationColumn())
     {
-        m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_CURSOR_COLUMN_CHANGED));
     }
 
     if (evt.GetRow() != evt.GetDestinationRow())
     {
         updateStatusBar(false);
         updateChildWindows();
-
-        m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_CURSOR_ROW_CHANGED));
     }
 }
 
