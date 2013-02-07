@@ -16,11 +16,6 @@
 
 // -- Frame events fired by this document: --------------------------------------
 //
-// "tabledoc.cursorColumnChanged" - fired when the cursor column position
-//                                  is changed in the grid
-//
-// "tabledoc.cursorRowChanged"    - fired when the cursor row position is changed
-//                                  in the grid
 //
 // "tabledoc.viewModified"        - fired when the active view is modified
 //                                  param 1: 0=columns changed, 1=column resize

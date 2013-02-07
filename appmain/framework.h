@@ -74,9 +74,6 @@ const int FirstDocCommandId = 7000;
 
 // -- Frame events used by cfw ------------------------------------------------
 //
-// "cfw.propertiesChanged"   - fired when one or more document properties
-//                             are changed
-//
 // "cfw.statusFieldsChanged" - fired when one or more status field (for the
 //                             status bar are changed
 //
