@@ -172,7 +172,7 @@ void StructureDoc::setModifySet(tango::ISetPtr modify_set)
 
             // fire this event so that the URL will be updated with the new path
             if (m_frame.isOk())
-                m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
+                m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_CFW_LOCATION_CHANGED));
         }
 
         m_readonly = false;
@@ -1296,7 +1296,7 @@ bool StructureDoc::createTable()
 
     // fire this event so that the URL will be updated with the new path
     if (m_frame.isOk())
-        m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
+        m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_CFW_LOCATION_CHANGED));
 
     // set the modify set in case the user wants to further modify the set
     // they just created... this would be a modify structure job
@@ -1590,7 +1590,7 @@ void StructureDoc::onModifyStructJobFinished(IJobPtr job)
 void StructureDoc::onFrameEvent(FrameworkEvent& evt)
 {
     // if a file is renamed, update this file with the new file path
-    if (evt.name == wxT("treepanel.ofsFileRenamed"))
+    if (evt.name == FRAMEWORK_EVT_TREEPANEL_OFS_FILE_RENAMED)
     {
         if (evt.s_param == m_path)
         {
@@ -1605,12 +1605,12 @@ void StructureDoc::onFrameEvent(FrameworkEvent& evt)
             {
                 // fire this event so that the URL combobox will be updated
                 // with the new path if this is the active child
-                m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
+                m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_CFW_LOCATION_CHANGED));
             }
         }
     }
 
-    if (evt.name == wxT("appmain.view_switcher.query_available_views"))
+    if (evt.name == FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_QUERY_AVAILABLE_VIEW)
     {
         IDocumentSitePtr active_child;
         active_child = g_app->getMainFrame()->getActiveChild();
@@ -1645,7 +1645,7 @@ void StructureDoc::onFrameEvent(FrameworkEvent& evt)
                           (tabledoc_site == active_site) ? true : false);
         }
     }
-     else if (evt.name == wxT("appmain.view_switcher.active_view_changing"))
+     else if (evt.name == FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_ACTIVE_VIEW_CHANGING)
     {
         int id = (int)(evt.l_param);
         
@@ -1767,7 +1767,7 @@ void StructureDoc::onFrameEvent(FrameworkEvent& evt)
                 return;
         }
     }
-     else if (evt.name == wxT("tabledoc.structureModified"))
+     else if (evt.name == FRAMEWORK_EVT_TABLEDOC_STRUCTURE_MODIFIED)
     {
         // update the row data in the grid by repopulating it
         populateGridFromSet(m_modify_set);

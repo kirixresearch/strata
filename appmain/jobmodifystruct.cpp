@@ -105,7 +105,7 @@ void ModifyStructJob::runPostJob()
     if (getJobInfo()->getState() != jobStateFinished)
         return;
     
-    FrameworkEvent* evt = new FrameworkEvent(wxT("appmain.tableStructureModified"));
+    FrameworkEvent* evt = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_TABLE_STRUCTURE_MODIFIED);
     evt->s_param = towx(m_action_set->getObjectPath());
     g_app->getMainFrame()->postEvent(evt);
 }

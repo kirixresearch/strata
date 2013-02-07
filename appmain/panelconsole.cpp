@@ -713,7 +713,7 @@ void ConsolePanel::onCommandEntered(wxString& command)
 void ConsolePanel::onCommand(wxString& command)
 {
     if (m_frame.isOk())
-        m_frame->postEvent(new FrameworkEvent(wxT("consolepanel.command"), 0, command));
+        m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_CONSOLEPANEL_COMMAND, 0, command));
 }
 
 void ConsolePanel::onQueryJobFinished(IJobPtr job)

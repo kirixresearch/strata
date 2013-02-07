@@ -499,7 +499,7 @@ void TextDoc::onSiteActivated()
 
 bool TextDoc::updateColumnList()
 {
-    g_app->getMainFrame()->postEvent(new FrameworkEvent(wxT("ColumnListPanel.update")));
+    g_app->getMainFrame()->postEvent(new FrameworkEvent(FRAMEWORK_EVT_COLUMNLISTPANEL_UPDATE));
     return true;
 }
 

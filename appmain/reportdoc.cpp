@@ -449,7 +449,7 @@ bool ReportDoc::create(const ReportCreateInfo& data)
     updateFormatItems();
 
     // update the column list
-    g_app->getMainFrame()->postEvent(new FrameworkEvent(wxT("ColumnListPanel.update")));
+    g_app->getMainFrame()->postEvent(new FrameworkEvent(FRAMEWORK_EVT_COLUMNLISTPANEL_UPDATE));
 
     return true;
 }
@@ -578,7 +578,7 @@ bool ReportDoc::saveFile(const wxString& path)
     updateCaption();
 
     // fire this event so that the URL will be updated with the report's path
-    m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
+    m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_CFW_LOCATION_CHANGED));
 
     // render the canvas
     getCanvas()->render();
@@ -598,7 +598,7 @@ bool ReportDoc::loadFile(const wxString& path, bool layout)
     updateCaption();
 
     // fire this event so that the URL will be updated with the report's path
-    m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
+    m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_CFW_LOCATION_CHANGED));
 
     // clear the layout component
     getLayoutComponentRaw()->clear();
@@ -648,7 +648,7 @@ bool ReportDoc::loadFile(const wxString& path, bool layout)
     updateFormatItems();
 
     // update the column list
-    g_app->getMainFrame()->postEvent(new FrameworkEvent(wxT("ColumnListPanel.update")));
+    g_app->getMainFrame()->postEvent(new FrameworkEvent(FRAMEWORK_EVT_COLUMNLISTPANEL_UPDATE));
     
     return true;
 }
@@ -729,7 +729,7 @@ void ReportDoc::onReload(wxCommandEvent& evt)
     updateCanvas();
 
     // update the column list
-    g_app->getMainFrame()->postEvent(new FrameworkEvent(wxT("ColumnListPanel.update")));
+    g_app->getMainFrame()->postEvent(new FrameworkEvent(FRAMEWORK_EVT_COLUMNLISTPANEL_UPDATE));
 }
 
 void ReportDoc::onPrint(wxCommandEvent& evt)
@@ -2373,7 +2373,7 @@ void ReportDoc::onColumnListDblClicked(const std::vector<wxString>& list)
 void ReportDoc::onFrameEvent(FrameworkEvent& evt)
 {
     // if a file is renamed, update this file with the new file path
-    if (evt.name == wxT("treepanel.ofsFileRenamed"))
+    if (evt.name == FRAMEWORK_EVT_TREEPANEL_OFS_FILE_RENAMED)
     {
         if (evt.s_param == m_file_path)
         {
@@ -2385,13 +2385,13 @@ void ReportDoc::onFrameEvent(FrameworkEvent& evt)
             {
                 // fire this event so that the URL combobox will be updated
                 // with the new path if this is the active child
-                m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
+                m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_CFW_LOCATION_CHANGED));
             }
         }
     }
 
     // populate the view switcher with the available views
-    if (evt.name == wxT("appmain.view_switcher.query_available_views"))
+    if (evt.name == FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_QUERY_AVAILABLE_VIEW)
     {
         // make sure we are in the active container before replying
         IDocumentSitePtr active_site;
@@ -2414,7 +2414,7 @@ void ReportDoc::onFrameEvent(FrameworkEvent& evt)
     }
 
     // if the view has changed, switch views
-    if (evt.name == wxT("appmain.view_switcher.active_view_changed"))
+    if (evt.name == FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_ACTIVE_VIEW_CHANGED)
     {
         // -- make sure we are in the active container --
         IDocumentSitePtr active_site;
@@ -2452,7 +2452,7 @@ void ReportDoc::onFrameEvent(FrameworkEvent& evt)
         }
     }
     
-    if (evt.name == wxT("appmain.format_toolbar.toggled"))
+    if (evt.name == FRAMEWORK_EVT_APPMAIN_FORMAT_TOOLBAR_TOGGLED)
     {
         // if the global toolbar is on, don't show the embedded toolbar
         long format_toolbar_shown = evt.l_param;
@@ -2698,7 +2698,7 @@ void ReportDoc::updateStatusBar()
 void ReportDoc::updatePropertiesPanel()
 {
     // let the properties panel know that it should refresh itself
-    m_frame->postEvent(new FrameworkEvent(wxT("cfw.propertiesChanged")));
+    m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_CFW_PROPERTIES_CHANGED));
 }
 
 void ReportDoc::updateDesignComponentMargins()
@@ -4169,7 +4169,7 @@ bool ReportDoc::setDataSource(const wxString& path)
     getDesignComponentRaw()->setDataSource(path);
 
     // update the column list
-    g_app->getMainFrame()->postEvent(new FrameworkEvent(wxT("ColumnListPanel.update")));
+    g_app->getMainFrame()->postEvent(new FrameworkEvent(FRAMEWORK_EVT_COLUMNLISTPANEL_UPDATE));
     
     return true;
 }

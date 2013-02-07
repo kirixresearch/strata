@@ -2409,7 +2409,7 @@ bool WebDoc::findIsReplaceAllowed()
 
 void WebDoc::onFrameEvent(FrameworkEvent& evt)
 {
-    if (evt.name == wxT("appmain.view_switcher.query_available_views"))
+    if (evt.name == FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_QUERY_AVAILABLE_VIEW)
     {
         // make sure we are the same site
         if (g_app->getMainFrame()->getActiveChild() != m_doc_site)
@@ -2428,7 +2428,7 @@ void WebDoc::onFrameEvent(FrameworkEvent& evt)
         list->addItem(ID_View_SwitchToLayoutView, _("Web Page View"),
                       is_source ? false : true);
     }
-     else if (evt.name == wxT("appmain.view_switcher.active_view_changed"))
+     else if (evt.name == FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_ACTIVE_VIEW_CHANGED)
     {
         int id = (int)(evt.l_param);
         
@@ -2643,7 +2643,7 @@ void WebDoc::openURI(const wxString& uri, wxWebPostData* post_data)
             IDocumentSitePtr doc_site = m_frame->getActiveChild();
             if (doc_site.isOk() && doc_site == m_doc_site)
             {
-                m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
+                m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_CFW_LOCATION_CHANGED));
             }
         }
 
@@ -3074,7 +3074,7 @@ void WebDoc::onLocationChange(wxWebEvent& evt)
         IDocumentSitePtr doc_site = m_frame->getActiveChild();
         if (doc_site.isOk() && doc_site == m_doc_site)
         {
-            m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
+            m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_CFW_LOCATION_CHANGED));
         }
     }
 }
@@ -3446,7 +3446,7 @@ void WebDoc::onFavIconAvailable(wxWebEvent& evt)
     
     // fire a 'document bitmap updated' event
     
-    FrameworkEvent* cfw_evt = new FrameworkEvent(wxT("appmain.docBitmapUpdated"));
+    FrameworkEvent* cfw_evt = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_DOC_BITMAP_UPDATED);
     cfw_evt->o_param = &bitmap;
     g_app->getMainFrame()->sendEvent(cfw_evt);
     
@@ -4005,7 +4005,7 @@ void WebDoc::onWebViewDocumentLoaded(wxWebViewEvent& evt)
         IDocumentSitePtr doc_site = m_frame->getActiveChild();
         if (doc_site.isOk() && doc_site == m_doc_site)
         {
-            m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
+            m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_CFW_LOCATION_CHANGED));
         }
     }
 }

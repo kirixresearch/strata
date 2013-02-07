@@ -2507,7 +2507,7 @@ void DbDoc::doPaste()
                 // post a command that lets everyone know that
                 // an ofs item has been moved
 
-                FrameworkEvent* cfw_event = new FrameworkEvent(wxT("treepanel.ofsFileRenamed"));
+                FrameworkEvent* cfw_event = new FrameworkEvent(FRAMEWORK_EVT_TREEPANEL_OFS_FILE_RENAMED);
                 cfw_event->s_param = src_path;
                 cfw_event->s_param2 = target_path;
                 g_app->getMainFrame()->postEvent(cfw_event);
@@ -3493,7 +3493,7 @@ void DbDoc::onFsItemEndLabelEdit(IFsItemPtr item,
             // post a command that lets everyone know that
             // an ofs item has been renamed
 
-            FrameworkEvent* evt = new FrameworkEvent(wxT("treepanel.ofsFileRenamed"));
+            FrameworkEvent* evt = new FrameworkEvent(FRAMEWORK_EVT_TREEPANEL_OFS_FILE_RENAMED);
             evt->s_param = old_path;
             evt->s_param2 = new_path;
             g_app->getMainFrame()->postEvent(evt);
@@ -4153,7 +4153,7 @@ void DbDoc::onDragDrop(IFsItemPtr target,
                 // post a command that lets everyone know that
                 // an ofs item has been moved
 
-                FrameworkEvent* evt = new FrameworkEvent(wxT("treepanel.ofsFileRenamed"));
+                FrameworkEvent* evt = new FrameworkEvent(FRAMEWORK_EVT_TREEPANEL_OFS_FILE_RENAMED);
                 evt->s_param = src_path;
                 evt->s_param2 = dest_path;
                 g_app->getMainFrame()->postEvent(evt);

@@ -180,7 +180,7 @@ void TableDoc::createNewMark(const wxString& expr)
 
     // let other windows know that a mark was created
     // and make sure the marks panel is shown
-    m_frame->postEvent(new FrameworkEvent(wxT("tabledoc.markCreated")));
+    m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_MARK_CREATED));
 }
 
 

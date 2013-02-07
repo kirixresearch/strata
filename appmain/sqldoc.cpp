@@ -432,7 +432,7 @@ void SqlDoc::setText(const wxString& text)
 void SqlDoc::onFrameEvent(FrameworkEvent& evt)
 {
     // if a file is renamed, update this file with the new file path
-    if (evt.name == wxT("treepanel.ofsFileRenamed"))
+    if (evt.name == FRAMEWORK_EVT_TREEPANEL_OFS_FILE_RENAMED)
     {
         if (evt.s_param == getDocumentLocation())
         {
@@ -447,12 +447,12 @@ void SqlDoc::onFrameEvent(FrameworkEvent& evt)
             {
                 // fire this event so that the URL combobox will be updated
                 // with the new path if this is the active child
-                m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
+                m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_CFW_LOCATION_CHANGED));
             }
         }
     }
 
-    if (evt.name == wxT("appmain.view_switcher.query_available_views"))
+    if (evt.name == FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_QUERY_AVAILABLE_VIEW)
     {
         IDocumentSitePtr active_child;
         active_child = g_app->getMainFrame()->getActiveChild();
@@ -494,11 +494,11 @@ void SqlDoc::onFrameEvent(FrameworkEvent& evt)
                           (tabledoc_site == active_site) ? true : false);
         }
     }
-     else if (evt.name == wxT("appmain.view_switcher.active_view_changing"))
+     else if (evt.name == FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_ACTIVE_VIEW_CHANGING)
     {
         // the QueryDoc handles this case for us...
     }
-     else if (evt.name == wxT("appmain.view_switcher.active_view_changed"))
+     else if (evt.name == FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_ACTIVE_VIEW_CHANGED)
     {
         int id = (int)(evt.l_param);
         

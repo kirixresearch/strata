@@ -1523,7 +1523,7 @@ bool EditorDoc::loadFile(const wxString& _path)
     updateCaption();
 
     // fire this event so that the URL will be updated with the new path
-    m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
+    m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_CFW_LOCATION_CHANGED));
 
 
     setCurrentEolMode(value);
@@ -1889,7 +1889,7 @@ bool EditorDoc::doSave()
             g_app->getAppController()->refreshDbDoc();
 
             // fire this event so that the URL will be updated with the new path
-            m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
+            m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_CFW_LOCATION_CHANGED));
 
             return true;
         }
@@ -1919,7 +1919,7 @@ bool EditorDoc::doSave()
             g_app->getAppController()->refreshDbDoc();
             
             // fire this event so that the URL will be updated with the new path
-            m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
+            m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_CFW_LOCATION_CHANGED));
 
             return true;
         }
@@ -1962,7 +1962,7 @@ void EditorDoc::onStatusBarItemLeftDblClick(IStatusBarItemPtr item)
 void EditorDoc::onFrameEvent(FrameworkEvent& evt)
 {
     // if a file is renamed, update this file with the new file path
-    if (evt.name == wxT("treepanel.ofsFileRenamed"))
+    if (evt.name == FRAMEWORK_EVT_TREEPANEL_OFS_FILE_RENAMED)
     {
         if (evt.s_param == m_path)
         {
@@ -1974,11 +1974,11 @@ void EditorDoc::onFrameEvent(FrameworkEvent& evt)
             {
                 // fire this event so that the URL combobox will be updated
                 // with the new path if this is the active child
-                m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
+                m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_CFW_LOCATION_CHANGED));
             }
         }
     }
-     else if (evt.name == wxT("appmain.find_panel.query_find_value"))
+     else if (evt.name == FRAMEWORK_EVT_APPMAIN_FIND_PANEL_QUERY_FIND_VALUE)
     {
         wxString text = m_text->GetSelectedText();
         if (text.Length() > 0 && text.Find(wxT('\n')) == wxNOT_FOUND)
@@ -1987,7 +1987,7 @@ void EditorDoc::onFrameEvent(FrameworkEvent& evt)
             *val = text;
         }
     }
-     else if (evt.name == wxT("appmain.preferencesSaved"))
+     else if (evt.name == FRAMEWORK_EVT_APPMAIN_PREFERENCES_SAVED)
     {
         refreshControlPreferences();
     }

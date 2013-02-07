@@ -668,7 +668,7 @@ bool TableDoc::onSiteClosing(bool force)
 
 
     // let the column props (dynamic) field panel know that we are closing
-    FrameworkEvent* e = new FrameworkEvent(wxT("tabledoc.onSiteClosing"), (long)(ITableDoc*)this);
+    FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_ON_SITE_CLOSING, (long)(ITableDoc*)this);
     m_frame->sendEvent(e);
 
 
@@ -748,7 +748,7 @@ void TableDoc::onStatusBarItemLeftDblClick(IStatusBarItemPtr item)
 
 void TableDoc::onFrameEvent(FrameworkEvent& evt)
 {
-    if (evt.name == wxT("tabledoc.doViewReload") &&
+    if (evt.name == FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD &&
         evt.l_param != (unsigned long)this)
     {
         TableDoc* td1 = (TableDoc*)evt.l_param;
@@ -773,11 +773,11 @@ void TableDoc::onFrameEvent(FrameworkEvent& evt)
 
     }
      else if (evt.name == wxT("tabledoc.doReloadSettings") ||
-              evt.name == wxT("appmain.preferencesSaved"))
+              evt.name == FRAMEWORK_EVT_APPMAIN_PREFERENCES_SAVED)
     {
         reloadSettings(true);
     }
-     else if (evt.name == wxT("tabledoc.structureModified"))
+     else if (evt.name == FRAMEWORK_EVT_TABLEDOC_STRUCTURE_MODIFIED)
     {
         if (getEnabled())
         {
@@ -792,7 +792,7 @@ void TableDoc::onFrameEvent(FrameworkEvent& evt)
             refreshActiveView();
         }
     }
-     else if (evt.name == wxT("treepanel.ofsFileRenamed"))
+     else if (evt.name == FRAMEWORK_EVT_TREEPANEL_OFS_FILE_RENAMED)
     {
         updateCaption();
         
@@ -801,14 +801,14 @@ void TableDoc::onFrameEvent(FrameworkEvent& evt)
         {
             // fire this event so that the URL combobox will be updated
             // with the new path if this is the active child
-            m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
+            m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_CFW_LOCATION_CHANGED));
         }
     }
-     else if (evt.name == wxT("appmain.relationshipsUpdated"))
+     else if (evt.name == FRAMEWORK_EVT_APPMAIN_RELATIONSHIPS_UPDATED)
     {
         m_grid->refresh(kcl::Grid::refreshAll);
     }
-     else if (evt.name == wxT("appmain.view_switcher.query_available_views"))
+     else if (evt.name == FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_QUERY_AVAILABLE_VIEW)
     {
         IDocumentSitePtr active_child;
         active_child = g_app->getMainFrame()->getActiveChild();
@@ -876,7 +876,7 @@ void TableDoc::onFrameEvent(FrameworkEvent& evt)
         list->addItem(ID_View_SwitchToLayoutView, _("Table View"),
                       (m_doc_site == active_site) ? true : false);
     }
-     else if (evt.name == wxT("appmain.view_switcher.active_view_changed"))
+     else if (evt.name == FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_ACTIVE_VIEW_CHANGED)
     {
         int id = (int)(evt.l_param);
         
@@ -2469,7 +2469,7 @@ void TableDoc::setEnabled(bool new_val)
 
     m_grid->refresh(kcl::Grid::refreshAll);
 
-    m_frame->postEvent(new FrameworkEvent(wxT("tabledoc.enabledStateChanged")));
+    m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_ENABLED_STATE_CHANGED));
     wxTheApp->ProcessIdle();
 }
 
@@ -2960,10 +2960,10 @@ void TableDoc::insertColumnSeparator(int insert_pos)
 
     m_grid->refresh(kcl::Grid::refreshAll);
 
-    m_frame->postEvent(new FrameworkEvent(wxT("tabledoc.viewModified"), 0));
+    m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_VIEW_MODIFIED, 0));
 
     // update other windows that are showing the same view
-    FrameworkEvent* e = new FrameworkEvent(wxT("tabledoc.doViewReload"),
+    FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD,
                                            (unsigned long)this);
     e->l_param2 = (unsigned long)m_active_view.p;
     m_frame->postEvent(e);
@@ -3016,10 +3016,10 @@ void TableDoc::insertColumnInternal(int insert_pos,
     if (refresh)
         m_grid->refresh(kcl::Grid::refreshAll);
 
-    m_frame->postEvent(new FrameworkEvent(wxT("tabledoc.viewModified"), 0));
+    m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_VIEW_MODIFIED, 0));
 
     // update other windows that are showing the same view
-    FrameworkEvent* e = new FrameworkEvent(wxT("tabledoc.doViewReload"),
+    FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD,
                                           (unsigned long)this);
     e->l_param2 = (unsigned long)m_active_view.p;
     m_frame->postEvent(e);
@@ -3141,7 +3141,7 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
         insertColumn(insert_pos, column_name);
 
         // let other windows know that the structure was modified
-        FrameworkEvent* evt = new FrameworkEvent(wxT("tabledoc.structureModified"));
+        FrameworkEvent* evt = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_STRUCTURE_MODIFIED);
         evt->s_param = m_dbpath;
         m_frame->postEvent(evt);
     }
@@ -3155,10 +3155,10 @@ void TableDoc::hideColumn(int idx)
     m_grid->hideColumn(idx);
     m_active_view->deleteColumn(idx);
     m_grid->refresh(kcl::Grid::refreshAll);
-    m_frame->postEvent(new FrameworkEvent(wxT("tabledoc.viewModified"), 0));
+    m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_VIEW_MODIFIED, 0));
 
     // update other windows that are showing the same view
-    FrameworkEvent* e = new FrameworkEvent(wxT("tabledoc.doViewReload"),
+    FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD,
                                            (unsigned long)this);
     e->l_param2 = (unsigned long)m_active_view.p;
     m_frame->postEvent(e);
@@ -3287,7 +3287,7 @@ void TableDoc::onModifyStructJobFinished(IJobPtr job)
     // unlock this window
     m_enabled = true;
     m_grid->setVisibleState(kcl::Grid::stateVisible);
-    m_frame->postEvent(new FrameworkEvent(wxT("tabledoc.enabledStateChanged")));
+    m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_ENABLED_STATE_CHANGED));
 
     createModel();
     m_grid->setModel(m_grid_model);
@@ -3352,10 +3352,10 @@ void TableDoc::onModifyStructJobFinished(IJobPtr job)
     // write out all of changes
     m_model->writeObject(m_active_view);
 
-    m_frame->postEvent(new FrameworkEvent(wxT("tabledoc.viewModified"), 0));
+    m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_VIEW_MODIFIED, 0));
 
     // update other windows that are showing the same view
-    FrameworkEvent* e = new FrameworkEvent(wxT("tabledoc.doViewReload"),
+    FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD,
                                    (unsigned long)this);
     e->l_param2 = (unsigned long)m_active_view.p;
     m_frame->postEvent(e);
@@ -3364,7 +3364,7 @@ void TableDoc::onModifyStructJobFinished(IJobPtr job)
     g_app->getAppController()->updateQuickFilterToolBarItem();
     
     // let other windows know that the structure was modified
-    FrameworkEvent* evt = new FrameworkEvent(wxT("tabledoc.structureModified"));
+    FrameworkEvent* evt = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_STRUCTURE_MODIFIED);
     evt->s_param = m_dbpath;
     m_frame->postEvent(evt);
 }
@@ -4082,7 +4082,7 @@ void TableDoc::onGridCursorMove(kcl::GridEvent& evt)
 {
     if (evt.GetColumn() != evt.GetDestinationColumn())
     {
-        m_frame->postEvent(new FrameworkEvent(wxT("tabledoc.cursorColumnChanged")));
+        m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_CURSOR_COLUMN_CHANGED));
     }
 
     if (evt.GetRow() != evt.GetDestinationRow())
@@ -4090,7 +4090,7 @@ void TableDoc::onGridCursorMove(kcl::GridEvent& evt)
         updateStatusBar(false);
         updateChildWindows();
 
-        m_frame->postEvent(new FrameworkEvent(wxT("tabledoc.cursorRowChanged")));
+        m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_CURSOR_ROW_CHANGED));
     }
 }
 
@@ -4513,7 +4513,7 @@ void TableDoc::onGridColumnResize(kcl::GridEvent& evt)
 
     if (evt.GetUserEvent())
     {
-        FrameworkEvent* e = new FrameworkEvent(wxT("tabledoc.doViewReload"),
+        FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD,
                                        (unsigned long)this);
         e->l_param2 = (unsigned long)m_active_view.p;
         m_frame->postEvent(e);
@@ -4601,11 +4601,11 @@ void TableDoc::onGridColumnMove(kcl::GridEvent& evt)
 
     m_active_view->moveColumn(evt.GetColumn(), evt.GetDestinationColumn());
 
-    e = new FrameworkEvent(wxT("tabledoc.viewModified"), 0);
+    e = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_VIEW_MODIFIED, 0);
     e->s_param = wxT("colmove");
     m_frame->postEvent(e);
 
-    e = new FrameworkEvent(wxT("tabledoc.doViewReload"), (unsigned long)this);
+    e = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD, (unsigned long)this);
     e->l_param2 = (unsigned long)m_active_view.p;
     m_frame->postEvent(e);
 }
@@ -5286,7 +5286,7 @@ void TableDoc::onCreateDynamicFieldCancelled(ColPropsPanel* panel)
         m_grid->refresh(kcl::Grid::refreshAll);
 
         // let other windows know that the structure was modified
-        FrameworkEvent* evt = new FrameworkEvent(wxT("tabledoc.structureModified"));
+        FrameworkEvent* evt = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_STRUCTURE_MODIFIED);
         evt->s_param = m_dbpath;
         m_frame->postEvent(evt);
     }
@@ -5959,7 +5959,7 @@ void TableDoc::deleteSelectedColumns()
         }
 
         // let other windows know that the structure was modified
-        FrameworkEvent* evt = new FrameworkEvent(wxT("tabledoc.structureModified"));
+        FrameworkEvent* evt = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_STRUCTURE_MODIFIED);
         evt->s_param = m_dbpath;
         m_frame->postEvent(evt);
     }
@@ -7739,7 +7739,7 @@ void TableDoc::onQuickFilter(wxCommandEvent& evt)
 
     // running a quick filter needs to add the value
     // to the find/filter combo control dropdown
-    FrameworkEvent* cfw_evt = new FrameworkEvent(wxT("appmain.addFindComboItem"));
+    FrameworkEvent* cfw_evt = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_ADD_FIND_COMBO_ITEM);
     cfw_evt->s_param = val;
     g_app->getMainFrame()->postEvent(cfw_evt);
 }
@@ -8506,7 +8506,7 @@ void TableDoc::setActiveView(ITableDocViewPtr active_view)
 
     // fire a signal that indicates that the view has been set
     if (m_frame)
-        m_frame->postEvent(new FrameworkEvent(wxT("tabledoc.viewChanged")));
+        m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_VIEW_CHANGED));
 }
 
 ITableDocViewPtr TableDoc::getActiveView()

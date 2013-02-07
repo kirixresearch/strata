@@ -2450,7 +2450,7 @@ void AppController::onViewChanged(wxCommandEvent& evt)
     int command = evt.GetId();
     if (command != 0)
     {
-        e1 = new FrameworkEvent(wxT("appmain.view_switcher.active_view_changing"));
+        e1 = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_ACTIVE_VIEW_CHANGING);
         e1->l_param = (unsigned long)command;
         e1->l_param2 = (unsigned long)(&is_allowed);
         main_frame->sendEvent(e1);
@@ -2463,7 +2463,7 @@ void AppController::onViewChanged(wxCommandEvent& evt)
     // switch to the view that was selected
     if (command != 0)
     {    
-        e2 = new FrameworkEvent(wxT("appmain.view_switcher.active_view_changed"));
+        e2 = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_ACTIVE_VIEW_CHANGED);
         e2->l_param = (unsigned long)command;
         main_frame->sendEvent(e2);
     }
@@ -2479,7 +2479,7 @@ void AppController::doViewSwitcher(bool drop_down_menu)
 
     // get the list of available views from the active document
     ViewSwitcherList* list = new ViewSwitcherList;
-    e1 = new FrameworkEvent(wxT("appmain.view_switcher.query_available_views"));
+    e1 = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_QUERY_AVAILABLE_VIEW);
     e1->o_param = (wxObject*)list;
     main_frame->sendEvent(e1);
     
@@ -2558,7 +2558,7 @@ void AppController::doViewSwitcher(bool drop_down_menu)
     // switch to the view that was selected
     if (command != 0)
     {
-        e2 = new FrameworkEvent(wxT("appmain.view_switcher.active_view_changing"));
+        e2 = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_ACTIVE_VIEW_CHANGING);
         e2->l_param = (unsigned long)command;
         e2->l_param2 = (unsigned long)(&is_allowed);
         main_frame->sendEvent(e2);
@@ -2571,7 +2571,7 @@ void AppController::doViewSwitcher(bool drop_down_menu)
     // switch to the view that was selected
     if (command != 0)
     {
-        e3 = new FrameworkEvent(wxT("appmain.view_switcher.active_view_changed"));
+        e3 = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_ACTIVE_VIEW_CHANGED);
         e3->l_param = (unsigned long)command;
         main_frame->sendEvent(e3);
     }
@@ -2895,7 +2895,7 @@ void AppController::onFindPrev(wxCommandEvent& evt)
         return;
     
     // fire an event to add this string to the find combobox dropdowns
-    FrameworkEvent* cfw_evt = new FrameworkEvent(wxT("appmain.addFindComboItem"));
+    FrameworkEvent* cfw_evt = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_ADD_FIND_COMBO_ITEM);
     cfw_evt->s_param = find_str;
     g_app->getMainFrame()->postEvent(cfw_evt);
 
@@ -2928,7 +2928,7 @@ void AppController::onFindNext(wxCommandEvent& evt)
         return;
     
     // fire an event to add this string to the find combobox dropdowns
-    FrameworkEvent* cfw_evt = new FrameworkEvent(wxT("appmain.addFindComboItem"));
+    FrameworkEvent* cfw_evt = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_ADD_FIND_COMBO_ITEM);
     cfw_evt->s_param = find_str;
     g_app->getMainFrame()->postEvent(cfw_evt);
 
@@ -3443,7 +3443,7 @@ void AppController::onStatusBarRefresh()
 
 void AppController::onFrameEvent(FrameworkEvent& evt)
 {
-    if (evt.name == wxT("appmain.addFindComboItem"))
+    if (evt.name == FRAMEWORK_EVT_APPMAIN_ADD_FIND_COMBO_ITEM)
     {
         wxString str = evt.s_param;
         wxBitmap bitmap = GETBMP(gf_find_16);
@@ -3458,17 +3458,17 @@ void AppController::onFrameEvent(FrameworkEvent& evt)
         // update the standard toolbar
         m_project_toolbar->m_find->SetValue(str);
     }
-     else if (evt.name == wxT("cfw.locationChanged"))
+     else if (evt.name == FRAMEWORK_EVT_CFW_LOCATION_CHANGED)
     {
         updateURLToolbar();
     }
-     else if (evt.name == wxT("appmain.docBitmapUpdated"))
+     else if (evt.name == FRAMEWORK_EVT_APPMAIN_DOC_BITMAP_UPDATED)
     {
         wxBitmap bitmap = *((wxBitmap*)evt.o_param);
         int idx = m_project_toolbar->m_url->GetSelection();
         m_project_toolbar->m_url->SetItemBitmap(idx, bitmap);
     }
-     else if (evt.name == wxT("appmain.preferencesSaved"))
+     else if (evt.name == FRAMEWORK_EVT_APPMAIN_PREFERENCES_SAVED)
     {
         doPreferenceRefresh();
     }
@@ -6870,7 +6870,7 @@ void AppController::showFindPanel()
         
         wxString val;
         
-        FrameworkEvent* e = new FrameworkEvent(wxT("appmain.find_panel.query_find_value"));
+        FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_FIND_PANEL_QUERY_FIND_VALUE);
         e->l_param = (unsigned long)(&val);
         g_app->getMainFrame()->sendEvent(e);
         
@@ -6916,7 +6916,7 @@ void AppController::showFindInFilesPanel()
         
         wxString val;
         
-        FrameworkEvent* e = new FrameworkEvent(wxT("appmain.find_panel.query_find_value"));
+        FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_FIND_PANEL_QUERY_FIND_VALUE);
         e->l_param = (unsigned long)(&val);
         g_app->getMainFrame()->sendEvent(e);
         
@@ -6964,7 +6964,7 @@ void AppController::showReplacePanel()
         
         wxString val;
         
-        FrameworkEvent* e = new FrameworkEvent(wxT("appmain.find_panel.query_find_value"));
+        FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_FIND_PANEL_QUERY_FIND_VALUE);
         e->l_param = (unsigned long)(&val);
         g_app->getMainFrame()->sendEvent(e);
         
@@ -7664,7 +7664,7 @@ void AppController::toggleToolbar(wxWindowID id)
     if (id == ID_Frame_ToggleFormatToolbar)
     {
         // let everyone know we've toggled the format toolbar on or off
-        FrameworkEvent* e = new FrameworkEvent(wxT("appmain.format_toolbar.toggled"));
+        FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_FORMAT_TOOLBAR_TOGGLED);
         if (wnd->IsShown())
             e->l_param = 1;
              else

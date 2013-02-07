@@ -1493,7 +1493,7 @@ void TransformationDoc::onDeletedRows(std::vector<int> rows)
 
 void TransformationDoc::onFrameEvent(FrameworkEvent& evt)
 {
-    if (evt.name == wxT("appmain.view_switcher.active_view_changing"))
+    if (evt.name == FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_ACTIVE_VIEW_CHANGING)
     {
         int id = (int)(evt.l_param);
         

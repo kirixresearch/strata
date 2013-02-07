@@ -532,7 +532,7 @@ bool FindPanel::onSiteClosing(bool force)
 
 void FindPanel::onFrameEvent(FrameworkEvent& evt)
 {
-    if (evt.name == wxT("appmain.addFindComboItem"))
+    if (evt.name == FRAMEWORK_EVT_APPMAIN_ADD_FIND_COMBO_ITEM)
     {
         wxString val = evt.s_param;
         
@@ -704,7 +704,7 @@ void FindPanel::onFindPrevNext(wxCommandEvent& evt)
     wxString find_val = m_find_combo->GetValue();
     
     // fire an event to add this string to the find combobox dropdowns
-    FrameworkEvent* cfw_evt = new FrameworkEvent(wxT("appmain.addFindComboItem"));
+    FrameworkEvent* cfw_evt = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_ADD_FIND_COMBO_ITEM);
     cfw_evt->s_param = find_val;
     g_app->getMainFrame()->postEvent(cfw_evt);
 
@@ -795,7 +795,7 @@ void FindPanel::onReplace(wxCommandEvent& evt)
     wxString replace_val = m_replace_combo->GetValue();
     
     // fire an event to add this string to the find combobox dropdowns
-    FrameworkEvent* cfw_evt = new FrameworkEvent(wxT("appmain.addFindComboItem"));
+    FrameworkEvent* cfw_evt = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_ADD_FIND_COMBO_ITEM);
     cfw_evt->s_param = find_val;
     g_app->getMainFrame()->postEvent(cfw_evt);
     
@@ -824,7 +824,7 @@ void FindPanel::onReplaceAll(wxCommandEvent& evt)
     wxString replace_val = m_replace_combo->GetValue();
     
     // fire an event to add this string to the find combobox dropdowns
-    FrameworkEvent* cfw_evt = new FrameworkEvent(wxT("appmain.addFindComboItem"));
+    FrameworkEvent* cfw_evt = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_ADD_FIND_COMBO_ITEM);
     cfw_evt->s_param = find_val;
     g_app->getMainFrame()->postEvent(cfw_evt);
     
@@ -890,7 +890,7 @@ void FindComboControl::onFind(wxCommandEvent& evt)
     
     // fire an event to add this string to the find combobox dropdowns
     
-    FrameworkEvent* cfw_evt = new FrameworkEvent(wxT("appmain.addFindComboItem"));
+    FrameworkEvent* cfw_evt = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_ADD_FIND_COMBO_ITEM);
     cfw_evt->s_param = val;
     g_app->getMainFrame()->postEvent(cfw_evt);
 

@@ -1493,7 +1493,7 @@ void QueryDoc::updateStatusBar()
 
 void QueryDoc::updateColumnList()
 {
-    g_app->getMainFrame()->postEvent(new FrameworkEvent(wxT("ColumnListPanel.update")));
+    g_app->getMainFrame()->postEvent(new FrameworkEvent(FRAMEWORK_EVT_COLUMNLISTPANEL_UPDATE));
 }
 
 void QueryDoc::updateJoinStructure(const wxString& left_path)
@@ -1923,7 +1923,7 @@ bool QueryDoc::load(const wxString& path)
 
     // fire this event so that the URL will be updated with the new path
     if (m_frame.isOk())
-        m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
+        m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_CFW_LOCATION_CHANGED));
 
     // reset the changed flag and return
     setChanged(false);
@@ -1934,7 +1934,7 @@ bool QueryDoc::load(const wxString& path)
 void QueryDoc::onFrameEvent(FrameworkEvent& evt)
 {
     // if a file is renamed, update this file with the new file path
-    if (evt.name == wxT("treepanel.ofsFileRenamed"))
+    if (evt.name == FRAMEWORK_EVT_TREEPANEL_OFS_FILE_RENAMED)
     {
         if (evt.s_param == m_path)
         {
@@ -1949,12 +1949,12 @@ void QueryDoc::onFrameEvent(FrameworkEvent& evt)
             {
                 // fire this event so that the URL combobox will be updated
                 // with the new path if this is the active child
-                m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
+                m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_CFW_LOCATION_CHANGED));
             }
         }
     }
 
-    if (evt.name == wxT("appmain.view_switcher.query_available_views"))
+    if (evt.name == FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_QUERY_AVAILABLE_VIEW)
     {
         IDocumentSitePtr active_child;
         active_child = g_app->getMainFrame()->getActiveChild();
@@ -1994,7 +1994,7 @@ void QueryDoc::onFrameEvent(FrameworkEvent& evt)
                           (tabledoc_site == active_child) ? true : false);
         }
     }
-     else if (evt.name == wxT("appmain.view_switcher.active_view_changing"))
+     else if (evt.name == FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_ACTIVE_VIEW_CHANGING)
     {
         int id = (int)(evt.l_param);
         
@@ -2021,7 +2021,7 @@ void QueryDoc::onFrameEvent(FrameworkEvent& evt)
             return;
         }
     }
-     else if (evt.name == wxT("appmain.view_switcher.active_view_changed"))
+     else if (evt.name == FRAMEWORK_EVT_APPMAIN_VIEW_SWITCHER_ACTIVE_VIEW_CHANGED)
     {
         int id = (int)(evt.l_param);
         
@@ -2174,7 +2174,7 @@ bool QueryDoc::doSave(bool force)
 
         // fire this event so that the URL will be updated with the new path
         if (m_frame.isOk())
-            m_frame->postEvent(new FrameworkEvent(wxT("cfw.locationChanged")));
+            m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_CFW_LOCATION_CHANGED));
     }
     
     // put the work from the UI into the template

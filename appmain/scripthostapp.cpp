@@ -1994,7 +1994,7 @@ void HostApp::onActiveChildChanged(IDocumentSitePtr doc_site)
 
 void HostApp::onFrameEvent(FrameworkEvent& evt)
 {
-    if (evt.name == wxT("consolepanel.command"))
+    if (evt.name == FRAMEWORK_EVT_CONSOLEPANEL_COMMAND)
     {
         wxString console_command = evt.s_param;
 
@@ -2006,7 +2006,7 @@ void HostApp::onFrameEvent(FrameworkEvent& evt)
         return;
     }
 
-    if (evt.name == wxT("cfw.locationChanged"))
+    if (evt.name == FRAMEWORK_EVT_CFW_LOCATION_CHANGED)
     {
         IDocumentSitePtr doc_site = m_frame->getActiveChild();
         if (doc_site.isOk())

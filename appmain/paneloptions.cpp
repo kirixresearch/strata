@@ -527,7 +527,7 @@ public:
         m_toolbar_style->SetSelection(pref2toolbarChoice(m_pi->general_toolbar_style));
         
         // do preference refresh
-        FrameworkEvent* e = new FrameworkEvent(wxT("appmain.preferencesSaved"));
+        FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_PREFERENCES_SAVED);
         g_app->getMainFrame()->sendEvent(e);
     }
     
@@ -2657,7 +2657,7 @@ void OptionsPanel::savePrefs(PrefInfo* info)
     
     prefs->flush();
     
-    FrameworkEvent* e = new FrameworkEvent(wxT("appmain.preferencesSaved"));
+    FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_PREFERENCES_SAVED);
     g_app->getMainFrame()->sendEvent(e);
 }
 

@@ -141,10 +141,10 @@ bool ColumnListPanel::onSiteClosing(bool force)
 
 void ColumnListPanel::onFrameEvent(FrameworkEvent& evt)
 {
-    if (evt.name == wxT("tabledoc.structureModified") ||
-        evt.name == wxT("appmain.relationshipsUpdated") ||
-        evt.name == wxT("tabledoc.viewChanged") ||
-        evt.name == wxT("ColumnListPanel.update"))
+    if (evt.name == FRAMEWORK_EVT_TABLEDOC_STRUCTURE_MODIFIED ||
+        evt.name == FRAMEWORK_EVT_APPMAIN_RELATIONSHIPS_UPDATED ||
+        evt.name == FRAMEWORK_EVT_TABLEDOC_VIEW_CHANGED ||
+        evt.name == FRAMEWORK_EVT_COLUMNLISTPANEL_UPDATE)
     {
         m_grid->clearSelection();
         populate();
@@ -152,7 +152,7 @@ void ColumnListPanel::onFrameEvent(FrameworkEvent& evt)
 
     // populate if the column ordering was changed (insert or delete)...
     // don't populate if the column was just resized
-    if (evt.name == wxT("tabledoc.viewModified") && evt.l_param == 0)
+    if (evt.name == FRAMEWORK_EVT_TABLEDOC_VIEW_MODIFIED && evt.l_param == 0)
     {
         if (evt.s_param != wxT("colmove"))
         {

@@ -287,7 +287,7 @@ void ColPropsPanel::onSiteClose(IDocumentSitePtr site)
 
 void ColPropsPanel::onFrameEvent(FrameworkEvent& evt)
 {
-    if (evt.name == wxT("tabledoc.onSiteClosing"))
+    if (evt.name == FRAMEWORK_EVT_TABLEDOC_ON_SITE_CLOSING)
     {
         if (m_tabledoc_site.isOk())
         {
@@ -1048,7 +1048,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
     closeSite();
 
     // let other windows know that the structure was modified
-    FrameworkEvent* evt = new FrameworkEvent(wxT("tabledoc.structureModified"));
+    FrameworkEvent* evt = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_STRUCTURE_MODIFIED);
     evt->s_param = towx(m_set->getObjectPath());
     g_app->getMainFrame()->postEvent(evt);
 

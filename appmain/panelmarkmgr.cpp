@@ -234,7 +234,7 @@ void MarkMgrPanel::onActiveChildChanged(IDocumentSitePtr doc_site)
 
 void MarkMgrPanel::onFrameEvent(FrameworkEvent& evt)
 {
-    if (evt.name == wxT("tabledoc.markCreated"))
+    if (evt.name == FRAMEWORK_EVT_TABLEDOC_MARK_CREATED)
     {
         Freeze();
         populate(false);

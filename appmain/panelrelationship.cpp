@@ -37,7 +37,7 @@ RelDiagramWatcher::RelDiagramWatcher()
 
 void RelDiagramWatcher::onFrameEvent(FrameworkEvent& evt)
 {
-    if (evt.name == wxT("treepanel.ofsFileRenamed"))
+    if (evt.name == FRAMEWORK_EVT_TREEPANEL_OFS_FILE_RENAMED)
     {
         onSetRenamed(evt.s_param, evt.s_param2);
 
@@ -49,7 +49,7 @@ void RelDiagramWatcher::onFrameEvent(FrameworkEvent& evt)
             panel->onSetRenamed(evt.s_param, evt.s_param2);
         }
     }
-     else if (evt.name == wxT("appmain.tableStructureModified"))
+     else if (evt.name == FRAMEWORK_EVT_APPMAIN_TABLE_STRUCTURE_MODIFIED)
     {
         IDocumentSitePtr site;
         site = g_app->getMainFrame()->lookupSite(wxT("RelationshipsPanel"));
@@ -59,7 +59,7 @@ void RelDiagramWatcher::onFrameEvent(FrameworkEvent& evt)
             panel->onSetStructureChanged(evt.s_param);
         }
     }
-     else if (evt.name == wxT("tabledoc.structureModified"))
+     else if (evt.name == FRAMEWORK_EVT_TABLEDOC_STRUCTURE_MODIFIED)
     {
         IDocumentSitePtr site;
         site = g_app->getMainFrame()->lookupSite(wxT("RelationshipsPanel"));
@@ -470,7 +470,7 @@ static void addRelationships(UpdateInfo* info)
                                              towstr(it->right_expr));
     }
 
-    g_app->getMainFrame()->postEvent(new FrameworkEvent(wxT("appmain.relationshipsUpdated")));
+    g_app->getMainFrame()->postEvent(new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_RELATIONSHIPS_UPDATED));
 
     // update the relationship syncing (if it was enabled)
     int synctype = g_app->getAppController()->getRelationshipSync();

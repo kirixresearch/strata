@@ -33,7 +33,7 @@ const wxString FRAMEWORK_EVT_CFW_LOCATION_CHANGED                       = wxT("c
 const wxString FRAMEWORK_EVT_CFW_PROPERTIES_CHANGED                     = wxT("cfw.propertiesChanged");
 
 const wxString FRAMEWORK_EVT_COLUMNLISTPANEL_UPDATE                     = wxT("ColumnListPanel.update");
-const wxString FRAMEWORK_EVT_CONSOLPANEL_COMMAND                        = wxT("consolepanel.command");
+const wxString FRAMEWORK_EVT_CONSOLEPANEL_COMMAND                       = wxT("consolepanel.command");
 
 const wxString FRAMEWORK_EVT_TABLEDOC_CURSOR_COLUMN_CHANGED             = wxT("tabledoc.cursorColumnChanged");
 const wxString FRAMEWORK_EVT_TABLEDOC_CURSOR_ROW_CHANGED                = wxT("tabledoc.cursorRowChanged");
