@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="alter.cpp" />
     <ClCompile Include="append.cpp" />
     <ClCompile Include="divide.cpp" />
     <ClCompile Include="group.cpp" />
@@ -34,6 +35,7 @@
     <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="alter.h" />
     <ClInclude Include="append.h" />
     <ClInclude Include="divide.h" />
     <ClInclude Include="group.h" />

@@ -11,6 +11,7 @@
 
 #include "jobspch.h"
 #include "jobinfo.h"
+#include "alter.h"
 #include "append.h"
 #include "divide.h"
 #include "index.h"
@@ -24,6 +25,8 @@ namespace jobs
 
 IJobPtr createJob(const std::wstring job_class)
 {
+    if (job_class == L"application/vnd.kx.alter-job")
+        return static_cast<IJob*>(new AlterJob);
     if (job_class == L"application/vnd.kx.append-job")
         return static_cast<IJob*>(new AppendJob);
     if (job_class == L"application/vnd.kx.divide-job")
