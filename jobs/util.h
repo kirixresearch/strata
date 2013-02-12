@@ -22,6 +22,9 @@ namespace jobs
 
 void vectorToDelimitedString(const std::vector<std::wstring>& vec, std::wstring& str, wchar_t delimiter = ',');
 
+unsigned int toDbType(const std::wstring& str);
+std::wstring fromDbType(unsigned int type);
+
 
 };  // namespace jobs
 
