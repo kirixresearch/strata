@@ -3303,10 +3303,11 @@ static void extractAlterJobInfo(kl::JsonNode params,
             if (it->childExists("params"))
             {
                 if (it->getChild("params").childExists("name"))
+                {
                     p.second = towx(it->getChild("params").getChild("name"));
+                    to_rename.push_back(p);
+                }
             }
-
-            to_rename.push_back(p);
         }
 
         if (action == L"add")
@@ -3319,10 +3320,11 @@ static void extractAlterJobInfo(kl::JsonNode params,
             if (it->childExists("params"))
             {
                 if (it->getChild("params").childExists("position"))
+                {
                     p.second = it->getChild("params").getChild("position").getInteger();
+                    to_insert.push_back(p);
+                }
             }
-
-            to_insert.push_back(p);
         }
 
         if (action == L"drop")
@@ -5577,8 +5579,10 @@ void TableDoc::onMakeStatic(wxCommandEvent& evt)
     if (!g_app->getAppController()->doReadOnlyCheck())
         return;
 
-    // find out which columns are selected
+    // get the current set path
+    wxString object_path = m_set->getObjectPath();
 
+    // find out which columns are selected
     kcl::IModelPtr model = m_grid->getModel();
     ITangoGridModelPtr tmodel = model;
 
@@ -5651,6 +5655,39 @@ void TableDoc::onMakeStatic(wxCommandEvent& evt)
 
     closeSet();
 
+
+    // set up the job from the info we gathered
+    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.alter-job");
+
+    kl::JsonNode params;
+    params["input"].setString(towstr(object_path));
+    params["actions"].setArray();
+
+    for (it = cols.begin(); it != cols.end(); ++it)
+    {
+        kl::JsonNode node = params["actions"].appendElement();
+        node["action"].setString(L"modify");
+        node["column"].setString(towstr(*it));
+        node["params"].setObject();
+
+        kl::JsonNode modify_param = node["params"];
+        modify_param["expression"].setNull();
+    }
+
+
+    // create the job
+    wxString title = wxString::Format(_("Modifying Structure of '%s'"),
+                                        getCaption().c_str());
+
+    job->getJobInfo()->setTitle(towstr(title));
+    job->setParameters(params.toString());
+
+    job->sigJobFinished().connect(this, &TableDoc::onAlterJobFinished);
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
+
+
+
+/*
     // create a job and send it to the queue
 
     wxString title = wxString::Format(_("Modifying Structure of '%s'"),
@@ -5670,6 +5707,7 @@ void TableDoc::onMakeStatic(wxCommandEvent& evt)
     connectModifyStructJob(job);
 
     g_app->getJobQueue()->addJob(job, jobStateRunning);
+*/
 }
 
 
