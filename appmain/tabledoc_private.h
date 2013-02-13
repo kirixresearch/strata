@@ -270,10 +270,8 @@ private:
     void onSortFilterJobFinished(IJobPtr query_job);
     void onSetOrderFinished(IJobPtr query_job);
     void onDeleteJobFinished(IJobPtr delete_job);
-    void onIndexJobFinished(IJobPtr index_job);
-    void onReplaceJobFinished(IJobPtr replace_job);
-    void onAppendRecordsFinished(IJobPtr append_job);
     void onModifyStructJobFinished(IJobPtr modify_job);
+    void onAlterJobFinished(jobs::IJobPtr job);
     void onEditDynamicFieldOk(ColPropsPanel* panel);
     void onCreateDynamicFieldOk(ColPropsPanel* panel);
     void onCreateDynamicFieldCancelled(ColPropsPanel* panel);

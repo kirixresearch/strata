@@ -315,7 +315,6 @@ static bool compareViews(ITableDocView* v1, ITableDocView* v2)
 
 
 
-
 // -- TableDoc class implementation --
 
 TableDoc::TableDoc()
@@ -3269,15 +3268,138 @@ void TableDoc::onDeleteJobFinished(IJobPtr delete_job)
     updateStatusBar();
 }
 
-void TableDoc::onReplaceJobFinished(IJobPtr replace_job)
+static void extractAlterJobInfo(kl::JsonNode params,
+                                wxString& input,
+                                std::vector<std::pair<wxString, wxString> >& to_rename,
+                                std::vector<std::pair<wxString,int> >& to_insert,
+                                std::vector<wxString>& to_delete)
 {
-    m_grid->refresh(kcl::Grid::refreshAll);
+    if (params.childExists("input"))
+        input = towx(params["input"]);
+
+    if (!params.childExists("actions"))
+        return;
+
+    kl::JsonNode node = params["actions"];
+    std::vector<kl::JsonNode> actions = node.getChildren();
+
+    std::vector<kl::JsonNode>::iterator it, it_end;
+    it_end = actions.end();
+
+    for (it = actions.begin(); it != actions.end(); ++it)
+    {
+        if (!it->childExists("action"))
+            continue;
+
+        std::wstring action = it->getChild("action");
+            
+        if (action == L"drop")
+        {
+            std::wstring column;
+            if (it->childExists("column"))
+                to_delete.push_back(towx(it->getChild("column")));
+        }
+
+        if (action == L"add")
+        {
+            // TODO: fill out
+        }
+
+        if (action == L"modify")
+        {
+            // TODO: fill out
+        }
+    }
 }
 
-void TableDoc::onAppendRecordsFinished(IJobPtr append_job)
+void TableDoc::onAlterJobFinished(jobs::IJobPtr job)
 {
-    m_grid->refresh(kcl::Grid::refreshAll);
+    // unlock this window
+    m_enabled = true;
+    m_grid->setVisibleState(kcl::Grid::stateVisible);
+    m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_ENABLED_STATE_CHANGED));
+
+    createModel();
+    m_grid->setModel(m_grid_model);
+
+
+    // get information about what happened to each of the columns in the job
+    std::vector<std::pair<wxString, wxString> > to_rename;
+    std::vector<std::pair<wxString,int> > to_insert;
+    std::vector<wxString> to_delete;
+    wxString input_path;
+
+    kl::JsonNode params;
+    params.fromString(job->getParameters());
+    extractAlterJobInfo(params, input_path, to_rename, to_insert, to_delete);
+
+
+    // rename the columns; note: for the rename to work, we have to do this
+    // after we have a grid model, but before we open the set since the
+    // rename operation needs a model, but opening a set goes "too far" and
+    // will try to refresh the view with the old names, causing them to be
+    // removed if they aren't in sync with the model
+    if (job->getJobInfo()->getState() == jobStateFinished)
+    {
+        std::vector<std::pair<wxString, wxString> >::iterator rename_iter;
+        for (rename_iter = to_rename.begin();
+             rename_iter != to_rename.end(); ++rename_iter)
+        {
+            onColumnNameChanged(rename_iter->first, rename_iter->second);
+        }
+    }
+
+    tango::ISetPtr action_set = g_app->getDatabase()->openSet(towstr(input_path));
+    open(action_set, xcm::null);
+
+    // remove the "Filtered" suffix
+    setCaption(wxEmptyString, wxEmptyString);
+    
+    if (job->getJobInfo()->getState() != jobStateFinished)
+        return;
+
+    // do inserts for each new field
+    std::vector<std::pair<wxString,int> >::iterator insert_iter;
+    for (insert_iter = to_insert.begin();
+         insert_iter != to_insert.end(); ++insert_iter)
+    {
+        insertColumnInternal(insert_iter->second,
+                             insert_iter->first, false, true);
+    }
+
+    // do deletes in the view
+    std::vector<wxString>::iterator delete_iter;
+    for (delete_iter = to_delete.begin();
+         delete_iter != to_delete.end(); ++delete_iter)
+    {
+        // delete each column in the view with this name
+        int view_idx = 0;
+        while (view_idx != -1)
+        {
+            view_idx = m_active_view->getColumnIdx(*delete_iter);
+            if (view_idx != -1)
+                m_active_view->deleteColumn(view_idx);
+        }
+    }
+
+    // write out all of changes
+    m_model->writeObject(m_active_view);
+
+    m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_VIEW_MODIFIED, 0));
+
+    // update other windows that are showing the same view
+    FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD,
+                                   (unsigned long)this);
+    e->l_param2 = (unsigned long)m_active_view.p;
+    m_frame->postEvent(e);
+    
     updateStatusBar();
+    g_app->getAppController()->updateQuickFilterToolBarItem();
+    
+    // let other windows know that the structure was modified
+    FrameworkEvent* evt = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_STRUCTURE_MODIFIED);
+    evt->s_param = m_dbpath;
+    m_frame->postEvent(evt);
 }
 
 void TableDoc::onModifyStructJobFinished(IJobPtr job)
@@ -5835,6 +5957,100 @@ void TableDoc::deleteSelectedRows()
 
 void TableDoc::deleteSelectedColumns()
 {
+    // read only check
+    if (!g_app->getAppController()->doReadOnlyCheck())
+        return;
+
+    wxString object_path = m_set->getObjectPath();
+    tango::IStructurePtr structure = m_iter->getSet()->getStructure();
+    tango::IColumnInfoPtr colinfo;
+
+    std::set<wxString> cols;
+    std::set<wxString>::iterator it;
+
+    int col_count = m_grid->getColumnCount();
+    int total_phys_fields_to_delete = 0;
+    int total_phys_fields = 0;
+    int i;
+
+    for (i = 0; i < col_count; ++i)
+    {
+        colinfo = structure->getColumnInfo(towstr(m_grid->getColumnCaption(i)));
+        if (colinfo.isNull())
+            continue;
+
+        if (m_grid->isColumnSelected(i))
+        {
+            cols.insert(towx(colinfo->getName()));
+
+            if (!colinfo->getCalculated())
+                total_phys_fields_to_delete++;
+        }
+
+        if (!colinfo->getCalculated())
+            total_phys_fields++;
+    }
+
+    // if we're trying to delete all fields, don't do anything
+    if (total_phys_fields_to_delete == (size_t)total_phys_fields)
+        return;
+
+    // show warning
+    wxString message = _("Performing this operation will permanently delete data.  Are you sure\nyou want to delete the following field(s):");
+    message += wxT("\n");
+
+    for (it = cols.begin(); it != cols.end(); ++it)
+    {
+        message += wxT("\n\t");
+        message += makeProperIfNecessary(*it);
+    }
+    
+    int res = wxMessageBox(message,
+                           APPLICATION_NAME,
+                           wxYES_NO |
+                           wxICON_EXCLAMATION |
+                           wxCENTER);
+
+    if (res != wxYES)
+        return;
+
+
+    // refresh the grid; if we're deleting physical columns, grey out
+    // the interface
+    m_grid->clearSelection();
+    m_grid->refresh(kcl::Grid::refreshAll);
+
+    if (total_phys_fields_to_delete > 0)
+        closeSet();
+
+
+    // set up the job from the info we gathered
+    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.alter-job");
+
+    kl::JsonNode params;
+    params["input"].setString(towstr(object_path));
+    params["actions"].setArray();
+
+    for (it = cols.begin(); it != cols.end(); ++it)
+    {
+        kl::JsonNode node = params["actions"].appendElement();
+        node["action"].setString(L"drop");
+        node["column"].setString(towstr(*it));
+    }
+
+
+    // create the job
+    wxString title = wxString::Format(_("Modifying Structure of '%s'"),
+                                        getCaption().c_str());
+
+    job->getJobInfo()->setTitle(towstr(title));
+    job->setParameters(params.toString());
+
+    job->sigJobFinished().connect(this, &TableDoc::onAlterJobFinished);
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
+
+
+/*
     tango::IStructurePtr structure = m_iter->getSet()->getStructure();
     tango::IColumnInfoPtr colinfo;
 
@@ -5967,6 +6183,7 @@ void TableDoc::deleteSelectedColumns()
 
     m_grid->clearSelection();
     m_grid->refresh(kcl::Grid::refreshAll);
+*/
 }
 
 bool TableDoc::deleteSelectedRowsColumns()
