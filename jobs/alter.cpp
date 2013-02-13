@@ -51,7 +51,8 @@ bool AlterJob::isInputValid()
                     "scale": <integer>,
                     "expression": <string> | null,  // note: null expression turns off expressions
                     "position": <integer>
-                }
+            },
+            ...
         ]
     }
 */
