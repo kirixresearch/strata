@@ -3292,22 +3292,44 @@ static void extractAlterJobInfo(kl::JsonNode params,
             continue;
 
         std::wstring action = it->getChild("action");
-            
+
+        if (action == L"modify")
+        {
+            std::pair<wxString,wxString> p;
+
+            if (it->childExists("column"))
+                p.first = towx(it->getChild("column"));
+
+            if (it->childExists("params"))
+            {
+                if (it->getChild("params").childExists("name"))
+                    p.second = towx(it->getChild("params").getChild("name"));
+            }
+
+            to_rename.push_back(p);
+        }
+
+        if (action == L"add")
+        {
+            std::pair<wxString,int> p;
+
+            if (it->childExists("column"))
+                p.first = towx(it->getChild("column"));
+
+            if (it->childExists("params"))
+            {
+                if (it->getChild("params").childExists("position"))
+                    p.second = it->getChild("params").getChild("position").getInteger();
+            }
+
+            to_insert.push_back(p);
+        }
+
         if (action == L"drop")
         {
             std::wstring column;
             if (it->childExists("column"))
                 to_delete.push_back(towx(it->getChild("column")));
-        }
-
-        if (action == L"add")
-        {
-            // TODO: fill out
-        }
-
-        if (action == L"modify")
-        {
-            // TODO: fill out
         }
     }
 }
