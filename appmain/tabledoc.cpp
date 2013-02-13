@@ -5684,30 +5684,6 @@ void TableDoc::onMakeStatic(wxCommandEvent& evt)
 
     job->sigJobFinished().connect(this, &TableDoc::onAlterJobFinished);
     g_app->getJobQueue()->addJob(job, jobStateRunning);
-
-
-
-/*
-    // create a job and send it to the queue
-
-    wxString title = wxString::Format(_("Modifying Structure of '%s'"),
-                                      getCaption().c_str());
-
-    ModifyStructJob* job = new ModifyStructJob;
-    job->getJobInfo()->setTitle(towstr(title));
-    
-    for (it = cols.begin(); it != cols.end(); ++it)
-    {
-        colinfo = structure->modifyColumn(towstr(*it));
-        colinfo->setCalculated(false);
-    }
-
-    job->setInstructions(action_set, structure);
-
-    connectModifyStructJob(job);
-
-    g_app->getJobQueue()->addJob(job, jobStateRunning);
-*/
 }
 
 
