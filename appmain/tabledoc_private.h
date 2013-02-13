@@ -366,7 +366,7 @@ private:
     void onSaveAsExternal(wxCommandEvent& evt);
     void onReload(wxCommandEvent& evt);
     void onPrint(wxCommandEvent& evt);
-    void onMakePermanent(wxCommandEvent& evt);
+    void onMakeStatic(wxCommandEvent& evt);
     void onCreateNewMark(wxCommandEvent& evt);
     void onInsertColumnSeparator(wxCommandEvent& evt);
     void onFormatChanged(wxCommandEvent& evt);

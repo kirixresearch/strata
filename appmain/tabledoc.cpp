@@ -67,7 +67,7 @@ BEGIN_EVENT_TABLE(TableDoc, wxWindow)
     EVT_MENU(ID_Data_RemoveSort, TableDoc::onRemoveOrder)
     EVT_MENU(ID_Data_SortAscending, TableDoc::onSetOrderAscending)
     EVT_MENU(ID_Data_SortDescending, TableDoc::onSetOrderDescending)
-    EVT_MENU(ID_Data_MakeDynamicFieldStatic, TableDoc::onMakePermanent)
+    EVT_MENU(ID_Data_MakeDynamicFieldStatic, TableDoc::onMakeStatic)
     EVT_MENU(ID_Data_QuickFilter, TableDoc::onQuickFilter)
     EVT_MENU(ID_Data_Filter, TableDoc::onFilter)
     EVT_MENU(ID_Data_CopyRecords, TableDoc::onCopyRecords)
@@ -1197,7 +1197,7 @@ void TableDoc::onUpdateUI(wxUpdateUIEvent& evt)
             if (m_is_childset)
             {
                 // if we are a child set in a relationship sync
-                // situation, do not allow make permanent
+                // situation, do not allow making static
                 evt.Enable(false);
                 return;
             }
@@ -4080,7 +4080,7 @@ void TableDoc::onGridColumnRightClick(kcl::GridEvent& evt)
 
     // find out if any dynamic fields are selected
     bool dynamic_selected = false;
-    bool permanent_selected = false;
+    bool static_selected = false;
     int selected_count = 0;
 
     kcl::IModelPtr model = m_grid->getModel();
@@ -4128,7 +4128,7 @@ void TableDoc::onGridColumnRightClick(kcl::GridEvent& evt)
             if (tmodel->getColumnCalculated(model_idx))
                 dynamic_selected = true;
                  else
-                permanent_selected = true;
+                static_selected = true;
         }
     }
     
@@ -4149,7 +4149,7 @@ void TableDoc::onGridColumnRightClick(kcl::GridEvent& evt)
     menuPopup.Append(ID_Data_CreateDynamicField, _("Insert &Calculated Field..."));
     if (dynamic_selected && selected_count == 1)
         menuPopup.Append(ID_Data_ModifyDynamicField, _("&Edit Calculated Field..."));
-    if (!permanent_selected)
+    if (!static_selected)
     {
         menuPopup.Append(ID_Data_MakeDynamicFieldStatic, _("Convert to Fixed &Field"));
         menuPopup.Append(ID_Edit_Delete, _("&Delete Calculated Field"));
@@ -5572,7 +5572,7 @@ void TableDoc::onCreateNewMark(wxCommandEvent& evt)
     g_app->getAppController()->showMarkManagerPanel();
 }
 
-void TableDoc::onMakePermanent(wxCommandEvent& evt)
+void TableDoc::onMakeStatic(wxCommandEvent& evt)
 {
     if (!g_app->getAppController()->doReadOnlyCheck())
         return;
