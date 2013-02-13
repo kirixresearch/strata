@@ -66,8 +66,8 @@ bool AlterJob::isInputValid()
     if (!m_config.childExists("actions"))
         return false;
 
-    kl::JsonNode group_node = m_config.getChild("actions");
-    if (!group_node.isArray())
+    kl::JsonNode actions_node = m_config.getChild("actions");
+    if (!actions_node.isArray())
         return false;
 
     // TODO: check for file existence?  in general, how much
