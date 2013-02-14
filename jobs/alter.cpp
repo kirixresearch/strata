@@ -129,11 +129,12 @@ int AlterJob::runJob()
         unsigned int position = 0;
 
         bool name_exists = false;
-        bool expression_exists = false;
         bool type_exists = false;
         bool width_exists = false;
         bool scale_exists = false;
         bool position_exists = false;
+        bool expression_exists = false;
+        bool expression_isexplicitnull = false;
 
 
         // get the action and the column
@@ -169,11 +170,11 @@ int AlterJob::runJob()
             }
             if (params.childExists("expression"))
             {
-                if (!params.getChild("expression").isNull())
-                {
-                    expression = params.getChild("expression");
-                    expression_exists = true;
-                }
+                expression = params.getChild("expression");
+                expression_exists = true;
+
+                if (params.getChild("expression").isNull())
+                    expression_isexplicitnull = true;
             }
             if (params.childExists("position"))
             {
@@ -199,7 +200,7 @@ int AlterJob::runJob()
             col->setScale(scale);
             col->setCalculated(false);
 
-            if (expression_exists)
+            if (expression_exists && !expression_isexplicitnull)
             {
                 col->setCalculated(true);
                 col->setExpression(expression);
@@ -225,14 +226,17 @@ int AlterJob::runJob()
                 col->setScale(scale);
             if (position_exists)
                 col->setColumnOrdinal(position);
-            if (!expression_exists)
+            if (expression_exists)
             {
-                col->setCalculated(false);
-            }
-             else
-            {
-                col->setCalculated(true);
-                col->setExpression(expression);
+                if (expression_isexplicitnull)
+                {
+                    col->setCalculated(false);
+                }
+                 else
+                {
+                    col->setCalculated(true);
+                    col->setExpression(expression);
+                }
             }
 
             continue;
