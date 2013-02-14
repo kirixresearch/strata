@@ -301,11 +301,6 @@ private:
     IFsItemPtr _findFsItem(IFsItemPtr item,
                                 const wxString& path);
 
-    void doImportJob(std::vector<IFsItemPtr>& items,
-                     const wxString& dest_location);
-    void doExportJob(std::vector<IFsItemPtr>& items,
-                     IFsItemPtr dest_item);
-
     wxString getDefaultNewFileName(IFsItemPtr parent,
                                    const wxString& name);
     IFsItemPtr getNewFileParent();
