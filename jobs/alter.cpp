@@ -154,7 +154,7 @@ int AlterJob::runJob()
             }
             if (params.childExists("type"))
             {
-                type = jobs::toDbType(params.getChild("type").getString());
+                type = tango::stringToDbtype(params.getChild("type").getString());
                 type_exists = true;
             }
             if (params.childExists("width"))
