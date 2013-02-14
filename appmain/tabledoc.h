@@ -38,9 +38,6 @@
 
 
 // -- forward declarations --
-class ModifyStructJob;
-
-
 xcm_interface ITableDocObject;
 xcm_interface ITableDocMark;
 xcm_interface ITableDocWatch;
@@ -254,7 +251,7 @@ public:
     virtual tango::ISetPtr getBrowseSet() = 0;
     virtual ITableDocModelPtr getModel() = 0;
 
-    virtual void connectModifyStructJob(jobs::IJobPtr job) = 0;
+    virtual void connectAlterTableJob(jobs::IJobPtr job) = 0;
 
     virtual void onColumnNameChanged(const wxString& old_name,
                                      const wxString& new_name) = 0;

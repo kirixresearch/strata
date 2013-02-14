@@ -15,7 +15,6 @@
 
 class TableDocWatch;
 class AppendPanel;
-class ModifyStructJob;
 class ColPropsPanel;
 class ViewPanel;
 class IndexPanel;
@@ -127,7 +126,7 @@ public:
     tango::IIteratorPtr getIterator();
     void setIterator(tango::IIteratorPtr iter, bool go_first = true);
 
-    void connectModifyStructJob(jobs::IJobPtr job);
+    void connectAlterTableJob(jobs::IJobPtr job);
 
     void onColumnNameChanged(const wxString& old_name, const wxString& new_name);
 
@@ -270,8 +269,7 @@ private:
     void onSortFilterJobFinished(IJobPtr query_job);
     void onSetOrderFinished(IJobPtr query_job);
     void onDeleteJobFinished(IJobPtr delete_job);
-    void onModifyStructJobFinished(IJobPtr modify_job);
-    void onAlterJobFinished(jobs::IJobPtr job);
+    void onAlterTableJobFinished(jobs::IJobPtr job);
     void onEditDynamicFieldOk(ColPropsPanel* panel);
     void onCreateDynamicFieldOk(ColPropsPanel* panel);
     void onCreateDynamicFieldCancelled(ColPropsPanel* panel);

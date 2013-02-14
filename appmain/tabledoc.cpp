@@ -2588,9 +2588,9 @@ void TableDoc::reloadSettings(bool redraw)
         m_grid->refresh(kcl::Grid::refreshAll);
 }
 
-void TableDoc::connectModifyStructJob(jobs::IJobPtr job)
+void TableDoc::connectAlterTableJob(jobs::IJobPtr job)
 {
-    job->sigJobFinished().connect(this, &TableDoc::onAlterJobFinished);
+    job->sigJobFinished().connect(this, &TableDoc::onAlterTableJobFinished);
 }
 
 void TableDoc::onColumnNameChanged(const wxString& old_name,
@@ -3332,7 +3332,7 @@ static void extractAlterJobInfo(kl::JsonNode params,
     }
 }
 
-void TableDoc::onAlterJobFinished(jobs::IJobPtr job)
+void TableDoc::onAlterTableJobFinished(jobs::IJobPtr job)
 {
     // unlock this window
     m_enabled = true;
@@ -3421,96 +3421,6 @@ void TableDoc::onAlterJobFinished(jobs::IJobPtr job)
     evt->s_param = m_dbpath;
     m_frame->postEvent(evt);
 }
-
-void TableDoc::onModifyStructJobFinished(IJobPtr job)
-{
-    IModifyStructJobPtr modify_job = job;
-
-    // unlock this window
-    m_enabled = true;
-    m_grid->setVisibleState(kcl::Grid::stateVisible);
-    m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_ENABLED_STATE_CHANGED));
-
-    createModel();
-    m_grid->setModel(m_grid_model);
-
-    // rename the columns; note: for the rename to work, we have to do this
-    // after we have a grid model, but before we open the set since the
-    // rename operation needs a model, but opening a set goes "too far" and
-    // will try to refresh the view with the old names, causing them to be
-    // removed if they aren't in sync with the model
-    if (job->getJobInfo()->getState() == jobStateFinished)
-    {
-        std::vector<std::pair<wxString, wxString> > to_rename;
-        std::vector<std::pair<wxString, wxString> >::iterator rename_iter;
-
-        modify_job->getToRename(to_rename);
-
-        for (rename_iter = to_rename.begin();
-             rename_iter != to_rename.end(); ++rename_iter)
-        {
-            onColumnNameChanged(rename_iter->first, rename_iter->second);
-        }
-    }
-
-    open(modify_job->getActionSet(), xcm::null);
-
-    // remove the "Filtered" suffix
-    setCaption(wxEmptyString, wxEmptyString);
-    
-    if (job->getJobInfo()->getState() != jobStateFinished)
-        return;
-
-    // do inserts for each new field
-    std::vector<std::pair<wxString,int> > to_insert;
-    std::vector<std::pair<wxString,int> >::iterator insert_iter;
-    
-    modify_job->getToInsert(to_insert);
-    for (insert_iter = to_insert.begin();
-         insert_iter != to_insert.end(); ++insert_iter)
-    {
-        insertColumnInternal(insert_iter->second,
-                             insert_iter->first, false, true);
-    }
-    
-    // do deletes in the view
-    std::vector<wxString> to_delete;
-    std::vector<wxString>::iterator delete_iter;
-    
-    modify_job->getToDelete(to_delete);
-    for (delete_iter = to_delete.begin();
-         delete_iter != to_delete.end(); ++delete_iter)
-    {
-        // delete each column in the view with this name
-        int view_idx = 0;
-        while (view_idx != -1)
-        {
-            view_idx = m_active_view->getColumnIdx(*delete_iter);
-            if (view_idx != -1)
-                m_active_view->deleteColumn(view_idx);
-        }
-    }
-
-    // write out all of changes
-    m_model->writeObject(m_active_view);
-
-    m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_VIEW_MODIFIED, 0));
-
-    // update other windows that are showing the same view
-    FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD,
-                                   (unsigned long)this);
-    e->l_param2 = (unsigned long)m_active_view.p;
-    m_frame->postEvent(e);
-    
-    updateStatusBar();
-    g_app->getAppController()->updateQuickFilterToolBarItem();
-    
-    // let other windows know that the structure was modified
-    FrameworkEvent* evt = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_STRUCTURE_MODIFIED);
-    evt->s_param = m_dbpath;
-    m_frame->postEvent(evt);
-}
-
 
 
 
@@ -5678,7 +5588,7 @@ void TableDoc::onMakeStatic(wxCommandEvent& evt)
     job->getJobInfo()->setTitle(towstr(title));
     job->setParameters(params.toString());
 
-    job->sigJobFinished().connect(this, &TableDoc::onAlterJobFinished);
+    job->sigJobFinished().connect(this, &TableDoc::onAlterTableJobFinished);
     g_app->getJobQueue()->addJob(job, jobStateRunning);
 }
 
@@ -6078,7 +5988,7 @@ void TableDoc::deleteSelectedColumns()
     job->getJobInfo()->setTitle(towstr(title));
     job->setParameters(params.toString());
 
-    job->sigJobFinished().connect(this, &TableDoc::onAlterJobFinished);
+    job->sigJobFinished().connect(this, &TableDoc::onAlterTableJobFinished);
     g_app->getJobQueue()->addJob(job, jobStateRunning);
 }
 

@@ -562,11 +562,11 @@ bool StructureDoc::doSave()
 
 
     // connect the job finished signal to the structuredoc
-    job->sigJobFinished().connect(this, &StructureDoc::onModifyStructJobFinished);
+    job->sigJobFinished().connect(this, &StructureDoc::onAlterTableJobFinished);
 
     // connect the job finished signal to the tabledoc
     if (table_doc.isOk())
-        table_doc->connectModifyStructJob(job);
+        table_doc->connectAlterTableJob(job);
 
     // now, connect the job finished signal to all open
     // tabledocs that are showing this set
@@ -576,7 +576,7 @@ bool StructureDoc::doSave()
         if (table_doc.p == (*it))
             continue;
         
-        (*it)->connectModifyStructJob(job);
+        (*it)->connectAlterTableJob(job);
     }
 
     g_app->getJobQueue()->addJob(job, jobStateRunning);
@@ -1570,7 +1570,7 @@ void StructureDoc::setChanged(bool changed)
         updateCaption();
 }
 
-void StructureDoc::onModifyStructJobFinished(jobs::IJobPtr job)
+void StructureDoc::onAlterTableJobFinished(jobs::IJobPtr job)
 {
     // update the modify set
     kl::JsonNode params;
@@ -1880,7 +1880,7 @@ void StructureDoc::onConvertDynamicToFixed(wxCommandEvent& evt)
         // for now, don't allow newly created dynamic fields
         // (in the StructureDoc) to be converted to fixed fields -- doing
         // so results in the field being empty since the dynamic field's
-        // expression is disregarded in the ModifyStructJob
+        // expression is disregarded
         if (f->dynamic && !f->original_dynamic)
         {
             appMessageBox(_("One or more of the calculated fields that is selected is new to the table's structure.  Only calculated fields that already exist in the table's structure can be converted to fixed fields."),

@@ -17,9 +17,6 @@
 
 
 // -- forward declarations --
-class ModifyStructJob;
-
-
 class StructureField
 {
 public:
@@ -181,7 +178,7 @@ private:
     
 private:
 
-    void onModifyStructJobFinished(jobs::IJobPtr job);
+    void onAlterTableJobFinished(jobs::IJobPtr job);
     
     // -- frame event handlers --
     void onFrameEvent(FrameworkEvent& evt);
