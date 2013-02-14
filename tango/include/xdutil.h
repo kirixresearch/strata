@@ -65,6 +65,41 @@ inline void bindExprParser(void* parser)
 
 // -- general utility functions --
 
+inline std::wstring dbtypeToString(int type)
+{
+    switch (type)
+    {
+        default:
+        case tango::typeUndefined:     return L"undefined";    
+        case tango::typeInvalid:       return L"invalid";      
+        case tango::typeCharacter:     return L"character";    
+        case tango::typeWideCharacter: return L"widecharacter";
+        case tango::typeNumeric:       return L"numeric";      
+        case tango::typeDouble:        return L"double";       
+        case tango::typeInteger:       return L"integer";      
+        case tango::typeDate:          return L"date";         
+        case tango::typeDateTime:      return L"datetime";     
+        case tango::typeBoolean:       return L"boolean";      
+        case tango::typeBinary:        return L"binary";       
+    }
+}
+
+inline int stringToDbtype(const std::wstring& type)
+{
+         if (type == L"undefined")     return tango::typeUndefined;
+    else if (type == L"invalid")       return tango::typeInvalid;
+    else if (type == L"character")     return tango::typeCharacter;
+    else if (type == L"widecharacter") return tango::typeWideCharacter;
+    else if (type == L"numeric")       return tango::typeNumeric;
+    else if (type == L"double")        return tango::typeDouble;
+    else if (type == L"integer")       return tango::typeInteger;
+    else if (type == L"date")          return tango::typeDate;
+    else if (type == L"datetime")      return tango::typeDateTime;
+    else if (type == L"boolean")       return tango::typeBoolean;
+    else if (type == L"binary")        return tango::typeBinary;
+    else return tango::typeUndefined;
+}
+
 inline bool isTypeCompatible(int type1, int type2)
 {
     // determines if two tango types are compatible

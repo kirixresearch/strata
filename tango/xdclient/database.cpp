@@ -204,41 +204,6 @@ std::wstring ClientDatabase::serverCall(const std::wstring& call_path,
     return result;
 }
 
-std::wstring ClientDatabase::dbtypeToString(int type)
-{
-    switch (type)
-    {
-        default:
-        case tango::typeUndefined:     return L"undefined";    
-        case tango::typeInvalid:       return L"invalid";      
-        case tango::typeCharacter:     return L"character";    
-        case tango::typeWideCharacter: return L"widecharacter";
-        case tango::typeNumeric:       return L"numeric";      
-        case tango::typeDouble:        return L"double";       
-        case tango::typeInteger:       return L"integer";      
-        case tango::typeDate:          return L"date";         
-        case tango::typeDateTime:      return L"datetime";     
-        case tango::typeBoolean:       return L"boolean";      
-        case tango::typeBinary:        return L"binary";       
-    }
-}
-
-int ClientDatabase::stringToDbtype(const std::wstring& type)
-{
-         if (type == L"undefined")     return tango::typeUndefined;
-    else if (type == L"invalid")       return tango::typeInvalid;
-    else if (type == L"character")     return tango::typeCharacter;
-    else if (type == L"widecharacter") return tango::typeWideCharacter;
-    else if (type == L"numeric")       return tango::typeNumeric;
-    else if (type == L"double")        return tango::typeDouble;
-    else if (type == L"integer")       return tango::typeInteger;
-    else if (type == L"date")          return tango::typeDate;
-    else if (type == L"datetime")      return tango::typeDateTime;
-    else if (type == L"boolean")       return tango::typeBoolean;
-    else if (type == L"binary")        return tango::typeBinary;
-    else return tango::typeUndefined;
-}
-
 tango::IStructurePtr ClientDatabase::jsonToStructure(kl::JsonNode& node)
 {
     Structure* s = new Structure;
@@ -252,7 +217,7 @@ tango::IStructurePtr ClientDatabase::jsonToStructure(kl::JsonNode& node)
 
         tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
         col->setName(column["name"]);
-        col->setType(stringToDbtype(column["type"]));
+        col->setType(tango::stringToDbtype(column["type"]));
         col->setWidth(column["width"].getInteger());
         col->setScale(column["scale"].getInteger());
         col->setColumnOrdinal(i);
@@ -293,26 +258,10 @@ std::wstring ClientDatabase::structureToJson(tango::IStructurePtr structure)
             
         tango::IColumnInfoPtr info = structure->getColumnInfoByIdx(idx);
         column["name"] = info->getName();
-
-        switch (info->getType())
-        {
-            default:
-            case tango::typeUndefined:     column["type"] = L"undefined";      break;
-            case tango::typeInvalid:       column["type"] = L"invalid";        break;
-            case tango::typeCharacter:     column["type"] = L"character";      break; 
-            case tango::typeWideCharacter: column["type"] = L"widecharacter";  break;
-            case tango::typeNumeric:       column["type"] = L"numeric";        break;
-            case tango::typeDouble:        column["type"] = L"double";         break;
-            case tango::typeInteger:       column["type"] = L"integer";        break;
-            case tango::typeDate:          column["type"] = L"date";           break;
-            case tango::typeDateTime:      column["type"] = L"datetime";       break;
-            case tango::typeBoolean:       column["type"] = L"boolean";        break;
-            case tango::typeBinary:        column["type"] = L"binary";         break;
-        }
-
+        column["type"] = tango::dbtypeToString(info->getType());
         column["width"].setInteger(info->getWidth());
-        column["scale"].setInteger(info->getScale());   
-        column["expression"] = info->getExpression();     
+        column["scale"].setInteger(info->getScale());
+        column["expression"] = info->getExpression();
     }
 
     return columns.toString();

@@ -170,8 +170,6 @@ public:
     tango::IStructurePtr jsonToStructure(kl::JsonNode& node);
     std::wstring structureToJson(tango::IStructurePtr structure);
     void columnToJsonNode(tango::IColumnInfoPtr colinfo, kl::JsonNode& column);
-    std::wstring dbtypeToString(int db_type);
-    int stringToDbtype(const std::wstring& str_type);
 
 private:
 
