@@ -223,6 +223,8 @@ int AlterJob::runJob()
                 col->setWidth(width);
             if (scale_exists)
                 col->setScale(scale);
+            if (position_exists)
+                col->setColumnOrdinal(position);
             if (!expression_exists)
             {
                 col->setCalculated(false);
