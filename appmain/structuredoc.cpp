@@ -14,7 +14,6 @@
 #include "structuredoc.h"
 #include "tabledoc.h"
 #include "toolbars.h"
-#include "jobmodifystruct.h"
 #include "dlgdatabasefile.h"
 #include "dlgcustomprompt.h"
 #include "fieldtypechoice.h"

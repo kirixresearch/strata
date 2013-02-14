@@ -14,7 +14,6 @@
 #include "panelrelationship.h"
 #include "relationdiagram.h"
 #include "relationdnd.h"
-#include "jobindex.h"
 #include "tabledoc.h"
 #include <set>
 

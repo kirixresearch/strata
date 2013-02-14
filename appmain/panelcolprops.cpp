@@ -13,7 +13,6 @@
 #include "panelcolprops.h"
 #include "tangogridmodel.h"
 #include "exprbuilder.h"
-#include "jobindex.h"
 #include "appcontroller.h"
 
 

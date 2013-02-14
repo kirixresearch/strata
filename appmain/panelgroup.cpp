@@ -11,7 +11,6 @@
 
 #include "appmain.h"
 #include "panelgroup.h"
-#include "jobgroup.h"
 #include "tabledoc.h"
 #include "appcontroller.h"
 #include "fieldlistcontrol.h"

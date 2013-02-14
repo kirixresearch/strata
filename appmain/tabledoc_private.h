@@ -21,7 +21,7 @@ class IndexPanel;
 class ExprBuilderPanel;
 class ReportCreateInfo;
 
-#include "jobmodifystruct.h"
+
 #include "panelcolumnlist.h"
 #include "panelfind.h"
 #include "tangogridmodel.h"
