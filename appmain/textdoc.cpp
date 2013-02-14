@@ -2333,21 +2333,7 @@ bool TextDoc::saveLayoutTemplate(const wxString& path)
             kl::JsonNode field = fields.appendElement();
             
             field["name"] = e->getName();
-            
-            switch (e->getType())
-            {
-                default:
-                case tango::typeCharacter:      field["type"] = wxT("character");     break;
-                case tango::typeWideCharacter:  field["type"] = wxT("widecharacter"); break;
-                case tango::typeBinary:         field["type"] = wxT("binary");        break;
-                case tango::typeNumeric:        field["type"] = wxT("numeric");       break;
-                case tango::typeDouble:         field["type"] = wxT("double");        break;
-                case tango::typeInteger:        field["type"] = wxT("integer");       break;
-                case tango::typeDate:           field["type"] = wxT("date");          break;
-                case tango::typeDateTime:       field["type"] = wxT("datetime");      break;
-                case tango::typeBoolean:        field["type"] = wxT("boolean");       break;
-            }
-            
+            field["type"] = tango::dbtypeToString(e->getType());
             field["width"] = e->getWidth();
             field["scale"] = e->getScale();
         }
