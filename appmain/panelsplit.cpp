@@ -12,7 +12,6 @@
 #include "appmain.h"
 #include "appcontroller.h"
 #include "panelsplit.h"
-#include "jobsplit.h"
 #include "dbdoc.h"
 #include "dlgdatabasefile.h"
 
@@ -348,20 +347,6 @@ void SplitPanel::onBrowse(wxCommandEvent& evt)
     m_sourcetable_textctrl->SetValue(dlg.getPath());
 }
 
-static SplitType getSplitType(int splittype_choice_selection)
-{
-    if (splittype_choice_selection == 0)
-        return splitByRowCount;
-    if (splittype_choice_selection == 1)
-        return splitByTableCount;
-    if (splittype_choice_selection == 2)
-        return splitByTableSize;
-    if (splittype_choice_selection == 3)
-        return splitByExpression;
-    
-    return splitUndefined;
-}
-
 void SplitPanel::onOK(wxCommandEvent& event)
 {
     if (m_set.isNull())
@@ -373,24 +358,25 @@ void SplitPanel::onOK(wxCommandEvent& event)
     }
 
     // create the split info for the split job
-    SplitInfo si;
-    si.type = getSplitType(m_splittype_choice->GetSelection());
-    si.source_set = m_set;
-    si.prefix = m_prefix_textctrl->GetValue();
-    si.expression = m_expression_textctrl->GetValue();
-    m_rowcount_textctrl->GetValue().ToLong(&si.row_count);
-    m_tablecount_textctrl->GetValue().ToLong(&si.table_count);
+
+    tango::ISetPtr source_set = m_set;
+    std::wstring prefix = m_prefix_textctrl->GetValue();
+    std::wstring expression = m_expression_textctrl->GetValue();
+
+    long row_count, table_count;
+    m_rowcount_textctrl->GetValue().ToLong(&row_count);
+    m_tablecount_textctrl->GetValue().ToLong(&table_count);
 
 
     // check output paths
     wxString output_path;
-    for (int i = 0; i < si.table_count; ++i)
+    for (int i = 0; i < table_count; ++i)
     {
-        output_path = si.prefix;
+        output_path = prefix;
         
-        if (si.table_count < 10)
+        if (table_count < 10)
             output_path += wxString::Format(wxT("_%01d"), i+1);
-         else if (si.table_count >= 10 && si.table_count < 100)
+         else if (table_count >= 10 && table_count < 100)
             output_path += wxString::Format(wxT("_%02d"), i+1);
          else
             output_path += wxString::Format(wxT("_%03d"), i+1);
@@ -403,9 +389,9 @@ void SplitPanel::onOK(wxCommandEvent& event)
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.divide-job");
 
     kl::JsonNode params;
-    params["input"].setString(towstr(si.source_set->getObjectPath()));
-    params["output"].setString(towstr(si.prefix));
-    params["row_count"].setInteger(si.row_count);
+    params["input"].setString(source_set->getObjectPath());
+    params["output"].setString(prefix);
+    params["row_count"].setInteger(row_count);
     
     job->getJobInfo()->setTitle(towstr(_("Divide Table")));
     job->setParameters(params.toString());

@@ -13,7 +13,6 @@
 #define __APP_PANELSPLIT_H
 
 
-struct SplitInfo;
 class SplitPanel : public wxPanel,
                    public IDocument,
                    public xcm::signal_sink
