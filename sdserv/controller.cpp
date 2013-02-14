@@ -170,21 +170,7 @@ static void JsonNodeToColumn(kl::JsonNode& column, tango::IColumnInfoPtr col)
     if (column.childExists("type"))
     {
         std::wstring type = column["type"];
-        int ntype;
-
-             if (type == L"undefined")     ntype = tango::typeUndefined;
-        else if (type == L"invalid")       ntype = tango::typeInvalid;
-        else if (type == L"character")     ntype = tango::typeCharacter;
-        else if (type == L"widecharacter") ntype = tango::typeWideCharacter;
-        else if (type == L"numeric")       ntype = tango::typeNumeric;
-        else if (type == L"double")        ntype = tango::typeDouble;
-        else if (type == L"integer")       ntype = tango::typeInteger;
-        else if (type == L"date")          ntype = tango::typeDate;
-        else if (type == L"datetime")      ntype = tango::typeDateTime;
-        else if (type == L"boolean")       ntype = tango::typeBoolean;
-        else if (type == L"binary")        ntype = tango::typeBinary;
-        else ntype = tango::typeUndefined;
-        
+        int ntype = tango::stringToDbtype(type);
         col->setType(ntype);
     }
     
@@ -523,20 +509,7 @@ void Controller::apiCreateTable(RequestInfo& req)
         
         kl::JsonNode column = columns[i];
         std::wstring type = column["type"];
-        int ntype;
-
-             if (type == L"undefined")     ntype = tango::typeUndefined;
-        else if (type == L"invalid")       ntype = tango::typeInvalid;
-        else if (type == L"character")     ntype = tango::typeCharacter;
-        else if (type == L"widecharacter") ntype = tango::typeWideCharacter;
-        else if (type == L"numeric")       ntype = tango::typeNumeric;
-        else if (type == L"double")        ntype = tango::typeDouble;
-        else if (type == L"integer")       ntype = tango::typeInteger;
-        else if (type == L"date")          ntype = tango::typeDate;
-        else if (type == L"datetime")      ntype = tango::typeDateTime;
-        else if (type == L"boolean")       ntype = tango::typeBoolean;
-        else if (type == L"binary")        ntype = tango::typeBinary;
-        else ntype = tango::typeUndefined;
+        int ntype = tango::stringToDbtype(type);
 
         col->setName(column["name"]);
         col->setType(ntype);
@@ -1202,26 +1175,10 @@ void Controller::apiDescribeTable(RequestInfo& req)
         
         tango::IColumnInfoPtr info = structure->getColumnInfoByIdx(idx);
         item["name"] = info->getName();
-        
-        switch (info->getType())
-        {
-            default:
-            case tango::typeUndefined:     item["type"] = "undefined";      break;
-            case tango::typeInvalid:       item["type"] = "invalid";        break;
-            case tango::typeCharacter:     item["type"] = "character";      break; 
-            case tango::typeWideCharacter: item["type"] = "widecharacter";  break;
-            case tango::typeNumeric:       item["type"] = "numeric";        break;
-            case tango::typeDouble:        item["type"] = "double";         break;
-            case tango::typeInteger:       item["type"] = "integer";        break;
-            case tango::typeDate:          item["type"] = "date";           break;
-            case tango::typeDateTime:      item["type"] = "datetime";       break;
-            case tango::typeBoolean:       item["type"] = "boolean";        break;
-            case tango::typeBinary:        item["type"] = "binary";         break;
-        }
-        
+        item["type"] = tango::dbtypeToString(info->getType());
         item["width"].setInteger(info->getWidth());
-        item["scale"].setInteger(info->getScale());    
-        item["expression"] = info->getExpression();    
+        item["scale"].setInteger(info->getScale());
+        item["expression"] = info->getExpression();
     }
 
     req.write(response.toString());
