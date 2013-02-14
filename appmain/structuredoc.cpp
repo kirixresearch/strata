@@ -80,7 +80,169 @@ static std::vector<RowErrorChecker> getRowErrorCheckerVector(
     return vec;
 }
 
+static void createModifyJobInstructions(tango::ISetPtr modify_set,
+                                        kcl::Grid* grid,
+                                        kl::JsonNode& params,
+                                        size_t* _action_count)
+{
+    // basic alter table job params
+    params["input"].setString(towstr(modify_set->getObjectPath()));
+    params["actions"].setArray();
 
+    *_action_count = 0;
+
+    tango::IStructurePtr structure = modify_set->getStructure();
+    tango::IColumnInfoPtr col;
+    
+    int row_count = grid->getRowCount();
+    size_t action_count = 0;
+    
+    // find deleted fields (i.e. fields in the original
+    // structure that aren't found in the grid)
+    for (int i = 0; i < structure->getColumnCount(); ++i)
+    {
+        col = structure->getColumnInfoByIdx(i);
+        wxString old_name = towx(col->getName());
+        bool found = false;
+        
+        // -- try to find the old field name in the grid's row data --
+        for (int row = 0; row < row_count; ++row)
+        {
+            StructureField* f = (StructureField*)grid->getRowData(row);
+            if (!f)
+                continue;
+            
+            // only check fields in the original structure
+            if (!f->original)
+                continue;
+                
+            // -- if we find the name, we haven't deleted the field --
+            if ((old_name.CmpNoCase(f->name) == 0))
+            {
+                found = true;
+                break;
+            }
+        }
+        
+        // if we didn't find the old field in the grid's row data
+        // then the user has deleted the field
+        if (!found)
+        {
+            kl::JsonNode node = params["actions"].appendElement();
+            node["action"].setString(L"drop");
+            node["column"].setString(towstr(old_name));
+            action_count++;
+        }
+    }
+    
+    
+    wxString name;
+    int type;
+    int width;
+    int scale;
+    int row;
+    wxString expr;
+    
+    
+    // find the min and max boundries of all move operations; 
+    // we use this information to reassign indexes of fields 
+    // inside these bounds
+    int phys_i = 0;
+    
+    bool moving_fields = false;
+    for (row = 0; row < row_count; ++row)
+    {
+        StructureField* f = (StructureField*)grid->getRowData(row);
+        if (!f)
+            continue;
+        
+        if (f->original && !f->original_dynamic && f->pos != phys_i)
+        {
+            moving_fields = true;
+            break;
+        }
+        
+        if (!f->dynamic)
+            phys_i++;
+    }
+
+
+    // tell the job which fields to create and modify
+    for (row = 0; row < row_count; ++row)
+    {
+        name = grid->getCellString(row, colFieldName);
+        type = grid->getCellComboSel(row, colFieldType);
+        width = grid->getCellInteger(row, colFieldWidth);
+        scale = grid->getCellInteger(row, colFieldScale);
+        expr = grid->getCellString(row, colFieldFormula);
+
+
+        StructureField* f = (StructureField*)grid->getRowData(row);
+        if (!f)
+            continue;
+
+        if (!f->original)
+        {
+            // there's no row data, so we're inserting a new field
+
+            kl::JsonNode node = params["actions"].appendElement();
+            node["action"].setString(L"add");
+            node["params"].setObject();
+
+            kl::JsonNode modify_param = node["params"];
+            modify_param["name"].setString(towstr(name));
+            modify_param["type"].setString(tango::dbtypeToString(choice2tango(type)));
+            modify_param["width"].setInteger(width);
+            modify_param["scale"].setInteger(scale);
+            modify_param["expression"].setString(towstr(expr));
+            modify_param["position"].setInteger(row);
+            if (!f->dynamic)
+                modify_param["expression"].setNull();
+
+            action_count++;
+        }
+         else
+        {
+            // we're modifying an existing field
+            if (f->name.Cmp(name) != 0 ||
+                f->type != choice2tango(type) ||
+                f->width != width ||
+                f->scale != scale ||
+                f->expr != expr ||
+                f->dynamic != f->original_dynamic ||
+                moving_fields)
+            {
+                kl::JsonNode node = params["actions"].appendElement();
+                node["action"].setString(L"modify");
+                node["column"].setString(towstr(f->name));
+                node["params"].setObject();
+
+                kl::JsonNode modify_param = node["params"];
+
+                if (f->name.Cmp(name) != 0)
+                    modify_param["name"].setString(towstr(name));
+                if (f->type != choice2tango(type))
+                    modify_param["type"].setString(tango::dbtypeToString(choice2tango(type)));
+                if (f->width != width)
+                    modify_param["width"].setInteger(width);
+                if (f->scale != scale)
+                    modify_param["scale"].setInteger(scale);
+                if (f->expr != expr)
+                    modify_param["expression"].setString(towstr(expr));
+                if (moving_fields && f->pos != row)
+                    modify_param["position"].setInteger(row);
+                if (!f->dynamic)
+                    modify_param["expression"].setNull();
+
+                action_count++;
+            }
+        }
+    }
+
+    // report back how many actions we're going to perform
+    if (_action_count)
+        *_action_count = action_count;
+}
 
 
 BEGIN_EVENT_TABLE(StructureDoc, wxWindow)
@@ -227,29 +389,23 @@ bool StructureDoc::doSave()
     // if we're not modifying an existing table, submit a create table job
     if (!m_modify)
         return createTable();
-    
-    
-    // -- at this point, we know we're modifying an existing table --
-    
-    
+
+
     // create the modify job
+    kl::JsonNode params;
     size_t action_count = 0;
-    ModifyStructJob* job = createModifyJob(&action_count);
+    createModifyJobInstructions(m_modify_set, m_grid, params, &action_count);
 
     // make sure there's something to do
     if (action_count == 0)
-    {
-        delete job;
         return true;
-    }
-    
-    
-    // -- make sure we've got a tabledoc in our container --
+
+    // make sure we've got a tabledoc in our container
     ITableDocPtr table_doc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
     if (table_doc.isNull())
     {
-        // -- this chunk of code exists in the view switcher code as well --
-        
+        // note: this chunk of code exists in the view switcher code as well
+
         // create a tabledoc and open it
         table_doc = TableDocMgr::createTableDoc();
         table_doc->open(m_modify_set, xcm::null);
@@ -260,12 +416,12 @@ bool StructureDoc::doSave()
             wxString caption = m_path.AfterLast(wxT('/'));
             table_doc->setCaption(caption, wxEmptyString);
         }
-        
+
         wxWindow* container = m_doc_site->getContainerWindow();
         g_app->getMainFrame()->createSite(container,
                                           table_doc, false);
     }
-    
+
     // check to see if this table is a child in a relationship sync situation
     bool filtered_table = false;
     if (table_doc.isOk())
@@ -285,7 +441,6 @@ bool StructureDoc::doSave()
                 appMessageBox(_("The structure cannot be modified while the table is showing filtered related records."),
                                    APPLICATION_NAME,
                                    wxOK | wxICON_INFORMATION | wxCENTER);
-                delete job;
                 return false;
             }
             
@@ -324,7 +479,6 @@ bool StructureDoc::doSave()
                     appMessageBox(_("The structure cannot be modified while the table is showing filtered related records."),
                                        APPLICATION_NAME,
                                        wxOK | wxICON_INFORMATION | wxCENTER);
-                    delete job;
                     return false;
                 }
             
@@ -349,19 +503,17 @@ bool StructureDoc::doSave()
         int result = dlg.ShowModal();
         if (result != wxYES)
         {
-            delete job;
             return false;
         }
     }
 
 
-    // -- disable the structure editor grid --
-    
+    // disable the structure editor grid
     m_grid->setVisibleState(kcl::Grid::stateDisabled);
     m_grid->refresh(kcl::Grid::refreshAll);
     
     
-    // -- close the sets --
+    // close the sets
     std::vector<ITableDoc*> to_connect;
     for (i = 0; i < site_count; ++i)
     {
@@ -390,14 +542,24 @@ bool StructureDoc::doSave()
         }
     }
 
-    // -- let the pending close events process --
-    
+    // let the pending close events process
     g_app->processIdle();
     ::wxSafeYield();
 
-    
-    // -- start the job --
-    g_app->getJobQueue()->addJob(job, jobStateRunning);
+
+    // create the job
+    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.alter-job");
+
+    wxString caption = m_doc_site->getCaption();
+    wxString title = wxString::Format(_("Modifying Structure of '%s'"),
+                                      caption.c_str());
+
+    job->getJobInfo()->setTitle(towstr(title));
+    job->setParameters(params.toString());
+
+
+    // TODO: should send out a structure update event instead of all this
+
 
     // connect the job finished signal to the structuredoc
     job->sigJobFinished().connect(this, &StructureDoc::onModifyStructJobFinished);
@@ -405,7 +567,7 @@ bool StructureDoc::doSave()
     // connect the job finished signal to the tabledoc
     if (table_doc.isOk())
         table_doc->connectModifyStructJob(job);
-    
+
     // now, connect the job finished signal to all open
     // tabledocs that are showing this set
     std::vector<ITableDoc*>::iterator it;
@@ -417,6 +579,7 @@ bool StructureDoc::doSave()
         (*it)->connectModifyStructJob(job);
     }
 
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
     return true;
 }
 
@@ -1318,6 +1481,7 @@ bool StructureDoc::createTable()
     return true;
 }
 
+/*
 ModifyStructJob* StructureDoc::createModifyJob(size_t* _action_count)
 {
     wxString caption = m_doc_site->getCaption();
@@ -1477,7 +1641,7 @@ ModifyStructJob* StructureDoc::createModifyJob(size_t* _action_count)
     
     return job;
 }
-
+*/
 tango::IStructurePtr StructureDoc::createStructureFromGrid()
 {
     // -- create the tango::IStructure --
@@ -1567,12 +1731,15 @@ void StructureDoc::setChanged(bool changed)
         updateCaption();
 }
 
-void StructureDoc::onModifyStructJobFinished(IJobPtr job)
+void StructureDoc::onModifyStructJobFinished(jobs::IJobPtr job)
 {
     // update the modify set
-    IModifyStructJobPtr modify_job = job;
-    m_modify_set = modify_job->getActionSet();
-    
+    kl::JsonNode params;
+    params.fromString(job->getParameters());
+
+    std::wstring input = params["input"];
+    m_modify_set = g_app->getDatabase()->openSet(input);
+
     // enable the structure editor grid
     m_grid->setVisibleState(kcl::Grid::stateVisible);
 

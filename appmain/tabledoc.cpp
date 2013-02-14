@@ -2588,14 +2588,10 @@ void TableDoc::reloadSettings(bool redraw)
         m_grid->refresh(kcl::Grid::refreshAll);
 }
 
-
-
-
-void TableDoc::connectModifyStructJob(ModifyStructJob* modify_job)
+void TableDoc::connectModifyStructJob(jobs::IJobPtr job)
 {
-    modify_job->sigJobFinished().connect(this, &TableDoc::onModifyStructJobFinished);
+    job->sigJobFinished().connect(this, &TableDoc::onAlterJobFinished);
 }
-
 
 void TableDoc::onColumnNameChanged(const wxString& old_name,
                                    const wxString& new_name)

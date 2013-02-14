@@ -127,7 +127,7 @@ public:
     tango::IIteratorPtr getIterator();
     void setIterator(tango::IIteratorPtr iter, bool go_first = true);
 
-    void connectModifyStructJob(ModifyStructJob* modify_job);
+    void connectModifyStructJob(jobs::IJobPtr job);
 
     void onColumnNameChanged(const wxString& old_name, const wxString& new_name);
 

@@ -173,8 +173,6 @@ private:
 
     // structural
     bool createTable();
-    ModifyStructJob* createModifyJob(size_t* action_count);
-    
     tango::IStructurePtr createStructureFromGrid();
     void populateGridFromSet(tango::ISetPtr set);
     
@@ -183,7 +181,7 @@ private:
     
 private:
 
-    void onModifyStructJobFinished(IJobPtr job);
+    void onModifyStructJobFinished(jobs::IJobPtr job);
     
     // -- frame event handlers --
     void onFrameEvent(FrameworkEvent& evt);

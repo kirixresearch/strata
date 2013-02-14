@@ -254,7 +254,7 @@ public:
     virtual tango::ISetPtr getBrowseSet() = 0;
     virtual ITableDocModelPtr getModel() = 0;
 
-    virtual void connectModifyStructJob(ModifyStructJob* modify_job) = 0;
+    virtual void connectModifyStructJob(jobs::IJobPtr job) = 0;
 
     virtual void onColumnNameChanged(const wxString& old_name,
                                      const wxString& new_name) = 0;
