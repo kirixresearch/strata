@@ -38,7 +38,15 @@ bool UpdateJob::isInputValid()
             "version" : 1,
             "description" : ""
         },
-        "input" : <path>
+        "input" : <path>,
+        "where": "",
+        "set" : [
+            {
+                "column" : <string>,
+                "expression"
+            },
+            ...
+        ]
     }
 */
     if (m_config.isNull())
@@ -49,11 +57,11 @@ bool UpdateJob::isInputValid()
     if (!m_config.childExists("input"))
         return false;
 
-    if (!m_config.childExists("actions"))
+    if (!m_config.childExists("set"))
         return false;
 
-    kl::JsonNode actions_node = m_config.getChild("actions");
-    if (!actions_node.isArray())
+    kl::JsonNode set_node = m_config.getChild("set");
+    if (!set_node.isArray())
         return false;
 
     // TODO: check for file existence?  in general, how much
@@ -84,9 +92,52 @@ int UpdateJob::runJob()
     // get the input parameters
     std::wstring input_path = m_config["input"].getString();
 
+    std::wstring where_param;
+    if (m_config.childExists("where"))
+        where_param = m_config["where"].getString();
+
+    std::vector<kl::JsonNode> set_nodes;
+    set_nodes = m_config["set"].getChildren();
+
+
+    // build the update SQL
+    std::wstring update_sql = L"";
+    update_sql += L"UPDATE ";
+    update_sql += tango::quoteIdentifier(m_db, input_path);
+    update_sql += L" SET ";
+
+    std::vector<kl::JsonNode>::iterator it, it_end;
+    it_end = set_nodes.end();
+
+    bool first = true;
+    for (it = set_nodes.begin(); it != it_end; ++it)
+    {
+        if (!first)
+            update_sql += L",";
+        first = false;
+
+        std::wstring column, expression;
+        if (!it->childExists("column") || !it->childExists("expression"))
+            continue;
+
+        column = it->getChild("column").getString();
+        expression = it->getChild("expression").getString();
+
+        update_sql += tango::quoteIdentifier(m_db, column);
+        update_sql += L" = ";
+        update_sql += expression;
+    }
+
+    if (where_param.length() > 0)
+        update_sql += (L" WHERE " + where_param);
+
 
     tango::IJobPtr tango_job = m_db->createJob();
     setTangoJob(tango_job);
+
+    xcm::IObjectPtr result;
+    if (m_db->execute(update_sql, tango::sqlPassThrough, result, tango_job));
+
 
     if (tango_job->getCancelled())
     {
@@ -100,7 +151,7 @@ int UpdateJob::runJob()
 
         // TODO: need to decide how to handle error strings; these need to 
         // be translated, so shouldn't be in this class
-        //m_job_info->setProgressString(towstr(_("Update failed: The table may be in use by another user.")));
+        //m_job_info->setProgressString(towstr(_("Update failed")));
     }
 
     return 0;
