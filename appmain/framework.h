@@ -34,6 +34,7 @@ const wxString FRAMEWORK_EVT_CFW_LOCATION_CHANGED                       = wxT("c
 const wxString FRAMEWORK_EVT_COLUMNLISTPANEL_UPDATE                     = wxT("ColumnListPanel.update");
 const wxString FRAMEWORK_EVT_CONSOLEPANEL_COMMAND                       = wxT("consolepanel.command");
 
+const wxString FRAMEWORK_EVT_TABLEDOC_REFRESH                           = wxT("tabledoc.refresh");
 const wxString FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD                    = wxT("tabledoc.doViewReload");
 const wxString FRAMEWORK_EVT_TABLEDOC_ENABLED_STATE_CHANGED             = wxT("tabledoc.enabledStateChanged");
 const wxString FRAMEWORK_EVT_TABLEDOC_MARK_CREATED                      = wxT("tabledoc.markCreated");
