@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="alter.cpp" />
     <ClCompile Include="append.cpp" />
+    <ClCompile Include="delete.cpp" />
     <ClCompile Include="divide.cpp" />
     <ClCompile Include="group.cpp" />
     <ClCompile Include="index.cpp" />
@@ -38,6 +39,7 @@
   <ItemGroup>
     <ClInclude Include="alter.h" />
     <ClInclude Include="append.h" />
+    <ClInclude Include="delete.h" />
     <ClInclude Include="divide.h" />
     <ClInclude Include="group.h" />
     <ClInclude Include="index.h" />

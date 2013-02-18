@@ -13,6 +13,7 @@
 #include "jobinfo.h"
 #include "alter.h"
 #include "append.h"
+#include "delete.h"
 #include "divide.h"
 #include "index.h"
 #include "group.h"
@@ -30,6 +31,8 @@ IJobPtr createJob(const std::wstring job_class)
         return static_cast<IJob*>(new AlterJob);
     if (job_class == L"application/vnd.kx.append-job")
         return static_cast<IJob*>(new AppendJob);
+    if (job_class == L"application/vnd.kx.delete-job")
+        return static_cast<IJob*>(new DeleteJob);
     if (job_class == L"application/vnd.kx.divide-job")
         return static_cast<IJob*>(new DivideJob);
     if (job_class == L"application/vnd.kx.index-job")
