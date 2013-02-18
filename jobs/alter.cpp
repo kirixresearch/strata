@@ -11,7 +11,6 @@
 
 #include "jobspch.h"
 #include "alter.h"
-#include "util.h"
 
 
 namespace jobs
