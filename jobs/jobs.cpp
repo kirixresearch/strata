@@ -17,6 +17,7 @@
 #include "index.h"
 #include "group.h"
 #include "summarize.h"
+#include "update.h"
 
 
 namespace jobs
@@ -37,6 +38,8 @@ IJobPtr createJob(const std::wstring job_class)
         return static_cast<IJob*>(new GroupJob);
     if (job_class == L"application/vnd.kx.summarize-job")
         return static_cast<IJob*>(new SummarizeJob);
+    if (job_class == L"application/vnd.kx.update-job")
+        return static_cast<IJob*>(new UpdateJob);
 
     return xcm::null;        
 }
