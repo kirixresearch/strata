@@ -744,7 +744,19 @@ void TableDoc::onStatusBarItemLeftDblClick(IStatusBarItemPtr item)
 
 void TableDoc::onFrameEvent(FrameworkEvent& evt)
 {
-    if (evt.name == FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD &&
+    if (evt.name == FRAMEWORK_EVT_TABLEDOC_REFRESH)
+    {
+        // get the event set path; refresh the tabledoc if the base or
+        // browse sets have the same path
+        wxString path = evt.s_param;
+        tango::ISetPtr base_set = getBaseSet();
+        tango::ISetPtr filter_set = getBrowseSet();
+
+        if ((base_set.isOk() && base_set->getObjectPath() == path) ||
+            (filter_set.isOk() && filter_set->getObjectPath() == path))
+            m_grid->refresh(kcl::Grid::refreshAll);
+    }
+    else if (evt.name == FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD &&
         evt.l_param != (unsigned long)this)
     {
         TableDoc* td1 = (TableDoc*)evt.l_param;

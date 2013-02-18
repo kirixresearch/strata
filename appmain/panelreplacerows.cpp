@@ -12,7 +12,6 @@
 #include "appmain.h"
 #include "panelreplacerows.h"
 #include "exprbuilder.h"
-#include "jobquery.h"
 #include "appcontroller.h"
 #include "tabledoc.h"
 #include <algorithm>
@@ -140,7 +139,6 @@ void ReplaceRowsPanel::setParams(tango::ISetPtr set, const wxString& expr, const
     m_doc_site->setCaption(caption);
     setDocumentFocus();
 }
-
 
 void ReplaceRowsPanel::populate()
 {
@@ -291,7 +289,6 @@ void ReplaceRowsPanel::onReplaceTextChanged(wxCommandEvent& evt)
     validate();
 }
 
-
 void ReplaceRowsPanel::onFieldChoiceChanged(wxCommandEvent& evt)
 {
     validate();
@@ -299,44 +296,16 @@ void ReplaceRowsPanel::onFieldChoiceChanged(wxCommandEvent& evt)
     m_replace_text->SetFocus();
 }
 
-
-static void onReplaceJobFinished(IJobPtr job)
+static void onUpdateJobFinished(jobs::IJobPtr job)
 {
-    wxString target_set_id = job->getExtraString();
+    kl::JsonNode params;
+    params.fromString(job->getParameters());
+    std::wstring input = params["input"];
 
-    // -- iterate through document sites, and update tabledocs --
-    IDocumentSiteEnumPtr docsites;
-    IDocumentSitePtr site;
-    ITableDocPtr table_doc;
-
-    docsites = g_app->getMainFrame()->getDocumentSites(sitetypeNormal);
-
-    int site_count = docsites->size();
-    for (int i = 0; i < site_count; ++i)
-    {
-        site = docsites->getItem(i);
-        table_doc = site->getDocument();
-        if (table_doc.isOk())
-        {
-            tango::ISetPtr browse_set = table_doc->getBrowseSet();
-            tango::ISetPtr base_set = table_doc->getBaseSet();
-
-            wxString base_setid;
-            wxString browse_setid;
-            if (base_set.isOk())
-                base_setid = towx(base_set->getSetId());
-            if (browse_set.isOk())
-                browse_setid = towx(browse_set->getSetId());
-            
-            if ((browse_set.isOk() && browse_setid == target_set_id) ||
-                (base_set.isOk() && base_setid == target_set_id))
-            {
-                table_doc->getGrid()->refresh(kcl::Grid::refreshAll);
-            }
-        }
-    }
+    FrameworkEvent* cfw_event = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_REFRESH);
+    cfw_event->s_param = towx(input);
+    g_app->getMainFrame()->postEvent(cfw_event);
 }
-
 
 void ReplaceRowsPanel::onOKPressed(ExprBuilderPanel* panel)
 {
@@ -447,33 +416,29 @@ void ReplaceRowsPanel::onOKPressed(ExprBuilderPanel* panel)
         }
     }
 
-    wxString cmd = wxT("UPDATE ");
-    cmd += towx(m_set->getObjectPath());
-    cmd += wxT(" SET ");
-    cmd += replace_field;
-    cmd += wxT("=");
-    cmd += replace_value;
-    
-    if (condition.Length() > 0)
-    {
-        cmd += wxT(" WHERE ");
-        cmd += condition;
-    }
+    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.update-job");
 
-    QueryJob* job = new QueryJob;
-    job->getJobInfo()->setTitle(towstr(_("Update Values")));
-    job->sigJobFinished().connect(&onReplaceJobFinished);
-    job->setExtraString(m_set->getSetId());
-    job->setQuery(cmd, tango::sqlPassThrough);
+    kl::JsonNode params;
+    params["input"].setString(m_set->getObjectPath());
+    if (condition.Length() > 0)
+        params["where"].setString(towstr(condition));
+
+    params["set"].setArray();
+    kl::JsonNode update_info = params["set"].appendElement();
+    update_info["column"].setString(towstr(replace_field));
+    update_info["expression"].setString(towstr(replace_value));
     
+    job->getJobInfo()->setTitle(towstr(_("Update Values")));
+    job->setParameters(params.toString());
+
+    job->sigJobFinished().connect(&onUpdateJobFinished);
     g_app->getJobQueue()->addJob(job, jobStateRunning);
+
     g_app->getMainFrame()->closeSite(m_doc_site);
 }
-
 
 void ReplaceRowsPanel::onCancelPressed(ExprBuilderPanel* panel)
 {
     g_app->getMainFrame()->closeSite(m_doc_site);
 }
-
 
