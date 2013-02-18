@@ -13,7 +13,6 @@
 #include "panelreplacerows.h"
 #include "exprbuilder.h"
 #include "appcontroller.h"
-#include "tabledoc.h"
 #include <algorithm>
 
 
