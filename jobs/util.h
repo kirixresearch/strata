@@ -19,7 +19,12 @@
 namespace jobs
 {
 
+
 void vectorToDelimitedString(const std::vector<std::wstring>& vec, std::wstring& str, wchar_t delimiter = ',');
+
+std::wstring getMountRoot(tango::IDatabasePtr db, const std::wstring _path);
+tango::IIndexInfoPtr lookupIndex(tango::IIndexInfoEnumPtr idx_enum, const std::wstring& expr, bool exact_column_order);
+
 
 };  // namespace jobs
 
