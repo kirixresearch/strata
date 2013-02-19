@@ -455,73 +455,17 @@ struct UpdateInfo
 };
 
 
-static void addRelationships(UpdateInfo* info)
+static void onRelationshipJobFinished(jobs::IJobPtr job)
 {
-    std::vector<UpdateRel>::iterator it;
-
-    for (it = info->relations.begin();
-         it != info->relations.end(); ++it)
-    {
-        g_app->getDatabase()->createRelation(towstr(it->tag),
-                                             towstr(it->left_path),
-                                             towstr(it->right_path),
-                                             towstr(it->left_expr),
-                                             towstr(it->right_expr));
-    }
+    if (job->getJobInfo()->getState() != jobStateFinished)
+        return;
 
     g_app->getMainFrame()->postEvent(new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_RELATIONSHIPS_UPDATED));
 
     // update the relationship syncing (if it was enabled)
     int synctype = g_app->getAppController()->getRelationshipSync();
     if (synctype != tabledocRelationshipSyncNone)
-        g_app->getAppController()->updateTableDocRelationshipSync(synctype);        
-}
-
-static void onIndexJobFinished(jobs::IJobPtr job)
-{
-    if (job->getJobInfo()->getState() != jobStateFinished)
-        return;
-
-    // unpack the job parameters and save it to the update info        
-    UpdateInfo info;
-
-    kl::JsonNode params;
-    params.fromString(job->getParameters());
-
-    // note: no check; this is a local callback and these must exist
-    std::vector<kl::JsonNode> indexes = params["indexes"].getChildren();
-    std::vector<kl::JsonNode> relationships = params["relationships"].getChildren();
-    
-    std::vector<kl::JsonNode>::iterator it, it_end;
-    it_end = indexes.end();
-    
-    for (it = indexes.begin(); it != it_end; ++it)
-    {
-        UpdateIdx index;
-        index.set_path = it->getChild("input").getString();
-        index.idx_name = it->getChild("name").getString();
-        index.idx_expr = it->getChild("expression").getString();
-
-        info.indexes.push_back(index);
-    }
-
-    std::vector<kl::JsonNode>::iterator it_rel, it_rel_end;
-    it_rel_end = relationships.end();
-    
-    for (it_rel = relationships.begin(); it_rel != it_rel_end; ++it_rel)
-    {
-        UpdateRel relation;
-        relation.tag = it_rel->getChild("name").getString();
-        relation.left_path = it_rel->getChild("left_path").getString();
-        relation.left_expr = it_rel->getChild("left_expression").getString();
-        relation.right_path = it_rel->getChild("right_path").getString();
-        relation.right_expr = it_rel->getChild("right_expression").getString();
-
-        info.relations.push_back(relation);    
-    }    
-    
-    // add the relationship info
-    addRelationships(&info);
+        g_app->getAppController()->updateTableDocRelationshipSync(synctype);
 }
 
 static tango::IRelationPtr lookupSetRelation(tango::IDatabasePtr& db, tango::ISetPtr set, const std::wstring& tag)
@@ -553,7 +497,7 @@ void RelationshipPanel::onUpdateRelationships(wxCommandEvent& evt)
     if (!db)
         return;
 
-    UpdateInfo* info = new UpdateInfo;
+    UpdateInfo info;
 
     std::set<wxString> sets;
     std::set<wxString>::iterator it;
@@ -651,90 +595,45 @@ void RelationshipPanel::onUpdateRelationships(wxCommandEvent& evt)
                 right_str += line_it->right_expr;
             }
 
-            tango::ISetPtr right_set = db->openSet(towstr(ni_it->right_path));
-            if (!right_set)
-                continue;
-            
-
-          
-
-            tango::IIndexInfoEnumPtr right_set_indexes = db->getIndexEnum(towstr(ni_it->right_path));
-
-            if (getMountRoot(db, towstr(ni_it->right_path)).length() == 0) // only auto-create indexes on xdnative or equivalent
-            {
-                tango::IIndexInfoPtr idx = lookupIndex(right_set_indexes, towstr(right_str), false);
-                if (!idx)
-                {
-                    UpdateIdx i;
-                    i.set_path = right_set->getObjectPath();
-                    i.idx_expr = right_str;
-                    i.idx_name = right_str;
-                    i.idx_name.Replace(wxT(","), wxT("_"));
-                    info->indexes.push_back(i);
-                }
-            }
-
             UpdateRel r;
             r.tag = ni_it->tag;            
             r.left_path = set->getObjectPath();
             r.left_expr = left_str;
             r.right_path = ni_it->right_path;            
             r.right_expr = right_str;
-            info->relations.push_back(r);
+            info.relations.push_back(r);
         }
     }
 
 
     // now start the job
-    
-    if (info->indexes.size() > 0)
+    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.relationship-job");
+
+    kl::JsonNode params;
+    kl::JsonNode relationships = params["relationships"];
+    relationships.setArray();
+
+
+    // add relationship information
+    std::vector<UpdateRel>::iterator it_rel;
+    for (it_rel = info.relations.begin();
+            it_rel != info.relations.end(); ++it_rel)
     {
-        jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.index-job");
+        kl::JsonNode relationship_item = relationships.appendElement();
 
-        kl::JsonNode params;
-        
-        kl::JsonNode indexes = params["indexes"];
-        kl::JsonNode relationships = params["relationships"];
-
-        // add the index information
-        std::vector<UpdateIdx>::iterator it;
-        for (it = info->indexes.begin();
-             it != info->indexes.end(); ++it)
-        {
-            kl::JsonNode index_item = indexes.appendElement();
-
-            index_item["input"].setString(towstr(it->set_path));
-            index_item["name"].setString(towstr(it->idx_name));
-            index_item["expression"].setString(towstr(it->idx_expr));
-        }
-
-        // add extra relationship information; index job doesn't require
-        // this but we'll need it when the index jobs are finished
-        std::vector<UpdateRel>::iterator it_rel;
-        for (it_rel = info->relations.begin();
-             it_rel != info->relations.end(); ++it_rel)
-        {
-            kl::JsonNode relationship_item = relationships.appendElement();
-
-            relationship_item["name"].setString(towstr(it_rel->tag));
-            relationship_item["left_path"].setString(towstr(it_rel->left_path));
-            relationship_item["left_expression"].setString(towstr(it_rel->left_expr));
-            relationship_item["right_path"].setString(towstr(it_rel->right_path));
-            relationship_item["right_expression"].setString(towstr(it_rel->right_expr));
-        }
-
-        job->getJobInfo()->setTitle(towstr(_("Creating Index")));
-        job->setParameters(params.toString());
-
-        job->sigJobFinished().connect(&onIndexJobFinished);
-        g_app->getJobQueue()->addJob(job, jobStateRunning);
+        relationship_item["name"].setString(towstr(it_rel->tag));
+        relationship_item["left_path"].setString(towstr(it_rel->left_path));
+        relationship_item["left_expression"].setString(towstr(it_rel->left_expr));
+        relationship_item["right_path"].setString(towstr(it_rel->right_path));
+        relationship_item["right_expression"].setString(towstr(it_rel->right_expr));
     }
-     else
-    {
-        // no indexing, add the relationships now
-        addRelationships(info);
-        delete info;
-    }
+
+    job->getJobInfo()->setTitle(towstr(_("Creating Relationships")));
+    job->setParameters(params.toString());
+
+    job->sigJobFinished().connect(&onRelationshipJobFinished);
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
+
 
     m_diagram->resetModified();
     m_diagram->save();
