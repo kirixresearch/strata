@@ -83,8 +83,6 @@ private:
     void onSetStructureChanged(const wxString& set_path);
 
     void loadRelationships();
-    void saveRelationships();
-    void checkIndexes();
     bool checkCircular();
     void validateUpdateButton();
 
