@@ -50,7 +50,6 @@ public:
     ~ViewPanel();
     
     void updateTableDocViewEnum(ITableDocPtr tabledoc);
-    ITableDocViewPtr getSelectedView();
     
     xcm::signal1<ViewPanel*> sigOkPressed;
 

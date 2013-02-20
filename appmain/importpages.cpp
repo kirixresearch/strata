@@ -862,42 +862,6 @@ void ImportTableSelectionPage::onSelectNoTables(wxCommandEvent& evt)
 
 
 
-
-
-int formatStr2combo(wxString str)
-{
-    if (str.CmpNoCase(wxT("YMDhmsl")) == 0)
-        return 0;
-    if (str.CmpNoCase(wxT("YMD")) == 0)
-        return 1;
-    if (str.CmpNoCase(wxT("MDYhmsl")) == 0)
-        return 2;
-    if (str.CmpNoCase(wxT("MDY")) == 0)
-        return 3;
-    if (str.CmpNoCase(wxT("DMYhmsl")) == 0)
-        return 4;
-    if (str.CmpNoCase(wxT("DMY")) == 0)
-        return 5;
-
-    return 0;
-}
-
-wxString combo2formatStr(int idx)
-{
-    switch (idx)
-    {
-        case 0:     return wxT("YMDhmsl");
-        case 1:     return wxT("YMD");
-        case 2:     return wxT("MDYhmsl");
-        case 3:     return wxT("MDY");
-        case 4:     return wxT("DMYhmsl");
-        case 5:     return wxT("DMY");
-    }
-
-    return wxT("YMDhmsl");
-}
-
-
 BEGIN_EVENT_TABLE(ImportDelimitedTextSettingsPage, kcl::WizardPage)
 END_EVENT_TABLE()
 

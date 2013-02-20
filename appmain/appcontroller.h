@@ -73,7 +73,6 @@ public:
 
     bool init();
 
-    IDocumentSitePtr getColumnListPanelSite();
     IDocumentSitePtr getMarkManagerPanelSite();
     ScriptCommandEventRouter* getScriptCommandRouter();
     StandardToolbar* getStandardToolbar();

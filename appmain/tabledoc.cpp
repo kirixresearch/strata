@@ -185,18 +185,6 @@ static void setColumnProps(wxColor* fill_color,
                            wxColor* text_color = NULL,
                            int alignment = -1);
 
-static bool colInVector(int col, std::vector<int> cols)
-{
-    std::vector<int>::iterator it;
-    for (it = cols.begin(); it != cols.end(); ++it)
-    {
-        if (col == *it)
-            return true;
-    }
-    
-    return false;
-}
-
 static wxString buildSelectedColumnExpression(kcl::Grid* grid, bool descending = false)
 {
     wxString expr;
@@ -5449,24 +5437,6 @@ void TableDoc::onModifyDynamicField(wxCommandEvent& evt)
 void TableDoc::onDeleteField(wxCommandEvent& evt)
 {
     deleteSelectedColumns();
-}
-
-wxString TableDoc::findDynamicFieldByExpr(const wxString& expr)
-{
-    tango::IStructurePtr structure = m_iter->getStructure();
-
-    int col_count = structure->getColumnCount();
-    int i;
-
-    for (i = 0; i < col_count; ++i)
-    {
-        tango::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
-
-        if (expr == towx(colinfo->getExpression()))
-            return towx(colinfo->getName());
-    }
-    
-    return wxEmptyString;
 }
 
 void TableDoc::onCreateNewMark(wxCommandEvent& evt)

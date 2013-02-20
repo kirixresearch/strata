@@ -16,7 +16,7 @@
 #include "toolbars.h"
 #include "dlgdatabasefile.h"
 #include "dlgcustomprompt.h"
-#include "fieldtypechoice.h"
+#include "fieldtypechoice.h" 
 #include "structurevalidator.h"
 
 

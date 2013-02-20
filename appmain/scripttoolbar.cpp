@@ -264,6 +264,10 @@ void ToolBarItem::setDisabledBitmap(kscript::ExprEnv* env, kscript::Value* retva
     }
 }
 
+void ToolBarItem::getDisabledBitmap(kscript::ExprEnv* env, kscript::Value* retval)
+{
+    // TODO: fill out
+}
 
 
 

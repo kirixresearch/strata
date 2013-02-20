@@ -1650,19 +1650,6 @@ void switchToOtherDocument(IDocumentSitePtr site,
     }
 }
 
-wxWindow* getDocumentSiteWindow(IDocumentSitePtr site)
-{
-    if (site.isNull())
-        return NULL;
-    
-    IDocumentPtr doc = site->getDocument();
-    if (doc.isNull())
-        return NULL;
-    
-    wxWindow* w = doc->getDocumentWindow();
-    return w;
-}
-
 jobs::IJobPtr appCreateJob(const std::wstring& job_id)
 {
     jobs::IJobPtr job = jobs::createJob(job_id);
@@ -1909,23 +1896,6 @@ int getTaskBarHeight()
 #else
     // default task bar height
     return 50;
-#endif
-}
-
-wxFont getDefaultWindowFont()
-{
-#ifdef WIN32
-    NONCLIENTMETRICS nm;
-    nm.cbSize = sizeof(NONCLIENTMETRICS);
-    SystemParametersInfoW(SPI_GETNONCLIENTMETRICS,0,&nm,0);
-
-    wxNativeFontInfo info;
-    memcpy(&info.lf, &nm.lfMessageFont, sizeof(LOGFONT));
-    wxFont font;
-    font.Create(info, 0);
-    return font;
-#else
-    return wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
 #endif
 }
 

@@ -188,7 +188,7 @@ protected:
     void parseExpr();
     void buildExpr();
 
-    void addField(const wxString& field);
+    //void addField(const wxString& field);
 
     void insertText(const wxString& text);
     void updateGridOverlay();

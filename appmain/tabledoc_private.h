@@ -145,7 +145,6 @@ public:
     void showCreateDynamicField();
     void showEditDynamicField(const wxString& field);
     void createOrShowStructureDoc();
-    wxString findDynamicFieldByExpr(const wxString& expr);
     bool createDynamicField(const wxString& col_name,
                             int type,
                             int width,

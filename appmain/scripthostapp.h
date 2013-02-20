@@ -179,8 +179,6 @@ public:
     void getApplicationId(kscript::ExprEnv* env, kscript::Value* retval);
     void installExtensionMainMenu(kscript::ExprEnv* env, kscript::Value* retval);
     void installExtensionMenu(kscript::ExprEnv* env, kscript::Value* retval);
-    void createExportObject(kscript::ExprEnv* env, kscript::Value* retval);
-    void createImportObject(kscript::ExprEnv* env, kscript::Value* retval);
     void importFile(kscript::ExprEnv* env, kscript::Value* retval);
     void exportFile(kscript::ExprEnv* env, kscript::Value* retval);
     void saveAsPdf(kscript::ExprEnv* env, kscript::Value* retval);

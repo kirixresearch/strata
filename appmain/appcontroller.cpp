@@ -1592,11 +1592,6 @@ void AppController::doPreferenceRefresh()
         webprefs.SetIntPref(wxT("privacy.popups.policy"), 1 /* accept popups */);
 }
 
-IDocumentSitePtr AppController::getColumnListPanelSite()
-{
-    return m_columnlistpanel_site;
-}
-
 IDocumentSitePtr AppController::getMarkManagerPanelSite()
 {
     return m_markmanagerpanel_site;

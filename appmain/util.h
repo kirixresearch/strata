@@ -338,8 +338,6 @@ IDocumentPtr lookupOtherDocument(
 void switchToOtherDocument(IDocumentSitePtr site,
                            const std::string& doc_class_name);
 
-wxWindow* getDocumentSiteWindow(IDocumentSitePtr site);
-
 jobs::IJobPtr appCreateJob(const std::wstring& job_id);
 
 // -- other utility functions -------------------------------------------------
@@ -361,12 +359,9 @@ bool windowOrChildHasFocus(wxWindow* wnd);
 // on Windows or 50px for other operating systems
 int getTaskBarHeight();
 
-// getDefaultFont() returns the default font for window contents
-wxFont getDefaultWindowFont();
-
-// getUserDocumentFolder() returns the default location for the user's
-// document storage.  On Windows, this will normally be the user's
-// "My Documents" directory.  On other systems, the user's home folder
+// returns the default location for the user's document storage;
+// on Windows, this will normally be the user's "My Documents" directory;
+// on other systems, the user's home folder
 wxString getUserDocumentFolder();
 
 void limitFontSize(wxWindow* wnd, int size = 12);
