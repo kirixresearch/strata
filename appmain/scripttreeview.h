@@ -126,9 +126,6 @@ public:
     void getItemCount(kscript::ExprEnv* env, kscript::Value* retval);
     void getSelectedItem(kscript::ExprEnv* env, kscript::Value* retval);
     void getSelectedItems(kscript::ExprEnv* env, kscript::Value* retval);
-
-    void setDropData();
-    void onDataDropped();
     
 private:
 
