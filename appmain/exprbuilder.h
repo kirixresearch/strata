@@ -254,10 +254,6 @@ protected:
     ExprBuilderPanel* m_panel;
     wxBoxSizer* m_main_sizer;
 
-    void onEditFinished(wxString text);
-    void onEditCancelled();
-
-
     DECLARE_EVENT_TABLE()
 };
 
@@ -287,9 +283,6 @@ protected:
 
     KeyBuilderPanel* m_panel;
     wxBoxSizer* m_main_sizer;
-
-    void onEditFinished(wxString text);
-    void onEditCancelled();
 
     void onOKPressed(KeyBuilderPanel*);
     void onCancelPressed(KeyBuilderPanel*);
