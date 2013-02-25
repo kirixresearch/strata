@@ -365,8 +365,6 @@ int getTaskBarHeight();
 wxString getUserDocumentFolder();
 
 void limitFontSize(wxWindow* wnd, int size = 12);
-void makeTextCtrlLowerCase(wxTextCtrl* text);
-void makeTextCtrlUpperCase(wxTextCtrl* text);
 void makeFontBold(wxWindow* window);
 void setTextWrap(wxStaticText* text, bool wrap);
 void resizeStaticText(wxStaticText* text, int width = -1);

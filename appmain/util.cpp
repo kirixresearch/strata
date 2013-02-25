@@ -1943,26 +1943,6 @@ void limitFontSize(wxWindow* wnd, int size)
     }
 }
 
-void makeTextCtrlLowerCase(wxTextCtrl* text)
-{
-#ifdef WIN32
-    HWND h = (HWND)text->GetHWND();
-    LONG l = GetWindowLongA(h, GWL_STYLE);
-    l |= ES_LOWERCASE;
-    SetWindowLongA(h, GWL_STYLE, l);
-#endif
-}
-
-void makeTextCtrlUpperCase(wxTextCtrl* text)
-{
-#ifdef WIN32
-    HWND h = (HWND)text->GetHWND();
-    LONG l = GetWindowLongA(h, GWL_STYLE);
-    l |= ES_UPPERCASE;
-    SetWindowLongA(h, GWL_STYLE, l);
-#endif
-}
-
 void makeFontBold(wxWindow* window)
 {
     wxFont font = window->GetFont();
