@@ -294,7 +294,6 @@ void DbComboPopup::setRootFolder(const wxString& path, const wxString& root_labe
     DbFolderFsItem* root = new DbFolderFsItem;
     root->setPath(m_root_path);
     root->setDatabase(g_app->getDatabase());
-    //root->setExternalVisible(false);
     root->setFoldersOnly(true);
     
     wxString label = root_label;

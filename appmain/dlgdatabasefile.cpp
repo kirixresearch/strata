@@ -251,7 +251,6 @@ void DlgDatabaseFile::setRootFolder(const wxString& path, const wxString& root_l
         DbFolderFsItem* root = new DbFolderFsItem;
         root->setPath(m_root_folder);
         root->setDatabase(g_app->getDatabase());
-        //root->setExternalVisible(false);
         
         if (m_mode == modeSelectFolder)
             root->setFoldersOnly(true);
