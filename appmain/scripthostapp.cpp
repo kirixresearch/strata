@@ -1405,20 +1405,6 @@ void HostApp::exit(kscript::ExprEnv* env, kscript::Value* retval)
 }
 
 
-// DO NOT DOCUMENT - deprecated
-// HostJob.system() - execute a system command (run a program, etc.)
-//
-//   Returns: (not defined)
-
-void HostApp::system(kscript::ExprEnv* env, kscript::Value* retval)
-{
-    if (env->getParamCount() < 1)
-        return;
-        
-    ::wxExecute(towx(env->getParam(0)->getString()));
-}
-
-
 // (METHOD) HostApp.refresh
 //
 // Description: Refreshes the host application's panels
@@ -1553,49 +1539,6 @@ void HostApp::getApplicationId(kscript::ExprEnv* env, kscript::Value* retval)
 {
     retval->setString(PALADIN_APP_TAG);
 }
-
-
-
-
-// DO NOT DOCUMENT - deprecated
-void HostApp::installExtensionMainMenu(kscript::ExprEnv* env, kscript::Value* retval)
-{
-}
-
-// DO NOT DOCUMENT - deprecated
-void HostApp::installExtensionMenu(kscript::ExprEnv* env, kscript::Value* retval)
-{
-    if (env->getParamCount() < 1)
-        return;
-
-    if (m_frame.isNull())
-        return;
-        
-    wxMenuBar* menu_bar = m_frame->getFrameWindow()->GetMenuBar();
-
-    if (!menu_bar)
-        return;
-    
-    if (env->getParam(0)->isObject())
-    { 
-        kscript::ValueObject* obj = (kscript::ValueObject*)env->getParam(0)->getObject();
-        if (obj->getClassName() == L"MenuItem")
-        {
-            MenuItem* item = (MenuItem*)obj;
-            
-            int idx = menu_bar->FindMenu(_("Tools"));
-            if (idx != wxNOT_FOUND)
-            {
-                wxMenu* menu = menu_bar->GetMenu(idx);
-                
-                item->setWxMenu(menu);
-                menu->Append(item->getWxMenuItem());
-            }
-        }
-    }
-}
-
-
 
 // (METHOD) HostApp.executeAndWait
 //
@@ -4041,7 +3984,6 @@ void HostAutomation::command(kscript::ExprEnv* env, kscript::Value* retval)
 void HostAutomation::execute(kscript::ExprEnv* env, kscript::Value* retval)
 {
 }
-
 
 kscript::Value* HostAutomation::getMember(const std::wstring& name)
 {

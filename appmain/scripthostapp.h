@@ -126,11 +126,8 @@ public:
         // -- to be deprecated --
         KSCRIPT_GUI_METHOD("showJobManager", HostApp::showJobManager)         
         
-        // -- deprecated or replaced --  
+        // -- deprecated --  
         KSCRIPT_GUI_METHOD("createJob", HostApp::createJob)
-        KSCRIPT_METHOD("installExtensionMainMenu", HostApp::installExtensionMainMenu)
-        KSCRIPT_METHOD("installExtensionMenu", HostApp::installExtensionMenu)
-        KSCRIPT_GUI_METHOD("system", HostApp::system)
 
         // -- private test function --
         KSCRIPT_METHOD("evalExpression", HostApp::evalExpression)
@@ -169,18 +166,12 @@ public:
     void hang(kscript::ExprEnv* env, kscript::Value* retval);
     void crash(kscript::ExprEnv* env, kscript::Value* retval);
     void exit(kscript::ExprEnv* env, kscript::Value* retval);
-    void system(kscript::ExprEnv* env, kscript::Value* retval);
     void refresh(kscript::ExprEnv* env, kscript::Value* retval);
     void execute(kscript::ExprEnv* env, kscript::Value* retval);
     void getCommandLineArguments(kscript::ExprEnv* env, kscript::Value* retval);
     void checkVersion(kscript::ExprEnv* env, kscript::Value* retval);
     void getVersion(kscript::ExprEnv* env, kscript::Value* retval);
     void getApplicationId(kscript::ExprEnv* env, kscript::Value* retval);
-    void installExtensionMainMenu(kscript::ExprEnv* env, kscript::Value* retval);
-    void installExtensionMenu(kscript::ExprEnv* env, kscript::Value* retval);
-    void importFile(kscript::ExprEnv* env, kscript::Value* retval);
-    void exportFile(kscript::ExprEnv* env, kscript::Value* retval);
-    void saveAsPdf(kscript::ExprEnv* env, kscript::Value* retval);
     void executeAndWait(kscript::ExprEnv* env, kscript::Value* retval);
     void evalExpression(kscript::ExprEnv* env, kscript::Value* retval);
     void isGuiActive(kscript::ExprEnv* env, kscript::Value* retval);
