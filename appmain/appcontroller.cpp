@@ -5905,6 +5905,9 @@ IJobPtr AppController::execute(const wxString& location)
         }        
          else
         {
+            // TODO: add hook for JSON job templates
+
+
             // most likely a script
             return executeScript(location);
         }
