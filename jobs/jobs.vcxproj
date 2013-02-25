@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="aggregate.cpp" />
     <ClCompile Include="alter.cpp" />
     <ClCompile Include="append.cpp" />
     <ClCompile Include="delete.cpp" />
@@ -38,6 +39,7 @@
     <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="aggregate.h" />
     <ClInclude Include="alter.h" />
     <ClInclude Include="append.h" />
     <ClInclude Include="delete.h" />
