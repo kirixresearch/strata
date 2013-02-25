@@ -17,7 +17,7 @@
 #include <wx/fontenum.h>
 
 
-// -- utility functions --
+// utility functions
 
 wxColor getDefaultGreenBarColor(const wxColor& color, int ialpha)
 {
@@ -62,8 +62,7 @@ void initDefaultPreferences()
         return;
     
     
-    // -- add default general preferences --
-    
+    // add default general preferences
     prefs->setString(wxT("general.location.home"),              APP_WEBLOCATION_HOME);
     prefs->setString(wxT("general.location.help"),              APP_WEBLOCATION_HELP);
     prefs->setString(wxT("general.location.resources"),         APP_WEBLOCATION_DEVELOPER);
@@ -77,8 +76,7 @@ void initDefaultPreferences()
     prefs->setBoolean(wxT("general.updater.check_for_updates"), true);
     
     
-    // -- add default internet preferences --
-    
+    // add default internet preferences
     prefs->setLong(wxT("internet.proxy.type"),       prefProxyDirect);
     prefs->setLong(wxT("internet.proxy.http_port"),  0);
     prefs->setLong(wxT("internet.proxy.ftp_port"),   0);
@@ -90,16 +88,14 @@ void initDefaultPreferences()
     prefs->setString(wxT("internet.proxy.socks"),    wxEmptyString);
     
     
-    // -- add default privacy preferences --
-    
+    // add default privacy preferences
     prefs->setBoolean(wxT("privacy.popups.block"),        true);
     prefs->setBoolean(wxT("privacy.cookie.accept"),       true);
     prefs->setLong(wxT("privacy.cookie.lifetime_policy"), prefKeepCookiesUntilExpired);
     prefs->setLong(wxT("privacy.cookie.lifetime_days"),   90);
     
     
-    // -- add default grid preferences --
-    
+    // add default grid preferences
     #ifdef WIN32
     const wxFont datasheet_font = getDefaultWindowsFont();
     #else
@@ -130,7 +126,7 @@ void initDefaultPreferences()
     prefs->setBoolean(wxT("grid.font.underline"),    datasheet_font.GetUnderlined());
     
     
-    // -- add default report preferences --
+    // add default report preferences
     
     // create a suitable default font to ensure we have
     // one that will work on a given system
@@ -162,8 +158,7 @@ void initDefaultPreferences()
     prefs->setString(wxT("report.font.underscore"), default_font.getUnderscore());
     
     
-    // -- add default script preferences --
-    
+    // add default script preferences
     prefs->setBoolean(wxT("script.show_syntax_highlighting"), true);
     prefs->setBoolean(wxT("script.show_line_numbers"),        true);
     prefs->setBoolean(wxT("script.show_whitespace"),          false);
