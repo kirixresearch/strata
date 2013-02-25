@@ -245,8 +245,6 @@ private:
     void onMergeTable(wxCommandEvent& evt);
     void onSplitTable(wxCommandEvent& evt);
     void onRemoveDupRecs(wxCommandEvent& evt);
-    void onDupPayWizard(wxCommandEvent& evt);
-    void onDupPayAnalysis(wxCommandEvent& evt);
     void onEditOptions(wxCommandEvent& evt);
     void onHelp(wxCommandEvent& evt);
     void onReference(wxCommandEvent& evt);

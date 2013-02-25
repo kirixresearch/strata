@@ -3048,14 +3048,6 @@ void AppController::onRemoveDupRecs(wxCommandEvent& evt)
     }
 }
 
-void AppController::onDupPayWizard(wxCommandEvent& evt)
-{
-}
-
-void AppController::onDupPayAnalysis(wxCommandEvent& evt)
-{
-}
-
 void AppController::onCascade(wxCommandEvent& evt)
 {
     m_frame->cascade();
