@@ -3667,7 +3667,6 @@ void HostData::exportData(kscript::ExprEnv* env, kscript::Value* retval)
     
 } 
 
-
 void HostData::importBinaryFile(kscript::ExprEnv* env, kscript::Value* retval)
 {
     if (env->getParamCount() < 2)
@@ -3778,7 +3777,6 @@ void HostData::exportBinaryFile(kscript::ExprEnv* env, kscript::Value* retval)
     xf_close(f);
 }
 
-
 void HostData::copyFile(kscript::ExprEnv* env, kscript::Value* retval)
 {
     retval->setBoolean(false);
@@ -3841,7 +3839,6 @@ void HostData::readTextStream(kscript::ExprEnv* env, kscript::Value* retval)
     retval->setString(result);
 }
 
-
 void HostData::writeTextStream(kscript::ExprEnv* env, kscript::Value* retval)
 {
     retval->setBoolean(false);
@@ -3866,59 +3863,6 @@ void HostData::writeTextStream(kscript::ExprEnv* env, kscript::Value* retval)
     
     retval->setBoolean(true);
 }
-
-
-
-void HostData::groupQuery(kscript::ExprEnv* env, kscript::Value* retval)
-{
-    retval->setNull();
-    
-    if (env->getParamCount() < 6)
-        return;
-        
-    tango::IDatabasePtr db = g_app->getDatabase();
-    if (db.isNull())
-        return;
-        
-    std::wstring input = env->getParam(0)->getString();
-    std::wstring output = env->getParam(1)->getString();
-    std::wstring group = env->getParam(2)->getString();
-    std::wstring output_fields = env->getParam(3)->getString();
-    std::wstring where_condition = env->getParam(4)->getString();
-    std::wstring having_condition = env->getParam(5)->getString();
-    
-
-    
-    tango::ISetPtr input_set = db->openSet(input);
-    if (input_set.isNull())
-        return;
-    
-    tango::ISetPtr output_set;
-    output_set = db->runGroupQuery(input_set,
-                                   group,
-                                   output_fields,
-                                   where_condition,
-                                   having_condition,
-                                   NULL);
-    
-    if (output_set.isNull())
-        return;
-    
-    if (output.length() > 0)
-    {
-        db->storeObject(output_set.p, output);
-    }
-    
-    tango::IIteratorPtr iter = output_set->createIterator(L"", L"", NULL);
-    if (iter.isNull())
-        return;
-        
-    DbResult* res = DbResult::createObject(env);
-    res->init(iter);
-    
-    retval->setObject(res);
-}
-
 
 
 

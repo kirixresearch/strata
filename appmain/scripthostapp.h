@@ -68,7 +68,6 @@ public:
 
 // -- Application Host bindings --
 
-
 class HostApp : public kscript::ValueObject,
                 public xcm::signal_sink
 {
@@ -209,8 +208,6 @@ private:
 };
 
 
-
-
 class HostDocument : public kscript::ValueObject
 {
     BEGIN_KSCRIPT_CLASS("HostDocument", HostDocument)
@@ -240,8 +237,6 @@ public:
 };
 
 
-
-
 class HostGlobal : public kscript::ValueObject
 {
     BEGIN_KSCRIPT_CLASS("HostGlobal", HostGlobal)
@@ -258,10 +253,6 @@ public:
     void setMember(const std::wstring& name, kscript::Value* value);
     kscript::Value* getMember(const std::wstring& name);
 };
-
-
-
-
 
 
 class HostJob : public kscript::ValueObject
@@ -303,9 +294,6 @@ private:
 };
 
 
-
-
-
 class HostServices : public kscript::ValueObject
 {
     BEGIN_KSCRIPT_CLASS("HostServices", HostServices)
@@ -331,8 +319,6 @@ private:
 
     std::map<std::wstring, kscript::ValueObject*> m_services;
 };
-
-
 
 
 class HostBitmap : public kscript::ValueObject
@@ -382,8 +368,6 @@ public:
 };
 
 
-
-
 class HostData : public kscript::ValueObject
 {
     BEGIN_KSCRIPT_CLASS("HostData", HostData)
@@ -397,7 +381,6 @@ class HostData : public kscript::ValueObject
         KSCRIPT_METHOD("copyFile", HostData::copyFile)
         KSCRIPT_METHOD("readTextStream", HostData::readTextStream)
         KSCRIPT_METHOD("writeTextStream", HostData::writeTextStream)
-        KSCRIPT_METHOD("groupQuery", HostData::groupQuery)
     END_KSCRIPT_CLASS()
 
 public:
@@ -419,8 +402,6 @@ public:
 };
 
 
-
-
 class HostPrinting : public kscript::ValueObject
 {
     BEGIN_KSCRIPT_CLASS("HostPrinting", HostPrinting)
@@ -436,8 +417,6 @@ public:
     void constructor(kscript::ExprEnv* env, kscript::Value* retval);
     void saveAsPdf(kscript::ExprEnv* env, kscript::Value* retval);
 };
-
-
 
 
 class HostAutomation : public kscript::ValueObject
@@ -467,10 +446,6 @@ public:
 
     kscript::Value m_retval;
 };
-
-
-
-
 
 
 #endif
