@@ -452,32 +452,6 @@ public:
 };
 
 
-
-
-/*
-class Cursor : public ScriptHostBase
-{
-    BEGIN_KSCRIPT_CLASS("Cursor", Cursor)
-        KSCRIPT_GUI_METHOD("constructor", Cursor::constructor)
-        KSCRIPT_GUI_METHOD("setBitmap", Cursor::setBitmap)
-    END_KSCRIPT_CLASS()
-
-public:
-
-    Cursor();
-    ~Cursor();
-
-    wxCursor getWxCursor();
-    
-    void constructor(kscript::ExprEnv* env, kscript::Value* retval);
-    void setBitmap(kscript::ExprEnv* env, kscript::Value* retval);
-    
-private:
-
-    wxCursor m_cursor;
-};
-*/
-
 class zBusyCursor : public ScriptHostBase
 {
     BEGIN_KSCRIPT_CLASS("BusyCursor", zBusyCursor)
