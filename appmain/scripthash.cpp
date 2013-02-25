@@ -73,3 +73,31 @@ void Hash::md5(kscript::ExprEnv* env, void* param, kscript::Value* retval)
     }
 }
 
+
+
+
+
+// (METHOD) Hash.md5sum
+//
+// Description: Calculates an md5sum of a file
+//
+// Syntax: static function Hash.md5sum(path : String) : String
+//
+// Remarks: Calculates the md5sum of the file specified in the |path| parameter
+//
+// Param(value): A string or memory buffer to hash
+// Returns: A string containing the md5sum of the file specified in the |path|
+//     parameter.  If an error is encountered, null is returned
+
+void Hash::md5sum(kscript::ExprEnv* env, void* param, kscript::Value* retval)
+{
+    retval->setNull();
+    
+    if (env->getParamCount() < 1)
+        return;
+        
+    kl::md5result_t res;
+    kl::md5sum(env->getParam(0)->getString(), &res);
+
+    retval->setString(kl::md5resultToString(res));
+}

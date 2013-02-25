@@ -18,6 +18,7 @@ class Hash : public kscript::ValueObject
     BEGIN_KSCRIPT_CLASS("Hash", Hash)
         KSCRIPT_METHOD("constructor", Hash::constructor)
         KSCRIPT_STATIC_METHOD("md5", Hash::md5)
+        KSCRIPT_STATIC_METHOD("md5sum", Hash::md5sum)
     END_KSCRIPT_CLASS()
 
 public:
@@ -28,6 +29,7 @@ public:
     void constructor(kscript::ExprEnv* env, kscript::Value* retval);
 
     static void md5(kscript::ExprEnv* env, void* param, kscript::Value* retval);
+    static void md5sum(kscript::ExprEnv* env, void* param, kscript::Value* retval);
 };
 
 
