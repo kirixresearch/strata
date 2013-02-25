@@ -205,6 +205,8 @@ wxString makeUniqueString();
 void int2buf(unsigned char* buf, unsigned int i);
 int buf2int(const unsigned char* buf);
 
+
+// TODO: similar functions exist elsewhere; should factor
 wxString vectorToString(const std::vector<wxString>& list);
 std::vector<wxString> stringToVector(const wxString& string);
 std::vector< std::pair<wxString, bool> > sortExprToVector(const wxString& sort_expr);
