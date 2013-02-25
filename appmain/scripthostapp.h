@@ -364,7 +364,6 @@ class HostData : public kscript::ValueObject
     BEGIN_KSCRIPT_CLASS("HostData", HostData)
         KSCRIPT_METHOD("constructor", HostData::constructor)
         KSCRIPT_METHOD("assignDefinition", HostData::assignDefinition)
-        KSCRIPT_METHOD("loadDefinition", HostData::loadDefinition)
         KSCRIPT_METHOD("importData", HostData::importData)
         KSCRIPT_METHOD("exportData", HostData::exportData)
         KSCRIPT_METHOD("importBinaryFile", HostData::importBinaryFile)
@@ -381,7 +380,6 @@ public:
 
     void constructor(kscript::ExprEnv* env, kscript::Value* retval);
     void assignDefinition(kscript::ExprEnv* env, kscript::Value* retval);
-    void loadDefinition(kscript::ExprEnv* env, kscript::Value* retval);
     void importData(kscript::ExprEnv* env, kscript::Value* retval);
     void exportData(kscript::ExprEnv* env, kscript::Value* retval);
     void importBinaryFile(kscript::ExprEnv* env, kscript::Value* retval);
@@ -389,7 +387,6 @@ public:
     void copyFile(kscript::ExprEnv* env, kscript::Value* retval);
     void readTextStream(kscript::ExprEnv* env, kscript::Value* retval);
     void writeTextStream(kscript::ExprEnv* env, kscript::Value* retval);
-    void groupQuery(kscript::ExprEnv* env, kscript::Value* retval);
 };
 
 

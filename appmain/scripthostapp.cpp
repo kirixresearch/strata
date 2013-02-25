@@ -3177,11 +3177,6 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
 }
 
 
-void HostData::loadDefinition(kscript::ExprEnv* env, kscript::Value* retval)
-{
-}
-
-
 class HostImportExportFile
 {
 public:
