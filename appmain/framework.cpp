@@ -3213,17 +3213,3 @@ void MainFrame::sendEvent(FrameworkEvent* evt)
     delete evt;
 }
 
-void MainFrame::propertiesUpdated()
-{
-}
-
-void MainFrame::statusFieldsUpdated()
-{
-}
-
-void MainFrame::locationUpdated()
-{
-}
-
-
-

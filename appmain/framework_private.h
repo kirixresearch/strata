@@ -353,10 +353,6 @@ public:
     void postEvent(FrameworkEvent* evt);
     void sendEvent(FrameworkEvent* evt);
     void dispatchAllEvents();
-
-    void propertiesUpdated();
-    void statusFieldsUpdated();
-    void locationUpdated();
     
 public:
 
