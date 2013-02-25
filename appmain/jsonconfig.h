@@ -18,7 +18,6 @@ class JsonConfig
 public:
 
     // kl::JsonNode implementation
-    static kl::JsonNode loadFromFile(const wxString& path);
     static kl::JsonNode loadFromDb(tango::IDatabasePtr db, const wxString& path);
     static kl::JsonNode loadFromString(const wxString& json);
     
@@ -27,14 +26,9 @@ public:
     static bool saveToDb(kl::JsonNode& node,
                          tango::IDatabasePtr db,
                          const wxString& path,
-                         const wxString& mime_type = wxT("text/plain"));
-                         
-    static bool saveToFile(
-                         kl::JsonNode& node,
-                         const wxString& path,
-                         const wxString& mime_type = wxEmptyString);                         
+                         const wxString& mime_type = wxT("text/plain"));                        
 };
 
 
-
 #endif
+

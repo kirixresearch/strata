@@ -14,13 +14,6 @@
 #include <kl/utf8.h>
 
 
-kl::JsonNode JsonConfig::loadFromFile(const wxString& path)
-{
-    // TODO: implement
-    kl::JsonNode node;
-    return node;
-}
-
 kl::JsonNode JsonConfig::loadFromDb(tango::IDatabasePtr db, const wxString& path)
 {
     kl::JsonNode node;
@@ -67,41 +60,4 @@ bool JsonConfig::saveToDb(kl::JsonNode& node,
                                towstr(text),
                                towstr(mime_type));
 }
-
-bool JsonConfig::saveToFile(kl::JsonNode& node, const wxString& path, const wxString& mime_type)
-{
-    // TODO: implement
-    return false;
-}
-
-
-/*
-void jsonTest()
-{
-    JsonNode node;
-    node["input"] = wxT("c:\\hello");
-    node["names"]["hat"][0] = 123;
-    node["names"]["hat"][1] = 456;
-    node["names"]["hat"][2] = 789;
-    
-    wxString str;
-    JsonConfig::saveToString(node, str);
-    printf("%ls\n", (const wchar_t*)str.c_str());
-    
-    
-    JsonNode node2;
-    node2 = JsonConfig::loadFromString(str);
-    if (node2.isOk())
-    {
-        printf("%ls\n", (const wchar_t*)node["input"].getString().c_str());
-        
-        JsonNode arr = node["names"]["hat"];
-        size_t i = 0, count = arr.getCount();
-        for (i = 0; i < count; ++i)
-        {
-            printf("%d\n", arr[i].getInteger());
-        }
-    }
-}
-*/
 
