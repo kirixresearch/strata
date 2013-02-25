@@ -440,128 +440,6 @@ void func_alert(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 }
 
 
-
-class TestBaseClass : public kscript::ValueObject
-{
-    BEGIN_KSCRIPT_CLASS("TestBaseClass", TestBaseClass)
-        KSCRIPT_METHOD("constructor", TestBaseClass::constructor)
-        KSCRIPT_GUI_METHOD("baseMethod", TestBaseClass::baseMethod)
-        KSCRIPT_GUI_METHOD("testOverride", TestBaseClass::testOverride)
-    END_KSCRIPT_CLASS()
-
-
-public:
-
-    TestBaseClass()
-    {
-    }
-
-    ~TestBaseClass()
-    {
-    }
-
-    void constructor(kscript::ExprEnv* env, kscript::Value* retval)
-    {
-        int i = 5;
-    }
-
-    void baseMethod(kscript::ExprEnv* env, kscript::Value* retval)
-    {
-        appMessageBox(wxT("TestBaseClass::baseMethod"));
-    }
-    
-    void testOverride(kscript::ExprEnv* env, kscript::Value* retval)
-    {
-        appMessageBox(wxT("TestBaseClass::testOverride"));
-    }
-};
-
-
-// TODO: should this still be in here?
-
-class TestClass : public TestBaseClass
-{
-    BEGIN_KSCRIPT_DERIVED_CLASS("TestClass", TestClass, TestBaseClass)
-        //KSCRIPT_METHOD("constructor", TestClass::constructor)
-        KSCRIPT_METHOD("nonguiFunc", TestClass::nonguiFunc)
-        KSCRIPT_METHOD("refreshTree", TestClass::refreshTree)
-        KSCRIPT_GUI_METHOD("guiFunc", TestClass::guiFunc)
-        KSCRIPT_GUI_METHOD("msgBox", TestClass::msgBox)
-        KSCRIPT_GUI_METHOD("testOverride", TestClass::testOverride)
-    END_KSCRIPT_CLASS()
-
-
-public:
-
-    TestClass()
-    {
-        m_i = 1;
-    }
-
-    ~TestClass()
-    {
-    }
-
-    void constructor(kscript::ExprEnv* env, kscript::Value* retval)
-    {
-        wxString msg = towx(env->getParam(0)->getString());
-    }
-
-    void nonguiFunc(kscript::ExprEnv* env, kscript::Value* retval)
-    {
-    /*
-        BoundMemberInfo* bmi;
-        size_t i = 0;
-        while (NULL != (bmi = get_bound_method(i++))) {
-            appMessageBox(wxString::Format(wxT("%s %d"), bmi->method_name, bmi->class_id));
-        }
-    
-        appMessageBox(wxString::Format(wxT("%d"), staticGetClassId()));
-        appMessageBox(wxString::Format(wxT("%d"), staticGetClassId()));
-        m_i = 2;
-     */
-    }
-
-    void refreshTree(kscript::ExprEnv* env, kscript::Value* retval)
-    {
-        // refreshes the tree from a thread...could be dangerous
-        // if not careful.  Note in HostApp.refresh() we had this
-        // as a gui function, so it gets marshaled into the main thread
-        g_app->getAppController()->refreshDbDoc();
-    }
-    
-    void guiFunc(kscript::ExprEnv* env, kscript::Value* retval)
-    {
-    }
-
-    void msgBox(kscript::ExprEnv* env, kscript::Value* retval)
-    {
-        wxString msg = towx(env->getParam(0)->getString());
-        appMessageBox(msg);
-    }
-    
-    void testOverride(kscript::ExprEnv* env, kscript::Value* retval)
-    {
-        appMessageBox(wxT("TestClass::testOverride"));
-    }
-    
-public:
-
-    int m_i;
-};
-
-
-
-void func_createTestObject(kscript::ExprEnv* env, void* param, kscript::Value* retval)
-{
-    TestClass* obj = TestClass::createObject(env);
-    retval->setObject(obj);
-}
-
-
-
-
-
 // -- ScriptHost implementation --
 
 BEGIN_EVENT_TABLE(ScriptHost, wxEvtHandler)
@@ -583,10 +461,6 @@ ScriptHost::ScriptHost()
     
     m_retval = new kscript::Value;
 
-    TestBaseClass::compiletimeBind(m_expr);
-    TestClass::compiletimeBind(m_expr);
-    addGuiFunction(L"createTestObject", func_createTestObject, L"*()");
-    
 
     // -- gui related --
     Application::compiletimeBind(m_expr);
