@@ -22,6 +22,8 @@ namespace jobs
 
 RelationshipJob::RelationshipJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
 {
+    m_config["metadata"]["type"] = L"application/vnd.kx.relationship-job";
+    m_config["metadata"]["version"] = 1;
 }
 
 RelationshipJob::~RelationshipJob()
@@ -39,26 +41,33 @@ bool RelationshipJob::isInputValid()
             "version" : 1,
             "description" : ""
         },
-        "relationships" : [
-            {
-                "name" : <string>,              // tag name of the relationship
-                "left_path" : <path>,           // path of the left table in the relationship
-                "left_expression" : <string>,   // fields in the left table that form the relationship
-                "right_path" : <path>,          // path of the right table in the relationship
-                "right_expression" : <string>   // fields in the right table that form the relationship
-            },
-            ...
-        ]
+        "params":
+        {
+            "relationships" : [
+                {
+                    "name" : <string>,              // tag name of the relationship
+                    "left_path" : <path>,           // path of the left table in the relationship
+                    "left_expression" : <string>,   // fields in the left table that form the relationship
+                    "right_path" : <path>,          // path of the right table in the relationship
+                    "right_expression" : <string>   // fields in the right table that form the relationship
+                },
+                ...
+            ]
+        }
 */
     if (m_config.isNull())
         return false;
 
     // TODO: check job type and version
 
-    if (!m_config.childExists("relationships"))
+    kl::JsonNode params = m_config["params"];
+    if (params.isNull())
         return false;
 
-    kl::JsonNode relationships_node = m_config["relationships"];
+    if (!params.childExists("relationships"))
+        return false;
+
+    kl::JsonNode relationships_node = params["relationships"];
     if (!relationships_node.isArray())
         return false;
 
@@ -88,8 +97,10 @@ int RelationshipJob::runJob()
     }    
 
 
+    kl::JsonNode params = m_config["params"];
+
     std::vector<kl::JsonNode>::iterator it, it_end;
-    std::vector<kl::JsonNode> relationships = m_config["relationships"].getChildren();
+    std::vector<kl::JsonNode> relationships = params["relationships"].getChildren();
 
 
     // get the relationships

@@ -21,6 +21,8 @@ namespace jobs
 
 AppendJob::AppendJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
 {
+    m_config["metadata"]["type"] = L"application/vnd.kx.append-job";
+    m_config["metadata"]["version"] = 1;
 }
 
 AppendJob::~AppendJob()
@@ -38,9 +40,12 @@ bool AppendJob::isInputValid()
             "version" : 1,
             "description" : ""
         },
-        "input" : [<path1>, <path2>, ...],
-        "output" : <path>,      // optional;
-        "mode" : "overwrite"    // optional; if used, either "append" or "overwrite"; if undefined, uses "append"
+        "params":
+        {
+            "input" : [<path1>, <path2>, ...],
+            "output" : <path>,      // optional;
+            "mode" : "overwrite"    // optional; if used, either "append" or "overwrite"; if undefined, uses "append"
+        }
     }
 */
 
@@ -49,10 +54,14 @@ bool AppendJob::isInputValid()
 
     // TODO: check job type and version
 
-    if (!m_config.childExists("input"))
+    kl::JsonNode params = m_config["params"];
+    if (params.isNull())
         return false;
 
-    kl::JsonNode input_arr = m_config["input"];
+    if (!params.childExists("input"))
+        return false;
+
+    kl::JsonNode input_arr = params["input"];
     if (input_arr.getChildCount() == 0)
         return false;
 
@@ -82,9 +91,11 @@ int AppendJob::runJob()
     bool valid_max_count = true;
 
 
+    kl::JsonNode params = m_config["params"];
+
     // get input data
     std::vector<tango::ISetPtr> sets;
-    kl::JsonNode input_arr = m_config["input"];
+    kl::JsonNode input_arr = params["input"];
     for (size_t i = 0; i < input_arr.getChildCount(); ++i)
     {
         std::wstring path = input_arr[i].getString();
@@ -116,9 +127,9 @@ int AppendJob::runJob()
         m_job_info->setMaxCount((double)max_count);
 
     // output target
-    std::wstring output_path = m_config["output"];
+    std::wstring output_path = params["output"];
 
-    if (m_config["mode"].getString() == L"overwrite")
+    if (params["mode"].getString() == L"overwrite")
     {
         if (m_db->getFileExist(output_path))
             m_db->deleteFile(output_path);
@@ -225,7 +236,7 @@ int AppendJob::runJob()
         if (tango_job->getCancelled())
         {
             target_set.clear();
-            if (m_config["mode"].getString() == L"overwrite")
+            if (params["mode"].getString() == L"overwrite")
                 m_db->deleteFile(output_path);
 
             break;

@@ -22,6 +22,8 @@ namespace jobs
 
 GroupJob::GroupJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
 {
+    m_config["metadata"]["type"] = L"application/vnd.kx.group-job";
+    m_config["metadata"]["version"] = 1;
 }
 
 GroupJob::~GroupJob()
@@ -39,13 +41,16 @@ bool GroupJob::isInputValid()
             "version" : 1,
             "description" : ""
         },
-        "input" : <path>,
-        "output" : <path>,
-        "group" : <array>,
-        "columns" : <array>,
-        "where" : <string>,      // not required; default = ""
-        "having" : <string>,     // not required; default = ""
-        "unique" : <boolean>     // not required; default = false
+        "params":
+        {
+            "input" : <path>,
+            "output" : <path>,
+            "group" : <array>,
+            "columns" : <array>,
+            "where" : <string>,      // not required; default = ""
+            "having" : <string>,     // not required; default = ""
+            "unique" : <boolean>     // not required; default = false
+        }
     }
 */
     if (m_config.isNull())
@@ -53,23 +58,32 @@ bool GroupJob::isInputValid()
 
     // TODO: check job type and version
 
-    if (!m_config.childExists("input"))
+
+
+std::wstring str = m_config.toString();
+
+
+    kl::JsonNode params = m_config["params"];
+    if (params.isNull())
         return false;
 
-    if (!m_config.childExists("output"))
+    if (!params.childExists("input"))
         return false;
 
-    if (!m_config.childExists("group"))
+    if (!params.childExists("output"))
         return false;
 
-    if (!m_config.childExists("columns"))
+    if (!params.childExists("group"))
         return false;
 
-    kl::JsonNode group_node = m_config.getChild("group");
+    if (!params.childExists("columns"))
+        return false;
+
+    kl::JsonNode group_node = params.getChild("group");
     if (!group_node.isArray())
         return false;
 
-    kl::JsonNode columns_node = m_config.getChild("columns");
+    kl::JsonNode columns_node = params.getChild("columns");
     if (!columns_node.isArray())
         return false;
 
@@ -98,23 +112,26 @@ int GroupJob::runJob()
         return 0;
     }    
 
+
+    kl::JsonNode params = m_config["params"];
+
     // get the input parameters
-    std::wstring input_path = m_config["input"].getString();
-    std::wstring output_path = m_config["output"].getString();
-    std::vector<kl::JsonNode> group_nodes = m_config["group"].getChildren();
-    std::vector<kl::JsonNode> column_nodes = m_config["columns"].getChildren();
+    std::wstring input_path = params["input"].getString();
+    std::wstring output_path = params["output"].getString();
+    std::vector<kl::JsonNode> group_nodes = params["group"].getChildren();
+    std::vector<kl::JsonNode> column_nodes = params["columns"].getChildren();
 
     std::wstring where_params;
-    if (m_config.childExists("where"))
-        where_params = m_config["where"].getString();
+    if (params.childExists("where"))
+        where_params = params["where"].getString();
 
     std::wstring having_params;
-    if (m_config.childExists("having"))
-        having_params = m_config["having"].getString();
+    if (params.childExists("having"))
+        having_params = params["having"].getString();
 
     bool unique_records = false;
-    if (m_config.childExists("unique"))
-        unique_records = m_config["unique"].getBoolean();
+    if (params.childExists("unique"))
+        unique_records = params["unique"].getBoolean();
 
     std::vector<std::wstring> group_values, column_values;
     std::vector<kl::JsonNode>::iterator it_node;

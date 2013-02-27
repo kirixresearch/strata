@@ -21,6 +21,8 @@ namespace jobs
 
 DeleteJob::DeleteJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
 {
+    m_config["metadata"]["type"] = L"application/vnd.kx.delete-job";
+    m_config["metadata"]["version"] = 1;
 }
 
 DeleteJob::~DeleteJob()
@@ -38,8 +40,11 @@ bool DeleteJob::isInputValid()
             "version" : 1,
             "description" : ""
         },
-        "input" : <path>,
-        "where": ""
+        "params":
+        {
+            "input" : <path>,
+            "where": ""
+        }
     }
 */
     if (m_config.isNull())
@@ -47,10 +52,14 @@ bool DeleteJob::isInputValid()
 
     // TODO: check job type and version
 
-    if (!m_config.childExists("input"))
+    kl::JsonNode params = m_config["params"];
+    if (params.isNull())
         return false;
 
-    if (!m_config.childExists("where"))
+    if (!params.childExists("input"))
+        return false;
+
+    if (!params.childExists("where"))
         return false;
 
     // TODO: check for file existence?  in general, how much
@@ -78,9 +87,13 @@ int DeleteJob::runJob()
         return 0;
     }    
 
+
+    kl::JsonNode params = m_config["params"];
+
+
     // get the input parameters
-    std::wstring input_path = m_config["input"].getString();
-    std::wstring where_param = m_config["where"].getString();
+    std::wstring input_path = params["input"].getString();
+    std::wstring where_param = params["where"].getString();
 
 
     // build the delete SQL
@@ -95,7 +108,7 @@ int DeleteJob::runJob()
     setTangoJob(tango_job);
 
     xcm::IObjectPtr result;
-    if (m_db->execute(delete_sql, tango::sqlPassThrough, result, tango_job));
+    m_db->execute(delete_sql, tango::sqlPassThrough, result, tango_job);
 
 
     if (tango_job->getCancelled())

@@ -42,6 +42,34 @@ public:
         std::wstring str1 = L"$c records processed";
         std::wstring str2 = L"$c of $m records processed ($p1%)";
         getJobInfo()->setProgressStringFormat(str1, str2);
+
+
+        // set the basic configuration:
+        /*
+            {
+                "metadata":
+                {
+                    "type" : "",
+                    "version" : 1,
+                    "description" : ""
+                },
+                "params":
+                {
+                }
+            }
+        */
+
+
+        m_config.setObject();
+
+        kl::JsonNode metadata = m_config["metadata"];
+        metadata.setObject();
+        metadata["type"].setString(L"");
+        metadata["version"].setString(L"");
+        metadata["description"].setString(L"");
+
+        kl::JsonNode params = m_config["params"];
+        params.setObject();
     }
 
     int getJobId()
@@ -72,10 +100,18 @@ public:
     {
         XCM_AUTO_LOCK(m_jobbase_mutex);
 
-        m_config.fromString(json);
+        m_config["params"].fromString(json);
     }
 
     std::wstring getParameters()
+    {
+        XCM_AUTO_LOCK(m_jobbase_mutex);
+
+        std::wstring res = m_config["params"].toString();
+        return res;
+    }
+
+    std::wstring getConfig()
     {
         XCM_AUTO_LOCK(m_jobbase_mutex);
 

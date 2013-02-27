@@ -21,6 +21,8 @@ namespace jobs
 
 DivideJob::DivideJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
 {
+    m_config["metadata"]["type"] = L"application/vnd.kx.divide-job";
+    m_config["metadata"]["version"] = 1;
 }
 
 DivideJob::~DivideJob()
@@ -38,9 +40,12 @@ bool DivideJob::isInputValid()
             "version" : 1,
             "description" : ""
         },
-        "input" : <path>,
-        "output" : <path>,      // prefix used for output path
-        "row_count" : <integer>
+        "params":
+        {
+            "input" : <path>,
+            "output" : <path>,      // prefix used for output path
+            "row_count" : <integer>
+        }
     }
 */
 
@@ -49,13 +54,17 @@ bool DivideJob::isInputValid()
 
     // TODO: check job type and version
 
-    if (!m_config.childExists("input"))
+    kl::JsonNode params = m_config["params"];
+    if (params.isNull())
         return false;
 
-    if (!m_config.childExists("output"))
+    if (!params.childExists("input"))
         return false;
 
-    if (!m_config.childExists("row_count"))
+    if (!params.childExists("output"))
+        return false;
+
+    if (!params.childExists("row_count"))
         return false;
 
     // TODO: check for file existence?  in general, how much
@@ -75,13 +84,16 @@ int DivideJob::runJob()
         return 0;
     }
 
+
+    kl::JsonNode params = m_config["params"];
+
     // get the input
-    std::wstring input_path = m_config["input"].getString();
+    std::wstring input_path = params["input"].getString();
     tango::ISetPtr input_set = m_db->openSet(input_path);
 
     // get the output prefix and row count
-    std::wstring output_prefix = m_config["output"].getString();
-    size_t output_row_count = m_config["row_count"].getInteger();
+    std::wstring output_prefix = params["output"].getString();
+    size_t output_row_count = params["row_count"].getInteger();
 
     if (input_set.isNull())
     {

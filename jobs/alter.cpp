@@ -21,6 +21,8 @@ namespace jobs
 
 AlterJob::AlterJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
 {
+    m_config["metadata"]["type"] = L"application/vnd.kx.alter-job";
+    m_config["metadata"]["version"] = 1;
 }
 
 AlterJob::~AlterJob()
@@ -38,21 +40,24 @@ bool AlterJob::isInputValid()
             "version" : 1,
             "description" : ""
         },
-        "input" : <path>,
-        "actions" : [
-            { 
-                "action" : "add" | "drop" | "modify",
-                "name" : <string>,
-                "params" : {
+        "params":
+        {
+            "input" : <path>,
+            "actions" : [
+                { 
+                    "action" : "add" | "drop" | "modify",
                     "name" : <string>,
-                    "type" : "character" | "widecharacter" | "binary" | "numeric" | "double" | "integer" | "date" | "datetime" | "boolean",
-                    "width": <integer>,
-                    "scale": <integer>,
-                    "expression": <string> | null,  // note: null expression turns off expressions
-                    "position": <integer>
-            },
-            ...
-        ]
+                    "params" : {
+                        "name" : <string>,
+                        "type" : "character" | "widecharacter" | "binary" | "numeric" | "double" | "integer" | "date" | "datetime" | "boolean",
+                        "width": <integer>,
+                        "scale": <integer>,
+                        "expression": <string> | null,  // note: null expression turns off expressions
+                        "position": <integer>
+                },
+                ...
+            ]
+        }
     }
 */
     if (m_config.isNull())
@@ -60,13 +65,17 @@ bool AlterJob::isInputValid()
 
     // TODO: check job type and version
 
-    if (!m_config.childExists("input"))
+    kl::JsonNode params = m_config["params"];
+    if (params.isNull())
         return false;
 
-    if (!m_config.childExists("actions"))
+    if (!params.childExists("input"))
         return false;
 
-    kl::JsonNode actions_node = m_config.getChild("actions");
+    if (!params.childExists("actions"))
+        return false;
+
+    kl::JsonNode actions_node = params.getChild("actions");
     if (!actions_node.isArray())
         return false;
 
@@ -96,8 +105,9 @@ int AlterJob::runJob()
     }    
 
     // get the input parameters
-    std::wstring input_path = m_config["input"].getString();
-    std::vector<kl::JsonNode> action_nodes = m_config["actions"].getChildren();
+    kl::JsonNode params = m_config["params"];
+    std::wstring input_path = params["input"].getString();
+    std::vector<kl::JsonNode> action_nodes = params["actions"].getChildren();
 
     tango::ISetPtr input_set = m_db->openSet(input_path);
     if (input_set.isNull())

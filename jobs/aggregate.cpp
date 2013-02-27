@@ -21,6 +21,8 @@ namespace jobs
 
 AggregateJob::AggregateJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
 {
+    m_config["metadata"]["type"] = L"application/vnd.kx.aggregate-job";
+    m_config["metadata"]["version"] = 1;
 }
 
 AggregateJob::~AggregateJob()
@@ -38,8 +40,11 @@ bool AggregateJob::isInputValid()
             "version" : 1,
             "description" : ""
         },
-        jobs : [
-        ]
+        "params":
+        {
+            jobs : [
+            ]
+        }
     }
 */
     if (m_config.isNull())
@@ -47,10 +52,14 @@ bool AggregateJob::isInputValid()
 
     // TODO: check job type and version
 
-    if (!m_config.childExists("jobs"))
+    kl::JsonNode params = m_config["params"];
+    if (params.isNull())
         return false;
 
-    kl::JsonNode actions_node = m_config.getChild("jobs");
+    if (!params.childExists("jobs"))
+        return false;
+
+    kl::JsonNode actions_node = params.getChild("jobs");
     if (!actions_node.isArray())
         return false;
 
@@ -80,7 +89,8 @@ int AggregateJob::runJob()
     }    
 
     // get the jobs
-    std::vector<kl::JsonNode> action_nodes = m_config["jobs"].getChildren();
+    kl::JsonNode params = m_config["params"];
+    std::vector<kl::JsonNode> action_nodes = params.getChildren();
 
 
 

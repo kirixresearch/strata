@@ -21,6 +21,8 @@ namespace jobs
 
 UpdateJob::UpdateJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
 {
+    m_config["metadata"]["type"] = L"application/vnd.kx.update-job";
+    m_config["metadata"]["version"] = 1;
 }
 
 UpdateJob::~UpdateJob()
@@ -38,15 +40,18 @@ bool UpdateJob::isInputValid()
             "version" : 1,
             "description" : ""
         },
-        "input" : <path>,
-        "where": "",
-        "set" : [
-            {
-                "column" : <string>,
-                "expression"
-            },
-            ...
-        ]
+        "params":
+        {
+            "input" : <path>,
+            "where": "",
+            "set" : [
+                {
+                    "column" : <string>,
+                    "expression"
+                },
+                ...
+            ]
+        }
     }
 */
     if (m_config.isNull())
@@ -54,13 +59,17 @@ bool UpdateJob::isInputValid()
 
     // TODO: check job type and version
 
-    if (!m_config.childExists("input"))
+    kl::JsonNode params = m_config["params"];
+    if (params.isNull())
         return false;
 
-    if (!m_config.childExists("set"))
+    if (!params.childExists("input"))
         return false;
 
-    kl::JsonNode set_node = m_config.getChild("set");
+    if (!params.childExists("set"))
+        return false;
+
+    kl::JsonNode set_node = params.getChild("set");
     if (!set_node.isArray())
         return false;
 
@@ -89,15 +98,18 @@ int UpdateJob::runJob()
         return 0;
     }    
 
+
+    kl::JsonNode params = m_config["params"];
+
     // get the input parameters
-    std::wstring input_path = m_config["input"].getString();
+    std::wstring input_path = params["input"].getString();
 
     std::wstring where_param;
-    if (m_config.childExists("where"))
-        where_param = m_config["where"].getString();
+    if (params.childExists("where"))
+        where_param = params["where"].getString();
 
     std::vector<kl::JsonNode> set_nodes;
-    set_nodes = m_config["set"].getChildren();
+    set_nodes = params["set"].getChildren();
 
 
     // build the update SQL
@@ -136,7 +148,7 @@ int UpdateJob::runJob()
     setTangoJob(tango_job);
 
     xcm::IObjectPtr result;
-    if (m_db->execute(update_sql, tango::sqlPassThrough, result, tango_job));
+    m_db->execute(update_sql, tango::sqlPassThrough, result, tango_job);
 
 
     if (tango_job->getCancelled())

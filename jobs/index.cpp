@@ -21,6 +21,8 @@ namespace jobs
 
 IndexJob::IndexJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
 {
+    m_config["metadata"]["type"] = L"application/vnd.kx.index-job";
+    m_config["metadata"]["version"] = 1;
 }
 
 IndexJob::~IndexJob()
@@ -38,14 +40,17 @@ bool IndexJob::isInputValid()
             "version" : 1,
             "description" : ""
         },
-        "indexes" : [
-            {
-                "input" : <path>,
-                "name" : <string>,
-                "expression" : <string>
-            },
-            ...
-        ]
+        "params":
+        {
+            "indexes" : [
+                {
+                    "input" : <path>,
+                    "name" : <string>,
+                    "expression" : <string>
+                },
+                ...
+            ]
+        }
     }
 */
     if (m_config.isNull())
@@ -53,7 +58,11 @@ bool IndexJob::isInputValid()
 
     // TODO: check job type and version
 
-    if (!m_config.childExists("indexes"))
+    kl::JsonNode params = m_config["params"];
+    if (params.isNull())
+        return false;
+
+    if (!params.childExists("indexes"))
         return false;
 
     // TODO: check for file existence?  in general, how much
@@ -82,8 +91,10 @@ int IndexJob::runJob()
     }    
 
 
+    kl::JsonNode params = m_config["params"];
+
     // get the index node children
-    std::vector<kl::JsonNode> children = m_config["indexes"].getChildren();
+    std::vector<kl::JsonNode> children = params["indexes"].getChildren();
     std::vector<kl::JsonNode>::iterator it, it_end;
     it_end = children.end();
 

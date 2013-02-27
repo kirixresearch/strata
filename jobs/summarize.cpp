@@ -23,6 +23,8 @@ namespace jobs
 
 SummarizeJob::SummarizeJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
 {
+    m_config["metadata"]["type"] = L"application/vnd.kx.summarize-job";
+    m_config["metadata"]["version"] = 1;
 }
 
 SummarizeJob::~SummarizeJob()
@@ -40,10 +42,13 @@ bool SummarizeJob::isInputValid()
             "version" : 1,
             "description" : ""
         },
-        "input" : <path>,
-        "output" : <path>,
-        "columns" : <array>,     // array of fieldnames to summarize
-        "where" : <string>,      // not required; default = ""
+        "params":
+        {
+            "input" : <path>,
+            "output" : <path>,
+            "columns" : <array>,     // array of fieldnames to summarize
+            "where" : <string>,      // not required; default = ""
+        }
     }
 */
     if (m_config.isNull())
@@ -51,16 +56,20 @@ bool SummarizeJob::isInputValid()
 
     // TODO: check job type and version
 
-    if (!m_config.childExists("input"))
+    kl::JsonNode params = m_config["params"];
+    if (params.isNull())
         return false;
 
-    if (!m_config.childExists("output"))
+    if (!params.childExists("input"))
         return false;
 
-    if (!m_config.childExists("columns"))
+    if (!params.childExists("output"))
         return false;
 
-    kl::JsonNode columns_node = m_config.getChild("columns");
+    if (!params.childExists("columns"))
+        return false;
+
+    kl::JsonNode columns_node = params.getChild("columns");
     if (!columns_node.isArray())
         return false;
 
@@ -90,11 +99,13 @@ int SummarizeJob::runJob()
     }
 
 
+    kl::JsonNode params = m_config["params"];
+
     // STEP 1: build the group job parameters from the summarize parameters
 
-    std::wstring input_path = m_config["input"].getString();
+    std::wstring input_path = params["input"].getString();
     
-    std::vector<kl::JsonNode> input_columns = m_config["columns"].getChildren();
+    std::vector<kl::JsonNode> input_columns = params["columns"].getChildren();
     std::vector<kl::JsonNode>::iterator it_node, it_node_end;
     it_node_end = input_columns.end();
     
@@ -195,8 +206,8 @@ int SummarizeJob::runJob()
     setTangoJob(tango_job);
 
     std::wstring where_param;
-    if (m_config.childExists("where"))
-        where_param = m_config["where"].getString();
+    if (params.childExists("where"))
+        where_param = params["where"].getString();
 
     group_output_set = m_db->runGroupQuery(input_set,
                                            L"",
@@ -473,7 +484,7 @@ int SummarizeJob::runJob()
 
 
     // store the summary result table
-    std::wstring output_path = m_config["output"].getString();
+    std::wstring output_path = params["output"].getString();
     if (output_path.length() > 0)
         m_db->storeObject(output_set, output_path);
 
