@@ -26,7 +26,7 @@ struct md5result_t
 };
 
 void md5(const unsigned char* buf, size_t len, md5result_t* result);
-void md5sum(const std::wstring& path, md5result_t* result);
+bool md5sum(const std::wstring& path, md5result_t* result);
 
 std::wstring md5w(const unsigned char* buf, size_t len);
 std::string md5(const unsigned char* buf, size_t len);

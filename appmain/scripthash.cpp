@@ -97,7 +97,8 @@ void Hash::md5sum(kscript::ExprEnv* env, void* param, kscript::Value* retval)
         return;
         
     kl::md5result_t res;
-    kl::md5sum(env->getParam(0)->getString(), &res);
+    if (!kl::md5sum(env->getParam(0)->getString(), &res))
+        return;
 
     retval->setString(kl::md5resultToString(res));
 }
