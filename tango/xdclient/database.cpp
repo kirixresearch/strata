@@ -234,7 +234,7 @@ tango::IStructurePtr ClientDatabase::jsonToStructure(kl::JsonNode& node)
 void ClientDatabase::columnToJsonNode(tango::IColumnInfoPtr info, kl::JsonNode& column)
 {  
     column["name"] = info->getName();
-    column["type"] = dbtypeToString(info->getType());
+    column["type"] = tango::dbtypeToString(info->getType());
     column["width"].setInteger(info->getWidth());
     column["scale"].setInteger(info->getScale());   
     column["expression"] = info->getExpression();

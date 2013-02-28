@@ -196,7 +196,7 @@ bool ClientSet::modifyStructure(tango::IStructure* struct_config, tango::IJob* j
                 json_action["params"]["name"] = it->m_params->getName();
 
             if (it->m_params->getType() != -1)
-                json_action["params"]["type"] = m_database->dbtypeToString(it->m_params->getType());
+                json_action["params"]["type"] = tango::dbtypeToString(it->m_params->getType());
 
             if (it->m_params->getWidth() != -1)
                 json_action["params"]["width"].setInteger(it->m_params->getWidth());
