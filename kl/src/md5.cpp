@@ -289,13 +289,16 @@ void md5(const unsigned char* buf,
     md5_final(result->buf, &ctx);
 }
 
-void md5sum(const std::wstring& path, md5result_t* result)
+bool md5sum(const std::wstring& path, md5result_t* result)
 {
     md5context_t ctx;
-    
-    md5_init(&ctx);
 
     xf_file_t f = xf_open(path, xfOpen, xfRead, xfShareReadWrite);
+    if (!f)
+        return false;
+
+    md5_init(&ctx);
+
     unsigned char buf[512];
     int r;
 
@@ -309,6 +312,8 @@ void md5sum(const std::wstring& path, md5result_t* result)
     xf_close(f);
 
     md5_final(result->buf, &ctx);
+
+    return true;
 }
 
 std::string md5resultToString(const md5result_t& res)
