@@ -232,6 +232,7 @@ enum
     errorCancelled = -8,
     errorTimeoutExceeded = -9,
     errorDiskSpace = -10,
+    errorNoDriver = -11,
     
     errorObjectNotFound = -100,
     errorColumnNotFound = -101,

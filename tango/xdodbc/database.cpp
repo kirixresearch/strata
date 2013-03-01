@@ -834,16 +834,23 @@ void OdbcDatabase::errorSqlConn(HDBC hdbc)
     SQLINTEGER native_error_ptr;
     SQLSMALLINT text_len_ptr;
 
-    SQLRETURN r = SQLGetDiagRec(SQL_HANDLE_DBC,
-                                hdbc,
-                                1,
-                                state,
-                                &native_error_ptr,
-                                message,
-                                2048,
-                                &text_len_ptr);
-                                
-    m_error.setError(odbcStateToTangoError(state), kl::towstring((TCHAR*)message));
+    if (hdbc)
+    {
+        SQLRETURN r = SQLGetDiagRec(SQL_HANDLE_DBC,
+                                    hdbc,
+                                    1,
+                                    state,
+                                    &native_error_ptr,
+                                    message,
+                                    2048,
+                                    &text_len_ptr);
+        m_error.setError(odbcStateToTangoError(state), kl::towstring((TCHAR*)message));
+    }
+     else
+    {
+        m_error.setError(tango::errorGeneral, L"");
+    }
+                          
 }
 
 
@@ -1177,7 +1184,7 @@ bool OdbcDatabase::open(int type,
 
             std::vector<std::wstring> drivers;
             getOdbcDriverNames(drivers);
-            const wchar_t* driver = L"";
+            const wchar_t* driver = NULL;
             std::vector<std::wstring>::iterator driver_it;
             for (driver_it = drivers.begin(); driver_it != drivers.end(); ++driver_it)
             {
@@ -1185,6 +1192,12 @@ bool OdbcDatabase::open(int type,
                 kl::makeUpper(d);
                 if (d.find(L"MYSQL") != d.npos)
                     driver = driver_it->c_str();
+            }
+
+            if (!driver)
+            {
+                m_error.setError(tango::errorNoDriver, L"The required MySQL ODBC driver was not found");
+                return false;
             }
             
             swprintf(db_label_buf, 1024, L"MySQL (%ls)", server.c_str());
