@@ -264,7 +264,7 @@ void testSqlConn(HDBC hdbc)
 
 // utility function to create a valid SQL field string
 
-std::wstring createOdbcFieldString(std::wstring name,
+std::wstring createOdbcFieldString(const std::wstring& name,
                                    int type,
                                    int width,
                                    int scale,

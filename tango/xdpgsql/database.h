@@ -3,125 +3,47 @@
  * Copyright (c) 2003-2013, Kirix Research, LLC.  All rights reserved.
  *
  * Project:  XD Database Library
- * Author:   Benjamin I. Williams; David Z. Williams
- * Created:  2003-09-03
+ * Author:   Benjamin I. Williams
+ * Created:  2013-03-01
  *
  */
 
 
-#ifndef __XDODBC_DATABASE_H
-#define __XDODBC_DATABASE_H
+#ifndef __XDPGSQL_DATABASE_H
+#define __XDPGSQL_DATABASE_H
 
 
-#if _MSC_VER < 1300
-#define SQLLEN SQLINTEGER
-#define SQLULEN SQLUINTEGER
-#endif
 
-
-#ifdef WIN32
-#include <xcm/xcmwin32.h>
-#endif
-
-
-#include <kl/string.h>
-#include "../xdcommon/xdcommon.h"
 #include "../xdcommon/errorinfo.h"
 
-
-extern "C" {
-
-#include <sql.h>
-#include <sqlext.h>
-};
-
-
-#ifdef _UNICODE
-    #define sqlt(s)    ((SQLWCHAR*)(s.c_str()))
-    #define _t(s)      (SQLWCHAR*)L ## s
-#else
-    #define sqlt(s)    ((SQLCHAR*)(kl::tostring(s).c_str()))
-    #define _t(s)      (SQLCHAR*)s
-#endif
-
-
-inline std::wstring sql2wstring(const SQLCHAR* s)
-{
-    return kl::towstring((char*)s);
-}
-
-inline std::wstring sql2wstring(const SQLWCHAR* s)
-{
-    return kl::towstring((wchar_t*)s);
-}
-
-void testSqlStmt(HSTMT stmt);
-void testSqlConn(HDBC hdbc);
-SQLSMALLINT tango2sqlType(int tango_type);
-SQLSMALLINT tango2sqlCType(int tango_type);
-int sql2tangoType(SQLSMALLINT sql_type);
-
-std::wstring createOdbcFieldString(const std::wstring& name,
-                                   int type,
-                                   int width,
-                                   int scale,
-                                   bool allow_nulls,
-                                   int db_type);
-
-tango::IColumnInfoPtr createColInfo(int db_type,
-                                    const std::wstring& col_name,
+inline tango::IColumnInfoPtr createColInfo(const std::wstring& col_name,
                                     int col_odbc_type,
                                     int col_width,
                                     int col_scale,
                                     const std::wstring& col_expr,
-                                    int datetime_sub);
+                                    int datetime_sub) {return xcm::null;}
 
 
-
-
-xcm_interface IOdbcDatabase : public xcm::IObject
+class PgsqlDatabase : public tango::IDatabase
 {
-    XCM_INTERFACE_NAME("xdodbc.IOdbcDatabase")
+friend class PgsqlSet;
+friend class PgsqlIterator;
 
-public:
-
-    virtual SQLRETURN connect(HDBC conn) = 0;
-    virtual bool getUsingDsn() = 0;
-    virtual std::wstring getServer() = 0;
-    virtual std::wstring getPath() = 0;
-    
-    virtual std::wstring getTempFileDirectory() = 0;
-    virtual std::wstring getDefinitionDirectory() = 0;
-    
-    virtual void errorSqlStmt(HSTMT stmt) = 0;
-    virtual void errorSqlConn(HDBC hdbc) = 0;
-};
-
-XCM_DECLARE_SMARTPTR(IOdbcDatabase)
-
-
-
-class OdbcDatabase : public tango::IDatabase,
-                     public IOdbcDatabase
-{
-    XCM_CLASS_NAME("xdodbc.Database")
-    XCM_BEGIN_INTERFACE_MAP(OdbcDatabase)
+    XCM_CLASS_NAME("xdpgsql.Database")
+    XCM_BEGIN_INTERFACE_MAP(PgsqlDatabase)
         XCM_INTERFACE_ENTRY(tango::IDatabase)
-        XCM_INTERFACE_ENTRY(IOdbcDatabase)
     XCM_END_INTERFACE_MAP()
 
 public:
 
-    OdbcDatabase();
-    ~OdbcDatabase();
+    PgsqlDatabase();
+    ~PgsqlDatabase();
     
-    bool open(int type,
-              const std::wstring& server,
+    bool open(const std::wstring& server,
               int port,
               const std::wstring& database,
               const std::wstring& username,
-              const std::wstring& password,
-              const std::wstring& path = L"");
+              const std::wstring& password);
 
     void close();
 
@@ -217,30 +139,19 @@ public:
                                  tango::IJob* job);
 
 private:
-
-    tango::IFileInfoEnumPtr getTreeFolderInfo(const std::wstring& path);
  
-    void errorSqlStmt(HSTMT stmt);
-    void errorSqlConn(HDBC hdbc);
-    
-    SQLRETURN connect(HDBC conn);
-    HDBC createConnection(SQLRETURN* retval = NULL);
-    void closeConnection(HDBC conn);
-    
-    bool getUsingDsn();
     std::wstring getServer();
     std::wstring getPath();
     
     std::wstring getTempFileDirectory();
     std::wstring getDefinitionDirectory();
     
-    void setAttributes(HDBC connection = NULL);
-    
+    PGconn* createConnection();
+    void closeConnection(PGconn* conn);
+
 private:
 
     tango::IAttributesPtr m_attr;
-    
-    HENV m_env;
 
     std::wstring m_db_name;
     std::wstring m_conn_str;
