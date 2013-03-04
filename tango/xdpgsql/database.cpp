@@ -472,7 +472,7 @@ PGconn* PgsqlDatabase::createConnection()
     connstr += L"hostaddr='" + m_server + L"'";
 
     int port = m_port; if (port == 0) port = 5432;
-    connstr += L" portr='" + kl::itowstring(port) + L"'";
+    connstr += L" port='" + kl::itowstring(port) + L"'";
 
     connstr += L" dbname='" + m_database + L"'";
     connstr += L" user='" + m_username + L"'";
@@ -508,6 +508,22 @@ bool PgsqlDatabase::open(const std::wstring& server,
 
     m_error.clearError();
     
+
+    m_server = server;
+    m_port = port;
+    m_database = database;
+    m_username = username;
+    m_password = password;
+
+    PGconn* conn = createConnection();
+    if (!conn)
+    {
+        return false;
+    }
+
+
+    closeConnection(conn);
+
 
     return true;
 }
@@ -761,6 +777,30 @@ tango::IFileInfoEnumPtr PgsqlDatabase::getFolderInfo(const std::wstring& path)
     xcm::IVectorImpl<tango::IFileInfoPtr>* retval;
     retval = new xcm::IVectorImpl<tango::IFileInfoPtr>;
 
+    PGconn* conn = createConnection();
+    if (!conn)
+        return retval;
+
+    PGresult* res = PQexec(conn, "select tablename from pg_tables");
+
+    if (PQresultStatus(res) != PGRES_TUPLES_OK)
+        return retval;
+
+    std::vector<std::string> arr;
+
+    int i, rows = PQntuples(res);
+    for (i = 0; i < rows; ++i)
+    {
+        PgsqlFileInfo* f = new PgsqlFileInfo(this);
+        f->name = kl::towstring(PQgetvalue(res, i, 0));
+        f->type = tango::filetypeSet;
+        f->format = tango::formatNative;
+
+        retval->append(f);
+    }
+    
+
+    closeConnection(conn);
 
     return retval;
 }

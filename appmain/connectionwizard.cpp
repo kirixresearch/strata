@@ -339,6 +339,9 @@ wxString ConnectionWizard::getConnectionString()
         case dbtypeOracle:
             result += wxT("Xdprovider=xdoracle;");
             break;
+        case dbtypePostgres:
+            result += wxT("Xdprovider=xdpgsql;");
+            break;
         case dbtypeOdbc:
             result += wxT("Xdprovider=xdodbc;Xddbtype=dsn;");
             break;
@@ -422,6 +425,8 @@ void ConnectionWizard::setConnectionString(const wxString& str)
         ci.type = dbtypeMySql;
     else if (cstr->getLowerValue(L"Xdprovider") == L"xdoracle")
         ci.type = dbtypeOracle;
+    else if (cstr->getLowerValue(L"Xdprovider") == L"xdpgsql")
+        ci.type = dbtypePostgres;
     else if (cstr->getLowerValue(L"Xdprovider") == L"xdfs")
     {
         xdfs = true;

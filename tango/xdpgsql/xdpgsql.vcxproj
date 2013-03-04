@@ -113,7 +113,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;ws2_32.lib;secur32.lib;../xdcommon/lib/xdcommonud.lib;../../kscript/lib/kscriptud.lib;../../kl/lib/klud.lib;../../supp/postgres/src/interfaces/libpq/Release/libpq.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;ws2_32.lib;secur32.lib;../xdcommon/lib/xdcommonud.lib;../../kscript/lib/kscriptud.lib;../../kl/lib/klud.lib;../../supp/postgres/src/interfaces/libpq/Debug/libpqd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../../supp/sqlite/Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -202,7 +202,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;wsock32.lib;../xdcommon/lib/xdcommonu.lib;../../kscript/lib/kscriptu.lib;../../kl/lib/klu.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;ws2_32.lib;secur32.lib;../xdcommon/lib/xdcommonu.lib;../../kscript/lib/kscriptu.lib;../../kl/lib/klu.lib;../../supp/postgres/src/interfaces/libpq/Debug/libpqd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ProgramDatabaseFile>.\ReleaseUnicode/xdpgsql.pdb</ProgramDatabaseFile>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>

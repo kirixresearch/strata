@@ -75,6 +75,7 @@ public:
             case dbtypeExcel:        provider = wxT("xdodbc"); dbtype = wxT("excel"); break;
             case dbtypeSqlite:       provider = wxT("xdsqlite"); break;
 
+            case dbtypePostgres:     provider = wxT("xdpgsql"); break;
             case dbtypeOracle:       provider = wxT("xdoracle"); break;
             case dbtypeOdbc:         provider = wxT("xdodbc"); dbtype = wxT("dsn"); break;
             case dbtypeDb2:          provider = wxT("xdodbc"); dbtype = wxT("db2"); break;
