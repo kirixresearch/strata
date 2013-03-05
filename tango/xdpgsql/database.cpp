@@ -70,157 +70,6 @@ const wchar_t* sql92_keywords =
                 L"WHENEVER,WHERE,WITH,WORK,WRITE,YEAR,ZONE";
 
 
-const wchar_t* access_keywords =
-                L"ADD,ALL,ALPHANUMERIC,ALTER,AND,ANY,APPLICATION,AS,"
-                L"ASC,ASSISTANT,AUTOINCREMENT,AVG,BETWEEN,BINARY,BIT,"
-                L"BOOLEAN,BY,BYTE,CHAR,CHARACTER,COLUMN,COMPACTDATABASE,"
-                L"CONSTRAINT,CONTAINER,COUNT,COUNTER,CREATE,"
-                L"CREATEDATABASE,CREATEFIELD,CREATEGROUP,CREATEINDEX,"
-                L"CREATEOBJECT,CREATEPROPERTY,CREATERELATION,"
-                L"CREATETABLEDEF,CREATEUSER,CREATEWORKSPACE,CURRENCY,"
-                L"CURRENTUSER,DATABASE,DATE,DATETIME,DELETE,DESC,"
-                L"DESCRIPTION,DISALLOW,DISTINCT,DISTINCTROW,DOCUMENT,"
-                L"DOUBLE,DROP,ECHO,ELSE,END,EQV,ERROR,EXISTS,EXIT,FALSE,"
-                L"FIELD,FIELDS,FILLCACHE,FLOAT,FLOAT4,FLOAT8,FOREIGN,"
-                L"FORM,FROM,FULL,FUNCTION,GENERAL,GETOBJECT,GETOPTION,"
-                L"GOTOPAGE,GROUP,GUID,HAVING,IDLE,IEEEDOUBLE,IEEESINGLE,"
-                L"IF,IGNORE,IMP,IN,INDEX,INDEXES,INNER,INSERT,"
-                L"INSERTTEXT,INT,INTEGER,INTEGER1,INTEGER2,INTEGER4,"
-                L"INTO,IS,JOIN,KEY,LASTMODIFIED,LEFT,LEVEL,LIKE,LOGICAL,"
-                L"LOGICAL1,LONG,LONGBINARY,LONGTEXT,MACRO,MATCH,MAX,MIN,"
-                L"MOD,MEMO,MODULE,MONEY,MOVE,NAME,NEWPASSWORD,NO,NOT,"
-                L"NULL,NUMBER,NUMERIC,OBJECT,OLEOBJECT,OFF,ON,"
-                L"OPENRECORDSET,OPTION,OR,ORDER,OUTER,OWNERACCESS,"
-                L"PARAMETER,PARAMETERS,PARTIAL,PERCENT,PIVOT,PRIMARY,"
-                L"PROCEDURE,PROPERTY,QUERIES,QUERY,QUIT,REAL,RECALC,"
-                L"RECORDSET,REFERENCES,REFRESH,REFRESHLINK,"
-                L"REGISTERDATABASE,RELATION,REPAINT,REPAIRDATABASE,"
-                L"REPORT,REPORTS,REQUERY,RIGHT,SCREEN,SECTION,SELECT,"
-                L"SET,SETFOCUS,SETOPTION,SHORT,SINGLE,SMALLINT,SOME,SQL,"
-                L"STDEV,STDEVP,STRING,SUM,TABLE,TABLEDEF,TABLEDEFS,"
-                L"TABLEID,TEXT,TIME,TIMESTAMP,TOP,TRANSFORM,TRUE,TYPE,"
-                L"UNION,UNIQUE,UPDATE,VALUE,VALUES,VAR,VARP,VARBINARY,"
-                L"VARCHAR,WHERE,WITH,WORKSPACE,XOR,YEAR,YES,YESNO";
-
-
-const wchar_t* excel_keywords = L"";
-
-
-const wchar_t* mysql_keywords =
-                L"ADD,ALL,ALTER,ANALYZE,AND,AS,ASC,ASENSITIVE,"
-                L"AUTO_INCREMENT,BDB,BEFORE,BERKELEYDB,BETWEEN,"
-                L"BIGINT,BINARY,BLOB,BOTH,BY,CALL,CASCADE,CASE,"
-                L"CHANGE,CHAR,CHARACTER,CHECK,COLLATE,COLUMN,"
-                L"COLUMNS,CONDITION,CONNECTION,CONSTRAINT,"
-                L"CONTINUE,CREATE,CROSS,CURRENT_DATE,"
-                L"CURRENT_TIME,CURRENT_TIMESTAMP,CURSOR,DATABASE,"
-                L"DATABASES,DAY_HOUR,DAY_MICROSECOND,DAY_MINUTE,"
-                L"DAY_SECOND,DEC,DECIMAL,DECLARE,DEFAULT,DELAYED,"
-                L"DELETE,DESC,DESCRIBE,DETERMINISTIC,DISTINCT,"
-                L"DISTINCTROW,DIV,DOUBLE,DROP,ELSE,ELSEIF,ENCLOSED,"
-                L"ESCAPED,EXISTS,EXIT,EXPLAIN,FALSE,FETCH,FIELDS,"
-                L"FLOAT,FOR,FORCE,FOREIGN,FOUND,FRAC_SECOND,FROM,"
-                L"FULLTEXT,GRANT,GROUP,HAVING,HIGH_PRIORITY,"
-                L"HOUR_MICROSECOND,HOUR_MINUTE,HOUR_SECOND,IF,"
-                L"IGNORE,IN,INDEX,INFILE,INNER,INNODB,INOUT,"
-                L"INSENSITIVE,INSERT,INT,INTEGER,INTERVAL,INTO,"
-                L"IO_THREAD,IS,ITERATE,JOIN,KEY,KEYS,KILL,LEADING,"
-                L"LEAVE,LEFT,LIKE,LIMIT,LINES,LOAD,LOCALTIME,"
-                L"LOCALTIMESTAMP,LOCK,LONG,LONGBLOB,LONGTEXT,LOOP,"
-                L"LOW_PRIORITY,MASTER_SERVER_ID,MATCH,MEDIUMBLOB,"
-                L"MEDIUMINT,MEDIUMTEXT,MIDDLEINT,"
-                L"MINUTE_MICROSECOND,MINUTE_SECOND,MOD,NATURAL,NOT,"
-                L"NO_WRITE_TO_BINLOG,NULL,NUMERIC,ON,OPTIMIZE,"
-                L"OPTION,OPTIONALLY,OR,ORDER,OUT,OUTER,OUTFILE,"
-                L"PRECISION,PRIMARY,PRIVILEGES,PROCEDURE,PURGE,"
-                L"READ,REAL,REFERENCES,REGEXP,RENAME,REPEAT,"
-                L"REPLACE,REQUIRE,RESTRICT,RETURN,REVOKE,RIGHT,"
-                L"RLIKE,SECOND_MICROSECOND,SELECT,SENSITIVE,"
-                L"SEPARATOR,SET,SHOW,SMALLINT,SOME,SONAME,SPATIAL,"
-                L"SPECIFIC,SQL,SQLEXCEPTION,SQLSTATE,SQLWARNING,"
-                L"SQL_BIG_RESULT,SQL_CALC_FOUND_ROWS,"
-                L"SQL_SMALL_RESULT,SQL_TSI_DAY,SQL_TSI_FRAC_SECOND,"
-                L"SQL_TSI_HOUR,SQL_TSI_MINUTE,SQL_TSI_MONTH,"
-                L"SQL_TSI_QUARTER,SQL_TSI_SECOND,SQL_TSI_WEEK,"
-                L"SQL_TSI_YEAR,SSL,STARTING,STRAIGHT_JOIN,STRIPED,"
-                L"TABLE,TABLES,TERMINATED,THEN,TIMESTAMPADD,"
-                L"TIMESTAMPDIFF,TINYBLOB,TINYINT,TINYTEXT,TO,"
-                L"TRAILING,TRUE,UNDO,UNION,UNIQUE,UNLOCK,UNSIGNED,"
-                L"UPDATE,USAGE,USE,USER_RESOURCES,USING,UTC_DATE,"
-                L"UTC_TIME,UTC_TIMESTAMP,VALUES,VARBINARY,VARCHAR,"
-                L"VARCHARACTER,VARYING,WHEN,WHERE,WHILE,WITH,WRITE,"
-                L"XOR,YEAR_MONTH,ZEROFILL"
-                L"WITHOUT,WORK,WRITE,YEAR,ZONE";
-
-
-const wchar_t* sqlserver_keywords =
-                L"ADD,ALL,ALTER,AND,ANY,AS,ASC,AUTHORIZATION,BACKUP,"
-                L"BEGIN,BETWEEN,BREAK,BROWSE,BULK,BY,CASCADE,CASE,"
-                L"CHECK,CHECKPOINT,CLOSE,CLUSTERED,COALESCE,COLLATE,"
-                L"COLUMN,COMMIT,COMPUTE,CONSTRAINT,CONTAINS,"
-                L"CONTAINSTABLE,CONTINUE,CONVERT,CREATE,CROSS,"
-                L"CURRENT,CURRENT_DATE,CURRENT_TIME,"
-                L"CURRENT_TIMESTAMP,CURRENT_USER,CURSOR,DATABASE,"
-                L"DBCC,DEALLOCATE,DECLARE,DEFAULT,DELETE,DENY,DESC,"
-                L"DISK,DISTINCT,DISTRIBUTED,DOUBLE,DROP,DUMMY,DUMP,"
-                L"ELSE,END,ERRLVL,ESCAPE,EXCEPT,EXEC,EXECUTE,EXISTS,"
-                L"EXIT,FETCH,FILE,FILLFACTOR,FOR,FOREIGN,FREETEXT,"
-                L"FREETEXTTABLE,FROM,FULL,FUNCTION,GOTO,GRANT,GROUP,"
-                L"HAVING,HOLDLOCK,IDENTITY,IDENTITY_INSERT,"
-                L"IDENTITYCOL,IF,IN,INDEX,INNER,INSERT,INTERSECT,"
-                L"INTO,IS,JOIN,KEY,KILL,LEFT,LIKE,LINENO,LOAD,"
-                L"NATIONAL,NOCHECK,NONCLUSTERED,NOT,NULL,NULLIF,OF,"
-                L"OFF,OFFSETS,ON,OPEN,OPENDATASOURCE,OPENQUERY,"
-                L"OPENROWSET,OPENXML,OPTION,OR,ORDER,OUTER,OVER,"
-                L"PERCENT,PLAN,PRECISION,PRIMARY,PRINT,PROC,"
-                L"PROCEDURE,PUBLIC,RAISERROR,READ,READTEXT,"
-                L"RECONFIGURE,REFERENCES,REPLICATION,RESTORE,"
-                L"RESTRICT,RETURN,REVOKE,RIGHT,ROLLBACK,ROWCOUNT,"
-                L"ROWGUIDCOL,RULE,SAVE,SCHEMA,SELECT,SESSION_USER,"
-                L"SET,SETUSER,SHUTDOWN,SOME,STATISTICS,SYSTEM_USER,"
-                L"TABLE,TEXTSIZE,THEN,TO,TOP,TRAN,TRANSACTION,"
-                L"TRIGGER,TRUNCATE,TSEQUAL,UNION,UNIQUE,UPDATE,"
-                L"UPDATETEXT,USE,USER,VALUES,VARYING,VIEW,WAITFOR,"
-                L"WHEN,WHERE,WHILE,WITH,WRITETEXT";
-
-
-// the following keywords are listed as
-// "possible future" keywords by sql server
-
-const wchar_t* sqlserver_keywords2 =
-                L"ABSOLUTE,ACTION,ADMIN,AFTER,AGGREGATE,ALIAS,"
-                L"ALLOCATE,ARE,ARRAY,ASSERTION,AT,BEFORE,BINARY,"
-                L"BIT,BLOB,BOOLEAN,BOTH,BREADTH,CALL,CASCADED,"
-                L"CAST,CATALOG,CHAR,CHARACTER,CLASS,CLOB,COLLATION,"
-                L"COMPLETION,CONNECT,CONNECTION,CONSTRAINTS,"
-                L"CONSTRUCTOR,CORRESPONDING,CUBE,CURRENT_PATH,"
-                L"CURRENT_ROLE,CYCLE,DATA,DATE,DAY,DEC,DECIMAL,"
-                L"DEFERRABLE,DEFERRED,DEPTH,DEREF,DESCRIBE,"
-                L"DESCRIPTOR,DESTROY,DESTRUCTOR,DETERMINISTIC,"
-                L"DIAGNOSTICS,DICTIONARY,DISCONNECT,DOMAIN,DYNAMIC,"
-                L"EACH,END-EXEC,EQUALS,EVERY,EXCEPTION,EXTERNAL,"
-                L"FALSE,FIRST,FLOAT,FOUND,FREE,GENERAL,GET,GLOBAL,"
-                L"GO,GROUPING,HOST,HOUR,IGNORE,IMMEDIATE,INDICATOR,"
-                L"INITIALIZE,INITIALLY,INOUT,INPUT,INT,INTEGER,"
-                L"INTERVAL,ISOLATION,ITERATE,LANGUAGE,LARGE,LAST,"
-                L"LATERAL,LEADING,LESS,LEVEL,LIMIT,LOCAL,LOCALTIME,"
-                L"LOCALTIMESTAMP,LOCATOR,MAP,MATCH,MINUTE,MODIFIES,"
-                L"MODIFY,MODULE,MONTH,NAMES,NATURAL,NCHAR,NCLOB,"
-                L"NEW,NEXT,NO,NONE,NUMERIC,OBJECT,OLD,ONLY,"
-                L"OPERATION,ORDINALITY,OUT,OUTPUT,PAD,PARAMETER,"
-                L"PARAMETERS,PARTIAL,PATH,POSTFIX,PREFIX,PREORDER,"
-                L"PREPARE,PRESERVE,PRIOR,PRIVILEGES,READS,REAL,"
-                L"RECURSIVE,REF,REFERENCING,RELATIVE,RESULT,"
-                L"RETURNS,ROLE,ROLLUP,ROUTINE,ROW,ROWS,SAVEPOINT,"
-                L"SCOPE,SCROLL,SEARCH,SECOND,SECTION,SEQUENCE,"
-                L"SESSION,SETS,SIZE,SMALLINT,SPACE,SPECIFIC,"
-                L"SPECIFICTYPE,SQL,SQLEXCEPTION,SQLSTATE,"
-                L"SQLWARNING,START,STATE,STATEMENT,STATIC,"
-                L"STRUCTURE,TEMPORARY,TERMINATE,THAN,TIME,"
-                L"TIMESTAMP,TIMEZONE_HOUR,TIMEZONE_MINUTE,TRAILING,"
-                L"TRANSLATION,TREAT,TRUE,UNDER,UNKNOWN,UNNEST,"
-                L"USAGE,USING,VALUE,VARCHAR,VARIABLE,WHENEVER";
-
 
 // utility function to create a valid SQL field string
 
@@ -496,6 +345,21 @@ PgsqlDatabase::PgsqlDatabase()
     m_password = L"";
     
     m_attr = static_cast<tango::IAttributes*>(new DatabaseAttributes);
+
+    m_attr->setIntAttribute(tango::dbattrColumnMaxNameLength, 63);
+    m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 63);
+    m_attr->setStringAttribute(tango::dbattrKeywords, sql92_keywords);    
+    m_attr->setStringAttribute(tango::dbattrColumnInvalidChars, 
+                               L"\\./\x00\xFF");
+    m_attr->setStringAttribute(tango::dbattrTableInvalidChars, 
+                               L"\\./:*?<>|\x00\xFF");
+    m_attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars,
+                               L"\\./\x00\xFF");
+    m_attr->setStringAttribute(tango::dbattrTableInvalidStartingChars,
+                               L"\\./:*?<>|\x00\xFF");
+    m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"\"");
+    m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"\"");
+    m_attr->setStringAttribute(tango::dbattrIdentifierCharsNeedingQuote, L"`\"~# $!@%^&(){}-+.");   
 }
 
 PgsqlDatabase::~PgsqlDatabase()
@@ -1076,11 +940,66 @@ tango::IIndexInfoEnumPtr PgsqlDatabase::getIndexEnum(const std::wstring& path)
 
 tango::IStructurePtr PgsqlDatabase::describeTable(const std::wstring& path)
 {
-    tango::ISetPtr set = openSet(path);
-    if (set.isNull())
+    std::wstring tbl = getTablenameFromPath(path);
+
+    std::wstring query;
+    query += L"select attname,atttypid,atttypmod from pg_attribute where ";
+    query += L"attrelid = (select oid from pg_class where relname='"+tbl+L"') and ";
+    query += L"attnum >= 1 order by attnum";
+
+    PGconn* conn = createConnection();
+    if (!conn)
         return xcm::null;
 
-    return set->getStructure();
+    PGresult* res = PQexec(conn, kl::toUtf8(query));
+
+    if (PQresultStatus(res) != PGRES_TUPLES_OK)
+        return xcm::null;
+
+    // create new tango::IStructure
+    Structure* s = new Structure;
+
+    std::wstring colname;
+    int pg_type;
+    int tango_type;
+    int type_mod;
+    int col_width;
+    int col_scale;
+
+    int i, rows = PQntuples(res);
+    for (i = 0; i < rows; ++i)
+    {
+        colname = kl::towstring(PQgetvalue(res, i, 0));
+        pg_type = atoi(PQgetvalue(res, i, 1));
+        type_mod = atoi(PQgetvalue(res, i, 2));
+        tango_type = pgsqlToTangoType(pg_type);
+        
+        if (tango_type == tango::typeNumeric || tango_type == tango::typeDouble)
+        {
+            type_mod -= 4;
+            col_width = (type_mod >> 16);
+            col_scale = (type_mod & 0xffff);
+        }
+         else if (tango_type == tango::typeCharacter || tango_type == tango::typeWideCharacter)
+        {
+            col_width = type_mod - 4;
+            col_scale = 0;
+        }
+
+        tango::IColumnInfoPtr colinfo = pgsqlCreateColInfo(colname,
+                                                           pg_type, 
+                                                           col_width,
+                                                           col_scale,
+                                                           L"",
+                                                           0);
+        s->addColumn(colinfo);
+    }
+    
+    PQclear(res);
+
+    closeConnection(conn);
+
+    return static_cast<tango::IStructure*>(s);
 }
 
 
@@ -1090,28 +1009,25 @@ bool PgsqlDatabase::execute(const std::wstring& command,
                             xcm::IObjectPtr& result,
                             tango::IJob* job)
 {
-    return false;
-/*
     m_error.clearError();
     result.clear();
-        
-    wchar_t* p = (wchar_t*)command.c_str();
-    while (::iswspace(*p)) ++p;
+    
+    PGconn* conn = createConnection();
+    if (!conn)
+        return false;
 
-    std::wstring first_word;
-    while (*p && !iswspace(*p))
-    {
-        first_word += *p;
-        ++p;
-    }
+    PGresult* res = PQexec(conn, kl::toUtf8(command));
+    if (!res)
+        return false;
 
-    if (0 == wcscasecmp(first_word.c_str(), L"SELECT"))
+    int result_status = PQresultStatus(res);
+
+    if (result_status == PGRES_TUPLES_OK)
     {
         // create an iterator based on our select statement
         PgsqlIterator* iter = new PgsqlIterator(this);
 
-        // initialize Odbc connection for this set
-        if (!iter->init(command))
+        if (!iter->init(conn, res))
         {
             delete iter;
             return false;
@@ -1122,40 +1038,11 @@ bool PgsqlDatabase::execute(const std::wstring& command,
     }
      else
     {
-        HDBC conn = createConnection();
-        if (!conn)
-        {
-            // no connection could be made
-            // (return more specific m_error code here)
-            return false;
-        }
-
-        HSTMT stmt;
-        SQLAllocStmt(conn, &stmt);
-
-        SQLRETURN retval;
-        retval = SQLExecDirect(stmt, sqlt(command), SQL_NTS);
-
-        #ifdef _DEBUG
-        std::string s = kl::tostring(command);
-        #endif
-
-        if (retval != SQL_SUCCESS)
-        {
-            errorSqlStmt(stmt);
-        }
-
-        if (stmt)
-        {
-            SQLCloseCursor(stmt);
-            SQLFreeHandle(SQL_HANDLE_STMT, stmt);
-        }
-
+        PQclear(res);
         closeConnection(conn);
         
-        return (SQL_SUCCEEDED(retval) || retval == SQL_NO_DATA_FOUND) ? true : false;
+        return (result_status == PGRES_COMMAND_OK) ? true : false;
     }
-    */
 }
 
 tango::ISetPtr PgsqlDatabase::runGroupQuery(tango::ISetPtr set,

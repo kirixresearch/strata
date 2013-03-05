@@ -114,6 +114,7 @@ public:
     ~PgsqlIterator();
     
     bool init(const std::wstring& query);
+    bool init(PGconn* conn, PGresult* res);
 
     // tango::IIterator interface implementation
 
@@ -165,14 +166,6 @@ public:
     bool updateCacheRow(tango::rowid_t rowid,
                         tango::ColumnUpdateInfo* info,
                         size_t info_size);
-                                
-private:
-
-    tango::IColumnInfoPtr colinfoFromDAI(PgsqlDataAccessInfo* dai);
-    void skipWithCache(int delta);
-    void saveRowToCache();
-    void readRowFromCache(tango::rowpos_t row);
-    void clearFieldData();
 
 private:
 

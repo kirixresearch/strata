@@ -111,18 +111,11 @@ std::wstring PgsqlSet::getSetId()
 
 tango::IStructurePtr PgsqlSet::getStructure()
 {
-    // create new tango::IStructure
-    Structure* s = new Structure;
-
-    m_structure = static_cast<tango::IStructure*>(s);
-
-    tango::IStructurePtr ret = m_structure->clone();
-    appendCalcFields(ret);
-    return ret;
+    return m_database->describeTable(m_tablename);
 }
 
 bool PgsqlSet::modifyStructure(tango::IStructure* struct_config,
-                              tango::IJob* job)
+                               tango::IJob* job)
 {
     return true;
 }
@@ -151,93 +144,15 @@ tango::IIteratorPtr PgsqlSet::createIterator(const std::wstring& columns,
                                             tango::IJob* job)
 {
     std::wstring query;
-    query.reserve(1024);
 
-
-    if (m_db_type == tango::dbtypeAccess)
-    {
-        tango::IStructurePtr s = getStructure();
-        int i, cnt;
-        
-        cnt = s->getColumnCount();
-
-        query = L"SELECT ";
-        for (i = 0; i < cnt; ++i)
-        {
-            tango::IColumnInfoPtr colinfo;
-            colinfo = s->getColumnInfoByIdx(i);
-
-            if (colinfo->getCalculated())
-                continue;
-                
-            if (i != 0)
-            {
-                query += L",";
-            }
-            
-            if (colinfo->getType() == tango::typeNumeric ||
-                colinfo->getType() == tango::typeDouble)
-            {
-                query += L"IIF(ISNUMERIC([";
-                query += colinfo->getName();
-                query += L"]),VAL(STR([";
-                query += colinfo->getName();
-                query += L"])),null) AS ";
-                query += L"[";
-                query += colinfo->getName();
-                query += L"] ";
-            }
-             else
-            {
-                query += L"[";
-                query += colinfo->getName();
-                query += L"]";
-            }
-        }
-
-        query += L" FROM ";
-        query += L"[";
-        query += m_tablename;
-        query += L"]";
-    }
-     else if (m_db_type == tango::dbtypeExcel)
-    {
-        query = L"SELECT * FROM ";
-        query += L"\"";
-        query += m_tablename;
-        query += L"$\"";
-    }
-     else if (m_db_type == tango::dbtypeOracle)
-    {
-        tango::IStructurePtr s = getStructure();
-        int i, cnt;
-        
-        cnt = s->getColumnCount();
-
-        query = L"SELECT ";
-        for (i = 0; i < cnt; ++i)
-        {
-            if (i != 0)
-            {
-                query += L",";
-            }
-
-            query += s->getColumnName(i);
-        }
-        query += L" FROM ";
-        query += m_tablename;
-    }
-     else
-    {
-        tango::IAttributesPtr attr = m_database->getAttributes();
-        std::wstring quote_openchar = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
-        std::wstring quote_closechar = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);    
+    tango::IAttributesPtr attr = m_database->getAttributes();
+    std::wstring quote_openchar = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
+    std::wstring quote_closechar = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);    
     
-        query = L"SELECT * FROM ";
-        query += quote_openchar;
-        query += m_tablename;
-        query += quote_closechar;
-    }
+    query = L"SELECT * FROM ";
+    query += quote_openchar;
+    query += m_tablename;
+    query += quote_closechar;
 
     if (m_where_condition.length() > 0)
     {

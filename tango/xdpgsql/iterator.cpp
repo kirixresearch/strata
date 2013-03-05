@@ -78,25 +78,29 @@ PgsqlIterator::~PgsqlIterator()
 
 bool PgsqlIterator::init(const std::wstring& query)
 {
-    m_conn = m_database->createConnection();
-    if (!m_conn)
+    PGconn* conn = m_database->createConnection();
+    if (!conn)
         return false;
 
-    m_res = PQexec(m_conn, kl::toUtf8(query));
-    if (!m_res)
+    PGresult* res = PQexec(conn, kl::toUtf8(query));
+    if (!res)
         return false;
 
-    if (PQresultStatus(m_res) != PGRES_TUPLES_OK)
+    if (PQresultStatus(res) != PGRES_TUPLES_OK)
     {
-        PQclear(m_res);
-        m_res = NULL;
-
-        m_database->closeConnection(m_conn);
-        m_conn = NULL;
-
+        PQclear(res);
+        m_database->closeConnection(conn);
         return false;
     }
 
+    return init(conn, res);
+}
+
+
+bool PgsqlIterator::init(PGconn* conn, PGresult* res)
+{
+    m_conn = conn;
+    m_res = res;
 
     std::wstring col_name;
     col_name.reserve(80);
@@ -104,6 +108,7 @@ bool PgsqlIterator::init(const std::wstring& query)
     int col_tango_type;
     int col_width = 20;
     int col_scale = 0;
+    int fmod;
     bool col_nullable = true;
 
     int i;
@@ -115,6 +120,20 @@ bool PgsqlIterator::init(const std::wstring& query)
         col_pg_type = PQftype(m_res, i);
         col_tango_type = pgsqlToTangoType(col_pg_type);
         col_width = 255;
+        fmod = PQfmod(m_res, i);
+
+        if (col_tango_type == tango::typeNumeric || col_tango_type == tango::typeDouble)
+        {
+            fmod -= 4;
+            col_width = (fmod >> 16);
+            col_scale = (fmod & 0xffff);
+        }
+         else if (col_tango_type == tango::typeCharacter || col_tango_type == tango::typeWideCharacter)
+        {
+            col_width = fmod - 4;
+            col_scale = 0;
+        }
+
 
         PgsqlDataAccessInfo* field = new PgsqlDataAccessInfo;
         field->name = col_name;
@@ -175,333 +194,10 @@ unsigned int PgsqlIterator::getIteratorFlags()
     return tango::ifForwardOnly;
 }
 
-void PgsqlIterator::clearFieldData()
-{
-    std::vector<PgsqlDataAccessInfo*>::iterator it;
-    for (it = m_fields.begin(); it != m_fields.end(); ++it)
-    {
-        (*it)->str_result = "";
-        (*it)->wstr_result = L"";
-    }
-}
-
-
-
-void PgsqlIterator::saveRowToCache()
-{
-/*
-    if (m_row_pos < m_cache.getRowCount())
-    {
-        // row already saved
-        return;
-    }
-
-    if (m_eof)
-    {
-        // don't save rows past the eof
-        return;
-    }
-
-
-    m_cache.createRow();
-    
-    
-    std::vector<PgsqlDataAccessInfo*>::iterator it, it_begin, it_end;
-    it_begin = m_fields.begin();
-    it_end = m_fields.end();
-
-    int width;
-
-    // place the row into the cache
-    for (it = it_begin; it != it_end; ++it)
-    {
-        // work only on physical odbc fields
-        if ((*it)->expr_text.length() > 0 || (*it)->expr)
-            continue;
-
-        if ((*it)->indicator == SQL_NULL_DATA)
-        {
-            m_cache.appendNullColumn();
-            continue;
-        }
-
-
-        switch ((*it)->type)
-        {
-            case tango::typeCharacter:
-                if ((*it)->indicator == SQL_NTS)
-                    width = strlen((*it)->str_val);
-                     else
-                    width = (*it)->indicator;
-                    
-                if (width >= (*it)->width)
-                    width = (*it)->width;
-                    
-                m_cache.appendColumnData((unsigned char*)((*it)->str_val),
-                                         width*sizeof(char));
-                break;
-
-            case tango::typeWideCharacter:
-                if ((*it)->indicator == SQL_NTS)
-                    width = wcslen((*it)->wstr_val) * sizeof(wchar_t);
-                     else
-                    width = (*it)->indicator;
-                
-                if (width >= (*it)->width * (int)sizeof(wchar_t))
-                    width = (*it)->width * (int)sizeof(wchar_t);
-                    
-                m_cache.appendColumnData((unsigned char*)((*it)->wstr_val),
-                                          width);
-                break;
-
-            case tango::typeNumeric:
-            case tango::typeDouble:
-                m_cache.appendColumnData((unsigned char*)&((*it)->dbl_val),
-                                         sizeof(double));
-                break;
-
-            case tango::typeInteger:
-                m_cache.appendColumnData((unsigned char*)&((*it)->int_val),
-                                         sizeof(int));
-                break;
-
-            case tango::typeDate:
-                m_cache.appendColumnData((unsigned char*)&((*it)->date_val),
-                                         sizeof(SQL_DATE_STRUCT));
-                break;
-
-            case tango::typeDateTime:
-                m_cache.appendColumnData((unsigned char*)&((*it)->datetime_val),
-                                         sizeof(SQL_TIMESTAMP_STRUCT));
-                break;
-
-            case tango::typeBoolean:
-                m_cache.appendColumnData((unsigned char*)&((*it)->bool_val),
-                                         sizeof(bool));
-                break;
-        }
-    }
-
-    m_cache.finishRow();
-    */
-}
-
-void PgsqlIterator::readRowFromCache(tango::rowpos_t row)
-{
-/*
-    m_cache.goRow((tango::rowpos_t)row);
-    m_cache.getRow(m_cache_row);
-
-    bool is_null;
-    unsigned int data_size;
-    unsigned char* data;
-
-    std::vector<PgsqlDataAccessInfo*>::iterator it, it_begin, it_end;
-    it_begin = m_fields.begin();
-    it_end = m_fields.end();
-    int col = 0;
-    
-    // read cached data into the dai values
-    for (it = it_begin; it != it_end; ++it)
-    {
-        // work only on physical odbc fields
-        if ((*it)->expr_text.length() > 0 || (*it)->expr)
-            continue;
-
-        data = m_cache_row.getColumnData(col, &data_size, &is_null);
-        ++col;
-        
-        if (!data)
-        {
-            is_null = true;
-        }
-        
-        if (is_null)
-        {
-            (*it)->indicator = SQL_NULL_DATA;
-            continue;
-        }
-         else
-        {
-            (*it)->indicator = data_size;
-        }
-        
-        switch ((*it)->type)
-        {
-            case tango::typeCharacter:
-                memcpy((*it)->str_val, data, data_size);
-                break;
-
-            case tango::typeWideCharacter:
-                memcpy((*it)->wstr_val, data, data_size);
-                //data_size /= sizeof(wchar_t);
-                (*it)->indicator = data_size;
-                break;
-
-
-            case tango::typeNumeric:
-            case tango::typeDouble:
-                (*it)->dbl_val = *(double*)data;
-                break;
-
-            case tango::typeInteger:
-                (*it)->int_val = *(int*)data;
-                break;
-
-            case tango::typeDate:
-                memcpy(&((*it)->date_val), data, sizeof(SQL_DATE_STRUCT));
-                break;
-
-            case tango::typeDateTime:
-                memcpy(&((*it)->datetime_val), data, sizeof(SQL_TIMESTAMP_STRUCT));
-                break;
-
-            case tango::typeBoolean:
-                (*it)->bool_val = *(bool*)data;
-                break;
-        }
-    }
-
-    */
-}
-
-void PgsqlIterator::skipWithCache(int delta)
-{
-/*
-    if (delta == 0)
-        return;
-    
-    if (!m_cache.isOk())
-    {
-        if (!m_cache.init())
-        {
-            // init failed, deactivate cache
-            m_cache_active = false;
-        }
-    }   
-
-    // save row to cache if necessary
-    saveRowToCache();
-    
-    // clear out our current dai values
-    clearFieldData();
-    
-    
-    tango::tango_int64_t desired_row = ((tango::tango_int64_t)m_row_pos) + delta;
-    if (desired_row < 0)
-        desired_row = 0;
-    
-    if ((tango::rowpos_t)desired_row < m_cache.getRowCount())
-    {
-        readRowFromCache(desired_row);
-
-        m_row_pos = desired_row;
-        m_eof = false;
-    }
-     else
-    {        
-        int i;
-        SQLRETURN r;
-
-        // fetch the row from the database, adding new rows
-        // to the cache along the way
-        
-        for (i = 0; i < delta; ++i)
-        {
-            saveRowToCache();
-            
-            r = SQLFetch(m_stmt);
-            m_row_pos++;
-            if (r != SQL_SUCCESS && r != SQL_SUCCESS_WITH_INFO)
-            {
-                #ifdef _DEBUG
-                testSqlStmt(m_stmt);
-                #endif
-                
-                m_eof = true;
-                return;
-            }
-        }        
-    }
-    */
-}
-
 void PgsqlIterator::skip(int delta)
 {
     m_block_row += delta;
     m_eof = (m_block_row >= PQntuples(m_res));
-/*
-    if (m_cache_active)
-    {
-        skipWithCache(delta);
-        return;
-    }
-
-
-    if (m_eof)
-        return;
-    
-    if (delta == 0)
-        return;
-    
-    SQLRETURN r;
-    int i;
-    
-    if (m_bidirectional)
-    {
-        if (delta < 0)
-        {
-            for (i = 0; i < -delta; ++i)
-            {
-                clearFieldData();
-                
-                r = SQLFetchScroll(m_stmt, SQL_FETCH_PRIOR, 0);
-                
-                if (r != SQL_SUCCESS && r != SQL_SUCCESS_WITH_INFO)
-                {
-                    m_eof = true;
-                    return;
-                }
-            }
-        }
-         else
-        {
-            for (i = 0; i < delta; ++i)
-            {
-                clearFieldData();
-                
-                r = SQLFetchScroll(m_stmt, SQL_FETCH_NEXT, 0);
-                
-                if (r != SQL_SUCCESS && r != SQL_SUCCESS_WITH_INFO)
-                {
-                    m_eof = true;
-                    return;
-                }
-            }
-        }
-    }
-     else
-    {
-        for (i = 0; i < delta; ++i)
-        {
-            clearFieldData();
-            
-            r = SQLFetch(m_stmt);
-            m_row_pos++;
-            
-            if (r != SQL_SUCCESS && r != SQL_SUCCESS_WITH_INFO)
-            {
-                #ifdef _DEBUG
-                testSqlStmt(m_stmt);
-                #endif
-                
-                m_eof = true;
-                return;
-            }
-        }
-
-    }
-    */
 }
 
 void PgsqlIterator::goFirst()
@@ -509,28 +205,6 @@ void PgsqlIterator::goFirst()
     m_row_pos = 0;
     m_block_row = 0;
     m_eof = (m_block_row >= PQntuples(m_res));
-/*
-    if (m_cache_active)
-    {
-        int delta = (int)-((tango::tango_int64_t)m_row_pos);
-        skip(delta);
-        return;
-    }
-    
-    if (m_bidirectional)
-    {
-        m_row_pos = 0;
-        clearFieldData();
-        SQLRETURN r = SQLFetchScroll(m_stmt, SQL_FETCH_FIRST, 0);
-        
-        m_eof = (r != SQL_SUCCESS && r != SQL_SUCCESS_WITH_INFO) ? true : false;
-
-        #ifdef _DEBUG
-        if (r != SQL_SUCCESS && r != SQL_SUCCESS_WITH_INFO)
-            testSqlStmt(m_stmt);
-        #endif
-    }
-    */
 }
 
 void PgsqlIterator::goLast()
@@ -581,13 +255,15 @@ tango::IStructurePtr PgsqlIterator::getStructure()
     if (m_structure.isOk())
         return m_structure->clone();
 
+
     tango::IStructurePtr set_structure;
-    
+
+/*    
     if (m_set)
     {
         set_structure = m_set->getStructure();
     }
-
+*/
 
     Structure* s = new Structure;
 
@@ -1243,14 +919,12 @@ int PgsqlIterator::getInteger(tango::objhandle_t data_handle)
     }
      else
     {
-        return 0.0;
+        return 0;
     }
 }
 
 bool PgsqlIterator::getBoolean(tango::objhandle_t data_handle)
 {
-    return false;
-/*
     PgsqlDataAccessInfo* dai = (PgsqlDataAccessInfo*)data_handle;
     if (dai == NULL)
     {
@@ -1269,11 +943,10 @@ bool PgsqlIterator::getBoolean(tango::objhandle_t data_handle)
         return false;
     }
 
-    if (dai->indicator == SQL_NULL_DATA)
-        return false;
+    const char* c = PQgetvalue(m_res, m_block_row, dai->ordinal);
 
-    return dai->bool_val ? true : false;
-*/
+    return false;
+    //return dai->bool_val ? true : false;
 }
 
 bool PgsqlIterator::isNull(tango::objhandle_t data_handle)
@@ -1444,8 +1117,8 @@ tango::IIteratorPtr PgsqlIterator::getChildIterator(tango::IRelationPtr relation
 // tango::ICacheRowUpdate::updateCacheRow()
 
 bool PgsqlIterator::updateCacheRow(tango::rowid_t rowid,
-                                  tango::ColumnUpdateInfo* info,
-                                  size_t info_size)
+                                   tango::ColumnUpdateInfo* info,
+                                   size_t info_size)
 {
 /*
     saveRowToCache();
