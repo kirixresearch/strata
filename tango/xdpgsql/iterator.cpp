@@ -9,7 +9,6 @@
  */
 
 
-#include <kl/klib.h>
 #include "libpq-fe.h"
 #include "tango.h"
 #include "database.h"
@@ -18,7 +17,9 @@
 #include "../xdcommon/xdcommon.h"
 #include "../xdcommon/sqlcommon.h"
 #include "../xdcommon/localrowcache.h"
-
+#include <kl/portable.h>
+#include <kl/string.h>
+#include <kl/utf8.h>
 
 const int row_array_size = 1000;
 
@@ -29,8 +30,11 @@ const std::wstring empty_wstring = L"";
 PgsqlIterator::PgsqlIterator(PgsqlDatabase* database, PgsqlSet* set)
 {
     m_conn = NULL;
+    m_database = database;
+    m_set = set;
 
     m_row_pos = 0;
+    m_block_row = 0;
     m_eof = false;
     
     m_bidirectional = false;
@@ -63,11 +67,67 @@ PgsqlIterator::~PgsqlIterator()
     for (it = m_exprs.begin(); it != m_exprs.end(); ++it)
         delete (*it);
 
+    
+    if (m_res)
+        PQclear(m_res);
+
+    if (m_conn)
+        m_database->closeConnection(m_conn);
 
 }
 
 bool PgsqlIterator::init(const std::wstring& query)
 {
+    m_conn = m_database->createConnection();
+    if (!m_conn)
+        return false;
+
+    m_res = PQexec(m_conn, kl::toUtf8(query));
+    if (!m_res)
+        return false;
+
+    if (PQresultStatus(m_res) != PGRES_TUPLES_OK)
+    {
+        PQclear(m_res);
+        m_res = NULL;
+
+        m_database->closeConnection(m_conn);
+        m_conn = NULL;
+
+        return false;
+    }
+
+
+    std::wstring col_name;
+    col_name.reserve(80);
+    int col_pg_type;
+    int col_tango_type;
+    int col_width = 20;
+    int col_scale = 0;
+    bool col_nullable = true;
+
+    int i;
+    int col_count = PQnfields(m_res);
+
+    for (i = 0; i < col_count; ++i)
+    {
+        col_name = kl::towstring(PQfname(m_res, i));
+        col_pg_type = PQftype(m_res, i);
+        col_tango_type = pgsqlToTangoType(col_pg_type);
+        col_width = 255;
+
+        PgsqlDataAccessInfo* field = new PgsqlDataAccessInfo;
+        field->name = col_name;
+        field->pg_type = col_pg_type;
+        field->type = col_tango_type;
+        field->width = col_width;
+        field->scale = col_scale;
+        field->ordinal = i;
+
+        m_fields.push_back(field);
+    }
+
+
     refreshStructure();
     
     return true;
@@ -122,16 +182,6 @@ void PgsqlIterator::clearFieldData()
     {
         (*it)->str_result = "";
         (*it)->wstr_result = L"";
-        if ((*it)->str_val)
-            (*it)->str_val[0] = 0;
-        if ((*it)->wstr_val)
-            (*it)->wstr_val[0] = 0;
-        (*it)->int_val = 0;
-        (*it)->dbl_val = 0.0;
-        (*it)->bool_val = 0;
-        //memset(&(*it)->date_val, 0, sizeof(SQL_DATE_STRUCT));
-        //memset(&(*it)->time_val, 0, sizeof(SQL_TIME_STRUCT));
-        //memset(&(*it)->datetime_val, 0, sizeof(SQL_TIMESTAMP_STRUCT));
     }
 }
 
@@ -378,6 +428,8 @@ void PgsqlIterator::skipWithCache(int delta)
 
 void PgsqlIterator::skip(int delta)
 {
+    m_block_row += delta;
+    m_eof = (m_block_row >= PQntuples(m_res));
 /*
     if (m_cache_active)
     {
@@ -454,6 +506,9 @@ void PgsqlIterator::skip(int delta)
 
 void PgsqlIterator::goFirst()
 {
+    m_row_pos = 0;
+    m_block_row = 0;
+    m_eof = (m_block_row >= PQntuples(m_res));
 /*
     if (m_cache_active)
     {
@@ -494,12 +549,7 @@ bool PgsqlIterator::bof()
 
 bool PgsqlIterator::eof()
 {
-    if (m_eof)
-    {
-        return true;
-    }
-
-    return false;
+    return m_eof;
 }
 
 bool PgsqlIterator::seek(const unsigned char* key, int length, bool soft)
@@ -528,7 +578,6 @@ double PgsqlIterator::getPos()
 
 tango::IStructurePtr PgsqlIterator::getStructure()
 {
-/*
     if (m_structure.isOk())
         return m_structure->clone();
 
@@ -581,13 +630,12 @@ tango::IStructurePtr PgsqlIterator::getStructure()
                 // field info from the query result
                 tango::IColumnInfoPtr col;
 
-                col = createColInfo(
-                                    (*it)->name,
-                                    (*it)->odbc_type,
-                                    (*it)->width,
-                                    (*it)->scale,
-                                    (*it)->expr_text,
-                                    -1);
+                col = pgsqlCreateColInfo((*it)->name,
+                                         (*it)->pg_type,
+                                         (*it)->width,
+                                         (*it)->scale,
+                                         (*it)->expr_text,
+                                         -1);
 
                 col->setColumnOrdinal((*it)->ordinal - 1);
                 s->addColumn(col);
@@ -598,9 +646,6 @@ tango::IStructurePtr PgsqlIterator::getStructure()
     m_structure = static_cast<tango::IStructure*>(s);
 
     return m_structure->clone();
-    */
-
-    return xcm::null;
 }
 
 void PgsqlIterator::refreshStructure()
@@ -610,8 +655,8 @@ void PgsqlIterator::refreshStructure()
         return;
 
     // find changed/deleted calc fields
-    int i, col_count;
-    for (i = 0; i < (int)m_fields.size(); ++i)
+    size_t i, col_count;
+    for (i = 0; i < m_fields.size(); ++i)
     {
         if (!m_fields[i]->isCalculated())
             continue;
@@ -631,8 +676,6 @@ void PgsqlIterator::refreshStructure()
         m_fields[i]->width = col->getWidth();
         m_fields[i]->scale = col->getScale();
         m_fields[i]->expr_text = col->getExpression();
-        m_fields[i]->str_val = NULL;
-        m_fields[i]->wstr_val = NULL;
     }
     
     // find new calc fields
@@ -673,15 +716,7 @@ void PgsqlIterator::refreshStructure()
             dai->ordinal = m_fields.size();
             dai->expr_text = col->getExpression();
             dai->expr = NULL;
-                
-            dai->str_val = NULL;
-            dai->wstr_val = NULL;
-            dai->int_val = 0;
-            dai->dbl_val = 0.0;
-            dai->bool_val = 0;
-            //memset(&dai->date_val, 0, sizeof(SQL_DATE_STRUCT));
-            //memset(&dai->datetime_val, 0, sizeof(SQL_TIMESTAMP_STRUCT));
-
+            
             m_fields.push_back(dai);
         }
     }
@@ -786,16 +821,6 @@ bool PgsqlIterator::modifyStructure(tango::IStructure* struct_config,
             dai->expr_text = it->m_params->getExpression();
             dai->expr = parse(it->m_params->getExpression());
                 
-            dai->str_val = new char[(dai->width+1)*sizeof(char)];
-            dai->wstr_val = new wchar_t[(dai->width+1)*sizeof(wchar_t)];
-            memset(dai->str_val, 0, (dai->width+1)*sizeof(char));
-            memset(dai->wstr_val, 0, (dai->width+1)*sizeof(wchar_t));
-            dai->int_val = 0;
-            dai->dbl_val = 0.0;
-            dai->bool_val = 0;
-            //memset(&dai->date_val, 0, sizeof(SQL_DATE_STRUCT));
-            //memset(&dai->datetime_val, 0, sizeof(SQL_TIMESTAMP_STRUCT));
-
             m_fields.push_back(dai);
         }
     }
@@ -906,12 +931,12 @@ tango::IColumnInfoPtr PgsqlIterator::getInfo(tango::objhandle_t data_handle)
 
     // generate column information from our internal info
 
-    return createColInfo(dai->name,
-                         dai->type,
-                         dai->width,
-                         dai->scale,
-                         dai->expr_text,
-                         -1);
+    return pgsqlCreateColInfo(dai->name,
+                              dai->type,
+                              dai->width,
+                              dai->scale,
+                              dai->expr_text,
+                              -1);
 }
 
 int PgsqlIterator::getType(tango::objhandle_t data_handle)
@@ -938,6 +963,7 @@ int PgsqlIterator::getRawWidth(tango::objhandle_t data_handle)
 
 const unsigned char* PgsqlIterator::getRawPtr(tango::objhandle_t data_handle)
 {
+/*
     PgsqlDataAccessInfo* dai = (PgsqlDataAccessInfo*)data_handle;
     if (dai == NULL)
     {
@@ -950,6 +976,9 @@ const unsigned char* PgsqlIterator::getRawPtr(tango::objhandle_t data_handle)
     }
 
     return (const unsigned char*)dai->str_val;
+*/
+
+    return NULL;
 }
 
 
@@ -995,8 +1024,6 @@ static void decodeHexString(const char* buf, std::string& out)
 
 const std::string& PgsqlIterator::getString(tango::objhandle_t data_handle)
 {
-    return empty_string;
-/*
     PgsqlDataAccessInfo* dai = (PgsqlDataAccessInfo*)data_handle;
     if (dai == NULL)
     {
@@ -1016,45 +1043,15 @@ const std::string& PgsqlIterator::getString(tango::objhandle_t data_handle)
         return empty_string;
     }
 
-    int width = 0;
-
-    if (dai->indicator == SQL_NULL_DATA)
+    if (PQgetisnull(m_res, m_block_row, dai->ordinal))
         return empty_string;
-    if (dai->indicator == SQL_NTS)
-        width = strlen(dai->str_val);
-         else
-        width = dai->indicator;
 
-    if (width > dai->width)
-        width = dai->width;
-    
-    if (m_db_type == tango::dbtypeMySql &&
-        (dai->odbc_type == SQL_BINARY || dai->odbc_type == SQL_VARBINARY || dai->odbc_type == SQL_LONGVARBINARY))
-    {
-        decodeHexString(dai->str_val, dai->str_result);
-        return dai->str_result;   
-    }
-    
-    if (dai->type == tango::typeCharacter)
-    {
-        dai->str_result.assign(dai->str_val, width);
-        return dai->str_result;
-    }
-     else if (dai->type == tango::typeWideCharacter)
-    {
-        dai->wstr_result.assign(dai->wstr_val, width);
-        dai->str_result = kl::tostring(dai->wstr_result);
-        return dai->str_result;
-    }
-
-    return empty_string;
-    */
+    dai->str_result = PQgetvalue(m_res, m_block_row, dai->ordinal);
+    return dai->str_result;
 }
 
 const std::wstring& PgsqlIterator::getWideString(tango::objhandle_t data_handle)
 {
-    return empty_wstring;
-/*
     PgsqlDataAccessInfo* dai = (PgsqlDataAccessInfo*)data_handle;
     if (dai == NULL)
     {
@@ -1074,34 +1071,15 @@ const std::wstring& PgsqlIterator::getWideString(tango::objhandle_t data_handle)
         return empty_wstring;
     }
 
-    int width = 0;
-
-    if (dai->indicator == SQL_NULL_DATA)
+    if (PQgetisnull(m_res, m_block_row, dai->ordinal))
         return empty_wstring;
-    if (dai->indicator == SQL_NTS)
-        width = wcslen(dai->wstr_val);
-         else
-        width = (dai->indicator/sizeof(wchar_t));
 
-    if (dai->type == tango::typeCharacter)
-    {
-        dai->wstr_result = kl::towstring(getString(data_handle));
-        return dai->wstr_result;
-    }
-     else if (dai->type == tango::typeWideCharacter)
-    {
-        dai->wstr_result.assign(dai->wstr_val, width);
-        return dai->wstr_result;
-    }
-
-    return empty_wstring;
-*/
+    dai->wstr_result = kl::fromUtf8((PQgetvalue(m_res, m_block_row, dai->ordinal)));
+    return dai->wstr_result;
 }
 
 tango::datetime_t PgsqlIterator::getDateTime(tango::objhandle_t data_handle)
 {
-    return 0;
-/*
     PgsqlDataAccessInfo* dai = (PgsqlDataAccessInfo*)data_handle;
     if (dai == NULL)
     {
@@ -1128,48 +1106,69 @@ tango::datetime_t PgsqlIterator::getDateTime(tango::objhandle_t data_handle)
         return 0;
     }
 
-    if (dai->indicator == SQL_NULL_DATA)
+    if (PQgetisnull(m_res, m_block_row, dai->ordinal))
         return 0;
 
-
-    if (dai->type == SQL_TYPE_TIME)
-    {
-        // not yet supported
-        return 0;
-    }
-
+    const char* c = PQgetvalue(m_res, m_block_row, dai->ordinal);
+    char buf[8];
+    int y, m, d, h, mm, s;
 
     if (dai->type == tango::typeDate)
     {
-        if (dai->date_val.year == 0)
+        memcpy(buf, c, 4);
+        buf[4] = 0;
+        y = atoi(buf);
+
+        memcpy(buf, c+5, 2);
+        buf[2] = 0;
+        m = atoi(buf);
+
+        memcpy(buf, c+8, 2);
+        buf[2] = 0;
+        d = atoi(buf);
+
+        if (y == 0)
             return 0;
 
-        tango::DateTime dt(dai->date_val.year,
-                           dai->date_val.month,
-                           dai->date_val.day);
+        tango::DateTime dt(y, m, d);
         return dt;
     }
      else
-    {    
-        if (dai->datetime_val.year == 0)
+    {
+        memcpy(buf, c, 4);
+        buf[4] = 0;
+        y = atoi(buf);
+
+        memcpy(buf, c+5, 2);
+        buf[2] = 0;
+        m = atoi(buf);
+
+        memcpy(buf, c+8, 2);
+        buf[2] = 0;
+        d = atoi(buf);
+
+        memcpy(buf, c+11, 2);
+        buf[2] = 0;
+        h = atoi(buf);
+
+        memcpy(buf, c+14, 2);
+        buf[2] = 0;
+        mm = atoi(buf);
+
+        memcpy(buf, c+17, 2);
+        buf[2] = 0;
+        s = atoi(buf);
+
+        if (y == 0)
             return 0;
 
-        tango::DateTime dt(dai->datetime_val.year,
-                           dai->datetime_val.month,
-                           dai->datetime_val.day,
-                           dai->datetime_val.hour,
-                           dai->datetime_val.minute,
-                           dai->datetime_val.second,
-                           dai->datetime_val.fraction/1000000);
+        tango::DateTime dt(y, m, d, h, mm, s, 0);
         return dt;
     }
-    */
 }
 
 double PgsqlIterator::getDouble(tango::objhandle_t data_handle)
 {
-    return 0.0;
-/*
     PgsqlDataAccessInfo* dai = (PgsqlDataAccessInfo*)data_handle;
     if (dai == NULL)
     {
@@ -1188,27 +1187,28 @@ double PgsqlIterator::getDouble(tango::objhandle_t data_handle)
         return 0.0;
     }
 
-    if (dai->indicator == SQL_NULL_DATA)
+    if (PQgetisnull(m_res, m_block_row, dai->ordinal))
         return 0.0;
+
+    const char* c = PQgetvalue(m_res, m_block_row, dai->ordinal);
 
     if (dai->type == tango::typeNumeric ||
         dai->type == tango::typeDouble)
     {
-        return dai->dbl_val;
+        return kl::nolocale_atof(c);
     }
      else if (dai->type == tango::typeInteger)
     {
-        return (double)dai->int_val;
+        return atoi(c);
     }
-
-    return 0;
-*/
+     else
+    {
+        return 0.0;
+    }
 }
 
 int PgsqlIterator::getInteger(tango::objhandle_t data_handle)
 {
-    return 0;
-/*
     PgsqlDataAccessInfo* dai = (PgsqlDataAccessInfo*)data_handle;
     if (dai == NULL)
     {
@@ -1227,21 +1227,24 @@ int PgsqlIterator::getInteger(tango::objhandle_t data_handle)
         return 0;
     }
 
-    if (dai->indicator == SQL_NULL_DATA)
+    if (PQgetisnull(m_res, m_block_row, dai->ordinal))
         return 0;
 
-    if (dai->type == tango::typeInteger)
-    {
-        return dai->int_val;
-    }
-     else if (dai->type == tango::typeNumeric ||
-              dai->type == tango::typeDouble)
-    {
-        return (int)dai->dbl_val;
-    }
+    const char* c = PQgetvalue(m_res, m_block_row, dai->ordinal);
 
-    return 0;
-*/
+    if (dai->type == tango::typeNumeric ||
+        dai->type == tango::typeDouble)
+    {
+        return (int)kl::nolocale_atof(c);
+    }
+     else if (dai->type == tango::typeInteger)
+    {
+        return atoi(c);
+    }
+     else
+    {
+        return 0.0;
+    }
 }
 
 bool PgsqlIterator::getBoolean(tango::objhandle_t data_handle)
@@ -1275,13 +1278,9 @@ bool PgsqlIterator::getBoolean(tango::objhandle_t data_handle)
 
 bool PgsqlIterator::isNull(tango::objhandle_t data_handle)
 {
-    return false;
-/*
     PgsqlDataAccessInfo* dai = (PgsqlDataAccessInfo*)data_handle;
     if (dai == NULL)
-    {
         return true;
-    }
 
     if (dai->expr)
         return false;
@@ -1292,11 +1291,7 @@ bool PgsqlIterator::isNull(tango::objhandle_t data_handle)
         return true;
     }
 
-    if (dai->indicator == SQL_NULL_DATA)
-        return true;
-
-    return false;
-*/
+    return PQgetisnull(m_res, m_block_row, dai->ordinal) ? true : false;
 }
 
 

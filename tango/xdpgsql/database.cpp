@@ -19,6 +19,7 @@
 #include "../xdcommon/dbattr.h"
 #include "../xdcommon/fileinfo.h"
 #include "../xdcommon/structure.h"
+#include "../xdcommon/columninfo.h"
 #include "database.h"
 #include "iterator.h"
 #include "set.h"
@@ -223,7 +224,7 @@ const wchar_t* sqlserver_keywords2 =
 
 // utility function to create a valid SQL field string
 
-std::wstring createPgsqlFieldString(const std::wstring& name,
+std::wstring pgsqlCreateFieldString(const std::wstring& name,
                                     int type,
                                     int width,
                                     int scale,
@@ -370,8 +371,80 @@ std::wstring createPgsqlFieldString(const std::wstring& name,
     return L"";
 }
 
+
+int pgsqlToTangoType(int pg_type)
+{
+    switch (pg_type)
+    {
+        case 16:  // boolean
+            return tango::typeBoolean;
+
+        case 17:  // bytea
+        case 20:  // int8
+        case 21:  // int2
+        case 23:  // int4
+        case 26:  // oid
+            return tango::typeInteger;
+
+        case 1700: // numeric
+        case 790:  // money
+            return tango::typeNumeric;
+
+        case 700:  // float4
+        case 701:  // float8
+            return tango::typeDouble;
+
+        case 1114: // timestamp
+        case 1184: // timestamptz
+            return tango::typeDateTime;
+
+        case 1083: // time
+        case 1266: // timetz
+        case 1082: // date
+            return tango::typeDate;
+
+        default:
+        case 18:   // char
+        case 25:   // text
+        case 1043: // varchar
+            return tango::typeCharacter;
+
+    }
+
+    return tango::typeInvalid;
+}
+
+tango::IColumnInfoPtr pgsqlCreateColInfo(const std::wstring& col_name,
+                                         int col_pg_type,
+                                         int col_width,
+                                         int col_scale,
+                                         const std::wstring& col_expr,
+                                         int datetime_sub)
+{
+    int col_tango_type = pgsqlToTangoType(col_pg_type);
+
+    tango::IColumnInfoPtr col;
+    col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+
+    col->setName(col_name);
+    col->setType(col_tango_type);
+    col->setWidth(col_width);
+    col->setScale(col_scale);
+    col->setExpression(col_expr);
+    col->setColumnOrdinal(0);
+
+    if (col_expr.length() > 0)
+        col->setCalculated(true);
+        
+    return col;
+}
+
+
+
 static std::wstring getTablenameFromPath(const std::wstring& path)
 {
+    if (path.substr(0,1) == L"/")
+        return path.substr(1);
     return path;
 }
 
@@ -781,12 +854,10 @@ tango::IFileInfoEnumPtr PgsqlDatabase::getFolderInfo(const std::wstring& path)
     if (!conn)
         return retval;
 
-    PGresult* res = PQexec(conn, "select tablename from pg_tables");
+    PGresult* res = PQexec(conn, "select tablename from pg_tables where schemaname <> 'pg_catalog' and schemaname <> 'information_schema'");
 
     if (PQresultStatus(res) != PGRES_TUPLES_OK)
         return retval;
-
-    std::vector<std::string> arr;
 
     int i, rows = PQntuples(res);
     for (i = 0; i < rows; ++i)
@@ -799,6 +870,7 @@ tango::IFileInfoEnumPtr PgsqlDatabase::getFolderInfo(const std::wstring& path)
         retval->append(f);
     }
     
+    PQclear(res);
 
     closeConnection(conn);
 
@@ -857,7 +929,7 @@ tango::ISetPtr PgsqlDatabase::createSet(const std::wstring& path,
         width = col_info->getWidth();
         scale = col_info->getScale();
 
-        field = createPgsqlFieldString(name,
+        field = pgsqlCreateFieldString(name,
                                   type,
                                   width,
                                   scale,

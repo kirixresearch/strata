@@ -29,7 +29,7 @@
 struct PgsqlDataAccessInfo
 {
     // metadata
-    int odbc_type;
+    int pg_type;
     
     std::wstring name;
     int type;
@@ -46,18 +46,11 @@ struct PgsqlDataAccessInfo
     std::wstring wstr_result;
     std::string str_result;
 
-    // data
-    char* str_val;
-    wchar_t* wstr_val;
-    int int_val;
-    double dbl_val;
-    unsigned char bool_val;
 
-    int indicator;
 
     PgsqlDataAccessInfo()
     {
-        odbc_type = -1;
+        pg_type = -1;
         
         name = L"";
         type = tango::typeUndefined;
@@ -71,20 +64,10 @@ struct PgsqlDataAccessInfo
         key_layout = NULL;
         str_result = "";
         wstr_result = L"";
-
-        str_val = NULL;
-        wstr_val = NULL;
-        int_val = 0;
-        dbl_val = 0.0;
-        bool_val = 0;
-        indicator = 0;
     }
 
     ~PgsqlDataAccessInfo()
     {
-        delete[] str_val;
-        delete[] wstr_val;
-        
         delete expr;
         delete key_layout;
     }
@@ -201,6 +184,7 @@ private:
     PgsqlSet* m_set;
     tango::IStructurePtr m_structure;
     PGconn* m_conn;
+    PGresult* m_res;
 
     LocalRowCache m_cache;
     LocalRow m_cache_row;
@@ -211,6 +195,7 @@ private:
  
     bool m_eof;
     tango::rowpos_t m_row_pos;
+    int m_block_row;
 };
 
 

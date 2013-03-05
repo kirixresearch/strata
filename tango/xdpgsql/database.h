@@ -16,12 +16,15 @@
 
 #include "../xdcommon/errorinfo.h"
 
-inline tango::IColumnInfoPtr createColInfo(const std::wstring& col_name,
-                                    int col_odbc_type,
-                                    int col_width,
-                                    int col_scale,
-                                    const std::wstring& col_expr,
-                                    int datetime_sub) {return xcm::null;}
+
+tango::IColumnInfoPtr pgsqlCreateColInfo(const std::wstring& col_name,
+                                         int col_odbc_type,
+                                         int col_width,
+                                         int col_scale,
+                                         const std::wstring& col_expr,
+                                         int datetime_sub);
+
+int pgsqlToTangoType(int pg_type);
 
 
 class PgsqlDatabase : public tango::IDatabase
