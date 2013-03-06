@@ -161,8 +161,7 @@ bool Database::execute(const std::wstring& command,
             if (!kl::isFileUrl(rpath) && rpath.find(L"/") != -1)
                 rpath = L"/" + rpath;
             
-            if (rpath.find(L" ") != -1)
-                rpath = quote_openchar + rpath + quote_closechar;
+            rpath = quote_openchar + rpath + quote_closechar;
 
 
             std::wstring table_name = kl::afterLast(*it,'/');
