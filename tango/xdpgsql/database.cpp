@@ -87,32 +87,17 @@ std::wstring pgsqlCreateFieldString(const std::wstring& name,
 
     switch (type)
     {
+        case tango::typeWideCharacter:
         case tango::typeCharacter:
         {
-            bool compression = false;
-
-            if (db_type == tango::dbtypeAccess)
-            {
-                compression = true;
-
-                if (width >= 255)
-                    width = 255;
-            }
-            
-            if (db_type == tango::dbtypeExcel)
-            {
-                if (width >= 255)
-                    width = 255;
-            }
-
-            swprintf(buf, 255, L"%ls varchar (%d)%ls%ls",
+            swprintf(buf, 255, L"%ls varchar (%d)%ls",
                                 name.c_str(),
                                 width,
-                                compression ? L" WITH COMPRESSION" : L"",
                                 allow_nulls ? L"" : L" NOT NULL");
             return buf;
         }
 
+        /*
         case tango::typeWideCharacter:
         {
             swprintf(buf, 255, L"%ls nvarchar (%d)%ls",
@@ -121,6 +106,7 @@ std::wstring pgsqlCreateFieldString(const std::wstring& name,
                                 allow_nulls ? L" NULL" : L"");
             return buf;
         }
+        */
 
         case tango::typeNumeric:
         {
@@ -129,16 +115,7 @@ std::wstring pgsqlCreateFieldString(const std::wstring& name,
                 width = 28;
             }
 
-            if (db_type == tango::dbtypeMySql)
-            {
-                // we need to add 2 to the width of decimal fields in
-                // MySql for backward compatibility as versions below
-                // 3.23 include the minus and period in the width
-
-                width += 2;
-            }
-
-            swprintf(buf, 255, L"%ls decimal (%d,%d)%ls",
+            swprintf(buf, 255, L"%ls numeric (%d,%d)%ls",
                                 name.c_str(),
                                 width,
                                 scale,
@@ -156,7 +133,7 @@ std::wstring pgsqlCreateFieldString(const std::wstring& name,
 
         case tango::typeDouble:
         {
-            swprintf(buf, 255, L"%ls float%ls",
+            swprintf(buf, 255, L"%ls double precision%ls",
                                 name.c_str(),
                                 allow_nulls ? L"" : L" NOT NULL");
             return buf;
@@ -164,7 +141,7 @@ std::wstring pgsqlCreateFieldString(const std::wstring& name,
 
         case tango::typeBoolean:
         {
-            swprintf(buf, 255, L"%ls bit%ls",
+            swprintf(buf, 255, L"%ls boolean%ls",
                                 name.c_str(),
                                 allow_nulls ? L"" : L" NOT NULL");
             return buf;
@@ -172,46 +149,18 @@ std::wstring pgsqlCreateFieldString(const std::wstring& name,
 
         case tango::typeDate:
         {
-            if (db_type == tango::dbtypeMySql ||
-                db_type == tango::dbtypeDb2 ||
-				db_type == tango::dbtypePostgres)
-            {
-                swprintf(buf, 255, L"%ls date%ls",
-                                    name.c_str(),
-                                    allow_nulls ? L"" : L" NOT NULL");
-            }
-             else if (db_type == tango::dbtypeFirebird)
-            {
-                swprintf(buf, 255, L"%ls timestamp%ls",
-                        name.c_str(),
-                        allow_nulls ? L"" : L" NOT NULL");
-            }
-             else
-            {
-                swprintf(buf, 255, L"%ls datetime%ls",
-                                    name.c_str(),
-                                    allow_nulls ? L"" : L" NOT NULL");
-            }
+            swprintf(buf, 255, L"%ls date%ls",
+                                name.c_str(),
+                                allow_nulls ? L"" : L" NOT NULL");
 
             return buf;
         }
 
         case tango::typeDateTime:
         {
-            if (db_type == tango::dbtypeDb2 ||
-                db_type == tango::dbtypeFirebird ||
-				db_type == tango::dbtypePostgres)
-            {
-                swprintf(buf, 255, L"%ls timestamp%ls",
-                                    name.c_str(),
-                                    allow_nulls ? L"" : L" NOT NULL");
-            }
-             else
-            {
-                swprintf(buf, 255, L"%ls datetime%ls",
-                                    name.c_str(),
-                                    allow_nulls ? L"" : L" NOT NULL");
-            }
+            swprintf(buf, 255, L"%ls timestamp%ls",
+                                name.c_str(),
+                                allow_nulls ? L"" : L" NOT NULL");
 
             return buf;
         }
@@ -754,8 +703,8 @@ tango::IStructurePtr PgsqlDatabase::createStructure()
 }
 
 tango::ISetPtr PgsqlDatabase::createTable(const std::wstring& path,
-                                        tango::IStructurePtr struct_config,
-                                        tango::FormatInfo* format_info)
+                                          tango::IStructurePtr struct_config,
+                                          tango::FormatInfo* format_info)
 {
     std::wstring quote_openchar = m_attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
     std::wstring quote_closechar = m_attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
