@@ -2826,7 +2826,7 @@ void func_replace(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
 
 
-void func_proper(kscript::ExprEnv* env, void* param, kscript::Value* retval)
+void func_initcap(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {
     const wchar_t* p0 = env->m_eval_params[0]->getString();
     int p0_len = env->m_eval_params[0]->getDataLen();

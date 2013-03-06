@@ -79,6 +79,7 @@ static void populateFuncInfoList()
     func_info_list.push_back(FuncInfo(wxT("floor"),     _("FLOOR(number [, precision])"),                    _("Returns the largest number, to the specified precision, that is less than or equal to the input number")));
     func_info_list.push_back(FuncInfo(wxT("hour"),      _("HOUR(date)"),                                     _("Returns the hour corresponding to a date")));
     func_info_list.push_back(FuncInfo(wxT("iif"),       _("IIF(boolean test, true value, false value)"),     _("If the boolean test is true, the function returns the true value, otherwise it returns the false value")));
+    func_info_list.push_back(FuncInfo(wxT("initcap"),   _("INITCAP(string)"),                                _("Converts any character in a string that follows a non-letter character to uppercase")));
     func_info_list.push_back(FuncInfo(wxT("instr"),     _("INSTR(string, search string [, occurrence])"),    _("Returns the nth occurrence of the search string in the string, starting from the left side of the string")));
     func_info_list.push_back(FuncInfo(wxT("isnull"),    _("ISNULL(value)"),                                  _("Returns true if an input string or date is null, false otherwise")));
     func_info_list.push_back(FuncInfo(wxT("left"),      _("LEFT(string, length)"),                           _("Returns the leftmost characters of a string to the specified length")));
@@ -97,7 +98,6 @@ static void populateFuncInfoList()
     func_info_list.push_back(FuncInfo(wxT("monthname"), _("MONTHNAME(date)"),                                _("Returns the name of the month containing a date")));
     func_info_list.push_back(FuncInfo(wxT("pi"),        _("PI()"),                                           _("Returns an approximation of the constant PI")));
     func_info_list.push_back(FuncInfo(wxT("power"),     _("POWER(base, exponent)"),                          _("Returns the base raised to the power of the exponent")));
-    func_info_list.push_back(FuncInfo(wxT("proper"),    _("PROPER(string)"),                                 _("Converts any character in a string that follows a non-letter character to uppercase")));
     func_info_list.push_back(FuncInfo(wxT("rand"),      _("RAND()"),                                         _("Returns a random number between zero and one")));
     func_info_list.push_back(FuncInfo(wxT("recid"),     _("RECID()"),                                        _("Returns a string that uniquely identifies a record in a project")));
     func_info_list.push_back(FuncInfo(wxT("recno"),     _("RECNO()"),                                        _("Returns a number indicating the unsorted, absolute position of a record in a set")));

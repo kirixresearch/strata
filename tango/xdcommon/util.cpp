@@ -1059,7 +1059,8 @@ void bindExprParser(kscript::ExprParser* parser)
     parser->addFunction(L"replace", false, func_replace, false, L"s(sss)");
     parser->addFunction(L"lower", false, func_lower, false, L"s(s)");
     parser->addFunction(L"upper", false, func_upper, false, L"s(s)");
-    parser->addFunction(L"proper", false, func_proper, false, L"s(s)");
+    parser->addFunction(L"proper", false, func_initcap, false, L"s(s)");
+    parser->addFunction(L"initcap", false, func_initcap, false, L"s(s)");   // more standard name for proper()
     parser->addFunction(L"reverse", false, func_reverse, false, L"s(s)");
     parser->addFunction(L"soundex", false, func_soundex, false, L"s(s[n])");
     parser->addFunction(L"binhex", false, func_binhex, false, L"s(x)");              // internal

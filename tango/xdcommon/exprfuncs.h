@@ -79,7 +79,7 @@ void func_rfind(kscript::ExprEnv* env, void* param, kscript::Value* retval);
 void func_repeat(kscript::ExprEnv* env, void* param, kscript::Value* retval);
 void func_translate(kscript::ExprEnv* env, void* param, kscript::Value* retval);
 void func_replace(kscript::ExprEnv* env, void* param, kscript::Value* retval);
-void func_proper(kscript::ExprEnv* env, void* param, kscript::Value* retval);
+void func_initcap(kscript::ExprEnv* env, void* param, kscript::Value* retval);
 void func_soundex(kscript::ExprEnv* env, void* param, kscript::Value* retval);
 void func_hour(kscript::ExprEnv* env, void* param, kscript::Value* retval);
 void func_minute(kscript::ExprEnv* env, void* param, kscript::Value* retval);
