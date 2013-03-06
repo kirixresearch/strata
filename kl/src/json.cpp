@@ -821,11 +821,25 @@ bool isValidArraySize(JsonNode& data, JsonNode& schema)
 
 bool isValidArrayItems(JsonNode& data, JsonNode& schema)
 {
-    // TODO: fill out
+    // if the data type isn't an array, nothing to validate
+    if (!data.isArray())
+        return true;
 
-    // items
-    // additionalItems
-    // uniqueItems
+    JsonNode schema_items = schema[L"items"];
+    if (schema_items.isObject())
+    {
+        // validate each of the array items against the schema
+        // defined by the items
+        std::vector<JsonNode> child_nodes = data.getChildren();
+        std::vector<JsonNode>::iterator it, it_end;
+        it_end = child_nodes.end();
+
+        for (it = child_nodes.begin(); it != child_nodes.end(); ++it)
+        {
+            if (!isValidJsonNode(*it, schema_items))
+                return false;
+        }
+    }
 
     return true;
 }
@@ -923,12 +937,12 @@ bool isValidJsonNode(JsonNode& data, JsonNode& schema)
 
     // extends
     // $ref
-    // properties
     // patternProperties
-    // additionalProperties
     // dependencies
     // enum
     // format
+    // additionalItems
+    // uniqueItems
 
     return true;
 }
