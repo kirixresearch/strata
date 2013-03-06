@@ -18,6 +18,8 @@
 #include "jsboolean.h"
 #include "util.h"
 
+#include "../kl/include/kl/json.h"
+
 
 #ifdef _MSC_VER
 #define swprintf _snwprintf
@@ -314,6 +316,31 @@ void Json::parse(ExprEnv* env, void*, Value* retval)
 
     delete e;
 */
+}
+
+void Json::validate(ExprEnv* env, void*, Value* retval)
+{
+    // NOTE: private test function for JSON schema validator
+
+    retval->setBoolean(false);
+    if (env->getParamCount() < 2)
+        return;
+
+    // get the json string to validate
+    Value* value_data = env->getParam(0);
+    std::wstring data_str = value_data->getString();
+
+    Value* value_schema = env->getParam(1);
+    std::wstring schema_str = value_schema->getString();
+
+    kl::JsonNode data_node;
+    data_node.fromString(data_str);
+
+    kl::JsonNode schema_node;
+    schema_node.fromString(schema_str);
+
+    bool result = data_node.isValid(schema_node);
+    retval->setBoolean(result);
 }
 
 void Json::encode(ExprEnv* env, 

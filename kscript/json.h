@@ -56,6 +56,7 @@ class Json : public ValueObject
         KSCRIPT_METHOD("constructor", Json::constructor)
         KSCRIPT_STATIC_METHOD("stringify", Json::stringify)
         KSCRIPT_STATIC_METHOD("parse", Json::parse)
+        KSCRIPT_STATIC_METHOD("validate", Json::validate)   // TEST function for schema validator
     END_KSCRIPT_CLASS()
 
 public:
@@ -66,6 +67,7 @@ public:
     void constructor(ExprEnv* env, Value* retval);
     static void stringify(ExprEnv* env, void*, Value* retval);
     static void parse(ExprEnv* env, void*, Value* retval);
+    static void validate(ExprEnv* env, void*, Value* retval);
 
 private:
 
