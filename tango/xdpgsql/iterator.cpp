@@ -32,8 +32,13 @@ PgsqlIterator::PgsqlIterator(PgsqlDatabase* database, PgsqlSet* set)
 {
     m_conn = NULL;
     m_res = NULL;
+
     m_database = database;
+    m_database->ref();
+
     m_set = set;
+    if (m_set)
+        m_set->ref();
 
     m_row_pos = 0;
     m_block_row = 0;
@@ -80,6 +85,12 @@ PgsqlIterator::~PgsqlIterator()
         m_database->closeConnection(m_conn);
     }
 
+
+    if (m_set)
+        m_set->unref();
+
+    if (m_database)
+        m_database->unref();
 }
 
 bool PgsqlIterator::init(const std::wstring& query)
