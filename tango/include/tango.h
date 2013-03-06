@@ -731,7 +731,7 @@ public:
     virtual bool createFolder(const std::wstring& path) = 0;
     virtual INodeValuePtr createNodeFile(const std::wstring& path) = 0;
     virtual IStreamPtr createStream(const std::wstring& path, const std::wstring& mime_type) = 0;
-    virtual ISetPtr createSet(const std::wstring& path, IStructurePtr struct_config, FormatInfo* format_info) = 0;
+    virtual ISetPtr createTable(const std::wstring& path, IStructurePtr struct_config, FormatInfo* format_info) = 0;
     
     virtual IStreamPtr openStream(const std::wstring& path) = 0;
     virtual INodeValuePtr openNodeFile(const std::wstring& path) = 0;

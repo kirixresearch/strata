@@ -2040,7 +2040,7 @@ tango::IStructurePtr OdbcDatabase::createStructure()
     return static_cast<tango::IStructure*>(s);
 }
 
-tango::ISetPtr OdbcDatabase::createSet(const std::wstring& path,
+tango::ISetPtr OdbcDatabase::createTable(const std::wstring& path,
                                        tango::IStructurePtr struct_config,
                                        tango::FormatInfo* format_info)
 {

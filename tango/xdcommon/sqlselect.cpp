@@ -2041,7 +2041,7 @@ static tango::ISetPtr doJoin(tango::IDatabasePtr db,
         colinfo->setScale(jf_it->scale);
     }
 
-    output_set = db->createSet(L"", output_structure, NULL);
+    output_set = db->createTable(L"", output_structure, NULL);
 
     if (output_set.isNull())
         return xcm::null;
@@ -2217,7 +2217,7 @@ bool convertToNativeTables(tango::IDatabasePtr db,
         
         // need to make an xdnative copy of the set
         tango::IStructurePtr structure = st_it->set->getStructure();
-        tango::ISetPtr set = db->createSet(L"", structure, NULL);
+        tango::ISetPtr set = db->createTable(L"", structure, NULL);
         if (set.isNull())
         {
             // fail out
@@ -3380,12 +3380,12 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
     // check if the output file will be in a mount
     if (output_path.length() > 0 && db->getMountDatabase(output_path).isOk())
     {
-        output_set = db->createSet(output_path, output_structure, NULL);
+        output_set = db->createTable(output_path, output_structure, NULL);
         store_object = false;
     }
      else
     {
-        output_set = db->createSet(L"", output_structure, NULL);
+        output_set = db->createTable(L"", output_structure, NULL);
         store_object = true;
     }
 

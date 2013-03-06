@@ -78,6 +78,7 @@ private:
     std::wstring m_table;
 
     int m_buf_rows;
+    int m_insert_rows;
     std::wstring m_wdata;
     char* m_utf8data;
     int m_utf8data_len;

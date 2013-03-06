@@ -32,6 +32,7 @@ PgsqlRowInserter::PgsqlRowInserter(PgsqlDatabase* db, const std::wstring& table)
     m_conn = NULL;
 
     m_buf_rows = 0;
+    m_insert_rows = 0;
     m_table = table;
     kl::replaceStr(m_table, L"\"", L"");
 
@@ -259,7 +260,7 @@ bool PgsqlRowInserter::insertRow()
     if (!m_conn)
         return false;
 
-    if (m_wdata.length() > 0)
+    if (m_insert_rows++ > 0)
         m_wdata += L"\n";
 
     std::vector<PgsqlInsertFieldData>::iterator it;
@@ -329,6 +330,7 @@ bool PgsqlRowInserter::flush()
     PQputCopyData(m_conn, m_utf8data, (int)output_buf_size);
 
     m_buf_rows = 0;
+    m_wdata = L"";
 
     return true;
 }
