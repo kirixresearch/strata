@@ -44,6 +44,10 @@ int frac exp:
 */
 
 
+// forward declaration
+bool isValidJsonNode(JsonNode& data, JsonNode& schema);
+
+
 inline bool isWhiteSpaceOrLS(wchar_t ch)
 {
     if (ch < 0x80)
@@ -828,8 +832,52 @@ bool isValidArrayItems(JsonNode& data, JsonNode& schema)
 
 bool isValidObjectProperties(JsonNode& data, JsonNode& schema)
 {
-    // TODO: fill out:
+    // if the data type isn't an object, nothing to validate
+    if (!data.isObject())
+        return true;
 
+    // get the property tests from the schema
+    JsonNode schema_properties = schema[L"properties"];
+    JsonNode schema_additionalproperties = schema[L"additionalProperties"];
+
+    // if neither are defined, we're done
+    if (schema_properties.isUndefined() && schema_additionalproperties.isUndefined())
+        return true;
+
+    // get the data object children
+    std::vector<std::wstring> child_keys = data.getChildKeys();
+    std::vector<std::wstring>::iterator it, it_end;
+    it_end = child_keys.end();
+
+    // iterate through the children and test them against the
+    // properties and the additional properties
+    for (it = child_keys.begin(); it != it_end; ++it)
+    {
+        // test against the schema properties
+        if (schema_properties.isObject() && schema_properties.childExists(*it))
+        {
+            JsonNode data_child_node = data.getChild(*it);
+            JsonNode schema_property_child_node = schema_properties.getChild(*it);
+            
+            // we have schema defined for the child node, so validate against it
+            if (!isValidJsonNode(data_child_node, schema_property_child_node))
+                return false;
+
+            // valid; no need to compare against the additional properties
+            continue;
+        }
+
+        // we didn't find the child in the schema; test against the
+        // additional properties
+        if (schema_additionalproperties.isObject())
+        {
+            JsonNode data_child_node = data.getChild(*it);
+            if (!isValidJsonNode(data_child_node, schema_additionalproperties))
+                return false;
+        }
+    }
+
+    // all tests pass
     return true;
 }
 
