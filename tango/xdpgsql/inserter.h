@@ -23,14 +23,7 @@ struct PgsqlInsertFieldData
     int m_scale;
     int m_idx;
 
-    // data
-    char* m_str_val;
-    wchar_t* m_wstr_val;
-    int m_int_val;
-    double m_dbl_val;
-    unsigned char m_bool_val;
-
-    int m_indicator;
+    std::wstring m_value;
 
     PgsqlInsertFieldData()
     {
@@ -40,7 +33,7 @@ struct PgsqlInsertFieldData
         m_scale = 0;
         m_idx = 0;
 
-        m_indicator = 0;
+        m_value = L"";
     }
 };
 
@@ -79,10 +72,20 @@ public:
 private:
 
     PgsqlDatabase* m_database;
+    PGconn* m_conn;
+
     bool m_inserting;
     std::wstring m_table;
 
-    std::vector<PgsqlInsertFieldData*> m_fields;
+    int m_buf_rows;
+    std::wstring m_wdata;
+    char* m_utf8data;
+    int m_utf8data_len;
+    
+    std::wstring m_quote_openchar;
+    std::wstring m_quote_closechar;
+
+    std::vector<PgsqlInsertFieldData> m_fields;
 };
 
 

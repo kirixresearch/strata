@@ -30,6 +30,7 @@ int pgsqlToTangoType(int pg_type);
 class PgsqlDatabase : public tango::IDatabase
 {
 friend class PgsqlSet;
+friend class PgsqlRowInserter;
 friend class PgsqlIterator;
 
     XCM_CLASS_NAME("xdpgsql.Database")
