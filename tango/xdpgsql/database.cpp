@@ -977,22 +977,22 @@ bool PgsqlDatabase::execute(const std::wstring& command,
     m_error.clearError();
     result.clear();
     
-    PGconn* conn = createConnection();
-    if (!conn)
-        return false;
+    wchar_t* p = (wchar_t*)command.c_str();
+    while (::iswspace(*p)) ++p;
 
-    PGresult* res = PQexec(conn, kl::toUtf8(command));
-    if (!res)
-        return false;
+    std::wstring first_word;
+    while (*p && !iswspace(*p))
+    {
+        first_word += *p;
+        ++p;
+    }
 
-    int result_status = PQresultStatus(res);
-
-    if (result_status == PGRES_TUPLES_OK)
+    if (0 == wcscasecmp(first_word.c_str(), L"SELECT"))
     {
         // create an iterator based on our select statement
         PgsqlIterator* iter = new PgsqlIterator(this);
 
-        if (!iter->init(conn, res))
+        if (!iter->init(command))
         {
             delete iter;
             return false;
@@ -1003,6 +1003,16 @@ bool PgsqlDatabase::execute(const std::wstring& command,
     }
      else
     {
+        PGconn* conn = createConnection();
+        if (!conn)
+            return false;
+
+        PGresult* res = PQexec(conn, kl::toUtf8(command));
+        if (!res)
+            return false;
+
+        int result_status = PQresultStatus(res);
+
         PQclear(res);
         closeConnection(conn);
         

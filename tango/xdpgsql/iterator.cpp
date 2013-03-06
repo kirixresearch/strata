@@ -123,7 +123,8 @@ bool PgsqlIterator::init(const std::wstring& query)
 
         m_server_side_cursor = true;
 
-        return init(conn, res);
+        if (!init(conn, res))
+            return false;
     } 
      else
     {
@@ -138,8 +139,29 @@ bool PgsqlIterator::init(const std::wstring& query)
             return false;
         }
 
-        return init(conn, res);
+        if (!init(conn, res))
+            return false;
     }
+
+
+    // if m_set is null, create a placeholder set
+    if (!m_set)
+    {
+        // create set and initialize variables
+        PgsqlSet* set = new PgsqlSet(m_database);
+        set->m_tablename = getTableNameFromSql(query);
+
+        // initialize Odbc connection for this set
+        if (!set->init())
+        {
+            return false;
+        }
+
+        m_set = set;
+        m_set->ref();
+    }
+
+    return true;
 }
 
 
@@ -429,7 +451,11 @@ tango::IStructurePtr PgsqlIterator::getStructure()
 
 void PgsqlIterator::refreshStructure()
 {
-    tango::IStructurePtr set_structure = m_set->getStructure();
+    tango::IStructurePtr set_structure;
+    
+    if (m_set)
+        set_structure = m_set->getStructure();
+
     if (set_structure.isNull())
         return;
 
