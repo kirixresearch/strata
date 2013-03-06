@@ -753,7 +753,7 @@ tango::IStructurePtr PgsqlDatabase::createStructure()
     return static_cast<tango::IStructure*>(s);
 }
 
-tango::ISetPtr PgsqlDatabase::createSet(const std::wstring& path,
+tango::ISetPtr PgsqlDatabase::createTable(const std::wstring& path,
                                         tango::IStructurePtr struct_config,
                                         tango::FormatInfo* format_info)
 {
