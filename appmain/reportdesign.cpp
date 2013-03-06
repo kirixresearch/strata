@@ -320,12 +320,12 @@ static bool loadTablePropertiesFromJson(kl::JsonNode& node, kcanvas::ICompTableP
         {
             // if the property isn't set, move on
             kl::JsonNode prop = properties[prop_idx];
-            if (prop.isNull())
+            if (prop.isUndefined())
                 continue;
 
             // if a range isn't set, move on
             kl::JsonNode range = prop["range"];
-            if (range.isNull())
+            if (range.isUndefined())
                 continue;
 
             // get the range count, and make sure there are

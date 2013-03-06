@@ -190,7 +190,7 @@ bool ImportTemplate::load(const wxString& path)
     
     kl::JsonNode objects = root["objects"];
     
-    if (objects.isNull())
+    if (objects.isUndefined())
         objects = root["imports"];  // backward compatibility -- can be removed later
     
     if (objects.isOk())

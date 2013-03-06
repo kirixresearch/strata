@@ -68,7 +68,7 @@ bool ClientSet::init(const std::wstring& path)
         return false;
 
     kl::JsonNode file_info = response["file_info"];
-    if (file_info.isNull() || file_info["type"].getString() != L"table")
+    if (file_info.isUndefined() || file_info["type"].getString() != L"table")
         return false;
 
     kl::JsonNode fast_row_count = file_info["fast_row_count"];
@@ -318,11 +318,11 @@ tango::rowpos_t ClientSet::getRowCount()
         return 0;
     
     kl::JsonNode file_info = response["file_info"];
-    if (file_info.isNull())
+    if (file_info.isUndefined())
         return 0;
 
     kl::JsonNode row_count = file_info["row_count"];
-    if (row_count.isNull())
+    if (row_count.isUndefined())
         return 0;
 
     return (tango::rowpos_t)row_count.getDouble();
