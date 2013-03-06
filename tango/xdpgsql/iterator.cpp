@@ -31,6 +31,7 @@ const std::wstring empty_wstring = L"";
 PgsqlIterator::PgsqlIterator(PgsqlDatabase* database, PgsqlSet* set)
 {
     m_conn = NULL;
+    m_res = NULL;
     m_database = database;
     m_set = set;
 
@@ -308,6 +309,7 @@ void PgsqlIterator::goFirst()
         if (m_block_start == 1 && m_block_rowcount > 0)
         {
             m_block_row = 0;
+            m_eof = false;
             return;
         }
 
@@ -321,8 +323,7 @@ void PgsqlIterator::goFirst()
         m_block_start = 1;
         m_block_rowcount = PQntuples(m_res);
         m_block_row = 0;
-        if (m_block_rowcount == 0)
-            m_eof = true;
+        m_eof = (m_block_row >= PQntuples(m_res));
     }
      else
     {

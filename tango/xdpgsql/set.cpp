@@ -68,17 +68,6 @@ unsigned int PgsqlSet::getSetFlags()
     if (m_cached_row_count != (tango::rowpos_t)-1)
         return tango::sfFastRowCount;
  
-    switch (m_db_type)
-    {
-        case tango::dbtypeMySql:
-        case tango::dbtypeSqlServer:
-        case tango::dbtypeExcel:
-            return tango::sfFastRowCount;
-        case tango::dbtypeAccess:
-        default:
-            return 0;
-    }
-
     return 0;
 }
 
