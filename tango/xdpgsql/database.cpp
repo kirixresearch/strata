@@ -718,7 +718,8 @@ tango::IFileInfoEnumPtr PgsqlDatabase::getFolderInfo(const std::wstring& path)
     if (!conn)
         return retval;
 
-    PGresult* res = PQexec(conn, "select tablename from pg_tables where schemaname <> 'pg_catalog' and schemaname <> 'information_schema'");
+    PGresult* res = PQexec(conn, "select tablename as name from pg_tables where schemaname <> 'pg_catalog' and schemaname <> 'information_schema' UNION "
+                                 "select viewname as name from pg_views where schemaname <> 'pg_catalog' and schemaname <> 'information_schema'");
 
     if (PQresultStatus(res) != PGRES_TUPLES_OK)
         return retval;
@@ -983,6 +984,21 @@ tango::IStructurePtr PgsqlDatabase::describeTable(const std::wstring& path)
          else if (tango_type == tango::typeCharacter || tango_type == tango::typeWideCharacter)
         {
             col_width = type_mod - 4;
+            col_scale = 0;
+        }
+         else if (tango_type == tango::typeDateTime)
+        {
+            col_width = 8;
+            col_scale = 0;
+        }
+         else if (tango_type == tango::typeInteger || tango_type == tango::typeDate)
+        {
+            col_width = 4;
+            col_scale = 0;
+        }
+         else
+        {
+            col_width = 8;
             col_scale = 0;
         }
 

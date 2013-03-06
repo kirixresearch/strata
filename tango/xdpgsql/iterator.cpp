@@ -20,6 +20,7 @@
 #include <kl/portable.h>
 #include <kl/string.h>
 #include <kl/utf8.h>
+#include <kl/md5.h>
 
 const int row_array_size = 1000;
 
@@ -37,7 +38,7 @@ PgsqlIterator::PgsqlIterator(PgsqlDatabase* database, PgsqlSet* set)
     m_block_row = 0;
     m_eof = false;
     
-    m_bidirectional = false;
+    m_server_side_cursor = false;
     
     m_cache_active = false;
     m_cache_dbrowpos = 0;
@@ -72,28 +73,73 @@ PgsqlIterator::~PgsqlIterator()
         PQclear(m_res);
 
     if (m_conn)
+    {
+        if (m_server_side_cursor)
+            PQexec(m_conn, "END");
         m_database->closeConnection(m_conn);
+    }
 
 }
 
 bool PgsqlIterator::init(const std::wstring& query)
 {
+    bool use_server_side_cursor = true;
+
     PGconn* conn = m_database->createConnection();
     if (!conn)
         return false;
 
-    PGresult* res = PQexec(conn, kl::toUtf8(query));
-    if (!res)
-        return false;
-
-    if (PQresultStatus(res) != PGRES_TUPLES_OK)
+    if (use_server_side_cursor)
     {
-        PQclear(res);
-        m_database->closeConnection(conn);
-        return false;
-    }
+        PGresult* res;
+        int status;
 
-    return init(conn, res);
+        res = PQexec(conn, "BEGIN");
+        status = PQresultStatus(res);
+        PQclear(res);
+
+        if (status != PGRES_COMMAND_OK)
+        {
+            m_database->closeConnection(conn);
+            return false;
+        }
+
+        res = PQexec(conn, kl::toUtf8(L"DECLARE xdpgsqlcursor SCROLL CURSOR FOR " + query));
+        status = PQresultStatus(res);
+        PQclear(res);
+
+        if (status != PGRES_COMMAND_OK)
+        {
+            PQexec(conn, "END");
+            m_database->closeConnection(conn);
+            return false;
+        }
+
+
+        res = PQexec(conn, "FETCH 100 from xdpgsqlcursor");
+        m_block_start = 1;
+        m_block_row = 0;
+        m_block_rowcount = PQntuples(res);
+
+        m_server_side_cursor = true;
+
+        return init(conn, res);
+    } 
+     else
+    {
+        PGresult* res = PQexec(conn, kl::toUtf8(query));
+        if (!res)
+            return false;
+
+        if (PQresultStatus(res) != PGRES_TUPLES_OK)
+        {
+            PQclear(res);
+            m_database->closeConnection(conn);
+            return false;
+        }
+
+        return init(conn, res);
+    }
 }
 
 
@@ -176,35 +222,92 @@ void PgsqlIterator::setIteratorFlags(unsigned int mask, unsigned int value)
     
 unsigned int PgsqlIterator::getIteratorFlags()
 {
-    // if iterator is bidirectional, then return 0, meaning
-    // backwards and forwards scrolling is ok
-    if (m_bidirectional)
-    {
-        return 0;
-    }
-    
-    // if we have a unidirectional iterator, but the back-scroll
-    // cache is on, then we still can scroll back
-    if (m_cache_active)
-    {
-        return 0;
-    }
-    
-    // otherwise, indicate that this iterator is forward-only
-    return tango::ifForwardOnly;
+    return 0;
 }
 
 void PgsqlIterator::skip(int delta)
 {
-    m_block_row += delta;
-    m_eof = (m_block_row >= PQntuples(m_res));
+    m_row_pos += delta;
+
+    if (m_server_side_cursor)
+    {
+        m_eof = false;
+
+        if (m_row_pos >= m_block_start && m_row_pos < m_block_start + m_block_rowcount)
+        {
+            m_block_row = (int)(m_row_pos - m_block_start);
+            return;
+        }
+
+
+        if (m_row_pos == m_block_start + m_block_rowcount)
+        {
+            // no need to reposition, just get the next block
+
+            PQclear(m_res);
+            m_res = PQexec(m_conn, "FETCH 100 from xdpgsqlcursor");
+            m_block_start += m_block_rowcount;
+            m_block_rowcount = PQntuples(m_res);
+            m_block_row = 0;
+            if (m_block_rowcount == 0)
+                m_eof = true;
+        }
+         else
+        {
+            PQclear(m_res);
+
+            // reposition
+            char q[80];
+            snprintf(q, 80, "FETCH ABSOLUTE %d from xdpgsqlcursor", (int)(m_row_pos-1));
+            m_res = PQexec(m_conn, q);
+            PQclear(m_res);
+
+            m_res = PQexec(m_conn, "FETCH 100 from xdpgsqlcursor");
+            m_block_start = m_row_pos;
+            m_block_rowcount = PQntuples(m_res);
+            m_block_row = 0;
+            if (m_block_rowcount == 0)
+                m_eof = true;
+       }
+    }
+     else
+    {
+        m_block_row += delta;
+        m_eof = (m_block_row >= PQntuples(m_res));
+    }
 }
 
 void PgsqlIterator::goFirst()
 {
-    m_row_pos = 0;
-    m_block_row = 0;
-    m_eof = (m_block_row >= PQntuples(m_res));
+    if (m_server_side_cursor)
+    {
+        m_row_pos = 1;
+
+        if (m_block_start == 1 && m_block_rowcount > 0)
+        {
+            m_block_row = 0;
+            return;
+        }
+
+
+        PQclear(m_res);
+
+        m_res = PQexec(m_conn, "FETCH ABSOLUTE 0 from xdpgsqlcursor");
+        PQclear(m_res);
+
+        m_res = PQexec(m_conn, "FETCH 100 from xdpgsqlcursor");
+        m_block_start = 1;
+        m_block_rowcount = PQntuples(m_res);
+        m_block_row = 0;
+        if (m_block_rowcount == 0)
+            m_eof = true;
+    }
+     else
+    {
+        m_row_pos = 1;
+        m_block_row = 0;
+        m_eof = (m_block_row >= PQntuples(m_res));
+    }
 }
 
 void PgsqlIterator::goLast()
@@ -213,7 +316,7 @@ void PgsqlIterator::goLast()
 
 tango::rowid_t PgsqlIterator::getRowId()
 {
-    return 0;
+    return m_row_pos;
 }
 
 bool PgsqlIterator::bof()

@@ -184,11 +184,14 @@ private:
     bool m_cache_active;
     tango::rowpos_t m_cache_dbrowpos;
     
-    bool m_bidirectional;
+    bool m_server_side_cursor;
  
     bool m_eof;
     tango::rowpos_t m_row_pos;
+
+    tango::rowpos_t m_block_start;
     int m_block_row;
+    int m_block_rowcount;
 };
 
 
