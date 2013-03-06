@@ -42,7 +42,6 @@ public:
         m_double = 0.0f;
         m_integer = 0;
         m_boolean = false;
-        m_isnull = true;
         m_type = 0;
 
         m_refcount = 0;
@@ -75,7 +74,6 @@ private:
     double m_double;
     int m_integer;
     bool m_boolean;
-    bool m_isnull;
 
     int m_type;
 

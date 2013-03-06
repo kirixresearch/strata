@@ -1057,7 +1057,6 @@ void JsonNode::setObject()
     m_value->m_double = 0.0f;
     m_value->m_integer = 0;
     m_value->m_boolean = false;
-    m_value->m_isnull = false;
     m_value->m_type = nodetypeObject;
 }
 
@@ -1069,7 +1068,6 @@ void JsonNode::setArray()
     m_value->m_double = 0.0f;
     m_value->m_integer = 0;
     m_value->m_boolean = false;
-    m_value->m_isnull = false;
     m_value->m_type = nodetypeArray;
 }
 
@@ -1081,7 +1079,6 @@ void JsonNode::setString(const std::wstring& str)
     m_value->m_double = 0.0f;
     m_value->m_integer = 0;
     m_value->m_boolean = false;
-    m_value->m_isnull = false;
     m_value->m_type = nodetypeString;
 }
 
@@ -1093,7 +1090,6 @@ void JsonNode::setBoolean(bool b)
     m_value->m_double = 0.0f;
     m_value->m_integer = 0;
     m_value->m_boolean = b;
-    m_value->m_isnull = false;
     m_value->m_type = nodetypeBoolean;
 }
 
@@ -1105,7 +1101,6 @@ void JsonNode::setDouble(double num)
     m_value->m_double = num;
     m_value->m_integer = 0;
     m_value->m_boolean = false;
-    m_value->m_isnull = false;
     m_value->m_type = nodetypeDouble;
 }
 
@@ -1117,7 +1112,6 @@ void JsonNode::setInteger(int num)
     m_value->m_double = 0.0f;
     m_value->m_integer = num;
     m_value->m_boolean = false;
-    m_value->m_isnull = false;
     m_value->m_type = nodetypeInteger;
 }
 
@@ -1129,7 +1123,6 @@ void JsonNode::setNull()
     m_value->m_double = 0.0f;
     m_value->m_integer = 0;
     m_value->m_boolean = false;
-    m_value->m_isnull = true;
     m_value->m_type = nodetypeNull;    
 }
 
@@ -1223,7 +1216,7 @@ bool JsonNode::isInteger() const
 
 bool JsonNode::isNull() const
 {
-    return m_value->m_isnull;
+    return (m_value->m_type == nodetypeNull);
 }
 
 bool JsonNode::isOk() const
@@ -1254,7 +1247,6 @@ void JsonNode::copyFrom(const JsonNode& node)
     m_value->m_double = node.m_value->m_double;
     m_value->m_integer = node.m_value->m_integer;
     m_value->m_boolean = node.m_value->m_boolean;
-    m_value->m_isnull = node.m_value->m_isnull;
     m_value->m_type = node.m_value->m_type;
 }
 
@@ -1266,7 +1258,6 @@ void JsonNode::init()
     m_value->m_double = 0.0f;
     m_value->m_integer = 0;
     m_value->m_boolean = false;
-    m_value->m_isnull = true;
     m_value->m_type = nodetypeNull;
 }
 
