@@ -25,7 +25,7 @@ class JsonValue;
 class JsonNode;
 
 
-// helper function
+// helper functions
 std::wstring escape_string(std::wstring& str);
 
 
@@ -102,15 +102,15 @@ public:
     JsonNode operator[](const char* str);
     JsonNode operator[](const std::wstring& str);
     
-    bool childExists(const std::wstring& str);
-    bool childExists(const std::string& str);
+    bool childExists(const std::wstring& str) const;
+    bool childExists(const std::string& str) const;
     
     JsonNode getChild(const std::wstring& str);
     JsonNode getChild(const std::string& str);
 
-    std::vector<std::wstring> getChildKeys();
-    std::vector<JsonNode> getChildren();
-    size_t getChildCount();
+    std::vector<std::wstring> getChildKeys() const;
+    std::vector<JsonNode> getChildren() const;
+    size_t getChildCount() const;
     JsonNode appendElement();
 
     void setObject();
@@ -121,18 +121,23 @@ public:
     void setInteger(int num);
     void setNull();
 
-    std::wstring getString();
-    bool getBoolean();
-    double getDouble();
-    int getInteger();
+    std::wstring getString() const;
+    bool getBoolean() const;
+    double getDouble() const;
+    int getInteger() const;
 
-    bool isObject();
-    bool isArray();
-    bool isNull();
-    bool isOk();
+    bool isValid(JsonNode& schema); // partial implementation of json schema spec (draft version 3)
+    bool isObject() const;
+    bool isArray() const;
+    bool isString() const;
+    bool isBoolean() const;
+    bool isDouble() const;
+    bool isInteger() const;
+    bool isNull() const;
+    bool isOk() const;
     
-    operator std::wstring();
-    std::wstring toString();
+    operator std::wstring() const;
+    std::wstring toString() const;
     bool fromString(const std::wstring& str);
 
     void copyFrom(const JsonNode& node);
@@ -141,7 +146,7 @@ public:
 private:
 
     bool parse(wchar_t* expr);
-    std::wstring stringify(unsigned int indent_level = 0);
+    std::wstring stringify(unsigned int indent_level = 0) const;
 
 private:
 

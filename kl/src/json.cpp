@@ -13,6 +13,7 @@
 #include "kl/json.h"
 #include "kl/string.h"
 #include "kl/math.h"
+#include "kl/regex.h"
 
 
 namespace kl
@@ -521,6 +522,369 @@ bool parseJsonWord(wchar_t* expr, wchar_t** endloc, JsonNode& node)
     return parseFail(expr, endloc, node);
 }
 
+bool isValidTypePrimitive(JsonNode& data, const std::wstring type)
+{
+    if (type == L"any")
+        return true;
+    if (type == L"null" && !data.isNull())
+        return false;
+    if (type == L"boolean" && !data.isBoolean())
+        return false;
+    if (type == L"integer" && !data.isInteger())
+        return false;
+    if (type == L"number" && !(data.isInteger() || data.isDouble()))
+        return false;
+    if (type == L"string" && !data.isString())
+        return false;
+    if (type == L"object" && !data.isObject())
+        return false;
+    if (type == L"array" && !data.isArray())
+        return false;
+
+    // something not in this list, so any value is allowed
+    return true;
+}
+
+bool isValidType(JsonNode& data, JsonNode& schema)
+{
+    // if the type doesn't exist in the schema, any type is valid
+    if (!schema.childExists(L"type"))
+        return true;
+
+    // type has to be either a string or an array
+    if (schema[L"type"].isString())
+        return isValidTypePrimitive(data, schema[L"type"].getString());
+
+    if (schema[L"type"].isArray())
+    {
+        std::vector<JsonNode> children = schema[L"type"].getChildren();
+        std::vector<JsonNode>::iterator it, it_end;
+        it_end = children.end();
+
+        bool match = false;
+        for (it = children.begin(); it != it_end; ++it)
+        {
+            if (isValidTypePrimitive(data, it->getString()))
+                return true;
+
+            // TODO: need to handle case where type in array is a schema
+        }
+
+        // type doesn't match any of the children
+        return false;
+    }
+
+    // type is specified, but it's not a string or an array; 
+    // handle as if type isn't defined
+    return true;
+}
+
+bool isValidTypeDisallowed(JsonNode& data, JsonNode& schema)
+{
+    // TODO: fill out
+
+    // disallow
+
+    return true;
+}
+
+bool isValidValueRequired(JsonNode& data, JsonNode& schema)
+{
+    // TODO: fill out
+
+    // required
+
+    return true;
+}
+
+bool isValidNumberValue(JsonNode& data, JsonNode& schema)
+{
+    // if the data type isn't a number, nothing to validate
+    if (!data.isDouble() && !data.isInteger())
+        return true;
+
+    // validate the minimum number
+    if (schema.childExists(L"minimum"))
+    {
+        bool exclusive = false;
+        if (schema.childExists(L"exclusiveMinimum"))
+            exclusive = schema[L"exclusiveMinimum"].getBoolean();
+
+        JsonNode& constraint_node = schema[L"minimum"];
+
+        // validate double value
+        if (constraint_node.isDouble())
+        {
+            double minvalue = constraint_node.getDouble();
+
+            if (exclusive)
+            {
+                if (data.isDouble() && data.getDouble() <= minvalue)
+                    return false;
+                if (data.isInteger() && data.getInteger() <= minvalue)
+                    return false;
+            }
+             else
+            {
+                if (data.isDouble() && data.getDouble() < minvalue)
+                    return false;
+                if (data.isInteger() && data.getInteger() < minvalue)
+                    return false;
+            }
+        }
+
+        // validate integer value
+        if (constraint_node.isInteger())
+        {
+            int minvalue = constraint_node.getInteger();
+
+            if (exclusive)
+            {
+                if (data.isDouble() && data.getDouble() <= minvalue)
+                    return false;
+                if (data.isInteger() && data.getInteger() <= minvalue)
+                    return false;
+            }
+             else
+            {
+                if (data.isDouble() && data.getDouble() < minvalue)
+                    return false;
+                if (data.isInteger() && data.getInteger() < minvalue)
+                    return false;
+            }
+        }
+
+        // if minimum is something else, don't do anything
+    }
+
+    // validate the maximum number
+    if (schema.childExists(L"maximum"))
+    {
+        bool exclusive = false;
+        if (schema.childExists(L"exclusiveMaximum"))
+            exclusive = schema[L"exclusiveMaximum"].getBoolean();
+
+        JsonNode& constraint_node = schema[L"maximum"];
+
+        // validate double value
+        if (constraint_node.isDouble())
+        {
+            double maxvalue = constraint_node.getDouble();
+
+            if (exclusive)
+            {
+                if (data.isDouble() && data.getDouble() >= maxvalue)
+                    return false;
+                if (data.isInteger() && data.getInteger() >= maxvalue)
+                    return false;
+            }
+             else
+            {
+                if (data.isDouble() && data.getDouble() > maxvalue)
+                    return false;
+                if (data.isInteger() && data.getInteger() > maxvalue)
+                    return false;
+            }
+        }
+
+        // validate integer value
+        if (constraint_node.isInteger())
+        {
+            int maxvalue = constraint_node.getInteger();
+
+            if (exclusive)
+            {
+                if (data.isDouble() && data.getDouble() >= maxvalue)
+                    return false;
+                if (data.isInteger() && data.getInteger() >= maxvalue)
+                    return false;
+            }
+             else
+            {
+                if (data.isDouble() && data.getDouble() > maxvalue)
+                    return false;
+                if (data.isInteger() && data.getInteger() > maxvalue)
+                    return false;
+            }
+        }
+
+        // if maximum is something else, don't do anything
+    }
+
+    if (schema.childExists(L"divisibleBy"))
+    {
+        JsonNode constraint_node = schema[L"divisibleBy"];
+
+        if (constraint_node.isDouble())
+        {
+            double divisibleby = constraint_node.getDouble();
+            if (divisibleby != 0 && data.isDouble() && (fmod(data.getDouble(),divisibleby) != 0))
+                return false;
+            if (divisibleby != 0 && data.isInteger() && (fmod(data.getInteger(),divisibleby) != 0))
+                return false;
+        }
+
+        if (constraint_node.isInteger())
+        {
+            int divisibleby = constraint_node.getInteger();
+            if (divisibleby != 0 && data.isDouble() && (fmod(data.getDouble(),(double)divisibleby) != 0))
+                return false;
+            if (divisibleby != 0 && data.isInteger() && (data.getInteger() % divisibleby != 0))
+                return false;
+        }
+    }
+
+    return true;
+}
+
+bool isValidStringValue(JsonNode& data, JsonNode& schema)
+{
+    // if the data type isn't a string, nothing to validate
+    if (!data.isString())
+        return true;
+
+    // validate the minimum string length
+    if (schema.childExists(L"minLength"))
+    {
+        int minlen = schema[L"minLength"].getInteger();
+        int strlen = data.getString().length();
+
+        if (strlen < minlen)
+            return false;
+    }
+
+    // validate the maximum string length
+    if (schema.childExists(L"maxLength"))
+    {
+        int maxlen = schema[L"maxLength"].getInteger();
+        int strlen = data.getString().length();
+
+        if (strlen > maxlen)
+            return false;
+    }
+
+    // validate the string pattern
+    if (schema.childExists(L"pattern"))
+    {
+        JsonNode constraint_node = schema[L"pattern"];
+
+        std::wstring regexstr;
+        if (constraint_node.isString())
+            regexstr = constraint_node.getString();
+
+        klregex::wregex regex;
+        regex.assign(regexstr);
+
+        std::wstring t = data.getString();
+        const wchar_t* datastr = t.c_str();
+
+        // note: use search rather than match so that an embedded string 
+        // match counts (i.e., a regex of "b" would match a string of "abc"), 
+        // which is the required functionality for the pattern parameter
+        if (!regex.search(datastr, datastr + wcslen(datastr)))
+            return false;
+    }
+
+    return true;
+}
+
+bool isValidArraySize(JsonNode& data, JsonNode& schema)
+{
+    // if the data type isn't an array, nothing to validate
+    if (!data.isArray())
+        return true;
+
+    if (schema.childExists(L"minItems"))
+    {
+        int minitem_count = schema[L"minItems"].getInteger();
+        int child_count = data.getChildCount();
+
+        if (child_count < minitem_count)
+            return false;
+    }
+
+    if (schema.childExists(L"maxItems"))
+    {
+        int maxitem_count = schema[L"maxItems"].getInteger();
+        int child_count = data.getChildCount();
+
+        if (child_count > maxitem_count)
+            return false;
+    }
+
+    return true;
+}
+
+bool isValidArrayItems(JsonNode& data, JsonNode& schema)
+{
+    // TODO: fill out
+
+    // items
+    // additionalItems
+    // uniqueItems
+
+    return true;
+}
+
+bool isValidObjectProperties(JsonNode& data, JsonNode& schema)
+{
+    // TODO: fill out:
+
+    return true;
+}
+
+bool isValidJsonNode(JsonNode& data, JsonNode& schema)
+{
+    // make sure schema is an object
+    if (!schema.isObject())
+        return false;
+
+    // validate the object type
+    if (!isValidType(data, schema))
+        return false;
+
+    // validate the object type based on disallowed types
+    if (!isValidTypeDisallowed(data, schema))
+        return false;
+
+    // validate value requirement
+    if (!isValidValueRequired(data, schema))
+        return false;
+
+    // validate any numeric value
+    if (!isValidNumberValue(data, schema))
+        return false;
+
+    // validate any string value
+    if (!isValidStringValue(data, schema))
+        return false;
+
+    // validate any array size
+    if (!isValidArraySize(data, schema))
+        return false;
+
+    // validate array items
+    if (!isValidArrayItems(data, schema))
+        return false;
+
+    // validate object properties
+    if (!isValidObjectProperties(data, schema))
+        return false;
+
+    // TODO: implement:
+
+    // extends
+    // $ref
+    // properties
+    // patternProperties
+    // additionalProperties
+    // dependencies
+    // enum
+    // format
+
+    return true;
+}
+
 JsonNode::JsonNode()
 {
     m_value = new JsonValue;
@@ -591,14 +955,14 @@ JsonNode JsonNode::operator[](const std::wstring& str)
     return getChild(str);
 }
 
-bool JsonNode::childExists(const std::string& str)
+bool JsonNode::childExists(const std::string& str) const
 {
     return childExists(kl::towstring(str));
 }
 
-bool JsonNode::childExists(const std::wstring& str)
+bool JsonNode::childExists(const std::wstring& str) const
 {
-    std::map<std::wstring,JsonNode>::iterator it = m_value->m_child_nodes.find(str);
+    std::map<std::wstring,JsonNode>::const_iterator it = m_value->m_child_nodes.find(str);
     if (it != m_value->m_child_nodes.end())
         return true;
 
@@ -632,13 +996,13 @@ JsonNode JsonNode::getChild(const std::string& str)
 }
 
 
-std::vector<std::wstring> JsonNode::getChildKeys()
+std::vector<std::wstring> JsonNode::getChildKeys() const
 {
     // return an ordered list of keys
     std::vector<std::wstring> child_keys;
     child_keys.reserve(m_value->m_child_nodes_ordered.size());
 
-    std::vector<std::pair<std::wstring,JsonNode>>::iterator it, it_end;
+    std::vector<std::pair<std::wstring,JsonNode>>::const_iterator it, it_end;
     it_end = m_value->m_child_nodes_ordered.end();
     
     for (it = m_value->m_child_nodes_ordered.begin(); it != it_end; ++it)
@@ -649,13 +1013,13 @@ std::vector<std::wstring> JsonNode::getChildKeys()
     return child_keys;
 }
 
-std::vector<JsonNode> JsonNode::getChildren()
+std::vector<JsonNode> JsonNode::getChildren() const
 {
     // return an ordered list of children
     std::vector<JsonNode> child_nodes;
     child_nodes.reserve(m_value->m_child_nodes_ordered.size());
 
-    std::vector<std::pair<std::wstring,JsonNode>>::iterator it, it_end;
+    std::vector<std::pair<std::wstring,JsonNode>>::const_iterator it, it_end;
     it_end = m_value->m_child_nodes_ordered.end();
     
     for (it = m_value->m_child_nodes_ordered.begin(); it != it_end; ++it)
@@ -666,7 +1030,7 @@ std::vector<JsonNode> JsonNode::getChildren()
     return child_nodes;
 }
 
-size_t JsonNode::getChildCount()
+size_t JsonNode::getChildCount() const
 {
     return m_value->m_child_nodes_ordered.size();
 }
@@ -769,14 +1133,14 @@ void JsonNode::setNull()
     m_value->m_type = nodetypeNull;    
 }
 
-std::wstring JsonNode::getString()
+std::wstring JsonNode::getString() const
 {
     // TODO: add implicit type conversions
 
     return m_value->m_string;
 }
 
-bool JsonNode::getBoolean()
+bool JsonNode::getBoolean() const
 {
     switch (m_value->m_type)
     {
@@ -798,7 +1162,7 @@ bool JsonNode::getBoolean()
     return false;
 }
 
-double JsonNode::getDouble()
+double JsonNode::getDouble() const
 {
     // TODO: add implicit type conversions
 
@@ -808,39 +1172,71 @@ double JsonNode::getDouble()
         return m_value->m_double;
 }
 
-int JsonNode::getInteger()
+int JsonNode::getInteger() const
 {
     // TODO: add implicit type conversions
 
     return m_value->m_integer;
 }
 
-bool JsonNode::isObject()
+bool JsonNode::isValid(JsonNode& schema)
+{
+    // TODO: would be nice to make the input const JsonNode& schema;
+    // however schema isn't const because implementation depends on 
+    // getChild() which creates a child if it doesn't exist
+
+    // TODO: would also be nice to make isValid() const, but need
+    // to work around *this
+
+    return isValidJsonNode(*this, schema);
+}
+
+bool JsonNode::isObject() const
 {
     return (m_value->m_type == nodetypeObject);
 }
 
-bool JsonNode::isArray()
+bool JsonNode::isArray() const
 {
     return (m_value->m_type == nodetypeArray);
 }
 
-bool JsonNode::isNull()
+bool JsonNode::isString() const
+{
+    return (m_value->m_type == nodetypeString);
+}
+
+bool JsonNode::isBoolean() const
+{
+    return (m_value->m_type == nodetypeBoolean);
+}
+
+bool JsonNode::isDouble() const
+{
+    return (m_value->m_type == nodetypeDouble);
+}
+
+bool JsonNode::isInteger() const
+{
+    return (m_value->m_type == nodetypeInteger);
+}
+
+bool JsonNode::isNull() const
 {
     return m_value->m_isnull;
 }
 
-bool JsonNode::isOk()
+bool JsonNode::isOk() const
 {
     return !isNull();
 }
 
-JsonNode::operator std::wstring()
+JsonNode::operator std::wstring() const
 {
     return getString();
 }
 
-std::wstring JsonNode::toString()
+std::wstring JsonNode::toString() const
 {
     return stringify();
 }
@@ -905,7 +1301,7 @@ static std::wstring addspaces(unsigned int indent_level)
     return spaces;
 }
 
-std::wstring JsonNode::stringify(unsigned int indent_level)
+std::wstring JsonNode::stringify(unsigned int indent_level) const
 {
     if (m_value->m_type == nodetypeNull)
         return L"null";
