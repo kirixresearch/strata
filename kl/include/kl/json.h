@@ -42,7 +42,7 @@ public:
         m_double = 0.0f;
         m_integer = 0;
         m_boolean = false;
-        m_type = 0;
+        m_type = 0;         // undefined node type
 
         m_refcount = 0;
     }
@@ -133,6 +133,7 @@ public:
     bool isInteger() const;
     bool isNull() const;
     bool isOk() const;
+    bool isUndefined() const;
     
     operator std::wstring() const;
     std::wstring toString() const;
@@ -151,13 +152,14 @@ private:
     // JsonNode value types
     enum NodeType
     {
-        nodetypeNull = 0,
-        nodetypeObject = 1,
-        nodetypeArray = 2,
-        nodetypeString = 3,
-        nodetypeDouble = 4,
-        nodetypeInteger = 5,
-        nodetypeBoolean = 6
+        nodetypeUndefined = 0,
+        nodetypeNull = 1,
+        nodetypeObject = 2,
+        nodetypeArray = 3,
+        nodetypeString = 4,
+        nodetypeDouble = 5,
+        nodetypeInteger = 6,
+        nodetypeBoolean = 7
     };
 
     JsonValue* m_value; 

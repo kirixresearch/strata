@@ -1221,7 +1221,12 @@ bool JsonNode::isNull() const
 
 bool JsonNode::isOk() const
 {
-    return !isNull();
+    return !isUndefined();
+}
+
+bool JsonNode::isUndefined() const
+{
+    return (m_value->m_type == nodetypeUndefined);
 }
 
 JsonNode::operator std::wstring() const
@@ -1258,7 +1263,7 @@ void JsonNode::init()
     m_value->m_double = 0.0f;
     m_value->m_integer = 0;
     m_value->m_boolean = false;
-    m_value->m_type = nodetypeNull;
+    m_value->m_type = nodetypeUndefined;
 }
 
 bool JsonNode::parse(wchar_t* expr)
@@ -1294,6 +1299,9 @@ static std::wstring addspaces(unsigned int indent_level)
 
 std::wstring JsonNode::stringify(unsigned int indent_level) const
 {
+    if (m_value->m_type == nodetypeUndefined)
+        return L"";
+
     if (m_value->m_type == nodetypeNull)
         return L"null";
 
