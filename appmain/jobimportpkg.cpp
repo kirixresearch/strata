@@ -218,7 +218,7 @@ bool ImportPkgJob::importSet(PkgStreamReader* reader,
     }
     */
 
-    info->output_set = g_app->getDatabase()->createSet(towstr(info->output_path), structure, NULL);
+    info->output_set = g_app->getDatabase()->createTable(towstr(info->output_path), structure, NULL);
     if (info->output_set.isNull())
     {
         // could not create set

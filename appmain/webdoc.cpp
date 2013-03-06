@@ -1925,7 +1925,7 @@ tango::ISetPtr makeTableFromDom(wxDOMNode& _node)
         col_info->setScale(field_it->type == tango::typeNumeric ? field_it->max_dec : 0);
     }
 
-    dest_set = dest_db->createSet(L"", dest_struct, NULL);
+    dest_set = dest_db->createTable(L"", dest_struct, NULL);
     
     if (dest_set.isNull())
         return xcm::null;

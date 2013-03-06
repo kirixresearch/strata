@@ -286,7 +286,7 @@ int SummarizeJob::runJob()
         ++i;
     }
 
-    tango::ISetPtr output_set = m_db->createSet(L"",
+    tango::ISetPtr output_set = m_db->createTable(L"",
                                                 output_structure,
                                                 NULL);
     if (output_set.isNull())

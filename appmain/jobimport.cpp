@@ -1052,7 +1052,7 @@ int ImportJob::runJob()
                 col_info->setScale(field_it->output_scale);
             }
 
-            dest_set = dest_db->createSet(L"", dest_struct, NULL);
+            dest_set = dest_db->createTable(L"", dest_struct, NULL);
         }
 
         

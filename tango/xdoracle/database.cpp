@@ -1118,7 +1118,7 @@ tango::IStructurePtr OracleDatabase::createStructure()
     return static_cast<tango::IStructure*>(s);
 }
 
-tango::ISetPtr OracleDatabase::createSet(const std::wstring& path,
+tango::ISetPtr OracleDatabase::createTable(const std::wstring& path,
                                          tango::IStructurePtr struct_config,
                                          tango::FormatInfo* format_info)
 {

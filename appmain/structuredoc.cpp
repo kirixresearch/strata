@@ -1446,7 +1446,7 @@ bool StructureDoc::createTable()
     
     // -- get the path from the dialog and create the new set --
     m_path = dlg.getPath();
-    tango::ISetPtr set = g_app->getDatabase()->createSet(towstr(m_path),
+    tango::ISetPtr set = g_app->getDatabase()->createTable(towstr(m_path),
                                                          structure,
                                                          NULL);
 

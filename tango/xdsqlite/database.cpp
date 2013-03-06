@@ -571,7 +571,7 @@ tango::IStructurePtr SlDatabase::createStructure()
 }
 
 
-tango::ISetPtr SlDatabase::createSet(const std::wstring& _path,
+tango::ISetPtr SlDatabase::createTable(const std::wstring& _path,
                                      tango::IStructurePtr struct_config,
                                      tango::FormatInfo* format_info)
 {

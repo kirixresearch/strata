@@ -1101,7 +1101,7 @@ tango::ISetPtr Database::runGroupQuery(tango::ISetPtr set,
         info->setScale(out_it->m_scale);
     }
 
-    tango::ISetPtr output_set = createSet(L"", output_struct, NULL);
+    tango::ISetPtr output_set = createTable(L"", output_struct, NULL);
     if (output_set.isNull())
         return xcm::null;
 

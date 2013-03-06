@@ -381,7 +381,7 @@ bool sqlCreate(tango::IDatabasePtr db,
             return false;
         }
         
-        tango::ISetPtr set = db->createSet(table_name, sp, NULL);
+        tango::ISetPtr set = db->createTable(table_name, sp, NULL);
         if (set.isNull())
         {
             wchar_t buf[1024]; // some paths might be long

@@ -572,7 +572,7 @@ tango::IStructurePtr SqlServerDatabase::createStructure()
     return static_cast<tango::IStructure*>(s);
 }
 
-tango::ISetPtr SqlServerDatabase::createSet(const std::wstring& path,
+tango::ISetPtr SqlServerDatabase::createTable(const std::wstring& path,
                                             tango::IStructurePtr struct_config,
                                             tango::FormatInfo* format_info)
 {

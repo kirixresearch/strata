@@ -132,7 +132,7 @@ int DivideJob::runJob()
         tango_job = m_db->createJob();
         setTangoJob(tango_job);
 
-        dest_set = m_db->createSet(L"", structure, NULL);
+        dest_set = m_db->createTable(L"", structure, NULL);
 
         if (rows_left >= output_row_count)
         {

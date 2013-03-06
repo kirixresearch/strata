@@ -414,7 +414,7 @@ bool ConvertDataJob::convertTable(ConvertDataInstruction& cdi)
             colinfo->setScale(field_it->out_scale);
         }
 
-        table_it->sp_set = db->createSet(L"", structure, NULL);
+        table_it->sp_set = db->createTable(L"", structure, NULL);
         if (!table_it->sp_set)
         {
             // -- error --
@@ -971,7 +971,7 @@ void ConvertJob::createAndSaveSetFromIterator(tango::IDatabasePtr target_db,
     }
 
     tango::ISetPtr dest_set;
-    dest_set = target_db->createSet(towstr(set_name), src_struct, NULL);
+    dest_set = target_db->createTable(towstr(set_name), src_struct, NULL);
     if (!dest_set)
     {
         m_job_info->setState(cfw::jobStateFailed);
@@ -1118,7 +1118,7 @@ int ConvertJob::runJob()
 
 
     tango::ISetPtr dest_set;
-    dest_set = m_dest_db->createSet(towstr(m_dest_table), src_struct, NULL);
+    dest_set = m_dest_db->createTable(towstr(m_dest_table), src_struct, NULL);
     if (!dest_set)
     {
         m_job_info->setState(cfw::jobStateFailed);

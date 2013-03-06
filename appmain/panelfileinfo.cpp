@@ -517,7 +517,7 @@ void MultiFileInfoPanel::onSave(wxCommandEvent& event)
     colinfo->setWidth(8);
     colinfo->setScale(0);
 
-    tango::ISetPtr output = g_app->getDatabase()->createSet(L"", output_structure, NULL);
+    tango::ISetPtr output = g_app->getDatabase()->createTable(L"", output_structure, NULL);
     if (!output)
         return;
 

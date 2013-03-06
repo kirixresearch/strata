@@ -1572,7 +1572,7 @@ tango::IStructurePtr FsDatabase::createStructure()
     return static_cast<tango::IStructure*>(s);
 }
 
-tango::ISetPtr FsDatabase::createSet(const std::wstring& _path,
+tango::ISetPtr FsDatabase::createTable(const std::wstring& _path,
                                      tango::IStructurePtr struct_config,
                                      tango::FormatInfo* format_info)
 {

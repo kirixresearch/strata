@@ -201,7 +201,7 @@ int AppendJob::runJob()
         }
 
 
-        target_set = m_db->createSet(output_path, output_structure, NULL);
+        target_set = m_db->createTable(output_path, output_structure, NULL);
         if (target_set.isNull())
         {
             m_job_info->setState(jobStateFailed);

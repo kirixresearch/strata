@@ -1341,7 +1341,7 @@ bool StructWindow::createTable()
         ci->setScale(it->new_field.scale);
     }
 
-    tango::ISetPtr new_set = c->getDatabasePtr()->createSet(L"", sc, NULL);
+    tango::ISetPtr new_set = c->getDatabasePtr()->createTable(L"", sc, NULL);
 
     return true;
 }

@@ -343,7 +343,7 @@ int CopyJob::runJob()
 
 
         tango::ISetPtr result_set;
-        it->m_result_set = it->m_dest_db->createSet(towstr(it->m_dest_path),
+        it->m_result_set = it->m_dest_db->createTable(towstr(it->m_dest_path),
                                                     copy_structure,
                                                     NULL);
         if (it->m_result_set.isNull())

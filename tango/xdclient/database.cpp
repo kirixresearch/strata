@@ -599,7 +599,7 @@ tango::IStructurePtr ClientDatabase::createStructure()
     return static_cast<tango::IStructure*>(s);
 }
 
-tango::ISetPtr ClientDatabase::createSet(const std::wstring& path,
+tango::ISetPtr ClientDatabase::createTable(const std::wstring& path,
                                          tango::IStructurePtr structure,
                                          tango::FormatInfo* format_info)
 {

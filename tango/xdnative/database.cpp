@@ -3000,7 +3000,7 @@ tango::IStructurePtr Database::createStructure()
     return static_cast<tango::IStructure*>(s);
 }
 
-tango::ISetPtr Database::createSet(const std::wstring& _path,
+tango::ISetPtr Database::createTable(const std::wstring& _path,
                                    tango::IStructurePtr structure,
                                    tango::FormatInfo* format_info)
 {
@@ -3018,7 +3018,7 @@ tango::ISetPtr Database::createSet(const std::wstring& _path,
             if (db.isNull())
                 return xcm::null;
 
-            tango::ISetPtr set = db->createSet(rpath, structure, format_info);
+            tango::ISetPtr set = db->createTable(rpath, structure, format_info);
             if (set.isOk())
             {
                 set->setObjectPath(_path);

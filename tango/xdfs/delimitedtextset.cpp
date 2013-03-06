@@ -646,9 +646,9 @@ void DelimitedTextSet::setCreateStructure(tango::IStructurePtr structure)
 {
     // this function is used when creating a set.  When a set is created,
     // only the field headers are present in the file.  The newly created
-    // file is closed and then reopened by FsDatabase::createSet().  Because
+    // file is closed and then reopened by FsDatabase::createTable().  Because
     // there is no data in the file, the file's structure cannot be reliably
-    // determined.  This function allows FsDatabase::createSet() explicity
+    // determined.  This function allows FsDatabase::createTable() explicity
     // set up the structure of set.
     
     m_source_structure = static_cast<tango::IStructure*>(new Structure);

@@ -749,7 +749,7 @@ tango::IStructurePtr DrizzleDatabase::createStructure()
     return static_cast<tango::IStructure*>(s);
 }
 
-tango::ISetPtr DrizzleDatabase::createSet(const std::wstring& path,
+tango::ISetPtr DrizzleDatabase::createTable(const std::wstring& path,
                                           tango::IStructurePtr struct_config,
                                           tango::FormatInfo* format_info)
 {

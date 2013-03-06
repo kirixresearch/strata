@@ -534,7 +534,7 @@ int ExportJob::runJob()
                     tango::FormatInfo fi;
                     fi.table_format = format;
 
-                    dest_set = conn->getDatabasePtr()->createSet(
+                    dest_set = conn->getDatabasePtr()->createTable(
                                                        towstr(it->output_path),
                                                        dest_struct,
                                                        &fi);
@@ -553,7 +553,7 @@ int ExportJob::runJob()
                         tango::FormatInfo fi;
                         fi.table_format = tango::formatDelimitedText;
 
-                        dest_set = conn->getDatabasePtr()->createSet(
+                        dest_set = conn->getDatabasePtr()->createTable(
                                                            towstr(it->output_path),
                                                            dest_struct,
                                                            &fi);
@@ -575,7 +575,7 @@ int ExportJob::runJob()
                         tango::IStructurePtr empty_struct;
                         empty_struct = g_app->getDatabase()->createStructure();
 
-                        dest_set = conn->getDatabasePtr()->createSet(
+                        dest_set = conn->getDatabasePtr()->createTable(
                                                            towstr(it->output_path),
                                                            dest_struct,
                                                            &fi);

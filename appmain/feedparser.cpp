@@ -329,7 +329,7 @@ tango::ISetPtr FeedParser::convertToSet()
     colinfo->setWidth(max_id_len);
     colinfo->setScale(0);
 
-    dest_set = db->createSet(L"", structure, NULL);
+    dest_set = db->createTable(L"", structure, NULL);
 
     if (dest_set.isNull())
         return xcm::null;

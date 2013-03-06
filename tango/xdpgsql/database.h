@@ -92,7 +92,7 @@ public:
     std::wstring getPrimaryKey(const std::wstring table);
     
     tango::IStructurePtr createStructure();
-    tango::ISetPtr createSet(const std::wstring& path,
+    tango::ISetPtr createTable(const std::wstring& path,
                              tango::IStructurePtr struct_config,
                              tango::FormatInfo* format_info);
     tango::IStreamPtr openStream(const std::wstring& path);

@@ -1975,7 +1975,7 @@ void DbConnection::save(kscript::ExprEnv* env, kscript::Value* retval)
     if (append && m_db->getFileExist(output_name))
         output_set = m_db->openSet(output_name);
           else
-        output_set = m_db->createSet(output_name, input_set->getStructure(), NULL);
+        output_set = m_db->createTable(output_name, input_set->getStructure(), NULL);
 
     if (output_set.isNull())
         return;
