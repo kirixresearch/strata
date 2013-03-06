@@ -592,15 +592,6 @@ bool isValidTypeDisallowed(JsonNode& data, JsonNode& schema)
     return true;
 }
 
-bool isValidValueRequired(JsonNode& data, JsonNode& schema)
-{
-    // TODO: fill out
-
-    // required
-
-    return true;
-}
-
 bool isValidNumberValue(JsonNode& data, JsonNode& schema)
 {
     // if the data type isn't a number, nothing to validate
@@ -844,7 +835,34 @@ bool isValidArrayItems(JsonNode& data, JsonNode& schema)
     return true;
 }
 
-bool isValidObjectProperties(JsonNode& data, JsonNode& schema)
+bool isValidObjectKeys(JsonNode& data, JsonNode& schema)
+{
+    // if the data type isn't an object, nothing to validate
+    if (!data.isObject())
+        return true;
+
+    // get the list of required keys; TODO: verify behavior;
+    // this behavior matches examples rather than the draft3
+    // standard
+    JsonNode schema_requiredkeys_node = schema[L"required"];
+    if (schema_requiredkeys_node.isArray())
+    {
+        std::vector<JsonNode> required_keys = schema_requiredkeys_node.getChildren();
+        std::vector<JsonNode>::iterator it, it_end;
+        it_end = required_keys.end();
+
+        for (it = required_keys.begin(); it != it_end; ++it)
+        {
+            // validate the key
+            if (!data.childExists(it->getString()))
+                return false;
+        }
+    }
+
+    return true;
+}
+
+bool isValidObjectValues(JsonNode& data, JsonNode& schema)
 {
     // if the data type isn't an object, nothing to validate
     if (!data.isObject())
@@ -909,10 +927,6 @@ bool isValidJsonNode(JsonNode& data, JsonNode& schema)
     if (!isValidTypeDisallowed(data, schema))
         return false;
 
-    // validate value requirement
-    if (!isValidValueRequired(data, schema))
-        return false;
-
     // validate any numeric value
     if (!isValidNumberValue(data, schema))
         return false;
@@ -929,9 +943,14 @@ bool isValidJsonNode(JsonNode& data, JsonNode& schema)
     if (!isValidArrayItems(data, schema))
         return false;
 
-    // validate object properties
-    if (!isValidObjectProperties(data, schema))
+    // validate object keys
+    if (!isValidObjectKeys(data, schema))
         return false;
+
+    // validate object properties
+    if (!isValidObjectValues(data, schema))
+        return false;
+
 
     // TODO: implement:
 
