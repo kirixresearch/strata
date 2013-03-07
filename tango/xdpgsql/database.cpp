@@ -548,7 +548,7 @@ tango::INodeValuePtr PgsqlDatabase::openNodeFile(const std::wstring& path)
 }
 
 bool PgsqlDatabase::renameFile(const std::wstring& path,
-                              const std::wstring& new_name)
+                               const std::wstring& new_name)
 {
     std::wstring command;
 
@@ -575,13 +575,13 @@ bool PgsqlDatabase::renameFile(const std::wstring& path,
 }
 
 bool PgsqlDatabase::moveFile(const std::wstring& path,
-                            const std::wstring& new_location)
+                             const std::wstring& new_location)
 {
     return false;
 }
 
 bool PgsqlDatabase::copyFile(const std::wstring& src_path,
-                            const std::wstring& dest_path)
+                             const std::wstring& dest_path)
 {
     return false;
 }
@@ -676,7 +676,7 @@ tango::IFileInfoEnumPtr PgsqlDatabase::getFolderInfo(const std::wstring& path)
         return retval;
 
     PGresult* res = PQexec(conn, "select tablename as name from pg_tables where schemaname <> 'pg_catalog' and schemaname <> 'information_schema' UNION "
-                                 "select viewname as name from pg_views where schemaname <> 'pg_catalog' and schemaname <> 'information_schema'");
+                                 "select viewname  as name from pg_views  where schemaname <> 'pg_catalog' and schemaname <> 'information_schema'");
 
     if (PQresultStatus(res) != PGRES_TUPLES_OK)
         return retval;
@@ -826,7 +826,7 @@ tango::IStreamPtr PgsqlDatabase::createStream(const std::wstring& ofs_path, cons
 }
 
 tango::ISetPtr PgsqlDatabase::openSetEx(const std::wstring& ofs_path,
-                                       int format)
+                                        int format)
 {
     return openSet(ofs_path);
 }
@@ -918,7 +918,7 @@ bool PgsqlDatabase::renameIndex(const std::wstring& path,
 
 
 bool PgsqlDatabase::deleteIndex(const std::wstring& path,
-                               const std::wstring& name)
+                                const std::wstring& name)
 {
     return false;
 }

@@ -36,6 +36,8 @@ GridActionValidator::GridActionValidator(kcl::Grid* grid,
 
 GridActionValidator::~GridActionValidator()
 {
+    m_grid->RemoveEventHandler(this);
+
     std::vector<GridActionRule*>::iterator it;
     for (it = m_rules.begin(); it != m_rules.end(); ++it)
         delete (*it);

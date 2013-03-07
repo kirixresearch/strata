@@ -126,7 +126,8 @@ IndexPanel::IndexPanel(ITableDocPtr tabledoc)
     m_selected_index_info = NULL;
     m_available_fields = NULL;
     m_index_fields = NULL;
-    
+    m_indexes_list_validator = NULL;
+
     m_set = tabledoc->getBaseSet();
     if (m_set.isOk())
     {
@@ -143,6 +144,7 @@ IndexPanel::IndexPanel(ITableDocPtr tabledoc)
 
 IndexPanel::~IndexPanel()
 {
+    delete m_indexes_list_validator;
     m_ok_button = NULL;
 }
 
@@ -209,6 +211,7 @@ bool IndexPanel::initDoc(IFramePtr frame,
     m_indexes_list_validator->validate();
     
 
+
     // create available fields list
 
     m_available_fields = new FieldListControl(this, ID_AvailableFieldsList);
@@ -217,7 +220,9 @@ bool IndexPanel::initDoc(IFramePtr frame,
     m_available_fields->setStructure(m_structure);
     
 
+
     // create index fields list
+
     m_index_fields = new kcl::RowSelectionGrid(this);
     m_index_fields->setAllowDeletes(true);
     m_index_fields->setDragFormat(wxT("indexpanel_output"));
@@ -235,6 +240,7 @@ bool IndexPanel::initDoc(IFramePtr frame,
     m_index_fields->createDefaultView();
     
 
+
     // the list of field names should not be editable
 
     kcl::CellProperties props;
@@ -243,7 +249,9 @@ bool IndexPanel::initDoc(IFramePtr frame,
     m_index_fields->setModelColumnProperties(0, &props);
     
 
+
     // the sort order should be a drop list
+
     props.mask = kcl::CellProperties::cpmaskCtrlType |
                  kcl::CellProperties::cpmaskCbChoices;
     props.ctrltype = kcl::Grid::ctrltypeDropList;
@@ -255,7 +263,9 @@ bool IndexPanel::initDoc(IFramePtr frame,
     m_index_fields->setRowHeight(index_row_height);
     
 
+
     // create add index button
+
     wxButton* add_index_button = new wxButton(this,
                                              ID_AddIndexButton,
                                              _("Add"),
@@ -268,6 +278,7 @@ bool IndexPanel::initDoc(IFramePtr frame,
     
 
     // create delete index button
+
     m_delete_index_button = new wxButton(this,
                                          ID_DeleteIndexButton,
                                          _("Delete"),
@@ -280,6 +291,7 @@ bool IndexPanel::initDoc(IFramePtr frame,
     
 
     // create the drop target for the grid and connect the signal
+
     kcl::GridDataDropTarget* drop_target = new kcl::GridDataDropTarget(m_index_fields);
     drop_target->sigDropped.connect(this, &IndexPanel::onGridDataDropped);
     drop_target->setGridDataObjectFormats(wxT("indexpanel_fields"), wxT("indexpanel_output"));
