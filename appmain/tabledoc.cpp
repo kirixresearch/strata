@@ -8019,6 +8019,33 @@ void TableDoc::showViewPanel()
     }
 }
 
+static bool isKeyExpressionSame(const std::wstring& expr1, const std::wstring& expr2)
+{
+    std::vector<std::wstring> parts1;
+    std::vector<std::wstring> parts2;
+
+    kl::parseDelimitedList(expr1, parts1, ',', true);
+    kl::parseDelimitedList(expr2, parts2, ',', true);
+
+    if (parts1.size() != parts2.size())
+        return false;
+
+    size_t i, cnt = parts1.size();
+
+    for (i = 0; i < cnt; ++i)
+    {
+        tango::dequoteIdentifier(parts1[i], '[', ']');
+        tango::dequoteIdentifier(parts1[i], '"', '"');
+        tango::dequoteIdentifier(parts2[i], '[', ']');
+        tango::dequoteIdentifier(parts2[i], '"', '"');
+
+        if (0 != wcscasecmp(parts1[i].c_str(), parts2[i].c_str()))
+            return false;
+    }
+
+    return true;
+}
+
 void TableDoc::onIndexEditFinished(IndexPanel* panel)
 {
     tango::IDatabasePtr db = g_app->getDatabase();
@@ -8176,10 +8203,9 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
         // we found the index; there are a couple of options...
         
         // 1) the expression hasn't changed; do nothing
-        index_expr = towx(index->getExpression());
-        if (index_expr.CmpNoCase(info->expr) == 0)
+        if (isKeyExpressionSame(index->getExpression(), towstr(info->expr)))
             continue;
-        
+
         // 2) the expression has changed; delete the old index
         //    and create a new one
         kl::JsonNode index_item = indexes.appendElement();
