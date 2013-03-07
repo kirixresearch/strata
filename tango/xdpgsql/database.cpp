@@ -20,6 +20,7 @@
 #include "../xdcommon/fileinfo.h"
 #include "../xdcommon/structure.h"
 #include "../xdcommon/columninfo.h"
+#include "../xdcommon/indexinfo.h"
 #include "database.h"
 #include "iterator.h"
 #include "set.h"
@@ -241,9 +242,16 @@ tango::IColumnInfoPtr pgsqlCreateColInfo(const std::wstring& col_name,
 
 static std::wstring getTablenameFromPath(const std::wstring& path)
 {
+    std::wstring res;
+
     if (path.substr(0,1) == L"/")
-        return path.substr(1);
-    return path;
+        res = path.substr(1);
+         else
+        res = path;
+
+    kl::replaceStr(res, L"\"", L"");
+
+    return res;
 }
 
 // PgsqlFileInfo class implementation
@@ -691,9 +699,47 @@ tango::IFileInfoEnumPtr PgsqlDatabase::getFolderInfo(const std::wstring& path)
     return retval;
 }
 
-std::wstring PgsqlDatabase::getPrimaryKey(const std::wstring _path)
+std::wstring PgsqlDatabase::getPrimaryKey(const std::wstring path)
 {
-    return L"";
+    std::wstring table = getTablenameFromPath(path);
+    std::wstring pk;
+
+    PGconn* conn = createConnection();
+    if (!conn)
+        return pk;
+
+    std::wstring query = L"SELECT pg_attribute.attname, "
+                         L"       format_type(pg_attribute.atttypid, pg_attribute.atttypmod) "
+                         L"FROM   pg_index, pg_class, pg_attribute "
+                         L"WHERE  pg_class.oid = '%tbl%'::regclass AND "
+                         L"       indrelid = pg_class.oid AND "
+                         L"       pg_attribute.attrelid = pg_class.oid AND "
+                         L"       pg_attribute.attnum = any(pg_index.indkey) AND "
+                         L"       indisprimary";
+
+    kl::replaceStr(query, L"%tbl%", table);
+
+    PGresult* res = PQexec(conn, kl::toUtf8(query));
+
+    if (!res || PQresultStatus(res) != PGRES_TUPLES_OK)
+    {
+        PQclear(res);
+        closeConnection(conn);
+        return xcm::null;
+    }
+
+    int i, rows = PQntuples(res);
+    for (i = 0; i < rows; ++i)
+    {
+        if (pk.length() > 0)
+            pk += L",";
+        pk += kl::towstring(PQgetvalue(res, i, 0));
+    }
+
+
+    closeConnection(conn);
+
+    return pk;
 }
 
 tango::IStructurePtr PgsqlDatabase::createStructure()
@@ -883,6 +929,68 @@ tango::IIndexInfoEnumPtr PgsqlDatabase::getIndexEnum(const std::wstring& path)
     xcm::IVectorImpl<tango::IIndexInfoEnumPtr>* vec;
     vec = new xcm::IVectorImpl<tango::IIndexInfoEnumPtr>;
 
+
+    std::wstring table = getTablenameFromPath(path);
+
+    PGconn* conn = createConnection();
+    if (!conn)
+        return vec;
+
+    std::wstring query = L"SELECT t.relname as table_name, "
+                         L"       i.relname as index_name, "
+                         L"       a.attname as column_name "
+                         L"FROM   pg_class t, pg_class i, pg_index ix, pg_attribute a "
+                         L"WHERE "
+                         L"     t.oid = ix.indrelid "
+                         L"     and i.oid = ix.indexrelid "
+                         L"     and a.attrelid = t.oid "
+                         L"     and a.attnum = ANY(ix.indkey) "
+                         L"     and t.relkind = 'r' "
+                         L"     and t.relname = '%tbl%' "
+                         L"ORDER BY "
+                         L"     t.relname, "
+                         L"     i.relname ";
+
+    kl::replaceStr(query, L"%tbl%", table);
+
+    PGresult* res = PQexec(conn, kl::toUtf8(query));
+
+    if (!res || PQresultStatus(res) != PGRES_TUPLES_OK)
+    {
+        PQclear(res);
+        closeConnection(conn);
+        return vec;
+    }
+
+    std::map<std::wstring, std::wstring> indexes;
+
+    int i, rows = PQntuples(res);
+    for (i = 0; i < rows; ++i)
+    {
+        std::wstring index_name = kl::towstring(PQgetvalue(res, i, 1));
+        std::wstring index_column = kl::towstring(PQgetvalue(res, i, 2));
+
+        if (indexes[index_name].length() > 0)
+            indexes[index_name] += L",";
+        indexes[index_name] += index_column;
+    }
+
+
+    closeConnection(conn);
+
+
+
+    std::map<std::wstring, std::wstring>::iterator it;
+    for (it = indexes.begin(); it != indexes.end(); ++it)
+    {
+        IndexInfo* ii = new IndexInfo;
+        ii->setTag();
+        ii->setExpression(it->expr);
+
+        indexes->append(static_cast<tango::IIndexInfo*>(ii));
+    }
+
+
     return vec;
 }
 
@@ -903,8 +1011,11 @@ tango::IStructurePtr PgsqlDatabase::describeTable(const std::wstring& path)
 
     PGresult* res = PQexec(conn, kl::toUtf8(query));
 
-    if (PQresultStatus(res) != PGRES_TUPLES_OK)
+    if (!res || PQresultStatus(res) != PGRES_TUPLES_OK)
+    {
+        PQclear(res);
         return xcm::null;
+    }
 
     // create new tango::IStructure
     Structure* s = new Structure;
