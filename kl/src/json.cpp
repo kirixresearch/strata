@@ -974,6 +974,9 @@ bool isValidArrayItems(JsonNode& data, JsonNode& schema)
         return true;
 
     JsonNode schema_items = schema[L"items"];
+
+    // if the items node is an object, then it's a schema;
+    // compare it against each of the items in the data array  
     if (schema_items.isObject())
     {
         // validate each of the array items against the schema
@@ -987,6 +990,15 @@ bool isValidArrayItems(JsonNode& data, JsonNode& schema)
             if (!isValidJsonNode(*it, schema_items))
                 return false;
         }
+    }
+
+    // if the schema items node is an array, compare the elements of
+    // the schema items array to the items in the data array by
+    // cycling through the elements of the schema items array as
+    // we cycle through the data items
+    if (schema_items.isArray())
+    {
+        // TODO: implement
     }
 
     return true;
