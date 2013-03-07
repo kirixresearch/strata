@@ -242,7 +242,7 @@ void tabledocmodel2xml(ITableDocModelPtr model, kl::xmlnode& root)
     }
 
 
-    // save queries from model
+    // save marks from model
 
     kl::xmlnode& marks_node = root.addChild();
     marks_node.setNodeName(L"queries");
@@ -288,8 +288,8 @@ void xml2tabledocmodel(kl::xmlnode& node,
     kl::xmlnode& views_node = node.getChild(L"views");
     if (!views_node.isEmpty())
     {
-        int child_count = views_node.getChildCount();
-        for (int i = 0; i < child_count; ++i)
+        int i, child_count = views_node.getChildCount();
+        for (i = 0; i < child_count; ++i)
         {
             kl::xmlnode& view_node = views_node.getChild(i);
             if (view_node.getNodeName() != L"view")
@@ -307,8 +307,8 @@ void xml2tabledocmodel(kl::xmlnode& node,
     kl::xmlnode& queries_node = node.getChild(L"queries");
     if (!queries_node.isEmpty())
     {
-        int child_count = queries_node.getChildCount();
-        for (int i = 0; i < child_count; ++i)
+        int i, child_count = queries_node.getChildCount();
+        for (i = 0; i < child_count; ++i)
         {
             kl::xmlnode& mark_node = queries_node.getChild(i);
             if (mark_node.getNodeName() != L"expr_query")
