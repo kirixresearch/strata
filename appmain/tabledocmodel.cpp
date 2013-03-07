@@ -1240,41 +1240,6 @@ static tango::INodeValuePtr getObjects(const wxString set_id,
 }
 
 
-ITableDocWatchEnumPtr TableDocModel::getWatchEnum()
-{
-    XCM_AUTO_LOCK(m_obj_mutex);
-
-    xcm::IVectorImpl<ITableDocWatchPtr>* vec;
-    vec = new xcm::IVectorImpl<ITableDocWatchPtr>;
-
-    if (m_watches_cache_time == 0)
-    {
-        m_watches.clear();
-        m_watches_cache_time = time(NULL);
-
-        tango::INodeValuePtr base_node = getObjects(m_id, wxT("watches"));
-        if (base_node.isNull())
-            return vec;
-        int i, child_count = base_node->getChildCount();
-        for (i = 0; i < child_count; ++i)
-        {
-            TableDocWatch* obj = new TableDocWatch;
-            tango::INodeValuePtr node = base_node->getChildByIdx(i);
-            obj->setObjectId(towx(node->getName()));
-            obj->readFromNode(node);
-            m_watches.push_back(static_cast<ITableDocObject*>(obj));
-        }
-    }
-
-    std::vector<ITableDocObjectPtr>::iterator it;
-    for (it = m_watches.begin(); it != m_watches.end(); ++it)
-    {
-        vec->append((*it)->clone());
-    }
-
-    return vec;
-}
-
 ITableDocMarkEnumPtr TableDocModel::getMarkEnum()
 {
     XCM_AUTO_LOCK(m_obj_mutex);
@@ -1464,17 +1429,10 @@ void TableDocMgr::copyModel(tango::ISetPtr _src_set,
     ITableDocObjectEnumPtr vec;
     vec = new xcm::IVectorImpl<ITableDocObjectPtr>;
 
-    ITableDocWatchEnumPtr watches = src_model->getWatchEnum();
     ITableDocMarkEnumPtr marks = src_model->getMarkEnum();
     ITableDocViewEnumPtr views = src_model->getViewEnum();
 
     int i, count;
-
-    count = watches->size();
-    for (i = 0; i < count; ++i)
-    {
-        vec->append(watches->getItem(i));
-    }
 
     count = marks->size();
     for (i = 0; i < count; ++i)

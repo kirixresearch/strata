@@ -46,7 +46,6 @@ private:
     ITableDocMarkPtr createMarkObject();
     ITableDocViewPtr createViewObject();
 
-    ITableDocWatchEnumPtr getWatchEnum();
     ITableDocMarkEnumPtr getMarkEnum();
     ITableDocViewEnumPtr getViewEnum();
     

@@ -198,11 +198,9 @@ public:
     virtual bool writeMultipleObjects(ITableDocObjectEnumPtr obj) = 0;
     virtual bool deleteObject(ITableDocObjectPtr obj) = 0;
 
-    virtual ITableDocWatchPtr createWatchObject() = 0;
     virtual ITableDocMarkPtr createMarkObject() = 0;
     virtual ITableDocViewPtr createViewObject() = 0;
 
-    virtual ITableDocWatchEnumPtr getWatchEnum() = 0;
     virtual ITableDocMarkEnumPtr getMarkEnum() = 0;
     virtual ITableDocViewEnumPtr getViewEnum() = 0;
     

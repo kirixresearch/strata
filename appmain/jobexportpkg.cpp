@@ -215,7 +215,6 @@ void xml2tabledocwatch(kl::xmlnode& node, ITableDocWatchPtr watch)
 void tabledocmodel2xml(ITableDocModelPtr model, kl::xmlnode& root)
 {   
     ITableDocViewEnumPtr views = model->getViewEnum();
-    ITableDocWatchEnumPtr watches = model->getWatchEnum();
     ITableDocMarkEnumPtr marks = model->getMarkEnum();
 
     ITableDocViewPtr view;
@@ -223,7 +222,6 @@ void tabledocmodel2xml(ITableDocModelPtr model, kl::xmlnode& root)
     ITableDocMarkPtr mark;
 
     int view_count = views->size();
-    int watch_count = watches->size();
     int mark_count = marks->size();
 
     int i;
@@ -243,19 +241,6 @@ void tabledocmodel2xml(ITableDocModelPtr model, kl::xmlnode& root)
         tabledocview2xml(view, view_node);
     }
 
-    // save watches from model
-    kl::xmlnode& watches_node = root.addChild();
-    watches_node.setNodeName(L"watches");
-
-    for (i = 0; i < watch_count; ++i)
-    {
-        watch = watches->getItem(i);
-
-        kl::xmlnode& watch_node = watches_node.addChild();
-        watch_node.setNodeName(L"watch");
-
-        tabledocwatch2xml(watch, watch_node);
-    }
 
     // save queries from model
 
@@ -318,24 +303,6 @@ void xml2tabledocmodel(kl::xmlnode& node,
         }
     }
 
-    kl::xmlnode& watches_node = node.getChild(L"watches");
-    if (!watches_node.isEmpty())
-    {
-        int child_count = watches_node.getChildCount();
-        for (int i = 0; i < child_count; ++i)
-        {
-            kl::xmlnode& watch_node = watches_node.getChild(i);
-            if (watch_node.getNodeName() != L"watch")
-            {
-                continue;
-            }
-            
-            ITableDocWatchPtr watch = model->createWatchObject();
-            xml2tabledocwatch(watch_node, watch);
-            vec->append(watch);
-        }
-
-    }
 
     kl::xmlnode& queries_node = node.getChild(L"queries");
     if (!queries_node.isEmpty())
