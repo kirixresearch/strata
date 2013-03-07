@@ -9,13 +9,13 @@
  */
 
 
-#ifndef __XDNATIVE_INDEXINFO_H
-#define __XDNATIVE_INDEXINFO_H
+#ifndef __XDCOMMON_INDEXINFO_H
+#define __XDCOMMON_INDEXINFO_H
 
 
 class IndexInfo : public tango::IIndexInfo
 {
-    XCM_CLASS_NAME("xdnative.IndexInfo")
+    XCM_CLASS_NAME("tango.IndexInfo")
     XCM_BEGIN_INTERFACE_MAP(IndexInfo)
         XCM_INTERFACE_ENTRY(tango::IIndexInfo)
     XCM_END_INTERFACE_MAP()

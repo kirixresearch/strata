@@ -3847,6 +3847,17 @@ tango::IIndexInfoPtr Database::createIndex(const std::wstring& path,
                                            const std::wstring& expr,
                                            tango::IJob* job)
 {
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, cstr, rpath))
+    {
+        // action takes place in a mount
+        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return xcm::null;
+
+        return db->createIndex(rpath, name, expr, job);
+    }
+
     tango::ISetPtr set = openSet(path);
     ISetInternalPtr set_int = set;
     if (set_int.isNull())
@@ -3860,6 +3871,17 @@ bool Database::renameIndex(const std::wstring& path,
                            const std::wstring& name,
                            const std::wstring& new_name)
 {
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, cstr, rpath))
+    {
+        // action takes place in a mount
+        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return xcm::null;
+
+        return db->renameIndex(rpath, name, new_name);
+    }
+
     tango::ISetPtr set = openSet(path);
     ISetInternalPtr set_int = set;
     if (set_int.isNull())
@@ -3872,6 +3894,17 @@ bool Database::renameIndex(const std::wstring& path,
 bool Database::deleteIndex(const std::wstring& path,
                            const std::wstring& name)
 {
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, cstr, rpath))
+    {
+        // action takes place in a mount
+        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return xcm::null;
+
+        return db->deleteIndex(rpath, name);
+    }
+
     tango::ISetPtr set = openSet(path);
     ISetInternalPtr set_int = set;
     if (set_int.isNull())
@@ -3885,13 +3918,24 @@ bool Database::deleteIndex(const std::wstring& path,
 
 tango::IIndexInfoEnumPtr Database::getIndexEnum(const std::wstring& path)
 {
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, cstr, rpath))
+    {
+        // action takes place in a mount
+        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return xcm::null;
+
+        return db->getIndexEnum(rpath);
+    }
+
     tango::ISetPtr set = openSet(path);
     ISetInternalPtr set_int = set;
     if (set_int.isNull())
     {
         // ISetInternal not supported -- return no indexes
-        xcm::IVectorImpl<tango::IIndexInfoEnumPtr>* vec;
-        vec = new xcm::IVectorImpl<tango::IIndexInfoEnumPtr>;
+        xcm::IVectorImpl<tango::IIndexInfoPtr>* vec;
+        vec = new xcm::IVectorImpl<tango::IIndexInfoPtr>;
         return vec;
     }
     

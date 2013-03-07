@@ -767,8 +767,8 @@ tango::IStructurePtr SlDatabase::describeTable(const std::wstring& path)
 
 tango::IIndexInfoEnumPtr SlDatabase::getIndexEnum(const std::wstring& path)
 {
-    xcm::IVectorImpl<tango::IIndexInfoEnumPtr>* vec;
-    vec = new xcm::IVectorImpl<tango::IIndexInfoEnumPtr>;
+    xcm::IVectorImpl<tango::IIndexInfoPtr>* vec;
+    vec = new xcm::IVectorImpl<tango::IIndexInfoPtr>;
 
     return vec;
 }

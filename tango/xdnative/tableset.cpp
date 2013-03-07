@@ -20,7 +20,6 @@
 #include "tango.h"
 #include "tableset.h"
 #include "nativetbl.h"
-#include "indexinfo.h"
 #include "stditer.h"
 #include "util.h"
 #include "../xdcommon/dbfuncs.h"
@@ -29,7 +28,7 @@
 #include "../xdcommon/keylayout.h"
 #include "../xdcommon/idxutil.h"
 #include "../xdcommon/rowidarray.h"
-
+#include "../xdcommon/indexinfo.h"
 
 const int tableiterator_read_ahead_buffer_size = 2097152;
 

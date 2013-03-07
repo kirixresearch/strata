@@ -926,8 +926,8 @@ bool PgsqlDatabase::deleteIndex(const std::wstring& path,
 
 tango::IIndexInfoEnumPtr PgsqlDatabase::getIndexEnum(const std::wstring& path)
 {
-    xcm::IVectorImpl<tango::IIndexInfoEnumPtr>* vec;
-    vec = new xcm::IVectorImpl<tango::IIndexInfoEnumPtr>;
+    xcm::IVectorImpl<tango::IIndexInfoPtr>* vec;
+    vec = new xcm::IVectorImpl<tango::IIndexInfoPtr>;
 
 
     std::wstring table = getTablenameFromPath(path);
@@ -984,10 +984,10 @@ tango::IIndexInfoEnumPtr PgsqlDatabase::getIndexEnum(const std::wstring& path)
     for (it = indexes.begin(); it != indexes.end(); ++it)
     {
         IndexInfo* ii = new IndexInfo;
-        ii->setTag();
-        ii->setExpression(it->expr);
+        ii->setTag(it->first);
+        ii->setExpression(it->second);
 
-        indexes->append(static_cast<tango::IIndexInfo*>(ii));
+        vec->append(static_cast<tango::IIndexInfo*>(ii));
     }
 
 

@@ -33,7 +33,6 @@ OBJECTS = baseiterator.o \
 	database.o \
 	dbmgr.o \
 	groupqueryex.o \
-	indexinfo.o \
 	nativetbl.o \
 	ofs.o \
 	query.o \

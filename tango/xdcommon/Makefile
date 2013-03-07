@@ -35,6 +35,7 @@ OBJECTS = block.o \
 	fileinfo.o \
 	filestream.o \
 	idxutil.o \
+	indexinfo.o \
 	jobinfo.o \
 	keylayout.o \
 	localrowcache.o \

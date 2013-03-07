@@ -2221,8 +2221,8 @@ bool OdbcDatabase::deleteIndex(const std::wstring& path,
 
 tango::IIndexInfoEnumPtr OdbcDatabase::getIndexEnum(const std::wstring& path)
 {
-    xcm::IVectorImpl<tango::IIndexInfoEnumPtr>* vec;
-    vec = new xcm::IVectorImpl<tango::IIndexInfoEnumPtr>;
+    xcm::IVectorImpl<tango::IIndexInfoPtr>* vec;
+    vec = new xcm::IVectorImpl<tango::IIndexInfoPtr>;
 
     return vec;
 }

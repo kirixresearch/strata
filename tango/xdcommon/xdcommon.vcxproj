@@ -281,6 +281,7 @@
     <ClCompile Include="filestream.cpp" />
     <ClCompile Include="groupquery.cpp" />
     <ClCompile Include="idxutil.cpp" />
+    <ClCompile Include="indexinfo.cpp" />
     <ClCompile Include="jobinfo.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -355,6 +356,7 @@
     <ClInclude Include="filestream.h" />
     <ClInclude Include="groupquery.h" />
     <ClInclude Include="idxutil.h" />
+    <ClInclude Include="indexinfo.h" />
     <ClInclude Include="jobinfo.h" />
     <ClInclude Include="keylayout.h" />
     <ClInclude Include="localrowcache.h" />
