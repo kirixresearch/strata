@@ -725,7 +725,7 @@ std::wstring PgsqlDatabase::getPrimaryKey(const std::wstring path)
     {
         PQclear(res);
         closeConnection(conn);
-        return xcm::null;
+        return pk;
     }
 
     int i, rows = PQntuples(res);
