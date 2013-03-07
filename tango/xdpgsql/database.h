@@ -29,6 +29,7 @@ int pgsqlToTangoType(int pg_type);
 std::wstring pgsqlQuoteIdentifier(const std::wstring& str);
 std::wstring pgsqlQuoteIdentifierIfNecessary(const std::wstring& str);
 
+class JobInfo;
 
 class PgsqlDatabase : public tango::IDatabase
 {
@@ -172,6 +173,10 @@ private:
     std::wstring m_password;
     std::wstring m_path;
     
+    xcm::mutex m_jobs_mutex;
+    int m_last_job;
+    std::vector<JobInfo*> m_jobs;
+
     ThreadErrorInfo m_error;
 };
 

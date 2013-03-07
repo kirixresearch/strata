@@ -21,6 +21,8 @@
 #include "../xdcommon/structure.h"
 #include "../xdcommon/columninfo.h"
 #include "../xdcommon/indexinfo.h"
+#include "../xdcommon/jobinfo.h"
+#include "../xdcommon/util.h"
 #include "database.h"
 #include "iterator.h"
 #include "set.h"
@@ -353,6 +355,12 @@ PgsqlDatabase::PgsqlDatabase()
 PgsqlDatabase::~PgsqlDatabase()
 {
     close();
+
+    m_jobs_mutex.lock();
+    std::vector<JobInfo*>::iterator it;
+    for (it = m_jobs.begin(); it != m_jobs.end(); ++it)
+        (*it)->unref();
+    m_jobs_mutex.unlock();
 }
 
 
@@ -536,11 +544,29 @@ bool PgsqlDatabase::storeObject(xcm::IObject* obj,
 
 tango::IJobPtr PgsqlDatabase::createJob()
 {
-    return xcm::null;
+    XCM_AUTO_LOCK(m_jobs_mutex);
+
+    JobInfo* job = new JobInfo;
+    job->setJobId(++m_last_job);
+    job->ref();
+    m_jobs.push_back(job);
+
+    return static_cast<tango::IJob*>(job);
 }
 
 tango::IJobPtr PgsqlDatabase::getJob(tango::jobid_t job_id)
 {
+    XCM_AUTO_LOCK(m_jobs_mutex);
+
+    std::vector<JobInfo*>::iterator it;
+    for (it = m_jobs.begin(); it != m_jobs.end(); ++it)
+    {
+        if ((*it)->getJobId() == job_id)
+        {
+            return static_cast<tango::IJob*>(*it);
+        }
+    }
+
     return xcm::null;
 }
 
@@ -779,10 +805,14 @@ tango::IStructurePtr PgsqlDatabase::createStructure()
     return static_cast<tango::IStructure*>(s);
 }
 
-tango::ISetPtr PgsqlDatabase::createTable(const std::wstring& path,
+tango::ISetPtr PgsqlDatabase::createTable(const std::wstring& _path,
                                           tango::IStructurePtr struct_config,
                                           tango::FormatInfo* format_info)
 {
+    std::wstring path = _path;
+    if (path == L"")
+        path = getUniqueString();
+
     std::wstring quote_openchar = m_attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
     std::wstring quote_closechar = m_attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
 
