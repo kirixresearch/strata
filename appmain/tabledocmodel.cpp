@@ -39,9 +39,6 @@ static wxString getUniqueString()
 
 
 
-
-// -- Model Registry --
-
 class ModelRegistry : public xcm::signal_sink
 {
 
@@ -78,7 +75,7 @@ public:
             return model;
         }
 
-        // -- model needs to be loaded --
+        // model needs to be loaded
         TableDocModel* model_p = new TableDocModel;
         model_p->setId(set_id);
         model_p->sigDeleted.connect(this, &ModelRegistry::onTableDocModelDeleted);
@@ -95,8 +92,7 @@ public:
         if (set_id.IsEmpty())
             return false;
 
-        // -- first find the model and delete it from the vector --
-
+        // first find the model and delete it from the vector
         std::vector<ITableDocModelPtr>::iterator it;
         for (it = m_models.begin(); it != m_models.end(); ++it)
         {
@@ -108,7 +104,7 @@ public:
         }
 
 
-        // -- next attempt to delete the disk files --
+        // next attempt to delete the disk files
         tango::IDatabasePtr db = g_app->getDatabase();
         if (!db)
             return false;
@@ -223,13 +219,10 @@ protected:
 
     bool m_dirty;
     wxString m_id;
-    //xcm::mutex m_obj_mutex;
 };
 
 
 
-
-// -- TangoGridMark implementation --
 
 class TableDocMark :  public ITableDocMark,
                       public TableDocObjectBase
@@ -365,7 +358,7 @@ public:
         tango::INodeValuePtr mark_bgcolor_node = node->createChild(L"mark_bgcolor");
         if (m_bgcolor.IsOk())
             int_color = (m_bgcolor.Red() << 16) | (m_bgcolor.Green() << 8) | m_bgcolor.Blue();
-         else
+             else
             int_color = -1;
         mark_bgcolor_node->setInteger(int_color);
 
@@ -410,75 +403,7 @@ public:
             m_bgcolor.Set(int_color >> 16, (int_color >> 8) & 0xff, int_color & 0xff);
          else
             m_bgcolor = wxNullColour;
-        
-
-        // -- this will load the expression from the old filter set from older versions --
-        tango::INodeValuePtr markset_path_node = node->getChild(L"queryset_path", false);
-        if (expression_node.isNull() && markset_path_node.isOk())
-        {
-            // doesn't really work because the queryset folder itself is being
-            // removed in the upgrade function at the bottom of this file
-            
-        /*
-            tango::IDatabasePtr db = g_app->getDatabase();
-            std::wstring set_path = markset_path_node->getString();
-            
-            tango::INodeValuePtr markset = db->openNodeFile(set_path);
-            if (markset)
-            {
-                tango::INodeValuePtr setid_node = markset->getChild(L"set_id", false);
-                if (setid_node)
-                {
-                    std::wstring set_id = setid_node->getString();
-                    std::wstring path = L"/.system/objects/";
-                    path += set_id;
-                    
-                    tango::INodeValuePtr object_node = db->openNodeFile(path);
-                    if (object_node)
-                    {
-                        tango::INodeValuePtr expr_node = object_node->getChild(L"condition_expr", false);
-                        if (expr_node)
-                        {
-                            m_expression = towx(expr_node->getString());
-                            expr_node.clear();
-                            object_node.clear();
-                            setid_node.clear();
-                            markset.clear();
-                            
-                            db->deleteFile(set_path);
-                            markset_path_node->setString(L"");
-                            
-                            tango::INodeValuePtr expression_node = node->createChild(L"expression");
-                            expression_node->setString(towstr(m_expression));
-                        }
-                    }
-                }
-            }
-        */
-        
-        /*
-            tango::IDatabasePtr db = g_app->getDatabase();
-            std::wstring set_path = markset_path_node->getString();
-            if (db.isOk() && set_path.length() > 0)
-            {
-                tango::IFilterSetPtr set = db->openSet(set_path);
-                if (set)
-                {
-                    m_expression = towx(set->getFilterExpression());
-                    
-                    // get rid of filter set and upgrade tabledocmodel node
-                    set.clear();
-                    db->deleteFile(set_path);
-                    markset_path_node->setString(L"");
-                    
-                    tango::INodeValuePtr expression_node = node->createChild(L"expression");
-                    expression_node->setString(towstr(m_expression));
-                }
-            }
-        */
-        }
-
-        
+                
         return true;
     }
 
@@ -493,8 +418,6 @@ private:
 
 
 
-
-// -- TableDocWatch implementation --
 
 class TableDocWatch : public TableDocObjectBase,
                       public ITableDocWatch
@@ -572,7 +495,6 @@ class TableDocViewCol : public TableDocObjectBase,
         XCM_INTERFACE_ENTRY(ITableDocViewCol)
         XCM_INTERFACE_CHAIN(TableDocObjectBase)
     XCM_END_INTERFACE_MAP()
-
 
 public:
 
@@ -763,13 +685,9 @@ public:
 
         col_textwrap = node->getChild(L"text_wrap", false);
         if (col_textwrap)
-        {
             m_text_wrap = col_alignment->getInteger();
-        } 
-         else
-        {
+             else
             m_text_wrap = tabledocWrapDefault;
-        }
 
         return true;
     }
@@ -786,7 +704,7 @@ private:
 
 
 
-// -- TableDocView implementation --
+
 
 class TableDocView : public TableDocObjectBase,
                      public ITableDocView
@@ -860,6 +778,7 @@ public:
                 return idx;
             idx++;
         }
+
         return -1;
     }
 
@@ -943,14 +862,9 @@ public:
         
         tango::INodeValuePtr rowsize_node = node->getChild(L"row_size", false);
         if (rowsize_node)
-        {
             m_row_size = rowsize_node->getInteger();
-        }
-         else
-        {
+             else
             m_row_size = -1;
-        }
-        
 
         tango::INodeValuePtr cols_node = node->getChild(L"columns", false);
         if (!cols_node)
@@ -1038,7 +952,7 @@ private:
 
 
 
-// -- TableDocModel class implementation --
+
 
 
 TableDocModel::TableDocModel()
@@ -1126,7 +1040,7 @@ tango::INodeValuePtr TableDocModel::flushObject(ITableDocObjectPtr obj)
     
     obj->setDirty(false);
 
-    // -- update our cached version --
+    // update our cached version
     {
         std::vector<ITableDocObjectPtr>* vec = NULL;
 
@@ -1253,7 +1167,7 @@ bool TableDocModel::deleteObject(ITableDocObjectPtr obj)
     base_node->deleteChild(node_name);
 
 
-    // -- update our cached version --
+    // update our cached version
     {
         std::vector<ITableDocObjectPtr>* vec = NULL;
 
@@ -1305,7 +1219,7 @@ ITableDocViewPtr TableDocModel::createViewObject()
 
 
 static tango::INodeValuePtr getObjects(const wxString set_id,
-                                      const wxString& tag)
+                                       const wxString& tag)
 {
     if (set_id.IsEmpty())
         return xcm::null;
@@ -1373,46 +1287,9 @@ ITableDocMarkEnumPtr TableDocModel::getMarkEnum()
     {
         tango::INodeValuePtr base_node;
 
-        // -- <= 2.1 upgrade --
-        base_node = getObjects(m_id, wxT("queries"));
-        if (base_node.isOk())
-        {
-            // -- old filename for 2.1 and before was called 'queries'.
-            //    we need to rename it to marks.xml --
-            
-            xcm::IVectorImpl<ITableDocObjectPtr>* mark_vec;
-            mark_vec = new xcm::IVectorImpl<ITableDocObjectPtr>;
-
-            int i, child_count = base_node->getChildCount();
-            for (i = 0; i < child_count; ++i)
-            {
-                TableDocMark* obj = new TableDocMark;
-                tango::INodeValuePtr node = base_node->getChildByIdx(i);
-                obj->readFromNode(node);
-                obj->setDirty(true); // -- write them to the new file --
-                mark_vec->append(static_cast<ITableDocObject*>(obj));
-            }
-
-            base_node.clear();
-
-            wxString path;
-            path = wxString::Format(wxT("/.appdata/%s/dcfe/setinfo/%s/queries"),
-                                    towx(g_app->getDatabase()->getActiveUid()).c_str(),
-                                    m_id.c_str());
-
-            tango::IDatabasePtr db = g_app->getDatabase();
-            db->deleteFile(towstr(path));
-
-            mark_vec->ref();
-            writeMultipleObjects(mark_vec);
-            mark_vec->unref();
-        }
-
-
         m_marks.clear();
         m_marks_cache_time = time(NULL);
 
-        
         base_node = getObjects(m_id, wxT("marks"));
         if (base_node.isNull())
             return vec;
@@ -1516,7 +1393,7 @@ wxColour TableDocModel::getNextMarkColor()
 
 
 
-// -- TableDocMgr --
+// TableDocMgr class implementation
 
 bool TableDocMgr::newFile(const wxString& _path)
 {
@@ -1566,7 +1443,7 @@ ITableDocPtr TableDocMgr::getActiveTableDoc(int* site_id)
 void TableDocMgr::copyModel(tango::ISetPtr _src_set,
                             tango::ISetPtr _dest_set)
 {
-    // -- create a new model for the result set --
+    // create a new model for the result set
     tango::ISetPtr source_set = _src_set;
     tango::ISetPtr dest_set = _dest_set;
 
@@ -1612,7 +1489,7 @@ void TableDocMgr::copyModel(tango::ISetPtr _src_set,
     }
 
    
-    // -- assign every object a new id --
+    // assign every object a new id
     count = vec->size();
     for (i = 0; i < count; ++i)
     {
@@ -1625,20 +1502,17 @@ void TableDocMgr::copyModel(tango::ISetPtr _src_set,
     }
 
 
-    // -- delete any existing model in the destination slot --
-
+    // delete any existing model in the destination slot
     TableDocMgr::deleteModel(dest_id);
 
-
-    // -- create new model and put objects in it --
+    // create new model and put objects in it
     ITableDocModelPtr dest_model = TableDocMgr::loadModel(dest_id);
     dest_model->writeMultipleObjects(vec);
-
 
     src_model.clear();
     dest_model.clear();
 
-    // -- released unused models --
+    // released unused models
     TableDocMgr::cleanupModelRegistry();
 }
 
@@ -1664,61 +1538,3 @@ void TableDocMgr::cleanupModelRegistry()
 {
     g_model_registry.cleanup();
 }
-
-
-// this routine moves set info files (views, watches, marks) from their
-// old position /.appdata/dcfe/<username>/... to the new location
-// /.appdata/<username>/dcfe/setinfo/...  Other files such as relmgrpanel
-// and jobscheduler are moved as well.
-
-// After most people have upgraded from 2005.1, this routine may be
-// removed.  This upgrade is not essential to the programs functionality
-
-void TableDocMgr::upgradeFrom2005_1()
-{
-    tango::IDatabasePtr db = g_app->getDatabase();
-    if (!db)
-        return;
-        
-    if (!db->getFileExist(L"/.appdata/dcfe"))
-        return;
-        
-    if (db->getFileExist(L"/.appdata/dcfe/admin"))
-    {
-        tango::IFileInfoEnumPtr folder = db->getFolderInfo(L"/.appdata/dcfe/admin");
-        
-        if (!folder)
-            return;
-            
-        if (!db->createFolder(L"/.appdata/admin/dcfe"))
-            return;
-        
-        db->moveFile(L"/.appdata/dcfe/admin/relmgrpanel",
-                     L"/.appdata/admin/dcfe/relmgrpanel");
-        
-        db->moveFile(L"/.appdata/dcfe/admin/jobscheduler",
-                     L"/.appdata/admin/dcfe/jobscheduler");
-                     
-        size_t i, count = folder->size();
-        for (i = 0; i < count; ++i)
-        {
-            tango::IFileInfoPtr fileinfo = folder->getItem(i);
-            
-            std::wstring name = fileinfo->getName();
-            if (name == L"relmgrpanel" || name == L"jobscheduler")
-                continue;
-            
-            
-            std::wstring src, dest;
-            src = L"/.appdata/dcfe/admin/";
-            src += name;
-            dest = L"/.appdata/admin/dcfe/setinfo/";
-            dest += name;
-            db->moveFile(src, dest);
-        }
-    }
-    
-    // clean up
-    db->deleteFile(L"/.appdata/dcfe");
-}
-

@@ -312,7 +312,6 @@ public:
                           tango::ISetPtr dest_id);
     static void clearModelRegistry();
     static void cleanupModelRegistry();
-    static void upgradeFrom2005_1();
 };
 
 

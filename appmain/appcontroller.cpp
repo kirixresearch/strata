@@ -6223,11 +6223,14 @@ bool AppController::openProject(const wxString& location,
         return false;
     }
 
+    wxString lower_location = location;
+    lower_location.MakeLower();
 
 #ifndef USE_XDSL
-    if (location.Find(L"xdprovider=") == -1 && 
-        location.SubString(0,6) != wxT("http://") && 
-        location.SubString(0,7) != wxT("https://"))
+
+    if (lower_location.Find(L"xdprovider=") == -1 && 
+        lower_location.SubString(0,6) != wxT("http://") && 
+        lower_location.SubString(0,7) != wxT("https://"))
     {
         if (!xf_get_directory_exist(towstr(location)))
         {
@@ -6279,14 +6282,14 @@ bool AppController::openProject(const wxString& location,
 
 
     wxString cstr;
-    if (location.Find(wxT("xdprovider=")) != -1)
+    if (lower_location.Find(wxT("xdprovider=")) != -1)
     {
         // location string is already a connection string
         cstr = location;
         if (cstr.Length() == 0 || cstr.Last() != ';')
             cstr += wxT(";");
         
-        if (location.Find(wxT("user id=")) == -1)
+        if (lower_location.Find(wxT("user id=")) == -1)
         {
             cstr += wxT("user id=");
             cstr += uid;
@@ -6296,7 +6299,7 @@ bool AppController::openProject(const wxString& location,
             cstr += wxT(";");
         }
     }
-     else if (location.SubString(0,6) == wxT("http://"))
+     else if (lower_location.SubString(0,6) == wxT("http://"))
     {
         // TODO: extract out database from path
         wxString database = wxT("default");
@@ -6319,7 +6322,7 @@ bool AppController::openProject(const wxString& location,
         cstr += password;
         cstr += wxT(";");
     }
-     else if (location.SubString(0,7) == wxT("https://"))
+     else if (lower_location.SubString(0,7) == wxT("https://"))
     {
     }
      else
@@ -6360,9 +6363,6 @@ bool AppController::openProject(const wxString& location,
     
     if (m_dbdoc)
         m_dbdoc->setDatabase(database);
-    
-    // upgrade the database folder structure
-    TableDocMgr::upgradeFrom2005_1();
     
     IAppPreferencesPtr prefs = g_app->getAppPreferences();
     bool default_links_created = prefs->getBoolean(wxT("general.default_links_created"), false);
