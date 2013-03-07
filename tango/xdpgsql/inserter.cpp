@@ -246,7 +246,8 @@ bool PgsqlRowInserter::startInsert(const std::wstring& col_list)
 
 
     std::wstring sql;
-    sql = L"COPY \"" + m_table + L"\" FROM stdin";
+    sql = L"COPY %tbl% FROM stdin";
+    kl::replaceStr(sql, L"%tbl%", pgsqlQuoteIdentifierIfNecessary(m_table));
 
     PGresult* res = PQexec(m_conn, kl::toUtf8(sql));
     PQclear(res);

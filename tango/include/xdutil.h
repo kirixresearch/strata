@@ -142,6 +142,7 @@ inline bool isTypeCompatible(int type1, int type2)
     return false;
 }
 
+
 inline std::wstring quoteIdentifier(tango::IDatabasePtr db, const std::wstring& identifier)
 {
     if (db.isOk())
@@ -186,6 +187,21 @@ inline std::wstring dequoteIdentifier(tango::IDatabasePtr db, const std::wstring
 
     return identifier;
 }
+
+inline void dequoteIdentifier(std::wstring& str, wchar_t ch1, wchar_t ch2)
+{
+    size_t len = str.length();
+    if (len > 1)
+    {
+        if (str[0] == ch1 && str[len-1] == ch2)
+        {
+            str.erase(len-1, 1);
+            str.erase(0, 1);
+        }
+    }
+}
+
+
 
 inline void requoteAllIdentifiers(tango::IDatabasePtr db, std::vector<std::wstring>& identifiers)
 {

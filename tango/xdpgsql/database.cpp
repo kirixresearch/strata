@@ -250,8 +250,39 @@ static std::wstring getTablenameFromPath(const std::wstring& path)
         res = path;
 
     kl::replaceStr(res, L"\"", L"");
+    kl::makeLower(res);
 
     return res;
+}
+
+std::wstring pgsqlQuoteIdentifier(const std::wstring& str)
+{
+    std::wstring res;
+
+    res = str;
+    kl::replaceStr(res, L"\"", L"");
+    kl::replaceStr(res, L"/*", L"");
+    kl::replaceStr(res, L"-", L"");
+    kl::makeLower(res);
+
+    return L"\"" + res + L"\"";
+}
+
+std::wstring pgsqlQuoteIdentifierIfNecessary(const std::wstring& str)
+{
+    std::wstring res;
+
+    res = str;
+    kl::replaceStr(res, L"\"", L"");
+    kl::replaceStr(res, L"/*", L"");
+    kl::replaceStr(res, L"-", L"");
+    kl::makeLower(res);
+
+    if (res.find(' ') == str.npos)
+        return res;
+
+
+    return L"\"" + res + L"\"";
 }
 
 // PgsqlFileInfo class implementation
@@ -759,9 +790,7 @@ tango::ISetPtr PgsqlDatabase::createTable(const std::wstring& path,
     command.reserve(1024);
 
     command = L"CREATE TABLE ";
-    command += quote_openchar;
-    command += getTablenameFromPath(path);
-    command += quote_closechar;
+    command += pgsqlQuoteIdentifierIfNecessary(getTablenameFromPath(path));
     command += L" (";
 
     std::wstring field;
@@ -780,10 +809,7 @@ tango::ISetPtr PgsqlDatabase::createTable(const std::wstring& path,
         col_info = struct_config->getColumnInfoByIdx(i);
 
         // quote the fieldname
-        name = L"";
-        name += quote_openchar;
-        name += col_info->getName();
-        name += quote_closechar;
+        name = pgsqlQuoteIdentifierIfNecessary(col_info->getName());
 
         type = col_info->getType();
         width = col_info->getWidth();
@@ -901,17 +927,40 @@ bool PgsqlDatabase::deleteRelation(const std::wstring& relation_id)
 
 
 tango::IIndexInfoPtr PgsqlDatabase::createIndex(const std::wstring& path,
-                                               const std::wstring& name,
-                                               const std::wstring& expr,
-                                               tango::IJob* job)
+                                                const std::wstring& name,
+                                                const std::wstring& expr,
+                                                tango::IJob* job)
 {
-    return xcm::null;
+    std::wstring table = getTablenameFromPath(path);
+
+    PGconn* conn = createConnection();
+    if (!conn)
+        return xcm::null;
+
+    std::wstring query = L"CREATE INDEX %idx% ON %tbl% (%expr%)";
+    kl::replaceStr(query, L"%idx%", pgsqlQuoteIdentifierIfNecessary(name));
+    kl::replaceStr(query, L"%tbl%", pgsqlQuoteIdentifierIfNecessary(table));
+    kl::replaceStr(query, L"%expr%", expr);
+
+    PGresult* res = PQexec(conn, kl::toUtf8(query));
+    bool success = (PQresultStatus(res) == PGRES_COMMAND_OK);
+    PQclear(res);
+    closeConnection(conn);
+
+    if (!success)
+        return xcm::null;
+
+    IndexInfo* ii = new IndexInfo;
+    ii->setTag(name);
+    ii->setExpression(expr);
+
+    return static_cast<tango::IIndexInfo*>(ii);
 }
 
 
 bool PgsqlDatabase::renameIndex(const std::wstring& path,
-                               const std::wstring& name,
-                               const std::wstring& new_name)
+                                const std::wstring& name,
+                                const std::wstring& new_name)
 {
     return false;
 }
@@ -920,7 +969,21 @@ bool PgsqlDatabase::renameIndex(const std::wstring& path,
 bool PgsqlDatabase::deleteIndex(const std::wstring& path,
                                 const std::wstring& name)
 {
-    return false;
+    std::wstring table = getTablenameFromPath(path);
+
+    PGconn* conn = createConnection();
+    if (!conn)
+        return xcm::null;
+
+    std::wstring query = L"DROP INDEX %idx%";
+    kl::replaceStr(query, L"%idx%", pgsqlQuoteIdentifierIfNecessary(name));
+
+    PGresult* res = PQexec(conn, kl::toUtf8(query));
+    bool success = (PQresultStatus(res) == PGRES_COMMAND_OK);
+    PQclear(res);
+    closeConnection(conn);
+
+    return success;
 }
 
 

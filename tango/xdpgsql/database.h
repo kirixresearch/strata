@@ -26,6 +26,9 @@ tango::IColumnInfoPtr pgsqlCreateColInfo(const std::wstring& col_name,
 
 int pgsqlToTangoType(int pg_type);
 
+std::wstring pgsqlQuoteIdentifier(const std::wstring& str);
+std::wstring pgsqlQuoteIdentifierIfNecessary(const std::wstring& str);
+
 
 class PgsqlDatabase : public tango::IDatabase
 {

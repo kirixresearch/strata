@@ -646,7 +646,14 @@ void IndexPanel::onCancel(wxCommandEvent& evt)
 
 wxString IndexPanel::getUniqueIndexName()
 {
-    wxString base = _("index");
+    wxString base;
+    
+    base = m_set_path.AfterLast('/');
+    base.MakeLower();
+    if (base.length() > 0)
+        base += "_";
+    base += _("index");
+
     wxString retval;
     
     int row, row_count = m_indexes_list->getRowCount();
