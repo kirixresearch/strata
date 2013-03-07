@@ -3855,7 +3855,20 @@ tango::IIndexInfoPtr Database::createIndex(const std::wstring& path,
         if (db.isNull())
             return xcm::null;
 
-        return db->createIndex(rpath, name, expr, job);
+        std::vector<std::wstring> cols;
+        std::vector<std::wstring>::iterator it;
+        kl::parseDelimitedList(expr, cols, L',', true);
+        std::wstring newexpr;
+        for (it = cols.begin(); it != cols.end(); ++it)
+        {
+            if (newexpr.length() > 0)
+                newexpr += L",";
+            dequote(*it, '[', ']');
+            kl::replaceStr(*it, L",", L"");
+            newexpr += *it;
+        }
+
+        return db->createIndex(rpath, name, newexpr, job);
     }
 
     tango::ISetPtr set = openSet(path);
