@@ -154,12 +154,12 @@ private:
     {
         nodetypeUndefined = 0,
         nodetypeNull = 1,
-        nodetypeObject = 2,
-        nodetypeArray = 3,
-        nodetypeString = 4,
-        nodetypeDouble = 5,
-        nodetypeInteger = 6,
-        nodetypeBoolean = 7
+        nodetypeBoolean = 2,
+        nodetypeInteger = 3,
+        nodetypeDouble = 4,
+        nodetypeString = 5,
+        nodetypeArray = 6,
+        nodetypeObject = 7
     };
 
     JsonValue* m_value; 

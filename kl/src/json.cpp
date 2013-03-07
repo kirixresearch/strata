@@ -526,6 +526,135 @@ bool parseJsonWord(wchar_t* expr, wchar_t** endloc, JsonNode& node)
     return parseFail(expr, endloc, node);
 }
 
+bool isJsonNodePrimitiveValueEqual(JsonNode& node1, JsonNode& node2)
+{
+    // if either node is an array or object, it's not a primitive
+    if (node1.isArray() || node2.isArray())
+        return false;
+    if (node1.isObject() || node2.isObject())
+        return false;
+
+    // note: for combinations of null and undefined, we'll follow
+    // the same conventions as ECMAScript
+    if (node1.isUndefined() && node2.isUndefined())
+        return true;
+    if (node1.isNull() && node2.isNull())
+        return true;
+    if (node1.isUndefined() && node2.isNull())
+        return true;
+    if (node1.isNull() && node2.isUndefined())
+        return true;
+
+    // we're comparing two types, at least one of which is either a 
+    // boolean, number or string; if the other is null or undefined, 
+    // they're not equal
+    if (node1.isUndefined() || node2.isUndefined())
+        return false;
+    if (node1.isNull() || node2.isNull())
+        return false;
+
+    // if we have two strings, return the results of comparing
+    // them directly
+    if (node1.isString() && node2.isString())
+        return (node1.getString() == node2.getString());
+
+    // we're comparing two primitive types of mixed boolean, number,
+    // or string types; if they are numerically equivalent, the 
+    // values match
+    if (node1.getDouble() == node2.getDouble())
+        return true;
+
+    // values don't match
+    return false;
+}
+
+bool isJsonNodeValueEqual(JsonNode& node1, JsonNode& node2)
+{
+    // nodes are equal if they are both primitive types (not array 
+    // and not object) and they have the same equivalent value
+    if (isJsonNodePrimitiveValueEqual(node1, node2))
+        return true;
+
+    // nodes are equal if they are both arrays and have the 
+    // same number of elements with equivalent values
+    if (node1.isArray() && node2.isArray())
+    {
+        int node1_childcount = node1.getChildCount();
+        int node2_childcount = node2.getChildCount();
+
+        // different number elements
+        if (node1_childcount != node2_childcount)
+            return false;
+
+        // handle "no element" case
+        if (node1_childcount == 0 && node2_childcount)
+            return true;
+
+        std::vector<JsonNode> node1_children = node1.getChildren();
+        std::vector<JsonNode> node2_children = node2.getChildren();
+
+        std::vector<JsonNode>::iterator it, it_end;
+        it_end = node1_children.end();
+
+        int idx = 0;
+        for (it = node1_children.begin(); it != it_end; ++it)
+        {
+            JsonNode node1_child = *it;
+            JsonNode node2_child = node2_children[idx];
+
+            // if child elements in corresponding positions aren't equal,
+            // the arrays aren't equal
+            if (!isJsonNodeValueEqual(node1_child, node2_child))
+                return false;
+        }
+
+        // same number of array elements and values in the same position
+        return true;
+    }
+
+    // nodes are equal if they are both objects and have the 
+    // same number of elements with equivalent values
+    if (node1.isObject() && node2.isObject())
+    {
+        int node1_childcount = node1.getChildCount();
+        int node2_childcount = node2.getChildCount();
+
+        // different number elements
+        if (node1_childcount != node2_childcount)
+            return false;
+
+        // handle "no element" case
+        if (node1_childcount == 0 && node2_childcount)
+            return true;
+
+        // same number of non-zero elements; key's and values must match, but
+        // don't have to have the same order
+        std::vector<std::wstring> node1_childkeys = node1.getChildKeys();
+        std::vector<std::wstring>::iterator it, it_end;
+        it_end = node1_childkeys.end();
+
+        for (it = node1_childkeys.begin(); it != it_end; ++it)
+        {
+            // if we can't find the node1 key in node2, objects aren't the same
+            if (!node2.childExists(*it))
+                return false;
+
+            JsonNode node1_child = node1.getChild(*it);
+            JsonNode node2_child = node2.getChild(*it);
+
+            // node exists in both; values must now be the same
+            if (!isJsonNodeValueEqual(node1_child, node2_child))
+                return false;
+        }
+
+        // same object keys and child values
+        return true;
+    }
+
+    // some other case; shouldn't happen
+    return false;
+}
+
 bool isValidTypePrimitive(JsonNode& data, const std::wstring type)
 {
     if (type == L"any")
@@ -732,6 +861,34 @@ bool isValidNumberValue(JsonNode& data, JsonNode& schema)
     return true;
 }
 
+bool isValidEnumValue(JsonNode& data, JsonNode& schema)
+{
+    // if the enum value doesn't exist, nothing to validate
+    if (!schema.childExists("enum"))
+        return true;
+
+    // the enumeration has to be an array; if it isn't, the
+    // data passes the test
+    JsonNode enum_node = schema[L"enum"];
+    if (!enum_node.isArray())
+        return true;
+
+    // an enumeration exists; compare the values in the enumeration
+    // against the object
+    std::vector<JsonNode> enum_children = enum_node.getChildren();
+    std::vector<JsonNode>::iterator it, it_end;
+    it_end = enum_children.end();
+
+    for (it = enum_children.begin(); it != it_end; ++it)
+    {
+        if (isJsonNodeValueEqual(data, *it))
+            return true;
+    }
+
+    // non of the objects match
+    return false;
+}
+
 bool isValidStringValue(JsonNode& data, JsonNode& schema)
 {
     // if the data type isn't a string, nothing to validate
@@ -933,6 +1090,10 @@ bool isValidJsonNode(JsonNode& data, JsonNode& schema)
 
     // validate any string value
     if (!isValidStringValue(data, schema))
+        return false;
+
+    // validate against an enumeration of values
+    if (!isValidEnumValue(data, schema))
         return false;
 
     // validate any array size
@@ -1209,15 +1370,41 @@ void JsonNode::setNull()
 
 std::wstring JsonNode::getString() const
 {
-    // TODO: add implicit type conversions
-
-    return m_value->m_string;
+    switch (m_value->m_type)
+    {
+        default:
+            return L"";
+        case nodetypeUndefined:
+            return L"";
+        case nodetypeNull:
+            return L"null";
+        case nodetypeBoolean:
+            return m_value->m_boolean ? L"true" : L"false";
+        case nodetypeInteger:
+            {
+                wchar_t buf[30];
+                swprintf(buf, 30, L"%d", m_value->m_integer);
+                return buf;
+            }
+        case nodetypeDouble:
+            return kl::dbltostr(getDouble());
+        case nodetypeString:
+            return m_value->m_string;
+        case nodetypeArray:
+        case nodetypeObject:
+            return L"";
+    }
 }
 
 bool JsonNode::getBoolean() const
 {
     switch (m_value->m_type)
     {
+        default:
+            return false;
+        case nodetypeUndefined:
+        case nodetypeNull:
+            return false;
         case nodetypeBoolean:
             return m_value->m_boolean;
         case nodetypeInteger:
@@ -1226,8 +1413,6 @@ bool JsonNode::getBoolean() const
             return (m_value->m_double != 0 ? true : false);
         case nodetypeString:
             return (m_value->m_string.size() > 0 ? true : false); // ECMAScript behavior
-        case nodetypeNull:
-            return false;
         case nodetypeObject:
         case nodetypeArray:
             return true;
@@ -1238,19 +1423,51 @@ bool JsonNode::getBoolean() const
 
 double JsonNode::getDouble() const
 {
-    // TODO: add implicit type conversions
+    // TODO: should consider using NaN for undefined, 
+    // array, and object (null should still convert to 0)
 
-    if (m_value->m_type == nodetypeInteger)
-        return m_value->m_integer;
-         else
-        return m_value->m_double;
+    switch (m_value->m_type)
+    {
+        default:
+            return 0;
+        case nodetypeUndefined:
+        case nodetypeNull:
+            return 0;
+        case nodetypeBoolean:
+            return m_value->m_boolean ? 1 : 0;
+        case nodetypeInteger:
+            return m_value->m_integer;
+        case nodetypeDouble:
+            return m_value->m_double;
+        case nodetypeString:
+            return wtof(m_value->m_string);
+        case nodetypeArray:
+        case nodetypeObject:
+            return 0;
+    }
 }
 
 int JsonNode::getInteger() const
 {
-    // TODO: add implicit type conversions
-
-    return m_value->m_integer;
+    switch (m_value->m_type)
+    {
+        default:
+            return 0;
+        case nodetypeUndefined:
+        case nodetypeNull:
+            return 0;
+        case nodetypeBoolean:
+            return m_value->m_boolean ? 1 : 0;
+        case nodetypeInteger:
+            return m_value->m_integer;
+        case nodetypeDouble:
+            return m_value->m_double;
+        case nodetypeString:
+            return wtoi(m_value->m_string);
+        case nodetypeArray:
+        case nodetypeObject:
+            return 0;
+    }
 }
 
 bool JsonNode::isValid(JsonNode& schema)
@@ -1381,28 +1598,23 @@ static std::wstring addspaces(unsigned int indent_level)
 std::wstring JsonNode::stringify(unsigned int indent_level) const
 {
     if (m_value->m_type == nodetypeUndefined)
-        return L"";
+        return getString();
 
     if (m_value->m_type == nodetypeNull)
-        return L"null";
+        return getString();
 
     if (m_value->m_type == nodetypeBoolean)
-        return getBoolean() ? L"true" : L"false";
-
-    if (m_value->m_type == nodetypeString)
-        return L'"' + escape_string(getString()) + L'"';
+        return getString();
 
     if (m_value->m_type == nodetypeInteger)
-    {
-        wchar_t buf[30];
-        swprintf(buf, 30, L"%d", getInteger());
-        return buf;
-    }
+        return getString();
         
     if (m_value->m_type == nodetypeDouble)
-    {
-        return kl::dbltostr(getDouble());
-    }
+        return getString();
+
+    // make sure to escape the string
+    if (m_value->m_type == nodetypeString)
+        return L'"' + escape_string(getString()) + L'"';
 
     // following are for formatting
     std::wstring newline = L"\n";
