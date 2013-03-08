@@ -42,7 +42,6 @@ private:
     bool deleteObject(ITableDocObjectPtr obj);
     tango::INodeValuePtr flushObject(ITableDocObjectPtr obj);
 
-    ITableDocWatchPtr createWatchObject();
     ITableDocMarkPtr createMarkObject();
     ITableDocViewPtr createViewObject();
 
@@ -56,16 +55,12 @@ private:
     xcm::mutex m_obj_mutex;
     wxString m_id;
 
-    std::vector<ITableDocObjectPtr> m_watches;
     std::vector<ITableDocObjectPtr> m_marks;
     std::vector<ITableDocObjectPtr> m_views;
 
-    int m_watches_cache_time;
     int m_marks_cache_time;
     int m_views_cache_time;
 };
 
 
-
 #endif
-

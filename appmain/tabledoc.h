@@ -40,7 +40,6 @@
 // -- forward declarations --
 xcm_interface ITableDocObject;
 xcm_interface ITableDocMark;
-xcm_interface ITableDocWatch;
 xcm_interface ITableDocViewCol;
 xcm_interface ITableDocView;
 xcm_interface ITableDocModel;
@@ -48,14 +47,12 @@ xcm_interface ITableDoc;
 
 XCM_DECLARE_SMARTPTR(ITableDocObject)
 XCM_DECLARE_SMARTPTR(ITableDocMark)
-XCM_DECLARE_SMARTPTR(ITableDocWatch)
 XCM_DECLARE_SMARTPTR(ITableDocViewCol)
 XCM_DECLARE_SMARTPTR(ITableDocView)
 XCM_DECLARE_SMARTPTR(ITableDocModel)
 XCM_DECLARE_SMARTPTR(ITableDoc)
 XCM_DECLARE_SMARTPTR2(xcm::IVector<ITableDocObjectPtr>, ITableDocObjectEnumPtr)
 XCM_DECLARE_SMARTPTR2(xcm::IVector<ITableDocMarkPtr>, ITableDocMarkEnumPtr)
-XCM_DECLARE_SMARTPTR2(xcm::IVector<ITableDocWatchPtr>, ITableDocWatchEnumPtr)
 XCM_DECLARE_SMARTPTR2(xcm::IVector<ITableDocViewPtr>, ITableDocViewEnumPtr)
 
 
@@ -125,16 +122,6 @@ public:
 };
 
 
-
-xcm_interface ITableDocWatch : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("appmain.ITableDocWatch")
-
-public:
-
-    virtual void setExpression(const wxString& expression) = 0;
-    virtual wxString getExpression() = 0;
-};
 
 
 xcm_interface ITableDocViewCol : public xcm::IObject

@@ -185,31 +185,6 @@ bool xml2tabledocview(kl::xmlnode& node, ITableDocViewPtr view)
 
 
 
-void tabledocwatch2xml(ITableDocWatchPtr watch, kl::xmlnode& node)
-{
-    // set version
-    kl::xmlnode& version_node = node.addChild();
-    version_node.setNodeName(L"version");
-    version_node.setNodeValue(1);
-
-    kl::xmlnode& expression_node = node.addChild();
-    expression_node.setNodeName(L"expression");
-    expression_node.setNodeValue(towstr(watch->getExpression()));
-}
-
-
-void xml2tabledocwatch(kl::xmlnode& node, ITableDocWatchPtr watch)
-{
-    // set version
-    kl::xmlnode& expression_node = node.getChild(L"expression");
-    watch->setExpression(towx(expression_node.getNodeValue()));
-}
-
-
-
-
-
-
 
 
 void tabledocmodel2xml(ITableDocModelPtr model, kl::xmlnode& root)
@@ -218,7 +193,6 @@ void tabledocmodel2xml(ITableDocModelPtr model, kl::xmlnode& root)
     ITableDocMarkEnumPtr marks = model->getMarkEnum();
 
     ITableDocViewPtr view;
-    ITableDocWatchPtr watch;
     ITableDocMarkPtr mark;
 
     int view_count = views->size();

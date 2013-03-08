@@ -419,72 +419,6 @@ private:
 
 
 
-class TableDocWatch : public TableDocObjectBase,
-                      public ITableDocWatch
-{
-friend class TableDoc;
-
-    XCM_CLASS_NAME("appmain.TableDocWatch")
-    XCM_BEGIN_INTERFACE_MAP(TableDocWatch)
-        XCM_INTERFACE_ENTRY(ITableDocWatch)
-        XCM_INTERFACE_CHAIN(TableDocObjectBase)
-    XCM_END_INTERFACE_MAP()
-
-public:
-
-    TableDocWatch()
-    {
-        m_expression = wxT("");
-    }
-
-    virtual ~TableDocWatch()
-    {
-    }
-
-    void setExpression(const wxString& expression)
-    {
-        if (m_expression == expression)
-            return;
-
-        m_expression = expression;
-        setDirty(true);
-    }
-
-    wxString getExpression()
-    {
-        return m_expression;
-    }
-
-    ITableDocObjectPtr clone()
-    {
-        TableDocWatch* watch = new TableDocWatch;
-        watch->m_id = m_id;
-        watch->m_expression = m_expression;
-        return static_cast<ITableDocObject*>(watch);
-    }
-
-    bool writeToNode(tango::INodeValuePtr node)
-    {
-        tango::INodeValuePtr expr_node = node->createChild(L"expression");
-        expr_node->setString(towstr(m_expression));
-        return true;
-    }
-
-    bool readFromNode(tango::INodeValuePtr node)
-    {
-        tango::INodeValuePtr expr_node = node->getChild(L"expression", false);
-        if (expr_node.isNull())
-            return false;
-        m_expression = towx(expr_node->getString());
-        return true;
-    }
-
-public:
-
-    wxString m_expression;
-};
-
-
 
 
 class TableDocViewCol : public TableDocObjectBase,
@@ -957,7 +891,6 @@ private:
 
 TableDocModel::TableDocModel()
 {
-    m_watches_cache_time = 0;
     m_marks_cache_time = 0;
     m_views_cache_time = 0;
 }
@@ -996,14 +929,11 @@ tango::INodeValuePtr TableDocModel::flushObject(ITableDocObjectPtr obj)
 
     ITableDocViewPtr view = obj;
     ITableDocMarkPtr mark = obj;
-    ITableDocWatchPtr watch = obj;
 
     if (view.isOk())
         tag = wxT("views");
     if (mark.isOk())
         tag = wxT("marks");
-    if (watch.isOk())
-        tag = wxT("watches");
 
     if (tag.IsEmpty())
         return xcm::null;
@@ -1048,8 +978,6 @@ tango::INodeValuePtr TableDocModel::flushObject(ITableDocObjectPtr obj)
             vec = &m_views;
         else if (mark.isOk())
             vec = &m_marks;
-        else if (watch.isOk())
-            vec = &m_watches;
 
         if (vec)
         {
@@ -1126,14 +1054,11 @@ bool TableDocModel::deleteObject(ITableDocObjectPtr obj)
 
     ITableDocViewPtr view = obj;
     ITableDocMarkPtr mark = obj;
-    ITableDocWatchPtr watch = obj;
 
     if (view.isOk())
         tag = wxT("views");
     if (mark.isOk())
         tag = wxT("marks");
-    if (watch.isOk())
-        tag = wxT("watches");
 
     if (tag.IsEmpty())
         return false;
@@ -1175,8 +1100,6 @@ bool TableDocModel::deleteObject(ITableDocObjectPtr obj)
             vec = &m_views;
         else if (mark.isOk())
             vec = &m_marks;
-        else if (watch.isOk())
-            vec = &m_watches;
 
         if (vec)
         {
@@ -1195,13 +1118,6 @@ bool TableDocModel::deleteObject(ITableDocObjectPtr obj)
     return true;
 }
 
-
-ITableDocWatchPtr TableDocModel::createWatchObject()
-{
-    TableDocWatch* obj = new TableDocWatch;
-    obj->setDirty(true);
-    return static_cast<ITableDocWatch*>(obj);
-}
 
 ITableDocMarkPtr TableDocModel::createMarkObject()
 {
