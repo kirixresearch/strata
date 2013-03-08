@@ -356,7 +356,7 @@ void Json::validate(ExprEnv* env, void*, Value* retval)
     result_object->getMember(L"success")->setBoolean(result);
     kscript::Value* result_messages = result_object->getMember(L"messages");
 
-    std::vector<std::wstring> messages = json_validator.getErrors();
+    std::vector<std::wstring> messages = json_validator.getMessages();
     std::vector<std::wstring>::iterator it, it_end;
     it_end = messages.end();
 

@@ -172,11 +172,32 @@ public:
     ~JsonNodeValidator();
 
     bool isValid(JsonNode& data, JsonNode& schema);
-    std::vector<std::wstring> getErrors();
+    std::vector<std::wstring> getMessages();
 
 private:
 
-    std::vector<std::wstring> m_errors;
+    bool checkJsonNode(JsonNode& data, JsonNode& schema);
+    bool checkTypePrimitive(JsonNode& data, const std::wstring& type);
+    bool checkType(JsonNode& data, JsonNode& schema);
+    bool checkTypeDisallowed(JsonNode& data, JsonNode& schema);
+    bool checkNumberValue(JsonNode& data, JsonNode& schema);
+    bool checkEnumValue(JsonNode& data, JsonNode& schema);
+    bool checkStringValue(JsonNode& data, JsonNode& schema);
+    bool checkArraySize(JsonNode& data, JsonNode& schema);
+    bool checkArrayItems(JsonNode& data, JsonNode& schema);
+    bool checkObjectKeys(JsonNode& data, JsonNode& schema);
+    bool checkObjectValues(JsonNode& data, JsonNode& schema);
+
+    bool isPrimitiveValueEqual(JsonNode& node1, JsonNode& node2);
+    bool isJsonNodeValueEqual(JsonNode& node1, JsonNode& node2);
+
+    void flagError(const std::wstring& message);
+    bool hasErrors();
+
+private:
+
+    std::vector<std::wstring> m_messages;
+    bool m_errors_exist;
 };
 
 

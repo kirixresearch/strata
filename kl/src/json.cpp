@@ -1082,139 +1082,96 @@ std::wstring JsonNode::stringify(unsigned int indent_level) const
 ////////////////////////////////////////////////////////////////////////////////
 
 
-// forward declaration
-bool isValidJsonNode(JsonNode& data, JsonNode& schema);
-
-bool isJsonNodePrimitiveValueEqual(JsonNode& node1, JsonNode& node2)
+JsonNodeValidator::JsonNodeValidator()
 {
-    // if either node is an array or object, it's not a primitive
-    if (node1.isArray() || node2.isArray())
-        return false;
-    if (node1.isObject() || node2.isObject())
-        return false;
-
-    // note: for combinations of null and undefined, we'll follow
-    // the same conventions as ECMAScript
-    if (node1.isUndefined() && node2.isUndefined())
-        return true;
-    if (node1.isNull() && node2.isNull())
-        return true;
-    if (node1.isUndefined() && node2.isNull())
-        return true;
-    if (node1.isNull() && node2.isUndefined())
-        return true;
-
-    // we're comparing two types, at least one of which is either a 
-    // boolean, number or string; if the other is null or undefined, 
-    // they're not equal
-    if (node1.isUndefined() || node2.isUndefined())
-        return false;
-    if (node1.isNull() || node2.isNull())
-        return false;
-
-    // if we have two strings, return the results of comparing
-    // them directly
-    if (node1.isString() && node2.isString())
-        return (node1.getString() == node2.getString());
-
-    // we're comparing two primitive types of mixed boolean, number,
-    // or string types; if they are numerically equivalent, the 
-    // values match
-    if (node1.getDouble() == node2.getDouble())
-        return true;
-
-    // values don't match
-    return false;
+    m_errors_exist = false;
 }
 
-bool isJsonNodeValueEqual(JsonNode& node1, JsonNode& node2)
+JsonNodeValidator::~JsonNodeValidator()
 {
-    // nodes are equal if they are both primitive types (not array 
-    // and not object) and they have the same equivalent value
-    if (isJsonNodePrimitiveValueEqual(node1, node2))
-        return true;
-
-    // nodes are equal if they are both arrays and have the 
-    // same number of elements with equivalent values
-    if (node1.isArray() && node2.isArray())
-    {
-        int node1_childcount = node1.getChildCount();
-        int node2_childcount = node2.getChildCount();
-
-        // different number elements
-        if (node1_childcount != node2_childcount)
-            return false;
-
-        // handle "no element" case
-        if (node1_childcount == 0 && node2_childcount)
-            return true;
-
-        std::vector<JsonNode> node1_children = node1.getChildren();
-        std::vector<JsonNode> node2_children = node2.getChildren();
-
-        std::vector<JsonNode>::iterator it, it_end;
-        it_end = node1_children.end();
-
-        int idx = 0;
-        for (it = node1_children.begin(); it != it_end; ++it)
-        {
-            JsonNode node1_child = *it;
-            JsonNode node2_child = node2_children[idx];
-
-            // if child elements in corresponding positions aren't equal,
-            // the arrays aren't equal
-            if (!isJsonNodeValueEqual(node1_child, node2_child))
-                return false;
-        }
-
-        // same number of array elements and values in the same position
-        return true;
-    }
-
-    // nodes are equal if they are both objects and have the 
-    // same number of elements with equivalent values
-    if (node1.isObject() && node2.isObject())
-    {
-        int node1_childcount = node1.getChildCount();
-        int node2_childcount = node2.getChildCount();
-
-        // different number elements
-        if (node1_childcount != node2_childcount)
-            return false;
-
-        // handle "no element" case
-        if (node1_childcount == 0 && node2_childcount)
-            return true;
-
-        // same number of non-zero elements; key's and values must match, but
-        // don't have to have the same order
-        std::vector<std::wstring> node1_childkeys = node1.getChildKeys();
-        std::vector<std::wstring>::iterator it, it_end;
-        it_end = node1_childkeys.end();
-
-        for (it = node1_childkeys.begin(); it != it_end; ++it)
-        {
-            // if we can't find the node1 key in node2, objects aren't the same
-            if (!node2.childExists(*it))
-                return false;
-
-            JsonNode node1_child = node1.getChild(*it);
-            JsonNode node2_child = node2.getChild(*it);
-
-            // node exists in both; values must now be the same
-            if (!isJsonNodeValueEqual(node1_child, node2_child))
-                return false;
-        }
-
-        // same object keys and child values
-        return true;
-    }
-
-    // some other case; shouldn't happen
-    return false;
 }
 
-bool isValidTypePrimitive(JsonNode& data, const std::wstring type)
+bool JsonNodeValidator::isValid(JsonNode& data, JsonNode& schema)
+{
+    // TODO: would be nice to make the input const JsonNode& schema;
+    // however schema isn't const because implementation depends on 
+    // getChild() which creates a child if it doesn't exist
+
+    // reset the error flag and the messages
+    m_errors_exist = false;
+    m_messages.clear();
+
+    // check the node and return the results
+    checkJsonNode(data, schema);
+    
+    if (hasErrors())
+        return false;
+
+    return true;
+}
+
+bool JsonNodeValidator::checkJsonNode(JsonNode& data, JsonNode& schema)
+{
+    // make sure schema is an object
+    if (!schema.isObject())
+    {
+        // flag error and return, since there's nothing more we can do
+        flagError(L"Error: schema is not a valid object");
+        return false;
+    }
+
+    // validate the object type
+    if (!checkType(data, schema))
+        return false;
+
+    // validate the object type based on disallowed types
+    if (!checkTypeDisallowed(data, schema))
+        return false;
+
+    // validate any numeric value
+    if (!checkNumberValue(data, schema))
+        return false;
+
+    // validate any string value
+    if (!checkStringValue(data, schema))
+        return false;
+
+    // validate against an enumeration of values
+    if (!checkEnumValue(data, schema))
+        return false;
+
+    // validate any array size
+    if (!checkArraySize(data, schema))
+        return false;
+
+    // validate array items
+    if (!checkArrayItems(data, schema))
+        return false;
+
+    // validate object keys
+    if (!checkObjectKeys(data, schema))
+        return false;
+
+    // validate object properties
+    if (!checkObjectValues(data, schema))
+        return false;
+
+
+    // TODO: implement:
+
+    // extends
+    // $ref
+    // patternProperties
+    // dependencies
+    // enum
+    // format
+    // additionalItems
+    // uniqueItems
+
+    return true;
+}
+
+bool JsonNodeValidator::checkTypePrimitive(JsonNode& data, const std::wstring& type)
 {
     if (type == L"any")
         return true;
@@ -1237,7 +1194,7 @@ bool isValidTypePrimitive(JsonNode& data, const std::wstring type)
     return true;
 }
 
-bool isValidType(JsonNode& data, JsonNode& schema)
+bool JsonNodeValidator::checkType(JsonNode& data, JsonNode& schema)
 {
     // if the type doesn't exist in the schema, any type is valid
     if (!schema.childExists(L"type"))
@@ -1245,7 +1202,7 @@ bool isValidType(JsonNode& data, JsonNode& schema)
 
     // type has to be either a string or an array
     if (schema[L"type"].isString())
-        return isValidTypePrimitive(data, schema[L"type"].getString());
+        return checkTypePrimitive(data, schema[L"type"].getString());
 
     if (schema[L"type"].isArray())
     {
@@ -1256,7 +1213,7 @@ bool isValidType(JsonNode& data, JsonNode& schema)
         bool match = false;
         for (it = children.begin(); it != it_end; ++it)
         {
-            if (isValidTypePrimitive(data, it->getString()))
+            if (checkTypePrimitive(data, it->getString()))
                 return true;
 
             // TODO: need to handle case where type in array is a schema
@@ -1271,7 +1228,7 @@ bool isValidType(JsonNode& data, JsonNode& schema)
     return true;
 }
 
-bool isValidTypeDisallowed(JsonNode& data, JsonNode& schema)
+bool JsonNodeValidator::checkTypeDisallowed(JsonNode& data, JsonNode& schema)
 {
     // TODO: fill out
 
@@ -1280,7 +1237,7 @@ bool isValidTypeDisallowed(JsonNode& data, JsonNode& schema)
     return true;
 }
 
-bool isValidNumberValue(JsonNode& data, JsonNode& schema)
+bool JsonNodeValidator::checkNumberValue(JsonNode& data, JsonNode& schema)
 {
     // if the data type isn't a number, nothing to validate
     if (!data.isDouble() && !data.isInteger())
@@ -1420,7 +1377,7 @@ bool isValidNumberValue(JsonNode& data, JsonNode& schema)
     return true;
 }
 
-bool isValidEnumValue(JsonNode& data, JsonNode& schema)
+bool JsonNodeValidator::checkEnumValue(JsonNode& data, JsonNode& schema)
 {
     // if the enum value doesn't exist, nothing to validate
     if (!schema.childExists("enum"))
@@ -1448,7 +1405,7 @@ bool isValidEnumValue(JsonNode& data, JsonNode& schema)
     return false;
 }
 
-bool isValidStringValue(JsonNode& data, JsonNode& schema)
+bool JsonNodeValidator::checkStringValue(JsonNode& data, JsonNode& schema)
 {
     // if the data type isn't a string, nothing to validate
     if (!data.isString())
@@ -1499,7 +1456,7 @@ bool isValidStringValue(JsonNode& data, JsonNode& schema)
     return true;
 }
 
-bool isValidArraySize(JsonNode& data, JsonNode& schema)
+bool JsonNodeValidator::checkArraySize(JsonNode& data, JsonNode& schema)
 {
     // if the data type isn't an array, nothing to validate
     if (!data.isArray())
@@ -1526,7 +1483,7 @@ bool isValidArraySize(JsonNode& data, JsonNode& schema)
     return true;
 }
 
-bool isValidArrayItems(JsonNode& data, JsonNode& schema)
+bool JsonNodeValidator::checkArrayItems(JsonNode& data, JsonNode& schema)
 {
     // if the data type isn't an array, nothing to validate
     if (!data.isArray())
@@ -1546,7 +1503,7 @@ bool isValidArrayItems(JsonNode& data, JsonNode& schema)
 
         for (it = child_nodes.begin(); it != child_nodes.end(); ++it)
         {
-            if (!isValidJsonNode(*it, schema_items))
+            if (!checkJsonNode(*it, schema_items))
                 return false;
         }
     }
@@ -1563,7 +1520,7 @@ bool isValidArrayItems(JsonNode& data, JsonNode& schema)
     return true;
 }
 
-bool isValidObjectKeys(JsonNode& data, JsonNode& schema)
+bool JsonNodeValidator::checkObjectKeys(JsonNode& data, JsonNode& schema)
 {
     // if the data type isn't an object, nothing to validate
     if (!data.isObject())
@@ -1590,7 +1547,7 @@ bool isValidObjectKeys(JsonNode& data, JsonNode& schema)
     return true;
 }
 
-bool isValidObjectValues(JsonNode& data, JsonNode& schema)
+bool JsonNodeValidator::checkObjectValues(JsonNode& data, JsonNode& schema)
 {
     // if the data type isn't an object, nothing to validate
     if (!data.isObject())
@@ -1620,7 +1577,7 @@ bool isValidObjectValues(JsonNode& data, JsonNode& schema)
             JsonNode schema_property_child_node = schema_properties.getChild(*it);
             
             // we have schema defined for the child node, so validate against it
-            if (!isValidJsonNode(data_child_node, schema_property_child_node))
+            if (!checkJsonNode(data_child_node, schema_property_child_node))
                 return false;
 
             // valid; no need to compare against the additional properties
@@ -1632,7 +1589,7 @@ bool isValidObjectValues(JsonNode& data, JsonNode& schema)
         if (schema_additionalproperties.isObject())
         {
             JsonNode data_child_node = data.getChild(*it);
-            if (!isValidJsonNode(data_child_node, schema_additionalproperties))
+            if (!checkJsonNode(data_child_node, schema_additionalproperties))
                 return false;
         }
     }
@@ -1641,84 +1598,153 @@ bool isValidObjectValues(JsonNode& data, JsonNode& schema)
     return true;
 }
 
-bool isValidJsonNode(JsonNode& data, JsonNode& schema)
+bool JsonNodeValidator::isPrimitiveValueEqual(JsonNode& node1, JsonNode& node2)
 {
-    // make sure schema is an object
-    if (!schema.isObject())
+    // if either node is an array or object, it's not a primitive
+    if (node1.isArray() || node2.isArray())
+        return false;
+    if (node1.isObject() || node2.isObject())
         return false;
 
-    // validate the object type
-    if (!isValidType(data, schema))
+    // note: for combinations of null and undefined, we'll follow
+    // the same conventions as ECMAScript
+    if (node1.isUndefined() && node2.isUndefined())
+        return true;
+    if (node1.isNull() && node2.isNull())
+        return true;
+    if (node1.isUndefined() && node2.isNull())
+        return true;
+    if (node1.isNull() && node2.isUndefined())
+        return true;
+
+    // we're comparing two types, at least one of which is either a 
+    // boolean, number or string; if the other is null or undefined, 
+    // they're not equal
+    if (node1.isUndefined() || node2.isUndefined())
+        return false;
+    if (node1.isNull() || node2.isNull())
         return false;
 
-    // validate the object type based on disallowed types
-    if (!isValidTypeDisallowed(data, schema))
-        return false;
+    // if we have two strings, return the results of comparing
+    // them directly
+    if (node1.isString() && node2.isString())
+        return (node1.getString() == node2.getString());
 
-    // validate any numeric value
-    if (!isValidNumberValue(data, schema))
-        return false;
+    // we're comparing two primitive types of mixed boolean, number,
+    // or string types; if they are numerically equivalent, the 
+    // values match
+    if (node1.getDouble() == node2.getDouble())
+        return true;
 
-    // validate any string value
-    if (!isValidStringValue(data, schema))
-        return false;
-
-    // validate against an enumeration of values
-    if (!isValidEnumValue(data, schema))
-        return false;
-
-    // validate any array size
-    if (!isValidArraySize(data, schema))
-        return false;
-
-    // validate array items
-    if (!isValidArrayItems(data, schema))
-        return false;
-
-    // validate object keys
-    if (!isValidObjectKeys(data, schema))
-        return false;
-
-    // validate object properties
-    if (!isValidObjectValues(data, schema))
-        return false;
-
-
-    // TODO: implement:
-
-    // extends
-    // $ref
-    // patternProperties
-    // dependencies
-    // enum
-    // format
-    // additionalItems
-    // uniqueItems
-
-    return true;
+    // values don't match
+    return false;
 }
 
-
-JsonNodeValidator::JsonNodeValidator()
+bool JsonNodeValidator::isJsonNodeValueEqual(JsonNode& node1, JsonNode& node2)
 {
+    // nodes are equal if they are both primitive types (not array 
+    // and not object) and they have the same equivalent value
+    if (isPrimitiveValueEqual(node1, node2))
+        return true;
+
+    // nodes are equal if they are both arrays and have the 
+    // same number of elements with equivalent values
+    if (node1.isArray() && node2.isArray())
+    {
+        int node1_childcount = node1.getChildCount();
+        int node2_childcount = node2.getChildCount();
+
+        // different number elements
+        if (node1_childcount != node2_childcount)
+            return false;
+
+        // handle "no element" case
+        if (node1_childcount == 0 && node2_childcount)
+            return true;
+
+        std::vector<JsonNode> node1_children = node1.getChildren();
+        std::vector<JsonNode> node2_children = node2.getChildren();
+
+        std::vector<JsonNode>::iterator it, it_end;
+        it_end = node1_children.end();
+
+        int idx = 0;
+        for (it = node1_children.begin(); it != it_end; ++it)
+        {
+            JsonNode node1_child = *it;
+            JsonNode node2_child = node2_children[idx];
+
+            // if child elements in corresponding positions aren't equal,
+            // the arrays aren't equal
+            if (!isJsonNodeValueEqual(node1_child, node2_child))
+                return false;
+        }
+
+        // same number of array elements and values in the same position
+        return true;
+    }
+
+    // nodes are equal if they are both objects and have the 
+    // same number of elements with equivalent values
+    if (node1.isObject() && node2.isObject())
+    {
+        int node1_childcount = node1.getChildCount();
+        int node2_childcount = node2.getChildCount();
+
+        // different number elements
+        if (node1_childcount != node2_childcount)
+            return false;
+
+        // handle "no element" case
+        if (node1_childcount == 0 && node2_childcount)
+            return true;
+
+        // same number of non-zero elements; key's and values must match, but
+        // don't have to have the same order
+        std::vector<std::wstring> node1_childkeys = node1.getChildKeys();
+        std::vector<std::wstring>::iterator it, it_end;
+        it_end = node1_childkeys.end();
+
+        for (it = node1_childkeys.begin(); it != it_end; ++it)
+        {
+            // if we can't find the node1 key in node2, objects aren't the same
+            if (!node2.childExists(*it))
+                return false;
+
+            JsonNode node1_child = node1.getChild(*it);
+            JsonNode node2_child = node2.getChild(*it);
+
+            // node exists in both; values must now be the same
+            if (!isJsonNodeValueEqual(node1_child, node2_child))
+                return false;
+        }
+
+        // same object keys and child values
+        return true;
+    }
+
+    // some other case; shouldn't happen
+    return false;
 }
 
-JsonNodeValidator::~JsonNodeValidator()
+void JsonNodeValidator::flagError(const std::wstring& message)
 {
+    // if a message is set, add it to the list
+    if (message.length() > 0)
+        m_messages.push_back(message);
+
+    // set the error flag
+    m_errors_exist = true;
 }
 
-bool JsonNodeValidator::isValid(JsonNode& data, JsonNode& schema)
+bool JsonNodeValidator::hasErrors()
 {
-    // TODO: would be nice to make the input const JsonNode& schema;
-    // however schema isn't const because implementation depends on 
-    // getChild() which creates a child if it doesn't exist
-
-    return isValidJsonNode(data, schema);
+    return m_errors_exist;
 }
 
-std::vector<std::wstring> JsonNodeValidator::getErrors()
+std::vector<std::wstring> JsonNodeValidator::getMessages()
 {
-    return m_errors;
+    return m_messages;
 }
 
 
