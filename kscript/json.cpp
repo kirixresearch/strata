@@ -322,9 +322,16 @@ void Json::validate(ExprEnv* env, void*, Value* retval)
 {
     // NOTE: private test function for JSON schema validator
 
-    retval->setBoolean(false);
+
+    // set a default result message
+    kscript::Object* result_object = kscript::Object::createObject(env);
+    result_object->getMember(L"success")->setBoolean(false);
+    result_object->getMember(L"messages")->setArray(env);
+    retval->setObject(result_object);
+
     if (env->getParamCount() < 2)
         return;
+
 
     // get the json string to validate
     Value* value_data = env->getParam(0);
@@ -339,8 +346,26 @@ void Json::validate(ExprEnv* env, void*, Value* retval)
     kl::JsonNode schema_node;
     schema_node.fromString(schema_str);
 
-    bool result = data_node.isValid(schema_node);
-    retval->setBoolean(result);
+
+    // validate the json
+    kl::JsonNodeValidator json_validator;
+    bool result = json_validator.isValid(data_node, schema_node);
+    
+
+    // set the return object values
+    result_object->getMember(L"success")->setBoolean(result);
+    kscript::Value* result_messages = result_object->getMember(L"messages");
+
+    std::vector<std::wstring> messages = json_validator.getErrors();
+    std::vector<std::wstring>::iterator it, it_end;
+    it_end = messages.end();
+
+    for (it = messages.begin(); it != messages.end(); ++it)
+    {
+        kscript::Value message;
+        message.setString(*it);
+        result_messages->appendMember(&message);
+    }
 }
 
 void Json::encode(ExprEnv* env, 

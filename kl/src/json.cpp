@@ -44,8 +44,12 @@ int frac exp:
 */
 
 
-// forward declaration
-bool isValidJsonNode(JsonNode& data, JsonNode& schema);
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// JsonNode implementation
+//
+////////////////////////////////////////////////////////////////////////////////
 
 
 inline bool isWhiteSpaceOrLS(wchar_t ch)
@@ -525,6 +529,561 @@ bool parseJsonWord(wchar_t* expr, wchar_t** endloc, JsonNode& node)
 
     return parseFail(expr, endloc, node);
 }
+
+
+JsonNode::JsonNode()
+{
+    m_value = new JsonValue;
+    m_value->ref();
+    init();
+}
+
+JsonNode::~JsonNode()
+{
+    m_value->unref();
+}
+
+JsonNode::JsonNode(const JsonNode& _c)
+{
+    m_value = _c.m_value;
+    m_value->ref();
+}
+
+JsonNode& JsonNode::operator=(const JsonNode& _c)
+{
+    if (this == &_c)
+        return *this;
+
+    m_value = _c.m_value;
+    m_value->ref();
+
+    return *this;
+}
+
+JsonNode& JsonNode::operator=(int i)
+{
+    setInteger(i);
+    return *this;
+}
+
+JsonNode& JsonNode::operator=(double d)
+{
+    setDouble(d);
+    return *this;
+}
+
+JsonNode& JsonNode::operator=(const std::string& str)
+{
+    setString(kl::towstring(str));
+    return *this;
+}
+
+JsonNode& JsonNode::operator=(const std::wstring& str)
+{
+    setString(str);
+    return *this;
+}
+
+JsonNode JsonNode::operator[](int i)
+{
+    wchar_t buf[30];
+    swprintf(buf, 30, L"%d", i);
+    return getChild(buf);
+}
+
+JsonNode JsonNode::operator[](const char* str)
+{
+    return (*this)[kl::towstring(str)];
+}
+
+JsonNode JsonNode::operator[](const std::wstring& str)
+{
+    return getChild(str);
+}
+
+bool JsonNode::childExists(const std::string& str) const
+{
+    return childExists(kl::towstring(str));
+}
+
+bool JsonNode::childExists(const std::wstring& str) const
+{
+    std::map<std::wstring,JsonNode>::const_iterator it = m_value->m_child_nodes.find(str);
+    if (it != m_value->m_child_nodes.end())
+        return true;
+
+    return false;
+}
+
+JsonNode JsonNode::getChild(const std::wstring& _str)
+{
+    // reset the node type
+    m_value->m_type = nodetypeObject;
+
+    // try to find the child in the mapped container
+    std::map<std::wstring,JsonNode>::iterator it = m_value->m_child_nodes.find(_str);
+    if (it != m_value->m_child_nodes.end())
+        return it->second;
+
+    // if we can't find the child, create a new one and store it in both
+    // containers for ready access
+    JsonNode new_child;
+    std::pair<std::wstring,JsonNode> m_child_keyvalue(_str, new_child);
+
+    m_value->m_child_nodes[_str] = new_child;
+    m_value->m_child_nodes_ordered.push_back(m_child_keyvalue);
+
+    return new_child;
+}
+
+JsonNode JsonNode::getChild(const std::string& str)
+{
+    return getChild(kl::towstring(str));
+}
+
+
+std::vector<std::wstring> JsonNode::getChildKeys() const
+{
+    // return an ordered list of keys
+    std::vector<std::wstring> child_keys;
+    child_keys.reserve(m_value->m_child_nodes_ordered.size());
+
+    std::vector<std::pair<std::wstring,JsonNode>>::const_iterator it, it_end;
+    it_end = m_value->m_child_nodes_ordered.end();
+    
+    for (it = m_value->m_child_nodes_ordered.begin(); it != it_end; ++it)
+    {
+        child_keys.push_back(it->first);
+    }
+
+    return child_keys;
+}
+
+std::vector<JsonNode> JsonNode::getChildren() const
+{
+    // return an ordered list of children
+    std::vector<JsonNode> child_nodes;
+    child_nodes.reserve(m_value->m_child_nodes_ordered.size());
+
+    std::vector<std::pair<std::wstring,JsonNode>>::const_iterator it, it_end;
+    it_end = m_value->m_child_nodes_ordered.end();
+    
+    for (it = m_value->m_child_nodes_ordered.begin(); it != it_end; ++it)
+    {
+        child_nodes.push_back(it->second);
+    }
+
+    return child_nodes;
+}
+
+size_t JsonNode::getChildCount() const
+{
+    return m_value->m_child_nodes_ordered.size();
+}
+
+JsonNode JsonNode::appendElement()
+{
+    // if the node type was anything besides an array, clear it out
+    if (m_value->m_type != nodetypeArray)
+        init();
+
+    // make sure the type is an array (getChild currently
+    // converts node to object type)
+    JsonNode child = (*this)[getChildCount()];
+    m_value->m_type = nodetypeArray;
+    
+    return child;    
+}
+
+void JsonNode::setObject()
+{
+    m_value->m_child_nodes.clear();
+    m_value->m_child_nodes_ordered.clear();
+    m_value->m_string.clear();
+    m_value->m_double = 0.0f;
+    m_value->m_integer = 0;
+    m_value->m_boolean = false;
+    m_value->m_type = nodetypeObject;
+}
+
+void JsonNode::setArray()
+{
+    m_value->m_child_nodes.clear();
+    m_value->m_child_nodes_ordered.clear();    
+    m_value->m_string.clear();
+    m_value->m_double = 0.0f;
+    m_value->m_integer = 0;
+    m_value->m_boolean = false;
+    m_value->m_type = nodetypeArray;
+}
+
+void JsonNode::setString(const std::wstring& str)
+{
+    m_value->m_child_nodes.clear();
+    m_value->m_child_nodes_ordered.clear();    
+    m_value->m_string = str;
+    m_value->m_double = 0.0f;
+    m_value->m_integer = 0;
+    m_value->m_boolean = false;
+    m_value->m_type = nodetypeString;
+}
+
+void JsonNode::setBoolean(bool b)
+{
+    m_value->m_child_nodes.clear();
+    m_value->m_child_nodes_ordered.clear();    
+    m_value->m_string.clear();
+    m_value->m_double = 0.0f;
+    m_value->m_integer = 0;
+    m_value->m_boolean = b;
+    m_value->m_type = nodetypeBoolean;
+}
+
+void JsonNode::setDouble(double num)
+{
+    m_value->m_child_nodes.clear();
+    m_value->m_child_nodes_ordered.clear();
+    m_value->m_string.clear();
+    m_value->m_double = num;
+    m_value->m_integer = 0;
+    m_value->m_boolean = false;
+    m_value->m_type = nodetypeDouble;
+}
+
+void JsonNode::setInteger(int num)
+{
+    m_value->m_child_nodes.clear();
+    m_value->m_child_nodes_ordered.clear();    
+    m_value->m_string.clear();
+    m_value->m_double = 0.0f;
+    m_value->m_integer = num;
+    m_value->m_boolean = false;
+    m_value->m_type = nodetypeInteger;
+}
+
+void JsonNode::setNull()
+{
+    m_value->m_child_nodes.clear();
+    m_value->m_child_nodes_ordered.clear();    
+    m_value->m_string.clear();
+    m_value->m_double = 0.0f;
+    m_value->m_integer = 0;
+    m_value->m_boolean = false;
+    m_value->m_type = nodetypeNull;    
+}
+
+std::wstring JsonNode::getString() const
+{
+    switch (m_value->m_type)
+    {
+        default:
+            return L"";
+        case nodetypeUndefined:
+            return L"";
+        case nodetypeNull:
+            return L"null";
+        case nodetypeBoolean:
+            return m_value->m_boolean ? L"true" : L"false";
+        case nodetypeInteger:
+            {
+                wchar_t buf[30];
+                swprintf(buf, 30, L"%d", m_value->m_integer);
+                return buf;
+            }
+        case nodetypeDouble:
+            return kl::dbltostr(getDouble());
+        case nodetypeString:
+            return m_value->m_string;
+        case nodetypeArray:
+        case nodetypeObject:
+            return L"";
+    }
+}
+
+bool JsonNode::getBoolean() const
+{
+    switch (m_value->m_type)
+    {
+        default:
+            return false;
+        case nodetypeUndefined:
+        case nodetypeNull:
+            return false;
+        case nodetypeBoolean:
+            return m_value->m_boolean;
+        case nodetypeInteger:
+            return (m_value->m_integer != 0 ? true : false);
+        case nodetypeDouble:
+            return (m_value->m_double != 0 ? true : false);
+        case nodetypeString:
+            return (m_value->m_string.size() > 0 ? true : false); // ECMAScript behavior
+        case nodetypeObject:
+        case nodetypeArray:
+            return true;
+    }
+
+    return false;
+}
+
+double JsonNode::getDouble() const
+{
+    // TODO: should consider using NaN for undefined, 
+    // array, and object (null should still convert to 0)
+
+    switch (m_value->m_type)
+    {
+        default:
+            return 0;
+        case nodetypeUndefined:
+        case nodetypeNull:
+            return 0;
+        case nodetypeBoolean:
+            return m_value->m_boolean ? 1 : 0;
+        case nodetypeInteger:
+            return m_value->m_integer;
+        case nodetypeDouble:
+            return m_value->m_double;
+        case nodetypeString:
+            return wtof(m_value->m_string);
+        case nodetypeArray:
+        case nodetypeObject:
+            return 0;
+    }
+}
+
+int JsonNode::getInteger() const
+{
+    switch (m_value->m_type)
+    {
+        default:
+            return 0;
+        case nodetypeUndefined:
+        case nodetypeNull:
+            return 0;
+        case nodetypeBoolean:
+            return m_value->m_boolean ? 1 : 0;
+        case nodetypeInteger:
+            return m_value->m_integer;
+        case nodetypeDouble:
+            return m_value->m_double;
+        case nodetypeString:
+            return wtoi(m_value->m_string);
+        case nodetypeArray:
+        case nodetypeObject:
+            return 0;
+    }
+}
+
+bool JsonNode::isObject() const
+{
+    return (m_value->m_type == nodetypeObject);
+}
+
+bool JsonNode::isArray() const
+{
+    return (m_value->m_type == nodetypeArray);
+}
+
+bool JsonNode::isString() const
+{
+    return (m_value->m_type == nodetypeString);
+}
+
+bool JsonNode::isBoolean() const
+{
+    return (m_value->m_type == nodetypeBoolean);
+}
+
+bool JsonNode::isDouble() const
+{
+    return (m_value->m_type == nodetypeDouble);
+}
+
+bool JsonNode::isInteger() const
+{
+    return (m_value->m_type == nodetypeInteger);
+}
+
+bool JsonNode::isNull() const
+{
+    return (m_value->m_type == nodetypeNull);
+}
+
+bool JsonNode::isOk() const
+{
+    return !isUndefined();
+}
+
+bool JsonNode::isUndefined() const
+{
+    return (m_value->m_type == nodetypeUndefined);
+}
+
+JsonNode::operator std::wstring() const
+{
+    return getString();
+}
+
+std::wstring JsonNode::toString() const
+{
+    return stringify();
+}
+
+bool JsonNode::fromString(const std::wstring& str)
+{
+    return parse((wchar_t*)str.c_str());
+}
+
+void JsonNode::copyFrom(const JsonNode& node)
+{
+    m_value->m_child_nodes = node.m_value->m_child_nodes;
+    m_value->m_child_nodes_ordered = node.m_value->m_child_nodes_ordered;    
+    m_value->m_string = node.m_value->m_string;
+    m_value->m_double = node.m_value->m_double;
+    m_value->m_integer = node.m_value->m_integer;
+    m_value->m_boolean = node.m_value->m_boolean;
+    m_value->m_type = node.m_value->m_type;
+}
+
+void JsonNode::init()
+{
+    m_value->m_child_nodes.clear();
+    m_value->m_child_nodes_ordered.clear();
+    m_value->m_string.clear();
+    m_value->m_double = 0.0f;
+    m_value->m_integer = 0;
+    m_value->m_boolean = false;
+    m_value->m_type = nodetypeUndefined;
+}
+
+bool JsonNode::parse(wchar_t* expr)
+{
+    wchar_t* endloc = NULL;
+    bool success = parseJsonValue(expr, &endloc, *this);
+    
+    // make sure there's nothing left over
+    skipWhiteSpaceOrLS(endloc);
+    if (*endloc != NULL)
+        success = false;
+
+    if (!success)
+    {
+        // reset the json
+        init();
+        return false;
+    }
+    
+    return true;
+}
+
+static std::wstring addspaces(unsigned int indent_level)
+{
+    std::wstring spaces = L"";
+    int spaces_per_indent_level = 4;
+
+    for (int i = 0; i < indent_level*spaces_per_indent_level; ++i)
+        spaces += L" ";
+
+    return spaces;
+}
+
+std::wstring JsonNode::stringify(unsigned int indent_level) const
+{
+    if (m_value->m_type == nodetypeUndefined)
+        return getString();
+
+    if (m_value->m_type == nodetypeNull)
+        return getString();
+
+    if (m_value->m_type == nodetypeBoolean)
+        return getString();
+
+    if (m_value->m_type == nodetypeInteger)
+        return getString();
+        
+    if (m_value->m_type == nodetypeDouble)
+        return getString();
+
+    // make sure to escape the string
+    if (m_value->m_type == nodetypeString)
+        return L'"' + escape_string(getString()) + L'"';
+
+    // following are for formatting
+    std::wstring newline = L"\n";
+
+    if (m_value->m_type == nodetypeArray)
+    {
+        std::wstring result;
+        result += L"[" + newline + addspaces(indent_level+1);
+
+        std::vector<std::pair<std::wstring,JsonNode>>::iterator it, it_end;
+        it_end = m_value->m_child_nodes_ordered.end();
+
+        bool first = true;
+        for (it = m_value->m_child_nodes_ordered.begin(); it != it_end; ++it)
+        {
+            if (!first)
+                result += L"," + newline + addspaces(indent_level+1);
+            first = false;
+
+            result += it->second.stringify(indent_level+1);
+        }
+        
+        result += newline + addspaces(indent_level) + L"]";
+        return result;
+    }
+    
+    if (m_value->m_type == nodetypeObject)
+    {
+        std::wstring result;
+        result += L"{" + newline + addspaces(indent_level+1);
+
+        std::vector<std::pair<std::wstring,JsonNode>>::iterator it, it_end;
+        it_end = m_value->m_child_nodes_ordered.end();
+
+        bool first = true;
+        for (it = m_value->m_child_nodes_ordered.begin(); it != it_end; ++it)
+        {
+            if (!first)
+                result += L"," + newline + addspaces(indent_level+1);
+            first = false;
+
+            // stringify the key
+            result += (L'"' + escape_string(it->first) + L'"');
+            
+            // separator
+            result += L":";
+
+            // if the value is an array or an object, add in a return
+            if (it->second.m_value->m_type == nodetypeArray || 
+                it->second.m_value->m_type == nodetypeObject)
+            {
+                result += newline + addspaces(indent_level+1);       
+            }
+
+            // stringify the value
+            result += it->second.stringify(indent_level+1);
+        }
+
+        result += newline + addspaces(indent_level) + L"}";
+        return result;
+    }
+    
+    return L"";
+}
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// JsonNodeValiator implementation
+//
+////////////////////////////////////////////////////////////////////////////////
+
+
+// forward declaration
+bool isValidJsonNode(JsonNode& data, JsonNode& schema);
 
 bool isJsonNodePrimitiveValueEqual(JsonNode& node1, JsonNode& node2)
 {
@@ -1139,557 +1698,27 @@ bool isValidJsonNode(JsonNode& data, JsonNode& schema)
     return true;
 }
 
-JsonNode::JsonNode()
+
+JsonNodeValidator::JsonNodeValidator()
 {
-    m_value = new JsonValue;
-    m_value->ref();
-    init();
 }
 
-JsonNode::~JsonNode()
+JsonNodeValidator::~JsonNodeValidator()
 {
-    m_value->unref();
 }
 
-JsonNode::JsonNode(const JsonNode& _c)
-{
-    m_value = _c.m_value;
-    m_value->ref();
-}
-
-JsonNode& JsonNode::operator=(const JsonNode& _c)
-{
-    if (this == &_c)
-        return *this;
-
-    m_value = _c.m_value;
-    m_value->ref();
-
-    return *this;
-}
-
-JsonNode& JsonNode::operator=(int i)
-{
-    setInteger(i);
-    return *this;
-}
-
-JsonNode& JsonNode::operator=(double d)
-{
-    setDouble(d);
-    return *this;
-}
-
-JsonNode& JsonNode::operator=(const std::string& str)
-{
-    setString(kl::towstring(str));
-    return *this;
-}
-
-JsonNode& JsonNode::operator=(const std::wstring& str)
-{
-    setString(str);
-    return *this;
-}
-
-JsonNode JsonNode::operator[](int i)
-{
-    wchar_t buf[30];
-    swprintf(buf, 30, L"%d", i);
-    return getChild(buf);
-}
-
-JsonNode JsonNode::operator[](const char* str)
-{
-    return (*this)[kl::towstring(str)];
-}
-
-JsonNode JsonNode::operator[](const std::wstring& str)
-{
-    return getChild(str);
-}
-
-bool JsonNode::childExists(const std::string& str) const
-{
-    return childExists(kl::towstring(str));
-}
-
-bool JsonNode::childExists(const std::wstring& str) const
-{
-    std::map<std::wstring,JsonNode>::const_iterator it = m_value->m_child_nodes.find(str);
-    if (it != m_value->m_child_nodes.end())
-        return true;
-
-    return false;
-}
-
-JsonNode JsonNode::getChild(const std::wstring& _str)
-{
-    // reset the node type
-    m_value->m_type = nodetypeObject;
-
-    // try to find the child in the mapped container
-    std::map<std::wstring,JsonNode>::iterator it = m_value->m_child_nodes.find(_str);
-    if (it != m_value->m_child_nodes.end())
-        return it->second;
-
-    // if we can't find the child, create a new one and store it in both
-    // containers for ready access
-    JsonNode new_child;
-    std::pair<std::wstring,JsonNode> m_child_keyvalue(_str, new_child);
-
-    m_value->m_child_nodes[_str] = new_child;
-    m_value->m_child_nodes_ordered.push_back(m_child_keyvalue);
-
-    return new_child;
-}
-
-JsonNode JsonNode::getChild(const std::string& str)
-{
-    return getChild(kl::towstring(str));
-}
-
-
-std::vector<std::wstring> JsonNode::getChildKeys() const
-{
-    // return an ordered list of keys
-    std::vector<std::wstring> child_keys;
-    child_keys.reserve(m_value->m_child_nodes_ordered.size());
-
-    std::vector<std::pair<std::wstring,JsonNode>>::const_iterator it, it_end;
-    it_end = m_value->m_child_nodes_ordered.end();
-    
-    for (it = m_value->m_child_nodes_ordered.begin(); it != it_end; ++it)
-    {
-        child_keys.push_back(it->first);
-    }
-
-    return child_keys;
-}
-
-std::vector<JsonNode> JsonNode::getChildren() const
-{
-    // return an ordered list of children
-    std::vector<JsonNode> child_nodes;
-    child_nodes.reserve(m_value->m_child_nodes_ordered.size());
-
-    std::vector<std::pair<std::wstring,JsonNode>>::const_iterator it, it_end;
-    it_end = m_value->m_child_nodes_ordered.end();
-    
-    for (it = m_value->m_child_nodes_ordered.begin(); it != it_end; ++it)
-    {
-        child_nodes.push_back(it->second);
-    }
-
-    return child_nodes;
-}
-
-size_t JsonNode::getChildCount() const
-{
-    return m_value->m_child_nodes_ordered.size();
-}
-
-JsonNode JsonNode::appendElement()
-{
-    // if the node type was anything besides an array, clear it out
-    if (m_value->m_type != nodetypeArray)
-        init();
-
-    // make sure the type is an array (getChild currently
-    // converts node to object type)
-    JsonNode child = (*this)[getChildCount()];
-    m_value->m_type = nodetypeArray;
-    
-    return child;    
-}
-
-void JsonNode::setObject()
-{
-    m_value->m_child_nodes.clear();
-    m_value->m_child_nodes_ordered.clear();
-    m_value->m_string.clear();
-    m_value->m_double = 0.0f;
-    m_value->m_integer = 0;
-    m_value->m_boolean = false;
-    m_value->m_type = nodetypeObject;
-}
-
-void JsonNode::setArray()
-{
-    m_value->m_child_nodes.clear();
-    m_value->m_child_nodes_ordered.clear();    
-    m_value->m_string.clear();
-    m_value->m_double = 0.0f;
-    m_value->m_integer = 0;
-    m_value->m_boolean = false;
-    m_value->m_type = nodetypeArray;
-}
-
-void JsonNode::setString(const std::wstring& str)
-{
-    m_value->m_child_nodes.clear();
-    m_value->m_child_nodes_ordered.clear();    
-    m_value->m_string = str;
-    m_value->m_double = 0.0f;
-    m_value->m_integer = 0;
-    m_value->m_boolean = false;
-    m_value->m_type = nodetypeString;
-}
-
-void JsonNode::setBoolean(bool b)
-{
-    m_value->m_child_nodes.clear();
-    m_value->m_child_nodes_ordered.clear();    
-    m_value->m_string.clear();
-    m_value->m_double = 0.0f;
-    m_value->m_integer = 0;
-    m_value->m_boolean = b;
-    m_value->m_type = nodetypeBoolean;
-}
-
-void JsonNode::setDouble(double num)
-{
-    m_value->m_child_nodes.clear();
-    m_value->m_child_nodes_ordered.clear();
-    m_value->m_string.clear();
-    m_value->m_double = num;
-    m_value->m_integer = 0;
-    m_value->m_boolean = false;
-    m_value->m_type = nodetypeDouble;
-}
-
-void JsonNode::setInteger(int num)
-{
-    m_value->m_child_nodes.clear();
-    m_value->m_child_nodes_ordered.clear();    
-    m_value->m_string.clear();
-    m_value->m_double = 0.0f;
-    m_value->m_integer = num;
-    m_value->m_boolean = false;
-    m_value->m_type = nodetypeInteger;
-}
-
-void JsonNode::setNull()
-{
-    m_value->m_child_nodes.clear();
-    m_value->m_child_nodes_ordered.clear();    
-    m_value->m_string.clear();
-    m_value->m_double = 0.0f;
-    m_value->m_integer = 0;
-    m_value->m_boolean = false;
-    m_value->m_type = nodetypeNull;    
-}
-
-std::wstring JsonNode::getString() const
-{
-    switch (m_value->m_type)
-    {
-        default:
-            return L"";
-        case nodetypeUndefined:
-            return L"";
-        case nodetypeNull:
-            return L"null";
-        case nodetypeBoolean:
-            return m_value->m_boolean ? L"true" : L"false";
-        case nodetypeInteger:
-            {
-                wchar_t buf[30];
-                swprintf(buf, 30, L"%d", m_value->m_integer);
-                return buf;
-            }
-        case nodetypeDouble:
-            return kl::dbltostr(getDouble());
-        case nodetypeString:
-            return m_value->m_string;
-        case nodetypeArray:
-        case nodetypeObject:
-            return L"";
-    }
-}
-
-bool JsonNode::getBoolean() const
-{
-    switch (m_value->m_type)
-    {
-        default:
-            return false;
-        case nodetypeUndefined:
-        case nodetypeNull:
-            return false;
-        case nodetypeBoolean:
-            return m_value->m_boolean;
-        case nodetypeInteger:
-            return (m_value->m_integer != 0 ? true : false);
-        case nodetypeDouble:
-            return (m_value->m_double != 0 ? true : false);
-        case nodetypeString:
-            return (m_value->m_string.size() > 0 ? true : false); // ECMAScript behavior
-        case nodetypeObject:
-        case nodetypeArray:
-            return true;
-    }
-
-    return false;
-}
-
-double JsonNode::getDouble() const
-{
-    // TODO: should consider using NaN for undefined, 
-    // array, and object (null should still convert to 0)
-
-    switch (m_value->m_type)
-    {
-        default:
-            return 0;
-        case nodetypeUndefined:
-        case nodetypeNull:
-            return 0;
-        case nodetypeBoolean:
-            return m_value->m_boolean ? 1 : 0;
-        case nodetypeInteger:
-            return m_value->m_integer;
-        case nodetypeDouble:
-            return m_value->m_double;
-        case nodetypeString:
-            return wtof(m_value->m_string);
-        case nodetypeArray:
-        case nodetypeObject:
-            return 0;
-    }
-}
-
-int JsonNode::getInteger() const
-{
-    switch (m_value->m_type)
-    {
-        default:
-            return 0;
-        case nodetypeUndefined:
-        case nodetypeNull:
-            return 0;
-        case nodetypeBoolean:
-            return m_value->m_boolean ? 1 : 0;
-        case nodetypeInteger:
-            return m_value->m_integer;
-        case nodetypeDouble:
-            return m_value->m_double;
-        case nodetypeString:
-            return wtoi(m_value->m_string);
-        case nodetypeArray:
-        case nodetypeObject:
-            return 0;
-    }
-}
-
-bool JsonNode::isValid(JsonNode& schema)
+bool JsonNodeValidator::isValid(JsonNode& data, JsonNode& schema)
 {
     // TODO: would be nice to make the input const JsonNode& schema;
     // however schema isn't const because implementation depends on 
     // getChild() which creates a child if it doesn't exist
 
-    // TODO: would also be nice to make isValid() const, but need
-    // to work around *this
-
-    return isValidJsonNode(*this, schema);
+    return isValidJsonNode(data, schema);
 }
 
-bool JsonNode::isObject() const
+std::vector<std::wstring> JsonNodeValidator::getErrors()
 {
-    return (m_value->m_type == nodetypeObject);
-}
-
-bool JsonNode::isArray() const
-{
-    return (m_value->m_type == nodetypeArray);
-}
-
-bool JsonNode::isString() const
-{
-    return (m_value->m_type == nodetypeString);
-}
-
-bool JsonNode::isBoolean() const
-{
-    return (m_value->m_type == nodetypeBoolean);
-}
-
-bool JsonNode::isDouble() const
-{
-    return (m_value->m_type == nodetypeDouble);
-}
-
-bool JsonNode::isInteger() const
-{
-    return (m_value->m_type == nodetypeInteger);
-}
-
-bool JsonNode::isNull() const
-{
-    return (m_value->m_type == nodetypeNull);
-}
-
-bool JsonNode::isOk() const
-{
-    return !isUndefined();
-}
-
-bool JsonNode::isUndefined() const
-{
-    return (m_value->m_type == nodetypeUndefined);
-}
-
-JsonNode::operator std::wstring() const
-{
-    return getString();
-}
-
-std::wstring JsonNode::toString() const
-{
-    return stringify();
-}
-
-bool JsonNode::fromString(const std::wstring& str)
-{
-    return parse((wchar_t*)str.c_str());
-}
-
-void JsonNode::copyFrom(const JsonNode& node)
-{
-    m_value->m_child_nodes = node.m_value->m_child_nodes;
-    m_value->m_child_nodes_ordered = node.m_value->m_child_nodes_ordered;    
-    m_value->m_string = node.m_value->m_string;
-    m_value->m_double = node.m_value->m_double;
-    m_value->m_integer = node.m_value->m_integer;
-    m_value->m_boolean = node.m_value->m_boolean;
-    m_value->m_type = node.m_value->m_type;
-}
-
-void JsonNode::init()
-{
-    m_value->m_child_nodes.clear();
-    m_value->m_child_nodes_ordered.clear();
-    m_value->m_string.clear();
-    m_value->m_double = 0.0f;
-    m_value->m_integer = 0;
-    m_value->m_boolean = false;
-    m_value->m_type = nodetypeUndefined;
-}
-
-bool JsonNode::parse(wchar_t* expr)
-{
-    wchar_t* endloc = NULL;
-    bool success = parseJsonValue(expr, &endloc, *this);
-    
-    // make sure there's nothing left over
-    skipWhiteSpaceOrLS(endloc);
-    if (*endloc != NULL)
-        success = false;
-
-    if (!success)
-    {
-        // reset the json
-        init();
-        return false;
-    }
-    
-    return true;
-}
-
-static std::wstring addspaces(unsigned int indent_level)
-{
-    std::wstring spaces = L"";
-    int spaces_per_indent_level = 4;
-
-    for (int i = 0; i < indent_level*spaces_per_indent_level; ++i)
-        spaces += L" ";
-
-    return spaces;
-}
-
-std::wstring JsonNode::stringify(unsigned int indent_level) const
-{
-    if (m_value->m_type == nodetypeUndefined)
-        return getString();
-
-    if (m_value->m_type == nodetypeNull)
-        return getString();
-
-    if (m_value->m_type == nodetypeBoolean)
-        return getString();
-
-    if (m_value->m_type == nodetypeInteger)
-        return getString();
-        
-    if (m_value->m_type == nodetypeDouble)
-        return getString();
-
-    // make sure to escape the string
-    if (m_value->m_type == nodetypeString)
-        return L'"' + escape_string(getString()) + L'"';
-
-    // following are for formatting
-    std::wstring newline = L"\n";
-
-    if (m_value->m_type == nodetypeArray)
-    {
-        std::wstring result;
-        result += L"[" + newline + addspaces(indent_level+1);
-
-        std::vector<std::pair<std::wstring,JsonNode>>::iterator it, it_end;
-        it_end = m_value->m_child_nodes_ordered.end();
-
-        bool first = true;
-        for (it = m_value->m_child_nodes_ordered.begin(); it != it_end; ++it)
-        {
-            if (!first)
-                result += L"," + newline + addspaces(indent_level+1);
-            first = false;
-
-            result += it->second.stringify(indent_level+1);
-        }
-        
-        result += newline + addspaces(indent_level) + L"]";
-        return result;
-    }
-    
-    if (m_value->m_type == nodetypeObject)
-    {
-        std::wstring result;
-        result += L"{" + newline + addspaces(indent_level+1);
-
-        std::vector<std::pair<std::wstring,JsonNode>>::iterator it, it_end;
-        it_end = m_value->m_child_nodes_ordered.end();
-
-        bool first = true;
-        for (it = m_value->m_child_nodes_ordered.begin(); it != it_end; ++it)
-        {
-            if (!first)
-                result += L"," + newline + addspaces(indent_level+1);
-            first = false;
-
-            // stringify the key
-            result += (L'"' + escape_string(it->first) + L'"');
-            
-            // separator
-            result += L":";
-
-            // if the value is an array or an object, add in a return
-            if (it->second.m_value->m_type == nodetypeArray || 
-                it->second.m_value->m_type == nodetypeObject)
-            {
-                result += newline + addspaces(indent_level+1);       
-            }
-
-            // stringify the value
-            result += it->second.stringify(indent_level+1);
-        }
-
-        result += newline + addspaces(indent_level) + L"}";
-        return result;
-    }
-    
-    return L"";
+    return m_errors;
 }
 
 

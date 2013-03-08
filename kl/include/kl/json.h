@@ -124,7 +124,6 @@ public:
     double getDouble() const;
     int getInteger() const;
 
-    bool isValid(JsonNode& schema); // partial implementation of json schema spec (draft version 3)
     bool isObject() const;
     bool isArray() const;
     bool isString() const;
@@ -163,6 +162,21 @@ private:
     };
 
     JsonValue* m_value; 
+};
+
+class JsonNodeValidator
+{
+public:
+
+    JsonNodeValidator();
+    ~JsonNodeValidator();
+
+    bool isValid(JsonNode& data, JsonNode& schema);
+    std::vector<std::wstring> getErrors();
+
+private:
+
+    std::vector<std::wstring> m_errors;
 };
 
 
