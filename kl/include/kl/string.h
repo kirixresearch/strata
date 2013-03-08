@@ -186,6 +186,8 @@ std::wstring stdswprintf(const wchar_t* fmt, ...);
 std::wstring formattedNumber(double d, int dec = -1);
 
 
+std::wstring joinList(std::vector<std::wstring>& vec, const std::wstring join_str = L",");
+
 void parseDelimitedList(const std::wstring& s,
                         std::vector<std::wstring>& vec,
                         wchar_t delimiter,

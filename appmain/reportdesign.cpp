@@ -4250,19 +4250,18 @@ void CompReportDesign::setGroupsFromSortExpr(const wxString& sort_expr)
     setSections(new_sections);
 
     // get the sort fields
-    std::vector< std::pair<wxString, bool> > sort_fields;
-    sort_fields = sortExprToVector(sort_expr);
+    std::vector< std::pair<std::wstring, bool> > sort_fields;
+    sort_fields = sortExprToVector(towstr(sort_expr));
 
     // insert a group for each field in reverse order,
-    // since the last field corresponds to the innermost
-    // group
+    // since the last field corresponds to the innermost group
     tango::IDatabasePtr db = g_app->getDatabase();
-    std::vector< std::pair<wxString, bool> >::reverse_iterator itr, itr_end;
+    std::vector< std::pair<std::wstring, bool> >::reverse_iterator itr, itr_end;
     itr_end = sort_fields.rend();
     
     for (itr = sort_fields.rbegin(); itr != itr_end; ++itr)
     {
-        wxString field = towx(tango::dequoteIdentifier(db, towstr(itr->first)));
+        wxString field = towx(tango::dequoteIdentifier(db, itr->first));
         insertGroup(wxT(""), field, itr->second, false);
     }
 }

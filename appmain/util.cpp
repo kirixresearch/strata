@@ -366,26 +366,6 @@ int buf2int(const unsigned char* buf)
     return buf[0] + (buf[1]*256) + (buf[2]*65536) + (buf[3] * 16777216);
 }
 
-wxString vectorToString(const std::vector<wxString>& list)
-{
-    // note: converts a vector of strings to a string 
-    // containing the fields as a comma-delimited list
-
-    wxString result;
-
-    std::vector<wxString>::const_iterator it, it_end;
-    it_end = list.end();
-    
-    for (it = list.begin(); it != it_end; ++it)
-    {
-        if (it != list.begin())
-            result += wxT(",");
-    
-        result += *it;
-    }
-    
-    return result;
-}
 
 std::vector<wxString> stringToVector(const wxString& string)
 {
@@ -409,68 +389,66 @@ std::vector<wxString> stringToVector(const wxString& string)
     return result;
 }
 
-std::vector< std::pair<wxString, bool> > sortExprToVector(const wxString& sort_expr)
+std::vector< std::pair<std::wstring, bool> > sortExprToVector(const std::wstring& sort_expr)
 {
-    // note: this function takes an input sort expression
-    // and parses out the fieldnames that make up the sort 
-    // expression into a vector of pairs, where the first 
-    // part of the pair is the name of the field and the 
-    // second part of the field is a boolean value that 
-    // indicates the sort order: false = sort ascending 
-    // and true = sort descneding
+    // note: this function takes an input sort expression and parses out the
+    // fieldnames that make up the sort expression into a vector of pairs,
+    // where the first part of the pair is the name of the field and the 
+    // second part of the field is a boolean value that indicates the sort
+    // order: false = sort ascending and true = sort descneding
 
     // used throughout
-    std::vector< std::pair<wxString, bool> > sort_fields;
+    std::vector< std::pair<std::wstring, bool> > sort_fields;
+    std::vector<std::wstring> expr_parts;
 
     // get the fields from the sort expression
-    std::vector<wxString> expr_parts = stringToVector(sort_expr);
-    std::vector<wxString>::iterator it, it_end;
+    kl::parseDelimitedList(sort_expr, expr_parts, ',', true);
+
+    std::vector<std::wstring>::iterator it, it_end;
     it_end = expr_parts.end();
 
     for (it = expr_parts.begin(); it != it_end; ++it)
     {
         // get the string
-        wxString field = *it;
+        std::wstring field = *it;
+        kl::trim(field);
+
+        std::wstring upper_field = field;
+        kl::makeUpper(upper_field);
         
-        // trim leading and trailing spaces
-        field.Trim(true);
-        field.Trim(false);
-        
-        // get the field name, which is separated
-        // from the ASC/DESC sort order qualifiers
-        // by a space
+        // get the field name, which is separated from the ASC/DESC
+        // sort order qualifiers by a space
         bool sort_desc = false;
  
         // see if the ascending flag is included
-        int offset = field.Upper().Find(wxT("ASC"));
-        if (offset != wxNOT_FOUND)
+        int offset = upper_field.find(L" ASC");
+        if (offset != upper_field.npos)
         {
             // if the ascending flag is included,
             // strip it off and set the sort flag
-            field = field.Left(offset);
+            field = field.substr(0, offset);
             sort_desc = false;
         }
         else
         {
             // if the ascending flag isn't included,
             // check for the descending flag
-            offset = field.Upper().Find(wxT("DESC"));
-            if (offset != wxNOT_FOUND)
+            offset = upper_field.find(L" DESC");
+            if (offset != upper_field.npos)
             {
                 // if the descending flag is included,
                 // strip it off and set the sort flag
-                field = field.Left(offset);
+                field = field.substr(0, offset);
                 sort_desc = true;
             }
         }
 
         // trim any remaining spaces
-        field.Trim(true);
-        field.Trim(false);
+        kl::trim(field);
 
         // set the fieldname and sort order, and
         // save the pair
-        std::pair<wxString, bool> pair;
+        std::pair<std::wstring, bool> pair;
         pair.first = field;
         pair.second = sort_desc;
     

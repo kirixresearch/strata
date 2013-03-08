@@ -278,6 +278,22 @@ static wchar_t* zl_strchr(wchar_t* str,
     return NULL;
 }
 
+std::wstring joinList(std::vector<std::wstring>& vec, const std::wstring join_str)
+{
+    std::wstring res;
+    std::vector<std::wstring>::iterator it;
+
+    for (it = vec.begin(); it != vec.end(); ++it)
+    {
+        if (it != vec.begin())
+            res += join_str;
+        res += *it;
+    }
+
+    return res;
+}
+
+
 void parseDelimitedList(const std::wstring& s,
                         std::vector<std::wstring>& vec,
                         wchar_t delimiter,

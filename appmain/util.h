@@ -207,9 +207,7 @@ int buf2int(const unsigned char* buf);
 
 
 // TODO: similar functions exist elsewhere; should factor
-wxString vectorToString(const std::vector<wxString>& list);
-std::vector<wxString> stringToVector(const wxString& string);
-std::vector< std::pair<wxString, bool> > sortExprToVector(const wxString& sort_expr);
+std::vector< std::pair<std::wstring, bool> > sortExprToVector(const std::wstring& sort_expr);
 
 
 

@@ -3217,18 +3217,19 @@ void TableDoc::onSetOrderFinished(IJobPtr job)
     // of the new sort order, remove the group break; TODO: decide
     // if this behavior is predictable, or if we should always
     // remove the group sort when setting an order of any kind
-    std::vector< std::pair<wxString, bool> > sort_fields;
-    std::vector<wxString> group_fields;
 
-    sort_fields = sortExprToVector(m_sort_order);
-    group_fields = stringToVector(m_group_break);
+    std::vector< std::pair<std::wstring, bool> > sort_fields;
+    std::vector<std::wstring> group_fields;
+
+    sort_fields = sortExprToVector(towstr(m_sort_order));
+    kl::parseDelimitedList(towstr(m_group_break), group_fields, ',', true);
 
     bool remove_group_break = true;
     if (group_fields.size() <= sort_fields.size())
     {
         remove_group_break = false;
         
-        std::vector<wxString>::iterator it, it_end;
+        std::vector<std::wstring>::iterator it, it_end;
         it_end = group_fields.end();
         
         int i = 0;
