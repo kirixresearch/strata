@@ -925,24 +925,24 @@ tango::INodeValuePtr TableDocModel::flushObject(ITableDocObjectPtr obj)
     if (m_id.IsEmpty())
         return xcm::null;
 
-    wxString tag;
+    wxString object_type;
 
     ITableDocViewPtr view = obj;
     ITableDocMarkPtr mark = obj;
 
     if (view.isOk())
-        tag = wxT("views");
+        object_type = wxT("views");
     if (mark.isOk())
-        tag = wxT("marks");
+        object_type = wxT("marks");
 
-    if (tag.IsEmpty())
+    if (object_type.IsEmpty())
         return xcm::null;
 
     wxString path;
     path = wxString::Format(wxT("/.appdata/%s/dcfe/setinfo/%s/%s"),
                             towx(g_app->getDatabase()->getActiveUid()).c_str(),
                             m_id.c_str(),
-                            tag.c_str());
+                            object_type.c_str());
 
     tango::INodeValuePtr file;
     
@@ -955,7 +955,7 @@ tango::INodeValuePtr TableDocModel::flushObject(ITableDocObjectPtr obj)
             return xcm::null;
     }
 
-    tango::INodeValuePtr base_node = file->getChild(towstr(tag), true);
+    tango::INodeValuePtr base_node = file->getChild(towstr(object_type), true);
     if (base_node.isNull())
         return xcm::null;
 
@@ -1050,24 +1050,24 @@ bool TableDocModel::deleteObject(ITableDocObjectPtr obj)
     if (m_id.IsEmpty())
         return false;
 
-    wxString tag;
+    wxString object_type;
 
     ITableDocViewPtr view = obj;
     ITableDocMarkPtr mark = obj;
 
     if (view.isOk())
-        tag = wxT("views");
+        object_type = wxT("views");
     if (mark.isOk())
-        tag = wxT("marks");
+        object_type = wxT("marks");
 
-    if (tag.IsEmpty())
+    if (object_type.IsEmpty())
         return false;
 
     wxString path;
     path = wxString::Format(wxT("/.appdata/%s/dcfe/setinfo/%s/%s"),
                             towx(g_app->getDatabase()->getActiveUid()).c_str(),
                             m_id.c_str(),
-                            tag.c_str());
+                            object_type.c_str());
 
     tango::INodeValuePtr file;
 
@@ -1080,7 +1080,7 @@ bool TableDocModel::deleteObject(ITableDocObjectPtr obj)
             return false;
     }
 
-    tango::INodeValuePtr base_node = file->getChild(towstr(tag), true);
+    tango::INodeValuePtr base_node = file->getChild(towstr(object_type), true);
     if (base_node.isNull())
         return false;
 
@@ -1135,7 +1135,7 @@ ITableDocViewPtr TableDocModel::createViewObject()
 
 
 static tango::INodeValuePtr getObjects(const wxString set_id,
-                                       const wxString& tag)
+                                       const wxString& object_type)
 {
     if (set_id.IsEmpty())
         return xcm::null;
@@ -1144,7 +1144,7 @@ static tango::INodeValuePtr getObjects(const wxString set_id,
     path = wxString::Format(wxT("/.appdata/%s/dcfe/setinfo/%s/%s"),
                             towx(g_app->getDatabase()->getActiveUid()).c_str(),
                             set_id.c_str(),
-                            tag.c_str());
+                            object_type.c_str());
 
     tango::IDatabasePtr db = g_app->getDatabase();
     tango::INodeValuePtr file = db->openNodeFile(towstr(path));
@@ -1152,7 +1152,7 @@ static tango::INodeValuePtr getObjects(const wxString set_id,
     if (file.isNull())
         return xcm::null;
 
-    return file->getChild(towstr(tag), true);
+    return file->getChild(towstr(object_type), true);
 }
 
 
