@@ -885,7 +885,7 @@ bool isValidEnumValue(JsonNode& data, JsonNode& schema)
             return true;
     }
 
-    // non of the objects match
+    // none of the objects match
     return false;
 }
 
