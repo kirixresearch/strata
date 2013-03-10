@@ -12,6 +12,7 @@
 #include "kl/string.h"
 #include "kl/math.h"
 #include <cstdarg>
+#include <ctime>
 
 namespace kl
 {
@@ -220,6 +221,33 @@ std::wstring formattedNumber(double d, int dec_places)
 }
 
 
+
+// this function is also used for creating unique strings;
+// the current length of the strings this function returns
+// is presently set at 32
+
+std::wstring getUniqueString()
+{
+    int i;
+    wchar_t temp[33];
+    memset(temp, 0, 33 * sizeof(wchar_t));
+    
+    for (i = 0; i < 8; i++)
+    {
+        temp[i] = L'a' + (rand() % 26);
+    }
+
+    unsigned int t = (unsigned int)time(NULL);
+    unsigned int div = 308915776;    // 26^6;
+    for (i = 8; i < 15; i++)
+    {
+        temp[i] = L'a' + (t/div);
+        t -= ((t/div)*div);
+        div /= 26;
+    }
+
+    return temp;
+}
 
 
 static wchar_t* zl_strchr(wchar_t* str,

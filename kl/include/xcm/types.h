@@ -15,18 +15,10 @@
 namespace xcm
 {
 
-// -- int64 support --
-#ifdef _MSC_VER
-typedef __int64 int64_t;
-typedef unsigned __int64 uint64_t;
-#else
+// int64 support
+
 typedef long long int64_t;
 typedef unsigned long long uint64_t;
-#endif
-
-
-typedef uint64_t threadid_t;
-
 
 };
 

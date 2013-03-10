@@ -25,6 +25,9 @@ namespace xcm
 {
 
 
+typedef unsigned long long threadid_t;
+
+
 class mutex
 {
 public:
