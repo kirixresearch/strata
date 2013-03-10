@@ -15,29 +15,6 @@
 #include "jobquery.h"
 
 
-static wxString getUniqueString()
-{
-    unsigned int t = ((unsigned int)time(NULL)) & 0xffffffff;
-    
-    unsigned int r = rand();
-    r <<= 16;
-    r |= (rand() & 0xffff);
-
-#ifdef __WXWINCE__
-    unsigned c = ((unsigned int)GetTickCount()) & 0xffffff;
-#else
-    unsigned c = ((unsigned int)clock()) & 0xffffff;
-#endif
-
-    static int count = 0;
-    count++;
-    if (count > 255)
-        count = 0;
-
-    return wxString::Format(wxT("%08x%06x%02x%08x"), t, c, count, r);
-}
-
-
 
 class ModelRegistry : public xcm::signal_sink
 {
@@ -52,9 +29,7 @@ public:
         for (it = m_models.begin(); it != m_models.end(); ++it)
         {
             if (!set_id.CmpNoCase((*it)->getId()))
-            {
-                return (*it);
-            }
+                return *it;
         }
 
         return xcm::null;
@@ -71,9 +46,7 @@ public:
 
         ITableDocModelPtr model = lookupModel(set_id);
         if (model.isOk())
-        {
             return model;
-        }
 
         // model needs to be loaded
         TableDocModel* model_p = new TableDocModel;
@@ -152,7 +125,6 @@ public:
     void clear()
     {
         XCM_AUTO_LOCK(m_obj_mutex);
-
         m_models.clear();
     }
 
@@ -161,7 +133,6 @@ private:
     void onTableDocModelDeleted(TableDocModel* model)
     {
         XCM_AUTO_LOCK(m_obj_mutex);
-
         m_deleted_flag = true;
     }
 
@@ -191,7 +162,7 @@ public:
 
     TableDocObjectBase()
     {
-        m_id = getUniqueString();
+        m_id = towx(kl::getUniqueString());
         m_dirty = false;
     }
 
@@ -335,6 +306,17 @@ public:
         mark->m_bgcolor = m_bgcolor;
         mark->m_mark_active = m_mark_active;
         return static_cast<ITableDocObject*>(mark);
+    }
+
+
+    bool readFromNode(kl::JsonNode& node)
+    {
+        return true;
+    }
+
+    bool writeToNode(kl::JsonNode& node)
+    {
+        return true;
     }
 
 
@@ -548,31 +530,46 @@ public:
     }
 
 
+    bool readFromNode(kl::JsonNode& node)
+    {
+        m_name = towx(node["name"].getString());
+        m_size = node["size"].getInteger();
+        m_fgcolor.Set(towx(node["fgcolor"].getString()));
+        m_bgcolor.Set(towx(node["bgcolor"].getString()));
+        m_alignment = node["alignment"].getInteger();
+        return true;
+    }
+
+    bool writeToNode(kl::JsonNode& node)
+    {
+        node["name"] = towstr(m_name);
+        node["size"] = m_size;
+        node["fgcolor"] = towstr(m_fgcolor.GetAsString(wxC2S_HTML_SYNTAX));
+        node["bgcolor"] = towstr(m_bgcolor.GetAsString(wxC2S_HTML_SYNTAX));
+        node["alignment"] = m_alignment;
+        node["text_wrap"] = m_text_wrap;
+        return true;
+    }
+
+
     bool writeToNode(tango::INodeValuePtr node)
     {
-        tango::INodeValuePtr col_name,
-                            col_size,
-                            col_fgcolor,
-                            col_bgcolor,
-                            col_alignment,
-                            col_textwrap;
-
-        col_name = node->createChild(L"name");
+        tango::INodeValuePtr col_name = node->createChild(L"name");
         col_name->setString(towstr(m_name));
 
-        col_size = node->createChild(L"size");
+        tango::INodeValuePtr col_size = node->createChild(L"size");
         col_size->setInteger(m_size);
 
-        col_fgcolor = node->createChild(L"fgcolor");
+        tango::INodeValuePtr col_fgcolor = node->createChild(L"fgcolor");
         col_fgcolor->setInteger(color2int(m_fgcolor));
 
-        col_bgcolor = node->createChild(L"bgcolor");
+        tango::INodeValuePtr col_bgcolor = node->createChild(L"bgcolor");
         col_bgcolor->setInteger(color2int(m_bgcolor));
 
-        col_alignment = node->createChild(L"alignment");
+        tango::INodeValuePtr col_alignment = node->createChild(L"alignment");
         col_alignment->setInteger(m_alignment);
         
-        col_textwrap = node->createChild(L"text_wrap");
+        tango::INodeValuePtr col_textwrap = node->createChild(L"text_wrap");
         col_textwrap->setInteger(m_text_wrap);
 
         return true;
@@ -580,44 +577,33 @@ public:
 
     bool readFromNode(tango::INodeValuePtr node)
     {
-        tango::INodeValuePtr col_name,
-                            col_size,
-                            col_fgcolor,
-                            col_bgcolor,
-                            col_alignment,
-                            col_textwrap;
-            
-        col_name = node->getChild(L"name", false);
+        tango::INodeValuePtr col_name = node->getChild(L"name", false);
         if (!col_name)
             return false;
         m_name = towx(col_name->getString());
         
-        col_size = node->getChild(L"size", false);
+        tango::INodeValuePtr col_size = node->getChild(L"size", false);
         if (!col_size)
             return false;
         m_size = col_size->getInteger();
 
-        col_fgcolor = node->getChild(L"fgcolor", false);
+        tango::INodeValuePtr col_fgcolor = node->getChild(L"fgcolor", false);
         if (!col_fgcolor)
             return false;
         m_fgcolor = int2color(col_fgcolor->getInteger());
 
-        col_bgcolor = node->getChild(L"bgcolor", false);
+        tango::INodeValuePtr col_bgcolor = node->getChild(L"bgcolor", false);
         if (!col_bgcolor)
             return false;
         m_bgcolor = int2color(col_bgcolor->getInteger());
 
-        col_alignment = node->getChild(L"alignment", false);
+        tango::INodeValuePtr col_alignment = node->getChild(L"alignment", false);
         if (col_alignment)
-        {
             m_alignment = col_alignment->getInteger();
-        }
-         else
-        {
+             else
             m_alignment = tabledocAlignDefault;
-        }
 
-        col_textwrap = node->getChild(L"text_wrap", false);
+        tango::INodeValuePtr col_textwrap = node->getChild(L"text_wrap", false);
         if (col_textwrap)
             m_text_wrap = col_alignment->getInteger();
              else
@@ -755,6 +741,49 @@ public:
         m_cols.insert(m_cols.begin() + new_idx, col);
         setDirty(true);
     }
+
+
+    bool writeToNode(kl::JsonNode& node)
+    {
+        node["description"] = towstr(m_description);
+        node["row_size"] = m_row_size;
+        node["columns"].setArray();
+        kl::JsonNode columns = node["columns"];
+
+        std::vector<ITableDocViewColPtr>::iterator col_it;
+        for (col_it = m_cols.begin(); col_it != m_cols.end(); ++col_it)
+        {
+            kl::JsonNode element = columns.appendElement();
+            ITableDocObjectPtr obj = *col_it;
+            if (!obj->writeToNode(element))
+                return false;
+        }
+
+        return true;
+    }
+
+    bool readFromNode(kl::JsonNode& node)
+    {
+        m_description = towx(node["description"].getString());
+        m_row_size = node["row_size"].getInteger();
+        kl::JsonNode columns = node["columns"];
+
+        size_t i, child_count = columns.getChildCount();
+        for (i = 0; i < child_count; i++)
+        {
+            kl::JsonNode col = columns[i];
+
+            TableDocViewCol* viewcol = new TableDocViewCol;
+            viewcol->ref();
+            if (viewcol->readFromNode(col))
+                m_cols.push_back(static_cast<ITableDocViewCol*>(viewcol));
+            viewcol->unref();
+        }
+
+        return true;
+    }
+
+
 
     bool writeToNode(tango::INodeValuePtr node)
     {
@@ -916,13 +945,7 @@ tango::INodeValuePtr TableDocModel::flushObject(ITableDocObjectPtr obj)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
-    if (obj.isNull())
-        return xcm::null;
-
-    if (!obj->getDirty())
-        return xcm::null;
-
-    if (m_id.IsEmpty())
+    if (obj.isNull() || !obj->getDirty() || m_id.IsEmpty())
         return xcm::null;
 
     wxString object_type;
@@ -932,10 +955,9 @@ tango::INodeValuePtr TableDocModel::flushObject(ITableDocObjectPtr obj)
 
     if (view.isOk())
         object_type = wxT("views");
-    if (mark.isOk())
+    else if (mark.isOk())
         object_type = wxT("marks");
-
-    if (object_type.IsEmpty())
+    else
         return xcm::null;
 
     wxString path;
@@ -1044,10 +1066,7 @@ bool TableDocModel::deleteObject(ITableDocObjectPtr obj)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
-    if (obj.isNull())
-        return false;
-
-    if (m_id.IsEmpty())
+    if (obj.isNull() || m_id.IsEmpty())
         return false;
 
     wxString object_type;
@@ -1057,10 +1076,9 @@ bool TableDocModel::deleteObject(ITableDocObjectPtr obj)
 
     if (view.isOk())
         object_type = wxT("views");
-    if (mark.isOk())
+    else if (mark.isOk())
         object_type = wxT("marks");
-
-    if (object_type.IsEmpty())
+    else 
         return false;
 
     wxString path;
@@ -1370,7 +1388,7 @@ void TableDocMgr::copyModel(tango::ISetPtr _src_set,
         ITableDocObjectPtr obj = vec->getItem(i);
         if (obj)
         {
-            obj->setObjectId(getUniqueString());
+            obj->setObjectId(towx(kl::getUniqueString()));
             obj->setDirty(true);
         }
     }
@@ -1412,3 +1430,4 @@ void TableDocMgr::cleanupModelRegistry()
 {
     g_model_registry.cleanup();
 }
+

@@ -27,8 +27,6 @@ class ReportCreateInfo;
 #include "tangogridmodel.h"
 #include <map>
 
-
-
 xcm_interface ITableDocPrivate : public xcm::IObject
 {
     XCM_INTERFACE_NAME("appmain.ITableDocPrivate")
