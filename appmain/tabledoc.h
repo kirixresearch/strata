@@ -86,8 +86,8 @@ xcm_interface ITableDocObject : public xcm::IObject
 
 public:
 
-    virtual wxString getObjectId() = 0;
-    virtual void setObjectId(const wxString& id) = 0;
+    virtual const std::wstring& getObjectId() = 0;
+    virtual void setObjectId(const std::wstring& id) = 0;
 
     virtual ITableDocObjectPtr clone() = 0;
 
@@ -108,11 +108,11 @@ xcm_interface ITableDocMark : public xcm::IObject
 
 public:
 
-    virtual void setDescription(const wxString& description) = 0;
-    virtual wxString getDescription() = 0;
+    virtual void setDescription(const std::wstring& description) = 0;
+    virtual std::wstring getDescription() = 0;
 
-    virtual void setExpression(const wxString& expr) = 0;
-    virtual wxString getExpression() = 0;
+    virtual void setExpression(const std::wstring& expr) = 0;
+    virtual std::wstring getExpression() = 0;
 
     virtual void setMarkActive(bool new_val) = 0;
     virtual bool getMarkActive() = 0;
@@ -133,8 +133,8 @@ xcm_interface ITableDocViewCol : public xcm::IObject
 
 public:
 
-    virtual void setName(const wxString& new_value) = 0;
-    virtual wxString getName() = 0;
+    virtual void setName(const std::wstring& new_value) = 0;
+    virtual std::wstring getName() = 0;
 
     virtual void setSize(int new_value) = 0;
     virtual int getSize() = 0;
@@ -159,8 +159,8 @@ xcm_interface ITableDocView : public xcm::IObject
 
 public:
 
-    virtual void setDescription(const wxString& new_val) = 0;
-    virtual wxString getDescription() = 0;
+    virtual void setDescription(const std::wstring& new_val) = 0;
+    virtual std::wstring getDescription() = 0;
 
     virtual void setRowSize(int new_value) = 0;
     virtual int getRowSize() = 0;
@@ -182,9 +182,11 @@ xcm_interface ITableDocModel : public xcm::IObject
 
 public:
 
-    virtual wxString getId() = 0;
+    virtual const std::wstring& getId() = 0;
 
-    virtual bool writeObject(ITableDocObjectPtr obj) = 0;
+    virtual bool save() = 0;
+
+    virtual bool writeObject(ITableDocObjectPtr obj, bool save_to_store = true) = 0;
     virtual bool writeMultipleObjects(ITableDocObjectEnumPtr obj) = 0;
     virtual bool deleteObject(ITableDocObjectPtr obj) = 0;
 
@@ -290,12 +292,12 @@ class TableDocMgr
 {
 public:
 
-    static bool newFile(const wxString& path);
+    static bool newFile(const std::wstring& path);
     static ITableDocPtr createTableDoc();
     static ITableDocPtr getActiveTableDoc(int* site_id = NULL);
 
-    static ITableDocModelPtr loadModel(const wxString& set_id);
-    static bool deleteModel(const wxString& set_id);
+    static ITableDocModelPtr loadModel(const std::wstring& set_id);
+    static bool deleteModel(const std::wstring& set_id);
     static void copyModel(tango::ISetPtr src_id,
                           tango::ISetPtr dest_id);
     static void clearModelRegistry();

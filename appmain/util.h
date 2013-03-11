@@ -170,6 +170,22 @@ inline wxColor int2color(int int_color)
     return wxColor(int_color >> 16, (int_color >> 8) & 0xff, int_color & 0xff);
 }
 
+inline std::wstring color2string(const wxColor& color)
+{
+    if (!color.Ok())
+        return L"null";
+    wchar_t buf[24];
+    swprintf(buf, 24, L"#%02x%02x%02x", color.Red(), color.Green(), color.Blue());
+    return buf;
+}
+
+inline wxColor string2color(const std::wstring& str)
+{
+    if (str == L"null" || str.length() != 7)
+        return wxNullColour;
+
+    return wxColor(towx(str));
+}
 
 
 // -- string helper functions -------------------------------------------------

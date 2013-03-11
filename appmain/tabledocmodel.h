@@ -28,19 +28,22 @@ public:
 
     TableDocModel();
     virtual ~TableDocModel();
+    void init(const std::wstring& id);
 
-    void setId(const wxString& id);
-    wxString getId();
+    const std::wstring& getId();
+
+    bool load();
+    bool save();
+
+    bool writeObject(ITableDocObjectPtr obj, bool save_to_store = true);
+    bool writeMultipleObjects(ITableDocObjectEnumPtr obj);
+
+    bool deleteObject(ITableDocObjectPtr obj);
 
 public:
     xcm::signal1<TableDocModel*> sigDeleted;
 
 private:
-
-    bool writeObject(ITableDocObjectPtr obj);
-    bool writeMultipleObjects(ITableDocObjectEnumPtr obj);
-    bool deleteObject(ITableDocObjectPtr obj);
-    tango::INodeValuePtr flushObject(ITableDocObjectPtr obj);
 
     ITableDocMarkPtr createMarkObject();
     ITableDocViewPtr createViewObject();
@@ -50,16 +53,18 @@ private:
     
     wxColor getNextMarkColor();
 
+    ITableDocObjectPtr lookupObject(const std::wstring& id);
+
+    void upgradeOldVersionIfNecessary(const std::wstring& id);
+
 private:
 
     xcm::mutex m_obj_mutex;
-    wxString m_id;
+    std::wstring m_id;
 
     std::vector<ITableDocObjectPtr> m_marks;
     std::vector<ITableDocObjectPtr> m_views;
-
-    int m_marks_cache_time;
-    int m_views_cache_time;
+    std::vector<std::wstring> m_to_delete;
 };
 
 

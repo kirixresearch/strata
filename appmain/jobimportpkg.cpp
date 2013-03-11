@@ -380,7 +380,7 @@ bool ImportPkgJob::importSet(PkgStreamReader* reader,
         kl::xmlnode& node = stream_info.getChild(node_idx);
 
         ITableDocModelPtr model;
-        model = TableDocMgr::loadModel(towx(info->output_set->getSetId()));
+        model = TableDocMgr::loadModel(info->output_set->getSetId());
         xml2tabledocmodel(node, info->output_set, model);
     }
 

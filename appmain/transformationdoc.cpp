@@ -1827,7 +1827,7 @@ bool TransformationDoc::doSave()
                 {
                     // add the column to the TableDoc's view
                     ITableDocViewColPtr viewcol = tabledocview->createColumn(i);
-                    viewcol->setName(towx(colinfo->getName()));
+                    viewcol->setName(colinfo->getName());
                     viewcol->setSize(80);
                 }
             }

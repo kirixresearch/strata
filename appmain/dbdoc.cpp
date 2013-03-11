@@ -2837,7 +2837,7 @@ void DbDoc::onNewTable(wxCommandEvent& evt)
         
     wxString path = getDefaultNewFileName(parent, _("New Table"));
     
-    if (!TableDocMgr::newFile(path))
+    if (!TableDocMgr::newFile(towstr(path)))
     {
         appMessageBox(_("A file could not be created in this folder."),
                            APPLICATION_NAME,
@@ -3145,7 +3145,7 @@ void DbDoc::deleteFsItem(IFsPanelPtr tree,
             set = db->openSet(towstr(obj->getPath()));
             if (set.isOk())
             {
-                wxString set_id = towx(set->getSetId());
+                std::wstring set_id = set->getSetId();
                 set.clear();
 
                 if (db->deleteFile(towstr(obj->getPath())))

@@ -407,7 +407,7 @@ void MarkMgrPanel::onExprEditFinished(wxString text)
         return;
     
     // save the mark's new expression
-    mark->setExpression(text);
+    mark->setExpression(towstr(text));
     model->writeObject(mark);
     
     // refresh the mark panel's grid
@@ -501,7 +501,7 @@ void MarkMgrPanel::onAddMark(wxCommandEvent& event)
     int row = m_grid->getRowCount();
     ITableDocMarkPtr mark = model->createMarkObject();
     mark->setBackgroundColor(model->getNextMarkColor());
-    mark->setDescription(getUniqueMarkName());
+    mark->setDescription(towstr(getUniqueMarkName()));
     mark->setExpression(wxEmptyString);
     model->writeObject(mark);
     
@@ -596,7 +596,7 @@ void MarkMgrPanel::onGridModelChange(kcl::GridEvent& event)
      else if (model_col == colDescription)
     {
         wxString new_val = m_grid->getCellString(row, model_col);
-        mark->setDescription(new_val);
+        mark->setDescription(towstr(new_val));
         model->writeObject(mark);
     }
     

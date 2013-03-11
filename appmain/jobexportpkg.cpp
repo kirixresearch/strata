@@ -157,7 +157,7 @@ bool xml2tabledocview(kl::xmlnode& node, ITableDocViewPtr view)
     kl::xmlnode& description_node = node.getChild(L"description");
     if (!description_node.isEmpty())
     {
-        view->setDescription(towx(description_node.getNodeValue()));
+        view->setDescription(description_node.getNodeValue());
     }
 
     int child_count = columns_node.getChildCount();
@@ -174,7 +174,7 @@ bool xml2tabledocview(kl::xmlnode& node, ITableDocViewPtr view)
         }
 
         ITableDocViewColPtr viewcol = view->createColumn(-1);
-        viewcol->setName(towx(col_node.getChild(L"name").getNodeValue()));
+        viewcol->setName(col_node.getChild(L"name").getNodeValue());
         viewcol->setSize(kl::wtoi(col_node.getChild(L"size").getNodeValue()));
         viewcol->setForegroundColor(int2color(kl::wtoi(col_node.getChild(L"fgcolor").getNodeValue())));
         viewcol->setBackgroundColor(int2color(kl::wtoi(col_node.getChild(L"bgcolor").getNodeValue())));
@@ -293,8 +293,8 @@ void xml2tabledocmodel(kl::xmlnode& node,
             // create mark
 
             ITableDocMarkPtr mark = model->createMarkObject();
-            mark->setDescription(towx(mark_node.getChild(L"description").getNodeValue()));
-            mark->setExpression(towx(mark_node.getChild(L"expression").getNodeValue()));
+            mark->setDescription(mark_node.getChild(L"description").getNodeValue());
+            mark->setExpression(mark_node.getChild(L"expression").getNodeValue());
             mark->setForegroundColor(int2color(kl::wtoi(mark_node.getChild(L"fgcolor").getNodeValue())));
             mark->setBackgroundColor(int2color(kl::wtoi(mark_node.getChild(L"bgcolor").getNodeValue())));
             mark->setMarkActive(kl::wtoi(mark_node.getChild(L"mark_active").getNodeValue()) != 0 ? true : false);
@@ -721,7 +721,7 @@ bool ExportPkgJob::writeSetStream(tango::IDatabasePtr& db,
 
     // first load the set's model
     ITableDocModelPtr tabledoc_model;
-    tabledoc_model = TableDocMgr::loadModel(towx(set->getSetId()));
+    tabledoc_model = TableDocMgr::loadModel(set->getSetId());
     if (tabledoc_model.isOk())
     {
         tabledocmodel2xml(tabledoc_model, tabledoc_model_node);

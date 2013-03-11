@@ -295,7 +295,7 @@ void ViewPanel::updateTableDocViewEnum(ITableDocPtr tabledoc)
         ViewInfo* info = (ViewInfo*)m_views_list->getRowData(row);
         
         ITableDocViewPtr view = model->createViewObject();
-        view->setDescription(m_views_list->getCellString(row, 0));
+        view->setDescription(towstr(m_views_list->getCellString(row, 0)));
         
         // don't save views that had no columns
         if (info->cols.size() == 0)
@@ -306,7 +306,7 @@ void ViewPanel::updateTableDocViewEnum(ITableDocPtr tabledoc)
         for (it = info->cols.begin(); it != info->cols.end(); ++it)
         {
             ITableDocViewColPtr col = view->createColumn(i++);
-            col->setName(it->name);
+            col->setName(towstr(it->name));
             col->setSize(it->size);
             col->setAlignment(it->alignment);
             col->setForegroundColor(it->fg_color);
@@ -437,7 +437,7 @@ void ViewPanel::populateViewsList()
             colinfo.size = col->getSize();
             colinfo.bg_color = col->getBackgroundColor();
             colinfo.fg_color = col->getForegroundColor();
-            colinfo.separator = (col->getName().IsEmpty()) ? true : false;
+            colinfo.separator = (col->getName().empty() ? true : false);
             info->cols.push_back(colinfo);
         }
         

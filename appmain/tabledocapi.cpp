@@ -172,8 +172,8 @@ void TableDoc::createNewMark(const wxString& expr)
     ITableDocMarkEnumPtr markvec = m_model->getMarkEnum();
     int mark_count = markvec->size();
     mark->setBackgroundColor(m_model->getNextMarkColor());
-    mark->setDescription(wxString::Format(_("Mark #%d"), mark_count+1));
-    mark->setExpression(expr);
+    mark->setDescription(towstr(wxString::Format(_("Mark #%d"), mark_count+1)));
+    mark->setExpression(towstr(expr));
 
     m_model->writeObject(mark);
     m_grid->refresh(kcl::Grid::refreshAll);

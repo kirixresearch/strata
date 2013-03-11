@@ -1816,7 +1816,7 @@ void TableDoc::onDoReloadRefresh(wxCommandEvent& evt)
         xf_remove(towstr(m_reload_filename));
         
         tango::ISetPtr old_set = getBaseSet();
-        wxString old_set_id = towx(old_set->getSetId());
+        std::wstring old_set_id = old_set->getSetId();
         
         tango::ISetPtr new_set = parser.convertToSet();
         if (new_set.isNull())
@@ -2384,7 +2384,7 @@ bool TableDoc::open(tango::ISetPtr set, tango::IIteratorPtr iter)
     if (m_temporary_model)
         m_model = TableDocMgr::loadModel(wxT(""));
          else
-        m_model = TableDocMgr::loadModel(towx(m_set->getSetId()));
+        m_model = TableDocMgr::loadModel(m_set->getSetId());
 
 
 
@@ -2636,7 +2636,7 @@ void TableDoc::onColumnNameChanged(const wxString& old_name,
             }
 
             col = view->getColumn(idx);
-            col->setName(new_name);
+            col->setName(towstr(new_name));
             updated = true;
         }
 
@@ -2854,7 +2854,7 @@ void TableDoc::setIterator(tango::IIteratorPtr iter, bool go_first)
         ITableDocViewPtr defview = m_model->createViewObject();
         tango::IStructurePtr s = m_iter->getStructure();
         initializeDefaultView(defview, s);
-        defview->setDescription(wxString(_("Default View")));
+        defview->setDescription(towstr(_("Default View")));
         setActiveView(defview);
         m_default_view_created = true;
     }
@@ -2994,7 +2994,7 @@ void TableDoc::insertColumnInternal(int insert_pos,
     }
 
     ITableDocViewColPtr col = m_active_view->createColumn(insert_pos);
-    col->setName(viewcol_name);
+    col->setName(towstr(viewcol_name));
     col->setSize(80);
 
     if (save_view)
@@ -8452,7 +8452,7 @@ void TableDoc::initializeDefaultView(ITableDocViewPtr view,
             colinfo = v_struct->getColumnInfoByIdx(i);
             
             viewcol = view->createColumn(-1);
-            viewcol->setName(towx(colinfo->getName()));
+            viewcol->setName(colinfo->getName());
             viewcol->setSize(80);
         }
     }

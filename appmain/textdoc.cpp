@@ -1333,7 +1333,7 @@ void TextDoc::onTextViewColumnAdded(TextViewColumn col)
             {
                 // add the column to the TableDoc's view
                 ITableDocViewColPtr viewcol = tabledocview->createColumn(idx);
-                viewcol->setName(col.name);
+                viewcol->setName(towstr(col.name));
                 viewcol->setSize(80);
                 
                 // refresh the TableDoc's view
@@ -1491,7 +1491,7 @@ void TextDoc::onTextViewColumnModified(TextViewColumn col,
                 if (viewidx != -1)
                 {
                     ITableDocViewColPtr viewcol = tabledocview->getColumn(viewidx);
-                    viewcol->setName(new_settings.name);
+                    viewcol->setName(towstr(new_settings.name));
                 }
             }
         }
@@ -2147,7 +2147,7 @@ void TextDoc::onTextDelimitedCaptionEndEdit(kcl::GridEvent& evt)
             if (viewidx != -1)
             {
                 ITableDocViewColPtr viewcol = tabledocview->getColumn(viewidx);
-                viewcol->setName(new_name);
+                viewcol->setName(towstr(new_name));
             }
         }
 
@@ -2241,7 +2241,7 @@ void TextDoc::resetTransformationDocAndTableDoc()
             return;
 
         std::wstring set_id = set->getSetId();
-        ITableDocModelPtr model = TableDocMgr::loadModel(towx(set_id));
+        ITableDocModelPtr model = TableDocMgr::loadModel(set_id);
         ITableDocViewEnumPtr views = model->getViewEnum();
         
         int i, count = views->size();
@@ -2285,7 +2285,7 @@ void TextDoc::doBulkFieldRename(std::vector< std::pair<wxString, wxString> > to_
                     
                 ITableDocViewColPtr viewcol = tabledocview->getColumn(colidx);
                 if (viewcol)
-                    viewcol->setName(it->second);
+                    viewcol->setName(towstr(it->second));
             }
 
             // refresh the TableDoc's set and view
