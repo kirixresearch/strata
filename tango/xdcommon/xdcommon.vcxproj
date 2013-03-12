@@ -294,6 +294,7 @@
     </ClCompile>
     <ClCompile Include="keylayout.cpp" />
     <ClCompile Include="localrowcache.cpp" />
+    <ClCompile Include="nodefilestream.cpp" />
     <ClCompile Include="rowidarray.cpp" />
     <ClCompile Include="setconfigfile.cpp" />
     <ClCompile Include="sqlalter.cpp" />
@@ -360,6 +361,7 @@
     <ClInclude Include="jobinfo.h" />
     <ClInclude Include="keylayout.h" />
     <ClInclude Include="localrowcache.h" />
+    <ClInclude Include="nodefilestream.h" />
     <ClInclude Include="rowidarray.h" />
     <ClInclude Include="setconfigfile.h" />
     <ClInclude Include="sqlcommon.h" />
