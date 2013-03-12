@@ -16,7 +16,6 @@
 
 #include "tango.h"
 #include "nodefilestream.h"
-#include "ofs.h"
 
 
 NodeFileStream::NodeFileStream(tango::IDatabase* db)

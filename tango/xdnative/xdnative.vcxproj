@@ -320,6 +320,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="nodefilestream.cpp" />
     <ClCompile Include="ofs.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -408,6 +409,7 @@
     <ClInclude Include="database.h" />
     <ClInclude Include="dbmgr.h" />
     <ClInclude Include="nativetbl.h" />
+    <ClInclude Include="nodefilestream.h" />
     <ClInclude Include="ofs.h" />
     <ClInclude Include="stditer.h" />
     <ClInclude Include="stdset.h" />
