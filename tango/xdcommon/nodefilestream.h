@@ -25,7 +25,7 @@ class NodeFileStream : public tango::IStream
 
 public:
 
-    NodeFileStream();
+    NodeFileStream(tango::IDatabase* db);
     ~NodeFileStream();
 
     bool create(const std::wstring& filename);
@@ -41,7 +41,8 @@ public:
 
 private:
 
-    xf_file_t m_file;
+    tango::IDatabase* m_db;
+    const char* m_utf8data;
 };
 
 
