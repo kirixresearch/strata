@@ -42,7 +42,9 @@ public:
 private:
 
     tango::IDatabase* m_db;
-    const char* m_utf8data;
+    char* m_utf8data;
+    unsigned long m_stream_length;
+    unsigned long m_stream_offset;
 };
 
 
