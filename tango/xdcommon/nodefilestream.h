@@ -34,11 +34,11 @@ public:
     bool read(void* buf,
               unsigned long read_size,
               unsigned long* read_count);
-                      
+
     bool write(const void* buf,
                unsigned long write_size,
                unsigned long* written_count);
-              
+
 private:
 
     xf_file_t m_file;

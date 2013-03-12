@@ -26,7 +26,6 @@ NodeFileStream::~NodeFileStream()
 {
 }
 
-
 bool NodeFileStream::create(const std::wstring& filename)
 {
     return false;
