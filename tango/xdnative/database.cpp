@@ -24,6 +24,7 @@
 #include "../xdcommon/dbattr.h"
 #include "../xdcommon/fileinfo.h"
 #include "../xdcommon/filestream.h"
+#include "../xdcommon/nodefilestream.h"
 #include "../xdcommon/connectionstr.h"
 #include "database.h"
 #include "baseset.h"
@@ -2834,20 +2835,35 @@ tango::IStreamPtr Database::openStream(const std::wstring& _path)
         return db->openStream(rpath);
     }
 
-    std::wstring stream_filename = getStreamFilename(path);
-    
-    if (stream_filename.length() == 0)
+
+    // see if the file is a node file; if it is, open the
+    // stream from the node
+    tango::IFileInfoPtr info = getFileInfo(_path);
+    if (info.isOk() && info->getType() == tango::filetypeNode)
     {
-        return xcm::null;
+        NodeFileStream* stream = new NodeFileStream;
+        if (!stream->open(_path))
+        {
+            delete stream;
+            return xcm::null;
+        }
+
+        return static_cast<tango::IStream*>(stream);
     }
-    
+
+
+    // not a node file; open as a regular stream
+    std::wstring stream_filename = getStreamFilename(path);
+    if (stream_filename.length() == 0)
+        return xcm::null;
+
     FileStream* stream = new FileStream;
     if (!stream->open(stream_filename))
     {
         delete stream;
         return xcm::null;
     }
-    
+
     return static_cast<tango::IStream*>(stream);
 }
 
