@@ -119,7 +119,7 @@ bool QueryTemplate::load(const wxString& path)
 
     // if we can't load it in the new format, try
     // to open it with the old format
-    return loadXml(path);
+    return loadJsonFromNode(path);
 }
 
 IJobPtr QueryTemplate::execute(int site_id)
@@ -1510,165 +1510,146 @@ bool QueryTemplate::saveXml(const wxString& path)
     return true;
 }
 
-bool QueryTemplate::loadXml(const wxString& path)
+bool QueryTemplate::loadJsonFromNode(const wxString& path)
 {
+    kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), path);
+    if (!node.isOk())
+        return false;
+
     m_source_tables.clear();
     m_params.clear();
 
-    // create an ofs file with the run information
-    tango::IDatabasePtr db = g_app->getDatabase();
 
-    tango::INodeValuePtr file = db->openNodeFile(towstr(path));
-    if (file.isNull())
+    kl::JsonNode root_node = node["root"];
+    if (!root_node.isOk())
         return false;
 
-    tango::INodeValuePtr kpp_template = file->getChild(L"kpp_template", false);
-    if (!kpp_template)
+    kl::JsonNode kpp_template_node = root_node["kpp_template"];
+    if (!kpp_template_node.isOk())
         return false;
 
-    tango::INodeValuePtr template_type = kpp_template->getChild(L"type", false);
-    if (!template_type)
+    kl::JsonNode template_type_node = kpp_template_node["type"];
+    if (!template_type_node.isOk())
         return false;
 
-    if (template_type->getString() != L"query")
+    if (template_type_node.getString() != L"query")
         return false;
 
-    tango::INodeValuePtr data_root = kpp_template->getChild(L"data", false);
-    if (!data_root)
+    kl::JsonNode data_node = kpp_template_node["data"];
+    if (!data_node.isOk())
         return false;
 
-    // read output path
-    tango::INodeValuePtr output_path_node = data_root->getChild(L"output_path", false);
-    if (!output_path_node)
+    kl::JsonNode output_path_node = data_node["output_path"];
+    if (!output_path_node.isOk())
         return false;
-    m_output_path = towx(output_path_node->getString());
+    m_output_path = towx(output_path_node.getString());
 
-    // read distinct flag
-    tango::INodeValuePtr distinct_node = data_root->getChild(L"distinct", false);
-    if (!distinct_node)
+    kl::JsonNode distinct_node = data_node["distinct"];
+    if (!distinct_node.isOk())
         return false;
-    m_distinct = distinct_node->getBoolean();
+    m_distinct = (distinct_node.getInteger() != 0 ? true : false);
 
-    // source tables base
-    tango::INodeValuePtr tables_base = data_root->getChild(L"source_tables", false);
-    if (!tables_base)
+    kl::JsonNode source_tables_node = data_node["source_tables"];
+    if (!source_tables_node.isOk())
         return false;
-    int tables_child_count = tables_base->getChildCount();
 
-    // try to load the input set
-    int tbl_counter;
-    for (tbl_counter = 0; tbl_counter < tables_child_count; ++tbl_counter)
+    std::vector<kl::JsonNode> source_tables_node_children = source_tables_node.getChildren();
+    std::vector<kl::JsonNode>::iterator it_table, it_table_end;
+    it_table_end = source_tables_node_children.end();
+
+    for (it_table = source_tables_node_children.begin(); it_table != it_table_end; ++it_table)
     {
         QueryBuilderSourceTable tbl;
 
-        tango::INodeValuePtr table = tables_base->getChildByIdx(tbl_counter);
+        kl::JsonNode table_node = *it_table;
 
-        // read alias
-        tango::INodeValuePtr alias_node = table->getChild(L"alias", false);
-        if (!alias_node)
+        kl::JsonNode alias_node = table_node["alias"];
+        if (!alias_node.isOk())
             return false;
-        tbl.alias = towx(alias_node->getString());
+        tbl.alias = towx(alias_node.getString());
 
-        // read path
-        tango::INodeValuePtr path_node = table->getChild(L"path", false);
-        if (!path_node)
+        kl::JsonNode path_node = table_node["path"];
+        if (!path_node.isOk())
             return false;
-        tbl.path = towx(path_node->getString());
+        tbl.path = towx(path_node.getString());
 
-        // read coordinates
-        tango::INodeValuePtr x_node = table->getChild(L"x", false);
-        if (!x_node)
+        kl::JsonNode x_node = table_node["x"];
+        if (!x_node.isOk())
             return false;
-        tbl.x = x_node->getInteger();
+        tbl.x = x_node.getInteger();
 
-        tango::INodeValuePtr y_node = table->getChild(L"y", false);
-        if (!y_node)
+        kl::JsonNode y_node = table_node["y"];
+        if (!y_node.isOk())
             return false;
-        tbl.y = y_node->getInteger();
+        tbl.y = y_node.getInteger();
 
-        tango::INodeValuePtr width_node = table->getChild(L"width", false);
-        if (!width_node)
+        kl::JsonNode width_node = table_node["width"];
+        if (!width_node.isOk())
             return false;
-        tbl.width = width_node->getInteger();
+        tbl.width = width_node.getInteger();
 
-        tango::INodeValuePtr height_node = table->getChild(L"height", false);
-        if (!height_node)
+        kl::JsonNode height_node = table_node["height"];
+        if (!height_node.isOk())
             return false;
-        tbl.height = height_node->getInteger();
+        tbl.height = height_node.getInteger();
 
         // attempt to open the set and get it's structure
         {
-            tango::ISetPtr set = db->openSet(towstr(tbl.path));
+            tango::ISetPtr set = g_app->getDatabase()->openSet(towstr(tbl.path));
             if (set)
-            {
                 tbl.structure = set->getStructure();
-            }
-             else
-            {
+                 else
                 continue;
-            }
         }
 
-
-        // join collection
-        tango::INodeValuePtr joins = table->getChild(L"joins", false);
-        if (!joins)
+        kl::JsonNode joins_node = table_node["joins"];
+        if (!joins_node.isOk())
             return false;
 
-        int join_count = joins->getChildCount();
+        std::vector<kl::JsonNode> joins_node_children = joins_node.getChildren();
+        std::vector<kl::JsonNode>::iterator it_join, it_join_end;
+        it_join_end = joins_node_children.end();
 
-        int join_counter;
-        for (join_counter = 0; join_counter < join_count; ++join_counter)
+        for (it_join = joins_node_children.begin(); it_join != it_join_end; ++it_join)
         {
             QueryJoin join;
+            
+            kl::JsonNode join_node = *it_join;
 
-            tango::INodeValuePtr join_node = joins->getChildByIdx(join_counter);
-
-            tango::INodeValuePtr join_type_node = join_node->getChild(L"type", false);
-            if (!join_type_node)
+            kl::JsonNode join_type_node = join_node["type"];
+            if (!join_type_node.isOk())
                 return false;
+            wxString join_type = towx(join_type_node.getString());
 
-            // read join type
-            wxString join_type = towx(join_type_node->getString());
-
+            // join type
             if (!join_type.CmpNoCase(wxT("inner")))
-            {
                 join.join_type = QueryJoinInner;
-            }
              else if (!join_type.CmpNoCase(wxT("left_outer")))
-            {
                 join.join_type = QueryJoinLeftOuter;
-            }
              else if (!join_type.CmpNoCase(wxT("right_outer")))
-            {
                 join.join_type = QueryJoinRightOuter;
-            }
              else if (!join_type.CmpNoCase(wxT("full_outer")))
-            {
                 join.join_type = QueryJoinFullOuter;
-            }
              else
-            {
                 join.join_type = QueryJoinNone;
-            }
 
-            // read right_path
-            tango::INodeValuePtr right_path_node = join_node->getChild(L"right_path", false);
-            if (!right_path_node)
+            // right path
+            kl::JsonNode right_path_node = join_node["right_path"];
+            if (!right_path_node.isOk())
                 return false;
-            join.right_path = towx(right_path_node->getString());
+            join.right_path = towx(right_path_node.getString());
 
-            // read left columns
-            tango::INodeValuePtr left_columns_node = join_node->getChild(L"left_columns", false);
-            if (!left_columns_node)
+            // right columns
+            kl::JsonNode right_columns_node = join_node["right_columns"];
+            if (!right_columns_node.isOk())
                 return false;
-            join.left_columns = towx(left_columns_node->getString());
+            join.right_columns = towx(right_columns_node.getString());
 
-            // read right columns
-            tango::INodeValuePtr right_columns_node = join_node->getChild(L"right_columns", false);
-            if (!right_columns_node)
+            // left columns
+            kl::JsonNode left_columns_node = join_node["left_columns"];
+            if (!left_columns_node.isOk())
                 return false;
-            join.right_columns = towx(right_columns_node->getString());
+            join.left_columns = towx(left_columns_node.getString());
 
             tbl.joins.push_back(join);
         }
@@ -1676,111 +1657,81 @@ bool QueryTemplate::loadXml(const wxString& path)
         m_source_tables.push_back(tbl);
     }
 
-
-    // criteria collection
-    tango::INodeValuePtr parameters = data_root->getChild(L"parameters", false);
-    if (!parameters)
+    kl::JsonNode parameters_node = data_node["parameters"];
+    if (!parameters_node.isOk())
         return false;
 
-    int param_count = parameters->getChildCount();
+    std::vector<kl::JsonNode> parameters_node_children = parameters_node.getChildren();
+    std::vector<kl::JsonNode>::iterator it, it_end;
+    it_end = parameters_node_children.end();
 
-    int param_counter;
-    for (param_counter = 0; param_counter < param_count; ++param_counter)
+    for (it = parameters_node_children.begin(); it != it_end; ++it)
     {
         QueryBuilderParam p;
 
-        tango::INodeValuePtr param = parameters->getChildByIdx(param_counter);
+        kl::JsonNode param_node = *it;
 
-        tango::INodeValuePtr output_node = param->getChild(L"output", false);
-        if (!output_node)
+        kl::JsonNode output_node = param_node["output"];
+        if (!output_node.isOk())
             return false;
-        p.output = output_node->getBoolean();
+        p.output = (output_node.getInteger() != 0 ? true : false);
 
-        tango::INodeValuePtr input_expr = param->getChild(L"input_expr", false);
-        if (!input_expr)
+        kl::JsonNode input_expr_node = param_node["input_expr"];
+        if (!input_expr_node.isOk())
             return false;
-        p.input_expr = towx(input_expr->getString());
+        p.input_expr = towx(input_expr_node.getString());
 
-        tango::INodeValuePtr output_field = param->getChild(L"output_field", false);
-        if (!output_field)
+        kl::JsonNode output_field_node = param_node["output_field"];
+        if (!output_field_node.isOk())
             return false;
-        p.output_field = towx(output_field->getString());
+        p.output_field = towx(output_field_node.getString());
 
-        tango::INodeValuePtr group_func_node = param->getChild(L"group_func", false);
-        if (!group_func_node)
+        kl::JsonNode group_func_node = param_node["group_func"];
+        if (!group_func_node.isOk())
             return false;
-        
-        wxString group_func = towx(group_func_node->getString());
+
+        wxString group_func = towx(group_func_node.getString());
 
         if (!group_func.CmpNoCase(wxT("group_by")))
-        {
             p.group_func = QueryGroupFunction_GroupBy;
-        }
          else if (!group_func.CmpNoCase(wxT("first")))
-        {
             p.group_func = QueryGroupFunction_GroupBy;
-            //p.group_func = QueryGroupFunction_First;
-        }
          else if (!group_func.CmpNoCase(wxT("last")))
-        {
             p.group_func = QueryGroupFunction_GroupBy;
-            //p.group_func = QueryGroupFunction_Last;
-        }
          else if (!group_func.CmpNoCase(wxT("min")))
-        {
             p.group_func = QueryGroupFunction_Min;
-        }
          else if (!group_func.CmpNoCase(wxT("max")))
-        {
             p.group_func = QueryGroupFunction_Max;
-        }
          else if (!group_func.CmpNoCase(wxT("sum")))
-        {
             p.group_func = QueryGroupFunction_Sum;
-        }
          else if (!group_func.CmpNoCase(wxT("avg")))
-        {
             p.group_func = QueryGroupFunction_Avg;
-        }
          else if (!group_func.CmpNoCase(wxT("count")))
-        {
             p.group_func = QueryGroupFunction_Count;
-        }
          else if (!group_func.CmpNoCase(wxT("stddev")))
-        {
             p.group_func = QueryGroupFunction_Stddev;
-        }
          else if (!group_func.CmpNoCase(wxT("variance")))
-        {
             p.group_func = QueryGroupFunction_Variance;
-        }
          else if (!group_func.CmpNoCase(wxT("group_id")))
-        {
             p.group_func = QueryGroupFunction_GroupID;
-        }
          else
-        {
             p.group_func = QueryGroupFunction_None;
-        }
 
-
-        tango::INodeValuePtr sort_order = param->getChild(L"sort_order", false);
-        if (!sort_order)
+         kl::JsonNode sort_order_node = param_node["sort_order"];
+         if (!sort_order_node.isOk())
             return false;
-        p.sort_order = sort_order->getInteger();
+         p.sort_order = sort_order_node.getInteger();
 
-        
         wchar_t buf[255];
         int cond = 0;
         while (1)
         {
             swprintf(buf, 255, L"condition_%d", cond++);
-            tango::INodeValuePtr condition = param->getChild(buf, false);
-            if (!condition)
+            kl::JsonNode condition_node = param_node[buf];
+            if (!condition_node.isOk())
                 break;
-            p.conditions.push_back(towx(condition->getString()));
+            p.conditions.push_back(towx(condition_node.getString()));
         }
-
 
         m_params.push_back(p);
     }
