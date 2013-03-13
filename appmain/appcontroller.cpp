@@ -4913,7 +4913,6 @@ bool AppController::openTemplate(const wxString& location,
     bool handled = false;
     bool res = apphookOpenTemplate(location,
                                    file_info,
-                                   nodefile,
                                    &handled);
     if (handled)
         return res;
@@ -5869,7 +5868,7 @@ IJobPtr AppController::execute(const wxString& location)
     
     // give the application hook a chance to handle this call
     bool handled = false;
-    IJobPtr res = apphookExecute(location, file_info, nodefile, &handled);
+    IJobPtr res = apphookExecute(location, file_info, &handled);
     if (handled)
     {
         // hook handled the call

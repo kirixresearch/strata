@@ -20,12 +20,10 @@ void apphookInitMenuBar(wxMenuBar* menubar);
 
 bool apphookOpenTemplate(const wxString& location,
                          tango::IFileInfoPtr file_info,
-                         tango::INodeValuePtr file_root,
                          bool* handled);
                          
 IJobPtr apphookExecute(const wxString& location,
                             tango::IFileInfoPtr file_info,
-                            tango::INodeValuePtr file_root,
                             bool* handled);
 
 void apphookUninitFrame();

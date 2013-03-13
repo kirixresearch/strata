@@ -26,7 +26,6 @@ void apphookInitMenuBar(wxMenuBar* menubar)
 
 bool apphookOpenTemplate(const wxString& location,
                          tango::IFileInfoPtr file_info,
-                         tango::INodeValuePtr file_root,
                          bool* handled)
 {
     wxASSERT(handled);
@@ -37,7 +36,6 @@ bool apphookOpenTemplate(const wxString& location,
 
 IJobPtr apphookExecute(const wxString& path,
                        tango::IFileInfoPtr file_info,
-                       tango::INodeValuePtr file_root,
                        bool* handled)
 {
     wxASSERT(handled);
