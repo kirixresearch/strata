@@ -1587,98 +1587,62 @@ bool EditorDoc::readFile(const wxString _path,
         tango::IFileInfoPtr file_info = db->getFileInfo(path);
         if (!file_info)
             return false;
-                
-        if (file_info->getType() == tango::filetypeNode)
+
+        // note: no nead to handle old node format any longer; node
+        // format for scripts was never used in a release per previous
+        // comment
+
+        tango::IStreamPtr stream = db->openStream(path);
+        if (!stream)
+            return false;
+            
+        wxMemoryBuffer buf;
+            
+        char* tempbuf = new char[16384];
+        unsigned long read = 0;
+            
+        while (1)
         {
-            tango::INodeValuePtr file = db->openNodeFile(path);
-            if (!file)
-                return false;
-            
-            // we can eventually get rid of this whole section
-            // (loading scripts from node files).  This never
-            // existed in any released version
-            
-            tango::INodeValuePtr kpp_script = file->getChild(L"kpp_script", false);
-            if (!kpp_script)
-                return false;
-
-            tango::INodeValuePtr script_type = kpp_script->getChild(L"type", false);
-            if (!script_type)
-                return false;
-
-            if (script_type->getString() != L"kscript")
-                return false;
-
-            tango::INodeValuePtr script_version = kpp_script->getChild(L"version", false);
-            if (!script_version)
-                return false;
-            if (script_version->getInteger() != 1)
-                return false;
-
-            tango::INodeValuePtr data = kpp_script->getChild(L"data", false);
-            if (!data)
-                return false;
-            
-            value = towx(data->getString());
-            
-            // set the mime type and external flag
-            mime_type = wxT("text/plain");
-            external = false;
+            if (!stream->read(tempbuf, 16384, &read))
+                break;
+                
+            buf.AppendData(tempbuf, read);
+                
+            if (read != 16384)
+                break;
         }
-         else
+            
+        delete[] tempbuf;
+            
+            
+        unsigned char* ptr = (unsigned char*)buf.GetData();
+        size_t buf_len = buf.GetDataLen();
+        if (buf_len >= 2 && ptr[0] == 0xff && ptr[1] == 0xfe)
         {
-            tango::IStreamPtr stream = db->openStream(path);
-            if (!stream)
-                return false;
-            
-            wxMemoryBuffer buf;
-            
-            char* tempbuf = new char[16384];
-            unsigned long read = 0;
-            
-            while (1)
-            {
-                if (!stream->read(tempbuf, 16384, &read))
-                    break;
-                
-                buf.AppendData(tempbuf, read);
-                
-                if (read != 16384)
-                    break;
-            }
-            
+            // little endian UCS-2
+            std::wstring wval;
+            kl::ucsle2wstring(wval, ptr+2, (buf_len-2)/2);
+            value = towx(wval);
+        }
+            else if (buf_len >= 3 && ptr[0] == 0xef && ptr[1] == 0xbb && ptr[2] == 0xbf)
+        {
+            // utf-8
+            wchar_t* tempbuf = new wchar_t[buf_len+1];
+            kl::utf8_utf8tow(tempbuf, buf_len+1, (char*)ptr+3, buf_len-3);
+            value = towx(tempbuf);
             delete[] tempbuf;
-            
-            
-            unsigned char* ptr = (unsigned char*)buf.GetData();
-            size_t buf_len = buf.GetDataLen();
-            if (buf_len >= 2 && ptr[0] == 0xff && ptr[1] == 0xfe)
-            {
-                // little endian UCS-2
-                std::wstring wval;
-                kl::ucsle2wstring(wval, ptr+2, (buf_len-2)/2);
-                value = towx(wval);
-            }
-             else if (buf_len >= 3 && ptr[0] == 0xef && ptr[1] == 0xbb && ptr[2] == 0xbf)
-            {
-                // utf-8
-                wchar_t* tempbuf = new wchar_t[buf_len+1];
-                kl::utf8_utf8tow(tempbuf, buf_len+1, (char*)ptr+3, buf_len-3);
-                value = towx(tempbuf);
-                delete[] tempbuf;
-            }
+        }
 
-             else
-            {
-                buf.AppendByte(0);
-                value = wxString::From8BitData((char*)buf.GetData());
-            }
+            else
+        {
+            buf.AppendByte(0);
+            value = wxString::From8BitData((char*)buf.GetData());
+        }
                     
             
-            // set the mime type and external flag
-            mime_type = file_info->getMimeType();
-            external = false;
-        }
+        // set the mime type and external flag
+        mime_type = file_info->getMimeType();
+        external = false;
     }
 
     return true;
