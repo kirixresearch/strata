@@ -466,39 +466,5 @@ private:
 };
 
 
-
-
-class DbNodeValue : public kscript::ValueObject
-{
-    typedef kscript::ValueObject BaseClass;
-
-    BEGIN_KSCRIPT_CLASS("DbNodeValue", DbNodeValue)
-        KSCRIPT_METHOD("constructor", DbNodeValue::constructor)
-        //KSCRIPT_METHOD("getString", DbNodeValue::getString)
-    END_KSCRIPT_CLASS()
-
-public:
-
-    DbNodeValue();
-    ~DbNodeValue();
-
-    void init(tango::INodeValuePtr value);
-    
-    void constructor(kscript::ExprEnv* env, kscript::Value* retval);
-    kscript::Value* getMember(const std::wstring& name);
-    void setMember(const std::wstring& name, kscript::Value* value);
-    
-    const std::wstring& getNodeName();
-    void toString(kscript::Value* retval);
-    void toNumber(kscript::Value* retval);
-    void toBoolean(kscript::Value* retval);
-    
-private:
-
-    tango::INodeValuePtr m_value;
-    std::vector<DbNodeValue*> m_children;
-    kscript::Value m_member_val;
-};
-
-
 #endif
+

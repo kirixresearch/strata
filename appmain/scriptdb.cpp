@@ -970,169 +970,15 @@ void DbResult::seekCmn(kscript::ExprEnv* env, kscript::Value* retval, bool soft)
     }
 }
 
-
 void DbResult::seek(kscript::ExprEnv* env, kscript::Value* retval)
 {
     seekCmn(env, retval, false);
 }
 
-
-
 void DbResult::seekLocation(kscript::ExprEnv* env, kscript::Value* retval)
 {
     // performs a "soft" seek
     seekCmn(env, retval, true);
-}
-
-
-
-
-
-
-DbNodeValue::DbNodeValue()
-{
-}
-
-DbNodeValue::~DbNodeValue()
-{
-    std::vector<DbNodeValue*>::iterator it;
-    for (it = m_children.begin(); it != m_children.end(); ++it)
-    {
-        (*it)->baseUnref();
-    }
-}
-
-void DbNodeValue::init(tango::INodeValuePtr value)
-{
-    m_value = value;
-}
-
-void DbNodeValue::constructor(kscript::ExprEnv* env, kscript::Value* retval)
-{
-}
-
-void DbNodeValue::toString(kscript::Value* retval)
-{
-    retval->setString(m_value->getString());
-}
-
-void DbNodeValue::toNumber(kscript::Value* retval)
-{
-    retval->setDouble(m_value->getDouble());
-}
-
-void DbNodeValue::toBoolean(kscript::Value* retval)
-{
-    retval->setBoolean(m_value->getBoolean());
-}
-
-
-static void copyObjectValuesIntoNode(kscript::Value* value,
-                                     tango::INodeValuePtr node)
-{
-    if (value->isString())
-    {
-        node->setString(value->getString());
-    }
-     else if (value->isInteger())
-    {
-        node->setInteger(value->getInteger());
-    }
-     else if (value->isDouble())
-    {
-        node->setDouble(value->getDouble());
-    }
-     else if (value->isBoolean())
-    {
-        node->setBoolean(value->getBoolean());
-    }
-     else if (value->isObject())
-    {
-    }
-     else
-    {
-        node->setString(value->getString());
-    }
-    
-    if (value->hasObject())
-    {
-        kscript::ValueObject* obj = value->getObject();
-        size_t i, count = obj->getRawMemberCount();
-        for (i = 0; i < count; ++i)
-        {
-            std::wstring child_name = obj->getRawMemberName(i);
-            kscript::Value* child_value = obj->getRawMemberByIdx(i);
-            
-            tango::INodeValuePtr child_node = node->getChild(child_name, true);
-            copyObjectValuesIntoNode(child_value, child_node);
-        }
-    }
-}
-
-void DbNodeValue::setMember(const std::wstring& name, kscript::Value* value)
-{
-    DbNodeValue* v = NULL;
-    
-    std::vector<DbNodeValue*>::iterator it;
-    for (it = m_children.begin(); it != m_children.end(); ++it)
-    {
-        if (name == (*it)->getNodeName())
-        {
-            v = *it;
-            break;
-        }
-    }
-    
-    if (!v)
-    {
-        tango::INodeValuePtr node = m_value->getChild(name, true);
-        if (node.isNull())
-        {
-            wxFAIL_MSG(wxT("node is null, and it shouldn't be"));
-            return;
-        }
-
-        v = DbNodeValue::createObject(getParser());
-        v->init(node);
-        v->baseRef();
-        m_children.push_back(v);
-    }
-    
-    
-    copyObjectValuesIntoNode(value, v->m_value);
-}
-
-kscript::Value* DbNodeValue::getMember(const std::wstring& name)
-{
-    std::vector<DbNodeValue*>::iterator it;
-    for (it = m_children.begin(); it != m_children.end(); ++it)
-    {
-        if (name == (*it)->getNodeName())
-        {
-            m_member_val.setObject(*it);
-            return &m_member_val;
-        }
-    }
-    
-    tango::INodeValuePtr v = m_value->getChild(name, false);
-    if (v.isNull())
-    {
-        m_member_val.setNull();
-        return &m_member_val;
-    }
-    
-    DbNodeValue* c = DbNodeValue::createObject(getParser());
-    c->init(v);
-    c->baseRef();
-    m_children.push_back(c);
-    
-    m_member_val.setObject(c);
-    return &m_member_val;
-}
-
-const std::wstring& DbNodeValue::getNodeName()
-{
-    return m_value->getName();
 }
 
 
@@ -1881,17 +1727,10 @@ void DbConnection::execute(kscript::ExprEnv* env, kscript::Value* retval)
     }
     
     tango::IIteratorPtr iter = result_obj;
-    tango::INodeValuePtr node = result_obj;
     if (iter)
     {
         DbResult* d = DbResult::createObject(env);
         d->init(iter);
-        retval->setObject(d);
-    }
-     else if (node)
-    {
-        DbNodeValue* d = DbNodeValue::createObject(env);
-        d->init(node);
         retval->setObject(d);
     }
      else

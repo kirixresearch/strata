@@ -577,7 +577,6 @@ ScriptHost::ScriptHost()
     DbEncoding::compiletimeBind(m_expr);
     DbError::compiletimeBind(m_expr);
     DbException::compiletimeBind(m_expr);
-    DbNodeValue::compiletimeBind(m_expr);
     DbObjectInfo::compiletimeBind(m_expr);
     DbType::compiletimeBind(m_expr);
     DbInsertMode::compiletimeBind(m_expr);
