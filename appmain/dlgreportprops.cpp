@@ -14,6 +14,7 @@
 #include "dlgdatabasefile.h"
 #include "dlgreportprops.h"
 #include "querytemplate.h"
+#include "jsonconfig.h"
 
 
 // these values correspond match 1-to-1 with the grid (and must stay that way)
@@ -104,22 +105,26 @@ static std::vector<wxString> getColumnsFromSource(const std::wstring& source)
         return columns;
     }
 
-    // query source, XML format
+    // query source, node format
     if (info->getType() == tango::filetypeNode)
     {
-        tango::INodeValuePtr nodefile = g_app->getDatabase()->openNodeFile(source);
-        if (nodefile.isNull())
-            return columns;    
-
-        tango::INodeValuePtr template_root = nodefile->getChild(L"kpp_template", false);
-        if (template_root.isNull())
+        kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), source);
+        if (!node.isOk())
             return columns;
 
-        tango::INodeValuePtr type_node = template_root->getChild(L"type", false);
-        if (type_node.isNull())
+        kl::JsonNode root_node = node["root"];
+        if (!root_node.isOk())
             return columns;
-        
-        wxString type = towx(type_node->getString());
+
+        kl::JsonNode kpp_template_node = root_node["kpp_template"];
+        if (!kpp_template_node.isOk())
+            return columns;
+
+        kl::JsonNode type_node = kpp_template_node["type"];
+        if (!type_node.isOk())
+            return columns;
+
+        wxString type = towx(type_node.getString());
         if (!type.CmpNoCase(wxT("query")))
         {
             QueryTemplate t;
@@ -129,7 +134,7 @@ static std::vector<wxString> getColumnsFromSource(const std::wstring& source)
             return t.getOutputFields();       
         }
     }
-    
+
     // query source, JSON format
     if (info->getType() == tango::filetypeStream)
     {
