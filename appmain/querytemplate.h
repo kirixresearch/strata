@@ -101,8 +101,6 @@ private:
 
     // functions for saving/loading the query template
     bool saveJson(const wxString& path);
-    bool saveXml(const wxString& path);
-
     bool loadJson(const wxString& path);
     bool loadJsonFromNode(const wxString& path);
 
