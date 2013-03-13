@@ -21,14 +21,13 @@
 #include "kl/json.h"
 #include "kl/utf8.h"
 
+
 static bool convertNodeToJson(tango::INodeValuePtr ofsnode, kl::JsonNode& jsonnode)
 {
     if (ofsnode.isNull())
         return false;
 
     // set the object name and value by default
-    jsonnode.setObject();
-
     std::wstring name = ofsnode->getName();
     std::wstring value = ofsnode->getString();
     jsonnode[name] = value;
@@ -39,14 +38,9 @@ static bool convertNodeToJson(tango::INodeValuePtr ofsnode, kl::JsonNode& jsonno
         return true;
 
     // get the children and convert them
-    jsonnode[name].setArray();
-    kl::JsonNode jsonnode_children = jsonnode[name];
-
+    kl::JsonNode jsonnode_child = jsonnode[name];
     for (int idx = 0; idx < ofsnode_child_count; ++idx)
     {
-        // set the node to an object and append child nodes
-        kl::JsonNode jsonnode_child = jsonnode_children.appendElement();
-
         tango::INodeValuePtr ofsnode_child = ofsnode->getChildByIdx(idx);
         if (!convertNodeToJson(ofsnode_child, jsonnode_child))
             return false;
