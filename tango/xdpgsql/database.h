@@ -16,6 +16,7 @@
 
 #include "../xdcommon/errorinfo.h"
 
+std::wstring pgsqlGetTablenameFromPath(const std::wstring& path);
 
 tango::IColumnInfoPtr pgsqlCreateColInfo(const std::wstring& col_name,
                                          int col_odbc_type,
@@ -36,6 +37,7 @@ class PgsqlDatabase : public tango::IDatabase
 friend class PgsqlSet;
 friend class PgsqlRowInserter;
 friend class PgsqlIterator;
+friend class PgsqlStream;
 
     XCM_CLASS_NAME("xdpgsql.Database")
     XCM_BEGIN_INTERFACE_MAP(PgsqlDatabase)

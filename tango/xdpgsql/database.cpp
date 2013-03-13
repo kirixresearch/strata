@@ -15,6 +15,7 @@
 
 
 #include "libpq-fe.h"
+#include "libpq/libpq-fs.h"
 #include "tango.h"
 #include "../xdcommon/dbattr.h"
 #include "../xdcommon/fileinfo.h"
@@ -26,6 +27,7 @@
 #include "database.h"
 #include "iterator.h"
 #include "set.h"
+#include "stream.h"
 #include <set>
 #include <kl/portable.h>
 #include <kl/string.h>
@@ -242,7 +244,7 @@ tango::IColumnInfoPtr pgsqlCreateColInfo(const std::wstring& col_name,
 
 
 
-static std::wstring getTablenameFromPath(const std::wstring& path)
+std::wstring pgsqlGetTablenameFromPath(const std::wstring& path)
 {
     std::wstring res;
 
@@ -253,6 +255,9 @@ static std::wstring getTablenameFromPath(const std::wstring& path)
 
     kl::replaceStr(res, L"\"", L"");
     kl::makeLower(res);
+
+    if (res.find(' ') != res.npos)
+        res = L"\"" + res + L"\"";
 
     return res;
 }
@@ -536,8 +541,7 @@ bool PgsqlDatabase::cleanup()
 }
 
 
-bool PgsqlDatabase::storeObject(xcm::IObject* obj,
-                               const std::wstring& ofs_path)
+bool PgsqlDatabase::storeObject(xcm::IObject* obj, const std::wstring& path)
 {
     return false;
 }
@@ -576,15 +580,15 @@ tango::IDatabasePtr PgsqlDatabase::getMountDatabase(const std::wstring& path)
 }
 
 bool PgsqlDatabase::setMountPoint(const std::wstring& path,
-                                 const std::wstring& connection_str,
-                                 const std::wstring& remote_path)
+                                  const std::wstring& connection_str,
+                                  const std::wstring& remote_path)
 {
     return false;
 }
                               
 bool PgsqlDatabase::getMountPoint(const std::wstring& path,
-                                 std::wstring& connection_str,
-                                 std::wstring& remote_path)
+                                  std::wstring& connection_str,
+                                  std::wstring& remote_path)
 {
     return false;
 }
@@ -615,11 +619,11 @@ bool PgsqlDatabase::renameFile(const std::wstring& path,
 
     command = L"ALTER TABLE ";
     command += quote_openchar;
-    command += getTablenameFromPath(path);
+    command += pgsqlGetTablenameFromPath(path);
     command += quote_closechar;
     command += L" RENAME TO ";
     command += quote_openchar;
-    command += getTablenameFromPath(new_name);
+    command += pgsqlGetTablenameFromPath(new_name);
     command += quote_closechar;
 
     if (command.length() > 0)
@@ -652,7 +656,7 @@ bool PgsqlDatabase::deleteFile(const std::wstring& path)
     command.reserve(1024);
     command = L"DROP TABLE ";
     command += quote_openchar;
-    command += getTablenameFromPath(path);
+    command += pgsqlGetTablenameFromPath(path);
     command += quote_closechar;
 
     xcm::IObjectPtr result_obj;
@@ -732,19 +736,33 @@ tango::IFileInfoEnumPtr PgsqlDatabase::getFolderInfo(const std::wstring& path)
     if (!conn)
         return retval;
 
-    PGresult* res = PQexec(conn, "select tablename as name from pg_tables where schemaname <> 'pg_catalog' and schemaname <> 'information_schema' UNION "
-                                 "select viewname  as name from pg_views  where schemaname <> 'pg_catalog' and schemaname <> 'information_schema'");
+    PGresult* res = PQexec(conn, "select t.tablename as name, coalesce(d.description,'') as type from pg_tables t "
+                                 "inner join pg_class as c on c.relname=t.tablename "
+                                 "left outer join pg_description as d on c.oid=d.objoid "
+                                 "where t.schemaname <> 'pg_catalog' and t.schemaname <> 'information_schema' "
+
+                                 " UNION "
+
+                                 "select viewname  as name, 'view' as type from pg_views  where schemaname <> 'pg_catalog' and schemaname <> 'information_schema'");
 
     if (PQresultStatus(res) != PGRES_TUPLES_OK)
         return retval;
 
+    std::wstring name, type;
+
     int i, rows = PQntuples(res);
     for (i = 0; i < rows; ++i)
     {
+        name = kl::towstring(PQgetvalue(res, i, 0));
+        type = kl::towstring(PQgetvalue(res, i, 1));
+
         PgsqlFileInfo* f = new PgsqlFileInfo(this);
-        f->name = kl::towstring(PQgetvalue(res, i, 0));
+        f->name = name;
         f->type = tango::filetypeSet;
         f->format = tango::formatNative;
+
+        if (type.substr(0, 6) == L"stream")
+            f->type = tango::filetypeStream;
 
         retval->append(f);
     }
@@ -758,7 +776,7 @@ tango::IFileInfoEnumPtr PgsqlDatabase::getFolderInfo(const std::wstring& path)
 
 std::wstring PgsqlDatabase::getPrimaryKey(const std::wstring path)
 {
-    std::wstring table = getTablenameFromPath(path);
+    std::wstring table = pgsqlGetTablenameFromPath(path);
     std::wstring pk;
 
     PGconn* conn = createConnection();
@@ -820,7 +838,7 @@ tango::ISetPtr PgsqlDatabase::createTable(const std::wstring& _path,
     command.reserve(1024);
 
     command = L"CREATE TABLE ";
-    command += pgsqlQuoteIdentifierIfNecessary(getTablenameFromPath(path));
+    command += pgsqlQuoteIdentifierIfNecessary(pgsqlGetTablenameFromPath(path));
     command += L" (";
 
     std::wstring field;
@@ -871,25 +889,124 @@ tango::ISetPtr PgsqlDatabase::createTable(const std::wstring& _path,
     return openSet(path);
 }
 
-tango::IStreamPtr PgsqlDatabase::openStream(const std::wstring& ofs_path)
+tango::IStreamPtr PgsqlDatabase::openStream(const std::wstring& path)
 {
-    return xcm::null;
+    PGconn* conn = createConnection();
+    if (!conn)
+        return xcm::null;
+
+    std::wstring tbl = pgsqlGetTablenameFromPath(path);
+    std::wstring sql = L"select blob_id from %tbl%";
+    kl::replaceStr(sql, L"%tbl%", tbl);
+
+    PGresult* res = PQexec(conn, kl::toUtf8(sql));
+    if (!res || PQresultStatus(res) != PGRES_TUPLES_OK)
+    {
+        if (res)
+            PQclear(res);
+        closeConnection(conn);
+        return xcm::null;
+    }
+
+    Oid oid = atoi(PQgetvalue(res, 0, 0));
+    
+    PQclear(res);
+
+
+    PgsqlStream* pstream = new PgsqlStream(this);
+    if (!pstream->init(oid, conn))
+    {
+        delete pstream;
+        return xcm::null;
+    }
+
+    return static_cast<tango::IStream*>(pstream);
 }
 
-tango::IStreamPtr PgsqlDatabase::createStream(const std::wstring& ofs_path, const std::wstring& mime_type)
+tango::IStreamPtr PgsqlDatabase::createStream(const std::wstring& path, const std::wstring& mime_type)
 {
-    return xcm::null;
+    PGconn* conn = createConnection();
+    PGresult* res;
+    if (!conn)
+        return xcm::null;
+
+    // create holder table for stream
+
+    std::wstring tbl = pgsqlGetTablenameFromPath(path);
+
+    std::wstring sql = L"DROP TABLE IF EXISTS %tbl%";
+    kl::replaceStr(sql, L"%tbl%", tbl);
+
+    res = PQexec(conn, kl::toUtf8(sql));
+    if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
+    {
+        closeConnection(conn);
+        return xcm::null;
+    }
+
+
+
+    sql = L"CREATE TABLE %tbl% (xdpgsql_stream VARCHAR(80), mime_type VARCHAR(80), blob_id oid)";
+    kl::replaceStr(sql, L"%tbl%", tbl);
+
+    res = PQexec(conn, kl::toUtf8(sql));
+    if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
+    {
+        closeConnection(conn);
+        return xcm::null;
+    }
+
+
+
+    Oid oid = lo_creat(conn, 0);
+    if (oid < 0)
+        return xcm::null;
+
+
+    sql = L"INSERT INTO %tbl% (xdpgsql_stream, mime_type, blob_id) VALUES ('', '%mimetype%', %oid%)";
+    kl::replaceStr(sql, L"%tbl%", tbl);
+    kl::replaceStr(sql, L"%mimetype%", mime_type);
+    kl::replaceStr(sql, L"%oid%", kl::stdswprintf(L"%u", (unsigned int)oid));
+
+    res = PQexec(conn, kl::toUtf8(sql));
+    if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
+    {
+        closeConnection(conn);
+        return xcm::null;
+    }
+
+
+    sql = L"COMMENT ON TABLE %tbl% IS 'stream; %mimetype%'";
+    kl::replaceStr(sql, L"%tbl%", tbl);
+    kl::replaceStr(sql, L"%mimetype%", mime_type);
+
+    res = PQexec(conn, kl::toUtf8(sql));
+    if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
+    {
+        closeConnection(conn);
+        return xcm::null;
+    }
+
+
+    PgsqlStream* pstream = new PgsqlStream(this);
+    if (!pstream->init(oid, conn))
+    {
+        delete pstream;
+        return xcm::null;
+    }
+
+    return static_cast<tango::IStream*>(pstream);
 }
 
-tango::ISetPtr PgsqlDatabase::openSetEx(const std::wstring& ofs_path,
+tango::ISetPtr PgsqlDatabase::openSetEx(const std::wstring& path,
                                         int format)
 {
-    return openSet(ofs_path);
+    return openSet(path);
 }
 
 tango::ISetPtr PgsqlDatabase::openSet(const std::wstring& path)
 {
-    std::wstring tablename1 = getTablenameFromPath(path);
+    std::wstring tablename1 = pgsqlGetTablenameFromPath(path);
 
     if (tablename1.empty())
         return xcm::null;
@@ -961,7 +1078,7 @@ tango::IIndexInfoPtr PgsqlDatabase::createIndex(const std::wstring& path,
                                                 const std::wstring& expr,
                                                 tango::IJob* job)
 {
-    std::wstring table = getTablenameFromPath(path);
+    std::wstring table = pgsqlGetTablenameFromPath(path);
 
     PGconn* conn = createConnection();
     if (!conn)
@@ -999,7 +1116,7 @@ bool PgsqlDatabase::renameIndex(const std::wstring& path,
 bool PgsqlDatabase::deleteIndex(const std::wstring& path,
                                 const std::wstring& name)
 {
-    std::wstring table = getTablenameFromPath(path);
+    std::wstring table = pgsqlGetTablenameFromPath(path);
 
     PGconn* conn = createConnection();
     if (!conn)
@@ -1023,7 +1140,7 @@ tango::IIndexInfoEnumPtr PgsqlDatabase::getIndexEnum(const std::wstring& path)
     vec = new xcm::IVectorImpl<tango::IIndexInfoPtr>;
 
 
-    std::wstring table = getTablenameFromPath(path);
+    std::wstring table = pgsqlGetTablenameFromPath(path);
 
     PGconn* conn = createConnection();
     if (!conn)
@@ -1091,7 +1208,7 @@ tango::IIndexInfoEnumPtr PgsqlDatabase::getIndexEnum(const std::wstring& path)
 
 tango::IStructurePtr PgsqlDatabase::describeTable(const std::wstring& path)
 {
-    std::wstring tbl = getTablenameFromPath(path);
+    std::wstring tbl = pgsqlGetTablenameFromPath(path);
 
     std::wstring query;
     query += L"select attname,atttypid,atttypmod from pg_attribute where ";
