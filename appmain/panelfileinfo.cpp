@@ -12,6 +12,7 @@
 #include "appmain.h"
 #include "panelfileinfo.h"
 #include "tabledoc.h"
+#include "jsonconfig.h"
 #include <algorithm>
 
 
@@ -82,27 +83,27 @@ int determineProjectInfoType(const wxString& path)
         
     if (file_type == tango::filetypeNode)
     {
-        tango::INodeValuePtr node_file, node_file_type, node_type;
-        
-        node_file = db->openNodeFile(towstr(path));
-        if (node_file.isOk())
+        kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), path);
+        if (node.isOk())
         {
-            // node is a report
-            node_file_type = node_file->getChild(L"kpp_report", false);
-            if (node_file_type.isOk())
-                return ProjectFileInfo::typeReport;
-
-            node_file_type = node_file->getChild(L"kpp_template", false);
-            if (node_file_type.isOk())
+            kl::JsonNode root_node = node["root"];
+            if (root_node.isOk())
             {
-                // node is a query
-                node_type = node_file_type->getChild(L"type", false);
-                if (node_type.isOk() && node_type->getString() == L"query")
-                    return ProjectFileInfo::typeQuery;
+                kl::JsonNode kpp_report_node = root_node["kpp_report"];
+                if (kpp_report_node.isOk())
+                    return ProjectFileInfo::typeReport;
+
+                kl::JsonNode kpp_template_node = root_node["kpp_template"];
+                if (kpp_template_node.isOk())
+                {
+                    kl::JsonNode kpp_template_type = kpp_template_node["type"];
+                    if (kpp_template_type.isOk() && kpp_template_type.getString() == L"query")
+                        return ProjectFileInfo::typeQuery;
+                }
             }
         }
     }
-    
+
     return ProjectFileInfo::typeOther;
 }
 
