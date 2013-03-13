@@ -33,7 +33,6 @@ bool sqlDrop(tango::IDatabasePtr db,
     stmt.addKeyword(L"INDEX");
     stmt.addKeyword(L"DIRECTORY");
     stmt.addKeyword(L"MOUNT");
-    stmt.addKeyword(L"NODEFILE");
     stmt.addKeyword(L"IF");
     stmt.addKeyword(L"EXISTS");
     stmt.addKeyword(L"ON");
@@ -47,10 +46,9 @@ bool sqlDrop(tango::IDatabasePtr db,
     if (!stmt.getKeywordExists(L"TABLE") &&
         !stmt.getKeywordExists(L"MOUNT") &&
         !stmt.getKeywordExists(L"INDEX") && 
-        !stmt.getKeywordExists(L"DIRECTORY") &&
-        !stmt.getKeywordExists(L"NODEFILE"))
+        !stmt.getKeywordExists(L"DIRECTORY"))
     {
-        error.setError(tango::errorSyntax, L"Invalid syntax; DROP statement missing TABLE, MOUNT, INDEX, DIRECTORY, or NODEFILE clause");    
+        error.setError(tango::errorSyntax, L"Invalid syntax; DROP statement missing TABLE, MOUNT, INDEX, or DIRECTORY clause");    
         return false;
     }
 
@@ -100,29 +98,6 @@ bool sqlDrop(tango::IDatabasePtr db,
         {
             wchar_t buf[1024]; // some paths might be long
             swprintf(buf, 1024, L"Unable to drop directory [%ls]", param.c_str());
-            error.setError(tango::errorGeneral, buf);
-            return false;
-        }
-        
-        return true;
-    }
-     else if (stmt.getKeywordExists(L"NODEFILE"))
-    {
-        if (if_exists)
-            param = stmt.getKeywordParam(L"EXISTS");
-             else
-            param = stmt.getKeywordParam(L"NODEFILE");
-
-        dequote(param, '[', ']');
-
-        result = db->deleteFile(param);
-        
-        // if the if_exists flag is false, drop item must be
-        // deleted, or else there's an error
-        if (!if_exists && !result)
-        {
-            wchar_t buf[1024]; // some paths might be long
-            swprintf(buf, 1024, L"Unable to drop nodefile [%ls]", param.c_str());
             error.setError(tango::errorGeneral, buf);
             return false;
         }

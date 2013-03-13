@@ -84,13 +84,6 @@ tango::IIteratorPtr sqlSelect(
            unsigned int flags,
            ThreadErrorInfo& error,
            tango::IJob* job);
-
-bool sqlOpen(
-           tango::IDatabasePtr db,
-           const std::wstring& path,
-           xcm::IObjectPtr& result,
-           ThreadErrorInfo& error,
-           tango::IJob* job);
            
 bool sqlInsert(
            tango::IDatabasePtr db,

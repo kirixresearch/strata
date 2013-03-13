@@ -212,7 +212,6 @@ bool sqlCreate(tango::IDatabasePtr db,
     stmt.addKeyword(L"INDEX");
     stmt.addKeyword(L"DIRECTORY");
     stmt.addKeyword(L"MOUNT");
-    stmt.addKeyword(L"NODEFILE");
     stmt.addKeyword(L"AS");
     stmt.addKeyword(L"PATH");
 
@@ -260,22 +259,6 @@ bool sqlCreate(tango::IDatabasePtr db,
         }
         
         return true;
-    }
-     else if (stmt.getKeywordExists(L"NODEFILE"))
-    {
-        std::wstring param = stmt.getKeywordParam(L"NODEFILE");
-        dequote(param, '[', ']');
-
-        tango::INodeValuePtr node = db->createNodeFile(param);
-        if (node.isNull())
-        {
-            wchar_t buf[1024]; // some paths might be long
-            swprintf(buf, 1024, L"Unable to create nodefile [%ls]", param.c_str());
-            error.setError(tango::errorGeneral, buf);
-            return false;
-        }
-        
-        result_obj = node;
     }
      else if (stmt.getKeywordExists(L"INDEX"))
     {

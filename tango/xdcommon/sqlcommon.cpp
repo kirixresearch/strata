@@ -619,11 +619,6 @@ bool doSQL(tango::IDatabasePtr db,
         {
             result = sqlAlter(db, command, error, job);
         }
-         else if (0 == wcsncasecmp(command_cstr, L"OPEN", 4) &&
-                  iswspace(command_cstr[4]))
-        {
-            result = sqlOpen(db, command, result_obj, error, job);
-        }
                 
         if (!result)
         {

@@ -3478,30 +3478,3 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
 }
 
 
-bool sqlOpen(
-       tango::IDatabasePtr db,
-       const std::wstring& command,
-       xcm::IObjectPtr& result_obj,
-       ThreadErrorInfo& error,
-       tango::IJob* job)
-{
-    result_obj.clear();
-    
-    SqlStatement stmt(command);
-
-    stmt.addKeyword(L"OPEN");
-    stmt.addKeyword(L"NODEFILE");
-
-    if (!stmt.getKeywordExists(L"OPEN"))
-        return false;
-
-    if (!stmt.getKeywordExists(L"NODEFILE"))
-        return false;
-        
-    std::wstring file = stmt.getKeywordParam(L"NODEFILE");
-    dequote(file, '[', ']');
-    
-    result_obj = db->openNodeFile(file);
-    return result_obj.isOk();
-}
-
