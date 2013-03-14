@@ -649,6 +649,46 @@ bool PgsqlDatabase::copyFile(const std::wstring& src_path,
 
 bool PgsqlDatabase::deleteFile(const std::wstring& path)
 {
+    tango::IFileInfoPtr info = getFileInfo(path);
+    if (info.isNull())
+        return false;
+
+    if (info->getType() == tango::filetypeStream)
+    {
+        PGconn* conn = createConnection();
+        if (!conn)
+            return xcm::null;
+
+        std::wstring tbl = pgsqlGetTablenameFromPath(path);
+        std::wstring sql = L"select blob_id from %tbl%";
+        kl::replaceStr(sql, L"%tbl%", tbl);
+
+        PGresult* res = PQexec(conn, kl::toUtf8(sql));
+        if (!res || PQresultStatus(res) != PGRES_TUPLES_OK)
+        {
+            if (res)
+                PQclear(res);
+            closeConnection(conn);
+            return xcm::null;
+        }
+
+        Oid oid = atoi(PQgetvalue(res, 0, 0));
+        PQclear(res);
+
+        int r = lo_unlink(conn, oid);
+        
+        sql = L"drop table if exists %tbl%";
+        kl::replaceStr(sql, L"%tbl%", tbl);
+
+        PQexec(conn, kl::toUtf8(sql));
+
+        closeConnection(conn);
+
+        return true;
+    }
+
+
+
     std::wstring quote_openchar = m_attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
     std::wstring quote_closechar = m_attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);    
     
@@ -895,6 +935,8 @@ tango::IStreamPtr PgsqlDatabase::openStream(const std::wstring& path)
     if (!conn)
         return xcm::null;
 
+    PQexec(conn, "BEGIN");
+
     std::wstring tbl = pgsqlGetTablenameFromPath(path);
     std::wstring sql = L"select blob_id from %tbl%";
     kl::replaceStr(sql, L"%tbl%", tbl);
@@ -925,27 +967,20 @@ tango::IStreamPtr PgsqlDatabase::openStream(const std::wstring& path)
 
 tango::IStreamPtr PgsqlDatabase::createStream(const std::wstring& path, const std::wstring& mime_type)
 {
+    deleteFile(path);
+
+
     PGconn* conn = createConnection();
     PGresult* res;
     if (!conn)
         return xcm::null;
 
-    // create holder table for stream
 
-    std::wstring tbl = pgsqlGetTablenameFromPath(path);
+    PQexec(conn, "BEGIN");
 
-    std::wstring sql = L"DROP TABLE IF EXISTS %tbl%";
-    kl::replaceStr(sql, L"%tbl%", tbl);
+    std::wstring sql, tbl;
 
-    res = PQexec(conn, kl::toUtf8(sql));
-    if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
-    {
-        closeConnection(conn);
-        return xcm::null;
-    }
-
-
-
+    tbl = pgsqlGetTablenameFromPath(path);
     sql = L"CREATE TABLE %tbl% (xdpgsql_stream VARCHAR(80), mime_type VARCHAR(80), blob_id oid)";
     kl::replaceStr(sql, L"%tbl%", tbl);
 

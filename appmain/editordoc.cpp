@@ -1686,9 +1686,9 @@ bool EditorDoc::getFileHash(const wxString path, std::wstring& hash)
         tango::IDatabasePtr db = g_app->getDatabase();
         xcm::class_info* class_info = xcm::get_class_info(db.p);
         wxString driver = towx(class_info->get_name()).BeforeFirst('.');
-        if (driver == wxT("xdclient"))
+        if (driver == wxT("xdclient") || driver == wxT("xdpgsql"))
         {
-            // don't do this operation when running in xdclient mode
+            // don't do this operation when running in xdclient or xdpgsql mode
             m_file_hash = L"";
             hash = L"";
             return true;

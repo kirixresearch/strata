@@ -34,8 +34,13 @@ PgsqlStream::~PgsqlStream()
     if (m_fd != -1)
         lo_close(m_conn, m_fd);
 
+
     if (m_conn)
+    {
+        PQexec(m_conn, "COMMIT");
+
         m_database->closeConnection(m_conn);
+    }
 
     m_database->unref();
 }
