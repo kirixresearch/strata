@@ -10,7 +10,6 @@
 
 
 #include <kl/klib.h>
-#include "libpq-fe.h"
 #include "tango.h"
 #include "database.h"
 #include "../xdcommon/connectionstr.h"
