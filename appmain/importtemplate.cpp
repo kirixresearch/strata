@@ -105,11 +105,22 @@ ImportTemplate::ImportTemplate()
 
 bool ImportTemplate::load(const wxString& path)
 {
+    // try to load the path in the new JSON format
+    if (loadJson(path))
+        return true;
+
+    // if we can't load it in the new format, try
+    // to open it with the old format
+    return loadJsonFromNode(path);
+}
+
+bool ImportTemplate::loadJson(const wxString& path)
+{
     m_ii.tables.clear();
     
     kl::JsonNode root = JsonConfig::loadFromDb(g_app->getDatabase(), path);
     if (!root.isOk())
-        return loadOldVersion(path);
+        return false;
 
 
     // make sure we have the appropriate mime type and version
@@ -248,318 +259,283 @@ bool ImportTemplate::load(const wxString& path)
     return true;
 }
 
-
-bool ImportTemplate::loadOldVersion(const wxString& path)
+bool ImportTemplate::loadJsonFromNode(const wxString& path)
 {
-    // create an ofs file with the run information
-    tango::IDatabasePtr db = g_app->getDatabase();
-
-    tango::INodeValuePtr file = db->openNodeFile(towstr(path));
-    if (file.isNull())
+    kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), path);
+    if (!node.isOk())
         return false;
 
-    tango::INodeValuePtr kpp_template = file->getChild(L"kpp_template", false);
-    if (!kpp_template)
+    kl::JsonNode root_node = node["root"];
+    if (!root_node.isOk())
         return false;
 
-    tango::INodeValuePtr template_type = kpp_template->getChild(L"type", false);
-    if (!template_type)
+    kl::JsonNode kpp_template_node = root_node["kpp_template"];
+    if (!kpp_template_node.isOk())
         return false;
 
-    if (template_type->getString() != L"import")
+    kl::JsonNode type_node = kpp_template_node["type"];
+    if (!type_node.isOk() || type_node.getString() != L"import")
         return false;
 
-    tango::INodeValuePtr template_version = kpp_template->getChild((L"version"), false);
-    if (!template_version)
+    kl::JsonNode version_node = kpp_template_node["version"];
+    if (!version_node.isOk() || version_node.getInteger() > 1)
         return false;
 
-    if (template_version->getInteger() > 1)
-        return false;
-
-    tango::INodeValuePtr data_root = kpp_template->getChild(L"data", false);
-    if (!data_root)
+    kl::JsonNode data_node = kpp_template_node["data"];
+    if (!data_node.isOk())
         return false;
 
 
-    // type
-    tango::INodeValuePtr type_val = data_root->getChild(L"type", false);
-    if (!type_val)
+    // import type
+    kl::JsonNode import_type_node = data_node["type"];
+    if (!import_type_node.isOk())
         return false;
-    m_ii.type = type_val->getInteger();
-    m_ii.last_type = type_val->getInteger();
+    m_ii.type = import_type_node.getInteger();
+    m_ii.last_type = import_type_node.getInteger();
 
     // description
-    tango::INodeValuePtr desc_val = data_root->getChild(L"description", false);
-    if (!desc_val)
+    kl::JsonNode description_node = data_node["description"];
+    if (!description_node.isOk())
         return false;
-    m_ii.description = towx(desc_val->getString());
+    m_ii.description = towx(description_node.getString());
 
     // path
-    tango::INodeValuePtr path_val = data_root->getChild(L"path", false);
-    if (!path_val)
+    kl::JsonNode path_node = data_node["path"];
+    if (!path_node.isOk())
         return false;
-    m_ii.path = towx(path_val->getString());
+    m_ii.path = towx(path_node.getString());
 
     // filter
-    tango::INodeValuePtr filter_val = data_root->getChild(L"filter", false);
-    if (!filter_val)
+    kl::JsonNode filter_node = data_node["filter"];
+    if (!filter_node.isOk())
         return false;
-    m_ii.filter = towx(filter_val->getString());
+    m_ii.filter = towx(filter_node.getString());
 
     // server
-    tango::INodeValuePtr server_val = data_root->getChild(L"server", false);
-    if (!server_val)
+    kl::JsonNode server_node = data_node["server"];
+    if (!server_node.isOk())
         return false;
-    m_ii.server = towx(server_val->getString());
+    m_ii.server = towx(server_node.getString());
 
     // port
-    tango::INodeValuePtr port_val = data_root->getChild(L"port", false);
-    if (!port_val)
+    kl::JsonNode port_node = data_node["port"];
+    if (!port_node.isOk())
         return false;
-    m_ii.port = port_val->getInteger();
-    
+    m_ii.port = port_node.getInteger();
+
     // database
-    tango::INodeValuePtr database_val = data_root->getChild(L"database", false);
-    if (!database_val)
+    kl::JsonNode database_node = data_node["database"];
+    if (!database_node.isOk())
         return false;
-    m_ii.database = towx(database_val->getString());
+    m_ii.database = towx(database_node.getString());
 
     // username
-    tango::INodeValuePtr username_val = data_root->getChild(L"username", false);
-    if (!username_val)
+    kl::JsonNode username_node = data_node["username"];
+    if (!username_node.isOk())
         return false;
-    m_ii.username = towx(username_val->getString());
+    m_ii.username = towx(username_node.getString());
 
     // password
-    tango::INodeValuePtr password_val = data_root->getChild(L"password", false);
-    if (!password_val)
+    kl::JsonNode password_node = data_node["password"];
+    if (!password_node.isOk())
         return false;
-    m_ii.password = towx(password_val->getString());
+    m_ii.password = towx(password_node.getString());
 
-    // save password
-    tango::INodeValuePtr save_password_val = data_root->getChild(L"save_password", false);
-    if (!save_password_val)
+    // save password flag
+    kl::JsonNode save_password_node = data_node["save_password"];
+    if (!save_password_node.isOk())
         return false;
-    m_ii.save_password = save_password_val->getBoolean();
+    m_ii.save_password = (save_password_node.getInteger() != 0 ? true : false);
 
     // base path
-    tango::INodeValuePtr base_path_val = data_root->getChild(L"base_path", false);
-    if (!base_path_val)
+    kl::JsonNode base_path_node = data_node["base_path"];
+    if (!base_path_node.isOk())
         return false;
-    m_ii.base_path = towx(base_path_val->getString());
+    m_ii.base_path = towx(base_path_node.getString());
 
-    // delimiters (for text-delimited imports)
-    tango::INodeValuePtr delimiters_val = data_root->getChild(L"delimiters", false);
-    if (!delimiters_val)
+    // delimiters (for text_delimited imports);
+    kl::JsonNode delimiters_node = data_node["delimiters"];
+    if (!delimiters_node.isOk())
         return false;
-    m_ii.delimiters = towx(delimiters_val->getString());
+    m_ii.delimiters = towx(delimiters_node.getString());
 
-    // text qualifier (for text-delimited imports)
-    tango::INodeValuePtr text_qualifier_val = data_root->getChild(L"text_qualifier", false);
-    if (!text_qualifier_val)
+    // text qualifier (for text-delimited imports);
+    kl::JsonNode text_qualifier_node = data_node["text_qualifier"];
+    if (!text_qualifier_node.isOk())
         return false;
-    m_ii.text_qualifier = towx(text_qualifier_val->getString());
+    m_ii.text_qualifier = towx(text_qualifier_node.getString());
 
     // first row is header row (for text-delimited imports)
-    tango::INodeValuePtr first_row_header_val = data_root->getChild(L"first_row_header", false);
-    if (!first_row_header_val)
+    kl::JsonNode first_row_header_node = data_node["first_row_header"];
+    if (!first_row_header_node.isOk())
         return false;
-    m_ii.first_row_header = first_row_header_val->getBoolean();
+    m_ii.first_row_header = (first_row_header_node.getInteger() != 0 ? true : false);
 
     // date format (for text-delimited imports)
-    tango::INodeValuePtr date_format_val = data_root->getChild(L"date_format_str", false);
-    if (!date_format_val)
+    kl::JsonNode date_format_str_node = data_node["date_format_str"];
+    if (!date_format_str_node.isOk())
         return false;
-    m_ii.date_format_str = towx(date_format_val->getString());
+    m_ii.date_format_str = towx(date_format_str_node.getString());
 
     // tables base
-    tango::INodeValuePtr tables_base = data_root->getChild(L"tables", false);
-    if (!tables_base)
+    kl::JsonNode tables_base_node = data_node["tables"];
+    if (!tables_base_node.isOk())
         return false;
 
-    int table_count = tables_base->getChildCount();
+    std::vector<kl::JsonNode> tables_base_children_node = tables_base_node.getChildren();
+    std::vector<kl::JsonNode>::iterator it_tables, it_tables_end;
+    it_tables_end = tables_base_children_node.end();
 
-    // try to load the tables that were saved
-
-    int table_counter;
-    for (table_counter = 0;
-         table_counter < table_count;
-         ++table_counter)
+    for (it_tables = tables_base_children_node.begin(); it_tables != it_tables_end; ++it_tables)
     {
-        tango::INodeValuePtr table_node = tables_base->getChildByIdx(table_counter);
-
-        tango::INodeValuePtr type = table_node->getChild(L"type", false);
-
-        // show
-        tango::INodeValuePtr is_shown = table_node->getChild(L"show", false);
-        if (!is_shown)
-            return false;
-
-        // selected
-        tango::INodeValuePtr selected = table_node->getChild(L"selected", false);
-        if (!selected)
-            return false;
-
-        // input tablename
-        tango::INodeValuePtr input_tn = table_node->getChild(L"input_tablename", false);
-        if (!input_tn)
-            return false;
-
-        // output tablename
-        tango::INodeValuePtr output_tn = table_node->getChild(L"output_tablename", false);
-        if (!output_tn)
-            return false;
-
-        // append
-        tango::INodeValuePtr append = table_node->getChild(L"append", false);
-        if (!append)
-            return false;
-
-        // field mapping name
-        tango::INodeValuePtr td_name = table_node->getChild(L"field_mapping_name", false);
-        if (!td_name)
-            return false;
-
-        // query
-        tango::INodeValuePtr query = table_node->getChild(L"query", false);
-
         ImportTableSelection ts;
 
-        if (type.isOk())
-            ts.type = type->getInteger();
+
+        kl::JsonNode table_node = *it_tables;
+        if (!table_node.isOk())
+            return false;
+
+        kl::JsonNode type_node = table_node["type"];
+        if (type_node.isOk())
+            ts.type = type_node.getInteger();
              else
             ts.type = ImportTableSelection::typeTable;
 
-        ts.show = is_shown->getBoolean();
-        ts.selected = selected->getBoolean();
-        ts.input_tablename = towx(input_tn->getString());
-        ts.output_tablename = towx(output_tn->getString());
-        ts.append = append->getBoolean();
-        ts.field_mapping_name = towx(td_name->getString());
+        kl::JsonNode show_node = table_node["show"];
+        if (!show_node.isOk())
+            return false;
+        ts.show = (show_node.getInteger() != 0 ? true : false);
 
-        if (query.isOk())
-        {
-            ts.query = towx(query->getString());
-        }
+        kl::JsonNode selected_node = table_node["selected"];
+        if (!selected_node.isOk())
+            return false;
+        ts.selected = (selected_node.getInteger() != 0 ? true : false);
+
+        kl::JsonNode input_tablename_node = table_node["input_tablename"];
+        if (!input_tablename_node.isOk())
+            return false;
+        ts.input_tablename = input_tablename_node.getString();
+
+        kl::JsonNode output_tablename_node = table_node["output_tablename"];
+        if (!output_tablename_node.isOk())
+            return false;
+        ts.output_tablename = output_tablename_node.getString();
+
+        kl::JsonNode append_node = table_node["append"];
+        if (!append_node.isOk())
+            return false;
+        ts.append = (append_node.getInteger() != 0 ? true : false);
+
+        kl::JsonNode field_mapping_name_node = table_node["field_mapping_name"];
+        if (!field_mapping_name_node.isOk())    
+            return false;
+        ts.field_mapping_name = towx(field_mapping_name_node.getString());
+
+        kl::JsonNode query_node = table_node["query"];
+        if (query_node.isOk())
+            ts.query = towx(query_node.getString());
 
         // load fixed-length row width (if any)
-        tango::INodeValuePtr fixed_length_row_width = table_node->getChild(L"fixed_length_row_width", false);
-        if (fixed_length_row_width.isOk())
-            ts.row_width = fixed_length_row_width->getInteger();
+        kl::JsonNode fixed_length_row_width_node = table_node["fixed_length_row_width"];
+        if (fixed_length_row_width_node.isOk())
+            ts.row_width = fixed_length_row_width_node.getInteger();
              else
             ts.row_width = 0;
-
+    
         // load fixed-length structure (if any)
-        tango::INodeValuePtr fixed_length_structure = table_node->getChild(L"fixed_length_structure", false);
-        if (fixed_length_structure.isOk())
+        kl::JsonNode fixed_length_structure_node = table_node["fixed_length_structure"];
+        if (fixed_length_structure_node.isOk())
         {
-            // read in fixed-length structure
-
             int field_counter;
-            int field_count = fixed_length_structure->getChildCount();
+            int field_count = fixed_length_structure_node.getChildCount();
 
             for (field_counter = 0; field_counter < field_count; ++field_counter)
             {
+                FixedLengthField fs;
+
+
                 wchar_t buf[255];
                 swprintf(buf, 255, L"field%d", field_counter);
 
-                // get field node
-                tango::INodeValuePtr field_node = fixed_length_structure->getChild(buf, false);
-                if (!field_node)
+                kl::JsonNode field_node = fixed_length_structure_node[buf];
+                if (!field_node.isOk())
                     return false;
 
-                // skip
-                tango::INodeValuePtr skip = field_node->getChild(L"skip", false);
-                if (!skip)
+                kl::JsonNode skip_node = field_node["skip"];
+                if (!skip_node.isOk())
                     return false;
+                fs.skip = (skip_node.getInteger() != 0 ? true : false);
 
-                // input type
-                tango::INodeValuePtr input_offset = field_node->getChild(L"input_offset", false);
-                if (!input_offset)
+                kl::JsonNode input_offset_node = field_node["input_offset"];
+                if (!input_offset_node.isOk())
                     return false;
+                fs.input_offset = input_offset_node.getInteger();
 
-                // input width
-                tango::INodeValuePtr input_width = field_node->getChild(L"input_width", false);
-                if (!input_width)
+                kl::JsonNode input_width_node = field_node["input_width"];
+                if (!input_width_node.isOk())
                     return false;
+                fs.input_width = input_width_node.getInteger();
 
-                // output name
-                tango::INodeValuePtr output_name = field_node->getChild(L"output_name", false);
-                if (!output_name)
+                kl::JsonNode output_name_node = field_node["output_name"];
+                if (!output_name_node.isOk())
                     return false;
+                fs.output_name = towx(output_name_node.getString());
 
-                // output type
-                tango::INodeValuePtr output_type = field_node->getChild(L"output_type", false);
-                if (!output_type)
+                kl::JsonNode output_type_node = field_node["output_type"];
+                if (!output_type_node.isOk())
                     return false;
+                fs.output_type = output_type_node.getInteger();
 
-                // output width
-                tango::INodeValuePtr output_width = field_node->getChild(L"output_width", false);
-                if (!output_width)
+                kl::JsonNode output_width_node = field_node["output_width"];
+                if (!output_width_node.isOk())
                     return false;
+                fs.output_width = output_width_node.getInteger();
 
-                // output scale
-                tango::INodeValuePtr output_scale = field_node->getChild(L"output_scale", false);
-                if (!output_scale)
+                kl::JsonNode output_scale_node = field_node["output_scale"];
+                if (!output_scale_node.isOk())
                     return false;
+                fs.output_scale = output_scale_node.getInteger();
 
-                // trim leading spaces
-                tango::INodeValuePtr trim_leading_spaces = field_node->getChild(L"trim_leading_spaces", false);
-                if (!trim_leading_spaces)
+                kl::JsonNode trim_leading_spaces_node = field_node["trim_leading_spaces"];
+                if (!trim_leading_spaces_node.isOk())
                     return false;
+                fs.trim_leading_spaces = (trim_leading_spaces_node.getInteger() != 0 ? true : false);
 
-                // trim leading zeros
-                tango::INodeValuePtr trim_leading_zeros = field_node->getChild(L"trim_leading_zeros", false);
-                if (!trim_leading_zeros)
+                kl::JsonNode trim_leading_zeros_node = field_node["trim_leading_zeros"];
+                if (!trim_leading_zeros_node.isOk())
                     return false;
+                fs.trim_leading_zeros = (trim_leading_zeros_node.getInteger() != 0 ? true : false);
 
-                // decimal separator
-                tango::INodeValuePtr decimal_separator = field_node->getChild(L"decimal_separator", false);
-                if (!decimal_separator)
+                kl::JsonNode decimal_separator_node = field_node["decimal_separator"];
+                if (!decimal_separator_node.isOk())
                     return false;
+                fs.decimal_separator = towx(decimal_separator_node.getString());
 
-                // negative sign
-                tango::INodeValuePtr negative_sign = field_node->getChild(L"negative_sign", false);
-                if (!negative_sign)
+                kl::JsonNode negative_sign_node = field_node["negative_sign"];
+                if (!negative_sign_node.isOk())
                     return false;
+                fs.negative_sign = towx(negative_sign_node.getString());
 
-                // date order
-                tango::INodeValuePtr date_format = field_node->getChild(L"date_format", false);
-                if (!date_format)
+                kl::JsonNode date_format_node = field_node["date_format"];
+                if (!date_format_node.isOk())
                     return false;
+                fs.date_order = towx(date_format_node.getString());
 
-                // boolean format
-                tango::INodeValuePtr boolean_format = field_node->getChild(L"boolean_format", false);
-                if (!boolean_format)
+                kl::JsonNode boolean_format_node = field_node["boolean_format"];
+                if (!boolean_format_node.isOk())
                     return false;
+                fs.boolean_format = towx(boolean_format_node.getString());
 
-                // custom expression
-                tango::INodeValuePtr custom_expression = field_node->getChild(L"expression", false);
-                if (!custom_expression)
+                kl::JsonNode expression_node = field_node["expression"];
+                if (!expression_node.isOk())
                     return false;
+                fs.custom_expression = towx(expression_node.getString());
 
-                // hidden expression
-                tango::INodeValuePtr hidden_expression = field_node->getChild(L"hidden_expression", false);
-                if (!hidden_expression)
+                kl::JsonNode hidden_expression_node = field_node["hidden_expression"];
+                if (!hidden_expression_node.isOk())
                     return false;
+                fs.hidden_expression = towx(hidden_expression_node.getString());
 
-
-                FixedLengthField fs;
-                fs.skip = skip->getBoolean();
-                fs.input_offset = input_offset->getInteger();
-                fs.input_width = input_width->getInteger();
-                fs.output_name = towx(output_name->getString());
-                fs.output_type = output_type->getInteger();
-                fs.output_width = output_width->getInteger();
-                fs.output_scale = output_scale->getInteger();
-                fs.trim_leading_spaces = trim_leading_spaces->getBoolean();
-                fs.trim_leading_zeros = trim_leading_zeros->getBoolean();
-                fs.decimal_separator = towx(decimal_separator->getString());
-                fs.negative_sign = towx(negative_sign->getString());
-                fs.date_order = towx(date_format->getString());
-                fs.boolean_format = towx(boolean_format->getString());
-                fs.custom_expression = towx(custom_expression->getString());
-                fs.hidden_expression = towx(hidden_expression->getString());
 
                 ts.fixed_fields.push_back(fs);
             }
@@ -568,156 +544,133 @@ bool ImportTemplate::loadOldVersion(const wxString& path)
         m_ii.tables.push_back(ts);
     }
 
+
     // field mappings base
-    tango::INodeValuePtr field_mappings_base = data_root->getChild(L"field_mappings", false);
-    if (!field_mappings_base)
+    kl::JsonNode field_mappings_base_node = data_node["field_mappings"];
+    if (!field_mappings_base_node.isOk())
         return false;
 
-    int field_mapping_count = field_mappings_base->getChildCount();
+    std::vector<kl::JsonNode> field_mappings_base_children_node = field_mappings_base_node.getChildren();
+    std::vector<kl::JsonNode>::iterator it_fieldmap, it_fieldmap_end;
+    it_fieldmap_end = field_mappings_base_children_node.end();
 
-    // try to load the field mappings that were saved
-
-    int field_mapping_counter;
-    for (field_mapping_counter = 0;
-         field_mapping_counter < field_mapping_count;
-         ++field_mapping_counter)
+    for (it_fieldmap = field_mappings_base_children_node.begin(); it_fieldmap != it_fieldmap_end; ++it_fieldmap)
     {
-        tango::INodeValuePtr field_mapping_node;
-        field_mapping_node = field_mappings_base->getChildByIdx(field_mapping_counter);
-
-        // show
-        tango::INodeValuePtr is_shown = field_mapping_node->getChild(L"show", false);
-        if (!is_shown)
-            return false;
-
-        // selected
-        tango::INodeValuePtr selected = field_mapping_node->getChild(L"selected", false);
-        if (!selected)
-            return false;
-
-        // input tablename
-        tango::INodeValuePtr input_tn = field_mapping_node->getChild(L"input_tablename", false);
-        if (!input_tn)
-            return false;
-
-        // output tablename
-        tango::INodeValuePtr output_tn = field_mapping_node->getChild(L"output_tablename", false);
-        if (!output_tn)
-            return false;
-
-        // append
-        tango::INodeValuePtr append = field_mapping_node->getChild(L"append", false);
-        if (!append)
-            return false;
-
-        // field mapping name
-        tango::INodeValuePtr td_name = field_mapping_node->getChild(L"field_mapping_name", false);
-        if (!td_name)
-            return false;
-        
-        // pre-filter node
-        tango::INodeValuePtr query = field_mapping_node->getChild(L"query", false);
-
-
         ImportTableSelection ts;
-        ts.show = is_shown->getBoolean();
-        ts.selected = selected->getBoolean();
-        ts.input_tablename = towx(input_tn->getString());
-        ts.output_tablename = towx(output_tn->getString());
-        ts.append = append->getBoolean();
-        ts.field_mapping_name = towx(td_name->getString());
 
-        if (query.isOk())
-        {
-            ts.query = towx(query->getString());
-        }
 
-        // field count
-        tango::INodeValuePtr output_fc = field_mapping_node->getChild(L"output_field_count", false);
-        if (!output_fc)
+        kl::JsonNode field_mapping_node = *it_fieldmap;
+
+        kl::JsonNode show_node = field_mapping_node["show"];
+        if (!show_node.isOk())
             return false;
+        ts.show = (show_node.getInteger() != 0 ? true : false);
 
+        kl::JsonNode selected_node = field_mapping_node["selected"];
+        if (!selected_node.isOk())
+            return false;
+        ts.selected = (selected_node.getInteger() != 0 ? true : false);
+
+        kl::JsonNode input_tablename_node = field_mapping_node["input_tablename"];
+        if (!input_tablename_node.isOk())
+            return false;
+        ts.input_tablename = towx(input_tablename_node.getString());
+
+        kl::JsonNode output_tablename_node = field_mapping_node["output_tablename"];
+        if (!output_tablename_node.isOk())
+            return false;
+        ts.output_tablename = towx(output_tablename_node.getString());
+
+        kl::JsonNode append_node = field_mapping_node["append"];
+        if (!append_node.isOk())
+            return false;
+        ts.append = (append_node.getInteger() != 0 ? true : false);
+
+        kl::JsonNode field_mapping_name_node = field_mapping_node["field_mapping_name"];
+        if (!field_mapping_name_node.isOk())
+            return false;
+        ts.field_mapping_name = towx(field_mapping_name_node.getString());
+
+        kl::JsonNode query_node = field_mapping_node["query"];
+        if (query_node.isOk())
+            ts.query = towx(query_node.getString());
+
+
+        // output fields
+        kl::JsonNode output_field_count_node = field_mapping_node["output_field_count"];
+        if (!output_field_count_node.isOk())
+            return false;
 
         int field_counter;
-        int output_field_count = output_fc->getInteger();
+        int output_field_count = output_field_count_node.getInteger();
 
         for (field_counter = 0; field_counter < output_field_count; ++field_counter)
         {
+            FieldSelection fs;
+
+
             wchar_t buf[255];
             swprintf(buf, 255, L"output_field%d", field_counter);
 
-            // get field node
-            tango::INodeValuePtr field_node = field_mapping_node->getChild(buf, false);
-            if (!field_node)
+            kl::JsonNode output_field_node = field_mapping_node[buf];
+            if (!output_field_node.isOk())
                 return false;
 
-            // input name
-            tango::INodeValuePtr field_in = field_node->getChild(L"input_name", false);
-            if (!field_in)
+            kl::JsonNode input_name_node = output_field_node["input_name"];
+            if (!input_name_node.isOk())
                 return false;
+            fs.input_name = towx(input_name_node.getString());
 
-            // input type
-            tango::INodeValuePtr field_it = field_node->getChild(L"input_type", false);
-            if (!field_it)
+            kl::JsonNode input_type_node = output_field_node["input_type"];
+            if (!input_type_node.isOk())
                 return false;
+            fs.input_type = input_type_node.getInteger();
 
-            // input width
-            tango::INodeValuePtr field_iw = field_node->getChild(L"input_width", false);
-            if (!field_iw)
+            kl::JsonNode input_width_node = output_field_node["input_width"];
+            if (!input_width_node.isOk())
                 return false;
+            fs.input_width = input_width_node.getInteger();
 
-            // input scale
-            tango::INodeValuePtr field_is = field_node->getChild(L"input_scale", false);
-            if (!field_is)
+            kl::JsonNode input_scale_node = output_field_node["input_scale"];
+            if (!input_scale_node.isOk())
                 return false;
+            fs.input_scale = input_scale_node.getInteger();
 
-            // output name
-            tango::INodeValuePtr field_on = field_node->getChild(L"output_name", false);
-            if (!field_on)
+            kl::JsonNode output_name_node = output_field_node["output_name"];
+            if (!output_name_node.isOk())
                 return false;
+            fs.output_name = towx(output_name_node.getString());
 
-            // output type
-            tango::INodeValuePtr field_ot = field_node->getChild(L"output_type", false);
-            if (!field_ot)
+            kl::JsonNode output_type_node = output_field_node["output_type"];
+            if (!output_type_node.isOk())
                 return false;
+            fs.output_type = output_type_node.getInteger();
 
-            // output width
-            tango::INodeValuePtr field_ow = field_node->getChild(L"output_width", false);
-            if (!field_ow)
+            kl::JsonNode output_width_node = output_field_node["output_width"];
+            if (!output_width_node.isOk())
                 return false;
+            fs.output_width = output_width_node.getInteger();
 
-            // output scale
-            tango::INodeValuePtr field_os = field_node->getChild(L"output_scale", false);
-            if (!field_os)
+            kl::JsonNode output_scale_node = output_field_node["output_scale"];
+            if (!output_scale_node.isOk())
                 return false;
+            fs.output_scale = output_scale_node.getInteger();
 
-            // dynamic
-            tango::INodeValuePtr field_dyn = field_node->getChild(L"dynamic", false);
-            if (!field_dyn)
+            kl::JsonNode dynamic_node = output_field_node["dynamic"];
+            if (!dynamic_node.isOk())
                 return false;
+            fs.dynamic = dynamic_node.getInteger();
 
-            // dynamic state
-            tango::INodeValuePtr field_dyn_state = field_node->getChild(L"dynamic_state", false);
-            if (!field_dyn_state)
+            kl::JsonNode dynamic_state_node = output_field_node["dynamic_state"];
+            if (!dynamic_state_node.isOk())
                 return false;
+            fs.dyn_state = (dynamic_state_node.getInteger() != 0 ? true : false);
 
-            // expression
-            tango::INodeValuePtr field_expression = field_node->getChild(L"expression", false);
-            if (!field_expression)
+            kl::JsonNode expression_node = output_field_node["expression"];
+            if (!expression_node.isOk())
                 return false;
+            fs.expression = towx(expression_node.getString());
 
-            FieldSelection fs;
-            fs.input_name = towx(field_in->getString());
-            fs.input_type = field_it->getInteger();
-            fs.input_width = field_iw->getInteger();
-            fs.input_scale = field_is->getInteger();
-            fs.output_name = towx(field_on->getString());
-            fs.output_type = field_ot->getInteger();
-            fs.output_width = field_ow->getInteger();
-            fs.output_scale = field_os->getInteger();
-            fs.dynamic = field_dyn->getInteger();
-            fs.dyn_state = field_dyn_state->getBoolean();
-            fs.expression = towx(field_expression->getString());
 
             ts.output_fields.push_back(fs);
         }

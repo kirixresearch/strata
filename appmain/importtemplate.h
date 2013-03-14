@@ -331,7 +331,8 @@ public:
     
 public:
 
-    bool loadOldVersion(const wxString& path);
+    bool loadJson(const wxString& path);
+    bool loadJsonFromNode(const wxString& path);
 
 public:
 
