@@ -365,6 +365,8 @@ tango::datetime_t KpgIterator::getDateTime(tango::objhandle_t data_handle)
         return 0;
     }
 
+
+    return 0;
 }
 
 double KpgIterator::getDouble(tango::objhandle_t data_handle)
