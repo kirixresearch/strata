@@ -11,6 +11,7 @@
 
 #include "appmain.h"
 #include "bookmark.h"
+#include "jsonconfig.h"
 #include <wx/sstream.h>
 #include <wx/buffer.h>
 #include <wx/mstream.h>
@@ -330,41 +331,49 @@ bool Bookmark::load(const wxString& path)
     tango::IFileInfoPtr info = db->getFileInfo(towstr(path));
     if (info.isOk() && info->getType() == tango::filetypeFolder)
         return false;
-    
-    tango::INodeValuePtr file = db->openNodeFile(towstr(path));
-    if (file.isNull())
+
+    kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), path);
+    if (!node.isOk())
         return false;
     
-    // if this node exists, we're working with a mount
-    tango::INodeValuePtr remotepath_node = file->getChild(L"remote_path", false);
-    if (remotepath_node.isOk())
-        m_loc = towx(remotepath_node->getString());
-    
-    // get/create the root bookmark node
-    tango::INodeValuePtr bookmark_node = file->getChild(L"bookmark", false);
-    if (bookmark_node.isNull())
+    kl::JsonNode root_node = node["root"];
+    if (!root_node.isOk())
         return false;
 
-    tango::INodeValuePtr data;
-    data = bookmark_node->getChild(L"location", false);
-    if (remotepath_node.isNull())
-        m_loc = towx(data->getString());
+    // if this node exists, we're working with a mount
+    kl::JsonNode remote_path_node = root_node["remote_path"];
+    if (remote_path_node.isOk())
+        m_loc = towx(remote_path_node.getString());
     
-    data = bookmark_node->getChild(L"tags", false);
-    m_tags = towx(data->getString());
-    
-    data = bookmark_node->getChild(L"description", false);
-    m_desc = towx(data->getString());
-    
-    data = bookmark_node->getChild(L"favicon", false);
-    if (data.isOk())
-        m_favicon = textToImage(towx(data->getString()));
+    // get/create the root bookmark node
+    kl::JsonNode bookmark_node = root_node["bookmark"];
+    if (!bookmark_node.isOk())
+        return false;
+
+    kl::JsonNode location_node = bookmark_node["location"];
+    if (!location_node.isOk())
+        return false;
+
+    if (!remote_path_node.isOk())
+        m_loc = towx(location_node.getString());
+
+    kl::JsonNode tags_node = bookmark_node["tags"];
+    if (tags_node.isOk())
+        m_tags = towx(tags_node.getString());
+
+    kl::JsonNode description_node = bookmark_node["description"];
+    if (description_node.isOk())
+        m_desc = towx(description_node.getString());
+
+    kl::JsonNode favicon_node = bookmark_node["favicon"];
+    if (favicon_node.isOk())
+        m_favicon = textToImage(towx(favicon_node.getString()));
          else
         m_favicon = wxImage();
         
-    data = bookmark_node->getChild(L"run_target", false);
-    if (data.isOk())
-        m_run_target = data->getBoolean();
+    kl::JsonNode run_target_node = bookmark_node["run_target"];
+    if (run_target_node.isOk())
+        m_run_target = (run_target_node.getInteger() != 0 ? true : false);
          else
         m_run_target = false;
     
