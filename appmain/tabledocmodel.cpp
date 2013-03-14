@@ -338,32 +338,7 @@ public:
 
     bool writeToNode(tango::INodeValuePtr node)
     {
-        int int_color;
-
-        tango::INodeValuePtr description_node = node->createChild(L"description");
-        description_node->setString(towstr(m_description));
-
-        tango::INodeValuePtr expression_node = node->createChild(L"expression");
-        expression_node->setString(towstr(m_expression));
-        
-        tango::INodeValuePtr mark_active_node = node->createChild(L"mark_active");
-        mark_active_node->setBoolean(m_mark_active);
-
-        tango::INodeValuePtr mark_fgcolor_node = node->createChild(L"mark_fgcolor");
-        int_color = (m_fgcolor.Red() << 16) | (m_fgcolor.Green() << 8) | m_fgcolor.Blue();
-        mark_fgcolor_node->setInteger(int_color);
-
-        tango::INodeValuePtr mark_bgcolor_node = node->createChild(L"mark_bgcolor");
-        if (m_bgcolor.IsOk())
-            int_color = (m_bgcolor.Red() << 16) | (m_bgcolor.Green() << 8) | m_bgcolor.Blue();
-             else
-            int_color = -1;
-        mark_bgcolor_node->setInteger(int_color);
-
-        tango::INodeValuePtr markset_path_node = node->createChild(L"queryset_path");
-        markset_path_node->setString(L"");
-
-        return true;
+        return false;
     }
 
     bool readFromNode(tango::INodeValuePtr node)
@@ -570,25 +545,7 @@ public:
 
     bool writeToNode(tango::INodeValuePtr node)
     {
-        tango::INodeValuePtr col_name = node->createChild(L"name");
-        col_name->setString(towstr(m_name));
-
-        tango::INodeValuePtr col_size = node->createChild(L"size");
-        col_size->setInteger(m_size);
-
-        tango::INodeValuePtr col_fgcolor = node->createChild(L"fgcolor");
-        col_fgcolor->setInteger(color2int(m_fgcolor));
-
-        tango::INodeValuePtr col_bgcolor = node->createChild(L"bgcolor");
-        col_bgcolor->setInteger(color2int(m_bgcolor));
-
-        tango::INodeValuePtr col_alignment = node->createChild(L"alignment");
-        col_alignment->setInteger(m_alignment);
-        
-        tango::INodeValuePtr col_textwrap = node->createChild(L"text_wrap");
-        col_textwrap->setInteger(m_text_wrap);
-
-        return true;
+        return false;
     }
 
     bool readFromNode(tango::INodeValuePtr node)
@@ -805,32 +762,7 @@ public:
 
     bool writeToNode(tango::INodeValuePtr node)
     {
-        tango::INodeValuePtr desc_node = node->createChild(L"description");
-        desc_node->setString(towstr(m_description));
-
-        tango::INodeValuePtr rowsize_node = node->createChild(L"row_size");
-        rowsize_node->setInteger(m_row_size);
-
-        tango::INodeValuePtr cols_node = node->createChild(L"columns");
-
-        wchar_t buf[255];
-        int counter = 0;
-
-        tango::INodeValuePtr col;
-        wxColor color;
-
-        std::vector<ITableDocViewColPtr>::iterator col_it;
-        for (col_it = m_cols.begin(); col_it != m_cols.end(); ++col_it)
-        {
-            swprintf(buf, 255, L"column_%03d", counter++);
-            col = cols_node->createChild(buf);
-
-            ITableDocObjectPtr obj = *col_it;
-            if (!obj->writeToNode(col))
-                return false;
-        }
-
-        return true;
+        return false;
     }
 
     bool readFromNode(tango::INodeValuePtr node)
