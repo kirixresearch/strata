@@ -15,6 +15,7 @@
 #include "appcontroller.h"
 #include "dlgprojectmgr.h"
 #include "jobscheduler.h"
+#include "jsonconfig.h"
 #include "../paladin/paladin.h"
 #include "../webconnect/webcontrol.h"
 #include "connectionmgr.h"
@@ -944,28 +945,31 @@ wxString MainApp::getBookmarkFolder()
     std::wstring path = L"/.appdata/";
     path += m_database->getActiveUid();
     path += L"/dcfe/bookmarkloc";
- 
-    tango::INodeValuePtr n = m_database->openNodeFile(path);
-    if (n.isOk())
+
+    kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), path);
+    if (node.isOk())
     {
-        tango::INodeValuePtr path_node = n->getChild(L"path", false);
-        if (path_node)
+        kl::JsonNode root_node = node["root"];
+        if (root_node.isOk())
         {
-            res = towx(path_node->getString());
-            if (res.Length() > 0)
+            kl::JsonNode path_node = root_node["path"];
+            if (path_node.isOk())
             {
-                if (res.Last() == wxT('/'))
-                    res.RemoveLast();
+                res = towx(path_node.getString());
+                if (res.Length() > 0)
+                {
+                    if (res.Last() == wxT('/'))
+                        res.RemoveLast();
                 
-                if (!m_database->getFileExist(towstr(res)))
-                    m_database->createFolder(towstr(res));
+                    if (!m_database->getFileExist(towstr(res)))
+                        m_database->createFolder(towstr(res));
                 
-                return res;
+                    return res;
+                }
             }
         }
     }
-    
-    
+
     res = L"/.appdata/";
     res += m_database->getActiveUid();
     res += L"/bookmarks";
