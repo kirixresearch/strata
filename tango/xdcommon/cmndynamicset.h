@@ -28,7 +28,6 @@ public:
 
 
 class CommonDynamicSet : public tango::ISet,
-                         public tango::IDynamicSet,
                          public tango::ISetRowUpdate
 {
 friend class CommonDynamicSetRowDeleter;
@@ -36,7 +35,6 @@ friend class CommonDynamicSetRowDeleter;
     XCM_CLASS_NAME("xdnative.CommonDynamicSet")
     XCM_BEGIN_INTERFACE_MAP(CommonDynamicSet)
         XCM_INTERFACE_ENTRY(tango::ISet)
-        XCM_INTERFACE_ENTRY(tango::IDynamicSet)
         XCM_INTERFACE_ENTRY(tango::ISetRowUpdate)
     XCM_END_INTERFACE_MAP()
 

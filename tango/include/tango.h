@@ -61,7 +61,6 @@ xcm_interface IDatabase;
 xcm_interface IDatabaseEntry;
 xcm_interface IDatabaseMgr;
 xcm_interface IDelimitedTextSet;
-xcm_interface IDynamicSet;
 xcm_interface IFileInfo;
 xcm_interface IFixedLengthDefinition;
 xcm_interface IIndexInfo;
@@ -93,7 +92,6 @@ XCM_DECLARE_SMARTPTR(IDelimitedTextSet)
 XCM_DECLARE_SMARTPTR(IIndexInfo)
 XCM_DECLARE_SMARTPTR(IJob)
 XCM_DECLARE_SMARTPTR(IIterator)
-XCM_DECLARE_SMARTPTR(IDynamicSet)
 XCM_DECLARE_SMARTPTR(IStructure)
 XCM_DECLARE_SMARTPTR(IRelation)
 XCM_DECLARE_SMARTPTR(IRowInserter)
@@ -600,20 +598,6 @@ public:
     virtual rowpos_t getRowCount() = 0;
 };
 
-
-
-xcm_interface IDynamicSet : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("tango.IDynamicSet")
-
-public:
-
-    virtual ISetPtr getBaseSet() = 0;
-    virtual void startBulkInsert() = 0;
-    virtual void finishBulkInsert() = 0;
-    virtual bool insertRow(const rowid_t& rowid) = 0;
-    virtual bool deleteRow(const rowid_t& rowid) = 0;
-};
 
 
 xcm_interface IJob : public xcm::IObject
