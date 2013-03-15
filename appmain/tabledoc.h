@@ -298,8 +298,7 @@ public:
 
     static ITableDocModelPtr loadModel(const std::wstring& set_id);
     static bool deleteModel(const std::wstring& set_id);
-    static void copyModel(tango::ISetPtr src_id,
-                          tango::ISetPtr dest_id);
+    static void copyModel(const std::wstring& src_set_id, const std::wstring& dest_set_id);
     static void clearModelRegistry();
     static void cleanupModelRegistry();
 };

@@ -37,6 +37,7 @@ public:
     tango::IIteratorPtr m_source_iter;
     wxString m_condition;
     wxString m_columns;
+    wxString m_source_set_id;
     
     // sort/filter mode parameters
     wxString m_order;       // (used along with m_condition above)
@@ -88,7 +89,8 @@ public:
                             const wxString& columns,
                             tango::IDatabasePtr dest_db,
                             const wxString& dest_path = wxEmptyString,
-                            const wxString& cstr = wxEmptyString);
+                            const wxString& cstr = wxEmptyString,
+                            const wxString& source_set_id = wxEmptyString);
 
     void addCopyInstruction(tango::IDatabasePtr source_db,
                             tango::ISetPtr source_set,

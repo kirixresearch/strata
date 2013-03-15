@@ -1389,25 +1389,8 @@ ITableDocPtr TableDocMgr::getActiveTableDoc(int* site_id)
     return tabledoc;
 }
 
-void TableDocMgr::copyModel(tango::ISetPtr _src_set,
-                            tango::ISetPtr _dest_set)
+void TableDocMgr::copyModel(const std::wstring& src_id, const std::wstring& dest_id)
 {
-    // create a new model for the result set
-    tango::ISetPtr source_set = _src_set;
-    tango::ISetPtr dest_set = _dest_set;
-
-    tango::IDynamicSetPtr dynset = source_set;
-    if (dynset)
-    {
-        source_set = dynset->getBaseSet();
-        dynset.clear();
-    }
-
-
-    std::wstring src_id = source_set->getSetId();
-    std::wstring dest_id = dest_set->getSetId();
-
-
     ITableDocModelPtr src_model = TableDocMgr::loadModel(src_id);
 
     ITableDocObjectEnumPtr vec;

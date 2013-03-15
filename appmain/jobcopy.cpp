@@ -49,11 +49,13 @@ void CopyJob::addCopyInstruction(tango::IDatabasePtr source_db,
                                  const wxString& columns,
                                  tango::IDatabasePtr dest_db,
                                  const wxString& dest_path,
-                                 const wxString& cstr)
+                                 const wxString& cstr,
+                                 const wxString& source_set_id)
 {
     CopyInstruction ci;
     ci.m_mode = CopyInstruction::modeIterator;
     ci.m_source_db = source_db;
+    ci.m_source_set_id = source_set_id;
     ci.m_source_iter = source_iter;
     ci.m_columns = columns;
     ci.m_condition = condition;
@@ -77,6 +79,7 @@ void CopyJob::addCopyInstruction(tango::IDatabasePtr source_db,
     ci.m_mode = CopyInstruction::modeFilterSort;
     ci.m_source_db = source_db;
     ci.m_source_set = source_set;
+    ci.m_source_set_id = source_set->getSetId();
     ci.m_columns = columns;
     ci.m_condition = condition;
     ci.m_order = order;
@@ -144,6 +147,8 @@ int CopyJob::runJob()
 
                 if (set)
                 {
+                    it->m_source_set_id = set->getSetId();
+
                     source_iter = set->createIterator(L"", L"", NULL);
                     it->m_source_iter = source_iter;
 
@@ -392,14 +397,16 @@ int CopyJob::runJob()
     for (it = m_instructions.begin(); it != m_instructions.end(); ++it)
     {
         // copy the old table doc model, if any, to the new set
-        if (it->m_source_iter)
+        if (it->m_source_set_id.Length() > 0)
         {
-            tango::ISetPtr source_set = it->m_source_iter->getSet();
-
-            if (source_set)
+            wxString dest_set_id = wxT("");
+            if (it->m_result_set.isOk())
+                dest_set_id = towx(it->m_result_set->getSetId());
+            
+            if (it->m_source_set_id.Length() > 0 &&
+                dest_set_id.Length() > 0)
             {
-                TableDocMgr::copyModel(source_set,
-                                       it->m_result_set);
+                TableDocMgr::copyModel(towstr(it->m_source_set_id), towstr(dest_set_id));
             }
         }
     }

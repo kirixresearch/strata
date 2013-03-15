@@ -1533,7 +1533,9 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
                                      L"",
                                      L"",
                                      g_app->getDatabase(),
-                                     path);
+                                     path,
+                                     wxEmptyString,
+                                     towx(getBaseSet()->getSetId()));
     }
      else
     {
@@ -1821,8 +1823,9 @@ void TableDoc::onDoReloadRefresh(wxCommandEvent& evt)
         tango::ISetPtr new_set = parser.convertToSet();
         if (new_set.isNull())
             return;
-        
-        TableDocMgr::copyModel(old_set, new_set);
+        std::wstring new_set_id = new_set->getSetId();
+
+        TableDocMgr::copyModel(old_set_id, new_set_id);
         
         open(new_set, xcm::null);
         
@@ -7531,12 +7534,16 @@ void TableDoc::copyRecords(const wxString& condition)
     
     if (source_iter)
     {
+        std::wstring src_set_id = L"";
+
         wxString dest_cstr = wxT("");
         tango::IDatabasePtr dest_db = g_app->getDatabase();
 
         tango::ISetPtr set = getBaseSet();
         if (set.isOk())
         {
+            src_set_id = set->getSetId();
+
             std::wstring mount_root = getMountRoot(g_app->getDatabase(), set->getObjectPath());
             if (mount_root.length() > 0)
             {
@@ -7556,7 +7563,8 @@ void TableDoc::copyRecords(const wxString& condition)
                                      columns,
                                      dest_db,
                                      wxEmptyString,
-                                     dest_cstr);
+                                     dest_cstr,
+                                     src_set_id);
     }
      else
     {

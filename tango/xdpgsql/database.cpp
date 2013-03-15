@@ -613,18 +613,11 @@ bool PgsqlDatabase::renameFile(const std::wstring& path,
 {
     std::wstring command;
 
-    std::wstring quote_openchar = m_attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
-    std::wstring quote_closechar = m_attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
-
 
     command = L"ALTER TABLE ";
-    command += quote_openchar;
     command += pgsqlGetTablenameFromPath(path);
-    command += quote_closechar;
     command += L" RENAME TO ";
-    command += quote_openchar;
     command += pgsqlGetTablenameFromPath(new_name);
-    command += quote_closechar;
 
     if (command.length() > 0)
     {
@@ -687,17 +680,10 @@ bool PgsqlDatabase::deleteFile(const std::wstring& path)
         return true;
     }
 
-
-
-    std::wstring quote_openchar = m_attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
-    std::wstring quote_closechar = m_attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);    
-    
     std::wstring command;
     command.reserve(1024);
     command = L"DROP TABLE ";
-    command += quote_openchar;
     command += pgsqlGetTablenameFromPath(path);
-    command += quote_closechar;
 
     xcm::IObjectPtr result_obj;
     execute(command, 0, result_obj, NULL);
@@ -802,7 +788,17 @@ tango::IFileInfoEnumPtr PgsqlDatabase::getFolderInfo(const std::wstring& path)
         f->format = tango::formatNative;
 
         if (type.substr(0, 6) == L"stream")
+        {
             f->type = tango::filetypeStream;
+
+            type = kl::afterFirst(type, L';');
+            type = kl::beforeFirst(type, L';');
+            kl::trim(type);
+
+            f->mime_type = type;
+
+            kl::trim(f->mime_type);
+        }
 
         retval->append(f);
     }
