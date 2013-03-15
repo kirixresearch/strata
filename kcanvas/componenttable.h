@@ -26,13 +26,11 @@ namespace kcanvas
 
 class CompTable;
 
-class CompTableModel : public ITableModel,
-                       public IStorable
+class CompTableModel : public ITableModel
 {
     XCM_CLASS_NAME("kcanvas.CompTableModel")
     XCM_BEGIN_INTERFACE_MAP(CompTableModel)
         XCM_INTERFACE_ENTRY(ITableModel)
-        XCM_INTERFACE_ENTRY(IStorable)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -126,9 +124,6 @@ public:
     void reset();
 
     void eval(int row, int col, Properties& properties) const;
-
-    // IStorable
-    bool load(IStoreValuePtr store);
 
 protected:
 
@@ -328,9 +323,6 @@ public:
     void selectNone();
 
     void clear(bool text = true);
-
-    // IStorable
-    bool load(IStoreValuePtr store);
 
 protected:
 

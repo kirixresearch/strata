@@ -27,7 +27,6 @@ class Canvas;
 
 class Component : public IComponent,
                   public IEventTarget,
-                  public IStorable,
                   public xcm::signal_sink
 {
 friend class Canvas;
@@ -36,7 +35,6 @@ friend class Canvas;
     XCM_BEGIN_INTERFACE_MAP(Component)
         XCM_INTERFACE_ENTRY(IComponent)
         XCM_INTERFACE_ENTRY(IEventTarget)
-        XCM_INTERFACE_ENTRY(IStorable)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -88,9 +86,6 @@ public:
     bool intersects(const wxRect& rect);
     void extends(wxRect& rect);
     void render(const wxRect& rect = wxRect());
-
-    // IStorable
-    bool load(IStoreValuePtr store);
 
     // IEventTarget
     bool addEventHandler(const wxString& name,

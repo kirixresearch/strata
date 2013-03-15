@@ -322,10 +322,6 @@ enum CanvasTools
 
 
 // forward interface declarations
-xcm_interface IStoreValue;
-xcm_interface IStorable;
-xcm_interface IStore;
-
 xcm_interface ITableModel;
 
 xcm_interface IEdit;
@@ -350,10 +346,6 @@ xcm_interface ICanvasHistory;
 
 
 // smart pointers
-XCM_DECLARE_SMARTPTR(IStoreValue)
-XCM_DECLARE_SMARTPTR(IStorable)
-XCM_DECLARE_SMARTPTR(IStore)
-
 XCM_DECLARE_SMARTPTR(IEdit)
 
 XCM_DECLARE_SMARTPTR(IEvent)
@@ -376,57 +368,6 @@ XCM_DECLARE_SMARTPTR(ICanvasHistory)
 
 XCM_DECLARE_SMARTPTR(ITableModel)
 
-
-xcm_interface IStoreValue : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("kcanvas.IStoreValue")
-
-public:
-
-    virtual wxString getName() = 0;
-
-    virtual void setString(const wxString& value) = 0;
-    virtual wxString getString() = 0;
-
-    virtual void setDouble(double value) = 0;
-    virtual double getDouble() = 0;
-
-    virtual void setInteger(int value) = 0;
-    virtual int getInteger() = 0;
-
-    virtual void setBoolean(bool value) = 0;
-    virtual bool getBoolean() = 0;
-
-    virtual void setColor(const Color& color) = 0;
-    virtual Color getColor() = 0;
-
-    virtual unsigned int getChildCount() = 0;
-    virtual wxString getChildName(unsigned int idx) = 0;
-    virtual IStoreValuePtr getChildByIdx(unsigned int idx) = 0;
-    virtual IStoreValuePtr getChild(const wxString& name, bool create_if_not_exist) = 0;
-    virtual IStoreValuePtr createChild(const wxString& name) = 0;
-    virtual bool getChildExist(const wxString& name) = 0;
-    virtual bool deleteChild(const wxString& name) = 0;
-    virtual bool deleteAllChildren() = 0;
-};
-
-xcm_interface IStorable : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("kcanvas.IStorable")
-
-public:
-
-    virtual bool load(IStoreValuePtr store) = 0;
-};
-
-xcm_interface IStore : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("kcanvas.IStore")
-
-public:
-
-    virtual IStoreValuePtr loadFile(const wxString& file) = 0;
-};
 
 xcm_interface IEdit : public xcm::IObject
 {

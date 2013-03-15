@@ -417,11 +417,6 @@ void Component::render(const wxRect& rect)
 {
 }
 
-bool Component::load(IStoreValuePtr store)
-{
-    return loadProperties(store, m_properties);
-}
-
 bool Component::addEventHandler(const wxString& name,
                                 IEventHandlerPtr handler,
                                 bool capture_phase)
