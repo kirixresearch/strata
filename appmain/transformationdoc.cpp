@@ -543,14 +543,6 @@ bool TransformationDoc::onSiteClosing(bool force)
             return true;
     }
 
-    // save the view information in the OFS so we can resume in this view
-    // the next time we open up this text file (NOTE: we save the view as
-    // "table" because it would be confusing to the user to open up a text
-    // file and begin in the TransformationDoc)
-    ITextDocPtr textdoc = lookupOtherDocument(m_doc_site, "appmain.TextDoc");
-    if (textdoc)
-        textdoc->saveViewInfo(L"table");
-
     if (m_dirty)
     {
         // save the set's metadata

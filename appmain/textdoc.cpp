@@ -132,11 +132,6 @@ ITextDocPtr createTextDoc(const wxString& filename,
     // create a new TransformationDoc
     TransformationDoc* transdoc = new TransformationDoc(filename);
 
-    // load default view string
-    bool show_tabledoc = (textdoc->loadViewInfo() == L"text") ? false : true;
-
-
-
     if (container_wnd)
     {
         tabledoc_site = frame->createSite(container_wnd,
@@ -169,8 +164,16 @@ ITextDocPtr createTextDoc(const wxString& filename,
 
 
 
-    // activate table doc site for starts if this textdoc is
-    // being created in a container which already exists
+    // activate table doc site for starts if this textdoc is being created in a 
+    // container which already exists
+
+    // TODO: for now, always open the view in the table view; we used to have 
+    // some logic for saving whether to open a table in the text view on a per-table 
+    // basis based on the state in which it was last viewed, but this value was stored 
+    // as a single value in the OFS on a per table and the implementation used a 
+    // legacy approach that would be better to reimplement than adopt
+    bool show_tabledoc = true;
+
     if (container_wnd)
     {
         if (show_tabledoc)
@@ -468,10 +471,6 @@ bool TextDoc::onSiteClosing(bool force)
             return true;
     }
 
-    // save the view information in the OFS so we can resume in
-    // this view the next time we open up this text file
-    saveViewInfo(L"text");
-
     if (m_dirty)
     {
         // save the set's metadata
@@ -501,69 +500,6 @@ bool TextDoc::updateColumnList()
 {
     g_app->getMainFrame()->postEvent(new FrameworkEvent(FRAMEWORK_EVT_COLUMNLISTPANEL_UPDATE));
     return true;
-}
-
-bool TextDoc::saveViewInfo(const std::wstring& view_str)
-{
-    std::wstring set_id;
-    std::wstring user_id;
-    
-    // get the set ID
-    if (m_view == TextDoc::TextDelimitedView)
-        set_id = m_textdelimited_set->getSetId();
-     else
-        set_id = m_fixedlength_set->getSetId();
-
-    // get the active user ID
-    user_id = g_app->getDatabase()->getActiveUid();
-    
-    // save the TextDoc information in the OFS
-    wxString path;
-    path = wxString::Format(wxT("/.appdata/%s/dcfe/setinfo/%s/textdocinfo"),
-                            towx(user_id).c_str(),
-                            kl::tstr(set_id).c_str());
-    tango::INodeValuePtr file = g_app->getDatabase()->createNodeFile(towstr(path));
-    if (file)
-    {
-        tango::INodeValuePtr docview = file->createChild(L"view");
-        docview->setString(view_str);
-        return true;
-    }
-    
-    return false;
-}
-
-std::wstring TextDoc::loadViewInfo()
-{
-    std::wstring set_id;
-    std::wstring user_id;
-    
-    // get the set ID
-    if (m_view == TextDoc::TextDelimitedView)
-        set_id = m_textdelimited_set->getSetId();
-     else
-        set_id = m_fixedlength_set->getSetId();
-
-    // get the active user ID
-    user_id = g_app->getDatabase()->getActiveUid();
-    
-    // save the TextDoc information in the OFS
-    wxString path;
-    path = wxString::Format(wxT("/.appdata/%s/dcfe/setinfo/%s/textdocinfo"),
-                            towx(user_id).c_str(),
-                            kl::tstr(set_id).c_str());
-    tango::INodeValuePtr file = g_app->getDatabase()->openNodeFile(towstr(path));
-    if (file)
-    {
-        tango::INodeValuePtr docview = file->getChild(L"view", false);
-        if (docview)
-        {
-            std::wstring retval = docview->getString();
-            return retval;
-        }
-    }
-    
-    return L"";
 }
 
 tango::ISetPtr TextDoc::getTextSet()

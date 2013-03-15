@@ -641,15 +641,6 @@ bool TableDoc::onSiteClosing(bool force)
     
     AppBusyCursor bc;
 
-    // if we're viewing a text file, save the view information in the OFS
-    // so we can resume in this view the next time we open up this text file
-    IDocumentPtr doc;
-    doc = lookupOtherDocument(m_doc_site, "appmain.TextDoc");
-    ITextDocPtr textdoc = doc;
-    if (textdoc)
-        textdoc->saveViewInfo(L"table");
-
-
 
     // let the column props (dynamic) field panel know that we are closing
     FrameworkEvent* e = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_ON_SITE_CLOSING, (long)(ITableDoc*)this);

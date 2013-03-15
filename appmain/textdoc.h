@@ -27,14 +27,8 @@ public:
     virtual bool open(const wxString& filename) = 0;
     virtual void close() = 0;
     virtual wxString getFilename() = 0;
-    
     virtual tango::ISetPtr getTextSet() = 0;
-
     virtual void setSourceUrl(const wxString& source_url) = 0; // allows override of displayed url
-
-    virtual bool saveViewInfo(const std::wstring& view_str) = 0;
-    virtual std::wstring loadViewInfo() = 0;
-
 };
 
 XCM_DECLARE_SMARTPTR(ITextDoc)
@@ -90,11 +84,7 @@ public:
 
     // -- ITextDoc --
     void setSourceUrl(const wxString& source_url);
-    bool saveViewInfo(const std::wstring& view_str);
-    std::wstring loadViewInfo();
-
     tango::ISetPtr getTextSet();
-    
     bool open(const wxString& filename);
     void close();
     wxString getFilename();
