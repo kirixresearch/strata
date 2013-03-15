@@ -131,6 +131,7 @@ public:
     bool renameFile(const std::wstring& path, const std::wstring& new_name);
     bool moveFile(const std::wstring& path, const std::wstring& new_location);
     bool copyFile(const std::wstring& src_path, const std::wstring& dest_path);
+    bool copyData(const tango::CopyInfo* info, tango::IJob* job);
     bool deleteFile(const std::wstring& path);
     bool getLocalFileExist(const std::wstring& path);
     bool getFileExist(const std::wstring& path);

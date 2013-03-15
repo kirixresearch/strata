@@ -974,6 +974,10 @@ bool FsDatabase::copyFile(const std::wstring& src_path,
     return true;
 }
 
+bool FsDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
+{
+    return false;
+}
 
 // from xdnative/database.cpp
 static bool _deleteTree(const std::wstring& path)

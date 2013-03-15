@@ -443,6 +443,11 @@ bool SqlServerDatabase::copyFile(const std::wstring& src_path,
     return false;
 }
 
+bool SqlServerDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
+{
+    return false;
+}
+
 bool SqlServerDatabase::deleteFile(const std::wstring& path)
 {
     std::wstring command;

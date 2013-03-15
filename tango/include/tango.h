@@ -57,8 +57,7 @@ const int max_numeric_scale = 12;
 xcm_interface IAttributes;
 xcm_interface IColumnInfo;
 xcm_interface IConnectionStr;
-xcm_interface IDatabase;
-xcm_interface IDatabaseEntry;
+xcm_interface IDatabase;xcm_interface IDatabaseEntry;
 xcm_interface IDatabaseMgr;
 xcm_interface IDelimitedTextSet;
 xcm_interface IFileInfo;
@@ -664,6 +663,21 @@ public:
 };
 
 
+struct CopyInfo
+{
+    CopyInfo()
+    {
+        append = false;
+    }
+
+    std::wstring source_path;
+    std::wstring where_condition;
+    std::wstring order;
+
+    std::wstring destination_path;
+    bool append;
+};
+
 struct FormatInfo
 {
     FormatInfo()
@@ -726,6 +740,7 @@ public:
     virtual bool renameFile(const std::wstring& path, const std::wstring& new_name) = 0;
     virtual bool moveFile(const std::wstring& path, const std::wstring& new_folder) = 0;
     virtual bool copyFile(const std::wstring& src_path, const std::wstring& dest_path) = 0;
+    virtual bool copyData(const CopyInfo* info, IJob* job) = 0;
     virtual bool deleteFile(const std::wstring& path) = 0;
     virtual bool getFileExist(const std::wstring& path) = 0;
     virtual IFileInfoPtr getFileInfo(const std::wstring& path) = 0;

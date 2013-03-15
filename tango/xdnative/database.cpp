@@ -1697,7 +1697,10 @@ static bool _copyTree(const std::wstring& path,
     return true;
 }
 
-
+bool Database::copyData(const tango::CopyInfo* info, tango::IJob* job)
+{
+    return false;
+}
 
 bool Database::copyFile(const std::wstring& src_path,
                         const std::wstring& dest_path)

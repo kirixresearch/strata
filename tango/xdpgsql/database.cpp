@@ -640,6 +640,11 @@ bool PgsqlDatabase::copyFile(const std::wstring& src_path,
     return false;
 }
 
+bool PgsqlDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
+{
+    return false;
+}
+
 bool PgsqlDatabase::deleteFile(const std::wstring& path)
 {
     tango::IFileInfoPtr info = getFileInfo(path);

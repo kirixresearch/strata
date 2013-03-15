@@ -435,6 +435,11 @@ bool ClientDatabase::copyFile(const std::wstring& src_path, const std::wstring& 
     return false;
 }
 
+bool ClientDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
+{
+    return false;
+}
+
 bool ClientDatabase::deleteFile(const std::wstring& path)
 {
     ServerCallParams params;

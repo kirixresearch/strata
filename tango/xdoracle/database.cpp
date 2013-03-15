@@ -849,6 +849,11 @@ bool OracleDatabase::copyFile(const std::wstring& src_path,
     return false;
 }
 
+bool OracleDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
+{
+    return false;
+}
+
 bool OracleDatabase::deleteFile(const std::wstring& path)
 {
     std::wstring command;

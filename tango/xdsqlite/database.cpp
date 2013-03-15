@@ -438,6 +438,11 @@ bool SlDatabase::copyFile(const std::wstring& src_path,
     return false;
 }
 
+bool SlDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
+{
+    return false;
+}
+
 bool SlDatabase::deleteFile(const std::wstring& path)
 {
     std::wstring objname = pathToObjectName(path);

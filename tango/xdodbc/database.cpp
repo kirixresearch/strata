@@ -1582,6 +1582,11 @@ bool OdbcDatabase::copyFile(const std::wstring& src_path,
     return false;
 }
 
+bool OdbcDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
+{
+    return false;
+}
+
 bool OdbcDatabase::deleteFile(const std::wstring& path)
 {
     if (m_db_type == tango::dbtypeExcel)
