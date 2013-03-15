@@ -416,7 +416,6 @@ xcm_interface IStorable : public xcm::IObject
 
 public:
 
-    virtual bool save(IStoreValuePtr store) = 0;
     virtual bool load(IStoreValuePtr store) = 0;
 };
 
@@ -426,7 +425,6 @@ xcm_interface IStore : public xcm::IObject
 
 public:
 
-    virtual IStoreValuePtr createFile(const wxString& file) = 0;
     virtual IStoreValuePtr loadFile(const wxString& file) = 0;
 };
 

@@ -1802,96 +1802,6 @@ void CompTableModel::eval(int row, int col, Properties& properties) const
     }
 }
 
-bool CompTableModel::save(IStoreValuePtr store)
-{
-    // compact the cell properties
-    compact();
-
-    // save the row and column counts
-    IStoreValuePtr node_row_count;
-    node_row_count = store->createChild(wxT("row.count"));
-    node_row_count->setInteger(getRowCount());
-    
-    IStoreValuePtr node_column_count;
-    node_column_count = store->createChild(wxT("column.count"));
-    node_column_count->setInteger(getColumnCount());
-
-    // save the cell range count
-    IStoreValuePtr node_1;
-    node_1 = store->createChild(wxT("cell.range.count"));
-    node_1->setInteger(m_cell_properties.size());
-
-    // iterate through the cell ranges; note: we don't need to
-    // save or load the default properties since these are created
-    // and accessed separately from the layers of properties
-    std::vector<CellProperties>::iterator it, it_end;
-    it_end = m_cell_properties.end();
-
-    for (it = m_cell_properties.begin(); it != it_end; ++it)
-    {
-        // create a node to store this group of cell properties
-        int range_idx = it - m_cell_properties.begin();
-        wxString node_2_name = wxString::Format(wxT("cell.range%d"), range_idx);
-
-        IStoreValuePtr node_2;
-        node_2 = store->createChild(node_2_name);
-
-        // first, store the range values for this group
-        wxString node_2_1_name = wxT("cell.range.value");
-        wxString node_2_1_value = wxT("");
-        
-        int row1, col1, row2, col2;
-        it->getRange(&row1, &col1, &row2, &col2);
-        node_2_1_value  += wxString::Format(wxT("row1=%d;"), row1);
-        node_2_1_value  += wxString::Format(wxT("col1=%d;"), col1);
-        node_2_1_value  += wxString::Format(wxT("row2=%d;"), row2);
-        node_2_1_value  += wxString::Format(wxT("col2=%d"),  col2);
-
-        IStoreValuePtr node_2_1;
-        node_2_1 = node_2->createChild(node_2_1_name);
-        node_2_1->setString(node_2_1_value);
-
-        // then, store the actual properties for this group
-        IStoreValuePtr node_2_2;
-        node_2_2 = node_2->createChild(wxT("cell.range.properties"));
-        saveProperties(node_2_2, it->m_properties);
-    }
-
-    // save the merged cells
-    IStoreValuePtr node_3;
-    node_3 = store->createChild(wxT("cell.merge.count"));
-    node_3->setInteger(m_cell_merges.size());
-
-    // iterate through the merged cells
-    it_end = m_cell_merges.end();
-    for (it = m_cell_merges.begin(); it != it_end; ++it)
-    {
-        // create a node to store this group of cell merges
-        int range_idx = it - m_cell_merges.begin();
-        wxString node_4_name = wxString::Format(wxT("cell.merge%d"), range_idx);
-
-        IStoreValuePtr node_4;
-        node_4 = store->createChild(node_4_name);
-
-        // first, store the range values for this group
-        wxString node_4_1_name = wxT("cell.merge.value");
-        wxString node_4_1_value = wxT("");
-        
-        int row1, col1, row2, col2;
-        it->getRange(&row1, &col1, &row2, &col2);
-        node_4_1_value  += wxString::Format(wxT("row1=%d;"), row1);
-        node_4_1_value  += wxString::Format(wxT("col1=%d;"), col1);
-        node_4_1_value  += wxString::Format(wxT("row2=%d;"), row2);
-        node_4_1_value  += wxString::Format(wxT("col2=%d"),  col2);
-        
-        IStoreValuePtr node_4_1;
-        node_4_1 = node_4->createChild(node_4_1_name);
-        node_4_1->setString(node_4_1_value);
-    }
-
-    return true;
-}
-
 bool CompTableModel::load(IStoreValuePtr store)
 {
     // clear the cache and pre-existing cell properties, merged cells,
@@ -4004,20 +3914,6 @@ void CompTable::clear(bool text)
     {
         clearCells(*itr, props);
     }
-}
-
-bool CompTable::save(IStoreValuePtr store)
-{
-    // save the component properties
-    if (!Component::save(store))
-        return false;
-
-    // save the model properties
-    kcanvas::IStorablePtr storable = m_model;
-    if (!storable->save(store))
-        return false;
-
-    return true;
 }
 
 bool CompTable::load(IStoreValuePtr store)

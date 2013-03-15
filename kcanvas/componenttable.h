@@ -127,7 +127,6 @@ public:
     void eval(int row, int col, Properties& properties) const;
 
     // IStorable
-    bool save(IStoreValuePtr store);
     bool load(IStoreValuePtr store);
 
 protected:
@@ -329,7 +328,6 @@ public:
     void clear(bool text = true);
 
     // IStorable
-    bool save(IStoreValuePtr store);
     bool load(IStoreValuePtr store);
 
 protected:

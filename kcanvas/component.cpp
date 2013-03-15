@@ -417,11 +417,6 @@ void Component::render(const wxRect& rect)
 {
 }
 
-bool Component::save(IStoreValuePtr store)
-{
-    return saveProperties(store, m_properties);
-}
-
 bool Component::load(IStoreValuePtr store)
 {
     return loadProperties(store, m_properties);

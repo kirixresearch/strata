@@ -90,7 +90,6 @@ public:
     void render(const wxRect& rect = wxRect());
 
     // IStorable
-    bool save(IStoreValuePtr store);
     bool load(IStoreValuePtr store);
 
     // IEventTarget

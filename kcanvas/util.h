@@ -36,8 +36,7 @@ void getBitmapContentArea(const wxBitmap& bitmap,
                           const Color& invalid_color,
                           int* x, int* y, int* w, int* h);
 
-// functions for saving and loading properties
-bool saveProperties(IStoreValuePtr store, const Properties& properties);
+// functions for loading properties
 bool loadProperties(IStoreValuePtr store, Properties& properties);
 
 // functions for converting between fonts and properties

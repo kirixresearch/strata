@@ -812,67 +812,6 @@ void CompReportDesign::render(const wxRect& rect)
     }
 }
 
-bool CompReportDesign::save(kcanvas::IStoreValuePtr store)
-{
-    // save the component properties
-    if (!Component::save(store))
-        return false;
-
-    // save the total number of sections
-    kcanvas::IStoreValuePtr node_1;
-    node_1 = store->createChild(wxT("section.count"));
-    node_1->setInteger(m_sections.size());
-
-    // iterate through the sections and save the info
-    // for each section
-    std::vector<SectionInfo>::iterator it, it_end;
-    it_end = m_sections.end();
-
-    for (it = m_sections.begin(); it != it_end; ++it)
-    {
-        // create a node to store this section
-        int section_idx = it - m_sections.begin();
-        wxString node_2_name = wxString::Format(wxT("section%d"), section_idx);
-
-        kcanvas::IStoreValuePtr node_2;
-        node_2 = store->createChild(node_2_name);
-
-        // save the section type
-        kcanvas::IStoreValuePtr node_2_1;
-        node_2_1 = node_2->createChild(wxT("section.type"));
-        node_2_1->setString(it->m_type);
-
-        // save the section field
-        kcanvas::IStoreValuePtr node_2_2;
-        node_2_2 = node_2->createChild(wxT("section.field"));
-        node_2_2->setString(it->m_group_field);
-
-        // save the page break flag
-        kcanvas::IStoreValuePtr node_2_3;
-        node_2_3 = node_2->createChild(wxT("section.pagebreak"));
-        node_2_3->setBoolean(it->m_page_break);
-
-        // save the sort descending flag
-        kcanvas::IStoreValuePtr node_2_4;
-        node_2_4 = node_2->createChild(wxT("section.sortdesc"));
-        node_2_4->setBoolean(it->m_sort_desc);
-
-        // save the active flag
-        kcanvas::IStoreValuePtr node_2_5;
-        node_2_5 = node_2->createChild(wxT("section.active"));
-        node_2_5->setBoolean(it->m_active);
-
-        // save the section properties
-        kcanvas::IStoreValuePtr node_2_6;
-        node_2_6 = node_2->createChild(wxT("section.properties"));
-        kcanvas::IStorablePtr table = it->m_table;
-        if (!table.isNull())
-            table->save(node_2_6);
-    }
-
-    return true;
-}
-
 bool CompReportDesign::load(kcanvas::IStoreValuePtr store)
 {
     if (store.isNull())
@@ -994,12 +933,6 @@ bool CompReportDesign::load(kcanvas::IStoreValuePtr store)
 
 bool CompReportDesign::save(const wxString& path)
 {
-    // if the path ends in .xml, save the file in the old xml format; 
-    // otherwise, use the new json format
-    wxString ext = path.AfterLast(wxT('.'));
-    if (ext.Length() < path.Length() && ext.CmpNoCase(wxT("xml")) == 0)
-        return saveXml(path);
-
     return saveJson(path);
 }
 
@@ -3587,77 +3520,6 @@ bool CompReportDesign::loadJson(const wxString& path)
         }
     }
 
-    return true;
-}
-
-bool CompReportDesign::saveXml(const wxString& path)
-{
-    // create a report store
-    ReportStore* store = new ReportStore;
-    kcanvas::IStorePtr store_ptr = static_cast<kcanvas::IStore*>(store);
-
-    if (store_ptr.isNull())
-        return false;
-
-    // create the file
-    kcanvas::IStoreValuePtr data_node;
-    data_node = store_ptr->createFile(path);
-
-    if (data_node.isNull())
-        return false;
-
-    kcanvas::IStorablePtr storable;
-
-    // save the data source
-    kcanvas::IStoreValuePtr source_node = data_node->createChild(wxT("data.source"));
-    if (source_node.isNull())
-        return false;
-
-    kcanvas::IStoreValuePtr table_name_node = source_node->createChild(wxT("table.name"));
-    if (table_name_node.isNull())
-        return false;
-
-    wxString data_source = getDataSource();        
-    table_name_node->setString(data_source);
-
-    // save the page template
-    kcanvas::IStoreValuePtr page_node = data_node->createChild(wxT("template.page"));
-    if (page_node.isNull())
-        return false;
-
-    // note: the layout component used to have a default page
-    // that contained the page size and margin info; this was
-    // then serialized directly in the report as a page; this
-    // is no longer the case: the design component now stores
-    // page size and margin information directly; so the save
-    // and load code still works, save this information as
-    // a page component
-    int page_width, page_height;
-    getPageSize(&page_width, &page_height);
-    
-    int margin_left, margin_right, margin_top, margin_bottom;
-    getPageMargins(&margin_left, &margin_right, &margin_top, &margin_bottom);
-
-    kcanvas::IComponentPtr page;
-    page = kcanvas::CompPage::create();
-    page->setSize(page_width, page_height);
-
-    kcanvas::ICompPagePtr p = page;
-    p->setMargins(margin_left, margin_right, margin_top, margin_bottom);
-
-    storable = page;
-    if (storable.isNull())
-        return false;
-
-    storable->save(page_node);
-
-    // save the rest of the template
-    kcanvas::IStoreValuePtr table_node = data_node->createChild(wxT("template.table"));
-    if (table_node.isNull())
-        return false;
-
-    storable = static_cast<kcanvas::IStorable*>(this);
-    storable->save(table_node);
     return true;
 }
 

@@ -75,7 +75,6 @@ public:
     ReportStore();
     virtual ~ReportStore();
 
-    kcanvas::IStoreValuePtr createFile(const wxString& file);
     kcanvas::IStoreValuePtr loadFile(const wxString& file);
 
 private:

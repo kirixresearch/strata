@@ -141,7 +141,6 @@ public:
     void render(const wxRect& rect = wxRect());
 
     // IStorable
-    bool save(kcanvas::IStoreValuePtr store);
     bool load(kcanvas::IStoreValuePtr store);
 
 public:
@@ -293,8 +292,6 @@ private:
     // functions for saving/loading the design template
     bool saveJson(const wxString& path);
     bool loadJson(const wxString& path);
-
-    bool saveXml(const wxString& path);
     bool loadXml(const wxString& path);
 
     // functions for adding the row and column table
