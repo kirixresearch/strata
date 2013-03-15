@@ -317,6 +317,11 @@ bool KpgDatabase::copyFile(const std::wstring& src_path,
     return false;
 }
 
+bool KpgDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
+{
+    return false;
+}
+
 bool KpgDatabase::deleteFile(const std::wstring& path)
 {
     return true;
