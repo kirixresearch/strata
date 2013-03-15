@@ -140,9 +140,6 @@ public:
     void copy(kcanvas::IComponentPtr component);
     void render(const wxRect& rect = wxRect());
 
-    // IStorable
-    bool load(kcanvas::IStoreValuePtr store);
-
 public:
 
     // functions for saving and loading the report
@@ -292,7 +289,7 @@ private:
     // functions for saving/loading the design template
     bool saveJson(const wxString& path);
     bool loadJson(const wxString& path);
-    bool loadXml(const wxString& path);
+    bool loadJsonFromNode(const wxString& path);
 
     // functions for adding the row and column table
     // headers and updating the group information

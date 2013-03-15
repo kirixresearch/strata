@@ -13,7 +13,6 @@
 #include <wx/paper.h>
 #include "reportdesign.h"
 #include "reportengine.h"
-#include "reportstore.h"
 #include "jsonconfig.h"
 
 #include "../kcanvas/componentpage.h"
@@ -1095,125 +1094,6 @@ void CompReportDesign::render(const wxRect& rect)
     }
 }
 
-bool CompReportDesign::load(kcanvas::IStoreValuePtr store)
-{
-    if (store.isNull())
-        return false;
-
-    // clear out the sections and the child tables
-    removeAllSections();
-
-    // load the component properties
-    if (!Component::load(store))
-        return false;
-
-    // find out the total number of sections
-    kcanvas::IStoreValuePtr node_1;
-    node_1 = store->getChild(wxT("section.count"), false);
-    if (node_1.isNull())
-        return false;
-
-    int section_count = node_1->getInteger();
-
-    // load the info for each section
-    for (int section_idx = 0; section_idx < section_count; ++section_idx)
-    {
-        // section we're creating; set when we add the section
-        SectionInfo* section;
-
-        // section info we're loading
-        wxString section_type;
-        wxString section_field;
-        bool section_pagebreak = false;
-        bool section_sortdesc = false;
-        bool section_active = true;
-    
-        // get the section
-        wxString node_2_name = wxString::Format(wxT("section%d"), section_idx);
-
-        kcanvas::IStoreValuePtr node_2;
-        node_2 = store->getChild(node_2_name, false);
-        if (node_2.isNull())
-            continue;
-
-        // get the section type
-        kcanvas::IStoreValuePtr node_2_1;
-        node_2_1 = node_2->getChild(wxT("section.type"), false);
-        if (node_2_1.isNull())
-        {
-            // previously, "section.type" was called "section.name";
-            // if we can't find the section type node, check the
-            // section name; TODO: can remove for release
-            node_2_1 = node_2->getChild(wxT("section.name"), false);
-            if (node_2_1.isNull())
-                continue;
-        }
-
-        section_type = node_2_1->getString();
-
-        // get the section field
-        kcanvas::IStoreValuePtr node_2_2;
-        node_2_2 = node_2->getChild(wxT("section.field"), false);
-        if (node_2_2.isNull())
-        {
-            // in previous betas, sections stored all the fields as
-            // a comma-delimited list; if we don't have a field
-            // section, get the list of fields and load it as
-            // a single string, which will allow the group to be 
-            // fixed in the interface
-            node_2_2 = node_2->getChild(wxT("section.group"), false);
-            if (node_2_2.isNull())
-                continue;
-        }
-
-        // get the section field
-        section_field = node_2_2->getString();
-
-        // get the page break flag
-        kcanvas::IStoreValuePtr node_2_3;
-        node_2_3 = node_2->getChild(wxT("section.pagebreak"), false);
-        if (!node_2_3.isNull())
-            section_pagebreak = node_2_3->getBoolean();
-
-        // get the sort descending flag
-        kcanvas::IStoreValuePtr node_2_4;
-        node_2_4 = node_2->getChild(wxT("section.sortdesc"), false);
-        if (!node_2_4.isNull())
-            section_sortdesc = node_2_4->getBoolean();
-
-        // get the active flag
-        kcanvas::IStoreValuePtr node_2_5;
-        node_2_5 = node_2->getChild(wxT("section.active"), false);
-        if (!node_2_5.isNull())
-            section_active = node_2_5->getBoolean();
-
-        // add a new section with the loaded type, and set the
-        // section field; note: here, the group name is set the
-        // same as the section type; for default sections, such
-        // as report headers/footers, page headers/footers and
-        // the detail section, the name is the same as the type;
-        // for group headers/footers, the name will be reset
-        // in the addSection() function
-        addSection(section_type, section_type, 0, section_active);
-        section = &m_sections[section_idx];
-        section->m_group_field = section_field;
-        section->m_sort_desc = section_sortdesc;
-        section->m_page_break = section_pagebreak;
-
-        // load the properties
-        kcanvas::IStoreValuePtr node_2_6;
-        node_2_6 = node_2->getChild(wxT("section.properties"), false);
-        if (node_2_6.isNull())
-            continue;
-        
-        kcanvas::IStorablePtr table = section->m_table;
-        if (!table.isNull())
-            table->load(node_2_6);
-    }
-
-    return true;
-}
-
 bool CompReportDesign::save(const wxString& path)
 {
     return saveJson(path);
@@ -1227,7 +1107,7 @@ bool CompReportDesign::load(const wxString& path)
 
     // if we can't load it in the new format, try
     // to open it with the old format
-    return loadXml(path);
+    return loadJsonFromNode(path);
 }
 
 bool CompReportDesign::load(const ReportCreateInfo& data)
@@ -3806,7 +3686,7 @@ bool CompReportDesign::loadJson(const wxString& path)
     return true;
 }
 
-bool CompReportDesign::loadXml(const wxString& path)
+bool CompReportDesign::loadJsonFromNode(const wxString& path)
 {
     kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), path);
     if (!node.isOk())
