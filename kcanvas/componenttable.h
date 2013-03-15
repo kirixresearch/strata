@@ -123,6 +123,7 @@ public:
     bool tag(const wxString& tag);
     bool restore(const wxString& tag);
     void compact();
+    void reset();
 
     void eval(int row, int col, Properties& properties) const;
 
@@ -265,6 +266,7 @@ public:
     bool tag(const wxString& tag);
     bool restore(const wxString& tag);
     void compact();
+    void reset();
 
     void selectCells(const CellRange& range);
     void removeCellSelections(const CellRange& range);

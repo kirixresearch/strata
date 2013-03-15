@@ -1732,6 +1732,17 @@ void CompTableModel::compact()
     m_cell_properties = cell_properties_saved;
 }
 
+void CompTableModel::reset()
+{
+    clearCache();
+
+    m_cell_properties.clear();
+    m_cell_merges.clear();
+
+    m_row_count = 0;
+    m_col_count = 0;
+}
+
 void CompTableModel::eval(int row, int col, Properties& properties) const
 {
     // note: this function evaluates the cell at the specified
@@ -2764,6 +2775,11 @@ bool CompTable::restore(const wxString& tag)
 void CompTable::compact()
 {
     m_model->compact();
+}
+
+void CompTable::reset()
+{
+    m_model->reset();
 }
 
 void CompTable::selectCells(const CellRange& range)

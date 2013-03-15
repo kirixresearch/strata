@@ -771,6 +771,7 @@ public:
     virtual bool tag(const wxString& tag) = 0;
     virtual bool restore(const wxString& tag) = 0;
     virtual void compact() = 0;
+    virtual void reset() = 0;
 
     virtual void selectCells(const CellRange& range) = 0;
     virtual void removeCellSelections(const CellRange& range) = 0;
@@ -1081,6 +1082,7 @@ public:
     virtual bool tag(const wxString& tag) = 0;
     virtual bool restore(const wxString& tag) = 0;
     virtual void compact() = 0;
+    virtual void reset() = 0;
 
     virtual void eval(int row, int col, Properties& properties) const = 0;
 };
