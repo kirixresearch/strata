@@ -178,44 +178,5 @@ ReportStore::~ReportStore()
 
 kcanvas::IStoreValuePtr ReportStore::loadFile(const wxString& path)
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
-    if (db.isNull())
-        return xcm::null;
-        
-    m_file = db->openNodeFile(towstr(path));
-
-    if (m_file.isNull())
-        return xcm::null;
-
-    // -- verify report format --
-    tango::INodeValuePtr kpp_report = m_file->getChild(L"kpp_report", false);
-    if (!kpp_report)
-        return xcm::null;
-
-    tango::INodeValuePtr report_type = kpp_report->getChild(L"type", false);
-    if (!report_type)
-        return xcm::null;
-
-    if (report_type->getString() != L"report")
-        return xcm::null;
-
-    tango::INodeValuePtr report_version = kpp_report->getChild(L"version", false);
-    if (!report_version)
-        return xcm::null;
-
-    // report_version: version 2 for v2005.1;
-    //                 version 3 for v4.0 beta period
-    //                 version 4 for v4.0 release
-    if (report_version->getInteger() != 4 &&
-        report_version->getInteger() != 3)  // allow reports created in beta; however, save them as version 4
-        return xcm::null;
-
-    tango::INodeValuePtr data = kpp_report->getChild(L"data", false);
-    if (data.isNull())
-        return xcm::null;
-
-    ReportValue* value = new ReportValue;
-    value->setNode(data);
-
-    return static_cast<kcanvas::IStoreValue*>(value);
+    return xcm::null;
 }

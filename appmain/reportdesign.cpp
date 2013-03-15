@@ -357,6 +357,289 @@ static bool loadTablePropertiesFromJson(kl::JsonNode& node, kcanvas::ICompTableP
     return true;
 }
 
+static bool loadPropertiesFromJsonNode(kl::JsonNode& node, kcanvas::Properties& properties)
+{
+    // get a list of the properties to restore
+    kl::JsonNode propertytypes_node = node["property.types"];
+    if (!propertytypes_node.isOk())
+        return false;
+
+    std::vector<kcanvas::Property> properties_to_restore;
+
+    wxString property_list = propertytypes_node.getString();
+    wxStringTokenizer tokenizer(property_list, wxT(";"));
+    while (tokenizer.HasMoreTokens())
+    {
+        wxString prop_token = tokenizer.GetNextToken();
+        wxString prop_name = prop_token.BeforeFirst(wxT(':'));
+        wxString prop_type_string = prop_token.AfterFirst(wxT(':'));
+        prop_name.Trim(true);
+        prop_name.Trim(false);
+        prop_type_string.Trim(true);
+        prop_type_string.Trim(false);
+
+        // get the property type
+        int prop_type = kcanvas::proptypeInvalid;
+
+        if (prop_type_string == wxT("type.string"))
+            prop_type = kcanvas::proptypeString;
+            
+        if (prop_type_string == wxT("type.color"))
+            prop_type = kcanvas::proptypeColor;
+
+        if (prop_type_string == wxT("type.integer"))
+            prop_type = kcanvas::proptypeInteger;
+
+        if (prop_type_string == wxT("type.boolean"))
+            prop_type = kcanvas::proptypeBoolean;
+ 
+        if (prop_type == kcanvas::proptypeInvalid)
+            continue;
+
+        properties_to_restore.push_back(kcanvas::Property(prop_name, prop_type));
+    }
+
+
+    // restore the properties based on the list of properties that
+    // should be resotred
+    kl::JsonNode propertyvalues_node = node["property.values"];
+    if (!propertyvalues_node.isOk())
+        return false;
+
+    std::vector<kcanvas::Property>::iterator it, it_end;
+    it_end = properties_to_restore.end();
+
+    for (it = properties_to_restore.begin(); it != it_end; ++it)
+    {
+        // get the property name and type
+        wxString property_name;
+        int property_type;
+
+        property_name = it->getName();
+        property_type = it->getType();
+
+        // if we have an invalid type, move on
+        if (property_type == kcanvas::proptypeInvalid)
+            continue;
+
+        // if we can't get the given property, move on
+        kl::JsonNode property_node = propertyvalues_node[property_name];
+        if (!property_node.isOk())
+            continue;
+
+        // note: PROP_TEXT_VALUEonly exists for <= 4.3 XML report format; 
+        // PROP_CONTENT_VALUE is now used to store values; convert old
+        // format to new
+        if (property_name == kcanvas::PROP_TEXT_VALUE)
+            property_name = kcanvas::PROP_CONTENT_VALUE;
+
+        // load a string property
+        std::wstring str_value = property_node.getString();
+        if (property_type == kcanvas::proptypeString)
+            properties.add(property_name, towx(str_value));
+
+        // load a color property; don't rely on the implicit JsonNode::getInteger() 
+        // conversion to ensure we're properly handling the color value
+        unsigned int val = kl::wtoi(property_node.getString());
+        int b = (val & 0xff);
+        int g = (val >> 8) & 0xff;
+        int r = (val >> 16) & 0xff;
+        kcanvas::Color color_value(r,g,b);
+
+        if (property_type == kcanvas::proptypeColor)
+            properties.add(property_name, color_value);
+
+        // load an integer property
+        int int_value = property_node.getInteger();
+        if (property_type == kcanvas::proptypeInteger)
+            properties.add(property_name, int_value);
+
+        // load a boolean property
+        bool bool_value = (property_node.getInteger() != 0 ? true : false);
+        if (property_type == kcanvas::proptypeBoolean)
+            properties.add(property_name, bool_value);
+    }
+
+    return true;
+}
+
+static bool loadComponentPropertiesFromJsonNode(kl::JsonNode& node, kcanvas::IComponentPtr component)
+{
+    if (!node.isOk())
+        return false;
+
+    if (!component.isOk())
+        return false;
+
+    kcanvas::Properties properties;
+    loadPropertiesFromJsonNode(node, properties);
+    component->addProperties(properties);
+    return true;
+}
+
+static bool loadTablePropertiesFromJsonNode(kl::JsonNode& node, kcanvas::ICompTablePtr table)
+{
+    table->reset();
+
+
+    // load the table properties
+    if (!loadComponentPropertiesFromJsonNode(node, table))
+        return false;
+
+    kl::JsonNode rowcount_node = node["row.count"];
+    if (!rowcount_node.isOk())
+        return false;
+    table->setRowCount(rowcount_node.getInteger());
+
+    kl::JsonNode columncount_node = node["column.count"];
+    if (!columncount_node.isOk())
+        return false;
+    table->setColumnCount(columncount_node.getInteger());
+
+
+    // load the cell properties
+    kl::JsonNode cellrangecount_node = node["cell.range.count"];
+    if (!cellrangecount_node.isOk())
+        return false;
+
+    int cell_range_count = cellrangecount_node.getInteger();
+    int range_idx;
+
+    std::vector<kcanvas::CellProperties> cell_properties;
+    cell_properties.reserve(cell_range_count);
+
+    for (range_idx = 0; range_idx < cell_range_count; ++range_idx)
+    {
+        // load the cell properties for a particular range
+        wxString range_name = wxString::Format(wxT("cell.range%d"), range_idx);
+
+        kl::JsonNode cellrange_node = node[range_name];
+        if (!cellrange_node.isOk())
+            continue;
+
+        kl::JsonNode cellrangevalue_node = cellrange_node["cell.range.value"];
+        if (!cellrangevalue_node.isOk())
+            continue;
+
+        wxString cellrangevalue_list = towx(cellrangevalue_node.getString());
+
+        int row1 = -1;
+        int col1 = -1;
+        int row2 = -1;
+        int col2 = -1;
+        
+        while(1)
+        {
+            wxString range_part = cellrangevalue_list.BeforeFirst(wxT(';'));
+            cellrangevalue_list = cellrangevalue_list.AfterFirst(wxT(';'));
+            wxString range_name = range_part.BeforeFirst(wxT('='));
+            wxString range_value = range_part.AfterFirst(wxT('='));
+            range_name.MakeLower();
+            range_name.Trim(true);
+            range_name.Trim(false);
+            range_value.Trim(true);
+            range_value.Trim(false);
+            int value = wxAtoi(range_value.c_str());
+
+            if (range_name.empty())
+                break;
+            else if (range_name == wxT("row1"))
+                row1 = value;
+            else if (range_name == wxT("col1"))
+                col1 = value;
+            else if (range_name == wxT("row2"))
+                row2 = value;
+            else if (range_name == wxT("col2"))
+                col2 = value;
+            else {
+                break;
+            }
+        }
+
+        kl::JsonNode cellrangeproperties_node = cellrange_node["cell.range.properties"];
+        if (!cellrangeproperties_node.isOk())
+            continue;
+
+        kcanvas::Properties properties;
+        if (!loadPropertiesFromJsonNode(cellrangeproperties_node, properties))
+            continue;
+
+        if (properties.count() == 0)
+            continue;
+
+        // add the properties to the list of cell properties
+        kcanvas::CellProperties cellrange_properties;
+        cellrange_properties.setRange(row1, col1, row2, col2);
+        cellrange_properties.addProperties(properties);
+        cell_properties.push_back(cellrange_properties);
+    }
+
+    table->addCellProperties(cell_properties, false);  // properties are cleared out, so need to replace and faster
+
+
+    // load the merged cell properties
+    kl::JsonNode cellmergecount_node = node["cell.merge.count"];
+    if (!cellmergecount_node.isOk())
+        return false;
+
+    int cell_merge_count = cellmergecount_node.getInteger();
+
+    // iterate through the groups of merged cells
+    int merge_idx;
+    for (merge_idx = 0; merge_idx < cell_merge_count; ++merge_idx)
+    {
+        wxString merge_name = wxString::Format(wxT("cell.merge%d"), merge_idx);
+
+        kl::JsonNode cellmerge_node = node[merge_name];
+        if (!cellmerge_node.isOk())
+            continue;
+
+        kl::JsonNode cellmergevalue_node = cellmerge_node["cell.merge.value"];
+        if (!cellmergevalue_node.isOk())
+            continue;
+
+        wxString cellmergevalue_token = cellmergevalue_node.getString();
+        
+        int row1 = -1;
+        int col1 = -1;
+        int row2 = -1;
+        int col2 = -1;
+        
+        while(1)
+        {
+            wxString range_part = cellmergevalue_token.BeforeFirst(wxT(';'));
+            cellmergevalue_token = cellmergevalue_token.AfterFirst(wxT(';'));
+            wxString range_name = range_part.BeforeFirst(wxT('='));
+            wxString range_value = range_part.AfterFirst(wxT('='));
+            range_name.MakeLower();
+            range_name.Trim(true);
+            range_name.Trim(false);
+            range_value.Trim(true);
+            range_value.Trim(false);
+            int value = wxAtoi(range_value.c_str());
+
+            if (range_name.empty())
+                break;
+            else if (range_name == wxT("row1"))
+                row1 = value;
+            else if (range_name == wxT("col1"))
+                col1 = value;
+            else if (range_name == wxT("row2"))
+                row2 = value;
+            else if (range_name == wxT("col2"))
+                col2 = value;
+            else {
+                break;
+            }
+        }
+
+        // set the merged cells
+        table->mergeCells(kcanvas::CellRange(row1, col1, row2, col2));
+    }
+
+    return true;
+}
+
 static wxString getDefaultSectionLabel(const wxString& type)
 {
     if (type == PROP_REPORT_HEADER)
@@ -3525,55 +3808,65 @@ bool CompReportDesign::loadJson(const wxString& path)
 
 bool CompReportDesign::loadXml(const wxString& path)
 {
-    // create a report store
-    ReportStore* store = new ReportStore;
-    kcanvas::IStorePtr store_ptr = static_cast<kcanvas::IStore*>(store);
-
-    if (store_ptr.isNull())
+    kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), path);
+    if (!node.isOk())
         return false;
 
-    // open the file
-    kcanvas::IStoreValuePtr data_node;
-    data_node = store_ptr->loadFile(path);
+    removeAllSections();
 
-    if (data_node.isNull())
+
+    kl::JsonNode root_node = node["root"];
+    if (!root_node.isOk())
         return false;
 
-    kcanvas::IStorablePtr storable;
-
-    // load the data source
-    kcanvas::IStoreValuePtr source_node = data_node->getChild(wxT("data.source"), false);
-    if (source_node.isNull())
+    kl::JsonNode kpp_report_node = root_node["kpp_report"];
+    if (!kpp_report_node.isOk())
         return false;
 
-    kcanvas::IStoreValuePtr table_name_node = source_node->getChild(wxT("table.name"), false);
-    if (table_name_node.isNull())
+    kl::JsonNode type_node = kpp_report_node["type"];
+    if (!type_node.isOk() || type_node.getString() != L"report")
         return false;
 
-    wxString data_source = table_name_node->getString();
-    setDataSource(data_source);
-
-    // load the page template
-    kcanvas::IStoreValuePtr page_node = data_node->getChild(wxT("template.page"), false);
-    if (page_node.isNull())
+    kl::JsonNode version_node = kpp_report_node["version"];
+    if (!version_node.isOk())
         return false;
 
-    // note: the layout component used to have a default page
-    // that contained the page size and margin info; this was
-    // then serialized directly in the report as a page; this
-    // is no longer the case: the design component now stores
+    // only read version 4:
+    //     release 2005.1 => report version 2; 
+    //     release v4.0 beta period => report version 3; 
+    //     release v4.0 => report version 4
+    if (version_node.getInteger() != 4)
+        return false;
+
+    kl::JsonNode data_node = kpp_report_node["data"];
+    if (!data_node.isOk())
+        return false;
+
+    kl::JsonNode datasource_node = data_node["data.source"];
+    if (!datasource_node.isOk())
+        return false;
+
+    kl::JsonNode tablename_node = datasource_node["table.name"];
+    if (!tablename_node.isOk())
+        return false;
+    setDataSource(tablename_node.getString());
+
+    kl::JsonNode templatepage_node = data_node["template.page"];
+    if (!templatepage_node.isOk())
+        return false;
+
+    // note: the design component used to have a default page
+    // that contained the page size and margin info; this is
+    // no longer the case: the design component now stores
     // page size and margin information directly; so the save
     // and load code still works, load this information as
     // a page component, then use the page to set the values
 
     kcanvas::IComponentPtr page;
     page = kcanvas::CompPage::create();
-    
-    storable = page;
-    if (storable.isNull())
-        return false;
 
-    storable->load(page_node);
+    if (!loadComponentPropertiesFromJsonNode(templatepage_node, page))
+        return false;
 
     int page_width, page_height;
     page->getSize(&page_width, &page_height);
@@ -3586,17 +3879,81 @@ bool CompReportDesign::loadXml(const wxString& path)
     setPageMargins(margin_left, margin_right, margin_top, margin_bottom);
 
 
-
     // load the rest of the template
-    kcanvas::IStoreValuePtr table_node = data_node->getChild(wxT("template.table"), false);
-    if (table_node.isNull())
+    kl::JsonNode templatetable_node = data_node["template.table"];
+    if (!templatetable_node.isOk())
         return false;
 
-    storable = static_cast<kcanvas::IStorable*>(this); 
-    if (storable.isNull())
+    kcanvas::IComponentPtr templatetable_ptr = static_cast<IComponent*>(this);
+    if (!loadComponentPropertiesFromJsonNode(templatetable_node, templatetable_ptr))
         return false;
 
-    storable->load(table_node);
+    kl::JsonNode sectioncount_node = templatetable_node["section.count"];
+    if (!sectioncount_node.isOk())
+        return false;
+
+    int section_count = sectioncount_node.getInteger();
+
+    // load the info for each section
+    for (int section_idx = 0; section_idx < section_count; ++section_idx)
+    {
+        // section we're creating; set when we add the section
+        SectionInfo* section;
+
+        // section info we're loading
+        wxString section_type;
+        wxString section_field;
+        bool section_pagebreak = false;
+        bool section_sortdesc = false;
+        bool section_active = true;
+    
+        wxString section_name = wxString::Format(wxT("section%d"), section_idx);
+        kl::JsonNode section_node = templatetable_node[towstr(section_name)];
+        if (!section_node.isOk())
+            continue;
+
+        kl::JsonNode sectiontype_node = section_node["section.type"];
+        if (!sectiontype_node.isOk())
+            continue;
+        section_type = sectiontype_node.getString();
+
+        kl::JsonNode sectionfield_node = section_node["section.field"];
+        if (!sectionfield_node.isOk())
+            continue;
+        section_field = sectionfield_node.getString();
+
+        kl::JsonNode sectionpagebreak_node = section_node["section.pagebreak"];
+        if (sectionpagebreak_node.isOk())
+            section_pagebreak = (sectionpagebreak_node.getInteger() != 0 ? true : false);
+
+        kl::JsonNode sectionsortdesc_node = section_node["section.sortdesc"];
+        if (sectionsortdesc_node.isOk())
+            section_sortdesc = (sectionsortdesc_node.getInteger() != 0 ? true : false);
+
+        kl::JsonNode sectionactive_node = section_node["section.active"];
+        if (sectionactive_node.isOk())
+            section_active = (sectionactive_node.getInteger() != 0 ? true : false);
+
+
+        // add a new section with the loaded type, and set the section field; 
+        // note: here, the group name is set the same as the section type; for 
+        // default sections, such as report headers/footers, page headers/footers 
+        // and the detail section, the name is the same as the type; for group 
+        // headers/footers, the name will be reset in the addSection() function
+        addSection(section_type, section_type, 0, section_active);
+        section = &m_sections[section_idx];
+        section->m_group_field = section_field;
+        section->m_sort_desc = section_sortdesc;
+        section->m_page_break = section_pagebreak;
+
+
+        kl::JsonNode sectionproperties_node = section_node["section.properties"];
+        if (!sectionproperties_node.isOk())
+            continue;
+
+        loadTablePropertiesFromJsonNode(sectionproperties_node, section->m_table);
+    }
+
     return true;
 }
 
