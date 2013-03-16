@@ -1102,9 +1102,7 @@ bool JsonNodeValidator::isValid(JsonNode& data, JsonNode& schema)
     m_messages.clear();
 
     // check the node and return the results
-    checkJsonNode(data, schema);
-    
-    if (hasErrors())
+    if (!checkJsonNode(data, schema))
         return false;
 
     return true;
@@ -1116,46 +1114,45 @@ bool JsonNodeValidator::checkJsonNode(JsonNode& data, JsonNode& schema)
     if (!schema.isObject())
     {
         // flag error and return, since there's nothing more we can do
-        flagError(L"Error: schema is not a valid object");
+        flagError(data, L"Error: schema is not an object type");
         return false;
     }
 
     // validate the object type
     if (!checkType(data, schema))
-        return false;
+        flagError(data, L"Error: node type is not one of allowed types near '%s'");
 
     // validate the object type based on disallowed types
     if (!checkTypeDisallowed(data, schema))
-        return false;
+        flagError(data, L"Error: node type is disallowed near '%s'");
 
     // validate any numeric value
     if (!checkNumberValue(data, schema))
-        return false;
+        flagError(data, L"Error: number value invalid near '%s'");
 
     // validate any string value
     if (!checkStringValue(data, schema))
-        return false;
+        flagError(data, L"Error: string value invalid near '%s'");
 
     // validate against an enumeration of values
     if (!checkEnumValue(data, schema))
-        return false;
+        flagError(data, L"Error: value is not an enumerated value near '%s'");
 
     // validate any array size
     if (!checkArraySize(data, schema))
-        return false;
+        flagError(data, L"Error: array size out of bounds near '%s'");
 
     // validate array items
     if (!checkArrayItems(data, schema))
-        return false;
+        flagError(data, L"Error: array item invalid near '%s'");
 
     // validate object keys
     if (!checkObjectKeys(data, schema))
-        return false;
+        flagError(data, L"Error: object key invalid near '%s'");
 
     // validate object properties
     if (!checkObjectValues(data, schema))
         return false;
-
 
     // TODO: implement:
 
@@ -1167,6 +1164,9 @@ bool JsonNodeValidator::checkJsonNode(JsonNode& data, JsonNode& schema)
     // format
     // additionalItems
     // uniqueItems
+
+    if (hasErrors())
+        return false;
 
     return true;
 }
@@ -1727,14 +1727,19 @@ bool JsonNodeValidator::isJsonNodeValueEqual(JsonNode& node1, JsonNode& node2)
     return false;
 }
 
-void JsonNodeValidator::flagError(const std::wstring& message)
+void JsonNodeValidator::flagError(JsonNode& data, const std::wstring& message)
 {
-    // if a message is set, add it to the list
-    if (message.length() > 0)
-        m_messages.push_back(message);
+    m_errors_exist = true;    
 
-    // set the error flag
-    m_errors_exist = true;
+    if (message.length() == 0)
+        return;
+
+    std::wstring error_message = message;
+    std::wstring error_context = data.toString();
+    error_context = error_context.substr(0,15);
+    kl::replaceStr(error_message, L"%s", error_context, true);
+
+    m_messages.push_back(error_message);
 }
 
 bool JsonNodeValidator::hasErrors()

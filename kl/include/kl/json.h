@@ -191,7 +191,7 @@ private:
     bool isPrimitiveValueEqual(JsonNode& node1, JsonNode& node2);
     bool isJsonNodeValueEqual(JsonNode& node1, JsonNode& node2);
 
-    void flagError(const std::wstring& message);
+    void flagError(JsonNode& data, const std::wstring& message);
     bool hasErrors();
 
 private:
