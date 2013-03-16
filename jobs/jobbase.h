@@ -159,7 +159,7 @@ public:
     void runPostJob()
     {
     }
-    
+
 protected:
 
     IJobInfoPtr m_sp_job_info;
