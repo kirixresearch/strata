@@ -32,6 +32,10 @@ public:
     bool isInputValid();
     int runJob();
     void runPostJob();
+
+private:
+
+    kl::JsonNode getJobSchema();
 };
 
 

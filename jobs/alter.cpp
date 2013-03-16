@@ -11,10 +11,41 @@
 
 #include "jobspch.h"
 #include "alter.h"
+#include "util.h"
 
 
 namespace jobs
 {
+
+// example:
+/*
+{
+    "metadata" : {
+        "type" : "application/vnd.kx.alter-job",
+        "version" : 1,
+        "description" : ""
+    },
+    "params": {
+        "input" : "",
+        "actions" : [ {
+                "action" : "add",
+                "name" : "",
+                "params" : {
+                    "name" : "field_name",
+                    "type" : "character",
+                    "width": 1,
+                    "scale": 1,
+                    "expression": "",
+                    "position": 0
+                }
+            }
+        ]
+    }
+}
+*/
+
+
+kl::JsonNode schema_node;
 
 
 // AlterJob implementation
@@ -31,56 +62,10 @@ AlterJob::~AlterJob()
 
 bool AlterJob::isInputValid()
 {
-/*
-    // example format:
-    {
-        "metadata":
-        {
-            "type" : "application/vnd.kx.alter-job",
-            "version" : 1,
-            "description" : ""
-        },
-        "params":
-        {
-            "input" : <path>,
-            "actions" : [
-                { 
-                    "action" : "add" | "drop" | "modify",
-                    "name" : <string>,
-                    "params" : {
-                        "name" : <string>,
-                        "type" : "character" | "widecharacter" | "binary" | "numeric" | "double" | "integer" | "date" | "datetime" | "boolean",
-                        "width": <integer>,
-                        "scale": <integer>,
-                        "expression": <string> | null,  // note: null expression turns off expressions
-                        "position": <integer>
-                },
-                ...
-            ]
-        }
-    }
-*/
-    if (m_config.isUndefined())
+    // verify the configuration against the schema
+    kl::JsonNodeValidator json_validator;
+    if (!json_validator.isValid(m_config, getJobSchema()))
         return false;
-
-    // TODO: check job type and version
-
-    kl::JsonNode params = m_config["params"];
-    if (params.isUndefined())
-        return false;
-
-    if (!params.childExists("input"))
-        return false;
-
-    if (!params.childExists("actions"))
-        return false;
-
-    kl::JsonNode actions_node = params.getChild("actions");
-    if (!actions_node.isArray())
-        return false;
-
-    // TODO: check for file existence?  in general, how much
-    // work should the validator do?
 
     return true;
 }
@@ -278,6 +263,99 @@ int AlterJob::runJob()
 
 void AlterJob::runPostJob()
 {
+}
+
+kl::JsonNode AlterJob::getJobSchema()
+{
+    std::wstring schema_definition = L"\
+        {\
+            'type' : 'object',\
+            'required' : ['metadata','params'],\
+            'properties' : {\
+                'metadata' :  {\
+                    'type' : 'object',\
+                    'required' : ['type'],\
+                    'properties' :  {\
+                        'type' : {\
+                            'type' : 'string',\
+                            'enum' : ['application/vnd.kx.alter-job']\
+                        },\
+                        'version' : {\
+                            'type' : 'integer',\
+                            'minimum' : 1\
+                        }\
+                    }\
+                },\
+                'params' : {\
+                    'type' : 'object',\
+                    'required' : ['input','actions'],\
+                    'properties' : {\
+                        'input' : {\
+                            'type' : 'string'\
+                        },\
+                        'actions' : {\
+                            'type' : 'array',\
+                            'items' : {\
+                                'type' : 'object',\
+                                'required' : ['action'],\
+                                'properties' : {\
+                                    'action' : {\
+                                        'type' : 'string',\
+                                        'enum' : ['add','drop','modify']\
+                                    },\
+                                    'name' : {\
+                                        'type' : 'string'\
+                                    },\
+                                    'params' : {\
+                                        'type' : 'object',\
+                                        'properties' : {\
+                                            'name' : {\
+                                                'type' : ['null','string']\
+                                            },\
+                                            'type' : {\
+                                                'type' : ['null','string'],\
+                                                'enum' : [\
+                                                    'character',\
+                                                    'widecharacter',\
+                                                    'binary',\
+                                                    'numeric',\
+                                                    'double',\
+                                                    'integer',\
+                                                    'date',\
+                                                    'datetime',\
+                                                    'boolean'\
+                                                ]\
+                                            },\
+                                            'width' : {\
+                                                'type' : ['null','integer'],\
+                                                'minimum' : 1\
+                                            },\
+                                            'scale' : {\
+                                                'type' : ['null','integer'],\
+                                                'minimum' : 0\
+                                            },\
+                                            'expression' : {\
+                                                'type' : ['null','string']\
+                                            },\
+                                            'position' : {\
+                                                'type' : ['null','integer'],\
+                                                'minimum' : 0\
+                                            }\
+                                        }\
+                                    }\
+                                }\
+                            }\
+                        }\
+                    }\
+                }\
+            }\
+        }\
+    ";
+
+    if (schema_node.isUndefined())
+        schema_node = createJsonNodeSchema(schema_definition);
+
+    return schema_node;
 }
 
 
