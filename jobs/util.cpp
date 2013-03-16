@@ -139,6 +139,24 @@ tango::IIndexInfoPtr lookupIndex(tango::IIndexInfoEnumPtr idx_enum, const std::w
     return result;
 }
 
+kl::JsonNode createJsonNodeSchema(const std::wstring& schema_definition)
+{
+    // note: to store the schema definition in a somewhat readable form,
+    // all double quotes are represented with single quotes (since it's
+    // more readable than escaping all the double quotes in the string);
+    // in future compilers, it should be possible to store string literals, 
+    // so hopefully this won't be necessary
+
+    // convert single quotes to double quotes
+    std::wstring schema_definition_copy = schema_definition;
+    kl::replaceStr(schema_definition_copy, L"'", L"\"", true);
+
+    kl::JsonNode schema;
+    schema.fromString(schema_definition_copy);
+
+    return schema;
+}
+
 
 }; // namespace jobs
 

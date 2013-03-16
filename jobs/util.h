@@ -25,6 +25,8 @@ void vectorToDelimitedString(const std::vector<std::wstring>& vec, std::wstring&
 std::wstring getMountRoot(tango::IDatabasePtr db, const std::wstring _path);
 tango::IIndexInfoPtr lookupIndex(tango::IIndexInfoEnumPtr idx_enum, const std::wstring& expr, bool exact_column_order);
 
+kl::JsonNode createJsonNodeSchema(const std::wstring& schema_definition);
+
 
 };  // namespace jobs
 
