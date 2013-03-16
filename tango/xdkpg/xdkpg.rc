@@ -37,7 +37,7 @@ BEGIN
             VALUE "InternalName", "xdpgsql\0"
             VALUE "LegalCopyright", "Copyright (c) 2013, Kirix Research, LLC.  All rights reserved.\0"
             VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "xdpgsql.dll\0"
+            VALUE "OriginalFilename", "xdkpg.dll\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "XD Database Engine (kpg Driver)\0"
             VALUE "ProductVersion", "4.x\0"

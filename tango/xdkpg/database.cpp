@@ -25,6 +25,7 @@
 #include "database.h"
 #include "iterator.h"
 #include "set.h"
+#include "pkgfile.h"
 #include <set>
 #include <kl/portable.h>
 #include <kl/string.h>
@@ -100,12 +101,6 @@ KpgDatabase::~KpgDatabase()
 }
 
 
-
-std::wstring KpgDatabase::getServer()
-{
-    return m_server;
-}
-
 std::wstring KpgDatabase::getPath()
 {
     return m_path;
@@ -137,22 +132,18 @@ std::wstring KpgDatabase::getDefinitionDirectory()
 
 
 
-bool KpgDatabase::open(const std::wstring& server,
-                         int port,
-                         const std::wstring& database,
-                         const std::wstring& username,
-                         const std::wstring& password)
+bool KpgDatabase::open(const std::wstring& path)
 {
-
     m_error.clearError();
     
-
-    m_server = server;
-    m_port = port;
-    m_database = database;
-    m_username = username;
-    m_password = password;
-
+    m_path = path;
+    m_kpg = new PkgFile;
+    if (!m_kpg->open(path, PkgFile::modeReadWrite))
+    {
+        delete m_kpg;
+        m_kpg = NULL;
+        return false;
+    }
 
     return true;
 }
@@ -160,15 +151,9 @@ bool KpgDatabase::open(const std::wstring& server,
 
 void KpgDatabase::close()
 {
-    m_db_name = L"";
-    m_conn_str = L"";
-
-    m_db_type = -1;
-    m_port = 0;
-    m_server = L"";
-    m_database = L"";
-    m_username = L"";
-    m_password = L"";
+    m_path = L"";
+    delete m_kpg;
+    m_kpg = NULL;
 }
 
 
@@ -182,11 +167,6 @@ void KpgDatabase::setDatabaseName(const std::wstring& name)
 std::wstring KpgDatabase::getDatabaseName()
 {
     return m_db_name;
-}
-
-int KpgDatabase::getDatabaseType()
-{
-    return m_db_type;
 }
 
 std::wstring KpgDatabase::getActiveUid()
@@ -437,16 +417,9 @@ tango::ISetPtr KpgDatabase::openSet(const std::wstring& path)
 
     if (tablename1.empty())
         return xcm::null;
-        
-    if (m_db_type == tango::dbtypeDb2 ||
-        m_db_type == tango::dbtypeOracle)
-    {
-        kl::makeUpper(tablename1);
-    }
-
+    
     // create set and initialize variables
     KpgSet* set = new KpgSet(this);
-    set->m_conn_str = m_conn_str;
     set->m_tablename = tablename1;
 
     if (!set->init())

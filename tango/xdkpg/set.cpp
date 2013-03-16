@@ -76,7 +76,7 @@ std::wstring KpgSet::getSetId()
     {
         std::wstring id = L"xdkpg:";
         
-        std::wstring server = m_database->getServer();
+        std::wstring server = m_database->getPath();
         kl::makeLower(server);
 
         id += server;

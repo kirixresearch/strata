@@ -101,7 +101,7 @@ class KpgIterator : public CommonBaseIterator,
     friend class KpgDatabase;
     friend class KpgSet;
 
-    XCM_CLASS_NAME("xdpgsql.Iterator")
+    XCM_CLASS_NAME("xdkpg.Iterator")
     XCM_BEGIN_INTERFACE_MAP(KpgIterator)
         XCM_INTERFACE_ENTRY(tango::IIterator)
         XCM_INTERFACE_ENTRY(tango::ICacheRowUpdate)

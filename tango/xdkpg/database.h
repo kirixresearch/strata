@@ -17,6 +17,7 @@
 #include "../xdcommon/errorinfo.h"
 
 class JobInfo;
+class PkgFile;
 
 class KpgDatabase : public tango::IDatabase
 {
@@ -25,7 +26,7 @@ friend class KpgRowInserter;
 friend class KpgIterator;
 friend class KpgStream;
 
-    XCM_CLASS_NAME("xdpgsql.Database")
+    XCM_CLASS_NAME("xdkpg.Database")
     XCM_BEGIN_INTERFACE_MAP(KpgDatabase)
         XCM_INTERFACE_ENTRY(tango::IDatabase)
     XCM_END_INTERFACE_MAP()
@@ -35,17 +36,11 @@ public:
     KpgDatabase();
     ~KpgDatabase();
     
-    bool open(const std::wstring& server,
-              int port,
-              const std::wstring& database,
-              const std::wstring& username,
-              const std::wstring& password);
-
+    bool open(const std::wstring& path);
     void close();
 
     void setDatabaseName(const std::wstring& name);
     std::wstring getDatabaseName();
-    int getDatabaseType();
     tango::IAttributesPtr getAttributes();
     std::wstring getActiveUid();
     
@@ -136,8 +131,7 @@ public:
                                  tango::IJob* job);
 
 private:
- 
-    std::wstring getServer();
+
     std::wstring getPath();
     
     std::wstring getTempFileDirectory();
@@ -148,17 +142,9 @@ private:
     tango::IAttributesPtr m_attr;
 
     std::wstring m_db_name;
-    std::wstring m_conn_str;
-
-    bool m_using_dsn;
-    int m_db_type;
-    int m_port;
-    std::wstring m_server;
-    std::wstring m_database;
-    std::wstring m_username;
-    std::wstring m_password;
     std::wstring m_path;
-    
+    PkgFile* m_kpg;
+
     xcm::mutex m_jobs_mutex;
     int m_last_job;
     std::vector<JobInfo*> m_jobs;

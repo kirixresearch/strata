@@ -18,7 +18,7 @@
 
 class DatabaseMgr : public tango::IDatabaseMgr
 {
-    XCM_CLASS_NAME("xdpgsql.DatabaseMgr")
+    XCM_CLASS_NAME("xdkpg.DatabaseMgr")
     XCM_BEGIN_INTERFACE_MAP(DatabaseMgr)
         XCM_INTERFACE_ENTRY(tango::IDatabaseMgr)
     XCM_END_INTERFACE_MAP()
@@ -36,25 +36,20 @@ public:
         if (provider.empty())
             return xcm::null;
         
-        // check if the provider is xdpgsql, or in a different DLL
-        if (provider != L"xdpgsql")
+        // check if the provider is xdkpg, or in a different DLL
+        if (provider != L"xdkpg")
         {
             return xcm::null;
         }
         
         // parse the connection string
         
-        std::wstring host = c.getValue(L"host");
-        std::wstring port = c.getValue(L"port");
         std::wstring database = c.getValue(L"database");
-        std::wstring uid = c.getValue(L"user id");
-        std::wstring password = c.getValue(L"password");
-        
 
         KpgDatabase* db = new KpgDatabase;
         db->ref();
 
-        if (!db->open(host, kl::wtoi(port), database, uid, password))
+        if (!db->open(database))
         {
             m_error.setError(db->getErrorCode(), db->getErrorString());
 

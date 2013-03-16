@@ -17,7 +17,7 @@
 
 xcm_interface IKpgSet : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("xdpgsql.IKpgSet")
+    XCM_INTERFACE_NAME("xdkpg.IKpgSet")
 
 public:
 
@@ -34,7 +34,7 @@ friend class KpgDatabase;
 friend class KpgIterator;
 friend class KpgRowInserter;
 
-    XCM_CLASS_NAME("xdpgsql.Set")
+    XCM_CLASS_NAME("xdkpg.Set")
     XCM_BEGIN_INTERFACE_MAP(KpgSet)
         XCM_INTERFACE_ENTRY(IKpgSet)
         XCM_INTERFACE_ENTRY(CommonBaseSet)

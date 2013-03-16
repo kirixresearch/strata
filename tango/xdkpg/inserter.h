@@ -40,7 +40,7 @@ struct KpgInsertFieldData
 
 class KpgRowInserter : public tango::IRowInserter
 {
-    XCM_CLASS_NAME("xdpgsql.RowInserter")
+    XCM_CLASS_NAME("xdkpg.RowInserter")
     XCM_BEGIN_INTERFACE_MAP(KpgRowInserter)
         XCM_INTERFACE_ENTRY(tango::IRowInserter)
     XCM_END_INTERFACE_MAP()
