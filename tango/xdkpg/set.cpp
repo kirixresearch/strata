@@ -9,8 +9,6 @@
  */
 
 
-
-
 #include "tango.h"
 #include "database.h"
 #include "set.h"
@@ -27,10 +25,7 @@ KpgSet::KpgSet(KpgDatabase* database)
     m_database = database;
     m_database->ref();
 
-    m_filter_query = false;
     m_tablename = L"";
-    
-    m_cached_row_count = (tango::rowpos_t)-1;
 }
 
 KpgSet::~KpgSet()
@@ -61,11 +56,7 @@ std::wstring KpgSet::getObjectPath()
 
 unsigned int KpgSet::getSetFlags()
 {
-    if (m_filter_query)
-        return 0;
-        
-    if (m_cached_row_count != (tango::rowpos_t)-1)
-        return tango::sfFastRowCount;
+ //       return tango::sfFastRowCount;
  
     return 0;
 }
@@ -81,7 +72,6 @@ std::wstring KpgSet::getSetId()
 
         id += server;
         id += L":";
-        
         
         std::wstring table_name = m_tablename;
         kl::makeLower(table_name);
@@ -100,7 +90,18 @@ std::wstring KpgSet::getSetId()
 
 tango::IStructurePtr KpgSet::getStructure()
 {
-    return m_database->describeTable(m_tablename);
+    if (m_structure.isOk())
+        return m_structure;
+
+    int node_idx = m_info.getChildIdx(L"structure");
+    if (node_idx == -1)
+        return xcm::null;
+
+    kl::xmlnode& structure_node = m_info.getChild(node_idx);
+
+    m_structure = xdkpgXmlToStructure(structure_node);
+
+    return m_structure;
 }
 
 bool KpgSet::modifyStructure(tango::IStructure* struct_config,
@@ -129,37 +130,13 @@ int KpgSet::insert(tango::IIteratorPtr source_iter,
 }
 
 tango::IIteratorPtr KpgSet::createIterator(const std::wstring& columns,
-                                            const std::wstring& expr,
-                                            tango::IJob* job)
-{
-    std::wstring query;
-
-    tango::IAttributesPtr attr = m_database->getAttributes();
-    std::wstring quote_openchar = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
-    std::wstring quote_closechar = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);    
-    
-    query = L"SELECT * FROM ";
-    query += quote_openchar;
-    query += m_tablename;
-    query += quote_closechar;
-
-    if (m_where_condition.length() > 0)
-    {
-        query += L" WHERE ";
-        query += m_where_condition;
-    }
-
-    if (expr.length() > 0)
-    {
-        query += L" ORDER BY ";
-        query += expr;
-    }
-    
+                                           const std::wstring& expr,
+                                           tango::IJob* job)
+{    
     // create an iterator based on our select statement
     KpgIterator* iter = new KpgIterator(m_database, this);
 
-    // initialize Odbc connection for this set
-    if (!iter->init(query))
+    if (!iter->init(L""))
     {
         return xcm::null;
     }
@@ -169,56 +146,6 @@ tango::IIteratorPtr KpgSet::createIterator(const std::wstring& columns,
 
 tango::rowpos_t KpgSet::getRowCount()
 {
-    if (m_cached_row_count != (tango::rowpos_t)-1)
-        return m_cached_row_count;
-
-
-    tango::IAttributesPtr attr = m_database->getAttributes();
-    std::wstring quote_openchar = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
-    std::wstring quote_closechar = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);     
-    
-    std::wstring query;
-    query += L"SELECT COUNT(*) AS xdpgsqlres FROM ";
-    query += quote_openchar;
-    query += m_tablename;
-    query += quote_closechar;
-
-
-    KpgIterator* iter = new KpgIterator(m_database, this);
-    iter->ref();
-
-    // initialize Odbc connection for this set
-    if (!iter->init(query))
-    {
-        iter->unref();
-        return 0;
-    }
-
-    iter->goFirst();
-    tango::objhandle_t h = iter->getHandle(L"xdpgsqlres");
-    if (!h)
-    {
-        iter->unref();
-        return 0;
-    }
-
-    tango::rowpos_t result = iter->getInteger(h);
-    iter->releaseHandle(h);
-
-    iter->unref();
-
-
-    // always cache row count
-    m_cached_row_count = result;
-
-    return result;
+    return -1;
 }
-
-
-
-void KpgSet::setWhereCondition(const std::wstring& condition)
-{
-    m_where_condition = condition;
-}
-
 

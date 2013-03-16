@@ -77,11 +77,14 @@ public:
 
     PkgStreamReader();
     ~PkgStreamReader();
+    bool reopen();
 
     void* loadNextBlock(int* block_size);
 
 private:
+
     PkgFile* m_pkgfile;
+    xf_file_t m_file;
     xf_off_t m_offset;
     unsigned char* m_buf;
     unsigned char* m_temp_buf;
@@ -99,6 +102,7 @@ public:
 
     PkgStreamWriter();
     ~PkgStreamWriter();
+    bool reopen();
 
     void startWrite();
     bool writeBlock(const void* data, int block_size, bool compressed);
@@ -108,6 +112,7 @@ private:
     
     // general class members
     PkgFile* m_pkgfile;
+    xf_file_t m_file;
     unsigned char* m_buf;
     int m_buf_size;
 
@@ -142,8 +147,8 @@ public:
     PkgFile();
     ~PkgFile();
 
-    bool create(const std::wstring& filename, int version = -1);
-    bool open(const std::wstring& filename, int mode);
+    bool create(const std::wstring& filename);
+    bool open(const std::wstring& filename);
     bool close();
     bool isOpen();
 
@@ -159,6 +164,7 @@ private:
     bool lookupDirEntry(const std::wstring& stream_name, PkgDirEntry& entry);
 
 private:
+    std::wstring m_filename;
     xf_file_t m_file;
     int m_version;
 };

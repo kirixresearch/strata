@@ -30,6 +30,7 @@
 #include <kl/portable.h>
 #include <kl/string.h>
 #include <kl/utf8.h>
+#include <kl/xml.h>
 
 
 const wchar_t* sql92_keywords =
@@ -71,6 +72,84 @@ const wchar_t* sql92_keywords =
                 L"UNION,UNIQUE,UNKNOWN,UPDATE,UPPER,USAGE,USER,"
                 L"USING,VALUE,VALUES,VARCHAR,VARYING,VIEW,WHEN,"
                 L"WHENEVER,WHERE,WITH,WORK,WRITE,YEAR,ZONE";
+
+
+
+
+void xdkpgStructureToXml(tango::IStructurePtr s, kl::xmlnode& node)
+{
+    node.setNodeName(L"structure");
+
+    tango::IColumnInfoPtr colinfo;
+    int i, col_count;
+
+    col_count = s->getColumnCount();
+    for (i = 0; i < col_count; ++i)
+    {
+        colinfo = s->getColumnInfoByIdx(i);
+
+        kl::xmlnode& col = node.addChild();
+        col.setNodeName(L"column");
+
+        col.addChild(L"name", colinfo->getName());
+        col.addChild(L"type", colinfo->getType());
+        col.addChild(L"width", colinfo->getWidth());
+        col.addChild(L"scale", colinfo->getScale());
+        col.addChild(L"calculated", colinfo->getCalculated() ? 1 : 0);
+        col.addChild(L"expression", colinfo->getExpression());
+    }
+}
+
+
+
+tango::IStructurePtr xdkpgXmlToStructure(kl::xmlnode& node)
+{
+    tango::IStructurePtr s = static_cast<tango::IStructure*>(new Structure);
+
+    int child_count = node.getChildCount();
+    int i;
+
+    for (i = 0; i < child_count; ++i)
+    {
+        kl::xmlnode& col = node.getChild(i);
+        if (col.getNodeName() != L"column")
+        {
+            continue;
+        }
+
+        kl::xmlnode& colname = col.getChild(L"name");
+        kl::xmlnode& coltype = col.getChild(L"type");
+        kl::xmlnode& colwidth = col.getChild(L"width");
+        kl::xmlnode& colscale = col.getChild(L"scale");
+        kl::xmlnode& colcalculated = col.getChild(L"calculated");
+        kl::xmlnode& colexpression = col.getChild(L"expression");
+
+        if (colname.isEmpty() ||
+            coltype.isEmpty() ||
+            colwidth.isEmpty() ||
+            colscale.isEmpty() ||
+            colcalculated.isEmpty() ||
+            colexpression.isEmpty())
+        {
+            return xcm::null;
+        }
+
+        tango::IColumnInfoPtr colinfo = s->createColumn();
+        colinfo->setName(colname.getNodeValue());
+        colinfo->setType(kl::wtoi(coltype.getNodeValue()));
+        colinfo->setWidth(kl::wtoi(colwidth.getNodeValue()));
+        colinfo->setScale(kl::wtoi(colscale.getNodeValue()));
+        colinfo->setCalculated(kl::wtoi(colcalculated.getNodeValue()) != 0 ? true : false);
+        colinfo->setExpression(colexpression.getNodeValue());
+    }
+
+    return s;
+}
+
+
+
+
+
 
 
 // KpgDatabase class implementation
@@ -138,7 +217,7 @@ bool KpgDatabase::open(const std::wstring& path)
     
     m_path = path;
     m_kpg = new PkgFile;
-    if (!m_kpg->open(path, PkgFile::modeReadWrite))
+    if (!m_kpg->open(path))
     {
         delete m_kpg;
         m_kpg = NULL;
@@ -371,6 +450,8 @@ tango::IFileInfoPtr KpgDatabase::getFileInfo(const std::wstring& path)
 
 tango::IFileInfoEnumPtr KpgDatabase::getFolderInfo(const std::wstring& path)
 {
+    XCM_AUTO_LOCK(m_obj_mutex);
+
     xcm::IVectorImpl<tango::IFileInfoPtr>* retval;
     retval = new xcm::IVectorImpl<tango::IFileInfoPtr>;
 
@@ -427,22 +508,53 @@ tango::IStreamPtr KpgDatabase::createStream(const std::wstring& path, const std:
     return xcm::null;
 }
 
-tango::ISetPtr KpgDatabase::openSetEx(const std::wstring& path,
-                                        int format)
+tango::ISetPtr KpgDatabase::openSetEx(const std::wstring& path, int format)
 {
     return openSet(path);
 }
 
-tango::ISetPtr KpgDatabase::openSet(const std::wstring& path)
+tango::ISetPtr KpgDatabase::openSet(const std::wstring& _path)
 {
-    std::wstring tablename1;// = pgsqlGetTablenameFromPath(path);
+    XCM_AUTO_LOCK(m_obj_mutex);
 
-    if (tablename1.empty())
+    std::wstring path = _path;
+    if (path.substr(0,1) == L"/")
+        path.erase(0,1);
+
+    PkgStreamReader* reader = m_kpg->readStream(path);
+    if (!reader)
         return xcm::null;
-    
+
+    int len;
+    unsigned char* data = (unsigned char*)reader->loadNextBlock(&len);
+    if (!data || len == 0)
+    {
+        delete reader;
+        return xcm::null;
+    }
+
+    std::wstring info;
+
+    if (m_kpg->getVersion() == 1)
+    {
+        info = kl::towstring((const char*)data);
+    }
+     else
+    {
+        kl::ucsle2wstring(info, data, len/2);
+    }
+
+    delete reader;
+
+
     // create set and initialize variables
     KpgSet* set = new KpgSet(this);
-    set->m_tablename = tablename1;
+    set->m_tablename = path;
+    if (!set->m_info.parse(info))
+    {
+        delete set;
+        return xcm::null;
+    }
 
     if (!set->init())
     {
@@ -454,9 +566,9 @@ tango::ISetPtr KpgDatabase::openSet(const std::wstring& path)
 
 
 tango::IIteratorPtr KpgDatabase::createIterator(const std::wstring& path,
-                                                  const std::wstring& columns,
-                                                  const std::wstring& sort,
-                                                  tango::IJob* job)
+                                                const std::wstring& columns,
+                                                const std::wstring& sort,
+                                                tango::IJob* job)
 {
     tango::ISetPtr set = openSet(path);
     if (set.isNull())

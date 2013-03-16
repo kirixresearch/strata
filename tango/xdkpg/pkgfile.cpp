@@ -113,6 +113,7 @@ int PkgStreamEnum::getStreamCount()
 
 PkgStreamReader::PkgStreamReader()
 {
+    m_file = NULL;
     m_pkgfile = NULL;
     m_offset = 0;
     m_buf = NULL;
@@ -132,15 +133,28 @@ PkgStreamReader::~PkgStreamReader()
     {
         free(m_temp_buf);
     }
+
+    if (m_file && m_file != m_pkgfile->m_file)
+    {
+        xf_close(m_file);
+    }
 }
 
+bool PkgStreamReader::reopen()
+{
+    xf_file_t f = xf_open(m_pkgfile->m_filename, xfOpen, xfReadWrite, xfShareReadWrite);
+    if (!f)
+        return false;
+    m_file = f;
+    return true;
+}
 
 void* PkgStreamReader::loadNextBlock(int* block_size)
 {
     unsigned char block_header[32];
 
-    xf_seek(m_pkgfile->m_file, m_offset, xfSeekSet);
-    if (1 != xf_read(m_pkgfile->m_file, block_header, 32, 1))
+    xf_seek(m_file, m_offset, xfSeekSet);
+    if (1 != xf_read(m_file, block_header, 32, 1))
     {
         return NULL;
     }
@@ -189,7 +203,7 @@ void* PkgStreamReader::loadNextBlock(int* block_size)
     }
 
 
-    if (1 != xf_read(m_pkgfile->m_file, read_buf, compressed_block_size, 1))
+    if (1 != xf_read(m_file, read_buf, compressed_block_size, 1))
     {
         *block_size = 0;
         return NULL;
@@ -224,6 +238,7 @@ void* PkgStreamReader::loadNextBlock(int* block_size)
 
 PkgStreamWriter::PkgStreamWriter()
 {
+    m_file = NULL;
     m_pkgfile = NULL;
     m_buf = NULL;
     m_buf_size = 0;
@@ -241,6 +256,21 @@ PkgStreamWriter::~PkgStreamWriter()
     {
         free(m_buf);
     }
+
+    if (m_file && m_file != m_pkgfile->m_file)
+    {
+        xf_close(m_file);
+    }
+}
+
+
+bool PkgStreamWriter::reopen()
+{
+    xf_file_t f = xf_open(m_pkgfile->m_filename, xfOpen, xfReadWrite, xfShareReadWrite);
+    if (!f)
+        return false;
+    m_file = f;
+    return true;
 }
 
 
@@ -302,14 +332,14 @@ bool PkgStreamWriter::writeBlock(const void* data, int block_size, bool compress
     int2buf(m_buf+4, write_size);
     int2buf(m_buf+8, block_size);
 
-    xf_seek(m_pkgfile->m_file, 0, xfSeekEnd);
+    xf_seek(m_file, 0, xfSeekEnd);
 
     if (m_offset == 0)
     {
-        m_offset = xf_get_file_pos(m_pkgfile->m_file);
+        m_offset = xf_get_file_pos(m_file);
     }
 
-    if (1 != xf_write(m_pkgfile->m_file, m_buf, write_size+32, 1))
+    if (1 != xf_write(m_file, m_buf, write_size+32, 1))
     {
         // write failed
         return false;
@@ -327,7 +357,7 @@ void PkgStreamWriter::finishWrite()
     // write eof marker for this stream
     unsigned char eof[32];
     memset(eof, 0, 32);
-    xf_write(m_pkgfile->m_file, eof, 32, 1);
+    xf_write(m_file, eof, 32, 1);
 
     // write directory entry
     PkgDirEntry e;
@@ -359,7 +389,7 @@ PkgFile::~PkgFile()
 }
 
 
-bool PkgFile::create(const std::wstring& filename, int version)
+bool PkgFile::create(const std::wstring& filename)
 {
     // if the file is already open, close it
 
@@ -369,15 +399,16 @@ bool PkgFile::create(const std::wstring& filename, int version)
     }
 
 
-    if (version == -1)
-        version = 2;
+    int version = 2;
     m_version = version;
-
-
+    
     // attempt to open the file
 
-    m_file = xf_open(filename, xfCreate, xfReadWrite, xfShareNone);
+    m_file = xf_open(filename, xfCreate, xfReadWrite, xfShareReadWrite);
+    if (!m_file)
+        return false;
 
+    m_filename = filename;
 
     // create file header
     unsigned char* header = new unsigned char[kpg_header_size];
@@ -398,6 +429,7 @@ bool PkgFile::create(const std::wstring& filename, int version)
         delete[] header;
         xf_close(m_file);
         xf_remove(filename);
+        m_filename = L"";
         return false;
     }
 
@@ -422,7 +454,7 @@ bool PkgFile::create(const std::wstring& filename, int version)
 }
 
 
-bool PkgFile::open(const std::wstring& filename, int mode)
+bool PkgFile::open(const std::wstring& filename)
 {
     // if the file is already open, close it
 
@@ -434,20 +466,8 @@ bool PkgFile::open(const std::wstring& filename, int mode)
 
     // attempt to open the file
 
-    int mode_flags = xfRead;
-    int share_flags = xfShareNone;
-
-    switch (mode)
-    {
-        case modeRead:      mode_flags = xfRead; break;
-        case modeWrite:     mode_flags = xfWrite; break;
-        case modeReadWrite: mode_flags = xfReadWrite; break;
-    }
-
-    if (!(mode_flags & xfWrite))
-    {
-        share_flags = xfShareRead;
-    }
+    int mode_flags = xfReadWrite;
+    int share_flags = xfShareReadWrite;
 
     m_file = xf_open(filename, xfOpen, mode_flags, share_flags);
     if (!m_file)
@@ -455,6 +475,7 @@ bool PkgFile::open(const std::wstring& filename, int mode)
         return false;
     }
 
+    m_filename = filename;
 
     unsigned char* header = new unsigned char[kpg_header_size];
     xf_seek(m_file, 0, xfSeekSet);
@@ -487,8 +508,10 @@ int PkgFile::getVersion()
 
 bool PkgFile::close()
 {
-    xf_close(m_file);
+    if (m_file)
+        xf_close(m_file);
     m_file = NULL;
+    m_filename = L"";
     return false;
 }
 
@@ -829,6 +852,7 @@ PkgStreamReader* PkgFile::readStream(const std::wstring& stream_name)
     }
 
     PkgStreamReader* reader = new PkgStreamReader;
+    reader->m_file = m_file;
     reader->m_pkgfile = this;
     reader->m_offset = entry.first_block_offset;
     return reader;
@@ -837,6 +861,7 @@ PkgStreamReader* PkgFile::readStream(const std::wstring& stream_name)
 PkgStreamWriter* PkgFile::createStream(const std::wstring& stream_name)
 {
     PkgStreamWriter* writer = new PkgStreamWriter;
+    writer->m_file = m_file;
     writer->m_pkgfile = this;
     writer->m_stream_name = stream_name;
     return writer;

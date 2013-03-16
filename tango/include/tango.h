@@ -138,6 +138,8 @@ enum
     dbtypeFirebird = 10,
     dbtypeSqlite = 11,
     dbtypeClient = 12,
+    dbtypeKpg = 13,
+
     dbtypeFilesystem = 80
 };
 

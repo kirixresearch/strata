@@ -19,6 +19,10 @@
 class JobInfo;
 class PkgFile;
 
+namespace kl { class xmlnode; };
+void xdkpgStructureToXml(tango::IStructurePtr s, kl::xmlnode& node);
+tango::IStructurePtr xdkpgXmlToStructure(kl::xmlnode& node);
+
 class KpgDatabase : public tango::IDatabase
 {
 friend class KpgSet;
@@ -39,6 +43,7 @@ public:
     bool open(const std::wstring& path);
     void close();
 
+    int getDatabaseType() { return tango::dbtypeKpg; }
     void setDatabaseName(const std::wstring& name);
     std::wstring getDatabaseName();
     tango::IAttributesPtr getAttributes();
@@ -138,6 +143,8 @@ private:
     std::wstring getDefinitionDirectory();
     
 private:
+
+    xcm::mutex m_obj_mutex;
 
     tango::IAttributesPtr m_attr;
 

@@ -48,6 +48,26 @@ KpgIterator::~KpgIterator()
 
 bool KpgIterator::init(const std::wstring& query)
 {
+    m_structure = m_set->getStructure();
+
+    int i, col_count = m_structure->getColumnCount();
+    for (i = 0; i < col_count; ++i)
+    {
+        tango::IColumnInfoPtr colinfo = m_structure->getColumnInfoByIdx(i);
+
+        KpgDataAccessInfo* field = new KpgDataAccessInfo;
+        field->name = colinfo->getName();
+        field->type = colinfo->getType();
+        field->width = colinfo->getWidth();
+        field->scale = colinfo->getScale();
+        field->ordinal = i;
+
+        m_fields.push_back(field);
+    }
+
+
+    refreshStructure();
+
 
     return true;
 }
@@ -136,7 +156,7 @@ double KpgIterator::getPos()
 
 tango::IStructurePtr KpgIterator::getStructure()
 {
-    return xcm::null;
+    return m_set->getStructure();
 }
 
 void KpgIterator::refreshStructure()
