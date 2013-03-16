@@ -374,6 +374,28 @@ tango::IFileInfoEnumPtr KpgDatabase::getFolderInfo(const std::wstring& path)
     xcm::IVectorImpl<tango::IFileInfoPtr>* retval;
     retval = new xcm::IVectorImpl<tango::IFileInfoPtr>;
 
+    PkgStreamEnum* kpgenum = m_kpg->getStreamEnum();
+    if (kpgenum)
+    {
+        int i, cnt = kpgenum->getStreamCount();
+        for (i = 0; i < cnt; ++i)
+        {
+            PkgDirEntry entry;
+            std::wstring name = kpgenum->getStreamName(i);
+            if (kpgenum->getStreamInfo(name, entry))
+            {
+                if (!entry.deleted)
+                {
+                    xdcommon::FileInfo* f = new xdcommon::FileInfo;
+                    f->name = entry.stream_name;
+                    f->type = tango::filetypeSet;
+
+                    retval->append(static_cast<tango::IFileInfo*>(f));
+                }
+            }
+        }
+    }
+
     return retval;
 }
 
