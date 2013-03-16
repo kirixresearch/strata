@@ -1736,7 +1736,7 @@ void JsonNodeValidator::flagError(JsonNode& data, const std::wstring& message)
 
     std::wstring error_message = message;
     std::wstring error_context = data.toString();
-    error_context = error_context.substr(0,15);
+    error_context = error_context.substr(0,50);
     kl::replaceStr(error_message, L"%s", error_context, true);
 
     m_messages.push_back(error_message);
