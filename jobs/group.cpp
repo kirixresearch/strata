@@ -59,10 +59,6 @@ bool GroupJob::isInputValid()
     // TODO: check job type and version
 
 
-
-std::wstring str = m_config.toString();
-
-
     kl::JsonNode params = m_config["params"];
     if (params.isUndefined())
         return false;
