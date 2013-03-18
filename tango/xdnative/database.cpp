@@ -1699,7 +1699,24 @@ static bool _copyTree(const std::wstring& path,
 
 bool Database::copyData(const tango::CopyInfo* info, tango::IJob* job)
 {
-    return false;
+    tango::ISetPtr input = openSet(info->input_path);
+    if (input.isNull())
+        return false;
+
+    tango::IIteratorPtr iter = input->createIterator(L"", info->order, NULL);
+
+    tango::IStructurePtr structure = input->getStructure();
+    if (structure.isNull())
+        return false;
+
+    tango::ISetPtr result_set;
+    tango::ISetPtr output = createTable(info->output_path,
+                                        structure,
+                                        NULL);
+
+    output->insert(iter, info->where_condition, 0, NULL);
+    
+    return true;
 }
 
 bool Database::copyFile(const std::wstring& src_path,

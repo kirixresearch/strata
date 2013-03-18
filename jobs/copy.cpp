@@ -82,6 +82,11 @@ int CopyJob::runJob()
     std::wstring input_path = params["input"].getString();
     std::wstring output_path = params["output"].getString();
 
+    tango::CopyInfo info;
+    info.input_path = input_path;
+    info.output_path = output_path;
+
+    m_db->copyData(&info, NULL);
 
     return 0;
 }

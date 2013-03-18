@@ -7459,27 +7459,23 @@ void TableDoc::onInsertColumnSeparator(wxCommandEvent& evt)
     insertColumnSeparator(m_grid->getCursorColumn());
 }
 
-void onCopyRecordsJobFinished(IJobPtr job)
+void onCopyRecordsJobFinished(jobs::IJobPtr job)
 {
     if (job->getJobInfo()->getState() != jobStateFinished)
         return;
 
+    kl::JsonNode params;
+    params.fromString(job->getParameters());
+
     // open the result set in a new child window
 
-    ICopyJobPtr copy_job = job;
 
-    size_t copy_count = copy_job->getInstructionCount();
-    size_t i;
+    TableDoc* doc = new TableDoc;
+    doc->open(g_app->getDatabase(), towx(params["output"].getString()));
 
-    for (i = 0; i < copy_count; ++i)
-    {
-        TableDoc* doc = new TableDoc;
-        doc->open(copy_job->getResultSet(i), xcm::null);
+    g_app->getMainFrame()->createSite(doc, sitetypeNormal,
+                                      -1, -1, -1, -1);
 
-        g_app->getMainFrame()->createSite(doc, sitetypeNormal,
-                                          -1, -1, -1, -1);
-    }
-    
     g_app->getAppController()->refreshDbDoc();
 }
 
@@ -7497,8 +7493,22 @@ void TableDoc::onCopyRecordsOk(ExprBuilderPanel* expr_panel)
 }
 
 
+void TableDoc::copyRecords(const wxString& condition)
+{
+    // set up the job from the info we gathered
+    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.copy-job");
 
+    kl::JsonNode params;
 
+    params["input"].setString(getBaseSet()->getObjectPath());
+    params["output"].setString(L"copy_" + kl::getUniqueString());
+
+    job->setParameters(params.toString());
+    job->sigJobFinished().connect(&onCopyRecordsJobFinished);
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
+}
+
+#if 0
 void TableDoc::copyRecords(const wxString& condition)
 {
     flushActiveView();
@@ -7589,6 +7599,7 @@ void TableDoc::copyRecords(const wxString& condition)
 
     g_app->getJobQueue()->addJob(copy_job, jobStateRunning);
 }
+#endif
 
 
 

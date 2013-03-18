@@ -672,11 +672,11 @@ struct CopyInfo
         append = false;
     }
 
-    std::wstring source_path;
+    std::wstring input_path;
     std::wstring where_condition;
     std::wstring order;
 
-    std::wstring destination_path;
+    std::wstring output_path;
     bool append;
 };
 
