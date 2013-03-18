@@ -798,14 +798,22 @@ bool TableDocModel::writeObject(ITableDocObjectPtr obj, bool save_to_store)
         {
             found = true;
             (*vec)[i] = obj->clone();
+            (*vec)[i]->setDirty(true);
             break;
         }
     }
     if (!found)
-        vec->push_back(obj->clone());
+    {
+        ITableDocObjectPtr c = obj->clone();
+        c->setDirty(true);
+        vec->push_back(c);
+    }
+
 
     if (save_to_store)
         save();
+
+    obj->setDirty(false);
 
     return true;
 }
@@ -818,6 +826,17 @@ bool TableDocModel::writeMultipleObjects(ITableDocObjectEnumPtr objs)
         return false;
 
     size_t i, count = objs->size();
+
+    size_t dirty_count = 0;
+
+    for (i = 0; i < count; ++i)
+    {
+        if (objs->getItem(i)->getDirty())
+            dirty_count++;
+    }
+
+    if (dirty_count == 0)
+        return true;
 
     for (i = 0; i < count; ++i)
     {
@@ -967,6 +986,9 @@ bool TableDocModel::saveJson(const wxString& path)
     std::vector<ITableDocObjectPtr>::iterator vit;
     for (vit = views.begin(); vit != views.end(); ++vit)
     {
+        if (!(*vit)->getDirty())
+            continue;
+
         bool found = false;
         size_t i;
 
@@ -975,6 +997,7 @@ bool TableDocModel::saveJson(const wxString& path)
             if (m_views[i]->getObjectId() == (*vit)->getObjectId())
             {
                 found = true;
+                (*vit)->setDirty(false);
                 m_views[i] = (*vit)->clone();
                 break;
             }
@@ -986,6 +1009,9 @@ bool TableDocModel::saveJson(const wxString& path)
     std::vector<ITableDocObjectPtr>::iterator mit;
     for (mit = marks.begin(); mit != marks.end(); ++mit)
     {
+       if (!(*mit)->getDirty())
+            continue;
+
         bool found = false;
         size_t i;
 
@@ -994,6 +1020,7 @@ bool TableDocModel::saveJson(const wxString& path)
             if (m_marks[i]->getObjectId() == (*mit)->getObjectId())
             {
                 found = true;
+                (*mit)->setDirty(false);
                 m_marks[i] = (*mit)->clone();
                 break;
             }
