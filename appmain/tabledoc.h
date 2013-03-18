@@ -96,9 +96,6 @@ public:
 
     virtual bool readFromNode(kl::JsonNode& node) = 0;
     virtual bool writeToNode(kl::JsonNode& node) = 0;
-
-    virtual bool readFromNode(tango::INodeValuePtr node) = 0;
-    virtual bool writeToNode(tango::INodeValuePtr node) = 0;
 };
 
 

@@ -13,6 +13,7 @@
 #include "tabledocmodel.h"
 #include "tabledoc_private.h"
 #include "jobquery.h"
+#include "jsonconfig.h"
 #include <kl/string.h>
 
 
@@ -251,8 +252,6 @@ public:
         return m_description;
     }
 
-
-
     void setExpression(const std::wstring& new_val)
     {
         if (m_expression == new_val)
@@ -266,7 +265,6 @@ public:
     {
         return m_expression;
     }
-
 
     void setForegroundColor(const wxColour& new_val)
     {
@@ -298,7 +296,6 @@ public:
             
         return m_bgcolor;
     }
-
 
     ITableDocObjectPtr clone()
     {
@@ -334,52 +331,6 @@ public:
         return true;
     }
 
-
-
-    bool writeToNode(tango::INodeValuePtr node)
-    {
-        return false;
-    }
-
-    bool readFromNode(tango::INodeValuePtr node)
-    {
-        int int_color;
-
-        tango::INodeValuePtr description_node = node->getChild(L"description", false);
-        if (description_node.isNull())
-            return false;
-        m_description = towx(description_node->getString());
-
-        tango::INodeValuePtr expression_node = node->getChild(L"expression", false);
-        if (expression_node)
-        {
-            m_expression = towx(expression_node->getString());
-        }
-        
-        
-        tango::INodeValuePtr mark_active_node = node->getChild(L"mark_active", false);
-        if (mark_active_node.isNull())
-            return false;
-        m_mark_active = mark_active_node->getBoolean();
-
-        tango::INodeValuePtr mark_fgcolor_node = node->getChild(L"mark_fgcolor", false);
-        if (mark_fgcolor_node.isNull())
-            return false;
-        int_color = mark_fgcolor_node->getInteger();
-        m_fgcolor.Set(int_color >> 16, (int_color >> 8) & 0xff, int_color & 0xff);
-
-        tango::INodeValuePtr mark_bgcolor_node = node->getChild(L"mark_bgcolor", false);
-        if (mark_bgcolor_node.isNull())
-            return false;
-        int_color = mark_bgcolor_node->getInteger();
-        if (int_color != -1)
-            m_bgcolor.Set(int_color >> 16, (int_color >> 8) & 0xff, int_color & 0xff);
-         else
-            m_bgcolor = wxNullColour;
-                
-        return true;
-    }
-
 private:
 
     bool m_mark_active;
@@ -388,8 +339,6 @@ private:
     std::wstring m_description;
     std::wstring m_expression;
 };
-
-
 
 
 
@@ -489,7 +438,6 @@ public:
         return m_alignment;
     }
 
-
     void setTextWrap(int new_value)
     {
         if (m_text_wrap == new_value)
@@ -504,9 +452,6 @@ public:
         return m_text_wrap;
     }
 
-
-
-
     ITableDocObjectPtr clone()
     {
         TableDocViewCol* viewcol = new TableDocViewCol;
@@ -520,7 +465,6 @@ public:
         return static_cast<ITableDocObject*>(viewcol);
     }
 
-
     bool readFromNode(kl::JsonNode& node)
     {
         m_name = node["name"].getString();
@@ -528,6 +472,7 @@ public:
         m_fgcolor = string2color(node["fgcolor"].getString());
         m_bgcolor = string2color(node["bgcolor"].getString());
         m_alignment = node["alignment"].getInteger();
+        m_text_wrap = node["text_wrap"].getInteger();
         return true;
     }
 
@@ -542,49 +487,6 @@ public:
         return true;
     }
 
-
-    bool writeToNode(tango::INodeValuePtr node)
-    {
-        return false;
-    }
-
-    bool readFromNode(tango::INodeValuePtr node)
-    {
-        tango::INodeValuePtr col_name = node->getChild(L"name", false);
-        if (!col_name)
-            return false;
-        m_name = towx(col_name->getString());
-        
-        tango::INodeValuePtr col_size = node->getChild(L"size", false);
-        if (!col_size)
-            return false;
-        m_size = col_size->getInteger();
-
-        tango::INodeValuePtr col_fgcolor = node->getChild(L"fgcolor", false);
-        if (!col_fgcolor)
-            return false;
-        m_fgcolor = int2color(col_fgcolor->getInteger());
-
-        tango::INodeValuePtr col_bgcolor = node->getChild(L"bgcolor", false);
-        if (!col_bgcolor)
-            return false;
-        m_bgcolor = int2color(col_bgcolor->getInteger());
-
-        tango::INodeValuePtr col_alignment = node->getChild(L"alignment", false);
-        if (col_alignment)
-            m_alignment = col_alignment->getInteger();
-             else
-            m_alignment = tabledocAlignDefault;
-
-        tango::INodeValuePtr col_textwrap = node->getChild(L"text_wrap", false);
-        if (col_textwrap)
-            m_text_wrap = col_alignment->getInteger();
-             else
-            m_text_wrap = tabledocWrapDefault;
-
-        return true;
-    }
-
 private:
     
     std::wstring m_name;
@@ -594,7 +496,6 @@ private:
     int m_alignment;
     int m_text_wrap;
 };
-
 
 
 
@@ -715,7 +616,6 @@ public:
         setDirty(true);
     }
 
-
     bool writeToNode(kl::JsonNode& node)
     {
         node["object_id"] = m_id;
@@ -758,54 +658,6 @@ public:
         return true;
     }
 
-
-
-    bool writeToNode(tango::INodeValuePtr node)
-    {
-        return false;
-    }
-
-    bool readFromNode(tango::INodeValuePtr node)
-    {
-        tango::INodeValuePtr desc_node = node->getChild(L"description", false);
-        if (desc_node)
-        {
-            m_description = towx(desc_node->getString());
-        }
-        
-        tango::INodeValuePtr rowsize_node = node->getChild(L"row_size", false);
-        if (rowsize_node)
-            m_row_size = rowsize_node->getInteger();
-             else
-            m_row_size = -1;
-
-        tango::INodeValuePtr cols_node = node->getChild(L"columns", false);
-        if (!cols_node)
-            return false;
-
-        TableDocViewCol* viewcol;
-
-        tango::INodeValuePtr col;
-
-        unsigned int child_count = cols_node->getChildCount();
-        for (unsigned int i = 0; i < child_count; i++)
-        {
-            col = cols_node->getChildByIdx(i);
-
-            viewcol = new TableDocViewCol;
-            if (viewcol->readFromNode(col))
-            {
-                m_cols.push_back(static_cast<ITableDocViewCol*>(viewcol));
-            }
-             else
-            {
-                delete viewcol;
-            }
-        }
-
-        return true;
-    }
-
     ITableDocObjectPtr clone()
     {
         TableDocView* view = new TableDocView;
@@ -820,7 +672,6 @@ public:
         }
         return static_cast<ITableDocObject*>(view);
     }
-
 
     void setDirty(bool new_val)
     {
@@ -864,6 +715,8 @@ private:
 };
 
 
+
+
 TableDocModel::TableDocModel()
 {
 }
@@ -883,11 +736,7 @@ void TableDocModel::init(const std::wstring& id)
     m_id = id;
 
     if (id.length() > 0)
-    {
-        upgradeOldVersionIfNecessary(id);
-
         load();
-    }
 }
 
 bool TableDocModel::load()
@@ -896,50 +745,17 @@ bool TableDocModel::load()
     if (db.isNull())
         return false;
 
-    std::wstring filename = L"/.appdata/%usr%/tabledocmodel/%id%";
+    std::wstring filename = L"/.appdata/%usr%/tabledoc/%id%";
     kl::replaceStr(filename, L"%usr%", db->getActiveUid());
     kl::replaceStr(filename, L"%id%", m_id);
-    
-    std::wstring contents;
 
-    if (!readStreamTextFile(db, filename, contents))
-        return false;
+    // try to load the path in the new JSON format
+    if (loadJson(filename))
+        return true;
 
-    kl::JsonNode root;
-    if (!root.fromString(contents))
-        return false;
-
-    m_views.clear();
-    m_marks.clear();
-    m_to_delete.clear();
-
-    if (root.childExists("views"))
-    {
-        kl::JsonNode views_root = root["views"];
-
-        size_t i, child_count = views_root.getChildCount();
-        for (i = 0; i < child_count; ++i)
-        {
-            TableDocView* obj = new TableDocView;
-            obj->readFromNode(views_root[i]);
-            m_views.push_back(static_cast<ITableDocObject*>(obj));
-        }
-    }
-
-    if (root.childExists("marks"))
-    {
-        kl::JsonNode marks_root = root["marks"];
-
-        size_t i, child_count = marks_root.getChildCount();
-        for (i = 0; i < child_count; ++i)
-        {
-            TableDocMark* obj = new TableDocMark;
-            obj->readFromNode(marks_root[i]);
-            m_marks.push_back(static_cast<ITableDocObject*>(obj));
-        }
-    }
-
-    return true;
+    // if we can't load it in the new format, try
+    // to open it with the old format
+    return loadAndConvertOldVersionToNewJson(getId());
 }
 
 bool TableDocModel::save()
@@ -948,115 +764,11 @@ bool TableDocModel::save()
     if (db.isNull())
         return false;
 
-    std::wstring filename = L"/.appdata/%usr%/tabledocmodel/%id%";
+    std::wstring filename = L"/.appdata/%usr%/tabledoc/%id%";
     kl::replaceStr(filename, L"%usr%", db->getActiveUid());
     kl::replaceStr(filename, L"%id%", m_id);
-    
 
-
-    std::vector<ITableDocObjectPtr> marks = m_marks;
-    std::vector<ITableDocObjectPtr> views = m_views;
-    std::vector<std::wstring> to_delete = m_to_delete;
-
-    m_marks.clear();
-    m_views.clear();
-
-    load();
-
-
-    // first, remove all objects slated for deletion
-    std::vector<ITableDocObjectPtr>::iterator it;
-    std::vector<std::wstring>::iterator dit;
-
-    for (dit = to_delete.begin(); dit != to_delete.end(); ++dit)
-    {
-        for (it = m_views.begin(); it != m_views.end(); ++it)
-        {
-            if ((*it)->getObjectId() == *dit)
-            {
-                m_views.erase(it);
-                break;
-            }
-        }
-
-        for (it = m_marks.begin(); it != m_marks.end(); ++it)
-        {
-            if ((*it)->getObjectId() == *dit)
-            {
-                m_marks.erase(it);
-                break;
-            }
-        }
-    }
-
-
-    // now merge existing and add new objects
-    std::vector<ITableDocObjectPtr>::iterator vit;
-    for (vit = views.begin(); vit != views.end(); ++vit)
-    {
-        bool found = false;
-        size_t i;
-
-        for (i = 0; i < m_views.size(); ++i)
-        {
-            if (m_views[i]->getObjectId() == (*vit)->getObjectId())
-            {
-                found = true;
-                m_views[i] = (*vit)->clone();
-                break;
-            }
-        }
-        if (!found)
-            m_views.push_back((*vit)->clone());
-    }
-
-
-    std::vector<ITableDocObjectPtr>::iterator mit;
-    for (mit = marks.begin(); mit != marks.end(); ++mit)
-    {
-        bool found = false;
-        size_t i;
-
-        for (i = 0; i < m_marks.size(); ++i)
-        {
-            if (m_marks[i]->getObjectId() == (*mit)->getObjectId())
-            {
-                found = true;
-                m_marks[i] = (*mit)->clone();
-                break;
-            }
-        }
-        if (!found)
-            m_marks.push_back((*mit)->clone());
-    }
-
-
-    // now serialize the object collections to json
-
-    kl::JsonNode root;
-    kl::JsonNode views_root = root["views"];
-    views_root.setArray();
-
-    for (it = m_views.begin(); it != m_views.end(); ++it)
-    {
-        kl::JsonNode node = views_root.appendElement();
-        (*it)->writeToNode(node);
-    }
-
-
-    kl::JsonNode marks_root = root["marks"];
-    marks_root.setArray();
-
-    for (it = m_marks.begin(); it != m_marks.end(); ++it)
-    {
-        kl::JsonNode node = marks_root.appendElement();
-        (*it)->writeToNode(node);
-    }
-
-
-    std::wstring contents = root.toString();
-
-    return writeStreamTextFile(db, filename, contents);
+    return saveJson(filename);
 }
 
 bool TableDocModel::writeObject(ITableDocObjectPtr obj, bool save_to_store)
@@ -1115,7 +827,6 @@ bool TableDocModel::writeMultipleObjects(ITableDocObjectEnumPtr objs)
     return save();
 }
 
-
 bool TableDocModel::deleteObject(ITableDocObjectPtr obj)
 {
     ITableDocViewPtr view = obj;
@@ -1150,7 +861,6 @@ bool TableDocModel::deleteObject(ITableDocObjectPtr obj)
     return true;
 }
 
-
 ITableDocMarkPtr TableDocModel::createMarkObject()
 {
     TableDocMark* obj = new TableDocMark;
@@ -1164,7 +874,6 @@ ITableDocViewPtr TableDocModel::createViewObject()
     obj->setDirty(true);
     return static_cast<ITableDocView*>(obj);
 }
-
 
 ITableDocObjectPtr TableDocModel::lookupObject(const std::wstring& id)
 {
@@ -1183,7 +892,6 @@ ITableDocObjectPtr TableDocModel::lookupObject(const std::wstring& id)
 
     return xcm::null;
 }
-
 
 ITableDocMarkEnumPtr TableDocModel::getMarkEnum()
 {
@@ -1215,6 +923,328 @@ ITableDocViewEnumPtr TableDocModel::getViewEnum()
     }
 
     return vec;
+}
+
+bool TableDocModel::saveJson(const wxString& path)
+{
+    std::vector<ITableDocObjectPtr> marks = m_marks;
+    std::vector<ITableDocObjectPtr> views = m_views;
+    std::vector<std::wstring> to_delete = m_to_delete;
+
+    m_marks.clear();
+    m_views.clear();
+
+    load();
+
+
+    // first, remove all objects slated for deletion
+    std::vector<ITableDocObjectPtr>::iterator it;
+    std::vector<std::wstring>::iterator dit;
+
+    for (dit = to_delete.begin(); dit != to_delete.end(); ++dit)
+    {
+        for (it = m_views.begin(); it != m_views.end(); ++it)
+        {
+            if ((*it)->getObjectId() == *dit)
+            {
+                m_views.erase(it);
+                break;
+            }
+        }
+
+        for (it = m_marks.begin(); it != m_marks.end(); ++it)
+        {
+            if ((*it)->getObjectId() == *dit)
+            {
+                m_marks.erase(it);
+                break;
+            }
+        }
+    }
+
+
+    // now merge existing and add new objects
+    std::vector<ITableDocObjectPtr>::iterator vit;
+    for (vit = views.begin(); vit != views.end(); ++vit)
+    {
+        bool found = false;
+        size_t i;
+
+        for (i = 0; i < m_views.size(); ++i)
+        {
+            if (m_views[i]->getObjectId() == (*vit)->getObjectId())
+            {
+                found = true;
+                m_views[i] = (*vit)->clone();
+                break;
+            }
+        }
+        if (!found)
+            m_views.push_back((*vit)->clone());
+    }
+
+    std::vector<ITableDocObjectPtr>::iterator mit;
+    for (mit = marks.begin(); mit != marks.end(); ++mit)
+    {
+        bool found = false;
+        size_t i;
+
+        for (i = 0; i < m_marks.size(); ++i)
+        {
+            if (m_marks[i]->getObjectId() == (*mit)->getObjectId())
+            {
+                found = true;
+                m_marks[i] = (*mit)->clone();
+                break;
+            }
+        }
+        if (!found)
+            m_marks.push_back((*mit)->clone());
+    }
+
+
+    // now serialize the object collections to json
+    kl::JsonNode root;
+    kl::JsonNode views_root = root["views"];
+    views_root.setArray();
+
+    for (it = m_views.begin(); it != m_views.end(); ++it)
+    {
+        kl::JsonNode node = views_root.appendElement();
+        (*it)->writeToNode(node);
+    }
+
+
+    kl::JsonNode marks_root = root["marks"];
+    marks_root.setArray();
+
+    for (it = m_marks.begin(); it != m_marks.end(); ++it)
+    {
+        kl::JsonNode node = marks_root.appendElement();
+        (*it)->writeToNode(node);
+    }
+
+
+    std::wstring contents = root.toString();
+
+    return writeStreamTextFile(g_app->getDatabase(), towstr(path), contents);
+}
+
+bool TableDocModel::loadJson(const wxString& path)
+{
+    kl::JsonNode root = JsonConfig::loadFromDb(g_app->getDatabase(), path);
+    if (!root.isOk())
+        return false;
+
+    m_views.clear();
+    m_marks.clear();
+    m_to_delete.clear();
+
+    if (root.childExists("views"))
+    {
+        kl::JsonNode views_root = root["views"];
+
+        size_t i, child_count = views_root.getChildCount();
+        for (i = 0; i < child_count; ++i)
+        {
+            TableDocView* obj = new TableDocView;
+            obj->readFromNode(views_root[i]);
+            m_views.push_back(static_cast<ITableDocObject*>(obj));
+        }
+    }
+
+    if (root.childExists("marks"))
+    {
+        kl::JsonNode marks_root = root["marks"];
+
+        size_t i, child_count = marks_root.getChildCount();
+        for (i = 0; i < child_count; ++i)
+        {
+            TableDocMark* obj = new TableDocMark;
+            obj->readFromNode(marks_root[i]);
+            m_marks.push_back(static_cast<ITableDocObject*>(obj));
+        }
+    }
+
+    return true;
+}
+
+bool TableDocModel::loadAndConvertOldVersionToNewJson(const std::wstring& id)
+{
+    std::wstring view_path = kl::stdswprintf(L"/.appdata/admin/dcfe/setinfo/%s/views", id.c_str());
+    std::wstring mark_path = kl::stdswprintf(L"/.appdata/admin/dcfe/setinfo/%s/marks", id.c_str());
+
+
+    // create a json object in the new format
+    bool format_converted = false;
+    kl::JsonNode node;
+
+    // load the views
+    node = JsonConfig::loadFromDb(g_app->getDatabase(), view_path);
+    if (node.isOk())
+    {
+        m_views.clear();
+
+        kl::JsonNode root_node = node["root"];
+        if (!root_node.isOk())
+            return false;
+
+        kl::JsonNode views_node = root_node["views"];
+        if (!views_node.isOk())
+            return false;
+
+        std::vector<kl::JsonNode> views_children = views_node.getChildren();
+        std::vector<kl::JsonNode>::iterator it_view, it_view_end;
+        it_view_end = views_children.end();
+
+        for (it_view = views_children.begin(); it_view != it_view_end; ++it_view)
+        {
+            kl::JsonNode old_view_format_node = *it_view;
+            if (!old_view_format_node.isOk())
+                continue;
+
+            // create a json node in the new format from the old old format
+            kl::JsonNode new_view_format_node;
+            new_view_format_node["object_id"].setString(L"");    // placeholder; object id will be set below
+
+            kl::JsonNode old_view_format_description_node = old_view_format_node["description"];
+            if (!old_view_format_description_node.isOk())
+                continue;
+            new_view_format_node["description"].setString(old_view_format_description_node.getString());
+
+            kl::JsonNode old_view_format_row_size_node = old_view_format_node["row_size"];
+            if (!old_view_format_row_size_node.isOk())
+                continue;
+            new_view_format_node["row_size"].setInteger(old_view_format_row_size_node.getInteger());
+
+            kl::JsonNode old_view_format_columns_node = old_view_format_node["columns"];
+            if (!old_view_format_columns_node.isOk())
+                continue;
+            new_view_format_node["columns"].setArray();
+
+            std::vector<kl::JsonNode> column_children = old_view_format_node["columns"].getChildren();
+            std::vector<kl::JsonNode>::iterator it_column, it_column_end;
+            it_column_end = column_children.end();
+
+            for (it_column = column_children.begin(); it_column != it_column_end; ++it_column)
+            {
+                kl::JsonNode old_view_format_column_child = *it_column;
+                if (!old_view_format_column_child.isOk())
+                    continue;
+                kl::JsonNode old_view_format_column_name = old_view_format_column_child["name"];
+                if (!old_view_format_column_name.isOk())
+                    continue;
+                kl::JsonNode old_view_format_column_size = old_view_format_column_child["size"];
+                if (!old_view_format_column_size.isOk())
+                    continue;
+                kl::JsonNode old_view_format_column_fgcolor = old_view_format_column_child["fgcolor"];
+                if (!old_view_format_column_fgcolor.isOk())
+                    continue;
+                kl::JsonNode old_view_format_column_bgcolor = old_view_format_column_child["bgcolor"];
+                if (!old_view_format_column_bgcolor.isOk())
+                    continue;
+                kl::JsonNode old_view_format_column_alignment = old_view_format_column_child["alignment"];
+                if (!old_view_format_column_alignment.isOk())
+                    continue;
+                kl::JsonNode old_view_format_column_textwrap = old_view_format_column_child["text_wrap"];
+                if (!old_view_format_column_textwrap.isOk())
+                    continue;
+
+                kl::JsonNode new_view_format_column_child = new_view_format_node["columns"].appendElement();
+                new_view_format_column_child["name"].setString(old_view_format_column_name.getString());
+                new_view_format_column_child["size"].setInteger(old_view_format_column_size.getInteger());
+                new_view_format_column_child["fgcolor"].setString(color2string(int2color(old_view_format_column_fgcolor.getInteger())));
+                new_view_format_column_child["bgcolor"].setString(color2string(int2color(old_view_format_column_bgcolor.getInteger())));
+                new_view_format_column_child["alignment"].setInteger(old_view_format_column_alignment.getInteger());
+                new_view_format_column_child["text_wrap"].setInteger(old_view_format_column_textwrap.getInteger());
+            }
+
+            // load the json node from the new format
+            TableDocView* obj = new TableDocView;
+            new_view_format_node["object_id"] = obj->getObjectId();
+            obj->readFromNode(new_view_format_node);
+            m_views.push_back(static_cast<ITableDocObject*>(obj));
+        }
+
+        format_converted = true;
+    }
+
+    // load the marks
+    node = JsonConfig::loadFromDb(g_app->getDatabase(), mark_path);
+    if (node.isOk())
+    {
+        m_marks.clear();
+
+        kl::JsonNode root_node = node["root"];
+        if (!root_node.isOk())
+            return false;
+
+        kl::JsonNode marks_node = root_node["marks"];
+        if (!marks_node.isOk())
+            return false;
+
+        std::vector<kl::JsonNode> marks_children = marks_node.getChildren();
+        std::vector<kl::JsonNode>::iterator it_mark, it_mark_end;
+        it_mark_end = marks_children.end();
+
+        for (it_mark = marks_children.begin(); it_mark != it_mark_end; ++it_mark)
+        {
+            kl::JsonNode old_mark_format_node = *it_mark;
+            if (!old_mark_format_node.isOk())
+                continue;
+
+            // create a json node in the new format from the old old format
+            kl::JsonNode new_mark_format_node;
+            new_mark_format_node["object_id"].setString(L"");    // placeholder; object id will be set below
+
+            kl::JsonNode old_mark_format_description_node = old_mark_format_node["description"];
+            if (!old_mark_format_description_node.isOk())
+                continue;
+            new_mark_format_node["description"].setString(old_mark_format_description_node.getString());
+
+            kl::JsonNode old_mark_format_expression_node = old_mark_format_node["expression"];
+            if (!old_mark_format_expression_node.isOk())
+                continue;
+            new_mark_format_node["expression"].setString(old_mark_format_expression_node.getString());
+
+            kl::JsonNode old_mark_format_mark_active_node = old_mark_format_node["mark_active"];
+            if (!old_mark_format_mark_active_node.isOk())
+                continue;
+            new_mark_format_node["mark_active"].setBoolean(old_mark_format_mark_active_node.getInteger() != 0 ? true : false);
+
+            kl::JsonNode old_mark_format_mark_fgcolor_node = old_mark_format_node["mark_fgcolor"];
+            if (!old_mark_format_mark_fgcolor_node.isOk())
+                continue;
+            new_mark_format_node["fgcolor"].setString(color2string(int2color(old_mark_format_mark_fgcolor_node.getInteger())));
+
+            kl::JsonNode old_mark_format_mark_bgcolor_node = old_mark_format_node["mark_bgcolor"];
+            if (!old_mark_format_mark_bgcolor_node.isOk())
+                continue;
+            new_mark_format_node["bgcolor"].setString(color2string(int2color(old_mark_format_mark_bgcolor_node.getInteger())));
+
+            // load the json node from the new format
+            TableDocMark* obj = new TableDocMark;
+            new_mark_format_node["object_id"] = obj->getObjectId();
+            obj->readFromNode(new_mark_format_node);
+            m_marks.push_back(static_cast<ITableDocObject*>(obj));
+        }
+
+        format_converted = true;
+    }
+
+    // old view or mark formats were converted
+    if (format_converted)
+    {
+        // note: need to delete before saving since save() calls load() which creates
+        // an infinite loop if the old format isn't removed before saving
+        std::wstring path = kl::stdswprintf(L"/.appdata/admin/dcfe/setinfo/%s", id.c_str());
+        if (!g_app->getDatabase()->deleteFile(path))
+            return false;
+        
+        save();
+    }
+
+    return true;
 }
 
 
@@ -1259,84 +1289,6 @@ wxColour TableDocModel::getNextMarkColor()
     }
     
     return DEFAULT_MARK_COLORS[0];
-}
-
-
-
-
-
-static tango::INodeValuePtr getOldVersionObjects(const std::wstring& id, const std::wstring& object_type)
-{
-    if (id.length() == 0)
-        return xcm::null;
-
-    std::wstring path = kl::stdswprintf(L"/.appdata/admin/dcfe/setinfo/%s/%s", id.c_str(), object_type.c_str());
-
-    tango::IDatabasePtr db = g_app->getDatabase();
-    if (db.isNull())
-        return xcm::null;
-
-    tango::INodeValuePtr file = db->openNodeFile(towstr(path));
-    
-    if (file.isNull())
-        return xcm::null;
-
-    return file->getChild(towstr(object_type), true);
-}
-
-
-void TableDocModel::upgradeOldVersionIfNecessary(const std::wstring& id)
-{
-    tango::IDatabasePtr db = g_app->getDatabase();
-    if (db.isNull())
-        return;
-
-    std::wstring path;
-
-
-    path = kl::stdswprintf(L"/.appdata/admin/dcfe/setinfo/%s/views", id.c_str());
-
-    if (!db->getFileExist(path))
-        return;
-
-    tango::INodeValuePtr base_node;
-    
-    base_node = getOldVersionObjects(id, L"views");
-    if (base_node.isOk())
-    {
-        size_t i, child_count = base_node->getChildCount();
-        for (i = 0; i < child_count; ++i)
-        {
-            TableDocView* obj = new TableDocView;
-            tango::INodeValuePtr node = base_node->getChildByIdx(i);
-            obj->setObjectId(node->getName());
-            obj->readFromNode(node);
-            m_views.push_back(static_cast<ITableDocObject*>(obj));
-        }
-    }
-    base_node.clear();
-
-
-    base_node = getOldVersionObjects(id, L"marks");
-    if (base_node.isOk())
-    {
-        size_t i, child_count = base_node->getChildCount();
-        for (i = 0; i < child_count; ++i)
-        {
-            TableDocMark* obj = new TableDocMark;
-            tango::INodeValuePtr node = base_node->getChildByIdx(i);
-            obj->setObjectId(node->getName());
-            obj->readFromNode(node);
-            m_marks.push_back(static_cast<ITableDocObject*>(obj));
-        }
-    }
-    base_node.clear();
-
-
-    path = kl::stdswprintf(L"/.appdata/admin/dcfe/setinfo/%s", id.c_str());
-    db->deleteFile(path);
-
-    save();
 }
 
 
@@ -1413,7 +1365,6 @@ void TableDocMgr::copyModel(const std::wstring& src_id, const std::wstring& dest
         vec->append(views->getItem(i));
     }
 
-   
     // assign every object a new id
     count = vec->size();
     for (i = 0; i < count; ++i)
@@ -1425,7 +1376,6 @@ void TableDocMgr::copyModel(const std::wstring& src_id, const std::wstring& dest
             obj->setDirty(true);
         }
     }
-
 
     // delete any existing model in the destination slot
     TableDocMgr::deleteModel(dest_id);
@@ -1440,9 +1390,6 @@ void TableDocMgr::copyModel(const std::wstring& src_id, const std::wstring& dest
     // released unused models
     TableDocMgr::cleanupModelRegistry();
 }
-
-
-
 
 ITableDocModelPtr TableDocMgr::loadModel(const std::wstring& set_id)
 {
@@ -1463,21 +1410,4 @@ void TableDocMgr::cleanupModelRegistry()
 {
     g_model_registry.cleanup();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
