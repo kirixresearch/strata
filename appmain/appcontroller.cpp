@@ -47,6 +47,7 @@
 #include "jobimportpkg.h"
 #include "jobexportpkg.h"
 #include "jobquery.h"
+#include "jsonconfig.h"
 #include "querydoc.h"
 #include "sqldoc.h"
 #include "toolbars.h"
@@ -4446,11 +4447,11 @@ bool AppController::openAny(const wxString& _location,
         }
          else if (item_type == tango::filetypeNode)
         {
-            tango::INodeValuePtr file;
+            kl::JsonNode node;
         
             if (!file_info->isMount())
             {
-                file = db->openNodeFile(towstr(location));
+                node = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(location));
             }
              else
             {
@@ -4462,41 +4463,34 @@ bool AppController::openAny(const wxString& _location,
                 {
                     if (cstr == L"")
                     {
-                        file = db->openNodeFile(rpath);
+                        node = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(rpath));
                         location = towx(rpath);
                     }
                 }
             }
             
-            if (file.isNull())
+            if (!node.isOk())
                 return false;
 
-            tango::INodeValuePtr bookmark_node = file->getChild(L"bookmark", false);
+            kl::JsonNode root_node = node["root"];
+            if (!root_node.isOk())
+                return false;
+
+            kl::JsonNode bookmark_node = root_node["bookmark"];
             if (bookmark_node.isOk())
-            {
                 return openBookmark(location, open_mask, site_id);
-            }
 
-            tango::INodeValuePtr script_node = file->getChild(L"kpp_script", false);
-            if (script_node.isOk())
-            {
-                if (openScript(location, site_id))
-                    return true;
-            }
+            kl::JsonNode kpp_script_node = root_node["kpp_script"];
+            if (kpp_script_node.isOk())
+                return openScript(location, site_id);
 
-            tango::INodeValuePtr report_node = file->getChild(L"kpp_report", false);
-            if (report_node.isOk())
-            {
-                if (openReport(location, open_mask))
-                    return true;
-            }
+            kl::JsonNode kpp_report = root_node["kpp_report"];
+            if (kpp_report.isOk())
+                return openReport(location, open_mask);
 
-            tango::INodeValuePtr template_node = file->getChild(L"kpp_template", false);
-            if (template_node.isOk())
-            {
-                if (openTemplate(location))
-                    return true;
-            }
+            kl::JsonNode kpp_template = root_node["kpp_template"];
+            if (kpp_template.isOk())
+                return openTemplate(location);
         }    
     }
     
@@ -4896,18 +4890,7 @@ bool AppController::openTemplate(const wxString& location,
     file_info = db->getFileInfo(towstr(location));
     if (!file_info.isOk())
         return false;
-        
-    int item_type = file_info->getType();
-  
 
-    tango::INodeValuePtr nodefile;
-    
-    if (file_info->getType() == tango::filetypeNode)
-    {
-        nodefile = db->openNodeFile(towstr(location));
-        if (nodefile.isNull())
-            return xcm::null;
-    }
 
     // give the application hook a chance to handle this call
     bool handled = false;
@@ -4916,9 +4899,10 @@ bool AppController::openTemplate(const wxString& location,
                                    &handled);
     if (handled)
         return res;
-    
-    
-    if (item_type == tango::filetypeStream)
+
+
+    // handle it ourselves
+    if (file_info->getType() == tango::filetypeStream)
     {
         std::wstring mime_type = file_info->getMimeType();
         if (mime_type == L"application/vnd.kx.report")
@@ -4937,29 +4921,29 @@ bool AppController::openTemplate(const wxString& location,
         
         return true;
     }
-     else if (item_type == tango::filetypeNode)
+     else if (file_info->getType() == tango::filetypeNode)
     {
-        tango::INodeValuePtr template_root = nodefile->getChild(L"kpp_template", false);
-        if (template_root.isNull())
+        kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), location);
+        if (!node.isOk())
             return false;
 
-        tango::INodeValuePtr type_node = template_root->getChild(L"type", false);
-        if (type_node.isNull())
+        kl::JsonNode root_node = node["root"];
+        if (!root_node.isOk())
             return false;
-        
-        wxString type = towx(type_node->getString());
 
-        nodefile.clear();
+        kl::JsonNode kpp_template_node = root_node["kpp_template"];
+        if (!kpp_template_node.isOk())
+            return false;
+
+        kl::JsonNode type_node = kpp_template_node["type"];
+        if (!type_node.isOk())
+            return false;
+        wxString type = towx(type_node.getString());
 
         if (!type.CmpNoCase(wxT("import")))
         {
             ImportInfo info;
             showImportWizard(info, location);
-        }
-         else if (!type.CmpNoCase(wxT("export")))
-        {
-            ExportInfo info;
-            showExportWizard(info, location);
         }
          else if (!type.CmpNoCase(wxT("query")))
         {
@@ -4977,43 +4961,57 @@ bool AppController::openBookmark(const wxString& location,
                                  int open_mask,
                                  int* site_id)
 {
-    // check if the location specified is a bookmark in the project.
-    // If so, load the url location from the bookmark
-    
+    // check if the location specified is a bookmark in the project;
+    // if so, load the url location from the bookmark
     tango::IDatabasePtr db = g_app->getDatabase();
-    
     if (db.isNull())
         return false;
-    
-    tango::INodeValuePtr file = db->openNodeFile(towstr(location));
-    if (file.isOk())
+
+    tango::IFileInfoPtr file_info;
+    file_info = db->getFileInfo(towstr(location));
+    if (!file_info.isOk())
+        return false;
+
+
+    if (file_info->getType() == tango::filetypeStream)
     {
-        tango::INodeValuePtr bookmark_node = file->getChild(L"bookmark", false);
-        if (bookmark_node.isOk())
-        {
-            tango::INodeValuePtr location_node = bookmark_node->getChild(L"location", false);
-            if (location_node.isNull())
-                return false;
-            wxString loc = towx(location_node->getString());
-            
-            bool run_target = false;
-            tango::INodeValuePtr run_target_node = bookmark_node->getChild(L"run_target", false);
-            if (run_target_node.isOk())
-                run_target = run_target_node->getBoolean();
-            
-            if (run_target)
-            {
-                if (execute(loc))
-                    return true;
-                    
-                // execute failed, try to open the target
-            }
-
-
-            return openAny(loc);
-        }
+        // TODO:
     }
-    
+     else if (file_info->getType() == tango::filetypeNode)
+    {
+        kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), location);
+        if (!node.isOk())
+            return false;
+
+        kl::JsonNode root_node = node["root"];
+        if (!root_node.isOk())
+            return false;
+
+        kl::JsonNode bookmark_node = root_node["bookmark"];
+        if (!bookmark_node.isOk())
+            return false;
+
+        kl::JsonNode location_node = bookmark_node["location"];
+        if (!location_node.isOk())
+            return false;
+        wxString location = towx(location_node.getString());
+
+        bool run_target = false;
+        kl::JsonNode run_target_node = bookmark_node["run_target"];
+        if (!run_target_node.isOk())
+            run_target = (run_target_node.getInteger() != 0 ? true : false);
+
+        if (run_target)
+        {
+            if (execute(location))
+                return true;
+                    
+            // execute failed, try to open the target
+        }
+
+        return openAny(location);
+    }
+
     return false;
 }
 
@@ -5035,22 +5033,33 @@ bool AppController::openWeb(const wxString& _location,
         tango::IDatabasePtr db = g_app->getDatabase();
         if (db.isOk())
         {
-            // check if the location specified is a bookmark
-            // in the project.  If so, load the url location
-            // from the bookmark
-            tango::INodeValuePtr file = db->openNodeFile(towstr(location));
-            if (file.isOk())
+
+
+            // check if the location specified is a bookmark in the project; if so, load 
+            // the url location from the bookmark
+
+            kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(location));
+            if (node.isOk())
             {
-                tango::INodeValuePtr bookmark_node = file->getChild(L"bookmark", false);
-                if (bookmark_node.isOk())
+                kl::JsonNode root_node = node["root"];
+                if (root_node.isOk())
                 {
-                    last_clicked_bookmark_path = location;
+                    kl::JsonNode bookmark_node = root_node["bookmark"];
+                    if (bookmark_node.isOk())
+                    {
+                        last_clicked_bookmark_path = location;
+
+                        kl::JsonNode location_node = bookmark_node["location"];
+                        if (!location_node.isOk())
+                            return false;
                     
-                    tango::INodeValuePtr location_node = bookmark_node->getChild(L"location", false);
-                    if (location_node.isNull())
-                        return false;
-                    
-                    location = towx(location_node->getString());
+                        location = towx(location_node.getString());
+                    }
+                }
+                else
+                {
+                    // TODO: when bookmark stream format becomes available, add 
+                    // check for it here
                 }
             }
              else
@@ -5855,16 +5864,6 @@ IJobPtr AppController::execute(const wxString& location)
     if (!file_info)
         return xcm::null;
         
-    tango::IStreamPtr stream;
-    tango::INodeValuePtr nodefile;
-    
-    if (file_info->getType() == tango::filetypeNode)
-    {
-        nodefile = db->openNodeFile(towstr(location));
-        if (nodefile.isNull())
-            return xcm::null;
-    }
-    
     
     // give the application hook a chance to handle this call
     bool handled = false;
@@ -5903,60 +5902,42 @@ IJobPtr AppController::execute(const wxString& location)
             return executeScript(location);
         }
     }
-
-
-    if (file_info->getType() != tango::filetypeNode)
-        return xcm::null;
-
-    file_info.clear();
-
-
-    tango::INodeValuePtr file = db->openNodeFile(towstr(location));
-    if (!file)
+     else if (file_info->getType() == tango::filetypeNode)
     {
-        return xcm::null;
-    }
-
-
-    // is it a template of some sort?
-    
-    tango::INodeValuePtr node;
-    node = file->getChild(L"kpp_template", false);
-    if (!node)
-    {
-        return xcm::null;
-    }
-
-    node = node->getChild(L"type", false);
-    if (!node)
-        return  xcm::null;
-
-    wxString type = towx(node->getString());
-    node.clear();
-
-    if (type == L"query")
-    {
-        QueryTemplate t;
-        if (!t.load(location))
+        kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(location));
+        if (!node.isOk())
             return xcm::null;
 
-        return t.execute();
-    }
-     else if (type == L"import")
-    {
-        ImportTemplate t;
-        if (!t.load(location))
+        kl::JsonNode root_node = node["root"];
+        if (!root_node.isOk())
             return xcm::null;
 
-        return t.execute();
-    }
-     else if (type == L"export")
-    {
-        ExportTemplate t;
-        if (!t.load(location))
+        kl::JsonNode kpp_template_node = root_node["kpp_template"];
+        if (!kpp_template_node.isOk())
             return xcm::null;
 
-        return t.execute();
+        kl::JsonNode type_node = kpp_template_node["type"];
+        if (!type_node.isOk())
+            return xcm::null;
+
+        wxString type = towx(type_node.getString());
+
+        if (type == L"query")
+        {
+            QueryTemplate t;
+            if (!t.load(location))
+                return xcm::null;
+
+            return t.execute();
+        }
+         else if (type == L"import")
+        {
+            ImportTemplate t;
+            if (!t.load(location))
+                return xcm::null;
+
+            return t.execute();
+        }
     }
 
     return xcm::null;
