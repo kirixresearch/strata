@@ -13,17 +13,13 @@
 #define __XDPGSQL_ITERATOR_H
 
 
-#if _MSC_VER < 1300
-#define SQLLEN SQLINTEGER
-#define SQLULEN SQLUINTEGER
-#endif
 
 #include "../xdcommon/cmnbaseiterator.h"
-#include "../xdcommon/localrowcache.h"
 #include "../xdcommon/keylayout.h"
 #include "../../kscript/kscript.h"
+#include <kl/file.h>
 
-
+class PkgStreamReader;
 
 
 struct KpgDataAccessInfo
@@ -36,6 +32,8 @@ struct KpgDataAccessInfo
     int width;
     int scale;
     int ordinal;
+    int buf_width;
+    int offset;
     bool nulls_allowed;
     std::wstring expr_text;
 
@@ -57,6 +55,8 @@ struct KpgDataAccessInfo
         width = 0;
         scale = 0;
         ordinal = 0;
+        offset = 0;
+        buf_width = 0;
         nulls_allowed = false;
         expr_text = L"";
 
@@ -113,7 +113,7 @@ public:
     KpgIterator(KpgDatabase* database, KpgSet* set = NULL);
     ~KpgIterator();
     
-    bool init(const std::wstring& query);
+    bool init();
 
     // tango::IIterator interface implementation
 
@@ -125,6 +125,9 @@ public:
     unsigned int getIteratorFlags();
 
     void skip(int delta);
+    void skipForward();
+    void skipBackward();
+
     void goFirst();
     void goLast();
     tango::rowid_t getRowId();
@@ -174,21 +177,19 @@ private:
 
     KpgDatabase* m_database;
     KpgSet* m_set;
+    PkgStreamReader* m_reader;
     tango::IStructurePtr m_structure;
 
-    LocalRowCache m_cache;
-    LocalRow m_cache_row;
-    bool m_cache_active;
-    tango::rowpos_t m_cache_dbrowpos;
-    
-    bool m_server_side_cursor;
- 
-    bool m_eof;
-    tango::rowpos_t m_row_pos;
+    std::vector<xf_off_t> m_block_offsets;
+    size_t m_cur_block;
 
-    tango::rowpos_t m_block_start;
-    int m_block_row;
-    int m_block_rowcount;
+    tango::rowpos_t m_row_pos;
+    unsigned char* m_data;
+    int m_data_len;
+    unsigned char* m_row;
+    bool m_eof;
+
+    int m_row_width;
 };
 
 

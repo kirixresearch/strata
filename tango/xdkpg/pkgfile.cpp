@@ -149,6 +149,17 @@ bool PkgStreamReader::reopen()
     return true;
 }
 
+void PkgStreamReader::rewind()
+{
+    m_offset = m_first_block_offset;
+}
+
+void* PkgStreamReader::loadBlockAtOffset(xf_off_t offset, int* block_size)
+{
+    m_offset = offset;
+    return loadNextBlock(block_size);
+}
+
 void* PkgStreamReader::loadNextBlock(int* block_size)
 {
     unsigned char block_header[32];
@@ -854,6 +865,7 @@ PkgStreamReader* PkgFile::readStream(const std::wstring& stream_name)
     PkgStreamReader* reader = new PkgStreamReader;
     reader->m_file = m_file;
     reader->m_pkgfile = this;
+    reader->m_first_block_offset = entry.first_block_offset;
     reader->m_offset = entry.first_block_offset;
     return reader;
 }

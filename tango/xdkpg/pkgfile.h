@@ -79,12 +79,16 @@ public:
     ~PkgStreamReader();
     bool reopen();
 
+    void  rewind();
+    xf_off_t tell() const { return m_offset; }
+    void* loadBlockAtOffset(xf_off_t offset, int* block_size);
     void* loadNextBlock(int* block_size);
 
 private:
 
     PkgFile* m_pkgfile;
     xf_file_t m_file;
+    xf_off_t m_first_block_offset;
     xf_off_t m_offset;
     unsigned char* m_buf;
     unsigned char* m_temp_buf;

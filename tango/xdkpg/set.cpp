@@ -14,6 +14,7 @@
 #include "set.h"
 #include "inserter.h"
 #include "iterator.h"
+#include "pkgfile.h"
 #include "../xdcommon/dbfuncs.h"
 #include "../xdcommon/extfileinfo.h"
 #include "../xdcommon/structure.h"
@@ -135,9 +136,16 @@ tango::IIteratorPtr KpgSet::createIterator(const std::wstring& columns,
 {    
     // create an iterator based on our select statement
     KpgIterator* iter = new KpgIterator(m_database, this);
-
-    if (!iter->init(L""))
+    iter->m_reader = m_database->m_kpg->readStream(m_tablename);
+    if (!iter->m_reader->reopen())
     {
+        delete iter;
+        return xcm::null;
+    }
+
+    if (!iter->init())
+    {
+        delete iter;
         return xcm::null;
     }
 

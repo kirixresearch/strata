@@ -13,6 +13,7 @@
 #include "database.h"
 #include "set.h"
 #include "iterator.h"
+#include "pkgfile.h"
 #include "../xdcommon/xdcommon.h"
 #include "../xdcommon/sqlcommon.h"
 #include "../xdcommon/localrowcache.h"
@@ -35,10 +36,20 @@ KpgIterator::KpgIterator(KpgDatabase* database, KpgSet* set)
     m_set = set;
     if (m_set)
         m_set->ref();
+
+    m_reader = NULL;
+    m_cur_block = 0;
+    m_row_pos = 0;
+    m_data = NULL;
+    m_data_len = 0;
+    m_row = NULL;
+    m_eof = false;
 }
 
 KpgIterator::~KpgIterator()
 {
+    delete m_reader;
+
     if (m_set)
         m_set->unref();
 
@@ -46,11 +57,18 @@ KpgIterator::~KpgIterator()
         m_database->unref();
 }
 
-bool KpgIterator::init(const std::wstring& query)
+bool KpgIterator::init()
 {
+    // get row width
+    int node_idx = m_set->m_info.getChildIdx(L"phys_row_width");
+    if (node_idx == -1)
+        return false;
+    m_row_width = kl::wtoi(m_set->m_info.getChild(node_idx).getNodeValue());
+
     m_structure = m_set->getStructure();
 
     int i, col_count = m_structure->getColumnCount();
+    int off = 0;
     for (i = 0; i < col_count; ++i)
     {
         tango::IColumnInfoPtr colinfo = m_structure->getColumnInfoByIdx(i);
@@ -62,12 +80,39 @@ bool KpgIterator::init(const std::wstring& query)
         field->scale = colinfo->getScale();
         field->ordinal = i;
 
+        switch (field->type)
+        {
+            default:
+            case tango::typeCharacter:
+                field->buf_width = field->width;
+                break;
+            case tango::typeWideCharacter:
+                field->buf_width = field->width * 2;
+                break;
+            case tango::typeDouble:
+                field->buf_width = 8;
+                break;
+            case tango::typeDate:
+                field->buf_width = 4;
+                break;
+            case tango::typeDateTime:
+                field->buf_width = 8;
+                break;
+            case tango::typeBoolean:
+                field->buf_width = 1;
+                break;
+        }
+
+
+        field->offset = off;
+        off += field->buf_width;
+
         m_fields.push_back(field);
     }
 
 
-    refreshStructure();
 
+    refreshStructure();
 
     return true;
 }
@@ -86,13 +131,35 @@ tango::IDatabasePtr KpgIterator::getDatabase()
 
 tango::IIteratorPtr KpgIterator::clone()
 {
-    return xcm::null;
+    KpgIterator* iter = new KpgIterator(m_database, m_set);
+    iter->m_reader = m_database->m_kpg->readStream(m_set->m_tablename);
+    if (!iter->m_reader->reopen())
+    {
+        delete iter;
+        return xcm::null;
+    }
+
+    if (!iter->init())
+    {
+        delete iter;
+        return xcm::null;
+    }
+
+    iter->m_block_offsets = m_block_offsets;
+    iter->m_cur_block = m_cur_block;
+    iter->m_row_pos = m_row_pos;
+    iter->m_eof = m_eof;
+    iter->m_row_width = m_row_width;
+
+    iter->m_data = (unsigned char*)iter->m_reader->loadBlockAtOffset(iter->m_block_offsets[iter->m_cur_block], &iter->m_data_len);
+    iter->m_row = iter->m_data + (m_row - m_data);
+
+    return static_cast<tango::IIterator*>(iter);
 }
 
 
 void KpgIterator::setIteratorFlags(unsigned int mask, unsigned int value)
 {
-    m_cache_active = ((mask & value & tango::ifReverseRowCache) != 0) ? true : false;
 }
     
     
@@ -103,12 +170,62 @@ unsigned int KpgIterator::getIteratorFlags()
 
 void KpgIterator::skip(int delta)
 {
-    m_row_pos += delta;
+    int i;
 
+    if (delta > 0)
+    {
+        for (i = 0; i < delta; ++i)
+            skipForward();
+    }
+     else
+    {
+        for (i = 0; i < -delta; ++i)
+            skipBackward();
+    }
 }
+
+void KpgIterator::skipBackward()
+{
+    m_row -= m_row_width;
+    if (m_row < m_data)
+    {
+        if (m_cur_block > 0)
+        {
+            m_cur_block--;
+            m_data = (unsigned char*)m_reader->loadBlockAtOffset(m_block_offsets[m_cur_block], &m_data_len);
+            int rows_in_block = m_data_len / m_row_width;
+            m_row = m_data + (rows_in_block-1)*m_row_width;
+        }
+    }
+}
+
+void KpgIterator::skipForward()
+{
+    m_row += m_row_width;
+    if (m_row >= m_data+m_data_len)
+    {
+        m_cur_block++;
+        if (m_cur_block >= m_block_offsets.size())
+            m_block_offsets.push_back(m_reader->tell());
+
+        m_data = (unsigned char*)m_reader->loadBlockAtOffset(m_block_offsets[m_cur_block], &m_data_len);
+        m_row = m_data;
+    }
+}
+
+
 
 void KpgIterator::goFirst()
 {
+    m_block_offsets.clear();
+    m_reader->rewind();
+    
+    m_data = (unsigned char*)m_reader->loadNextBlock(&m_data_len); // skip info block
+
+    m_block_offsets.push_back(m_reader->tell());
+    m_data = (unsigned char*)m_reader->loadNextBlock(&m_data_len);
+    m_cur_block = 0;
+    m_row = m_data;
 }
 
 void KpgIterator::goLast()
@@ -330,6 +447,21 @@ const std::string& KpgIterator::getString(tango::objhandle_t data_handle)
         return empty_string;
     }
 
+    // look for a zero terminator
+    if (dai->type == tango::typeWideCharacter)
+    {
+        dai->str_result = kl::tostring(getWideString(data_handle));
+    }
+     else
+    {
+        int real_width = dai->buf_width;
+        const unsigned char* col_data = m_row+dai->offset;
+        const unsigned char* p = (const unsigned char*)memchr(col_data, 0, real_width);
+        if (p)
+            real_width = p-col_data;
+        dai->str_result.assign((char*)col_data, real_width);
+    }
+
     return dai->str_result;
 }
 
@@ -352,6 +484,17 @@ const std::wstring& KpgIterator::getWideString(tango::objhandle_t data_handle)
     {
         // calculated field with bad expr
         return empty_wstring;
+    }
+
+
+    if (dai->type == tango::typeCharacter)
+    {
+        dai->wstr_result = kl::towstring(getString(data_handle));
+    }
+     else
+    {
+        const unsigned char* col_data = m_row+dai->offset;
+        kl::ucsle2wstring(dai->wstr_result, col_data, dai->width);
     }
 
     return dai->wstr_result;
@@ -473,7 +616,7 @@ bool KpgIterator::isNull(tango::objhandle_t data_handle)
         return true;
     }
 
-    return true;
+    return false;
 }
 
 
