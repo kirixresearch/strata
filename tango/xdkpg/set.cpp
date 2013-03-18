@@ -57,8 +57,6 @@ std::wstring KpgSet::getObjectPath()
 
 unsigned int KpgSet::getSetFlags()
 {
- //       return tango::sfFastRowCount;
- 
     return 0;
 }
 
@@ -106,9 +104,9 @@ tango::IStructurePtr KpgSet::getStructure()
 }
 
 bool KpgSet::modifyStructure(tango::IStructure* struct_config,
-                               tango::IJob* job)
+                             tango::IJob* job)
 {
-    return true;
+    return false;
 }
 
 tango::IRowInserterPtr KpgSet::getRowInserter()

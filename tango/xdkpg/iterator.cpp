@@ -17,10 +17,12 @@
 #include "../xdcommon/xdcommon.h"
 #include "../xdcommon/sqlcommon.h"
 #include "../xdcommon/localrowcache.h"
+#include "../xdcommon/util.h"
 #include <kl/portable.h>
 #include <kl/string.h>
 #include <kl/utf8.h>
 #include <kl/md5.h>
+#include <kl/math.h>
 
 const int row_array_size = 1000;
 
@@ -194,7 +196,11 @@ void KpgIterator::skipBackward()
             m_cur_block--;
             m_data = (unsigned char*)m_reader->loadBlockAtOffset(m_block_offsets[m_cur_block], &m_data_len);
             int rows_in_block = m_data_len / m_row_width;
-            m_row = m_data + (rows_in_block-1)*m_row_width;
+            if (m_data)
+                m_row = m_data + (rows_in_block-1)*m_row_width;
+                 else
+                m_row = NULL;
+            m_eof = (m_data == NULL) ? true : false;
         }
     }
 }
@@ -210,6 +216,7 @@ void KpgIterator::skipForward()
 
         m_data = (unsigned char*)m_reader->loadBlockAtOffset(m_block_offsets[m_cur_block], &m_data_len);
         m_row = m_data;
+        m_eof = (m_data == NULL) ? true : false;
     }
 }
 
@@ -447,6 +454,12 @@ const std::string& KpgIterator::getString(tango::objhandle_t data_handle)
         return empty_string;
     }
 
+    if (eof())
+    {
+        dai->str_result = "";
+        return dai->str_result;
+    }
+
     // look for a zero terminator
     if (dai->type == tango::typeWideCharacter)
     {
@@ -486,6 +499,12 @@ const std::wstring& KpgIterator::getWideString(tango::objhandle_t data_handle)
         return empty_wstring;
     }
 
+
+    if (eof())
+    {
+        dai->wstr_result = L"";
+        return dai->wstr_result;
+    }
 
     if (dai->type == tango::typeCharacter)
     {
@@ -528,9 +547,56 @@ tango::datetime_t KpgIterator::getDateTime(tango::objhandle_t data_handle)
         return 0;
     }
 
+    if (eof())
+        return 0;
 
-    return 0;
+    if (dai->type == tango::typeDate)
+    {
+        tango::datetime_t dt;
+        dt = *(unsigned int*)(m_row+dai->offset);
+        dt <<= 32;
+        return dt;
+    }
+     else if (dai->type == tango::typeDateTime)
+    {
+        return *(tango::datetime_t*)(m_row+dai->offset);
+    }
+     else
+    {
+        return 0;
+    }
+
+    return (tango::datetime_t)(m_row+dai->offset);
 }
+
+static double decstr2dbl(const char* c, int width, int scale)
+{
+    double res = 0;
+    double d = kl::pow10(width-scale-1);
+    bool neg = false;
+    while (width)
+    {
+        if (*c == '-')
+            neg = true;
+
+        if (*c >= '0' && *c <= '9')
+        {
+            res += d * (*c - '0');
+        }
+
+        d /= 10;
+        c++;
+        width--;
+    }
+
+    if (neg)
+    {
+        res *= -1.0;
+    }
+
+    return res;
+}
+
 
 double KpgIterator::getDouble(tango::objhandle_t data_handle)
 {
@@ -552,7 +618,23 @@ double KpgIterator::getDouble(tango::objhandle_t data_handle)
         return 0.0;
     }
 
-    return 0.0;
+    if (eof())
+        return 0.0;
+
+    const unsigned char* col_data = m_row+dai->offset;
+
+    switch (dai->type)
+    {
+        case tango::typeDouble:
+            return *(double*)col_data;    
+        case tango::typeInteger:
+            return *(int*)col_data;
+        case tango::typeNumeric:
+            return kl::dblround(decstr2dbl((char*)col_data, dai->width, dai->scale),
+                                dai->scale);
+        default:
+            return 0.0;
+    }
 }
 
 int KpgIterator::getInteger(tango::objhandle_t data_handle)
@@ -575,7 +657,23 @@ int KpgIterator::getInteger(tango::objhandle_t data_handle)
         return 0;
     }
 
-    return 0;
+    if (eof())
+        return 0;
+
+    const unsigned char* col_data = m_row+dai->offset;
+
+    switch (dai->type)
+    {
+        case tango::typeDouble:
+            return (int)(*(double*)col_data);    
+        case tango::typeInteger:
+            return *(int*)col_data;
+        case tango::typeNumeric:
+            return (int)(kl::dblround(decstr2dbl((char*)col_data, dai->width, dai->scale),
+                                      dai->scale));
+        default:
+            return 0;
+    }
 }
 
 bool KpgIterator::getBoolean(tango::objhandle_t data_handle)
@@ -598,7 +696,12 @@ bool KpgIterator::getBoolean(tango::objhandle_t data_handle)
         return false;
     }
 
-    return false;
+    if (eof())
+        return false;
+
+    const unsigned char* col_data = m_row+dai->offset;
+
+    return (*col_data == 'T' ? true : false);
 }
 
 bool KpgIterator::isNull(tango::objhandle_t data_handle)
@@ -616,6 +719,9 @@ bool KpgIterator::isNull(tango::objhandle_t data_handle)
         return true;
     }
 
+    if (eof())
+        return true;
+
     return false;
 }
 
@@ -623,23 +729,10 @@ bool KpgIterator::isNull(tango::objhandle_t data_handle)
 tango::ISetPtr KpgIterator::getChildSet(tango::IRelationPtr relation)
 {
     return xcm::null;
-
 }
-
 
 tango::IIteratorPtr KpgIterator::getChildIterator(tango::IRelationPtr relation)
 {
     return xcm::null;
-}
-
-
-
-// tango::ICacheRowUpdate::updateCacheRow()
-
-bool KpgIterator::updateCacheRow(tango::rowid_t rowid,
-                                 tango::ColumnUpdateInfo* info,
-                                 size_t info_size)
-{
-    return true;
 }
 

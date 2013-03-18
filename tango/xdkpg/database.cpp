@@ -648,9 +648,9 @@ tango::IStructurePtr KpgDatabase::describeTable(const std::wstring& path)
 
 
 bool KpgDatabase::execute(const std::wstring& command,
-                            unsigned int flags,
-                            xcm::IObjectPtr& result,
-                            tango::IJob* job)
+                          unsigned int flags,
+                          xcm::IObjectPtr& result,
+                          tango::IJob* job)
 {
     return false;
 }

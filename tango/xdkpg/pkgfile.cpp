@@ -167,6 +167,7 @@ void* PkgStreamReader::loadNextBlock(int* block_size)
     xf_seek(m_file, m_offset, xfSeekSet);
     if (1 != xf_read(m_file, block_header, 32, 1))
     {
+        *block_size = 0;
         return NULL;
     }
     m_offset += 32;

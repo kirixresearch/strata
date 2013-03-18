@@ -7535,6 +7535,7 @@ void TableDoc::copyRecords(const wxString& condition)
         {
             src_set_id = set->getSetId();
 
+            /*
             std::wstring mount_root = getMountRoot(g_app->getDatabase(), set->getObjectPath());
             if (mount_root.length() > 0)
             {
@@ -7545,6 +7546,7 @@ void TableDoc::copyRecords(const wxString& condition)
                     dest_cstr = towx(cstr);
                 }
             }
+            */
             
         }
 

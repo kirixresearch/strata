@@ -95,8 +95,7 @@ public:
 };
 
 class KpgIterator : public CommonBaseIterator,
-                      public tango::ICacheRowUpdate,
-                      public tango::IIteratorRelation
+                    public tango::IIteratorRelation
 {
     friend class KpgDatabase;
     friend class KpgSet;
@@ -104,7 +103,6 @@ class KpgIterator : public CommonBaseIterator,
     XCM_CLASS_NAME("xdkpg.Iterator")
     XCM_BEGIN_INTERFACE_MAP(KpgIterator)
         XCM_INTERFACE_ENTRY(tango::IIterator)
-        XCM_INTERFACE_ENTRY(tango::ICacheRowUpdate)
         XCM_INTERFACE_ENTRY(tango::IIteratorRelation)
     XCM_END_INTERFACE_MAP()
 
@@ -162,12 +160,6 @@ public:
 
     tango::ISetPtr getChildSet(tango::IRelationPtr relation);
     tango::IIteratorPtr getChildIterator(tango::IRelationPtr relation);
-
-    // tango::ICacheRowUpdate
-
-    bool updateCacheRow(tango::rowid_t rowid,
-                        tango::ColumnUpdateInfo* info,
-                        size_t info_size);
 
 private:
 
