@@ -13,7 +13,6 @@
 #define __APP_TABLEDOC_PRIVATE_H
 
 
-class TableDocWatch;
 class AppendPanel;
 class ColPropsPanel;
 class ViewPanel;
@@ -77,7 +76,7 @@ public:
     TableDoc();
     virtual ~TableDoc();
 
-    // -- IDocument --
+    // IDocument
     bool initDoc(IFramePtr frame,
                  IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,
@@ -91,7 +90,7 @@ public:
     void onSiteDeactivated();
     void onSiteActivated();
 
-    // -- ITableDoc --
+    // ITableDoc
     
     bool open(tango::IDatabasePtr db,
               const wxString& table,
@@ -167,7 +166,8 @@ public:
     wxString getDbDriver();
 
 
-    // -- exposed API --
+    // exposed API
+
     void setFilter(const wxString& condition);
     void setQuickFilter(const wxString& val);
     void removeFilter();
@@ -177,11 +177,12 @@ public:
     void createNewMark(const wxString& expr);
 
 
-    // -- IColumnListTarget --
+    // IColumnListTarget
+
     void getColumnListItems(std::vector<ColumnListItem>& list);
     void onColumnListDblClicked(const std::vector<wxString>& items);
     
-    // -- IFindTarget --
+    // IFindTarget
     
     bool findNextMatch(
                     const wxString& text,
@@ -201,18 +202,20 @@ public:
                     bool whole);
     bool findIsReplaceAllowed();
 
-    // -- IDocumentScriptBinding --
+    // IDocumentScriptBinding
     
     bool getScriptMember(const std::wstring& member,
                          kscript::Value* retval);
+                         
+    // public, but not on interface
 
-    // -- public, but not on interface --
     bool isExternalTable();
+    bool isTemporary();
     bool canDeleteColumns(std::vector<int>& view_cols);
 
 private:
 
-    // -- scripting methods --
+    // scripting methods
     
     static void scriptfuncOpen(kscript::ExprEnv* env, void* param, kscript::Value* retval);
     static void scriptfuncSetFilter(kscript::ExprEnv* env, void* param, kscript::Value* retval);
@@ -225,7 +228,7 @@ private:
   
 private:
 
-    // -- internal methods --
+    // internal methods
     
     IUIContextPtr getUserInterface();
     void createModel();
@@ -261,7 +264,6 @@ private:
     bool saveAsPdf(const wxString& path);
     bool saveAsStructure(const wxString& path);
 
-    void onWatchExprChanged(TableDocWatch* watch);
     void onSaveAsJobFinished(IJobPtr saveas_job);
     void onSortFilterJobFinished(IJobPtr query_job);
     void onSetOrderFinished(IJobPtr query_job);
@@ -276,7 +278,7 @@ private:
     void onIndexEditFinished(IndexPanel* panel);
     void onViewEditFinished(ViewPanel* panel);
     
-    // -- grid event handlers --
+    // grid event handlers
     void onGridLinkLeftClick(kcl::GridEvent& evt);
     void onGridLinkMiddleClick(kcl::GridEvent& evt);
     void onGridColumnRightClick(kcl::GridEvent& evt);
@@ -297,25 +299,24 @@ private:
     
     void onShareUrlRequested(wxString& url);
 
-    // -- model event handlers --
+    // model event handlers
     void onRequestRowColors(wxColor& fgcolor, wxColor& bgcolor);
     
-
-    // -- frame event handlers --
+    // frame event handlers
     void onFrameEvent(FrameworkEvent& evt);
     void onActiveChildChanged(IDocumentSitePtr doc_site);
     
-    // -- statusbar event handlers --
+    // statusbar event handlers
     void onStatusBarItemLeftDblClick(IStatusBarItemPtr item);
     
-    // -- reload handlers --
+    // reload handlers
     void onReloadDownloadFinished(IJobInfoPtr job_info);
     void onDoReloadRefresh(wxCommandEvent& evt);
     
-    // -- repaint handler --
+    // repaint handler
     void onDoRefresh(wxCommandEvent& evt);
     
-    // -- command handlers --
+    // command handlers
     void onSize(wxSizeEvent& evt);
     void onSetFocus(wxFocusEvent& evt);
     void onKillFocus(wxFocusEvent& evt);
@@ -378,17 +379,17 @@ private:
     tango::IIteratorPtr m_iter;
     ITableDocViewPtr m_active_view;
 
-    IFramePtr m_frame;                             // ptr to the application frame
-    IDocumentSitePtr m_doc_site;                   // ptr to our document site
+    IFramePtr m_frame;                                  // ptr to the application frame
+    IDocumentSitePtr m_doc_site;                        // ptr to our document site
     ITangoGridModelPtr m_grid_model;                    // grid's model
-    ITableDocModelPtr m_model;                          // our model (stores queries, marks, views, etc)
+    ITableDocModelPtr m_model;                          // our model (stores marks, views, etc)
     kcl::Grid* m_grid;                                  // grid control
 
-    std::map<wxString, tango::objhandle_t> m_handle_map; // handle map for watches and marks
+    std::map<wxString, tango::objhandle_t> m_handle_map; // handle map for marks
 
     wxString m_caption;               // window's caption/title
     wxString m_caption_suffix;        // window's caption suffix
-    wxString m_dbpath;                // path (if any) of the current window
+    wxString m_path;                  // path (if any) of the current window
     wxString m_filter;                // current filter, or empty if none
     wxString m_sort_order;            // current sort order, or empty if none
     wxString m_group_break;           // current group break, or empty if none
@@ -401,7 +402,6 @@ private:
     
     int m_text_wrapping;              // Grid::wrapDefault, Grid::wrapOn, or Grid::wrapOff
 
-    bool m_temporary;                 // temporary file
     bool m_temporary_model;           // true if the tabledoc should use a temporary model (e.g. for query results)
     int m_relationship_sync;          // true if the tabledoc should update child windows when cursor is moved
     bool m_enabled;                   // true if the tabledoc is enabled
@@ -416,6 +416,7 @@ private:
     int m_external_table;             // -1 = uninitialized; 0 = no; 1 = yes
     int m_db_type;                    // database type (tango::dbtype enum)
     tango::IDatabasePtr m_mount_db;   // native db for the table (null for native)
+
     DECLARE_EVENT_TABLE()
 };
 

@@ -742,7 +742,7 @@ void ConsolePanel::onQueryJobFinished(IJobPtr job)
 
     bool success = false;
 
-    // -- check if there is an output set --
+    // check if there is an output set
     if (query_job)
     {
         tango::ISetPtr result_set = query_job->getResultSet();

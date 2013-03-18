@@ -309,7 +309,6 @@ TableDoc::TableDoc()
 
     createModel();
 
-    m_temporary = true;
     m_temporary_model = false;
     m_relationship_sync = g_app->getAppController()->getRelationshipSync();
     m_is_childset = false;
@@ -387,6 +386,22 @@ bool TableDoc::isExternalTable()
     
     return (m_external_table == 1) ? true : false;
 }
+
+bool TableDoc::isTemporary()
+{
+    wxString prefix = m_path.AfterLast('/');
+    prefix = prefix.Left(4);
+    prefix.MakeLower();
+    if (prefix == wxT("tmp_"))
+        return true;
+
+    tango::ISetPtr set = getBaseSet();
+    if (set.isOk() && set->isTemporary())
+        return true;
+
+    return false;
+}
+
 
 bool TableDoc::canDeleteColumns(std::vector<int>& view_cols)
 {
@@ -570,7 +585,7 @@ wxString TableDoc::getDocumentLocation()
     if (m_source_url.Length() > 0)
         return m_source_url;
     
-    return m_dbpath;
+    return m_path;
 }
 
 wxString TableDoc::getDocumentTitle()
@@ -596,7 +611,7 @@ void TableDoc::setSourceMimeType(const wxString& source_mimetype)
 
 bool TableDoc::onSiteClosing(bool force)
 {
-    if (m_temporary && !force)
+    if (isTemporary() && !force)
     {
         // note: temporarily disable warning on closing unsaved data sets; the reason
         // for this is that many more untitled sets are created casually from the
@@ -625,7 +640,6 @@ bool TableDoc::onSiteClosing(bool force)
             {
                 g_app->getDatabase()->storeObject(m_set, towstr(dlg.getPath()));
                 g_app->getAppController()->refreshDbDoc();
-                m_temporary = false;
             }
              else
             {
@@ -664,7 +678,7 @@ bool TableDoc::onSiteClosing(bool force)
         m_grid = NULL;
     }
 
-    if (m_temporary)
+    if (isTemporary())
     {
         TableDocMgr::deleteModel(m_model->getId());
     }
@@ -1272,7 +1286,7 @@ void TableDoc::onSave(wxCommandEvent& evt)
     }
 
     // always show a "Save As" dialog for temporary tables
-    if (m_temporary)
+    if (isTemporary())
     {
         onSaveAs(evt);
         return;
@@ -1395,7 +1409,7 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
     // otherwise, we need to make a hard copy of the file since we're
     // either creating a local copy of a named file or are saving it
     // to a mount
-    if (m_temporary)
+    if (isTemporary())
     {
         std::wstring cstr;
         std::wstring rpath;
@@ -1417,13 +1431,11 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
             g_app->getAppController()->refreshDbDoc();
             g_app->getAppController()->updateURLToolbar();
             g_app->getAppController()->updateViewMenu(m_doc_site);
-
-            m_temporary = false;
             
             setSourceUrl(wxEmptyString);
             setSourceMimeType(wxEmptyString);
 
-            m_dbpath = save_path;
+            m_path = save_path;
 
             updateCaption();
             updateStatusBar();
@@ -1574,7 +1586,7 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
     filter += wxT(" (*.txt)|*.txt|");
     filter.RemoveLast(); // get rid of the last pipe sign
 
-    wxString filename = getFilenameFromPath(m_dbpath, false);
+    wxString filename = getFilenameFromPath(m_path, false);
     
     if (m_set.isOk() && m_set->isTemporary())
         filename = _("Untitled");
@@ -1674,7 +1686,7 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
         job->setPkgFilename(dlg.GetPath(), ExportPkgJob::modeOverwrite);
 
         job->addExportObject(stream_name,
-                             this->m_dbpath,
+                             this->m_path,
                              true /* compress */);
 
         g_app->getJobQueue()->addJob(job, jobStateRunning);    
@@ -1690,7 +1702,7 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
         job->setExportType(dbtype);
 
         ExportJobInfo job_export_info;
-        job_export_info.input_path = this->m_dbpath;
+        job_export_info.input_path = this->m_path;
         job_export_info.output_path = dlg.GetPath();
         job_export_info.append = false;
 
@@ -1704,7 +1716,7 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
         if (dbtype == dbtypeAccess || dbtype == dbtypeExcel)
         {
             job->setFilename(dlg.GetPath());
-            job_export_info.output_path = this->m_dbpath.AfterLast(wxT('/')).BeforeLast(wxT('.'));
+            job_export_info.output_path = this->m_path.AfterLast(wxT('/')).BeforeLast(wxT('.'));
             job_export_info.output_path.Replace(wxT("."), wxT("_"));
             job_export_info.output_path.Replace(wxT(" "), wxT("_"));
             job_export_info.output_path.Replace(wxT("-"), wxT("_"));
@@ -2313,13 +2325,8 @@ bool TableDoc::open(tango::ISetPtr set, tango::IIteratorPtr iter)
     
     if (m_set.isNull())
         return false;
-
-    if (m_set.isOk())
-        m_temporary = m_set->isTemporary();
-         else
-        m_temporary = false;
     
-    m_dbpath = m_set->getObjectPath();
+    m_path = m_set->getObjectPath();
 
     // if the set/table displayed has a url associated with it, display it
 
@@ -2703,12 +2710,9 @@ void TableDoc::updateCaption()
     {
         wxString temps = towx(m_set->getObjectPath());
 
-        if (m_set->isTemporary())
+        if (isTemporary())
         {
-            if (temps.Find(wxT("/.temp")) != -1)
-                m_caption = _("(Untitled)");
-                 else
-                m_caption = temps;
+            m_caption = _("(Untitled)");
         }
          else
         {
@@ -3128,7 +3132,7 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
 
         // let other windows know that the structure was modified
         FrameworkEvent* evt = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_STRUCTURE_MODIFIED);
-        evt->s_param = m_dbpath;
+        evt->s_param = m_path;
         m_frame->postEvent(evt);
     }
 }
@@ -3410,7 +3414,7 @@ void TableDoc::onAlterTableJobFinished(jobs::IJobPtr job)
     
     // let other windows know that the structure was modified
     FrameworkEvent* evt = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_STRUCTURE_MODIFIED);
-    evt->s_param = m_dbpath;
+    evt->s_param = m_path;
     m_frame->postEvent(evt);
 }
 
@@ -5328,7 +5332,7 @@ void TableDoc::onCreateDynamicFieldCancelled(ColPropsPanel* panel)
 
         // let other windows know that the structure was modified
         FrameworkEvent* evt = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_STRUCTURE_MODIFIED);
-        evt->s_param = m_dbpath;
+        evt->s_param = m_path;
         m_frame->postEvent(evt);
     }
 }
@@ -7501,7 +7505,7 @@ void TableDoc::copyRecords(const wxString& condition)
     kl::JsonNode params;
 
     params["input"].setString(getBaseSet()->getObjectPath());
-    params["output"].setString(L"copy_" + kl::getUniqueString());
+    params["output"].setString(L"tmp_" + kl::getUniqueString());
 
     job->setParameters(params.toString());
     job->sigJobFinished().connect(&onCopyRecordsJobFinished);
