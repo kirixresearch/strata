@@ -27,6 +27,7 @@ KpgSet::KpgSet(KpgDatabase* database)
     m_database->ref();
 
     m_tablename = L"";
+    m_creating = false;
 }
 
 KpgSet::~KpgSet()
@@ -121,9 +122,9 @@ tango::IRowDeleterPtr KpgSet::getRowDeleter()
 }
 
 int KpgSet::insert(tango::IIteratorPtr source_iter,
-                    const std::wstring& where_condition,
-                    int max_rows,
-                    tango::IJob* job)
+                   const std::wstring& where_condition,
+                   int max_rows,
+                   tango::IJob* job)
 {
     return xdcmnInsert(source_iter, this, where_condition, max_rows, job);
 }
@@ -131,7 +132,10 @@ int KpgSet::insert(tango::IIteratorPtr source_iter,
 tango::IIteratorPtr KpgSet::createIterator(const std::wstring& columns,
                                            const std::wstring& expr,
                                            tango::IJob* job)
-{    
+{
+    if (m_creating)
+        return xcm::null;
+
     // create an iterator based on our select statement
     KpgIterator* iter = new KpgIterator(m_database, this);
     iter->m_reader = m_database->m_kpg->readStream(m_tablename);

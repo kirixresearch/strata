@@ -14,10 +14,11 @@
 #include "tango.h"
 #include "database.h"
 #include "inserter.h"
+#include <kl/file.h>
 #include <kl/portable.h>
 #include <kl/string.h>
 #include <kl/utf8.h>
-
+#include "pkgfile.h"
 
 KpgRowInserter::KpgRowInserter(KpgDatabase* db, const std::wstring& table)
 {
@@ -63,8 +64,8 @@ tango::IColumnInfoPtr KpgRowInserter::getInfo(tango::objhandle_t column_handle)
 }
 
 bool KpgRowInserter::putRawPtr(tango::objhandle_t column_handle,
-                                 const unsigned char* value,
-                                 int length)
+                               const unsigned char* value,
+                               int length)
 {
     return false;
 }
@@ -78,12 +79,13 @@ bool KpgRowInserter::putString(tango::objhandle_t column_handle,
         return false;
     }
 
-    f->m_value = kl::towstring(value);
+    f->m_str_val = kl::towstring(value);
+
     return true;
 }
 
 bool KpgRowInserter::putWideString(tango::objhandle_t column_handle,
-                                     const std::wstring& value)
+                                   const std::wstring& value)
 {
     KpgInsertFieldData* f = (KpgInsertFieldData*)column_handle;
     if (!f)
@@ -91,13 +93,13 @@ bool KpgRowInserter::putWideString(tango::objhandle_t column_handle,
         return false;
     }
 
-    f->m_value = value;
+    f->m_str_val = value;
 
     return true;
 }
 
 bool KpgRowInserter::putDouble(tango::objhandle_t column_handle,
-                                 double value)
+                               double value)
 {
     KpgInsertFieldData* f = (KpgInsertFieldData*)column_handle;
     if (!f)
@@ -105,15 +107,13 @@ bool KpgRowInserter::putDouble(tango::objhandle_t column_handle,
         return false;
     }
 
-    wchar_t buf[64];
-    swprintf(buf, 63, L"%.*f", f->m_scale, value);
-    f->m_value = buf;
+    f->m_dbl_val = value;
 
     return true;
 }
 
 bool KpgRowInserter::putInteger(tango::objhandle_t column_handle,
-                                  int value)
+                                int value)
 {
     KpgInsertFieldData* f = (KpgInsertFieldData*)column_handle;
     if (!f)
@@ -121,15 +121,13 @@ bool KpgRowInserter::putInteger(tango::objhandle_t column_handle,
         return false;
     }
 
-    wchar_t buf[64];
-    swprintf(buf, 63, L"%d", value);
-    f->m_value = buf;
+    f->m_int_val = value;
 
     return true;
 }
 
 bool KpgRowInserter::putBoolean(tango::objhandle_t column_handle,
-                                  bool value)
+                                bool value)
 {
     KpgInsertFieldData* f = (KpgInsertFieldData*)column_handle;
     if (!f)
@@ -137,14 +135,13 @@ bool KpgRowInserter::putBoolean(tango::objhandle_t column_handle,
         return false;
     }
 
-
-    f->m_value = value ? 'T' : 'F';
+    f->m_bool_val = value;
 
     return true;
 }
 
 bool KpgRowInserter::putDateTime(tango::objhandle_t column_handle,
-                                   tango::datetime_t datetime)
+                                 tango::datetime_t value)
 {
     KpgInsertFieldData* f = (KpgInsertFieldData*)column_handle;
     if (!f)
@@ -152,28 +149,7 @@ bool KpgRowInserter::putDateTime(tango::objhandle_t column_handle,
         return false;
     }
 
-    if (datetime == 0)
-    {
-        return putNull(column_handle);
-    }
-
-    tango::DateTime dt(datetime);
-    wchar_t buf[64];
-
-    if (f->m_tango_type == tango::typeDate)
-    {
-        swprintf(buf, 63, L"%04d-%02d-%02d", dt.getYear(), dt.getMonth(),  dt.getDay());
-        f->m_value = buf;
-    }
-     else if (f->m_tango_type == tango::typeDateTime) //datetime
-    {
-        swprintf(buf, 63, L"%04d-%02d-%02d %02d:%02d:%02d", dt.getYear(), dt.getMonth(), dt.getDay(), dt.getHour(), dt.getMinute(), dt.getSecond());
-        f->m_value = buf;
-    }
-     else
-    {
-        f->m_value = L"";
-    }
+    f->m_datetime_val = value;
 
     return true;
 }
@@ -186,13 +162,14 @@ bool KpgRowInserter::putNull(tango::objhandle_t column_handle)
         return false;
     }
 
-    f->m_value = L"\\N";
-
     return false;
 }
 
 bool KpgRowInserter::startInsert(const std::wstring& col_list)
 {
+    m_writer = m_database->m_kpg->createStream(m_table);
+
+
 
     return true;
 }
@@ -205,11 +182,15 @@ bool KpgRowInserter::insertRow()
 
 void KpgRowInserter::finishInsert()
 {
+    if (!m_writer)
+        return;
 
+    m_writer->finishWrite();
+    delete m_writer;
+    m_writer = NULL;
 }
 
 bool KpgRowInserter::flush()
 {
-
     return true;
 }

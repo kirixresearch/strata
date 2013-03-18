@@ -22,8 +22,13 @@ struct KpgInsertFieldData
     int m_width;
     int m_scale;
     int m_idx;
+    int m_offset;
 
-    std::wstring m_value;
+    std::wstring m_str_val;
+    int m_int_val;
+    double m_dbl_val;
+    unsigned char m_bool_val;
+    tango::datetime_t m_datetime_val;
 
     KpgInsertFieldData()
     {
@@ -32,12 +37,11 @@ struct KpgInsertFieldData
         m_width = 0;
         m_scale = 0;
         m_idx = 0;
-
-        m_value = L"";
     }
 };
 
 
+class PkgStreamWriter;
 class KpgRowInserter : public tango::IRowInserter
 {
     XCM_CLASS_NAME("xdkpg.RowInserter")
@@ -72,6 +76,7 @@ public:
 private:
 
     KpgDatabase* m_database;
+    PkgStreamWriter* m_writer;
 
     bool m_inserting;
     std::wstring m_table;

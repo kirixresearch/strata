@@ -492,10 +492,30 @@ tango::IStructurePtr KpgDatabase::createStructure()
 }
 
 tango::ISetPtr KpgDatabase::createTable(const std::wstring& _path,
-                                          tango::IStructurePtr struct_config,
-                                          tango::FormatInfo* format_info)
+                                        tango::IStructurePtr struct_config,
+                                        tango::FormatInfo* format_info)
 {
-    return xcm::null;
+    if (getFileExist(_path))
+        return xcm::null;
+
+    std::wstring path = _path;
+    if (path.substr(0,1) == L"/")
+        path.erase(0,1);
+
+    if (path.length() == 0)
+        return xcm::null;
+
+    KpgSet* set = new KpgSet(this);
+    set->m_tablename = path;
+    set->m_creating = true;
+    set->m_structure = struct_config;
+
+    if (!set->init())
+    {
+        return xcm::null;
+    }
+
+    return static_cast<tango::ISet*>(set);
 }
 
 tango::IStreamPtr KpgDatabase::openStream(const std::wstring& path)
@@ -616,15 +636,15 @@ tango::IIndexInfoPtr KpgDatabase::createIndex(const std::wstring& path,
 
 
 bool KpgDatabase::renameIndex(const std::wstring& path,
-                                const std::wstring& name,
-                                const std::wstring& new_name)
+                              const std::wstring& name,
+                              const std::wstring& new_name)
 {
     return false;
 }
 
 
 bool KpgDatabase::deleteIndex(const std::wstring& path,
-                                const std::wstring& name)
+                              const std::wstring& name)
 {
     return false;
 }
@@ -642,7 +662,11 @@ tango::IIndexInfoEnumPtr KpgDatabase::getIndexEnum(const std::wstring& path)
 
 tango::IStructurePtr KpgDatabase::describeTable(const std::wstring& path)
 {
-    return xcm::null;
+    tango::ISetPtr set = openSet(path);
+    if (set.isNull())
+        return xcm::null;
+
+    return set->getStructure();
 }
 
 

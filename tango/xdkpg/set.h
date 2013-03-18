@@ -66,6 +66,7 @@ private:
     std::wstring m_tablename;
     std::wstring m_path;
     std::wstring m_set_id;
+    bool m_creating;
 
     kl::xmlnode m_info;
 
@@ -73,9 +74,4 @@ private:
 };
 
 
-
-
 #endif
-
-
-
