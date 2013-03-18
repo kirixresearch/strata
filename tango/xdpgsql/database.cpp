@@ -642,7 +642,27 @@ bool PgsqlDatabase::copyFile(const std::wstring& src_path,
 
 bool PgsqlDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
 {
-    return false;
+    PGconn* conn = createConnection();
+    if (!conn)
+        return xcm::null;
+
+    std::wstring intbl = pgsqlGetTablenameFromPath(info->input_path);
+    std::wstring outtbl = pgsqlGetTablenameFromPath(info->output_path);
+    std::wstring sql = L"create table %outtbl% as select * from %intbl%";
+    kl::replaceStr(sql, L"%intbl%", intbl);
+    kl::replaceStr(sql, L"%outtbl%", outtbl);
+
+    PGresult* res = PQexec(conn, kl::toUtf8(sql));
+    if (!res || PQresultStatus(res) != PGRES_TUPLES_OK)
+    {
+        if (res)
+            PQclear(res);
+        closeConnection(conn);
+        return false;
+    }
+
+    closeConnection(conn);
+    return true;
 }
 
 bool PgsqlDatabase::deleteFile(const std::wstring& path)
