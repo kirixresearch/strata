@@ -4268,6 +4268,7 @@ void DbDoc::onDragDrop(IFsItemPtr target,
 
 void DbDoc::onCopyJobFinished(jobs::IJobPtr job)
 {
+    g_app->getAppController()->refreshDbDoc();
 /*
     wxString folder_to_refresh = job->getExtraString();
     if (folder_to_refresh.Length() > 0)
