@@ -103,6 +103,9 @@ public:
     virtual void setResultObject(const std::wstring& json) = 0;
     virtual std::wstring getResultObject() = 0;
 
+    virtual std::wstring getExtraValue(const std::wstring& key) = 0;
+    virtual void setExtraValue(const std::wstring& key, const std::wstring& value) = 0;
+
     virtual void setDatabase(tango::IDatabase* db) = 0;
 
     virtual std::wstring toJson() = 0;

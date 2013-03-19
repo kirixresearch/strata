@@ -160,12 +160,24 @@ public:
     {
     }
 
+
+    std::wstring getExtraValue(const std::wstring& key)
+    {
+        return m_extra[key];
+    }
+
+    void setExtraValue(const std::wstring& key, const std::wstring& value)
+    {
+        m_extra[key] = value;
+    }
+
 protected:
 
     IJobInfoPtr m_sp_job_info;
     IJobInfo* m_job_info;
     kl::JsonNode m_config;
     kl::JsonNode m_result;
+    std::map<std::wstring, std::wstring> m_extra;
 
 private:
 
