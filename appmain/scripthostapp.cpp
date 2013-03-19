@@ -22,7 +22,6 @@
 #include "jobexportpkg.h"
 #include "jobimport.h"
 #include "jobimportpkg.h"
-#include "jobcopy.h"
 #include "extensionpkg.h"
 #include "reportlayout.h"
 #include "tabledoc.h"
@@ -3736,26 +3735,17 @@ void HostData::copyFile(kscript::ExprEnv* env, kscript::Value* retval)
         
     if (f->getType() == tango::filetypeSet)
     {
-        tango::ISetPtr set = db->openSet(param1);
-        if (set.isNull())
-            return;
-            
-        // file is a table, we need a copy job
-        CopyJob* job = new CopyJob;
-        job->addCopyInstruction(db, set, wxT(""), wxT(""), wxT(""), db, param2);
-        job->runJob();
-        IJobInfoPtr info = job->getJobInfo();
-        delete job;
-        
-        if (info->getState() == jobStateFinished)
-            retval->setBoolean(true);
+        tango::CopyInfo info;
+        info.input_path = param1;
+        info.output_path = param2;
+
+        retval->setBoolean(db->copyData(&info, NULL));
     }
      else
     {
-        // a simply copy call to the db suffices
         retval->setBoolean(db->copyFile(param1, param2));
     }
-    
+   
 } 
 
 void HostData::readTextStream(kscript::ExprEnv* env, kscript::Value* retval)
