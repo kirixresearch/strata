@@ -2603,6 +2603,7 @@ void DbDoc::doPaste()
             if (jobs.size() > 0)
             {
                 jobs::IJobPtr aggregate_job = jobs::createAggregateJob(jobs);
+                aggregate_job->setDatabase(g_app->getDatabase());
 
                 g_app->getJobQueue()->addJob(aggregate_job, jobStateRunning);
                 
@@ -4267,6 +4268,7 @@ void DbDoc::onDragDrop(IFsItemPtr target,
 
 void DbDoc::onCopyJobFinished(jobs::IJobPtr job)
 {
+/*
     wxString folder_to_refresh = job->getExtraString();
     if (folder_to_refresh.Length() > 0)
     {
@@ -4280,6 +4282,7 @@ void DbDoc::onCopyJobFinished(jobs::IJobPtr job)
 
 
     m_fspanel->refresh();
+*/
 }
 
 void DbDoc::onSetConnectionPropertiesFinished(ConnectionWizard* dlg)

@@ -81,29 +81,24 @@ int AggregateJob::runJob()
         return 0;
     }
 
-    // make sure the database is valid
-    if (m_db.isNull())
-    {
-        m_job_info->setState(jobStateFailed);
-        return 0;
-    }    
-
     // get the jobs
     kl::JsonNode params = m_config["params"];
-    std::vector<kl::JsonNode> action_nodes = params.getChildren();
-    std::vector<kl::JsonNode>::iterator it;
 
+    kl::JsonNode jobs_node = params["jobs"];
 
     // create job objects from each parameter json node
     std::vector<jobs::IJobPtr> jobs;
 
-    for (it = action_nodes.begin(); it != action_nodes.end(); ++it)
+    size_t i, cnt = jobs_node.getChildCount();
+    for (i = 0; i < cnt; ++i)
     {
-        kl::JsonNode metadata = (*it)["metadata"];
+        kl::JsonNode job_node = jobs_node[i];
+
+        kl::JsonNode metadata = job_node["metadata"];
         if (!metadata.isOk())
             continue;
 
-        kl::JsonNode params = (*it)["params"];
+        kl::JsonNode params = job_node["params"];
         if (!params.isOk())
             continue;
 
@@ -114,7 +109,18 @@ int AggregateJob::runJob()
             return 0;
         }
 
+        job->setDatabase(m_db);
         job->setParameters(params.toString());
+
+        jobs.push_back(job);
+    }
+
+
+    std::vector<jobs::IJobPtr>::iterator jit;
+    for (jit = jobs.begin(); jit != jobs.end(); ++jit)
+    {
+        (*jit)->runJob();
+        (*jit)->runPostJob();
     }
 
 
