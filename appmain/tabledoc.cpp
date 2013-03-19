@@ -1481,8 +1481,8 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
     // extension, the user usually ends up adding this as the 
     // first item of business after saving
 
-    wxString path = dlg.getPath();
-    path = addExtensionIfExternalFsDatabase(path, wxT(".csv"));
+    std::wstring path = towstr(dlg.getPath());
+    path = addExtensionIfExternalFsDatabase(path, L".csv");
 
 
     bool is_indeterminate = false;
@@ -1514,7 +1514,7 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
     
     wxString title = wxString::Format(_("Saving '%s' as '%s'"),
                               getCaption().c_str(),
-                              path.AfterLast('/').c_str());
+                              kl::afterLast(path, '/').c_str());
 
 
     // set up the job from the info we gathered
@@ -1523,7 +1523,7 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
     kl::JsonNode params;
 
     params["input"].setString(getBaseSet()->getObjectPath());
-    params["output"].setString(towstr(path));
+    params["output"].setString(path);
     params["where"].setString(towstr(getFilter()));
     params["order"].setString(towstr(getSortOrder()));
     params["extra_docsite_id"].setInteger(m_doc_site->getId());

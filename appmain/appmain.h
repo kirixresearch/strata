@@ -58,6 +58,7 @@
 #include <xcm/xcm.h>
 #include <kl/klib.h>
 #include <kl/json.h>
+#include <kl/thread.h>
 #include "tango.h"
 #include "commands.h"
 

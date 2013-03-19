@@ -3631,7 +3631,7 @@ void HostData::importBinaryFile(kscript::ExprEnv* env, kscript::Value* retval)
     }
      else
     {
-        mime_type = determineMimeType(towx(input_path));
+        mime_type = determineMimeType(input_path);
     }
     
     

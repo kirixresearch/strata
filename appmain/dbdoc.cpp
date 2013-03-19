@@ -22,7 +22,6 @@
 #include "paneldatabaseinfo.h"
 #include "panelfileinfo.h"
 #include "panelrelationship.h"
-#include "jobcopy.h"
 #include "jobimport.h"
 #include "jobexport.h"
 #include "toolbars.h"
@@ -82,14 +81,16 @@ static wxString appendPath(const wxString& path1,
     return result;
 }
 
-static wxString stripExtension(const wxString& s)
+static std::wstring stripExtension(const std::wstring& s)
 {
-    wxString ext;
-    ext = s.AfterLast(wxT('.'));
-    ext.MakeUpper();
+    if (s.find('.') == s.npos)
+        return s;
 
-    if (ext == wxT("DBF") || ext == wxT("TXT") || ext == wxT("CSV") || ext == wxT("ICSV"))
-        return s.BeforeLast(wxT('.'));
+    std::wstring ext = kl::afterLast(s, '.');
+    kl::makeUpper(ext);
+    
+    if (ext == L"DBF" || ext == L"TXT" || ext == L"CSV" || ext == L"ICSV")
+        return kl::beforeLast(s, '.');
 
     return s;
 }
@@ -2543,6 +2544,72 @@ void DbDoc::doPaste()
 
         if (!external_copy)
         {
+
+            std::vector<jobs::IJobPtr> jobs;
+            for (it = g_cutcopy_items.begin(); it != g_cutcopy_items.end(); ++it)
+            {
+                std::wstring input = towstr(getFsItemPath(*it));
+                std::wstring fname = stripExtension(kl::afterLast(input, '/'));
+                std::wstring output;
+
+                int counter = 0;
+                do
+                {
+                    output = towstr(target_location);
+                    if (output.empty() || output[output.length()-1] != '/')
+                        output += L"/";
+
+                    output += fname;
+                    if (counter > 0)
+                    {
+                        output += kl::stdswprintf(L"_%d", counter+1);
+                    }
+
+                    // if we're saving the file to a filesystem mount and no
+                    // extension is specified, then automatically add a 'csv'
+                    // or 'js' extension; this is a usability issue since without 
+                    // the extension, the user usually ends up adding this as the 
+                    // first item of business after saving
+                    IDbObjectFsItemPtr dbobject_item = *it;
+                    if (dbobject_item.isOk())
+                    {
+                        if (dbobject_item->getType() == dbobjtypeSet)
+                            output = addExtensionIfExternalFsDatabase(output, L".csv");
+                        if (dbobject_item->getType() == dbobjtypeScript)
+                            output = addExtensionIfExternalFsDatabase(output, L".js");
+                    }
+
+                    counter++;
+                } while (db->getFileExist(output));
+
+
+                jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.copy-job");
+                
+                kl::JsonNode params;
+                params["input"] = input;
+                params["output"] = output;
+
+                job->setParameters(params.toString());
+                jobs.push_back(job);
+            }
+
+
+
+            if (g_cutcopy_items.size() > jobs.size())
+            {
+                m_fspanel->refreshItem(target);
+            }
+
+            if (jobs.size() > 0)
+            {
+                jobs::IJobPtr aggregate_job = jobs::createAggregateJob(jobs);
+
+                g_app->getJobQueue()->addJob(aggregate_job, jobStateRunning);
+                
+                aggregate_job->sigJobFinished().connect(this, &DbDoc::onCopyJobFinished);
+            }
+
+        /*
             CopyJob* job = new CopyJob;
             
             // set folder to refresh after paste operation
@@ -2579,9 +2646,9 @@ void DbDoc::doPaste()
                     if (dbobject_item.isOk())
                     {
                         if (dbobject_item->getType() == dbobjtypeSet)
-                            target_path = addExtensionIfExternalFsDatabase(target_path, wxT(".csv"));
+                            target_path = addExtensionIfExternalFsDatabase(target_path, L".csv");
                         if (dbobject_item->getType() == dbobjtypeScript)
-                            target_path = addExtensionIfExternalFsDatabase(target_path, wxT(".js"));
+                            target_path = addExtensionIfExternalFsDatabase(target_path, L".js");
                     }
 
 
@@ -2644,6 +2711,8 @@ void DbDoc::doPaste()
                 }
             }
 
+
+
             if (g_cutcopy_items.size() > job->getInstructionCount())
             {
                 m_fspanel->refreshItem(target);
@@ -2655,11 +2724,13 @@ void DbDoc::doPaste()
                 
                 job->sigJobFinished().connect(this, &DbDoc::onCopyJobFinished);
             }
+
+*/
         }
-         else
-        {
-            // TODO: import?
-        }
+
+
+
+
     }
 }
 
@@ -3935,6 +4006,10 @@ void DbDoc::onDragDrop(IFsItemPtr target,
                        wxDataObject* data,
                        wxDragResult* result)
 {
+
+
+/*
+
     if (data->GetPreferredFormat() != wxDataFormat(wxT("application/vnd.kx.fspanel")))
     {
         *result = wxDragNone;
@@ -4028,9 +4103,6 @@ void DbDoc::onDragDrop(IFsItemPtr target,
 
 
 
-
-
-
     // perform the copy or move operation
 
     CopyJob* job = NULL;
@@ -4082,9 +4154,9 @@ void DbDoc::onDragDrop(IFsItemPtr target,
         if (dbobject_item.isOk())
         {
             if (dbobject_item->getType() == dbobjtypeSet)
-                dest_path = addExtensionIfExternalFsDatabase(dest_path, wxT(".csv"));
+                dest_path = addExtensionIfExternalFsDatabase(dest_path, L".csv");
             if (dbobject_item->getType() == dbobjtypeScript)
-                dest_path = addExtensionIfExternalFsDatabase(dest_path, wxT(".js"));
+                dest_path = addExtensionIfExternalFsDatabase(dest_path, L".js");
         }
         
 
@@ -4188,9 +4260,12 @@ void DbDoc::onDragDrop(IFsItemPtr target,
             }
         }
     }
+
+
+    */
 }
 
-void DbDoc::onCopyJobFinished(IJobPtr job)
+void DbDoc::onCopyJobFinished(jobs::IJobPtr job)
 {
     wxString folder_to_refresh = job->getExtraString();
     if (folder_to_refresh.Length() > 0)

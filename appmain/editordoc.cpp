@@ -1873,7 +1873,7 @@ bool EditorDoc::doSave()
             // extension, the user usually ends up adding this as the 
             // first item of business after saving
             m_path = dlg.getPath();
-            m_path = addExtensionIfExternalFsDatabase(m_path, wxT(".js"));            
+            m_path = towx(addExtensionIfExternalFsDatabase(towstr(m_path), L".js"));
 
             m_external = false;
             m_temporary = false;

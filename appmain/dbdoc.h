@@ -319,7 +319,7 @@ private:
                     wxDataObject* data,
                     wxDragResult* result);
     
-    void onCopyJobFinished(IJobPtr job);
+    void onCopyJobFinished(jobs::IJobPtr job);
     void onSetConnectionPropertiesFinished(ConnectionWizard* dlg);
 
     
