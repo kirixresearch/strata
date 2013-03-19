@@ -13,10 +13,6 @@
 #define __APP_UTIL_H
 
 
-#include <cmath>
-#include <string>
-#include <kl/thread.h>
-
 
 
 // -- platform definitions ----------------------------------------------------
@@ -276,13 +272,13 @@ std::wstring getDbDriverFromSet(tango::ISetPtr set);
 // gets the filename from the path
 wxString getFilenameFromPath(const wxString& path, bool include_extension = true);
 wxString getDirectoryFromPath(const wxString& path);
-wxString getExtensionFromPath(const wxString& path);
-wxString getMimeTypeFromExtension(const wxString& path);
-wxString determineMimeType(const wxString& path);
+std::wstring getExtensionFromPath(const std::wstring& path);
+std::wstring getMimeTypeFromExtension(const std::wstring& path);
+std::wstring determineMimeType(const std::wstring& path);
 
 // utility for adding a filesystem extension to a path if the path is a
 // mounted filesystem database and the path doesn't specify an extension
-wxString addExtensionIfExternalFsDatabase(const wxString& path, const wxString& ext);
+std::wstring addExtensionIfExternalFsDatabase(const std::wstring& path, const std::wstring& ext);
 
 // stream text file loading and saving routines
 bool readStreamTextFile(tango::IDatabasePtr db,

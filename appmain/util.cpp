@@ -966,60 +966,46 @@ wxString getDirectoryFromPath(const wxString& path)
     return directory;
 }
 
-wxString getExtensionFromPath(const wxString& path)
+// returns filename extension
+std::wstring getExtensionFromPath(const std::wstring& path)
 {
-    // note: return the extension portion of a full
-    // path; returns empty if no extension is included
-    // in the path
-    
-    // path can be either in the database or in
-    // the filesystem, so we have to check for two
-    // types of path separators
-    wxString extension;
+    if (path.find('.') == path.npos)
+        return L"";
 
-    // get the extension portion
-    extension = path.AfterLast(wxT('.'));
-
-    // if the whole string is returned, then no extension
-    // portion is specified; return empty
-    if (extension.Length() == path.Length())
-        return wxEmptyString;
-
-    // return the extension
-    return extension;
+    return kl::afterLast(path, '.');
 }
 
-wxString getMimeTypeFromExtension(const wxString& path)
+std::wstring getMimeTypeFromExtension(const std::wstring& path)
 {
-    wxString ext = getExtensionFromPath(path);
-    if (ext.Length() == 0)
+    std::wstring ext = getExtensionFromPath(path);
+    if (ext.length() == 0)
         ext = path;
-    ext.MakeLower();
+    kl::makeLower(ext);
     
-         if (ext == wxT("bmp"))                        return wxT("image/x-ms-bmp");
-    else if (ext == wxT("css"))                        return wxT("text/css");
-    else if (ext == wxT("icsv"))                       return wxT("application/vnd.interchange-csv");
-    else if (ext == wxT("gif"))                        return wxT("image/gif");
-    else if (ext == wxT("gz"))                         return wxT("application/x-gzip");
-    else if (ext == wxT("htm") || ext == wxT("html"))  return wxT("text/html");
-    else if (ext == wxT("hta"))                        return wxT("application/hta");
-    else if (ext == wxT("jpg") || ext == wxT("jpeg"))  return wxT("image/jpeg");
-    else if (ext == wxT("js"))                         return wxT("application/javascript");
-    else if (ext == wxT("json"))                       return wxT("application/json");
-    else if (ext == wxT("pdf"))                        return wxT("application/pdf");
-    else if (ext == wxT("png"))                        return wxT("image/png");
-    else if (ext == wxT("svg"))                        return wxT("image/svg+xml");
-    else if (ext == wxT("tif") || ext == wxT("tiff"))  return wxT("image/tiff");
-    else if (ext == wxT("txt"))                        return wxT("text/plain");
-    else if (ext == wxT("xls"))                        return wxT("application/vnd.ms-excel");
-    else if (ext == wxT("xml"))                        return wxT("application/xml");
-    else if (ext == wxT("zip"))                        return wxT("application/zip");
-    else                                               return wxT("application/octet-stream");
+         if (ext == L"bmp")                        return L"image/x-ms-bmp";
+    else if (ext == L"css")                        return L"text/css";
+    else if (ext == L"icsv")                       return L"application/vnd.interchange-csv";
+    else if (ext == L"gif")                        return L"image/gif";
+    else if (ext == L"gz")                         return L"application/x-gzip";
+    else if (ext == L"htm" || ext == L"html")      return L"text/html";
+    else if (ext == L"hta")                        return L"application/hta";
+    else if (ext == L"jpg" || ext == L"jpeg")      return L"image/jpeg";
+    else if (ext == L"js")                         return L"application/javascript";
+    else if (ext == L"json")                       return L"application/json";
+    else if (ext == L"pdf")                        return L"application/pdf";
+    else if (ext == L"png")                        return L"image/png";
+    else if (ext == L"svg")                        return L"image/svg+xml";
+    else if (ext == L"tif" || ext == L"tiff")      return L"image/tiff";
+    else if (ext == L"txt")                        return L"text/plain";
+    else if (ext == L"xls")                        return L"application/vnd.ms-excel";
+    else if (ext == L"xml")                        return L"application/xml";
+    else if (ext == L"zip")                        return L"application/zip";
+    else                                           return L"application/octet-stream";
 }
 
-wxString determineMimeType(const wxString& path)
+std::wstring determineMimeType(const std::wstring& path)
 {
-    xf_file_t f = xf_open(towstr(path), xfOpen, xfRead, xfShareRead);
+    xf_file_t f = xf_open(path, xfOpen, xfRead, xfShareRead);
     if (!f)
         return wxT("");
 
@@ -1063,18 +1049,18 @@ wxString determineMimeType(const wxString& path)
     std::wstring res = res_match.str();
     kl::replaceStr(res, L"\\", L"");
     
-    return towx(res);
+    return res;
 }
 
-wxString addExtensionIfExternalFsDatabase(const wxString& _path, const wxString& ext)
+std::wstring addExtensionIfExternalFsDatabase(const std::wstring& _path, const std::wstring& ext)
 {
-    wxString path = _path;
-    tango::IDatabasePtr mount_db = g_app->getDatabase()->getMountDatabase(towstr(path));
+    std::wstring path = _path;
+    std::wstring extension;
+    tango::IDatabasePtr mount_db = g_app->getDatabase()->getMountDatabase(path);
     if (!mount_db.isNull() && mount_db->getDatabaseType() == tango::dbtypeFilesystem)
     {
-        wxString extension;
         extension = getExtensionFromPath(path);
-        if (extension.Length() == 0)
+        if (extension.length() == 0)
             path += ext;
     }
     
