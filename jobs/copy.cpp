@@ -79,12 +79,15 @@ int CopyJob::runJob()
     kl::JsonNode params = m_config["params"];
 
     // get the input parameters
-    std::wstring input_path = params["input"].getString();
-    std::wstring output_path = params["output"].getString();
 
     tango::CopyInfo info;
-    info.input_path = input_path;
-    info.output_path = output_path;
+    info.input_path = params["input"].getString();
+    info.output_path = params["output"].getString();
+
+    if (params.childExists("order"))
+        info.order = params["order"].getString();
+    if (params.childExists("where"))
+        info.where_condition = params["where"].getString();
 
     m_db->copyData(&info, NULL);
 

@@ -7499,13 +7499,29 @@ void TableDoc::onCopyRecordsOk(ExprBuilderPanel* expr_panel)
 
 void TableDoc::copyRecords(const wxString& condition)
 {
+    wxString final_condition = getFilter();
+    if (final_condition.Length() == 0)
+    {
+        final_condition = condition;
+    }
+        else
+    {
+        final_condition.Prepend(wxT("("));
+        final_condition += wxT(") AND (");
+        final_condition += condition;
+        final_condition += wxT(")");
+    }
+
+
     // set up the job from the info we gathered
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.copy-job");
 
     kl::JsonNode params;
 
     params["input"].setString(getBaseSet()->getObjectPath());
-    params["output"].setString(L"tmp_" + kl::getUniqueString());
+    params["output"].setString(L"xtmp_" + kl::getUniqueString());
+    params["where"].setString(towstr(final_condition));
+    params["order"].setString(towstr(getSortOrder()));
 
     job->setParameters(params.toString());
     job->sigJobFinished().connect(&onCopyRecordsJobFinished);

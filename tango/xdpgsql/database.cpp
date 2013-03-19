@@ -652,6 +652,12 @@ bool PgsqlDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
     kl::replaceStr(sql, L"%intbl%", intbl);
     kl::replaceStr(sql, L"%outtbl%", outtbl);
 
+    if (info->where_condition.length() > 0)
+        sql += (L" where " + info->where_condition);
+    
+    if (info->order.length() > 0)
+        sql += (L" order by " + info->order);
+
     PGresult* res = PQexec(conn, kl::toUtf8(sql));
     if (!res || PQresultStatus(res) != PGRES_TUPLES_OK)
     {
