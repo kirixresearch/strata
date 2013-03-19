@@ -106,7 +106,6 @@ private:
     void checkForJobs();
     void runJob(JobSchedulerEntry& e);
     void calcNextRun(JobSchedulerEntry& e);
-    void updateJobVersion(JobSchedulerEntry& e, int old_interval);
 
     void onTimer(wxTimerEvent& event);
 
