@@ -264,7 +264,7 @@ private:
     bool saveAsPdf(const wxString& path);
     bool saveAsStructure(const wxString& path);
 
-    void onSaveAsJobFinished(IJobPtr saveas_job);
+    void onSaveAsJobFinished(jobs::IJobPtr saveas_job);
     void onSortFilterJobFinished(IJobPtr query_job);
     void onSetOrderFinished(IJobPtr query_job);
     void onDeleteJobFinished(IJobPtr delete_job);

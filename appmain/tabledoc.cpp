@@ -15,7 +15,6 @@
 #include "tabledoc.h"
 #include "tabledoc_private.h"
 #include "tangogridmodel.h"
-#include "jobcopy.h"
 #include "jobexport.h"
 #include "jobexportpkg.h"
 #include "jobquery.h"
@@ -390,9 +389,9 @@ bool TableDoc::isExternalTable()
 bool TableDoc::isTemporary()
 {
     wxString prefix = m_path.AfterLast('/');
-    prefix = prefix.Left(4);
+    prefix = prefix.Left(5);
     prefix.MakeLower();
-    if (prefix == wxT("tmp_"))
+    if (prefix == wxT("xtmp_"))
         return true;
 
     tango::ISetPtr set = getBaseSet();
@@ -1307,8 +1306,11 @@ void TableDoc::onSave(wxCommandEvent& evt)
     wxMilliSleep(500);
 }
 
-void TableDoc::onSaveAsJobFinished(IJobPtr job)
+void TableDoc::onSaveAsJobFinished(jobs::IJobPtr job)
 {
+    kl::JsonNode params;
+    params.fromString(job->getParameters());
+
     // re-enabled the GUI
     setEnabled(true);
     
@@ -1316,16 +1318,12 @@ void TableDoc::onSaveAsJobFinished(IJobPtr job)
         return;
     
     g_app->getAppController()->refreshDbDoc();
-    
-    ICopyJobPtr copy_job = job;
-    size_t copy_count = copy_job->getInstructionCount();
-    if (copy_count != 1)
-        return;
-    
-    IDocumentSitePtr site = g_app->getMainFrame()->lookupSiteById(job->getExtraLong());
+
+    int docsite_id = params["extra_docsite_id"].getInteger();
+    IDocumentSitePtr site = g_app->getMainFrame()->lookupSiteById(docsite_id);
     if (site.isNull())
         return;
-    
+
     ITableDocPtr tabledoc = site->getDocument();
     if (tabledoc.isNull())
         return;
@@ -1336,7 +1334,7 @@ void TableDoc::onSaveAsJobFinished(IJobPtr job)
     setSourceMimeType(wxEmptyString);
     
     // set the base set to the result set
-    open(copy_job->getResultSet(0), xcm::null);
+    open(g_app->getDatabase(), params["output"].getString());
     
     // the copy job copies the TableDocModel for the table; when doing so,
     // all of the TableDocObjects have a new ID assigned to them, thus the
@@ -1517,7 +1515,25 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
     wxString title = wxString::Format(_("Saving '%s' as '%s'"),
                               getCaption().c_str(),
                               path.AfterLast('/').c_str());
-    
+
+
+    // set up the job from the info we gathered
+    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.copy-job");
+
+    kl::JsonNode params;
+
+    params["input"].setString(getBaseSet()->getObjectPath());
+    params["output"].setString(towstr(path));
+    params["where"].setString(towstr(getFilter()));
+    params["order"].setString(towstr(getSortOrder()));
+    params["extra_docsite_id"].setInteger(m_doc_site->getId());
+
+    job->setParameters(params.toString());
+    job->sigJobFinished().connect(this, &TableDoc::onSaveAsJobFinished);
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
+
+
+    /*
     CopyJob* copy_job = new CopyJob;
     copy_job->getJobInfo()->setTitle(towstr(title));
     copy_job->setExtraLong(m_doc_site->getId());
@@ -1554,6 +1570,7 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
     
     copy_job->sigJobFinished().connect(this, &TableDoc::onSaveAsJobFinished);
     g_app->getJobQueue()->addJob(copy_job, jobStateRunning);
+    */
 }
 
 
