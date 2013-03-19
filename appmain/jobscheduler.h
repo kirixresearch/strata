@@ -95,7 +95,6 @@ public:
 
     bool save();
     bool load();
-    bool convertAndLoadOldVersion(int version);
     
     void setInterval(int seconds);
     void clearJobs();

@@ -487,12 +487,10 @@ bool JobScheduler::load()
     if (!version_node)
         return false;
 
-    // if we're not loading an up-to-date job scheduler file,
-    // we need to update the convert the old job format
-    // into the current format so they run correctly
+    // old job format no longer supported
     int version = version_node->getInteger();
-    if (version != 2)
-        return convertAndLoadOldVersion(version);
+    if (version < 2)
+        return false;
 
     tango::INodeValuePtr jobs_node = jobscheduler_file->getChild(L"jobs", false);
     int counter = 0;
@@ -615,81 +613,6 @@ void JobScheduler::updateJobVersion(JobSchedulerEntry& e, int old_interval)
     }
 }
 
-bool JobScheduler::convertAndLoadOldVersion(int version)
-{
-    XCM_AUTO_LOCK(m_obj_mutex);
 
-    m_jobs.clear();
-
-    tango::IDatabasePtr db = g_app->getDatabase();
-    if (!db)
-        return false;
-
-
-    std::vector<JobSchedulerEntry> jobs;
-
-    // -- load jobs --
-    wxString path;
-    path = wxString::Format(wxT("/.appdata/%s/dcfe/jobscheduler"),
-                            towx(g_app->getDatabase()->getActiveUid()).c_str());
-
-    tango::INodeValuePtr jobscheduler_file = db->openNodeFile(towstr(path));
-    if (!jobscheduler_file)
-        return false;
-
-    tango::INodeValuePtr version_node = jobscheduler_file->getChild(L"version", false);
-    if (!version_node)
-        return false;
-
-    if (version_node->getInteger() != version)
-        return false;
-
-    tango::INodeValuePtr jobs_node = jobscheduler_file->getChild(L"jobs", false);
-    int counter = 0;
-
-    int i, child_count = jobs_node->getChildCount();
-    int interval;
-        
-    for (i = 0; i < child_count; ++i)
-    {
-        JobSchedulerEntry job;
-
-        tango::INodeValuePtr job_node = jobs_node->getChildByIdx(i);
-
-        tango::INodeValuePtr name_node = job_node->getChild(L"name", false);
-        if (!name_node)
-            return false;
-        job.name = towx(name_node->getString());
-
-        tango::INodeValuePtr starttime_node = job_node->getChild(L"start_time", false);
-        if (!starttime_node)
-            return false;
-        job.start_time = starttime_node->getInteger();
-
-        tango::INodeValuePtr interval_node = job_node->getChild(L"interval", false);
-        if (!interval_node)
-            return false;
-        interval = interval_node->getInteger();
-
-        tango::INodeValuePtr commands_node = job_node->getChild(L"commands", false);
-        if (!commands_node)
-            return false;
-
-        int command_count = commands_node->getChildCount();
-        int ci;
-        for (ci = 0; ci < command_count; ++ci)
-        {
-            tango::INodeValuePtr command_node = commands_node->getChildByIdx(ci);
-            job.commands.push_back(towx(command_node->getString()));
-        }
-
-        calcNextRun(job);
-        updateJobVersion(job, interval);
-        jobs.push_back(job);
-    }
-
-    m_jobs = jobs;
-    return true;
-}
 
 
