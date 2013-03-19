@@ -71,12 +71,14 @@ IJobPtr createAggregateJob(std::vector<IJobPtr>& jobs)
     for (it = jobs.begin(); it != jobs.end(); ++it)
     {
         kl::JsonNode job_entry = jobs_node.appendElement();
-        kl::JsonNode job_params;
-        job_params.fromString((*it)->getParameters());
-
-        job_entry["metadata"]["type"] = "abc";
-        job_entry["params"] = job_params;
+        job_entry.fromString((*it)->toJson());
     }
+
+    job->setParameters(agg_params.toString());
+
+
+// debug:
+std::wstring debug = job->getParameters();
 
     return job;
 }

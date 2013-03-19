@@ -111,14 +111,6 @@ public:
         return res;
     }
 
-    std::wstring getConfig()
-    {
-        XCM_AUTO_LOCK(m_jobbase_mutex);
-
-        std::wstring res = m_config.toString();
-        return res;
-    }
-
     void setResultObject(const std::wstring& json)
     {
         XCM_AUTO_LOCK(m_jobbase_mutex);
@@ -136,6 +128,14 @@ public:
 
     void setDatabase(tango::IDatabase* db)
     {
+    }
+
+    std::wstring toJson()
+    {
+        XCM_AUTO_LOCK(m_jobbase_mutex);
+
+        std::wstring res = m_config.toString();
+        return res;
     }
 
     bool cancel()

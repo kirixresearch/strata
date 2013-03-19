@@ -104,6 +104,8 @@ public:
     virtual std::wstring getResultObject() = 0;
 
     virtual void setDatabase(tango::IDatabase* db) = 0;
+
+    virtual std::wstring toJson() = 0;
 };
 
 
