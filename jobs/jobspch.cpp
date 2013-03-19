@@ -11,3 +11,4 @@
 
 #include "jobspch.h"
 
+void jobsPchPlaceholder() { }

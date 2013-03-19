@@ -57,6 +57,31 @@ IJobPtr createJob(const std::wstring job_class)
 }
 
 
+IJobPtr createAggregateJob(std::vector<IJobPtr>& jobs)
+{
+    IJobPtr job = createJob(L"application/vnd.kx.aggregate-job");
+
+    kl::JsonNode agg_params;
+    agg_params.fromString(job->getParameters());
+
+    kl::JsonNode jobs_node = agg_params["jobs"];
+    jobs_node.setArray();
+
+    std::vector<IJobPtr>::iterator it;
+    for (it = jobs.begin(); it != jobs.end(); ++it)
+    {
+        kl::JsonNode job_entry = jobs_node.appendElement();
+        kl::JsonNode job_params;
+        job_params.fromString((*it)->getParameters());
+
+        job_entry["metadata"]["type"] = "abc";
+        job_entry["params"] = job_params;
+    }
+
+    return job;
+}
+
+
 IJobInfoPtr createJobInfoObject()
 {
     return static_cast<IJobInfo*>(new JobInfo);

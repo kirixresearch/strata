@@ -91,27 +91,32 @@ int AggregateJob::runJob()
     // get the jobs
     kl::JsonNode params = m_config["params"];
     std::vector<kl::JsonNode> action_nodes = params.getChildren();
+    std::vector<kl::JsonNode>::iterator it;
 
 
+    // create job objects from each parameter json node
+    std::vector<jobs::IJobPtr> jobs;
 
-
-    tango::IJobPtr tango_job = m_db->createJob();
-    setTangoJob(tango_job);
-
-
-
-    if (tango_job->getCancelled())
+    for (it = action_nodes.begin(); it != action_nodes.end(); ++it)
     {
-        m_job_info->setState(jobStateCancelling);
-        return 0;
+        kl::JsonNode metadata = (*it)["metadata"];
+        if (!metadata.isOk())
+            continue;
+
+        kl::JsonNode params = (*it)["params"];
+        if (!params.isOk())
+            continue;
+
+        jobs::IJobPtr job = createJob(metadata["type"]);
+        if (job.isNull())
+        {
+            m_job_info->setState(jobStateFailed);
+            return 0;
+        }
+
+        job->setParameters(params.toString());
     }
 
-    if (tango_job->getStatus() == tango::jobFailed)
-    {
-        m_job_info->setState(jobStateFailed);
-
-        // TODO: error string
-    }
 
     return 0;
 }
