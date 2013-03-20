@@ -32,6 +32,10 @@ public:
     bool isInputValid();
     int runJob();
     void runPostJob();
+
+private:
+
+    std::vector<std::wstring> m_to_delete;
 };
 
 

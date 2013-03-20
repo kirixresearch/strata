@@ -104,7 +104,8 @@ int SummarizeJob::runJob()
     // STEP 1: build the group job parameters from the summarize parameters
 
     std::wstring input_path = params["input"].getString();
-    
+    std::wstring output_path = params["output"].getString();
+
     std::vector<kl::JsonNode> input_columns = params["columns"].getChildren();
     std::vector<kl::JsonNode>::iterator it_node, it_node_end;
     it_node_end = input_columns.end();
@@ -209,15 +210,17 @@ int SummarizeJob::runJob()
     if (params.childExists("where"))
         where_param = params["where"].getString();
 
-        /*
-    group_output_set = m_db->runGroupQuery(input_set,
-                                           L"",
-                                           column_param,
-                                           where_param,
-                                           L"",
-                                           tango_job.p);
-*/
-    if (tango_job->getCancelled())
+    tango::GroupQueryInfo info;
+    info.input = input_path;
+    info.output = L"xtmp_" + kl::getUniqueString();
+    info.columns = column_param,
+    info.where = where_param;
+
+    bool res = m_db->groupQuery(&info, tango_job.p);
+
+    m_to_delete.push_back(info.output);
+
+    if (!res || tango_job->getCancelled())
     {
         m_job_info->setState(jobStateCancelling);
         return 0;
@@ -232,6 +235,7 @@ int SummarizeJob::runJob()
 
 
     // STEP 3: pivot the output
+    group_output_set = m_db->openSet(info.output);
 
     if (group_output_set.isNull())
     {
@@ -287,9 +291,9 @@ int SummarizeJob::runJob()
         ++i;
     }
 
-    tango::ISetPtr output_set = m_db->createTable(L"",
-                                                output_structure,
-                                                NULL);
+    tango::ISetPtr output_set = m_db->createTable(output_path,
+                                                  output_structure,
+                                                  NULL);
     if (output_set.isNull())
     {
         m_job_info->setState(jobStateFailed);
@@ -484,17 +488,17 @@ int SummarizeJob::runJob()
     output_inserter->finishInsert();
 
 
-    // store the summary result table
-    std::wstring output_path = params["output"].getString();
-    if (output_path.length() > 0)
-        m_db->storeObject(output_set, output_path);
-
-
     return 0;
 }
 
 void SummarizeJob::runPostJob()
 {
+    if (m_db)
+    {
+        std::vector<std::wstring>::iterator it;
+        for (it = m_to_delete.begin(); it != m_to_delete.end(); ++it)
+            m_db->deleteFile(*it);
+    }
 }
 
 

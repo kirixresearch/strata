@@ -6280,7 +6280,7 @@ void TableDoc::onSummary(wxCommandEvent& evt)
 
     kl::JsonNode params;
     params["input"].setString(towstr(getBrowseSet()->getObjectPath()));
-    params["output"].setString(tango::getTemporaryPath());
+    params["output"].setString(L"xtmp_" + kl::getUniqueString());
     params["columns"].setArray();
     params["where"].setString(towstr(getFilter()));
 
