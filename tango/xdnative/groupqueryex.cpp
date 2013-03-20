@@ -684,49 +684,26 @@ void buf2str(std::string& str, char* ptr, int len)
 }
 
 
-
+/*
 tango::ISetPtr Database::runGroupQuery(tango::ISetPtr set,
                                        const std::wstring& group,
                                        const std::wstring& output,
                                        const std::wstring& where,
                                        const std::wstring& having,
                                        tango::IJob* job)
+*/
+
+bool Database::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
 {
-    // check if we are running this job on an xdclient mount
-    std::wstring set_path = set->getObjectPath();
-    std::wstring cstr, rpath;
-    if (detectMountPoint(set_path, cstr, rpath))
-    {
-        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
-        if (db.isNull())
-            return xcm::null;
-        
-        tango::IAttributesPtr attr = db->getAttributes();
-        if (attr->getStringAttribute(tango::dbattrDatabaseUrl).substr(0,6) == L"sdserv")
-        {
-            tango::ISetPtr rset = db->openSet(rpath);
-            if (rset.isOk())
-            {
-                tango::ISetPtr result_rset = db->runGroupQuery(rset, group, output, where, having, job);
-                if (result_rset.isNull())
-                    return xcm::null;
+    std::wstring input = info->input;
+    std::wstring group = info->group;
+    std::wstring columns = info->columns;
+    std::wstring where = info->where;
+    std::wstring having = info->having;
 
-                std::wstring remote_output_path = L"/.temp/" + getUniqueString();
-                if (!db->storeObject(result_rset, remote_output_path))
-                    return xcm::null;
-
-                std::wstring link_output_path;
-                if (link_output_path.length() == 0)
-                    link_output_path = L"/.temp/" + getUniqueString();
-
-                if (!setMountPoint(link_output_path, cstr, remote_output_path))
-                    return xcm::null;
-
-                return openSet(link_output_path);
-            }
-        }
-    }
-
+    tango::ISetPtr set = openSet(input);
+    if (set.isNull())
+        return false;
 
 
 
@@ -768,7 +745,7 @@ tango::ISetPtr Database::runGroupQuery(tango::ISetPtr set,
 
     std::vector<std::wstring> output_columns;
     std::vector<std::wstring>::iterator outcol_it;
-    kl::parseDelimitedList(output, output_columns, L',', true);
+    kl::parseDelimitedList(columns, output_columns, L',', true);
 
     for (outcol_it = output_columns.begin();
          outcol_it != output_columns.end();
@@ -1101,7 +1078,7 @@ tango::ISetPtr Database::runGroupQuery(tango::ISetPtr set,
         info->setScale(out_it->m_scale);
     }
 
-    tango::ISetPtr output_set = createTable(L"", output_struct, NULL);
+    tango::ISetPtr output_set = createTable(info->output, output_struct, NULL);
     if (output_set.isNull())
         return xcm::null;
 

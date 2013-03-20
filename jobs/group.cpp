@@ -161,14 +161,17 @@ int GroupJob::runJob()
         tango_job = m_db->createJob();
         setTangoJob(tango_job);
 
-        output_set = m_db->runGroupQuery(input_set,
-                                         group_params,
-                                         column_params,
-                                         where_params,
-                                         having_params,
-                                         tango_job.p);
+        tango::GroupQueryInfo info;
+        info.input = input_path;
+        info.output = L"xtmp_" + kl::getUniqueString();
+        info.group = group_params;
+        info.columns = column_params;
+        info.where = where_params;
+        info.having = having_params;
 
-        if (tango_job->getCancelled())
+        bool res = m_db->groupQuery(&info, tango_job.p);
+
+        if (!res || tango_job->getCancelled())
         {
             m_job_info->setState(jobStateCancelling);
             return 0;
@@ -184,9 +187,12 @@ int GroupJob::runJob()
 
             return 0;
         }
+
+        output_set = m_db->openSet(info.output);
     }
      else
     {
+/*
         // this whole section is specialized code to optimize the option
         // for unique records:  rather than selecting distinct first, then
         // doing a group operation, this first groups with the related
@@ -287,6 +293,7 @@ int GroupJob::runJob()
 
             return 0;
         }
+*/
     }
 
 

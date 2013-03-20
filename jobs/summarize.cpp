@@ -209,13 +209,14 @@ int SummarizeJob::runJob()
     if (params.childExists("where"))
         where_param = params["where"].getString();
 
+        /*
     group_output_set = m_db->runGroupQuery(input_set,
                                            L"",
                                            column_param,
                                            where_param,
                                            L"",
                                            tango_job.p);
-
+*/
     if (tango_job->getCancelled())
     {
         m_job_info->setState(jobStateCancelling);

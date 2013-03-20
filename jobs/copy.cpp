@@ -81,13 +81,13 @@ int CopyJob::runJob()
     // get the input parameters
 
     tango::CopyInfo info;
-    info.input_path = params["input"].getString();
-    info.output_path = params["output"].getString();
+    info.input = params["input"].getString();
+    info.output = params["output"].getString();
 
     if (params.childExists("order"))
         info.order = params["order"].getString();
     if (params.childExists("where"))
-        info.where_condition = params["where"].getString();
+        info.where = params["where"].getString();
 
     m_db->copyData(&info, NULL);
 

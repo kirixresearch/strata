@@ -3736,8 +3736,8 @@ void HostData::copyFile(kscript::ExprEnv* env, kscript::Value* retval)
     if (f->getType() == tango::filetypeSet)
     {
         tango::CopyInfo info;
-        info.input_path = param1;
-        info.output_path = param2;
+        info.input = param1;
+        info.output = param2;
 
         retval->setBoolean(db->copyData(&info, NULL));
     }

@@ -665,20 +665,6 @@ public:
 };
 
 
-struct CopyInfo
-{
-    CopyInfo()
-    {
-        append = false;
-    }
-
-    std::wstring input_path;
-    std::wstring where_condition;
-    std::wstring order;
-
-    std::wstring output_path;
-    bool append;
-};
 
 struct FormatInfo
 {
@@ -699,6 +685,40 @@ struct FormatInfo
     bool first_row_column_names;
 };
 
+
+
+struct CopyInfo
+{
+    CopyInfo()
+    {
+        append = false;
+    }
+
+    std::wstring input;
+    std::wstring output;
+    bool append;
+
+    std::wstring where;
+    std::wstring order;
+};
+
+struct GroupQueryInfo
+{
+    GroupQueryInfo()
+    {
+        append = false;
+    }
+
+    std::wstring input;
+    std::wstring output;
+    bool append;
+
+    std::wstring group;
+    std::wstring columns;
+    std::wstring where;
+    std::wstring having;
+    std::wstring order;
+};
 
 xcm_interface IDatabase : public xcm::IObject
 {
@@ -791,12 +811,7 @@ public:
                                         const std::wstring& sort,
                                         IJob* job) = 0;
 
-    virtual ISetPtr runGroupQuery(ISetPtr set,
-                                  const std::wstring& group,
-                                  const std::wstring& output,
-                                  const std::wstring& where_expr,
-                                  const std::wstring& having,
-                                  IJob* job) = 0;
+    virtual bool groupQuery(GroupQueryInfo* info, IJob* job) { return false; };
 };
 
 

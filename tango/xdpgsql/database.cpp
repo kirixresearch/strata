@@ -646,14 +646,14 @@ bool PgsqlDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
     if (!conn)
         return xcm::null;
 
-    std::wstring intbl = pgsqlGetTablenameFromPath(info->input_path);
-    std::wstring outtbl = pgsqlGetTablenameFromPath(info->output_path);
+    std::wstring intbl = pgsqlGetTablenameFromPath(info->input);
+    std::wstring outtbl = pgsqlGetTablenameFromPath(info->output);
     std::wstring sql = L"create table %outtbl% as select * from %intbl%";
     kl::replaceStr(sql, L"%intbl%", intbl);
     kl::replaceStr(sql, L"%outtbl%", outtbl);
 
-    if (info->where_condition.length() > 0)
-        sql += (L" where " + info->where_condition);
+    if (info->where.length() > 0)
+        sql += (L" where " + info->where);
     
     if (info->order.length() > 0)
         sql += (L" order by " + info->order);

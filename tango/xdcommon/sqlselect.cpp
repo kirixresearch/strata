@@ -3205,13 +3205,15 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
             ijob->startPhase();
         }
 
+
         tango::ISetPtr result_set;
+        /*
         result_set = db->runGroupQuery(set,
                                        group_by_str,
                                        field_str,
                                        L"",
                                        having,
-                                       job);
+                                       job);*/
 
         if (job && job->getCancelled())
         {

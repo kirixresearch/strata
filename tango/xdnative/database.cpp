@@ -1699,7 +1699,7 @@ static bool _copyTree(const std::wstring& path,
 
 bool Database::copyData(const tango::CopyInfo* info, tango::IJob* job)
 {
-    tango::ISetPtr input = openSet(info->input_path);
+    tango::ISetPtr input = openSet(info->input);
     if (input.isNull())
         return false;
 
@@ -1710,11 +1710,11 @@ bool Database::copyData(const tango::CopyInfo* info, tango::IJob* job)
         return false;
 
     tango::ISetPtr result_set;
-    tango::ISetPtr output = createTable(info->output_path,
+    tango::ISetPtr output = createTable(info->output,
                                         structure,
                                         NULL);
 
-    output->insert(iter, info->where_condition, 0, NULL);
+    output->insert(iter, info->where, 0, NULL);
     
     return true;
 }
