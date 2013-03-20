@@ -2318,14 +2318,3 @@ bool OdbcDatabase::execute(const std::wstring& command,
         return (SQL_SUCCEEDED(retval) || retval == SQL_NO_DATA_FOUND) ? true : false;
     }
 }
-
-tango::ISetPtr OdbcDatabase::runGroupQuery(tango::ISetPtr set,
-                                           const std::wstring& group,
-                                           const std::wstring& output,
-                                           const std::wstring& where,
-                                           const std::wstring& having,
-                                           tango::IJob* job)
-{
-    return xcm::null;
-}
-

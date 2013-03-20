@@ -840,17 +840,6 @@ bool SlDatabase::execute(const std::wstring& command,
     return true;
 }
 
-tango::ISetPtr SlDatabase::runGroupQuery(tango::ISetPtr set,
-                                         const std::wstring& group,
-                                         const std::wstring& output,
-                                         const std::wstring& filter,
-                                         const std::wstring& having,
-                                         tango::IJob* job)
-{
-    return xcm::null;
-}
-
-
 tango::IStructurePtr SlDatabase::getStructureFromPath(std::wstring& path)
 {
     

@@ -678,14 +678,3 @@ bool KpgDatabase::execute(const std::wstring& command,
 {
     return false;
 }
-
-tango::ISetPtr KpgDatabase::runGroupQuery(tango::ISetPtr set,
-                                           const std::wstring& group,
-                                           const std::wstring& output,
-                                           const std::wstring& where,
-                                           const std::wstring& having,
-                                           tango::IJob* job)
-{
-    return xcm::null;
-}
-

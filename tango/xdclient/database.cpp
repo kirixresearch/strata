@@ -814,6 +814,8 @@ bool ClientDatabase::execute(const std::wstring& command,
     */
 }
 
+
+/*
 tango::ISetPtr ClientDatabase::runGroupQuery(tango::ISetPtr sp_set,
                                              const std::wstring& group,
                                              const std::wstring& output,
@@ -848,3 +850,4 @@ tango::ISetPtr ClientDatabase::runGroupQuery(tango::ISetPtr sp_set,
     return static_cast<tango::ISet*>(result_set);
 }
 
+*/

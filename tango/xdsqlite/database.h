@@ -127,13 +127,6 @@ public:
                  unsigned int flags,
                  xcm::IObjectPtr& result,
                  tango::IJob* job);
-                 
-    tango::ISetPtr runGroupQuery(tango::ISetPtr set,
-                                 const std::wstring& group,
-                                 const std::wstring& output,
-                                 const std::wstring& filter,
-                                 const std::wstring& having,
-                                 tango::IJob* job);
     
     tango::IStructurePtr getStructureFromPath(std::wstring& path);
     

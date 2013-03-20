@@ -1427,19 +1427,6 @@ bool OracleDatabase::execute(const std::wstring& _command,
 }
 
 
-tango::ISetPtr OracleDatabase::runGroupQuery(tango::ISetPtr set,
-                                             const std::wstring& group,
-                                             const std::wstring& output,
-                                             const std::wstring& where,
-                                             const std::wstring& having,
-                                             tango::IJob* job)
-{
-    return xcm::null;
-}
-
-
-
-
 
 /*
     if (OCI_SUCCESS != checkerr(m_err, OCIEnvNlsCreate((OCIEnv**)&m_env,

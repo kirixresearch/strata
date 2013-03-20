@@ -684,14 +684,6 @@ void buf2str(std::string& str, char* ptr, int len)
 }
 
 
-/*
-tango::ISetPtr Database::runGroupQuery(tango::ISetPtr set,
-                                       const std::wstring& group,
-                                       const std::wstring& output,
-                                       const std::wstring& where,
-                                       const std::wstring& having,
-                                       tango::IJob* job)
-*/
 
 bool Database::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
 {

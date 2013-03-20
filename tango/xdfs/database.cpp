@@ -1989,16 +1989,3 @@ tango::IIndexInfoEnumPtr FsDatabase::getIndexEnum(const std::wstring& path)
 }
 
 
-
-tango::ISetPtr FsDatabase::runGroupQuery(tango::ISetPtr set,
-                                         const std::wstring& group,
-                                         const std::wstring& output,
-                                         const std::wstring& where_expr,
-                                         const std::wstring& having,
-                                         tango::IJob* job)
-{
-    return xcm::null;
-}
-
-
-

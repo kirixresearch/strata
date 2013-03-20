@@ -156,13 +156,6 @@ public:
                  xcm::IObjectPtr& result,
                  tango::IJob* job);
 
-    tango::ISetPtr runGroupQuery(tango::ISetPtr set,
-                                 const std::wstring& group,
-                                 const std::wstring& output,
-                                 const std::wstring& where,
-                                 const std::wstring& having,
-                                 tango::IJob* job);
-
     tango::IStructurePtr describeTable(const std::wstring& path);
     void clearDescribeTableCache(const std::wstring& path);
 

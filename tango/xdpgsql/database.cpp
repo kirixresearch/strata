@@ -1402,14 +1402,3 @@ bool PgsqlDatabase::execute(const std::wstring& command,
         return (result_status == PGRES_COMMAND_OK) ? true : false;
     }
 }
-
-tango::ISetPtr PgsqlDatabase::runGroupQuery(tango::ISetPtr set,
-                                           const std::wstring& group,
-                                           const std::wstring& output,
-                                           const std::wstring& where,
-                                           const std::wstring& having,
-                                           tango::IJob* job)
-{
-    return xcm::null;
-}
-

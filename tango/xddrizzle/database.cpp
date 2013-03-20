@@ -1130,16 +1130,6 @@ bool DrizzleDatabase::execute(const std::wstring& command,
     }
 }
 
-tango::ISetPtr DrizzleDatabase::runGroupQuery(tango::ISetPtr set,
-                                            const std::wstring& group,
-                                            const std::wstring& output,
-                                            const std::wstring& where,
-                                            const std::wstring& having,
-                                            tango::IJob* job)
-{
-    return xcm::null;
-}
-
 std::wstring DrizzleDatabase::getErrorString()
 {
     return m_error.getErrorString();
