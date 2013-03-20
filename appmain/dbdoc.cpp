@@ -4009,9 +4009,6 @@ void DbDoc::onDragDrop(IFsItemPtr target,
                        wxDragResult* result)
 {
 
-
-/*
-
     if (data->GetPreferredFormat() != wxDataFormat(wxT("application/vnd.kx.fspanel")))
     {
         *result = wxDragNone;
@@ -4105,73 +4102,59 @@ void DbDoc::onDragDrop(IFsItemPtr target,
 
 
 
+
+
     // perform the copy or move operation
 
-    CopyJob* job = NULL;
+    std::vector<jobs::IJobPtr> jobs;
+
 
     for (i = 0; i < count; ++i)
     {
         IFsItemPtr item = items->getItem(i);
 
-        wxString src_path = getFsItemPath(item);
-        wxString dest_location = getFsItemPath(target);
+        std::wstring src_path = getFsItemPath(item);
+        std::wstring src_name = kl::afterLast(src_path, '/');
+        std::wstring dest_folder = getFsItemPath(target);
 
-
-        // lookup database pointers
         tango::IDatabasePtr db = g_app->getDatabase();
         tango::IDatabasePtr source_db = getItemDatabase(item);
         tango::IDatabasePtr dest_db = getItemDatabase(target);
 
-        // determine if this is a cross-mount drag
-        bool cross_mount_drag = false;
-        if (isItemInMount(item) || isItemInMount(target))
-            cross_mount_drag = true;
-
-
-        
-        
-        // generate destination path
-        wxString fname = src_path.AfterLast(wxT('/'));
-        
-        if (getDbDriver(db) == wxT("xdnative"))
+        std::wstring dest_name = src_name;
+        if (getDbDriver(dest_db) == wxT("xdfs"))
         {
-            fname = stripExtension(fname);
-            fname.Replace(wxT("."), wxT("_"));
-            fname = makeValidObjectName(fname, dest_db);
+            // if we're saving the file to a filesystem mount and no extension
+            // is specified, then automatically add a 'csv' or 'js' extension; this
+            // is a usability issue since without the extension, the user usually
+            // ends up adding this as the  first item of business after saving
+            if (getExtensionFromPath(dest_name).length() == 0)
+            {
+                IDbObjectFsItemPtr dbobject_item = item;
+                if (dbobject_item.isOk() && dbobject_item->getType() == dbobjtypeSet)
+                    dest_name += L".csv";
+                else if (dbobject_item.isOk() && dbobject_item->getType() == dbobjtypeScript)
+                    dest_name += L".js";
+            }
         }
-        
-        wxString dest_path;
-        dest_path = dest_location;
-        if (dest_path.IsEmpty() || dest_path.Last() != wxT('/'))
-            dest_path += wxT("/");
-        dest_path += fname;
-
-
-        // if we're saving the file to a filesystem mount and no
-        // extension is specified, then automatically add a 'csv'
-        // or 'js' extension; this is a usability issue since without 
-        // the extension, the user usually ends up adding this as the 
-        // first item of business after saving
-        IDbObjectFsItemPtr dbobject_item = item;
-        if (dbobject_item.isOk())
+         else
         {
-            if (dbobject_item->getType() == dbobjtypeSet)
-                dest_path = addExtensionIfExternalFsDatabase(dest_path, L".csv");
-            if (dbobject_item->getType() == dbobjtypeScript)
-                dest_path = addExtensionIfExternalFsDatabase(dest_path, L".js");
+            // dest database is not a filesystem
+            dest_name = stripExtension(dest_name);
+            kl::replaceStr(dest_name, L".", L"_");
+            dest_name = makeValidObjectName(dest_name, dest_db);
         }
-        
 
-        std::wstring cstr;
-        std::wstring rpath;
-        if (db->getMountPoint(towstr(dest_location), cstr, rpath))
-        {
-            dest_db = db->getMountDatabase(towstr(dest_location));
-            if (dest_db.isNull())
-                return;
-            if (dest_db != source_db)
-                dest_path = getFilenameFromPath(dest_path, true);
-        }
+        std::wstring dest_path = dest_folder;
+        if (dest_path.empty() || dest_path[dest_path.length()-1] != '/')
+            dest_path += L"/";
+        dest_path += dest_name;
+
+
+        bool cross_mount = false;
+        std::wstring cstr, rpath;
+        if (db->getMountPoint(dest_folder, cstr, rpath))
+            cross_mount = true;
 
 
         if (m_link_bar_mode)
@@ -4189,27 +4172,16 @@ void DbDoc::onDragDrop(IFsItemPtr target,
                 Bookmark::create(dest_path, src_path);
             }
         }
-         else if (source_db != dest_db || cross_mount_drag)
+         else if (cross_mount)
         {
-            IDbObjectFsItemPtr obj = item;
-            if (obj)
-            {
-                if (source_db.isOk() && dest_db.isOk())
-                {
-                    if (!job)
-                    {
-                        job = new CopyJob;
+            jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.copy-job");
+                
+            kl::JsonNode params;
+            params["input"] = src_path;
+            params["output"] = dest_path;
 
-                        // set folder to be refreshed when copy job is finished
-                        job->setExtraString(towstr(dest_location));
-                    }
-                    
-                    job->addCopyInstruction(source_db,
-                                            src_path,
-                                            dest_db,
-                                            dest_path);
-                }
-            }
+            job->setParameters(params.toString());
+            jobs.push_back(job);
         }
          else
         {
@@ -4235,16 +4207,20 @@ void DbDoc::onDragDrop(IFsItemPtr target,
         }
     }
 
-    if (job == NULL || count > job->getInstructionCount())
+    if (count > jobs.size())
     {
         m_fspanel->refreshItem(target);
     }
 
-    if (job && job->getInstructionCount() > 0)
+    if (jobs.size() > 0)
     {
-        // add and start job
-        job->sigJobFinished().connect(this, &DbDoc::onCopyJobFinished);
-        g_app->getJobQueue()->addJob(job, jobStateRunning);
+        jobs::IJobPtr aggregate_job = jobs::createAggregateJob(jobs);
+        aggregate_job->setDatabase(g_app->getDatabase());
+        aggregate_job->setExtraValue(L"refresh-folder", towstr(target_path));
+
+        g_app->getJobQueue()->addJob(aggregate_job, jobStateRunning);
+                
+        aggregate_job->sigJobFinished().connect(this, &DbDoc::onCopyJobFinished);
     }
      else
     {
@@ -4264,7 +4240,7 @@ void DbDoc::onDragDrop(IFsItemPtr target,
     }
 
 
-    */
+
 }
 
 void DbDoc::onCopyJobFinished(jobs::IJobPtr job)
