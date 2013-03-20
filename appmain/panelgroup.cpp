@@ -862,7 +862,7 @@ void GroupPanel::onExecute(wxCommandEvent& event)
         kl::makeUpper(input_colname);
         kl::trim(input_colname);
 
-        std::wstring quoted_colname = tango::quoteIdentifier(g_app->getDatabase(), input_colname);
+        std::wstring quoted_colname = tango::quoteIdentifierIfNecessary(g_app->getDatabase(), input_colname);
         group_columns.push_back(quoted_colname);
     }
 
@@ -893,8 +893,8 @@ void GroupPanel::onExecute(wxCommandEvent& event)
             continue;
         }
 
-        std::wstring quoted_inputfield = tango::quoteIdentifier(g_app->getDatabase(), groupcol_inputfield);
-        std::wstring quoted_outputfield = tango::quoteIdentifier(g_app->getDatabase(), groupcol_outputfield);
+        std::wstring quoted_inputfield = tango::quoteIdentifierIfNecessary(g_app->getDatabase(), groupcol_inputfield);
+        std::wstring quoted_outputfield = tango::quoteIdentifierIfNecessary(g_app->getDatabase(), groupcol_outputfield);
 
         // construct the output field specifier, which as the form <output_name>=<group_func>(<input_name>)
         std::wstring output_col_expr;
@@ -922,7 +922,7 @@ void GroupPanel::onExecute(wxCommandEvent& event)
 
     kl::JsonNode params;
     params["input"].setString(towstr(m_browse_set->getObjectPath()));
-    params["output"].setString(tango::getTemporaryPath());
+    params["output"].setString(L"xtmp_" + kl::getUniqueString());
     params["group"].setArray();
     params["columns"].setArray();
     params["where"].setString(towstr(m_browse_filter));

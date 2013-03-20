@@ -1402,3 +1402,77 @@ bool PgsqlDatabase::execute(const std::wstring& command,
         return (result_status == PGRES_COMMAND_OK) ? true : false;
     }
 }
+
+
+
+bool PgsqlDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
+{
+
+    std::wstring sql = L"SELECT ";
+
+
+    std::vector<std::wstring> vec;
+    std::vector<std::wstring>::iterator it;
+    kl::parseDelimitedList(info->columns, vec, ',', true);
+    for (it = vec.begin(); it != vec.end(); ++it)
+    {
+        std::wstring fld = kl::beforeFirst(*it, '=');
+        std::wstring expr = kl::afterFirst(*it, '=');
+
+        std::wstring func = kl::beforeFirst(expr, '(');
+        kl::makeLower(func);
+        if (func == L"first")
+        {
+            expr.erase(0,5);
+            dequote(expr, '(', ')');
+        }
+         else if (func == L"count")
+        {
+            expr = L"COUNT(*)";
+        }
+
+
+        if (it != vec.begin())
+            sql += L",";
+
+        dequote(fld, '"', '"');
+
+        sql += expr + L" AS " + fld;
+    }
+
+
+
+    sql += L" FROM " + info->input;
+
+
+    if (info->where.length() > 0)
+        sql += L" WHERE " + info->where;
+       
+
+    if (info->group.length() > 0)
+        sql += L" GROUP BY " + info->group;
+        
+    if (info->having.length() > 0)
+        sql += L" HAVING " + info->having;
+    
+    if (info->output.length() > 0)
+        sql = L"CREATE TABLE " + info->output + L" AS " + sql;
+
+
+
+
+    PGconn* conn = createConnection();
+    if (!conn)
+        return false;
+
+    PGresult* res = PQexec(conn, kl::toUtf8(sql));
+    if (!res)
+        return false;
+
+    int result_status = PQresultStatus(res);
+
+    PQclear(res);
+    closeConnection(conn);
+        
+    return (result_status == PGRES_COMMAND_OK) ? true : false;
+}

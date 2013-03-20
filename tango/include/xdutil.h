@@ -161,6 +161,15 @@ inline std::wstring quoteIdentifier(tango::IDatabasePtr db, const std::wstring& 
     return identifier;
 }
 
+inline std::wstring quoteIdentifierIfNecessary(tango::IDatabasePtr db, const std::wstring& identifier)
+{
+     if (identifier.find(' ') == identifier.npos)
+        return identifier;
+
+    return quoteIdentifier(db, identifier);
+}
+
+
 inline std::wstring dequoteIdentifier(tango::IDatabasePtr db, const std::wstring& identifier)
 {
     if (db.isOk())

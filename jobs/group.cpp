@@ -163,7 +163,7 @@ int GroupJob::runJob()
 
         tango::GroupQueryInfo info;
         info.input = input_path;
-        info.output = L"xtmp_" + kl::getUniqueString();
+        info.output = output_path;
         info.group = group_params;
         info.columns = column_params;
         info.where = where_params;
