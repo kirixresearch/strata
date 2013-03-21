@@ -75,11 +75,6 @@ IJobPtr createAggregateJob(std::vector<IJobPtr>& jobs)
     }
 
     job->setParameters(agg_params.toString());
-
-
-// debug:
-std::wstring debug = job->getParameters();
-
     return job;
 }
 
