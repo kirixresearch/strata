@@ -1710,9 +1710,16 @@ bool Database::copyData(const tango::CopyInfo* info, tango::IJob* job)
         return false;
 
     tango::ISetPtr result_set;
-    tango::ISetPtr output = createTable(info->output,
-                                        structure,
-                                        NULL);
+    tango::ISetPtr output;
+    
+    if (info->append)
+    {
+        output = openSet(info->output);
+    }
+     else
+    {
+        output = createTable(info->output, structure, NULL);
+    }
 
     output->insert(iter, info->where, 0, NULL);
     

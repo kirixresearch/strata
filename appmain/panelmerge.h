@@ -45,7 +45,7 @@ public:
 
 private:
     
-    // -- signal events --
+    // signal events
     void onDeletedRows(std::vector<int> rows);
 
     // event handlers
@@ -57,8 +57,7 @@ private:
 
     IFramePtr m_frame;
     IDocumentSitePtr m_doc_site;
-    tango::ISetPtr m_set;
-    
+
     wxTextCtrl* m_output_table;
     kcl::RowSelectionGrid* m_grid;
     wxButton* m_ok_button;

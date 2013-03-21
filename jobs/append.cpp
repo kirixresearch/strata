@@ -219,6 +219,32 @@ int AppendJob::runJob()
         tango_job = m_db->createJob();
         setTangoJob(tango_job, false);
 
+        tango::CopyInfo info;
+        info.input = (*it)->getObjectPath();
+        info.output = target_set->getObjectPath();
+        info.append = true;
+        m_db->copyData(&info, tango_job.p);
+
+        if (tango_job->getStatus() == tango::jobFailed)
+        {
+            m_job_info->setState(jobStateFailed);
+            m_job_info->setError(jobserrInsufficientDiskSpace, L"");
+            break;
+        }
+
+        if (tango_job->getCancelled())
+        {
+            target_set.clear();
+            if (params["mode"].getString() == L"overwrite")
+                m_db->deleteFile(output_path);
+
+            break;
+        }
+
+    /*
+        tango_job = m_db->createJob();
+        setTangoJob(tango_job, false);
+
         source_iter = (*it)->createIterator(L"", L"", NULL);
         if (!source_iter)
             continue;
@@ -241,6 +267,7 @@ int AppendJob::runJob()
 
             break;
         }
+    */
     }
 
 

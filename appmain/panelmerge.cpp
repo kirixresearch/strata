@@ -78,7 +78,7 @@ bool MergePanel::initDoc(IFramePtr frame,
     
     m_frame = frame;
     m_doc_site = doc_site;
-    m_set = xcm::null;
+
 
     // create the grid
     m_grid = new kcl::RowSelectionGrid(this);
@@ -93,6 +93,7 @@ bool MergePanel::initDoc(IFramePtr frame,
     m_grid->createModelColumn(-1, _("Tables"), kcl::Grid::typeCharacter, 256, 0);
     m_grid->createDefaultView();
     m_grid->setColumnProportionalSize(0, 1);
+
 
     // create the output table sizer
     wxStaticText* label_output_table = new wxStaticText(this, -1, _("Output Table:"));
@@ -119,19 +120,19 @@ bool MergePanel::initDoc(IFramePtr frame,
         if (table_doc.isNull())
             return false;
 
-        m_set = table_doc->getBaseSet();
+        tango::ISetPtr set = table_doc->getBaseSet();
 
-        // -- make panel caption --
+        // make panel caption
         wxString caption = _("Append");
-        if (m_set.isOk())
+        if (set.isOk())
         {
-            if (!m_set->isTemporary())
+            if (!set->isTemporary())
             {
-                wxString name = towx(m_set->getObjectPath());
-                name.AfterLast(wxT('/'));
-                
+                std::wstring name = set->getObjectPath();
+                name = kl::afterLast(name, '/');
+            
                 caption += wxT(" - [");
-                caption += name;
+                caption += towx(name);
                 caption += wxT("]");
             }
         }
@@ -143,8 +144,7 @@ bool MergePanel::initDoc(IFramePtr frame,
         output_table_sizer->Show(static_output_table, false);
     }
     
-    // -- create a platform standards-compliant OK/Cancel sizer --
-
+    // create a platform standards-compliant OK/Cancel sizer
     m_ok_button = new wxButton(this, wxID_OK, _("Run"));
     
     wxStdDialogButtonSizer* ok_cancel_sizer = new wxStdDialogButtonSizer;
@@ -153,7 +153,7 @@ bool MergePanel::initDoc(IFramePtr frame,
     ok_cancel_sizer->Realize();
     ok_cancel_sizer->AddSpacer(5);
     
-    // -- this code is necessary to get the sizer's bottom margin to 8 --
+    // this code is necessary to get the sizer's bottom margin to 8
     wxSize min_size = ok_cancel_sizer->GetMinSize();
     min_size.SetHeight(min_size.GetHeight()+16);
     ok_cancel_sizer->SetMinSize(min_size);
@@ -174,7 +174,8 @@ bool MergePanel::initDoc(IFramePtr frame,
     SetSizer(main_sizer);
     Layout();
 
-    // -- set our drop targets --
+
+    // set our drop targets
 
     kcl::GridDataObjectComposite* drop_data;
     drop_data = new kcl::GridDataObjectComposite(NULL, wxT("merge_tables"));
@@ -188,6 +189,7 @@ bool MergePanel::initDoc(IFramePtr frame,
     FsDataDropTarget* output_drop_target = new FsDataDropTarget;
     output_drop_target->sigDragDrop.connect(this, &MergePanel::onOutputPathDropped);
     m_output_table->SetDropTarget(output_drop_target);
+
 
     // connect row selection grid signal
     m_grid->sigDeletedRows.connect(this, &MergePanel::onDeletedRows);
@@ -298,10 +300,9 @@ void MergePanel::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
         return;
     }
 
-    // -- we're dragging tables from the project panel --
-    
-
+    // we're dragging tables from the project panel;
     // only accept tree data objects here
+
     if (fmt.GetId().CmpNoCase(FS_DATA_OBJECT_FORMAT) != 0)
         return;
 
@@ -313,8 +314,8 @@ void MergePanel::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
     unsigned char* data = new unsigned char[len];
     drop_data->GetDataHere(fmt, data);
     
-    // -- copy the data from the wxDataObjectComposite to this new
-    //    FsDataObject so we can use it's accessor functions --
+    // copy the data from the wxDataObjectComposite to this new
+    // FsDataObject so we can use it's accessor functions
     FsDataObject* fs_data_obj = new FsDataObject;
     fs_data_obj->SetData(fmt, len, data);
 
@@ -362,7 +363,8 @@ void MergePanel::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
 void MergePanel::onDeletedRows(std::vector<int> rows)
 {
     // NOTE: the kcl::RowSelectionGrid is in the middle of deleting rows,
-    //       so it will take care of the grid refresh for us
+    // so it will take care of the grid refresh for us
+
     checkOverlayText();
 }
 
@@ -446,7 +448,7 @@ void MergePanel::onOK(wxCommandEvent& evt)
     }
     
     tango::ISetPtr set;
-    std::vector<tango::ISetPtr> set_ptrs;
+    std::vector<std::wstring> table_paths;
 
     int col_idx = 0;
     int input_col_count = 0;
@@ -455,11 +457,12 @@ void MergePanel::onOK(wxCommandEvent& evt)
     int row = 0, row_count = m_grid->getRowCount();
     for (row = 0; row < row_count; ++row)
     {
-        wxString set_path = m_grid->getCellString(row, 0);
-        set = g_app->getDatabase()->openSet(towstr(set_path));
+        std::wstring table_path = m_grid->getCellString(row, 0);
+        tango::ISetPtr set = g_app->getDatabase()->openSet(table_path);
+
         if (set.isNull())
         {
-            wxString message = wxString::Format(_("'%s' could not be opened.  Please make sure this is a valid table."), set_path.c_str());
+            wxString message = wxString::Format(_("'%s' could not be opened.  Please make sure this is a valid table."), table_path.c_str());
 
             appMessageBox(message,
                                APPLICATION_NAME,
@@ -468,7 +471,7 @@ void MergePanel::onOK(wxCommandEvent& evt)
             return;
         }
 
-        set_ptrs.push_back(set);
+        table_paths.push_back(table_path);
     }
 
 
@@ -480,23 +483,25 @@ void MergePanel::onOK(wxCommandEvent& evt)
 
     if (m_append)
     {
+        // this is an append job
         params["mode"].setString(L"append");
-        params["output"] = m_set->getObjectPath(); // this is an append job
+        params["output"] = towstr(output_path);
         job->getJobInfo()->setTitle(towstr(_("Append Records")));
     }
      else  
     {
+        // this is a merge job (overwrites output)
         params["mode"].setString(L"overwrite");
         params["output"] = towstr(output_path);
         job->getJobInfo()->setTitle(towstr(_("Merge Tables")));
     }
 
-    // add all of the sets we're going to append
-    std::vector<tango::ISetPtr>::iterator set_it;
-    for (set_it = set_ptrs.begin(); set_it != set_ptrs.end(); ++set_it)
+    // add all of the tables we're going to append
+    std::vector<std::wstring>::iterator it;
+    for (it = table_paths.begin(); it != table_paths.end(); ++it)
     {
         kl::JsonNode input_element = params["input"].appendElement();
-        input_element.setString((*set_it)->getObjectPath());
+        input_element.setString(*it);
     }
 
 
@@ -514,4 +519,3 @@ void MergePanel::onCancel(wxCommandEvent& evt)
 {
     m_frame->closeSite(m_doc_site);
 }
-

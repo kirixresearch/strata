@@ -154,7 +154,6 @@ int GroupJob::runJob()
 
     tango::IJobPtr tango_job;
     tango::ISetPtr output_set;
-    tango::ISetPtr input_set = m_db->openSet(input_path);
 
     if (!unique_records)
     {
@@ -192,7 +191,6 @@ int GroupJob::runJob()
     }
      else
     {
-/*
         // this whole section is specialized code to optimize the option
         // for unique records:  rather than selecting distinct first, then
         // doing a group operation, this first groups with the related
@@ -204,20 +202,23 @@ int GroupJob::runJob()
         setTangoJob(tango_job);
 
         tango::ISetPtr intermediate_output_set1;
-        intermediate_output_set1 = m_db->runGroupQuery(input_set,
-                                                       group_params,
-                                                       L"[DETAIL]",
-                                                       where_params,
-                                                       having_params,
-                                                       tango_job.p);
+        tango::GroupQueryInfo info1;
+        info1.input = input_path;
+        info1.output = L"xtmp_" + kl::getUniqueString();
+        info1.group = group_params;
+        info1.columns = L"[DETAIL]";
+        info1.where = where_params;
+        info1.having = having_params;
+        bool res1 = m_db->groupQuery(&info1, tango_job.p);
+        m_to_delete.push_back(info1.output);
 
-        if (tango_job->getCancelled())
+        if ( tango_job->getCancelled())
         {
             m_job_info->setState(jobStateCancelling);
             return 0;
         }
 
-        if (tango_job->getStatus() == tango::jobFailed)
+        if (!res1 || tango_job->getStatus() == tango::jobFailed)
         {
             m_job_info->setState(jobStateFailed);
 
@@ -235,8 +236,9 @@ int GroupJob::runJob()
         }
 
 
-        std::wstring sql = L"SELECT DISTINCT * FROM ";
-        sql += intermediate_output_set1->getObjectPath();
+        std::wstring output2 = L"xtmp_" + kl::getUniqueString();
+        std::wstring sql = L"SELECT DISTINCT * INTO " + output2 + L" FROM " + info1.output;
+        m_to_delete.push_back(output2);
 
         tango_job = m_db->createJob();
         setTangoJob(tango_job);
@@ -252,30 +254,28 @@ int GroupJob::runJob()
             return 0;
         }
 
-        if (iter.isNull())
+        if (m_db->getFileExist(output2))
         {
             m_job_info->setState(jobStateFailed);
             return 0;
         }
 
-        tango::ISetPtr intermediate_output_set2 = iter->getSet();
-        if (intermediate_output_set2.isNull())
-        {
-            m_job_info->setState(jobStateFailed);
-            return 0;
-        }
 
 
 
         tango_job = m_db->createJob();
         setTangoJob(tango_job);
 
-        output_set = m_db->runGroupQuery(intermediate_output_set2,
-                                         group_params,
-                                         column_params,
-                                         where_params,
-                                         having_params,
-                                         tango_job.p);
+        tango::GroupQueryInfo info3;
+        info3.input = output2;
+        info3.output = output_path;
+        info3.group = group_params;
+        info3.columns = column_params;
+        info3.where = where_params;
+        info3.having = having_params;
+        m_to_delete.push_back(info1.output);
+
+        bool res3 =  m_db->groupQuery(&info1, tango_job.p);
 
         if (tango_job->getCancelled())
         {
@@ -283,7 +283,7 @@ int GroupJob::runJob()
             return 0;
         }
 
-        if (tango_job->getStatus() == tango::jobFailed)
+        if (!res3 || tango_job->getStatus() == tango::jobFailed)
         {
             m_job_info->setState(jobStateFailed);
 
@@ -293,12 +293,7 @@ int GroupJob::runJob()
 
             return 0;
         }
-*/
     }
-
-
-    if (output_path.length() > 0)
-        m_db->storeObject(output_set, output_path);
 
 
     return 0;
@@ -306,6 +301,14 @@ int GroupJob::runJob()
 
 void GroupJob::runPostJob()
 {
+/*
+    if (m_db)
+    {
+        std::vector<std::wstring>::iterator it;
+        for (it = m_to_delete.begin(); it != m_to_delete.end(); ++it)
+            m_db->deleteFile(*it);
+    }
+    */
 }
 
 
