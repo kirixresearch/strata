@@ -26,7 +26,7 @@ public:
     static bool saveToDb(kl::JsonNode& node,
                          tango::IDatabasePtr db,
                          const wxString& path,
-                         const wxString& mime_type = wxT("text/plain"));                        
+                         const wxString& mime_type = wxT("text/plain"));   
 };
 
 

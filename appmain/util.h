@@ -352,7 +352,10 @@ void switchToOtherDocument(IDocumentSitePtr site,
 
 jobs::IJobPtr appCreateJob(const std::wstring& job_id);
 
+
 // -- other utility functions -------------------------------------------------
+
+bool isValidFileVersion(kl::JsonNode node, const std::wstring& type, int version);
 
 // get small web files, returning them as strings
 wxString getWebFile(const wxString& urlstring);

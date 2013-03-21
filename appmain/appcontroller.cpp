@@ -4962,7 +4962,7 @@ bool AppController::openTemplate(const wxString& location,
 }
 
 
-bool AppController::openBookmark(const wxString& location,
+bool AppController::openBookmark(const wxString& _location,
                                  int open_mask,
                                  int* site_id)
 {
@@ -4973,51 +4973,47 @@ bool AppController::openBookmark(const wxString& location,
         return false;
 
     tango::IFileInfoPtr file_info;
-    file_info = db->getFileInfo(towstr(location));
+    file_info = db->getFileInfo(towstr(_location));
     if (!file_info.isOk())
         return false;
 
+    // note: old bookmark node files are converted to the new format
+    // when they are loaded, which happens when a first project is
+    // first loaded, so we shouldn't have bookmarks in the old node
+    // format
+    if (file_info->getType() != tango::filetypeStream)
+        return false;
 
-    if (file_info->getType() == tango::filetypeStream)
+    kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), _location);
+    if (!node.isOk())
+        return false;
+
+    if (!isValidFileVersion(node, L"application/vnd.kx.bookmark", 1))
+        return false;
+
+    kl::JsonNode bookmark_node = node["bookmark"];
+    if (!bookmark_node.isOk())
+        return false;
+
+    kl::JsonNode location_node = bookmark_node["location"];
+    if (!location_node.isOk())
+        return false;
+    wxString location = towx(location_node.getString());
+
+    bool run_target = false;
+    kl::JsonNode run_target_node = bookmark_node["run_target"];
+    if (!run_target_node.isOk())
+        run_target = (run_target_node.getInteger() != 0 ? true : false);
+
+    if (run_target)
     {
-        // TODO:
-    }
-     else if (file_info->getType() == tango::filetypeNode)
-    {
-        kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), location);
-        if (!node.isOk())
-            return false;
-
-        kl::JsonNode root_node = node["root"];
-        if (!root_node.isOk())
-            return false;
-
-        kl::JsonNode bookmark_node = root_node["bookmark"];
-        if (!bookmark_node.isOk())
-            return false;
-
-        kl::JsonNode location_node = bookmark_node["location"];
-        if (!location_node.isOk())
-            return false;
-        wxString location = towx(location_node.getString());
-
-        bool run_target = false;
-        kl::JsonNode run_target_node = bookmark_node["run_target"];
-        if (!run_target_node.isOk())
-            run_target = (run_target_node.getInteger() != 0 ? true : false);
-
-        if (run_target)
-        {
-            if (execute(location))
-                return true;
+        if (execute(location))
+            return true;
                     
-            // execute failed, try to open the target
-        }
-
-        return openAny(location);
+        // execute failed, try to open the target
     }
 
-    return false;
+    return openAny(location);
 }
 
 

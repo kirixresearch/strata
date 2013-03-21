@@ -1193,10 +1193,7 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
                     }
                 }
 
-                if (node["metadata"]["type"].isOk() &&
-                    node["metadata"]["version"].isOk() &&
-                    node["metadata"]["type"].getString() == L"application/vnd.kx.bookmark" &&
-                    node["metadata"]["version"].getInteger() == 1)
+                if (isValidFileVersion(node, L"application/vnd.kx.bookmark", 1))
                 {
                     kl::JsonNode bookmark_node = node["bookmark"];
                     kl::JsonNode favicon_node;

@@ -1629,6 +1629,31 @@ jobs::IJobPtr appCreateJob(const std::wstring& job_id)
     return job;
 }
 
+bool isValidFileVersion(kl::JsonNode node, const std::wstring& type, int version)
+{
+    if (!node.isOk())
+        return false;
+
+    kl::JsonNode metadata_node = node["metadata"];
+    if (!metadata_node.isOk())
+        return false;
+
+    kl::JsonNode type_node = metadata_node["type"];
+    if (!type_node.isOk())
+        return false;
+
+    kl::JsonNode version_node = metadata_node["version"];
+    if (!version_node.isOk())
+        return false;
+
+    if (type_node.getString() != type)
+        return false;
+
+    if (version_node.getInteger() != version)
+        return false;
+
+    return true;
+}
 
 wxString getWebFile(const wxString& urlstring)
 {
