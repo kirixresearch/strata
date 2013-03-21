@@ -12,6 +12,7 @@
 #include "appmain.h"
 #include "jobscheduler.h"
 #include "appcontroller.h"
+#include "jsonconfig.h"
 #include <wx/datectrl.h>
 #include <kl/thread.h>
 
@@ -387,77 +388,58 @@ bool JobScheduler::save()
     if (!db)
         return false;
 
+    // store the job information json node;
+    // TODO: decide if we want to use these particular variables/format or
+    // something else
+    kl::JsonNode node;
+    kl::JsonNode metadata_node = node["metadata"];
+    metadata_node["type"] = L"application/vnd.kx.jobscheduler";
+    metadata_node["version"] = 1;
+    metadata_node["description"] = L"";
 
-    // -- save jobs --
-    wxString path;
-    path = wxString::Format(wxT("/.appdata/%s/dcfe/jobscheduler"),
-                            towx(g_app->getDatabase()->getActiveUid()).c_str());
+    kl::JsonNode jobs_node = node["jobs"];
 
-    tango::INodeValuePtr jobscheduler_file = db->createNodeFile(towstr(path));
-    if (!jobscheduler_file)
-        return false;
+    std::vector<JobSchedulerEntry>::iterator it_jobs, it_jobs_end;
+    it_jobs_end = m_jobs.end();
 
-    tango::INodeValuePtr version_node = jobscheduler_file->createChild(L"version");
-    version_node->setInteger(2);
-
-    tango::INodeValuePtr jobs_node = jobscheduler_file->createChild(L"jobs");
-    int counter = 0;
-
-    std::vector<JobSchedulerEntry>::iterator it;
-    for (it = m_jobs.begin(); it != m_jobs.end(); ++it)
+    for (it_jobs = m_jobs.begin(); it_jobs != it_jobs_end; ++it_jobs)
     {
-        wchar_t buf[255];
-        swprintf(buf, 255, L"job_%03d", counter++);
+        kl::JsonNode jobs_child_node = jobs_node.appendElement();
 
-        tango::INodeValuePtr job_node = jobs_node->createChild(buf);
+        jobs_child_node["name"].setString(towstr(it_jobs->name));
+        jobs_child_node["schedule"].setInteger(it_jobs->schedule);
+        jobs_child_node["active"].setBoolean(it_jobs->active);
+        jobs_child_node["start_time"].setInteger(it_jobs->start_time);
+        jobs_child_node["finish_time"].setInteger(it_jobs->finish_time);
+        jobs_child_node["finish_active"].setBoolean(it_jobs->finish_active);
+        jobs_child_node["daily_repeat_active"].setBoolean(it_jobs->daily_repeat_active);
+        jobs_child_node["daily_repeat_interval"].setInteger(it_jobs->daily_repeat_interval);
+        jobs_child_node["weekly_days_of_week"].setInteger(it_jobs->weekly_days);
+        jobs_child_node["monthly_day_number"].setInteger(it_jobs->monthly_daynumber);
+        jobs_child_node["commands"].setArray();
 
-        tango::INodeValuePtr name_node = job_node->createChild(L"name");
-        name_node->setString(towstr(it->name));
+        kl::JsonNode commands_node = jobs_child_node["commands"];
 
-        tango::INodeValuePtr schedule_node = job_node->createChild(L"schedule");
-        schedule_node->setInteger(it->schedule);
+        std::vector<wxString>::iterator it_commands, it_commands_end;
+        it_commands_end = it_jobs->commands.end();
 
-        tango::INodeValuePtr active_node = job_node->createChild(L"active");
-        active_node->setBoolean(it->active);
-
-        tango::INodeValuePtr starttime_node = job_node->createChild(L"start_time");
-        starttime_node->setInteger(it->start_time);
-
-        tango::INodeValuePtr finishtime_node = job_node->createChild(L"finish_time");
-        finishtime_node->setInteger(it->finish_time);
-        
-        tango::INodeValuePtr finishactive_node = job_node->createChild(L"finish_active");
-        finishactive_node->setBoolean(it->finish_active);
-
-        tango::INodeValuePtr dailyrepeat_node = job_node->createChild(L"daily_repeat_active");
-        dailyrepeat_node->setBoolean(it->daily_repeat_active);
-
-        tango::INodeValuePtr dailyinterval_node = job_node->createChild(L"daily_repeat_interval");
-        dailyinterval_node->setInteger(it->daily_repeat_interval);
-
-        tango::INodeValuePtr weeklydays_node = job_node->createChild(L"weekly_days_of_week");
-        weeklydays_node->setInteger(it->weekly_days);
-
-        tango::INodeValuePtr monthlyday_node = job_node->createChild(L"monthly_day_number");
-        monthlyday_node->setInteger(it->monthly_daynumber);
-
-        tango::INodeValuePtr commands_node = job_node->createChild(L"commands");
-
-        int cc = 0;
-        std::vector<wxString>::iterator cit;
-        for (cit = it->commands.begin(); cit != it->commands.end(); ++cit)
+        for (it_commands = it_jobs->commands.begin(); it_commands != it_commands_end; ++it_commands)
         {
-            wchar_t buf[255];
-            swprintf(buf, 255, L"command_%03d", cc++);
-
-            tango::INodeValuePtr command_node = commands_node->createChild(buf);
-            command_node->setString(towstr(*cit));
+            kl::JsonNode commands_child_node = commands_node.appendElement();
+            commands_child_node = towstr(*it_commands);
         }
     }
 
+    // save the job
+    wxString path = wxString::Format(wxT("/.appdata/%s/jobscheduler"),
+                              towx(db->getActiveUid()).c_str());
+
+    if (!JsonConfig::saveToDb(node, g_app->getDatabase(), towstr(path), L"application/vnd.kx.jobscheduler"))
+        return false;
+
     // we may have just added a job that is about to run
     checkForJobs();
-    
+
     return true;
 }
 
@@ -465,109 +447,71 @@ bool JobScheduler::load()
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
-    m_jobs.clear();
 
     tango::IDatabasePtr db = g_app->getDatabase();
     if (!db)
         return false;
 
+    wxString path = wxString::Format(wxT("/.appdata/%s/jobscheduler"),
+                              towx(db->getActiveUid()).c_str());
 
+    // if the old jobs location exists, delete it
+    if (db->getFileExist(towstr(path)))
+        db->deleteFile(towstr(path));
+
+    // open the new location
+    kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(path));
+    if (!node.isOk())
+        return false;
+
+    // if we don't have the correct version, we're done
+    if (!isValidFileVersion(node, L"application/vnd.kx.jobscheduler", 1))
+        return false;
+
+    // load the job info
+    m_jobs.clear();
     std::vector<JobSchedulerEntry> jobs;
 
-    // -- load jobs --
-    wxString path;
-    path = wxString::Format(wxT("/.appdata/%s/dcfe/jobscheduler"),
-                            towx(g_app->getDatabase()->getActiveUid()).c_str());
-
-    tango::INodeValuePtr jobscheduler_file = db->openNodeFile(towstr(path));
-    if (!jobscheduler_file)
+    kl::JsonNode jobs_node = node["jobs"];
+    if (!jobs_node.isOk())
         return false;
 
-    tango::INodeValuePtr version_node = jobscheduler_file->getChild(L"version", false);
-    if (!version_node)
-        return false;
-
-    // old job format no longer supported
-    int version = version_node->getInteger();
-    if (version < 2)
-        return false;
-
-    tango::INodeValuePtr jobs_node = jobscheduler_file->getChild(L"jobs", false);
-    int counter = 0;
-
-    int i, child_count = jobs_node->getChildCount();
-        
-    for (i = 0; i < child_count; ++i)
+    std::vector<kl::JsonNode> jobs_node_children = jobs_node.getChildren();
+    std::vector<kl::JsonNode>::iterator it_jobs, it_jobs_end;
+    it_jobs_end = jobs_node_children.end();
+    
+    for (it_jobs = jobs_node_children.begin(); it_jobs != it_jobs_end; ++it_jobs)
     {
+        kl::JsonNode jobs_child_node = *it_jobs;
+        if (!jobs_child_node.isOk())
+            continue;
+
         JobSchedulerEntry job;
 
-        tango::INodeValuePtr job_node = jobs_node->getChildByIdx(i);
+        job.name = jobs_child_node["name"].getString();
+        job.schedule = (JobSchedulerEntry::Schedule)jobs_child_node["schedule"].getInteger();
+        job.active = jobs_child_node["active"].getInteger() != 0 ? true : false;
+        job.start_time = jobs_child_node["start_time"].getInteger();
+        job.finish_time = jobs_child_node["finish_time"].getInteger();
+        job.finish_active = jobs_child_node["finish_active"].getInteger() != 0 ? true : false;
+        job.daily_repeat_active = jobs_child_node["daily_repeat_active"].getInteger() != 0 ? true : false;
+        job.daily_repeat_interval = jobs_child_node["daily_repeat_interval"].getInteger();
+        job.weekly_days = jobs_child_node["weekly_days_of_week"].getInteger();
+        job.monthly_daynumber = jobs_child_node["monthly_day_number"].getInteger();
 
-        tango::INodeValuePtr name_node = job_node->getChild(L"name", false);
-        if (!name_node)
-            return false;
-        job.name = towx(name_node->getString());
+        std::vector<kl::JsonNode> commands_node_children = jobs_child_node["commands"].getChildren();
+        std::vector<kl::JsonNode>::iterator it_commands, it_commands_end;
+        it_commands_end = commands_node_children.end();
 
-        tango::INodeValuePtr schedule_node = job_node->getChild(L"schedule", false);
-        if (!schedule_node)
-            return false;
-        job.schedule = (JobSchedulerEntry::Schedule)schedule_node->getInteger();
-
-        tango::INodeValuePtr active_node = job_node->getChild(L"active", false);
-        if (!active_node)
-            return false;
-        job.active = active_node->getBoolean();
-
-        tango::INodeValuePtr starttime_node = job_node->getChild(L"start_time", false);
-        if (!starttime_node)
-            return false;
-        job.start_time = starttime_node->getInteger();
-
-        tango::INodeValuePtr finishtime_node = job_node->getChild(L"finish_time", false);
-        if (!finishtime_node)
-            return false;
-        job.finish_time = finishtime_node->getInteger();
-        
-        tango::INodeValuePtr finishactive_node = job_node->getChild(L"finish_active", false);
-        if (!finishactive_node)
-            return false;
-        job.finish_active = finishactive_node->getBoolean();
-
-        tango::INodeValuePtr dailyrepeat_node = job_node->getChild(L"daily_repeat_active", false);
-        if (!dailyrepeat_node)
-            return false;
-        job.daily_repeat_active = dailyrepeat_node->getBoolean();
-
-        tango::INodeValuePtr dailyinterval_node = job_node->getChild(L"daily_repeat_interval", false);
-        if (!dailyinterval_node)
-            return false;
-        job.daily_repeat_interval = dailyinterval_node->getInteger();
-
-        tango::INodeValuePtr weeklydays_node = job_node->getChild(L"weekly_days_of_week", false);
-        if (!weeklydays_node)
-            return false;
-        job.weekly_days = weeklydays_node->getInteger();
-
-        tango::INodeValuePtr monthlyday_node = job_node->getChild(L"monthly_day_number", false);
-        if (!monthlyday_node)
-            return false;
-        job.monthly_daynumber = monthlyday_node->getInteger();
-
-        tango::INodeValuePtr commands_node = job_node->getChild(L"commands", false);
-        if (!commands_node)
-            return false;
-
-        int command_count = commands_node->getChildCount();
-        int ci;
-        for (ci = 0; ci < command_count; ++ci)
+        for (it_commands = commands_node_children.begin(); it_commands != it_commands_end; ++it_commands)
         {
-            tango::INodeValuePtr command_node = commands_node->getChildByIdx(ci);
-            job.commands.push_back(towx(command_node->getString()));
+            kl::JsonNode command_child_node = *it_commands;
+            job.commands.push_back(towx(command_child_node.getString()));
         }
 
         calcNextRun(job);
         jobs.push_back(job);
-    }
+    } 
 
     m_jobs = jobs;
     return true;
