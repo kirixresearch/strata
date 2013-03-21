@@ -404,16 +404,6 @@ bool SqlServerDatabase::createFolder(const std::wstring& path)
     return false;
 }
 
-tango::INodeValuePtr SqlServerDatabase::createNodeFile(const std::wstring& path)
-{
-    return xcm::null;
-}
-
-tango::INodeValuePtr SqlServerDatabase::openNodeFile(const std::wstring& path)
-{
-    return xcm::null;
-}
-
 bool SqlServerDatabase::renameFile(const std::wstring& path,
                                    const std::wstring& new_name)
 {

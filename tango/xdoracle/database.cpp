@@ -812,16 +812,6 @@ bool OracleDatabase::createFolder(const std::wstring& path)
     return false;
 }
 
-tango::INodeValuePtr OracleDatabase::createNodeFile(const std::wstring& path)
-{
-    return xcm::null;
-}
-
-tango::INodeValuePtr OracleDatabase::openNodeFile(const std::wstring& path)
-{
-    return xcm::null;
-}
-
 bool OracleDatabase::renameFile(const std::wstring& path,
                                 const std::wstring& new_name)
 {

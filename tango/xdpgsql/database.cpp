@@ -598,16 +598,6 @@ bool PgsqlDatabase::createFolder(const std::wstring& path)
     return false;
 }
 
-tango::INodeValuePtr PgsqlDatabase::createNodeFile(const std::wstring& path)
-{
-    return xcm::null;
-}
-
-tango::INodeValuePtr PgsqlDatabase::openNodeFile(const std::wstring& path)
-{
-    return xcm::null;
-}
-
 bool PgsqlDatabase::renameFile(const std::wstring& path,
                                const std::wstring& new_name)
 {

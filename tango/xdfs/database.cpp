@@ -920,16 +920,6 @@ bool FsDatabase::createFolder(const std::wstring& _path)
     return xf_mkdir(path);
 }
 
-tango::INodeValuePtr FsDatabase::createNodeFile(const std::wstring& path)
-{
-    return xcm::null;
-}
-
-tango::INodeValuePtr FsDatabase::openNodeFile(const std::wstring& path)
-{
-    return xcm::null;
-}
-
 bool FsDatabase::renameFile(const std::wstring& path,
                             const std::wstring& new_name)
 {

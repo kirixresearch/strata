@@ -348,16 +348,6 @@ bool KpgDatabase::createFolder(const std::wstring& path)
     return false;
 }
 
-tango::INodeValuePtr KpgDatabase::createNodeFile(const std::wstring& path)
-{
-    return xcm::null;
-}
-
-tango::INodeValuePtr KpgDatabase::openNodeFile(const std::wstring& path)
-{
-    return xcm::null;
-}
-
 bool KpgDatabase::renameFile(const std::wstring& path,
                                const std::wstring& new_name)
 {

@@ -96,8 +96,6 @@ public:
     tango::IJobPtr getJob(tango::jobid_t job_id);
 
     bool createFolder(const std::wstring& path);
-    tango::INodeValuePtr createNodeFile(const std::wstring& path);
-    tango::INodeValuePtr openNodeFile(const std::wstring& path);
     bool renameFile(const std::wstring& path, const std::wstring& new_name);
     bool moveFile(const std::wstring& path, const std::wstring& new_folder);
     bool copyFile(const std::wstring& src_path, const std::wstring& dest_path);

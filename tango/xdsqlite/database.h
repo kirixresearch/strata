@@ -65,8 +65,6 @@ public:
 
     bool createFolder(const std::wstring& path);
     tango::IStreamPtr createStream(const std::wstring& path, const std::wstring& mime_type);
-    tango::INodeValuePtr createNodeFile(const std::wstring& path);
-    tango::INodeValuePtr openNodeFile(const std::wstring& path);
     bool renameFile(const std::wstring& path, const std::wstring& new_name);
     bool moveFile(const std::wstring& path, const std::wstring& new_location);
     bool copyFile(const std::wstring& src_path, const std::wstring& dest_path);

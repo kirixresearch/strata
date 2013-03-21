@@ -1520,16 +1520,6 @@ bool OdbcDatabase::createFolder(const std::wstring& path)
     return false;
 }
 
-tango::INodeValuePtr OdbcDatabase::createNodeFile(const std::wstring& path)
-{
-    return xcm::null;
-}
-
-tango::INodeValuePtr OdbcDatabase::openNodeFile(const std::wstring& path)
-{
-    return xcm::null;
-}
-
 bool OdbcDatabase::renameFile(const std::wstring& path,
                               const std::wstring& new_name)
 {

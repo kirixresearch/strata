@@ -391,16 +391,6 @@ tango::IStreamPtr SlDatabase::createStream(const std::wstring& path,
     return xcm::null;
 }
 
-tango::INodeValuePtr SlDatabase::createNodeFile(const std::wstring& path)
-{
-    return xcm::null;
-}
-
-tango::INodeValuePtr SlDatabase::openNodeFile(const std::wstring& path)
-{
-    return xcm::null;
-}
-
 bool SlDatabase::renameFile(const std::wstring& path,
                             const std::wstring& new_name)
 {

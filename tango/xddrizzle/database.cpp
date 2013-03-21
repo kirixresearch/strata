@@ -508,15 +508,7 @@ bool DrizzleDatabase::createFolder(const std::wstring& path)
     return false;
 }
 
-tango::INodeValuePtr DrizzleDatabase::createNodeFile(const std::wstring& path)
-{
-    return xcm::null;
-}
 
-tango::INodeValuePtr DrizzleDatabase::openNodeFile(const std::wstring& path)
-{
-    return xcm::null;
-}
 
 bool DrizzleDatabase::renameFile(const std::wstring& path, const std::wstring& new_name)
 {

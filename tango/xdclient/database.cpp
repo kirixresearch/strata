@@ -384,28 +384,6 @@ bool ClientDatabase::createFolder(const std::wstring& path)
     return response["success"].getBoolean();
 }
 
-tango::INodeValuePtr ClientDatabase::createNodeFile(const std::wstring& path)
-{
-    NodeFile* file = NodeFile::createFile(this, path);
-    if (!file)
-        return xcm::null;
-    file->ref();
-    tango::INodeValuePtr value = file->getRootNode();
-    file->unref();
-    return value;
-}
-
-tango::INodeValuePtr ClientDatabase::openNodeFile(const std::wstring& path)
-{
-    NodeFile* file = NodeFile::openFile(this, path);
-    if (!file)
-        return xcm::null;
-    file->ref();
-    tango::INodeValuePtr value = file->getRootNode();
-    file->unref();
-    return value;
-}
-
 bool ClientDatabase::renameFile(const std::wstring& path, const std::wstring& new_name)
 {
     ServerCallParams params;
