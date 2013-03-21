@@ -1169,7 +1169,8 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
              else if (mime_type == L"application/vnd.kx.bookmark")
             {
                 DbObjectFsItem* item = new DbObjectFsItem;
-
+                item->setBitmap(GETBMP(gf_document_16), fsbmpSmall);
+                item->setBitmap(GETBMP(gf_document_16), fsbmpLarge);
 
                 // open the bookmark file to get the favicon
                 wxString path = appendPath(m_path, item_name);
