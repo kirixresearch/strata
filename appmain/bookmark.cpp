@@ -335,52 +335,116 @@ bool Bookmark::load(const wxString& path)
     kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), path);
     if (!node.isOk())
         return false;
+
+    // try to load the new format
+    kl::JsonNode metadata_node = node["metadata"];
+    if (metadata_node.isOk())
+    {
+        // check the mime type and the version
+        kl::JsonNode type_node = metadata_node["type"];
+        if (!type_node.isOk() || type_node.getString() != L"application/vnd.kx.bookmark")
+            return false;
+
+        kl::JsonNode version_node = metadata_node["version"];
+        if (!version_node.isOk() || version_node.getInteger() != 1)
+            return false;
+
+        // if this node exists, we're working with a mount
+        kl::JsonNode remote_path_node = node["remote_path"];
+        if (remote_path_node.isOk())
+            m_loc = towx(remote_path_node.getString());
     
-    kl::JsonNode root_node = node["root"];
-    if (!root_node.isOk())
-        return false;
+        // get/create the root bookmark node
+        kl::JsonNode bookmark_node = node["bookmark"];
+        if (!bookmark_node.isOk())
+            return false;
 
-    // if this node exists, we're working with a mount
-    kl::JsonNode remote_path_node = root_node["remote_path"];
-    if (remote_path_node.isOk())
-        m_loc = towx(remote_path_node.getString());
-    
-    // get/create the root bookmark node
-    kl::JsonNode bookmark_node = root_node["bookmark"];
-    if (!bookmark_node.isOk())
-        return false;
+        kl::JsonNode location_node = bookmark_node["location"];
+        if (!location_node.isOk())
+            return false;
 
-    kl::JsonNode location_node = bookmark_node["location"];
-    if (!location_node.isOk())
-        return false;
+        if (!remote_path_node.isOk())
+            m_loc = towx(location_node.getString());
 
-    if (!remote_path_node.isOk())
-        m_loc = towx(location_node.getString());
+        kl::JsonNode tags_node = bookmark_node["tags"];
+        if (tags_node.isOk())
+            m_tags = towx(tags_node.getString());
 
-    kl::JsonNode tags_node = bookmark_node["tags"];
-    if (tags_node.isOk())
-        m_tags = towx(tags_node.getString());
+        kl::JsonNode description_node = bookmark_node["description"];
+        if (description_node.isOk())
+            m_desc = towx(description_node.getString());
 
-    kl::JsonNode description_node = bookmark_node["description"];
-    if (description_node.isOk())
-        m_desc = towx(description_node.getString());
-
-    kl::JsonNode favicon_node = bookmark_node["favicon"];
-    if (favicon_node.isOk())
-        m_favicon = textToImage(towx(favicon_node.getString()));
-         else
-        m_favicon = wxImage();
+        kl::JsonNode favicon_node = bookmark_node["favicon"];
+        if (favicon_node.isOk())
+            m_favicon = textToImage(towx(favicon_node.getString()));
+             else
+            m_favicon = wxImage();
         
-    kl::JsonNode run_target_node = bookmark_node["run_target"];
-    if (run_target_node.isOk())
-        m_run_target = (run_target_node.getInteger() != 0 ? true : false);
-         else
-        m_run_target = false;
+        kl::JsonNode run_target_node = bookmark_node["run_target"];
+        if (run_target_node.isOk())
+            m_run_target = (run_target_node.getInteger() != 0 ? true : false);
+             else
+            m_run_target = false;
     
-    // now we can set the path member variable
-    m_path = path;
+        // now we can set the path member variable
+        m_path = path;
+
+        return true;
+    }
+
+
+    // if we can't load the new format, try to load the old format    
+    kl::JsonNode root_node = node["root"];
+    if (root_node.isOk())
+    {
+        // if this node exists, we're working with a mount
+        kl::JsonNode remote_path_node = root_node["remote_path"];
+        if (remote_path_node.isOk())
+            m_loc = towx(remote_path_node.getString());
     
-    return true;
+        // get/create the root bookmark node
+        kl::JsonNode bookmark_node = root_node["bookmark"];
+        if (!bookmark_node.isOk())
+            return false;
+
+        kl::JsonNode location_node = bookmark_node["location"];
+        if (!location_node.isOk())
+            return false;
+
+        if (!remote_path_node.isOk())
+            m_loc = towx(location_node.getString());
+
+        kl::JsonNode tags_node = bookmark_node["tags"];
+        if (tags_node.isOk())
+            m_tags = towx(tags_node.getString());
+
+        kl::JsonNode description_node = bookmark_node["description"];
+        if (description_node.isOk())
+            m_desc = towx(description_node.getString());
+
+        kl::JsonNode favicon_node = bookmark_node["favicon"];
+        if (favicon_node.isOk())
+            m_favicon = textToImage(towx(favicon_node.getString()));
+             else
+            m_favicon = wxImage();
+        
+        kl::JsonNode run_target_node = bookmark_node["run_target"];
+        if (run_target_node.isOk())
+            m_run_target = (run_target_node.getInteger() != 0 ? true : false);
+             else
+            m_run_target = false;
+    
+        // now we can set the path member variable
+        m_path = path;
+
+        // convert the old path to the new format
+        save(path);
+
+        return true;
+    }
+
+    // some other format that we don't know about
+    return false;
 }
 
 bool Bookmark::save(const wxString& path)
@@ -396,70 +460,45 @@ bool Bookmark::save(const wxString& path)
     if (info.isOk() && info->getType() == tango::filetypeFolder)
         return false;
     
-    tango::INodeValuePtr file;
-    if (m_path.CmpNoCase(path) == 0)
-    {
-        // edit the existing node file
-        file = db->openNodeFile(towstr(path));
-        if (file.isNull())
-            return false;
-    }
-     else
-    {
-        if (m_path.Length() > 0)
-        {
-            // move the existing node file
-            if (!db->moveFile(towstr(m_path), towstr(path)))
-                return false;
-            
-            // open the node file from its new location
-            file = db->openNodeFile(towstr(path));
-            if (file.isNull())
-                return false;
-        }
-         else
-        {
-            // create a new node file
-            file = db->createNodeFile(towstr(path));
-            if (file.isNull())
-                return false;
-        }
-    }
-    
-    // if this node exists, we're working with a mount
-    // and need to fill out this information
-    tango::INodeValuePtr remotepath_node = file->getChild(L"remote_path", false);
-    if (remotepath_node.isOk())
-        remotepath_node->setString(towstr(m_loc));
 
-    // get/create the root bookmark node
-    tango::INodeValuePtr bookmark_node = file->getChild(L"bookmark", true);
-    if (bookmark_node.isNull())
-        return false;
-    
-    tango::INodeValuePtr data;
-    data = bookmark_node->getChild(L"location", true);
-    data->setString(towstr(m_loc));
-    
-    data = bookmark_node->getChild(L"tags", true);
-    data->setString(towstr(m_tags));
-    
-    data = bookmark_node->getChild(L"description", true);
-    data->setString(towstr(m_desc));
-    
+    // path exists and is different; we'll be saving to a new location
+    // so delete any existing bookmark that may have been created
+    if (m_path.CmpNoCase(path) != 0 && m_path.Length() > 0)
+        g_app->getDatabase()->deleteFile(towstr(m_path));
+
+
+    kl::JsonNode node;
+    kl::JsonNode metadata_node = node["metadata"];
+    metadata_node["type"] = L"application/vnd.kx.bookmark";
+    metadata_node["version"] = 1;
+    metadata_node["description"] = L"";
+
+
+    // TODO: how do we handle saving of "remote_path"?
+    // what triggers whether this should be set; seems like
+    // we should think of a better way of doing this; for
+    // now, don't handle it
+    // node["remote_path"] = ?
+
+
+    kl::JsonNode bookmark_node = node["bookmark"];
+    bookmark_node["location"] = towstr(m_loc);
+    bookmark_node["tags"] = towstr(m_tags);
+    bookmark_node["description"] = towstr(m_desc);
     if (m_favicon.IsOk())
     {
-        data = bookmark_node->getChild(L"favicon", true);
         wxString text = imageToText(m_favicon);
-        data->setString(towstr(text));
+        bookmark_node["favicon"] = towstr(text);
     }
-    
-    data = bookmark_node->getChild(L"run_target", true);
-    data->setBoolean(m_run_target);
-    
-    // now we can set the path member variable
+    bookmark_node["run_target"].setBoolean(m_run_target);
+
+
+    if (!JsonConfig::saveToDb(node, g_app->getDatabase(), path, L"application/vnd.kx.bookmark"))
+        return false;
+
+
+    // set the path member variable
     m_path = path;
-    
     return true;
 }
 

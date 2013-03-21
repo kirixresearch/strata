@@ -4434,7 +4434,12 @@ bool AppController::openAny(const wxString& _location,
          else if (item_type == tango::filetypeStream)
         {
             std::wstring mime_type = file_info->getMimeType();
-            if (mime_type.substr(0, 19) == L"application/vnd.kx.")
+            if (mime_type == L"application/vnd.kx.bookmark")
+            {
+                if (openBookmark(location, open_mask))
+                    return true;
+            }
+             else if (mime_type.substr(0, 19) == L"application/vnd.kx.")
             {
                 if (openTemplate(location, open_mask))
                     return true;
@@ -5892,7 +5897,7 @@ IJobPtr AppController::execute(const wxString& location)
             if (!t.load(location))
                 return xcm::null;
             return t.execute();
-        }        
+        }
          else
         {
             // TODO: add hook for JSON job templates

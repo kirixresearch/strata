@@ -24,6 +24,7 @@
 #include "panelrelationship.h"
 #include "jobimport.h"
 #include "jobexport.h"
+#include "jsonconfig.h"
 #include "toolbars.h"
 #include "dlgdatabasefile.h"
 #include "dlgprojectmgr.h"
@@ -343,51 +344,122 @@ public:
     
     bool load(const std::wstring& positions_file_path)
     {
-        tango::INodeValuePtr file = m_db->openNodeFile(positions_file_path);
-        if (file.isNull())
+        std::wstring path = positions_file_path;
+
+        if (path.empty())
             return false;
-        
-        tango::INodeValuePtr positions = file->getChild(L"positions", false);
-        if (positions.isNull())
+
+        tango::IDatabasePtr db = g_app->getDatabase();
+        if (db.isNull())
             return false;
-        
-        m_positions.clear();
-        
-        size_t p = 0;
-        size_t i, count = positions->getChildCount();
-        for (i = 0; i < count; ++i)
+    
+        tango::IFileInfoPtr info = db->getFileInfo(towstr(path));
+        if (info.isOk() && info->getType() == tango::filetypeFolder)
+            return false;
+
+        kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), path);
+        if (!node.isOk())
+            return false;
+
+        // try to load the new format
+        kl::JsonNode metadata_node = node["metadata"];
+        if (metadata_node.isOk())
         {
-            tango::INodeValuePtr pos = positions->getChildByIdx(i);
-            tango::INodeValuePtr name = pos->getChild(L"name", false);
-            if (name.isNull())
-                continue;
-                
-            m_positions[name->getString()] = p++;
+            // check the mime type and the version
+            kl::JsonNode type_node = metadata_node["type"];
+            if (!type_node.isOk() || type_node.getString() != L"application/vnd.kx.bookmarkorder")
+                return false;
+
+            kl::JsonNode version_node = metadata_node["version"];
+            if (!version_node.isOk() || version_node.getInteger() != 1)
+                return false;
+
+            kl::JsonNode positions_node = node["positions"];
+            if (!positions_node.isOk())
+                return false;
+
+            // clear out existing positions
+            m_positions.clear();
+
+            // load the new positions
+            std::vector<kl::JsonNode> positions_children = positions_node.getChildren();
+            std::vector<kl::JsonNode>::iterator it, it_end;
+            it_end = positions_children.end();
+
+            size_t p = 0;
+            for (it = positions_children.begin(); it != it_end; ++it)
+            {
+                kl::JsonNode child_node = *it;
+                kl::JsonNode name_node = child_node["name"];
+                if (!name_node.isOk())
+                    continue;
+
+                m_positions[name_node.getString()] = p++;
+            }
+
+            // .objorder should always be last
+            insertEntry(L".objorder", m_positions.size());
+            return true;
         }
-        
-        // .objorder should always be last
-        insertEntry(L".objorder", m_positions.size());
-        
-        return true;
+
+
+        // if we can't load the new format, try to load the old format    
+        kl::JsonNode root_node = node["root"];
+        if (root_node.isOk())
+        {
+            // if we don't have the positions node, somethings wrong
+            kl::JsonNode positions_node = root_node["positions"];
+            if (!positions_node.isOk())
+                return false;
+
+            // note: following implemention is identical to the new
+            // format, but leave this separate in case the new format
+            // changes
+
+            // clear out existing positions
+            m_positions.clear();
+
+            // load the new positions
+            std::vector<kl::JsonNode> positions_children = positions_node.getChildren();
+            std::vector<kl::JsonNode>::iterator it, it_end;
+            it_end = positions_children.end();
+
+            size_t p = 0;
+            for (it = positions_children.begin(); it != it_end; ++it)
+            {
+                kl::JsonNode child_node = *it;
+                kl::JsonNode name_node = child_node["name"];
+                if (!name_node.isOk())
+                    continue;
+
+                m_positions[name_node.getString()] = p++;
+            }
+
+            // convert the old path to the new format
+            save(path);
+
+            return true;
+        }
+
+        // some other format that we don't know about
+        return false;
     }
     
     bool save(const std::wstring& positions_file_path)
     {
-        if (m_db->getFileExist(positions_file_path))
-        {
-            if (!m_db->deleteFile(positions_file_path))
-                return false;
-        }
-        
-        tango::INodeValuePtr file = m_db->createNodeFile(positions_file_path);
-        if (file.isNull())
+        std::wstring path = positions_file_path;
+
+        if (path.empty())
             return false;
-            
-        tango::INodeValuePtr positions = file->createChild(L"positions");
-        if (positions.isNull())
+
+        tango::IDatabasePtr db = g_app->getDatabase();
+        if (db.isNull())
             return false;
-            
-            
+    
+        tango::IFileInfoPtr info = db->getFileInfo(towstr(path));
+        if (info.isOk() && info->getType() == tango::filetypeFolder)
+            return false;
+
         // put map into a vector and remove gaps   
         std::vector<std::wstring> vpos;
         
@@ -410,23 +482,27 @@ public:
                 count--;
             }
         }
-        
-        
+
         // dump position data into file
-        
-        wchar_t node_name[255];
+        kl::JsonNode node;
+        kl::JsonNode metadata_node = node["metadata"];
+        metadata_node["type"] = L"application/vnd.kx.bookmarkorder";
+        metadata_node["version"] = 1;
+        metadata_node["description"] = L"";
+
+        kl::JsonNode positions_node = node["positions"];
+        positions_node.setArray();
+
         count = (int)vpos.size();
         for (i = 0; i < count; ++i)
-        {    
-            swprintf(node_name, 254, L"position%d", i);
-            tango::INodeValuePtr entry = positions->createChild(node_name);
-            tango::INodeValuePtr name = entry->createChild(L"name");
-            if (name.isNull())
-                continue;
-                
-            name->setString(vpos[i]);
+        {
+            kl::JsonNode element_node = node["positions"].appendElement();
+            element_node["name"] = vpos[i];
         }
-        
+
+        if (!JsonConfig::saveToDb(node, g_app->getDatabase(), path, L"application/vnd.kx.bookmarkorder"))
+            return false;
+
         return true;
     }
     
@@ -934,12 +1010,13 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
         }
          else if (item_type == tango::filetypeNode)
         {
-            wxString path = appendPath(m_path, item_name);;
-            tango::INodeValuePtr file;
-            
+            // we have an old nodefile; open it as a stream and get what we need
+            wxString path = appendPath(m_path, item_name);
+            kl::JsonNode node;
+
             if (!info->isMount())
             {
-                file = m_db->openNodeFile(towstr(path));
+                node = JsonConfig::loadFromDb(m_db, towstr(path));
             }
              else
             {
@@ -951,51 +1028,47 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
                 {
                     tango::IDatabasePtr db2 = m_db->getMountDatabase(towstr(path));
                     if (db2)
-                    {
-                        file = db2->openNodeFile(towstr(rpath));
-                    }
+                        node = JsonConfig::loadFromDb(db2, towstr(path));
                 }
             }
-            
-            
 
-            if (!file)
-            {
+            if (!node.isOk())
                 continue;
-            }
 
+            kl::JsonNode root_node = node["root"];
+            if (!root_node.isOk())
+                continue;
+
+
+            bool bookmark = false;
             bool script = false;
             bool report = false;
             bool query = false;
-            bool bookmark = false;
 
 
-            tango::INodeValuePtr bookmark_node = file->getChild(L"bookmark", false);
-            bookmark = bookmark_node.isOk();
-            
-            // some bookmarks have an image
-            tango::INodeValuePtr favicon_node;
-            tango::INodeValuePtr location_node;
+            kl::JsonNode bookmark_node = root_node["bookmark"];
+            kl::JsonNode favicon_node;
+            kl::JsonNode location_node;
+
             if (bookmark_node.isOk())
             {
-                location_node = bookmark_node->getChild(L"location", false);
-                favicon_node = bookmark_node->getChild(L"favicon", false);
+                bookmark = true;
+                location_node = bookmark_node["location"];
+                favicon_node = bookmark_node["favicon"];
             }
-                
-            tango::INodeValuePtr script_node = file->getChild(L"kpp_script", false);
+
+            kl::JsonNode script_node = root_node["kpp_script"];
             script = script_node.isOk();
 
-            tango::INodeValuePtr report_node = file->getChild(L"kpp_report", false);
+            kl::JsonNode report_node = root_node["kpp_report"];
             report = report_node.isOk();
 
-            tango::INodeValuePtr template_node = file->getChild(L"kpp_template", false);
-            if (template_node)
+            kl::JsonNode template_node = root_node["kpp_template"];
+            if (template_node.isOk())
             {
-                tango::INodeValuePtr type = template_node->getChild(L"type", false);
-                if (type.isOk() && type->getString() == L"query")
-                {
+                kl::JsonNode type_node = template_node["type"];
+                if (type_node.isOk() && type_node.getString() == L"query")
                     query = true;
-                }
             }
 
             DbObjectFsItem* item = new DbObjectFsItem;
@@ -1038,8 +1111,7 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
             if (favicon_node.isOk() && location_node.isOk())
             {
                 wxBitmap bmp;
-                
-                std::wstring location = location_node->getString();
+                std::wstring location = location_node.getString();
                 
                 std::map<std::wstring, wxBitmap>::iterator it;
                 it = g_custom_icons.find(location);
@@ -1050,7 +1122,7 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
                  else
                 {             
                     // item has a custom image -- put it in
-                    wxString favicon = towx(favicon_node->getString());
+                    wxString favicon = towx(favicon_node.getString());
                     wxImage img = Bookmark::textToImage(favicon);
                     bmp = wxBitmap(img);
                     if (bmp.IsOk())
@@ -1094,6 +1166,86 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
                 item->setType(dbobjtypeTemplate);
                 vec->append(static_cast<IFsItem*>(item));
             }
+             else if (mime_type == L"application/vnd.kx.bookmark")
+            {
+                DbObjectFsItem* item = new DbObjectFsItem;
+
+
+                // open the bookmark file to get the favicon
+                wxString path = appendPath(m_path, item_name);
+                kl::JsonNode node;
+
+                if (!info->isMount())
+                {
+                    node = JsonConfig::loadFromDb(m_db, towstr(path));
+                }
+                 else
+                {
+                    // links to node files must be dereferenced manually.  We
+                    // should expand the API to include a way of opening node
+                    // files having the database do the deferencing work
+                    std::wstring cstr, rpath;
+                    if (m_db->getMountPoint(towstr(path), cstr, rpath))
+                    {
+                        tango::IDatabasePtr db2 = m_db->getMountDatabase(towstr(path));
+                        if (db2)
+                            node = JsonConfig::loadFromDb(db2, towstr(path));
+                    }
+                }
+
+                if (node["metadata"]["type"].isOk() &&
+                    node["metadata"]["version"].isOk() &&
+                    node["metadata"]["type"].getString() == L"application/vnd.kx.bookmark" &&
+                    node["metadata"]["version"].getInteger() == 1)
+                {
+                    kl::JsonNode bookmark_node = node["bookmark"];
+                    kl::JsonNode favicon_node;
+                    kl::JsonNode location_node;
+
+                    if (bookmark_node.isOk())
+                    {
+                        favicon_node = bookmark_node["favicon"];
+                        location_node = bookmark_node["location"];
+                    }
+
+                    if (favicon_node.isOk() && location_node.isOk())
+                    {
+                        wxBitmap bmp;
+                        std::wstring location = location_node.getString();
+
+                        std::map<std::wstring, wxBitmap>::iterator it;
+                        it = g_custom_icons.find(location);
+                        if (it != g_custom_icons.end())
+                        {
+                            bmp = it->second;
+                        }
+                         else
+                        {             
+                            // item has a custom image -- put it in
+                            wxString favicon = towx(favicon_node.getString());
+                            wxImage img = Bookmark::textToImage(favicon);
+                            bmp = wxBitmap(img);
+                            if (bmp.IsOk())
+                            {
+                                g_custom_icons[location] = bmp;
+                            }
+                        }
+                
+                        if (bmp.IsOk())
+                        {
+                            item->setBitmap(bmp, fsbmpSmall);
+                            item->setBitmap(bmp, fsbmpLarge);
+                        }
+                
+                    }
+                }
+
+                item->setLabel(item_name);
+                item->setPath(appendPath(m_path, item_name));
+                item->setOwner(this);
+                item->setType(dbobjtypeBookmark);
+                vec->append(static_cast<IFsItem*>(item));
+            }
              else if (mime_type.substr(0, 19) == L"application/vnd.kx.")
             {
                 DbObjectFsItem* item = new DbObjectFsItem;
@@ -1107,6 +1259,15 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
             }
              else
             {
+
+                // see if we have a bookmark
+
+
+
+
+
+
+
                 DbObjectFsItem* item = new DbObjectFsItem;
                 item->setLabel(item_name);
                 item->setPath(appendPath(m_path, item_name));
