@@ -72,8 +72,6 @@ bool Controller::onRequest(RequestInfo& req)
     else if (uri == L"/api/selectdb")         apiSelectDb(req);
     else if (uri == L"/api/folderinfo")       apiFolderInfo(req);
     else if (uri == L"/api/fileinfo")         apiFileInfo(req);
-    else if (uri == L"/api/readnodefile")     apiReadNodeFile(req);
-    else if (uri == L"/api/writenodefile")    apiWriteNodeFile(req);
     else if (uri == L"/api/createstream")     apiCreateStream(req);
     else if (uri == L"/api/createtable")      apiCreateTable(req);
     else if (uri == L"/api/createfolder")     apiCreateFolder(req);
@@ -692,125 +690,6 @@ void Controller::apiDeleteFile(RequestInfo& req)
 }
 
 
-static void tangoNodeToJsonNode(tango::INodeValuePtr nv, kl::JsonNode& jn)
-{
-    size_t i, cnt;
-    cnt = nv->getChildCount();
-    if (cnt > 0)
-    {
-        for (i = 0; i < cnt; ++i)
-        {
-            kl::JsonNode child = jn[nv->getChildName(i)];
-            tangoNodeToJsonNode(nv->getChildByIdx(i), child);
-        }
-    }
-     else
-    {
-        jn.setString(nv->getString());
-    }
-}
-
-
-
-
-static void JsonNodeToTangoNode(kl::JsonNode& jn, tango::INodeValuePtr nv)
-{
-    std::vector<std::wstring> keys = jn.getChildKeys();
-
-    if (keys.size() > 0)
-    {
-        std::vector<std::wstring>::iterator it;
-
-        for (it = keys.begin(); it < keys.end(); ++it)
-        {
-            tango::INodeValuePtr child = nv->createChild(*it);
-            kl::JsonNode jchild = jn[*it];
-            
-            JsonNodeToTangoNode(jchild, child);
-        }
-    }
-     else
-    {
-        nv->setString(jn.getString());
-    }
-}
-
-
-void Controller::apiReadNodeFile(RequestInfo& req)
-{
-    tango::IDatabasePtr db = getSessionDatabase(req);
-    if (db.isNull())
-        return;
-    
-    if (!req.getValueExists(L"path"))
-    {
-        returnApiError(req, "Missing path parameter");
-        return;
-    }
-    
-    std::wstring path = req.getValue(L"path");
-    
-    tango::INodeValuePtr nv = db->openNodeFile(path);
-    if (nv.isNull())
-    {
-        returnApiError(req, "Cannot open node file");
-        return;
-    }
-    
-
- 
-    // return success to caller
-    kl::JsonNode response;
-    response["success"].setBoolean(true);
-    tangoNodeToJsonNode(nv, response["data"]);
-
-    
-    req.write(response.toString());
-}
-
-void Controller::apiWriteNodeFile(RequestInfo& req)
-{
-    tango::IDatabasePtr db = getSessionDatabase(req);
-    if (db.isNull())
-        return;
-    
-    if (!req.getValueExists(L"path"))
-    {
-        returnApiError(req, "Missing path parameter");
-        return;
-    }
-    
-    std::wstring path = req.getValue(L"path");
-
-
-    kl::JsonNode node;
-    if (!node.fromString(req.getValue(L"data")))
-    {
-        returnApiError(req, "Malformed data");
-        return;
-    }
-    
-
-    db->deleteFile(path);
-    
-    tango::INodeValuePtr root = db->createNodeFile(path);
-    if (root.isNull())
-    {
-        returnApiError(req, "Could not create node file");
-        return;
-    }
-
-
-    JsonNodeToTangoNode(node, root);
-    
-
-    // return success to caller
-    kl::JsonNode response;
-    response["success"].setBoolean(true);
-    req.write(response.toString());
-}
-
-
 void Controller::apiOpenStream(RequestInfo& req)
 {
     tango::IDatabasePtr db = getSessionDatabase(req);
@@ -1091,27 +970,31 @@ void Controller::apiGroupQuery(RequestInfo& req)
         return;
 
     std::wstring path = req.getValue(L"path");
-    std::wstring group = req.getValue(L"group");
     std::wstring output = req.getValue(L"output");
+    std::wstring group = req.getValue(L"group");
+    std::wstring columns = req.getValue(L"columns");
     std::wstring wherep = req.getValue(L"where");
     std::wstring having = req.getValue(L"having");
 
-    tango::ISetPtr input_set = db->openSet(path);
-    if (input_set.isNull())
+    tango::GroupQueryInfo info;
+    info.input = path;
+    info.output = output;
+    info.columns = columns;
+    info.group = group;
+    info.where = wherep;
+    info.having = having;
+    
+    bool b = db->groupQuery(&info, NULL);
+    if (!b)
     {
-        returnApiError(req, "Invalid input path.");
+        returnApiError(req, "Grouping operation failed");
+        return;
     }
-    
-    
-    tango::ISetPtr set = db->runGroupQuery(input_set, group, output, wherep, having, NULL);
-    
-    std::wstring output_path = L"/.temp/" + createHandle();
-    db->storeObject(set, output_path);
     
     // return success to caller
     kl::JsonNode response;
     response["success"].setBoolean(true);
-    response["path"] = output_path;
+    response["path"] = info.output;
     
     req.write(response.toString());
 }
