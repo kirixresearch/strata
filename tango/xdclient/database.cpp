@@ -12,7 +12,6 @@
 #include "xdclient.h"
 #include "request.h"
 #include "stream.h"
-#include "nodefile.h"
 
 
 
