@@ -1031,64 +1031,71 @@ bool TableDocModel::saveJson(const wxString& path)
 
 
     // now serialize the object collections to json
-    kl::JsonNode root;
-    kl::JsonNode views_root = root["views"];
-    views_root.setArray();
+    kl::JsonNode node;
+
+    kl::JsonNode metadata_node = node["metadata"];
+    metadata_node["type"] = L"application/vnd.kx.tabledocmodel";
+    metadata_node["version"] = 1;
+    metadata_node["description"] = L"";
+
+    kl::JsonNode views_node = node["views"];
+    views_node.setArray();
 
     for (it = m_views.begin(); it != m_views.end(); ++it)
     {
-        kl::JsonNode node = views_root.appendElement();
-        (*it)->writeToNode(node);
+        kl::JsonNode views_child_node = views_node.appendElement();
+        (*it)->writeToNode(views_child_node);
     }
 
-
-    kl::JsonNode marks_root = root["marks"];
-    marks_root.setArray();
+    kl::JsonNode marks_node = node["marks"];
+    marks_node.setArray();
 
     for (it = m_marks.begin(); it != m_marks.end(); ++it)
     {
-        kl::JsonNode node = marks_root.appendElement();
-        (*it)->writeToNode(node);
+        kl::JsonNode marks_child_node = marks_node.appendElement();
+        (*it)->writeToNode(marks_child_node);
     }
 
-
-    std::wstring contents = root.toString();
-
+    std::wstring contents = node.toString();
     return writeStreamTextFile(g_app->getDatabase(), towstr(path), contents);
 }
 
 bool TableDocModel::loadJson(const wxString& path)
 {
-    kl::JsonNode root = JsonConfig::loadFromDb(g_app->getDatabase(), path);
-    if (!root.isOk())
+    kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), path);
+    if (!node.isOk())
+        return false;
+
+    // make sure the version we're loading is valid
+    if (!isValidFileVersion(node, L"application/vnd.kx.tabledocmodel", 1))
         return false;
 
     m_views.clear();
     m_marks.clear();
     m_to_delete.clear();
 
-    if (root.childExists("views"))
+    if (node.childExists("views"))
     {
-        kl::JsonNode views_root = root["views"];
+        kl::JsonNode views_node = node["views"];
 
-        size_t i, child_count = views_root.getChildCount();
+        size_t i, child_count = views_node.getChildCount();
         for (i = 0; i < child_count; ++i)
         {
             TableDocView* obj = new TableDocView;
-            obj->readFromNode(views_root[i]);
+            obj->readFromNode(views_node[i]);
             m_views.push_back(static_cast<ITableDocObject*>(obj));
         }
     }
 
-    if (root.childExists("marks"))
+    if (node.childExists("marks"))
     {
-        kl::JsonNode marks_root = root["marks"];
+        kl::JsonNode marks_node = node["marks"];
 
-        size_t i, child_count = marks_root.getChildCount();
+        size_t i, child_count = marks_node.getChildCount();
         for (i = 0; i < child_count; ++i)
         {
             TableDocMark* obj = new TableDocMark;
-            obj->readFromNode(marks_root[i]);
+            obj->readFromNode(marks_node[i]);
             m_marks.push_back(static_cast<ITableDocObject*>(obj));
         }
     }
