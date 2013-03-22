@@ -388,7 +388,7 @@ bool JobScheduler::save()
     if (!db)
         return false;
 
-    // store the job information json node;
+    // store the job information in a json node;
     // TODO: decide if we want to use these particular variables/format or
     // something else
     kl::JsonNode node;
