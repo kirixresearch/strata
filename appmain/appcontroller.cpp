@@ -2292,58 +2292,6 @@ void AppController::onQuit(wxCommandEvent& evt)
     m_frame->getFrameWindow()->Close();
 }
 
-
-
-
-
-class MunchThread : public kl::Thread
-{
-public:
-    
-    tango::IDatabasePtr db;
-    
-    MunchThread() : kl::Thread()
-    {
-        db = g_app->getDatabase();
-    }
-
-    ~MunchThread()
-    {
-    }
-
-    unsigned int entry()
-    {
-        #ifdef _MSC_VER
-        static int counter = 0;
-        counter += 100;
-        // ensures that the rand() is truly random in this thread
-        int seed = (int)time(NULL);
-        seed += (int)clock();
-        seed += counter;
-        srand(seed);
-        #endif
-        
-        while (1)
-        {
-            {
-                //IJobInfoPtr ptr;
-                
-                //ptr = jobs::createJobInfoObject();
-                
-                //ptr.clear();
-                
-                tango::ISetPtr set = db->openSet(L"/demo/vend_mast");                
-                set.clear();
-                
-                //tango::IJobPtr job = db->createJob();
-                //job.clear();
-            }
-        }
-    }
-};
-
-
-
 void AppController::onAbout(wxCommandEvent& evt)
 {
     showAbout();
