@@ -98,7 +98,7 @@ public:
 
 protected:
 
-    tango::INodeValuePtr openSetDefinition(bool create_if_not_exist);
+    INodeValuePtr openSetDefinition(bool create_if_not_exist);
 
     bool modifyStructure(tango::IStructure* struct_config,
                          bool* done);

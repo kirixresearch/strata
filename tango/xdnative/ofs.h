@@ -51,11 +51,11 @@ public:
 
 
 
-class OfsValue : public tango::INodeValue
+class OfsValue : public INodeValue
 {
     XCM_CLASS_NAME_CUSTOMREFCOUNT("xdnative.OfsValue")
     XCM_BEGIN_INTERFACE_MAP(OfsValue)
-        XCM_INTERFACE_ENTRY(tango::INodeValue)
+        XCM_INTERFACE_ENTRY(INodeValue)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -82,10 +82,10 @@ public:
 
     unsigned int getChildCount();
     const std::wstring& getChildName(unsigned int idx);
-    tango::INodeValuePtr getChildByIdx(unsigned int idx);
-    tango::INodeValuePtr getChild(const std::wstring& name,
+    INodeValuePtr getChildByIdx(unsigned int idx);
+    INodeValuePtr getChild(const std::wstring& name,
                                  bool create_if_not_exist);
-    tango::INodeValuePtr createChild(const std::wstring& name);
+    INodeValuePtr createChild(const std::wstring& name);
     bool getChildExist(const std::wstring& name);
     bool deleteChild(const std::wstring& name);
     bool renameChild(const std::wstring& name,
@@ -157,7 +157,7 @@ public:
                             int* type,
                             bool* is_mount);
                             
-    tango::INodeValuePtr getRootNode();
+    INodeValuePtr getRootNode();
     const std::wstring& getPath();
     void setType(int new_type);
     int getType();

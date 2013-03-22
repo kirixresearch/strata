@@ -73,6 +73,10 @@ xcm_interface IRelationInternal;
 xcm_interface ISetInternal;
 xcm_interface IDatabaseInternal;
 xcm_interface IOfsEvents;
+xcm_interface INodeValue;
+
+xcm_interface IIndex;
+xcm_interface IIndexIterator;
 
 class BaseIterator;
 class BaseSet;
@@ -85,18 +89,42 @@ XCM_DECLARE_SMARTPTR(IRelationInternal)
 XCM_DECLARE_SMARTPTR(ISetInternal)
 XCM_DECLARE_SMARTPTR(IDatabaseInternal)
 XCM_DECLARE_SMARTPTR(IOfsEvents)
+XCM_DECLARE_SMARTPTR(INodeValue)
 
 
 
+xcm_interface INodeValue : public xcm::IObject
+{
+    XCM_INTERFACE_NAME("xdnative.INodeValue")
 
+public:
 
-// -- forward declarations --
+    virtual bool write() = 0;
 
-xcm_interface IIndex;
-xcm_interface IIndexIterator;
+    virtual const std::wstring& getName() = 0;
+    virtual int getType() = 0;
 
+    virtual const std::wstring& getString() = 0;
+    virtual void setString(const std::wstring& value) = 0;
+    virtual double getDouble() = 0;
+    virtual void setDouble(double value) = 0;
+    virtual int getInteger() = 0;
+    virtual void setInteger(int value) = 0;
+    virtual bool getBoolean() = 0;
+    virtual void setBoolean(bool value) = 0;
 
-
+    virtual unsigned int getChildCount() = 0;
+    virtual const std::wstring& getChildName(unsigned int idx) = 0;
+    virtual INodeValuePtr getChildByIdx(unsigned int idx) = 0;
+    virtual INodeValuePtr getChild(const std::wstring& name,
+                                  bool create_if_not_exist) = 0;
+    virtual INodeValuePtr createChild(const std::wstring& name) = 0;
+    virtual bool getChildExist(const std::wstring& name) = 0;
+    virtual bool renameChild(const std::wstring& name,
+                             const std::wstring& new_name) = 0;
+    virtual bool deleteChild(const std::wstring& name) = 0;
+    virtual bool deleteAllChildren() = 0;
+};
 
 
 xcm_interface IRelationInternal : public xcm::IObject
@@ -252,6 +280,9 @@ xcm_interface IDatabaseInternal : public xcm::IObject
     XCM_INTERFACE_NAME("xdnative.IDatabaseInternal")
 
 public:
+
+    virtual INodeValuePtr createNodeFile(const std::wstring& path) = 0;
+    virtual INodeValuePtr openNodeFile(const std::wstring& path) = 0;
 
     virtual ITablePtr openTableByOrdinal(tango::tableord_t ordinal) = 0;
     virtual tango::ISetPtr openSetById(const std::wstring& set_id) = 0;

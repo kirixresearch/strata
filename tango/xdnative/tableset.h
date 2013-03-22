@@ -157,7 +157,7 @@ public:
     virtual ~TableSet();
 
     bool create(tango::IStructure* struct_config);
-    bool load(tango::INodeValuePtr file);
+    bool load(INodeValuePtr file);
     bool save();
 
     void updateRowCount();

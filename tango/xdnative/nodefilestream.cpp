@@ -22,7 +22,7 @@
 #include "kl/utf8.h"
 
 
-static bool convertNodeToJson(tango::INodeValuePtr ofsnode, kl::JsonNode& jsonnode)
+static bool convertNodeToJson(INodeValuePtr ofsnode, kl::JsonNode& jsonnode)
 {
     if (ofsnode.isNull())
         return false;
@@ -41,7 +41,7 @@ static bool convertNodeToJson(tango::INodeValuePtr ofsnode, kl::JsonNode& jsonno
     kl::JsonNode jsonnode_child = jsonnode[name];
     for (int idx = 0; idx < ofsnode_child_count; ++idx)
     {
-        tango::INodeValuePtr ofsnode_child = ofsnode->getChildByIdx(idx);
+        INodeValuePtr ofsnode_child = ofsnode->getChildByIdx(idx);
         if (!convertNodeToJson(ofsnode_child, jsonnode_child))
             return false;
     }
@@ -79,7 +79,7 @@ bool NodeFileStream::open(const std::wstring& filename)
         return false;
 
     // get the ofs node and convert it to a json string
-    tango::INodeValuePtr ofsnode = ofsfile->getRootNode();
+    INodeValuePtr ofsnode = ofsfile->getRootNode();
     if (ofsnode.isNull())
         return false;
 

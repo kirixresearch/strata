@@ -504,13 +504,13 @@ bool TableSet::create(tango::IStructure* struct_config)
 
     // create the ofs file
     std::wstring temp_ofspath = dbi->getTempOfsPath();
-    tango::INodeValuePtr file = m_database->createNodeFile(temp_ofspath);
+    INodeValuePtr file = dbi->createNodeFile(temp_ofspath);
     if (!file)
         return false;
     
     dbi->setFileType(temp_ofspath, tango::filetypeSet);
 
-    tango::INodeValuePtr setid_node = file->getChild(L"set_id", true);
+    INodeValuePtr setid_node = file->getChild(L"set_id", true);
     if (!setid_node)
         return false;
     setid_node->setString(getSetId());
@@ -585,32 +585,32 @@ bool TableSet::loadTable(const std::wstring& tbl_filename)
 }
 
 
-bool TableSet::load(tango::INodeValuePtr set_file)
+bool TableSet::load(INodeValuePtr set_file)
 {
     IDatabaseInternalPtr dbi = m_database;
 
     // verify that this is the corrent set type
-    tango::INodeValuePtr settype_node = set_file->getChild(L"set_type", false);
+    INodeValuePtr settype_node = set_file->getChild(L"set_type", false);
     if (!settype_node)
         return false;
     if (wcscmp(settype_node->getString().c_str(), L"table") != 0)
         return false;
 
     // load set id
-    tango::INodeValuePtr setid_node = set_file->getChild(L"set_id", false);
+    INodeValuePtr setid_node = set_file->getChild(L"set_id", false);
     if (!setid_node)
         return false;
     setSetId(setid_node->getString());
 
     // load ordinal
-    tango::INodeValuePtr ordinal_node = set_file->getChild(L"ordinal", false);
+    INodeValuePtr ordinal_node = set_file->getChild(L"ordinal", false);
     if (!ordinal_node)
         return false;
 
     m_ordinal = ordinal_node->getInteger();
 
     // load ofs path
-    tango::INodeValuePtr ofspath_node = set_file->getChild(L"ofs_path", false);
+    INodeValuePtr ofspath_node = set_file->getChild(L"ofs_path", false);
     if (!ofspath_node)
         return false;
 
@@ -638,7 +638,7 @@ bool TableSet::save()
 {
     XCM_AUTO_LOCK(m_update_mutex);
 
-    tango::INodeValuePtr set_file = openSetDefinition(true);
+    INodeValuePtr set_file = openSetDefinition(true);
 
     if (!set_file)
     {
@@ -647,16 +647,16 @@ bool TableSet::save()
 
     // write out values
 
-    tango::INodeValuePtr settype_node = set_file->getChild(L"set_type", true);
+    INodeValuePtr settype_node = set_file->getChild(L"set_type", true);
     settype_node->setString(L"table");
 
-    tango::INodeValuePtr setid_node = set_file->getChild(L"set_id", true);
+    INodeValuePtr setid_node = set_file->getChild(L"set_id", true);
     setid_node->setString(getSetId());
 
-    tango::INodeValuePtr ofspath_node = set_file->getChild(L"ofs_path", true);
+    INodeValuePtr ofspath_node = set_file->getChild(L"ofs_path", true);
     ofspath_node->setString(m_ofspath);
 
-    tango::INodeValuePtr ordinal_node = set_file->getChild(L"ordinal", true);
+    INodeValuePtr ordinal_node = set_file->getChild(L"ordinal", true);
     ordinal_node->setInteger(m_ordinal);
 
     return true;
@@ -856,7 +856,7 @@ void TableSet::refreshIndexEntries()
     dbi = m_database;
 
 
-    tango::INodeValuePtr set_file = openSetDefinition(true);
+    INodeValuePtr set_file = openSetDefinition(true);
     if (!set_file)
     {
         return;
@@ -899,7 +899,7 @@ void TableSet::refreshIndexEntries()
 
     std::vector<std::wstring> bad_index_tags;
 
-    tango::INodeValuePtr indexes_node = set_file->getChild(L"indexes", false);
+    INodeValuePtr indexes_node = set_file->getChild(L"indexes", false);
     if (indexes_node)
     {
         int index_count = indexes_node->getChildCount();
@@ -907,25 +907,25 @@ void TableSet::refreshIndexEntries()
 
         for (i = 0; i < index_count; ++i)
         {
-            tango::INodeValuePtr index = indexes_node->getChildByIdx(i);
+            INodeValuePtr index = indexes_node->getChildByIdx(i);
 
             std::wstring tag = index->getName();
 
-            tango::INodeValuePtr idx_expr_node = index->getChild(L"expression", false);
+            INodeValuePtr idx_expr_node = index->getChild(L"expression", false);
             if (idx_expr_node.isNull())
             {
                 bad_index_tags.push_back(tag);
                 continue;
             }
 
-            tango::INodeValuePtr idx_filename_node = index->getChild(L"filename", false);
+            INodeValuePtr idx_filename_node = index->getChild(L"filename", false);
             if (idx_filename_node.isNull())
             {
                 bad_index_tags.push_back(tag);
                 continue;
             }
 
-            tango::INodeValuePtr active_node = index->getChild(L"active", false);
+            INodeValuePtr active_node = index->getChild(L"active", false);
             if (active_node.isOk())
             {
                 if (!active_node->getBoolean())
@@ -1058,7 +1058,7 @@ tango::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
 
     // find out of the index already exists
     
-    tango::INodeValuePtr set_file = openSetDefinition(true);
+    INodeValuePtr set_file = openSetDefinition(true);
     if (!set_file)
     {
         if (job)
@@ -1069,7 +1069,7 @@ tango::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
         return xcm::null;
     }
 
-    tango::INodeValuePtr indexes_node = set_file->getChild(L"indexes", false);
+    INodeValuePtr indexes_node = set_file->getChild(L"indexes", false);
     if (indexes_node)
     {
         int index_count = indexes_node->getChildCount();
@@ -1077,14 +1077,14 @@ tango::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
 
         for (i = 0; i < index_count; ++i)
         {
-            tango::INodeValuePtr index = indexes_node->getChildByIdx(i);
+            INodeValuePtr index = indexes_node->getChildByIdx(i);
             std::wstring ntag = index->getName();
 
             if (0 == wcscasecmp(tag.c_str(), ntag.c_str()))
             {
                 // check if the index file exists
 
-                tango::INodeValuePtr filename_node;
+                INodeValuePtr filename_node;
                 filename_node = index->getChild(L"filename", false);
                 if (filename_node.isOk())
                 {
@@ -1184,12 +1184,12 @@ tango::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
         indexes_node = set_file->getChild(L"indexes", true);
         if (indexes_node)
         {
-            tango::INodeValuePtr index_node = indexes_node->getChild(e.tag, true);
+            INodeValuePtr index_node = indexes_node->getChild(e.tag, true);
 
-            tango::INodeValuePtr expr_node = index_node->getChild(L"expression", true);
+            INodeValuePtr expr_node = index_node->getChild(L"expression", true);
             expr_node->setString(e.expr);
 
-            tango::INodeValuePtr filename_node = index_node->getChild(L"filename", true);
+            INodeValuePtr filename_node = index_node->getChild(L"filename", true);
             filename_node->setString(e.filename);
         }
     }
@@ -1259,10 +1259,10 @@ bool TableSet::deleteIndexInternal(IIndex* idx_to_delete)
     {
         kl::makeLower(tag_to_delete);
 
-        tango::INodeValuePtr set_file = openSetDefinition(true);
+        INodeValuePtr set_file = openSetDefinition(true);
         if (set_file.isOk())
         {
-            tango::INodeValuePtr indexes_node;
+            INodeValuePtr indexes_node;
             indexes_node = set_file->getChild(L"indexes", true);
             if (indexes_node.isOk())
             {
@@ -1302,11 +1302,11 @@ bool TableSet::renameIndex(const std::wstring& name,
 
 
     // delete the space we reserved for this tag
-    tango::INodeValuePtr set_file = openSetDefinition(false);
+    INodeValuePtr set_file = openSetDefinition(false);
     if (set_file.isNull())
         return false;
 
-    tango::INodeValuePtr indexes_node;
+    INodeValuePtr indexes_node;
     indexes_node = set_file->getChild(L"indexes", true);
     if (indexes_node.isNull())
         return false;
@@ -1353,10 +1353,10 @@ bool TableSet::deleteAllIndexes()
 
 
 
-    tango::INodeValuePtr set_file = openSetDefinition(true);
+    INodeValuePtr set_file = openSetDefinition(true);
     if (set_file.isOk())
     {
-        tango::INodeValuePtr indexes_node;
+        INodeValuePtr indexes_node;
         indexes_node = set_file->getChild(L"indexes", true);
         if (indexes_node.isOk())
         {

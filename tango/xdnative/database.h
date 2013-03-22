@@ -150,9 +150,9 @@ public:
                        std::wstring& remote_path);
 
     bool createFolder(const std::wstring& path);
-    tango::INodeValuePtr createNodeFile(const std::wstring& path);
-    tango::INodeValuePtr openNodeFile(const std::wstring& path);
-    tango::INodeValuePtr openLocalNodeFile(const std::wstring& path);
+    INodeValuePtr createNodeFile(const std::wstring& path);
+    INodeValuePtr openNodeFile(const std::wstring& path);
+    INodeValuePtr openLocalNodeFile(const std::wstring& path);
 
     tango::IStructurePtr createStructure();
     tango::IStreamPtr createStream(const std::wstring& path, const std::wstring& mime_type);

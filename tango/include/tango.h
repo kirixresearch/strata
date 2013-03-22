@@ -65,7 +65,6 @@ xcm_interface IFixedLengthDefinition;
 xcm_interface IIndexInfo;
 xcm_interface IIterator;
 xcm_interface IJob;
-xcm_interface INodeValue;
 xcm_interface IRelation;
 xcm_interface IRowDeleter;
 xcm_interface IRowInserter;
@@ -80,7 +79,6 @@ xcm_interface IIteratorRelation;
 // smart pointer declarations
 
 XCM_DECLARE_SMARTPTR(IAttributes)
-XCM_DECLARE_SMARTPTR(INodeValue)
 XCM_DECLARE_SMARTPTR(IFileInfo)
 XCM_DECLARE_SMARTPTR(IColumnInfo)
 XCM_DECLARE_SMARTPTR(IConnectionStr)
@@ -317,43 +315,6 @@ enum
     sqlAlwaysCopy = 0x02
 };
 
-
-
-
-
-
-xcm_interface INodeValue : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("tango.INodeValue")
-
-public:
-
-    virtual bool write() = 0;
-
-    virtual const std::wstring& getName() = 0;
-    virtual int getType() = 0;
-
-    virtual const std::wstring& getString() = 0;
-    virtual void setString(const std::wstring& value) = 0;
-    virtual double getDouble() = 0;
-    virtual void setDouble(double value) = 0;
-    virtual int getInteger() = 0;
-    virtual void setInteger(int value) = 0;
-    virtual bool getBoolean() = 0;
-    virtual void setBoolean(bool value) = 0;
-
-    virtual unsigned int getChildCount() = 0;
-    virtual const std::wstring& getChildName(unsigned int idx) = 0;
-    virtual INodeValuePtr getChildByIdx(unsigned int idx) = 0;
-    virtual INodeValuePtr getChild(const std::wstring& name,
-                                  bool create_if_not_exist) = 0;
-    virtual INodeValuePtr createChild(const std::wstring& name) = 0;
-    virtual bool getChildExist(const std::wstring& name) = 0;
-    virtual bool renameChild(const std::wstring& name,
-                             const std::wstring& new_name) = 0;
-    virtual bool deleteChild(const std::wstring& name) = 0;
-    virtual bool deleteAllChildren() = 0;
-};
 
 
 xcm_interface IStream : public xcm::IObject
@@ -749,12 +710,10 @@ public:
     virtual bool storeObject(xcm::IObject* obj, const std::wstring& path) = 0;
 
     virtual bool createFolder(const std::wstring& path) = 0;
-    virtual INodeValuePtr createNodeFile(const std::wstring& path) { return xcm::null; }
     virtual IStreamPtr createStream(const std::wstring& path, const std::wstring& mime_type) = 0;
     virtual ISetPtr createTable(const std::wstring& path, IStructurePtr struct_config, FormatInfo* format_info) = 0;
     
     virtual IStreamPtr openStream(const std::wstring& path) = 0;
-    virtual INodeValuePtr openNodeFile(const std::wstring& path) { return xcm::null; }
     virtual ISetPtr openSet(const std::wstring& path) = 0;
     virtual ISetPtr openSetEx(const std::wstring& path,
                               int format) = 0;

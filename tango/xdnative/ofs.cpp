@@ -223,7 +223,7 @@ const std::wstring& OfsValue::getChildName(unsigned int idx)
     return m_iv->m_children[idx]->m_name;
 }
 
-tango::INodeValuePtr OfsValue::getChildByIdx(unsigned int idx)
+INodeValuePtr OfsValue::getChildByIdx(unsigned int idx)
 {
     XCM_AUTO_LOCK(m_iv->m_object_mutex);
 
@@ -231,10 +231,10 @@ tango::INodeValuePtr OfsValue::getChildByIdx(unsigned int idx)
         return xcm::null;
 
     OfsValue* v = new OfsValue(m_file, m_iv->m_children[idx]);
-    return static_cast<tango::INodeValue*>(v);
+    return static_cast<INodeValue*>(v);
 }
 
-tango::INodeValuePtr OfsValue::getChild(const std::wstring& name,
+INodeValuePtr OfsValue::getChild(const std::wstring& name,
                                        bool create_if_not_exist)
 {
     XCM_AUTO_LOCK(m_iv->m_object_mutex);
@@ -243,7 +243,7 @@ tango::INodeValuePtr OfsValue::getChild(const std::wstring& name,
     if (idx != -1)
     {
         OfsValue* v = new OfsValue(m_file, m_iv->m_children[idx]);
-        return static_cast<tango::INodeValue*>(v);
+        return static_cast<INodeValue*>(v);
     }
 
     if (!create_if_not_exist)
@@ -252,7 +252,7 @@ tango::INodeValuePtr OfsValue::getChild(const std::wstring& name,
     return createChild(name);
 }
 
-tango::INodeValuePtr OfsValue::createChild(const std::wstring& name)
+INodeValuePtr OfsValue::createChild(const std::wstring& name)
 {
     XCM_AUTO_LOCK(m_iv->m_object_mutex);
 
@@ -269,7 +269,7 @@ tango::INodeValuePtr OfsValue::createChild(const std::wstring& name)
     m_iv->m_lookup_map[name] = m_iv->m_children.size() - 1;
 
     OfsValue* v = new OfsValue(m_file, new_child);
-    return static_cast<tango::INodeValue*>(v);
+    return static_cast<INodeValue*>(v);
 }
 
 
@@ -674,11 +674,11 @@ void OfsFile::setType(int new_type)
     setDirty(true);
 }
 
-tango::INodeValuePtr OfsFile::getRootNode()
+INodeValuePtr OfsFile::getRootNode()
 {
     // don't lock here; see comment in OfsFile::getPath()
     OfsValue* v = new OfsValue(this, m_root_node);
-    return static_cast<tango::INodeValue*>(v);
+    return static_cast<INodeValue*>(v);
 }
 
 
@@ -911,10 +911,10 @@ bool OfsFile::getFileType(tango::IDatabase* db,
         
         t = file->getType();
         
-        tango::INodeValuePtr root = file->getRootNode();
+        INodeValuePtr root = file->getRootNode();
         if (root.isOk())
         {
-            tango::INodeValuePtr cs = root->getChild(L"connection_str", false);
+            INodeValuePtr cs = root->getChild(L"connection_str", false);
             if (cs.isOk())
             {
                 m = true;

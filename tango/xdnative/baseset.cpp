@@ -42,14 +42,14 @@ BaseSet::~BaseSet()
 
 }
 
-tango::INodeValuePtr BaseSet::openSetDefinition(bool create_if_not_exist)
+INodeValuePtr BaseSet::openSetDefinition(bool create_if_not_exist)
 {
     std::wstring path;
     path.reserve(80);
     path = L"/.system/objects/";
     path += getSetId();
 
-    tango::INodeValuePtr file = m_database->openNodeFile(path);
+    INodeValuePtr file = m_dbi->openNodeFile(path);
     if (file.isOk())
     {
         return file;
@@ -57,7 +57,7 @@ tango::INodeValuePtr BaseSet::openSetDefinition(bool create_if_not_exist)
 
     if (create_if_not_exist)
     {
-        return m_database->createNodeFile(path);
+        return m_dbi->createNodeFile(path);
     }
 
     return xcm::null;
@@ -125,12 +125,12 @@ bool BaseSet::createCalcField(tango::IColumnInfoPtr colinfo)
 {
     XCM_AUTO_LOCK(m_structure_mutex);
 
-    tango::INodeValuePtr file = openSetDefinition(true);
+    INodeValuePtr file = openSetDefinition(true);
     if (file.isNull())
         return false;
 
     // load calculated fields
-    tango::INodeValuePtr folder_node = file->getChild(L"calc_fields", true);
+    INodeValuePtr folder_node = file->getChild(L"calc_fields", true);
     if (!folder_node)
         return false;
 
@@ -142,21 +142,21 @@ bool BaseSet::createCalcField(tango::IColumnInfoPtr colinfo)
         return false;
     }
 
-    tango::INodeValuePtr item_node = folder_node->createChild(name);
+    INodeValuePtr item_node = folder_node->createChild(name);
 
-    tango::INodeValuePtr name_node = item_node->createChild(L"name");
+    INodeValuePtr name_node = item_node->createChild(L"name");
     name_node->setString(colinfo->getName());
 
-    tango::INodeValuePtr type_node = item_node->createChild(L"type");
+    INodeValuePtr type_node = item_node->createChild(L"type");
     type_node->setInteger(colinfo->getType());
 
-    tango::INodeValuePtr width_node = item_node->createChild(L"width");
+    INodeValuePtr width_node = item_node->createChild(L"width");
     width_node->setInteger(colinfo->getWidth());
 
-    tango::INodeValuePtr scale_node = item_node->createChild(L"scale");
+    INodeValuePtr scale_node = item_node->createChild(L"scale");
     scale_node->setInteger(colinfo->getScale());
 
-    tango::INodeValuePtr expr_node = item_node->createChild(L"expression");
+    INodeValuePtr expr_node = item_node->createChild(L"expression");
     expr_node->setString(colinfo->getExpression());
 
     tango::IColumnInfoPtr newcol = colinfo->clone();
@@ -173,19 +173,19 @@ bool BaseSet::modifyCalcField(const std::wstring& _name,
 {
     XCM_AUTO_LOCK(m_structure_mutex);
 
-    tango::INodeValuePtr file = openSetDefinition(true);
+    INodeValuePtr file = openSetDefinition(true);
     if (file.isNull())
         return false;
 
     // load calculated fields
-    tango::INodeValuePtr folder_node = file->getChild(L"calc_fields", true);
+    INodeValuePtr folder_node = file->getChild(L"calc_fields", true);
     if (!folder_node)
         return false;
 
     std::wstring name = _name;
     kl::makeUpper(name);
 
-    tango::INodeValuePtr item_node = folder_node->getChild(name, false);
+    INodeValuePtr item_node = folder_node->getChild(name, false);
     if (item_node.isNull())
     {
         return false;
@@ -207,31 +207,31 @@ bool BaseSet::modifyCalcField(const std::wstring& _name,
             return false;
         }
 
-        tango::INodeValuePtr name_node = item_node->getChild(L"name", true);
+        INodeValuePtr name_node = item_node->getChild(L"name", true);
         name_node->setString(colinfo->getName());
     }
 
     if (colinfo->getType() != -1)
     {
-        tango::INodeValuePtr type_node = item_node->getChild(L"type", true);
+        INodeValuePtr type_node = item_node->getChild(L"type", true);
         type_node->setInteger(colinfo->getType());
     }
 
     if (colinfo->getWidth() != -1)
     {
-        tango::INodeValuePtr width_node = item_node->getChild(L"width", true);
+        INodeValuePtr width_node = item_node->getChild(L"width", true);
         width_node->setInteger(colinfo->getWidth());
     }
 
     if (colinfo->getScale() != -1)
     {
-        tango::INodeValuePtr scale_node = item_node->getChild(L"scale", true);
+        INodeValuePtr scale_node = item_node->getChild(L"scale", true);
         scale_node->setInteger(colinfo->getScale());
     }
 
     if (colinfo->getExpression().length() > 0)
     {
-        tango::INodeValuePtr expr_node = item_node->getChild(L"expression", true);
+        INodeValuePtr expr_node = item_node->getChild(L"expression", true);
         expr_node->setString(colinfo->getExpression());
     }
 
@@ -245,12 +245,12 @@ bool BaseSet::deleteCalcField(const std::wstring& _name)
 {
     XCM_AUTO_LOCK(m_structure_mutex);
 
-    tango::INodeValuePtr file = openSetDefinition(true);
+    INodeValuePtr file = openSetDefinition(true);
     if (file.isNull())
         return false;
 
     // load calculated fields
-    tango::INodeValuePtr folder_node = file->getChild(L"calc_fields", true);
+    INodeValuePtr folder_node = file->getChild(L"calc_fields", true);
     if (!folder_node)
         return false;
 
@@ -284,16 +284,16 @@ void BaseSet::appendCalcFields(tango::IStructure* structure)
     {
         m_calcrefresh_time = t;
 
-        tango::INodeValuePtr file = openSetDefinition(false);
+        INodeValuePtr file = openSetDefinition(false);
         if (file.isNull())
             return;
 
         // load calculated fields
-        tango::INodeValuePtr folder_node = file->getChild(L"calc_fields", true);
+        INodeValuePtr folder_node = file->getChild(L"calc_fields", true);
         if (!folder_node)
             return;
 
-        tango::INodeValuePtr item_node, node;
+        INodeValuePtr item_node, node;
         ColumnInfo* colinfo;
 
         int child_count = folder_node->getChildCount();
@@ -372,7 +372,7 @@ bool BaseSet::modifyStructure(tango::IStructure* struct_config,
     *done_flag = false;
 
     // keep the file open
-    tango::INodeValuePtr file = openSetDefinition(true);
+    INodeValuePtr file = openSetDefinition(true);
     if (file.isNull())
         return false;
 

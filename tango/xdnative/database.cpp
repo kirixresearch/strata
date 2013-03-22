@@ -106,7 +106,7 @@ void Database::setDatabaseName(const std::wstring& db_name)
 {
     m_dbname = db_name;
 
-    tango::INodeValuePtr node = openNodeFile(L"/.system/database_name");
+    INodeValuePtr node = openNodeFile(L"/.system/database_name");
     if (node)
     {
         node->setString(m_dbname);
@@ -191,7 +191,7 @@ double Database::getUsedSpace()
 
 void Database::addFileToTrash(const std::wstring& filename)
 {
-    tango::INodeValuePtr root;
+    INodeValuePtr root;
 
     if (!getFileExist(L"/.system/trash"))
     {
@@ -202,7 +202,7 @@ void Database::addFileToTrash(const std::wstring& filename)
         root = openNodeFile(L"/.system/trash");
     }
 
-    tango::INodeValuePtr item = root->createChild(getUniqueString());
+    INodeValuePtr item = root->createChild(getUniqueString());
     item->setString(filename);
 }
 
@@ -213,7 +213,7 @@ void Database::emptyTrash()
         return;
     }
 
-    tango::INodeValuePtr root;
+    INodeValuePtr root;
     root = openNodeFile(L"/.system/trash");
 
     size_t i, child_count = root->getChildCount();
@@ -222,7 +222,7 @@ void Database::emptyTrash()
 
     for (i = 0; i < child_count; ++i)
     {
-        tango::INodeValuePtr item = root->getChildByIdx(i);
+        INodeValuePtr item = root->getChildByIdx(i);
         if (item.isNull())
             continue;
 
@@ -523,7 +523,7 @@ bool Database::createDatabase(const std::wstring& db_name,
 
 
     // create system folder structure
-    tango::INodeValuePtr node;
+    INodeValuePtr node;
     bool res;
     
     res = createFolder(L"/.appdata");
@@ -609,21 +609,21 @@ bool Database::openDatabase(const std::wstring& location,
     createFolder(L"/.system");
 
     // read database name
-    tango::INodeValuePtr dbname = openNodeFile(L"/.system/database_name");
+    INodeValuePtr dbname = openNodeFile(L"/.system/database_name");
     if (!dbname)
         return false;
 
     m_dbname = dbname->getString();
 
     // ensure that an ordinal counter exists
-    tango::INodeValuePtr last_ord = openNodeFile(L"/.system/ordinal_counter");
+    INodeValuePtr last_ord = openNodeFile(L"/.system/ordinal_counter");
     if (!last_ord)
         return false;
 
     // ensure that a database version exists
     if (!getFileExist(L"/.system/database_version"))
     {
-        tango::INodeValuePtr db_ver = createNodeFile(L"/.system/database_version");
+        INodeValuePtr db_ver = createNodeFile(L"/.system/database_version");
         if (db_ver)
         {
             db_ver->setInteger(2);
@@ -675,14 +675,14 @@ bool Database::createUser(const std::wstring& uid,
     if (getFileExist(path))
         return false;
 
-    tango::INodeValuePtr node = createNodeFile(path);
+    INodeValuePtr node = createNodeFile(path);
     if (node.isNull())
         return false;
         
-    tango::INodeValuePtr uid_node = node->getChild(L"uid", true);
+    INodeValuePtr uid_node = node->getChild(L"uid", true);
     uid_node->setString(uid);
     
-    tango::INodeValuePtr password_node = node->getChild(L"password", true);
+    INodeValuePtr password_node = node->getChild(L"password", true);
     password_node->setString(kl::encryptString(password, getUserPasswordEncryptionKey()));
     
     return true;
@@ -708,15 +708,15 @@ bool Database::checkPassword(
     std::wstring path = L"/.system/users/";
     path += uid;
     
-    tango::INodeValuePtr node = openNodeFile(path);
+    INodeValuePtr node = openNodeFile(path);
     if (node.isNull())
         return false;
         
-    tango::INodeValuePtr uid_node = node->getChild(L"uid", false);
+    INodeValuePtr uid_node = node->getChild(L"uid", false);
     if (!uid_node)
         return false;
     
-    tango::INodeValuePtr password_node = node->getChild(L"password", false);
+    INodeValuePtr password_node = node->getChild(L"password", false);
     if (!password_node)
         return false;
 
@@ -906,7 +906,7 @@ bool Database::setOrdinalTable(tango::tableord_t ordinal,
     wchar_t tableord_path[255];
     swprintf(tableord_path, 255, L"/.system/ordinals/%u", ordinal);
 
-    tango::INodeValuePtr tableord;
+    INodeValuePtr tableord;
     if (!getFileExist(tableord_path))
     {
         tableord = createNodeFile(tableord_path);
@@ -920,7 +920,7 @@ bool Database::setOrdinalTable(tango::tableord_t ordinal,
             return false;
     }
 
-    tango::INodeValuePtr target_file = tableord->getChild(L"target_file", true);
+    INodeValuePtr target_file = tableord->getChild(L"target_file", true);
     if (!target_file)
         return false;
 
@@ -947,11 +947,11 @@ bool Database::deleteOrdinal(tango::tableord_t ordinal)
 void Database::updateSetReference(const std::wstring& ofs_path)
 {
     // open file
-    tango::INodeValuePtr set_file = openNodeFile(ofs_path);
+    INodeValuePtr set_file = openNodeFile(ofs_path);
     if (set_file.isNull())
         return;
 
-    tango::INodeValuePtr setid_node = set_file->getChild(L"set_id", false);
+    INodeValuePtr setid_node = set_file->getChild(L"set_id", false);
     if (!setid_node)
         return;
     
@@ -965,11 +965,11 @@ void Database::updateSetReference(const std::wstring& ofs_path)
     path = L"/.system/objects/";
     path += set_id;
 
-    tango::INodeValuePtr setid_file = openNodeFile(path);
+    INodeValuePtr setid_file = openNodeFile(path);
     if (setid_file.isNull())
         return;
 
-    tango::INodeValuePtr ofspath_value = setid_file->getChild(L"ofs_path", true);
+    INodeValuePtr ofspath_value = setid_file->getChild(L"ofs_path", true);
     ofspath_value->setString(ofs_path);
 
     // if the set is open, let it know that its ofs path changed
@@ -1068,13 +1068,13 @@ bool Database::deleteStream(const std::wstring& ofs_path)
     }
     
     // get object id
-    tango::INodeValuePtr stream_file = openNodeFile(ofs_path);
+    INodeValuePtr stream_file = openNodeFile(ofs_path);
     if (!stream_file)
     {
         return false;
     }
     
-    tango::INodeValuePtr objectid_node = stream_file->getChild(L"object_id", false);
+    INodeValuePtr objectid_node = stream_file->getChild(L"object_id", false);
     if (!objectid_node)
         return false;
     
@@ -1113,14 +1113,14 @@ bool Database::deleteSet(const std::wstring& ofs_path)
     file_info.clear();
 
     // get set id
-    tango::INodeValuePtr set_file = openNodeFile(ofs_path);
+    INodeValuePtr set_file = openNodeFile(ofs_path);
     if (!set_file)
     {
         return false;
     }
 
     // load the set type
-    tango::INodeValuePtr setid_node = set_file->getChild(L"set_id", false);
+    INodeValuePtr setid_node = set_file->getChild(L"set_id", false);
     if (!setid_node)
         return false;
 
@@ -1158,7 +1158,7 @@ bool Database::deleteSet(const std::wstring& ofs_path)
     }
 
     // get the set type
-    tango::INodeValuePtr settype_node = set_file->getChild(L"set_type", false);
+    INodeValuePtr settype_node = set_file->getChild(L"set_type", false);
     if (!settype_node)
     {
         return false;
@@ -1170,7 +1170,7 @@ bool Database::deleteSet(const std::wstring& ofs_path)
     if (set_type == L"table")
     {
         // get the ordinal
-        tango::INodeValuePtr ordinal_node = set_file->getChild(L"ordinal", false);
+        INodeValuePtr ordinal_node = set_file->getChild(L"ordinal", false);
         if (!ordinal_node)
         {
             set_file.clear();
@@ -1201,15 +1201,15 @@ bool Database::deleteSet(const std::wstring& ofs_path)
 
 
         // delete the set's indexes
-        tango::INodeValuePtr indexes_node = set_file->getChild(L"indexes", false);
+        INodeValuePtr indexes_node = set_file->getChild(L"indexes", false);
         if (indexes_node)
         {
             int index_count = indexes_node->getChildCount();
             for (int i = 0; i < index_count; ++i)
             {
-                tango::INodeValuePtr index = indexes_node->getChildByIdx(i);
+                INodeValuePtr index = indexes_node->getChildByIdx(i);
 
-                tango::INodeValuePtr idx_filename_node = index->getChild(L"filename", false);
+                INodeValuePtr idx_filename_node = index->getChild(L"filename", false);
                 if (idx_filename_node.isNull())
                     continue;
 
@@ -1232,7 +1232,7 @@ bool Database::deleteSet(const std::wstring& ofs_path)
      else if (set_type == L"dynamic")
     {
         // get the ordinal
-        tango::INodeValuePtr datafile_node = set_file->getChild(L"data_file", false);
+        INodeValuePtr datafile_node = set_file->getChild(L"data_file", false);
         if (datafile_node)
         {
             xf_remove(datafile_node->getString());
@@ -1293,11 +1293,11 @@ bool Database::setMountPoint(const std::wstring& path,
     if (!file)
         return false;
 
-    tango::INodeValuePtr root = file->getRootNode();
-    tango::INodeValuePtr cs = root->createChild(L"connection_str");
+    INodeValuePtr root = file->getRootNode();
+    INodeValuePtr cs = root->createChild(L"connection_str");
     cs->setString(final_connection_string);
     
-    tango::INodeValuePtr rp = root->createChild(L"remote_path");
+    INodeValuePtr rp = root->createChild(L"remote_path");
     rp->setString(remote_path);
     
     file->unref();
@@ -1321,15 +1321,15 @@ bool Database::getMountPoint(const std::wstring& path,
                              std::wstring& connection_str,
                              std::wstring& remote_path)
 {
-    tango::INodeValuePtr root = openLocalNodeFile(path);
+    INodeValuePtr root = openLocalNodeFile(path);
     if (root.isNull())
         return false;
         
-    tango::INodeValuePtr cs = root->getChild(L"connection_str", false);
+    INodeValuePtr cs = root->getChild(L"connection_str", false);
     if (cs.isNull())
         return false;
         
-    tango::INodeValuePtr rp = root->getChild(L"remote_path", false);
+    INodeValuePtr rp = root->getChild(L"remote_path", false);
     if (rp.isNull())
         return false;
         
@@ -1365,26 +1365,8 @@ bool Database::createFolder(const std::wstring& path)
 }
 
 
-tango::INodeValuePtr Database::createNodeFile(const std::wstring& path)
+INodeValuePtr Database::createNodeFile(const std::wstring& path)
 {
-    std::wstring cstr, rpath;
-    if (detectMountPoint(path, cstr, rpath))
-    {
-        bool file_exists = xf_get_file_exist(ofsToPhysFilename(path, false));
-
-        if (!file_exists)
-        {
-            // action takes place in a mount
-            tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
-            if (db.isNull())
-                return xcm::null;
-
-            return db->createNodeFile(rpath);
-        }
-    }
-    
-
-
     OfsFile* file = OfsFile::createFile(this, path, tango::filetypeNode);
 
     if (!file)
@@ -1392,12 +1374,12 @@ tango::INodeValuePtr Database::createNodeFile(const std::wstring& path)
         return xcm::null;
     }
 
-    tango::INodeValuePtr result = file->getRootNode();
+    INodeValuePtr result = file->getRootNode();
     file->unref();
     return result;
 }
 
-tango::INodeValuePtr Database::openLocalNodeFile(const std::wstring& path)
+INodeValuePtr Database::openLocalNodeFile(const std::wstring& path)
 {
     {
         XCM_AUTO_LOCK(m_objregistry_mutex);
@@ -1418,12 +1400,12 @@ tango::INodeValuePtr Database::openLocalNodeFile(const std::wstring& path)
         return xcm::null;
     }
 
-    tango::INodeValuePtr result = file->getRootNode();
+    INodeValuePtr result = file->getRootNode();
     file->unref();
     return result;
 }
 
-tango::INodeValuePtr Database::openNodeFile(const std::wstring& _path)
+INodeValuePtr Database::openNodeFile(const std::wstring& _path)
 {
     if (_path.empty())
         return xcm::null;
@@ -1445,22 +1427,6 @@ tango::INodeValuePtr Database::openNodeFile(const std::wstring& _path)
     }
 
 
-    // check if it's mounted
-    std::wstring cstr, rpath;
-    if (detectMountPoint(path, cstr, rpath))
-    {
-        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
-        if (db.isNull())
-            return xcm::null;
-
-        return db->openNodeFile(rpath);
-    }
-    
-
-
-
-
-
     OfsFile* file = OfsFile::openFile(this, path);
 
     if (!file)
@@ -1468,7 +1434,7 @@ tango::INodeValuePtr Database::openNodeFile(const std::wstring& _path)
         return xcm::null;
     }
 
-    tango::INodeValuePtr result = file->getRootNode();
+    INodeValuePtr result = file->getRootNode();
     file->unref();
     return result;
 }
@@ -1971,7 +1937,7 @@ bool Database::deleteFile(const std::wstring& _path)
     {
         // check if the mount is just a single
         // mount to another file
-        tango::INodeValuePtr f = openLocalNodeFile(path);
+        INodeValuePtr f = openLocalNodeFile(path);
         if (f.isOk())
         {
             f.clear();
@@ -2078,12 +2044,12 @@ tango::tango_int64_t Database::getFileSize(const std::wstring& ofs_path)
 
     // open up set file
 
-    tango::INodeValuePtr set_file = openNodeFile(fixed_name);
+    INodeValuePtr set_file = openNodeFile(fixed_name);
     if (!set_file)
         return 0;
 
     // load the set id
-    tango::INodeValuePtr setid_node = set_file->getChild(L"set_id", false);
+    INodeValuePtr setid_node = set_file->getChild(L"set_id", false);
     if (!setid_node)
         return 0;
 
@@ -2106,7 +2072,7 @@ tango::tango_int64_t Database::getFileSize(const std::wstring& ofs_path)
     }
 
     // load ordinal
-    tango::INodeValuePtr ordinal_node = set_file->getChild(L"ordinal", false);
+    INodeValuePtr ordinal_node = set_file->getChild(L"ordinal", false);
     if (!ordinal_node)
         return 0;
 
@@ -2120,11 +2086,11 @@ std::wstring Database::getFileMimeType(const std::wstring& path)
     if (path.empty())
         return L"";
     
-    tango::INodeValuePtr file = openNodeFile(path);
+    INodeValuePtr file = openNodeFile(path);
     if (!file)
         return L"";
 
-    tango::INodeValuePtr mime_type = file->getChild(L"mime_type", false);
+    INodeValuePtr mime_type = file->getChild(L"mime_type", false);
     if (!mime_type)
         return L"";
     
@@ -2276,10 +2242,10 @@ bool Database::getFileType(const std::wstring& path, int* type, bool* is_mount)
                 if (is_mount)
                 {
                     *is_mount = false;
-                    tango::INodeValuePtr root = file->getRootNode();
+                    INodeValuePtr root = file->getRootNode();
                     if (root.isOk())
                     {
-                        tango::INodeValuePtr cs = root->getChild(L"connection_str", false);
+                        INodeValuePtr cs = root->getChild(L"connection_str", false);
                         if (cs.isOk())
                             *is_mount = true;
                     }
@@ -2471,15 +2437,15 @@ bool Database::detectMountPoint(const std::wstring& path,
             continue;
             
 
-        tango::INodeValuePtr val = openLocalNodeFile(fpath);
+        INodeValuePtr val = openLocalNodeFile(fpath);
         if (val.isNull())
             break;
             
-        tango::INodeValuePtr cs = val->getChild(L"connection_str", false);
+        INodeValuePtr cs = val->getChild(L"connection_str", false);
         if (cs.isNull())
             continue;
             
-        tango::INodeValuePtr rp = val->getChild(L"remote_path", false);
+        INodeValuePtr rp = val->getChild(L"remote_path", false);
         if (rp.isNull())
             continue;
         
@@ -2775,10 +2741,10 @@ void Database::getFolderUsedOrdinals(const std::wstring& folder_path,
 
         if (file_type == tango::filetypeSet)
         {
-            tango::INodeValuePtr set_file = openNodeFile(path);
+            INodeValuePtr set_file = openNodeFile(path);
             if (set_file)
             {
-                tango::INodeValuePtr setid_node;
+                INodeValuePtr setid_node;
                 setid_node = set_file->getChild(L"set_id", false);
 
                 if (!setid_node)
@@ -2789,12 +2755,12 @@ void Database::getFolderUsedOrdinals(const std::wstring& folder_path,
                 path = L"/.system/objects/";
                 path += set_id;
 
-                tango::INodeValuePtr file;
+                INodeValuePtr file;
                 file = openNodeFile(path);
 
                 if (file)
                 {
-                    tango::INodeValuePtr setid_node;
+                    INodeValuePtr setid_node;
                     setid_node = file->getChild(L"ordinal", false);
                     if (!setid_node)
                         continue;
@@ -2919,8 +2885,8 @@ tango::IStreamPtr Database::createStream(const std::wstring& _path, const std::w
         OfsFile* file = OfsFile::openFile(this, path);
         if (file)
         {
-            tango::INodeValuePtr root = file->getRootNode();
-            tango::INodeValuePtr mime_type_node = root->getChild(L"mime_type", true);
+            INodeValuePtr root = file->getRootNode();
+            INodeValuePtr mime_type_node = root->getChild(L"mime_type", true);
             mime_type_node->setString(mime_type);
             file->unref();
         }
@@ -2960,16 +2926,16 @@ tango::IStreamPtr Database::createStream(const std::wstring& _path, const std::w
         return xcm::null;
     }
 
-    tango::INodeValuePtr root = file->getRootNode();
+    INodeValuePtr root = file->getRootNode();
     
     // create a new object id
     std::wstring object_id = getUniqueString();
     
     // set object id in ofs node file
-    tango::INodeValuePtr object_id_node = root->getChild(L"object_id", true);
+    INodeValuePtr object_id_node = root->getChild(L"object_id", true);
     object_id_node->setString(object_id);
     
-    tango::INodeValuePtr mime_type_node = root->getChild(L"mime_type", true);
+    INodeValuePtr mime_type_node = root->getChild(L"mime_type", true);
     mime_type_node->setString(mime_type);
     
     object_id_node.clear();
@@ -2995,7 +2961,7 @@ tango::IStreamPtr Database::createStream(const std::wstring& _path, const std::w
     
     
     // add entry pointing to data file
-    tango::INodeValuePtr data_file_node = root->getChild(L"data_file", true);
+    INodeValuePtr data_file_node = root->getChild(L"data_file", true);
     if (!data_file_node)
     {
         return xcm::null;
@@ -3105,11 +3071,11 @@ int Database::getDatabaseType()
 
 std::wstring Database::getStreamFilename(const std::wstring& ofs_path)
 {    
-    tango::INodeValuePtr file = openNodeFile(ofs_path);
+    INodeValuePtr file = openNodeFile(ofs_path);
     if (!file)
         return L"";
 
-    tango::INodeValuePtr object_id_node = file->getChild(L"object_id", false);
+    INodeValuePtr object_id_node = file->getChild(L"object_id", false);
     if (!object_id_node)
         return L"";
 
@@ -3128,7 +3094,7 @@ std::wstring Database::getStreamFilename(const std::wstring& ofs_path)
     if (!file)
         return L"";
         
-    tango::INodeValuePtr data_file_node = file->getChild(L"data_file", false);
+    INodeValuePtr data_file_node = file->getChild(L"data_file", false);
     if (!data_file_node)
         return L"";
 
@@ -3145,11 +3111,11 @@ std::wstring Database::getTableFilename(tango::tableord_t table_ordinal)
     wchar_t ord_key_name[255];
     swprintf(ord_key_name, 255, L"/.system/ordinals/%d", table_ordinal);
 
-    tango::INodeValuePtr ordinal = openNodeFile(ord_key_name);
+    INodeValuePtr ordinal = openNodeFile(ord_key_name);
     if (!ordinal)
         return L"";
 
-    tango::INodeValuePtr target_file = ordinal->getChild(L"target_file", false);
+    INodeValuePtr target_file = ordinal->getChild(L"target_file", false);
     if (!target_file)
         return L"";
 
@@ -3237,14 +3203,14 @@ tango::ISetPtr Database::openSetById(const std::wstring& set_id)
 
     // get filename from registry
 
-    tango::INodeValuePtr set_file = openNodeFile(path);
+    INodeValuePtr set_file = openNodeFile(path);
     if (!set_file)
     {
         return xcm::null;
     }
 
     // load the set type
-    tango::INodeValuePtr settype_node = set_file->getChild(L"set_type", false);
+    INodeValuePtr settype_node = set_file->getChild(L"set_type", false);
     if (!settype_node)
         return xcm::null;
 
@@ -3284,12 +3250,12 @@ std::wstring Database::getSetIdFromPath(const std::wstring& set_path)
 
     // open up set file
 
-    tango::INodeValuePtr set_file = openNodeFile(fixed_name);
+    INodeValuePtr set_file = openNodeFile(fixed_name);
     if (!set_file)
         return L"";
 
     // load the set id
-    tango::INodeValuePtr setid_node = set_file->getChild(L"set_id", false);
+    INodeValuePtr setid_node = set_file->getChild(L"set_id", false);
     if (!setid_node)
         return L"";
 
@@ -3304,11 +3270,11 @@ std::wstring Database::getSetPathFromId(const std::wstring& set_id)
     path = L"/.system/objects/";
     path += set_id;
 
-    tango::INodeValuePtr setid_file = openNodeFile(path);
+    INodeValuePtr setid_file = openNodeFile(path);
     if (setid_file.isNull())
         return L"";
 
-    tango::INodeValuePtr ofspath_value = setid_file->getChild(L"ofs_path", true);
+    INodeValuePtr ofspath_value = setid_file->getChild(L"ofs_path", true);
     if (ofspath_value.isNull())
         return L"";
 
@@ -3641,7 +3607,7 @@ tango::IRelationEnumPtr Database::getRelationEnum(const std::wstring& path)
     std::wstring filter_set_path = path;
     
 
-    tango::INodeValuePtr file;
+    INodeValuePtr file;
 
     if (!getFileExist(L"/.system/rel_table"))
         return vec;
@@ -3654,7 +3620,7 @@ tango::IRelationEnumPtr Database::getRelationEnum(const std::wstring& path)
 
     std::wstring tag, left_set_id, right_set_id, left_set_path, right_set_path, left_expr, right_expr;
 
-    tango::INodeValuePtr rel_node, left_setid_node, right_setid_node, left_setpath_node, right_setpath_node,
+    INodeValuePtr rel_node, left_setid_node, right_setid_node, left_setpath_node, right_setpath_node,
                         left_expr_node, right_expr_node, tag_node;
 
 
@@ -3662,7 +3628,7 @@ tango::IRelationEnumPtr Database::getRelationEnum(const std::wstring& path)
 
     for (i = 0; i < count; ++i)
     {
-        tango::INodeValuePtr rel_node = file->getChildByIdx(i);
+        INodeValuePtr rel_node = file->getChildByIdx(i);
 
         tag_node = rel_node->getChild(L"tag", false);
         if (!tag_node)
@@ -3774,7 +3740,7 @@ tango::IRelationPtr Database::createRelation(const std::wstring& tag,
                                              const std::wstring& left_expr,
                                              const std::wstring& right_expr)
 {    
-    tango::INodeValuePtr root;
+    INodeValuePtr root;
 
     if (!getFileExist(L"/.system/rel_table"))
         root = createNodeFile(L"/.system/rel_table");
@@ -3790,7 +3756,7 @@ tango::IRelationPtr Database::createRelation(const std::wstring& tag,
     std::wstring right_set_id = getSetIdFromPath(right_set_path);
 
     // create a new entry in our relationship table file
-    tango::INodeValuePtr rel_node, left_setid_node, right_setid_node,
+    INodeValuePtr rel_node, left_setid_node, right_setid_node,
                         left_expr_node, right_expr_node, tag_node;
 
     rel_node = root->getChild(rel_id, true);
@@ -3854,7 +3820,7 @@ bool Database::deleteRelation(const std::wstring& relation_id)
     if (rel.isNull())
         return false;
 
-    tango::INodeValuePtr root;
+    INodeValuePtr root;
 
     if (!getFileExist(L"/.system/rel_table"))
         return false;
