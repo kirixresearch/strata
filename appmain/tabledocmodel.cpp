@@ -745,7 +745,7 @@ bool TableDocModel::load()
     if (db.isNull())
         return false;
 
-    std::wstring filename = L"/.appdata/%usr%/tabledoc/%id%";
+    std::wstring filename = L"/.appdata/%usr%/tables/%id%";
     kl::replaceStr(filename, L"%usr%", db->getActiveUid());
     kl::replaceStr(filename, L"%id%", m_id);
 
@@ -764,7 +764,7 @@ bool TableDocModel::save()
     if (db.isNull())
         return false;
 
-    std::wstring filename = L"/.appdata/%usr%/tabledoc/%id%";
+    std::wstring filename = L"/.appdata/%usr%/tables/%id%";
     kl::replaceStr(filename, L"%usr%", db->getActiveUid());
     kl::replaceStr(filename, L"%id%", m_id);
 
