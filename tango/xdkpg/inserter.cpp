@@ -392,6 +392,8 @@ bool KpgRowInserter::insertRow()
                              m_buf_rows * m_row_width,
                              true /* compressed */);
         memset(m_data, 0, m_rows_per_buf * m_row_width);
+
+        m_buf_rows = 0;
     }
 
     return true;
