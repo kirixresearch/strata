@@ -388,65 +388,13 @@ bool ImportPkgJob::importSet(PkgStreamReader* reader,
     return true;
 }
 
-/*
-static bool convertXmlToValue(kl::xmlnode& src_node,
-                              tango::INodeValuePtr dest_value)
-{
-    kl::xmlnode& value = src_node.getChild(L"value");
-    dest_value->setString(value.getNodeValue());
-
-    kl::xmlnode& children = src_node.getChild(L"children");
-    int child_count = children.getChildCount();
-    int i;
-
-    for (i = 0; i < child_count; ++i)
-    {
-        kl::xmlnode& child = children.getChild(i);
-        if (child.getNodeName() != L"child")
-            continue;
-
-        kl::xmlnode& child_name = child.getChild(L"name");
-        if (child_name.isEmpty())
-            return false;
-
-        tango::INodeValuePtr child_value;
-        child_value = dest_value->createChild(child_name.getNodeValue());
-
-        if (!convertXmlToValue(child, child_value))
-            return false;
-    }
-
-    return true;
-}
-*/
 
 bool ImportPkgJob::importOfsFile(PkgStreamReader* reader,
                                  PkgImportInfo* info,
                                  kl::xmlnode& stream_info)
 {
-    return false;
-
-/*
-    tango::IDatabasePtr db = g_app->getDatabase();
-    tango::INodeValuePtr root_value;
-
-    db->deleteFile(towstr(info->output_path));
-
-    root_value = db->createNodeFile(towstr(info->output_path));
-    if (root_value.isNull())
-        return false;
-
-    kl::xmlnode& root_node = stream_info.getChild(L"data");
-    if (root_node.isEmpty())
-        return false;
-
-    bool res = convertXmlToValue(root_node, root_value);
-
-    m_job_info->incrementCurrentCount(1.0);
-
-    delete reader;
-    return res;
-*/
+    // disabled importing ofs files -- always return true
+    return true;
 }
 
 
