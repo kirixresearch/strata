@@ -388,7 +388,7 @@ bool ImportPkgJob::importSet(PkgStreamReader* reader,
     return true;
 }
 
-
+/*
 static bool convertXmlToValue(kl::xmlnode& src_node,
                               tango::INodeValuePtr dest_value)
 {
@@ -418,12 +418,15 @@ static bool convertXmlToValue(kl::xmlnode& src_node,
 
     return true;
 }
-
+*/
 
 bool ImportPkgJob::importOfsFile(PkgStreamReader* reader,
                                  PkgImportInfo* info,
                                  kl::xmlnode& stream_info)
 {
+    return false;
+
+/*
     tango::IDatabasePtr db = g_app->getDatabase();
     tango::INodeValuePtr root_value;
 
@@ -443,6 +446,7 @@ bool ImportPkgJob::importOfsFile(PkgStreamReader* reader,
 
     delete reader;
     return res;
+*/
 }
 
 

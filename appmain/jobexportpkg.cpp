@@ -350,7 +350,7 @@ void ExportPkgJob::addExportObject(const wxString& stream_name,
 
 
 
-
+/*
 static void convertValueToXml(tango::INodeValuePtr src_value,
                               kl::xmlnode& dest_node)
 {
@@ -367,13 +367,16 @@ static void convertValueToXml(tango::INodeValuePtr src_value,
         convertValueToXml(src_value->getChildByIdx(i), child);
     }
 }
-
+*/
 
 bool ExportPkgJob::writeOfsFileStream(tango::IDatabasePtr& db,
                                       PkgFile* pkg,
                                       PkgStreamInfo* info,
                                       bool* cancelled)
 {
+    return false;
+
+/*
     tango::IFileInfoPtr file_info;
     file_info = db->getFileInfo(towstr(info->src_path));
 
@@ -421,6 +424,7 @@ bool ExportPkgJob::writeOfsFileStream(tango::IDatabasePtr& db,
     m_job_info->incrementCurrentCount(1.0);
 
     return true;
+*/
 }
 
 bool ExportPkgJob::writeStreamStream(tango::IDatabasePtr& db,
