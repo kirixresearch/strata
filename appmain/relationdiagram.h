@@ -217,8 +217,8 @@ public:
 
     ~RelationDiagram();
 
-    void load();
-    void save();
+    bool load();
+    bool save();
     
     void setOverlayText(const wxString& overlay_text);
     

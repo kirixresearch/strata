@@ -73,45 +73,12 @@ void RelDiagramWatcher::onFrameEvent(FrameworkEvent& evt)
 void RelDiagramWatcher::onSetRenamed(const wxString& old_path,
                                      const wxString& new_path)
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
-    if (db.isNull())
-        return;
-        
-    // save views
-    wxString path;
-    path = wxString::Format(wxT("/.appdata/%s/dcfe/relmgrpanel"),
-                            towx(db->getActiveUid()).c_str());
 
-    tango::INodeValuePtr relmgrpanel_file = db->openNodeFile(towstr(path));
-    if (relmgrpanel_file.isNull())
-        return;
+    // TODO: should we store the set id in the relationship panel
+    // so that this isn't necessary?
 
-    tango::INodeValuePtr boxcount_node;
-    boxcount_node = relmgrpanel_file->getChild(L"box_count", false);
-    if (boxcount_node.isNull())
-        return;
-
-    tango::INodeValuePtr boxes_node;
-    boxes_node = relmgrpanel_file->getChild(L"boxes", false);
-    if (boxes_node.isNull())
-        return;
-    
-    int i, box_count = boxcount_node->getInteger();
-    for (i = 0; i < box_count; ++i)
-    {
-        wchar_t buf[255];
-        swprintf(buf, 255, L"box_%03d", i);
-
-        tango::INodeValuePtr box_node = boxes_node->getChild(buf, false);
-        if (box_node.isNull())
-            continue;
-
-        tango::INodeValuePtr path_node = box_node->getChild(L"path", false);
-        wxString path = towx(path_node->getString());
-
-        if (path.CmpNoCase(old_path) == 0)
-            path_node->setString(towstr(new_path));
-    }
+    // TODO: if path is stored in the relationship diagram, then
+    // we need to rename the path elements in the panel info
 }
 
 

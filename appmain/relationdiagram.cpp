@@ -14,6 +14,7 @@
 #include "dlgdatabasefile.h"
 #include "relationdnd.h"
 #include "dbdoc.h"
+#include "jsonconfig.h"
 
 #if defined(__WXMSW__)
     #include <wx/msw/uxtheme.h>
@@ -1527,30 +1528,27 @@ RelationDiagram::~RelationDiagram()
 {
 }
 
-void RelationDiagram::save()
+bool RelationDiagram::save()
 {
+    tango::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return false;
+
     int vx, vy;
     GetViewStart(&vx, &vy);
 
     vx *= 10;
     vy *= 10;
 
-    tango::IDatabasePtr db = g_app->getDatabase();
-    if (db.isNull())
-        return;
+    // store the relationship info a json node
+    kl::JsonNode node;
+    kl::JsonNode metadata_node = node["metadata"];
+    metadata_node["type"] = L"application/vnd.kx.relmgrpanel";
+    metadata_node["version"] = 1;
+    metadata_node["description"] = L"";
 
-    // save views
-    wxString path;
-    path = wxString::Format(wxT("/.appdata/%s/dcfe/relmgrpanel"),
-                            towx(g_app->getDatabase()->getActiveUid()).c_str());
-
-    tango::INodeValuePtr relmgrpanel_file = db->createNodeFile(towstr(path));
-
-    tango::INodeValuePtr boxcount_node = relmgrpanel_file->createChild(L"box_count");
-    boxcount_node->setInteger(m_boxes.size());
-
-    tango::INodeValuePtr boxes_node = relmgrpanel_file->createChild(L"boxes");
-    int counter = 0;
+    kl::JsonNode boxes_node = node["boxes"];
+    boxes_node.setArray();
 
     std::vector<RelationBox*>::iterator it;
     for (it = m_boxes.begin(); it != m_boxes.end(); ++it)
@@ -1562,94 +1560,150 @@ void RelationDiagram::save()
         x += vx;
         y += vy;
 
-        wchar_t buf[255];
-        swprintf(buf, 255, L"box_%03d", counter++);
-
-        tango::INodeValuePtr box_node = boxes_node->createChild(buf);
-
-        tango::INodeValuePtr path_node = box_node->createChild(L"path");
-        path_node->setString(towstr((*it)->getSetPath()));
-
-        tango::INodeValuePtr xpos_node = box_node->createChild(L"xpos");
-        xpos_node->setInteger(x);
-
-        tango::INodeValuePtr ypos_node = box_node->createChild(L"ypos");
-        ypos_node->setInteger(y);
-
-        tango::INodeValuePtr width_node = box_node->createChild(L"width");
-        width_node->setInteger(width);
-
-        tango::INodeValuePtr height_node = box_node->createChild(L"height");
-        height_node->setInteger(height);
+        kl::JsonNode boxes_child_node = boxes_node.appendElement();
+        boxes_child_node["path"].setString(towstr((*it)->getSetPath()));
+        boxes_child_node["xpos"].setInteger(x);
+        boxes_child_node["ypos"].setInteger(y);
+        boxes_child_node["width"].setInteger(width);
+        boxes_child_node["height"].setInteger(height);
     }
+
+    // save the job
+    wxString path;
+    path = wxString::Format(wxT("/.appdata/%s/panels/relmgrpanel"),
+                            towx(g_app->getDatabase()->getActiveUid()).c_str());
+
+    if (!JsonConfig::saveToDb(node, g_app->getDatabase(), towstr(path), L"application/vnd.kx.relmgrpanel"))
+        return false;
+
+    return true;
 }
 
 
-void RelationDiagram::load()
+bool RelationDiagram::load()
 {
     tango::IDatabasePtr db = g_app->getDatabase();
-    
-    // save views
+    if (db.isNull())
+        return false;
+
+    kl::JsonNode node;
+
+    // try to load the manager info from the new location
     wxString path;
-    path = wxString::Format(wxT("/.appdata/%s/dcfe/relmgrpanel"),
+    path = wxString::Format(wxT("/.appdata/%s/panels/relmgrpanel"),
                             towx(g_app->getDatabase()->getActiveUid()).c_str());
 
-    tango::INodeValuePtr relmgrpanel_file = db->openNodeFile(towstr(path));
-    if (relmgrpanel_file.isNull())
-        return;
-
-    tango::INodeValuePtr boxcount_node = relmgrpanel_file->getChild(L"box_count", false);
-    if (boxcount_node.isNull())
-        return;
-
-    int box_count = boxcount_node->getInteger();
-
-    tango::INodeValuePtr boxes_node = relmgrpanel_file->getChild(L"boxes", false);
-
-    int i;
-    for (i = 0; i < box_count; ++i)
+    node = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(path));
+    if (node.isOk())
     {
-        wxString path;
-        int x, y, width, height;
+        // file exists in the location; make sure it's in the right format
+        if (!isValidFileVersion(node, L"application/vnd.kx.relmgrpanel", 1))
+            return false;
 
-        wchar_t buf[255];
-        swprintf(buf, 255, L"box_%03d", i);
+        kl::JsonNode boxes_node = node["boxes"];
+        if (!boxes_node.isOk())
+            return false;
 
-        tango::INodeValuePtr box_node = boxes_node->getChild(buf, false);
-        if (box_node.isNull())
-            continue;
+        std::vector<kl::JsonNode> boxes_children_node = boxes_node.getChildren();
+        std::vector<kl::JsonNode>::iterator it, it_end;
+        it_end = boxes_children_node.end();
 
-        tango::INodeValuePtr path_node = box_node->getChild(L"path", false);
-        path = towx(path_node->getString());
+        for (it = boxes_children_node.begin(); it != it_end; ++it)
+        {
+            wxString path;
+            int x, y, width, height;
 
-        tango::INodeValuePtr xpos_node = box_node->getChild(L"xpos", false);
-        x = xpos_node->getInteger();
+            kl::JsonNode boxes_child_node = *it;
+            path = towx(boxes_child_node["path"].getString());
+            x = boxes_child_node["xpos"].getInteger();
+            y = boxes_child_node["ypos"].getInteger();
+            width = boxes_child_node["width"].getInteger();
+            height = boxes_child_node["height"].getInteger();
 
-        tango::INodeValuePtr ypos_node = box_node->getChild(L"ypos", false);
-        y = ypos_node->getInteger();
+            if (x < 0)
+                x = 0;
+            if (y < 0)
+                y = 0;
+            if (width > 500)
+                width = 500;
+            if (height > 500)
+                height = 500;
+            if (x > DIAGRAM_SCROLL_WIDTH-width)
+                x = DIAGRAM_SCROLL_WIDTH-width;
+            if (y > DIAGRAM_SCROLL_HEIGHT-height)
+                y = DIAGRAM_SCROLL_HEIGHT-height;
 
-        tango::INodeValuePtr width_node = box_node->getChild(L"width", false);
-        width = width_node->getInteger();
+            wxString caption = path.AfterLast(wxT('/'));
+            addBox(path, caption, *wxBLACK, x, y, width, height);
+        }
 
-        tango::INodeValuePtr height_node = box_node->getChild(L"height", false);
-        height = height_node->getInteger();
-
-        if (x < 0)
-            x = 0;
-        if (y < 0)
-            y = 0;
-        if (width > 500)
-            width = 500;
-        if (height > 500)
-            height = 500;
-        if (x > DIAGRAM_SCROLL_WIDTH-width)
-            x = DIAGRAM_SCROLL_WIDTH-width;
-        if (y > DIAGRAM_SCROLL_HEIGHT-height)
-            y = DIAGRAM_SCROLL_HEIGHT-height;
-
-        wxString caption = path.AfterLast(wxT('/'));
-        addBox(path, caption, *wxBLACK, x, y, width, height);
+        return true;
     }
+
+    // file isn't in the new location; try the old location in the old format
+    wxString old_location;
+    old_location = wxString::Format(wxT("/.appdata/%s/dcfe/relmgrpanel"),
+                             towx(g_app->getDatabase()->getActiveUid()).c_str());
+
+    node = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(old_location));
+    if (node.isOk())
+    {
+        kl::JsonNode root_node = node["root"];
+        if (!root_node.isOk())
+            return false;
+
+        // load the boxes from the old format; note: this parallels the way the
+        // data is loaded from the new format at this time; keep implementation
+        // separate in case new fomat changes
+        kl::JsonNode boxes_node = root_node["boxes"];
+        if (!boxes_node.isOk())
+            return false;
+
+        std::vector<kl::JsonNode> boxes_children_node = boxes_node.getChildren();
+        std::vector<kl::JsonNode>::iterator it, it_end;
+        it_end = boxes_children_node.end();
+
+        for (it = boxes_children_node.begin(); it != it_end; ++it)
+        {
+            wxString path;
+            int x, y, width, height;
+
+            kl::JsonNode boxes_child_node = *it;
+            path = towx(boxes_child_node["path"].getString());
+            x = boxes_child_node["xpos"].getInteger();
+            y = boxes_child_node["ypos"].getInteger();
+            width = boxes_child_node["width"].getInteger();
+            height = boxes_child_node["height"].getInteger();
+
+            if (x < 0)
+                x = 0;
+            if (y < 0)
+                y = 0;
+            if (width > 500)
+                width = 500;
+            if (height > 500)
+                height = 500;
+            if (x > DIAGRAM_SCROLL_WIDTH-width)
+                x = DIAGRAM_SCROLL_WIDTH-width;
+            if (y > DIAGRAM_SCROLL_HEIGHT-height)
+                y = DIAGRAM_SCROLL_HEIGHT-height;
+
+            wxString caption = path.AfterLast(wxT('/'));
+            addBox(path, caption, *wxBLACK, x, y, width, height);
+        }
+
+        // save the info in the new location and format
+        save();
+
+        // delete the old
+        if (db->getFileExist(towstr(old_location)))
+            db->deleteFile(towstr(old_location));
+
+        return true;
+    }
+
+    // couldn't load the file in the new or the old format
+    return false;
 }
 
 void RelationDiagram::setOverlayText(const wxString& overlay_text)
