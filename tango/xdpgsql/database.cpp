@@ -406,6 +406,8 @@ std::wstring PgsqlDatabase::getDefinitionDirectory()
 
 PGconn* PgsqlDatabase::createConnection()
 {
+    m_error.clearError();
+
     std::wstring connstr;
     connstr += L"hostaddr='" + m_server + L"'";
 
@@ -422,6 +424,8 @@ PGconn* PgsqlDatabase::createConnection()
 
     if (PQstatus(conn) != CONNECTION_OK)
     {
+        m_error.setError(tango::errorGeneral, kl::towstring(PQerrorMessage(conn)));
+
         PQfinish(conn);
         return NULL;
     }
