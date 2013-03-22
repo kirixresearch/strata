@@ -348,85 +348,6 @@ void ExportPkgJob::addExportObject(const wxString& stream_name,
     m_info.push_back(info);
 }
 
-
-
-/*
-static void convertValueToXml(tango::INodeValuePtr src_value,
-                              kl::xmlnode& dest_node)
-{
-    dest_node.addChild(L"name", src_value->getName());
-    dest_node.addChild(L"value", src_value->getString());
-    kl::xmlnode& children = dest_node.addChild(L"children");
-
-    int child_count = src_value->getChildCount();
-    int i;
-
-    for (i = 0; i < child_count; ++i)
-    {
-        kl::xmlnode& child = children.addChild(L"child");
-        convertValueToXml(src_value->getChildByIdx(i), child);
-    }
-}
-*/
-
-bool ExportPkgJob::writeOfsFileStream(tango::IDatabasePtr& db,
-                                      PkgFile* pkg,
-                                      PkgStreamInfo* info,
-                                      bool* cancelled)
-{
-    return false;
-
-/*
-    tango::IFileInfoPtr file_info;
-    file_info = db->getFileInfo(towstr(info->src_path));
-
-    if (file_info.isNull())
-        return false;
-
-    if (file_info->getType() == tango::filetypeSet)
-        return false;
-
-    tango::INodeValuePtr root_value;
-    root_value = db->openNodeFile(towstr(info->src_path));
-    if (root_value.isNull())
-        return false;
-
-    kl::xmlnode root_node;
-    root_node.setNodeName(L"pkg_stream_info");
-    root_node.appendProperty(L"type", L"ofsfile");
-    root_node.addChild(L"version", 1);
-
-    kl::xmlnode& data_node = root_node.addChild(L"data");
-
-    convertValueToXml(root_value, data_node);
-
-    std::wstring xmlstr = root_node.getXML();
-
-    unsigned char* buf = new unsigned char[(xmlstr.length()+1) * 2];
-    kl::wstring2ucsle(buf, xmlstr, xmlstr.length()+1);
-
-    PkgStreamWriter* writer;
-    writer = pkg->createStream(towstr(info->stream_name));
-    if (!writer)
-    {
-        delete[] buf;
-        return false;
-    }
-
-    writer->startWrite();
-    writer->writeBlock(buf, (xmlstr.length()+1)*2, true);
-    writer->finishWrite();
-
-    delete writer;
-
-    delete[] buf;
-
-    m_job_info->incrementCurrentCount(1.0);
-
-    return true;
-*/
-}
-
 bool ExportPkgJob::writeStreamStream(tango::IDatabasePtr& db,
                                      PkgFile* pkg,
                                      PkgStreamInfo* info,
@@ -1123,15 +1044,8 @@ int ExportPkgJob::runJob()
         }
          else
         {
-            if (!writeOfsFileStream(db,
-                                    &pkg,
-                                    &(*it),
-                                    &cancelled))
-            {
-                m_job_info->setState(jobStateFailed);
-                cancelled = true;
-                break;
-            }
+            // no longer allow exporting of old node type files; instead
+            // they should be saved in new format and exported as a stream
         }
 
         
