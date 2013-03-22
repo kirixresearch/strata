@@ -431,7 +431,7 @@ bool JobScheduler::save()
     }
 
     // save the job
-    wxString path = wxString::Format(wxT("/.appdata/%s/jobscheduler"),
+    wxString path = wxString::Format(wxT("/.appdata/%s/panels/jobscheduler"),
                               towx(db->getActiveUid()).c_str());
 
     if (!JsonConfig::saveToDb(node, g_app->getDatabase(), towstr(path), L"application/vnd.kx.jobscheduler"))
@@ -452,12 +452,15 @@ bool JobScheduler::load()
     if (!db)
         return false;
 
-    wxString path = wxString::Format(wxT("/.appdata/%s/jobscheduler"),
-                              towx(db->getActiveUid()).c_str());
-
     // if the old jobs location exists, delete it
-    if (db->getFileExist(towstr(path)))
-        db->deleteFile(towstr(path));
+    wxString old_location = wxString::Format(wxT("/.appdata/%s/dcfe/jobscheduler"),
+                                      towx(db->getActiveUid()).c_str());
+
+    if (db->getFileExist(towstr(old_location)))
+        db->deleteFile(towstr(old_location));
+
+    wxString path = wxString::Format(wxT("/.appdata/%s/panels/jobscheduler"),
+                              towx(db->getActiveUid()).c_str());
 
     // open the new location
     kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(path));
