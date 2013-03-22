@@ -112,7 +112,7 @@ bool KpgSet::modifyStructure(tango::IStructure* struct_config,
 
 tango::IRowInserterPtr KpgSet::getRowInserter()
 {
-    KpgRowInserter* inserter = new KpgRowInserter(m_database, m_tablename);
+    KpgRowInserter* inserter = new KpgRowInserter(m_database, m_tablename, getStructure());
     return static_cast<tango::IRowInserter*>(inserter);
 }
 

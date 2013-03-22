@@ -52,7 +52,7 @@ class KpgRowInserter : public tango::IRowInserter
 
 public:
 
-    KpgRowInserter(KpgDatabase* db, const std::wstring& table);
+    KpgRowInserter(KpgDatabase* db, const std::wstring& table, tango::IStructurePtr structure);
     ~KpgRowInserter();
 
     tango::objhandle_t getHandle(const std::wstring& column_name);
@@ -82,14 +82,11 @@ private:
     std::wstring m_table;
 
     int m_buf_rows;
-    int m_insert_rows;
-    std::wstring m_wdata;
-    char* m_utf8data;
-    int m_utf8data_len;
-    
-    std::wstring m_quote_openchar;
-    std::wstring m_quote_closechar;
+    int m_row_width;
+    int m_rows_per_buf;
+    unsigned char* m_data;
 
+    tango::IStructurePtr m_structure;
     std::vector<KpgInsertFieldData> m_fields;
 };
 

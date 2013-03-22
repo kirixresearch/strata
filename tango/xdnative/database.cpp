@@ -1687,6 +1687,9 @@ bool Database::copyData(const tango::CopyInfo* info, tango::IJob* job)
         output = createTable(info->output, structure, NULL);
     }
 
+    if (output.isNull())
+        return false;
+
     output->insert(iter, info->where, 0, NULL);
     
     return true;
