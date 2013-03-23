@@ -2046,7 +2046,6 @@ void AppController::onOpenFile(wxCommandEvent& evt)
     wxString first_ext;
     wxString ext;
 
-    tango::IDatabasePtr db_ptr;
     IConnectionPtr conn;
 
     filter += _("All Files");
