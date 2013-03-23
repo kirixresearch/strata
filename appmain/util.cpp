@@ -759,6 +759,32 @@ wxString getDbColumnTypeText(int tango_type)
     return wxT("");
 }
 
+bool getRemotePathIfExists(wxString& path)
+{
+    tango::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return false;
+
+    tango::IFileInfoPtr info = db->getFileInfo(towstr(path));
+    if (info.isNull())
+        return false;
+    
+    if (!info->isMount())
+        return false;
+    
+    std::wstring cstr, rpath;
+    db->getMountPoint(towstr(path), cstr, rpath);
+    
+    // convert the path to the remote path of the connection
+    if (cstr.length() == 0)
+    {
+        path = towx(rpath);
+        return true;
+    }
+    
+    return false;
+}
+
 wxString getObjectPathFromMountPath(const wxString& database_path)
 {
     tango::IDatabasePtr db = g_app->getDatabase();

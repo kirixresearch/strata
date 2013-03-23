@@ -260,6 +260,11 @@ wxString makeValidObjectName(
 // returns a localized name for a given type
 wxString getDbColumnTypeText(int tango_type);
 
+// this function determines if the specified path is an internal mount,
+// and if it is, converts the string that was passed in to the remote
+// path specified in the mount
+bool getRemotePathIfExists(wxString& path);
+
 // for mounted folders or singleton mounts, these functions get
 // the actual object path or actual filename, respectively
 wxString getObjectPathFromMountPath(const wxString& database_path);

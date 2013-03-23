@@ -141,37 +141,6 @@ static std::vector<RowErrorChecker> getRowErrorCheckerVector(
     return vec;
 }
 
-// this function determines if the specified path is an internal mount,
-// and if it is, converts the string that was passed in to the remote
-// path specified in the mount
-static bool getRemotePathIfExists(wxString& path)
-{
-    tango::IDatabasePtr db = g_app->getDatabase();
-    if (db.isNull())
-        return false;
-
-    tango::IFileInfoPtr info = db->getFileInfo(towstr(path));
-    if (info.isNull())
-        return false;
-    
-    if (!info->isMount())
-        return false;
-    
-    std::wstring cstr, rpath;
-    db->getMountPoint(towstr(path), cstr, rpath);
-    
-    // convert the path to the remote path of the connection
-    if (cstr.length() == 0)
-    {
-        path = towx(rpath);
-        return true;
-    }
-    
-    return false;
-}
-
-
-
 
 BEGIN_EVENT_TABLE(QueryDoc, wxWindow)
     EVT_MENU(ID_File_Save, QueryDoc::onSave)

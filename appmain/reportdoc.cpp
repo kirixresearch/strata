@@ -97,35 +97,6 @@ static double mm2in(double mm) { return (mm/25.4); }
 static int in2model(double in) { return in*kcanvas::CANVAS_MODEL_DPI; }
 static double model2in(int model) { return ((double)(model))/kcanvas::CANVAS_MODEL_DPI; }
 
-// this function determines if the specified path is an internal mount,
-// and if it is, converts the string that was passed in to the remote
-// path specified in the mount
-static bool getRemotePathIfExists(wxString& path)
-{
-    tango::IDatabasePtr db = g_app->getDatabase();
-    if (db.isNull())
-        return false;
-
-    tango::IFileInfoPtr info = db->getFileInfo(towstr(path));
-    if (info.isNull())
-        return false;
-    
-    if (!info->isMount())
-        return false;
-    
-    std::wstring cstr, rpath;
-    db->getMountPoint(towstr(path), cstr, rpath);
-    
-    // convert the path to the remote path of the connection
-    if (cstr.length() == 0)
-    {
-        path = towx(rpath);
-        return true;
-    }
-    
-    return false;
-}
-
 
 // this art provider is exactly the same as wxAuiDefaultToolbarArt,
 // with the exception that it doesn't draw a gradient background
@@ -143,8 +114,6 @@ public:
         dc.DrawRectangle(rect);
     }
 };
-
-
 
 
 BEGIN_EVENT_TABLE(ReportDoc, wxWindow)
