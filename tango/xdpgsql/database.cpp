@@ -292,6 +292,8 @@ std::wstring pgsqlQuoteIdentifierIfNecessary(const std::wstring& str)
     return L"\"" + res + L"\"";
 }
 
+
+
 // PgsqlFileInfo class implementation
 
 
@@ -321,6 +323,65 @@ private:
     PgsqlDatabase* m_db;
 };
 
+
+
+
+xcm_interface IPgsqlJobInfo : public xcm::IObject
+{
+    XCM_INTERFACE_NAME("xdpgsql.IPgsqlJobInfo")
+
+public:
+
+    virtual void setConnection(PGconn* conn) = 0;
+};
+
+XCM_DECLARE_SMARTPTR(IPgsqlJobInfo)
+
+
+class PgsqlJobInfo : public JobInfo, public IPgsqlJobInfo
+{
+public:
+
+    XCM_CLASS_NAME("xdpgsql.PgsqlJobInfo")
+    XCM_BEGIN_INTERFACE_MAP(PgsqlJobInfo)
+        XCM_INTERFACE_ENTRY(tango::IJob)
+        XCM_INTERFACE_ENTRY(IJobInternal)
+        XCM_INTERFACE_ENTRY(IPgsqlJobInfo)
+    XCM_END_INTERFACE_MAP()
+
+    PgsqlJobInfo() : JobInfo()
+    {
+        m_conn = NULL;
+    }
+
+    void setConnection(PGconn* conn)
+    {
+        XCM_AUTO_LOCK(m_obj_mutex);
+        m_conn = conn;
+    }
+
+    bool cancel()
+    {
+        XCM_AUTO_LOCK(m_obj_mutex);
+
+        if (!m_conn)
+            return JobInfo::cancel();
+        
+        if (!getCanCancel())
+            return false;
+
+        char err[256];
+        PGcancel* c = PQgetCancel(m_conn);
+        PQcancel(c, err, 256);
+        PQfreeCancel(c);
+
+        return JobInfo::cancel();
+    }
+
+private:
+
+    PGconn* m_conn;
+};
 
 
 
@@ -362,7 +423,7 @@ PgsqlDatabase::~PgsqlDatabase()
     close();
 
     m_jobs_mutex.lock();
-    std::vector<JobInfo*>::iterator it;
+    std::vector<PgsqlJobInfo*>::iterator it;
     for (it = m_jobs.begin(); it != m_jobs.end(); ++it)
         (*it)->unref();
     m_jobs_mutex.unlock();
@@ -554,7 +615,7 @@ tango::IJobPtr PgsqlDatabase::createJob()
 {
     XCM_AUTO_LOCK(m_jobs_mutex);
 
-    JobInfo* job = new JobInfo;
+    PgsqlJobInfo* job = new PgsqlJobInfo;
     job->setJobId(++m_last_job);
     job->ref();
     m_jobs.push_back(job);
@@ -566,7 +627,7 @@ tango::IJobPtr PgsqlDatabase::getJob(tango::jobid_t job_id)
 {
     XCM_AUTO_LOCK(m_jobs_mutex);
 
-    std::vector<JobInfo*>::iterator it;
+    std::vector<PgsqlJobInfo*>::iterator it;
     for (it = m_jobs.begin(); it != m_jobs.end(); ++it)
     {
         if ((*it)->getJobId() == job_id)
@@ -639,6 +700,13 @@ bool PgsqlDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
     PGconn* conn = createConnection();
     if (!conn)
         return xcm::null;
+
+    if (job)
+    {
+        IPgsqlJobInfoPtr pjob = job;
+        if (pjob)
+            pjob->setConnection(conn); 
+    }
 
     std::wstring intbl = pgsqlGetTablenameFromPath(info->input);
     std::wstring outtbl = pgsqlGetTablenameFromPath(info->output);

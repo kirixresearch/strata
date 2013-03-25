@@ -102,7 +102,7 @@ public:
     int getErrorCode();
     std::wstring getErrorString();
 
-private:
+protected:
 
     xcm::mutex m_obj_mutex;
 
