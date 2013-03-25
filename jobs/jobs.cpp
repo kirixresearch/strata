@@ -19,6 +19,7 @@
 #include "divide.h"
 #include "index.h"
 #include "group.h"
+#include "query.h"
 #include "relationship.h"
 #include "summarize.h"
 #include "update.h"
@@ -46,6 +47,8 @@ IJobPtr createJob(const std::wstring job_class)
         return static_cast<IJob*>(new IndexJob);
     if (job_class == L"application/vnd.kx.group-job")
         return static_cast<IJob*>(new GroupJob);
+    if (job_class == L"application/vnd.kx.query-job")
+        return static_cast<IJob*>(new QueryJob);
     if (job_class == L"application/vnd.kx.relationship-job")
         return static_cast<IJob*>(new RelationshipJob);
     if (job_class == L"application/vnd.kx.summarize-job")
