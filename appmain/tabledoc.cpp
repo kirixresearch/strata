@@ -1519,7 +1519,7 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
 
     // set up the job from the info we gathered
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.copy-job");
-
+    job->getJobInfo()->setTitle(towstr(title));
     kl::JsonNode params;
 
     params["input"].setString(getBaseSet()->getObjectPath());
@@ -7529,9 +7529,13 @@ void TableDoc::copyRecords(const wxString& condition)
         final_condition += wxT(")");
     }
 
+        // create a query job
+    wxString title = wxString::Format(_("Copying Records from '%s'"),
+                                      getCaption().c_str());
 
     // set up the job from the info we gathered
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.copy-job");
+    job->getJobInfo()->setTitle(towstr(title));
 
     kl::JsonNode params;
 

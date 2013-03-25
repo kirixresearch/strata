@@ -76,6 +76,9 @@ int CopyJob::runJob()
     }    
 
 
+    tango::IJobPtr tango_job = m_db->createJob();
+    setTangoJob(tango_job);
+
     kl::JsonNode params = m_config["params"];
 
     // get the input parameters
@@ -89,7 +92,7 @@ int CopyJob::runJob()
     if (params.childExists("where"))
         info.where = params["where"].getString();
 
-    m_db->copyData(&info, NULL);
+    m_db->copyData(&info, tango_job.p);
 
     return 0;
 }
