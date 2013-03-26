@@ -233,43 +233,6 @@ tango::IRowInserterPtr ClientSet::getRowInserter()
     return static_cast<tango::IRowInserter*>(new ClientRowInserter(m_database, this, m_path));
 }
 
-tango::IRowDeleterPtr ClientSet::getRowDeleter()
-{
-    return xcm::null;
-}
-
-int ClientSet::insert(tango::IIteratorPtr source_iter,
-                      const std::wstring& where_condition,
-                      int max_rows,
-                      tango::IJob* job)
-{
-
-    IClientIteratorPtr client_iter = source_iter;
-    if (client_iter.isOk() && client_iter->getClientDatabase() == m_database)
-    {
-        // perform the copy on the server
-
-        ServerCallParams params;
-        params.setParam(L"path", m_path);
-        params.setParam(L"source_handle", client_iter->getHandle());
-        params.setParam(L"where", where_condition);
-        params.setParam(L"max_rows", kl::itowstring(max_rows));
-        std::wstring sres = m_database->serverCall(L"/api/insertrows", &params);
-        kl::JsonNode response;
-        response.fromString(sres);
-
-        if (!response["success"].getBoolean())
-            return 0;
-
-        return response["row_count"].getInteger();
-    }
-     else
-    {
-        return xdcmnInsert(source_iter, this, where_condition, max_rows, job);
-    }
-}
-
-
 tango::IIteratorPtr ClientSet::createIterator(const std::wstring& columns,
                                               const std::wstring& order,
                                               tango::IJob* job)

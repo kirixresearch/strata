@@ -195,19 +195,6 @@ tango::IRowInserterPtr DelimitedTextSet::getRowInserter()
     return static_cast<tango::IRowInserter*>(inserter);
 }
 
-tango::IRowDeleterPtr DelimitedTextSet::getRowDeleter()
-{
-    return xcm::null;
-}
-
-int DelimitedTextSet::insert(tango::IIteratorPtr source_iter,
-                             const std::wstring& where_condition,
-                             int max_rows,
-                             tango::IJob* job)
-{
-    return xdcmnInsert(source_iter, this, where_condition, max_rows, job);
-}
-
 tango::IIteratorPtr DelimitedTextSet::createSourceIterator(tango::IJob* job)
 {
     DelimitedTextIterator* iter = new DelimitedTextIterator;

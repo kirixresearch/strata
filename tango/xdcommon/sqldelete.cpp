@@ -29,6 +29,9 @@ static int doDelete(tango::ISetPtr set,
                     const std::wstring& filter,
                     tango::IJob* job)
 {
+    return 0;
+
+/*
     int delete_count = 0;
 
     // get a row deleter from this object
@@ -116,6 +119,7 @@ static int doDelete(tango::ISetPtr set,
     }
     
     return delete_count;
+    */
 }
 
 

@@ -75,11 +75,6 @@ tango::IRowInserterPtr IterWrapperSet::getRowInserter()
     return xcm::null;
 }
 
-tango::IRowDeleterPtr IterWrapperSet::getRowDeleter()
-{
-    return m_base_set->getRowDeleter();
-}
-
 int IterWrapperSet::insert(tango::IIteratorPtr source_iter,
                            const std::wstring& where_condition,
                            int max_rows,
@@ -293,10 +288,7 @@ tango::IRowInserterPtr EofSet::getRowInserter()
     return xcm::null;
 }
 
-tango::IRowDeleterPtr EofSet::getRowDeleter()
-{
-    return xcm::null;
-}
+
 
 int EofSet::insert(tango::IIteratorPtr source_iter,
                    const std::wstring& where_condition,

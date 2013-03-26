@@ -92,12 +92,6 @@ public:
     std::wstring getSetId();
 
     tango::IRowInserterPtr getRowInserter();
-    tango::IRowDeleterPtr getRowDeleter();
-
-    int insert(tango::IIteratorPtr source_iter,
-               const std::wstring& where_condition,
-               int max_rows,
-               tango::IJob* job);
 
     tango::IIteratorPtr createIterator(const std::wstring& columns,
                                        const std::wstring& expr,

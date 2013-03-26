@@ -5738,6 +5738,7 @@ void TableDoc::onColumnListDblClicked(const std::vector<wxString>& items)
 
 void TableDoc::deleteSelectedRows()
 {
+/*
     // check for external data; if we're on external data, we're done
     if (isExternalTable())
     {
@@ -5890,6 +5891,7 @@ void TableDoc::deleteSelectedRows()
     // refresh the grid and status bar
     m_grid->refresh(kcl::Grid::refreshAll);
     updateStatusBar();
+*/
 }
 
 void TableDoc::deleteSelectedColumns()

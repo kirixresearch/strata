@@ -43,13 +43,6 @@ public:
     std::wstring getSetId();
 
     tango::IRowInserterPtr getRowInserter();
-    tango::IRowDeleterPtr getRowDeleter();
-
-    int insert(tango::IIteratorPtr source_iter,
-               const std::wstring& where_condition,
-               int max_rows,
-               tango::IJob* job);
-
     tango::rowpos_t getRowCount();
 
     // -- ISetInternal --

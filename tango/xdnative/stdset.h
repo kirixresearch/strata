@@ -41,7 +41,6 @@ public:
     bool modifyStructure(tango::IStructure* struct_config, tango::IJob* job);
 
     tango::IRowInserterPtr getRowInserter();
-    tango::IRowDeleterPtr getRowDeleter();
     tango::IIteratorPtr getRow(tango::rowid_t rowid);
     tango::rowpos_t getRowCount();
 
@@ -130,7 +129,6 @@ public:
     bool modifyStructure(tango::IStructure* struct_config, tango::IJob* job);
 
     tango::IRowInserterPtr getRowInserter();
-    tango::IRowDeleterPtr getRowDeleter();
     tango::IIteratorPtr createIterator(const std::wstring& columns,
                                        const std::wstring& expr,
                                        tango::IJob* job);

@@ -101,22 +101,6 @@ tango::IRowInserterPtr BaseSet::getRowInserter()
     return xcm::null;
 }
 
-tango::IRowDeleterPtr BaseSet::getRowDeleter()
-{
-    // default does nothing
-    return xcm::null;
-}
-
-int BaseSet::insert(tango::IIteratorPtr source_iter,
-                    const std::wstring& where_condition,
-                    int max_rows,
-                    tango::IJob* job)
-{
-    // default does nothing
-    return 0;
-}
-
-
 
 
 // calculated Field routines

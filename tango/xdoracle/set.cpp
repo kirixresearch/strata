@@ -383,21 +383,6 @@ tango::IRowInserterPtr OracleSet::getRowInserter()
     return static_cast<tango::IRowInserter*>(inserter);
 }
 
-tango::IRowDeleterPtr OracleSet::getRowDeleter()
-{
-    return xcm::null;
-}
-
-int OracleSet::insert(tango::IIteratorPtr source_iter,
-                      const std::wstring& where_condition,
-                      int max_rows,
-                      tango::IJob* job)
-{
-    return xdcmnInsert(source_iter, this, where_condition, max_rows, job);
-}
-
-
-
 tango::IIteratorPtr OracleSet::createIterator(const std::wstring& columns,
                                               const std::wstring& expr,
                                               tango::IJob* job)

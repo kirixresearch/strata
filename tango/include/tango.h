@@ -547,7 +547,6 @@ public:
     virtual bool modifyStructure(IStructure* struct_config, IJob* job) = 0;
 
     virtual IRowInserterPtr getRowInserter() = 0;
-    virtual IRowDeleterPtr getRowDeleter() = 0;
 
     virtual IIteratorPtr createIterator(const std::wstring& columns,
                                         const std::wstring& expr,
