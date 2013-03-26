@@ -534,10 +534,6 @@ bool ExportPkgJob::writeSetStream(tango::IDatabasePtr& db,
                                   PkgStreamInfo* info,
                                   bool* cancelled)
 {
-    tango::ISetPtr set = db->openSet(towstr(info->src_path));
-    if (set.isNull())
-        return false;
-
     tango::IStructurePtr structure;
     tango::IIteratorPtr sp_iter;
     tango::IIterator* iter;
@@ -555,9 +551,16 @@ bool ExportPkgJob::writeSetStream(tango::IDatabasePtr& db,
 
 
 
+    // create an iterator
+    sp_iter = db->createIterator(towstr(info->src_path), L"", L"", NULL);
+    if (!sp_iter)
+        return false;
+    iter = sp_iter.p;
+
+    std::wstring set_id = sp_iter->getSet()->getSetId();
 
     // get structure from set
-    structure = set->getStructure();
+    structure = sp_iter->getStructure();
     col_count = structure->getColumnCount();
 
     if (col_count < 1)
@@ -615,13 +618,6 @@ bool ExportPkgJob::writeSetStream(tango::IDatabasePtr& db,
     rows_per_buf = package_block_size / total_phys_width;
 
 
-    // create an iterator
-    sp_iter = set->createIterator(L"", L"", NULL);
-    if (!sp_iter)
-        return false;
-    iter = sp_iter.p;
-
-
     writer = pkg->createStream(towstr(info->stream_name));
     if (!writer)
         return false;
@@ -646,7 +642,7 @@ bool ExportPkgJob::writeSetStream(tango::IDatabasePtr& db,
 
     // first load the set's model
     ITableDocModelPtr tabledoc_model;
-    tabledoc_model = TableDocMgr::loadModel(set->getSetId());
+    tabledoc_model = TableDocMgr::loadModel(set_id);
     if (tabledoc_model.isOk())
     {
         tabledocmodel2xml(tabledoc_model, tabledoc_model_node);
