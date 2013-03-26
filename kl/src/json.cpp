@@ -1022,6 +1022,11 @@ std::wstring JsonNode::stringify(unsigned int indent_level) const
         bool first = true;
         for (it = m_value->m_child_nodes_ordered.begin(); it != it_end; ++it)
         {
+            // if a node is undefined, don't include it to avoid 
+            // creating output like:  ["a",,,"b"]
+            if (it->second.isUndefined())
+                continue;
+
             if (!first)
                 result += L"," + newline + addspaces(indent_level+1);
             first = false;
@@ -1044,6 +1049,11 @@ std::wstring JsonNode::stringify(unsigned int indent_level) const
         bool first = true;
         for (it = m_value->m_child_nodes_ordered.begin(); it != it_end; ++it)
         {
+            // if a node is undefined, don't include it to avoid 
+            // creating output like:  {"a": }
+            if (it->second.isUndefined())
+                continue;
+
             if (!first)
                 result += L"," + newline + addspaces(indent_level+1);
             first = false;
