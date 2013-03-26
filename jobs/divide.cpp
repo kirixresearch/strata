@@ -129,53 +129,35 @@ int DivideJob::runJob()
     int i = 0;
     while (rows_left > 0)
     {
+        std::wstring suffix, output_path;
+
+        i++;
+
+        if (output_table_count < 10)
+            suffix = kl::stdswprintf(L"%01d", i+1);
+        else if (output_table_count >= 10 && output_table_count < 100)
+            suffix = kl::stdswprintf(L"%02d", i+1);
+        else
+            suffix = kl::stdswprintf(L"%03d", i+1);
+
+        output_path = output_prefix + suffix;
+
+        if (rows_left >= output_row_count)
+            rows_left -= output_row_count;
+                else
+            rows_left = 0;
+
         tango_job = m_db->createJob();
         setTangoJob(tango_job);
 
-        dest_set = m_db->createTable(L"", structure, NULL);
-
-
         tango::CopyInfo info;
         info.iter_input = iter;
-        info.output = dest_set->getObjectPath();
+        info.output = output_path;
         info.max_rows = (rows_left >= output_row_count) ? output_row_count : rows_left;
         m_db->copyData(&info, tango_job);
 
-
         if (isCancelling())
-        {
             break;
-        }
-         else
-        {
-            wchar_t buf[10];
-            if (output_table_count < 10)
-                swprintf(buf, L"%01d", i+1);
-            else if (output_table_count >= 10 && output_table_count < 100)
-                swprintf(buf, L"%02d", i+1);
-            else
-                swprintf(buf, L"%03d", i+1);
-
-            std::wstring output_suffix(buf);
-            std::wstring output_path = output_prefix + output_suffix;
-            to_store.push_back(std::pair<tango::ISetPtr, std::wstring>(dest_set, output_path));
-
-            if (rows_left >= output_row_count)
-                rows_left -= output_row_count;
-                 else
-                rows_left = 0;
-        }
-
-        i++;
-    }
-
-    if (!isCancelling())
-    {
-        std::vector< std::pair<tango::ISetPtr, std::wstring> >::iterator it;
-        for (it = to_store.begin(); it != to_store.end(); ++it)
-        {
-            m_db->storeObject(it->first, it->second);
-        }
     }
 
     return 0;

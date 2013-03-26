@@ -1698,6 +1698,7 @@ bool Database::copyData(const tango::CopyInfo* info, tango::IJob* job)
     }
      else
     {
+        deleteFile(info->output);
         output = createTable(info->output, structure, NULL);
     }
 
