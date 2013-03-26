@@ -84,7 +84,6 @@ int QueryJob::runJob()
     kl::JsonNode where_node = params_node["where"];
     kl::JsonNode order_node = params_node["order"];
 
-
     std::wstring input = input_node.getString();
     std::wstring q_input = tango::quoteIdentifier(m_db, input_node.getString());
 
@@ -101,8 +100,9 @@ int QueryJob::runJob()
         if (!first)
             order_clause += L",";
 
-        // TODO: make sure fieldnames are quoted (dequote/requote) before
-        // adding them to the list
+        // TODO: make sure fieldnames are quoted (dequote/quote) before
+        // adding them to the list (remove any DESC qualifier, dequote/quote 
+        // the field, and re-add the qualifier)
         order_clause += it->getString();
     }
 

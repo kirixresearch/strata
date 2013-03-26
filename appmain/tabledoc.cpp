@@ -3171,6 +3171,56 @@ void TableDoc::hideColumn(int idx)
     m_frame->postEvent(e);
 }
 
+void TableDoc::onQueryJobFinished(jobs::IJobPtr job)
+{
+    if (job.isOk())
+    {
+        // if the job that finished is the quick filter job,
+        // reset the filter pending state
+        int id = job->getJobId();
+        if (id == m_quick_filter_jobid)
+            m_quick_filter_jobid = quickFilterNotPending;
+    }
+
+    if (job->getJobInfo()->getState() != jobStateFinished)
+    {
+        // if the job is cancelled or failed, update the filter toolbar item
+        // and we're done
+        if (job->getJobInfo()->getState() == jobStateCancelled ||
+            job->getJobInfo()->getState() == jobStateFailed)
+        {
+            g_app->getAppController()->updateQuickFilterToolBarItem();    
+        }
+
+        return;
+    }
+
+    tango::IIteratorPtr iter = job->getResultObject();
+    if (iter.isOk())
+    {
+        kl::JsonNode params_node;
+        params_node.fromString(job->getParameters());
+        m_filter = towstr(params_node["where"].getString());
+
+        // TODO: set order
+        //m_sort_order = L"";
+
+        setBrowseSet(iter->getSet(), iter);
+    }
+
+    updateStatusBar();
+    g_app->getAppController()->updateQuickFilterToolBarItem();
+
+    wxString suffix;
+    if (m_filter.Length() > 0)
+    {
+        suffix = wxT(" [");
+        suffix += _("Filtered");
+        suffix += wxT("]");
+    }
+    
+    setCaption(wxEmptyString, suffix);
+}
 
 void TableDoc::onSortFilterJobFinished(IJobPtr job)
 {

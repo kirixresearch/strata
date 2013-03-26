@@ -265,6 +265,7 @@ private:
     bool saveAsStructure(const wxString& path);
 
     void onSaveAsJobFinished(jobs::IJobPtr saveas_job);
+    void onQueryJobFinished(jobs::IJobPtr query_job);
     void onSortFilterJobFinished(IJobPtr query_job);
     void onSetOrderFinished(IJobPtr query_job);
     void onDeleteJobFinished(IJobPtr delete_job);

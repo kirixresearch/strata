@@ -20,26 +20,56 @@
 void TableDoc::setFilter(const wxString& filter)
 {
     if (filter.IsEmpty())
-    {
         removeFilter();
+
+
+    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.query-job");
+
+
+    // configure the job parameters
+    kl::JsonNode params;
+    params["input"].setString(towstr(m_browse_set->getObjectPath()));
+    params["where"].setString(towstr(filter));
+    params["order"].setArray();
+
+    if (m_sort_order.Length() > 0)
+    {
+        std::vector< std::pair<std::wstring, bool> > sort_fields;
+        sort_fields = sortExprToVector(towstr(m_sort_order));
+
+        std::vector< std::pair<std::wstring, bool> >::iterator it, it_end;
+        it_end = sort_fields.end();
+
+        for (it = sort_fields.begin(); it != it_end; ++it)
+        {
+            std::wstring order_field_str;
+
+            std::wstring field = it->first;
+            field = tango::dequoteIdentifier(g_app->getDatabase(), field);
+            field = tango::quoteIdentifier(g_app->getDatabase(), field);
+            order_field_str = field + (it->second ? L" DESC" : L""); 
+
+            kl::JsonNode order_field_node = params["order"].appendElement();
+            order_field_node.setString(order_field_str);
+        }
     }
 
-    // create a query job
+
+    // set the job parameters and start the job
     wxString title = wxString::Format(_("Filtering '%s'"),
-                                      getCaption().c_str());
+                                      m_doc_site->getCaption().c_str());
 
-    SortFilterJob* query_job = new SortFilterJob;
-    query_job->getJobInfo()->setTitle(towstr(title));
-    query_job->setInstructions(m_set, filter, m_sort_order);
-    query_job->sigJobFinished().connect(this, &TableDoc::onSortFilterJobFinished);
+    job->getJobInfo()->setTitle(towstr(title));
+    job->setParameters(params.toString());
 
-    g_app->getJobQueue()->addJob(query_job, jobStateRunning);
-    
+    job->sigJobFinished().connect(this, &TableDoc::onQueryJobFinished);
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
+
+
     // if the job is a quick filter job, track the ID
     if (m_quick_filter_jobid == quickFilterPending)
-        m_quick_filter_jobid = query_job->getJobInfo()->getJobId();    
+        m_quick_filter_jobid = job->getJobInfo()->getJobId();
 }
-
 
 void TableDoc::setQuickFilter(const wxString& val)
 {
@@ -51,12 +81,10 @@ void TableDoc::setQuickFilter(const wxString& val)
     setFilter(filter_expr);
 }
 
-
 wxString TableDoc::getFilter()
 {
     return m_filter;
 }
-
 
 void TableDoc::removeFilter()
 {
@@ -77,14 +105,10 @@ void TableDoc::removeFilter()
     setCaption(wxEmptyString, wxEmptyString);
 }
 
-
-
 void TableDoc::setSortOrder(const wxString& expr)
 {
     if (m_grid->isEditing())
-    {
         m_grid->endEdit(true);
-    }
 
 
     // if the database can't handle createIterator() with a different
@@ -141,8 +165,6 @@ wxString TableDoc::getSortOrder()
     return m_sort_order;
 }
 
-
-
 void TableDoc::setGroupBreak(const wxString& _expr)
 {
     wxString expr = _expr;
@@ -163,8 +185,6 @@ wxString TableDoc::getGroupBreak()
     return m_group_break;
 }
 
-
-
 void TableDoc::createNewMark(const wxString& expr)
 {
     // create mark
@@ -182,9 +202,6 @@ void TableDoc::createNewMark(const wxString& expr)
     // and make sure the marks panel is shown
     m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_MARK_CREATED));
 }
-
-
-
 
 
 
@@ -258,7 +275,6 @@ void TableDoc::scriptfuncSetQuickFilter(kscript::ExprEnv* env,
         val = env->getParam(0)->getString();
     pThis->setQuickFilter(val);
 }
-
 
 // static
 void TableDoc::scriptfuncGetFilter(kscript::ExprEnv* env,

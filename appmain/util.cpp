@@ -395,7 +395,7 @@ std::vector< std::pair<std::wstring, bool> > sortExprToVector(const std::wstring
     // fieldnames that make up the sort expression into a vector of pairs,
     // where the first part of the pair is the name of the field and the 
     // second part of the field is a boolean value that indicates the sort
-    // order: false = sort ascending and true = sort descneding
+    // order: false = sort ascending and true = sort descending
 
     // used throughout
     std::vector< std::pair<std::wstring, bool> > sort_fields;
