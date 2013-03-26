@@ -332,7 +332,6 @@ int ExportJob::runJob()
     {
         updateJobTitle(&(*it));
         
-        tango::ISetPtr src_set;
         tango::IStructurePtr src_struct;
         tango::IIteratorPtr src_iter;
         tango::ISetPtr dest_set;
@@ -342,14 +341,16 @@ int ExportJob::runJob()
         std::vector<ExportCopyInfo>::iterator copyinfo_it;
 
 
-        src_set = src_db_ptr->openSet(towstr(it->input_path));
-        if (src_set.isNull())
+        // now, do the insert
+        src_iter = src_db_ptr->createIterator(towstr(it->input_path), L"", L"", NULL);
+        if (src_iter.isNull())
         {
             m_job_info->setState(jobStateFailed);
             return 0;
         }
 
-        src_struct = src_set->getStructure();
+
+        src_struct = src_iter->getStructure();
         if (src_struct.isNull())
         {
             m_job_info->setState(jobStateFailed);
@@ -606,8 +607,6 @@ int ExportJob::runJob()
         //  resulting in no values being inserted into character fields
         dest_struct = dest_set->getStructure();
 
-        // now, do the insert
-        src_iter = src_set->createIterator(L"", L"", NULL);
 
         tango::IRowInserterPtr ri;
         ri = dest_set->getRowInserter();
