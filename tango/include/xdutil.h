@@ -178,6 +178,9 @@ inline std::wstring dequoteIdentifier(tango::IDatabasePtr db, const std::wstring
         if (attr)
         {
             size_t length = identifier.size();
+            if (length == 0)
+                return identifier;
+
             wchar_t open_char = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar)[0];
             wchar_t close_char = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar)[0];
             wchar_t first_char = identifier[0];
