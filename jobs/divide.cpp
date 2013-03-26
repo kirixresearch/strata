@@ -134,14 +134,13 @@ int DivideJob::runJob()
 
         dest_set = m_db->createTable(L"", structure, NULL);
 
-        if (rows_left >= output_row_count)
-        {
-            dest_set->insert(iter, L"", output_row_count, tango_job);
-        }
-         else
-        {
-            dest_set->insert(iter, L"", rows_left, tango_job);
-        }
+
+        tango::CopyInfo info;
+        info.iter_input = iter;
+        info.output = dest_set->getObjectPath();
+        info.max_rows = (rows_left >= output_row_count) ? output_row_count : rows_left;
+        m_db->copyData(&info, tango_job);
+
 
         if (isCancelling())
         {

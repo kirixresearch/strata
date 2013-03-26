@@ -1795,7 +1795,9 @@ void DbConnection::save(kscript::ExprEnv* env, kscript::Value* retval)
     DbResult* input_set = (DbResult*)env->getParam(0)->getObject();
     if (input_set->getStructure().isNull())
         return;
-    if (input_set->getIterator().isNull())
+
+    tango::IIteratorPtr input_iter = input_set->getIterator();
+    if (input_iter.isNull())
         return;
 
     // option third parameter
@@ -1819,14 +1821,16 @@ void DbConnection::save(kscript::ExprEnv* env, kscript::Value* retval)
     if (output_set.isNull())
         return;
 
-    // reset the position of the iterator
-    input_set->getIterator()->goFirst();
-
     // add the records to the output set, reset the
     // iterator, and we're done
-    output_set->insert(input_set->getIterator(), L"", 0, NULL);
-    input_set->getIterator()->goFirst();
-    retval->setBoolean(true);
+
+    tango::CopyInfo info;
+    info.iter_input = input_set->getIterator();
+    info.output = output_set->getObjectPath();
+ 
+    bool res = m_db->copyData(&info, NULL);
+
+    retval->setBoolean(res);
 }
 
 

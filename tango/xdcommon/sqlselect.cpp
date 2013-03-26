@@ -25,6 +25,7 @@
 #include "sqlcommon.h"
 #include "cmndynamicset.h"
 #include "errorinfo.h"
+#include "dbfuncs.h"
 #include "../../kscript/kscript.h"
 #include "../../kscript/functions.h"
 
@@ -2230,8 +2231,8 @@ bool convertToNativeTables(tango::IDatabasePtr db,
             return false;
         iter->goFirst();
             
-        set->insert(iter, L"", 0, job);
-        
+        xdcmnInsert(iter, set,  L"",  0,  job);
+
         if (mainset == st_it->set)
             mainset = set;
             
@@ -3418,7 +3419,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
             ijob->startPhase();
         }
 
-        output_set->insert(iter, L"", 0, job);
+        xdcmnInsert(iter, output_set,  L"",  0,  job);
 
         if (job && job->getCancelled())
         {

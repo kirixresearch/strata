@@ -25,6 +25,7 @@
 #include "../xdcommon/fileinfo.h"
 #include "../xdcommon/filestream.h"
 #include "../xdcommon/connectionstr.h"
+#include "../xdcommon/dbfuncs.h"
 #include "nodefilestream.h"
 #include "database.h"
 #include "baseset.h"
@@ -1665,15 +1666,28 @@ static bool _copyTree(const std::wstring& path,
 
 bool Database::copyData(const tango::CopyInfo* info, tango::IJob* job)
 {
-    tango::ISetPtr input = openSet(info->input);
-    if (input.isNull())
-        return false;
 
-    tango::IIteratorPtr iter = input->createIterator(L"", info->order, NULL);
+    tango::IIteratorPtr iter;
+    tango::IStructurePtr structure;
 
-    tango::IStructurePtr structure = input->getStructure();
-    if (structure.isNull())
-        return false;
+    if (info->iter_input.isOk())
+    {
+        iter = info->iter_input;
+        structure = iter->getStructure();
+    }
+     else
+    {
+        tango::ISetPtr input = openSet(info->input);
+        if (input.isNull())
+            return false;
+
+        iter = input->createIterator(L"", info->order, NULL);
+
+        structure = input->getStructure();
+        if (structure.isNull())
+            return false;
+    }
+
 
     tango::ISetPtr result_set;
     tango::ISetPtr output;
@@ -1690,8 +1704,8 @@ bool Database::copyData(const tango::CopyInfo* info, tango::IJob* job)
     if (output.isNull())
         return false;
 
-    output->insert(iter, info->where, 0, NULL);
-    
+    xdcmnInsert(iter, output, info->where,  info->max_rows,  job);
+
     return true;
 }
 

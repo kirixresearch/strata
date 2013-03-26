@@ -19,6 +19,7 @@
 #include "tango.h"
 #include "sqlcommon.h"
 #include "util.h"
+#include "dbfuncs.h"
 
 
 struct InsertFieldInfo
@@ -116,7 +117,7 @@ bool sqlInsert(tango::IDatabasePtr db,
         }
 
         src_iter->goFirst();
-        set->insert(src_iter, L"", 0, NULL);
+        xdcmnInsert(src_iter, set,  L"",  0,  NULL);
 
         return true;
     }

@@ -541,23 +541,17 @@ public:
 
     virtual unsigned int getSetFlags() = 0;
     virtual std::wstring getSetId() = 0;
-
+    virtual rowpos_t getRowCount() = 0;
     virtual IStructurePtr getStructure() = 0;
+
     virtual bool modifyStructure(IStructure* struct_config, IJob* job) = 0;
 
     virtual IRowInserterPtr getRowInserter() = 0;
     virtual IRowDeleterPtr getRowDeleter() = 0;
 
-    virtual int insert(IIteratorPtr source_iter,
-                       const std::wstring& where_condition,
-                       int max_rows,
-                       IJob* job) = 0;
-
     virtual IIteratorPtr createIterator(const std::wstring& columns,
                                         const std::wstring& expr,
                                         IJob* job) = 0;
-
-    virtual rowpos_t getRowCount() = 0;
 };
 
 
@@ -653,14 +647,17 @@ struct CopyInfo
     CopyInfo()
     {
         append = false;
+        max_rows = -1;
     }
 
+    IIteratorPtr iter_input;
     std::wstring input;
     std::wstring output;
     bool append;
 
     std::wstring where;
     std::wstring order;
+    int max_rows;
 };
 
 struct GroupQueryInfo

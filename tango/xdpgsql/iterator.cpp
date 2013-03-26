@@ -393,14 +393,6 @@ tango::IStructurePtr PgsqlIterator::getStructure()
         return m_structure->clone();
 
 
-    tango::IStructurePtr set_structure;
-
-/*    
-    if (m_set)
-    {
-        set_structure = m_set->getStructure();
-    }
-*/
 
     Structure* s = new Structure;
 
@@ -409,14 +401,6 @@ tango::IStructurePtr PgsqlIterator::getStructure()
     {
         tango::IColumnInfoPtr col;
      
-        // try to use the column info from the
-        // set's structure, if possible
-
-        if (set_structure)
-        {
-            col = set_structure->getColumnInfo((*it)->name);
-        }
-
         if (col.isOk())
         {
             col->setColumnOrdinal((*it)->ordinal - 1);
