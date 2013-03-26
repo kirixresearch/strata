@@ -831,6 +831,7 @@ public:
 
 
 
+/*
 class SqlSeekIterator : public SqlIterator
 {
 public:
@@ -924,7 +925,7 @@ public:
     tango::rowpos_t m_curpos;
     bool m_cancelled;
 };
-
+*/
 
 
 SqlIterator* SqlIterator::createSqlIterator(tango::IIteratorPtr iter,

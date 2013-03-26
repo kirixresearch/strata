@@ -25,7 +25,7 @@
 
 
 
-static int doDelete(tango::ISetPtr set,
+static int doDelete(std::wstring path,
                     const std::wstring& filter,
                     tango::IJob* job)
 {
@@ -182,7 +182,7 @@ bool sqlDelete(tango::IDatabasePtr db,
         return true;
     }
 
-    int result = doDelete(set, filter, job);
+    int result = doDelete(table, filter, job);
     if (result == -1)
     {
         error.setError(tango::errorGeneral, L"Unable to process DELETE statement");
