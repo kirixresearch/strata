@@ -4714,13 +4714,10 @@ void ReportDoc::insertFormula(int command_id)
             // there's no way to get it without running the query
 
             wxString data_source = getDesignComponentRaw()->getDataSource();
-            tango::ISetPtr set = g_app->getDatabase()->openSet(towstr(data_source));
-            if (!set.isNull())
-            {
-                tango::IIteratorPtr iter = set->createIterator(L"", L"", NULL);
-                if (!iter.isNull())
-                    panel->setIterator(iter);
-            }
+
+            tango::IIteratorPtr iter = g_app->getDatabase()->createIterator(towstr(data_source), L"", L"", NULL);
+            if (!iter.isNull())
+                panel->setIterator(iter);
 
             // set the initial expression
             panel->setExpression(cell_text);

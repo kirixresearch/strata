@@ -107,11 +107,8 @@ int DivideJob::runJob()
     tango::ISetPtr dest_set;
     tango::IIteratorPtr iter;
     
-    iter = input_set->createIterator(L"", L"", NULL);
+    iter = m_db->createIterator(input_path, L"", L"", NULL);
     iter->goFirst();
-
-
-    std::vector< std::pair<tango::ISetPtr, std::wstring> > to_store;
 
     int i = 0;
     while (rows_left > 0)
