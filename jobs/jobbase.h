@@ -111,19 +111,32 @@ public:
         return res;
     }
 
-    void setResultObject(const std::wstring& json)
+    void setExtraValue(const std::wstring& key, const std::wstring& value)
     {
         XCM_AUTO_LOCK(m_jobbase_mutex);
 
-        m_result.fromString(json);
+        m_extra[key] = value;
     }
 
-    std::wstring getResultObject()
+    std::wstring getExtraValue(const std::wstring& key)
     {
         XCM_AUTO_LOCK(m_jobbase_mutex);
 
-        std::wstring res = m_result.toString();
-        return res;
+        return m_extra[key];
+    }
+
+    void setResultObject(xcm::IObjectPtr result)
+    {
+        XCM_AUTO_LOCK(m_jobbase_mutex);
+
+        m_result = result;
+    }
+
+    xcm::IObjectPtr getResultObject()
+    {
+        XCM_AUTO_LOCK(m_jobbase_mutex);
+
+        return m_result;
     }
 
     void setDatabase(tango::IDatabase* db)
@@ -160,23 +173,12 @@ public:
     {
     }
 
-
-    std::wstring getExtraValue(const std::wstring& key)
-    {
-        return m_extra[key];
-    }
-
-    void setExtraValue(const std::wstring& key, const std::wstring& value)
-    {
-        m_extra[key] = value;
-    }
-
 protected:
 
     IJobInfoPtr m_sp_job_info;
     IJobInfo* m_job_info;
     kl::JsonNode m_config;
-    kl::JsonNode m_result;
+    xcm::IObjectPtr m_result;
     std::map<std::wstring, std::wstring> m_extra;
 
 private:
