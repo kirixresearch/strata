@@ -30,7 +30,9 @@ public:
     GroupPanel();
     ~GroupPanel();
 
-    // -- IDocument --
+    void setParameters(const wxString& path, const wxString& where_condition);
+
+    // IDocument
     bool initDoc(IFramePtr frame,
                  IDocumentSitePtr site,
                  wxWindow* doc_site,
@@ -39,7 +41,7 @@ public:
     wxWindow* getDocumentWindow();
     void setDocumentFocus();
 
-    // -- panel methods --
+    // panel methods
     void markProblemRow(int row,
                         bool scroll_to = false,
                         bool refresh = true);
@@ -61,14 +63,14 @@ private:
     void onCancel(wxCommandEvent& evt);
     void onAdvancedQueryText(wxCommandEvent& evt);
 
-    // -- grid events --
+    // grid events
     void onGridEndEdit(kcl::GridEvent& evt);
     void onGridEditChange(kcl::GridEvent& evt);
     void onGridPreGhostRowInsert(kcl::GridEvent& evt);
     void onGridPreInvalidAreaInsert(kcl::GridEvent& evt);
     void onGridDataDropped(kcl::GridDataDropTarget* drop_target);
 
-    // -- signal events --
+    // signal events
     void onFieldDblClicked(int row, const wxString& field);
     void onDeletedRows(std::vector<int> rows);
 
@@ -77,9 +79,8 @@ private:
     IDocumentSitePtr m_doc_site;
     tango::IStructurePtr m_structure;
     
-    tango::ISetPtr m_base_set;
-    tango::ISetPtr m_browse_set;
-    wxString m_browse_filter;
+    wxString m_path;
+    wxString m_where_condition;
 
     FieldListControl* m_tablecols;
     kcl::RowSelectionGrid* m_grid;
@@ -92,8 +93,6 @@ private:
 
     DECLARE_EVENT_TABLE()
 };
-
-
 
 
 

@@ -8320,6 +8320,8 @@ void TableDoc::onGroup(wxCommandEvent& evt)
     if (site.isNull())
     {
         GroupPanel* panel = new GroupPanel;
+        panel->setParameters(m_path, getFilter());
+
         site = g_app->getMainFrame()->createSite(panel,
                                                  sitetypeModeless,
                                                  -1, -1, 600, 360);

@@ -271,6 +271,7 @@ wxString getObjectPathFromMountPath(const wxString& database_path);
 wxString getPhysPathFromMountPath(const wxString& database_path);
 std::wstring getMountRoot(tango::IDatabasePtr db, const std::wstring path);
 bool getMountPointHelper(tango::IDatabasePtr& db, const wxString& _path, wxString& cstr, wxString& rpath);
+bool isTemporaryTable(const std::wstring& path);
 
 std::wstring getDbDriverFromSet(tango::ISetPtr set);
 

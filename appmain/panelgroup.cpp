@@ -193,6 +193,13 @@ GroupPanel::~GroupPanel()
 
 }
 
+void GroupPanel::setParameters(const wxString& path, const wxString& where_condition)
+{
+    m_path = path;
+    m_where_condition = where_condition;
+}
+
+
 bool GroupPanel::initDoc(IFramePtr frame,
                          IDocumentSitePtr site,
                          wxWindow* docsite_wnd,
@@ -324,35 +331,23 @@ bool GroupPanel::initDoc(IFramePtr frame,
     m_grid->setColumnSize(GroupCol_OutputField, w);
 
 
-    IDocumentSitePtr active_site;
-    active_site = g_app->getMainFrame()->getActiveChild();
-    if (active_site.isNull())
-        return false;
-
-    ITableDocPtr tabledoc = active_site->getDocument();
-    if (tabledoc.isNull())
-        return false;
-
-    m_base_set = tabledoc->getBaseSet();
-    m_browse_set = tabledoc->getBrowseSet();
-    m_browse_filter = tabledoc->getFilter();
-
-    if (m_browse_set.isNull())
-        return false;
 
     wxString caption = _("Group");
-    if (!m_browse_set->isTemporary())
+
+    if (!isTemporaryTable(towstr(m_path)))
     {
-        wxString name = towx(m_browse_set->getObjectPath());
-        name.AfterLast(wxT('/'));
-        
+        wxString name = m_path.AfterLast(wxT('/'));
         caption += wxT(" - [");
         caption += name;
         caption += wxT("]");
     }
 
+    tango::IDatabasePtr db = g_app->getDatabase();
+    m_structure = db->describeTable(towstr(m_path));
+    if (m_structure.isNull())
+        return false;
+
     // save structure for later
-    m_structure = m_browse_set->getStructure();
     m_tablecols->addCustomItem(getCountLabel(), GETBMP(xpm_blank_16));
     m_tablecols->addCustomItem(getGroupIdLabel(), GETBMP(xpm_blank_16));
     m_tablecols->setStructure(m_structure);
@@ -655,15 +650,19 @@ void GroupPanel::addGroupField(const wxString& input)
     insertOutputField(-1, input);
 }
 
-void GroupPanel::onExecute(wxCommandEvent& event)
+void GroupPanel::onExecute(wxCommandEvent& evt)
 {
+    tango::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return;
+
     m_grid->endEdit(true);
 
     tango::IColumnInfoPtr colinfo;
     int i, row_count = m_grid->getRowCount();
     int combo_sel;
 
-    // -- do some rudimentary checks --
+    // do some rudimentary checks
 
     if (row_count == 0)
     {
@@ -767,7 +766,7 @@ void GroupPanel::onExecute(wxCommandEvent& event)
         if (func == GroupFunc_Count && input_name.length() > 0)
         {
             // check to make sure that count's parameter is boolean
-            tango::IIteratorPtr iter = m_browse_set->createIterator(L"", L"", NULL);
+            tango::IIteratorPtr iter = db->createIterator(towstr(m_path), L"", L"", NULL);
             if (iter.isNull())
                 return;
 
@@ -921,11 +920,11 @@ void GroupPanel::onExecute(wxCommandEvent& event)
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.group-job");
 
     kl::JsonNode params;
-    params["input"].setString(towstr(m_browse_set->getObjectPath()));
+    params["input"].setString(towstr(m_path));
     params["output"].setString(L"xtmp_" + kl::getUniqueString());
     params["group"].setArray();
     params["columns"].setArray();
-    params["where"].setString(towstr(m_browse_filter));
+    params["where"].setString(towstr(m_where_condition));
     params["having"].setString(towstr(group_query));
 
     std::vector<std::wstring>::iterator it, it_end;

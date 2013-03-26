@@ -924,6 +924,19 @@ bool getMountPointHelper(tango::IDatabasePtr& db, const wxString& _path, wxStrin
     return false;
 }
 
+bool isTemporaryTable(const std::wstring& path)
+{
+    if (path.find(L"xtmp_") != path.npos ||
+        path.find(L".temp") != path.npos)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+
+
 std::wstring getDbDriverFromSet(tango::ISetPtr set)
 {
     if (set.isNull())
