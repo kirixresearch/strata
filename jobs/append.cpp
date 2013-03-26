@@ -224,7 +224,7 @@ int AppendJob::runJob()
         if (tango_job->getCancelled())
         {
             target_set.clear();
-            if (params["mode"].getString() == L"overwrite")
+            if (params_node["mode"].getString() == L"overwrite")
                 m_db->deleteFile(output_path);
 
             break;
