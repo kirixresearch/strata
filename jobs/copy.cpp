@@ -48,6 +48,7 @@ bool CopyJob::isInputValid()
         }
     }
 */
+
     if (m_config.isUndefined())
         return false;
 

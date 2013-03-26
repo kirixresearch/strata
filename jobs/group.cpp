@@ -53,38 +53,11 @@ bool GroupJob::isInputValid()
         }
     }
 */
+
     if (m_config.isUndefined())
         return false;
 
-    // TODO: check job type and version
-
-
-    kl::JsonNode params = m_config["params"];
-    if (params.isUndefined())
-        return false;
-
-    if (!params.childExists("input"))
-        return false;
-
-    if (!params.childExists("output"))
-        return false;
-
-    if (!params.childExists("group"))
-        return false;
-
-    if (!params.childExists("columns"))
-        return false;
-
-    kl::JsonNode group_node = params.getChild("group");
-    if (!group_node.isArray())
-        return false;
-
-    kl::JsonNode columns_node = params.getChild("columns");
-    if (!columns_node.isArray())
-        return false;
-
-    // TODO: check for file existence?  in general, how much
-    // work should the validator do?
+    // TODO: add validation
 
     return true;
 }

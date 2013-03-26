@@ -52,23 +52,7 @@ bool DivideJob::isInputValid()
     if (m_config.isUndefined())
         return false;
 
-    // TODO: check job type and version
-
-    kl::JsonNode params = m_config["params"];
-    if (params.isUndefined())
-        return false;
-
-    if (!params.childExists("input"))
-        return false;
-
-    if (!params.childExists("output"))
-        return false;
-
-    if (!params.childExists("row_count"))
-        return false;
-
-    // TODO: check for file existence?  in general, how much
-    // work should the validator do?
+    // TODO: add validation
 
     return true;
 }

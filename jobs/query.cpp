@@ -47,6 +47,7 @@ bool QueryJob::isInputValid()
         }
     }
 */
+
     if (m_config.isUndefined())
         return false;
 
