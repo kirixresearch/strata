@@ -77,11 +77,14 @@ int AppendJob::runJob()
     bool valid_max_count = true;
 
 
-    kl::JsonNode params = m_config["params"];
+    // get the parameters
+    kl::JsonNode params_node;
+    params_node.fromString(getParameters());
+
 
     // get input data
     std::vector<tango::ISetPtr> sets;
-    kl::JsonNode input_arr = params["input"];
+    kl::JsonNode input_arr = params_node["input"];
     for (size_t i = 0; i < input_arr.getChildCount(); ++i)
     {
         std::wstring path = input_arr[i].getString();
@@ -113,9 +116,9 @@ int AppendJob::runJob()
         m_job_info->setMaxCount((double)max_count);
 
     // output target
-    std::wstring output_path = params["output"];
+    std::wstring output_path = params_node["output"];
 
-    if (params["mode"].getString() == L"overwrite")
+    if (params_node["mode"].getString() == L"overwrite")
     {
         if (m_db->getFileExist(output_path))
             m_db->deleteFile(output_path);

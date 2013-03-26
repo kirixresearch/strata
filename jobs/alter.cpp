@@ -91,10 +91,12 @@ int AlterJob::runJob()
         return 0;
     }    
 
-    // get the input parameters
-    kl::JsonNode params = m_config["params"];
-    std::wstring input_path = params["input"].getString();
-    std::vector<kl::JsonNode> action_nodes = params["actions"].getChildren();
+    // get the parameters
+    kl::JsonNode params_node;
+    params_node.fromString(getParameters());
+
+    std::wstring input_path = params_node["input"].getString();
+    std::vector<kl::JsonNode> action_nodes = params_node["actions"].getChildren();
 
     tango::ISetPtr input_set = m_db->openSet(input_path);
     if (input_set.isNull())

@@ -82,10 +82,13 @@ int IndexJob::runJob()
     }    
 
 
-    kl::JsonNode params = m_config["params"];
+    // get the parameters
+    kl::JsonNode params_node;
+    params_node.fromString(getParameters());
+
 
     // get the index node children
-    std::vector<kl::JsonNode> children = params["indexes"].getChildren();
+    std::vector<kl::JsonNode> children = params_node["indexes"].getChildren();
     std::vector<kl::JsonNode>::iterator it, it_end;
     it_end = children.end();
 

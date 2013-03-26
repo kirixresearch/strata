@@ -80,14 +80,17 @@ int SummarizeJob::runJob()
     }
 
 
-    kl::JsonNode params = m_config["params"];
+    // get the parameters
+    kl::JsonNode params_node;
+    params_node.fromString(getParameters());
+
 
     // STEP 1: build the group job parameters from the summarize parameters
 
-    std::wstring input_path = params["input"].getString();
-    std::wstring output_path = params["output"].getString();
+    std::wstring input_path = params_node["input"].getString();
+    std::wstring output_path = params_node["output"].getString();
 
-    std::vector<kl::JsonNode> input_columns = params["columns"].getChildren();
+    std::vector<kl::JsonNode> input_columns = params_node["columns"].getChildren();
     std::vector<kl::JsonNode>::iterator it_node, it_node_end;
     it_node_end = input_columns.end();
     
@@ -188,8 +191,8 @@ int SummarizeJob::runJob()
     setTangoJob(tango_job);
 
     std::wstring where_param;
-    if (params.childExists("where"))
-        where_param = params["where"].getString();
+    if (params_node.childExists("where"))
+        where_param = params_node["where"].getString();
 
     tango::GroupQueryInfo info;
     info.input = input_path;

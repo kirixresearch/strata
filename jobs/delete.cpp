@@ -76,12 +76,14 @@ int DeleteJob::runJob()
     }    
 
 
-    kl::JsonNode params = m_config["params"];
+    // get the parameters
+    kl::JsonNode params_node;
+    params_node.fromString(getParameters());
 
 
     // get the input parameters
-    std::wstring input_path = params["input"].getString();
-    std::wstring where_param = params["where"].getString();
+    std::wstring input_path = params_node["input"].getString();
+    std::wstring where_param = params_node["where"].getString();
 
 
     // build the delete SQL

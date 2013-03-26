@@ -84,10 +84,13 @@ int RelationshipJob::runJob()
     }    
 
 
-    kl::JsonNode params = m_config["params"];
+    // get the parameters
+    kl::JsonNode params_node;
+    params_node.fromString(getParameters());
+
 
     std::vector<kl::JsonNode>::iterator it, it_end;
-    std::vector<kl::JsonNode> relationships = params["relationships"].getChildren();
+    std::vector<kl::JsonNode> relationships = params_node["relationships"].getChildren();
 
 
     // get the relationships

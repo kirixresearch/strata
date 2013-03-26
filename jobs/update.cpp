@@ -83,17 +83,19 @@ int UpdateJob::runJob()
     }    
 
 
-    kl::JsonNode params = m_config["params"];
+    kl::JsonNode params_node;
+    params_node.fromString(getParameters());
+
 
     // get the input parameters
-    std::wstring input_path = params["input"].getString();
+    std::wstring input_path = params_node["input"].getString();
 
     std::wstring where_param;
-    if (params.childExists("where"))
-        where_param = params["where"].getString();
+    if (params_node.childExists("where"))
+        where_param = params_node["where"].getString();
 
     std::vector<kl::JsonNode> set_nodes;
-    set_nodes = params["set"].getChildren();
+    set_nodes = params_node["set"].getChildren();
 
 
     // build the update SQL

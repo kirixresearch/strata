@@ -69,15 +69,18 @@ int DivideJob::runJob()
     }
 
 
-    kl::JsonNode params = m_config["params"];
+    // get the parameters
+    kl::JsonNode params_node;
+    params_node.fromString(getParameters());
+
 
     // get the input
-    std::wstring input_path = params["input"].getString();
+    std::wstring input_path = params_node["input"].getString();
     tango::ISetPtr input_set = m_db->openSet(input_path);
 
     // get the output prefix and row count
-    std::wstring output_prefix = params["output"].getString();
-    size_t output_row_count = params["row_count"].getInteger();
+    std::wstring output_prefix = params_node["output"].getString();
+    size_t output_row_count = params_node["row_count"].getInteger();
 
     if (input_set.isNull())
     {

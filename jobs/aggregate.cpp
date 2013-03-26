@@ -69,9 +69,10 @@ int AggregateJob::runJob()
     }
 
     // get the jobs
-    kl::JsonNode params = m_config["params"];
+    kl::JsonNode params_node;
+    params_node.fromString(getParameters());
 
-    kl::JsonNode jobs_node = params["jobs"];
+    kl::JsonNode jobs_node = params_node["jobs"];
 
     // create job objects from each parameter json node
     std::vector<jobs::IJobPtr> jobs;

@@ -80,18 +80,20 @@ int CopyJob::runJob()
     tango::IJobPtr tango_job = m_db->createJob();
     setTangoJob(tango_job);
 
-    kl::JsonNode params = m_config["params"];
+    // get the parameters
+    kl::JsonNode params_node;
+    params_node.fromString(getParameters());
 
-    // get the input parameters
 
+    // get the input
     tango::CopyInfo info;
-    info.input = params["input"].getString();
-    info.output = params["output"].getString();
+    info.input = params_node["input"].getString();
+    info.output = params_node["output"].getString();
 
-    if (params.childExists("order"))
-        info.order = params["order"].getString();
-    if (params.childExists("where"))
-        info.where = params["where"].getString();
+    if (params_node.childExists("order"))
+        info.order = params_node["order"].getString();
+    if (params_node.childExists("where"))
+        info.where = params_node["where"].getString();
 
     m_db->copyData(&info, tango_job.p);
 

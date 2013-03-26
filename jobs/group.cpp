@@ -82,25 +82,28 @@ int GroupJob::runJob()
     }    
 
 
-    kl::JsonNode params = m_config["params"];
+    // get the parameters
+    kl::JsonNode params_node;
+    params_node.fromString(getParameters());
+
 
     // get the input parameters
-    std::wstring input_path = params["input"].getString();
-    std::wstring output_path = params["output"].getString();
-    std::vector<kl::JsonNode> group_nodes = params["group"].getChildren();
-    std::vector<kl::JsonNode> column_nodes = params["columns"].getChildren();
+    std::wstring input_path = params_node["input"].getString();
+    std::wstring output_path = params_node["output"].getString();
+    std::vector<kl::JsonNode> group_nodes = params_node["group"].getChildren();
+    std::vector<kl::JsonNode> column_nodes = params_node["columns"].getChildren();
 
     std::wstring where_params;
-    if (params.childExists("where"))
-        where_params = params["where"].getString();
+    if (params_node.childExists("where"))
+        where_params = params_node["where"].getString();
 
     std::wstring having_params;
-    if (params.childExists("having"))
-        having_params = params["having"].getString();
+    if (params_node.childExists("having"))
+        having_params = params_node["having"].getString();
 
     bool unique_records = false;
-    if (params.childExists("unique"))
-        unique_records = params["unique"].getBoolean();
+    if (params_node.childExists("unique"))
+        unique_records = params_node["unique"].getBoolean();
 
     std::vector<std::wstring> group_values, column_values;
     std::vector<kl::JsonNode>::iterator it_node;
