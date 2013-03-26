@@ -198,7 +198,7 @@ public:
     void onCustomColorsRequested(std::vector<wxColor>& colors);
     void onCustomColorsChanged(std::vector<wxColor> colors);
 
-    void onOpenDataViewFinished(IJobPtr query_job);
+    void onOpenDataViewFinished(jobs::IJobPtr query_job);
 
 private:
 

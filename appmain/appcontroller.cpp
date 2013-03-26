@@ -4784,13 +4784,19 @@ bool AppController::openDataLink(const wxString& location, int* site_id)
             }
 
 
-            SortFilterJob* query_job = new SortFilterJob;
-            query_job->getJobInfo()->setTitle(towstr(_("Opening data view...")));
-            query_job->setInstructions(set, filter, sort);
+            jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.query-job");
 
-            query_job->sigJobFinished().connect(this, &AppController::onOpenDataViewFinished);
+            // configure the job parameters
+            kl::JsonNode params;
+            params = createSortFilterJobParams(set->getObjectPath(), towstr(filter), towstr(sort));
 
-            g_app->getJobQueue()->addJob(query_job, jobStateRunning);
+            // set the job parameters and start the job
+            job->getJobInfo()->setTitle(towstr(_("Opening data view...")));
+            job->setParameters(params.toString());
+
+            job->sigJobFinished().connect(this, &AppController::onOpenDataViewFinished);
+            g_app->getJobQueue()->addJob(job, jobStateRunning);
+
 
             if (site_id)
                 *site_id = 0;
@@ -4805,27 +4811,27 @@ bool AppController::openDataLink(const wxString& location, int* site_id)
 }
 
 
-void AppController::onOpenDataViewFinished(IJobPtr query_job)
+void AppController::onOpenDataViewFinished(jobs::IJobPtr query_job)
 {
-    ISortFilterJobPtr job = query_job;
+    tango::IIteratorPtr iter = query_job->getResultObject();
+    if (iter.isNull())
+        return;
 
-    tango::ISetPtr set = job->getResultSet();
-    tango::IIteratorPtr iter = job->getResultIterator();
+    tango::ISetPtr set = iter->getSet();
+    if (set.isNull())
+        return;
 
-    if (set.isOk() && iter.isOk())
+    ITableDocPtr doc = TableDocMgr::createTableDoc();
+    if (!doc->open(set, iter))
     {
-        ITableDocPtr doc = TableDocMgr::createTableDoc();
-        if (!doc->open(set, iter))
-        {
-            wxFAIL_MSG(wxT("ITableDoc::open() returned false"));
-            return;
-        }
-
-        unsigned int site_type = sitetypeNormal;
-
-        IDocumentSitePtr doc_site;
-        doc_site = g_app->getMainFrame()->createSite(doc, site_type, -1, -1, -1, -1);
+        wxFAIL_MSG(wxT("ITableDoc::open() returned false"));
+        return;
     }
+
+    unsigned int site_type = sitetypeNormal;
+
+    IDocumentSitePtr doc_site;
+    doc_site = g_app->getMainFrame()->createSite(doc, site_type, -1, -1, -1, -1);
 }
 
 

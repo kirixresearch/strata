@@ -319,6 +319,11 @@ tango::IIndexInfoPtr lookupIndex(tango::IIndexInfoEnumPtr indexes,
                                  const std::wstring& fields, bool order_matters);
 
 
+// creates the job parameters for a sort/filter job
+kl::JsonNode createSortFilterJobParams(const std::wstring& path,
+                                       const std::wstring& filter,
+                                       const std::wstring& order);
+
 
 // -- message box helpers -----------------------------------------------------
 

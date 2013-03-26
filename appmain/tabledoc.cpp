@@ -297,6 +297,29 @@ static bool compareViews(ITableDocView* v1, ITableDocView* v2)
     return true;
 }
 
+std::wstring getOrderExprFromJobParam(kl::JsonNode order_node)
+{
+    if (!order_node.isOk())
+        return L"";
+
+    std::wstring result;
+
+    std::vector<kl::JsonNode> order_children_node = order_node.getChildren();
+    std::vector<kl::JsonNode>::iterator it, it_end;
+    it_end = order_children_node.end();
+
+    bool first = true;
+    for (it = order_children_node.begin(); it != it_end; ++it)
+    {
+        if (!first)
+            result += L",";
+        first = false;
+
+        result += it->getString();
+    }
+
+    return result;
+}
 
 
 // -- TableDoc class implementation --
@@ -1933,18 +1956,23 @@ void TableDoc::onReload(wxCommandEvent& evt)
         }
          else
         {
-            // refresh normal table with query
-            
+            jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.query-job");
+
+
+            // configure the job parameters
+            kl::JsonNode params;
+            params = createSortFilterJobParams(m_set->getObjectPath(), towstr(m_filter), towstr(m_sort_order));
+
+
+            // set the job parameters and start the job
             wxString title = wxString::Format(_("Filtering '%s'"),
                                               getCaption().c_str());
 
-            SortFilterJob* query_job = new SortFilterJob;
-            query_job->getJobInfo()->setTitle(towstr(title));
-            query_job->setInstructions(m_set, m_filter, m_sort_order);
+            job->getJobInfo()->setTitle(towstr(title));
+            job->setParameters(params.toString());
 
-            query_job->sigJobFinished().connect(this, &TableDoc::onSortFilterJobFinished);
-
-            g_app->getJobQueue()->addJob(query_job, jobStateRunning);
+            job->sigJobFinished().connect(this, &TableDoc::onFilterJobFinished);
+            g_app->getJobQueue()->addJob(job, jobStateRunning);
         }
     }
 }
@@ -3171,7 +3199,7 @@ void TableDoc::hideColumn(int idx)
     m_frame->postEvent(e);
 }
 
-void TableDoc::onQueryJobFinished(jobs::IJobPtr job)
+void TableDoc::onFilterJobFinished(jobs::IJobPtr job)
 {
     if (job.isOk())
     {
@@ -3202,9 +3230,6 @@ void TableDoc::onQueryJobFinished(jobs::IJobPtr job)
         params_node.fromString(job->getParameters());
         m_filter = towstr(params_node["where"].getString());
 
-        // TODO: set order
-        //m_sort_order = L"";
-
         setBrowseSet(iter->getSet(), iter);
     }
 
@@ -3222,101 +3247,58 @@ void TableDoc::onQueryJobFinished(jobs::IJobPtr job)
     setCaption(wxEmptyString, suffix);
 }
 
-void TableDoc::onSortFilterJobFinished(IJobPtr job)
+void TableDoc::onSortJobFinished(jobs::IJobPtr query_job)
 {
-    if (job.isOk())
-    {
-        // if the job that finished is the quick filter job,
-        // reset the filter pending state
-        int id = job->getJobId();
-        if (id == m_quick_filter_jobid)
-            m_quick_filter_jobid = quickFilterNotPending;
-    }
-
-    if (job->getJobInfo()->getState() != jobStateFinished)
-    {
-        // if the job is cancelled or failed, update the filter toolbar item
-        // and we're done
-        if (job->getJobInfo()->getState() == jobStateCancelled ||
-            job->getJobInfo()->getState() == jobStateFailed)
-        {
-            g_app->getAppController()->updateQuickFilterToolBarItem();    
-        }
-
+    if (query_job->getJobInfo()->getState() != jobStateFinished)
         return;
-    }
-
-    ISortFilterJobPtr query_job = job;
-
-    m_filter = query_job->getCondition();
-    m_sort_order = query_job->getOrder();
-    setBrowseSet(query_job->getResultSet(), query_job->getResultIterator());
-
-    updateStatusBar();
-    g_app->getAppController()->updateQuickFilterToolBarItem();
-
-    wxString suffix;
-    if (m_filter.Length() > 0)
-    {
-        suffix = wxT(" [");
-        suffix += _("Filtered");
-        suffix += wxT("]");
-    }
-    
-    setCaption(wxEmptyString, suffix);
-}
-
-void TableDoc::onSetOrderFinished(IJobPtr job)
-{
-    if (job->getJobInfo()->getState() != jobStateFinished)
-        return;
-
-    ISortFilterJobPtr query_job = job;
-
-
-    // set the sort order
-    m_sort_order = query_job->getOrder();
-    
-
-    // if we have a group break and the group break isn't a subset
-    // of the new sort order, remove the group break; TODO: decide
-    // if this behavior is predictable, or if we should always
-    // remove the group sort when setting an order of any kind
-
-    std::vector< std::pair<std::wstring, bool> > sort_fields;
-    std::vector<std::wstring> group_fields;
-
-    sort_fields = sortExprToVector(towstr(m_sort_order));
-    kl::parseDelimitedList(towstr(m_group_break), group_fields, ',', true);
 
     bool remove_group_break = true;
-    if (group_fields.size() <= sort_fields.size())
-    {
-        remove_group_break = false;
-        
-        std::vector<std::wstring>::iterator it, it_end;
-        it_end = group_fields.end();
-        
-        int i = 0;
-        for (it = group_fields.begin(); it != it_end; ++it)
-        {
-            if (*it != sort_fields[i].first)
-            {
-                remove_group_break = true;
-                break;
-            }
 
-            ++i;
+    kl::JsonNode params_node;
+    params_node.fromString(query_job->getParameters());
+
+    kl::JsonNode order_node = params_node["order"];
+    if (order_node.isOk())
+    {
+        m_sort_order = towx(getOrderExprFromJobParam(order_node));
+
+        // if we have a group break and the group break isn't a subset
+        // of the new sort order, remove the group break
+        std::vector< std::pair<std::wstring, bool> > sort_fields;
+        std::vector<std::wstring> group_fields;
+
+        sort_fields = sortExprToVector(towstr(m_sort_order));
+        kl::parseDelimitedList(towstr(m_group_break), group_fields, ',', true);
+
+        if (group_fields.size() <= sort_fields.size())
+        {
+            remove_group_break = false;
+        
+            std::vector<std::wstring>::iterator it, it_end;
+            it_end = group_fields.end();
+        
+            int i = 0;
+            for (it = group_fields.begin(); it != it_end; ++it)
+            {
+                if (*it != sort_fields[i].first)
+                {
+                    remove_group_break = true;
+                    break;
+                }
+
+                ++i;
+            }
         }
     }
 
     if (remove_group_break)
-        setGroupBreak(wxT(""));    
-
+        setGroupBreak(wxT(""));
 
     // set the browse set and update the status bar
-    setBrowseSet(query_job->getResultSet(), query_job->getResultIterator());
-    
+    tango::IIteratorPtr iter = query_job->getResultObject();
+    if (iter.isOk())
+        setBrowseSet(iter->getSet(), iter);
+
     updateStatusBar();
 }
 

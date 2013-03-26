@@ -17,6 +17,7 @@
 #include "scripthost.h"
 
 
+
 void TableDoc::setFilter(const wxString& filter)
 {
     if (filter.IsEmpty())
@@ -25,44 +26,19 @@ void TableDoc::setFilter(const wxString& filter)
 
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.query-job");
 
-
     // configure the job parameters
     kl::JsonNode params;
-    params["input"].setString(towstr(m_browse_set->getObjectPath()));
-    params["where"].setString(towstr(filter));
-    params["order"].setArray();
-
-    if (m_sort_order.Length() > 0)
-    {
-        std::vector< std::pair<std::wstring, bool> > sort_fields;
-        sort_fields = sortExprToVector(towstr(m_sort_order));
-
-        std::vector< std::pair<std::wstring, bool> >::iterator it, it_end;
-        it_end = sort_fields.end();
-
-        for (it = sort_fields.begin(); it != it_end; ++it)
-        {
-            std::wstring order_field_str;
-
-            std::wstring field = it->first;
-            field = tango::dequoteIdentifier(g_app->getDatabase(), field);
-            field = tango::quoteIdentifier(g_app->getDatabase(), field);
-            order_field_str = field + (it->second ? L" DESC" : L""); 
-
-            kl::JsonNode order_field_node = params["order"].appendElement();
-            order_field_node.setString(order_field_str);
-        }
-    }
+    params = createSortFilterJobParams(m_browse_set->getObjectPath(), towstr(filter), towstr(m_sort_order));
 
 
     // set the job parameters and start the job
     wxString title = wxString::Format(_("Filtering '%s'"),
-                                      m_doc_site->getCaption().c_str());
+                                      getCaption().c_str());
 
     job->getJobInfo()->setTitle(towstr(title));
     job->setParameters(params.toString());
 
-    job->sigJobFinished().connect(this, &TableDoc::onQueryJobFinished);
+    job->sigJobFinished().connect(this, &TableDoc::onFilterJobFinished);
     g_app->getJobQueue()->addJob(job, jobStateRunning);
 
 
@@ -111,52 +87,58 @@ void TableDoc::setSortOrder(const wxString& expr)
         m_grid->endEdit(true);
 
 
+    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.query-job");
+
+
     // if the database can't handle createIterator() with a different
     // sort order on an existing set (e.g. must requery), do that here.
     wxString db_driver = getDbDriver();
     if (db_driver != wxT("xdnative") && db_driver != wxT("xdfs"))
     {
-        // create a job to sort the data
+        // configure the job parameters
+        kl::JsonNode params;
+        params = createSortFilterJobParams(getBaseSet()->getObjectPath(), 
+                                           towstr(getFilter()), 
+                                           towstr(expr));
 
+        // set the job parameters and start the job
         wxString title = wxString::Format(_("Sorting '%s'"),
                                           getCaption().c_str());
 
-        SortFilterJob* job = new SortFilterJob;
         job->getJobInfo()->setTitle(towstr(title));
-        job->setInstructions(getBaseSet(), getFilter(), expr);
+        job->setParameters(params.toString());
 
-        job->sigJobFinished().connect(this, &TableDoc::onSetOrderFinished);
-
-        // submit job
+        job->sigJobFinished().connect(this, &TableDoc::onSortJobFinished);
         g_app->getJobQueue()->addJob(job, jobStateRunning);
-        
+
         return;
     }
-
 
     if (expr.IsEmpty())
     {
         // set default order
         m_sort_order = wxT("");
         tango::IIteratorPtr iter;
-        iter = getBrowseSet()->createIterator(L"", L"", NULL);
+        iter = g_app->getDatabase()->createIterator(getBrowseSet()->getObjectPath(), L"", L"", NULL);
         setIterator(iter);
         return;
     }
 
 
-    // create a job
+    // configure the job parameters
+    kl::JsonNode params;
+    params = createSortFilterJobParams(getBrowseSet()->getObjectPath(), 
+                                       L"",
+                                       towstr(expr));
 
+    // set the job parameters and start the job
     wxString title = wxString::Format(_("Sorting '%s'"),
-                                      getCaption().c_str());
+                                        getCaption().c_str());
 
-    SortFilterJob* job = new SortFilterJob;
     job->getJobInfo()->setTitle(towstr(title));
-    job->setInstructions(m_browse_set, wxT(""), expr);
+    job->setParameters(params.toString());
 
-    job->sigJobFinished().connect(this, &TableDoc::onSetOrderFinished);
-
-    // submit job
+    job->sigJobFinished().connect(this, &TableDoc::onSortJobFinished);
     g_app->getJobQueue()->addJob(job, jobStateRunning);
 }
 

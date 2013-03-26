@@ -1390,6 +1390,40 @@ tango::IIndexInfoPtr lookupIndex(tango::IIndexInfoEnumPtr idx_enum, const std::w
     return result;
 }
 
+kl::JsonNode createSortFilterJobParams(const std::wstring& path,
+                                       const std::wstring& filter,
+                                       const std::wstring& order)
+{
+    kl::JsonNode params;
+    params["input"].setString(path);
+    params["where"].setString(filter);
+    params["order"].setArray();
+
+    if (order.length() > 0)
+    {
+        std::vector< std::pair<std::wstring, bool> > sort_fields;
+        sort_fields = sortExprToVector(order);
+
+        std::vector< std::pair<std::wstring, bool> >::iterator it, it_end;
+        it_end = sort_fields.end();
+
+        for (it = sort_fields.begin(); it != it_end; ++it)
+        {
+            std::wstring order_field_str;
+
+            std::wstring field = it->first;
+            field = tango::dequoteIdentifier(g_app->getDatabase(), field);
+            field = tango::quoteIdentifier(g_app->getDatabase(), field);
+            order_field_str = field + (it->second ? L" DESC" : L""); 
+
+            kl::JsonNode order_field_node = params["order"].appendElement();
+            order_field_node.setString(order_field_str);
+        }
+    }
+
+    return params;
+}
+
 void appInvalidObjectMessageBox(const wxString& name,
                                 wxWindow* parent)
 {
