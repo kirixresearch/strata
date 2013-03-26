@@ -184,7 +184,7 @@ int SummarizeJob::runJob()
 
     // STEP 2: create a group job and pass the summarize parameters
 
-    tango::ISetPtr group_output_set;
+    std::wstring group_output_set_path = L"xtmp_" + kl::getUniqueString();
 
     tango::IJobPtr tango_job;
     tango_job = m_db->createJob();
@@ -196,7 +196,7 @@ int SummarizeJob::runJob()
 
     tango::GroupQueryInfo info;
     info.input = input_path;
-    info.output = L"xtmp_" + kl::getUniqueString();
+    info.output = group_output_set_path;
     info.columns = column_param,
     info.where = where_param;
 
@@ -219,14 +219,6 @@ int SummarizeJob::runJob()
 
 
     // STEP 3: pivot the output
-    group_output_set = m_db->openSet(info.output);
-
-    if (group_output_set.isNull())
-    {
-        m_job_info->setState(jobStateFailed);
-        // TODO: error code?
-        return 0;
-    }
 
     tango::IStructurePtr output_structure = m_db->createStructure();
     tango::IColumnInfoPtr output_colinfo;
@@ -303,15 +295,15 @@ int SummarizeJob::runJob()
     }
 
 
-    tango::IStructurePtr group_result_structure = group_output_set->getStructure();
-    tango::IIteratorPtr group_result_iter = group_output_set->createIterator(L"", L"", NULL);
-    
+    tango::IIteratorPtr group_result_iter = m_db->createIterator(group_output_set_path, L"", L"", NULL);
     if (group_result_iter.isNull())
     {
         m_job_info->setState(jobStateFailed);
         // TODO: error code?
         return 0;
     }
+
+    tango::IStructurePtr group_result_structure = group_result_iter->getStructure();
 
     group_result_iter->goFirst();
     if (group_result_iter->eof())
