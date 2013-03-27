@@ -359,8 +359,7 @@ void onScriptJobFinished(jobs::IJobPtr job)
     if (job->getJobInfo()->getState() != jobStateFinished)
         return;
 
-    wxString script_job_guid = job->getExtraString();
-    
+    wxString script_job_guid = towx(job->getExtraValue(L"appmain.extension.guid"));
     ExtensionMgr* ext_mgr = g_app->getExtensionMgr();
     
     std::vector<ExtensionInfo>::iterator it;
@@ -431,7 +430,7 @@ bool ExtensionMgr::startAllExtensions()
                 job_info->getState() == jobStateRunning)
             {
                 job->sigJobFinished().connect(&onScriptJobFinished);
-                job->setExtraString(towstr(it->guid));
+                job->setExtraValue(L"appmain.extension.guid", towstr(it->guid));
                 it->state = ExtensionInfo::stateRunning;
             }
         }
@@ -472,8 +471,9 @@ bool ExtensionMgr::stopAllExtensions()
             job = job_queue->lookupJob(job_info->getJobId());
             if (job.isNull())
                 continue;
-            
-            if (it->guid.CmpNoCase(job->getExtraString()) == 0)
+
+            wxString script_job_guid = towx(job->getExtraValue(L"appmain.extension.guid"));
+            if (it->guid.CmpNoCase(script_job_guid) == 0)
             {
                 found = true;
                 break;
@@ -556,7 +556,7 @@ bool ExtensionMgr::startExtension(const wxString& guid)
         if (job_info.isOk() && job_info->getState() == jobStateRunning)
         {
             job->sigJobFinished().connect(&onScriptJobFinished);
-            job->setExtraString(towstr(info.guid));
+            job->setExtraValue(L"appmain.extension.guid", towstr(info.guid));
             info.state = ExtensionInfo::stateRunning;
             
             // fire a signal that we've started this extension
@@ -592,8 +592,9 @@ bool ExtensionMgr::stopExtension(const wxString& guid)
         job = job_queue->lookupJob(job_info->getJobId());
         if (job.isNull())
             continue;
-        
-        if (guid.CmpNoCase(job->getExtraString()) == 0)
+
+        wxString script_job_guid = towx(job->getExtraValue(L"appmain.extension.guid"));        
+        if (guid.CmpNoCase(script_job_guid) == 0)
         {
             job->cancel();
             return true;
