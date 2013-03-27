@@ -1553,46 +1553,6 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
     job->setParameters(params.toString());
     job->sigJobFinished().connect(this, &TableDoc::onSaveAsJobFinished);
     g_app->getJobQueue()->addJob(job, jobStateRunning);
-
-
-    /*
-    CopyJob* copy_job = new CopyJob;
-    copy_job->getJobInfo()->setTitle(towstr(title));
-    copy_job->setExtraLong(m_doc_site->getId());
-
-    if (is_indeterminate)
-    {
-        IJobInfoPtr job_info = copy_job->getJobInfo();
-        job_info->setMaxCount(0.0);
-    }
-
-
-    if (source_iter)
-    {
-        copy_job->addCopyInstruction(g_app->getDatabase(),
-                                     source_iter,
-                                     L"",
-                                     L"",
-                                     g_app->getDatabase(),
-                                     path,
-                                     wxEmptyString,
-                                     towx(getBaseSet()->getSetId()));
-    }
-     else
-    {
-        // this type of copy must requery, because no clone() is available
-        copy_job->addCopyInstruction(g_app->getDatabase(),
-                                     getBaseSet(),
-                                     L"",
-                                     getFilter(),
-                                     getSortOrder(),
-                                     g_app->getDatabase(),
-                                     path);
-    }
-    
-    copy_job->sigJobFinished().connect(this, &TableDoc::onSaveAsJobFinished);
-    g_app->getJobQueue()->addJob(copy_job, jobStateRunning);
-    */
 }
 
 
