@@ -25,6 +25,7 @@
     <ClCompile Include="copy.cpp" />
     <ClCompile Include="delete.cpp" />
     <ClCompile Include="divide.cpp" />
+    <ClCompile Include="execute.cpp" />
     <ClCompile Include="group.cpp" />
     <ClCompile Include="index.cpp" />
     <ClCompile Include="jobbase.cpp" />
@@ -47,6 +48,7 @@
     <ClInclude Include="copy.h" />
     <ClInclude Include="delete.h" />
     <ClInclude Include="divide.h" />
+    <ClInclude Include="execute.h" />
     <ClInclude Include="group.h" />
     <ClInclude Include="index.h" />
     <ClInclude Include="jobbase.h" />

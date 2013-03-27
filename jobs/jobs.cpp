@@ -17,6 +17,7 @@
 #include "copy.h"
 #include "delete.h"
 #include "divide.h"
+#include "execute.h"
 #include "index.h"
 #include "group.h"
 #include "query.h"
@@ -43,6 +44,8 @@ IJobPtr createJob(const std::wstring job_class)
         return static_cast<IJob*>(new DeleteJob);
     if (job_class == L"application/vnd.kx.divide-job")
         return static_cast<IJob*>(new DivideJob);
+    if (job_class == L"application/vnd.kx.execute-job")
+        return static_cast<IJob*>(new ExecuteJob);
     if (job_class == L"application/vnd.kx.index-job")
         return static_cast<IJob*>(new IndexJob);
     if (job_class == L"application/vnd.kx.group-job")
