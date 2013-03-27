@@ -716,7 +716,7 @@ void ConsolePanel::onCommand(wxString& command)
         m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_CONSOLEPANEL_COMMAND, 0, command));
 }
 
-void ConsolePanel::onQueryJobFinished(IJobPtr job)
+void ConsolePanel::onQueryJobFinished(jobs::IJobPtr job)
 {
     if (job->getJobInfo()->getState() == jobStateFailed)
     {
@@ -738,28 +738,25 @@ void ConsolePanel::onQueryJobFinished(IJobPtr job)
     if (job->getJobInfo()->getState() != jobStateFinished)
         return;
 
-    IQueryJobPtr query_job = job;
 
     bool success = false;
 
-    // check if there is an output set
-    if (query_job)
+    tango::IIteratorPtr result_iter = job->getResultObject();
+    if (result_iter.isOk())
     {
-        tango::ISetPtr result_set = query_job->getResultSet();
-        tango::IIteratorPtr result_iter = query_job->getResultIterator();
-
-        if (result_set)
+        tango::ISetPtr result_set = result_iter->getSet();
+        if (result_set.isOk())
         {
             ITableDocPtr doc = TableDocMgr::createTableDoc();
             doc->setTemporaryModel(true);
             doc->open(result_set, result_iter);
             g_app->getMainFrame()->createSite(doc,
-                                              sitetypeNormal,
-                                              -1, -1, -1, -1);
+                                                sitetypeNormal,
+                                                -1, -1, -1, -1);
         }
 
         // TODO: we should do a better job checking for success;
-        // however,we can't base the test on a result set since 
+        // however, we can't base the test on a result set since 
         // some types of sql statements don't return a result set
         // (i.e. drop table), and the db doc should refresh for
         // these the same as when a result is returned
@@ -1040,9 +1037,12 @@ void ConsolePanel::runCommand(wxString& command)
         }
     }
 
-    // try to run the command as sql
-    QueryJob* job = new QueryJob;
 
+/*
+    // TODO: old console logic allow a mount database to be specified
+    // and the query passed through directly to this; need a way
+    // of setting the current database so the command can run against
+    // this
 
     // if a command database is specified, set the database so
     // the command are passed directly through to that database
@@ -1066,12 +1066,26 @@ void ConsolePanel::runCommand(wxString& command)
 
     if (mount_db.isOk())
         job->setDatabase(mount_db);
-    
-    job->getJobInfo()->setTitle(towstr(_("Query")));
-    job->sigJobFinished().connect(this, &ConsolePanel::onQueryJobFinished);
-    job->setQuery(command, flags);
+*/
 
+
+
+    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.execute-job");
+
+    if (flags & tango::sqlAlwaysCopy)
+        job->setExtraValue(L"tango.sqlAlwaysCopy", L"true");
+
+
+    // run the job
+    kl::JsonNode params;
+    params["command"].setString(towstr(command));
+
+    job->getJobInfo()->setTitle(towstr(_("Query")));
+    job->setParameters(params.toString());
+    job->sigJobFinished().connect(this, &ConsolePanel::onQueryJobFinished);
     g_app->getJobQueue()->addJob(job, jobStateRunning);
+
+
     SetFocus();
 }
 

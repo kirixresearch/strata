@@ -88,7 +88,7 @@ private:
     // signal handlers
     void onCommandEntered(wxString& command);
     void onCommand(wxString& command);
-    void onQueryJobFinished(IJobPtr job);
+    void onQueryJobFinished(jobs::IJobPtr job);
 
 private:
 
