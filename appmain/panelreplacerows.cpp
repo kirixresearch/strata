@@ -39,7 +39,16 @@ ReplaceRowsPanel::~ReplaceRowsPanel()
 {
 }
 
-// -- IDocument --
+void ReplaceRowsPanel::setParameters(const wxString& path, const wxString& expr, const wxString& field)
+{
+    m_path = path;
+    m_iter = g_app->getDatabase()->createIterator(towstr(path), L"", L"", NULL);
+    m_structure = m_iter->getStructure();
+    m_default_expr = expr;
+    m_default_field = field;
+}
+
+
 bool ReplaceRowsPanel::initDoc(IFramePtr frame,
                                IDocumentSitePtr site,
                                wxWindow* docsite_wnd,
@@ -88,6 +97,38 @@ bool ReplaceRowsPanel::initDoc(IFramePtr frame,
     SetSizer(main_sizer);
     Layout();
 
+
+
+
+    populate();
+    
+    // set the expression
+    m_expr_panel->setExpression(m_default_expr);
+    
+    // set the initial field
+    int idx = m_field_choice->FindString(m_default_field);
+    if (m_default_field.Length() > 0 && idx >= 0)
+        m_field_choice->Select(idx);
+
+
+    //  make panel caption
+    wxString caption = _("Update");
+
+    if (!isTemporaryTable(towstr(m_path)))
+    {
+        caption += wxT(" - [");
+        caption += m_path;
+        caption += wxT("]");
+    }
+
+
+    m_doc_site->setCaption(caption);
+
+
+    // validate the expression builder and panel
+
+    m_expr_panel->validate();
+    validate();
     checkEnableRun();
     
     return true;
@@ -103,57 +144,21 @@ void ReplaceRowsPanel::setDocumentFocus()
     m_replace_text->SetFocus();
 }
 
-void ReplaceRowsPanel::setParams(tango::ISetPtr set, const wxString& expr, const wxString& field)
-{
-    m_set = set;
-    m_iter = m_set->createIterator(L"", L"", NULL);
-    populate();
-    
-    // set the expression
-    m_expr_panel->setExpression(expr);
-    
-    // set the initial field
-    int idx = m_field_choice->FindString(field);
-    if (field.Length() > 0 && idx >= 0)
-        m_field_choice->Select(idx);
-
-    // validate the expression builder and panel
-    m_expr_panel->validate();
-    validate();
-    checkEnableRun();
-
-    // -- make panel caption --
-    wxString caption = _("Update");
-
-    if (set.isOk())
-    {
-        if (!set->isTemporary())
-        {
-            caption += wxT(" - [");
-            caption += towx(set->getObjectPath());
-            caption += wxT("]");
-        }
-    }
-
-    m_doc_site->setCaption(caption);
-    setDocumentFocus();
-}
 
 void ReplaceRowsPanel::populate()
 {
     m_expr_panel->setIterator(m_iter);
 
-    // -- populate choicebox --
-    tango::IStructurePtr structure = m_set->getStructure();
+    // populate choicebox
     tango::IColumnInfoPtr colinfo;
 
     std::vector<wxString> fields;
 
     m_field_choice->Clear();
-    int i, col_count = structure->getColumnCount();
+    int i, col_count = m_structure->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        colinfo = structure->getColumnInfoByIdx(i);
+        colinfo = m_structure->getColumnInfoByIdx(i);
         fields.push_back(makeProper(towx(colinfo->getName())));
     }
 
@@ -171,8 +176,7 @@ bool ReplaceRowsPanel::isValidValue()
     replace_value.Trim(TRUE);
     
     wxString replace_field = m_field_choice->GetStringSelection();
-    tango::IStructurePtr structure = m_set->getStructure();
-    tango::IColumnInfoPtr colinfo = structure->getColumnInfo(towstr(replace_field));
+    tango::IColumnInfoPtr colinfo = m_structure->getColumnInfo(towstr(replace_field));
     if (colinfo.isNull())
         return false;
 
@@ -225,13 +229,9 @@ void ReplaceRowsPanel::checkEnableRun()
 {
     if (!m_expr_panel)
         return;
-    
-    if (m_set.isNull())
-        return;
-    
+
     wxString replace_field = m_field_choice->GetStringSelection();
-    tango::IStructurePtr structure = m_set->getStructure();
-    tango::IColumnInfoPtr colinfo = structure->getColumnInfo(towstr(replace_field));
+    tango::IColumnInfoPtr colinfo = m_structure->getColumnInfo(towstr(replace_field));
     
     if (replace_field.IsEmpty() || colinfo.isNull())
     {
@@ -249,23 +249,17 @@ bool ReplaceRowsPanel::validate(bool* value)
     if (value)
         *value = false;
 
-    if (m_iter.isOk())
-    {
-        wxString replace_value = m_replace_text->GetValue();
-        wxString replace_field = m_field_choice->GetStringSelection();
 
-        tango::IStructurePtr structure = m_iter->getStructure();
-        tango::IColumnInfoPtr colinfo = structure->getColumnInfo(towstr(replace_field));
-        if (colinfo.isOk())
-        {
-            tango::objhandle_t handle = m_iter->getHandle(towstr(replace_value));
-            if (handle)
-            {
-                valid = tango::isTypeCompatible(m_iter->getType(handle), colinfo->getType());
-                m_iter->releaseHandle(handle);
-            }
-        }
+    wxString replace_value = m_replace_text->GetValue();
+    wxString replace_field = m_field_choice->GetStringSelection();
+
+    tango::IColumnInfoPtr colinfo = m_structure->getColumnInfo(towstr(replace_field));
+    if (colinfo.isOk())
+    {
+        int type = m_structure->getExprType(towstr(replace_value));
+        valid = tango::isTypeCompatible(type, colinfo->getType());
     }
+
 
     m_valid_control->setValidLabel(_("Valid"));
 
@@ -311,8 +305,7 @@ void ReplaceRowsPanel::onOKPressed(ExprBuilderPanel* panel)
     bool is_value = false;
     
     wxString replace_field = m_field_choice->GetStringSelection();
-    tango::IStructurePtr structure = m_set->getStructure();
-    tango::IColumnInfoPtr colinfo = structure->getColumnInfo(towstr(replace_field));
+    tango::IColumnInfoPtr colinfo = m_structure->getColumnInfo(towstr(replace_field));
     
     if (replace_field.IsEmpty())
     {
@@ -418,7 +411,7 @@ void ReplaceRowsPanel::onOKPressed(ExprBuilderPanel* panel)
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.update-job");
 
     kl::JsonNode params;
-    params["input"].setString(m_set->getObjectPath());
+    params["input"].setString(towstr(m_path));
     if (condition.Length() > 0)
         params["where"].setString(towstr(condition));
 

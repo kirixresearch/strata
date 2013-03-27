@@ -7905,6 +7905,7 @@ void TableDoc::showReplacePanel(const wxString& def_condition, const wxString& d
             AppBusyCursor bc;
 
             ReplaceRowsPanel* panel = new ReplaceRowsPanel;
+            panel->setParameters(towx(getBrowseSet()->getObjectPath()), def_condition, def_field);
 
             site = m_frame->createSite(panel,
                                        sitetypeModeless |
@@ -7912,7 +7913,6 @@ void TableDoc::showReplacePanel(const wxString& def_condition, const wxString& d
                                        -1, -1, 560, 340);
             site->setMinSize(560,340);
             site->setName(wxT("UpdatePanel"));
-            panel->setParams(getBrowseSet(), def_condition, def_field);
         }
 
         site->setVisible(true);

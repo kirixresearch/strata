@@ -27,11 +27,11 @@ public:
 
     ReplaceRowsPanel();
     ~ReplaceRowsPanel();
-    void setParams(tango::ISetPtr set, const wxString& expr, const wxString& field = wxT(""));
+    void setParameters(const wxString& path, const wxString& expr, const wxString& field = wxT(""));
 
 private:
 
-    // -- IDocument --
+    // IDocument
     bool initDoc(IFramePtr frame,
                  IDocumentSitePtr site,
                  wxWindow* doc_site,
@@ -51,10 +51,13 @@ private:
 
 private:
 
-    tango::ISetPtr m_set;
+    wxString m_path;
+    tango::IStructurePtr m_structure;
     tango::IIteratorPtr m_iter;
     IDocumentSitePtr m_doc_site;
-    
+    wxString m_default_expr;
+    wxString m_default_field;
+
     wxChoice* m_field_choice;
     wxTextCtrl* m_replace_text;
     kcl::ValidControl* m_valid_control;
