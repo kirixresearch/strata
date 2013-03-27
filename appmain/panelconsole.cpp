@@ -748,7 +748,7 @@ void ConsolePanel::onQueryJobFinished(jobs::IJobPtr job)
         {
             ITableDocPtr doc = TableDocMgr::createTableDoc();
             doc->setTemporaryModel(true);
-            doc->open(result_set, result_iter);
+            doc->open(g_app->getDatabase(), towx(result_set->getObjectPath()), result_set, result_iter);
             g_app->getMainFrame()->createSite(doc,
                                                 sitetypeNormal,
                                                 -1, -1, -1, -1);
