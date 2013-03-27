@@ -34,13 +34,11 @@ enum
 
 
 xcm_interface IJob;
-xcm_interface IJobStat;
 xcm_interface IJobInfo;
 xcm_interface IJobQueue;
 
 
 XCM_DECLARE_SMARTPTR(IJob)
-XCM_DECLARE_SMARTPTR(IJobStat)
 XCM_DECLARE_SMARTPTR(IJobInfo)
 XCM_DECLARE_SMARTPTR(IJobQueue)
 XCM_DECLARE_SMARTPTR2(xcm::IVector<IJobInfoPtr>, IJobInfoEnumPtr)
