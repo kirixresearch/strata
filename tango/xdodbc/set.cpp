@@ -760,12 +760,6 @@ bool OdbcSet::modifyStructure(tango::IStructure* struct_config,
 }
 */
 
-/*
-tango::IRowInserterPtr OdbcSet::getRowInserter()
-{
-
-}
-*/
 
 tango::IIteratorPtr OdbcSet::createIterator(const std::wstring& columns,
                                             const std::wstring& expr,

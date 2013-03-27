@@ -230,10 +230,6 @@ bool ClientSet::modifyStructure(tango::IStructure* struct_config, tango::IJob* j
 }
 */
 
-tango::IRowInserterPtr ClientSet::getRowInserter()
-{
-    return static_cast<tango::IRowInserter*>(new ClientRowInserter(m_database, this, m_path));
-}
 
 tango::IIteratorPtr ClientSet::createIterator(const std::wstring& columns,
                                               const std::wstring& order,
