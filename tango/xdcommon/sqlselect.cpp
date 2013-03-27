@@ -2382,6 +2382,9 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
 
         output_path = p_into;
         kl::trim(output_path);
+
+        dequote(output_path, L'"', L'"');
+        dequote(output_path, L'[', L']');
     }
 
     // error checks
