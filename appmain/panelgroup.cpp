@@ -598,8 +598,6 @@ static void onGroupJobFinished(jobs::IJobPtr job)
     if (job->getJobInfo()->getState() != jobStateFinished)
         return;
 
-    bool success = false;
-
     kl::JsonNode params;
     params.fromString(job->getParameters());
 
@@ -609,17 +607,15 @@ static void onGroupJobFinished(jobs::IJobPtr job)
     if (result_set.isOk())
     {
         ITableDocPtr doc = TableDocMgr::createTableDoc();
-        doc->open(result_set, xcm::null);
+        doc->open(g_app->getDatabase(), output_path);
         g_app->getMainFrame()->createSite(doc, sitetypeNormal,
                                             -1, -1, -1, -1);
-        success = true;
     }
-
-    if (!success)
+     else
     {
         appMessageBox(_("The output table could not be created."),
-                           APPLICATION_NAME,
-                           wxOK | wxICON_EXCLAMATION | wxCENTER);
+                      APPLICATION_NAME,
+                      wxOK | wxICON_EXCLAMATION | wxCENTER);
     }
 }
 
