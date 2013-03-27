@@ -3435,48 +3435,6 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         db->storeObject(output_set, output_path);
     }
 
-
-
-    /*
-    // change all periods to underscores
-    tango::IStructurePtr os = output_set->getStructure();
-    tango::IStructurePtr ms = output_set->getStructure();
-    int col_count = os->getColumnCount();
-    int i;
-    bool modifying = false;
-    for (i = 0; i < col_count; ++i)
-    {
-        tango::IColumnInfoPtr colinfo = os->getColumnInfoByIdx(i);
-        std::wstring name = colinfo->getName();
-
-        bool changed = false;
-
-        int i;
-        while (1)
-        {
-            i = name.find(L'.');
-            if (i == -1)
-                break;
-            name[i] = L'_';
-            changed = true;
-        }
-
-        if (!changed)
-            continue;
-
-        modifying = true;
-        tango::IColumnInfoPtr mc = ms->modifyColumn(colinfo->getName());
-        mc->setName(name);
-    }
-    
-    if (modifying)
-    {
-        output_set->modifyStructure(ms, NULL);
-    }
-    */
-
-    // create iterator, done.
-
     return output_set->createIterator(L"", L"", NULL);
 }
 
