@@ -1533,9 +1533,13 @@ bool PgsqlDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
             expr.erase(0,5);
             dequote(expr, '(', ')');
         }
+         else if (func == L"groupid")
+        {
+            expr = L"row_number() over ()";
+        }
          else if (func == L"count")
         {
-            expr = L"COUNT(*)";
+            expr = L"count(*)";
         }
 
 
@@ -1554,8 +1558,7 @@ bool PgsqlDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
 
     if (info->where.length() > 0)
         sql += L" WHERE " + info->where;
-       
-
+    
     if (info->group.length() > 0)
         sql += L" GROUP BY " + info->group;
         
