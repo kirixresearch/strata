@@ -82,21 +82,9 @@ public:
     virtual IJobInfoPtr getJobInfo() = 0;
     virtual void setJobInfo(IJobInfoPtr new_val) = 0;
 
-    virtual long getExtraLong() { return 0; }  // DEPRECATED
-    virtual void setExtraLong(long value) {}  // DEPRECATED
-    
-    virtual void setExtraString(const std::wstring& s) {}  // DEPRECATED
-    virtual std::wstring getExtraString() { return 0; }  // DEPRECATED
-
-    virtual bool cancel() = 0;
-
-    virtual int runJob() = 0;
-    virtual void runPostJob() = 0;
-    
-    XCM_DECLARE_SIGNAL1(sigJobFinished, IJobPtr)
-
     virtual void setParameters(const std::wstring& json) = 0;
     virtual std::wstring getParameters() = 0;
+    virtual std::wstring toJson() = 0;
 
     virtual void setExtraValue(const std::wstring& key, const std::wstring& value) = 0;
     virtual std::wstring getExtraValue(const std::wstring& key) = 0;
@@ -106,7 +94,12 @@ public:
 
     virtual void setDatabase(tango::IDatabase* db) = 0;
 
-    virtual std::wstring toJson() = 0;
+    virtual bool cancel() = 0;
+
+    virtual int runJob() = 0;
+    virtual void runPostJob() = 0;
+
+    XCM_DECLARE_SIGNAL1(sigJobFinished, IJobPtr)
 };
 
 
@@ -163,7 +156,6 @@ public:
     XCM_DECLARE_SIGNAL1(sigOnGetPercentage, double*)
     XCM_DECLARE_SIGNAL1(sigStateChanged, IJobInfoPtr)
 };
-
 
 
 IJobPtr createAggregateJob(std::vector<IJobPtr>& jobs);
