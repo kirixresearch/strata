@@ -3302,7 +3302,7 @@ void TableDoc::onSortJobFinished(jobs::IJobPtr query_job)
     updateStatusBar();
 }
 
-void TableDoc::onDeleteJobFinished(IJobPtr delete_job)
+void TableDoc::onDeleteJobFinished(jobs::IJobPtr delete_job)
 {
     m_grid->reset();
     m_grid->refresh(kcl::Grid::refreshAll);
@@ -7806,46 +7806,49 @@ void TableDoc::onDeleteRecordsOk(ExprBuilderPanel* expr_panel)
 
 void TableDoc::deleteRecords(const wxString& condition)
 {
-    wxString title = wxString::Format(_("Deleting records in '%s'"),
-                                      getCaption().c_str());
+    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.execute-job");
 
-    QueryJob* delete_job = new QueryJob;
-    delete_job->getJobInfo()->setTitle(towstr(title));
-    
-    wxString cmd;
-        
-    tango::IDatabasePtr db = g_app->getDatabase();
-
-    tango::IFileInfoPtr file_info = db->getFileInfo(getBaseSet()->getObjectPath());
-    
+    // if a filter is active, delete from both the base set as well 
+    // as the browse set so the user doesn't have to refresh to
+    // see the changes; this is easier to do with an execute job
+    // than an aggregate delete job, so, just build the command
+    std::wstring cmd;
     if (m_filter.Length() > 0)
     {
-        cmd = wxT("DELETE FROM ");
-        cmd += towx(getBaseSet()->getObjectPath());
-        cmd += wxT(" WHERE ");
-        cmd += wxT("(");
-        cmd += m_filter;
-        cmd += wxT(") and (");
-        cmd += condition;
-        cmd += wxT(");");
+        cmd = L" DELETE FROM ";
+        cmd += getBaseSet()->getObjectPath();
+        cmd += L" WHERE ";
+        cmd += L"(";
+        cmd += towstr(m_filter);
+        cmd += L") AND (";
+        cmd += towstr(condition);
+        cmd += L");";
         
-        cmd += wxT("DELETE FROM ");
-        cmd += towx(getBrowseSet()->getObjectPath());
-        cmd += wxT(" WHERE ");
-        cmd += condition;
+        cmd += L"DELETE FROM ";
+        cmd += getBrowseSet()->getObjectPath();
+        cmd += L" WHERE ";
+        cmd += towstr(condition);
     }
      else
     {
-        cmd += wxT("DELETE FROM ");
-        cmd += towx(getBaseSet()->getObjectPath());
-        cmd += wxT(" WHERE ");
-        cmd += condition;
+        cmd += L" DELETE FROM ";
+        cmd += getBaseSet()->getObjectPath();
+        cmd += L" WHERE ";
+        cmd += towstr(condition);
     }
-    
-    delete_job->setQuery(cmd, tango::sqlPassThrough);
-    delete_job->sigJobFinished().connect(this, &TableDoc::onDeleteJobFinished);
 
-    g_app->getJobQueue()->addJob(delete_job, jobStateRunning);
+    // run the job
+    wxString title = wxString::Format(_("Deleting records in '%s'"),
+                                      getCaption().c_str());
+
+    job->getJobInfo()->setTitle(towstr(title));
+    kl::JsonNode params;
+
+    params["command"].setString(cmd);
+
+    job->setParameters(params.toString());
+    job->sigJobFinished().connect(this, &TableDoc::onDeleteJobFinished);
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
 }
 
 

@@ -267,7 +267,7 @@ private:
     void onSaveAsJobFinished(jobs::IJobPtr saveas_job);
     void onFilterJobFinished(jobs::IJobPtr query_job);
     void onSortJobFinished(jobs::IJobPtr query_job);
-    void onDeleteJobFinished(IJobPtr delete_job);
+    void onDeleteJobFinished(jobs::IJobPtr delete_job);
     void onAlterTableJobFinished(jobs::IJobPtr job);
     void onEditDynamicFieldOk(ColPropsPanel* panel);
     void onCreateDynamicFieldOk(ColPropsPanel* panel);
