@@ -86,8 +86,13 @@ int ExecuteJob::runJob()
     tango::IJobPtr tango_job = m_db->createJob();
     setTangoJob(tango_job);
 
+
+    unsigned int flags = tango::sqlPassThrough;
+    if (getExtraValue(L"tango.sqlAlwaysCopy") == L"true")
+        flags = tango::sqlAlwaysCopy;
+
     xcm::IObjectPtr result;
-    m_db->execute(sql, tango::sqlPassThrough, result, tango_job);
+    m_db->execute(sql, flags, result, tango_job);
     setResultObject(result);
 
     if (tango_job->getCancelled())
