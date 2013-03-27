@@ -29,9 +29,10 @@ namespace jobs
     $p2 = percentage (2 decimal places)
 */
 
+
 class JobInfo : public IJobInfo
 {
-    XCM_CLASS_NAME("cfw.JobInfo")
+    XCM_CLASS_NAME("jobs.JobInfo")
     XCM_BEGIN_INTERFACE_MAP(JobInfo)
         XCM_INTERFACE_ENTRY(IJobInfo)
     XCM_END_INTERFACE_MAP()

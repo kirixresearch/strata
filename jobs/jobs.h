@@ -72,7 +72,7 @@ enum
 
 xcm_interface IJob : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("cfw.IJob")
+    XCM_INTERFACE_NAME("jobs.IJob")
 
 public:
 
@@ -105,7 +105,7 @@ public:
 
 xcm_interface IJobInfo : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("cfw.IJobInfo")
+    XCM_INTERFACE_NAME("jobs.IJobInfo")
 
 public:
 

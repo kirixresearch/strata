@@ -17,20 +17,21 @@
 #include "framework.h"
 
 
-// NOTE: The current way we've implemented statusbars in cfw does not
-//       allow the ability to create indexes for each statusbar item
-//       (which would allow the notion of inserting an item at a certain
-//       place in the statusbar).  If this becomes necessary, we'll deal
-//       with it at that point.  The way things are done right now,
-//       left-aligned global items are added to the statusbar, then
-//       the statusbar provider's items are added to the statusbar
-//       and then right-aligned global items are added at the end
+// NOTE: The current way we've implemented statusbars does not 
+//       allow the ability  to create indexes for each statusbar 
+//       item (which would allow the notion of inserting an item 
+//       at a certain place in the statusbar).  If this becomes 
+//       necessary, we'll deal with it at that point.  The way 
+//       things are done right now, left-aligned global items are 
+//       added to the statusbar, then the statusbar provider's 
+//       items are added to the statusbar and then right-aligned 
+//       global items are added at the end
 
 
 class StatusBarItem : public IStatusBarItem
 {
 
-XCM_CLASS_NAME("cfw.StatusBarItem")
+XCM_CLASS_NAME("appmain.StatusBarItem")
 XCM_BEGIN_INTERFACE_MAP(StatusBarItem)
     XCM_INTERFACE_ENTRY(IStatusBarItem)
 XCM_END_INTERFACE_MAP()
@@ -156,7 +157,7 @@ class StatusBar : public wxAuiToolBar,
 {
 friend class StatusBarItemEvtHandler;
 
-XCM_CLASS_NAME_NOREFCOUNT("cfw.StatusBar")
+XCM_CLASS_NAME_NOREFCOUNT("appmain.StatusBar")
 XCM_BEGIN_INTERFACE_MAP(StatusBar)
     XCM_INTERFACE_ENTRY(IStatusBar)
 XCM_END_INTERFACE_MAP()
@@ -228,7 +229,7 @@ private:
 class StatusBarProviderBase : public IStatusBarProvider
 {
 
-XCM_CLASS_NAME_NOREFCOUNT("cfw.StatusBarProviderBase")
+XCM_CLASS_NAME_NOREFCOUNT("appmain.StatusBarProviderBase")
 XCM_BEGIN_INTERFACE_MAP(StatusBarProviderBase)
     XCM_INTERFACE_ENTRY(IStatusBarProvider)
 XCM_END_INTERFACE_MAP()

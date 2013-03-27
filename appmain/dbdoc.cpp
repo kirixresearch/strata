@@ -1526,14 +1526,14 @@ bool DbDoc::initAsWindow(wxWindow* window,
     
     if (m_fspanel.isNull())
     {
-        wxFAIL_MSG(wxT("Could not create cfw.FsPanel object"));
+        wxFAIL_MSG(wxT("Could not create FsPanel object"));
         return false;
     }
     
     m_fspanel->setStyle(m_style);
     if (!m_fspanel->create(window, id, position, size, flags))
     {
-        wxFAIL_MSG(wxT("Could not create cfw.FsPanel window"));
+        wxFAIL_MSG(wxT("Could not create FsPanel window"));
         return false;
     }
 
@@ -1573,7 +1573,7 @@ bool DbDoc::initAsDocument(IFsItemPtr item)
     
     if (m_fspanel.isNull())
     {
-        wxFAIL_MSG(wxT("Could not create cfw.FsPanel object"));
+        wxFAIL_MSG(wxT("Could not create FsPanel object"));
         return false;
     }
     
@@ -1583,7 +1583,7 @@ bool DbDoc::initAsDocument(IFsItemPtr item)
     
     if (m_dbdoc_site.isNull())
     {
-        wxFAIL_MSG(wxT("Could not create site for cfw.FsPanel"));
+        wxFAIL_MSG(wxT("Could not create site for FsPanel"));
         return false;
     }
     

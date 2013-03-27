@@ -33,10 +33,9 @@ public:
 };
 
 
-
 xcm_interface IAppPreferences : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("cfw.IAppPreferences")
+    XCM_INTERFACE_NAME("appmain.IAppPreferences")
 
 public:
 
@@ -63,6 +62,7 @@ public:
     virtual void flush() = 0;
 };
 
+
 XCM_DECLARE_SMARTPTR(IAppPreferences)
 
 
@@ -71,3 +71,4 @@ IAppPreferencesPtr createMemoryAppPreferencesObject();
 
 
 #endif
+

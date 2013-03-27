@@ -46,7 +46,7 @@ enum
 
 xcm_interface IJobQueue : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("cfw.IJobQueue")
+    XCM_INTERFACE_NAME("appmain.IJobQueue")
 
 public:
 

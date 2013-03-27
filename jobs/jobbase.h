@@ -23,7 +23,7 @@ namespace jobs
 class JobBase : public IJob
 {
 
-XCM_CLASS_NAME("cfw.JobBase")
+XCM_CLASS_NAME("jobs.JobBase")
 XCM_BEGIN_INTERFACE_MAP(JobBase)
     XCM_INTERFACE_ENTRY(IJob)
 XCM_END_INTERFACE_MAP()

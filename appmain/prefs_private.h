@@ -19,8 +19,7 @@
 
 class AppPreferences : public IAppPreferences
 {
-
-    XCM_CLASS_NAME("cfw.AppPreferences")
+    XCM_CLASS_NAME("appmain.AppPreferences")
     XCM_BEGIN_INTERFACE_MAP(AppPreferences)
         XCM_INTERFACE_ENTRY(IAppPreferences)
     XCM_END_INTERFACE_MAP()
@@ -76,7 +75,7 @@ private:
 
 class MemoryAppPreferences : public IAppPreferences
 {
-    XCM_CLASS_NAME("cfw.MemoryAppPreferences")
+    XCM_CLASS_NAME("appmain.MemoryAppPreferences")
     XCM_BEGIN_INTERFACE_MAP(MemoryAppPreferences)
         XCM_INTERFACE_ENTRY(IAppPreferences)
     XCM_END_INTERFACE_MAP()

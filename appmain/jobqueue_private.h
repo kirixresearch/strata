@@ -13,16 +13,13 @@
 #define __APP_JOBQUEUE_PRIVATE_H
 
 
-
-
-
 class JobQueue : public wxEvtHandler,
                  public IJobQueue,
                  public xcm::signal_sink
 {
     friend class JobThread;
     
-    XCM_CLASS_NAME("cfw.JobQueue")
+    XCM_CLASS_NAME("appmain.JobQueue")
     XCM_BEGIN_INTERFACE_MAP(JobQueue)
         XCM_INTERFACE_ENTRY(IJobQueue)
     XCM_END_INTERFACE_MAP()
@@ -66,8 +63,6 @@ private:
 
     DECLARE_EVENT_TABLE()
 };
-
-
 
 
 #endif
