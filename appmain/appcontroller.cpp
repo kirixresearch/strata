@@ -4821,7 +4821,7 @@ void AppController::onOpenDataViewFinished(jobs::IJobPtr query_job)
         return;
 
     ITableDocPtr doc = TableDocMgr::createTableDoc();
-    if (!doc->open(set, iter))
+    if (!doc->open(g_app->getDatabase(), towx(set->getObjectPath()), set, iter))
     {
         wxFAIL_MSG(wxT("ITableDoc::open() returned false"));
         return;

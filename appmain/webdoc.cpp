@@ -1454,7 +1454,7 @@ static double extractNumber(const wxString& num, int* dec_places = NULL)
 
 
 
-tango::ISetPtr makeTableFromDom(wxDOMNode& _node)
+static bool makeTableFromDom(wxDOMNode& _node, const std::wstring& output_path)
 {
     std::vector<HtmlTableFieldInfo> fields;
     tango::IStructurePtr dest_struct;
@@ -1925,14 +1925,14 @@ tango::ISetPtr makeTableFromDom(wxDOMNode& _node)
         col_info->setScale(field_it->type == tango::typeNumeric ? field_it->max_dec : 0);
     }
 
-    dest_set = dest_db->createTable(L"", dest_struct, NULL);
+    dest_set = dest_db->createTable(output_path, dest_struct, NULL);
     
     if (dest_set.isNull())
-        return xcm::null;
+        return false;
     
     tango::IRowInserterPtr row_inserter = dest_set->getRowInserter();
     if (row_inserter.isNull())
-        return xcm::null;
+        return false;
         
     row_inserter->startInsert(L"");
                                        
@@ -1940,7 +1940,7 @@ tango::ISetPtr makeTableFromDom(wxDOMNode& _node)
     {
         field_it->handle = row_inserter->getHandle(towstr(field_it->name));
         if (!field_it->handle)
-            return xcm::null;
+            return false;
     }
     
     // populate the data table rows from the html table
@@ -2073,7 +2073,7 @@ tango::ISetPtr makeTableFromDom(wxDOMNode& _node)
     
     row_inserter->finishInsert();
     
-    return dest_set;
+    return false;
 }
 
 
@@ -3268,15 +3268,17 @@ void WebDoc::onShowContextMenu(wxWebEvent& evt)
             
             
                 wxDOMNode target = evt.GetTargetNode();
-        
-                tango::ISetPtr set = makeTableFromDom(target);
-                if (set.isNull())
+                
+                std::wstring output_path = L"xtmp_" + kl::getUniqueString();
+
+                if (!makeTableFromDom(target, output_path))
                     return;
                     
                 ITableDocPtr doc = TableDocMgr::createTableDoc();
 
-                doc->open(set, xcm::null);
+                doc->open(g_app->getDatabase(), output_path);
                 doc->setSourceUrl(m_url);
+
                 g_app->getMainFrame()->createSite(doc,
                                                   sitetypeNormal,
                                                   -1, -1, -1, -1);
