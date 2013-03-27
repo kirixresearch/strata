@@ -81,14 +81,19 @@ int QueryJob::runJob()
     params_node.fromString(getParameters());
 
     kl::JsonNode input_node = params_node["input"];
+    kl::JsonNode output_node = params_node["output"];
     kl::JsonNode where_node = params_node["where"];
     kl::JsonNode order_node = params_node["order"];
+    kl::JsonNode distinct_node = params_node["distinct"];
 
-    std::wstring input = input_node.getString();
-    std::wstring q_input = tango::quoteIdentifier(m_db, input_node.getString());
+    std::wstring input_str = input_node.getString();
+    std::wstring q_input_str = tango::quoteIdentifier(m_db, input_node.getString());
 
-    std::wstring where_clause = where_node.getString();
-    std::wstring order_clause;
+    std::wstring output_str = output_node.getString();
+    std::wstring q_output_str = tango::quoteIdentifier(m_db, output_node.getString());
+
+    std::wstring where_str = where_node.getString();
+    std::wstring order_str;
 
     std::vector<kl::JsonNode> order_children_node = order_node.getChildren();
     std::vector<kl::JsonNode>::iterator it, it_end;
@@ -98,27 +103,47 @@ int QueryJob::runJob()
     for (it = order_children_node.begin(); it != it_end; ++it)
     {
         if (!first)
-            order_clause += L",";
+            order_str += L",";
 
         // TODO: make sure fieldnames are quoted (dequote/quote) before
         // adding them to the list (remove any DESC qualifier, dequote/quote 
         // the field, and re-add the qualifier)
-        order_clause += it->getString();
+        order_str += it->getString();
     }
 
+    bool distinct = false;
+    if (distinct_node.isOk())
+        distinct = distinct_node.getBoolean();
 
     std::wstring sql;
-    sql += L"SELECT * FROM ";
-    sql += q_input;
-    if (where_clause.length() > 0)
+    sql += L" SELECT ";
+
+    if (distinct)
+    {
+        sql += L" DISTINCT ";
+    }
+
+    sql += L" * ";
+
+    if (output_str.length() > 0)
+    {
+        sql += L" INTO ";
+        sql += q_output_str;
+    }
+
+    sql += L" FROM ";
+    sql += q_input_str;
+
+    if (where_str.length() > 0)
     {
         sql += L" WHERE ";
-        sql += where_clause;
+        sql += where_str;
     }
-    if (order_clause.length() > 0)
+
+    if (order_str.length() > 0)
     {
         sql += L" ORDER BY ";
-        sql += order_clause;
+        sql += order_str;
     }
 
 

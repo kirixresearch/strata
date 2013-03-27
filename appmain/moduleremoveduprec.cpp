@@ -356,28 +356,26 @@ void RemoveDupRecWizard::onWizardCancelled(kcl::Wizard* wizard)
 }
 
 
-static void onRemoveDupRecJobFinished(IJobPtr job)
+static void onRemoveDupRecJobFinished(jobs::IJobPtr job)
 {
     if (job->getJobInfo()->getState() != jobStateFinished)
         return;
 
-    IQueryJobPtr group_job = job;
-
     bool success = false;
 
-    // -- check if there is an output set --
-    if (group_job.isOk())
+    // if there's an output set, open it
+    tango::IIteratorPtr result_iter = job->getResultObject();
+    if (result_iter.isOk())
     {
-        tango::ISetPtr result_set = group_job->getResultSet();
-
+        tango::ISetPtr result_set = result_iter->getSet();
         if (result_set.isOk())
         {
-            wxString output_path;
+            std::wstring output_path;
+            output_path= result_set->getObjectPath();
 
-            if (!result_set->isTemporary())
-                output_path = towx(result_set->getObjectPath());
-
-            if (output_path.IsEmpty())
+            // if the object path begins with xtmp_, we have a temporary
+            // table, so open it up
+            if (isTemporaryTable(output_path))
             {
                 ITableDocPtr doc = TableDocMgr::createTableDoc();
                 doc->open(result_set, xcm::null);
@@ -392,6 +390,7 @@ static void onRemoveDupRecJobFinished(IJobPtr job)
             }
 
             success = true;
+
         }
     }
 
@@ -408,28 +407,33 @@ void RemoveDupRecWizard::onWizardFinished(kcl::Wizard* wizard)
     if (m_info->m_input_set.isNull())
         return;
 
-    // -- close the site --
+    // close the site
     g_app->getMainFrame()->closeSite(m_doc_site);
 
-    wxString sql = wxT("SELECT DISTINCT * ");
-    
-    if (!m_info->m_output_path.IsEmpty())
-    {
-        sql += wxT("INTO ");
-        sql += m_info->m_output_path;
-        sql += wxT(" ");
-    }
-    
-    sql += wxT("FROM ");
-    sql += m_info->m_input_path;
 
-    QueryJob* job = new QueryJob;
+    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.query-job");
+
+    // configure the job parameters
+    kl::JsonNode params;
+    params["input"].setString(towstr(m_info->m_input_path));
+    params["output"].setString(L"xtmp_" + kl::getUniqueString());
+
+    if (m_info->m_output_path.Length() > 0)
+        params["output"].setString(towstr(m_info->m_output_path));
+
+    params["distinct"].setBoolean(true);
+
+    // set the job parameters and start the job
     job->getJobInfo()->setTitle(towstr(_("Remove Duplicate Records")));
-    job->sigJobFinished().connect(&onRemoveDupRecJobFinished);
-    job->setQuery(sql, tango::sqlAlwaysCopy);
+    job->setParameters(params.toString());
 
-    // -- add and start job --
+    job->sigJobFinished().connect(&onRemoveDupRecJobFinished);
     g_app->getJobQueue()->addJob(job, jobStateRunning);
+
+    // TODO: see if tango::sqlAlwaysCopy flag still needs to be set;
+    // this was set in the old query job:  job->setQuery(sql, tango::sqlAlwaysCopy);
+    // if it still needs to be set, then figure out how to set the tango
+
 }
 
 void RemoveDupRecWizard::onSize(wxSizeEvent& event)
