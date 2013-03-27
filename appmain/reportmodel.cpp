@@ -1195,33 +1195,34 @@ void TangoModel::execute(bool block)
             m_job->cancel();
             m_job.clear();
         }
-        
+
         // if we're not in blocking mode, run the query job and
         // handle everything else when the job is finished
-        
-        QueryJob* job = new QueryJob;
-        m_job = static_cast<IJob*>(job);
+
+        jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.execute-job");
+
+        kl::JsonNode params;
+        params["command"].setString(towstr(m_query));
+
         job->getJobInfo()->setTitle(towstr(_("Query")));
+        job->setParameters(params.toString());
         job->sigJobFinished().connect(this, &TangoModel::onQueryJobFinished);
-        job->setQuery(m_query, tango::sqlPassThrough);
-        
         g_app->getJobQueue()->addJob(job, jobStateRunning);
     }
      else
     {
-        // create a query job and block
-        QueryJob* job = new QueryJob;
-        job->ref();
+        // create a query job and run it directly
+        jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.execute-job");
 
-        job->setQuery(m_query, tango::sqlPassThrough);
+        kl::JsonNode params;
+        params["command"].setString(towstr(m_query));
+
+        job->setParameters(params.toString());
         job->runJob();
         job->runPostJob();
 
-        tango::IIteratorPtr iter = job->getResultIterator();
+        tango::IIteratorPtr iter = job->getResultObject();
         setIterator(iter);
-        
-        // delete the job
-        job->unref();
     }
 }
 
@@ -1695,18 +1696,14 @@ bool TangoModel::getBoolean(int col_idx, int function)
     return value;
 }
 
-void TangoModel::onQueryJobFinished(IJobPtr job)
+void TangoModel::onQueryJobFinished(jobs::IJobPtr job)
 {
     m_job.clear();
     
     if (job->getJobInfo()->getState() != jobStateFinished)
         return;
 
-    IQueryJobPtr query_job = job;
-    if (query_job.isNull())
-        return;
-
-    tango::IIteratorPtr iter = query_job->getResultIterator();
+    tango::IIteratorPtr iter = job->getResultObject();
     setIterator(iter);
 
     // fire a signal indicating that the data has been loaded

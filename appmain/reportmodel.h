@@ -350,7 +350,7 @@ protected:
 
 private:
 
-    void onQueryJobFinished(IJobPtr job);
+    void onQueryJobFinished(jobs::IJobPtr job);
 
 private:
 
