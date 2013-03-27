@@ -379,14 +379,6 @@ bool OracleSet::modifyStructure(tango::IStructure* struct_config,
 }
 */
 
-/*
-tango::IRowInserterPtr OracleSet::getRowInserter()
-{
-    OracleRowInserter* inserter = new OracleRowInserter(this);
-    return static_cast<tango::IRowInserter*>(inserter);
-}
-*/
-
 tango::IIteratorPtr OracleSet::createIterator(const std::wstring& columns,
                                               const std::wstring& expr,
                                               tango::IJob* job)

@@ -749,6 +749,9 @@ bool SlDatabase::deleteIndex(const std::wstring& path,
 
 tango::IRowInserterPtr SlDatabase::bulkInsert(const std::wstring& path)
 {
+    //SlRowInserter* inserter = new SlRowInserter(this);
+    //return static_cast<tango::IRowInserter*>(inserter);
+
     return xcm::null;
 }
 

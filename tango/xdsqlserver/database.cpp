@@ -748,6 +748,9 @@ tango::IIndexInfoEnumPtr SqlServerDatabase::getIndexEnum(const std::wstring& pat
 
 tango::IRowInserterPtr SqlServerDatabase::bulkInsert(const std::wstring& path)
 {
+    //SqlServerRowInserter* inserter = new SqlServerRowInserter(this);
+    //return static_cast<tango::IRowInserter*>(inserter);
+
     return xcm::null;
 }
 

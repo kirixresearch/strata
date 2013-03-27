@@ -75,7 +75,7 @@ const wchar_t* kws =
                 L"WITHOUT,WORK,WRITE,YEAR,ZONE";
 
 
-// -- utility functions--
+// utility functions
 
 int drizzle2tangoType(int mysql_type)
 {
@@ -196,7 +196,7 @@ std::wstring createDrizzleFieldString(const std::wstring& name, int type, int wi
 
 
 
-// -- DrizzleFileInfo class implementation --
+// DrizzleFileInfo class implementation
 
 
 class DrizzleFileInfo : public xdcommon::FileInfo
@@ -436,7 +436,7 @@ std::wstring DrizzleDatabase::getDatabase()
 }
 
     
-// -- tango::IDatabase interface implementation --
+// tango::IDatabase interface implementation
 
 void DrizzleDatabase::close()
 {
@@ -940,6 +940,9 @@ tango::IIndexInfoEnumPtr DrizzleDatabase::getIndexEnum(const std::wstring& path)
 
 tango::IRowInserterPtr DrizzleDatabase::bulkInsert(const std::wstring& path)
 {
+    //DrizzleRowInserter* inserter = new DrizzleRowInserter(this);
+    //return static_cast<tango::IRowInserter*>(inserter);
+
     return xcm::null;
 }
 

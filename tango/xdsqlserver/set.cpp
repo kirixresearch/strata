@@ -257,13 +257,6 @@ bool SqlServerSet::modifyStructure(tango::IStructure* struct_config,
 
 */
 
-/*
-tango::IRowInserterPtr SqlServerSet::getRowInserter()
-{
-    SqlServerRowInserter* inserter = new SqlServerRowInserter(this);
-    return static_cast<tango::IRowInserter*>(inserter);
-}
-*/
 
 tango::IIteratorPtr SqlServerSet::createIterator(const std::wstring& columns,
                                                  const std::wstring& expr,

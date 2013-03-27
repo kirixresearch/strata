@@ -173,7 +173,6 @@ bool DrizzleIterator::init(const std::wstring& query)
     return true;
 }
 
-// -- IIterator interface implementation --
 
 tango::ISetPtr DrizzleIterator::getSet()
 {

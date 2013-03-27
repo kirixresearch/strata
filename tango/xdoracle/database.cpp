@@ -1308,6 +1308,8 @@ tango::IIndexInfoEnumPtr OracleDatabase::getIndexEnum(const std::wstring& path)
 
 tango::IRowInserterPtr OracleDatabase::bulkInsert(const std::wstring& path)
 {
+    //OracleRowInserter* inserter = new OracleRowInserter(this);
+    //return static_cast<tango::IRowInserter*>(inserter);
     return xcm::null;
 }
 

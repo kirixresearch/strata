@@ -25,7 +25,7 @@
 #include "iterator.h"
 
 
-// -- DrizzleSet class implementation --
+// DrizzleSet class implementation
 
 DrizzleSet::DrizzleSet()
 {
@@ -279,11 +279,6 @@ bool DrizzleSet::modifyStructure(tango::IStructure* struct_config,
 }
 */
 
-tango::IRowInserterPtr DrizzleSet::getRowInserter()
-{
-    DrizzleRowInserter* inserter = new DrizzleRowInserter(this);
-    return static_cast<tango::IRowInserter*>(inserter);
-}
 
 
 tango::IIteratorPtr DrizzleSet::createIterator(const std::wstring& columns,
@@ -319,7 +314,7 @@ tango::rowpos_t DrizzleSet::getRowCount()
     std::wstring quote_openchar = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
     std::wstring quote_closechar = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
 
-    // -- create select statement --
+    // create select statement
     std::wstring query;
     query += L"SELECT COUNT(*) FROM ";
     query += quote_openchar;
@@ -354,7 +349,7 @@ tango::rowpos_t DrizzleSet::getRowCount()
 
 
 
-// -- DrizzleRowInserter class implementation --
+// DrizzleRowInserter class implementation
 
 DrizzleRowInserter::DrizzleRowInserter(DrizzleSet* set)
 {

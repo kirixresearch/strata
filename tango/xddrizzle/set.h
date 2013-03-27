@@ -35,7 +35,7 @@ public:
     
     bool init();
     
-    // -- tango::ISet interface --
+    // tango::ISet interface
     
     void setObjectPath(const std::wstring& path);
     std::wstring getObjectPath();
@@ -45,8 +45,6 @@ public:
     std::wstring getSetId();
 
     tango::IStructurePtr getStructure();
-
-    tango::IRowInserterPtr getRowInserter();
 
     tango::IIteratorPtr createIterator(const std::wstring& columns,
                                       const std::wstring& expr,
@@ -134,7 +132,4 @@ private:
 };
 
 
-
-
 #endif
-

@@ -103,14 +103,6 @@ tango::IStructurePtr SlSet::getStructure()
     return m_structure->clone();
 }
 
-/*
-tango::IRowInserterPtr SlSet::getRowInserter()
-{
-    SlRowInserter* inserter = new SlRowInserter(this);
-    return static_cast<tango::IRowInserter*>(inserter);
-}
-*/
-
 tango::IIteratorPtr SlSet::createIterator(const std::wstring& columns,
                                           const std::wstring& expr,
                                           tango::IJob* job)
