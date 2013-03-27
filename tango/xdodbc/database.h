@@ -104,6 +104,8 @@ XCM_DECLARE_SMARTPTR(IOdbcDatabase)
 class OdbcDatabase : public tango::IDatabase,
                      public IOdbcDatabase
 {
+    friend class OdbcRowInserter;
+
     XCM_CLASS_NAME("xdodbc.Database")
     XCM_BEGIN_INTERFACE_MAP(OdbcDatabase)
         XCM_INTERFACE_ENTRY(tango::IDatabase)

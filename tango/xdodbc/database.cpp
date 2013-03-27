@@ -21,16 +21,11 @@
 #include "../xdcommon/fileinfo.h"
 #include "iterator.h"
 #include "set.h"
+#include "inserter.h"
 #include <set>
-
 
 #ifdef WIN32
 #include <xcm/xcmwin32.h>
-#endif
-
-#if _MSC_VER < 1300
-// VC6 doesn't have SQLLEN
-#define SQLLEN SQLINTEGER
 #endif
 
 const wchar_t* sql92_keywords =
@@ -2224,7 +2219,10 @@ tango::IIndexInfoEnumPtr OdbcDatabase::getIndexEnum(const std::wstring& path)
 
 tango::IRowInserterPtr OdbcDatabase::bulkInsert(const std::wstring& path)
 {
-    return xcm::null;
+    std::wstring tablename = getTablenameFromOfsPath(path);
+
+    OdbcRowInserter* inserter = new OdbcRowInserter(this, tablename);
+    return static_cast<tango::IRowInserter*>(inserter);
 }
 
 
