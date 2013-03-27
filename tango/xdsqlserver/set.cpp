@@ -167,6 +167,7 @@ tango::IStructurePtr SqlServerSet::getStructure()
     return s;
 }
 
+/*
 bool SqlServerSet::modifyStructure(tango::IStructure* struct_config,
                                    tango::IJob* job)
 {
@@ -182,7 +183,7 @@ bool SqlServerSet::modifyStructure(tango::IStructure* struct_config,
     std::wstring command;
     command.reserve(1024);
 
-    // -- handle delete --
+    // handle delete
     for (it = actions.begin(); it != actions.end(); ++it)
     {
         if (it->m_action == StructureAction::actionDelete)
@@ -198,7 +199,7 @@ bool SqlServerSet::modifyStructure(tango::IStructure* struct_config,
         }
     }
 
-    // -- handle modify --
+    // handle modify
     for (it = actions.begin(); it != actions.end(); ++it)
     {
         if (it->m_action == StructureAction::actionModify)
@@ -211,7 +212,7 @@ bool SqlServerSet::modifyStructure(tango::IStructure* struct_config,
     tango::IColumnInfoPtr colinfo;
     bool found = false;
 
-    // -- handle create --
+    // handle create
     for (it = actions.begin(); it != actions.end(); ++it)
     {
         if (it->m_action == StructureAction::actionCreate)
@@ -254,11 +255,15 @@ bool SqlServerSet::modifyStructure(tango::IStructure* struct_config,
     return true;
 }
 
+*/
+
+/*
 tango::IRowInserterPtr SqlServerSet::getRowInserter()
 {
     SqlServerRowInserter* inserter = new SqlServerRowInserter(this);
     return static_cast<tango::IRowInserter*>(inserter);
 }
+*/
 
 tango::IIteratorPtr SqlServerSet::createIterator(const std::wstring& columns,
                                                  const std::wstring& expr,

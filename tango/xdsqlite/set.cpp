@@ -103,18 +103,13 @@ tango::IStructurePtr SlSet::getStructure()
     return m_structure->clone();
 }
 
-bool SlSet::modifyStructure(tango::IStructure* struct_config,
-                              tango::IJob* job)
-{
-    XCM_AUTO_LOCK(m_object_mutex);
-    return true;
-}
-
+/*
 tango::IRowInserterPtr SlSet::getRowInserter()
 {
     SlRowInserter* inserter = new SlRowInserter(this);
     return static_cast<tango::IRowInserter*>(inserter);
 }
+*/
 
 tango::IIteratorPtr SlSet::createIterator(const std::wstring& columns,
                                           const std::wstring& expr,

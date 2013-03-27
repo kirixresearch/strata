@@ -59,12 +59,7 @@ public:
 
     unsigned int getSetFlags();
     std::wstring getSetId();
-
     tango::IStructurePtr getStructure();
-    bool modifyStructure(tango::IStructure* struct_config,
-                         tango::IJob* job);
-
-    tango::IRowInserterPtr getRowInserter();
 
     tango::IIteratorPtr createIterator(const std::wstring& columns,
                                        const std::wstring& expr,

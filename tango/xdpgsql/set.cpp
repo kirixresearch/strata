@@ -96,25 +96,11 @@ std::wstring PgsqlSet::getSetId()
 }
 
 
-
-
-
 tango::IStructurePtr PgsqlSet::getStructure()
 {
     return m_database->describeTable(m_tablename);
 }
 
-bool PgsqlSet::modifyStructure(tango::IStructure* struct_config,
-                               tango::IJob* job)
-{
-    return true;
-}
-
-tango::IRowInserterPtr PgsqlSet::getRowInserter()
-{
-    PgsqlRowInserter* inserter = new PgsqlRowInserter(m_database, m_tablename);
-    return static_cast<tango::IRowInserter*>(inserter);
-}
 
 tango::IIteratorPtr PgsqlSet::createIterator(const std::wstring& columns,
                                              const std::wstring& expr,

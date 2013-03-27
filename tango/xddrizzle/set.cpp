@@ -174,6 +174,7 @@ tango::IStructurePtr DrizzleSet::getStructure()
     return structure;
 }
 
+/*
 bool DrizzleSet::modifyStructure(tango::IStructure* struct_config,
                                tango::IJob* job)
 {
@@ -276,6 +277,7 @@ bool DrizzleSet::modifyStructure(tango::IStructure* struct_config,
 
     return true;
 }
+*/
 
 tango::IRowInserterPtr DrizzleSet::getRowInserter()
 {

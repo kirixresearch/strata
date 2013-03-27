@@ -104,13 +104,6 @@ tango::IStructurePtr KpgSet::getStructure()
     return m_structure;
 }
 
-bool KpgSet::modifyStructure(tango::IStructure* struct_config,
-                             tango::IJob* job)
-{
-    return false;
-}
-
-
 tango::IIteratorPtr KpgSet::createIterator(const std::wstring& columns,
                                            const std::wstring& expr,
                                            tango::IJob* job)

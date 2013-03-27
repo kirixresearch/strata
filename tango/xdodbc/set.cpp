@@ -620,6 +620,7 @@ tango::IStructurePtr OdbcSet::getStructure()
     return ret;
 }
 
+/*
 bool OdbcSet::modifyStructure(tango::IStructure* struct_config,
                               tango::IJob* job)
 {
@@ -757,12 +758,15 @@ bool OdbcSet::modifyStructure(tango::IStructure* struct_config,
 
     return true;
 }
+*/
 
+/*
 tango::IRowInserterPtr OdbcSet::getRowInserter()
 {
     OdbcRowInserter* inserter = new OdbcRowInserter(this);
     return static_cast<tango::IRowInserter*>(inserter);
 }
+*/
 
 tango::IIteratorPtr OdbcSet::createIterator(const std::wstring& columns,
                                             const std::wstring& expr,

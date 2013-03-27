@@ -46,7 +46,6 @@ public:
     std::wstring getSetId();
 
     tango::IStructurePtr getStructure();
-    bool modifyStructure(tango::IStructure* struct_config, tango::IJob* job);
 
     tango::IRowInserterPtr getRowInserter();
 

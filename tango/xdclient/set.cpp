@@ -138,6 +138,7 @@ tango::IStructurePtr ClientSet::getStructure()
     return structure->clone();
 }
 
+/*
 bool ClientSet::modifyStructure(tango::IStructure* struct_config, tango::IJob* job)
 {
     if (!struct_config)
@@ -227,6 +228,7 @@ bool ClientSet::modifyStructure(tango::IStructure* struct_config, tango::IJob* j
 
     return true;
 }
+*/
 
 tango::IRowInserterPtr ClientSet::getRowInserter()
 {

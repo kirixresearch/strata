@@ -43,8 +43,6 @@ public:
     std::wstring getSetId();
 
     tango::IStructurePtr getStructure();
-    bool modifyStructure(tango::IStructure* struct_config,
-                         tango::IJob* job);
 
     tango::IIteratorPtr createIterator(const std::wstring& columns,
                                        const std::wstring& expr,

@@ -27,6 +27,7 @@
 #include "database.h"
 #include "iterator.h"
 #include "set.h"
+#include "inserter.h"
 #include "stream.h"
 #include <set>
 #include <kl/portable.h>
@@ -1332,7 +1333,10 @@ tango::IIndexInfoEnumPtr PgsqlDatabase::getIndexEnum(const std::wstring& path)
 
 tango::IRowInserterPtr PgsqlDatabase::bulkInsert(const std::wstring& path)
 {
-    return xcm::null;
+    std::wstring tbl = pgsqlGetTablenameFromPath(path);
+
+    PgsqlRowInserter* inserter = new PgsqlRowInserter(this, tbl);
+    return static_cast<tango::IRowInserter*>(inserter);
 }
 
 
