@@ -32,7 +32,7 @@ struct InsertInfo
 
 
 
-int xdcmnInsert(tango::IDatabasePtr db,
+int xdcmnInsert(tango::IDatabasePtr dest_db,
                 tango::IIteratorPtr sp_source_iter,
                 const std::wstring& dest_table,
                 const std::wstring& constraint,
@@ -48,7 +48,7 @@ int xdcmnInsert(tango::IDatabasePtr db,
     // this code assumes for the time being that columns are named the same
     // in the source and destination databases
 
-    tango::IRowInserterPtr sp_insert = db->bulkInsert(dest_table);
+    tango::IRowInserterPtr sp_insert = dest_db->bulkInsert(dest_table);
     if (sp_insert.isNull())
     {
         return 0;
@@ -58,7 +58,7 @@ int xdcmnInsert(tango::IDatabasePtr db,
 
     // get table structure
     tango::IColumnInfoPtr src_colinfo, dest_colinfo;
-    tango::IStructurePtr dest_structure = db->describeTable(dest_table);
+    tango::IStructurePtr dest_structure = dest_db->describeTable(dest_table);
     tango::IStructurePtr src_structure = source_iter->getStructure();
 
     int i;

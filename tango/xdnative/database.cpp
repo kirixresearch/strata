@@ -1666,7 +1666,6 @@ static bool _copyTree(const std::wstring& path,
 
 bool Database::copyData(const tango::CopyInfo* info, tango::IJob* job)
 {
-
     tango::IIteratorPtr iter;
     tango::IStructurePtr structure;
 
@@ -1705,7 +1704,19 @@ bool Database::copyData(const tango::CopyInfo* info, tango::IJob* job)
     if (output.isNull())
         return false;
 
-    xdcmnInsert(static_cast<tango::IDatabase*>(this), iter, info->output, info->where,  info->max_rows,  job);
+    std::wstring cstr, rpath;
+    if (detectMountPoint(info->output, cstr, rpath))
+    {
+        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return false;
+
+        xdcmnInsert(db, iter, rpath, info->where, info->max_rows, job);
+    }
+     else
+    {
+        xdcmnInsert(static_cast<tango::IDatabase*>(this), iter, info->output, info->where, info->max_rows, job);
+    }
 
     return true;
 }
@@ -3995,6 +4006,18 @@ tango::IStructurePtr Database::describeTable(const std::wstring& path)
 
 tango::IRowInserterPtr Database::bulkInsert(const std::wstring& path)
 {
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, cstr, rpath))
+    {
+        // action takes place in a mount
+        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return xcm::null;
+
+        return db->bulkInsert(rpath);
+    }
+
+
     ISetInternalPtr set = openSet(path);
     if (set.isNull())
         return xcm::null;

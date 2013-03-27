@@ -25,6 +25,7 @@
 #include "database.h"
 #include "iterator.h"
 #include "set.h"
+#include "inserter.h"
 #include "pkgfile.h"
 #include <set>
 #include <kl/portable.h>
@@ -485,6 +486,8 @@ tango::ISetPtr KpgDatabase::createTable(const std::wstring& _path,
                                         tango::IStructurePtr struct_config,
                                         tango::FormatInfo* format_info)
 {
+    XCM_AUTO_LOCK(m_obj_mutex);
+
     if (getFileExist(_path))
         return xcm::null;
 
@@ -504,6 +507,8 @@ tango::ISetPtr KpgDatabase::createTable(const std::wstring& _path,
     {
         return xcm::null;
     }
+
+    m_create_tables[path] = struct_config;
 
     return static_cast<tango::ISet*>(set);
 }
@@ -543,15 +548,13 @@ bool KpgDatabase::getStreamInfoBlock(const std::wstring& _path, std::wstring& ou
         return xcm::null;
     }
 
-    std::wstring info;
-
     if (m_kpg->getVersion() == 1)
     {
-        info = kl::towstring((const char*)data);
+        output = kl::towstring((const char*)data);
     }
      else
     {
-        kl::ucsle2wstring(info, data, len/2);
+        kl::ucsle2wstring(output, data, len/2);
     }
 
     delete reader;
@@ -664,19 +667,71 @@ tango::IIndexInfoEnumPtr KpgDatabase::getIndexEnum(const std::wstring& path)
 
 
 
-tango::IRowInserterPtr KpgDatabase::bulkInsert(const std::wstring& path)
+tango::IRowInserterPtr KpgDatabase::bulkInsert(const std::wstring& _path)
 {
-    return xcm::null;
+    XCM_AUTO_LOCK(m_obj_mutex);
+
+    std::wstring path = _path;
+    if (path.substr(0,1) == L"/")
+        path.erase(0,1);
+
+    tango::IStructurePtr structure;
+
+    std::map<std::wstring, tango::IStructurePtr, kl::cmp_nocase>::iterator it;
+    it = m_create_tables.find(path);
+    if (it != m_create_tables.end())
+    {
+        structure = it->second;
+    }
+     else
+    {
+        structure = describeTable(_path);
+    }
+
+    if (structure.isNull())
+        return xcm::null;
+
+    KpgRowInserter* inserter = new KpgRowInserter(this, path, structure);
+    return static_cast<tango::IRowInserter*>(inserter);
 }
 
 
-tango::IStructurePtr KpgDatabase::describeTable(const std::wstring& path)
+tango::IStructurePtr KpgDatabase::describeTable(const std::wstring& _path)
 {
-    tango::ISetPtr set = openSet(path);
-    if (set.isNull())
+    XCM_AUTO_LOCK(m_obj_mutex);
+
+    std::wstring path = _path;
+    if (path.substr(0,1) == L"/")
+        path.erase(0,1);
+
+    tango::IStructurePtr structure;
+
+    std::map<std::wstring, tango::IStructurePtr, kl::cmp_nocase>::iterator it;
+    it = m_create_tables.find(path);
+    if (it != m_create_tables.end())
+    {
+        return it->second;
+    }
+
+
+
+    std::wstring stream_info;
+    if (!getStreamInfoBlock(path, stream_info))
         return xcm::null;
 
-    return set->getStructure();
+    // create set and initialize variables
+    kl::xmlnode info;
+
+    if (!info.parse(stream_info))
+        return xcm::null;
+
+    int node_idx = info.getChildIdx(L"structure");
+    if (node_idx == -1)
+        return xcm::null;
+
+    kl::xmlnode& structure_node = info.getChild(node_idx);
+
+    return xdkpgXmlToStructure(structure_node);
 }
 
 bool KpgDatabase::modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job)

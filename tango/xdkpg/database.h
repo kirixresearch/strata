@@ -13,7 +13,8 @@
 #define __XDPGSQL_DATABASE_H
 
 
-
+#include <map>
+#include <kl/string.h>
 #include "../xdcommon/errorinfo.h"
 
 class JobInfo;
@@ -153,6 +154,8 @@ private:
     xcm::mutex m_jobs_mutex;
     int m_last_job;
     std::vector<JobInfo*> m_jobs;
+
+    std::map<std::wstring, tango::IStructurePtr, kl::cmp_nocase> m_create_tables;
 
     ThreadErrorInfo m_error;
 };

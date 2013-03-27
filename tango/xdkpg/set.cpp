@@ -110,11 +110,6 @@ bool KpgSet::modifyStructure(tango::IStructure* struct_config,
     return false;
 }
 
-tango::IRowInserterPtr KpgSet::getRowInserter()
-{
-    KpgRowInserter* inserter = new KpgRowInserter(m_database, m_tablename, getStructure());
-    return static_cast<tango::IRowInserter*>(inserter);
-}
 
 tango::IIteratorPtr KpgSet::createIterator(const std::wstring& columns,
                                            const std::wstring& expr,
