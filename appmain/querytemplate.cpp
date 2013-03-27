@@ -17,77 +17,73 @@
 #include "jsonconfig.h"
 #include <set>
 
-static void onQueryJobFinished(IJobPtr job)
+
+static void onQueryJobFinished(jobs::IJobPtr job)
 {
     if (job->getJobInfo()->getState() != jobStateFinished)
         return;
 
-    IQueryJobPtr query_job = job;
+
     bool refresh_tree = false;
-    int querydoc_site_id = job->getExtraLong();
+
+    int querydoc_site_id = kl::wtoi(job->getExtraValue(L"appmain.siteid"));
     IDocumentSitePtr querydoc_site;
+
     if (querydoc_site_id != 0)
         querydoc_site = g_app->getMainFrame()->lookupSiteById(querydoc_site_id);
     
     // check if there is an output set
-    if (query_job.isOk())
+    tango::IIteratorPtr result_iter = job->getResultObject();
+    tango::ISetPtr result_set = result_iter->getSet();
+
+    // if the result set isn't temporary, the set has been created
+    // with an "INTO" statement and should appear on the tree; so, 
+    // set the refresh tree flag to true
+    if (!result_set->isTemporary())
+        refresh_tree = true;
+
+    if (querydoc_site.isOk())
     {
-        tango::IIteratorPtr result_iter = query_job->getResultIterator();
-        tango::ISetPtr result_set = query_job->getResultSet();
-
-        // if the result set isn't temporary, the set has been created
-        // with an "INTO" statement and should appear on the tree; so, 
-        // set the refresh tree flag to true
-        if (!result_set->isTemporary())
-            refresh_tree = true;
-
-        if (result_set.isOk())
+        // first try to find an existing tabledoc 
+        ITableDocPtr tabledoc;
+        tabledoc = lookupOtherDocument(querydoc_site, "appmain.TableDoc");
+        if (tabledoc.isNull())
         {
-            if (querydoc_site.isOk())
-            {
-                // first try to find an existing tabledoc 
-                ITableDocPtr tabledoc;
-                tabledoc = lookupOtherDocument(querydoc_site, "appmain.TableDoc");
-                if (tabledoc.isNull())
-                {
-                    // none exists yet, create one  
-                    tabledoc = TableDocMgr::createTableDoc();
-                    tabledoc->setTemporaryModel(true);
-                    tabledoc->open(result_set, result_iter);
+            // none exists yet, create one  
+            tabledoc = TableDocMgr::createTableDoc();
+            tabledoc->setTemporaryModel(true);
+            tabledoc->open(result_set, result_iter);
                     
-                    wxWindow* container = querydoc_site->getContainerWindow();
-                    g_app->getMainFrame()->createSite(container,
-                                                      tabledoc,
-                                                      true);
-                }
-                 else
-                {
-                    // switch to the table view
-                    tabledoc->getGrid()->Freeze();
-                    tabledoc->open(result_set, result_iter);
-                    tabledoc->refreshActiveView();
-                    tabledoc->getGrid()->Thaw();
-
-                    switchToOtherDocument(querydoc_site, "appmain.TableDoc");
-                }
-            }
-             else
-            {
-                ITableDocPtr doc = TableDocMgr::createTableDoc();
-                doc->setTemporaryModel(true);
-                doc->open(result_set, result_iter);
-
-                g_app->getMainFrame()->createSite(doc, sitetypeNormal,
-                                                  -1, -1, -1, -1);
-                refresh_tree = true;
-            }
+            wxWindow* container = querydoc_site->getContainerWindow();
+            g_app->getMainFrame()->createSite(container,
+                                                tabledoc,
+                                                true);
         }
+            else
+        {
+            // switch to the table view
+            tabledoc->getGrid()->Freeze();
+            tabledoc->open(result_set, result_iter);
+            tabledoc->refreshActiveView();
+            tabledoc->getGrid()->Thaw();
+
+            switchToOtherDocument(querydoc_site, "appmain.TableDoc");
+        }
+    }
+        else
+    {
+        ITableDocPtr doc = TableDocMgr::createTableDoc();
+        doc->setTemporaryModel(true);
+        doc->open(result_set, result_iter);
+
+        g_app->getMainFrame()->createSite(doc, sitetypeNormal,
+                                            -1, -1, -1, -1);
+        refresh_tree = true;
     }
 
     if (refresh_tree)
         g_app->getAppController()->refreshDbDoc();
 }
-
 
 
 QueryTemplate::QueryTemplate()
@@ -116,32 +112,41 @@ bool QueryTemplate::load(const wxString& path)
     return loadJsonFromNode(path);
 }
 
-IJobPtr QueryTemplate::execute(int site_id)
+jobs::IJobPtr QueryTemplate::execute(int site_id)
 {
-    // create and run the query job
-    wxString sql = getQueryString();
-    int flags = 0;
-    
+    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.execute-job");
+
+
+    // determine the sql execute flags
     if (getDatabaseDisposition() == tango::dbtypeXdnative)
     {
         // local database queries require this because of
         // view bugs in queries that don't return all columns
-        flags = tango::sqlAlwaysCopy;
+        job->setExtraValue(L"tango.sqlAlwaysCopy", L"true");
     }
      else
     {
         // for non-local queries, use pass-through to increase performance
-        flags = tango::sqlPassThrough;
+        job->setExtraValue(L"tango.sqlPassThrough", L"true");
     }
-    
-    QueryJob* job = new QueryJob;
-    job->setExtraLong(site_id);
-    job->sigJobFinished().connect(&onQueryJobFinished);
-    job->getJobInfo()->setTitle(towstr(_("Query")));
-    job->setQuery(sql, flags);
 
+
+    // save the site_id; TODO: this is to work with the existing code;
+    // any way to get the equivalent functionality without packaging
+    // this up and doing it the way it's implemented in the callback?
+    job->setExtraValue(L"appmain.siteid", kl::itowstring(site_id));
+
+
+    // run the job
+    kl::JsonNode params;
+    params["command"].setString(towstr(getQueryString()));
+
+    job->getJobInfo()->setTitle(towstr(_("Query")));
+    job->setParameters(params.toString());
+    job->sigJobFinished().connect(onQueryJobFinished);
     g_app->getJobQueue()->addJob(job, jobStateRunning);
-    return static_cast<IJob*>(job);
+
+    return static_cast<jobs::IJob*>(job);
 }
 
 std::vector<wxString> QueryTemplate::getOutputFields()

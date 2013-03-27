@@ -2474,7 +2474,7 @@ bool QueryDoc::execute()
     
     setChangedExecute(false);
 
-    IJobPtr job = m_info.execute(m_doc_site->getId());
+    jobs::IJobPtr job = m_info.execute(m_doc_site->getId());
     if (job.isOk())
     {
         m_job_info = job->getJobInfo();

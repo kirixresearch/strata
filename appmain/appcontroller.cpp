@@ -5845,7 +5845,10 @@ IJobPtr AppController::execute(const wxString& location)
             QueryTemplate t;
             if (!t.load(location))
                 return xcm::null;
-            return t.execute();
+            //return t.execute();
+
+            // TODO: QueryTemplate now returns jobs::IJobPtr; need to
+            // uncomment above once this function returns the same
         }
          else
         {
@@ -5881,15 +5884,18 @@ IJobPtr AppController::execute(const wxString& location)
             QueryTemplate t;
             if (!t.load(location))
                 return xcm::null;
+            //return t.execute();
 
-            return t.execute();
+            //return t.execute();
+
+            // TODO: QueryTemplate now returns jobs::IJobPtr; need to
+            // uncomment above once this function returns the same
         }
          else if (type == L"import")
         {
             ImportTemplate t;
             if (!t.load(location))
                 return xcm::null;
-
             return t.execute();
         }
     }
