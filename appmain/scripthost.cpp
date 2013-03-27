@@ -52,7 +52,6 @@
 #include "appcontroller.h"
 #include "panelconsole.h"
 #include "dlgdatabasefile.h"
-#include "jobquery.h"
 #include "jobscript.h"
 #include "extensionmgr.h"
 #include "extensionpkg.h"

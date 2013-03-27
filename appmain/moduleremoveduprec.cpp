@@ -13,7 +13,6 @@
 #include "dlgdatabasefile.h"
 #include "moduleremoveduprec.h"
 #include "tabledoc.h"
-#include "jobquery.h"
 #include "appcontroller.h"
 #include "dbdoc.h"
 

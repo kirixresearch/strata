@@ -20,7 +20,6 @@
 #include "dlgdatabasefile.h"
 #include "structurevalidator.h"
 #include "jobexportpkg.h"
-#include "jobquery.h"
 #include <algorithm>
 #include <set>
 

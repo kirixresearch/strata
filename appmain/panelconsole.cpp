@@ -14,7 +14,6 @@
 #include "editordoc.h"
 #include "appcontroller.h"
 #include "scripthostapp.h"
-#include "jobquery.h"
 #include "tabledoc.h"
 #include <kl/regex.h>
 #include <wx/stc/stc.h>

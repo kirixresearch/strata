@@ -12,7 +12,6 @@
 #include "appmain.h"
 #include "tabledocmodel.h"
 #include "tabledoc_private.h"
-#include "jobquery.h"
 #include "jsonconfig.h"
 #include <kl/string.h>
 

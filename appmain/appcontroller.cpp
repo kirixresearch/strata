@@ -46,7 +46,6 @@
 #include "jobimport.h"
 #include "jobimportpkg.h"
 #include "jobexportpkg.h"
-#include "jobquery.h"
 #include "jsonconfig.h"
 #include "querydoc.h"
 #include "sqldoc.h"

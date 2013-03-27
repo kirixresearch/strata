@@ -11,7 +11,6 @@
 
 #include "appmain.h"
 #include "querytemplate.h"
-#include "jobquery.h"
 #include "tabledoc.h"
 #include "appcontroller.h"
 #include "jsonconfig.h"

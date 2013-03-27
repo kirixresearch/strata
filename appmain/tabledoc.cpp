@@ -17,7 +17,6 @@
 #include "tangogridmodel.h"
 #include "jobexport.h"
 #include "jobexportpkg.h"
-#include "jobquery.h"
 #include "exprbuilder.h"
 #include "feedparser.h"
 #include "panelcolprops.h"

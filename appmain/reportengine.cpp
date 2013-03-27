@@ -12,7 +12,6 @@
 #include "appmain.h"
 #include "reportengine.h"
 #include "querytemplate.h"
-#include "jobquery.h"
 
 #include "../kcanvas/component.h"
 #include "../kcanvas/componentpage.h"

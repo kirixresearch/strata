@@ -11,7 +11,6 @@
 
 #include "appmain.h"
 #include "reportmodel.h"
-#include "jobquery.h"
 #include "../kscript/util.h"
 
 

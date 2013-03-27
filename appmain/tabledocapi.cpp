@@ -13,7 +13,6 @@
 #include "tabledoc.h"
 #include "tabledoc_private.h"
 #include "appcontroller.h"
-#include "jobquery.h"
 #include "scripthost.h"
 
 
