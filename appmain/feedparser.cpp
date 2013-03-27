@@ -263,7 +263,7 @@ static wxString StripHTML(const wxString& str)
 }
   
 
-tango::ISetPtr FeedParser::convertToSet()
+bool FeedParser::convertToTable(const std::wstring& output_path)
 {
     tango::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
@@ -329,14 +329,15 @@ tango::ISetPtr FeedParser::convertToSet()
     colinfo->setWidth(max_id_len);
     colinfo->setScale(0);
 
-    dest_set = db->createTable(L"", structure, NULL);
+
+    dest_set = db->createTable(output_path, structure, NULL);
 
     if (dest_set.isNull())
-        return xcm::null;
+        return false;
 
     tango::IRowInserterPtr row_inserter = dest_set->getRowInserter();
     if (row_inserter.isNull())
-        return xcm::null;
+        return false;
         
     row_inserter->startInsert(L"");
     
@@ -396,6 +397,6 @@ tango::ISetPtr FeedParser::convertToSet()
 
     row_inserter->finishInsert();
 
-    return dest_set;
+    return true;
 }
 

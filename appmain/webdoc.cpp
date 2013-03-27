@@ -778,12 +778,12 @@ public:
         
         xf_remove(towstr(filename));
 
-        
-        tango::ISetPtr set = parser.convertToSet();
-        
-        if (set.isNull())
+        std::wstring output_path = L"xtmp_" + kl::getUniqueString();
+
+
+        if (!parser.convertToTable(output_path))
         {
-            // bad set
+            // conversion failed
             return;
         }
         
@@ -801,7 +801,7 @@ public:
 
         IDocumentSitePtr site;
         ITableDocPtr doc = TableDocMgr::createTableDoc();
-        doc->open(set, xcm::null);
+        doc->open(g_app->getDatabase(), output_path);
         doc->setSourceUrl(m_url);
         doc->setSourceMimeType(wxT("application/rss+xml"));
 

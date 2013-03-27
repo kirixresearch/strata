@@ -39,7 +39,7 @@ public:
 
     bool loadAndParse(const wxString& filename);
     const std::vector<FeedItem>& getItems() const;
-    tango::ISetPtr convertToSet();
+    bool convertToTable(const std::wstring& output_path);
     
 private:
 

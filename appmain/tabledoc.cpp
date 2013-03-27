@@ -1862,14 +1862,19 @@ void TableDoc::onDoReloadRefresh(wxCommandEvent& evt)
         tango::ISetPtr old_set = getBaseSet();
         std::wstring old_set_id = old_set->getSetId();
         
-        tango::ISetPtr new_set = parser.convertToSet();
+        std::wstring output_path = L"xtmp_" + kl::getUniqueString();
+
+        if (!parser.convertToTable(output_path))
+            return;
+
+        tango::ISetPtr new_set = g_app->getDatabase()->openSet(output_path);
         if (new_set.isNull())
             return;
         std::wstring new_set_id = new_set->getSetId();
 
         TableDocMgr::copyModel(old_set_id, new_set_id);
         
-        open(new_set, xcm::null);
+        open(g_app->getDatabase(), output_path);
         
         TableDocMgr::deleteModel(old_set_id);
     }
