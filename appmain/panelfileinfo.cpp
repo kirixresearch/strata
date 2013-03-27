@@ -518,7 +518,9 @@ void MultiFileInfoPanel::onSave(wxCommandEvent& event)
     colinfo->setWidth(8);
     colinfo->setScale(0);
 
-    tango::ISetPtr output = g_app->getDatabase()->createTable(L"xtmp_" + kl::getUniqueString(), output_structure, NULL);
+    std::wstring output_path = L"xtmp_" + kl::getUniqueString();
+
+    tango::ISetPtr output = g_app->getDatabase()->createTable(output_path, output_structure, NULL);
     if (!output)
         return;
 
@@ -581,7 +583,7 @@ void MultiFileInfoPanel::onSave(wxCommandEvent& event)
     output_inserter->finishInsert();
     
     ITableDocPtr doc = TableDocMgr::createTableDoc();
-    doc->open(output, xcm::null);
+    doc->open(g_app->getDatabase(), output_path);
     g_app->getMainFrame()->createSite(doc, sitetypeNormal, -1, -1, -1, -1);
     g_app->getMainFrame()->closeSite(m_doc_site);
 }
