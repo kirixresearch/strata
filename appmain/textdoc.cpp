@@ -121,16 +121,18 @@ ITextDocPtr createTextDoc(const wxString& filename,
     IDocumentSitePtr tabledoc_site;
 
     // create a new TextDoc
-    TextDoc* textdoc = new TextDoc(filename);
+    TextDoc* textdoc = new TextDoc();
     if (!textdoc->open(filename))
         return xcm::null;
     
     // create a new TableDoc
     ITableDocPtr tabledoc = TableDocMgr::createTableDoc();
-    tabledoc->open(textdoc->getTextSet(), xcm::null);
+    tabledoc->open(g_app->getDatabase(), filename, textdoc->getTextSet());
 
     // create a new TransformationDoc
-    TransformationDoc* transdoc = new TransformationDoc(filename);
+    TransformationDoc* transdoc = new TransformationDoc();
+    if (!transdoc->open(filename))
+        return xcm::null;
 
     if (container_wnd)
     {
@@ -251,10 +253,8 @@ BEGIN_EVENT_TABLE(TextDoc, wxWindow)
 END_EVENT_TABLE()
 
 
-TextDoc::TextDoc(const wxString& filename)
+TextDoc::TextDoc()
 {
-    m_filename = filename;
-    
     m_fixedlength_set = xcm::null;
     m_textdelimited_set = xcm::null;
     m_textdelimited_iter = xcm::null;
@@ -297,14 +297,8 @@ TextDoc::TextDoc(const wxString& filename)
     m_textqualifier_labels.push_back(_("None"));
     m_textqualifier_labels.push_back(_("Other..."));
 
-    // get the format of the file from the database
-    tango::IFileInfoPtr file_info = g_app->getDatabase()->getFileInfo(towstr(filename));
-    if (file_info->getFormat() == tango::formatDelimitedText)
-        m_view = TextDoc::TextDelimitedView;
-         else
-        m_view = TextDoc::FixedLengthView;
-    
     m_encoding = TextDoc::StandardEncoding;
+    m_view = -1;  // -1 means the view will be be determined by the file type in TextDoc::open()
 }
 
 TextDoc::~TextDoc()
@@ -329,9 +323,9 @@ bool TextDoc::initDoc(IFramePtr frame,
 
     // set the document's caption and icon
     wxString caption;
-    if (!m_filename.IsEmpty())
+    if (!m_path.IsEmpty())
     {
-        caption = m_filename.AfterLast(wxT('/'));
+        caption = m_path.AfterLast(wxT('/'));
     }
      else
     {
@@ -436,7 +430,7 @@ wxString TextDoc::getDocumentLocation()
     if (m_source_url.Length() > 0)
         return m_source_url;
         
-    return urlToFilename(m_filename);
+    return urlToFilename(m_path);
 }
 
 void TextDoc::setDocumentFocus()
@@ -516,9 +510,9 @@ tango::ISetPtr TextDoc::getTextSet()
     return xcm::null;
 }
 
-wxString TextDoc::getFilename()
+wxString TextDoc::getPath()
 {
-    return m_filename;
+    return m_path;
 }
 
 
@@ -568,7 +562,7 @@ bool TextDoc::initFixedLengthView()
     
     // open the set
     m_textdelimited_set.clear();
-    m_fixedlength_set = db->openSetEx(towstr(m_filename),
+    m_fixedlength_set = db->openSetEx(towstr(m_path),
                                       tango::formatFixedLengthText);
 
     // if we don't have a set, bail out
@@ -587,10 +581,10 @@ bool TextDoc::initFixedLengthView()
 
     // open the file in the TextView control
     wxString fn;
-    if (m_filename.Left(5).CmpNoCase(wxT("file:")) == 0)
-        fn = urlToFilename(m_filename);
+    if (m_path.Left(5).CmpNoCase(wxT("file:")) == 0)
+        fn = urlToFilename(m_path);
      else
-        fn = getPhysPathFromMountPath(m_filename);
+        fn = getPhysPathFromMountPath(m_path);
         
     if (!m_textview->openFile(fn))
         return false;
@@ -715,12 +709,23 @@ bool TextDoc::open(const wxString& filename)
     if (db.isNull())
         return false;
 
+    // get the format of the file from the database
+    tango::IFileInfoPtr file_info = db->getFileInfo(towstr(filename));
+    if (file_info.isNull())
+        return false;
 
     m_textdelimited_set.clear();
     m_fixedlength_set.clear();
+    m_path = filename;
     
-    m_filename = filename;
-    
+    if (m_view == -1)
+    {
+        if (file_info->getFormat() == tango::formatDelimitedText)
+            m_view = TextDoc::TextDelimitedView;
+             else
+            m_view = TextDoc::FixedLengthView;
+    }
+
     
     if (m_frame.isOk())
     {
@@ -737,14 +742,14 @@ bool TextDoc::open(const wxString& filename)
     {
         if (m_view == TextDoc::FixedLengthView)
         {
-            m_fixedlength_set = db->openSetEx(towstr(m_filename),
-                                      tango::formatFixedLengthText);
+            m_fixedlength_set = db->openSetEx(towstr(m_path),
+                                              tango::formatFixedLengthText);
             return m_fixedlength_set.isOk();
         }
          else if (m_view == TextDoc::TextDelimitedView)
         {
-            m_textdelimited_set = db->openSetEx(towstr(m_filename),
-                                        tango::formatDelimitedText);
+            m_textdelimited_set = db->openSetEx(towstr(m_path),
+                                                tango::formatDelimitedText);
             return m_textdelimited_set.isOk();
         }
     }
@@ -771,7 +776,7 @@ bool TextDoc::initTextDelimitedView()
     
     // open the set
     m_fixedlength_set.clear();
-    m_textdelimited_set = db->openSetEx(towstr(m_filename),
+    m_textdelimited_set = db->openSetEx(towstr(m_path),
                                         tango::formatDelimitedText);
 
     // if we don't have a set, bail out

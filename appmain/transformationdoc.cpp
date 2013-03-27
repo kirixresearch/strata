@@ -313,9 +313,8 @@ BEGIN_EVENT_TABLE(TransformationDoc, wxWindow)
 END_EVENT_TABLE()
 
 
-TransformationDoc::TransformationDoc(const wxString& filename)
+TransformationDoc::TransformationDoc()
 {
-    m_filename = filename;
     m_dirty = false;
     m_grid = NULL;
     m_last_selected_fieldtype = -1;
@@ -358,8 +357,15 @@ TransformationDoc::TransformationDoc(const wxString& filename)
 
 TransformationDoc::~TransformationDoc()
 {
-
 }
+
+
+bool TransformationDoc::open(const wxString& path)
+{
+    m_path = path;
+    return true;
+}
+
 
 inline void resizeAllGridColumnsToFitDoc(kcl::Grid* grid)
 {
@@ -392,8 +398,8 @@ bool TransformationDoc::initDoc(IFramePtr frame,
     
     // set the document's caption and icon
     wxString caption;
-    if (m_filename.Length() > 0)
-        caption = m_filename.AfterLast(wxT('/'));
+    if (m_path.Length() > 0)
+        caption = m_path.AfterLast(wxT('/'));
          else
         caption = _("(Untitled)");
     
@@ -513,7 +519,7 @@ wxString TransformationDoc::getDocumentLocation()
     if (textdoc)
         return textdoc->getDocumentLocation();
 
-    return urlToFilename(m_filename);
+    return urlToFilename(m_path);
 }
 
 void TransformationDoc::setDocumentFocus()

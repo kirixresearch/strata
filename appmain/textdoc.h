@@ -26,7 +26,7 @@ public:
 
     virtual bool open(const wxString& filename) = 0;
     virtual void close() = 0;
-    virtual wxString getFilename() = 0;
+    virtual wxString getPath() = 0;
     virtual tango::ISetPtr getTextSet() = 0;
     virtual void setSourceUrl(const wxString& source_url) = 0; // allows override of displayed url
 };
@@ -67,10 +67,10 @@ public:
     
 public:
 
-    TextDoc(const wxString& filename);
+    TextDoc();
     virtual ~TextDoc();
 
-    // -- IDocument --
+    // IDocument
     bool initDoc(IFramePtr frame,
                  IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,
@@ -82,15 +82,15 @@ public:
     void onSiteDeactivated();
     void onSiteActivated();
 
-    // -- ITextDoc --
+    // ITextDoc
     void setSourceUrl(const wxString& source_url);
     tango::ISetPtr getTextSet();
     bool open(const wxString& filename);
     void close();
-    wxString getFilename();
+    wxString getPath();
     
     
-    // -- IColumnListTarget --
+    // IColumnListTarget
     void getColumnListItems(std::vector<ColumnListItem>& items);
     
 private:
@@ -147,7 +147,7 @@ private:
     void onTextDelimitedCaptionEndEdit(kcl::GridEvent& evt);
     void onToggleView(wxCommandEvent& evt);
 
-    // -- signal handlers --
+    // signal handlers
     void onTextViewColumnAdded(TextViewColumn col);
     void onTextViewColumnDeleted(TextViewColumn col);
     void onTextViewColumnModified(TextViewColumn col,
@@ -191,7 +191,7 @@ private:
     tango::IIteratorPtr m_textdelimited_iter;
     ITangoGridModelPtr m_grid_model;
     
-    wxString m_filename;
+    wxString m_path;
     wxString m_source_url;          // source url (can override what's displayed in the url bar)
     
     int m_view;                     // fixed-length or text-delimited

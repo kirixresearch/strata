@@ -143,10 +143,12 @@ public:
     
 public:
     
-    TransformationDoc(const wxString& filename);
+    TransformationDoc();
     virtual ~TransformationDoc();
     
-    // -- ITransformationDoc --
+    bool open(const wxString& filename);
+
+    // ITransformationDoc
     void initFromSet(tango::ISetPtr set);
     void close();
 
@@ -157,7 +159,7 @@ public:
 
 private:
 
-    // -- IDocument --
+    // IDocument
     bool initDoc(IFramePtr frame,
                  IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,
@@ -168,11 +170,11 @@ private:
     bool onSiteClosing(bool force);
     void onSiteActivated();
 
-    // -- IColumnListTarget --
+    // IColumnListTarget
     void getColumnListItems(std::vector<ColumnListItem>& items);
     void onColumnListDblClicked(const std::vector<wxString>& items);
 
-    // -- TransformationDoc methods --
+    // TransformationDoc methods
     TransformField getInputFieldByName(const wxString& input_name);
     
     void insertRow(int row, bool dynamic = false);
@@ -213,11 +215,11 @@ private:
 
 private:
 
-    // -- signal events --
+    // signal events
     void onInsertingRows(std::vector<int> rows);
     void onDeletedRows(std::vector<int> rows);
 
-    // -- frame event handlers --
+    // frame event handlers
     void onFrameEvent(FrameworkEvent& evt);
 
     // event handlers
@@ -250,7 +252,7 @@ private:
     
     tango::ISetPtr m_init_set;
     std::vector<TransformField> m_source_fields;
-    wxString m_filename;
+    wxString m_path;
     bool m_dirty;
     int m_last_selected_fieldtype;
 
@@ -264,7 +266,4 @@ private:
 };
 
 
-
 #endif  // __APP_TRANSFORMATIONDOC_H
-
-

@@ -1818,7 +1818,7 @@ void TableDoc::onDoReloadRefresh(wxCommandEvent& evt)
         
         // try to delete the filename
         bool error = false;
-        wxString filename = urlToFilename(textdoc->getFilename());
+        wxString filename = urlToFilename(textdoc->getPath());
         if (::wxRemoveFile(filename))
         {
             if (!::wxRenameFile(m_reload_filename, filename))
@@ -1921,7 +1921,7 @@ void TableDoc::onReload(wxCommandEvent& evt)
         if (!transdoc)
             return;
         
-        wxString filename = urlToFilename(textdoc->getFilename());
+        wxString filename = urlToFilename(textdoc->getPath());
         filename += wxT(".");
         filename += wxString::Format(wxT("%08x%08x"), (long)time(NULL), (long)clock());
         m_reload_filename = filename;
@@ -2358,12 +2358,7 @@ bool TableDoc::open(tango::IDatabasePtr db,
         m_db_type = m_mount_db->getDatabaseType();
     }
     
-    return open(set, optional_iterator);
-}
 
-
-bool TableDoc::open(tango::ISetPtr set, tango::IIteratorPtr iter)
-{
     m_filter = wxT("");
     m_sort_order = wxT("");
     m_caption_suffix = wxT("");
@@ -2377,10 +2372,10 @@ bool TableDoc::open(tango::ISetPtr set, tango::IIteratorPtr iter)
     
     m_path = m_set->getObjectPath();
 
+
     // if the set/table displayed has a url associated with it, display it
 
-    tango::IDatabasePtr db = g_app->getDatabase();
-    if (db.isOk() && m_set.isOk())
+    if (m_set.isOk())
     {
         tango::IAttributesPtr attr = db->getAttributes();
         std::wstring url = attr->getStringAttribute(tango::dbattrDatabaseUrl);
@@ -2440,16 +2435,16 @@ bool TableDoc::open(tango::ISetPtr set, tango::IIteratorPtr iter)
 
     tango::IIteratorPtr browse_iter;
 
-    if (iter.isOk())
+    if (optional_iterator.isOk())
     {
-        browse_iter = iter;
+        browse_iter = optional_iterator;
     }
      else
     {
         // create a default iterator
-        if (set.isOk())
+        if (m_set.isOk())
         {
-            browse_iter = set->createIterator(L"", L"", NULL);
+            browse_iter = m_set->createIterator(L"", L"", NULL);
         }
     }
 
@@ -2462,6 +2457,12 @@ bool TableDoc::open(tango::ISetPtr set, tango::IIteratorPtr iter)
     setIterator(browse_iter);
 
     return true;
+}
+
+
+bool TableDoc::open(tango::ISetPtr set, tango::IIteratorPtr iter)
+{
+    return open(g_app->getDatabase(), towx(set->getObjectPath()), set, iter);
 }
 
 bool TableDoc::setBrowseSet(tango::ISetPtr set, tango::IIteratorPtr iter)
