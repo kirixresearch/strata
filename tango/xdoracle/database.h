@@ -170,6 +170,8 @@ public:
                  xcm::IObjectPtr& result,
                  tango::IJob* job);
 
+    bool groupQuery(tango::GroupQueryInfo* info, tango::IJob* job);
+
 private:
 
     std::wstring getServer() { return m_server; }

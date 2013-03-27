@@ -766,7 +766,7 @@ public:
                                         const std::wstring& sort,
                                         IJob* job) = 0;
 
-    virtual bool groupQuery(GroupQueryInfo* info, IJob* job) { return false; };
+    virtual bool groupQuery(GroupQueryInfo* info, IJob* job) = 0;
 };
 
 

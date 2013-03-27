@@ -650,6 +650,12 @@ tango::IIndexInfoEnumPtr KpgDatabase::getIndexEnum(const std::wstring& path)
 
 
 
+tango::IRowInserterPtr KpgDatabase::bulkInsert(const std::wstring& path)
+{
+    return xcm::null;
+}
+
+
 tango::IStructurePtr KpgDatabase::describeTable(const std::wstring& path)
 {
     tango::ISetPtr set = openSet(path);
@@ -659,12 +665,21 @@ tango::IStructurePtr KpgDatabase::describeTable(const std::wstring& path)
     return set->getStructure();
 }
 
+bool KpgDatabase::modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job)
+{
+    return false;
+}
 
 
 bool KpgDatabase::execute(const std::wstring& command,
                           unsigned int flags,
                           xcm::IObjectPtr& result,
                           tango::IJob* job)
+{
+    return false;
+}
+
+bool KpgDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
 {
     return false;
 }

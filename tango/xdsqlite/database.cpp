@@ -837,6 +837,11 @@ bool SlDatabase::execute(const std::wstring& command,
     return true;
 }
 
+bool SlDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
+{
+    return false;
+}
+
 tango::IStructurePtr SlDatabase::getStructureFromPath(std::wstring& path)
 {
     

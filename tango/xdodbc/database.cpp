@@ -2316,3 +2316,8 @@ bool OdbcDatabase::execute(const std::wstring& command,
         return (SQL_SUCCEEDED(retval) || retval == SQL_NO_DATA_FOUND) ? true : false;
     }
 }
+
+bool OdbcDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
+{
+    return false;
+}

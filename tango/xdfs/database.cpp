@@ -1951,6 +1951,10 @@ bool FsDatabase::execute(const std::wstring& command,
                  command, flags, result, m_error, job);
 }
 
+bool FsDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
+{
+    return false;
+}
 
 
 

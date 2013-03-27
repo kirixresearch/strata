@@ -1427,6 +1427,11 @@ bool OracleDatabase::execute(const std::wstring& _command,
 }
 
 
+bool OracleDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
+{
+    return false;
+}
+
 
 /*
     if (OCI_SUCCESS != checkerr(m_err, OCIEnvNlsCreate((OCIEnv**)&m_env,
@@ -1496,3 +1501,4 @@ bool OracleDatabase::execute(const std::wstring& _command,
 
     }
 */
+
