@@ -294,14 +294,17 @@ int ExportJob::runJob()
         return 0;
     }
 
-    tango::IDatabasePtr src_db_ptr = g_app->getDatabase();
-    if (src_db_ptr.isNull())
+
+    tango::IDatabasePtr src_db = g_app->getDatabase();
+
+    tango::IDatabasePtr dest_db = conn->getDatabasePtr();
+
+    if (src_db.isNull() || dest_db.isNull())
     {
         // no source database available
         m_job_info->setState(jobStateFailed);
         return 0;
     }
-
 
 
     double max_count;
@@ -314,7 +317,7 @@ int ExportJob::runJob()
     for (it = m_exports.begin(); it != m_exports.end(); ++it)
     {
         // get total row count
-        tango::ISetPtr set = src_db_ptr->openSet(towstr(it->input_path));
+        tango::ISetPtr set = src_db->openSet(towstr(it->input_path));
         if (set.isNull())
             continue;
 
@@ -342,7 +345,7 @@ int ExportJob::runJob()
 
 
         // now, do the insert
-        src_iter = src_db_ptr->createIterator(towstr(it->input_path), L"", L"", NULL);
+        src_iter = src_db->createIterator(towstr(it->input_path), L"", L"", NULL);
         if (src_iter.isNull())
         {
             m_job_info->setState(jobStateFailed);
@@ -360,7 +363,9 @@ int ExportJob::runJob()
         int src_col_count = src_struct->getColumnCount();
 
         // try to open the set
-        dest_set = conn->getDatabasePtr()->openSet(towstr(it->output_path));
+
+        
+        dest_set = dest_db->openSet(towstr(it->output_path));
 
 
         if (it->append && dest_set.isOk())
@@ -535,10 +540,9 @@ int ExportJob::runJob()
                     tango::FormatInfo fi;
                     fi.table_format = format;
 
-                    dest_set = conn->getDatabasePtr()->createTable(
-                                                       towstr(it->output_path),
-                                                       dest_struct,
-                                                       &fi);
+                    dest_set = dest_db->createTable(towstr(it->output_path),
+                                                    dest_struct,
+                                                    &fi);
                 }
                 break;
 
@@ -554,10 +558,9 @@ int ExportJob::runJob()
                         tango::FormatInfo fi;
                         fi.table_format = tango::formatDelimitedText;
 
-                        dest_set = conn->getDatabasePtr()->createTable(
-                                                           towstr(it->output_path),
-                                                           dest_struct,
-                                                           &fi);
+                        dest_set = dest_db->createTable(towstr(it->output_path),
+                                                        dest_struct,
+                                                        &fi);
                     }
                      else
                     {
@@ -568,18 +571,9 @@ int ExportJob::runJob()
                         fi.line_delimiters = L"\n";
                         fi.first_row_column_names = m_first_row_header;
 
-                        // create a delimited-text set with no fields; create it with
-                        // no fields for two reasons because the set creation routine
-                        // automatically adds fields with specific delimiters and for
-                        // this export, we need control over those delimiters as well
-                        // as whether or not the fields even show
-                        tango::IStructurePtr empty_struct;
-                        empty_struct = g_app->getDatabase()->createStructure();
-
-                        dest_set = conn->getDatabasePtr()->createTable(
-                                                           towstr(it->output_path),
-                                                           dest_struct,
-                                                           &fi);
+                        dest_set = dest_db->createTable(towstr(it->output_path),
+                                                        dest_struct,
+                                                        &fi);
                     }
                     
                     break;
@@ -609,7 +603,7 @@ int ExportJob::runJob()
 
 
         tango::IRowInserterPtr ri;
-        ri = dest_set->getRowInserter();
+        ri = dest_db->bulkInsert(towstr(it->output_path));
         ri->startInsert(L"*");
 
         // get input and output handles

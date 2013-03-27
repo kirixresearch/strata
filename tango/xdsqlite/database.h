@@ -118,7 +118,9 @@ public:
     bool getMountPoint(const std::wstring& path,
                        std::wstring& connection_str,
                        std::wstring& remote_path);
-                       
+    
+    tango::IRowInserterPtr bulkInsert(const std::wstring& path);
+          
     tango::IStructurePtr describeTable(const std::wstring& path);
 
     bool modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job);

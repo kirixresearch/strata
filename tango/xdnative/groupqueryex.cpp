@@ -975,9 +975,7 @@ bool Database::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
                 {
                     int store_offset = 0;
 
-                    if (gi.addStoreCountField(iter,
-                                              count_filter,
-                                              &store_offset))
+                    if (gi.addStoreCountField(iter, count_filter, &store_offset))
                     {
                         // this only happens if there was a valid count filter,
                         // otherwise addStoreCountField() does nothing
@@ -1074,7 +1072,7 @@ bool Database::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
     if (output_set.isNull())
         return xcm::null;
 
-    tango::IRowInserterPtr output_inserter = output_set->getRowInserter();
+    tango::IRowInserterPtr output_inserter = bulkInsert(info->output);
     if (output_inserter.isNull())
         return xcm::null;
 

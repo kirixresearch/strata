@@ -117,7 +117,7 @@ bool sqlInsert(tango::IDatabasePtr db,
         }
 
         src_iter->goFirst();
-        xdcmnInsert(src_iter, set,  L"",  0,  NULL);
+        xdcmnInsert(db, src_iter, set->getObjectPath(),  L"",  0,  NULL);
 
         return true;
     }
@@ -140,7 +140,7 @@ bool sqlInsert(tango::IDatabasePtr db,
     kl::trim(values);
 
 
-    // -- parse lists --
+    // parse lists
     
     std::vector<InsertFieldInfo> insertvec;
     std::vector<std::wstring> fieldvec;
@@ -151,12 +151,12 @@ bool sqlInsert(tango::IDatabasePtr db,
 
     if (fieldvec.size() != valuesvec.size())
     {
-        // -- field list/value list size mismatch --
+        // field list/value list size mismatch
         error.setError(tango::errorSyntax, L"Invalid syntax; number of values to insert differs from number of fields to insert into");
         return false;
     }
 
-    // -- try to open the target set --
+    // try to open the target set
 
     tango::ISetPtr set = db->openSet(table);
     if (set.isNull())
@@ -177,12 +177,12 @@ bool sqlInsert(tango::IDatabasePtr db,
     }
 
 
-    // -- do the insert --
+    // do the insert
 
-    tango::IRowInserterPtr inserter = set->getRowInserter();
+    tango::IRowInserterPtr inserter = db->bulkInsert(table);
 
 
-    // -- get field info --
+    // get field info
     insertvec.reserve(fieldvec.size());
 
     std::vector<std::wstring>::iterator it;

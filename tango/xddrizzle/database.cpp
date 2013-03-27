@@ -938,6 +938,12 @@ tango::IIndexInfoEnumPtr DrizzleDatabase::getIndexEnum(const std::wstring& path)
     return vec;
 }
 
+tango::IRowInserterPtr DrizzleDatabase::bulkInsert(const std::wstring& path)
+{
+    return xcm::null;
+}
+
+
 tango::IStructurePtr DrizzleDatabase::describeTable(const std::wstring& path)
 {
     tango::ISetPtr set = openSet(path);

@@ -1930,7 +1930,7 @@ static bool makeTableFromDom(wxDOMNode& _node, const std::wstring& output_path)
     if (dest_set.isNull())
         return false;
     
-    tango::IRowInserterPtr row_inserter = dest_set->getRowInserter();
+    tango::IRowInserterPtr row_inserter = dest_db->bulkInsert(output_path);
     if (row_inserter.isNull())
         return false;
         

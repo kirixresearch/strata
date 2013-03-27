@@ -218,7 +218,11 @@ bool ImportPkgJob::importSet(PkgStreamReader* reader,
     }
     */
 
-    info->output_set = g_app->getDatabase()->createTable(towstr(info->output_path), structure, NULL);
+    tango::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return false;
+
+    info->output_set = db->createTable(towstr(info->output_path), structure, NULL);
     if (info->output_set.isNull())
     {
         // could not create set
@@ -226,7 +230,7 @@ bool ImportPkgJob::importSet(PkgStreamReader* reader,
     }
 
 
-    tango::IRowInserterPtr sp_inserter = info->output_set->getRowInserter();
+    tango::IRowInserterPtr sp_inserter = db->bulkInsert(towstr(info->output_path));
     tango::IRowInserter* inserter = sp_inserter.p;
     if (!inserter)
     {

@@ -490,9 +490,13 @@ void MultiFileInfoPanel::onOK(wxCommandEvent& event)
 
 void MultiFileInfoPanel::onSave(wxCommandEvent& event)
 {
+    tango::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return;
+
     tango::IStructurePtr output_structure;
     tango::IColumnInfoPtr colinfo;
-    output_structure = g_app->getDatabase()->createStructure();
+    output_structure = db->createStructure();
 
     colinfo = output_structure->createColumn();
     colinfo->setName(L"Filename");
@@ -520,11 +524,11 @@ void MultiFileInfoPanel::onSave(wxCommandEvent& event)
 
     std::wstring output_path = L"xtmp_" + kl::getUniqueString();
 
-    tango::ISetPtr output = g_app->getDatabase()->createTable(output_path, output_structure, NULL);
+    tango::ISetPtr output = db->createTable(output_path, output_structure, NULL);
     if (!output)
         return;
 
-    tango::IRowInserterPtr output_inserter = output->getRowInserter();
+    tango::IRowInserterPtr output_inserter = db->bulkInsert(output_path);
     if (!output_inserter)
         return;
 

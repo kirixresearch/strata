@@ -162,12 +162,12 @@ public:
 
     void updateRowCount();
 
-    // -- IStorable --
+    // IStorable
     std::wstring getObjectPath();
     bool isTemporary();
     bool storeObject(const std::wstring& ofs_path);
 
-    // -- ISet --
+    // ISet
     tango::IStructurePtr getStructure();
     bool modifyStructure(tango::IStructure* struct_config,
                          tango::IJob* job);
@@ -189,11 +189,6 @@ public:
     tango::IRowDeleterPtr getRowDeleter();
     bool restoreDeleted(); // ISetRestoreDeleted
     
-    int insert(tango::IIteratorPtr source_iter,
-               const std::wstring& where_condition,
-               int max_rows,
-               tango::IJob* job);
-
     tango::rowpos_t getRowCount();
 
     bool updateRow(tango::rowid_t rowid,
@@ -202,7 +197,7 @@ public:
 
     tango::tango_uint64_t getStructureModifyTime();
 
-    // -- ITableEvents --
+    // ITableEvents
     void onTableRowUpdated(tango::rowid_t rowid);
     void onTableRowDeleted(tango::rowid_t rowid);
     void onTableRowCountUpdated();

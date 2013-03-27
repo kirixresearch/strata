@@ -135,6 +135,7 @@ public:
                      const std::wstring& name);
     tango::IIndexInfoEnumPtr getIndexEnum(const std::wstring& path);
 
+    tango::IRowInserterPtr bulkInsert(const std::wstring& path);
 
     tango::IStructurePtr describeTable(const std::wstring& path);
 

@@ -736,7 +736,7 @@ public:
 
 
 static bool insertDistinct(tango::IDatabase* db,
-                           tango::ISetPtr target,
+                           const std::wstring& target,
                            tango::IIteratorPtr src_iter,
                            tango::IJob* job)
 {
@@ -774,7 +774,7 @@ static bool insertDistinct(tango::IDatabase* db,
 
     // create row inserter
 
-    tango::IRowInserterPtr sp_output = target->getRowInserter();
+    tango::IRowInserterPtr sp_output = db->bulkInsert(target);
     tango::IRowInserter* output = sp_output.p;
     tango::IIterator* iter = src_iter.p;
     output->startInsert(L"*");
@@ -2049,7 +2049,7 @@ static tango::ISetPtr doJoin(tango::IDatabasePtr db,
 
     // create output row inserter
 
-    tango::IRowInserterPtr sp_output = output_set->getRowInserter();
+    tango::IRowInserterPtr sp_output = db->bulkInsert(output_set->getObjectPath());
     tango::IRowInserter* output = sp_output.p;
 
     output->startInsert(L"*");
@@ -2231,7 +2231,7 @@ bool convertToNativeTables(tango::IDatabasePtr db,
             return false;
         iter->goFirst();
             
-        xdcmnInsert(iter, set,  L"",  0,  job);
+        xdcmnInsert(db, iter, set->getObjectPath(),  L"",  0,  job);
 
         if (mainset == st_it->set)
             mainset = set;
@@ -3405,7 +3405,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
 
     if (p_distinct)
     {
-        insertDistinct(db, output_set, iter, job);
+        insertDistinct(db, output_set->getObjectPath(), iter, job);
 
         if (job && job->getCancelled())
         {
@@ -3422,7 +3422,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
             ijob->startPhase();
         }
 
-        xdcmnInsert(iter, output_set,  L"",  0,  job);
+        xdcmnInsert(db, iter, output_set->getObjectPath(),  L"",  0,  job);
 
         if (job && job->getCancelled())
         {

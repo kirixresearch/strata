@@ -149,14 +149,18 @@ public:
                      const std::wstring& name);
     tango::IIndexInfoEnumPtr getIndexEnum(const std::wstring& path);
 
-    bool execute(const std::wstring& command,
-                 unsigned int flags,
-                 xcm::IObjectPtr& result,
-                 tango::IJob* job);
+
+    tango::IRowInserterPtr bulkInsert(const std::wstring& path);
+
+    tango::IStructurePtr describeTable(const std::wstring& path);
 
     bool modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job);
 
-    tango::IStructurePtr describeTable(const std::wstring& path);
+    bool execute(const std::wstring& command,
+                unsigned int flags,
+                xcm::IObjectPtr& result,
+                tango::IJob* job);
+
     void clearDescribeTableCache(const std::wstring& path);
 
 public:

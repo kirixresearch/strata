@@ -5161,8 +5161,7 @@ void TableDoc::onGridPreGhostRowInsert(kcl::GridEvent& evt)
         return;
     }
 
-    tango::ISetPtr set = getBaseSet();
-    tango::IRowInserterPtr inserter = set->getRowInserter();
+    tango::IRowInserterPtr inserter = g_app->getDatabase()->bulkInsert(towstr(m_path));
     inserter->startInsert(L"*");
     inserter->insertRow();
     inserter->finishInsert();

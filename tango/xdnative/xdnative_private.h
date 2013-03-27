@@ -264,6 +264,7 @@ public:
     virtual void onRelationshipsUpdated() = 0;
     
     virtual bool modifyStructure(tango::IStructure* struct_config, tango::IJob* job) = 0;
+    virtual tango::IRowInserterPtr getRowInserter() = 0;
 
     virtual bool storeObject(const std::wstring& path) = 0;
 

@@ -544,8 +544,6 @@ public:
     virtual rowpos_t getRowCount() = 0;
     virtual IStructurePtr getStructure() = 0;
 
-    virtual IRowInserterPtr getRowInserter() = 0;
-
     virtual IIteratorPtr createIterator(const std::wstring& columns,
                                         const std::wstring& expr,
                                         IJob* job) = 0;
@@ -758,6 +756,8 @@ public:
                          unsigned int flags,
                          xcm::IObjectPtr& result,
                          IJob* job) = 0;
+
+    virtual IRowInserterPtr bulkInsert(const std::wstring& path) = 0;
 
     virtual bool modifyStructure(const std::wstring& path, IStructurePtr struct_config, IJob* job) = 0;
 

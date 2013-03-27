@@ -1918,6 +1918,10 @@ bool FsDatabase::deleteRelation(const std::wstring& relation_id)
 }
 
 
+tango::IRowInserterPtr FsDatabase::bulkInsert(const std::wstring& path)
+{
+    return xcm::null;
+}
 
 
 tango::IStructurePtr FsDatabase::describeTable(const std::wstring& path)

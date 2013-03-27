@@ -32,8 +32,9 @@ struct InsertInfo
 
 
 
-int xdcmnInsert(tango::IIteratorPtr sp_source_iter,
-                tango::ISetPtr dest_set,
+int xdcmnInsert(tango::IDatabasePtr db,
+                tango::IIteratorPtr sp_source_iter,
+                const std::wstring& dest_table,
                 const std::wstring& constraint,
                 int max_rows,
                 tango::IJob* job)
@@ -47,7 +48,7 @@ int xdcmnInsert(tango::IIteratorPtr sp_source_iter,
     // this code assumes for the time being that columns are named the same
     // in the source and destination databases
 
-    tango::IRowInserterPtr sp_insert = dest_set->getRowInserter();
+    tango::IRowInserterPtr sp_insert = db->bulkInsert(dest_table);
     if (sp_insert.isNull())
     {
         return 0;
@@ -55,9 +56,9 @@ int xdcmnInsert(tango::IIteratorPtr sp_source_iter,
 
     tango::IRowInserter* insert = sp_insert.p;
 
-    // get set structure
+    // get table structure
     tango::IColumnInfoPtr src_colinfo, dest_colinfo;
-    tango::IStructurePtr dest_structure = dest_set->getStructure();
+    tango::IStructurePtr dest_structure = db->describeTable(dest_table);
     tango::IStructurePtr src_structure = source_iter->getStructure();
 
     int i;

@@ -335,7 +335,7 @@ bool FeedParser::convertToTable(const std::wstring& output_path)
     if (dest_set.isNull())
         return false;
 
-    tango::IRowInserterPtr row_inserter = dest_set->getRowInserter();
+    tango::IRowInserterPtr row_inserter = db->bulkInsert(output_path);
     if (row_inserter.isNull())
         return false;
         

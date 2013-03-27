@@ -1077,7 +1077,7 @@ int ImportJob::runJob()
         // insert rows into that set
 
         tango::IRowInserterPtr ri;
-        ri = dest_set->getRowInserter();
+        ri = dest_db->bulkInsert(dest_set->getObjectPath());
         ri->startInsert(L"*");
 
         std::vector<ImportCopyInfo>::iterator copyinfo_it;

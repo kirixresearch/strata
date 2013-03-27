@@ -2222,6 +2222,10 @@ tango::IIndexInfoEnumPtr OdbcDatabase::getIndexEnum(const std::wstring& path)
     return vec;
 }
 
+tango::IRowInserterPtr OdbcDatabase::bulkInsert(const std::wstring& path)
+{
+    return xcm::null;
+}
 
 
 tango::IStructurePtr OdbcDatabase::describeTable(const std::wstring& path)

@@ -1330,6 +1330,13 @@ tango::IIndexInfoEnumPtr PgsqlDatabase::getIndexEnum(const std::wstring& path)
 
 
 
+tango::IRowInserterPtr PgsqlDatabase::bulkInsert(const std::wstring& path)
+{
+    return xcm::null;
+}
+
+
+
 tango::IStructurePtr PgsqlDatabase::describeTable(const std::wstring& path)
 {
     std::wstring tbl = pgsqlGetTablenameFromPath(path);

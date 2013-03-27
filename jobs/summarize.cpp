@@ -277,7 +277,7 @@ int SummarizeJob::runJob()
         return 0;
     }
 
-    tango::IRowInserterPtr output_inserter = output_set->getRowInserter();
+    tango::IRowInserterPtr output_inserter = m_db->bulkInsert(output_path);
     if (output_inserter.isNull())
     {
         m_job_info->setState(jobStateFailed);

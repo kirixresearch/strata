@@ -720,20 +720,6 @@ bool TableSet::restoreDeleted() // ISetRestoreDeleted
 }
 
 
-int TableSet::insert(tango::IIteratorPtr source_iter,
-                     const std::wstring& where_condition,
-                     int max_rows,
-                     tango::IJob* job)
-{
-    return xdcmnInsert(source_iter,
-                       static_cast<tango::ISet*>(this),
-                       where_condition,
-                       max_rows,
-                       job);
-}
-
-
-
 
 void TableSet::refreshUpdateBuffer()
 {

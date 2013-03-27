@@ -1705,7 +1705,7 @@ bool Database::copyData(const tango::CopyInfo* info, tango::IJob* job)
     if (output.isNull())
         return false;
 
-    xdcmnInsert(iter, output, info->where,  info->max_rows,  job);
+    xdcmnInsert(static_cast<tango::IDatabase*>(this), iter, info->output, info->where,  info->max_rows,  job);
 
     return true;
 }
@@ -3992,6 +3992,17 @@ tango::IStructurePtr Database::describeTable(const std::wstring& path)
 
     return set->getStructure();
 }
+
+tango::IRowInserterPtr Database::bulkInsert(const std::wstring& path)
+{
+    ISetInternalPtr set = openSet(path);
+    if (set.isNull())
+        return xcm::null;
+
+    return set->getRowInserter();
+}
+
+
 
 bool Database::modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job)
 {

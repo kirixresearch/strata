@@ -1306,6 +1306,12 @@ tango::IIndexInfoEnumPtr OracleDatabase::getIndexEnum(const std::wstring& path)
 }
 
 
+tango::IRowInserterPtr OracleDatabase::bulkInsert(const std::wstring& path)
+{
+    return xcm::null;
+}
+
+
 tango::IStructurePtr OracleDatabase::describeTable(const std::wstring& path)
 {
     tango::ISetPtr set = openSet(path);

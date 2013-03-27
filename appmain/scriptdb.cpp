@@ -1017,11 +1017,11 @@ bool DbBulkInsert::init(tango::IDatabasePtr db,
     std::wstring columns = _columns;
     kl::trim(columns);
         
-    tango::ISetPtr set = db->openSet(table);
-    if (!set)
+    tango::IStructurePtr structure = db->describeTable(table);
+    if (!structure.isOk())
         return false;
-    
-    m_sp_ri = set->getRowInserter();
+        
+    m_sp_ri = db->bulkInsert(table);
     if (!m_sp_ri)
         return false;
     
@@ -1030,8 +1030,7 @@ bool DbBulkInsert::init(tango::IDatabasePtr db,
     
     m_ri = m_sp_ri.p;
     
-    tango::IStructurePtr structure = set->getStructure();
-    
+
     if (columns == L"*")
     {
         size_t i, col_count = (size_t)structure->getColumnCount();
