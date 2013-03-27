@@ -369,15 +369,14 @@ static void onRemoveDupRecJobFinished(jobs::IJobPtr job)
         tango::ISetPtr result_set = result_iter->getSet();
         if (result_set.isOk())
         {
-            std::wstring output_path;
-            output_path= result_set->getObjectPath();
+            std::wstring output_path = result_set->getObjectPath();
 
             // if the object path begins with xtmp_, we have a temporary
             // table, so open it up
             if (isTemporaryTable(output_path))
             {
                 ITableDocPtr doc = TableDocMgr::createTableDoc();
-                doc->open(result_set, xcm::null);
+                doc->open(g_app->getDatabase(), output_path);
                 g_app->getMainFrame()->createSite(doc,
                                                   sitetypeNormal,
                                                   -1, -1, -1, -1);
