@@ -1013,10 +1013,12 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
         colinfo->setExpression(towstr(m_last_expr));
     }
 
-    tango::IIndexInfoEnumPtr old_indexes;
-    old_indexes = g_app->getDatabase()->getIndexEnum(m_tabledoc->getBaseSet()->getObjectPath());
+    tango::IDatabasePtr db = g_app->getDatabase();
 
-    if (!m_set->modifyStructure(structure, NULL))
+    tango::IIndexInfoEnumPtr old_indexes;
+    old_indexes = db->getIndexEnum(m_tabledoc->getBaseSet()->getObjectPath());
+
+    if (!db->modifyStructure(m_set->getObjectPath(), structure, NULL))
     {
         appMessageBox(_("The structure of the table could not be modified, due to an invalid parameter."),
                            APPLICATION_NAME,

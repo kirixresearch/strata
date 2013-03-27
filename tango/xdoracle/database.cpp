@@ -1316,6 +1316,10 @@ tango::IStructurePtr OracleDatabase::describeTable(const std::wstring& path)
 }
 
 
+bool OracleDatabase::modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job)
+{
+    return false;
+}
 
 
 bool OracleDatabase::execute(const std::wstring& _command,

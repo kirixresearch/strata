@@ -154,6 +154,8 @@ public:
                  xcm::IObjectPtr& result,
                  tango::IJob* job);
 
+    bool modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job);
+
     tango::IStructurePtr describeTable(const std::wstring& path);
     void clearDescribeTableCache(const std::wstring& path);
 

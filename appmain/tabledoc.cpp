@@ -5316,10 +5316,13 @@ bool TableDoc::createDynamicField(const wxString& col_name,
 
     if (on_set)
     {
-        tango::IColumnInfoPtr col;
-        tango::ISetPtr set = getBaseSet();
+        tango::IDatabasePtr db = g_app->getDatabase();
 
+        tango::IColumnInfoPtr col;
+
+        tango::ISetPtr set = getBaseSet();
         structure = set->getStructure();
+
         col = structure->createColumn();
 
         col->setName(towstr(col_name));
@@ -5328,7 +5331,7 @@ bool TableDoc::createDynamicField(const wxString& col_name,
         col->setScale(scale);
         col->setExpression(towstr(expr));
 
-        if (!set->modifyStructure(structure, NULL))
+        if (!db->modifyStructure(towstr(m_path), structure, NULL))
         {
             return false;
         }

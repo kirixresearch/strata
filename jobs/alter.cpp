@@ -245,7 +245,7 @@ int AlterJob::runJob()
     tango::IJobPtr tango_job = m_db->createJob();
     setTangoJob(tango_job);
 
-    bool res = input_set->modifyStructure(structure, tango_job);
+    bool res = m_db->modifyStructure(input_path, structure, tango_job);
 
     if (tango_job->getCancelled())
     {

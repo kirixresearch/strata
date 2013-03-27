@@ -1929,6 +1929,10 @@ tango::IStructurePtr FsDatabase::describeTable(const std::wstring& path)
     return set->getStructure();
 }
 
+bool FsDatabase::modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job)
+{
+    return false;
+}
 
 
 bool FsDatabase::execute(const std::wstring& command,

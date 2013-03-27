@@ -1413,6 +1413,11 @@ tango::IStructurePtr PgsqlDatabase::describeTable(const std::wstring& path)
 }
 
 
+bool PgsqlDatabase::modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job)
+{
+    return false;
+}
+
 
 bool PgsqlDatabase::execute(const std::wstring& command,
                             unsigned int flags,

@@ -757,6 +757,11 @@ tango::IStructurePtr SqlServerDatabase::describeTable(const std::wstring& path)
     return set->getStructure();
 }
 
+bool SqlServerDatabase::modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job)
+{
+    return false;
+}
+
 
 bool SqlServerDatabase::execute(const std::wstring& command,
                                 unsigned int flags,

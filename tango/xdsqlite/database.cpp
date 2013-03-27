@@ -758,6 +758,10 @@ tango::IStructurePtr SlDatabase::describeTable(const std::wstring& path)
     return set->getStructure();
 }
 
+bool SlDatabase::modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job)
+{
+    return false;
+}
 
 
 tango::IIndexInfoEnumPtr SlDatabase::getIndexEnum(const std::wstring& path)

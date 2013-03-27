@@ -948,6 +948,12 @@ tango::IStructurePtr DrizzleDatabase::describeTable(const std::wstring& path)
 }
 
 
+bool DrizzleDatabase::modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job)
+{
+    return false;
+}
+
+
 tango::IRelationEnumPtr DrizzleDatabase::getRelationEnum(const std::wstring& path)
 {
     xcm::IVectorImpl<tango::IRelationPtr>* relations = new xcm::IVectorImpl<tango::IRelationPtr>;

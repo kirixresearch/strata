@@ -549,6 +549,12 @@ tango::IStructurePtr ClientDatabase::describeTable(const std::wstring& path)
     return jsonToStructure(response);
 }
 
+bool ClientDatabase::modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job)
+{
+    return false;
+}
+
+
 
 void ClientDatabase::clearDescribeTableCache(const std::wstring& path)
 {

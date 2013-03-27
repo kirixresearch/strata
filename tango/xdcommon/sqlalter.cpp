@@ -313,7 +313,7 @@ bool sqlAlter(tango::IDatabasePtr db,
     }    
     
 
-    set->modifyStructure(structure, NULL);
+    //set->modifyStructure(structure, NULL);
 
     return true;
 }

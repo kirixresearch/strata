@@ -464,8 +464,9 @@ tango::IStructurePtr CommonDynamicSet::getStructure()
 
 
 bool CommonDynamicSet::modifyStructure(tango::IStructure* struct_config,
-                                 tango::IJob* job)
+                                       tango::IJob* job)
 {
+/*
     // release all indexes
     std::vector<CommonDynamicSetIndexEntry>::iterator it;
     for (it = m_indexes.begin(); it != m_indexes.end(); ++it)
@@ -485,6 +486,9 @@ bool CommonDynamicSet::modifyStructure(tango::IStructure* struct_config,
     m_base_set_iter = m_base_set->createIterator(L"", L"", NULL);
 
     return result;
+*/
+
+    return false;
 }
 
 

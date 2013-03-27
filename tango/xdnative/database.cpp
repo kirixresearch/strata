@@ -3993,3 +3993,11 @@ tango::IStructurePtr Database::describeTable(const std::wstring& path)
     return set->getStructure();
 }
 
+bool Database::modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job)
+{
+    ISetInternalPtr set = openSet(path);
+    if (set.isNull())
+        return xcm::null;
+
+    return set->modifyStructure(struct_config, job);
+}

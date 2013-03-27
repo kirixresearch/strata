@@ -122,6 +122,8 @@ public:
 
     tango::IStructurePtr describeTable(const std::wstring& path);
 
+    bool modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job);
+
     bool execute(const std::wstring&,
                  unsigned int flags,
                  xcm::IObjectPtr& result,

@@ -148,7 +148,7 @@ tango::IStructurePtr IterWrapperSet::getStructure()
 bool IterWrapperSet::modifyStructure(tango::IStructure* struct_config,
                                      tango::IJob* job)
 {
-    return m_base_set->modifyStructure(struct_config, job);
+    return false;
 }
 
 bool IterWrapperSet::updateRow(tango::rowid_t rowid,
@@ -325,7 +325,7 @@ tango::IStructurePtr EofSet::getStructure()
 
 bool EofSet::modifyStructure(tango::IStructure* struct_config, tango::IJob* job)
 {
-    return m_base_set->modifyStructure(struct_config, job);
+    return false;
 }
 
 void EofSet::onSetDomainUpdated()
