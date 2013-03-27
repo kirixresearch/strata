@@ -7838,14 +7838,13 @@ void TableDoc::deleteRecords(const wxString& condition)
     }
 
     // run the job
+    kl::JsonNode params;
+    params["command"].setString(cmd);
+
     wxString title = wxString::Format(_("Deleting records in '%s'"),
                                       getCaption().c_str());
 
     job->getJobInfo()->setTitle(towstr(title));
-    kl::JsonNode params;
-
-    params["command"].setString(cmd);
-
     job->setParameters(params.toString());
     job->sigJobFinished().connect(this, &TableDoc::onDeleteJobFinished);
     g_app->getJobQueue()->addJob(job, jobStateRunning);
