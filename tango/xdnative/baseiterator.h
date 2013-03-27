@@ -131,7 +131,7 @@ public:
     void releaseAggResultObject(AggregateResult* agg_res);
     void recalcAggResults();
 
-    // -- IIterator --
+    // IIterator
     tango::IDatabasePtr getDatabase();
     tango::ISetPtr getSet();
     void setSet(tango::ISetPtr set);
@@ -166,7 +166,7 @@ public:
     bool getBoolean(tango::objhandle_t column_handle);
     bool isNull(tango::objhandle_t column_handle);
 
-    // -- row buffer modifiers --
+    // row buffer modifiers
 
     bool putRowBuffer(const unsigned char* buf, int length);
     bool putString(tango::objhandle_t column_handle, const std::string& value);
@@ -178,7 +178,7 @@ public:
     bool putNull(tango::objhandle_t column_handle);
     void flushRow();
 
-    // -- ISetEvents --
+    // ISetEvents 
     void onSetDomainUpdated();
     void onSetStructureUpdated();
     void onSetRelationshipsUpdated();

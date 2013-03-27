@@ -16,7 +16,7 @@
 #include "../xdcommon/exindex.h"
 
 
-// -- BufIterator implementation --
+// BufIterator implementation 
 
 BufIterator::BufIterator()
 {

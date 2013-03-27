@@ -33,8 +33,7 @@
 const int tableiterator_read_ahead_buffer_size = 2097152;
 
 
-// -- TableIterator class implementation --
-
+// TableIterator class implementation
 
 TableIterator::TableIterator() : BaseIterator()
 {
@@ -396,7 +395,7 @@ void TableIterator::onSetStructureUpdated()
 
 
 
-// -- TableSet class implementation --
+// TableSet class implementation
 
 TableSet::TableSet(tango::IDatabase* database) : BaseSet(database)
 {
@@ -1658,7 +1657,7 @@ tango::rowpos_t TableSet::getRowCount()
 
 
 
-// -- TableSetRowInserter class implementation --
+// TableSetRowInserter class implementation
 
 const int inserter_buf_rows = 500;
 
@@ -1882,7 +1881,7 @@ bool TableSetRowInserter::flush()
 
 
 
-// -- TableSetRowDeleter class implementation --
+// TableSetRowDeleter class implementation
 
 TableSetRowDeleter::TableSetRowDeleter(tango::IDatabasePtr db, TableSet* set)
 {

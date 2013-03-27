@@ -16,11 +16,9 @@
 #include <map>
 
 
-// -- forward declarations --
 
 class Database;
 class OfsFile;
-
 
 class InternalOfsValue
 {
@@ -67,7 +65,7 @@ public:
 
     void setDirty();
 
-    // -- INodeValue interface --
+    // INodeValue interface
     const std::wstring& getName();
     int getType();
 

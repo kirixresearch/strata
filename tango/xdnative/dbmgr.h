@@ -44,7 +44,7 @@ public:
     int getErrorCode();
     
     
-    // -- IDatabaseParserBinder --
+    // IDatabaseParserBinder
     
     void bindExprParser(void* parser);
     

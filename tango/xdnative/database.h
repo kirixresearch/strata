@@ -19,7 +19,6 @@
 #include "../xdcommon/errorinfo.h"
 
 
-// -- forward declarations --
 class JobInfo;
 class OfsFile;
 
@@ -52,7 +51,7 @@ public:
     void close();
 
 
-    // -- database user --
+    // database user
     
     bool createUser(const std::wstring& uid,
                     const std::wstring& password);
@@ -65,11 +64,15 @@ public:
     
     bool getUserExist(const std::wstring& uid);
     
-    // -- database configuration --
+
+    // database configuration
+
     bool setBaseDirectory(const std::wstring& base_dir);
     std::wstring getBaseDirectory();
 
-    // -- IDatabaseInternal --
+
+    // IDatabaseInternal
+
     ITablePtr openTableByOrdinal(tango::tableord_t ordinal);
     std::wstring getTempFilename();
     std::wstring getUniqueFilename();
@@ -113,7 +116,8 @@ public:
     bool deleteTempData();
     bool cleanup();
 
-    // -- IDatabase --
+
+    // IDatabase
 
     void setDatabaseName(const std::wstring& name);
     std::wstring getDatabaseName();
@@ -239,7 +243,7 @@ private:
     void getFolderUsedOrdinals(const std::wstring& path,
                                std::set<int>& used_ordinals);
 
-    // -- Ofs Event Handlers --
+    // ofs Event Handlers
     void onOfsPostRenameFile(std::wstring ofs_path, std::wstring new_name);
     void onOfsPostMoveFile(std::wstring ofs_path, std::wstring new_path);
 

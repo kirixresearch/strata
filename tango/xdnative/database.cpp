@@ -53,13 +53,13 @@ const wchar_t* xdnative_keywords =
                 L"VARYING,VIEW,VOID,WHEN,WHENEVER,WHERE,WHILE,WITH";
 
 
-// -- secondary keywords (may be used in the future) --
+// secondary keywords (may be used in the future)
 
 const wchar_t* xdnative_keywords2 = L"";
 
 
 
-// -- Database class implementation --
+// Database class implementation
 
 Database::Database()
 {

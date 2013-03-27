@@ -19,9 +19,8 @@
 const int native_header_len = 1024;
 const int native_column_descriptor_len = 256;
 
-// -- in general these constants should be the
-//    same as tango::max_numeric_width and
-//    tango::max_numeric_scale --
+// in general these constants should be the same as
+// tango::max_numeric_width and tango::max_numeric_scale
 
 const int native_max_numeric_width = 20;
 const int native_max_numeric_scale = 12;

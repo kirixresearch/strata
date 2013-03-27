@@ -32,7 +32,7 @@ public:
     BaseSet(tango::IDatabase* database);
     virtual ~BaseSet();
 
-    // -- storing functions --
+    // storing functions
     void setObjectPath(const std::wstring& path) { }
     std::wstring getObjectPath() { return L""; }
     bool isTemporary() { return false; }
@@ -45,7 +45,7 @@ public:
     tango::IRowInserterPtr getRowInserter();
     tango::rowpos_t getRowCount();
 
-    // -- ISetInternal --
+    // ISetInternal
 
     bool addEventHandler(ISetEvents* handler);
     bool removeEventHandler(ISetEvents* handler);
@@ -81,7 +81,7 @@ public:
     }
 
 
-    // -- ISetUpdate --
+    // ISetUpdate
     
     bool updateRow(tango::rowid_t rowid,
                    tango::ColumnUpdateInfo* info,
@@ -133,8 +133,4 @@ private:
 };
 
 
-
-
-
 #endif
-

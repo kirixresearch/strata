@@ -18,7 +18,7 @@
 #include "../xdcommon/tango_private.h"
 
 
-// -- aggregate function types --
+// aggregate function types
 
 enum
 {
@@ -38,7 +38,7 @@ enum
 };
 
 
-// -- rowid creation/extraction functions --
+// rowid creation/extraction functions
 
 inline tango::rowid_t rowidCreate(tango::tableord_t table_ordinal,
                                   tango::rowpos_t row_num)
@@ -63,9 +63,6 @@ inline tango::tableord_t rowidGetTableOrd(tango::rowid_t rowid)
     return (rowid >> 36);
 }
 
-
-
-// -- internal interfaces --
 
 xcm_interface ITable;
 xcm_interface IBookmark;

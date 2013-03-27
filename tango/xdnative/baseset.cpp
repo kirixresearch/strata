@@ -399,7 +399,7 @@ bool BaseSet::modifyStructure(tango::IStructure* struct_config,
         }
     }
 
-    // -- handle insert --
+    // handle insert
     for (it = actions.begin(); it != actions.end(); ++it)
     {
         if (it->m_action != StructureAction::actionInsert)

@@ -518,7 +518,7 @@ bool NativeTable::open(const std::wstring& filename,
     file_size -= m_data_offset;
     tango::rowpos_t real_phys_row_count = (file_size/m_row_width);
 
-    // -- compare that to the stats --
+    // compare that to the stats
     if (real_phys_row_count != m_phys_row_count)
     {
         m_phys_row_count = real_phys_row_count;
@@ -1239,7 +1239,7 @@ bool NativeTable::restoreDeleted()
 
 
 
-// -- NativeRowDeleter class implementation --
+// NativeRowDeleter class implementation
 
 NativeRowDeleter::NativeRowDeleter(tango::IDatabase* database, NativeTable* table)
 {
