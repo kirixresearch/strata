@@ -26,13 +26,13 @@ class JobThread : public kl::Thread
 public:
 
     JobQueue* m_job_queue;
-    IJobPtr m_job;
-    IJobInfoPtr m_job_info;
+    jobs::IJobPtr m_job;
+    jobs::IJobInfoPtr m_job_info;
     int m_job_id;
     bool* m_started_flag;
 
 
-    JobThread(JobQueue* queue, IJobPtr job, bool* started_flag) : kl::Thread()
+    JobThread(JobQueue* queue, jobs::IJobPtr job, bool* started_flag) : kl::Thread()
     {
         m_job = job;
         m_job_info = job->getJobInfo();
@@ -117,10 +117,10 @@ JobQueue::~JobQueue()
 {
 }
 
-int JobQueue::addJob(IJobPtr job, int initial_state)
+int JobQueue::addJob(jobs::IJobPtr job, int initial_state)
 {
     int new_job_id;
-    IJobInfoPtr job_info;
+    jobs::IJobInfoPtr job_info;
     
     wxASSERT_MSG(job.p, wxT("Job is null!"));
     
@@ -164,7 +164,7 @@ int JobQueue::addJob(IJobPtr job, int initial_state)
     return new_job_id;
 }
 
-int JobQueue::addJobInfo(IJobInfoPtr job_info, int initial_state)
+int JobQueue::addJobInfo(jobs::IJobInfoPtr job_info, int initial_state)
 {
     int new_job_id;
     
@@ -186,11 +186,11 @@ int JobQueue::addJobInfo(IJobInfoPtr job_info, int initial_state)
     return new_job_id;
 }
 
-IJobPtr JobQueue::lookupJob(int job_id)
+jobs::IJobPtr JobQueue::lookupJob(int job_id)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
-    for (std::vector<IJobPtr>::iterator it = m_jobs.begin();
+    for (std::vector<jobs::IJobPtr>::iterator it = m_jobs.begin();
             it != m_jobs.end(); ++it)
     {
         if (it->p->getJobId() == job_id)
@@ -202,18 +202,18 @@ IJobPtr JobQueue::lookupJob(int job_id)
 
 bool JobQueue::startJob(int job_id)
 {
-    IJobPtr job = lookupJob(job_id);
+    jobs::IJobPtr job = lookupJob(job_id);
     if (!job)
         return false;
 
     return startJob(job);
 }
 
-IJobInfoPtr JobQueue::getJobInfo(int job_id)
+jobs::IJobInfoPtr JobQueue::getJobInfo(int job_id)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
-    std::vector<IJobInfoPtr>::iterator it;
+    std::vector<jobs::IJobInfoPtr>::iterator it;
     for (it = m_job_info.begin(); it != m_job_info.end(); ++it)
     {
         if (it->p->getJobId() == job_id)
@@ -223,13 +223,13 @@ IJobInfoPtr JobQueue::getJobInfo(int job_id)
     return xcm::null;
 }
 
-IJobInfoEnumPtr JobQueue::getJobInfoEnum(int job_state_mask)
+jobs::IJobInfoEnumPtr JobQueue::getJobInfoEnum(int job_state_mask)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
-    xcm::IVectorImpl<IJobInfoPtr>* vec = new xcm::IVectorImpl<IJobInfoPtr>;
+    xcm::IVectorImpl<jobs::IJobInfoPtr>* vec = new xcm::IVectorImpl<jobs::IJobInfoPtr>;
 
-    std::vector<IJobInfoPtr>::iterator it;
+    std::vector<jobs::IJobInfoPtr>::iterator it;
     for (it = m_job_info.begin(); it != m_job_info.end(); ++it)
     {
         if (job_state_mask & it->p->getState())
@@ -246,7 +246,7 @@ bool JobQueue::getJobsActive()
     return (m_active_jobs > 0) ? true : false;
 }
 
-bool JobQueue::startJob(IJobPtr& job)
+bool JobQueue::startJob(jobs::IJobPtr& job)
 {
     bool started_flag = false;
     
@@ -282,9 +282,9 @@ void JobQueue::decrementActiveJobs()
 
 void JobQueue::onJobFinished(wxCommandEvent& event)
 {
-    std::vector<IJobPtr>::iterator it;
+    std::vector<jobs::IJobPtr>::iterator it;
     int job_id = event.GetInt();
-    IJobPtr job;
+    jobs::IJobPtr job;
     
     m_obj_mutex.lock();
     for (it = m_jobs.begin(); it != m_jobs.end(); ++it)
@@ -316,7 +316,7 @@ void JobQueue::onJobFinished(wxCommandEvent& event)
     sigQueueChanged().fire();
 }
 
-void JobQueue::onJobInfoEntryStateChanged(IJobInfoPtr job_info)
+void JobQueue::onJobInfoEntryStateChanged(jobs::IJobInfoPtr job_info)
 {
     int state = job_info->getState();
     if (state == jobStateRunning)

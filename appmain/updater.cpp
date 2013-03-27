@@ -15,6 +15,7 @@
 #include <curl/curl.h>
 #include <kl/crypt.h>
 #include <kl/thread.h>
+#include "../jobs/jobbase.h"
 
 
 // encryption key for the update service
@@ -109,13 +110,13 @@ XCM_DECLARE_SMARTPTR(IUpdateCheckJob)
 
 
 
-class UpdateCheckJob : public JobBase,
+class UpdateCheckJob : public jobs::JobBase,
                        public IUpdateCheckJob
 {
     XCM_CLASS_NAME("appmain.UpdateCheckJob")
     XCM_BEGIN_INTERFACE_MAP(UpdateCheckJob)
         XCM_INTERFACE_ENTRY(IUpdateCheckJob)
-        XCM_INTERFACE_CHAIN(JobBase)
+        XCM_INTERFACE_CHAIN(jobs::JobBase)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -186,13 +187,13 @@ public:
 
 XCM_DECLARE_SMARTPTR(IUpdateDownloadJob)
 
-class UpdateDownloadJob : public JobBase,
+class UpdateDownloadJob : public jobs::JobBase,
                           public IUpdateDownloadJob
 {
     XCM_CLASS_NAME("appmain.UpdateDownloadJob")
     XCM_BEGIN_INTERFACE_MAP(UpdateDownloadJob)
         XCM_INTERFACE_ENTRY(IUpdateDownloadJob)
-        XCM_INTERFACE_CHAIN(JobBase)
+        XCM_INTERFACE_CHAIN(jobs::JobBase)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -576,7 +577,7 @@ bool Updater::parseUpdateFile(const wxString& xml, UpdaterInfo& info)
 }
 
 
-static void onUpdateDownloadFinished(IJobPtr job)
+static void onUpdateDownloadFinished(jobs::IJobPtr job)
 {
     if (job->getJobInfo()->getState() != jobStateFinished)
         return;
@@ -661,7 +662,7 @@ static void onUpdateDownloadFinished(IJobPtr job)
 CheckUpdatesWaitDlg* g_dlg = NULL;
 
 
-static void onUpdateCheckFinished(IJobPtr job)
+static void onUpdateCheckFinished(jobs::IJobPtr job)
 {
     bool full_gui = false;
     if (g_dlg)

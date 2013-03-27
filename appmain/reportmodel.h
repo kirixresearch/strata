@@ -380,7 +380,7 @@ private:
     wxString m_group_label;
     int m_rowpos;
     
-    IJobPtr m_job;
+    jobs::IJobPtr m_job;
 };
 
 

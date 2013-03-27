@@ -8,10 +8,9 @@
  *
  */
 
+
 #ifndef __APP_APPHOOK_H
 #define __APP_APPHOOK_H
-
-
 
 
 void apphookInitFrame();
@@ -22,9 +21,9 @@ bool apphookOpenTemplate(const wxString& location,
                          tango::IFileInfoPtr file_info,
                          bool* handled);
                          
-IJobPtr apphookExecute(const wxString& location,
-                            tango::IFileInfoPtr file_info,
-                            bool* handled);
+jobs::IJobPtr apphookExecute(const wxString& location,
+                             tango::IFileInfoPtr file_info,
+                             bool* handled);
 
 void apphookUninitFrame();
 void apphookOnExit();

@@ -121,14 +121,14 @@ public:
     bool newScript(int* site_id = NULL);
     
     // -- execute commands --
-    IJobPtr executeScript(const wxString& location,
-                               ScriptHostParams* params = NULL,
-                               AppScriptError* error = NULL,
-                               bool async = true);
-    IJobPtr executeCode(const wxString& source_code,
-                             ScriptHostParams* params = NULL,
-                             AppScriptError* error = NULL);
-    IJobPtr execute(const wxString& location);
+    jobs::IJobPtr executeScript(const wxString& location,
+                                ScriptHostParams* params = NULL,
+                                AppScriptError* error = NULL,
+                                bool async = true);
+    jobs::IJobPtr executeCode(const wxString& source_code,
+                              ScriptHostParams* params = NULL,
+                              AppScriptError* error = NULL);
+    jobs::IJobPtr execute(const wxString& location);
 
     // -- print commands --
     bool print(const wxString& location);

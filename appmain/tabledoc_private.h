@@ -310,7 +310,7 @@ private:
     void onStatusBarItemLeftDblClick(IStatusBarItemPtr item);
     
     // reload handlers
-    void onReloadDownloadFinished(IJobInfoPtr job_info);
+    void onReloadDownloadFinished(jobs::IJobInfoPtr job_info);
     void onDoReloadRefresh(wxCommandEvent& evt);
     
     // repaint handler

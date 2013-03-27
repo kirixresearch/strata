@@ -169,7 +169,7 @@ private:
 
     wxString m_url;
     wxString m_filename;
-    IJobInfoPtr m_job_info;
+    jobs::IJobInfoPtr m_job_info;
     int m_job_id;
     int m_max_page_count;
     bool m_cancelled;

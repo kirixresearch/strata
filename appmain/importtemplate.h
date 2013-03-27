@@ -327,7 +327,7 @@ public:
 
     bool load(const wxString& path);
     bool save(const wxString& path);
-    IJobPtr execute();
+    jobs::IJobPtr execute();
     
 public:
 

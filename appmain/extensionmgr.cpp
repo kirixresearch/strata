@@ -354,7 +354,7 @@ std::vector<ExtensionInfo>& ExtensionMgr::getExtensions()
     return m_extensions;
 }
 
-void onScriptJobFinished(IJobPtr job)
+void onScriptJobFinished(jobs::IJobPtr job)
 {
     if (job->getJobInfo()->getState() != jobStateFinished)
         return;
@@ -423,10 +423,10 @@ bool ExtensionMgr::startAllExtensions()
             continue;
         }
         
-        IJobPtr job = g_app->getAppController()->executeScript(it->path);
+        jobs::IJobPtr job = g_app->getAppController()->executeScript(it->path);
         if (job.isOk())
         {
-            IJobInfoPtr job_info = job->getJobInfo();
+            jobs::IJobInfoPtr job_info = job->getJobInfo();
             if (job_info.isOk() &&
                 job_info->getState() == jobStateRunning)
             {
@@ -442,14 +442,14 @@ bool ExtensionMgr::startAllExtensions()
 
 bool ExtensionMgr::stopAllExtensions()
 {
-    std::vector<IJobInfoPtr> job_infos_to_watch;
+    std::vector<jobs::IJobInfoPtr> job_infos_to_watch;
     
     
     IJobQueuePtr job_queue = g_app->getScriptJobQueue();
     if (job_queue.isNull())
         return false;
     
-    IJobInfoEnumPtr job_info_enum = job_queue->getJobInfoEnum(jobStateRunning);
+    jobs::IJobInfoEnumPtr job_info_enum = job_queue->getJobInfoEnum(jobStateRunning);
     if (job_info_enum.isNull())
         return false;
         
@@ -458,8 +458,8 @@ bool ExtensionMgr::stopAllExtensions()
     {
         bool found = false;
         
-        IJobPtr job;
-        IJobInfoPtr job_info;
+        jobs::IJobPtr job;
+        jobs::IJobInfoPtr job_info;
         size_t i, job_count = job_info_enum->size();
         for (i = 0; i < job_count; ++i)
         {
@@ -504,7 +504,7 @@ bool ExtensionMgr::stopAllExtensions()
         
         size_t finish_count = 0;
         
-        std::vector<IJobInfoPtr>::iterator it;
+        std::vector<jobs::IJobInfoPtr>::iterator it;
         for (it = job_infos_to_watch.begin();
              it != job_infos_to_watch.end();
              ++it)
@@ -549,10 +549,10 @@ bool ExtensionMgr::startExtension(const wxString& guid)
     if (info.state == ExtensionInfo::stateRunning)
         return false;
     
-    IJobPtr job = g_app->getAppController()->executeScript(info.path);
+    jobs::IJobPtr job = g_app->getAppController()->executeScript(info.path);
     if (job.isOk())
     {
-        IJobInfoPtr job_info = job->getJobInfo();
+        jobs::IJobInfoPtr job_info = job->getJobInfo();
         if (job_info.isOk() && job_info->getState() == jobStateRunning)
         {
             job->sigJobFinished().connect(&onScriptJobFinished);
@@ -574,12 +574,12 @@ bool ExtensionMgr::stopExtension(const wxString& guid)
     if (job_queue.isNull())
         return false;
     
-    IJobInfoEnumPtr job_info_enum = job_queue->getJobInfoEnum(jobStateRunning);
+    jobs::IJobInfoEnumPtr job_info_enum = job_queue->getJobInfoEnum(jobStateRunning);
     if (job_info_enum.isNull())
         return false;
     
-    IJobPtr job;
-    IJobInfoPtr job_info;
+    jobs::IJobPtr job;
+    jobs::IJobInfoPtr job_info;
     size_t i, job_count = job_info_enum->size();
     for (i = 0; i < job_count; ++i)
     {

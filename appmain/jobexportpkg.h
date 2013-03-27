@@ -13,6 +13,9 @@
 #define __APP_JOBEXPORTPKG_H
 
 
+#include "../jobs/jobbase.h"
+
+
 class PkgFile;
 
 
@@ -26,11 +29,11 @@ public:
 };
 
 
-class ExportPkgJob : public JobBase
+class ExportPkgJob : public jobs::JobBase
 {
     XCM_CLASS_NAME("appmain.ExportPkgJob")
     XCM_BEGIN_INTERFACE_MAP(ExportPkgJob)
-        XCM_INTERFACE_CHAIN(JobBase)
+        XCM_INTERFACE_CHAIN(jobs::JobBase)
     XCM_END_INTERFACE_MAP()
 
 public:

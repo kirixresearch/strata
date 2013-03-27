@@ -664,8 +664,8 @@ public:
     void UnInit();
     void Notify();
     
-    void onJobAdded(IJobInfoPtr job_info);
-    void onJobStateChanged(IJobInfoPtr job_info);
+    void onJobAdded(jobs::IJobInfoPtr job_info);
+    void onJobStateChanged(jobs::IJobInfoPtr job_info);
 
     void onJobAddedInMainThread(wxCommandEvent& evt);
     void onJobStateChangedInMainThread(wxCommandEvent& evt);

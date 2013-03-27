@@ -13,6 +13,9 @@
 #define __APP_JOBIMPORTPKG_H
 
 
+#include "../jobs/jobbase.h"
+
+
 class PkgStreamReader;
 
 
@@ -25,11 +28,11 @@ public:
 };
 
 
-class ImportPkgJob : public JobBase
+class ImportPkgJob : public jobs::JobBase
 {
     XCM_CLASS_NAME("appmain.ImportPkgJob")
     XCM_BEGIN_INTERFACE_MAP(ImportPkgJob)
-        XCM_INTERFACE_CHAIN(JobBase)
+        XCM_INTERFACE_CHAIN(jobs::JobBase)
     XCM_END_INTERFACE_MAP()
 
 public:

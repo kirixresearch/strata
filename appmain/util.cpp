@@ -2528,7 +2528,7 @@ void JobGaugeUpdateTimer::Notify()
     bool is_indeterminate = false;
     
     // determine the overall progress
-    IJobInfoEnumPtr jobs = m_job_queue->getJobInfoEnum(jobStateRunning);
+    jobs::IJobInfoEnumPtr jobs = m_job_queue->getJobInfoEnum(jobStateRunning);
     size_t i, job_count = jobs->size();
     
     // this check is here because sometimes the running job count is
@@ -2552,7 +2552,7 @@ void JobGaugeUpdateTimer::Notify()
     
     for (i = 0; i < job_count; i++)
     {
-        IJobInfoPtr job_info = jobs->getItem(i);
+        jobs::IJobInfoPtr job_info = jobs->getItem(i);
         
         // update the total percentage
         double pct = job_info->getPercentage();
@@ -2611,7 +2611,7 @@ void JobGaugeUpdateTimer::Notify()
     }
 }
 
-void JobGaugeUpdateTimer::onJobAdded(IJobInfoPtr job_info)
+void JobGaugeUpdateTimer::onJobAdded(jobs::IJobInfoPtr job_info)
 {
     // post an event that a job has been added; we need to send
     // an event rather than rely on the job state because some
@@ -2634,7 +2634,7 @@ void JobGaugeUpdateTimer::onJobAdded(IJobInfoPtr job_info)
     job_info->sigStateChanged().connect(this, &JobGaugeUpdateTimer::onJobStateChanged);
 }
 
-void JobGaugeUpdateTimer::onJobStateChanged(IJobInfoPtr job_info)
+void JobGaugeUpdateTimer::onJobStateChanged(jobs::IJobInfoPtr job_info)
 {
     // post an event that a particular job status has changed
     wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, 10001);
@@ -2668,7 +2668,7 @@ void JobGaugeUpdateTimer::onJobStateChangedInMainThread(wxCommandEvent& evt)
 {
     wxASSERT_MSG(::wxIsMainThread(), wxT("Being called outside of main/gui thread!"));
 
-    IJobInfoPtr job_info = (IJobInfo*)evt.GetExtraLong();
+    jobs::IJobInfoPtr job_info = (jobs::IJobInfo*)evt.GetExtraLong();
     if (job_info->getState() == jobStateFailed)
     {
         // if any of the jobs in the queue fail,

@@ -1371,7 +1371,7 @@ kscript::Value* ScriptHost::getRetval()
 }
 
 
-void ScriptHost::setCurrentJob(IJobPtr job)
+void ScriptHost::setCurrentJob(jobs::IJobPtr job)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
     m_curjob = job;
@@ -1380,7 +1380,7 @@ void ScriptHost::setCurrentJob(IJobPtr job)
 }
 
 
-IJobPtr ScriptHost::getCurrentJob()
+jobs::IJobPtr ScriptHost::getCurrentJob()
 {
     XCM_AUTO_LOCK(m_obj_mutex);
     return m_curjob;

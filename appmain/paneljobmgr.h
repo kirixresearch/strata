@@ -28,7 +28,7 @@ public:
 private:
 
     void populate();
-    void addJobItem(IJobInfoPtr job_info);
+    void addJobItem(jobs::IJobInfoPtr job_info);
     void updateJobItem(kcl::ScrollListItem* item);
     
     // -- signal events --

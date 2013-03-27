@@ -97,7 +97,7 @@ bool ExportTemplate::save(const wxString& path)
     return false;
 }
 
-IJobPtr ExportTemplate::execute()
+jobs::IJobPtr ExportTemplate::execute()
 {
     // check for package file export
     if (m_ei.type == dbtypePackage)
@@ -125,7 +125,7 @@ IJobPtr ExportTemplate::execute()
 
         g_app->getJobQueue()->addJob(job, jobStateRunning);
 
-        return static_cast<IJob*>(job);
+        return static_cast<jobs::IJob*>(job);
     }
 
 
@@ -159,7 +159,7 @@ IJobPtr ExportTemplate::execute()
 
     g_app->getJobQueue()->addJob(job, jobStateRunning);
 
-    return static_cast<IJob*>(job);
+    return static_cast<jobs::IJob*>(job);
 }
 
 

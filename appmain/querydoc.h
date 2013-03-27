@@ -197,7 +197,7 @@ private:
     RelationDiagram* m_diagram;
     kcl::RowSelectionGrid* m_grid;
 
-    IJobInfoPtr m_job_info;
+    jobs::IJobInfoPtr m_job_info;
     
     DECLARE_EVENT_TABLE()
 };

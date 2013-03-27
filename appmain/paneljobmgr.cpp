@@ -67,7 +67,7 @@ END_EVENT_TABLE()
 
 
 
-static wxString getJobElapsedTimeString(IJobInfoPtr job_info)
+static wxString getJobElapsedTimeString(jobs::IJobInfoPtr job_info)
 {
     int job_state = job_info->getState();
     if (job_state == jobStatePaused)
@@ -177,7 +177,7 @@ JobListCtrl::~JobListCtrl()
     }
 }
 
-void JobListCtrl::addJobItem(IJobInfoPtr job_info)
+void JobListCtrl::addJobItem(jobs::IJobInfoPtr job_info)
 {
     checkIfInMainThread();
 
@@ -261,7 +261,7 @@ void JobListCtrl::updateJobItem(kcl::ScrollListItem* item)
     checkIfInMainThread();
 
     int job_id = item->getExtraLong();
-    IJobInfoPtr job_info = m_job_queue->getJobInfo(job_id);
+    jobs::IJobInfoPtr job_info = m_job_queue->getJobInfo(job_id);
     int job_state = job_info->getState();
     
     kcl::ScrollListElement* element;
@@ -341,7 +341,7 @@ void JobListCtrl::refreshItems()
         job_id = (*it)->getExtraLong();
         
         // try to locate the job info in the job queue
-        IJobInfoPtr info;
+        jobs::IJobInfoPtr info;
         info = m_job_queue->getJobInfo(job_id);
         if (!info)
             continue;
@@ -369,14 +369,14 @@ void JobListCtrl::refreshItems()
     }
 
     // now look for new jobs
-    IJobInfoEnumPtr jobs = m_job_queue->getJobInfoEnum(jobStateAll);
+    jobs::IJobInfoEnumPtr jobs = m_job_queue->getJobInfoEnum(jobStateAll);
     bool item_count_changed = false;
     int job_count = jobs->size();
     int i;
 
     for (i = 0; i < job_count; i++)
     {
-        IJobInfoPtr job_info = jobs->getItem(i);
+        jobs::IJobInfoPtr job_info = jobs->getItem(i);
 
         job_id = job_info->getJobId();
         int state = job_info->getState();
@@ -407,8 +407,8 @@ void JobListCtrl::clearInactiveJobs()
 {
     checkIfInMainThread();
 
-    IJobInfoEnumPtr jobs = m_job_queue->getJobInfoEnum(jobStateAll);
-    IJobInfoPtr job_info;
+    jobs::IJobInfoEnumPtr jobs = m_job_queue->getJobInfoEnum(jobStateAll);
+    jobs::IJobInfoPtr job_info;
     int job_count = jobs->size();
     int i;
 
@@ -417,7 +417,7 @@ void JobListCtrl::clearInactiveJobs()
         // for all jobs that are done (meaning cancelled, finished, etc.),
         // set the job info's visible flag to false, since we'll use that
         // to determine whether to create a kcl::ScrollList item or not
-        IJobInfoPtr job_info = jobs->getItem(i);
+        jobs::IJobInfoPtr job_info = jobs->getItem(i);
         int state = job_info->getState();
         
         if (state == jobStateFinished ||
@@ -449,8 +449,8 @@ void JobListCtrl::populate()
 {
     checkIfInMainThread();
 
-    IJobInfoEnumPtr jobs = m_job_queue->getJobInfoEnum(jobStateAll);
-    IJobInfoPtr job_info;
+    jobs::IJobInfoEnumPtr jobs = m_job_queue->getJobInfoEnum(jobStateAll);
+    jobs::IJobInfoPtr job_info;
     size_t i, job_count = jobs->size();
 
     // clear out the job items vector
@@ -460,7 +460,7 @@ void JobListCtrl::populate()
     for (i = 0; i < job_count; i++)
     {
         // only populate the control with visible job infos
-        IJobInfoPtr job_info = jobs->getItem(i);
+        jobs::IJobInfoPtr job_info = jobs->getItem(i);
         if (!job_info->getVisible())
             continue;
 
@@ -489,11 +489,11 @@ void JobListCtrl::onCancelButtonClicked(wxCommandEvent& evt)
     }
 
     int job_id = item->getExtraLong();
-    IJobPtr job = m_job_queue->lookupJob(job_id);
+    jobs::IJobPtr job = m_job_queue->lookupJob(job_id);
 
     if (job)
     {
-        IJobInfoPtr info = job->getJobInfo();
+        jobs::IJobInfoPtr info = job->getJobInfo();
         if (info.isOk())
         {
             info->setFinishTime(time(NULL));
@@ -505,7 +505,7 @@ void JobListCtrl::onCancelButtonClicked(wxCommandEvent& evt)
     }
      else
     {
-        IJobInfoPtr job_info = m_job_queue->getJobInfo(job_id);
+        jobs::IJobInfoPtr job_info = m_job_queue->getJobInfo(job_id);
         if (job_info)
         {
             job_info->setFinishTime(time(NULL));

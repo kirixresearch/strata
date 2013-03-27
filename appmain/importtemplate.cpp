@@ -778,7 +778,7 @@ bool ImportTemplate::save(const wxString& path)
     return JsonConfig::saveToDb(root, g_app->getDatabase(), path, wxT("application/vnd.kx.import"));
 }
 
-static void onImportJobFinished(IJobPtr job)
+static void onImportJobFinished(jobs::IJobPtr job)
 {
     if (job->getJobInfo()->getState() != jobStateFinished)
         return;
@@ -787,7 +787,7 @@ static void onImportJobFinished(IJobPtr job)
 }
 
 
-IJobPtr ImportTemplate::execute()
+jobs::IJobPtr ImportTemplate::execute()
 {
     // -- concatenate the base path and the table name --
 
@@ -842,7 +842,7 @@ IJobPtr ImportTemplate::execute()
 
         g_app->getJobQueue()->addJob(job, jobStateRunning);
 
-        return static_cast<IJob*>(job);
+        return static_cast<jobs::IJob*>(job);
     }
 
     // we have to do this here, since the path selection page is now used
@@ -1019,7 +1019,7 @@ IJobPtr ImportTemplate::execute()
 
     g_app->getJobQueue()->addJob(job, jobStateRunning);
 
-    return static_cast<IJob*>(job);
+    return static_cast<jobs::IJob*>(job);
 }
 
 

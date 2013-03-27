@@ -281,7 +281,7 @@ public:
     
 private:
 
-    IJobInfoPtr m_job_info;
+    jobs::IJobInfoPtr m_job_info;
 };
 
 

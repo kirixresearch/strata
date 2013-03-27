@@ -190,7 +190,7 @@ public:
     
     static bool downloadFile(const wxString& url,
                              const wxString& filename,
-                             IJobInfoPtr job_info);
+                             jobs::IJobInfoPtr job_info);
     
 private:
 

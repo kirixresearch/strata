@@ -175,8 +175,8 @@ public:
     
 public:
 
-    void setCurrentJob(IJobPtr job);
-    IJobPtr getCurrentJob();
+    void setCurrentJob(jobs::IJobPtr job);
+    jobs::IJobPtr getCurrentJob();
     
     xcm::signal0 sigJobChanged;
     kscript::Value m_print_function;
@@ -197,7 +197,7 @@ private:
 
     Application* m_script_app;
     kscript::ExprParser* m_expr;
-    IJobPtr m_curjob;
+    jobs::IJobPtr m_curjob;
     std::vector<void*> m_to_delete;
     std::vector<ScriptHostInclude> m_include_paths;
     std::queue<ScriptHostInclude> m_include_contexts;

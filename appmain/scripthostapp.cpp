@@ -1603,7 +1603,7 @@ public:
     
     bool ProcessEvent(wxEvent& evt)
     {   
-        IJobPtr job;
+        jobs::IJobPtr job;
         
         if (m_flags & HostApp::ExecuteSource)
         {
@@ -1654,7 +1654,7 @@ public:
 
     wxString m_target;
     int m_flags;
-    IJobInfoPtr m_job_info;
+    jobs::IJobInfoPtr m_job_info;
     
     int m_ready;
 };
@@ -1719,7 +1719,7 @@ void HostApp::execute(kscript::ExprEnv* env, kscript::Value* retval)
         kl::Thread::sleep(wait);
     }
     
-    IJobInfoPtr job_info = r->m_job_info;
+    jobs::IJobInfoPtr job_info = r->m_job_info;
     
     delete r;
     r = NULL;
@@ -3326,7 +3326,7 @@ void HostData::importData(kscript::ExprEnv* env, kscript::Value* retval)
         
         
 
-        IJobPtr job;
+        jobs::IJobPtr job;
         if (database_type == dbtypePackage)
         {
             ImportPkgJob* import_job = new ImportPkgJob;
@@ -3339,7 +3339,7 @@ void HostData::importData(kscript::ExprEnv* env, kscript::Value* retval)
                                             appendPath(towx(target_path), it->dest_path));
             }
             
-            job = static_cast<IJob*>(import_job);
+            job = static_cast<jobs::IJob*>(import_job);
         }
          else
         {
@@ -3368,7 +3368,7 @@ void HostData::importData(kscript::ExprEnv* env, kscript::Value* retval)
                 import_job->addImportSet(info);
             }
             
-            job = static_cast<IJob*>(import_job);
+            job = static_cast<jobs::IJob*>(import_job);
         }
         
         if (job.isNull())
@@ -3522,7 +3522,7 @@ void HostData::exportData(kscript::ExprEnv* env, kscript::Value* retval)
             }
         }
         
-        IJobPtr job;
+        jobs::IJobPtr job;
         if (database_type == dbtypePackage)
         {
             ExportPkgJob* export_job = new ExportPkgJob;
@@ -3537,7 +3537,7 @@ void HostData::exportData(kscript::ExprEnv* env, kscript::Value* retval)
                                             it->compress);
             }
             
-            job = static_cast<IJob*>(export_job);
+            job = static_cast<jobs::IJob*>(export_job);
         }
          else
         {
@@ -3565,7 +3565,7 @@ void HostData::exportData(kscript::ExprEnv* env, kscript::Value* retval)
                 export_job->addExportSet(info);
             }
             
-            job = static_cast<IJob*>(export_job);
+            job = static_cast<jobs::IJob*>(export_job);
         }
         
         if (job.isNull())

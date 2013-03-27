@@ -54,7 +54,7 @@ class DownloadProgressListener : public wxWebProgressBase
 {
 public:
 
-    DownloadProgressListener(IJobInfoPtr job_info = xcm::null)
+    DownloadProgressListener(jobs::IJobInfoPtr job_info = xcm::null)
     {
         m_job_id = -1;
         
@@ -133,7 +133,7 @@ private:
 
     wxString m_url;
     wxString m_filename;
-    IJobInfoPtr m_job_info;
+    jobs::IJobInfoPtr m_job_info;
     int m_job_id;
 };
 
@@ -650,7 +650,7 @@ public:
     }
     
     // close the site if the job is cancelled
-    void onJobInfoStateChanged(IJobInfoPtr job_info)
+    void onJobInfoStateChanged(jobs::IJobInfoPtr job_info)
     {
         if (job_info->getState() == jobStateCancelling)
             cancelDownload(true);
@@ -690,7 +690,7 @@ private:
 
     wxString m_url;
     wxString m_filename;
-    IJobInfoPtr m_job_info;
+    jobs::IJobInfoPtr m_job_info;
     ProgressBitmapUpdater m_bitmap_updater;
     int m_site_id;
     bool m_cancelled;
@@ -2189,7 +2189,7 @@ void WebDoc::setLastClickedBookmarkPath(const wxString& path)
 
 bool WebDoc::downloadFile(const wxString& url,
                           const wxString& filename,
-                          IJobInfoPtr job_info)
+                          jobs::IJobInfoPtr job_info)
 {
     DownloadProgressListener* listener = new DownloadProgressListener(job_info);
 
@@ -3246,7 +3246,7 @@ void WebDoc::onShowContextMenu(wxWebEvent& evt)
                 
                 if (dlg.ShowModal() == wxID_OK)
                 {
-                    IJobInfoPtr job_info = jobs::createJobInfoObject();
+                    jobs::IJobInfoPtr job_info = jobs::createJobInfoObject();
                     downloadFile(evt.GetHref(), dlg.GetPath(), job_info);
                 }
             }

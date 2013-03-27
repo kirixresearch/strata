@@ -13,11 +13,14 @@
 #define __APP_JOBFINDINFILES_H
 
 
-class FindInFilesJob : public JobBase
+#include "../jobs/jobbase.h"
+
+
+class FindInFilesJob : public jobs::JobBase
 {
     XCM_CLASS_NAME("appmain.FindInFilesJob")
     XCM_BEGIN_INTERFACE_MAP(FindInFilesJob)
-        XCM_INTERFACE_CHAIN(JobBase)
+        XCM_INTERFACE_CHAIN(jobs::JobBase)
     XCM_END_INTERFACE_MAP()
 
 public:

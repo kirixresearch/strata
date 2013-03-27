@@ -66,7 +66,7 @@ public:
                 m_obj_mutex.unlock();
             }
 
-            IJobPtr job = g_app->getAppController()->execute(*it);
+            jobs::IJobPtr job = g_app->getAppController()->execute(*it);
             if (job.isNull())
                 return 0;
 
@@ -76,7 +76,7 @@ public:
         return 0;
     }
 
-    void onJobFinished(IJobPtr job)
+    void onJobFinished(jobs::IJobPtr job)
     {
         XCM_AUTO_LOCK(m_obj_mutex);
 

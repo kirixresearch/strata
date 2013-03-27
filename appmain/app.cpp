@@ -748,7 +748,7 @@ public:
 // "main script" finishes, it instructs the main thread's
 // event loop to exit
 
-static void onMainScriptFinished(IJobPtr job)
+static void onMainScriptFinished(jobs::IJobPtr job)
 {
     g_app->ExitMainLoop();
 }
@@ -789,7 +789,7 @@ bool MainApp::runCommandLineScript()
     ScriptHostParams* params = new ScriptHostParams;
     params->print_function.setFunction(func_console_print);
     AppScriptError error;
-    IJobPtr job = getAppController()->executeScript(path, params, &error);
+    jobs::IJobPtr job = getAppController()->executeScript(path, params, &error);
     if (error.code != 0)
     {
         if (error.file.length() == 0)

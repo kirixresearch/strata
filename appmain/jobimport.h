@@ -13,7 +13,8 @@
 #define __APP_JOBIMPORT_H
 
 
-#include "tangojobbase.h"
+#include "../jobs/jobbase.h"
+#include "../jobs/xdjobbase.h"
 
 
 struct FieldTransInfo
@@ -108,13 +109,13 @@ public:
 XCM_DECLARE_SMARTPTR(IImportJob)
 
 
-class ImportJob : public TangoJobBase,
+class ImportJob : public jobs::XdJobBase,
                   public IImportJob
 {
     XCM_CLASS_NAME("appmain.ImportJob")
     XCM_BEGIN_INTERFACE_MAP(ImportJob)
         XCM_INTERFACE_ENTRY(IImportJob)
-        XCM_INTERFACE_CHAIN(JobBase)
+        XCM_INTERFACE_CHAIN(jobs::JobBase)
     XCM_END_INTERFACE_MAP()
 
 public:

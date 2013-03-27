@@ -33,10 +33,9 @@ bool apphookOpenTemplate(const wxString& location,
     return true;
 }
 
-
-IJobPtr apphookExecute(const wxString& path,
-                            tango::IFileInfoPtr file_info,
-                            bool* handled)
+jobs::IJobPtr apphookExecute(const wxString& path,
+                             tango::IFileInfoPtr file_info,
+                             bool* handled)
 {
     wxASSERT(handled);
     *handled = false;

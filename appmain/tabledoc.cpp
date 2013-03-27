@@ -1733,7 +1733,7 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
 
 
      
-void TableDoc::onReloadDownloadFinished(IJobInfoPtr job_info)
+void TableDoc::onReloadDownloadFinished(jobs::IJobInfoPtr job_info)
 {
     // this is in the main thread, but truly, only because
     // of the way xulrunner thread marshals the call;
@@ -1890,7 +1890,7 @@ void TableDoc::onReload(wxCommandEvent& evt)
         transdoc.clear();
 
 
-        IJobInfoPtr job_info = jobs::createJobInfoObject();
+        jobs::IJobInfoPtr job_info = jobs::createJobInfoObject();
         job_info->sigStateChanged().connect(this, &TableDoc::onReloadDownloadFinished);
         
         
@@ -1899,7 +1899,7 @@ void TableDoc::onReload(wxCommandEvent& evt)
     }
      else if (m_source_mimetype == wxT("application/rss+xml"))
     {
-        IJobInfoPtr job_info = jobs::createJobInfoObject();
+        jobs::IJobInfoPtr job_info = jobs::createJobInfoObject();
         if (job_info.isNull())
             return;
         job_info->sigStateChanged().connect(this, &TableDoc::onReloadDownloadFinished);
@@ -7672,7 +7672,7 @@ void TableDoc::onQuickFilter(wxCommandEvent& evt)
     // is clicked
     if (m_quick_filter_jobid > 0)
     {
-        IJobPtr job = g_app->getJobQueue()->lookupJob(m_quick_filter_jobid);
+        jobs::IJobPtr job = g_app->getJobQueue()->lookupJob(m_quick_filter_jobid);
         if (job.isOk())
         {
             job->cancel();

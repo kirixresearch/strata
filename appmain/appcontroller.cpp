@@ -2265,7 +2265,7 @@ void AppController::onStop(wxCommandEvent& evt)
     if (!job_queue->getJobsActive())
         return;
     
-    IJobInfoEnumPtr jobs;
+    jobs::IJobInfoEnumPtr jobs;
     jobs = job_queue->getJobInfoEnum(jobStateRunning);
     if (jobs.isNull())
         return;
@@ -2276,11 +2276,11 @@ void AppController::onStop(wxCommandEvent& evt)
         return;
     }
     
-    IJobInfoPtr job_info = jobs->getItem(0);
+    jobs::IJobInfoPtr job_info = jobs->getItem(0);
     if (job_info.isNull())
         return;
     
-    IJobPtr job = job_queue->lookupJob(job_info->getJobId());
+    jobs::IJobPtr job = job_queue->lookupJob(job_info->getJobId());
     if (job.isOk())
         job->cancel();
 }
@@ -5126,7 +5126,7 @@ static wxString getTempTablename(const wxString& filename, const wxString& table
     return retval;
 }
 
-static void onOpenExcelJobFinished(IJobPtr job)
+static void onOpenExcelJobFinished(jobs::IJobPtr job)
 {
     if (job->getJobInfo()->getState() != jobStateFinished)
         return;
@@ -5539,10 +5539,10 @@ bool AppController::newScript(int* site_id)
 
 
 
-IJobPtr AppController::executeScript(const wxString& _location,
-                                          ScriptHostParams* params,
-                                          AppScriptError* error,
-                                          bool async)
+jobs::IJobPtr AppController::executeScript(const wxString& _location,
+                                           ScriptHostParams* params,
+                                           AppScriptError* error,
+                                           bool async)
 {
     AppBusyCursorIfMainThread bc;
 
@@ -5758,16 +5758,16 @@ IJobPtr AppController::executeScript(const wxString& _location,
 
     ScriptJob* script_job = new ScriptJob;
     script_job->setScriptHost(script_host);
-    IJobPtr job = static_cast<IJob*>(script_job);
+    jobs::IJobPtr job = static_cast<jobs::IJob*>(script_job);
 
     g_app->getScriptJobQueue()->addJob(job, jobStateRunning);
     return job;
 }
 
 
-IJobPtr AppController::executeCode(const wxString& value,
-                                        ScriptHostParams* params,
-                                        AppScriptError* error)
+jobs::IJobPtr AppController::executeCode(const wxString& value,
+                                         ScriptHostParams* params,
+                                         AppScriptError* error)
 {
     // create a script host object
     ScriptHost* script_host = new ScriptHost;
@@ -5797,7 +5797,7 @@ IJobPtr AppController::executeCode(const wxString& value,
 
     ScriptJob* script_job = new ScriptJob;
     script_job->setScriptHost(script_host);
-    IJobPtr job = static_cast<IJob*>(script_job);
+    jobs::IJobPtr job = static_cast<jobs::IJob*>(script_job);
 
     g_app->getScriptJobQueue()->addJob(job, jobStateRunning);
     return job;
@@ -5807,7 +5807,7 @@ IJobPtr AppController::executeCode(const wxString& value,
 
 
 
-IJobPtr AppController::execute(const wxString& location)
+jobs::IJobPtr AppController::execute(const wxString& location)
 {
     tango::IDatabasePtr db = g_app->getDatabase();
     if (!db)
@@ -5820,7 +5820,7 @@ IJobPtr AppController::execute(const wxString& location)
     
     // give the application hook a chance to handle this call
     bool handled = false;
-    IJobPtr res = apphookExecute(location, file_info, &handled);
+    jobs::IJobPtr res = apphookExecute(location, file_info, &handled);
     if (handled)
     {
         // hook handled the call
@@ -5844,7 +5844,7 @@ IJobPtr AppController::execute(const wxString& location)
             QueryTemplate t;
             if (!t.load(location))
                 return xcm::null;
-            //return t.execute();
+            return t.execute();
 
             // TODO: QueryTemplate now returns jobs::IJobPtr; need to
             // uncomment above once this function returns the same
@@ -6001,7 +6001,7 @@ static void addDefaultItemsToProject(const wxString& project_path)
         import_job->addImportObject(*it, *it);
     
     // run the job
-    IJobPtr job = static_cast<IJob*>(import_job);
+    jobs::IJobPtr job = static_cast<jobs::IJob*>(import_job);
     if (job.isOk())
     {
         job->runJob();
@@ -6471,14 +6471,14 @@ bool AppController::checkForRunningJobs(bool exit_message)
             wxMilliSleep(1500);
             
             // cancel all running jobs
-            IJobInfoEnumPtr jobs = job_queue->getJobInfoEnum(jobStateRunning);
+            jobs::IJobInfoEnumPtr jobs = job_queue->getJobInfoEnum(jobStateRunning);
             size_t i, job_count = jobs->size();
             for (i = 0; i < job_count; i++)
             {
-                IJobInfoPtr job_info = jobs->getItem(i);
+                jobs::IJobInfoPtr job_info = jobs->getItem(i);
                 int job_id = job_info->getJobId();
                 
-                IJobPtr job = job_queue->lookupJob(job_id);
+                jobs::IJobPtr job = job_queue->lookupJob(job_id);
                 if (job)
                     job->cancel();
             }
