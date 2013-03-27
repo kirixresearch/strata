@@ -7524,10 +7524,13 @@ void TableDoc::copyRecords(const wxString& condition)
     }
         else
     {
-        final_condition.Prepend(wxT("("));
-        final_condition += wxT(") AND (");
-        final_condition += condition;
-        final_condition += wxT(")");
+        if (condition.Length() > 0)
+        {
+            final_condition.Prepend(wxT("("));
+            final_condition += wxT(") AND (");
+            final_condition += condition;
+            final_condition += wxT(")");
+        }
     }
 
         // create a query job
