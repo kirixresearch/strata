@@ -249,10 +249,6 @@ bool CommonDynamicSet::deleteRow(const tango::rowid_t& rowid)
     return true;
 }
 
-tango::IRowInserterPtr CommonDynamicSet::getRowInserter()
-{
-    return xcm::null;
-}
 
 tango::IRowDeleterPtr CommonDynamicSet::getRowDeleter()
 {

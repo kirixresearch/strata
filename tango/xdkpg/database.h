@@ -133,8 +133,10 @@ public:
 
 private:
 
+    bool getStreamInfoBlock(const std::wstring& stream_name, std::wstring& output);
+
     std::wstring getPath();
-    
+
     std::wstring getTempFileDirectory();
     std::wstring getDefinitionDirectory();
     

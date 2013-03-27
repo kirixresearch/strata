@@ -50,14 +50,14 @@ public:
     std::wstring getObjectPath();
     bool isTemporary();
 
-    // -- ICommonDynamicSet --
+
     tango::ISetPtr getBaseSet();
     void startBulkInsert();
     void finishBulkInsert();
     bool insertRow(const tango::rowid_t& rowid);
     bool deleteRow(const tango::rowid_t& rowid);
     
-    // -- ISet --
+    // ISet
     std::wstring getSetId();
 
     unsigned int getSetFlags();
@@ -65,7 +65,6 @@ public:
     bool modifyStructure(tango::IStructure* struct_config, 
                          tango::IJob* job);
 
-    tango::IRowInserterPtr getRowInserter();
     tango::IRowDeleterPtr getRowDeleter();
     tango::IIteratorPtr createIterator(const std::wstring& columns,
                                        const std::wstring& expr,
@@ -82,7 +81,7 @@ public:
                    tango::ColumnUpdateInfo* info,
                    size_t info_size);
                      
-    // -- ISetEvents --
+    // ISetEvents
     void onSetDomainUpdated();
     void onSetStructureUpdated();
     void onSetRelationshipsUpdated();

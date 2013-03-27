@@ -116,19 +116,6 @@ tango::IRowInserterPtr KpgSet::getRowInserter()
     return static_cast<tango::IRowInserter*>(inserter);
 }
 
-tango::IRowDeleterPtr KpgSet::getRowDeleter()
-{
-    return xcm::null;
-}
-
-int KpgSet::insert(tango::IIteratorPtr source_iter,
-                   const std::wstring& where_condition,
-                   int max_rows,
-                   tango::IJob* job)
-{
-    return xdcmnInsert(source_iter, this, where_condition, max_rows, job);
-}
-
 tango::IIteratorPtr KpgSet::createIterator(const std::wstring& columns,
                                            const std::wstring& expr,
                                            tango::IJob* job)
