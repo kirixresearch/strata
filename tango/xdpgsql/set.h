@@ -73,7 +73,6 @@ private:
     
     int m_db_type;
     std::wstring m_path;
-    std::wstring m_conn_str;
     std::wstring m_set_id;
     std::wstring m_where_condition;
 

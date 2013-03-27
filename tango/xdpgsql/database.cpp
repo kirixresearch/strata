@@ -1144,7 +1144,6 @@ tango::ISetPtr PgsqlDatabase::openSet(const std::wstring& path)
 
     // create set and initialize variables
     PgsqlSet* set = new PgsqlSet(this);
-    set->m_conn_str = m_conn_str;
     set->m_tablename = tablename1;
 
     // initialize Odbc connection for this set
@@ -1162,10 +1161,40 @@ tango::IIteratorPtr PgsqlDatabase::createIterator(const std::wstring& path,
                                                   const std::wstring& sort,
                                                   tango::IJob* job)
 {
-    tango::ISetPtr set = openSet(path);
-    if (set.isNull())
+    std::wstring tablename = pgsqlGetTablenameFromPath(path);
+
+
+    std::wstring query;
+
+    tango::IAttributesPtr attr = getAttributes();
+    std::wstring quote_openchar = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
+    std::wstring quote_closechar = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);    
+    
+    query = L"SELECT * FROM ";
+    query += quote_openchar;
+    query += tablename;
+    query += quote_closechar;
+
+    if (sort.length() > 0)
+    {
+        query += L" ORDER BY ";
+        query += sort;
+    }
+    
+    // create a placeholder set
+    PgsqlSet* set = new PgsqlSet(this);
+    set->m_tablename = tablename;
+
+    // create an iterator based on our select statement
+    PgsqlIterator* iter = new PgsqlIterator(this, set);
+
+    if (!iter->init(query))
+    {
+        delete iter;
         return xcm::null;
-    return set->createIterator(columns, sort, job);
+    }
+
+    return static_cast<tango::IIterator*>(iter);
 }
 
 
