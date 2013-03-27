@@ -537,6 +537,7 @@ tango::IFileInfoEnumPtr ClientDatabase::getFolderInfo(const std::wstring& path)
 tango::IRowInserterPtr ClientDatabase::bulkInsert(const std::wstring& path)
 {
     //return static_cast<tango::IRowInserter*>(new ClientRowInserter(m_database, this, path));
+    return xcm::null;
 }
 
 tango::IStructurePtr ClientDatabase::describeTable(const std::wstring& path)

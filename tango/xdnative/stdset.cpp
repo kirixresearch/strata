@@ -70,18 +70,6 @@ bool IterWrapperSet::create(tango::ISetPtr base_set,
 }
 
 
-tango::IRowInserterPtr IterWrapperSet::getRowInserter()
-{
-    return xcm::null;
-}
-
-int IterWrapperSet::insert(tango::IIteratorPtr source_iter,
-                           const std::wstring& where_condition,
-                           int max_rows,
-                           tango::IJob* job)
-{
-    return 0;
-}
 
 tango::IIteratorPtr IterWrapperSet::createIterator(const std::wstring& columns,
                                                    const std::wstring& expr,
@@ -145,11 +133,6 @@ tango::IStructurePtr IterWrapperSet::getStructure()
     return m_base_set->getStructure();
 }
 
-bool IterWrapperSet::modifyStructure(tango::IStructure* struct_config,
-                                     tango::IJob* job)
-{
-    return false;
-}
 
 bool IterWrapperSet::updateRow(tango::rowid_t rowid,
                                tango::ColumnUpdateInfo* info,
@@ -283,20 +266,6 @@ bool EofSet::create(tango::ISetPtr base_set)
 }
 
 
-tango::IRowInserterPtr EofSet::getRowInserter()
-{
-    return xcm::null;
-}
-
-
-
-int EofSet::insert(tango::IIteratorPtr source_iter,
-                   const std::wstring& where_condition,
-                   int max_rows,
-                   tango::IJob* job)
-{
-    return 0;
-}
 
 tango::IIteratorPtr EofSet::createIterator(const std::wstring& columns,
                                            const std::wstring& expr,
@@ -323,10 +292,6 @@ tango::IStructurePtr EofSet::getStructure()
     return m_base_set->getStructure();
 }
 
-bool EofSet::modifyStructure(tango::IStructure* struct_config, tango::IJob* job)
-{
-    return false;
-}
 
 void EofSet::onSetDomainUpdated()
 {

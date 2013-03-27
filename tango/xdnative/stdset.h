@@ -36,23 +36,15 @@ public:
 
     bool create(tango::ISetPtr base_set, tango::IIteratorPtr iter);
 
-    // -- ISet --
+    // ISet 
     tango::IStructurePtr getStructure();
-    bool modifyStructure(tango::IStructure* struct_config, tango::IJob* job);
+    bool modifyStructure(tango::IStructure* struct_config, tango::IJob* job) { return false; }
 
-    tango::IRowInserterPtr getRowInserter();
-    tango::IIteratorPtr getRow(tango::rowid_t rowid);
     tango::rowpos_t getRowCount();
 
     tango::IIteratorPtr createIterator(const std::wstring& columns,
                                        const std::wstring& expr,
                                        tango::IJob* job);
-
-    int insert(tango::IIteratorPtr source_iter,
-               const std::wstring& where_condition,
-               int max_rows,
-               tango::IJob* job);
-
 
     bool updateRow(tango::rowid_t rowid,
                    tango::ColumnUpdateInfo* info,
@@ -60,7 +52,7 @@ public:
 
     bool storeObject(const std::wstring& path) { return false; }
 
-    // -- ISetEvents --
+    // ISetEvents
     void onSetDomainUpdated();
     void onSetStructureUpdated();
     void onSetRelationshipsUpdated();
@@ -124,25 +116,19 @@ public:
 
     bool create(tango::ISetPtr base_set);
 
-    // -- ISet --
+    // ISet
     tango::IStructurePtr getStructure();
-    bool modifyStructure(tango::IStructure* struct_config, tango::IJob* job);
+    bool modifyStructure(tango::IStructure* struct_config, tango::IJob* job) { return false; }
 
-    tango::IRowInserterPtr getRowInserter();
     tango::IIteratorPtr createIterator(const std::wstring& columns,
                                        const std::wstring& expr,
                                        tango::IJob* job);
-    tango::IIteratorPtr getRow(tango::rowid_t rowid);
+    
     tango::rowpos_t getRowCount();
-
-    int insert(tango::IIteratorPtr source_iter,
-               const std::wstring& where_condition,
-               int max_rows,
-               tango::IJob* job);
 
     bool storeObject(const std::wstring& path) { return false; }
 
-    // -- ISetEvents --
+    // ISetEvents
     void onSetDomainUpdated();
     void onSetStructureUpdated();
     void onSetRelationshipsUpdated();
@@ -156,7 +142,4 @@ private:
 };
 
 
-
-
 #endif
-
