@@ -229,7 +229,7 @@ private:
                            tango::IDatabasePtr remote_db, 
                            const std::wstring remote_path);
 
-    tango::tango_int64_t getFileSize(const std::wstring& path);
+    long long getFileSize(const std::wstring& path);
     std::wstring getFileMimeType(const std::wstring& path);
     bool renameOfsFile(const std::wstring& path, const std::wstring& new_name);
     bool moveOfsFile(const std::wstring& path, const std::wstring& new_location);

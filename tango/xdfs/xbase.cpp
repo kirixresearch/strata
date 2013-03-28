@@ -566,12 +566,12 @@ double XbaseFile::getDouble(size_t col_idx)
 
     if (m_fields[col_idx].type == 'Y')
     {
-        tango::tango_int64_t val;
-        tango::tango_int64_t dec;
+        long long val;
+        long long dec;
 
         memcpy(&val,
                m_currow_ptr+m_fields[col_idx].offset,
-               sizeof(tango::tango_int64_t));
+               sizeof(long long));
 
         dec = val % 10000;
         val -= dec;

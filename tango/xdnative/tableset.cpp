@@ -326,8 +326,8 @@ bool TableIterator::setPos(double pct)
 
 double TableIterator::getPos()
 {
-    double d = (double)(tango::tango_int64_t)rowidGetRowPos(m_rowid);
-    double row_count = (double)(tango::tango_int64_t)m_row_count;
+    double d = (double)(long long)rowidGetRowPos(m_rowid);
+    double row_count = (double)(long long)m_row_count;
     if (kl::dblcompare(row_count, 0.0) == 0)
         return 0.0;
 
@@ -971,7 +971,7 @@ tango::IIndexInfoEnumPtr TableSet::getIndexEnum()
         return indexes;
     }
 
-    tango::tango_uint64_t mtime = m_table->getStructureModifyTime();
+    unsigned long long mtime = m_table->getStructureModifyTime();
     if (m_idxrefresh_time != mtime)
     {
         m_idxrefresh_time = mtime;
@@ -1444,7 +1444,7 @@ tango::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
 }
 
 
-tango::tango_uint64_t TableSet::getStructureModifyTime()
+unsigned long long TableSet::getStructureModifyTime()
 {
     if (!m_table)
         return 0;

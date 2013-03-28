@@ -77,7 +77,7 @@ std::wstring getTablenameFromFilesystemPath(const std::wstring& path);
 
 void crc64(const unsigned char* s,
            int length,
-           tango::tango_uint64_t* result);
+           unsigned long long* result);
 
 void bindExprParser(kscript::ExprParser* parser);
 kscript::ExprParser* createExprParser();
@@ -100,7 +100,7 @@ bool parseDateTime(const std::wstring& input,
 tango::datetime_t str2datetime(const char* str,
                                const char* fmt = "YMDhms");
 
-tango::tango_uint64_t hex2uint64(const wchar_t* _code);
+unsigned long long hex2uint64(const wchar_t* _code);
 
 
 tango::rowid_t bufToRowid(unsigned char* buf);
@@ -213,12 +213,12 @@ inline unsigned int buf2int(const unsigned char* buf)
 }
 
 
-inline tango::tango_int64_t bufToInt64(unsigned char* buf)
+inline long long bufToInt64(unsigned char* buf)
 {
 #ifdef WIN32
-    return *((tango::tango_int64_t*)buf);
+    return *((long long*)buf);
 #else
-    tango::tango_int64_t result, tempv;
+    long long result, tempv;
     tempv = buf[0];
     result = tempv;
     tempv = buf[1];
@@ -240,7 +240,7 @@ inline tango::tango_int64_t bufToInt64(unsigned char* buf)
 }
 
 inline void int64ToBuf(unsigned char* bytes,
-                       tango::tango_int64_t i)
+                       long long i)
 {
     bytes[0] = (unsigned char)((i) & 0xff);
     bytes[1] = (unsigned char)((i >> 8) & 0xff);

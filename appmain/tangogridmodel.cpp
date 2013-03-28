@@ -213,7 +213,7 @@ void TangoGridModel::goRow(int row)
                 if (m_current_row < 0)
                     m_current_row = 1;
 
-                double row_count = (tango::tango_int64_t)set->getRowCount();
+                double row_count = (long long)set->getRowCount();
                 double dest = row;
                 double pos = dest/row_count;
 

@@ -73,7 +73,7 @@ int AppendJob::runJob()
     tango::IIteratorPtr source_iter;
     tango::ISetPtr target_set;
     std::vector<tango::ISetPtr>::iterator it;
-    tango::tango_int64_t max_count = 0;
+    long long max_count = 0;
     bool valid_max_count = true;
 
 

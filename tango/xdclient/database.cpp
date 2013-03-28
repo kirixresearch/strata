@@ -456,7 +456,7 @@ tango::IFileInfoPtr ClientDatabase::getFileInfo(const std::wstring& path)
     f->mime_type = file_info["mime_type"];
     f->is_mount = file_info["is_mount"].getBoolean();
     f->primary_key = file_info["primary_key"];
-    f->size = (tango::tango_int64_t)file_info["size"].getDouble();
+    f->size = (long long)file_info["size"].getDouble();
 
     return static_cast<tango::IFileInfo*>(f);
 }
@@ -508,7 +508,7 @@ tango::IFileInfoEnumPtr ClientDatabase::getFolderInfo(const std::wstring& path)
         f->mime_type = item["mime_type"];
         f->is_mount = item["is_mount"].getBoolean();
         f->primary_key = item["primary_key"];
-        f->size = (tango::tango_int64_t)item["size"].getDouble();
+        f->size = (long long)item["size"].getDouble();
 
         retval->append(f);
     }

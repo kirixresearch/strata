@@ -47,7 +47,7 @@ int FileInfo::getFormat()
     return format;
 }
 
-tango::tango_int64_t FileInfo::getSize()
+long long FileInfo::getSize()
 {
     return size;
 }

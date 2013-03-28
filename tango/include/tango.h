@@ -19,25 +19,14 @@
 namespace tango
 {
 
-
-// int64 support
-#ifdef _MSC_VER
-typedef __int64 tango_int64_t;
-typedef unsigned __int64 tango_uint64_t;
-#else
-typedef long long tango_int64_t;
-typedef unsigned long long tango_uint64_t;
-#endif
-
-
 // tango type definitions
 
 typedef void* objhandle_t;
 typedef unsigned int jobid_t;
-typedef tango_uint64_t tableord_t;
-typedef tango_uint64_t rowpos_t;
-typedef tango_uint64_t rowid_t;
-typedef tango_uint64_t datetime_t;
+typedef unsigned long long tableord_t;
+typedef unsigned long long rowpos_t;
+typedef unsigned long long rowid_t;
+typedef unsigned long long datetime_t;
 
 
 // data metric constants
@@ -343,7 +332,7 @@ public:
     virtual int getType() = 0;                       // one of the filetype enums
     virtual int getFormat() = 0;                     // one of the format enums
     virtual const std::wstring& getMimeType() = 0;   // mime type, empty if none
-    virtual tango_int64_t getSize() = 0;             // size, in bytes
+    virtual long long getSize() = 0;                 // size, in bytes
     virtual bool isMount() = 0;                      // true if file/folder is a mount
     virtual const std::wstring& getPrimaryKey() = 0; // primary key of a table
 };

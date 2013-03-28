@@ -2968,7 +2968,7 @@ void func_crc64(kscript::ExprEnv* env, void* param, kscript::Value* retval)
     retval->setStringLen(16);
     wchar_t* outstr = retval->getString();
 
-    tango::tango_uint64_t result = 0;
+    unsigned long long result = 0;
 
     switch (p0->getType())
     {

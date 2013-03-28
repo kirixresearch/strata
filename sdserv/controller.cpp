@@ -1130,8 +1130,8 @@ void Controller::apiFetchRows(RequestInfo& req)
     }
      else
     {
-        tango::tango_int64_t newpos = start;
-        newpos -= ((tango::tango_int64_t)qr.rowpos);
+        long long newpos = start;
+        newpos -= ((long long)qr.rowpos);
         if (newpos != 0)
         {
             iter->skip((int)newpos);

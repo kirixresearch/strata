@@ -384,7 +384,7 @@ void PgsqlIterator::goRow(const tango::rowid_t& rowid)
 
 double PgsqlIterator::getPos()
 {
-    return (double)(tango::tango_int64_t)m_row_pos;
+    return (double)(long long)m_row_pos;
 }
 
 tango::IStructurePtr PgsqlIterator::getStructure()

@@ -765,7 +765,7 @@ static bool insertDistinct(tango::IDatabase* db,
 
     // create the index file
     if (!index->create(index_filename,
-                       sizeof(tango::tango_uint64_t),
+                       sizeof(unsigned long long),
                        sizeof(tango::rowpos_t),
                        true))
     {
@@ -824,12 +824,12 @@ static bool insertDistinct(tango::IDatabase* db,
         ijob->startPhase();
     }
 
-    tango::tango_uint64_t crc;
+    unsigned long long crc;
     while (!iter->eof())
     {
         crc64(key.getKey(), key_len, &crc);
         index->insert(&crc,
-                      sizeof(tango::tango_uint64_t),
+                      sizeof(unsigned long long),
                       &cur_row,
                       sizeof(tango::rowpos_t));
 
@@ -892,7 +892,7 @@ static bool insertDistinct(tango::IDatabase* db,
     memset(bitmask, 0, bitmask_size);
 
 
-    tango::tango_uint64_t last_crc = 0;
+    unsigned long long last_crc = 0;
 
     IIndexIterator* idx_iter = index->createIterator();
     idx_iter->goFirst();
@@ -905,7 +905,7 @@ static bool insertDistinct(tango::IDatabase* db,
 
     while (!idx_iter->isEof())
     {
-        crc = *(tango::tango_uint64_t*)idx_iter->getKey();
+        crc = *(unsigned long long*)idx_iter->getKey();
         if (crc != last_crc)
         {
             setBitState(bitmask, *(tango::rowpos_t*)idx_iter->getValue());

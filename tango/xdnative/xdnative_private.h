@@ -229,7 +229,7 @@ public:
     virtual int appendRows(unsigned char* buf,
                            int row_count) = 0;
 
-    virtual tango::tango_uint64_t getStructureModifyTime() = 0;
+    virtual unsigned long long getStructureModifyTime() = 0;
     virtual bool setStructureModified() = 0;
 };
 
@@ -299,7 +299,7 @@ public:
     virtual bool getFileType(const std::wstring& path, int* type, bool* is_mount) = 0;
 
     virtual std::wstring getTableFilename(tango::tableord_t table_ordinal) = 0;
-    virtual tango::tango_int64_t getFileSize(const std::wstring& path) = 0;
+    virtual long long getFileSize(const std::wstring& path) = 0;
     virtual std::wstring getFileMimeType(const std::wstring& path) = 0;
 
     virtual std::wstring getTempFilename() = 0;

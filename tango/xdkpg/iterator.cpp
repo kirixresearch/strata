@@ -275,7 +275,7 @@ void KpgIterator::goRow(const tango::rowid_t& rowid)
 
 double KpgIterator::getPos()
 {
-    return (double)(tango::tango_int64_t)m_row_pos;
+    return (double)(long long)m_row_pos;
 }
 
 tango::IStructurePtr KpgIterator::getStructure()

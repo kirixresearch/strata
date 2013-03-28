@@ -42,8 +42,8 @@ public:
 
     wxString name;
     int type;
-    tango::tango_int64_t size;
-    tango::tango_int64_t records;
+    long long size;
+    long long records;
 };
 
 

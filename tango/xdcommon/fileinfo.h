@@ -33,7 +33,7 @@ public:
     int getType();
     int getFormat();
     const std::wstring& getMimeType();
-    tango::tango_int64_t getSize();
+    long long getSize();
     bool isMount();
     const std::wstring& getPrimaryKey();
 
@@ -44,7 +44,7 @@ public:
     std::wstring primary_key;
     int type;
     int format;
-    tango::tango_int64_t size;
+    long long size;
     bool is_mount;
 };
 

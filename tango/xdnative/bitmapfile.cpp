@@ -34,7 +34,7 @@ BitmapFileScroller::BitmapFileScroller()
 {
     m_buf = new unsigned char[bitmap_file_page_size];
     m_data_offset = 0;
-    m_buf_offset = (tango::tango_uint64_t)-1;
+    m_buf_offset = (unsigned long long)-1;
     m_file = NULL;
     m_bmp_file = NULL;
     m_buf_valid = false;
@@ -79,7 +79,7 @@ bool BitmapFileScroller::_flush()
             xf_seek(m_file, 0, xfSeekSet);
             xf_read(m_file, buf, 20, 1);
 
-            tango::tango_int64_t count = bufToInt64(buf+12);
+            long long count = bufToInt64(buf+12);
             count += m_modify_set_bit_count;
             int64ToBuf(buf+12, count);
 
@@ -95,7 +95,7 @@ bool BitmapFileScroller::_flush()
     return true;
 }
 
-bool BitmapFileScroller::_goBlock(tango::tango_uint64_t block_number,
+bool BitmapFileScroller::_goBlock(unsigned long long block_number,
                                   bool lock,
                                   bool pad)
 {
@@ -169,12 +169,12 @@ bool BitmapFileScroller::_goBlock(tango::tango_uint64_t block_number,
 }
 
 
-bool BitmapFileScroller::getState(tango::tango_uint64_t offset)
+bool BitmapFileScroller::getState(unsigned long long offset)
 {
     unsigned int byte_offset = offset/8;
     unsigned int bit_offset = offset % 8;
 
-    if (m_buf_offset == (tango::tango_uint64_t)-1 ||
+    if (m_buf_offset == (unsigned long long)-1 ||
         byte_offset < m_buf_offset ||
         byte_offset >= m_buf_offset+bitmap_file_page_size)
     {
@@ -186,7 +186,7 @@ bool BitmapFileScroller::getState(tango::tango_uint64_t offset)
     return (m_buf[byte_offset-m_buf_offset] & bit_values[bit_offset]) ? true : false;
 }
 
-bool BitmapFileScroller::findPrev(tango::tango_uint64_t* offset,
+bool BitmapFileScroller::findPrev(unsigned long long* offset,
                                   bool state)
 {
     unsigned int byte_offset = (*offset)/8;
@@ -195,7 +195,7 @@ bool BitmapFileScroller::findPrev(tango::tango_uint64_t* offset,
 
     while (1)
     {
-        if (m_buf_offset == (tango::tango_uint64_t)-1 ||
+        if (m_buf_offset == (unsigned long long)-1 ||
             byte_offset < m_buf_offset ||
             byte_offset >= m_buf_offset+bitmap_file_page_size)
         {
@@ -252,7 +252,7 @@ bool BitmapFileScroller::findPrev(tango::tango_uint64_t* offset,
     return false;
 }
 
-bool BitmapFileScroller::findNext(tango::tango_uint64_t* offset,
+bool BitmapFileScroller::findNext(unsigned long long* offset,
                                   bool state)
 {
     unsigned int byte_offset = (*offset)/8;
@@ -261,7 +261,7 @@ bool BitmapFileScroller::findNext(tango::tango_uint64_t* offset,
 
     while (1)
     {
-        if (m_buf_offset == (tango::tango_uint64_t)-1 ||
+        if (m_buf_offset == (unsigned long long)-1 ||
             byte_offset < m_buf_offset ||
             byte_offset >= m_buf_offset+bitmap_file_page_size)
         {
@@ -319,13 +319,13 @@ void BitmapFileScroller::endModify()
 }
 
 
-void BitmapFileScroller::setState(tango::tango_uint64_t offset,
+void BitmapFileScroller::setState(unsigned long long offset,
                                   bool state)
 {
     unsigned byte_offset = offset/8;
     unsigned bit_offset = offset % 8;
 
-    if (m_buf_offset == (tango::tango_uint64_t)-1 ||
+    if (m_buf_offset == (unsigned long long)-1 ||
         byte_offset < m_buf_offset ||
         byte_offset >= m_buf_offset+bitmap_file_page_size)
     {
@@ -445,13 +445,13 @@ bool BitmapFile::isOpen()
 }
 
 
-tango::tango_uint64_t BitmapFile::getSetBitCount()
+unsigned long long BitmapFile::getSetBitCount()
 {
     if (!xf_trylock(m_file, 0, bitmap_file_page_size, 10000))
         return 0;
 
     unsigned char buf[8];
-    tango::tango_uint64_t result;
+    unsigned long long result;
 
     memset(buf, 0, 8);
     xf_seek(m_file, 12, xfSeekSet);

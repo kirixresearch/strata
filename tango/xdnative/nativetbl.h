@@ -123,7 +123,7 @@ public:
     tango::IRowDeleterPtr getRowDeleter();
     bool restoreDeleted();
 
-    tango::tango_uint64_t getStructureModifyTime();
+    unsigned long long getStructureModifyTime();
     bool setStructureModified();
 
 private:
@@ -152,7 +152,7 @@ private:
     tango::rowpos_t m_phys_row_count;     // number of rows in this table
     unsigned int m_row_width;             // row width
     unsigned int m_data_offset;           // offset where the data rows begin
-    tango::tango_int64_t m_modified_time; // time that an update has occurred
+    long long m_modified_time; // time that an update has occurred
 };
 
 

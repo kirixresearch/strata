@@ -29,30 +29,30 @@ public:
     BitmapFileScroller(const BitmapFileScroller& c);
     ~BitmapFileScroller();
 
-    bool getState(tango::tango_uint64_t offset);
-    bool findPrev(tango::tango_uint64_t* offset, bool state);
-    bool findNext(tango::tango_uint64_t* offset, bool state);
+    bool getState(unsigned long long offset);
+    bool findPrev(unsigned long long* offset, bool state);
+    bool findNext(unsigned long long* offset, bool state);
 
     void startModify();
     void endModify();
-    void setState(tango::tango_uint64_t offset, bool state);
+    void setState(unsigned long long offset, bool state);
 
 private:
 
     BitmapFile* m_bmp_file;
     xf_file_t m_file;
     unsigned char* m_buf;
-    tango::tango_uint64_t m_data_offset;
-    tango::tango_uint64_t m_buf_offset;
+    unsigned long long m_data_offset;
+    unsigned long long m_buf_offset;
 
     bool m_locked;
     bool m_dirty;
     bool m_buf_valid;
 
-    tango::tango_int64_t m_modify_set_bit_count;
+    long long m_modify_set_bit_count;
 
     bool _flush();
-    bool _goBlock(tango::tango_uint64_t block_number,
+    bool _goBlock(unsigned long long block_number,
                   bool lock,
                   bool pad);
 };
@@ -71,14 +71,14 @@ public:
     bool close();
     bool isOpen();
 
-    tango::tango_uint64_t getSetBitCount();
+    unsigned long long getSetBitCount();
 
     BitmapFileScroller* createScroller();
 
 private:
 
     xf_file_t m_file;
-    tango::tango_uint64_t m_data_offset;
+    unsigned long long m_data_offset;
 };
 
 

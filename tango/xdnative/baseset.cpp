@@ -260,7 +260,7 @@ void BaseSet::appendCalcFields(tango::IStructure* structure)
     // this will avoid interlocking the mutexes of NativeTable
     // and BaseSet.  This problem won't exist anymore once we
     // make getStructureModifyTime in NativeTable take no mutex.
-    tango::tango_uint64_t t = getStructureModifyTime();
+    unsigned long long t = getStructureModifyTime();
     
     XCM_AUTO_LOCK(m_structure_mutex);
 
@@ -460,7 +460,7 @@ bool BaseSet::updateRow(tango::rowid_t rowid,
 }                           
 
 
-tango::tango_uint64_t BaseSet::getStructureModifyTime()
+unsigned long long BaseSet::getStructureModifyTime()
 {
     return 0;
 }

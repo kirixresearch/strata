@@ -287,7 +287,7 @@ void DrizzleIterator::skipWithCache(int delta)
     saveRowToCache();
     
         
-    tango::tango_int64_t desired_row = ((tango::tango_int64_t)m_row_pos) + delta;
+    long long desired_row = ((long long)m_row_pos) + delta;
     if (desired_row < 0)
         desired_row = 0;
     

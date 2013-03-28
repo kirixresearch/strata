@@ -660,7 +660,7 @@ void OdbcIterator::skipWithCache(int delta)
     clearFieldData();
     
     
-    tango::tango_int64_t desired_row = ((tango::tango_int64_t)m_row_pos) + delta;
+    long long desired_row = ((long long)m_row_pos) + delta;
     if (desired_row < 0)
         desired_row = 0;
     
@@ -776,7 +776,7 @@ void OdbcIterator::goFirst()
 {
     if (m_cache_active)
     {
-        int delta = (int)-((tango::tango_int64_t)m_row_pos);
+        int delta = (int)-((long long)m_row_pos);
         skip(delta);
         return;
     }
@@ -841,7 +841,7 @@ void OdbcIterator::goRow(const tango::rowid_t& rowid)
 
 double OdbcIterator::getPos()
 {
-    return (double)(tango::tango_int64_t)m_row_pos;
+    return (double)(long long)m_row_pos;
 }
 
 tango::IStructurePtr OdbcIterator::getStructure()

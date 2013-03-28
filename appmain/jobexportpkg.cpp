@@ -972,7 +972,7 @@ int ExportPkgJob::runJob()
             if (set->getSetFlags() & tango::sfFastRowCount)
             {
                 m_obj_mutex.lock();
-                max_count += (tango::tango_int64_t)set->getRowCount();
+                max_count += (long long)set->getRowCount();
                 m_obj_mutex.unlock();
             }
         }

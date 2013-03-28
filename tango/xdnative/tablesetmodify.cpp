@@ -1073,9 +1073,9 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
                 }
                  else
                 {
-                    double r = (double)(tango::tango_int64_t)rows_processed;
-                    double p = (double)(tango::tango_int64_t)phys_row_count;
-                    double t = (double)(tango::tango_int64_t)(phys_row_count - deleted_row_count);
+                    double r = (double)(long long)rows_processed;
+                    double p = (double)(long long)phys_row_count;
+                    double t = (double)(long long)(phys_row_count - deleted_row_count);
 
                     ijob->setCurrentCount((tango::rowpos_t)(((r*t)/p)));
                 }

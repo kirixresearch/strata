@@ -193,7 +193,7 @@ public:
                    tango::ColumnUpdateInfo* info,
                    size_t info_size);
 
-    tango::tango_uint64_t getStructureModifyTime();
+    unsigned long long getStructureModifyTime();
 
     // ITableEvents
     void onTableRowUpdated(tango::rowid_t rowid);
@@ -220,7 +220,7 @@ private:
     tango::rowpos_t m_row_count;
     tango::rowpos_t m_deleted_row_count;
     tango::rowpos_t m_phys_row_count;
-    tango::tango_uint64_t m_idxrefresh_time;
+    unsigned long long m_idxrefresh_time;
     ITable* m_table;
     tango::IStructurePtr m_structure;
 

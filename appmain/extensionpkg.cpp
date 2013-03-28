@@ -270,12 +270,12 @@ private:
     }
 
 
-    tango::tango_int64_t bufToInt64(unsigned char* buf)
+    long long bufToInt64(unsigned char* buf)
     {
     #ifdef WIN32
-        return *((tango::tango_int64_t*)buf);
+        return *((long long*)buf);
     #else
-        tango::tango_int64_t result, tempv;
+        long long result, tempv;
         tempv = buf[0];
         result = tempv;
         tempv = buf[1];

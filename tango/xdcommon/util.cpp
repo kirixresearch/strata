@@ -756,10 +756,10 @@ wchar_t* zl_stristr(wchar_t* str,
 
 
 
-void crc64(const unsigned char* s, int length, tango::tango_uint64_t* result)
+void crc64(const unsigned char* s, int length, unsigned long long* result)
 {
-    static tango::tango_uint64_t crc_table[256];
-    tango::tango_uint64_t crc = 0;
+    static unsigned long long crc_table[256];
+    unsigned long long crc = 0;
     static int init = 0;
 
     if (!init)
@@ -769,12 +769,12 @@ void crc64(const unsigned char* s, int length, tango::tango_uint64_t* result)
         for (i = 0; i <= 255; i++)
         {
             int j;
-            tango::tango_uint64_t part = i;
+            unsigned long long part = i;
             for (j = 0; j < 8; j++)
             {
                 if (part & 1)
 #ifdef _MSC_VER
-                    part = (part >> 1) ^ ((tango::tango_uint64_t)0xd800000000000000);
+                    part = (part >> 1) ^ ((unsigned long long)0xd800000000000000);
 #else
                     part = (part >> 1) ^ 0xd800000000000000ULL;
 #endif
@@ -787,8 +787,8 @@ void crc64(const unsigned char* s, int length, tango::tango_uint64_t* result)
 
     while (length--)
     {
-        tango::tango_uint64_t temp1 = crc >> 8;
-        tango::tango_uint64_t temp2 = crc_table[(crc ^ (tango::tango_uint64_t)*s) & 0xff];
+        unsigned long long temp1 = crc >> 8;
+        unsigned long long temp2 = crc_table[(crc ^ (unsigned long long)*s) & 0xff];
         crc = temp1 ^ temp2;
         s++;
     }
@@ -981,15 +981,15 @@ wchar_t* wcsrev(wchar_t* str)
 #endif
 
 
-tango::tango_uint64_t hex2uint64(const wchar_t* _code)
+unsigned long long hex2uint64(const wchar_t* _code)
 {
     static const wchar_t* hexchars = L"0123456789ABCDEF";
 
     wchar_t* code = wcsdup(_code);
     wcsrev(code);
 
-    tango::tango_uint64_t retval = 0;
-    tango::tango_uint64_t multiplier = 1;
+    unsigned long long retval = 0;
+    unsigned long long multiplier = 1;
 
     wchar_t* p = code;
     while (*p)
@@ -1003,7 +1003,7 @@ tango::tango_uint64_t hex2uint64(const wchar_t* _code)
             return 0;
         }
 
-        tango::tango_uint64_t a = pos-hexchars;
+        unsigned long long a = pos-hexchars;
         retval += (a*multiplier);
         multiplier *= 16;
     }
@@ -1229,7 +1229,7 @@ kscript::ExprParser* createExprParser()
 
 tango::rowid_t bufToRowid(unsigned char* buf)
 {
-    tango::tango_int64_t result, tempv;
+    long long result, tempv;
     tempv = buf[7];
     result = tempv;
     tempv = buf[6];

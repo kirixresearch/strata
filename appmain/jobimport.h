@@ -147,7 +147,7 @@ private:
     
     // this is a helper function to make the runJob()
     // function smaller and more readable
-    tango::tango_int64_t getTotalRowCount(tango::IDatabasePtr db);
+    long long getTotalRowCount(tango::IDatabasePtr db);
 
 private:
 

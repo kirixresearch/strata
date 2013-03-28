@@ -481,7 +481,7 @@ static wxString getImportTitle(int import_type,
 }
 
 
-tango::tango_int64_t ImportJob::getTotalRowCount(tango::IDatabasePtr db)
+long long ImportJob::getTotalRowCount(tango::IDatabasePtr db)
 {
     std::vector<ImportJobInfo>::iterator it;
     tango::ISetPtr src_set;
@@ -490,7 +490,7 @@ tango::tango_int64_t ImportJob::getTotalRowCount(tango::IDatabasePtr db)
         m_import_type != dbtypeDelimitedText &&
         m_import_type != dbtypeFixedLengthText)
     {
-        tango::tango_int64_t max_count = 0;
+        long long max_count = 0;
         bool use_max_count = true;
 
         for (it = m_imports.begin(); it != m_imports.end(); ++it)
@@ -655,11 +655,11 @@ int ImportJob::runJob()
     tango::ISetPtr dest_set;
     tango::IStructurePtr dest_struct;
     tango::rowpos_t row_count = 0;
-    tango::tango_int64_t total_row_count = 0;
+    long long total_row_count = 0;
 
 
     // determine the total row count
-    tango::tango_int64_t max_row_count = getTotalRowCount(src_db);
+    long long max_row_count = getTotalRowCount(src_db);
     
     if (max_row_count == 0)
         m_job_info->setMaxCount(0.0);
@@ -745,9 +745,9 @@ int ImportJob::runJob()
                 }
                 m_job_info->setCurrentCount(0);
                 if (td_set->isFirstRowColumnNames())
-                    m_job_info->setMaxCount((tango::tango_int64_t)tango_job->getMaxCount()-1);
+                    m_job_info->setMaxCount((long long)tango_job->getMaxCount()-1);
                      else
-                    m_job_info->setMaxCount((tango::tango_int64_t)tango_job->getMaxCount());
+                    m_job_info->setMaxCount((long long)tango_job->getMaxCount());
                 setTangoJob(xcm::null);
                 
                 // set the progress string format back to its default
@@ -795,7 +795,7 @@ int ImportJob::runJob()
                     m_job_info->setState(jobStateCancelled);
                 }
                 m_job_info->setCurrentCount(0);
-                m_job_info->setMaxCount((tango::tango_int64_t)tango_job->getMaxCount());
+                m_job_info->setMaxCount((long long)tango_job->getMaxCount());
                 setTangoJob(xcm::null);
 
                 m_job_info->setProgressString(wxEmptyString);

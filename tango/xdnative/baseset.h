@@ -87,7 +87,7 @@ public:
                    tango::ColumnUpdateInfo* info,
                    size_t info_size);
 
-    virtual tango::tango_uint64_t getStructureModifyTime();
+    virtual unsigned long long getStructureModifyTime();
 
 protected:
 
@@ -128,7 +128,7 @@ private:
 
     std::vector<ISetEvents*> m_event_handlers;
     std::vector<tango::IColumnInfoPtr> m_calc_fields;
-    tango::tango_uint64_t m_calcrefresh_time;
+    unsigned long long m_calcrefresh_time;
     bool m_rel_init;
 };
 

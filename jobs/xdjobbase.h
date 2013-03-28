@@ -109,7 +109,7 @@ private:
     {
         if (m_tango_job.p)
         {
-            *result = (tango::tango_int64_t)m_tango_job.p->getCurrentCount() + m_base_count;
+            *result = (long long)m_tango_job.p->getCurrentCount() + m_base_count;
         }
          else
         {
@@ -121,7 +121,7 @@ private:
     {
         if (m_tango_job.p)
         {
-            *result = (double)(tango::tango_int64_t)m_tango_job.p->getMaxCount();
+            *result = (double)(long long)m_tango_job.p->getMaxCount();
         }
          else
         {

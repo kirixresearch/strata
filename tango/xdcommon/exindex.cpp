@@ -2059,9 +2059,9 @@ void ExIndex::startBulkInsert(tango::rowpos_t total_keys)
     }
 
     // decide on the absolute maximum amount of pool space
-    tango::tango_int64_t free_mem;
+    long long free_mem;
     free_mem = kl::getFreePhysMemory();
-    tango::tango_int64_t max_pool_bytes = free_mem/5;
+    long long max_pool_bytes = free_mem/5;
     if (max_pool_bytes > 256000000)
         max_pool_bytes = 256000000;
     if (max_pool_bytes < 8000000)
@@ -2069,7 +2069,7 @@ void ExIndex::startBulkInsert(tango::rowpos_t total_keys)
 
     // calculate how large the key pool would be if we stored
     // every key/value pair in one pool
-    tango::tango_int64_t total_required_pool_size = (m_keylen + m_vallen);
+    long long total_required_pool_size = (m_keylen + m_vallen);
     total_required_pool_size *= total_keys;
 
     int pool_bytes = 64000000;

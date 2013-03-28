@@ -483,7 +483,7 @@ void Process::getMemoryInfo(kscript::ExprEnv* env, kscript::Value* retval)
 {
     retval->setNull();
     
-    tango::tango_int64_t total, working;
+    long long total, working;
     
     if (!g_process_info.getMemoryInfo(m_process_id, &total, &working))
         return;

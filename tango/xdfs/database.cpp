@@ -1134,7 +1134,7 @@ public:
         return mime_type;
     }
     
-    tango::tango_int64_t getSize()
+    long long getSize()
     {
         return xf_get_file_size(phys_path);
     }

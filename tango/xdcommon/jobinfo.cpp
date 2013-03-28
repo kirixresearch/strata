@@ -285,8 +285,8 @@ double JobInfo::getPercentage()
     if (m_max_count == 0)
         return 0.0;
 
-    double m = (double)(tango::tango_int64_t)getMaxCount();
-    double c = (double)(tango::tango_int64_t)getCurrentCount();
+    double m = (double)(long long)getMaxCount();
+    double c = (double)(long long)getCurrentCount();
 
     return m_base_pct+((c*m_phase_pct)/m);
 }

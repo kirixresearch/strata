@@ -2054,7 +2054,7 @@ bool Database::getFileExist(const std::wstring& _path)
 }
 
 
-tango::tango_int64_t Database::getFileSize(const std::wstring& ofs_path)
+long long Database::getFileSize(const std::wstring& ofs_path)
 {
     if (ofs_path.empty())
         return 0;
@@ -2157,7 +2157,7 @@ public:
         return format;
     }
 
-    tango::tango_int64_t getSize()
+    long long getSize()
     {
         if (fetched_size)
             return size;
@@ -2195,7 +2195,7 @@ public:
     std::wstring mime_type;
     std::wstring path;
     std::wstring primary_key;
-    tango::tango_int64_t size;
+    long long size;
     int type;
     int format;
     bool is_mount;

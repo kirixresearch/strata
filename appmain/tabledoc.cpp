@@ -2226,7 +2226,7 @@ void TableDoc::updateStatusBar(bool row_count_update)
         {
             position_text = wxString::Format(_("Position: %s"), currow_text.c_str());
             reccount_text = wxString::Format(_("Record Count: %s"),
-                kl::formattedNumber((tango::tango_int64_t)m_stat_row_count).c_str());
+                kl::formattedNumber((long long)m_stat_row_count).c_str());
         }
          else
         {
@@ -2846,7 +2846,7 @@ void TableDoc::setIterator(tango::IIteratorPtr iter, bool go_first)
         // convince the grid and its row model to jump to
         // where the iterator is currently positioned
         kcl::IModelPtr model = m_grid_model;
-        tango::tango_int64_t row_count = (tango::tango_int64_t)model->getRowCount();
+        long long row_count = (long long)model->getRowCount();
         double pos = m_iter->getPos();
         int approx_pos = (int)(row_count*pos);
         m_grid_model->setCurrentRow(approx_pos);
@@ -6585,7 +6585,7 @@ void TableDoc::gotoRecord()
 {
     if (m_set->getRowCount() > 0 && m_grid->getRowCount() > 0)
     {
-        tango::tango_int64_t row_count = (tango::tango_int64_t)m_stat_row_count;
+        long long row_count = (long long)m_stat_row_count;
         
         wxString message = wxString::Format(_("Record number (1 - %s):"),
                 kl::formattedNumber(row_count).c_str());
@@ -6595,7 +6595,7 @@ void TableDoc::gotoRecord()
         
         if (dlg.ShowModal() == wxID_OK)
         {
-            tango::tango_int64_t goto_row = wxAtof(dlg.GetValue());
+            long long goto_row = wxAtof(dlg.GetValue());
             if (goto_row < 1)
                 goto_row = 1;
              else if (goto_row > row_count)

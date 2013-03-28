@@ -789,7 +789,7 @@ int NativeTable::getRows(unsigned char* buf,
          else
         {
             // read chunk
-            tango::tango_uint64_t offset = rowpos_arr[chunk_offset]-1;
+            unsigned long long offset = rowpos_arr[chunk_offset]-1;
             offset *= m_row_width;
             offset += m_data_offset;
             xf_seek(m_file, offset, xfSeekSet);
@@ -806,7 +806,7 @@ int NativeTable::getRows(unsigned char* buf,
     // read in last chunk
     if (chunk_len)
     {
-        tango::tango_uint64_t offset = rowpos_arr[chunk_offset]-1;
+        unsigned long long offset = rowpos_arr[chunk_offset]-1;
         offset *= m_row_width;
         offset += m_data_offset;
         xf_seek(m_file, offset, xfSeekSet);
@@ -1068,12 +1068,12 @@ bool NativeTable::writeColumnInfo(int col_idx,
 
 
 
-tango::tango_uint64_t NativeTable::getStructureModifyTime()
+unsigned long long NativeTable::getStructureModifyTime()
 {
     XCM_AUTO_LOCK(m_object_mutex);
 
     unsigned char sig[8];
-    tango::tango_uint64_t i = 0;
+    unsigned long long i = 0;
 
     if (!xf_seek(m_file, 28, xfSeekSet))
         return 0;
@@ -1081,7 +1081,7 @@ tango::tango_uint64_t NativeTable::getStructureModifyTime()
     if (xf_read(m_file, sig, 8, 1) != 1)
         return 0;
 
-    return (tango::tango_uint64_t)bufToInt64(sig);
+    return (unsigned long long)bufToInt64(sig);
 }
 
 
@@ -1090,7 +1090,7 @@ bool NativeTable::setStructureModified()
     XCM_AUTO_LOCK(m_object_mutex);
 
     unsigned char sig[8];
-    tango::tango_uint64_t i = 0;
+    unsigned long long i = 0;
 
     i = time(NULL);
     i <<= 32;

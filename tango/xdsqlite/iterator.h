@@ -100,7 +100,7 @@ private:
     tango::tableord_t m_ordinal;
     std::wstring m_tablename;
 
-    tango::tango_int64_t m_oid;
+    long long m_oid;
     bool m_eof;
     sqlite3* m_db;
     sqlite3_stmt* m_stmt;

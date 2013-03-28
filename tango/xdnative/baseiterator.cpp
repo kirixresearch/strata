@@ -1789,7 +1789,7 @@ void func_rownum(kscript::ExprEnv* env,
                  kscript::Value* retval)
 {
     BaseIterator* it = (BaseIterator*)param;
-    retval->setDouble((double)(tango::tango_int64_t)it->getRowNumber());
+    retval->setDouble((double)(long long)it->getRowNumber());
 }
 
 void func_recno(kscript::ExprEnv* env,
@@ -1798,7 +1798,7 @@ void func_recno(kscript::ExprEnv* env,
 {
     BaseIterator* it = (BaseIterator*)param;
     tango::rowpos_t rowpos = rowidGetRowPos(it->m_rowid);
-    retval->setDouble((double)(tango::tango_int64_t)rowpos);
+    retval->setDouble((double)(long long)rowpos);
 }
 
 void func_recid(kscript::ExprEnv* env,
@@ -1822,13 +1822,13 @@ void func_reccrc(kscript::ExprEnv* env,
 {
     BaseIterator* it = (BaseIterator*)param;
 
-    tango::tango_uint64_t c;
+    unsigned long long c;
     crc64(it->getRowBuffer(), it->getRowBufferWidth(), &c);
 
     retval->setType(kscript::Value::typeBinary);
     retval->allocMem(8);
     retval->setDataLen(8);
-    memcpy(retval->getBinary(), &c, sizeof(tango::tango_uint64_t));
+    memcpy(retval->getBinary(), &c, sizeof(unsigned long long));
 }
 
 
