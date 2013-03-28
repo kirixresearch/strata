@@ -3210,7 +3210,16 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         }
 
 
-        tango::ISetPtr result_set;
+        tango::GroupQueryInfo info;
+        info.input = set->getObjectPath();
+        info.output = L"xtmp_" + kl::getUniqueString();
+        info.columns = field_str;
+        info.having = having;
+        info.group = group_by_str;
+
+        db->groupQuery(&info, job);
+
+
         /*
         result_set = db->runGroupQuery(set,
                                        group_by_str,
@@ -3225,13 +3234,12 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
             return xcm::null;
         }
 
-        if (result_set.isNull())
+        set = db->openSet(info.output);
+        if (set.isNull())
         {
             error.setError(tango::errorGeneral, L"Unable to process GROUP BY clause");        
             return xcm::null;
         }
-
-        set = result_set;
 
         for (f_it = fields.begin(); f_it != fields.end(); ++f_it)
         {
@@ -3381,18 +3389,16 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
 
 
     tango::ISetPtr output_set;
-    bool store_object;
 
     // check if the output file will be in a mount
     if (output_path.length() > 0 && db->getMountDatabase(output_path).isOk())
     {
         output_set = db->createTable(output_path, output_structure, NULL);
-        store_object = false;
     }
      else
     {
-        output_set = db->createTable(L"", output_structure, NULL);
-        store_object = true;
+        output_path = L"xtmp_" + kl::getUniqueString();
+        output_set = db->createTable(output_path, output_structure, NULL);
     }
 
     if (output_set.isNull())
@@ -3405,12 +3411,11 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
 
     if (p_distinct)
     {
-        insertDistinct(db, output_set->getObjectPath(), iter, job);
+        insertDistinct(db, output_path, iter, job);
 
         if (job && job->getCancelled())
         {
-            if (!store_object)
-                db->deleteFile(output_path);
+            db->deleteFile(output_path);
             error.setError(tango::errorCancelled, L"Job cancelled");
             return xcm::null;
         }
@@ -3422,20 +3427,14 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
             ijob->startPhase();
         }
 
-        xdcmnInsert(db, iter, output_set->getObjectPath(),  L"",  0,  job);
+        xdcmnInsert(db, iter, output_path,  L"",  0,  job);
 
         if (job && job->getCancelled())
         {
-            if (!store_object)
-                db->deleteFile(output_path);
+            db->deleteFile(output_path);
             error.setError(tango::errorCancelled, L"Job cancelled");
             return xcm::null;
         }
-    }
-
-    if (output_path.length() > 0 && store_object)
-    {
-        db->storeObject(output_set, output_path);
     }
 
     return output_set->createIterator(L"", L"", NULL);
