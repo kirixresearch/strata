@@ -2059,8 +2059,7 @@ void ExIndex::startBulkInsert(tango::rowpos_t total_keys)
     }
 
     // decide on the absolute maximum amount of pool space
-    long long free_mem;
-    free_mem = kl::getFreePhysMemory();
+    long long free_mem = (long long)kl::getFreePhysMemory();
     long long max_pool_bytes = free_mem/5;
     if (max_pool_bytes > 256000000)
         max_pool_bytes = 256000000;

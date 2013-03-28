@@ -25,30 +25,30 @@ namespace kl
 
 #ifdef WIN32
 
-    unsigned long getTotalPhysMemory()
+    unsigned long long getTotalPhysMemory()
     {
-        MEMORYSTATUS memStatus;
-        memStatus.dwLength = sizeof(MEMORYSTATUS);
-        GlobalMemoryStatus(&memStatus);
-        return memStatus.dwTotalPhys;
+        MEMORYSTATUSEX memStatus;
+        memStatus.dwLength = sizeof(MEMORYSTATUSEX);
+        GlobalMemoryStatusEx(&memStatus);
+        return memStatus.ullTotalPhys;
     }
 
-    unsigned long getFreePhysMemory()
+    unsigned long long getFreePhysMemory()
     {
-        MEMORYSTATUS memStatus;
-        memStatus.dwLength = sizeof(MEMORYSTATUS);
-        GlobalMemoryStatus(&memStatus);
-        return memStatus.dwAvailPhys;
+        MEMORYSTATUSEX memStatus;
+        memStatus.dwLength = sizeof(MEMORYSTATUSEX);
+        GlobalMemoryStatusEx(&memStatus);
+        return memStatus.ullAvailPhys;
     }
 
 #else
 
-    unsigned long getTotalPhysMemory()
+    unsigned long long getTotalPhysMemory()
     {
         return 268435456;
     }
 
-    unsigned long getFreePhysMemory()
+    unsigned long long getFreePhysMemory()
     {
         return 268435456;
     }

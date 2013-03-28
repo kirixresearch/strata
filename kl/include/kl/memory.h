@@ -17,8 +17,8 @@ namespace kl
 {
 
 
-unsigned long getTotalPhysMemory();
-unsigned long getFreePhysMemory();
+unsigned long long getTotalPhysMemory();
+unsigned long long getFreePhysMemory();
 
 
 
