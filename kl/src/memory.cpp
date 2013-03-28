@@ -45,12 +45,12 @@ namespace kl
 
     unsigned long long getTotalPhysMemory()
     {
-        return 268435456;
+        return 1073741824;
     }
 
     unsigned long long getFreePhysMemory()
     {
-        return 268435456;
+        return 536870912;
     }
     
 #endif
