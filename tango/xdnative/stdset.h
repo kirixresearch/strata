@@ -50,7 +50,6 @@ public:
                    tango::ColumnUpdateInfo* info,
                    size_t info_size);
 
-    bool storeObject(const std::wstring& path) { return false; }
 
     // ISetEvents
     void onSetDomainUpdated();
@@ -125,8 +124,6 @@ public:
                                        tango::IJob* job);
     
     tango::rowpos_t getRowCount();
-
-    bool storeObject(const std::wstring& path) { return false; }
 
     // ISetEvents
     void onSetDomainUpdated();

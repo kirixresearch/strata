@@ -41,11 +41,6 @@ bool SlSet::init()
 
 
 
-
-
-// -- tango::IStorable implementation --
-
-
 void SlSet::setObjectPath(const std::wstring& path)
 {
     m_path = path;

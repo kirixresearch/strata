@@ -45,8 +45,6 @@ public:
 
     tango::rowpos_t getRowCount();
 
-    // tango::IStorable
-    
     void setObjectPath(const std::wstring& path);
     std::wstring getObjectPath();
     bool isTemporary();

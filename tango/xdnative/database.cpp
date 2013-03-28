@@ -3039,50 +3039,42 @@ tango::IStructurePtr Database::createStructure()
 }
 
 tango::ISetPtr Database::createTable(const std::wstring& _path,
-                                   tango::IStructurePtr structure,
-                                   tango::FormatInfo* format_info)
+                                     tango::IStructurePtr structure,
+                                     tango::FormatInfo* format_info)
 {
     std::wstring path = _path;
     
-    if (path.length() > 0)
+    if (path.length() == 0)
+        return xcm::null;
+
+    if (kl::isFileUrl(_path))
+        path = urlToOfsFilename(_path);
+
+    if (getFileExist(path))
+        return xcm::null;  // already exists
+
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, cstr, rpath))
     {
-        if (kl::isFileUrl(_path))
-            path = urlToOfsFilename(_path);
+        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return xcm::null;
 
-        std::wstring cstr, rpath;
-        if (detectMountPoint(path, cstr, rpath))
+        tango::ISetPtr set = db->createTable(rpath, structure, format_info);
+        if (set.isOk())
         {
-            tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
-            if (db.isNull())
-                return xcm::null;
-
-            tango::ISetPtr set = db->createTable(rpath, structure, format_info);
-            if (set.isOk())
-            {
-                set->setObjectPath(_path);
-            }
-            
-            return set;
+            set->setObjectPath(_path);
         }
+            
+        return set;
     }
-    
-
 
 
     TableSet* set = new TableSet(this);
     set->ref();
 
-    if (!set->create(structure))
+    if (!set->create(structure, path))
         return xcm::null;
-
-    if (path.length() > 0)
-    {
-        if (!storeObject(static_cast<tango::ISet*>(set), path))
-        {
-            set->unref();
-            return xcm::null;
-        }
-    }
 
     return tango::ISetPtr(set, false);
 }
@@ -3386,50 +3378,6 @@ tango::ISetPtr Database::openSetEx(const std::wstring& _path,
 
     return openSet(path);
 }
-
-bool Database::storeObject(xcm::IObject* _obj, const std::wstring& new_path)
-{
-    // check path validity
-    if (new_path.length() == 0)
-        return false;
-
-    if (iswspace(new_path[0]))
-        return false;
-
-    // get the ISet interface
-    tango::ISetPtr obj = _obj;
-    if (obj.isNull())
-        return false;
-    
-    std::wstring obj_path = obj->getObjectPath();
-
-    std::wstring cstr,rpath;
-    if (getMountPoint(obj_path, cstr, rpath))
-    {
-        if (!moveFile(obj_path, new_path))
-            return false;
-
-        obj->setObjectPath(new_path);
-        return true;
-    }
-
-
-    ISetInternalPtr intset = obj;
-    if (intset.isNull())
-        return false;
-
-    // remove any old object stored at 'new_path'
-
-    if (wcscasecmp(obj_path.c_str(), new_path.c_str()) != 0)
-    {
-        if (getFileExist(new_path))
-            deleteFile(new_path);
-    }
-
-    // store the object
-    return intset->storeObject(new_path);
-}
-
 
 
 tango::IIteratorPtr Database::createIterator(const std::wstring& path,

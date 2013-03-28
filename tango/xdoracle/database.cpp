@@ -773,11 +773,6 @@ bool OracleDatabase::cleanup()
     return true;
 }
 
-bool OracleDatabase::storeObject(xcm::IObject* obj, const std::wstring& ofs_path)
-{
-    return false;
-}
-
 tango::IJobPtr OracleDatabase::createJob()
 {
     return xcm::null;

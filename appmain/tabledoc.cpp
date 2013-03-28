@@ -659,7 +659,7 @@ bool TableDoc::onSiteClosing(bool force)
 
             if (dlg.ShowModal() == wxID_OK)
             {
-                g_app->getDatabase()->storeObject(m_set, towstr(dlg.getPath()));
+                g_app->getDatabase()->moveFile(m_set->getObjectPath(), towstr(dlg.getPath()));
                 g_app->getAppController()->refreshDbDoc();
             }
              else
@@ -1419,6 +1419,10 @@ void TableDoc::onSaveAsJobFinished(jobs::IJobPtr job)
 
 void TableDoc::onSaveAs(wxCommandEvent& evt)
 {
+    tango::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return;
+
     // show a "Save As" dialog
     DlgDatabaseFile dlg(g_app->getMainWindow(), DlgDatabaseFile::modeSave);
     if (dlg.ShowModal() != wxID_OK)
@@ -1435,18 +1439,19 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
         std::wstring rpath;
         std::wstring folder = towstr(dlg.getPath().BeforeLast(wxT('/')));
 
-        if (!g_app->getDatabase()->getMountPoint(folder, cstr, rpath))
+
+        if (!db->getMountPoint(folder, cstr, rpath))
         {
             std::wstring save_path = towstr(dlg.getPath());
-            tango::ISetPtr save_set = m_set;
 
-            if (!g_app->getDatabase()->storeObject(save_set, save_path))
+            if (!db->moveFile(m_set->getObjectPath(), save_path))
             {
                 appMessageBox(_("The file could not be saved in the specified location.  The destination location may by in use."),
                                    APPLICATION_NAME,
                                    wxOK | wxICON_EXCLAMATION | wxCENTER);
                 return;
             }
+
 
             g_app->getAppController()->refreshDbDoc();
             g_app->getAppController()->updateURLToolbar();
@@ -5162,6 +5167,9 @@ void TableDoc::onGridPreGhostRowInsert(kcl::GridEvent& evt)
     }
 
     tango::IRowInserterPtr inserter = g_app->getDatabase()->bulkInsert(towstr(m_path));
+    if (inserter.isNull())
+        return;
+
     inserter->startInsert(L"*");
     inserter->insertRow();
     inserter->finishInsert();

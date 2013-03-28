@@ -1052,7 +1052,7 @@ int ImportJob::runJob()
                 col_info->setScale(field_it->output_scale);
             }
 
-            dest_set = dest_db->createTable(L"", dest_struct, NULL);
+            dest_set = dest_db->createTable(towstr(it->output_path), dest_struct, NULL);
         }
 
         
@@ -1274,14 +1274,7 @@ int ImportJob::runJob()
             }
         }
 
-
-        // store sets
-        if (!isCancelling() && dest_set.isOk())
-        {
-            dest_db->storeObject(dest_set, towstr(it->output_path));
-        }
-
-        // close out the sets
+        // close out the tables
         src_set.clear();
         dest_set.clear();
     }

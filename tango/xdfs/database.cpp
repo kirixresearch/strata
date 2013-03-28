@@ -547,12 +547,6 @@ bool FsDatabase::cleanup()
     return true;
 }
 
-bool FsDatabase::storeObject(xcm::IObject* obj,
-                             const std::wstring& ofs_path)
-{
-    return true;
-}
-
 tango::IJobPtr FsDatabase::createJob()
 {
     XCM_AUTO_LOCK(m_obj_mutex);

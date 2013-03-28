@@ -263,8 +263,6 @@ public:
     virtual bool modifyStructure(tango::IStructure* struct_config, tango::IJob* job) = 0;
     virtual tango::IRowInserterPtr getRowInserter() = 0;
 
-    virtual bool storeObject(const std::wstring& path) = 0;
-
     virtual tango::IIndexInfoEnumPtr getIndexEnum() = 0;
     virtual tango::IIndexInfoPtr createIndex(const std::wstring& name,
                                              const std::wstring& expr,

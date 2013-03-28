@@ -291,12 +291,6 @@ bool KpgDatabase::cleanup()
     return true;
 }
 
-
-bool KpgDatabase::storeObject(xcm::IObject* obj, const std::wstring& path)
-{
-    return false;
-}
-
 tango::IJobPtr KpgDatabase::createJob()
 {
     XCM_AUTO_LOCK(m_jobs_mutex);

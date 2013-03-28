@@ -81,8 +81,6 @@ public:
     double getUsedSpace();
     bool cleanup();
 
-    bool storeObject(xcm::IObject* obj, const std::wstring& ofs_path);
-
     tango::IJobPtr createJob();
     tango::IJobPtr getJob(tango::jobid_t job_id);
 

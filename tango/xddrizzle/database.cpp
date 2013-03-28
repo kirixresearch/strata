@@ -488,11 +488,6 @@ bool DrizzleDatabase::cleanup()
     return true;
 }
 
-bool DrizzleDatabase::storeObject(xcm::IObject* obj, const std::wstring& ofs_path)
-{
-    return false;
-}
-
 tango::IJobPtr DrizzleDatabase::createJob()
 {
     return xcm::null;

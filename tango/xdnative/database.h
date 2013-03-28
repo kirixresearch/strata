@@ -169,7 +169,7 @@ public:
     tango::ISetPtr openSet(const std::wstring& path);
     tango::ISetPtr openSetEx(const std::wstring& path,
                              int format);
-    bool storeObject(xcm::IObject* _obj, const std::wstring& ofs_path);
+
     bool deleteSet(const std::wstring& ofs_path);
     bool deleteStream(const std::wstring& ofs_path);
     

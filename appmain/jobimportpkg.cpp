@@ -207,17 +207,6 @@ bool ImportPkgJob::importSet(PkgStreamReader* reader,
         return false;
     }
 
-    /*
-    tango::IDatabasePtr mount_db = g_app->getDatabase()->getMountDatabase(towstr(info->output_path));
-    std::wstring output_path = L"";
-    if (mount_db)
-    {
-        // for mounts, the output path must be specified here,
-        // because mounts don't support storeObject()
-        output_path = info->output_path;
-    }
-    */
-
     tango::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return false;
@@ -674,22 +663,6 @@ int ImportPkgJob::runJob()
         if (isCancelling())
         {
             break;
-        }
-    }
-
-
-    // store sets
-    if (!isCancelling() && !failed)
-    {
-        for (it = m_info.begin(); it != m_info.end(); ++it)
-        {
-            if (it->output_set.isOk())
-            {
-                tango::IDatabasePtr mount_db;
-                mount_db = g_app->getDatabase()->getMountDatabase(towstr(it->output_path));
-                if (mount_db.isNull())
-                    g_app->getDatabase()->storeObject(it->output_set, towstr(it->output_path));
-            }
         }
     }
 

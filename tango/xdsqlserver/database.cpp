@@ -364,12 +364,6 @@ bool SqlServerDatabase::cleanup()
     return true;
 }
 
-bool SqlServerDatabase::storeObject(xcm::IObject* obj,
-                                    const std::wstring& path)
-{
-    return false;
-}
-
 tango::IJobPtr SqlServerDatabase::createJob()
 {
     return xcm::null;

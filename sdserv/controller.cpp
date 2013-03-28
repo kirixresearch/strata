@@ -527,15 +527,6 @@ void Controller::apiCreateTable(RequestInfo& req)
         return;
     }
 
-    if (path.length() == 0)
-    {
-        path = L"/.temp/" + createHandle();
-        if (!db->storeObject(set, path))
-        {
-            returnApiError(req, "Cannot create table");
-            return;
-        }
-    }
     
     // return success to caller
     kl::JsonNode response;

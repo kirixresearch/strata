@@ -710,13 +710,6 @@ int ExportJob::runJob()
         }
 
         ri->finishInsert();
-
-        // store sets
-        if (!isCancelling() && dest_set.isOk())
-        {
-            conn->getDatabasePtr()->storeObject(dest_set,
-                                                towstr(it->output_path));
-        }
     }
 
     return 0;

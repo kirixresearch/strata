@@ -606,12 +606,6 @@ bool PgsqlDatabase::cleanup()
     return true;
 }
 
-
-bool PgsqlDatabase::storeObject(xcm::IObject* obj, const std::wstring& path)
-{
-    return false;
-}
-
 tango::IJobPtr PgsqlDatabase::createJob()
 {
     XCM_AUTO_LOCK(m_jobs_mutex);

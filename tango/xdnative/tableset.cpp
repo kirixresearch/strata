@@ -400,7 +400,6 @@ void TableIterator::onSetStructureUpdated()
 TableSet::TableSet(tango::IDatabase* database) : BaseSet(database)
 {
     m_ordinal = 0;
-    m_temporary = false;
     m_ofspath = L"";
     m_row_count = 0;
     m_phys_row_count = 0;
@@ -438,13 +437,6 @@ TableSet::~TableSet()
         m_update_buf = NULL;
     }
 
-
-    if (m_temporary)
-    {
-        m_database->deleteFile(m_ofspath);
-    }
-
-
     // release all indexes
     
     std::vector<IndexEntry>::iterator it;
@@ -477,7 +469,7 @@ TableSet::~TableSet()
 
 
 
-bool TableSet::create(tango::IStructure* struct_config)
+bool TableSet::create(tango::IStructure* struct_config, const std::wstring& path)
 {
     IDatabaseInternalPtr dbi = m_database;
 
@@ -502,12 +494,11 @@ bool TableSet::create(tango::IStructure* struct_config)
     setSetId(getTableSetId(m_ordinal));
 
     // create the ofs file
-    std::wstring temp_ofspath = dbi->getTempOfsPath();
-    INodeValuePtr file = dbi->createNodeFile(temp_ofspath);
+    INodeValuePtr file = dbi->createNodeFile(path);
     if (!file)
         return false;
     
-    dbi->setFileType(temp_ofspath, tango::filetypeSet);
+    dbi->setFileType(path, tango::filetypeSet);
 
     INodeValuePtr setid_node = file->getChild(L"set_id", true);
     if (!setid_node)
@@ -529,6 +520,7 @@ bool TableSet::create(tango::IStructure* struct_config)
     }
 
     // write out set definition file
+    m_ofspath = path;
     save();
 
     // load up the table
@@ -540,7 +532,6 @@ bool TableSet::create(tango::IStructure* struct_config)
         return false;
     }
 
-    m_ofspath = temp_ofspath;
     m_table = table;
     m_table->addEventHandler(this);
 
@@ -551,9 +542,7 @@ bool TableSet::create(tango::IStructure* struct_config)
     refreshUpdateBuffer();
 
     updateRowCount();
-    m_temporary = true;
 
-        
     m_dbi->registerSet(this);
     return true;
 }
@@ -677,26 +666,6 @@ bool TableSet::isTemporary()
     std::wstring ofs_path = m_ofspath;
     kl::makeLower(ofs_path);
     return (wcsstr(ofs_path.c_str(), L".temp") != NULL ? true : false);
-}
-
-
-bool TableSet::storeObject(const std::wstring& _ofs_path)
-{
-    if (_ofs_path.empty() || iswspace(*(_ofs_path.c_str())))
-        return false;
-  
-    // prepend a slash if it is missing
-    std::wstring ofs_path;
-    if (*(_ofs_path.c_str()) != L'/')
-        ofs_path = L"/";
-    ofs_path += _ofs_path;
-
-    if (!m_database->moveFile(m_ofspath, ofs_path))
-        return false;
-
-    m_temporary = false;
-
-    return true;
 }
 
 

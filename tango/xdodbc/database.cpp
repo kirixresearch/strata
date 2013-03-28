@@ -1474,13 +1474,6 @@ bool OdbcDatabase::cleanup()
     return true;
 }
 
-
-bool OdbcDatabase::storeObject(xcm::IObject* obj,
-                               const std::wstring& ofs_path)
-{
-    return false;
-}
-
 tango::IJobPtr OdbcDatabase::createJob()
 {
     return xcm::null;

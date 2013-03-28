@@ -156,16 +156,14 @@ public:
     TableSet(tango::IDatabase* database);
     virtual ~TableSet();
 
-    bool create(tango::IStructure* struct_config);
+    bool create(tango::IStructure* struct_config, const std::wstring& path);
     bool load(INodeValuePtr file);
     bool save();
 
     void updateRowCount();
 
-    // IStorable
     std::wstring getObjectPath();
     bool isTemporary();
-    bool storeObject(const std::wstring& ofs_path);
 
     // ISet
     tango::IStructurePtr getStructure();

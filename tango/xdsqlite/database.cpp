@@ -309,44 +309,6 @@ bool SlDatabase::cleanup()
 }
 
 
-bool SlDatabase::storeObject(xcm::IObject* _obj,
-                             const std::wstring& ofs_path)
-{
-    // -- get the IStorable interface --
-    tango::ISetPtr obj = _obj;
-    if (!obj)
-    {
-        return false;
-    }
-
-    // -- check path validity --
-
-    if (ofs_path.length() == 0)
-    {
-        return false;
-    }
-
-    if (iswspace(ofs_path[0]))
-    {
-        return false;
-    }
-
-
-    // -- remove old object stored at 'ofs_path' --
-
-    if (wcscasecmp(obj->getObjectPath().c_str(), ofs_path.c_str()) != 0)
-    {
-        if (getFileExist(ofs_path))
-        {
-            deleteFile(ofs_path);
-        }
-    }
-
-    // -- store the object --
-
-    return moveFile(obj->getObjectPath(), ofs_path);
-}
-
 tango::IJobPtr SlDatabase::createJob()
 {
     m_last_job++;
