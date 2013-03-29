@@ -2302,41 +2302,43 @@ bool TableDoc::open(tango::IDatabasePtr db,
     }
     
 
-    tango::ISetPtr set = optional_set;
-    if (set.isNull())
+    tango::ISetPtr set;
+    
+    if (optional_set.isOk())
+    {
+        path = optional_set->getObjectPath();
+        set = optional_set;
+    }
+     else
     {
         set = db->openSet(towstr(path));
-
         if (set.isNull())
             return false;
     }
     
-    m_db_type = db->getDatabaseType();
     
+    // make sure we know the database type
     m_mount_db = db->getMountDatabase(towstr(path));
     if (m_mount_db)
     {
         m_db_type = m_mount_db->getDatabaseType();
     }
+     else
+    {
+        m_db_type = db->getDatabaseType();
+    }
     
+    m_filter = "";
+    m_sort_order = "";
+    m_caption_suffix = "";
 
-    m_filter = wxT("");
-    m_sort_order = wxT("");
-    m_caption_suffix = wxT("");
-
-    // save set pointer
     m_set = set;
     m_browse_set = set;
-    
-    if (m_set.isNull())
-        return false;
-    
-    m_path = m_set->getObjectPath();
-
+    m_path = path;
 
     // if the set/table displayed has a url associated with it, display it
 
-    if (m_set.isOk())
+    if (set.isOk())
     {
         tango::IAttributesPtr attr = db->getAttributes();
         std::wstring url = attr->getStringAttribute(tango::dbattrDatabaseUrl);
@@ -2348,7 +2350,7 @@ bool TableDoc::open(tango::IDatabasePtr db,
         }
          else
         {
-            std::wstring set_path = m_set->getObjectPath();
+            std::wstring set_path = set->getObjectPath();
             std::wstring mount_root = getMountRoot(db, set_path);
 
             std::wstring url;
@@ -2380,45 +2382,35 @@ bool TableDoc::open(tango::IDatabasePtr db,
     }
 
 
-
-
     // update caption
     updateCaption();
-
 
     // load a model for this set
     if (m_temporary_model)
         m_model = TableDocMgr::loadModel(wxT(""));
          else
-        m_model = TableDocMgr::loadModel(m_set->getSetId());
-
+        m_model = TableDocMgr::loadModel(set->getSetId());
 
 
     tango::IIteratorPtr browse_iter;
 
     if (optional_iterator.isOk())
     {
+        // use the iterator passed to us
         browse_iter = optional_iterator;
     }
      else
     {
-        // create a default iterator
-        if (m_set.isOk())
-        {
-            browse_iter = m_set->createIterator(L"", L"", NULL);
-        }
-    }
-
-    if (browse_iter.isNull())
-    {
-        // something's wrong
-        return false;
+        browse_iter = set->createIterator(L"", L"", NULL);
+        if (browse_iter.isNull())
+            return false; // something's wrong
     }
 
     setIterator(browse_iter);
 
     return true;
 }
+
 
 
 bool TableDoc::open(tango::ISetPtr set, tango::IIteratorPtr iter)
