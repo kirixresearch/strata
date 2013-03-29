@@ -3028,18 +3028,17 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
 {
     // try to find an existing dynamic field which contains
     // the dynamic field expression
-
-    tango::ISetPtr set = getBaseSet();
-    if (set.isNull())
+    tango::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
         return;
 
-    tango::IStructurePtr s = set->getStructure();
+    tango::IStructurePtr s = db->describeTable(towstr(m_path));
+    if (s.isNull())
+        return;
 
-    int col_count = s->getColumnCount();
+    int i, col_count = s->getColumnCount();
+
     tango::IColumnInfoPtr colinfo;
-
-    int i;
-
     for (i = 0; i < col_count; ++i)
     {
         colinfo = s->getColumnInfoByIdx(i);
@@ -3071,9 +3070,9 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
     tango::ISetPtr right_set;
     tango::IStructurePtr right_structure;
 
-    tango::IRelationEnumPtr rel_enum = g_app->getDatabase()->getRelationEnum(set->getObjectPath());
+    tango::IRelationEnumPtr rel_enum = db->getRelationEnum(towstr(m_path));
     tango::IRelationPtr rel;
-    int rel_count = rel_enum->size();
+    int rel_count = (int)rel_enum->size();
 
     for (i = 0; i < rel_count; ++i)
     {
@@ -3085,11 +3084,9 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
         if (0 != rel_tag.CmpNoCase(towx(rel->getTag())))
             continue;
 
-        right_set = rel->getRightSetPtr();
-        if (right_set.isNull())
+        right_structure = db->describeTable(rel->getRightSet());
+        if (right_structure.isNull())
             continue;
-
-        right_structure = right_set->getStructure();
 
         colinfo = right_structure->getColumnInfo(towstr(col_name));
         if (colinfo.isNull())
@@ -3102,13 +3099,11 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
     wxString column_name = makeProperIfNecessary(col_name);
     wxString column_expr;
 
-
     column_expr = wxT("FIRST(");
     column_expr += rel_tag;
     column_expr += wxT(".");
     column_expr += col_name;
     column_expr += wxT(")");
-
 
     wxString temp;
     i = 0;
