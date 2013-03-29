@@ -3335,8 +3335,8 @@ void HostData::importData(kscript::ExprEnv* env, kscript::Value* retval)
             std::vector<HostImportExportFile>::iterator it;
             for (it = files.begin(); it != files.end(); ++it)
             {
-                import_job->addImportObject(it->source_path,
-                                            appendPath(towx(target_path), it->dest_path));
+                import_job->addImportObject(towstr(it->source_path),
+                                            towstr(appendPath(towx(target_path), it->dest_path)));
             }
             
             job = static_cast<jobs::IJob*>(import_job);

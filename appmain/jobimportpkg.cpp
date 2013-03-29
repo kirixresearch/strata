@@ -28,7 +28,7 @@ void tabledocview2xml(ITableDocViewPtr view, kl::xmlnode& node);
 bool xml2tabledocview(kl::xmlnode& node, ITableDocViewPtr view);
 
 void tabledocmodel2xml(ITableDocModelPtr model, kl::xmlnode& root);
-void xml2tabledocmodel(kl::xmlnode& node, tango::ISetPtr output_set, ITableDocModelPtr model);
+void xml2tabledocmodel(kl::xmlnode& node, ITableDocModelPtr model);
 
 
 // -- ImportPkgJob class implementation --
@@ -45,13 +45,13 @@ ImportPkgJob::~ImportPkgJob()
 }
 
 
-void ImportPkgJob::setPkgFilename(const wxString& filename)
+void ImportPkgJob::setPkgFilename(const std::wstring& filename)
 {
     m_filename = filename;
 }
 
-void ImportPkgJob::addImportObject(const wxString& stream_name,
-                                   const wxString& output_path)
+void ImportPkgJob::addImportObject(const std::wstring& stream_name,
+                                   const std::wstring& output_path)
 {
     PkgImportInfo info;
     info.stream_name = stream_name;
@@ -83,7 +83,7 @@ bool ImportPkgJob::importStream(PkgStreamReader* reader,
 
 
 
-    tango::IStreamPtr stream = g_app->getDatabase()->createStream(towstr(info->output_path), mime_type);
+    tango::IStreamPtr stream = g_app->getDatabase()->createStream(info->output_path, mime_type);
     if (stream.isNull())
     {
         // could not create set
@@ -117,7 +117,7 @@ bool ImportPkgJob::importStream(PkgStreamReader* reader,
     if (isCancelling())
     {
         stream.clear();
-        g_app->getDatabase()->deleteFile(towstr(info->output_path));
+        g_app->getDatabase()->deleteFile(info->output_path);
         return true;
     }
 
@@ -211,8 +211,8 @@ bool ImportPkgJob::importSet(PkgStreamReader* reader,
     if (db.isNull())
         return false;
 
-    info->output_set = db->createTable(towstr(info->output_path), structure, NULL);
-    if (info->output_set.isNull())
+    tango::ISetPtr output_set = db->createTable(info->output_path, structure, NULL);
+    if (output_set.isNull())
     {
         // could not create set
         return false;
@@ -370,11 +370,22 @@ bool ImportPkgJob::importSet(PkgStreamReader* reader,
     node_idx = stream_info.getChildIdx(L"tabledoc_model");
     if (node_idx != -1)
     {
-        kl::xmlnode& node = stream_info.getChild(node_idx);
+        
+        tango::IFileInfoPtr file_info = db->getFileInfo(towstr(info->output_path));
+        if (file_info.isOk())
+        {
+            std::wstring set_id = file_info->getObjectId();
+            if (set_id.length() > 0)
+            {
+                kl::xmlnode& node = stream_info.getChild(node_idx);
 
-        ITableDocModelPtr model;
-        model = TableDocMgr::loadModel(info->output_set->getSetId());
-        xml2tabledocmodel(node, info->output_set, model);
+                ITableDocModelPtr model = TableDocMgr::loadModel(set_id);
+                if (model.isOk())
+                {
+                    xml2tabledocmodel(node, model);
+                }
+            }
+        }
     }
 
 
@@ -423,11 +434,11 @@ bool ImportPkgJob::importMount(PkgStreamReader* reader,
 
 int ImportPkgJob::runJob()
 {
-    wxString fn = m_filename.AfterLast(PATH_SEPARATOR_CHAR);
-    wxString title = wxString::Format(_("Importing from '%s'"), fn.c_str());
+    std::wstring fn = kl::afterLast(m_filename, PATH_SEPARATOR_CHAR);
+    std::wstring title = kl::stdswprintf(_("Importing from '%ls'").c_str(), fn.c_str());
     
-    if (fn.Length() > 0)
-        m_job_info->setTitle(towstr(title));
+    if (fn.length() > 0)
+        m_job_info->setTitle(title);
          else
         m_job_info->setTitle(towstr(_("Importing from package file")));
 
@@ -454,12 +465,12 @@ int ImportPkgJob::runJob()
     {
         // change the job's title to reflect the new
         // table, report, script, etc. we're importing
-        wxString tn = it->stream_name.AfterLast(wxT('/'));
-        wxString title = wxString::Format(_("Importing '%s' from '%s'"),
-                                          tn.c_str(),
-                                          fn.c_str());
+        std::wstring tn = kl::afterLast(it->stream_name, '/');
+        std::wstring title = kl::stdswprintf(_("Importing '%ls' from '%ls'").c_str(),
+                                             tn.c_str(),
+                                             fn.c_str());
         
-        if (tn.IsEmpty() || fn.IsEmpty())
+        if (tn.empty() || fn.empty())
             m_job_info->setTitle(towstr(_("Importing from package file")));
              else
             m_job_info->setTitle(towstr(title));

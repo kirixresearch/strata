@@ -823,12 +823,12 @@ jobs::IJobPtr ImportTemplate::execute()
     }
 
 
-    // -- check for package file import --
+    // check for package file import
 
     if (m_ii.type == dbtypePackage)
     {
         ImportPkgJob* job = new ImportPkgJob;
-        job->setPkgFilename(m_ii.path);
+        job->setPkgFilename(towstr(m_ii.path));
 
         std::vector<ImportTableSelection>::iterator it;
         for (it = m_ii.tables.begin(); it != m_ii.tables.end(); ++it)
@@ -836,8 +836,8 @@ jobs::IJobPtr ImportTemplate::execute()
             if (!it->selected)
                 continue;
 
-            job->addImportObject(it->input_tablename,
-                                 it->output_tablename);
+            job->addImportObject(towstr(it->input_tablename),
+                                 towstr(it->output_tablename));
         }
 
         g_app->getJobQueue()->addJob(job, jobStateRunning);

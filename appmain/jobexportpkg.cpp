@@ -252,7 +252,6 @@ void tabledocmodel2xml(ITableDocModelPtr model, kl::xmlnode& root)
 
 
 void xml2tabledocmodel(kl::xmlnode& node,
-                       tango::ISetPtr output_set,
                        ITableDocModelPtr model)
 {
     ITableDocObjectEnumPtr vec;
@@ -550,6 +549,12 @@ bool ExportPkgJob::writeSetStream(tango::IDatabasePtr& db,
     int i;
 
 
+    tango::IFileInfoPtr file_info = db->getFileInfo(towstr(info->src_path));
+    if (file_info.isNull())
+        return false;
+
+    std::wstring set_id = file_info->getObjectId();
+
 
     // create an iterator
     sp_iter = db->createIterator(towstr(info->src_path), L"", L"", NULL);
@@ -557,7 +562,6 @@ bool ExportPkgJob::writeSetStream(tango::IDatabasePtr& db,
         return false;
     iter = sp_iter.p;
 
-    std::wstring set_id = sp_iter->getSet()->getSetId();
 
     // get structure from set
     structure = sp_iter->getStructure();

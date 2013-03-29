@@ -22,9 +22,8 @@ class PkgStreamReader;
 class PkgImportInfo
 {
 public:
-    wxString stream_name;
-    wxString output_path;
-    tango::ISetPtr output_set;
+    std::wstring stream_name;
+    std::wstring output_path;
 };
 
 
@@ -40,9 +39,9 @@ public:
     ImportPkgJob();
     virtual ~ImportPkgJob();
 
-    void setPkgFilename(const wxString& filename);
-    void addImportObject(const wxString& stream_name,
-                              const wxString& output_path);
+    void setPkgFilename(const std::wstring& filename);
+    void addImportObject(const std::wstring& stream_name,
+                         const std::wstring& output_path);
 
     int runJob();
     void runPostJob();
@@ -70,7 +69,7 @@ private:
 
 private:
 
-    wxString m_filename;
+    std::wstring m_filename;
     std::vector<PkgImportInfo> m_info;
 };
 

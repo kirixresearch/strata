@@ -5976,12 +5976,12 @@ static void addDefaultItemsToProject(const wxString& project_path)
     
     // create the import package job        
     ImportPkgJob* import_job = new ImportPkgJob;
-    import_job->setPkgFilename(filename);
+    import_job->setPkgFilename(towstr(filename));
     
     // add the items to the import job
     std::vector<wxString>::iterator it;
     for (it = item_names.begin(); it != item_names.end(); ++it)
-        import_job->addImportObject(*it, *it);
+        import_job->addImportObject(towstr(*it), towstr(*it));
     
     // run the job
     jobs::IJobPtr job = static_cast<jobs::IJob*>(import_job);

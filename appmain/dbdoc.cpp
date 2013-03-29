@@ -3373,12 +3373,11 @@ void DbDoc::deleteFsItem(IFsPanelPtr tree,
 
             bool problem = false;
 
-            tango::ISetPtr set;
-            set = db->openSet(towstr(obj->getPath()));
-            if (set.isOk())
+            tango::IFileInfoPtr info = db->getFileInfo(towstr(obj->getPath()));
+
+            if (info.isOk())
             {
-                std::wstring set_id = set->getSetId();
-                set.clear();
+                std::wstring set_id = info->getObjectId();
 
                 if (db->deleteFile(towstr(obj->getPath())))
                 {
