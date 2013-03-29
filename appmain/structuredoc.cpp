@@ -407,7 +407,7 @@ bool StructureDoc::doSave()
 
         // create a tabledoc and open it
         table_doc = TableDocMgr::createTableDoc();
-        table_doc->open(m_modify_set, xcm::null);
+        table_doc->open(g_app->getDatabase(), m_modify_set->getObjectPath());
 
         if (table_doc->getCaption().Length() == 0)
         {
@@ -1727,11 +1727,11 @@ void StructureDoc::onFrameEvent(FrameworkEvent& evt)
                 // because we are creating a table)
                 if (tabledoc_site.isNull())
                 {
-                    // -- this chunk of code exists in doSave() as well --
+                    // this chunk of code exists in doSave() as well
                     
                     // create a tabledoc and open it
                     ITableDocPtr doc = TableDocMgr::createTableDoc();
-                    doc->open(m_modify_set, xcm::null);
+                    doc->open(g_app->getDatabase(), m_modify_set->getObjectPath());
 
                     if (doc->getCaption().Length() == 0)
                     {

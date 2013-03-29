@@ -6240,24 +6240,23 @@ void TableDoc::onGridSelectionChange(kcl::GridEvent& evt)
 
 static void onSummaryJobFinished(jobs::IJobPtr job)
 {
+    if (job->getJobInfo()->getState() != jobStateFinished)
+        return;
+
     kl::JsonNode params;
     params.fromString(job->getParameters());
 
     std::wstring output_path = params["output"];
-    tango::ISetPtr output_set = g_app->getDatabase()->openSet(output_path);
 
-    if (output_set.isNull())
+    if (!g_app->getAppController()->openTable(output_path))
     {
         appMessageBox(_("An output set could not be created."),
-                           APPLICATION_NAME,
-                           wxOK | wxICON_EXCLAMATION | wxCENTER);
+                        APPLICATION_NAME,
+                         wxOK | wxICON_EXCLAMATION | wxCENTER);
         return;
     }
 
-    TableDoc* doc = new TableDoc;
-    doc->open(output_set, xcm::null);
-    g_app->getMainFrame()->createSite(doc, sitetypeNormal,
-                                      -1, -1, -1, -1);
+    
 }
 
 
@@ -7498,15 +7497,7 @@ void onCopyRecordsJobFinished(jobs::IJobPtr job)
     params.fromString(job->getParameters());
 
     // open the result set in a new child window
-
-
-    TableDoc* doc = new TableDoc;
-    doc->open(g_app->getDatabase(), towx(params["output"].getString()));
-
-    g_app->getMainFrame()->createSite(doc, sitetypeNormal,
-                                      -1, -1, -1, -1);
-
-    g_app->getAppController()->refreshDbDoc();
+    g_app->getAppController()->openTable(params["output"].getString());
 }
 
 void TableDoc::onCopyRecordsOk(ExprBuilderPanel* expr_panel)
