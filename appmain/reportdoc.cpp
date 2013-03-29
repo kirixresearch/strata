@@ -4715,9 +4715,10 @@ void ReportDoc::insertFormula(int command_id)
 
             wxString data_source = getDesignComponentRaw()->getDataSource();
 
-            tango::IIteratorPtr iter = g_app->getDatabase()->createIterator(towstr(data_source), L"", L"", NULL);
-            if (!iter.isNull())
-                panel->setIterator(iter);
+            tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(data_source));
+
+            if (structure.isOk())
+                panel->setStructure(structure);
 
             // set the initial expression
             panel->setExpression(cell_text);

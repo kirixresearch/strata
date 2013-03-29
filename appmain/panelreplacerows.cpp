@@ -147,7 +147,7 @@ void ReplaceRowsPanel::setDocumentFocus()
 
 void ReplaceRowsPanel::populate()
 {
-    m_expr_panel->setIterator(m_iter);
+    m_expr_panel->setStructure(m_structure);
 
     // populate choicebox
     tango::IColumnInfoPtr colinfo;

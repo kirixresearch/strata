@@ -894,10 +894,9 @@ void ExprBuilderPanel::setEmptyOk(bool empty_ok)
     }
 }
 
-void ExprBuilderPanel::setIterator(tango::IIteratorPtr iter)
+void ExprBuilderPanel::setStructure(tango::IStructurePtr structure)
 {
-    m_iter = iter;
-    m_structure = m_iter->getStructure();
+    m_structure = structure;
 
     m_col_list->setStructure(m_structure);
 }
@@ -959,14 +958,9 @@ bool ExprBuilderPanel::validate()
     bool valid = false;
     int type = tango::typeInvalid;
     
-    if (m_iter)
+    if (m_structure)
     {
-        tango::objhandle_t handle = m_iter->getHandle(towstr(text));
-        if (handle)
-        {
-            type = m_iter->getType(handle);
-            m_iter->releaseHandle(handle);
-        }
+        type = m_structure->getExprType(towstr(text));
     }
 
     wxString valid_text;
@@ -1581,17 +1575,11 @@ void KeyBuilderPanel::setEmptyOk(bool empty_ok)
     validate();
 }
 
-void KeyBuilderPanel::setIterator(tango::IIteratorPtr iter)
+void KeyBuilderPanel::setStructure(tango::IStructurePtr structure)
 {
-    m_iter = iter;
-    m_structure = m_iter->getStructure();
+    m_structure = structure;
 
     m_col_list->setStructure(m_structure);
-}
-
-tango::IIteratorPtr KeyBuilderPanel::getIterator()
-{
-    return m_iter;
 }
 
 wxString KeyBuilderPanel::getExpression()
@@ -1683,9 +1671,9 @@ DlgExprBuilder::DlgExprBuilder(wxWindow* parent, const wxString& title)
     Layout();
 }
 
-void DlgExprBuilder::setIterator(tango::IIteratorPtr iter)
+void DlgExprBuilder::setStructure(tango::IStructurePtr structure)
 {
-    m_panel->setIterator(iter);
+    m_panel->setStructure(structure);
 }
 
 wxString DlgExprBuilder::getExpression()
@@ -1799,9 +1787,9 @@ DlgKeyBuilder::DlgKeyBuilder(wxWindow* parent, const wxString& title)
     SetSizer(m_main_sizer);
 }
 
-void DlgKeyBuilder::setIterator(tango::IIteratorPtr iter)
+void DlgKeyBuilder::setStructure(tango::IStructurePtr structure)
 {
-    m_panel->setIterator(iter);
+    m_panel->setStructure(structure);
 }
 
 wxString DlgKeyBuilder::getExpression()

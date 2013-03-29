@@ -19,6 +19,7 @@ class ViewPanel;
 class IndexPanel;
 class ExprBuilderPanel;
 class ReportCreateInfo;
+class KeyBuilderPanel;
 
 
 #include "panelcolumnlist.h"
@@ -277,7 +278,8 @@ private:
     void onDeleteRecordsOk(ExprBuilderPanel* expr_panel);
     void onIndexEditFinished(IndexPanel* panel);
     void onViewEditFinished(ViewPanel* panel);
-    
+    void onSetOrderExprEditFinished(KeyBuilderPanel* builder);
+
     // grid event handlers
     void onGridLinkLeftClick(kcl::GridEvent& evt);
     void onGridLinkMiddleClick(kcl::GridEvent& evt);

@@ -7255,14 +7255,11 @@ bool TableDoc::findIsReplaceAllowed()
 
 // -- Set/Remove Order Implementation --
 
-static void onSetOrderExprEditFinished(KeyBuilderPanel* builder)
+void TableDoc::onSetOrderExprEditFinished(KeyBuilderPanel* builder)
 {
-    tango::IIteratorPtr iter = builder->getIterator();
     wxString expr = builder->getExpression();
 
-
     // close panel site
-
     IDocumentSitePtr site;
     site = g_app->getMainFrame()->lookupSite(wxT("SortPanel"));
     if (site.isOk())
@@ -7271,26 +7268,7 @@ static void onSetOrderExprEditFinished(KeyBuilderPanel* builder)
     }
 
 
-    // set the order on the appropriate table doc
-
-    IDocumentSiteEnumPtr docsites;
-    ITableDocPtr table_doc;
-
-    docsites = g_app->getMainFrame()->getDocumentSites(sitetypeNormal);
-
-    int site_count = docsites->size();
-    for (int i = 0; i < site_count; ++i)
-    {
-        site = docsites->getItem(i);
-        table_doc = site->getDocument();
-        if (table_doc.isOk())
-        {
-            if (table_doc->getIterator() == iter)
-            {
-                table_doc->setSortOrder(expr);
-            }
-        }
-    }
+    setSortOrder(expr);
 }
 
 
@@ -7300,6 +7278,10 @@ void TableDoc::onSetOrder(wxCommandEvent& evt)
     site = m_frame->lookupSite(wxT("SortPanel"));
     if (site.isNull())
     {
+        tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(m_path));
+        if (structure.isNull())
+            return;
+
         KeyBuilderDocPanel* panel = new KeyBuilderDocPanel;
         panel->setOKText(_("Run"));
         panel->setOverlayText(_("Select fields from the list on the left and\ndrag them here to define the table sort order"));
@@ -7307,27 +7289,27 @@ void TableDoc::onSetOrder(wxCommandEvent& evt)
                                    -1, -1, 600, 360);
         site->setMinSize(520,300);
         site->setName(wxT("SortPanel"));
-        panel->setIterator(m_iter);
+        panel->setStructure(structure);
 
         site->setCaption(_("Sort"));
 
-        // set the fields in the sort expression builder based on the 
-        // selected fields; note: we used to set the order based on the 
-        // current sort order, similar to filter; but then in this panel 
-        // and the grouping panel, we added the ability to pre-populate 
-        // the form based on the selected fields (consistent also with
-        // copy fields and summarize, which operate on the selected columns)
-        // however, this raised the issue in that if fields were selected,
-        // the sort panel would show those fields, otherwise, it would show
-        // the fields in the current sort order; in use, this dual behavior
-        // seemed confusing, so we're populating the list based on the
-        // selected columns, since the panel is more about setting a new 
-        // order than a providing a status report of the current order
+        // set the fields in the sort expression builder based on the selected
+        // fields; note: we used to set the order based on the current sort
+        // order, similar to filter; but then in this panel and the grouping
+        // panel, we added the ability to pre-populate the form based on the
+        // selected fields (consistent also with copy fields and summarize,
+        // which operate on the selected columns) however, this raised the
+        // issue in that if fields were selected, the sort panel would show
+        // those fields, otherwise, it would show the fields in the current
+        // sort order; in use, this dual behavior seemed confusing, so we're
+        // populating the list based on the selected columns, since the panel
+        // is more about setting a new order than a providing a status report
+        // of the current order
+
         wxString expr = buildSelectedColumnExpression(m_grid);
         panel->setExpression(expr);
 
-        panel->sigOkPressed.connect(&onSetOrderExprEditFinished);
-        panel->setIterator(m_iter);
+        panel->sigOkPressed.connect(this, &TableDoc::onSetOrderExprEditFinished);
     }
      else
     {
@@ -7542,6 +7524,10 @@ void TableDoc::onCopyRecords(wxCommandEvent& evt)
         {
             AppBusyCursor bc;
 
+            tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(m_path));
+            if (structure.isNull())
+                return;
+
             ExprBuilderDocPanel* panel = new ExprBuilderDocPanel;
             panel->setValidationEnabled(m_db_type == tango::dbtypeXdnative ? true : false);
             panel->setOKText(_("Run"));
@@ -7557,7 +7543,7 @@ void TableDoc::onCopyRecords(wxCommandEvent& evt)
             panel->setTypeOnly(tango::typeBoolean);
             panel->setOKText(_("Run"));
             panel->setEmptyOk(true);
-            panel->setIterator(m_iter);
+            panel->setStructure(structure);
         }
 
         site->setVisible(true);
@@ -7696,6 +7682,10 @@ void TableDoc::onFilter(wxCommandEvent& evt)
         {
             AppBusyCursor bc;
 
+            tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(m_path));
+            if (structure.isNull())
+                return;
+
             ExprBuilderDocPanel* panel = new ExprBuilderDocPanel;
             panel->setOKText(_("Run"));
             panel->setValidationEnabled(m_db_type == tango::dbtypeXdnative ? true : false);
@@ -7707,7 +7697,7 @@ void TableDoc::onFilter(wxCommandEvent& evt)
             site->setCaption(makeCaption(_("Filter")));
             site->setName(wxT("FilterPanel"));
 
-            panel->setIterator(m_iter);
+            panel->setStructure(structure);
             panel->setExpression(m_filter);
             panel->setOKText(_("Run"));
             panel->sigOkPressed.connect(this, &TableDoc::onFilterOk);
@@ -7813,6 +7803,10 @@ void TableDoc::onDeleteRecords(wxCommandEvent& evt)
         {
             AppBusyCursor bc;
 
+            tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(m_path));
+            if (structure.isNull())
+                return;
+
             ExprBuilderDocPanel* panel = new ExprBuilderDocPanel;
             panel->setOKText(_("Run"));
             panel->setValidationEnabled(m_db_type == tango::dbtypeXdnative ? true : false);
@@ -7824,7 +7818,7 @@ void TableDoc::onDeleteRecords(wxCommandEvent& evt)
             site->setCaption(makeCaption(_("Delete")));
             site->setName(wxT("DeletePanel"));
 
-            panel->setIterator(m_iter);
+            panel->setStructure(structure);
             panel->sigOkPressed.connect(this, &TableDoc::onDeleteRecordsOk);
             panel->setOKText(_("Run"));
             panel->setTypeOnly(tango::typeBoolean);
@@ -8298,9 +8292,13 @@ void TableDoc::onSetBreakExpr(wxCommandEvent& evt)
     if (model.isNull())
         return;
 
+    tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(m_path));
+    if (structure.isNull())
+        return;
+
     DlgKeyBuilder dlg(this);
 
-    dlg.setIterator(m_iter);
+    dlg.setStructure(structure);
     dlg.setExpression(model->getGroupBreakExpr().c_str());
     dlg.setEmptyOk(true);
 

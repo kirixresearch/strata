@@ -74,7 +74,7 @@ public:
     void setEmptyOk(bool empty_ok);
     void setValidationEnabled(bool enable) { m_validation = enable; }
 
-    void setIterator(tango::IIteratorPtr iter);
+    void setStructure(tango::IStructurePtr structure);
     wxString getExpression();
     int getExpressionType();
     void setExpression(const wxString& expr);
@@ -110,7 +110,6 @@ protected:
 
 protected:
     
-    tango::IIteratorPtr m_iter;
     tango::IStructurePtr m_structure;
     wxString m_ok_text;
     wxString m_cancel_text;
@@ -158,8 +157,7 @@ public:
     void setNoOrders();
     void setOverlayText(const wxString& expr);
 
-    void setIterator(tango::IIteratorPtr iter);
-    tango::IIteratorPtr getIterator();
+    void setStructure(tango::IStructurePtr structure);
 
     void setExpression(const wxString& expr);
     wxString getExpression();
@@ -172,7 +170,7 @@ private:
     void onCancel(wxCommandEvent& evt);
     void onColumnActivated(int row, const wxString& text);
     
-    // -- grid events --
+    // grid events
     void onGridDataDropped(kcl::GridDataDropTarget* drop_target);
     void onGridDeletedRows(std::vector<int> rows);
 
@@ -196,7 +194,6 @@ protected:
 
 protected:
 
-    tango::IIteratorPtr m_iter;
     tango::IStructurePtr m_structure;
     wxString m_ok_text;
     wxString m_cancel_text;
@@ -233,7 +230,7 @@ public:
     void onCancelPressed(ExprBuilderPanel*);
     void onCancel(wxCommandEvent& evt);
     
-    void setIterator(tango::IIteratorPtr iter);
+    void setStructure(tango::IStructurePtr structure);
     wxString getExpression();
     void setExpression(const wxString& expr);
     void setTypeOnly(int type);
@@ -267,7 +264,7 @@ public:
     DlgKeyBuilder(wxWindow* parent,
                   const wxString& title = _("Key Builder"));
 
-    void setIterator(tango::IIteratorPtr iter);
+    void setStructure(tango::IStructurePtr structure);
     wxString getExpression();
     void setExpression(const wxString& expr);
     void setEmptyOk(bool empty_ok);
@@ -295,9 +292,6 @@ public: // signals
 
     DECLARE_EVENT_TABLE()
 };
-
-
-
 
 
 #endif

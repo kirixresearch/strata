@@ -461,7 +461,7 @@ void MarkMgrPanel::editMark(int mark_idx)
     m_builder->setTypeOnly(tango::typeBoolean);
     m_builder->sigExprEditFinished.connect(this, &MarkMgrPanel::onExprEditFinished);
     m_builder->sigExprEditCancelled.connect(this, &MarkMgrPanel::onExprEditCancelled);
-    m_builder->setIterator(iter);
+    m_builder->setStructure(iter->getStructure());
     m_builder->setExpression(expr);
     m_builder->Show(true);
 }

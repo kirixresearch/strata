@@ -251,7 +251,7 @@ bool ColPropsPanel::initDoc(IFramePtr frame,
     m_iter = m_tabledoc->getIterator();
     kcl::Grid* grid = m_tabledoc->getGrid();
 
-    m_expr_panel->setIterator(m_iter);
+    m_expr_panel->setStructure(m_set->getStructure());
 
     // populate
     populate();
