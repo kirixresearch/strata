@@ -2683,18 +2683,18 @@ void Database::unregisterNodeFile(OfsFile* file)
     }
 }
 
-void Database::registerSet(tango::ISet* set)
+void Database::registerSet(ISetInternal* set)
 {
     XCM_AUTO_LOCK(m_objregistry_mutex);
 
     m_sets.push_back(set);
 }
 
-void Database::unregisterSet(tango::ISet* set)
+void Database::unregisterSet(ISetInternal* set)
 {
     XCM_AUTO_LOCK(m_objregistry_mutex);
 
-    std::vector<tango::ISet*>::iterator it;
+    std::vector<ISetInternal*>::iterator it;
     for (it = m_sets.begin(); it != m_sets.end(); ++it)
     {
         if (*it == set)
@@ -3031,13 +3031,13 @@ tango::ISet* Database::lookupSet(const std::wstring& set_id)
     XCM_AUTO_LOCK(m_objregistry_mutex);
 
     // search existing sets for a match
-    std::vector<tango::ISet*>::iterator sit;
+    std::vector<ISetInternal*>::iterator sit;
     for (sit = m_sets.begin(); sit != m_sets.end(); ++sit)
     {
         if (!wcscasecmp((*sit)->getSetId().c_str(), set_id.c_str()))
         {
             (*sit)->ref();
-            return *sit;
+            return (*sit)->getISet();
         }
     }
 

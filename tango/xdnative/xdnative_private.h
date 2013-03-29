@@ -253,6 +253,9 @@ xcm_interface ISetInternal : public xcm::IObject
 
 public:
 
+    virtual std::wstring getSetId() = 0;
+    virtual tango::ISet* getISet() = 0;
+
     virtual bool addEventHandler(ISetEvents* handler) = 0;
     virtual bool removeEventHandler(ISetEvents* handler) = 0;
 
@@ -301,7 +304,6 @@ public:
     virtual std::wstring getTableFilename(tango::tableord_t table_ordinal) = 0;
     virtual long long getFileSize(const std::wstring& path) = 0;
     virtual std::wstring getFileMimeType(const std::wstring& path) = 0;
-    virtual std::wstring getFileObjectId(const std::wstring& path) = 0;
 
     virtual std::wstring getTempFilename() = 0;
     virtual std::wstring getTempOfsPath() = 0;
@@ -322,8 +324,8 @@ public:
     virtual void lockObjectRegistryMutex() = 0;
     virtual void unlockObjectRegistryMutex() = 0;
     
-    virtual void registerSet(tango::ISet* set) = 0;
-    virtual void unregisterSet(tango::ISet* set) = 0;
+    virtual void registerSet(ISetInternal* set) = 0;
+    virtual void unregisterSet(ISetInternal* set) = 0;
 
     virtual void registerNodeFile(OfsFile* set) = 0;
     virtual void unregisterNodeFile(OfsFile* set) = 0;

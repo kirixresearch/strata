@@ -107,8 +107,8 @@ public:
     void registerNodeFile(OfsFile* set);
     void unregisterNodeFile(OfsFile* set);
 
-    void registerSet(tango::ISet* set);
-    void unregisterSet(tango::ISet* set);
+    void registerSet(ISetInternal* set);
+    void unregisterSet(ISetInternal* set);
 
     void registerTable(ITable* table);
     void unregisterTable(ITable* table);
@@ -259,7 +259,7 @@ private:
     tango::IDatabaseMgrPtr m_db_mgr;
     std::map<std::wstring, tango::IDatabasePtr> m_mounted_dbs;
     
-    std::vector<tango::ISet*> m_sets;
+    std::vector<ISetInternal*> m_sets;
     std::vector<ITable*> m_tables;
     std::vector<OfsFile*> m_ofs_files;
     std::vector<JobInfo*> m_jobs;

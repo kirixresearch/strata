@@ -32,6 +32,8 @@ public:
     BaseSet(tango::IDatabase* database);
     virtual ~BaseSet();
 
+    tango::ISet* getISet() { return this; }
+
     void setObjectPath(const std::wstring& path) { }
     std::wstring getObjectPath() { return L""; }
 
