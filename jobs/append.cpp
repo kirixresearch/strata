@@ -69,10 +69,9 @@ int AppendJob::runJob()
     }
 
     tango::IJobPtr tango_job;
-
     tango::IIteratorPtr source_iter;
     tango::ISetPtr target_set;
-    std::vector<tango::ISetPtr>::iterator it;
+
     long long max_count = 0;
     bool valid_max_count = true;
 
@@ -83,8 +82,11 @@ int AppendJob::runJob()
 
 
     // get input data
-    std::vector<tango::ISetPtr> sets;
+    std::vector<std::wstring> tables;
+    std::vector<std::wstring>::iterator it;
+
     kl::JsonNode input_arr = params_node["input"];
+
     for (size_t i = 0; i < input_arr.getChildCount(); ++i)
     {
         std::wstring path = input_arr[i].getString();
@@ -102,10 +104,10 @@ int AppendJob::runJob()
              else
             valid_max_count = false;  // can't get a reliable total number of records
 
-        sets.push_back(set);
+        tables.push_back(path);
     }
 
-    if (sets.size() == 0)
+    if (tables.size() == 0)
     {
         m_job_info->setState(jobStateFailed);
         m_job_info->setError(jobserrInvalidParameter, L"");
@@ -151,24 +153,29 @@ int AppendJob::runJob()
         tango::IStructurePtr output_structure = xcm::null;
         tango::IColumnInfoPtr input_colinfo = xcm::null;
         tango::IColumnInfoPtr output_colinfo = xcm::null;
-        std::vector<tango::ISetPtr> set_ptrs;
 
         int col_idx = 0;
         int input_col_count = 0;
         int output_col_count = 0;
 
-        for (it = sets.begin(); it != sets.end(); ++it)
+        for (it = tables.begin(); it != tables.end(); ++it)
         {
             // merging tables -- merge their fields into one amalgamated
             // output structure (NOTE: we don't do this for append because
             // doing an append implies that the result set should have the
             // same structure as the set we're appending to)
 
-            input_structure = (*it)->getStructure();
-                
+            input_structure = m_db->describeTable(*it);
+            if (input_structure.isNull())
+            {
+                m_job_info->setState(jobStateFailed);
+                m_job_info->setError(jobserrWriteError, L"");
+                return 0;
+            }
+            
             if (!output_structure)
             {
-                output_structure = (*it)->getStructure();
+                output_structure = input_structure->clone();
             }
 
             input_col_count = input_structure->getColumnCount();
@@ -200,17 +207,14 @@ int AppendJob::runJob()
     }
 
 
-
-
-
-    for (it = sets.begin(); it != sets.end(); ++it)
+    for (it = tables.begin(); it != tables.end(); ++it)
     {
         tango_job = m_db->createJob();
         setTangoJob(tango_job, false);
 
         tango::CopyInfo info;
-        info.input = (*it)->getObjectPath();
-        info.output = target_set->getObjectPath();
+        info.input = *it;
+        info.output = output_path;
         info.append = true;
         m_db->copyData(&info, tango_job.p);
 
