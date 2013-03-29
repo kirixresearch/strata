@@ -529,7 +529,6 @@ public:
     virtual std::wstring getObjectPath() = 0;
 
     virtual unsigned int getSetFlags() = 0;
-    virtual std::wstring getSetId() = 0;
     virtual rowpos_t getRowCount() = 0;
     virtual IStructurePtr getStructure() = 0;
 

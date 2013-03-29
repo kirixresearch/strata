@@ -28,6 +28,8 @@ public:
     void setObjectPath(const std::wstring& path);
     std::wstring getObjectPath();
     
+    virtual std::wstring getSetId() { return L""; }
+
 protected:
 
     bool modifyStructure(tango::IStructure* struct_config,
