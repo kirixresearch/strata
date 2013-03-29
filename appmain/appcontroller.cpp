@@ -4198,7 +4198,7 @@ bool AppController::openAny(const wxString& _location,
     // if the open as table flag is set, open the location
     // with the table browser
     if (open_mask & appOpenAsTable)
-        return openSet(location, site_id);
+        return openTable(location, site_id);
 
     // if the open as text flag is set, open the location
     // with the script editor
@@ -4374,7 +4374,7 @@ bool AppController::openAny(const wxString& _location,
   
         if (item_type == tango::filetypeSet)
         {
-            if (openSet(location, site_id))
+            if (openTable(location, site_id))
                 return true;
         }
          else if (item_type == tango::filetypeStream)
@@ -4595,7 +4595,7 @@ bool AppController::openScript(const wxString& _location, int* site_id)
     return true;
 }
         
-bool AppController::openSet(const wxString& _location, int* site_id)
+bool AppController::openTable(const wxString& _location, int* site_id)
 {
     if (site_id)
         *site_id = 0;
@@ -4752,7 +4752,7 @@ bool AppController::openDataLink(const wxString& location, int* site_id)
 
         if (filter.length() == 0 && sort.length() == 0)
         {
-            return openSet(path);
+            return openTable(path);
         }
          else
         {
@@ -4786,7 +4786,7 @@ bool AppController::openDataLink(const wxString& location, int* site_id)
     }
      else if (finfo->getType() == tango::filetypeSet)
     {
-        return openSet(path, site_id);
+        return openTable(path, site_id);
     }
 
     return true;
@@ -5125,7 +5125,7 @@ static void onOpenExcelJobFinished(jobs::IJobPtr job)
     std::vector<ImportJobInfo>::iterator it;
     for (it = sets.begin(); it != sets.end(); ++it)
     {
-        g_app->getAppController()->openSet(it->output_path, &site_id);
+        g_app->getAppController()->openTable(it->output_path, &site_id);
         
         // store the set id for the first table we open,
         // so we can activate that site

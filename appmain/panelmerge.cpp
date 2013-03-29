@@ -425,7 +425,7 @@ static void onAppendJobFinished(jobs::IJobPtr job)
             return;
 
         std::wstring output_path = params["output"];
-        g_app->getAppController()->openSet(output_path);
+        g_app->getAppController()->openTable(output_path);
     }
 }
 

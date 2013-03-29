@@ -89,7 +89,7 @@ public:
     void updateQuickFilterToolBarItem();
     void updateViewMenu(IDocumentSitePtr doc_site);
     
-    // -- open commands --
+    // open commands
     bool openAny(const wxString& location,
                  int open_mask = appOpenDefault,
                  int* site_id = NULL);
@@ -101,7 +101,7 @@ public:
                  int* site_id = NULL);
     bool openQuery(const wxString& location, int* site_id = NULL);
     bool openScript(const wxString& location, int* site_id = NULL);
-    bool openSet(const wxString& location, int* site_id = NULL);
+    bool openTable(const wxString& location, int* site_id = NULL);
     bool openDataLink(const wxString& location, int* site_id = NULL);
     bool openTemplate(const wxString& location,
                       int open_mask = appOpenDefault);
@@ -114,13 +114,13 @@ public:
     bool openPackage(const wxString& location);
     bool setActiveChildByLocation(const wxString& location, int* site_id);
     
-    // -- new commands --
+    // new commands
     bool newReport(int* site_id = NULL);
     bool newQuery(int* site_id = NULL);
     bool newTable(int* site_id = NULL);
     bool newScript(int* site_id = NULL);
     
-    // -- execute commands --
+    // execute commands
     jobs::IJobPtr executeScript(const wxString& location,
                                 ScriptHostParams* params = NULL,
                                 AppScriptError* error = NULL,
@@ -130,10 +130,10 @@ public:
                               AppScriptError* error = NULL);
     jobs::IJobPtr execute(const wxString& location);
 
-    // -- print commands --
+    // print commands
     bool print(const wxString& location);
     
-    // -- project commands --
+    // project commands
     bool createDefaultProject();
     void createDefaultLinks();
     bool openProject(tango::IDatabasePtr database);
@@ -150,7 +150,7 @@ public:
                           const wxString& mount_path,
                           bool refresh_tree = true);
     
-    // -- show commands --
+    // show commands
     void showAbout();
     void showCreateExternalConnectionWizard();
     void showImportWizard(const ImportInfo& info,
@@ -187,7 +187,7 @@ public:
     
     void printConsoleText(const wxString& text);
     
-    // -- relationship commands --
+    // relationship commands
     void updateTableDocRelationshipSync(int tabledoc_sync_state);
     int getRelationshipSync();
     void setRelationshipSync(int tabledoc_sync_state);
