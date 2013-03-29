@@ -167,7 +167,7 @@ public:
                                                  wxRB_GROUP);
         
 
-        // -- create open project sizer --
+        // create open project sizer
         
         m_startup_openproject = new wxRadioButton(this,
                                              ID_StartupOpenProjectRadio,
@@ -200,7 +200,7 @@ public:
         openproject_sizer->Add(m_openproject, 1, wxALIGN_CENTER);
         
         
-        // -- create startup sizer --
+        // create startup sizer
         
         wxStaticBox* startup_static_box = new wxStaticBox(this, 
                                                 -1,
@@ -215,7 +215,7 @@ public:
         startup_sizer->AddSpacer(10);
         
         
-        // -- create startup location sizer --
+        // create startup location sizer
         
         wxBoxSizer* loc_text_sizer = createLabelTextControlSizer(
                                         this,
@@ -249,7 +249,7 @@ public:
         startup_location_sizer->AddSpacer(10);
         
         
-        // -- create toolbar look and feel sizer --
+        // create toolbar look and feel sizer
         
         wxStaticText* label_style = new wxStaticText(this,
                                                      -1,
@@ -274,14 +274,14 @@ public:
         toolbar_laf_sizer->AddSpacer(10);
         toolbar_laf_sizer->Add(m_toolbar_style, 1, wxALIGN_CENTER);
         
-        // -- create reset sizer --
+        // create reset sizer
         
         wxButton* m_reset_panels_button = new wxButton(this, ID_ResetPanelsButton, _("Reset Toolbars and Panels"));
         wxBoxSizer* reset_sizer = new wxBoxSizer(wxHORIZONTAL);
         reset_sizer->AddStretchSpacer();
         reset_sizer->Add(m_reset_panels_button);
         
-        // -- create look and feel sizer --
+        // create look and feel sizer
         
         wxStaticBox* laf_static_box = new wxStaticBox(this, -1, _("Toolbars and Panels"));
         wxStaticBoxSizer* laf_sizer = new wxStaticBoxSizer(laf_static_box, wxVERTICAL);
@@ -538,14 +538,14 @@ public:
     
     void restoreDefaultPrefs()
     {
-        // -- get the default values from the default app preferences --
+        // get the default values from the default app preferences
         m_pi->general_startup_open_last_project = getAppPrefsDefaultBoolean(wxT("general.startup.open_last_project"));
         m_pi->general_startup_location = getAppPrefsDefaultString(wxT("general.location.home"));
         m_pi->general_startup_action = getAppPrefsDefaultLong(wxT("general.startup.default_action"));
         m_pi->general_toolbar_style = getAppPrefsDefaultLong(wxT("general.toolbar.style"));
         m_pi->general_check_for_updates = getAppPrefsDefaultBoolean(wxT("general.updater.check_for_updates"));
         
-        // -- restore the default settings to controls --
+        // restore the default settings to controls
         m_openproject->SetSelection(m_pi->general_startup_open_last_project ? 0 : 1);
         m_startup_location_textctrl->SetValue(m_pi->general_startup_location);
         m_startup_openproject->SetValue(m_pi->general_startup_action == prefStartupOpenProject ? true : false);
@@ -604,7 +604,7 @@ const int BUTTON_SIZE = 20;
 const int COLOR_SQUARE_SIZE = 14;
 const int DROPDOWN_WIDTH = 9;
 
-// -- from kcl::Button --
+// from kcl::Button
 static const char* xpm_dropdown_arrow[] = {
 "5 3 2 1",
 "  c None",
@@ -641,7 +641,7 @@ private:
         ID_FontCombo,
         ID_FontSizeCombo,
 
-        // -- parameter of the grid we are changing --
+        // parameter of the grid we are changing
         gridBackgroundColor,
         gridForegroundColor,
         gridLineColor,
@@ -725,7 +725,7 @@ public:
         m_color_panel = NULL;
         
         
-        // -- create top left options sizer --
+        // create top left options sizer
         
         m_horz_line_check = new wxCheckBox(this, ID_HorzLineCheckBox, _("Show horizontal grid lines"));
         m_vert_line_check = new wxCheckBox(this, ID_VertLineCheckBox, _("Show vertical grid lines"));
@@ -754,7 +754,7 @@ public:
         top_left_sizer->AddSpacer(10);
 
 
-        // -- create foreground color sizer --
+        // create foreground color sizer
         
         m_foreground_color_button = createColorButton(this,
                                           ID_ForegroundColorButton,
@@ -769,7 +769,7 @@ public:
         foreground_color_sizer->Add(foreground_static_text, 0, wxALIGN_CENTER);
 
 
-        // -- create background color sizer --
+        // create background color sizer
         
         m_background_color_button = createColorButton(this,
                                           ID_BackgroundColorButton,
@@ -784,7 +784,7 @@ public:
         background_color_sizer->Add(background_static_text, 0, wxALIGN_CENTER);
 
 
-        // -- create grid line color sizer --
+        // create grid line color sizer
         
         m_gridline_color_button = createColorButton(this,
                                           ID_LineColorButton,
@@ -799,7 +799,7 @@ public:
         gridline_color_sizer->Add(gridline_static_text, 0, wxALIGN_CENTER);
 
 
-        // -- create invalid area color sizer --
+        // create invalid area color sizer
         
         m_invalid_area_color_button = createColorButton(this,
                                           ID_InvalidAreaColorButton,
@@ -814,7 +814,7 @@ public:
         invalid_area_color_sizer->Add(invalid_area_static_text, 0, wxALIGN_CENTER);
 
 
-        // -- create greenbar color sizer --
+        // create greenbar color sizer
         
         m_greenbar_color_button = createColorButton(this,
                                           ID_GreenBarColorButton,
@@ -829,7 +829,7 @@ public:
         greenbar_color_sizer->Add(greenbar_static_text, 0, wxALIGN_CENTER);
         
         
-        // -- create font sizer --
+        // create font sizer
         
         m_fontface_combo = new FontComboControl(this, ID_FontCombo);
         m_fontface_combo->SetStringSelection(m_pi->grid_font_facename);
@@ -850,7 +850,7 @@ public:
         font_sizer->Add(m_fontsize_combo, 0);
         
         
-        // -- create top right options sizer --
+        // create top right options sizer
         
         wxStaticBox* right_box = new wxStaticBox(this, -1, _("Colors and Font"));
         wxStaticBoxSizer* top_right_sizer = new wxStaticBoxSizer(right_box, wxVERTICAL);
@@ -869,7 +869,7 @@ public:
         top_right_sizer->AddSpacer(10);
 
 
-        // -- create options sizer --
+        // create options sizer
         
         wxFlexGridSizer* top_sizer = new wxFlexGridSizer(1, 2, 10, 10);
         top_sizer->Add(top_left_sizer, 0, wxEXPAND);
@@ -877,7 +877,7 @@ public:
         top_sizer->AddGrowableCol(1, 1);
 
 
-        // -- create grid preview sizer --
+        // create grid preview sizer
 
         m_preview_grid = new kcl::Grid;
         m_preview_grid->setCursorType(kcl::Grid::cursorRowHighlight);
@@ -955,7 +955,7 @@ public:
                                             m_pi->grid_greenbar_interval : 0);
         m_preview_grid->setColumnTextWrapping(0, m_pi->grid_text_wrap ? kcl::Grid::wrapOn : kcl::Grid::wrapOff);
 
-        // -- show a "T" or a checkbox for the boolean column --
+        // show a "T" or a checkbox for the boolean column
         kcl::CellProperties colprops;
         colprops.mask = kcl::CellProperties::cpmaskCtrlType;
 
@@ -1194,7 +1194,7 @@ public:
         evt.Skip();
     }
     
-    // -- manage color panel events --
+    // manage color panel events
 
     void onColorPanelDestructing(kcl::ColorPanel* panel)
     {
@@ -1258,7 +1258,7 @@ public:
 
     void restoreDefaultPrefs()
     {
-        // -- get the default values from the default app preferences --
+        // get the default values from the default app preferences
         m_pi->grid_horzlines_visible = getAppPrefsDefaultBoolean(wxT("grid.horzlines_visible"));
         m_pi->grid_vertlines_visible = getAppPrefsDefaultBoolean(wxT("grid.vertlines_visible"));
         m_pi->grid_greenbar_visible = getAppPrefsDefaultBoolean(wxT("grid.greenbar_visible"));
@@ -1282,7 +1282,7 @@ public:
         m_pi->grid_font_encoding = getAppPrefsDefaultLong(wxT("grid.font.encoding"));
         m_pi->grid_font_underline = getAppPrefsDefaultBoolean(wxT("grid.font.underline"));
         
-        // -- restore the default settings to controls --
+        // restore the default settings to controls
         m_background_color_button->setColor(kcl::Button::colorNormalFg,
                                         m_pi->grid_background_color);
         m_foreground_color_button->setColor(kcl::Button::colorNormalFg,
@@ -1305,7 +1305,7 @@ public:
         m_fontface_combo->SetStringSelection(m_pi->grid_font_facename);
         m_fontsize_combo->SetStringSelection(wxString::Format(wxT("%d"), m_pi->grid_font_ptsize));
         
-        // -- restore the default settings to the grid --
+        // restore the default settings to the grid
         m_preview_grid->setDefaultBackgroundColor(m_pi->grid_background_color);
         m_preview_grid->setDefaultForegroundColor(m_pi->grid_foreground_color);
         m_preview_grid->setDefaultLineColor(m_pi->grid_line_color);
@@ -1427,7 +1427,7 @@ public:
     {
         SetWindowStyle(GetWindowStyle() | wxTAB_TRAVERSAL);
 
-        // -- create proxy radio buttons --
+        // create proxy radio buttons
 
         m_proxy_direct_radio = new wxRadioButton(this, 
                                                  ID_DirectProxyRadio,
@@ -1448,7 +1448,7 @@ public:
                                                  wxDefaultPosition,
                                                  wxDefaultSize);
 
-        // -- create http proxy settings sizer --
+        // create http proxy settings sizer
         
         m_proxy_http_sizer = createLabelTextControlSizer(
                                 this,
@@ -1467,7 +1467,7 @@ public:
         m_proxy_http_sizer->AddSpacer(10);
         m_proxy_http_sizer->Add(httpport_sizer);
         
-        // -- create ftp proxy settings sizer --
+        // create ftp proxy settings sizer
         
         m_proxy_ftp_sizer = createLabelTextControlSizer(
                                 this,
@@ -1486,7 +1486,7 @@ public:
         m_proxy_ftp_sizer->AddSpacer(10);
         m_proxy_ftp_sizer->Add(ftpport_sizer);
         
-        // -- create ssl proxy settings sizer --
+        // create ssl proxy settings sizer
         
         m_proxy_ssl_sizer = createLabelTextControlSizer(
                                 this,
@@ -1505,7 +1505,7 @@ public:
         m_proxy_ssl_sizer->AddSpacer(10);
         m_proxy_ssl_sizer->Add(sslport_sizer);
         
-        // -- create socks proxy settings sizer --
+        // create socks proxy settings sizer
         
         m_proxy_socks_sizer = createLabelTextControlSizer(
                                 this,
@@ -1543,7 +1543,7 @@ public:
         m_proxy_autodetect_radio->SetValue(m_pi->internet_proxy_type == prefProxyAutoDetect ? true : false);
         m_proxy_manual_radio->SetValue(m_pi->internet_proxy_type == prefProxyManual ? true : false);
         
-        // -- create the proxy settings sizer --
+        // create the proxy settings sizer
         
         wxStaticBox* ps_box = new wxStaticBox(this, -1, _("Proxy Settings (Advanced)"));
         wxStaticBoxSizer* proxy_sizer = new wxStaticBoxSizer(ps_box, wxVERTICAL);
@@ -1674,7 +1674,7 @@ public:
     
     void restoreDefaultPrefs()
     {
-        // -- get the default values from the default app preferences --
+        // get the default values from the default app preferences
         m_pi->internet_proxy_type = getAppPrefsDefaultLong(wxT("internet.proxy.type"));
         m_pi->internet_proxy_http_port = getAppPrefsDefaultLong(wxT("internet.proxy.http_port"));
         m_pi->internet_proxy_ftp_port = getAppPrefsDefaultLong(wxT("internet.proxy.ftp_port"));
@@ -1685,7 +1685,7 @@ public:
         m_pi->internet_proxy_ssl = getAppPrefsDefaultString(wxT("internet.proxy.ssl"));
         m_pi->internet_proxy_socks = getAppPrefsDefaultString(wxT("internet.proxy.socks"));
         
-        // -- restore the default settings to controls --
+        // restore the default settings to controls
         m_proxy_http_textctrl->SetValue(m_pi->internet_proxy_http);
         m_proxy_ftp_textctrl->SetValue(m_pi->internet_proxy_ftp);
         m_proxy_ssl_textctrl->SetValue(m_pi->internet_proxy_ssl);
@@ -1773,7 +1773,7 @@ public:
         SetWindowStyle(GetWindowStyle() | wxTAB_TRAVERSAL);
 
 
-        // -- create controls --
+        // create controls
         
         m_block_popups = new wxCheckBox(this,
                                         ID_AllowPopupsCheckBox,
@@ -1801,7 +1801,7 @@ public:
                                             _("Clear Private Data"));
         
         
-        // -- create popups sizer --
+        // create popups sizer
 
         wxStaticBox* popup_static_box = new wxStaticBox(this, 
                                                 -1,
@@ -1814,7 +1814,7 @@ public:
         popup_sizer->AddSpacer(10);
         
         
-        // -- create cookies sizer --
+        // create cookies sizer
 
         wxStaticBox* cookies_static_box = new wxStaticBox(this, 
                                                 -1,
@@ -1831,7 +1831,7 @@ public:
         cookies_sizer->AddSpacer(10);
         
         
-        // -- create clear private data sizer --
+        // create clear private data sizer
 
         wxBoxSizer* clear_private_data_sizer = new wxBoxSizer(wxHORIZONTAL);
         clear_private_data_sizer->Add(m_clear_private_data);
@@ -1909,13 +1909,13 @@ public:
     
     void restoreDefaultPrefs()
     {
-        // -- get the default values from the default app preferences --
+        // get the default values from the default app preferences
         m_pi->privacy_block_popups = getAppPrefsDefaultBoolean(wxT("privacy.popups.block"));
         m_pi->privacy_accept_cookies = getAppPrefsDefaultBoolean(wxT("privacy.cookie.accept"));
         m_pi->privacy_cookie_lifetime_policy = getAppPrefsDefaultLong(wxT("privacy.cookie.lifetime_policy"));
         m_pi->privacy_cookie_lifetime_days = getAppPrefsDefaultLong(wxT("privacy.cookie.lifetime_days"));
         
-        // -- restore the default settings to controls --
+        // restore the default settings to controls
         m_block_popups->SetValue(m_pi->privacy_block_popups);
         m_accept_cookies->SetValue(m_pi->privacy_accept_cookies);
         m_keep_cookies_until_expired->SetValue(m_pi->privacy_cookie_lifetime_policy == prefKeepCookiesUntilExpired ? true : false);
@@ -1963,7 +1963,7 @@ public:
         m_pagesize_panel = new PageSizePanel(this);
         
         
-        // -- create font sizer --
+        // create font sizer
         
         m_fontface_combo = new FontComboControl(this, -1);
         m_fontsize_combo = new FontSizeComboControl(this, -1);
@@ -2073,7 +2073,7 @@ public:
     
     void restoreDefaultPrefs()
     {
-        // -- get the default values from the default app preferences --
+        // get the default values from the default app preferences
         m_pi->report_page_width = getAppPrefsDefaultLong(wxT("report.page.width"));
         m_pi->report_page_height = getAppPrefsDefaultLong(wxT("report.page.height"));
         m_pi->report_margin_left = getAppPrefsDefaultLong(wxT("report.margin.left"));
@@ -2087,7 +2087,7 @@ public:
         m_pi->report_font_weight = getAppPrefsDefaultString(wxT("report.font.weight"));
         m_pi->report_font_underscore = getAppPrefsDefaultString(wxT("report.font.underscore"));
 
-        // -- restore the default settings to controls --
+        // restore the default settings to controls
         m_pagesize_panel->setPageDimensions(toPage(m_pi->report_page_width),
                                             toPage(m_pi->report_page_height));
         
@@ -2153,7 +2153,7 @@ public:
         m_spaces_size = NULL;
         m_tab_size = NULL;
 
-        // -- create controls --
+        // create controls
         
         m_show_line_numbers = new wxCheckBox(this,
                                     ID_ShowLineNumbersCheckBox,
@@ -2200,7 +2200,7 @@ public:
                                     MIN_TABS, MAX_TABS);
         
         
-        // -- create general sizer --
+        // create general sizer
         
         wxStaticBox* general_box = new wxStaticBox(this, -1, _("General"));
         wxStaticBoxSizer* general_sizer = new wxStaticBoxSizer(general_box, wxVERTICAL);
@@ -2213,7 +2213,7 @@ public:
         general_sizer->AddSpacer(10);
         
         
-        // -- create tabs sizer --
+        // create tabs sizer
         
         wxStaticBox* tabs_box = new wxStaticBox(this, -1, _("Tabs"));
         wxStaticBoxSizer* tabs_sizer = new wxStaticBoxSizer(tabs_box, wxVERTICAL);
@@ -2267,7 +2267,7 @@ public:
     
     void restoreDefaultPrefs()
     {
-        // -- get the default values from the default app preferences --
+        // get the default values from the default app preferences
         m_pi->script_show_syntax_highlight = getAppPrefsDefaultBoolean(wxT("script.show_syntax_highlighting"));
         m_pi->script_show_line_numbers = getAppPrefsDefaultBoolean(wxT("script.show_line_numbers"));
         m_pi->script_show_whitespace = getAppPrefsDefaultBoolean(wxT("script.show_whitespace"));
@@ -2275,7 +2275,7 @@ public:
         m_pi->script_spaces_size = getAppPrefsDefaultLong(wxT("script.insert_spaces_count"));
         m_pi->script_tab_size = getAppPrefsDefaultLong(wxT("script.tab_size"));
         
-        // -- restore the default settings to controls --
+        // restore the default settings to controls
         m_show_syntax_highlight->SetValue(m_pi->script_show_syntax_highlight);
         m_show_line_numbers->SetValue(m_pi->script_show_line_numbers);
         m_show_whitespace->SetValue(m_pi->script_show_whitespace);
@@ -2401,13 +2401,13 @@ OptionsPanel::~OptionsPanel()
         delete m_pi;
 }
 
-// -- IDocument --
+
 bool OptionsPanel::initDoc(IFramePtr frame,
                            IDocumentSitePtr doc_site,
                            wxWindow* docsite_wnd,
                            wxWindow* panesite_wnd)
 {
-    // -- create document's window --
+    // create document's window
     bool result = Create(docsite_wnd,
                          -1,
                          wxDefaultPosition,
@@ -2459,7 +2459,7 @@ bool OptionsPanel::initDoc(IFramePtr frame,
     wxButton* ok_button = new wxButton(this, wxID_OK);
 
 
-    // -- create a platform standards-compliant OK/Cancel sizer --
+    // create a platform standards-compliant OK/Cancel sizer
     
     wxStdDialogButtonSizer* ok_cancel_sizer = new wxStdDialogButtonSizer;
     ok_cancel_sizer->AddButton(ok_button);
@@ -2469,7 +2469,7 @@ bool OptionsPanel::initDoc(IFramePtr frame,
     ok_cancel_sizer->Prepend(restore_defaults_button, 0, wxALIGN_CENTER | wxLEFT, 8);
     ok_cancel_sizer->AddSpacer(5);
     
-    // -- this code is necessary to get the sizer's bottom margin to 8 --
+    // this code is necessary to get the sizer's bottom margin to 8
     wxSize min_size = ok_cancel_sizer->GetMinSize();
     min_size.SetHeight(min_size.GetHeight()+16);
     ok_cancel_sizer->SetMinSize(min_size);
