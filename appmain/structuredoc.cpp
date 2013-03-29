@@ -323,7 +323,7 @@ void StructureDoc::setModifySet(tango::ISetPtr modify_set)
 
     if (m_modify_set.isOk())
     {
-        if (m_modify_set->isTemporary())
+        if (isTemporaryTable(m_modify_set->getObjectPath()))
         {
             m_path = _("(Untitled)");
         }

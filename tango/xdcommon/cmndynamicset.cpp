@@ -104,16 +104,6 @@ std::wstring CommonDynamicSet::getObjectPath()
     return m_ofspath;
 }
 
-bool CommonDynamicSet::isTemporary()
-{
-    if (m_ofspath.empty())
-        return true;
-        
-    std::wstring ofs_path = m_ofspath;
-    kl::makeLower(ofs_path);
-    return (wcsstr(ofs_path.c_str(), L".temp") != NULL ? true : false);
-}
-
 
 std::wstring CommonDynamicSet::getSetId()
 {

@@ -237,7 +237,7 @@ bool ColPropsPanel::initDoc(IFramePtr frame,
 
     if (m_set.isOk())
     {
-        if (!m_set->isTemporary())
+        if (!isTemporaryTable(m_set->getObjectPath()))
         {
             caption += wxT(" - [");
             caption += towx(m_set->getObjectPath());

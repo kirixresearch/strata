@@ -54,15 +54,6 @@ std::wstring SlSet::getObjectPath()
     return m_path;
 }
 
-bool SlSet::isTemporary()
-{
-    std::wstring path = getObjectPath();
-    if (path.find(L"/.temp") != -1)
-        return true;
-    return false;
-}
-
-// -- tango::ISet interface implementation --
 
 unsigned int SlSet::getSetFlags()
 {

@@ -39,8 +39,7 @@ public:
     
     void setObjectPath(const std::wstring& path);
     std::wstring getObjectPath();
-    bool isTemporary();
-    
+
     unsigned int getSetFlags();
     std::wstring getSetId();
 

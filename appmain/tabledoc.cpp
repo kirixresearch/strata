@@ -415,12 +415,8 @@ bool TableDoc::isTemporary()
     prefix.MakeLower();
     if (prefix == wxT("xtmp_"))
         return true;
-
-    tango::ISetPtr set = getBaseSet();
-    if (set.isOk() && set->isTemporary())
-        return true;
-
-    return false;
+         else
+        return false;
 }
 
 
@@ -1592,7 +1588,7 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
 
     wxString filename = getFilenameFromPath(m_path, false);
     
-    if (m_set.isOk() && m_set->isTemporary())
+    if (m_set.isOk() && isTemporaryTable(m_set->getObjectPath()))
         filename = _("Untitled");
     
     wxFileDialog dlg(g_app->getMainWindow(),
@@ -2754,18 +2750,15 @@ wxString TableDoc::makeCaption(const wxString& title)
     // make panel caption
     wxString caption = title;
 
-    if (m_set.isOk())
+    if (!isTemporaryTable(towstr(m_path)))
     {
-        if (!m_set->isTemporary())
-        {
-            wxString name = towx(m_set->getObjectPath());
-            name.AfterLast(wxT('/'));
-            
-            caption += wxT(" - [");
-            caption += name;
-            caption += wxT("]");
-        }
+        wxString name = m_path.AfterLast('/');
+
+        caption += wxT(" - [");
+        caption += name;
+        caption += wxT("]");
     }
+
 
     return caption;
 }
@@ -7315,20 +7308,7 @@ void TableDoc::onSetOrder(wxCommandEvent& evt)
         site->setName(wxT("SortPanel"));
         panel->setIterator(m_iter);
 
-        // set title
-        tango::ISetPtr browse_set = getBrowseSet();
-        if (!browse_set)
-            return;
-
-        wxString caption = _("Sort");
-        if (!browse_set->isTemporary())
-        {
-            caption += wxT(" - [");
-            caption += towx(browse_set->getObjectPath());
-            caption += wxT("]");
-        }
-
-        site->setCaption(caption);
+        site->setCaption(_("Sort"));
 
         // set the fields in the sort expression builder based on the 
         // selected fields; note: we used to set the order based on the 

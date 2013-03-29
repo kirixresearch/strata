@@ -6518,7 +6518,7 @@ bool AppController::checkForTemporaryFiles()
 
         tango::ISetPtr set = table_doc->getBaseSet();
 
-        if (set->isTemporary())
+        if (isTemporaryTable(set->getObjectPath()))
             return true;
     }
     

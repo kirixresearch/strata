@@ -65,13 +65,6 @@ std::wstring DrizzleSet::getObjectPath()
     return m_tablename;
 }
 
-bool DrizzleSet::isTemporary()
-{
-    return false;
-}
-
-
-
 unsigned int DrizzleSet::getSetFlags()
 {
     return 0;

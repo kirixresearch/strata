@@ -126,7 +126,7 @@ bool MergePanel::initDoc(IFramePtr frame,
         wxString caption = _("Append");
         if (set.isOk())
         {
-            if (!set->isTemporary())
+            if (isTemporaryTable(set->getObjectPath()))
             {
                 std::wstring name = set->getObjectPath();
                 name = kl::afterLast(name, '/');

@@ -163,7 +163,6 @@ public:
     void updateRowCount();
 
     std::wstring getObjectPath();
-    bool isTemporary();
 
     // ISet
     tango::IStructurePtr getStructure();

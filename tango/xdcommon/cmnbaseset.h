@@ -28,8 +28,6 @@ public:
     void setObjectPath(const std::wstring& path);
     std::wstring getObjectPath();
     
-    bool isTemporary() { return false; }
-
 protected:
 
     bool modifyStructure(tango::IStructure* struct_config,

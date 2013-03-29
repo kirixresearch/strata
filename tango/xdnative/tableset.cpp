@@ -661,14 +661,6 @@ std::wstring TableSet::getObjectPath()
     return m_ofspath;
 }
 
-bool TableSet::isTemporary()
-{
-    std::wstring ofs_path = m_ofspath;
-    kl::makeLower(ofs_path);
-    return (wcsstr(ofs_path.c_str(), L".temp") != NULL ? true : false);
-}
-
-
 tango::IRowInserterPtr TableSet::getRowInserter()
 {
     TableSetRowInserter* inserter = new TableSetRowInserter(this);

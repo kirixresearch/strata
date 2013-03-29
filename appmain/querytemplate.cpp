@@ -38,7 +38,7 @@ static void onQueryJobFinished(jobs::IJobPtr job)
     // if the result set isn't temporary, the set has been created
     // with an "INTO" statement and should appear on the tree; so, 
     // set the refresh tree flag to true
-    if (!result_set->isTemporary())
+    if (!isTemporaryTable(result_set->getObjectPath()))
         refresh_tree = true;
 
     if (querydoc_site.isOk())

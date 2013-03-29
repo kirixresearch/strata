@@ -109,14 +109,6 @@ std::wstring ClientSet::getObjectPath()
     return m_path;
 }
 
-bool ClientSet::isTemporary()
-{
-    if (m_path.find(L"/.temp/") != m_path.npos)
-        return true;
-         else
-        return false;
-}
-
 unsigned int ClientSet::getSetFlags()
 {
     return m_set_flags;

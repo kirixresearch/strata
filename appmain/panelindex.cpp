@@ -131,11 +131,10 @@ IndexPanel::IndexPanel(ITableDocPtr tabledoc)
     m_set = tabledoc->getBaseSet();
     if (m_set.isOk())
     {
-        wxString temps = towx(m_set->getObjectPath());
-        if (m_set->isTemporary())
-            m_set_path = wxEmptyString;
+        if (isTemporaryTable(m_set->getObjectPath()))
+            m_set_path = "";
              else
-            m_set_path = temps;
+            m_set_path = m_set->getObjectPath();
         
         // store the set structure
         m_structure = m_set->getStructure();

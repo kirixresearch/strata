@@ -32,10 +32,8 @@ public:
     BaseSet(tango::IDatabase* database);
     virtual ~BaseSet();
 
-    // storing functions
     void setObjectPath(const std::wstring& path) { }
     std::wstring getObjectPath() { return L""; }
-    bool isTemporary() { return false; }
 
     unsigned int getSetFlags();
     void setSetFlags(unsigned int new_val);

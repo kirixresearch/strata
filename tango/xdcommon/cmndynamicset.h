@@ -48,8 +48,6 @@ public:
 
     void setObjectPath(const std::wstring& new_path);
     std::wstring getObjectPath();
-    bool isTemporary();
-
 
     tango::ISetPtr getBaseSet();
     void startBulkInsert();

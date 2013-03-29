@@ -312,7 +312,7 @@ bool RemoveDupRecWizard::initDoc(IFramePtr frame,
         {
             tango::ISetPtr set = table_doc->getBaseSet();
 
-            if (!set->isTemporary())
+            if (!isTemporaryTable(set->getObjectPath()))
                 m_info->m_input_path = towx(set->getObjectPath());
         }        
     }
