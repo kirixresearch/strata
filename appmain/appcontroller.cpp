@@ -4608,58 +4608,41 @@ bool AppController::openSet(const wxString& _location, int* site_id)
     if (database.isNull())
         return false;
         
-    wxString location = _location;
-    location.Trim(true);
-    location.Trim(false);
+    std::wstring location = towstr(_location);
+    kl::trim(location);
 
-    // (needs error checking)
-    tango::ISetPtr set = database->openSet(towstr(location));
 
-    if (set)
+    tango::IFileInfoPtr fileinfo = database->getFileInfo(location);
+    if (fileinfo.isNull())
+        return false;
+
+    int format = fileinfo->getFormat();
+
+    if (format == tango::formatDelimitedText || format == tango::formatFixedLengthText)
     {
-        // this is a poor man's way of identifying if we're
-        // dealing with a text set or a data set.  Eventually
-        // we should query a set's format via IDatabase::getFileInfo()
-        bool text_set = false;
-        
-        {
-            tango::IDelimitedTextSetPtr s1 = set;
-            tango::IFixedLengthDefinitionPtr s2 = set;
-            if (s1.isOk() || s2.isOk())
-                text_set = true;
-        }
-        
-    
-        if (text_set)
-        {
-            // open text set
-            createTextDoc(location, NULL, site_id);
-        }
-         else
-        {
-            // open all normal table docs
-            ITableDocPtr doc = TableDocMgr::createTableDoc();
-            if (!doc->open(database, location, set))
-            {
-                wxFAIL_MSG(wxT("ITableDoc::open() returned false"));
-                return false;
-            }
-
-            if (doc->getCaption().Length() == 0)
-                doc->setCaption(location, wxEmptyString);
-            
-            unsigned int site_type = sitetypeNormal;
-
-            IDocumentSitePtr doc_site;
-            doc_site = g_app->getMainFrame()->createSite(doc, site_type, -1, -1, -1, -1);
-            
-            if (site_id)
-                *site_id = doc_site->getId();
-        }
+        // open text set
+        createTextDoc(location, NULL, site_id);
     }
      else
     {
-        return false;
+        // open all normal table docs
+        ITableDocPtr doc = TableDocMgr::createTableDoc();
+        if (!doc->open(database, location))
+        {
+            wxFAIL_MSG(wxT("ITableDoc::open() returned false"));
+            return false;
+        }
+
+        if (doc->getCaption().Length() == 0)
+            doc->setCaption(location, wxEmptyString);
+            
+        unsigned int site_type = sitetypeNormal;
+
+        IDocumentSitePtr doc_site;
+        doc_site = g_app->getMainFrame()->createSite(doc, site_type, -1, -1, -1, -1);
+            
+        if (site_id)
+            *site_id = doc_site->getId();
     }
 
     return true;
