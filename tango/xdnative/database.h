@@ -231,6 +231,7 @@ private:
 
     long long getFileSize(const std::wstring& path);
     std::wstring getFileMimeType(const std::wstring& path);
+    std::wstring getFileObjectId(const std::wstring& path);
     bool renameOfsFile(const std::wstring& path, const std::wstring& new_name);
     bool moveOfsFile(const std::wstring& path, const std::wstring& new_location);
     bool deleteOfsFile(const std::wstring& path);

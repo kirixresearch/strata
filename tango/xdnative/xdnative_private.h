@@ -301,6 +301,7 @@ public:
     virtual std::wstring getTableFilename(tango::tableord_t table_ordinal) = 0;
     virtual long long getFileSize(const std::wstring& path) = 0;
     virtual std::wstring getFileMimeType(const std::wstring& path) = 0;
+    virtual std::wstring getFileObjectId(const std::wstring& path) = 0;
 
     virtual std::wstring getTempFilename() = 0;
     virtual std::wstring getTempOfsPath() = 0;

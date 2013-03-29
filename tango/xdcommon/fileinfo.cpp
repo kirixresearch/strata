@@ -62,5 +62,9 @@ const std::wstring& FileInfo::getPrimaryKey()
     return primary_key;
 }
 
+const std::wstring& FileInfo::getObjectId()
+{
+    return object_id;
+}
 
 }; // namespace xdcommon

@@ -2126,6 +2126,22 @@ std::wstring Database::getFileMimeType(const std::wstring& path)
     return mime_type->getString();
 }
 
+std::wstring Database::getFileObjectId(const std::wstring& path)
+{
+    if (path.empty())
+        return L"";
+    
+    INodeValuePtr file = openNodeFile(path);
+    if (!file)
+        return L"";
+
+    INodeValuePtr set_id = file->getChild(L"set_id", false);
+    if (set_id.isOk())
+        return set_id->getString();
+    
+    return L"";
+}
+
 class NativeFileInfo : public tango::IFileInfo
 {
     XCM_CLASS_NAME("xdnative.FileInfo")
@@ -2189,12 +2205,22 @@ public:
         return primary_key;
     }
     
+    const std::wstring& getObjectId()
+    {
+        if (object_id.length() > 0)
+            return object_id;
+
+        object_id = db->getFileObjectId(path);
+        return object_id;
+    }
+
 public:
 
     std::wstring name;
     std::wstring mime_type;
     std::wstring path;
     std::wstring primary_key;
+    std::wstring object_id;
     long long size;
     int type;
     int format;
@@ -2319,7 +2345,8 @@ tango::IFileInfoPtr Database::getFileInfo(const std::wstring& _path)
             int file_format = tango::formatNative;
             int is_mount = -1;
             std::wstring file_mime_type;
-            
+            std::wstring file_object_id;
+
             if (getLocalFileExist(path))
                 is_mount = 1;
                 
@@ -2335,6 +2362,7 @@ tango::IFileInfoPtr Database::getFileInfo(const std::wstring& _path)
                         file_format = file_info->getFormat();
                         file_primary_key = file_info->getPrimaryKey();
                         file_mime_type = file_info->getMimeType();
+                        file_object_id = file_info->getObjectId();
                         if (is_mount == -1)
                             is_mount = file_info->isMount() ? 1 : 0;
                     }
@@ -2348,6 +2376,7 @@ tango::IFileInfoPtr Database::getFileInfo(const std::wstring& _path)
             f->is_mount = (is_mount == 1 ? true : false);
             f->primary_key = file_primary_key;
             f->mime_type = file_mime_type;
+            f->object_id = file_object_id;
             
             return static_cast<tango::IFileInfo*>(f);
         }

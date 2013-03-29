@@ -335,6 +335,7 @@ public:
     virtual long long getSize() = 0;                 // size, in bytes
     virtual bool isMount() = 0;                      // true if file/folder is a mount
     virtual const std::wstring& getPrimaryKey() = 0; // primary key of a table
+    virtual const std::wstring& getObjectId() = 0;   // object id (i.e. set id, oid, etc)
 };
 
 

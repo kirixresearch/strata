@@ -36,12 +36,14 @@ public:
     long long getSize();
     bool isMount();
     const std::wstring& getPrimaryKey();
+    const std::wstring& getObjectId();
 
 public:
 
     std::wstring name;
     std::wstring mime_type;
     std::wstring primary_key;
+    std::wstring object_id;
     int type;
     int format;
     long long size;

@@ -1148,6 +1148,11 @@ public:
     {
         return primary_key;
     }
+
+    const std::wstring& getObjectId()
+    {
+        return object_id;
+    }
     
 public:
 
@@ -1156,6 +1161,7 @@ public:
     std::wstring path;
     std::wstring phys_path;
     std::wstring primary_key;
+    std::wstring object_id;
     int type;
     int format;
     bool is_mount;
