@@ -408,7 +408,7 @@ void Controller::apiFileInfo(RequestInfo& req)
         file_info["is_mount"].setBoolean(finfo->isMount());
         file_info["primary_key"] = finfo->getPrimaryKey();
         file_info["size"] = (double)finfo->getSize();
-        file_info["object_id"] = finfo->getSetId();
+        file_info["object_id"] = finfo->getObjectId();
 
         if (finfo->getType() == tango::filetypeSet)
         {
