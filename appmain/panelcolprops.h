@@ -42,7 +42,7 @@ public: // signals
 
 private:
 
-    // -- IDocument --
+    //  IDocument 
     bool initDoc(IFramePtr frame,
                  IDocumentSitePtr site,
                  wxWindow* doc_site,
@@ -52,7 +52,7 @@ private:
     void setDocumentFocus();
     bool onSiteClosing(bool force);
 
-    // -- panel methods --
+    //  panel methods 
 
     void setName(const wxString& name);
     void setType(int type);
@@ -68,7 +68,7 @@ private:
 
     void populate();
 
-    // -- frame events --
+    // frame events
     void onFrameEvent(FrameworkEvent& evt);
     void onSiteClose(IDocumentSitePtr site);
 
@@ -89,12 +89,12 @@ private:
 
 private:
 
-    // -- container context info --
-    IDocumentSitePtr m_doc_site;       // our document's site
-    tango::ISetPtr m_set;                   // tabledoc's set
-    tango::IIteratorPtr m_iter;             // tabledoc's iterator
-    IDocumentSitePtr m_tabledoc_site;  // tabledoc's site
-    ITableDocPtr m_tabledoc;                // tabledoc ptr
+    // container context info
+    IDocumentSitePtr m_doc_site;         // our document's site
+    tango::ISetPtr m_set;                // tabledoc's set
+    tango::IIteratorPtr m_iter;          // tabledoc's iterator
+    IDocumentSitePtr m_tabledoc_site;    // tabledoc's site
+    ITableDocPtr m_tabledoc;             // tabledoc ptr
     bool m_ok_pressed;
 
     wxString m_edit_column;
