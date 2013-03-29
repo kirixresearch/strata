@@ -70,7 +70,7 @@ public:
 
 private:
 
-    // -- IDocument --
+    // IDocument
     bool initDoc(IFramePtr frame,
                  IDocumentSitePtr site,
                  wxWindow* doc_site,
@@ -79,7 +79,7 @@ private:
     wxWindow* getDocumentWindow();
     void setDocumentFocus();
 
-    // -- panel methods --
+    // panel methods
     void populate();
     
     // event handlers
@@ -91,7 +91,7 @@ private:
 
 private:
 
-    // -- frame events --
+    // frame events
     void onActiveChildChanged(IDocumentSitePtr doc_site);
     void onFrameEvent(FrameworkEvent& evt);
     bool onSiteClosing(bool force);

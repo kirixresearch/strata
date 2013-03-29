@@ -5622,37 +5622,22 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
 {
     list.clear();
     
-    tango::ISetPtr base_set;
-    tango::ISetPtr set;
-    tango::IStructurePtr structure;
-    
-    if (getDbDriver() == wxT("xdnative"))
-    {
-        base_set = getBaseSet();
-        set = getBrowseSet();
-        if (set.isOk())
-            structure = set->getStructure();
-    }
-     else
-    {
-        // external databases get their structure from iterators;
-        // eventually we'll move over to this for xdnative iterators, too
-        
-        if (m_iter)
-        {
-            structure = m_iter->getStructure();
-        }
-    }
-    
+    tango::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return;
+
+    tango::IStructurePtr structure = m_iter->getStructure();
     if (structure.isNull())
         return;
     
     int i, col_count = structure->getColumnCount();
     list.reserve(col_count);
     
+    tango::IColumnInfoPtr colinfo;
+
     for (i = 0; i < col_count; i++)
     {
-        tango::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
+        colinfo = structure->getColumnInfoByIdx(i);
         
         bool in_view = false;
         int model_idx = m_grid->getColumnModelIdxByName(towx(colinfo->getName()));
@@ -5662,7 +5647,10 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
         }
         
         ColumnListItem item;
+
+        item.active = true;
         item.text = makeProperIfNecessary(towx(colinfo->getName()));
+
         if (colinfo->getCalculated())
         {
             item.bitmap = in_view ? GETBMP(gf_lightning_16) : GETDISBMP(gf_lightning_16);
@@ -5671,57 +5659,50 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
         {
             item.bitmap = in_view ? GETBMP(gf_field_16) : GETDISBMP(gf_field_16);
         }
-        item.active = true;
+
         list.push_back(item);
     }
     
-    
-    if (base_set.isOk())
-    {
-        // add fields from child file(s)
 
-        tango::ISetPtr right_set;
-        tango::IStructurePtr right_structure;
+    // add fields from child file(s)
 
-        tango::IRelationEnumPtr rel_enum = g_app->getDatabase()->getRelationEnum(base_set->getObjectPath());
-        tango::IRelationPtr rel;
-        size_t r, rel_count = rel_enum->size();
+    tango::IRelationEnumPtr rel_enum = db->getRelationEnum(towstr(m_path));
+    tango::IRelationPtr rel;
+    size_t r, rel_count = rel_enum->size();
         
-        wxString s;
+    wxString s;
 
-        for (r = 0; r < rel_count; ++r)
+    for (r = 0; r < rel_count; ++r)
+    {
+        rel = rel_enum->getItem(r);
+
+        if (rel.isNull())
+            continue;
+
+        std::wstring right_path = rel->getRightSet();
+
+        tango::IStructurePtr right_structure = db->describeTable(right_path);
+        if (right_structure.isNull())
+            continue;
+
+        int i, col_count = right_structure->getColumnCount();
+ 
+        for (i = 0; i < col_count; ++i)
         {
-            rel = rel_enum->getItem(r);
+            colinfo = right_structure->getColumnInfoByIdx(i);
 
-            if (rel.isNull())
-                continue;
-
-            right_set = rel->getRightSetPtr();
-            if (right_set.isNull())
-                continue;
-
-            right_structure = right_set->getStructure();
-
-            int i, col_count;
-            col_count = right_structure->getColumnCount();
-
-            for (i = 0; i < col_count; ++i)
-            {
-                tango::IColumnInfoPtr colinfo;
-                colinfo = right_structure->getColumnInfoByIdx(i);
-
-                s = wxString::Format(wxT("%s.%s"),
-                           makeProperIfNecessary(towx(rel->getTag())).c_str(),
-                           makeProperIfNecessary(towx(colinfo->getName())).c_str());
+            s = wxString::Format(wxT("%s.%s"),
+                        makeProperIfNecessary(towx(rel->getTag())).c_str(),
+                        makeProperIfNecessary(towx(colinfo->getName())).c_str());
                 
-                ColumnListItem item;
-                item.text = s;
-                item.bitmap = GETBMP(gf_related_field_16);
-                item.active = true;
-                list.push_back(item);
-            }
+            ColumnListItem item;
+            item.text = s;
+            item.bitmap = GETBMP(gf_related_field_16);
+            item.active = true;
+            list.push_back(item);
         }
     }
+
 }
 
 // IColumnListTarget::onColumnListDblClicked

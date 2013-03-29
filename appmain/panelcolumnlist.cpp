@@ -52,7 +52,6 @@ ColumnListPanel::~ColumnListPanel()
 }
 
 
-// -- IDocument --
 bool ColumnListPanel::initDoc(IFramePtr frame,
                          IDocumentSitePtr site,
                          wxWindow* docsite_wnd,
@@ -68,7 +67,7 @@ bool ColumnListPanel::initDoc(IFramePtr frame,
 
     site->setCaption(_("Fields"));
 
-    // -- save site id --
+    // save site id
     m_site_id = site->getId();
 
     m_grid = new kcl::RowSelectionGrid(this, wxID_ANY,
@@ -101,7 +100,7 @@ bool ColumnListPanel::initDoc(IFramePtr frame,
     frame->sigFrameEvent().connect(this, &ColumnListPanel::onFrameEvent);
     frame->sigActiveChildChanged().connect(this, &ColumnListPanel::onActiveChildChanged);
 
-    // -- populate based on active container --
+    // populate based on active container
     m_grid->clearSelection();
     populate();
 
@@ -165,7 +164,7 @@ void ColumnListPanel::populate()
 {
     int saved_offset = m_grid->getRowOffset();
     
-    // -- first, delete all present items --
+    // first, delete all present items
     m_grid->deleteAllRows();
 
     if (g_app->getMainFrame().isNull())
@@ -189,7 +188,7 @@ void ColumnListPanel::populate()
     
     if (target.isNull())
     {
-        // -- document doesn't support IColumnListTarget --
+        // document doesn't support IColumnListTarget
         m_grid->setColumnBitmap(0, wxNullBitmap,
                                 kcl::Grid::alignRight);
         m_grid->refresh(kcl::Grid::refreshAll);
@@ -226,7 +225,7 @@ void ColumnListPanel::populate()
     std::vector<ColumnListItem>::iterator it, it_end = cols.end();
     for (it = cols.begin(); it != it_end; ++it)
     {
-        // -- insert the row for the string and bitmap --
+        // insert the row for the string and bitmap
         m_grid->insertRow(-1);
 
         m_grid->setCellBitmap(idx, 0, it->bitmap);
