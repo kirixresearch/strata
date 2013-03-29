@@ -20,7 +20,7 @@
 #include "structurevalidator.h"
 
 
-// -- command ids --
+// command ids
 
 enum
 {
@@ -30,7 +30,7 @@ enum
     ID_UpdateStatusBar
 };
 
-// -- grid column indexes --
+// grid column indexes
 
 enum
 {
@@ -42,9 +42,9 @@ enum
     colFieldFormula
 };
 
-// -- utility functions --
 
-static bool isFieldDynamic(kcl::Grid* grid, int row)
+
+static bool isCalculatedField(kcl::Grid* grid, int row)
 {
     StructureField* f = (StructureField*)grid->getRowData(row);
     if (!f)
@@ -104,7 +104,7 @@ static void createModifyJobInstructions(tango::ISetPtr modify_set,
         wxString old_name = towx(col->getName());
         bool found = false;
         
-        // -- try to find the old field name in the grid's row data --
+        // try to find the old field name in the grid's row data
         for (int row = 0; row < row_count; ++row)
         {
             StructureField* f = (StructureField*)grid->getRowData(row);
@@ -115,7 +115,7 @@ static void createModifyJobInstructions(tango::ISetPtr modify_set,
             if (!f->original)
                 continue;
                 
-            // -- if we find the name, we haven't deleted the field --
+            // if we find the name, we haven't deleted the field
             if ((old_name.CmpNoCase(f->name) == 0))
             {
                 found = true;
@@ -591,7 +591,7 @@ bool StructureDoc::initDoc(IFramePtr frame,
     m_frame = frame;
     m_doc_site = doc_site;
 
-    // -- create document's window --
+    // create document's window
     bool result = Create(docsite_wnd,
                          -1,
                          wxDefaultPosition,
@@ -609,7 +609,7 @@ bool StructureDoc::initDoc(IFramePtr frame,
 
     wxFont overlay_font = wxFont(16, wxSWISS, wxNORMAL, wxNORMAL, false);
     
-    // -- create grid --
+    // create grid
     m_grid = new kcl::RowSelectionGrid(this,
                                        -1,
                                        wxPoint(0,0),
@@ -639,7 +639,7 @@ bool StructureDoc::initDoc(IFramePtr frame,
     m_grid->setColumnSize(colFieldScale, 55);
     m_grid->setColumnSize(colFieldFormula, 160);
 
-    // -- set cell properties for field type choice control --
+    // set cell properties for field type choice control
     kcl::CellProperties props;
     props.mask = kcl::CellProperties::cpmaskCtrlType |
                  kcl::CellProperties::cpmaskCbChoices;
@@ -911,7 +911,7 @@ void StructureDoc::insertSelectedRows(bool dynamic)
 
 void StructureDoc::updateNumberColumn()
 {
-    // -- resize row number column based on it's max text size --
+    // resize row number column based on it's max text size
     wxClientDC cdc(this);
     wxString text;
     int w, h, descent, leading;
@@ -1175,18 +1175,18 @@ void StructureDoc::updateCaption()
 
 void StructureDoc::updateStatusBar()
 {
-    // -- if the grid hasn't been created yet, bail out --
+    // if the grid hasn't been created yet, bail out
     if (!m_grid)
         return;
 
-    // -- field count --
+    // field count
     int row, row_count = m_grid->getRowCount();
     
-    // -- row width --
+    // row width
     int total_width = 0;
     for (row = 0; row < row_count; ++row)
     {
-        if (isFieldDynamic(m_grid, row))
+        if (isCalculatedField(m_grid, row))
             continue;
             
         total_width += m_grid->getCellInteger(row, colFieldWidth);
@@ -1394,7 +1394,7 @@ void StructureDoc::clearProblemRows()
     int row, row_count = m_grid->getRowCount();
     for (row = 0; row < row_count; ++row)
     {
-        if (!isFieldDynamic(m_grid, row))
+        if (!isCalculatedField(m_grid, row))
         {
             m_grid->setCellBitmap(row, colRowNumber, GETBMP(xpm_blank_16));
         }
@@ -1415,7 +1415,7 @@ bool StructureDoc::createTable()
     if (dlg.ShowModal() != wxID_OK)
         return false;
 
-    // -- create the structure --
+    // create the structure
     tango::IStructurePtr structure = g_app->getDatabase()->createStructure();
     tango::IColumnInfoPtr col;
 
@@ -1425,7 +1425,7 @@ bool StructureDoc::createTable()
     int scale;
     wxString expr;
     
-    // -- add the fields to the structure --
+    // add the fields to the structure
     int row_count = m_grid->getRowCount();
     for (int row = 0; row < row_count; ++row)
     {
@@ -1441,16 +1441,16 @@ bool StructureDoc::createTable()
         col->setWidth(width);
         col->setScale(scale);
         col->setExpression(towstr(expr));
-        col->setCalculated(isFieldDynamic(m_grid, row));
+        col->setCalculated(isCalculatedField(m_grid, row));
     }
     
-    // -- get the path from the dialog and create the new set --
+    // get the path from the dialog and create the new set
     m_path = dlg.getPath();
     tango::ISetPtr set = g_app->getDatabase()->createTable(towstr(m_path),
                                                          structure,
                                                          NULL);
 
-    // -- update the project panel and the document caption --
+    // update the project panel and the document caption
     g_app->getAppController()->refreshDbDoc();
 
     // update caption
@@ -1482,7 +1482,7 @@ bool StructureDoc::createTable()
 
 tango::IStructurePtr StructureDoc::createStructureFromGrid()
 {
-    // -- create the tango::IStructure --
+    // create the tango::IStructure
     tango::IStructurePtr s = g_app->getDatabase()->createStructure();
 
     int row, row_count = m_grid->getRowCount();
@@ -1494,7 +1494,7 @@ tango::IStructurePtr StructureDoc::createStructureFromGrid()
         col->setWidth(m_grid->getCellInteger(row, colFieldWidth));
         col->setScale(m_grid->getCellInteger(row, colFieldScale));
         col->setExpression(towstr(m_grid->getCellString(row, colFieldFormula)));
-        col->setCalculated(isFieldDynamic(m_grid, row));
+        col->setCalculated(isCalculatedField(m_grid, row));
     }
     
     return s;
@@ -1654,7 +1654,7 @@ void StructureDoc::onFrameEvent(FrameworkEvent& evt)
     {
         int id = (int)(evt.l_param);
         
-        // -- make sure we are in the active container --
+        // make sure we are in the active container
         IDocumentSitePtr active_site;
         active_site = g_app->getMainFrame()->getActiveChild();
         if (active_site.isNull() || m_doc_site.isNull())
@@ -1895,7 +1895,7 @@ void StructureDoc::onConvertDynamicToFixed(wxCommandEvent& evt)
     for (it = selected_rows.begin(); it != selected_rows.end(); ++it)
     {
         int row = (*it);
-        if (isFieldDynamic(m_grid, row))
+        if (isCalculatedField(m_grid, row))
         {
             StructureField* f = (StructureField*)m_grid->getRowData(row);
             if (!f)
@@ -1980,7 +1980,7 @@ void StructureDoc::onGridNeedTooltipText(kcl::GridEvent& evt)
             if (it->row == row)
             {
                 // don't check empty expressions for static fields
-                if (!isFieldDynamic(m_grid, row))
+                if (!isCalculatedField(m_grid, row))
                     continue;
                 
                 int type = choice2tango(m_grid->getCellComboSel(row, colFieldType));
@@ -2001,7 +2001,7 @@ void StructureDoc::onGridNeedTooltipText(kcl::GridEvent& evt)
 
 void StructureDoc::onGridPreGhostRowInsert(kcl::GridEvent& evt)
 {
-    // -- we'll handle the processing of this event ourselves --
+    // we'll handle the processing of this event ourselves
     evt.Veto();
 
     // make sure we're not editing the grid
@@ -2023,7 +2023,7 @@ void StructureDoc::onGridPreGhostRowInsert(kcl::GridEvent& evt)
 
 void StructureDoc::onGridPreInvalidAreaInsert(kcl::GridEvent& evt)
 {
-    // -- we'll handle the processing of this event ourselves --
+    // we'll handle the processing of this event ourselves
     evt.Veto();
 
     // make sure we're not editing the grid
@@ -2056,7 +2056,7 @@ void StructureDoc::onGridBeginEdit(kcl::GridEvent& evt)
      else if (col == colFieldFormula)
     {
         // don't allow the user to edit the formula for static fields
-        if (!isFieldDynamic(m_grid, row))
+        if (!isCalculatedField(m_grid, row))
         {
             evt.Veto();
             return;
@@ -2170,7 +2170,7 @@ void StructureDoc::onGridEditChange(kcl::GridEvent& evt)
         
         // if the expression is valid, don't show
         // an icon next to the expression
-        if (isFieldDynamic(m_grid, row))
+        if (isCalculatedField(m_grid, row))
         {
             int res = validateExpression(expr, type);
             updateExpressionIcon(row, true, res);
@@ -2223,7 +2223,7 @@ void StructureDoc::onGridCellRightClick(kcl::GridEvent& evt)
     for (it = selected_rows.begin(); it != selected_rows.end(); ++it)
     {
         int row = (*it);
-        if (!isFieldDynamic(m_grid, row))
+        if (!isCalculatedField(m_grid, row))
         {
             all_dynamic = false;
             break;
@@ -2252,7 +2252,7 @@ void StructureDoc::onGridCellRightClick(kcl::GridEvent& evt)
     int command = cc->getLastCommandId();
     PopEventHandler(true);
     
-    // -- post the event to the event handler --
+    // post the event to the event handler
     wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED, command);
     ::wxPostEvent(this, e);
 }
