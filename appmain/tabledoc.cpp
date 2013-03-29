@@ -1810,6 +1810,14 @@ void TableDoc::onDoReloadRefresh(wxCommandEvent& evt)
     }
      else if (m_source_mimetype == wxT("application/rss+xml"))
     {
+        tango::IDatabasePtr db = g_app->getDatabase();
+        if (db.isNull())
+            return;
+
+        tango::IFileInfoPtr old_file_info = db->getFileInfo(towstr(m_path));
+        std::wstring old_set_id = old_file_info.isOk() ? old_file_info->getObjectId() : L"";
+        
+
         FeedParser parser;
         if (!parser.loadAndParse(m_reload_filename))
         {
@@ -1820,24 +1828,20 @@ void TableDoc::onDoReloadRefresh(wxCommandEvent& evt)
         
         xf_remove(towstr(m_reload_filename));
         
-        tango::ISetPtr old_set = getBaseSet();
-        std::wstring old_set_id = old_set->getSetId();
-        
         std::wstring output_path = L"xtmp_" + kl::getUniqueString();
-
         if (!parser.convertToTable(output_path))
             return;
 
-        tango::ISetPtr new_set = g_app->getDatabase()->openSet(output_path);
-        if (new_set.isNull())
-            return;
-        std::wstring new_set_id = new_set->getSetId();
+        tango::IFileInfoPtr new_file_info = db->getFileInfo(output_path);
+        std::wstring new_set_id = new_file_info.isOk() ? new_file_info->getObjectId() : L"";
 
-        TableDocMgr::copyModel(old_set_id, new_set_id);
-        
+        if (old_set_id.length() > 0 && new_set_id.length() > 0)
+        {
+            TableDocMgr::copyModel(old_set_id, new_set_id);
+            TableDocMgr::deleteModel(old_set_id);
+        }
+
         open(g_app->getDatabase(), output_path);
-        
-        TableDocMgr::deleteModel(old_set_id);
     }
 }
 
@@ -2311,12 +2315,16 @@ bool TableDoc::open(tango::IDatabasePtr db,
     }
      else
     {
-        set = db->openSet(towstr(path));
+        set = db->openSet(path);
         if (set.isNull())
             return false;
     }
     
     
+    tango::IFileInfoPtr file_info = db->getFileInfo(path);
+    if (file_info.isNull())
+        return false;
+
     // make sure we know the database type
     m_mount_db = db->getMountDatabase(towstr(path));
     if (m_mount_db)
@@ -2389,7 +2397,7 @@ bool TableDoc::open(tango::IDatabasePtr db,
     if (m_temporary_model)
         m_model = TableDocMgr::loadModel(wxT(""));
          else
-        m_model = TableDocMgr::loadModel(set->getSetId());
+        m_model = TableDocMgr::loadModel(file_info->getObjectId());
 
 
     tango::IIteratorPtr browse_iter;
