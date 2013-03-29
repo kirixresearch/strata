@@ -2181,8 +2181,11 @@ void TextDoc::resetTransformationDocAndTableDoc()
         if (set.isNull())
             return;
 
-        std::wstring set_id = set->getSetId();
-        ITableDocModelPtr model = TableDocMgr::loadModel(set_id);
+        tango::IFileInfoPtr finfo = g_app->getDatabase()->getFileInfo(set->getObjectPath());
+        if (finfo.isNull())
+            return;
+
+        ITableDocModelPtr model = TableDocMgr::loadModel(finfo->getObjectId());
         ITableDocViewEnumPtr views = model->getViewEnum();
         
         int i, count = views->size();
