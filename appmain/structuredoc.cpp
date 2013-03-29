@@ -426,33 +426,6 @@ bool StructureDoc::doSave()
     // check to see if this table is a child in a relationship sync situation
     bool filtered_table = false;
 
-    /*
-    if (table_doc.isOk())
-    {
-        // VC6 Bug: spelling out the smart ptr assignment and comparison here
-        // prevents a VC6 compiler bug.   When VC6 is no longer in use, this
-        // can be compacted into:
-        // if (m_modify_set == doc->getBaseSet() || m_modify_set == doc->getBrowseSet())
-
-        tango::ISetPtr base_set = table_doc->getBaseSet();
-        tango::ISetPtr browse_set = table_doc->getBrowseSet();
-
-        if (m_modify_set == base_set || m_modify_set == browse_set)
-        {
-            if (table_doc->getIsChildSet())
-            {
-                appMessageBox(_("The structure cannot be modified while the table is showing filtered related records."),
-                              APPLICATION_NAME,
-                              wxOK | wxICON_INFORMATION | wxCENTER);
-                return false;
-            }
-            
-            if (table_doc->getFilter().Length() > 0)
-                filtered_table = true;
-        }
-    }
-    */
-
     IDocumentSiteEnumPtr sites;
     sites = g_app->getMainFrame()->getDocumentSites(sitetypeNormal);
     size_t i, site_count = sites->size();
@@ -466,32 +439,20 @@ bool StructureDoc::doSave()
         if (doc.isNull())
             continue;
         
-
-        /*
+        if (isSamePath(towstr(doc->getPath()), getPath()))
         {
-            // VC6 Bug: spelling out the smart ptr assignment and comparison here
-            // prevents a VC6 compiler bug.   When VC6 is no longer in use, this
-            // can be compacted into:
-            // if (m_modify_set == doc->getBaseSet() || m_modify_set == doc->getBrowseSet())
-
-            tango::ISetPtr base_set = doc->getBaseSet();
-            tango::ISetPtr browse_set = doc->getBrowseSet();
-
-            if (m_modify_set == base_set || m_modify_set == browse_set)
+            if (doc->getIsChildSet())
             {
-                if (doc->getIsChildSet())
-                {
-                    appMessageBox(_("The structure cannot be modified while the table is showing filtered related records."),
-                                       APPLICATION_NAME,
-                                       wxOK | wxICON_INFORMATION | wxCENTER);
-                    return false;
-                }
-            
-                if (doc->getFilter().Length() > 0)
-                    filtered_table = true;
+                appMessageBox(_("The structure cannot be modified while the table is showing filtered related records."),
+                                    APPLICATION_NAME,
+                                    wxOK | wxICON_INFORMATION | wxCENTER);
+                return false;
             }
+            
+            if (doc->getFilter().Length() > 0)
+                filtered_table = true;
         }
-        */
+
     }
 
     // if we're modifying a table that we've filtered,
@@ -520,7 +481,6 @@ bool StructureDoc::doSave()
     
     std::vector<ITableDoc*> to_connect;
 
-    /*
     // close the sets
     for (i = 0; i < site_count; ++i)
     {
@@ -532,23 +492,13 @@ bool StructureDoc::doSave()
         if (doc.isNull())
             continue;
 
-        // VC6 Bug: spelling out the smart ptr assignment and comparison here
-        // prevents a VC6 compiler bug.   When VC6 is no longer in use, this
-        // can be compacted into:
-        // if (m_modify_set == doc->getBaseSet() || m_modify_set == doc->getBrowseSet())
-        // N.B. This is where the problem was manifesting itself.  The ISetPtr's were
-        // being leaked and the set could not be deleted after structure modify
-
-        tango::ISetPtr base_set = doc->getBaseSet();
-        tango::ISetPtr browse_set = doc->getBrowseSet();
-        
-        if (m_modify_set == base_set || m_modify_set == browse_set)
+        if (isSamePath(towstr(doc->getPath()), getPath()))
         {
             to_connect.push_back(doc.p);
             doc->closeSet();
         }
     }
-    */
+
 
     // let the pending close events process
     g_app->processIdle();
@@ -567,7 +517,6 @@ bool StructureDoc::doSave()
 
 
     // TODO: should send out a structure update event instead of all this
-
 
     // connect the job finished signal to the structuredoc
     job->sigJobFinished().connect(this, &StructureDoc::onAlterTableJobFinished);
@@ -588,6 +537,7 @@ bool StructureDoc::doSave()
     }
 
     g_app->getJobQueue()->addJob(job, jobStateRunning);
+
     return true;
 }
 

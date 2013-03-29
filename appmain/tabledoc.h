@@ -237,6 +237,7 @@ public:
     virtual tango::ISetPtr getBaseSet() = 0;
     virtual tango::ISetPtr getBrowseSet() = 0;
     virtual ITableDocModelPtr getModel() = 0;
+    virtual wxString getPath() = 0;
 
     virtual void connectAlterTableJob(jobs::IJobPtr job) = 0;
 

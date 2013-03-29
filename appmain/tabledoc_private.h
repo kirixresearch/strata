@@ -104,6 +104,8 @@ public:
     bool setBrowseSet(tango::ISetPtr set, tango::IIteratorPtr iter);
     tango::ISetPtr getBrowseSet();
 
+    wxString getPath() { return m_path; }
+
     void closeSet();
     void setEnabled(bool new_val);
     bool getEnabled();
