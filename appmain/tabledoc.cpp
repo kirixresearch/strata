@@ -4288,9 +4288,9 @@ void TableDoc::resetChildWindows()
     for (i = 0; i < rel_count; ++i)
     {
         rel = rel_enum->getItem(i);
-        site_name = wxString::Format(wxT("%s-%s"),
-                       towx(m_browse_set->getSetId()).c_str(),
-                       towx(rel->getTag()).c_str());
+
+        site_name = m_path + wxT(";") + towx(rel->getTag());
+        site_name.MakeLower();
 
         site = g_app->getMainFrame()->lookupSite(site_name);
         
@@ -4456,9 +4456,10 @@ void TableDoc::updateChildWindows()
     for (i = 0; i < rel_count; ++i)
     {
         rel = rel_enum->getItem(i);
-        site_name = wxString::Format(wxT("%s-%s"),
-                       towx(m_browse_set->getSetId()).c_str(),
-                       towx(rel->getTag()).c_str());
+
+        site_name = m_path + wxT(";") + towx(rel->getTag());
+        site_name.MakeLower();
+
 
         site = g_app->getMainFrame()->lookupSite(site_name);
         

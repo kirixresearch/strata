@@ -23,7 +23,7 @@
 
 enum
 {
-    // -- File Menu --
+    // File Menu
     ID_Open = ID_App_LastCommand + 1,
     ID_NewConnection,
     ID_NewDirectory,
@@ -31,16 +31,16 @@ enum
     ID_CopyTables,
     ID_Exit,
     
-    // -- Window Menu --
+    // Window Menu
     ID_Cascade,
     ID_TileHorizontal,
     ID_TileVertical,
 
-    // -- Help Menu --
+    // Help Menu
     ID_LicenseManager,
     ID_About,
 
-    // -- Other --
+    // Other
     ID_New,
     ID_ToggleAllPanels,
     ID_ToggleTreePanel
@@ -111,7 +111,7 @@ AppController::AppController()
 
 bool AppController::init()
 {
-    // -- get saved windows dimensions --
+    // get saved windows dimensions
     long x, y, w, h, screen_x, screen_y;
     bool maximized;
 
@@ -141,7 +141,7 @@ bool AppController::init()
     if (h > screen_y)
         h = screen_y;
 
-    // -- create the main frame --
+    // create the main frame
     m_frame.create_instance("cfw.MainFrame");
     if (m_frame.isNull())
         return false;
@@ -162,22 +162,22 @@ bool AppController::init()
         return false;
 
 
-    // -- load registry settings --
+    // load registry settings
     loadRegistry();
 
-    // -- create the tree controller --
+    // create the tree controller
     m_tree_controller = new TreeController;
 
-    // -- create console panel to add to the binder panel --
+    // create console panel to add to the binder panel
     ConsolePanel* console_panel = new ConsolePanel;
 
-    // -- create job list panel to add to the binder panel --
+    // create job list panel to add to the binder panel
     cfw::IJobListPanelPtr joblist_panel;
     joblist_panel.create_instance("cfw.JobListPanel");
     joblist_panel->setJobQueue(g_app->getJobQueue());
     joblist_panel->setUpdateInterval(5000);
 
-    // -- create binderpanel and dock it --
+    // create binderpanel and dock it
     cfw::IBinderPanelPtr binder_panel;
     binder_panel.create_instance("cfw.BinderPanel");
     binder_panel->addPage(m_frame, console_panel, _("Console"), GET_XPM(xpm_consolepanel_small));
@@ -187,7 +187,7 @@ bool AppController::init()
                                              cfw::sitetypeDockable | cfw::dockBottom,
                                              0, 0, 140, 140);
 
-    // -- create menus --
+    // create menus
     cfw::wxBitmapMenu* menuNew = new cfw::wxBitmapMenu;
     menuNew->Append(ID_NewConnection, _("Remote Database Connection..."), GET_XPM(xpm_new));
     menuNew->Append(ID_NewDbConnection, _("Project Connection..."), GET_XPM(xpm_new));
@@ -216,7 +216,7 @@ bool AppController::init()
     menuBar->Append(menuHelp, _("&Help"));
 
 
-    // -- create toolbars --
+    // create toolbars
 
     m_frame->dockWindow(createStandardToolbar(),
                         cfw::sitetypeDockable | cfw::dockTop | cfw::siteNoResize,
@@ -285,7 +285,7 @@ void AppController::onFrameDestroy()
         frame_wnd->Iconize(false);
     }
 
-    // -- main window dimensions --
+    // main window dimensions
 
     cfw::IAppPreferencesPtr prefs = g_app->getAppPreferences();
 
@@ -576,7 +576,7 @@ void AppController::onCopyTables(wxCommandEvent& event)
 
 bool AppController::loadRegistry()
 {
-    // -- load the connections from  the registry --
+    // load the connections from  the registry
     g_app->getConnectionMgr()->loadRegistry(g_app->getAppPreferences());
     return true;
 }
@@ -584,7 +584,7 @@ bool AppController::loadRegistry()
 
 bool AppController::saveRegistry()
 {
-    // -- save the connections to the registry --
+    // save the connections to the registry
     g_app->getConnectionMgr()->saveRegistry(g_app->getAppPreferences());
     return true;
 }
