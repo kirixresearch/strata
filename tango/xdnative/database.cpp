@@ -2126,22 +2126,6 @@ std::wstring Database::getFileMimeType(const std::wstring& path)
     return mime_type->getString();
 }
 
-std::wstring Database::getFileObjectId(const std::wstring& path)
-{
-    if (path.empty())
-        return L"";
-    
-    INodeValuePtr file = openNodeFile(path);
-    if (!file)
-        return L"";
-
-    INodeValuePtr set_id = file->getChild(L"set_id", false);
-    if (set_id.isOk())
-        return set_id->getString();
-    
-    return L"";
-}
-
 class NativeFileInfo : public tango::IFileInfo
 {
     XCM_CLASS_NAME("xdnative.FileInfo")
@@ -2210,7 +2194,7 @@ public:
         if (object_id.length() > 0)
             return object_id;
 
-        object_id = db->getFileObjectId(path);
+        object_id = db->getSetIdFromPath(path);
         return object_id;
     }
 
