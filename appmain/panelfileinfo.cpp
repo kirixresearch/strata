@@ -10,6 +10,7 @@
 
 
 #include "appmain.h"
+#include "appcontroller.h"
 #include "panelfileinfo.h"
 #include "tabledoc.h"
 #include "jsonconfig.h"
