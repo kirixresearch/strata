@@ -76,12 +76,12 @@ int DivideJob::runJob()
 
     // get the input
     std::wstring input_path = params_node["input"].getString();
-    tango::ISetPtr input_set = m_db->openSet(input_path);
 
     // get the output prefix and row count
     std::wstring output_prefix = params_node["output"].getString();
     size_t output_row_count = params_node["row_count"].getInteger();
 
+    tango::ISetPtr input_set = m_db->openSet(input_path);
     if (input_set.isNull())
     {
         m_job_info->setState(jobStateFailed);
@@ -89,7 +89,7 @@ int DivideJob::runJob()
         return 0;    
     }
 
-    size_t max_row_count = input_set->getRowCount();
+    size_t max_row_count = (size_t)input_set->getRowCount();
     if (output_row_count <= 0 || output_row_count >= max_row_count)
         output_row_count = max_row_count;
 

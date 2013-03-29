@@ -70,7 +70,6 @@ int AppendJob::runJob()
 
     tango::IJobPtr tango_job;
     tango::IIteratorPtr source_iter;
-    tango::ISetPtr target_set;
 
     long long max_count = 0;
     bool valid_max_count = true;
@@ -138,7 +137,7 @@ int AppendJob::runJob()
     if (m_db->getFileExist(output_path))
     {
         // append to existing table
-        target_set = m_db->openSet(output_path);
+        tango::ISetPtr target_set = m_db->openSet(output_path);
         if (target_set.isNull())
         {
             m_job_info->setState(jobStateFailed);
@@ -197,7 +196,7 @@ int AppendJob::runJob()
         }
 
 
-        target_set = m_db->createTable(output_path, output_structure, NULL);
+        tango::ISetPtr target_set = m_db->createTable(output_path, output_structure, NULL);
         if (target_set.isNull())
         {
             m_job_info->setState(jobStateFailed);
@@ -227,7 +226,6 @@ int AppendJob::runJob()
 
         if (tango_job->getCancelled())
         {
-            target_set.clear();
             if (params_node["mode"].getString() == L"overwrite")
                 m_db->deleteFile(output_path);
 
