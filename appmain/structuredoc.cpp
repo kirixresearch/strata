@@ -79,35 +79,33 @@ static std::vector<RowErrorChecker> getRowErrorCheckerVector(
     return vec;
 }
 
-static void createModifyJobInstructions(tango::ISetPtr modify_set,
-                                        kcl::Grid* grid,
-                                        kl::JsonNode& params,
-                                        size_t* _action_count)
+void StructureDoc::createModifyJobInstructions(kl::JsonNode& params,
+                                               size_t* _action_count)
 {
     // basic alter table job params
-    params["input"].setString(towstr(modify_set->getObjectPath()));
+    params["input"] = m_path;
     params["actions"].setArray();
 
     *_action_count = 0;
 
-    tango::IStructurePtr structure = modify_set->getStructure();
     tango::IColumnInfoPtr col;
     
-    int row_count = grid->getRowCount();
+    int row_count = m_grid->getRowCount();
     size_t action_count = 0;
     
     // find deleted fields (i.e. fields in the original
     // structure that aren't found in the grid)
-    for (int i = 0; i < structure->getColumnCount(); ++i)
+    for (int i = 0; i < m_structure->getColumnCount(); ++i)
     {
-        col = structure->getColumnInfoByIdx(i);
+        col = m_structure->getColumnInfoByIdx(i);
+
         wxString old_name = towx(col->getName());
         bool found = false;
         
         // try to find the old field name in the grid's row data
         for (int row = 0; row < row_count; ++row)
         {
-            StructureField* f = (StructureField*)grid->getRowData(row);
+            StructureField* f = (StructureField*)m_grid->getRowData(row);
             if (!f)
                 continue;
             
@@ -151,7 +149,7 @@ static void createModifyJobInstructions(tango::ISetPtr modify_set,
     bool moving_fields = false;
     for (row = 0; row < row_count; ++row)
     {
-        StructureField* f = (StructureField*)grid->getRowData(row);
+        StructureField* f = (StructureField*)m_grid->getRowData(row);
         if (!f)
             continue;
         
@@ -169,14 +167,14 @@ static void createModifyJobInstructions(tango::ISetPtr modify_set,
     // tell the job which fields to create and modify
     for (row = 0; row < row_count; ++row)
     {
-        name = grid->getCellString(row, colFieldName);
-        type = grid->getCellComboSel(row, colFieldType);
-        width = grid->getCellInteger(row, colFieldWidth);
-        scale = grid->getCellInteger(row, colFieldScale);
-        expr = grid->getCellString(row, colFieldFormula);
+        name = m_grid->getCellString(row, colFieldName);
+        type = m_grid->getCellComboSel(row, colFieldType);
+        width = m_grid->getCellInteger(row, colFieldWidth);
+        scale = m_grid->getCellInteger(row, colFieldScale);
+        expr = m_grid->getCellString(row, colFieldFormula);
 
 
-        StructureField* f = (StructureField*)grid->getRowData(row);
+        StructureField* f = (StructureField*)m_grid->getRowData(row);
         if (!f)
             continue;
 
@@ -298,39 +296,40 @@ END_EVENT_TABLE()
 
 StructureDoc::StructureDoc()
 {
-    m_path = wxEmptyString;
+    m_path = L"";
     m_changed = false;
     m_modify = false;
     m_readonly = false;
     m_last_selected_fieldtype = -1;
     m_grid = NULL;
-    
-    m_modify_set = xcm::null;
-    m_expr_edit_structure = xcm::null;
 }
 
 StructureDoc::~StructureDoc()
 {
 }
 
-void StructureDoc::setModifySet(tango::ISetPtr modify_set)
+bool StructureDoc::setModifySet(const std::wstring& path)
 {
-    m_modify_set = modify_set;
     m_modify = true;
     
     // set the changed flag
     setChanged(false);
 
-    if (m_modify_set.isOk())
+    if (path.length() > 0)
     {
-        if (isTemporaryTable(m_modify_set->getObjectPath()))
+        m_structure = g_app->getDatabase()->describeTable(path);
+        if (m_structure.isNull())
         {
-            m_path = _("(Untitled)");
+            m_path = L"";
+            m_readonly = true;
+            return false;
         }
-         else
-        {
-            m_path = towx(m_modify_set->getObjectPath());
 
+
+        m_path = path;
+
+        if (isTemporaryTable(m_path))
+        {
             // fire this event so that the URL will be updated with the new path
             if (m_frame.isOk())
                 m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_CFW_LOCATION_CHANGED));
@@ -340,13 +339,17 @@ void StructureDoc::setModifySet(tango::ISetPtr modify_set)
     }
      else
     {
+        m_path = L"";
         m_readonly = true;
+        m_structure.clear();
     }
+
+    return true;
 }
 
-tango::ISetPtr StructureDoc::getModifySet()
+std::wstring StructureDoc::getPath()
 {
-    return m_modify_set;
+    return m_path;
 }
 
 bool StructureDoc::doSave()
@@ -393,7 +396,7 @@ bool StructureDoc::doSave()
     // create the modify job
     kl::JsonNode params;
     size_t action_count = 0;
-    createModifyJobInstructions(m_modify_set, m_grid, params, &action_count);
+    createModifyJobInstructions(params, &action_count);
 
     // make sure there's something to do
     if (action_count == 0)
@@ -407,22 +410,23 @@ bool StructureDoc::doSave()
 
         // create a tabledoc and open it
         table_doc = TableDocMgr::createTableDoc();
-        table_doc->open(g_app->getDatabase(), m_modify_set->getObjectPath());
+        table_doc->open(g_app->getDatabase(), m_path);
 
         if (table_doc->getCaption().Length() == 0)
         {
             // update the caption manually
-            wxString caption = m_path.AfterLast(wxT('/'));
+            wxString caption = towx(kl::afterLast(m_path, '/'));
             table_doc->setCaption(caption, wxEmptyString);
         }
 
         wxWindow* container = m_doc_site->getContainerWindow();
-        g_app->getMainFrame()->createSite(container,
-                                          table_doc, false);
+        g_app->getMainFrame()->createSite(container, table_doc, false);
     }
 
     // check to see if this table is a child in a relationship sync situation
     bool filtered_table = false;
+
+    /*
     if (table_doc.isOk())
     {
         // VC6 Bug: spelling out the smart ptr assignment and comparison here
@@ -438,8 +442,8 @@ bool StructureDoc::doSave()
             if (table_doc->getIsChildSet())
             {
                 appMessageBox(_("The structure cannot be modified while the table is showing filtered related records."),
-                                   APPLICATION_NAME,
-                                   wxOK | wxICON_INFORMATION | wxCENTER);
+                              APPLICATION_NAME,
+                              wxOK | wxICON_INFORMATION | wxCENTER);
                 return false;
             }
             
@@ -447,7 +451,8 @@ bool StructureDoc::doSave()
                 filtered_table = true;
         }
     }
-    
+    */
+
     IDocumentSiteEnumPtr sites;
     sites = g_app->getMainFrame()->getDocumentSites(sitetypeNormal);
     size_t i, site_count = sites->size();
@@ -462,6 +467,7 @@ bool StructureDoc::doSave()
             continue;
         
 
+        /*
         {
             // VC6 Bug: spelling out the smart ptr assignment and comparison here
             // prevents a VC6 compiler bug.   When VC6 is no longer in use, this
@@ -485,6 +491,7 @@ bool StructureDoc::doSave()
                     filtered_table = true;
             }
         }
+        */
     }
 
     // if we're modifying a table that we've filtered,
@@ -511,9 +518,10 @@ bool StructureDoc::doSave()
     m_grid->setVisibleState(kcl::Grid::stateDisabled);
     m_grid->refresh(kcl::Grid::refreshAll);
     
-    
-    // close the sets
     std::vector<ITableDoc*> to_connect;
+
+    /*
+    // close the sets
     for (i = 0; i < site_count; ++i)
     {
         IDocumentSitePtr site = sites->getItem(i);
@@ -540,6 +548,7 @@ bool StructureDoc::doSave()
             doc->closeSet();
         }
     }
+    */
 
     // let the pending close events process
     g_app->processIdle();
@@ -670,7 +679,9 @@ bool StructureDoc::initDoc(IFramePtr frame,
     
     // populate the grid
     if (m_modify)
-        populateGridFromSet(m_modify_set);
+    {
+        populateGridFromStructure();
+    }
 
     // number the row number column and calculate its width
     updateNumberColumn();
@@ -773,22 +784,16 @@ void StructureDoc::getColumnListItems(std::vector<ColumnListItem>& items)
     // clear the list
     items.clear();
 
-    // make sure we have a modify set
-    if (m_modify_set.isNull())
-        return;
-    
-    // get the structure
-    tango::IStructurePtr structure = m_modify_set->getStructure();
-    if (structure.isNull())
+    if (m_structure.isNull())
         return;
 
     // get the column count and reserve space for the items
-    int i, col_count = structure->getColumnCount();
+    int i, col_count = m_structure->getColumnCount();
     items.reserve(col_count);
 
     for (i = 0; i < col_count; i++)
     {
-        tango::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
+        tango::IColumnInfoPtr colinfo = m_structure->getColumnInfoByIdx(i);
      
         ColumnListItem item;
         item.text = makeProperIfNecessary(towx(colinfo->getName()));
@@ -809,7 +814,7 @@ void StructureDoc::onColumnListDblClicked(const std::vector<wxString>& items)
 {
     // we can only add fields from the fields panel
     // if we're modifying an existing table
-    if (m_modify_set.isNull())
+    if (m_structure.isNull())
         return;
 
     // set the changed flag
@@ -817,8 +822,6 @@ void StructureDoc::onColumnListDblClicked(const std::vector<wxString>& items)
 
     m_grid->Freeze();
 
-    tango::IStructurePtr s = m_modify_set->getStructure();
-                
     int row = m_grid->getRowCount();
 
     // inserting fields in from the field panel
@@ -826,7 +829,7 @@ void StructureDoc::onColumnListDblClicked(const std::vector<wxString>& items)
     for (it = items.begin(); it != items.end(); ++it)
     {
         // get the column info from the column name we dragged in
-        tango::IColumnInfoPtr colinfo = s->getColumnInfo(towstr(*it));
+        tango::IColumnInfoPtr colinfo = m_structure->getColumnInfo(towstr(*it));
         if (colinfo.isNull())
             continue;
         
@@ -1161,17 +1164,21 @@ void StructureDoc::updateRowCellProps(int row)
 
 void StructureDoc::updateCaption()
 {
-    wxString caption = _("(Untitled)");
-    if (m_path.Length() == 0)
-        m_doc_site->setCaption(caption);
-    else
-    {
-        caption = m_path.AfterLast(wxT('/'));
-        caption.Append(isChanged() ? wxT("*") : wxT(""));
+    wxString caption;
 
-        m_doc_site->setCaption(caption);
+    if (m_path.length() == 0)
+    {
+        caption = _("(Untitled)");
     }
+     else
+    {
+        caption = towx(kl::afterLast(m_path, '/'));
+        caption.Append(isChanged() ? wxT("*") : wxT(""));
+    }
+
+    m_doc_site->setCaption(caption);
 }
+
 
 void StructureDoc::updateStatusBar()
 {
@@ -1445,27 +1452,26 @@ bool StructureDoc::createTable()
     }
     
     // get the path from the dialog and create the new set
-    m_path = dlg.getPath();
-    tango::ISetPtr set = g_app->getDatabase()->createTable(towstr(m_path),
-                                                         structure,
-                                                         NULL);
+    std::wstring new_path = towstr(dlg.getPath());
+    tango::ISetPtr set = g_app->getDatabase()->createTable(new_path,
+                                                           structure,
+                                                           NULL);
+    if (set.isNull())
+        return false;
 
-    // update the project panel and the document caption
-    g_app->getAppController()->refreshDbDoc();
+    // set the modify set in case the user wants to further modify the set
+    // they just created... this would be a modify structure job
+    setModifySet(new_path);
 
     // update caption
     updateCaption();
 
-    // fire this event so that the URL will be updated with the new path
-    if (m_frame.isOk())
-        m_frame->postEvent(new FrameworkEvent(FRAMEWORK_EVT_CFW_LOCATION_CHANGED));
+    // update the project panel and the document caption
+    g_app->getAppController()->refreshDbDoc();
 
-    // set the modify set in case the user wants to further modify the set
-    // they just created... this would be a modify structure job
-    setModifySet(set);
-    
     // update the row data in the grid by repopulating it
-    populateGridFromSet(m_modify_set);
+    populateGridFromStructure();
+
     m_grid->moveCursor(0, colFieldName, false);
     m_grid->clearSelection();
     if (m_grid->getRowCount() > 0)
@@ -1500,23 +1506,20 @@ tango::IStructurePtr StructureDoc::createStructureFromGrid()
     return s;
 }
 
-void StructureDoc::populateGridFromSet(tango::ISetPtr set)
+void StructureDoc::populateGridFromStructure()
 {
     m_grid->deleteAllRows();
-    
-    if (set.isNull())
-        return;
     
     // first, populate the grid with all the fields; do this before validating
     // any of the calculated fields since some of the fields may be dependent
     // on later fields in grid that need to be added to the validation structure
     // before validation on previous fields in the grid is possible
-    tango::IStructurePtr structure = set->getStructure();
-    int i, col_count = structure->getColumnCount();
+
+    int i, col_count = m_structure->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
         tango::IColumnInfoPtr col;
-        col = structure->getColumnInfoByIdx(i);
+        col = m_structure->getColumnInfoByIdx(i);
 
         StructureField* f = new StructureField;
         f->name = towx(col->getName());
@@ -1576,13 +1579,14 @@ void StructureDoc::onAlterTableJobFinished(jobs::IJobPtr job)
     params.fromString(job->getParameters());
 
     std::wstring input = params["input"];
-    m_modify_set = g_app->getDatabase()->openSet(input);
+    m_structure = g_app->getDatabase()->describeTable(input);
 
     // enable the structure editor grid
     m_grid->setVisibleState(kcl::Grid::stateVisible);
 
     // update the row data in the grid by repopulating it
-    populateGridFromSet(m_modify_set);
+    populateGridFromStructure();
+
     m_grid->moveCursor(0, colFieldName, false);
     m_grid->clearSelection();
     if (m_grid->getRowCount() > 0)
@@ -1698,7 +1702,8 @@ void StructureDoc::onFrameEvent(FrameworkEvent& evt)
                         setChanged(false);
                     
                         // revert the grid to the original structure
-                        populateGridFromSet(m_modify_set);
+                        populateGridFromStructure();
+
                         updateNumberColumn();
                         checkOverlayText();
                         
@@ -1725,24 +1730,24 @@ void StructureDoc::onFrameEvent(FrameworkEvent& evt)
                 // if we don't have a tabledoc yet, we need to create one so
                 // that we can switch to it (this is most likely the case
                 // because we are creating a table)
+
                 if (tabledoc_site.isNull())
                 {
                     // this chunk of code exists in doSave() as well
                     
                     // create a tabledoc and open it
                     ITableDocPtr doc = TableDocMgr::createTableDoc();
-                    doc->open(g_app->getDatabase(), m_modify_set->getObjectPath());
+                    doc->open(g_app->getDatabase(), m_path);
 
                     if (doc->getCaption().Length() == 0)
                     {
                         // update the caption manually
-                        wxString caption = m_path.AfterLast(wxT('/'));
+                        wxString caption = towx(kl::afterLast(m_path, '/'));
                         doc->setCaption(caption, wxEmptyString);
                     }
                     
                     wxWindow* container = m_doc_site->getContainerWindow();
-                    g_app->getMainFrame()->createSite(container,
-                                                      doc, false);
+                    g_app->getMainFrame()->createSite(container, doc, false);
                 }
             }
         }
@@ -1775,7 +1780,8 @@ void StructureDoc::onFrameEvent(FrameworkEvent& evt)
      else if (evt.name == FRAMEWORK_EVT_TABLEDOC_STRUCTURE_MODIFIED)
     {
         // update the row data in the grid by repopulating it
-        populateGridFromSet(m_modify_set);
+        populateGridFromStructure();
+
         m_grid->moveCursor(0, colFieldName, false);
         m_grid->clearSelection();
         if (m_grid->getRowCount() > 0)
@@ -2284,10 +2290,9 @@ void StructureDoc::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
         {
             // we can only drag in fields from the fields panel
             // if we're modifying an existing table
-            if (m_modify_set.isNull())
+            if (m_path.length() == 0)
                 return;
 
-            tango::IStructurePtr s = m_modify_set->getStructure();
             tango::IColumnInfoPtr colinfo;
                         
             int drop_row = drop_target->getDropRow();
@@ -2302,7 +2307,7 @@ void StructureDoc::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
                     continue;
                 
                 // get the column info from the column name we dragged in
-                colinfo = s->getColumnInfo(towstr((*it)->m_strvalue));
+                colinfo = m_structure->getColumnInfo(towstr((*it)->m_strvalue));
                 if (colinfo.isNull())
                     continue;
                 

@@ -7887,7 +7887,7 @@ void TableDoc::createOrShowStructureDoc()
     {
         // structuredoc contains the same set
         // as the tabledoc, we're good to go
-        if (structuredoc->getModifySet() == m_set)
+        if (isSamePath(towstr(m_path), structuredoc->getPath()))
         {
             switchToOtherDocument(m_doc_site, "appmain.StructureDoc");
             return;
@@ -7912,7 +7912,7 @@ void TableDoc::createOrShowStructureDoc()
         AppBusyCursor bc;
 
         StructureDoc* doc = new StructureDoc;
-        doc->setModifySet(m_set);
+        doc->setModifySet(towstr(m_path));
         
         wxWindow* container = m_doc_site->getContainerWindow();
 

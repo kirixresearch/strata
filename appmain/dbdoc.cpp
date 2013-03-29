@@ -2521,7 +2521,7 @@ void DbDoc::onPrintReport(wxCommandEvent& evt)
     }
 }
 
-void DbDoc::onModifyStructure(wxCommandEvent& event)
+void DbDoc::onModifyStructure(wxCommandEvent& evt)
 {
     IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
@@ -2533,16 +2533,10 @@ void DbDoc::onModifyStructure(wxCommandEvent& event)
     if (!obj)
         return;
 
-    tango::ISetPtr modify_set;
-    
-    modify_set = g_app->getDatabase()->openSet(towstr(obj->getPath()));
-    if (!modify_set)
-    {
-        return;
-    }
+    std::wstring path = towstr(obj->getPath());
 
     StructureDoc* doc = new StructureDoc;
-    doc->setModifySet(modify_set);
+    doc->setModifySet(path);
     g_app->getMainFrame()->createSite(static_cast<IDocument*>(doc),
                                       sitetypeNormal,
                                       -1, -1, -1, -1);

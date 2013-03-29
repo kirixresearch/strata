@@ -265,6 +265,8 @@ wxString getDbColumnTypeText(int tango_type);
 // path specified in the mount
 bool getRemotePathIfExists(wxString& path);
 
+bool isSamePath(const std::wstring& path1, const std::wstring& path2);
+
 // for mounted folders or singleton mounts, these functions get
 // the actual object path or actual filename, respectively
 wxString getObjectPathFromMountPath(const wxString& database_path);

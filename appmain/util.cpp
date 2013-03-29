@@ -785,6 +785,20 @@ bool getRemotePathIfExists(wxString& path)
     return false;
 }
 
+bool isSamePath(const std::wstring& path1, const std::wstring& path2)
+{
+    std::wstring s1 = path1, s2 = path2;
+    kl::makeLower(s1);
+    kl::makeLower(s2);
+    if (s1.length() > 0 && s1[0] == '/')
+        s1.erase(0,1);
+    if (s2.length() > 0 && s2[0] == '/')
+        s2.erase(0,1);
+
+    return (s1 == s2) ? true : false;
+}
+
+
 wxString getObjectPathFromMountPath(const wxString& database_path)
 {
     tango::IDatabasePtr db = g_app->getDatabase();

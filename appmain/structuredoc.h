@@ -84,8 +84,8 @@ xcm_interface IStructureDoc : public xcm::IObject
 
 public:
 
-    virtual void setModifySet(tango::ISetPtr set) = 0;
-    virtual tango::ISetPtr getModifySet() = 0;
+    virtual bool setModifySet(const std::wstring& path) = 0;
+    virtual std::wstring getPath() = 0;
     virtual bool doSave() = 0;
 };
 
@@ -124,14 +124,14 @@ public:
     StructureDoc();
     virtual ~StructureDoc();
 
-    // -- IStructureDoc --
-    void setModifySet(tango::ISetPtr modify_set);
-    tango::ISetPtr getModifySet();
+    // IStructureDoc
+    bool setModifySet(const std::wstring& path);
+    std::wstring getPath();
     bool doSave();
 
 private:
 
-    // -- IDocument --
+    // IDocument
     bool initDoc(IFramePtr frame,
                  IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,
@@ -142,7 +142,7 @@ private:
     bool onSiteClosing(bool force);
     void onSiteActivated();
     
-    // -- IColumnListTarget --
+    // IColumnListTarget
     void getColumnListItems(std::vector<ColumnListItem>& items);
     void onColumnListDblClicked(const std::vector<wxString>& items);
 
@@ -171,23 +171,25 @@ private:
     // structural
     bool createTable();
     tango::IStructurePtr createStructureFromGrid();
-    void populateGridFromSet(tango::ISetPtr set);
+    void populateGridFromStructure();
     
     bool isChanged();
     void setChanged(bool changed);
     
+    void createModifyJobInstructions(kl::JsonNode& params, size_t* _action_count);
+
 private:
 
     void onAlterTableJobFinished(jobs::IJobPtr job);
     
-    // -- frame event handlers --
+    // frame event handlers
     void onFrameEvent(FrameworkEvent& evt);
     
-    // -- signal events --
+    // signal events 
     void onInsertingRows(std::vector<int> rows);
     void onDeletedRows(std::vector<int> rows);
     
-    // -- events --
+    // events
     void onSize(wxSizeEvent& evt);
     void onEraseBackground(wxEraseEvent& evt);
 
@@ -214,14 +216,14 @@ private:
 
 private:
 
-    tango::ISetPtr m_modify_set;
+    tango::IStructurePtr m_structure;
     tango::IStructurePtr m_expr_edit_structure;
     
     IFramePtr m_frame;
     IDocumentSitePtr m_doc_site;
     IDocumentSitePtr m_target_site;
 
-    wxString m_path;
+    std::wstring m_path;
     bool m_changed;
     bool m_modify;
     bool m_readonly;
@@ -233,7 +235,4 @@ private:
 };
 
 
-
 #endif
-
-
