@@ -457,6 +457,7 @@ tango::IFileInfoPtr ClientDatabase::getFileInfo(const std::wstring& path)
     f->is_mount = file_info["is_mount"].getBoolean();
     f->primary_key = file_info["primary_key"];
     f->size = (long long)file_info["size"].getDouble();
+    f->object_id = file_info["object_id"];
 
     return static_cast<tango::IFileInfo*>(f);
 }
