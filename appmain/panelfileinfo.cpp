@@ -586,9 +586,8 @@ void MultiFileInfoPanel::onSave(wxCommandEvent& event)
 
     output_inserter->finishInsert();
     
-    ITableDocPtr doc = TableDocMgr::createTableDoc();
-    doc->open(g_app->getDatabase(), output_path);
-    g_app->getMainFrame()->createSite(doc, sitetypeNormal, -1, -1, -1, -1);
+    g_app->getAppController()->openTable(output_path);
+
     g_app->getMainFrame()->closeSite(m_doc_site);
 }
 

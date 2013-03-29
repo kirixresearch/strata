@@ -606,10 +606,7 @@ static void onGroupJobFinished(jobs::IJobPtr job)
 
     if (result_set.isOk())
     {
-        ITableDocPtr doc = TableDocMgr::createTableDoc();
-        doc->open(g_app->getDatabase(), output_path);
-        g_app->getMainFrame()->createSite(doc, sitetypeNormal,
-                                            -1, -1, -1, -1);
+        g_app->getAppController()->openTable(output_path);
     }
      else
     {

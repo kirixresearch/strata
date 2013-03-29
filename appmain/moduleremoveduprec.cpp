@@ -375,16 +375,11 @@ static void onRemoveDupRecJobFinished(jobs::IJobPtr job)
             // table, so open it up
             if (isTemporaryTable(output_path))
             {
-                ITableDocPtr doc = TableDocMgr::createTableDoc();
-                doc->open(g_app->getDatabase(), output_path);
-                g_app->getMainFrame()->createSite(doc,
-                                                  sitetypeNormal,
-                                                  -1, -1, -1, -1);
+                g_app->getAppController()->openTable(output_path);
             }
              else
             {
-                DbDoc* dbdoc = g_app->getDbDoc();
-                dbdoc->refresh();
+                g_app->getAppController()->refreshDbDoc();
             }
 
             success = true;
