@@ -98,16 +98,17 @@ int AlterJob::runJob()
     std::wstring input_path = params_node["input"].getString();
     std::vector<kl::JsonNode> action_nodes = params_node["actions"].getChildren();
 
-    tango::ISetPtr input_set = m_db->openSet(input_path);
-    if (input_set.isNull())
+
+
+    // build the structure configuration from the action list
+    tango::IStructurePtr structure = m_db->describeTable(input_path);
+    if (structure.isNull())
     {
         m_job_info->setState(jobStateFailed);
         return 0;
     }
 
 
-    // build the structure configuration from the action list
-    tango::IStructurePtr structure = input_set->getStructure();
     tango::IColumnInfoPtr col;
 
     std::vector<kl::JsonNode>::iterator it, it_end;
