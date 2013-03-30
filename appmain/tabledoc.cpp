@@ -5710,26 +5710,8 @@ void TableDoc::deleteSelectedRows()
     // ok, now actually do the deletion
     AppBusyCursor bc;
 
-    tango::ISetPtr base_set = getBaseSet();
-    tango::ISetPtr browse_set = getBrowseSet();
-    
     tango::IRowDeleterPtr base_set_deleter;
     tango::IRowDeleterPtr browse_set_deleter;
-    
-    if (base_set.isOk())
-    {
-        base_set_deleter = base_set->getRowDeleter();
-        if (base_set_deleter.isNull())
-            return;
-    }
-    
-    if (browse_set.isOk() && base_set != browse_set)
-    {
-        browse_set_deleter = browse_set->getRowDeleter();
-        if (browse_set_deleter.isNull())
-            return;
-    }
-
 
     // show warning
     wxString message = wxString::Format(_("Performing this operation will permanently delete data.  Are you sure\nyou want to delete %d record(s)?"),
@@ -6184,11 +6166,13 @@ void TableDoc::onSummary(wxCommandEvent& evt)
     // if there was no selection, summarize all columns
     if (summary_columns.size() == 0)
     {
-        tango::IStructurePtr structure = m_browse_set->getStructure();
-        size_t i, col_count = structure->getColumnCount();
+        tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(m_path));
+        if (structure.isNull())
+            return;
 
+        size_t i, col_count = structure->getColumnCount();
         for (i = 0; i < col_count; ++i)
-            summary_columns.push_back(towstr(structure->getColumnName(i)));
+            summary_columns.push_back(structure->getColumnName(i));
     }
 
 
