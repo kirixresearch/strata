@@ -8152,7 +8152,13 @@ void TableDoc::showIndexPanel()
     
     if (site.isNull())
     {
-        IndexPanel* panel = new IndexPanel(this);
+        IndexPanel* panel = new IndexPanel;
+        if (!panel->setPath(towstr(m_path)))
+        {
+            delete panel;
+            return;
+        }
+
         panel->sigOkPressed.connect(this, &TableDoc::onIndexEditFinished);
         
         site = g_app->getMainFrame()->createSite(panel,

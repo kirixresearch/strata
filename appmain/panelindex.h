@@ -45,16 +45,18 @@ XCM_END_INTERFACE_MAP()
 
 public:
 
-    IndexPanel(ITableDocPtr tabledoc);
+    IndexPanel();
     ~IndexPanel();
-    
+
+    bool setPath(const std::wstring& path);
+
     std::vector<IndexInfo*> getAllIndexes();
     
     xcm::signal1<IndexPanel*> sigOkPressed;
 
 private:
 
-    // -- IDocument --
+    // IDocument 
     bool initDoc(IFramePtr frame,
                  IDocumentSitePtr site,
                  wxWindow* doc_site,
@@ -89,7 +91,7 @@ private:
 
     void onGridDataDropped(kcl::GridDataDropTarget* drop_target);
     
-    // -- signal events --
+    // signal events
     void onAvailableFieldsDblClicked(int row, const wxString& text);
     void onDeletingIndexes(std::vector<int> rows, bool* allow);
     void onDeletedIndexes(std::vector<int> rows);
@@ -107,8 +109,7 @@ private:
     
     IndexInfo* m_selected_index_info;
 
-    wxString m_set_path;
-    tango::ISetPtr m_set;
+    std::wstring m_path;
     tango::IStructurePtr m_structure;
     IDocumentSitePtr m_doc_site;
     

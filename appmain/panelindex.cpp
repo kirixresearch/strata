@@ -121,24 +121,13 @@ BEGIN_EVENT_TABLE(IndexPanel, wxPanel)
 END_EVENT_TABLE()
 
 
-IndexPanel::IndexPanel(ITableDocPtr tabledoc)
+IndexPanel::IndexPanel()
 {
     m_selected_index_info = NULL;
     m_available_fields = NULL;
     m_index_fields = NULL;
     m_indexes_list_validator = NULL;
 
-    m_set = tabledoc->getBaseSet();
-    if (m_set.isOk())
-    {
-        if (isTemporaryTable(m_set->getObjectPath()))
-            m_set_path = "";
-             else
-            m_set_path = m_set->getObjectPath();
-        
-        // store the set structure
-        m_structure = m_set->getStructure();
-    }
 }
 
 IndexPanel::~IndexPanel()
@@ -146,6 +135,20 @@ IndexPanel::~IndexPanel()
     delete m_indexes_list_validator;
     m_ok_button = NULL;
 }
+
+
+bool IndexPanel::setPath(const std::wstring& path)
+{
+    tango::IDatabasePtr db = g_app->getDatabase();
+
+    m_structure = db->describeTable(path);
+    if (m_structure.isNull())
+        return false;
+
+    m_path = path;
+    return true;
+}
+
 
 
 bool IndexPanel::initDoc(IFramePtr frame,
@@ -162,16 +165,16 @@ bool IndexPanel::initDoc(IFramePtr frame,
     if (!result)
         return false;
     
-    wxString caption = _("Indexes");
-    if (m_set_path.Length() > 0)
+    std::wstring caption = towstr(_("Indexes"));
+    if (m_path.length() > 0)
     {
-        caption += wxT(" - [");
-        caption += m_set_path;
-        caption += wxT("]");
+        caption += L" - [";
+        caption += m_path;
+        caption += L"]";
     }
     
     m_doc_site = site;
-    m_doc_site->setCaption(caption);
+    m_doc_site->setCaption(towx(caption));
     
 
     // create indexes list
@@ -446,12 +449,11 @@ std::vector<IndexInfo*> IndexPanel::getAllIndexes()
 
 void IndexPanel::populateIndexesList()
 {
-    if (m_set.isNull())
-        return;
-    
     tango::IIndexInfoPtr index;
     tango::IIndexInfoEnumPtr indexes;
-    indexes = g_app->getDatabase()->getIndexEnum(m_set->getObjectPath());
+    indexes = g_app->getDatabase()->getIndexEnum(m_path);
+    if (indexes.isNull())
+        return;
     
     // temporary vector for sorting
     std::vector<IndexInfo*> info_vec;
@@ -645,10 +647,7 @@ void IndexPanel::onCancel(wxCommandEvent& evt)
 
 wxString IndexPanel::getUniqueIndexName()
 {
-    wxString base;
-    
-    base = m_set_path.AfterLast('/');
-    base.MakeLower();
+    wxString base = towx(kl::afterLast(m_path, '/'));
     if (base.length() > 0)
         base += "_";
     base += _("index");
