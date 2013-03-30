@@ -758,21 +758,9 @@ void GroupPanel::onExecute(wxCommandEvent& evt)
 
         if (func == GroupFunc_Count && input_name.length() > 0)
         {
-            // check to make sure that count's parameter is boolean
-            tango::IIteratorPtr iter = db->createIterator(towstr(m_path), L"", L"", NULL);
-            if (iter.isNull())
-                return;
+            int type = m_structure->getExprType(towstr(input_name));
 
-            bool valid = false;
-
-            tango::objhandle_t handle = iter->getHandle(towstr(input_name));
-            if (handle)
-            {
-                valid = (iter->getType(handle) == tango::typeBoolean ? true : false);
-                iter->releaseHandle(handle);
-            }
-
-            if (!valid)
+            if (type != tango::typeBoolean)
             {
                 appMessageBox(_("Parameters for the count function must evaluate to either true or false."),
                                    APPLICATION_NAME,
@@ -781,7 +769,7 @@ void GroupPanel::onExecute(wxCommandEvent& evt)
             }
         }
 
-        // -- check for incompatible input field type/group func type --
+        // check for incompatible input field type/group func type
         if (func == GroupFunc_Sum || 
             func == GroupFunc_Avg || 
             func == GroupFunc_Stddev ||
