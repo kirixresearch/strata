@@ -120,21 +120,17 @@ bool MergePanel::initDoc(IFramePtr frame,
         if (table_doc.isNull())
             return false;
 
-        tango::ISetPtr set = table_doc->getBaseSet();
-
         // make panel caption
         wxString caption = _("Append");
-        if (set.isOk())
+
+        std::wstring path = towstr(table_doc->getPath());
+        if (isTemporaryTable(path))
         {
-            if (isTemporaryTable(set->getObjectPath()))
-            {
-                std::wstring name = set->getObjectPath();
-                name = kl::afterLast(name, '/');
+            std::wstring name = kl::afterLast(path, '/');
             
-                caption += wxT(" - [");
-                caption += towx(name);
-                caption += wxT("]");
-            }
+            caption += wxT(" - [");
+            caption += towx(name);
+            caption += wxT("]");
         }
 
         m_doc_site->setCaption(caption);
@@ -408,8 +404,7 @@ static void onAppendJobFinished(jobs::IJobPtr job)
             table_doc = site->getDocument();
             if (table_doc.isOk())
             {
-                tango::ISetPtr base_set = table_doc->getBaseSet();
-                if (base_set.isOk() && 0 == wcscasecmp(base_set->getObjectPath().c_str(), output_path.c_str()))
+                if (0 == wcscasecmp(table_doc->getPath().c_str(), output_path.c_str()))
                 {
                     table_doc->getGrid()->refresh(kcl::Grid::refreshAll);
                     table_doc->updateStatusBar();

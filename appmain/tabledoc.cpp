@@ -428,11 +428,11 @@ bool TableDoc::canDeleteColumns(std::vector<int>& view_cols)
     
     // we're checking an external set
     
-    tango::ISetPtr set = getBaseSet();
-    if (set.isNull())
+    tango::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
         return false;
-    
-    tango::IStructurePtr structure = set->getStructure();
+
+    tango::IStructurePtr structure = db->describeTable(towstr(m_path));
     if (structure.isNull())
         return false;
     
@@ -762,12 +762,8 @@ void TableDoc::onFrameEvent(FrameworkEvent& evt)
     {
         // get the event set path; refresh the tabledoc if the base or
         // browse sets have the same path
-        wxString path = evt.s_param;
-        tango::ISetPtr base_set = getBaseSet();
-        tango::ISetPtr filter_set = getBrowseSet();
 
-        if ((base_set.isOk() && base_set->getObjectPath() == path) ||
-            (filter_set.isOk() && filter_set->getObjectPath() == path))
+        if (isSamePath(towstr(m_path), towstr(evt.s_param)))
             m_grid->refresh(kcl::Grid::refreshAll);
     }
     else if (evt.name == FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD &&
@@ -1471,36 +1467,9 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
     }
 
 
-    // for xdclient, rather than copying the table, create a local "bookmark"
-    {
-        tango::ISetPtr set = getBaseSet();
-        if (set.isOk())
-        {
-            std::wstring path = set->getObjectPath();
-
-            // is the source location itself a mount?
-            std::wstring root = getMountRoot(g_app->getDatabase(), path);
-            if (root.length() > 0)
-            {
-                std::wstring cstr, rpath;
-                g_app->getDatabase()->getMountPoint(root, cstr, rpath);
-                kl::makeLower(cstr);
-                if (cstr.find(L"xdclient") != -1)
-                {
-                    Bookmark::create(dlg.getPath(), path);
-                    g_app->getAppController()->refreshDbDoc();
-                    return;
-                }
-            }
-        }
-    }
-
-
-
     // copy the file
     if (m_iter.isNull())
         return;
-
 
     // if we're saving the file to a filesystem mount and no
     // extension is specified, then automatically add a 'csv'
@@ -1549,7 +1518,7 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
     job->getJobInfo()->setTitle(towstr(title));
     kl::JsonNode params;
 
-    params["input"].setString(getBaseSet()->getObjectPath());
+    params["input"].setString(towstr(m_path));
     params["output"].setString(path);
     params["where"].setString(towstr(getFilter()));
     params["order"].setString(towstr(getSortOrder()));
@@ -1967,15 +1936,8 @@ void TableDoc::onShareUrlRequested(wxString& url)
         return;
     }
 
-    tango::ISetPtr set = getBaseSet();
-    if (set.isNull())
-    {
-        url = wxT("Invalid table");
-        return;
-    }
 
-    
-    std::wstring path = set->getObjectPath();
+    std::wstring path = towstr(m_path);
 
     if (g_app->getDbDriver() != L"xdclient")
     {
@@ -3984,8 +3946,9 @@ void TableDoc::onGridColumnRightClick(kcl::GridEvent& evt)
     
 
     tango::IStructurePtr iter_structure = m_iter->getStructure();
-    tango::IStructurePtr set_structure = getBaseSet()->getStructure();
-
+    tango::IStructurePtr set_structure = g_app->getDatabase()->describeTable(towstr(m_path));
+    if (set_structure.isNull())
+        return;
 
 
     // find out if any dynamic fields are selected
@@ -4042,8 +4005,8 @@ void TableDoc::onGridColumnRightClick(kcl::GridEvent& evt)
         }
     }
     
-
-    tango::IIndexInfoEnumPtr index_enum = g_app->getDatabase()->getIndexEnum(getBaseSet()->getObjectPath());
+    tango::IDatabasePtr db = g_app->getDatabase();
+    tango::IIndexInfoEnumPtr index_enum = db->getIndexEnum(towstr(m_path));
 
     wxMenu menuPopup;
 
@@ -4110,7 +4073,7 @@ void TableDoc::onGridColumnRightClick(kcl::GridEvent& evt)
 
 
         tango::IIndexInfoEnumPtr indexes;
-        indexes = g_app->getDatabase()->getIndexEnum(getBaseSet()->getObjectPath());
+        indexes = db->getIndexEnum(towstr(m_path));
         
         if (i >= (int)(indexes->size()+1))
         {
@@ -4262,12 +4225,10 @@ static void setColumnProps(wxColor* fill_color,
 
 void TableDoc::resetChildWindows()
 {
-    tango::ISetPtr set = getBaseSet();
-    if (set.isNull())
-        return;
+    tango::IDatabasePtr db = g_app->getDatabase();
 
     tango::IRelationEnumPtr rel_enum;
-    rel_enum = g_app->getDatabase()->getRelationEnum(set->getObjectPath());
+    rel_enum = db->getRelationEnum(towstr(m_path));
 
     if (rel_enum->size() == 0)
         return;
@@ -4821,7 +4782,8 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
         return;
         
     std::wstring primary_key;
-    tango::IFileInfoPtr info = db->getFileInfo(getBaseSet()->getObjectPath());
+
+    tango::IFileInfoPtr info = db->getFileInfo(towstr(m_path));
     if (info.isOk())
     {
         primary_key = info->getPrimaryKey();

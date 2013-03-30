@@ -60,10 +60,10 @@ ViewPanel::ViewPanel(ITableDocPtr tabledoc)
     tango::ISetPtr set = tabledoc->getBaseSet();
     if (set.isOk())
     {
-        if (isTemporaryTable(set->getObjectPath()))
+        if (isTemporaryTable(towstr(tabledoc->getPath())))
             m_set_path = "";
              else
-            m_set_path = towx(set->getObjectPath());
+            m_set_path = tabledoc->getPath();
         
         m_structure = set->getStructure();
     }

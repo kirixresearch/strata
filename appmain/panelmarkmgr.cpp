@@ -450,7 +450,7 @@ void MarkMgrPanel::editMark(int mark_idx)
         return;
     
     wxString expr = mark->getExpression();
-    wxString set_path = towx(tabledoc->getBaseSet()->getObjectPath());
+    wxString set_path = tabledoc->getPath();
     wxString caption = wxString::Format(_("Mark - [%s] - %s"),
                                         set_path.c_str(),
                                         mark->getDescription().c_str());
