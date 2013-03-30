@@ -71,8 +71,7 @@ void TableDoc::removeFilter()
     m_filter = wxT("");
     m_sort_order = wxT("");
 
-    tango::ISetPtr set = m_set;
-    setBrowseSet(set, xcm::null);
+    setBrowseSet(m_set, xcm::null);
 
     updateStatusBar();
     g_app->getAppController()->updateQuickFilterToolBarItem();

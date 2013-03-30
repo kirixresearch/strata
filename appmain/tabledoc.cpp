@@ -776,7 +776,7 @@ void TableDoc::onFrameEvent(FrameworkEvent& evt)
         TableDoc* td1 = (TableDoc*)evt.l_param;
         TableDoc* td2 = (TableDoc*)this;
 
-        if (td1->m_set == td2->m_set)
+        if (isSamePath(towstr(td1->m_path), towstr(td2->m_path)))
         {
             if (evt.l_param2 != (unsigned long)m_active_view.p)
             {
@@ -5518,10 +5518,8 @@ void TableDoc::onMakeStatic(wxCommandEvent& evt)
 
 
     // make sure that the columns are all dynamic
-    
-    tango::ISetPtr action_set = m_set;
 
-    tango::IStructurePtr structure = action_set->getStructure();
+    tango::IStructurePtr structure = m_set->getStructure();
     tango::IColumnInfoPtr colinfo;
            
     std::set<wxString>::iterator it;
@@ -8129,7 +8127,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
         
         if (index.isOk())
         {
-            db->deleteIndex(m_set->getObjectPath(), index->getTag());
+            db->deleteIndex(towstr(m_path), index->getTag());
             index_deleted = true;
         }
     }
