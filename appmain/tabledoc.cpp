@@ -46,7 +46,7 @@
 #include <set>
 #include <kl/utf8.h>
 #include <kl/thread.h>
-
+#include <kl/string.h>
 
 enum
 {
@@ -655,8 +655,12 @@ bool TableDoc::onSiteClosing(bool force)
 
             if (dlg.ShowModal() == wxID_OK)
             {
-                g_app->getDatabase()->moveFile(m_set->getObjectPath(), towstr(dlg.getPath()));
-                g_app->getAppController()->refreshDbDoc();
+                if (g_app->getDatabase()->moveFile(towstr(m_path), towstr(dlg.getPath())))
+                {
+                    g_app->getAppController()->refreshDbDoc();
+
+                    m_path = dlg.getPath();
+                }
             }
              else
             {
@@ -1438,9 +1442,9 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
 
         if (!db->getMountPoint(folder, cstr, rpath))
         {
-            std::wstring save_path = towstr(dlg.getPath());
+            wxString save_path = dlg.getPath();
 
-            if (!db->moveFile(m_set->getObjectPath(), save_path))
+            if (!db->moveFile(towstr(m_path), towstr(save_path)))
             {
                 appMessageBox(_("The file could not be saved in the specified location.  The destination location may by in use."),
                                    APPLICATION_NAME,
@@ -1588,7 +1592,7 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
 
     wxString filename = getFilenameFromPath(m_path, false);
     
-    if (m_set.isOk() && isTemporaryTable(m_set->getObjectPath()))
+    if (isTemporaryTable(towstr(m_path)))
         filename = _("Untitled");
     
     wxFileDialog dlg(g_app->getMainWindow(),
@@ -1930,7 +1934,7 @@ void TableDoc::onReload(wxCommandEvent& evt)
 
             // configure the job parameters
             kl::JsonNode params;
-            params = createSortFilterJobParams(m_set->getObjectPath(), towstr(m_filter), towstr(m_sort_order));
+            params = createSortFilterJobParams(towstr(m_path), towstr(m_filter), towstr(m_sort_order));
 
 
             // set the job parameters and start the job
@@ -2353,7 +2357,7 @@ bool TableDoc::open(tango::IDatabasePtr db,
         if (url.length() > 0)
         {
             // project is a remote project
-            url += m_set->getObjectPath();
+            url += m_path;
             setSourceUrl(url);
         }
          else
@@ -2717,27 +2721,22 @@ void TableDoc::updateCaption()
     }
 
     // get caption
-    if (m_set.isOk())
-    {
-        wxString temps = towx(m_set->getObjectPath());
 
-        if (isTemporary())
-        {
-            m_caption = _("(Untitled)");
-        }
-         else
-        {
-            if (m_source_url.Length() > 0)
-                m_caption = m_source_url.AfterLast(wxT('/'));
-             else
-                m_caption = temps.AfterLast(wxT('/'));
-        }
+    if (isTemporary())
+    {
+        m_caption = _("(Untitled)");
+    }
+        else
+    {
+        if (m_source_url.Length() > 0)
+            m_caption = m_source_url.AfterLast('/');
+            else
+            m_caption = m_path.AfterLast('/');
     }
 
     if (m_doc_site)
     {
-        wxString s;
-        s = m_caption;
+        wxString s = m_caption;
         s += m_caption_suffix;
 
         m_doc_site->setCaption(s);
