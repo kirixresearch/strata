@@ -810,7 +810,7 @@ int ImportJob::runJob()
             }
 
             // create an iterator on the source set
-            src_iter = src_set->createIterator(L"", L"", NULL);
+            src_iter = src_db->createIterator(towstr(it->input_path), L"", L"", NULL);
         }
          else
         {

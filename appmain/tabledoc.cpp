@@ -2343,7 +2343,7 @@ bool TableDoc::open(tango::IDatabasePtr db,
                     setSourceUrl(url + rpath);
                 }
             }
-                else
+             else
             {
                 std::wstring part = path;
                 part.erase(0, mount_root.length());
@@ -2392,6 +2392,10 @@ bool TableDoc::open(tango::ISetPtr set, tango::IIteratorPtr iter)
 
 bool TableDoc::setBrowseSet(tango::ISetPtr set, tango::IIteratorPtr iter)
 {
+    tango::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return false;
+
     if (set.isNull())
         return false;
 
@@ -2404,7 +2408,10 @@ bool TableDoc::setBrowseSet(tango::ISetPtr set, tango::IIteratorPtr iter)
      else
     {
         // create a default iterator
-        tango::IIteratorPtr iter = set->createIterator(L"", L"", NULL);
+        tango::IIteratorPtr iter = db->createIterator(m_browse_set->getObjectPath(), L"", L"", NULL);
+        if (iter.isNull())
+            return false;
+
         setIterator(iter);
     }
 
