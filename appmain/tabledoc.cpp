@@ -2835,9 +2835,7 @@ void TableDoc::setIterator(tango::IIteratorPtr iter, bool go_first)
         // insertion of new rows is not allowed when
         // an order or a filter is set
 
-        if (m_sort_order.IsEmpty() &&
-            m_filter.IsEmpty() &&
-            m_set == m_browse_set)
+        if (m_sort_order.IsEmpty() && m_filter.IsEmpty())
         {
             m_grid->setOptionState(kcl::Grid::optGhostRow, true);
         }
@@ -7644,7 +7642,7 @@ void TableDoc::deleteRecords(const wxString& condition)
     if (m_filter.Length() > 0)
     {
         cmd = L" DELETE FROM ";
-        cmd += towstr(m_path);
+        cmd += towstr(getPath());
         cmd += L" WHERE ";
         cmd += L"(";
         cmd += towstr(m_filter);
@@ -7652,18 +7650,15 @@ void TableDoc::deleteRecords(const wxString& condition)
         cmd += towstr(condition);
         cmd += L");";
         
-        if (m_browse_set.isOk())
-        {
-            cmd += L"DELETE FROM ";
-            cmd += m_browse_set->getObjectPath();
-            cmd += L" WHERE ";
-            cmd += towstr(condition);
-        }
+        cmd += L"DELETE FROM ";
+        cmd += towstr(getBrowsePath());
+        cmd += L" WHERE ";
+        cmd += towstr(condition);
     }
      else
     {
         cmd += L" DELETE FROM ";
-        cmd += towstr(m_path);
+        cmd += towstr(getPath());
         cmd += L" WHERE ";
         cmd += towstr(condition);
     }
@@ -7742,7 +7737,7 @@ void TableDoc::showReplacePanel(const wxString& def_condition, const wxString& d
             AppBusyCursor bc;
 
             ReplaceRowsPanel* panel = new ReplaceRowsPanel;
-            panel->setParameters(towx(m_browse_set->getObjectPath()), def_condition, def_field);
+            panel->setParameters(getBrowsePath(), def_condition, def_field);
 
             site = m_frame->createSite(panel,
                                        sitetypeModeless |
