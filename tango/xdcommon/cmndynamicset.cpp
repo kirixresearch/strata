@@ -164,12 +164,6 @@ unsigned int CommonDynamicSet::getSetFlags()
     return tango::sfFastRowCount;
 }
 
-
-tango::ISetPtr CommonDynamicSet::getBaseSet()
-{
-    return m_base_set;
-}
-
 void CommonDynamicSet::startBulkInsert()
 {
     m_index->startBulkInsert(100000);

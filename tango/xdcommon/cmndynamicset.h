@@ -49,7 +49,6 @@ public:
     void setObjectPath(const std::wstring& new_path);
     std::wstring getObjectPath();
 
-    tango::ISetPtr getBaseSet();
     void startBulkInsert();
     void finishBulkInsert();
     bool insertRow(const tango::rowid_t& rowid);
