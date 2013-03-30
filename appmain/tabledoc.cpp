@@ -5476,7 +5476,7 @@ void TableDoc::onMakeStatic(wxCommandEvent& evt)
         return;
 
     // get the current set path
-    wxString object_path = m_set->getObjectPath();
+    wxString object_path = m_path;
 
     // find out which columns are selected
     kcl::IModelPtr model = m_grid->getModel();
@@ -5876,7 +5876,7 @@ void TableDoc::deleteSelectedColumns()
     if (!g_app->getAppController()->doReadOnlyCheck())
         return;
 
-    wxString object_path = m_set->getObjectPath();
+    wxString object_path = m_path;
     tango::IStructurePtr structure = m_iter->getSet()->getStructure();
     tango::IColumnInfoPtr colinfo;
 
@@ -7965,7 +7965,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
     tango::IDatabasePtr db = g_app->getDatabase();
 
     // get the original indexes that exist on this set
-    tango::IIndexInfoEnumPtr orig_indexes = db->getIndexEnum(m_set->getObjectPath());
+    tango::IIndexInfoEnumPtr orig_indexes = db->getIndexEnum(towstr(m_path));
     bool found;
     
     // get all of the indexes that were created/updated in the IndexPanel
@@ -7997,14 +7997,14 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
         // delete the index if it's not found
         if (!found)
         {
-            db->deleteIndex(m_set->getObjectPath(), index->getTag());
+            db->deleteIndex(towstr(m_path), index->getTag());
         }
     }
     
     
     // we may have deleted some of the original indexes;
     // get the list of indexes again
-    orig_indexes = db->getIndexEnum(m_set->getObjectPath());
+    orig_indexes = db->getIndexEnum(towstr(m_path));
     count = (int)orig_indexes->size();
     
     // rename indexes
@@ -8057,7 +8057,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
     
     // we may have deleted some of the original indexes;
     // get the list of indexes again
-    orig_indexes = db->getIndexEnum(m_set->getObjectPath());
+    orig_indexes = db->getIndexEnum(towstr(m_path));
     count = (int)orig_indexes->size();
     bool index_deleted = false;
     
@@ -8085,7 +8085,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
         // get the list of indexes again
         if (index_deleted)
         {
-            orig_indexes = db->getIndexEnum(m_set->getObjectPath());
+            orig_indexes = db->getIndexEnum(towstr(m_path));
             count = (int)orig_indexes->size();
             index_deleted = false;
         }
