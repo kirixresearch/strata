@@ -2312,48 +2312,46 @@ bool TableDoc::open(tango::IDatabasePtr db,
 
     // if the set/table displayed has a url associated with it, display it
 
-    if (set.isOk())
+    tango::IAttributesPtr attr = db->getAttributes();
+    std::wstring url = attr->getStringAttribute(tango::dbattrDatabaseUrl);
+    if (url.length() > 0)
     {
-        tango::IAttributesPtr attr = db->getAttributes();
-        std::wstring url = attr->getStringAttribute(tango::dbattrDatabaseUrl);
+        // project is a remote project
+        url += m_path;
+        setSourceUrl(url);
+    }
+        else
+    {
+        std::wstring mount_root = getMountRoot(db, path);
+
+        std::wstring url;
+        tango::IDatabasePtr mount_db = db->getMountDatabase(mount_root);
+        if (mount_db.isOk())
+        {
+            attr = mount_db->getAttributes();
+            if (attr)
+                url = attr->getStringAttribute(tango::dbattrDatabaseUrl);
+        }
+
         if (url.length() > 0)
         {
-            // project is a remote project
-            url += m_path;
-            setSourceUrl(url);
-        }
-         else
-        {
-            std::wstring set_path = set->getObjectPath();
-            std::wstring mount_root = getMountRoot(db, set_path);
-
-            std::wstring url;
-            tango::IDatabasePtr mount_db = db->getMountDatabase(mount_root);
-            if (mount_db.isOk())
+            if (path == mount_root)
             {
-                attr = mount_db->getAttributes();
-                if (attr)
-                    url = attr->getStringAttribute(tango::dbattrDatabaseUrl);
+                std::wstring cstr, rpath;
+                if (db->getMountPoint(path, cstr, rpath))
+                {
+                    setSourceUrl(url + rpath);
+                }
             }
-
-            if (url.length() > 0)
+                else
             {
-                if (set_path == mount_root)
-                {
-                    std::wstring cstr, rpath;
-                    if (db->getMountPoint(set_path, cstr, rpath))
-                    {
-                        setSourceUrl(url + rpath);
-                    }
-                }
-                 else
-                {
-                    set_path.erase(0, mount_root.length());
-                    setSourceUrl(url + set_path);
-                }
+                std::wstring part = path;
+                part.erase(0, mount_root.length());
+                setSourceUrl(url + part);
             }
         }
     }
+
 
 
     // update caption
@@ -2375,7 +2373,7 @@ bool TableDoc::open(tango::IDatabasePtr db,
     }
      else
     {
-        browse_iter = set->createIterator(L"", L"", NULL);
+        browse_iter = db->createIterator(path, L"", L"", NULL);
         if (browse_iter.isNull())
             return false; // something's wrong
     }
