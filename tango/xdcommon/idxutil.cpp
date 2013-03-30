@@ -78,7 +78,7 @@ IIndex* createExternalIndex(tango::ISetPtr set,
                             bool allow_dups,
                             tango::IJob* job)
 {
-    // -- job information --
+    // job information
     IJobInternalPtr ijob;
     tango::rowpos_t cur_count;
     tango::rowpos_t max_count;
@@ -109,7 +109,7 @@ IIndex* createExternalIndex(tango::ISetPtr set,
     }
 
 
-    // -- create an unordered iterator --
+    // create an unordered iterator
     tango::IIteratorPtr temp_iter = set->createIterator(L"", L"", NULL);
     if (!temp_iter)
     {
@@ -129,7 +129,7 @@ IIndex* createExternalIndex(tango::ISetPtr set,
     iter->goFirst();
 
 
-    // -- create the index --
+    // create the index
     ExIndex* index = new ExIndex;
     index->setTempFilePath(tempfile_path);
 
@@ -147,7 +147,7 @@ IIndex* createExternalIndex(tango::ISetPtr set,
 
     
 
-    // -- add keys to the index --
+    // add keys to the index
     tango::rowid_t rowid;
     index->startBulkInsert(max_count);
     while (!iter->eof())
@@ -211,7 +211,7 @@ IIndex* createExternalIndex(tango::ISetPtr set,
         return NULL;
     }
 
-    // -- mark job as finished --
+    // mark job as finished
     if (job)
     {
         ijob->setCurrentCount(cur_count);
@@ -233,7 +233,8 @@ IIndexIterator* seekRow(IIndex* idx,
                         int key_len,
                         tango::rowid_t rowid)
 {
-    // -- attempt to seek --
+    // attempt to seek
+
     IIndexIterator* iter = idx->seek((unsigned char*)key, key_len, false);
     
     if (!iter)
@@ -294,7 +295,7 @@ tango::IIteratorPtr createIteratorFromIndex(tango::ISetPtr set,
 
 
 
-// -- CommonIndexIterator Implementation --
+// CommonIndexIterator Implementation
 
 CommonIndexIterator::CommonIndexIterator(tango::ISet* set,
                                          tango::IIterator* data_iter,
@@ -315,11 +316,11 @@ CommonIndexIterator::CommonIndexIterator(tango::ISet* set,
         m_set->ref();
     }
     
-    // -- store the data iterator pointer
+    // store the data iterator pointer
     m_data_iter = data_iter;
     m_data_iter->ref();
     
-    // -- store the index iterator pointer --
+    // store the index iterator pointer
     m_idx_iter = idx_iter;
     m_idx_iter->ref();
 
@@ -327,7 +328,7 @@ CommonIndexIterator::CommonIndexIterator(tango::ISet* set,
 
     m_row_deleted = false;
 
-    // -- get key length --
+    // get key length
     IIndex* idx = m_idx_iter->getIndex();
     m_keylen = idx->getKeyLength();
     idx->unref();
@@ -335,7 +336,7 @@ CommonIndexIterator::CommonIndexIterator(tango::ISet* set,
     m_key_filter = new unsigned char[m_keylen];
     m_key_filter_len = 0;
     
-    // -- store the key columns --
+    // store the key columns
     m_order = order;
     m_layout = NULL;
 }
@@ -501,8 +502,8 @@ bool CommonIndexIterator::seek(const unsigned char* key,
 
     if (!m_value_side)
     {
-        // -- we are seeking for a record number.
-        //    'key' contains a 64-bit record id --
+        // we are seeking for a record number.
+        // 'key' contains a 64-bit record id
 
         tango::rowid_t fixed_rowid;
         invert_rowid_endianness((unsigned char*)&fixed_rowid,
@@ -522,7 +523,7 @@ bool CommonIndexIterator::seek(const unsigned char* key,
     }
 
 
-    // -- we are seeking for a specific key --
+    // we are seeking for a specific key
 
     bool result = false;
 
@@ -615,7 +616,7 @@ void CommonIndexIterator::onSetRowUpdated(tango::rowid_t rowid)
 {
     if (rowid == m_rowid)
     {
-        // -- refetch row --
+        // refetch row
         m_data_iter->goRow(rowid);
     }
 }
