@@ -223,7 +223,9 @@ bool ColPropsPanel::initDoc(IFramePtr frame,
     if (!m_tabledoc)
         return false;
 
-    m_set = m_tabledoc->getBrowseSet();
+    std::wstring browse_path = towstr(m_tabledoc->getBrowsePath());
+
+    m_set = g_app->getDatabase()->openSet(browse_path);
 
     if (m_set.isNull())
     {

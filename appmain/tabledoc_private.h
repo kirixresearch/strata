@@ -99,12 +99,11 @@ public:
               tango::IIteratorPtr optional_iterator = xcm::null);
 
     bool open(tango::ISetPtr set, tango::IIteratorPtr iter);
-    tango::ISetPtr getBaseSet();
 
     bool setBrowseSet(tango::ISetPtr set, tango::IIteratorPtr iter);
-    tango::ISetPtr getBrowseSet();
 
     wxString getPath() { return m_path; }
+    wxString getBrowsePath() { return towx(m_browse_set->getObjectPath()); }
 
     void closeSet();
     void setEnabled(bool new_val);

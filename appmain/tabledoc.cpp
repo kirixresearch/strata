@@ -2887,21 +2887,11 @@ tango::IIteratorPtr TableDoc::getIterator()
     return m_iter;
 }
 
-tango::ISetPtr TableDoc::getBaseSet()
-{
-    return m_set;
-}
 
 ITableDocModelPtr TableDoc::getModel()
 {
     return m_model;
 }
-
-tango::ISetPtr TableDoc::getBrowseSet()
-{
-    return m_browse_set;
-}
-
 
 void TableDoc::insertColumnSeparator(int insert_pos)
 {
@@ -4257,7 +4247,8 @@ void TableDoc::resetChildWindows()
         table_doc = site->getDocument();
         if (table_doc.isOk())
         {
-            table_doc->setBrowseSet(table_doc->getBaseSet(), xcm::null);
+            // reset child window with original path
+            table_doc->open(g_app->getDatabase(), table_doc->getPath());
             table_doc->setCaption(wxT(""), wxT(""));
             site->setName(wxT(""));
             table_doc->setIsChildSet(false);
@@ -6027,11 +6018,10 @@ bool TableDoc::getIsChildSet()
 
 wxString TableDoc::getDbDriver()
 {
-    tango::ISetPtr browse_set = getBrowseSet();
-    if (browse_set.isNull())
+    if (m_set.isNull())
         return wxT("");
         
-    xcm::class_info* class_info = xcm::get_class_info(browse_set.p);
+    xcm::class_info* class_info = xcm::get_class_info(m_set.p);
     
     return towx(class_info->get_name()).BeforeFirst('.');
 }
@@ -6206,7 +6196,7 @@ void TableDoc::onSummary(wxCommandEvent& evt)
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.summarize-job");
 
     kl::JsonNode params;
-    params["input"].setString(towstr(getBrowseSet()->getObjectPath()));
+    params["input"].setString(towstr(m_path));
     params["output"].setString(L"xtmp_" + kl::getUniqueString());
     params["columns"].setArray();
     params["where"].setString(towstr(getFilter()));
@@ -7678,10 +7668,13 @@ void TableDoc::deleteRecords(const wxString& condition)
         cmd += towstr(condition);
         cmd += L");";
         
-        cmd += L"DELETE FROM ";
-        cmd += getBrowseSet()->getObjectPath();
-        cmd += L" WHERE ";
-        cmd += towstr(condition);
+        if (m_browse_set.isOk())
+        {
+            cmd += L"DELETE FROM ";
+            cmd += m_browse_set->getObjectPath();
+            cmd += L" WHERE ";
+            cmd += towstr(condition);
+        }
     }
      else
     {
@@ -7765,7 +7758,7 @@ void TableDoc::showReplacePanel(const wxString& def_condition, const wxString& d
             AppBusyCursor bc;
 
             ReplaceRowsPanel* panel = new ReplaceRowsPanel;
-            panel->setParameters(towx(getBrowseSet()->getObjectPath()), def_condition, def_field);
+            panel->setParameters(towx(m_browse_set->getObjectPath()), def_condition, def_field);
 
             site = m_frame->createSite(panel,
                                        sitetypeModeless |

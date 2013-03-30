@@ -117,7 +117,7 @@ void TableDoc::setSortOrder(const wxString& expr)
         // set default order
         m_sort_order = wxT("");
         tango::IIteratorPtr iter;
-        iter = g_app->getDatabase()->createIterator(getBrowseSet()->getObjectPath(), L"", L"", NULL);
+        iter = g_app->getDatabase()->createIterator(m_browse_set->getObjectPath(), L"", L"", NULL);
         setIterator(iter);
         return;
     }
@@ -125,7 +125,7 @@ void TableDoc::setSortOrder(const wxString& expr)
 
     // configure the job parameters
     kl::JsonNode params;
-    params = createSortFilterJobParams(getBrowseSet()->getObjectPath(), 
+    params = createSortFilterJobParams(m_browse_set->getObjectPath(), 
                                        L"",
                                        towstr(expr));
 
