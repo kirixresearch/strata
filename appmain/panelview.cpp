@@ -57,16 +57,15 @@ ViewPanel::ViewPanel(ITableDocPtr tabledoc)
     m_available_fields = NULL;
     m_visible_fields = NULL;
     
-    tango::ISetPtr set = tabledoc->getBaseSet();
-    if (set.isOk())
-    {
-        if (isTemporaryTable(towstr(tabledoc->getPath())))
-            m_set_path = "";
-             else
-            m_set_path = tabledoc->getPath();
+    std::wstring path = towstr(tabledoc->getPath());
+
+    if (isTemporaryTable(path))
+        m_set_path = "";
+            else
+        m_set_path = towx(path);
         
-        m_structure = set->getStructure();
-    }
+    m_structure = g_app->getDatabase()->describeTable(path);
+
     
     // store all existing views
     ITableDocModelPtr model = tabledoc->getModel();

@@ -310,10 +310,10 @@ bool RemoveDupRecWizard::initDoc(IFramePtr frame,
         ITableDocPtr table_doc = site->getDocument();
         if (table_doc.isOk())
         {
-            tango::ISetPtr set = table_doc->getBaseSet();
+            std::wstring path = towstr(table_doc->getPath());
 
-            if (!isTemporaryTable(set->getObjectPath()))
-                m_info->m_input_path = towx(set->getObjectPath());
+            if (!isTemporaryTable(path))
+                m_info->m_input_path = towx(path);
         }        
     }
 

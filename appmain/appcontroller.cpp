@@ -1756,16 +1756,12 @@ static bool setReportCreateInfo(IDocumentSitePtr doc_site,
     //data.font_size = font.GetPointSize();
 
     // set the source
-    tango::ISetPtr set = table_doc->getBaseSet();
-    if (set.isNull())
-        return false;
-
     tango::IIteratorPtr iter = table_doc->getIterator();
     if (iter.isNull())
         return false;
 
     data.iterator = iter;
-    data.path = towx(set->getObjectPath());
+    data.path = table_doc->getPath();
     data.sort_expr = table_doc->getSortOrder();
     data.filter_expr = table_doc->getFilter();
 
@@ -6510,15 +6506,12 @@ bool AppController::checkForTemporaryFiles()
         IDocumentSitePtr site;
         site = docsites->getItem(i);
 
-        ITableDocPtr table_doc;
-        table_doc = site->getDocument();
+        ITableDocPtr table_doc = site->getDocument();
 
         if (table_doc.isNull())
             continue;
 
-        tango::ISetPtr set = table_doc->getBaseSet();
-
-        if (isTemporaryTable(set->getObjectPath()))
+        if (isTemporaryTable(towstr(table_doc->getPath())))
             return true;
     }
     

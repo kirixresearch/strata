@@ -1016,7 +1016,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
     tango::IDatabasePtr db = g_app->getDatabase();
 
     tango::IIndexInfoEnumPtr old_indexes;
-    old_indexes = db->getIndexEnum(m_tabledoc->getBaseSet()->getObjectPath());
+    old_indexes = db->getIndexEnum(towstr(m_tabledoc->getPath()));
 
     if (!db->modifyStructure(m_set->getObjectPath(), structure, NULL))
     {
@@ -1058,7 +1058,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
     // some of the indexes may have been deleted during
     // the modifyStructure() operation
 
-    tango::IIndexInfoEnumPtr new_indexes = g_app->getDatabase()->getIndexEnum(m_tabledoc->getBaseSet()->getObjectPath());
+    tango::IIndexInfoEnumPtr new_indexes = db->getIndexEnum(towstr(m_tabledoc->getPath()));
 
     std::vector<tango::IIndexInfoPtr> to_recreate;
     int i, j, old_cnt, new_cnt;
@@ -1120,7 +1120,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
             {
                 kl::JsonNode index_item = indexes.appendElement();
 
-                index_item["input"].setString(m_tabledoc->getBaseSet()->getObjectPath());
+                index_item["input"].setString(towstr(m_tabledoc->getPath()));
                 index_item["name"].setString((*it)->getTag());
                 index_item["expression"].setString((*it)->getExpression());
             }

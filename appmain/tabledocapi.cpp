@@ -95,7 +95,7 @@ void TableDoc::setSortOrder(const wxString& expr)
     {
         // configure the job parameters
         kl::JsonNode params;
-        params = createSortFilterJobParams(getBaseSet()->getObjectPath(), 
+        params = createSortFilterJobParams(towstr(m_path), 
                                            towstr(getFilter()), 
                                            towstr(expr));
 

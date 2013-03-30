@@ -4376,12 +4376,8 @@ void TableDoc::updateChildWindows()
     if (m_relationship_sync == tabledocRelationshipSyncNone)
         return;
 
-    tango::ISetPtr set = getBaseSet();
-    if (set.isNull())
-        return;
-    
     tango::IRelationEnumPtr rel_enum;
-    rel_enum = g_app->getDatabase()->getRelationEnum(set->getObjectPath());
+    rel_enum = g_app->getDatabase()->getRelationEnum(towstr(m_path));
 
     if (rel_enum->size() == 0)
         return;
@@ -4440,11 +4436,8 @@ void TableDoc::updateChildWindows()
 
                 if (table_doc)
                 {
-                    tango::ISetPtr base_set = table_doc->getBaseSet();
-                    std::wstring path = L"";
-                    if (base_set.isOk())
-                        path = base_set->getObjectPath();
-                    if (0 == wcscasecmp(path.c_str(), rel->getRightSet().c_str()))
+                    std::wstring path = towstr(table_doc->getPath());
+                    if (isSamePath(path, rel->getRightSet()))
                     {
                         found = true;
                         site->setName(site_name);
@@ -4908,7 +4901,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
     }
 
 
-    tango::IStructurePtr structure = getBaseSet()->getStructure();
+    tango::IStructurePtr structure = db->describeTable(towstr(m_path));
     if (structure.isNull())
         return;
 
@@ -5068,7 +5061,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
 
 
     wxString cmd = wxT("UPDATE ");
-    cmd += towx(tango::quoteIdentifierIfNecessary(db, getBaseSet()->getObjectPath()));
+    cmd += towx(tango::quoteIdentifierIfNecessary(db, towstr(m_path)));
     cmd += wxT(" SET ");
     cmd += str;
     cmd += where_str;
@@ -5235,12 +5228,11 @@ bool TableDoc::createDynamicField(const wxString& col_name,
     {
         tango::IDatabasePtr db = g_app->getDatabase();
 
-        tango::IColumnInfoPtr col;
+        tango::IStructurePtr structure = db->describeTable(towstr(m_path));
+        if (structure.isNull())
+            return false;
 
-        tango::ISetPtr set = getBaseSet();
-        structure = set->getStructure();
-
-        col = structure->createColumn();
+        tango::IColumnInfoPtr col = structure->createColumn();
 
         col->setName(towstr(col_name));
         col->setType(type);
@@ -5326,8 +5318,10 @@ void TableDoc::showCreateDynamicField()
 
     m_grid->clearSelection();
 
-    tango::IStructurePtr structure = getBaseSet()->getStructure();
-    
+    tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(m_path));
+    if (structure.isNull())
+        return;
+
     int i = 0;
     wxString column_name;
     do
@@ -5989,11 +5983,7 @@ bool TableDoc::deleteSelectedRowsColumns()
 
 void TableDoc::deleteAllRelations()
 {
-    tango::ISetPtr set = getBaseSet();
-    if (set.isNull())
-        return;
-
-    //set->deleteAllRelations();
+    //getBaseSet()->deleteAllRelations();
     //TODO: make sure the above line gets re-implemented
 }
 
@@ -6733,20 +6723,13 @@ bool TableDoc::findNextCell(const wxString& search,
 
 void TableDoc::getReportCreateInfo(ReportCreateInfo& data)
 {
-    // set the source
-    tango::ISetPtr set = getBaseSet();
-    if (set.isOk())
-    {
-        data.path = towx(set->getObjectPath());
-    }
-
     // set the font facename and size being used by the grid
+    data.path = m_path;
     data.font_facename = m_font.GetFaceName();
     data.font_size = m_font.GetPointSize();
 
     // set the data fields
-    int i;
-    int col_count = m_grid->getColumnCount();
+    int i, col_count = m_grid->getColumnCount();
     kcl::IModelPtr model = m_grid_model;
 
     for (i = 0; i < col_count; ++i)
@@ -6853,11 +6836,7 @@ bool TableDoc::saveAsStructure(const wxString& path)
     //  ]
     //  }    
 
-    tango::ISetPtr set = getBaseSet();
-    if (set.isNull())
-        return false;
-    
-    tango::IStructurePtr structure = set->getStructure();
+    tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(m_path));
     if (structure.isNull())
         return false;
 
@@ -7440,7 +7419,7 @@ void TableDoc::copyRecords(const wxString& condition)
 
     kl::JsonNode params;
 
-    params["input"].setString(getBaseSet()->getObjectPath());
+    params["input"].setString(towstr(m_path));
     params["output"].setString(L"xtmp_" + kl::getUniqueString());
     params["where"].setString(towstr(final_condition));
     params["order"].setString(towstr(getSortOrder()));
@@ -7504,7 +7483,7 @@ void TableDoc::onAppendRecords(wxCommandEvent& evt)
     if (site.isNull())
     {
         MergePanel* panel = new MergePanel;
-        panel->setAppend(towx(getBaseSet()->getObjectPath()));
+        panel->setAppend(m_path);
         site = g_app->getMainFrame()->createSite(panel, 
                                                  sitetypeModeless,
                                                  -1, -1, 460, 420);
@@ -7691,7 +7670,7 @@ void TableDoc::deleteRecords(const wxString& condition)
     if (m_filter.Length() > 0)
     {
         cmd = L" DELETE FROM ";
-        cmd += getBaseSet()->getObjectPath();
+        cmd += towstr(m_path);
         cmd += L" WHERE ";
         cmd += L"(";
         cmd += towstr(m_filter);
@@ -7707,7 +7686,7 @@ void TableDoc::deleteRecords(const wxString& condition)
      else
     {
         cmd += L" DELETE FROM ";
-        cmd += getBaseSet()->getObjectPath();
+        cmd += towstr(m_path);
         cmd += L" WHERE ";
         cmd += towstr(condition);
     }
@@ -7990,7 +7969,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
                 if (info->name.CmpNoCase(info->orig_name) != 0)
                 {
                     // have the set rename this index
-                    db->renameIndex(getBaseSet()->getObjectPath(),
+                    db->renameIndex(towstr(m_path),
                                     towstr(index_tag),
                                     towstr(info->name));
                     
@@ -8031,7 +8010,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
         {
             // this is a new index; add it to the IndexJob
             kl::JsonNode index_item = indexes.appendElement();
-            index_item["input"].setString(towstr(getBaseSet()->getObjectPath()));
+            index_item["input"].setString(towstr(m_path));
             index_item["name"].setString(towstr(info->name));
             index_item["expression"].setString(towstr(info->expr));
 
@@ -8067,7 +8046,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
         {
             // we couldn't find the orginal index; create a new index
             kl::JsonNode index_item = indexes.appendElement();
-            index_item["input"].setString(towstr(getBaseSet()->getObjectPath()));
+            index_item["input"].setString(towstr(m_path));
             index_item["name"].setString(towstr(info->name));
             index_item["expression"].setString(towstr(info->expr));
 
@@ -8083,7 +8062,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
         // 2) the expression has changed; delete the old index
         //    and create a new one
         kl::JsonNode index_item = indexes.appendElement();
-        index_item["input"].setString(towstr(getBaseSet()->getObjectPath()));
+        index_item["input"].setString(towstr(m_path));
         index_item["name"].setString(towstr(info->name));
         index_item["expression"].setString(towstr(info->expr));        
         
@@ -8374,7 +8353,7 @@ void TableDoc::setActiveView(ITableDocViewPtr active_view)
 
         if (table_doc.isOk())
         {
-            if (table_doc->getBaseSet() != getBaseSet())
+            if (!isSamePath(towstr(m_path), towstr(table_doc->getPath())))
                 continue;
 
             ITableDocObjectPtr v1 = table_doc->getActiveView();
@@ -8448,8 +8427,7 @@ void TableDoc::refreshActiveView(bool repaint)
         if (table_doc.p == static_cast<ITableDoc*>(this))
             continue;
 
-        if (getBaseSet() == table_doc->getBaseSet() ||
-            getBrowseSet() == table_doc->getBrowseSet())
+        if (isSamePath(towstr(m_path), towstr(table_doc->getPath())))
         {
             multiple_tabledocs_open = true;
             break;
