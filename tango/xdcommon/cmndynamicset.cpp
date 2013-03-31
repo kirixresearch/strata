@@ -118,8 +118,12 @@ std::wstring CommonDynamicSet::getSetId()
 }
 
 bool CommonDynamicSet::create(tango::IDatabasePtr database,
-                              tango::ISetPtr base_set)
+                              const std::wstring& base_path)
 {
+    tango::ISetPtr base_set = database->openSet(base_path);
+    if (base_set.isNull())
+        return false;
+
     //std::wstring filename = dbi->getUniqueFilename();
     //filename += L".dyn";
     
@@ -150,9 +154,7 @@ bool CommonDynamicSet::create(tango::IDatabasePtr database,
     m_base_set_update = base_set;
     m_row_count = 0;
 
-
-    m_base_set_iter = base_set->createIterator(L"", L"", NULL);
-
+    m_base_set_iter = database->createIterator(base_path, L"", L"", NULL);
     m_database = database;
     
     return true;
@@ -442,11 +444,11 @@ tango::IStructurePtr CommonDynamicSet::getStructure()
     return m_base_set->getStructure();
 }
 
-
+/*
 bool CommonDynamicSet::modifyStructure(tango::IStructure* struct_config,
                                        tango::IJob* job)
 {
-/*
+
     // release all indexes
     std::vector<CommonDynamicSetIndexEntry>::iterator it;
     for (it = m_indexes.begin(); it != m_indexes.end(); ++it)
@@ -466,10 +468,8 @@ bool CommonDynamicSet::modifyStructure(tango::IStructure* struct_config,
     m_base_set_iter = m_base_set->createIterator(L"", L"", NULL);
 
     return result;
-*/
-
-    return false;
 }
+*/
 
 
 

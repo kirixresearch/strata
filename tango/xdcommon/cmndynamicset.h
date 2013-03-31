@@ -44,7 +44,7 @@ public:
     virtual ~CommonDynamicSet();
 
     bool create(tango::IDatabasePtr database,
-                tango::ISetPtr base_set);
+                const std::wstring& base_path);
 
     void setObjectPath(const std::wstring& new_path);
     std::wstring getObjectPath();
@@ -59,8 +59,6 @@ public:
 
     unsigned int getSetFlags();
     tango::IStructurePtr getStructure();
-    bool modifyStructure(tango::IStructure* struct_config, 
-                         tango::IJob* job);
 
     tango::IRowDeleterPtr getRowDeleter();
     tango::IIteratorPtr createIterator(const std::wstring& columns,

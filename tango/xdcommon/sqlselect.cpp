@@ -3067,7 +3067,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         
 
         CommonDynamicSet* dyn_set = new CommonDynamicSet;
-        if (!dyn_set->create(db, set))
+        if (!dyn_set->create(db, set->getObjectPath()))
         {
             error.setError(tango::errorGeneral, L"Unable to process WHERE clause");
             delete dyn_set;
@@ -3128,7 +3128,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         
         // create the filtered set
         CommonDynamicSet* dyn_set = new CommonDynamicSet;
-        if (!dyn_set->create(db, set))
+        if (!dyn_set->create(db, set->getObjectPath()))
         {
             error.setError(tango::errorGeneral, L"Unable to process WHERE clause");
             delete dyn_set;
