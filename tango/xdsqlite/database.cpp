@@ -646,14 +646,26 @@ tango::ISetPtr SlDatabase::openSetEx(const std::wstring& path, int format)
 
 
 tango::IIteratorPtr SlDatabase::createIterator(const std::wstring& path,
-                                               const std::wstring& columns,
+                                               const std::wstring& _columns,
                                                const std::wstring& sort,
                                                tango::IJob* job)
 {
-    tango::ISetPtr set = openSet(path);
-    if (set.isNull())
+    std::wstring columns = _columns;
+    if (columns.length() == 0)
+        columns = L"*";
+
+    std::wstring sql = L"SELECT %columns% FROM %table%";
+    kl::replaceStr(sql, L"%columns%", columns);
+    kl::replaceStr(sql, L"%table%", path);
+
+    if (sort.length() > 0)
+        sql += L" ORDER BY " + sort;
+
+    xcm::IObjectPtr resobj;
+    if (!execute(sql, 0, resobj, job))
         return xcm::null;
-    return set->createIterator(columns, sort, job);
+
+    return resobj;
 }
 
 
