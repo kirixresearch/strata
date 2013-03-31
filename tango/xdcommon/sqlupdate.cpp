@@ -37,12 +37,17 @@ struct BaseSetReplaceInfo
 };
 
 
-static int doUpdate(tango::ISetPtr set,
+static int doUpdate(tango::IDatabasePtr db,
+                    const std::wstring& path,
                     const std::wstring& filter,
                     const std::wstring& _params,
                     ThreadErrorInfo& error,
                     tango::IJob* job)
 {
+    tango::ISetPtr set = db->openSet(path);
+    if (set.isNull())
+        return -1;
+
     tango::ColumnUpdateInfo* col_update;
     std::vector<BaseSetReplaceInfo> replace;
     std::vector<BaseSetReplaceInfo>::iterator rit;
@@ -99,7 +104,7 @@ static int doUpdate(tango::ISetPtr set,
 
 
     // create physical iterator and initialize expression handles
-    tango::IIteratorPtr sp_iter = set->createIterator(L"", L"", NULL);
+    tango::IIteratorPtr sp_iter = db->createIterator(path, L"", L"", NULL);
     tango::IIterator* iter = sp_iter.p;
     if (sp_iter.isNull())
     {
@@ -126,7 +131,6 @@ static int doUpdate(tango::ISetPtr set,
 
     // perpare the tango::ColumnUpdateInfo array; this involves
     // getting all writer handles
-    
     
     col_update = new tango::ColumnUpdateInfo[replace.size()];
     size_t i;
@@ -365,7 +369,7 @@ bool sqlUpdate(tango::IDatabasePtr db,
         return false;
     }
 
-    int result = doUpdate(set, filter, params, error, job);
+    int result = doUpdate(db, update, filter, params, error, job);
     if (result == -1)
         return false;
         
