@@ -47,7 +47,7 @@ static int doUpdate(tango::ISetPtr set,
     std::vector<BaseSetReplaceInfo> replace;
     std::vector<BaseSetReplaceInfo>::iterator rit;
 
-    // -- parse the replace params --
+    // parse the replace params
     std::vector<std::wstring> params;
     std::vector<std::wstring>::iterator p_it;
     kl::parseDelimitedList(_params, params, L',', true);
@@ -67,7 +67,7 @@ static int doUpdate(tango::ISetPtr set,
         int eq_pos = p_it->find(L'=');
         if (eq_pos < 1)
         {
-            // -- parse error --
+            // parse error
             error.setError(tango::errorSyntax, L"Invalid syntax; missing '=' in replace parameters");
             return -1;
         }
@@ -87,7 +87,7 @@ static int doUpdate(tango::ISetPtr set,
         replace.push_back(ri);
     }
 
-    // -- get set update interface --
+    // get set update interface
     tango::ISetRowUpdatePtr sp_set_update = set;
     tango::ISetRowUpdate* set_update = sp_set_update.p;
     if (sp_set_update.isNull())
@@ -98,7 +98,7 @@ static int doUpdate(tango::ISetPtr set,
     }
 
 
-    // -- create physical iterator and initialize expression handles --
+    // create physical iterator and initialize expression handles
     tango::IIteratorPtr sp_iter = set->createIterator(L"", L"", NULL);
     tango::IIterator* iter = sp_iter.p;
     if (sp_iter.isNull())
@@ -109,7 +109,7 @@ static int doUpdate(tango::ISetPtr set,
     }
     
     
-    // -- create an SqlIterator object --
+    // create an SqlIterator object
     
     SqlIterator* s_iter = SqlIterator::createSqlIterator(sp_iter, filter, job);
     if (!s_iter)
@@ -118,14 +118,14 @@ static int doUpdate(tango::ISetPtr set,
         return -1;
     }
 
-    // -- get structure --
+    // get structure
     tango::IStructurePtr structure = set->getStructure();
 
 
 
 
-    // -- perpare the tango::ColumnUpdateInfo array; this involves
-    //    getting all writer handles --
+    // perpare the tango::ColumnUpdateInfo array; this involves
+    // getting all writer handles
     
     
     col_update = new tango::ColumnUpdateInfo[replace.size()];
@@ -209,7 +209,7 @@ static int doUpdate(tango::ISetPtr set,
     }
 
 
-    // -- initialize the job with starting time, max_count, etc. --
+    // initialize the job with starting time, max_count, etc.
     IJobInternalPtr ijob = job;
     if (ijob)
     {
@@ -227,10 +227,10 @@ static int doUpdate(tango::ISetPtr set,
     }
 
 
-    // -- start at the top --
+    // start at the top
     s_iter->goFirst();
 
-    // -- do the replacing --
+    // do the replacing
     int update_count = 0;
     size_t col;
     size_t col_count = replace.size();
