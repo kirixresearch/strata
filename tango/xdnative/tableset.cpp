@@ -1075,7 +1075,8 @@ tango::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
                                         index_filename);
 
 
-    IIndex* idx = createExternalIndex(static_cast<tango::ISet*>(this),
+    IIndex* idx = createExternalIndex(m_database,
+                                      getObjectPath(),
                                       full_index_filename,
                                       dbi->getTempPath(),
                                       expr,
@@ -1402,7 +1403,8 @@ tango::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
                                             index_filename);
 
 
-        idx = createExternalIndex(static_cast<tango::ISet*>(this),
+        idx = createExternalIndex(m_database,
+                                  getObjectPath(),
                                   full_index_filename,
                                   dbi->getTempPath(),
                                   expr,

@@ -180,7 +180,8 @@ tango::IIteratorPtr XbaseSet::createIterator(const std::wstring& columns,
                                        index_filename);
 
     IIndex* idx;
-    idx = createExternalIndex(static_cast<tango::ISet*>(this),
+    idx = createExternalIndex(m_database,
+                              getObjectPath(),
                               full_index_filename,
                               temp_directory,
                               expr,

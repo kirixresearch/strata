@@ -71,13 +71,18 @@ public:
 };
 
 
-IIndex* createExternalIndex(tango::ISetPtr set,
+IIndex* createExternalIndex(tango::IDatabasePtr db,
+                            const std::wstring& table_path,
                             const std::wstring& index_filename,
                             const std::wstring& tempfile_path,
                             const std::wstring& expr,
                             bool allow_dups,
                             tango::IJob* job)
 {
+    tango::ISetPtr set = db->openSet(table_path);
+    if (set.isNull())
+        return false;
+
     // job information
     IJobInternalPtr ijob;
     tango::rowpos_t cur_count;
@@ -110,19 +115,22 @@ IIndex* createExternalIndex(tango::ISetPtr set,
 
 
     // create an unordered iterator
-    tango::IIteratorPtr temp_iter = set->createIterator(L"", L"", NULL);
-    if (!temp_iter)
-    {
+    tango::IIteratorPtr sp_iter = db->createIterator(table_path, L"", L"", NULL);
+    if (!sp_iter)
         return NULL;
-    }
-    tango::IIterator* iter = temp_iter.p;
+
+    tango::IIterator* iter = sp_iter.p;
     iter->ref();
-    temp_iter = xcm::null;
+    sp_iter = xcm::null;
 
 
     KeyLayout kl;
     if (!kl.setKeyExpr(iter, expr))
+    {
+        iter->unref();
         return NULL;
+    }
+
     int key_length = kl.getKeyLength();
 
 

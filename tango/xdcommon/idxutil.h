@@ -17,7 +17,8 @@
 #include "cmnbaseiterator.h"
 
 
-IIndex* createExternalIndex(tango::ISetPtr set,
+IIndex* createExternalIndex(tango::IDatabasePtr db,
+                            const std::wstring& table_path,
                             const std::wstring& index_filename,
                             const std::wstring& tempfile_path,
                             const std::wstring& expr,

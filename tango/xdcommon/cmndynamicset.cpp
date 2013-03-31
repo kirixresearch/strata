@@ -400,7 +400,8 @@ tango::IIteratorPtr CommonDynamicSet::createIterator(const std::wstring& columns
                                        L"",
                                        index_filename);
 
-    IIndex* idx = createExternalIndex(static_cast<tango::ISet*>(this),
+    IIndex* idx = createExternalIndex(m_database,
+                                      getObjectPath(),
                                       full_index_filename,
                                       m_temp_path,
                                       expr,

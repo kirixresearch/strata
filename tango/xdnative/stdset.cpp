@@ -94,7 +94,8 @@ tango::IIteratorPtr IterWrapperSet::createIterator(const std::wstring& columns,
     xcm::ptr<IDatabaseInternal> dbinternal = m_database;
     std::wstring index_filename = dbinternal->getTempFilename();
 
-    IIndex* idx = createExternalIndex(static_cast<tango::ISet*>(this),
+    IIndex* idx = createExternalIndex(m_database,
+                                      getObjectPath(),
                                       index_filename,
                                       dbinternal->getTempPath(),
                                       expr,
