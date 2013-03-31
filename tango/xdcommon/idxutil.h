@@ -25,7 +25,7 @@ IIndex* createExternalIndex(tango::IDatabasePtr db,
                             bool allow_dups,
                             tango::IJob* job);
                             
-tango::IIteratorPtr createIteratorFromIndex(tango::ISetPtr set,
+tango::IIteratorPtr createIteratorFromIndex(tango::IIteratorPtr data_iter,
                                             IIndex* idx,
                                             const std::wstring& columns,
                                             const std::wstring& order);
@@ -58,8 +58,7 @@ class CommonIndexIterator : public tango::IIterator,
 
 public:
 
-    CommonIndexIterator(tango::ISet* set,
-                        tango::IIterator* data_iter,
+    CommonIndexIterator(tango::IIterator* data_iter,
                         IIndexIterator* idx_index,
                         const std::wstring& order,
                         bool value_side = true);
@@ -130,7 +129,6 @@ private:
 
 private:
 
-    tango::ISet* m_set;
     tango::IIterator* m_data_iter;
     IIndexIterator* m_idx_iter;
     

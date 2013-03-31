@@ -1385,8 +1385,10 @@ tango::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
             ijob->setStatus(tango::jobFinished);
         }
 
+        tango::IIteratorPtr data_iter = createIterator(columns, L"", NULL);
+
         tango::IIteratorPtr res;
-        res = createIteratorFromIndex(static_cast<tango::ISet*>(this),
+        res = createIteratorFromIndex(data_iter,
                                       idx, columns, expr);
 
         idx->unref();
@@ -1432,7 +1434,8 @@ tango::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
 
         m_indexes.push_back(entry);
 
-        return createIteratorFromIndex(static_cast<tango::ISet*>(this),
+        tango::IIteratorPtr data_iter = createIterator(columns, L"", NULL);
+        return createIteratorFromIndex(data_iter,
                                        idx, columns, expr);
     }
 }

@@ -319,7 +319,8 @@ tango::IIteratorPtr FixedLengthTextSet::createIterator(
         return xcm::null;
     }
 
-    return createIteratorFromIndex(static_cast<tango::ISet*>(this),
+    tango::IIteratorPtr data_iter = createIterator(columns, L"", NULL);
+    return createIteratorFromIndex(data_iter,
                                    idx,
                                    columns,
                                    expr);

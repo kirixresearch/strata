@@ -106,8 +106,11 @@ tango::IIteratorPtr IterWrapperSet::createIterator(const std::wstring& columns,
         return xcm::null;
     }
 
-    tango::IIteratorPtr iter = createIteratorFromIndex(static_cast<tango::ISet*>(this),
-                                                       idx, columns, expr);
+    tango::IIteratorPtr data_iter = createIterator(columns, L"", NULL);
+    tango::IIteratorPtr iter = createIteratorFromIndex(data_iter,
+                                                       idx,
+                                                       columns,
+                                                       expr);
     idx->unref();
 
     return iter;

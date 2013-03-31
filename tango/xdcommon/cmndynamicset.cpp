@@ -379,8 +379,7 @@ tango::IIteratorPtr CommonDynamicSet::createIterator(const std::wstring& columns
             return xcm::null;
         data_iter->goFirst();
 
-        CommonIndexIterator* iter = new CommonIndexIterator(static_cast<tango::ISet*>(this),
-                                                            data_iter,
+        CommonIndexIterator* iter = new CommonIndexIterator(data_iter,
                                                             idx_iter,
                                                             L"",
                                                             false);
@@ -425,7 +424,8 @@ tango::IIteratorPtr CommonDynamicSet::createIterator(const std::wstring& columns
     e.key_length = e.key_expr->getKeyLength();
     m_indexes.push_back(e);
 
-    return createIteratorFromIndex(static_cast<tango::ISet*>(this),
+    tango::IIteratorPtr data_iter = createIterator(columns, L"", NULL);
+    return createIteratorFromIndex(data_iter,
                                    idx,
                                    columns,
                                    expr);

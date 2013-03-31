@@ -278,22 +278,18 @@ IIndexIterator* seekRow(IIndex* idx,
 }
 
 
-tango::IIteratorPtr createIteratorFromIndex(tango::ISetPtr set,
+tango::IIteratorPtr createIteratorFromIndex(tango::IIteratorPtr data_iter,
                                             IIndex* idx,
                                             const std::wstring& columns,
                                             const std::wstring& order)
-{
-    tango::IIteratorPtr data_iter = set->createIterator(columns, L"", NULL);
-    if (data_iter.isNull())
-        return xcm::null;
-        
+{   
     IIndexIterator* idx_iter = idx->createIterator();
     if (!idx_iter)
         return xcm::null;
     idx_iter->goFirst();
 
     CommonIndexIterator* iter;
-    iter = new CommonIndexIterator(set, data_iter, idx_iter, order, true);
+    iter = new CommonIndexIterator(data_iter, idx_iter, order, true);
 
     idx_iter->unref();
     iter->goFirst();
@@ -305,25 +301,11 @@ tango::IIteratorPtr createIteratorFromIndex(tango::ISetPtr set,
 
 // CommonIndexIterator Implementation
 
-CommonIndexIterator::CommonIndexIterator(tango::ISet* set,
-                                         tango::IIterator* data_iter,
+CommonIndexIterator::CommonIndexIterator(tango::IIterator* data_iter,
                                          IIndexIterator* idx_iter,
                                          const std::wstring& order,
                                          bool value_side)
 {
-    // store the set pointer
-    m_set = set;
-    if (m_set)
-    {
-        m_set->ref();
-    }
-     else
-    {
-        tango::ISetPtr spset = data_iter->getSet();
-        m_set = spset.p;
-        m_set->ref();
-    }
-    
     // store the data iterator pointer
     m_data_iter = data_iter;
     m_data_iter->ref();
@@ -351,9 +333,6 @@ CommonIndexIterator::CommonIndexIterator(tango::ISet* set,
 
 CommonIndexIterator::~CommonIndexIterator()
 {
-    if (m_set)
-        m_set->unref();
-    
     delete m_layout;
     
     if (m_data_iter)
@@ -370,8 +349,7 @@ tango::IIteratorPtr CommonIndexIterator::clone()
     IIndexIterator* index_iter = m_idx_iter->clone();
     tango::IIteratorPtr data_iter = m_data_iter->clone();
     
-    CommonIndexIterator* new_iter = new CommonIndexIterator(m_set,
-                                                            data_iter.p,
+    CommonIndexIterator* new_iter = new CommonIndexIterator(data_iter.p,
                                                             index_iter,
                                                             m_order,
                                                             m_value_side);
@@ -644,16 +622,7 @@ void CommonIndexIterator::onSetRowDeleted(tango::rowid_t rowid)
 
 tango::ISetPtr CommonIndexIterator::getSet()
 {
-    if (m_set)
-    {
-        return m_set;
-    }
-     else
-    {
-        return m_data_iter->getSet();
-    }
-    
-    return xcm::null;
+    return m_data_iter->getSet();
 }
 
 /*
