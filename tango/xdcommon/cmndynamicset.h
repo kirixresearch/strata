@@ -93,6 +93,7 @@ private:
     std::wstring m_filename;
     std::wstring m_temp_path;
     std::vector<CommonDynamicSetIndexEntry> m_indexes;
+    std::wstring m_base_path;
     tango::ISetPtr m_base_set;
     tango::IIteratorPtr m_base_set_iter;
     tango::ISetRowUpdatePtr m_base_set_update;

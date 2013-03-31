@@ -150,6 +150,7 @@ bool CommonDynamicSet::create(tango::IDatabasePtr database,
 
     m_index = static_cast<IIndex*>(di);
     m_filename = filename;
+    m_base_path = base_path;
     m_base_set = base_set;
     m_base_set_update = base_set;
     m_row_count = 0;
@@ -373,7 +374,7 @@ tango::IIteratorPtr CommonDynamicSet::createIterator(const std::wstring& columns
         idx_iter->goFirst();
 
         // create a physical-order iterator 
-        tango::IIteratorPtr data_iter = m_base_set->createIterator(columns, L"", NULL);
+        tango::IIteratorPtr data_iter = m_database->createIterator(m_base_path, columns, L"", NULL);
         if (data_iter.isNull())
             return xcm::null;
         data_iter->goFirst();
