@@ -440,7 +440,8 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
 
     // get right set
     tango::ISetPtr right_set = rel->getRightSetPtr();
-    if (!right_set)
+    ISetInternalPtr right_set_int = right_set;
+    if (!right_set_int)
         return false;
 
     // lookup the index on the right set
@@ -503,9 +504,9 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
 
     if (info.right_iter.isNull())
     {
-        info.right_iter = right_set->createIterator(L"",
-                                                   idx->getExpression(),
-                                                   NULL);
+        info.right_iter = right_set_int->createIterator(L"",
+                                                        idx->getExpression(),
+                                                        NULL);
         info.right_iter_int = info.right_iter;
     }
 

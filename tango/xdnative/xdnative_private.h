@@ -263,6 +263,10 @@ public:
     virtual void onOfsPathChanged(const std::wstring& new_path) = 0;
     virtual void onRelationshipsUpdated() = 0;
     
+    virtual tango::IIteratorPtr createIterator(const std::wstring& columns,
+                                               const std::wstring& expr,
+                                               tango::IJob* job) = 0;
+
     virtual bool modifyStructure(tango::IStructure* struct_config, tango::IJob* job) = 0;
     virtual tango::IRowInserterPtr getRowInserter() = 0;
 
