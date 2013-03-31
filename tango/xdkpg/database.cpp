@@ -586,15 +586,41 @@ tango::ISetPtr KpgDatabase::openSet(const std::wstring& _path)
 }
 
 
-tango::IIteratorPtr KpgDatabase::createIterator(const std::wstring& path,
+tango::IIteratorPtr KpgDatabase::createIterator(const std::wstring& _path,
                                                 const std::wstring& columns,
                                                 const std::wstring& sort,
                                                 tango::IJob* job)
 {
-    tango::ISetPtr set = openSet(path);
-    if (set.isNull())
+    XCM_AUTO_LOCK(m_obj_mutex);
+
+    std::wstring path = _path;
+    if (path.substr(0,1) == L"/")
+        path.erase(0,1);
+
+    std::wstring info;
+    if (!getStreamInfoBlock(path, info))
         return xcm::null;
-    return set->createIterator(columns, sort, job);
+
+    // create set and initialize variables
+    KpgSet* set = new KpgSet(this);
+    set->m_tablename = path;
+    if (!set->m_info.parse(info))
+    {
+        delete set;
+        return xcm::null;
+    }
+
+    if (!set->init())
+    {
+        delete set;
+        return xcm::null;
+    }
+
+    set->ref();
+    tango::IIteratorPtr iter = set->createIterator(columns, sort, job);
+    set->unref();
+
+    return iter;
 }
 
 
