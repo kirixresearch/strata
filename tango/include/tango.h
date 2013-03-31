@@ -531,10 +531,6 @@ public:
     virtual unsigned int getSetFlags() = 0;
     virtual rowpos_t getRowCount() = 0;
     virtual IStructurePtr getStructure() = 0;
-
-    virtual IIteratorPtr createIterator(const std::wstring& columns,
-                                        const std::wstring& expr,
-                                        IJob* job) = 0;
 };
 
 

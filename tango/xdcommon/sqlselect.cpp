@@ -3459,7 +3459,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         }
     }
 
-    return output_set->createIterator(L"", L"", NULL);
+    return db->createIterator(output_path, L"", L"", NULL);
 }
 
 
