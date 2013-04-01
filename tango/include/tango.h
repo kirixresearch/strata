@@ -532,7 +532,6 @@ public:
 
     virtual void setObjectPath(const std::wstring& path) = 0;
     virtual std::wstring getObjectPath() = 0;
-    //virtual IStructurePtr getStructure() = 0;
 };
 
 

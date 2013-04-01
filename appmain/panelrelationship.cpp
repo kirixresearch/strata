@@ -435,9 +435,9 @@ static void onRelationshipJobFinished(jobs::IJobPtr job)
         g_app->getAppController()->updateTableDocRelationshipSync(synctype);
 }
 
-static tango::IRelationPtr lookupSetRelation(tango::IDatabasePtr& db, tango::ISetPtr set, const std::wstring& tag)
+static tango::IRelationPtr lookupSetRelation(tango::IDatabasePtr& db, const std::wstring& table_path, const std::wstring& tag)
 {
-    tango::IRelationEnumPtr rel_enum = db->getRelationEnum(set->getObjectPath());
+    tango::IRelationEnumPtr rel_enum = db->getRelationEnum(table_path);
     size_t i, n = rel_enum->size();
     for (i = 0; i < n; ++i)
     {
@@ -502,8 +502,7 @@ void RelationshipPanel::onUpdateRelationships(wxCommandEvent& evt)
         m_diagram->getOrigRelationInfo(*it, old_info);
         m_diagram->getRelationInfo(*it, new_info);
 
-        tango::ISetPtr set = db->openSet(towstr(*it));
-        if (set.isNull())
+        if (!isValidTable(towstr(*it)))
             continue;
 
         // look for relationships that were deleted
@@ -525,7 +524,7 @@ void RelationshipPanel::onUpdateRelationships(wxCommandEvent& evt)
 
             if (!found)
             {
-                tango::IRelationPtr rel = lookupSetRelation(db, set, towstr(oi_it->tag));
+                tango::IRelationPtr rel = lookupSetRelation(db, towstr(*it), towstr(oi_it->tag));
                 if (rel)
                     db->deleteRelation(rel->getRelationId());
             }
@@ -537,7 +536,7 @@ void RelationshipPanel::onUpdateRelationships(wxCommandEvent& evt)
         {
             // delete all existing relationships for this table
 
-            tango::IRelationEnumPtr rel_enum = db->getRelationEnum(set->getObjectPath());
+            tango::IRelationEnumPtr rel_enum = db->getRelationEnum(towstr(*it));
             size_t i, rel_count = rel_enum->size();
             for (i = 0; i < rel_count; ++i)
                 db->deleteRelation(rel_enum->getItem(i)->getRelationId());
@@ -564,7 +563,7 @@ void RelationshipPanel::onUpdateRelationships(wxCommandEvent& evt)
 
             UpdateRel r;
             r.tag = ni_it->tag;            
-            r.left_path = set->getObjectPath();
+            r.left_path = *it;
             r.left_expr = left_str;
             r.right_path = ni_it->right_path;            
             r.right_expr = right_str;
