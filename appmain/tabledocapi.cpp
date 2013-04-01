@@ -220,16 +220,15 @@ void TableDoc::scriptfuncOpen(kscript::ExprEnv* env,
 {
     TableDoc* pThis = (TableDoc*)param;
     
-    tango::ISetPtr set = g_app->getDatabase()->openSet(env->getParam(0)->getString());
-    if (set)
-    {
-        pThis->open(set, xcm::null);
-        retval->setBoolean(true);
-    }
-     else
+    std::wstring path = env->getParam(0)->getString();
+    if (!isValidTable(path))
     {
         retval->setBoolean(false);
-    }    
+        return;
+    }
+
+
+    retval->setBoolean(pThis->open(g_app->getDatabase(), path));
 }
 
 // static

@@ -3335,8 +3335,7 @@ void TableDoc::onAlterTableJobFinished(jobs::IJobPtr job)
         }
     }
 
-    tango::ISetPtr action_set = g_app->getDatabase()->openSet(towstr(input_path));
-    open(action_set, xcm::null);
+    open(g_app->getDatabase(), towstr(input_path));
 
     // remove the "Filtered" suffix
     setCaption(wxEmptyString, wxEmptyString);
