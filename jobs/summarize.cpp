@@ -108,14 +108,8 @@ int SummarizeJob::runJob()
     }
 
     tango::ISetPtr input_set = m_db->openSet(input_path);
-    if (input_set.isNull())
-    {
-        m_job_info->setState(jobStateFailed);
-        return 0;
-    }
-
-    tango::IStructurePtr input_structure = input_set->getStructure();
-    if (input_structure.isNull())
+    tango::IStructurePtr input_structure = m_db->describeTable(input_path);
+    if (input_set.isNull() || input_structure.isNull())
     {
         m_job_info->setState(jobStateFailed);
         return 0;

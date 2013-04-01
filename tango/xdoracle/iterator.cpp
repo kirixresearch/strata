@@ -28,10 +28,14 @@ const std::string empty_string = "";
 const std::wstring empty_wstring = L"";
 
 
-OracleIterator::OracleIterator(OracleDatabase* database)
+OracleIterator::OracleIterator(OracleDatabase* database, OracleSet* set)
 {
     m_database = database;
     m_database->ref();
+
+    m_set = set;
+    if (m_set)
+        m_set->ref();
 
     m_eof = false;
     m_cache_active = false;
@@ -60,7 +64,9 @@ OracleIterator::~OracleIterator()
     for (it = m_exprs.begin(); it != m_exprs.end(); ++it)
         delete (*it);
 
-    // release database ref
+    if (m_set)
+        m_set->unref();
+
     m_database->unref();
 }
 
@@ -382,7 +388,7 @@ bool OracleIterator::init(const std::wstring& query)
 
 
     // if m_set is null, create a placeholder set
-    if (m_set.isNull())
+    if (!m_set)
     {
         // create set and initialize variables
         OracleSet* set = new OracleSet(m_database);
@@ -397,7 +403,8 @@ bool OracleIterator::init(const std::wstring& query)
             return false;
         }
 
-        m_set = static_cast<tango::ISet*>(set);
+        m_set = set;
+        m_set->ref();
     }
 
 
@@ -760,7 +767,7 @@ tango::IStructurePtr OracleIterator::getStructure()
 
 void OracleIterator::refreshStructure()
 {
-    if (m_set.isNull())
+    if (!m_set)
         return;
 
     tango::IStructurePtr set_structure = m_set->getStructure();

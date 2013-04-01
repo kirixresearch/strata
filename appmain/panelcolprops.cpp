@@ -210,7 +210,7 @@ bool ColPropsPanel::initDoc(IFramePtr frame,
     // keep track of which document we are working on
 
     m_iter = xcm::null;
-    m_set = xcm::null;
+    m_structure = xcm::null;
     m_tabledoc = xcm::null;
 
     m_tabledoc_site = g_app->getMainFrame()->getActiveChild();
@@ -223,11 +223,11 @@ bool ColPropsPanel::initDoc(IFramePtr frame,
     if (!m_tabledoc)
         return false;
 
-    std::wstring browse_path = towstr(m_tabledoc->getBrowsePath());
+    m_path = towstr(m_tabledoc->getBrowsePath());
 
-    m_set = g_app->getDatabase()->openSet(browse_path);
-
-    if (m_set.isNull())
+    tango::IFileInfoPtr finfo = g_app->getDatabase()->getFileInfo(m_path);
+    m_structure = g_app->getDatabase()->describeTable(m_path);
+    if (finfo.isNull() || m_structure.isNull())
     {
         m_doc_site = xcm::null;
         m_tabledoc = xcm::null;
@@ -237,14 +237,12 @@ bool ColPropsPanel::initDoc(IFramePtr frame,
     // make panel caption
     wxString caption = _("Calculated Field");
 
-    if (m_set.isOk())
+
+    if (!isTemporaryTable(m_path))
     {
-        if (!isTemporaryTable(m_set->getObjectPath()))
-        {
-            caption += wxT(" - [");
-            caption += towx(m_set->getObjectPath());
-            caption += wxT("]");
-        }
+        caption += " - [";
+        caption += towx(m_path);
+        caption += "]";
     }
 
     m_doc_site->setCaption(caption);
@@ -253,7 +251,7 @@ bool ColPropsPanel::initDoc(IFramePtr frame,
     m_iter = m_tabledoc->getIterator();
     kcl::Grid* grid = m_tabledoc->getGrid();
 
-    m_expr_panel->setStructure(m_set->getStructure());
+    m_expr_panel->setStructure(m_structure);
 
     // populate
     populate();
@@ -336,7 +334,7 @@ void ColPropsPanel::populate()
     m_orig_scale = colinfo->getScale();
     m_orig_expr = towx(colinfo->getExpression());
 
-    tango::IStructurePtr structure = m_set->getStructure();
+    tango::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
     m_orig_existed = structure->getColumnExist(towstr(m_orig_name));
 
 
@@ -482,10 +480,10 @@ void ColPropsPanel::onTypeChanged(wxCommandEvent& evt)
     {
         m_last_type = type;
 
-        tango::IStructurePtr structure = m_iter->getStructure();
+        tango::IStructurePtr iter_structure = m_iter->getStructure();
         tango::IColumnInfoPtr colinfo;
         
-        colinfo = structure->modifyColumn(towstr(m_modify_field));
+        colinfo = iter_structure->modifyColumn(towstr(m_modify_field));
 
         if (colinfo.isOk())
         {
@@ -510,7 +508,7 @@ void ColPropsPanel::onTypeChanged(wxCommandEvent& evt)
                 setWidth(tango::max_numeric_width);
             }
 
-            if (m_iter->modifyStructure(structure, NULL))
+            if (m_iter->modifyStructure(iter_structure, NULL))
             {
                 kcl::Grid* grid = m_tabledoc->getGrid();
 
@@ -571,13 +569,13 @@ void ColPropsPanel::onWidthChanged(wxCommandEvent& evt)
     {
         m_last_width = width;
 
-        tango::IStructurePtr structure = m_iter->getStructure();
+        tango::IStructurePtr iter_structure = m_iter->getStructure();
         tango::IColumnInfoPtr colinfo;
-        colinfo = structure->modifyColumn(towstr(m_modify_field));
+        colinfo = iter_structure->modifyColumn(towstr(m_modify_field));
         if (colinfo.isOk())
         {
             colinfo->setWidth(width);
-            if (m_iter->modifyStructure(structure, NULL))
+            if (m_iter->modifyStructure(iter_structure, NULL))
             {
                 kcl::Grid* grid = m_tabledoc->getGrid();
 
@@ -624,13 +622,13 @@ void ColPropsPanel::onScaleChanged(wxCommandEvent& evt)
     {
         m_last_scale = scale;
 
-        tango::IStructurePtr structure = m_iter->getStructure();
+        tango::IStructurePtr iter_structure = m_iter->getStructure();
         tango::IColumnInfoPtr colinfo;
-        colinfo = structure->modifyColumn(towstr(m_modify_field));
+        colinfo = iter_structure->modifyColumn(towstr(m_modify_field));
         if (colinfo.isOk())
         {
             colinfo->setScale(scale);
-            if (m_iter->modifyStructure(structure, NULL))
+            if (m_iter->modifyStructure(iter_structure, NULL))
             {
                 kcl::Grid* grid = m_tabledoc->getGrid();
 
@@ -669,9 +667,9 @@ void ColPropsPanel::onExpressionChanged(ExprBuilderPanel*)
         m_last_expr = expr;
 
         // update the calcfield in the grid
-        tango::IStructurePtr structure = m_iter->getStructure();
+        tango::IStructurePtr iter_structure = m_iter->getStructure();
         tango::IColumnInfoPtr colinfo;
-        colinfo = structure->modifyColumn(towstr(m_modify_field));
+        colinfo = iter_structure->modifyColumn(towstr(m_modify_field));
         if (colinfo.isOk())
         {
             colinfo->setExpression(towstr(expr));
@@ -736,7 +734,7 @@ void ColPropsPanel::onExpressionChanged(ExprBuilderPanel*)
                 }
             }
 
-            if (m_iter->modifyStructure(structure, NULL))
+            if (m_iter->modifyStructure(iter_structure, NULL))
             {
                 kcl::Grid* grid = m_tabledoc->getGrid();
 
@@ -904,6 +902,9 @@ void ColPropsPanel::updateSpinBoxes()
 
 void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
 {
+    tango::IDatabasePtr db = g_app->getDatabase();
+
+
     changeColumnCaption(wxEmptyString);
     
     // check for valid field name
@@ -968,7 +969,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
         return;
     }
 
-    tango::IStructurePtr structure = m_set->getStructure();
+    tango::IStructurePtr structure = db->describeTable(m_path);
     if (structure->getColumnExist(towstr(m_orig_name)))
     {
         if (!m_orig_existed)
@@ -1015,12 +1016,11 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
         colinfo->setExpression(towstr(m_last_expr));
     }
 
-    tango::IDatabasePtr db = g_app->getDatabase();
 
     tango::IIndexInfoEnumPtr old_indexes;
     old_indexes = db->getIndexEnum(towstr(m_tabledoc->getPath()));
 
-    if (!db->modifyStructure(m_set->getObjectPath(), structure, NULL))
+    if (!db->modifyStructure(m_path, structure, NULL))
     {
         appMessageBox(_("The structure of the table could not be modified, due to an invalid parameter."),
                            APPLICATION_NAME,
@@ -1030,8 +1030,9 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
         return;
     }
 
-
     // refresh the iterator with the set's new structure information
+    m_structure = db->describeTable(m_path);
+
     m_iter->refreshStructure();
 
     // refresh the target tabledoc's grid information
@@ -1052,7 +1053,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
 
     // let other windows know that the structure was modified
     FrameworkEvent* evt = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_STRUCTURE_MODIFIED);
-    evt->s_param = towx(m_set->getObjectPath());
+    evt->s_param = towx(m_path);
     g_app->getMainFrame()->postEvent(evt);
 
 
@@ -1122,7 +1123,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
             {
                 kl::JsonNode index_item = indexes.appendElement();
 
-                index_item["input"].setString(towstr(m_tabledoc->getPath()));
+                index_item["input"].setString(m_path);
                 index_item["name"].setString((*it)->getTag());
                 index_item["expression"].setString((*it)->getExpression());
             }
@@ -1155,14 +1156,12 @@ void ColPropsPanel::revertChanges()
 
     // restore dynamic field
 
-    tango::IStructurePtr structure = m_iter->getStructure();
+    tango::IStructurePtr iter_structure = m_iter->getStructure();
     tango::IColumnInfoPtr colinfo;
     
-    colinfo = structure->modifyColumn(towstr(m_modify_field));
+    colinfo = iter_structure->modifyColumn(towstr(m_modify_field));
     if (!colinfo)
-    {
         return;
-    }
 
     colinfo->setName(towstr(m_orig_name));
     colinfo->setType(m_orig_type);
@@ -1170,7 +1169,7 @@ void ColPropsPanel::revertChanges()
     colinfo->setScale(m_orig_scale);
     colinfo->setExpression(towstr(m_orig_expr));
 
-    if (m_iter->modifyStructure(structure, NULL))
+    if (m_iter->modifyStructure(iter_structure, NULL))
     {
         kcl::Grid* grid = m_tabledoc->getGrid();
         grid->refreshModel();

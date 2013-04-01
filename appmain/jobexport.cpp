@@ -381,7 +381,7 @@ int ExportJob::runJob()
             // if we are appending to a set and the destination
             // set exists, get the structure from that set
 
-            dest_struct = dest_set->getStructure();
+            dest_struct = dest_db->describeTable(towstr(it->output_path));
 
 
             ExportCopyInfo ci;
@@ -593,22 +593,28 @@ int ExportJob::runJob()
                 m_job_info->setState(jobStateFailed);
                 return 0;
             }
+
+
+            // first, update the structgure; even though we tried to create
+            // a table with particular types, the columns may not actually have 
+            // those types; in particular, this happens with the Access and Excel 
+            // ODBC drivers, that always export to wide character fields; without
+            // updating the destination structure, the following insertion routine 
+            // tries to insert text into a regular character field, while the handle, 
+            // which knows that the output field is a wide character, sets the wide
+            // character parameter, leaving the regular character parameter blank,
+            //  resulting in no values being inserted into character fields
+
+            dest_struct = dest_db->describeTable(towstr(it->output_path));
+            if (!dest_struct)
+            {
+                m_job_info->setState(jobStateFailed);
+                return 0;
+            }
         }
 
         // now that we have created the destination set,
         // insert rows into that set
-
-        // first, update the copy info type; even though we tried to create
-        // a set with particular types, the columns may not actually have 
-        // those types; in particular, this happens with the Access and Excel 
-        // ODBC drivers, that always export to wide character fields; without
-        // updating the destination structure, the following insertion routine 
-        // tries to insert text into a regular character field, while the handle, 
-        // which knows that the output field is a wide character, sets the wide
-        // character parameter, leaving the regular character parameter blank,
-        //  resulting in no values being inserted into character fields
-        dest_struct = dest_set->getStructure();
-
 
         tango::IRowInserterPtr ri;
         ri = dest_db->bulkInsert(towstr(it->output_path));

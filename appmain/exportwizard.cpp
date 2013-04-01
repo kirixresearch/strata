@@ -853,7 +853,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
              it != m_template.m_ei.tables.end(); ++it)
         {
             tango::ISetPtr set = local_db->openSet(towstr(it->input_tablename));
-            tango::IStructurePtr structure = set->getStructure();
+            tango::IStructurePtr structure = local_db->describeTable(towstr(it->input_tablename));
 
             if (set.isNull() || structure.isNull())
             {
@@ -1194,6 +1194,9 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         return;
     }
     
+
+    tango::IDatabasePtr db = g_app->getDatabase();
+
     // CHECK: are all of the fieldnames in the tables valid?
     std::vector<wxString> invalid_fieldnames;
 
@@ -1201,11 +1204,11 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
     for (it = m_template.m_ei.tables.begin();
          it != m_template.m_ei.tables.end(); ++it)
     {
-        tango::ISetPtr set = g_app->getDatabase()->openSet(towstr(it->input_tablename));
+        tango::ISetPtr set = db->openSet(towstr(it->input_tablename));
         if (set.isNull())
             continue;
         
-        tango::IStructurePtr s = set->getStructure();
+        tango::IStructurePtr s = db->describeTable(towstr(it->input_tablename));
         if (s.isNull())
             continue;
 

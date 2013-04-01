@@ -21,7 +21,7 @@
 
 struct OracleDataAccessInfo
 {
-    // -- metadata --
+    // metadata
     std::wstring name;
     int oracle_charset;
     int oracle_type;
@@ -31,7 +31,7 @@ struct OracleDataAccessInfo
     int scale;
     int ordinal;
 
-    // -- expression stuff --
+    // expression stuff
     KeyLayout* key_layout;
     std::wstring expr_text;
     kscript::ExprParser* expr;
@@ -39,7 +39,7 @@ struct OracleDataAccessInfo
     std::wstring wstr_result;
     std::string str_result;
 
-    // -- data --
+    // data
     char* str_val;
     wchar_t* wstr_val;
     int int_val;
@@ -47,7 +47,7 @@ struct OracleDataAccessInfo
     bool bool_val;
     unsigned char date_val[7];
 
-    // -- define variables --
+    // define variables
     OCIDefine* define;
     sb2 indicator;
     ub2 str_len;
@@ -90,11 +90,12 @@ friend class OracleSet;
 
 public:
 
-    OracleIterator(OracleDatabase* database);
+    OracleIterator(OracleDatabase* database, OracleSet* set = NULL);
     ~OracleIterator();
+
     bool init(const std::wstring& query);
 
-    // -- IIterator interface implementation --
+    // tango::IIterator
 
     tango::ISetPtr getSet();
     tango::rowpos_t getRowCount();
@@ -141,7 +142,7 @@ private:
     void saveRowToCache();
     void readRowFromCache(tango::rowpos_t row);
 
-    // -- tango::ICacheRowUpdate --
+    // tango::ICacheRowUpdate
 
     bool updateCacheRow(tango::rowid_t rowid,
                         tango::ColumnUpdateInfo* info,
@@ -149,7 +150,7 @@ private:
 private:
 
     OracleDatabase* m_database;
-    tango::ISetPtr m_set;
+    OracleSet* m_set;
 
     OCIEnv* m_env;
     OCISvcCtx* m_svc;
@@ -169,15 +170,4 @@ private:
 };
 
 
-
-
 #endif
-
-
-
-
-
-
-
-
-

@@ -5478,7 +5478,7 @@ void TableDoc::onMakeStatic(wxCommandEvent& evt)
 
     // make sure that the columns are all dynamic
 
-    tango::IStructurePtr structure = m_set->getStructure();
+    tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(m_path));
     tango::IColumnInfoPtr colinfo;
            
     std::set<wxString>::iterator it;
@@ -5816,7 +5816,7 @@ void TableDoc::deleteSelectedColumns()
         return;
 
     wxString object_path = m_path;
-    tango::IStructurePtr structure = m_iter->getSet()->getStructure();
+    tango::IStructurePtr structure = m_iter->getStructure();
     tango::IColumnInfoPtr colinfo;
 
     std::set<wxString> cols;

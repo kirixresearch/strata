@@ -1723,12 +1723,11 @@ bool TransformationDoc::doSave()
     if (textdoc.isOk())
     {
         // get the proper set from the TextDoc
-        text_set = textdoc->getTextSet();
         fset = text_set;
         tset = text_set;
         
         // get a structure that we can configure
-        tango::IStructurePtr new_struct = text_set->getStructure();
+        tango::IStructurePtr new_struct = textdoc->getStructure();
         tango::IColumnInfoPtr colinfo;
         
         // populate the new structure

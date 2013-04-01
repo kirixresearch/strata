@@ -91,7 +91,8 @@ private:
 
     // container context info
     IDocumentSitePtr m_doc_site;         // our document's site
-    tango::ISetPtr m_set;                // tabledoc's set
+    std::wstring m_path;                 // path of the table
+    tango::IStructurePtr m_structure;    // table m_path's structure
     tango::IIteratorPtr m_iter;          // tabledoc's iterator
     IDocumentSitePtr m_tabledoc_site;    // tabledoc's site
     ITableDocPtr m_tabledoc;             // tabledoc ptr

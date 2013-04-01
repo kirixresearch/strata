@@ -955,7 +955,6 @@ tango::IFileInfoEnumPtr OracleDatabase::getFolderInfo(const std::wstring& path)
         OracleIterator* iter = new OracleIterator(this);
         iter->m_env = m_env;
         iter->m_svc = m_svc;
-        iter->m_set = xcm::null;
         iter->m_name = query;
         if (!iter->init(query))
         {
@@ -1004,7 +1003,6 @@ tango::IFileInfoEnumPtr OracleDatabase::getFolderInfo(const std::wstring& path)
         OracleIterator* iter = new OracleIterator(this);
         iter->m_env = m_env;
         iter->m_svc = m_svc;
-        iter->m_set = xcm::null;
         iter->m_name = query;
         if (!iter->init(query))
         {
@@ -1324,11 +1322,16 @@ tango::IRowInserterPtr OracleDatabase::bulkInsert(const std::wstring& path)
 
 tango::IStructurePtr OracleDatabase::describeTable(const std::wstring& path)
 {
+/*
     tango::ISetPtr set = openSet(path);
     if (set.isNull())
         return xcm::null;
 
     return set->getStructure();
+*/
+    
+    // TODO: implement
+    return xcm::null;
 }
 
 
@@ -1368,7 +1371,6 @@ bool OracleDatabase::execute(const std::wstring& _command,
         OracleIterator* iter = new OracleIterator(this);
         iter->m_env = m_env;
         iter->m_svc = m_svc;
-        iter->m_set = xcm::null;
         iter->m_name = command;
         
         if (!iter->init(command))

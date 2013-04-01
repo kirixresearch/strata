@@ -510,6 +510,24 @@ tango::ISetPtr TextDoc::getTextSet()
     return xcm::null;
 }
 
+tango::IStructurePtr TextDoc::getStructure()
+{
+    if (m_view == TextDoc::TextDelimitedView)
+    {
+        tango::IDelimitedTextSetPtr s = m_textdelimited_set;
+        if (s)
+            return s->getStructure();
+    }
+     else if (m_view == TextDoc::FixedLengthView)
+    {
+        tango::IFixedLengthDefinitionPtr s = m_fixedlength_set;
+        if (s)
+            return s->getStructure();
+    }
+    
+    return xcm::null;
+}
+
 wxString TextDoc::getPath()
 {
     return m_path;

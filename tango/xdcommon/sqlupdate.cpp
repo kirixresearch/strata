@@ -52,6 +52,10 @@ static int doUpdate(tango::IDatabasePtr db,
     if (set.isNull())
         return -1;
 
+    tango::IStructurePtr structure = db->describeTable(path);
+    if (structure.isNull())
+        return -1;
+
     tango::ColumnUpdateInfo* col_update;
     std::vector<BaseSetReplaceInfo> replace;
     std::vector<BaseSetReplaceInfo>::iterator rit;
@@ -126,11 +130,6 @@ static int doUpdate(tango::IDatabasePtr db,
         error.setError(tango::errorGeneral, L"Unable to process the UPDATE statement");    
         return -1;
     }
-
-    // get structure
-    tango::IStructurePtr structure = set->getStructure();
-
-
 
 
     // perpare the tango::ColumnUpdateInfo array; this involves

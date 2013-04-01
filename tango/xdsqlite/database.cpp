@@ -106,7 +106,7 @@ static std::wstring pathToObjectName(const std::wstring& path)
 
 SlDatabase::SlDatabase()
 {
-    m_db = NULL;
+    m_sqlite = NULL;
     m_last_job = 0;
 }
 
@@ -124,7 +124,7 @@ SlDatabase::~SlDatabase()
 bool SlDatabase::createDatabase(const std::wstring& path,
                                 const std::wstring& db_name)
 {
-    m_db = NULL;
+    m_sqlite = NULL;
     m_path = L"";
 
     if (xf_get_file_exist(path))
@@ -195,7 +195,7 @@ bool SlDatabase::createDatabase(const std::wstring& path,
     }
 
 
-    m_db = db;
+    m_sqlite = db;
     m_path = path;
 
     return true;
@@ -222,19 +222,18 @@ bool SlDatabase::openDatabase(const std::wstring& path,
         return false;
     }
 
-    m_db = db;
+    m_sqlite = db;
     m_path = path;
 
     return true;
 }
 
-// -- tango::IDatabase interface implementation --
 
 void SlDatabase::close()
 {
-    if (m_db)
+    if (m_sqlite)
     {
-        sqlite3_close(m_db);
+        sqlite3_close(m_sqlite);
     }
 }
 
@@ -446,7 +445,7 @@ tango::IFileInfoPtr SlDatabase::getFileInfo(const std::wstring& path)
     wchar_t query[512];
     swprintf(query, 512, L"SELECT tbl_name, sql FROM sqlite_master WHERE name='%ls'", objname.c_str());
     
-    rc = sqlite3_get_table(m_db, kl::toUtf8(query), &result, &rows, NULL, NULL);
+    rc = sqlite3_get_table(m_sqlite, kl::toUtf8(query), &result, &rows, NULL, NULL);
     if (rc != SQLITE_OK || rows < 1)
         return xcm::null;
 
@@ -490,7 +489,7 @@ tango::IFileInfoEnumPtr SlDatabase::getFolderInfo(const std::wstring& path)
         sql += L"$$$%'";
     }
 
-    rc = sqlite3_get_table(m_db, kl::toUtf8(sql), &result, &rows, NULL, NULL);
+    rc = sqlite3_get_table(m_sqlite, kl::toUtf8(sql), &result, &rows, NULL, NULL);
     if (rc != SQLITE_OK)
         return retval;
 
@@ -609,7 +608,7 @@ tango::ISetPtr SlDatabase::createTable(const std::wstring& _path,
 
     std::string ascsql = kl::tostring(sql);
 
-    if (SQLITE_OK != sqlite3_exec(m_db, ascsql.c_str(), NULL, NULL, NULL))
+    if (SQLITE_OK != sqlite3_exec(m_sqlite, ascsql.c_str(), NULL, NULL, NULL))
     {
         return xcm::null;
     }
@@ -628,13 +627,10 @@ tango::ISetPtr SlDatabase::openSet(const std::wstring& path)
 {
     std::wstring objname = pathToObjectName(path);
 
-    SlSet* set = new SlSet;
-
-    set->m_database = static_cast<tango::IDatabase*>(this);
-    set->m_dbint = this;
+    SlSet* set = new SlSet(this);
     set->m_tablename = objname;
     set->m_path = path;
-    set->m_db = m_db;
+    set->m_sqlite = m_sqlite;
 
     return static_cast<tango::ISet*>(set);
 }
@@ -731,11 +727,8 @@ tango::IRowInserterPtr SlDatabase::bulkInsert(const std::wstring& path)
 
 tango::IStructurePtr SlDatabase::describeTable(const std::wstring& path)
 {
-    tango::ISetPtr set = openSet(path);
-    if (set.isNull())
-        return xcm::null;
-
-    return set->getStructure();
+    // TODO: implement
+    return xcm::null;
 }
 
 bool SlDatabase::modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job)
@@ -785,13 +778,10 @@ bool SlDatabase::execute(const std::wstring& command,
     static klregex::wregex select_regex(L"SELECT\\s");
     if (select_regex.search(command))
     {
-        SlIterator* iter = new SlIterator;
+        SlIterator* iter = new SlIterator(this, NULL);
+        iter->m_sqlite = m_sqlite;
+
         iter->ref();
-        
-        iter->m_db = m_db;
-        iter->m_dbint = this;
-        iter->m_database = static_cast<tango::IDatabase*>(this);
-        iter->m_set = xcm::null;
 
         if (!iter->init(command))
         {
@@ -801,11 +791,13 @@ bool SlDatabase::execute(const std::wstring& command,
         }
 
         result = static_cast<xcm::IObject*>(iter);
+        iter->unref();
+
         return true;
     }
      else
     {
-        if (SQLITE_OK != sqlite3_exec(m_db, kl::toUtf8(command), NULL, NULL, NULL))
+        if (SQLITE_OK != sqlite3_exec(m_sqlite, kl::toUtf8(command), NULL, NULL, NULL))
         {
             return false;
         }
@@ -832,7 +824,7 @@ tango::IStructurePtr SlDatabase::getStructureFromPath(std::wstring& path)
     int rows = 0;
     int cat_id = 0;
 
-    rc = sqlite3_get_table(m_db, kl::toUtf8(buf), &result, &rows, NULL, NULL);
+    rc = sqlite3_get_table(m_sqlite, kl::toUtf8(buf), &result, &rows, NULL, NULL);
     if (rc != SQLITE_OK || rows < 1)
     {
         // return failure

@@ -45,8 +45,9 @@ private:
 
 public:
 
-    SlIterator();
+    SlIterator(SlDatabase* database, SlSet* set);
     ~SlIterator();
+
     bool init(const std::wstring& query);
 
     // tango::IIterator
@@ -93,17 +94,16 @@ private:
 
     std::vector<SlDataAccessInfo> m_columns;
 
-    tango::IDatabasePtr m_database;
-    SlDatabase* m_dbint;
-    
-    tango::ISetPtr m_set;
+    SlDatabase* m_database;
+    SlSet* m_set;
+
     tango::IStructurePtr m_set_structure;
     tango::tableord_t m_ordinal;
     std::wstring m_tablename;
 
     long long m_oid;
     bool m_eof;
-    sqlite3* m_db;
+    sqlite3* m_sqlite;
     sqlite3_stmt* m_stmt;
 };
 

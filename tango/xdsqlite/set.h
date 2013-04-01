@@ -27,7 +27,7 @@ friend class SlRowInserter;
 
 public:
 
-    SlSet();
+    SlSet(SlDatabase* database);
     ~SlSet();
     
     bool init();
@@ -53,10 +53,9 @@ private:
     xcm::mutex m_object_mutex;
     tango::IStructurePtr m_structure;
 
-    tango::IDatabasePtr m_database;
-    SlDatabase* m_dbint;
+    SlDatabase* m_database;
     
-    sqlite3* m_db;
+    sqlite3* m_sqlite;
 
     std::wstring m_tablename;
     std::wstring m_path;

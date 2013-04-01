@@ -2105,8 +2105,8 @@ bool RelationDiagram::addBox(const wxString& path,
     if (height <= 0)
         height = BOX_DEFAULT_HEIGHT;
 
-    tango::ISetPtr set = g_app->getDatabase()->openSet(towstr(path));
-    if (set.isNull())
+    tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(path));
+    if (structure.isNull())
         return false;
 
     if (x <= 0 && y <= 0)
@@ -2170,7 +2170,7 @@ bool RelationDiagram::addBox(const wxString& path,
                                        wxSize(width, height));
 
     box->setSetPath(path);
-    box->setStructure(set->getStructure());
+    box->setStructure(structure);
 
     refresh();
 
@@ -2405,14 +2405,7 @@ void RelationDiagram::onSetStructureChanged(const wxString& set_path)
     if (!box)
         return;
     
-    // it's unfortunate we have to do this here; it'd be much more convenient
-    // to pass the new structure (after the modify) as a parameter, but there
-    // were some issues with smart pointer reference counting
-    tango::ISetPtr set = g_app->getDatabase()->openSet(towstr(set_path));
-    if (set.isNull())
-        return;
-    
-    tango::IStructurePtr structure = set->getStructure();
+    tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(set_path));
     if (structure.isNull())
         return;
     

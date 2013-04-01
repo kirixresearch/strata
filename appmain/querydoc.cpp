@@ -1158,14 +1158,19 @@ void QueryDoc::onTreeDataDropped(FsDataObject* data)
     for (it = res.begin(); it != res.end(); ++it)
     {
         wxString path = *it;
-        tango::ISetPtr set = g_app->getDatabase()->openSet(towstr(path));
-        if (set.isOk())
+        tango::IFileInfoPtr finfo = g_app->getDatabase()->getFileInfo(towstr(path));
+        if (finfo.isOk() && finfo->getType() == tango::filetypeSet)
         {
-            QueryBuilderSourceTable s;
-            s.structure = set->getStructure();
-            s.alias = it->AfterLast(wxT('/'));
+            tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(path));
 
-            m_info.m_source_tables.push_back(s);
+            if (structure.isOk())
+            {
+                QueryBuilderSourceTable s;
+                s.structure = structure;
+                s.alias = it->AfterLast(wxT('/'));
+
+                m_info.m_source_tables.push_back(s);
+            }
         }
     }
 }
@@ -1199,8 +1204,12 @@ void QueryDoc::onDiagramSetAdded(wxString path, bool* allow)
         }
     }
 
-    tango::ISetPtr set = g_app->getDatabase()->openSet(towstr(path));
-    if (!set)
+    tango::IFileInfoPtr finfo = g_app->getDatabase()->getFileInfo(towstr(path));
+    if (finfo.isNull() || finfo->getType() != tango::filetypeSet)
+        return;
+
+    tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(path));
+    if (structure.isNull())
         return;
 
     // choose unique alias
@@ -1232,7 +1241,7 @@ void QueryDoc::onDiagramSetAdded(wxString path, bool* allow)
 
     QueryBuilderSourceTable s;
     s.path = path;
-    s.structure = set->getStructure();
+    s.structure = structure;
     s.alias = alias;
 
     m_info.m_source_tables.push_back(s);

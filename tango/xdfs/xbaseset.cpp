@@ -154,7 +154,7 @@ tango::IIteratorPtr XbaseSet::createIterator(const std::wstring& columns,
     {
         XbaseIterator* iter = new XbaseIterator;
         if (!iter->init(m_database,
-                        static_cast<tango::ISet*>(this),
+                        this,
                         m_file.getFilename()))
         {
             delete iter;

@@ -42,8 +42,9 @@ friend class OdbcRowInserter;
 
 public:
 
-    OdbcSet();
+    OdbcSet(OdbcDatabase* database);
     ~OdbcSet();
+
     bool init();
 
     // tango::ISet interface
@@ -69,7 +70,7 @@ private:
 
 private:
 
-    tango::IDatabasePtr m_database;
+    OdbcDatabase* m_database;
     std::wstring m_tablename;
     bool m_filter_query;
         

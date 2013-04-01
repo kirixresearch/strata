@@ -651,6 +651,28 @@ bool isValidObjectPath(const wxString& str,
     return true;
 }
 
+bool isValidTable(
+               const std::wstring& str,
+               tango::IDatabasePtr db)
+{
+    // if the string is empty, it's invalid
+    if (str.length() == 0)
+        return false;
+
+    if (db.isNull())
+        db = g_app->getDatabase();
+
+    if (db.isNull())
+        return false;
+
+    tango::IFileInfoPtr finfo = db->getFileInfo(str);
+    if (finfo.isOk() && finfo->getType() == tango::filetypeSet)
+        return true;
+         else
+        return false;
+}
+
+
 wxString makeValidFieldName(const wxString& str,
                             tango::IDatabasePtr db)
 {

@@ -54,14 +54,19 @@ const std::string empty_string = "";
 const std::wstring empty_wstring = L"";
 
 
-SlIterator::SlIterator()
+SlIterator::SlIterator(SlDatabase* database, SlSet* set)
 {
     m_eof = false;
     m_stmt = NULL;
-    m_db = NULL;
-    m_dbint = NULL;
     m_oid = 0;
     m_ordinal = 0;
+
+    m_database = database;
+    m_database->ref();
+
+    m_set = set;
+    if (m_set)
+        m_set->ref();
 }
 
 SlIterator::~SlIterator()
@@ -70,31 +75,19 @@ SlIterator::~SlIterator()
     {
         sqlite3_finalize(m_stmt);
     }
+
+    if (m_set)
+        m_set->unref();
+    m_database->unref();
 }
 
 bool SlIterator::init(const std::wstring& _query)
 {
-    // -- open the database again --
-
+    //  open the database again
     if (m_set)
-    {
         m_set_structure = m_set->getStructure();
-    }
 
-/*
-    std::string ascpath = kl::tostring(m_path);
-    sqlite3* db = NULL;
-
-    if (SQLITE_OK != sqlite3_open(ascpath.c_str(), &db))
-    {
-        // -- database could not be opened --
-        return false;
-    }
-
-    m_db = db;
-*/
-
-    // -- add rowid to the select statement --
+    // add rowid to the select statement
     const wchar_t* q = _query.c_str();
     while (iswspace(*q))
         q++;
@@ -113,11 +106,11 @@ bool SlIterator::init(const std::wstring& _query)
 
     std::string ascsql = kl::tostring(query);
 
-    int rc =  sqlite3_prepare(m_db,
-                             ascsql.c_str(),
-                             ascsql.length(),
-                             &m_stmt,
-                             NULL);
+    int rc =  sqlite3_prepare(m_sqlite,
+                              ascsql.c_str(),
+                              ascsql.length(),
+                              &m_stmt,
+                              NULL);
 
     if (rc != SQLITE_OK)
         return false;
@@ -153,22 +146,21 @@ bool SlIterator::init(const std::wstring& _query)
 
 
     // if m_set is null, create a placeholder set
-    if (m_set.isNull())
+    if (!m_set)
     {
         // create set and initialize variables
-        SlSet* set = new SlSet;
-        set->m_database = m_database;
-        set->m_dbint = m_dbint;
+        SlSet* set = new SlSet(m_database);
         set->m_tablename = getTableNameFromSql(query);
         //set->m_filter_query = true;
 
-        // -- initialize Odbc connection for this set --
         if (!set->init())
         {
+            delete set;
             return false;
         }
 
-        m_set = static_cast<tango::ISet*>(set);
+        m_set = set;
+        m_set->ref();
         m_set_structure = m_set->getStructure();
     }
 

@@ -85,11 +85,15 @@ static std::vector<wxString> getColumnsFromSource(const std::wstring& source)
     // table source
     if (info->getType() == tango::filetypeSet)
     {
-        tango::ISetPtr set = g_app->getDatabase()->openSet(source);
+        tango::IDatabasePtr db = g_app->getDatabase();
+        if (db.isNull())
+            return columns;
+
+        tango::ISetPtr set = db->openSet(source);
         if (set.isNull())
             return columns;
 
-        tango::IStructurePtr set_structure = set->getStructure();
+        tango::IStructurePtr set_structure = db->describeTable(source);
         if (set_structure.isNull())
             return columns;
 

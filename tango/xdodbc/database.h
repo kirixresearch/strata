@@ -13,16 +13,9 @@
 #define __XDODBC_DATABASE_H
 
 
-#if _MSC_VER < 1300
-#define SQLLEN SQLINTEGER
-#define SQLULEN SQLUINTEGER
-#endif
-
-
 #ifdef WIN32
 #include <xcm/xcmwin32.h>
 #endif
-
 
 #include <kl/string.h>
 #include "../xdcommon/xdcommon.h"
@@ -104,7 +97,9 @@ XCM_DECLARE_SMARTPTR(IOdbcDatabase)
 class OdbcDatabase : public tango::IDatabase,
                      public IOdbcDatabase
 {
+    friend class OdbcSet;
     friend class OdbcRowInserter;
+    friend class OdbcIterator;
 
     XCM_CLASS_NAME("xdodbc.Database")
     XCM_BEGIN_INTERFACE_MAP(OdbcDatabase)

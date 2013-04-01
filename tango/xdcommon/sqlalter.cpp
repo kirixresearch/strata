@@ -64,7 +64,9 @@ bool sqlAlter(tango::IDatabasePtr db,
     dequote(table_name, '[', ']');
     
     tango::ISetPtr set = db->openSet(table_name);
-    if (set.isNull())
+    tango::IStructurePtr structure = db->describeTable(table_name);
+
+    if (set.isNull() || structure.isNull())
     {
         // input set could not be opened
         wchar_t buf[1024]; // some paths might be long
@@ -72,11 +74,7 @@ bool sqlAlter(tango::IDatabasePtr db,
         error.setError(tango::errorGeneral, buf);
         return false;
     }
-    
-    
-    tango::IStructurePtr structure = set->getStructure();
-    
-    
+
     
     std::vector<std::wstring> commands;
     std::vector<std::wstring>::iterator it;

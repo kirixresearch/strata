@@ -2120,11 +2120,8 @@ tango::ISetPtr OdbcDatabase::openSet(const std::wstring& path)
     }
 
     // create set and initialize variables
-    OdbcSet* set = new OdbcSet;
-    set->m_env = m_env;
-    set->m_database = this;
+    OdbcSet* set = new OdbcSet(this);
     set->m_conn_str = m_conn_str;
-    set->m_db_type = m_db_type;
     set->m_tablename = tablename1;
 
     // initialize Odbc connection for this set
@@ -2233,11 +2230,16 @@ tango::IRowInserterPtr OdbcDatabase::bulkInsert(const std::wstring& path)
 
 tango::IStructurePtr OdbcDatabase::describeTable(const std::wstring& path)
 {
+/*
     tango::ISetPtr set = openSet(path);
     if (set.isNull())
         return xcm::null;
 
     return set->getStructure();
+*/
+
+    // TODO: implement
+    return xcm::null;
 }
 
 bool OdbcDatabase::modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job)
@@ -2267,11 +2269,8 @@ bool OdbcDatabase::execute(const std::wstring& command,
     if (0 == wcscasecmp(first_word.c_str(), L"SELECT"))
     {
         // create an iterator based on our select statement
-        OdbcIterator* iter = new OdbcIterator;
-        iter->m_env = m_env;
-        iter->m_database = this;
-        iter->m_set = xcm::null;
-        iter->m_db_type = m_db_type;
+        OdbcIterator* iter = new OdbcIterator(this, NULL);
+
 
         // initialize Odbc connection for this set
         if (!iter->init(command))

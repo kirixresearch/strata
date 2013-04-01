@@ -25,14 +25,17 @@
 #include "../xdcommon/util.h"
 
 
-SlSet::SlSet()
+SlSet::SlSet(SlDatabase* database)
 {
-    m_db = NULL;
+    m_database = database;
+    m_database->ref();
 }
 
 SlSet::~SlSet()
 {
+    m_database->unref();
 }
+
 
 bool SlSet::init()
 {
@@ -82,7 +85,7 @@ tango::IStructurePtr SlSet::getStructure()
     if (m_structure.isOk())
         return m_structure->clone();
     
-    m_structure = m_dbint->getStructureFromPath(m_tablename);
+    m_structure = m_database->getStructureFromPath(m_tablename);
     if (!m_structure)
         return xcm::null;
                
@@ -94,13 +97,8 @@ tango::IIteratorPtr SlSet::createIterator(const std::wstring& columns,
                                           tango::IJob* job)
 {
     // create an iterator based on our select statement
-    SlIterator* iter = new SlIterator;
-    iter->m_db = m_db;
-    iter->m_dbint = m_dbint;
-    iter->m_database = m_database;
+    SlIterator* iter = new SlIterator(m_database, this);
     iter->m_ordinal = m_ordinal;
-    iter->m_set = static_cast<tango::ISet*>(this);
-    
 
     std::wstring sql;
     sql = L"SELECT ";
@@ -261,7 +259,7 @@ bool SlRowInserter::startInsert(const std::wstring& col_list)
 
 
     // -- begin a transaction --
-    sqlite3_exec(m_set->m_db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
+    sqlite3_exec(m_set->m_sqlite, "BEGIN TRANSACTION;", NULL, NULL, NULL);
 
 
 
@@ -271,7 +269,7 @@ bool SlRowInserter::startInsert(const std::wstring& col_list)
     ascsql = kl::tostring(sql);
 
 
-    if (SQLITE_OK != sqlite3_prepare(m_set->m_db, 
+    if (SQLITE_OK != sqlite3_prepare(m_set->m_sqlite, 
                                      ascsql.c_str(),  // stmt
                                      ascsql.length(),
                                      &m_stmt,
@@ -316,8 +314,8 @@ void SlRowInserter::finishInsert()
         m_stmt = NULL;
     }
 
-    // -- commit this transaction --
-    sqlite3_exec(m_set->m_db, "COMMIT;", NULL, NULL, NULL);
+    // commit this transaction
+    sqlite3_exec(m_set->m_sqlite, "COMMIT;", NULL, NULL, NULL);
 
 }
 

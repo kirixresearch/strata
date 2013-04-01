@@ -868,7 +868,6 @@ int ImportJob::runJob()
         // try to open the destination set (to see if it already exists)
         dest_set = dest_db->openSet(towstr(it->output_path));
 
-
         // use this opportunity of having the set open to fill out the
         // field map, if one is not already present.  An empty field map
         // indicates that the caller desires all fields to be copied.
@@ -892,7 +891,7 @@ int ImportJob::runJob()
 
             if (it->append && dest_set.isOk())
             {
-                tango::IStructurePtr dest_struct = dest_set->getStructure();
+                dest_struct = dest_db->describeTable(towstr(it->output_path));
 
                 if (!dest_struct)
                     continue;
@@ -1016,10 +1015,6 @@ int ImportJob::runJob()
 
         if (it->append && dest_set.isOk())
         {
-            // if we are appending to a set and the destination set exists,
-            // get the structure from that set
-
-            dest_struct = dest_set->getStructure();
         }
          else
         {
@@ -1045,13 +1040,15 @@ int ImportJob::runJob()
 
         
         // if our destination set doesn't exist, bail out
-        if (dest_set.isNull())
+        dest_struct = dest_db->describeTable(towstr(it->output_path));
+
+        if (dest_set.isNull() || dest_struct.isNull())
         {
             getJobInfo()->setState(jobStateFailed);
             return 0;
         }
 
-        
+
         // if our source structure doesn't exist, bail out
         src_struct = src_iter->getStructure();
         if (src_struct.isNull())

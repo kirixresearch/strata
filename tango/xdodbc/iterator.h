@@ -13,11 +13,6 @@
 #define __XDODBC_ITERATOR_H
 
 
-#if _MSC_VER < 1300
-#define SQLLEN SQLINTEGER
-#define SQLULEN SQLUINTEGER
-#endif
-
 #include "../xdcommon/cmnbaseiterator.h"
 #include "../xdcommon/localrowcache.h"
 #include "../xdcommon/keylayout.h"
@@ -138,7 +133,7 @@ class OdbcIterator : public CommonBaseIterator,
 
 public:
 
-    OdbcIterator();
+    OdbcIterator(OdbcDatabase* database, OdbcSet* set = NULL);
     ~OdbcIterator();
     
     bool init(const std::wstring& query);
@@ -209,8 +204,8 @@ private:
     std::vector<OdbcDataAccessInfo*> m_exprs;
     std::vector<OdbcIteratorRelInfo> m_relations;
 
-    tango::IDatabasePtr m_database;
-    tango::ISetPtr m_set;
+    OdbcDatabase* m_database;
+    OdbcSet* m_set;
     tango::IStructurePtr m_structure;
 
     LocalRowCache m_cache;

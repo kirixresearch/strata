@@ -23,7 +23,7 @@
 
 struct XbaseDataAccessInfo
 {
-    // -- metadata --
+    // metadata
     char xbase_type;
 
     std::wstring name;
@@ -34,7 +34,7 @@ struct XbaseDataAccessInfo
     bool nulls_allowed;
     std::wstring expr_text;
 
-    // -- expression stuff --
+    // expression stuff
     kscript::ExprParser* expr;
     KeyLayout* key_layout;
     kscript::Value expr_result;
@@ -72,7 +72,7 @@ struct XbaseDataAccessInfo
 };
 
 
-// -- XbaseIterator class declaration --
+// XbaseIterator class declaration
 
 class XbaseIterator : public CommonBaseIterator
 {
@@ -88,10 +88,10 @@ public:
     XbaseIterator();
     ~XbaseIterator();
     bool init(tango::IDatabasePtr db,
-              tango::ISetPtr set,
+              XbaseSet* set,
               const std::wstring& filename);
 
-    // -- tango::IIterator interface --
+    // tango::IIterator
 
     tango::ISetPtr getSet();
     tango::rowpos_t getRowCount();
@@ -134,7 +134,7 @@ public:
 private:
 
     tango::IDatabasePtr m_database;
-    tango::ISetPtr m_set;
+    XbaseSet* m_set;
 
     XbaseFile m_file;
 

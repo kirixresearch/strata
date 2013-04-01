@@ -18,9 +18,12 @@
 #include "../xdcommon/extfileinfo.h"
 
 
-OdbcSet::OdbcSet()
+OdbcSet::OdbcSet(OdbcDatabase* database)
 {
-    m_env = 0;
+    m_database = database;
+    m_database->ref();
+
+    m_env = database->m_env;
     m_conn = 0;
 
     m_db_type = -1;
@@ -38,6 +41,8 @@ OdbcSet::~OdbcSet()
         SQLFreeConnect(m_conn);
         m_conn = 0;
     }
+
+    m_database->unref();
 }
 
 bool OdbcSet::init()
@@ -867,11 +872,7 @@ tango::IIteratorPtr OdbcSet::createIterator(const std::wstring& columns,
     }
     
     // create an iterator based on our select statement
-    OdbcIterator* iter = new OdbcIterator;
-    iter->m_env = m_env;
-    iter->m_database = m_database;
-    iter->m_set = this;
-    iter->m_db_type = m_db_type;
+    OdbcIterator* iter = new OdbcIterator(m_database, this);
 
     // initialize Odbc connection for this set
     if (!iter->init(query))
@@ -921,12 +922,8 @@ tango::rowpos_t OdbcSet::getRowCount()
         query += quote_closechar;
     }
 
-    OdbcIterator* iter = new OdbcIterator;
+    OdbcIterator* iter = new OdbcIterator(m_database, this);
     iter->ref();
-    iter->m_env = m_env;
-    iter->m_database = m_database;
-    iter->m_set = this;
-    iter->m_db_type = m_db_type;
 
     // initialize Odbc connection for this set
     if (!iter->init(query))

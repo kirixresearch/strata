@@ -1214,11 +1214,14 @@ bool QueryTemplate::loadJson(const wxString& path)
                 query_table.height = table["height"].getInteger();
 
             // attempt to open the set and get it's structure
-            tango::ISetPtr set = g_app->getDatabase()->openSet(towstr(query_table.path));
-            if (set.isNull())
+            tango::IFileInfoPtr finfo = g_app->getDatabase()->getFileInfo(towstr(query_table.path));
+            if (finfo.isNull())
                 continue;
-                 else
-                query_table.structure = set->getStructure();
+            tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(query_table.path));
+            if (structure.isNull())
+                continue;
+
+            query_table.structure = structure;
 
             // if joins are specified, load them
             kl::JsonNode joins = table["joins"];
@@ -1431,9 +1434,9 @@ bool QueryTemplate::loadJsonFromNode(const wxString& path)
 
         // attempt to open the set and get it's structure
         {
-            tango::ISetPtr set = g_app->getDatabase()->openSet(towstr(tbl.path));
-            if (set)
-                tbl.structure = set->getStructure();
+            tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(tbl.path));
+            if (structure)
+                tbl.structure = structure;
                  else
                 continue;
         }

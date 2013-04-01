@@ -132,10 +132,15 @@ tango::rowpos_t IterWrapperSet::getRowCount()
     return count;
 }
 
+
 tango::IStructurePtr IterWrapperSet::getStructure()
 {
-    return m_base_set->getStructure();
+    ISetInternalPtr set_int = m_base_set;
+    if (set_int.isNull())
+        return xcm::null;
+    return set_int->getStructure();
 }
+
 
 
 bool IterWrapperSet::updateRow(tango::rowid_t rowid,
@@ -293,9 +298,11 @@ tango::rowpos_t EofSet::getRowCount()
 
 tango::IStructurePtr EofSet::getStructure()
 {
-    return m_base_set->getStructure();
+    ISetInternalPtr set_int = m_base_set;
+    if (set_int.isNull())
+        return xcm::null;
+    return set_int->getStructure();
 }
-
 
 void EofSet::onSetDomainUpdated()
 {

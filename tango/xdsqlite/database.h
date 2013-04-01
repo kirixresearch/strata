@@ -137,7 +137,7 @@ private:
     std::wstring m_path;
     std::wstring m_db_name;
 
-    sqlite3* m_db;
+    sqlite3* m_sqlite;
     int m_last_job;
     std::vector<JobInfo*> m_jobs;
     

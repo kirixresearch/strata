@@ -27,13 +27,13 @@ const std::string empty_string = "";
 const std::wstring empty_wstring = L"";
 
 
-// -- XbaseIterator class implementation --
 
 XbaseIterator::XbaseIterator()
 {
     m_current_row = 1;
     m_bof = false;
     m_eof = false;
+    m_set = NULL;
 }
 
 XbaseIterator::~XbaseIterator()
@@ -48,10 +48,13 @@ XbaseIterator::~XbaseIterator()
     {
         m_file.closeFile();
     }
+
+    if (m_set)
+        m_set->unref();
 }
 
 bool XbaseIterator::init(tango::IDatabasePtr db,
-                         tango::ISetPtr set,
+                         XbaseSet* set,
                          const std::wstring& filename)
 {
     if (!m_file.openFile(filename))
@@ -59,6 +62,7 @@ bool XbaseIterator::init(tango::IDatabasePtr db,
 
     m_database = db;
     m_set = set;
+    m_set->ref();
 
     m_current_row = 1;
 
@@ -229,7 +233,7 @@ void XbaseIterator::refreshStructure()
     int col_count = s->getColumnCount();
     int i;
 
-    // -- get structure from xbase file --
+    // get structure from xbase file
     std::vector<XbaseField> fields = m_file.getFields();
     
     for (i = 0; i < col_count; ++i)

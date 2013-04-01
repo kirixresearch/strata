@@ -2023,15 +2023,8 @@ void DbConnection::describeTable(kscript::ExprEnv* env, kscript::Value* retval)
     }
     
     std::wstring table_name = env->getParam(0)->getString();
-
-    tango::ISetPtr set = m_db->openSet(table_name);
-    if (set.isNull())
-    {
-        retval->setNull();
-        return;
-    }
     
-    tango::IStructurePtr structure = set->getStructure();
+    tango::IStructurePtr structure = m_db->describeTable(table_name);
     
     if (structure.isNull())
     {

@@ -2223,15 +2223,10 @@ void ReportDoc::getColumnListItems(std::vector<ColumnListItem>& list)
     if (data_source.Length() == 0)
         return;
 
-    tango::ISetPtr set;
-    set = g_app->getDatabase()->openSet(towstr(data_source));
-    if (!set.isNull())
+    tango::IStructurePtr structure;
+    structure = g_app->getDatabase()->describeTable(towstr(data_source));
+    if (structure.isOk())
     {
-        // if we don't have a valid structure, we're done
-        tango::IStructurePtr structure = set->getStructure();
-        if (structure.isNull())
-            return;
-        
         // add the columns to the list
         int i, col_count = structure->getColumnCount();
         list.reserve(col_count);

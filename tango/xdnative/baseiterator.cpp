@@ -444,14 +444,15 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
     if (!right_set_int)
         return false;
 
+    tango::IStructurePtr right_structure = right_set_int->getStructure();
+    if (right_structure.isNull())
+        return false;
+
     // lookup the index on the right set
     tango::IIndexInfoEnumPtr idx_enum = m_database->getIndexEnum(right_set->getObjectPath());
     tango::IIndexInfoPtr idx = xdLookupIndex(idx_enum, rel->getRightExpression(), false);
     if (!idx)
         return false;
-
-    tango::IStructurePtr right_structure = right_set->getStructure();
-
 
     // construct final left expression.  This will be based off of the order
     // of the fields in the right set's index expression.  The order of the
@@ -704,7 +705,7 @@ bool BaseIterator::initStructure()
 
     // refresh iterator structure from set
 
-    m_set_structure = m_set->getStructure();
+    m_set_structure = m_set_internal->getStructure();
     m_calc_fields.clear();
 
     if (m_columns == L"*")
@@ -901,7 +902,7 @@ void BaseIterator::refreshStructure()
 
 
     // refresh the relation info structures
-    int idx;
+    size_t idx;
     for (idx = 0; idx < m_relations.size(); ++idx)
     {
         if (!refreshRelInfo(m_relations[idx]))
@@ -1139,10 +1140,11 @@ public:
 
 
         tango::ISetPtr right_set = rel->getRightSetPtr();
-        if (right_set.isNull())
+        ISetInternalPtr right_set_internal = right_set;
+        if (right_set_internal.isNull())
             return false;
 
-        tango::IStructurePtr s = right_set->getStructure();
+        tango::IStructurePtr s = right_set_internal->getStructure();
         if (s.isNull())
             return false;
 

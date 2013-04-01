@@ -3968,10 +3968,11 @@ tango::IIndexInfoEnumPtr Database::getIndexEnum(const std::wstring& path)
 tango::IStructurePtr Database::describeTable(const std::wstring& path)
 {
     tango::ISetPtr set = openSet(path);
-    if (set.isNull())
+    ISetInternalPtr set_int = set;
+    if (set_int.isNull())
         return xcm::null;
 
-    return set->getStructure();
+    return set_int->getStructure();
 }
 
 tango::IRowInserterPtr Database::bulkInsert(const std::wstring& path)

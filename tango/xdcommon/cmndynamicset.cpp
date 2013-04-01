@@ -161,12 +161,6 @@ bool CommonDynamicSet::create(tango::IDatabasePtr database,
     return true;
 }
 
-
-unsigned int CommonDynamicSet::getSetFlags()
-{
-    return tango::sfFastRowCount;
-}
-
 void CommonDynamicSet::startBulkInsert()
 {
     m_index->startBulkInsert(100000);
@@ -426,11 +420,13 @@ tango::rowpos_t CommonDynamicSet::getRowCount()
 
 
 
-
+/*
 tango::IStructurePtr CommonDynamicSet::getStructure()
 {
     return m_base_set->getStructure();
 }
+*/
+
 
 /*
 bool CommonDynamicSet::modifyStructure(tango::IStructure* struct_config,

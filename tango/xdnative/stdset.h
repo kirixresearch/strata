@@ -32,15 +32,12 @@ public:
     IterWrapperSet(tango::IDatabase* database);
     virtual ~IterWrapperSet();
 
-    std::wstring getObjectPath();
-
     bool create(tango::ISetPtr base_set, tango::IIteratorPtr iter);
 
-    // ISet 
-    tango::IStructurePtr getStructure();
-    bool modifyStructure(tango::IStructure* struct_config, tango::IJob* job) { return false; }
+    std::wstring getObjectPath();
 
     tango::rowpos_t getRowCount();
+    tango::IStructurePtr getStructure();
 
     tango::IIteratorPtr createIterator(const std::wstring& columns,
                                        const std::wstring& expr,
@@ -49,7 +46,6 @@ public:
     bool updateRow(tango::rowid_t rowid,
                    tango::ColumnUpdateInfo* info,
                    size_t info_size);
-
 
     // ISetEvents
     void onSetDomainUpdated();
@@ -64,7 +60,6 @@ private:
 
     tango::ISetPtr m_base_set;
     tango::IIterator* m_iter;
-
 };
 
 
@@ -116,14 +111,12 @@ public:
     bool create(tango::ISetPtr base_set);
 
     // ISet
-    tango::IStructurePtr getStructure();
-    bool modifyStructure(tango::IStructure* struct_config, tango::IJob* job) { return false; }
-
     tango::IIteratorPtr createIterator(const std::wstring& columns,
                                        const std::wstring& expr,
                                        tango::IJob* job);
     
     tango::rowpos_t getRowCount();
+    tango::IStructurePtr getStructure();
 
     // ISetEvents
     void onSetDomainUpdated();

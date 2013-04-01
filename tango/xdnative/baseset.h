@@ -37,6 +37,8 @@ public:
     void setObjectPath(const std::wstring& path) { }
     std::wstring getObjectPath() { return L""; }
 
+    bool modifyStructure(tango::IStructure* struct_config, tango::IJob* job) { return false; }
+
     unsigned int getSetFlags();
     void setSetFlags(unsigned int new_val);
     void setSetId(const std::wstring& new_val);

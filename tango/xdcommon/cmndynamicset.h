@@ -57,8 +57,7 @@ public:
     // ISet
     std::wstring getSetId();
 
-    unsigned int getSetFlags();
-    tango::IStructurePtr getStructure();
+    //tango::IStructurePtr getStructure();
 
     tango::IRowDeleterPtr getRowDeleter();
     tango::IIteratorPtr createIterator(const std::wstring& columns,

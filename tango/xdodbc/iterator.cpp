@@ -25,13 +25,20 @@ const std::string empty_string = "";
 const std::wstring empty_wstring = L"";
 
 
-OdbcIterator::OdbcIterator()
+OdbcIterator::OdbcIterator(OdbcDatabase* database, OdbcSet* set)
 {
-    m_env = 0;
+    m_database = database;
+    m_database->ref();
+
+    m_set = set;
+    if (m_set)
+        m_set->ref();
+
+    m_env = m_database->m_env;
+    m_db_type =  m_database->m_db_type;
+
     m_conn = 0;
     m_stmt = 0;
-
-    m_db_type = -1;
 
     m_row_pos = 0;
     m_eof = false;
@@ -80,6 +87,11 @@ OdbcIterator::~OdbcIterator()
 
     for (it = m_exprs.begin(); it != m_exprs.end(); ++it)
         delete (*it);
+
+    if (m_set)
+        m_set->unref();
+
+    m_database->unref();
 }
 
 bool OdbcIterator::init(const std::wstring& query)
@@ -377,23 +389,22 @@ bool OdbcIterator::init(const std::wstring& query)
 
 
     // if m_set is null, create a placeholder set
-    if (m_set.isNull())
+    if (!m_set)
     {
         // create set and initialize variables
-        OdbcSet* set = new OdbcSet;
-        set->m_env = m_env;
-        set->m_database = m_database;
-        set->m_db_type = m_db_type;
+        OdbcSet* set = new OdbcSet(m_database);
         set->m_tablename = getTableNameFromSql(query);
         set->m_filter_query = true;
 
         // initialize Odbc connection for this set
         if (!set->init())
         {
+            delete set;
             return false;
         }
 
-        m_set = static_cast<tango::ISet*>(set);
+        m_set = set;
+        m_set->ref();
     }
 
 
@@ -405,7 +416,7 @@ bool OdbcIterator::init(const std::wstring& query)
 
 tango::ISetPtr OdbcIterator::getSet()
 {
-    return m_set;
+    return static_cast<tango::ISet*>(m_set);
 }
 
 tango::rowpos_t OdbcIterator::getRowCount()

@@ -247,6 +247,11 @@ bool isValidObjectPath(
                tango::IDatabasePtr db = xcm::null,
                int* err_idx = NULL);
 
+bool isValidTable(
+               const std::wstring& str,
+               tango::IDatabasePtr db = xcm::null);
+
+
 // makes a valid field name out of the given string
 wxString makeValidFieldName(
                const wxString& str,

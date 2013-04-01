@@ -1938,14 +1938,20 @@ tango::IRowInserterPtr FsDatabase::bulkInsert(const std::wstring& path)
 
 tango::IStructurePtr FsDatabase::describeTable(const std::wstring& path)
 {
+/*
     tango::ISetPtr set = openSet(path);
     if (set.isNull())
         return xcm::null;
 
     return set->getStructure();
+*/
+    // TODO: implement
+    return xcm::null;
 }
 
-bool FsDatabase::modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job)
+bool FsDatabase::modifyStructure(const std::wstring& path,
+                                 tango::IStructurePtr struct_config,
+                                 tango::IJob* job)
 {
     return false;
 }

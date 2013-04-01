@@ -395,10 +395,9 @@ tango::IIteratorPtr OracleSet::createIterator(const std::wstring& columns,
         query += expr;
     }
 
-    OracleIterator* iter = new OracleIterator(m_database);
+    OracleIterator* iter = new OracleIterator(m_database, this);
     iter->m_env = m_env;
     iter->m_svc = m_svc;
-    iter->m_set = this;
     iter->m_name = m_tablename;
     if (!iter->init(query))
     {
