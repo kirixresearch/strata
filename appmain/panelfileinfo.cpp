@@ -520,8 +520,8 @@ void MultiFileInfoPanel::onSave(wxCommandEvent& event)
 
     std::wstring output_path = L"xtmp_" + kl::getUniqueString();
 
-    tango::ISetPtr output = db->createTable(output_path, output_structure, NULL);
-    if (!output)
+    db->createTable(output_path, output_structure, NULL);
+    if (!isValidTable(output_path))
         return;
 
     tango::IRowInserterPtr output_inserter = db->bulkInsert(output_path);
