@@ -97,11 +97,11 @@ bool sqlInsert(tango::IDatabasePtr db,
             
         std::wstring select_stmt = _command.substr(pos);
         
-        tango::ISetPtr set = db->openSet(table);
-        if (set.isNull())
+        tango::IFileInfoPtr finfo = db->getFileInfo(table);
+        if (finfo.isNull() || finfo->getType() != tango::filetypeSet)
         {
             wchar_t buf[1024]; // some paths might be long
-            swprintf(buf, 1024, L"Unable to insert rows because table [%ls] cannot be opened", table.c_str());
+            swprintf(buf, 1024, L"Unable to insert rows because table [%ls] cannot be accessed", table.c_str());
             error.setError(tango::errorGeneral, buf);
             return false;
         }
@@ -117,14 +117,12 @@ bool sqlInsert(tango::IDatabasePtr db,
         }
 
         src_iter->goFirst();
-        xdcmnInsert(db, src_iter, set->getObjectPath(),  L"",  0,  NULL);
+        xdcmnInsert(db, src_iter, table,  L"",  0,  NULL);
 
         return true;
     }
 
     
-    
-
 
     temps = stmt.getKeywordParam(L"VALUES");
     kl::trim(temps);
