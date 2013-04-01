@@ -1164,9 +1164,8 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
     for (it = m_template.m_ei.tables.begin();
          it != m_template.m_ei.tables.end(); ++it)
     {
-        tango::ISetPtr set = g_app->getDatabase()->openSet(towstr(it->input_tablename));
-
-        if (set.isNull())
+        bool exists = g_app->getDatabase()->getFileExist(towstr(it->input_tablename));
+        if (!exists)
         {
             m_table_selection_page->markProblemRow(row, true);
             missing_tables.push_back(it->input_tablename);
