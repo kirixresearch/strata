@@ -89,6 +89,9 @@ static std::vector<wxString> getColumnsFromSource(const std::wstring& source)
         if (db.isNull())
             return columns;
 
+        if (!isValidTable(source, db))
+            return columns;
+
         tango::IStructurePtr set_structure = db->describeTable(source);
         if (set_structure.isNull())
             return columns;
