@@ -211,8 +211,8 @@ bool ImportPkgJob::importSet(PkgStreamReader* reader,
     if (db.isNull())
         return false;
 
-    tango::ISetPtr output_set = db->createTable(info->output_path, structure, NULL);
-    if (output_set.isNull())
+    db->createTable(info->output_path, structure, NULL);
+    if (!isValidTable(info->output_path))
     {
         // could not create set
         return false;
