@@ -372,13 +372,6 @@ void MergePanel::onSize(wxSizeEvent& evt)
     }
 }
 
-
-struct AppendInfo
-{
-    wxString output_path;
-    tango::ISetPtr target_set;
-};
-
 static void onAppendJobFinished(jobs::IJobPtr job)
 {
     g_app->getAppController()->refreshDbDoc();
@@ -441,8 +434,8 @@ void MergePanel::onOK(wxCommandEvent& evt)
         if (!doOutputPathCheck(output_path))
             return;
     }
-    
-    tango::ISetPtr set;
+
+
     std::vector<std::wstring> table_paths;
 
     int col_idx = 0;
@@ -453,22 +446,19 @@ void MergePanel::onOK(wxCommandEvent& evt)
     for (row = 0; row < row_count; ++row)
     {
         std::wstring table_path = m_grid->getCellString(row, 0);
-        tango::ISetPtr set = g_app->getDatabase()->openSet(table_path);
-
-        if (set.isNull())
+        if (!isValidTable(table_path))
         {
             wxString message = wxString::Format(_("'%s' could not be opened.  Please make sure this is a valid table."), table_path.c_str());
 
             appMessageBox(message,
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
-            
+
             return;
         }
 
         table_paths.push_back(table_path);
     }
-
 
 
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.append-job");
