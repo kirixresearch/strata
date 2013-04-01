@@ -852,10 +852,9 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         for (it = m_template.m_ei.tables.begin();
              it != m_template.m_ei.tables.end(); ++it)
         {
-            tango::ISetPtr set = local_db->openSet(towstr(it->input_tablename));
             tango::IStructurePtr structure = local_db->describeTable(towstr(it->input_tablename));
 
-            if (set.isNull() || structure.isNull())
+            if (structure.isNull())
             {
                 missing_input_table_rows.push_back(row);
                 input_tables_missing = true;
@@ -1204,10 +1203,6 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
     for (it = m_template.m_ei.tables.begin();
          it != m_template.m_ei.tables.end(); ++it)
     {
-        tango::ISetPtr set = db->openSet(towstr(it->input_tablename));
-        if (set.isNull())
-            continue;
-        
         tango::IStructurePtr s = db->describeTable(towstr(it->input_tablename));
         if (s.isNull())
             continue;
