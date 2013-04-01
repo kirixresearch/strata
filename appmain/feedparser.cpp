@@ -268,9 +268,7 @@ bool FeedParser::convertToTable(const std::wstring& output_path)
     tango::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return xcm::null;
-    
-    tango::ISetPtr dest_set;
-    
+
     size_t max_link_len = 1;
     size_t max_title_len = 1;
     size_t max_description_len = 1;
@@ -330,9 +328,9 @@ bool FeedParser::convertToTable(const std::wstring& output_path)
     colinfo->setScale(0);
 
 
-    dest_set = db->createTable(output_path, structure, NULL);
+    db->createTable(output_path, structure, NULL);
 
-    if (dest_set.isNull())
+    if (!isValidTable(output_path))
         return false;
 
     tango::IRowInserterPtr row_inserter = db->bulkInsert(output_path);
