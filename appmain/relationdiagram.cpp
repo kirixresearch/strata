@@ -140,10 +140,7 @@ void showAddTableDialog(RelationDiagram* diagram)
     
     if (dlg.ShowModal() == wxID_OK)
     {
-        tango::ISetPtr set;
-        set = g_app->getDatabase()->openSet(towstr(dlg.getPath()));
-
-        if (set.isOk())
+        if (isValidTable(towstr(dlg.getPath())))
         {
             wxString path = dlg.getPath();
             wxString caption = path.AfterLast(wxT('/'));
