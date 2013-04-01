@@ -50,7 +50,6 @@ public:
     void setObjectPath(const std::wstring& path);
     std::wstring getObjectPath();
 
-    unsigned int getSetFlags();
     std::wstring getSetId();
 
     tango::IStructurePtr getStructure();
@@ -59,7 +58,6 @@ public:
                                        const std::wstring& expr,
                                        tango::IJob* job);
 
-    tango::rowpos_t getRowCount();
 
     void setWhereCondition(const std::wstring& condition);
 

@@ -93,6 +93,7 @@ std::wstring OdbcSet::getObjectPath()
 }
 
 
+/*
 unsigned int OdbcSet::getSetFlags()
 {
     if (m_filter_query)
@@ -114,6 +115,7 @@ unsigned int OdbcSet::getSetFlags()
 
     return 0;
 }
+*/
 
 std::wstring OdbcSet::getSetId()
 {

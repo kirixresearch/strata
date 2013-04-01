@@ -86,12 +86,6 @@ std::wstring OracleSet::getObjectPath()
     return m_path;
 }
 
-
-unsigned int OracleSet::getSetFlags()
-{
-    return 0;
-}
-
 std::wstring OracleSet::getSetId()
 {
     IOracleDatabasePtr db = m_database;

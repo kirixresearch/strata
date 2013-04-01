@@ -52,7 +52,6 @@ public:
     void setObjectPath(const std::wstring& path);
     std::wstring getObjectPath();
 
-    unsigned int getSetFlags();
     std::wstring getSetId();
     tango::IStructurePtr getStructure();
 

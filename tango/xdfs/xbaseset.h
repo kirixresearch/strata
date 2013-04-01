@@ -76,9 +76,6 @@ public:
     bool init(tango::IDatabasePtr db,
               const std::wstring& filename);
 
-    // -- tango::ISet interface --
-
-    unsigned int getSetFlags();
     std::wstring getSetId();
 
     tango::IStructurePtr getStructure();

@@ -2965,12 +2965,16 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
     
     if (ijob)
     {
-    /*
-        if (left->getSetFlags() & tango::sfFastRowCount)
-            ijob->setMaxCount(left->getRowCount());
+        tango::IFileInfoPtr left_finfo = db->getFileInfo(left);
+        if (left_finfo.isNull())
+        {
+            error.setError(tango::errorGeneral);
+            return xcm::null;
+        }
+
+        if (left_finfo->getFlags() & tango::sfFastRowCount)
+            ijob->setMaxCount(left_finfo->getRowCount());
              else
-            ijob->setMaxCount(0);
-    */
             ijob->setMaxCount(0);
     }
 

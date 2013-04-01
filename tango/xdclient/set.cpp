@@ -46,7 +46,6 @@ ClientSet::ClientSet(ClientDatabase* database)
 {
     m_database = database;
     m_database->ref();
-    m_set_flags = 0;
     m_known_row_count = (tango::rowpos_t)-1;
     m_set_id = L"";
 }
@@ -71,22 +70,6 @@ bool ClientSet::init(const std::wstring& path)
     if (file_info.isUndefined() || file_info["type"].getString() != L"table")
         return false;
 
-    kl::JsonNode fast_row_count = file_info["fast_row_count"];
-    if (fast_row_count.isOk())
-    {
-        if (fast_row_count.getBoolean())
-        {
-            kl::JsonNode row_count = file_info["row_count"];
-            if (row_count.isOk())
-            {
-                m_set_flags |= tango::sfFastRowCount;
-                m_known_row_count = row_count.getInteger();
-            }
-        }
-    }
-
-
-
     m_set_id = file_info["object_id"].getString();
 
     m_path = path;
@@ -107,11 +90,6 @@ std::wstring ClientSet::getObjectPath()
         return m_object_path;
 
     return m_path;
-}
-
-unsigned int ClientSet::getSetFlags()
-{
-    return m_set_flags;
 }
 
 std::wstring ClientSet::getSetId()

@@ -32,9 +32,6 @@ public:
     
     bool init();
 
-    // tango::ISet interface
-
-    unsigned int getSetFlags();
     std::wstring getSetId();
 
     tango::IStructurePtr getStructure();

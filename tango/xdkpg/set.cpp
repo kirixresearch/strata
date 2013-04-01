@@ -55,12 +55,6 @@ std::wstring KpgSet::getObjectPath()
     return m_path;
 }
 
-
-unsigned int KpgSet::getSetFlags()
-{
-    return 0;
-}
-
 std::wstring KpgSet::getSetId()
 {
     if (m_set_id.length() == 0)
@@ -128,9 +122,3 @@ tango::IIteratorPtr KpgSet::createIterator(const std::wstring& columns,
 
     return static_cast<tango::IIterator*>(iter);
 }
-
-tango::rowpos_t KpgSet::getRowCount()
-{
-    return -1;
-}
-

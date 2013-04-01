@@ -65,12 +65,6 @@ std::wstring DrizzleSet::getObjectPath()
     return m_tablename;
 }
 
-unsigned int DrizzleSet::getSetFlags()
-{
-    return 0;
-    //return tango::sfFastRowCount;
-}
-
 std::wstring DrizzleSet::getSetId()
 {
     IDrizzleDatabasePtr mydb = m_database;

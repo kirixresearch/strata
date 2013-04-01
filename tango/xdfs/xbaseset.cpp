@@ -67,10 +67,6 @@ bool XbaseSet::init(tango::IDatabasePtr db,
     return true;
 }
 
-unsigned int XbaseSet::getSetFlags()
-{
-    return tango::sfFastRowCount;
-}
 
 std::wstring XbaseSet::getSetId()
 {

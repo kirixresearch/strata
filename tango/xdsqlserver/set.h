@@ -28,12 +28,9 @@ friend class SqlServerRowInserter;
 
 public:
 
-    // -- tango::ISet interface --
-
     void setObjectPath(const std::wstring& obj_path);
     std::wstring getObjectPath();
 
-    unsigned int getSetFlags();
     std::wstring getSetId();
 
     tango::IStructurePtr getStructure();

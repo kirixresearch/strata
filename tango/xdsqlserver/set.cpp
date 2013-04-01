@@ -58,12 +58,6 @@ std::wstring SqlServerSet::getObjectPath()
     return L"";
 }
 
-
-unsigned int SqlServerSet::getSetFlags()
-{
-    return tango::sfFastRowCount;
-}
-
 std::wstring SqlServerSet::getSetId()
 {
     return L"";

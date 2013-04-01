@@ -39,7 +39,6 @@ public:
     void setObjectPath(const std::wstring& path);
     std::wstring getObjectPath();
 
-    unsigned int getSetFlags();
     std::wstring getSetId();
 
     tango::IStructurePtr getStructure();
@@ -47,8 +46,6 @@ public:
     tango::IIteratorPtr createIterator(const std::wstring& columns,
                                        const std::wstring& expr,
                                        tango::IJob* job);
-
-    tango::rowpos_t getRowCount();
 
 private:
 

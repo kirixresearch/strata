@@ -59,18 +59,6 @@ std::wstring PgsqlSet::getObjectPath()
     return m_path;
 }
 
-
-unsigned int PgsqlSet::getSetFlags()
-{
-    if (m_filter_query)
-        return 0;
-        
-    if (m_cached_row_count != (tango::rowpos_t)-1)
-        return tango::sfFastRowCount;
- 
-    return 0;
-}
-
 std::wstring PgsqlSet::getSetId()
 {
     if (m_set_id.length() == 0)
@@ -141,6 +129,7 @@ tango::IIteratorPtr PgsqlSet::createIterator(const std::wstring& columns,
     return static_cast<tango::IIterator*>(iter);
 }
 
+/*
 tango::rowpos_t PgsqlSet::getRowCount()
 {
     if (m_cached_row_count != (tango::rowpos_t)-1)
@@ -187,7 +176,7 @@ tango::rowpos_t PgsqlSet::getRowCount()
 
     return result;
 }
-
+*/
 
 
 void PgsqlSet::setWhereCondition(const std::wstring& condition)

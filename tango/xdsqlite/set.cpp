@@ -58,12 +58,6 @@ std::wstring SlSet::getObjectPath()
 }
 
 
-unsigned int SlSet::getSetFlags()
-{
-    //return tango::sfFastRowCount;
-    return 0;
-}
-
 std::wstring SlSet::getSetId()
 {
     if (m_set_id.length() == 0)
