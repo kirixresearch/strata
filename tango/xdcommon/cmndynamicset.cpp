@@ -252,29 +252,15 @@ int CommonDynamicSet::insert(tango::IIteratorPtr source_iter,
     IJobInternalPtr sp_ijob = job;
     IJobInternal* ijob = sp_ijob.p;
 
-    tango::rowpos_t max_count = 0;
-
-
-    tango::ISetPtr source_set = source_iter->getSet();
-    if (source_set)
-    {
-        if (source_set->getSetFlags() & tango::sfFastRowCount)
-        {
-            max_count = source_set->getRowCount();
-        }
-    }
-    source_set = xcm::null;
-
-
     if (job)
     {
-        ijob->setMaxCount(max_count);
+        ijob->setMaxCount(max_rows);
         ijob->setCurrentCount(0);
         ijob->setStatus(tango::jobRunning);
         ijob->setStartTime(time(NULL));
     }
 
-    m_index->startBulkInsert(max_count);
+    m_index->startBulkInsert(max_rows);
 
     // if the constraint set is a filter set, we can perform the
     // operation faster by just parsing the filter expression locally

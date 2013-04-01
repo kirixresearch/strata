@@ -1044,7 +1044,10 @@ tango::ISetPtr BaseIterator::getSet()
     return m_set;
 }
 
-
+tango::rowpos_t BaseIterator::getRowCount()
+{
+    return m_set_internal->getRowCount();
+}
 
 
 

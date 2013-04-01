@@ -92,9 +92,8 @@ public:
     void onSetRelationshipsUpdated() { }
     void onSetDomainUpdated() { }
 
-    // -- tango::IIterator stuff (passed through to data_iter) --
     tango::ISetPtr getSet();
-    //tango::IDatabasePtr getDatabase();
+    tango::rowpos_t getRowCount();
 
     void setIteratorFlags(unsigned int mask, unsigned int value);
     unsigned int getIteratorFlags();

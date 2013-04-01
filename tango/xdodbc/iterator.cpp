@@ -408,6 +408,11 @@ tango::ISetPtr OdbcIterator::getSet()
     return m_set;
 }
 
+tango::rowpos_t OdbcIterator::getRowCount()
+{
+    return 0;
+}
+
 tango::IDatabasePtr OdbcIterator::getDatabase()
 {
     return m_database;

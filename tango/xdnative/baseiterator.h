@@ -134,6 +134,7 @@ public:
     // IIterator
     tango::IDatabasePtr getDatabase();
     tango::ISetPtr getSet();
+    tango::rowpos_t getRowCount();
     void setSet(tango::ISetPtr set);
 
     tango::IStructurePtr getStructure();

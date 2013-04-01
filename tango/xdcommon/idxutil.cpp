@@ -79,8 +79,8 @@ IIndex* createExternalIndex(tango::IDatabasePtr db,
                             bool allow_dups,
                             tango::IJob* job)
 {
-    tango::ISetPtr set = db->openSet(table_path);
-    if (set.isNull())
+    tango::IFileInfoPtr finfo = db->getFileInfo(table_path);
+    if (finfo.isNull())
         return false;
 
     // job information
@@ -93,9 +93,9 @@ IIndex* createExternalIndex(tango::IDatabasePtr db,
 
     if (job)
     {
-        if (set->getSetFlags() & tango::sfFastRowCount)
+        if (finfo->getFlags() & tango::sfFastRowCount)
         {
-            max_count = set->getRowCount();
+            max_count = finfo->getRowCount();
         }
 
         ijob = job;
@@ -625,12 +625,10 @@ tango::ISetPtr CommonIndexIterator::getSet()
     return m_data_iter->getSet();
 }
 
-/*
-tango::IDatabasePtr CommonIndexIterator::getDatabase()
+tango::rowpos_t CommonIndexIterator::getRowCount()
 {
-    return m_data_iter->getDatabase();
+    return m_data_iter->getRowCount();
 }
-*/
 
 void CommonIndexIterator::setIteratorFlags(unsigned int mask, unsigned int value)
 {

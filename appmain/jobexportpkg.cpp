@@ -912,7 +912,7 @@ int ExportPkgJob::runJob()
     tango::IDatabasePtr db = g_app->getDatabase();
     m_buf = new unsigned char[package_block_size];
     std::vector<PkgStreamInfo>::iterator it;
-    double max_count;
+    long long max_count = 0;
 
 
     std::vector<PkgStreamInfo> info;
@@ -939,9 +939,7 @@ int ExportPkgJob::runJob()
 
 
     // calculate max row count
-    m_obj_mutex.lock();
-    max_count = 0.0;
-    m_obj_mutex.unlock();
+    max_count = 0;
 
     for (it = info.begin(); it != info.end(); ++it)
     {
@@ -964,20 +962,9 @@ int ExportPkgJob::runJob()
             
         if (file_info->getType() == tango::filetypeSet)
         {
-            // attempt to open set
-            tango::ISetPtr set = db->openSet(towstr(it->src_path));
-
-            if (set.isNull())
+            if (file_info->getFlags() & tango::sfFastRowCount)
             {
-                getJobInfo()->setState(jobStateFailed);
-                return 0;
-            }
-
-            if (set->getSetFlags() & tango::sfFastRowCount)
-            {
-                m_obj_mutex.lock();
-                max_count += (long long)set->getRowCount();
-                m_obj_mutex.unlock();
+                max_count += file_info->getRowCount();
             }
         }
          else if (file_info->getType() == tango::filetypeStream)

@@ -81,15 +81,34 @@ int DivideJob::runJob()
     std::wstring output_prefix = params_node["output"].getString();
     size_t output_row_count = params_node["row_count"].getInteger();
 
-    tango::ISetPtr input_set = m_db->openSet(input_path);
-    if (input_set.isNull())
+    tango::IFileInfoPtr finfo = m_db->getFileInfo(input_path);
+    if (finfo.isNull())
     {
         m_job_info->setState(jobStateFailed);
         m_job_info->setError(jobserrInvalidParameter, L"");
         return 0;    
     }
 
-    size_t max_row_count = (size_t)input_set->getRowCount();
+    tango::IStructurePtr structure;
+    structure = m_db->describeTable(input_path);
+    if (structure.isNull())
+    {
+        m_job_info->setState(jobStateFailed);
+        m_job_info->setError(jobserrInvalidParameter, L"");
+        return 0; 
+    }
+
+    tango::IIteratorPtr iter;
+    iter = m_db->createIterator(input_path, L"", L"", NULL);
+    if (iter.isNull())
+    {
+        m_job_info->setState(jobStateFailed);
+        m_job_info->setError(jobserrInvalidParameter, L"");
+        return 0;
+    }
+
+
+    size_t max_row_count = (size_t)finfo->getRowCount();
     if (output_row_count <= 0 || output_row_count >= max_row_count)
         output_row_count = max_row_count;
 
@@ -101,13 +120,7 @@ int DivideJob::runJob()
 
 
     tango::IJobPtr tango_job;
-    tango::IStructurePtr structure;
-    structure = input_set->getStructure();
 
-    tango::ISetPtr dest_set;
-    tango::IIteratorPtr iter;
-    
-    iter = m_db->createIterator(input_path, L"", L"", NULL);
     iter->goFirst();
 
     int i = 0;

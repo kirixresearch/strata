@@ -27,7 +27,7 @@ public:
     SplitPanel();
     ~SplitPanel();
 
-    // -- IDocument --
+    // IDocument
     bool initDoc(IFramePtr frame,
                  IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,
@@ -36,15 +36,15 @@ public:
     void setDocumentFocus();
 
     // event handlers
-    void onSplitTypeChanged(wxCommandEvent& event);
-    void onPrefixTextChanged(wxCommandEvent& event);
-    void onSourceTableTextChanged(wxCommandEvent& event);
-    void onTableCountTextChanged(wxCommandEvent& event);
-    void onTableSizeTextChanged(wxCommandEvent& event);
-    void onRowCountTextChanged(wxCommandEvent& event);
-    void onBrowse(wxCommandEvent& event);
-    void onOK(wxCommandEvent& event);
-    void onCancel(wxCommandEvent& event);
+    void onSplitTypeChanged(wxCommandEvent& evt);
+    void onPrefixTextChanged(wxCommandEvent& evt);
+    void onSourceTableTextChanged(wxCommandEvent& evt);
+    void onTableCountTextChanged(wxCommandEvent& evt);
+    void onTableSizeTextChanged(wxCommandEvent& evt);
+    void onRowCountTextChanged(wxCommandEvent& evt);
+    void onBrowse(wxCommandEvent& evt);
+    void onOK(wxCommandEvent& evt);
+    void onCancel(wxCommandEvent& evt);
 
     void setTextControls(int state);
     bool validate();
@@ -53,6 +53,10 @@ public:
 private:
 
     void onSourceTableDropped(wxDragResult& drag_result, FsDataObject* data);
+    
+    int getSetColumnCount();
+    int getSetRowWidth();
+    double getSetSize();
 
 private:
 
@@ -79,7 +83,9 @@ private:
     wxSizerItem* m_spacer;
     
     bool m_prefix_edited;
-    tango::ISetPtr m_set;
+    tango::IFileInfoPtr m_finfo;
+    tango::IStructurePtr m_structure;
+    wxString m_path;
 
     DECLARE_EVENT_TABLE()
 };

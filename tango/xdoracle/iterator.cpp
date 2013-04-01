@@ -408,12 +408,16 @@ bool OracleIterator::init(const std::wstring& query)
 }
 
 
-// -- IIterator interface implementation --
-
 tango::ISetPtr OracleIterator::getSet()
 {
     return m_set;
 }
+
+tango::rowpos_t OracleIterator::getRowCount()
+{
+    return 0;
+}
+
 
 tango::IDatabasePtr OracleIterator::getDatabase()
 {

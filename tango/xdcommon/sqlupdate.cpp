@@ -44,6 +44,10 @@ static int doUpdate(tango::IDatabasePtr db,
                     ThreadErrorInfo& error,
                     tango::IJob* job)
 {
+    tango::IFileInfoPtr finfo = db->getFileInfo(path);
+    if (finfo.isNull())
+        return -1;
+
     tango::ISetPtr set = db->openSet(path);
     if (set.isNull())
         return -1;
@@ -219,9 +223,9 @@ static int doUpdate(tango::IDatabasePtr db,
     {
         tango::rowpos_t max_count = 0;
         
-        if (set->getSetFlags() & tango::sfFastRowCount)
+        if (finfo->getFlags() & tango::sfFastRowCount)
         {
-            max_count = set->getRowCount();
+            max_count = finfo->getRowCount();
         }
 
         ijob->setMaxCount(max_count);

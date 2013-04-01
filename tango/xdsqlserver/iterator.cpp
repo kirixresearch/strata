@@ -279,11 +279,15 @@ bool SqlServerIterator::init(const std::wstring& query)
     return true;
 }
 
-// -- IIterator interface implementation --
 
 tango::ISetPtr SqlServerIterator::getSet()
 {
     return m_set;
+}
+
+tango::rowpos_t SqlServerIterator::getRowCount()
+{
+    return 0;
 }
 
 tango::IDatabasePtr SqlServerIterator::getDatabase()

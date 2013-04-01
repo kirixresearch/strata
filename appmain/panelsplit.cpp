@@ -37,27 +37,21 @@ enum
 
 // helper functions
 
-static int getSetColumnCount(tango::ISetPtr set)
+int SplitPanel::getSetColumnCount()
 {
-    tango::IStructurePtr structure = set->getStructure();
-    if (!structure)
+    if (m_structure.isNull())
         return 0;
         
-    return structure->getColumnCount();
+    return m_structure->getColumnCount();
 }
 
-static int getSetRowWidth(tango::ISetPtr set)
+int SplitPanel::getSetRowWidth()
 {
     int row_width = 0;
-    
-    tango::IStructurePtr structure = set->getStructure();
-    if (!structure)
-        return 0;
-
-    int i, col_count = structure->getColumnCount();
+    int i, col_count = m_structure->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr col = structure->getColumnInfoByIdx(i);
+        tango::IColumnInfoPtr col = m_structure->getColumnInfoByIdx(i);
         if (col->getCalculated())
             continue;
 
@@ -68,16 +62,19 @@ static int getSetRowWidth(tango::ISetPtr set)
 }
 
 // return value is in bytes
-static double getSetSize(tango::ISetPtr set)
+double SplitPanel::getSetSize()
 {
-    int col_count = getSetColumnCount(set);
-    int row_width = getSetRowWidth(set);
-    int row_count = set->getRowCount();
+    if (m_finfo.isNull())
+        return 0.0;
+
+    int col_count = getSetColumnCount();
+    int row_width = getSetRowWidth();
+    int row_count = m_finfo->getRowCount();
     
     int header_length = (col_count*98); // field header
     header_length += 1024; // file header
     
-    return (header_length+(row_width*row_count));
+    return (header_length + (row_width*row_count));
 }
 
 // return value is in bytes
@@ -132,14 +129,13 @@ SplitPanel::~SplitPanel()
 
 }
 
-// -- IDocument --
 
 bool SplitPanel::initDoc(IFramePtr frame,
                          IDocumentSitePtr doc_site,
                          wxWindow* docsite_wnd,
                          wxWindow* panesite_wnd)
 {
-    // -- create document's window --
+    // create document's window
     bool result = Create(docsite_wnd,
                          -1,
                          wxDefaultPosition,
@@ -242,7 +238,7 @@ bool SplitPanel::initDoc(IFramePtr frame,
     m_expression_sizer->Add(m_expression_textctrl, 1, wxEXPAND);
     m_expression_sizer->AddSpacer(10);
 
-    // -- create a platform standards-compliant OK/Cancel sizer --
+    // create a platform standards-compliant OK/Cancel sizer
     
     m_ok_button = new wxButton(this, wxID_OK, _("Run"));
     
@@ -307,7 +303,7 @@ bool SplitPanel::initDoc(IFramePtr frame,
     m_main_sizer->Add(ok_cancel_sizer, 0, wxEXPAND);
     SetSizer(m_main_sizer);
     
-    // -- connect signals --
+    // connect drag-drop signals from source tree
     FsDataDropTarget* sourcetable_droptarget = new FsDataDropTarget;
     sourcetable_droptarget->sigDragDrop.connect(this, &SplitPanel::onSourceTableDropped);
     m_sourcetable_textctrl->SetDropTarget(sourcetable_droptarget);
@@ -349,7 +345,7 @@ void SplitPanel::onBrowse(wxCommandEvent& evt)
 
 void SplitPanel::onOK(wxCommandEvent& event)
 {
-    if (m_set.isNull())
+    if (m_finfo.isNull())
     {
         appMessageBox(_("The source table specified is invalid.  Please specify a valid table to continue."),
                            APPLICATION_NAME,
@@ -358,8 +354,6 @@ void SplitPanel::onOK(wxCommandEvent& event)
     }
 
     // create the split info for the split job
-
-    tango::ISetPtr source_set = m_set;
     std::wstring prefix = m_prefix_textctrl->GetValue();
     std::wstring expression = m_expression_textctrl->GetValue();
 
@@ -389,7 +383,7 @@ void SplitPanel::onOK(wxCommandEvent& event)
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.divide-job");
 
     kl::JsonNode params;
-    params["input"].setString(source_set->getObjectPath());
+    params["input"].setString(towstr(m_path));
     params["output"].setString(prefix);
     params["row_count"].setInteger(row_count);
     
@@ -428,10 +422,10 @@ void SplitPanel::onSplitTypeChanged(wxCommandEvent& event)
     m_spacer->Show((sel < 3) ? true:false);
     
     // enable/disable controls based on if the set path is valid
-    m_prefix_textctrl->Enable(m_set.isOk() ? true:false);
-    m_rowcount_textctrl->Enable((sel == 0) && m_set.isOk() ? true:false);
-    m_tablecount_textctrl->Enable((sel == 1) && m_set.isOk() ? true:false);
-    m_tablesize_textctrl->Enable((sel == 2) && m_set.isOk() ? true:false);
+    m_prefix_textctrl->Enable(m_finfo.isOk() ? true:false);
+    m_rowcount_textctrl->Enable((sel == 0) && m_finfo.isOk() ? true:false);
+    m_tablecount_textctrl->Enable((sel == 1) && m_finfo.isOk() ? true:false);
+    m_tablesize_textctrl->Enable((sel == 2) && m_finfo.isOk() ? true:false);
 
     Layout();
     Thaw();
@@ -459,7 +453,7 @@ void SplitPanel::setTextControls(int state)
 
 bool SplitPanel::validate()
 {
-    if (!m_set)
+    if (m_finfo.isNull())
         return false;
         
     bool retval = true;
@@ -512,9 +506,9 @@ bool SplitPanel::validate()
     }
     
     // maximum row count value
-    if (split_type == 0 && row_count_val > m_set->getRowCount())
+    if (split_type == 0 && row_count_val > m_finfo->getRowCount())
     {
-        m_rowcount_textctrl->SetValue(wxString::Format(wxT("%d"), m_set->getRowCount()));
+        m_rowcount_textctrl->SetValue(wxString::Format(wxT("%d"), m_finfo->getRowCount()));
         m_rowcount_textctrl->SetInsertionPointEnd();
         return true;
     }
@@ -536,9 +530,9 @@ bool SplitPanel::validate()
     }
     
     // maximum split table value
-    if (split_type == 1 && table_count_val > m_set->getRowCount())
+    if (split_type == 1 && table_count_val > m_finfo->getRowCount())
     {
-        m_tablecount_textctrl->SetValue(wxString::Format(wxT("%d"), m_set->getRowCount()));
+        m_tablecount_textctrl->SetValue(wxString::Format(wxT("%d"), m_finfo->getRowCount()));
         m_tablecount_textctrl->SetInsertionPointEnd();
         return true;
     }
@@ -560,7 +554,7 @@ bool SplitPanel::validate()
     }
     
     // maximum table size value (make sure it's at least the minimum too to avoid an endless loop)
-    double max_table_size = std::max(getSetSize(m_set)/1048576.0, 0.01);
+    double max_table_size = std::max(getSetSize()/1048576.0, 0.01);
     if (split_type == 2 && table_size_val > max_table_size)
     {
         m_tablesize_textctrl->SetValue(wxString::Format(wxT("%.02f"), max_table_size));
@@ -586,7 +580,7 @@ void SplitPanel::populate()
     int split_table_count;
     double split_table_size;
 
-    if (!m_set)
+    if (m_finfo.isNull())
     {
         m_rowcount_textctrl->ChangeValue(wxT("N/A"));
         m_tablecount_textctrl->ChangeValue(wxT("N/A"));
@@ -599,9 +593,9 @@ void SplitPanel::populate()
     {
         case 0: /* split by row count */
         {
-            if (m_set->getSetFlags() & tango::sfFastRowCount)
+            if (m_finfo->getFlags() & tango::sfFastRowCount)
             {
-                table_row_count = m_set->getRowCount();
+                table_row_count = m_finfo->getRowCount();
                 split_row_count = wxAtoi(m_rowcount_textctrl->GetValue());
 
                 if (split_row_count == 0)
@@ -620,8 +614,8 @@ void SplitPanel::populate()
                 }
                 
                 split_table_count = (int)(ceil((double)table_row_count/(double)split_row_count));
-                split_table_size = calculateSetSize(getSetColumnCount(m_set),
-                                                    getSetRowWidth(m_set),
+                split_table_size = calculateSetSize(getSetColumnCount(),
+                                                    getSetRowWidth(),
                                                     split_row_count)/1048576.0;
                 
                 m_tablecount_textctrl->ChangeValue(wxString::Format(wxT("%d"), split_table_count));
@@ -640,9 +634,9 @@ void SplitPanel::populate()
         
         case 1: /* split by table count */
         {
-            if (m_set->getSetFlags() & tango::sfFastRowCount)
+            if (m_finfo->getFlags() & tango::sfFastRowCount)
             {
-                table_row_count = m_set->getRowCount();
+                table_row_count = m_finfo->getRowCount();
                 split_table_count = wxAtoi(m_tablecount_textctrl->GetValue());
                 
                 if (split_table_count == 0)
@@ -656,9 +650,9 @@ void SplitPanel::populate()
                 if (split_row_count > table_row_count)
                     split_row_count = table_row_count;
                 
-                split_table_size = calculateSetSize(getSetColumnCount(m_set),
-                                                    getSetRowWidth(m_set),
-                                                    split_row_count)/1048576.0;
+                split_table_size = calculateSetSize(getSetColumnCount(),
+                                                    getSetRowWidth(),
+                                                    split_row_count) / 1048576.0;
                 
                 wxString format = wxT("%");
                 format += towx(wxLongLongFmtSpec);
@@ -680,17 +674,17 @@ void SplitPanel::populate()
         
         case 2: /* split by table size */
         {
-            if (m_set->getSetFlags() & tango::sfFastRowCount)
+            if (m_finfo->getFlags() & tango::sfFastRowCount)
             {
-                table_row_count = m_set->getRowCount();
+                table_row_count = m_finfo->getRowCount();
                 split_table_size = wxAtof(m_tablesize_textctrl->GetValue());
                 split_table_size *= 1048576.0;
                 
-                int row_width = getSetRowWidth(m_set);
-                double table_file_size = getSetSize(m_set);
+                int row_width = getSetRowWidth();
+                double table_file_size = getSetSize();
                 
-                split_row_count = calculateSetRowCount(getSetColumnCount(m_set),
-                                                       getSetRowWidth(m_set),
+                split_row_count = calculateSetRowCount(getSetColumnCount(),
+                                                       getSetRowWidth(),
                                                        split_table_size);
                 if (split_row_count > table_row_count)
                     split_row_count = table_row_count;
@@ -720,20 +714,27 @@ void SplitPanel::populate()
     }
 }
 
-void SplitPanel::onPrefixTextChanged(wxCommandEvent& event)
+void SplitPanel::onPrefixTextChanged(wxCommandEvent& evt)
 {
     m_prefix_edited = true;
 }
 
-void SplitPanel::onSourceTableTextChanged(wxCommandEvent& event)
+void SplitPanel::onSourceTableTextChanged(wxCommandEvent& evt)
 {
-    std::wstring set_path = towstr(m_sourcetable_textctrl->GetValue());
-    m_set = g_app->getDatabase()->openSet(set_path);
+    wxString m_path = m_sourcetable_textctrl->GetValue();
+    m_finfo = g_app->getDatabase()->getFileInfo(towstr(m_path));
     
     if (!m_prefix_edited)
-        m_prefix_textctrl->ChangeValue(event.GetString());
+        m_prefix_textctrl->ChangeValue(evt.GetString());
+    
+    if (m_finfo.isOk())
+    {
+        m_structure = g_app->getDatabase()->describeTable(towstr(m_path));
+        if (m_structure.isNull())
+            m_finfo.clear();
+    }
         
-    if (m_set.isNull())
+    if (m_finfo.isNull())
     {
         m_prefix_textctrl->Enable(false);
         m_rowcount_textctrl->Enable(false);
@@ -748,7 +749,7 @@ void SplitPanel::onSourceTableTextChanged(wxCommandEvent& event)
         format += towx(wxLongLongFmtSpec);
         format += wxT("u");
                 
-        wxString val = wxString::Format((const wxChar*)format.c_str(), m_set->getRowCount());
+        wxString val = wxString::Format(format, m_finfo->getRowCount());
         m_rowcount_textctrl->SetValue(val);
         
         m_prefix_textctrl->Enable(true);

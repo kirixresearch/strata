@@ -737,6 +737,11 @@ tango::ISetPtr FixedLengthTextIterator::getSet()
     return static_cast<tango::ISet*>(m_set);
 }
 
+tango::rowpos_t FixedLengthTextIterator::getRowCount()
+{
+    return 0;
+}
+
 tango::IDatabasePtr FixedLengthTextIterator::getDatabase()
 {
     return m_database;

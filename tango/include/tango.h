@@ -273,12 +273,14 @@ enum
 
 enum
 {
-    ifFastSkip = 0x01,       // (read-only) set if IIterator::skip(n)
-                             //  can be executed in O(1) time (fast)
-    ifForwardOnly = 0x02,    // (read-only) set if IIterator::skip(n)
-                             //  only supports forward-only skips,
-    ifReverseRowCache = 0x04 // (read-write) set iterators which are
-                             //  forward-only, but require skip(-value)
+    ifFastSkip = 0x01,        // (read-only) set if IIterator::skip(n)
+                              //  can be executed in O(1) time (fast)
+    ifForwardOnly = 0x02,     // (read-only) set if IIterator::skip(n)
+                              //  only supports forward-only skips,
+    ifReverseRowCache = 0x04, // (read-write) set iterators which are
+                              //  forward-only, but require skip(-value),
+    ifFastRowCount = 0x01,    // (read-only) set if IIterator::getRowCount()
+                              //  can be executed in O(1) time (fast)
 };
 
 
@@ -448,6 +450,7 @@ public:
     virtual unsigned int getIteratorFlags() = 0;
     
     virtual ISetPtr getSet() = 0;
+    virtual rowpos_t getRowCount() = 0;
     virtual IIteratorPtr clone() = 0;
 
     virtual void skip(int delta) = 0;
@@ -529,9 +532,6 @@ public:
 
     virtual void setObjectPath(const std::wstring& path) = 0;
     virtual std::wstring getObjectPath() = 0;
-
-    virtual unsigned int getSetFlags() = 0;
-    virtual rowpos_t getRowCount() = 0;
     virtual IStructurePtr getStructure() = 0;
 };
 

@@ -112,6 +112,11 @@ tango::ISetPtr DelimitedTextIterator::getSet()
     return static_cast<tango::ISet*>(m_set);
 }
 
+tango::rowpos_t DelimitedTextIterator::getRowCount()
+{
+    return 0;
+}
+
 tango::IDatabasePtr DelimitedTextIterator::getDatabase()
 {
     return m_database;

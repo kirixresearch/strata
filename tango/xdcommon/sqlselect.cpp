@@ -828,9 +828,7 @@ static bool insertDistinct(tango::IDatabase* db,
 
     // PHASE 1: populate the index with crc64 hash values
 
-    tango::ISetPtr src_set = src_iter->getSet();
-    index->startBulkInsert(src_set->getRowCount());
-    src_set.clear();
+    index->startBulkInsert(src_iter->getRowCount());
 
     if (job)
     {

@@ -202,18 +202,17 @@ void TangoGridModel::goRow(int row)
     if (abs(row-m_current_row) > 100000)
     {
         // (this code is ok even if m_current_row is -1; it is just an approximation
-
-        tango::ISetPtr set = m_it->getSet();
-        if (set->getSetFlags() & tango::sfFastRowCount)
+        unsigned int iter_flags = m_it->getIteratorFlags();
+        if (iter_flags & tango::ifFastRowCount)
         {
 
             // if a large skip runs fast, we don't need to to the long jump approximation
-            if (!(m_it->getIteratorFlags() & tango::ifFastSkip))
+            if (!(iter_flags & tango::ifFastSkip))
             {
                 if (m_current_row < 0)
                     m_current_row = 1;
 
-                double row_count = (long long)set->getRowCount();
+                double row_count = (double)m_it->getRowCount();
                 double dest = row;
                 double pos = dest/row_count;
 
@@ -439,8 +438,7 @@ tango::IIteratorPtr TangoGridModel::getIterator()
 
 bool TangoGridModel::isEofKnown()
 {
-    tango::ISetPtr set = m_it->getSet();
-    if (set.isOk() && (set->getSetFlags() & tango::sfFastRowCount))
+    if (m_it.isOk() && (m_it->getIteratorFlags() & tango::ifFastRowCount))
         return true;
 
     return (m_row_count == -1) ? false : true;
@@ -951,11 +949,10 @@ int TangoGridModel::getRowCount()
         wxFAIL_MSG(wxT("in TangoGridModel::getRowCount(), m_it is null"));
         return 0;
     }
-        
-    tango::ISetPtr set = m_it->getSet();
-    if (set.isOk() && (set->getSetFlags() & tango::sfFastRowCount))
+    
+    if (m_it->getIteratorFlags() & tango::ifFastRowCount)
     {
-        tango::rowpos_t row_count = set->getRowCount();
+        tango::rowpos_t row_count = m_it->getRowCount();
 
         // clamp it off at 2 billion
         if (row_count > 2000000000)

@@ -242,16 +242,7 @@ void FixedLengthTextSet::setCreateStructure(tango::IStructurePtr structure)
     setLineDelimited(false);
 }
 
-unsigned int FixedLengthTextSet::getSetFlags()
-{
 /*
-    if (m_definition->m_file_type == FixedLengthDefinition::FixedWidth)
-        return tango::sfFastRowCount;
-*/
-
-    return 0;
-}
-
 std::wstring FixedLengthTextSet::getSetId()
 {
     std::wstring set_id;
@@ -268,6 +259,7 @@ std::wstring FixedLengthTextSet::getSetId()
 
     return kl::md5str(set_id);
 }
+*/
 
 tango::IRowInserterPtr FixedLengthTextSet::getRowInserter()
 {

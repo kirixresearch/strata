@@ -141,11 +141,11 @@ void MultiFileInfoPanel::addFile(const wxString& path)
 
     // can't get file info; bail out
     tango::IDatabasePtr db = g_app->getDatabase();
-    tango::IFileInfoPtr file = db->getFileInfo(towstr(path));
-    if (file.isNull())
+    tango::IFileInfoPtr finfo = db->getFileInfo(towstr(path));
+    if (finfo.isNull())
         return;
         
-    switch (file->getType())
+    switch (finfo->getType())
     {
         case tango::filetypeFolder:
         {
@@ -156,7 +156,7 @@ void MultiFileInfoPanel::addFile(const wxString& path)
             f.size = -2;
             f.records = -2;
             
-            if (!file->isMount())
+            if (!finfo->isMount())
             {
                 // native project folder; traverse the folder
                 
@@ -182,21 +182,16 @@ void MultiFileInfoPanel::addFile(const wxString& path)
 
         case tango::filetypeSet:
         {
-            // open the set
-            tango::ISetPtr set = db->openSet(towstr(path));
-            if (set.isNull())
-                return;
-            
             // get the record count
-            int rec_count = -1;
-            if (set->getSetFlags() & tango::sfFastRowCount)
-                rec_count = set->getRowCount();
+            long long rec_count = -1;
+            if (finfo->getFlags() & tango::sfFastRowCount)
+                rec_count = finfo->getRowCount();
 
             // create the project file info
             ProjectFileInfo f;
             f.name = path;
             f.type = ProjectFileInfo::typeTable;
-            f.size = file->getSize();
+            f.size = finfo->getSize();
             f.records = rec_count;
 
             // add the project file info to the vector

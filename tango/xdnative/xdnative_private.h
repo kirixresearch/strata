@@ -256,6 +256,8 @@ public:
     virtual std::wstring getSetId() = 0;
     virtual tango::ISet* getISet() = 0;
 
+    virtual tango::rowpos_t getRowCount() = 0;
+
     virtual bool addEventHandler(ISetEvents* handler) = 0;
     virtual bool removeEventHandler(ISetEvents* handler) = 0;
 

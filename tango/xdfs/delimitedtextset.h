@@ -86,9 +86,8 @@ public:
 
     void setCreateStructure(tango::IStructurePtr structure);
     
-    // -- tango::ISet interface --
+    // tango::ISet
 
-    unsigned int getSetFlags();
     std::wstring getSetId();
 
     tango::IRowInserterPtr getRowInserter();
@@ -99,7 +98,7 @@ public:
 
     tango::rowpos_t getRowCount();
 
-    // -- tango::IDelimitedTextSet interface --
+    // tango::IDelimitedTextSet
 
     bool saveConfiguration();
     bool deleteConfiguration();

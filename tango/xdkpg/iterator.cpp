@@ -126,6 +126,11 @@ tango::ISetPtr KpgIterator::getSet()
     return static_cast<tango::ISet*>(m_set);
 }
 
+tango::rowpos_t KpgIterator::getRowCount()
+{
+    return 0;
+}
+
 tango::IDatabasePtr KpgIterator::getDatabase()
 {
     return static_cast<tango::IDatabase*>(m_database);

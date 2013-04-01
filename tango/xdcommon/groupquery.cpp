@@ -627,6 +627,9 @@ bool runGroupQuery(tango::IDatabasePtr db,
                    const std::wstring& having,
                    tango::IJob* job)
 {
+    if (db.isNull() || sp_iter.isNull())
+        return false;
+
     GroupQueryInfo gi;
     std::vector<GroupOutputInfo> output_fields;
     kscript::ExprParser* having_parser = NULL;
@@ -639,10 +642,9 @@ bool runGroupQuery(tango::IDatabasePtr db,
 
     // try to get the row count
     {
-        tango::ISetPtr set = iter->getSet();
-        if (set.isOk() && (set->getSetFlags() & tango::sfFastRowCount))
+        if (sp_iter->getIteratorFlags() & tango::ifFastRowCount)
         {
-            row_count = set->getRowCount();
+            row_count = sp_iter->getRowCount();
         }
     }
 

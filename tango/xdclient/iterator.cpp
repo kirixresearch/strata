@@ -77,6 +77,11 @@ tango::ISetPtr ClientIterator::getSet()
     return m_set;
 }
 
+tango::rowpos_t ClientIterator::getRowCount()
+{
+    return 0;
+}
+
 tango::IDatabasePtr ClientIterator::getDatabase()
 {
     return m_database;

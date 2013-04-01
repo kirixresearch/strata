@@ -90,16 +90,16 @@ int AppendJob::runJob()
     {
         std::wstring path = input_arr[i].getString();
 
-        tango::ISetPtr set = m_db->openSet(path);
-        if (set.isNull())
+        tango::IFileInfoPtr finfo = m_db->getFileInfo(path);
+        if (finfo.isNull())
         {
             m_job_info->setState(jobStateFailed);
             m_job_info->setError(jobserrInvalidParameter, L"");
             return 0;
         }
 
-        if (set->getSetFlags() & tango::sfFastRowCount)
-            max_count += set->getRowCount();
+        if (finfo->getFlags() & tango::sfFastRowCount)
+            max_count += finfo->getRowCount();
              else
             valid_max_count = false;  // can't get a reliable total number of records
 

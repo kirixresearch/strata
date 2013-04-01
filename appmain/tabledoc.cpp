@@ -1100,7 +1100,13 @@ void TableDoc::onUpdateUI(wxUpdateUIEvent& evt)
     // disable goto when we have an unknown number of records
     if (id == ID_Edit_GoTo)
     {
-        if (m_set->getRowCount() <= 0 || m_grid->getRowCount() <= 0)
+        if (m_iter.isNull())
+        {
+            evt.Enable(false);
+            return;
+        }
+
+        if ((m_iter->getIteratorFlags() & tango::ifFastRowCount) == 0)
         {
             evt.Enable(false);
             return;
@@ -2178,6 +2184,8 @@ void TableDoc::updateStatusBar(bool row_count_update)
     {
         if (row_count_update)
         {
+        /*
+            TODO: implement this
             if (m_browse_set->getSetFlags() & tango::sfFastRowCount)
             {
                 m_stat_row_count = m_browse_set->getRowCount();
@@ -2186,6 +2194,7 @@ void TableDoc::updateStatusBar(bool row_count_update)
             {
                 m_stat_row_count = (tango::rowpos_t)-1;
             }
+        */
         }
         
         if (m_stat_row_count != (tango::rowpos_t)-1)
@@ -6478,7 +6487,10 @@ wxString TableDoc::getFindExprFromValue(const wxString& _search,
 
 void TableDoc::gotoRecord()
 {
-    if (m_set->getRowCount() > 0 && m_grid->getRowCount() > 0)
+    if ((m_iter->getIteratorFlags() & tango::ifFastRowCount) == 0)
+        return;
+
+    if (m_grid->getRowCount() > 0)
     {
         long long row_count = (long long)m_stat_row_count;
         

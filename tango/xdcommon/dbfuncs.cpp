@@ -134,20 +134,6 @@ int xdcmnInsert(tango::IDatabasePtr dest_db,
 
     if (job)
     {
-        tango::ISetPtr source_set = source_iter->getSet();
-        if (source_set)
-        {
-            if (source_set->getSetFlags() & tango::sfFastRowCount)
-            {
-                max_count = source_set->getRowCount();
-            }
-        }
-
-        if (max_rows > 0 && max_rows < max_count)
-        {
-            max_count = max_rows;
-        }
-
         ijob = job;
         if (!ijob)
         {
@@ -155,7 +141,7 @@ int xdcmnInsert(tango::IDatabasePtr dest_db,
             return 0;
         }
 
-        ijob->setMaxCount(max_count);
+        ijob->setMaxCount(max_rows);
         ijob->setCurrentCount(0);
         ijob->setStatus(tango::jobRunning);
         ijob->setStartTime(time(NULL));

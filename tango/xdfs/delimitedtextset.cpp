@@ -167,10 +167,6 @@ bool DelimitedTextSet::init(tango::IDatabasePtr db,
     return true;
 }
 
-unsigned int DelimitedTextSet::getSetFlags()
-{
-    return 0;
-}
 
 std::wstring DelimitedTextSet::getSetId()
 {

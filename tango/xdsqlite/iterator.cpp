@@ -175,12 +175,14 @@ bool SlIterator::init(const std::wstring& _query)
     return true;
 }
 
-
-// -- IIterator interface implementation --
-
 tango::ISetPtr SlIterator::getSet()
 {
     return m_set;
+}
+
+tango::rowpos_t SlIterator::getRowCount()
+{
+    return 0;
 }
 
 tango::IDatabasePtr SlIterator::getDatabase()

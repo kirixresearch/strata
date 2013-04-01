@@ -1062,7 +1062,7 @@ void TextDoc::updateStatusBar()
         
         // field count
         int col = m_textview->getCursorOffset();
-        int field_count = m_fixedlength_set->getRowCount();
+        int field_count = 0;
         
         tango::IFixedLengthDefinitionPtr fset = m_fixedlength_set;
         if (fset)

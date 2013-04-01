@@ -106,9 +106,10 @@ public:
     ~ClientIterator();
     bool init(const std::wstring& handle, const std::wstring& url_query);
 
-    // tango::IIterator interface implementation
+    // tango::IIterator
 
     tango::ISetPtr getSet();
+    tango::rowpos_t getRowCount();
     tango::IDatabasePtr getDatabase();
     tango::IIteratorPtr clone();
 

@@ -179,6 +179,11 @@ tango::ISetPtr DrizzleIterator::getSet()
     return m_set;
 }
 
+tango::rowpos_t DrizzleIterator::getRowCount()
+{
+    return 0;
+}
+
 tango::IDatabasePtr DrizzleIterator::getDatabase()
 {
     return m_database;

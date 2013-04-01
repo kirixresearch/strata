@@ -50,7 +50,7 @@ TableIterator::TableIterator() : BaseIterator()
     m_bof = false;
     m_include_deleted = false;
 
-    setIteratorFlags(tango::ifFastSkip);
+    setIteratorFlags(tango::ifFastSkip | tango::ifFastRowCount);
 }
 
 TableIterator::~TableIterator()

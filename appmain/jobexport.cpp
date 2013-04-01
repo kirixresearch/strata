@@ -296,7 +296,6 @@ int ExportJob::runJob()
 
 
     tango::IDatabasePtr src_db = g_app->getDatabase();
-
     tango::IDatabasePtr dest_db = conn->getDatabasePtr();
 
     if (src_db.isNull() || dest_db.isNull())
@@ -307,29 +306,38 @@ int ExportJob::runJob()
     }
 
 
-    double max_count;
-
-    m_obj_mutex.lock();
+    long long max_count = 0;
+    bool max_count_known = true;
     max_count = 0.0;
-    m_obj_mutex.unlock();
+
 
     std::vector<ExportJobInfo>::iterator it;
     for (it = m_exports.begin(); it != m_exports.end(); ++it)
     {
         // get total row count
-        tango::ISetPtr set = src_db->openSet(towstr(it->input_path));
-        if (set.isNull())
-            continue;
+        tango::IFileInfoPtr finfo = src_db->getFileInfo(towstr(it->input_path));
+        if (finfo.isNull())
+        {
+            m_job_info->setState(jobStateFailed);
+            return 0;
+        }
 
-        if (set->getSetFlags() & tango::sfFastRowCount)
+        if (finfo->getFlags() & tango::sfFastRowCount)
         {
             m_obj_mutex.lock();
-            max_count += (long long)set->getRowCount();
+            max_count += finfo->getRowCount();
             m_obj_mutex.unlock();
+        }
+         else
+        {
+            max_count_known = false;
         }
     }
 
-    m_job_info->setMaxCount(max_count);
+    if (max_count_known)
+    {
+        m_job_info->setMaxCount(max_count);
+    }
 
     for (it = m_exports.begin(); it != m_exports.end(); ++it)
     {

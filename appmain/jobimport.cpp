@@ -501,29 +501,17 @@ long long ImportJob::getTotalRowCount(tango::IDatabasePtr db)
                 break;
             }
 
-
-            int format = tango::formatNative;
-            if (m_import_type == dbtypeDelimitedText)
-            {
-                format = tango::formatDelimitedText;
-            }
-             else if (m_import_type == dbtypeFixedLengthText)
-            {
-                format = tango::formatFixedLengthText;
-            }
-
-
-            src_set = db->openSetEx(towstr(it->input_path), format);
-            if (!src_set)
+            tango::IFileInfoPtr finfo = db->getFileInfo(towstr(it->input_path));
+            if (finfo.isNull())
             {
                 m_job_info->setState(jobStateFailed);
                 return 0;
             }
 
             // get total row count
-            if (src_set->getSetFlags() & tango::sfFastRowCount)
+            if (finfo->getFlags() & tango::sfFastRowCount)
             {
-                max_count += src_set->getRowCount();
+                max_count += finfo->getRowCount();
             }
              else
             {

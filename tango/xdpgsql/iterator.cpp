@@ -237,6 +237,11 @@ tango::ISetPtr PgsqlIterator::getSet()
     return static_cast<tango::ISet*>(m_set);
 }
 
+tango::rowpos_t PgsqlIterator::getRowCount()
+{
+    return 0;
+}
+
 tango::IDatabasePtr PgsqlIterator::getDatabase()
 {
     return static_cast<tango::IDatabase*>(m_database);

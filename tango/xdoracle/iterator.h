@@ -97,6 +97,7 @@ public:
     // -- IIterator interface implementation --
 
     tango::ISetPtr getSet();
+    tango::rowpos_t getRowCount();
     tango::IDatabasePtr getDatabase();
     tango::IIteratorPtr clone();
 

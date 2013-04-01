@@ -94,11 +94,7 @@ public:
 
     void setCreateStructure(tango::IStructurePtr structure);
 
-    // -- tango::ISet interface --
-
-    unsigned int getSetFlags();
-    std::wstring getSetId();
-
+    // tango::ISet
     tango::IRowInserterPtr getRowInserter();
     tango::IIteratorPtr createIterator(const std::wstring& columns,
                                        const std::wstring& expr,
