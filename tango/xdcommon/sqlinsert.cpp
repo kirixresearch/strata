@@ -156,13 +156,12 @@ bool sqlInsert(tango::IDatabasePtr db,
 
     // try to open the target set
 
-    tango::ISetPtr set = db->openSet(table);
     tango::IStructurePtr structure = db->describeTable(table);
 
-    if (set.isNull() || structure.isNull())
+    if (structure.isNull())
     {
         wchar_t buf[1024]; // some paths might be long
-        swprintf(buf, 1024, L"Unable to insert values because table [%ls] could not be opened", table.c_str());
+        swprintf(buf, 1024, L"Unable to insert values because table [%ls] could not be accessed", table.c_str());
         error.setError(tango::errorGeneral, buf);
         return false;
     }
