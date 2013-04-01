@@ -1557,10 +1557,10 @@ void ReportLayoutEngine::populateDataModel()
     wxString query_string;
     
     // set the base and browse sets
-    wxString data_source = m_data_source;    
-    if (isValidTable(towstr(data_source)))
+    wxString data_source = m_data_source;
+    if (!isValidTable(towstr(data_source)))
     {
-        // if we don't have a data set, try to load the path as a query
+        // if we don't have a table, try to load the path as a query
         QueryTemplate query_template;
         if (query_template.load(data_source))
             query_string = query_template.getQueryString();
