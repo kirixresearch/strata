@@ -308,7 +308,7 @@ public:
     wxString base_path;
 
     // -- for the fixed-length preview grid --
-    tango::ISetPtr set;
+    //tango::ISetPtr set;
 
     // -- delimited text settings --
     wxString delimiters;
