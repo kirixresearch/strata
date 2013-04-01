@@ -600,15 +600,9 @@ static void onGroupJobFinished(jobs::IJobPtr job)
 
     kl::JsonNode params;
     params.fromString(job->getParameters());
-
     std::wstring output_path = params["output"];
-    tango::ISetPtr result_set = g_app->getDatabase()->openSet(output_path);
 
-    if (result_set.isOk())
-    {
-        g_app->getAppController()->openTable(output_path);
-    }
-     else
+    if (!g_app->getAppController()->openTable(output_path))
     {
         appMessageBox(_("The output table could not be created."),
                       APPLICATION_NAME,
