@@ -1558,8 +1558,7 @@ void ReportLayoutEngine::populateDataModel()
     
     // set the base and browse sets
     wxString data_source = m_data_source;    
-    tango::ISetPtr set = g_app->getDatabase()->openSet(towstr(data_source));
-    if (set.isNull())
+    if (isValidTable(towstr(data_source)))
     {
         // if we don't have a data set, try to load the path as a query
         QueryTemplate query_template;
