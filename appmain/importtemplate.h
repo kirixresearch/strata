@@ -307,9 +307,6 @@ public:
     std::vector<ImportTableSelection> field_mappings;
     wxString base_path;
 
-    // -- for the fixed-length preview grid --
-    //tango::ISetPtr set;
-
     // -- delimited text settings --
     wxString delimiters;
     wxString text_qualifier;
