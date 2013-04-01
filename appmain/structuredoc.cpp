@@ -1403,10 +1403,11 @@ bool StructureDoc::createTable()
     
     // get the path from the dialog and create the new set
     std::wstring new_path = towstr(dlg.getPath());
-    tango::ISetPtr set = g_app->getDatabase()->createTable(new_path,
-                                                           structure,
-                                                           NULL);
-    if (set.isNull())
+    g_app->getDatabase()->createTable(new_path,
+                                      structure,
+                                      NULL);
+
+    if (!isValidTable(new_path))
         return false;
 
     // set the modify set in case the user wants to further modify the set
