@@ -129,7 +129,6 @@ int GroupJob::runJob()
 
 
     tango::IJobPtr tango_job;
-    tango::ISetPtr output_set;
 
     if (!unique_records)
     {
@@ -162,8 +161,6 @@ int GroupJob::runJob()
 
             return 0;
         }
-
-        output_set = m_db->openSet(info.output);
     }
      else
     {
@@ -177,7 +174,6 @@ int GroupJob::runJob()
         tango_job = m_db->createJob();
         setTangoJob(tango_job);
 
-        tango::ISetPtr intermediate_output_set1;
         tango::GroupQueryInfo info1;
         info1.input = input_path;
         info1.output = L"xtmp_" + kl::getUniqueString();
@@ -188,7 +184,7 @@ int GroupJob::runJob()
         bool res1 = m_db->groupQuery(&info1, tango_job.p);
         m_to_delete.push_back(info1.output);
 
-        if ( tango_job->getCancelled())
+        if (tango_job->getCancelled())
         {
             m_job_info->setState(jobStateCancelling);
             return 0;
@@ -205,11 +201,6 @@ int GroupJob::runJob()
             return 0;
         }
 
-        if (output_set.isNull())
-        {
-            m_job_info->setState(jobStateFailed);
-            return 0;
-        }
 
 
         std::wstring output2 = L"xtmp_" + kl::getUniqueString();
