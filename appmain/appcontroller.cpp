@@ -5862,12 +5862,7 @@ jobs::IJobPtr AppController::execute(const wxString& location)
             QueryTemplate t;
             if (!t.load(location))
                 return xcm::null;
-            //return t.execute();
-
-            //return t.execute();
-
-            // TODO: QueryTemplate now returns jobs::IJobPtr; need to
-            // uncomment above once this function returns the same
+            return t.execute();
         }
          else if (type == L"import")
         {
