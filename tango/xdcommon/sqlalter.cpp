@@ -63,10 +63,9 @@ bool sqlAlter(tango::IDatabasePtr db,
     
     dequote(table_name, '[', ']');
     
-    tango::ISetPtr set = db->openSet(table_name);
     tango::IStructurePtr structure = db->describeTable(table_name);
 
-    if (set.isNull() || structure.isNull())
+    if (structure.isNull())
     {
         // input set could not be opened
         wchar_t buf[1024]; // some paths might be long
@@ -311,7 +310,7 @@ bool sqlAlter(tango::IDatabasePtr db,
     }    
     
 
-    //set->modifyStructure(structure, NULL);
+    db->modifyStructure(table_name, structure, NULL);
 
     return true;
 }
