@@ -82,7 +82,6 @@ public:
         return *this;
     }
 
-
     int input_offset;
     int input_width;
 
@@ -103,8 +102,7 @@ public:
 };
 
 
-// -- a functor to sort FixedLengthField objects --
-
+// functor to sort FixedLengthField objects
 class FixedLengthFieldBreakSort
 {
 public:
@@ -120,6 +118,7 @@ public:
 class FieldSelection
 {
 public:
+
     FieldSelection()
     {
         input_name = wxT("");
@@ -177,6 +176,7 @@ public:
     }
 
 public:
+
     wxString input_name;
     int input_type;
     int input_width;
@@ -250,6 +250,7 @@ public:
     }
 
 public:
+
     int type;
     bool show;
     bool selected;
@@ -260,7 +261,7 @@ public:
     wxString query;
     std::vector<FieldSelection> output_fields;
 
-    // -- fixed length text settings --
+    // fixed length text settings
     std::vector<FixedLengthField> fixed_fields;
     int row_width;
 };
@@ -269,6 +270,7 @@ public:
 class ImportInfo : public ConnectionInfo
 {
 public:
+
     ImportInfo()
     {
         base_path = wxT("/");
@@ -307,13 +309,12 @@ public:
     std::vector<ImportTableSelection> field_mappings;
     wxString base_path;
 
-    // -- delimited text settings --
+    // delimited text settings
     wxString delimiters;
     wxString text_qualifier;
     wxString date_format_str;
     bool first_row_header;
 };
-
 
 
 class ImportTemplate
@@ -337,8 +338,7 @@ public:
 };
 
 
-// -- a functor to sort ImportTableSelection objects --
-
+// functor to sort ImportTableSelection objects
 class ImportTableSelectionLess
 {
 public:
@@ -350,7 +350,6 @@ public:
                                                 true : false;
      }
 };
-
 
 
 #endif
