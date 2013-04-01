@@ -17,7 +17,6 @@
 #include "dbdoc.h"
 
 
-
 enum
 {
     ID_BrowseInputButton = wxID_HIGHEST + 1,
@@ -138,7 +137,6 @@ public:
         m_input_textctrl->SetFocus();
     }
 
-
     void onOutputTextDropped(wxDragResult& drag_result, FsDataObject* data)
     {
         IFsItemEnumPtr items = data->getFsItems();
@@ -191,9 +189,7 @@ public:
         m_output_textctrl->SetFocus();
     }
 
-
-    // -- wizard event handlers --
-
+    // wizard event handlers
     void onPageChanged()
     {
         m_input_textctrl->SetValue(m_info->m_input_path);
@@ -204,7 +200,7 @@ public:
 
     bool onPageChanging(bool forward)
     {
-        // -- store the output set paths in m_info --
+        // store the output set paths in m_info
         m_info->m_output_path = m_output_textctrl->GetValue();
 
         if (m_info->m_output_path.length() > 0 &&
@@ -222,7 +218,7 @@ public:
             m_info->m_input_path = new_input_path;
         }
 
-        // -- try to open the input set, if it's not already open --
+        // try to open the input set, if it's not already open
         if (m_info->m_input_changed || m_info->m_input_set.isNull())
         {
             m_info->m_input_changed = true;
@@ -233,14 +229,13 @@ public:
         {
             m_info->m_input_path = wxT("");
 
-            // -- could not open input transation file, bail out. --
+            // could not open input transation file, bail out
             appMessageBox(_("The specified input transaction set could not be opened."),
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
 
             return false;
         }
-
 
         return true;
     }
@@ -264,10 +259,7 @@ END_EVENT_TABLE()
 
 
 
-
-
-// -- wizard event handlers --
-
+// wizard event handlers
 BEGIN_EVENT_TABLE(RemoveDupRecWizard, wxWindow)
     EVT_SIZE(RemoveDupRecWizard::onSize)
 END_EVENT_TABLE()
@@ -288,7 +280,7 @@ bool RemoveDupRecWizard::initDoc(IFramePtr frame,
                                  wxWindow* docsite_wnd,
                                  wxWindow* panesite_wnd)
 {
-    // -- create document's window --
+    // create document's window
     bool result = Create(docsite_wnd,
                          -1,
                          wxDefaultPosition,
@@ -332,7 +324,7 @@ bool RemoveDupRecWizard::initDoc(IFramePtr frame,
     m_wizard->addPage(page0);
     m_wizard->startWizard(0);
 
-    // -- connect signals --
+    // connect signals
     m_wizard->sigCancelPressed.connect(this, &RemoveDupRecWizard::onWizardCancelled);
     m_wizard->sigFinishPressed.connect(this, &RemoveDupRecWizard::onWizardFinished);
 
@@ -346,7 +338,6 @@ wxWindow* RemoveDupRecWizard::getDocumentWindow()
 
 void RemoveDupRecWizard::setDocumentFocus()
 {
-
 }
 
 void RemoveDupRecWizard::onWizardCancelled(kcl::Wizard* wizard)
@@ -397,9 +388,6 @@ static void onRemoveDupRecJobFinished(jobs::IJobPtr job)
 
 void RemoveDupRecWizard::onWizardFinished(kcl::Wizard* wizard)
 {
-    if (m_info->m_input_set.isNull())
-        return;
-
     // close the site
     g_app->getMainFrame()->closeSite(m_doc_site);
 
@@ -426,7 +414,6 @@ void RemoveDupRecWizard::onWizardFinished(kcl::Wizard* wizard)
     // TODO: see if tango::sqlAlwaysCopy flag still needs to be set;
     // this was set in the old query job:  job->setQuery(sql, tango::sqlAlwaysCopy);
     // if it still needs to be set, then figure out how to set the tango
-
 }
 
 void RemoveDupRecWizard::onSize(wxSizeEvent& event)
