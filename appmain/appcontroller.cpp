@@ -4752,21 +4752,13 @@ bool AppController::openDataLink(const wxString& location, int* site_id)
         }
          else
         {
-
-
-            tango::ISetPtr set = db->openSet(mount_root + L"/" + path);
-            if (set.isNull())
-            {
-                appMessageBox(wxT("The data file referenced by the data view cannot be opened."), wxT("Error"));
-                return false;
-            }
-
-
             jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.query-job");
 
             // configure the job parameters
             kl::JsonNode params;
-            params = createSortFilterJobParams(set->getObjectPath(), towstr(filter), towstr(sort));
+
+            std::wstring path = mount_root + L"/" + path;
+            params = createSortFilterJobParams(path, towstr(filter), towstr(sort));
 
             // set the job parameters and start the job
             job->getJobInfo()->setTitle(towstr(_("Opening data view...")));
