@@ -3407,10 +3407,10 @@ tango::IIteratorPtr Database::createIterator(const std::wstring& path,
                                              tango::IJob* job)
 {
     tango::ISetPtr set = openSet(path);
-    ISetInternalPtr set_int = set;
-    if (set_int.isNull())
+    ICreateIteratorPtr ci = set;
+    if (ci.isNull())
         return xcm::null;
-    return set_int->createIterator(columns, sort, job);
+    return ci->createIterator(columns, sort, job);
 }
 
 

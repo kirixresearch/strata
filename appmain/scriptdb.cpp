@@ -1768,15 +1768,14 @@ void DbConnection::exists(kscript::ExprEnv* env, kscript::Value* retval)
 // canonical, make sure to document it
 void DbConnection::save(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    // note: this function takes a result set and saves it to the
-    // specified table; the first parameter is the result set to save 
-    // and the second parameter is the name of the table to which to 
-    // save the result; the optional third parameter is a DbMode flag; 
-    // if the third parameter isn't specified or is DbMode.Create, the 
-    // function will create a new table, overwriting what is there; if 
-    // the third parameter is DbMode.Append, the results will be 
-    // appending to an existing set; the rreturns true upon success; 
-    // false upon failure
+    // note: this function takes a result set and saves it to the specified
+    // table; the first parameter is the result set to save and the second
+    // parameter is the name of the table to which to save the result; the
+    // optional third parameter is a DbMode flag; if the third parameter
+    // isn't specified or is DbMode.Create, the function will create a new
+    // table, overwriting what is there; if the third parameter is
+    // DbMode.Append, the results will be appending to an existing set;
+    // the returns true upon success; false upon failure
     
     // default return value
     retval->setBoolean(false);
@@ -1790,16 +1789,12 @@ void DbConnection::save(kscript::ExprEnv* env, kscript::Value* retval)
     if (!env->getParam(0)->getObject()->isKindOf(L"DbResult"))
         return;
 
-    // get the input result set
-    DbResult* input_set = (DbResult*)env->getParam(0)->getObject();
-    if (input_set->getStructure().isNull())
-        return;
-
-    tango::IIteratorPtr input_iter = input_set->getIterator();
+    DbResult* input = (DbResult*)env->getParam(0)->getObject();
+    tango::IIteratorPtr input_iter = input->getIterator();
     if (input_iter.isNull())
         return;
 
-    // option third parameter
+    // option third parameter to indicate append or overwrite
     bool append = false;
     if (env->getParamCount() >= 3)
     {
@@ -1810,23 +1805,13 @@ void DbConnection::save(kscript::ExprEnv* env, kscript::Value* retval)
     // get the output name
     std::wstring output_name = env->getParam(1)->getString();
 
-    // create or open the output set
-    tango::ISetPtr output_set;
-    if (append && m_db->getFileExist(output_name))
-        output_set = m_db->openSet(output_name);
-          else
-        output_set = m_db->createTable(output_name, input_set->getStructure(), NULL);
-
-    if (output_set.isNull())
-        return;
-
     // add the records to the output set, reset the
     // iterator, and we're done
 
     tango::CopyInfo info;
-    info.iter_input = input_set->getIterator();
-    info.output = output_set->getObjectPath();
- 
+    info.iter_input = input_iter;
+    info.output = output_name;
+    info.append = append;
     bool res = m_db->copyData(&info, NULL);
 
     retval->setBoolean(res);

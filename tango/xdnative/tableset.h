@@ -121,6 +121,7 @@ friend class TableSetRowDeleter;
         XCM_INTERFACE_ENTRY(ISetRestoreDeleted)
         XCM_INTERFACE_ENTRY(ISetInternal)
         XCM_INTERFACE_ENTRY(ITableEvents)
+        XCM_INTERFACE_ENTRY(ICreateIterator)
     XCM_END_INTERFACE_MAP()
 
 

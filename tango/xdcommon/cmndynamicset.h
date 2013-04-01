@@ -12,6 +12,7 @@
 #ifndef __XDCOMMON_CMNDYNAMICSET_H
 #define __XDCOMMON_CMNDYNAMICSET_H
 
+#include "tango_private.h"
 
 class CommonDynamicSetIndexEntry
 {
@@ -28,7 +29,8 @@ public:
 
 
 class CommonDynamicSet : public tango::ISet,
-                         public tango::ISetRowUpdate
+                         public tango::ISetRowUpdate,
+                         public ICreateIterator
 {
 friend class CommonDynamicSetRowDeleter;
 
@@ -36,6 +38,7 @@ friend class CommonDynamicSetRowDeleter;
     XCM_BEGIN_INTERFACE_MAP(CommonDynamicSet)
         XCM_INTERFACE_ENTRY(tango::ISet)
         XCM_INTERFACE_ENTRY(tango::ISetRowUpdate)
+        XCM_INTERFACE_ENTRY(ICreateIterator)
     XCM_END_INTERFACE_MAP()
 
 public:

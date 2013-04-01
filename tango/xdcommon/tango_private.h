@@ -22,6 +22,9 @@ XCM_DECLARE_SMARTPTR(IIteratorSetAccess)
 xcm_interface ISetRestoreDeleted;
 XCM_DECLARE_SMARTPTR(ISetRestoreDeleted)
 
+xcm_interface ICreateIterator;
+XCM_DECLARE_SMARTPTR(ICreateIterator)
+
 
 xcm_interface IIteratorKeyAccess : public xcm::IObject
 {
@@ -70,6 +73,18 @@ xcm_interface ISetRestoreDeleted : public xcm::IObject
 public:
 
     virtual bool restoreDeleted() = 0;
+};
+
+
+xcm_interface ICreateIterator : public xcm::IObject
+{
+    XCM_INTERFACE_NAME("tango.ICreateIterator")
+
+public:
+
+    virtual tango::IIteratorPtr createIterator(const std::wstring& columns,
+                                               const std::wstring& expr,
+                                               tango::IJob* job) = 0;
 };
 
 
