@@ -531,7 +531,12 @@ bool NativeTable::open(const std::wstring& filename,
     }
 
     if (!xf_seek(m_file, native_header_len, xfSeekSet))
+    {
+        delete[] header;
+        xf_close(m_file);
+        m_file = NULL;
         return false;
+    }
 
     int i, column_count;
     column_count = buf2int(header+16);
@@ -551,13 +556,13 @@ bool NativeTable::open(const std::wstring& filename,
     }
 
     Structure* structure = new Structure;
+    std::wstring col_name;
 
     unsigned char* fld = flds;
     for (i = 0; i < column_count; ++i)
     {
         ColumnInfo* col = new ColumnInfo;
 
-        std::wstring col_name;
         kl::ucsle2wstring(col_name, fld+64, 80);
         
         col->setName(col_name);
