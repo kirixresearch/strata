@@ -693,11 +693,6 @@ bool Database::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
     std::wstring where = info->where;
     std::wstring having = info->having;
 
-    tango::ISetPtr set = openSet(input);
-    if (set.isNull())
-        return false;
-
-
 
     GroupQueryInfo gi;
     std::vector<GroupOutputInfo> output_fields;
@@ -710,6 +705,10 @@ bool Database::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
     tango::rowpos_t row_count = 0;
 
 
+    tango::IFileInfoPtr finfo = getFileInfo(input);
+    if (finfo.isNull())
+        return false;
+
     // create an iterator for the input file
 
     sp_iter = createIterator(input, L"", L"", NULL);
@@ -717,19 +716,19 @@ bool Database::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
     {
         // iterator can't be made for some reason
         // usually this is an out of disk space error
-        return xcm::null;
+        return false;
     }
     
 
     iter = sp_iter.p;
     structure = iter->getStructure();
     gi.m_iter_structure = iter->getStructure();
-    gi.m_set_structure = set->getStructure();
+    gi.m_set_structure = gi.m_iter_structure->clone();
 
     // try to get the row count
-    if (set->getSetFlags() & tango::sfFastRowCount)
+    if (finfo->getFlags() & tango::sfFastRowCount)
     {
-        row_count = set->getRowCount();
+        row_count = finfo->getRowCount();
     }
 
 
