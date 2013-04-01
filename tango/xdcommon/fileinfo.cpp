@@ -24,6 +24,8 @@ FileInfo::FileInfo()
     type = 0;
     format = 0;
     size = 0;
+    row_count = 0;
+    flags = 0;
     is_mount = false;
 }
 
@@ -47,9 +49,20 @@ int FileInfo::getFormat()
     return format;
 }
 
+unsigned int FileInfo::getFlags()
+{
+    return flags;
+}
+
+
 long long FileInfo::getSize()
 {
     return size;
+}
+
+tango::rowpos_t FileInfo::getRowCount()
+{
+    return row_count;
 }
 
 bool FileInfo::isMount()

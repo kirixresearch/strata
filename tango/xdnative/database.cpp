@@ -1676,13 +1676,11 @@ bool Database::copyData(const tango::CopyInfo* info, tango::IJob* job)
     }
      else
     {
-        tango::ISetPtr input = openSet(info->input);
-        if (input.isNull())
+        iter = createIterator(info->input, L"", info->order, NULL);
+        if (iter.isNull())
             return false;
 
-        iter = input->createIterator(L"", info->order, NULL);
-
-        structure = input->getStructure();
+        structure = iter->getStructure();
         if (structure.isNull())
             return false;
     }
@@ -2166,6 +2164,11 @@ public:
         fetched_size = true;
         return size;
     }
+
+    tango::rowpos_t getRowCount()
+    {
+        return 0;
+    }
     
     const std::wstring& getMimeType()
     {
@@ -2177,6 +2180,11 @@ public:
         mime_type = db->getFileMimeType(path);
         fetched_mime_type = true;
         return mime_type;
+    }
+
+    unsigned int getFlags()
+    {
+        return 0;
     }
     
     bool isMount()
@@ -3399,9 +3407,10 @@ tango::IIteratorPtr Database::createIterator(const std::wstring& path,
                                              tango::IJob* job)
 {
     tango::ISetPtr set = openSet(path);
-    if (set.isNull())
+    ISetInternalPtr set_int = set;
+    if (set_int.isNull())
         return xcm::null;
-    return set->createIterator(columns, sort, job);
+    return set_int->createIterator(columns, sort, job);
 }
 
 

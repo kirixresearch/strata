@@ -1085,6 +1085,7 @@ public:
         format = -1;
         fetched_format = false;
         is_mount = false;
+        row_count = 0;
     }
 
     const std::wstring& getName()
@@ -1129,6 +1130,11 @@ public:
         return format;
     }
 
+    unsigned int getFlags()
+    {
+        return 0;
+    }
+
     const std::wstring& getMimeType()
     {
         return mime_type;
@@ -1137,6 +1143,11 @@ public:
     long long getSize()
     {
         return xf_get_file_size(phys_path);
+    }
+
+    tango::rowpos_t getRowCount()
+    {
+        return row_count;
     }
     
     bool isMount()
@@ -1167,6 +1178,7 @@ public:
     bool is_mount;
     IFsDatabasePtr db;
     bool fetched_format;
+    tango::rowpos_t row_count;
 };
 
 tango::IFileInfoPtr FsDatabase::getFileInfo(const std::wstring& path)

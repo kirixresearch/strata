@@ -712,7 +712,7 @@ bool Database::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
 
     // create an iterator for the input file
 
-    sp_iter = set->createIterator(L"", L"", NULL);
+    sp_iter = createIterator(input, L"", L"", NULL);
     if (sp_iter.isNull())
     {
         // iterator can't be made for some reason

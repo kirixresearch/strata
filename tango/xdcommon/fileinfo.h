@@ -32,8 +32,10 @@ public:
     const std::wstring& getName();
     int getType();
     int getFormat();
+    unsigned int getFlags();
     const std::wstring& getMimeType();
     long long getSize();
+    tango::rowpos_t getRowCount();
     bool isMount();
     const std::wstring& getPrimaryKey();
     const std::wstring& getObjectId();
@@ -46,7 +48,9 @@ public:
     std::wstring object_id;
     int type;
     int format;
+    int flags;
     long long size;
+    tango::rowpos_t row_count;
     bool is_mount;
 };
 

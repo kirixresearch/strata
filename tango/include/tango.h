@@ -329,10 +329,12 @@ xcm_interface IFileInfo : public xcm::IObject
 public:
 
     virtual const std::wstring& getName() = 0;       // filename
-    virtual int getType() = 0;                       // one of the filetype enums
-    virtual int getFormat() = 0;                     // one of the format enums
+    virtual int getType() = 0;                       // filetype enums
+    virtual int getFormat() = 0;                     // format enums
+    virtual unsigned int getFlags() = 0;             // object information enums
     virtual const std::wstring& getMimeType() = 0;   // mime type, empty if none
     virtual long long getSize() = 0;                 // size, in bytes
+    virtual rowpos_t getRowCount() = 0;              // size, in rows (if applicable)
     virtual bool isMount() = 0;                      // true if file/folder is a mount
     virtual const std::wstring& getPrimaryKey() = 0; // primary key of a table
     virtual const std::wstring& getObjectId() = 0;   // object id (i.e. set id, oid, etc)
