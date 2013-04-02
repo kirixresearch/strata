@@ -643,20 +643,15 @@ void RelationshipPanel::loadRelationships()
             tango::ISetPtr right_set = rel->getRightSetPtr();
             if (right_set)
             {
-                std::wstring driver = getDbDriverFromSet(right_set);
-                
-                if (driver == L"xdnative" || driver == L"xdfs")
+                tango::IIndexInfoEnumPtr right_set_indexes = db->getIndexEnum(right_set->getObjectPath());
+
+                tango::IIndexInfoPtr idx;
+                idx = lookupIndex(right_set_indexes, rel->getRightExpression(), false);
+
+                if (idx.isNull())
                 {
-                    tango::IIndexInfoEnumPtr right_set_indexes = db->getIndexEnum(right_set->getObjectPath());
-
-                    tango::IIndexInfoPtr idx;
-                    idx = lookupIndex(right_set_indexes, rel->getRightExpression(), false);
-
-                    if (idx.isNull())
-                    {
-                        valid = false;
-                        update_button = true;
-                    }
+                    valid = false;
+                    update_button = true;
                 }
             }
 

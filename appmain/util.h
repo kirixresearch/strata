@@ -280,8 +280,6 @@ std::wstring getMountRoot(tango::IDatabasePtr db, const std::wstring path);
 bool getMountPointHelper(tango::IDatabasePtr& db, const wxString& _path, wxString& cstr, wxString& rpath);
 bool isTemporaryTable(const std::wstring& path);
 
-std::wstring getDbDriverFromSet(tango::ISetPtr set);
-
 // gets the filename from the path
 wxString getFilenameFromPath(const wxString& path, bool include_extension = true);
 wxString getDirectoryFromPath(const wxString& path);

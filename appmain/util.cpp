@@ -971,17 +971,6 @@ bool isTemporaryTable(const std::wstring& path)
     return false;
 }
 
-
-
-std::wstring getDbDriverFromSet(tango::ISetPtr set)
-{
-    if (set.isNull())
-        return L"";
-        
-    xcm::class_info* class_info = xcm::get_class_info(set.p);
-    return kl::beforeFirst(towstr(class_info->get_name()), '.');
-}
-
 // gets the filename from the path
 wxString getFilenameFromPath(const wxString& path, bool include_extension)
 {
