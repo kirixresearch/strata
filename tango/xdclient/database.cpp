@@ -310,16 +310,6 @@ void ClientDatabase::setError(int error_code, const std::wstring& error_string)
     m_error.setError(error_code);
 }
 
-double ClientDatabase::getFreeSpace()
-{
-    return 0.0f;
-}
-
-double ClientDatabase::getUsedSpace()
-{
-    return 0.0f;
-}
-
 bool ClientDatabase::cleanup()
 {
     return false;
@@ -339,21 +329,6 @@ tango::IJobPtr ClientDatabase::createJob()
     return static_cast<tango::IJob*>(job);
 }
 
-tango::IJobPtr ClientDatabase::getJob(tango::jobid_t job_id)
-{
-    XCM_AUTO_LOCK(m_obj_mutex);
-
-    std::vector<JobInfo*>::iterator it;
-    for (it = m_jobs.begin(); it != m_jobs.end(); ++it)
-    {
-        if ((*it)->getJobId() == job_id)
-        {
-            return static_cast<tango::IJob*>(*it);
-        }
-    }
-
-    return xcm::null;
-}
 
 bool ClientDatabase::createFolder(const std::wstring& path)
 {

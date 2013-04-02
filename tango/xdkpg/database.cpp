@@ -259,17 +259,6 @@ tango::IAttributesPtr KpgDatabase::getAttributes()
     return m_attr;
 }
 
-double KpgDatabase::getFreeSpace()
-{
-    return 0.0;
-}
-
-double KpgDatabase::getUsedSpace()
-{
-    return 0.0;
-}
-
-
 std::wstring KpgDatabase::getErrorString()
 {
     return m_error.getErrorString();
@@ -301,22 +290,6 @@ tango::IJobPtr KpgDatabase::createJob()
     m_jobs.push_back(job);
 
     return static_cast<tango::IJob*>(job);
-}
-
-tango::IJobPtr KpgDatabase::getJob(tango::jobid_t job_id)
-{
-    XCM_AUTO_LOCK(m_jobs_mutex);
-
-    std::vector<JobInfo*>::iterator it;
-    for (it = m_jobs.begin(); it != m_jobs.end(); ++it)
-    {
-        if ((*it)->getJobId() == job_id)
-        {
-            return static_cast<tango::IJob*>(*it);
-        }
-    }
-
-    return xcm::null;
 }
 
 tango::IDatabasePtr KpgDatabase::getMountDatabase(const std::wstring& path)

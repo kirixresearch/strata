@@ -1442,15 +1442,6 @@ tango::IAttributesPtr OdbcDatabase::getAttributes()
     return m_attr;
 }
 
-double OdbcDatabase::getFreeSpace()
-{
-    return 0.0;
-}
-
-double OdbcDatabase::getUsedSpace()
-{
-    return 0.0;
-}
 
 
 std::wstring OdbcDatabase::getErrorString()
@@ -1475,11 +1466,6 @@ bool OdbcDatabase::cleanup()
 }
 
 tango::IJobPtr OdbcDatabase::createJob()
-{
-    return xcm::null;
-}
-
-tango::IJobPtr OdbcDatabase::getJob(tango::jobid_t job_id)
 {
     return xcm::null;
 }

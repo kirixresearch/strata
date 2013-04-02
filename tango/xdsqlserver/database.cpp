@@ -331,17 +331,6 @@ tango::IAttributesPtr SqlServerDatabase::getAttributes()
     return static_cast<tango::IAttributes*>(m_attr);
 }
 
-double SqlServerDatabase::getFreeSpace()
-{
-    return 0.0;
-}
-
-double SqlServerDatabase::getUsedSpace()
-{
-    return 0.0;
-}
-
-
 
 std::wstring SqlServerDatabase::getErrorString()
 {
@@ -365,11 +354,6 @@ bool SqlServerDatabase::cleanup()
 }
 
 tango::IJobPtr SqlServerDatabase::createJob()
-{
-    return xcm::null;
-}
-
-tango::IJobPtr SqlServerDatabase::getJob(tango::jobid_t job_id)
 {
     return xcm::null;
 }

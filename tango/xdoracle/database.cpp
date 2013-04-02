@@ -740,17 +740,6 @@ tango::IAttributesPtr OracleDatabase::getAttributes()
     return static_cast<tango::IAttributes*>(m_attr);
 }
 
-double OracleDatabase::getFreeSpace()
-{
-    return 0.0;
-}
-
-double OracleDatabase::getUsedSpace()
-{
-    return 0.0;
-}
-
-
 std::wstring OracleDatabase::getErrorString()
 {
     return m_error.getErrorString();
@@ -774,11 +763,6 @@ bool OracleDatabase::cleanup()
 }
 
 tango::IJobPtr OracleDatabase::createJob()
-{
-    return xcm::null;
-}
-
-tango::IJobPtr OracleDatabase::getJob(tango::jobid_t job_id)
 {
     return xcm::null;
 }

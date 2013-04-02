@@ -675,13 +675,10 @@ public:
     virtual int getErrorCode() = 0;
     virtual void setError(int error_code, const std::wstring& error_string) = 0;
     
-    virtual double getFreeSpace() = 0;
-    virtual double getUsedSpace() = 0;
     virtual bool cleanup() = 0;
     
     virtual IJobPtr createJob() = 0;
-    virtual IJobPtr getJob(jobid_t job_id) = 0;
-    
+
     virtual IStructurePtr createStructure() = 0;
 
     virtual bool createFolder(const std::wstring& path) = 0;

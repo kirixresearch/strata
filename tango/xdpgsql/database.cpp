@@ -574,17 +574,6 @@ tango::IAttributesPtr PgsqlDatabase::getAttributes()
     return m_attr;
 }
 
-double PgsqlDatabase::getFreeSpace()
-{
-    return 0.0;
-}
-
-double PgsqlDatabase::getUsedSpace()
-{
-    return 0.0;
-}
-
-
 std::wstring PgsqlDatabase::getErrorString()
 {
     return m_error.getErrorString();
@@ -618,21 +607,6 @@ tango::IJobPtr PgsqlDatabase::createJob()
     return static_cast<tango::IJob*>(job);
 }
 
-tango::IJobPtr PgsqlDatabase::getJob(tango::jobid_t job_id)
-{
-    XCM_AUTO_LOCK(m_jobs_mutex);
-
-    std::vector<PgsqlJobInfo*>::iterator it;
-    for (it = m_jobs.begin(); it != m_jobs.end(); ++it)
-    {
-        if ((*it)->getJobId() == job_id)
-        {
-            return static_cast<tango::IJob*>(*it);
-        }
-    }
-
-    return xcm::null;
-}
 
 tango::IDatabasePtr PgsqlDatabase::getMountDatabase(const std::wstring& path)
 {

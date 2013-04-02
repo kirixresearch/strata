@@ -473,27 +473,12 @@ tango::IAttributesPtr DrizzleDatabase::getAttributes()
     return static_cast<tango::IAttributes*>(m_attr);
 }
 
-double DrizzleDatabase::getFreeSpace()
-{
-    return 0.0;
-}
-
-double DrizzleDatabase::getUsedSpace()
-{
-    return 0.0;
-}
-
 bool DrizzleDatabase::cleanup()
 {
     return true;
 }
 
 tango::IJobPtr DrizzleDatabase::createJob()
-{
-    return xcm::null;
-}
-
-tango::IJobPtr DrizzleDatabase::getJob(tango::jobid_t job_id)
 {
     return xcm::null;
 }

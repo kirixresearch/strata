@@ -95,12 +95,9 @@ public:
     int getErrorCode();
     void setError(int error_code, const std::wstring& error_string);
 
-    double getFreeSpace();
-    double getUsedSpace();
     bool cleanup();
 
     tango::IJobPtr createJob();
-    tango::IJobPtr getJob(tango::jobid_t job_id);
 
     tango::IDatabasePtr getMountDatabase(const std::wstring& path);
 

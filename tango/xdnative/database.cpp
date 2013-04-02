@@ -162,33 +162,6 @@ tango::IAttributesPtr Database::getAttributes()
 
 
 
-double Database::getFreeSpace()
-{
-    return (double)xf_get_free_disk_space(m_base_dir);
-}
-
-double Database::getUsedSpace()
-{
-    double total_size = 2000000.0;
-
-    std::wstring data_path = makePathName(m_base_dir, L"data");
-
-    xf_dirhandle_t h = xf_opendir(data_path);
-    xf_direntry_t info;
-    while (xf_readdir(h, &info))
-    {
-        if (info.m_type == xfFileTypeNormal)
-        {
-            std::wstring path = makePathName(data_path, L"", info.m_name);
-            total_size += xf_get_file_size(path);
-        }
-    }
-    xf_closedir(h);
-
-    return total_size;
-}
-
-
 
 void Database::addFileToTrash(const std::wstring& filename)
 {
@@ -417,23 +390,6 @@ tango::IJobPtr Database::createJob()
 
     return static_cast<tango::IJob*>(job);
 }
-
-tango::IJobPtr Database::getJob(tango::jobid_t job_id)
-{
-    XCM_AUTO_LOCK(m_jobs_mutex);
-
-    std::vector<JobInfo*>::iterator it;
-    for (it = m_jobs.begin(); it != m_jobs.end(); ++it)
-    {
-        if ((*it)->getJobId() == job_id)
-        {
-            return static_cast<tango::IJob*>(*it);
-        }
-    }
-
-    return xcm::null;
-}
-
 
 
 std::wstring Database::ofsToPhysFilename(const std::wstring& ofs_path,

@@ -516,16 +516,6 @@ tango::IAttributesPtr FsDatabase::getAttributes()
     return m_attr;
 }
 
-double FsDatabase::getFreeSpace()
-{
-    return 0.0;
-}
-
-double FsDatabase::getUsedSpace()
-{
-    return 0.0;
-}
-
 std::wstring FsDatabase::getErrorString()
 {
     return m_error.getErrorString();
@@ -559,22 +549,6 @@ tango::IJobPtr FsDatabase::createJob()
     m_jobs.push_back(job);
 
     return static_cast<tango::IJob*>(job);
-}
-
-tango::IJobPtr FsDatabase::getJob(tango::jobid_t job_id)
-{
-    XCM_AUTO_LOCK(m_obj_mutex);
-
-    std::vector<JobInfo*>::iterator it;
-    for (it = m_jobs.begin(); it != m_jobs.end(); ++it)
-    {
-        if ((*it)->getJobId() == job_id)
-        {
-            return static_cast<tango::IJob*>(*it);
-        }
-    }
-
-    return xcm::null;
 }
 
 

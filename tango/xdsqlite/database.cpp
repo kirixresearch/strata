@@ -276,17 +276,6 @@ tango::IAttributesPtr SlDatabase::getAttributes()
     return static_cast<tango::IAttributes*>(attr);
 }
 
-double SlDatabase::getFreeSpace()
-{
-    return 0.0;
-}
-
-double SlDatabase::getUsedSpace()
-{
-    return 0.0;
-}
-
-
 std::wstring SlDatabase::getErrorString()
 {
     return L"";
@@ -320,19 +309,6 @@ tango::IJobPtr SlDatabase::createJob()
     return static_cast<IJobInternal*>(job);
 }
 
-tango::IJobPtr SlDatabase::getJob(tango::jobid_t job_id)
-{
-    std::vector<JobInfo*>::iterator it;
-    for (it = m_jobs.begin(); it != m_jobs.end(); ++it)
-    {
-        if ((*it)->getJobId() == job_id)
-        {
-            return static_cast<tango::IJob*>(*it);
-        }
-    }
-
-    return xcm::null;
-}
 
 bool SlDatabase::createFolder(const std::wstring& path)
 {
