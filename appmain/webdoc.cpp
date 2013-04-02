@@ -1458,7 +1458,6 @@ static bool makeTableFromDom(wxDOMNode& _node, const std::wstring& output_path)
 {
     std::vector<HtmlTableFieldInfo> fields;
     tango::IStructurePtr dest_struct;
-    tango::ISetPtr dest_set;
     wxDOMNode node = _node;
     wxDOMNode table_node;
     size_t i, count;
