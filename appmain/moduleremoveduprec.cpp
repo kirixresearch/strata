@@ -212,20 +212,14 @@ public:
         wxString new_input_path = m_input_textctrl->GetValue();
 
         m_info->m_input_changed = false;
-        if (m_info->m_input_path.CmpNoCase(new_input_path) != 0)
+        if (!isSamePath(towstr(m_info->m_input_path), towstr(new_input_path)))
         {
             m_info->m_input_changed = true;
             m_info->m_input_path = new_input_path;
         }
 
-        // try to open the input set, if it's not already open
-        if (m_info->m_input_changed || m_info->m_input_set.isNull())
-        {
-            m_info->m_input_changed = true;
-            m_info->m_input_set = g_app->getDatabase()->openSet(towstr(m_info->m_input_path));
-        }
 
-        if (m_info->m_input_set.isNull())
+        if (!isValidTable(towstr(m_info->m_input_path)))
         {
             m_info->m_input_path = wxT("");
 

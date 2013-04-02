@@ -17,7 +17,6 @@ struct DupRecInfo
 {
     wxString m_input_path;
     wxString m_output_path;
-    tango::ISetPtr m_input_set;
     bool m_input_changed;
 };
 
