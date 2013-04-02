@@ -39,7 +39,7 @@ const int iterator_readahead_size = 10000;
 const int iterator_readahead_trigger = 1000;
 
 
-// -- ModInfo classes --
+// -- ModInfo class -------------------------------------------
 
 class ModInfoBase
 {
@@ -259,7 +259,7 @@ void ExIndexIterator::_loadCache()
     int curpos_curoffset;
     int i;
 
-    // -- save current position --
+    // save current position
     for (i = 0; i <= m_curlevel; ++i)
     {
         curpos_levels[i] = m_levels[i];
@@ -272,7 +272,7 @@ void ExIndexIterator::_loadCache()
     curpos_curoffset = m_curoffset;
 
     
-    // -- collect nodes for our cache --
+    // collect nodes for our cache
     int last_node_idx = -1;
     for (i = 0; i < iterator_readahead_size; ++i)
     {
@@ -291,12 +291,12 @@ void ExIndexIterator::_loadCache()
     }
 
 
-    // -- restore position --
+    // restore position
     _clearLevels();
 
     for (i = 0; i <= curpos_curlevel; ++i)
     {
-        // -- this is already ref'ed from before --
+        // this is already ref'ed from before
         m_levels[i] = curpos_levels[i];
     }
     m_curlevel = curpos_curlevel;
@@ -306,13 +306,13 @@ void ExIndexIterator::_loadCache()
 
 BlockEntry* ExIndexIterator::_getRoot()
 {
-    // -- get the root block's idx from the info block --
+    // get the root block's idx from the info block
     unsigned int root_idx;
     BlockEntry* info = m_index->m_bf.getBlock(0);
     root_idx = buf2int(info->m_buf+20);
     info->unref();
 
-    // -- load root node (caller must unref return value) --
+    // load root node (caller must unref return value)
     return m_index->m_bf.getBlock(root_idx);
 }
 
@@ -438,10 +438,10 @@ void ExIndexIterator::_goPrev()
 
         while (m_curoffset == -1)
         {
-            // -- go to the parent --
+            // go to the parent
             if (m_curlevel == 0)
             {
-                // -- eof condition has been reached --
+                // eof condition has been reached
                 return;
             }
 
@@ -490,10 +490,10 @@ bool ExIndexIterator::_goNext()
     {
         while (m_curoffset == entry_count)
         {
-            // -- go to the parent --
+            // go to the parent
             if (m_curlevel == 0)
             {
-                // -- eof condition has been reached --
+                // eof condition has been reached
                 return false;
             }
 
@@ -538,7 +538,7 @@ void ExIndexIterator::_adjustPosition(ModInfo& mod_info)
                 {
                     _clearLevels();
                     
-                    // -- load new path --
+                    // load new path
                     int level = 0;
                     std::vector<int>::iterator it;
                     for (it = mod->new_path.begin(); it != mod->new_path.end(); ++it)
@@ -599,10 +599,9 @@ void ExIndexIterator::_adjustPosition(ModInfo& mod_info)
                 {
                     if (m_levels[i]->m_block_idx == mod->orig_block)
                     {
-                        // -- children in the node path from this
-                        //    point down may be a child of the new left
-                        //    node.  The original node (us) is now the right
-                        //    node in the split --
+                        // children in the node path from this point down may
+                        // be a child of the new left node.  The original node
+                        // (us) is now the right node in the split
                         
                         BlockEntry* new_left = m_index->m_bf.getBlock(mod->new_block);
                         unsigned int entry_count = m_index->_getEntryCount(new_left);
@@ -671,7 +670,7 @@ void ExIndexIterator::_adjustPosition(ModInfo& mod_info)
         }
     }
 
-    // -- check if we are beyond the end of a node --
+    // check if we are beyond the end of a node
     if (m_curoffset >= m_index->_getEntryCount(m_levels[m_curlevel]))
     {
         m_curoffset--;
@@ -756,7 +755,7 @@ void ExIndexIterator::skip(int delta)
 
             if (_goNext())
             {
-                // -- _goNext returns whether or not we need to reload the cache --
+                // _goNext returns whether or not we need to reload the cache
                 if (m_readahead_count == iterator_readahead_trigger)
                 {
                     _loadCache();
@@ -791,7 +790,7 @@ void ExIndexIterator::setPos(double pct)
 {
     _clearLevels();
 
-    // -- load root node --
+    // load root node
     BlockEntry* root = _getRoot();
     _descendPct(root, pct);
     root->unref();
@@ -914,7 +913,7 @@ ExIndex::ExIndex()
     m_pool = NULL;
 
 
-    // -- find a suitable tempfile path default --
+    // find a suitable tempfile path default
 
     #ifdef WIN32
         TCHAR buf[512];
@@ -931,10 +930,10 @@ ExIndex::ExIndex()
     #endif
 
 
-    // -- due to the nature of the usage of this class,
-    //  we will increment our own reference count.  When
-    //  we are done using the class, we should use unref()
-    //  as opposed to delete --
+    // due to the nature of the usage of this class,
+    // we will increment our own reference count.  When
+    // we are done using the class, we should use unref()
+    // as opposed to delete
 
     ref();
 }
@@ -1030,9 +1029,9 @@ bool ExIndex::_lookup(BlockEntry* blockptrs[],
             {
                 if (not_equal)
                 {
-                    // -- this mechanism essentially allows duplicate key storage
-                    // -- in the tree to succeed.  we act like we didn't find the key
-                    // -- so that each new insertation will be put at the end
+                    // this mechanism essentially allows duplicate key storage
+                    // in the tree to succeed.  we act like we didn't find the key
+                    // so that each new insertation will be put at the end
                     continue;
                 }
 
@@ -1046,7 +1045,7 @@ bool ExIndex::_lookup(BlockEntry* blockptrs[],
                 {
                     unsigned int save_blockptr_count = *blockptr_count;
 
-                    // -- load child node and search in that --
+                    // load child node and search in that
                     blockptrs[(*blockptr_count)++] = m_bf.getBlock(branch_node);
                     if (!_lookup(blockptrs, blockptr_count, key, keylen, not_equal, entry_idx))
                     {
@@ -1068,13 +1067,13 @@ bool ExIndex::_lookup(BlockEntry* blockptrs[],
             int branch_node = _getEntryBranch(curnode, i);
             if (branch_node == 0)
             {
-                // -- we didn't find it, so return false.
-                //    this index is used by the insert method --
+                // we didn't find it, so return false.
+                // this index is used by the insert method
                 *entry_idx = i;
                 return false;
             }
 
-            // -- load child node and search in that --
+            // load child node and search in that
             blockptrs[(*blockptr_count)++] = m_bf.getBlock(branch_node);
 
             return _lookup(blockptrs,
@@ -1107,8 +1106,8 @@ void ExIndex::_insert(BlockEntry* blockptrs[],
 
     if (insert_loc == -1)
     {
-        // -- caller will pass -1 if _insert should find
-        // -- appropriate insert location
+        // caller will pass -1 if _insert should find
+        // appropriate insert location
 
         for (int i = 0; i < (int)entry_count; i++)
         {
@@ -1125,7 +1124,7 @@ void ExIndex::_insert(BlockEntry* blockptrs[],
             insert_loc = entry_count;
     }
 
-    // -- make room for new entry --
+    // make room for new entry
 
     // (the +4 in the length param will also
     //  copy the descend right ptr)
@@ -1134,7 +1133,7 @@ void ExIndex::_insert(BlockEntry* blockptrs[],
                 _getEntryPtr(curnode, insert_loc),
                 ((entry_count-insert_loc)*m_entrylen)+4);
 
-    // -- copy in the new key --
+    // copy in the new key
     memcpy(_getEntryKey(curnode, insert_loc), key, m_keylen);
     memcpy(_getEntryValue(curnode, insert_loc), value, m_vallen);
     _setEntryBranch(curnode, insert_loc, branch);
@@ -1151,7 +1150,7 @@ void ExIndex::_insert(BlockEntry* blockptrs[],
 
 
 
-    // -- record modification info --
+    // record modification info
     if (mod_info)
     {
         mod_info->add(new ShiftInfo(curnode->m_block_idx,
@@ -1159,8 +1158,8 @@ void ExIndex::_insert(BlockEntry* blockptrs[],
                                     insert_loc+1));
     }
 
-    // -- if we have not exceeded the max keys,
-    //    we are done with the insert --
+    // if we have not exceeded the max keys,
+    // we are done with the insert
 
     if (entry_count < XDB_MAX_KEYS_PER_NODE)
     {
@@ -1168,10 +1167,10 @@ void ExIndex::_insert(BlockEntry* blockptrs[],
     }
 
 
-    // -- there are too many entries in this node, so we need to split
-    //    it up.  This involves creating a new left node, a new right node,
-    //    and taking the middle key of curnode and placing it in the parent.
-    //    This can recurse all the way up to the root node --
+    // there are too many entries in this node, so we need to split
+    // it up.  This involves creating a new left node, a new right node,
+    // and taking the middle key of curnode and placing it in the parent.
+    // This can recurse all the way up to the root node
 
     if (split_indicator)
     {
@@ -1195,7 +1194,7 @@ void ExIndex::_insert(BlockEntry* blockptrs[],
     }
 
 
-    // -- create new left node --
+    // create new left node
     BlockEntry* left = m_bf.createBlock();
     memcpy(    _getEntryPtr(left, 0),
             _getEntryPtr(curnode, 0),
@@ -1204,7 +1203,7 @@ void ExIndex::_insert(BlockEntry* blockptrs[],
     _setEntryCount(left, (XDB_MAX_KEYS_PER_NODE-1)/2);
     left->setDirty(true);
 
-    // -- curnode becomes right node --
+    // curnode becomes right node
     memcpy(    _getEntryPtr(curnode, 0),
             _getEntryPtr(curnode, ((XDB_MAX_KEYS_PER_NODE-1)/2)+1),
             (m_entrylen*((XDB_MAX_KEYS_PER_NODE-1)/2))+4);
@@ -1216,7 +1215,7 @@ void ExIndex::_insert(BlockEntry* blockptrs[],
 
     if (new_root == NULL)
     {
-        // -- insert entry into parent --
+        // insert entry into parent
         BlockEntry* parent = blockptrs[blockptr_count-2];
         int parent_entry_count = _getEntryCount(parent);
         for (insert_pos = 0;
@@ -1228,7 +1227,7 @@ void ExIndex::_insert(BlockEntry* blockptrs[],
         }
 
 
-        // -- insert entry into parent --
+        // insert entry into parent
         _insert(blockptrs,
                 blockptr_count-1,
                 _getEntryKey(curnode, (XDB_MAX_KEYS_PER_NODE-1)/2),
@@ -1253,13 +1252,13 @@ void ExIndex::_insert(BlockEntry* blockptrs[],
                 NULL,
                 mod_info);
 
-        // -- if new root was created, we must populate the branch right value --
+        // if new root was created, we must populate the branch right value
         _setEntryBranch(new_root, 1, curnode->m_block_idx);
 
         new_root->commit();
 
 
-        // -- update info block with new root block idx --
+        // update info block with new root block idx
         BlockEntry* info_block = m_bf.getBlock(0);
         int2buf(info_block->m_buf+20, new_root->m_block_idx);
         info_block->setDirty(true);
@@ -1269,7 +1268,7 @@ void ExIndex::_insert(BlockEntry* blockptrs[],
         {
             m_root_node->commit();
 
-            // -- release old root --
+            // release old root
             m_root_node->unref();
         }
         m_root_node = new_root;
@@ -1281,7 +1280,7 @@ void ExIndex::_insert(BlockEntry* blockptrs[],
     }
 
 
-    // -- record modification info --
+    // record modification info
 
     if (mod_info)
     {
@@ -1331,14 +1330,14 @@ bool ExIndex::_remove(BlockEntry* blockptrs[],
     int node_branch = _getEntryBranch(node, offset);
     int entry_count = _getEntryCount(node);
 
-    // -- check if the branch has a child --
+    // check if the branch has a child
     if (node_branch == 0)
     {
-        // -- Leaf Node Delete --
+        // Leaf Node Delete
 
         int entry_count = _getEntryCount(node);
 
-        // -- no, no child, so just delete --
+        // no, no child, so just delete
         memmove(    _getEntryPtr(node, offset),
                     _getEntryPtr(node, offset+1),
                     ((entry_count-offset)*m_entrylen)+4);
@@ -1348,27 +1347,27 @@ bool ExIndex::_remove(BlockEntry* blockptrs[],
         _setEntryCount(node, entry_count);
         node->setDirty(true);
 
-        // -- save mod info --
+        // save mod info
         if (mod_info)
         {
             mod_info->add(new ShiftInfo(node->m_block_idx, offset+1, offset));
         }
 
-        // -- are we the root? --
+        // are we the root?
         if (blockptr_count == 1)
         {
-            // -- we are the root --
+            // we are the root
             if (entry_count == 0)
             {
-                // -- current root is empty, so we need to
-                //    set a new root --
+                // current root is empty, so we need to
+                // set a new root
                 unsigned int new_root_block = _getEntryBranch(node, 0);
                 if (new_root_block != 0)
                 {
                     m_root_node->unref();
                     m_root_node = m_bf.getBlock(new_root_block);
 
-                    // -- update info block with new root block idx --
+                    // update info block with new root block idx
                     BlockEntry* info_block = m_bf.getBlock(0);
                     int2buf(info_block->m_buf+20, new_root_block);
                     info_block->setDirty(true);
@@ -1381,14 +1380,14 @@ bool ExIndex::_remove(BlockEntry* blockptrs[],
                 }
             }
 
-            // -- if we are the root, we're finished here --
+            // if we are the root, we're finished here
             node->commit();
             return true;
         }
 
         
-        // -- if we still have at least the minimum number of entries
-        //  in this node, we are finished --
+        // if we still have at least the minimum number of entries
+        // in this node, we are finished
         if (entry_count >= (XDB_MAX_KEYS_PER_NODE-1)/2)
         {
             node->commit();
@@ -1396,13 +1395,13 @@ bool ExIndex::_remove(BlockEntry* blockptrs[],
         }
 
 
-        // -- since the number of entries is now less than the
-        //    minimum entry count, we must borrow some keys from one of our
-        //    siblings, and, if that's not possible, we must merge --
+        // since the number of entries is now less than the
+        // minimum entry count, we must borrow some keys from one of our
+        // siblings, and, if that's not possible, we must merge
 
         BlockEntry* parent_node = blockptrs[blockptr_count-2];
 
-        // -- find our parent entry --
+        // find our parent entry
         int parent_entry_num;
         int parent_entry_count;
 
@@ -1435,7 +1434,7 @@ bool ExIndex::_remove(BlockEntry* blockptrs[],
 
         if (left_right == 0)
         {
-            // -- choose the sibling with the greater entry count --
+            // choose the sibling with the greater entry count
             BlockEntry* left_sibling = m_bf.getBlock(_getEntryBranch(parent_node, parent_entry_num-1));
             BlockEntry* right_sibling = m_bf.getBlock(_getEntryBranch(parent_node, parent_entry_num+1));
 
@@ -1470,7 +1469,7 @@ bool ExIndex::_remove(BlockEntry* blockptrs[],
             }
         }
 
-        // -- determine if we will merge or rotate --
+        // determine if we will merge or rotate
 
         bool merge = false;
 
@@ -1483,24 +1482,24 @@ bool ExIndex::_remove(BlockEntry* blockptrs[],
         {
             if (left_right == 1)
             {
-                // -- rotate from the right --
+                // rotate from the right
 
-                // -- save right branch --
+                // save right branch
                 unsigned int old_right_branch = _getEntryBranch(node, entry_count);
 
-                // -- copy down parent entry --
+                // copy down parent entry
                 memcpy(    _getEntryPtr(node, entry_count),
                         _getEntryPtr(parent_node, parent_entry_num),
                         m_entrylen);
                 
-                // -- old right branch becomes left-branch of former parent key --
+                // old right branch becomes left-branch of former parent key
                 _setEntryBranch(node, entry_count, old_right_branch);
 
-                // -- increment entry count --
+                // increment entry count
                 entry_count++;
                 _setEntryCount(node, entry_count);
 
-                // -- copy sibling's left-most entry into the parent --
+                // copy sibling's left-most entry into the parent
 
                 unsigned int sibling_entry_branch = _getEntryBranch(sibling, 0);
 
@@ -1511,7 +1510,7 @@ bool ExIndex::_remove(BlockEntry* blockptrs[],
                 _setEntryBranch(parent_node, parent_entry_num, node->m_block_idx);
                 parent_node->setDirty(true);
 
-                // -- delete old entry from sibling --
+                // delete old entry from sibling
 
                 int sibling_entry_count = _getEntryCount(sibling);
 
@@ -1523,19 +1522,19 @@ bool ExIndex::_remove(BlockEntry* blockptrs[],
                 _setEntryCount(sibling, sibling_entry_count);
                 sibling->setDirty(true);
 
-                // -- set our right branch to the sibling entry's old left branch --
+                // set our right branch to the sibling entry's old left branch
 
                 _setEntryBranch(node, entry_count, sibling_entry_branch);
 
 
-                // -- clean-up --
+                // clean-up
 
                 node->commit();
                 sibling->commit();
                 sibling->unref();
 
-                // -- save info modification info for the iterators --
-
+                // save info modification info for the iterators
+                
                 if (mod_info)
                 {
                     unsigned int i;
@@ -1568,31 +1567,31 @@ bool ExIndex::_remove(BlockEntry* blockptrs[],
             }
              else
             {
-                // -- rotate from the left --
+                // rotate from the left
 
                 
-                // -- make space at the left-most entry --
+                // make space at the left-most entry
 
                 memmove( _getEntryPtr(node, 1),
                          _getEntryPtr(node, 0),
                          (entry_count*m_entrylen)+4);
 
-                // -- copy down entry from parent --
+                // copy down entry from parent
                 memcpy(    _getEntryPtr(node, 0),
                         _getEntryPtr(parent_node, parent_entry_num-1),
                         m_entrylen);
                 
                 int sibling_entry_count = _getEntryCount(sibling);
 
-                // -- right branch from sibling node becomes entry 0's left branch --
+                // right branch from sibling node becomes entry 0's left branch
                 int new_left_branch = _getEntryBranch(sibling, sibling_entry_count);
                 _setEntryBranch(node, 0, new_left_branch);
 
-                // -- increment entry count --
+                // increment entry count
                 entry_count++;
                 _setEntryCount(node, entry_count);
 
-                // -- copy sibling's right-most entry into the parent --
+                // copy sibling's right-most entry into the parent
 
                 unsigned int sibling_entry_branch = _getEntryBranch(sibling, sibling_entry_count-1);
 
@@ -1604,24 +1603,24 @@ bool ExIndex::_remove(BlockEntry* blockptrs[],
                 parent_node->setDirty(true);
                 parent_node->commit();
 
-                // -- delete old entry from sibling --
+                // delete old entry from sibling
 
                 sibling_entry_count--;
                 _setEntryCount(sibling, sibling_entry_count);
 
-                // -- set sibling entry's right branch --
+                // set sibling entry's right branch
 
                 _setEntryBranch(sibling, sibling_entry_count, sibling_entry_branch);
                 sibling->setDirty(true);
 
-                // -- commit nodes and return --
+                // commit nodes and return
 
                 node->commit();
                 sibling->commit();
                 sibling->unref();
 
 
-                // -- save info modification info for the iterators --
+                // save info modification info for the iterators
 
                 if (mod_info)
                 {
@@ -1656,7 +1655,7 @@ bool ExIndex::_remove(BlockEntry* blockptrs[],
         }
          else
         {
-            // -- do the merge --
+            // do the merge
             BlockEntry* left_node;
             BlockEntry* right_node;
 
@@ -1679,21 +1678,21 @@ bool ExIndex::_remove(BlockEntry* blockptrs[],
 
             old_right_branch = _getEntryBranch(left_node, left_entry_count);
 
-            // -- copy down parent entry --
+            // copy down parent entry
             memcpy(    _getEntryPtr(left_node, left_entry_count),
                     _getEntryPtr(parent_node, parent_entry_num),
                     m_entrylen);
             
-            // -- former parent entry gets our old right branch --
+            // former parent entry gets our old right branch
             _setEntryBranch(left_node, left_entry_count, old_right_branch);
             left_entry_count++;
 
-            // -- copy in entries from the right_node --
+            // copy in entries from the right_node
             memcpy( _getEntryPtr(left_node, left_entry_count),
                     _getEntryPtr(right_node, 0),
                     (right_entry_count*m_entrylen)+4);
 
-            // -- update the entry count --
+            // update the entry count
 
             left_entry_count += right_entry_count;
             _setEntryCount(left_node, left_entry_count);
@@ -1701,7 +1700,7 @@ bool ExIndex::_remove(BlockEntry* blockptrs[],
             left_node->setDirty(true);
             left_node->commit();
 
-            // -- save info modification info for the iterators --
+            // save info modification info for the iterators
 
             if (mod_info)
             {
@@ -1719,14 +1718,14 @@ bool ExIndex::_remove(BlockEntry* blockptrs[],
                                                left_entry_count-right_entry_count));
             }
 
-            // -- recursively delete old parent entry --
+            // recursively delete old parent entry
 
             _setEntryBranch(parent_node, parent_entry_num, 0);
             _setEntryBranch(parent_node, parent_entry_num+1, left_node->m_block_idx);
 
             bool result = _remove(blockptrs, blockptr_count-1, parent_entry_num, mod_info);
 
-            // -- commit and return --
+            // commit and return
 
             sibling->unref();
 
@@ -1735,8 +1734,8 @@ bool ExIndex::_remove(BlockEntry* blockptrs[],
     }
      else
     {
-        // -- this is an internal node entry, so we need to find the
-        //  successor to this key and then delete the leaf node's entry instead --
+        // this is an internal node entry, so we need to find the
+        // successor to this key and then delete the leaf node's entry instead
 
         BlockEntry* r_blockptrs[30];
         unsigned int r_blockptr_count = blockptr_count;
@@ -1748,7 +1747,7 @@ bool ExIndex::_remove(BlockEntry* blockptrs[],
             r_blockptrs[i]->ref();
         }
 
-        // -- find successor and fill out new traversal trail --
+        // find successor and fill out new traversal trail
         BlockEntry* child_node;
         int branch = _getEntryBranch(node, offset+1);
         while (branch)
@@ -1761,7 +1760,7 @@ bool ExIndex::_remove(BlockEntry* blockptrs[],
                 break;
         }
         
-        // -- overwrite this entry with the successor key's entry --
+        // overwrite this entry with the successor key's entry
         memcpy( _getEntryPtr(node, offset),
                 _getEntryPtr(child_node, 0),
                 m_entrylen);
@@ -1769,7 +1768,7 @@ bool ExIndex::_remove(BlockEntry* blockptrs[],
         _setEntryBranch(node, offset, node_branch);
         node->setDirty(true);
 
-        // -- recursively call remove to get rid of the leaf node's entry --
+        // recursively call remove to get rid of the leaf node's entry
         bool result = _remove(r_blockptrs, r_blockptr_count, 0, mod_info);
 
         for (i = 0; i < r_blockptr_count; ++i)
@@ -1841,7 +1840,7 @@ bool ExIndex::create(const std::wstring& filename,
 
     BlockEntry* info_block = m_bf.createBlock();
 
-    // -- set info --
+    // set info
     int2buf(info_block->m_buf, 0xaa505100);            // file signature
     int2buf(info_block->m_buf+4, 1);                   // version
     int2buf(info_block->m_buf+8, m_keylen);            // key length
@@ -1966,10 +1965,10 @@ bool ExIndex::_sortedInsert(IKeyList* pool,
         ptr = pool->getEntryPtr();
 
         
-        // -- check if the hierarchy has changed --
+        // check if the hierarchy has changed
         if (m_root_node != old_root)
         {
-            // -- save blocks for releasing --
+            // save blocks for releasing
             std::vector<BlockEntry*> to_release;
             int i;
             for (i = 0; i < blockptr_count; ++i)
@@ -1984,7 +1983,7 @@ bool ExIndex::_sortedInsert(IKeyList* pool,
             int branch;
             while (1)
             {
-                // -- get right branch --
+                // get right branch
                 branch = _getEntryBranch(blockptrs[blockptr_count-1],
                                          _getEntryCount(blockptrs[blockptr_count-1]));
 
@@ -1995,7 +1994,7 @@ bool ExIndex::_sortedInsert(IKeyList* pool,
                 ++blockptr_count;
             }
  
-            // -- release old blocks --
+            // release old blocks
             std::vector<BlockEntry*>::iterator it;
             for (it = to_release.begin(); it != to_release.end(); ++it)
             {
@@ -2037,7 +2036,7 @@ bool ExIndex::_sortedInsert(IKeyList* pool,
     }
 
 
-    // -- release insert hierarchy --
+    // release insert hierarchy
     int i;
     for (i = 0; i < blockptr_count; ++i)
     {
@@ -2107,7 +2106,7 @@ void ExIndex::cancelBulkInsert()
         m_pool = NULL;
     }
 
-    // -- cancelled, so don't write anything. --
+    // cancelled, so don't write anything
     m_bf.markAllClean();
 
     flush();
@@ -2115,7 +2114,7 @@ void ExIndex::cancelBulkInsert()
     m_bulk_insert = false;
     m_root_node->commit();
 
-    // -- delete the temp files --
+    // delete the temp files
     std::vector<std::wstring>::iterator it;
     for (it = m_pool_files.begin(); it != m_pool_files.end(); ++it)
     {
@@ -2162,7 +2161,7 @@ void ExIndex::finishBulkInsert(IIndexProgress* progress)
         m_pool = NULL;
     }
 
-    // -- delete the temp files --
+    // delete the temp files
     std::vector<std::wstring>::iterator it;
     for (it = m_pool_files.begin(); it != m_pool_files.end(); ++it)
     {
@@ -2209,12 +2208,12 @@ xcm::result ExIndex::insert(const void* key,
     {
         if (m_pool->isFull())
         {
-            // -- we have filled up this key pool, so we need to sort
-            //    it and write it out --
+            // we have filled up this key pool, so we need to sort
+            // it and write it out
         
             m_pool->sort();
      
-            // -- generate a good temp filename --
+            // generate a good temp filename
             std::wstring filename;
         
             filename = m_bulk_filestub;
