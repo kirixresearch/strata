@@ -27,7 +27,7 @@ namespace kcl
 {
 
 
-// -- helper functions for drawing text in the DC --
+// helper functions for drawing text in the DC
 
 static void drawTextWrap(wxDC& dc,
                          const wxString& str,
@@ -209,7 +209,7 @@ static void lightenMemDC(wxMemoryDC& dc, wxBitmap& bmp)
 
 
 
-// -- ScrollListElement class implementation --
+// ScrollListElement class implementation
 
 ScrollListElement::ScrollListElement()
 {
@@ -325,7 +325,7 @@ void ScrollListElement::setVisible(bool visible)
 
     
     
-// -- ScrollListControl class implementation --
+// ScrollListControl class implementation
 
 BEGIN_EVENT_TABLE(ScrollListControl, wxScrolledWindow)
     EVT_PAINT(ScrollListControl::onPaint)

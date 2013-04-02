@@ -281,12 +281,12 @@ void DelimitedTextIterator::refreshStructure()
             
             if (dai->expr_text.length() > 0)
             {
-                // this is a dynamic field
+                // this is a calculated field
                 dai->expr = parseDestinationExpression(dai->expr_text);
             }
              else
             {
-                // this is not a dynamic field, lookup and
+                // this is not a calculated field, lookup and
                 // parse the destination structure's expression
                 tango::IColumnInfoPtr dest_colinfo;
                 dest_colinfo = destination_structure->getColumnInfoByIdx(i);
@@ -486,7 +486,7 @@ kscript::ExprParser* DelimitedTextIterator::parseDestinationExpression(const std
 {
     // parseDestinationExpr() is used for parsing expressions which
     // use the destination (transformed) structure as input fields;
-    // for example, dynamic fields would use this function for parsing
+    // for example, calculated fields would use this function for parsing
     
     // use CommonBaseIterator::parse()
     return parse(expr);

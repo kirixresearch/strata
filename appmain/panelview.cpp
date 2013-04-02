@@ -342,7 +342,7 @@ void ViewPanel::insertViewColumn(int row,
     if (row == -1)
         row = m_visible_fields->getRowCount()-1;
     
-    // determine if this field is a dynamic field
+    // determine if this field is a calculated field
     bool dynamic = false;
     tango::IColumnInfoPtr colinfo = m_structure->getColumnInfo(towstr(col_name));
     if (colinfo.isOk())

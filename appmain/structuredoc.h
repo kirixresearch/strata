@@ -71,7 +71,7 @@ public:
     
     int pos;
     bool dynamic;
-    bool original_dynamic;  // true if the field was a dynamic field in the original structure
+    bool original_dynamic;  // true if the field was a calculated field in the original structure
     bool original;          // true if the field existed in the original structure
 };
 

@@ -1083,7 +1083,7 @@ void StructureDoc::updateRowCellProps(int row)
             break;
     }
     
-    // gray out dynamic field formulas for dynamic fields
+    // gray out calculated field formulas for calculated fields
     // that are being converted to static fields
     wxString expr = m_grid->getCellString(row, colFieldFormula);
     StructureField* f = (StructureField*)m_grid->getRowData(row);
@@ -1829,9 +1829,9 @@ void StructureDoc::onConvertDynamicToFixed(wxCommandEvent& evt)
         int row = (*it);
         StructureField* f = (StructureField*)m_grid->getRowData(row);
         
-        // for now, don't allow newly created dynamic fields
+        // for now, don't allow newly created calculated fields
         // (in the StructureDoc) to be converted to fixed fields -- doing
-        // so results in the field being empty since the dynamic field's
+        // so results in the field being empty since the calculated field's
         // expression is disregarded
         if (f->dynamic && !f->original_dynamic)
         {
@@ -2169,7 +2169,7 @@ void StructureDoc::onGridCellRightClick(kcl::GridEvent& evt)
         m_grid->refresh(kcl::Grid::refreshAll);
     }
     
-    // find out if all of the selected rows are dynamic fields
+    // find out if all of the selected rows are calculated fields
     bool all_dynamic = true;
     std::vector<int> selected_rows = m_grid->getSelectedRows();
     std::vector<int>::iterator it;

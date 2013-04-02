@@ -102,7 +102,7 @@ void BlockEntry::flushDeferredUnrefs()
 }
 
 
-// -- BlockFile implementation --
+// BlockFile implementation
 
 BlockFile::BlockFile()
 {
@@ -128,7 +128,7 @@ bool BlockFile::create(const std::wstring& filename, unsigned int block_size)
 
     unsigned char buf[4];
 
-    // -- write out version id (== 1) --
+    // write out version id (== 1)
     buf[0] = 0x01;
     buf[1] = 0x00;
     buf[2] = 0x00;
@@ -140,7 +140,7 @@ bool BlockFile::create(const std::wstring& filename, unsigned int block_size)
         return false;
     }
 
-    // -- write out row count to dbf header --
+    // write out row count to dbf header
     buf[0] = (block_size & 0x000000ff);
     buf[1] = ((block_size & 0x0000ff00) >> 8);
     buf[2] = ((block_size & 0x00ff0000) >> 16);
@@ -289,7 +289,7 @@ unsigned char* BlockFile::_getPoolPtr()
 {
     if (m_free_bufs.empty())
     {
-        // -- we need to allocate another pool chunk --
+        // we need to allocate another pool chunk
         if (m_alloc_size == 0)
             return NULL;
 
@@ -400,7 +400,7 @@ void BlockFile::_commitBlock(BlockEntry* entry)
 
     if (entry->m_block_idx == bfNewBlock)
     {
-        // -- append the new block -- 
+        // append the new block
         xf_seek(m_f, 0, xfSeekEnd);
         xf_off_t pos = xf_get_file_pos(m_f);
         entry->m_block_idx = ((pos-8)/m_block_size);
@@ -491,7 +491,7 @@ BlockEntry* BlockFile::createBlock()
     memset(entry->m_buf, 0, m_alloc_size);
 
 
-    // -- append the new block -- 
+    // append the new block
     xf_seek(m_f, 0, xfSeekEnd);
     xf_off_t pos = xf_get_file_pos(m_f);
     entry->m_block_idx = ((pos-8)/m_block_size);

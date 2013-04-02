@@ -276,7 +276,7 @@ static void md5_final(unsigned char digest[16],
 
 
 
-// -- public interface --
+// public interface
 
 void md5(const unsigned char* buf,
          size_t len,

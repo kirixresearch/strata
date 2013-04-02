@@ -881,7 +881,7 @@ public:
             // it doesn't allow the user to select relevant articles as 
             // quickly because they can no longer see as many articles;
             // consequently, if a user saves a link to an RSS and sets
-            // up a mark/dynamic field combination to highlight links
+            // up a mark/calculated field combination to highlight links
             // with keywords, they can't simply middle-click on the links
             // in the highlighted records without having to scroll down
             // several times; the tradeoff here is whether the RSS table

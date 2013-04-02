@@ -18,7 +18,7 @@
 #include "../paladin/util.h"
 
 
-// -- our "generic" key (don't change) --
+// our "generic" key (don't change)
 static unsigned char generic_key[] = { 0x42, 0x49, 0x98, 0xba, 0x22, 0x34, 0x32, 0x8e };
 
 
@@ -123,7 +123,7 @@ wxString calcActivationCode(const wxString& input_app_tag,
     memset(actcode, 0, 8);
 
 
-    // -- get site code that user entered --
+    // get site code that user entered
 
     site_code = getCodeFromString(input_site_code);
     
@@ -132,7 +132,7 @@ wxString calcActivationCode(const wxString& input_app_tag,
         return wxT("");
     }
     
-    // -- prepare site_code and host_id code byte arrays --
+    // prepare site_code and host_id code byte arrays
 
     unsigned char site_code_bytes[8];
     unsigned char host_id_bytes[8];
@@ -140,7 +140,7 @@ wxString calcActivationCode(const wxString& input_app_tag,
     paladin::int64unpack(site_code_bytes, site_code);
 
 
-    // -- get the site's host id from the site's site code --
+    // get the site's host id from the site's site code
 
     paladin::paladin_int64_t unenc_site_code = site_code;
     paladin::int64crypt(unenc_site_code, generic_key, false);
@@ -157,7 +157,7 @@ wxString calcActivationCode(const wxString& input_app_tag,
     paladin::int64unpack(host_id_bytes, host_id);
 
 
-    // -- calculate activation code --
+    // calculate activation code
 
     //wxDateTime dt(exp_day, (wxDateTime::Month)(exp_month-1), exp_year);
     //unsigned int expire_julian = dateToJulian(dt.GetYear(), dt.GetMonth()+1, dt.GetDay()) - dateToJulian(2000, 1, 1);
@@ -171,8 +171,8 @@ wxString calcActivationCode(const wxString& input_app_tag,
 
     if (exp_year == 0 && exp_month == 0 && exp_day == 0)
     {
-        // -- user requests a perpetual (non-expiring) license,
-        //    which is denoted by 0xffaa as the expire julian --
+        // user requests a perpetual (non-expiring) license,
+        // which is denoted by 0xffaa as the expire julian
 
         expire_julian = 0xffaa;
     }
@@ -190,7 +190,7 @@ wxString calcActivationCode(const wxString& input_app_tag,
     actcode[6] = (feature_id) & 0xff;
     actcode[7] = (feature_id >> 8) & 0xff;
 
-    // -- encrypt site code with the master encryption key --
+    // encrypt site code with the master encryption key
 
     Des d;
 
@@ -220,22 +220,22 @@ wxString calcActivationCode(const wxString& input_app_tag,
     d.setKey(master_key);
     d.crypt(enc_key, 8, true);
 
-    // -- encrypt activation code --
+    // encrypt activation code
     d.setKey(enc_key);
     d.crypt(actcode, 8, true);
 
-    // -- encrypt activation with site key --
+    // encrypt activation with site key
     d.setKey(site_code_bytes);
     d.crypt(actcode, 8, true);
 
 
-    // -- generate final activation code from buffer --
+    // generate final activation code from buffer
 
     paladin::actcode_t final_actcode = 0;
     paladin::int64pack(final_actcode, actcode);
 
 
-    // -- put activation code into output textctrl --
+    // put activation code into output textctrl
 
     wxString actcode_str;
 
@@ -267,7 +267,7 @@ wxString calcComputerId(const wxString& input_site_code)
     memset(actcode, 0, 8);
 
 
-    // -- get site code that user entered --
+    // get site code that user entered
 
     int counter = 0;
 
@@ -312,14 +312,14 @@ wxString calcComputerId(const wxString& input_site_code)
     }
 
 
-    // -- prepare site_code and host_id code byte arrays --
+    // prepare site_code and host_id code byte arrays
 
     unsigned char site_code_bytes[8];
 
     paladin::int64unpack(site_code_bytes, site_code);
 
 
-    // -- get the site's host id from the site's site code --
+    // get the site's host id from the site's site code
 
     paladin::paladin_int64_t unenc_site_code = site_code;
     paladin::int64crypt(unenc_site_code, generic_key, false);
@@ -332,7 +332,7 @@ wxString calcComputerId(const wxString& input_site_code)
 #endif
 
 
-    // -- put activation code into output textctrl --
+    // put activation code into output textctrl
 
     wxString ret_str;
 

@@ -40,7 +40,7 @@ MainFrame::MainFrame() : wxFrame(NULL, -1, _("Paladin Code Generator"),
 
     SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
 
-    // -- make a menu --
+    // make a menu
 
     wxMenu* menuFile = new wxMenu;
     menuFile->Append(ID_SiteCodeInfo, _("Get Site Code Info..."));

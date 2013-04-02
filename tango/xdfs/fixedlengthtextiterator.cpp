@@ -252,7 +252,7 @@ bool FixedLengthTextIterator::init(tango::IDatabasePtr db,
     }
 
 
-    // get the dynamic fields, add them to m_fields
+    // get the calculated fields, add them to m_fields
     tango::IStructurePtr final_structure = m_set->getStructure();
     col_count = final_structure->getColumnCount();
     for (i = 0; i < col_count; ++i)
@@ -276,7 +276,7 @@ bool FixedLengthTextIterator::init(tango::IDatabasePtr db,
         m_fields.push_back(dai);
     }
 
-    // parse the dynamic field expressions
+    // parse the calculated field expressions
     col_count = m_fields.size();
     for (i = 0; i < col_count; ++i)
     {

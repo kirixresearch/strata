@@ -88,7 +88,7 @@ private:
     
     void updateButtons(bool do_layout = true);
 
-    // -- event handlers --
+    // event handlers
     void onPrevPage(wxCommandEvent& evt);
     void onNextPage(wxCommandEvent& evt);
     void onFinish(wxCommandEvent& evt);

@@ -97,7 +97,7 @@ bool CommonBaseSet::modifyStructure(tango::IStructure* struct_config,
 }
 
 
-// -- Calculated Field routines --
+// Calculated Field routines
 
 bool CommonBaseSet::createCalcField(tango::IColumnInfoPtr colinfo)
 {

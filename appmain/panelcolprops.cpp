@@ -1154,7 +1154,7 @@ void ColPropsPanel::revertChanges()
         return;
     }
 
-    // restore dynamic field
+    // restore calculated field
 
     tango::IStructurePtr iter_structure = m_iter->getStructure();
     tango::IColumnInfoPtr colinfo;

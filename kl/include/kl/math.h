@@ -35,7 +35,7 @@ inline double pow10(int r)
 }
 
 
-// -- double helpers --
+// double helpers
 
 inline double dblround(double d, int dec)
 {

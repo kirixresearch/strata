@@ -15,7 +15,7 @@
 
 #include <cstring>
 
-// -- export macros --
+// export macros 
 
 #ifdef WIN32
     // this works with both gcc and msvc under win32
@@ -35,7 +35,7 @@
 #endif
 
 
-// -- smart ptr macros --
+// smart ptr macros
 
 #define XCM_DECLARE_SMARTPTR(interface_type) \
     typedef xcm::ptr<interface_type > interface_type##Ptr;
@@ -44,7 +44,7 @@
     typedef xcm::ptr<interface_type > smartptr_name;
 
 
-// -- module macros --
+// module macros
 
 #define XCM_BEGIN_STATIC_MODULE(module_name) \
     class xcm_static_module_##module_name : public xcm::static_module_base { \
@@ -83,7 +83,7 @@
     }
 
 
-// -- class map macros --
+// class map macros
 
 #define XCM_BEGIN_CLASS_MAP()    \
     void* xcm_module_runtime(bool bCreateInstance, const char* obj_class) {
@@ -107,7 +107,7 @@
 
 
 
-// -- class macros --
+// class macros
 
 namespace xcm
 {
@@ -300,7 +300,7 @@ long XCM_STDCALL interlocked_decrement(long*);
     }
 
 
-// -- anonymous class support --
+// anonymous class support
 
 #define XCM_ANONYMOUS_CLASS(class_name) \
     public: \
@@ -319,7 +319,7 @@ long XCM_STDCALL interlocked_decrement(long*);
     }
 
 
-// -- interface macros --
+// interface macros
 
 #define XCM_INTERFACE_NAME(intf_name)    \
     public:    \
@@ -327,7 +327,7 @@ long XCM_STDCALL interlocked_decrement(long*);
 
 
 
-// -- signal macros --
+// signal macros
 
 #define XCM_DECLARE_SIGNAL0(sig_name)   \
             virtual xcm::signal0& sig_name() = 0;
@@ -365,7 +365,7 @@ long XCM_STDCALL interlocked_decrement(long*);
             xcm::signal4<p1,p2,p3,p4>& sig_name() { return sig_##sig_name; }
 
 
-// -- type info macros --
+// type info macros
 
 #define XCM_NO_TYPE_INFO()    \
     public: \

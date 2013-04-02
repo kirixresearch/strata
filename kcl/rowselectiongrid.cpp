@@ -35,7 +35,7 @@ namespace kcl
 {
 
 
-// -- RowSelectionGrid class implementation --
+// RowSelectionGrid class implementation
 
 BEGIN_EVENT_TABLE(RowSelectionGrid, kcl::Grid)
     EVT_SIZE(RowSelectionGrid::onSize)

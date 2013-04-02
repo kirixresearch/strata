@@ -178,7 +178,7 @@ public:
     BlockFile();
     ~BlockFile();
 
-    // -- open/close --
+    // open/close
     bool create(const std::wstring& filename, unsigned int block_size = 512);
     bool open(const std::wstring& filename);
     void close();
@@ -187,7 +187,7 @@ public:
     unsigned int getBlockAllocSize();
     bool isOpen();
 
-    // -- cache control --
+    // cache control
     void setPoolSize(int new_val);
     void freePool();
     bool getPoolFull();
@@ -195,7 +195,7 @@ public:
     void flushDirty();
     void markAllClean();
 
-    // -- block access --
+    // block access
     int getBlockCount();
     bool isCached(unsigned int block_idx);
     BlockEntry* getBlock(unsigned int block_idx);

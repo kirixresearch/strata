@@ -47,7 +47,7 @@ void ConnectionStr::parse(const std::wstring& str)
     {
         std::wstring chunk, key, value;
         
-        // -- get the next chunk --
+        // get the next chunk
         size_t delim = str.find(L';', next_pos);
         if (delim == str.npos)
         {
@@ -64,7 +64,7 @@ void ConnectionStr::parse(const std::wstring& str)
         if (chunk.empty())
             break;
 
-        // -- get the key name --
+        // get the key name
         key = kl::beforeFirst(chunk, L'=');
         value = kl::afterFirst(chunk, L'=');
 

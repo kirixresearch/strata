@@ -635,7 +635,7 @@ bool TableDoc::onSiteClosing(bool force)
         // web (html/rss/etc) simply by clicking, and everytime these are closed,
         // this warning pops up, constantly interrupting the user; if we want to have
         // this warning back, we could add it if the user begins to do operations on
-        // the file, such as creating dynamic fields, or sorting/filtering, etc; this
+        // the file, such as creating calculated fields, or sorting/filtering, etc; this
         // would parallel the script document, which doesn't pop up a warning message
         // for new untitled files unless they begin modifying the document
         
@@ -1158,7 +1158,7 @@ void TableDoc::onUpdateUI(wxUpdateUIEvent& evt)
 
     if (isExternalTable())
     {
-        // don't allow dynamic fields to be made static
+        // don't allow calculated fields to be made static
         // on external databases
     
         if (id == ID_Data_MakeDynamicFieldStatic)
@@ -1243,7 +1243,7 @@ void TableDoc::onUpdateUI(wxUpdateUIEvent& evt)
             }
 
 
-            // for now, limit deleting to dynamic fields
+            // for now, limit deleting to calculated fields
             tango::IStructurePtr structure = m_iter->getStructure();
             tango::IColumnInfoPtr colinfo;
 
@@ -2989,8 +2989,8 @@ void TableDoc::insertColumnInternal(int insert_pos,
 
 void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
 {
-    // try to find an existing dynamic field which contains
-    // the dynamic field expression
+    // try to find an existing calculated field which contains
+    // the calculated field expression
     tango::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return;
@@ -3016,7 +3016,7 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
         }
     }
 
-    // a suitable dynamic field did not exist for the expression,
+    // a suitable calculated field did not exist for the expression,
     // so we have to create it
 
     if (text.Find(wxT('.')) == -1)
@@ -3952,7 +3952,7 @@ void TableDoc::onGridColumnRightClick(kcl::GridEvent& evt)
         return;
 
 
-    // find out if any dynamic fields are selected
+    // find out if any calculated fields are selected
     bool dynamic_selected = false;
     bool static_selected = false;
     int selected_count = 0;
@@ -3969,7 +3969,7 @@ void TableDoc::onGridColumnRightClick(kcl::GridEvent& evt)
             selected_count++;
 
             // this code fragement makes sure that we are not doing
-            // context column operations on dynamic fields that are
+            // context column operations on calculated fields that are
             // currently being modified; when checking, make sure we
             // have a valid model column index (i.e., that we're not 
             // on a column separator)
@@ -5264,7 +5264,7 @@ void TableDoc::onCreateDynamicFieldOk(ColPropsPanel* panel)
 void TableDoc::onEditDynamicFieldOk(ColPropsPanel* panel)
 {
     // if there were relationships synced, we need to 
-    // update the display because the dynamic field we
+    // update the display because the calculated field we
     // just changed may play a role
 
     int synctype = g_app->getAppController()->getRelationshipSync();
@@ -5277,7 +5277,7 @@ void TableDoc::onCreateDynamicFieldCancelled(ColPropsPanel* panel)
 {
     freeTemporaryHandles();
     
-    // we are deleting just dynamic fields
+    // we are deleting just calculated fields
     wxString modify_struct = panel->getModifyField();
     tango::IStructurePtr structure = m_iter->getStructure();
     structure->deleteColumn(towstr(modify_struct));
@@ -5308,7 +5308,7 @@ void TableDoc::onCreateDynamicFieldCancelled(ColPropsPanel* panel)
 
 void TableDoc::showCreateDynamicField()
 {
-    // see if any other dynamic field frames are visible
+    // see if any other calculated field frames are visible
     IDocumentSitePtr site;
     site = m_frame->lookupSite(wxT("CalculatedFieldPropertiesPanel"));
     if (site.isOk())

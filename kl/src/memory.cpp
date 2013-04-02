@@ -21,7 +21,7 @@ namespace kl
 {
 
 
-// -- memory api --
+// memory api
 
 #ifdef WIN32
 

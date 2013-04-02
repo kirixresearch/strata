@@ -87,7 +87,7 @@ GenerationPage::GenerationPage(wxWindow* parent) : wxPanel(parent, -1)
     wxBoxSizer* button_sizer = new wxBoxSizer(wxVERTICAL);
 
 
-    // -- key sizer --
+    // key sizer
     wxStaticBox* key_static_box = new wxStaticBox(this, -1, _("Site and Activation Codes"));
     wxStaticBoxSizer* key_sizer = new wxStaticBoxSizer(key_static_box, wxVERTICAL);
 
@@ -134,7 +134,7 @@ GenerationPage::GenerationPage(wxWindow* parent) : wxPanel(parent, -1)
     key_sizer->Add(feature_id_sizer, 0, wxEXPAND | wxALL, 4);
     key_sizer->Add(activation_key_sizer, 0, wxEXPAND | wxALL, 4);
 
-    // -- expiration date sizer --
+    // expiration date sizer
 
     wxBoxSizer* exp_button_sizer = new wxBoxSizer(wxVERTICAL);
 
@@ -313,7 +313,7 @@ void GenerationPage::recalcActivationCode()
 
     if (!m_exp_date->IsEnabled())
     {
-        // -- perpetual license --
+        // perpetual license
         y = 0;
         m = 0;
         d = 0;

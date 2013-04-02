@@ -101,7 +101,7 @@ public: // signals
     xcm::signal2<RulerControl*, int> sigMoveGuideEnd;
     xcm::signal2<RulerControl*, int> sigMoveGuide;
 
-    // --signal for returning focus to another window --
+    // signal for returning focus to another window 
     xcm::signal0 sigReturnFocus;
     
 private:
@@ -112,7 +112,8 @@ private:
         actionMoveOrigin = 1
     };
 
-    // -- Bitmap variables --
+    // bitmap variables
+
     wxBitmap m_bmp;
     wxMemoryDC m_memdc;
     wxBrush m_bkbrush;
@@ -120,7 +121,8 @@ private:
     int m_bmp_alloc_width;
     int m_bmp_alloc_height;
 
-    // -- Mouse event variables --
+    //  mouse event variables
+
     int m_mouse_action;             // action indicator
     int m_mouse_xlast;              // last x pos of the mouse
     int m_mouse_ylast;              // last y pos of the mouse

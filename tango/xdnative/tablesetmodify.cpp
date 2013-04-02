@@ -1123,7 +1123,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
     }
 
 
-    // remove all dynamic fields which were made permanent
+    // remove all calculated fields which were made permanent
     std::vector<std::wstring>::iterator makeperm_it;
     for (makeperm_it = makeperm_fields.begin();
          makeperm_it != makeperm_fields.end(); ++makeperm_it)

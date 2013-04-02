@@ -92,7 +92,7 @@ DataAccessInfo::~DataAccessInfo()
 bool DataAccessInfo::eval(kscript::Value* result)
 {
     // this prevents mutual recursion (when two
-    //  dynamic fields reference each other
+    //  calculated fields reference each other
 
     if (++depth == max_recursion_depth)
     {
@@ -987,7 +987,7 @@ void BaseIterator::colinfo2dai(DataAccessInfo* dai,
 
         if (dai->type == tango::typeCharacter)
         {
-            // allocate a place for dynamic field results
+            // allocate a place for calculated field results
             // (this is needed for the getRawPtr() function
             dai->raw_buf = new unsigned char[dai->width+1];
 
@@ -1955,12 +1955,12 @@ bool BaseIterator::base_iterator_parse_hook(kscript::ExprParseHookInfo& hook_inf
         {
             if (colinfo->getCalculated())
             {
-                // dynamic field referring to itself
+                // calculated field referring to itself
                 return false;
             }
              else
             {
-                // the dynamic field may referring to a physical
+                // the calculated field may referring to a physical
                 // field of the same name
                 dai = new DataAccessInfo;
                 dai->it = iter;
