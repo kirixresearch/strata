@@ -132,16 +132,16 @@ jobs::IJobPtr ExportTemplate::execute()
 
     ExportJob* job = new ExportJob;
     job->setExportType(m_ei.type);
-    job->setFilename(m_ei.path, m_ei.overwrite_file);
+    job->setFilename(towstr(m_ei.path), m_ei.overwrite_file);
     job->setFixInvalidFieldnames(m_ei.fix_invalid_fieldnames);
-    job->setConnectionInfo(m_ei.server,
+    job->setConnectionInfo(towstr(m_ei.server),
                            m_ei.port,
-                           m_ei.database,
-                           m_ei.username,
-                           m_ei.password);
+                           towstr(m_ei.database),
+                           towstr(m_ei.username),
+                           towstr(m_ei.password));
 
-    job->setDelimiters(m_ei.delimiters);
-    job->setTextQualifier(m_ei.text_qualifier);
+    job->setDelimiters(towstr(m_ei.delimiters));
+    job->setTextQualifier(towstr(m_ei.text_qualifier));
     job->setFirstRowHeader(m_ei.first_row_header);
 
 

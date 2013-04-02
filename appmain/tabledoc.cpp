@@ -1687,20 +1687,20 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
 
         if (dbtype == dbtypeDelimitedText)
         {
-            job->setDelimiters(delimiters);
+            job->setDelimiters(towstr(delimiters));
             job->setTextQualifier(L"\"");
             job->setFirstRowHeader(true);
         }
         
         if (dbtype == dbtypeAccess || dbtype == dbtypeExcel)
         {
-            job->setFilename(dlg.GetPath());
-            job_export_info.output_path = this->m_path.AfterLast(wxT('/')).BeforeLast(wxT('.'));
-            job_export_info.output_path.Replace(wxT("."), wxT("_"));
-            job_export_info.output_path.Replace(wxT(" "), wxT("_"));
-            job_export_info.output_path.Replace(wxT("-"), wxT("_"));
-            if (job_export_info.output_path.IsEmpty())
-                job_export_info.output_path = wxT("exptable");
+            job->setFilename(towstr(dlg.GetPath()));
+            job_export_info.output_path = kl::beforeLast( kl::afterLast(towstr(m_path), '/'), '.');
+            kl::replaceStr(job_export_info.output_path, L".", L"_");
+            kl::replaceStr(job_export_info.output_path, L" ", L"_");
+            kl::replaceStr(job_export_info.output_path, L"-", L"_");
+            if (job_export_info.output_path.empty())
+                job_export_info.output_path = L"exptable";
         }
        
         job->addExportSet(job_export_info);

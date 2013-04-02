@@ -17,18 +17,18 @@
 
 ExportJob::ExportJob()
 {
-    m_job_info->setTitle(wxEmptyString);
+    m_job_info->setTitle(L"");
 
     m_export_type = dbtypeUndefined;
     m_fix_invalid_fieldnames = false;
 
-    m_filename = wxEmptyString;
+    m_filename = L"";
     m_overwrite_file = true;
     
-    m_host = wxEmptyString;
-    m_database = wxEmptyString;
-    m_username = wxEmptyString;
-    m_password = wxEmptyString;
+    m_host = L"";
+    m_database = L"";
+    m_username = L"";
+    m_password = L"";
     m_port = 0;
     
     m_delimiters = L",";
@@ -51,17 +51,17 @@ void ExportJob::setFixInvalidFieldnames(bool val)
     m_fix_invalid_fieldnames = val;
 }
 
-void ExportJob::setFilename(const wxString& filename, bool overwrite)
+void ExportJob::setFilename(const std::wstring& filename, bool overwrite)
 {
     m_filename = filename;
     m_overwrite_file = overwrite;
 }
 
-void ExportJob::setConnectionInfo(const wxString& host,
+void ExportJob::setConnectionInfo(const std::wstring& host,
                                   int port,
-                                  const wxString& database,
-                                  const wxString& username,
-                                  const wxString& password)
+                                  const std::wstring& database,
+                                  const std::wstring& username,
+                                  const std::wstring& password)
 {
     m_host = host;
     m_port = port;
@@ -75,12 +75,12 @@ void ExportJob::addExportSet(const ExportJobInfo& info)
     m_exports.push_back(info);
 }
 
-void ExportJob::setDelimiters(const wxString& delimiters)
+void ExportJob::setDelimiters(const std::wstring& delimiters)
 {
     m_delimiters = delimiters;
 }
 
-void ExportJob::setTextQualifier(const wxString& text_qualifier)
+void ExportJob::setTextQualifier(const std::wstring& text_qualifier)
 {
     m_text_qualifier = text_qualifier;
 }
@@ -110,8 +110,9 @@ static bool isValidExportType(int export_type)
     return false;
 }
 
-static wxString getDefaultExportTitle(int export_type)
+static std::wstring getDefaultExportTitle(int export_type)
 {
+/*
     switch (export_type)
     {
         case dbtypeAccess:
@@ -136,18 +137,20 @@ static wxString getDefaultExportTitle(int export_type)
             return _("Exporting Fixed-Length File(s)");
     }
 
-    return wxEmptyString;
+    return L"";
+    */
+    return L"Exporting Data";
 }
 
-static wxString getExportTitle(int export_type,
-                               const wxString& tablename = wxEmptyString,
-                               const wxString& filename = wxEmptyString,
-                               const wxString& server = wxEmptyString)
+static std::wstring getExportTitle(int export_type,
+                                   const std::wstring& tablename = L"",
+                                   const std::wstring& filename = L"",
+                                   const std::wstring& server = L"")
 {
     if (!isValidExportType(export_type))
-        return wxEmptyString;
+        return L"";
             
-    if (tablename.IsEmpty() && filename.IsEmpty() && server.IsEmpty())
+    if (tablename.empty() && filename.empty() && server.empty())
         return getDefaultExportTitle(export_type);
     
     if (export_type == dbtypeSqlServer ||
@@ -156,53 +159,53 @@ static wxString getExportTitle(int export_type,
         export_type == dbtypeOdbc      ||
         export_type == dbtypeDb2)
     {
-        if (server.IsEmpty())
+        if (server.empty())
             return getDefaultExportTitle(export_type);
         
-        if (tablename.Length() > 0)
-            return wxString::Format(_("Exporting '%s' to '%s'"), tablename.c_str(), server.c_str());
+        if (tablename.length() > 0)
+            return kl::stdswprintf(L"Exporting '%ls' to '%ls'", tablename.c_str(), server.c_str());
              else
-            return wxString::Format(_("Exporting to '%s'"), server.c_str());
+            return kl::stdswprintf(L"Exporting to '%ls'", server.c_str());
     }
      else if (export_type == dbtypeAccess ||
               export_type == dbtypeExcel)
     {
-        wxString fn = filename.AfterLast(PATH_SEPARATOR_CHAR);
-        if (fn.IsEmpty())
+        std::wstring fn = kl::afterLast(filename, PATH_SEPARATOR_CHAR);
+        if (fn.empty())
             return getDefaultExportTitle(export_type);
 
-        wxString tn = tablename.AfterLast(wxT('/'));
-        if (tn.Length() > 0)
-            return wxString::Format(_("Exporting '%s' to '%s'"), tn.c_str(), fn.c_str());
+        std::wstring tn = kl::afterLast(tablename, '/');
+        if (tn.length() > 0)
+            return kl::stdswprintf(L"Exporting '%ls' to '%ls'", tn.c_str(), fn.c_str());
              else
-            return wxString::Format(_("Exporting to '%s'"), fn.c_str());
+            return kl::stdswprintf(L"Exporting to '%ls'", fn.c_str());
     }
      else if (export_type == dbtypeFixedLengthText ||
               export_type == dbtypeDelimitedText   ||
               export_type == dbtypeXbase)
     {
-        wxString fn = filename.AfterLast(PATH_SEPARATOR_CHAR);
-        if (fn.IsEmpty())
+        std::wstring fn = kl::afterLast(filename, PATH_SEPARATOR_CHAR);
+        if (fn.empty())
             return getDefaultExportTitle(export_type);
 
-        wxString tn = tablename.AfterLast(PATH_SEPARATOR_CHAR);
-        if (tn.Length() > 0)
-            return wxString::Format(_("Exporting '%s' to '%s'"), tn.c_str(), fn.c_str());
+        std::wstring tn = kl::afterLast(tablename, PATH_SEPARATOR_CHAR);
+        if (tn.length() > 0)
+            return kl::stdswprintf(L"Exporting '%ls' to '%ls'", tn.c_str(), fn.c_str());
              else
             return getDefaultExportTitle(export_type);
     }
     
-    return wxEmptyString;
+    return L"";
 }
 
 void ExportJob::updateJobTitle(ExportJobInfo* info)
 {
-    wxString tablename, filename, title;
+    std::wstring tablename, filename, title;
     
     if (!info)
     {
         title = getExportTitle(m_export_type);
-        m_job_info->setTitle(towstr(title));
+        m_job_info->setTitle(title);
         return;
     }
        
@@ -212,26 +215,26 @@ void ExportJob::updateJobTitle(ExportJobInfo* info)
         m_export_type == dbtypeOdbc      ||
         m_export_type == dbtypeDb2)
     {
-        tablename = info->input_path.AfterLast(wxT('/'));
-        title = getExportTitle(m_export_type, tablename, wxEmptyString, m_host);
-        m_job_info->setTitle(towstr(title));
+        tablename = kl::afterLast(info->input_path, '/');
+        title = getExportTitle(m_export_type, tablename, L"", m_host);
+        m_job_info->setTitle(title);
     }
      else if (m_export_type == dbtypeAccess ||
               m_export_type == dbtypeExcel)
     {
-        tablename = info->input_path.AfterLast(wxT('/'));
-        filename = m_filename.AfterLast(PATH_SEPARATOR_CHAR);
+        tablename = kl::afterLast(info->input_path, '/');
+        filename = kl::afterLast(m_filename, PATH_SEPARATOR_CHAR);
         title = getExportTitle(m_export_type, tablename, filename);
-        m_job_info->setTitle(towstr(title));
+        m_job_info->setTitle(title);
     }
      else if (m_export_type == dbtypeFixedLengthText ||
               m_export_type == dbtypeDelimitedText   ||
               m_export_type == dbtypeXbase)
     {
-        tablename = info->input_path.AfterLast(wxT('/'));
-        filename = info->output_path.AfterLast(PATH_SEPARATOR_CHAR);
+        tablename = kl::afterLast(info->input_path, '/');
+        filename = kl::afterLast(info->output_path, PATH_SEPARATOR_CHAR);
         title = getExportTitle(m_export_type, tablename, filename);
-        m_job_info->setTitle(towstr(title));
+        m_job_info->setTitle(title);
     }              
 }
 
@@ -245,8 +248,8 @@ int ExportJob::runJob()
     }
     
     // only use default job title if the job info's title is empty
-    wxString job_title = m_job_info->getTitle();
-    if (job_title.IsEmpty())
+    std::wstring job_title = m_job_info->getTitle();
+    if (job_title.empty())
         updateJobTitle(NULL);
 
     if (m_export_type == dbtypeAccess ||
@@ -265,9 +268,9 @@ int ExportJob::runJob()
                 return 0;
             }
 
-            xf_remove(towstr(m_filename));
+            xf_remove(m_filename);
         
-            tango::IDatabasePtr db = db_mgr->createDatabase(towstr(m_filename), L"");
+            tango::IDatabasePtr db = db_mgr->createDatabase(m_filename, L"");
             if (db.isNull())
             {
                 // could not create mdb database.  permissions problem maybe?
@@ -315,7 +318,7 @@ int ExportJob::runJob()
     for (it = m_exports.begin(); it != m_exports.end(); ++it)
     {
         // get total row count
-        tango::IFileInfoPtr finfo = src_db->getFileInfo(towstr(it->input_path));
+        tango::IFileInfoPtr finfo = src_db->getFileInfo(it->input_path);
         if (finfo.isNull())
         {
             m_job_info->setState(jobStateFailed);
@@ -352,7 +355,7 @@ int ExportJob::runJob()
 
 
         // now, do the insert
-        src_iter = src_db->createIterator(towstr(it->input_path), L"", L"", NULL);
+        src_iter = src_db->createIterator(it->input_path, L"", L"", NULL);
         if (src_iter.isNull())
         {
             m_job_info->setState(jobStateFailed);
@@ -373,14 +376,14 @@ int ExportJob::runJob()
 
         
 
-        tango::IFileInfoPtr dest_finfo = dest_db->getFileInfo(towstr(it->output_path));
+        tango::IFileInfoPtr dest_finfo = dest_db->getFileInfo(it->output_path);
 
         if (it->append && dest_finfo.isOk())
         {
             // if we are appending to an existing table exists;
             // get the structure from that table
 
-            dest_struct = dest_db->describeTable(towstr(it->output_path));
+            dest_struct = dest_db->describeTable(it->output_path);
             if (dest_struct.isNull())
             {
                 m_job_info->setState(jobStateFailed);
@@ -411,7 +414,7 @@ int ExportJob::runJob()
             ExportCopyInfo ci;
 
 
-            std::set<wxString> dup_check;
+            std::set<std::wstring> dup_check;
 
             // we are not appending to a set, so create a new set
             // and fill out it's structure from the FieldTransInfo vector
@@ -427,9 +430,9 @@ int ExportJob::runJob()
                 ci.src_name = towx(src_colinfo->getName());
                 
                 // xbase field names can only be 10 characters long
-                wxString s;
+                std::wstring s;
                 if (conn_type == dbtypeXbase)
-                    s = ci.src_name.Left(10);
+                    s = ci.src_name.substr(0, 10);
                      else
                     s = ci.src_name;
                 
@@ -442,22 +445,23 @@ int ExportJob::runJob()
                     conn_type == dbtypeOdbc ||
                     conn_type == dbtypeDb2)
                 {
-                    s.Replace(wxT(" "), wxT("_"), true);
+                    kl::replaceStr(s, L" ", L"_", true);
                 }
                     
                 ci.dest_name = s;
 
                 int counter = 2;
-                s.MakeUpper();
+                kl::makeUpper(s);
                 while (dup_check.find(s) != dup_check.end())
                 {
                     if (conn_type == dbtypeXbase)
-                        s = ci.src_name.Left(10-((counter/10)+1));
+                        s = ci.src_name.substr(0, 10 - (counter/10) + 1);
                          else
                         s = ci.src_name;
-                    s += wxString::Format(wxT("%d"), counter++);
+                    s += kl::stdswprintf(L"%d", counter++);
                     ci.dest_name = s;
-                    s.MakeUpper();
+
+                    kl::makeUpper(s);
                 }
 
                 dup_check.insert(s);
@@ -466,7 +470,7 @@ int ExportJob::runJob()
 
                 // create destination column
                 tango::IColumnInfoPtr dest_colinfo = dest_struct->createColumn();
-                dest_colinfo->setName(towstr(ci.dest_name));
+                dest_colinfo->setName(ci.dest_name);
                 dest_colinfo->setType(src_colinfo->getType());
                 dest_colinfo->setWidth(src_colinfo->getWidth());
                 dest_colinfo->setScale(src_colinfo->getScale());
@@ -476,7 +480,7 @@ int ExportJob::runJob()
             // existing table before we create a new one
             if (dest_finfo.isOk())
             {
-                conn->getDatabasePtr()->deleteFile(towstr(it->output_path));
+                conn->getDatabasePtr()->deleteFile(it->output_path);
             }
 
             // even if the table couldn't be opened, the file may still exist
@@ -488,14 +492,16 @@ int ExportJob::runJob()
                     conn_type == dbtypeDelimitedText ||
                     conn_type == dbtypeFixedLengthText)
                 {
-                    if (xf_get_file_exist(towstr(it->output_path)))
-                        xf_remove(towstr(it->output_path));
+                    if (xf_get_file_exist(it->output_path))
+                    {
+                        xf_remove(it->output_path);
+                    }
                 }
             }
             
             
-            std::wstring delimiters = towstr(m_delimiters);
-            std::wstring text_qualifiers = towstr(m_text_qualifier);
+            std::wstring delimiters = m_delimiters;
+            std::wstring text_qualifiers = m_text_qualifier;
             
             int format;
             switch (conn_type)
@@ -510,10 +516,10 @@ int ExportJob::runJob()
                 case dbtypeFilesystem:
                 {
                     // determine the file format from the output filename's extension
-                    wxString ext;
-                    if (it->output_path.Find(wxT('.')) != -1)
-                        ext = it->output_path.AfterLast(wxT('.'));                    
-                    ext.MakeLower();
+                    std::wstring ext;
+                    if (it->output_path.find(L".") != it->output_path.npos)
+                        ext = kl::afterLast(it->output_path, '.');                    
+                    kl::makeLower(ext);
                     
                     if (ext == L"dbf")
                     {
@@ -550,7 +556,7 @@ int ExportJob::runJob()
                     tango::FormatInfo fi;
                     fi.table_format = format;
 
-                    dest_db->createTable(towstr(it->output_path),
+                    dest_db->createTable(it->output_path,
                                          dest_struct,
                                          &fi);
                 }
@@ -558,17 +564,17 @@ int ExportJob::runJob()
 
                 case tango::formatDelimitedText:
                 {
-                    wxString ext;
-                    if (it->output_path.Find(wxT('.')) != -1)
-                        ext = it->output_path.AfterLast(wxT('.'));                    
-                    ext.MakeLower();
+                    std::wstring ext;
+                    if (it->output_path.find(L".") != it->output_path.npos)
+                        ext = kl::afterLast(it->output_path, '.');                    
+                    kl::makeLower(ext);
                     
                     if (ext == wxT("icsv"))
                     {
                         tango::FormatInfo fi;
                         fi.table_format = tango::formatDelimitedText;
 
-                        dest_db->createTable(towstr(it->output_path),
+                        dest_db->createTable(it->output_path,
                                              dest_struct,
                                              &fi);
                     }
@@ -581,7 +587,7 @@ int ExportJob::runJob()
                         fi.line_delimiters = L"\n";
                         fi.first_row_column_names = m_first_row_header;
 
-                        dest_db->createTable(towstr(it->output_path),
+                        dest_db->createTable(it->output_path,
                                              dest_struct,
                                              &fi);
                     }
@@ -601,7 +607,7 @@ int ExportJob::runJob()
             // character parameter, leaving the regular character parameter blank,
             //  resulting in no values being inserted into character fields
 
-            dest_struct = dest_db->describeTable(towstr(it->output_path));
+            dest_struct = dest_db->describeTable(it->output_path);
             if (!dest_struct)
             {
                 m_job_info->setState(jobStateFailed);
@@ -613,7 +619,7 @@ int ExportJob::runJob()
         // insert rows into that set
 
         tango::IRowInserterPtr ri;
-        ri = dest_db->bulkInsert(towstr(it->output_path));
+        ri = dest_db->bulkInsert(it->output_path);
         ri->startInsert(L"*");
 
         // get input and output handles
@@ -622,16 +628,16 @@ int ExportJob::runJob()
              ++copyinfo_it)
         {
             tango::IColumnInfoPtr dest_colinfo;
-            dest_colinfo = dest_struct->getColumnInfo(towstr(copyinfo_it->dest_name));
+            dest_colinfo = dest_struct->getColumnInfo(copyinfo_it->dest_name);
             if (dest_colinfo.isNull())
             {
                 m_job_info->setState(jobStateFailed);
                 return 0;
             }
 
-            copyinfo_it->src_handle = src_iter->getHandle(towstr(copyinfo_it->src_name));
-            copyinfo_it->dest_handle = ri->getHandle(towstr(copyinfo_it->dest_name));
-            copyinfo_it->dest_type = dest_struct->getColumnInfo(towstr(copyinfo_it->dest_name))->getType();
+            copyinfo_it->src_handle = src_iter->getHandle(copyinfo_it->src_name);
+            copyinfo_it->dest_handle = ri->getHandle(copyinfo_it->dest_name);
+            copyinfo_it->dest_type = dest_struct->getColumnInfo(copyinfo_it->dest_name)->getType();
 
             if (!copyinfo_it->src_handle || !copyinfo_it->dest_handle)
             {

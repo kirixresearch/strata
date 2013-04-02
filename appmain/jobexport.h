@@ -19,16 +19,16 @@
 struct ExportJobInfo
 {
 public:
-    wxString input_path;
-    wxString output_path;
+    std::wstring input_path;
+    std::wstring output_path;
     bool append;
 };
 
 
 struct ExportCopyInfo
 {
-    wxString src_name;
-    wxString dest_name;
+    std::wstring src_name;
+    std::wstring dest_name;
     int dest_type;
     tango::objhandle_t src_handle;
     tango::objhandle_t dest_handle;
@@ -49,20 +49,20 @@ public:
     
     void setExportType(int type);
     void setFixInvalidFieldnames(bool val);
-    void setFilename(const wxString& filename,
+    void setFilename(const std::wstring& filename,
                      bool overwrite = true);
     void setConnectionInfo(
-                     const wxString& host,
+                     const std::wstring& host,
                      int port,
-                     const wxString& database,
-                     const wxString& username,
-                     const wxString& password);
+                     const std::wstring& database,
+                     const std::wstring& username,
+                     const std::wstring& password);
 
     void addExportSet(const ExportJobInfo& info);
 
     // additional parameters for text-delimited export
-    void setDelimiters(const wxString& delimiters);
-    void setTextQualifier(const wxString& text_qualifier);
+    void setDelimiters(const std::wstring& delimiters);
+    void setTextQualifier(const std::wstring& text_qualifier);
     void setFirstRowHeader(bool first_row_header);
     
     int runJob();
@@ -78,19 +78,19 @@ private:
 
     int m_export_type;
 
-    wxString m_filename;
+    std::wstring m_filename;
     bool m_overwrite_file;
     bool m_fix_invalid_fieldnames;
     
-    wxString m_host;
+    std::wstring m_host;
     int m_port;
-    wxString m_database;
-    wxString m_username;
-    wxString m_password;
+    std::wstring m_database;
+    std::wstring m_username;
+    std::wstring m_password;
 
     // text-delimited parameters
-    wxString m_delimiters;
-    wxString m_text_qualifier;
+    std::wstring m_delimiters;
+    std::wstring m_text_qualifier;
     bool m_first_row_header;
 
     std::vector<ExportJobInfo> m_exports;
