@@ -443,7 +443,6 @@ static std::wstring getImportTitle(int import_type,
 long long ImportJob::getTotalRowCount(tango::IDatabasePtr db)
 {
     std::vector<ImportJobInfo>::iterator it;
-    tango::ISetPtr src_set;
 
     if (m_import_type != dbtypeOracle &&
         m_import_type != dbtypeDelimitedText &&
