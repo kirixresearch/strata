@@ -26,7 +26,7 @@ enum DragMetadata
 const int DRAG_METADATA_COUNT = 3;
 
 
-// -- utility functions --
+// utility functions
 
 static bool isMouseInWindow(wxWindow* wnd)
 {
@@ -137,7 +137,7 @@ void doRowDragDrop(kcl::Grid* grid,
         grid->refresh(Grid::refreshAll);
 }
 
-// -- functors to help sort the cells and rows --
+// functors to help sort the cells and rows
 
 static bool sortCells(const CellData* l, const CellData* r)
 {
@@ -153,7 +153,7 @@ static bool sortCells(const CellData* l, const CellData* r)
     return false;
 }
 
-// -- GridDataObject class implementation --
+// GridDataObject class implementation
 
 GridDataObject::GridDataObject(Grid* grid,
                                const wxString& extended_format)
@@ -428,7 +428,7 @@ wxWindowID GridDataObject::getSourceGridId()
 }
 
 
-// -- GridDataDropTargetTimer class implementation --
+// GridDataDropTargetTimer class implementation
 
 class GridDataDropTargetTimer : public wxTimer
 {
@@ -513,7 +513,7 @@ private:
 
 
 
-// -- GridDataDropTarget class implementation --
+// GridDataDropTarget class implementation
 
 GridDataDropTarget::GridDataDropTarget(Grid* target_grid, GridScrollDirection scroll_direction)
                         : wxDropTarget(new GridDataObjectComposite)
@@ -819,7 +819,7 @@ bool GridDataDropTarget::scrollHorizontal(int pixels)
 
 
 
-// -- GridDropSource class implementation --
+// GridDropSource class implementation
 
 GridDropSource::GridDropSource()
 {
