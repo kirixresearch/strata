@@ -35,10 +35,12 @@ static void onQueryJobFinished(jobs::IJobPtr job)
     tango::IIteratorPtr result_iter = job->getResultObject();
     tango::ISetPtr result_set = result_iter->getSet();
 
+    std::wstring output_path = result_set->getObjectPath();
+
     // if the result set isn't temporary, the set has been created
     // with an "INTO" statement and should appear on the tree; so, 
     // set the refresh tree flag to true
-    if (!isTemporaryTable(result_set->getObjectPath()))
+    if (!isTemporaryTable(output_path))
         refresh_tree = true;
 
     if (querydoc_site.isOk())
@@ -51,7 +53,7 @@ static void onQueryJobFinished(jobs::IJobPtr job)
             // none exists yet, create one  
             tabledoc = TableDocMgr::createTableDoc();
             tabledoc->setTemporaryModel(true);
-            tabledoc->open(result_set, result_iter);
+            tabledoc->open(g_app->getDatabase(), output_path, result_set, result_iter);
                     
             wxWindow* container = querydoc_site->getContainerWindow();
             g_app->getMainFrame()->createSite(container,
