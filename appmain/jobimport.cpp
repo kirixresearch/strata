@@ -21,7 +21,7 @@
 
 ImportJob::ImportJob()
 {
-    m_job_info->setTitle(wxEmptyString);
+    m_job_info->setTitle(L"");
     m_import_type = dbtypeUndefined;
     m_port = 0;
 }
@@ -36,16 +36,16 @@ void ImportJob::setImportType(int type)
     m_import_type = type;
 }
 
-void ImportJob::setFilename(const wxString& filename)
+void ImportJob::setFilename(const std::wstring& filename)
 {
     m_filename = filename;
 }
 
-void ImportJob::setConnectionInfo(const wxString& host,
+void ImportJob::setConnectionInfo(const std::wstring& host,
                                   int port,
-                                  const wxString& database,
-                                  const wxString& username,
-                                  const wxString& password)
+                                  const std::wstring& database,
+                                  const std::wstring& username,
+                                  const std::wstring& password)
 {
     m_host = host;
     m_port = port;
@@ -71,7 +71,7 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
     // as the input type, it will try to convert it, and it will
     // also try to handle possible invalid widths and scales
 
-    wxString current_expression = wxT("");
+    std::wstring current_expression = L"";
     if (info->expression.length() > 0)
     {
         current_expression = info->expression;
@@ -87,13 +87,8 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
             if (dest_type == tango::typeDate ||
                 dest_type == tango::typeDateTime)
             {
-                wxString s;
-
-                s.Printf(wxT("date(%s)"),
-                         makeProper(info->input_name).c_str());
-
-                info->expression = current_expression.length() > 0 ?
-                                              current_expression : s;
+                std::wstring s = kl::stdswprintf(L"date(%ls)", info->input_name.c_str());
+                info->expression = current_expression.length() > 0 ? current_expression : s;
                 break;
             }
 
@@ -101,25 +96,15 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
                 dest_type == tango::typeDouble ||
                 dest_type == tango::typeInteger)
             {
-                wxString s;
-
-                s.Printf(wxT("val(%s)"),
-                         makeProper(info->input_name).c_str());
-
-                info->expression = current_expression.length() > 0 ?
-                                              current_expression : s;
+                std::wstring s = kl::stdswprintf(L"val(%ls)", info->input_name.c_str());
+                info->expression = current_expression.length() > 0 ? current_expression : s;
                 break;
             }
 
             if (dest_type == tango::typeBoolean)
             {
-                wxString s;
-
-                s.Printf(wxT("iif(%s = \"T\", true, false)"),
-                         makeProper(info->input_name).c_str());
-
-                info->expression = current_expression.length() > 0 ?
-                                              current_expression : s;
+                std::wstring s = kl::stdswprintf(L"iif(%ls = \"T\", true, false)", info->input_name.c_str());
+                info->expression = current_expression.length() > 0 ? current_expression : s;
                 break;
             }
 
@@ -132,13 +117,8 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
             if (dest_type == tango::typeCharacter ||
                 dest_type == tango::typeWideCharacter)
             {
-                wxString s;
-
-                s.Printf(wxT("str(%s)"),
-                         makeProper(info->input_name).c_str());
-
-                info->expression = current_expression.length() > 0 ?
-                                              current_expression : s;
+                std::wstring s = kl::stdswprintf(L"str(%ls)", info->input_name.c_str());
+                info->expression = current_expression.length() > 0 ? current_expression : s;
                 break;
             }
 
@@ -159,15 +139,12 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
             if (dest_type == tango::typeCharacter ||
                 dest_type == tango::typeCharacter)
             {
-                wxString s;
-
-                s.Printf(wxT("str(%s, %d, %d)"),
-                         makeProper(info->input_name).c_str(),
+                std::wstring s = kl::stdswprintf(L"str(%ls, %d, %d)",
+                         info->input_name.c_str(),
                          info->input_width,
                          info->input_scale);
 
-                info->expression = current_expression.length() > 0 ?
-                                              current_expression : s;
+                info->expression = current_expression.length() > 0 ? current_expression : s;
                 break;
             }
 
@@ -180,13 +157,10 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
 
             if (dest_type == tango::typeBoolean)
             {
-                wxString s;
+                std::wstring s = kl::stdswprintf(L"iif(%ls != 0, true, false)",
+                         info->input_name.c_str());
 
-                s.Printf(wxT("iif(%s != 0, true, false)"),
-                         makeProper(info->input_name).c_str());
-
-                info->expression = current_expression.length() > 0 ?
-                                              current_expression : s;
+                info->expression = current_expression.length() > 0 ? current_expression : s;
                 break;
             }
 
@@ -198,15 +172,12 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
             if (dest_type == tango::typeCharacter ||
                 dest_type == tango::typeWideCharacter)
             {
-                wxString s;
+                std::wstring s = kl::stdswprintf(L"str(%ls, %d, %d)",
+                                                 info->input_name.c_str(),
+                                                 info->output_width > 20 ? 20 : info->output_width,
+                                                 info->input_scale);
 
-                s.Printf(wxT("str(%s, %d, %d)"),
-                         makeProper(info->input_name).c_str(),
-                         info->output_width > 20 ? 20 : info->output_width,
-                         info->input_scale);
-
-                info->expression = current_expression.length() > 0 ?
-                                              current_expression : s;
+                info->expression = current_expression.length() > 0 ? current_expression : s;
 
                 break;
             }
@@ -220,13 +191,10 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
 
             if (dest_type == tango::typeBoolean)
             {
-                wxString s;
+                std::wstring s = kl::stdswprintf(L"iif(%ls != 0, true, false)",
+                                                 info->input_name);
 
-                s.Printf(wxT("iif(%s != 0, true, false)"),
-                         makeProper(info->input_name).c_str());
-
-                info->expression = current_expression.length() > 0 ?
-                                              current_expression : s;
+                info->expression = current_expression.length() > 0 ? current_expression : s;
                 break;
             }
 
@@ -238,15 +206,12 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
             if (dest_type == tango::typeCharacter ||
                 dest_type == tango::typeWideCharacter)
             {
-                wxString s;
+                std::wstring s = kl::stdswprintf(L"str(%ls, %d, %d)",
+                                                 info->input_name.c_str(),
+                                                 info->output_width > 10 ? 10 : info->output_width,
+                                                 info->input_scale);
 
-                s.Printf(wxT("str(%s, %d, %d)"),
-                         makeProper(info->input_name).c_str(),
-                         info->output_width > 10 ? 10 : info->output_width,
-                         info->input_scale);
-
-                info->expression = current_expression.length() > 0 ?
-                                              current_expression : s;
+                info->expression = current_expression.length() > 0 ?  current_expression : s;
 
                 break;
             }
@@ -260,13 +225,10 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
 
             if (dest_type == tango::typeBoolean)
             {
-                wxString s;
+                std::wstring s = kl::stdswprintf(L"iif(%ls != 0, true, false)",
+                                                 info->input_name.c_str());
 
-                s.Printf(wxT("iif(%s != 0, true, false)"),
-                         makeProper(info->input_name).c_str());
-
-                info->expression = current_expression.length() > 0 ?
-                                              current_expression : s;
+                info->expression = current_expression.length() > 0 ? current_expression : s;
                 break;
             }
 
@@ -278,13 +240,10 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
             if (dest_type == tango::typeCharacter ||
                 dest_type == tango::typeWideCharacter)
             {
-                wxString s;
+                std::wstring s = kl::stdswprintf(L"iif(%ls, \"T\", \"F\")",
+                                                 info->input_name.c_str());
 
-                s.Printf(wxT("iif(%s, \"T\", \"F\")"),
-                         makeProper(info->input_name).c_str());
-
-                info->expression = current_expression.length() > 0 ?
-                                              current_expression : s;
+                info->expression = current_expression.length() > 0 ? current_expression : s;
                 break;
             }
 
@@ -299,13 +258,10 @@ bool ImportJob::handleFieldInfo(FieldTransInfo* info)
                 dest_type == tango::typeDouble ||
                 dest_type == tango::typeInteger)
             {
-                wxString s;
+                std::wstring s = kl::stdswprintf(L"iif(%ls, 1, 0)",
+                                                 info->input_name.c_str());
 
-                s.Printf(wxT("iif(%s, 1, 0)"),
-                         makeProper(info->input_name).c_str());
-
-                info->expression = current_expression.length() > 0 ?
-                                              current_expression : s;
+                info->expression = current_expression.length() > 0 ?  current_expression : s;
                 break;
             }
 
@@ -399,8 +355,9 @@ static bool isValidImportType(int import_type)
     return false;
 }
 
-static wxString getDefaultImportTitle(int import_type)
+static std::wstring getDefaultImportTitle(int import_type)
 {
+/*
     switch (import_type)
     {
         case dbtypeAccess:
@@ -425,18 +382,20 @@ static wxString getDefaultImportTitle(int import_type)
             return _("Importing Fixed-Length File(s)");
     }
 
-    return wxEmptyString;
+    return L"";
+    */
+    return L"Importing Data";
 }
 
-static wxString getImportTitle(int import_type,
-                               const wxString& tablename = wxEmptyString,
-                               const wxString& filename = wxEmptyString,
-                               const wxString& server = wxEmptyString)
+static std::wstring getImportTitle(int import_type,
+                               const std::wstring& tablename = L"",
+                               const std::wstring& filename = L"",
+                               const std::wstring& server = L"")
 {
     if (!isValidImportType(import_type))
-        return wxEmptyString;
+        return L"";
             
-    if (tablename.IsEmpty() && filename.IsEmpty() && server.IsEmpty())
+    if (tablename.empty() && filename.empty() && server.empty())
         return getDefaultImportTitle(import_type);
     
     if (import_type == dbtypeSqlServer ||
@@ -445,39 +404,39 @@ static wxString getImportTitle(int import_type,
         import_type == dbtypeOdbc      ||
         import_type == dbtypeDb2)
     {
-        if (server.IsEmpty())
+        if (server.empty())
             return getDefaultImportTitle(import_type);
         
-        if (tablename.Length() > 0)
-            return wxString::Format(_("Importing '%s' from '%s'"), tablename.c_str(), server.c_str());
+        if (tablename.length() > 0)
+            return kl::stdswprintf(L"Importing '%ls' from '%ls'", tablename.c_str(), server.c_str());
              else
-            return wxString::Format(_("Importing from '%s'"), server.c_str());
+            return kl::stdswprintf(L"Importing from '%ls'", server.c_str());
     }
      else if (import_type == dbtypeAccess ||
               import_type == dbtypeExcel)
     {
-        wxString fn = filename.AfterLast(PATH_SEPARATOR_CHAR);
-        if (fn.IsEmpty())
+        std::wstring fn = kl::afterLast(filename, PATH_SEPARATOR_CHAR);
+        if (fn.empty())
             return getDefaultImportTitle(import_type);
 
-        wxString tn = tablename.AfterLast(wxT('/'));
-        if (tn.Length() > 0)
-            return wxString::Format(_("Importing '%s' from '%s'"), tn.c_str(), fn.c_str());
+        std::wstring tn = kl::afterLast(tablename, '/');
+        if (tn.length() > 0)
+            return kl::stdswprintf(L"Importing '%ls' from '%ls'", tn.c_str(), fn.c_str());
              else
-            return wxString::Format(_("Importing from '%s'"), fn.c_str());
+            return kl::stdswprintf(L"Importing from '%ls'", fn.c_str());
     }
      else if (import_type == dbtypeFixedLengthText ||
               import_type == dbtypeDelimitedText   ||
               import_type == dbtypeXbase)
     {
-        wxString tn = tablename.AfterLast(PATH_SEPARATOR_CHAR);
-        if (tn.Length() > 0)
-            return wxString::Format(_("Importing '%s'"), tn.c_str());
+        std::wstring tn = kl::afterLast(tablename, PATH_SEPARATOR_CHAR);
+        if (tn.length() > 0)
+            return kl::stdswprintf(L"Importing '%ls'", tn.c_str());
              else
             return getDefaultImportTitle(import_type);
     }
     
-    return wxEmptyString;
+    return L"";
 }
 
 
@@ -495,7 +454,7 @@ long long ImportJob::getTotalRowCount(tango::IDatabasePtr db)
 
         for (it = m_imports.begin(); it != m_imports.end(); ++it)
         {
-            if (!it->query.IsEmpty())
+            if (!it->query.empty())
             {
                 use_max_count = false;
                 break;
@@ -526,9 +485,9 @@ long long ImportJob::getTotalRowCount(tango::IDatabasePtr db)
     return 0;
 }
 
-void ImportJob::updateJobTitle(const wxString& tablename)
+void ImportJob::updateJobTitle(const std::wstring& tablename)
 {
-    wxString title;
+    std::wstring title;
         
     if (m_import_type == dbtypeSqlServer ||
         m_import_type == dbtypeMySql     ||
@@ -536,7 +495,7 @@ void ImportJob::updateJobTitle(const wxString& tablename)
         m_import_type == dbtypeOdbc      ||
         m_import_type == dbtypeDb2)
     {
-        title = getImportTitle(m_import_type, tablename, wxEmptyString, m_host);
+        title = getImportTitle(m_import_type, tablename, L"", m_host);
         m_job_info->setTitle(towstr(title));
     }
      else if (m_import_type == dbtypeAccess ||
@@ -564,8 +523,8 @@ int ImportJob::runJob()
     }
     
     // only use default job title if the job info's title is empty
-    wxString job_title = m_job_info->getTitle();
-    if (job_title.IsEmpty())
+    std::wstring job_title = m_job_info->getTitle();
+    if (job_title.empty())
     {
         // try to get the name of the first table we're going to import
         if (m_import_type == dbtypeFixedLengthText ||
@@ -573,13 +532,13 @@ int ImportJob::runJob()
             m_import_type == dbtypeXbase)
         {
             if (m_imports.size() == 0)
-                updateJobTitle(wxEmptyString);
+                updateJobTitle(L"");
                  else
                 updateJobTitle(m_imports.begin()->input_path);
         }
          else
         {
-            updateJobTitle(wxEmptyString);
+            updateJobTitle(L"");
         }
     }
     
@@ -681,7 +640,7 @@ int ImportJob::runJob()
 
         // the input path is filled out and there is no query
 
-        if (!it->input_path.IsEmpty() && it->query.IsEmpty())
+        if (!it->input_path.empty() && it->query.empty())
         {
             // every time we open a text-delimited set, we need to read some
             // of the file -- let the user know this is happening
@@ -693,7 +652,7 @@ int ImportJob::runJob()
             // if we can't open the source set, bail out
             if (src_set.isNull())
             {
-                m_job_info->setProgressString(wxEmptyString);
+                m_job_info->setProgressString(L"");
                 m_job_info->setState(jobStateFailed);
                 return 0;
             }
@@ -715,7 +674,7 @@ int ImportJob::runJob()
                     td_set->setDiscoverFirstRowColumnNames(false);
                 }
                 
-                m_job_info->setProgressString(wxEmptyString);
+                m_job_info->setProgressString(L"");
                 m_job_info->setProgressStringFormat(
                                             towstr(_("Determining table structure: $c records processed")),
                                             towstr(_("Determining table structure: $c of $m records processed ($p1%)")));
@@ -727,7 +686,7 @@ int ImportJob::runJob()
                 td_set->determineColumns(-1, tango_job);
                 if (tango_job->getCancelled())
                 {
-                    m_job_info->setProgressString(wxEmptyString);
+                    m_job_info->setProgressString(L"");
                     m_job_info->setState(jobStateCancelled);
                 }
                 m_job_info->setCurrentCount(0);
@@ -738,7 +697,7 @@ int ImportJob::runJob()
                 setTangoJob(xcm::null);
                 
                 // set the progress string format back to its default
-                m_job_info->setProgressString(wxEmptyString);
+                m_job_info->setProgressString(L"");
                 m_job_info->setProgressStringFormat(
                                             towstr(_("$c records processed")),
                                             towstr(_("$c of $m records processed ($p1%)")));
@@ -771,21 +730,21 @@ int ImportJob::runJob()
                 }
                 
                 
-                m_job_info->setProgressString(wxEmptyString);
+                m_job_info->setProgressString(L"");
 
                 tango::IJobPtr tango_job = src_db->createJob();
                 setTangoJob(tango_job);
 
                 if (tango_job->getCancelled())
                 {
-                    m_job_info->setProgressString(wxEmptyString);
+                    m_job_info->setProgressString(L"");
                     m_job_info->setState(jobStateCancelled);
                 }
                 m_job_info->setCurrentCount(0);
                 m_job_info->setMaxCount((long long)tango_job->getMaxCount());
                 setTangoJob(xcm::null);
 
-                m_job_info->setProgressString(wxEmptyString);
+                m_job_info->setProgressString(L"");
 
                 // we are done with it->field_info, because it was used only
                 // to transfer the structure info (this will have to be changed
@@ -801,24 +760,24 @@ int ImportJob::runJob()
         }
          else
         {
-            if (!it->input_path.IsEmpty())
+            if (!it->input_path.empty())
             {
-                wxString table_name = it->input_path;
+                std::wstring table_name = it->input_path;
 
                 if (m_import_type != dbtypeXdnative &&
                     m_import_type != dbtypePackage)
                 {
-                    table_name.Replace(wxT("/"), wxT("."));
-                    while (table_name.Left(1) == wxT("."))
-                        table_name.Remove(0,1);
+                    kl::replaceStr(table_name, L"/", L".");
+                    while (table_name.substr(0,1) == L".")
+                        table_name.erase(0, 1);
                 }
 
-                wxString query = wxT("SELECT ");
+                std::wstring query = L"SELECT ";
 
                 
                 if (it->field_info.size() == 0)
                 {
-                    query += wxT("*");
+                    query += L"*";
                 }
                  else
                 {
@@ -829,16 +788,16 @@ int ImportJob::runJob()
                     {
                         if (field_it != it->field_info.begin())
                         {
-                            query += wxT(",");
+                            query += L",";
                         }
 
                         query += field_it->input_name;
                     }
                 }
 
-                query += wxT(" FROM ");
+                query += L" FROM ";
                 query += table_name;
-                query += wxT(" WHERE ");
+                query += L" WHERE ";
                 query += it->query;
 
 
@@ -858,7 +817,7 @@ int ImportJob::runJob()
         // if we couldn't create an iterator on our source set, bail out
         if (src_iter.isNull())
         {
-            m_job_info->setProgressString(wxEmptyString);
+            m_job_info->setProgressString(L"");
             m_job_info->setState(jobStateFailed);
             return 0;
         }
@@ -882,7 +841,7 @@ int ImportJob::runJob()
 
             int i, col_count = src_struct->getColumnCount();
             FieldTransInfo fs;
-            wxString out_fieldname;
+            std::wstring out_fieldname;
 
             // if we are appending and can locate the destination set,
             // get the output structure info from that set
@@ -954,8 +913,8 @@ int ImportJob::runJob()
 
 
         std::vector<FieldTransInfo>::iterator field_it;
-        std::set<wxString>::iterator dup_check_it;
-        std::set<wxString> dup_check;
+        std::set<std::wstring>::iterator dup_check_it;
+        std::set<std::wstring> dup_check;
 
 
         // add destination database keywords to the dup_check
@@ -964,13 +923,18 @@ int ImportJob::runJob()
         tango::IAttributesPtr attr = dest_db->getAttributes();
         if (attr.isOk())
         {
-            wxStringTokenizer t(towx(attr->getStringAttribute(tango::dbattrKeywords)), wxT(","));
-            while (t.HasMoreTokens())
+            std::wstring keywords = attr->getStringAttribute(tango::dbattrKeywords);
+            std::vector<std::wstring> vec;
+            std::vector<std::wstring>::iterator it;
+
+            kl::parseDelimitedList(keywords, vec, ',');
+
+            for (it = vec.begin(); it != vec.end(); ++it)
             {
-                wxString s = t.GetNextToken();
-                s.MakeUpper();
-                dup_check.insert(s);
+                kl::makeUpper(*it);
+                dup_check.insert(*it);
             }
+
         }
 
 
@@ -980,25 +944,25 @@ int ImportJob::runJob()
              field_it != it->field_info.end();
              ++field_it)
         {
-            wxString s = field_it->output_name;
-            s.MakeUpper();
+            std::wstring s = field_it->output_name;
+            kl::makeUpper(s);
 
             dup_check_it = dup_check.find(s);
             int counter = 2;
-            wxString new_name;
+            std::wstring new_name;
             while (dup_check_it != dup_check.end())
             {
                 // field has a duplicate name; correct it
                 new_name = field_it->output_name;
-                new_name += wxString::Format(wxT("%d"), counter++);
+                new_name += kl::stdswprintf(L"%d", counter++);
                 s = new_name;
-                s.MakeUpper();
+                kl::makeUpper(s);
                 dup_check_it = dup_check.find(s);
             }
 
             // change the output fieldname in the vector for
             // later use in the import job
-            if (!new_name.IsEmpty())
+            if (!new_name.empty())
             {
                 field_it->output_name = new_name;
             }
@@ -1008,7 +972,7 @@ int ImportJob::runJob()
 
 
         // clear out our progress string
-        m_job_info->setProgressString(wxEmptyString);
+        m_job_info->setProgressString(L"");
 
 
         if (it->append && dest_finfo.isOk())
@@ -1079,7 +1043,7 @@ int ImportJob::runJob()
 
             // if we can't get this column's info, continue
             // looking for other columns
-            if (field_it->input_name.Length() > 0 &&
+            if (field_it->input_name.length() > 0 &&
                 field_it->expression.length() == 0 &&
                 src_colinfo.isNull())
             {
@@ -1261,16 +1225,10 @@ int ImportJob::runJob()
         src_set.clear();
     }
 
-    m_job_info->setProgressString(wxT(""));
+    m_job_info->setProgressString(L"");
     return 0;
 }
 
 void ImportJob::runPostJob()
 {
 }
-
-
-
-
-
-

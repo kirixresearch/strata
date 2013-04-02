@@ -5285,7 +5285,7 @@ bool AppController::openExcel(const wxString& location, int* site_id)
         
         ImportJob* job = new ImportJob;
         job->setImportType(dbtypeExcel);
-        job->setFilename(fn);
+        job->setFilename(towstr(fn));
             
         selections = dlg.GetSelections();
         int i, count = selections.Count();

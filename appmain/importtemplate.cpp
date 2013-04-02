@@ -856,12 +856,12 @@ jobs::IJobPtr ImportTemplate::execute()
     ImportJob* job = new ImportJob;
     job->sigJobFinished().connect(&onImportJobFinished);
     job->setImportType(m_ii.type);
-    job->setFilename(m_ii.path);
-    job->setConnectionInfo(m_ii.server,
+    job->setFilename(towstr(m_ii.path));
+    job->setConnectionInfo(towstr(m_ii.server),
                            m_ii.port,
-                           m_ii.database,
-                           m_ii.username,
-                           m_ii.password);
+                           towstr(m_ii.database),
+                           towstr(m_ii.username),
+                           towstr(m_ii.password));
 
     // set the job title
     if (m_ii.type == dbtypePackage ||

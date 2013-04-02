@@ -19,18 +19,18 @@
 
 struct FieldTransInfo
 {
-    wxString input_name;
+    std::wstring input_name;
     int input_type;
     int input_width;
     int input_scale;
     int input_offset;    // used only by fixed-length imports
 
-    wxString output_name;
+    std::wstring output_name;
     int output_type;
     int output_width;
     int output_scale;
 
-    wxString expression; // optional transformation expression
+    std::wstring expression; // optional transformation expression
 };
 
 
@@ -77,20 +77,20 @@ public:
 
 public:
 
-    wxString input_path;
-    wxString query;
-    wxString output_path;
+    std::wstring input_path;
+    std::wstring query;
+    std::wstring output_path;
     bool append;
 
     std::vector<FieldTransInfo> field_info;
 
-    // -- for text-delimited sets only --
+    // for text-delimited sets only
     bool specify_text_params;  // whether or not the next three items should be used
-    wxString delimiters;
-    wxString text_qualifier;
+    std::wstring delimiters;
+    std::wstring text_qualifier;
     bool first_row_header;
 
-    // -- for fixed-length text sets only --
+    // for fixed-length text sets only
     int row_width;
 };
 
@@ -124,15 +124,14 @@ public:
     virtual ~ImportJob();
 
     void setImportType(int type);
-    void setFilename(const wxString& filename);
-    void setConnectionInfo(const wxString& host,
+    void setFilename(const std::wstring& filename);
+    void setConnectionInfo(const std::wstring& host,
                            int port,
-                           const wxString& database,
-                           const wxString& username,
-                           const wxString& password);
+                           const std::wstring& database,
+                           const std::wstring& username,
+                           const std::wstring& password);
     void addImportSet(const ImportJobInfo& info);
 
-    // -- IImportJob interface --
     std::vector<ImportJobInfo> getImportSets();
     
     int runJob();
@@ -143,7 +142,7 @@ private:
     bool handleFieldInfo(FieldTransInfo* info);
     void correctFieldParams(FieldTransInfo* info);
     
-    void updateJobTitle(const wxString& tablename);
+    void updateJobTitle(const std::wstring& tablename);
     
     // this is a helper function to make the runJob()
     // function smaller and more readable
@@ -155,13 +154,13 @@ private:
 
     int m_import_type;
 
-    wxString m_filename;
+    std::wstring m_filename;
     
-    wxString m_host;
+    std::wstring m_host;
     int m_port;
-    wxString m_database;
-    wxString m_username;
-    wxString m_password;
+    std::wstring m_database;
+    std::wstring m_username;
+    std::wstring m_password;
 
     std::vector<ImportJobInfo> m_imports;
 };

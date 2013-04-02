@@ -391,7 +391,7 @@ void ExIndexIterator::_descendPct(BlockEntry* block, double pct)
     {
         m_curoffset = int(e);
 
-        if (m_curoffset >= m_index->_getEntryCount(block))
+        if (m_curoffset >= (int)m_index->_getEntryCount(block))
         {
             m_curoffset = m_index->_getEntryCount(block)-1;
         }
@@ -671,7 +671,7 @@ void ExIndexIterator::_adjustPosition(ModInfo& mod_info)
     }
 
     // check if we are beyond the end of a node
-    if (m_curoffset >= m_index->_getEntryCount(m_levels[m_curlevel]))
+    if (m_curoffset >= (int)m_index->_getEntryCount(m_levels[m_curlevel]))
     {
         m_curoffset--;
         _goNext();
@@ -2070,7 +2070,7 @@ void ExIndex::startBulkInsert(tango::rowpos_t total_keys)
     long long total_required_pool_size = (m_keylen + m_vallen);
     total_required_pool_size *= total_keys;
 
-    int pool_bytes = 64000000;
+    long long pool_bytes = 64000000;
     if (free_mem >  500000000)
         pool_bytes = 128000000;
     if (free_mem > 2000000000)
@@ -2082,7 +2082,7 @@ void ExIndex::startBulkInsert(tango::rowpos_t total_keys)
         pool_bytes = total_required_pool_size;
     }
 
-    m_pool = new ExKeyPool(pool_bytes, m_keylen + m_vallen, m_keylen);
+    m_pool = new ExKeyPool((int)pool_bytes, m_keylen + m_vallen, m_keylen);
 
 
     long block_size = m_bf.getBlockAllocSize();
