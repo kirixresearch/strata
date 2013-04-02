@@ -460,7 +460,7 @@ long long ImportJob::getTotalRowCount(tango::IDatabasePtr db)
                 break;
             }
 
-            tango::IFileInfoPtr finfo = db->getFileInfo(towstr(it->input_path));
+            tango::IFileInfoPtr finfo = db->getFileInfo(it->input_path);
             if (finfo.isNull())
             {
                 m_job_info->setState(jobStateFailed);
@@ -496,20 +496,20 @@ void ImportJob::updateJobTitle(const std::wstring& tablename)
         m_import_type == dbtypeDb2)
     {
         title = getImportTitle(m_import_type, tablename, L"", m_host);
-        m_job_info->setTitle(towstr(title));
+        m_job_info->setTitle(title);
     }
      else if (m_import_type == dbtypeAccess ||
               m_import_type == dbtypeExcel)
     {
         title = getImportTitle(m_import_type, tablename, m_filename);
-        m_job_info->setTitle(towstr(title));
+        m_job_info->setTitle(title);
     }
      else if (m_import_type == dbtypeFixedLengthText ||
               m_import_type == dbtypeDelimitedText   ||
               m_import_type == dbtypeXbase)
     {
         title = getImportTitle(m_import_type, tablename);
-        m_job_info->setTitle(towstr(title));
+        m_job_info->setTitle(title);
     }              
 }
 
@@ -548,7 +548,7 @@ int ImportJob::runJob()
         m_import_type == dbtypeOdbc      ||
         m_import_type == dbtypeDb2)
     {
-        m_job_info->setProgressString(towstr(_("Opening database connection...")));
+        m_job_info->setProgressString(L"Opening database connection...");
     }
      else if (m_import_type == dbtypeFixedLengthText ||
               m_import_type == dbtypeDelimitedText ||
@@ -556,7 +556,7 @@ int ImportJob::runJob()
               m_import_type == dbtypeExcel ||
               m_import_type == dbtypeAccess)
     {
-        m_job_info->setProgressString(towstr(_("Reading file...")));
+        m_job_info->setProgressString(L"Reading file...");
     }              
     
     // create a connection to the source database
@@ -578,7 +578,7 @@ int ImportJob::runJob()
             m_import_type == dbtypeOdbc      ||
             m_import_type == dbtypeDb2)
         {
-            m_job_info->setProgressString(towstr(_("The database connection could not be opened.")));
+            m_job_info->setProgressString(L"The database connection could not be opened.");
         }
          else if (m_import_type == dbtypeAccess        ||
                   m_import_type == dbtypeExcel         ||
@@ -586,7 +586,7 @@ int ImportJob::runJob()
                   m_import_type == dbtypeDelimitedText ||
                   m_import_type == dbtypeFixedLengthText)
         {
-            m_job_info->setProgressString(towstr(_("The file could not be opened.")));
+            m_job_info->setProgressString(L"The file could not be opened.");
         }              
 
         m_job_info->setState(jobStateFailed);
@@ -645,9 +645,9 @@ int ImportJob::runJob()
             // every time we open a text-delimited set, we need to read some
             // of the file -- let the user know this is happening
             if (m_import_type == dbtypeDelimitedText)
-                m_job_info->setProgressString(towstr(_("Reading file...")));
+                m_job_info->setProgressString(L"Reading file...");
 
-            src_set = src_db->openSetEx(towstr(it->input_path), format);
+            src_set = src_db->openSetEx(it->input_path, format);
 
             // if we can't open the source set, bail out
             if (src_set.isNull())
@@ -668,16 +668,16 @@ int ImportJob::runJob()
                     // in more detail.  This behavior is the default, and could
                     // possibly be wrong.
                     
-                    td_set->setDelimiters(towstr(it->delimiters), false);
-                    td_set->setTextQualifier(towstr(it->text_qualifier), false);
+                    td_set->setDelimiters(it->delimiters, false);
+                    td_set->setTextQualifier(it->text_qualifier, false);
                     td_set->setFirstRowColumnNames(it->first_row_header);
                     td_set->setDiscoverFirstRowColumnNames(false);
                 }
                 
                 m_job_info->setProgressString(L"");
                 m_job_info->setProgressStringFormat(
-                                            towstr(_("Determining table structure: $c records processed")),
-                                            towstr(_("Determining table structure: $c of $m records processed ($p1%)")));
+                                            L"Determining table structure: $c records processed",
+                                            L"Determining table structure: $c of $m records processed ($p1%)");
 
                 tango::IJobPtr tango_job = src_db->createJob();
                 setTangoJob(tango_job);
@@ -699,8 +699,8 @@ int ImportJob::runJob()
                 // set the progress string format back to its default
                 m_job_info->setProgressString(L"");
                 m_job_info->setProgressStringFormat(
-                                            towstr(_("$c records processed")),
-                                            towstr(_("$c of $m records processed ($p1%)")));
+                                            L"$c records processed",
+                                            L"$c of $m records processed ($p1%)");
             }
 
             // set the parameters for a fixed-length text import
@@ -721,11 +721,11 @@ int ImportJob::runJob()
                     flt_set->insertColumn(-1,
                                           field_it->input_offset,
                                           field_it->input_width,
-                                          towstr(field_it->output_name),
+                                          field_it->output_name,
                                           field_it->output_type,
                                           field_it->output_width,
                                           field_it->output_scale,
-                                          towstr(field_it->expression));
+                                          field_it->expression);
                     */
                 }
                 
@@ -756,7 +756,7 @@ int ImportJob::runJob()
             }
 
             // create an iterator on the source set
-            src_iter = src_db->createIterator(towstr(it->input_path), L"", L"", NULL);
+            src_iter = src_db->createIterator(it->input_path, L"", L"", NULL);
         }
          else
         {
@@ -802,13 +802,13 @@ int ImportJob::runJob()
 
 
                 xcm::IObjectPtr result;
-                src_db->execute(towstr(query), 0, result, NULL);
+                src_db->execute(query, 0, result, NULL);
                 src_iter = result;
             }
              else
             {
                 xcm::IObjectPtr result;
-                src_db->execute(towstr(it->query), 0, result, NULL);
+                src_db->execute(it->query, 0, result, NULL);
                 src_iter = result;
             }
         }
@@ -824,7 +824,7 @@ int ImportJob::runJob()
 
 
         // try to open the destination set (to see if it already exists)
-        tango::IFileInfoPtr dest_finfo = dest_db->getFileInfo(towstr(it->output_path));
+        tango::IFileInfoPtr dest_finfo = dest_db->getFileInfo(it->output_path);
 
         // use this opportunity of having the set open to fill out the
         // field map, if one is not already present.  An empty field map
@@ -848,7 +848,7 @@ int ImportJob::runJob()
 
             if (it->append && dest_finfo.isOk())
             {
-                dest_struct = dest_db->describeTable(towstr(it->output_path));
+                dest_struct = dest_db->describeTable(it->output_path);
 
                 if (dest_struct.isNull())
                     continue;
@@ -991,18 +991,18 @@ int ImportJob::runJob()
             {
                 tango::IColumnInfoPtr col_info = dest_struct->createColumn();
 
-                col_info->setName(towstr(field_it->output_name));
+                col_info->setName(field_it->output_name);
                 col_info->setType(field_it->output_type);
                 col_info->setWidth(field_it->output_width);
                 col_info->setScale(field_it->output_scale);
             }
 
-            dest_db->createTable(towstr(it->output_path), dest_struct, NULL);
+            dest_db->createTable(it->output_path, dest_struct, NULL);
         }
 
         
         // if our destination set doesn't exist, bail out
-        dest_struct = dest_db->describeTable(towstr(it->output_path));
+        dest_struct = dest_db->describeTable(it->output_path);
 
         if (dest_struct.isNull())
         {
@@ -1024,7 +1024,7 @@ int ImportJob::runJob()
         // insert rows into that set
 
         tango::IRowInserterPtr ri;
-        ri = dest_db->bulkInsert(towstr(it->output_path));
+        ri = dest_db->bulkInsert(it->output_path);
         ri->startInsert(L"*");
 
         std::vector<ImportCopyInfo>::iterator copyinfo_it;
@@ -1038,8 +1038,8 @@ int ImportJob::runJob()
             tango::IColumnInfoPtr src_colinfo;
             tango::IColumnInfoPtr dest_colinfo;
 
-            src_colinfo = src_struct->getColumnInfo(towstr(field_it->input_name));
-            dest_colinfo = dest_struct->getColumnInfo(towstr(field_it->output_name));
+            src_colinfo = src_struct->getColumnInfo(field_it->input_name);
+            dest_colinfo = dest_struct->getColumnInfo(field_it->output_name);
 
             // if we can't get this column's info, continue
             // looking for other columns
@@ -1064,7 +1064,7 @@ int ImportJob::runJob()
             tango::objhandle_t src_handle;
             if (field_it->expression.length() > 0)
             {
-                src_handle = src_iter->getHandle(towstr(field_it->expression));
+                src_handle = src_iter->getHandle(field_it->expression);
             }
              else
             {
@@ -1175,7 +1175,7 @@ int ImportJob::runJob()
             if (!ri->insertRow())
             {
                 m_job_info->setState(jobStateFailed);
-                m_job_info->setProgressString(towstr(_("ERROR: Insufficient disk space")));
+                m_job_info->setProgressString(L"ERROR: Insufficient disk space");
                 return 0;
             }
           
@@ -1195,8 +1195,8 @@ int ImportJob::runJob()
         // traverse the path given and create all folders
         // in the destination database that do not exist
 
-        std::wstring base_path = kl::beforeFirst(towstr(it->output_path), L'/');
-        std::wstring remainder = kl::afterFirst(towstr(it->output_path), L'/');
+        std::wstring base_path = kl::beforeFirst(it->output_path, L'/');
+        std::wstring remainder = kl::afterFirst(it->output_path, L'/');
         std::wstring old_remainder;
 
         while (1)
