@@ -23,20 +23,20 @@ namespace kcl
 {
 
 
-// -- forward declarations --
+// forward declarations
 
 xcm_interface IModelColumn;
 xcm_interface IModel;
 class Grid;
 
 
-// -- smart pointer declarations --
+// smart pointer declarations
 
 XCM_DECLARE_SMARTPTR(IModelColumn)
 XCM_DECLARE_SMARTPTR(IModel)
 
 
-// -- event declarations/classes --
+// event declarations/classes
 
 class GridEvent : public wxNotifyEvent
 {
@@ -218,7 +218,7 @@ public:
 
 
 
-// -- cell properties --
+// cell properties
 
 struct CellProperties
 {
@@ -252,7 +252,8 @@ struct CellProperties
     bool visible;
 };
 
-// -- selection --
+
+// selection
 
 class SelectionRect
 {
@@ -465,7 +466,7 @@ public:
     bool m_boolvalue;
     bool m_null;
     
-    // -- these are used for row dragging only --
+    // these are used for row dragging only
     int m_row;
     int m_col;
 };
@@ -528,7 +529,7 @@ friend class GridDataDropTargetTimer;
 
 public:
 
-    // -- constants --
+    // constants
 
     enum GridDataType
     {
@@ -834,36 +835,36 @@ private:
     bool allocBitmap(int width, int height);
     void removeToolTip();
 
-    // -- event dispatchers --
+    // event dispatchers
     bool fireEvent(int type, int row, int col, bool* allowed = NULL);
     bool fireEvent(int event_type, GridEvent& evt, bool* allowed = NULL);
 
 private:
 
-    // -- extra event handlers --
+    // extra event handlers
 
     void onEditDestroy(const wxString& value,
                        int last_key_code,
                        bool focus_lost,
                        bool user_action);
 
-    void onEndEditCleanup(wxCommandEvent& event);
+    void onEndEditCleanup(wxCommandEvent& evt);
     void onEditChanged(const wxString& value);
     void onCellClicked(int row, int col);
 
 protected:
 
-    // -- event handlers --
+    // event handlers
 
-    void onSize(wxSizeEvent& event);
-    void onScroll(wxScrollWinEvent& event);
-    void onMouse(wxMouseEvent& event);
-    void onKeyDown(wxKeyEvent& event);
-    void onChar(wxKeyEvent& event);
-    void onPaint(wxPaintEvent& event);
-    void onEraseBackground(wxEraseEvent& event);
-    void onComboSelectionChanged(wxCommandEvent& event);
-    void onScrollTimer(wxTimerEvent& event);
+    void onSize(wxSizeEvent& evt);
+    void onScroll(wxScrollWinEvent& evt);
+    void onMouse(wxMouseEvent& evt);
+    void onKeyDown(wxKeyEvent& evt);
+    void onChar(wxKeyEvent& evt);
+    void onPaint(wxPaintEvent& evt);
+    void onEraseBackground(wxEraseEvent& evt);
+    void onComboSelectionChanged(wxCommandEvent& evt);
+    void onScrollTimer(wxTimerEvent& evt);
 
 protected:
 
@@ -884,7 +885,7 @@ private:
         actionPressColor
     };
 
-    // -- data member variables --
+    // data member variables
     IModel* m_model;
     std::vector<ColumnRange> m_colranges;
     std::vector<RowData> m_rowdata;
@@ -903,7 +904,7 @@ private:
     bool m_caption_editing;
     ViewColumn* m_caption_edit_col;
     
-    // -- dimensions and positions --
+    // dimensions and positions
 
     wxSize m_render_size;
     int m_cliheight;
@@ -925,7 +926,7 @@ private:
     int m_cursor_modelcol;
     int m_greenbar_interval;
 
-    // -- graphic/ui member variables --
+    // graphic/ui member variables
     wxMemoryDC m_memdc;
     wxBitmap m_bmp;
     wxFont m_caption_font;
@@ -971,13 +972,13 @@ private:
     int m_scroll_timer_voffset;
     int m_scroll_timer_hoffset;
     
-    // -- in-place editing variables --
+    // in-place editing variables
     wxControl* m_control;
     wxString m_edit_value;
     int m_edit_combosel;
     int m_last_key_code;
 
-    // -- mouse event variables --
+    // mouse event variables
     int m_mouse_action;         // action indicator
     ViewColumn* m_action_col;   // action column
     int m_action_colxoff;       // x offset of the column at start of action
@@ -1005,7 +1006,7 @@ private:
 
 
 
-// -- events --
+// events
 
 BEGIN_DECLARE_EVENT_TYPES()
     DECLARE_EVENT_TYPE(wxEVT_KCLGRID_SELECTION_CHANGE,        2100)

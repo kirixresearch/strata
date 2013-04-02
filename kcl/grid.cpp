@@ -46,7 +46,7 @@
 #include <wx/msw/uxtheme.h>
 #endif
 
-// -- event definitions --
+// event definitions
 
 DEFINE_EVENT_TYPE(wxEVT_KCLGRID_SELECTION_CHANGE)
 DEFINE_EVENT_TYPE(wxEVT_KCLGRID_BEGIN_EDIT)
@@ -90,8 +90,6 @@ DEFINE_EVENT_TYPE(wxEVT_KCLGRID_LINK_MIDDLECLICK)
 namespace kcl
 {
 
-
-// -- XPM's --
 
 /* XPM */
 static const char* xpm_cursorrowmarker[] = {
@@ -200,11 +198,10 @@ static const char* xpm_checkneutral[] = {
 "!!!!!!!!!!!!!"};
 
 
-// -- utility functions --
+// utility functions
 
 wxColor getDefaultGreenBarColor(const wxColor& color, int ialpha)
 {
-
     // make sure our default greenbar color is not too light
     wxColor c = kcl::stepColor(color, ialpha);
     if (c == *wxWHITE)
@@ -291,7 +288,7 @@ const int EditCtrlId = 29923;
 
 
 
-// -- ModelColumn implementation --
+// ModelColumn implementation
 
 ModelColumn::ModelColumn()
 {
@@ -342,7 +339,7 @@ int ModelColumn::getScale()
 }
 
 
-// -- TestModel implementation--
+// TestModel implementation
 
 TestModel::TestModel()
 {
@@ -585,8 +582,7 @@ bool TestModel::getGroupBreaksActive()
 
 
 
-// -- cell editor controls --
-
+// cell editor controls
 
 class GridTextCtrl : public wxTextCtrl
 {
@@ -1146,7 +1142,7 @@ END_EVENT_TABLE()
 
 
 
-// -- Selection class implementation --
+// Selection class implementation
 
 Selection::Selection()
 {
@@ -1426,10 +1422,7 @@ void Selection::clear()
 
 
 
-// -- Grid class implemetation --
-
-
-// -- grid static members --
+// grid static members
 wxBitmap Grid::m_bmp_checkbox_on = wxNullBitmap;
 wxBitmap Grid::m_bmp_checkbox_off = wxNullBitmap;
 wxBitmap Grid::m_bmp_checkbox_neutral = wxNullBitmap;
@@ -3548,7 +3541,7 @@ bool Grid::removeSelection(unsigned int idx)
 
 
 
-// -- event dispatchers --
+// event dispatchers
 
 bool Grid::fireEvent(int event_type, int row, int col, bool* allowed)
 {
@@ -5257,7 +5250,7 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
             break;
     }
 
-    // -- draw column lines --
+    // draw column lines
 
     if (m_options & optVertGridLines)
     {
@@ -5282,7 +5275,7 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
         }
     }
 
-    // -- draw row lines --
+    // draw row lines
 
     if (m_options & optHorzGridLines)
     {
