@@ -73,7 +73,7 @@ public:
     tango::IFileInfoEnumPtr getFolderInfo(const std::wstring& path);
 
     tango::IStructurePtr createStructure();
-    tango::ISetPtr createTable(const std::wstring& path, tango::IStructurePtr struct_config, tango::FormatInfo* format_info);
+    bool createTable(const std::wstring& path, tango::IStructurePtr struct_config, tango::FormatInfo* format_info);
     tango::ISetPtr createDynamicSet(tango::ISetPtr base_set);
     
     tango::IStreamPtr openStream(const std::wstring& path);

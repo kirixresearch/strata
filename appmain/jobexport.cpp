@@ -345,7 +345,6 @@ int ExportJob::runJob()
         
         tango::IStructurePtr src_struct;
         tango::IIteratorPtr src_iter;
-        tango::ISetPtr dest_set;
         tango::IStructurePtr dest_struct;
 
         std::vector<ExportCopyInfo> copy_info;
@@ -373,16 +372,20 @@ int ExportJob::runJob()
         // try to open the set
 
         
-        dest_set = dest_db->openSet(towstr(it->output_path));
 
+        tango::IFileInfoPtr dest_finfo = dest_db->getFileInfo(towstr(it->output_path));
 
-        if (it->append && dest_set.isOk())
+        if (it->append && dest_finfo.isOk())
         {
-            // if we are appending to a set and the destination
-            // set exists, get the structure from that set
+            // if we are appending to an existing table exists;
+            // get the structure from that table
 
             dest_struct = dest_db->describeTable(towstr(it->output_path));
-
+            if (dest_struct.isNull())
+            {
+                m_job_info->setState(jobStateFailed);
+                return 0;
+            }
 
             ExportCopyInfo ci;
             int i;
@@ -470,14 +473,13 @@ int ExportJob::runJob()
             }
 
             // if the table already exists, then we are overwriting it, so drop the
-            //    existing table before we create the new table
-            if (dest_set.isOk())
+            // existing table before we create a new one
+            if (dest_finfo.isOk())
             {
-                dest_set.clear();
                 conn->getDatabasePtr()->deleteFile(towstr(it->output_path));
             }
 
-            // even if the set couldn't be opened, the file may still exists
+            // even if the table couldn't be opened, the file may still exist
             // (if it was corrupt, etc.), so make sure the file is deleted
             if (!it->append)
             {
@@ -548,9 +550,9 @@ int ExportJob::runJob()
                     tango::FormatInfo fi;
                     fi.table_format = format;
 
-                    dest_set = dest_db->createTable(towstr(it->output_path),
-                                                    dest_struct,
-                                                    &fi);
+                    dest_db->createTable(towstr(it->output_path),
+                                         dest_struct,
+                                         &fi);
                 }
                 break;
 
@@ -566,9 +568,9 @@ int ExportJob::runJob()
                         tango::FormatInfo fi;
                         fi.table_format = tango::formatDelimitedText;
 
-                        dest_set = dest_db->createTable(towstr(it->output_path),
-                                                        dest_struct,
-                                                        &fi);
+                        dest_db->createTable(towstr(it->output_path),
+                                             dest_struct,
+                                             &fi);
                     }
                      else
                     {
@@ -579,23 +581,17 @@ int ExportJob::runJob()
                         fi.line_delimiters = L"\n";
                         fi.first_row_column_names = m_first_row_header;
 
-                        dest_set = dest_db->createTable(towstr(it->output_path),
-                                                        dest_struct,
-                                                        &fi);
+                        dest_db->createTable(towstr(it->output_path),
+                                             dest_struct,
+                                             &fi);
                     }
                     
                     break;
                 }
             }
 
-            if (!dest_set)
-            {
-                m_job_info->setState(jobStateFailed);
-                return 0;
-            }
 
-
-            // first, update the structgure; even though we tried to create
+            // first, update the structure; even though we tried to create
             // a table with particular types, the columns may not actually have 
             // those types; in particular, this happens with the Access and Excel 
             // ODBC drivers, that always export to wide character fields; without

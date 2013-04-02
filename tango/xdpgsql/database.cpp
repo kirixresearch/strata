@@ -947,9 +947,9 @@ tango::IStructurePtr PgsqlDatabase::createStructure()
     return static_cast<tango::IStructure*>(s);
 }
 
-tango::ISetPtr PgsqlDatabase::createTable(const std::wstring& _path,
-                                          tango::IStructurePtr struct_config,
-                                          tango::FormatInfo* format_info)
+bool PgsqlDatabase::createTable(const std::wstring& _path,
+                                tango::IStructurePtr struct_config,
+                                tango::FormatInfo* format_info)
 {
     std::wstring path = _path;
     if (path == L"")
@@ -973,8 +973,7 @@ tango::ISetPtr PgsqlDatabase::createTable(const std::wstring& _path,
     int width;
     int scale;
     
-    int col_count = struct_config->getColumnCount();
-    int i;
+    int i, col_count = struct_config->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
         tango::IColumnInfoPtr col_info;
@@ -1006,11 +1005,11 @@ tango::ISetPtr PgsqlDatabase::createTable(const std::wstring& _path,
     xcm::IObjectPtr result_obj;
     if (!execute(command, 0, result_obj, NULL))
     {
-        // failed
-        return xcm::null;
+        // sql command failed
+        return false;
     }
 
-    return openSet(path);
+    return true;
 }
 
 tango::IStreamPtr PgsqlDatabase::openStream(const std::wstring& path)

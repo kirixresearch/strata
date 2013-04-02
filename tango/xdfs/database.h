@@ -137,7 +137,7 @@ public:
                        std::wstring& remote_path);
 
     tango::IStructurePtr createStructure();
-    tango::ISetPtr createTable(const std::wstring& path, tango::IStructurePtr struct_config, tango::FormatInfo* format_info);
+    bool createTable(const std::wstring& path, tango::IStructurePtr struct_config, tango::FormatInfo* format_info);
     tango::IStreamPtr openStream(const std::wstring& ofs_path);
     tango::IStreamPtr createStream(const std::wstring& ofs_path, const std::wstring& mime_type);
     tango::ISetPtr openSet(const std::wstring& ofs_path);

@@ -260,13 +260,9 @@ int SummarizeJob::runJob()
         ++i;
     }
 
-    tango::ISetPtr output_set = m_db->createTable(output_path,
-                                                  output_structure,
-                                                  NULL);
-    if (output_set.isNull())
+    if (!m_db->createTable(output_path, output_structure, NULL))
     {
         m_job_info->setState(jobStateFailed);
-        // TODO: error code?
         return 0;
     }
 
@@ -274,7 +270,6 @@ int SummarizeJob::runJob()
     if (output_inserter.isNull())
     {
         m_job_info->setState(jobStateFailed);
-        // TODO: error code?
         return 0;
     }
 

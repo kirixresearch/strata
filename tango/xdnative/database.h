@@ -160,7 +160,7 @@ public:
 
     tango::IStructurePtr createStructure();
     tango::IStreamPtr createStream(const std::wstring& path, const std::wstring& mime_type);
-    tango::ISetPtr createTable(const std::wstring& path, tango::IStructurePtr structure, tango::FormatInfo* format_info);
+    bool createTable(const std::wstring& path, tango::IStructurePtr structure, tango::FormatInfo* format_info);
     
     tango::ISetPtr openSetById(const std::wstring& set_id);
     std::wstring getSetIdFromPath(const std::wstring& set_path);

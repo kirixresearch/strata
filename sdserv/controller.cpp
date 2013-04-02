@@ -518,10 +518,7 @@ void Controller::apiCreateTable(RequestInfo& req)
         col->setCalculated(column["expression"].getString().length() > 0 ? true : false);
     }
 
-
-    
-    tango::ISetPtr set = db->createTable(path, structure, NULL);
-    if (set.isNull())
+    if (!db->createTable(path, structure, NULL))
     {
         returnApiError(req, "Cannot create table");
         return;

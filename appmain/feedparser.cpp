@@ -328,9 +328,7 @@ bool FeedParser::convertToTable(const std::wstring& output_path)
     colinfo->setScale(0);
 
 
-    db->createTable(output_path, structure, NULL);
-
-    if (!isValidTable(output_path))
+    if (!db->createTable(output_path, structure, NULL))
         return false;
 
     tango::IRowInserterPtr row_inserter = db->bulkInsert(output_path);

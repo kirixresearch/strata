@@ -561,9 +561,9 @@ tango::IStructurePtr SqlServerDatabase::createStructure()
     return static_cast<tango::IStructure*>(s);
 }
 
-tango::ISetPtr SqlServerDatabase::createTable(const std::wstring& path,
-                                            tango::IStructurePtr struct_config,
-                                            tango::FormatInfo* format_info)
+bool SqlServerDatabase::createTable(const std::wstring& path,
+                                    tango::IStructurePtr struct_config,
+                                    tango::FormatInfo* format_info)
 {
     std::wstring command;
     command.reserve(1024);
@@ -585,8 +585,8 @@ tango::ISetPtr SqlServerDatabase::createTable(const std::wstring& path,
     int width;
     int scale;
     
-    int col_count = struct_config->getColumnCount();
-    int i;
+    int i, col_count = struct_config->getColumnCount();
+
     for (i = 0; i < col_count; ++i)
     {
         tango::IColumnInfoPtr col_info = struct_config->getColumnInfoByIdx(i);
@@ -607,12 +607,7 @@ tango::ISetPtr SqlServerDatabase::createTable(const std::wstring& path,
     command += L" )";
 
     xcm::IObjectPtr result;
-    if (!execute(command, 0, result, NULL))
-    {
-        return xcm::null;
-    }
-
-    return openSet(path);
+    return execute(command, 0, result, NULL);
 }
 
 tango::IStreamPtr SqlServerDatabase::openStream(const std::wstring& ofs_path)

@@ -741,7 +741,7 @@ tango::IStructurePtr DrizzleDatabase::createStructure()
     return static_cast<tango::IStructure*>(s);
 }
 
-tango::ISetPtr DrizzleDatabase::createTable(const std::wstring& path,
+bool DrizzleDatabase::createTable(const std::wstring& path,
                                           tango::IStructurePtr struct_config,
                                           tango::FormatInfo* format_info)
 {
@@ -799,8 +799,8 @@ tango::ISetPtr DrizzleDatabase::createTable(const std::wstring& path,
     int width;
     int scale;
 
-    int col_count = struct_config->getColumnCount();
-    int i;
+    int i, col_count = struct_config->getColumnCount();
+
     for (i = 0; i < col_count; ++i)
     {
         tango::IColumnInfoPtr col_info = struct_config->getColumnInfoByIdx(i);
@@ -825,9 +825,7 @@ tango::ISetPtr DrizzleDatabase::createTable(const std::wstring& path,
     command += L" )";
 
     xcm::IObjectPtr result_obj;
-    execute(command, 0, result_obj, NULL);
-
-    return openSet(path);
+    return execute(command, 0, result_obj, NULL);
 }
 
 tango::IStreamPtr DrizzleDatabase::openStream(const std::wstring& path)

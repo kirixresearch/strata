@@ -195,9 +195,7 @@ int AppendJob::runJob()
             }
         }
 
-
-        tango::ISetPtr target_set = m_db->createTable(output_path, output_structure, NULL);
-        if (target_set.isNull())
+        if (!m_db->createTable(output_path, output_structure, NULL))
         {
             m_job_info->setState(jobStateFailed);
             m_job_info->setError(jobserrWriteError, L"");

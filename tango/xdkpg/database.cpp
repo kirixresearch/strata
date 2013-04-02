@@ -476,35 +476,28 @@ tango::IStructurePtr KpgDatabase::createStructure()
     return static_cast<tango::IStructure*>(s);
 }
 
-tango::ISetPtr KpgDatabase::createTable(const std::wstring& _path,
-                                        tango::IStructurePtr struct_config,
-                                        tango::FormatInfo* format_info)
+bool KpgDatabase::createTable(const std::wstring& _path,
+                              tango::IStructurePtr struct_config,
+                              tango::FormatInfo* format_info)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
     if (getFileExist(_path))
-        return xcm::null;
+    {
+        // object already exists
+        return false;
+    }
 
     std::wstring path = _path;
     if (path.substr(0,1) == L"/")
         path.erase(0,1);
 
     if (path.length() == 0)
-        return xcm::null;
-
-    KpgSet* set = new KpgSet(this);
-    set->m_tablename = path;
-    set->m_creating = true;
-    set->m_structure = struct_config;
-
-    if (!set->init())
-    {
-        return xcm::null;
-    }
+        return false;
 
     m_create_tables[path] = struct_config;
 
-    return static_cast<tango::ISet*>(set);
+    return true;
 }
 
 tango::IStreamPtr KpgDatabase::openStream(const std::wstring& path)

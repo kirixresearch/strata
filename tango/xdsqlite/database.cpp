@@ -527,33 +527,18 @@ tango::IStructurePtr SlDatabase::createStructure()
 }
 
 
-tango::ISetPtr SlDatabase::createTable(const std::wstring& _path,
-                                     tango::IStructurePtr struct_config,
-                                     tango::FormatInfo* format_info)
+bool SlDatabase::createTable(const std::wstring& path,
+                             tango::IStructurePtr struct_config,
+                             tango::FormatInfo* format_info)
 {
-    std::wstring path;
-
-    // -- ofs path --
-    if (_path.empty())
-    {
-        path = L"/.temp/";
-        path += getUniqueString();
-    }
-     else
-    {
-        path = _path;
-    }
-
-    // -- generate table name, SQL CREATE statment, and execute --
+    // generate table name, SQL CREATE statment, and execute
 
     std::wstring sql;
     sql = L"CREATE TABLE ";
     sql += path;
     sql += L" (";
     
-    int col_count, i;
-    
-    col_count = struct_config->getColumnCount();
+    int i, col_count = struct_config->getColumnCount();
 
     for (i = 0; i < col_count; ++i)
     {
@@ -609,12 +594,9 @@ tango::ISetPtr SlDatabase::createTable(const std::wstring& _path,
     std::string ascsql = kl::tostring(sql);
 
     if (SQLITE_OK != sqlite3_exec(m_sqlite, ascsql.c_str(), NULL, NULL, NULL))
-    {
-        return xcm::null;
-    }
+        return false;
 
-
-    return openSet(path);
+    return true;
 }
 
 

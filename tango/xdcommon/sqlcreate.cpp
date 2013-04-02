@@ -364,8 +364,8 @@ bool sqlCreate(tango::IDatabasePtr db,
             return false;
         }
         
-        tango::ISetPtr set = db->createTable(table_name, sp, NULL);
-        if (set.isNull())
+        bool res = db->createTable(table_name, sp, NULL);
+        if (!res)
         {
             wchar_t buf[1024]; // some paths might be long
             swprintf(buf, 1024, L"Unable to create table [%ls]", table_name.c_str()); 

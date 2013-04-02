@@ -577,13 +577,11 @@ tango::IStructurePtr ClientDatabase::createStructure()
     return static_cast<tango::IStructure*>(s);
 }
 
-tango::ISetPtr ClientDatabase::createTable(const std::wstring& path,
-                                         tango::IStructurePtr structure,
-                                         tango::FormatInfo* format_info)
+bool ClientDatabase::createTable(const std::wstring& path,
+                                 tango::IStructurePtr structure,
+                                 tango::FormatInfo* format_info)
 {
-
     std::wstring columns = structureToJson(structure);
-
 
     ServerCallParams params;
     params.setParam(L"path", path);
@@ -592,19 +590,7 @@ tango::ISetPtr ClientDatabase::createTable(const std::wstring& path,
     kl::JsonNode response;
     response.fromString(sres);
 
-    if (!response["success"].getBoolean())
-        return xcm::null;
-
-
-    ClientSet* set = new ClientSet(this);
-
-    if (!set->init(response["path"]))
-    {
-        delete set;
-        return xcm::null;
-    }
-
-    return static_cast<tango::ISet*>(set);
+    return response["success"].getBoolean();
 }
 
 tango::IStreamPtr ClientDatabase::openStream(const std::wstring& path)

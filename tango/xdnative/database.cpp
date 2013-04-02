@@ -3059,20 +3059,20 @@ tango::IStructurePtr Database::createStructure()
     return static_cast<tango::IStructure*>(s);
 }
 
-tango::ISetPtr Database::createTable(const std::wstring& _path,
-                                     tango::IStructurePtr structure,
-                                     tango::FormatInfo* format_info)
+bool Database::createTable(const std::wstring& _path,
+                           tango::IStructurePtr structure,
+                           tango::FormatInfo* format_info)
 {
     std::wstring path = _path;
     
     if (path.length() == 0)
-        return xcm::null;
+        return false;
 
     if (kl::isFileUrl(_path))
         path = urlToOfsFilename(_path);
 
     if (getFileExist(path))
-        return xcm::null;  // already exists
+        return false;  // already exists
 
     std::wstring cstr, rpath;
     if (detectMountPoint(path, cstr, rpath))
@@ -3081,13 +3081,7 @@ tango::ISetPtr Database::createTable(const std::wstring& _path,
         if (db.isNull())
             return xcm::null;
 
-        tango::ISetPtr set = db->createTable(rpath, structure, format_info);
-        if (set.isOk())
-        {
-            set->setObjectPath(_path);
-        }
-            
-        return set;
+        return db->createTable(rpath, structure, format_info);
     }
 
 
@@ -3095,9 +3089,13 @@ tango::ISetPtr Database::createTable(const std::wstring& _path,
     set->ref();
 
     if (!set->create(structure, path))
-        return xcm::null;
+    {
+        set->unref();
+        return false;
+    }
 
-    return tango::ISetPtr(set, false);
+    set->unref();
+    return false;
 }
 
 

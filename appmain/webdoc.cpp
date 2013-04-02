@@ -1925,11 +1925,9 @@ static bool makeTableFromDom(wxDOMNode& _node, const std::wstring& output_path)
         col_info->setScale(field_it->type == tango::typeNumeric ? field_it->max_dec : 0);
     }
 
-    dest_set = dest_db->createTable(output_path, dest_struct, NULL);
-    
-    if (dest_set.isNull())
+    if (!dest_db->createTable(output_path, dest_struct, NULL))
         return false;
-    
+        
     tango::IRowInserterPtr row_inserter = dest_db->bulkInsert(output_path);
     if (row_inserter.isNull())
         return false;

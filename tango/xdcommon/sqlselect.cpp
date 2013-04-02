@@ -2054,14 +2054,15 @@ static bool doJoin(tango::IDatabasePtr db,
         colinfo->setScale(jf_it->scale);
     }
 
-    output_set = db->createTable(output_path, output_structure, NULL);
-
-    if (output_set.isNull())
+    if (!db->createTable(output_path, output_structure, NULL))
         return false;
 
     // create output row inserter
 
-    tango::IRowInserterPtr sp_output = db->bulkInsert(output_set->getObjectPath());
+    tango::IRowInserterPtr sp_output = db->bulkInsert(output_path);
+    if (sp_output.isNull())
+        return false;
+
     tango::IRowInserter* output = sp_output.p;
 
     output->startInsert(L"*");
@@ -2235,8 +2236,8 @@ bool convertToNativeTables(tango::IDatabasePtr db,
         
         // need to make an xdnative copy of the set
         tango::IStructurePtr structure = st_it->set->getStructure();
-        tango::ISetPtr set = db->createTable(L"", structure, NULL);
-        if (set.isNull())
+        std::wstring output_path = L"xtmp_" + kl::getUniqueString();
+        if (!db->createTable(output_path, structure, NULL))
         {
             // fail out
             return false;
@@ -2248,7 +2249,7 @@ bool convertToNativeTables(tango::IDatabasePtr db,
             return false;
         iter->goFirst();
             
-        xdcmnInsert(db, iter, set->getObjectPath(),  L"",  0,  job);
+        xdcmnInsert(db, iter, output_path,  L"",  0,  job);
 
         if (mainset == st_it->set)
             mainset = set;
@@ -3412,20 +3413,20 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
     }
 
 
-    tango::ISetPtr output_set;
+    bool create_result;
 
     // check if the output file will be in a mount
     if (output_path.length() > 0 && db->getMountDatabase(output_path).isOk())
     {
-        output_set = db->createTable(output_path, output_structure, NULL);
+        create_result = db->createTable(output_path, output_structure, NULL);
     }
      else
     {
         output_path = L"xtmp_" + kl::getUniqueString();
-        output_set = db->createTable(output_path, output_structure, NULL);
+        create_result = db->createTable(output_path, output_structure, NULL);
     }
 
-    if (output_set.isNull())
+    if (!create_result)
     {
         error.setError(tango::errorGeneral, L"Unable to process SELECT statement");
         return xcm::null;

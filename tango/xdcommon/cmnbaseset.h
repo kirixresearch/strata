@@ -24,7 +24,6 @@ public:
     // this should be called by derived classes
     void setConfigFilePath(const std::wstring& path);
     
-    // tango::ISet::setObjectPath() and getObjectPath();
     void setObjectPath(const std::wstring& path);
     std::wstring getObjectPath();
     
@@ -56,5 +55,3 @@ private:
 
 
 #endif
-
-

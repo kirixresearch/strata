@@ -1403,11 +1403,7 @@ bool StructureDoc::createTable()
     
     // get the path from the dialog and create the new set
     std::wstring new_path = towstr(dlg.getPath());
-    g_app->getDatabase()->createTable(new_path,
-                                      structure,
-                                      NULL);
-
-    if (!isValidTable(new_path))
+    if (!g_app->getDatabase()->createTable(new_path, structure, NULL))
         return false;
 
     // set the modify set in case the user wants to further modify the set

@@ -640,7 +640,6 @@ int ImportJob::runJob()
     tango::ISetPtr src_set;
     tango::IStructurePtr src_struct;
     tango::IIteratorPtr src_iter;
-    tango::ISetPtr dest_set;
     tango::IStructurePtr dest_struct;
     tango::rowpos_t row_count = 0;
     long long total_row_count = 0;
@@ -866,7 +865,7 @@ int ImportJob::runJob()
 
 
         // try to open the destination set (to see if it already exists)
-        dest_set = dest_db->openSet(towstr(it->output_path));
+        tango::IFileInfoPtr dest_finfo = dest_db->getFileInfo(towstr(it->output_path));
 
         // use this opportunity of having the set open to fill out the
         // field map, if one is not already present.  An empty field map
@@ -881,19 +880,18 @@ int ImportJob::runJob()
             if (!src_struct)
                 continue;
 
-            int i;
-            int col_count = src_struct->getColumnCount();
+            int i, col_count = src_struct->getColumnCount();
             FieldTransInfo fs;
             wxString out_fieldname;
 
             // if we are appending and can locate the destination set,
             // get the output structure info from that set
 
-            if (it->append && dest_set.isOk())
+            if (it->append && dest_finfo.isOk())
             {
                 dest_struct = dest_db->describeTable(towstr(it->output_path));
 
-                if (!dest_struct)
+                if (dest_struct.isNull())
                     continue;
 
                 for (i = 0; i < col_count; ++i)
@@ -1013,7 +1011,7 @@ int ImportJob::runJob()
         m_job_info->setProgressString(wxEmptyString);
 
 
-        if (it->append && dest_set.isOk())
+        if (it->append && dest_finfo.isOk())
         {
         }
          else
@@ -1035,14 +1033,14 @@ int ImportJob::runJob()
                 col_info->setScale(field_it->output_scale);
             }
 
-            dest_set = dest_db->createTable(towstr(it->output_path), dest_struct, NULL);
+            dest_db->createTable(towstr(it->output_path), dest_struct, NULL);
         }
 
         
         // if our destination set doesn't exist, bail out
         dest_struct = dest_db->describeTable(towstr(it->output_path));
 
-        if (dest_set.isNull() || dest_struct.isNull())
+        if (dest_struct.isNull())
         {
             getJobInfo()->setState(jobStateFailed);
             return 0;
@@ -1062,7 +1060,7 @@ int ImportJob::runJob()
         // insert rows into that set
 
         tango::IRowInserterPtr ri;
-        ri = dest_db->bulkInsert(dest_set->getObjectPath());
+        ri = dest_db->bulkInsert(towstr(it->output_path));
         ri->startInsert(L"*");
 
         std::vector<ImportCopyInfo>::iterator copyinfo_it;
@@ -1261,7 +1259,6 @@ int ImportJob::runJob()
 
         // close out the tables
         src_set.clear();
-        dest_set.clear();
     }
 
     m_job_info->setProgressString(wxT(""));

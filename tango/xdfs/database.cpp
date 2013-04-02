@@ -1578,12 +1578,11 @@ tango::IStructurePtr FsDatabase::createStructure()
     return static_cast<tango::IStructure*>(s);
 }
 
-tango::ISetPtr FsDatabase::createTable(const std::wstring& _path,
-                                     tango::IStructurePtr struct_config,
-                                     tango::FormatInfo* format_info)
+bool FsDatabase::createTable(const std::wstring& _path,
+                             tango::IStructurePtr struct_config,
+                             tango::FormatInfo* format_info)
 {
-    size_t i;
-    size_t col_count = struct_config->getColumnCount();
+    size_t i, col_count = struct_config->getColumnCount();
 
     int format = tango::formatNative;
     if (format_info)
@@ -1605,7 +1604,7 @@ tango::ISetPtr FsDatabase::createTable(const std::wstring& _path,
             if (!xf_get_directory_exist(base_path))
             {
                 if (!xf_mkdir(base_path))
-                    return xcm::null;
+                    return false;
             }
         }
         
@@ -1653,11 +1652,11 @@ tango::ISetPtr FsDatabase::createTable(const std::wstring& _path,
 
         // create the xbase file
         XbaseFile file;
-        file.createFile(path, fields);
+        if (!file.createFile(path, fields))
+            return false;
         file.closeFile();
         
-        // return the XbaseSet
-        return openSetEx(path, format);
+        return xf_get_file_exist(path);
     }
 
     if (format == tango::formatDelimitedText)
@@ -1792,7 +1791,7 @@ tango::ISetPtr FsDatabase::createTable(const std::wstring& _path,
             
             default:
                 // invalid or non-supported encoding
-                return xcm::null;
+                return false;
         }
         
 
@@ -1814,7 +1813,7 @@ tango::ISetPtr FsDatabase::createTable(const std::wstring& _path,
         {
             tango::ISetPtr set = openSetEx(path, tango::formatDelimitedText);
             if (set.isNull())
-                return xcm::null;
+                return false;
         
             DelimitedTextSet* tset = static_cast<DelimitedTextSet*>(set.p);
             tset->setCreateStructure(struct_config);
@@ -1843,9 +1842,7 @@ tango::ISetPtr FsDatabase::createTable(const std::wstring& _path,
             set.clear();
         }
 
-
-        // return the DelimitedTextSet
-        return openSetEx(path, format);
+        return xf_get_file_exist(path);
     }
 
     if (format == tango::formatFixedLengthText)
@@ -1856,18 +1853,16 @@ tango::ISetPtr FsDatabase::createTable(const std::wstring& _path,
         
         tango::ISetPtr set = openSetEx(path, tango::formatFixedLengthText);
         if (set.isNull())
-            return xcm::null;
+            return false;
         
         FixedLengthTextSet* tset = static_cast<FixedLengthTextSet*>(set.p);
         tset->setCreateStructure(struct_config);
         tset->saveConfiguration();
 
-
-        // return the FixedLengthTextSet
-        return openSetEx(path, format);
+        return xf_get_file_exist(path);
     }
 
-    return xcm::null;
+    return false;
 }
 
 

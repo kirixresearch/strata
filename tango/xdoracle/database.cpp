@@ -1106,11 +1106,10 @@ tango::IStructurePtr OracleDatabase::createStructure()
     return static_cast<tango::IStructure*>(s);
 }
 
-tango::ISetPtr OracleDatabase::createTable(const std::wstring& path,
-                                         tango::IStructurePtr struct_config,
-                                         tango::FormatInfo* format_info)
+bool OracleDatabase::createTable(const std::wstring& path,
+                                 tango::IStructurePtr struct_config,
+                                 tango::FormatInfo* format_info)
 {
-
     std::wstring command;
     command.reserve(1024);
 
@@ -1126,8 +1125,7 @@ tango::ISetPtr OracleDatabase::createTable(const std::wstring& path,
     int width;
     int scale;
     
-    int i;
-    int col_count = struct_config->getColumnCount();
+    int i, col_count = struct_config->getColumnCount();
 
     for (i = 0; i < col_count; ++i)
     {
@@ -1149,21 +1147,7 @@ tango::ISetPtr OracleDatabase::createTable(const std::wstring& path,
     command += L" )";
 
     xcm::IObjectPtr result_obj;
-    if (!execute(command, 0, result_obj, NULL))
-        return xcm::null;
-
-    OracleSet* set = new OracleSet(this);
-    set->m_env = m_env;
-    set->m_svc = m_svc;
-    set->m_path = path;
-    set->m_tablename = getTablenameFromOfsPath(path);
-    if (!set->init())
-    {
-        delete set;
-        return xcm::null;
-    }
-    
-    return static_cast<tango::ISet*>(set);
+    return execute(command, 0, result_obj, NULL);
 }
 
 tango::IStreamPtr OracleDatabase::openStream(const std::wstring& ofs_path)

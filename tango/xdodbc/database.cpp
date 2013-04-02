@@ -2023,9 +2023,9 @@ tango::IStructurePtr OdbcDatabase::createStructure()
     return static_cast<tango::IStructure*>(s);
 }
 
-tango::ISetPtr OdbcDatabase::createTable(const std::wstring& path,
-                                       tango::IStructurePtr struct_config,
-                                       tango::FormatInfo* format_info)
+bool OdbcDatabase::createTable(const std::wstring& path,
+                               tango::IStructurePtr struct_config,
+                               tango::FormatInfo* format_info)
 {
     std::wstring quote_openchar = m_attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
     std::wstring quote_closechar = m_attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
@@ -2047,8 +2047,8 @@ tango::ISetPtr OdbcDatabase::createTable(const std::wstring& path,
     int width;
     int scale;
     
-    int col_count = struct_config->getColumnCount();
-    int i;
+    int i, col_count = struct_config->getColumnCount();
+
     for (i = 0; i < col_count; ++i)
     {
         tango::IColumnInfoPtr col_info;
@@ -2081,13 +2081,7 @@ tango::ISetPtr OdbcDatabase::createTable(const std::wstring& path,
     command += L")";
 
     xcm::IObjectPtr result_obj;
-    if (!execute(command, 0, result_obj, NULL))
-    {
-        // failed
-        return xcm::null;
-    }
-
-    return openSet(path);
+    return execute(command, 0, result_obj, NULL);
 }
 
 tango::IStreamPtr OdbcDatabase::openStream(const std::wstring& ofs_path)
