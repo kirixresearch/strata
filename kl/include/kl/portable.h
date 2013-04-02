@@ -61,12 +61,6 @@
 #endif
 
 
-// for all versions of MSVC less than 2008 an
-#if _MSC_VER < 1600
-#define max _cpp_max
-#define min _cpp_min
-#endif
-
 #endif
 
 

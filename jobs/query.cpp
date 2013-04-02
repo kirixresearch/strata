@@ -87,10 +87,17 @@ int QueryJob::runJob()
     kl::JsonNode distinct_node = params_node["distinct"];
 
     std::wstring input_str = input_node.getString();
-    std::wstring q_input_str = tango::quoteIdentifier(m_db, input_node.getString());
+    
+    // if there is only one slash at the beginning, remove it
+    // for compatibility with databases which don't have
+    // hierarchical/folder namespaces
+    if (kl::stringFrequency(input_str, '/') == 1 && input_str[0] == '/')
+        input_str.erase(0, 1);
+
+    std::wstring q_input_str = tango::quoteIdentifierIfNecessary(m_db, input_node.getString());
 
     std::wstring output_str = output_node.getString();
-    std::wstring q_output_str = tango::quoteIdentifier(m_db, output_node.getString());
+    std::wstring q_output_str = tango::quoteIdentifierIfNecessary(m_db, output_node.getString());
 
     std::wstring where_str = where_node.getString();
     std::wstring order_str;

@@ -249,6 +249,16 @@ std::wstring getUniqueString()
     return temp;
 }
 
+size_t stringFrequency(const std::wstring& haystack, wchar_t needle)
+{
+    size_t cnt = 0, i, len = haystack.length();
+    for (i = 0; i < len; ++i)
+    {
+        if (haystack[i] == needle)
+            cnt++;
+    }
+    return cnt;
+}
 
 static wchar_t* zl_strchr(wchar_t* str,
                           wchar_t ch,
