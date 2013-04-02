@@ -2180,34 +2180,28 @@ void TableDoc::updateStatusBar(bool row_count_update)
         currow_text = wxT("~");
     currow_text += kl::formattedNumber(m_grid->getCursorRow()+1);
 
-    if (m_browse_set.isOk())
+    if (row_count_update)
     {
-        if (row_count_update)
+        if (m_iter->getIteratorFlags() & tango::ifFastRowCount)
         {
-        /*
-            TODO: implement this
-            if (m_browse_set->getSetFlags() & tango::sfFastRowCount)
-            {
-                m_stat_row_count = m_browse_set->getRowCount();
-            }
-             else
-            {
-                m_stat_row_count = (tango::rowpos_t)-1;
-            }
-        */
-        }
-        
-        if (m_stat_row_count != (tango::rowpos_t)-1)
-        {
-            position_text = wxString::Format(_("Position: %s"), currow_text.c_str());
-            reccount_text = wxString::Format(_("Record Count: %s"),
-                kl::formattedNumber((long long)m_stat_row_count).c_str());
+            m_stat_row_count = m_iter->getRowCount();
         }
          else
         {
-            position_text = wxString::Format(_("Position: %s"), currow_text.c_str());
-            reccount_text = wxEmptyString;
+            m_stat_row_count = (tango::rowpos_t)-1;
         }
+    }
+        
+    if (m_stat_row_count != (tango::rowpos_t)-1)
+    {
+        position_text = wxString::Format(_("Position: %s"), currow_text.c_str());
+        reccount_text = wxString::Format(_("Record Count: %s"),
+            kl::formattedNumber((long long)m_stat_row_count).c_str());
+    }
+        else
+    {
+        position_text = wxString::Format(_("Position: %s"), currow_text.c_str());
+        reccount_text = wxEmptyString;
     }
 
     IStatusBarItemPtr item;
