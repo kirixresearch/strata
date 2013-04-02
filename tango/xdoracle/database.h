@@ -81,12 +81,10 @@ public:
               const std::wstring& username,
               const std::wstring& password);
 
-    // -- tango::IDatabase interface --
+    // tango::IDatabase
 
     void close();
 
-    void setDatabaseName(const std::wstring& name);
-    std::wstring getDatabaseName();
     int getDatabaseType();
     tango::IAttributesPtr getAttributes();
     std::wstring getActiveUid();

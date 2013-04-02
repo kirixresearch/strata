@@ -94,12 +94,10 @@ public:
     void registerSet(std::wstring path, tango::ISet* set);
     void unregisterSet(tango::ISet* set);
     
-    // -- tango::IDatabase interface --
+    // tango::IDatabase
 
     void close();
 
-    void setDatabaseName(const std::wstring& name);
-    std::wstring getDatabaseName();
     int getDatabaseType();
     tango::IAttributesPtr getAttributes();
     std::wstring getActiveUid();

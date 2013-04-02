@@ -1128,13 +1128,25 @@ wxString MainApp::getProjectName()
     if (m_database.isNull())
         return wxT("");
 
-    return towx(m_database->getDatabaseName());
+    tango::IAttributesPtr attr = m_database->getAttributes();
+    if (attr.isNull())
+        return wxT("");
+
+    return towx(attr->getStringAttribute(tango::dbattrDatabaseName));
 }
 
 void MainApp::setProjectName(const wxString& name)
 {
-    wxString old_project_name = towx(m_database->getDatabaseName());
-    m_database->setDatabaseName(towstr(name));
+    if (m_database.isNull())
+        return;
+
+    tango::IAttributesPtr attr = m_database->getAttributes();
+    if (attr.isNull())
+        return;
+
+    wxString old_project_name = towx(attr->getStringAttribute(tango::dbattrDatabaseName));
+
+    attr->setStringAttribute(tango::dbattrDatabaseName, towstr(name));
 
     ProjectMgr projmgr;
     int idx = projmgr.getIdxFromLocation(getDatabaseLocation());

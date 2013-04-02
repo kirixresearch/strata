@@ -67,12 +67,10 @@ public:
     std::wstring getServer();
     std::wstring getDatabase();
     
-    // -- tango::IDatabase interface --
+    // tango::IDatabase
 
     void close();
 
-    void setDatabaseName(const std::wstring& name);
-    std::wstring getDatabaseName();
     int getDatabaseType();
     std::wstring getActiveUid();
     tango::IAttributesPtr getAttributes();

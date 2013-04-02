@@ -237,16 +237,6 @@ void SlDatabase::close()
     }
 }
 
-void SlDatabase::setDatabaseName(const std::wstring& name)
-{
-    m_db_name = name;
-}
-
-std::wstring SlDatabase::getDatabaseName()
-{
-    return m_db_name;
-}
-
 int SlDatabase::getDatabaseType()
 {
     return tango::dbtypeSqlite;

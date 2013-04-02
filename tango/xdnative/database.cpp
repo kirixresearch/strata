@@ -102,17 +102,18 @@ Database::~Database()
     deleteTempData();
 }
 
-
+/*
 void Database::setDatabaseName(const std::wstring& db_name)
 {
-    m_dbname = db_name;
+    m_attr->setStringAttribute(tango::dbattrDatabaseName, db_name);
 
     INodeValuePtr node = openNodeFile(L"/.system/database_name");
     if (node)
     {
-        node->setString(m_dbname);
+        node->setString(db_name);
     }
 }
+*/
 
 bool Database::setBaseDirectory(const std::wstring& base_dir)
 {    
@@ -504,12 +505,13 @@ bool Database::createDatabase(const std::wstring& db_name,
         return false;
     node->setString(db_name);
 
+    m_attr->setStringAttribute(tango::dbattrDatabaseName, db_name);
+
     node = createNodeFile(L"/.system/database_version");
     if (!node)
         return false;
     node->setInteger(2);
 
-    m_dbname = db_name;
     m_uid = L"admin";
 
     // create an ordinal file
@@ -570,7 +572,7 @@ bool Database::openDatabase(const std::wstring& location,
     if (!dbname)
         return false;
 
-    m_dbname = dbname->getString();
+    m_attr->setStringAttribute(tango::dbattrDatabaseName, dbname->getString());
 
     // ensure that an ordinal counter exists
     INodeValuePtr last_ord = openNodeFile(L"/.system/ordinal_counter");
@@ -3052,12 +3054,6 @@ bool Database::createTable(const std::wstring& _path,
 
     set->unref();
     return false;
-}
-
-
-std::wstring Database::getDatabaseName()
-{
-    return m_dbname;
 }
 
 int Database::getDatabaseType()

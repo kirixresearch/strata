@@ -117,10 +117,8 @@ public:
     bool cleanup();
 
 
-    // IDatabase
+    // tango::IDatabase
 
-    void setDatabaseName(const std::wstring& name);
-    std::wstring getDatabaseName();
     int getDatabaseType();
     std::wstring getErrorString();
     int getErrorCode();
@@ -264,7 +262,6 @@ private:
     std::wstring m_base_dir;
     std::wstring m_ofs_root;
     std::wstring m_ordinal_counter_path;
-    std::wstring m_dbname;
     std::wstring m_uid;
     tango::jobid_t m_last_job;
     

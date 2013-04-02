@@ -6262,7 +6262,10 @@ bool AppController::openProject(const wxString& location,
     wxString name = projects[idx].name;
     
     // set the database
-    database->setDatabaseName(towstr(name));
+    tango::IAttributesPtr attr = database->getAttributes();
+    if (attr)
+        attr->setStringAttribute(tango::dbattrDatabaseName, towstr(name));
+
     g_app->setDatabase(database);
     g_app->setDatabaseLocation(location);
     

@@ -1352,7 +1352,7 @@ bool OdbcDatabase::open(int type,
 
     // set the database attributes
     
-    setDatabaseName(db_label_buf);
+    m_attr->setStringAttribute(tango::dbattrDatabaseName, db_label_buf);
     setAttributes(conn);
 
     m_port = port;
@@ -1415,17 +1415,6 @@ void OdbcDatabase::closeConnection(HDBC conn)
     SQLFreeConnect(conn);
 }
 
-
-
-void OdbcDatabase::setDatabaseName(const std::wstring& name)
-{
-    m_db_name = name;
-}
-
-std::wstring OdbcDatabase::getDatabaseName()
-{
-    return m_db_name;
-}
 
 int OdbcDatabase::getDatabaseType()
 {

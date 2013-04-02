@@ -16,7 +16,7 @@
 #include "../xdcommon/errorinfo.h"
 
 
-// -- utility functions --
+// utility functions
 
 std::wstring createSqlServerFieldString(const std::wstring& name,
                                         int type,
@@ -43,12 +43,10 @@ public:
               const std::wstring& username,
               const std::wstring& password);
 
-    // tango::IDatabase interface 
+    // tango::IDatabase
 
     void close();
 
-    void setDatabaseName(const std::wstring& name);
-    std::wstring getDatabaseName();
     int getDatabaseType();
     tango::IAttributesPtr getAttributes();
     std::wstring getActiveUid();
@@ -133,8 +131,6 @@ private:
     TDSLOGIN* m_login;
     TDSCONTEXT* m_context;
     TDSCONNECTION* m_connect_info;
-
-    std::wstring m_db_name;
 
     std::wstring m_server;
     int m_port;

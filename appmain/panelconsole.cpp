@@ -1241,7 +1241,7 @@ void ConsolePanel::echoDatabaseInfo(tango::IDatabasePtr command_db, const wxStri
      else
     {
         response += wxT("Result: Using ");
-        response += command_db->getDatabaseName();
+        response += g_app->getProjectName();
         response += wxT(" from ");
         response += L"[";
         response += command_path;

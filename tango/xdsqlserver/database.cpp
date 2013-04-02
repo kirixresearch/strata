@@ -275,7 +275,7 @@ bool SqlServerDatabase::open(const std::wstring& server,
 
         wchar_t buf[1024];
         swprintf(buf, 1024, L"SQL Server (%ls)", server.c_str());
-        setDatabaseName(buf);
+        m_attr->setStringAttribute(tango::dbattrDatabaseName, buf);
 
         return true;
     }
@@ -306,15 +306,6 @@ void SqlServerDatabase::close()
     m_password = L"";
 }
 
-void SqlServerDatabase::setDatabaseName(const std::wstring& name)
-{
-    m_db_name = name;
-}
-
-std::wstring SqlServerDatabase::getDatabaseName()
-{
-    return m_db_name;
-}
 
 int SqlServerDatabase::getDatabaseType()
 {

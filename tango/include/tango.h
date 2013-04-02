@@ -240,7 +240,8 @@ enum
     dbattrTempDirectory = 1001,
     dbattrDefinitionDirectory = 1002,
     dbattrDatabaseUrl = 1003,
-    
+    dbattrDatabaseName = 1003,
+
     dbattrIdentifierQuoteOpenChar = 1900,
     dbattrIdentifierQuoteCloseChar = 1901,
     dbattrIdentifierCharsNeedingQuote = 1902,
@@ -666,8 +667,6 @@ public:
 
     virtual void close() = 0;
 
-    virtual void setDatabaseName(const std::wstring& name) = 0;
-    virtual std::wstring getDatabaseName() = 0;
     virtual int getDatabaseType() = 0;
     virtual IAttributesPtr getAttributes() = 0;
     virtual std::wstring getActiveUid() = 0;

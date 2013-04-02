@@ -261,7 +261,7 @@ void DlgDatabaseFile::setRootFolder(const wxString& path, const wxString& root_l
         wxString label = root_label;
         if (label.IsEmpty())
         {
-            wxString project_name = towx(g_app->getDatabase()->getDatabaseName());
+            wxString project_name = g_app->getProjectName();
             if (project_name.Length() > 0)
                 label = wxString::Format(_("Project '%s'"), project_name.c_str());
                  else

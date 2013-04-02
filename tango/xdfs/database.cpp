@@ -491,16 +491,6 @@ void FsDatabase::close()
 
 }
 
-void FsDatabase::setDatabaseName(const std::wstring& name)
-{
-
-}
-
-std::wstring FsDatabase::getDatabaseName()
-{
-    return L"";
-}
-
 int FsDatabase::getDatabaseType()
 {
     return tango::dbtypeFilesystem;

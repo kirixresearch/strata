@@ -679,7 +679,7 @@ bool OracleDatabase::open(const std::wstring& server,
 
     wchar_t buf[1024];
     swprintf(buf, 1024, L"Oracle (%ls)", server.c_str());
-    setDatabaseName(buf);
+    m_attr->setStringAttribute(tango::dbattrDatabaseName, buf);
     return true;
 }
 
@@ -713,17 +713,7 @@ void OracleDatabase::close()
 
 
 
-// -- tango::IDatabase interface implementation --
-
-void OracleDatabase::setDatabaseName(const std::wstring& name)
-{
-    m_db_name = name;
-}
-
-std::wstring OracleDatabase::getDatabaseName()
-{
-    return m_db_name;
-}
+// tango::IDatabase
 
 int OracleDatabase::getDatabaseType()
 {

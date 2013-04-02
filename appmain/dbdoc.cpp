@@ -98,7 +98,16 @@ static std::wstring stripExtension(const std::wstring& s)
 
 static wxString getDatabaseNameProjectLabel()
 {
-    wxString project_name = towx(g_app->getDatabase()->getDatabaseName());
+    tango::IDatabasePtr database = g_app->getDatabase();
+    if (database.isNull())
+        return wxT("");
+
+    tango::IAttributesPtr attr = database->getAttributes();
+    if (attr.isNull())
+        return wxT("");
+
+    wxString project_name = towx(attr->getStringAttribute(tango::dbattrDatabaseName));
+
     wxString label;
     if (project_name.Length() > 0)
         label = wxString::Format(_("Project '%s'"), project_name.c_str());

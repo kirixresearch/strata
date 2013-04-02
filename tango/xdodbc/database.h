@@ -122,7 +122,6 @@ public:
 
     void close();
 
-    void setDatabaseName(const std::wstring& name);
     std::wstring getDatabaseName();
     int getDatabaseType();
     tango::IAttributesPtr getAttributes();
