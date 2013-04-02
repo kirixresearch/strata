@@ -333,7 +333,6 @@ bool NativeTable::create(const std::wstring& filename, tango::IStructure* struct
     
     if (xf_write(f, header, native_header_len, 1) != 1)
     {
-        delete[] header;
         delete[] flds;
         xf_close(f);
         return false;
@@ -341,13 +340,11 @@ bool NativeTable::create(const std::wstring& filename, tango::IStructure* struct
 
     if (xf_write(f, flds, field_arr_len, 1) != 1)
     {
-        delete[] header;
         delete[] flds;
         xf_close(f);
         return false;
     }
 
-    delete[] header;
     delete[] flds;
 
     xf_close(f);
@@ -461,12 +458,11 @@ bool NativeTable::open(const std::wstring& filename,
     if (!xf_seek(m_file, 0, xfSeekSet))
         return false;
 
-    unsigned char* header = new unsigned char[native_header_len];
+    unsigned char header[native_header_len];
     unsigned char* flds;
 
     if (xf_read(m_file, header, native_header_len, 1) == 0)
     {
-        delete[] header;
         xf_close(m_file);
         m_file = NULL;
         return false;
@@ -477,7 +473,6 @@ bool NativeTable::open(const std::wstring& filename,
     version = buf2int(header+4);
     if (signature != 0xddaa2299 || version > 2)
     {
-        delete[] header;
         xf_close(m_file);
         m_file = NULL;
         return false;
@@ -489,7 +484,6 @@ bool NativeTable::open(const std::wstring& filename,
 
     if (m_row_width == 0)
     {
-        delete[] header;
         xf_close(m_file);
         m_file = NULL;
         return false;
@@ -502,7 +496,6 @@ bool NativeTable::open(const std::wstring& filename,
     {
         if (!upgradeVersion1(header))
         {
-            delete[] header;
             xf_close(m_file);
             m_file = NULL;
             return false;
@@ -532,7 +525,6 @@ bool NativeTable::open(const std::wstring& filename,
 
     if (!xf_seek(m_file, native_header_len, xfSeekSet))
     {
-        delete[] header;
         xf_close(m_file);
         m_file = NULL;
         return false;
@@ -548,7 +540,6 @@ bool NativeTable::open(const std::wstring& filename,
                 column_count * native_column_descriptor_len,
                 1) != 1)
     {
-        delete[] header;
         delete[] flds;
         xf_close(m_file);
         m_file = NULL;
@@ -580,12 +571,9 @@ bool NativeTable::open(const std::wstring& filename,
         fld += native_column_descriptor_len;
     }
 
-    delete[] header;
     delete[] flds;
 
-
     m_structure = static_cast<tango::IStructure*>(structure);
-
 
     return true;
 }
