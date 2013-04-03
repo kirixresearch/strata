@@ -538,9 +538,6 @@ bool TableSet::create(tango::IStructure* struct_config, const std::wstring& path
     // initialize internal structure
     m_structure = m_table->getStructure();
 
-    // create the update iterator and its associated buffer
-    refreshUpdateBuffer();
-
     updateRowCount();
 
     m_dbi->registerSet(this);
@@ -564,8 +561,6 @@ bool TableSet::loadTable(const std::wstring& tbl_filename)
 
     // initialize internal structure
     m_structure = m_table->getStructure();
-
-    refreshUpdateBuffer();
 
     updateRowCount();
 
@@ -1462,6 +1457,9 @@ bool TableSet::updateRow(tango::rowid_t rowid,
     if (rowidGetTableOrd(rowid) != m_ordinal)
         return false;
     tango::rowpos_t row = rowidGetRowPos(rowid);
+
+    if (!m_update_iter)
+        refreshUpdateBuffer();
 
     // read the row
     m_table->getRow(row, m_update_buf);
