@@ -71,7 +71,7 @@ xcm_interface ISetInternal;
 xcm_interface IDatabaseInternal;
 xcm_interface IOfsEvents;
 xcm_interface INodeValue;
-
+xcm_interface IIteratorSetAccess;
 xcm_interface IIndex;
 xcm_interface IIndexIterator;
 
@@ -87,7 +87,7 @@ XCM_DECLARE_SMARTPTR(ISetInternal)
 XCM_DECLARE_SMARTPTR(IDatabaseInternal)
 XCM_DECLARE_SMARTPTR(IOfsEvents)
 XCM_DECLARE_SMARTPTR(INodeValue)
-
+XCM_DECLARE_SMARTPTR(IIteratorSetAccess)
 
 
 xcm_interface INodeValue : public xcm::IObject
@@ -279,8 +279,19 @@ public:
                                              tango::IJob* job) = 0;
     virtual bool renameIndex(const std::wstring& name,
                              const std::wstring& new_name) = 0;
-   virtual  bool deleteIndex(const std::wstring& name) = 0;
+    virtual  bool deleteIndex(const std::wstring& name) = 0;
 };
+
+
+xcm_interface IIteratorSetAccess : public xcm::IObject
+{
+    XCM_INTERFACE_NAME("xdnative.IIteratorSetAccess")
+
+public:
+
+    virtual void setSet(tango::ISetPtr set) = 0;
+};
+
 
 
 xcm_interface IDatabaseInternal : public xcm::IObject

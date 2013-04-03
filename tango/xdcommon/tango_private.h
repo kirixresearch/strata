@@ -16,9 +16,6 @@
 xcm_interface IIteratorKeyAccess;
 XCM_DECLARE_SMARTPTR(IIteratorKeyAccess)
 
-xcm_interface IIteratorSetAccess;
-XCM_DECLARE_SMARTPTR(IIteratorSetAccess)
-
 xcm_interface ISetRestoreDeleted;
 XCM_DECLARE_SMARTPTR(ISetRestoreDeleted)
 
@@ -37,17 +34,6 @@ public:
     virtual bool setKeyFilter(const void* key, int len) = 0;
     virtual void getKeyFilter(const void** key, int* len) = 0;
     virtual bool setFirstKey() = 0;
-};
-
-
-
-xcm_interface IIteratorSetAccess : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("tango.IIteratorSetAccess")
-
-public:
-
-    virtual void setSet(tango::ISetPtr set) = 0;
 };
 
 
