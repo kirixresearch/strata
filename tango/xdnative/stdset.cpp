@@ -110,7 +110,8 @@ tango::IIteratorPtr IterWrapperSet::createIterator(const std::wstring& columns,
     tango::IIteratorPtr iter = createIteratorFromIndex(data_iter,
                                                        idx,
                                                        columns,
-                                                       expr);
+                                                       expr,
+                                                       getObjectPath());
     idx->unref();
 
     return iter;

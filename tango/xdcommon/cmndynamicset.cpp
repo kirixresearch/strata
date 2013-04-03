@@ -117,6 +117,13 @@ std::wstring CommonDynamicSet::getSetId()
     return m_set_id;
 }
 
+tango::IStructurePtr CommonDynamicSet::getStructure()
+{
+    IXdsqlTablePtr tbl = m_base_set;
+    return tbl->getStructure();
+}
+
+
 bool CommonDynamicSet::create(tango::IDatabasePtr database,
                               const std::wstring& base_path)
 {
@@ -359,10 +366,17 @@ tango::IIteratorPtr CommonDynamicSet::createIterator(const std::wstring& columns
             return xcm::null;
         data_iter->goFirst();
 
+
+        tango::ISetPtr thisset = static_cast<tango::ISet*>(this);
+
+        
+
         CommonIndexIterator* iter = new CommonIndexIterator(data_iter,
                                                             idx_iter,
                                                             L"",
                                                             false);
+        iter->setTable(getObjectPath());
+        iter->setRefObj(thisset); // we want |this| to live as long as the index iterator
         idx_iter->unref();
         iter->goFirst();
         return static_cast<tango::IIterator*>(iter);
@@ -408,7 +422,8 @@ tango::IIteratorPtr CommonDynamicSet::createIterator(const std::wstring& columns
     return createIteratorFromIndex(data_iter,
                                    idx,
                                    columns,
-                                   expr);
+                                   expr,
+                                   getObjectPath());
 }
 
 

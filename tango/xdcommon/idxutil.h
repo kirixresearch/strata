@@ -28,7 +28,8 @@ IIndex* createExternalIndex(tango::IDatabasePtr db,
 tango::IIteratorPtr createIteratorFromIndex(tango::IIteratorPtr data_iter,
                                             IIndex* idx,
                                             const std::wstring& columns,
-                                            const std::wstring& order);
+                                            const std::wstring& order,
+                                            const std::wstring& table = L"");
 
 
 
@@ -64,6 +65,9 @@ public:
                         bool value_side = true);
 
     virtual ~CommonIndexIterator();
+
+    void setTable(const std::wstring& path) { m_table = path; }
+    void setRefObj(xcm::IObjectPtr refobj) { m_refobj = refobj; } // holds onto a reference
 
     void* getKey();
     int getKeyLength();
@@ -129,6 +133,8 @@ private:
 
 private:
 
+    xcm::IObjectPtr m_refobj;
+    std::wstring m_table;
     tango::IIterator* m_data_iter;
     IIndexIterator* m_idx_iter;
     

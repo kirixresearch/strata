@@ -2591,7 +2591,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
     }
 
 
-   tango::IStructurePtr set_structure;
+    tango::IStructurePtr set_structure;
 
     // parse the from table
     {

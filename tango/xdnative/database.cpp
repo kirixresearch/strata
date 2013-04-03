@@ -2270,7 +2270,17 @@ tango::IFileInfoPtr Database::getFileInfo(const std::wstring& _path)
 {
     if (_path.empty())
         return xcm::null;
-        
+    
+    if (_path.substr(0, 11) == L"/.temp/.ptr")
+    {
+        xdcommon::FileInfo* f = new xdcommon::FileInfo;
+        f->name = kl::afterLast(_path, L'/');
+        f->type = tango::filetypeSet;
+        f->format = tango::formatNative;
+        f->is_mount = false;
+        return static_cast<tango::IFileInfo*>(f);
+    }
+
     std::wstring path = _path;
     if (kl::isFileUrl(_path))
         path = urlToOfsFilename(_path);
@@ -3357,7 +3367,7 @@ tango::IIteratorPtr Database::createIterator(const std::wstring& path,
                                              tango::IJob* job)
 {
     tango::ISetPtr set = openSet(path);
-    ICreateIteratorPtr ci = set;
+    IXdsqlTablePtr ci = set;
     if (ci.isNull())
         return xcm::null;
     return ci->createIterator(columns, sort, job);
@@ -3918,7 +3928,7 @@ tango::IIndexInfoEnumPtr Database::getIndexEnum(const std::wstring& path)
 tango::IStructurePtr Database::describeTable(const std::wstring& path)
 {
     tango::ISetPtr set = openSet(path);
-    ISetInternalPtr set_int = set;
+    IXdsqlTablePtr set_int = set;
     if (set_int.isNull())
         return xcm::null;
 

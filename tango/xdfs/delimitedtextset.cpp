@@ -255,7 +255,8 @@ tango::IIteratorPtr DelimitedTextSet::createIterator(const std::wstring& columns
     return createIteratorFromIndex(data_iter,
                                    idx,
                                    columns,
-                                   expr);
+                                   expr,
+                                   getObjectPath());
 }
 
 tango::rowpos_t DelimitedTextSet::getRowCount()

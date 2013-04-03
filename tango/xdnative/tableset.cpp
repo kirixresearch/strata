@@ -1387,7 +1387,10 @@ tango::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
 
         tango::IIteratorPtr res;
         res = createIteratorFromIndex(data_iter,
-                                      idx, columns, expr);
+                                      idx,
+                                      columns,
+                                      expr,
+                                      getObjectPath());
 
         idx->unref();
         return res;
@@ -1434,7 +1437,10 @@ tango::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
 
         tango::IIteratorPtr data_iter = createIterator(columns, L"", NULL);
         return createIteratorFromIndex(data_iter,
-                                       idx, columns, expr);
+                                       idx,
+                                       columns,
+                                       expr,
+                                       getObjectPath());
     }
 }
 

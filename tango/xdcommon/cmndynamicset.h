@@ -30,7 +30,7 @@ public:
 
 class CommonDynamicSet : public tango::ISet,
                          public tango::ISetRowUpdate,
-                         public ICreateIterator
+                         public IXdsqlTable
 {
 friend class CommonDynamicSetRowDeleter;
 
@@ -38,7 +38,7 @@ friend class CommonDynamicSetRowDeleter;
     XCM_BEGIN_INTERFACE_MAP(CommonDynamicSet)
         XCM_INTERFACE_ENTRY(tango::ISet)
         XCM_INTERFACE_ENTRY(tango::ISetRowUpdate)
-        XCM_INTERFACE_ENTRY(ICreateIterator)
+        XCM_INTERFACE_ENTRY(IXdsqlTable)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -60,7 +60,7 @@ public:
     // ISet
     std::wstring getSetId();
 
-    //tango::IStructurePtr getStructure();
+    tango::IStructurePtr getStructure();
 
     tango::IRowDeleterPtr getRowDeleter();
     tango::IIteratorPtr createIterator(const std::wstring& columns,

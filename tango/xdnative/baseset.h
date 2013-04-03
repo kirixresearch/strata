@@ -19,14 +19,14 @@
 
 class BaseSet : public tango::ISet,
                 public tango::ISetRowUpdate,
-                public ICreateIterator,
+                public IXdsqlTable,
                 public ISetInternal
 {
     XCM_CLASS_NAME("xdnative.BaseSet")
     XCM_BEGIN_INTERFACE_MAP(BaseSet)
         XCM_INTERFACE_ENTRY(tango::ISet)
         XCM_INTERFACE_ENTRY(tango::ISetRowUpdate)
-        XCM_INTERFACE_ENTRY(ICreateIterator)
+        XCM_INTERFACE_ENTRY(IXdsqlTable)
         XCM_INTERFACE_ENTRY(ISetInternal)
     XCM_END_INTERFACE_MAP()
  

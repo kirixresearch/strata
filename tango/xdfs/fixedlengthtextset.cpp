@@ -315,7 +315,8 @@ tango::IIteratorPtr FixedLengthTextSet::createIterator(
     return createIteratorFromIndex(data_iter,
                                    idx,
                                    columns,
-                                   expr);
+                                   expr,
+                                   getObjectPath());
 
 }
 

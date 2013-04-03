@@ -1000,6 +1000,7 @@ unsigned long long hex2uint64(const wchar_t* _code)
         const wchar_t* pos = wcschr(hexchars, c);
         if (!pos)
         {
+            free(code);
             return 0;
         }
 

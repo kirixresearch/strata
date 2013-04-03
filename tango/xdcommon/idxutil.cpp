@@ -281,7 +281,8 @@ IIndexIterator* seekRow(IIndex* idx,
 tango::IIteratorPtr createIteratorFromIndex(tango::IIteratorPtr data_iter,
                                             IIndex* idx,
                                             const std::wstring& columns,
-                                            const std::wstring& order)
+                                            const std::wstring& order,
+                                            const std::wstring& table)
 {   
     IIndexIterator* idx_iter = idx->createIterator();
     if (!idx_iter)
@@ -290,6 +291,7 @@ tango::IIteratorPtr createIteratorFromIndex(tango::IIteratorPtr data_iter,
 
     CommonIndexIterator* iter;
     iter = new CommonIndexIterator(data_iter, idx_iter, order, true);
+    iter->setTable(table);
 
     idx_iter->unref();
     iter->goFirst();
@@ -354,7 +356,7 @@ tango::IIteratorPtr CommonIndexIterator::clone()
                                                             m_order,
                                                             m_value_side);
     index_iter->unref();
-
+    new_iter->setTable(m_table);
     memcpy(new_iter->m_key_filter, m_key_filter, m_keylen);
     new_iter->m_key_filter_len = m_key_filter_len;
 
@@ -627,6 +629,9 @@ tango::ISetPtr CommonIndexIterator::getSet()
 
 std::wstring CommonIndexIterator::getTable()
 {
+    if (m_table.length() > 0)
+        return m_table;
+
     tango::ISetPtr set = getSet();
     if (set.isNull())
         return L"";
