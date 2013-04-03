@@ -27,14 +27,6 @@ class KeyBuilderPanel;
 #include "tangogridmodel.h"
 #include <map>
 
-xcm_interface ITableDocPrivate : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("appmain.ITableDocPrivate")
-
-public:
-
-};
-
 
 // forward declarations
 namespace kscript
@@ -54,7 +46,6 @@ enum
 class TableDoc : public wxWindow,
                  public IDocument,
                  public ITableDoc,
-                 public ITableDocPrivate,
                  public IColumnListTarget,
                  public IFindTarget,
                  public IDocumentScriptBinding,
@@ -65,7 +56,6 @@ class TableDoc : public wxWindow,
     XCM_BEGIN_INTERFACE_MAP(TableDoc)
         XCM_INTERFACE_ENTRY(IDocument)
         XCM_INTERFACE_ENTRY(ITableDoc)
-        XCM_INTERFACE_ENTRY(ITableDocPrivate)
         XCM_INTERFACE_ENTRY(IColumnListTarget)
         XCM_INTERFACE_ENTRY(IFindTarget)
         XCM_INTERFACE_ENTRY(IDocumentScriptBinding)
@@ -93,13 +83,14 @@ public:
 
     // ITableDoc
     
-    bool open(const wxString& table,
+    bool open(const wxString& path,
               tango::IIteratorPtr optional_iterator = xcm::null);
 
-    bool setBrowseSet(tango::ISetPtr set, tango::IIteratorPtr iter);
+    bool setBrowseSet(const wxString& path,
+                      tango::IIteratorPtr optional_iterator = xcm::null);
 
     wxString getPath() { return m_path; }
-    wxString getBrowsePath() { return towx(m_browse_set->getObjectPath()); }
+    wxString getBrowsePath() { return m_browse_path; }
 
     void closeSet();
     void setEnabled(bool new_val);
@@ -373,8 +364,6 @@ private:
 
 private:
 
-    tango::ISetPtr m_set;
-    tango::ISetPtr m_browse_set;
     tango::IIteratorPtr m_iter;
     ITableDocViewPtr m_active_view;
 
@@ -389,6 +378,7 @@ private:
     wxString m_caption;               // window's caption/title
     wxString m_caption_suffix;        // window's caption suffix
     wxString m_path;                  // path (if any) of the current window
+    wxString m_browse_path;           // path of any filtered or subset
     wxString m_filter;                // current filter, or empty if none
     wxString m_sort_order;            // current sort order, or empty if none
     wxString m_group_break;           // current group break, or empty if none

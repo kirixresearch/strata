@@ -689,8 +689,6 @@ bool TableDoc::onSiteClosing(bool force)
     m_frame.clear();
     m_doc_site.clear();
     m_grid_model.clear();
-    m_set.clear();
-    m_browse_set.clear();
     m_iter.clear();
 
     if (m_grid)
@@ -1747,8 +1745,6 @@ void TableDoc::onDoReloadRefresh(wxCommandEvent& evt)
         freeTemporaryHandles();
         m_grid->setModel(xcm::null);
         m_grid_model.clear();
-        m_set.clear();
-        m_browse_set.clear();
         m_iter.clear();
         
         // close out text doc
@@ -2263,21 +2259,18 @@ void TableDoc::onColumnsDropped(kcl::GridDataDropTarget* drop_target)
 bool TableDoc::open(const wxString& _path,
                     tango::IIteratorPtr optional_iterator)
 {
+    std::wstring path = towstr(_path);
+
     tango::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return false;
 
-    std::wstring path = towstr(_path);
-    tango::ISetPtr set = db->openSet(path);
-    if (set.isNull())
-        return false;
-
     tango::IFileInfoPtr file_info = db->getFileInfo(path);
-    if (file_info.isNull())
+    if (file_info.isNull() || file_info->getType() != tango::filetypeSet)
         return false;
 
     // make sure we know the database type
-    m_mount_db = db->getMountDatabase(towstr(path));
+    m_mount_db = db->getMountDatabase(path);
     if (m_mount_db)
     {
         m_db_type = m_mount_db->getDatabaseType();
@@ -2291,9 +2284,7 @@ bool TableDoc::open(const wxString& _path,
     m_sort_order = "";
     m_caption_suffix = "";
 
-    m_set = set;
-    m_browse_set = set;
-    m_path = path;
+    m_path = _path;
 
     // if the set/table displayed has a url associated with it, display it
 
@@ -2305,7 +2296,7 @@ bool TableDoc::open(const wxString& _path,
         url += m_path;
         setSourceUrl(url);
     }
-        else
+     else
     {
         std::wstring mount_root = getMountRoot(db, path);
 
@@ -2330,9 +2321,9 @@ bool TableDoc::open(const wxString& _path,
             }
              else
             {
-                std::wstring part = path;
-                part.erase(0, mount_root.length());
-                setSourceUrl(url + part);
+                std::wstring tpart = path;
+                tpart.erase(0, mount_root.length());
+                setSourceUrl(url + tpart);
             }
         }
     }
@@ -2368,16 +2359,13 @@ bool TableDoc::open(const wxString& _path,
     return true;
 }
 
-bool TableDoc::setBrowseSet(tango::ISetPtr set, tango::IIteratorPtr iter)
+bool TableDoc::setBrowseSet(const wxString& path, tango::IIteratorPtr iter)
 {
     tango::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return false;
 
-    if (set.isNull())
-        return false;
-
-    m_browse_set = set;
+    m_browse_path = path;
 
     if (iter.isOk())
     {
@@ -2386,7 +2374,7 @@ bool TableDoc::setBrowseSet(tango::ISetPtr set, tango::IIteratorPtr iter)
      else
     {
         // create a default iterator
-        tango::IIteratorPtr iter = db->createIterator(m_browse_set->getObjectPath(), L"", L"", NULL);
+        tango::IIteratorPtr iter = db->createIterator(towstr(m_browse_path), L"", L"", NULL);
         if (iter.isNull())
             return false;
 
@@ -2407,8 +2395,6 @@ void TableDoc::closeSet()
     m_grid->setModel(xcm::null);
 
     m_grid_model.clear();
-    m_set.clear();
-    m_browse_set.clear();
     m_iter.clear();
 }
 
@@ -3120,7 +3106,7 @@ void TableDoc::onFilterJobFinished(jobs::IJobPtr job)
         params_node.fromString(job->getParameters());
         m_filter = towstr(params_node["where"].getString());
 
-        setBrowseSet(iter->getSet(), iter);
+        setBrowseSet(iter->getSet()->getObjectPath(), iter);
     }
 
     updateStatusBar();
@@ -3187,7 +3173,7 @@ void TableDoc::onSortJobFinished(jobs::IJobPtr query_job)
     // set the browse set and update the status bar
     tango::IIteratorPtr iter = query_job->getResultObject();
     if (iter.isOk())
-        setBrowseSet(iter->getSet(), iter);
+        setBrowseSet(iter->getSet()->getObjectPath(), iter);
 
     updateStatusBar();
 }
@@ -4436,7 +4422,7 @@ void TableDoc::updateChildWindows()
                 tango::ISetPtr child_set = iter_r->getChildSet(rel);
                 if (child_set)
                 {
-                    table_doc->setBrowseSet(child_set, xcm::null);
+                    table_doc->setBrowseSet(towx(child_set->getObjectPath()));
 
                     wxString suffix;
                     suffix = wxT(" ");
@@ -5980,12 +5966,15 @@ bool TableDoc::getIsChildSet()
 
 wxString TableDoc::getDbDriver()
 {
+    return wxT("xdnative");
+    /*
     if (m_set.isNull())
         return wxT("");
         
     xcm::class_info* class_info = xcm::get_class_info(m_set.p);
     
     return towx(class_info->get_name()).BeforeFirst('.');
+    */
 }
 
 

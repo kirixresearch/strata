@@ -27,7 +27,7 @@ void TableDoc::setFilter(const wxString& filter)
 
     // configure the job parameters
     kl::JsonNode params;
-    params = createSortFilterJobParams(towstr(getBrowsePath()), towstr(filter), towstr(m_sort_order));
+    params = createSortFilterJobParams(towstr(m_path), towstr(filter), towstr(m_sort_order));
 
 
     // set the job parameters and start the job
@@ -71,7 +71,7 @@ void TableDoc::removeFilter()
     m_filter = wxT("");
     m_sort_order = wxT("");
 
-    setBrowseSet(m_set, xcm::null);
+    setBrowseSet(m_path);
 
     updateStatusBar();
     g_app->getAppController()->updateQuickFilterToolBarItem();

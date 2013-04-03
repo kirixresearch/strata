@@ -207,11 +207,13 @@ public:
     virtual bool open(const wxString& table,
                       tango::IIteratorPtr optional_iterator = xcm::null) = 0;
 
-    virtual bool setBrowseSet(tango::ISetPtr set,
-                              tango::IIteratorPtr iter) = 0;
+    virtual bool setBrowseSet(
+                      const wxString& path,
+                      tango::IIteratorPtr optional_iter = xcm::null) = 0;
 
-    virtual void setCaption(const wxString& caption,
-                            const wxString& caption_suffix) = 0;
+    virtual void setCaption(
+                      const wxString& caption,
+                      const wxString& caption_suffix) = 0;
 
     // url that generated this tabledoc (rss, csv, etc.)
     // this will override the value returned by IDocument::getDocumentLocation()
