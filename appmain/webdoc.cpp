@@ -801,7 +801,7 @@ public:
 
         IDocumentSitePtr site;
         ITableDocPtr doc = TableDocMgr::createTableDoc();
-        doc->open(g_app->getDatabase(), output_path);
+        doc->open(output_path);
         doc->setSourceUrl(m_url);
         doc->setSourceMimeType(wxT("application/rss+xml"));
 
@@ -3273,7 +3273,7 @@ void WebDoc::onShowContextMenu(wxWebEvent& evt)
                     
                 ITableDocPtr doc = TableDocMgr::createTableDoc();
 
-                doc->open(g_app->getDatabase(), output_path);
+                doc->open(output_path);
                 doc->setSourceUrl(m_url);
 
                 g_app->getMainFrame()->createSite(doc,

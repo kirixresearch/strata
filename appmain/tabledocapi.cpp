@@ -228,7 +228,7 @@ void TableDoc::scriptfuncOpen(kscript::ExprEnv* env,
     }
 
 
-    retval->setBoolean(pThis->open(g_app->getDatabase(), path));
+    retval->setBoolean(pThis->open(path));
 }
 
 // static

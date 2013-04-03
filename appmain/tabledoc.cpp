@@ -1358,7 +1358,7 @@ void TableDoc::onSaveAsJobFinished(jobs::IJobPtr job)
     setSourceMimeType(wxEmptyString);
     
     // set the base set to the result set
-    open(g_app->getDatabase(), params["output"].getString());
+    open(params["output"].getString());
     
     // the copy job copies the TableDocModel for the table; when doing so,
     // all of the TableDocObjects have a new ID assigned to them, thus the
@@ -1779,7 +1779,7 @@ void TableDoc::onDoReloadRefresh(wxCommandEvent& evt)
         // reload grid
         createModel();
         m_grid->setModel(m_grid_model);
-        open(textdoc->getTextSet(), xcm::null);
+        open(m_path);
         setEnabled(true);
         
         if (error)
@@ -1820,7 +1820,7 @@ void TableDoc::onDoReloadRefresh(wxCommandEvent& evt)
             TableDocMgr::deleteModel(old_set_id);
         }
 
-        open(g_app->getDatabase(), output_path);
+        open(output_path);
     }
 }
 
@@ -2260,21 +2260,15 @@ void TableDoc::onColumnsDropped(kcl::GridDataDropTarget* drop_target)
 
 
 
-bool TableDoc::open(tango::IDatabasePtr db,
-                    const wxString& _path,
+bool TableDoc::open(const wxString& _path,
                     tango::ISetPtr optional_set,
                     tango::IIteratorPtr optional_iterator)
 {
-    std::wstring path = towstr(_path);
-
+    tango::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
-    {
-        db = g_app->getDatabase();
-        if (db.isNull())
-            return false;
-    }
-    
+        return false;
 
+    std::wstring path = towstr(_path);
     tango::ISetPtr set;
     
     if (optional_set.isOk())
@@ -3322,7 +3316,7 @@ void TableDoc::onAlterTableJobFinished(jobs::IJobPtr job)
         }
     }
 
-    open(g_app->getDatabase(), towstr(input_path));
+    open(input_path);
 
     // remove the "Filtered" suffix
     setCaption(wxEmptyString, wxEmptyString);
@@ -4246,7 +4240,7 @@ void TableDoc::resetChildWindows()
         if (table_doc.isOk())
         {
             // reset child window with original path
-            table_doc->open(g_app->getDatabase(), table_doc->getPath());
+            table_doc->open(table_doc->getPath());
             table_doc->setCaption(wxT(""), wxT(""));
             site->setName(wxT(""));
             table_doc->setIsChildSet(false);

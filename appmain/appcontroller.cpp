@@ -4623,7 +4623,7 @@ bool AppController::openTable(const wxString& _location, int* site_id)
     {
         // open all normal table docs
         ITableDocPtr doc = TableDocMgr::createTableDoc();
-        if (!doc->open(database, location))
+        if (!doc->open(location))
         {
             wxFAIL_MSG(wxT("ITableDoc::open() returned false"));
             return false;
@@ -4792,7 +4792,7 @@ void AppController::onOpenDataViewFinished(jobs::IJobPtr query_job)
         return;
 
     ITableDocPtr doc = TableDocMgr::createTableDoc();
-    if (!doc->open(g_app->getDatabase(), towx(set->getObjectPath()), set, iter))
+    if (!doc->open(towx(set->getObjectPath()), set, iter))
     {
         wxFAIL_MSG(wxT("ITableDoc::open() returned false"));
         return;

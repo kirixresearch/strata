@@ -93,8 +93,7 @@ public:
 
     // ITableDoc
     
-    bool open(tango::IDatabasePtr db,
-              const wxString& table,
+    bool open(const wxString& table,
               tango::ISetPtr optional_set = xcm::null,
               tango::IIteratorPtr optional_iterator = xcm::null);
 

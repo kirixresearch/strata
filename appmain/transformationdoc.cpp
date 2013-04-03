@@ -1554,7 +1554,7 @@ void TransformationDoc::onFrameEvent(FrameworkEvent& evt)
                 {
                     // create a tabledoc and open it
                     ITableDocPtr doc = TableDocMgr::createTableDoc();
-                    doc->open(g_app->getDatabase(), m_init_set->getObjectPath());
+                    doc->open(m_init_set->getObjectPath());
 
                     if (doc->getCaption().Length() == 0)
                     {
@@ -1802,7 +1802,7 @@ bool TransformationDoc::doSave()
     if (tabledoc)
     {
         // update the TableDoc's base set
-        tabledoc->open(g_app->getDatabase(), text_set->getObjectPath());
+        tabledoc->open(text_set->getObjectPath());
         
         ITableDocViewPtr tabledocview = tabledoc->getActiveView();
         if (tabledocview)

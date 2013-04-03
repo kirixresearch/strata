@@ -410,7 +410,7 @@ bool StructureDoc::doSave()
 
         // create a tabledoc and open it
         table_doc = TableDocMgr::createTableDoc();
-        table_doc->open(g_app->getDatabase(), m_path);
+        table_doc->open(m_path);
 
         if (table_doc->getCaption().Length() == 0)
         {
@@ -1684,7 +1684,7 @@ void StructureDoc::onFrameEvent(FrameworkEvent& evt)
                     
                     // create a tabledoc and open it
                     ITableDocPtr doc = TableDocMgr::createTableDoc();
-                    doc->open(g_app->getDatabase(), m_path);
+                    doc->open(m_path);
 
                     if (doc->getCaption().Length() == 0)
                     {

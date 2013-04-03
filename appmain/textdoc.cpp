@@ -127,7 +127,7 @@ ITextDocPtr createTextDoc(const wxString& filename,
     
     // create a new TableDoc
     ITableDocPtr tabledoc = TableDocMgr::createTableDoc();
-    tabledoc->open(g_app->getDatabase(), filename, textdoc->getTextSet());
+    tabledoc->open(filename, textdoc->getTextSet());
 
     // create a new TransformationDoc
     TransformationDoc* transdoc = new TransformationDoc();
@@ -1280,7 +1280,7 @@ void TextDoc::onTextViewColumnAdded(TextViewColumn col)
     if (tabledoc)
     {
         // update the TableDoc's base set
-        tabledoc->open(g_app->getDatabase(), m_path);
+        tabledoc->open(m_path);
         
         ITableDocViewPtr tabledocview = tabledoc->getActiveView();
         if (tabledocview)
@@ -1362,7 +1362,7 @@ void TextDoc::onTextViewColumnDeleted(TextViewColumn col)
         }
         
         // update the TableDoc's base set and refresh its view
-        tabledoc->open(g_app->getDatabase(), m_path);
+        tabledoc->open(m_path);
         tabledoc->refreshActiveView();
     }
 
@@ -1456,7 +1456,7 @@ void TextDoc::onTextViewColumnModified(TextViewColumn col,
         }
 
         // update the TableDoc's base set and refresh its view
-        tabledoc->open(g_app->getDatabase(), m_path);
+        tabledoc->open(m_path);
         tabledoc->refreshActiveView();
     }
     
@@ -1644,7 +1644,7 @@ void TextDoc::onFixedLengthSkipCharTextEnter(wxCommandEvent& evt)
     ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
     if (tabledoc)
     {
-        tabledoc->open(g_app->getDatabase(), m_path);
+        tabledoc->open(m_path);
     }
     
     m_dirty = true;
@@ -1682,7 +1682,7 @@ void TextDoc::onFixedLengthRowWidthTextEnter(wxCommandEvent& evt)
     ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
     if (tabledoc)
     {
-        tabledoc->open(g_app->getDatabase(), m_path);
+        tabledoc->open(m_path);
     }
 
     updateColumnList();
@@ -1708,7 +1708,7 @@ void TextDoc::onFixedLengthSkipCharSpun(wxSpinEvent& evt)
     ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
     if (tabledoc)
     {
-        tabledoc->open(g_app->getDatabase(), m_path);
+        tabledoc->open(m_path);
     }
 
     m_dirty = true;
@@ -1732,7 +1732,7 @@ void TextDoc::onFixedLengthRowWidthSpun(wxSpinEvent& evt)
     ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
     if (tabledoc)
     {
-        tabledoc->open(g_app->getDatabase(), m_path);
+        tabledoc->open(m_path);
     }
 
     updateColumnList();
@@ -1759,7 +1759,7 @@ void TextDoc::onFixedLengthLineDelimitedChecked(wxCommandEvent& evt)
     ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
     if (tabledoc)
     {
-        tabledoc->open(g_app->getDatabase(), m_path);
+        tabledoc->open(m_path);
     }
 
     updateColumnList();
@@ -2111,7 +2111,7 @@ void TextDoc::onTextDelimitedCaptionEndEdit(kcl::GridEvent& evt)
         }
 
         // update the TableDoc's base set and refresh its view
-        tabledoc->open(g_app->getDatabase(), m_path);
+        tabledoc->open(m_path);
         tabledoc->refreshActiveView();
     }
 
@@ -2215,7 +2215,7 @@ void TextDoc::resetTransformationDocAndTableDoc()
 
         // calling this after deleting all the views will cause
         // the TableDoc to "re-initialize" with a default view
-        tabledoc->open(g_app->getDatabase(), m_path);
+        tabledoc->open(m_path);
     }
 }
 
@@ -2251,7 +2251,7 @@ void TextDoc::doBulkFieldRename(std::vector< std::pair<wxString, wxString> > to_
             }
 
             // refresh the TableDoc's set and view
-            tabledoc->open(g_app->getDatabase(), m_path);
+            tabledoc->open(m_path);
             tabledoc->refreshActiveView();
         }
     }
