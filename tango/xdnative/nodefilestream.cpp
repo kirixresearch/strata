@@ -53,6 +53,8 @@ static bool convertNodeToJson(INodeValuePtr ofsnode, kl::JsonNode& jsonnode)
 NodeFileStream::NodeFileStream(tango::IDatabase* db)
 {
     m_db = db;
+    m_db->ref();
+
     m_utf8data = NULL;
     m_stream_length = 0;
     m_stream_offset = 0;
@@ -61,6 +63,8 @@ NodeFileStream::NodeFileStream(tango::IDatabase* db)
 NodeFileStream::~NodeFileStream()
 {
     delete[] m_utf8data;
+
+    m_db->unref();
 }
 
 bool NodeFileStream::create(const std::wstring& filename)
@@ -81,11 +85,17 @@ bool NodeFileStream::open(const std::wstring& filename)
     // get the ofs node and convert it to a json string
     INodeValuePtr ofsnode = ofsfile->getRootNode();
     if (ofsnode.isNull())
+    {
+        ofsfile->unref();
         return false;
+    }
 
     kl::JsonNode jsonnode;
     if (!convertNodeToJson(ofsnode, jsonnode))
+    {
+        ofsfile->unref();
         return false;
+    }
 
     std::wstring jsonstr = jsonnode.toString();
 
@@ -104,6 +114,7 @@ bool NodeFileStream::open(const std::wstring& filename)
     m_stream_length = strlen(m_utf8data);
     m_stream_offset = 0;
 
+    ofsfile->unref();
     return true;
 }
 
@@ -125,7 +136,7 @@ bool NodeFileStream::read(void* buf,
 
     return true;
 }
-                  
+              
 bool NodeFileStream::write(const void* buf,
                            unsigned long write_size,
                            unsigned long* written_count)
