@@ -89,8 +89,8 @@ public:
     bool setBrowseSet(const wxString& path,
                       tango::IIteratorPtr optional_iterator = xcm::null);
 
-    wxString getPath() { return m_path; }
-    wxString getBrowsePath() { return m_browse_path; }
+    wxString getPath();
+    wxString getBrowsePath();
 
     void closeSet();
     void setEnabled(bool new_val);

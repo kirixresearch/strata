@@ -2254,6 +2254,18 @@ void TableDoc::onColumnsDropped(kcl::GridDataDropTarget* drop_target)
 }
 
 
+wxString TableDoc::getPath()
+{
+    return m_path;
+}
+
+wxString TableDoc::getBrowsePath()
+{
+    if (m_browse_path.Length() > 0)
+        return m_browse_path;
+    return m_path;
+}
+
 
 
 bool TableDoc::open(const wxString& _path,
@@ -6896,7 +6908,7 @@ bool TableDoc::saveAsStructure(const wxString& path)
         memcpy(buf, s.c_str(), buf_len);
     }
 
-    // -- file is not in project, try disk filesystem --
+    // file is not in project, try disk filesystem
     xf_file_t f = xf_open(towstr(path), xfCreate, xfWrite, xfShareNone);
     if (!f)
     {
