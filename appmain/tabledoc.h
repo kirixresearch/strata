@@ -205,7 +205,6 @@ xcm_interface ITableDoc : public xcm::IObject
 public:
 
     virtual bool open(const wxString& table,
-                      tango::ISetPtr optional_set = xcm::null,
                       tango::IIteratorPtr optional_iterator = xcm::null) = 0;
 
     virtual bool setBrowseSet(tango::ISetPtr set,

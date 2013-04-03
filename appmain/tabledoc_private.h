@@ -94,7 +94,6 @@ public:
     // ITableDoc
     
     bool open(const wxString& table,
-              tango::ISetPtr optional_set = xcm::null,
               tango::IIteratorPtr optional_iterator = xcm::null);
 
     bool setBrowseSet(tango::ISetPtr set, tango::IIteratorPtr iter);

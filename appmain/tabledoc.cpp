@@ -2261,7 +2261,6 @@ void TableDoc::onColumnsDropped(kcl::GridDataDropTarget* drop_target)
 
 
 bool TableDoc::open(const wxString& _path,
-                    tango::ISetPtr optional_set,
                     tango::IIteratorPtr optional_iterator)
 {
     tango::IDatabasePtr db = g_app->getDatabase();
@@ -2269,21 +2268,10 @@ bool TableDoc::open(const wxString& _path,
         return false;
 
     std::wstring path = towstr(_path);
-    tango::ISetPtr set;
-    
-    if (optional_set.isOk())
-    {
-        path = optional_set->getObjectPath();
-        set = optional_set;
-    }
-     else
-    {
-        set = db->openSet(path);
-        if (set.isNull())
-            return false;
-    }
-    
-    
+    tango::ISetPtr set = db->openSet(path);
+    if (set.isNull())
+        return false;
+
     tango::IFileInfoPtr file_info = db->getFileInfo(path);
     if (file_info.isNull())
         return false;
