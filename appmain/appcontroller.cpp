@@ -4787,12 +4787,12 @@ void AppController::onOpenDataViewFinished(jobs::IJobPtr query_job)
     if (iter.isNull())
         return;
 
-    tango::ISetPtr set = iter->getSet();
-    if (set.isNull())
+    std::wstring table_path = iter->getTable();
+    if (table_path.empty())
         return;
 
     ITableDocPtr doc = TableDocMgr::createTableDoc();
-    if (!doc->open(towx(set->getObjectPath()), iter))
+    if (!doc->open(towx(table_path), iter))
     {
         wxFAIL_MSG(wxT("ITableDoc::open() returned false"));
         return;

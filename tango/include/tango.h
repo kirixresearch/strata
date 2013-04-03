@@ -451,6 +451,7 @@ public:
     virtual unsigned int getIteratorFlags() = 0;
     
     virtual ISetPtr getSet() = 0;
+    virtual std::wstring getTable() = 0;
     virtual rowpos_t getRowCount() = 0;
     virtual IIteratorPtr clone() = 0;
 

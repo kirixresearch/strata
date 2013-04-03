@@ -420,6 +420,14 @@ tango::ISetPtr OracleIterator::getSet()
     return m_set;
 }
 
+std::wstring OracleIterator::getTable()
+{
+    if (m_set)
+        return L"";
+    return m_set->getObjectPath();
+}
+
+
 tango::rowpos_t OracleIterator::getRowCount()
 {
     return 0;

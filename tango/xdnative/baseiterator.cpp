@@ -1045,6 +1045,13 @@ tango::ISetPtr BaseIterator::getSet()
     return m_set;
 }
 
+std::wstring BaseIterator::getTable()
+{
+    if (m_set.isNull())
+        return L"";
+    return m_set->getObjectPath();
+}
+
 tango::rowpos_t BaseIterator::getRowCount()
 {
     return m_set_internal->getRowCount();

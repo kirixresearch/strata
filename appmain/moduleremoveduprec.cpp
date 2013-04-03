@@ -345,36 +345,38 @@ static void onRemoveDupRecJobFinished(jobs::IJobPtr job)
     if (job->getJobInfo()->getState() != jobStateFinished)
         return;
 
+    kl::JsonNode params;
+    params.fromString(job->getParameters());
+
+    bool silent = false;
+    bool untitled = false;
+
+    if (params.childExists("silent"))
+        silent = params["silent"].getBoolean();
+    if (params.childExists("untitled"))
+        untitled = params["untitled"].getBoolean();
+
+    std::wstring output_path = params["output"];
     bool success = false;
 
-    // if there's an output set, open it
-    tango::IIteratorPtr result_iter = job->getResultObject();
-    if (result_iter.isOk())
+    if (isValidTable(output_path))
     {
-        tango::ISetPtr result_set = result_iter->getSet();
-        if (result_set.isOk())
+        if (untitled)
         {
-            std::wstring output_path = result_set->getObjectPath();
-
-            // if the object path begins with xtmp_, we have a temporary
-            // table, so open it up
-            if (isTemporaryTable(output_path))
-            {
-                g_app->getAppController()->openTable(output_path);
-            }
-             else
-            {
-                g_app->getAppController()->refreshDbDoc();
-            }
-
-            success = true;
-
+            g_app->getAppController()->openTable(output_path);
         }
+         else
+        {
+            if (!silent)
+                g_app->getAppController()->refreshDbDoc();
+        }
+
+        success = true;
     }
 
-    if (!success)
+    if (!success && !silent)
     {
-        appMessageBox(_("An output set could not be created."),
+        appMessageBox(_("An output table could not be created."),
                            APPLICATION_NAME,
                            wxOK | wxICON_EXCLAMATION | wxCENTER);
     }

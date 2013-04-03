@@ -3106,7 +3106,7 @@ void TableDoc::onFilterJobFinished(jobs::IJobPtr job)
         params_node.fromString(job->getParameters());
         m_filter = towstr(params_node["where"].getString());
 
-        setBrowseSet(iter->getSet()->getObjectPath(), iter);
+        setBrowseSet(iter->getTable(), iter);
     }
 
     updateStatusBar();
@@ -3173,7 +3173,7 @@ void TableDoc::onSortJobFinished(jobs::IJobPtr query_job)
     // set the browse set and update the status bar
     tango::IIteratorPtr iter = query_job->getResultObject();
     if (iter.isOk())
-        setBrowseSet(iter->getSet()->getObjectPath(), iter);
+        setBrowseSet(iter->getTable(), iter);
 
     updateStatusBar();
 }

@@ -743,12 +743,13 @@ void ConsolePanel::onQueryJobFinished(jobs::IJobPtr job)
     tango::IIteratorPtr result_iter = job->getResultObject();
     if (result_iter.isOk())
     {
-        tango::ISetPtr result_set = result_iter->getSet();
-        if (result_set.isOk())
+        std::wstring table_path = result_iter->getTable();
+
+        if (table_path.length() > 0)
         {
             ITableDocPtr doc = TableDocMgr::createTableDoc();
             doc->setTemporaryModel(true);
-            doc->open(towx(result_set->getObjectPath()), result_iter);
+            doc->open(towx(table_path), result_iter);
             g_app->getMainFrame()->createSite(doc,
                                                 sitetypeNormal,
                                                 -1, -1, -1, -1);

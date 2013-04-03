@@ -625,6 +625,14 @@ tango::ISetPtr CommonIndexIterator::getSet()
     return m_data_iter->getSet();
 }
 
+std::wstring CommonIndexIterator::getTable()
+{
+    tango::ISetPtr set = getSet();
+    if (set.isNull())
+        return L"";
+    return set->getObjectPath();
+}
+
 tango::rowpos_t CommonIndexIterator::getRowCount()
 {
     return m_data_iter->getRowCount();

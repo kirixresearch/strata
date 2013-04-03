@@ -90,9 +90,10 @@ public:
               const std::wstring& filename);
     void setUseSourceIterator(bool source_iterator);
 
-    // -- tango::IIterator interface implementation --
+    // tango::IIterator
 
     tango::ISetPtr getSet();
+    std::wstring getTable();
     tango::rowpos_t getRowCount();
     tango::IDatabasePtr getDatabase();
     tango::IIteratorPtr clone();

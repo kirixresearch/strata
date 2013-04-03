@@ -33,9 +33,8 @@ static void onQueryJobFinished(jobs::IJobPtr job)
     
     // check if there is an output set
     tango::IIteratorPtr result_iter = job->getResultObject();
-    tango::ISetPtr result_set = result_iter->getSet();
 
-    std::wstring output_path = result_set->getObjectPath();
+    std::wstring output_path = result_iter->getTable();
 
     // if the result set isn't temporary, the set has been created
     // with an "INTO" statement and should appear on the tree; so, 
@@ -64,7 +63,7 @@ static void onQueryJobFinished(jobs::IJobPtr job)
         {
             // switch to the table view
             tabledoc->getGrid()->Freeze();
-            tabledoc->open(result_set->getObjectPath(), result_iter);
+            tabledoc->open(output_path, result_iter);
             tabledoc->refreshActiveView();
             tabledoc->getGrid()->Thaw();
 
@@ -75,7 +74,7 @@ static void onQueryJobFinished(jobs::IJobPtr job)
     {
         ITableDocPtr doc = TableDocMgr::createTableDoc();
         doc->setTemporaryModel(true);
-        doc->open(result_set->getObjectPath(), result_iter);
+        doc->open(output_path, result_iter);
 
         g_app->getMainFrame()->createSite(doc, sitetypeNormal,
                                             -1, -1, -1, -1);

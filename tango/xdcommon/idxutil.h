@@ -93,6 +93,7 @@ public:
     void onSetDomainUpdated() { }
 
     tango::ISetPtr getSet();
+    std::wstring getTable();
     tango::rowpos_t getRowCount();
 
     void setIteratorFlags(unsigned int mask, unsigned int value);

@@ -77,6 +77,13 @@ tango::ISetPtr ClientIterator::getSet()
     return m_set;
 }
 
+std::wstring ClientIterator::getTable()
+{
+    if (m_set)
+        return L"";
+    return m_set->getObjectPath();
+}
+
 tango::rowpos_t ClientIterator::getRowCount()
 {
     return 0;

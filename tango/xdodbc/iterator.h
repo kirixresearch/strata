@@ -138,9 +138,10 @@ public:
     
     bool init(const std::wstring& query);
 
-    // tango::IIterator interface implementation
+    // tango::IIterator
 
     tango::ISetPtr getSet();
+    std::wstring getTable();
     tango::rowpos_t getRowCount();
     tango::IDatabasePtr getDatabase();
     tango::IIteratorPtr clone();

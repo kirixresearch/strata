@@ -285,6 +285,13 @@ tango::ISetPtr SqlServerIterator::getSet()
     return m_set;
 }
 
+std::wstring SqlServerIterator::getTable()
+{
+    if (m_set)
+        return L"";
+    return m_set->getObjectPath();
+}
+
 tango::rowpos_t SqlServerIterator::getRowCount()
 {
     return 0;

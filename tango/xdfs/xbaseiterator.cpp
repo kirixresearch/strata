@@ -76,6 +76,13 @@ tango::ISetPtr XbaseIterator::getSet()
     return m_set;
 }
 
+std::wstring XbaseIterator::getTable()
+{
+    if (m_set)
+        return L"";
+    return m_set->getObjectPath();
+}
+
 tango::rowpos_t XbaseIterator::getRowCount()
 {
     return 0;

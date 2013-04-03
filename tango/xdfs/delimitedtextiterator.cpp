@@ -112,6 +112,14 @@ tango::ISetPtr DelimitedTextIterator::getSet()
     return static_cast<tango::ISet*>(m_set);
 }
 
+std::wstring DelimitedTextIterator::getTable()
+{
+    if (m_set)
+        return L"";
+    return m_set->getObjectPath();
+}
+
+
 tango::rowpos_t DelimitedTextIterator::getRowCount()
 {
     return 0;

@@ -99,9 +99,10 @@ public:
               FixedLengthTextSet* set,
               const std::wstring& columns);
 
-    // -- IIterator interface implementation --
+    // IIterator interface
 
     tango::ISetPtr getSet();
+    std::wstring getTable();
     tango::rowpos_t getRowCount();
     tango::IDatabasePtr getDatabase();
     tango::IIteratorPtr clone();

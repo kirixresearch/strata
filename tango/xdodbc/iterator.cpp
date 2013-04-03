@@ -419,6 +419,13 @@ tango::ISetPtr OdbcIterator::getSet()
     return static_cast<tango::ISet*>(m_set);
 }
 
+std::wstring OdbcIterator::getTable()
+{
+    if (m_set)
+        return L"";
+    return m_set->getObjectPath();
+}
+
 tango::rowpos_t OdbcIterator::getRowCount()
 {
     return 0;

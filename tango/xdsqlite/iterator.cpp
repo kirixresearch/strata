@@ -172,6 +172,13 @@ tango::ISetPtr SlIterator::getSet()
     return m_set;
 }
 
+std::wstring SlIterator::getTable()
+{
+    if (m_set)
+        return L"";
+    return m_set->getObjectPath();
+}
+
 tango::rowpos_t SlIterator::getRowCount()
 {
     return 0;

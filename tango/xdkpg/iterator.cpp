@@ -126,6 +126,13 @@ tango::ISetPtr KpgIterator::getSet()
     return static_cast<tango::ISet*>(m_set);
 }
 
+std::wstring KpgIterator::getTable()
+{
+    if (m_set)
+        return L"";
+    return m_set->getObjectPath();
+}
+
 tango::rowpos_t KpgIterator::getRowCount()
 {
     return 0;
