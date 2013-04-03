@@ -98,8 +98,6 @@ public:
               tango::ISetPtr optional_set = xcm::null,
               tango::IIteratorPtr optional_iterator = xcm::null);
 
-    bool open(tango::ISetPtr set, tango::IIteratorPtr iter);
-
     bool setBrowseSet(tango::ISetPtr set, tango::IIteratorPtr iter);
 
     wxString getPath() { return m_path; }

@@ -2386,13 +2386,6 @@ bool TableDoc::open(tango::IDatabasePtr db,
     return true;
 }
 
-
-
-bool TableDoc::open(tango::ISetPtr set, tango::IIteratorPtr iter)
-{
-    return open(g_app->getDatabase(), towx(set->getObjectPath()), set, iter);
-}
-
 bool TableDoc::setBrowseSet(tango::ISetPtr set, tango::IIteratorPtr iter)
 {
     tango::IDatabasePtr db = g_app->getDatabase();

@@ -209,9 +209,6 @@ public:
                       tango::ISetPtr optional_set = xcm::null,
                       tango::IIteratorPtr optional_iterator = xcm::null) = 0;
 
-    virtual bool open(tango::ISetPtr set,
-                      tango::IIteratorPtr iter) = 0;
-
     virtual bool setBrowseSet(tango::ISetPtr set,
                               tango::IIteratorPtr iter) = 0;
 
