@@ -127,7 +127,7 @@ ITextDocPtr createTextDoc(const wxString& filename,
     
     // create a new TableDoc
     ITableDocPtr tabledoc = TableDocMgr::createTableDoc();
-    tabledoc->open(filename, textdoc->getTextSet());
+    tabledoc->open(filename);
 
     // create a new TransformationDoc
     TransformationDoc* transdoc = new TransformationDoc();
