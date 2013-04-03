@@ -709,6 +709,9 @@ bool TableSet::prepareIndexEntry(IndexEntry& e)
     if (!e.index)
         return false;
 
+    if (!m_update_iter)
+        refreshUpdateBuffer(); // indexes key builder use m_update_iter
+
     delete e.key_expr;  
     delete[] e.orig_key;
 
