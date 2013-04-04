@@ -2996,8 +2996,6 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
 
 
     // now try to find the set that has that column
-
-    tango::ISetPtr right_set;
     tango::IStructurePtr right_structure;
 
     tango::IRelationEnumPtr rel_enum = db->getRelationEnum(towstr(m_path));
