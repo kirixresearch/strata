@@ -1709,9 +1709,8 @@ void DbDoc::actionActivate(IFsItemPtr item, int open_mask)
     IDbObjectFsItemPtr obj = item;
     if (!obj)
         return;
-        
-    IDbFolderFsItemPtr folder = item;
-    if (folder)
+
+    if (obj->isFolder())
     {
         // don't activate a folder
         return;
@@ -1830,15 +1829,12 @@ void DbDoc::getFsItemPaths(IFsItemEnumPtr source,
 wxString DbDoc::getFsItemPath(IFsItemPtr source)
 {
     IDbFolderFsItemPtr db_folder_item = source;
-
     if (db_folder_item)
     {
         return db_folder_item->getPath();
     }
 
-    IDbObjectFsItemPtr db_object_item;
-    db_object_item = source;
-
+    IDbObjectFsItemPtr db_object_item = source;
     if (db_object_item)
     {
         return db_object_item->getPath();

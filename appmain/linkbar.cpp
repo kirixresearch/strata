@@ -285,7 +285,7 @@ END_EVENT_TABLE()
 
 static wxString getLinkBarItemPath(const wxString& label)
 {
-    wxString retval = g_app->getBookmarkFolder();
+    wxString retval = g_app->getBookmarksFolder();
     if (label.Mid(0,1) != wxT("/"))
         retval += wxT("/");
     retval += label;
@@ -1062,12 +1062,11 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
     
     // if we right-clicked on a folder, make sure the starting folder
     // for the LinkPropsDialog is that folders path
-    wxString start_folder = g_app->getBookmarkFolder();
+    wxString start_folder = g_app->getBookmarksFolder();
     if (is_folder_clicked)
     {
         start_folder += wxT("/");
         start_folder += item->getLabel();
-        
     }
     
     // process the event
@@ -1596,25 +1595,9 @@ void LinkBar::refresh()
     }
 
     if (m_base_path.IsEmpty())
-        m_base_path = g_app->getBookmarkFolder();
+        m_base_path = g_app->getBookmarksFolder();
 
-    DbDoc* dbdoc = g_app->getDbDoc();
-    IFsItemPtr root_item;
-    
-    if (dbdoc)
-    {
-        // see if we already have an item on the tree that we can use
-        root_item = dbdoc->getFsItemFromPath(m_base_path);
-        
-        if (root_item.isNull())
-        {
-            DbFolderFsItem* folder_raw = new DbFolderFsItem;
-            folder_raw->setLinkBarMode(true);
-            folder_raw->setPath(m_base_path);
-            folder_raw->setDatabase(g_app->getDatabase());
-            root_item = static_cast<IDbFolderFsItem*>(folder_raw);
-        }
-    }
+    IFsItemPtr root_item = g_app->getBookmarksRoot();
     
     if (root_item.isNull())
     {
@@ -2215,10 +2198,10 @@ static void doProjectTreeDragDrop(IFsItemPtr item,
     // find out if we're dragging something already in the bookmark
     // folder to somewhere also in the bookmark folder.  This would amount
     // to a simple move
-    wxString bookmark_folder = g_app->getBookmarkFolder();
+    wxString bookmarks_folder = g_app->getBookmarksFolder();
     bool inner_bookmark = false;
-    if (0 == src_path.Left(bookmark_folder.Length()).CmpNoCase(bookmark_folder) &&
-        0 == dest_path.Left(bookmark_folder.Length()).CmpNoCase(bookmark_folder))
+    if (0 == src_path.Left(bookmarks_folder.Length()).CmpNoCase(bookmarks_folder) &&
+        0 == dest_path.Left(bookmarks_folder.Length()).CmpNoCase(bookmarks_folder))
     {
         inner_bookmark = true;
     }

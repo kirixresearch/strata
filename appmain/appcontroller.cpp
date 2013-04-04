@@ -6037,7 +6037,7 @@ bool AppController::createDefaultProject()
 
 void AppController::createDefaultLinks()
 {
-    wxString bookmarks_folder = g_app->getBookmarkFolder();
+    wxString bookmarks_folder = g_app->getBookmarksFolder();
     if (bookmarks_folder.IsEmpty() || bookmarks_folder.Last() != wxT('/'))
         bookmarks_folder += wxT("/");
     

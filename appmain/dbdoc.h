@@ -64,6 +64,8 @@ xcm_interface IDbObjectFsItem : public xcm::IObject
 
 public:
 
+    virtual bool isFolder() = 0;
+
     virtual void setPath(const wxString& s) = 0;
     virtual wxString getPath() = 0;
     
@@ -126,6 +128,7 @@ public:
     IFsItemEnumPtr getChildren();
 
     bool isDeferred() { return true; }
+    bool isFolder() { return true; }
 
 private:
 
@@ -172,6 +175,8 @@ public:
 
     void setOwner(IDbFolderFsItemPtr owner);
     IDbFolderFsItemPtr getOwner();
+
+    bool isFolder() { return false; }
 
 private:
 

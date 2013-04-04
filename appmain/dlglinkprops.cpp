@@ -104,7 +104,7 @@ int LinkPropsDialog::ShowModal()
     }
      else
     {
-        m_db_comboctrl->setPopupRootFolder(g_app->getBookmarkFolder(),
+        m_db_comboctrl->setPopupRootFolder(g_app->getBookmarksFolder(),
                                            _("Bookmarks Toolbar"));
     }
     

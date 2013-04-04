@@ -13,7 +13,6 @@
 #define __APP_BOOKMARKFS_H
 
 
-// -- DbFolderFsItem class implementation --
 
 class IEBookmarkItem : public FsItemBase
 {

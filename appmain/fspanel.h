@@ -71,6 +71,7 @@ xcm_interface IFsItem : public xcm::IObject
 public:
 
     virtual bool isDeferred() = 0;
+    virtual bool isFolder() = 0;
     virtual bool hasChildren() = 0;
 
     virtual wxTreeItemId getTreeItemId() = 0;
@@ -202,6 +203,11 @@ public:
     wxTreeItemId getTreeItemId()
     {
         return m_base_treeitem_id;
+    }
+
+    bool isFolder()
+    {
+        return false;
     }
 
     wxBitmap getBitmap(unsigned int bitmap_type)
