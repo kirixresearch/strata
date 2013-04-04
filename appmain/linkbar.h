@@ -87,7 +87,7 @@ private:
 private:
 
     LinkBarPopupWindow* m_popup_window;
-    DbDoc* m_popup_dbdoc;
+    IFsPanelPtr m_popup_fspanel;
     wxTimer m_popup_timer;
     bool m_popup_during_drag;
     int m_popup_id;

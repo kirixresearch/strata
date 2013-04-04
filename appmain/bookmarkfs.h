@@ -17,7 +17,13 @@
 class BookmarkFs
 {
 public:
+
     static IFsItemPtr getRootBookmarksFolder();
+    static bool createBookmark(const wxString& path,
+                               const wxString& loc,
+                               const wxString& tags = L"",
+                               const wxString& desc = L"",
+                               const wxImage& favicon = wxImage());
 };
 
 

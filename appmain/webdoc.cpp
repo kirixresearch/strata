@@ -17,7 +17,6 @@
 #include "textdoc.h"
 #include "extensionmgr.h"
 #include "feedparser.h"
-#include "bookmark.h"
 #include "dlgpagesetup.h"
 #include "dbdoc.h"
 #include "dlgcustomprompt.h"
@@ -3454,6 +3453,7 @@ void WebDoc::onFavIconAvailable(wxWebEvent& evt)
     if (m_last_clicked_bookmark_path.IsEmpty())
         return;
     
+    /*
     Bookmark bookmark;
     if (!bookmark.load(m_last_clicked_bookmark_path))
     {
@@ -3463,7 +3463,8 @@ void WebDoc::onFavIconAvailable(wxWebEvent& evt)
     
     bookmark.setFavIcon(img);
     bookmark.save(m_last_clicked_bookmark_path);
-    
+    */
+
     g_app->getAppController()->refreshLinkBar();
         
     m_last_clicked_bookmark_path = wxEmptyString;

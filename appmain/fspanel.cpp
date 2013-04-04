@@ -1085,6 +1085,12 @@ IFsItemPtr FsPanel::getRootItem()
 void FsPanel::setRootItem(IFsItemPtr item)
 {
     m_root = item;
+
+    if (item)
+    {
+        wxTreeItemId null_item;
+        item->setTreeItemId(null_item);
+    }
     
     if (m_treeview)
         m_treeview->setRootItem(item);

@@ -31,8 +31,8 @@
 #include "dbdoc.h"
 #include "structuredoc.h"
 #include "connectionwizard.h"
-#include "bookmark.h"
 #include "dlglinkprops.h"
+#include "bookmarkfs.h"
 
 #include <wx/generic/dirctrlg.h>
 #include <wx/sstream.h>
@@ -1049,22 +1049,10 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
                 continue;
 
 
-            bool bookmark = false;
             bool script = false;
             bool report = false;
             bool query = false;
 
-
-            kl::JsonNode bookmark_node = root_node["bookmark"];
-            kl::JsonNode favicon_node;
-            kl::JsonNode location_node;
-
-            if (bookmark_node.isOk())
-            {
-                bookmark = true;
-                location_node = bookmark_node["location"];
-                favicon_node = bookmark_node["favicon"];
-            }
 
             kl::JsonNode script_node = root_node["kpp_script"];
             script = script_node.isOk();
@@ -1085,13 +1073,7 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
             item->setPath(path);
             item->setOwner(this);
 
-            if (bookmark)
-            {
-                item->setBitmap(GETBMP(gf_document_16), fsbmpSmall);
-                item->setBitmap(GETBMP(gf_document_16), fsbmpLarge);
-                item->setType(dbobjtypeBookmark);
-            }
-             else if (script)
+            if (script)
             {
                 item->setBitmap(DECIDE_BMP(gf_script_16), fsbmpSmall);
                 item->setBitmap(DECIDE_BMP(gf_script_16), fsbmpLarge);
@@ -1114,38 +1096,6 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
                 item->setBitmap(DECIDE_BMP(gf_gear_16), fsbmpSmall);
                 item->setBitmap(DECIDE_BMP(gf_gear_16), fsbmpLarge);
                 item->setType(dbobjtypeTemplate);
-            }
-            
-            
-            if (favicon_node.isOk() && location_node.isOk())
-            {
-                wxBitmap bmp;
-                std::wstring location = location_node.getString();
-                
-                std::map<std::wstring, wxBitmap>::iterator it;
-                it = g_custom_icons.find(location);
-                if (it != g_custom_icons.end())
-                {
-                    bmp = it->second;
-                }
-                 else
-                {             
-                    // item has a custom image -- put it in
-                    wxString favicon = towx(favicon_node.getString());
-                    wxImage img = Bookmark::textToImage(favicon);
-                    bmp = wxBitmap(img);
-                    if (bmp.IsOk())
-                    {
-                        g_custom_icons[location] = bmp;
-                    }
-                }
-                
-                if (bmp.IsOk())
-                {
-                    item->setBitmap(bmp, fsbmpSmall);
-                    item->setBitmap(bmp, fsbmpLarge);
-                }
-                
             }
 
             vec->append(static_cast<IFsItem*>(item));
@@ -1175,84 +1125,6 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
                 item->setType(dbobjtypeTemplate);
                 vec->append(static_cast<IFsItem*>(item));
             }
-             else if (mime_type == L"application/vnd.kx.bookmark")
-            {
-                DbObjectFsItem* item = new DbObjectFsItem;
-                item->setBitmap(GETBMP(gf_document_16), fsbmpSmall);
-                item->setBitmap(GETBMP(gf_document_16), fsbmpLarge);
-
-                // open the bookmark file to get the favicon
-                wxString path = appendPath(m_path, item_name);
-                kl::JsonNode node;
-
-                if (!info->isMount())
-                {
-                    node = JsonConfig::loadFromDb(m_db, towstr(path));
-                }
-                 else
-                {
-                    // links to node files must be dereferenced manually.  We
-                    // should expand the API to include a way of opening node
-                    // files having the database do the deferencing work
-                    std::wstring cstr, rpath;
-                    if (m_db->getMountPoint(towstr(path), cstr, rpath))
-                    {
-                        tango::IDatabasePtr db2 = m_db->getMountDatabase(towstr(path));
-                        if (db2)
-                            node = JsonConfig::loadFromDb(db2, towstr(path));
-                    }
-                }
-
-                if (isValidFileVersion(node, L"application/vnd.kx.bookmark", 1))
-                {
-                    kl::JsonNode bookmark_node = node["bookmark"];
-                    kl::JsonNode favicon_node;
-                    kl::JsonNode location_node;
-
-                    if (bookmark_node.isOk())
-                    {
-                        favicon_node = bookmark_node["favicon"];
-                        location_node = bookmark_node["location"];
-                    }
-
-                    if (favicon_node.isOk() && location_node.isOk())
-                    {
-                        wxBitmap bmp;
-                        std::wstring location = location_node.getString();
-
-                        std::map<std::wstring, wxBitmap>::iterator it;
-                        it = g_custom_icons.find(location);
-                        if (it != g_custom_icons.end())
-                        {
-                            bmp = it->second;
-                        }
-                         else
-                        {             
-                            // item has a custom image -- put it in
-                            wxString favicon = towx(favicon_node.getString());
-                            wxImage img = Bookmark::textToImage(favicon);
-                            bmp = wxBitmap(img);
-                            if (bmp.IsOk())
-                            {
-                                g_custom_icons[location] = bmp;
-                            }
-                        }
-                
-                        if (bmp.IsOk())
-                        {
-                            item->setBitmap(bmp, fsbmpSmall);
-                            item->setBitmap(bmp, fsbmpLarge);
-                        }
-                
-                    }
-                }
-
-                item->setLabel(item_name);
-                item->setPath(appendPath(m_path, item_name));
-                item->setOwner(this);
-                item->setType(dbobjtypeBookmark);
-                vec->append(static_cast<IFsItem*>(item));
-            }
              else if (mime_type.substr(0, 19) == L"application/vnd.kx.")
             {
                 DbObjectFsItem* item = new DbObjectFsItem;
@@ -1266,15 +1138,6 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
             }
              else
             {
-
-                // see if we have a bookmark
-
-
-
-
-
-
-
                 DbObjectFsItem* item = new DbObjectFsItem;
                 item->setLabel(item_name);
                 item->setPath(appendPath(m_path, item_name));
@@ -2084,52 +1947,6 @@ void DbDoc::onItemProperties(wxCommandEvent& evt)
 
     if (count == 1)
     {
-        IDbObjectFsItemPtr item = items->getItem(0);
-        if (item->getType() == dbobjtypeBookmark)
-        {
-            wxString path = getFsItemPath(item);
-            wxString label = items->getItem(0)->getLabel();
-            int idx = m_fspanel->getItemIndex(item);
-            
-            Bookmark b;
-            if (!b.load(path))
-                return;
-            
-            wxString title = wxString::Format(_("\"%s\" Properties"),
-                                              label.c_str());
-            
-            LinkPropsDialog dlg(g_app->getMainWindow());
-            dlg.setStartFolder(path.BeforeLast(wxT('/')));
-            dlg.setName(label);
-            dlg.setLocation(b.getLocation());
-            dlg.setTags(b.getTags());
-            dlg.setDescription(b.getDescription());
-            dlg.setRunTarget(b.getRunTarget());
-            dlg.SetTitle(title);
-            dlg.CenterOnScreen();
-            
-            if (dlg.ShowModal() == wxID_OK)
-            {
-                // save the properties
-                b.setLocation(dlg.getLocation());
-                b.setTags(dlg.getTags());
-                b.setDescription(dlg.getDescription());
-                b.save(dlg.getPath());
-                b.setRunTarget(dlg.getRunTarget());
-                
-                // position the bookmark in the linkbar
-                if (idx != -1)
-                {
-                    DbDoc::setFileVisualLocation(dlg.getPath(), idx);
-                }
-            }
-            
-            refresh();
-            return;
-        }
-    
-    
-    
         IDbFolderFsItemPtr folder = items->getItem(0);
         if (folder)
         {
@@ -4326,7 +4143,7 @@ void DbDoc::onDragDrop(IFsItemPtr target,
              else
             {
                 // create the bookmark
-                Bookmark::create(dest_path, src_path);
+                BookmarkFs::createBookmark(dest_path, src_path);
             }
         }
          else if (cross_mount)

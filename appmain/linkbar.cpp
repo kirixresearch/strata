@@ -11,9 +11,9 @@
 
 #include "appmain.h"
 #include "appcontroller.h"
+#include "bookmarkfs.h"
 #include "linkbar.h"
 #include "toolbars.h"
-#include "bookmark.h"
 #include "dbdoc.h"
 #include "dlglinkprops.h"
 #include "tabledoc.h"
@@ -396,7 +396,7 @@ LinkBar::LinkBar(wxWindow* parent,
     m_exclude_id_end = ID_App_ToggleRelationshipSync;
 
     m_popup_window = NULL;
-    m_popup_dbdoc = NULL;
+    m_popup_fspanel.clear();
     m_popup_id = 0;
     m_popup_timer.SetOwner(this, 6901);
     m_popup_during_drag = false;
@@ -441,11 +441,10 @@ void LinkBar::onItemActivated(IFsItemPtr item)
     {
         m_popup_window->Freeze();
         
-        IFsPanelPtr panel = m_popup_dbdoc->getFsPanel();
-        if (panel->isItemExpanded(item))
-            panel->collapse(item);
+        if (m_popup_fspanel->isItemExpanded(item))
+            m_popup_fspanel->collapse(item);
              else
-            panel->expand(item);
+            m_popup_fspanel->expand(item);
 
         // reposition and resize the popup window
         // as best we can to the size of its contents
@@ -472,11 +471,12 @@ void LinkBar::onItemActivated(IFsItemPtr item)
 
     m_popup_window->Show(false);
     LinkBarPopupWindow* popup_window = m_popup_window;
-    DbDoc* popup_dbdoc = m_popup_dbdoc;
+    IFsPanelPtr popup_dbdoc = m_popup_fspanel;
     m_popup_window = NULL;
-    m_popup_dbdoc = NULL;
+    m_popup_fspanel.clear();
     ::wxYield();
     
+    /*
     if (::wxGetMouseState().ControlDown())
     {
         // ctrl-click is the same as a middle-click
@@ -487,9 +487,10 @@ void LinkBar::onItemActivated(IFsItemPtr item)
     {
         DbDoc::actionActivate(item, appOpenDefault);
     }
-    
+    */
+
     m_popup_window = popup_window;
-    m_popup_dbdoc = popup_dbdoc;
+    m_popup_fspanel = popup_dbdoc;
     closePopupWindow();
 }
 
@@ -513,11 +514,12 @@ void LinkBar::onItemMiddleClicked(IFsItemPtr item)
 
     m_popup_window->Show(false);
     LinkBarPopupWindow* popup_window = m_popup_window;
-    DbDoc* popup_dbdoc = m_popup_dbdoc;
+    IFsPanelPtr popup_dbdoc = m_popup_fspanel;
     m_popup_window = NULL;
-    m_popup_dbdoc = NULL;
+    m_popup_fspanel.clear();
     ::wxYield();
     
+    /*
     IDbFolderFsItemPtr folder = item;
     if (folder)
     {
@@ -531,9 +533,10 @@ void LinkBar::onItemMiddleClicked(IFsItemPtr item)
         DbDoc::actionActivate(item, appOpenForceNewWindow |
                                     appOpenActivateNewWindow);
     }
-    
+    */
+
     m_popup_window = popup_window;
-    m_popup_dbdoc = popup_dbdoc;
+    m_popup_fspanel = popup_dbdoc;
     closePopupWindow();
 }
 
@@ -574,9 +577,7 @@ void LinkBar::onPopupDestructing()
         wxPendingDelete.Append(m_popup_window);
     m_popup_window = NULL;
     
-    m_popup_dbdoc->m_fspanel.p = NULL;
-    m_popup_dbdoc->unref();
-    m_popup_dbdoc = NULL;
+    m_popup_fspanel.clear();
     
     m_popup_timer.Stop();
     m_popup_during_drag = false;
@@ -606,8 +607,7 @@ void LinkBar::showPopupWindow(int id,
         m_popup_during_drag = popup_during_drag;
     }
     
-    IDbFolderFsItemPtr folder;
-    wxString path;
+    IFsItemPtr folder;
     
     // show the linkbar "overflow" popup
     if (id == LinkBarDropDownId)
@@ -621,7 +621,7 @@ void LinkBar::showPopupWindow(int id,
         folder_raw->setPath(m_base_path);
         folder_raw->setChildrenOverride(items);
         folder_raw->setDatabase(g_app->getDatabase());
-        folder = static_cast<IDbFolderFsItem*>(folder_raw);
+        folder = static_cast<IFsItem*>(folder_raw);
     }
      else
     {
@@ -631,34 +631,51 @@ void LinkBar::showPopupWindow(int id,
         
         // get the folder item from vector of IFsItems
         folder = m_items[item_idx];
-        path = folder->getPath();
     }
     
     m_popup_window = new LinkBarPopupWindow(this, wxBORDER_NONE);
-    m_popup_dbdoc = new DbDoc;
-    m_popup_dbdoc->setLinkBarMode(true);
-    m_popup_dbdoc->setStyle(fsstyleTreeHideRoot | fsstyleTrackSelect);
-    m_popup_dbdoc->initAsWindow(m_popup_window,
+    m_popup_fspanel = createFsPanelObject();
+    m_popup_fspanel->setStyle(fsstyleTreeHideRoot | fsstyleTrackSelect);
+
+    if (!m_popup_fspanel->create(m_popup_window, -1, wxPoint(1,1), MaxPopupWindowSize, 0))
+    {
+        wxFAIL_MSG(wxT("Could not create FsPanel window"));
+        return;
+    }
+
+
+    m_popup_fspanel->setRootItem(folder);
+    m_popup_fspanel->setView(fsviewTree);
+    m_popup_fspanel->refresh();
+
+    /*
+    m_popup_fspanel->initAsWindow(m_popup_window,
                              -1,
                              wxPoint(1,1),
                              MaxPopupWindowSize,
                              0);
     if (!path.IsEmpty())
-        m_popup_dbdoc->setDatabase(g_app->getDatabase(), folder->getPath());
+        m_popup_fspanel->setDatabase(g_app->getDatabase(), folder->getPath());
          else
-        m_popup_dbdoc->setRootItem(folder);
-    
+        m_popup_fspanel->setRootItem(folder);
+    */
+
+
     // resize the popup window as best we can to the size of its contents
     recalcPopupWindowSize();
     
-    m_popup_dbdoc->refresh();
-    m_popup_dbdoc->getFsPanel()->setDragDrop(true);
-    m_popup_dbdoc->getFsPanel()->sigItemSelected().disconnect();
-    m_popup_dbdoc->getFsPanel()->sigItemActivated().disconnect();
-    m_popup_dbdoc->getFsPanel()->sigItemSelected().connect(this, &LinkBar::onItemActivated);
-    m_popup_dbdoc->getFsPanel()->sigItemMiddleClicked().connect(this, &LinkBar::onItemMiddleClicked);
-    m_popup_dbdoc->getFsPanel()->sigMouseMove().disconnect();
-    m_popup_dbdoc->getFsPanel()->sigMouseMove().connect(this, &LinkBar::onPopupMouseMove);
+    m_popup_fspanel->refresh();
+    m_popup_fspanel->setDragDrop(true);
+
+
+    m_popup_fspanel->sigItemSelected().disconnect();
+    m_popup_fspanel->sigItemActivated().disconnect();
+    m_popup_fspanel->sigItemSelected().connect(this, &LinkBar::onItemActivated);
+    m_popup_fspanel->sigItemMiddleClicked().connect(this, &LinkBar::onItemMiddleClicked);
+    m_popup_fspanel->sigMouseMove().disconnect();
+    m_popup_fspanel->sigMouseMove().connect(this, &LinkBar::onPopupMouseMove);
+
+
     m_popup_window->sigDismiss.connect(this, &LinkBar::onPopupDestructing);
     m_popup_id = id;
     
@@ -676,15 +693,13 @@ void LinkBar::showPopupWindow(int id,
 
 void LinkBar::recalcPopupWindowSize()
 {
-    DbDoc* dbdoc = m_popup_dbdoc;
-    
     int max_height = MaxPopupWindowSize.GetHeight();
     int max_width  = MaxPopupWindowSize.GetWidth();
     int min_height = MinPopupWindowSize.GetHeight();
     int min_width  = MinPopupWindowSize.GetWidth();
     
     int new_width, new_height;
-    dbdoc->getFsPanel()->getVirtualSize(&new_width, &new_height);
+    m_popup_fspanel->getVirtualSize(&new_width, &new_height);
     
     if (new_height < min_height)
         new_height = min_height;
@@ -698,7 +713,8 @@ void LinkBar::recalcPopupWindowSize()
     new_height += wxSystemSettings::GetMetric(wxSYS_HSCROLL_Y);
     new_width  += wxSystemSettings::GetMetric(wxSYS_VSCROLL_X);
     
-    wxWindow* doc_wnd = dbdoc->getDocWindow();
+    IDocumentPtr doc = m_popup_fspanel;
+    wxWindow* doc_wnd = doc->getDocumentWindow();
     wxSize s = doc_wnd->GetSize();
     
     // no change in height or width, we're done
@@ -707,7 +723,7 @@ void LinkBar::recalcPopupWindowSize()
     
     s.SetHeight(new_height);
     s.SetWidth(new_width);
-    dbdoc->getDocWindow()->SetClientSize(s);
+    doc_wnd->SetClientSize(s);
     
     wxWindow* cont_wnd = doc_wnd->GetParent();
     cont_wnd->SetClientSize(s+wxSize(2,2));     // extra pixels for border
@@ -1103,6 +1119,8 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
             
             if (dlg.ShowModal() == wxID_OK)
             {
+
+            /*
                 // create the bookmark
                 Bookmark b;
                 b.setLocation(dlg.getLocation());
@@ -1110,6 +1128,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
                 b.setTags(dlg.getTags());
                 b.setRunTarget(dlg.getRunTarget());
                 b.save(dlg.getPath());
+            */
 
                 // position the bookmark in the linkbar
                 DbDoc::setFileVisualLocation(dlg.getPath(), idx);
@@ -1235,6 +1254,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
                 }
                  else
                 {
+                /*
                     Bookmark b;
                     if (!b.load(path))
                         return;
@@ -1266,6 +1286,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
                         // repopulate and refresh the linkbar
                         refresh();
                     }
+                */
                 }
             }
             
@@ -1354,6 +1375,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
                 }
                  else
                 {
+                /*
                     Bookmark b;
                     if (!b.load(path))
                         return;
@@ -1389,6 +1411,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
                         // repopulate and refresh the linkbar
                         refresh();
                     }
+                */
                 }
             }
             
@@ -1623,6 +1646,7 @@ void LinkBar::refresh()
         AddTool(id, bmp, wxNullBitmap, false, 0);
         SetToolLabel(id, tool_label);
         
+        /*
         IDbFolderFsItemPtr folder_item = item;
         if (folder_item.isNull())
         {
@@ -1724,6 +1748,7 @@ void LinkBar::refresh()
             if (tooltip.Length() > 0)
                 SetToolShortHelp(id, tooltip);
         }
+        */
 
         m_items.push_back(item);
     }
@@ -2229,7 +2254,7 @@ static void doProjectTreeDragDrop(IFsItemPtr item,
             {
                 // for all other items, create a bookmark (link)
                 // and add it to the linkbar (or folder in the linkbar)
-                Bookmark::create(dest_path, src_path);
+                BookmarkFs::createBookmark(dest_path, src_path);
             }
         }
     }
@@ -2414,7 +2439,7 @@ void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
                 
 
             // create the bookmark at the specified location
-            Bookmark::create(dest_path, obj->getPath(), wxT(""), wxT(""), favicon);
+            BookmarkFs::createBookmark(dest_path, obj->getPath(), wxT(""), wxT(""), favicon);
 
             // if we're not dragging to a folder, set the
             // position of the item on the linkbar

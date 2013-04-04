@@ -15,7 +15,7 @@
 #include "appmain.h"
 #include "apphook.h"
 #include "appcontroller.h"
-#include "bookmark.h"
+#include "bookmarkfs.h"
 #include "scripthost.h"
 #include "scriptapp.h"
 #include "dlgprojectmgr.h"
@@ -1881,7 +1881,7 @@ void AppController::onCreateBookmark(wxCommandEvent& evt)
     if (dlg.ShowModal() != wxID_OK)
         return;
     
-    Bookmark::create(dlg.getPath(), doc->getDocumentLocation());
+    BookmarkFs::createBookmark(dlg.getPath(), doc->getDocumentLocation());
     m_linkbar->refresh();
 }
 
@@ -6054,10 +6054,10 @@ void AppController::createDefaultLinks()
     
     IAppPreferencesPtr prefs = g_app->getAppPreferences();
     
-    Bookmark::create(bookmarks_folder + wxT("Home Page"), getAppPrefsDefaultString(wxT("general.location.home")));
-    Bookmark::create(bookmarks_folder + wxT("Online Help"), getAppPrefsDefaultString(wxT("general.location.help")));
-    Bookmark::create(bookmarks_folder + wxT("Developer Resources"), getAppPrefsDefaultString(wxT("general.location.resources")));
-    Bookmark::create(bookmarks_folder + wxT("Support Forums"), getAppPrefsDefaultString(wxT("general.location.support")));
+    BookmarkFs::createBookmark(bookmarks_folder + wxT("Home Page"), getAppPrefsDefaultString(wxT("general.location.home")));
+    BookmarkFs::createBookmark(bookmarks_folder + wxT("Online Help"), getAppPrefsDefaultString(wxT("general.location.help")));
+    BookmarkFs::createBookmark(bookmarks_folder + wxT("Developer Resources"), getAppPrefsDefaultString(wxT("general.location.resources")));
+    BookmarkFs::createBookmark(bookmarks_folder + wxT("Support Forums"), getAppPrefsDefaultString(wxT("general.location.support")));
 
     DbDoc::setFileVisualLocation(bookmarks_folder + wxT("Home Page"), 0);
     DbDoc::setFileVisualLocation(bookmarks_folder + wxT("Online Help"), 1);

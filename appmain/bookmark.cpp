@@ -10,7 +10,6 @@
 
 
 #include "appmain.h"
-#include "bookmark.h"
 #include "jsonconfig.h"
 #include <wx/sstream.h>
 #include <wx/buffer.h>

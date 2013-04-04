@@ -11,14 +11,12 @@
 
 #include "appmain.h"
 #include "bookmarkfs.h"
-
 #include <wx/stdpaths.h>
-
-
 
 #ifdef WIN32
 #include <shlobj.h>
 #endif
+
 
 static std::wstring getBookmarksLocation()
 {
@@ -101,6 +99,17 @@ IFsItemPtr BookmarkFs::getRootBookmarksFolder()
 }
 
 
+bool BookmarkFs::createBookmark(const wxString& path,
+                                const wxString& loc,
+                                const wxString& tags,
+                                const wxString& desc,
+                                const wxImage& favicon)
+{
+    return true;
+}
+
+
+
 
 
 BookmarkFolder::BookmarkFolder()
@@ -144,7 +153,7 @@ void BookmarkFolder::populate()
             IFsItemPtr f = static_cast<IFsItem*>(item);
             m_children.push_back(f);
         }
-            else if (xf_get_directory_exist(full_path))
+         else if (xf_get_directory_exist(full_path))
         {
             BookmarkFolder* folder = new BookmarkFolder;
             folder->setLabel(info.m_name);
