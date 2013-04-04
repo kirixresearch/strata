@@ -750,7 +750,7 @@ bool Database::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
             if (copy_detail)
             {
                 // '[DETAIL]' was specified more than once. return error
-                return xcm::null;
+                return false;
             }
 
             copy_detail = true;
@@ -807,7 +807,7 @@ bool Database::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
 
                 if (!parser->parse(part2))
                 {
-                    return xcm::null;
+                    return false;
                 }
 
                 // add an output field in the output file definition
@@ -845,7 +845,7 @@ bool Database::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
                  else
                 {
                     // syntax error
-                    return xcm::null;
+                    return false;
                 }
             }
 
@@ -881,7 +881,7 @@ bool Database::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
             gi.m_to_destroy.push_back(parser);
             if (!parser->parse(part2))
             {
-                return xcm::null;
+                return false;
             }
             
             
@@ -912,7 +912,7 @@ bool Database::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
 
         if (!having_parser->parse(having))
         {
-            return xcm::null;
+            return false;
         }
     }
     
@@ -925,7 +925,7 @@ bool Database::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
         where_handle = iter->getHandle(where);
         if (iter->getType(where_handle) != tango::typeBoolean)
         {
-            return xcm::null;
+            return false;
         }
     }
 
@@ -937,7 +937,7 @@ bool Database::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
     if (!group.empty())
     {
         if (!kl.setKeyExpr(sp_iter, group))
-            return xcm::null;
+            return false;
     }
 
 
@@ -1054,7 +1054,7 @@ bool Database::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
         if (unique_output_fields.find(f) != unique_output_fields.end())
         {
             // duplicate output field name found, no good
-            return xcm::null;
+            return false;
         }
         unique_output_fields.insert(f);
 
@@ -1067,13 +1067,12 @@ bool Database::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
         info->setScale(out_it->m_scale);
     }
 
-    tango::ISetPtr output_set = createTable(info->output, output_struct, NULL);
-    if (output_set.isNull())
-        return xcm::null;
+    if (!createTable(info->output, output_struct, NULL))
+        return false;
 
     tango::IRowInserterPtr output_inserter = bulkInsert(info->output);
     if (output_inserter.isNull())
-        return xcm::null;
+        return false;
 
 
     for (out_it = output_fields.begin(); out_it != output_fields.end(); ++out_it)
@@ -1094,7 +1093,7 @@ bool Database::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
         ijob = job;
         if (!ijob)
         {
-            return xcm::null;
+            return false;
         }
 
         ijob->setStartTime(time(NULL));
@@ -1137,7 +1136,7 @@ bool Database::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
         if (!idx->create(index_filename, keylen, vallen, true))
         {
             delete idx;
-            return xcm::null;
+            return false;
         }
 
         if (ijob)
@@ -1279,7 +1278,7 @@ bool Database::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
             delete[] keybuf;
             delete[] valuebuf;
 
-            return xcm::null;
+            return false;
         }
 
 
@@ -1301,7 +1300,7 @@ bool Database::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
             delete[] keybuf;
             delete[] valuebuf;
 
-            return xcm::null;
+            return false;
         }
     }
 
@@ -1364,7 +1363,7 @@ bool Database::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
     // if we are already at eof, then this is an empty file
     if (eof)
     {
-        return output_set;
+        return true;
     }
 
 
@@ -1931,6 +1930,7 @@ bool Database::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
     delete[] valuebuf;
 
     output_inserter->finishInsert();
+    output_inserter.clear();
 
     if (idx)
     {
@@ -1942,7 +1942,8 @@ bool Database::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
 
     if (cancelled)
     {
-        return xcm::null;
+        deleteFile(info->output);
+        return false;
     }
      else
     {
@@ -1955,7 +1956,7 @@ bool Database::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
         }
     }
 
-    return output_set;
+    return true;
 }
 
 

@@ -3063,7 +3063,7 @@ bool Database::createTable(const std::wstring& _path,
     }
 
     set->unref();
-    return false;
+    return true;
 }
 
 int Database::getDatabaseType()
