@@ -95,26 +95,10 @@ public:
 };
 
 
-
-
-xcm_interface IImportJob : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("appmain.IImportJob")
-
-public:
-
-    virtual std::vector<ImportJobInfo> getImportSets() = 0;
-};
-
-XCM_DECLARE_SMARTPTR(IImportJob)
-
-
-class ImportJob : public jobs::XdJobBase,
-                  public IImportJob
+class ImportJob : public jobs::XdJobBase
 {
     XCM_CLASS_NAME("appmain.ImportJob")
     XCM_BEGIN_INTERFACE_MAP(ImportJob)
-        XCM_INTERFACE_ENTRY(IImportJob)
         XCM_INTERFACE_CHAIN(jobs::JobBase)
     XCM_END_INTERFACE_MAP()
 

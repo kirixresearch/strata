@@ -5102,19 +5102,22 @@ static void onOpenExcelJobFinished(jobs::IJobPtr job)
     if (job->getJobInfo()->getState() != jobStateFinished)
         return;
 
-    IImportJobPtr import_job = job;
-    if (!import_job)
-        return;
-    
+    // get the list of output tables;
+    std::wstring output = job->getExtraValue(L"appmain.output_tables");
+
+    std::vector<std::wstring> output_tables;
+    kl::parseDelimitedList(output, output_tables, ',', true);
+
     int first_site_id = 0;
     int site_id = 0;
     
-    std::vector<ImportJobInfo> sets = import_job->getImportSets();
-    std::vector<ImportJobInfo>::iterator it;
-    for (it = sets.begin(); it != sets.end(); ++it)
+    std::vector<std::wstring>::iterator it, it_end;
+    it_end = output_tables.end();
+
+    for (it = output_tables.begin(); it != it_end; ++it)
     {
-        g_app->getAppController()->openTable(it->output_path, &site_id);
-        
+        g_app->getAppController()->openTable(*it, &site_id);
+
         // store the set id for the first table we open,
         // so we can activate that site
         if (first_site_id == 0)
@@ -5300,6 +5303,8 @@ bool AppController::openExcel(const wxString& location, int* site_id)
             // would show multiple error messages)
             return true;
         }
+
+        std::vector<std::wstring> output_paths;
             
         for (i = 0; i < count; ++i)
         {
@@ -5310,7 +5315,13 @@ bool AppController::openExcel(const wxString& location, int* site_id)
             job_import_info.output_path = getTempTablename(fn, as[idx]);
             job_import_info.append = false;
             job->addImportSet(job_import_info);
+
+            output_paths.push_back(job_import_info.output_path);
         }
+
+        // pass the output tables as a delimited list
+        std::wstring output = kl::joinList(output_paths, L",");
+        job->setExtraValue(L"appmain.output_tables", output);
 
         job->getJobInfo()->setTitle(towstr(job_title));
         job->sigJobFinished().connect(&onOpenExcelJobFinished);
