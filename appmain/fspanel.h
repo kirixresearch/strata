@@ -15,38 +15,22 @@
 
 #include <wx/dataobj.h>
 #include <wx/dnd.h>
-
-
 #include <wx/treectrl.h>
+#include <wx/listctrl.h>
+
 #ifdef CFW_USE_GENERIC_TREECTRL
 #include <wx/generic/treectlg.h>
-#endif
-
-#include <wx/listctrl.h>
-#ifdef CFW_USE_GENERIC_LISTCTRL
 #include <wx/generic/listctrl.h>
-#endif
-
-
-
-
-#ifdef CFW_USE_GENERIC_TREECTRL
 typedef wxGenericTreeCtrl CfwTreeCtrl;
-#else
-typedef wxTreeCtrl CfwTreeCtrl;
-#endif
-
-
-#ifdef CFW_USE_GENERIC_LISTCTRL
 typedef wxGenericListCtrl CfwListCtrl;
 #else
+typedef wxTreeCtrl CfwTreeCtrl;
 typedef wxListCtrl CfwListCtrl;
 #endif
 
 
 xcm_interface IFsPanel;
 xcm_interface IFsItem;
-
 
 XCM_DECLARE_SMARTPTR(IFsPanel)
 XCM_DECLARE_SMARTPTR(IFsItem)
@@ -106,7 +90,7 @@ public:
     virtual void onRightClicked() = 0;
     virtual void onMiddleClicked() = 0;
     virtual void onActivated() = 0;
-    virtual void onCommandEvent(wxCommandEvent& event) = 0;
+    virtual void onCommandEvent(wxCommandEvent& evt) = 0;
 };
 
 
@@ -118,12 +102,13 @@ public:
 
     virtual void setStyle(int style_flags) = 0;
 
-    // this may be alternatively to the cfw document mechanism
+    // this may be used alternatively to the cfw document mechanism
     virtual bool create(wxWindow* parent,
                         wxWindowID id,
                         const wxPoint& position,
                         const wxSize& size,
                         int flags) = 0;
+
     virtual void destroy() = 0;
 
     virtual void setView(int val) = 0;
@@ -311,10 +296,10 @@ public:
     {
     }
 
-    void onCommandEvent(wxCommandEvent& event)
+    void onCommandEvent(wxCommandEvent& evt)
     {
         // forward this info to the treemodel
-        wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED, event.GetId());
+        wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED, evt.GetId());
         e.SetEventObject(this);
         ProcessEvent(e);
     }
@@ -372,9 +357,8 @@ public:
     
     void setFsItems(IFsItemEnumPtr items)
     {
-        int item_count = items->size();
-        int data_size = (FSDATAOBJECT_METADATA_COUNT+item_count) * sizeof(long);
-        int i;
+        size_t item_count = items->size();
+        size_t i, data_size = (FSDATAOBJECT_METADATA_COUNT + item_count) * sizeof(long);
 
         unsigned long* data = new unsigned long[data_size];
         data[IDX_FSITEM_COUNT] = item_count;
@@ -383,7 +367,7 @@ public:
         for (i = 0; i < item_count; ++i)
         {
             IFsItemPtr item = items->getItem(i);
-            data[i+FSDATAOBJECT_METADATA_COUNT] = (unsigned long)item.p;
+            data[i + FSDATAOBJECT_METADATA_COUNT] = (unsigned long)item.p;
         }
 
         SetData(data_size, data);
@@ -404,13 +388,12 @@ public:
 
         unsigned long* data = (unsigned long*)GetData();
 
-        int item_count = *data;
-        int i;
+        size_t i, item_count = *data;
 
         for (i = 0; i < item_count; ++i)
         {
             IFsItemPtr t;
-            t.p = (IFsItem*)data[i+FSDATAOBJECT_METADATA_COUNT];
+            t.p = (IFsItem*)data[i + FSDATAOBJECT_METADATA_COUNT];
             t.p->ref();
 
             v->append(t);
@@ -484,10 +467,7 @@ private:
 };
 
 
-
 IFsPanelPtr createFsPanelObject();
 
 
 #endif
-
-

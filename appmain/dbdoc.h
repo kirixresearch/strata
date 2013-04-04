@@ -13,10 +13,6 @@
 #define __APP_DBDOC_H
 
 
-class ConnectionWizard;
-
-// -- utility functions --
-
 
 enum
 {
@@ -85,7 +81,7 @@ public:
 
 
 
-// -- DbFolderFsItem class implementation --
+class ConnectionWizard;
 
 class DbFolderFsItem : public FsItemBase,
                        public IDbFolderFsItem,
@@ -151,8 +147,6 @@ private:
 
 
 
-// -- DbObjectFsItem class implementation --
-
 class DbObjectFsItem : public FsItemBase,
                        public IDbObjectFsItem
 {
@@ -190,7 +184,6 @@ private:
 
 
 
-// -- DbDoc class implementation --
 
 class DbDoc : public wxEvtHandler,
               public xcm::signal_sink
@@ -199,7 +192,7 @@ friend class LinkBar;
 
 public:
 
-    // public API for DbDoc
+    // public utility API for DbDoc
     static void actionActivate(IFsItemPtr item, int open_mask);
     static void actionActivateDeferred(IFsItemPtr item, int open_mask);
     static void setFileVisualLocation(const wxString& path, int insert_index);
@@ -358,10 +351,5 @@ private:
 };
 
 
-
-
 #endif
-
-
-
 

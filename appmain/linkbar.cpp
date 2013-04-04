@@ -1501,7 +1501,7 @@ void LinkBar::drawDropHighlight()
     Update();
     
     // invalid drop index, don't draw any drop highlight
-    if (m_drop_idx == -1)
+    if (m_drop_idx < 0)
         return;
     
     // if there's a popup window open, don't draw any drop highlight
@@ -1525,7 +1525,7 @@ void LinkBar::drawDropHighlight()
     // get the rectangle of the item we're using to draw the drop highlight
     
     LinkBarItem* item;
-    if (m_drop_idx >= (int)GetToolCount())
+    if ((size_t)m_drop_idx >= GetToolCount())
     {
         item = FindToolByIndex(m_drop_idx-1);
         wxRect item_rect = getToolRectByItem(item);
@@ -1551,8 +1551,8 @@ void LinkBar::drawDropHighlight()
 
 void LinkBar::refresh()
 {
-    Clear();
-    m_items.clear();
+    this->Clear();    // remove items from toolbar
+    m_items.clear();  // clear our items vector
     
     // add command buttons
     AddTool(ID_Project_New, ID2BMP16(ID_Project_New), wxNullBitmap, false);
@@ -1618,7 +1618,7 @@ void LinkBar::refresh()
     
     if (root_item.isNull())
     {
-        Realize();
+        this->Realize();
         return;
     }
     
