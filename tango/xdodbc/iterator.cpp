@@ -396,7 +396,6 @@ bool OdbcIterator::init(const std::wstring& query)
         set->m_tablename = getTableNameFromSql(query);
         set->m_filter_query = true;
 
-        // initialize Odbc connection for this set
         if (!set->init())
         {
             delete set;

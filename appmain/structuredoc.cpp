@@ -526,7 +526,7 @@ bool StructureDoc::doSave()
         table_doc->connectAlterTableJob(job);
 
     // now, connect the job finished signal to all open
-    // tabledocs that are showing this set
+    // tabledocs that are showing this table
     std::vector<ITableDoc*>::iterator it;
     for (it = to_connect.begin(); it != to_connect.end(); ++it)
     {

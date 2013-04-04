@@ -20,7 +20,7 @@ namespace tango
 {
 
 
-// -- database manager instantiator --
+// database manager instantiator
 
 inline IDatabaseMgrPtr getDatabaseMgr()
 {
@@ -38,7 +38,7 @@ inline IConnectionStrPtr createConnectionStr()
 
 
 
-// -- Expression Binding Utility --
+// Expression Binding Utility
 
 xcm_interface IDatabaseParserBinder : public xcm::IObject
 {
@@ -63,7 +63,7 @@ inline void bindExprParser(void* parser)
 }
 
 
-// -- general utility functions --
+// general utility functions
 
 inline std::wstring dbtypeToString(int type)
 {
@@ -261,7 +261,7 @@ inline std::wstring getTemporaryPath()
 }
 
 
-// -- DateTime support --
+// DateTime support
 
 class DateTime
 {

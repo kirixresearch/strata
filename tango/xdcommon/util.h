@@ -13,7 +13,7 @@
 #define __XDCOMMON_UTIL_H
 
 
-// -- forward declarations --
+// forward declarations
 
 namespace kscript
 {
@@ -21,7 +21,7 @@ namespace kscript
 };
 
 
-// -- platform definitions --
+// platform definitions
 
 #ifdef WIN32
 #define PATH_SEPARATOR_CHAR    L'\\'
@@ -33,7 +33,7 @@ namespace kscript
 
 
 
-// -- string and conversion functions --
+// string and conversion functions
 
 wchar_t* zl_strblank(wchar_t* str);
 wchar_t* zl_strchr(
@@ -49,7 +49,7 @@ wchar_t* zl_stristr(wchar_t* str,
 
 
 
-// -- utility functions --
+// utility functions
 
 std::wstring getUniqueString();
 
@@ -108,7 +108,7 @@ void rowidToBuf(unsigned char* bytes, tango::rowid_t r);
 
 int levenshtein(const wchar_t* s, const wchar_t* t);
 
-// -- inline utilities --
+// inline utilities
 
 
 inline int dateToJulian(int year, int month, int day)
@@ -193,7 +193,7 @@ inline int getDayOfWeek(int year, int month, int day)
 
 
 
-// -- integer <-> buffer conversions --
+// integer <-> buffer conversions
 
 inline void int2buf(unsigned char* buf, unsigned int i)
 {
@@ -267,7 +267,7 @@ inline void invert_rowid_endianness(unsigned char* out, const unsigned char* in)
 }
 
 
-// -- helper class to delete ptr after scope exits --
+// helper class to delete ptr after scope exits
 
 template <class T>
 class DelArrPtr
@@ -279,7 +279,7 @@ public:
 };
 
 
-// -- type stuff --
+// type stuff
 
 inline bool isTypeCompatible(int type1, int type2)
 {
@@ -322,7 +322,7 @@ inline bool isTypeCompatible(int type1, int type2)
 }
 
 
-// -- character-encoding conversion functions --
+// character-encoding conversion functions
 
 
 inline unsigned char ascii2ebcdic(unsigned char c)

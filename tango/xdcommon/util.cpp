@@ -350,7 +350,7 @@ tango::datetime_t str2datetime(const char* str, const char* fmt)
     int arr_size = 0;
     int Y,M,D,h,m,s,ms;
 
-    // -- find next delimiter --
+    // find next delimiter
     p = str;
     last = false;
     while (1)
@@ -371,27 +371,30 @@ tango::datetime_t str2datetime(const char* str, const char* fmt)
         arr[arr_size] = atoi(piece);
         arr_size++;
 
-        // -- if this is the last value, we are done --
+        // if this is the last value, we are done
         if (last)
             break;
 
-        // -- if we've read 7 values, we are done --
+        // if we've read 7 values, we are done
         if (arr_size == 7)
             break;
     }
 
-    // -- assign the appropriate values from the array
-    //    based on the format string --
+    // assign the appropriate values from the array
+    // based on the format string
+
     p = fmt;
     while (*p)
     {
-        // -- we do not have this many values in the array
-        //    so we're done --
+        // we do not have this many values in the array
+        // so we're done
+
         if ((p-fmt) > arr_size)
             break;
 
-        // -- locate the appropriate value in the integer
-        //    array based on the format string --
+        // locate the appropriate value in the integer
+        // array based on the format string
+
         switch (*p)
         {
             case 'Y':
@@ -469,7 +472,8 @@ std::wstring makePathName(const std::wstring& base_dir,
 
         final += s;
 
-        // -- remove trailing slash, if any --
+        // remove trailing slash, if any
+
         wchar_t last_char = final[final.length()-1];
         if (last_char == L'/' || last_char == L'\\')
         {
@@ -568,8 +572,8 @@ std::wstring getTablenameFromFilesystemPath(const std::wstring& _path)
     
     path = path.substr(i+1);
     
-    // -- now that we have the last chunk of the filesystem path, remove
-    //    the file extension, if it exists --
+    // now that we have the last chunk of the filesystem path, remove
+    // the file extension, if it exists
     
     length = path.length();
     for (i = 0; i < length; ++i)
@@ -850,7 +854,7 @@ tango::IIndexInfoPtr xdLookupIndex(tango::IIndexInfoEnumPtr idx_enum,
 
             for (j = 0; j < col_count; ++j)
             {
-                // -- try to find it in the idx columns --
+                // try to find it in the idx columns
                 
                 bool found = false;
 
@@ -1018,7 +1022,7 @@ unsigned long long hex2uint64(const wchar_t* _code)
 
 void bindExprParser(kscript::ExprParser* parser)
 {
-    // -- numeric functions --
+    // numeric functions
     parser->addFunction(L"abs", false, func_abs, false, L"f(f);i(i)");
     parser->addFunction(L"sign", false, func_sign, false, L"i(n)");
     parser->addFunction(L"exp", false, func_exp, false, L"f(n)");
@@ -1039,7 +1043,7 @@ void bindExprParser(kscript::ExprParser* parser)
     parser->addFunction(L"trunc", false, func_trunc, false, L"f(n[n])");
     parser->addFunction(L"round", false, func_round, false, L"f(n[n])");
 
-    // -- string functions --
+    // string functions
     parser->addFunction(L"chr", false, func_chr, false, L"s(i)");
     parser->addFunction(L"contains", false, func_contains, false, L"b(ss)");
     parser->addFunction(L"ltrim", false, func_ltrim, false, L"s(s[s])");
@@ -1074,7 +1078,7 @@ void bindExprParser(kscript::ExprParser* parser)
     parser->addFunction(L"stripchars", false, func_stripchars, false, L"s(ss)");  // internal
     parser->addFunction(L"strdistance", false, func_strdistance, false, L"i(ss)");  // internal
 
-    // -- date functions --
+    // date functions
     parser->addFunction(L"year", false, func_year, false, L"i(d)");
     parser->addFunction(L"month", false, func_month, false, L"i(d)");
     parser->addFunction(L"monthname", false, func_monthname, false, L"s(d)");
@@ -1089,13 +1093,13 @@ void bindExprParser(kscript::ExprParser* parser)
     parser->addFunction(L"curdatetime", false, func_curdatetime, false, L"d()");
     parser->addFunction(L"striptime", false, func_striptime, false, L"d(d)");  // internal
 
-    // -- conversion functions --
+    // conversion functions
     parser->addFunction(L"date", false, func_date, false, L"d(s);d(ss);d(n);d(nnn);d(nnnnnn)");
     parser->addFunction(L"str", false, func_str, false, L"s(n[n]);s(d);s(b)");
     parser->addFunction(L"val", false, func_val, false, L"f(s)");
     parser->addFunction(L"to_char", false, func_tochar, false, L"s(ds);s(ns);s(bs)");  // internal
     
-    // -- list functions --
+    // list functions
     parser->addFunction(L"min", false, func_min, false, L"f(f)f;s(s)s;d(d)d");
     parser->addFunction(L"max", false, func_max, false, L"f(f)f;s(s)s;d(d)d");
     parser->addFunction(L"sum", false, func_sum, false, L"f(n)n");
@@ -1103,25 +1107,25 @@ void bindExprParser(kscript::ExprParser* parser)
     parser->addFunction(L"stddev", false, func_stddev, false, L"f(n)n");
     parser->addFunction(L"variance", false, func_variance, false, L"f(n)n");
 
-    // -- index functions --
+    // index functions
     parser->addFunction(L"ascend", false, func_ascend, true, L"x(sn);x(dn);x(nn);x(in);x(bn)");    // internal
     parser->addFunction(L"descend", false, func_descend, true, L"x(sn);x(dn);x(nn);x(in);x(bn)");  // internal
     parser->addFunction(L"key", false, func_ascend, true, L"x(sn);x(dn);x(nn);x(in);x(bn)");       // internal
     parser->addFunction(L"asckey", false, func_asckey, true, L"x(sn);x(dn);x(nn);x(in);x(bn)");    // internal
 
-    // -- other functions --
+    // other functions
     parser->addFunction(L"iif", false, func_iif, false, L"s(bss);f(bnn);b(bbb);d(bdd)");
     parser->addFunction(L"empty", false, func_empty, false, L"b(s);b(n);b(d)");
     parser->addFunction(L"isnull", false, func_isnull, false, L"b(s);b(n);b(d)");
     parser->addFunction(L"hostname", false, func_hostname, false, L"s(s)");  // internal
 
-    // -- regex functions --
+    // regex functions
     parser->addFunction(L"regexp", false, func_regexp, false, L"s(ss);s(ssn);s(sss)");
     parser->addFunction(L"regexp_m", false, func_regexp_m, false, L"s(ss);s(ssn);s(sss)");  // internal
     parser->addFunction(L"regexp_replace", false, func_regexp_replace, false, L"s(sss);");  // internal
     parser->addFunction(L"regexp_match", false, func_regexp_match, false, L"b(ss);");       // internal
     
-    // -- javascript/json functions --
+    // javascript/json functions
     parser->addFunction(L"json_extract", false, func_json_extract, false, L"s(ss)");  // internal
 }
 

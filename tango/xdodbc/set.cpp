@@ -876,7 +876,6 @@ tango::IIteratorPtr OdbcSet::createIterator(const std::wstring& columns,
     // create an iterator based on our select statement
     OdbcIterator* iter = new OdbcIterator(m_database, this);
 
-    // initialize Odbc connection for this set
     if (!iter->init(query))
     {
         return xcm::null;
@@ -927,7 +926,6 @@ tango::rowpos_t OdbcSet::getRowCount()
     OdbcIterator* iter = new OdbcIterator(m_database, this);
     iter->ref();
 
-    // initialize Odbc connection for this set
     if (!iter->init(query))
     {
         iter->unref();

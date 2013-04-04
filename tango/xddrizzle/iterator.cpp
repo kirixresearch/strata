@@ -160,7 +160,6 @@ bool DrizzleIterator::init(const std::wstring& query)
         set->m_drizzle = m_drizzle;
         set->m_tablename = getTableNameFromSql(query);
         
-        // initialize Odbc connection for this set
         if (!set->init())
             return false;
 

@@ -99,7 +99,6 @@ ExtensionManagerPanel::~ExtensionManagerPanel()
 
 }
 
-// -- IDocument --
 bool ExtensionManagerPanel::initDoc(IFramePtr frame,
                               IDocumentSitePtr site,
                               wxWindow* docsite_wnd,
@@ -120,7 +119,7 @@ bool ExtensionManagerPanel::initDoc(IFramePtr frame,
     m_doc_site->setMinSize(200,150);
     m_doc_site->setCaption(_("Extensions"));
 
-    // -- create controls for the panel --
+    // create controls for the panel
     m_extension_list = new kcl::ScrollListControl(this, -1);
     m_addextensions_button = new wxButton(this, ID_AddExtensionsButton, _("Add Extensions..."));
     
@@ -129,12 +128,12 @@ bool ExtensionManagerPanel::initDoc(IFramePtr frame,
     wxButton* close_button;
     close_button = new wxButton(this, wxID_CANCEL, wxEmptyString, wxDefaultPosition, wxSize(0,0));
     
-    // -- create the button sizer --
+    // create the button sizer
     wxBoxSizer* button_sizer = new wxBoxSizer(wxHORIZONTAL);
     button_sizer->Add(m_addextensions_button, 0, wxALIGN_CENTER);
     button_sizer->Add(close_button, 0, wxALIGN_CENTER);
     
-    // -- create the main sizer --
+    // create the main sizer
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
     main_sizer->AddSpacer(8);
     main_sizer->Add(m_extension_list, 1, wxEXPAND | wxLEFT | wxRIGHT, 8);
@@ -195,7 +194,7 @@ void ExtensionManagerPanel::addItem(ExtensionInfo& info)
     
     kcl::ScrollListItem* item = new kcl::ScrollListItem;
     
-    // -- create uninstall text element --
+    // create uninstall text element
     wxString appname = APPLICATION_NAME;
     wxString uninstall_text = wxString::Format(_("This extension will be uninstalled when %s is restarted."),
                                                appname.c_str());
@@ -207,7 +206,7 @@ void ExtensionManagerPanel::addItem(ExtensionInfo& info)
     uninstall->setTextWrap(false);
     uninstall->setVisible(false);
     
-    // -- create bitmap element --
+    // create bitmap element
     kcl::ScrollListElement* bitmap;
     bitmap = item->addElement(info.bitmap);
     bitmap->setPadding(0,0,15,15);
@@ -215,7 +214,7 @@ void ExtensionManagerPanel::addItem(ExtensionInfo& info)
                                 kcl::ScrollListElement::positionBelow);
     bitmap->setName(wxT("bitmap"));
 
-    // -- create name text element --
+    // create name text element
     kcl::ScrollListElement* name;
     name = item->addElement(info.name);
     name->setPadding(0,0,10,8);
@@ -225,7 +224,7 @@ void ExtensionManagerPanel::addItem(ExtensionInfo& info)
     name->setTextWrap(false);
     name->setName(wxT("name"));
 
-    // -- create version text element --
+    // create version text element
     wxString version_text = wxString::Format(wxT("%d.%d.%d"), info.major_version,
                                                               info.minor_version,
                                                               info.subminor_version);
@@ -237,7 +236,7 @@ void ExtensionManagerPanel::addItem(ExtensionInfo& info)
     version->setTextWrap(false);
     version->setName(wxT("version"));
 
-    // -- create description text element --
+    // create description text element
     kcl::ScrollListElement* desc;
     desc = item->addElement(info.description);
     desc->setPadding(0,0,15,8);
@@ -245,7 +244,7 @@ void ExtensionManagerPanel::addItem(ExtensionInfo& info)
     desc->setStretchable(true);
     desc->setName(wxT("description"));
     
-    // -- create location text element --
+    // create location text element
     wxString location_text = wxT("Location:");
     kcl::ScrollListElement* location;
     location = item->addElement(location_text);
@@ -265,7 +264,7 @@ void ExtensionManagerPanel::addItem(ExtensionInfo& info)
     filename->setVisible(false);
     filename->setName(wxT("filename"));
 
-    // -- create 'uninstall' button element --
+    // create 'uninstall' button element
     wxButton* uninstall_button = new wxButton(m_extension_list,
                                               ID_UninstallButton,
                                               _("Uninstall"),
@@ -283,7 +282,7 @@ void ExtensionManagerPanel::addItem(ExtensionInfo& info)
     uninstall2->setVisible(false);
     uninstall2->setName(wxT("uninstall_button"));
     
-    // -- create 'don't uninstall' button element --
+    // create 'don't uninstall' button element
     wxButton* cancel_uninstall_button = new wxButton(m_extension_list,
                                               ID_CancelUninstallButton,
                                               _("Don't Uninstall"),
@@ -301,7 +300,7 @@ void ExtensionManagerPanel::addItem(ExtensionInfo& info)
     cancel_uninstall->setVisible(false);
     cancel_uninstall->setName(wxT("cancel_uninstall_button"));
     
-    // -- create 'start now' button element --
+    // create 'start now' button element
     wxButton* startnow_button = new wxButton(m_extension_list,
                                              ID_StartNowButton,
                                              _("Start Now"),
@@ -318,7 +317,7 @@ void ExtensionManagerPanel::addItem(ExtensionInfo& info)
     startnow->setVisible(false);
     startnow->setName(wxT("startnow_button"));
         
-    // -- create 'run at startup' checkbox element --
+    // create 'run at startup' checkbox element
     wxCheckBox* runatstartup_checkbox = new wxCheckBox(m_extension_list,
                                                        ID_RunAtStartupCheckBox,
                                                        _("Run at startup"));

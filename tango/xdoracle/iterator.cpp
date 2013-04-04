@@ -396,7 +396,6 @@ bool OracleIterator::init(const std::wstring& query)
         set->m_svc = m_svc;
         set->m_tablename = getTableNameFromSql(query);
 
-        // initialize Odbc connection for this set
         if (!set->init())
         {
             delete set;

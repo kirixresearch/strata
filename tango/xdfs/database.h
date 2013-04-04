@@ -83,7 +83,7 @@ public:
     ~FsDatabase();
     bool open(const std::wstring& path);
     
-    // -- tango::IFsDatabase interface --
+    // tango::IDatabase
     
     bool getSetFormat(const std::wstring& path,
                       FsSetFormatInfo* info,

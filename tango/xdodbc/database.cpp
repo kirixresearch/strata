@@ -2093,7 +2093,6 @@ tango::ISetPtr OdbcDatabase::openSet(const std::wstring& path)
     set->m_conn_str = m_conn_str;
     set->m_tablename = tablename1;
 
-    // initialize Odbc connection for this set
     if (!set->init())
     {
         return xcm::null;
@@ -2240,8 +2239,6 @@ bool OdbcDatabase::execute(const std::wstring& command,
         // create an iterator based on our select statement
         OdbcIterator* iter = new OdbcIterator(this, NULL);
 
-
-        // initialize Odbc connection for this set
         if (!iter->init(command))
         {
             delete iter;

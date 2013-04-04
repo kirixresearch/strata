@@ -20,7 +20,7 @@
 #include "util.h"
 
 
-// -- platform definitions --
+// platform definitions
 
 
 #ifdef WIN32

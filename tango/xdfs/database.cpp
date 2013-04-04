@@ -65,7 +65,7 @@ const wchar_t* xdfs_invalid_column_chars =
 
 
 
-// -- FsDatabase class implementation --
+// FsDatabase class implementation
 
 FsDatabase::FsDatabase()
 {

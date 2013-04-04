@@ -2345,7 +2345,7 @@ bool TableDoc::open(const wxString& _path,
     // update caption
     updateCaption();
 
-    // load a model for this set
+    // load a model for this table
     if (m_temporary_model)
         m_model = TableDocMgr::loadModel(wxT(""));
          else
@@ -3288,10 +3288,11 @@ void TableDoc::onAlterTableJobFinished(jobs::IJobPtr job)
 
 
     // rename the columns; note: for the rename to work, we have to do this
-    // after we have a grid model, but before we open the set since the
-    // rename operation needs a model, but opening a set goes "too far" and
-    // will try to refresh the view with the old names, causing them to be
-    // removed if they aren't in sync with the model
+    // after we have a grid model, but before we open the table since the
+    // rename operation needs a model. However, opening a set goes "too far"
+    // and will try to refresh the view with the old names, causing them
+    // to be removed if they aren't in sync with the model
+
     if (job->getJobInfo()->getState() == jobStateFinished)
     {
         std::vector<std::pair<wxString, wxString> >::iterator rename_iter;
