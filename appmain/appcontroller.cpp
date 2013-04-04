@@ -5110,7 +5110,7 @@ static void onOpenExcelJobFinished(jobs::IJobPtr job)
 
     int first_site_id = 0;
     int site_id = 0;
-    
+
     std::vector<std::wstring>::iterator it, it_end;
     it_end = output_tables.end();
 
