@@ -437,8 +437,7 @@ void LinkBar::onItemActivated(IFsItemPtr item)
     if (!m_popup_window)
         return;
     
-    IDbFolderFsItemPtr folder = item;
-    if (folder.isOk())
+    if (item->isFolder())
     {
         m_popup_window->Freeze();
         
@@ -548,12 +547,8 @@ bool LinkBar::isFolderItem(int id)
         return false;
     
     IFsItemPtr item = m_items[item_idx];
-    IDbFolderFsItemPtr folder = item;
-    
-    if (folder.isOk())
-        return true;
-    
-    return false;
+
+    return item->isFolder();
 }
 
 bool LinkBar::isPopupWindowOpen()

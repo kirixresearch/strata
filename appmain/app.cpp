@@ -14,6 +14,7 @@
 #include "apphook.h"
 #include "appcontroller.h"
 #include "dbdoc.h"
+#include "bookmarkfs.h"
 #include "dlgprojectmgr.h"
 #include "jobscheduler.h"
 #include "jsonconfig.h"
@@ -983,6 +984,10 @@ wxString MainApp::getBookmarksFolder()
 
 IFsItemPtr MainApp::getBookmarksRoot()
 {
+    return BookmarkFs::getRootBookmarksFolder();
+
+
+
     DbDoc* dbdoc = g_app->getDbDoc();
     if (!dbdoc)
         return xcm::null;
