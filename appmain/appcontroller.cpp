@@ -6048,23 +6048,19 @@ bool AppController::createDefaultProject()
 
 void AppController::createDefaultLinks()
 {
-    wxString bookmarks_folder = g_app->getBookmarksFolder();
-    if (bookmarks_folder.IsEmpty() || bookmarks_folder.Last() != wxT('/'))
-        bookmarks_folder += wxT("/");
-    
     IAppPreferencesPtr prefs = g_app->getAppPreferences();
     
-    BookmarkFs::createBookmark(towstr(bookmarks_folder + _("Home Page")), towstr(getAppPrefsDefaultString("general.location.home")));
-    BookmarkFs::createBookmark(towstr(bookmarks_folder + _("Online Help")), towstr(getAppPrefsDefaultString("general.location.help")));
-    BookmarkFs::createBookmark(towstr(bookmarks_folder + _("Developer Resources")), towstr(getAppPrefsDefaultString("general.location.resources")));
-    BookmarkFs::createBookmark(towstr(bookmarks_folder + _("Support Forums")), towstr(getAppPrefsDefaultString("general.location.support")));
+    BookmarkFs::createBookmark(towstr(_("Home Page")), towstr(getAppPrefsDefaultString("general.location.home")));
+    BookmarkFs::createBookmark(towstr(_("Online Help")), towstr(getAppPrefsDefaultString("general.location.help")));
+    BookmarkFs::createBookmark(towstr(_("Developer Resources")), towstr(getAppPrefsDefaultString("general.location.resources")));
+    BookmarkFs::createBookmark(towstr(_("Support Forums")), towstr(getAppPrefsDefaultString("general.location.support")));
 
-    /*
-    DbDoc::setFileVisualLocation(bookmarks_folder + "Home Page", 0);
-    DbDoc::setFileVisualLocation(bookmarks_folder + "Online Help", 1);
-    DbDoc::setFileVisualLocation(bookmarks_folder + "Developer Resources", 2);
-    DbDoc::setFileVisualLocation(bookmarks_folder + "Support Forums", 3);
-    */
+
+    BookmarkFs::setFileVisualLocation(towstr(_("Home Page")), 0);
+    BookmarkFs::setFileVisualLocation(towstr(_("Online Help")), 1);
+    BookmarkFs::setFileVisualLocation(towstr(_("Developer Resources")), 2);
+    BookmarkFs::setFileVisualLocation(towstr(_("Support Forums")), 3);
+
 }
 
 

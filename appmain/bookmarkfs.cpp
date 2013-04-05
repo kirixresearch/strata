@@ -15,6 +15,7 @@
 #include <wx/sstream.h>
 #include <wx/buffer.h>
 #include <wx/mstream.h>
+#include <set>
 
 #ifdef WIN32
 #include <shlobj.h>
@@ -267,6 +268,20 @@ IFsItemPtr BookmarkFs::getRootBookmarksFolder()
     return static_cast<IFsItem*>(root);
 }
 
+static std::wstring mergeBookmarkPaths(const std::wstring& bookmark, const std::wstring& extension = L".json")
+{
+    std::wstring full_path = getBookmarksLocation();
+    if (full_path.empty())
+        return L"";
+    if (bookmark.length() == 0)
+        return L"";
+    if (bookmark[0] != '/')
+        full_path += PATH_SEPARATOR_STR;
+    full_path += bookmark;
+    full_path += extension;
+    kl::replaceStr(full_path, L"/", PATH_SEPARATOR_STR);
+    return full_path;
+}
 
 bool BookmarkFs::createBookmark(const std::wstring& path,
                                 const std::wstring& location,
@@ -283,15 +298,20 @@ bool BookmarkFs::createBookmark(const std::wstring& path,
     return saveBookmark(path, b);
 }
 
-bool BookmarkFs::loadBookmark(const std::wstring& path, Bookmark& bookmark)
+bool BookmarkFs::createFolder(const std::wstring& path)
 {
-    std::wstring full_path = getBookmarksLocation();
+    std::wstring full_path = mergeBookmarkPaths(path, L"");
     if (full_path.empty())
         return false;
-    full_path += PATH_SEPARATOR_STR;
-    full_path += path;
-    full_path += L".json";
-    kl::replaceStr(full_path, L"/", PATH_SEPARATOR_STR);
+
+    return xf_mkdir(full_path);
+}
+
+bool BookmarkFs::loadBookmark(const std::wstring& path, Bookmark& bookmark)
+{
+    std::wstring full_path = mergeBookmarkPaths(path);
+    if (full_path.empty())
+        return false;
 
     bool success = false;
     std::wstring json = xf_get_file_contents(full_path, &success);
@@ -305,13 +325,9 @@ bool BookmarkFs::loadBookmark(const std::wstring& path, Bookmark& bookmark)
 
 bool BookmarkFs::saveBookmark(const std::wstring& path, Bookmark& bookmark)
 {
-    std::wstring full_path = getBookmarksLocation();
+    std::wstring full_path = mergeBookmarkPaths(path);
     if (full_path.empty())
         return false;
-    full_path += PATH_SEPARATOR_STR;
-    full_path += path;
-    full_path += L".json";
-    kl::replaceStr(full_path, L"/", PATH_SEPARATOR_STR);
 
     std::wstring json = bookmark.toJson();
 
@@ -320,12 +336,9 @@ bool BookmarkFs::saveBookmark(const std::wstring& path, Bookmark& bookmark)
 
 bool BookmarkFs::deleteItem(const std::wstring& path)
 {
-    std::wstring full_path = getBookmarksLocation();
+    std::wstring full_path = mergeBookmarkPaths(path, L"");
     if (full_path.empty())
         return false;
-    full_path += PATH_SEPARATOR_STR;
-    full_path += path;
-    kl::replaceStr(full_path, L"/", PATH_SEPARATOR_STR);
 
     if (xf_get_directory_exist(full_path))
         return xf_rmtree(full_path);
@@ -333,6 +346,212 @@ bool BookmarkFs::deleteItem(const std::wstring& path)
     full_path += L".json";
     return xf_remove(full_path);
 }
+
+
+
+void BookmarkFs::setFileVisualLocation(const std::wstring& _path, int insert_index)
+{
+    if (insert_index < 0)
+        return;
+
+    std::wstring path = _path;
+    std::wstring folder;
+    std::wstring item;
+    std::vector<std::wstring> order;
+    std::vector<std::wstring>::iterator it;
+
+    // find out which folder the bookmark is in
+    if (path.length() > 0 && path[path.length() - 1] == '/')
+        path = path.substr(0, path.length() - 1); // remove trailing slash
+
+    if (kl::stringFrequency(path, '/') > 0)
+    {
+        folder = kl::beforeLast(path, '/');
+        item = kl::afterLast(path, '/');
+    }
+     else
+    {
+        folder = L"/";
+        item = path;
+    }
+    kl::makeLower(item);
+    
+
+
+    // STEP 1: read in existing order entries from json file
+    std::wstring objorder_fname = mergeBookmarkPaths(folder + L"/objorder.info", L"");
+
+    std::wstring json;
+    json = xf_get_file_contents(objorder_fname);
+    if (json.length() > 0)
+    {
+        kl::JsonNode node;
+        if (node.fromString(json) && node.childExists("order"))
+        {
+            kl::JsonNode o = node["order"];
+            size_t i, cnt = o.getChildCount();
+            for (i = 0; i < cnt; ++i)
+            {
+                kl::JsonNode bm = o[i];
+                order.push_back(bm.getString());
+            }
+        }
+    }
+
+
+
+    // STEP 2: reconcile differences between folder contents on visual array
+    std::set<std::wstring> existing;
+
+    std::wstring fspath = mergeBookmarkPaths(folder, L"");
+    xf_dirhandle_t handle = xf_opendir(fspath);
+    xf_direntry_t info;
+    std::wstring full_path;
+
+    while (xf_readdir(handle, &info))
+    {
+        if (info.m_name == L"." || info.m_name == L".." || info.m_name == L"objorder.info")
+            continue;
+
+        full_path = fspath;
+        full_path += PATH_SEPARATOR_CHAR;
+        full_path += info.m_name;
+
+        kl::makeLower(info.m_name);
+
+
+
+        if (info.m_name.find(L".json") != info.m_name.npos)
+            existing.insert(kl::beforeLast(info.m_name, '.'));
+        else if (xf_get_directory_exist(full_path))
+            existing.insert(info.m_name);
+    }
+
+    xf_closedir(handle);
+
+    // first delete any items from the order array that no longer exist
+    int i;
+    for (i = 0; i < (int)order.size(); ++i)
+    {
+        std::wstring item = order[i];
+        kl::makeLower(item);
+        if (existing.find(item) == existing.end())
+        {
+            order.erase(order.begin() + i);
+            i--;
+        }
+    }
+
+    // we will delete all items from |existing| that we already know about
+    std::set<std::wstring>::iterator sit;
+    for (it = order.begin(); it != order.end(); ++it)
+    {
+        sit = existing.find(*it);
+        if (sit != existing.end())
+            existing.erase(sit);
+    }
+
+    // now append any new items to the end
+    for (sit = existing.begin(); sit != existing.end(); ++sit)
+        order.push_back(*sit);
+
+
+
+    // STEP 3: insert path in desired location
+
+    // (first remove the item from where it was)
+    for (it = order.begin(); it != order.end(); ++it)
+    {
+        if (*it == item)
+        {
+            order.erase(it);
+            break;
+        }
+    }
+
+    // (now insert it)
+    if ((size_t)insert_index >= order.size())
+        order.push_back(item);
+         else
+        order.insert(order.begin() + insert_index, item);
+
+
+
+    // STEP 4: write out new json file
+
+    kl::JsonNode node;
+    kl::JsonNode o = node["order"];
+    o.setArray();
+    for (it = order.begin(); it != order.end(); ++it)
+    {
+        kl::JsonNode oi = o.appendElement();
+        oi.setString(*it);
+    }
+
+    xf_put_file_contents(objorder_fname, node.toString());
+}
+
+
+
+
+static void reorderBookmarkEntries(const std::wstring& folder, std::vector<IFsItemPtr>& entries)
+{
+    // STEP 1: read in existing order entries from json file
+    std::wstring objorder_fname = mergeBookmarkPaths(folder + L"/objorder.info", L"");
+
+    std::vector<std::wstring> order;
+    std::vector<std::wstring>::iterator it;
+    std::wstring json;
+    json = xf_get_file_contents(objorder_fname);
+    if (json.length() > 0)
+    {
+        kl::JsonNode node;
+        if (node.fromString(json) && node.childExists("order"))
+        {
+            kl::JsonNode o = node["order"];
+            size_t i, cnt = o.getChildCount();
+            for (i = 0; i < cnt; ++i)
+            {
+                kl::JsonNode bm = o[i];
+                order.push_back(bm.getString());
+            }
+        }
+    }
+
+
+    // STEP 2: index |entries|
+    std::map<std::wstring, IFsItemPtr, kl::cmp_nocase> idx;
+    std::map<std::wstring, IFsItemPtr, kl::cmp_nocase>::iterator mit;
+
+    std::vector<IFsItemPtr>::iterator eit;
+
+    for (eit = entries.begin(); eit != entries.end(); ++eit)
+        idx[towstr((*eit)->getLabel())] = *eit;
+
+
+    // STEP 3: create a new |entries| array in the order they appear in the |order|
+
+    entries.clear();
+
+    for (it = order.begin(); it != order.end(); ++it)
+    {
+        mit = idx.find(*it);
+        if (mit == idx.end())
+            continue;
+        entries.push_back(mit->second);
+        idx.erase(mit);
+    }
+
+    // add remaining items that weren't found in the order array
+    for (mit = idx.begin(); mit != idx.end(); ++mit)
+        entries.push_back(mit->second);
+}
+
+
+
+
+
+
 
 
 
@@ -361,7 +580,7 @@ void BookmarkFolder::populate()
 
     while (xf_readdir(handle, &info))
     {
-        if (info.m_name == L"." || info.m_name == L"..")
+        if (info.m_name == L"." || info.m_name == L".." || info.m_name == L"objorder.info")
             continue;
 
         full_path = fspath;
@@ -390,6 +609,8 @@ void BookmarkFolder::populate()
     }
 
     xf_closedir(handle);
+
+    reorderBookmarkEntries(m_path, m_children);
 }
 
 IFsItemEnumPtr BookmarkFolder::getChildren()

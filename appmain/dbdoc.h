@@ -200,7 +200,6 @@ public:
     // public utility API for DbDoc
     static void actionActivate(IFsItemPtr item, int open_mask);
     static void actionActivateDeferred(IFsItemPtr item, int open_mask);
-    static void setFileVisualLocation(const wxString& path, int insert_index);
     static tango::IDatabasePtr getItemDatabase(IFsItemPtr item);
     static bool isItemMount(IFsItemPtr item);
     static bool isItemInMount(IFsItemPtr item);

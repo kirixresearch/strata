@@ -1706,47 +1706,6 @@ wxString DbDoc::getFsItemPath(IFsItemPtr source)
     return wxEmptyString;
 }
 
-void DbDoc::setFileVisualLocation(const wxString& path, int insert_index)
-{
-    tango::IDatabasePtr db = g_app->getDatabase();
-    if (db.isNull())
-        return;
-    
-    wxString filename = path.AfterLast(wxT('/'));
-    
-    wxString p = path.BeforeLast(wxT('/'));
-    wxString folder = p;
-    if (folder.Length() > 0 && folder.Last() == wxT('/'))
-        folder.RemoveLast();
-    if (folder.IsEmpty())
-        folder += wxT("/");
-        
-    if (p.IsEmpty() || p.Last() != wxT('/'))
-        p += wxT("/");
-    std::wstring wstr_path = towstr(p);
-    wstr_path += L".objorder";
-    
-    tango::IFileInfoPtr fileinfo = db->getFileInfo(towstr(folder));
-    if (fileinfo.isNull() || fileinfo->getType() != tango::filetypeFolder)
-        return;
-    
-    DbDocDisplayOrder disp(db);
-    
-    if (!disp.load(wstr_path))
-    {
-        disp.createDefaultOrder(towstr(folder));
-    }
-     else
-    {
-        tango::IFileInfoEnumPtr folderinfo = db->getFolderInfo(towstr(folder));
-        disp.sync(folderinfo);
-    }
-
-    disp.insertEntry(towstr(filename), insert_index);
-    
-    disp.save(wstr_path);
-}
-
 
 bool DbDoc::isItemMount(IFsItemPtr _item)
 {
@@ -4039,42 +3998,9 @@ void DbDoc::onDragDrop(IFsItemPtr target,
 
     if (!ok)
     {
-        if (!m_link_bar_mode)
-        {
-            *result = wxDragNone;
-            return;
-        }
-         else
-        {
-
-            // link bar mode -- item is being dragged inside a folder.
-            // Set it's visual position
-            int x, y;
-            ::wxGetMousePosition(&x, &y);
-            IDocumentPtr doc = m_fspanel;
-            doc->getDocumentWindow()->ScreenToClient(&x, &y);
-            
-            IFsItemPtr item = m_fspanel->hitTest(x,y);
-            if (item.isOk())
-            {
-                int idx = m_fspanel->getItemIndex(item);
-                if (idx != -1)
-                {
-                    for (i = 0; i < count; ++i)
-                    {
-                        IFsItemPtr item = items->getItem(i);
-                        DbDoc::setFileVisualLocation(getFsItemPath(item), idx+i);
-                    }
-                }
-            }
-            
-            refresh();
-            return;
-        }
+        *result = wxDragNone;
+        return;
     }
-
-
-
 
 
 

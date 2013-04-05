@@ -41,10 +41,12 @@ public:
                                const std::wstring& tags = L"",
                                const std::wstring& description = L"",
                                const wxImage& icon = wxImage());
-
+    static bool createFolder(const std::wstring& path);
     static bool loadBookmark(const std::wstring& path, Bookmark& bookmark);
     static bool saveBookmark(const std::wstring& path, Bookmark& bookmark);
     static bool deleteItem(const std::wstring& path);
+
+    static void setFileVisualLocation(const std::wstring& path, int insert_index);
 };
 
 

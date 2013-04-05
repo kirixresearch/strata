@@ -471,7 +471,7 @@ void LinkBar::onItemActivated(IFsItemPtr item)
 
     m_popup_window->Show(false);
     LinkBarPopupWindow* popup_window = m_popup_window;
-    IFsPanelPtr popup_dbdoc = m_popup_fspanel;
+    IFsPanelPtr popup_fspanel = m_popup_fspanel;
     m_popup_window = NULL;
     m_popup_fspanel.clear();
     ::wxYield();
@@ -490,7 +490,7 @@ void LinkBar::onItemActivated(IFsItemPtr item)
     */
 
     m_popup_window = popup_window;
-    m_popup_fspanel = popup_dbdoc;
+    m_popup_fspanel = popup_fspanel;
     closePopupWindow();
 }
 
@@ -514,7 +514,7 @@ void LinkBar::onItemMiddleClicked(IFsItemPtr item)
 
     m_popup_window->Show(false);
     LinkBarPopupWindow* popup_window = m_popup_window;
-    IFsPanelPtr popup_dbdoc = m_popup_fspanel;
+    IFsPanelPtr popup_fspanel = m_popup_fspanel;
     m_popup_window = NULL;
     m_popup_fspanel.clear();
     ::wxYield();
@@ -536,7 +536,7 @@ void LinkBar::onItemMiddleClicked(IFsItemPtr item)
     */
 
     m_popup_window = popup_window;
-    m_popup_fspanel = popup_dbdoc;
+    m_popup_fspanel = popup_fspanel;
     closePopupWindow();
 }
 
@@ -1129,7 +1129,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
                 BookmarkFs::saveBookmark(towstr(dlg.getPath()), b);
 
                 // position the bookmark in the linkbar
-                //DbDoc::setFileVisualLocation(dlg.getPath(), idx);
+                BookmarkFs::setFileVisualLocation(towstr(dlg.getPath()), idx);
                 
                 // repopulate and refresh the linkbar
                 refresh();
@@ -1153,17 +1153,10 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
             
             if (dlg.ShowModal() == wxID_OK)
             {
-                tango::IDatabasePtr db = g_app->getDatabase();
-                if (db.isNull())
-                    return;
-                
-                // create the folder
-                bool result = db->createFolder(towstr(dlg.getPath()));
-                if (!result)
-                    return;
+                BookmarkFs::createFolder(towstr(dlg.getPath()));
                 
                 // position the folder in the linkbar
-                DbDoc::setFileVisualLocation(dlg.getPath(), idx);
+                BookmarkFs::setFileVisualLocation(towstr(dlg.getPath()), idx);
                 
                 // repopulate and refresh the linkbar
                 refresh();
@@ -1207,7 +1200,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
                         return;
                     
                     // position the folder in the linkbar
-                    DbDoc::setFileVisualLocation(new_path, idx);
+                    BookmarkFs::setFileVisualLocation(towstr(new_path), idx);
                     
                     // repopulate and refresh the linkbar
                     refresh();
@@ -1243,7 +1236,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
                             db->setMountPoint(towstr(dlg.getPath()), L"", towstr(dlg.getLocation()));
                     
                             // position the singleton mount in the linkbar
-                            DbDoc::setFileVisualLocation(dlg.getPath(), idx);
+                            BookmarkFs::setFileVisualLocation(towstr(dlg.getPath()), idx);
                             
                             // repopulate and refresh the linkbar
                             refresh();
@@ -1279,7 +1272,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
                         b.save(dlg.getPath());
                         
                         // position the bookmark in the linkbar
-                        DbDoc::setFileVisualLocation(dlg.getPath(), idx);
+                        BookmarkFs::setFileVisualLocation(dlg.getPath(), idx);
                         
                         // repopulate and refresh the linkbar
                         refresh();
@@ -1326,7 +1319,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
                         return;
                     
                     // position the folder in the linkbar
-                    DbDoc::setFileVisualLocation(new_path, idx);
+                    BookmarkFs::setFileVisualLocation(towstr(new_path), idx);
                     
                     // repopulate and refresh the linkbar
                     refresh();
@@ -1364,7 +1357,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
                             db->setMountPoint(towstr(dlg.getPath()), L"", towstr(dlg.getLocation()));
                     
                             // position the singleton mount in the linkbar
-                            DbDoc::setFileVisualLocation(dlg.getPath(), idx);
+                            BookmarkFs::setFileVisualLocation(towstr(dlg.getPath()), idx);
                             
                             // repopulate and refresh the linkbar
                             refresh();
@@ -1404,7 +1397,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
                         b.save(dlg.getPath());
                         
                         // position the bookmark in the linkbar
-                        DbDoc::setFileVisualLocation(dlg.getPath(), idx);
+                        BookmarkFs::setFileVisualLocation(dlg.getPath(), idx);
                         
                         // repopulate and refresh the linkbar
                         refresh();
@@ -2263,7 +2256,7 @@ static void doProjectTreeDragDrop(IFsItemPtr item,
     if (drop_folder_path.IsEmpty())
     {
         // position the item in the linkbar
-        DbDoc::setFileVisualLocation(dest_path, link_drop_idx);
+        BookmarkFs::setFileVisualLocation(towstr(dest_path), link_drop_idx);
     }
 }
 
@@ -2344,8 +2337,8 @@ void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
             int link_drop_idx = m_drop_idx;
             tool2LinkIndex(link_drop_idx);
             
-            wxString path = DbDoc::getFsItemPath(items->getItem(0));
-            DbDoc::setFileVisualLocation(path, link_drop_idx);
+            wxString path = items->getItem(0)->getLabel();
+            BookmarkFs::setFileVisualLocation(towstr(path), link_drop_idx);
         }
          else if (drop_folder_path.Length() > 0)
         {
@@ -2368,7 +2361,7 @@ void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
                 link_drop_idx = files->size();
             
             // make sure it goes to the bottom of the folder
-            DbDoc::setFileVisualLocation(dest_path, link_drop_idx);
+            BookmarkFs::setFileVisualLocation(towstr(dest_path), link_drop_idx);
         }
     }
      else if (data->getSourceId() == ID_Frame_UrlCtrl)
@@ -2448,7 +2441,7 @@ void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
                 tool2LinkIndex(link_drop_idx);
             
                 // position the item in the linkbar
-                DbDoc::setFileVisualLocation(dest_path, link_drop_idx);
+                BookmarkFs::setFileVisualLocation(towstr(dest_path), link_drop_idx);
             }
         }
     }
