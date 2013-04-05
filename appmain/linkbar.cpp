@@ -283,15 +283,6 @@ END_EVENT_TABLE()
 
 // utility functions
 
-static wxString getLinkBarItemPath(const wxString& label)
-{
-    wxString retval = g_app->getBookmarksFolder();
-    if (label.Mid(0,1) != wxT("/"))
-        retval += wxT("/");
-    retval += label;
-    return retval;
-}
-
 static std::vector<IFsItemPtr> enum2vec(IFsItemEnumPtr fs_enum)
 {
     std::vector<IFsItemPtr> vec;
@@ -303,18 +294,14 @@ static std::vector<IFsItemPtr> enum2vec(IFsItemEnumPtr fs_enum)
     return vec;
 }
 
-static bool hasLinkItems(std::vector<IFsItemPtr>& vec)
+
+static void activateItem(const std::wstring& path, int open_mask)
 {
-    std::vector<IFsItemPtr>::iterator it;
-    for (it = vec.begin(); it != vec.end(); ++it)
-    {
-        IFsItemPtr item = *it;
-        IDbFolderFsItemPtr folder = item;
-        if (folder.isNull())
-            return true;
-    }
-    
-    return false;
+    Bookmark b;
+    if (!BookmarkFs::loadBookmark(path, b))
+        return;
+
+    g_app->getAppController()->openAny(b.location, open_mask);
 }
 
 static void openItems(std::vector<IFsItemPtr>& vec)
@@ -324,16 +311,19 @@ static void openItems(std::vector<IFsItemPtr>& vec)
     std::vector<IFsItemPtr>::iterator it;
     for (it = vec.begin(); it != vec.end(); ++it)
     {
-        IDbFolderFsItemPtr folder = *it;
-        if (folder.isNull())
-        {
-            int open_mask = appOpenForceNewWindow;
-            if (first)
-                open_mask |= appOpenActivateNewWindow;
-            
-            DbDoc::actionActivate(*it, open_mask);
-            first = false;
-        }
+        if ((*it)->isFolder())
+            continue;
+
+        std::wstring path = BookmarkFs::getBookmarkItemPath(*it);
+        if (path.empty())
+            continue;
+
+        first = false;
+        int open_mask = appOpenForceNewWindow;
+        if (first)
+            open_mask |= appOpenActivateNewWindow;
+
+        activateItem(path, open_mask);
     }
 }
 
@@ -476,18 +466,15 @@ void LinkBar::onItemActivated(IFsItemPtr item)
     m_popup_fspanel.clear();
     ::wxYield();
     
-    /*
+    int open_flags = appOpenDefault;
+
     if (::wxGetMouseState().ControlDown())
     {
         // ctrl-click is the same as a middle-click
-        DbDoc::actionActivate(item, appOpenForceNewWindow |
-                                    appOpenActivateNewWindow);
+        open_flags = appOpenForceNewWindow | appOpenActivateNewWindow;
     }
-     else
-    {
-        DbDoc::actionActivate(item, appOpenDefault);
-    }
-    */
+
+    activateItem(BookmarkFs::getBookmarkItemPath(item), open_flags);
 
     m_popup_window = popup_window;
     m_popup_fspanel = popup_fspanel;
@@ -903,22 +890,20 @@ void LinkBar::onToolButtonClick(wxCommandEvent& evt)
         IFsItemPtr item = m_items[item_idx];
 
         // folder clicks are handled in onToolDropDownClick()
-        if (isFolderItem(id))
+        if (item->isFolder())
         {
             evt.Skip();
             return;
         }
-            
+        
+        int open_mask = appOpenDefault;
         if (::wxGetMouseState().ControlDown())
         {
             // ctrl-click is the same as a middle-click
-            DbDoc::actionActivate(item, appOpenForceNewWindow |
-                                        appOpenActivateNewWindow);
+            open_mask = appOpenForceNewWindow | appOpenActivateNewWindow;
         }
-         else
-        {
-            DbDoc::actionActivate(item, appOpenDefault);
-        }
+
+        activateItem(BookmarkFs::getBookmarkItemPath(item), open_mask);
     }
     
     evt.Skip();
@@ -1007,15 +992,12 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
     if (item.isNull())
     {
         menuPopup.Append(ID_LinkBar_OpenAll, _("&Open All in Tabs"));
-        menuPopup.Enable(ID_LinkBar_OpenAll, hasLinkItems(m_items) ? true : false);
     }
      else
     {
         if (is_folder_clicked)
         {
-            std::vector<IFsItemPtr> vec = enum2vec(item->getChildren());
             menuPopup.Append(ID_LinkBar_OpenAllFolder, _("&Open All in Tabs"));
-            menuPopup.Enable(ID_LinkBar_OpenAllFolder, hasLinkItems(vec) ? true : false);
         }
          else
         {
@@ -1092,8 +1074,11 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
         case ID_LinkBar_OpenTab:
         {
             if (item.isOk())
-                DbDoc::actionActivate(item, appOpenForceNewWindow |
-                                            appOpenActivateNewWindow);
+            {
+                std::vector<IFsItemPtr> vec;
+                vec.push_back(item);
+                openItems(vec);
+            }
             break;
         }
         case ID_LinkBar_NewBookmark:
@@ -2048,6 +2033,7 @@ static void doProjectTreeDragDrop(IFsItemPtr item,
                                   wxString drop_folder_path,
                                   int link_drop_idx = -1)
 {
+/*
     // TODO: reimplement this
     return;
 
@@ -2128,10 +2114,12 @@ static void doProjectTreeDragDrop(IFsItemPtr item,
         // position the item in the linkbar
         BookmarkFs::setFileVisualLocation(towstr(dest_path), link_drop_idx);
     }
+*/
 }
 
 void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
 {
+/*
     DbDoc* dbdoc = g_app->getDbDoc();
     if (dbdoc == NULL)
     {
@@ -2340,6 +2328,7 @@ void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
     m_drop_idx = -1;
     m_drag_id = -1;
     m_last_id = -1;
+*/
 }
 
 // this function was ripped directly from
