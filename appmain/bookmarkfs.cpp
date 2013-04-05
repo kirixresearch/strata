@@ -210,7 +210,26 @@ Bookmark::Bookmark()
 
 bool Bookmark::fromJson(const std::wstring& json)
 {
-    return false;
+    kl::JsonNode node;
+    if (!node.fromString(json))
+        return false;
+
+    if (!node.childExists("metadata"))
+        return false;
+    
+    kl::JsonNode metadata = node["metadata"];
+    if (metadata["type"].getString() != L"application/vnd.kx.application/vnd.kx.bookmark")
+        return false;
+
+    kl::JsonNode attributes = node["attributes"];
+
+    location = attributes["location"].getString();
+    tags = attributes["tags"].getString();
+    description = attributes["description"].getString();
+    icon = textToImage(attributes["icon"].getString());
+    run_target = attributes["run_target"].getBoolean();
+
+    return true;
 }
 
 std::wstring Bookmark::toJson()

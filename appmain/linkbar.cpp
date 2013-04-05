@@ -979,11 +979,6 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
         evt.Skip();
         return;
     }
-    
-    // no database, bail out
-    tango::IDatabasePtr db = g_app->getDatabase();
-    if (db.isNull())
-        return;
 
     // sticky the item we've right-clicked
     int tool_id = evt.GetToolId();
@@ -1006,12 +1001,6 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
     if (idx >= 0 && idx < (int)m_items.size())
         item = m_items[idx];
 
-    // get the object_type
-    int obj_type = -1;
-    IDbObjectFsItemPtr obj = item;
-    if (obj.isOk())
-        obj_type = obj->getType();
-
     // create and populate the popup menu
     
     wxMenu menuPopup;
@@ -1033,10 +1022,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
             // we'll make 'open' do something different later on --
             // for now, 'open' is the same as 'open in new tab'
             menuPopup.Append(ID_LinkBar_Open, _("&Open"));
-            
-            // only show this menu item for web links
-            if (obj_type != -1 && obj_type == dbobjtypeBookmark)
-                menuPopup.Append(ID_LinkBar_OpenTab, _("&Open in New Tab"));
+            menuPopup.Append(ID_LinkBar_OpenTab, _("&Open in New Tab"));
         }
            
     }
@@ -1147,8 +1133,8 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
             dlg.setMessage(message);
             dlg.setName(_("New Folder"));
             dlg.SetTitle(_("New Folder"));
-            dlg.SetSize(280,145);
-            dlg.SetMinSize(wxSize(280,145));
+            dlg.SetSize(320, 155);
+            dlg.SetMinSize(wxSize(320, 155));
             dlg.CenterOnScreen();
             
             if (dlg.ShowModal() == wxID_OK)
@@ -1181,8 +1167,8 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
                 dlg.setMessage(message);
                 dlg.setName(item->getLabel());
                 dlg.SetTitle(title);
-                dlg.SetSize(280,145);
-                dlg.SetMinSize(wxSize(280,145));
+                dlg.SetSize(320, 155);
+                dlg.SetMinSize(wxSize(320, 155));
                 dlg.CenterOnScreen();
                 
                 if (dlg.ShowModal() == wxID_OK)
@@ -1208,78 +1194,49 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
             }
              else
             {
-                // we're editing the properties of
-                // a bookmark or a singleton mount
-                
-                wxString remote_path = path;
-                if (getRemotePathIfExists(remote_path))
+                Bookmark b;
+                if (!BookmarkFs::loadBookmark(towstr(path), b))
+                    return;
+
+                wxString title = wxString::Format(_("\"%s\" Properties"),
+                                                    item->getLabel().c_str());
+                    
+                LinkPropsDialog dlg(this);
+                dlg.setName(item->getLabel());
+                dlg.setLocation(towx(b.location));
+                dlg.setTags(towx(b.tags));
+                dlg.setDescription(towx(b.description));
+                dlg.setRunTarget(b.run_target);
+                dlg.SetTitle(title);
+                dlg.CenterOnScreen();
+                    
+                if (dlg.ShowModal() == wxID_OK)
                 {
-                    wxString title = wxString::Format(_("\"%s\" Properties"),
-                                                      item->getLabel().c_str());
-                    
-                    LinkPropsDialog dlg(this);
-                    dlg.setMode(LinkPropsDialog::ModeEditNoDesc);
-                    dlg.setName(item->getLabel());
-                    dlg.setLocation(remote_path);
-                    dlg.SetTitle(title);
-                    dlg.SetSize(360,145);
-                    dlg.SetMinSize(wxSize(300,145));
-                    dlg.CenterOnScreen();
-                    
-                    if (dlg.ShowModal() == wxID_OK)
+                    wxString new_path = dlg.getPath();
+
+                    // save the properties
+                    b.location = towstr(dlg.getLocation());
+                    b.tags = towstr(dlg.getTags());
+                    b.description = towstr(dlg.getDescription());
+                    b.run_target = dlg.getRunTarget();
+
+                    if (BookmarkFs::saveBookmark(towstr(new_path), b))
                     {
-                        tango::IDatabasePtr db = g_app->getDatabase();
-                        if (db.isOk())
+                        if (new_path != path)
                         {
-                            // remove the old node file and create a new one
-                            db->deleteFile(towstr(path));
-                            db->setMountPoint(towstr(dlg.getPath()), L"", towstr(dlg.getLocation()));
-                    
-                            // position the singleton mount in the linkbar
-                            BookmarkFs::setFileVisualLocation(towstr(dlg.getPath()), idx);
-                            
-                            // repopulate and refresh the linkbar
-                            refresh();
+                            // delete old bookmark
+                            BookmarkFs::deleteItem(towstr(path));
                         }
-                    }
-                }
-                 else
-                {
-                /*
-                    Bookmark b;
-                    if (!b.load(path))
-                        return;
-                    
-                    wxString title = wxString::Format(_("\"%s\" Properties"),
-                                                      item->getLabel().c_str());
-                    
-                    LinkPropsDialog dlg(this);
-                    dlg.setName(item->getLabel());
-                    dlg.setLocation(b.getLocation());
-                    dlg.setTags(b.getTags());
-                    dlg.setDescription(b.getDescription());
-                    dlg.setRunTarget(b.getRunTarget());
-                    dlg.SetTitle(title);
-                    dlg.CenterOnScreen();
-                    
-                    if (dlg.ShowModal() == wxID_OK)
-                    {
-                        // save the properties
-                        b.setLocation(dlg.getLocation());
-                        b.setTags(dlg.getTags());
-                        b.setDescription(dlg.getDescription());
-                        b.setRunTarget(dlg.getRunTarget());
-                        b.save(dlg.getPath());
-                        
+
                         // position the bookmark in the linkbar
-                        BookmarkFs::setFileVisualLocation(dlg.getPath(), idx);
+                        BookmarkFs::setFileVisualLocation(towstr(new_path), idx);
                         
                         // repopulate and refresh the linkbar
                         refresh();
                     }
-                */
                 }
             }
+
             
             break;
         }
@@ -1300,8 +1257,8 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
             dlg.setMessage(message);
             dlg.setName(item->getLabel());
             dlg.SetTitle(title);
-            dlg.SetSize(280,145);
-            dlg.SetMinSize(wxSize(280,145));
+            dlg.SetSize(320,155);
+            dlg.SetMinSize(wxSize(320,155));
             dlg.CenterOnScreen();
                 
             if (dlg.ShowModal() == wxID_OK)
