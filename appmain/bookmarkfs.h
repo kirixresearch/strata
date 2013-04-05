@@ -13,17 +13,38 @@
 #define __APP_BOOKMARKFS_H
 
 
+class Bookmark
+{
+public:
+
+    Bookmark();
+    bool fromJson(const std::wstring& json);
+    std::wstring toJson();
+
+public:
+
+    std::wstring location;
+    std::wstring tags;
+    std::wstring description;
+    bool run_target;
+    wxImage icon;
+};
 
 class BookmarkFs
 {
 public:
 
     static IFsItemPtr getRootBookmarksFolder();
-    static bool createBookmark(const wxString& path,
-                               const wxString& loc,
-                               const wxString& tags = L"",
-                               const wxString& desc = L"",
-                               const wxImage& favicon = wxImage());
+
+    static bool createBookmark(const std::wstring& path,
+                               const std::wstring& location,
+                               const std::wstring& tags = L"",
+                               const std::wstring& description = L"",
+                               const wxImage& icon = wxImage());
+
+    static bool loadBookmark(const std::wstring& path, Bookmark& bookmark);
+    static bool saveBookmark(const std::wstring& path, Bookmark& bookmark);
+    static bool deleteItem(const std::wstring& path);
 };
 
 

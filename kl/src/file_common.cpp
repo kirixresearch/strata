@@ -15,7 +15,6 @@
 
 std::wstring xf_get_file_contents(const std::wstring& path, bool* success)
 {
-    // file is not in project, try disk filesystem
     xf_file_t f = xf_open(path, xfOpen, xfRead, xfShareReadWrite);
     if (!f)
     {
@@ -61,8 +60,31 @@ std::wstring xf_get_file_contents(const std::wstring& path, bool* success)
     return value;
 }
 
-bool xf_put_file_contents(const std::wstring& filename, const std::wstring& contents)
+bool xf_put_file_contents(const std::wstring& path, const std::wstring& contents)
 {
+    kl::toUtf8 conv(contents);
+    const char* buf = conv;
+    size_t len = strlen(buf);
+
+
+    xf_file_t f = xf_open(path, xfCreate, xfReadWrite, xfShareNone);
+    if (!f)
+        return false;
+
+    static const unsigned char bom[3] = { 0xef, 0xbb, 0xbf };
+    if (xf_write(f, bom, 1, 3) != 3)
+    {
+        xf_close(f);
+        return false;
+    }
+
+    if (xf_write(f, buf, 1, len) != len)
+    {
+        xf_close(f);
+        return false;
+    }
+
+    xf_close(f);
     return true;
 }
 

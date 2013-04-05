@@ -1871,7 +1871,7 @@ void AppController::onCreateBookmark(wxCommandEvent& evt)
     
     // get new bookmark path from a dialog
     LinkPropsDialog dlg(g_app->getMainWindow());
-    dlg.setMode(LinkPropsDialog::ModeCreateSmall);
+    dlg.setMode(LinkPropsDialog::ModeCreate);
     dlg.setName(s);
     dlg.SetTitle(_("New Bookmark"));
     dlg.SetSize(360,145);
@@ -1881,7 +1881,7 @@ void AppController::onCreateBookmark(wxCommandEvent& evt)
     if (dlg.ShowModal() != wxID_OK)
         return;
     
-    BookmarkFs::createBookmark(dlg.getPath(), doc->getDocumentLocation());
+    BookmarkFs::createBookmark(towstr(dlg.getPath()), towstr(doc->getDocumentLocation()));
     m_linkbar->refresh();
 }
 
@@ -6054,15 +6054,17 @@ void AppController::createDefaultLinks()
     
     IAppPreferencesPtr prefs = g_app->getAppPreferences();
     
-    BookmarkFs::createBookmark(bookmarks_folder + wxT("Home Page"), getAppPrefsDefaultString(wxT("general.location.home")));
-    BookmarkFs::createBookmark(bookmarks_folder + wxT("Online Help"), getAppPrefsDefaultString(wxT("general.location.help")));
-    BookmarkFs::createBookmark(bookmarks_folder + wxT("Developer Resources"), getAppPrefsDefaultString(wxT("general.location.resources")));
-    BookmarkFs::createBookmark(bookmarks_folder + wxT("Support Forums"), getAppPrefsDefaultString(wxT("general.location.support")));
+    BookmarkFs::createBookmark(towstr(bookmarks_folder + _("Home Page")), towstr(getAppPrefsDefaultString("general.location.home")));
+    BookmarkFs::createBookmark(towstr(bookmarks_folder + _("Online Help")), towstr(getAppPrefsDefaultString("general.location.help")));
+    BookmarkFs::createBookmark(towstr(bookmarks_folder + _("Developer Resources")), towstr(getAppPrefsDefaultString("general.location.resources")));
+    BookmarkFs::createBookmark(towstr(bookmarks_folder + _("Support Forums")), towstr(getAppPrefsDefaultString("general.location.support")));
 
-    DbDoc::setFileVisualLocation(bookmarks_folder + wxT("Home Page"), 0);
-    DbDoc::setFileVisualLocation(bookmarks_folder + wxT("Online Help"), 1);
-    DbDoc::setFileVisualLocation(bookmarks_folder + wxT("Developer Resources"), 2);
-    DbDoc::setFileVisualLocation(bookmarks_folder + wxT("Support Forums"), 3);
+    /*
+    DbDoc::setFileVisualLocation(bookmarks_folder + "Home Page", 0);
+    DbDoc::setFileVisualLocation(bookmarks_folder + "Online Help", 1);
+    DbDoc::setFileVisualLocation(bookmarks_folder + "Developer Resources", 2);
+    DbDoc::setFileVisualLocation(bookmarks_folder + "Support Forums", 3);
+    */
 }
 
 

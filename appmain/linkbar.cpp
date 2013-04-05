@@ -1119,19 +1119,17 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
             
             if (dlg.ShowModal() == wxID_OK)
             {
-
-            /*
                 // create the bookmark
                 Bookmark b;
-                b.setLocation(dlg.getLocation());
-                b.setDescription(dlg.getDescription());
-                b.setTags(dlg.getTags());
-                b.setRunTarget(dlg.getRunTarget());
-                b.save(dlg.getPath());
-            */
+                b.location = towstr(dlg.getLocation());
+                b.description = towstr(dlg.getDescription());
+                b.tags = towstr(dlg.getTags());
+                b.run_target = dlg.getRunTarget();
+                
+                BookmarkFs::saveBookmark(towstr(dlg.getPath()), b);
 
                 // position the bookmark in the linkbar
-                DbDoc::setFileVisualLocation(dlg.getPath(), idx);
+                //DbDoc::setFileVisualLocation(dlg.getPath(), idx);
                 
                 // repopulate and refresh the linkbar
                 refresh();
@@ -2254,7 +2252,7 @@ static void doProjectTreeDragDrop(IFsItemPtr item,
             {
                 // for all other items, create a bookmark (link)
                 // and add it to the linkbar (or folder in the linkbar)
-                BookmarkFs::createBookmark(dest_path, src_path);
+                BookmarkFs::createBookmark(towstr(dest_path), towstr(src_path));
             }
         }
     }
@@ -2439,7 +2437,7 @@ void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
                 
 
             // create the bookmark at the specified location
-            BookmarkFs::createBookmark(dest_path, obj->getPath(), wxT(""), wxT(""), favicon);
+            BookmarkFs::createBookmark(towstr(dest_path), towstr(obj->getPath()), L"", L"", favicon);
 
             // if we're not dragging to a folder, set the
             // position of the item on the linkbar

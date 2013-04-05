@@ -24,7 +24,7 @@ enum
 };
 
 
-// -- LinkPropsDialog class implementation --
+// LinkPropsDialog class implementation
 
 BEGIN_EVENT_TABLE(LinkPropsDialog, wxDialog)
     EVT_TEXT(ID_NameTextCtrl, LinkPropsDialog::onNameChanged)
@@ -51,7 +51,6 @@ LinkPropsDialog::LinkPropsDialog(wxWindow* parent,
                                      wxCLIP_CHILDREN |
                                      wxNO_FULL_REPAINT_ON_RESIZE)
 {
-    m_db_comboctrl = NULL;
     m_name_textctrl = NULL;
     m_location_textctrl = NULL;
     m_tags_textctrl = NULL;
@@ -86,31 +85,6 @@ int LinkPropsDialog::ShowModal()
 
     // create the separator
     wxStaticLine* separator = new wxStaticLine(this, -1);
-
-    // create the db combo sizer
-    wxStaticText* label_create = new wxStaticText(this,
-                                                  -1,
-                                                  _("Create in:"),
-                                                  wxDefaultPosition,
-                                                  wxDefaultSize);
-    m_db_comboctrl = NULL;
-    m_db_comboctrl = new DbComboCtrl(this);
-    m_db_comboctrl->setShowFullPath(true, true);
-
-    if (m_start_folder.Length() > 0)
-    {
-        wxString label = m_start_folder.AfterLast(wxT('/'));
-        m_db_comboctrl->setPopupRootFolder(m_start_folder, label);
-    }
-     else
-    {
-        m_db_comboctrl->setPopupRootFolder(g_app->getBookmarksFolder(),
-                                           _("Bookmarks Toolbar"));
-    }
-    
-    wxBoxSizer* create_sizer = new wxBoxSizer(wxHORIZONTAL);
-    create_sizer->Add(label_create, 0, wxALIGN_CENTER);
-    create_sizer->Add(m_db_comboctrl, 1, wxALIGN_CENTER);
 
     // create the name sizer
     wxStaticText* label_name = new wxStaticText(this,
@@ -227,18 +201,6 @@ int LinkPropsDialog::ShowModal()
         tags_sizer->SetItemMinSize(label_tags, label_size);
         flags_sizer->SetItemMinSize((size_t)0, label_size);
     }
-     else if (m_mode == LinkPropsDialog::ModeCreateSmall)
-    {
-        // measure the label widths
-        wxSize label_size = getMaxTextSize(label_create,
-                                                label_name);
-        label_size.x += 10;
-        
-        create_sizer->SetItemMinSize(label_create, label_size);
-        name_sizer->SetItemMinSize(label_name, label_size);
-        flags_sizer->SetItemMinSize((size_t)0, label_size);
-    }
-    
     
     
     
@@ -259,7 +221,6 @@ int LinkPropsDialog::ShowModal()
     // create main sizer
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
     main_sizer->Add(message_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 8);
-    main_sizer->Add(create_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 8);
     main_sizer->Add(name_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 8);
     main_sizer->Add(separator, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 8);
     main_sizer->Add(location_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 8);
@@ -273,7 +234,6 @@ int LinkPropsDialog::ShowModal()
         m_mode == LinkPropsDialog::ModeEdit)
     {
         message_sizer->Show(false);
-        create_sizer->Show(false);
         tags_sizer->Show(false);
         separator->Show(false);
         spacer->Show(false);
@@ -281,23 +241,13 @@ int LinkPropsDialog::ShowModal()
      else if (m_mode == LinkPropsDialog::ModeEditNoDesc)
     {
         message_sizer->Show(false);
-        create_sizer->Show(false);
         tags_sizer->Show(false);
         description_sizer->Show(false);
         separator->Show(false);
         flags_sizer->Show(false);
     }
-     else if (m_mode == LinkPropsDialog::ModeCreateSmall)
-    {
-        message_sizer->Show(false);
-        separator->Show(false);
-        location_sizer->Show(false);
-        tags_sizer->Show(false);
-        description_sizer->Show(false);
-    }
      else if (m_mode == LinkPropsDialog::ModeRename)
     {
-        create_sizer->Show(false);
         separator->Show(false);
         location_sizer->Show(false);
         tags_sizer->Show(false);
@@ -315,14 +265,11 @@ int LinkPropsDialog::ShowModal()
 
 wxString LinkPropsDialog::getPath()
 {
-    if (!m_db_comboctrl)
-        return wxEmptyString;
-        
     wxString name = m_name;
     trimUnwantedUrlChars(name);
     
-    wxString retval = m_db_comboctrl->getPath();
-    retval += wxT("/");
+    wxString retval;
+    retval += "/";
     retval += name;
     return retval;
 }
