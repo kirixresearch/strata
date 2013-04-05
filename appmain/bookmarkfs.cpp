@@ -199,6 +199,7 @@ static std::wstring imageToText(wxImage& image)
     return ret;
 }
 
+
 // Bookmark class implementation
 
 
@@ -268,19 +269,37 @@ IFsItemPtr BookmarkFs::getRootBookmarksFolder()
     return static_cast<IFsItem*>(root);
 }
 
-static std::wstring mergeBookmarkPaths(const std::wstring& bookmark, const std::wstring& extension = L".json")
+static std::wstring getBookmarkFilePath(const std::wstring& bookmark, const std::wstring& extension = L".json")
 {
     std::wstring full_path = getBookmarksLocation();
     if (full_path.empty())
         return L"";
     if (bookmark.length() == 0)
-        return L"";
+        return full_path;
     if (bookmark[0] != '/')
         full_path += PATH_SEPARATOR_STR;
     full_path += bookmark;
     full_path += extension;
     kl::replaceStr(full_path, L"/", PATH_SEPARATOR_STR);
     return full_path;
+}
+
+static std::wstring appendPaths(const std::wstring& path1, const std::wstring& path2)
+{
+    if (path2.empty())
+        return path1;
+
+    std::wstring res = path1;
+
+    if (res.length() > 0 && res[res.length()-1] != '/')
+        res += L'/';
+
+    if (path2[0] == '/')
+        res += path2.substr(1);
+         else
+        res += path2;
+
+    return res;
 }
 
 bool BookmarkFs::createBookmark(const std::wstring& path,
@@ -300,7 +319,7 @@ bool BookmarkFs::createBookmark(const std::wstring& path,
 
 bool BookmarkFs::createFolder(const std::wstring& path)
 {
-    std::wstring full_path = mergeBookmarkPaths(path, L"");
+    std::wstring full_path = getBookmarkFilePath(path, L"");
     if (full_path.empty())
         return false;
 
@@ -309,7 +328,7 @@ bool BookmarkFs::createFolder(const std::wstring& path)
 
 bool BookmarkFs::loadBookmark(const std::wstring& path, Bookmark& bookmark)
 {
-    std::wstring full_path = mergeBookmarkPaths(path);
+    std::wstring full_path = getBookmarkFilePath(path);
     if (full_path.empty())
         return false;
 
@@ -325,7 +344,7 @@ bool BookmarkFs::loadBookmark(const std::wstring& path, Bookmark& bookmark)
 
 bool BookmarkFs::saveBookmark(const std::wstring& path, Bookmark& bookmark)
 {
-    std::wstring full_path = mergeBookmarkPaths(path);
+    std::wstring full_path = getBookmarkFilePath(path);
     if (full_path.empty())
         return false;
 
@@ -336,7 +355,7 @@ bool BookmarkFs::saveBookmark(const std::wstring& path, Bookmark& bookmark)
 
 bool BookmarkFs::deleteItem(const std::wstring& path)
 {
-    std::wstring full_path = mergeBookmarkPaths(path, L"");
+    std::wstring full_path = getBookmarkFilePath(path, L"");
     if (full_path.empty())
         return false;
 
@@ -347,7 +366,36 @@ bool BookmarkFs::deleteItem(const std::wstring& path)
     return xf_remove(full_path);
 }
 
+bool BookmarkFs::moveItem(const std::wstring& old_path, const std::wstring& new_path)
+{
+    std::wstring p1 = getBookmarkFilePath(old_path, L"");
+    std::wstring p2;
+    if (p1.empty())
+        return false;
 
+    if (xf_get_directory_exist(p1))
+    {
+        p2 = getBookmarkFilePath(new_path, L"");
+        if (p2.empty())
+            return false;
+ 
+        return xf_move(p1, p2);
+    }
+
+    p1 = getBookmarkFilePath(old_path);
+    p2 = getBookmarkFilePath(new_path);
+
+    return xf_move(p1, p2);
+}
+
+
+std::wstring BookmarkFs::getBookmarkItemPath(IFsItemPtr item)
+{   
+    IFsBookmarkItemPtr fsi = item;
+    if (fsi.isNull())
+        return L"";
+    return fsi->getPath();
+}
 
 void BookmarkFs::setFileVisualLocation(const std::wstring& _path, int insert_index)
 {
@@ -379,7 +427,7 @@ void BookmarkFs::setFileVisualLocation(const std::wstring& _path, int insert_ind
 
 
     // STEP 1: read in existing order entries from json file
-    std::wstring objorder_fname = mergeBookmarkPaths(folder + L"/objorder.info", L"");
+    std::wstring objorder_fname = getBookmarkFilePath(folder + L"/objorder.info", L"");
 
     std::wstring json;
     json = xf_get_file_contents(objorder_fname);
@@ -403,7 +451,7 @@ void BookmarkFs::setFileVisualLocation(const std::wstring& _path, int insert_ind
     // STEP 2: reconcile differences between folder contents on visual array
     std::set<std::wstring> existing;
 
-    std::wstring fspath = mergeBookmarkPaths(folder, L"");
+    std::wstring fspath = getBookmarkFilePath(folder, L"");
     xf_dirhandle_t handle = xf_opendir(fspath);
     xf_direntry_t info;
     std::wstring full_path;
@@ -419,8 +467,6 @@ void BookmarkFs::setFileVisualLocation(const std::wstring& _path, int insert_ind
 
         kl::makeLower(info.m_name);
 
-
-
         if (info.m_name.find(L".json") != info.m_name.npos)
             existing.insert(kl::beforeLast(info.m_name, '.'));
         else if (xf_get_directory_exist(full_path))
@@ -428,6 +474,7 @@ void BookmarkFs::setFileVisualLocation(const std::wstring& _path, int insert_ind
     }
 
     xf_closedir(handle);
+
 
     // first delete any items from the order array that no longer exist
     int i;
@@ -458,6 +505,7 @@ void BookmarkFs::setFileVisualLocation(const std::wstring& _path, int insert_ind
 
 
     // STEP 3: insert path in desired location
+
 
     // (first remove the item from where it was)
     for (it = order.begin(); it != order.end(); ++it)
@@ -497,7 +545,7 @@ void BookmarkFs::setFileVisualLocation(const std::wstring& _path, int insert_ind
 static void reorderBookmarkEntries(const std::wstring& folder, std::vector<IFsItemPtr>& entries)
 {
     // STEP 1: read in existing order entries from json file
-    std::wstring objorder_fname = mergeBookmarkPaths(folder + L"/objorder.info", L"");
+    std::wstring objorder_fname = getBookmarkFilePath(folder + L"/objorder.info", L"");
 
     std::vector<std::wstring> order;
     std::vector<std::wstring>::iterator it;
@@ -589,9 +637,12 @@ void BookmarkFolder::populate()
 
         if (info.m_name.find(L".json") != info.m_name.npos)
         {
+            std::wstring name = kl::beforeLast(info.m_name, '.');
+
             BookmarkItem* item = new BookmarkItem;
-            item->setLabel(towx(kl::beforeLast(info.m_name, '.')));
+            item->setLabel(towx(name));
             item->setBitmap(GETBMP(gf_document_16));
+            item->setPath(appendPaths(m_path, name));
                 
             IFsItemPtr f = static_cast<IFsItem*>(item);
             m_children.push_back(f);
@@ -601,7 +652,7 @@ void BookmarkFolder::populate()
             BookmarkFolder* folder = new BookmarkFolder;
             folder->setLabel(info.m_name);
             folder->setBitmap(GETBMP(gf_folder_closed_16));
-            folder->setPath(m_path + L"/" + info.m_name);
+            folder->setPath(appendPaths(m_path, info.m_name));
 
             IFsItemPtr f = static_cast<IFsItem*>(folder);
             m_children.push_back(f);

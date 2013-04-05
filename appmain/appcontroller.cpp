@@ -6282,11 +6282,11 @@ bool AppController::openProject(const wxString& location,
         m_dbdoc->setDatabase(database);
     
     IAppPreferencesPtr prefs = g_app->getAppPreferences();
-    bool default_links_created = prefs->getBoolean(wxT("general.default_links_created"), false);
+    bool default_links_created = prefs->getBoolean(wxT("general.default_links_created_2"), false);
     if (!default_links_created)
     {
         createDefaultLinks();
-        prefs->setBoolean(wxT("general.default_links_created"), true);
+        prefs->setBoolean(wxT("general.default_links_created_2"), true);
     }
     
     // if the 'Last Open Project' preference has been set,

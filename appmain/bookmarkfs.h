@@ -45,16 +45,30 @@ public:
     static bool loadBookmark(const std::wstring& path, Bookmark& bookmark);
     static bool saveBookmark(const std::wstring& path, Bookmark& bookmark);
     static bool deleteItem(const std::wstring& path);
+    static bool moveItem(const std::wstring& old_path, const std::wstring& new_path);
 
     static void setFileVisualLocation(const std::wstring& path, int insert_index);
+
+    static std::wstring getBookmarkItemPath(IFsItemPtr item);
 };
 
 
 
-class BookmarkFolder : public FsItemBase
+xcm_interface IFsBookmarkItem : public xcm::IObject
+{
+    XCM_INTERFACE_NAME("tango.IFsBookmarkItem")
+
+public:
+
+    virtual const std::wstring& getPath() = 0;
+};
+XCM_DECLARE_SMARTPTR(IFsBookmarkItem)
+
+class BookmarkFolder : public FsItemBase, public IFsBookmarkItem
 {
     XCM_CLASS_NAME("appmain.BookmarkFolder")
     XCM_BEGIN_INTERFACE_MAP(BookmarkFolder)
+        XCM_INTERFACE_ENTRY(IFsBookmarkItem)
         XCM_INTERFACE_CHAIN(FsItemBase)
     XCM_END_INTERFACE_MAP()
 
@@ -68,6 +82,7 @@ public:
     bool isDeferred() { return false; }
     bool isFolder() { return true; }
     void setPath(const std::wstring& path) { m_path = path; }
+    const std::wstring& getPath() { return m_path; }
     bool hasChildren()
     {
         if (!m_populated)
@@ -87,10 +102,11 @@ private:
 };
 
 
-class BookmarkItem : public FsItemBase
+class BookmarkItem : public FsItemBase, public IFsBookmarkItem
 {
     XCM_CLASS_NAME("appmain.BookmarkItem")
     XCM_BEGIN_INTERFACE_MAP(BookmarkItem)
+        XCM_INTERFACE_ENTRY(IFsBookmarkItem)
         XCM_INTERFACE_CHAIN(FsItemBase)
     XCM_END_INTERFACE_MAP()
 
@@ -100,6 +116,12 @@ public:
     ~BookmarkItem();
 
     bool isDeferred() { return false; }
+    void setPath(const std::wstring& path) { m_path = path; }
+    const std::wstring& getPath() { return m_path; }
+
+private:
+
+    std::wstring m_path;
 };
 
 

@@ -1166,7 +1166,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
         }
         case ID_LinkBar_Properties:
         {
-            wxString path = DbDoc::getFsItemPath(item);
+            wxString path = towx(BookmarkFs::getBookmarkItemPath(item));
 
             if (is_folder_clicked)
             {
@@ -1285,134 +1285,51 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
         }
         case ID_LinkBar_Rename:
         {
-            wxString path = DbDoc::getFsItemPath(item);
-
+            // we're editing the properties of a folder
+            wxString message;
             if (is_folder_clicked)
-            {
-                // we're editing the properties of a folder
-                
-                wxString message = wxString::Format(_("Please enter the name of the folder:"));
-                wxString title = wxString::Format(_("\"%s\" Properties"),
-                                                  item->getLabel().c_str());
+                message = _("Please enter the new name of the folder:");
+                 else
+                message = _("Please enter the new name of the bookmark:");
+
+            wxString title = wxString::Format(_("\"%s\" Properties"),
+                                                item->getLabel().c_str());
                                                   
-                LinkPropsDialog dlg(this);
-                dlg.setMode(LinkPropsDialog::ModeRename);
-                dlg.setMessage(message);
-                dlg.setName(item->getLabel());
-                dlg.SetTitle(title);
-                dlg.SetSize(280,145);
-                dlg.SetMinSize(wxSize(280,145));
-                dlg.CenterOnScreen();
+            LinkPropsDialog dlg(this);
+            dlg.setMode(LinkPropsDialog::ModeRename);
+            dlg.setMessage(message);
+            dlg.setName(item->getLabel());
+            dlg.SetTitle(title);
+            dlg.SetSize(280,145);
+            dlg.SetMinSize(wxSize(280,145));
+            dlg.CenterOnScreen();
                 
-                if (dlg.ShowModal() == wxID_OK)
+            if (dlg.ShowModal() == wxID_OK)
+            {
+                std::wstring old_path = BookmarkFs::getBookmarkItemPath(item);
+                std::wstring new_path = towstr(dlg.getPath());
+
+                if (BookmarkFs::moveItem(old_path, new_path))
                 {
-                    tango::IDatabasePtr db = g_app->getDatabase();
-                    if (db.isNull())
-                        return;
-                    
-                    wxString new_path = dlg.getPath();
-                    if (new_path.CmpNoCase(path) == 0)
-                        return;
-                    
-                    bool result = db->moveFile(towstr(path), towstr(new_path));
-                    if (!result)
-                        return;
-                    
                     // position the folder in the linkbar
-                    BookmarkFs::setFileVisualLocation(towstr(new_path), idx);
+                    BookmarkFs::setFileVisualLocation(new_path, idx);
                     
                     // repopulate and refresh the linkbar
                     refresh();
                 }
             }
-             else
-            {
-                // we're editing the properties of
-                // a bookmark or a singleton mount
-                
-                wxString remote_path = path;
-                if (getRemotePathIfExists(remote_path))
-                {
-                    wxString message = wxString::Format(_("Please enter the name of the bookmark:"));
-                    wxString title = wxString::Format(_("\"%s\" Properties"),
-                                                      item->getLabel().c_str());
-                    
-                    LinkPropsDialog dlg(this);
-                    dlg.setMode(LinkPropsDialog::ModeRename);
-                    dlg.setMessage(message);
-                    dlg.setName(path.AfterLast(wxT('/')));
-                    dlg.setLocation(remote_path);
-                    dlg.SetTitle(title);
-                    dlg.SetSize(280,145);
-                    dlg.SetMinSize(wxSize(280,145));
-                    dlg.CenterOnScreen();
-                    
-                    if (dlg.ShowModal() == wxID_OK)
-                    {
-                        tango::IDatabasePtr db = g_app->getDatabase();
-                        if (db.isOk())
-                        {
-                            // remove the old node file and create a new one
-                            db->deleteFile(towstr(path));
-                            db->setMountPoint(towstr(dlg.getPath()), L"", towstr(dlg.getLocation()));
-                    
-                            // position the singleton mount in the linkbar
-                            BookmarkFs::setFileVisualLocation(towstr(dlg.getPath()), idx);
-                            
-                            // repopulate and refresh the linkbar
-                            refresh();
-                        }
-                    }
-                }
-                 else
-                {
-                /*
-                    Bookmark b;
-                    if (!b.load(path))
-                        return;
-                    
 
-                    wxString message = wxString::Format(_("Please enter the name of the bookmark:"));
-                    wxString title = wxString::Format(_("\"%s\" Properties"),
-                                                      item->getLabel().c_str());
-                    
-                    LinkPropsDialog dlg(this);
-                    dlg.setMode(LinkPropsDialog::ModeRename);
-                    dlg.setMessage(message);
-                    dlg.setName(path.AfterLast(wxT('/')));
-                    dlg.setLocation(b.getLocation());
-                    dlg.setTags(b.getTags());
-                    dlg.setDescription(b.getDescription());
-                    dlg.SetTitle(title);
-                    dlg.SetSize(280,145);
-                    dlg.SetMinSize(wxSize(280,145));
-                    dlg.CenterOnScreen();
-                    
-                    if (dlg.ShowModal() == wxID_OK)
-                    {
-                        // save the properties
-                        b.setLocation(dlg.getLocation());
-                        b.setTags(dlg.getTags());
-                        b.setDescription(dlg.getDescription());
-                        b.save(dlg.getPath());
-                        
-                        // position the bookmark in the linkbar
-                        BookmarkFs::setFileVisualLocation(dlg.getPath(), idx);
-                        
-                        // repopulate and refresh the linkbar
-                        refresh();
-                    }
-                */
-                }
-            }
-            
             break;
         }
         case ID_LinkBar_Delete:
         {
-            wxString path = DbDoc::getFsItemPath(item);
-            g_app->getDatabase()->deleteFile(towstr(path));
-            refresh();
+            std::wstring bookmark_path = BookmarkFs::getBookmarkItemPath(item);
+            if (bookmark_path.length() > 0)
+            {
+                BookmarkFs::deleteItem(towstr(item->getLabel()));
+                refresh();
+            }
+
             break;
         }
     }
@@ -1454,17 +1371,6 @@ void LinkBar::onMiddleClick(wxAuiToolBarEvent& evt)
     }
 }
 
-// this function converts a IFsItemPtr into a tango::IFileInfoPtr
-static tango::IFileInfoPtr fsItemToFileInfo(IFsItemPtr item)
-{
-    wxString path = DbDoc::getFsItemPath(item);
-    tango::IFileInfoPtr info = g_app->getDatabase()->getFileInfo(towstr(path));
-    if (info.isNull())
-    {
-        return xcm::null;
-    }
-    return info;
-}
 
 void LinkBar::onOverflowClick(wxAuiToolBarEvent& evt)
 {
@@ -1475,6 +1381,7 @@ void LinkBar::onOverflowClick(wxAuiToolBarEvent& evt)
     xcm::IVectorImpl<tango::IFileInfoPtr>* vec;
     vec = new xcm::IVectorImpl<tango::IFileInfoPtr>;
 
+    /*
     // only show items that don't fit in the dropdown
     size_t i, count = m_items.size();
     for (i = 0; i < count; ++i)
@@ -1486,6 +1393,7 @@ void LinkBar::onOverflowClick(wxAuiToolBarEvent& evt)
                 vec->append(info);
         }
     }
+    */
     
     // no items to show
     if (vec->size() == 0)
@@ -1645,7 +1553,7 @@ void LinkBar::refresh()
             wxString tooltip;
             
             Bookmark b;
-            bool bookmark_loaded = b.load(DbDoc::getFsItemPath(item));
+            bool bookmark_loaded = b.load(BookmarkFs::getBookmarkItemPath(item));
 
             // truncate long labels
             if (label.Length() > 80)
@@ -2116,10 +2024,11 @@ void LinkBar::onFsDataDragOver(wxDragResult& def)
             if (idx >= 0 && idx < (int)m_items.size())
                 fs_item = m_items[idx];
             
+            /*
             if (fs_item.isOk())
             {
                 // get the database path of the item
-                wxString item_path = DbDoc::getFsItemPath(fs_item);
+                wxString item_path = towx(BookmarkFs::getBookmarkItemPath(fs_item);
                 
                 if (!isExternalMount(item_path))
                 {
@@ -2132,6 +2041,7 @@ void LinkBar::onFsDataDragOver(wxDragResult& def)
                     }
                 }
             }
+            */
         }
 
         // we want to show the user that they're going to drop the item
@@ -2181,8 +2091,11 @@ static void doProjectTreeDragDrop(IFsItemPtr item,
                                   wxString drop_folder_path,
                                   int link_drop_idx = -1)
 {
+    // TODO: reimplement this
+    return;
+
     // get the full path of the item
-    wxString src_path = DbDoc::getFsItemPath(item);
+    wxString src_path = towx(BookmarkFs::getBookmarkItemPath(item));
     
     // get the name (chop off folders)
     wxString src_name = src_path.AfterLast(wxT('/'));
@@ -2345,7 +2258,7 @@ void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
             // dragging an item into a folder in the linkbar
             
             // get the full path of the source item
-            wxString src_path = DbDoc::getFsItemPath(items->getItem(0));
+            wxString src_path = towx(BookmarkFs::getBookmarkItemPath(items->getItem(0)));
             
             // move the item to the destination folder
             getRemotePathIfExists(drop_folder_path);
