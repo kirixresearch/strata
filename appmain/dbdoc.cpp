@@ -278,17 +278,9 @@ public:
         int f1_type = f1->getType();
         int f2_type = f2->getType();
         
-        /*
-        // mounts always float to the very top (above folders even)
-        if (f2->isMount() && !f1->isMount())
-            return false;
-        if (f1->isMount() && !f2->isMount())
-            return true;
-        */
-        
-        //  after mounts, folders always float to the top
-        if (f1_type == tango::filetypeFolder ||
-            f2_type == tango::filetypeFolder)
+        // folders always float to the top
+
+        if (f1_type == tango::filetypeFolder || f2_type == tango::filetypeFolder)
         {
             if (f1_type == f2_type)
             {
