@@ -101,8 +101,6 @@ public:
     DbFolderFsItem();
     ~DbFolderFsItem();
 
-    void setLinkBarMode(bool b);
-    
     void setConnection(IConnectionPtr conn);
     IConnectionPtr getConnection();
 
@@ -132,10 +130,6 @@ public:
 
 private:
 
-    bool checkForDisplayOrder(tango::IFileInfoEnumPtr& file_info);
-
-private:
-
     wxString m_path;
     tango::IDatabasePtr m_db;
     tango::IFileInfoEnumPtr m_children_override;
@@ -144,7 +138,6 @@ private:
     bool m_only_folders;
     bool m_only_tables;
     bool m_is_mount;
-    bool m_link_bar_mode;
 };
 
 
@@ -216,7 +209,6 @@ public:
     void unref();
     
     void setStyle(int fspanel_style) { m_style = fspanel_style; }
-    void setLinkBarMode(bool value) { m_link_bar_mode = value; }
     void setNoEdit(bool value) { m_no_edit = value; }
     
     // call initAsDocument() if you want to use dbdoc as a cfw document,
@@ -345,7 +337,6 @@ private:
     IFsItemPtr m_edit_item;
     
     bool m_no_edit;
-    bool m_link_bar_mode;
     int m_edit_mode;
     int m_style;
 

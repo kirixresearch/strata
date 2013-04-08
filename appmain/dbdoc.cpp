@@ -339,361 +339,8 @@ static void sortFolderInfo(tango::IFileInfoEnumPtr& f)
 
 
 
-// -- DbDocDisplayOrder class implementation --
 
-class DbDocDisplayOrder
-{
-
-public:
-
-    DbDocDisplayOrder(tango::IDatabasePtr db)
-    {
-        m_db = db;
-    }
-    
-    bool load(const std::wstring& positions_file_path)
-    {
-        std::wstring path = positions_file_path;
-
-        if (path.empty())
-            return false;
-
-        tango::IDatabasePtr db = g_app->getDatabase();
-        if (db.isNull())
-            return false;
-    
-        tango::IFileInfoPtr info = db->getFileInfo(towstr(path));
-        if (info.isOk() && info->getType() == tango::filetypeFolder)
-            return false;
-
-        kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), path);
-        if (!node.isOk())
-            return false;
-
-        // try to load the new format
-        kl::JsonNode metadata_node = node["metadata"];
-        if (metadata_node.isOk())
-        {
-            // check the mime type and the version
-            kl::JsonNode type_node = metadata_node["type"];
-            if (!type_node.isOk() || type_node.getString() != L"application/vnd.kx.bookmarkorder")
-                return false;
-
-            kl::JsonNode version_node = metadata_node["version"];
-            if (!version_node.isOk() || version_node.getInteger() != 1)
-                return false;
-
-            kl::JsonNode positions_node = node["positions"];
-            if (!positions_node.isOk())
-                return false;
-
-            // clear out existing positions
-            m_positions.clear();
-
-            // load the new positions
-            std::vector<kl::JsonNode> positions_children = positions_node.getChildren();
-            std::vector<kl::JsonNode>::iterator it, it_end;
-            it_end = positions_children.end();
-
-            size_t p = 0;
-            for (it = positions_children.begin(); it != it_end; ++it)
-            {
-                kl::JsonNode child_node = *it;
-                kl::JsonNode name_node = child_node["name"];
-                if (!name_node.isOk())
-                    continue;
-
-                m_positions[name_node.getString()] = p++;
-            }
-
-            // .objorder should always be last
-            insertEntry(L".objorder", m_positions.size());
-            return true;
-        }
-
-
-        // if we can't load the new format, try to load the old format    
-        kl::JsonNode root_node = node["root"];
-        if (root_node.isOk())
-        {
-            // if we don't have the positions node, somethings wrong
-            kl::JsonNode positions_node = root_node["positions"];
-            if (!positions_node.isOk())
-                return false;
-
-            // note: following implemention is identical to the new
-            // format, but leave this separate in case the new format
-            // changes
-
-            // clear out existing positions
-            m_positions.clear();
-
-            // load the new positions
-            std::vector<kl::JsonNode> positions_children = positions_node.getChildren();
-            std::vector<kl::JsonNode>::iterator it, it_end;
-            it_end = positions_children.end();
-
-            size_t p = 0;
-            for (it = positions_children.begin(); it != it_end; ++it)
-            {
-                kl::JsonNode child_node = *it;
-                kl::JsonNode name_node = child_node["name"];
-                if (!name_node.isOk())
-                    continue;
-
-                m_positions[name_node.getString()] = p++;
-            }
-
-            // convert the old path to the new format
-            save(path);
-
-            return true;
-        }
-
-        // some other format that we don't know about
-        return false;
-    }
-    
-    bool save(const std::wstring& positions_file_path)
-    {
-        std::wstring path = positions_file_path;
-
-        if (path.empty())
-            return false;
-
-        tango::IDatabasePtr db = g_app->getDatabase();
-        if (db.isNull())
-            return false;
-    
-        tango::IFileInfoPtr info = db->getFileInfo(towstr(path));
-        if (info.isOk() && info->getType() == tango::filetypeFolder)
-            return false;
-
-        // put map into a vector and remove gaps   
-        std::vector<std::wstring> vpos;
-        
-        std::map<std::wstring, int, kl::cmp_nocase>::iterator pit;
-        for (pit = m_positions.begin(); pit != m_positions.end(); ++pit)
-        {
-            int pos = pit->second;
-            while ((size_t)pos >= vpos.size())
-                vpos.push_back(L"");
-            vpos[pos] = pit->first;
-        }
-        
-        int i, count = (int)vpos.size();
-        for (i = 0; i < count; ++i)
-        {
-            if (vpos[i].length() == 0)
-            {
-                vpos.erase(vpos.begin() + i);
-                i--;
-                count--;
-            }
-        }
-
-        // dump position data into file
-        kl::JsonNode node;
-        kl::JsonNode metadata_node = node["metadata"];
-        metadata_node["type"] = L"application/vnd.kx.bookmarkorder";
-        metadata_node["version"] = 1;
-        metadata_node["description"] = L"";
-
-        kl::JsonNode positions_node = node["positions"];
-        positions_node.setArray();
-
-        count = (int)vpos.size();
-        for (i = 0; i < count; ++i)
-        {
-            kl::JsonNode element_node = node["positions"].appendElement();
-            element_node["name"] = vpos[i];
-        }
-
-        if (!JsonConfig::saveToDb(node, g_app->getDatabase(), path, L"application/vnd.kx.bookmarkorder"))
-            return false;
-
-        return true;
-    }
-    
-    void sync(tango::IFileInfoEnumPtr fi)
-    {
-        std::vector<tango::IFileInfoPtr> vec;
-        size_t i, count = fi->size();
-        for (i = 0; i < count; ++i)
-            vec.push_back(fi->getItem(i));
-        sync(vec);
-    }
-    
-    void sync(std::vector<tango::IFileInfoPtr>& vec)
-    {
-        // remove entries from the m_positions which are not found
-        // in the vector passed in the parameter above
-        
-        std::set<std::wstring, kl::cmp_nocase> existing;
-        size_t i, count = vec.size();
-        for (i = 0; i < count; ++i)
-            existing.insert(vec[i]->getName());
-        
-        std::vector<std::wstring> position_names;
-        std::map<std::wstring, int, kl::cmp_nocase>::iterator it;
-        for (it = m_positions.begin(); it != m_positions.end(); ++it)
-            position_names.push_back(it->first);
-        
-        std::vector<std::wstring>::iterator vit;
-        for (vit = position_names.begin(); vit != position_names.end(); ++vit)
-        {
-            std::set<std::wstring, kl::cmp_nocase>::iterator sit;
-            sit = existing.find(*vit);
-            if (sit == existing.end())
-                deleteEntry(*vit);
-        }
-
-
-        // add any entries that m_positions doesn't yet have
-        
-        for (i = 0; i < count; ++i)
-        {
-            const std::wstring& name = vec[i]->getName();
-            std::map<std::wstring, int, kl::cmp_nocase>::iterator it;
-            it = m_positions.find(name);
-            if (it == m_positions.end())
-            {
-                insertEntry(name, m_positions.size());
-            }
-        }
-    }
-    
-    void sort(std::vector<tango::IFileInfoPtr>& vec)
-    {
-        if (m_positions.size() == 0)
-            return;
-        
-        sync(vec);
-        
-        size_t i = 0, count = vec.size();
-        while (i < count)
-        {
-            std::map<std::wstring, int, kl::cmp_nocase>::iterator it;
-            const std::wstring& name = vec[i]->getName();
-            it = m_positions.find(name);
-            if (it == m_positions.end())
-            {
-                i++;
-                continue;
-            }
-            
-            int new_pos = it->second;
-            if (new_pos >= 0 && (size_t)new_pos < vec.size())
-            {
-                if (new_pos != i)
-                {
-                    tango::IFileInfoPtr temp = vec[new_pos];
-                    vec[new_pos] = vec[i];
-                    vec[i] = temp;
-                }
-                 else
-                {
-                    i++;
-                }
-            }
-             else
-            {
-                i++;
-            }
-        }
-    }
-    
-    bool createDefaultOrder(const std::wstring& folder_path)
-    {
-        m_positions.clear();
-        
-        tango::IFileInfoEnumPtr files = m_db->getFolderInfo(folder_path);
-        if (files.isNull())
-            return false;
-            
-        sortFolderInfo(files);
-        
-        size_t i, count = files->size();
-        for (i = 0; i < count; ++i)
-        {
-            tango::IFileInfoPtr f = files->getItem(i);
-            const std::wstring& name = f->getName();
-            m_positions[name] = i;
-        }
-        
-        
-        // .objorder should always be last
-        insertEntry(L".objorder", m_positions.size());
-
-        return true;
-    }
-    
-    bool deleteEntry(const std::wstring& filename)
-    {
-        std::map<std::wstring, int, kl::cmp_nocase>::iterator it, entry_it;
-        entry_it = m_positions.find(filename);
-        if (entry_it == m_positions.end())
-            return false;
-        int deleted_pos = entry_it->second;
-        for (it = m_positions.begin(); it != m_positions.end(); ++it)
-        {
-            if (it->second >= deleted_pos)
-                (it->second)--;
-        }
-        m_positions.erase(entry_it);
-        return true;
-    }
-
-    void insertEntry(const std::wstring& filename, int pos)
-    {
-        if (pos < 0)
-        {
-            // passing -1 here will set the item's position to the end
-            pos = m_positions.size();
-        }
-        
-        if ((size_t)pos > m_positions.size())
-            pos = (int)m_positions.size();
-                
-        std::map<std::wstring, int, kl::cmp_nocase>::iterator it;
-        it = m_positions.find(filename);
-        if (it != m_positions.end())
-        {
-            if (it->second == pos)
-                return;
-
-            int old_pos = it->second;
-            
-            m_positions.erase(it);
-            
-            for (it = m_positions.begin(); it != m_positions.end(); ++it)
-            {
-                if (it->second >= old_pos)
-                    (it->second)--;
-            }
-        }
-            
-        for (it = m_positions.begin(); it != m_positions.end(); ++it)
-        {
-            if (it->second >= pos)
-                (it->second)++;
-        }
-        
-        m_positions[filename] = pos;
-    }
-    
-private:
-
-    tango::IDatabasePtr m_db;
-    std::map<std::wstring, int, kl::cmp_nocase> m_positions;
-};
-
-
-
-
-
-
-// -- DbFolderFsItem class implementation --
+// DbFolderFsItem class implementation
 
 DbFolderFsItem::DbFolderFsItem()
 {
@@ -701,16 +348,10 @@ DbFolderFsItem::DbFolderFsItem()
     m_is_mount = false;
     m_only_folders = false;
     m_only_tables = false;
-    m_link_bar_mode = false;
 }
 
 DbFolderFsItem::~DbFolderFsItem()
 {
-}
-
-void DbFolderFsItem::setLinkBarMode(bool b)
-{
-    m_link_bar_mode = b;
 }
 
 void DbFolderFsItem::setConnection(IConnectionPtr conn)
@@ -869,20 +510,9 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
         return vec;
     }
     
-    
-    if (m_link_bar_mode)
-    {
-        if (!checkForDisplayOrder(files))
-        {
-            // there was no display order file, so sort alphabetically
-            sortFolderInfo(files);
-        }
-    }
-     else
-    {
-        // regular tree mode is always alphabetical
-        sortFolderInfo(files);
-    }
+
+    // regular tree mode is always alphabetical
+    sortFolderInfo(files);
 
     size_t i, count = files->size();
 
@@ -953,7 +583,6 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
         if (item_type == tango::filetypeFolder)
         {
             DbFolderFsItem* item = new DbFolderFsItem;
-            item->setLinkBarMode(m_link_bar_mode);
             item->setBitmap(DECIDE_BMP(gf_folder_closed_16), fsbmpSmall);
             item->setBitmap(DECIDE_BMP(gf_folder_open_16), fsbmpSmallExpanded);
             item->setBitmap(DECIDE_BMP(gf_folder_closed_16), fsbmpLarge);
@@ -1148,26 +777,6 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
                 vec->append(static_cast<IFsItem*>(item));
             }
         }
-        
-        
-        if (m_link_bar_mode)
-        {
-            // in link bar mode, chop very long lables down a bit
-            if (vec->size() > 0)
-            {
-                IFsItemPtr item = vec->getItem(vec->size()-1);
-                if (item.isOk())
-                {
-                    wxString label = item->getLabel();
-                    if (label.Length() > 47)
-                    {
-                        label = label.Left(47);
-                        label += wxT("...");
-                        item->setLabel(label);
-                    }
-                }
-            }
-        }
     }
     
     return vec;
@@ -1175,51 +784,7 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
 
 
 
-bool DbFolderFsItem::checkForDisplayOrder(tango::IFileInfoEnumPtr& f)
-{
-    if (f.isNull())
-        return false;
-
-    std::vector<tango::IFileInfoPtr> vec;
-    std::vector<tango::IFileInfoPtr>::iterator it;
-    
-    size_t i, count = f->size();
-    bool disp_order_active = false;
-    
-    for (i = 0; i < count; ++i)
-    {
-        vec.push_back(f->getItem(i));
-        if (vec[i]->getName() == L".objorder")
-            disp_order_active = true;
-    }
-    
-    if (!disp_order_active)
-    {
-        // no particular display order found
-        return false;
-    }
-
-    std::wstring info_path = towstr(m_path);
-    if (info_path.empty() || info_path[info_path.length()-1] != L'/')
-        info_path += L'/';
-    info_path += L".objorder";
-
-    DbDocDisplayOrder dispord(m_db);
-    if (!dispord.load(info_path))
-        return false;
-    
-    dispord.sort(vec);
-    
-    f->clear();
-    for (it = vec.begin(); it != vec.end(); ++it)
-    {
-        f->append(*it);
-    }
-    
-    return true;
-}
-
-// -- DbObjectFsItem class implementation --
+// DbObjectFsItem class implementation
 
 DbObjectFsItem::DbObjectFsItem()
 {
@@ -1349,7 +914,6 @@ END_EVENT_TABLE()
 DbDoc::DbDoc()
 {
     m_edit_mode = editNone;
-    m_link_bar_mode = false;
     m_no_edit = false;
     m_style = 0;
     m_ref_count = 1;
@@ -1505,7 +1069,6 @@ void DbDoc::setDatabase(tango::IDatabasePtr db, const wxString& root_path)
     {
         DbFolderFsItem* root = new DbFolderFsItem;
         root->setDatabase(db);
-        root->setLinkBarMode(m_link_bar_mode);
         if (root_path.Length() > 0)
             root->setPath(root_path);
         
@@ -2134,35 +1697,9 @@ void DbDoc::onRenameItem(wxCommandEvent& evt)
     if (items->size() != 1)
         return;
     IFsItemPtr item = items->getItem(0);
-        
-    if (m_link_bar_mode)
-    {
-        // link bar rename requires a dialog because of the
-        // transient nature of the drop-down dbdocs
-        
-        wxString default_name = DbDoc::getFsItemPath(item);
-        default_name = default_name.AfterLast(L'/');
-        
-        wxTextEntryDialog dlg(g_app->getMainWindow(),
-                              _("New name:"),
-                              _("Rename"),
-                              default_name);
-        dlg.SetSize(260,141);
-        
-        if (dlg.ShowModal() == wxID_OK && dlg.GetValue() != default_name)
-        {
-            bool allow = true;
-            m_edit_mode = editRename;
-            onFsItemEndLabelEdit(item, dlg.GetValue(), false, &allow);
-        }
 
-    }
-     else
-    {
-        // normal, in-tree edit
-        m_edit_mode = editRename;
-        m_fspanel->editLabel(item);
-    }
+    m_edit_mode = editRename;
+    m_fspanel->editLabel(item);
 }
 
 void DbDoc::onOpen(wxCommandEvent& evt)
@@ -3636,17 +3173,7 @@ void DbDoc::onFsItemRightClicked(IFsItemPtr item)
         if (result != 0)
         {
             wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED, result);
-            if (m_link_bar_mode)
-            {
-                ref();
-                ProcessEvent(e);
-                g_app->getMainWindow()->SetFocus(); // this dismisses the menu
-                unref();
-            }
-             else
-            {
-                ::wxPostEvent(this, e);
-            }
+            ::wxPostEvent(this, e);
         }
         
         return;
@@ -3782,18 +3309,7 @@ void DbDoc::onFsItemRightClicked(IFsItemPtr item)
             else
             {
                 wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED, result);
-
-                if (m_link_bar_mode)
-                {
-                    ref();
-                    ProcessEvent(e);
-                    g_app->getMainWindow()->SetFocus(); // this dismisses the menu
-                    unref();
-                }
-                 else
-                {
-                    ::wxPostEvent(this, e);
-                }
+                ::wxPostEvent(this, e);
             }
         }
 
@@ -3912,18 +3428,7 @@ void DbDoc::onFsItemRightClicked(IFsItemPtr item)
         if (result != 0)
         {
             wxCommandEvent e(wxEVT_COMMAND_MENU_SELECTED, result);
-            
-            if (m_link_bar_mode)
-            {
-                ref();
-                ProcessEvent(e);
-                g_app->getMainWindow()->SetFocus(); // this dismisses the menu
-                unref();
-            }
-             else
-            {
-                ::wxPostEvent(this, e);
-            }
+            ::wxPostEvent(this, e);
         }
     }
 }
@@ -4057,22 +3562,7 @@ void DbDoc::onDragDrop(IFsItemPtr target,
             cross_mount = true;
 
 
-        if (m_link_bar_mode)
-        {
-            if (tree_data->getSourceId() == ID_Toolbar_Link)
-            {
-                if (db->moveFile(towstr(src_path), towstr(dest_path)))
-                {
-                    g_app->getAppController()->refreshLinkBar();
-                }
-            }
-             else
-            {
-                // create the bookmark
-                BookmarkFs::createBookmark(dest_path, src_path);
-            }
-        }
-         else if (cross_mount)
+        if (cross_mount)
         {
             jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.copy-job");
                 

@@ -53,7 +53,6 @@ bool DbComboPopup::Create(wxWindow* parent)
 {
     // create popup control
     m_dbdoc = new DbDoc;
-    m_dbdoc->setLinkBarMode(true);
     m_dbdoc->setStyle(fsstyleTrackSelect);
     m_dbdoc->initAsWindow(parent,
                        -1,

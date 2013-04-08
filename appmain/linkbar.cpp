@@ -618,7 +618,6 @@ void LinkBar::showPopupWindow(int id,
         
         // assign the children to the folder manually
         DbFolderFsItem* folder_raw = new DbFolderFsItem;
-        folder_raw->setLinkBarMode(true);
         folder_raw->setPath(m_base_path);
         folder_raw->setChildrenOverride(items);
         folder_raw->setDatabase(g_app->getDatabase());
