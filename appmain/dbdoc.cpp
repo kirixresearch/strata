@@ -3621,8 +3621,6 @@ void DbDoc::onDragDrop(IFsItemPtr target,
         }
     }
 
-
-
 }
 
 void DbDoc::onCopyJobFinished(jobs::IJobPtr job)

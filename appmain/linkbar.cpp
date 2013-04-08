@@ -662,6 +662,7 @@ void LinkBar::showPopupWindow(int id,
     m_popup_fspanel->sigItemMiddleClicked().connect(this, &LinkBar::onItemMiddleClicked);
     m_popup_fspanel->sigMouseMove().disconnect();
     m_popup_fspanel->sigMouseMove().connect(this, &LinkBar::onPopupMouseMove);
+    m_popup_fspanel->sigDragDrop().connect(this, &LinkBar::onFsDataFolderDrop);
 
 
     m_popup_window->sigDismiss.connect(this, &LinkBar::onPopupDestructing);
@@ -1986,6 +1987,43 @@ void LinkBar::onFsDataDragOver(wxDragResult& def)
             drawDropHighlight();
         }
     }
+}
+
+
+void LinkBar::onFsDataFolderDrop(IFsItemPtr target, wxDataObject* data, wxDragResult* result)
+{
+    FsDataObject* tree_data = (FsDataObject*)data;
+    IFsItemEnumPtr items = tree_data->getFsItems();
+
+    size_t i, count = items->size();
+
+    std::wstring target_folder = BookmarkFs::getBookmarkItemPath(m_popup_fspanel->getRootItem());
+
+    int x, y;
+    ::wxGetMousePosition(&x, &y);
+    IDocumentPtr doc = m_popup_fspanel;
+    doc->getDocumentWindow()->ScreenToClient(&x, &y);
+            
+    IFsItemPtr target_item = m_popup_fspanel->hitTest(x,y);
+    if (target_item.isOk())
+    {
+
+        int target_idx = m_popup_fspanel->getItemIndex(target_item);
+        if (target_idx != -1)
+        {
+            for (i = 0; i < count; ++i)
+            {
+                IFsItemPtr item = items->getItem(i);
+                std::wstring src_path = BookmarkFs::getBookmarkItemPath(item);
+                std::wstring dest_path = target_folder + L"/" + item->getLabel();
+
+                BookmarkFs::moveItem(src_path, dest_path);
+                BookmarkFs::setFileVisualLocation(dest_path, target_idx + i);
+            }
+        }
+    }
+            
+    refresh();
 }
 
 

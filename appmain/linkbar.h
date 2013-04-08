@@ -84,6 +84,7 @@ private:
     void onFsDataLeave();
     void onFsDataDragOver(wxDragResult& def);
     void onFsDataDrop(wxDragResult& def, FsDataObject* data);
+    void onFsDataFolderDrop(IFsItemPtr target, wxDataObject* data, wxDragResult* result);
     
 private:
 
