@@ -59,7 +59,6 @@ public:
     wxString getInstallPath();
     wxString getAppDataPath();
     wxString getBookmarksFolder();
-    IFsItemPtr getBookmarksRoot();
 
     IFramePtr getMainFrame();
     void setMainFrame(IFramePtr frame);

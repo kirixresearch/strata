@@ -29,7 +29,7 @@ const wxSize MinPopupWindowSize = wxSize(140, 20);
 
 
 // ripped directly from CfwTabArt
-inline void drawInactiveTabBackground(wxDC& dc,
+static void drawInactiveTabBackground(wxDC& dc,
                                       const wxRect& rect,
                                       const wxColor& base_color,
                                       const wxPen& border_pen1,
@@ -541,6 +541,20 @@ bool LinkBar::isFolderItem(int id)
     return item->isFolder();
 }
 
+
+IFsItemPtr LinkBar::getItemFromId(int id)
+{
+    if (id < ID_FirstLinkBarId)
+        return xcm::null;
+    
+    int item_idx = id-ID_FirstLinkBarId;
+    if ((size_t)item_idx >= m_items.size())
+        return xcm::null;
+    
+    return m_items[item_idx];
+}
+
+
 bool LinkBar::isPopupWindowOpen()
 {
     return (m_popup_window != NULL ? true : false);
@@ -634,18 +648,6 @@ void LinkBar::showPopupWindow(int id,
     m_popup_fspanel->setRootItem(folder);
     m_popup_fspanel->setView(fsviewTree);
     m_popup_fspanel->refresh();
-
-    /*
-    m_popup_fspanel->initAsWindow(m_popup_window,
-                             -1,
-                             wxPoint(1,1),
-                             MaxPopupWindowSize,
-                             0);
-    if (!path.IsEmpty())
-        m_popup_fspanel->setDatabase(g_app->getDatabase(), folder->getPath());
-         else
-        m_popup_fspanel->setRootItem(folder);
-    */
 
 
     // resize the popup window as best we can to the size of its contents
@@ -1456,7 +1458,7 @@ void LinkBar::refresh()
     if (m_base_path.IsEmpty())
         m_base_path = g_app->getBookmarksFolder();
 
-    IFsItemPtr root_item = g_app->getBookmarksRoot();
+    IFsItemPtr root_item = BookmarkFs::getBookmarkFolderItem(L"/");
     
     if (root_item.isNull())
     {
@@ -1844,29 +1846,6 @@ bool LinkBar::pointInExclude(const wxPoint& pt)
     return false;
 }
 
-// this function determines if the specified path is an external mount
-static bool isExternalMount(const wxString& path)
-{
-    tango::IDatabasePtr db = g_app->getDatabase();
-    if (db.isNull())
-        return false;
-
-    tango::IFileInfoPtr info = db->getFileInfo(towstr(path));
-    if (info.isNull())
-        return false;
-    
-    if (!info->isMount())
-        return false;
-    
-    std::wstring cstr, rpath;
-    db->getMountPoint(towstr(path), cstr, rpath);
-    
-    if (cstr.length() == 0)
-        return false;
-    
-    return true;
-}
-
 static bool isNearItemEdge(const wxRect& rect, int x)
 {
     int tolerance = 8;
@@ -2119,17 +2098,6 @@ static void doProjectTreeDragDrop(IFsItemPtr item,
 
 void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
 {
-/*
-    DbDoc* dbdoc = g_app->getDbDoc();
-    if (dbdoc == NULL)
-    {
-        // no dbdoc, bail out
-        m_drop_idx = -1;
-        m_drag_id = -1;
-        m_last_id = -1;
-        return;
-    }
-
     IFsItemEnumPtr items = data->getFsItems();
     if (items->size() == 0)
     {
@@ -2140,14 +2108,11 @@ void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
         return;
     }
     
-    // check the database
-    tango::IDatabasePtr db = g_app->getDatabase();
-    if (db.isNull())
-        return;
-    
     // this chunk of code only applies if we're dropping items into a folder
     LinkBarItem* drop_folder = NULL;
-    wxString drop_folder_path;
+    std::wstring drop_folder_path;
+    IFsItemPtr drop_item;
+
     if (m_drop_idx == -1)
     {
         int x,y;
@@ -2159,30 +2124,28 @@ void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
         if (!drop_folder)
             return;
         
-        if (!isFolderItem(drop_folder->GetId()))
+        drop_item = getItemFromId(drop_folder->GetId());
+        if (drop_item.isNull())
             return;
 
         // get the path of the drop folder in the linkbar
-        drop_folder_path = getLinkBarItemPath(drop_folder->GetLabel());
-        
-        // we don't allow drops on external mounts right now
-        if (isExternalMount(drop_folder_path))
-            return;
+        drop_folder_path = BookmarkFs::getBookmarkItemPath(drop_item);
     }
     
     if (data->getSourceId() == ID_Toolbar_Link)
     {
+
         // dragging from the linkbar to the linkbar
         
         // we can't drag more than one item at a time from the linkbar
         if (items->size() != 1)
             return;
-        
+     
         int drag_idx = GetToolIndex(m_drag_id);
         
         if (m_drop_idx != drag_idx &&
             m_drop_idx != drag_idx+1 &&
-            drop_folder_path.IsEmpty())
+            drop_folder_path.empty())
         {
             // repositioning an item in the linkbar
         
@@ -2195,31 +2158,30 @@ void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
             int link_drop_idx = m_drop_idx;
             tool2LinkIndex(link_drop_idx);
             
-            wxString path = items->getItem(0)->getLabel();
-            BookmarkFs::setFileVisualLocation(towstr(path), link_drop_idx);
+            std::wstring path = BookmarkFs::getBookmarkItemPath(items->getItem(0));
+            BookmarkFs::setFileVisualLocation(path, link_drop_idx);
         }
-         else if (drop_folder_path.Length() > 0)
+         else if (drop_folder_path.length() > 0)
         {
             // dragging an item into a folder in the linkbar
             
             // get the full path of the source item
-            wxString src_path = towx(BookmarkFs::getBookmarkItemPath(items->getItem(0)));
+            std::wstring src_path = BookmarkFs::getBookmarkItemPath(items->getItem(0));
             
             // move the item to the destination folder
-            getRemotePathIfExists(drop_folder_path);
-            wxString dest_path = drop_folder_path;
-            dest_path += wxT("/");
-            dest_path += src_path.AfterLast(wxT('/'));
-            db->moveFile(towstr(src_path), towstr(dest_path));
-            
-            
+            std::wstring dest_path = drop_folder_path;
+            dest_path += L"/";
+            dest_path += kl::afterLast(src_path, '/');
+
+            BookmarkFs::moveItem(src_path, dest_path);
+
             int link_drop_idx = 0;
-            tango::IFileInfoEnumPtr files = db->getFolderInfo(towstr(drop_folder_path));
-            if (files.isOk())
-                link_drop_idx = files->size();
-            
+            IFsItemEnumPtr children = drop_item->getChildren();
+            if (children.isOk())
+                link_drop_idx = children->size();
+
             // make sure it goes to the bottom of the folder
-            BookmarkFs::setFileVisualLocation(towstr(dest_path), link_drop_idx);
+            BookmarkFs::setFileVisualLocation(dest_path, link_drop_idx);
         }
     }
      else if (data->getSourceId() == ID_Frame_UrlCtrl)
@@ -2229,7 +2191,9 @@ void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
         // we can't drag more than one item at a time from the url combobox
         if (items->size() != 1)
             return;
-        
+
+        IDbObjectFsItemPtr drag_obj = items->getItem(0);
+    /*        
         // doing a lookup in the DbDoc will determine if the item
         // actually exists in our project
         IDbObjectFsItemPtr obj = items->getItem(0);
@@ -2245,66 +2209,65 @@ void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
             
             doProjectTreeDragDrop(item, drop_folder_path, link_drop_idx);
         }
-         else
+    */
+        // we're browsing an item that doesn't exist in the project,
+        // create a bookmark (link) and add it to the linkbar
+        // (or folder in the linkbar)
+
+        IFsItemPtr item = items->getItem(0);
+            
+        std::wstring dest_path;
+
+        wxString label = item->getLabel();
+        trimUnwantedUrlChars(label);
+            
+        if (drop_folder_path.length() > 0)
         {
-            // we're browsing an item that doesn't exist in the project,
-            // create a bookmark (link) and add it to the linkbar
-            // (or folder in the linkbar)
-            
-            item = obj;
-            
-            wxString dest_path;
-            wxString label = item->getLabel();
-            trimUnwantedUrlChars(label);
-            
-            if (drop_folder_path.Length() > 0)
-            {
-                // create the item in the destination folder in the linkbar
-                getRemotePathIfExists(drop_folder_path);
-                dest_path = drop_folder_path;
-                dest_path += wxT("/");
-                dest_path += label;
-            }
-             else
-            {
-                // create the item in the main linkbar folder
-                dest_path = getLinkBarItemPath(label);
-            }
+            // create the item in the destination folder in the linkbar
+            dest_path = drop_folder_path;
+            dest_path += L"/";
+            dest_path += towstr(label);
+        }
+            else
+        {
+            // create the item in the main linkbar folder
+            dest_path = L"/" + label;
+        }
             
             
-            // grab favicon -- since we're dragging from the url bar, the
-            // current document should handily provide us with the right icon
-            wxImage favicon;
-            IDocumentSitePtr site = g_app->getMainFrame()->getActiveChild();
-            IWebDocPtr webdoc;
-            if (site)
-                webdoc = site->getDocument();
+        // grab favicon -- since we're dragging from the url bar, the
+        // current document should handily provide us with the right icon
+        wxImage favicon;
+        IDocumentSitePtr site = g_app->getMainFrame()->getActiveChild();
+        IWebDocPtr webdoc;
+        if (site)
+            webdoc = site->getDocument();
                 
-            if (webdoc)
-            {
-                favicon = webdoc->getFavIcon();
-                webdoc.clear();
-            }
+        if (webdoc)
+        {
+            favicon = webdoc->getFavIcon();
+            webdoc.clear();
+        }
                 
 
-            // create the bookmark at the specified location
-            BookmarkFs::createBookmark(towstr(dest_path), towstr(obj->getPath()), L"", L"", favicon);
+        // create the bookmark at the specified location
+        BookmarkFs::createBookmark(dest_path, towstr(drag_obj->getPath()), L"", L"", favicon);
 
-            // if we're not dragging to a folder, set the
-            // position of the item on the linkbar
-            if (drop_folder_path.IsEmpty())
-            {
-                // convert the tool index to a link index
-                int link_drop_idx = m_drop_idx;
-                tool2LinkIndex(link_drop_idx);
+        // if we're not dragging to a folder, set the
+        // position of the item on the linkbar
+        if (drop_folder_path.empty())
+        {
+            // convert the tool index to a link index
+            int link_drop_idx = m_drop_idx;
+            tool2LinkIndex(link_drop_idx);
             
-                // position the item in the linkbar
-                BookmarkFs::setFileVisualLocation(towstr(dest_path), link_drop_idx);
-            }
+            // position the item in the linkbar
+            BookmarkFs::setFileVisualLocation(towstr(dest_path), link_drop_idx);
         }
     }
      else
     {
+    /*
         // dragging from the project panel to the linkbar
         
         size_t i, count = items->size();
@@ -2320,6 +2283,7 @@ void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
             
             doProjectTreeDragDrop(item, drop_folder_path, link_drop_idx+i);
         }
+    */
     }
     
     refresh();
@@ -2328,7 +2292,6 @@ void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
     m_drop_idx = -1;
     m_drag_id = -1;
     m_last_id = -1;
-*/
 }
 
 // this function was ripped directly from

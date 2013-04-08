@@ -35,6 +35,7 @@ public:
     
     void refresh();
     bool isFolderItem(int id);
+    IFsItemPtr getItemFromId(int id);
     bool isPopupWindowOpen();
     void showPopupWindow(int id, bool popup_mode,
                          tango::IFileInfoEnumPtr items = xcm::null);

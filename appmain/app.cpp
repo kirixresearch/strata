@@ -982,32 +982,6 @@ wxString MainApp::getBookmarksFolder()
     return res;
 }
 
-IFsItemPtr MainApp::getBookmarksRoot()
-{
-    return BookmarkFs::getRootBookmarksFolder();
-
-
-
-    DbDoc* dbdoc = g_app->getDbDoc();
-    if (!dbdoc)
-        return xcm::null;
-
-    wxString bookmarks_folder = getBookmarksFolder();
-
-    // see if we already have an item on the tree that we can use
-    IFsItemPtr root_item = dbdoc->getFsItemFromPath(bookmarks_folder);
-        
-    if (root_item.isNull())
-    {
-        DbFolderFsItem* folder_raw = new DbFolderFsItem;
-        folder_raw->setLinkBarMode(true);
-        folder_raw->setPath(bookmarks_folder);
-        folder_raw->setDatabase(g_app->getDatabase());
-        return static_cast<IFsItem*>(folder_raw);
-    }
-
-    return xcm::null;
-}
 
 
 IFramePtr MainApp::getMainFrame()

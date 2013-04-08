@@ -34,7 +34,7 @@ class BookmarkFs
 {
 public:
 
-    static IFsItemPtr getRootBookmarksFolder();
+    static IFsItemPtr getBookmarkFolderItem(const std::wstring& path);
 
     static bool createBookmark(const std::wstring& path,
                                const std::wstring& location,

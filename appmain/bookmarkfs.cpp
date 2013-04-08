@@ -280,10 +280,10 @@ std::wstring Bookmark::toJson()
 
 // BookmarkFs class implementation
 
-IFsItemPtr BookmarkFs::getRootBookmarksFolder()
+IFsItemPtr BookmarkFs::getBookmarkFolderItem(const std::wstring& path)
 {
     BookmarkFolder* root = new BookmarkFolder;
-    root->setPath(L"/");
+    root->setPath(path);
 
     return static_cast<IFsItem*>(root);
 }
