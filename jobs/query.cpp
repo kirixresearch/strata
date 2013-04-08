@@ -11,7 +11,7 @@
 
 #include "jobspch.h"
 #include "query.h"
-
+#include <kl/portable.h>
 
 namespace jobs
 {
@@ -103,19 +103,17 @@ int QueryJob::runJob()
     std::wstring order_str;
 
     std::vector<kl::JsonNode> order_children_node = order_node.getChildren();
-    std::vector<kl::JsonNode>::iterator it, it_end;
-    it_end = order_children_node.end();
+    std::vector<kl::JsonNode>::iterator it;
 
-    bool first = true;
-    for (it = order_children_node.begin(); it != it_end; ++it)
+    for (it = order_children_node.begin(); it != order_children_node.end(); ++it)
     {
-        if (!first)
+        if (it != order_children_node.begin())
             order_str += L",";
 
-        // TODO: make sure fieldnames are quoted (dequote/quote) before
-        // adding them to the list (remove any DESC qualifier, dequote/quote 
-        // the field, and re-add the qualifier)
-        order_str += it->getString();
+        order_str += tango::quoteIdentifierIfNecessary(m_db, (*it)["expression"]);
+        
+        if (it->childExists("direction") && 0 == wcscasecmp((*it)["direction"].getString().c_str(), L"DESC"))
+            order_str += L" DESC";
     }
 
     bool distinct = false;

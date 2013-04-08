@@ -1449,13 +1449,12 @@ kl::JsonNode createSortFilterJobParams(const std::wstring& path,
         {
             std::wstring order_field_str;
 
-            std::wstring field = it->first;
-            field = tango::dequoteIdentifier(g_app->getDatabase(), field);
-            field = tango::quoteIdentifier(g_app->getDatabase(), field);
-            order_field_str = field + (it->second ? L" DESC" : L""); 
+            std::wstring field = tango::dequoteIdentifier(g_app->getDatabase(), it->first);
 
             kl::JsonNode order_field_node = params["order"].appendElement();
-            order_field_node.setString(order_field_str);
+            order_field_node["expression"] = it->first;
+            if (it->second)
+                order_field_node["direction"] = L"DESC";
         }
     }
 
