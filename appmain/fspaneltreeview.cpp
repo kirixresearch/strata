@@ -220,6 +220,9 @@ void FsPanelTreeView::doScroll(int direction)
         wxTreeItemId id = getNextVisibleItem(this, curitem);
         if (id.IsOk())
         {
+            if (this->GetRootItem() == id && this->HasFlag(wxTR_HIDE_ROOT))
+                return;
+
             EnsureVisible(id);
         }
     }
@@ -228,6 +231,9 @@ void FsPanelTreeView::doScroll(int direction)
         wxTreeItemId id = getPrevVisibleItem(this, curitem);
         if (id.IsOk())
         {
+            if (this->GetRootItem() == id && this->HasFlag(wxTR_HIDE_ROOT))
+                return;
+
             EnsureVisible(id);
         }
     }

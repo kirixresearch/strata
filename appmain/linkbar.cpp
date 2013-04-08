@@ -824,20 +824,12 @@ void LinkBar::onBeginDrag(wxAuiToolBarEvent& evt)
         
     if (id >= ID_FirstLinkBarId && (size_t)id < ID_FirstLinkBarId+m_items.size())
     {
-        DbDoc* dbdoc = g_app->getDbDoc();
-        if (!dbdoc)
-        {
-            evt.Skip();
-            return;
-        }
-        
         int item_idx = id-ID_FirstLinkBarId;
         IFsItemPtr item = m_items[item_idx];
-        IDbFolderFsItemPtr folder = item;
-        
+
         // only allow folder drags if the control key
         // is down -- also see onToolDropDownClick()
-        if (folder.isOk() && !::wxGetMouseState().ControlDown())
+        if (item->isFolder() && !::wxGetMouseState().ControlDown())
         {
             evt.Skip();
             return;
@@ -872,7 +864,7 @@ void LinkBar::onBeginDrag(wxAuiToolBarEvent& evt)
         data.setSourceId(ID_Toolbar_Link);
         data.setFsItems(items);
         wxDropSource dragSource(data, this);
-        wxDragResult result = dragSource.DoDragDrop(TRUE);
+        wxDragResult result = dragSource.DoDragDrop(wxDrag_DefaultMove);
     }
 }
 
@@ -1945,24 +1937,16 @@ void LinkBar::onFsDataDragOver(wxDragResult& def)
             if (idx >= 0 && idx < (int)m_items.size())
                 fs_item = m_items[idx];
             
-            /*
             if (fs_item.isOk())
-            {
-                // get the database path of the item
-                wxString item_path = towx(BookmarkFs::getBookmarkItemPath(fs_item);
-                
-                if (!isExternalMount(item_path))
+            { 
+                // only show the popup window if we're hovering over
+                // a folder item and it's not the folder we're dragging
+                if (item->GetId() != m_drag_id && item->GetId() != m_popup_id)
                 {
-                    // only show the popup window if we're hovering over
-                    // a folder item and it's not the folder we're dragging
-                    if (item->GetId() != m_drag_id && item->GetId() != m_popup_id)
-                    {
-                        showPopupWindow(item->GetId(), false);
-                        m_popup_during_drag = true;
-                    }
+                    showPopupWindow(item->GetId(), false);
+                    m_popup_during_drag = true;
                 }
             }
-            */
         }
 
         // we want to show the user that they're going to drop the item
@@ -2005,96 +1989,6 @@ void LinkBar::onFsDataDragOver(wxDragResult& def)
     }
 }
 
-// this function handles all drag and drop to the linkbar
-// from the project panel (or any existing object in the project,
-// in the case of the dragging from the url combobox)
-static void doProjectTreeDragDrop(IFsItemPtr item,
-                                  wxString drop_folder_path,
-                                  int link_drop_idx = -1)
-{
-/*
-    // TODO: reimplement this
-    return;
-
-    // get the full path of the item
-    wxString src_path = towx(BookmarkFs::getBookmarkItemPath(item));
-    
-    // get the name (chop off folders)
-    wxString src_name = src_path.AfterLast(wxT('/'));
-    if (src_name.IsEmpty())
-        return;
-
-    tango::IDatabasePtr db = g_app->getDatabase();
-        
-    // determine the destination path
-    wxString dest_path;
-    if (drop_folder_path.Length() > 0)
-    {
-        getRemotePathIfExists(drop_folder_path);
-        dest_path = drop_folder_path;
-        dest_path += wxT("/");
-        dest_path += src_name;
-    }
-     else
-    {
-        dest_path = getLinkBarItemPath(src_name);
-    }
-    
-    
-    // find out if we're dragging something already in the bookmark
-    // folder to somewhere also in the bookmark folder.  This would amount
-    // to a simple move
-    wxString bookmarks_folder = g_app->getBookmarksFolder();
-    bool inner_bookmark = false;
-    if (0 == src_path.Left(bookmarks_folder.Length()).CmpNoCase(bookmarks_folder) &&
-        0 == dest_path.Left(bookmarks_folder.Length()).CmpNoCase(bookmarks_folder))
-    {
-        inner_bookmark = true;
-    }
-    
-    
-    
-    
-    
-    if (src_path != dest_path)
-    {
-        // copy the dragged item into the linkbar or drop folder
-        if (inner_bookmark)
-        {
-            db->moveFile(towstr(src_path), towstr(dest_path));
-        }
-         else if (isExternalMount(src_path))
-        {
-            // copy mount items to linkbar (or folder in the linkbar)
-            db->copyFile(towstr(src_path), towstr(dest_path));
-        }
-         else
-        {
-            IDbObjectFsItemPtr obj_item = item;
-            if (obj_item.isOk() && obj_item->getType() == dbobjtypeBookmark)
-            {
-                // copy bookmark items to linkbar (or folder in the linkbar)
-                db->copyFile(towstr(src_path), towstr(dest_path));
-            }
-             else
-            {
-                // for all other items, create a bookmark (link)
-                // and add it to the linkbar (or folder in the linkbar)
-                BookmarkFs::createBookmark(towstr(dest_path), towstr(src_path));
-            }
-        }
-    }
-    
-    
-    // if we're not dragging to a folder, set the
-    // position of the item on the linkbar
-    if (drop_folder_path.IsEmpty())
-    {
-        // position the item in the linkbar
-        BookmarkFs::setFileVisualLocation(towstr(dest_path), link_drop_idx);
-    }
-*/
-}
 
 void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
 {
@@ -2193,23 +2087,7 @@ void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
             return;
 
         IDbObjectFsItemPtr drag_obj = items->getItem(0);
-    /*        
-        // doing a lookup in the DbDoc will determine if the item
-        // actually exists in our project
-        IDbObjectFsItemPtr obj = items->getItem(0);
-        IFsItemPtr item;
-        item = g_app->getDbDoc()->getFsItemFromPath(obj->getPath());
-        if (item.isOk())
-        {
-            // we're browsing an item that exists in the project
 
-            // convert the tool index to a link index
-            int link_drop_idx = m_drop_idx;
-            tool2LinkIndex(link_drop_idx);
-            
-            doProjectTreeDragDrop(item, drop_folder_path, link_drop_idx);
-        }
-    */
         // we're browsing an item that doesn't exist in the project,
         // create a bookmark (link) and add it to the linkbar
         // (or folder in the linkbar)
@@ -2233,8 +2111,8 @@ void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
             // create the item in the main linkbar folder
             dest_path = L"/" + label;
         }
-            
-            
+
+
         // grab favicon -- since we're dragging from the url bar, the
         // current document should handily provide us with the right icon
         wxImage favicon;
@@ -2265,27 +2143,7 @@ void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
             BookmarkFs::setFileVisualLocation(towstr(dest_path), link_drop_idx);
         }
     }
-     else
-    {
-    /*
-        // dragging from the project panel to the linkbar
-        
-        size_t i, count = items->size();
-        for (i = 0; i < count; ++i)
-        {
-            IFsItemPtr item = items->getItem(i);
-            if (item.isNull())
-                continue;
-            
-            // convert the tool index to a link index
-            int link_drop_idx = m_drop_idx;
-            tool2LinkIndex(link_drop_idx);
-            
-            doProjectTreeDragDrop(item, drop_folder_path, link_drop_idx+i);
-        }
-    */
-    }
-    
+
     refresh();
     
     // we're no longer dragging anything
