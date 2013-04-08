@@ -31,7 +31,6 @@ public:
     virtual void openURI(const wxString& uri, wxWebPostData* post_data = NULL) = 0;
     virtual wxWebControl* getWebControl() = 0;
     virtual bool isViewingSource() const = 0;
-    virtual void setLastClickedBookmarkPath(const wxString& path) = 0;
     virtual wxImage getFavIcon() = 0;
 };
 
@@ -180,7 +179,6 @@ public:
 
     bool isWebBrowserOk() const;
     
-    void setLastClickedBookmarkPath(const wxString& path);
     void openURI(const wxString& uri, wxWebPostData* post_data = NULL);
     wxWebControl* getWebControl();
     bool isViewingSource() const;
@@ -194,7 +192,7 @@ public:
     
 private:
 
-    // -- IDocument --
+    // IDocument
     bool initDoc(IFramePtr frame,
                  IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,
@@ -206,7 +204,7 @@ private:
     void setDocumentFocus();
     bool onSiteClosing(bool force);
     
-    // -- IFindTarget --
+    // IFindTarget
     bool findNextMatch(
                     const wxString& text,
                     bool forward,
@@ -225,7 +223,7 @@ private:
                     bool whole);
     bool findIsReplaceAllowed();
     
-    // -- other methods --
+    // other methods
     void switchToWeb();
     void switchToSource();
     void savePageAsExternal();
@@ -287,11 +285,8 @@ private:
     wxString m_url;
     wxString m_title;
     ProgressBitmapUpdater m_bitmap_updater;
-    wxString m_last_clicked_bookmark_path;
     wxImage m_favicon;
 
-
-    
 private:
 
     DECLARE_EVENT_TABLE()

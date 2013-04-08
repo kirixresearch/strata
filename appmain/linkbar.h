@@ -42,6 +42,13 @@ public:
     void closePopupWindow();
     LinkBarItem* getItemFromCurrentPosition(bool ignore_ypos = false);
     
+    wxString getLastClickedPath()
+    {
+        wxString res = m_last_clicked_path;
+        m_last_clicked_path = L"";
+        return res;
+    }
+
 private:
 
     void onPopupTimer(wxTimerEvent& evt);
@@ -95,7 +102,8 @@ private:
     int m_popup_id;
     wxString m_base_path;
     std::vector<IFsItemPtr> m_items;
-    
+    wxString m_last_clicked_path;
+
     // drag and drop
     int m_exclude_id_begin;         // beginning of the range of items where data can't be dropped
     int m_exclude_id_end;           // end of the range of items where data can't be dropped

@@ -310,6 +310,7 @@ MainApp::MainApp()
     m_web_server = NULL;
     m_paper_database = NULL;
     m_dbdoc = NULL;
+    m_linkbar = NULL;
     m_command_line = NULL;
     m_is_service = false;
     m_is_service_config = false;
@@ -1114,6 +1115,16 @@ DbDoc* MainApp::getDbDoc()
 void MainApp::setDbDoc(DbDoc* dbdoc)
 {
     m_dbdoc = dbdoc;
+}
+
+LinkBar* MainApp::getLinkBar()
+{
+    return m_linkbar;
+}
+
+void MainApp::setLinkBar(LinkBar* linkbar)
+{
+    m_linkbar = linkbar;
 }
 
 bool MainApp::isDatabaseOpen()

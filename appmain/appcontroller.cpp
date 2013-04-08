@@ -1058,7 +1058,8 @@ bool AppController::init()
                         siteNoResize,
                         1, -1, 0, 0);
     m_frame->getAuiManager().GetPane(m_linkbar).Name(wxT("BookmarksToolbar")).Resizable().DockFixed();
-    
+    g_app->setLinkBar(m_linkbar);
+
     // create the format toolbar and dock it
     m_format_toolbar = new FormatToolbar(m_frame->getFrameWindow());
     m_frame->dockWindow(m_format_toolbar,
@@ -4950,59 +4951,6 @@ bool AppController::openWeb(const wxString& _location,
         
     wxString location = _location;
 
-    wxString last_clicked_bookmark_path;
-    
-    if (location.Find(wxT("://")) == wxNOT_FOUND)
-    {
-        tango::IDatabasePtr db = g_app->getDatabase();
-        if (db.isOk())
-        {
-
-
-            // check if the location specified is a bookmark in the project; if so, load 
-            // the url location from the bookmark
-
-            kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(location));
-            if (node.isOk())
-            {
-                kl::JsonNode root_node = node["root"];
-                if (root_node.isOk())
-                {
-                    kl::JsonNode bookmark_node = root_node["bookmark"];
-                    if (bookmark_node.isOk())
-                    {
-                        last_clicked_bookmark_path = location;
-
-                        kl::JsonNode location_node = bookmark_node["location"];
-                        if (!location_node.isOk())
-                            return false;
-                    
-                        location = towx(location_node.getString());
-                    }
-                }
-                else
-                {
-                    // TODO: when bookmark stream format becomes available, add 
-                    // check for it here
-                }
-            }
-             else
-            {
-                // the file could be a web file that is located
-                // in a mounted (filesystem) folder; get the physical
-                // location of the file and try to open it instead
-                wxString phys_path = getPhysPathFromMountPath(location);
-                if (phys_path.Length() > 0)
-                {
-                    location = filenameToUrl(phys_path);
-                    open_mask |= appOpenForceNewWindow;
-                    open_mask |= appOpenActivateNewWindow;
-                }
-            }
-        }
-    }
-
-
     // finally, if we can't open the url as a file in the project, try 
     // to open it as a browser document
     IWebDocPtr doc;
@@ -5031,7 +4979,6 @@ bool AppController::openWeb(const wxString& _location,
             *site_id = site->getId();
     }    
 
-    doc->setLastClickedBookmarkPath(last_clicked_bookmark_path);
     doc->openURI(location, post_data);
     
     return true;

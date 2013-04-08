@@ -24,7 +24,7 @@ class wxHelpController;
 class wxHelpControllerBase;
 class wxCHMHelpController;
 class wxPrintPaperDatabase;
-
+class LinkBar;
 
 
 #if APP_CONSOLE==1
@@ -73,6 +73,9 @@ public:
 
     DbDoc* getDbDoc();
     void setDbDoc(DbDoc* dbdoc);
+
+    LinkBar* getLinkBar();
+    void setLinkBar(LinkBar* link_bar);
 
     wxString getProjectName();
     void setProjectName(const wxString& name);
@@ -125,6 +128,7 @@ private:
     wxFrame* m_frame_wnd;
     wxCmdLineParser* m_command_line;
     DbDoc* m_dbdoc;
+    LinkBar* m_linkbar;
     
     wxArrayString m_font_names;
     

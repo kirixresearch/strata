@@ -474,7 +474,9 @@ void LinkBar::onItemActivated(IFsItemPtr item)
         open_flags = appOpenForceNewWindow | appOpenActivateNewWindow;
     }
 
-    activateItem(BookmarkFs::getBookmarkItemPath(item), open_flags);
+    std::wstring bookmark_path = BookmarkFs::getBookmarkItemPath(item);
+    m_last_clicked_path = towx(bookmark_path);
+    activateItem(bookmark_path, open_flags);
 
     m_popup_window = popup_window;
     m_popup_fspanel = popup_fspanel;
@@ -897,7 +899,10 @@ void LinkBar::onToolButtonClick(wxCommandEvent& evt)
             open_mask = appOpenForceNewWindow | appOpenActivateNewWindow;
         }
 
-        activateItem(BookmarkFs::getBookmarkItemPath(item), open_mask);
+        std::wstring bookmark_path = BookmarkFs::getBookmarkItemPath(item);
+        m_last_clicked_path = towx(bookmark_path);
+
+        activateItem(bookmark_path, open_mask);
     }
     
     evt.Skip();

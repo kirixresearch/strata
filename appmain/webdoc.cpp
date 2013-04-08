@@ -19,6 +19,8 @@
 #include "feedparser.h"
 #include "dlgpagesetup.h"
 #include "dbdoc.h"
+#include "bookmarkfs.h"
+#include "linkbar.h"
 #include "dlgcustomprompt.h"
 #include "../webconnect/webcontrol.h"
 #include <wx/fs_inet.h>
@@ -2177,12 +2179,6 @@ WebDoc::~WebDoc()
 {
 }
 
-
-void WebDoc::setLastClickedBookmarkPath(const wxString& path)
-{
-    m_last_clicked_bookmark_path = path;
-}
-
 bool WebDoc::downloadFile(const wxString& url,
                           const wxString& filename,
                           jobs::IJobInfoPtr job_info)
@@ -2648,6 +2644,9 @@ void WebDoc::openURI(const wxString& uri, wxWebPostData* post_data)
     }
 
 
+    m_doc_site->setBitmap(GETBMP(gf_document_16));
+
+
     // don't allow thse locations to be loaded -- most restricted locations are handled
     // in WebDoc::onOpenURI(), however, by the time these locations get to that function,
     // they've already been processed by the Gecko engine and translated to something like
@@ -3059,7 +3058,9 @@ void WebDoc::onStateChange(wxWebEvent& evt)
 
 void WebDoc::onLocationChange(wxWebEvent& evt)
 {
-        
+    // reset favicon to nothing
+    m_favicon = wxImage();
+
     m_url = evt.GetString();
     
     if (m_url == wxT("about:blank"))
@@ -3450,24 +3451,15 @@ void WebDoc::onFavIconAvailable(wxWebEvent& evt)
     
     // if we clicked on a bookmar in the linkbar, update its bitmap
     
-    if (m_last_clicked_bookmark_path.IsEmpty())
-        return;
-    
-    /*
-    Bookmark bookmark;
-    if (!bookmark.load(m_last_clicked_bookmark_path))
-    {
-        m_last_clicked_bookmark_path = wxEmptyString;
-        return;
-    }
-    
-    bookmark.setFavIcon(img);
-    bookmark.save(m_last_clicked_bookmark_path);
-    */
+    wxString last_clicked_bookmark = g_app->getLinkBar()->getLastClickedPath();
 
-    g_app->getAppController()->refreshLinkBar();
-        
-    m_last_clicked_bookmark_path = wxEmptyString;
+    Bookmark bookmark;
+    if (BookmarkFs::loadBookmark(towstr(last_clicked_bookmark), bookmark))
+    {
+        bookmark.icon = img;
+        if (BookmarkFs::saveBookmark(towstr(last_clicked_bookmark), bookmark))
+            g_app->getAppController()->refreshLinkBar();
+    }
 }
 
 void WebDoc::onDOMContentLoaded(wxWebEvent& evt)
@@ -3533,8 +3525,7 @@ wxImage WebDoc::getFavIcon()
 
 void WebDoc::onOpenURI(wxWebEvent& evt)
 {
-    // reset favicon to nothing
-    m_favicon = wxImage();
+
     m_bitmap_updater.setFinishBitmap(wxBitmap());
     
     

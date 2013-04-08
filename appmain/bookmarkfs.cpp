@@ -656,12 +656,22 @@ void BookmarkFolder::populate()
 
         if (info.m_name.find(L".json") != info.m_name.npos)
         {
+            wxBitmap bmp = GETBMP(gf_document_16);
             std::wstring name = kl::beforeLast(info.m_name, '.');
+            std::wstring bookmark_path = appendPaths(m_path, name);
+
+            Bookmark b;
+            if (BookmarkFs::loadBookmark(bookmark_path, b))
+            {
+                if (b.icon.IsOk())
+                    bmp = wxBitmap(b.icon);
+            }
+
 
             BookmarkItem* item = new BookmarkItem;
             item->setLabel(towx(name));
-            item->setBitmap(GETBMP(gf_document_16));
-            item->setPath(appendPaths(m_path, name));
+            item->setBitmap(bmp);
+            item->setPath(bookmark_path);
                 
             IFsItemPtr f = static_cast<IFsItem*>(item);
             m_children.push_back(f);
