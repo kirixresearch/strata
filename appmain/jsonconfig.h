@@ -20,13 +20,16 @@ public:
     // kl::JsonNode implementation
     static kl::JsonNode loadFromDb(tango::IDatabasePtr db, const wxString& path);
     static kl::JsonNode loadFromString(const wxString& json);
-    
+    static bool loadFromFile(kl::JsonNode& node, const std::wstring& path); 
+
     static bool saveToString(kl::JsonNode& node, wxString& dest);
     
     static bool saveToDb(kl::JsonNode& node,
                          tango::IDatabasePtr db,
                          const wxString& path,
-                         const wxString& mime_type = wxT("text/plain"));   
+                         const wxString& mime_type = wxT("text/plain"));
+
+    static bool saveToFile(kl::JsonNode& node, const std::wstring& path);   
 };
 
 

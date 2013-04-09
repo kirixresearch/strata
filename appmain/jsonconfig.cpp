@@ -26,6 +26,19 @@ kl::JsonNode JsonConfig::loadFromDb(tango::IDatabasePtr db, const wxString& path
     return node;
 }
 
+kl::JsonNode loadFromFile(kl::JsonNode& node, const std::wstring& path)
+{
+
+    bool success = false;
+    std::wstring wval = xf_get_file_contents(path, &success);
+    if (!success)
+        return node;
+
+    node.fromString(wval);
+    return node;
+}
+
+
 kl::JsonNode JsonConfig::loadFromString(const wxString& json)
 {
     kl::JsonNode node;
@@ -50,14 +63,25 @@ bool JsonConfig::saveToDb(kl::JsonNode& node,
                           const wxString& path,
                           const wxString& mime_type)
 {
-    wxString text = towx(node.toString());
+    std::wstring text = node.toString();
     
     // add a trailing \n, because some editors complain
     // when this is missing
-    text += wxT("\n");
+    text += L"\n";
     
     return writeStreamTextFile(db, towstr(path),
-                               towstr(text),
+                               text,
                                towstr(mime_type));
 }
 
+
+bool JsonConfig::saveToFile(kl::JsonNode& node, const std::wstring& path)
+{
+    std::wstring text = node.toString();
+    
+    // add a trailing \n, because some editors complain
+    // when this is missing
+    text += L"\n";
+    
+    return xf_put_file_contents(path, text);
+}
