@@ -84,7 +84,7 @@ int determineProjectInfoType(const wxString& path)
         
     if (file_type == tango::filetypeNode)
     {
-        kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), path);
+        kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(path));
         if (node.isOk())
         {
             kl::JsonNode root_node = node["root"];

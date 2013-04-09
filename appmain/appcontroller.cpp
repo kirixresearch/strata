@@ -4377,12 +4377,7 @@ bool AppController::openAny(const wxString& _location,
          else if (item_type == tango::filetypeStream)
         {
             std::wstring mime_type = file_info->getMimeType();
-            if (mime_type == L"application/vnd.kx.bookmark")
-            {
-                if (openBookmark(location, open_mask))
-                    return true;
-            }
-             else if (mime_type.substr(0, 19) == L"application/vnd.kx.")
+            if (mime_type.substr(0, 19) == L"application/vnd.kx.")
             {
                 if (openTemplate(location, open_mask))
                     return true;
@@ -4423,10 +4418,6 @@ bool AppController::openAny(const wxString& _location,
             kl::JsonNode root_node = node["root"];
             if (!root_node.isOk())
                 return false;
-
-            kl::JsonNode bookmark_node = root_node["bookmark"];
-            if (bookmark_node.isOk())
-                return openBookmark(location, open_mask, site_id);
 
             kl::JsonNode kpp_script_node = root_node["kpp_script"];
             if (kpp_script_node.isOk())
@@ -4852,7 +4843,7 @@ bool AppController::openTemplate(const wxString& location,
     }
      else if (file_info->getType() == tango::filetypeNode)
     {
-        kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), location);
+        kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(location));
         if (!node.isOk())
             return false;
 
@@ -4883,61 +4874,6 @@ bool AppController::openTemplate(const wxString& location,
     }
     
     return false;
-}
-
-
-bool AppController::openBookmark(const wxString& _location,
-                                 int open_mask,
-                                 int* site_id)
-{
-    // check if the location specified is a bookmark in the project;
-    // if so, load the url location from the bookmark
-    tango::IDatabasePtr db = g_app->getDatabase();
-    if (db.isNull())
-        return false;
-
-    tango::IFileInfoPtr file_info;
-    file_info = db->getFileInfo(towstr(_location));
-    if (!file_info.isOk())
-        return false;
-
-    // note: old bookmark node files are converted to the new format
-    // when they are loaded, which happens when a first project is
-    // first loaded, so we shouldn't have bookmarks in the old node
-    // format
-    if (file_info->getType() != tango::filetypeStream)
-        return false;
-
-    kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), _location);
-    if (!node.isOk())
-        return false;
-
-    if (!isValidFileVersion(node, L"application/vnd.kx.bookmark", 1))
-        return false;
-
-    kl::JsonNode bookmark_node = node["bookmark"];
-    if (!bookmark_node.isOk())
-        return false;
-
-    kl::JsonNode location_node = bookmark_node["location"];
-    if (!location_node.isOk())
-        return false;
-    wxString location = towx(location_node.getString());
-
-    bool run_target = false;
-    kl::JsonNode run_target_node = bookmark_node["run_target"];
-    if (!run_target_node.isOk())
-        run_target = (run_target_node.getInteger() != 0 ? true : false);
-
-    if (run_target)
-    {
-        if (execute(location))
-            return true;
-                    
-        // execute failed, try to open the target
-    }
-
-    return openAny(location);
 }
 
 

@@ -1156,13 +1156,13 @@ bool QueryTemplate::saveJson(const wxString& path)
         }
     }
 
-    return JsonConfig::saveToDb(root, g_app->getDatabase(), path, wxT("application/vnd.kx.query"));
+    return JsonConfig::saveToDb(root, g_app->getDatabase(), towstr(path), L"application/vnd.kx.query");
 }
 
 bool QueryTemplate::loadJson(const wxString& path)
 {
     // try to load the JSON string
-    kl::JsonNode root = JsonConfig::loadFromDb(g_app->getDatabase(), path);
+    kl::JsonNode root = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(path));
     if (!root.isOk())
         return false;
 
@@ -1352,7 +1352,7 @@ bool QueryTemplate::loadJson(const wxString& path)
 
 bool QueryTemplate::loadJsonFromNode(const wxString& path)
 {
-    kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), path);
+    kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(path));
     if (!node.isOk())
         return false;
 

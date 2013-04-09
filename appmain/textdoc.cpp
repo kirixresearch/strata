@@ -2300,7 +2300,7 @@ bool TextDoc::saveLayoutTemplate(const wxString& path)
             field["scale"] = e->getScale();
         }
 
-        return JsonConfig::saveToDb(root, g_app->getDatabase(), path, wxT("application/vnd.kx.text_format"));
+        return JsonConfig::saveToDb(root, g_app->getDatabase(), towstr(path), L"application/vnd.kx.text_format");
     }
     
     return false;

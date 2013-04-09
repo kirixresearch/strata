@@ -93,9 +93,6 @@ public:
     bool openAny(const wxString& location,
                  int open_mask = appOpenDefault,
                  int* site_id = NULL);
-    bool openBookmark(const wxString& location,
-                 int open_mask = appOpenDefault,
-                 int* site_id = NULL);
     bool openReport(const wxString& location, 
                  int open_mask = appOpenDefault,
                  int* site_id = NULL);

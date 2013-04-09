@@ -3560,13 +3560,13 @@ bool CompReportDesign::saveJson(const wxString& path)
         saveTablePropertiesToJson(it->m_table, section);
     }
 
-    return JsonConfig::saveToDb(root, g_app->getDatabase(), path, wxT("application/vnd.kx.report"));
+    return JsonConfig::saveToDb(root, g_app->getDatabase(), towstr(path), L"application/vnd.kx.report");
 }
 
 bool CompReportDesign::loadJson(const wxString& path)
 {
     // try to load the JSON string
-    kl::JsonNode root = JsonConfig::loadFromDb(g_app->getDatabase(), path);
+    kl::JsonNode root = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(path));
     if (!root.isOk())
         return false;
 
@@ -3688,7 +3688,7 @@ bool CompReportDesign::loadJson(const wxString& path)
 
 bool CompReportDesign::loadJsonFromNode(const wxString& path)
 {
-    kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), path);
+    kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(path));
     if (!node.isOk())
         return false;
 

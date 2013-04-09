@@ -14,12 +14,12 @@
 #include <kl/utf8.h>
 
 
-kl::JsonNode JsonConfig::loadFromDb(tango::IDatabasePtr db, const wxString& path)
+kl::JsonNode JsonConfig::loadFromDb(tango::IDatabasePtr db, const std::wstring& path)
 {
     kl::JsonNode node;
 
     std::wstring wval;
-    if (!readStreamTextFile(db, towstr(path), wval))
+    if (!readStreamTextFile(db, path, wval))
         return node;
     
     node.fromString(wval);
@@ -39,17 +39,17 @@ kl::JsonNode loadFromFile(kl::JsonNode& node, const std::wstring& path)
 }
 
 
-kl::JsonNode JsonConfig::loadFromString(const wxString& json)
+kl::JsonNode JsonConfig::loadFromString(const std::wstring& json)
 {
     kl::JsonNode node;
-    node.fromString(towstr(json));
+    node.fromString(json);
     return node;
 }
 
-bool JsonConfig::saveToString(kl::JsonNode& node, wxString& dest)
+bool JsonConfig::saveToString(kl::JsonNode& node, std::wstring& dest)
 {
-    wxString s = node.toString();
-    if (s.Length() > 0)
+    std::wstring s = node.toString();
+    if (s.length() > 0)
     {
         dest = s;
         return true; 
@@ -60,8 +60,8 @@ bool JsonConfig::saveToString(kl::JsonNode& node, wxString& dest)
 
 bool JsonConfig::saveToDb(kl::JsonNode& node,
                           tango::IDatabasePtr db,
-                          const wxString& path,
-                          const wxString& mime_type)
+                          const std::wstring& path,
+                          const std::wstring& mime_type)
 {
     std::wstring text = node.toString();
     
@@ -69,9 +69,7 @@ bool JsonConfig::saveToDb(kl::JsonNode& node,
     // when this is missing
     text += L"\n";
     
-    return writeStreamTextFile(db, towstr(path),
-                               text,
-                               towstr(mime_type));
+    return writeStreamTextFile(db, path, text, mime_type);
 }
 
 

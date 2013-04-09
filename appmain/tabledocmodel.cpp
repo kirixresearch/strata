@@ -739,34 +739,32 @@ void TableDocModel::init(const std::wstring& id)
 
 bool TableDocModel::load()
 {
+    if (m_id.empty())
+        return false;
+
     tango::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return false;
 
-    std::wstring filename = L"/.appdata/%usr%/tables/%id%";
-    kl::replaceStr(filename, L"%usr%", db->getActiveUid());
-    kl::replaceStr(filename, L"%id%", m_id);
-
     // try to load the path in the new JSON format
-    if (loadJson(filename))
+    if (loadJson())
         return true;
 
     // if we can't load it in the new format, try
     // to open it with the old format
-    return loadAndConvertOldVersionToNewJson(getId());
+    return loadAndConvertOldVersionToNewJson();
 }
 
 bool TableDocModel::save()
 {
+    if (m_id.empty())
+        return false;
+
     tango::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return false;
 
-    std::wstring filename = L"/.appdata/%usr%/tables/%id%";
-    kl::replaceStr(filename, L"%usr%", db->getActiveUid());
-    kl::replaceStr(filename, L"%id%", m_id);
-
-    return saveJson(filename);
+    return saveJson();
 }
 
 bool TableDocModel::writeObject(ITableDocObjectPtr obj, bool save_to_store)
@@ -942,8 +940,15 @@ ITableDocViewEnumPtr TableDocModel::getViewEnum()
     return vec;
 }
 
-bool TableDocModel::saveJson(const std::wstring& path)
+bool TableDocModel::saveJson()
 {
+    tango::IDatabasePtr db = g_app->getDatabase();
+
+    std::wstring path = L"/.appdata/%usr%/tables/%id%";
+    kl::replaceStr(path, L"%usr%", db->getActiveUid());
+    kl::replaceStr(path, L"%id%", m_id);
+
+
     std::vector<ITableDocObjectPtr> marks = m_marks;
     std::vector<ITableDocObjectPtr> views = m_views;
     std::vector<std::wstring> to_delete = m_to_delete;
@@ -1058,11 +1063,18 @@ bool TableDocModel::saveJson(const std::wstring& path)
     return writeStreamTextFile(g_app->getDatabase(), path, contents);
 }
 
-bool TableDocModel::loadJson(const std::wstring& path)
+bool TableDocModel::loadJson()
 {
-    kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), path);
+    tango::IDatabasePtr db = g_app->getDatabase();
+
+    std::wstring path = L"/.appdata/%usr%/tables/%id%";
+    kl::replaceStr(path, L"%usr%", db->getActiveUid());
+    kl::replaceStr(path, L"%id%", m_id);
+
+    kl::JsonNode node = JsonConfig::loadFromDb(db, path);
     if (!node.isOk())
         return false;
+    
 
     // make sure the version we're loading is valid
     if (!isValidFileVersion(node, L"application/vnd.kx.tabledocmodel", 1))
@@ -1101,10 +1113,10 @@ bool TableDocModel::loadJson(const std::wstring& path)
     return true;
 }
 
-bool TableDocModel::loadAndConvertOldVersionToNewJson(const std::wstring& id)
+bool TableDocModel::loadAndConvertOldVersionToNewJson()
 {
-    std::wstring view_path = kl::stdswprintf(L"/.appdata/admin/dcfe/setinfo/%s/views", id.c_str());
-    std::wstring mark_path = kl::stdswprintf(L"/.appdata/admin/dcfe/setinfo/%s/marks", id.c_str());
+    std::wstring view_path = kl::stdswprintf(L"/.appdata/admin/dcfe/setinfo/%s/views", m_id.c_str());
+    std::wstring mark_path = kl::stdswprintf(L"/.appdata/admin/dcfe/setinfo/%s/marks", m_id.c_str());
 
 
     // create a json object in the new format
@@ -1269,7 +1281,7 @@ bool TableDocModel::loadAndConvertOldVersionToNewJson(const std::wstring& id)
     {
         // note: need to delete before saving since save() calls load() which creates
         // an infinite loop if the old format isn't removed before saving
-        std::wstring path = kl::stdswprintf(L"/.appdata/admin/dcfe/setinfo/%s", id.c_str());
+        std::wstring path = kl::stdswprintf(L"/.appdata/admin/dcfe/setinfo/%s", m_id.c_str());
         if (!g_app->getDatabase()->deleteFile(path))
             return false;
         

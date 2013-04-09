@@ -55,9 +55,9 @@ private:
 
     ITableDocObjectPtr lookupObject(const std::wstring& id);
 
-    bool saveJson(const std::wstring& path);
-    bool loadJson(const std::wstring& path);
-    bool loadAndConvertOldVersionToNewJson(const std::wstring& id);
+    bool saveJson();
+    bool loadJson();
+    bool loadAndConvertOldVersionToNewJson();
 
 private:
 

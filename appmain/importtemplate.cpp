@@ -118,7 +118,7 @@ bool ImportTemplate::loadJson(const wxString& path)
 {
     m_ii.tables.clear();
     
-    kl::JsonNode root = JsonConfig::loadFromDb(g_app->getDatabase(), path);
+    kl::JsonNode root = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(path));
     if (!root.isOk())
         return false;
 
@@ -261,7 +261,7 @@ bool ImportTemplate::loadJson(const wxString& path)
 
 bool ImportTemplate::loadJsonFromNode(const wxString& path)
 {
-    kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), path);
+    kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(path));
     if (!node.isOk())
         return false;
 
@@ -775,7 +775,7 @@ bool ImportTemplate::save(const wxString& path)
     
 
 
-    return JsonConfig::saveToDb(root, g_app->getDatabase(), path, wxT("application/vnd.kx.import"));
+    return JsonConfig::saveToDb(root, g_app->getDatabase(), towstr(path), L"application/vnd.kx.import");
 }
 
 static void onImportJobFinished(jobs::IJobPtr job)
