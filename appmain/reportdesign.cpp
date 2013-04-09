@@ -200,55 +200,55 @@ static void loadCellProperties(kcanvas::ICompTablePtr table, kcanvas::CellRange 
     // set the string properties
     value = node[kcanvas::PROP_FONT_FACENAME];
     if (value.isOk())
-        properties.add(kcanvas::PROP_FONT_FACENAME, towx(value.getString()));
+        properties.add(kcanvas::PROP_FONT_FACENAME, value.getString());
 
     value = node[kcanvas::PROP_FONT_STYLE];
     if (value.isOk())
-        properties.add(kcanvas::PROP_FONT_STYLE, towx(value.getString()));
+        properties.add(kcanvas::PROP_FONT_STYLE, value.getString());
     
     value = node[kcanvas::PROP_FONT_WEIGHT];
     if (value.isOk())
-        properties.add(kcanvas::PROP_FONT_WEIGHT, towx(value.getString()));
+        properties.add(kcanvas::PROP_FONT_WEIGHT, value.getString());
     
     value = node[kcanvas::PROP_FONT_UNDERSCORE];
     if (value.isOk())
-        properties.add(kcanvas::PROP_FONT_UNDERSCORE, towx(value.getString()));
+        properties.add(kcanvas::PROP_FONT_UNDERSCORE, value.getString());
 
     value = node[kcanvas::PROP_TEXT_HALIGN];
     if (value.isOk())
-        properties.add(kcanvas::PROP_TEXT_HALIGN, towx(value.getString()));
+        properties.add(kcanvas::PROP_TEXT_HALIGN, value.getString());
     
     value = node[kcanvas::PROP_TEXT_VALIGN];
     if (value.isOk())
-        properties.add(kcanvas::PROP_TEXT_VALIGN, towx(value.getString()));
+        properties.add(kcanvas::PROP_TEXT_VALIGN, value.getString());
 
     value = node[kcanvas::PROP_CONTENT_VALUE];
     if (value.isOk())
-        properties.add(kcanvas::PROP_CONTENT_VALUE, towx(value.getString()));
+        properties.add(kcanvas::PROP_CONTENT_VALUE, value.getString());
     
     value = node[kcanvas::PROP_CONTENT_MIMETYPE];
     if (value.isOk())
-        properties.add(kcanvas::PROP_CONTENT_MIMETYPE, towx(value.getString()));
+        properties.add(kcanvas::PROP_CONTENT_MIMETYPE, value.getString());
 
     value = node[kcanvas::PROP_CONTENT_ENCODING];
     if (value.isOk())
-        properties.add(kcanvas::PROP_CONTENT_ENCODING, towx(value.getString()));
+        properties.add(kcanvas::PROP_CONTENT_ENCODING, value.getString());
 
     value = node[kcanvas::PROP_BORDER_TOP_STYLE];
     if (value.isOk())
-        properties.add(kcanvas::PROP_BORDER_TOP_STYLE, towx(value.getString()));
+        properties.add(kcanvas::PROP_BORDER_TOP_STYLE, value.getString());
 
     value = node[kcanvas::PROP_BORDER_BOTTOM_STYLE];
     if (value.isOk())
-        properties.add(kcanvas::PROP_BORDER_BOTTOM_STYLE, towx(value.getString()));
+        properties.add(kcanvas::PROP_BORDER_BOTTOM_STYLE, value.getString());
         
     value = node[kcanvas::PROP_BORDER_LEFT_STYLE];
     if (value.isOk())
-        properties.add(kcanvas::PROP_BORDER_LEFT_STYLE, towx(value.getString()));
+        properties.add(kcanvas::PROP_BORDER_LEFT_STYLE, value.getString());
         
     value = node[kcanvas::PROP_BORDER_RIGHT_STYLE];
     if (value.isOk())
-        properties.add(kcanvas::PROP_BORDER_RIGHT_STYLE, towx(value.getString()));
+        properties.add(kcanvas::PROP_BORDER_RIGHT_STYLE, value.getString());
 
 
     // set the color properties
@@ -435,7 +435,7 @@ static bool loadPropertiesFromJsonNode(kl::JsonNode& node, kcanvas::Properties& 
         // load a string property
         std::wstring str_value = property_node.getString();
         if (property_type == kcanvas::proptypeString)
-            properties.add(property_name, towx(str_value));
+            properties.add(property_name, str_value);
 
         // load a color property; don't rely on the implicit JsonNode::getInteger() 
         // conversion to ensure we're properly handling the color value
@@ -520,7 +520,7 @@ static bool loadTablePropertiesFromJsonNode(kl::JsonNode& node, kcanvas::ICompTa
         if (!cellrangevalue_node.isOk())
             continue;
 
-        wxString cellrangevalue_list = towx(cellrangevalue_node.getString());
+        wxString cellrangevalue_list = cellrangevalue_node.getString();
 
         int row1 = -1;
         int col1 = -1;
@@ -1155,9 +1155,12 @@ bool CompReportDesign::load(const ReportCreateInfo& data)
         std::wstring quoted_field_name;
         quoted_field_name = tango::quoteIdentifier(g_app->getDatabase(), towstr(it->field_name));
 
-        wxString value = wxT("=") + towx(quoted_field_name);
+        wxString value = "=";
+        value += quoted_field_name;
+
         value.Trim(true);
         value.Trim(false);
+
         kcanvas::CellRange range(row_idx, col_idx);
         table_detail->setCellProperty(range, kcanvas::PROP_CONTENT_VALUE, value);
         table_detail->setCellProperty(range, kcanvas::PROP_TEXT_HALIGN, it->alignment);
@@ -4360,7 +4363,7 @@ void CompReportDesign::setGroupsFromSortExpr(const wxString& sort_expr)
     
     for (itr = sort_fields.rbegin(); itr != itr_end; ++itr)
     {
-        wxString field = towx(tango::dequoteIdentifier(db, itr->first));
+        wxString field = tango::dequoteIdentifier(db, itr->first);
         insertGroup(wxT(""), field, itr->second, false);
     }
 }

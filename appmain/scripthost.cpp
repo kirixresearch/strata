@@ -355,8 +355,8 @@ size_t ScriptHostBase::invokeJsEvent(kscript::Value* vevt,
 
 void func_print(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {
-    wxString message = towx(env->m_eval_params[0]->getString());
-    message += wxT("\n");
+    wxString message = env->m_eval_params[0]->getString();
+    message += "\n";
     
     ScriptHost* script_host = (ScriptHost*)env->getParser()->getExtraLong();
     if (script_host->m_print_function.isFunction())
@@ -384,11 +384,11 @@ void func_alert(kscript::ExprEnv* env, void* param, kscript::Value* retval)
     int msg_style;
 
 
-    message = towx(env->m_eval_params[0]->getString());
+    message = env->m_eval_params[0]->getString();
 
 
     if (env->m_param_count > 1)
-        caption = towx(env->m_eval_params[1]->getString());
+        caption = env->m_eval_params[1]->getString();
          else
         caption = APPLICATION_NAME;
 
@@ -755,19 +755,19 @@ static bool tryIncludeFile(const wxString& filename, wxString& res_string)
         // little endian UCS-2
         std::wstring wval;
         kl::ucsle2wstring(wval, buf+2, (readbytes-2)/2);
-        res_string = towx(wval);
+        res_string = wval;
     }
      else if (readbytes >= 3 && buf[0] == 0xef && buf[1] == 0xbb && buf[2] == 0xbf)
     {
         // utf-8
         wchar_t* tempbuf = new wchar_t[fsize+1];
         kl::utf8_utf8tow(tempbuf, fsize+1, (char*)buf+3, readbytes);
-        res_string = towx(tempbuf);
+        res_string = tempbuf;
         delete[] tempbuf;
     }
      else
     {
-        res_string = towx((char*)buf);
+        res_string = (const char*)buf;
     }
     
     delete[] buf;
@@ -821,7 +821,7 @@ static bool tryIncludeProjectFile(const wxString& _filename, wxString& res_strin
             // utf-8
             wchar_t* tempbuf = new wchar_t[buf_len+1];
             kl::utf8_utf8tow(tempbuf, buf_len+1, (char*)ptr+3, buf_len-3);
-            value = towx(tempbuf);
+            value = tempbuf;
             delete[] tempbuf;
         }
          else
@@ -830,7 +830,7 @@ static bool tryIncludeProjectFile(const wxString& _filename, wxString& res_strin
             value = wxString::From8BitData((char*)buf.GetData());
         }
         
-        res_string = towx(value);
+        res_string = value;
         return true;
     }
     
@@ -1004,7 +1004,7 @@ bool ScriptHost::script_host_parse_hook(kscript::ExprParseHookInfo& info)
         }
         
         ScriptHostInclude inc;
-        if (!host->getFullIncludePath(towx(info.expr_text), &inc))
+        if (!host->getFullIncludePath(info.expr_text, &inc))
             return false;
             
         if (inc.type == ScriptHostInclude::includeProjectFile)
@@ -1125,8 +1125,8 @@ bool ScriptHost::compile(const wchar_t* text)
         m_error_code = error.getCode();
         m_error_line = error.getLine();
         m_error_offset = error.getOffset();
-        m_error_string = towx(error.getText());
-        m_error_file = towx(error.getFileName());
+        m_error_string = error.getText();
+        m_error_file = error.getFileName();
         
 
         switch (m_error_code)
@@ -1317,8 +1317,8 @@ bool ScriptHost::run()
                 break;
 
             case kscript::rterrorTermNotFunction:
-                m_error_string = wxString::Format(_("Term '%s' does not evaluate to a function."),
-                                    towx(m_expr->getErrorInfo().getText()).c_str());
+                m_error_string = wxString::Format(_("Term '%ls' does not evaluate to a function."),
+                                                  m_expr->getErrorInfo().getText().c_str());
                 break;
             
             case kscript::rterrorExit:

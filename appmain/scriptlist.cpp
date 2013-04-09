@@ -154,7 +154,7 @@ void zListBox::addItem(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() < 1 || !isControlValid())
         return;
         
-    wxString s = towx(env->getParam(0)->getString());
+    wxString s = env->getParam(0)->getString();
     int idx = m_ctrl->Append(s);
     retval->setInteger(idx);
 }
@@ -283,7 +283,7 @@ void zListBox::findItem(kscript::ExprEnv* env, kscript::Value* retval)
         return;
     
     // get the find string
-    wxString s = towx(env->getParam(0)->getString());
+    wxString s = env->getParam(0)->getString();
     
     // get the start index
     int start_idx = -1;
@@ -585,7 +585,7 @@ void zListBox::insertItem(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() < 2 || !isControlValid())
         return;
         
-    wxString s = towx(env->getParam(0)->getString());
+    wxString s = env->getParam(0)->getString();
     int idx = env->getParam(1)->getInteger();
     if (idx < 0 || idx >= (int)m_ctrl->GetCount())
         m_ctrl->Append(s);
@@ -709,7 +709,7 @@ void zListBox::setItem(kscript::ExprEnv* env, kscript::Value* retval)
     if (idx < 0 || idx >= (int)m_ctrl->GetCount())
         return;
         
-    wxString s = towx(env->getParam(1)->getString());
+    wxString s = env->getParam(1)->getString();
 
     m_ctrl->SetString(idx, s);
     retval->setBoolean(true);

@@ -534,7 +534,7 @@ wxString DlgAuth::getSiteCodeString()
 {
     char buf[255];
     paladin::getStringFromCode(m_site_code, buf);
-    wxString str = towx(buf);
+    wxString str = buf;
     return str;
 }
 

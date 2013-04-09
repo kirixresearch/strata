@@ -637,7 +637,7 @@ public:
     bool readFromNode(kl::JsonNode& node)
     {
         m_id = node["object_id"].getString();
-        m_description = towx(node["description"].getString());
+        m_description = node["description"].getString();
         m_row_size = node["row_size"].getInteger();
         kl::JsonNode columns = node["columns"];
 

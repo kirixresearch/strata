@@ -139,12 +139,12 @@ void WebBrowser::navigate(kscript::ExprEnv* env, kscript::Value* retval)
 
     if (isControlValid())
     { 
-        wxString val = towx(env->getParam(0)->getString());
+        std::wstring val = env->getParam(0)->getString();
         m_ctrl->OpenURI(val);
     }
      else
     {
-        m_initial_nav = towx(env->getParam(0)->getString());
+        m_initial_nav = env->getParam(0)->getString();
     }
 }
 
@@ -170,17 +170,17 @@ void WebBrowser::showHypertext(kscript::ExprEnv* env, kscript::Value* retval)
     
     if (!isControlValid())
     {
-        m_initial_html = towx(env->getParam(0)->getString());
+        m_initial_html = env->getParam(0)->getString();
         return;
     }
     
-    retval->setBoolean(showHypertext(towx(env->getParam(0)->getString())));
+    retval->setBoolean(showHypertext(env->getParam(0)->getString()));
 }
 
 bool WebBrowser::showHypertext(const wxString& html)
 {
     std::wstring s_temp_filename = xf_get_temp_filename(L"tmpd", L"html");
-    wxString temp_filename = towx(s_temp_filename);
+    wxString temp_filename = s_temp_filename;
     
     // create a file that only the local user is able to read and write to
     wxFile file;

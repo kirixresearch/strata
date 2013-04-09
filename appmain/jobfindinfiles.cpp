@@ -70,7 +70,7 @@ void FindInFilesJob::lookInPath(tango::IDatabasePtr& db, const wxString& path)
         if (info.isNull())
             continue;
         
-        wxString filename = towx(info->getName());
+        wxString filename = info->getName();
         
         // skip hidden files
         if (filename.Length() > 0 && filename.GetChar(0) == '.')
@@ -135,7 +135,7 @@ void FindInFilesJob::lookInFile(tango::IDatabasePtr& db, const wxString& path)
                 if (*p > 127) *p = ' ';
             }
 
-            test_string = towx((char*)offset);
+            test_string = (const char*)offset;
             *end_of_string = tempc;
             
             bool found = false;

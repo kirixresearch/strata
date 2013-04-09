@@ -297,25 +297,25 @@ bool ImportTemplate::loadJsonFromNode(const wxString& path)
     kl::JsonNode description_node = data_node["description"];
     if (!description_node.isOk())
         return false;
-    m_ii.description = towx(description_node.getString());
+    m_ii.description = description_node.getString();
 
     // path
     kl::JsonNode path_node = data_node["path"];
     if (!path_node.isOk())
         return false;
-    m_ii.path = towx(path_node.getString());
+    m_ii.path = path_node.getString();
 
     // filter
     kl::JsonNode filter_node = data_node["filter"];
     if (!filter_node.isOk())
         return false;
-    m_ii.filter = towx(filter_node.getString());
+    m_ii.filter = filter_node.getString();
 
     // server
     kl::JsonNode server_node = data_node["server"];
     if (!server_node.isOk())
         return false;
-    m_ii.server = towx(server_node.getString());
+    m_ii.server = server_node.getString();
 
     // port
     kl::JsonNode port_node = data_node["port"];
@@ -327,19 +327,19 @@ bool ImportTemplate::loadJsonFromNode(const wxString& path)
     kl::JsonNode database_node = data_node["database"];
     if (!database_node.isOk())
         return false;
-    m_ii.database = towx(database_node.getString());
+    m_ii.database = database_node.getString();
 
     // username
     kl::JsonNode username_node = data_node["username"];
     if (!username_node.isOk())
         return false;
-    m_ii.username = towx(username_node.getString());
+    m_ii.username = username_node.getString();
 
     // password
     kl::JsonNode password_node = data_node["password"];
     if (!password_node.isOk())
         return false;
-    m_ii.password = towx(password_node.getString());
+    m_ii.password = password_node.getString();
 
     // save password flag
     kl::JsonNode save_password_node = data_node["save_password"];
@@ -351,19 +351,19 @@ bool ImportTemplate::loadJsonFromNode(const wxString& path)
     kl::JsonNode base_path_node = data_node["base_path"];
     if (!base_path_node.isOk())
         return false;
-    m_ii.base_path = towx(base_path_node.getString());
+    m_ii.base_path = base_path_node.getString();
 
     // delimiters (for text_delimited imports);
     kl::JsonNode delimiters_node = data_node["delimiters"];
     if (!delimiters_node.isOk())
         return false;
-    m_ii.delimiters = towx(delimiters_node.getString());
+    m_ii.delimiters = delimiters_node.getString();
 
     // text qualifier (for text-delimited imports);
     kl::JsonNode text_qualifier_node = data_node["text_qualifier"];
     if (!text_qualifier_node.isOk())
         return false;
-    m_ii.text_qualifier = towx(text_qualifier_node.getString());
+    m_ii.text_qualifier = text_qualifier_node.getString();
 
     // first row is header row (for text-delimited imports)
     kl::JsonNode first_row_header_node = data_node["first_row_header"];
@@ -375,7 +375,7 @@ bool ImportTemplate::loadJsonFromNode(const wxString& path)
     kl::JsonNode date_format_str_node = data_node["date_format_str"];
     if (!date_format_str_node.isOk())
         return false;
-    m_ii.date_format_str = towx(date_format_str_node.getString());
+    m_ii.date_format_str = date_format_str_node.getString();
 
     // tables base
     kl::JsonNode tables_base_node = data_node["tables"];
@@ -429,11 +429,11 @@ bool ImportTemplate::loadJsonFromNode(const wxString& path)
         kl::JsonNode field_mapping_name_node = table_node["field_mapping_name"];
         if (!field_mapping_name_node.isOk())    
             return false;
-        ts.field_mapping_name = towx(field_mapping_name_node.getString());
+        ts.field_mapping_name = field_mapping_name_node.getString();
 
         kl::JsonNode query_node = table_node["query"];
         if (query_node.isOk())
-            ts.query = towx(query_node.getString());
+            ts.query = query_node.getString();
 
         // load fixed-length row width (if any)
         kl::JsonNode fixed_length_row_width_node = table_node["fixed_length_row_width"];
@@ -479,7 +479,7 @@ bool ImportTemplate::loadJsonFromNode(const wxString& path)
                 kl::JsonNode output_name_node = field_node["output_name"];
                 if (!output_name_node.isOk())
                     return false;
-                fs.output_name = towx(output_name_node.getString());
+                fs.output_name = output_name_node.getString();
 
                 kl::JsonNode output_type_node = field_node["output_type"];
                 if (!output_type_node.isOk())
@@ -509,32 +509,32 @@ bool ImportTemplate::loadJsonFromNode(const wxString& path)
                 kl::JsonNode decimal_separator_node = field_node["decimal_separator"];
                 if (!decimal_separator_node.isOk())
                     return false;
-                fs.decimal_separator = towx(decimal_separator_node.getString());
+                fs.decimal_separator = decimal_separator_node.getString();
 
                 kl::JsonNode negative_sign_node = field_node["negative_sign"];
                 if (!negative_sign_node.isOk())
                     return false;
-                fs.negative_sign = towx(negative_sign_node.getString());
+                fs.negative_sign = negative_sign_node.getString();
 
                 kl::JsonNode date_format_node = field_node["date_format"];
                 if (!date_format_node.isOk())
                     return false;
-                fs.date_order = towx(date_format_node.getString());
+                fs.date_order = date_format_node.getString();
 
                 kl::JsonNode boolean_format_node = field_node["boolean_format"];
                 if (!boolean_format_node.isOk())
                     return false;
-                fs.boolean_format = towx(boolean_format_node.getString());
+                fs.boolean_format = boolean_format_node.getString();
 
                 kl::JsonNode expression_node = field_node["expression"];
                 if (!expression_node.isOk())
                     return false;
-                fs.custom_expression = towx(expression_node.getString());
+                fs.custom_expression = expression_node.getString();
 
                 kl::JsonNode hidden_expression_node = field_node["hidden_expression"];
                 if (!hidden_expression_node.isOk())
                     return false;
-                fs.hidden_expression = towx(hidden_expression_node.getString());
+                fs.hidden_expression = hidden_expression_node.getString();
 
 
                 ts.fixed_fields.push_back(fs);
@@ -574,12 +574,12 @@ bool ImportTemplate::loadJsonFromNode(const wxString& path)
         kl::JsonNode input_tablename_node = field_mapping_node["input_tablename"];
         if (!input_tablename_node.isOk())
             return false;
-        ts.input_tablename = towx(input_tablename_node.getString());
+        ts.input_tablename = input_tablename_node.getString();
 
         kl::JsonNode output_tablename_node = field_mapping_node["output_tablename"];
         if (!output_tablename_node.isOk())
             return false;
-        ts.output_tablename = towx(output_tablename_node.getString());
+        ts.output_tablename = output_tablename_node.getString();
 
         kl::JsonNode append_node = field_mapping_node["append"];
         if (!append_node.isOk())
@@ -589,11 +589,11 @@ bool ImportTemplate::loadJsonFromNode(const wxString& path)
         kl::JsonNode field_mapping_name_node = field_mapping_node["field_mapping_name"];
         if (!field_mapping_name_node.isOk())
             return false;
-        ts.field_mapping_name = towx(field_mapping_name_node.getString());
+        ts.field_mapping_name = field_mapping_name_node.getString();
 
         kl::JsonNode query_node = field_mapping_node["query"];
         if (query_node.isOk())
-            ts.query = towx(query_node.getString());
+            ts.query = query_node.getString();
 
 
         // output fields
@@ -619,7 +619,7 @@ bool ImportTemplate::loadJsonFromNode(const wxString& path)
             kl::JsonNode input_name_node = output_field_node["input_name"];
             if (!input_name_node.isOk())
                 return false;
-            fs.input_name = towx(input_name_node.getString());
+            fs.input_name = input_name_node.getString();
 
             kl::JsonNode input_type_node = output_field_node["input_type"];
             if (!input_type_node.isOk())
@@ -639,7 +639,7 @@ bool ImportTemplate::loadJsonFromNode(const wxString& path)
             kl::JsonNode output_name_node = output_field_node["output_name"];
             if (!output_name_node.isOk())
                 return false;
-            fs.output_name = towx(output_name_node.getString());
+            fs.output_name = output_name_node.getString();
 
             kl::JsonNode output_type_node = output_field_node["output_type"];
             if (!output_type_node.isOk())
@@ -669,7 +669,7 @@ bool ImportTemplate::loadJsonFromNode(const wxString& path)
             kl::JsonNode expression_node = output_field_node["expression"];
             if (!expression_node.isOk())
                 return false;
-            fs.expression = towx(expression_node.getString());
+            fs.expression = expression_node.getString();
 
 
             ts.output_fields.push_back(fs);

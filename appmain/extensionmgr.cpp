@@ -53,24 +53,24 @@ static bool xmlToExtensionInfo(const wxString& xml, ExtensionInfo& info)
     
     if (!guid.isEmpty())
     {
-        info.guid = towx(guid.getNodeValue());
+        info.guid = guid.getNodeValue();
         info.guid.MakeUpper();
     }
         
     if (!name.isEmpty())
-        info.name = towx(name.getNodeValue());
+        info.name = name.getNodeValue();
         
     if (!author.isEmpty())
-        info.author = towx(author.getNodeValue());
+        info.author = author.getNodeValue();
         
     if (!bitmap_path.isEmpty())
-        info.bitmap_path = towx(bitmap_path.getNodeValue());
+        info.bitmap_path = bitmap_path.getNodeValue();
         
     if (!startup_path.isEmpty())
-        info.startup_path = towx(startup_path.getNodeValue());
+        info.startup_path = startup_path.getNodeValue();
         
     if (!description.isEmpty())
-        info.description = towx(description.getNodeValue());
+        info.description = description.getNodeValue();
         
     if (!major_version.isEmpty())
         info.major_version = kl::wtoi(major_version.getNodeValue());
@@ -359,7 +359,7 @@ void onScriptJobFinished(jobs::IJobPtr job)
     if (job->getJobInfo()->getState() != jobStateFinished)
         return;
 
-    wxString script_job_guid = towx(job->getExtraValue(L"appmain.extension.guid"));
+    wxString script_job_guid = job->getExtraValue(L"appmain.extension.guid");
     ExtensionMgr* ext_mgr = g_app->getExtensionMgr();
     
     std::vector<ExtensionInfo>::iterator it;
@@ -472,7 +472,7 @@ bool ExtensionMgr::stopAllExtensions()
             if (job.isNull())
                 continue;
 
-            wxString script_job_guid = towx(job->getExtraValue(L"appmain.extension.guid"));
+            wxString script_job_guid = job->getExtraValue(L"appmain.extension.guid");
             if (it->guid.CmpNoCase(script_job_guid) == 0)
             {
                 found = true;
@@ -593,7 +593,7 @@ bool ExtensionMgr::stopExtension(const wxString& guid)
         if (job.isNull())
             continue;
 
-        wxString script_job_guid = towx(job->getExtraValue(L"appmain.extension.guid"));        
+        wxString script_job_guid = job->getExtraValue(L"appmain.extension.guid");        
         if (guid.CmpNoCase(script_job_guid) == 0)
         {
             job->cancel();
@@ -630,12 +630,12 @@ bool ExtensionMgr::loadEntries()
         
         ExtensionInfo info;
         info.guid = *it;
-        config->read(L"Path",            str, L"");                     info.path = towx(str);
-        config->read(L"Name",            str, L"");                     info.name = towx(str);
-        config->read(L"Author",          str, L"");                     info.author = towx(str);
-        config->read(L"Bitmap",          str, L"");                     info.bitmap_path = towx(str);
-        config->read(L"Startup",         str, L"");                     info.startup_path = towx(str);
-        config->read(L"Description",     str, L"");                     info.description = towx(str);
+        config->read(L"Path",            str, L"");                     info.path = str;
+        config->read(L"Name",            str, L"");                     info.name = str;
+        config->read(L"Author",          str, L"");                     info.author = str;
+        config->read(L"Bitmap",          str, L"");                     info.bitmap_path = str;
+        config->read(L"Startup",         str, L"");                     info.startup_path = str;
+        config->read(L"Description",     str, L"");                     info.description = str;
         config->read(L"MajorVersion",    &info.major_version, 0);
         config->read(L"MinorVersion",    &info.minor_version, 0);
         config->read(L"SubminorVersion", &info.subminor_version, 0);

@@ -668,7 +668,8 @@ void ConsolePanel::onLeftDblClick(wxStyledTextEvent& evt)
         IEditorDocPtr editor;
         IDocumentSitePtr site;
         
-        g_app->getAppController()->setActiveChildByLocation(towx(filename), &site_id);
+        g_app->getAppController()->setActiveChildByLocation(filename, &site_id);
+
         if (site_id)
         {
             site = g_app->getMainFrame()->lookupSiteById(site_id);
@@ -685,7 +686,7 @@ void ConsolePanel::onLeftDblClick(wxStyledTextEvent& evt)
             }
         }
         
-        g_app->getAppController()->openScript(towx(filename), &site_id);
+        g_app->getAppController()->openScript(filename, &site_id);
         site = g_app->getMainFrame()->lookupSiteById(site_id);
         if (site)
         {
@@ -749,10 +750,10 @@ void ConsolePanel::onQueryJobFinished(jobs::IJobPtr job)
         {
             ITableDocPtr doc = TableDocMgr::createTableDoc();
             doc->setTemporaryModel(true);
-            doc->open(towx(table_path), result_iter);
+            doc->open(table_path, result_iter);
             g_app->getMainFrame()->createSite(doc,
-                                                sitetypeNormal,
-                                                -1, -1, -1, -1);
+                                              sitetypeNormal,
+                                              -1, -1, -1, -1);
         }
 
         // TODO: we should do a better job checking for success;

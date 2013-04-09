@@ -475,7 +475,7 @@ void LinkBar::onItemActivated(IFsItemPtr item)
     }
 
     std::wstring bookmark_path = BookmarkFs::getBookmarkItemPath(item);
-    m_last_clicked_path = towx(bookmark_path);
+    m_last_clicked_path = bookmark_path;
     activateItem(bookmark_path, open_flags);
 
     m_popup_window = popup_window;
@@ -900,7 +900,7 @@ void LinkBar::onToolButtonClick(wxCommandEvent& evt)
         }
 
         std::wstring bookmark_path = BookmarkFs::getBookmarkItemPath(item);
-        m_last_clicked_path = towx(bookmark_path);
+        m_last_clicked_path = bookmark_path;
 
         activateItem(bookmark_path, open_mask);
     }
@@ -1136,7 +1136,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
         }
         case ID_LinkBar_Properties:
         {
-            wxString path = towx(BookmarkFs::getBookmarkItemPath(item));
+            wxString path = BookmarkFs::getBookmarkItemPath(item);
 
             if (is_folder_clicked)
             {
@@ -1187,9 +1187,9 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
                     
                 LinkPropsDialog dlg(this);
                 dlg.setName(item->getLabel());
-                dlg.setLocation(towx(b.location));
-                dlg.setTags(towx(b.tags));
-                dlg.setDescription(towx(b.description));
+                dlg.setLocation(b.location);
+                dlg.setTags(b.tags);
+                dlg.setDescription(b.description);
                 dlg.setRunTarget(b.run_target);
                 dlg.SetTitle(title);
                 dlg.CenterOnScreen();

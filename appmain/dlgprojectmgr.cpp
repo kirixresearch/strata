@@ -56,12 +56,12 @@ void ProjectMgr::refresh()
         config->read(L"User",     dbuser,     L"");
         config->read(L"Password", dbpasswd,   L"");
 
-        c.entry_name = towx(*it);
+        c.entry_name = *it;
         c.local = local;
-        c.name = towx(dbname);
-        c.location = towx(dblocation);
-        c.user_id = towx(dbuser);
-        c.passwd = towx(dbpasswd);
+        c.name = dbname;
+        c.location = dblocation;
+        c.user_id = dbuser;
+        c.passwd = dbpasswd;
 
         if (c.name.Length() == 0)
         {

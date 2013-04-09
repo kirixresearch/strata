@@ -1327,11 +1327,11 @@ wxString TangoModel::getString(int col_idx, int function)
         default:
 
         case tango::typeCharacter:
-            value = towx(m_iter->getString(m_columns[col_idx]->m_handle));
+            value = m_iter->getString(m_columns[col_idx]->m_handle);
             break;
 
         case tango::typeWideCharacter:
-            value = towx(m_iter->getWideString(m_columns[col_idx]->m_handle));
+            value = m_iter->getWideString(m_columns[col_idx]->m_handle);
             break;
 
         return wxT("");
@@ -1355,11 +1355,11 @@ wxString TangoModel::getString(int col_idx, int function)
             default:
 
             case tango::typeCharacter:
-                new_value = towx(m_iter->getString(m_columns[col_idx]->m_handle));
+                new_value = m_iter->getString(m_columns[col_idx]->m_handle);
                 break;
 
             case tango::typeWideCharacter:
-                new_value = towx(m_iter->getWideString(m_columns[col_idx]->m_handle));
+                new_value = m_iter->getWideString(m_columns[col_idx]->m_handle);
                 break;
         }
 
@@ -1865,7 +1865,7 @@ void TangoModel::refresh()
     for (i = 0; i < col_count; ++i)
     {
         m_columns[i] = new ModelColumn;
-        m_columns[i]->m_name = towx(structure->getColumnName(i));
+        m_columns[i]->m_name = structure->getColumnName(i);
         m_columns[i]->m_handle = m_iter->getHandle(towstr(m_columns[i]->m_name));
         spCol = m_iter->getInfo(m_columns[i]->m_handle);
         m_columns[i]->m_tango_type = spCol->getType();

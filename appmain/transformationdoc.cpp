@@ -201,12 +201,14 @@ static const std::wstring expr2regex(const std::wstring& expr)
 {
     // even though it is a little slower to convert to wxString and back,
     // there are far more string translation functions to help us
-    wxString e = towx(expr);
-    e.Replace(wxT("("), wxT("\\("), true);
-    e.Replace(wxT(")"), wxT("\\)"), true);
-    e.Replace(wxT("+"), wxT("\\+"), true);
-    e.Replace(wxT("="), wxT("\\="), true);
-    e.Replace(wxT("%s"), wxT("([^,\"()]+)"), true);
+    wxString e = expr;
+
+    e.Replace("(", "\\(", true);
+    e.Replace(")", "\\)", true);
+    e.Replace("+", "\\+", true);
+    e.Replace("=", "\\=", true);
+    e.Replace("%s", "([^,\"()]+)", true);
+
     return towstr(e);
 }
     
@@ -679,7 +681,7 @@ void TransformationDoc::setInputStructure(tango::IStructurePtr structure)
         tango::IColumnInfoPtr col = structure->getColumnInfoByIdx(i);
         if (col)
         {
-            field.input_name = towx(col->getName());
+            field.input_name = col->getName();
             field.input_type = col->getType();
             field.input_width = col->getWidth();
             field.input_scale = col->getScale();
@@ -840,16 +842,16 @@ void TransformationDoc::insertRowFromColumnInfo(int row,
         row = m_grid->getRowCount();
         
     TransformField* f = new TransformField;
-    f->input_name = towx(colinfo->getName());
+    f->input_name = colinfo->getName();
     f->input_type = tango::typeCharacter;
     f->input_width = colinfo->getWidth();
     f->input_scale = colinfo->getScale();
     f->input_offset = colinfo->getOffset();
-    f->output_name = makeProper(towx(colinfo->getName()));
+    f->output_name = makeProper(colinfo->getName());
     f->output_type = colinfo->getType();
     f->output_width = colinfo->getWidth();
     f->output_scale = colinfo->getScale();
-    f->output_expression = towx(colinfo->getExpression());
+    f->output_expression = colinfo->getExpression();
     f->dynamic = colinfo->getCalculated() ? true : false;
     f->original = true;
     
@@ -870,7 +872,7 @@ void TransformationDoc::insertRowFromColumnInfo(int row,
     
     wxString source_name;
     int format_comboidx;
-    bool res = getInfoFromDestinationExpression(towx(colinfo->getExpression()),
+    bool res = getInfoFromDestinationExpression(colinfo->getExpression(),
                                                 colinfo->getType(),
                                                 &source_name,
                                                 &format_comboidx);
@@ -889,7 +891,7 @@ void TransformationDoc::insertRowFromColumnInfo(int row,
         
         // only set the expression cell's text if the column info's
         // expression was not a source name
-        wxString wx_expr = towx(colinfo->getExpression());
+        wxString wx_expr = colinfo->getExpression();
         if (wx_expr.CmpNoCase(m_grid->getCellString(row, colSourceName)) != 0)
             m_grid->setCellString(row, colFieldFormula, wx_expr);
     }
@@ -1122,7 +1124,7 @@ wxString TransformationDoc::createDestinationExpression(int row)
     int tango_type = choice2tango(m_grid->getCellComboSel(row, colFieldType));
     int format_comboidx = m_grid->getCellComboSel(row, colFieldFormula);
     wxString source_name = m_grid->getCellString(row, colSourceName);
-    wxString quoted_source_name = towx(tango::quoteIdentifier(g_app->getDatabase(), towstr(source_name)));
+    wxString quoted_source_name = tango::quoteIdentifier(g_app->getDatabase(), towstr(source_name));
     
     // translate from the combobox index and tango type
     // to the expression format index
@@ -1140,7 +1142,7 @@ wxString TransformationDoc::createDestinationExpression(int row)
     {
         if (expr_lookup_arr[i].format == expr_format)
         {
-            retval = towx(expr_lookup_arr[i].expr);
+            retval = expr_lookup_arr[i].expr;
             retval.Replace(wxT("%s"), quoted_source_name, true);
             return retval;
         }
@@ -1194,7 +1196,7 @@ bool TransformationDoc::getInfoFromDestinationExpression(
             
             // fill out the source name
             if (name_match.isValid())
-                *source_name = towx(name_match.str());
+                *source_name = name_match.str();
             source_name->Trim(true);
             source_name->Trim(false);
             

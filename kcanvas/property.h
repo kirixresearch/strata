@@ -39,6 +39,7 @@ public:
     virtual ~PropertyValue();
 
     PropertyValue(const PropertyValue& c);
+    PropertyValue(const std::wstring& data);
     PropertyValue(const wxString& data);
     PropertyValue(const Color& data);
     PropertyValue(int data);

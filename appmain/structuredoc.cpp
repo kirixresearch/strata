@@ -99,7 +99,7 @@ void StructureDoc::createModifyJobInstructions(kl::JsonNode& params,
     {
         col = m_structure->getColumnInfoByIdx(i);
 
-        wxString old_name = towx(col->getName());
+        wxString old_name = col->getName();
         bool found = false;
         
         // try to find the old field name in the grid's row data
@@ -415,7 +415,7 @@ bool StructureDoc::doSave()
         if (table_doc->getCaption().Length() == 0)
         {
             // update the caption manually
-            wxString caption = towx(kl::afterLast(m_path, '/'));
+            wxString caption = kl::afterLast(m_path, '/');
             table_doc->setCaption(caption, wxEmptyString);
         }
 
@@ -746,7 +746,7 @@ void StructureDoc::getColumnListItems(std::vector<ColumnListItem>& items)
         tango::IColumnInfoPtr colinfo = m_structure->getColumnInfoByIdx(i);
      
         ColumnListItem item;
-        item.text = makeProperIfNecessary(towx(colinfo->getName()));
+        item.text = makeProperIfNecessary(colinfo->getName());
         if (colinfo->getCalculated())
         {
             item.bitmap = GETBMP(gf_lightning_16);
@@ -784,11 +784,11 @@ void StructureDoc::onColumnListDblClicked(const std::vector<wxString>& items)
             continue;
         
         insertRow(row, colinfo->getCalculated());
-        m_grid->setCellString(row, colFieldName, towx(colinfo->getName()));
+        m_grid->setCellString(row, colFieldName, colinfo->getName());
         m_grid->setCellComboSel(row, colFieldType, tango2choice(colinfo->getType()));
         m_grid->setCellInteger(row, colFieldWidth, colinfo->getWidth());
         m_grid->setCellInteger(row, colFieldScale, colinfo->getScale());
-        m_grid->setCellString(row, colFieldFormula, towx(colinfo->getExpression()));
+        m_grid->setCellString(row, colFieldFormula, colinfo->getExpression());
         updateRowCellProps(row);
         row++;
     }
@@ -1122,7 +1122,7 @@ void StructureDoc::updateCaption()
     }
      else
     {
-        caption = towx(kl::afterLast(m_path, '/'));
+        caption = kl::afterLast(m_path, '/');
         caption.Append(isChanged() ? wxT("*") : wxT(""));
     }
 
@@ -1469,30 +1469,25 @@ void StructureDoc::populateGridFromStructure()
         col = m_structure->getColumnInfoByIdx(i);
 
         StructureField* f = new StructureField;
-        f->name = towx(col->getName());
+        f->name = col->getName();
         f->type = col->getType();
         f->width = col->getWidth();
         f->scale = col->getScale();
         f->dynamic = col->getCalculated() ? true : false;
-        f->expr = towx(col->getExpression());
+        f->expr = col->getExpression();
         f->original_dynamic = col->getCalculated() ? true : false;
         f->original = true;
         f->pos = i;
 
         m_grid->insertRow(i);
         m_grid->setRowData(i, (long)f);
-        m_grid->setCellBitmap(i, colRowNumber,
-                         col->getCalculated() ? GETBMP(gf_lightning_16)
-                                              : GETBMP(xpm_blank_16));
-        m_grid->setCellString(i, colFieldName,
-                         towx(col->getName()));
-        m_grid->setCellComboSel(i, colFieldType,
-                         tango2choice(col->getType()));
-        m_grid->setCellInteger(i, colFieldWidth, col->getWidth());
-        m_grid->setCellInteger(i, colFieldScale, col->getScale());
-        m_grid->setCellString(i, colFieldFormula,
-                         towx(col->getExpression()));
-        m_grid->setCellBitmap(i, colFieldFormula, GETBMP(xpm_blank_16));
+        m_grid->setCellBitmap(i,   colRowNumber,    col->getCalculated() ? GETBMP(gf_lightning_16) : GETBMP(xpm_blank_16));
+        m_grid->setCellString(i,   colFieldName,    col->getName());
+        m_grid->setCellComboSel(i, colFieldType,    tango2choice(col->getType()));
+        m_grid->setCellInteger(i,  colFieldWidth,   col->getWidth());
+        m_grid->setCellInteger(i,  colFieldScale,   col->getScale());
+        m_grid->setCellString(i,   colFieldFormula, col->getExpression());
+        m_grid->setCellBitmap(i,   colFieldFormula, GETBMP(xpm_blank_16));
 
         updateRowCellProps(i);
     }
@@ -1689,7 +1684,7 @@ void StructureDoc::onFrameEvent(FrameworkEvent& evt)
                     if (doc->getCaption().Length() == 0)
                     {
                         // update the caption manually
-                        wxString caption = towx(kl::afterLast(m_path, '/'));
+                        wxString caption = kl::afterLast(m_path, '/');
                         doc->setCaption(caption, wxEmptyString);
                     }
                     
@@ -2259,11 +2254,11 @@ void StructureDoc::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
                     continue;
                 
                 insertRow(drop_row, colinfo->getCalculated());
-                m_grid->setCellString(drop_row, colFieldName, towx(colinfo->getName()));
+                m_grid->setCellString(drop_row, colFieldName, colinfo->getName());
                 m_grid->setCellComboSel(drop_row, colFieldType, tango2choice(colinfo->getType()));
                 m_grid->setCellInteger(drop_row, colFieldWidth, colinfo->getWidth());
                 m_grid->setCellInteger(drop_row, colFieldScale, colinfo->getScale());
-                m_grid->setCellString(drop_row, colFieldFormula, towx(colinfo->getExpression()));
+                m_grid->setCellString(drop_row, colFieldFormula, colinfo->getExpression());
                 updateRowCellProps(drop_row);
                 drop_row++;
             }

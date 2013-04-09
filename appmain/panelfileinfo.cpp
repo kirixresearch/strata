@@ -169,7 +169,7 @@ void MultiFileInfoPanel::addFile(const wxString& path)
                     wxString new_path = path;
                     if (new_path.Length() == 0 || new_path.Last() != wxT('/'))
                         new_path += wxT("/");
-                    new_path += towx(files->getItem(i)->getName());
+                    new_path += files->getItem(i)->getName();
 
                     addFile(new_path);
                 }

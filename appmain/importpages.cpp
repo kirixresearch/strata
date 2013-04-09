@@ -69,8 +69,8 @@ static void getAllSets(tango::IDatabasePtr db_ptr,
         if (item_type == tango::filetypeFolder)
         {
             wxString folder_path = path;
-            folder_path += towx(info->getName());
-            folder_path += wxT("/");
+            folder_path += info->getName();
+            folder_path += "/";
 
             // recursively traverse this folder
             getAllSets(db_ptr, folder_path, retval);
@@ -79,10 +79,10 @@ static void getAllSets(tango::IDatabasePtr db_ptr,
         {
             wxString name = path;
             
-            if (name.Length() == 0 || name.Last() != wxT('/'))
+            if (name.length() == 0 || name.Last() != '/')
                 name += wxT("/");
                 
-            name += towx(info->getName());
+            name += info->getName();
 
             retval.push_back(name);
         }
@@ -414,11 +414,11 @@ void ImportTableSelectionPage::onPageChanged()
         for (int i = 0; i < stream_count; ++i)
         {
             // don't show hidden stream names
-            wxString stream_name = towx(stream_enum->getStreamName(i));
+            wxString stream_name = stream_enum->getStreamName(i);
             if (*(stream_name.c_str()) == '.')
                 continue;
             
-            tablenames.push_back(towx(stream_enum->getStreamName(i)));
+            tablenames.push_back(stream_enum->getStreamName(i));
         }
 
         delete stream_enum;

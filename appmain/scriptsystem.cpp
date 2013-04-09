@@ -490,5 +490,5 @@ void System::execute(kscript::ExprEnv* env, void* param, kscript::Value* retval)
         return;
     }
         
-    retval->setInteger(::wxExecute(towx(env->getParam(0)->getString())));
+    retval->setInteger(::wxExecute(env->getParam(0)->getString()));
 }

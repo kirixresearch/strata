@@ -625,11 +625,11 @@ void RelationshipPanel::loadRelationships()
         std::vector<wxString> left_parts;
         std::vector<wxString> right_parts;
 
-        wxStringTokenizer left(towx(rel->getLeftExpression()), wxT(","));
+        wxStringTokenizer left(rel->getLeftExpression(), ",");
         while (left.HasMoreTokens())
             left_parts.push_back(left.GetNextToken());
 
-        wxStringTokenizer right(towx(rel->getRightExpression()), wxT(","));
+        wxStringTokenizer right(rel->getRightExpression(), ",");
         while (right.HasMoreTokens())
             right_parts.push_back(right.GetNextToken());
 
@@ -660,14 +660,14 @@ void RelationshipPanel::loadRelationships()
             {
                 RelationLine* line;
                 
-                line = m_diagram->addLine(towx(rel->getLeftSet()),
+                line = m_diagram->addLine(rel->getLeftSet(),
                                           left_parts[j],
-                                          towx(rel->getRightSet()),
+                                          rel->getRightSet(),
                                           right_parts[j]);
                 if (line)
                 {
                     line->valid = valid;
-                    line->tag = towx(rel->getTag());
+                    line->tag = rel->getTag();
                 }
             }
         }

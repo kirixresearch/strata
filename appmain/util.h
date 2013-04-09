@@ -29,83 +29,6 @@
 
 // -- conversion functions ----------------------------------------------------
 
-inline wxString towx(const char* s)
-{
-#ifdef _UNICODE
-    return wxString::From8BitData(s);
-#else
-    return s;
-#endif
-}
-
-inline wxString towx(const wchar_t* s)
-{
-#ifdef _UNICODE
-    return s;
-#else
-    wxString result;
-    int len = wcslen(s);
-    result.Alloc(len);
-    for (int i = 0; i < len; ++i)
-    {
-        if (s[i] > 255)
-            result += '?';
-             else
-            result += ((char)s[i]);
-    }
-    return result;
-#endif
-}
-
-inline wxString towx(const std::string& s)
-{
-#ifdef _UNICODE
-    return wxString::From8BitData(s.c_str());
-#else
-    return s.c_str();
-#endif
-}
-
-inline wxString towx(const std::wstring& s)
-{
-#ifdef _UNICODE
-    return s.c_str();
-#else
-    wxString result;
-    int len = s.length();
-    result.Alloc(len);
-    for (int i = 0; i < len; ++i)
-    {
-        if (s[i] > 255)
-            result += '?';
-             else
-            result += ((char)s[i]);
-    }
-    return result;
-#endif
-}
-
-inline wxString towx(char c)
-{
-    wxChar s[2];
-    s[0] = (unsigned char)c;
-    s[1] = 0;
-    return s;
-}
-
-inline wxString towx(wchar_t c)
-{
-    wxChar s[2];
-    s[0] = c;
-    s[1] = 0;
-    return s;
-}
-
-inline const wxChar* wxcstr(const wxString& s)
-{
-    return (const wxChar*)s.c_str();
-}
-
 #ifndef _DEBUG
 
     inline std::wstring towstr(const wxString& s)
@@ -179,6 +102,11 @@ inline std::string tostr(const std::wstring& s)
     return ret;
 }
 
+inline const wxChar* wxcstr(const wxString& s)
+{
+    return (const wxChar*)s.c_str();
+}
+
 inline int color2int(const wxColor& color)
 {
     if (color.Ok())
@@ -209,7 +137,7 @@ inline wxColor string2color(const std::wstring& str)
     if (str == L"null" || str.length() != 7)
         return wxNullColour;
 
-    return wxColor(towx(str));
+    return wxColor(str);
 }
 
 

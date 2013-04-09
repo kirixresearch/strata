@@ -572,7 +572,7 @@ wxString QueryTemplate::stripAllAliases(const wxString& input)
         kl::replaceStrNoCase(result, alias_dot, L"");
     }
 
-    return towx(result);
+    return result;
 }
 
 wxString QueryTemplate::buildJoinString(QueryBuilderSourceTable& tbl)
@@ -1382,7 +1382,7 @@ bool QueryTemplate::loadJsonFromNode(const wxString& path)
     kl::JsonNode output_path_node = data_node["output_path"];
     if (!output_path_node.isOk())
         return false;
-    m_output_path = towx(output_path_node.getString());
+    m_output_path = output_path_node.getString();
 
     kl::JsonNode distinct_node = data_node["distinct"];
     if (!distinct_node.isOk())
@@ -1406,12 +1406,12 @@ bool QueryTemplate::loadJsonFromNode(const wxString& path)
         kl::JsonNode alias_node = table_node["alias"];
         if (!alias_node.isOk())
             return false;
-        tbl.alias = towx(alias_node.getString());
+        tbl.alias = alias_node.getString();
 
         kl::JsonNode path_node = table_node["path"];
         if (!path_node.isOk())
             return false;
-        tbl.path = towx(path_node.getString());
+        tbl.path = path_node.getString();
 
         kl::JsonNode x_node = table_node["x"];
         if (!x_node.isOk())
@@ -1459,16 +1459,16 @@ bool QueryTemplate::loadJsonFromNode(const wxString& path)
             kl::JsonNode join_type_node = join_node["type"];
             if (!join_type_node.isOk())
                 return false;
-            wxString join_type = towx(join_type_node.getString());
+            wxString join_type = join_type_node.getString();
 
             // join type
-            if (!join_type.CmpNoCase(wxT("inner")))
+            if (!join_type.CmpNoCase("inner"))
                 join.join_type = QueryJoinInner;
-             else if (!join_type.CmpNoCase(wxT("left_outer")))
+             else if (!join_type.CmpNoCase("left_outer"))
                 join.join_type = QueryJoinLeftOuter;
-             else if (!join_type.CmpNoCase(wxT("right_outer")))
+             else if (!join_type.CmpNoCase("right_outer"))
                 join.join_type = QueryJoinRightOuter;
-             else if (!join_type.CmpNoCase(wxT("full_outer")))
+             else if (!join_type.CmpNoCase("full_outer"))
                 join.join_type = QueryJoinFullOuter;
              else
                 join.join_type = QueryJoinNone;
@@ -1477,19 +1477,19 @@ bool QueryTemplate::loadJsonFromNode(const wxString& path)
             kl::JsonNode right_path_node = join_node["right_path"];
             if (!right_path_node.isOk())
                 return false;
-            join.right_path = towx(right_path_node.getString());
+            join.right_path = right_path_node.getString();
 
             // right columns
             kl::JsonNode right_columns_node = join_node["right_columns"];
             if (!right_columns_node.isOk())
                 return false;
-            join.right_columns = towx(right_columns_node.getString());
+            join.right_columns = right_columns_node.getString();
 
             // left columns
             kl::JsonNode left_columns_node = join_node["left_columns"];
             if (!left_columns_node.isOk())
                 return false;
-            join.left_columns = towx(left_columns_node.getString());
+            join.left_columns = left_columns_node.getString();
 
             tbl.joins.push_back(join);
         }
@@ -1519,40 +1519,40 @@ bool QueryTemplate::loadJsonFromNode(const wxString& path)
         kl::JsonNode input_expr_node = param_node["input_expr"];
         if (!input_expr_node.isOk())
             return false;
-        p.input_expr = towx(input_expr_node.getString());
+        p.input_expr = input_expr_node.getString();
 
         kl::JsonNode output_field_node = param_node["output_field"];
         if (!output_field_node.isOk())
             return false;
-        p.output_field = towx(output_field_node.getString());
+        p.output_field = output_field_node.getString();
 
         kl::JsonNode group_func_node = param_node["group_func"];
         if (!group_func_node.isOk())
             return false;
 
-        wxString group_func = towx(group_func_node.getString());
+        wxString group_func = group_func_node.getString();
 
-        if (!group_func.CmpNoCase(wxT("group_by")))
+        if (!group_func.CmpNoCase("group_by"))
             p.group_func = QueryGroupFunction_GroupBy;
-         else if (!group_func.CmpNoCase(wxT("first")))
+         else if (!group_func.CmpNoCase("first"))
             p.group_func = QueryGroupFunction_GroupBy;
-         else if (!group_func.CmpNoCase(wxT("last")))
+         else if (!group_func.CmpNoCase("last"))
             p.group_func = QueryGroupFunction_GroupBy;
-         else if (!group_func.CmpNoCase(wxT("min")))
+         else if (!group_func.CmpNoCase("min"))
             p.group_func = QueryGroupFunction_Min;
-         else if (!group_func.CmpNoCase(wxT("max")))
+         else if (!group_func.CmpNoCase("max"))
             p.group_func = QueryGroupFunction_Max;
-         else if (!group_func.CmpNoCase(wxT("sum")))
+         else if (!group_func.CmpNoCase("sum"))
             p.group_func = QueryGroupFunction_Sum;
-         else if (!group_func.CmpNoCase(wxT("avg")))
+         else if (!group_func.CmpNoCase("avg"))
             p.group_func = QueryGroupFunction_Avg;
-         else if (!group_func.CmpNoCase(wxT("count")))
+         else if (!group_func.CmpNoCase("count"))
             p.group_func = QueryGroupFunction_Count;
-         else if (!group_func.CmpNoCase(wxT("stddev")))
+         else if (!group_func.CmpNoCase("stddev"))
             p.group_func = QueryGroupFunction_Stddev;
-         else if (!group_func.CmpNoCase(wxT("variance")))
+         else if (!group_func.CmpNoCase("variance"))
             p.group_func = QueryGroupFunction_Variance;
-         else if (!group_func.CmpNoCase(wxT("group_id")))
+         else if (!group_func.CmpNoCase("group_id"))
             p.group_func = QueryGroupFunction_GroupID;
          else
             p.group_func = QueryGroupFunction_None;
@@ -1570,7 +1570,7 @@ bool QueryTemplate::loadJsonFromNode(const wxString& path)
             kl::JsonNode condition_node = param_node[buf];
             if (!condition_node.isOk())
                 break;
-            p.conditions.push_back(towx(condition_node.getString()));
+            p.conditions.push_back(condition_node.getString());
         }
 
         m_params.push_back(p);
@@ -1581,13 +1581,13 @@ bool QueryTemplate::loadJsonFromNode(const wxString& path)
 
 wxString QueryTemplate::quoteTable(const wxString& _str)
 {
-    wxString str = _str;
+    std::wstring str = towstr(_str);
 
     tango::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return str;
 
-    str = towx(tango::quoteIdentifier(g_app->getDatabase(), towstr(str)));
+    str = tango::quoteIdentifier(db, str);
     return str;
 }
 
@@ -1602,15 +1602,15 @@ wxString QueryTemplate::quoteAlias(const wxString& _str)
 
     if (str.Freq('.') == 0)
     {
-        str = towx(tango::quoteIdentifier(g_app->getDatabase(), towstr(str)));
+        str = tango::quoteIdentifier(g_app->getDatabase(), towstr(str));
     }
      else
     {
         wxString alias = str.BeforeLast('.');
         wxString field = str.AfterLast('.');
 
-        alias = towx(tango::quoteIdentifier(db, towstr(alias)));
-        field = towx(tango::quoteIdentifier(db, towstr(field)));
+        alias = tango::quoteIdentifier(db, towstr(alias));
+        field = tango::quoteIdentifier(db, towstr(field));
         str = alias + wxT(".") + field;
     }
 
@@ -1641,7 +1641,7 @@ wxString QueryTemplate::quoteField(const wxString& _str)
         for (int idx = 0; idx < col_count; ++idx)
         {
             wxString table_name = it->alias;
-            wxString col_name = towx(structure->getColumnName(idx));
+            wxString col_name = structure->getColumnName(idx);
             
             table_name.MakeUpper();
             col_name.MakeUpper();
@@ -1662,15 +1662,15 @@ wxString QueryTemplate::quoteField(const wxString& _str)
 
     if (str.Freq('.') == 0)
     {
-        str = towx(tango::quoteIdentifier(g_app->getDatabase(), towstr(str)));
+        str = tango::quoteIdentifier(g_app->getDatabase(), towstr(str));
     }
      else
     {
         wxString alias = str.BeforeLast('.');
         wxString field = str.AfterLast('.');
 
-        alias = towx(tango::quoteIdentifier(db, towstr(alias)));
-        field = towx(tango::quoteIdentifier(db, towstr(field)));
+        alias = tango::quoteIdentifier(db, towstr(alias));
+        field = tango::quoteIdentifier(db, towstr(field));
         str = alias + wxT(".") + field;
     }
 

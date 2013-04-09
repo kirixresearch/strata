@@ -294,12 +294,12 @@ public:
 
     void setPath(const std::wstring& path)
     {
-        m_config->SetPath(towx(path));
+        m_config->SetPath(path);
     }
 
     bool exists(const std::wstring& path)
     {
-        return m_config->Exists(towx(path));
+        return m_config->Exists(path);
     }
 
     bool write(const std::wstring& path, const std::wstring& value)
@@ -315,14 +315,14 @@ public:
     bool read(const std::wstring& path, std::wstring& value, const std::wstring& def)
     {
         wxString wxval;
-        bool res = m_config->Read(towx(path), &wxval, towx(def));
+        bool res = m_config->Read(path, &wxval, def);
         value = towstr(wxval);
         return res;
     }
 
     bool read(const std::wstring& path, long* value, long def)
     {
-        return m_config->Read(towx(path), value, def);
+        return m_config->Read(path, value, def);
     }
 
     std::vector<std::wstring> getGroups(const std::wstring& path)
@@ -344,7 +344,7 @@ public:
 
     bool deleteGroup(const std::wstring& path)
     {
-        return m_config->DeleteGroup(towx(path));
+        return m_config->DeleteGroup(path);
     }
 
 private:

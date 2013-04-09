@@ -565,7 +565,7 @@ void TextDoc::getColumnListItems(std::vector<ColumnListItem>& list)
             continue;
         
         ColumnListItem item;
-        item.text = makeProperIfNecessary(towx(colinfo->getName()));
+        item.text = makeProperIfNecessary(colinfo->getName());
         item.bitmap = GETBMP(gf_field_16);
         item.active = true;
         list.push_back(item);
@@ -659,7 +659,7 @@ bool TextDoc::initFixedLengthView()
         
         m_textview->addColumn(colinfo->getOffset(),
                               colinfo->getEncoding(),
-                              towx(colinfo->getName()));
+                              colinfo->getName());
     }
     
     m_loading_definition = false;
@@ -813,8 +813,8 @@ bool TextDoc::initTextDelimitedView()
 
     // get the text-delimited metadata from the set
     bool firstrowfieldnames = tset->isFirstRowColumnNames();
-    wxString delimiters = towx(tset->getDelimiters());
-    wxString textqualifier = towx(tset->getTextQualifier());
+    wxString delimiters = tset->getDelimiters();
+    wxString textqualifier = tset->getTextQualifier();
     
     // set the field delimiter dropdown
     setDelimitersComboBoxSelection(m_delimiters_combobox,
@@ -1333,7 +1333,7 @@ void TextDoc::onTextViewColumnDeleted(TextViewColumn col)
         {
             colinfo = s->getColumnInfoByIdx(i);
             
-            if (towx(colinfo->getExpression()) == col.name)
+            if (col.name == colinfo->getExpression())
                 s->deleteColumn(colinfo->getName());
         }
         fset->modifyDestinationStructure(s, NULL);
@@ -2001,7 +2001,7 @@ void TextDoc::onTextDelimitedFirstRowFieldNamesChecked(wxCommandEvent& evt)
         for (i = 0; i < col_count; ++i)
         {
             colinfo = s->getColumnInfoByIdx(i);
-            name_pair.first = towx(colinfo->getName());
+            name_pair.first = colinfo->getName();
             name_changes.push_back(name_pair);
         }
         
@@ -2015,7 +2015,7 @@ void TextDoc::onTextDelimitedFirstRowFieldNamesChecked(wxCommandEvent& evt)
         for (i = 0; i < col_count; ++i)
         {
             colinfo = s->getColumnInfoByIdx(i);
-            name_changes[i].second = towx(colinfo->getName());
+            name_changes[i].second = colinfo->getName();
         }
     }
 

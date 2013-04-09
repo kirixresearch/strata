@@ -15,12 +15,12 @@
 #include "scriptfile.h"
 #include "scriptmemory.h"
 #include "../kscript/jsdate.h"
-#include <wx/dir.h>
+
 #include <wx/stdpaths.h>
 #include <kl/portable.h>
 #include <kl/utf8.h>
 #include <limits>
-
+#include <wx/dir.h>
 
 // (CLASS) Directory
 // Category: IO
@@ -62,7 +62,7 @@ void Directory::exists(kscript::ExprEnv* env, void*, kscript::Value* retval)
      else
     {
         std::wstring path = env->getParam(0)->getString();
-        retval->setBoolean(wxDir::Exists(towx(path)));
+        retval->setBoolean(wxDir::Exists(path));
     }
 }
 
@@ -88,7 +88,7 @@ void Directory::createDirectory(kscript::ExprEnv* env, void*, kscript::Value* re
     {
         wxLogNull log;
         std::wstring path = env->getParam(0)->getString();
-        retval->setBoolean(::wxMkdir(towx(path)));
+        retval->setBoolean(::wxMkdir(path));
     }
 }
 
@@ -129,7 +129,7 @@ void Directory::zdelete(kscript::ExprEnv* env, void*, kscript::Value* retval)
      else
     {
         std::wstring path = env->getParam(0)->getString();
-        retval->setBoolean(::wxRmdir(towx(path)));
+        retval->setBoolean(::wxRmdir(path));
     }
     
 }
@@ -161,7 +161,7 @@ void Directory::getAll(kscript::ExprEnv* env, void*, kscript::Value* retval)
     if (!xf_get_directory_exist(dir_path))
         return;
 
-    wxDir dir(towx(dir_path));
+    wxDir dir(dir_path);
     wxString filename;
     size_t i = 0;
     
@@ -205,18 +205,18 @@ void Directory::getFiles(kscript::ExprEnv* env, void*, kscript::Value* retval)
     if (!xf_get_directory_exist(dir_path))
         return;
 
-    wxDir dir(towx(dir_path));
+    wxDir d(dir_path);
     wxString filename;
     size_t i = 0;
     
-    bool ok = dir.GetFirst(&filename, wxEmptyString, wxDIR_FILES | wxDIR_HIDDEN);
+    bool ok = d.GetFirst(&filename, wxEmptyString, wxDIR_FILES | wxDIR_HIDDEN);
     while (ok)
     {
         kscript::Value val;
         val.setString(towstr(filename));
         retval->appendMember(&val);
 
-        ok = dir.GetNext(&filename);
+        ok = d.GetNext(&filename);
     }
 }
 
@@ -249,18 +249,18 @@ void Directory::getDirectories(kscript::ExprEnv* env, void*, kscript::Value* ret
     if (!xf_get_directory_exist(dir_path))
         return;
 
-    wxDir dir(towx(dir_path));
+    wxDir d(dir_path);
     wxString filename;
     size_t i = 0;
     
-    bool ok = dir.GetFirst(&filename, wxEmptyString, wxDIR_DIRS | wxDIR_HIDDEN);
+    bool ok = d.GetFirst(&filename, wxEmptyString, wxDIR_DIRS | wxDIR_HIDDEN);
     while (ok)
     {
         kscript::Value val;
         val.setString(towstr(filename));
         retval->appendMember(&val);
 
-        ok = dir.GetNext(&filename);
+        ok = d.GetNext(&filename);
     }
 }
 
@@ -1731,7 +1731,7 @@ void Log::addLogLine(int level, const std::wstring& str)
     
     if (m_console_output)
     {
-        g_app->getAppController()->printConsoleText(towx(line));
+        g_app->getAppController()->printConsoleText(line);
     }
 }
 

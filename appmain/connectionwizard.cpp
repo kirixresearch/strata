@@ -455,20 +455,20 @@ void ConnectionWizard::setConnectionString(const wxString& str)
             ci.type = dbtypeMySql;
     }
     
-    ci.server = towx(cstr->getLowerValue(L"Host"));
+    ci.server = cstr->getLowerValue(L"Host");
     ci.port = 0;
     
-    wxString port_str = towx(cstr->getLowerValue(L"Port"));
+    wxString port_str = cstr->getLowerValue(L"Port");
     if (port_str.Length() > 0)
         ci.port = wxAtoi(port_str);
     
     if (xdfs)
-        ci.path = towx(cstr->getValue(L"Database"));
+        ci.path = cstr->getValue(L"Database");
          else
-        ci.database = towx(cstr->getValue(L"Database"));
+        ci.database = cstr->getValue(L"Database");
         
-    ci.username = towx(cstr->getValue(L"User ID"));
-    ci.password = towx(cstr->getValue(L"Password"));
+    ci.username = cstr->getValue(L"User ID");
+    ci.password = cstr->getValue(L"Password");
     
     m_ci = ci;
 }

@@ -525,7 +525,8 @@ static wxString getDbDriver(tango::IDatabasePtr& db)
         return wxEmptyString;
     
     xcm::class_info* class_info = xcm::get_class_info(db.p);
-    return towx(class_info->get_name()).BeforeFirst('.');
+    wxString class_name = class_info->get_name();
+    return class_name.BeforeFirst('.');
 }
 
 bool ExportPkgJob::writeSetStream(tango::IDatabasePtr& db,

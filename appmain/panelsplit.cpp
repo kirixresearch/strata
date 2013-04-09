@@ -654,9 +654,9 @@ void SplitPanel::populate()
                                                     getSetRowWidth(),
                                                     split_row_count) / 1048576.0;
                 
-                wxString format = wxT("%");
-                format += towx(wxLongLongFmtSpec);
-                format += wxT("u");
+                wxString format = "%";
+                format += wxLongLongFmtSpec;
+                format += "u";
                 
                 m_rowcount_textctrl->ChangeValue(wxString::Format((const wxChar*)format.c_str(), split_row_count));
                 m_tablesize_textctrl->ChangeValue(wxString::Format(wxT("%.02f"), split_table_size));
@@ -691,9 +691,9 @@ void SplitPanel::populate()
                 
                 split_table_count = (int)(ceil((double)table_file_size/(double)split_table_size));
                 
-                wxString format = wxT("%");
-                format += towx(wxLongLongFmtSpec);
-                format += wxT("u");
+                wxString format = "%";
+                format += wxLongLongFmtSpec;
+                format += "u";
                 
                 m_rowcount_textctrl->ChangeValue(wxString::Format((const wxChar*)format.c_str(), split_row_count));
                 m_tablecount_textctrl->ChangeValue(wxString::Format(wxT("%d"), split_table_count));
@@ -745,9 +745,9 @@ void SplitPanel::onSourceTableTextChanged(wxCommandEvent& evt)
     }
      else
     {
-        wxString format = wxT("%");
-        format += towx(wxLongLongFmtSpec);
-        format += wxT("u");
+        wxString format = "%";
+        format += wxLongLongFmtSpec;
+        format += "u";
                 
         wxString val = wxString::Format(format, m_finfo->getRowCount());
         m_rowcount_textctrl->SetValue(val);

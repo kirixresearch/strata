@@ -669,7 +669,7 @@ void BookmarkFolder::populate()
 
 
             BookmarkItem* item = new BookmarkItem;
-            item->setLabel(towx(name));
+            item->setLabel(name);
             item->setBitmap(bmp);
             item->setPath(bookmark_path);
                 

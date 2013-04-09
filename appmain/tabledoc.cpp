@@ -204,12 +204,12 @@ static wxString buildSelectedColumnExpression(kcl::Grid* grid, bool descending =
 
             // add the column
             std::wstring col_name = towstr(model->getColumnInfo(model_idx)->getName());
-            expr += towx(tango::quoteIdentifierIfNecessary(g_app->getDatabase(), col_name));
+            expr += tango::quoteIdentifierIfNecessary(g_app->getDatabase(), col_name);
 
             // if the descending flag is set, add the
             // descending keyword
             if (descending)
-                expr += wxT(" DESC");
+                expr += " DESC";
         }
     }
 
@@ -1883,7 +1883,7 @@ void TableDoc::onReload(wxCommandEvent& evt)
             return;
         job_info->sigStateChanged().connect(this, &TableDoc::onReloadDownloadFinished);
             
-        m_reload_filename = towx(xf_get_temp_filename(L"feed", L"xml"));
+        m_reload_filename = xf_get_temp_filename(L"feed", L"xml");
 
         m_doing_reload = true;
         WebDoc::downloadFile(m_source_url, m_reload_filename, job_info);
@@ -2010,7 +2010,7 @@ void TableDoc::onShareUrlRequested(wxString& url)
 
     writeStreamTextFile(db, view_path, json, L"application/vnd.kx.view-link");
 
-    url = towx(dburl + view_path);
+    url = (dburl + view_path);
 }
 
 void TableDoc::onShareView(wxCommandEvent& evt)
@@ -2969,10 +2969,10 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
         if (!colinfo->getCalculated())
             continue;
 
-        if (text.CmpNoCase(towx(colinfo->getExpression())) == 0)
+        if (text.CmpNoCase(colinfo->getExpression()) == 0)
         {
             // we found an exact match
-            insertColumn(insert_pos, towx(colinfo->getName()));
+            insertColumn(insert_pos, colinfo->getName());
             return;
         }
     }
@@ -3003,7 +3003,7 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
         if (rel.isNull())
             continue;
 
-        if (0 != rel_tag.CmpNoCase(towx(rel->getTag())))
+        if (0 != rel_tag.CmpNoCase(rel->getTag()))
             continue;
 
         right_structure = db->describeTable(rel->getRightSet());
@@ -3140,7 +3140,7 @@ void TableDoc::onSortJobFinished(jobs::IJobPtr query_job)
     kl::JsonNode order_node = params_node["order"];
     if (order_node.isOk())
     {
-        m_sort_order = towx(getOrderExprFromJobParam(order_node));
+        m_sort_order = getOrderExprFromJobParam(order_node);
 
         // if we have a group break and the group break isn't a subset
         // of the new sort order, remove the group break
@@ -3196,7 +3196,7 @@ static void extractAlterJobInfo(kl::JsonNode params,
                                 std::vector<std::wstring>& to_delete)
 {
     if (params.childExists("input"))
-        input = towx(params["input"]);
+        input = params["input"].getString();
 
     if (!params.childExists("actions"))
         return;
@@ -3219,13 +3219,13 @@ static void extractAlterJobInfo(kl::JsonNode params,
             std::pair<wxString,wxString> p;
 
             if (it->childExists("column"))
-                p.first = towx(it->getChild("column"));
+                p.first = it->getChild("column").getString();
 
             if (it->childExists("params"))
             {
                 if (it->getChild("params").childExists("name"))
                 {
-                    p.second = towx(it->getChild("params").getChild("name"));
+                    p.second = it->getChild("params").getChild("name").getString();
                     to_rename.push_back(p);
                 }
             }
@@ -3236,7 +3236,7 @@ static void extractAlterJobInfo(kl::JsonNode params,
             std::pair<wxString,int> p;
 
             if (it->childExists("column"))
-                p.first = towx(it->getChild("column"));
+                p.first = it->getChild("column").getString();
 
             if (it->childExists("params"))
             {
@@ -3369,7 +3369,7 @@ static bool getMenuItemExpr(const wxString& field,
                             const wxString& value,
                             wxString& result)
 {
-    wxString lhs = towx(tango::quoteIdentifierIfNecessary(g_app->getDatabase(), towstr(field)));
+    wxString lhs = tango::quoteIdentifierIfNecessary(g_app->getDatabase(), towstr(field));
     wxString rhs = value;
 
     if (type == tango::typeBoolean)
@@ -3532,8 +3532,8 @@ static wxMenu* createIndexesMenu(tango::IIndexInfoEnumPtr indexes,
     for (i = 0; i < count; ++i)
     {
         tango::IIndexInfoPtr index = indexes->getItem(i);
-        wxString index_tag = towx(index->getTag());
-        wxString index_expr = towx(index->getExpression());
+        wxString index_tag = index->getTag();
+        wxString index_expr = index->getExpression();
         
         menu->AppendCheckItem(base_id, index_tag);
         
@@ -4046,7 +4046,7 @@ void TableDoc::onGridColumnRightClick(kcl::GridEvent& evt)
             // user clicked on one of the indexes;
             // set that index as the sort order
             tango::IIndexInfoPtr index = indexes->getItem(i-1);
-            setSortOrder(towx(index->getExpression()));
+            setSortOrder(index->getExpression());
         }
     }
      else if (command != 0)
@@ -4205,7 +4205,9 @@ void TableDoc::resetChildWindows()
     {
         rel = rel_enum->getItem(i);
 
-        site_name = m_path + wxT(";") + towx(rel->getTag());
+        site_name = m_path;
+        site_name += ";";
+        site_name += rel->getTag();
         site_name.MakeLower();
 
         site = g_app->getMainFrame()->lookupSite(site_name);
@@ -4268,36 +4270,36 @@ static wxString generateContextSyncMarkExpression(
         tango::objhandle_t lh = left_iter->getHandle(towstr(left_parts[idx]));
         idx++;
         if (!lh)
-            return wxT("");
+            return "";
         
         tango::objhandle_t rh = right_iter->getHandle(towstr(*it));
         if (!rh)
-            return wxT("");
+            return "";
         
-        part = towx(tango::quoteIdentifierIfNecessary(g_app->getDatabase(), towstr(*it)));
-        part += wxT("=");
+        part = tango::quoteIdentifierIfNecessary(g_app->getDatabase(), towstr(*it));
+        part += "=";
         
         tango::IColumnInfoPtr info = right_iter->getInfo(rh);
         if (info.isNull())
-            return wxT("");
+            return "";
             
         switch (info->getType())
         {
             case tango::typeCharacter:
             case tango::typeWideCharacter:
-                part += wxT("'");
-                part += doubleQuote(towx(left_iter->getWideString(lh)), '\'');
-                part += wxT("'");
+                part += "'";
+                part += doubleQuote(left_iter->getWideString(lh), '\'');
+                part += "'";
                 break;
             
             case tango::typeInteger:
-                part += wxString::Format(wxT("%d"), left_iter->getInteger(lh));
+                part += wxString::Format("%d", left_iter->getInteger(lh));
                 break;
                 
             case tango::typeNumeric:
             case tango::typeDouble:
-                value = wxString::Format(wxT("%.*f"), info->getScale(), left_iter->getDouble(lh));
-                value.Replace(wxT(","), wxT("."));
+                value = wxString::Format("%.*f", info->getScale(), left_iter->getDouble(lh));
+                value.Replace(",", ".");
                 part += value;
                 break;
                 
@@ -4370,7 +4372,9 @@ void TableDoc::updateChildWindows()
     {
         rel = rel_enum->getItem(i);
 
-        site_name = m_path + wxT(";") + towx(rel->getTag());
+        site_name = m_path;
+        site_name += ";";
+        site_name += rel->getTag();
         site_name.MakeLower();
 
 
@@ -4427,13 +4431,12 @@ void TableDoc::updateChildWindows()
                 tango::ISetPtr child_set = iter_r->getChildSet(rel);
                 if (child_set)
                 {
-                    table_doc->setBrowseSet(towx(child_set->getObjectPath()));
+                    table_doc->setBrowseSet(child_set->getObjectPath());
 
-                    wxString suffix;
-                    suffix = wxT(" ");
+                    wxString suffix = " ";
                     suffix += _("[Matching Records]");
 
-                    table_doc->setCaption(wxT(""), suffix);
+                    table_doc->setCaption("", suffix);
 
                     table_doc->updateChildWindows();
                     table_doc->setIsChildSet(true);
@@ -4445,8 +4448,8 @@ void TableDoc::updateChildWindows()
                 if (right_iter)
                 {
                     wxString expr = generateContextSyncMarkExpression(
-                                        towx(rel->getLeftExpression()),
-                                        towx(rel->getRightExpression()),
+                                        rel->getLeftExpression(),
+                                        rel->getRightExpression(),
                                         m_iter,
                                         right_iter);
                     
@@ -4614,7 +4617,7 @@ void TableDoc::onGridNeedTooltipText(kcl::GridEvent& event)
             return;
 
         event.SetString(wxString::Format(_("Name: %s, Type: %s, Width: %d, Decimals: %d"),
-                            makeProperIfNecessary(towx(colinfo->getName())).c_str(),
+                            makeProperIfNecessary(colinfo->getName()).c_str(),
                             getDbColumnTypeText(colinfo->getType()).c_str(),
                             colinfo->getWidth(),
                             colinfo->getScale()));
@@ -4776,13 +4779,13 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
         // split out primary key field names into an array
         std::vector<wxString> prikeys;
         
-        wxStringTokenizer t(towx(primary_key), wxT(","));
+        wxStringTokenizer t(primary_key, wxT(","));
         while (t.HasMoreTokens())
         {
             wxString s = t.GetNextToken();
             s.Trim();
-            s.Trim(FALSE);
-            prikeys.push_back(towx(tango::dequoteIdentifier(db, towstr(s))));
+            s.Trim(false);
+            prikeys.push_back(tango::dequoteIdentifier(db, towstr(s)));
         }
         
         std::vector<wxString>::iterator it;
@@ -4872,7 +4875,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
         return;
 
 
-    wxString quoted_col_name = towx(tango::quoteIdentifierIfNecessary(db, towstr(col_name)));
+    wxString quoted_col_name = tango::quoteIdentifierIfNecessary(db, towstr(col_name));
 
 
     // update_info is used by ICacheRowUpdate below, however only
@@ -5022,9 +5025,9 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
         return;
 
 
-    wxString cmd = wxT("UPDATE ");
-    cmd += towx(tango::quoteIdentifierIfNecessary(db, towstr(m_path)));
-    cmd += wxT(" SET ");
+    wxString cmd = "UPDATE ";
+    cmd += tango::quoteIdentifierIfNecessary(db, towstr(m_path));
+    cmd += " SET ";
     cmd += str;
     cmd += where_str;
             
@@ -5550,7 +5553,7 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
         colinfo = structure->getColumnInfoByIdx(i);
         
         bool in_view = false;
-        int model_idx = m_grid->getColumnModelIdxByName(towx(colinfo->getName()));
+        int model_idx = m_grid->getColumnModelIdxByName(colinfo->getName());
         if (model_idx >= 0 && m_grid->getColumnViewIdx(model_idx) != -1)
         {
             in_view = true;
@@ -5559,7 +5562,7 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
         ColumnListItem item;
 
         item.active = true;
-        item.text = makeProperIfNecessary(towx(colinfo->getName()));
+        item.text = makeProperIfNecessary(colinfo->getName());
 
         if (colinfo->getCalculated())
         {
@@ -5602,8 +5605,8 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
             colinfo = right_structure->getColumnInfoByIdx(i);
 
             s = wxString::Format(wxT("%s.%s"),
-                        makeProperIfNecessary(towx(rel->getTag())).c_str(),
-                        makeProperIfNecessary(towx(colinfo->getName())).c_str());
+                        makeProperIfNecessary(rel->getTag()).c_str(),
+                        makeProperIfNecessary(colinfo->getName()).c_str());
                 
             ColumnListItem item;
             item.text = s;
@@ -5794,7 +5797,7 @@ void TableDoc::deleteSelectedColumns()
 
         if (m_grid->isColumnSelected(i))
         {
-            cols.insert(towx(colinfo->getName()));
+            cols.insert(colinfo->getName());
 
             if (!colinfo->getCalculated())
                 total_phys_fields_to_delete++;
@@ -5977,8 +5980,8 @@ wxString TableDoc::getDbDriver()
         return wxT("");
         
     xcm::class_info* class_info = xcm::get_class_info(m_set.p);
-    
-    return towx(class_info->get_name()).BeforeFirst('.');
+    wxString class_name = class_info->get_name();
+    return class_name.BeforeFirst('.');
     */
 }
 
@@ -6355,7 +6358,7 @@ wxString TableDoc::getFindExprFromValue(const wxString& _search,
     for (it = search_cols.begin(); it != search_cols.end(); ++it)
     {
         wxString piece, left, right;
-        wxString colname = towx(tango::quoteIdentifierIfNecessary(g_app->getDatabase(), (*it)->getName()));        
+        wxString colname = tango::quoteIdentifierIfNecessary(g_app->getDatabase(), (*it)->getName());        
         
         switch ((*it)->getType())
         {
@@ -6459,7 +6462,7 @@ void TableDoc::gotoRecord()
         wxString message = wxString::Format(_("Record number (1 - %s):"),
                 kl::formattedNumber(row_count).c_str());
         wxTextEntryDialog dlg(this, message, _("Go To Record"),
-                towx(kl::formattedNumber(m_grid->getCursorRow()+1)));
+                kl::formattedNumber(m_grid->getCursorRow()+1));
         dlg.SetSize(270,143);
         
         if (dlg.ShowModal() == wxID_OK)
@@ -7215,7 +7218,7 @@ void TableDoc::onSetOrderAscending(wxCommandEvent& evt)
         model_colinfo = model->getColumnInfo(model_idx);
         col_name = model_colinfo->getName();
 
-        expr = towx(tango::quoteIdentifierIfNecessary(g_app->getDatabase(), towstr(col_name)));
+        expr = tango::quoteIdentifierIfNecessary(g_app->getDatabase(), towstr(col_name));
     }
 
 
@@ -7253,8 +7256,8 @@ void TableDoc::onSetOrderDescending(wxCommandEvent& evt)
         model_colinfo = model->getColumnInfo(model_idx);
         col_name = model_colinfo->getName();
 
-        expr = towx(tango::quoteIdentifierIfNecessary(g_app->getDatabase(), towstr(col_name)));
-        expr += wxT(" DESC");
+        expr = tango::quoteIdentifierIfNecessary(g_app->getDatabase(), towstr(col_name));
+        expr += " DESC";
     }
 
 
@@ -7869,7 +7872,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
     for (i = count-1; i >= 0; --i)
     {
         tango::IIndexInfoPtr index = orig_indexes->getItem(i);
-        wxString index_tag = towx(index->getTag());
+        wxString index_tag = index->getTag();
         found = false;
         
         // try to find the original index
@@ -7901,7 +7904,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
     for (i = count-1; i >= 0; --i)
     {
         tango::IIndexInfoPtr index = orig_indexes->getItem(i);
-        wxString index_tag = towx(index->getTag());
+        wxString index_tag = index->getTag();
         
         // find the original index and rename if
         // its name was changed in the IndexPanel
@@ -7984,7 +7987,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
         for (i = 0; i < count; ++i)
         {
             index = orig_indexes->getItem(i);
-            index_tag = towx(index->getTag());
+            index_tag = index->getTag();
             
             if (info->orig_name.CmpNoCase(index_tag) == 0)
             {

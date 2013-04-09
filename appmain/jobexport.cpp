@@ -403,8 +403,8 @@ int ExportJob::runJob()
                 if (src_colinfo.isNull() || dest_colinfo.isNull())
                     continue;
 
-                ci.src_name = towx(src_colinfo->getName());
-                ci.dest_name = towx(dest_colinfo->getName());
+                ci.src_name = src_colinfo->getName();
+                ci.dest_name = dest_colinfo->getName();
                 copy_info.push_back(ci);
             }
         }
@@ -427,7 +427,7 @@ int ExportJob::runJob()
             {
                 tango::IColumnInfoPtr src_colinfo = src_struct->getColumnInfoByIdx(i);
 
-                ci.src_name = towx(src_colinfo->getName());
+                ci.src_name = src_colinfo->getName();
                 
                 // xbase field names can only be 10 characters long
                 std::wstring s;

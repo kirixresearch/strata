@@ -299,7 +299,7 @@ bool RemoveDupRecWizard::initDoc(IFramePtr frame,
             std::wstring path = towstr(table_doc->getPath());
 
             if (!isTemporaryTable(path))
-                m_info->m_input_path = towx(path);
+                m_info->m_input_path = path;
         }        
     }
 

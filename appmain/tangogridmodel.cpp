@@ -85,7 +85,7 @@ void TangoGridModel::copyRowIntoCache(int row)
             default:
             case tango::typeWideCharacter:
             case tango::typeCharacter:
-                cell.m_str_val = towx(m_it->getWideString(m_columns[col].m_col_handle));
+                cell.m_str_val = m_it->getWideString(m_columns[col].m_col_handle);
                 break;
 
             case tango::typeDouble:
@@ -335,7 +335,7 @@ void TangoGridModel::refresh()
         {
             TangoGridColumnInfo& gci = m_columns[i];
 
-            gci.m_col_name = towx(structure->getColumnName(i));
+            gci.m_col_name = structure->getColumnName(i);
             gci.m_col_handle = m_it->getHandle(towstr(gci.m_col_name));
             spCol = m_it->getInfo(gci.m_col_handle);
             gci.m_col_type = spCol->getType();
@@ -728,10 +728,10 @@ wxString TangoGridModel::getCellString(int row, int col)
     {
         default:
         case tango::typeCharacter:
-            return towx(m_it->getString(m_columns[col].m_col_handle));
+            return m_it->getString(m_columns[col].m_col_handle);
 
         case tango::typeWideCharacter:
-            return towx(m_it->getWideString(m_columns[col].m_col_handle));
+            return m_it->getWideString(m_columns[col].m_col_handle);
 
         case tango::typeDouble:
         case tango::typeNumeric:

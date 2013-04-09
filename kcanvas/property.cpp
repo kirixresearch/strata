@@ -67,6 +67,13 @@ PropertyValue::PropertyValue(const wxString& data)
     m_string = new wxString(data);
 }
 
+PropertyValue::PropertyValue(const std::wstring& data)
+{
+    commonInit();
+    m_type = proptypeString;
+    m_string = new wxString(data);
+}
+
 PropertyValue::PropertyValue(const Color& data)
 {
     commonInit();

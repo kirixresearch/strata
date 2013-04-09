@@ -1021,7 +1021,7 @@ void ExprBuilderPanel::onExprChanged(wxCommandEvent& evt)
 
 void ExprBuilderPanel::onColumnActivated(int row, const wxString& text)
 {
-    wxString quoted_text = towx(tango::quoteIdentifier(g_app->getDatabase(), towstr(text)));
+    wxString quoted_text = tango::quoteIdentifier(g_app->getDatabase(), towstr(text));
     insertText(quoted_text);
 }
 

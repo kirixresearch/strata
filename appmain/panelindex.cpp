@@ -80,8 +80,8 @@ static kcl::GridActionRule* addCheckInvalidCharsRule(kcl::GridActionValidator* v
 {
     wxString error_text = _("Index names cannot contain the following characters:");
     error_text += wxT(" ");
-    error_text += towx(g_app->getDatabase()->getAttributes()->
-                       getStringAttribute(tango::dbattrTableInvalidChars));
+    error_text += g_app->getDatabase()->getAttributes()->
+                       getStringAttribute(tango::dbattrTableInvalidChars);
     
     kcl::GridActionRule* rule = validator->addRule();
     rule->setColumn(col);
@@ -96,8 +96,8 @@ static kcl::GridActionRule* addCheckInvalidStartingCharsRule(kcl::GridActionVali
 {
     wxString error_text = _("Index names cannot begin with the following characters:");
     error_text += wxT(" ");
-    error_text += towx(g_app->getDatabase()->getAttributes()->
-                       getStringAttribute(tango::dbattrTableInvalidStartingChars));
+    error_text += g_app->getDatabase()->getAttributes()->
+                       getStringAttribute(tango::dbattrTableInvalidStartingChars);
     
     kcl::GridActionRule* rule = validator->addRule();
     rule->setColumn(col);
@@ -174,7 +174,7 @@ bool IndexPanel::initDoc(IFramePtr frame,
     }
     
     m_doc_site = site;
-    m_doc_site->setCaption(towx(caption));
+    m_doc_site->setCaption(caption);
     
 
     // create indexes list
@@ -401,7 +401,7 @@ static void expr2vec(IndexInfo* info)
             }
 
             // make sure the column name is dequoted
-            c.name = towx(tango::dequoteIdentifier(g_app->getDatabase(), towstr(c.name)));
+            c.name = tango::dequoteIdentifier(g_app->getDatabase(), towstr(c.name));
             info->cols.push_back(c);
         }
     }
@@ -415,7 +415,7 @@ static void vec2expr(IndexInfo* info)
     std::vector<IndexColumnInfo>::iterator it;
     for (it = info->cols.begin(); it != info->cols.end(); ++it)
     {
-        wxString q_name = towx(tango::quoteIdentifier(g_app->getDatabase(), towstr(it->name)));
+        wxString q_name = tango::quoteIdentifier(g_app->getDatabase(), towstr(it->name));
         expr += q_name;
         
         if (!it->ascending)
@@ -466,9 +466,9 @@ void IndexPanel::populateIndexesList()
         
         // create the index info to be stored as row data
         IndexInfo* info = new IndexInfo;
-        info->orig_name = towx(index->getTag());
-        info->name = towx(index->getTag());
-        info->expr = towx(index->getExpression());
+        info->orig_name = index->getTag();
+        info->name = index->getTag();
+        info->expr = index->getExpression();
         
         // parse the index expression into a vector of IndexColumnInfo
         expr2vec(info);
@@ -647,7 +647,7 @@ void IndexPanel::onCancel(wxCommandEvent& evt)
 
 wxString IndexPanel::getUniqueIndexName()
 {
-    wxString base = towx(kl::afterLast(m_path, '/'));
+    wxString base = kl::afterLast(m_path, '/');
     if (base.length() > 0)
         base += "_";
     base += _("index");

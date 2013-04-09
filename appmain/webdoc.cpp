@@ -206,7 +206,7 @@ public:
             m_url = url;
             
             // create a temporary filename
-            m_filename = towx(xf_get_temp_filename(L"ext", L"kxt"));
+            m_filename = xf_get_temp_filename(L"ext", L"kxt");
             
             // remove the file if it exists
             xf_remove(towstr(m_filename));
@@ -403,7 +403,7 @@ public:
     {
         m_url = url;
         
-        m_filename = towx(xf_get_temp_filename(L"cch", towstr(m_extension)));
+        m_filename = xf_get_temp_filename(L"cch", towstr(m_extension));
         
         xf_remove(towstr(m_filename));
         
@@ -755,7 +755,7 @@ public:
     void OnStopRequest()
     {
         // write out the memory buffer to a file
-        wxString filename = towx(xf_get_temp_filename(L"cch", L"tmp"));
+        wxString filename = xf_get_temp_filename(L"cch", L"tmp");
 
         xf_file_t f = xf_open(towstr(filename),
                               xfOpenCreateIfNotExist,
@@ -1236,7 +1236,7 @@ static bool extractMatchResults(klregex::match_results<wxChar>& matchres,
 
     if (mm)
     {
-        wxString month = wxString(towx(month_match.str())).Left(3);
+        wxString month = wxString(month_match.str()).Left(3);
         if (month.length() == 0)
             return false;
         month.MakeUpper();
@@ -1857,7 +1857,7 @@ static bool makeTableFromDom(wxDOMNode& _node, const std::wstring& output_path)
     
     std::set<wxString> keywords;
     tango::IAttributesPtr attr = dest_db->getAttributes();
-    wxStringTokenizer t(towx(attr->getStringAttribute(tango::dbattrKeywords)), wxT(","));
+    wxStringTokenizer t(attr->getStringAttribute(tango::dbattrKeywords), ",");
     while (t.HasMoreTokens())
     {
         wxString s = t.GetNextToken();
@@ -3304,7 +3304,7 @@ void WebDoc::onShowContextMenu(wxWebEvent& evt)
                 style += L"-moz-transform:rotate(270deg)";
             }
             
-            img_node.SetAttribute(wxT("style"), towx(style));
+            img_node.SetAttribute("style", style);
             break;
         }
         
@@ -3330,7 +3330,7 @@ void WebDoc::onShowContextMenu(wxWebEvent& evt)
                 style += L"-moz-transform:rotate(90deg)";
             }
             
-            img_node.SetAttribute(wxT("style"), towx(style));
+            img_node.SetAttribute("style", style);
             break;
         }
                 
@@ -3717,7 +3717,7 @@ void WebDoc::onInitDownload(wxWebEvent& evt)
         // to ensure a unique but consistent filename, put a bit of
         // an md5 string right before the extension
         
-        wxString url_md5 = towx(kl::md5str(towstr(href)));
+        wxString url_md5 = kl::md5str(towstr(href));
         int spot = filename.Find(wxT('.'), true);
         if (spot >= 0)
         {
@@ -3728,7 +3728,7 @@ void WebDoc::onInitDownload(wxWebEvent& evt)
         
         wxString loc = m_webcontrol->GetCurrentURI();
         
-        wxString temp_path = towx(xf_get_temp_path());
+        wxString temp_path = xf_get_temp_path();
         if (temp_path.IsEmpty() || temp_path.Last() != PATH_SEPARATOR_CHAR)
             temp_path += PATH_SEPARATOR_CHAR;
         temp_path += filename;

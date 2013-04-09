@@ -667,7 +667,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         int stream_count = stream_enum->getStreamCount();
         for (int i = 0; i < stream_count; ++i)
         {
-            wxString tablename = towx(stream_enum->getStreamName(i));
+            wxString tablename = stream_enum->getStreamName(i);
 
             // don't show hidden stream names
             if (*(tablename.c_str()) == '.')
@@ -1209,7 +1209,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         for (i = 0; i < col_count; ++i)
         {
             tango::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
-            wxString colname = towx(colinfo->getName());
+            wxString colname = colinfo->getName();
 
             if (!isValidFieldName(colname, db_ptr))
             {
@@ -1269,7 +1269,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
             for (i = 0; i < table_count; ++i)
             {
                 tango::IFileInfoPtr info = tables->getItem(i);
-                tablename = towx(info->getName());
+                tablename = info->getName();
 
                 if (!it->output_tablename.CmpNoCase(tablename))
                 {

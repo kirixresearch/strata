@@ -88,7 +88,7 @@ void Console::show(kscript::ExprEnv* env, void*, kscript::Value* retval)
 
 void Console::write(kscript::ExprEnv* env, void*, kscript::Value* retval)
 {
-    wxString message = towx(env->m_eval_params[0]->getString());
+    wxString message = env->m_eval_params[0]->getString();
     IFramePtr frame = g_app->getMainFrame();
     if (frame.isOk())
     {
@@ -114,7 +114,7 @@ void Console::write(kscript::ExprEnv* env, void*, kscript::Value* retval)
 
 void Console::writeLine(kscript::ExprEnv* env, void*, kscript::Value* retval)
 {
-    wxString message = towx(env->m_eval_params[0]->getString());
+    wxString message = env->m_eval_params[0]->getString();
     message += wxT("\n");
     
     IFramePtr frame = g_app->getMainFrame();
@@ -233,7 +233,7 @@ void Extension::getBitmapResource(kscript::ExprEnv* env, void*, kscript::Value* 
     {
         // load the image from the extension package
         
-        wxInputStream* stream = pkg->getStream(towx(filename));
+        wxInputStream* stream = pkg->getStream(filename);
         if (!stream)
         {
             // resource doesn't exist, return failure
@@ -262,7 +262,7 @@ void Extension::getBitmapResource(kscript::ExprEnv* env, void*, kscript::Value* 
             
         if (filename.length() > 0 && filename[0] == PATH_SEPARATOR_CHAR)
             path.RemoveLast();
-        path += towx(filename);
+        path += filename;
         
         if (!xf_get_file_exist(towstr(path)))
         {
@@ -327,7 +327,7 @@ void Extension::getTextResource(kscript::ExprEnv* env, void*, kscript::Value* re
     {
         // load the image from the extension package
         
-        wxInputStream* stream = pkg->getStream(towx(filename));
+        wxInputStream* stream = pkg->getStream(filename);
         if (!stream)
         {
             // resource doesn't exist, return failure
@@ -359,7 +359,7 @@ void Extension::getTextResource(kscript::ExprEnv* env, void*, kscript::Value* re
             
         if (filename.length() > 0 && filename[0] == PATH_SEPARATOR_CHAR)
             path.RemoveLast();
-        path += towx(filename);
+        path += filename;
         
         if (!xf_get_file_exist(towstr(path)))
         {
@@ -671,7 +671,7 @@ void HostApp::setFrameCaption(kscript::ExprEnv* env, kscript::Value* retval)
     if (m_frame.isNull())
         return;
 
-    m_frame->getFrameWindow()->SetTitle(towx(env->getParam(0)->getString()));
+    m_frame->getFrameWindow()->SetTitle(env->getParam(0)->getString());
 }
 
 
@@ -942,12 +942,12 @@ void HostApp::openWeb(kscript::ExprEnv* env, kscript::Value* retval)
         {
             std::wstring member_name = post_obj->getRawMemberName(i);
             kscript::Value* member_obj = post_obj->getRawMemberByIdx(i);
-            post_data->Add(towx(member_name), towx(member_obj->getString()));
+            post_data->Add(member_name, member_obj->getString());
         }
     }
 
 
-    g_app->getAppController()->openWeb(towx(env->getParam(0)->getString()), post_data, appOpenForceNewWindow);
+    g_app->getAppController()->openWeb(env->getParam(0)->getString(), post_data, appOpenForceNewWindow);
 }
 
 
@@ -994,14 +994,14 @@ void HostApp::sendWebRequest(kscript::ExprEnv* env, kscript::Value* retval)
         {
             std::wstring member_name = post_obj->getRawMemberName(i);
             kscript::Value* member_obj = post_obj->getRawMemberByIdx(i);
-            post_data->Add(towx(member_name), towx(member_obj->getString()));
+            post_data->Add(member_name, member_obj->getString());
         }
     }
 
 
     wxString result = wxEmptyString;
     
-    wxWebControl::SaveRequestToString(towx(env->getParam(0)->getString()),
+    wxWebControl::SaveRequestToString(env->getParam(0)->getString(),
                               &result,
                               post_data);
     
@@ -1690,7 +1690,7 @@ void HostApp::execute(kscript::ExprEnv* env, kscript::Value* retval)
     int flags = 0;
     
     ExecuteJobRunner* r = new ExecuteJobRunner;
-    r->m_target = towx(env->getParam(0)->getString());
+    r->m_target = env->getParam(0)->getString();
     flags = 0;
     if (env->getParamCount() >= 2)
         flags = env->getParam(1)->getInteger();
@@ -2023,7 +2023,7 @@ void HostDocument::setCaption(kscript::ExprEnv* env, kscript::Value* retval)
         return;
     }
     
-    m_site->setCaption(towx(env->getParam(0)->getString()));
+    m_site->setCaption(env->getParam(0)->getString());
     retval->setBoolean(true);
 }
 
@@ -2550,9 +2550,9 @@ void HostBitmap::getBitmapInternal(kscript::ExprEnv* env,
 {
     retval->setNull();
     
-    wxString name = towx(bitmap_name);
-    name.Prepend(wxT("gf_"));
-    name += wxString::Format(wxT("_%d"), bitmap_size);
+    wxString name = bitmap_name;
+    name.Prepend("gf_");
+    name += wxString::Format("_%d", bitmap_size);
     
     wxBitmap bmp = BitmapMgr::getBitmap(name);
     if (!bmp.IsOk())
@@ -2635,7 +2635,7 @@ void HostPreferences::setValue(kscript::ExprEnv* env, kscript::Value* retval)
     if (prefs.isNull())
         return;
     
-    wxString pref_name = towx(env->getParam(0)->getString());
+    wxString pref_name = env->getParam(0)->getString();
     
     kscript::Value* param2 = env->getParam(1);
     if (param2->isBoolean())
@@ -2648,7 +2648,7 @@ void HostPreferences::setValue(kscript::ExprEnv* env, kscript::Value* retval)
     }
      else if (param2->isString())
     {
-        prefs->setString(pref_name, towx(param2->getString()));
+        prefs->setString(pref_name, param2->getString());
     }
      else
     {
@@ -2685,7 +2685,7 @@ void HostPreferences::getValue(kscript::ExprEnv* env, kscript::Value* retval)
     if (prefs.isNull())
         return;
         
-    wxString pref_name = towx(env->getParam(0)->getString());
+    wxString pref_name = env->getParam(0)->getString();
     
     if (!prefs->exists(pref_name))
         return;
@@ -2724,7 +2724,7 @@ void HostPreferences::deleteValue(kscript::ExprEnv* env, kscript::Value* retval)
     if (prefs.isNull())
         return;
         
-    retval->setBoolean(prefs->remove(towx(env->getParam(0)->getString())));
+    retval->setBoolean(prefs->remove(env->getParam(0)->getString()));
 }
 
 
@@ -2752,7 +2752,7 @@ void HostPreferences::exists(kscript::ExprEnv* env, kscript::Value* retval)
     if (prefs.isNull())
         return;
         
-    retval->setBoolean(prefs->exists(towx(env->getParam(0)->getString())));
+    retval->setBoolean(prefs->exists(env->getParam(0)->getString()));
 }
 
 
@@ -3336,7 +3336,7 @@ void HostData::importData(kscript::ExprEnv* env, kscript::Value* retval)
             for (it = files.begin(); it != files.end(); ++it)
             {
                 import_job->addImportObject(towstr(it->source_path),
-                                            towstr(appendPath(towx(target_path), it->dest_path)));
+                                            towstr(appendPath(target_path, it->dest_path)));
             }
             
             job = static_cast<jobs::IJob*>(import_job);
@@ -3362,7 +3362,7 @@ void HostData::importData(kscript::ExprEnv* env, kscript::Value* retval)
             {
                 ImportJobInfo info;
                 info.input_path = it->source_path;
-                info.output_path = appendPath(towx(target_path), it->dest_path);
+                info.output_path = appendPath(target_path, it->dest_path);
                 info.append = false;
                 
                 import_job->addImportSet(info);
@@ -3835,7 +3835,7 @@ void HostPrinting::saveAsPdf(kscript::ExprEnv* env, kscript::Value* retval)
         {
             std::wstring member_name = obj->getRawMemberName(i);
             kscript::Value* member_obj = obj->getRawMemberByIdx(i);
-            inputs.push_back(towx(member_obj->getString()));
+            inputs.push_back(member_obj->getString());
         }
     }
      else

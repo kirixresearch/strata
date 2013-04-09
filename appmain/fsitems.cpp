@@ -304,7 +304,7 @@ IFsItemEnumPtr DirectoryFsItem::getChildren()
             }
         }
 
-        new_path += towx(info.m_name);
+        new_path += info.m_name;
 
 
         if (info.m_type == xfFileTypeNormal)
@@ -320,7 +320,7 @@ IFsItemEnumPtr DirectoryFsItem::getChildren()
             }
             e++;
 
-            wxString extension = towx(e);
+            wxString extension = e;
             extension.MakeUpper();
 
             if (extensions.size() > 0)
@@ -350,7 +350,7 @@ IFsItemEnumPtr DirectoryFsItem::getChildren()
             if (visible)
             {
                 FileFsItem* item = new FileFsItem;
-                item->setLabel(towx(info.m_name));
+                item->setLabel(info.m_name);
                 item->setBitmap(bmp, fsbmpSmall);
                 item->setPath(new_path);
                 file_items.push_back(item);
@@ -359,7 +359,7 @@ IFsItemEnumPtr DirectoryFsItem::getChildren()
          else if (info.m_type == xfFileTypeDirectory)
         {
             DirectoryFsItem* item = new DirectoryFsItem;
-            item->setLabel(towx(info.m_name));
+            item->setLabel(info.m_name);
             item->setBitmap(m_default_folder_bitmap, fsbmpSmall);
             item->setPath(new_path);
             folder_items.push_back(item);

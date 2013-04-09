@@ -286,7 +286,7 @@ bool StructureValidator::findInvalidFieldNames(tango::IStructurePtr structure,
     for (i = 0; i < count; ++i)
     {
         tango::IColumnInfoPtr col = structure->getColumnInfoByIdx(i);
-        if (!isValidFieldName(towx(col->getName()), db))
+        if (!isValidFieldName(col->getName(), db))
         {
             found = true;
             break;

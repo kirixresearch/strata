@@ -113,10 +113,10 @@ void MenuItem::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     getMember(L"click")->setObject(Event::createObject(env));
 
     // if a label was supplied, use it
-    m_label = towx(env->getParam(0)->getString());
+    m_label = env->getParam(0)->getString();
     
     // if a help string was supplied, use it
-    m_help_str = towx(env->getParam(1)->getString());
+    m_help_str = env->getParam(1)->getString();
     
     // set the ID for this menu
     m_id = getUniqueScriptCommandId();
@@ -163,7 +163,7 @@ void MenuItem::setEnabled(kscript::ExprEnv* env, kscript::Value* retval)
 
 void MenuItem::setLabel(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    m_label = towx(env->getParam(0)->getString());
+    m_label = env->getParam(0)->getString();
 
     if (m_ctrl)
         m_ctrl->SetText(m_label);
@@ -194,7 +194,7 @@ void MenuItem::getLabel(kscript::ExprEnv* env, kscript::Value* retval)
 
 void MenuItem::setHelpString(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    m_help_str = towx(env->getParam(0)->getString());
+    m_help_str = env->getParam(0)->getString();
 
     if (m_ctrl)
         m_ctrl->SetHelp(m_help_str);
@@ -278,7 +278,7 @@ void zMenu::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     initComponent(env);
 
     // if a title was supplied, use it
-    m_title = towx(env->getParam(0)->getString());
+    m_title = env->getParam(0)->getString();
     
     // set the ID for this menu
     m_id = getUniqueScriptCommandId();
@@ -1092,11 +1092,11 @@ void MenuBar::findMenu(kscript::ExprEnv* env, kscript::Value* retval)
         return;
     }
     
-    int res = m_ctrl->FindMenu(towx(env->getParam(0)->getString()));
+    int res = m_ctrl->FindMenu(env->getParam(0)->getString());
     
     if (res == wxNOT_FOUND)
         retval->setInteger(-1);
-     else
+         else
         retval->setInteger(res);
 }
 

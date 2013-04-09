@@ -106,7 +106,7 @@ static wxString getDatabaseNameProjectLabel()
     if (attr.isNull())
         return wxT("");
 
-    wxString project_name = towx(attr->getStringAttribute(tango::dbattrDatabaseName));
+    wxString project_name = attr->getStringAttribute(tango::dbattrDatabaseName);
 
     wxString label;
     if (project_name.Length() > 0)
@@ -124,7 +124,8 @@ static wxString getDbDriver(tango::IDatabasePtr& db)
         return wxEmptyString;
     
     xcm::class_info* class_info = xcm::get_class_info(db.p);
-    return towx(class_info->get_name()).BeforeFirst('.');
+    wxString s = class_info->get_name();
+    return s.BeforeFirst('.');
 }
 
 
@@ -532,7 +533,7 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
     {
         tango::IFileInfoPtr info = files->getItem(i);
 
-        wxString item_name = towx(info->getName());
+        wxString item_name = info->getName();
         int item_type = info->getType();
         
         if ((item_type != tango::filetypeSet && item_type != tango::filetypeFolder) && m_only_tables)
@@ -1486,7 +1487,7 @@ void DbDoc::onItemProperties(wxCommandEvent& evt)
                 ConnectionWizard* wizard = new ConnectionWizard;
                 wizard->setTitle(_("Connection Properties"));
                 wizard->setMode(ConnectionWizard::ModeProperties);
-                wizard->setConnectionString(towx(cstr));
+                wizard->setConnectionString(cstr);
                 wizard->sigConnectionWizardFinished.connect(this, &DbDoc::onSetConnectionPropertiesFinished);
                 
                 site = g_app->getMainFrame()->createSite(wizard, sitetypeModeless,
@@ -3628,7 +3629,7 @@ void DbDoc::onCopyJobFinished(jobs::IJobPtr job)
     std::wstring folder_to_refresh = job->getExtraValue(L"refresh-folder");
     if (folder_to_refresh.length() > 0)
     {
-        IFsItemPtr item = getFsItemFromPath(towx(folder_to_refresh));
+        IFsItemPtr item = getFsItemFromPath(folder_to_refresh);
         if (item)
         {
             m_fspanel->refreshItem(item);

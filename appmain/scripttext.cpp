@@ -74,7 +74,7 @@ void TextBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 
     // get user input values
     if (param_count > 0)
-        text = towx(env->getParam(0)->getString());
+        text = env->getParam(0)->getString();
     if (param_count > 1)
         m_x = env->getParam(1)->getInteger();
     if (param_count > 2)
@@ -171,7 +171,7 @@ void TextBox::setText(kscript::ExprEnv* env, kscript::Value* retval)
     if (!isControlValid())
         return;
 
-    wxString text = towx(env->getParam(0)->getString());
+    wxString text = env->getParam(0)->getString();
     m_ctrl->SetValue(text);
 }
 
@@ -216,8 +216,8 @@ void TextBox::appendText(kscript::ExprEnv* env, kscript::Value* retval)
     if (!isControlValid())
         return;
 
-    wxString s = towx(env->getParam(0)->getString());
-    size_t len = s.Length();
+    wxString s = env->getParam(0)->getString();
+    size_t len = s.length();
 
 #ifdef WIN32
     // just using AppendText() somehow clips the text
@@ -744,7 +744,7 @@ void Label::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     
     // get user input values
     if (param_count > 0)
-        label = towx(env->getParam(0)->getString());
+        label = env->getParam(0)->getString();
     if (param_count > 1)
         m_x = env->getParam(1)->getInteger();
     if (param_count > 2)
@@ -813,7 +813,7 @@ void Label::setLabel(kscript::ExprEnv* env, kscript::Value* retval)
 {
     if (env->getParamCount() > 0 && isControlValid())
     {
-        wxString label = towx(env->getParam(0)->getString());
+        wxString label = env->getParam(0)->getString();
         m_ctrl->SetLabel(label);
     }
 }

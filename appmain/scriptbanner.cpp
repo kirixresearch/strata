@@ -78,7 +78,7 @@ void BannerBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     
     // get user input values
     if (param_count > 0)
-        text = towx(env->getParam(0)->getString());
+        text = env->getParam(0)->getString();
     if (param_count > 1)
         m_x = env->getParam(1)->getInteger();
     if (param_count > 2)

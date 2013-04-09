@@ -861,8 +861,8 @@ void DataSourceSelectionPage::populate()
         m_grid->insertRow(-1);
 
         tango::IDatabaseEntryPtr item = odbc_databases->getItem(i);
-        m_grid->setCellString(i, 0, towx(item->getName()));
-        m_grid->setCellString(i, 1, towx(item->getDescription()));
+        m_grid->setCellString(i, 0, item->getName());
+        m_grid->setCellString(i, 1, item->getDescription());
     }
 
     // if we already have a server name, move the cursor

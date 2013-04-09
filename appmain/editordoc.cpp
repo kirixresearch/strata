@@ -1295,8 +1295,7 @@ bool EditorDoc::findReplaceAll(const wxString& find_val,
     regex.replace(wtext, wreplace_val);
     
     // set the text in the control
-    wxString text = towx(wtext);
-    m_text->SetText(text);
+    m_text->SetText(wtext);
     
     // increase/decrease line number margin size
     m_text->updateLineNumberMarginWidth();
@@ -1561,19 +1560,19 @@ bool EditorDoc::readFile(const wxString _path,
             // little endian UCS-2
             std::wstring wval;
             kl::ucsle2wstring(wval, buf+2, (readbytes-2)/2);
-            value = towx(wval);
+            value = wval;
         }
          else if (readbytes >= 3 && buf[0] == 0xef && buf[1] == 0xbb && buf[2] == 0xbf)
         {
             // utf-8
             wchar_t* tempbuf = new wchar_t[fsize+1];
             kl::utf8_utf8tow(tempbuf, fsize+1, (char*)buf+3, readbytes);
-            value = towx(tempbuf);
+            value = tempbuf;
             delete[] tempbuf;
         }
          else
         {
-            value = towx((char*)buf);
+            value = (const char*)buf;
         }
         
         delete[] buf;
@@ -1622,14 +1621,14 @@ bool EditorDoc::readFile(const wxString _path,
             // little endian UCS-2
             std::wstring wval;
             kl::ucsle2wstring(wval, ptr+2, (buf_len-2)/2);
-            value = towx(wval);
+            value = wval;
         }
             else if (buf_len >= 3 && ptr[0] == 0xef && ptr[1] == 0xbb && ptr[2] == 0xbf)
         {
             // utf-8
             wchar_t* tempbuf = new wchar_t[buf_len+1];
             kl::utf8_utf8tow(tempbuf, buf_len+1, (char*)ptr+3, buf_len-3);
-            value = towx(tempbuf);
+            value = tempbuf;
             delete[] tempbuf;
         }
 
@@ -1685,7 +1684,8 @@ bool EditorDoc::getFileHash(const wxString path, std::wstring& hash)
     {
         tango::IDatabasePtr db = g_app->getDatabase();
         xcm::class_info* class_info = xcm::get_class_info(db.p);
-        wxString driver = towx(class_info->get_name()).BeforeFirst('.');
+        wxString class_name = class_info->get_name();
+        wxString driver = class_name.BeforeFirst('.');
         if (driver == wxT("xdclient") || driver == wxT("xdpgsql"))
         {
             // don't do this operation when running in xdclient or xdpgsql mode
@@ -1873,7 +1873,7 @@ bool EditorDoc::doSave()
             // extension, the user usually ends up adding this as the 
             // first item of business after saving
             m_path = dlg.getPath();
-            m_path = towx(addExtensionIfExternalFsDatabase(towstr(m_path), L".js"));
+            m_path = addExtensionIfExternalFsDatabase(towstr(m_path), L".js");
 
             m_external = false;
             m_temporary = false;

@@ -152,7 +152,7 @@ void ToolBarItem::setEnabled(kscript::ExprEnv* env, kscript::Value* retval)
 
 void ToolBarItem::setLabel(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    m_label = towx(env->getParam(0)->getString());
+    m_label = env->getParam(0)->getString();
 }
 
 // (METHOD) ToolBarItem.getLabel
@@ -181,7 +181,7 @@ void ToolBarItem::getLabel(kscript::ExprEnv* env, kscript::Value* retval)
 
 void ToolBarItem::setTooltip(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    m_tooltip = towx(env->getParam(0)->getString());
+    m_tooltip = env->getParam(0)->getString();
 }
 
 // (METHOD) ToolBarItem.getTooltip
@@ -209,7 +209,7 @@ void ToolBarItem::getTooltip(kscript::ExprEnv* env, kscript::Value* retval)
 
 void ToolBarItem::setHelpString(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    m_help_str = towx(env->getParam(0)->getString());
+    m_help_str = env->getParam(0)->getString();
 }
 
 // (METHOD) ToolBarItem.getHelpString

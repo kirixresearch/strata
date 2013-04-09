@@ -165,7 +165,7 @@ public:
         // if an error occurred, get an error string
         m_error_string.Clear();
         if (m_db.isNull())
-            m_error_string = towx(dbmgr->getErrorString());
+            m_error_string = dbmgr->getErrorString();
             
         return m_db.isOk();
     }

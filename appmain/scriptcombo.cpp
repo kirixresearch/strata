@@ -155,7 +155,7 @@ void ComboBox::addItem(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() < 1 || !isControlValid())
         return;
 
-    wxString s = towx(env->getParam(0)->getString());
+    std::wstring s = env->getParam(0)->getString();
     int idx = m_ctrl->Append(s);
     retval->setInteger(idx);
 }
@@ -219,7 +219,7 @@ void ComboBox::findItem(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() < 1 || !isControlValid())
         return;
 
-    wxString s = towx(env->getParam(0)->getString());
+    std::wstring s = env->getParam(0)->getString();
     int idx = m_ctrl->FindString(s);
     retval->setInteger(idx);
 }
@@ -348,7 +348,7 @@ void ComboBox::insertItem(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() < 2 || !isControlValid())
         return;
 
-    wxString s = towx(env->getParam(0)->getString());
+    std::wstring s = env->getParam(0)->getString();
     int idx = env->getParam(1)->getInteger();
     m_ctrl->Insert(s, idx);
 }
@@ -397,7 +397,7 @@ void ComboBox::setItem(kscript::ExprEnv* env, kscript::Value* retval)
         return;
 
     int idx = env->getParam(0)->getInteger();
-    wxString s = towx(env->getParam(1)->getString());
+    std::wstring s = env->getParam(1)->getString();
 
     m_ctrl->SetString(idx, s);
 }
@@ -416,7 +416,7 @@ void ComboBox::setValue(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() < 1 || !isControlValid())
         return;
     
-    wxString s = towx(env->getParam(0)->getString());
+    std::wstring s = env->getParam(0)->getString();
     
     m_ctrl->SetValue(s);
 }
@@ -603,7 +603,7 @@ void ChoiceBox::addItem(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() < 1 || !isControlValid())
         return;
 
-    wxString s = towx(env->getParam(0)->getString());
+    std::wstring s = env->getParam(0)->getString();
     int idx = m_ctrl->Append(s);
     retval->setInteger(idx);
 }
@@ -667,7 +667,7 @@ void ChoiceBox::findItem(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() < 1 || !isControlValid())
         return;
 
-    wxString s = towx(env->getParam(0)->getString());
+    std::wstring s = env->getParam(0)->getString();
     int idx = m_ctrl->FindString(s);
     retval->setInteger(idx);
 }
@@ -796,7 +796,7 @@ void ChoiceBox::insertItem(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() < 2 || !isControlValid())
         return;
 
-    wxString s = towx(env->getParam(0)->getString());
+    std::wstring s = env->getParam(0)->getString();
     int idx = env->getParam(1)->getInteger();
     m_ctrl->Insert(s, idx);
 }
@@ -845,7 +845,7 @@ void ChoiceBox::setItem(kscript::ExprEnv* env, kscript::Value* retval)
         return;
 
     int idx = env->getParam(0)->getInteger();
-    wxString s = towx(env->getParam(1)->getString());
+    std::wstring s = env->getParam(1)->getString();
 
     m_ctrl->SetString(idx, s);
 }
@@ -869,7 +869,7 @@ void ChoiceBox::setValue(kscript::ExprEnv* env, kscript::Value* retval)
         return;
     }
     
-    wxString s = towx(env->getParam(0)->getString());
+    std::wstring s = env->getParam(0)->getString();
     
     bool res = m_ctrl->SetStringSelection(s);
     retval->setBoolean(res);

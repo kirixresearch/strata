@@ -167,7 +167,7 @@ void Bitmap::loadFile(kscript::ExprEnv* env, kscript::Value* retval)
         return;
     }
     
-    wxString filename = towx(env->getParam(0)->getString());
+    wxString filename = env->getParam(0)->getString();
     wxBitmapType bmp_type;
     int type = Bitmap::FormatDefault;
     
@@ -228,7 +228,7 @@ void Bitmap::saveFile(kscript::ExprEnv* env, kscript::Value* retval)
         return;
     }
     
-    wxString filename = towx(env->getParam(0)->getString());
+    wxString filename = env->getParam(0)->getString();
     wxBitmapType bmp_type;
     int type = Bitmap::FormatDefault;
     

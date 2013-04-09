@@ -183,7 +183,7 @@ void WebDOMNode::setNodeValue(kscript::ExprEnv* env, kscript::Value* retval)
 {
     if (m_node.IsOk() && env->getParamCount() > 0)
     {
-        wxString value = towx(env->getParam(0)->getString());
+        wxString value = env->getParam(0)->getString();
         m_node.SetNodeValue(value);
     }
 }
@@ -782,7 +782,7 @@ void WebDOMNode::setPrefix(kscript::ExprEnv* env, kscript::Value* retval)
 
     if (m_node.IsOk() && env->getParamCount() > 0)
     {
-        wxString value = towx(env->getParam(0)->getString());
+        wxString value = env->getParam(0)->getString();
         m_node.SetPrefix(value);
     }
 }
@@ -900,7 +900,7 @@ void WebDOMNode::addEventListener(kscript::ExprEnv* env, kscript::Value* retval)
         WebEventListenerAdaptor* adaptor = new WebEventListenerAdaptor(getApplicationFromEnv(env), evt);
         evt->connectInternal(env->getParam(1));
         
-        m_node.AddEventListener(towx(env->getParam(0)->getString()), adaptor, -1, use_capture);
+        m_node.AddEventListener(env->getParam(0)->getString(), adaptor, -1, use_capture);
     }
      else if (env->getParam(1)->isObject())
     {
@@ -910,7 +910,7 @@ void WebDOMNode::addEventListener(kscript::ExprEnv* env, kscript::Value* retval)
             Event* evt = (Event*)obj;
             WebEventListenerAdaptor* adaptor = new WebEventListenerAdaptor(getApplicationFromEnv(env), evt);
             
-            m_node.AddEventListener(towx(env->getParam(0)->getString()), adaptor, -1, use_capture);
+            m_node.AddEventListener(env->getParam(0)->getString(), adaptor, -1, use_capture);
         }
          else
         {
@@ -972,7 +972,7 @@ void WebDOMText::setData(kscript::ExprEnv* env, kscript::Value* retval)
         return;
     
     wxDOMText node = m_node;
-    node.SetData(towx(env->getParam(0)->getString()));
+    node.SetData(env->getParam(0)->getString());
     
     retval->setBoolean(true);
 }
@@ -1197,7 +1197,7 @@ void WebDOMElement::getElementsByTagName(kscript::ExprEnv* env, kscript::Value* 
         return;
 
     wxDOMNodeList child_nodes;
-    wxString tag_name = towx(env->getParam(0)->getString());
+    wxString tag_name = env->getParam(0)->getString();
     child_nodes = element.GetElementsByTagName(tag_name);
 
     if (!child_nodes.IsOk())
@@ -1233,7 +1233,7 @@ void WebDOMElement::getAttribute(kscript::ExprEnv* env, kscript::Value* retval)
     wxDOMElement element = m_node;
     if (element.IsOk() && env->getParamCount() > 0)
     {
-        wxString value = towx(env->getParam(0)->getString());
+        wxString value = env->getParam(0)->getString();
         retval->setString(element.GetAttribute(value).wc_str());
     }
 }
@@ -1256,7 +1256,7 @@ void WebDOMElement::setAttribute(kscript::ExprEnv* env, kscript::Value* retval)
     {
         wxString value;
         if (env->getParamCount() > 1)
-            value = towx(env->getParam(1)->getString());
+            value = env->getParam(1)->getString();
             
         element.SetAttribute(env->getParam(0)->getString(), value);
     }
@@ -1276,7 +1276,7 @@ void WebDOMElement::removeAttribute(kscript::ExprEnv* env, kscript::Value* retva
     wxDOMElement element = m_node;
     if (element.IsOk() && env->getParamCount() > 0)
     {
-        wxString value = towx(env->getParam(0)->getString());
+        wxString value = env->getParam(0)->getString();
         element.RemoveAttribute(value);
     }
 }
@@ -1306,7 +1306,7 @@ void WebDOMElement::getAttributeNode(kscript::ExprEnv* env, kscript::Value* retv
     if (!element.IsOk())
         return;
       
-    wxDOMAttr result = element.GetAttributeNode(towx(env->getParam(0)->getString()));
+    wxDOMAttr result = element.GetAttributeNode(env->getParam(0)->getString());
     if (result.IsOk())
     {
         WebDOMAttr* res = WebDOMAttr::createObject(env);
@@ -1423,7 +1423,7 @@ void WebDOMElement::hasAttribute(kscript::ExprEnv* env, kscript::Value* retval)
     wxDOMElement element = m_node;
     if (element.IsOk() && env->getParamCount() > 0)
     {
-        wxString value = towx(env->getParam(0)->getString());
+        wxString value = env->getParam(0)->getString();
         retval->setBoolean(element.HasAttribute(value));
     }
 }
@@ -1506,7 +1506,7 @@ void WebDOMDocument::getElementById(kscript::ExprEnv* env, kscript::Value* retva
     if (!doc.IsOk())
         return;
       
-    wxDOMElement result = doc.GetElementById(towx(env->getParam(0)->getString()));
+    wxDOMElement result = doc.GetElementById(env->getParam(0)->getString());
     if (result.IsOk())
     {
         WebDOMNode* res = createAppropriateDOMNode(env, result);
@@ -1544,7 +1544,7 @@ void WebDOMDocument::getElementsByTagName(kscript::ExprEnv* env, kscript::Value*
         return;
 
     wxDOMNodeList child_nodes;
-    wxString tag_name = towx(env->getParam(0)->getString());
+    wxString tag_name = env->getParam(0)->getString();
     child_nodes = doc.GetElementsByTagName(tag_name);
 
     if (!child_nodes.IsOk())
@@ -1641,7 +1641,7 @@ void WebDOMDocument::createElement(kscript::ExprEnv* env, kscript::Value* retval
     if (!doc.IsOk())
         return;
 
-    wxDOMElement result = doc.CreateElement(towx(env->getParam(0)->getString()));
+    wxDOMElement result = doc.CreateElement(env->getParam(0)->getString());
     if (result.IsOk())
     {
         WebDOMNode* res = createAppropriateDOMNode(env, result);
@@ -1673,7 +1673,7 @@ void WebDOMDocument::createAttribute(kscript::ExprEnv* env, kscript::Value* retv
     if (!doc.IsOk())
         return;
 
-    wxDOMAttr result = doc.CreateElement(towx(env->getParam(0)->getString()));
+    wxDOMAttr result = doc.CreateElement(env->getParam(0)->getString());
     if (result.IsOk())
     {
         WebDOMAttr* res = WebDOMAttr::createObject(env);
@@ -1705,7 +1705,7 @@ void WebDOMDocument::createTextNode(kscript::ExprEnv* env, kscript::Value* retva
     if (!doc.IsOk())
         return;
 
-    wxDOMText result = doc.CreateTextNode(towx(env->getParam(0)->getString()));
+    wxDOMText result = doc.CreateTextNode(env->getParam(0)->getString());
     if (result.IsOk())
     {
         WebDOMText* res = WebDOMText::createObject(env);

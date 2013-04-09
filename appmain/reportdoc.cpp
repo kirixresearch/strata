@@ -2236,7 +2236,7 @@ void ReportDoc::getColumnListItems(std::vector<ColumnListItem>& list)
             tango::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
 
             ColumnListItem item;
-            item.text = makeProperIfNecessary(towx(colinfo->getName()));
+            item.text = makeProperIfNecessary(colinfo->getName());
             if (colinfo->getCalculated())
             {
                 item.bitmap = GETBMP(gf_lightning_16);
@@ -3302,7 +3302,7 @@ void ReportDoc::onCanvasDropEvent(kcanvas::IEventPtr evt)
             fieldname.Trim(true);
             fieldname.Trim(false);
             
-            wxString qfieldname = towx(tango::quoteIdentifier(g_app->getDatabase(), towstr(fieldname)));
+            wxString qfieldname = tango::quoteIdentifier(g_app->getDatabase(), towstr(fieldname));
             wxString value = wxT("=") + qfieldname;
 
             kcanvas::CellRange range(row_end, col_end);

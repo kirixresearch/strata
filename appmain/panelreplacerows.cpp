@@ -159,7 +159,7 @@ void ReplaceRowsPanel::populate()
     for (i = 0; i < col_count; ++i)
     {
         colinfo = m_structure->getColumnInfoByIdx(i);
-        fields.push_back(makeProper(towx(colinfo->getName())));
+        fields.push_back(makeProper(colinfo->getName()));
     }
 
     std::sort(fields.begin(), fields.end());
@@ -296,7 +296,7 @@ static void onUpdateJobFinished(jobs::IJobPtr job)
     std::wstring input = params["input"];
 
     FrameworkEvent* cfw_event = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_REFRESH);
-    cfw_event->s_param = towx(input);
+    cfw_event->s_param = input;
     g_app->getMainFrame()->postEvent(cfw_event);
 }
 

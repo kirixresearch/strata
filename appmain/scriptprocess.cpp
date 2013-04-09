@@ -76,7 +76,7 @@ void Process::start(kscript::ExprEnv* env, void* param, kscript::Value* retval)
     }
      else
     {
-        ::wxExecute(towx(env->getParam(0)->getString()), wxEXEC_ASYNC);
+        ::wxExecute(env->getParam(0)->getString(), wxEXEC_ASYNC);
     }
 }
 

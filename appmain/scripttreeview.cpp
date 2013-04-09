@@ -93,7 +93,7 @@ const wxTreeItemId TreeViewItem::getId()
 void TreeViewItem::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
     if (env->getParamCount() > 0)
-        m_label = towx(env->getParam(0)->getString());
+        m_label = env->getParam(0)->getString();
 
     if (env->getParamCount() > 1)
     {
@@ -120,7 +120,7 @@ void TreeViewItem::setLabel(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() == 0)
         return;
     
-    m_label = towx(env->getParam(0)->getString());
+    m_label = env->getParam(0)->getString();
     
     // the item has been added to a TreeView, so we can
     // set the label for the item in the wxTreeCtrl

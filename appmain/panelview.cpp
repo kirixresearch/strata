@@ -62,7 +62,7 @@ ViewPanel::ViewPanel(ITableDocPtr tabledoc)
     if (isTemporaryTable(path))
         m_set_path = "";
             else
-        m_set_path = towx(path);
+        m_set_path = path;
         
     m_structure = g_app->getDatabase()->describeTable(path);
 

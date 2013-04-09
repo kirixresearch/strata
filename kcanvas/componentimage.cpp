@@ -47,16 +47,6 @@ static const char* xpm_brokenimage[] = {
 };
 
 
-inline wxString towx(const char* s)
-{
-#ifdef _UNICODE
-    return wxString::From8BitData(s);
-#else
-    return s;
-#endif
-}
-
-
 CompImage::CompImage()
 {
     // properties
@@ -269,7 +259,7 @@ void CompImage::setImage(const wxImage& image)
     base64_buf[base64_len] = 0;
 
     // set the property
-    setProperty(PROP_CONTENT_VALUE, towx(base64_buf));
+    setProperty(PROP_CONTENT_VALUE, base64_buf);
 
     delete[] raw_buf;
     delete[] base64_buf;

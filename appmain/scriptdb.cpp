@@ -1048,7 +1048,7 @@ bool DbBulkInsert::init(tango::IDatabasePtr db,
     }
      else
     {
-        wxStringTokenizer t(towx(columns), wxT(","));
+        wxStringTokenizer t(columns, ",");
         while (t.HasMoreTokens())
         {
             wxString token = t.GetNextToken();

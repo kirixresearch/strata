@@ -36,7 +36,7 @@ wxString InetAuth::getAuthServer()
                 {
                     if (location_node.getNodeValue().length() > 0)
                     {
-                        server = towx(location_node.getNodeValue());
+                        server = location_node.getNodeValue();
                     }
                 }
             }
@@ -84,7 +84,7 @@ int InetAuth::installLicense(paladin::Authentication* global_auth,
     int err = errorFailure;
 
     paladin::actcode_t act_code;
-    act_code = paladin::getCodeFromString(towx(actcode_node.getNodeValue()).mbc_str());
+    act_code = paladin::getCodeFromString(kl::tostring(actcode_node.getNodeValue()).c_str());
 
     if (act_code == 0)
         return errorFailure;
@@ -229,7 +229,7 @@ int InetAuth::authorize(paladin::Authentication* auth,
                         const wxString& license_password)
 {
     // get product_tag and site_code from paladin
-    wxString product_tag = towx(auth->getAppTag());
+    wxString product_tag = auth->getAppTag();
     paladin::sitecode_t code = auth->getSiteCode();
     char szcode[255];
     paladin::getStringFromCode(code, szcode, false);
@@ -311,16 +311,16 @@ int InetAuth::deauthorize(paladin::Authentication* auth,
                           const wxString& license_login,
                           const wxString& license_password)
 {
-    // -- get product_tag and site_code from paladin --
-    wxString product_tag = towx(auth->getAppTag());
+    // get product_tag and site_code from paladin
+    wxString product_tag = auth->getAppTag();
     paladin::sitecode_t code = auth->getSiteCode();
     char szcode[255];
     paladin::getStringFromCode(code, szcode, false);
     wxString site_code = wxString::From8BitData(szcode);
 
-    // -- create a check variable.  A check variable is
-    //    a CRC32 of the site code.  This will prevent
-    //    undesired manual access to this url --
+    // create a check variable.  A check variable is
+    // a CRC32 of the site code.  This will prevent
+    // undesired manual access to this url
 
     unsigned int crc = paladin::crc32((unsigned char*)szcode, strlen(szcode));
     wxString check;

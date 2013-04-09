@@ -129,7 +129,7 @@ bool MergePanel::initDoc(IFramePtr frame,
             std::wstring name = kl::afterLast(path, '/');
             
             caption += wxT(" - [");
-            caption += towx(name);
+            caption += name;
             caption += wxT("]");
         }
 

@@ -1243,7 +1243,7 @@ bool AppController::init()
     // load frame perspective
     
     if (perspective.length() > 0)
-        m_frame->getAuiManager().LoadPerspective(towx(perspective), false);
+        m_frame->getAuiManager().LoadPerspective(perspective, false);
     
     
     // create the relationship diagram watcher (watches for files that are
@@ -4407,7 +4407,7 @@ bool AppController::openAny(const wxString& _location,
                     if (cstr == L"")
                     {
                         node = JsonConfig::loadFromDb(g_app->getDatabase(), rpath);
-                        location = towx(rpath);
+                        location = rpath;
                     }
                 }
             }
@@ -4784,7 +4784,7 @@ void AppController::onOpenDataViewFinished(jobs::IJobPtr query_job)
         return;
 
     ITableDocPtr doc = TableDocMgr::createTableDoc();
-    if (!doc->open(towx(table_path), iter))
+    if (!doc->open(table_path, iter))
     {
         wxFAIL_MSG(wxT("ITableDoc::open() returned false"));
         return;
@@ -4858,7 +4858,7 @@ bool AppController::openTemplate(const wxString& location,
         kl::JsonNode type_node = kpp_template_node["type"];
         if (!type_node.isOk())
             return false;
-        wxString type = towx(type_node.getString());
+        wxString type = type_node.getString();
 
         if (!type.CmpNoCase(wxT("import")))
         {
@@ -4943,7 +4943,7 @@ static void getAllSets(tango::IDatabasePtr db_ptr,
         if (item_type == tango::filetypeFolder)
         {
             wxString folder_path = path;
-            folder_path += towx(info->getName());
+            folder_path += info->getName();
             folder_path += wxT("/");
 
             // recursively traverse this folder
@@ -4956,7 +4956,7 @@ static void getAllSets(tango::IDatabasePtr db_ptr,
             if (name.Length() == 0 || name.Last() != wxT('/'))
                 name += wxT("/");
                 
-            name += towx(info->getName());
+            name += info->getName();
 
             retval.push_back(name);
         }
@@ -5574,7 +5574,7 @@ jobs::IJobPtr AppController::executeScript(const wxString& _location,
             // utf-8
             wchar_t* tempbuf = new wchar_t[buf_len+1];
             kl::utf8_utf8tow(tempbuf, buf_len+1, (char*)ptr+3, buf_len-3);
-            value = towx(tempbuf);
+            value = tempbuf;
             delete[] tempbuf;
         }
          else
@@ -5741,7 +5741,7 @@ jobs::IJobPtr AppController::execute(const wxString& location)
         if (!type_node.isOk())
             return xcm::null;
 
-        wxString type = towx(type_node.getString());
+        wxString type = type_node.getString();
 
         if (type == L"query")
         {
@@ -5839,11 +5839,11 @@ static void addDefaultItemsToProject(const wxString& project_path)
     for (int i = 0; i < stream_count; ++i)
     {
         // don't get hidden stream names
-        wxString stream_name = towx(stream_enum->getStreamName(i));
+        wxString stream_name = stream_enum->getStreamName(i);
         if (*(stream_name.c_str()) == '.')
             continue;
         
-        item_names.push_back(towx(stream_enum->getStreamName(i)));
+        item_names.push_back(stream_enum->getStreamName(i));
     }
     
     delete stream_enum;

@@ -408,28 +408,28 @@ void ImportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
     // check to make sure all the types are the same
     for (it = paths.begin(); it != paths.end(); ++it)
     {
-        wxString name = towx(*it);
+        wxString name = *it;
         
         if (first_ext.IsEmpty())
-            first_ext = name.AfterLast(wxT('.'));
+            first_ext = name.AfterLast('.');
         
         // specify what type of import we're doing based on the file extension
-        if (first_ext.CmpNoCase(wxT("kpg")) == 0)
+        if (first_ext.CmpNoCase("kpg") == 0)
             m_template.m_ii.type = dbtypePackage;
-         else if (first_ext.CmpNoCase(wxT("mdb")) == 0)
+         else if (first_ext.CmpNoCase("mdb") == 0)
             m_template.m_ii.type = dbtypeAccess;
-         else if (first_ext.CmpNoCase(wxT("accdb")) == 0)
+         else if (first_ext.CmpNoCase("accdb") == 0)
             m_template.m_ii.type = dbtypeAccess;
-         else if (first_ext.CmpNoCase(wxT("xls")) == 0)
+         else if (first_ext.CmpNoCase("xls") == 0)
             m_template.m_ii.type = dbtypeExcel;
-         else if (first_ext.CmpNoCase(wxT("xlsx")) == 0)
+         else if (first_ext.CmpNoCase("xlsx") == 0)
             m_template.m_ii.type = dbtypeExcel;
-         else if (first_ext.CmpNoCase(wxT("dbf")) == 0)
+         else if (first_ext.CmpNoCase("dbf") == 0)
             m_template.m_ii.type = dbtypeXbase;
          else
             m_template.m_ii.type = dbtypeDelimitedText;
             
-        ext = name.AfterLast(wxT('.'));
+        ext = name.AfterLast('.');
         
         // Package, Microsoft Access and Microsoft Excel files will all
         // populate their table lists in different locations, but for single
@@ -472,36 +472,36 @@ void ImportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
     
     for (it = paths.begin(); it != paths.end(); ++it)
     {
-        wxString name = towx(*it);
-        ext = name.AfterLast(wxT('.'));
+        wxString name = *it;
+        ext = name.AfterLast('.');
 
         // we can only import one of these types of files at a time
         
         if (ext.CmpNoCase(wxT("kpg")) == 0 && paths.size() > 1)
         {
             appMessageBox(_("Only one package file can be imported at a time.  Please choose only one package file to continue."),
-                               _("Too many files"),
-                               wxOK | wxICON_EXCLAMATION | wxCENTER);
+                          _("Too many files"),
+                          wxOK | wxICON_EXCLAMATION | wxCENTER);
 
             m_template.m_ii.tables.clear();
             *allow = false;
             return;
         }
-         else if ((ext.CmpNoCase(wxT("mdb")) == 0 || ext.CmpNoCase(wxT("accdb")) == 0) && paths.size() > 1)
+         else if ((ext.CmpNoCase("mdb") == 0 || ext.CmpNoCase("accdb") == 0) && paths.size() > 1)
         {
             appMessageBox(_("Only one Microsoft Access file can be imported at a time.  Please choose only one Microsoft Access file to continue."),
-                               _("Too many files"),
-                               wxOK | wxICON_EXCLAMATION | wxCENTER);
+                          _("Too many files"),
+                          wxOK | wxICON_EXCLAMATION | wxCENTER);
 
             m_template.m_ii.tables.clear();
             *allow = false;
             return;
         }
-         else if ((ext.CmpNoCase(wxT("xls")) == 0 || ext.CmpNoCase(wxT("xlsx")) == 0) && paths.size() > 1)
+         else if ((ext.CmpNoCase("xls") == 0 || ext.CmpNoCase("xlsx") == 0) && paths.size() > 1)
         {
             appMessageBox(_("Only one Microsoft Excel file can be imported at a time.  Please choose only one Microsoft Excel file to continue."),
-                               _("Too many files"),
-                               wxOK | wxICON_EXCLAMATION | wxCENTER);
+                          _("Too many files"),
+                          wxOK | wxICON_EXCLAMATION | wxCENTER);
 
             m_template.m_ii.tables.clear();
             *allow = false;

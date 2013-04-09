@@ -49,7 +49,7 @@ ListViewItem::~ListViewItem()
 void ListViewItem::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
     if (env->getParamCount() > 0)
-        m_text = towx(env->getParam(0)->getString());
+        m_text = env->getParam(0)->getString();
 
     if (env->getParamCount() > 1)
     {
@@ -81,9 +81,9 @@ void ListViewItem::setText(kscript::ExprEnv* env, kscript::Value* retval)
     if (idx != -1)
     {
         if (env->getParamCount() > 0)
-            m_text = towx(env->getParam(0)->getString());
+            m_text = env->getParam(0)->getString();
              else
-            m_text = wxT("");
+            m_text = "";
 
         if (m_owner && m_owner->isControlValid())
             m_owner->m_ctrl->SetItemText(idx, m_text);
@@ -199,7 +199,7 @@ void ListViewItem::setColumnText(kscript::ExprEnv* env, kscript::Value* retval)
         return;
     
     int idx = env->getParam(0)->getInteger();
-    wxString text = towx(env->getParam(1)->getString());
+    wxString text = env->getParam(1)->getString();
     
     if (idx < 0)
         return;
@@ -907,7 +907,7 @@ void ListView::findItem(kscript::ExprEnv* env, kscript::Value* retval)
         return;
     
     // get the find string
-    wxString s = towx(env->getParam(0)->getString());
+    wxString s = env->getParam(0)->getString();
     
     // get the start index
     int start_idx = -1;
@@ -1251,7 +1251,7 @@ void ListView::addColumn(kscript::ExprEnv* env, kscript::Value* retval)
             return;
     }
        
-    m_ctrl->InsertColumn(m_ctrl->GetColumnCount(), towx(col_text), wx_col_align, col_width);
+    m_ctrl->InsertColumn(m_ctrl->GetColumnCount(), col_text, wx_col_align, col_width);
     
     retval->setBoolean(true);
 }

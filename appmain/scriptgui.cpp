@@ -1541,7 +1541,7 @@ void Form::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     // get user input values
     if (env->getParamCount() > 0)
     {
-        caption = towx(env->getParam(0)->getString());
+        caption = env->getParam(0)->getString();
         m_caption = caption;
     }
     
@@ -1734,7 +1734,7 @@ void Form::enableForm(bool enabled)
 
 void Form::setCaption(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    m_caption = towx(env->getParam(0)->getString());
+    m_caption = env->getParam(0)->getString();
     
     if (m_form_frame)
     {
@@ -2772,7 +2772,7 @@ void BorderBox::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     
     // get user input values
     if (param_count > 0)
-        label = towx(env->getParam(0)->getString());
+        label = env->getParam(0)->getString();
     if (param_count > 1)
         m_x = env->getParam(1)->getInteger();
     if (param_count > 2)
@@ -2961,7 +2961,7 @@ void PictureBox::setImage(kscript::ExprEnv* env, kscript::Value* retval)
 
 void PictureBox::setImageFromFile(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    wxString fname = towx(env->getParam(0)->getString());
+    wxString fname = env->getParam(0)->getString();
 
     if (!m_img.LoadFile(fname))
     {

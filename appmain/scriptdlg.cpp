@@ -63,7 +63,7 @@ void FileDialog::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 
 void FileDialog::setDirectory(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    m_default_dir = towx(env->getParam(0)->getString());
+    m_default_dir = env->getParam(0)->getString();
 }
 
 // (METHOD) FileDialog.getDirectory
@@ -91,7 +91,7 @@ void FileDialog::getDirectory(kscript::ExprEnv* env, kscript::Value* retval)
 
 void FileDialog::setCaption(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    m_message = towx(env->getParam(0)->getString());
+    m_message = env->getParam(0)->getString();
 }
 
 // (METHOD) FileDialog.getCaption
@@ -121,7 +121,7 @@ void FileDialog::getCaption(kscript::ExprEnv* env, kscript::Value* retval)
 
 void FileDialog::setFilter(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    m_filter = towx(env->getParam(0)->getString());
+    m_filter = env->getParam(0)->getString();
 }
 
 // (METHOD) FileDialog.getFilter
@@ -462,7 +462,7 @@ void DirectoryDialog::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 
 void DirectoryDialog::setPath(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    m_path = towx(env->getParam(0)->getString());
+    m_path = env->getParam(0)->getString();
 }
 
 // (METHOD) DirectoryDialog.getPath
@@ -490,7 +490,7 @@ void DirectoryDialog::getPath(kscript::ExprEnv* env, kscript::Value* retval)
 
 void DirectoryDialog::setMessage(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    m_message = towx(env->getParam(0)->getString());
+    m_message = env->getParam(0)->getString();
 }
 
 // (METHOD) DirectoryDialog.getMessage
@@ -580,7 +580,7 @@ void TextEntryDialog::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 
 void TextEntryDialog::setText(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    m_text = towx(env->getParam(0)->getString());
+    m_text = env->getParam(0)->getString();
 }
 
 // (METHOD) TextEntryDialog.getText
@@ -608,7 +608,7 @@ void TextEntryDialog::getText(kscript::ExprEnv* env, kscript::Value* retval)
 
 void TextEntryDialog::setMessage(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    m_message = towx(env->getParam(0)->getString());
+    m_message = env->getParam(0)->getString();
 }
 
 // (METHOD) TextEntryDialog.getMessage
@@ -636,7 +636,7 @@ void TextEntryDialog::getMessage(kscript::ExprEnv* env, kscript::Value* retval)
 
 void TextEntryDialog::setCaption(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    m_caption = towx(env->getParam(0)->getString());
+    m_caption = env->getParam(0)->getString();
 }
 
 // (METHOD) TextEntryDialog.getCaption
@@ -761,7 +761,7 @@ void ColorDialog::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 
 void ColorDialog::setCaption(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    m_caption = towx(env->getParam(0)->getString());
+    m_caption = env->getParam(0)->getString();
 }
 
 // (METHOD) ColorDialog.getCaption
@@ -1032,7 +1032,7 @@ void ProjectFileDialog::constructor(kscript::ExprEnv* env, kscript::Value* retva
 
 void ProjectFileDialog::setPath(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    m_path = towx(env->getParam(0)->getString());
+    m_path = env->getParam(0)->getString();
 }
 
 // (METHOD) ProjectFileDialog.getPath
@@ -1060,7 +1060,7 @@ void ProjectFileDialog::getPath(kscript::ExprEnv* env, kscript::Value* retval)
 
 void ProjectFileDialog::setCaption(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    m_caption = towx(env->getParam(0)->getString());
+    m_caption = env->getParam(0)->getString();
     m_caption_set = true;
 }
 

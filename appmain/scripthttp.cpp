@@ -710,16 +710,16 @@ void HttpRequest::setPostValue(kscript::ExprEnv* env, kscript::Value* retval)
         // append the value to our post structure (note
         // this is only used in the case of multipart posts)
         curl_formadd(&m_formfields, &m_formfieldslast,
-                     CURLFORM_COPYNAME, (const char*)multipartEncode(towx(field)).mbc_str(), //field.c_str(),
-                     CURLFORM_COPYCONTENTS, (const char*)multipartEncode(towx(value)).mbc_str(), //value.c_str(), 
+                     CURLFORM_COPYNAME, (const char*)multipartEncode(field).mbc_str(), //field.c_str(),
+                     CURLFORM_COPYCONTENTS, (const char*)multipartEncode(value).mbc_str(), //value.c_str(), 
                      CURLFORM_END);
         
         // append the value to our post string (regular, non-multipart post)
         if (m_post_string.length() > 0)
             m_post_string += "&";
-        m_post_string += (const char*)urlEscape(towx(field)).mbc_str();
+        m_post_string += (const char*)urlEscape(field).mbc_str();
         m_post_string += "=";
-        m_post_string += (const char*)urlEscape(towx(value)).mbc_str();
+        m_post_string += (const char*)urlEscape(value).mbc_str();
     }
      else
     {
@@ -810,7 +810,7 @@ void HttpRequest::setPostData(kscript::ExprEnv* env, kscript::Value* retval)
     std::wstring str = env->getParam(0)->getString();
     if (m_auto_encode)
     {
-        m_post_string = urlEscape(towx(str)).mbc_str();
+        m_post_string = urlEscape(str).mbc_str();
     }
      else
     {

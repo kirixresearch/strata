@@ -127,8 +127,8 @@ static std::vector<wxString> getColumnsFromSource(const std::wstring& source)
         if (!type_node.isOk())
             return columns;
 
-        wxString type = towx(type_node.getString());
-        if (!type.CmpNoCase(wxT("query")))
+        wxString type = type_node.getString();
+        if (!type.CmpNoCase("query"))
         {
             QueryTemplate t;
             if (!t.load(source))

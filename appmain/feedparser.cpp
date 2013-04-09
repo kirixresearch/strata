@@ -108,17 +108,17 @@ void FeedParser::parseRSSEntry(kl::xmlnode& item_node)
     
     FeedItem item;
     if (!title_node.isEmpty())
-        item.title = towx(title_node.getNodeValue());
+        item.title = title_node.getNodeValue();
     if (!link_node.isEmpty())
-        item.link = towx(link_node.getNodeValue());
+        item.link = link_node.getNodeValue();
     if (!description_node.isEmpty())
-        item.description = towx(description_node.getNodeValue());
+        item.description = description_node.getNodeValue();
     if (!dcdate_node.isEmpty())
-        item.publish_date = towx(dcdate_node.getNodeValue());
+        item.publish_date = dcdate_node.getNodeValue();
     if (!pubdate_node.isEmpty())
-        item.publish_date = towx(pubdate_node.getNodeValue());
+        item.publish_date = pubdate_node.getNodeValue();
     if (!guid_node.isEmpty())
-        item.guid = towx(guid_node.getNodeValue());
+        item.guid = guid_node.getNodeValue();
     
     if (item.guid.IsEmpty())
     {
@@ -172,7 +172,7 @@ void FeedParser::parseAtomEntry(kl::xmlnode& item_node)
     
     FeedItem item;
     if (!title_node.isEmpty())
-        item.title = towx(title_node.getNodeValue());
+        item.title = title_node.getNodeValue();
     if (!link_node.isEmpty())
     {
         kl::xmlproperty& rel_prop = link_node.getProperty(L"rel");
@@ -182,18 +182,18 @@ void FeedParser::parseAtomEntry(kl::xmlnode& item_node)
         // type of href, but if there isn't one of that kind, we'll take any other
         
         if (item.link.empty())
-            item.link = towx(href_prop.value);
+            item.link = href_prop.value;
         if (rel_prop.isEmpty() || rel_prop.value == L"alternate")
-            item.link = towx(href_prop.value);
+            item.link = href_prop.value;
     }
     if (!content_node.isEmpty())
-        item.description = towx(content_node.getNodeValue());
+        item.description = content_node.getNodeValue();
     if (!summary_node.isEmpty())
-        item.summary = towx(summary_node.getNodeValue());
+        item.summary = summary_node.getNodeValue();
     if (!updated_node.isEmpty())
-        item.publish_date = towx(updated_node.getNodeValue());
+        item.publish_date = updated_node.getNodeValue();
     if (!id_node.isEmpty())
-        item.guid = towx(id_node.getNodeValue());
+        item.guid = id_node.getNodeValue();
     
     item.guid.Trim(true);
     item.guid.Trim(false);

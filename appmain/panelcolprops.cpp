@@ -241,7 +241,7 @@ bool ColPropsPanel::initDoc(IFramePtr frame,
     if (!isTemporaryTable(m_path))
     {
         caption += " - [";
-        caption += towx(m_path);
+        caption += m_path;
         caption += "]";
     }
 
@@ -328,11 +328,11 @@ void ColPropsPanel::populate()
         return;
 
 
-    m_orig_name = towx(colinfo->getName());
+    m_orig_name = colinfo->getName();
     m_orig_type = colinfo->getType();
     m_orig_width = colinfo->getWidth();
     m_orig_scale = colinfo->getScale();
-    m_orig_expr = towx(colinfo->getExpression());
+    m_orig_expr = colinfo->getExpression();
 
     tango::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
     m_orig_existed = structure->getColumnExist(towstr(m_orig_name));
@@ -365,16 +365,16 @@ void ColPropsPanel::populate()
     setScale(colinfo->getScale());
 
     // a kludge to pacify Nate...he didn't like the ""
-    wxString expr = towx(colinfo->getExpression());
+    wxString expr = colinfo->getExpression();
 
-    if (expr == wxT("\"\""))
+    if (expr == "\"\"")
     {
-        setExpression(wxT(""));
-        m_orig_expr = wxT("");
+        setExpression("");
+        m_orig_expr = "";
     }
      else
     {
-        setExpression(towx(colinfo->getExpression()));
+        setExpression(colinfo->getExpression());
     }
 
     updateSpinBoxes();
@@ -1053,7 +1053,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
 
     // let other windows know that the structure was modified
     FrameworkEvent* evt = new FrameworkEvent(FRAMEWORK_EVT_TABLEDOC_STRUCTURE_MODIFIED);
-    evt->s_param = towx(m_path);
+    evt->s_param = m_path;
     g_app->getMainFrame()->postEvent(evt);
 
 

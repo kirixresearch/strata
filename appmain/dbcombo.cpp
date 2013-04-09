@@ -304,7 +304,7 @@ void DbComboPopup::setRootFolder(const wxString& path, const wxString& root_labe
         wxString project_name;
         
         if (attr)
-            project_name = towx(attr->getStringAttribute(tango::dbattrDatabaseName));
+            project_name = attr->getStringAttribute(tango::dbattrDatabaseName);
 
         if (project_name.Length() > 0)
             label = wxString::Format(_("Project '%s'"), project_name.c_str());

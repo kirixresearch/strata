@@ -866,12 +866,12 @@ int ImportJob::runJob()
 
                     if (dest_colinfo)
                     {
-                        fs.input_name = towx(src_colinfo->getName());
+                        fs.input_name = src_colinfo->getName();
                         fs.input_type = src_colinfo->getType();
                         fs.input_width = src_colinfo->getWidth();
                         fs.input_scale = src_colinfo->getScale();
                         fs.input_offset = src_colinfo->getOffset();
-                        fs.output_name = towx(dest_colinfo->getName());
+                        fs.output_name = dest_colinfo->getName();
                         fs.output_type = dest_colinfo->getType();
                         fs.output_width = dest_colinfo->getWidth();
                         fs.output_scale = dest_colinfo->getScale();
@@ -890,10 +890,10 @@ int ImportJob::runJob()
                     src_colinfo = src_struct->getColumnInfoByIdx(i);
 
                     out_fieldname = makeValidFieldName(
-                                             towx(src_colinfo->getName()),
+                                             src_colinfo->getName(),
                                              dest_db);
 
-                    fs.input_name = towx(src_colinfo->getName());
+                    fs.input_name = src_colinfo->getName();
                     fs.input_type = src_colinfo->getType();
                     fs.input_width = src_colinfo->getWidth();
                     fs.input_scale = src_colinfo->getScale();

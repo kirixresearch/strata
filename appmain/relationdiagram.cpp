@@ -1117,7 +1117,7 @@ void RelationBox::populate()
 
     for (i = 0; i < col_count; ++i)
     {
-        items.push_back(towx(m_structure->getColumnName(i)));
+        items.push_back(m_structure->getColumnName(i));
     }
 
     if (m_sort_order == RelationBox::SortAscending)
@@ -1152,7 +1152,7 @@ void RelationBox::populate()
             icon = GETBMP(gf_field_16);
         }
         
-        wxString text = makeProper(towx(col_info->getName()));
+        wxString text = makeProper(col_info->getName());
 
 
         m_grid->insertRow(-1);
@@ -1535,11 +1535,10 @@ bool RelationDiagram::save()
     }
 
     // save the job
-    wxString path;
-    path = wxString::Format(wxT("/.appdata/%s/panels/relmgrpanel"),
-                            towx(g_app->getDatabase()->getActiveUid()).c_str());
+    std::wstring path = kl::stdswprintf(L"/.appdata/%ls/panels/relmgrpanel",
+                                        g_app->getDatabase()->getActiveUid().c_str());
 
-    if (!JsonConfig::saveToDb(node, g_app->getDatabase(), towstr(path), L"application/vnd.kx.relmgrpanel"))
+    if (!JsonConfig::saveToDb(node, g_app->getDatabase(), path, L"application/vnd.kx.relmgrpanel"))
         return false;
 
     return true;
@@ -1555,11 +1554,10 @@ bool RelationDiagram::load()
     kl::JsonNode node;
 
     // try to load the manager info from the new location
-    wxString path;
-    path = wxString::Format(wxT("/.appdata/%s/panels/relmgrpanel"),
-                            towx(g_app->getDatabase()->getActiveUid()).c_str());
+    std::wstring path = kl::stdswprintf(L"/.appdata/%ls/panels/relmgrpanel",
+                            g_app->getDatabase()->getActiveUid().c_str());
 
-    node = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(path));
+    node = JsonConfig::loadFromDb(g_app->getDatabase(), path);
     if (node.isOk())
     {
         // file exists in the location; make sure it's in the right format
@@ -1580,7 +1578,7 @@ bool RelationDiagram::load()
             int x, y, width, height;
 
             kl::JsonNode boxes_child_node = *it;
-            path = towx(boxes_child_node["path"].getString());
+            path = boxes_child_node["path"].getString();
             x = boxes_child_node["xpos"].getInteger();
             y = boxes_child_node["ypos"].getInteger();
             width = boxes_child_node["width"].getInteger();
@@ -1607,9 +1605,8 @@ bool RelationDiagram::load()
     }
 
     // file isn't in the new location; try the old location in the old format
-    wxString old_location;
-    old_location = wxString::Format(wxT("/.appdata/%s/dcfe/relmgrpanel"),
-                             towx(g_app->getDatabase()->getActiveUid()).c_str());
+    wxString old_location = kl::stdswprintf(L"/.appdata/%ls/dcfe/relmgrpanel",
+                                            g_app->getDatabase()->getActiveUid().c_str());
 
     node = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(old_location));
     if (node.isOk())
@@ -1635,7 +1632,7 @@ bool RelationDiagram::load()
             int x, y, width, height;
 
             kl::JsonNode boxes_child_node = *it;
-            path = towx(boxes_child_node["path"].getString());
+            path = boxes_child_node["path"].getString();
             x = boxes_child_node["xpos"].getInteger();
             y = boxes_child_node["ypos"].getInteger();
             width = boxes_child_node["width"].getInteger();
@@ -2412,7 +2409,7 @@ void RelationDiagram::onSetStructureChanged(const wxString& set_path)
     for (i = 0; i < count; ++i)
     {
         tango::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
-        fieldnames.push_back(towx(colinfo->getName()));
+        fieldnames.push_back(colinfo->getName());
     }
     
     // check to see if we need to delete any relationship lines

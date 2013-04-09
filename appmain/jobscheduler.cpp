@@ -431,10 +431,10 @@ bool JobScheduler::save()
     }
 
     // save the job
-    wxString path = wxString::Format(wxT("/.appdata/%s/panels/jobscheduler"),
-                              towx(db->getActiveUid()).c_str());
+    std::wstring path = kl::stdswprintf(L"/.appdata/%ls/panels/jobscheduler",
+                                        db->getActiveUid().c_str());
 
-    if (!JsonConfig::saveToDb(node, g_app->getDatabase(), towstr(path), L"application/vnd.kx.jobscheduler"))
+    if (!JsonConfig::saveToDb(node, g_app->getDatabase(), path, L"application/vnd.kx.jobscheduler"))
         return false;
 
     // we may have just added a job that is about to run
@@ -452,17 +452,17 @@ bool JobScheduler::load()
         return false;
 
     // if the old jobs location exists, delete it
-    wxString old_location = wxString::Format(wxT("/.appdata/%s/dcfe/jobscheduler"),
-                                      towx(db->getActiveUid()).c_str());
+    std::wstring old_location = kl::stdswprintf(L"/.appdata/%ls/dcfe/jobscheduler",
+                                                db->getActiveUid().c_str());
 
-    if (db->getFileExist(towstr(old_location)))
-        db->deleteFile(towstr(old_location));
+    if (db->getFileExist(old_location))
+        db->deleteFile(old_location);
 
-    wxString path = wxString::Format(wxT("/.appdata/%s/panels/jobscheduler"),
-                              towx(db->getActiveUid()).c_str());
+    std::wstring path = kl::stdswprintf(L"/.appdata/%ls/panels/jobscheduler",
+                                        db->getActiveUid().c_str());
 
     // open the new location
-    kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(path));
+    kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), path);
     if (!node.isOk())
         return false;
 
@@ -508,7 +508,7 @@ bool JobScheduler::load()
         for (it_commands = commands_node_children.begin(); it_commands != it_commands_end; ++it_commands)
         {
             kl::JsonNode command_child_node = *it_commands;
-            job.commands.push_back(towx(command_child_node.getString()));
+            job.commands.push_back(command_child_node.getString());
         }
 
         calcNextRun(job);

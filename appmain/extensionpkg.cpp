@@ -351,14 +351,14 @@ bool streamToString(wxInputStream* stream, wxString& res_string)
         // little-endian UTF-16
         std::wstring temps;
         kl::ucsle2wstring(temps, buf+2, (data_len-2)/2);
-        res_string = towx(temps);
+        res_string = temps;
     }
      else if (buf[0] == 0xfe && buf[1] == 0xff)
     {
         // big-endian UTF-16
         std::wstring temps;
         kl::ucsbe2wstring(temps, buf+2, (data_len-2)/2);
-        res_string = towx(temps);
+        res_string = temps;
     }
      else
     {

@@ -348,7 +348,7 @@ void Graphics::drawText(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() < 3)
         return;
     
-    m_dc->DrawText(towx(env->getParam(0)->getString()),
+    m_dc->DrawText(env->getParam(0)->getString(),
                    env->getParam(1)->getInteger(),
                    env->getParam(2)->getInteger());
 }
@@ -551,24 +551,24 @@ void Graphics::fromBitmap(kscript::ExprEnv* env, void* param, kscript::Value* re
 
 wxColor getColorFromText(const wchar_t* text)
 {
-    wxString s = towx(text);
+    wxString s = text;
     s.MakeLower();
     
-    if (s == wxT("black"))
+    if (s == "black")
         return *wxBLACK;
-     else if (s == wxT("white"))
+     else if (s == "white")
         return *wxWHITE;
-     else if (s == wxT("red"))
+     else if (s == "red")
         return *wxRED;
-     else if (s == wxT("blue"))
+     else if (s == "blue")
         return *wxBLUE;
-     else if (s == wxT("green"))
+     else if (s == "green")
         return *wxGREEN;
-     else if (s == wxT("cyan"))
+     else if (s == "cyan")
         return *wxCYAN;
-     else if (s == wxT("grey") || s == wxT("gray"))
+     else if (s == "grey" || s == "gray")
         return wxColor(128,128,128);
-     else if (s == wxT("lightgrey") || s == wxT("lightgray"))
+     else if (s == "lightgrey" || s == "lightgray")
         return wxColor(192,192,192);
      
      return *wxBLACK;

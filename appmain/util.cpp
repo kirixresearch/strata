@@ -145,12 +145,12 @@ bool isUnicodeString(const std::wstring& val)
 
 wxString filenameToUrl(const wxString& _filename)
 {
-    return towx(kl::filenameToUrl(towstr(_filename)));
+    return kl::filenameToUrl(towstr(_filename));
 }
 
 wxString urlToFilename(const wxString& _url)
 {
-    return towx(kl::urlToFilename(towstr(_url)));
+    return kl::urlToFilename(towstr(_url));
 }
 
 void trimUnwantedUrlChars(wxString& str)
@@ -523,7 +523,7 @@ bool isKeyword(const wxString& str,
 
     std::vector<wxString> vec;
 
-    wxStringTokenizer t(towx(attr->getStringAttribute(tango::dbattrKeywords)), wxT(","));
+    wxStringTokenizer t(attr->getStringAttribute(tango::dbattrKeywords), ",");
     while (t.HasMoreTokens())
     {
         wxString s = t.GetNextToken();
@@ -568,8 +568,8 @@ bool isValidFieldName(const wxString& str,
         return false;
     }
 
-    wxString invalid_starting = towx(attr->getStringAttribute(tango::dbattrColumnInvalidStartingChars));
-    wxString invalid = towx(attr->getStringAttribute(tango::dbattrColumnInvalidChars));
+    wxString invalid_starting = attr->getStringAttribute(tango::dbattrColumnInvalidStartingChars);
+    wxString invalid = attr->getStringAttribute(tango::dbattrColumnInvalidChars);
 
     // test the content
     if (!isValid(str, invalid_starting, invalid, err_idx))
@@ -598,8 +598,8 @@ bool isValidObjectName(const wxString& str,
     if (isKeyword(str, db))
         return false;
 
-    wxString invalid_starting = towx(attr->getStringAttribute(tango::dbattrTableInvalidStartingChars));
-    wxString invalid = towx(attr->getStringAttribute(tango::dbattrTableInvalidChars));
+    wxString invalid_starting = attr->getStringAttribute(tango::dbattrTableInvalidStartingChars);
+    wxString invalid = attr->getStringAttribute(tango::dbattrTableInvalidChars);
 
     // test the content
     if (!isValid(str, invalid_starting, invalid, err_idx))
@@ -800,7 +800,7 @@ bool getRemotePathIfExists(wxString& path)
     // convert the path to the remote path of the connection
     if (cstr.length() == 0)
     {
-        path = towx(rpath);
+        path = rpath;
         return true;
     }
     
@@ -868,7 +868,7 @@ wxString getPhysPathFromMountPath(const wxString& database_path)
                 return res;
             }
             
-            conn_str = towx(cstr);
+            conn_str = cstr;
             break;
         }
     
@@ -935,8 +935,8 @@ bool getMountPointHelper(tango::IDatabasePtr& db, const wxString& _path, wxStrin
         std::wstring wcstr, wrpath;
         if (db->getMountPoint(towstr(path), wcstr, wrpath))
         {
-            rpath = wxT("");
-            cstr = towx(wcstr);
+            rpath = "";
+            cstr = wcstr;
             
             std::vector<wxString>::iterator it;
             for (it = parts.begin(); it != parts.end(); ++it)
@@ -946,7 +946,7 @@ bool getMountPointHelper(tango::IDatabasePtr& db, const wxString& _path, wxStrin
             }
             
             if (wrpath != L"" && wrpath != wxT("/"))
-                rpath.Prepend(towx(wrpath));
+                rpath.Prepend(wrpath);
             return true;
         }
 
@@ -2014,7 +2014,7 @@ wxString getUserDocumentFolder()
         return _T("/");
     }
     strcpy(path, home);
-    return towx(path);
+    return path;
 #endif
 
 }

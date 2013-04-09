@@ -579,14 +579,14 @@ void MainApp::initWebClient()
         ::wxGetEnv(wxT("ProgramFiles"), &program_files_dir);
     }
     if (program_files_dir.Length() == 0 || program_files_dir.Last() != '\\')
-        program_files_dir += wxT("\\");
+        program_files_dir += "\\";
     
     wxString system_dir;
     TCHAR system_buf[255];
     ::GetSystemDirectory(system_buf, 255);
-    system_dir = towx(system_buf);
+    system_dir = system_buf;
     if (system_dir.Length() == 0 || system_dir.Last() != '\\')
-        system_dir += wxT("\\");
+        system_dir += "\\";
 
     
     wxString dir1 = program_files_dir;
@@ -758,9 +758,9 @@ static void onMainScriptFinished(jobs::IJobPtr job)
 
 static void func_console_print(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {
-    wxString message = towx(env->m_eval_params[0]->getString());
-    message += wxT("\n");
-    wxPrintf(wxT("%s"), (const wxChar*)message.c_str());
+    wxString message = env->m_eval_params[0]->getString();
+    message += "\n";
+    wxPrintf("%s", (const wxChar*)message.c_str());
 }
 
 bool MainApp::runCommandLineScript()
@@ -958,7 +958,7 @@ wxString MainApp::getBookmarksFolder()
             kl::JsonNode path_node = root_node["path"];
             if (path_node.isOk())
             {
-                res = towx(path_node.getString());
+                res = path_node.getString();
                 if (res.Length() > 0)
                 {
                     if (res.Last() == wxT('/'))
@@ -1146,7 +1146,7 @@ wxString MainApp::getProjectName()
     if (attr.isNull())
         return wxT("");
 
-    return towx(attr->getStringAttribute(tango::dbattrDatabaseName));
+    return attr->getStringAttribute(tango::dbattrDatabaseName);
 }
 
 void MainApp::setProjectName(const wxString& name)
@@ -1158,7 +1158,7 @@ void MainApp::setProjectName(const wxString& name)
     if (attr.isNull())
         return;
 
-    wxString old_project_name = towx(attr->getStringAttribute(tango::dbattrDatabaseName));
+    wxString old_project_name = attr->getStringAttribute(tango::dbattrDatabaseName);
 
     attr->setStringAttribute(tango::dbattrDatabaseName, towstr(name));
 

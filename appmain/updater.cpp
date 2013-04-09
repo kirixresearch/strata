@@ -256,7 +256,7 @@ public:
         
         CurlAutoDestroy ad(m_curl);
 
-        wxString temps = towx(m_fetch_url);
+        wxString temps = m_fetch_url;
         if (temps.Find(wxT('?')) != -1)
             temps = temps.BeforeLast(wxT('?'));
         if (temps.Length() > 0 && temps.Last() == wxT('/'))
@@ -539,7 +539,7 @@ bool Updater::parseUpdateFile(const wxString& xml, UpdaterInfo& info)
                 std::wstring val = uid.getNodeValue();
                 kl::trim(val);
 
-                user = towx(kl::decryptString(val, APP_UPDATE_ENCRYPTIONKEY));
+                user = kl::decryptString(val, APP_UPDATE_ENCRYPTIONKEY);
                 user.Trim(true);
                 user.Trim(false);
             }
@@ -550,7 +550,7 @@ bool Updater::parseUpdateFile(const wxString& xml, UpdaterInfo& info)
                 std::wstring val = p.getNodeValue();
                 kl::trim(val);
 
-                pw = towx(kl::decryptString(val, APP_UPDATE_ENCRYPTIONKEY));
+                pw = kl::decryptString(val, APP_UPDATE_ENCRYPTIONKEY);
                 pw.Trim(true);
                 pw.Trim(false);
             }
@@ -560,7 +560,7 @@ bool Updater::parseUpdateFile(const wxString& xml, UpdaterInfo& info)
             {
                 std::wstring val = location.getNodeValue();
                 kl::trim(val);
-                fetch_url = towx(kl::decryptString(val, APP_UPDATE_ENCRYPTIONKEY));
+                fetch_url = kl::decryptString(val, APP_UPDATE_ENCRYPTIONKEY);
                 fetch_url.Trim(true);
                 fetch_url.Trim(false);
                 
@@ -618,17 +618,17 @@ static void onUpdateDownloadFinished(jobs::IJobPtr job)
                 cmd += path;
                 cmd += wxT(" ");
                 cmd += wxT("-C ");
-                cmd += towx(xf_get_temp_path());
+                cmd += xf_get_temp_path();
 
                 cmd = wxT("xdg-open ");
-                cmd += towx(xf_get_temp_path());
+                cmd += xf_get_temp_path();
 
                 ::wxExecute(cmd);
             }
              else
             {
                 cmd = wxT("xdg-open ");
-                cmd += towx(xf_get_temp_path());
+                cmd += xf_get_temp_path();
                 ::wxExecute(cmd);
             }
 
