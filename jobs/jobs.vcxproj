@@ -38,6 +38,7 @@
     <ClCompile Include="query.cpp" />
     <ClCompile Include="relationship.cpp" />
     <ClCompile Include="summarize.cpp" />
+    <ClCompile Include="transform.cpp" />
     <ClCompile Include="update.cpp" />
     <ClCompile Include="util.cpp" />
   </ItemGroup>
@@ -58,6 +59,7 @@
     <ClInclude Include="query.h" />
     <ClInclude Include="relationship.h" />
     <ClInclude Include="summarize.h" />
+    <ClInclude Include="transform.h" />
     <ClInclude Include="update.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="xdjobbase.h" />

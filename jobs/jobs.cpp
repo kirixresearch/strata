@@ -23,6 +23,7 @@
 #include "query.h"
 #include "relationship.h"
 #include "summarize.h"
+#include "transform.h"
 #include "update.h"
 
 
@@ -56,10 +57,12 @@ IJobPtr createJob(const std::wstring job_class)
         return static_cast<IJob*>(new RelationshipJob);
     if (job_class == L"application/vnd.kx.summarize-job")
         return static_cast<IJob*>(new SummarizeJob);
+    if (job_class == L"application/vnd.kx.transform-job")
+        return static_cast<IJob*>(new TransformJob);
     if (job_class == L"application/vnd.kx.update-job")
         return static_cast<IJob*>(new UpdateJob);
 
-    return xcm::null;        
+    return xcm::null;
 }
 
 
