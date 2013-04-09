@@ -327,6 +327,7 @@ public:
         hashsrc += m_db->getServer() + L";";
         hashsrc += m_db->getActiveUid() + L";";
         hashsrc += name;
+        kl::makeLower(hashsrc);
         object_id = kl::md5str(hashsrc);
         return object_id;
     }
