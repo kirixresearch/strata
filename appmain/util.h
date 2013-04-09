@@ -78,6 +78,11 @@
             {
                 // string is already a std::wstring -- we want to disallow this
             }
+
+            towstr(const wchar_t* s) : std::wstring(s)
+            {
+                // string is already a const wchar_t* -- we want to disallow this
+            }
     };
 
 #endif
