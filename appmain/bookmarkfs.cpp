@@ -21,34 +21,15 @@
 #include <shlobj.h>
 #endif
 
+static std::wstring g_bookmarks_path;
 
 static std::wstring getBookmarksLocation()
 {
-#ifdef WIN32
-    TCHAR tpath[MAX_PATH];
-    if (S_OK != SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, tpath))
-        return L"";
+    if (!g_bookmarks_path.empty())
+        return g_bookmarks_path;
 
-    std::wstring path = kl::towstring(tpath);
-    path += L"\\";
-    path += kl::towstring(APP_CONFIG_KEY);
-
-    if (!xf_get_directory_exist(path))
-    {
-        if (!xf_mkdir(path))
-            return L"";
-    }
-
-    path += L"\\";
-    path += kl::towstring(APP_COMPANY_KEY);
-
-    if (!xf_get_directory_exist(path))
-    {
-        if (!xf_mkdir(path))
-            return L"";
-    }
-
-    path += L"\\";
+    std::wstring path = g_app->getAppDataPath();
+    path += PATH_SEPARATOR_CHAR;
     path += L"Bookmarks";
 
     if (!xf_get_directory_exist(path))
@@ -57,40 +38,8 @@ static std::wstring getBookmarksLocation()
             return L"";
     }
 
+    g_bookmarks_path = path;
     return path;
-#else
-
-    std::wstring path = towstr(wxStandardPaths::Get().GetDocumentsDir());
-    path += L"/.";
-    path += kl::towstring(APP_CONFIG_KEY);
-
-    if (!xf_get_directory_exist(path))
-    {
-        if (!xf_mkdir(path)) // TODO: add directory mode
-            return L"";
-    }
-
-    path += L"/";
-    path += kl::towstring(APP_COMPANY_KEY);
-
-    if (!xf_get_directory_exist(path))
-    {
-        if (!xf_mkdir(path))
-            return L"";
-    }
-
-    path += L"/";
-    path += L"Bookmarks";
-
-    if (!xf_get_directory_exist(path))
-    {
-        if (!xf_mkdir(path))
-            return L"";
-    }
-
-    return path;
-
-#endif
 }
 
 
