@@ -561,18 +561,6 @@ void PgsqlDatabase::close()
 }
 
 
-
-
-void PgsqlDatabase::setDatabaseName(const std::wstring& name)
-{
-    m_db_name = name;
-}
-
-std::wstring PgsqlDatabase::getDatabaseName()
-{
-    return m_db_name;
-}
-
 int PgsqlDatabase::getDatabaseType()
 {
     return m_db_type;
