@@ -41,6 +41,7 @@ friend class PgsqlSet;
 friend class PgsqlRowInserter;
 friend class PgsqlIterator;
 friend class PgsqlStream;
+friend class PgsqlFileInfo;
 
     XCM_CLASS_NAME("xdpgsql.Database")
     XCM_BEGIN_INTERFACE_MAP(PgsqlDatabase)

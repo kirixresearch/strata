@@ -33,7 +33,7 @@
 #include <kl/portable.h>
 #include <kl/string.h>
 #include <kl/utf8.h>
-
+#include <kl/md5.h>
 
 const wchar_t* sql92_keywords =
                 L"ABSOLUTE,ACTION,ADA,ADD,ALL,ALLOCATE,ALTER,AND,"
@@ -319,9 +319,22 @@ public:
         return primary_key;
     }
     
+    const std::wstring& getObjectId()
+    {
+        if (!object_id.empty())
+            return object_id;
+        std::wstring hashsrc;
+        hashsrc += m_db->getServer() + L";";
+        hashsrc += m_db->getActiveUid() + L";";
+        hashsrc += name;
+        object_id = kl::md5str(hashsrc);
+        return object_id;
+    }
+
 private:
 
     PgsqlDatabase* m_db;
+    
 };
 
 
