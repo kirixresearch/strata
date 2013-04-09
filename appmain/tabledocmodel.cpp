@@ -617,7 +617,7 @@ public:
     bool writeToNode(kl::JsonNode& node)
     {
         node["object_id"] = m_id;
-        node["description"] = towstr(m_description);
+        node["description"] = m_description;
         node["row_size"] = m_row_size;
         node["columns"].setArray();
         kl::JsonNode columns = node["columns"];

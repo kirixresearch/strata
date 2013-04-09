@@ -3108,7 +3108,7 @@ void TableDoc::onFilterJobFinished(jobs::IJobPtr job)
     {
         kl::JsonNode params_node;
         params_node.fromString(job->getParameters());
-        m_filter = towstr(params_node["where"].getString());
+        m_filter = params_node["where"].getString();
 
         setBrowseSet(iter->getTable(), iter);
     }

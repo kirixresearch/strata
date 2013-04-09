@@ -3567,7 +3567,7 @@ void DbDoc::onDragDrop(IFsItemPtr target,
         }
          else
         {
-            if (db->moveFile(towstr(src_path), towstr(dest_path)))
+            if (db->moveFile(src_path, dest_path))
             {
                 if (tree_data->getSourceId() != ID_Toolbar_Link)
                 {

@@ -753,7 +753,7 @@ bool PkgFile::getAllDirEntries(std::vector<PkgDirEntry>& entries)
 
             if (m_version == 1)
             {
-                entry.stream_name = towstr((char*)dir_entry+32);
+                entry.stream_name = towstr((const char*)dir_entry+32);
             }
              else
             {

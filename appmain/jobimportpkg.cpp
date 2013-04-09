@@ -218,7 +218,7 @@ bool ImportPkgJob::importSet(PkgStreamReader* reader,
     }
 
 
-    tango::IRowInserterPtr sp_inserter = db->bulkInsert(towstr(info->output_path));
+    tango::IRowInserterPtr sp_inserter = db->bulkInsert(info->output_path);
     tango::IRowInserter* inserter = sp_inserter.p;
     if (!inserter)
     {
@@ -370,7 +370,7 @@ bool ImportPkgJob::importSet(PkgStreamReader* reader,
     if (node_idx != -1)
     {
         
-        tango::IFileInfoPtr file_info = db->getFileInfo(towstr(info->output_path));
+        tango::IFileInfoPtr file_info = db->getFileInfo(info->output_path);
         if (file_info.isOk())
         {
             std::wstring set_id = file_info->getObjectId();
@@ -420,8 +420,8 @@ bool ImportPkgJob::importMount(PkgStreamReader* reader,
         rpath = kl::decryptString(rpath, PASSWORD_KEY);
         
         
-    db->deleteFile(towstr(info->output_path));
-    db->setMountPoint(towstr(info->output_path), cstr, rpath);
+    db->deleteFile(info->output_path);
+    db->setMountPoint(info->output_path, cstr, rpath);
 
     m_job_info->incrementCurrentCount(1.0);
 
@@ -442,7 +442,7 @@ int ImportPkgJob::runJob()
         m_job_info->setTitle(towstr(_("Importing from package file")));
 
     PkgFile pkg;
-    if (!pkg.open(towstr(m_filename), PkgFile::modeRead))
+    if (!pkg.open(m_filename, PkgFile::modeRead))
     {
         // could not open package file
         m_job_info->setState(jobStateFailed);
@@ -472,10 +472,10 @@ int ImportPkgJob::runJob()
         if (tn.empty() || fn.empty())
             m_job_info->setTitle(towstr(_("Importing from package file")));
              else
-            m_job_info->setTitle(towstr(title));
+            m_job_info->setTitle(title);
 
 
-        PkgStreamReader* reader = pkg.readStream(towstr(it->stream_name));
+        PkgStreamReader* reader = pkg.readStream(it->stream_name);
         if (!reader)
             continue;
 
@@ -538,7 +538,7 @@ int ImportPkgJob::runJob()
 
 
             PkgDirEntry entry;
-            if (!pkg_enum->getStreamInfo(towstr(it->stream_name), entry))
+            if (!pkg_enum->getStreamInfo(it->stream_name, entry))
             {
                 continue;
             }
@@ -567,7 +567,7 @@ int ImportPkgJob::runJob()
     
     for (it = m_info.begin(); it != m_info.end(); ++it)
     {
-        PkgStreamReader* reader = pkg.readStream(towstr(it->stream_name));
+        PkgStreamReader* reader = pkg.readStream(it->stream_name);
         if (!reader)
             continue;
 

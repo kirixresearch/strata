@@ -107,7 +107,7 @@ void tabledocview2xml(ITableDocViewPtr view, kl::xmlnode& node)
 
     kl::xmlnode& description_node = node.addChild();
     description_node.setNodeName(L"description");
-    description_node.setNodeValue(towstr(view->getDescription()));
+    description_node.setNodeValue(view->getDescription());
 
     kl::xmlnode& colcount_node = node.addChild();
     colcount_node.setNodeName(L"column_count");
@@ -124,7 +124,7 @@ void tabledocview2xml(ITableDocViewPtr view, kl::xmlnode& node)
         kl::xmlnode& col_node = columns_node.addChild();
         col_node.setNodeName(L"column");
 
-        col_node.addChild(L"name", towstr(viewcol->getName()));
+        col_node.addChild(L"name", viewcol->getName());
         col_node.addChild(L"size", viewcol->getSize());
         col_node.addChild(L"fgcolor", color2int(viewcol->getForegroundColor()));
         col_node.addChild(L"bgcolor", color2int(viewcol->getBackgroundColor()));
@@ -230,11 +230,11 @@ void tabledocmodel2xml(ITableDocModelPtr model, kl::xmlnode& root)
 
         kl::xmlnode& description_node = mark_node.addChild();
         description_node.setNodeName(L"description");
-        description_node.setNodeValue(towstr(mark->getDescription()));
+        description_node.setNodeValue(mark->getDescription());
 
         kl::xmlnode& expression_node = mark_node.addChild();
         expression_node.setNodeName(L"expression");
-        expression_node.setNodeValue(towstr(mark->getExpression()));
+        expression_node.setNodeValue(mark->getExpression());
 
         kl::xmlnode& markactive_node = mark_node.addChild();
         markactive_node.setNodeName(L"mark_active");
@@ -838,9 +838,13 @@ bool ExportPkgJob::writeSetStream(tango::IDatabasePtr& db,
 }
 
 
-static void addFolder(std::vector<PkgStreamInfo>& info, tango::IDatabasePtr& db, const std::wstring& path, const std::wstring& destination_base, bool compressed)
+static void addFolder(std::vector<PkgStreamInfo>& info,
+                      tango::IDatabasePtr& db,
+                      const std::wstring& path,
+                      const std::wstring& destination_base,
+                      bool compressed)
 {
-    tango::IFileInfoEnumPtr files = db->getFolderInfo(towstr(path));
+    tango::IFileInfoEnumPtr files = db->getFolderInfo(path);
     if (files.isOk())
     {
         size_t i, count = files->size();

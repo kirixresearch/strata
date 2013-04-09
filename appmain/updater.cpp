@@ -539,7 +539,7 @@ bool Updater::parseUpdateFile(const wxString& xml, UpdaterInfo& info)
                 std::wstring val = uid.getNodeValue();
                 kl::trim(val);
 
-                user = towx(kl::decryptString(val, towstr(APP_UPDATE_ENCRYPTIONKEY)));
+                user = towx(kl::decryptString(val, APP_UPDATE_ENCRYPTIONKEY));
                 user.Trim(true);
                 user.Trim(false);
             }
@@ -550,7 +550,7 @@ bool Updater::parseUpdateFile(const wxString& xml, UpdaterInfo& info)
                 std::wstring val = p.getNodeValue();
                 kl::trim(val);
 
-                pw = towx(kl::decryptString(val, towstr(APP_UPDATE_ENCRYPTIONKEY)));
+                pw = towx(kl::decryptString(val, APP_UPDATE_ENCRYPTIONKEY));
                 pw.Trim(true);
                 pw.Trim(false);
             }
@@ -560,7 +560,7 @@ bool Updater::parseUpdateFile(const wxString& xml, UpdaterInfo& info)
             {
                 std::wstring val = location.getNodeValue();
                 kl::trim(val);
-                fetch_url = towx(kl::decryptString(val, towstr(APP_UPDATE_ENCRYPTIONKEY)));
+                fetch_url = towx(kl::decryptString(val, APP_UPDATE_ENCRYPTIONKEY));
                 fetch_url.Trim(true);
                 fetch_url.Trim(false);
                 

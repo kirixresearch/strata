@@ -752,7 +752,7 @@ void GroupPanel::onExecute(wxCommandEvent& evt)
 
         if (func == GroupFunc_Count && input_name.length() > 0)
         {
-            int type = m_structure->getExprType(towstr(input_name));
+            int type = m_structure->getExprType(input_name);
 
             if (type != tango::typeBoolean)
             {
@@ -900,7 +900,7 @@ void GroupPanel::onExecute(wxCommandEvent& evt)
     params["group"].setArray();
     params["columns"].setArray();
     params["where"].setString(towstr(m_where_condition));
-    params["having"].setString(towstr(group_query));
+    params["having"].setString(group_query);
 
     std::vector<std::wstring>::iterator it, it_end;
 

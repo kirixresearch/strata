@@ -627,7 +627,7 @@ void HostApp::getCurrentLocation(kscript::ExprEnv* env, kscript::Value* retval)
 {
     if (m_frame.isNull())
     {
-        retval->setString(towstr(wxT("")));
+        retval->setString(L"");
         return;
     }
 
@@ -647,7 +647,7 @@ void HostApp::getCurrentLocation(kscript::ExprEnv* env, kscript::Value* retval)
     
     // if we don't have an active document, return a 
     // blank string
-    retval->setString(towstr(wxT("")));
+    retval->setString(L"");
     return;
 }
 
@@ -690,7 +690,7 @@ void HostApp::getFrameCaption(kscript::ExprEnv* env, kscript::Value* retval)
 {
     if (m_frame.isNull())
     {
-        retval->setString(towstr(wxT("")));
+        retval->setString(L"");
         return;
     }
 
@@ -2978,7 +2978,7 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
             for (it = fields.begin(); it != fields.end(); ++it)
             {
                 tango::IColumnInfoPtr col = s->createColumn();
-                col->setName(towstr(it->source_name));
+                col->setName(it->source_name);
                 col->setOffset(it->source_offset);
                 col->setWidth(it->source_width);
                 if (it->source_encoding)
@@ -3005,11 +3005,11 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
             for (it = fields.begin(); it != fields.end(); ++it)
             {
                 tango::IColumnInfoPtr col = s->createColumn();
-                col->setName(towstr(it->name));
+                col->setName(it->name);
                 col->setType(it->type);
                 col->setWidth(it->width);
                 col->setScale(it->scale);
-                col->setExpression(towstr(it->formula));
+                col->setExpression(it->formula);
                 
                 if (it->formula.length() == 0 && idx < source_structure->getColumnCount())
                     col->setExpression(source_structure->getColumnName(idx));
@@ -3133,7 +3133,7 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
         for (it = fields.begin(); it != fields.end(); ++it)
         {
             tango::IColumnInfoPtr col = s->createColumn();
-            col->setName(towstr(it->name));
+            col->setName(it->name);
             col->setType(it->type);
             col->setWidth(it->width);
             col->setScale(it->scale);
@@ -3151,12 +3151,12 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
             }
              else
             {
-                std::wstring formula = towstr(it->formula);
+                std::wstring formula = it->formula;
                 
                 if (idx < source_structure->getColumnCount())
                 {
                     std::wstring src_field_name = source_structure->getColumnName(idx);
-                    formula = towstr(it->formula);
+                    formula = it->formula;
                     kl::replaceStrNoCase(formula, L"$SRCFIELD", src_field_name);
                 }
                         

@@ -4406,7 +4406,7 @@ bool AppController::openAny(const wxString& _location,
                 {
                     if (cstr == L"")
                     {
-                        node = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(rpath));
+                        node = JsonConfig::loadFromDb(g_app->getDatabase(), rpath);
                         location = towx(rpath);
                     }
                 }
@@ -4750,7 +4750,7 @@ bool AppController::openDataLink(const wxString& location, int* site_id)
             kl::JsonNode params;
 
             std::wstring path = mount_root + L"/" + path;
-            params = createSortFilterJobParams(path, towstr(filter), towstr(sort));
+            params = createSortFilterJobParams(path, filter, sort);
 
             // set the job parameters and start the job
             job->getJobInfo()->setTitle(towstr(_("Opening data view...")));

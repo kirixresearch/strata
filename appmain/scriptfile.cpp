@@ -927,17 +927,17 @@ void File::copy(kscript::ExprEnv* env, void* param, kscript::Value* retval)
         return;
 
     // open the input file
-    xf_file_t source_file = xf_open(towstr(source_file_name),
-                                  xfOpen,
-                                  xfRead,
-                                  xfShareNone);
+    xf_file_t source_file = xf_open(source_file_name,
+                                    xfOpen,
+                                    xfRead,
+                                    xfShareNone);
 
     // if we can't open the source file, we're done
     if (!source_file)
         return;
 
     // open the the output file
-    xf_file_t dest_file = xf_open(towstr(dest_file_name),
+    xf_file_t dest_file = xf_open(dest_file_name,
                                   xfOpenCreateIfNotExist,
                                   xfReadWrite,
                                   xfShareNone);
@@ -1232,7 +1232,7 @@ void File::getContents(kscript::ExprEnv* env, void* param, kscript::Value* retva
      else
     {
         buf.AppendByte(0);
-        result_text = towstr((char*)buf.GetData());
+        result_text = towstr((const char*)buf.GetData());
     }
 
     retval->setString(result_text);

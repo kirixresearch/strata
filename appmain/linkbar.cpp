@@ -2182,7 +2182,7 @@ void LinkBar::onFsDataDrop(wxDragResult& def, FsDataObject* data)
             tool2LinkIndex(link_drop_idx);
             
             // position the item in the linkbar
-            BookmarkFs::setFileVisualLocation(towstr(dest_path), link_drop_idx);
+            BookmarkFs::setFileVisualLocation(dest_path, link_drop_idx);
         }
     }
 
