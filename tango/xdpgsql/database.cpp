@@ -1483,14 +1483,55 @@ bool PgsqlDatabase::execute(const std::wstring& command,
 
 bool PgsqlDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
 {
+    bool detail_rows = false;
+    size_t grouped_column_count = 0;
 
     std::wstring sql = L"SELECT ";
 
 
-    std::vector<std::wstring> vec;
+    std::vector<std::wstring> columns;
+    std::vector<std::wstring> group_parts;
     std::vector<std::wstring>::iterator it;
-    kl::parseDelimitedList(info->columns, vec, ',', true);
-    for (it = vec.begin(); it != vec.end(); ++it)
+
+    kl::parseDelimitedList(info->columns, columns, ',', true);
+    kl::parseDelimitedList(info->group,   group_parts, ',', true);
+
+
+    for (it = columns.begin(); it != columns.end(); ++it)
+    {
+        if (0 == wcscasecmp(it->c_str(), L"[detail]"))
+        {
+            columns.erase(it);
+            detail_rows = true;
+            break;
+        }
+    }
+    if (detail_rows)
+    {
+        // we need to make sure that all grouping fields
+        // make it into the inner grouping sql, because
+        // these will be used to join the detail back to
+        // the aggregate output
+
+        std::set<std::wstring, kl::cmp_nocase> idx;
+        for (it = columns.begin(); it != columns.end(); ++it)
+        {
+            idx.insert( kl::beforeFirst(*it, '='));
+        }
+
+        grouped_column_count = columns.size();
+
+        for (it = group_parts.begin(); it != group_parts.end(); ++it)
+        {
+            if (idx.find(*it) == idx.end())
+                columns.push_back(*it + L"=" + *it);
+        }
+    }
+
+
+
+    size_t cnt = 0;
+    for (it = columns.begin(); it != columns.end(); ++it)
     {
         std::wstring fld = kl::beforeFirst(*it, '=');
         std::wstring expr = kl::afterFirst(*it, '=');
@@ -1512,12 +1553,13 @@ bool PgsqlDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
         }
 
 
-        if (it != vec.begin())
+        if (cnt > 0)
             sql += L",";
 
         dequote(fld, '"', '"');
 
         sql += expr + L" AS " + fld;
+        cnt++;
     }
 
 
@@ -1534,6 +1576,49 @@ bool PgsqlDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
     if (info->having.length() > 0)
         sql += L" HAVING " + info->having;
     
+    if (detail_rows)
+    {
+        std::vector<std::wstring>::iterator it;
+        kl::parseDelimitedList(info->group, group_parts, ',');
+
+        std::wstring grpcols; // grouped output columns (aggregate results)
+        std::wstring order;
+
+        size_t i;
+        for (i = 0; i < grouped_column_count; ++i)
+        {
+            std::wstring fld = kl::beforeFirst(columns[i], '=');
+            std::wstring expr = kl::afterFirst(columns[i], '=');
+
+            if (i > 0)
+                grpcols += L",";
+            grpcols += L"b." + fld;
+
+            if (0 == wcscasecmp(expr.substr(0,8).c_str(), L"groupid("))
+            {
+                // if a groupid() is included, make that the output sort order
+                order = fld;
+            }
+        }
+
+
+        std::wstring outer_sql = L"SELECT %grpcols%, a.* FROM %tbl% AS a, (%sql%) AS b WHERE ";
+        kl::replaceStr(outer_sql, L"%tbl%", pgsqlGetTablenameFromPath(info->input));
+        kl::replaceStr(outer_sql, L"%sql%", sql);
+        kl::replaceStr(outer_sql, L"%grpcols%", grpcols);
+        for (it = group_parts.begin(); it != group_parts.end(); ++it)
+        {
+            if (it != group_parts.begin())
+                outer_sql += L" AND ";
+            outer_sql += L"a." + *it + L" = b." + *it;
+        }
+
+        if (order.length() > 0)
+            outer_sql += L" ORDER BY " + order;
+
+        sql = outer_sql;
+    }
+
     if (info->output.length() > 0)
         sql = L"CREATE TABLE " + pgsqlGetTablenameFromPath(info->output) + L" AS " + sql;
 
