@@ -106,30 +106,59 @@ inline const wxChar* wxcstr(const wxString& s)
     return (const wxChar*)s.c_str();
 }
 
-inline std::wstring towstr(const wxString& s)
-{
-#ifdef _UNICODE
-    return (const wchar_t*)s.wc_str();
-#else
-    std::wstring result;
-    int i, len;
-    len = s.Length();
-    result.resize(len);
-    for (i = 0; i < len; ++i)
-        result[i] = (unsigned char)s[i];
-    return result;
-#endif
-}
+#ifndef _DEBUG
 
-inline std::wstring towstr(const char* s)
-{
-    std::wstring ret;
-    int i, len = strlen(s);
-    ret.resize(len);
-    for (i = 0; i < len; ++i)
-        ret[i] = (unsigned char)(*(s+i));
-    return ret;
-}
+    inline std::wstring towstr(const wxString& s)
+    {
+    #ifdef _UNICODE
+        return (const wchar_t*)s.wc_str();
+    #else
+        std::wstring result;
+        int i, len;
+        len = s.Length();
+        result.resize(len);
+        for (i = 0; i < len; ++i)
+            result[i] = (unsigned char)s[i];
+        return result;
+    #endif
+    }
+
+    inline std::wstring towstr(const char* s)
+    {
+        std::wstring ret;
+        int i, len = strlen(s);
+        ret.resize(len);
+        for (i = 0; i < len; ++i)
+            ret[i] = (unsigned char)(*(s+i));
+        return ret;
+    }
+
+#else
+
+    class towstr : public std::wstring
+    {
+        public:
+
+            towstr(const wxString& s) : std::wstring((const wchar_t*)s.c_str()) {}
+
+            towstr(const char* s) : std::wstring()
+            {
+                int i, len = strlen(s);
+                resize(len);
+                for (i = 0; i < len; ++i)
+                    (*this)[i] = (unsigned char)(*(s+i));
+            }
+
+        private:
+        
+            towstr(const std::wstring& s) : std::wstring(s)
+            {
+                // string is already a std::wstring -- we want to disallow this
+            }
+    };
+
+#endif
+
 
 inline std::string tostr(const wxString& s)
 {

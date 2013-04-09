@@ -1097,7 +1097,7 @@ std::wstring determineMimeType(const std::wstring& path)
     }
      else
     {
-        result_text = towstr((char*)buf);
+        result_text = towstr((const char*)buf);
     }
 
 
@@ -1317,7 +1317,7 @@ double getProjectSize(const wxString& project_path)
     xf_dirhandle_t h = xf_opendir(base_path);
     xf_direntry_t info;
     
-    std::wstring path_sep = towstr(PATH_SEPARATOR_STR);
+    std::wstring path_sep = PATH_SEPARATOR_STR;
     
     while (xf_readdir(h, &info))
     {
