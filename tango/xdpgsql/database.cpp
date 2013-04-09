@@ -1522,7 +1522,7 @@ bool PgsqlDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
 
 
 
-    sql += L" FROM " + info->input;
+    sql += L" FROM " + pgsqlGetTablenameFromPath(info->input);
 
 
     if (info->where.length() > 0)
@@ -1535,7 +1535,7 @@ bool PgsqlDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
         sql += L" HAVING " + info->having;
     
     if (info->output.length() > 0)
-        sql = L"CREATE TABLE " + info->output + L" AS " + sql;
+        sql = L"CREATE TABLE " + pgsqlGetTablenameFromPath(info->output) + L" AS " + sql;
 
 
 
