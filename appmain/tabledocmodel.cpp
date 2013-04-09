@@ -16,6 +16,43 @@
 #include <kl/string.h>
 
 
+
+
+
+static std::wstring g_tabledocmodel_path;
+
+static std::wstring getTableMetadataLocation()
+{
+    if (!g_tabledocmodel_path.empty())
+        return g_tabledocmodel_path;
+
+    std::wstring path = g_app->getAppDataPath();
+    path += PATH_SEPARATOR_CHAR;
+    path += L"Metadata";
+
+    if (!xf_get_directory_exist(path))
+    {
+        if (!xf_mkdir(path))
+            return L"";
+    }
+
+    path += PATH_SEPARATOR_CHAR;
+    path += L"Tables";
+
+    if (!xf_get_directory_exist(path))
+    {
+        if (!xf_mkdir(path))
+            return L"";
+    }
+
+    g_tabledocmodel_path = path;
+    return path;
+}
+
+
+
+
+
 class ModelRegistry : public xcm::signal_sink
 {
 
@@ -944,11 +981,6 @@ bool TableDocModel::saveJson()
 {
     tango::IDatabasePtr db = g_app->getDatabase();
 
-    std::wstring path = L"/.appdata/%usr%/tables/%id%";
-    kl::replaceStr(path, L"%usr%", db->getActiveUid());
-    kl::replaceStr(path, L"%id%", m_id);
-
-
     std::vector<ITableDocObjectPtr> marks = m_marks;
     std::vector<ITableDocObjectPtr> views = m_views;
     std::vector<std::wstring> to_delete = m_to_delete;
@@ -956,8 +988,9 @@ bool TableDocModel::saveJson()
     m_marks.clear();
     m_views.clear();
 
+    // we want to merge our changes with whatever already
+    // exists in the json store; so first load what is there
     load();
-
 
     // first, remove all objects slated for deletion
     std::vector<ITableDocObjectPtr>::iterator it;
@@ -1059,22 +1092,60 @@ bool TableDocModel::saveJson()
         (*it)->writeToNode(marks_child_node);
     }
 
-    std::wstring contents = node.toString();
-    return writeStreamTextFile(g_app->getDatabase(), path, contents);
+
+
+    
+
+    if (g_app->getDbDriver() == L"xdnative")
+    {
+        // with xdnative, tabledoc model stores its metadata in streams
+        std::wstring path = L"/.appdata/%usr%/tables/%id%";
+        kl::replaceStr(path, L"%usr%", db->getActiveUid());
+        kl::replaceStr(path, L"%id%", m_id);
+
+        return JsonConfig::saveToDb(node, db, path);
+    }
+     else
+    {
+        // with direct connections to sql-type servers, store metadata locally
+        std::wstring path = getTableMetadataLocation();
+        path += PATH_SEPARATOR_CHAR;
+        path += m_id + L".json";
+
+        return JsonConfig::saveToFile(node, path);
+    }
 }
+
+
+
 
 bool TableDocModel::loadJson()
 {
     tango::IDatabasePtr db = g_app->getDatabase();
+    kl::JsonNode node;
 
-    std::wstring path = L"/.appdata/%usr%/tables/%id%";
-    kl::replaceStr(path, L"%usr%", db->getActiveUid());
-    kl::replaceStr(path, L"%id%", m_id);
+    if (g_app->getDbDriver() == L"xdnative")
+    {
+        // with xdnative, tabledoc model stores its metadata in streams
+        std::wstring path = L"/.appdata/%usr%/tables/%id%";
+        kl::replaceStr(path, L"%usr%", db->getActiveUid());
+        kl::replaceStr(path, L"%id%", m_id);
 
-    kl::JsonNode node = JsonConfig::loadFromDb(db, path);
-    if (!node.isOk())
-        return false;
-    
+        node = JsonConfig::loadFromDb(db, path);
+        if (!node.isOk())
+            return false;
+    }
+     else
+    {
+        // with direct connections to sql-type servers, store metadata locally
+        std::wstring path = getTableMetadataLocation();
+        path += PATH_SEPARATOR_CHAR;
+        path += m_id + L".json";
+
+        node = JsonConfig::loadFromFile(path);
+        if (!node.isOk())
+            return false;
+    }
 
     // make sure the version we're loading is valid
     if (!isValidFileVersion(node, L"application/vnd.kx.tabledocmodel", 1))

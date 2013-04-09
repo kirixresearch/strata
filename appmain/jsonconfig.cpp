@@ -26,8 +26,9 @@ kl::JsonNode JsonConfig::loadFromDb(tango::IDatabasePtr db, const std::wstring& 
     return node;
 }
 
-kl::JsonNode loadFromFile(kl::JsonNode& node, const std::wstring& path)
+kl::JsonNode JsonConfig::loadFromFile(const std::wstring& path)
 {
+    kl::JsonNode node;
 
     bool success = false;
     std::wstring wval = xf_get_file_contents(path, &success);

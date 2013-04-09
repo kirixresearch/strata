@@ -20,7 +20,7 @@ public:
     // kl::JsonNode implementation
     static kl::JsonNode loadFromDb(tango::IDatabasePtr db, const std::wstring& path);
     static kl::JsonNode loadFromString(const std::wstring& json);
-    static bool loadFromFile(kl::JsonNode& node, const std::wstring& path); 
+    static kl::JsonNode loadFromFile(const std::wstring& path); 
 
     static bool saveToString(kl::JsonNode& node, std::wstring& dest);
     
