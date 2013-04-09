@@ -164,7 +164,7 @@ public:
 
     virtual int getColumnCount() = 0;
     virtual ITableDocViewColPtr getColumn(unsigned int idx) = 0;
-    virtual int getColumnIdx(const wxString& col_name) = 0;
+    virtual int getColumnIdx(const std::wstring& col_name) = 0;
     virtual ITableDocViewColPtr createColumn(int pos) = 0;
     virtual void deleteColumn(unsigned int idx) = 0;
     virtual void deleteAllColumns() = 0;
@@ -237,8 +237,8 @@ public:
 
     virtual void connectAlterTableJob(jobs::IJobPtr job) = 0;
 
-    virtual void onColumnNameChanged(const wxString& old_name,
-                                     const wxString& new_name) = 0;
+    virtual void onColumnNameChanged(const std::wstring& old_name,
+                                     const std::wstring& new_name) = 0;
 
     virtual void setSortOrder(const wxString& new_value) = 0;
     virtual wxString getSortOrder() = 0;
@@ -280,7 +280,7 @@ public:
 
 
 
-// -- tabledoc external API --
+// TableDoc external API
 
 class TableDocMgr
 {

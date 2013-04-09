@@ -114,7 +114,7 @@ public:
 
     void connectAlterTableJob(jobs::IJobPtr job);
 
-    void onColumnNameChanged(const wxString& old_name, const wxString& new_name);
+    void onColumnNameChanged(const std::wstring& old_name, const std::wstring& new_name);
 
     void insertColumn(int insert_pos, const wxString& col_name);
     void insertColumnInternal(int insert_pos, const wxString& col_name, bool save, bool refresh);

@@ -1045,7 +1045,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
     // let the tabledoc know that a column name has changed
     if (m_orig_name.CmpNoCase(m_last_name) != 0)
     {
-        m_tabledoc->onColumnNameChanged(m_orig_name, m_last_name);
+        m_tabledoc->onColumnNameChanged(towstr(m_orig_name), towstr(m_last_name));
     }
 
     sigOkPressed(this);
@@ -1178,7 +1178,7 @@ void ColPropsPanel::revertChanges()
         {
             if (m_modify_field.CmpNoCase(m_orig_name) != 0)
             {
-                m_tabledoc->onColumnNameChanged(m_modify_field, m_orig_name);
+                m_tabledoc->onColumnNameChanged(towstr(m_modify_field), towstr(m_orig_name));
             }
         }
     }

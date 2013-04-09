@@ -1817,7 +1817,7 @@ bool TransformationDoc::doSave()
             for (i = 0; i < col_count; ++i)
             {
                 tango::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
-                int viewidx = tabledocview->getColumnIdx(towx(colinfo->getName()));
+                int viewidx = tabledocview->getColumnIdx(colinfo->getName());
                 
                 // only add the column to our view if it doesn't already exist
                 if (viewidx == -1)

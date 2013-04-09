@@ -2548,20 +2548,18 @@ void TableDoc::connectAlterTableJob(jobs::IJobPtr job)
     job->sigJobFinished().connect(this, &TableDoc::onAlterTableJobFinished);
 }
 
-void TableDoc::onColumnNameChanged(const wxString& old_name,
-                                   const wxString& new_name)
+void TableDoc::onColumnNameChanged(const std::wstring& old_name,
+                                   const std::wstring& new_name)
 {
-    if (old_name.CmpNoCase(new_name) == 0)
+    if (0 == wcscasecmp(old_name.c_str(), new_name.c_str()))
         return;
-
-    int idx;
 
     // update view structures
 
     ITableDocViewEnumPtr viewvec = m_model->getViewEnum();
     ITableDocViewPtr view;
-    int view_count = viewvec->size();
-    int i;
+    int idx;
+    size_t i, view_count = viewvec->size();
 
 
     // put our active view in this vector, instead
@@ -2594,7 +2592,7 @@ void TableDoc::onColumnNameChanged(const wxString& old_name,
             }
 
             col = view->getColumn(idx);
-            col->setName(towstr(new_name));
+            col->setName(new_name);
             updated = true;
         }
 
@@ -2606,19 +2604,16 @@ void TableDoc::onColumnNameChanged(const wxString& old_name,
 
 
     // update grid's view
+
     int new_idx = m_grid->getColumnModelIdxByName(new_name);
     if (new_idx == -1)
-    {
         return;
-    }
 
     while (1)
     {
         idx = m_grid->getColumnViewIdxByName(old_name);
         if (idx == -1)
-        {
             break;
-        }
 
         m_grid->setColumn(idx, new_idx);
     }
@@ -3196,9 +3191,9 @@ void TableDoc::onDeleteJobFinished(jobs::IJobPtr delete_job)
 
 static void extractAlterJobInfo(kl::JsonNode params,
                                 wxString& input,
-                                std::vector<std::pair<wxString, wxString> >& to_rename,
-                                std::vector<std::pair<wxString,int> >& to_insert,
-                                std::vector<wxString>& to_delete)
+                                std::vector<std::pair<std::wstring, std::wstring> >& to_rename,
+                                std::vector<std::pair<std::wstring, int> >& to_insert,
+                                std::vector<std::wstring>& to_delete)
 {
     if (params.childExists("input"))
         input = towx(params["input"]);
@@ -3257,7 +3252,7 @@ static void extractAlterJobInfo(kl::JsonNode params,
         {
             std::wstring column;
             if (it->childExists("column"))
-                to_delete.push_back(towx(it->getChild("column")));
+                to_delete.push_back(it->getChild("column"));
         }
     }
 }
@@ -3274,9 +3269,9 @@ void TableDoc::onAlterTableJobFinished(jobs::IJobPtr job)
 
 
     // get information about what happened to each of the columns in the job
-    std::vector<std::pair<wxString, wxString> > to_rename;
-    std::vector<std::pair<wxString,int> > to_insert;
-    std::vector<wxString> to_delete;
+    std::vector<std::pair<std::wstring, std::wstring> > to_rename;
+    std::vector<std::pair<std::wstring, int> > to_insert;
+    std::vector<std::wstring> to_delete;
     wxString input_path;
 
     kl::JsonNode params;
@@ -3292,7 +3287,7 @@ void TableDoc::onAlterTableJobFinished(jobs::IJobPtr job)
 
     if (job->getJobInfo()->getState() == jobStateFinished)
     {
-        std::vector<std::pair<wxString, wxString> >::iterator rename_iter;
+        std::vector<std::pair<std::wstring, std::wstring> >::iterator rename_iter;
         for (rename_iter = to_rename.begin();
              rename_iter != to_rename.end(); ++rename_iter)
         {
@@ -3309,7 +3304,7 @@ void TableDoc::onAlterTableJobFinished(jobs::IJobPtr job)
         return;
 
     // do inserts for each new field
-    std::vector<std::pair<wxString,int> >::iterator insert_iter;
+    std::vector<std::pair<std::wstring, int> >::iterator insert_iter;
     for (insert_iter = to_insert.begin();
          insert_iter != to_insert.end(); ++insert_iter)
     {
@@ -3318,7 +3313,7 @@ void TableDoc::onAlterTableJobFinished(jobs::IJobPtr job)
     }
 
     // do deletes in the view
-    std::vector<wxString>::iterator delete_iter;
+    std::vector<std::wstring>::iterator delete_iter;
     for (delete_iter = to_delete.begin();
          delete_iter != to_delete.end(); ++delete_iter)
     {

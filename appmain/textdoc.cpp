@@ -1285,7 +1285,7 @@ void TextDoc::onTextViewColumnAdded(TextViewColumn col)
         ITableDocViewPtr tabledocview = tabledoc->getActiveView();
         if (tabledocview)
         {
-            int viewidx = tabledocview->getColumnIdx(col.name);
+            int viewidx = tabledocview->getColumnIdx(towstr(col.name));
             
             // only add the column to our view if it doesn't already exist
             if (viewidx == -1)
@@ -1352,7 +1352,7 @@ void TextDoc::onTextViewColumnDeleted(TextViewColumn col)
         ITableDocViewPtr tabledocview = tabledoc->getActiveView();
         if (tabledocview)
         {
-            int viewidx = tabledocview->getColumnIdx(col.name);
+            int viewidx = tabledocview->getColumnIdx(towstr(col.name));
             
             // only delete the column from our view if it exists in the view
             if (viewidx != -1)
@@ -1444,7 +1444,7 @@ void TextDoc::onTextViewColumnModified(TextViewColumn col,
             ITableDocViewPtr tabledocview = tabledoc->getActiveView();
             if (tabledocview)
             {
-                int viewidx = tabledocview->getColumnIdx(col.name);
+                int viewidx = tabledocview->getColumnIdx(towstr(col.name));
                 
                 // only modify the column from our view if it exists in the view
                 if (viewidx != -1)
@@ -2100,7 +2100,7 @@ void TextDoc::onTextDelimitedCaptionEndEdit(kcl::GridEvent& evt)
         ITableDocViewPtr tabledocview = tabledoc->getActiveView();
         if (tabledocview)
         {
-            int viewidx = tabledocview->getColumnIdx(towx(colname));
+            int viewidx = tabledocview->getColumnIdx(colname);
             
             // only modify the view column if it exists in the view
             if (viewidx != -1)
@@ -2241,7 +2241,7 @@ void TextDoc::doBulkFieldRename(std::vector< std::pair<wxString, wxString> > to_
             for (it = to_rename.begin(); it != to_rename.end(); ++it)
             {
                 // we couldn't find the column in the view, continue
-                int colidx = tabledocview->getColumnIdx(it->first);
+                int colidx = tabledocview->getColumnIdx(towstr(it->first));
                 if (colidx == -1)
                     continue;
                     

@@ -86,12 +86,11 @@ public:
         if (!db)
             return false;
 
-        wxString path;
-        path = wxString::Format(wxT("/.appdata/%s/dcfe/setinfo/%s"),
-                                towx(db->getActiveUid()).c_str(),
-                                set_id.c_str());
+        std::wstring path = kl::stdswprintf(L"/.appdata/%ls/dcfe/setinfo/%ls",
+                                            db->getActiveUid().c_str(),
+                                            set_id.c_str());
 
-        return db->deleteFile(towstr(path));
+        return db->deleteFile(path);
     }
 
     void cleanup()  // table model garbage collection
@@ -561,13 +560,13 @@ public:
         return m_cols[idx];
     }
 
-    int getColumnIdx(const wxString& col_name)
+    int getColumnIdx(const std::wstring& col_name)
     {
         std::vector<ITableDocViewColPtr>::iterator it;
         int idx = 0;
         for (it = m_cols.begin(); it != m_cols.end(); ++it)
         {
-            if (!col_name.CmpNoCase((*it)->getName()))
+            if (0 == wcscasecmp(col_name.c_str(), (*it)->getName().c_str()))
                 return idx;
             idx++;
         }
@@ -943,7 +942,7 @@ ITableDocViewEnumPtr TableDocModel::getViewEnum()
     return vec;
 }
 
-bool TableDocModel::saveJson(const wxString& path)
+bool TableDocModel::saveJson(const std::wstring& path)
 {
     std::vector<ITableDocObjectPtr> marks = m_marks;
     std::vector<ITableDocObjectPtr> views = m_views;
@@ -1056,10 +1055,10 @@ bool TableDocModel::saveJson(const wxString& path)
     }
 
     std::wstring contents = node.toString();
-    return writeStreamTextFile(g_app->getDatabase(), towstr(path), contents);
+    return writeStreamTextFile(g_app->getDatabase(), path, contents);
 }
 
-bool TableDocModel::loadJson(const wxString& path)
+bool TableDocModel::loadJson(const std::wstring& path)
 {
     kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), path);
     if (!node.isOk())
