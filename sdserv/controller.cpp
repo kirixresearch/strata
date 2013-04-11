@@ -412,10 +412,9 @@ void Controller::apiFileInfo(RequestInfo& req)
 
         if (finfo->getType() == tango::filetypeSet)
         {
-            tango::ISetPtr set = db->openSet(path);
-            if (set.isOk() && set->getSetFlags() & tango::sfFastRowCount)
+            if (finfo->getFlags() & tango::sfFastRowCount)
             {
-                file_info["row_count"] = (double)set->getRowCount();
+                file_info["row_count"] = (double)finfo->getRowCount();
                 file_info["fast_row_count"].setBoolean(true);
             }
         }
@@ -871,15 +870,8 @@ void Controller::apiQuery(RequestInfo& req)
         
     if (req.getValue(L"mode") == L"createiterator")
     {
-        tango::ISetPtr set = db->openSet(req.getValue(L"path"));
-        if (!set.isOk())
-        {
-            returnApiError(req, "Invalid path");
-            return;
-        }
-        
-        tango::IIteratorPtr iter = set->createIterator(req.getValue(L"columns"), req.getValue(L"order"), NULL);
-        if (!set.isOk())
+        tango::IIteratorPtr iter = db->createIterator(req.getValue(L"path"), req.getValue(L"columns"), req.getValue(L"order"), NULL);
+        if (!iter.isOk())
         {
             returnApiError(req, "Could not create iterator");
             return;
@@ -895,9 +887,9 @@ void Controller::apiQuery(RequestInfo& req)
         response["success"].setBoolean(true);
         response["handle"] = handle;
         
-        if (set.isOk() && (set->getSetFlags() & tango::sfFastRowCount))
+        if (iter.isOk() && (iter->getIteratorFlags() & tango::ifFastRowCount))
         {
-            response["row_count"] = (double)set->getRowCount();
+            response["row_count"] = (double)iter->getRowCount();
         }
 
         req.write(response.toString());
@@ -930,11 +922,9 @@ void Controller::apiQuery(RequestInfo& req)
         response["success"].setBoolean(true);
         response["handle"] = handle;
         
-        
-        tango::ISetPtr set = iter->getSet();
-        if (set.isOk() && (set->getSetFlags() & tango::sfFastRowCount))
+        if (iter->getIteratorFlags() & tango::ifFastRowCount)
         {
-            response["row_count"] = (double)set->getRowCount();
+            response["row_count"] = (double)iter->getRowCount();
         }
         
         req.write(response.toString());
@@ -1009,9 +999,7 @@ void Controller::apiDescribeTable(RequestInfo& req)
     
     if (path.length() > 0)
     {
-        tango::ISetPtr set = db->openSet(path);
-        if (set.isOk())
-            structure = set->getStructure();
+        structure = db->describeTable(path);
     }
      else if (handle.length() > 0)
     {
@@ -1252,21 +1240,20 @@ void Controller::apiInsertRows(RequestInfo& req)
         return;
     }
 
-    tango::ISetPtr set = db->openSet(path);
-    if (set.isNull())
-    {
-        returnApiError(req, "Could not open destination table");
-        return;
-    }
 
     it->second.iter->goFirst();
-    int row_count = set->insert(it->second.iter, req.getValue(L"where"), kl::wtoi(req.getValue(L"max_rows")), NULL);
- 
-                      
+
+    tango::CopyInfo info;
+    info.iter_input = it->second.iter;
+    info.append = true;
+    info.where = req.getValue(L"where");
+    if (req.getValueExists(L"max_rows"))
+        info.max_rows = kl::wtoi(req.getValue(L"max_rows"));
+
     // return success to caller
     kl::JsonNode response;
     response["success"].setBoolean(true);
-    response["row_count"].setInteger(row_count);
+    //response["row_count"].setInteger(row_count);
     
     req.write(response.toString());
 }
@@ -1378,13 +1365,10 @@ void Controller::apiAlter(RequestInfo& req)
     std::wstring s_actions = req.getValue(L"actions");
     
     
-    tango::ISetPtr set = db->openSet(path);
-    tango::IStructurePtr structure;
-    if (set.isOk())
-        structure = set->getStructure();
+    tango::IStructurePtr structure = db->describeTable(path);
     if (structure.isNull())
     {
-        returnApiError(req, "Could not open table");
+        returnApiError(req, "Could not access table");
         return;
     }
     
@@ -1443,11 +1427,11 @@ void Controller::apiAlter(RequestInfo& req)
     }
     
     
-    set->modifyStructure(structure, NULL);
+    bool res = db->modifyStructure(path, structure, NULL);
     
-    // return success to caller
+    // return success/failure to caller
     kl::JsonNode response;
-    response["success"].setBoolean(true);
+    response["success"].setBoolean(res);
     
     req.write(response.toString());
 }
@@ -1568,15 +1552,8 @@ void Controller::apiStartBulkInsert(RequestInfo& req)
     
     std::wstring path = req.getValue(L"path");
     
-    tango::ISetPtr set = db->openSet(path);
-    tango::IRowInserterPtr inserter;
-    tango::IStructurePtr structure;
-    
-    if (set.isOk())
-    {
-        inserter = set->getRowInserter();
-        structure = set->getStructure();
-    }
+    tango::IRowInserterPtr inserter = db->bulkInsert(path);
+    tango::IStructurePtr structure = db->describeTable(path);
         
     if (inserter.isNull() || structure.isNull())
     {
