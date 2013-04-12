@@ -67,11 +67,11 @@ inline void skipWhiteSpaceOrLS(wchar_t*& ch)
         ++ch;
 }
 
-std::wstring escape_string(std::wstring& str)
+std::wstring escape_string(const std::wstring& str)
 {
     std::wstring result = L"";
 
-    std::wstring::iterator it, it_end;
+    std::wstring::const_iterator it, it_end;
     it_end = str.end();
 
     for (it = str.begin(); it != it_end; ++it)
@@ -648,7 +648,7 @@ std::vector<std::wstring> JsonNode::getChildKeys() const
     std::vector<std::wstring> child_keys;
     child_keys.reserve(m_value->m_child_nodes_ordered.size());
 
-    std::vector<std::pair<std::wstring,JsonNode>>::const_iterator it, it_end;
+    std::vector<std::pair<std::wstring,JsonNode> >::const_iterator it, it_end;
     it_end = m_value->m_child_nodes_ordered.end();
     
     for (it = m_value->m_child_nodes_ordered.begin(); it != it_end; ++it)
@@ -665,7 +665,7 @@ std::vector<JsonNode> JsonNode::getChildren() const
     std::vector<JsonNode> child_nodes;
     child_nodes.reserve(m_value->m_child_nodes_ordered.size());
 
-    std::vector<std::pair<std::wstring,JsonNode>>::const_iterator it, it_end;
+    std::vector<std::pair<std::wstring,JsonNode> >::const_iterator it, it_end;
     it_end = m_value->m_child_nodes_ordered.end();
     
     for (it = m_value->m_child_nodes_ordered.begin(); it != it_end; ++it)
@@ -963,7 +963,7 @@ bool JsonNode::parse(wchar_t* expr)
     
     // make sure there's nothing left over
     skipWhiteSpaceOrLS(endloc);
-    if (*endloc != NULL)
+    if (*endloc)
         success = false;
 
     if (!success)
@@ -1016,7 +1016,7 @@ std::wstring JsonNode::stringify(unsigned int indent_level) const
         std::wstring result;
         result += L"[" + newline + addspaces(indent_level+1);
 
-        std::vector<std::pair<std::wstring,JsonNode>>::iterator it, it_end;
+        std::vector<std::pair<std::wstring,JsonNode> >::iterator it, it_end;
         it_end = m_value->m_child_nodes_ordered.end();
 
         bool first = true;
@@ -1043,7 +1043,7 @@ std::wstring JsonNode::stringify(unsigned int indent_level) const
         std::wstring result;
         result += L"{" + newline + addspaces(indent_level+1);
 
-        std::vector<std::pair<std::wstring,JsonNode>>::iterator it, it_end;
+        std::vector<std::pair<std::wstring,JsonNode> >::iterator it, it_end;
         it_end = m_value->m_child_nodes_ordered.end();
 
         bool first = true;
@@ -1260,7 +1260,7 @@ bool JsonNodeValidator::checkNumberValue(JsonNode& data, JsonNode& schema)
         if (schema.childExists(L"exclusiveMinimum"))
             exclusive = schema[L"exclusiveMinimum"].getBoolean();
 
-        JsonNode& constraint_node = schema[L"minimum"];
+        JsonNode constraint_node = schema[L"minimum"];
 
         // validate double value
         if (constraint_node.isDouble())
@@ -1314,7 +1314,7 @@ bool JsonNodeValidator::checkNumberValue(JsonNode& data, JsonNode& schema)
         if (schema.childExists(L"exclusiveMaximum"))
             exclusive = schema[L"exclusiveMaximum"].getBoolean();
 
-        JsonNode& constraint_node = schema[L"maximum"];
+        JsonNode constraint_node = schema[L"maximum"];
 
         // validate double value
         if (constraint_node.isDouble())

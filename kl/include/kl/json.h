@@ -31,7 +31,7 @@ std::wstring escape_string(std::wstring& str);
 
 class JsonValue
 {
-friend JsonNode;
+friend class JsonNode;
 
 public:
 
@@ -68,7 +68,7 @@ public:
 private:
 
     std::map<std::wstring,JsonNode> m_child_nodes;
-    std::vector<std::pair<std::wstring,JsonNode>> m_child_nodes_ordered;
+    std::vector< std::pair<std::wstring,JsonNode> > m_child_nodes_ordered;
 
     std::wstring m_string;
     double m_double;
