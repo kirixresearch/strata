@@ -11,6 +11,7 @@
 
 #include "kl/string.h"
 #include "kl/math.h"
+#include "kl/portable.h"
 #include <cstdio>
 #include <cstdarg>
 #include <ctime>
