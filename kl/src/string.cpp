@@ -11,8 +11,10 @@
 
 #include "kl/string.h"
 #include "kl/math.h"
+#include <cstdio>
 #include <cstdarg>
 #include <ctime>
+#include <cstring>
 
 namespace kl
 {
@@ -92,7 +94,7 @@ void trimLeft(std::wstring& s)
 std::wstring itowstring(int val)
 {
     wchar_t buf[80];
-    swprintf(buf, L"%d", val);
+    swprintf(buf, 80, L"%d", val);
     return buf;
 }
 
@@ -101,7 +103,7 @@ std::wstring itowstring(int val)
 std::string itostring(int val)
 {
     char buf[80];
-    sprintf(buf, "%d", val);
+    snprintf(buf, 80, "%d", val);
     return buf;
 }
 

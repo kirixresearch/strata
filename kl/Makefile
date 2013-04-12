@@ -26,7 +26,7 @@ OBJECTS = \
 	math.o \
 	md5.o \
 	memory.o \
-	string.h \
+	string.o \
 	url.o \
 	utf8.o \
 	xcm.o \

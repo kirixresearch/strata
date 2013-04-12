@@ -14,6 +14,9 @@
 #endif
 
 
+#include <cstring>
+#include <cstdlib>
+#include <cstddef>
 #include "kl/memory.h"
 
 
