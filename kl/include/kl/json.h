@@ -26,7 +26,7 @@ class JsonNode;
 
 
 // helper functions
-std::wstring escape_string(std::wstring& str);
+std::wstring escape_string(const std::wstring& str);
 
 
 class JsonValue
