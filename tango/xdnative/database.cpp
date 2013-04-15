@@ -1688,8 +1688,14 @@ bool Database::copyFile(const std::wstring& src_path,
     if (info.isOk() && info->getType() == tango::filetypeStream)
     {
         tango::IStreamPtr src_stream = openStream(src_path);
-        tango::IStreamPtr dest_stream = createStream(dest_path, info->getMimeType());
-        if (src_stream.isNull() || dest_stream.isNull())
+        if (src_stream.isNull())
+            return false;
+        
+        if (!createStream(dest_path, info->getMimeType()))
+            return false;
+
+        tango::IStreamPtr dest_stream = openStream(dest_path);
+        if (dest_stream.isNull())
             return false;
 
         unsigned char* buf = new unsigned char[16384];
@@ -2878,7 +2884,7 @@ tango::IStreamPtr Database::openStream(const std::wstring& _path)
     return static_cast<tango::IStream*>(stream);
 }
 
-tango::IStreamPtr Database::createStream(const std::wstring& _path, const std::wstring& mime_type)
+bool Database::createStream(const std::wstring& _path, const std::wstring& mime_type)
 {
     std::wstring path = _path;
     if (kl::isFileUrl(_path))
@@ -2889,7 +2895,7 @@ tango::IStreamPtr Database::createStream(const std::wstring& _path, const std::w
     {
         tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
-            return xcm::null;
+            return false;
 
         return db->createStream(rpath, mime_type);
     }
@@ -2941,7 +2947,7 @@ tango::IStreamPtr Database::createStream(const std::wstring& _path, const std::w
     OfsFile* file = OfsFile::createFile(this, path, tango::filetypeStream);
     if (!file)
     {
-        return xcm::null;
+        return false;
     }
 
     INodeValuePtr root = file->getRootNode();
@@ -2994,10 +3000,11 @@ tango::IStreamPtr Database::createStream(const std::wstring& _path, const std::w
     if (!file_stream->create(full_path))
     {
         delete file_stream;
-        return xcm::null;
+        return false;
     }
 
-    return static_cast<tango::IStream*>(file_stream);
+    delete file_stream;
+    return true;
 }
 
 

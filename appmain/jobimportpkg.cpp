@@ -83,13 +83,19 @@ bool ImportPkgJob::importStream(PkgStreamReader* reader,
 
 
 
-    tango::IStreamPtr stream = g_app->getDatabase()->createStream(info->output_path, mime_type);
-    if (stream.isNull())
+
+    if (!g_app->getDatabase()->createStream(info->output_path, mime_type))
     {
-        // could not create set
+        // could not create stream
         return false;
     }
     
+    tango::IStreamPtr stream = g_app->getDatabase()->openStream(info->output_path);
+    if (stream.isNull())
+    {
+        // could not open newly created stream
+        return false;
+    }
     
     while (1)
     {

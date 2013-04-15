@@ -1101,9 +1101,7 @@ bool EditorDoc::initDoc(IFramePtr frame,
 // static
 bool EditorDoc::newFile(const wxString& path)
 {
-    tango::IStreamPtr stream;
-    stream = g_app->getDatabase()->createStream(towstr(path), L"text/plain");
-    return stream.isOk();
+    return g_app->getDatabase()->createStream(towstr(path), L"text/plain");
 }
 
 
@@ -1788,13 +1786,19 @@ bool EditorDoc::saveFile()
         if (db.isNull())
             return false;
       
-        tango::IStreamPtr stream = db->createStream(towstr(m_path), towstr(m_mime_type));
-        if (!stream)
+        if (!db->createStream(towstr(m_path), towstr(m_mime_type)))
         {
             delete[] buf;
             return false;
         }
-            
+
+        tango::IStreamPtr stream = db->openStream(towstr(m_path));
+        if (stream.isNull())
+        {
+            delete[] buf;
+            return false;
+        }
+
         stream->write(buf, buf_len, NULL);
     }
     

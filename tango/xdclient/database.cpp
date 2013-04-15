@@ -582,7 +582,7 @@ tango::IStreamPtr ClientDatabase::openStream(const std::wstring& path)
     return static_cast<tango::IStream*>(new ClientStream(this, response["handle"]));
 }
 
-tango::IStreamPtr ClientDatabase::createStream(const std::wstring& path, const std::wstring& mime_type)
+bool ClientDatabase::createStream(const std::wstring& path, const std::wstring& mime_type)
 {
     ServerCallParams params;
     params.setParam(L"path", path);
@@ -591,11 +591,7 @@ tango::IStreamPtr ClientDatabase::createStream(const std::wstring& path, const s
     kl::JsonNode response;
     response.fromString(sres);
 
-    if (!response["success"].getBoolean())
-        return xcm::null;
-
-    return static_cast<tango::IStream*>(new ClientStream(this, response["handle"]));
-
+    return response["success"].getBoolean();
 }
 
 tango::ISetPtr ClientDatabase::openSet(const std::wstring& path)

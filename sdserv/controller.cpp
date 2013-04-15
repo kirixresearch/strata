@@ -67,32 +67,35 @@ bool Controller::onRequest(RequestInfo& req)
     // end debugging code
  
  
+    std::wstring apimethod;
+    if (0 == uri.compare(0, 5, L"/api/"))
+        apimethod = uri.substr(5, 20);
     
-         if (uri == L"/api/login")            apiLogin(req);
-    else if (uri == L"/api/selectdb")         apiSelectDb(req);
-    else if (uri == L"/api/folderinfo")       apiFolderInfo(req);
-    else if (uri == L"/api/fileinfo")         apiFileInfo(req);
-    else if (uri == L"/api/createstream")     apiCreateStream(req);
-    else if (uri == L"/api/createtable")      apiCreateTable(req);
-    else if (uri == L"/api/createfolder")     apiCreateFolder(req);
-    else if (uri == L"/api/movefile")         apiMoveFile(req);
-    else if (uri == L"/api/renamefile")       apiRenameFile(req);
-    else if (uri == L"/api/deletefile")       apiDeleteFile(req);
-    else if (uri == L"/api/openstream")       apiOpenStream(req);
-    else if (uri == L"/api/readstream")       apiReadStream(req);
-    else if (uri == L"/api/writestream")      apiWriteStream(req);
-    else if (uri == L"/api/query")            apiQuery(req);
-    else if (uri == L"/api/groupquery")       apiGroupQuery(req);
-    else if (uri == L"/api/describetable")    apiDescribeTable(req);
-    else if (uri == L"/api/fetchrows")        apiFetchRows(req);
-    else if (uri == L"/api/insertrows")       apiInsertRows(req);
-    else if (uri == L"/api/clone")            apiClone(req);
-    else if (uri == L"/api/close")            apiClose(req);
-    else if (uri == L"/api/alter")            apiAlter(req);
-    else if (uri == L"/api/refresh")          apiRefresh(req);
-    else if (uri == L"/api/startbulkinsert")  apiStartBulkInsert(req);
-    else if (uri == L"/api/finishbulkinsert") apiFinishBulkInsert(req);
-    else if (uri == L"/api/bulkinsert")       apiBulkInsert(req);
+    //     if (apimethod == L"login")            apiLogin(req);
+    //else if (apimethod == L"selectdb")         apiSelectDb(req);
+         if (apimethod == L"folderinfo")       apiFolderInfo(req);
+    else if (apimethod == L"fileinfo")         apiFileInfo(req);
+    else if (apimethod == L"createstream")     apiCreateStream(req);
+    else if (apimethod == L"createtable")      apiCreateTable(req);
+    else if (apimethod == L"createfolder")     apiCreateFolder(req);
+    else if (apimethod == L"movefile")         apiMoveFile(req);
+    else if (apimethod == L"renamefile")       apiRenameFile(req);
+    else if (apimethod == L"deletefile")       apiDeleteFile(req);
+    else if (apimethod == L"openstream")       apiOpenStream(req);
+    else if (apimethod == L"readstream")       apiReadStream(req);
+    else if (apimethod == L"writestream")      apiWriteStream(req);
+    else if (apimethod == L"query")            apiQuery(req);
+    else if (apimethod == L"groupquery")       apiGroupQuery(req);
+    else if (apimethod == L"describetable")    apiDescribeTable(req);
+    else if (apimethod == L"fetchrows")        apiFetchRows(req);
+    else if (apimethod == L"insertrows")       apiInsertRows(req);
+    else if (apimethod == L"clone")            apiClone(req);
+    else if (apimethod == L"close")            apiClose(req);
+    else if (apimethod == L"alter")            apiAlter(req);
+    else if (apimethod == L"refresh")          apiRefresh(req);
+    else if (apimethod == L"startbulkinsert")  apiStartBulkInsert(req);
+    else if (apimethod == L"finishbulkinsert") apiFinishBulkInsert(req);
+    else if (apimethod == L"bulkinsert")       apiBulkInsert(req);
     else return false;
 
     end = clock();
@@ -231,66 +234,6 @@ SdservSession* Controller::getSdservSession(RequestInfo& req)
     return session;
 }
 
-
-void Controller::apiLogin(RequestInfo& req)
-{
-    std::wstring session_id = createHandle();
-    
-    // create a new session
-    SdservSession* session = new SdservSession;
-    addServerSessionObject(session_id, session);
-
-    // return success and session information to caller
-    kl::JsonNode response;
-    response["success"].setBoolean(true);
-    response["session_id"] = session_id;
-    req.write(response.toString());
-}
-
-void Controller::apiSelectDb(RequestInfo& req)
-{
-    std::wstring sid = req.getValue(L"sid");
-    SdservSession* session = (SdservSession*)getServerSessionObject(sid);
-    if (!session)
-    {
-        returnApiError(req, "Invalid session id");
-        return;
-    }
-
-    tango::IDatabaseMgrPtr dbmgr = tango::getDatabaseMgr();
-    if (dbmgr.isNull())
-    {
-        returnApiError(req, "Missing dbmgr component");
-        return;
-    }
-
-    std::wstring database = req.getValue(L"database");
-    //if (database == L"")
-    //    database = L"default";
-    
-    std::wstring cstr = g_server.getDatabaseConnectionString(database);
-    if (cstr.length() == 0)
-    {
-        returnApiError(req, "Database not found");
-        return;
-    }
-    
-    
-    session->db = dbmgr->open(cstr);
-
-    if (session->db)
-    {
-        // return success to caller
-        kl::JsonNode response;
-        response["success"].setBoolean(true);
-        req.write(response.toString());
-    } 
-     else
-    {
-        returnApiError(req, "Database could not be opened");
-        return;
-    }
-}
 
 
 void Controller::apiFolderInfo(RequestInfo& req)
@@ -473,10 +416,6 @@ void Controller::apiCreateTable(RequestInfo& req)
     if (db.isNull())
         return;
     
-    SdservSession* session = getSdservSession(req);
-    if (!session)
-        return;
-    
     if (!req.getValueExists(L"path"))
     {
         returnApiError(req, "Missing path parameter");
@@ -494,8 +433,6 @@ void Controller::apiCreateTable(RequestInfo& req)
     
     kl::JsonNode columns;
     columns.fromString(s_columns);
-    
-    
     
     tango::IStructurePtr structure = db->createStructure();
 
@@ -539,10 +476,6 @@ void Controller::apiCreateFolder(RequestInfo& req)
     if (db.isNull())
         return;
     
-    SdservSession* session = getSdservSession(req);
-    if (!session)
-        return;
-    
     if (!req.getValueExists(L"path"))
     {
         returnApiError(req, "Missing path parameter");
@@ -571,11 +504,7 @@ void Controller::apiMoveFile(RequestInfo& req)
     tango::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
         return;
-    
-    SdservSession* session = getSdservSession(req);
-    if (!session)
-        return;
-    
+
     if (!req.getValueExists(L"path"))
     {
         returnApiError(req, "Missing path parameter");
@@ -612,10 +541,6 @@ void Controller::apiRenameFile(RequestInfo& req)
     if (db.isNull())
         return;
     
-    SdservSession* session = getSdservSession(req);
-    if (!session)
-        return;
-    
     if (!req.getValueExists(L"path"))
     {
         returnApiError(req, "Missing path parameter");
@@ -649,10 +574,6 @@ void Controller::apiDeleteFile(RequestInfo& req)
 {
     tango::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
-        return;
-    
-    SdservSession* session = getSdservSession(req);
-    if (!session)
         return;
     
     if (!req.getValueExists(L"path"))
@@ -942,10 +863,6 @@ void Controller::apiGroupQuery(RequestInfo& req)
     tango::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
         return;
-    
-    SdservSession* session = getSdservSession(req);
-    if (!session)
-        return;
 
     std::wstring path = req.getValue(L"path");
     std::wstring output = req.getValue(L"output");
@@ -987,7 +904,6 @@ void Controller::apiDescribeTable(RequestInfo& req)
     SdservSession* session = getSdservSession(req);
     if (!session)
         return;
-
 
     kl::JsonNode response;
     

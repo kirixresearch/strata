@@ -1129,9 +1129,9 @@ tango::IStreamPtr OracleDatabase::openStream(const std::wstring& ofs_path)
     return xcm::null;
 }
 
-tango::IStreamPtr OracleDatabase::createStream(const std::wstring& ofs_path, const std::wstring& mime_type)
+bool OracleDatabase::createStream(const std::wstring& ofs_path, const std::wstring& mime_type)
 {
-    return xcm::null;
+    return false;
 }
 
 tango::ISetPtr OracleDatabase::openSetEx(const std::wstring& ofs_path,

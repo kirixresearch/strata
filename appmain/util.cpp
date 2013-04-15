@@ -1233,13 +1233,21 @@ bool writeStreamTextFile(tango::IDatabasePtr db,
     }
 
 
-    tango::IStreamPtr stream = db->createStream(path, mime_type);
-    if (!stream)
+
+    if (!db->createStream(path, mime_type))
     {
         delete[] buf;
         return false;
     }
-        
+
+
+    tango::IStreamPtr stream = db->openStream(path);
+    if (stream.isNull())
+    {
+        delete[] buf;
+        return false;
+    }
+
     stream->write(buf, buf_len, NULL);
 
     delete[] buf;

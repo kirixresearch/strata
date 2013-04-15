@@ -61,8 +61,9 @@ const wchar_t* sqlserver_keywords =
                 L"WHEN,WHERE,WHILE,WITH,WRITETEXT";
 
 
-// -- the following keywords are listed as
-//    "possible future" keywords by sql server --
+// the following keywords are listed as
+// "possible future" keywords by sql server
+
 const wchar_t* sqlserver_keywords2 =
                 L"ABSOLUTE,ACTION,ADMIN,AFTER,AGGREGATE,ALIAS,"
                 L"ALLOCATE,ARE,ARRAY,ASSERTION,AT,BEFORE,BINARY,"
@@ -98,7 +99,7 @@ const wchar_t* sqlserver_keywords2 =
                 L"USAGE,USING,VALUE,VARCHAR,VARIABLE,WHENEVER";
 
 
-// -- utility function to create a valid SQL Server field string --
+// utility function to create a valid SQL Server field string
 
 std::wstring createSqlServerFieldString(const std::wstring& name,
                                         int type,
@@ -260,11 +261,12 @@ bool SqlServerDatabase::open(const std::wstring& server,
         m_connect_info->database = (DSTR)strdup(asc_database.c_str());
         m_connect_info->port = port;
 
-        // -- attempt to connect to the sql server --
+        // attempt to connect to the sql server
         if (!m_connect_info || tds_connect(tds, m_connect_info) == TDS_FAIL)
         {
             return false;
         }
+
         tds_free_socket(tds);
 
         m_server = server;
@@ -285,11 +287,11 @@ bool SqlServerDatabase::open(const std::wstring& server,
     }
 }
 
-// -- tango::IDatabase interface implementation --
+// tango::IDatabase interface implementation
 
 void SqlServerDatabase::close()
 {
-    // -- clean up --
+    // clean up
     tds_free_connection(m_connect_info);
     tds_free_login(m_login);
     tds_free_context(m_context);
@@ -463,13 +465,13 @@ tango::IFileInfoEnumPtr SqlServerDatabase::getFolderInfo(const std::wstring& pat
     std::wstring table_name;
 
 
-    // -- allocate socket --
+    // allocate socket
     TDSSOCKET* tds;
     tds = tds_alloc_socket(m_context, 512);
     tds_set_parent(tds, NULL);
 
 
-    // -- attempt to connect to the sql server --
+    // attempt to connect to the sql server
     if (!m_connect_info || tds_connect(tds, m_connect_info) == TDS_FAIL)
     {
         tds_free_connection(m_connect_info);
@@ -499,14 +501,17 @@ tango::IFileInfoEnumPtr SqlServerDatabase::getFolderInfo(const std::wstring& pat
                 std::string coldata;
                 coldata.assign((char*)src, src_len);
 
-                // -- get the table name --
+                // get the table name
+
                 if (!strcasecmp(tds->res_info->columns[i]->column_name, "TABLE_NAME"))
                 {
                     table_name = kl::towstring(coldata);
                     kl::trim(table_name);
                 }
 
-                // -- only add the actual tables, not views, system tables, etc. --
+
+                // only add the actual tables, not views, system tables, etc.
+
                 if (!strcasecmp(tds->res_info->columns[i]->column_name, "TABLE_TYPE") &&
                     !strcasecmp(coldata.c_str(), "TABLE"))
                 {
@@ -590,14 +595,14 @@ tango::IStreamPtr SqlServerDatabase::openStream(const std::wstring& ofs_path)
     return xcm::null;
 }
 
-tango::IStreamPtr SqlServerDatabase::createStream(const std::wstring& ofs_path, const std::wstring& mime_type)
+bool SqlServerDatabase::createStream(const std::wstring& ofs_path, const std::wstring& mime_type)
 {
-    return xcm::null;
+    return false;
 }
 
 tango::ISetPtr SqlServerDatabase::openSet(const std::wstring& path)
 {
-    // -- get a list of tables --
+    // get a list of tables
     
     tango::IFileInfoEnumPtr tables = getFolderInfo(L"/");
 
@@ -753,7 +758,7 @@ bool SqlServerDatabase::execute(const std::wstring& command,
 
     if (!wcscasecmp(first_word.c_str(), L"SELECT"))
     {
-        // -- create an iterator based on our select statement --
+        // create an iterator based on our select statement
         SqlServerIterator* iter = new SqlServerIterator;
         iter->m_connect_info = m_connect_info;
         iter->m_context = m_context;
@@ -772,20 +777,20 @@ bool SqlServerDatabase::execute(const std::wstring& command,
     }
      else
     {
-        // -- allocate socket --
+        // allocate socket
         TDSSOCKET* tds;
         tds = tds_alloc_socket(m_context, 512);
         tds_set_parent(tds, NULL);
 
-        // -- attempt to connect to the sql server --
+        // attempt to connect to the sql server
         if (!m_connect_info || tds_connect(tds, m_connect_info) == TDS_FAIL)
         {
-            // -- there was a problem connecting to the server --
+            // there was a problem connecting to the server
             tds_free_connection(m_connect_info);
             return false;
         }
 
-        // -- submit the query to the sql server --
+        // submit the query to the sql server
         std::string asc_command = kl::tostring(command);
         if (tds_submit_query(tds, asc_command.c_str()) != TDS_SUCCEED)
         {

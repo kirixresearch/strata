@@ -682,7 +682,7 @@ public:
     virtual IStructurePtr createStructure() = 0;
 
     virtual bool createFolder(const std::wstring& path) = 0;
-    virtual IStreamPtr createStream(const std::wstring& path, const std::wstring& mime_type) = 0;
+    virtual bool createStream(const std::wstring& path, const std::wstring& mime_type) = 0;
     virtual bool createTable(const std::wstring& path, IStructurePtr struct_config, FormatInfo* format_info) = 0;
     
     virtual IStreamPtr openStream(const std::wstring& path) = 0;

@@ -1830,16 +1830,17 @@ bool FsDatabase::createTable(const std::wstring& _path,
 }
 
 
-tango::IStreamPtr FsDatabase::createStream(const std::wstring& path, const std::wstring& mime_type)
+bool FsDatabase::createStream(const std::wstring& path, const std::wstring& mime_type)
 {
     FileStream* stream = new FileStream;
-    
+    stream->ref();
+
     std::wstring phys_path = makeFullPath(path);
     
     if (!stream->create(phys_path))
     {
-        delete stream;
-        return xcm::null;
+        stream->unref();
+        return false;
     }
     
     
@@ -1857,7 +1858,8 @@ tango::IStreamPtr FsDatabase::createStream(const std::wstring& path, const std::
         fileinfo.save(config_file);
     }
 
-    return static_cast<tango::IStream*>(stream);
+    stream->unref();
+    return true;
 }
 
 

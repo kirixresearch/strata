@@ -82,7 +82,7 @@ public:
     tango::IStructurePtr createStructure();
     bool createTable(const std::wstring& path, tango::IStructurePtr struct_config, tango::FormatInfo* format_info);
     tango::IStreamPtr openStream(const std::wstring& ofs_path);
-    tango::IStreamPtr createStream(const std::wstring& ofs_path, const std::wstring& mime_type);
+    bool createStream(const std::wstring& ofs_path, const std::wstring& mime_type);
     tango::ISetPtr openSet(const std::wstring& path);
     tango::ISetPtr openSetEx(const std::wstring& ofs_path,
                              int format);

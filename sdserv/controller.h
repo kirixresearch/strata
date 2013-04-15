@@ -89,8 +89,6 @@ private:
     tango::IIteratorPtr getSessionIterator(RequestInfo& req);
     SdservSession* getSdservSession(RequestInfo& req);
     
-    void apiLogin(RequestInfo& req);
-    void apiSelectDb(RequestInfo& req);
     void apiFolderInfo(RequestInfo& req);
     void apiFileInfo(RequestInfo& req);
     void apiCreateStream(RequestInfo& req);
@@ -120,7 +118,7 @@ private:
     std::map< std::wstring , ServerSessionObject* > m_session_objects;
     xcm::mutex m_session_object_mutex;
 
-    tango::IDatabasePtr m_db;
+    std::map< std::wstring , tango::IDatabasePtr > m_databases;
 };
 
 

@@ -478,9 +478,9 @@ tango::IStreamPtr KpgDatabase::openStream(const std::wstring& path)
     return xcm::null;
 }
 
-tango::IStreamPtr KpgDatabase::createStream(const std::wstring& path, const std::wstring& mime_type)
+bool KpgDatabase::createStream(const std::wstring& path, const std::wstring& mime_type)
 {
-    return xcm::null;
+    return false;
 }
 
 tango::ISetPtr KpgDatabase::openSetEx(const std::wstring& path, int format)

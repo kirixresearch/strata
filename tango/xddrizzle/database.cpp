@@ -818,9 +818,9 @@ tango::IStreamPtr DrizzleDatabase::openStream(const std::wstring& path)
     return xcm::null;
 }
 
-tango::IStreamPtr DrizzleDatabase::createStream(const std::wstring& path, const std::wstring& mime_type)
+bool DrizzleDatabase::createStream(const std::wstring& path, const std::wstring& mime_type)
 {
-    return xcm::null;
+    return false;
 }
 
 tango::ISetPtr DrizzleDatabase::openSet(const std::wstring& path)

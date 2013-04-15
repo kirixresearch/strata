@@ -312,10 +312,10 @@ bool SlDatabase::createFolder(const std::wstring& path)
     return execute(sql, 0, resobj, NULL);
 }
 
-tango::IStreamPtr SlDatabase::createStream(const std::wstring& path,
-                                           const std::wstring& mime_type)
+bool SlDatabase::createStream(const std::wstring& path,
+                              const std::wstring& mime_type)
 {
-    return xcm::null;
+    return false;
 }
 
 bool SlDatabase::renameFile(const std::wstring& path,

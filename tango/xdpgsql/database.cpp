@@ -1024,7 +1024,7 @@ tango::IStreamPtr PgsqlDatabase::openStream(const std::wstring& path)
     return static_cast<tango::IStream*>(pstream);
 }
 
-tango::IStreamPtr PgsqlDatabase::createStream(const std::wstring& path, const std::wstring& mime_type)
+bool PgsqlDatabase::createStream(const std::wstring& path, const std::wstring& mime_type)
 {
     deleteFile(path);
 
@@ -1032,7 +1032,7 @@ tango::IStreamPtr PgsqlDatabase::createStream(const std::wstring& path, const st
     PGconn* conn = createConnection();
     PGresult* res;
     if (!conn)
-        return xcm::null;
+        return false;
 
 
     PQexec(conn, "BEGIN");
@@ -1047,14 +1047,14 @@ tango::IStreamPtr PgsqlDatabase::createStream(const std::wstring& path, const st
     if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
     {
         closeConnection(conn);
-        return xcm::null;
+        return false;
     }
 
 
 
     Oid oid = lo_creat(conn, 0);
     if (oid < 0)
-        return xcm::null;
+        return false;
 
 
     sql = L"INSERT INTO %tbl% (xdpgsql_stream, mime_type, blob_id) VALUES ('', '%mimetype%', %oid%)";
@@ -1066,7 +1066,7 @@ tango::IStreamPtr PgsqlDatabase::createStream(const std::wstring& path, const st
     if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
     {
         closeConnection(conn);
-        return xcm::null;
+        return false;
     }
 
 
@@ -1078,18 +1078,10 @@ tango::IStreamPtr PgsqlDatabase::createStream(const std::wstring& path, const st
     if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
     {
         closeConnection(conn);
-        return xcm::null;
+        return false;
     }
 
-
-    PgsqlStream* pstream = new PgsqlStream(this);
-    if (!pstream->init(oid, conn))
-    {
-        delete pstream;
-        return xcm::null;
-    }
-
-    return static_cast<tango::IStream*>(pstream);
+    return true;
 }
 
 tango::ISetPtr PgsqlDatabase::openSetEx(const std::wstring& path,
