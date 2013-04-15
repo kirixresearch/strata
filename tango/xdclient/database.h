@@ -47,7 +47,7 @@ public:
 
 // database class definition
 class ClientDatabase : public tango::IDatabase,
-                     public IClientDatabase
+                       public IClientDatabase
 {
     friend class ClientSet;
 
@@ -121,7 +121,7 @@ public:
 
     tango::IIteratorPtr createIterator(const std::wstring& path,
                                        const std::wstring& columns,
-                                       const std::wstring& sort,
+                                       const std::wstring& order,
                                        tango::IJob* job);
 
     tango::IRelationPtr createRelation(const std::wstring& tag,

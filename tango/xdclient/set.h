@@ -43,12 +43,6 @@ public:
 
     tango::IStructurePtr getStructure();
 
-    tango::IIteratorPtr createIterator(const std::wstring& columns,
-                                       const std::wstring& expr,
-                                       tango::IJob* job);
-
-    tango::rowpos_t getRowCount();
-    
 private:
     
     ClientDatabase* m_database;

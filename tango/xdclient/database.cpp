@@ -86,44 +86,15 @@ bool ClientDatabase::open(const std::wstring& host,
     m_uid = uid;
     m_password = password;
 
+    std::wstring url = L"sdserv://";
+    url += m_host;
+    url += L":";
+    url += m_port;
+    url += L"/";
+    url += m_database;
+    m_attr->setStringAttribute(tango::dbattrDatabaseUrl, url);
 
-    ServerCallParams params;
-    params.setParam(L"username", L"admin");
-    params.setParam(L"password", L"");
-    std::wstring sres = serverCall(L"/api/login", &params, false, 15 /*seconds*/);
-    kl::JsonNode response;
-    response.fromString(sres);
-
-    if (response["success"].getBoolean())
-    {
-        m_session_id = response["session_id"];
-        if (m_session_id.length() == 0)
-            return false;
-
-        ServerCallParams params;
-        params.setParam(L"database", m_database);
-        std::wstring sres = serverCall(L"/api/selectdb", &params);
-        kl::JsonNode response;
-        response.fromString(sres);
-        if (!response["success"].getBoolean())
-            return false;
-
-        std::wstring url = L"sdserv://";
-        url += m_host;
-        url += L":";
-        url += m_port;
-        url += L"/";
-        url += m_database;
-        m_attr->setStringAttribute(tango::dbattrDatabaseUrl, url);
-
-
-        return true;
-    }
-     else
-    {
-        return false;
-    }
-
+    return true;
 }
 
 std::wstring ClientDatabase::getRequestPath()
@@ -179,7 +150,7 @@ std::wstring ClientDatabase::serverCall(const std::wstring& call_path,
     http->resetPostParameters();
     if (use_multipart)
         http->useMultipartPost();
-    http->setLocation(getRequestPath() + call_path);
+    http->setLocation(getRequestPath() + L"/api/" + call_path);
 
     if (params)
     {
@@ -187,9 +158,6 @@ std::wstring ClientDatabase::serverCall(const std::wstring& call_path,
             http->setPostValue(it->first, it->second);
     }
 
-    if (m_session_id.length() > 0)
-        http->setPostValue(L"sid", m_session_id);
-    
     http->send();
 
     std::wstring result = http->getResponseString();
@@ -334,7 +302,7 @@ bool ClientDatabase::createFolder(const std::wstring& path)
 {
     ServerCallParams params;
     params.setParam(L"path", path);
-    std::wstring sres = serverCall(L"/api/createfolder", &params);
+    std::wstring sres = serverCall(L"createfolder", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -346,7 +314,7 @@ bool ClientDatabase::renameFile(const std::wstring& path, const std::wstring& ne
     ServerCallParams params;
     params.setParam(L"path", path);
     params.setParam(L"new_name", new_name);
-    std::wstring sres = serverCall(L"/api/renamefile", &params);
+    std::wstring sres = serverCall(L"renamefile", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -358,7 +326,7 @@ bool ClientDatabase::moveFile(const std::wstring& path, const std::wstring& dest
     ServerCallParams params;
     params.setParam(L"path", path);
     params.setParam(L"destination", destination_folder);
-    std::wstring sres = serverCall(L"/api/movefile", &params);
+    std::wstring sres = serverCall(L"movefile", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -379,7 +347,7 @@ bool ClientDatabase::deleteFile(const std::wstring& path)
 {
     ServerCallParams params;
     params.setParam(L"path", path);
-    std::wstring sres = serverCall(L"/api/deletefile", &params);
+    std::wstring sres = serverCall(L"deletefile", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -400,7 +368,7 @@ tango::IFileInfoPtr ClientDatabase::getFileInfo(const std::wstring& path)
 {
     ServerCallParams params;
     params.setParam(L"path", path);
-    std::wstring sres = serverCall(L"/api/fileinfo", &params);
+    std::wstring sres = serverCall(L"fileinfo", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -443,7 +411,7 @@ tango::IFileInfoEnumPtr ClientDatabase::getFolderInfo(const std::wstring& path)
 {
     ServerCallParams params;
     params.setParam(L"path", path);
-    std::wstring sres = serverCall(L"/api/folderinfo", &params);
+    std::wstring sres = serverCall(L"folderinfo", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -503,7 +471,7 @@ tango::IStructurePtr ClientDatabase::describeTable(const std::wstring& path)
 {
     ServerCallParams params;
     params.setParam(L"path", path);
-    std::wstring sres = serverCall(L"/api/describetable", &params);
+    std::wstring sres = serverCall(L"describetable", &params);
 
     kl::JsonNode response;
     response.fromString(sres);
@@ -561,7 +529,7 @@ bool ClientDatabase::createTable(const std::wstring& path,
     ServerCallParams params;
     params.setParam(L"path", path);
     params.setParam(L"columns", columns);
-    std::wstring sres = serverCall(L"/api/createtable", &params);
+    std::wstring sres = serverCall(L"createtable", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -572,7 +540,7 @@ tango::IStreamPtr ClientDatabase::openStream(const std::wstring& path)
 {
     ServerCallParams params;
     params.setParam(L"path", path);
-    std::wstring sres = serverCall(L"/api/openstream", &params);
+    std::wstring sres = serverCall(L"openstream", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -587,7 +555,7 @@ bool ClientDatabase::createStream(const std::wstring& path, const std::wstring& 
     ServerCallParams params;
     params.setParam(L"path", path);
     params.setParam(L"mime_type", mime_type);
-    std::wstring sres = serverCall(L"/api/createstream", &params);
+    std::wstring sres = serverCall(L"createstream", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -615,26 +583,34 @@ tango::ISetPtr ClientDatabase::openSetEx(const std::wstring& path, int format)
 
 
 tango::IIteratorPtr ClientDatabase::createIterator(const std::wstring& path,
-                                                   const std::wstring& _columns,
-                                                   const std::wstring& sort,
+                                                   const std::wstring& columns,
+                                                   const std::wstring& order,
                                                    tango::IJob* job)
 {
-    std::wstring columns = _columns;
-    if (columns.length() == 0)
-        columns = L"*";
+    ServerCallParams params;
+    params.setParam(L"mode", L"createiterator");
+    params.setParam(L"path", path);
+    params.setParam(L"columns", columns);
+    params.setParam(L"order", order);
 
-    std::wstring sql = L"SELECT %columns% FROM %table%";
-    kl::replaceStr(sql, L"%columns%", columns);
-    kl::replaceStr(sql, L"%table%", path);
+    std::wstring sres = serverCall(L"query", &params);
+    kl::JsonNode response;
+    response.fromString(sres);
 
-    if (sort.length() > 0)
-        sql += L" ORDER BY " + sort;
-
-    xcm::IObjectPtr resobj;
-    if (!execute(sql, 0, resobj, job))
+    if (!response["success"].getBoolean())
+    {
         return xcm::null;
+    }
 
-    return resobj;
+    // initialize the iterator
+    ClientIterator* iter = new ClientIterator(this, NULL);
+    if (!iter->init(response["handle"], L""))
+    {
+        delete iter;
+        return xcm::null;
+    }
+    
+    return static_cast<tango::IIterator*>(iter);
 }
 
 
@@ -713,7 +689,7 @@ bool ClientDatabase::execute(const std::wstring& command,
     params.setParam(L"sql", command);
 
 
-    std::wstring sres = serverCall(L"/api/query", &params);
+    std::wstring sres = serverCall(L"query", &params);
     kl::JsonNode response;
     response.fromString(sres);
 

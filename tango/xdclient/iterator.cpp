@@ -43,7 +43,7 @@ ClientIterator::~ClientIterator()
 
     ServerCallParams params;
     params.setParam(L"handle", m_handle);
-    std::wstring sres = m_database->serverCall(L"/api/close", &params);
+    std::wstring sres = m_database->serverCall(L"close", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -98,7 +98,7 @@ tango::IIteratorPtr ClientIterator::clone()
 {
     ServerCallParams params;
     params.setParam(L"handle", m_handle);
-    std::wstring sres = m_database->serverCall(L"/api/clone", &params);
+    std::wstring sres = m_database->serverCall(L"clone", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -221,7 +221,7 @@ void ClientIterator::skip(int delta)
         params.setParam(L"handle", m_handle);
         params.setParam(L"start", kl::itowstring(new_row));
         params.setParam(L"limit", L"100");
-        std::wstring sres = m_database->serverCall(L"/api/fetchrows", &params);
+        std::wstring sres = m_database->serverCall(L"fetchrows", &params);
 
 
         m_cache_rows.clear();
@@ -465,7 +465,7 @@ void ClientIterator::refreshStructure()
 
     ServerCallParams params;
     params.setParam(L"handle", m_handle);
-    std::wstring sres = m_database->serverCall(L"/api/refresh", &params);
+    std::wstring sres = m_database->serverCall(L"refresh", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -913,7 +913,7 @@ bool ClientIterator::refreshDataAccessInfo()
 
     ServerCallParams params;
     params.setParam(L"handle", m_handle);
-    std::wstring sres = m_database->serverCall(L"/api/describetable", &params);
+    std::wstring sres = m_database->serverCall(L"describetable", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
