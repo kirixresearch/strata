@@ -24,7 +24,7 @@ struct SessionQueryResultColumn
     int scale;
 };
 
-struct SessionQueryResult
+struct SessionQueryResult : public ServerSessionObject
 {
     tango::IIteratorPtr iter;
     std::vector<SessionQueryResultColumn> columns;
@@ -32,37 +32,18 @@ struct SessionQueryResult
 };
 
 
-struct SessionRowInserterColumn
+struct SessionRowInserterColumn : public ServerSessionObject
 {
     tango::objhandle_t handle;
     int type;
 };
 
-struct SessionRowInserter
+struct SessionRowInserter : public ServerSessionObject
 {
     tango::IRowInserterPtr inserter;
     std::vector<SessionRowInserterColumn> columns;
 };
 
-class SdservSession : public ServerSessionObject
-{
-public:
-
-    SdservSession()
-    {
-    }
-    
-    virtual ~SdservSession()
-    {
-    }
-
-public:
-
-    tango::IDatabasePtr db;
-    std::map<std::wstring, tango::IStreamPtr> streams;
-    std::map<std::wstring, SessionRowInserter> inserters;
-    std::map<std::wstring, SessionQueryResult> iters;
-};
 
 
 class Controller
@@ -87,8 +68,7 @@ private:
     void returnApiError(RequestInfo& req, const char* msg, const char* code = "ERR0000");
     tango::IDatabasePtr getSessionDatabase(RequestInfo& req);
     tango::IIteratorPtr getSessionIterator(RequestInfo& req);
-    SdservSession* getSdservSession(RequestInfo& req);
-    
+
     void apiFolderInfo(RequestInfo& req);
     void apiFileInfo(RequestInfo& req);
     void apiCreateStream(RequestInfo& req);
