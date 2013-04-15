@@ -204,21 +204,37 @@ void Controller::returnApiError(RequestInfo& req, const char* msg, const char* c
 
 tango::IDatabasePtr Controller::getSessionDatabase(RequestInfo& req)
 {
-    std::wstring sid = req.getValue(L"sid");
-    SdservSession* session = (SdservSession*)getServerSessionObject(sid);
-    if (!session)
+    std::wstring base_path = L"/";
+
+    std::map< std::wstring , tango::IDatabasePtr >::iterator it;
+    
     {
-        returnApiError(req, "Invalid session id");
-        return xcm::null;
+        XCM_AUTO_LOCK(m_databases_object_mutex);
+        it = m_databases.find(base_path);
+        if (it != m_databases.end())
+            return it->second;
     }
 
-    if (session->db.isNull())
-    {
-        returnApiError(req, "No database selected");
+    tango::IDatabaseMgrPtr dbmgr = tango::getDatabaseMgr();
+    if (dbmgr.isNull())
         return xcm::null;
-    }
 
-    return session->db;
+
+    std::wstring cstr = g_server.getDatabaseConnectionString(L"/");
+    if (cstr.length() == 0)
+        return xcm::null;
+
+
+    tango::IDatabasePtr db = dbmgr->open(cstr);
+
+    if (db.isNull())
+        return xcm::null;
+
+    {
+        XCM_AUTO_LOCK(m_databases_object_mutex);
+        m_databases[base_path] = db;
+        return db;
+    }
 }
 
 SdservSession* Controller::getSdservSession(RequestInfo& req)
@@ -378,10 +394,6 @@ void Controller::apiCreateStream(RequestInfo& req)
     if (db.isNull())
         return;
     
-    SdservSession* session = getSdservSession(req);
-    if (!session)
-        return;
-    
     if (!req.getValueExists(L"path"))
     {
         returnApiError(req, "Missing path parameter");
@@ -391,22 +403,16 @@ void Controller::apiCreateStream(RequestInfo& req)
     std::wstring path = req.getValue(L"path");
     std::wstring mime_type = req.getValue(L"mime_type");
     
-    tango::IStreamPtr stream = db->createStream(path, mime_type);
-    if (stream.isNull())
+    if (!db->createStream(path, mime_type))
     {
-        returnApiError(req, "Cannot open object");
+        returnApiError(req, "Cannot create object");
         return;
     }
     
-    // add object to session
-    std::wstring handle = createHandle();
-    session->streams[handle] = stream;
-        
     // return success to caller
     kl::JsonNode response;
     response["success"].setBoolean(true);
-    response["handle"] = handle;
-    
+
     req.write(response.toString());
 }
 

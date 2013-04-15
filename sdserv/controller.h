@@ -119,6 +119,7 @@ private:
     xcm::mutex m_session_object_mutex;
 
     std::map< std::wstring , tango::IDatabasePtr > m_databases;
+    xcm::mutex m_databases_object_mutex;
 };
 
 
