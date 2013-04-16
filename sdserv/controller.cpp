@@ -1010,7 +1010,7 @@ void Controller::apiFetchRows(RequestInfo& req)
      else
     {
         // add object to session
-        SessionQueryResult* qr = (SessionQueryResult*)getServerSessionObject(handle);
+        qr = (SessionQueryResult*)getServerSessionObject(handle);
         if (!qr)
         {
             returnApiError(req, "Invalid handle");
