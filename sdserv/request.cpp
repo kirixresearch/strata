@@ -442,7 +442,7 @@ bool RequestInfo::parsePart(const char* p,
     return true;
 }
 
-std::wstring RequestInfo::getValue(const std::wstring& key)
+std::wstring RequestInfo::getValue(const std::wstring& key, const std::wstring& def)
 {
     std::map<std::wstring, RequestPostInfo>::iterator p_it;
     p_it = m_post.find(key);
@@ -464,7 +464,7 @@ std::wstring RequestInfo::getValue(const std::wstring& key)
     if (g_it != m_get.end())
         return g_it->second;
         
-    return L"";
+    return def;
 }
 
 bool RequestInfo::getValueExists(const std::wstring& key) const

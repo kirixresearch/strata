@@ -71,7 +71,7 @@ public:
     
     std::wstring getURI();
     std::wstring getQuery();
-    std::wstring getValue(const std::wstring& key);
+    std::wstring getValue(const std::wstring& key, const std::wstring& def = L"");
     std::wstring getGetValue(const std::wstring& key);
     std::wstring getPostValue(const std::wstring& key);
     bool getValueExists(const std::wstring& key) const;

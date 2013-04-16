@@ -41,9 +41,6 @@ bool Controller::onRequest(RequestInfo& req)
         printf("\n");
     last_time = t;
     
-    if (uri == L"/api/login")
-        printf("\n-- New connection ---------------------------------------------------\n\n");
-    
     std::wstring str;
     if (req.getValueExists(L"path"))
         str = req.getValue(L"path");
@@ -69,6 +66,13 @@ bool Controller::onRequest(RequestInfo& req)
     printf("%s %-13ls %-44ls", timestamp, apimethod.c_str(), str.c_str());
     // end debugging code
  
+
+    if (apimethod.empty())
+    {
+        // no api method invoked, invoker wants data
+        apiFetchRows(req);
+        return true;
+    }
  
 
     //     if (apimethod == L"login")            apiLogin(req);
@@ -977,22 +981,41 @@ static void quotedAppend(std::wstring& str, const std::wstring& cell)
 
 void Controller::apiFetchRows(RequestInfo& req)
 {
-    if (!req.getValueExists(L"start") || !req.getValueExists(L"limit"))
-    {
-        returnApiError(req, "Missing parameter");
-        return;
-    }
-
     std::wstring handle = req.getValue(L"handle");
-    int start = kl::wtoi(req.getValue(L"start"));
-    int limit = kl::wtoi(req.getValue(L"limit"));
-    
-    // add object to session
-    SessionQueryResult* qr = (SessionQueryResult*)getServerSessionObject(handle);
-    if (!qr)
+    int start = kl::wtoi(req.getValue(L"start", L"-1"));
+    int limit = kl::wtoi(req.getValue(L"limit", L"-1"));
+    SessionQueryResult* qr = NULL;
+
+    if (handle.empty())
     {
-        returnApiError(req, "Invalid handle");
-        return;
+        tango::IDatabasePtr db = getSessionDatabase(req);
+        if (db.isNull())
+            return;
+
+        tango::IIteratorPtr iter = db->createIterator(req.getURI(), L"", L"", NULL);
+        if (!iter.isOk())
+        {
+            returnApiError(req, "Could not create iterator");
+            return;
+        }
+        
+
+        // add object to session
+        handle = createHandle();
+        qr = new SessionQueryResult;
+        qr->iter = iter;
+        qr->rowpos = 1;
+        addServerSessionObject(handle, qr);
+    }
+     else
+    {
+        // add object to session
+        SessionQueryResult* qr = (SessionQueryResult*)getServerSessionObject(handle);
+        if (!qr)
+        {
+            returnApiError(req, "Invalid handle");
+            return;
+        }
     }
     
     tango::IIterator* iter = qr->iter.p;
@@ -1016,29 +1039,32 @@ void Controller::apiFetchRows(RequestInfo& req)
     }
     
     std::wstring str;
-    str.reserve(limit*180);
+    str.reserve((limit>0?limit:100)*180);
     
-    if (start == 1)
+    if (start != -1)
     {
-        iter->goFirst();
-        qr->rowpos = 1;
-    }
-     else
-    {
-        long long newpos = start;
-        newpos -= ((long long)qr->rowpos);
-        if (newpos != 0)
+        if (start == 1)
         {
-            iter->skip((int)newpos);
-            qr->rowpos = (tango::rowpos_t)start;
+            iter->goFirst();
+            qr->rowpos = 1;
+        }
+         else
+        {
+            long long newpos = start;
+            newpos -= ((long long)qr->rowpos);
+            if (newpos != 0)
+            {
+                iter->skip((int)newpos);
+                qr->rowpos = (tango::rowpos_t)start;
+            }
         }
     }
-    
+
     str = L"{ \"success\": true, \"rows\": [ ";
     std::wstring cell;
     
     int row = 0, col, rowcnt = 0;
-    for (row = 0; row < limit; ++row)
+    for (row = 0; (limit > 0 ? row < limit : true); ++row)
     {
         if (iter->eof())
             break;
