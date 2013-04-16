@@ -1060,7 +1060,7 @@ void Controller::apiFetchRows(RequestInfo& req)
         }
     }
 
-    str = L"{ \"success\": true, \"rows\": [ ";
+    str = L"{ \"success\": true, \"handle\": \"" + handle + L"\", \"rows\": [ ";
     std::wstring cell;
     
     int row = 0, col, rowcnt = 0;
