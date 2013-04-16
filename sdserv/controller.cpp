@@ -59,18 +59,18 @@ bool Controller::onRequest(RequestInfo& req)
         str = str.substr(0, 10) + L"..." + str.substr(ending_start,30);
     }
     
+    std::wstring apimethod = req.getValue(L"m");
+    
+
     struct tm tm;
     localtime_r(&t, &tm);
     char timestamp[255];
     strftime(timestamp, 255, "%H:%M:%S", &tm);
-    printf("%s %-13ls %-44ls", timestamp, uri.substr(5).c_str(), str.c_str());
+    printf("%s %-13ls %-44ls", timestamp, apimethod.c_str(), str.c_str());
     // end debugging code
  
  
-    std::wstring apimethod;
-    if (0 == uri.compare(0, 5, L"/api/"))
-        apimethod = uri.substr(5, 20);
-    
+
     //     if (apimethod == L"login")            apiLogin(req);
     //else if (apimethod == L"selectdb")         apiSelectDb(req);
          if (apimethod == L"folderinfo")       apiFolderInfo(req);

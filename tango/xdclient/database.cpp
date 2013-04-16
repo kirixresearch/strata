@@ -137,7 +137,7 @@ HttpRequest* ClientDatabase::getHttpObject()
 }
 
 
-std::wstring ClientDatabase::serverCall(const std::wstring& call_path,
+std::wstring ClientDatabase::serverCall(const std::wstring& method,
                                         const ServerCallParams* params,
                                         bool use_multipart,
                                         int timeout)
@@ -150,7 +150,7 @@ std::wstring ClientDatabase::serverCall(const std::wstring& call_path,
     http->resetPostParameters();
     if (use_multipart)
         http->useMultipartPost();
-    http->setLocation(getRequestPath() + L"/api/" + call_path);
+    http->setLocation(getRequestPath() + L"?m=" + method);
 
     if (params)
     {

@@ -232,19 +232,20 @@ void RequestInfo::parse()
 
 
     
-    if (*m_req->request_method == 'G')
+
+
+    if (m_req->query_string && *m_req->query_string)
     {
-        if (m_req->query_string)
-        {
-            // get method
-            std::vector<request_member> parts;
-            std::vector<request_member>::iterator it;
-            extractPairs(kl::towstring(m_req->query_string), parts);
-            for (it = parts.begin(); it != parts.end(); ++it)
-                m_get[it->key] = it->value;
-        }
+        // get method
+        std::vector<request_member> parts;
+        std::vector<request_member>::iterator it;
+        extractPairs(kl::towstring(m_req->query_string), parts);
+        for (it = parts.begin(); it != parts.end(); ++it)
+            m_get[it->key] = it->value;
     }
-     else
+
+
+    if (*m_req->request_method == 'P')
     {
         char buf[4096];
         int buf_len;
