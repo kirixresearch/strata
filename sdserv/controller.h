@@ -85,7 +85,7 @@ private:
     void apiGroupQuery(RequestInfo& req);
     void apiDescribeTable(RequestInfo& req);
     void apiGetData(RequestInfo& req);
-    void apiFetchRows(RequestInfo& req);
+    void apiRead(RequestInfo& req);
     void apiInsertRows(RequestInfo& req);
     void apiClone(RequestInfo& req);
     void apiClose(RequestInfo& req);

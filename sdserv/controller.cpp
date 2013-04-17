@@ -70,7 +70,7 @@ bool Controller::onRequest(RequestInfo& req)
     if (apimethod.empty())
     {
         // no api method invoked, invoker wants data
-        apiFetchRows(req);
+        apiRead(req);
         return true;
     }
  
@@ -91,7 +91,7 @@ bool Controller::onRequest(RequestInfo& req)
     else if (apimethod == L"query")            apiQuery(req);
     else if (apimethod == L"groupquery")       apiGroupQuery(req);
     else if (apimethod == L"describetable")    apiDescribeTable(req);
-    else if (apimethod == L"fetchrows")        apiFetchRows(req);
+    else if (apimethod == L"read")             apiRead(req);
     else if (apimethod == L"insertrows")       apiInsertRows(req);
     else if (apimethod == L"clone")            apiClone(req);
     else if (apimethod == L"close")            apiClose(req);
@@ -979,7 +979,7 @@ static void quotedAppend(std::wstring& str, const std::wstring& cell)
     str += '"';
 }
 
-void Controller::apiFetchRows(RequestInfo& req)
+void Controller::apiRead(RequestInfo& req)
 {
     std::wstring handle = req.getValue(L"handle");
     int start = kl::wtoi(req.getValue(L"start", L"-1"));
@@ -991,6 +991,22 @@ void Controller::apiFetchRows(RequestInfo& req)
         tango::IDatabasePtr db = getSessionDatabase(req);
         if (db.isNull())
             return;
+
+        tango::IFileInfoPtr finfo = db->getFileInfo(req.getURI());
+        if (finfo.isNull())
+        {
+            req.setStatusCode(404);
+            req.setContentType("text/html");
+            req.write("<html><body><h2>Not found</h2></body></html>");
+            return;
+        }
+
+        if (finfo->getType() == tango::filetypeFolder)
+        {
+            req.setGetValue(L"path", req.getURI());
+            apiFolderInfo(req);
+            return;
+        }
 
         tango::IIteratorPtr iter = db->createIterator(req.getURI(), L"", req.getValue(L"order"), NULL);
         if (!iter.isOk())

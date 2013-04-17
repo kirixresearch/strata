@@ -74,6 +74,7 @@ public:
     std::wstring getValue(const std::wstring& key, const std::wstring& def = L"");
     std::wstring getGetValue(const std::wstring& key);
     std::wstring getPostValue(const std::wstring& key);
+    void setGetValue(const std::wstring& key, const std::wstring& value) { m_get[key] = value; }
     bool getValueExists(const std::wstring& key) const;
     bool acceptCompressed();
     
