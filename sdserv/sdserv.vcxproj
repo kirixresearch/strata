@@ -148,14 +148,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="controller.cpp" />
-    <ClCompile Include="jsonconfig.cpp" />
     <ClCompile Include="mongoose.c" />
     <ClCompile Include="request.cpp" />
     <ClCompile Include="sdserv.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="controller.h" />
-    <ClInclude Include="jsonconfig.h" />
     <ClInclude Include="mongoose.h" />
     <ClInclude Include="request.h" />
     <ClInclude Include="sdserv.h" />
