@@ -296,7 +296,6 @@
     <ClCompile Include="localrowcache.cpp" />
     <ClCompile Include="rowidarray.cpp" />
     <ClCompile Include="setconfigfile.cpp" />
-    <ClCompile Include="sqlalter.cpp" />
     <ClCompile Include="structure.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
