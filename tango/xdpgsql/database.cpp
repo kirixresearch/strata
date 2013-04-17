@@ -1082,39 +1082,6 @@ bool PgsqlDatabase::createStream(const std::wstring& path, const std::wstring& m
     return true;
 }
 
-tango::ISetPtr PgsqlDatabase::openSetEx(const std::wstring& path,
-                                        int format)
-{
-    return openSet(path);
-}
-
-tango::ISetPtr PgsqlDatabase::openSet(const std::wstring& path)
-{
-    std::wstring tablename1 = pgsqlGetTablenameFromPath(path);
-
-    if (tablename1.empty())
-        return xcm::null;
-        
-    if (m_db_type == tango::dbtypeDb2 ||
-        m_db_type == tango::dbtypeOracle)
-    {
-        kl::makeUpper(tablename1);
-    }
-
-    // create set and initialize variables
-    PgsqlSet* set = new PgsqlSet(this);
-    set->m_tablename = tablename1;
-
-    // initialize Odbc connection for this set
-    if (!set->init())
-    {
-        return xcm::null;
-    }
-
-    return static_cast<tango::ISet*>(set);
-}
-
-
 tango::IIteratorPtr PgsqlDatabase::createIterator(const std::wstring& path,
                                                   const std::wstring& columns,
                                                   const std::wstring& sort,

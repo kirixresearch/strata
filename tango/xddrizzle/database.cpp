@@ -823,54 +823,6 @@ bool DrizzleDatabase::createStream(const std::wstring& path, const std::wstring&
     return false;
 }
 
-tango::ISetPtr DrizzleDatabase::openSet(const std::wstring& path)
-{
-    // get a list of tables
-    tango::IFileInfoEnumPtr tables = getFolderInfo(L"/");
-
-    std::wstring tablename1 = getTablenameFromOfsPath(path);
-    std::wstring tablename2;
-    bool found = false;
-
-    size_t i, table_count = tables->size();
-    for (i = 0; i < table_count; ++i)
-    {
-        tango::IFileInfoPtr info = tables->getItem(i);
-        tablename2 = info->getName();
-        
-        if (0 == wcscasecmp(tablename1.c_str(), tablename2.c_str()))
-        {
-            found = true;
-            break;
-        }
-    }
-
-    // check if we couldn't find the table in the database
-    if (!found)
-        return xcm::null;
-
-    // open the set
-    
-    DrizzleSet* set = new DrizzleSet;
-    set->m_database = this;
-    set->m_drizzle = &m_drizzle;
-    set->m_tablename = tablename1;
-    
-    if (!set->init())
-    {
-        delete set;
-        return xcm::null;
-    }
-    
-    return static_cast<tango::ISet*>(set);
-}
-
-tango::ISetPtr DrizzleDatabase::openSetEx(const std::wstring& ofs_path,
-                                          int format)
-{
-    return openSet(ofs_path);
-}
-
 
 tango::IIteratorPtr DrizzleDatabase::createIterator(const std::wstring& path,
                                                     const std::wstring& columns,

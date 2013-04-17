@@ -1134,55 +1134,6 @@ bool OracleDatabase::createStream(const std::wstring& ofs_path, const std::wstri
     return false;
 }
 
-tango::ISetPtr OracleDatabase::openSetEx(const std::wstring& ofs_path,
-                                         int format)
-{
-    return openSet(ofs_path);
-}
-
-tango::ISetPtr OracleDatabase::openSet(const std::wstring& path)
-{
-    m_error.clearError();
-
-    std::wstring tablename = getTablenameFromOfsPath(path);
-
-    // find out if we have permission
-    std::wstring query;
-    query = L"SELECT 1 from ";
-    query += tablename;
-    query += L" WHERE 1=0";
-
-    OracleIterator* iter = new OracleIterator(this);
-    iter->ref();
-    iter->m_env = m_env;
-    iter->m_svc = m_svc;
-    iter->m_name = tablename;
-    if (!iter->init(query))
-    {
-        iter->unref();
-        return xcm::null;
-    }
-    iter->unref();
-
-
-
-    // we can access this table, so continue
-
-    OracleSet* set = new OracleSet(this);
-    set->m_env = m_env;
-    set->m_svc = m_svc;
-    set->m_path = path;
-    set->m_tablename = tablename;
-    if (!set->init())
-    {
-        delete set;
-        return xcm::null;
-    }
-    
-    return static_cast<tango::ISet*>(set);
-}
-
-
 tango::IIteratorPtr OracleDatabase::createIterator(const std::wstring& path,
                                                    const std::wstring& _columns,
                                                    const std::wstring& sort,

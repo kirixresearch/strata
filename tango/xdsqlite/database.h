@@ -74,8 +74,6 @@ public:
     tango::ISetPtr createDynamicSet(tango::ISetPtr base_set);
     
     tango::IStreamPtr openStream(const std::wstring& path);
-    tango::ISetPtr openSet(const std::wstring& path);
-    tango::ISetPtr openSetEx(const std::wstring& path, int format);
 
     tango::IIteratorPtr createIterator(const std::wstring& path,
                                        const std::wstring& columns,

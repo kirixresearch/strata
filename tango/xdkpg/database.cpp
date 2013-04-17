@@ -481,10 +481,6 @@ bool KpgDatabase::createStream(const std::wstring& path, const std::wstring& mim
     return false;
 }
 
-tango::ISetPtr KpgDatabase::openSetEx(const std::wstring& path, int format)
-{
-    return openSet(path);
-}
 
 bool KpgDatabase::getStreamInfoBlock(const std::wstring& _path, std::wstring& output)
 {

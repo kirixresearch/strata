@@ -561,18 +561,6 @@ bool ClientDatabase::createStream(const std::wstring& path, const std::wstring& 
     return response["success"].getBoolean();
 }
 
-tango::ISetPtr ClientDatabase::openSet(const std::wstring& path)
-{
-    ClientSet* set = new ClientSet();
-    set->setObjectPath(path);
-    return static_cast<tango::ISet*>(set);
-}
-
-tango::ISetPtr ClientDatabase::openSetEx(const std::wstring& path, int format)
-{
-    return openSet(path);
-}
-
 
 tango::IIteratorPtr ClientDatabase::createIterator(const std::wstring& path,
                                                    const std::wstring& columns,

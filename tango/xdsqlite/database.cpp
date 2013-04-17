@@ -571,23 +571,6 @@ tango::IStreamPtr SlDatabase::openStream(const std::wstring& path)
     return xcm::null;
 }
 
-tango::ISetPtr SlDatabase::openSet(const std::wstring& path)
-{
-    std::wstring objname = pathToObjectName(path);
-
-    SlSet* set = new SlSet(this);
-    set->m_tablename = objname;
-    set->m_path = path;
-    set->m_sqlite = m_sqlite;
-
-    return static_cast<tango::ISet*>(set);
-}
-
-tango::ISetPtr SlDatabase::openSetEx(const std::wstring& path, int format)
-{
-    return openSet(path);
-}
-
 
 tango::IIteratorPtr SlDatabase::createIterator(const std::wstring& path,
                                                const std::wstring& _columns,

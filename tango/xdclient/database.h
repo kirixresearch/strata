@@ -115,9 +115,6 @@ public:
     bool createTable(const std::wstring& path, tango::IStructurePtr struct_config, tango::FormatInfo* format_info);
     bool createStream(const std::wstring& path, const std::wstring& mime_type);
     tango::IStreamPtr openStream(const std::wstring& path);
-    tango::ISetPtr openSet(const std::wstring& path);
-    tango::ISetPtr openSetEx(const std::wstring& path,
-                             int format);
 
     tango::IIteratorPtr createIterator(const std::wstring& path,
                                        const std::wstring& columns,

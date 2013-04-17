@@ -600,49 +600,6 @@ bool SqlServerDatabase::createStream(const std::wstring& ofs_path, const std::ws
     return false;
 }
 
-tango::ISetPtr SqlServerDatabase::openSet(const std::wstring& path)
-{
-    // get a list of tables
-    
-    tango::IFileInfoEnumPtr tables = getFolderInfo(L"/");
-
-    std::wstring t1 = getTablenameFromOfsPath(path);
-    std::wstring t2;
-    bool found = false;
-
-    size_t i, table_count = tables->size();
-    for (i = 0; i < table_count; ++i)
-    {
-        tango::IFileInfoPtr info = tables->getItem(i);
-        t2 = info->getName();
-        
-        if (!wcscasecmp(t1.c_str(), t2.c_str()))
-        {
-            found = true;
-            break;
-        }
-    }
-
-    // check if we couldn't find the table in the database
-    if (!found)
-        return xcm::null;
-
-    SqlServerSet* set = new SqlServerSet;
-    set->m_connect_info = m_connect_info;
-    set->m_context = m_context;
-    set->m_database = this;
-    set->m_path = path;
-    set->m_tablename = getTablenameFromOfsPath(path);
-    return static_cast<tango::ISet*>(set);
-}
-
-tango::ISetPtr SqlServerDatabase::openSetEx(const std::wstring& ofs_path,
-                                            int format)
-{
-    return openSet(ofs_path);
-}
-
-
 
 tango::IIteratorPtr SqlServerDatabase::createIterator(const std::wstring& path,
                                                       const std::wstring& columns,

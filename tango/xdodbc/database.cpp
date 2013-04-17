@@ -2069,38 +2069,6 @@ bool OdbcDatabase::createStream(const std::wstring& ofs_path, const std::wstring
     return false;
 }
 
-tango::ISetPtr OdbcDatabase::openSetEx(const std::wstring& ofs_path,
-                                       int format)
-{
-    return openSet(ofs_path);
-}
-
-tango::ISetPtr OdbcDatabase::openSet(const std::wstring& path)
-{
-    std::wstring tablename1 = getTablenameFromOfsPath(path);
-
-    if (tablename1.empty())
-        return xcm::null;
-        
-    if (m_db_type == tango::dbtypeDb2 ||
-        m_db_type == tango::dbtypeOracle)
-    {
-        kl::makeUpper(tablename1);
-    }
-
-    // create set and initialize variables
-    OdbcSet* set = new OdbcSet(this);
-    set->m_conn_str = m_conn_str;
-    set->m_tablename = tablename1;
-
-    if (!set->init())
-    {
-        return xcm::null;
-    }
-
-    return static_cast<tango::ISet*>(set);
-}
-
 
 tango::IIteratorPtr OdbcDatabase::createIterator(const std::wstring& path,
                                                  const std::wstring& _columns,
