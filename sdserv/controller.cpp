@@ -1031,7 +1031,8 @@ void Controller::apiFetchRows(RequestInfo& req)
             tango::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
             
             SessionQueryResultColumn qrc;
-            qrc.handle = iter->getHandle(colinfo->getName());
+            qrc.name = colinfo->getName();
+            qrc.handle = iter->getHandle(qrc.name);
             qrc.type = colinfo->getType();
             qrc.width = colinfo->getWidth();
             qrc.scale = colinfo->getScale();
@@ -1072,9 +1073,9 @@ void Controller::apiFetchRows(RequestInfo& req)
             break;
         
         if (rowcnt > 0)
-            str += L"],[";
+            str += L"},{";
              else
-            str += L"[";
+            str += L"{";
         
         rowcnt++;
         
@@ -1083,6 +1084,9 @@ void Controller::apiFetchRows(RequestInfo& req)
             if (col > 0)
                 str += L",";
             
+            quotedAppend(str, qr->columns[col].name);
+            str += L":";
+
             switch (qr->columns[col].type)
             {
                 default:
@@ -1094,36 +1098,36 @@ void Controller::apiFetchRows(RequestInfo& req)
                     break;
                 
                 case tango::typeBoolean:
-                    cell = ((iter->getBoolean(qr->columns[col].handle)) ? L"true" : L"false");
+                    cell = iter->getBoolean(qr->columns[col].handle) ? L"true" : L"false";
                     break;
                 
                 case tango::typeNumeric:
                 case tango::typeDouble:
                 {
-                    wchar_t buf[255];
-                    swprintf(buf, 255, L"%.*f", qr->columns[col].scale, iter->getDouble(qr->columns[col].handle));
+                    wchar_t buf[64];
+                    swprintf(buf, 64, L"%.*f", qr->columns[col].scale, iter->getDouble(qr->columns[col].handle));
                     cell = buf;
                 }
                 break;
                 
                 case tango::typeDate:
                 {
-                    wchar_t buf[64];
+                    wchar_t buf[16];
                     buf[0] = 0;
                     tango::DateTime dt = iter->getDateTime(qr->columns[col].handle);
                     if (!dt.isNull())
-                        swprintf(buf, 64, L"%04d-%02d-%02d", dt.getYear(), dt.getMonth(), dt.getDay());
+                        swprintf(buf, 16, L"%04d-%02d-%02d", dt.getYear(), dt.getMonth(), dt.getDay());
                     cell = buf;
                 }
                 break;
                 
                 case tango::typeDateTime:
                 {
-                    wchar_t buf[64];
+                    wchar_t buf[32];
                     buf[0] = 0;
                     tango::DateTime dt = iter->getDateTime(qr->columns[col].handle);
                     if (!dt.isNull())
-                        swprintf(buf, 64, L"%04d-%02d-%02d %02d:%02d:%02d", dt.getYear(), dt.getMonth(), dt.getDay(), dt.getHour(), dt.getMinute(), dt.getSecond());
+                        swprintf(buf, 32, L"%04d-%02d-%02d %02d:%02d:%02d", dt.getYear(), dt.getMonth(), dt.getDay(), dt.getHour(), dt.getMinute(), dt.getSecond());
                     cell = buf;
                 }
                 break;
@@ -1140,7 +1144,7 @@ void Controller::apiFetchRows(RequestInfo& req)
     if (rowcnt == 0)
         str += L"] }";
          else
-        str += L"] ] }";
+        str += L"} ] }";
     
     req.write(kl::tostring(str));
 }

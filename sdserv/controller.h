@@ -19,6 +19,7 @@
 struct SessionQueryResultColumn
 {
     tango::objhandle_t handle;
+    std::wstring name;
     int type;
     int width;
     int scale;

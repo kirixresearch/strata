@@ -227,49 +227,60 @@ void ClientIterator::skip(int delta)
         m_cache_rows.resize(100);
 
         wchar_t* data = (wchar_t*)sres.c_str();
-        wchar_t* start;
-        wchar_t* end;
+        wchar_t* row_start;
+        wchar_t* row_end;
 
         wchar_t* col_start;
         wchar_t* col_end;
+        wchar_t* colon;
 
-        std::wstring colvalue;
+        std::wstring colname,colvalue;
 
         size_t rown = 0;
     
-        start = wcschr(data, '[');
-        if (start)
-            start = wcschr(start+1, '[');
-        while (start)
+        row_start = wcschr(data, '[');
+        if (row_start)
+            row_start = wcschr(row_start+1, '{');
+        while (row_start)
         {
-            start++;
-            end = js_zl_strchr(start, ']', NULL, NULL);
-            if (!end)
+            row_start++;
+            row_end = js_zl_strchr(row_start, '}', NULL, NULL);
+            if (!row_end)
                 break;
 
             ClientCacheRow& cache_row = m_cache_rows[rown];
             cache_row.values.clear();
 
-            col_start = start;
+            col_start = row_start;
             col_end = NULL;
-            while (col_end != end)
+            while (col_end != row_end)
             {
                 col_end = js_zl_strchr(col_start, ',', NULL, NULL);
-                if (col_end == NULL || col_end > end)
-                    col_end = end;
+                if (col_end == NULL || col_end > row_end)
+                    col_end = row_end;
 
-                colvalue.assign(col_start, col_end);
+                colon = col_start;
+                while (*colon != ':' && colon < col_end)
+                    colon++;
+                if (colon == col_end)
+                    break; // malformed
+
+                colname.assign(col_start, colon);
+                kl::trim(colname);
+                dequote(colname);
+
+                colvalue.assign(colon+1, col_end);
                 kl::trim(colvalue);
                 dequote(colvalue);
+
                 cache_row.values.push_back(colvalue);
 
                 col_start = col_end+1;
             }
             
             rown++;
-            start = wcschr(end, '[');
+            row_start = wcschr(row_end, '{');
         }
-
 
 
 
