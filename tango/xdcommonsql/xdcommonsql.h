@@ -15,7 +15,51 @@
 
 #include <map>
 #include <set>
-#include "../xdcommon/errorinfo.h"
+
+class ThreadErrorInfo;
+
+
+xcm_interface IXdsqlDatabase;
+XCM_DECLARE_SMARTPTR(IXdsqlDatabase)
+
+
+xcm_interface IXdsqlTable;
+XCM_DECLARE_SMARTPTR(IXdsqlTable)
+
+
+
+xcm_interface IXdsqlDatabase : public xcm::IObject
+{
+    XCM_INTERFACE_NAME("tango.IXdsqlDatabase")
+
+public:
+
+    virtual tango::ISetPtr openSet(const std::wstring& path) = 0;
+};
+
+
+
+xcm_interface IXdsqlTable : public xcm::IObject
+{
+    XCM_INTERFACE_NAME("tango.IXdsqlTable")
+
+public:
+
+    virtual tango::IIteratorPtr createIterator(const std::wstring& columns,
+                                               const std::wstring& expr,
+                                               tango::IJob* job) = 0;
+    virtual tango::IStructurePtr getStructure() = 0;
+
+    virtual bool updateRow(tango::rowid_t rowid,
+                           tango::ColumnUpdateInfo* info,
+                           size_t info_size) = 0;
+};
+
+
+
+
+
+
 
 
 class SqlStatement

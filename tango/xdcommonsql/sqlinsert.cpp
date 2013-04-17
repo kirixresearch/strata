@@ -20,7 +20,7 @@
 #include "xdcommonsql.h"
 #include "../xdcommon/util.h"
 #include "../xdcommon/dbfuncs.h"
-
+#include "../xdcommon/errorinfo.h"
 
 struct InsertFieldInfo
 {

@@ -22,7 +22,7 @@
 #include "xdcommonsql.h"
 #include "../xdcommon/util.h"
 #include "../xdcommon/jobinfo.h"
-
+#include "../xdcommon/errorinfo.h"
 
 
 struct BaseSetReplaceInfo
@@ -44,11 +44,15 @@ static int doUpdate(tango::IDatabasePtr db,
                     ThreadErrorInfo& error,
                     tango::IJob* job)
 {
+    IXdsqlDatabasePtr xdb = db;
+    if (xdb.isNull())
+        return -1;
+
     tango::IFileInfoPtr finfo = db->getFileInfo(path);
     if (finfo.isNull())
         return -1;
 
-    tango::ISetPtr set = db->openSet(path);
+    tango::ISetPtr set = xdb->openSet(path);
     if (set.isNull())
         return -1;
 
@@ -101,8 +105,8 @@ static int doUpdate(tango::IDatabasePtr db,
     }
 
     // get set update interface
-    tango::ISetRowUpdatePtr sp_set_update = set;
-    tango::ISetRowUpdate* set_update = sp_set_update.p;
+    IXdsqlTablePtr sp_set_update = set;
+    IXdsqlTable* set_update = sp_set_update.p;
     if (sp_set_update.isNull())
     {
         // could not get a row update interface
@@ -363,8 +367,8 @@ bool sqlUpdate(tango::IDatabasePtr db,
     
     dequote(update, '[', ']');
     
-    tango::ISetPtr set = db->openSet(update);
-    if (set.isNull())
+    tango::IFileInfoPtr finfo = db->getFileInfo(update);
+    if (finfo.isNull() || finfo->getType() != tango::filetypeSet)
     {
         wchar_t buf[1024]; // some paths might be long
         swprintf(buf, 1024, L"Unable to update rows because table [%ls] cannot be opened", update.c_str());

@@ -300,6 +300,8 @@ xcm_interface IDatabaseInternal : public xcm::IObject
 
 public:
 
+    virtual tango::ISetPtr openSet(const std::wstring& path) = 0;
+
     virtual INodeValuePtr createNodeFile(const std::wstring& path) = 0;
     virtual INodeValuePtr openNodeFile(const std::wstring& path) = 0;
 

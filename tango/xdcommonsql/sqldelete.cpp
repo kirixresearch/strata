@@ -19,6 +19,7 @@
 #include "xdcommonsql.h"
 #include "../xdcommon/jobinfo.h"
 #include "../xdcommon/util.h"
+#include "../xdcommon/errorinfo.h"
 #include <kl/portable.h>
 #include <map>
 #include <ctime>
@@ -159,8 +160,8 @@ bool sqlDelete(tango::IDatabasePtr db,
 
     dequote(table, '[', ']');
     
-    tango::ISetPtr set = db->openSet(table);
-    if (set.isNull())
+    tango::IFileInfoPtr finfo = db->getFileInfo(table);
+    if (finfo.isNull() || finfo->getType() != tango::filetypeSet)
     {
         wchar_t buf[1024]; // some paths might be long
         swprintf(buf, 1024, L"Unable to delete rows because table [%ls] cannot be opened", table.c_str());
@@ -168,6 +169,8 @@ bool sqlDelete(tango::IDatabasePtr db,
         return false;
     }
 
+    /*
+    // TODO: reimplement RESTORE
     if (stmt.getKeywordExists(L"RESTORE"))
     {
         ISetRestoreDeletedPtr sp = set;
@@ -181,6 +184,7 @@ bool sqlDelete(tango::IDatabasePtr db,
         
         return true;
     }
+    */
 
     int result = doDelete(table, filter, job);
     if (result == -1)

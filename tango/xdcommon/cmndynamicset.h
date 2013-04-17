@@ -12,7 +12,7 @@
 #ifndef __XDCOMMON_CMNDYNAMICSET_H
 #define __XDCOMMON_CMNDYNAMICSET_H
 
-#include "tango_private.h"
+#include "../xdcommonsql/xdcommonsql.h"
 
 class CommonDynamicSetIndexEntry
 {
@@ -29,7 +29,6 @@ public:
 
 
 class CommonDynamicSet : public tango::ISet,
-                         public tango::ISetRowUpdate,
                          public IXdsqlTable
 {
 friend class CommonDynamicSetRowDeleter;
@@ -37,7 +36,6 @@ friend class CommonDynamicSetRowDeleter;
     XCM_CLASS_NAME("xdnative.CommonDynamicSet")
     XCM_BEGIN_INTERFACE_MAP(CommonDynamicSet)
         XCM_INTERFACE_ENTRY(tango::ISet)
-        XCM_INTERFACE_ENTRY(tango::ISetRowUpdate)
         XCM_INTERFACE_ENTRY(IXdsqlTable)
     XCM_END_INTERFACE_MAP()
 
@@ -61,13 +59,14 @@ public:
     std::wstring getSetId();
 
     tango::IStructurePtr getStructure();
-
-    tango::IRowDeleterPtr getRowDeleter();
     tango::IIteratorPtr createIterator(const std::wstring& columns,
                                        const std::wstring& expr,
                                        tango::IJob* job);
+
     tango::IIteratorPtr getRow(tango::rowid_t rowid);
     tango::rowpos_t getRowCount();
+
+    tango::IRowDeleterPtr getRowDeleter();
 
     int insert(tango::IIteratorPtr source_iter,
                const std::wstring& where_condition,
@@ -77,16 +76,7 @@ public:
     bool updateRow(tango::rowid_t rowid,
                    tango::ColumnUpdateInfo* info,
                    size_t info_size);
-                     
-    // ISetEvents
-    void onSetDomainUpdated();
-    void onSetStructureUpdated();
-    void onSetRelationshipsUpdated();
-    void onSetRowUpdated(tango::rowid_t rowid);
-    void onSetRowDeleted(tango::rowid_t rowid);
-
-    void onOfsPathChanged(const std::wstring& new_path);
-
+    
 private:
 
     xcm::mutex m_object_mutex;
@@ -96,9 +86,8 @@ private:
     std::wstring m_temp_path;
     std::vector<CommonDynamicSetIndexEntry> m_indexes;
     std::wstring m_base_path;
-    tango::ISetPtr m_base_set;
-    tango::IIteratorPtr m_base_set_iter;
-    tango::ISetRowUpdatePtr m_base_set_update;
+    IXdsqlTablePtr m_base_table;
+    tango::IIteratorPtr m_base_iter;
     tango::rowpos_t m_row_count;
     std::wstring m_set_id;
 

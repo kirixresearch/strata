@@ -16,6 +16,7 @@
 #include <map>
 #include <set>
 #include "xdnative_private.h"
+#include "../xdcommonsql/xdcommonsql.h"
 #include "../xdcommon/errorinfo.h"
 
 
@@ -23,12 +24,14 @@ class JobInfo;
 class OfsFile;
 
 class Database : public tango::IDatabase,
+                 public IXdsqlDatabase,
                  public IDatabaseInternal,
                  public IOfsEvents
 {
     XCM_CLASS_NAME("xdnative.Database")
     XCM_BEGIN_INTERFACE_MAP(Database)
         XCM_INTERFACE_ENTRY(tango::IDatabase)
+        XCM_INTERFACE_ENTRY(IXdsqlDatabase)
         XCM_INTERFACE_ENTRY(IDatabaseInternal)
         XCM_INTERFACE_ENTRY(IOfsEvents)
     XCM_END_INTERFACE_MAP()

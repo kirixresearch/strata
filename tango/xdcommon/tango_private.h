@@ -19,9 +19,6 @@ XCM_DECLARE_SMARTPTR(IIteratorKeyAccess)
 xcm_interface ISetRestoreDeleted;
 XCM_DECLARE_SMARTPTR(ISetRestoreDeleted)
 
-xcm_interface IXdsqlTable;
-XCM_DECLARE_SMARTPTR(IXdsqlTable)
-
 
 xcm_interface IIteratorKeyAccess : public xcm::IObject
 {
@@ -59,19 +56,6 @@ xcm_interface ISetRestoreDeleted : public xcm::IObject
 public:
 
     virtual bool restoreDeleted() = 0;
-};
-
-
-xcm_interface IXdsqlTable : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("tango.IXdsqlTable")
-
-public:
-
-    virtual tango::IIteratorPtr createIterator(const std::wstring& columns,
-                                               const std::wstring& expr,
-                                               tango::IJob* job) = 0;
-    virtual tango::IStructurePtr getStructure() = 0;
 };
 
 

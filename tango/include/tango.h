@@ -58,7 +58,6 @@ xcm_interface IRelation;
 xcm_interface IRowDeleter;
 xcm_interface IRowInserter;
 xcm_interface ISet;
-xcm_interface ISetRowUpdate;
 xcm_interface ICacheRowUpdate;
 xcm_interface IStream;
 xcm_interface IStructure;
@@ -83,7 +82,6 @@ XCM_DECLARE_SMARTPTR(IRelation)
 XCM_DECLARE_SMARTPTR(IRowInserter)
 XCM_DECLARE_SMARTPTR(IRowDeleter)
 XCM_DECLARE_SMARTPTR(ISet)
-XCM_DECLARE_SMARTPTR(ISetRowUpdate)
 XCM_DECLARE_SMARTPTR(ICacheRowUpdate)
 XCM_DECLARE_SMARTPTR(IStream)
 XCM_DECLARE_SMARTPTR(IFixedLengthDefinition)
@@ -686,7 +684,7 @@ public:
     virtual bool createTable(const std::wstring& path, IStructurePtr struct_config, FormatInfo* format_info) = 0;
     
     virtual IStreamPtr openStream(const std::wstring& path) = 0;
-    virtual ISetPtr openSet(const std::wstring& path) = 0;
+    //virtual ISetPtr openSet(const std::wstring& path) = 0;
     virtual ISetPtr openSetEx(const std::wstring& path,
                               int format) = 0;
 
@@ -890,18 +888,6 @@ struct ColumnUpdateInfo
     tango::datetime_t date_val;
     bool bool_val;
     bool null;
-};
-
-
-xcm_interface ISetRowUpdate : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("tango.ISetRowUpdate")
-
-public:
-
-    virtual bool updateRow(tango::rowid_t rowid,
-                           tango::ColumnUpdateInfo* info,
-                           size_t info_size) = 0;
 };
 
 

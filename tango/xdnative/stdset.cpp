@@ -148,7 +148,7 @@ bool IterWrapperSet::updateRow(tango::rowid_t rowid,
                                tango::ColumnUpdateInfo* info,
                                size_t info_size)
 {
-    tango::ISetRowUpdatePtr set_update = m_base_set;
+    IXdsqlTablePtr set_update = m_base_set;
     if (set_update.isNull())
         return false;
 

@@ -1441,27 +1441,6 @@ tango::ISetPtr FsDatabase::openSetEx(const std::wstring& path, int format)
     }
 
 
-    std::wstring cstr, rpath;
-    if (detectMountPoint(path, cstr, rpath))
-    {
-        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
-        
-        if (db.isNull())
-            return xcm::null;
-        
-        if (checkCircularMount(path, db, rpath))
-            return xcm::null;
-        
-        tango::ISetPtr set = db->openSet(rpath);
-        if (set.isNull())
-            return xcm::null;
-        
-        set->setObjectPath(path);
-        return set;
-    }
-
-
-
     // if the file doesn't exist, bail out
     std::wstring phys_path = makeFullPath(path);
     if (!xf_get_file_exist(phys_path))

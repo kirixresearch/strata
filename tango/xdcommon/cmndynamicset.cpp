@@ -76,12 +76,6 @@ CommonDynamicSet::~CommonDynamicSet()
 
 }
 
-
-void CommonDynamicSet::onOfsPathChanged(const std::wstring& new_path)
-{
-    m_ofspath = new_path;
-}
-
 void CommonDynamicSet::setObjectPath(const std::wstring& new_path)
 {
     if (m_ofspath.empty())
@@ -119,16 +113,19 @@ std::wstring CommonDynamicSet::getSetId()
 
 tango::IStructurePtr CommonDynamicSet::getStructure()
 {
-    IXdsqlTablePtr tbl = m_base_set;
-    return tbl->getStructure();
+    return m_base_table->getStructure();
 }
 
 
 bool CommonDynamicSet::create(tango::IDatabasePtr database,
                               const std::wstring& base_path)
 {
-    tango::ISetPtr base_set = database->openSet(base_path);
-    if (base_set.isNull())
+    IXdsqlDatabasePtr xdb = database;
+    if (xdb.isNull())
+        return false;
+
+    IXdsqlTablePtr base_table = xdb->openSet(base_path);
+    if (base_table.isNull())
         return false;
 
     //std::wstring filename = dbi->getUniqueFilename();
@@ -158,11 +155,10 @@ bool CommonDynamicSet::create(tango::IDatabasePtr database,
     m_index = static_cast<IIndex*>(di);
     m_filename = filename;
     m_base_path = base_path;
-    m_base_set = base_set;
-    m_base_set_update = base_set;
+    m_base_table = base_table;
     m_row_count = 0;
 
-    m_base_set_iter = database->createIterator(base_path, L"", L"", NULL);
+    m_base_iter = database->createIterator(base_path, L"", L"", NULL);
     m_database = database;
     
     return true;
@@ -213,7 +209,7 @@ bool CommonDynamicSet::deleteRow(const tango::rowid_t& rowid)
     //fire_onSetRowDeleted(rowid);
 
 
-    m_base_set_iter->goRow(rowid);
+    m_base_iter->goRow(rowid);
 
     std::vector<CommonDynamicSetIndexEntry>::iterator it;
     IIndexIterator* iter;
@@ -410,7 +406,7 @@ tango::IIteratorPtr CommonDynamicSet::createIterator(const std::wstring& columns
     e.filename = index_filename;
     e.index = idx;      // (already ref'ed)
     e.key_expr = new KeyLayout;
-    if (!e.key_expr->setKeyExpr(m_base_set_iter, expr, false))
+    if (!e.key_expr->setKeyExpr(m_base_iter, expr, false))
     {
         delete e.key_expr;
         return xcm::null;
@@ -434,15 +430,6 @@ tango::rowpos_t CommonDynamicSet::getRowCount()
 
 
 
-
-/*
-tango::IStructurePtr CommonDynamicSet::getStructure()
-{
-    return m_base_set->getStructure();
-}
-*/
-
-
 /*
 bool CommonDynamicSet::modifyStructure(tango::IStructure* struct_config,
                                        tango::IJob* job)
@@ -463,8 +450,8 @@ bool CommonDynamicSet::modifyStructure(tango::IStructure* struct_config,
     bool result = m_base_set->modifyStructure(struct_config, job);
     //fire_onSetStructureUpdated();
     
-    m_base_set_iter.clear();
-    m_base_set_iter = m_base_set->createIterator(L"", L"", NULL);
+    m_base_iter.clear();
+    m_base_iter = m_base_set->createIterator(L"", L"", NULL);
 
     return result;
 }
@@ -475,37 +462,11 @@ bool CommonDynamicSet::modifyStructure(tango::IStructure* struct_config,
 
 
 
-void CommonDynamicSet::onSetDomainUpdated()
-{
-}
-
-void CommonDynamicSet::onSetStructureUpdated()
-{
-}
-
-void CommonDynamicSet::onSetRelationshipsUpdated()
-{
-}
-
-void CommonDynamicSet::onSetRowUpdated(tango::rowid_t rowid)
-{
-}
-
-void CommonDynamicSet::onSetRowDeleted(tango::rowid_t rowid)
-{
-}
-
-
 bool CommonDynamicSet::updateRow(tango::rowid_t rowid,
                            tango::ColumnUpdateInfo* info,
                            size_t info_size)
 {
-    if (m_base_set_update.isNull())
-    {
-        return false;
-    }
-
-    return m_base_set_update->updateRow(rowid, info, info_size);
+    return m_base_table->updateRow(rowid, info, info_size);
 }
 
 

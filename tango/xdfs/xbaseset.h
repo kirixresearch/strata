@@ -14,6 +14,7 @@
 
 
 #include "../xdcommon/cmnbaseset.h"
+#include "../xdcommonsql/xdcommonsql.h"
 #include "xbase.h"
 
 
@@ -55,10 +56,10 @@ inline int xbase2tangoType(unsigned char xbase_type)
 }
 
 
-// -- XbaseSet class declaration --
+
 
 class XbaseSet : public CommonBaseSet,
-                 public tango::ISetRowUpdate
+                 public IXdsqlTable
 {
 friend class FsDatabase;
 friend class XbaseRowInserter;
@@ -66,7 +67,7 @@ friend class XbaseRowInserter;
     XCM_CLASS_NAME("xdfs.XbaseSet")
     XCM_BEGIN_INTERFACE_MAP(XbaseSet)
         XCM_INTERFACE_ENTRY(CommonBaseSet)
-        XCM_INTERFACE_ENTRY(tango::ISetRowUpdate)
+        XCM_INTERFACE_ENTRY(IXdsqlTable)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -89,8 +90,6 @@ public:
                                        tango::IJob* job);
 
     tango::rowpos_t getRowCount();
-
-    // -- tango::ISetRowUpdate interface --
 
     bool updateRow(tango::rowid_t rowid,
                    tango::ColumnUpdateInfo* info,

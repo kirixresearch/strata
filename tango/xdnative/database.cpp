@@ -2925,7 +2925,8 @@ bool Database::createStream(const std::wstring& _path, const std::wstring& mime_
                 return xcm::null;
             }
 
-            return static_cast<tango::IStream*>(file_stream);
+            delete file_stream;
+            return true;
         }
          else
         {
@@ -3293,53 +3294,7 @@ std::wstring Database::getSetPathFromId(const std::wstring& set_id)
 
 
 
-tango::ISetPtr Database::openSet(const std::wstring& set_path)
-{
-    if (kl::isFileUrl(set_path))
-    {
-        return openSetEx(set_path, tango::formatNative);
-    }
-
-    std::wstring cstr, rpath;
-    if (detectMountPoint(set_path, cstr, rpath))
-    {
-        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
-
-        if (db.isNull())
-            return xcm::null;
-
-        if (checkCircularMount(set_path, db, rpath))
-            return xcm::null;
-
-        tango::ISetPtr set = db->openSet(rpath);
-        if (set.isNull())
-            return xcm::null;
-
-        set->setObjectPath(set_path);
-        return set;
-    }
-
-
-    // check for ptr sets
-    if (set_path.substr(0, 12) == L"/.temp/.ptr/")
-    {
-        std::wstring ptr_string = kl::afterLast(set_path, L'/');
-        unsigned long l = (unsigned long)hex2uint64(ptr_string.c_str());
-        tango::ISet* sptr = (tango::ISet*)l;
-        return sptr;
-    }
-
-
-
-    std::wstring set_id = getSetIdFromPath(set_path);
-    if (set_id.empty())
-        return xcm::null;
-
-    return openSetById(set_id);
-}
-
-tango::ISetPtr Database::openSetEx(const std::wstring& _path,
-                                   int format)
+tango::ISetPtr Database::openSet(const std::wstring& _path)
 {
     std::wstring path;
 
@@ -3348,22 +3303,26 @@ tango::ISetPtr Database::openSetEx(const std::wstring& _path,
          else
         path = _path;
 
-    std::wstring cstr, rpath;
-    if (detectMountPoint(path, cstr, rpath))
+    // check for ptr sets
+    if (path.substr(0, 12) == L"/.temp/.ptr/")
     {
-        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
-        if (db.isNull())
-            return xcm::null;
-
-        tango::ISetPtr set = db->openSetEx(rpath, format);
-        if (set)
-        {
-            set->setObjectPath(path);
-        }
-
-        return set;
+        std::wstring ptr_string = kl::afterLast(path, L'/');
+        unsigned long l = (unsigned long)hex2uint64(ptr_string.c_str());
+        tango::ISet* sptr = (tango::ISet*)l;
+        return sptr;
     }
 
+
+
+    std::wstring set_id = getSetIdFromPath(path);
+    if (set_id.empty())
+        return xcm::null;
+
+    return openSetById(set_id);
+}
+
+tango::ISetPtr Database::openSetEx(const std::wstring& path, int format)
+{
     return openSet(path);
 }
 
@@ -3525,8 +3484,7 @@ public:
     {
         if (m_right_path.length() > 0)
         {
-            tango::IDatabasePtr db = static_cast<xcm::IObject*>(m_dbi);
-            return db->openSet(m_right_path);
+            return m_dbi->openSet(m_right_path);
         }
          else
         {

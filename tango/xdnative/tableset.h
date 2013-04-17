@@ -117,7 +117,6 @@ friend class TableSetRowDeleter;
     XCM_CLASS_NAME_CUSTOMREFCOUNT("xdnative.TableSet")
     XCM_BEGIN_INTERFACE_MAP(TableSet)
         XCM_INTERFACE_ENTRY(tango::ISet)
-        XCM_INTERFACE_ENTRY(tango::ISetRowUpdate)
         XCM_INTERFACE_ENTRY(ISetRestoreDeleted)
         XCM_INTERFACE_ENTRY(ISetInternal)
         XCM_INTERFACE_ENTRY(ITableEvents)
