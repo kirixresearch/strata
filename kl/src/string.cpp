@@ -349,13 +349,9 @@ void parseDelimitedList(const std::wstring& s,
             piece++;
 
         if (zero_level)
-        {
             comma = zl_strchr((wchar_t*)piece, delimiter);
-        }
-         else
-        {
+             else
             comma = wcschr(piece, delimiter);
-        }
 
         if (!comma)
         {
@@ -567,7 +563,22 @@ double nolocale_wtof(const wchar_t* num)
 }
 
 
+// similar to boost's iequals -- here only for strings
+bool iequals(const std::wstring& s1, const std::wstring& s2)
+{
+    return (0 == wcscasecmp(s1.c_str(), s2.c_str()));
+}
 
+bool iequals(const std::string& s1, const std::string& s2)
+{
+    return (0 == strcasecmp(s1.c_str(), s2.c_str()));
+}
+
+bool iequals(const std::wstring& s1, const std::string& _s2)
+{
+    std::wstring s2 = kl::towstring(_s2);
+    return (0 == wcscasecmp(s1.c_str(), s2.c_str()));
+}
 
 
 // these functions convert a std::(w)string to a UCS-2 buffer and vice versa.

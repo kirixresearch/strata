@@ -190,6 +190,10 @@ size_t stringFrequency(const std::wstring& haystack, wchar_t needle);
 
 std::wstring joinList(std::vector<std::wstring>& vec, const std::wstring join_str = L",");
 
+bool iequals(const std::wstring& s1, const std::wstring& s2);
+bool iequals(const std::string& s1, const std::string& s2);
+bool iequals(const std::wstring& s1, const std::string& s2);
+
 void parseDelimitedList(const std::wstring& s,
                         std::vector<std::wstring>& vec,
                         wchar_t delimiter,
