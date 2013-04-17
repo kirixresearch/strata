@@ -1905,7 +1905,7 @@ void DbConnection::getObjects(kscript::ExprEnv* env, kscript::Value* retval)
         {
             case tango::filetypeNode:   oi_type = L"NODE"; break;
             case tango::filetypeFolder: oi_type = L"DIRECTORY"; break;
-            case tango::filetypeSet:    oi_type = L"TABLE"; break;
+            case tango::filetypeTable:    oi_type = L"TABLE"; break;
             case tango::filetypeStream: oi_type = L"STREAM"; break;
             default:
                 oi_type = L"UNKNOWN"; break;

@@ -3733,7 +3733,7 @@ void HostData::copyFile(kscript::ExprEnv* env, kscript::Value* retval)
     if (f.isNull())
         return;
         
-    if (f->getType() == tango::filetypeSet)
+    if (f->getType() == tango::filetypeTable)
     {
         tango::CopyInfo info;
         info.input = param1;

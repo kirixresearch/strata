@@ -425,7 +425,7 @@ tango::IFileInfoEnumPtr KpgDatabase::getFolderInfo(const std::wstring& path)
                 {
                     xdcommon::FileInfo* f = new xdcommon::FileInfo;
                     f->name = entry.stream_name;
-                    f->type = tango::filetypeSet;
+                    f->type = tango::filetypeTable;
 
                     retval->append(static_cast<tango::IFileInfo*>(f));
                 }

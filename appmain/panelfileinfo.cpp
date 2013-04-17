@@ -76,7 +76,7 @@ int determineProjectInfoType(const wxString& path)
     if (file_type == tango::filetypeFolder)
         return ProjectFileInfo::typeFolder;
         
-    if (file_type == tango::filetypeSet)
+    if (file_type == tango::filetypeTable)
         return ProjectFileInfo::typeTable;
         
     if (file_type == tango::filetypeStream)
@@ -180,7 +180,7 @@ void MultiFileInfoPanel::addFile(const wxString& path)
         }
         break;
 
-        case tango::filetypeSet:
+        case tango::filetypeTable:
         {
             // get the record count
             long long rec_count = -1;

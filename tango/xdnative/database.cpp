@@ -963,7 +963,7 @@ void Database::recursiveReferenceUpdate(const std::wstring& folder_path)
 
         std::wstring path = combineOfsPath(folder_path, info->getName());
 
-        if (file_type == tango::filetypeSet)
+        if (file_type == tango::filetypeTable)
         {
             updateSetReference(path);
         }
@@ -1066,7 +1066,7 @@ bool Database::deleteSet(const std::wstring& ofs_path)
     if (!file_info)
         return false;
 
-    if (file_info->getType() != tango::filetypeSet)
+    if (file_info->getType() != tango::filetypeTable)
         return false;
 
     file_info.clear();
@@ -1795,7 +1795,7 @@ bool Database::renameFile(const std::wstring& _path,
             // it is a folder, so all references underneath must be updated
             recursiveReferenceUpdate(new_path);
         }
-         else if (type == tango::filetypeSet)
+         else if (type == tango::filetypeTable)
         {
             // the set reference must be updated
             updateSetReference(new_path);
@@ -1904,7 +1904,7 @@ bool Database::moveFile(const std::wstring& _src_path,
             // must be updated
             recursiveReferenceUpdate(dest_path);
         }
-         else if (type == tango::filetypeSet)
+         else if (type == tango::filetypeTable)
         {
             // the set reference must be updated
             updateSetReference(dest_path);
@@ -1959,7 +1959,7 @@ bool Database::deleteFile(const std::wstring& _path)
 
     int type = file_info->getType();
 
-    if (type == tango::filetypeSet)
+    if (type == tango::filetypeTable)
     {
         return deleteSet(path);
     }
@@ -2281,7 +2281,7 @@ tango::IFileInfoPtr Database::getFileInfo(const std::wstring& _path)
     {
         xdcommon::FileInfo* f = new xdcommon::FileInfo;
         f->name = kl::afterLast(_path, L'/');
-        f->type = tango::filetypeSet;
+        f->type = tango::filetypeTable;
         f->format = tango::formatNative;
         f->is_mount = false;
         return static_cast<tango::IFileInfo*>(f);
@@ -2307,7 +2307,7 @@ tango::IFileInfoPtr Database::getFileInfo(const std::wstring& _path)
          else
         {
             std::wstring file_primary_key;
-            int file_type = tango::filetypeSet;
+            int file_type = tango::filetypeTable;
             int file_format = tango::formatNative;
             int is_mount = -1;
             std::wstring file_mime_type;
@@ -2763,7 +2763,7 @@ void Database::getFolderUsedOrdinals(const std::wstring& folder_path,
         std::wstring path = combineOfsPath(folder_path, info->getName());
 
 
-        if (file_type == tango::filetypeSet)
+        if (file_type == tango::filetypeTable)
         {
             INodeValuePtr set_file = openNodeFile(path);
             if (set_file)

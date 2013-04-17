@@ -291,7 +291,7 @@ enum
 {
     filetypeNode =   0x00,
     filetypeFolder = 0x01,
-    filetypeSet =    0x02,
+    filetypeTable =    0x02,
     filetypeStream = 0x04
 };
 

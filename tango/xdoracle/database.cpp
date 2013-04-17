@@ -909,7 +909,7 @@ tango::IFileInfoPtr OracleDatabase::getFileInfo(const std::wstring& _path)
     
     OracleFileInfo* f = new OracleFileInfo(this);
     f->name = kl::afterFirst(path, '.');
-    f->type = tango::filetypeSet;
+    f->type = tango::filetypeTable;
     f->format = tango::formatNative;
     return static_cast<tango::IFileInfo*>(f);
 }
@@ -997,7 +997,7 @@ tango::IFileInfoEnumPtr OracleDatabase::getFolderInfo(const std::wstring& path)
             OracleFileInfo* f = new OracleFileInfo(this);
             f->name = kl::towstring(table_name);
             kl::trim(f->name);
-            f->type = tango::filetypeSet;
+            f->type = tango::filetypeTable;
             f->format = tango::formatNative;
             retval->append(f);
 

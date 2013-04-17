@@ -666,7 +666,7 @@ bool isValidTable(
         return false;
 
     tango::IFileInfoPtr finfo = db->getFileInfo(str);
-    if (finfo.isOk() && finfo->getType() == tango::filetypeSet)
+    if (finfo.isOk() && finfo->getType() == tango::filetypeTable)
         return true;
          else
         return false;
@@ -1887,7 +1887,7 @@ bool doOutputPathCheck(const wxString& output_path, wxWindow* parent)
                            parent);
         return false;
     }
-     else if (file_type == tango::filetypeSet)
+     else if (file_type == tango::filetypeTable)
     {
         int result;
         result = appMessageBox(_("The specified output file name already exists.  Would you like to overwrite it?"),

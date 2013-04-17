@@ -83,7 +83,7 @@ static std::vector<wxString> getColumnsFromSource(const std::wstring& source)
     info = g_app->getDatabase()->getFileInfo(source);
     
     // table source
-    if (info->getType() == tango::filetypeSet)
+    if (info->getType() == tango::filetypeTable)
     {
         tango::IDatabasePtr db = g_app->getDatabase();
         if (db.isNull())

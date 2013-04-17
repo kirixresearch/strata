@@ -138,7 +138,7 @@ int AppendJob::runJob()
     {
         // append to existing table
         tango::IFileInfoPtr finfo = m_db->getFileInfo(output_path);
-        if (finfo.isNull() || finfo->getType() != tango::filetypeSet)
+        if (finfo.isNull() || finfo->getType() != tango::filetypeTable)
         {
             m_job_info->setState(jobStateFailed);
             m_job_info->setError(jobserrWriteError, L"");

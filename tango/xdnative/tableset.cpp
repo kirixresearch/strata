@@ -498,7 +498,7 @@ bool TableSet::create(tango::IStructure* struct_config, const std::wstring& path
     if (!file)
         return false;
     
-    dbi->setFileType(path, tango::filetypeSet);
+    dbi->setFileType(path, tango::filetypeTable);
 
     INodeValuePtr setid_node = file->getChild(L"set_id", true);
     if (!setid_node)

@@ -626,7 +626,7 @@ tango::IFileInfoEnumPtr DrizzleDatabase::getFolderInfo(const std::wstring& path)
         DrizzleFileInfo* f = new DrizzleFileInfo(this);
         kl::trim(wtable_name);
         f->name = wtable_name;
-        f->type = tango::filetypeSet;
+        f->type = tango::filetypeTable;
         f->format = tango::formatNative;
 
         retval->append(f);

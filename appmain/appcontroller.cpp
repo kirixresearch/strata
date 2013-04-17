@@ -4369,7 +4369,7 @@ bool AppController::openAny(const wxString& _location,
     {
         int item_type = file_info->getType();
   
-        if (item_type == tango::filetypeSet)
+        if (item_type == tango::filetypeTable)
         {
             if (openTable(location, site_id))
                 return true;
@@ -4764,7 +4764,7 @@ bool AppController::openDataLink(const wxString& location, int* site_id)
                 *site_id = 0;
         }
     }
-     else if (finfo->getType() == tango::filetypeSet)
+     else if (finfo->getType() == tango::filetypeTable)
     {
         return openTable(path, site_id);
     }
@@ -4949,7 +4949,7 @@ static void getAllSets(tango::IDatabasePtr db_ptr,
             // recursively traverse this folder
             getAllSets(db_ptr, folder_path, retval);
         }
-         else if (item_type == tango::filetypeSet)
+         else if (item_type == tango::filetypeTable)
         {
             wxString name = path;
             

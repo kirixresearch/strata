@@ -522,7 +522,7 @@ tango::IFileInfoEnumPtr SqlServerDatabase::getFolderInfo(const std::wstring& pat
 
                     xdcommon::FileInfo* f = new xdcommon::FileInfo;
                     f->name = table_name;
-                    f->type = tango::filetypeSet;
+                    f->type = tango::filetypeTable;
                     f->format = tango::formatNative;
 
                     retval->append(f);

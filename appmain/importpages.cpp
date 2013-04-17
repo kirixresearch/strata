@@ -75,7 +75,7 @@ static void getAllSets(tango::IDatabasePtr db_ptr,
             // recursively traverse this folder
             getAllSets(db_ptr, folder_path, retval);
         }
-         else if (item_type == tango::filetypeSet)
+         else if (item_type == tango::filetypeTable)
         {
             wxString name = path;
             

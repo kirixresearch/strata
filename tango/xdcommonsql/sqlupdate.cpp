@@ -368,7 +368,7 @@ bool sqlUpdate(tango::IDatabasePtr db,
     dequote(update, '[', ']');
     
     tango::IFileInfoPtr finfo = db->getFileInfo(update);
-    if (finfo.isNull() || finfo->getType() != tango::filetypeSet)
+    if (finfo.isNull() || finfo->getType() != tango::filetypeTable)
     {
         wchar_t buf[1024]; // some paths might be long
         swprintf(buf, 1024, L"Unable to update rows because table [%ls] cannot be opened", update.c_str());

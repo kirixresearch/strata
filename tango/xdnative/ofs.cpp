@@ -420,7 +420,7 @@ static int stringTypeToFileType(const std::wstring& type)
     }
      else if (0 == wcscasecmp(type.c_str(), L"set"))
     {
-        return tango::filetypeSet;
+        return tango::filetypeTable;
     }
      else if (0 == wcscasecmp(type.c_str(), L"stream"))
     {
@@ -438,7 +438,7 @@ static std::wstring fileTypeToStringType(int type)
         default:
         case tango::filetypeNode:    return L"generic";
         case tango::filetypeFolder:  return L"folder";
-        case tango::filetypeSet:     return L"set";
+        case tango::filetypeTable:     return L"set";
         case tango::filetypeStream:  return L"stream";
     }
     

@@ -2277,7 +2277,7 @@ bool TableDoc::open(const wxString& _path,
         return false;
 
     tango::IFileInfoPtr file_info = db->getFileInfo(path);
-    if (file_info.isNull() || file_info->getType() != tango::filetypeSet)
+    if (file_info.isNull() || file_info->getType() != tango::filetypeTable)
         return false;
 
     // make sure we know the database type

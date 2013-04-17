@@ -1750,7 +1750,7 @@ tango::IFileInfoEnumPtr OdbcDatabase::getTreeFolderInfo(const std::wstring& path
         {
             OdbcFileInfo* f = new OdbcFileInfo(this);
             f->name = kl::towstring((char*)table_name);
-            f->type = tango::filetypeSet;
+            f->type = tango::filetypeTable;
             f->format = tango::formatNative;
 
             kl::trim(f->name);
@@ -1885,7 +1885,7 @@ tango::IFileInfoEnumPtr OdbcDatabase::getFolderInfo(const std::wstring& path)
         
         OdbcFileInfo* f = new OdbcFileInfo(this);
         f->name = wtablename;
-        f->type = tango::filetypeSet;
+        f->type = tango::filetypeTable;
         f->format = tango::formatNative;
 
         retval->append(f);

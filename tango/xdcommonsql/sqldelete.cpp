@@ -161,7 +161,7 @@ bool sqlDelete(tango::IDatabasePtr db,
     dequote(table, '[', ']');
     
     tango::IFileInfoPtr finfo = db->getFileInfo(table);
-    if (finfo.isNull() || finfo->getType() != tango::filetypeSet)
+    if (finfo.isNull() || finfo->getType() != tango::filetypeTable)
     {
         wchar_t buf[1024]; // some paths might be long
         swprintf(buf, 1024, L"Unable to delete rows because table [%ls] cannot be opened", table.c_str());

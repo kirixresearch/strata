@@ -278,7 +278,7 @@ void Controller::apiFolderInfo(RequestInfo& req)
             {
                 case tango::filetypeFolder: item["type"] = "folder"; break;
                 case tango::filetypeNode: item["type"] = "node";     break;
-                case tango::filetypeSet: item["type"] = "table";     break;
+                case tango::filetypeTable: item["type"] = "table";     break;
                 case tango::filetypeStream: item["type"] = "stream"; break;
                 default: continue;
             }
@@ -339,7 +339,7 @@ void Controller::apiFileInfo(RequestInfo& req)
         {
             case tango::filetypeFolder: file_info["type"] = "folder"; break;
             case tango::filetypeNode: file_info["type"] = "node";     break;
-            case tango::filetypeSet: file_info["type"] = "table";     break;
+            case tango::filetypeTable: file_info["type"] = "table";     break;
             case tango::filetypeStream: file_info["type"] = "stream"; break;
             default: file_info["type"] = "unknown"; break;
         }
@@ -360,7 +360,7 @@ void Controller::apiFileInfo(RequestInfo& req)
         file_info["size"] = (double)finfo->getSize();
         file_info["object_id"] = finfo->getObjectId();
 
-        if (finfo->getType() == tango::filetypeSet)
+        if (finfo->getType() == tango::filetypeTable)
         {
             if (finfo->getFlags() & tango::sfFastRowCount)
             {

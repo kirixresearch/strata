@@ -536,7 +536,7 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
         wxString item_name = info->getName();
         int item_type = info->getType();
         
-        if ((item_type != tango::filetypeSet && item_type != tango::filetypeFolder) && m_only_tables)
+        if ((item_type != tango::filetypeTable && item_type != tango::filetypeFolder) && m_only_tables)
             continue;
         
         if (item_type != tango::filetypeFolder && m_only_folders)
@@ -594,11 +594,11 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
             
             vec->append(static_cast<IFsItem*>(item));
         }
-         else if (item_type == tango::filetypeSet)
+         else if (item_type == tango::filetypeTable)
         {
             // it appears that all files that are in mounted folders
             // except scripts (which are of type tango::filetypeStream)
-            // are of type tango::filetypeSet, so we need to determine
+            // are of type tango::filetypeTable, so we need to determine
             // the db object type based on the file's extension
 
             wxBitmap bmp = DECIDE_BMP(gf_table_16);
@@ -2163,7 +2163,7 @@ void DbDoc::doPaste()
                     return;
                 }
 
-                if (file_info->getType() == tango::filetypeSet ||
+                if (file_info->getType() == tango::filetypeTable ||
                     file_info->getType() == tango::filetypeStream)
                 {
                     job->addCopyInstruction(g_app->getDatabase(),

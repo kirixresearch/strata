@@ -965,7 +965,7 @@ int ExportPkgJob::runJob()
             continue;
         }
             
-        if (file_info->getType() == tango::filetypeSet)
+        if (file_info->getType() == tango::filetypeTable)
         {
             if (file_info->getFlags() & tango::sfFastRowCount)
             {
@@ -1010,7 +1010,7 @@ int ExportPkgJob::runJob()
                 break;
             }
         }
-         else if (it->file_type == tango::filetypeSet)
+         else if (it->file_type == tango::filetypeTable)
         {
             if (!writeSetStream(db,
                                 &pkg,

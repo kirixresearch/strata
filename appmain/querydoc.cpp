@@ -1159,7 +1159,7 @@ void QueryDoc::onTreeDataDropped(FsDataObject* data)
     {
         wxString path = *it;
         tango::IFileInfoPtr finfo = g_app->getDatabase()->getFileInfo(towstr(path));
-        if (finfo.isOk() && finfo->getType() == tango::filetypeSet)
+        if (finfo.isOk() && finfo->getType() == tango::filetypeTable)
         {
             tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(path));
 
@@ -1205,7 +1205,7 @@ void QueryDoc::onDiagramSetAdded(wxString path, bool* allow)
     }
 
     tango::IFileInfoPtr finfo = g_app->getDatabase()->getFileInfo(towstr(path));
-    if (finfo.isNull() || finfo->getType() != tango::filetypeSet)
+    if (finfo.isNull() || finfo->getType() != tango::filetypeTable)
         return;
 
     tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(path));

@@ -98,7 +98,7 @@ bool sqlInsert(tango::IDatabasePtr db,
         std::wstring select_stmt = _command.substr(pos);
         
         tango::IFileInfoPtr finfo = db->getFileInfo(table);
-        if (finfo.isNull() || finfo->getType() != tango::filetypeSet)
+        if (finfo.isNull() || finfo->getType() != tango::filetypeTable)
         {
             wchar_t buf[1024]; // some paths might be long
             swprintf(buf, 1024, L"Unable to insert rows because table [%ls] cannot be accessed", table.c_str());

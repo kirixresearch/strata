@@ -1071,7 +1071,7 @@ public:
                 case tango::formatXbase:
                 case tango::formatDelimitedText:
                 case tango::formatFixedLengthText:
-                    return tango::filetypeSet;
+                    return tango::filetypeTable;
                 case tango::formatText:
                     return tango::filetypeStream;
             }
@@ -1167,7 +1167,7 @@ tango::IFileInfoPtr FsDatabase::getFileInfo(const std::wstring& path)
          else
         {
             std::wstring file_primary_key;
-            int file_type = tango::filetypeSet;
+            int file_type = tango::filetypeTable;
             int file_format = tango::formatNative;
             int is_mount = -1;
             

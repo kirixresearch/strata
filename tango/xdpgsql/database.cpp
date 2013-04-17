@@ -846,7 +846,7 @@ tango::IFileInfoEnumPtr PgsqlDatabase::getFolderInfo(const std::wstring& path)
 
         PgsqlFileInfo* f = new PgsqlFileInfo(this);
         f->name = name;
-        f->type = tango::filetypeSet;
+        f->type = tango::filetypeTable;
         f->format = tango::formatNative;
 
         if (type.substr(0, 6) == L"stream")

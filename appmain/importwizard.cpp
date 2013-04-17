@@ -742,7 +742,7 @@ void ImportWizard::onWizardFinished(kcl::Wizard* wizard)
             info = g_app->getDatabase()->getFileInfo(towstr(check_path));
             
             // we're appending to this table, we're fine
-            if (it->append && info->getType() == tango::filetypeSet)
+            if (it->append && info->getType() == tango::filetypeTable)
                 continue;
 
             // don't allow imported items to overwrite folders

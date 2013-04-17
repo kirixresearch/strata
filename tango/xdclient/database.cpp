@@ -382,10 +382,10 @@ tango::IFileInfoPtr ClientDatabase::getFileInfo(const std::wstring& path)
     std::wstring type = file_info["type"];
          if (type == L"folder")          f->type = tango::filetypeFolder;
     else if (type == L"node")            f->type = tango::filetypeNode;
-    else if (type == L"set")             f->type = tango::filetypeSet;
-    else if (type == L"table")           f->type = tango::filetypeSet;
+    else if (type == L"set")             f->type = tango::filetypeTable;
+    else if (type == L"table")           f->type = tango::filetypeTable;
     else if (type == L"stream")          f->type = tango::filetypeStream;
-    else f->type = tango::filetypeSet;
+    else f->type = tango::filetypeTable;
 
     std::wstring format = file_info["format"];
          if (format == L"native")          f->format = tango::formatNative;
@@ -433,10 +433,10 @@ tango::IFileInfoEnumPtr ClientDatabase::getFolderInfo(const std::wstring& path)
         std::wstring type = item["type"];
              if (type == L"folder")          f->type = tango::filetypeFolder;
         else if (type == L"node")            f->type = tango::filetypeNode;
-        else if (type == L"set")             f->type = tango::filetypeSet;
-        else if (type == L"table")           f->type = tango::filetypeSet;
+        else if (type == L"set")             f->type = tango::filetypeTable;
+        else if (type == L"table")           f->type = tango::filetypeTable;
         else if (type == L"stream")          f->type = tango::filetypeStream;
-        else f->type = tango::filetypeSet;
+        else f->type = tango::filetypeTable;
 
 
         std::wstring format = item["format"];

@@ -422,7 +422,7 @@ tango::IFileInfoPtr SlDatabase::getFileInfo(const std::wstring& path)
     
     xdcommon::FileInfo* f = new xdcommon::FileInfo;
     f->name = objname;
-    f->type = tango::filetypeSet;
+    f->type = tango::filetypeTable;
     
     if (type.find(L"xdsqlite_folder") != -1)
         f->type = tango::filetypeFolder;
@@ -472,7 +472,7 @@ tango::IFileInfoEnumPtr SlDatabase::getFolderInfo(const std::wstring& path)
 
         xdcommon::FileInfo* f = new xdcommon::FileInfo;
         f->name = name;
-        f->type = tango::filetypeSet;
+        f->type = tango::filetypeTable;
         
         std::wstring sql = kl::fromUtf8(s_sql);
         if (sql.find(L"xdsqlite_folder") != -1)
