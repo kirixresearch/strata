@@ -220,7 +220,7 @@ void ClientIterator::skip(int delta)
         params.setParam(L"handle", m_handle);
         params.setParam(L"start", kl::itowstring(new_row));
         params.setParam(L"limit", L"100");
-        std::wstring sres = m_database->serverCall(L"", L"fetchrows", &params);
+        std::wstring sres = m_database->serverCall(L"", L"read", &params);
 
 
         m_cache_rows.clear();
