@@ -478,7 +478,7 @@ void HostApp::init(kscript::ExprParser* expr, Application* app)
         m_frame->sigFrameDestroy().connect(this, &HostApp::onFrameDestroy);
     }
     
-    // -- add the events --
+    // add the events
     getMember(L"commandEntered")->setObject(Event::createObject(expr));
     getMember(L"activeChildChanged")->setObject(Event::createObject(expr));
     getMember(L"locationChanged")->setObject(Event::createObject(expr));
@@ -1177,7 +1177,6 @@ public:
         m_form->baseUnref();
     }
 
-    // -- IDocument --
     bool initDoc(IFramePtr frame,
                  IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,
@@ -1899,7 +1898,7 @@ size_t HostApp::invokeJsEvent(const std::wstring& evt,
 
 void HostApp::onActiveChildChanged(IDocumentSitePtr doc_site)
 {
-    // -- get the name of the child --
+    // get the name of the child
     if (doc_site.isOk())
     {
         IDocumentPtr doc = doc_site->getDocument();
@@ -2354,7 +2353,8 @@ void HostJob::setValue(kscript::ExprEnv* env, kscript::Value* retval)
 
 
 
-// -- HostGlobal class implementation --
+// HostGlobal class implementation
+
 class HostGlobalData
 {
 public:
@@ -2444,7 +2444,7 @@ void HostGlobal::setMember(const std::wstring& name, kscript::Value* value)
 
 
 
-// -- HostServices class implementation --
+// HostServices class implementation
 
 
 HostServices::HostServices()
@@ -2532,7 +2532,7 @@ kscript::Value* HostServices::getMember(const std::wstring& name)
 
 
 
-// -- HostBitmap class implementation --
+// HostBitmap class implementation
 
 
 HostBitmap::HostBitmap()
@@ -2585,7 +2585,7 @@ void HostBitmap::get(kscript::ExprEnv* env, void*, kscript::Value* retval)
 
 
 
-// -- HostPreferences class implementation --
+// HostPreferences class implementation
 
 // (CLASS) HostPreferences
 // Category: HostApp
@@ -2921,7 +2921,7 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
             }
 
 
-            // -- now apply the settings to the file --
+            // now apply the settings to the file
     
             std::wstring set_path;
             if (filename.substr(0,5) != L"file:")
@@ -2989,7 +2989,7 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
             set->modifySourceStructure(s, NULL);
 
 
-            // -- add the destination fields --
+            // add the destination fields
             s = set->getDestinationStructure();
             
             // for some reason, the delimited set creates a default structure if
@@ -3111,7 +3111,7 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
         std::vector<HostDataDefinitionField>::iterator it;
 
 
-        // -- delete all existing destination fields --
+        // delete all existing destination fields
         s = set->getDestinationStructure();
         col_count = s->getColumnCount();
         for (i = 0; i < col_count; ++i)
@@ -3122,7 +3122,7 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
         
 
 
-        // -- add the destination fields --
+        // add the destination fields
         s = set->getDestinationStructure();
         
         col_count = s->getColumnCount();

@@ -534,7 +534,7 @@ wxString TextDoc::getPath()
 }
 
 
-// -- IColumnListTarget interface --
+// IColumnListTarget interface
 
 void TextDoc::getColumnListItems(std::vector<ColumnListItem>& list)
 {
