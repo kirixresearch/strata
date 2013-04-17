@@ -297,14 +297,6 @@
     <ClCompile Include="rowidarray.cpp" />
     <ClCompile Include="setconfigfile.cpp" />
     <ClCompile Include="sqlalter.cpp" />
-    <ClCompile Include="sqlcommon.cpp" />
-    <ClCompile Include="sqlcreate.cpp" />
-    <ClCompile Include="sqldelete.cpp" />
-    <ClCompile Include="sqldrop.cpp" />
-    <ClCompile Include="sqlinsert.cpp" />
-    <ClCompile Include="sqlmove.cpp" />
-    <ClCompile Include="sqlselect.cpp" />
-    <ClCompile Include="sqlupdate.cpp" />
     <ClCompile Include="structure.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -362,7 +354,6 @@
     <ClInclude Include="localrowcache.h" />
     <ClInclude Include="rowidarray.h" />
     <ClInclude Include="setconfigfile.h" />
-    <ClInclude Include="sqlcommon.h" />
     <ClInclude Include="structure.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="xdcommon.h" />
