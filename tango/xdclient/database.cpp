@@ -247,15 +247,6 @@ void ClientDatabase::close()
 {
 }
 
-void ClientDatabase::setDatabaseName(const std::wstring& name)
-{
-}
-
-std::wstring ClientDatabase::getDatabaseName()
-{
-    return m_database;
-}
-
 int ClientDatabase::getDatabaseType()
 {
     return tango::dbtypeClient;

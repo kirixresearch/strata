@@ -70,14 +70,14 @@ public:
 
     std::wstring getRequestPath();
     HttpRequest* getHttpObject();
-    std::wstring serverCall(const std::wstring& path, const std::wstring& method, const ServerCallParams* params = NULL, bool use_multipart = false, int timeout = 0);
 
-    // tango::IDatabase interface
-
+    std::wstring serverCall(const std::wstring& path,
+                            const std::wstring& method,
+                            const ServerCallParams* params = NULL,
+                            bool use_multipart = false,
+                            int timeout = 0);
     void close();
 
-    void setDatabaseName(const std::wstring& name);
-    std::wstring getDatabaseName();
     int getDatabaseType();
     tango::IAttributesPtr getAttributes();
     std::wstring getActiveUid();
@@ -113,8 +113,8 @@ public:
 
     tango::IStructurePtr createStructure();
     bool createTable(const std::wstring& path, tango::IStructurePtr struct_config, tango::FormatInfo* format_info);
-    tango::IStreamPtr openStream(const std::wstring& path);
     bool createStream(const std::wstring& path, const std::wstring& mime_type);
+    tango::IStreamPtr openStream(const std::wstring& path);
     tango::ISetPtr openSet(const std::wstring& path);
     tango::ISetPtr openSetEx(const std::wstring& path,
                              int format);
@@ -173,8 +173,6 @@ private:
     std::wstring m_database;
     std::wstring m_uid;
     std::wstring m_password;
-
-    std::wstring m_session_id;
 
     std::vector<JobInfo*> m_jobs;
     xcm::mutex m_obj_mutex;
