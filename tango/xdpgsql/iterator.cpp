@@ -493,7 +493,7 @@ void PgsqlIterator::refreshStructure()
             if (!(*it)->isCalculated())
                 continue;
 
-            if (0 == wcscasecmp((*it)->name.c_str(), col->getName().c_str()))
+            if (kl::iequals((*it)->name, col->getName()))
             {
                 found = true;
                 break;
@@ -544,7 +544,7 @@ bool PgsqlIterator::modifyStructure(tango::IStructure* struct_config,
 
         for (it2 = m_fields.begin(); it2 != m_fields.end(); ++it2)
         {
-            if (0 == wcscasecmp(it->m_colname.c_str(), (*it2)->name.c_str()))
+            if (kl::iequals(it->m_colname, (*it2)->name))
             {
                 PgsqlDataAccessInfo* dai = *(it2);
                 m_fields.erase(it2);
@@ -564,7 +564,7 @@ bool PgsqlIterator::modifyStructure(tango::IStructure* struct_config,
              it2 != m_fields.end();
              ++it2)
         {
-            if (0 == wcscasecmp(it->m_colname.c_str(), (*it2)->name.c_str()))
+            if (kl::iequals(it->m_colname, (*it2)->name))
             {
                 if (it->m_params->getName().length() > 0)
                 {
@@ -633,7 +633,7 @@ tango::objhandle_t PgsqlIterator::getHandle(const std::wstring& expr)
     std::vector<PgsqlDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        if (!wcscasecmp((*it)->name.c_str(), expr.c_str()))
+        if (kl::iequals((*it)->name, expr))
             return (tango::objhandle_t)(*it);
     }
 

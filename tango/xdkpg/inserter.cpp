@@ -53,7 +53,7 @@ tango::objhandle_t KpgRowInserter::getHandle(const std::wstring& column_name)
     std::vector<KpgInsertFieldData>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        if (!wcscasecmp(it->m_name.c_str(), column_name.c_str()))
+        if (kl::iequals(it->m_name, column_name))
             return &(*it);
     }
 

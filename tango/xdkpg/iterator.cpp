@@ -312,7 +312,7 @@ tango::objhandle_t KpgIterator::getHandle(const std::wstring& expr)
     std::vector<KpgDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        if (!wcscasecmp((*it)->name.c_str(), expr.c_str()))
+        if (kl::iequals((*it)->name, expr))
             return (tango::objhandle_t)(*it);
     }
 

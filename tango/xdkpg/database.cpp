@@ -362,10 +362,8 @@ bool KpgDatabase::getFileExist(const std::wstring& _path)
     for (i = 0 ; i < count; ++i)
     {
         tango::IFileInfoPtr info = files->getItem(i);
-        if (wcscasecmp(info->getName().c_str(), path.c_str()) == 0)
-        {
+        if (kl::iequals(info->getName(), path))
             return true;
-        }
     }
 
     return false;
@@ -397,7 +395,7 @@ tango::IFileInfoPtr KpgDatabase::getFileInfo(const std::wstring& path)
     for (i = 0; i < count; ++i)
     {
         tango::IFileInfoPtr finfo = files->getItem(i);
-        if (0 == wcscasecmp(finfo->getName().c_str(), name.c_str()))
+        if (kl::iequals(finfo->getName(), name))
         {
             return finfo;
         }

@@ -85,7 +85,7 @@ bool PkgStreamEnum::getStreamInfo(const std::wstring& stream_name, PkgDirEntry& 
     std::vector<PkgDirEntry>::iterator it;
     for (it = m_entries.begin(); it != m_entries.end(); ++it)
     {
-        if (!wcscasecmp(it->stream_name.c_str(), stream_name.c_str()))
+        if (kl::iequals(it->stream_name, stream_name))
         {
             entry = *it;
             return true;
@@ -714,7 +714,7 @@ bool PkgFile::lookupDirEntry(const std::wstring& stream_name, PkgDirEntry& entry
     std::vector<PkgDirEntry>::iterator it;
     for (it = entries.begin(); it != entries.end(); ++it)
     {
-        if (!wcscasecmp(it->stream_name.c_str(), stream_name.c_str()))
+        if (kl::iequals(it->stream_name, stream_name))
         {
             entry = *it;
             return true;

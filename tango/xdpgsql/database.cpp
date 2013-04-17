@@ -773,10 +773,8 @@ bool PgsqlDatabase::getFileExist(const std::wstring& _path)
     for (i = 0 ; i < count; ++i)
     {
         tango::IFileInfoPtr info = files->getItem(i);
-        if (wcscasecmp(info->getName().c_str(), path.c_str()) == 0)
-        {
+        if (kl::iequals(info->getName(), path))
             return true;
-        }
     }
 
     return false;
@@ -808,7 +806,7 @@ tango::IFileInfoPtr PgsqlDatabase::getFileInfo(const std::wstring& path)
     for (i = 0; i < count; ++i)
     {
         tango::IFileInfoPtr finfo = files->getItem(i);
-        if (0 == wcscasecmp(finfo->getName().c_str(), name.c_str()))
+        if (kl::iequals(finfo->getName(), name))
         {
             return finfo;
         }
@@ -1438,7 +1436,7 @@ bool PgsqlDatabase::execute(const std::wstring& command,
         ++p;
     }
 
-    if (0 == wcscasecmp(first_word.c_str(), L"SELECT"))
+    if (kl::iequals(first_word, L"SELECT"))
     {
         // create an iterator based on our select statement
         PgsqlIterator* iter = new PgsqlIterator(this);
@@ -1491,7 +1489,7 @@ bool PgsqlDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
 
     for (it = columns.begin(); it != columns.end(); ++it)
     {
-        if (0 == wcscasecmp(it->c_str(), L"[detail]"))
+        if (kl::iequals(*it, L"[detail]"))
         {
             columns.erase(it);
             detail_rows = true;
@@ -1586,7 +1584,7 @@ bool PgsqlDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
                 grpcols += L",";
             grpcols += L"b." + fld;
 
-            if (0 == wcscasecmp(expr.substr(0,8).c_str(), L"groupid("))
+            if (kl::iequals(expr.substr(0,8), L"groupid("))
             {
                 // if a groupid() is included, make that the output sort order
                 order = fld;
