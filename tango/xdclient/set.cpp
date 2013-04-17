@@ -42,71 +42,14 @@ static std::wstring buildOrderParams(const std::wstring& expr)
 }
 
 
-ClientSet::ClientSet(ClientDatabase* database)
+ClientSet::ClientSet()
 {
-    m_database = database;
-    m_database->ref();
-    m_known_row_count = (tango::rowpos_t)-1;
-    m_set_id = L"";
 }
 
 ClientSet::~ClientSet()
 {
-    m_database->unref();
 }
 
-bool ClientSet::init(const std::wstring& path)
-{
-    ServerCallParams params;
-    params.setParam(L"path", path);
-    std::wstring sres = m_database->serverCall(L"", L"fileinfo", &params);
-    kl::JsonNode response;
-    response.fromString(sres);
-
-    if (!response["success"].getBoolean())
-        return false;
-
-    kl::JsonNode file_info = response["file_info"];
-    if (file_info.isUndefined() || file_info["type"].getString() != L"table")
-        return false;
-
-    m_set_id = file_info["object_id"].getString();
-
-    m_path = path;
-
-    return true;
-}
-
-void ClientSet::setObjectPath(const std::wstring& path)
-{
-    m_object_path = path;
-
-    m_set_id = kl::md5str(m_database->m_host + L"/" + m_database->m_database + L"/" + m_set_id);
-}
-
-std::wstring ClientSet::getObjectPath()
-{
-    if (!m_object_path.empty())
-        return m_object_path;
-
-    return m_path;
-}
-
-std::wstring ClientSet::getSetId()
-{
-    if (m_set_id.length() == 0)
-        m_set_id = kl::md5str(m_database->m_host + L":" + m_path);
-
-    return m_set_id;
-}
-
-tango::IStructurePtr ClientSet::getStructure()
-{
-    tango::IStructurePtr structure = m_database->describeTable(m_path);
-    if (structure.isNull())
-        return xcm::null;
-    return structure->clone();
-}
 
 /*
 bool ClientSet::modifyStructure(tango::IStructure* struct_config, tango::IJob* job)
@@ -203,12 +146,12 @@ bool ClientSet::modifyStructure(tango::IStructure* struct_config, tango::IJob* j
 
 
 
-ClientRowInserter::ClientRowInserter(ClientDatabase* database, ClientSet* set, const std::wstring& path)
+ClientRowInserter::ClientRowInserter(ClientDatabase* database, const std::wstring& path)
 {
     m_database = database;
     m_database->ref();
 
-    m_structure = set->getStructure();
+    m_structure = database->describeTable(path);
 
     m_path = path;
     m_inserting = false;

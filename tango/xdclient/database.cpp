@@ -572,14 +572,8 @@ bool ClientDatabase::createStream(const std::wstring& path, const std::wstring& 
 
 tango::ISetPtr ClientDatabase::openSet(const std::wstring& path)
 {
-    ClientSet* set = new ClientSet(this);
-
-    if (!set->init(path))
-    {
-        delete set;
-        return xcm::null;
-    }
-
+    ClientSet* set = new ClientSet();
+    set->setObjectPath(path);
     return static_cast<tango::ISet*>(set);
 }
 

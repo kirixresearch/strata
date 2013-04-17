@@ -17,9 +17,8 @@
 #include "../xdcommon/cmnbaseset.h"
 
 
-class ClientSet : public CommonBaseSet
+class ClientSet : public tango::ISet
 {
-
 friend class ClientDatabase;
 friend class ClientIterator;
 friend class ClientRowInserter;
@@ -31,25 +30,15 @@ friend class ClientRowInserter;
 
 public:
 
-    ClientSet(ClientDatabase* database);
+    ClientSet();
     virtual ~ClientSet();
-    
-    bool init(const std::wstring& path);
-    
-    void setObjectPath(const std::wstring& path);
-    std::wstring getObjectPath();
 
-    std::wstring getSetId();
-
-    tango::IStructurePtr getStructure();
+    void setObjectPath(const std::wstring& path) { m_path = path; }
+    std::wstring getObjectPath() { return m_path; }
 
 private:
-    
-    ClientDatabase* m_database;
-    std::wstring m_path;         // server object path
-    std::wstring m_object_path;  // logical object path (e.g. mounts)
-    std::wstring m_set_id;
-    tango::rowpos_t m_known_row_count;
+
+    std::wstring m_path;
 };
 
 
@@ -75,7 +64,7 @@ class ClientRowInserter : public tango::IRowInserter
 
 public:
 
-    ClientRowInserter(ClientDatabase* database, ClientSet* set, const std::wstring& path);
+    ClientRowInserter(ClientDatabase* database,  const std::wstring& path);
     ~ClientRowInserter();
 
     tango::objhandle_t getHandle(const std::wstring& column_name);
