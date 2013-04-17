@@ -192,7 +192,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="sqlalter.cpp" />
-    <ClCompile Include="sqlcommon.cpp" />
     <ClCompile Include="sqlcreate.cpp" />
     <ClCompile Include="sqldelete.cpp" />
     <ClCompile Include="sqldrop.cpp" />
@@ -200,9 +199,7 @@
     <ClCompile Include="sqlmove.cpp" />
     <ClCompile Include="sqlselect.cpp" />
     <ClCompile Include="sqlupdate.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="sqlcommon.h" />
+    <ClCompile Include="xdcommonsql.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\kscript\kscript.vcxproj">

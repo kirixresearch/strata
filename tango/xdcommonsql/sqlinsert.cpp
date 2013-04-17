@@ -17,7 +17,7 @@
 #include <kl/portable.h>
 #include <kl/string.h>
 #include "tango.h"
-#include "sqlcommon.h"
+#include "xdcommonsql.h"
 #include "../xdcommon/util.h"
 #include "../xdcommon/dbfuncs.h"
 

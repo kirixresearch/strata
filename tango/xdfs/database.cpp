@@ -26,7 +26,7 @@
 #include "../xdcommon/xdcommon.h"
 #include "../xdcommon/dbattr.h"
 #include "../xdcommon/fileinfo.h"
-#include "../xdcommon/sqlcommon.h"
+#include "../xdcommonsql/xdcommonsql.h"
 #include "../xdcommon/extfileinfo.h"
 #include "../xdcommon/filestream.h"
 #include "../xdcommon/connectionstr.h"

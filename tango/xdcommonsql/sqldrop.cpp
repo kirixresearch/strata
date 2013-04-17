@@ -15,7 +15,7 @@
 
 
 #include "tango.h"
-#include "sqlcommon.h"
+#include "xdcommonsql.h"
 #include "../xdcommon/util.h"
 #include <map>
 #include <kl/portable.h>

@@ -16,7 +16,7 @@
 
 #include "tango.h"
 #include "../xdcommon/tango_private.h"
-#include "sqlcommon.h"
+#include "xdcommonsql.h"
 #include "../xdcommon/jobinfo.h"
 #include "../xdcommon/util.h"
 #include <kl/portable.h>

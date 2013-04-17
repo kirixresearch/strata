@@ -15,7 +15,7 @@
 
 #include <map>
 #include <set>
-#include "errorinfo.h"
+#include "../xdcommon/errorinfo.h"
 
 
 class SqlStatement

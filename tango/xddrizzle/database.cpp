@@ -21,7 +21,7 @@
 #include "../xdcommon/dbattr.h"
 #include "../xdcommon/fileinfo.h"
 #include "../xdcommon/util.h"
-#include "../xdcommon/sqlcommon.h"
+#include "../xdcommonsql/xdcommonsql.h"
 #include "drizzle_client.h"
 #include "database.h"
 #include "set.h"

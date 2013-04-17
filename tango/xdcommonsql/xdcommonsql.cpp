@@ -16,11 +16,11 @@
 
 #include "tango.h"
 #include "../xdcommon/tango_private.h"
-#include "sqlcommon.h"
 #include "../xdcommon/util.h"
 #include "../xdcommon/jobinfo.h"
 #include "../xdcommon/util.h"
 #include "../xdcommon/keylayout.h"
+#include "xdcommonsql.h"
 #include <kl/klib.h>
 #include <kl/regex.h>
 

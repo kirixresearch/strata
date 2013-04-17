@@ -15,7 +15,7 @@
 #include "set.h"
 #include "iterator.h"
 #include "../xdcommon/xdcommon.h"
-#include "../xdcommon/sqlcommon.h"
+#include "../xdcommonsql/xdcommonsql.h"
 #include "../xdcommon/localrowcache.h"
 
 
@@ -393,7 +393,6 @@ bool OdbcIterator::init(const std::wstring& query)
     {
         // create set and initialize variables
         OdbcSet* set = new OdbcSet(m_database);
-        set->m_tablename = getTableNameFromSql(query);
         set->m_filter_query = true;
 
         if (!set->init())

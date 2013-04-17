@@ -707,21 +707,8 @@ bool ClientDatabase::execute(const std::wstring& command,
 
 
 
-    // initialize a placeholder set
-    std::wstring path = getTableNameFromSql(command);
-    ClientSet* set = new ClientSet(this);
-    if (!set->init(path))
-    {
-        return xcm::null;
-    }
-
-    if (response["row_count"].isOk())
-    {
-        set->m_known_row_count = (tango::rowpos_t)response["row_count"].getDouble();
-    }
-
     // initialize the iterator
-    ClientIterator* iter = new ClientIterator(this, set);
+    ClientIterator* iter = new ClientIterator(this, NULL);
     if (!iter->init(response["handle"], L""))
     {
         delete iter;

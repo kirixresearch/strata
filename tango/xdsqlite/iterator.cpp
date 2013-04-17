@@ -22,7 +22,7 @@
 #include "set.h"
 #include "iterator.h"
 #include "../xdcommon/xdcommon.h"
-#include "../xdcommon/sqlcommon.h"
+#include "../xdcommonsql/xdcommonsql.h"
 
 
 inline tango::rowid_t rowidCreate(tango::tableord_t table_ordinal,
@@ -150,7 +150,6 @@ bool SlIterator::init(const std::wstring& _query)
     {
         // create set and initialize variables
         SlSet* set = new SlSet(m_database);
-        set->m_tablename = getTableNameFromSql(query);
         //set->m_filter_query = true;
 
         if (!set->init())

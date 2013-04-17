@@ -10,7 +10,7 @@
 #include "../xdcommon/errorinfo.h"
 #include "../xdcommon/dbattr.h"
 #include "../xdcommon/fileinfo.h"
-#include "../xdcommon/sqlcommon.h"
+#include "../xdcommonsql/xdcommonsql.h"
 #include "../xdcommon/util.h"
 
 #include "database.h"

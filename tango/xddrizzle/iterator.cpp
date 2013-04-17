@@ -14,7 +14,7 @@
 #include <kl/portable.h>
 #include "tango.h"
 #include "../xdcommon/xdcommon.h"
-#include "../xdcommon/sqlcommon.h"
+#include "../xdcommonsql/xdcommonsql.h"
 #include "drizzle_client.h"
 #include "database.h"
 #include "set.h"
@@ -158,7 +158,6 @@ bool DrizzleIterator::init(const std::wstring& query)
         DrizzleSet* set = new DrizzleSet;
         set->m_database = m_database;
         set->m_drizzle = m_drizzle;
-        set->m_tablename = getTableNameFromSql(query);
         
         if (!set->init())
             return false;

@@ -18,7 +18,7 @@
 #include <kl/string.h>
 #include <kl/regex.h>
 #include "tango.h"
-#include "sqlcommon.h"
+#include "xdcommonsql.h"
 #include "../xdcommon/util.h"
 #include "../xdcommon/exindex.h"
 #include "../xdcommon/keylayout.h"

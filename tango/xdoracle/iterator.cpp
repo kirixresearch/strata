@@ -21,7 +21,7 @@
 #include "set.h"
 #include "iterator.h"
 #include "../xdcommon/xdcommon.h"
-#include "../xdcommon/sqlcommon.h"
+#include "../xdcommonsql/xdcommonsql.h"
 
 
 const std::string empty_string = "";
@@ -394,7 +394,6 @@ bool OracleIterator::init(const std::wstring& query)
         OracleSet* set = new OracleSet(m_database);
         set->m_env = m_env;
         set->m_svc = m_svc;
-        set->m_tablename = getTableNameFromSql(query);
 
         if (!set->init())
         {

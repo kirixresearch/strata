@@ -15,7 +15,7 @@
 #include "set.h"
 #include "iterator.h"
 #include "../xdcommon/xdcommon.h"
-#include "../xdcommon/sqlcommon.h"
+#include "../xdcommonsql/xdcommonsql.h"
 #include "../xdcommon/localrowcache.h"
 #include <kl/portable.h>
 #include <kl/string.h>
@@ -153,24 +153,6 @@ bool PgsqlIterator::init(const std::wstring& query)
 
         if (!init(conn, res))
             return false;
-    }
-
-
-    // if m_set is null, create a placeholder set
-    if (!m_set)
-    {
-        // create set and initialize variables
-        PgsqlSet* set = new PgsqlSet(m_database);
-        set->m_tablename = getTableNameFromSql(query);
-
-        // initialize Odbc connection for this set
-        if (!set->init())
-        {
-            return false;
-        }
-
-        m_set = set;
-        m_set->ref();
     }
 
     return true;

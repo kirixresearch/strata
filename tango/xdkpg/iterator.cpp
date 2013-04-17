@@ -15,7 +15,7 @@
 #include "iterator.h"
 #include "pkgfile.h"
 #include "../xdcommon/xdcommon.h"
-#include "../xdcommon/sqlcommon.h"
+#include "../xdcommonsql/xdcommonsql.h"
 #include "../xdcommon/localrowcache.h"
 #include "../xdcommon/util.h"
 #include <kl/portable.h>

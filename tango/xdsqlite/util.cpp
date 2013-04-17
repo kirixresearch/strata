@@ -16,8 +16,9 @@
 #include "util.h"
 
 
-std::wstring popToken(std::wstring& str);
-std::wstring peekToken(const std::wstring& str);
+
+std::wstring popToken(std::wstring& str) { /* TODO: implement */ return L""; }
+std::wstring peekToken(const std::wstring& str) { /* TODO: implement */ return L""; }
 
 
 // this code is from xdcommon/sqlcreate.cpp
