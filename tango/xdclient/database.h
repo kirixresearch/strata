@@ -70,7 +70,7 @@ public:
 
     std::wstring getRequestPath();
     HttpRequest* getHttpObject();
-    std::wstring serverCall(const std::wstring& call_path, const ServerCallParams* params = NULL, bool use_multipart = false, int timeout = 0);
+    std::wstring serverCall(const std::wstring& path, const std::wstring& method, const ServerCallParams* params = NULL, bool use_multipart = false, int timeout = 0);
 
     // tango::IDatabase interface
 

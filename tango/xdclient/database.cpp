@@ -137,7 +137,8 @@ HttpRequest* ClientDatabase::getHttpObject()
 }
 
 
-std::wstring ClientDatabase::serverCall(const std::wstring& method,
+std::wstring ClientDatabase::serverCall(const std::wstring& path,
+                                        const std::wstring& method,
                                         const ServerCallParams* params,
                                         bool use_multipart,
                                         int timeout)
@@ -150,7 +151,14 @@ std::wstring ClientDatabase::serverCall(const std::wstring& method,
     http->resetPostParameters();
     if (use_multipart)
         http->useMultipartPost();
-    http->setLocation(getRequestPath() + L"?m=" + method);
+
+    std::wstring full_path = getRequestPath();
+    if (path.length() > 0)
+        full_path += path;
+    if (method.length() > 0)
+        full_path += (L"?m=" + method);
+
+    http->setLocation(full_path);
 
     if (params)
     {
@@ -302,7 +310,7 @@ bool ClientDatabase::createFolder(const std::wstring& path)
 {
     ServerCallParams params;
     params.setParam(L"path", path);
-    std::wstring sres = serverCall(L"createfolder", &params);
+    std::wstring sres = serverCall(L"", L"createfolder", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -314,7 +322,7 @@ bool ClientDatabase::renameFile(const std::wstring& path, const std::wstring& ne
     ServerCallParams params;
     params.setParam(L"path", path);
     params.setParam(L"new_name", new_name);
-    std::wstring sres = serverCall(L"renamefile", &params);
+    std::wstring sres = serverCall(L"", L"renamefile", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -326,7 +334,7 @@ bool ClientDatabase::moveFile(const std::wstring& path, const std::wstring& dest
     ServerCallParams params;
     params.setParam(L"path", path);
     params.setParam(L"destination", destination_folder);
-    std::wstring sres = serverCall(L"movefile", &params);
+    std::wstring sres = serverCall(L"", L"movefile", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -347,7 +355,7 @@ bool ClientDatabase::deleteFile(const std::wstring& path)
 {
     ServerCallParams params;
     params.setParam(L"path", path);
-    std::wstring sres = serverCall(L"deletefile", &params);
+    std::wstring sres = serverCall(L"", L"deletefile", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -368,7 +376,7 @@ tango::IFileInfoPtr ClientDatabase::getFileInfo(const std::wstring& path)
 {
     ServerCallParams params;
     params.setParam(L"path", path);
-    std::wstring sres = serverCall(L"fileinfo", &params);
+    std::wstring sres = serverCall(L"", L"fileinfo", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -411,7 +419,7 @@ tango::IFileInfoEnumPtr ClientDatabase::getFolderInfo(const std::wstring& path)
 {
     ServerCallParams params;
     params.setParam(L"path", path);
-    std::wstring sres = serverCall(L"folderinfo", &params);
+    std::wstring sres = serverCall(L"", L"folderinfo", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -471,7 +479,7 @@ tango::IStructurePtr ClientDatabase::describeTable(const std::wstring& path)
 {
     ServerCallParams params;
     params.setParam(L"path", path);
-    std::wstring sres = serverCall(L"describetable", &params);
+    std::wstring sres = serverCall(L"", L"describetable", &params);
 
     kl::JsonNode response;
     response.fromString(sres);
@@ -529,7 +537,7 @@ bool ClientDatabase::createTable(const std::wstring& path,
     ServerCallParams params;
     params.setParam(L"path", path);
     params.setParam(L"columns", columns);
-    std::wstring sres = serverCall(L"createtable", &params);
+    std::wstring sres = serverCall(L"", L"createtable", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -540,7 +548,7 @@ tango::IStreamPtr ClientDatabase::openStream(const std::wstring& path)
 {
     ServerCallParams params;
     params.setParam(L"path", path);
-    std::wstring sres = serverCall(L"openstream", &params);
+    std::wstring sres = serverCall(L"", L"openstream", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -555,7 +563,7 @@ bool ClientDatabase::createStream(const std::wstring& path, const std::wstring& 
     ServerCallParams params;
     params.setParam(L"path", path);
     params.setParam(L"mime_type", mime_type);
-    std::wstring sres = serverCall(L"createstream", &params);
+    std::wstring sres = serverCall(L"", L"createstream", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -565,7 +573,6 @@ bool ClientDatabase::createStream(const std::wstring& path, const std::wstring& 
 tango::ISetPtr ClientDatabase::openSet(const std::wstring& path)
 {
     ClientSet* set = new ClientSet(this);
-
 
     if (!set->init(path))
     {
@@ -587,13 +594,13 @@ tango::IIteratorPtr ClientDatabase::createIterator(const std::wstring& path,
                                                    const std::wstring& order,
                                                    tango::IJob* job)
 {
+
     ServerCallParams params;
-    params.setParam(L"mode", L"createiterator");
-    params.setParam(L"path", path);
     params.setParam(L"columns", columns);
     params.setParam(L"order", order);
+    params.setParam(L"limit", L"5");
 
-    std::wstring sres = serverCall(L"query", &params);
+    std::wstring sres = serverCall(path, L"", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -689,7 +696,7 @@ bool ClientDatabase::execute(const std::wstring& command,
     params.setParam(L"sql", command);
 
 
-    std::wstring sres = serverCall(L"query", &params);
+    std::wstring sres = serverCall(L"", L"query", &params);
     kl::JsonNode response;
     response.fromString(sres);
 

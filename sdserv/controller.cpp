@@ -992,10 +992,12 @@ void Controller::apiFetchRows(RequestInfo& req)
         if (db.isNull())
             return;
 
-        tango::IIteratorPtr iter = db->createIterator(req.getURI(), L"", L"", NULL);
+        tango::IIteratorPtr iter = db->createIterator(req.getURI(), L"", req.getValue(L"order"), NULL);
         if (!iter.isOk())
         {
-            returnApiError(req, "Could not create iterator");
+            req.setStatusCode(404);
+            req.setContentType("text/html");
+            req.write("<html><body><h2>Not found</h2></body></html>");
             return;
         }
         

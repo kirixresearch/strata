@@ -59,7 +59,7 @@ bool ClientSet::init(const std::wstring& path)
 {
     ServerCallParams params;
     params.setParam(L"path", path);
-    std::wstring sres = m_database->serverCall(L"fileinfo", &params);
+    std::wstring sres = m_database->serverCall(L"", L"fileinfo", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -189,7 +189,7 @@ bool ClientSet::modifyStructure(tango::IStructure* struct_config, tango::IJob* j
     params.setParam(L"path", m_path);
     params.setParam(L"actions", json_actions.toString());
     
-    std::wstring sres = m_database->serverCall(L"alter", &params);
+    std::wstring sres = m_database->serverCall(L"", L"alter", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -425,7 +425,7 @@ bool ClientRowInserter::startInsert(const std::wstring& col_list)
     ServerCallParams params;
     params.setParam(L"path", m_path);
     params.setParam(L"columns", scols);
-    std::wstring sres = m_database->serverCall(L"startbulkinsert", &params);
+    std::wstring sres = m_database->serverCall(L"", L"startbulkinsert", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -523,7 +523,7 @@ void ClientRowInserter::finishInsert()
 
     ServerCallParams params;
     params.setParam(L"handle", m_handle);
-    std::wstring sres = m_database->serverCall(L"finishbulkinsert", &params);
+    std::wstring sres = m_database->serverCall(L"", L"finishbulkinsert", &params);
 }
 
 bool ClientRowInserter::flush()
@@ -533,7 +533,7 @@ bool ClientRowInserter::flush()
     ServerCallParams params;
     params.setParam(L"rows", m_rows);
     params.setParam(L"handle", m_handle);
-    std::wstring sres = m_database->serverCall(L"bulkinsert", &params);
+    std::wstring sres = m_database->serverCall(L"", L"bulkinsert", &params);
     kl::JsonNode response;
     response.fromString(sres);
 

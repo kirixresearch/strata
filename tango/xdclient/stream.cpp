@@ -39,7 +39,7 @@ bool ClientStream::read(void* pv,
     ServerCallParams params;
     params.setParam(L"handle", m_handle);
     params.setParam(L"read_size", s_read_size);
-    std::wstring sres = m_database->serverCall(L"readstream", &params);
+    std::wstring sres = m_database->serverCall(L"", L"readstream", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -92,7 +92,7 @@ bool ClientStream::write(const void* pv,
     params.setParam(L"data", kl::towstring(base64_buf));
     delete[] base64_buf;
 
-    std::wstring sres = m_database->serverCall(L"writestream", &params, true);
+    std::wstring sres = m_database->serverCall(L"", L"writestream", &params, true);
     kl::JsonNode response;
     response.fromString(sres);
 
