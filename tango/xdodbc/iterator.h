@@ -117,6 +117,8 @@ public:
     std::vector<OdbcIteratorRelField> fields;
 };
 
+
+class OdbcSet;
 class OdbcIterator : public CommonBaseIterator,
                      public tango::ICacheRowUpdate,
                      public tango::IIteratorRelation
