@@ -160,8 +160,8 @@ public:
 
     // tango::IIteratorRelation
 
-    tango::ISetPtr getChildSet(tango::IRelationPtr relation);
     tango::IIteratorPtr getChildIterator(tango::IRelationPtr relation);
+    tango::IIteratorPtr getFilteredChildIterator(tango::IRelationPtr relation);
 
     // tango::ICacheRowUpdate
 

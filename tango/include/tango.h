@@ -664,8 +664,6 @@ xcm_interface IDatabase : public xcm::IObject
 
 public:
 
-    virtual void close() = 0;
-
     virtual int getDatabaseType() = 0;
     virtual IAttributesPtr getAttributes() = 0;
     virtual std::wstring getActiveUid() = 0;
@@ -674,20 +672,17 @@ public:
     virtual void setError(int error_code, const std::wstring& error_string) = 0;
     
     virtual bool cleanup() = 0;
+    virtual void close() = 0;
     
     virtual IJobPtr createJob() = 0;
-
     virtual IStructurePtr createStructure() = 0;
 
     virtual bool createFolder(const std::wstring& path) = 0;
     virtual bool createStream(const std::wstring& path, const std::wstring& mime_type) = 0;
     virtual bool createTable(const std::wstring& path, IStructurePtr struct_config, FormatInfo* format_info) = 0;
     
+    virtual ISetPtr openSetEx(const std::wstring& path, int format) { return xcm::null; }
     virtual IStreamPtr openStream(const std::wstring& path) = 0;
-
-    virtual ISetPtr openSetEx(const std::wstring& path,
-                              int format) { return xcm::null; }
-
     virtual bool renameFile(const std::wstring& path, const std::wstring& new_name) = 0;
     virtual bool moveFile(const std::wstring& path, const std::wstring& new_folder) = 0;
     virtual bool copyFile(const std::wstring& src_path, const std::wstring& dest_path) = 0;
@@ -698,15 +693,9 @@ public:
     virtual IFileInfoEnumPtr getFolderInfo(const std::wstring& path) = 0;
     
     virtual tango::IDatabasePtr getMountDatabase(const std::wstring& path) = 0;
-    
-    virtual bool setMountPoint(const std::wstring& path,
-                               const std::wstring& connection_str,
-                               const std::wstring& remote_path) = 0;
-                                  
-    virtual bool getMountPoint(const std::wstring& path,
-                               std::wstring& connection_str,
-                               std::wstring& remote_path) = 0;
-                             
+    virtual bool setMountPoint(const std::wstring& path, const std::wstring& connection_str,  const std::wstring& remote_path) = 0;
+    virtual bool getMountPoint(const std::wstring& path, std::wstring& connection_str,  std::wstring& remote_path) = 0;
+
     virtual IRelationPtr createRelation(const std::wstring& tag,
                                         const std::wstring& left_set_path,
                                         const std::wstring& right_set_path,
@@ -869,8 +858,8 @@ xcm_interface IIteratorRelation : public xcm::IObject
 
 public:
     
-    virtual ISetPtr getChildSet(tango::IRelationPtr relation) = 0;
     virtual IIteratorPtr getChildIterator(tango::IRelationPtr relation) = 0;
+    virtual IIteratorPtr getFilteredChildIterator(tango::IRelationPtr relation) = 0;
 };
 
 

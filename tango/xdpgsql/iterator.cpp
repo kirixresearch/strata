@@ -1087,150 +1087,16 @@ bool PgsqlIterator::isNull(tango::objhandle_t data_handle)
 }
 
 
-tango::ISetPtr PgsqlIterator::getChildSet(tango::IRelationPtr relation)
-{
-    return xcm::null;
-/*
-    if (eof())
-        return xcm::null;
-
-    tango::ISetPtr setptr = relation->getRightSetPtr();
-    IPgsqlSetPtr set = setptr;
-    if (set.isNull())
-        return xcm::null;
-
-
-    PgsqlIteratorRelInfo* info = NULL;
-    std::vector<PgsqlIteratorRelInfo>::iterator it;
-    for (it = m_relations.begin(); it != m_relations.end(); ++it)
-    {
-        if (it->relation_id == relation->getRelationId())
-        {
-            info = &(*it);
-            break;
-        }
-    }
-
-    if (!info)
-    {
-        PgsqlIteratorRelInfo relinfo;
-        relinfo.relation_id = relation->getRelationId();
-
-
-        std::vector<std::wstring> left_parts, right_parts;
-        size_t i, cnt;
-
-        kl::parseDelimitedList(relation->getLeftExpression(),  left_parts, L',', true);
-        kl::parseDelimitedList(relation->getRightExpression(), right_parts, L',', true);
-
-        // the number of parts in the left expression must match the count in the right expression
-        if (left_parts.size() != right_parts.size())
-            return xcm::null; 
-
-        cnt = right_parts.size();
-        for (i = 0; i < cnt; ++i)
-        {
-            PgsqlIteratorRelField f;
-            f.right_field = right_parts[i];
-            f.left_handle = getHandle(left_parts[i]);
-            if (!f.left_handle)
-                return xcm::null;
-            f.left_type = ((PgsqlDataAccessInfo*)(f.left_handle))->type;
-            
-            relinfo.fields.push_back(f);
-        }
-
-        m_relations.push_back(relinfo);
-        info = &(*m_relations.rbegin());
-    }
-
-
-    tango::IAttributesPtr attr = m_database->getAttributes();
-    std::wstring quote_openchar = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
-    std::wstring quote_closechar = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
-
-
-    std::wstring expr;
-
-    // build expression
-    std::vector<PgsqlIteratorRelField>::iterator fit;
-    for (fit = info->fields.begin(); fit != info->fields.end(); ++fit)
-    {
-        if (expr.length() > 0)
-            expr += L" AND ";
-        expr += quote_openchar + fit->right_field + quote_closechar + L"=";
-
-
-
-        switch (fit->left_type)
-        {
-            case tango::typeCharacter:
-            case tango::typeWideCharacter:
-                expr += L"'";
-                expr += getWideString(fit->left_handle);
-                expr += L"'";
-                break;
-            case tango::typeInteger:
-                expr += kl::itowstring(getInteger(fit->left_handle));
-                break;
-            case tango::typeNumeric:
-            case tango::typeDouble:
-                expr += kl::dbltostr(getDouble(fit->left_handle));
-                break;
-            case tango::typeDate:
-            {
-                tango::datetime_t dt = getDateTime(fit->left_handle);
-                if (dt == 0)
-                {
-                    expr += L"NULL";
-                }
-                 else
-                {
-                    tango::DateTime d(dt);
-                    expr += kl::stdswprintf(L"{d '%04d-%02d-%02d'}", d.getYear(), d.getMonth(), d.getDay());
-                }
-                break;
-            }
-            case tango::typeDateTime:
-            {
-                tango::datetime_t dt = getDateTime(fit->left_handle);
-                if (dt == 0)
-                {
-                    expr += L"NULL";
-                }
-                 else
-                {
-                    tango::DateTime d(dt);
-                    expr += kl::stdswprintf(L"{ts '%04d-%02d-%02d %02d:%02d:%02d.%03d'}", d.getYear(), d.getMonth(), d.getDay(), d.getHour(), d.getMinute(), d.getSecond(), d.getMillisecond());
-                }
-                break;
-            }
-        }
-
-    }
-
-
-
-    set->setWhereCondition(expr);
-
-    return setptr;
-*/
-}
-
 
 tango::IIteratorPtr PgsqlIterator::getChildIterator(tango::IRelationPtr relation)
 {
     return xcm::null;
-/*
-    tango::ISetPtr set = getChildSet(relation);
-
-    if (set.isNull())
-        return xcm::null;
-
-    return set->createIterator(L"", L"", NULL);
-*/
 }
 
+tango::IIteratorPtr PgsqlIterator::getFilteredChildIterator(tango::IRelationPtr relation)
+{
+    return xcm::null;
+}
 
 
 // tango::ICacheRowUpdate::updateCacheRow()

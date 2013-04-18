@@ -145,7 +145,6 @@ public:
     unsigned int getIteratorFlags();
     void setIteratorFlags(unsigned int new_val);
 
-    tango::ISetPtr getChildSet(tango::IRelationPtr relation);
     tango::IIteratorPtr getChildIterator(tango::IRelationPtr relation);
     tango::IIteratorPtr getFilteredChildIterator(tango::IRelationPtr relation);
 

@@ -4428,10 +4428,10 @@ void TableDoc::updateChildWindows()
                     
             if (m_relationship_sync == tabledocRelationshipSyncFilter)
             {       
-                tango::ISetPtr child_set = iter_r->getChildSet(rel);
-                if (child_set)
+                tango::IIteratorPtr right_iter = iter_r->getFilteredChildIterator(rel);
+                if (right_iter)
                 {
-                    table_doc->setBrowseSet(child_set->getObjectPath());
+                    table_doc->setIterator(right_iter, false);
 
                     wxString suffix = " ";
                     suffix += _("[Matching Records]");
@@ -4459,7 +4459,7 @@ void TableDoc::updateChildWindows()
                     wxString suffix;
                     suffix = wxT(" ");
                     suffix += _("[Matching Records And Context]");
-                    table_doc->setCaption(wxT(""), suffix);
+                    table_doc->setCaption("", suffix);
 
                     table_doc->updateChildWindows();
                     table_doc->setIsChildSet(true);
@@ -4469,8 +4469,6 @@ void TableDoc::updateChildWindows()
                     table_doc->setRelationshipSyncMarkExpr(wxT(""));
                     table_doc->getGrid()->refresh(kcl::Grid::refreshAll);
                 }
-                
-                
             }
         }
     }

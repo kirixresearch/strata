@@ -1614,7 +1614,7 @@ bool OdbcIterator::isNull(tango::objhandle_t data_handle)
     return false;
 }
 
-
+/*
 tango::ISetPtr OdbcIterator::getChildSet(tango::IRelationPtr relation)
 {
     if (eof())
@@ -1741,7 +1741,7 @@ tango::ISetPtr OdbcIterator::getChildSet(tango::IRelationPtr relation)
 
     return setptr;
 }
-
+*/
 
 tango::IIteratorPtr OdbcIterator::getChildIterator(tango::IRelationPtr relation)
 {
@@ -1756,6 +1756,11 @@ tango::IIteratorPtr OdbcIterator::getChildIterator(tango::IRelationPtr relation)
 */
 }
 
+
+tango::IIteratorPtr OdbcIterator::getFilteredChildIterator(tango::IRelationPtr relation)
+{
+    return xcm::null;
+}
 
 
 // tango::ICacheRowUpdate::updateCacheRow()

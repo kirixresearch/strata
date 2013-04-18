@@ -648,30 +648,6 @@ tango::IIteratorPtr BaseIterator::getFilteredChildIterator(tango::IRelationPtr r
 }
 
 
-tango::ISetPtr BaseIterator::getChildSet(tango::IRelationPtr relation)
-{
-    tango::IIteratorPtr right_iter = getFilteredChildIterator(relation);
-    IIteratorKeyAccessPtr iter_int = right_iter;
-    if (!iter_int.p)
-    {
-        tango::ISetPtr right_set = relation->getRightSetPtr();
-        if (!right_set.p)
-            return xcm::null;
-        return createEofSet(m_database, right_set);
-    }
-
-    IterWrapperSet* iter_set = new IterWrapperSet(m_database);
-    iter_set->ref();
-    if (!iter_set->create(right_iter->getSet(), right_iter))
-    {
-        iter_set->unref();
-        return xcm::null;
-    }
-
-    return tango::ISetPtr(static_cast<tango::ISet*>(iter_set), false);
-}
-
-
 tango::IStructurePtr BaseIterator::getStructure()
 {
     XCM_AUTO_LOCK(m_obj_mutex);
