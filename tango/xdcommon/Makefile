@@ -21,7 +21,6 @@ OBJECTS = block.o \
 	cmnbaseiterator.o \
 	cmnbaseset.o \
 	cmndynamicset.o \
-	cmnfilterset.o \
 	columninfo.o \
 	connectionstr.o \
 	dbattr.o \
@@ -41,15 +40,6 @@ OBJECTS = block.o \
 	localrowcache.o \
 	rowidarray.o \
 	setconfigfile.o \
-	sqlalter.o \
-	sqlcommon.o \
-	sqlcreate.o \
-	sqldelete.o \
-	sqldrop.o \
-	sqlinsert.o \
-	sqlmove.o \
-	sqlselect.o \
-	sqlupdate.o \
 	structure.o \
 	util.o \
 	xdcommon.o \
