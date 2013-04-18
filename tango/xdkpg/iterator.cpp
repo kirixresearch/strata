@@ -121,11 +121,6 @@ bool KpgIterator::init()
 
 
 
-tango::ISetPtr KpgIterator::getSet()
-{
-    return static_cast<tango::ISet*>(m_set);
-}
-
 std::wstring KpgIterator::getTable()
 {
     if (m_set)
