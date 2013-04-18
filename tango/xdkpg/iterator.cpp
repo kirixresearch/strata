@@ -736,15 +736,3 @@ bool KpgIterator::isNull(tango::objhandle_t data_handle)
 
     return false;
 }
-
-
-tango::ISetPtr KpgIterator::getChildSet(tango::IRelationPtr relation)
-{
-    return xcm::null;
-}
-
-tango::IIteratorPtr KpgIterator::getChildIterator(tango::IRelationPtr relation)
-{
-    return xcm::null;
-}
-

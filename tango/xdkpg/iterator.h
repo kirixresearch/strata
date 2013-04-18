@@ -94,8 +94,7 @@ public:
     std::vector<KpgIteratorRelField> fields;
 };
 
-class KpgIterator : public CommonBaseIterator,
-                    public tango::IIteratorRelation
+class KpgIterator : public CommonBaseIterator
 {
     friend class KpgDatabase;
     friend class KpgSet;
@@ -103,7 +102,6 @@ class KpgIterator : public CommonBaseIterator,
     XCM_CLASS_NAME("xdkpg.Iterator")
     XCM_BEGIN_INTERFACE_MAP(KpgIterator)
         XCM_INTERFACE_ENTRY(tango::IIterator)
-        XCM_INTERFACE_ENTRY(tango::IIteratorRelation)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -157,11 +155,6 @@ public:
     int getInteger(tango::objhandle_t data_handle);
     bool getBoolean(tango::objhandle_t data_handle);
     bool isNull(tango::objhandle_t data_handle);
-
-    // tango::IIteratorRelation
-
-    tango::ISetPtr getChildSet(tango::IRelationPtr relation);
-    tango::IIteratorPtr getChildIterator(tango::IRelationPtr relation);
 
 private:
 
