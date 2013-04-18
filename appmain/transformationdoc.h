@@ -103,7 +103,7 @@ xcm_interface ITransformationDoc : public xcm::IObject
 
 public:
 
-    virtual void initFromSet(tango::ISetPtr set) = 0;
+    virtual void initFromSet(const wxString& path) = 0;
     virtual void close() = 0;
     
     virtual void getTransformation(std::vector<TransformField>& result) = 0;
@@ -149,7 +149,7 @@ public:
     bool open(const wxString& filename);
 
     // ITransformationDoc
-    void initFromSet(tango::ISetPtr set);
+    void initFromSet(const wxString& path);
     void close();
 
     void getTransformation(std::vector<TransformField>& result);

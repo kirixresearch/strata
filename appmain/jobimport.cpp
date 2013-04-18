@@ -647,7 +647,8 @@ int ImportJob::runJob()
             if (m_import_type == dbtypeDelimitedText)
                 m_job_info->setProgressString(L"Reading file...");
 
-            src_set = src_db->openSetEx(it->input_path, format);
+            //src_set = src_db->openSetEx(it->input_path, format);
+            src_set.clear(); // TODO: implement
 
             // if we can't open the source set, bail out
             if (src_set.isNull())

@@ -162,7 +162,7 @@ ITextDocPtr createTextDoc(const wxString& filename,
     transdoc_site = frame->createSite(container_wnd,
                                       static_cast<IDocument*>(transdoc),
                                       false);
-    transdoc->initFromSet(textdoc->getTextSet());
+    transdoc->initFromSet(textdoc->getPath());
 
 
 
@@ -574,6 +574,7 @@ void TextDoc::getColumnListItems(std::vector<ColumnListItem>& list)
 
 bool TextDoc::initFixedLengthView()
 {
+/*
     tango::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return false;
@@ -678,6 +679,7 @@ bool TextDoc::initFixedLengthView()
     m_textview->refresh();
     
     m_fixedlength_inited = true;
+    */
     return true;
 }
 
@@ -723,6 +725,7 @@ inline void setTextQualifierComboBoxSelection(wxComboBox* combobox,
 
 bool TextDoc::open(const wxString& filename)
 {
+/*
     tango::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return false;
@@ -732,9 +735,9 @@ bool TextDoc::open(const wxString& filename)
     if (file_info.isNull())
         return false;
 
+    m_path = filename;
     m_textdelimited_set.clear();
     m_fixedlength_set.clear();
-    m_path = filename;
     
     if (m_view == -1)
     {
@@ -771,15 +774,14 @@ bool TextDoc::open(const wxString& filename)
             return m_textdelimited_set.isOk();
         }
     }
-    
+   */
+
     return false;
 }
 
 void TextDoc::close()
 {
     // get rid of all references that are keeping the file open
-    m_textdelimited_set.clear();
-    m_fixedlength_set.clear();
     m_textdelimited_iter.clear();
     m_grid_model.clear();
     m_grid->setModel(xcm::null);
@@ -791,7 +793,8 @@ bool TextDoc::initTextDelimitedView()
     tango::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return false;
-    
+
+/*
     // open the set
     m_fixedlength_set.clear();
     m_textdelimited_set = db->openSetEx(towstr(m_path),
@@ -853,6 +856,8 @@ bool TextDoc::initTextDelimitedView()
     m_grid->autoColumnResize(-1);
     
     m_textdelimited_inited = true;
+    */
+
     return true;
 }
 
@@ -1075,6 +1080,7 @@ void TextDoc::updateStatusBar()
     }
      else if (m_view == TextDoc::FixedLengthView)
     {
+    /*
         if (m_fixedlength_set.isNull())
             return;
         
@@ -1102,6 +1108,7 @@ void TextDoc::updateStatusBar()
         item = m_frame->getStatusBar()->getItem(wxT("textdoc_field_count"));
         if (item.isOk())
             item->setValue(field_count_str);
+        */
     }
 
     // refresh the statusbar
@@ -1232,7 +1239,7 @@ void TextDoc::onOptionsMenu(wxCommandEvent& evt)
 }
 
 void TextDoc::onTextViewColumnAdded(TextViewColumn col)
-{
+{/*
     // if we're loading a text definition, we don't want to process
     // the signals that the TextView is firing to us
     if (m_loading_definition)
@@ -1240,7 +1247,8 @@ void TextDoc::onTextViewColumnAdded(TextViewColumn col)
 
     // get the index of the column from the offset
     size_t idx = m_textview->getColumnIdxFromOffset(col.offset);
-     
+
+
     // insert the column into the fixed-length text set
     tango::IFixedLengthDefinitionPtr fset = m_fixedlength_set;
     if (fset.isOk())
@@ -1304,10 +1312,12 @@ void TextDoc::onTextViewColumnAdded(TextViewColumn col)
     updateColumnList();
     updateStatusBar();
     m_dirty = true;
+    */
 }
 
 void TextDoc::onTextViewColumnDeleted(TextViewColumn col)
 {
+/*
     // if we're loading a text definition, we don't want to process
     // the signals that the TextView is firing to us
     if (m_loading_definition)
@@ -1369,11 +1379,13 @@ void TextDoc::onTextViewColumnDeleted(TextViewColumn col)
     updateColumnList();
     updateStatusBar();
     m_dirty = true;
+*/
 }
 
 void TextDoc::onTextViewColumnModified(TextViewColumn col,
                                        TextViewColumn new_settings)
 {
+/*
     // if we're loading a text definition, we don't want to process
     // the signals that the TextView is firing to us
     if (m_loading_definition)
@@ -1463,6 +1475,7 @@ void TextDoc::onTextViewColumnModified(TextViewColumn col,
     updateColumnList();
     updateStatusBar();
     m_dirty = true;
+*/
 }
 
 void TextDoc::onTextViewCursorPositionChanged(int new_cursor_offset,
@@ -1497,6 +1510,7 @@ void TextDoc::onSize(wxSizeEvent& evt)
 
 void TextDoc::onSave(wxCommandEvent& evt)
 {
+/*
     if (m_view == TextDoc::FixedLengthView)
     {
         tango::IFixedLengthDefinitionPtr fset = m_fixedlength_set;
@@ -1504,9 +1518,11 @@ void TextDoc::onSave(wxCommandEvent& evt)
         {
             fset->saveConfiguration();
         }
+
     }
      else if (m_view == TextDoc::TextDelimitedView)
     {
+
         tango::IDelimitedTextSetPtr tset = m_textdelimited_set;
         if (tset)
         {
@@ -1524,6 +1540,7 @@ void TextDoc::onSave(wxCommandEvent& evt)
     }
     
     m_dirty = false;
+*/
 }
 
 void TextDoc::onToggleView(wxCommandEvent& evt)
@@ -1614,6 +1631,7 @@ void TextDoc::onEncodingChanged(wxCommandEvent& evt)
 
 void TextDoc::onFixedLengthSkipCharTextEnter(wxCommandEvent& evt)
 {
+/*
     if (!m_skipchars_spinctrl)
         return;
 
@@ -1648,10 +1666,12 @@ void TextDoc::onFixedLengthSkipCharTextEnter(wxCommandEvent& evt)
     }
     
     m_dirty = true;
+    */
 }
 
 void TextDoc::onFixedLengthRowWidthTextEnter(wxCommandEvent& evt)
 {
+/*
     if (!m_rowwidth_spinctrl)
         return;
 
@@ -1688,10 +1708,12 @@ void TextDoc::onFixedLengthRowWidthTextEnter(wxCommandEvent& evt)
     updateColumnList();
     updateStatusBar();
     m_dirty = true;
+    */
 }
 
 void TextDoc::onFixedLengthSkipCharSpun(wxSpinEvent& evt)
 {
+/*
     if (!m_skipchars_spinctrl)
         return;
         
@@ -1712,10 +1734,12 @@ void TextDoc::onFixedLengthSkipCharSpun(wxSpinEvent& evt)
     }
 
     m_dirty = true;
+    */
 }
 
 void TextDoc::onFixedLengthRowWidthSpun(wxSpinEvent& evt)
 {
+/*
     if (!m_rowwidth_spinctrl)
         return;
         
@@ -1738,10 +1762,12 @@ void TextDoc::onFixedLengthRowWidthSpun(wxSpinEvent& evt)
     updateColumnList();
     updateStatusBar();
     m_dirty = true;
+*/
 }
 
 void TextDoc::onFixedLengthLineDelimitedChecked(wxCommandEvent& evt)
 {
+/*
     bool val = evt.IsChecked();
     if (val)
         m_textview->setFileType(TextViewModel::lineDelimited);
@@ -1765,10 +1791,12 @@ void TextDoc::onFixedLengthLineDelimitedChecked(wxCommandEvent& evt)
     updateColumnList();
     updateStatusBar();
     m_dirty = true;
+*/
 }
 
 void TextDoc::onTextDelimitedFieldDelimiterTextEnter(wxCommandEvent& evt)
 {
+/*
     wxString s = evt.GetString();
     
     if (s.IsNumber())
@@ -1814,10 +1842,12 @@ void TextDoc::onTextDelimitedFieldDelimiterTextEnter(wxCommandEvent& evt)
     updateColumnList();
     updateStatusBar();
     m_dirty = true;
+*/
 }
 
 void TextDoc::onTextDelimitedTextQualifierTextEnter(wxCommandEvent& evt)
 {
+/*
     wxString s = evt.GetString();
     
     // we didn't change the text qualifier, so we're done
@@ -1856,10 +1886,12 @@ void TextDoc::onTextDelimitedTextQualifierTextEnter(wxCommandEvent& evt)
     updateColumnList();
     updateStatusBar();
     m_dirty = true;
+*/
 }
 
 void TextDoc::onTextDelimitedTextQualifierTextChanged(wxCommandEvent& evt)
 {
+/*
     wxString s = evt.GetString();
     
     // don't chop off the text if we selected one of the combobox items
@@ -1879,10 +1911,12 @@ void TextDoc::onTextDelimitedTextQualifierTextChanged(wxCommandEvent& evt)
     }
 
     m_dirty = true;
+*/
 }
 
 void TextDoc::onTextDelimitedFieldDelimiterCombo(wxCommandEvent& evt)
 {
+/*
     int sel = evt.GetSelection();
     
     // if "Other..." was selected, make sure the combobox text is empty
@@ -1933,10 +1967,12 @@ void TextDoc::onTextDelimitedFieldDelimiterCombo(wxCommandEvent& evt)
     updateColumnList();
     updateStatusBar();
     m_dirty = true;
+*/
 }
 
 void TextDoc::onTextDelimitedTextQualifierCombo(wxCommandEvent& evt)
 {
+/*
     int sel = evt.GetSelection();
 
     // if "Other..." was selected, make sure the combobox text is empty
@@ -1982,10 +2018,12 @@ void TextDoc::onTextDelimitedTextQualifierCombo(wxCommandEvent& evt)
     updateColumnList();
     updateStatusBar();
     m_dirty = true;
+*/
 }
 
 void TextDoc::onTextDelimitedFirstRowFieldNamesChecked(wxCommandEvent& evt)
 {
+/*
     std::vector< std::pair<wxString, wxString> > name_changes;
     std::pair<wxString, wxString> name_pair;
     
@@ -2024,6 +2062,7 @@ void TextDoc::onTextDelimitedFirstRowFieldNamesChecked(wxCommandEvent& evt)
     updateColumnList();
     updateStatusBar();
     m_dirty = true;
+*/
 }
 
 void TextDoc::onTextDelimitedCaptionBeginEdit(kcl::GridEvent& evt)
@@ -2033,6 +2072,7 @@ void TextDoc::onTextDelimitedCaptionBeginEdit(kcl::GridEvent& evt)
 
 void TextDoc::onTextDelimitedCaptionEndEdit(kcl::GridEvent& evt)
 {
+/*
     int col = evt.GetColumn();
     wxString new_name = evt.GetString();
     new_name.Trim(false);
@@ -2128,10 +2168,12 @@ void TextDoc::onTextDelimitedCaptionEndEdit(kcl::GridEvent& evt)
     updateColumnList();
     updateStatusBar();
     m_dirty = true;
+*/
 }
 
 bool TextDoc::isDestinationSameAsSourceStructure()
 {
+/*
     // this function determines if the user has edited
     // anything in the TransformationDoc or not
 
@@ -2177,12 +2219,13 @@ bool TextDoc::isDestinationSameAsSourceStructure()
         if (src_colinfo->getScale() != dest_colinfo->getScale())
             return false;
     }
-    
+*/
     return true;
 }
 
 void TextDoc::resetTransformationDocAndTableDoc()
 {
+/*
     // this function re-initializes both the TransformationDoc and the
     // TableDoc if a "big" change is made to the set (e.g. changing a
     // field delimiter, etc.)
@@ -2217,10 +2260,12 @@ void TextDoc::resetTransformationDocAndTableDoc()
         // the TableDoc to "re-initialize" with a default view
         tabledoc->open(m_path);
     }
+*/
 }
 
 void TextDoc::doBulkFieldRename(std::vector< std::pair<wxString, wxString> > to_rename)
 {
+/*
     // this function updates any columns in the TransformationDoc or TableDoc
     // which are associated with the source column that we're modifying
 
@@ -2255,12 +2300,13 @@ void TextDoc::doBulkFieldRename(std::vector< std::pair<wxString, wxString> > to_
             tabledoc->refreshActiveView();
         }
     }
+*/
 }
 
 
 bool TextDoc::saveLayoutTemplate(const wxString& path)
 {
-
+/*
     if (m_view == FixedLengthView)
     {
     }
@@ -2302,7 +2348,7 @@ bool TextDoc::saveLayoutTemplate(const wxString& path)
 
         return JsonConfig::saveToDb(root, g_app->getDatabase(), towstr(path), L"application/vnd.kx.text_format");
     }
-    
+    */
     return false;
 }
 

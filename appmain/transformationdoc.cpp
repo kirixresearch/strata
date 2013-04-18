@@ -140,8 +140,9 @@ static ExpressionLookupInfo expr_lookup_arr[] =
     { boolfmtNot00     , L"((VAL(TRIM(%s))!=0))"                                                                                                                               , NULL },
     { boolfmtEmpty     , L"((VAL(TRIM(%s))=1 OR TRIM(%s)=\"T\" OR TRIM(%s)=\"t\" OR UPPER(TRIM(%s))=\"TRUE\" OR UPPER(TRIM(%s))=\"YES\" OR TRIM(%s)=\"Y\" OR TRIM(%s)=\"y\"))" , NULL },
 };
-    
-// -- utility functions --
+
+
+// utility functions
 
 static const int format2comboIdx(int tango_type, int format_idx)
 {
@@ -201,6 +202,7 @@ static const std::wstring expr2regex(const std::wstring& expr)
 {
     // even though it is a little slower to convert to wxString and back,
     // there are far more string translation functions to help us
+
     wxString e = expr;
 
     e.Replace("(", "\\(", true);
@@ -245,6 +247,8 @@ tango::IStructurePtr getTextSourceStructure(IDocumentSitePtr doc_site)
 {
     tango::IStructurePtr source_struct;
     
+    /*
+
     // get the source structure so we can check the expression return type
     ITextDocPtr textdoc = lookupOtherDocument(doc_site, "appmain.TextDoc");
     if (textdoc.isOk())
@@ -258,6 +262,8 @@ tango::IStructurePtr getTextSourceStructure(IDocumentSitePtr doc_site)
             source_struct = tset->getSourceStructure();
     }
     
+    */
+
     return source_struct;
 }
 
@@ -566,8 +572,9 @@ void TransformationDoc::onSiteActivated()
         updateStatusBar();
 }
 
-void TransformationDoc::initFromSet(tango::ISetPtr set)
+void TransformationDoc::initFromSet(const wxString& path)
 {
+/*
     tango::IStructurePtr source_structure;
     tango::IStructurePtr structure;
     tango::IColumnInfoPtr colinfo;
@@ -619,6 +626,7 @@ void TransformationDoc::initFromSet(tango::ISetPtr set)
 
     // update the status bar
     updateStatusBar();
+*/
 }
 
 void TransformationDoc::close()
@@ -1540,10 +1548,13 @@ void TransformationDoc::onFrameEvent(FrameworkEvent& evt)
                     // revert the grid to the original structure
                     if (result == wxNO)
                     {
+                        /*
+                        TODO: implement
                         initFromSet(m_init_set);
                         updateNumberColumn();
                         checkOverlayText();
-                        
+                        */
+
                         // we'll refresh the grid below, after we've switched
                         // views, so we don't see any flicker
                     }

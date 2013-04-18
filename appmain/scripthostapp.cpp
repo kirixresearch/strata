@@ -2936,6 +2936,9 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
                 set_path = filename;
             }
             
+            /*
+            // TODO: implement
+
             tango::IFixedLengthDefinitionPtr set;
             set = g_app->getDatabase()->openSetEx(set_path, tango::formatFixedLengthText);
             if (!set)
@@ -3018,6 +3021,10 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
             
             set->modifyDestinationStructure(s, NULL);
             set->saveConfiguration();
+
+            */
+
+
             retval->setBoolean(true);
         }
     }
@@ -3088,7 +3095,9 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
             set_path = filename;
         }
         
-        
+        /*
+        TODO: implement
+
         tango::IDelimitedTextSetPtr set;
         set = g_app->getDatabase()->openSetEx(set_path, tango::formatDelimitedText);
         if (set.isNull())
@@ -3168,7 +3177,8 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
         
         set->modifyDestinationStructure(s, NULL);
         set->saveConfiguration();
-        
+        */
+
         retval->setBoolean(true);
         
     }
