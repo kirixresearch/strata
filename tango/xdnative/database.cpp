@@ -3321,11 +3321,6 @@ tango::ISetPtr Database::openSet(const std::wstring& _path)
     return openSetById(set_id);
 }
 
-tango::ISetPtr Database::openSetEx(const std::wstring& path, int format)
-{
-    return openSet(path);
-}
-
 
 tango::IIteratorPtr Database::createIterator(const std::wstring& path,
                                              const std::wstring& columns,

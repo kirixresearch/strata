@@ -2166,14 +2166,6 @@ tango::IRowInserterPtr OdbcDatabase::bulkInsert(const std::wstring& path)
 
 tango::IStructurePtr OdbcDatabase::describeTable(const std::wstring& path)
 {
-/*
-    tango::ISetPtr set = openSet(path);
-    if (set.isNull())
-        return xcm::null;
-
-    return set->getStructure();
-*/
-
     // TODO: implement
     return xcm::null;
 }

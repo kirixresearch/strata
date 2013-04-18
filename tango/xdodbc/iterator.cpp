@@ -1742,14 +1742,6 @@ tango::ISetPtr OdbcIterator::getChildSet(tango::IRelationPtr relation)
 tango::IIteratorPtr OdbcIterator::getChildIterator(tango::IRelationPtr relation)
 {
     return xcm::null;
-/*
-    tango::ISetPtr set = getChildSet(relation);
-
-    if (set.isNull())
-        return xcm::null;
-
-    return set->createIterator(L"", L"", NULL);
-*/
 }
 
 

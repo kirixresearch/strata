@@ -678,7 +678,6 @@ public:
     virtual bool createStream(const std::wstring& path, const std::wstring& mime_type) = 0;
     virtual bool createTable(const std::wstring& path, IStructurePtr struct_config, FormatInfo* format_info) = 0;
     
-    virtual ISetPtr openSetEx(const std::wstring& path, int format) { return xcm::null; }
     virtual IStreamPtr openStream(const std::wstring& path) = 0;
     virtual bool renameFile(const std::wstring& path, const std::wstring& new_name) = 0;
     virtual bool moveFile(const std::wstring& path, const std::wstring& new_folder) = 0;

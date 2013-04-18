@@ -71,8 +71,7 @@ public:
 
     tango::IStructurePtr createStructure();
     bool createTable(const std::wstring& path, tango::IStructurePtr struct_config, tango::FormatInfo* format_info);
-    tango::ISetPtr createDynamicSet(tango::ISetPtr base_set);
-    
+ 
     tango::IStreamPtr openStream(const std::wstring& path);
 
     tango::IIteratorPtr createIterator(const std::wstring& path,

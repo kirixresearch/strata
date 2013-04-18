@@ -606,10 +606,8 @@ tango::IIteratorPtr SqlServerDatabase::createIterator(const std::wstring& path,
                                                       const std::wstring& sort,
                                                       tango::IJob* job)
 {
-    tango::ISetPtr set = openSet(path);
-    if (set.isNull())
-        return xcm::null;
-    return set->createIterator(columns, sort, job);
+    // TODO: implement
+    return xcm::null;
 }
 
 
@@ -682,11 +680,8 @@ tango::IRowInserterPtr SqlServerDatabase::bulkInsert(const std::wstring& path)
 
 tango::IStructurePtr SqlServerDatabase::describeTable(const std::wstring& path)
 {
-    tango::ISetPtr set = openSet(path);
-    if (set.isNull())
-        return xcm::null;
-
-    return set->getStructure();
+    // TODO: implement
+    return xcm::null;
 }
 
 bool SqlServerDatabase::modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job)

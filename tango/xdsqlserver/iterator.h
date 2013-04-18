@@ -121,7 +121,6 @@ public:
 private:
 
     tango::IDatabasePtr m_database;
-    tango::ISetPtr m_set;
 
     TDSSOCKET* m_tds;
     TDSCONNECTION* m_connect_info;

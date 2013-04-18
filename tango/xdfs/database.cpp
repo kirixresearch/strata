@@ -1367,11 +1367,6 @@ tango::IStreamPtr FsDatabase::openStream(const std::wstring& path)
 }
 
 
-tango::ISetPtr FsDatabase::openSet(const std::wstring& path)
-{
-    return openSetEx(path, tango::formatNative);
-}
-
 static tango::ISetPtr openXbaseSet(tango::IDatabasePtr db,
                                    const std::wstring& path)
 {
@@ -1429,6 +1424,7 @@ static tango::ISetPtr openDelimitedTextSet(tango::IDatabasePtr db,
     return retval;
 }
 
+/*
 tango::ISetPtr FsDatabase::openSetEx(const std::wstring& path, int format)
 {
     // check for ptr sets
@@ -1501,7 +1497,7 @@ tango::ISetPtr FsDatabase::openSetEx(const std::wstring& path, int format)
 
     return set;
 }
-
+*/
 
 tango::IIteratorPtr FsDatabase::createIterator(const std::wstring& path,
                                                const std::wstring& columns,
@@ -1751,10 +1747,9 @@ bool FsDatabase::createTable(const std::wstring& _path,
 
         if (ext != L"icsv")
         {
-            tango::ISetPtr set = openSetEx(path, tango::formatDelimitedText);
-            if (set.isNull())
-                return false;
-        
+        /*
+            // TODO: implement
+
             DelimitedTextSet* tset = static_cast<DelimitedTextSet*>(set.p);
             tset->setCreateStructure(struct_config);
 
@@ -1780,6 +1775,7 @@ bool FsDatabase::createTable(const std::wstring& _path,
             tset->saveConfiguration();
 
             set.clear();
+            */
         }
 
         return xf_get_file_exist(path);
@@ -1790,14 +1786,13 @@ bool FsDatabase::createTable(const std::wstring& _path,
         // create the fixed length file
         xf_file_t file = xf_open(path, xfCreate, xfReadWrite, xfShareNone);
         xf_close(file);
-        
-        tango::ISetPtr set = openSetEx(path, tango::formatFixedLengthText);
-        if (set.isNull())
-            return false;
-        
+
+        /*
+        // TODO: implement
         FixedLengthTextSet* tset = static_cast<FixedLengthTextSet*>(set.p);
         tset->setCreateStructure(struct_config);
         tset->saveConfiguration();
+        */
 
         return xf_get_file_exist(path);
     }

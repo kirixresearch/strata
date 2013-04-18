@@ -164,8 +164,6 @@ public:
     std::wstring getSetPathFromId(const std::wstring& set_id);
     tango::IStreamPtr openStream(const std::wstring& path);
     tango::ISetPtr openSet(const std::wstring& path);
-    tango::ISetPtr openSetEx(const std::wstring& path,
-                             int format);
 
     bool deleteSet(const std::wstring& ofs_path);
     bool deleteStream(const std::wstring& ofs_path);
