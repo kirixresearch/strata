@@ -66,7 +66,8 @@ bool AlterJob::isInputValid()
 
     // verify the configuration against the schema
     kl::JsonNodeValidator json_validator;
-    if (!json_validator.isValid(m_config, getJobSchema()))
+    kl::JsonNode schema = getJobSchema();
+    if (!json_validator.isValid(m_config, schema))
         return false;
 
     return true;
