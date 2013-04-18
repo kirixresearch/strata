@@ -49,7 +49,7 @@ STATIC_LINKFLAGS = -static
 # optimizations
 #
 DEBUG_FLAGS = -ggdb -D_DEBUG
-OPTIMIZATION_FLAGS = -O2 -march=i586 -fomit-frame-pointer
+OPTIMIZATION_FLAGS = -O2 -fomit-frame-pointer
 
 
 # large file support
