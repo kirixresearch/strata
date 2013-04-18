@@ -431,9 +431,8 @@ public:
     virtual const std::wstring& getTag() = 0;
     virtual std::wstring getLeftExpression() = 0;
     virtual std::wstring getRightExpression() = 0;
-    virtual std::wstring getLeftSet() = 0;
-    virtual std::wstring getRightSet() = 0;
-    virtual ISetPtr getRightSetPtr() = 0;
+    virtual std::wstring getLeftTable() = 0;
+    virtual std::wstring getRightTable() = 0;
 };
 
 

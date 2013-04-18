@@ -3424,7 +3424,7 @@ public:
         m_left_setid = L"";
     }
     
-    std::wstring getLeftSet()
+    std::wstring getLeftTable()
     {
         if (m_left_path.length() > 0)
             return m_left_path;
@@ -3472,7 +3472,7 @@ public:
         return m_right_setid;
     }
 
-    std::wstring getRightSet()
+    std::wstring getRightTable()
     {
         if (m_right_path.length() > 0)
             return m_right_path;
@@ -3759,7 +3759,7 @@ bool Database::deleteRelation(const std::wstring& relation_id)
         return false;
 
     
-    std::wstring left_set_path = rel->getLeftSet();
+    std::wstring left_set_path = rel->getLeftTable();
     tango::ISetPtr left_set = openSet(left_set_path);
     if (left_set)
     {

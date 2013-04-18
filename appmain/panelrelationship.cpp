@@ -640,13 +640,12 @@ void RelationshipPanel::loadRelationships()
 
             bool valid = true;
 
-            tango::ISetPtr right_set = rel->getRightSetPtr();
-            if (right_set)
-            {
-                tango::IIndexInfoEnumPtr right_set_indexes = db->getIndexEnum(right_set->getObjectPath());
+            std::wstring right_set_path = rel->getRightTable();
 
-                tango::IIndexInfoPtr idx;
-                idx = lookupIndex(right_set_indexes, rel->getRightExpression(), false);
+            if (right_set_path.length() > 0)
+            {
+                tango::IIndexInfoEnumPtr right_set_indexes = db->getIndexEnum(right_set_path);
+                tango::IIndexInfoPtr idx = lookupIndex(right_set_indexes, rel->getRightExpression(), false);
 
                 if (idx.isNull())
                 {
@@ -660,9 +659,9 @@ void RelationshipPanel::loadRelationships()
             {
                 RelationLine* line;
                 
-                line = m_diagram->addLine(rel->getLeftSet(),
+                line = m_diagram->addLine(rel->getLeftTable(),
                                           left_parts[j],
-                                          rel->getRightSet(),
+                                          rel->getRightTable(),
                                           right_parts[j]);
                 if (line)
                 {

@@ -3006,7 +3006,7 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
         if (0 != rel_tag.CmpNoCase(rel->getTag()))
             continue;
 
-        right_structure = db->describeTable(rel->getRightSet());
+        right_structure = db->describeTable(rel->getRightTable());
         if (right_structure.isNull())
             continue;
 
@@ -4403,7 +4403,7 @@ void TableDoc::updateChildWindows()
                 if (table_doc)
                 {
                     std::wstring path = towstr(table_doc->getPath());
-                    if (isSamePath(path, rel->getRightSet()))
+                    if (isSamePath(path, rel->getRightTable()))
                     {
                         found = true;
                         site->setName(site_name);
@@ -5590,7 +5590,7 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
         if (rel.isNull())
             continue;
 
-        std::wstring right_path = rel->getRightSet();
+        std::wstring right_path = rel->getRightTable();
 
         tango::IStructurePtr right_structure = db->describeTable(right_path);
         if (right_structure.isNull())

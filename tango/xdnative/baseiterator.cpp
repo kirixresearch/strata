@@ -439,7 +439,7 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
         return false;
 
     // get right set
-    tango::ISetPtr right_set = rel->getRightSetPtr();
+    tango::ISetPtr right_set = m_dbi->openSet(rel->getRightTable());
     ISetInternalPtr right_set_int = right_set;
     if (!right_set_int)
         return false;
@@ -1058,7 +1058,9 @@ public:
               int agg_func,
               const std::wstring& expr)
     {
-        if (set.isNull())
+        IDatabaseInternalPtr dbi = database;
+        
+        if (dbi.isNull() || set.isNull())
             return false;
 
         m_agg_func = agg_func;
@@ -1122,7 +1124,7 @@ public:
         }
 
 
-        tango::ISetPtr right_set = rel->getRightSetPtr();
+        tango::ISetPtr right_set = dbi->openSet(rel->getRightTable());
         ISetInternalPtr right_set_internal = right_set;
         if (right_set_internal.isNull())
             return false;
