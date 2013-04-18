@@ -71,11 +71,6 @@ bool XbaseIterator::init(tango::IDatabasePtr db,
     return true;
 }
 
-tango::ISetPtr XbaseIterator::getSet()
-{
-    return m_set;
-}
-
 std::wstring XbaseIterator::getTable()
 {
     if (m_set)

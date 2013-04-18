@@ -214,11 +214,6 @@ bool PgsqlIterator::init(PGconn* conn, PGresult* res)
     return true;
 }
 
-tango::ISetPtr PgsqlIterator::getSet()
-{
-    return static_cast<tango::ISet*>(m_set);
-}
-
 std::wstring PgsqlIterator::getTable()
 {
     if (m_set)

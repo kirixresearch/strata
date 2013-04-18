@@ -279,12 +279,6 @@ bool SqlServerIterator::init(const std::wstring& query)
     return true;
 }
 
-
-tango::ISetPtr SqlServerIterator::getSet()
-{
-    return m_set;
-}
-
 std::wstring SqlServerIterator::getTable()
 {
     if (m_set)

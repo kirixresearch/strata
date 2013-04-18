@@ -620,22 +620,12 @@ void CommonIndexIterator::onSetRowDeleted(tango::rowid_t rowid)
 
 
 
-
-
-tango::ISetPtr CommonIndexIterator::getSet()
-{
-    return m_data_iter->getSet();
-}
-
 std::wstring CommonIndexIterator::getTable()
 {
     if (m_table.length() > 0)
         return m_table;
 
-    tango::ISetPtr set = getSet();
-    if (set.isNull())
-        return L"";
-    return set->getObjectPath();
+    return m_data_iter->getTable();
 }
 
 tango::rowpos_t CommonIndexIterator::getRowCount()

@@ -1016,11 +1016,6 @@ tango::IDatabasePtr BaseIterator::getDatabase()
     return m_database;
 }
 
-tango::ISetPtr BaseIterator::getSet()
-{
-    return m_set;
-}
-
 std::wstring BaseIterator::getTable()
 {
     if (m_set.isNull())

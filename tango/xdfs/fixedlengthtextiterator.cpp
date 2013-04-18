@@ -732,11 +732,6 @@ void FixedLengthTextIterator::updateDaiEntry(FixedLengthTextDataAccessInfo* dai)
 }
 
 
-tango::ISetPtr FixedLengthTextIterator::getSet()
-{
-    return static_cast<tango::ISet*>(m_set);
-}
-
 std::wstring FixedLengthTextIterator::getTable()
 {
     if (m_set)

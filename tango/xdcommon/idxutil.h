@@ -96,7 +96,6 @@ public:
     void onSetRelationshipsUpdated() { }
     void onSetDomainUpdated() { }
 
-    tango::ISetPtr getSet();
     std::wstring getTable();
     tango::rowpos_t getRowCount();
 

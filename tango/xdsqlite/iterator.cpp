@@ -166,11 +166,6 @@ bool SlIterator::init(const std::wstring& _query)
     return true;
 }
 
-tango::ISetPtr SlIterator::getSet()
-{
-    return m_set;
-}
-
 std::wstring SlIterator::getTable()
 {
     if (m_set)

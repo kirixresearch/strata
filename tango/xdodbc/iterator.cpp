@@ -412,10 +412,6 @@ bool OdbcIterator::init(const std::wstring& query)
     return true;
 }
 
-tango::ISetPtr OdbcIterator::getSet()
-{
-    return static_cast<tango::ISet*>(m_set);
-}
 
 std::wstring OdbcIterator::getTable()
 {

@@ -413,11 +413,6 @@ bool OracleIterator::init(const std::wstring& query)
 }
 
 
-tango::ISetPtr OracleIterator::getSet()
-{
-    return m_set;
-}
-
 std::wstring OracleIterator::getTable()
 {
     if (m_set)

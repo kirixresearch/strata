@@ -107,10 +107,6 @@ void DelimitedTextIterator::setUseSourceIterator(bool use_source_iterator)
     m_use_source_iterator = use_source_iterator;
 }
 
-tango::ISetPtr DelimitedTextIterator::getSet()
-{
-    return static_cast<tango::ISet*>(m_set);
-}
 
 std::wstring DelimitedTextIterator::getTable()
 {

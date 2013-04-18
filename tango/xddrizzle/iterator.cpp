@@ -171,12 +171,6 @@ bool DrizzleIterator::init(const std::wstring& query)
     return true;
 }
 
-
-tango::ISetPtr DrizzleIterator::getSet()
-{
-    return m_set;
-}
-
 tango::rowpos_t DrizzleIterator::getRowCount()
 {
     return 0;

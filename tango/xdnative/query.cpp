@@ -192,6 +192,9 @@ bool Database::execute(const std::wstring& command,
     if (primary_table_name[primary_table_name.length()-1] == '/')
         primary_table_name.erase(primary_table_name.length()-1, 1);
 
+/*
+    TODO: implement
+
     // if it's a query, rename the set's path to
     // correspond to it's mount path
     
@@ -204,6 +207,7 @@ bool Database::execute(const std::wstring& command,
             set->setObjectPath(primary_table_name);
         }
     }
+*/
         
     return true;
 }

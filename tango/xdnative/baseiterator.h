@@ -133,7 +133,6 @@ public:
 
     // tango::IIterator
     tango::IDatabasePtr getDatabase();
-    tango::ISetPtr getSet();
     std::wstring getTable();
     tango::rowpos_t getRowCount();
     void setSet(tango::ISetPtr set);

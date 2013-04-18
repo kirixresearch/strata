@@ -1490,11 +1490,14 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
     {
         source_iter->goFirst();
         
+        /*
+        TODO: reimplement
         // determine if the copy job's progress is indeterminate or not
         tango::IFixedLengthDefinitionPtr fset = source_iter->getSet();
         tango::IDelimitedTextSetPtr dset = source_iter->getSet();
         if ((fset.isOk() && !fset->isLineDelimited()) || dset.isOk())
             is_indeterminate = true;
+        */
     }
      else
     {

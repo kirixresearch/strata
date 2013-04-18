@@ -71,11 +71,6 @@ bool ClientIterator::init(const std::wstring& handle, const std::wstring& url_qu
     return refreshDataAccessInfo();
 }
 
-tango::ISetPtr ClientIterator::getSet()
-{
-    return m_set;
-}
-
 std::wstring ClientIterator::getTable()
 {
     if (m_set)
