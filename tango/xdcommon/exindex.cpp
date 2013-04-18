@@ -2443,7 +2443,7 @@ void doDebugOutput(const char* a)
 #ifdef WIN32
     OutputDebugStringA(a);
 #else
-    fprintf(stderr, a);
+    fprintf(stderr, "%s", a);
 #endif
 }
 
