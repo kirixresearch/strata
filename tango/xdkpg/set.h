@@ -36,9 +36,6 @@ public:
 
     bool init();
 
-    void setObjectPath(const std::wstring& path);
-    std::wstring getObjectPath();
-
     std::wstring getSetId();
 
     tango::IStructurePtr getStructure();

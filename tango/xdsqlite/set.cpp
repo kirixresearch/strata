@@ -43,21 +43,6 @@ bool SlSet::init()
 }
 
 
-
-void SlSet::setObjectPath(const std::wstring& path)
-{
-    m_path = path;
-}
-
-std::wstring SlSet::getObjectPath()
-{
-    if (m_path.empty())
-        return m_tablename;
-        
-    return m_path;
-}
-
-
 std::wstring SlSet::getSetId()
 {
     if (m_set_id.length() == 0)

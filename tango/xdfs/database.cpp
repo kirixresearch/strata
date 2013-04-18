@@ -1499,9 +1499,6 @@ tango::ISetPtr FsDatabase::openSetEx(const std::wstring& path, int format)
             return xcm::null;
     }
 
-    if (set.isOk())
-        set->setObjectPath(path);
-
     return set;
 }
 

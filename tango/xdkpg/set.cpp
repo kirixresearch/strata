@@ -42,19 +42,6 @@ bool KpgSet::init()
 
 
 
-void KpgSet::setObjectPath(const std::wstring& path)
-{
-    m_path = path;
-}
-
-std::wstring KpgSet::getObjectPath()
-{
-    if (m_path.empty())
-        return m_tablename;
-        
-    return m_path;
-}
-
 std::wstring KpgSet::getSetId()
 {
     if (m_set_id.length() == 0)

@@ -32,13 +32,6 @@ public:
 
     ClientSet();
     virtual ~ClientSet();
-
-    void setObjectPath(const std::wstring& path) { m_path = path; }
-    std::wstring getObjectPath() { return m_path; }
-
-private:
-
-    std::wstring m_path;
 };
 
 

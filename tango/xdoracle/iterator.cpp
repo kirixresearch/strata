@@ -415,9 +415,8 @@ bool OracleIterator::init(const std::wstring& query)
 
 std::wstring OracleIterator::getTable()
 {
-    if (m_set)
-        return L"";
-    return m_set->getObjectPath();
+    // TODO: implement
+    return L"";
 }
 
 

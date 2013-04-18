@@ -51,20 +51,6 @@ bool DrizzleSet::init()
 
 
 
-void DrizzleSet::setObjectPath(const std::wstring& path)
-{
-    m_ofs_path = path;
-    return;
-}
-
-std::wstring DrizzleSet::getObjectPath()
-{
-    if (!m_ofs_path.empty())
-        return m_ofs_path;
-        
-    return m_tablename;
-}
-
 std::wstring DrizzleSet::getSetId()
 {
     IDrizzleDatabasePtr mydb = m_database;

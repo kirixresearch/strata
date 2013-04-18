@@ -79,7 +79,6 @@ private:
     OCIStmt* m_stmt;
     OCIError* m_err;
 
-    std::wstring m_path;
     std::wstring m_tablename;
     xcm::mutex m_object_mutex;
 };

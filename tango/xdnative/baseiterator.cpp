@@ -423,7 +423,7 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
     tango::IRelationPtr rel;
 
     // try to find the correct relation id
-    tango::IRelationEnumPtr rel_enum = m_database->getRelationEnum(m_set->getObjectPath());
+    tango::IRelationEnumPtr rel_enum = m_database->getRelationEnum(getTable());
     size_t i, rel_count = rel_enum->size();
     for (i = 0; i < rel_count; ++i)
     {
@@ -449,7 +449,7 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
         return false;
 
     // lookup the index on the right set
-    tango::IIndexInfoEnumPtr idx_enum = m_database->getIndexEnum(right_set->getObjectPath());
+    tango::IIndexInfoEnumPtr idx_enum = m_database->getIndexEnum(getTable());
     tango::IIndexInfoPtr idx = xdLookupIndex(idx_enum, rel->getRightExpression(), false);
     if (!idx)
         return false;
@@ -1018,9 +1018,9 @@ tango::IDatabasePtr BaseIterator::getDatabase()
 
 std::wstring BaseIterator::getTable()
 {
-    if (m_set.isNull())
+    if (m_set_internal.isNull())
         return L"";
-    return m_set->getObjectPath();
+    return m_set_internal->getObjectPath();
 }
 
 tango::rowpos_t BaseIterator::getRowCount()
@@ -1049,13 +1049,13 @@ public:
     }
 
     bool init(tango::IDatabasePtr database,
-              tango::ISetPtr set,
+              const std::wstring& path,
               int agg_func,
               const std::wstring& expr)
     {
         IDatabaseInternalPtr dbi = database;
         
-        if (dbi.isNull() || set.isNull())
+        if (dbi.isNull() || path.empty())
             return false;
 
         m_agg_func = agg_func;
@@ -1096,18 +1096,16 @@ public:
         tango::IRelationEnumPtr rel_enum;
         tango::IRelationPtr rel;
 
-        rel_enum = database->getRelationEnum(set->getObjectPath());
+        rel_enum = database->getRelationEnum(path);
         size_t i, rel_count = rel_enum->size();
         for (i = 0; i < rel_count; ++i)
         {
             rel = rel_enum->getItem(i);
-            if (!wcscasecmp(rel->getTag().c_str(), m_link_tag.c_str()))
-            {
+            if (kl::iequals(rel->getTag(), m_link_tag))
                 break;
-            }
         }
 
-        if (rel.isNull())
+        if (i >= rel_count)
             return false;
 
         if (agg_func == GroupFunc_Count)
@@ -1268,8 +1266,7 @@ AggregateResult* BaseIterator::getAggResultObject(int agg_func,
     for (it = m_aggregate_results.begin();
          it != m_aggregate_results.end(); ++it)
     {
-        if ((*it)->m_agg_func == agg_func &&
-            !wcscasecmp((*it)->m_expr.c_str(), expr.c_str()))
+        if ((*it)->m_agg_func == agg_func &&  kl::iequals((*it)->m_expr, expr))
         {
             (*it)->m_ref_count++;
             return (*it);
@@ -1279,7 +1276,7 @@ AggregateResult* BaseIterator::getAggResultObject(int agg_func,
     // no suitable aggregate result object was found, so initialize a new one
 
     AggregateResult* agg_res = new AggregateResult;
-    if (!agg_res->init(m_database, m_set, agg_func, expr))
+    if (!agg_res->init(m_database, getTable(), agg_func, expr))
     {
         delete agg_res;
         return NULL;
@@ -1334,7 +1331,7 @@ void BaseIterator::recalcAggResults()
 
     m_rel_mutex.lock();
     if (m_relenum.isNull())
-        m_relenum = m_database->getRelationEnum(m_set->getObjectPath());
+        m_relenum = m_database->getRelationEnum(getTable());
     tango::IRelationEnumPtr rel_enum = m_relenum;
     m_rel_mutex.unlock();
 

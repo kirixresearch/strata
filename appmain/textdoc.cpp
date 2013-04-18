@@ -2199,7 +2199,7 @@ void TextDoc::resetTransformationDocAndTableDoc()
         if (set.isNull())
             return;
 
-        tango::IFileInfoPtr finfo = g_app->getDatabase()->getFileInfo(set->getObjectPath());
+        tango::IFileInfoPtr finfo = g_app->getDatabase()->getFileInfo(towstr(m_path));
         if (finfo.isNull())
             return;
 

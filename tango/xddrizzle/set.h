@@ -35,11 +35,6 @@ public:
     
     bool init();
     
-    // tango::ISet interface
-    
-    void setObjectPath(const std::wstring& path);
-    std::wstring getObjectPath();
-
     std::wstring getSetId();
 
     tango::IStructurePtr getStructure();
@@ -56,7 +51,6 @@ private:
     drizzle_st* m_drizzle;
     
     std::wstring m_tablename;
-    std::wstring m_ofs_path;
     xcm::mutex m_object_mutex;
 };
 

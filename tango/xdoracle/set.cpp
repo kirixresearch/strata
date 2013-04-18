@@ -70,22 +70,6 @@ bool OracleSet::init()
 
 
 
-// -- tango::ISet interface implementation --
-
-
-void OracleSet::setObjectPath(const std::wstring& path)
-{
-    m_path = path;
-}
-
-std::wstring OracleSet::getObjectPath()
-{
-    if (m_path.empty())
-        return m_tablename;
-        
-    return m_path;
-}
-
 std::wstring OracleSet::getSetId()
 {
     IOracleDatabasePtr db = m_database;

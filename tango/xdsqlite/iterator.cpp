@@ -168,9 +168,8 @@ bool SlIterator::init(const std::wstring& _query)
 
 std::wstring SlIterator::getTable()
 {
-    if (m_set)
-        return L"";
-    return m_set->getObjectPath();
+    // TODO: implement
+    return L"";
 }
 
 tango::rowpos_t SlIterator::getRowCount()

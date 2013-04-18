@@ -78,21 +78,6 @@ bool OdbcSet::init()
 }
 
 
-
-void OdbcSet::setObjectPath(const std::wstring& path)
-{
-    m_path = path;
-}
-
-std::wstring OdbcSet::getObjectPath()
-{
-    if (m_path.empty())
-        return m_tablename;
-        
-    return m_path;
-}
-
-
 /*
 unsigned int OdbcSet::getSetFlags()
 {

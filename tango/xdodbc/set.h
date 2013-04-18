@@ -47,11 +47,6 @@ public:
 
     bool init();
 
-    // tango::ISet interface
-    
-    void setObjectPath(const std::wstring& path);
-    std::wstring getObjectPath();
-
     std::wstring getSetId();
     tango::IStructurePtr getStructure();
 

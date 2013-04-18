@@ -1497,7 +1497,7 @@ void TransformationDoc::onFrameEvent(FrameworkEvent& evt)
     {
         int id = (int)(evt.l_param);
         
-        // -- make sure we are in the active container --
+        // make sure we are in the active container
         IDocumentSitePtr active_site;
         active_site = g_app->getMainFrame()->getActiveChild();
         if (active_site.isNull() || m_doc_site.isNull())
@@ -1554,6 +1554,9 @@ void TransformationDoc::onFrameEvent(FrameworkEvent& evt)
                 // because we are creating a table)
                 if (!tabledoc_site)
                 {
+                /*
+                    // TODO: implement
+
                     // create a tabledoc and open it
                     ITableDocPtr doc = TableDocMgr::createTableDoc();
                     doc->open(m_init_set->getObjectPath());
@@ -1570,6 +1573,7 @@ void TransformationDoc::onFrameEvent(FrameworkEvent& evt)
                                                   m_doc_site->getContainerWindow(),
                                                   doc,
                                                   false);
+                */
                 }
             }
         }
@@ -1803,8 +1807,12 @@ bool TransformationDoc::doSave()
     ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
     if (tabledoc)
     {
+        /* TODO: implement
+
         // update the TableDoc's base set
         tabledoc->open(text_set->getObjectPath());
+        */
+
         
         ITableDocViewPtr tabledocview = tabledoc->getActiveView();
         if (tabledocview)

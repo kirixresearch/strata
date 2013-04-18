@@ -44,20 +44,6 @@ void tango2tdsdate(const tango::datetime_t& src, TDS_DATETIME* res)
     res->dtdays = julian_days;
 }
 
-
-
-
-// -- SqlServerSet class implementation --
-
-void SqlServerSet::setObjectPath(const std::wstring& path)
-{
-}
-
-std::wstring SqlServerSet::getObjectPath()
-{
-    return L"";
-}
-
 std::wstring SqlServerSet::getSetId()
 {
     return L"";

@@ -73,9 +73,8 @@ bool ClientIterator::init(const std::wstring& handle, const std::wstring& url_qu
 
 std::wstring ClientIterator::getTable()
 {
-    if (m_set)
-        return L"";
-    return m_set->getObjectPath();
+    // TODO: implement
+    return L"";
 }
 
 tango::rowpos_t ClientIterator::getRowCount()

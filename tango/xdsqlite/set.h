@@ -42,9 +42,6 @@ public:
 
     tango::rowpos_t getRowCount();
 
-    void setObjectPath(const std::wstring& path);
-    std::wstring getObjectPath();
-
 private:
 
     xcm::mutex m_object_mutex;
@@ -55,7 +52,6 @@ private:
     sqlite3* m_sqlite;
 
     std::wstring m_tablename;
-    std::wstring m_path;
     tango::tableord_t m_ordinal;
     int m_row_count;
     

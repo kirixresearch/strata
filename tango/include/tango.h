@@ -528,8 +528,7 @@ xcm_interface ISet : public xcm::IObject
 
 public:
 
-    virtual void setObjectPath(const std::wstring& path) = 0;
-    virtual std::wstring getObjectPath() = 0;
+
 };
 
 
