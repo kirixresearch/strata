@@ -31,5 +31,5 @@ clean:
 
 $(OBJECTS): %.o : %.cpp
 	@echo $<
-	@$(CPP) $(CFLAGS) $(INCLUDES) -c $<
+	$(CPP) $(CFLAGS) $(INCLUDES) -c $<
 

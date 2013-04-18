@@ -466,7 +466,7 @@ bool AuthImpl::loadAuthInfo()
     }
 
     char buf[255];
-    fgets(buf, 254, f);
+    char* tempp = fgets(buf, 254, f);
     str_code = buf;
     fclose(f);
 
@@ -1479,7 +1479,7 @@ int AuthImpl::loadSiteCodeSeed()
 
 
     char buf[255];
-    fgets(buf, 254, f);
+    char* tempp = fgets(buf, 254, f);
     int seed = atoi(buf);
     fclose(f);
 
