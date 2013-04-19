@@ -20,7 +20,7 @@
 class JobInfo;
 class SlDatabase : public tango::IDatabase
 {
-    friend class SlSet;
+    friend class SlRowInserter;
     friend class SlIterator;
 
     XCM_CLASS_NAME("xdsqlite.Database")

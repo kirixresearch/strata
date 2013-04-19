@@ -45,7 +45,7 @@ private:
 
 public:
 
-    SlIterator(SlDatabase* database, SlSet* set);
+    SlIterator(SlDatabase* database);
     ~SlIterator();
 
     bool init(const std::wstring& query);
@@ -95,7 +95,6 @@ private:
     std::vector<SlDataAccessInfo> m_columns;
 
     SlDatabase* m_database;
-    SlSet* m_set;
 
     tango::IStructurePtr m_set_structure;
     tango::tableord_t m_ordinal;

@@ -709,7 +709,7 @@ bool SlDatabase::execute(const std::wstring& command,
     static klregex::wregex select_regex(L"SELECT\\s");
     if (select_regex.search(command))
     {
-        SlIterator* iter = new SlIterator(this, NULL);
+        SlIterator* iter = new SlIterator(this);
         iter->m_sqlite = m_sqlite;
 
         iter->ref();

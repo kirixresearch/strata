@@ -13,53 +13,6 @@
 #define __XDSQLITE_SET_H
 
 
-class SlSet : public tango::ISet
-{
-
-friend class SlDatabase;
-friend class SlIterator;
-friend class SlRowInserter;
-
-    XCM_CLASS_NAME("xdsqlite.Set")
-    XCM_BEGIN_INTERFACE_MAP(SlSet)
-        XCM_INTERFACE_ENTRY(tango::ISet)
-    XCM_END_INTERFACE_MAP()
-
-public:
-
-    SlSet(SlDatabase* database);
-    ~SlSet();
-    
-    bool init();
-
-    std::wstring getSetId();
-
-    tango::IStructurePtr getStructure();
-
-    tango::IIteratorPtr createIterator(const std::wstring& columns,
-                                       const std::wstring& expr,
-                                       tango::IJob* job);
-
-    tango::rowpos_t getRowCount();
-
-private:
-
-    xcm::mutex m_object_mutex;
-    tango::IStructurePtr m_structure;
-
-    SlDatabase* m_database;
-    
-    sqlite3* m_sqlite;
-
-    std::wstring m_tablename;
-    tango::tableord_t m_ordinal;
-    int m_row_count;
-    
-    std::wstring m_set_id;
-};
-
-
-
 class SlRowInserterData
 {
 public:
@@ -83,7 +36,7 @@ class SlRowInserter : public tango::IRowInserter
 
 public:
 
-    SlRowInserter(SlSet* set);
+    SlRowInserter(SlDatabase* database, const std::wstring& table);
     ~SlRowInserter();
 
     tango::objhandle_t getHandle(const std::wstring& column_name);
@@ -104,12 +57,12 @@ public:
 
     bool flush();
 
-
 private:
 
-    SlSet* m_set;
+    SlDatabase* m_database;
     sqlite3_stmt* m_stmt;
     bool m_inserting;
+    std::wstring m_table;
 
     std::vector<SlRowInserterData> m_fields;
 };

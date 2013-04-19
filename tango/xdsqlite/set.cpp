@@ -25,104 +25,18 @@
 #include "../xdcommon/util.h"
 
 
-SlSet::SlSet(SlDatabase* database)
-{
-    m_database = database;
-    m_database->ref();
-}
-
-SlSet::~SlSet()
-{
-    m_database->unref();
-}
 
 
-bool SlSet::init()
-{
-    return true;
-}
+// SlRowInserter class implementation
 
-
-std::wstring SlSet::getSetId()
-{
-    if (m_set_id.length() == 0)
-    {
-        std::wstring id = L"xdsqlite:";
-        id += m_tablename;
-                
-        m_set_id = kl::md5str(id);
-    }
-    
-    return m_set_id;
-}
-
-
-
-
-tango::IStructurePtr SlSet::getStructure()
-{
-    if (m_structure.isOk())
-        return m_structure->clone();
-    
-    m_structure = m_database->getStructureFromPath(m_tablename);
-    if (!m_structure)
-        return xcm::null;
-               
-    return m_structure->clone();
-}
-
-tango::IIteratorPtr SlSet::createIterator(const std::wstring& columns,
-                                          const std::wstring& expr,
-                                          tango::IJob* job)
-{
-    // create an iterator based on our select statement
-    SlIterator* iter = new SlIterator(m_database, this);
-    iter->m_ordinal = m_ordinal;
-
-    std::wstring sql;
-    sql = L"SELECT ";
-    if (columns.empty())
-    {
-        sql += L"*";
-    }
-     else
-    {
-        sql += columns;
-    }
-    sql += L" FROM ";
-    sql += m_tablename;
-    if (expr.length() > 0)
-    {
-        sql += L" ORDER BY ";
-        sql += expr;
-    }
-
-    if (!iter->init(sql))
-    {
-        delete iter;
-        return xcm::null;
-    }
-
-
-    return static_cast<tango::IIterator*>(iter);
-}
-
-tango::rowpos_t SlSet::getRowCount()
-{
-    return m_row_count;
-}
-
-
-
-
-// -- SlRowInserter class implementation --
-
-SlRowInserter::SlRowInserter(SlSet* set)
+SlRowInserter::SlRowInserter(SlDatabase* db, const std::wstring& table)
 {
     m_inserting = false;
     m_stmt = NULL;
-    m_set = set;
-    m_set->ref();
+    m_table = table;
+
+    m_database = db;
+    m_database->ref();
 }
 
 SlRowInserter::~SlRowInserter()
@@ -133,14 +47,13 @@ SlRowInserter::~SlRowInserter()
         m_stmt = NULL;
     }
 
-
     std::vector<SlRowInserterData>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
         delete[] it->str_data;
     }
 
-    m_set->unref();
+    m_database->unref();
 }
 
 tango::objhandle_t SlRowInserter::getHandle(const std::wstring& column_name)
@@ -173,20 +86,19 @@ bool SlRowInserter::startInsert(const std::wstring& col_list)
 {
     std::vector<std::wstring> cols;
 
-    tango::IStructurePtr set_structure = m_set->getStructure();
+    tango::IStructurePtr structure = m_database->describeTable(m_table);
+    if (structure.isNull())
+        return false;
 
     int i, col_count;
 
     if (col_list.empty() || col_list == L"*")
     {
-        // -- inserting every field --
-        tango::IStructurePtr s = m_set->getStructure();
-        if (s.isNull())
-            return false;
-        col_count = s->getColumnCount();
+        //  inserting every field
+        col_count = structure->getColumnCount();
         for (i = 0; i < col_count; ++i)
         {
-            tango::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
+            tango::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
             cols.push_back(colinfo->getName());
         }
     }
@@ -202,7 +114,7 @@ bool SlRowInserter::startInsert(const std::wstring& col_list)
 
     for (i = 0; i < col_count; ++i)
     {
-        if (!set_structure->getColumnExist(cols[i]))
+        if (!structure->getColumnExist(cols[i]))
         {
             return false;
         }
@@ -212,7 +124,7 @@ bool SlRowInserter::startInsert(const std::wstring& col_list)
     // -- create the SQL insert statement --
     std::wstring sql;
     sql = L"INSERT INTO ";
-    sql += m_set->m_tablename;
+    sql += m_table;
     sql += L" (";
 
     for (i = 0; i < col_count; ++i)
@@ -237,8 +149,8 @@ bool SlRowInserter::startInsert(const std::wstring& col_list)
 
 
 
-    // -- begin a transaction --
-    sqlite3_exec(m_set->m_sqlite, "BEGIN TRANSACTION;", NULL, NULL, NULL);
+    // begin a transaction
+    sqlite3_exec(m_database->m_sqlite, "BEGIN TRANSACTION;", NULL, NULL, NULL);
 
 
 
@@ -248,7 +160,7 @@ bool SlRowInserter::startInsert(const std::wstring& col_list)
     ascsql = kl::tostring(sql);
 
 
-    if (SQLITE_OK != sqlite3_prepare(m_set->m_sqlite, 
+    if (SQLITE_OK != sqlite3_prepare(m_database->m_sqlite, 
                                      ascsql.c_str(),  // stmt
                                      ascsql.length(),
                                      &m_stmt,
@@ -262,7 +174,7 @@ bool SlRowInserter::startInsert(const std::wstring& col_list)
     {
         SlRowInserterData data;
 
-        data.colinfo = set_structure->getColumnInfo(cols[i]);
+        data.colinfo = structure->getColumnInfo(cols[i]);
         data.type = data.colinfo->getType();
         data.length = data.colinfo->getWidth();
         data.idx = i+1;
@@ -294,7 +206,7 @@ void SlRowInserter::finishInsert()
     }
 
     // commit this transaction
-    sqlite3_exec(m_set->m_sqlite, "COMMIT;", NULL, NULL, NULL);
+    sqlite3_exec(m_database->m_sqlite, "COMMIT;", NULL, NULL, NULL);
 
 }
 

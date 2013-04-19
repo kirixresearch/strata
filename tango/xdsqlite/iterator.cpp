@@ -54,7 +54,7 @@ const std::string empty_string = "";
 const std::wstring empty_wstring = L"";
 
 
-SlIterator::SlIterator(SlDatabase* database, SlSet* set)
+SlIterator::SlIterator(SlDatabase* database)
 {
     m_eof = false;
     m_stmt = NULL;
@@ -64,9 +64,6 @@ SlIterator::SlIterator(SlDatabase* database, SlSet* set)
     m_database = database;
     m_database->ref();
 
-    m_set = set;
-    if (m_set)
-        m_set->ref();
 }
 
 SlIterator::~SlIterator()
@@ -76,17 +73,12 @@ SlIterator::~SlIterator()
         sqlite3_finalize(m_stmt);
     }
 
-    if (m_set)
-        m_set->unref();
+
     m_database->unref();
 }
 
 bool SlIterator::init(const std::wstring& _query)
 {
-    //  open the database again
-    if (m_set)
-        m_set_structure = m_set->getStructure();
-
     // add rowid to the select statement
     const wchar_t* q = _query.c_str();
     while (iswspace(*q))
@@ -142,25 +134,6 @@ bool SlIterator::init(const std::wstring& _query)
         }
 
         m_columns.push_back(dai);
-    }
-
-
-    // if m_set is null, create a placeholder set
-    if (!m_set)
-    {
-        // create set and initialize variables
-        SlSet* set = new SlSet(m_database);
-        //set->m_filter_query = true;
-
-        if (!set->init())
-        {
-            delete set;
-            return false;
-        }
-
-        m_set = set;
-        m_set->ref();
-        m_set_structure = m_set->getStructure();
     }
 
     return true;
