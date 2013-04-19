@@ -90,8 +90,8 @@ void TableDoc::setSortOrder(const wxString& expr)
 
     // if the database can't handle createIterator() with a different
     // sort order on an existing set (e.g. must requery), do that here.
-    wxString db_driver = getDbDriver();
-    if (db_driver != wxT("xdnative") && db_driver != wxT("xdfs"))
+    std::wstring db_driver = getDbDriver();
+    if (db_driver != L"xdnative" && db_driver != L"xdfs")
     {
         // configure the job parameters
         kl::JsonNode params;

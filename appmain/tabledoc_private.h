@@ -152,7 +152,7 @@ public:
     void setIsChildSet(bool new_val);
     bool getIsChildSet();
 
-    wxString getDbDriver();
+    std::wstring getDbDriver();
 
 
     // exposed API

@@ -118,14 +118,14 @@ static wxString getDatabaseNameProjectLabel()
 }
 
 
-static wxString getDbDriver(tango::IDatabasePtr& db)
+static std::wstring getDbDriver(tango::IDatabasePtr& db)
 {
     if (db.isNull())
         return wxEmptyString;
     
     xcm::class_info* class_info = xcm::get_class_info(db.p);
-    wxString s = class_info->get_name();
-    return s.BeforeFirst('.');
+    std::wstring s = towstr(class_info->get_name());
+    return kl::beforeFirst(s, '.');
 }
 
 
@@ -3520,7 +3520,7 @@ void DbDoc::onDragDrop(IFsItemPtr target,
         tango::IDatabasePtr dest_db = getItemDatabase(target);
 
         std::wstring dest_name = src_name;
-        if (getDbDriver(dest_db) == wxT("xdfs"))
+        if (getDbDriver(dest_db) == L"xdfs")
         {
             // if we're saving the file to a filesystem mount and no extension
             // is specified, then automatically add a 'csv' or 'js' extension; this

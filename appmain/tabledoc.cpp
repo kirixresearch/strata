@@ -401,7 +401,8 @@ bool TableDoc::isExternalTable()
     
     if (m_external_table == -1)
     {
-        m_external_table = (getDbDriver() != wxT("xdnative") && getDbDriver() != wxT("xdclient")) ? 1 : 0;
+        std::wstring db_driver = getDbDriver();
+        m_external_table = (db_driver != L"xdnative" && getDbDriver() != L"xdclient") ? 1 : 0;
     }
     
     return (m_external_table == 1) ? true : false;
@@ -4748,8 +4749,10 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
         primary_key = info->getPrimaryKey();
     }
 
+    std::wstring db_driver = getDbDriver();
+
     // can't update -- table doesn't have a primary key or a rowid
-    if (primary_key.empty() && getDbDriver() != wxT("xdnative") && getDbDriver() != wxT("xdclient"))
+    if (primary_key.empty() && db_driver != L"xdnative" && db_driver != L"xdclient")
     {
         deferredAppMessageBox(_("The database table does not have a primary key specified, which is required for editing data values."),
                                    APPLICATION_NAME,
@@ -4760,7 +4763,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
     wxString col_name = model_colinfo->getName();
 
     tango::rowid_t rowid = tango_grid_model->getRowId(m_grid->getCursorRow());
-    if ((getDbDriver() == wxT("xdnative") || getDbDriver() == wxT("xdclient")) && rowid == 0)
+    if ((db_driver == L"xdnative" || db_driver == wxT("xdclient")) && rowid == 0)
         return;
 
 
@@ -4840,7 +4843,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
                     dt.setDateTime(dtt);
                     wxString str;
                     
-                    if (getDbDriver() == wxT("xdoracle"))
+                    if (getDbDriver() == L"xdoracle")
                     {
                         str = wxString::Format(wxT("TO_DATE('%04d-%02d-%02d','YYYY-MM-DD')"),
                                                dt.getYear(), dt.getMonth(), dt.getDay());
@@ -4945,7 +4948,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
             // fill out update_info for ICacheRowUpdate below
             update_info.bool_val = evt.GetBoolean();
 
-            if (getDbDriver() == wxT("xdnative"))
+            if (getDbDriver() == L"xdnative")
             {
                 str = wxString::Format(wxT("%s=%s"), quoted_col_name.c_str(),
                                                      evt.GetBoolean() ? wxT("true") : wxT("false"));
@@ -4986,7 +4989,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
                 update_info.date_val = tango::DateTime(y, m, d);
                 
                 
-                if (getDbDriver() == wxT("xdoracle"))
+                if (getDbDriver() == L"xdoracle")
                 {
                     str = wxString::Format(wxT("%s=TO_DATE('%04d-%02d-%02d','YYYY-MM-DD')"),
                                            quoted_col_name.c_str(),
@@ -5003,7 +5006,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
             {
                 update_info.date_val = tango::DateTime(y, m, d, hh, mm, ss);
                 
-                if (getDbDriver() == wxT("xdoracle"))
+                if (getDbDriver() == L"xdoracle")
                 {
                     str = wxString::Format(wxT("%s=TO_DATE('%04d-%02d-%02d %02d:%02d:%02d', 'YYYY-MM-DD HH24:MI:SS')"),
                                            quoted_col_name.c_str(),
@@ -5060,7 +5063,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
     // this next line forces our model to get recalculate
     // where it is.  This must be done because the key
     // value may have been edited and the iterator repositioned
-    if (getDbDriver() == wxT("xdnative"))
+    if (getDbDriver() == L"xdnative")
         model->reset();
 
     m_grid->refresh(kcl::Grid::refreshAll);
@@ -5973,17 +5976,21 @@ bool TableDoc::getIsChildSet()
     return m_is_childset;
 }
 
-wxString TableDoc::getDbDriver()
+std::wstring TableDoc::getDbDriver()
 {
-    return wxT("xdnative");
-    /*
-    if (m_set.isNull())
-        return wxT("");
-        
-    xcm::class_info* class_info = xcm::get_class_info(m_set.p);
-    wxString class_name = class_info->get_name();
-    return class_name.BeforeFirst('.');
-    */
+    xcm::IObject* p;
+
+    if (m_iter.isOk())
+        p = m_iter.p;
+         else
+        p = g_app->getDatabase().p;
+
+    if (!p)
+        return L"";
+
+    xcm::class_info* class_info = xcm::get_class_info(p);
+    std::wstring class_name = towstr(class_info->get_name());
+    return kl::beforeFirst(class_name, '.');
 }
 
 
