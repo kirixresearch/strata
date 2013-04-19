@@ -145,11 +145,6 @@ bool XdnativeDatabase::setBaseDirectory(const std::wstring& base_dir)
     return true;
 }
 
-std::wstring XdnativeDatabase::getBaseDirectory()
-{
-    return m_base_dir;
-}
-
 std::wstring XdnativeDatabase::getActiveUid()
 {
     return m_uid;

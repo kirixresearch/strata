@@ -69,8 +69,6 @@ public:
     // database configuration
 
     bool setBaseDirectory(const std::wstring& base_dir);
-    std::wstring getBaseDirectory();
-
 
     // IXdnativeDatabase
 
