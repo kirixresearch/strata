@@ -26,7 +26,6 @@
 #include "../xdcommon/util.h"
 #include "database.h"
 #include "iterator.h"
-#include "set.h"
 #include "inserter.h"
 #include "stream.h"
 #include <set>

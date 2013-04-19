@@ -12,7 +12,6 @@
 #include "libpq-fe.h"
 #include "tango.h"
 #include "database.h"
-#include "set.h"
 #include "iterator.h"
 #include "../xdcommon/xdcommon.h"
 #include "../xdcommonsql/xdcommonsql.h"
