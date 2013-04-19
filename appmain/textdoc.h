@@ -27,7 +27,6 @@ public:
     virtual bool open(const wxString& filename) = 0;
     virtual void close() = 0;
     virtual wxString getPath() = 0;
-    virtual tango::ISetPtr getTextSet() = 0;
     virtual tango::IStructurePtr getStructure() = 0;
     virtual void setSourceUrl(const wxString& source_url) = 0; // allows override of displayed url
 };
@@ -85,7 +84,6 @@ public:
 
     // ITextDoc
     void setSourceUrl(const wxString& source_url);
-    tango::ISetPtr getTextSet();
     tango::IStructurePtr getStructure();
     bool open(const wxString& filename);
     void close();

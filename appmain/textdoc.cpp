@@ -540,6 +540,10 @@ void TextDoc::getColumnListItems(std::vector<ColumnListItem>& list)
 {
     list.clear();
     
+    /* 
+
+    TODO: reimplement
+
     tango::ISetPtr set = getTextSet();
     if (set.isNull())
         return;
@@ -570,6 +574,7 @@ void TextDoc::getColumnListItems(std::vector<ColumnListItem>& list)
         item.active = true;
         list.push_back(item);
     }
+    */
 }
 
 bool TextDoc::initFixedLengthView()
