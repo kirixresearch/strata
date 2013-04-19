@@ -253,7 +253,7 @@ tango::IStructurePtr getTextSourceStructure(IDocumentSitePtr doc_site)
     ITextDocPtr textdoc = lookupOtherDocument(doc_site, "appmain.TextDoc");
     if (textdoc.isOk())
     {
-        tango::ISetPtr set = textdoc->getTextSet();
+        tango::IxSetPtr set = textdoc->getTextSet();
         tango::IFixedLengthDefinitionPtr fset = set;
         tango::IDelimitedTextSetPtr tset = set;
         if (fset.isOk())
@@ -1720,7 +1720,7 @@ bool TransformationDoc::doSave()
     }
 
     /*
-    tango::ISetPtr text_set;
+    tango::IxSetPtr text_set;
     tango::IFixedLengthDefinitionPtr fset;
     tango::IDelimitedTextSetPtr tset;
 

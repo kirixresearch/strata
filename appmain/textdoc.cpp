@@ -533,7 +533,7 @@ void TextDoc::getColumnListItems(std::vector<ColumnListItem>& list)
 
     TODO: reimplement
 
-    tango::ISetPtr set = getTextSet();
+    tango::IxSetPtr set = getTextSet();
     if (set.isNull())
         return;
 
@@ -2235,7 +2235,7 @@ void TextDoc::resetTransformationDocAndTableDoc()
     ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
     if (tabledoc)
     {
-        tango::ISetPtr set = getTextSet();
+        tango::IxSetPtr set = getTextSet();
         if (set.isNull())
             return;
 
