@@ -66,7 +66,6 @@ inline tango::tableord_t rowidGetTableOrd(tango::rowid_t rowid)
 
 
 xcm_interface ITable;
-xcm_interface IBookmark;
 xcm_interface IRelationInternal;
 xcm_interface ISetInternal;
 xcm_interface IDatabaseInternal;
@@ -81,7 +80,6 @@ class OfsFile;
 
 
 XCM_DECLARE_SMARTPTR(ITable)
-XCM_DECLARE_SMARTPTR(IBookmark)
 XCM_DECLARE_SMARTPTR(IRelationInternal)
 XCM_DECLARE_SMARTPTR(ISetInternal)
 XCM_DECLARE_SMARTPTR(IDatabaseInternal)
@@ -232,17 +230,6 @@ public:
     virtual bool setStructureModified() = 0;
 };
 
-
-
-xcm_interface IBookmark : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("tango.IBookmark")
-
-public:
-
-    virtual void setRowId(tango::rowid_t rowid) = 0;
-    virtual tango::rowid_t getRowId() = 0;
-};
 
 
 
