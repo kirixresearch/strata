@@ -141,9 +141,9 @@ BaseIterator::~BaseIterator()
 
     m_tables.clear();
 
-    if (m_set_internal)
+    if (m_set)
     {
-        m_set_internal->removeEventHandler(this);
+        m_set->removeEventHandler(this);
     }
 }
 
@@ -266,7 +266,7 @@ bool BaseIterator::baseClone(BaseIterator* new_iter)
 
 
 bool BaseIterator::init(tango::IDatabase* database,
-                        tango::ISet* set,
+                        IXdnativeSet* set,
                         const std::wstring& columns)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
@@ -277,7 +277,6 @@ bool BaseIterator::init(tango::IDatabase* database,
 
     // store the set
     m_set = set;
-    m_set_internal = set;
 
     if (columns.empty())
     {
@@ -293,25 +292,24 @@ bool BaseIterator::init(tango::IDatabase* database,
         return false;
 
     // register to get set events
-    m_set_internal->addEventHandler(this);
+    m_set->addEventHandler(this);
 
     return true;
 }
 
-void BaseIterator::setSet(tango::ISetPtr set)
+void BaseIterator::setSet(IXdnativeSetPtr set)
 {
-    if (m_set_internal)
+    if (m_set)
     {
-        m_set_internal->removeEventHandler(this);
+        m_set->removeEventHandler(this);
     }
 
     m_set = set;
-    m_set_internal = set;
 
     // register to get set events
-    if (m_set_internal)
+    if (m_set)
     {
-        m_set_internal->addEventHandler(this);
+        m_set->addEventHandler(this);
     }
 }
 
@@ -662,7 +660,7 @@ bool BaseIterator::initStructure()
 
     // refresh iterator structure from set
 
-    m_set_structure = m_set_internal->getStructure();
+    m_set_structure = m_set->getStructure();
     m_calc_fields.clear();
 
     if (m_columns == L"*")
@@ -999,14 +997,14 @@ tango::IDatabasePtr BaseIterator::getDatabase()
 
 std::wstring BaseIterator::getTable()
 {
-    if (m_set_internal.isNull())
+    if (m_set.isNull())
         return L"";
-    return m_set_internal->getObjectPath();
+    return m_set->getObjectPath();
 }
 
 tango::rowpos_t BaseIterator::getRowCount()
 {
-    return m_set_internal->getRowCount();
+    return m_set->getRowCount();
 }
 
 

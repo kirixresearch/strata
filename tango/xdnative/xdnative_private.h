@@ -214,7 +214,7 @@ xcm_interface IXdnativeSet : public xcm::IObject
 public:
 
     virtual std::wstring getSetId() = 0;
-    virtual tango::ISet* getISet() = 0;
+    virtual IXdnativeSet* getRawXdnativeSetPtr() = 0;
 
     virtual void setObjectPath(const std::wstring& path) = 0;
     virtual std::wstring getObjectPath() = 0;
@@ -276,7 +276,7 @@ public:
     virtual INodeValuePtr openNodeFile(const std::wstring& path) = 0;
 
     virtual ITablePtr openTableByOrdinal(tango::tableord_t ordinal) = 0;
-    virtual tango::ISetPtr openSetById(const std::wstring& set_id) = 0;
+    virtual IXdnativeSetPtr openSetById(const std::wstring& set_id) = 0;
 
     virtual std::wstring getSetIdFromPath(const std::wstring& set_path) = 0;
     virtual std::wstring getSetPathFromId(const std::wstring& set_id) = 0;

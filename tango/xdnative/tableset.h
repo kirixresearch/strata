@@ -60,7 +60,7 @@ public:
     bool removeEventHandler(ITableEvents* handler);
 
     bool init(tango::IDatabase* database,
-              tango::ISet* set,
+              IXdnativeSet* set,
               ITable* table,
               const std::wstring& columns);
 
@@ -108,16 +108,13 @@ private:
 
 
 class TableSet : public BaseSet,
-                 public ITableEvents,
-                 public ISetRestoreDeleted
+                 public ITableEvents
 {
 friend class TableSetRowInserter;
 friend class TableSetRowDeleter;
 
     XCM_CLASS_NAME_CUSTOMREFCOUNT("xdnative.TableSet")
     XCM_BEGIN_INTERFACE_MAP(TableSet)
-        XCM_INTERFACE_ENTRY(tango::ISet)
-        XCM_INTERFACE_ENTRY(ISetRestoreDeleted)
         XCM_INTERFACE_ENTRY(IXdnativeSet)
         XCM_INTERFACE_ENTRY(ITableEvents)
         XCM_INTERFACE_ENTRY(IXdsqlTable)
@@ -164,7 +161,6 @@ public:
 
     std::wstring getObjectPath();
 
-    // ISet
     tango::IStructurePtr getStructure();
     bool modifyStructure(tango::IStructure* struct_config,
                          tango::IJob* job);
@@ -184,7 +180,7 @@ public:
 
     tango::IRowInserterPtr getRowInserter();
     tango::IRowDeleterPtr getRowDeleter();
-    bool restoreDeleted(); // ISetRestoreDeleted
+    bool restoreDeleted();
     
     tango::rowpos_t getRowCount();
 

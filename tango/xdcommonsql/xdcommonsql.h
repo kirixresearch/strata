@@ -50,6 +50,8 @@ public:
                                                tango::IJob* job) = 0;
     virtual tango::IStructurePtr getStructure() = 0;
 
+    virtual bool restoreDeleted() = 0;
+
     virtual bool updateRow(tango::rowid_t rowid,
                            tango::ColumnUpdateInfo* info,
                            size_t info_size) = 0;

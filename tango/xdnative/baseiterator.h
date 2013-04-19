@@ -120,7 +120,7 @@ public:
     void setIteratorFlags(unsigned int mask, unsigned int value) { }
 
     virtual bool init(tango::IDatabase* database,
-                      tango::ISet* set,
+                      IXdnativeSet* set,
                       const std::wstring& columns);
 
 
@@ -133,7 +133,7 @@ public:
     tango::IDatabasePtr getDatabase();
     std::wstring getTable();
     tango::rowpos_t getRowCount();
-    void setSet(tango::ISetPtr set);
+    void setSet(IXdnativeSetPtr set);
 
     tango::IStructurePtr getStructure();
     void refreshStructure();
@@ -225,10 +225,9 @@ private:
     std::vector<BaseIteratorRelInfo> m_relations;
     tango::IRelationEnumPtr m_relenum;
 
-    tango::ISetPtr m_set;                   // set associated with this iterator
     tango::IStructurePtr m_iter_structure;  // iter structure
     tango::IStructurePtr m_set_structure;   // set structure
-    IXdnativeSetPtr m_set_internal;         // set internal ptr
+    IXdnativeSetPtr m_set;                 // set internal ptr
     unsigned int m_iter_flags;
 };
 

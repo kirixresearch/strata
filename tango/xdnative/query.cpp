@@ -195,17 +195,12 @@ bool XdnativeDatabase::execute(const std::wstring& command,
 /*
     TODO: implement
 
-    // if it's a query, rename the set's path to
-    // correspond to it's mount path
+    // if it's a query, rename the path to correspond to its mount path
     
     tango::IIteratorPtr iter = result;                 
     if (iter.isOk())
     {
-        tango::ISetPtr set = iter->getSet();
-        if (set.isOk() && set->getObjectPath().length() > 0)
-        {
-            set->setObjectPath(primary_table_name);
-        }
+        iter->setObjectPath(primary_table_name);
     }
 */
         

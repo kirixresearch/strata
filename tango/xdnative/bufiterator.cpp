@@ -30,7 +30,7 @@ BufIterator::~BufIterator()
 
 
 bool BufIterator::init(tango::IDatabase* database,
-                       tango::ISet* set)
+                       IXdnativeSet* set)
 {
     if (!BaseIterator::init(database, set, L""))
         return false;

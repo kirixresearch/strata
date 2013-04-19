@@ -30,7 +30,7 @@ public:
     virtual ~BufIterator();
 
     bool init(tango::IDatabase* database,
-              tango::ISet* set);
+              IXdnativeSet* set);
 
     void setRowBuffer(unsigned char* buf, int row_width);
 

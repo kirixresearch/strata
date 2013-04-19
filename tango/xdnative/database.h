@@ -157,7 +157,7 @@ public:
     bool createStream(const std::wstring& path, const std::wstring& mime_type);
     bool createTable(const std::wstring& path, tango::IStructurePtr structure, tango::FormatInfo* format_info);
     
-    tango::ISetPtr openSetById(const std::wstring& set_id);
+    IXdnativeSetPtr openSetById(const std::wstring& set_id);
     std::wstring getSetIdFromPath(const std::wstring& set_path);
     std::wstring getSetPathFromId(const std::wstring& set_id);
     tango::IStreamPtr openStream(const std::wstring& path);
@@ -232,7 +232,7 @@ private:
     void recursiveReferenceUpdate(const std::wstring& folder_path);
     std::wstring getTableFilename(tango::tableord_t table_ordinal);
     std::wstring getStreamFilename(const std::wstring& ofs_path);
-    tango::ISet* lookupSet(const std::wstring& set_id);
+    IXdnativeSet* lookupSet(const std::wstring& set_id);
     void getFolderUsedOrdinals(const std::wstring& path,
                                std::set<int>& used_ordinals);
 
@@ -262,7 +262,6 @@ private:
     tango::jobid_t m_last_job;
     
     ThreadErrorInfo m_error;
-
 };
 
 

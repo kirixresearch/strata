@@ -932,16 +932,11 @@ void XdnativeDatabase::updateSetReference(const std::wstring& ofs_path)
     ofspath_value->setString(ofs_path);
 
     // if the set is open, let it know that its ofs path changed
-    tango::ISet* lookup_set = lookupSet(set_id);
+    IXdnativeSet* lookup_set = lookupSet(set_id);
     if (lookup_set)
     {
-        IXdnativeSetPtr iset;
-        iset = lookup_set;
-        if (iset)
-        {
-            iset->onOfsPathChanged(ofs_path);
-        }
-        
+        lookup_set->onOfsPathChanged(ofs_path);
+
         // release ref set by lookupSet() above
         lookup_set->unref();
     }
@@ -1059,7 +1054,7 @@ bool XdnativeDatabase::deleteSet(const std::wstring& ofs_path)
     setid_node.clear();
 
     // if the set is open by someone, don't allow the delete
-    tango::ISet* lookup_set = lookupSet(set_id);
+    IXdnativeSet* lookup_set = lookupSet(set_id);
     if (lookup_set)
     {
         lookup_set->unref();
@@ -2980,7 +2975,7 @@ bool XdnativeDatabase::createStream(const std::wstring& _path, const std::wstrin
 
 
 
-tango::ISet* XdnativeDatabase::lookupSet(const std::wstring& set_id)
+IXdnativeSet* XdnativeDatabase::lookupSet(const std::wstring& set_id)
 {
     XCM_AUTO_LOCK(m_objregistry_mutex);
 
@@ -2991,7 +2986,7 @@ tango::ISet* XdnativeDatabase::lookupSet(const std::wstring& set_id)
         if (!wcscasecmp((*sit)->getSetId().c_str(), set_id.c_str()))
         {
             (*sit)->ref();
-            return (*sit)->getISet();
+            return (*sit)->getRawXdnativeSetPtr();
         }
     }
 
@@ -3158,7 +3153,7 @@ ITablePtr XdnativeDatabase::openTableByOrdinal(tango::tableord_t table_ordinal)
 
 
 
-tango::ISetPtr XdnativeDatabase::openSetById(const std::wstring& set_id)
+IXdnativeSetPtr XdnativeDatabase::openSetById(const std::wstring& set_id)
 {
     // check if the set is locked
     if (getSetLocked(set_id))
@@ -3167,11 +3162,11 @@ tango::ISetPtr XdnativeDatabase::openSetById(const std::wstring& set_id)
     }
 
     // check if the set is already open
-    tango::ISet* lookup_set = lookupSet(set_id);
+    IXdnativeSet* lookup_set = lookupSet(set_id);
     if (lookup_set)
     {
         // result is already ref'ed by lookupSet();
-        tango::ISetPtr ret(lookup_set, false);
+        IXdnativeSetPtr ret(lookup_set, false);
         return ret;
     }
 
@@ -3206,7 +3201,7 @@ tango::ISetPtr XdnativeDatabase::openSetById(const std::wstring& set_id)
             return xcm::null;
         }
 
-        return tango::ISetPtr(static_cast<tango::ISet*>(set), false);
+        return IXdnativeSetPtr(static_cast<IXdnativeSet*>(set), false);
     }
 
     return xcm::null;

@@ -16,10 +16,6 @@
 xcm_interface IIteratorKeyAccess;
 XCM_DECLARE_SMARTPTR(IIteratorKeyAccess)
 
-xcm_interface ISetRestoreDeleted;
-XCM_DECLARE_SMARTPTR(ISetRestoreDeleted)
-
-
 xcm_interface IIteratorKeyAccess : public xcm::IObject
 {
     XCM_INTERFACE_NAME("tango.IIteratorKeyAccess")
@@ -33,15 +29,6 @@ public:
     virtual bool setFirstKey() = 0;
 };
 
-
-xcm_interface ISetRestoreDeleted : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("tango.ISetRestoreDeleted")
-
-public:
-
-    virtual bool restoreDeleted() = 0;
-};
 
 
 #endif

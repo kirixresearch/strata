@@ -65,7 +65,7 @@ TableIterator::~TableIterator()
 }
 
 bool TableIterator::init(tango::IDatabase* database,
-                         tango::ISet* set,
+                         IXdnativeSet* set,
                          ITable* table,
                          const std::wstring& columns)
 {
@@ -669,7 +669,7 @@ tango::IRowDeleterPtr TableSet::getRowDeleter()
     return static_cast<tango::IRowDeleter*>(deleter);
 }
 
-bool TableSet::restoreDeleted() // ISetRestoreDeleted
+bool TableSet::restoreDeleted()
 {
     return m_table->restoreDeleted();
 }
@@ -694,7 +694,7 @@ void TableSet::refreshUpdateBuffer()
     m_update_buf = new unsigned char[m_table->getRowWidth()];
     m_update_iter = new BufIterator;
     m_update_iter->ref();
-    m_update_iter->init(m_database, static_cast<tango::ISet*>(this));
+    m_update_iter->init(m_database, static_cast<IXdnativeSet*>(this));
     m_update_iter->setRowBuffer(m_update_buf, m_table->getRowWidth());
 }
 
@@ -1326,7 +1326,7 @@ TableIterator* TableSet::createPhysicalIterator(const std::wstring& columns,
     dbi = m_database;
     ITablePtr tbl = dbi->openTableByOrdinal(m_ordinal);
 
-    if (!it->init(m_database, static_cast<tango::ISet*>(this), tbl, columns))
+    if (!it->init(m_database, static_cast<IXdnativeSet*>(this), tbl, columns))
     {
         delete it;
         return NULL;
@@ -1648,7 +1648,7 @@ TableSetRowInserter::TableSetRowInserter(TableSet* set)
 
     m_iter = new BufIterator;
     m_iter->ref();
-    m_iter->init(m_set->m_database, static_cast<tango::ISet*>(m_set));
+    m_iter->init(m_set->m_database, static_cast<IXdnativeSet*>(m_set));
     m_iter->setRowBuffer(m_buf, m_row_width);
 
     // inserter is not valid until startInsert() is called
