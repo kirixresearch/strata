@@ -22,7 +22,6 @@
 #include "baseset.h"
 #include "baseiterator.h"
 #include "util.h"
-#include "stdset.h"
 #include "../xdcommon/xdcommon.h"
 #include "../xdcommon/keylayout.h"
 #include "../../kscript/kscript.h"
@@ -391,23 +390,6 @@ void BaseIterator::goRow(const tango::rowid_t& rowid)
     setRowId(rowid);
 }
 
-
-
-
-
-static tango::ISetPtr createEofSet(tango::IDatabasePtr& db,
-                                   tango::ISetPtr& set)
-{
-    // return empty set
-    EofSet* eof_set = new EofSet(db);
-    eof_set->ref();
-    if (!eof_set->create(set))
-    {
-        eof_set->unref();
-        return xcm::null;
-    }
-    return tango::ISetPtr(static_cast<tango::ISet*>(eof_set), false);
-}
 
 
 bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
