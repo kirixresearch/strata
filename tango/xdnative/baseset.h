@@ -104,7 +104,7 @@ protected:
                          tango::IColumnInfoPtr params);
     void appendCalcFields(tango::IStructure* structure);
 
-    void onOfsPathChanged(const std::wstring& new_path);
+    void onOfsPathChanged(const std::wstring& new_path) { }
     void onRelationshipsUpdated();
 
 

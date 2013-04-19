@@ -335,10 +335,6 @@ void BaseSet::appendCalcFields(tango::IStructure* structure)
 }
 
 
-void BaseSet::onOfsPathChanged(const std::wstring& new_path)
-{
-}
-
 void BaseSet::onRelationshipsUpdated()
 {
     fire_onSetRelationshipsUpdated();

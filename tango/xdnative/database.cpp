@@ -974,35 +974,6 @@ void Database::recursiveReferenceUpdate(const std::wstring& folder_path)
     }
 }
 
-void Database::onOfsPostRenameFile(std::wstring ofs_path, std::wstring new_name)
-{
-    // create a fully-qualified path for the newly renamed object
-    std::wstring new_path = kl::beforeLast(ofs_path, L'/');
-    if (new_path == ofs_path)
-        new_path = new_name;
-         else
-        new_path += new_name;
-
-    // check to see if a folder has been renamed
-    tango::IFileInfoPtr file_info = getFileInfo(new_path);
-    if (file_info->getType() == tango::filetypeFolder)
-    {
-        recursiveReferenceUpdate(new_path);
-        return;
-    }
-
-
-    // a regular object was renamed, update it if it was a set
-    updateSetReference(new_path);
-}
-
-
-void Database::onOfsPostMoveFile(std::wstring ofs_path, std::wstring new_path)
-{
-    updateSetReference(new_path);
-}
-
-
 
 
 bool Database::deleteStream(const std::wstring& ofs_path)

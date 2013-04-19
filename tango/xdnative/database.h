@@ -25,15 +25,13 @@ class OfsFile;
 
 class Database : public tango::IDatabase,
                  public IXdsqlDatabase,
-                 public IDatabaseInternal,
-                 public IOfsEvents
+                 public IDatabaseInternal
 {
     XCM_CLASS_NAME("xdnative.Database")
     XCM_BEGIN_INTERFACE_MAP(Database)
         XCM_INTERFACE_ENTRY(tango::IDatabase)
         XCM_INTERFACE_ENTRY(IXdsqlDatabase)
         XCM_INTERFACE_ENTRY(IDatabaseInternal)
-        XCM_INTERFACE_ENTRY(IOfsEvents)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -238,9 +236,6 @@ private:
     void getFolderUsedOrdinals(const std::wstring& path,
                                std::set<int>& used_ordinals);
 
-    // ofs Event Handlers
-    void onOfsPostRenameFile(std::wstring ofs_path, std::wstring new_name);
-    void onOfsPostMoveFile(std::wstring ofs_path, std::wstring new_path);
 
 private:
 

@@ -69,7 +69,6 @@ xcm_interface ITable;
 xcm_interface IRelationInternal;
 xcm_interface ISetInternal;
 xcm_interface IDatabaseInternal;
-xcm_interface IOfsEvents;
 xcm_interface INodeValue;
 xcm_interface IIndex;
 xcm_interface IIndexIterator;
@@ -83,7 +82,6 @@ XCM_DECLARE_SMARTPTR(ITable)
 XCM_DECLARE_SMARTPTR(IRelationInternal)
 XCM_DECLARE_SMARTPTR(ISetInternal)
 XCM_DECLARE_SMARTPTR(IDatabaseInternal)
-XCM_DECLARE_SMARTPTR(IOfsEvents)
 XCM_DECLARE_SMARTPTR(INodeValue)
 
 
@@ -134,32 +132,6 @@ public:
     virtual std::wstring getRightSetId() = 0;
 };
 
-
-
-xcm_interface IOfsEvents : public xcm::IObject
-{
-
-public:
-
-    virtual void onOfsPreRenameFile(const std::wstring& ofs_path,
-                                    const std::wstring& new_name,
-                                    bool* allow) { }
-
-    virtual void onOfsPostRenameFile(const std::wstring& ofs_path,
-                                     const std::wstring& new_name) { }
-
-    virtual void onOfsPreMoveFile(const std::wstring& ofs_path,
-                                  const std::wstring& new_path,
-                                  bool* allow) { }
-
-    virtual void onOfsPostMoveFile(const std::wstring& ofs_path,
-                                   const std::wstring& new_path) { }
-
-    virtual void onOfsPreDeleteFile(const std::wstring& ofs_path,
-                                    bool* allow) { }
-
-    virtual void onOfsPostDeleteFile(const std::wstring& ofs_path) { }
-};
 
 
 xcm_interface ITableEvents : public xcm::IObject
