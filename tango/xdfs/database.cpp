@@ -1443,7 +1443,11 @@ tango::IIteratorPtr FsDatabase::createIterator(const std::wstring& path,
                                                const std::wstring& sort,
                                                tango::IJob* job)
 {
-    return xcm::null;
+    IXdsqlTablePtr tbl = openSetEx(path, tango::formatNative);
+    if (tbl.isNull())
+        return xcm::null;
+
+    return tbl->createIterator(columns, sort, job);
 }
 
 

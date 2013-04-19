@@ -81,7 +81,6 @@ public:
     std::wstring getBasePath();
     std::wstring getOfsPath();
     std::wstring ofsToPhysFilename(const std::wstring& ofs_path, bool folder);
-    std::wstring urlToOfsFilename(const std::wstring& url);
     IJobInternalPtr createJobEntry();
 
     bool lockSet(const std::wstring& set_id);

@@ -402,45 +402,6 @@ std::wstring XdnativeDatabase::ofsToPhysFilename(const std::wstring& ofs_path, b
 #endif
 }
 
-std::wstring XdnativeDatabase::urlToOfsFilename(const std::wstring& url)
-{
-    // get a filename from a url
-    std::wstring fname = kl::urlToFilename(url);
-    
-    // change all slashes to forward slashes
-    size_t i, len = fname.length();
-    for (i = 0; i < len; ++i)
-    {
-        if (fname[i] == L'\\')
-            fname[i] = L'/';
-    }
-    
-    // transform normal filename into a filename
-    // in the /.fs mount directory
-    
-    if (fname.length() >= 2 && isalpha(fname[0]) && fname[1] == L':')
-    {
-        fname.insert(0, L"|");
-    }
-     else
-    {
-        if (fname.substr(0, 2) == L"//")
-        {
-            fname.erase(0,2);
-            fname.insert(0, L"|");
-        }
-         else
-        {
-            // remove all leading slashes
-            while (fname.length() > 0 && fname[0] == '/')
-                fname.erase(0, 1);
-        }
-    }
-    
-    fname = L"/.fs/" + fname;
-    
-    return fname;
-}
 
 bool XdnativeDatabase::createDatabase(const std::wstring& db_name,
                                       const std::wstring& base_dir)
@@ -1324,15 +1285,8 @@ INodeValuePtr XdnativeDatabase::openLocalNodeFile(const std::wstring& path)
     return result;
 }
 
-INodeValuePtr XdnativeDatabase::openNodeFile(const std::wstring& _path)
+INodeValuePtr XdnativeDatabase::openNodeFile(const std::wstring& path)
 {
-    if (_path.empty())
-        return xcm::null;
-        
-    std::wstring path = _path;
-    if (kl::isFileUrl(_path))
-        path = urlToOfsFilename(_path);
-
     {
         XCM_AUTO_LOCK(m_objregistry_mutex);
 
@@ -1699,16 +1653,13 @@ bool XdnativeDatabase::copyFile(const std::wstring& src_path,
 }
 
 
-bool XdnativeDatabase::renameFile(const std::wstring& _path,
-                          const std::wstring& new_name)
+bool XdnativeDatabase::renameFile(const std::wstring& path,
+                                  const std::wstring& new_name)
 {
-    if (_path.empty() || new_name.empty())
+    if (path.empty() || new_name.empty())
         return false;
 
-    std::wstring path = _path;
-    if (kl::isFileUrl(_path))
-        path = urlToOfsFilename(_path);
-        
+
     std::wstring cstr, rpath;
     if (detectMountPoint(path, cstr, rpath) && !getLocalFileExist(path))
     {
@@ -1765,18 +1716,11 @@ bool XdnativeDatabase::renameFile(const std::wstring& _path,
 }
 
 bool XdnativeDatabase::moveFile(const std::wstring& _src_path,
-                        const std::wstring& _dest_path)
+                                const std::wstring& _dest_path)
 {
-    if (_src_path.empty() || _dest_path.empty() || _src_path == _dest_path)
-        return false;
-    
     std::wstring src_path = _src_path, dest_path = _dest_path;
-    if (kl::isFileUrl(_src_path))
-        src_path = urlToOfsFilename(_src_path);
-    if (kl::isFileUrl(_dest_path))
-        dest_path = urlToOfsFilename(_dest_path);
 
-    if (src_path.empty() || dest_path.empty())
+    if (src_path.empty() || dest_path.empty() || src_path == dest_path)
         return false;
 
     if (src_path[0] != '/')
@@ -1873,15 +1817,8 @@ bool XdnativeDatabase::moveFile(const std::wstring& _src_path,
     return true;
 }
 
-bool XdnativeDatabase::deleteFile(const std::wstring& _path)
+bool XdnativeDatabase::deleteFile(const std::wstring& path)
 {
-    if (_path.empty())
-        return false;
-        
-    std::wstring path = _path;
-    if (kl::isFileUrl(_path))
-        path = urlToOfsFilename(_path);
-
     std::wstring cstr, rpath;
     if (detectMountPoint(path, cstr, rpath))
     {
@@ -1934,12 +1871,8 @@ bool XdnativeDatabase::deleteFile(const std::wstring& _path)
 
 
 
-bool XdnativeDatabase::getLocalFileExist(const std::wstring& _path)
+bool XdnativeDatabase::getLocalFileExist(const std::wstring& path)
 {
-    std::wstring path = _path;
-    if (kl::isFileUrl(_path))
-        path = urlToOfsFilename(_path);
-        
     if (path.empty())
         return false;
 
@@ -1947,12 +1880,8 @@ bool XdnativeDatabase::getLocalFileExist(const std::wstring& _path)
             xf_get_file_exist(ofsToPhysFilename(path, false)));
 }
 
-bool XdnativeDatabase::getFileExist(const std::wstring& _path)
+bool XdnativeDatabase::getFileExist(const std::wstring& path)
 {
-    std::wstring path = _path;
-    if (kl::isFileUrl(_path))
-        path = urlToOfsFilename(_path);
-        
     if (path.empty())
         return false;
 
@@ -2231,24 +2160,21 @@ bool XdnativeDatabase::getFileType(const std::wstring& path, int* type, bool* is
 }
 
 
-tango::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& _path)
+tango::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& path)
 {
-    if (_path.empty())
+    if (path.empty())
         return xcm::null;
     
-    if (_path.substr(0, 11) == L"/.temp/.ptr")
+    if (path.substr(0, 11) == L"/.temp/.ptr")
     {
         xdcommon::FileInfo* f = new xdcommon::FileInfo;
-        f->name = kl::afterLast(_path, L'/');
+        f->name = kl::afterLast(path, '/');
         f->type = tango::filetypeTable;
         f->format = tango::formatNative;
         f->is_mount = false;
         return static_cast<tango::IFileInfo*>(f);
     }
 
-    std::wstring path = _path;
-    if (kl::isFileUrl(_path))
-        path = urlToOfsFilename(_path);
 
     std::wstring cstr, rpath;
     if (detectMountPoint(path, cstr, rpath))
@@ -2257,7 +2183,7 @@ tango::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& _path)
         if (rpath.empty() || rpath == L"/")
         {
             xdcommon::FileInfo* f = new xdcommon::FileInfo;
-            f->name = kl::afterLast(path, L'/');
+            f->name = kl::afterLast(path, '/');
             f->type = tango::filetypeFolder;
             f->format = tango::formatNative;
             f->is_mount = true;
@@ -2381,18 +2307,31 @@ tango::IDatabasePtr XdnativeDatabase::lookupOrOpenMountDb(const std::wstring& cs
 
 
 bool XdnativeDatabase::detectMountPoint(const std::wstring& path,
-                                std::wstring& connection_str,
-                                std::wstring& remote_path)
+                                        std::wstring& connection_str,
+                                        std::wstring& remote_path)
 {
+    // /.system folder never contains mounts
+    if (0 == path.compare(0, 8, L"/.system"))
+        return false;
+
+    if (0 == path.compare(0, 7, L"file://"))
+    {
+        connection_str = L"Xdprovider=xdfs;Database=;User ID=;Password=;";
+        remote_path = path.substr(7);
+        if (remote_path.empty())
+            return false;
+        if (remote_path.length() >= 3 && remote_path[0] == '/' && remote_path[2] == ':') // ex: file:///c:/abc.txt
+            remote_path.erase(0, 1);
+        return true;
+    }
+
+
+
     std::vector<std::wstring> parts;
     std::vector<std::wstring>::iterator it, it2;
     bool found = true;
     
-    
-    // /.system folder never contains mounts
-    if (0 == path.compare(0, 8, L"/.system"))
-        return false;
-    
+
     kl::parseDelimitedList(path, parts, L'/', false);
     
     std::wstring fpath = L"/";
@@ -2795,12 +2734,8 @@ bool XdnativeDatabase::cleanup()
 }
 
 
-tango::IStreamPtr XdnativeDatabase::openStream(const std::wstring& _path)
+tango::IStreamPtr XdnativeDatabase::openStream(const std::wstring& path)
 {
-    std::wstring path = _path;
-    if (kl::isFileUrl(_path))
-        path = urlToOfsFilename(_path);
-
     std::wstring cstr, rpath;
     if (detectMountPoint(path, cstr, rpath))
     {
@@ -2814,11 +2749,11 @@ tango::IStreamPtr XdnativeDatabase::openStream(const std::wstring& _path)
 
     // see if the file is a node file; if it is, open the
     // stream from the node
-    tango::IFileInfoPtr info = getFileInfo(_path);
+    tango::IFileInfoPtr info = getFileInfo(path);
     if (info.isOk() && info->getType() == tango::filetypeNode)
     {
         NodeFileStream* stream = new NodeFileStream(this);
-        if (!stream->open(_path))
+        if (!stream->open(path))
         {
             delete stream;
             return xcm::null;
@@ -2843,12 +2778,8 @@ tango::IStreamPtr XdnativeDatabase::openStream(const std::wstring& _path)
     return static_cast<tango::IStream*>(stream);
 }
 
-bool XdnativeDatabase::createStream(const std::wstring& _path, const std::wstring& mime_type)
+bool XdnativeDatabase::createStream(const std::wstring& path, const std::wstring& mime_type)
 {
-    std::wstring path = _path;
-    if (kl::isFileUrl(_path))
-        path = urlToOfsFilename(_path);
-
     std::wstring cstr, rpath;
     if (detectMountPoint(path, cstr, rpath))
     {
@@ -2994,17 +2925,12 @@ tango::IStructurePtr XdnativeDatabase::createStructure()
     return static_cast<tango::IStructure*>(s);
 }
 
-bool XdnativeDatabase::createTable(const std::wstring& _path,
-                           tango::IStructurePtr structure,
-                           tango::FormatInfo* format_info)
+bool XdnativeDatabase::createTable(const std::wstring& path,
+                                   tango::IStructurePtr structure,
+                                   tango::FormatInfo* format_info)
 {
-    std::wstring path = _path;
-    
     if (path.length() == 0)
         return false;
-
-    if (kl::isFileUrl(_path))
-        path = urlToOfsFilename(_path);
 
     if (getFileExist(path))
         return false;  // already exists
@@ -3253,15 +3179,8 @@ std::wstring XdnativeDatabase::getSetPathFromId(const std::wstring& set_id)
 
 
 
-IXdsqlTablePtr XdnativeDatabase::openTable(const std::wstring& _path)
+IXdsqlTablePtr XdnativeDatabase::openTable(const std::wstring& path)
 {
-    std::wstring path;
-
-    if (kl::isFileUrl(_path))
-        path = urlToOfsFilename(_path);
-         else
-        path = _path;
-
     // check for ptr sets
     if (path.substr(0, 12) == L"/.temp/.ptr/")
     {
@@ -3270,8 +3189,6 @@ IXdsqlTablePtr XdnativeDatabase::openTable(const std::wstring& _path)
         IXdsqlTable* sptr = (IXdsqlTable*)l;
         return sptr;
     }
-
-
 
     std::wstring set_id = getSetIdFromPath(path);
     if (set_id.empty())
@@ -3282,10 +3199,21 @@ IXdsqlTablePtr XdnativeDatabase::openTable(const std::wstring& _path)
 
 
 tango::IIteratorPtr XdnativeDatabase::createIterator(const std::wstring& path,
-                                             const std::wstring& columns,
-                                             const std::wstring& sort,
-                                             tango::IJob* job)
+                                                     const std::wstring& columns,
+                                                     const std::wstring& sort,
+                                                     tango::IJob* job)
 {
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, cstr, rpath))
+    {
+        // action takes place in a mount
+        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return xcm::null;
+
+        return db->createIterator(rpath, columns, sort, job);
+    }
+
     IXdsqlTablePtr table = openTable(path);
     if (table.isNull())
         return xcm::null;
