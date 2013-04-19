@@ -363,7 +363,7 @@ tango::IIteratorPtr CommonDynamicSet::createIterator(const std::wstring& columns
         data_iter->goFirst();
 
 
-        tango::ISetPtr thisset = static_cast<tango::ISet*>(this);
+        IXdsqlTablePtr thisset = static_cast<IXdsqlTable*>(this);
 
         
 
