@@ -3132,7 +3132,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
             return xcm::null;
         }
 
-        set = static_cast<tango::ISet*>(dyn_set);
+        set = static_cast<tango::IxSet*>(dyn_set);
         delete s_iter;
         
 #endif

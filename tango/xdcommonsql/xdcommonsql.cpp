@@ -847,7 +847,7 @@ public:
     {
     }
      
-    bool init(tango::ISetPtr set,
+    bool init(tango::IxSetPtr set,
               const std::wstring& key_field,
               const std::wstring& key_value,
               tango::IJob* job)
@@ -963,7 +963,7 @@ SqlIterator* SqlIterator::createSqlIterator(tango::IIteratorPtr iter,
         kl::trim(field);
         dequote(field, '[', ']');
 
-        tango::ISetPtr set = iter->getSet();
+        tango::IxSetPtr set = iter->getSet();
         if (set)
         {
             tango::IIndexInfoPtr index = set->lookupIndex(field, true);
