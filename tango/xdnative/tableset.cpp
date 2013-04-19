@@ -471,7 +471,7 @@ TableSet::~TableSet()
 
 bool TableSet::create(tango::IStructure* struct_config, const std::wstring& path)
 {
-    IDatabaseInternalPtr dbi = m_database;
+    IXdnativeDatabasePtr dbi = m_database;
 
     // generate a unique filename for the table
     std::wstring table_filename = dbi->getUniqueFilename();
@@ -570,7 +570,7 @@ bool TableSet::loadTable(const std::wstring& tbl_filename)
 
 bool TableSet::load(INodeValuePtr set_file)
 {
-    IDatabaseInternalPtr dbi = m_database;
+    IXdnativeDatabasePtr dbi = m_database;
 
     // verify that this is the corrent set type
     INodeValuePtr settype_node = set_file->getChild(L"set_type", false);
@@ -796,7 +796,7 @@ void TableSet::refreshIndexEntries()
 {
     XCM_AUTO_LOCK(m_update_mutex);
 
-    IDatabaseInternalPtr dbi;
+    IXdnativeDatabasePtr dbi;
     dbi = m_database;
 
 
@@ -995,7 +995,7 @@ tango::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
     if (tag.length() == 0)
         return xcm::null;
 
-    IDatabaseInternalPtr dbi = m_database;
+    IXdnativeDatabasePtr dbi = m_database;
 
     std::wstring lower_tag = tag;
     kl::makeLower(lower_tag);
@@ -1157,7 +1157,7 @@ bool TableSet::deleteIndexInternal(IIndex* idx_to_delete)
 
     bool success = false;
 
-    IDatabaseInternalPtr dbi = m_database;
+    IXdnativeDatabasePtr dbi = m_database;
 
     std::wstring tag_to_delete;
 
@@ -1271,7 +1271,7 @@ bool TableSet::deleteAllIndexes()
 {
     XCM_AUTO_LOCK(m_update_mutex);
 
-    IDatabaseInternalPtr dbi = m_database;
+    IXdnativeDatabasePtr dbi = m_database;
 
     std::vector<IndexEntry>::iterator it;
     for (it = m_indexes.begin(); it != m_indexes.end(); ++it)
@@ -1322,7 +1322,7 @@ TableIterator* TableSet::createPhysicalIterator(const std::wstring& columns,
     // no sort order, so create a physical order iterator
     TableIterator* it = new TableIterator;
 
-    IDatabaseInternalPtr dbi;
+    IXdnativeDatabasePtr dbi;
     dbi = m_database;
     ITablePtr tbl = dbi->openTableByOrdinal(m_ordinal);
 
@@ -1352,7 +1352,7 @@ tango::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
         return static_cast<tango::IIterator*>(createPhysicalIterator(columns, false));
     }
 
-    IDatabaseInternalPtr dbi = m_database;
+    IXdnativeDatabasePtr dbi = m_database;
 
     // attempt to find a suitable existing index
     IIndex* idx = NULL;
@@ -1862,7 +1862,7 @@ TableSetRowDeleter::TableSetRowDeleter(tango::IDatabasePtr db, TableSet* set)
     m_set->ref();
     m_table_row_deleter = set->m_table->getRowDeleter();
     
-    IDatabaseInternalPtr dbi = db;
+    IXdnativeDatabasePtr dbi = db;
     m_rowid_array = new RowIdArray(dbi->getTempPath());
 }
 

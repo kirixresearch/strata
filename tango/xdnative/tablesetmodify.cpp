@@ -517,7 +517,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
                                tango::IJob* job)
 {
     IJobInternalPtr ijob = job;
-    IDatabaseInternalPtr dbi = m_database;
+    IXdnativeDatabasePtr dbi = m_database;
     IStructureInternalPtr struct_internal = struct_config;
     std::vector<StructureAction>& actions = struct_internal->getStructureActions();
     std::vector<StructureAction>::iterator it_sa;

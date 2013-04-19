@@ -271,7 +271,7 @@ bool BaseIterator::init(tango::IDatabase* database,
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
-    // retrieve and store the IDatabaseInternal pointer
+    // retrieve and store the IXdnativeDatabase pointer
     m_database = database;
     m_dbi = m_database;
 
@@ -421,7 +421,7 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
         return false;
 
     // get right set
-    ISetInternalPtr right_set_int = m_dbi->openTable(rel->getRightTable());
+    IXdnativeSetPtr right_set_int = m_dbi->openTable(rel->getRightTable());
     if (!right_set_int)
         return false;
 
@@ -1034,7 +1034,7 @@ public:
               int agg_func,
               const std::wstring& expr)
     {
-        IDatabaseInternalPtr dbi = database;
+        IXdnativeDatabasePtr dbi = database;
         
         if (dbi.isNull() || path.empty())
             return false;
@@ -1098,7 +1098,7 @@ public:
         }
 
 
-        ISetInternalPtr right_set_internal = dbi->openTable(rel->getRightTable());
+        IXdnativeSetPtr right_set_internal = dbi->openTable(rel->getRightTable());
         if (right_set_internal.isNull())
             return false;
 

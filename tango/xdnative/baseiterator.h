@@ -207,7 +207,7 @@ public:
     tango::rowid_t m_rowid;
     
 protected:
-    IDatabaseInternalPtr m_dbi;
+    IXdnativeDatabasePtr m_dbi;
     tango::IDatabasePtr m_database;
     std::wstring m_columns;
 
@@ -228,7 +228,7 @@ private:
     tango::ISetPtr m_set;                   // set associated with this iterator
     tango::IStructurePtr m_iter_structure;  // iter structure
     tango::IStructurePtr m_set_structure;   // set structure
-    ISetInternalPtr m_set_internal;         // set internal ptr
+    IXdnativeSetPtr m_set_internal;         // set internal ptr
     unsigned int m_iter_flags;
 };
 

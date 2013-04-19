@@ -118,7 +118,7 @@ friend class TableSetRowDeleter;
     XCM_BEGIN_INTERFACE_MAP(TableSet)
         XCM_INTERFACE_ENTRY(tango::ISet)
         XCM_INTERFACE_ENTRY(ISetRestoreDeleted)
-        XCM_INTERFACE_ENTRY(ISetInternal)
+        XCM_INTERFACE_ENTRY(IXdnativeSet)
         XCM_INTERFACE_ENTRY(ITableEvents)
         XCM_INTERFACE_ENTRY(IXdsqlTable)
     XCM_END_INTERFACE_MAP()
@@ -136,7 +136,7 @@ friend class TableSetRowDeleter;
         m_dbi->lockObjectRegistryMutex();
         if (--m_refcount_holder.xcm_ref_count == 0)
         {
-            IDatabaseInternalPtr dbi = m_dbi;
+            IXdnativeDatabasePtr dbi = m_dbi;
             dbi->unregisterSet(this);
             delete this;
             dbi->unlockObjectRegistryMutex();

@@ -20,13 +20,13 @@
 
 class BaseSet : public tango::ISet,
                 public IXdsqlTable,
-                public ISetInternal
+                public IXdnativeSet
 {
     XCM_CLASS_NAME("xdnative.BaseSet")
     XCM_BEGIN_INTERFACE_MAP(BaseSet)
         XCM_INTERFACE_ENTRY(tango::ISet)
         XCM_INTERFACE_ENTRY(IXdsqlTable)
-        XCM_INTERFACE_ENTRY(ISetInternal)
+        XCM_INTERFACE_ENTRY(IXdnativeSet)
     XCM_END_INTERFACE_MAP()
  
 public:
@@ -49,7 +49,7 @@ public:
     tango::IRowInserterPtr getRowInserter();
     tango::rowpos_t getRowCount();
 
-    // ISetInternal
+    // IXdnativeSet
 
     bool addEventHandler(ISetEvents* handler);
     bool removeEventHandler(ISetEvents* handler);
@@ -113,7 +113,7 @@ protected:
 protected:
 
     tango::IDatabasePtr m_database;
-    IDatabaseInternalPtr m_dbi;
+    IXdnativeDatabasePtr m_dbi;
     
 private:
     

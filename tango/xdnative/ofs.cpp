@@ -686,7 +686,7 @@ OfsFile* OfsFile::createFile(tango::IDatabase* db,
                              const std::wstring& key_path,
                              int type)
 {
-    IDatabaseInternalPtr dbi = db;
+    IXdnativeDatabasePtr dbi = db;
     std::wstring ofs_root = dbi->getOfsPath();
 
     std::wstring dir = ofs_root;
@@ -779,7 +779,7 @@ OfsFile* OfsFile::openFile(tango::IDatabase* db,
     if (_key_path.empty())
         return NULL;
 
-    IDatabaseInternalPtr dbi = db;
+    IXdnativeDatabasePtr dbi = db;
     std::wstring ofs_root = dbi->getOfsPath();
 
     std::wstring key_path;
@@ -835,7 +835,7 @@ bool OfsFile::getFileType(tango::IDatabase* db,
     
     
     // form the real file name of the file
-    IDatabaseInternalPtr dbi = db;
+    IXdnativeDatabasePtr dbi = db;
     
     std::wstring key_path;
     if (*(_key_path.c_str()) != L'/')

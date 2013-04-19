@@ -67,8 +67,8 @@ inline tango::tableord_t rowidGetTableOrd(tango::rowid_t rowid)
 
 xcm_interface ITable;
 xcm_interface IRelationInternal;
-xcm_interface ISetInternal;
-xcm_interface IDatabaseInternal;
+xcm_interface IXdnativeSet;
+xcm_interface IXdnativeDatabase;
 xcm_interface INodeValue;
 xcm_interface IIndex;
 xcm_interface IIndexIterator;
@@ -80,8 +80,8 @@ class OfsFile;
 
 XCM_DECLARE_SMARTPTR(ITable)
 XCM_DECLARE_SMARTPTR(IRelationInternal)
-XCM_DECLARE_SMARTPTR(ISetInternal)
-XCM_DECLARE_SMARTPTR(IDatabaseInternal)
+XCM_DECLARE_SMARTPTR(IXdnativeSet)
+XCM_DECLARE_SMARTPTR(IXdnativeDatabase)
 XCM_DECLARE_SMARTPTR(INodeValue)
 
 
@@ -205,9 +205,9 @@ public:
 
 
 
-xcm_interface ISetInternal : public xcm::IObject
+xcm_interface IXdnativeSet : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("xdnative.ISetInternal")
+    XCM_INTERFACE_NAME("xdnative.IXdnativeSet")
 
 public:
 
@@ -246,9 +246,9 @@ public:
 
 
 
-xcm_interface IDatabaseInternal : public xcm::IObject
+xcm_interface IXdnativeDatabase : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("xdnative.IDatabaseInternal")
+    XCM_INTERFACE_NAME("xdnative.IXdnativeDatabase")
 
 public:
 
@@ -296,8 +296,8 @@ public:
     virtual void lockObjectRegistryMutex() = 0;
     virtual void unlockObjectRegistryMutex() = 0;
     
-    virtual void registerSet(ISetInternal* set) = 0;
-    virtual void unregisterSet(ISetInternal* set) = 0;
+    virtual void registerSet(IXdnativeSet* set) = 0;
+    virtual void unregisterSet(IXdnativeSet* set) = 0;
 
     virtual void registerNodeFile(OfsFile* set) = 0;
     virtual void unregisterNodeFile(OfsFile* set) = 0;

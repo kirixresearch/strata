@@ -126,7 +126,7 @@ class OfsFile : public xcm::IObject
         m_database->lockObjectRegistryMutex();
         if (--m_refcount_holder.xcm_ref_count == 0)
         {
-            IDatabaseInternalPtr dbi = m_database;
+            IXdnativeDatabasePtr dbi = m_database;
             dbi->unregisterNodeFile(this);
             delete this;
             dbi->unlockObjectRegistryMutex();
@@ -178,7 +178,7 @@ private:
     bool m_dirty;
     int m_type;
     xcm::mutex m_object_mutex;
-    IDatabaseInternalPtr m_database;
+    IXdnativeDatabasePtr m_database;
 };
 
 

@@ -25,13 +25,13 @@ class OfsFile;
 
 class Database : public tango::IDatabase,
                  public IXdsqlDatabase,
-                 public IDatabaseInternal
+                 public IXdnativeDatabase
 {
     XCM_CLASS_NAME("xdnative.Database")
     XCM_BEGIN_INTERFACE_MAP(Database)
         XCM_INTERFACE_ENTRY(tango::IDatabase)
         XCM_INTERFACE_ENTRY(IXdsqlDatabase)
-        XCM_INTERFACE_ENTRY(IDatabaseInternal)
+        XCM_INTERFACE_ENTRY(IXdnativeDatabase)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -72,7 +72,7 @@ public:
     std::wstring getBaseDirectory();
 
 
-    // IDatabaseInternal
+    // IXdnativeDatabase
 
     ITablePtr openTableByOrdinal(tango::tableord_t ordinal);
     std::wstring getTempFilename();
@@ -108,8 +108,8 @@ public:
     void registerNodeFile(OfsFile* set);
     void unregisterNodeFile(OfsFile* set);
 
-    void registerSet(ISetInternal* set);
-    void unregisterSet(ISetInternal* set);
+    void registerSet(IXdnativeSet* set);
+    void unregisterSet(IXdnativeSet* set);
 
     void registerTable(ITable* table);
     void unregisterTable(ITable* table);
@@ -249,7 +249,7 @@ private:
     tango::IDatabaseMgrPtr m_db_mgr;
     std::map<std::wstring, tango::IDatabasePtr> m_mounted_dbs;
     
-    std::vector<ISetInternal*> m_sets;
+    std::vector<IXdnativeSet*> m_sets;
     std::vector<ITable*> m_tables;
     std::vector<OfsFile*> m_ofs_files;
     std::vector<JobInfo*> m_jobs;

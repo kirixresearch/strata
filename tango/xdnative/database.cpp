@@ -935,7 +935,7 @@ void Database::updateSetReference(const std::wstring& ofs_path)
     tango::ISet* lookup_set = lookupSet(set_id);
     if (lookup_set)
     {
-        ISetInternalPtr iset;
+        IXdnativeSetPtr iset;
         iset = lookup_set;
         if (iset)
         {
@@ -2154,7 +2154,7 @@ public:
     
     bool fetched_mime_type;
     bool fetched_size;
-    IDatabaseInternalPtr db;
+    IXdnativeDatabasePtr db;
 };
 
 
@@ -2635,18 +2635,18 @@ void Database::unregisterNodeFile(OfsFile* file)
     }
 }
 
-void Database::registerSet(ISetInternal* set)
+void Database::registerSet(IXdnativeSet* set)
 {
     XCM_AUTO_LOCK(m_objregistry_mutex);
 
     m_sets.push_back(set);
 }
 
-void Database::unregisterSet(ISetInternal* set)
+void Database::unregisterSet(IXdnativeSet* set)
 {
     XCM_AUTO_LOCK(m_objregistry_mutex);
 
-    std::vector<ISetInternal*>::iterator it;
+    std::vector<IXdnativeSet*>::iterator it;
     for (it = m_sets.begin(); it != m_sets.end(); ++it)
     {
         if (*it == set)
@@ -2985,7 +2985,7 @@ tango::ISet* Database::lookupSet(const std::wstring& set_id)
     XCM_AUTO_LOCK(m_objregistry_mutex);
 
     // search existing sets for a match
-    std::vector<ISetInternal*>::iterator sit;
+    std::vector<IXdnativeSet*>::iterator sit;
     for (sit = m_sets.begin(); sit != m_sets.end(); ++sit)
     {
         if (!wcscasecmp((*sit)->getSetId().c_str(), set_id.c_str()))
@@ -3355,7 +3355,7 @@ class RelationInfo : public tango::IRelation,
 
 public:
 
-    RelationInfo(IDatabaseInternal* db)
+    RelationInfo(IXdnativeDatabase* db)
     {
         // RelationInfo does not need to call ref() on the database object
         // since references themselves are held by the db
@@ -3459,7 +3459,7 @@ public:
 
 private:
 
-    IDatabaseInternal* m_dbi;
+    IXdnativeDatabase* m_dbi;
     std::wstring m_relation_id;
     std::wstring m_tag;
 
@@ -3570,7 +3570,7 @@ tango::IRelationEnumPtr Database::getRelationEnum(const std::wstring& path)
         }
 
         RelationInfo* relation;
-        relation = new RelationInfo(static_cast<IDatabaseInternal*>(this));
+        relation = new RelationInfo(static_cast<IXdnativeDatabase*>(this));
         relation->setRelationId(rel_node->getName());
         relation->setTag(tag);
         if (left_set_id.length() > 0)
@@ -3662,7 +3662,7 @@ tango::IRelationPtr Database::createRelation(const std::wstring& tag,
 
 
     // create a new relationship object to return to the caller
-    RelationInfo* relation = new RelationInfo(static_cast<IDatabaseInternal*>(this));
+    RelationInfo* relation = new RelationInfo(static_cast<IXdnativeDatabase*>(this));
     relation->setRelationId(rel_id);
     relation->setTag(tag);
     relation->setLeftExpression(left_expr);
@@ -3681,7 +3681,7 @@ tango::IRelationPtr Database::createRelation(const std::wstring& tag,
     IXdsqlTablePtr left_table = openTable(left_set_path);
     if (left_table.isOk())
     {
-        ISetInternalPtr set_int = left_table;
+        IXdnativeSetPtr set_int = left_table;
         if (set_int)
             set_int->onRelationshipsUpdated();
     }
@@ -3715,7 +3715,7 @@ bool Database::deleteRelation(const std::wstring& relation_id)
     IXdsqlTablePtr left_table = openTable(left_table_path);
     if (left_table)
     {
-        ISetInternalPtr set_int = left_table;
+        IXdnativeSetPtr set_int = left_table;
         if (set_int)
             set_int->onRelationshipsUpdated();
     }
@@ -3756,7 +3756,7 @@ tango::IIndexInfoPtr Database::createIndex(const std::wstring& path,
         return db->createIndex(rpath, name, newexpr, job);
     }
 
-    ISetInternalPtr set_int = openTable(path);
+    IXdnativeSetPtr set_int = openTable(path);
     if (set_int.isNull())
         return xcm::null;
 
@@ -3779,7 +3779,7 @@ bool Database::renameIndex(const std::wstring& path,
         return db->renameIndex(rpath, name, new_name);
     }
 
-    ISetInternalPtr set_int = openTable(path);
+    IXdnativeSetPtr set_int = openTable(path);
     if (set_int.isNull())
         return false;
 
@@ -3801,7 +3801,7 @@ bool Database::deleteIndex(const std::wstring& path,
         return db->deleteIndex(rpath, name);
     }
 
-    ISetInternalPtr set_int = openTable(path);
+    IXdnativeSetPtr set_int = openTable(path);
     if (set_int.isNull())
         return xcm::null;
 
@@ -3822,10 +3822,10 @@ tango::IIndexInfoEnumPtr Database::getIndexEnum(const std::wstring& path)
         return db->getIndexEnum(rpath);
     }
 
-    ISetInternalPtr set_int = openTable(path);
+    IXdnativeSetPtr set_int = openTable(path);
     if (set_int.isNull())
     {
-        // ISetInternal not supported -- return no indexes
+        // IXdnativeSet not supported -- return no indexes
         xcm::IVectorImpl<tango::IIndexInfoPtr>* vec;
         vec = new xcm::IVectorImpl<tango::IIndexInfoPtr>;
         return vec;
@@ -3859,7 +3859,7 @@ tango::IRowInserterPtr Database::bulkInsert(const std::wstring& path)
     }
 
 
-    ISetInternalPtr set = openTable(path);
+    IXdnativeSetPtr set = openTable(path);
     if (set.isNull())
         return xcm::null;
 
@@ -3870,7 +3870,7 @@ tango::IRowInserterPtr Database::bulkInsert(const std::wstring& path)
 
 bool Database::modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job)
 {
-    ISetInternalPtr set = openTable(path);
+    IXdnativeSetPtr set = openTable(path);
     if (set.isNull())
         return xcm::null;
 

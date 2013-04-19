@@ -57,7 +57,7 @@ class NativeTable : public ITable
         m_database_internal->lockObjectRegistryMutex();
         if (--m_refcount_holder.xcm_ref_count == 0)
         {
-            IDatabaseInternalPtr dbi = m_database_internal;
+            IXdnativeDatabasePtr dbi = m_database_internal;
             delete this;
             dbi->unlockObjectRegistryMutex();
             return;
@@ -137,7 +137,7 @@ private:
 private:
     xcm::mutex m_object_mutex;
 
-    IDatabaseInternalPtr m_database_internal;
+    IXdnativeDatabasePtr m_database_internal;
 
     tango::IStructurePtr m_structure;
     xf_file_t m_file;
