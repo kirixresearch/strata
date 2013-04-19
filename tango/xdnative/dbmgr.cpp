@@ -22,7 +22,7 @@ tango::IDatabasePtr DatabaseMgr::createDatabase(const std::wstring& location,
 {
     // create the database class
 
-    Database* db = new Database;
+    XdnativeDatabase* db = new XdnativeDatabase;
     db->ref();
 
     if (!db->createDatabase(dbname, location))
@@ -50,7 +50,7 @@ bool DatabaseMgr::createDatabase(const std::wstring& location, int db_type)
             if (dbname.length() > s2.length())
                 dbname = s2;
                 
-            Database* db = new Database;
+            XdnativeDatabase* db = new XdnativeDatabase;
             db->ref();
 
             if (!db->createDatabase(dbname, location))
@@ -130,7 +130,7 @@ tango::IDatabasePtr DatabaseMgr::open(const std::wstring& _connection_str)
     std::wstring uid = c.getValue(L"user id");
     std::wstring password = c.getValue(L"password");
         
-    Database* db = new Database;
+    XdnativeDatabase* db = new XdnativeDatabase;
     db->ref();
 
     if (!db->openDatabase(location, uid, password))

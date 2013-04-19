@@ -23,12 +23,12 @@
 class JobInfo;
 class OfsFile;
 
-class Database : public tango::IDatabase,
-                 public IXdsqlDatabase,
-                 public IXdnativeDatabase
+class XdnativeDatabase : public tango::IDatabase,
+                         public IXdsqlDatabase,
+                         public IXdnativeDatabase
 {
     XCM_CLASS_NAME("xdnative.Database")
-    XCM_BEGIN_INTERFACE_MAP(Database)
+    XCM_BEGIN_INTERFACE_MAP(XdnativeDatabase)
         XCM_INTERFACE_ENTRY(tango::IDatabase)
         XCM_INTERFACE_ENTRY(IXdsqlDatabase)
         XCM_INTERFACE_ENTRY(IXdnativeDatabase)
@@ -36,8 +36,8 @@ class Database : public tango::IDatabase,
 
 public:
 
-    Database();
-    virtual ~Database();
+    XdnativeDatabase();
+    virtual ~XdnativeDatabase();
 
     std::wstring getActiveUid();
     tango::IAttributesPtr getAttributes();

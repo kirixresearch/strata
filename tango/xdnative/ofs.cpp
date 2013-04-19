@@ -652,7 +652,7 @@ const std::wstring& OfsFile::getPath()
 {
     // don't lock m_object_mutex here -- it causes an interlocking
     // deadlock in ofs lookup mechanism for example in the for loop
-    // in Database::openLocalNodeFile(); besides, it's not necessary
+    // in XdnativeDatabase::openLocalNodeFile(); besides, it's not necessary
     // because m_key_path doesn't change during the lifetime of
     // an OfsFile object
     return m_key_path;

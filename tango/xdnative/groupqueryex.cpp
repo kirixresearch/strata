@@ -685,7 +685,7 @@ void buf2str(std::string& str, char* ptr, int len)
 
 
 
-bool Database::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
+bool XdnativeDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
 {
     std::wstring input = info->input;
     std::wstring group = info->group;

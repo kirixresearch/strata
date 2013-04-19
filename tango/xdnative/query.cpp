@@ -22,7 +22,7 @@
 #include <kl/url.h>
 
 
-tango::IDatabasePtr Database::getPassThroughMount(const std::vector<std::wstring>& tables)
+tango::IDatabasePtr XdnativeDatabase::getPassThroughMount(const std::vector<std::wstring>& tables)
 {
     // check to see if all the tables are in the same database
     // if they are
@@ -70,7 +70,7 @@ tango::IDatabasePtr Database::getPassThroughMount(const std::vector<std::wstring
     return db;
 }
 
-bool Database::execute(const std::wstring& command,
+bool XdnativeDatabase::execute(const std::wstring& command,
                        unsigned int flags,
                        xcm::IObjectPtr& result,
                        tango::IJob* job)
