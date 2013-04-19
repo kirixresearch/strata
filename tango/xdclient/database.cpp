@@ -97,23 +97,39 @@ bool ClientDatabase::open(const std::wstring& host,
     return true;
 }
 
-std::wstring ClientDatabase::getRequestPath()
+std::wstring ClientDatabase::getRequestPath(const std::wstring& path, const std::wstring& method)
 {
-    std::wstring path;
+    std::wstring res;
+
+    if (path.find(L"://") != path.npos)
+    {
+        res = path;
+        kl::replaceStr(res, L"sdservs:", L"https:");
+        kl::replaceStr(res, L"sdserv:", L"http:");
+        if (method.length() > 0)
+            res += (L"?m=" + method);
+        return res;
+    }
+
 
     if (m_port == L"4820")
-        path.append(L"https://");
+        res.append(L"https://");
          else
-        path.append(L"http://");
+        res.append(L"http://");
 
-    path.append(m_host);
-    if (m_port.length() > 0)
+    res.append(m_host);
+    if (m_port.length() > 0 && m_port != L"0")
     {
-        path.append(L":");
-        path.append(m_port); 
+        res.append(L":");
+        res.append(m_port); 
     }
-      
-    return path;
+
+    if (path.length() > 0)
+        res += path;
+    if (method.length() > 0)
+        res += (L"?m=" + method);
+
+    return res;
 }
 
 HttpRequest* ClientDatabase::getHttpObject()
@@ -152,11 +168,7 @@ std::wstring ClientDatabase::serverCall(const std::wstring& path,
     if (use_multipart)
         http->useMultipartPost();
 
-    std::wstring full_path = getRequestPath();
-    if (path.length() > 0)
-        full_path += path;
-    if (method.length() > 0)
-        full_path += (L"?m=" + method);
+    std::wstring full_path = getRequestPath(path, method);
 
     http->setLocation(full_path);
 
@@ -366,8 +378,7 @@ bool ClientDatabase::getLocalFileExist(const std::wstring& path)
 tango::IFileInfoPtr ClientDatabase::getFileInfo(const std::wstring& path)
 {
     ServerCallParams params;
-    params.setParam(L"path", path);
-    std::wstring sres = serverCall(L"", L"fileinfo", &params);
+    std::wstring sres = serverCall(path, L"fileinfo", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -567,6 +578,9 @@ tango::IIteratorPtr ClientDatabase::createIterator(const std::wstring& path,
                                                    const std::wstring& order,
                                                    tango::IJob* job)
 {
+    std::wstring request_url;
+    if (path.find(L"://") != path.npos)
+        request_url = path;
 
     ServerCallParams params;
     params.setParam(L"columns", columns);
@@ -584,7 +598,7 @@ tango::IIteratorPtr ClientDatabase::createIterator(const std::wstring& path,
 
     // initialize the iterator
     ClientIterator* iter = new ClientIterator(this);
-    if (!iter->init(response["handle"], L""))
+    if (!iter->init(response["handle"], request_url))
     {
         delete iter;
         return xcm::null;

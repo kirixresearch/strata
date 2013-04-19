@@ -249,15 +249,8 @@ void Controller::apiFolderInfo(RequestInfo& req)
     if (db.isNull())
         return;
 
-    if (!req.getValueExists(L"path"))
-    {
-        returnApiError(req, "Missing path parameter");
-        return;
-    }
+    std::wstring path = req.getURI();
     
-    std::wstring path = req.getValue(L"path");
-    
-
     // return success to caller
     kl::JsonNode response;
     response["success"].setBoolean(true);
@@ -316,14 +309,7 @@ void Controller::apiFileInfo(RequestInfo& req)
     if (db.isNull())
         return;
     
-    if (!req.getValueExists(L"path"))
-    {
-        returnApiError(req, "Missing path parameter");
-        return;
-    }
-    
-    std::wstring path = req.getValue(L"path");
-    
+    std::wstring path = req.getURI();
 
     // return success to caller
     kl::JsonNode response;

@@ -4189,9 +4189,6 @@ bool AppController::openAny(const wxString& _location,
     wxString protocol = location.BeforeFirst(wxT(':'));
     protocol.MakeLower();
 
-    if (protocol == wxT("sdserv") || protocol == wxT("sdservs"))
-        return openDataLink(location, site_id);
-
     // if the open as table flag is set, open the location
     // with the table browser
     if (open_mask & appOpenAsTable)

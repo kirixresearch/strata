@@ -2313,6 +2313,8 @@ bool XdnativeDatabase::detectMountPoint(const std::wstring& path,
     // /.system folder never contains mounts
     if (0 == path.compare(0, 8, L"/.system"))
         return false;
+    if (0 == path.compare(0, 9, L"/.appdata"))
+        return false;
 
     if (0 == path.compare(0, 7, L"file://"))
     {
@@ -2325,7 +2327,12 @@ bool XdnativeDatabase::detectMountPoint(const std::wstring& path,
         return true;
     }
 
-
+    if (0 == path.compare(0, 7, L"http://") || 0 == path.compare(0, 8, L"https://") || 0 == path.compare(0, 9, L"sdserv://") || 0 == path.compare(0, 10, L"sdservs://"))
+    {
+        connection_str = L"Xdprovider=xdclient;Database=;User ID=;Password=;";
+        remote_path = path;
+        return true;
+    }
 
     std::vector<std::wstring> parts;
     std::vector<std::wstring>::iterator it, it2;
@@ -3705,7 +3712,7 @@ bool XdnativeDatabase::renameIndex(const std::wstring& path,
 
 
 bool XdnativeDatabase::deleteIndex(const std::wstring& path,
-                           const std::wstring& name)
+                                   const std::wstring& name)
 {
     std::wstring cstr, rpath;
     if (detectMountPoint(path, cstr, rpath))

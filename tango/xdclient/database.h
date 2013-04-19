@@ -25,7 +25,7 @@ xcm_interface IClientDatabase : public xcm::IObject
 
 public:
 
-    virtual std::wstring getRequestPath() = 0;
+    virtual std::wstring getRequestPath(const std::wstring& path, const std::wstring& method) = 0;
 };
 
 XCM_DECLARE_SMARTPTR(IClientDatabase)
@@ -66,7 +66,7 @@ public:
               const std::wstring& uid, 
               const std::wstring& password);
 
-    std::wstring getRequestPath();
+    std::wstring getRequestPath(const std::wstring& path, const std::wstring& method);
     HttpRequest* getHttpObject();
 
     std::wstring serverCall(const std::wstring& path,
