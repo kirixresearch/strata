@@ -55,7 +55,6 @@ public:
     bool removeEventHandler(ISetEvents* handler);
 
 
-    
     tango::IIndexInfoPtr createIndex(const std::wstring& name,
                                      const std::wstring& expr,
                                      tango::IJob* job)
@@ -63,19 +62,16 @@ public:
         return xcm::null;
     }
 
-
     bool renameIndex(const std::wstring& name,
                      const std::wstring& new_name)
     {
         return false;
     }
 
-
     bool deleteIndex(const std::wstring& name)
     {
         return false;
     }
-
 
     tango::IIndexInfoEnumPtr getIndexEnum()
     {
