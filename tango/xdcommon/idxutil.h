@@ -45,16 +45,14 @@ IIndexIterator* seekRow(IIndex* idx,
 class KeyLayout;
 
 class CommonIndexIterator : public tango::IIterator,
-                            public IIteratorKeyAccess,
                             public tango::IIteratorRelation,
-                            public ISetEvents
+                            public IIteratorKeyAccess
 {
     XCM_CLASS_NAME("xdcommon.CommonIndexIterator")
     XCM_BEGIN_INTERFACE_MAP(CommonIndexIterator)
         XCM_INTERFACE_ENTRY(tango::IIterator)
-        XCM_INTERFACE_ENTRY(IIteratorKeyAccess)
         XCM_INTERFACE_ENTRY(tango::IIteratorRelation)
-        XCM_INTERFACE_ENTRY(ISetEvents)
+        XCM_INTERFACE_ENTRY(IIteratorKeyAccess)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -89,13 +87,6 @@ public:
     double getPos();
     void goRow(const tango::rowid_t& rowid);
     
-    void onSetRowUpdated(tango::rowid_t rowid);
-    void onSetRowDeleted(tango::rowid_t rowid);
-    void onSetDomainUpdatexd() { }
-    void onSetStructureUpdated() { }
-    void onSetRelationshipsUpdated() { }
-    void onSetDomainUpdated() { }
-
     std::wstring getTable();
     tango::rowpos_t getRowCount();
 

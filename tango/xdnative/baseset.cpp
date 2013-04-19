@@ -426,17 +426,17 @@ tango::rowpos_t BaseSet::getRowCount()
 
 
 
-bool BaseSet::addEventHandler(ISetEvents* handler)
+bool BaseSet::addEventHandler(IXdnativeSetEvents* handler)
 {
     XCM_AUTO_LOCK(m_event_mutex);
     m_event_handlers.push_back(handler);
     return true;
 }
 
-bool BaseSet::removeEventHandler(ISetEvents* handler)
+bool BaseSet::removeEventHandler(IXdnativeSetEvents* handler)
 {
     XCM_AUTO_LOCK(m_event_mutex);
-    std::vector<ISetEvents*>::iterator it;
+    std::vector<IXdnativeSetEvents*>::iterator it;
     it = std::find(m_event_handlers.begin(),
                    m_event_handlers.end(),
                    handler);
@@ -464,7 +464,7 @@ void BaseSet::fire_onSetDomainUpdated()
 {
     XCM_AUTO_LOCK(m_event_mutex);
 
-    std::vector<ISetEvents*>::iterator it;
+    std::vector<IXdnativeSetEvents*>::iterator it;
     for (it = m_event_handlers.begin();
          it != m_event_handlers.end();
          ++it)
@@ -477,7 +477,7 @@ void BaseSet::fire_onSetStructureUpdated()
 {
     XCM_AUTO_LOCK(m_event_mutex);
 
-    std::vector<ISetEvents*>::iterator it;
+    std::vector<IXdnativeSetEvents*>::iterator it;
     for (it = m_event_handlers.begin();
          it != m_event_handlers.end();
          ++it)
@@ -490,7 +490,7 @@ void BaseSet::fire_onSetRelationshipsUpdated()
 {
     XCM_AUTO_LOCK(m_event_mutex);
 
-    std::vector<ISetEvents*>::iterator it;
+    std::vector<IXdnativeSetEvents*>::iterator it;
     for (it = m_event_handlers.begin();
          it != m_event_handlers.end();
          ++it)
@@ -503,7 +503,7 @@ void BaseSet::fire_onSetRowUpdated(tango::rowid_t rowid)
 {
     XCM_AUTO_LOCK(m_event_mutex);
 
-    std::vector<ISetEvents*>::iterator it;
+    std::vector<IXdnativeSetEvents*>::iterator it;
     for (it = m_event_handlers.begin();
          it != m_event_handlers.end();
          ++it)
@@ -516,7 +516,7 @@ void BaseSet::fire_onSetRowDeleted(tango::rowid_t rowid)
 {
     XCM_AUTO_LOCK(m_event_mutex);
 
-    std::vector<ISetEvents*>::iterator it;
+    std::vector<IXdnativeSetEvents*>::iterator it;
     for (it = m_event_handlers.begin();
          it != m_event_handlers.end();
          ++it)

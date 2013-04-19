@@ -600,6 +600,9 @@ void CommonIndexIterator::goRow(const tango::rowid_t& rowid)
     m_data_iter->goRow(rowid);
 }
 
+/*
+TODO: reimplement this some other way (if necessary)
+
 void CommonIndexIterator::onSetRowUpdated(tango::rowid_t rowid)
 {
     if (rowid == m_rowid)
@@ -617,7 +620,7 @@ void CommonIndexIterator::onSetRowDeleted(tango::rowid_t rowid)
         m_row_deleted = true;
     }
 }
-
+*/
 
 
 std::wstring CommonIndexIterator::getTable()

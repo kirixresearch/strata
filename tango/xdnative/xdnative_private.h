@@ -68,6 +68,7 @@ inline tango::tableord_t rowidGetTableOrd(tango::rowid_t rowid)
 xcm_interface ITable;
 xcm_interface IRelationInternal;
 xcm_interface IXdnativeSet;
+xcm_interface IXdnativeSetEvents;
 xcm_interface IXdnativeDatabase;
 xcm_interface INodeValue;
 xcm_interface IIndex;
@@ -81,6 +82,7 @@ class OfsFile;
 XCM_DECLARE_SMARTPTR(ITable)
 XCM_DECLARE_SMARTPTR(IRelationInternal)
 XCM_DECLARE_SMARTPTR(IXdnativeSet)
+XCM_DECLARE_SMARTPTR(IXdnativeSetEvents)
 XCM_DECLARE_SMARTPTR(IXdnativeDatabase)
 XCM_DECLARE_SMARTPTR(INodeValue)
 
@@ -220,8 +222,8 @@ public:
     virtual tango::rowpos_t getRowCount() = 0;
     virtual tango::IStructurePtr getStructure() = 0;
 
-    virtual bool addEventHandler(ISetEvents* handler) = 0;
-    virtual bool removeEventHandler(ISetEvents* handler) = 0;
+    virtual bool addEventHandler(IXdnativeSetEvents* handler) = 0;
+    virtual bool removeEventHandler(IXdnativeSetEvents* handler) = 0;
 
     virtual void appendCalcFields(tango::IStructure* s) = 0;
     virtual void onOfsPathChanged(const std::wstring& new_path) = 0;
@@ -241,6 +243,22 @@ public:
     virtual bool renameIndex(const std::wstring& name,
                              const std::wstring& new_name) = 0;
     virtual  bool deleteIndex(const std::wstring& name) = 0;
+};
+
+
+
+
+xcm_interface IXdnativeSetEvents : public xcm::IObject
+{
+    XCM_INTERFACE_NAME("xdnative.IXdnativeSetEvents")
+
+public:
+
+    virtual void onSetDomainUpdated() = 0;   // (right now only used with BookmarkSet)
+    virtual void onSetStructureUpdated() = 0;
+    virtual void onSetRelationshipsUpdated() = 0;
+    virtual void onSetRowUpdated(tango::rowid_t rowid) = 0;
+    virtual void onSetRowDeleted(tango::rowid_t rowid) = 0;
 };
 
 

@@ -34,21 +34,6 @@ public:
 };
 
 
-
-xcm_interface ISetEvents : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("tango.ISetEvents")
-
-public:
-
-    virtual void onSetDomainUpdated() = 0;   // (right now only used with BookmarkSet)
-    virtual void onSetStructureUpdated() = 0;
-    virtual void onSetRelationshipsUpdated() = 0;
-    virtual void onSetRowUpdated(tango::rowid_t rowid) = 0;
-    virtual void onSetRowDeleted(tango::rowid_t rowid) = 0;
-};
-
-
 xcm_interface ISetRestoreDeleted : public xcm::IObject
 {
     XCM_INTERFACE_NAME("tango.ISetRestoreDeleted")

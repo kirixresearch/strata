@@ -51,8 +51,8 @@ public:
 
     // IXdnativeSet
 
-    bool addEventHandler(ISetEvents* handler);
-    bool removeEventHandler(ISetEvents* handler);
+    bool addEventHandler(IXdnativeSetEvents* handler);
+    bool removeEventHandler(IXdnativeSetEvents* handler);
 
 
     tango::IIndexInfoPtr createIndex(const std::wstring& name,
@@ -124,7 +124,7 @@ private:
     std::wstring m_set_id;
     unsigned int m_set_flags;
 
-    std::vector<ISetEvents*> m_event_handlers;
+    std::vector<IXdnativeSetEvents*> m_event_handlers;
     std::vector<tango::IColumnInfoPtr> m_calc_fields;
     unsigned long long m_calcrefresh_time;
     bool m_rel_init;

@@ -94,14 +94,14 @@ class AggregateResult;
 class BaseIterator :  public tango::IIterator,
                       public IIteratorKeyAccess,
                       public tango::IIteratorRelation,
-                      public ISetEvents
+                      public IXdnativeSetEvents
 {
     XCM_CLASS_NAME("xdnative.BaseIterator")
     XCM_BEGIN_INTERFACE_MAP(BaseIterator)
         XCM_INTERFACE_ENTRY(tango::IIterator)
         XCM_INTERFACE_ENTRY(IIteratorKeyAccess)
         XCM_INTERFACE_ENTRY(tango::IIteratorRelation)
-        XCM_INTERFACE_ENTRY(ISetEvents)
+        XCM_INTERFACE_ENTRY(IXdnativeSetEvents)
     XCM_END_INTERFACE_MAP()
 
 
@@ -176,7 +176,7 @@ public:
     bool putNull(tango::objhandle_t column_handle);
     void flushRow();
 
-    // ISetEvents 
+    // IXdnativeSetEvents 
     void onSetDomainUpdated();
     void onSetStructureUpdated();
     void onSetRelationshipsUpdated();
