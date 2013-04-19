@@ -236,7 +236,7 @@ enum
     dbattrTempDirectory = 1001,
     dbattrDefinitionDirectory = 1002,
     dbattrDatabaseUrl = 1003,
-    dbattrDatabaseName = 1003,
+    dbattrDatabaseName = 1004,
 
     dbattrIdentifierQuoteOpenChar = 1900,
     dbattrIdentifierQuoteCloseChar = 1901,

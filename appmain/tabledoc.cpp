@@ -176,7 +176,7 @@ BEGIN_EVENT_TABLE(TableDoc, wxWindow)
 END_EVENT_TABLE()
 
 
-// -- helper functions --
+// helper functions
 
 static void setColumnProps(wxColor* fill_color,
                            wxColor* text_color = NULL,
@@ -2667,7 +2667,7 @@ void TableDoc::updateCaption()
     {
         m_caption = _("(Untitled)");
     }
-        else
+     else
     {
         if (m_source_url.Length() > 0)
             m_caption = m_source_url.AfterLast('/');
