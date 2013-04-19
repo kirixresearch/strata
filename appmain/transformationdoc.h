@@ -250,7 +250,6 @@ private:
     
     kcl::RowSelectionGrid* m_grid;
     
-    tango::ISetPtr m_init_set;
     std::vector<TransformField> m_source_fields;
     wxString m_path;
     bool m_dirty;

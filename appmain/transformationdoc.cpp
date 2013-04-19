@@ -326,7 +326,6 @@ TransformationDoc::TransformationDoc()
     m_dirty = false;
     m_grid = NULL;
     m_last_selected_fieldtype = -1;
-    m_init_set = xcm::null;
     
     m_char_format_choices.push_back(_("Trim leading spaces"));
     m_char_format_choices.push_back(_("Trim leading zeros"));
@@ -631,7 +630,6 @@ void TransformationDoc::initFromSet(const wxString& path)
 
 void TransformationDoc::close()
 {
-    m_init_set.clear();
 }
 
 void TransformationDoc::getTransformation(std::vector<TransformField>& result)
@@ -1455,6 +1453,7 @@ tango::IStructurePtr TransformationDoc::createStructureFromGrid()
 
 tango::IStructurePtr TransformationDoc::getSourceStructure()
 {
+/*
     tango::IStructurePtr s;
     if (m_init_set.isOk())
     {
@@ -1466,6 +1465,8 @@ tango::IStructurePtr TransformationDoc::getSourceStructure()
             return tset->getSourceStructure();
     }
     
+    */
+
     return xcm::null;
 }
 
@@ -1718,6 +1719,7 @@ bool TransformationDoc::doSave()
             m_grid->setCellInteger(row, colFieldScale, scale);
     }
 
+    /*
     tango::ISetPtr text_set;
     tango::IFixedLengthDefinitionPtr fset;
     tango::IDelimitedTextSetPtr tset;
@@ -1814,6 +1816,8 @@ bool TransformationDoc::doSave()
         m_init_set = text_set;
     }
 
+    */
+
     // update the TableDoc's view
     ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
     if (tabledoc)
@@ -1822,7 +1826,7 @@ bool TransformationDoc::doSave()
 
         // update the TableDoc's base set
         tabledoc->open(text_set->getObjectPath());
-        */
+
 
         
         ITableDocViewPtr tabledocview = tabledoc->getActiveView();
@@ -1858,6 +1862,8 @@ bool TransformationDoc::doSave()
             if (model)
                 model->writeObject(tabledocview);
         }
+
+        */
     }
     
     m_dirty = false;
