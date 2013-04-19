@@ -496,19 +496,6 @@ bool TextDoc::updateColumnList()
     return true;
 }
 
-tango::ISetPtr TextDoc::getTextSet()
-{
-    if (m_view == TextDoc::TextDelimitedView)
-    {
-        return m_textdelimited_set;
-    }
-     else if (m_view == TextDoc::FixedLengthView)
-    {
-        return m_fixedlength_set;
-    }
-    
-    return xcm::null;
-}
 
 tango::IStructurePtr TextDoc::getStructure()
 {
