@@ -57,7 +57,6 @@ xcm_interface IJob;
 xcm_interface IRelation;
 xcm_interface IRowDeleter;
 xcm_interface IRowInserter;
-xcm_interface ISet;
 xcm_interface ICacheRowUpdate;
 xcm_interface IStream;
 xcm_interface IStructure;
@@ -81,7 +80,6 @@ XCM_DECLARE_SMARTPTR(IStructure)
 XCM_DECLARE_SMARTPTR(IRelation)
 XCM_DECLARE_SMARTPTR(IRowInserter)
 XCM_DECLARE_SMARTPTR(IRowDeleter)
-XCM_DECLARE_SMARTPTR(ISet)
 XCM_DECLARE_SMARTPTR(ICacheRowUpdate)
 XCM_DECLARE_SMARTPTR(IStream)
 XCM_DECLARE_SMARTPTR(IFixedLengthDefinition)
@@ -519,16 +517,6 @@ public:
     virtual bool deleteRow(const rowid_t& rowid) = 0;
     virtual void finishDelete() = 0;
     virtual void cancelDelete() = 0;
-};
-
-
-xcm_interface ISet : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("tango.ISet")
-
-public:
-
-
 };
 
 

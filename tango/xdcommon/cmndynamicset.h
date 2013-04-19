@@ -28,14 +28,12 @@ public:
 
 
 
-class CommonDynamicSet : public tango::ISet,
-                         public IXdsqlTable
+class CommonDynamicSet : public IXdsqlTable
 {
 friend class CommonDynamicSetRowDeleter;
 
     XCM_CLASS_NAME("xdnative.CommonDynamicSet")
     XCM_BEGIN_INTERFACE_MAP(CommonDynamicSet)
-        XCM_INTERFACE_ENTRY(tango::ISet)
         XCM_INTERFACE_ENTRY(IXdsqlTable)
     XCM_END_INTERFACE_MAP()
 
@@ -55,7 +53,6 @@ public:
     bool insertRow(const tango::rowid_t& rowid);
     bool deleteRow(const tango::rowid_t& rowid);
     
-    // ISet
     std::wstring getSetId();
 
     tango::IStructurePtr getStructure();

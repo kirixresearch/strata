@@ -13,7 +13,7 @@
 #define __XDCOMMON_CMNBASESET_H
 
 
-class CommonBaseSet : public tango::ISet
+class CommonBaseSet : public xcm::IObject
 {
 public:
 
