@@ -82,11 +82,16 @@ tango::IIteratorPtr IterWrapperSet::createIterator(const std::wstring& columns,
         m_iter->goFirst();
 
         tango::IIteratorPtr result = m_iter->clone();
+
+        /*
+        TODO: implement
+
         IIteratorSetAccessPtr iter_int = result;
         if (iter_int.isOk())
         {
             iter_int->setSet(static_cast<tango::ISet*>(this));
         }
+        */
 
         return result;
     }

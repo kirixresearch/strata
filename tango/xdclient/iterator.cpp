@@ -22,7 +22,7 @@ const std::wstring empty_wstring = L"";
 const int cache_size = 50;
 
 
-ClientIterator::ClientIterator(ClientDatabase* database, ClientSet* set)
+ClientIterator::ClientIterator(ClientDatabase* database)
 {
     m_current_row = 0;
     m_current_row_ptr = NULL;
@@ -31,10 +31,6 @@ ClientIterator::ClientIterator(ClientDatabase* database, ClientSet* set)
 
     m_database = database;
     m_database->ref();
-
-    m_set = set;
-    if (m_set)
-        m_set->ref();
 }
 
 ClientIterator::~ClientIterator()
@@ -55,9 +51,6 @@ ClientIterator::~ClientIterator()
 
     for (it = m_exprs.begin(); it != m_exprs.end(); ++it)
         delete (*it);
-
-    if (m_set)
-        m_set->unref();
 
     if (m_database)
         m_database->unref();
@@ -98,7 +91,7 @@ tango::IIteratorPtr ClientIterator::clone()
     if (!response["success"].getBoolean())
         return xcm::null;
 
-    ClientIterator* iter = new ClientIterator(m_database, m_set);
+    ClientIterator* iter = new ClientIterator(m_database);
     if (!iter->init(response["handle"], L""))
     {
         delete iter;

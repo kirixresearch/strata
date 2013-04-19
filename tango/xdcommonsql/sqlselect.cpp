@@ -1648,7 +1648,6 @@ static bool doJoin(tango::IDatabasePtr db,
                    tango::IJob* job)
 {
     std::wstring left;
-    tango::ISetPtr output_set;
     std::vector<JoinField> jfields;
     std::vector<JoinInfo> joins;
     SourceTable* left_table_info = NULL;
@@ -2311,7 +2310,6 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
     wcscpy(command, _command.c_str());
     DelArrPtr<wchar_t> del_command(command);
 
-    std::vector<tango::ISetPtr> sets;
     std::vector<SelectField> fields;
     std::vector<SourceTable> source_tables;
     std::vector<OrderByField> order_by_fields;
@@ -2323,7 +2321,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
     IJobInternalPtr ijob = job;
     bool group_operation = false;
     bool join_operation = false;
-    tango::ISetPtr filter_set_ref_holder;
+    xcm::IObjectPtr filter_set_ref_holder;
     
     // strip off trailing semicolon
     int command_len = wcslen(command);
@@ -3165,7 +3163,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
             delete dyn_set;
             return xcm::null;
         }
-        filter_set_ref_holder = (tango::ISet*)dyn_set;
+        filter_set_ref_holder = (xcm::IObject*)(IXdsqlTable*)dyn_set;
         
         // start job phase
         if (job)

@@ -19,37 +19,6 @@
 #include "../xdcommon/dbfuncs.h"
 
 
-static std::wstring buildOrderParams(const std::wstring& expr)
-{
-
-    return kl::url_encodeURIComponent(expr);
-/*
-    // TODO: do some type of expression translation to
-    // a suitable URL syntax
-
-    std::wstring result;
-
-    std::wstring::const_iterator it, it_end;
-    it_end = expr.end();
-    
-    for (it = expr.begin(); it != it_end; ++it)
-    {
-        result.push_back(*it);
-    }
-
-    return result;
-*/
-}
-
-
-ClientSet::ClientSet()
-{
-}
-
-ClientSet::~ClientSet()
-{
-}
-
 
 /*
 bool ClientSet::modifyStructure(tango::IStructure* struct_config, tango::IJob* job)

@@ -583,7 +583,7 @@ tango::IIteratorPtr ClientDatabase::createIterator(const std::wstring& path,
     }
 
     // initialize the iterator
-    ClientIterator* iter = new ClientIterator(this, NULL);
+    ClientIterator* iter = new ClientIterator(this);
     if (!iter->init(response["handle"], L""))
     {
         delete iter;
@@ -681,7 +681,7 @@ bool ClientDatabase::execute(const std::wstring& command,
 
 
     // initialize the iterator
-    ClientIterator* iter = new ClientIterator(this, NULL);
+    ClientIterator* iter = new ClientIterator(this);
     if (!iter->init(response["handle"], L""))
     {
         delete iter;

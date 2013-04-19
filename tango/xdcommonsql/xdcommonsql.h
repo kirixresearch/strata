@@ -34,7 +34,7 @@ xcm_interface IXdsqlDatabase : public xcm::IObject
 
 public:
 
-    virtual tango::ISetPtr openSet(const std::wstring& path) = 0;
+    virtual IXdsqlTablePtr openTable(const std::wstring& path) = 0;
 };
 
 

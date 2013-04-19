@@ -765,7 +765,7 @@ bool DrizzleDatabase::createTable(const std::wstring& path,
 
     execute(command, 0, NULL);
 
-    return openSet(path);
+    return openTable(path);
 */
     std::wstring command;
     command.reserve(1024);

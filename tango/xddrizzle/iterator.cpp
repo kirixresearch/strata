@@ -151,21 +151,6 @@ bool DrizzleIterator::init(const std::wstring& query)
     m_row = m_reader.getRow();
     m_lengths = m_reader.getFieldLengths();
 
-    // if m_set is null, create a placeholder set
-    if (m_set.isNull())
-    {
-        // create set and initialize variables
-        DrizzleSet* set = new DrizzleSet;
-        set->m_database = m_database;
-        set->m_drizzle = m_drizzle;
-        
-        if (!set->init())
-            return false;
-
-        m_set = static_cast<tango::ISet*>(set);
-    }
-    
-    
     refreshStructure();
     
     return true;

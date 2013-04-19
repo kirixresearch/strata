@@ -17,23 +17,6 @@
 #include "../xdcommon/cmnbaseset.h"
 
 
-class ClientSet : public tango::ISet
-{
-friend class ClientDatabase;
-friend class ClientIterator;
-friend class ClientRowInserter;
-
-    XCM_CLASS_NAME("xdclient.Set")
-    XCM_BEGIN_INTERFACE_MAP(ClientSet)
-        XCM_INTERFACE_ENTRY(tango::ISet)
-    XCM_END_INTERFACE_MAP()
-
-public:
-
-    ClientSet();
-    virtual ~ClientSet();
-};
-
 
 class ClientInsertData
 {

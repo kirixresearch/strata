@@ -170,7 +170,7 @@ public:
     bool getBoolean(tango::objhandle_t data_handle);
     bool isNull(tango::objhandle_t data_handle);
 
-    // -- tango::ICacheRowUpdate --
+    // tango::ICacheRowUpdate
 
     bool updateCacheRow(tango::rowid_t rowid,
                         tango::ColumnUpdateInfo* info,
@@ -184,8 +184,8 @@ private:
     
 private:
 
-    tango::IDatabasePtr m_database;
-    tango::ISetPtr m_set;
+    DrizzleDatabase* m_database;
+    DrizzleSet* m_set;
 
     drizzle_st* m_drizzle;
     drizzle_con_st* m_con;

@@ -1644,21 +1644,20 @@ bool Database::copyData(const tango::CopyInfo* info, tango::IJob* job)
     }
 
 
-    tango::ISetPtr result_set;
-    tango::ISetPtr output;
     
     if (info->append)
     {
-        output = openSet(info->output);
+        IXdsqlTablePtr output = openTable(info->output);
+        if (output.isNull())
+            return false;
     }
      else
     {
         deleteFile(info->output);
-        output = createTable(info->output, structure, NULL);
+        if (!createTable(info->output, structure, NULL))
+            return false;
     }
 
-    if (output.isNull())
-        return false;
 
     std::wstring cstr, rpath;
     if (detectMountPoint(info->output, cstr, rpath))
@@ -3294,7 +3293,7 @@ std::wstring Database::getSetPathFromId(const std::wstring& set_id)
 
 
 
-tango::ISetPtr Database::openSet(const std::wstring& _path)
+IXdsqlTablePtr Database::openTable(const std::wstring& _path)
 {
     std::wstring path;
 
@@ -3308,7 +3307,7 @@ tango::ISetPtr Database::openSet(const std::wstring& _path)
     {
         std::wstring ptr_string = kl::afterLast(path, L'/');
         unsigned long l = (unsigned long)hex2uint64(ptr_string.c_str());
-        tango::ISet* sptr = (tango::ISet*)l;
+        IXdsqlTable* sptr = (IXdsqlTable*)l;
         return sptr;
     }
 
@@ -3327,11 +3326,10 @@ tango::IIteratorPtr Database::createIterator(const std::wstring& path,
                                              const std::wstring& sort,
                                              tango::IJob* job)
 {
-    tango::ISetPtr set = openSet(path);
-    IXdsqlTablePtr ci = set;
-    if (ci.isNull())
+    IXdsqlTablePtr table = openTable(path);
+    if (table.isNull())
         return xcm::null;
-    return ci->createIterator(columns, sort, job);
+    return table->createIterator(columns, sort, job);
 }
 
 
@@ -3473,18 +3471,6 @@ public:
             return m_right_path;
              else
             return m_dbi->getSetPathFromId(m_right_setid);
-    }
-
-    tango::ISetPtr getRightSetPtr()
-    {
-        if (m_right_path.length() > 0)
-        {
-            return m_dbi->openSet(m_right_path);
-        }
-         else
-        {
-            return m_dbi->openSetById(m_right_setid);
-        }
     }
 
     void setRightExpression(const std::wstring& new_value)
@@ -3721,10 +3707,10 @@ tango::IRelationPtr Database::createRelation(const std::wstring& tag,
          else
         relation->setRightSetId(right_set_path);
 
-    tango::ISetPtr left_set = openSet(left_set_path);
-    if (left_set.isOk())
+    IXdsqlTablePtr left_table = openTable(left_set_path);
+    if (left_table.isOk())
     {
-        ISetInternalPtr set_int = left_set;
+        ISetInternalPtr set_int = left_table;
         if (set_int)
             set_int->onRelationshipsUpdated();
     }
@@ -3754,11 +3740,11 @@ bool Database::deleteRelation(const std::wstring& relation_id)
         return false;
 
     
-    std::wstring left_set_path = rel->getLeftTable();
-    tango::ISetPtr left_set = openSet(left_set_path);
-    if (left_set)
+    std::wstring left_table_path = rel->getLeftTable();
+    IXdsqlTablePtr left_table = openTable(left_table_path);
+    if (left_table)
     {
-        ISetInternalPtr set_int = left_set;
+        ISetInternalPtr set_int = left_table;
         if (set_int)
             set_int->onRelationshipsUpdated();
     }
@@ -3799,8 +3785,7 @@ tango::IIndexInfoPtr Database::createIndex(const std::wstring& path,
         return db->createIndex(rpath, name, newexpr, job);
     }
 
-    tango::ISetPtr set = openSet(path);
-    ISetInternalPtr set_int = set;
+    ISetInternalPtr set_int = openTable(path);
     if (set_int.isNull())
         return xcm::null;
 
@@ -3823,8 +3808,7 @@ bool Database::renameIndex(const std::wstring& path,
         return db->renameIndex(rpath, name, new_name);
     }
 
-    tango::ISetPtr set = openSet(path);
-    ISetInternalPtr set_int = set;
+    ISetInternalPtr set_int = openTable(path);
     if (set_int.isNull())
         return false;
 
@@ -3846,12 +3830,9 @@ bool Database::deleteIndex(const std::wstring& path,
         return db->deleteIndex(rpath, name);
     }
 
-    tango::ISetPtr set = openSet(path);
-    ISetInternalPtr set_int = set;
+    ISetInternalPtr set_int = openTable(path);
     if (set_int.isNull())
-    {
         return xcm::null;
-    }
 
     return set_int->deleteIndex(name);
 }
@@ -3870,8 +3851,7 @@ tango::IIndexInfoEnumPtr Database::getIndexEnum(const std::wstring& path)
         return db->getIndexEnum(rpath);
     }
 
-    tango::ISetPtr set = openSet(path);
-    ISetInternalPtr set_int = set;
+    ISetInternalPtr set_int = openTable(path);
     if (set_int.isNull())
     {
         // ISetInternal not supported -- return no indexes
@@ -3887,12 +3867,11 @@ tango::IIndexInfoEnumPtr Database::getIndexEnum(const std::wstring& path)
 
 tango::IStructurePtr Database::describeTable(const std::wstring& path)
 {
-    tango::ISetPtr set = openSet(path);
-    IXdsqlTablePtr set_int = set;
-    if (set_int.isNull())
+    IXdsqlTablePtr table = openTable(path);
+    if (table.isNull())
         return xcm::null;
 
-    return set_int->getStructure();
+    return table->getStructure();
 }
 
 tango::IRowInserterPtr Database::bulkInsert(const std::wstring& path)
@@ -3909,7 +3888,7 @@ tango::IRowInserterPtr Database::bulkInsert(const std::wstring& path)
     }
 
 
-    ISetInternalPtr set = openSet(path);
+    ISetInternalPtr set = openTable(path);
     if (set.isNull())
         return xcm::null;
 
@@ -3920,7 +3899,7 @@ tango::IRowInserterPtr Database::bulkInsert(const std::wstring& path)
 
 bool Database::modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job)
 {
-    ISetInternalPtr set = openSet(path);
+    ISetInternalPtr set = openTable(path);
     if (set.isNull())
         return xcm::null;
 

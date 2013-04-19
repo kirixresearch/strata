@@ -16,6 +16,7 @@
 #include <kl/string.h>
 #include "../xdcommon/jobinfo.h"
 #include "../xdcommon/tango_private.h"
+#include "../xdcommonsql/xdcommonsql.h"
 
 
 // aggregate function types
@@ -71,7 +72,6 @@ xcm_interface ISetInternal;
 xcm_interface IDatabaseInternal;
 xcm_interface IOfsEvents;
 xcm_interface INodeValue;
-xcm_interface IIteratorSetAccess;
 xcm_interface IIndex;
 xcm_interface IIndexIterator;
 
@@ -87,7 +87,6 @@ XCM_DECLARE_SMARTPTR(ISetInternal)
 XCM_DECLARE_SMARTPTR(IDatabaseInternal)
 XCM_DECLARE_SMARTPTR(IOfsEvents)
 XCM_DECLARE_SMARTPTR(INodeValue)
-XCM_DECLARE_SMARTPTR(IIteratorSetAccess)
 
 
 xcm_interface INodeValue : public xcm::IObject
@@ -286,15 +285,6 @@ public:
 };
 
 
-xcm_interface IIteratorSetAccess : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("xdnative.IIteratorSetAccess")
-
-public:
-
-    virtual void setSet(tango::ISetPtr set) = 0;
-};
-
 
 
 xcm_interface IDatabaseInternal : public xcm::IObject
@@ -303,7 +293,7 @@ xcm_interface IDatabaseInternal : public xcm::IObject
 
 public:
 
-    virtual tango::ISetPtr openSet(const std::wstring& path) = 0;
+    virtual IXdsqlTablePtr openTable(const std::wstring& path) = 0;
 
     virtual INodeValuePtr createNodeFile(const std::wstring& path) = 0;
     virtual INodeValuePtr openNodeFile(const std::wstring& path) = 0;

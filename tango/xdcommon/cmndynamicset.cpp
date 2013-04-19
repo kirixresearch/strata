@@ -124,7 +124,7 @@ bool CommonDynamicSet::create(tango::IDatabasePtr database,
     if (xdb.isNull())
         return false;
 
-    IXdsqlTablePtr base_table = xdb->openSet(base_path);
+    IXdsqlTablePtr base_table = xdb->openTable(base_path);
     if (base_table.isNull())
         return false;
 

@@ -102,7 +102,7 @@ friend class ClientSet;
 
 public:
 
-    ClientIterator(ClientDatabase* database, ClientSet* set);
+    ClientIterator(ClientDatabase* database);
     ~ClientIterator();
     bool init(const std::wstring& handle, const std::wstring& url_query);
 
@@ -175,7 +175,6 @@ private:
     std::wstring m_url_query;
 
     ClientDatabase* m_database;
-    ClientSet* m_set;
     std::wstring m_handle;
 
     tango::IStructurePtr m_structure;

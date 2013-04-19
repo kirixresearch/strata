@@ -52,7 +52,7 @@ static int doUpdate(tango::IDatabasePtr db,
     if (finfo.isNull())
         return -1;
 
-    tango::ISetPtr set = xdb->openSet(path);
+    IXdsqlTablePtr set = xdb->openTable(path);
     if (set.isNull())
         return -1;
 

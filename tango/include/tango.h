@@ -262,8 +262,8 @@ enum
 
 enum
 {
-    sfFastRowCount = 0x01    // set if an ISet::getRowCount() operation can
-                             //   be executed in O(1) time (fast)
+    sfFastRowCount = 0x01    // set if a getRowCount() operation can
+                             // be executed in O(1) time (fast)
 };
 
 

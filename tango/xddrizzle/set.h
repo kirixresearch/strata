@@ -25,7 +25,6 @@ friend class DrizzleRowInserter;
 
     XCM_CLASS_NAME("xddrizzle.Set")
     XCM_BEGIN_INTERFACE_MAP(DrizzleSet)
-        XCM_INTERFACE_ENTRY(tango::ISet)
     XCM_END_INTERFACE_MAP()
 
 public:

@@ -439,8 +439,7 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
         return false;
 
     // get right set
-    tango::ISetPtr right_set = m_dbi->openSet(rel->getRightTable());
-    ISetInternalPtr right_set_int = right_set;
+    ISetInternalPtr right_set_int = m_dbi->openTable(rel->getRightTable());
     if (!right_set_int)
         return false;
 
@@ -1117,8 +1116,7 @@ public:
         }
 
 
-        tango::ISetPtr right_set = dbi->openSet(rel->getRightTable());
-        ISetInternalPtr right_set_internal = right_set;
+        ISetInternalPtr right_set_internal = dbi->openTable(rel->getRightTable());
         if (right_set_internal.isNull())
             return false;
 
