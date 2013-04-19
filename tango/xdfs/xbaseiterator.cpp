@@ -15,6 +15,7 @@
 
 
 #include "tango.h"
+#include "xdfs.h"
 #include "database.h"
 #include "xbaseset.h"
 #include "xbaseiterator.h"

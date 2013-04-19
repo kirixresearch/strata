@@ -16,6 +16,7 @@
 
 #include <cmath>
 #include "tango.h"
+#include "xdfs.h"
 #include "database.h"
 #include "rawtext.h"
 #include "fixedlengthtextset.h"
@@ -73,11 +74,6 @@ FixedLengthTextSet::FixedLengthTextSet()
 
 FixedLengthTextSet::~FixedLengthTextSet()
 {
-    // unregister the set with the FsDatabase
-    IFsDatabasePtr fs_db = m_database;
-    if (fs_db)
-        fs_db->unregisterSet(this);
-        
     // release definition object
     m_definition->unref();
 }
@@ -88,11 +84,6 @@ bool FixedLengthTextSet::init(tango::IDatabasePtr db,
     if (!xf_get_file_exist(filename))
         return false;
 
-    // register the set with the FsDatabase
-    IFsDatabasePtr fs_db = db;
-    if (fs_db)
-        fs_db->registerSet(filename, this);
-    
     // set our member variables
     m_database = db;
     m_path = filename;

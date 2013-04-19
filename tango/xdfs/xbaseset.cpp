@@ -15,6 +15,7 @@
 
 
 #include "tango.h"
+#include "xdfs.h"
 #include "database.h"
 #include "xbaseset.h"
 #include "xbaseiterator.h"
@@ -28,7 +29,7 @@
 #include "kl/md5.h"
 
 
-// -- XbaseSet class implementation --
+// XbaseSet class implementation
 
 XbaseSet::XbaseSet()
 {
@@ -37,11 +38,6 @@ XbaseSet::XbaseSet()
 
 XbaseSet::~XbaseSet()
 {
-    // unregister the set with the FsDatabase
-    IFsDatabasePtr fs_db = m_database;
-    if (fs_db)
-        fs_db->unregisterSet(this);
-
     if (m_file.isOpen())
         m_file.closeFile();
 }
@@ -51,11 +47,6 @@ bool XbaseSet::init(tango::IDatabasePtr db,
 {
     if (!m_file.openFile(filename))
         return false;
-
-    // register the set with the FsDatabase
-    IFsDatabasePtr fs_db = db;
-    if (fs_db)
-        fs_db->registerSet(filename, this);
 
     // set the set info filename
     tango::IAttributesPtr attr = db->getAttributes();
@@ -87,18 +78,18 @@ std::wstring XbaseSet::getSetId()
 
 tango::IStructurePtr XbaseSet::getStructure()
 {
-    // -- create new tango::IStructure --
+    // create new tango::IStructure
     tango::IStructurePtr s = static_cast<tango::IStructure*>(new Structure);
     IStructureInternalPtr struct_int = s;
     
-    // -- if we can't open the file, return an empty structure --
+    // if we can't open the file, return an empty structure
     if (!m_file.isOpen())
         return s;
 
-    // -- get structure from xbase file --
+    // get structure from xbase file
     std::vector<XbaseField> fields = m_file.getFields();
     
-    // -- fill out tango structure from xbase structure --
+    // fill out tango structure from xbase structure
     std::vector<XbaseField>::iterator it;
     for (it = fields.begin(); it != fields.end(); ++it)
     {
@@ -111,7 +102,7 @@ tango::IStructurePtr XbaseSet::getStructure()
         col->setScale(it->scale);
         col->setColumnOrdinal(it->ordinal);
         
-        // -- handle column information for specific types (currency, etc.) --
+        // handle column information for specific types (currency, etc.)
         if (it->type == 'Y')    // xbase currency type
             col->setWidth(18);
         if (col->getType() == tango::typeDouble)
@@ -210,8 +201,9 @@ bool XbaseSet::updateRow(tango::rowid_t rowid,
         
     m_file.goRow((unsigned int)rowid);
     
-    // -- copy the current row buffer into memory, so that we don't lose
-    //    all the data in non-updated columns when we do our replace below --
+    // copy the current row buffer into memory, so that we don't lose
+    // all the data in non-updated columns when we do our replace below
+
     unsigned char* buf = m_file.getRowBuffer();
     m_file.putRowBuffer(buf);
     
@@ -278,7 +270,7 @@ bool XbaseSet::updateRow(tango::rowid_t rowid,
 }
 
 
-// -- XbaseRowInserter class implementation --
+// XbaseRowInserter class implementation
 
 XbaseRowInserter::XbaseRowInserter(XbaseSet* set)
 {
@@ -291,7 +283,7 @@ XbaseRowInserter::XbaseRowInserter(XbaseSet* set)
 
 XbaseRowInserter::~XbaseRowInserter()
 {
-    // -- free all insert field data --
+    // free all insert field data
     std::vector<XbaseField*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
@@ -329,7 +321,7 @@ tango::IColumnInfoPtr XbaseRowInserter::getInfo(tango::objhandle_t column_handle
         return xcm::null;
     }
 
-    // -- create new tango::IColumnInfoPtr --
+    // create new tango::IColumnInfoPtr
     tango::IColumnInfoPtr col_info = static_cast<tango::IColumnInfo*>(new ColumnInfo);
     col_info->setName(kl::towstring(f->name));
     col_info->setType(xbase2tangoType(f->type));
@@ -492,8 +484,8 @@ void XbaseRowInserter::finishInsert()
 
 bool XbaseRowInserter::flush()
 {
-    // -- all of the "flush" logic happens in XbaseFile,
-    //    so there is no need to do anything here --
+    // all of the "flush" logic happens in XbaseFile,
+    // so there is no need to do anything here
     return true;
 }
 

@@ -15,6 +15,7 @@
 
 
 #include "tango.h"
+#include "xdfs.h"
 #include "database.h"
 #include "../xdcommon/connectionstr.h"
 

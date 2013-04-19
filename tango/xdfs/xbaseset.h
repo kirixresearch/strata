@@ -59,6 +59,7 @@ inline int xbase2tangoType(unsigned char xbase_type)
 
 
 class XbaseSet : public CommonBaseSet,
+                 public IXdfsSet,
                  public IXdsqlTable
 {
 friend class FsDatabase;
@@ -67,6 +68,7 @@ friend class XbaseRowInserter;
     XCM_CLASS_NAME("xdfs.XbaseSet")
     XCM_BEGIN_INTERFACE_MAP(XbaseSet)
         XCM_INTERFACE_ENTRY(CommonBaseSet)
+        XCM_INTERFACE_ENTRY(IXdfsSet)
         XCM_INTERFACE_ENTRY(IXdsqlTable)
     XCM_END_INTERFACE_MAP()
 
@@ -104,7 +106,6 @@ private:
 };
 
 
-// -- XbaseRowInserter class declaration --
 
 class XbaseRowInserter : public tango::IRowInserter
 {

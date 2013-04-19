@@ -14,13 +14,16 @@
 #endif
 
 
-#include "../xdcommon/xdcommon.h"
 #include <ctime>
 #include "tango.h"
+#include "xdfs.h"
 #include "database.h"
 #include "delimitedtext.h"
 #include "delimitedtextset.h"
 #include "delimitedtextiterator.h"
+#include "../xdcommon/structure.h"
+#include "../xdcommon/columninfo.h"
+#include "../xdcommon/jobinfo.h"
 #include "../xdcommon/dbfuncs.h"
 #include "../xdcommon/exindex.h"
 #include "../xdcommon/idxutil.h"
@@ -50,11 +53,6 @@ DelimitedTextSet::DelimitedTextSet()
 
 DelimitedTextSet::~DelimitedTextSet()
 {
-    // unregister the set with the FsDatabase
-    IFsDatabasePtr fs_db = m_database;
-    if (fs_db.isOk())
-        fs_db->unregisterSet(this);
-
     if (m_file.isOpen())
         m_file.closeFile();
 }
@@ -159,11 +157,6 @@ bool DelimitedTextSet::init(tango::IDatabasePtr db,
         determineColumns(rows_to_check, NULL);
     }
     
-    // register the set with the FsDatabase
-    IFsDatabasePtr fs_db = db;
-    if (fs_db.isOk())
-        fs_db->registerSet(filename, this);
-
     return true;
 }
 

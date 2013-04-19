@@ -73,6 +73,8 @@ public:
 
 
 class FixedLengthTextSet : public CommonBaseSet,
+                           public IXdfsSet,
+                           public IXdsqlTable,
                            public tango::IFixedLengthDefinition
 {
 friend class FsDatabase;
@@ -82,6 +84,8 @@ friend class FixedLengthTextRowInserter;
     XCM_CLASS_NAME("xdfs.FixedLengthTextSet")
     XCM_BEGIN_INTERFACE_MAP(FixedLengthTextSet)
         XCM_INTERFACE_ENTRY(CommonBaseSet)
+        XCM_INTERFACE_ENTRY(IXdfsSet)
+        XCM_INTERFACE_ENTRY(IXdsqlTable)
         XCM_INTERFACE_ENTRY(tango::IFixedLengthDefinition)
     XCM_END_INTERFACE_MAP()
 
@@ -94,7 +98,6 @@ public:
 
     void setCreateStructure(tango::IStructurePtr structure);
 
-    // tango::ISet
     tango::IRowInserterPtr getRowInserter();
     tango::IIteratorPtr createIterator(const std::wstring& columns,
                                        const std::wstring& expr,
@@ -102,7 +105,13 @@ public:
 
     tango::rowpos_t getRowCount();
 
-    // -- tango::IFixedLengthDefinition interface --
+    bool restoreDeleted() { return false; }
+
+    bool updateRow(tango::rowid_t rowid,
+                   tango::ColumnUpdateInfo* info,
+                   size_t info_size) { return false; }
+
+    // tango::IFixedLengthDefinition
 
     bool saveConfiguration();
     bool deleteConfiguration();

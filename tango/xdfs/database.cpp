@@ -16,6 +16,7 @@
 
 #include <ctime>
 #include "tango.h"
+#include "xdfs.h"
 #include "database.h"
 #include "xbaseset.h"
 #include "delimitedtextset.h"
@@ -147,59 +148,6 @@ std::wstring FsDatabase::getDefinitionDirectory()
     return result;
 }
 
-static std::wstring getSetMapKey(const std::wstring& path, tango::ISet* set)
-{
-    std::wstring result = L"[other] ";
-    
-    if (!set)
-        return L"";
-        
-    tango::IDelimitedTextSetPtr dl = set;
-    tango::IFixedLengthDefinitionPtr fl = set;
-    if (dl.isOk())
-        result = L"[delim] ";
-    if (fl.isOk())
-        result = L"[fixed] ";
-    
-    result += path;
-    return result;
-}
-
-static std::wstring getSetMapKey(const std::wstring& path, int format)
-{
-    std::wstring result = L"[other] ";
-
-    if (format == tango::formatDelimitedText)
-        result = L"[delim] ";
-     else if (format == tango::formatFixedLengthText)
-        result = L"[fixed] ";
-    
-    result += path;
-    return result;
-}
-
-void FsDatabase::registerSet(std::wstring path, tango::ISet* set)
-{
-    XCM_AUTO_LOCK(m_obj_mutex);
-    
-    std::wstring key = getSetMapKey(path, set);
-    m_set_map[key] = set;
-}
-
-void FsDatabase::unregisterSet(tango::ISet* set)
-{
-    XCM_AUTO_LOCK(m_obj_mutex);
-
-    std::map<std::wstring, tango::ISet*, kl::cmp_nocase>::iterator it;
-    for (it = m_set_map.begin(); it != m_set_map.end(); ++it)
-    {
-        if (it->second == set)
-        {
-            m_set_map.erase(it);
-            return;
-        }
-    }
-}
 
 static int find_max(int a, int b, int c = 0, int d = 0, int e = 0, int f = 0,
                                   int g = 0, int h = 0, int i = 0, int j = 0)
@@ -1367,7 +1315,7 @@ tango::IStreamPtr FsDatabase::openStream(const std::wstring& path)
 }
 
 
-static tango::ISetPtr openXbaseSet(tango::IDatabasePtr db,
+static IXdfsSetPtr openXbaseSet(tango::IDatabasePtr db,
                                    const std::wstring& path)
 {
     // we need to manually protect the ref count because
@@ -1381,12 +1329,12 @@ static tango::ISetPtr openXbaseSet(tango::IDatabasePtr db,
         return xcm::null;
     }
     
-    tango::ISetPtr retval = static_cast<tango::ISet*>(set);
+    IXdfsSetPtr retval = static_cast<IXdfsSet*>(set);
     set->unref();
     return retval;
 }
 
-static tango::ISetPtr openFixedLengthTextSet(tango::IDatabasePtr db,
+static IXdfsSetPtr openFixedLengthTextSet(tango::IDatabasePtr db,
                                              const std::wstring& path)
 {
     // we need to manually protect the ref count because
@@ -1400,12 +1348,12 @@ static tango::ISetPtr openFixedLengthTextSet(tango::IDatabasePtr db,
         return xcm::null;
     }
     
-    tango::ISetPtr retval = static_cast<tango::ISet*>(set);
+    IXdfsSetPtr retval = static_cast<IXdfsSet*>(set);
     set->unref();
     return retval;
 }
 
-static tango::ISetPtr openDelimitedTextSet(tango::IDatabasePtr db,
+static IXdfsSetPtr openDelimitedTextSet(tango::IDatabasePtr db,
                                            const std::wstring& path)
 {
     // we need to manually protect the ref count because
@@ -1419,20 +1367,20 @@ static tango::ISetPtr openDelimitedTextSet(tango::IDatabasePtr db,
         return xcm::null;
     }
     
-    tango::ISetPtr retval = static_cast<tango::ISet*>(set);
+    IXdfsSetPtr retval = static_cast<IXdfsSet*>(set);
     set->unref();
     return retval;
 }
 
-/*
-tango::ISetPtr FsDatabase::openSetEx(const std::wstring& path, int format)
+
+IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, int format)
 {
     // check for ptr sets
     if (path.substr(0, 12) == L"/.temp/.ptr/")
     {
         std::wstring ptr_string = kl::afterLast(path, L'/');
         unsigned long l = (unsigned long)hex2uint64(ptr_string.c_str());
-        tango::ISet* sptr = (tango::ISet*)l;
+        IXdsqlTablePtr sptr = (IXdsqlTable*)l;
         return sptr;
     }
 
@@ -1454,18 +1402,9 @@ tango::ISetPtr FsDatabase::openSetEx(const std::wstring& path, int format)
         delimiters = info.delimiters;
     }
 
-    // lookup the path in our set map and return the pointer
-    // to the open set if we find an entry for this path
-    {
-        XCM_AUTO_LOCK(m_obj_mutex);
-        
-        std::map<std::wstring, tango::ISet*, kl::cmp_nocase>::iterator it;
-        it = m_set_map.find(getSetMapKey(phys_path, format));
-        if (it != m_set_map.end())
-            return static_cast<tango::ISet*>(it->second);
-    }
+
     
-    tango::ISetPtr set;
+    IXdfsSetPtr set;
     
     // open the set in the appropriate format
     if (format == tango::formatXbase)
@@ -1497,7 +1436,7 @@ tango::ISetPtr FsDatabase::openSetEx(const std::wstring& path, int format)
 
     return set;
 }
-*/
+
 
 tango::IIteratorPtr FsDatabase::createIterator(const std::wstring& path,
                                                const std::wstring& columns,

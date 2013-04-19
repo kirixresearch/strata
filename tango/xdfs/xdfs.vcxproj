@@ -353,6 +353,7 @@
     <ClInclude Include="xbase.h" />
     <ClInclude Include="xbaseiterator.h" />
     <ClInclude Include="xbaseset.h" />
+    <ClInclude Include="xdfs.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="xdfs.rc">

@@ -59,9 +59,6 @@ public:
                               int info_mask) = 0;
     virtual std::wstring getDefinitionDirectory() = 0;
     virtual std::wstring getTempFileDirectory() = 0;
-    
-    virtual void registerSet(std::wstring path, tango::ISet* set) = 0;
-    virtual void unregisterSet(tango::ISet* set) = 0;
 };
 XCM_DECLARE_SMARTPTR(IFsDatabase)
 
@@ -91,8 +88,6 @@ public:
     std::wstring getTempFileDirectory();
     std::wstring getDefinitionDirectory();
     
-    void registerSet(std::wstring path, tango::ISet* set);
-    void unregisterSet(tango::ISet* set);
     
     // tango::IDatabase
 
@@ -111,6 +106,8 @@ public:
     bool cleanup();
 
     tango::IJobPtr createJob();
+
+    IXdfsSetPtr openSetEx(const std::wstring& path, int format);
 
     bool createFolder(const std::wstring& path);
     bool renameFile(const std::wstring& path, const std::wstring& new_name);
@@ -193,7 +190,6 @@ private:
 private:
 
     xcm::mutex m_obj_mutex;
-    std::map<std::wstring, tango::ISet*, kl::cmp_nocase> m_set_map;
     std::map<std::wstring, tango::IDatabasePtr> m_mounted_dbs;
     tango::IDatabaseMgrPtr m_db_mgr;
 

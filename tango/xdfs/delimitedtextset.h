@@ -65,6 +65,8 @@ public:
 
 
 class DelimitedTextSet : public CommonBaseSet,
+                         public IXdfsSet,
+                         public IXdsqlTable,
                          public tango::IDelimitedTextSet
 {
 friend class FsDatabase;
@@ -74,6 +76,8 @@ friend class DelimitedTextRowInserter;
     XCM_CLASS_NAME("xdfs.DelimitedTextSet")
     XCM_BEGIN_INTERFACE_MAP(DelimitedTextSet)
         XCM_INTERFACE_ENTRY(CommonBaseSet)
+        XCM_INTERFACE_ENTRY(IXdfsSet)
+        XCM_INTERFACE_ENTRY(IXdsqlTable)
         XCM_INTERFACE_ENTRY(tango::IDelimitedTextSet)
     XCM_END_INTERFACE_MAP()
 
@@ -86,8 +90,6 @@ public:
 
     void setCreateStructure(tango::IStructurePtr structure);
     
-    // tango::ISet
-
     std::wstring getSetId();
 
     tango::IRowInserterPtr getRowInserter();
@@ -97,6 +99,12 @@ public:
                                        tango::IJob* job);
 
     tango::rowpos_t getRowCount();
+
+    bool restoreDeleted() { return false; }
+
+    bool updateRow(tango::rowid_t rowid,
+                   tango::ColumnUpdateInfo* info,
+                   size_t info_size) { return false; }
 
     // tango::IDelimitedTextSet
 
