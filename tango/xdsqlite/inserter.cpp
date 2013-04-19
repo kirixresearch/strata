@@ -17,7 +17,7 @@
 #include <kl/utf8.h>
 #include "tango.h"
 #include "database.h"
-#include "set.h"
+#include "inserter.h"
 #include "iterator.h"
 #include "../xdcommon/columninfo.h"
 #include "../xdcommon/structure.h"

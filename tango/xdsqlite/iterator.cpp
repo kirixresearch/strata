@@ -19,7 +19,7 @@
 #include <kl/utf8.h>
 #include "tango.h"
 #include "database.h"
-#include "set.h"
+#include "inserter.h"
 #include "iterator.h"
 #include "../xdcommon/xdcommon.h"
 #include "../xdcommonsql/xdcommonsql.h"

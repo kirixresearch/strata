@@ -26,7 +26,7 @@
 
 #include "tango.h"
 #include "database.h"
-#include "set.h"
+#include "inserter.h"
 #include "iterator.h"
 #include "util.h"
 #include "../xdcommon/dbattr.h"
