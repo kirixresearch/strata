@@ -18,7 +18,7 @@
 #include "xbase.h"
 
 
-// -- utility functions --
+// utility functions
 
 inline char tango2xbaseType(int tango_type)
 {
@@ -74,8 +74,8 @@ public:
 
     XbaseSet();
     ~XbaseSet();
-    bool init(tango::IDatabasePtr db,
-              const std::wstring& filename);
+
+    bool init(tango::IDatabasePtr db, const std::wstring& filename);
 
     std::wstring getSetId();
 
@@ -90,6 +90,8 @@ public:
                                        tango::IJob* job);
 
     tango::rowpos_t getRowCount();
+
+    bool restoreDeleted() { return false; }
 
     bool updateRow(tango::rowid_t rowid,
                    tango::ColumnUpdateInfo* info,

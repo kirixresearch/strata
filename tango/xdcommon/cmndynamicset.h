@@ -67,6 +67,7 @@ public:
     tango::rowpos_t getRowCount();
 
     tango::IRowDeleterPtr getRowDeleter();
+    bool restoreDeleted() { return false; }
 
     int insert(tango::IIteratorPtr source_iter,
                const std::wstring& where_condition,

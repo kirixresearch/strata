@@ -130,6 +130,10 @@ bool sqlDelete(tango::IDatabasePtr db,
                ThreadErrorInfo& error,
                tango::IJob* job)
 {
+    IXdsqlDatabasePtr xdb = db;
+    if (xdb.isNull())
+        return false;
+
     SqlStatement stmt(_command);
 
     stmt.addKeyword(L"DELETE");
@@ -169,12 +173,13 @@ bool sqlDelete(tango::IDatabasePtr db,
         return false;
     }
 
-    /*
+
     // TODO: reimplement RESTORE
     if (stmt.getKeywordExists(L"RESTORE"))
     {
-        ISetRestoreDeletedPtr sp = set;
-        if (!sp->restoreDeleted())
+        IXdsqlTablePtr tbl = xdb->openTable(table);
+
+        if (tbl.isNull() || !tbl->restoreDeleted())
         {
             wchar_t buf[1024]; // some paths might be long
             swprintf(buf, 1024, L"Unable to restore deleted rows in table [%ls]", table.c_str());
@@ -184,7 +189,6 @@ bool sqlDelete(tango::IDatabasePtr db,
         
         return true;
     }
-    */
 
     int result = doDelete(table, filter, job);
     if (result == -1)
