@@ -91,7 +91,7 @@ std::wstring CommonDynamicSet::getObjectPath()
         // return an object pointer -- see openSet or lookupSetId in xdnative and xdfs
         // to see how this curiosity plays out
         wchar_t buf[255];
-        swprintf(buf, 255, L"/.temp/.ptr/%p", static_cast<tango::ISet*>(this));
+        swprintf(buf, 255, L"/.temp/.ptr/%p", static_cast<IXdsqlTable*>(this));
         return buf;
     }
     
