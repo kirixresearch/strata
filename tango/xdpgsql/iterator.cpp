@@ -28,17 +28,13 @@ const std::string empty_string = "";
 const std::wstring empty_wstring = L"";
 
 
-PgsqlIterator::PgsqlIterator(PgsqlDatabase* database, PgsqlSet* set)
+PgsqlIterator::PgsqlIterator(PgsqlDatabase* database)
 {
     m_conn = NULL;
     m_res = NULL;
 
     m_database = database;
     m_database->ref();
-
-    m_set = set;
-    if (m_set)
-        m_set->ref();
 
     m_row_pos = 0;
     m_block_row = 0;
@@ -84,10 +80,6 @@ PgsqlIterator::~PgsqlIterator()
             PQexec(m_conn, "END");
         m_database->closeConnection(m_conn);
     }
-
-
-    if (m_set)
-        m_set->unref();
 
     if (m_database)
         m_database->unref();
@@ -216,9 +208,8 @@ bool PgsqlIterator::init(PGconn* conn, PGresult* res)
 
 std::wstring PgsqlIterator::getTable()
 {
-    if (m_set)
-        return L"";
-    return m_set->getObjectPath();
+    // TODO: implement
+    return L"";
 }
 
 tango::rowpos_t PgsqlIterator::getRowCount()
@@ -436,11 +427,7 @@ tango::IStructurePtr PgsqlIterator::getStructure()
 
 void PgsqlIterator::refreshStructure()
 {
-    tango::IStructurePtr set_structure;
-    
-    if (m_set)
-        set_structure = m_set->getStructure();
-
+    tango::IStructurePtr set_structure = m_database->describeTable(getTable());
     if (set_structure.isNull())
         return;
 

@@ -99,7 +99,6 @@ class PgsqlIterator : public CommonBaseIterator,
                       public tango::IIteratorRelation
 {
     friend class PgsqlDatabase;
-    friend class PgsqlSet;
 
     XCM_CLASS_NAME("xdpgsql.Iterator")
     XCM_BEGIN_INTERFACE_MAP(PgsqlIterator)
@@ -110,7 +109,7 @@ class PgsqlIterator : public CommonBaseIterator,
 
 public:
 
-    PgsqlIterator(PgsqlDatabase* database, PgsqlSet* set = NULL);
+    PgsqlIterator(PgsqlDatabase* database);
     ~PgsqlIterator();
     
     bool init(const std::wstring& query);
@@ -175,7 +174,6 @@ private:
     std::vector<PgsqlIteratorRelInfo> m_relations;
 
     PgsqlDatabase* m_database;
-    PgsqlSet* m_set;
     tango::IStructurePtr m_structure;
     PGconn* m_conn;
     PGresult* m_res;

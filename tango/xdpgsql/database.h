@@ -37,7 +37,6 @@ class PgsqlJobInfo;
 
 class PgsqlDatabase : public tango::IDatabase
 {
-friend class PgsqlSet;
 friend class PgsqlRowInserter;
 friend class PgsqlIterator;
 friend class PgsqlStream;

@@ -1107,12 +1107,9 @@ tango::IIteratorPtr PgsqlDatabase::createIterator(const std::wstring& path,
         query += sort;
     }
     
-    // create a placeholder set
-    PgsqlSet* set = new PgsqlSet(this);
-    set->m_tablename = tablename;
 
     // create an iterator based on our select statement
-    PgsqlIterator* iter = new PgsqlIterator(this, set);
+    PgsqlIterator* iter = new PgsqlIterator(this);
 
     if (!iter->init(query))
     {
