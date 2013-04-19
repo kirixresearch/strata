@@ -2303,46 +2303,54 @@ bool TableDoc::open(const wxString& _path,
 
     // if the set/table displayed has a url associated with it, display it
 
-    tango::IAttributesPtr attr = db->getAttributes();
-    std::wstring url = attr->getStringAttribute(tango::dbattrDatabaseUrl);
-    if (url.length() > 0)
+    if (m_path.find("://") != m_path.npos)
     {
-        // project is a remote project
-        url += m_path;
-        setSourceUrl(url);
+        // path is itself a url, display that in the url bar
+        setSourceUrl(m_path);
     }
      else
     {
-        std::wstring mount_root = getMountRoot(db, path);
 
-        std::wstring url;
-        tango::IDatabasePtr mount_db = db->getMountDatabase(mount_root);
-        if (mount_db.isOk())
-        {
-            attr = mount_db->getAttributes();
-            if (attr)
-                url = attr->getStringAttribute(tango::dbattrDatabaseUrl);
-        }
-
+        tango::IAttributesPtr attr = db->getAttributes();
+        std::wstring url = attr->getStringAttribute(tango::dbattrDatabaseUrl);
         if (url.length() > 0)
         {
-            if (path == mount_root)
+            // project is a remote project
+            url += m_path;
+            setSourceUrl(url);
+        }
+         else
+        {
+            std::wstring mount_root = getMountRoot(db, path);
+
+            std::wstring url;
+            tango::IDatabasePtr mount_db = db->getMountDatabase(mount_root);
+            if (mount_db.isOk())
             {
-                std::wstring cstr, rpath;
-                if (db->getMountPoint(path, cstr, rpath))
-                {
-                    setSourceUrl(url + rpath);
-                }
+                attr = mount_db->getAttributes();
+                if (attr)
+                    url = attr->getStringAttribute(tango::dbattrDatabaseUrl);
             }
-             else
+
+            if (url.length() > 0)
             {
-                std::wstring tpart = path;
-                tpart.erase(0, mount_root.length());
-                setSourceUrl(url + tpart);
+                if (path == mount_root)
+                {
+                    std::wstring cstr, rpath;
+                    if (db->getMountPoint(path, cstr, rpath))
+                    {
+                        setSourceUrl(url + rpath);
+                    }
+                }
+                 else
+                {
+                    std::wstring tpart = path;
+                    tpart.erase(0, mount_root.length());
+                    setSourceUrl(url + tpart);
+                }
             }
         }
     }
-
 
 
     // update caption

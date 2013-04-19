@@ -420,8 +420,7 @@ tango::IFileInfoPtr ClientDatabase::getFileInfo(const std::wstring& path)
 tango::IFileInfoEnumPtr ClientDatabase::getFolderInfo(const std::wstring& path)
 {
     ServerCallParams params;
-    params.setParam(L"path", path);
-    std::wstring sres = serverCall(L"", L"folderinfo", &params);
+    std::wstring sres = serverCall(path, L"folderinfo", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
