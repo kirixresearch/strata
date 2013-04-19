@@ -11,7 +11,7 @@
 
 #include <kl/klib.h>
 #include "tango.h"
-#include "stditer.h"
+#include "bufiterator.h"
 #include "util.h"
 #include "../xdcommon/exindex.h"
 

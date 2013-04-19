@@ -20,7 +20,7 @@
 #include "tango.h"
 #include "tableset.h"
 #include "nativetbl.h"
-#include "stditer.h"
+#include "bufiterator.h"
 #include "util.h"
 #include "../xdcommon/dbfuncs.h"
 #include "../xdcommon/util.h"

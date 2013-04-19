@@ -20,7 +20,6 @@
 #include "../xdcommon/idxutil.h"
 #include "xdnative_private.h"
 #include "baseset.h"
-#include "stditer.h"
 #include "util.h"
 #include <ctime>
 #include <algorithm>
