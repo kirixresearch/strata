@@ -388,8 +388,7 @@ tango::IJobPtr XdnativeDatabase::createJob()
 }
 
 
-std::wstring XdnativeDatabase::ofsToPhysFilename(const std::wstring& ofs_path,
-                                         bool folder)
+std::wstring XdnativeDatabase::ofsToPhysFilename(const std::wstring& ofs_path, bool folder)
 {
     std::wstring result;
     result = makePathName(m_ofs_root, ofs_path, L"", folder ? L"" : L"xml");
@@ -444,7 +443,7 @@ std::wstring XdnativeDatabase::urlToOfsFilename(const std::wstring& url)
 }
 
 bool XdnativeDatabase::createDatabase(const std::wstring& db_name,
-                              const std::wstring& base_dir)
+                                      const std::wstring& base_dir)
 {
     // create the directory
     if (!xf_get_directory_exist(base_dir))
@@ -520,8 +519,8 @@ bool XdnativeDatabase::createDatabase(const std::wstring& db_name,
 
 
 bool XdnativeDatabase::openDatabase(const std::wstring& location,
-                            const std::wstring& uid,
-                            const std::wstring& password)
+                                    const std::wstring& uid,
+                                    const std::wstring& password)
 {
     // check for the existence of the db's base directory
     if (!xf_get_directory_exist(location))
@@ -611,7 +610,7 @@ inline std::wstring getUserPasswordEncryptionKey()
 
 
 bool XdnativeDatabase::createUser(const std::wstring& uid,
-                          const std::wstring& password)
+                                  const std::wstring& password)
 {
     // must be admin to create a user
     if (m_uid != L"admin")
@@ -828,7 +827,7 @@ tango::tableord_t XdnativeDatabase::allocOrdinal()
 }
 
 bool XdnativeDatabase::setOrdinalTable(tango::tableord_t ordinal,
-                               const std::wstring& _filename)
+                                       const std::wstring& _filename)
 {
     std::wstring filename;
     std::wstring data_path = makePathName(m_base_dir, L"data");
