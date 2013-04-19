@@ -1611,12 +1611,12 @@ bool OdbcIterator::isNull(tango::objhandle_t data_handle)
 }
 
 /*
-tango::ISetPtr OdbcIterator::getChildSet(tango::IRelationPtr relation)
+tango::IxSetPtr OdbcIterator::getChildSet(tango::IRelationPtr relation)
 {
     if (eof())
         return xcm::null;
 
-    tango::ISetPtr setptr = relation->getRightSetPtr();
+    tango::IxSetPtr setptr = relation->getRightSetPtr();
     IOdbcSetPtr set = setptr;
     if (set.isNull())
         return xcm::null;
