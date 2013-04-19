@@ -596,7 +596,6 @@ int ImportJob::runJob()
 
     tango::IDatabasePtr src_db = conn->getDatabasePtr();
     tango::IDatabasePtr dest_db = g_app->getDatabase();
-    tango::ISetPtr src_set;
     tango::IStructurePtr src_struct;
     tango::IIteratorPtr src_iter;
     tango::IStructurePtr dest_struct;
@@ -647,8 +646,10 @@ int ImportJob::runJob()
             if (m_import_type == dbtypeDelimitedText)
                 m_job_info->setProgressString(L"Reading file...");
 
-            //src_set = src_db->openSetEx(it->input_path, format);
-            src_set.clear(); // TODO: implement
+            /*
+            TODO: reimplement
+
+            src_set = src_db->openSetEx(it->input_path, format);
 
             // if we can't open the source set, bail out
             if (src_set.isNull())
@@ -657,6 +658,7 @@ int ImportJob::runJob()
                 m_job_info->setState(jobStateFailed);
                 return 0;
             }
+
 
             // set the parameters for a delimited text import
             tango::IDelimitedTextSetPtr td_set = src_set;
@@ -718,7 +720,7 @@ int ImportJob::runJob()
                 {
                     // we'll deal with this later... it's part of the
                     // external data tango reorganization
-                    /*
+                    #if 0
                     flt_set->insertColumn(-1,
                                           field_it->input_offset,
                                           field_it->input_width,
@@ -727,7 +729,7 @@ int ImportJob::runJob()
                                           field_it->output_width,
                                           field_it->output_scale,
                                           field_it->expression);
-                    */
+                    #endif
                 }
                 
                 
@@ -755,6 +757,7 @@ int ImportJob::runJob()
 
                 it->field_info.clear();
             }
+            */
 
             // create an iterator on the source set
             src_iter = src_db->createIterator(it->input_path, L"", L"", NULL);
@@ -1222,8 +1225,6 @@ int ImportJob::runJob()
             }
         }
 
-        // close out the tables
-        src_set.clear();
     }
 
     m_job_info->setProgressString(L"");

@@ -255,8 +255,6 @@ END_EVENT_TABLE()
 
 TextDoc::TextDoc()
 {
-    m_fixedlength_set = xcm::null;
-    m_textdelimited_set = xcm::null;
     m_textdelimited_iter = xcm::null;
     
     m_dirty = false;
@@ -499,6 +497,9 @@ bool TextDoc::updateColumnList()
 
 tango::IStructurePtr TextDoc::getStructure()
 {
+/*
+    TODO: implement
+
     if (m_view == TextDoc::TextDelimitedView)
     {
         tango::IDelimitedTextSetPtr s = m_textdelimited_set;
@@ -511,7 +512,8 @@ tango::IStructurePtr TextDoc::getStructure()
         if (s)
             return s->getStructure();
     }
-    
+   */
+
     return xcm::null;
 }
 
@@ -1040,6 +1042,7 @@ void TextDoc::doTextModeLayout()
 
 void TextDoc::refreshGrid()
 {
+/*
     // if the set is not a text-delimited set, bail out
     tango::IDelimitedTextSetPtr tset = m_textdelimited_set;
     if (tset.isNull())
@@ -1054,6 +1057,8 @@ void TextDoc::refreshGrid()
     m_grid->refresh(kcl::Grid::refreshAll);
     m_grid->autoColumnResize(-1);
     m_grid->Thaw();
+*/
+
 }
 
 void TextDoc::updateStatusBar()

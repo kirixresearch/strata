@@ -186,8 +186,7 @@ private:
     wxComboBox* m_textqualifier_combobox;
     wxCheckBox* m_firstrowfieldnames_checkbox;
     
-    tango::ISetPtr m_fixedlength_set;
-    tango::ISetPtr m_textdelimited_set;
+
     tango::IIteratorPtr m_textdelimited_iter;
     ITangoGridModelPtr m_grid_model;
     
