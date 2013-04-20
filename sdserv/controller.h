@@ -27,13 +27,22 @@ struct SessionQueryResultColumn
 
 struct SessionQueryResult : public ServerSessionObject
 {
+    SessionQueryResult() : ServerSessionObject() { setType("SessionQueryResult"); }
+
     tango::IIteratorPtr iter;
     std::vector<SessionQueryResultColumn> columns;
     tango::rowpos_t rowpos;
 };
 
+struct SessionStream : public ServerSessionObject
+{
+    SessionStream() : ServerSessionObject() { setType("SessionStream"); }
 
-struct SessionRowInserterColumn : public ServerSessionObject
+    tango::IStreamPtr stream;
+};
+
+
+struct SessionRowInserterColumn
 {
     tango::objhandle_t handle;
     int type;
@@ -41,6 +50,8 @@ struct SessionRowInserterColumn : public ServerSessionObject
 
 struct SessionRowInserter : public ServerSessionObject
 {
+    SessionRowInserter() : ServerSessionObject() { setType("SessionRowInserter"); }
+
     tango::IRowInserterPtr inserter;
     std::vector<SessionRowInserterColumn> columns;
 };

@@ -312,8 +312,7 @@ tango::IJobPtr ClientDatabase::createJob()
 bool ClientDatabase::createFolder(const std::wstring& path)
 {
     ServerCallParams params;
-    params.setParam(L"path", path);
-    std::wstring sres = serverCall(L"", L"createfolder", &params);
+    std::wstring sres = serverCall(path, L"createfolder", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -323,9 +322,8 @@ bool ClientDatabase::createFolder(const std::wstring& path)
 bool ClientDatabase::renameFile(const std::wstring& path, const std::wstring& new_name)
 {
     ServerCallParams params;
-    params.setParam(L"path", path);
     params.setParam(L"new_name", new_name);
-    std::wstring sres = serverCall(L"", L"renamefile", &params);
+    std::wstring sres = serverCall(path, L"renamefile", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -536,9 +534,8 @@ bool ClientDatabase::createTable(const std::wstring& path,
     std::wstring columns = structureToJson(structure);
 
     ServerCallParams params;
-    params.setParam(L"path", path);
     params.setParam(L"columns", columns);
-    std::wstring sres = serverCall(L"", L"createtable", &params);
+    std::wstring sres = serverCall(path, L"createtable", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -548,8 +545,7 @@ bool ClientDatabase::createTable(const std::wstring& path,
 tango::IStreamPtr ClientDatabase::openStream(const std::wstring& path)
 {
     ServerCallParams params;
-    params.setParam(L"path", path);
-    std::wstring sres = serverCall(L"", L"openstream", &params);
+    std::wstring sres = serverCall(path, L"openstream", &params);
     kl::JsonNode response;
     response.fromString(sres);
 

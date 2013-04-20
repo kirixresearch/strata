@@ -399,19 +399,13 @@ void Controller::apiCreateTable(RequestInfo& req)
     if (db.isNull())
         return;
     
-    if (!req.getValueExists(L"path"))
-    {
-        returnApiError(req, "Missing path parameter");
-        return;
-    }
-    
     if (!req.getValueExists(L"columns"))
     {
         returnApiError(req, "Missing path parameter");
         return;
     }
     
-    std::wstring path = req.getValue(L"path");
+    std::wstring path = req.getURI();
     std::wstring s_columns = req.getValue(L"columns");
     
     kl::JsonNode columns;
@@ -459,13 +453,7 @@ void Controller::apiCreateFolder(RequestInfo& req)
     if (db.isNull())
         return;
     
-    if (!req.getValueExists(L"path"))
-    {
-        returnApiError(req, "Missing path parameter");
-        return;
-    }
-    
-    std::wstring path = req.getValue(L"path");
+    std::wstring path = req.getURI();
     
     if (db->createFolder(path))
     {
@@ -488,19 +476,13 @@ void Controller::apiMoveFile(RequestInfo& req)
     if (db.isNull())
         return;
 
-    if (!req.getValueExists(L"path"))
-    {
-        returnApiError(req, "Missing path parameter");
-        return;
-    }
-    
     if (!req.getValueExists(L"destination"))
     {
         returnApiError(req, "Missing path parameter");
         return;
     }
     
-    std::wstring path = req.getValue(L"path");
+    std::wstring path = req.getURI();
     std::wstring destination = req.getValue(L"destination");
 
     if (db->moveFile(path,destination))
@@ -524,19 +506,13 @@ void Controller::apiRenameFile(RequestInfo& req)
     if (db.isNull())
         return;
     
-    if (!req.getValueExists(L"path"))
-    {
-        returnApiError(req, "Missing path parameter");
-        return;
-    }
-    
     if (!req.getValueExists(L"new_name"))
     {
         returnApiError(req, "Missing new_name parameter");
         return;
     }
     
-    std::wstring path = req.getValue(L"path");
+    std::wstring path = req.getURI();
     std::wstring new_name = req.getValue(L"new_name");
 
     if (db->renameFile(path, new_name))
@@ -559,13 +535,7 @@ void Controller::apiDeleteFile(RequestInfo& req)
     if (db.isNull())
         return;
     
-    if (!req.getValueExists(L"path"))
-    {
-        returnApiError(req, "Missing path parameter");
-        return;
-    }
-    
-    std::wstring path = req.getValue(L"path");
+    std::wstring path = req.getURI();
     
     if (db->deleteFile(path))
     {
@@ -581,24 +551,14 @@ void Controller::apiDeleteFile(RequestInfo& req)
 }
 
 
+
 void Controller::apiOpenStream(RequestInfo& req)
 {
-/*
     tango::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
         return;
     
-    SdservSession* session = getSdservSession(req);
-    if (!session)
-        return;
-    
-    if (!req.getValueExists(L"path"))
-    {
-        returnApiError(req, "Missing path parameter");
-        return;
-    }
-    
-    std::wstring path = req.getValue(L"path");
+    std::wstring path = req.getURI();
     
     tango::IStreamPtr stream = db->openStream(path);
     if (stream.isNull())
@@ -609,7 +569,9 @@ void Controller::apiOpenStream(RequestInfo& req)
     
     // add object to session
     std::wstring handle = createHandle();
-    session->streams[handle] = stream;
+    SessionStream* so = new SessionStream;
+    so->stream = stream;
+    addServerSessionObject(handle, so);
         
     // return success to caller
     kl::JsonNode response;
@@ -617,24 +579,18 @@ void Controller::apiOpenStream(RequestInfo& req)
     response["handle"] = handle;
     
     req.write(response.toString());
-*/
 }
 
 
 void Controller::apiReadStream(RequestInfo& req)
 {
-/*
     tango::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
         return;
-    
-    SdservSession* session = getSdservSession(req);
-    if (!session)
-        return;
-    
+        
     if (!req.getValueExists(L"handle"))
     {
-        returnApiError(req, "Missing path parameter");
+        returnApiError(req, "Missing handle parameter");
         return;
     }
    
@@ -647,15 +603,15 @@ void Controller::apiReadStream(RequestInfo& req)
     std::wstring handle = req.getValue(L"handle");
     std::wstring read_size = req.getValue(L"read_size");
     
-    std::map<std::wstring, tango::IStreamPtr>::iterator it;
-    it = session->streams.find(handle);
-    if (it == session->streams.end())
+    SessionStream* so = (SessionStream*)getServerSessionObject(handle);
+    if (!so)
     {
         returnApiError(req, "Invalid handle");
         return;
     }
-    
-    tango::IStreamPtr stream = it->second;
+
+
+    tango::IStreamPtr stream = so->stream;
 
 
     unsigned long read_size_n = (unsigned long)kl::wtoi(read_size);
@@ -690,7 +646,6 @@ void Controller::apiReadStream(RequestInfo& req)
     delete[] base64_buf;
     
     req.write(response.toString());
-*/
 }
 
 
@@ -787,10 +742,10 @@ void Controller::apiQuery(RequestInfo& req)
 
         // add object to session
         std::wstring handle = createHandle();
-        SessionQueryResult* q = new SessionQueryResult;
-        q->iter = iter;
-        q->rowpos = 1;
-        addServerSessionObject(handle, q);
+        SessionQueryResult* so = new SessionQueryResult;
+        so->iter = iter;
+        so->rowpos = 1;
+        addServerSessionObject(handle, so);
         
         // return success to caller
         kl::JsonNode response;
@@ -825,10 +780,10 @@ void Controller::apiQuery(RequestInfo& req)
           
         // add object to session
         std::wstring handle = createHandle();
-        SessionQueryResult* q = new SessionQueryResult;
-        q->iter = iter;
-        q->rowpos = 1;
-        addServerSessionObject(handle, q);
+        SessionQueryResult* so = new SessionQueryResult;
+        so->iter = iter;
+        so->rowpos = 1;
+        addServerSessionObject(handle, so);
         
         // return success to caller
         kl::JsonNode response;
@@ -908,10 +863,10 @@ void Controller::apiDescribeTable(RequestInfo& req)
     }
      else if (handle.length() > 0)
     {
-        SessionQueryResult* qr = (SessionQueryResult*)getServerSessionObject(handle);
-        if (qr && qr->iter.isOk())
+        SessionQueryResult* so = (SessionQueryResult*)getServerSessionObject(handle);
+        if (so && so->iter.isOk())
         {
-            structure = qr->iter->getStructure();
+            structure = so->iter->getStructure();
         }
     }
      else
@@ -970,7 +925,7 @@ void Controller::apiRead(RequestInfo& req)
     std::wstring handle = req.getValue(L"handle");
     int start = kl::wtoi(req.getValue(L"start", L"-1"));
     int limit = kl::wtoi(req.getValue(L"limit", L"-1"));
-    SessionQueryResult* qr = NULL;
+    SessionQueryResult* so = NULL;
 
     if (handle.empty())
     {
@@ -993,6 +948,26 @@ void Controller::apiRead(RequestInfo& req)
             apiFolderInfo(req);
             return;
         }
+         else if (finfo->getType() == tango::filetypeStream)
+        {
+            tango::IStreamPtr stream = db->openStream(req.getURI());
+            if (stream.isNull())
+            {
+                req.setStatusCode(404);
+                req.setContentType("text/html");
+                req.write("<html><body><h2>Not found</h2></body></html>");
+                return;
+            }
+
+            req.setContentType(kl::tostring(finfo->getMimeType()).c_str());
+
+            char buf[4096];
+            unsigned long len;
+            while (stream->read(buf, 4096, &len))
+                req.write(buf, len);
+            return;
+        }
+
 
         tango::IIteratorPtr iter = db->createIterator(req.getURI(), L"", req.getValue(L"order"), NULL);
         if (!iter.isOk())
@@ -1006,25 +981,25 @@ void Controller::apiRead(RequestInfo& req)
 
         // add object to session
         handle = createHandle();
-        qr = new SessionQueryResult;
-        qr->iter = iter;
-        qr->rowpos = 1;
-        addServerSessionObject(handle, qr);
+        so = new SessionQueryResult;
+        so->iter = iter;
+        so->rowpos = 1;
+        addServerSessionObject(handle, so);
     }
      else
     {
         // add object to session
-        qr = (SessionQueryResult*)getServerSessionObject(handle);
-        if (!qr)
+        so = (SessionQueryResult*)getServerSessionObject(handle);
+        if (!so)
         {
             returnApiError(req, "Invalid handle");
             return;
         }
     }
     
-    tango::IIterator* iter = qr->iter.p;
+    tango::IIterator* iter = so->iter.p;
     
-    if (qr->columns.size() == 0)
+    if (so->columns.size() == 0)
     {
         // init handles;
         tango::IStructurePtr s = iter->getStructure();
@@ -1039,7 +1014,7 @@ void Controller::apiRead(RequestInfo& req)
             qrc.width = colinfo->getWidth();
             qrc.scale = colinfo->getScale();
             
-            qr->columns.push_back(qrc);
+            so->columns.push_back(qrc);
         }
     }
     
@@ -1051,16 +1026,16 @@ void Controller::apiRead(RequestInfo& req)
         if (start == 1)
         {
             iter->goFirst();
-            qr->rowpos = 1;
+            so->rowpos = 1;
         }
          else
         {
             long long newpos = start;
-            newpos -= ((long long)qr->rowpos);
+            newpos -= ((long long)so->rowpos);
             if (newpos != 0)
             {
                 iter->skip((int)newpos);
-                qr->rowpos = (tango::rowpos_t)start;
+                so->rowpos = (tango::rowpos_t)start;
             }
         }
     }
@@ -1081,33 +1056,33 @@ void Controller::apiRead(RequestInfo& req)
         
         rowcnt++;
         
-        for (col = 0; col < (int)qr->columns.size(); ++col)
+        for (col = 0; col < (int)so->columns.size(); ++col)
         {
             if (col > 0)
                 str += L",";
             
-            quotedAppend(str, qr->columns[col].name);
+            quotedAppend(str, so->columns[col].name);
             str += L":";
 
-            switch (qr->columns[col].type)
+            switch (so->columns[col].type)
             {
                 default:
-                    cell = iter->getWideString(qr->columns[col].handle);
+                    cell = iter->getWideString(so->columns[col].handle);
                     break;
                 
                 case tango::typeInteger:
-                    cell = kl::itowstring(iter->getInteger(qr->columns[col].handle));
+                    cell = kl::itowstring(iter->getInteger(so->columns[col].handle));
                     break;
                 
                 case tango::typeBoolean:
-                    cell = iter->getBoolean(qr->columns[col].handle) ? L"true" : L"false";
+                    cell = iter->getBoolean(so->columns[col].handle) ? L"true" : L"false";
                     break;
                 
                 case tango::typeNumeric:
                 case tango::typeDouble:
                 {
                     wchar_t buf[64];
-                    swprintf(buf, 64, L"%.*f", qr->columns[col].scale, iter->getDouble(qr->columns[col].handle));
+                    swprintf(buf, 64, L"%.*f", so->columns[col].scale, iter->getDouble(so->columns[col].handle));
                     cell = buf;
                 }
                 break;
@@ -1116,7 +1091,7 @@ void Controller::apiRead(RequestInfo& req)
                 {
                     wchar_t buf[16];
                     buf[0] = 0;
-                    tango::DateTime dt = iter->getDateTime(qr->columns[col].handle);
+                    tango::DateTime dt = iter->getDateTime(so->columns[col].handle);
                     if (!dt.isNull())
                         swprintf(buf, 16, L"%04d-%02d-%02d", dt.getYear(), dt.getMonth(), dt.getDay());
                     cell = buf;
@@ -1127,7 +1102,7 @@ void Controller::apiRead(RequestInfo& req)
                 {
                     wchar_t buf[32];
                     buf[0] = 0;
-                    tango::DateTime dt = iter->getDateTime(qr->columns[col].handle);
+                    tango::DateTime dt = iter->getDateTime(so->columns[col].handle);
                     if (!dt.isNull())
                         swprintf(buf, 32, L"%04d-%02d-%02d %02d:%02d:%02d", dt.getYear(), dt.getMonth(), dt.getDay(), dt.getHour(), dt.getMinute(), dt.getSecond());
                     cell = buf;
@@ -1140,7 +1115,7 @@ void Controller::apiRead(RequestInfo& req)
         }
         
         iter->skip(1);
-        qr->rowpos++;
+        so->rowpos++;
     }
     
     if (rowcnt == 0)
@@ -1264,13 +1239,13 @@ void Controller::apiClose(RequestInfo& req)
     }
      
     // add object to session
-    SessionQueryResult* qr = NULL;
+    SessionQueryResult* so = NULL;
 
     {
         XCM_AUTO_LOCK(m_session_object_mutex);
 
-        qr = (SessionQueryResult*)getServerSessionObject(handle);
-        if (!qr)
+        so = (SessionQueryResult*)getServerSessionObject(handle);
+        if (!so)
         {
             returnApiError(req, "Invalid handle");
             return;
@@ -1279,11 +1254,14 @@ void Controller::apiClose(RequestInfo& req)
         removeServerSessionObject(handle);
     }
     
-    std::vector<SessionQueryResultColumn>::iterator cit;
-    for (cit = qr->columns.begin(); cit != qr->columns.end(); ++cit)
-        qr->iter->releaseHandle(cit->handle);
+    if (so->isType("SessionQueryResultColumn"))
+    {
+        std::vector<SessionQueryResultColumn>::iterator cit;
+        for (cit = so->columns.begin(); cit != so->columns.end(); ++cit)
+            so->iter->releaseHandle(cit->handle);
+    }
 
-    delete qr;
+    delete so;
 
     // return success to caller
     kl::JsonNode response;

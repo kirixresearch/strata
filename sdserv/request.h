@@ -50,12 +50,13 @@ public:
     ServerSessionObject() {}
     virtual ~ServerSessionObject() {}
 
-    void setType(const std::wstring& type) {m_type = type;}
-    std::wstring getType() {return m_type;}
+    void setType(const std::string& type) { m_type = type; }
+    const std::string& getType() const { return m_type; }
+    bool isType(const char* type) const { return m_type == type; }
 
 private:
 
-    std::wstring m_type;
+    std::string m_type;
 };
 
 
