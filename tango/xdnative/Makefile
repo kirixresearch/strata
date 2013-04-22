@@ -36,8 +36,6 @@ OBJECTS = baseiterator.o \
 	nativetbl.o \
 	ofs.o \
 	query.o \
-	stditer.o \
-	stdset.o \
 	tableset.o \
 	tablesetmodify.o \
 	util.o \
