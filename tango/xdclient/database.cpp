@@ -368,7 +368,7 @@ bool ClientDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
     params.setParam(L"output", info->output);
     params.setParam(L"order", info->order);
     params.setParam(L"where", info->where);
-    params.setParam(L"limit", kl::itowstring(info->max_rows));
+    params.setParam(L"limit", kl::itowstring(info->limit));
 
     std::wstring sres = serverCall(info->input, L"copydata", &params);
     kl::JsonNode response;

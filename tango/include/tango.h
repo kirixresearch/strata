@@ -612,7 +612,7 @@ struct CopyInfo
     CopyInfo()
     {
         append = false;
-        max_rows = -1;
+        limit = -1;
     }
 
     IIteratorPtr iter_input;
@@ -622,7 +622,7 @@ struct CopyInfo
 
     std::wstring where;
     std::wstring order;
-    int max_rows;
+    int limit;
 };
 
 struct GroupQueryInfo

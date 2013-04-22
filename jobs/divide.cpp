@@ -150,7 +150,7 @@ int DivideJob::runJob()
         tango::CopyInfo info;
         info.iter_input = iter;
         info.output = output_path;
-        info.max_rows = (rows_left >= output_row_count) ? output_row_count : rows_left;
+        info.limit = (rows_left >= output_row_count) ? output_row_count : rows_left;
         m_db->copyData(&info, tango_job);
 
         if (isCancelling())

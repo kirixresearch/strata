@@ -568,7 +568,7 @@ void Controller::apiCopyData(RequestInfo& req)
     info.output = req.getValue(L"output");
     info.where = req.getValue(L"where");
     info.order = req.getValue(L"order");
-    info.max_rows = kl::wtoi(req.getValue(L"limit"));
+    info.limit = kl::wtoi(req.getValue(L"limit"));
 
     bool res = db->copyData(&info, NULL);
 
@@ -1194,8 +1194,8 @@ void Controller::apiInsertRows(RequestInfo& req)
     info.iter_input = it->second.iter;
     info.append = true;
     info.where = req.getValue(L"where");
-    if (req.getValueExists(L"max_rows"))
-        info.max_rows = kl::wtoi(req.getValue(L"max_rows"));
+    if (req.getValueExists(L"limit"))
+        info.limit = kl::wtoi(req.getValue(L"limit"));
 
     // return success to caller
     kl::JsonNode response;

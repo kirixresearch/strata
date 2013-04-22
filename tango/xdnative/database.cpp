@@ -1580,11 +1580,11 @@ bool XdnativeDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
         if (db.isNull())
             return false;
 
-        xdcmnInsert(db, iter, rpath, info->where, info->max_rows, job);
+        xdcmnInsert(db, iter, rpath, info->where, info->limit, job);
     }
      else
     {
-        xdcmnInsert(static_cast<tango::IDatabase*>(this), iter, info->output, info->where, info->max_rows, job);
+        xdcmnInsert(static_cast<tango::IDatabase*>(this), iter, info->output, info->where, info->limit, job);
     }
 
     return true;
