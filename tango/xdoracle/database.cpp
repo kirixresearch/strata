@@ -1136,6 +1136,7 @@ bool OracleDatabase::createStream(const std::wstring& ofs_path, const std::wstri
 
 tango::IIteratorPtr OracleDatabase::createIterator(const std::wstring& path,
                                                    const std::wstring& _columns,
+                                                   const std::wstring& wherec,
                                                    const std::wstring& order,
                                                    tango::IJob* job)
 {
