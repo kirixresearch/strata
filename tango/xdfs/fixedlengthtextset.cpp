@@ -260,10 +260,10 @@ tango::IRowInserterPtr FixedLengthTextSet::getRowInserter()
 
 tango::IIteratorPtr FixedLengthTextSet::createIterator(
                                         const std::wstring& columns,
-                                        const std::wstring& expr,
+                                        const std::wstring& order,
                                         tango::IJob* job)
 {
-    if (expr.empty())
+    if (order.empty())
     {
         FixedLengthTextIterator* iter = new FixedLengthTextIterator;        
         if (!iter->init(m_database, this, columns))
@@ -294,7 +294,7 @@ tango::IIteratorPtr FixedLengthTextSet::createIterator(
                               getObjectPath(),
                               full_index_filename,
                               temp_directory,
-                              expr,
+                              order,
                               true,
                               job);
     if (!idx)
@@ -306,7 +306,7 @@ tango::IIteratorPtr FixedLengthTextSet::createIterator(
     return createIteratorFromIndex(data_iter,
                                    idx,
                                    columns,
-                                   expr,
+                                   order,
                                    getObjectPath());
 
 }

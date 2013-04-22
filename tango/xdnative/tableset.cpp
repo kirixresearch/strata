@@ -1342,11 +1342,11 @@ TableIterator* TableSet::createPhysicalIterator(const std::wstring& columns,
 
 
 tango::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
-                                             const std::wstring& expr,
+                                             const std::wstring& order,
                                              tango::IJob* job)
 {
 
-    if (expr.empty())
+    if (order.empty())
     {
         // create an unordered iterator
         return static_cast<tango::IIterator*>(createPhysicalIterator(columns, false));
@@ -1362,7 +1362,7 @@ tango::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
         std::vector<IndexEntry>::iterator it;
         for (it = m_indexes.begin(); it != m_indexes.end(); ++it)
         {
-            if (getOrderExpressionMatch(it->expr, expr))
+            if (getOrderExpressionMatch(it->expr, order))
             {
                 idx = it->index;
                 idx->ref();
@@ -1389,7 +1389,7 @@ tango::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
         res = createIteratorFromIndex(data_iter,
                                       idx,
                                       columns,
-                                      expr,
+                                      order,
                                       getObjectPath());
 
         idx->unref();
@@ -1410,7 +1410,7 @@ tango::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
                                   getObjectPath(),
                                   full_index_filename,
                                   dbi->getTempPath(),
-                                  expr,
+                                  order,
                                   true,
                                   job);
         if (!idx)
@@ -1419,7 +1419,7 @@ tango::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
         }
 
         IndexEntry entry;
-        entry.expr = expr;
+        entry.expr = order;
         entry.filename = index_filename;
         entry.tag = L"";
         entry.update = false;
@@ -1439,7 +1439,7 @@ tango::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
         return createIteratorFromIndex(data_iter,
                                        idx,
                                        columns,
-                                       expr,
+                                       order,
                                        getObjectPath());
     }
 }

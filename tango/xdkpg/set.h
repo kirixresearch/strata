@@ -41,7 +41,7 @@ public:
     tango::IStructurePtr getStructure();
 
     tango::IIteratorPtr createIterator(const std::wstring& columns,
-                                       const std::wstring& expr,
+                                       const std::wstring& order,
                                        tango::IJob* job);
 
 private:

@@ -86,7 +86,7 @@ tango::IStructurePtr KpgSet::getStructure()
 }
 
 tango::IIteratorPtr KpgSet::createIterator(const std::wstring& columns,
-                                           const std::wstring& expr,
+                                           const std::wstring& order,
                                            tango::IJob* job)
 {
     if (m_creating)

@@ -200,10 +200,10 @@ tango::IIteratorPtr DelimitedTextSet::createSourceIterator(tango::IJob* job)
 }
 
 tango::IIteratorPtr DelimitedTextSet::createIterator(const std::wstring& columns,
-                                                     const std::wstring& expr,
+                                                     const std::wstring& order,
                                                      tango::IJob* job)
 {
-    if (expr.empty())
+    if (order.empty())
     {
         DelimitedTextIterator* iter = new DelimitedTextIterator;
         if (!iter->init(m_database,
@@ -236,7 +236,7 @@ tango::IIteratorPtr DelimitedTextSet::createIterator(const std::wstring& columns
                               getObjectPath(),
                               full_index_filename,
                               temp_directory,
-                              expr,
+                              order,
                               true,
                               job);
     if (!idx)
@@ -248,7 +248,7 @@ tango::IIteratorPtr DelimitedTextSet::createIterator(const std::wstring& columns
     return createIteratorFromIndex(data_iter,
                                    idx,
                                    columns,
-                                   expr,
+                                   order,
                                    getObjectPath());
 }
 

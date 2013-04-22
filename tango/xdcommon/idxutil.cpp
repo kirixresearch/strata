@@ -115,7 +115,7 @@ IIndex* createExternalIndex(tango::IDatabasePtr db,
 
 
     // create an unordered iterator
-    tango::IIteratorPtr sp_iter = db->createIterator(table_path, L"", L"", NULL);
+    tango::IIteratorPtr sp_iter = db->createIterator(table_path, L"", L"", L"", NULL);
     if (!sp_iter)
         return NULL;
 

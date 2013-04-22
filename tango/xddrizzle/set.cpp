@@ -255,7 +255,7 @@ bool DrizzleSet::modifyStructure(tango::IStructure* struct_config,
 
 
 tango::IIteratorPtr DrizzleSet::createIterator(const std::wstring& columns,
-                                               const std::wstring& expr,
+                                               const std::wstring& order,
                                                tango::IJob* job)
 {
     tango::IAttributesPtr attr = m_database->getAttributes();
@@ -268,10 +268,10 @@ tango::IIteratorPtr DrizzleSet::createIterator(const std::wstring& columns,
     query += m_tablename;
     query += quote_closechar;
 
-    if (expr.length() > 0)
+    if (order.length() > 0)
     {
         query += L" ORDER BY ";
-        query += expr;
+        query += order;
     }
 
     DrizzleIterator* iter = new DrizzleIterator;

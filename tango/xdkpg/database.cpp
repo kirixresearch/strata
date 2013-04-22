@@ -519,7 +519,7 @@ bool KpgDatabase::getStreamInfoBlock(const std::wstring& _path, std::wstring& ou
 
 tango::IIteratorPtr KpgDatabase::createIterator(const std::wstring& _path,
                                                 const std::wstring& columns,
-                                                const std::wstring& sort,
+                                                const std::wstring& order,
                                                 tango::IJob* job)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
@@ -548,7 +548,7 @@ tango::IIteratorPtr KpgDatabase::createIterator(const std::wstring& _path,
     }
 
     set->ref();
-    tango::IIteratorPtr iter = set->createIterator(columns, sort, job);
+    tango::IIteratorPtr iter = set->createIterator(columns, order, job);
     set->unref();
 
     return iter;

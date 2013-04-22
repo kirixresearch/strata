@@ -574,7 +574,8 @@ tango::IStreamPtr SlDatabase::openStream(const std::wstring& path)
 
 tango::IIteratorPtr SlDatabase::createIterator(const std::wstring& path,
                                                const std::wstring& _columns,
-                                               const std::wstring& sort,
+                                               const std::wstring& wherec,
+                                               const std::wstring& order,
                                                tango::IJob* job)
 {
     std::wstring columns = _columns;
@@ -585,8 +586,8 @@ tango::IIteratorPtr SlDatabase::createIterator(const std::wstring& path,
     kl::replaceStr(sql, L"%columns%", columns);
     kl::replaceStr(sql, L"%table%", path);
 
-    if (sort.length() > 0)
-        sql += L" ORDER BY " + sort;
+    if (order.length() > 0)
+        sql += L" ORDER BY " + order;
 
     xcm::IObjectPtr resobj;
     if (!execute(sql, 0, resobj, job))

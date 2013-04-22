@@ -603,7 +603,7 @@ bool SqlServerDatabase::createStream(const std::wstring& ofs_path, const std::ws
 
 tango::IIteratorPtr SqlServerDatabase::createIterator(const std::wstring& path,
                                                       const std::wstring& columns,
-                                                      const std::wstring& sort,
+                                                      const std::wstring& order,
                                                       tango::IJob* job)
 {
     // TODO: implement

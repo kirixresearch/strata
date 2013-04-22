@@ -558,7 +558,7 @@ bool ExportPkgJob::writeSetStream(tango::IDatabasePtr& db,
 
 
     // create an iterator
-    sp_iter = db->createIterator(towstr(info->src_path), L"", L"", NULL);
+    sp_iter = db->createIterator(towstr(info->src_path), L"", L"", L"", NULL);
     if (!sp_iter)
         return false;
     iter = sp_iter.p;

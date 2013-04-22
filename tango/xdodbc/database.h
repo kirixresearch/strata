@@ -163,7 +163,8 @@ public:
 
     tango::IIteratorPtr createIterator(const std::wstring& path,
                                        const std::wstring& columns,
-                                       const std::wstring& sort,
+                                       const std::wstring& wherec,
+                                       const std::wstring& order,
                                        tango::IJob* job);
 
     tango::IRelationPtr createRelation(const std::wstring& tag,

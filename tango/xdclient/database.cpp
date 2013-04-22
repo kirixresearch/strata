@@ -590,6 +590,7 @@ bool ClientDatabase::createStream(const std::wstring& path, const std::wstring& 
 
 tango::IIteratorPtr ClientDatabase::createIterator(const std::wstring& path,
                                                    const std::wstring& columns,
+                                                   const std::wstring& wherec,
                                                    const std::wstring& order,
                                                    tango::IJob* job)
 {
@@ -599,6 +600,7 @@ tango::IIteratorPtr ClientDatabase::createIterator(const std::wstring& path,
 
     ServerCallParams params;
     params.setParam(L"columns", columns);
+    params.setParam(L"where", wherec);
     params.setParam(L"order", order);
     params.setParam(L"limit", L"5");
 

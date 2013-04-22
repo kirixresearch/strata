@@ -283,7 +283,7 @@ int SummarizeJob::runJob()
     }
 
 
-    tango::IIteratorPtr group_result_iter = m_db->createIterator(group_output_set_path, L"", L"", NULL);
+    tango::IIteratorPtr group_result_iter = m_db->createIterator(group_output_set_path, L"", L"", L"", NULL);
     if (group_result_iter.isNull())
     {
         m_job_info->setState(jobStateFailed);

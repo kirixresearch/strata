@@ -239,7 +239,7 @@ bool SqlServerSet::modifyStructure(tango::IStructure* struct_config,
 
 
 tango::IIteratorPtr SqlServerSet::createIterator(const std::wstring& columns,
-                                                 const std::wstring& expr,
+                                                 const std::wstring& order,
                                                  tango::IJob* job)
 {
     std::wstring query;
@@ -248,17 +248,16 @@ tango::IIteratorPtr SqlServerSet::createIterator(const std::wstring& columns,
     query = L"SELECT * FROM ";
     query += m_tablename;
 
-    if (expr.length() > 0)
+    if (order.length() > 0)
     {
         query += L" ORDER BY ";
-        query += expr;
+        query += order;
     }
 
     SqlServerIterator* iter = new SqlServerIterator;
     iter->m_connect_info = m_connect_info;
     iter->m_context = m_context;
     iter->m_database = m_database;
-    iter->m_set = this;
     iter->m_name = m_tablename;
     iter->init(query);
 

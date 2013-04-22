@@ -714,7 +714,8 @@ public:
 
     virtual IIteratorPtr createIterator(const std::wstring& path,
                                         const std::wstring& columns,
-                                        const std::wstring& sort,
+                                        const std::wstring& wherec,
+                                        const std::wstring& order,
                                         IJob* job) = 0;
 
     virtual bool groupQuery(GroupQueryInfo* info, IJob* job) = 0;

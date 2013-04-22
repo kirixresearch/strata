@@ -355,7 +355,7 @@ int ExportJob::runJob()
 
 
         // now, do the insert
-        src_iter = src_db->createIterator(it->input_path, L"", L"", NULL);
+        src_iter = src_db->createIterator(it->input_path, L"", L"", L"", NULL);
         if (src_iter.isNull())
         {
             m_job_info->setState(jobStateFailed);

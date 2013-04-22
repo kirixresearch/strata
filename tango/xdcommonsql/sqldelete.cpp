@@ -43,7 +43,7 @@ static int doDelete(std::wstring path,
 
     // create physical iterator and initialize expression handles
 
-    tango::IIteratorPtr sp_iter = set->createIterator(L"", L"", NULL);
+    tango::IIteratorPtr sp_iter = set->createIterator(L"", L"", L"", NULL);
     if (sp_iter.isNull())
         return -1;
 

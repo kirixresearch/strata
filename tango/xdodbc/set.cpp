@@ -754,7 +754,7 @@ bool OdbcSet::modifyStructure(tango::IStructure* struct_config,
 
 
 tango::IIteratorPtr OdbcSet::createIterator(const std::wstring& columns,
-                                            const std::wstring& expr,
+                                            const std::wstring& order,
                                             tango::IJob* job)
 {
     std::wstring query;
@@ -852,10 +852,10 @@ tango::IIteratorPtr OdbcSet::createIterator(const std::wstring& columns,
         query += m_where_condition;
     }
 
-    if (expr.length() > 0)
+    if (order.length() > 0)
     {
         query += L" ORDER BY ";
-        query += expr;
+        query += order;
     }
     
     // create an iterator based on our select statement

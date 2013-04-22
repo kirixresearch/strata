@@ -100,7 +100,7 @@ public:
 
     tango::IRowInserterPtr getRowInserter();
     tango::IIteratorPtr createIterator(const std::wstring& columns,
-                                       const std::wstring& expr,
+                                       const std::wstring& order,
                                        tango::IJob* job);
 
     tango::rowpos_t getRowCount();

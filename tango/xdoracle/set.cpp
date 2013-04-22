@@ -358,7 +358,7 @@ bool OracleSet::modifyStructure(tango::IStructure* struct_config,
 */
 
 tango::IIteratorPtr OracleSet::createIterator(const std::wstring& columns,
-                                              const std::wstring& expr,
+                                              const std::wstring& order,
                                               tango::IJob* job)
 {
     std::wstring query;
@@ -367,10 +367,10 @@ tango::IIteratorPtr OracleSet::createIterator(const std::wstring& columns,
     query = L"SELECT * FROM ";
     query += m_tablename;
 
-    if (expr.length() > 0)
+    if (order.length() > 0)
     {
         query += L" ORDER BY ";
-        query += expr;
+        query += order;
     }
 
     OracleIterator* iter = new OracleIterator(m_database, this);

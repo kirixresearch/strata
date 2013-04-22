@@ -107,6 +107,7 @@ public:
 
     tango::IIteratorPtr createIterator(const std::wstring& path,
                                        const std::wstring& columns,
+                                       const std::wstring& wherec,
                                        const std::wstring& sort,
                                        tango::IJob* job);
 

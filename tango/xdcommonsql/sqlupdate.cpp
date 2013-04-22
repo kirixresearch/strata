@@ -116,7 +116,7 @@ static int doUpdate(tango::IDatabasePtr db,
 
 
     // create physical iterator and initialize expression handles
-    tango::IIteratorPtr sp_iter = db->createIterator(path, L"", L"", NULL);
+    tango::IIteratorPtr sp_iter = db->createIterator(path, L"", L"", L"", NULL);
     tango::IIterator* iter = sp_iter.p;
     if (sp_iter.isNull())
     {

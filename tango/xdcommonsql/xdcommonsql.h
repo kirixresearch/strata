@@ -46,7 +46,7 @@ xcm_interface IXdsqlTable : public xcm::IObject
 public:
 
     virtual tango::IIteratorPtr createIterator(const std::wstring& columns,
-                                               const std::wstring& expr,
+                                               const std::wstring& order,
                                                tango::IJob* job) = 0;
     virtual tango::IStructurePtr getStructure() = 0;
 

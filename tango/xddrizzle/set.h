@@ -39,8 +39,8 @@ public:
     tango::IStructurePtr getStructure();
 
     tango::IIteratorPtr createIterator(const std::wstring& columns,
-                                      const std::wstring& expr,
-                                      tango::IJob* job);
+                                       const std::wstring& order,
+                                       tango::IJob* job);
 
     tango::rowpos_t getRowCount();
 

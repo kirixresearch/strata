@@ -826,6 +826,7 @@ bool DrizzleDatabase::createStream(const std::wstring& path, const std::wstring&
 
 tango::IIteratorPtr DrizzleDatabase::createIterator(const std::wstring& path,
                                                     const std::wstring& columns,
+                                                    const std::wstring& order,
                                                     const std::wstring& sort,
                                                     tango::IJob* job)
 {

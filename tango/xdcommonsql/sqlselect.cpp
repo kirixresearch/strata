@@ -1673,7 +1673,7 @@ static bool doJoin(tango::IDatabasePtr db,
     if (left.length() == 0)
         return false;
 
-    tango::IIteratorPtr left_iter = db->createIterator(left, L"", L"", NULL);
+    tango::IIteratorPtr left_iter = db->createIterator(left, L"", L"", L"", NULL);
     if (left_iter.isNull())
         return false;
 
@@ -1813,6 +1813,7 @@ static bool doJoin(tango::IDatabasePtr db,
 
         // create iterator
         jit->right_iter = db->createIterator(jit->right_path, 
+                                             L"",
                                              L"",
                                              right_sort,
                                              iter_job);
@@ -2243,7 +2244,7 @@ bool convertToNativeTables(tango::IDatabasePtr db,
         }
 
         
-        tango::IIteratorPtr iter = st_it->set->createIterator(L"", L"", NULL);
+        tango::IIteratorPtr iter = st_it->set->createIterator(L"", L"", L"", NULL);
         if (iter.isNull())
             return false;
         iter->goFirst();
@@ -3074,7 +3075,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
     {
 #if 0
         // create an iterator which we will insert from
-        tango::IIteratorPtr source_iter = set->createIterator(L"", L"", NULL);
+        tango::IIteratorPtr source_iter = set->createIterator(L"", L"", L"", NULL);
         
         /*
         // this step is taken care of a few lines below
@@ -3138,7 +3139,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
 #endif
         
         // create an iterator which we will insert from
-        tango::IIteratorPtr source_iter = db->createIterator(set, L"", L"", NULL);
+        tango::IIteratorPtr source_iter = db->createIterator(set, L"", L"", L"", NULL);
         if (source_iter.isNull())
         {
             error.setError(tango::errorSyntax, L"Could not create iterator");            
@@ -3359,6 +3360,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
     tango::IIteratorPtr iter;
     iter = db->createIterator(set, 
                               field_str,
+                              L"",
                               order_by_str,
                               create_iter_job);
     
@@ -3460,7 +3462,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         }
     }
 
-    return db->createIterator(output_path, L"", L"", NULL);
+    return db->createIterator(output_path, L"", L"", L"", NULL);
 }
 
 

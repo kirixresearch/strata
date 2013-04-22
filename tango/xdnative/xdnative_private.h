@@ -230,7 +230,7 @@ public:
     virtual void onRelationshipsUpdated() = 0;
     
     virtual tango::IIteratorPtr createIterator(const std::wstring& columns,
-                                               const std::wstring& expr,
+                                               const std::wstring& order,
                                                tango::IJob* job) = 0;
 
     virtual bool modifyStructure(tango::IStructure* struct_config, tango::IJob* job) = 0;

@@ -134,10 +134,10 @@ tango::IRowInserterPtr XbaseSet::getRowInserter()
 
 
 tango::IIteratorPtr XbaseSet::createIterator(const std::wstring& columns,
-                                             const std::wstring& expr,
+                                             const std::wstring& order,
                                              tango::IJob* job)
 {
-    if (expr.empty())
+    if (order.empty())
     {
         XbaseIterator* iter = new XbaseIterator;
         if (!iter->init(m_database,
@@ -171,7 +171,7 @@ tango::IIteratorPtr XbaseSet::createIterator(const std::wstring& columns,
                               getObjectPath(),
                               full_index_filename,
                               temp_directory,
-                              expr,
+                              order,
                               true,
                               job);
     if (!idx)
@@ -183,7 +183,7 @@ tango::IIteratorPtr XbaseSet::createIterator(const std::wstring& columns,
     return createIteratorFromIndex(data_iter,
                                    idx,
                                    columns,
-                                   expr,
+                                   order,
                                    getObjectPath());
 }
 
