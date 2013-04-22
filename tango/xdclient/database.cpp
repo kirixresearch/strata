@@ -91,7 +91,7 @@ bool ClientDatabase::open(const std::wstring& host,
     url += L":";
     url += m_port;
     url += L"/";
-    url += m_database;
+    url += (m_database.length() > 0 && m_database[0] == '/') ? m_database.substr(1) : m_database;
     m_attr->setStringAttribute(tango::dbattrDatabaseUrl, url);
 
     return true;
@@ -125,7 +125,13 @@ std::wstring ClientDatabase::getRequestPath(const std::wstring& path, const std:
     }
 
     if (path.length() > 0)
+    {
+        if (path[0] != '/')
+            res += '/';
+            
         res += path;
+    }
+
     if (method.length() > 0)
         res += (L"?m=" + method);
 
@@ -349,14 +355,32 @@ bool ClientDatabase::copyFile(const std::wstring& src_path, const std::wstring& 
 
 bool ClientDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
 {
-    return false;
+    std::wstring handle;
+    IClientIteratorPtr iter = info->iter_input;
+    if (iter.isOk())
+        handle = iter->getHandle();
+
+    ServerCallParams params;
+    if (handle.length() > 0)
+        params.setParam(L"input_iter", handle);
+         else
+        params.setParam(L"input", info->input);
+    params.setParam(L"output", info->output);
+    params.setParam(L"order", info->order);
+    params.setParam(L"where", info->where);
+    params.setParam(L"limit", kl::itowstring(info->max_rows));
+
+    std::wstring sres = serverCall(info->input, L"copydata", &params);
+    kl::JsonNode response;
+    response.fromString(sres);
+
+    return response["success"].getBoolean();
 }
 
 bool ClientDatabase::deleteFile(const std::wstring& path)
 {
     ServerCallParams params;
-    params.setParam(L"path", path);
-    std::wstring sres = serverCall(L"", L"deletefile", &params);
+    std::wstring sres = serverCall(path, L"deletefile", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -368,10 +392,6 @@ bool ClientDatabase::getFileExist(const std::wstring& path)
     return getFileInfo(path).isOk();
 }
 
-bool ClientDatabase::getLocalFileExist(const std::wstring& path)
-{
-    return false;
-}
 
 tango::IFileInfoPtr ClientDatabase::getFileInfo(const std::wstring& path)
 {

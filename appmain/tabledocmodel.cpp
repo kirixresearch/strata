@@ -117,6 +117,7 @@ public:
             }
         }
 
+        // TODO: implement this right (see new path structure below)
 
         // next attempt to delete the disk files
         tango::IDatabasePtr db = g_app->getDatabase();

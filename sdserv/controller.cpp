@@ -85,6 +85,7 @@ bool Controller::onRequest(RequestInfo& req)
     else if (apimethod == L"movefile")         apiMoveFile(req);
     else if (apimethod == L"renamefile")       apiRenameFile(req);
     else if (apimethod == L"deletefile")       apiDeleteFile(req);
+    else if (apimethod == L"copydata")         apiCopyData(req);
     else if (apimethod == L"openstream")       apiOpenStream(req);
     else if (apimethod == L"readstream")       apiReadStream(req);
     else if (apimethod == L"writestream")      apiWriteStream(req);
@@ -537,6 +538,12 @@ void Controller::apiDeleteFile(RequestInfo& req)
     
     std::wstring path = req.getURI();
     
+    if (path == L"" || path == L"/")
+    {
+        returnApiError(req, "Could not delete root");
+        return;
+    }
+
     if (db->deleteFile(path))
     {
         // return success to caller
@@ -550,6 +557,26 @@ void Controller::apiDeleteFile(RequestInfo& req)
     }
 }
 
+void Controller::apiCopyData(RequestInfo& req)
+{
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+        return;
+    
+    tango::CopyInfo info;
+    info.input = req.getValue(L"input");
+    info.output = req.getValue(L"output");
+    info.where = req.getValue(L"where");
+    info.order = req.getValue(L"order");
+    info.max_rows = kl::wtoi(req.getValue(L"limit"));
+
+    bool res = db->copyData(&info, NULL);
+
+    // return success to caller
+    kl::JsonNode response;
+    response["success"].setBoolean(res);
+    req.write(response.toString());
+}
 
 
 void Controller::apiOpenStream(RequestInfo& req)

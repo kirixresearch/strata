@@ -89,6 +89,7 @@ private:
     void apiMoveFile(RequestInfo& req);
     void apiRenameFile(RequestInfo& req);
     void apiDeleteFile(RequestInfo& req);
+    void apiCopyData(RequestInfo& req);
     void apiOpenStream(RequestInfo& req);
     void apiReadStream(RequestInfo& req);
     void apiWriteStream(RequestInfo& req);

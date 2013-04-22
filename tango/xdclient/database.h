@@ -95,7 +95,6 @@ public:
     bool copyData(const tango::CopyInfo* info, tango::IJob* job);
     bool deleteFile(const std::wstring& path);
     bool getFileExist(const std::wstring& path);
-    bool getLocalFileExist(const std::wstring& path);
     tango::IFileInfoPtr getFileInfo(const std::wstring& path);
     tango::IFileInfoEnumPtr getFolderInfo(const std::wstring& path);
 

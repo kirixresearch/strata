@@ -6118,10 +6118,6 @@ void TableDoc::onGridSelectionChange(kcl::GridEvent& evt)
 
 
 
-
-// -- Field Summary Implementation --
-
-
 static void onSummaryJobFinished(jobs::IJobPtr job)
 {
     if (job->getJobInfo()->getState() != jobStateFinished)
