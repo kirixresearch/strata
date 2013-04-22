@@ -1779,38 +1779,10 @@ bool FsDatabase::createStream(const std::wstring& path, const std::wstring& mime
 
 
 
-tango::IRelationEnumPtr FsDatabase::getRelationEnum(const std::wstring& path)
-{
-    xcm::IVectorImpl<tango::IRelationPtr>* relations;
-    relations = new xcm::IVectorImpl<tango::IRelationPtr>;
-    return relations;
-}
-
-tango::IRelationPtr FsDatabase::getRelation(const std::wstring& relation_id)
-{
-    return xcm::null;
-}
-
-tango::IRelationPtr FsDatabase::createRelation(const std::wstring& tag,
-                                               const std::wstring& left_set_path,
-                                               const std::wstring& right_set_path,
-                                               const std::wstring& left_expr,
-                                               const std::wstring& right_expr)
-{
-    return xcm::null;
-}
-
-bool FsDatabase::deleteRelation(const std::wstring& relation_id)
-{
-    return false;
-}
-
-
 tango::IRowInserterPtr FsDatabase::bulkInsert(const std::wstring& path)
 {
     return xcm::null;
 }
-
 
 tango::IStructurePtr FsDatabase::describeTable(const std::wstring& path)
 {

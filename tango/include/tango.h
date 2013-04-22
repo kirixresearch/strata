@@ -684,10 +684,10 @@ public:
                                         const std::wstring& left_set_path,
                                         const std::wstring& right_set_path,
                                         const std::wstring& left_expr,
-                                        const std::wstring& right_expr) = 0;
-    virtual bool deleteRelation(const std::wstring& relation_id) = 0;
-    virtual IRelationPtr getRelation(const std::wstring& relation_id) = 0;
-    virtual IRelationEnumPtr getRelationEnum(const std::wstring& path) = 0;
+                                        const std::wstring& right_expr) { return xcm::null; }
+    virtual bool deleteRelation(const std::wstring& relation_id) { return false; }
+    virtual IRelationPtr getRelation(const std::wstring& relation_id) { return xcm::null; }
+    virtual IRelationEnumPtr getRelationEnum(const std::wstring& path) { return xcm::null; }
 
 
     virtual IIndexInfoPtr createIndex(const std::wstring& path,

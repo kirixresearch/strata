@@ -89,15 +89,6 @@ public:
                                        const std::wstring& order,
                                        tango::IJob* job);
 
-    tango::IRelationPtr createRelation(const std::wstring& tag,
-                                       const std::wstring& left_set_path,
-                                       const std::wstring& right_set_path,
-                                       const std::wstring& left_expr,
-                                       const std::wstring& right_expr);
-    bool deleteRelation(const std::wstring& relation_id);
-    tango::IRelationPtr getRelation(const std::wstring& relation_id);
-    tango::IRelationEnumPtr getRelationEnum(const std::wstring& path);
-
 
     tango::IIndexInfoPtr createIndex(const std::wstring& path,
                                      const std::wstring& name,

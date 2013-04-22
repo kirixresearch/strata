@@ -889,31 +889,6 @@ bool DrizzleDatabase::modifyStructure(const std::wstring& path, tango::IStructur
 }
 
 
-tango::IRelationEnumPtr DrizzleDatabase::getRelationEnum(const std::wstring& path)
-{
-    xcm::IVectorImpl<tango::IRelationPtr>* relations = new xcm::IVectorImpl<tango::IRelationPtr>;
-    return relations;
-}
-
-tango::IRelationPtr DrizzleDatabase::getRelation(const std::wstring& relation_id)
-{
-    return xcm::null;
-}
-
-tango::IRelationPtr DrizzleDatabase::createRelation(const std::wstring& tag,
-                                                    const std::wstring& left_set_path,
-                                                    const std::wstring& right_set_path,
-                                                    const std::wstring& left_expr,
-                                                    const std::wstring& right_expr)
-{
-    return xcm::null;
-}
-
-bool DrizzleDatabase::deleteRelation(const std::wstring& relation_id)
-{
-    return false;
-}
-
 bool DrizzleDatabase::execute(const std::wstring& command,
                               unsigned int flags,
                               xcm::IObjectPtr& result_object,

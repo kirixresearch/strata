@@ -597,35 +597,6 @@ tango::IIteratorPtr SlDatabase::createIterator(const std::wstring& path,
 }
 
 
-tango::IRelationEnumPtr SlDatabase::getRelationEnum(const std::wstring& path)
-{
-    xcm::IVectorImpl<tango::IRelationPtr>* relations;
-    relations = new xcm::IVectorImpl<tango::IRelationPtr>;
-    return relations;
-}
-
-
-tango::IRelationPtr SlDatabase::getRelation(const std::wstring& relation_id)
-{
-    return xcm::null;
-}
-
-tango::IRelationPtr SlDatabase::createRelation(const std::wstring& tag,
-                                               const std::wstring& left_set_path,
-                                               const std::wstring& right_set_path,
-                                               const std::wstring& left_expr,
-                                               const std::wstring& right_expr)
-{
-    return xcm::null;
-}
-
-bool SlDatabase::deleteRelation(const std::wstring& relation_id)
-{
-    return false;
-}
-
-
-
 tango::IIndexInfoPtr SlDatabase::createIndex(const std::wstring& path,
                                              const std::wstring& name,
                                              const std::wstring& expr,

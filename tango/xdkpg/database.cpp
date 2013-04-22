@@ -519,6 +519,7 @@ bool KpgDatabase::getStreamInfoBlock(const std::wstring& _path, std::wstring& ou
 
 tango::IIteratorPtr KpgDatabase::createIterator(const std::wstring& _path,
                                                 const std::wstring& columns,
+                                                const std::wstring& wherec,
                                                 const std::wstring& order,
                                                 tango::IJob* job)
 {
@@ -555,39 +556,11 @@ tango::IIteratorPtr KpgDatabase::createIterator(const std::wstring& _path,
 }
 
 
-tango::IRelationEnumPtr KpgDatabase::getRelationEnum(const std::wstring& path)
-{
-    xcm::IVectorImpl<tango::IRelationPtr>* relations;
-    relations = new xcm::IVectorImpl<tango::IRelationPtr>;
-    return relations;
-}
-
-tango::IRelationPtr KpgDatabase::getRelation(const std::wstring& relation_id)
-{
-    return xcm::null;
-}
-
-tango::IRelationPtr KpgDatabase::createRelation(const std::wstring& tag,
-                                                const std::wstring& left_set_path,
-                                                const std::wstring& right_set_path,
-                                                const std::wstring& left_expr,
-                                                const std::wstring& right_expr)
-{
-    return xcm::null;
-}
-
-bool KpgDatabase::deleteRelation(const std::wstring& relation_id)
-{
-    return false;
-}
-
-
-
 
 tango::IIndexInfoPtr KpgDatabase::createIndex(const std::wstring& path,
-                                                const std::wstring& name,
-                                                const std::wstring& expr,
-                                                tango::IJob* job)
+                                              const std::wstring& name,
+                                              const std::wstring& expr,
+                                              tango::IJob* job)
 {
     return xcm::null;
 }
