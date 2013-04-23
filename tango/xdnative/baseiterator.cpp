@@ -995,9 +995,7 @@ void BaseIterator::onSetRowDeleted(tango::rowid_t rowid)
 
 std::wstring BaseIterator::getTable()
 {
-    if (m_set.isNull())
-        return L"";
-    return m_set->getObjectPath();
+    return L"";
 }
 
 tango::rowpos_t BaseIterator::getRowCount()

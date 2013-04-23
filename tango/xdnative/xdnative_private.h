@@ -214,9 +214,6 @@ public:
     virtual std::wstring getSetId() = 0;
     virtual IXdnativeSet* getRawXdnativeSetPtr() = 0;
 
-    virtual void setObjectPath(const std::wstring& path) = 0;
-    virtual std::wstring getObjectPath() = 0;
-
     virtual tango::rowpos_t getRowCount() = 0;
     virtual tango::IStructurePtr getStructure() = 0;
 

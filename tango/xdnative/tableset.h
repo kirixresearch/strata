@@ -42,7 +42,7 @@ public:
 
 
 
-
+class TableSet;
 class TableIterator : public BaseIterator
 {
     friend class TableSet;
@@ -61,9 +61,11 @@ public:
     bool removeEventHandler(ITableEvents* handler);
 
     bool init(XdnativeDatabase* database,
-              IXdnativeSet* set,
+              TableSet* set,
               ITable* table,
               const std::wstring& columns);
+
+    std::wstring getTable();
 
     const unsigned char* getRowBuffer();
     int getRowBufferWidth();
@@ -93,6 +95,7 @@ private:
 
     tango::tableord_t m_table_ord;
     tango::rowpos_t m_row_count;
+    TableSet* m_table_set;
     ITable* m_table;
     int m_table_rowwidth;
     int m_read_ahead_rowcount;
@@ -113,6 +116,7 @@ class TableSet : public BaseSet,
 {
 friend class TableSetRowInserter;
 friend class TableSetRowDeleter;
+friend class TableIterator;
 
     XCM_CLASS_NAME_CUSTOMREFCOUNT("xdnative.TableSet")
     XCM_BEGIN_INTERFACE_MAP(TableSet)
@@ -163,8 +167,6 @@ public:
     bool save();
 
     void updateRowCount();
-
-    std::wstring getObjectPath();
 
     tango::IStructurePtr getStructure();
     bool modifyStructure(tango::IStructure* struct_config,
@@ -273,7 +275,7 @@ class TableSetRowInserter : public tango::IRowInserter
 
 public:
 
-    TableSetRowInserter(TableSet* set);
+    TableSetRowInserter(XdnativeDatabase* db, TableSet* set);
     virtual ~TableSetRowInserter();
 
     tango::objhandle_t getHandle(const std::wstring& column_name);
@@ -312,6 +314,7 @@ public:
 
 private:
 
+    XdnativeDatabase* m_database;
     TableSet* m_set;
     ITable* m_table;
     BufIterator* m_iter;

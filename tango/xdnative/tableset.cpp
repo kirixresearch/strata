@@ -65,12 +65,13 @@ TableIterator::~TableIterator()
 }
 
 bool TableIterator::init(XdnativeDatabase* database,
-                         IXdnativeSet* set,
+                         TableSet* set,
                          ITable* table,
                          const std::wstring& columns)
 {
     if (!BaseIterator::init(database, set, columns))
         return false;
+    m_table_set = set;
 
     registerTable(table);
 
@@ -96,6 +97,12 @@ bool TableIterator::init(XdnativeDatabase* database,
     
     return true;
 }
+
+std::wstring TableIterator::getTable()
+{
+    return m_table_set->m_ofspath;
+}
+
 
 tango::IIteratorPtr TableIterator::clone()
 {
@@ -647,17 +654,11 @@ void TableSet::onOfsPathChanged(const std::wstring& new_path)
     m_ofspath = new_path;
 }
 
-std::wstring TableSet::getObjectPath()
-{
-    return m_ofspath;
-}
-
 tango::IRowInserterPtr TableSet::getRowInserter()
 {
-    TableSetRowInserter* inserter = new TableSetRowInserter(this);
+    TableSetRowInserter* inserter = new TableSetRowInserter(m_database, this);
     return static_cast<tango::IRowInserter*>(inserter);
 }
-
 
 tango::IRowDeleterPtr TableSet::getRowDeleter()
 {
@@ -1065,7 +1066,7 @@ tango::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
 
 
     IIndex* idx = createExternalIndex(m_database,
-                                      getObjectPath(),
+                                      m_ofspath,
                                       full_index_filename,
                                       m_database->getTempPath(),
                                       expr,
@@ -1306,12 +1307,13 @@ bool TableSet::deleteAllIndexes()
 TableIterator* TableSet::createPhysicalIterator(const std::wstring& columns,
                                                 bool include_deleted)
 {
-    // no sort order, so create a physical order iterator
+    ITablePtr tbl = m_database->openTableByOrdinal(m_ordinal);
+    if (tbl.isNull())
+        return NULL;
+        
     TableIterator* it = new TableIterator;
 
-    ITablePtr tbl = m_database->openTableByOrdinal(m_ordinal);
-
-    if (!it->init(m_database, static_cast<IXdnativeSet*>(this), tbl, columns))
+    if (!it->init(m_database, this, tbl, columns))
     {
         delete it;
         return NULL;
@@ -1373,7 +1375,7 @@ tango::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
                                       idx,
                                       columns,
                                       order,
-                                      getObjectPath());
+                                      m_ofspath);
 
         idx->unref();
         return res;
@@ -1390,7 +1392,7 @@ tango::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
 
 
         idx = createExternalIndex(m_database,
-                                  getObjectPath(),
+                                  m_ofspath,
                                   full_index_filename,
                                   m_database->getTempPath(),
                                   order,
@@ -1423,7 +1425,7 @@ tango::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
                                        idx,
                                        columns,
                                        order,
-                                       getObjectPath());
+                                       m_ofspath);
     }
 }
 
@@ -1617,8 +1619,11 @@ tango::rowpos_t TableSet::getRowCount()
 
 const int inserter_buf_rows = 500;
 
-TableSetRowInserter::TableSetRowInserter(TableSet* set)
+TableSetRowInserter::TableSetRowInserter(XdnativeDatabase* db, TableSet* set)
 {
+    m_database = db;
+    m_database->ref();
+
     m_set = set;
     m_set->ref();
 
@@ -1631,7 +1636,7 @@ TableSetRowInserter::TableSetRowInserter(TableSet* set)
 
     m_iter = new BufIterator;
     m_iter->ref();
-    m_iter->init(m_set->m_database, static_cast<IXdnativeSet*>(m_set));
+    m_iter->init(db, static_cast<IXdnativeSet*>(m_set));
     m_iter->setRowBuffer(m_buf, m_row_width);
 
     // inserter is not valid until startInsert() is called
@@ -1650,6 +1655,9 @@ TableSetRowInserter::~TableSetRowInserter()
 
     if (m_set)
         m_set->unref();
+
+    if (m_database)
+        m_database->unref();
 }
 
 tango::objhandle_t TableSetRowInserter::getHandle(const std::wstring& column)

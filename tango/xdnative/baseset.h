@@ -35,9 +35,6 @@ public:
 
     IXdnativeSet* getRawXdnativeSetPtr() { return this; }
 
-    void setObjectPath(const std::wstring& path) { }
-    std::wstring getObjectPath() { return L""; }
-
     bool modifyStructure(tango::IStructure* struct_config, tango::IJob* job) { return false; }
 
     unsigned int getSetFlags();
