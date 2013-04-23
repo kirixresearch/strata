@@ -10,7 +10,6 @@
 
 
 #include "database.h"
-#include "set.h"
 #include "iterator.h"
 #include "inserter.h"
 

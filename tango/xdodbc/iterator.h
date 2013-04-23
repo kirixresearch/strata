@@ -135,7 +135,7 @@ class OdbcIterator : public CommonBaseIterator,
 
 public:
 
-    OdbcIterator(OdbcDatabase* database, OdbcSet* set = NULL);
+    OdbcIterator(OdbcDatabase* database);
     ~OdbcIterator();
     
     bool init(const std::wstring& query);
@@ -207,7 +207,6 @@ private:
     std::vector<OdbcIteratorRelInfo> m_relations;
 
     OdbcDatabase* m_database;
-    OdbcSet* m_set;
     tango::IStructurePtr m_structure;
 
     LocalRowCache m_cache;

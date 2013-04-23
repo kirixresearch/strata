@@ -60,10 +60,6 @@ public:
 
 private:
 
-    void fixAccessStructure(tango::IStructurePtr& s);
-
-private:
-
     OdbcDatabase* m_database;
     std::wstring m_tablename;
     bool m_filter_query;

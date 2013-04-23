@@ -20,7 +20,6 @@
 #include "../xdcommon/dbattr.h"
 #include "../xdcommon/fileinfo.h"
 #include "iterator.h"
-#include "set.h"
 #include "inserter.h"
 #include <set>
 
@@ -682,6 +681,7 @@ tango::IColumnInfoPtr createColInfo(int db_type,
     return col;
 }
 
+void odbcFixAccessStructure(HDBC conn, const std::wstring& tablename, Structure* s);
 
 
 // OdbcFileInfo class implementation
@@ -2076,22 +2076,114 @@ tango::IIteratorPtr OdbcDatabase::createIterator(const std::wstring& path,
                                                  const std::wstring& order,
                                                  tango::IJob* job)
 {
-    std::wstring columns = _columns;
-    if (columns.length() == 0)
-        columns = L"*";
+    std::wstring query;
+    query.reserve(1024);
 
-    std::wstring sql = L"SELECT %columns% FROM %table%";
-    kl::replaceStr(sql, L"%columns%", columns);
-    kl::replaceStr(sql, L"%table%", path);
+    std::wstring tablename = getTablenameFromOfsPath(path);
+
+    if (m_db_type == tango::dbtypeAccess)
+    {
+        tango::IStructurePtr s = describeTable(path);
+        if (s.isNull())
+            return xcm::null;
+
+        int i, cnt = s->getColumnCount();
+
+        query = L"SELECT ";
+        for (i = 0; i < cnt; ++i)
+        {
+            tango::IColumnInfoPtr colinfo;
+            colinfo = s->getColumnInfoByIdx(i);
+
+            if (colinfo->getCalculated())
+                continue;
+                
+            if (i != 0)
+            {
+                query += L",";
+            }
+            
+            if (colinfo->getType() == tango::typeNumeric ||
+                colinfo->getType() == tango::typeDouble)
+            {
+                query += L"IIF(ISNUMERIC([";
+                query += colinfo->getName();
+                query += L"]),VAL(STR([";
+                query += colinfo->getName();
+                query += L"])),null) AS ";
+                query += L"[";
+                query += colinfo->getName();
+                query += L"] ";
+            }
+             else
+            {
+                query += L"[";
+                query += colinfo->getName();
+                query += L"]";
+            }
+        }
+
+        query += L" FROM ";
+        query += L"[";
+        query += tablename;
+        query += L"]";
+    }
+     else if (m_db_type == tango::dbtypeExcel)
+    {
+        query = L"SELECT * FROM ";
+        query += L"\"";
+        query += tablename;
+        query += L"$\"";
+    }
+     else if (m_db_type == tango::dbtypeOracle)
+    {
+        tango::IStructurePtr s = describeTable(path);
+
+        int i, cnt = s->getColumnCount();
+
+        query = L"SELECT ";
+        for (i = 0; i < cnt; ++i)
+        {
+            if (i != 0)
+                query += L",";
+
+            query += s->getColumnName(i);
+        }
+
+        query += L" FROM ";
+        query += tablename;
+    }
+     else
+    {
+        tango::IAttributesPtr attr = this->getAttributes();
+        std::wstring quote_openchar = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
+        std::wstring quote_closechar = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);    
+    
+        query = L"SELECT * FROM ";
+        query += quote_openchar;
+        query += tablename;
+        query += quote_closechar;
+    }
+
+    if (wherec.length() > 0)
+    {
+        query += L" WHERE ";
+        query += wherec;
+    }
 
     if (order.length() > 0)
-        sql += L" ORDER BY " + order;
+    {
+        query += L" ORDER BY ";
+        query += order;
+    }
+    
+    // create an iterator based on our select statement
+    OdbcIterator* iter = new OdbcIterator(this);
 
-    xcm::IObjectPtr resobj;
-    if (!execute(sql, 0, resobj, job))
+    if (!iter->init(query))
         return xcm::null;
 
-    return resobj;
+    return static_cast<tango::IIterator*>(iter);
 }
 
 
@@ -2141,11 +2233,229 @@ tango::IRowInserterPtr OdbcDatabase::bulkInsert(const std::wstring& path)
 
 tango::IStructurePtr OdbcDatabase::describeTable(const std::wstring& path)
 {
-    // TODO: implement
-    return xcm::null;
+    HDBC conn = createConnection();
+    if (!conn)
+    {
+        // no connection could be made
+        // TODO: return more specific m_error code here
+        return xcm::null;
+    }
+
+    std::wstring schema;
+    std::wstring tablename = getTablenameFromOfsPath(path);
+
+    Structure* s = new Structure;
+
+    wchar_t col_name[255];
+    short int col_type;
+    int col_width;
+    short int col_scale;
+    short int datetime_sub;
+
+    SQLLEN col_name_ind = SQL_NULL_DATA;
+    SQLLEN col_type_ind = SQL_NULL_DATA;
+    SQLLEN col_width_ind = SQL_NULL_DATA;
+    SQLLEN col_scale_ind = SQL_NULL_DATA;
+    SQLLEN datetime_sub_ind = SQL_NULL_DATA;
+
+
+    HSTMT stmt = 0;
+    SQLAllocHandle(SQL_HANDLE_STMT, conn, &stmt);
+
+
+
+    if (tablename.find(L'.') != -1)
+    {
+        schema = kl::beforeFirst(tablename, L'.');
+        tablename = kl::afterFirst(tablename, L'.');
+    }
+
+
+    if (m_db_type == tango::dbtypeExcel)
+    {
+        // excel wants a $ at the end
+        tablename += L"$";
+    }
+
+
+    SQLRETURN r;
+    if (m_db_type == tango::dbtypeExcel ||
+        m_db_type == tango::dbtypeAccess ||
+        schema.empty())
+    {
+        // excel and access drivers cannot tolerate even an 
+        // empty string for parameter 4 of SQLColumns();
+        // it wants it to be NULL
+
+        // even SQL Server, if a schema is not specified,
+        // wants a NULL instead of an empty string.  This
+        //  is taken care of by the 'schema.isEmpty()' check above
+
+        r = SQLColumns(stmt,
+                       NULL,
+                       0,
+                       NULL,
+                       0,
+                       sqlt(tablename),
+                       SQL_NTS,
+                       NULL,
+                       0);
+    }
+     else
+    {
+        r = SQLColumns(stmt,
+                       NULL,
+                       0,
+                       sqlt(schema),
+                       SQL_NTS,
+                       sqlt(tablename),
+                       SQL_NTS,
+                       NULL,
+                       0);
+    }
+
+
+
+    #ifdef _DEBUG
+    if (r != SQL_SUCCESS)
+    {
+        testSqlStmt(stmt);
+    }
+    #endif
+
+
+    if (r == SQL_SUCCESS || r == SQL_SUCCESS_WITH_INFO)
+    {
+        // bind columns in result set to buffers
+        
+        int c_ord = 5;
+        if (m_db_type == tango::dbtypeOracle)
+        {
+            c_ord = 14;
+        }
+
+        // bind column name
+        r = SQLBindCol(stmt,
+                       4,
+                       SQL_C_WCHAR,
+                       col_name,
+                       255*sizeof(wchar_t),
+                       &col_name_ind);
+
+        // bind column type
+        r = SQLBindCol(stmt,
+                       c_ord,
+                       SQL_C_SSHORT,
+                       &col_type,
+                       sizeof(short int),
+                       &col_type_ind);
+
+        // bind column width
+        r = SQLBindCol(stmt,
+                       7,
+                       SQL_C_SLONG,
+                       &col_width,
+                       sizeof(long),
+                       &col_width_ind);
+
+        // bind column scale
+        r = SQLBindCol(stmt,
+                       9,
+                       SQL_C_SSHORT,
+                       &col_scale,
+                       sizeof(short int),
+                       &col_scale_ind);
+
+        if (m_db_type == tango::dbtypeOracle)
+        {
+            r = SQLBindCol(stmt,
+                           15,
+                           SQL_C_SSHORT,
+                           &datetime_sub,
+                           sizeof(short int),
+                           &datetime_sub_ind);
+        }
+
+        int i = 0;
+
+        // populate the structure
+        while (1)
+        {
+            col_name[0] = 0;
+            col_type = 0;
+            col_width = 0;
+            col_scale = 0;
+
+            r = SQLFetch(stmt);
+            
+            #ifdef _DEBUG
+            testSqlStmt(stmt);
+            #endif
+
+            if (r == SQL_ERROR || r == SQL_NO_DATA)
+            {
+                // failed
+                break;
+            }
+
+            if (r == SQL_SUCCESS || r == SQL_SUCCESS_WITH_INFO)
+            {
+                std::wstring wcol_name;
+                wcol_name = col_name;
+
+                tango::IColumnInfoPtr col;
+                
+                col = createColInfo(m_db_type,
+                                    wcol_name,
+                                    col_type,
+                                    col_width,
+                                    col_scale,
+                                    L"",
+                                      (datetime_sub_ind == SQL_NULL_DATA) ?
+                                         -1 : datetime_sub);
+
+                if (col.isNull())
+                    continue;
+
+                col->setColumnOrdinal(i);
+                i++;
+
+                s->addColumn(col);
+            }
+             else
+            {
+                // failed
+                break;
+            }
+        }
+    }
+
+    if (stmt)
+    {
+        SQLCloseCursor(stmt);
+        SQLFreeHandle(SQL_HANDLE_STMT, stmt);
+    }
+
+
+    if (m_db_type == tango::dbtypeAccess)
+    {
+        odbcFixAccessStructure(conn, tablename, s);
+    }
+
+    closeConnection(conn);
+
+    /*
+    tango::IStructurePtr ret = m_structure->clone();
+    appendCalcFields(ret);
+    return ret;
+    */
+
+    return static_cast<tango::IStructure*>(s);
 }
 
-bool OdbcDatabase::modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job)
+bool OdbcDatabase::modifyStructure(const std::wstring& path,
+                                   tango::IStructurePtr struct_config,
+                                   tango::IJob* job)
 {
     return false;
 }
@@ -2172,7 +2482,7 @@ bool OdbcDatabase::execute(const std::wstring& command,
     if (0 == wcscasecmp(first_word.c_str(), L"SELECT"))
     {
         // create an iterator based on our select statement
-        OdbcIterator* iter = new OdbcIterator(this, NULL);
+        OdbcIterator* iter = new OdbcIterator(this);
 
         if (!iter->init(command))
         {
@@ -2223,4 +2533,246 @@ bool OdbcDatabase::execute(const std::wstring& command,
 bool OdbcDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
 {
     return false;
+}
+
+
+
+
+
+
+
+
+struct TempInfo
+{
+    tango::IColumnInfoPtr colinfo;
+    std::wstring colname;
+    char buf[255];
+    SQLLEN indicator;
+    int max_dec;
+};
+
+
+void odbcFixAccessStructure(HDBC conn, const std::wstring& tablename, Structure* s)
+{
+    // because Access can store arbitrary numeric scales (decimal digits
+    // to the right of the decimal point), we must find out the correct
+    // scale by performing a query to look at the data itself
+
+    std::wstring query;
+    tango::IColumnInfoPtr colinfo;
+    int col_count = s->getColumnCount();
+    int i;
+    std::vector<TempInfo> cols;
+    std::vector<TempInfo>::iterator it;
+
+    query = L"SELECT TOP 100 ";
+    
+    bool first = true;
+    for (i = 0; i < col_count; ++i)
+    {
+        colinfo = s->getColumnInfoByIdx(i);
+        if (colinfo->getType() == tango::typeNumeric ||
+            colinfo->getType() == tango::typeDouble)
+        {
+            if (!first)
+                query += L",";
+            first = false;
+            query += L"STR([";
+            query += colinfo->getName();
+            query += L"])";
+            TempInfo ti;
+            ti.colinfo = colinfo;
+            ti.max_dec = 0;
+            ti.colname = colinfo->getName();
+            cols.push_back(ti);
+        }
+    }
+
+    query += L" FROM [";
+    query += tablename;
+    query += L"]";
+
+
+
+    HSTMT stmt = NULL;
+    SQLRETURN retval = 0;
+    SQLAllocStmt(conn, &stmt);
+
+    retval = SQLSetStmtAttr(stmt,
+                            SQL_ATTR_CURSOR_TYPE,
+                            (SQLPOINTER)SQL_CURSOR_FORWARD_ONLY,
+                            0);
+
+    retval = SQLSetStmtAttr(stmt,
+                            SQL_ATTR_CONCURRENCY,
+                            (SQLPOINTER)SQL_CONCUR_READ_ONLY,
+                            0);
+
+    retval = SQLExecDirect(stmt,
+                           sqlt(query),
+                           SQL_NTS);
+
+    if (retval == SQL_NO_DATA ||
+        retval == SQL_ERROR ||
+        retval == SQL_INVALID_HANDLE)
+    {
+        // failed (make no changes to the structure)
+        SQLCloseCursor(stmt);
+        SQLFreeHandle(SQL_HANDLE_STMT, stmt);
+        return;
+    }
+
+    SQLSMALLINT result_col_count = 0;
+    SQLNumResultCols(stmt, &result_col_count);
+
+    if (result_col_count != cols.size())
+    {
+        // failed (make no changes to the structure)
+        SQLCloseCursor(stmt);
+        SQLFreeHandle(SQL_HANDLE_STMT, stmt);
+        return;
+    }
+
+    // bind the columns to their return values
+    i = 1;
+    for (it = cols.begin(); it != cols.end(); ++it)
+    {
+        retval = SQLBindCol(stmt,
+                            i++,
+                            SQL_C_CHAR,
+                            it->buf,
+                            255,
+                            &it->indicator);
+        if (retval != SQL_SUCCESS)
+        {
+            // failed (make no changes to the structure)
+            SQLCloseCursor(stmt);
+            SQLFreeHandle(SQL_HANDLE_STMT, stmt);
+            return;
+        }
+    }
+
+
+    while (SQLFetch(stmt) == SQL_SUCCESS)
+    {
+        for (it = cols.begin(); it != cols.end(); ++it)
+        {
+            if (it->indicator == SQL_NULL_DATA)
+                continue;
+            char *p = strchr(it->buf, '.');
+            if (p)
+            {
+                int offset = p - it->buf;
+                int len = strlen(it->buf);
+                int decimal_places = len-(offset+1);
+                if (decimal_places > it->max_dec)
+                    it->max_dec = decimal_places;
+            }
+        }
+    }
+
+#ifdef _DEBUG
+    testSqlStmt(stmt);
+#endif
+
+    SQLCloseCursor(stmt);
+    SQLFreeHandle(SQL_HANDLE_STMT, stmt);
+
+    for (it = cols.begin(); it != cols.end(); ++it)
+    {
+        it->colinfo->setScale(it->max_dec);
+    }
+
+
+    // now grab scale from SQLColAttribute()
+
+    query = L"SELECT TOP 20 ";
+    
+    first = true;
+    for (it = cols.begin(); it != cols.end(); ++it)
+    {
+        if (!first)
+            query += L",";
+        first = false;
+        query += L"[";
+        query += it->colname;
+        query += L"]";
+    }
+
+    query += L" FROM [";
+    query += tablename;
+    query += L"]";
+
+
+
+    stmt = NULL;
+    retval = 0;
+    SQLAllocStmt(conn, &stmt);
+
+    retval = SQLSetStmtAttr(stmt,
+                            SQL_ATTR_CURSOR_TYPE,
+                            (SQLPOINTER)SQL_CURSOR_FORWARD_ONLY,
+                            0);
+
+    retval = SQLSetStmtAttr(stmt,
+                            SQL_ATTR_CONCURRENCY,
+                            (SQLPOINTER)SQL_CONCUR_READ_ONLY,
+                            0);
+
+    retval = SQLExecDirect(stmt,
+                           sqlt(query),
+                           SQL_NTS);
+
+    if (retval == SQL_NO_DATA ||
+        retval == SQL_ERROR ||
+        retval == SQL_INVALID_HANDLE)
+    {
+        // failed (make no changes to the structure)
+        SQLCloseCursor(stmt);
+        SQLFreeHandle(SQL_HANDLE_STMT, stmt);
+        return;
+    }
+
+    result_col_count = 0;
+    SQLNumResultCols(stmt, &result_col_count);
+
+    if (result_col_count != cols.size())
+    {
+        // failed (make no changes to the structure)
+        SQLCloseCursor(stmt);
+        SQLFreeHandle(SQL_HANDLE_STMT, stmt);
+        return;
+    }
+
+    // bind the columns to their return values
+    i = 1;
+    for (it = cols.begin(); it != cols.end(); ++it)
+    {
+        SQLLEN scale = 0;
+
+        if (SQL_SUCCESS != SQLColAttribute(stmt,
+                                           i++,
+                                           SQL_DESC_SCALE,
+                                           0,
+                                           0,
+                                           0,
+                                           &scale))
+        {
+            // failed (make no changes to the structure)
+            SQLCloseCursor(stmt);
+            SQLFreeHandle(SQL_HANDLE_STMT, stmt);
+            return;
+        }
+
+        if (scale > it->max_dec)
+            it->max_dec = scale;
+    }
+
+    SQLCloseCursor(stmt);
+    SQLFreeHandle(SQL_HANDLE_STMT, stmt);
+
+    for (it = cols.begin(); it != cols.end(); ++it)
+    {
+        it->colinfo->setScale(it->max_dec);
+    }
 }

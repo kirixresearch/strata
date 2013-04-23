@@ -12,7 +12,6 @@
 #include <kl/klib.h>
 #include "tango.h"
 #include "database.h"
-#include "set.h"
 #include "iterator.h"
 #include "../xdcommon/xdcommon.h"
 #include "../xdcommonsql/xdcommonsql.h"
@@ -25,14 +24,10 @@ const std::string empty_string = "";
 const std::wstring empty_wstring = L"";
 
 
-OdbcIterator::OdbcIterator(OdbcDatabase* database, OdbcSet* set)
+OdbcIterator::OdbcIterator(OdbcDatabase* database)
 {
     m_database = database;
     m_database->ref();
-
-    m_set = set;
-    if (m_set)
-        m_set->ref();
 
     m_env = m_database->m_env;
     m_db_type =  m_database->m_db_type;
@@ -87,9 +82,6 @@ OdbcIterator::~OdbcIterator()
 
     for (it = m_exprs.begin(); it != m_exprs.end(); ++it)
         delete (*it);
-
-    if (m_set)
-        m_set->unref();
 
     m_database->unref();
 }
@@ -388,24 +380,6 @@ bool OdbcIterator::init(const std::wstring& query)
 
 
 
-    // if m_set is null, create a placeholder set
-    if (!m_set)
-    {
-        // create set and initialize variables
-        OdbcSet* set = new OdbcSet(m_database);
-        set->m_filter_query = true;
-
-        if (!set->init())
-        {
-            delete set;
-            return false;
-        }
-
-        m_set = set;
-        m_set->ref();
-    }
-
-
 
     refreshStructure();
     
@@ -415,9 +389,7 @@ bool OdbcIterator::init(const std::wstring& query)
 
 std::wstring OdbcIterator::getTable()
 {
-    if (m_set)
-        return L"";
-    return m_set->getObjectPath();
+    return L"";
 }
 
 tango::rowpos_t OdbcIterator::getRowCount()
@@ -866,66 +838,41 @@ tango::IStructurePtr OdbcIterator::getStructure()
     if (m_structure.isOk())
         return m_structure->clone();
 
-    tango::IStructurePtr set_structure;
-    
-    if (m_set)
-    {
-        set_structure = m_set->getStructure();
-    }
-
 
     Structure* s = new Structure;
 
     std::vector<OdbcDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        tango::IColumnInfoPtr col;
-     
-        // try to use the column info from the
-        // set's structure, if possible
-
-        if (set_structure)
+        if ((*it)->isCalculated())
         {
-            col = set_structure->getColumnInfo((*it)->name);
-        }
-
-        if (col.isOk())
-        {
+            tango::IColumnInfoPtr col;
+            col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+            col->setName((*it)->name);
+            col->setType((*it)->type);
+            col->setWidth((*it)->width);
+            col->setScale((*it)->scale);
+            col->setExpression((*it)->expr_text);
+            col->setCalculated(true);
             col->setColumnOrdinal((*it)->ordinal - 1);
             s->addColumn(col);
         }
-         else
+            else
         {
-            if ((*it)->isCalculated())
-            {
-                tango::IColumnInfoPtr col;
-                col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
-                col->setName((*it)->name);
-                col->setType((*it)->type);
-                col->setWidth((*it)->width);
-                col->setScale((*it)->scale);
-                col->setExpression((*it)->expr_text);
-                col->setCalculated(true);
-                col->setColumnOrdinal((*it)->ordinal - 1);
-                s->addColumn(col);
-            }
-             else
-            {
-                // generate column info from the
-                // field info from the query result
-                tango::IColumnInfoPtr col;
+            // generate column info from the
+            // field info from the query result
+            tango::IColumnInfoPtr col;
 
-                col = createColInfo(m_db_type,
-                                    (*it)->name,
-                                    (*it)->odbc_type,
-                                    (*it)->width,
-                                    (*it)->scale,
-                                    (*it)->expr_text,
-                                    -1);
+            col = createColInfo(m_db_type,
+                                (*it)->name,
+                                (*it)->odbc_type,
+                                (*it)->width,
+                                (*it)->scale,
+                                (*it)->expr_text,
+                                -1);
 
-                col->setColumnOrdinal((*it)->ordinal - 1);
-                s->addColumn(col);
-            }
+            col->setColumnOrdinal((*it)->ordinal - 1);
+            s->addColumn(col);
         }
     }
     
@@ -936,96 +883,7 @@ tango::IStructurePtr OdbcIterator::getStructure()
 
 void OdbcIterator::refreshStructure()
 {
-    tango::IStructurePtr set_structure = m_set->getStructure();
-    if (set_structure.isNull())
-        return;
 
-    // find changed/deleted calc fields
-    int i, col_count;
-    for (i = 0; i < (int)m_fields.size(); ++i)
-    {
-        if (!m_fields[i]->isCalculated())
-            continue;
-            
-        delete m_fields[i]->expr;
-        m_fields[i]->expr = NULL;
-
-        tango::IColumnInfoPtr col = set_structure->getColumnInfo(m_fields[i]->name);
-        if (col.isNull())
-        {
-            m_fields.erase(m_fields.begin() + i);
-            i--;
-            continue;
-        }
-  
-        m_fields[i]->type = col->getType();
-        m_fields[i]->width = col->getWidth();
-        m_fields[i]->scale = col->getScale();
-        m_fields[i]->expr_text = col->getExpression();
-        m_fields[i]->str_val = NULL;
-        m_fields[i]->wstr_val = NULL;
-    }
-    
-    // find new calc fields
-    
-    col_count = set_structure->getColumnCount();
-    
-    std::vector<OdbcDataAccessInfo*>::iterator it;
-    for (i = 0; i < col_count; ++i)
-    {
-        tango::IColumnInfoPtr col;
-        
-        col = set_structure->getColumnInfoByIdx(i);
-        if (!col->getCalculated())
-            continue;
-            
-        bool found = false;
-        
-        for (it = m_fields.begin(); it != m_fields.end(); ++it)
-        {
-            if (!(*it)->isCalculated())
-                continue;
-
-            if (0 == wcscasecmp((*it)->name.c_str(), col->getName().c_str()))
-            {
-                found = true;
-                break;
-            }
-        }
-        
-        if (!found)
-        {
-            // add new calc field
-            OdbcDataAccessInfo* dai = new OdbcDataAccessInfo;
-            dai->name = col->getName();
-            dai->type = col->getType();
-            dai->width = col->getWidth();
-            dai->scale = col->getScale();
-            dai->ordinal = m_fields.size();
-            dai->expr_text = col->getExpression();
-            dai->expr = NULL;
-                
-            dai->str_val = NULL;
-            dai->wstr_val = NULL;
-            dai->int_val = 0;
-            dai->dbl_val = 0.0;
-            dai->bool_val = 0;
-            memset(&dai->date_val, 0, sizeof(SQL_DATE_STRUCT));
-            memset(&dai->datetime_val, 0, sizeof(SQL_TIMESTAMP_STRUCT));
-
-            m_fields.push_back(dai);
-        }
-    }
-    
-    // parse all expressions
-    for (it = m_fields.begin(); it != m_fields.end(); ++it)
-    {
-        (*it)->expr = parse((*it)->expr_text);
-    }
-    
-    
-    // let our m_structure cache regenerate from m_fields
-    m_structure.clear();
 }
 
 bool OdbcIterator::modifyStructure(tango::IStructure* struct_config,
