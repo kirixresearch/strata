@@ -16,6 +16,7 @@
 #include <kl/file.h>
 
 
+class XdnativeDatabase;
 class NodeFileStream : public tango::IStream
 {
     XCM_CLASS_NAME("tango.NodeFileStream")
@@ -25,7 +26,7 @@ class NodeFileStream : public tango::IStream
 
 public:
 
-    NodeFileStream(tango::IDatabase* db);
+    NodeFileStream(XdnativeDatabase* db);
     ~NodeFileStream();
 
     bool create(const std::wstring& filename);
@@ -41,7 +42,7 @@ public:
 
 private:
 
-    tango::IDatabase* m_db;
+    XdnativeDatabase* m_db;
     char* m_utf8data;
     unsigned long m_stream_length;
     unsigned long m_stream_offset;

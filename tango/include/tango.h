@@ -46,11 +46,10 @@ const int max_numeric_scale = 12;
 xcm_interface IAttributes;
 xcm_interface IColumnInfo;
 xcm_interface IConnectionStr;
-xcm_interface IDatabase;xcm_interface IDatabaseEntry;
+xcm_interface IDatabase;
+xcm_interface IDatabaseEntry;
 xcm_interface IDatabaseMgr;
-xcm_interface IDelimitedTextSet;
 xcm_interface IFileInfo;
-xcm_interface IFixedLengthDefinition;
 xcm_interface IIndexInfo;
 xcm_interface IIterator;
 xcm_interface IJob;
@@ -60,8 +59,11 @@ xcm_interface IRowInserter;
 xcm_interface ICacheRowUpdate;
 xcm_interface IStream;
 xcm_interface IStructure;
-xcm_interface IIteratorRelation;
 
+xcm_interface IIteratorRelation;
+xcm_interface IRelationSchema;
+xcm_interface IDelimitedTextSet;
+xcm_interface IFixedLengthDefinition;
 
 // smart pointer declarations
 
@@ -84,6 +86,7 @@ XCM_DECLARE_SMARTPTR(ICacheRowUpdate)
 XCM_DECLARE_SMARTPTR(IStream)
 XCM_DECLARE_SMARTPTR(IFixedLengthDefinition)
 XCM_DECLARE_SMARTPTR(IIteratorRelation)
+XCM_DECLARE_SMARTPTR(IRelationSchema)
 XCM_DECLARE_SMARTPTR2(xcm::IVector<IIndexInfoPtr>, IIndexInfoEnumPtr)
 XCM_DECLARE_SMARTPTR2(xcm::IVector<IRelationPtr>, IRelationEnumPtr)
 XCM_DECLARE_SMARTPTR2(xcm::IVector<IFileInfoPtr>, IFileInfoEnumPtr)
@@ -680,16 +683,6 @@ public:
     virtual bool setMountPoint(const std::wstring& path, const std::wstring& connection_str,  const std::wstring& remote_path) = 0;
     virtual bool getMountPoint(const std::wstring& path, std::wstring& connection_str,  std::wstring& remote_path) = 0;
 
-    virtual IRelationPtr createRelation(const std::wstring& tag,
-                                        const std::wstring& left_set_path,
-                                        const std::wstring& right_set_path,
-                                        const std::wstring& left_expr,
-                                        const std::wstring& right_expr) { return xcm::null; }
-    virtual bool deleteRelation(const std::wstring& relation_id) { return false; }
-    virtual IRelationPtr getRelation(const std::wstring& relation_id) { return xcm::null; }
-    virtual IRelationEnumPtr getRelationEnum(const std::wstring& path) { return xcm::null; }
-
-
     virtual IIndexInfoPtr createIndex(const std::wstring& path,
                                       const std::wstring& name,
                                       const std::wstring& expr,
@@ -720,8 +713,6 @@ public:
 
     virtual bool groupQuery(GroupQueryInfo* info, IJob* job) = 0;
 };
-
-
 
 
 xcm_interface IDatabaseEntry : public xcm::IObject
@@ -761,7 +752,26 @@ public:
 
 
 
-// -- specialized interfaces --
+// specialized interfaces
+
+
+
+xcm_interface IRelationSchema : public xcm::IObject
+{
+    XCM_INTERFACE_NAME("tango.IIRelationSchema")
+
+public:
+
+    virtual IRelationPtr createRelation(const std::wstring& tag,
+                                        const std::wstring& left_set_path,
+                                        const std::wstring& right_set_path,
+                                        const std::wstring& left_expr,
+                                        const std::wstring& right_expr) = 0;
+    virtual bool deleteRelation(const std::wstring& relation_id) = 0;
+    virtual IRelationPtr getRelation(const std::wstring& relation_id) = 0;
+    virtual IRelationEnumPtr getRelationEnum(const std::wstring& path) = 0;
+};
+
 
 
 xcm_interface IDelimitedTextSet : public xcm::IObject

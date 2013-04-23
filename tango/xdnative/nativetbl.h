@@ -14,6 +14,7 @@
 
 
 #include "xdnative_private.h"
+#include "database.h"
 
 
 const int native_header_len = 1024;
@@ -47,22 +48,26 @@ class NativeTable : public ITable
 
     virtual void ref()
     {
-        m_database_internal->lockObjectRegistryMutex();
+        m_database->lockObjectRegistryMutex();
         m_refcount_holder.xcm_ref_count++;
-        m_database_internal->unlockObjectRegistryMutex();
+        m_database->unlockObjectRegistryMutex();
     }
     
     virtual void unref()
     {
-        m_database_internal->lockObjectRegistryMutex();
+        m_database->lockObjectRegistryMutex();
         if (--m_refcount_holder.xcm_ref_count == 0)
         {
-            IXdnativeDatabasePtr dbi = m_database_internal;
+            XdnativeDatabase* db = m_database;
+            db->ref();
+
             delete this;
-            dbi->unlockObjectRegistryMutex();
+            db->unlockObjectRegistryMutex();
+
+            db->unref();
             return;
         }
-        m_database_internal->unlockObjectRegistryMutex();
+        m_database->unlockObjectRegistryMutex();
     }
     
     virtual int get_ref_count()
@@ -76,10 +81,10 @@ public:
 
 public:
     
-    NativeTable(tango::IDatabase* database);
+    NativeTable(XdnativeDatabase* database);
     virtual ~NativeTable();
 
-    // -- ITable --
+    // ITable
     bool addEventHandler(ITableEvents* handler);
     bool removeEventHandler(ITableEvents* handler);
     
@@ -137,7 +142,7 @@ private:
 private:
     xcm::mutex m_object_mutex;
 
-    IXdnativeDatabasePtr m_database_internal;
+    XdnativeDatabase* m_database;
 
     tango::IStructurePtr m_structure;
     xf_file_t m_file;
@@ -167,7 +172,7 @@ class NativeRowDeleter : public tango::IRowDeleter
 
 public:
 
-    NativeRowDeleter(tango::IDatabase* database, NativeTable* table);
+    NativeRowDeleter(NativeTable* table);
     virtual ~NativeRowDeleter();
 
     void startDelete();
@@ -177,7 +182,6 @@ public:
 
 public:
 
-    tango::IDatabasePtr m_database;
     NativeTable* m_table;
     BitmapFileScroller* m_map_scroller;
     bool m_started;

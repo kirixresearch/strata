@@ -90,7 +90,7 @@ struct BaseIteratorRelInfo
 };
 
 class AggregateResult;
-
+class XdnativeDatabase;
 class BaseIterator :  public tango::IIterator,
                       public IIteratorKeyAccess,
                       public tango::IIteratorRelation,
@@ -119,18 +119,15 @@ public:
     
     void setIteratorFlags(unsigned int mask, unsigned int value) { }
 
-    virtual bool init(tango::IDatabase* database,
+    virtual bool init(XdnativeDatabase* database,
                       IXdnativeSet* set,
                       const std::wstring& columns);
-
-
 
     AggregateResult* getAggResultObject(int aggregate_func, const std::wstring& expr);
     void releaseAggResultObject(AggregateResult* agg_res);
     void recalcAggResults();
 
     // tango::IIterator
-    tango::IDatabasePtr getDatabase();
     std::wstring getTable();
     tango::rowpos_t getRowCount();
     void setSet(IXdnativeSetPtr set);
@@ -207,9 +204,11 @@ public:
     tango::rowid_t m_rowid;
     
 protected:
-    IXdnativeDatabasePtr m_dbi;
-    tango::IDatabasePtr m_database;
+    XdnativeDatabase* m_database;
     std::wstring m_columns;
+    tango::IStructurePtr m_iter_structure;  // iter structure
+    tango::IStructurePtr m_set_structure;   // set structure
+    IXdnativeSetPtr m_set;                  // set internal ptr
 
 private:
     
@@ -225,9 +224,6 @@ private:
     std::vector<BaseIteratorRelInfo> m_relations;
     tango::IRelationEnumPtr m_relenum;
 
-    tango::IStructurePtr m_iter_structure;  // iter structure
-    tango::IStructurePtr m_set_structure;   // set structure
-    IXdnativeSetPtr m_set;                 // set internal ptr
     unsigned int m_iter_flags;
 };
 

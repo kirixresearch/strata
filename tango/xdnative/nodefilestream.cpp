@@ -50,7 +50,7 @@ static bool convertNodeToJson(INodeValuePtr ofsnode, kl::JsonNode& jsonnode)
 }
 
 
-NodeFileStream::NodeFileStream(tango::IDatabase* db)
+NodeFileStream::NodeFileStream(XdnativeDatabase* db)
 {
     m_db = db;
     m_db->ref();

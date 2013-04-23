@@ -126,10 +126,14 @@ class OfsFile : public xcm::IObject
         m_database->lockObjectRegistryMutex();
         if (--m_refcount_holder.xcm_ref_count == 0)
         {
-            IXdnativeDatabasePtr dbi = m_database;
-            dbi->unregisterNodeFile(this);
+            XdnativeDatabase* db = m_database;
+            db->ref();
+
+            db->unregisterNodeFile(this);
             delete this;
-            dbi->unlockObjectRegistryMutex();
+            db->unlockObjectRegistryMutex();
+            
+            db->unref();
             return;
         }
         m_database->unlockObjectRegistryMutex();
@@ -143,14 +147,14 @@ class OfsFile : public xcm::IObject
 
 public:
 
-    static OfsFile* createFile(tango::IDatabase* db,
+    static OfsFile* createFile(XdnativeDatabase* db,
                                const std::wstring& path,
                                int type);
 
-    static OfsFile* openFile(tango::IDatabase* db,
+    static OfsFile* openFile(XdnativeDatabase* db,
                              const std::wstring& path);
                              
-    static bool getFileType(tango::IDatabase* db,
+    static bool getFileType(XdnativeDatabase* db,
                             const std::wstring& path,
                             int* type,
                             bool* is_mount);
@@ -162,7 +166,7 @@ public:
     
 private:
     
-    OfsFile(tango::IDatabase* database);
+    OfsFile(XdnativeDatabase* database);
     ~OfsFile();
 
     void setDirty(bool dirty);
@@ -178,7 +182,7 @@ private:
     bool m_dirty;
     int m_type;
     xcm::mutex m_object_mutex;
-    IXdnativeDatabasePtr m_database;
+    XdnativeDatabase* m_database;
 };
 
 

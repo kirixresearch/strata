@@ -19,16 +19,17 @@
 #include "../xdcommon/exindex.h"
 #include "../xdcommon/idxutil.h"
 #include "xdnative_private.h"
+#include "database.h"
 #include "baseset.h"
 #include "util.h"
 #include <ctime>
 #include <algorithm>
 
 
-BaseSet::BaseSet(tango::IDatabase* database)
+BaseSet::BaseSet(XdnativeDatabase* database)
 {
     m_database = database;
-    m_dbi = m_database;
+    m_database->ref();
     
     m_set_flags = 0;
     m_calcrefresh_time = 0;
@@ -37,7 +38,7 @@ BaseSet::BaseSet(tango::IDatabase* database)
 
 BaseSet::~BaseSet()
 {
-
+    m_database->unref();
 }
 
 INodeValuePtr BaseSet::openSetDefinition(bool create_if_not_exist)
@@ -47,7 +48,7 @@ INodeValuePtr BaseSet::openSetDefinition(bool create_if_not_exist)
     path = L"/.system/objects/";
     path += getSetId();
 
-    INodeValuePtr file = m_dbi->openNodeFile(path);
+    INodeValuePtr file = m_database->openNodeFile(path);
     if (file.isOk())
     {
         return file;
@@ -55,7 +56,7 @@ INodeValuePtr BaseSet::openSetDefinition(bool create_if_not_exist)
 
     if (create_if_not_exist)
     {
-        return m_dbi->createNodeFile(path);
+        return m_database->createNodeFile(path);
     }
 
     return xcm::null;

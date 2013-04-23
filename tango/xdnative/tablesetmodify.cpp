@@ -499,7 +499,7 @@ public:
             {
                 ijob->setStatus(tango::jobFinished);
 
-                int max_count = job->getMaxCount();
+                int max_count = (int)job->getMaxCount();
                 if (max_count > 0)
                 {
                     ijob->setCurrentCount(max_count);
@@ -517,7 +517,6 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
                                tango::IJob* job)
 {
     IJobInternalPtr ijob = job;
-    IXdnativeDatabasePtr dbi = m_database;
     IStructureInternalPtr struct_internal = struct_config;
     std::vector<StructureAction>& actions = struct_internal->getStructureActions();
     std::vector<StructureAction>::iterator it_sa;
@@ -602,7 +601,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
     }
 
     // attempt to lock the set
-    if (!dbi->lockSet(getSetId()))
+    if (!m_database->lockSet(getSetId()))
     {
         fire_onSetStructureUpdated();
 
@@ -618,7 +617,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
     if (!m_table->reopen(true))
     {
         // unlock set
-        dbi->unlockSet(getSetId());
+        m_database->unlockSet(getSetId());
 
         if (ijob.isOk())
         {
@@ -868,7 +867,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
         refreshIndexEntries();
 
         // unlock set
-        dbi->unlockSet(getSetId());
+        m_database->unlockSet(getSetId());
         fire_onSetStructureUpdated();
 
         // done
@@ -919,14 +918,14 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
 
 
     // generate a unique filename for the table
-    std::wstring table_filename = dbi->getUniqueFilename();
+    std::wstring table_filename = m_database->getUniqueFilename();
     table_filename += L".ttb";
 
     // create the table
     if (!NativeTable::create(table_filename, output_structure))
     {
         // unlock set
-        dbi->unlockSet(getSetId());
+        m_database->unlockSet(getSetId());
 
         if (ijob.isOk())
         {
@@ -938,7 +937,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
 
 
     // load up the table
-    TableSet* tbl_set = new TableSet(m_database.p);
+    TableSet* tbl_set = new TableSet(m_database);
     tbl_set->ref();
 
     if (!tbl_set->loadTable(table_filename))
@@ -946,7 +945,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
         tbl_set->unref();
 
         // unlock set
-        dbi->unlockSet(getSetId());
+        m_database->unlockSet(getSetId());
 
         if (ijob.isOk())
         {
@@ -965,7 +964,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
     if (sp_output_inserter.isNull())
     {
         // unlock set
-        dbi->unlockSet(getSetId());
+        m_database->unlockSet(getSetId());
 
         if (ijob.isOk())
         {
@@ -985,7 +984,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
     if (sp_iter.isNull())
     {
         // unlock set
-        dbi->unlockSet(getSetId());
+        m_database->unlockSet(getSetId());
 
         if (ijob.isOk())
         {
@@ -1010,7 +1009,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
             if (it_mf->src_handle == 0)
             {
                 // unlock set
-                dbi->unlockSet(getSetId());
+                m_database->unlockSet(getSetId());
 
                 if (ijob.isOk())
                 {
@@ -1025,7 +1024,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
         if (it_mf->dest_handle == 0)
         {
             // unlock set
-            dbi->unlockSet(getSetId());
+            m_database->unlockSet(getSetId());
 
             if (ijob.isOk())
             {
@@ -1112,7 +1111,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
         xf_remove(table_filename);
 
         // unlock set
-        dbi->unlockSet(getSetId());
+        m_database->unlockSet(getSetId());
 
         if (ijob.isOk() && !cancelled)
         {
@@ -1140,10 +1139,10 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
 
 
     // re-assign ordinal's table
-    if (!dbi->setOrdinalTable(m_ordinal, table_filename))
+    if (!m_database->setOrdinalTable(m_ordinal, table_filename))
     {
         // unlock set
-        dbi->unlockSet(getSetId());
+        m_database->unlockSet(getSetId());
 
         if (ijob.isOk())
         {
@@ -1186,7 +1185,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
     m_table->setStructureModified();
 
     // unlock set
-    dbi->unlockSet(getSetId());
+    m_database->unlockSet(getSetId());
     fire_onSetStructureUpdated();
 
     return true;

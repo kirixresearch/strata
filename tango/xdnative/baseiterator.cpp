@@ -115,8 +115,7 @@ bool DataAccessInfo::eval(kscript::Value* result)
 
 BaseIterator::BaseIterator()
 {
-    m_database = xcm::null;
-    m_dbi = xcm::null;
+    m_database = NULL;
     m_set = xcm::null;
     m_rowptr = NULL;
     m_row_dirty = false;
@@ -144,6 +143,11 @@ BaseIterator::~BaseIterator()
     if (m_set)
     {
         m_set->removeEventHandler(this);
+    }
+
+    if (m_database)
+    {
+        m_database->unref();
     }
 }
 
@@ -265,15 +269,15 @@ bool BaseIterator::baseClone(BaseIterator* new_iter)
 }
 
 
-bool BaseIterator::init(tango::IDatabase* database,
+bool BaseIterator::init(XdnativeDatabase* database,
                         IXdnativeSet* set,
                         const std::wstring& columns)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
-    // retrieve and store the IXdnativeDatabase pointer
+    // store the database pointer
     m_database = database;
-    m_dbi = m_database;
+    m_database->ref();
 
     // store the set
     m_set = set;
@@ -364,7 +368,7 @@ void BaseIterator::goRow(const tango::rowid_t& rowid)
     if (!te)
     {
         // get the table if we don't already have it
-        te = registerTable(m_dbi->openTableByOrdinal(table_ord));
+        te = registerTable(m_database->openTableByOrdinal(table_ord));
     }
 
     if (!te)
@@ -419,7 +423,7 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
         return false;
 
     // get right set
-    IXdnativeSetPtr right_set_int = m_dbi->openTable(rel->getRightTable());
+    IXdnativeSetPtr right_set_int = m_database->openTable(rel->getRightTable());
     if (!right_set_int)
         return false;
 
@@ -989,12 +993,6 @@ void BaseIterator::onSetRowDeleted(tango::rowid_t rowid)
 }
 
 
-
-tango::IDatabasePtr BaseIterator::getDatabase()
-{
-    return m_database;
-}
-
 std::wstring BaseIterator::getTable()
 {
     if (m_set.isNull())
@@ -1027,14 +1025,12 @@ public:
     {
     }
 
-    bool init(tango::IDatabasePtr database,
+    bool init(XdnativeDatabase* database,
               const std::wstring& path,
               int agg_func,
               const std::wstring& expr)
     {
-        IXdnativeDatabasePtr dbi = database;
-        
-        if (dbi.isNull() || path.empty())
+        if (path.empty())
             return false;
 
         m_agg_func = agg_func;
@@ -1096,7 +1092,7 @@ public:
         }
 
 
-        IXdnativeSetPtr right_set_internal = dbi->openTable(rel->getRightTable());
+        IXdnativeSetPtr right_set_internal = database->openTable(rel->getRightTable());
         if (right_set_internal.isNull())
             return false;
 

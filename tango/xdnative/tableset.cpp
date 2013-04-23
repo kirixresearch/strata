@@ -64,7 +64,7 @@ TableIterator::~TableIterator()
     delete[] m_rowpos_buf;
 }
 
-bool TableIterator::init(tango::IDatabase* database,
+bool TableIterator::init(XdnativeDatabase* database,
                          IXdnativeSet* set,
                          ITable* table,
                          const std::wstring& columns)
@@ -397,7 +397,7 @@ void TableIterator::onSetStructureUpdated()
 
 // TableSet class implementation
 
-TableSet::TableSet(tango::IDatabase* database) : BaseSet(database)
+TableSet::TableSet(XdnativeDatabase* database) : BaseSet(database)
 {
     m_ordinal = 0;
     m_ofspath = L"";
@@ -456,7 +456,7 @@ TableSet::~TableSet()
         if (it->tag.length() == 0)
         {
             std::wstring full_index_filename;
-            full_index_filename = makePathName(m_dbi->getBasePath(),
+            full_index_filename = makePathName(m_database->getBasePath(),
                                                L"temp",
                                                it->filename);
 
@@ -471,10 +471,8 @@ TableSet::~TableSet()
 
 bool TableSet::create(tango::IStructure* struct_config, const std::wstring& path)
 {
-    IXdnativeDatabasePtr dbi = m_database;
-
     // generate a unique filename for the table
-    std::wstring table_filename = dbi->getUniqueFilename();
+    std::wstring table_filename = m_database->getUniqueFilename();
     table_filename += L".ttb";
 
     // create the table
@@ -482,11 +480,11 @@ bool TableSet::create(tango::IStructure* struct_config, const std::wstring& path
         return false;
 
     // allocate an ordinal for us
-    m_ordinal = dbi->allocOrdinal();
+    m_ordinal = m_database->allocOrdinal();
     if (m_ordinal == 0)
         return false;
 
-    if (!dbi->setOrdinalTable(m_ordinal, table_filename))
+    if (!m_database->setOrdinalTable(m_ordinal, table_filename))
         return false;
 
     // this is a table set, so we must set our id
@@ -494,11 +492,11 @@ bool TableSet::create(tango::IStructure* struct_config, const std::wstring& path
     setSetId(getTableSetId(m_ordinal));
 
     // create the ofs file
-    INodeValuePtr file = dbi->createNodeFile(path);
+    INodeValuePtr file = m_database->createNodeFile(path);
     if (!file)
         return false;
     
-    dbi->setFileType(path, tango::filetypeTable);
+    m_database->setFileType(path, tango::filetypeTable);
 
     INodeValuePtr setid_node = file->getChild(L"set_id", true);
     if (!setid_node)
@@ -524,7 +522,7 @@ bool TableSet::create(tango::IStructure* struct_config, const std::wstring& path
     save();
 
     // load up the table
-    NativeTable* table = new NativeTable(m_database.p);
+    NativeTable* table = new NativeTable(m_database);
     table->ref();
     if (!table->open(table_filename, m_ordinal))
     {
@@ -540,14 +538,14 @@ bool TableSet::create(tango::IStructure* struct_config, const std::wstring& path
 
     updateRowCount();
 
-    m_dbi->registerSet(this);
+    m_database->registerSet(this);
     return true;
 }
 
 
 bool TableSet::loadTable(const std::wstring& tbl_filename)
 {
-    NativeTable* table = new NativeTable(m_database.p);
+    NativeTable* table = new NativeTable(m_database);
     table->ref();
 
     if (!table->open(tbl_filename, m_ordinal))
@@ -570,8 +568,6 @@ bool TableSet::loadTable(const std::wstring& tbl_filename)
 
 bool TableSet::load(INodeValuePtr set_file)
 {
-    IXdnativeDatabasePtr dbi = m_database;
-
     // verify that this is the corrent set type
     INodeValuePtr settype_node = set_file->getChild(L"set_type", false);
     if (!settype_node)
@@ -600,7 +596,7 @@ bool TableSet::load(INodeValuePtr set_file)
     m_ofspath = ofspath_node->getString();
 
     // open the table
-    std::wstring tbl_filename = dbi->getTableFilename(m_ordinal);
+    std::wstring tbl_filename = m_database->getTableFilename(m_ordinal);
     if (tbl_filename.length() == 0)
         return false;
 
@@ -609,7 +605,7 @@ bool TableSet::load(INodeValuePtr set_file)
 
     refreshIndexEntries();
     
-    m_dbi->registerSet(this);
+    m_database->registerSet(this);
 
 
     return true;
@@ -796,9 +792,6 @@ void TableSet::refreshIndexEntries()
 {
     XCM_AUTO_LOCK(m_update_mutex);
 
-    IXdnativeDatabasePtr dbi;
-    dbi = m_database;
-
 
     INodeValuePtr set_file = openSetDefinition(true);
     if (!set_file)
@@ -906,7 +899,7 @@ void TableSet::refreshIndexEntries()
 
                 // try to open the index file
                 std::wstring full_idx_filename;
-                full_idx_filename = makePathName(dbi->getBasePath(),
+                full_idx_filename = makePathName(m_database->getBasePath(),
                                                  L"data",
                                                  i.filename);
 
@@ -995,8 +988,6 @@ tango::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
     if (tag.length() == 0)
         return xcm::null;
 
-    IXdnativeDatabasePtr dbi = m_database;
-
     std::wstring lower_tag = tag;
     kl::makeLower(lower_tag);
 
@@ -1036,7 +1027,7 @@ tango::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
                     index_filename = filename_node->getString();
 
                     std::wstring full_index_filename;
-                    full_index_filename =  makePathName(dbi->getBasePath(),
+                    full_index_filename =  makePathName(m_database->getBasePath(),
                                             L"data",
                                             index_filename);
                     if (!xf_get_file_exist(full_index_filename))
@@ -1068,7 +1059,7 @@ tango::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
     index_filename += L".idx";
     
     std::wstring full_index_filename;
-    full_index_filename =  makePathName(dbi->getBasePath(),
+    full_index_filename =  makePathName(m_database->getBasePath(),
                                         L"data",
                                         index_filename);
 
@@ -1076,7 +1067,7 @@ tango::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
     IIndex* idx = createExternalIndex(m_database,
                                       getObjectPath(),
                                       full_index_filename,
-                                      dbi->getTempPath(),
+                                      m_database->getTempPath(),
                                       expr,
                                       true,
                                       job);
@@ -1157,8 +1148,6 @@ bool TableSet::deleteIndexInternal(IIndex* idx_to_delete)
 
     bool success = false;
 
-    IXdnativeDatabasePtr dbi = m_database;
-
     std::wstring tag_to_delete;
 
     std::vector<IndexEntry>::iterator it;
@@ -1176,7 +1165,7 @@ bool TableSet::deleteIndexInternal(IIndex* idx_to_delete)
 
 
             std::wstring full_index_filename;
-            full_index_filename = makePathName(dbi->getBasePath(),
+            full_index_filename = makePathName(m_database->getBasePath(),
                                                L"data",
                                                it->filename);
 
@@ -1186,7 +1175,7 @@ bool TableSet::deleteIndexInternal(IIndex* idx_to_delete)
                 if (!success)
                 {
                     // add file to trash bin, because it's currently in use
-                    dbi->addFileToTrash(it->filename);
+                    m_database->addFileToTrash(it->filename);
                 }
             }
 
@@ -1271,8 +1260,6 @@ bool TableSet::deleteAllIndexes()
 {
     XCM_AUTO_LOCK(m_update_mutex);
 
-    IXdnativeDatabasePtr dbi = m_database;
-
     std::vector<IndexEntry>::iterator it;
     for (it = m_indexes.begin(); it != m_indexes.end(); ++it)
     {
@@ -1285,7 +1272,7 @@ bool TableSet::deleteAllIndexes()
         delete it->key_expr;
 
         std::wstring full_index_filename;
-        full_index_filename = makePathName(dbi->getBasePath(),
+        full_index_filename = makePathName(m_database->getBasePath(),
                                            L"data",
                                            it->filename);
         if (xf_get_file_exist(full_index_filename))
@@ -1322,9 +1309,7 @@ TableIterator* TableSet::createPhysicalIterator(const std::wstring& columns,
     // no sort order, so create a physical order iterator
     TableIterator* it = new TableIterator;
 
-    IXdnativeDatabasePtr dbi;
-    dbi = m_database;
-    ITablePtr tbl = dbi->openTableByOrdinal(m_ordinal);
+    ITablePtr tbl = m_database->openTableByOrdinal(m_ordinal);
 
     if (!it->init(m_database, static_cast<IXdnativeSet*>(this), tbl, columns))
     {
@@ -1351,8 +1336,6 @@ tango::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
         // create an unordered iterator
         return static_cast<tango::IIterator*>(createPhysicalIterator(columns, false));
     }
-
-    IXdnativeDatabasePtr dbi = m_database;
 
     // attempt to find a suitable existing index
     IIndex* idx = NULL;
@@ -1401,7 +1384,7 @@ tango::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
         index_filename += L".idx";
     
         std::wstring full_index_filename;
-        full_index_filename =  makePathName(dbi->getBasePath(),
+        full_index_filename =  makePathName(m_database->getBasePath(),
                                             L"temp",
                                             index_filename);
 
@@ -1409,7 +1392,7 @@ tango::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
         idx = createExternalIndex(m_database,
                                   getObjectPath(),
                                   full_index_filename,
-                                  dbi->getTempPath(),
+                                  m_database->getTempPath(),
                                   order,
                                   true,
                                   job);
@@ -1856,14 +1839,13 @@ bool TableSetRowInserter::flush()
 
 // TableSetRowDeleter class implementation
 
-TableSetRowDeleter::TableSetRowDeleter(tango::IDatabasePtr db, TableSet* set)
+TableSetRowDeleter::TableSetRowDeleter(XdnativeDatabase* db, TableSet* set)
 {
     m_set = set;
     m_set->ref();
     m_table_row_deleter = set->m_table->getRowDeleter();
     
-    IXdnativeDatabasePtr dbi = db;
-    m_rowid_array = new RowIdArray(dbi->getTempPath());
+    m_rowid_array = new RowIdArray(db->getTempPath());
 }
 
 TableSetRowDeleter::~TableSetRowDeleter()

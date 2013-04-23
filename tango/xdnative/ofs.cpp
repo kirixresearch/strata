@@ -524,7 +524,7 @@ static void ofsValueToXml(kl::xmlnode& node, const InternalOfsValue* value)
 }
 
 
-OfsFile::OfsFile(tango::IDatabase* db)
+OfsFile::OfsFile(XdnativeDatabase* db)
 {
     m_root_node = new InternalOfsValue;
     m_root_node->m_name = L"root";
@@ -533,6 +533,7 @@ OfsFile::OfsFile(tango::IDatabase* db)
     m_type = tango::filetypeNode;
     m_dirty = false;
     m_database = db;
+    m_database->ref();
 }
 
 OfsFile::~OfsFile()
@@ -547,6 +548,9 @@ OfsFile::~OfsFile()
         m_root_node->clear();
         delete m_root_node;
     }
+
+    if (m_database)
+        m_database->unref();
 }
 
 
@@ -682,12 +686,11 @@ INodeValuePtr OfsFile::getRootNode()
 }
 
 
-OfsFile* OfsFile::createFile(tango::IDatabase* db,
+OfsFile* OfsFile::createFile(XdnativeDatabase* db,
                              const std::wstring& key_path,
                              int type)
 {
-    IXdnativeDatabasePtr dbi = db;
-    std::wstring ofs_root = dbi->getOfsPath();
+    std::wstring ofs_root = db->getOfsPath();
 
     std::wstring dir = ofs_root;
 
@@ -773,14 +776,13 @@ OfsFile* OfsFile::createFile(tango::IDatabase* db,
 
 
 
-OfsFile* OfsFile::openFile(tango::IDatabase* db,
+OfsFile* OfsFile::openFile(XdnativeDatabase* db,
                            const std::wstring& _key_path)
 {
     if (_key_path.empty())
         return NULL;
 
-    IXdnativeDatabasePtr dbi = db;
-    std::wstring ofs_root = dbi->getOfsPath();
+    std::wstring ofs_root = db->getOfsPath();
 
     std::wstring key_path;
     if (*(_key_path.c_str()) != L'/')
@@ -810,7 +812,7 @@ OfsFile* OfsFile::openFile(tango::IDatabase* db,
         file->setDirty(false);
     }
 
-    file->m_database->registerNodeFile(file);
+    db->registerNodeFile(file);
     return file;
 }
 
@@ -822,10 +824,10 @@ OfsFile* OfsFile::openFile(tango::IDatabase* db,
 // very close to the beginning, just look for that without
 // parsing the xml
 
-bool OfsFile::getFileType(tango::IDatabase* db,
-                              const std::wstring& _key_path,
-                              int* type,
-                              bool* is_mount)
+bool OfsFile::getFileType(XdnativeDatabase* db,
+                          const std::wstring& _key_path,
+                          int* type,
+                          bool* is_mount)
 {
     if (_key_path.empty())
         return false;
@@ -835,14 +837,13 @@ bool OfsFile::getFileType(tango::IDatabase* db,
     
     
     // form the real file name of the file
-    IXdnativeDatabasePtr dbi = db;
-    
+
     std::wstring key_path;
     if (*(_key_path.c_str()) != L'/')
         key_path = L"/";
     key_path += _key_path;
     
-    std::wstring filename = makePathName(dbi->getOfsPath(), key_path, L"", L"xml");
+    std::wstring filename = makePathName(db->getOfsPath(), key_path, L"", L"xml");
     
     // open the file and read the first portion
     xf_file_t f = xf_open(filename, xfOpen, xfRead, xfShareRead);

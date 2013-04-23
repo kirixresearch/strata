@@ -24,14 +24,18 @@ class JobInfo;
 class OfsFile;
 
 class XdnativeDatabase : public tango::IDatabase,
-                         public IXdsqlDatabase,
-                         public IXdnativeDatabase
+                         public tango::IRelationSchema,
+                         public IXdsqlDatabase
+
 {
+    friend class XdnativeFileInfo;
+    friend class TableSet;
+
     XCM_CLASS_NAME("xdnative.Database")
     XCM_BEGIN_INTERFACE_MAP(XdnativeDatabase)
         XCM_INTERFACE_ENTRY(tango::IDatabase)
         XCM_INTERFACE_ENTRY(IXdsqlDatabase)
-        XCM_INTERFACE_ENTRY(IXdnativeDatabase)
+        XCM_INTERFACE_ENTRY(tango::IRelationSchema)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -70,7 +74,6 @@ public:
 
     bool setBaseDirectory(const std::wstring& base_dir);
 
-    // IXdnativeDatabase
 
     ITablePtr openTableByOrdinal(tango::tableord_t ordinal);
     std::wstring getTempFilename();

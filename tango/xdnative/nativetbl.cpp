@@ -113,22 +113,25 @@ int convertType_native2tango(int native_type)
 
 
 
-NativeTable::NativeTable(tango::IDatabase* database)
+NativeTable::NativeTable(XdnativeDatabase* database)
 {
     m_ordinal = 0;
-    m_database_internal = database;
+    m_database = database;
+    m_database->ref();
     m_file = NULL;
     m_map_file = NULL;
 
-    m_database_internal->registerTable(static_cast<ITable*>(this));
+    m_database->registerTable(static_cast<ITable*>(this));
 }
 
 NativeTable::~NativeTable()
 {
     // unregister table with database
-    m_database_internal->unregisterTable(static_cast<ITable*>(this));
+    m_database->unregisterTable(static_cast<ITable*>(this));
 
     close();
+
+    m_database->unref();
 }
 
 
@@ -1199,8 +1202,7 @@ std::wstring NativeTable::getMapFilename()
 
 tango::IRowDeleterPtr NativeTable::getRowDeleter()
 {
-    tango::IDatabasePtr database = m_database_internal;
-    NativeRowDeleter* deleter = new NativeRowDeleter(database, this);
+    NativeRowDeleter* deleter = new NativeRowDeleter(this);
     return static_cast<tango::IRowDeleter*>(deleter);
 }
 
@@ -1234,7 +1236,7 @@ bool NativeTable::restoreDeleted()
 
 // NativeRowDeleter class implementation
 
-NativeRowDeleter::NativeRowDeleter(tango::IDatabase* database, NativeTable* table)
+NativeRowDeleter::NativeRowDeleter(NativeTable* table)
 {
     m_table = table;
     m_table->ref();

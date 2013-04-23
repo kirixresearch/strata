@@ -16,8 +16,9 @@
 #include "../xdcommon/tango_private.h"
 #include "../xdcommonsql/xdcommonsql.h"
 #include "xdnative_private.h"
+#include "database.h"
 
-
+class XdnativeDatabase;
 class BaseSet : public IXdnativeSet,
                 public IXdsqlTable
 {
@@ -29,7 +30,7 @@ class BaseSet : public IXdnativeSet,
  
 public:
 
-    BaseSet(tango::IDatabase* database);
+    BaseSet(XdnativeDatabase* database);
     virtual ~BaseSet();
 
     IXdnativeSet* getRawXdnativeSetPtr() { return this; }
@@ -110,9 +111,8 @@ protected:
     
 protected:
 
-    tango::IDatabasePtr m_database;
-    IXdnativeDatabasePtr m_dbi;
-    
+    XdnativeDatabase* m_database;
+
 private:
     
     xcm::mutex m_event_mutex;         // for m_event_handlers

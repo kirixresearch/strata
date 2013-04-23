@@ -1976,20 +1976,27 @@ std::wstring XdnativeDatabase::getFileMimeType(const std::wstring& path)
     return mime_type->getString();
 }
 
-class NativeFileInfo : public tango::IFileInfo
+class XdnativeFileInfo : public tango::IFileInfo
 {
-    XCM_CLASS_NAME("xdnative.FileInfo")
-    XCM_BEGIN_INTERFACE_MAP(NativeFileInfo)
+    XCM_CLASS_NAME("xdnative.XdnativeFileInfo")
+    XCM_BEGIN_INTERFACE_MAP(XdnativeFileInfo)
         XCM_INTERFACE_ENTRY(tango::IFileInfo)
     XCM_END_INTERFACE_MAP()
 
 public:
 
-    NativeFileInfo(tango::IDatabasePtr _db)
+    XdnativeFileInfo(XdnativeDatabase* _db)
     {
         db = _db;
+        db->ref();
+
         fetched_size = false;
         fetched_mime_type = false;
+    }
+
+    virtual ~XdnativeFileInfo()
+    {
+        db->unref();
     }
 
     const std::wstring& getName()
@@ -2072,7 +2079,7 @@ public:
     
     bool fetched_mime_type;
     bool fetched_size;
-    IXdnativeDatabasePtr db;
+    XdnativeDatabase* db;
 };
 
 
@@ -2238,7 +2245,7 @@ tango::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& path)
         return xcm::null;
 
 
-    NativeFileInfo* f = new NativeFileInfo(static_cast<tango::IDatabase*>(this));
+    XdnativeFileInfo* f = new XdnativeFileInfo(this);
     f->type = tango::filetypeNode;
     f->is_mount = false;
     
@@ -3280,11 +3287,11 @@ class RelationInfo : public tango::IRelation,
 
 public:
 
-    RelationInfo(IXdnativeDatabase* db)
+    RelationInfo(XdnativeDatabase* db)
     {
         // RelationInfo does not need to call ref() on the database object
         // since references themselves are held by the db
-        m_dbi = db;
+        m_db = db;
     }
 
     void setRelationId(const std::wstring& new_val)
@@ -3318,7 +3325,7 @@ public:
         if (m_left_path.length() > 0)
             return m_left_path;
              else
-            return m_dbi->getSetPathFromId(m_left_setid);
+            return m_db->getSetPathFromId(m_left_setid);
     }
 
     void setLeftSetId(const std::wstring& new_value)
@@ -3366,7 +3373,7 @@ public:
         if (m_right_path.length() > 0)
             return m_right_path;
              else
-            return m_dbi->getSetPathFromId(m_right_setid);
+            return m_db->getSetPathFromId(m_right_setid);
     }
 
     void setRightExpression(const std::wstring& new_value)
@@ -3380,11 +3387,9 @@ public:
     }
 
 
-
-
 private:
 
-    IXdnativeDatabase* m_dbi;
+    XdnativeDatabase* m_db;
     std::wstring m_relation_id;
     std::wstring m_tag;
 
@@ -3495,7 +3500,7 @@ tango::IRelationEnumPtr XdnativeDatabase::getRelationEnum(const std::wstring& pa
         }
 
         RelationInfo* relation;
-        relation = new RelationInfo(static_cast<IXdnativeDatabase*>(this));
+        relation = new RelationInfo(this);
         relation->setRelationId(rel_node->getName());
         relation->setTag(tag);
         if (left_set_id.length() > 0)
@@ -3587,7 +3592,7 @@ tango::IRelationPtr XdnativeDatabase::createRelation(const std::wstring& tag,
 
 
     // create a new relationship object to return to the caller
-    RelationInfo* relation = new RelationInfo(static_cast<IXdnativeDatabase*>(this));
+    RelationInfo* relation = new RelationInfo(this);
     relation->setRelationId(rel_id);
     relation->setTag(tag);
     relation->setLeftExpression(left_expr);

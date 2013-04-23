@@ -69,7 +69,6 @@ xcm_interface ITable;
 xcm_interface IRelationInternal;
 xcm_interface IXdnativeSet;
 xcm_interface IXdnativeSetEvents;
-xcm_interface IXdnativeDatabase;
 xcm_interface INodeValue;
 xcm_interface IIndex;
 xcm_interface IIndexIterator;
@@ -83,7 +82,6 @@ XCM_DECLARE_SMARTPTR(ITable)
 XCM_DECLARE_SMARTPTR(IRelationInternal)
 XCM_DECLARE_SMARTPTR(IXdnativeSet)
 XCM_DECLARE_SMARTPTR(IXdnativeSetEvents)
-XCM_DECLARE_SMARTPTR(IXdnativeDatabase)
 XCM_DECLARE_SMARTPTR(INodeValue)
 
 
@@ -260,72 +258,6 @@ public:
     virtual void onSetRowUpdated(tango::rowid_t rowid) = 0;
     virtual void onSetRowDeleted(tango::rowid_t rowid) = 0;
 };
-
-
-
-
-xcm_interface IXdnativeDatabase : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("xdnative.IXdnativeDatabase")
-
-public:
-
-    virtual IXdsqlTablePtr openTable(const std::wstring& path) = 0;
-
-    virtual INodeValuePtr createNodeFile(const std::wstring& path) = 0;
-    virtual INodeValuePtr openNodeFile(const std::wstring& path) = 0;
-
-    virtual ITablePtr openTableByOrdinal(tango::tableord_t ordinal) = 0;
-    virtual IXdnativeSetPtr openSetById(const std::wstring& set_id) = 0;
-
-    virtual std::wstring getSetIdFromPath(const std::wstring& set_path) = 0;
-    virtual std::wstring getSetPathFromId(const std::wstring& set_id) = 0;
-
-    virtual bool lockSet(const std::wstring& set_id) = 0;
-    virtual bool unlockSet(const std::wstring& set_id) = 0;
-
-    virtual tango::tableord_t allocOrdinal() = 0;
-    virtual bool setOrdinalTable(tango::tableord_t ordinal,
-                                 const std::wstring& table_filename) = 0;
-    
-    virtual bool setFileType(const std::wstring& path, int type) = 0;
-    virtual bool getFileType(const std::wstring& path, int* type, bool* is_mount) = 0;
-
-    virtual std::wstring getTableFilename(tango::tableord_t table_ordinal) = 0;
-    virtual long long getFileSize(const std::wstring& path) = 0;
-    virtual std::wstring getFileMimeType(const std::wstring& path) = 0;
-
-    virtual std::wstring getTempFilename() = 0;
-    virtual std::wstring getTempOfsPath() = 0;
-    virtual std::wstring getTempPath() = 0;
-    virtual std::wstring getDefinitionPath() = 0;
-    virtual std::wstring getBasePath() = 0;
-    virtual std::wstring getOfsPath() = 0;
-    virtual std::wstring getUniqueFilename() = 0;
-
-    virtual std::wstring ofsToPhysFilename(const std::wstring& ofs_path,
-                                           bool folder) = 0;
-
-    virtual IJobInternalPtr createJobEntry() = 0;
-    
-    virtual void addFileToTrash(const std::wstring& filename) = 0;
-    virtual void emptyTrash() = 0;
-    
-    virtual void lockObjectRegistryMutex() = 0;
-    virtual void unlockObjectRegistryMutex() = 0;
-    
-    virtual void registerSet(IXdnativeSet* set) = 0;
-    virtual void unregisterSet(IXdnativeSet* set) = 0;
-
-    virtual void registerNodeFile(OfsFile* set) = 0;
-    virtual void unregisterNodeFile(OfsFile* set) = 0;
-
-    virtual void registerTable(ITable* table) = 0;
-    virtual void unregisterTable(ITable* table) = 0;
-};
-
-
-
 
 
 

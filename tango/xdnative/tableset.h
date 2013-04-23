@@ -13,6 +13,7 @@
 #define __XDNATIVE_TABLESET_H
 
 
+
 #include "baseset.h"
 #include "baseiterator.h"
 #include "../xdcommon/tango_private.h"
@@ -59,7 +60,7 @@ public:
     bool addEventHandler(ITableEvents* handler);
     bool removeEventHandler(ITableEvents* handler);
 
-    bool init(tango::IDatabase* database,
+    bool init(XdnativeDatabase* database,
               IXdnativeSet* set,
               ITable* table,
               const std::wstring& columns);
@@ -123,23 +124,27 @@ friend class TableSetRowDeleter;
 
     virtual void ref()
     {
-        m_dbi->lockObjectRegistryMutex();
+        m_database->lockObjectRegistryMutex();
         m_refcount_holder.xcm_ref_count++;
-        m_dbi->unlockObjectRegistryMutex();
+        m_database->unlockObjectRegistryMutex();
     }
     
     virtual void unref()
     {
-        m_dbi->lockObjectRegistryMutex();
+        m_database->lockObjectRegistryMutex();
         if (--m_refcount_holder.xcm_ref_count == 0)
         {
-            IXdnativeDatabasePtr dbi = m_dbi;
-            dbi->unregisterSet(this);
+            XdnativeDatabase* db = m_database;
+            db->ref();
+
+            db->unregisterSet(this);
             delete this;
-            dbi->unlockObjectRegistryMutex();
+            db->unlockObjectRegistryMutex();
+
+            db->unref();
             return;
         }
-        m_dbi->unlockObjectRegistryMutex();
+        m_database->unlockObjectRegistryMutex();
     }
     
     virtual int get_ref_count()
@@ -150,7 +155,7 @@ friend class TableSetRowDeleter;
 
 public:
 
-    TableSet(tango::IDatabase* database);
+    TableSet(XdnativeDatabase* database);
     virtual ~TableSet();
 
     bool create(tango::IStructure* struct_config, const std::wstring& path);
@@ -237,7 +242,7 @@ class TableSetRowDeleter : public tango::IRowDeleter
 
 public:
 
-    TableSetRowDeleter(tango::IDatabasePtr db, TableSet* set);
+    TableSetRowDeleter(XdnativeDatabase* db, TableSet* set);
     ~TableSetRowDeleter();
 
     void addIndex(IIndex* index, const std::wstring& expr);
