@@ -22,6 +22,7 @@
 #include <kl/utf8.h>
 #include <kl/file.h>
 #include <kl/regex.h>
+#include <kl/md5.h>
 
 
 #include "tango.h"
@@ -423,6 +424,10 @@ tango::IFileInfoPtr SlDatabase::getFileInfo(const std::wstring& path)
     xdcommon::FileInfo* f = new xdcommon::FileInfo;
     f->name = objname;
     f->type = tango::filetypeTable;
+
+    std::wstring str = m_path + L":" + path;
+    kl::makeLower(str);
+    f->object_id = kl::md5str(str);
     
     if (type.find(L"xdsqlite_folder") != -1)
         f->type = tango::filetypeFolder;
