@@ -21,6 +21,8 @@ struct SlDataAccessInfo
     std::wstring name;
     int sqlite_type;
     int tango_type;
+    int width;
+    int scale;
     int col_ordinal;
     char* buf;
     int datalen;
@@ -94,6 +96,7 @@ private:
 
     SlDatabase* m_database;
     tango::IStructurePtr m_structure;
+    tango::IStructurePtr m_table_structure;
 
     std::vector<SlDataAccessInfo> m_columns;
 

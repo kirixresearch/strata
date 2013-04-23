@@ -62,8 +62,8 @@ SlIterator::SlIterator(SlDatabase* database)
     m_ordinal = 0;
 
     m_database = database;
+    m_sqlite = database->m_sqlite;
     m_database->ref();
-
 }
 
 SlIterator::~SlIterator()
@@ -94,6 +94,16 @@ bool SlIterator::init(const std::wstring& _query)
     query += q;
 */
     
+    if (!m_tablename.empty())
+    {
+        // if we are iterating on a simple table, we can
+        // get better type information by querying this from the db
+
+        m_table_structure = m_database->describeTable(m_tablename);
+        if (m_table_structure.isNull())
+            return false;
+    }
+
 
     // prepare the sql query
 
@@ -130,6 +140,21 @@ bool SlIterator::init(const std::wstring& _query)
             case SQLITE_TEXT:    dai.tango_type = tango::typeCharacter; break;
         }
 
+        dai.width = 30;
+        dai.scale = 0;
+
+        tango::IColumnInfoPtr colinfo;
+        if (m_table_structure.isOk())
+        {
+            tango::IColumnInfoPtr colinfo = m_table_structure->getColumnInfo(dai.name);
+            if (colinfo.isOk())
+            {
+                dai.tango_type = colinfo->getType();
+                dai.width = colinfo->getWidth();
+                dai.scale = colinfo->getScale();
+            }
+        }
+        
         m_columns.push_back(dai);
     }
 
@@ -264,8 +289,8 @@ tango::IStructurePtr SlIterator::getStructure()
         ColumnInfo* col = new ColumnInfo;
         col->setName(it->name);
         col->setType(it->tango_type);
-        col->setWidth(30);
-        col->setScale(30);
+        col->setWidth(it->width);
+        col->setScale(it->scale);
         col->setColumnOrdinal(it->col_ordinal);
         s->addColumn(static_cast<tango::IColumnInfo*>(col));
     }
@@ -319,8 +344,8 @@ tango::IColumnInfoPtr SlIterator::getInfo(tango::objhandle_t data_handle)
     ColumnInfo* col = new ColumnInfo;
     col->setName(dai->name);
     col->setType(dai->tango_type);
-    col->setWidth(30);
-    col->setScale(30);
+    col->setWidth(dai->width);
+    col->setScale(dai->scale);
     col->setColumnOrdinal(dai->col_ordinal);
     
     return static_cast<tango::IColumnInfo*>(col);

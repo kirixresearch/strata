@@ -592,11 +592,21 @@ tango::IIteratorPtr SlDatabase::createIterator(const std::wstring& path,
     if (order.length() > 0)
         sql += L" ORDER BY " + order;
 
-    xcm::IObjectPtr resobj;
-    if (!execute(sql, 0, resobj, job))
-        return xcm::null;
 
-    return resobj;
+    SlIterator* iter = new SlIterator(this);
+    iter->m_tablename = path;
+    iter->ref();
+
+    if (!iter->init(sql))
+    {
+        iter->unref();
+        return xcm::null;
+    }
+
+    tango::IIteratorPtr result = static_cast<xcm::IObject*>(iter);
+    iter->unref();
+
+    return result;
 }
 
 
