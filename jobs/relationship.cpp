@@ -76,8 +76,10 @@ int RelationshipJob::runJob()
         return 0;
     }
 
+    tango::IRelationSchemaPtr rels = m_db;
+
     // make sure the database is valid
-    if (m_db.isNull())
+    if (m_db.isNull() || rels.isNull())
     {
         m_job_info->setState(jobStateFailed);
         return 0;
@@ -149,7 +151,7 @@ int RelationshipJob::runJob()
         std::wstring right_path = it->getChild("right_path").getString();
         std::wstring right_expr = it->getChild("right_expression").getString();
 
-        m_db->createRelation(name, left_path, right_path, left_expr, right_expr);
+        rels->createRelation(name, left_path, right_path, left_expr, right_expr);
     }
 
 
