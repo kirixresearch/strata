@@ -437,7 +437,11 @@ static void onRelationshipJobFinished(jobs::IJobPtr job)
 
 static tango::IRelationPtr lookupSetRelation(tango::IDatabasePtr& db, const std::wstring& table_path, const std::wstring& tag)
 {
-    tango::IRelationEnumPtr rel_enum = db->getRelationEnum(table_path);
+    tango::IRelationSchemaPtr rels = db;
+    if (rels.isNull())
+        return xcm::null;
+
+    tango::IRelationEnumPtr rel_enum = rels->getRelationEnum(table_path);
     size_t i, n = rel_enum->size();
     for (i = 0; i < n; ++i)
     {
@@ -463,6 +467,11 @@ void RelationshipPanel::onUpdateRelationships(wxCommandEvent& evt)
     tango::IDatabasePtr db = g_app->getDatabase();
     if (!db)
         return;
+
+    tango::IRelationSchemaPtr rels = db;
+    if (rels.isNull())
+        return;
+
 
     UpdateInfo info;
 
@@ -526,7 +535,7 @@ void RelationshipPanel::onUpdateRelationships(wxCommandEvent& evt)
             {
                 tango::IRelationPtr rel = lookupSetRelation(db, towstr(*it), towstr(oi_it->tag));
                 if (rel)
-                    db->deleteRelation(rel->getRelationId());
+                    rels->deleteRelation(rel->getRelationId());
             }
         }
 
@@ -536,10 +545,10 @@ void RelationshipPanel::onUpdateRelationships(wxCommandEvent& evt)
         {
             // delete all existing relationships for this table
 
-            tango::IRelationEnumPtr rel_enum = db->getRelationEnum(towstr(*it));
+            tango::IRelationEnumPtr rel_enum = rels->getRelationEnum(towstr(*it));
             size_t i, rel_count = rel_enum->size();
             for (i = 0; i < rel_count; ++i)
-                db->deleteRelation(rel_enum->getItem(i)->getRelationId());
+                rels->deleteRelation(rel_enum->getItem(i)->getRelationId());
         }
 
         for (ni_it = new_info.begin(); ni_it != new_info.end(); ++ni_it)
@@ -613,7 +622,12 @@ void RelationshipPanel::loadRelationships()
     m_diagram->deleteAllLines();
 
     tango::IDatabasePtr db = g_app->getDatabase();
-    tango::IRelationEnumPtr rel_enum = db->getRelationEnum(L"");
+
+    tango::IRelationSchemaPtr rels = db;
+    if (rels.isNull())
+        return;
+
+    tango::IRelationEnumPtr rel_enum = rels->getRelationEnum(L"");
 
     bool update_button = false;
 

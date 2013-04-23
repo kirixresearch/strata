@@ -418,7 +418,7 @@ void ConnectionWizard::setConnectionString(const wxString& str)
     
     ConnectionInfo ci;
     
-    // -- database type --
+    // database type
     if (cstr->getLowerValue(L"Xdprovider") == L"xdnative")
         ci.type = dbtypeXdnative;
     else if (cstr->getLowerValue(L"Xdprovider") == L"xdmysql")

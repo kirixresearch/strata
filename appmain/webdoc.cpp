@@ -3566,19 +3566,6 @@ void WebDoc::onOpenURI(wxWebEvent& evt)
         return;
     }
     
-    if (loc.Left(7) == wxT("sdserv:") || loc.Left(8) == wxT("sdservs:"))
-    {
-        g_app->getAppController()->openDataLink(loc);
-        evt.Veto();
-
-
-        g_macro << "";
-        g_macro << "// open a location";
-        g_macro << wxString::Format(wxT("HostApp.open('%s');"), wxcstr(loc));
-        
-        
-        return;
-    }
 
 
     // see WebDoc::openURI() for some oddball cases that
@@ -4008,7 +3995,7 @@ void WebDoc::onWebViewNavigating(wxWebViewEvent& evt)
 
     if (loc.Left(7) == wxT("sdserv:") || loc.Left(8) == wxT("sdservs:"))
     {
-        g_app->getAppController()->openDataLink(loc);
+        //g_app->getAppController()->openDataLink(loc);
         evt.Veto();
 
         g_macro << "";

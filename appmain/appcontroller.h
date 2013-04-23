@@ -99,7 +99,6 @@ public:
     bool openQuery(const wxString& location, int* site_id = NULL);
     bool openScript(const wxString& location, int* site_id = NULL);
     bool openTable(const wxString& location, int* site_id = NULL);
-    bool openDataLink(const wxString& location, int* site_id = NULL);
     bool openTemplate(const wxString& location,
                       int open_mask = appOpenDefault);
     bool openWeb(const wxString& location,
@@ -194,8 +193,6 @@ public:
     void onColorPanelDestructing(kcl::ColorPanel* panel);
     void onCustomColorsRequested(std::vector<wxColor>& colors);
     void onCustomColorsChanged(std::vector<wxColor> colors);
-
-    void onOpenDataViewFinished(jobs::IJobPtr query_job);
 
 private:
 

@@ -2968,6 +2968,10 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
     if (db.isNull())
         return;
 
+    tango::IRelationSchemaPtr rels = db;
+    if (rels.isNull())
+        return;
+
     tango::IStructurePtr s = db->describeTable(towstr(m_path));
     if (s.isNull())
         return;
@@ -3004,7 +3008,7 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
     // now try to find the set that has that column
     tango::IStructurePtr right_structure;
 
-    tango::IRelationEnumPtr rel_enum = db->getRelationEnum(towstr(m_path));
+    tango::IRelationEnumPtr rel_enum = rels->getRelationEnum(towstr(m_path));
     tango::IRelationPtr rel;
     int rel_count = (int)rel_enum->size();
 
@@ -4200,8 +4204,12 @@ void TableDoc::resetChildWindows()
 {
     tango::IDatabasePtr db = g_app->getDatabase();
 
+    tango::IRelationSchemaPtr rels = db;
+    if (rels.isNull())
+        return;
+
     tango::IRelationEnumPtr rel_enum;
-    rel_enum = db->getRelationEnum(towstr(m_path));
+    rel_enum = rels->getRelationEnum(towstr(m_path));
 
     if (rel_enum->size() == 0)
         return;
@@ -4352,8 +4360,12 @@ void TableDoc::updateChildWindows()
     if (m_relationship_sync == tabledocRelationshipSyncNone)
         return;
 
+    tango::IRelationSchemaPtr rels = g_app->getDatabase();
+    if (rels.isNull())
+        return;
+
     tango::IRelationEnumPtr rel_enum;
-    rel_enum = g_app->getDatabase()->getRelationEnum(towstr(m_path));
+    rel_enum = rels->getRelationEnum(towstr(m_path));
 
     if (rel_enum->size() == 0)
         return;
@@ -5551,6 +5563,10 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
     if (db.isNull())
         return;
 
+    tango::IRelationSchemaPtr rels = db;
+    if (rels.isNull())
+        return;
+
     tango::IStructurePtr structure = m_iter->getStructure();
     if (structure.isNull())
         return;
@@ -5591,7 +5607,7 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
 
     // add fields from child file(s)
 
-    tango::IRelationEnumPtr rel_enum = db->getRelationEnum(towstr(m_path));
+    tango::IRelationEnumPtr rel_enum = rels->getRelationEnum(towstr(m_path));
     tango::IRelationPtr rel;
     size_t r, rel_count = rel_enum->size();
         
