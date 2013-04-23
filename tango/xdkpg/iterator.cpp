@@ -11,7 +11,6 @@
 
 #include "tango.h"
 #include "database.h"
-#include "set.h"
 #include "iterator.h"
 #include "pkgfile.h"
 #include "../xdcommon/xdcommon.h"
@@ -30,14 +29,10 @@ const std::string empty_string = "";
 const std::wstring empty_wstring = L"";
 
 
-KpgIterator::KpgIterator(KpgDatabase* database, KpgSet* set)
+KpgIterator::KpgIterator(KpgDatabase* database)
 {
     m_database = database;
     m_database->ref();
-
-    m_set = set;
-    if (m_set)
-        m_set->ref();
 
     m_reader = NULL;
     m_cur_block = 0;
@@ -52,22 +47,43 @@ KpgIterator::~KpgIterator()
 {
     delete m_reader;
 
-    if (m_set)
-        m_set->unref();
-
     if (m_database)
         m_database->unref();
 }
 
-bool KpgIterator::init()
+bool KpgIterator::init(const std::wstring& path)
 {
+    m_path = path;
+
+    // get info block and parse it
+    std::wstring info;
+    if (!m_database->getStreamInfoBlock(path, info))
+        return false;
+
+    if (!m_info.parse(info))
+        return false;
+
     // get row width
-    int node_idx = m_set->m_info.getChildIdx(L"phys_row_width");
+    int node_idx = m_info.getChildIdx(L"phys_row_width");
     if (node_idx == -1)
         return false;
-    m_row_width = kl::wtoi(m_set->m_info.getChild(node_idx).getNodeValue());
+    m_row_width = kl::wtoi(m_info.getChild(node_idx).getNodeValue());
 
-    m_structure = m_set->getStructure();
+    // get structure
+    node_idx = m_info.getChildIdx(L"structure");
+    if (node_idx == -1)
+        return false;
+
+    kl::xmlnode& structure_node = m_info.getChild(node_idx);
+    m_structure = xdkpgXmlToStructure(structure_node);
+    if (m_structure.isNull())
+        return false;
+
+    // open the kpg stream
+    m_reader = m_database->m_kpg->readStream(path);
+    if (!m_reader || !m_reader->reopen())
+        return false;
+
 
     int i, col_count = m_structure->getColumnCount();
     int off = 0;
@@ -123,9 +139,7 @@ bool KpgIterator::init()
 
 std::wstring KpgIterator::getTable()
 {
-    if (m_set)
-        return L"";
-    return m_set->getObjectPath();
+    return m_path;
 }
 
 tango::rowpos_t KpgIterator::getRowCount()
@@ -140,15 +154,8 @@ tango::IDatabasePtr KpgIterator::getDatabase()
 
 tango::IIteratorPtr KpgIterator::clone()
 {
-    KpgIterator* iter = new KpgIterator(m_database, m_set);
-    iter->m_reader = m_database->m_kpg->readStream(m_set->m_tablename);
-    if (!iter->m_reader->reopen())
-    {
-        delete iter;
-        return xcm::null;
-    }
-
-    if (!iter->init())
+    KpgIterator* iter = new KpgIterator(m_database);
+    if (!iter->init(m_path))
     {
         delete iter;
         return xcm::null;
@@ -287,7 +294,7 @@ double KpgIterator::getPos()
 
 tango::IStructurePtr KpgIterator::getStructure()
 {
-    return m_set->getStructure();
+    return m_structure->clone();
 }
 
 void KpgIterator::refreshStructure()

@@ -18,6 +18,7 @@
 #include "../xdcommon/keylayout.h"
 #include "../../kscript/kscript.h"
 #include <kl/file.h>
+#include <kl/xml.h>
 
 class PkgStreamReader;
 
@@ -106,10 +107,10 @@ class KpgIterator : public CommonBaseIterator
 
 public:
 
-    KpgIterator(KpgDatabase* database, KpgSet* set = NULL);
+    KpgIterator(KpgDatabase* database);
     ~KpgIterator();
     
-    bool init();
+    bool init(const std::wstring& path);
 
     // tango::IIterator
 
@@ -162,9 +163,10 @@ private:
     std::vector<KpgIteratorRelInfo> m_relations;
 
     KpgDatabase* m_database;
-    KpgSet* m_set;
     PkgStreamReader* m_reader;
     tango::IStructurePtr m_structure;
+    std::wstring m_path;
+    kl::xmlnode m_info;
 
     std::vector<xf_off_t> m_block_offsets;
     size_t m_cur_block;

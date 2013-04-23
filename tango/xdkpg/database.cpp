@@ -24,7 +24,6 @@
 #include "../xdcommon/util.h"
 #include "database.h"
 #include "iterator.h"
-#include "set.h"
 #include "inserter.h"
 #include "pkgfile.h"
 #include <set>
@@ -529,30 +528,19 @@ tango::IIteratorPtr KpgDatabase::createIterator(const std::wstring& _path,
     if (path.substr(0,1) == L"/")
         path.erase(0,1);
 
-    std::wstring info;
-    if (!getStreamInfoBlock(path, info))
-        return xcm::null;
+ 
 
-    // create set and initialize variables
-    KpgSet* set = new KpgSet(this);
-    set->m_tablename = path;
-    if (!set->m_info.parse(info))
+    // create an iterator based on our select statement
+    KpgIterator* iter = new KpgIterator(this);
+
+
+    if (!iter->init(path))
     {
-        delete set;
+        delete iter;
         return xcm::null;
     }
 
-    if (!set->init())
-    {
-        delete set;
-        return xcm::null;
-    }
-
-    set->ref();
-    tango::IIteratorPtr iter = set->createIterator(columns, order, job);
-    set->unref();
-
-    return iter;
+    return static_cast<tango::IIterator*>(iter);
 }
 
 
@@ -662,7 +650,6 @@ bool KpgDatabase::modifyStructure(const std::wstring& path, tango::IStructurePtr
 {
     return false;
 }
-
 
 bool KpgDatabase::execute(const std::wstring& command,
                           unsigned int flags,
