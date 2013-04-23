@@ -79,6 +79,7 @@ SlIterator::~SlIterator()
 
 bool SlIterator::init(const std::wstring& _query)
 {
+/*
     // add rowid to the select statement
     const wchar_t* q = _query.c_str();
     while (iswspace(*q))
@@ -91,12 +92,12 @@ bool SlIterator::init(const std::wstring& _query)
     std::wstring query;
     query = L"SELECT oid,";
     query += q;
-    
+*/
     
 
     // prepare the sql query
 
-    std::string ascsql = kl::tostring(query);
+    std::string ascsql = kl::tostring(_query);
 
     int rc =  sqlite3_prepare(m_sqlite,
                               ascsql.c_str(),
@@ -111,26 +112,22 @@ bool SlIterator::init(const std::wstring& _query)
 
     
     m_columns.clear();
-    int col_count = sqlite3_column_count(m_stmt);
-    int i;
+    int i, col_count = sqlite3_column_count(m_stmt);
 
-    // (first column is the oid)
-    for (i = 1; i < col_count; ++i)
+    for (i = 0; i < col_count; ++i)
     {
         SlDataAccessInfo dai;
 
         dai.name = kl::towstring((char*)sqlite3_column_name(m_stmt, i));
+        dai.sqlite_type = sqlite3_column_type(m_stmt, i);
         dai.col_ordinal = i;
 
-        if (m_set_structure)
-        {   
-            dai.colinfo = m_set_structure->getColumnInfo(dai.name);
-        }
-
-        if (dai.colinfo.isNull())
+        switch (dai.sqlite_type)
         {
-            dai.colinfo = new ColumnInfo;
-            // fill this out
+            case SQLITE_INTEGER: dai.tango_type = tango::typeInteger; break;
+            case SQLITE_FLOAT:   dai.tango_type = tango::typeDouble; break;
+            case SQLITE_BLOB:    dai.tango_type = tango::typeBinary; break;
+            case SQLITE_TEXT:    dai.tango_type = tango::typeCharacter; break;
         }
 
         m_columns.push_back(dai);
@@ -141,7 +138,6 @@ bool SlIterator::init(const std::wstring& _query)
 
 std::wstring SlIterator::getTable()
 {
-    // TODO: implement
     return L"";
 }
 
@@ -257,7 +253,27 @@ void SlIterator::goRow(const tango::rowid_t& rowid)
 
 tango::IStructurePtr SlIterator::getStructure()
 {
-    return m_set_structure;
+    if (m_structure.isOk())
+        return m_structure->clone();
+
+    Structure* s = new Structure;
+
+    std::vector<SlDataAccessInfo>::iterator it;
+    for (it = m_columns.begin(); it != m_columns.end(); ++it)
+    {
+        ColumnInfo* col = new ColumnInfo;
+        col->setName(it->name);
+        col->setType(it->tango_type);
+        col->setWidth(30);
+        col->setScale(30);
+        col->setColumnOrdinal(it->col_ordinal);
+        s->addColumn(static_cast<tango::IColumnInfo*>(col));
+    }
+    
+    m_structure = static_cast<tango::IStructure*>(s);
+
+    return m_structure->clone();
+
 }
 
 void SlIterator::refreshStructure()
@@ -299,19 +315,21 @@ bool SlIterator::releaseHandle(tango::objhandle_t data_handle)
 tango::IColumnInfoPtr SlIterator::getInfo(tango::objhandle_t data_handle)
 {
     SlDataAccessInfo* dai = (SlDataAccessInfo*)data_handle;
-    if (!dai)
-        return xcm::null;
 
-    return dai->colinfo->clone();
+    ColumnInfo* col = new ColumnInfo;
+    col->setName(dai->name);
+    col->setType(dai->tango_type);
+    col->setWidth(30);
+    col->setScale(30);
+    col->setColumnOrdinal(dai->col_ordinal);
+    
+    return static_cast<tango::IColumnInfo*>(col);
 }
 
 int SlIterator::getType(tango::objhandle_t data_handle)
 {
-    tango::IColumnInfoPtr colinfo = getInfo(data_handle);
-    if (colinfo.isNull())
-        return tango::typeInvalid;
-
-    return colinfo->getType();
+    SlDataAccessInfo* dai = (SlDataAccessInfo*)data_handle;
+    return dai->tango_type;
 }
 
 int SlIterator::getRawWidth(tango::objhandle_t data_handle)

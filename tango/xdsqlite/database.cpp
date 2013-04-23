@@ -80,7 +80,7 @@ const wchar_t* sql92_keywords =
 
 
 
-static std::wstring pathToObjectName(const std::wstring& path)
+std::wstring sqliteGetTablenameFromPath(const std::wstring& path)
 {
     const wchar_t* p = path.c_str();
     while (iswspace(*p))
@@ -302,7 +302,7 @@ tango::IJobPtr SlDatabase::createJob()
 
 bool SlDatabase::createFolder(const std::wstring& path)
 {
-    std::wstring objname = pathToObjectName(path);
+    std::wstring objname = sqliteGetTablenameFromPath(path);
     
     std::wstring sql = L"CREATE TABLE ";
     sql += objname;
@@ -330,8 +330,8 @@ bool SlDatabase::renameFile(const std::wstring& path,
 bool SlDatabase::moveFile(const std::wstring& path,
                           const std::wstring& dest_path)
 {
-    std::wstring src_objname = pathToObjectName(path);
-    std::wstring dest_objname = pathToObjectName(dest_path);
+    std::wstring src_objname = sqliteGetTablenameFromPath(path);
+    std::wstring dest_objname = sqliteGetTablenameFromPath(dest_path);
 
     std::wstring command;
     command.reserve(1024);
@@ -362,7 +362,7 @@ bool SlDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
 
 bool SlDatabase::deleteFile(const std::wstring& path)
 {
-    std::wstring objname = pathToObjectName(path);
+    std::wstring objname = sqliteGetTablenameFromPath(path);
 
     std::wstring command;
     command.reserve(1024);
@@ -451,7 +451,7 @@ tango::IFileInfoEnumPtr SlDatabase::getFolderInfo(const std::wstring& path)
      else
     {
         sql += L" WHERE name like '";
-        sql += pathToObjectName(path);
+        sql += sqliteGetTablenameFromPath(path);
         sql += L"$$$%'";
     }
 
@@ -501,7 +501,7 @@ bool SlDatabase::createTable(const std::wstring& path,
 
     std::wstring sql;
     sql = L"CREATE TABLE ";
-    sql += pathToObjectName(path);
+    sql += sqliteGetTablenameFromPath(path);
     sql += L" (";
     
     int i, col_count = struct_config->getColumnCount();
@@ -584,7 +584,10 @@ tango::IIteratorPtr SlDatabase::createIterator(const std::wstring& path,
 
     std::wstring sql = L"SELECT %columns% FROM %table%";
     kl::replaceStr(sql, L"%columns%", columns);
-    kl::replaceStr(sql, L"%table%", path);
+    kl::replaceStr(sql, L"%table%", sqliteGetTablenameFromPath(path));
+
+    if (wherec.length() > 0)
+        sql += L" WHERE " + wherec;
 
     if (order.length() > 0)
         sql += L" ORDER BY " + order;
@@ -622,16 +625,35 @@ bool SlDatabase::deleteIndex(const std::wstring& path,
 
 tango::IRowInserterPtr SlDatabase::bulkInsert(const std::wstring& path)
 {
-    //SlRowInserter* inserter = new SlRowInserter(this);
-    //return static_cast<tango::IRowInserter*>(inserter);
-
-    return xcm::null;
+    SlRowInserter* inserter = new SlRowInserter(this, path);
+    return static_cast<tango::IRowInserter*>(inserter);
 }
 
-tango::IStructurePtr SlDatabase::describeTable(const std::wstring& path)
+tango::IStructurePtr SlDatabase::describeTable(const std::wstring& _path)
 {
-    // TODO: implement
-    return xcm::null;
+    std::wstring path = sqliteGetTablenameFromPath(_path);
+
+    int rc = 0;
+    
+    wchar_t buf[512];
+    swprintf(buf, 512, L"SELECT sql FROM sqlite_master WHERE name='%ls'", path.c_str());
+    
+    
+    char** result;
+    int rows = 0;
+    int cat_id = 0;
+
+    rc = sqlite3_get_table(m_sqlite, kl::toUtf8(buf), &result, &rows, NULL, NULL);
+    if (rc != SQLITE_OK || rows < 1)
+    {
+        // return failure
+        return xcm::null;
+    }
+    
+    std::wstring create_stmt = kl::fromUtf8(result[1]);
+    sqlite3_free_table(result);
+    
+    return parseCreateStatement(create_stmt);
 }
 
 bool SlDatabase::modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job)
@@ -713,30 +735,3 @@ bool SlDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
 {
     return false;
 }
-
-tango::IStructurePtr SlDatabase::getStructureFromPath(std::wstring& path)
-{
-    
-    int rc = 0;
-    
-    wchar_t buf[512];
-    swprintf(buf, 512, L"SELECT sql FROM sqlite_master WHERE name='%ls'", path.c_str());
-    
-    
-    char** result;
-    int rows = 0;
-    int cat_id = 0;
-
-    rc = sqlite3_get_table(m_sqlite, kl::toUtf8(buf), &result, &rows, NULL, NULL);
-    if (rc != SQLITE_OK || rows < 1)
-    {
-        // return failure
-        return xcm::null;
-    }
-    
-    std::wstring create_stmt = kl::fromUtf8(result[1]);
-    sqlite3_free_table(result);
-    
-    return parseCreateStatement(create_stmt);
-}
-

@@ -16,9 +16,110 @@
 #include "util.h"
 
 
+// TODO: peekToken and popToken should factor
+// out common code
 
-std::wstring popToken(std::wstring& str) { /* TODO: implement */ return L""; }
-std::wstring peekToken(const std::wstring& str) { /* TODO: implement */ return L""; }
+static std::wstring peekToken(const std::wstring& str)
+{
+    const wchar_t* start = str.c_str();
+    const wchar_t* p = start;
+    std::wstring ret;
+    int chars = 0;
+
+    while (iswspace(*p))
+    {
+        p++;
+        chars++;
+    }
+
+    if (*p == '[')
+    {
+        // identifier quotation
+        const wchar_t* close = wcschr(p, ']');
+        if (close)
+        {
+            ret.assign(p, close-p+1);
+            return ret;
+        }
+    }
+    
+    while (*p)
+    {
+        if (0 != wcschr(L" \t\n\r!@#$%^&*-=|/+,()[]{}:'\"", *p))
+        {
+            if (ret.empty())
+            {
+                ret = *p;
+                return ret;
+            }
+             else
+            {
+                break;
+            }
+        }
+
+        ret += *p;
+        ++p;
+        ++chars;
+    }
+
+    return ret;
+}
+
+
+// WARNING: until peekToken and popToken
+// are factored, if you make a change to popToken,
+// make sure to make the change to the function above
+
+static std::wstring popToken(std::wstring& str)
+{
+    const wchar_t* start = str.c_str();
+    const wchar_t* p = start;
+    std::wstring ret;
+    int chars = 0;
+
+    while (iswspace(*p))
+    {
+        p++;
+        chars++;
+    }
+
+    if (*p == '[')
+    {
+        // identifier quotation
+        const wchar_t* close = wcschr(p, ']');
+        if (close)
+        {
+            ret.assign(p, close-p+1);
+            str.erase(0, close-start+1);
+            return ret;
+        }
+    }
+    
+    while (*p)
+    {
+        if (0 != wcschr(L" \t\n\r!@#$%^&*-=|/+,()[]{}:'\"", *p))
+        {
+            if (ret.empty())
+            {
+                ret = *p;
+                str.erase(0,chars+1);
+                return ret;
+            }
+             else
+            {
+                break;
+            }
+        }
+
+        ret += *p;
+        ++p;
+        ++chars;
+    }
+
+    str.erase(0, chars);
+    return ret;
+}
 
 
 // this code is from xdcommon/sqlcreate.cpp

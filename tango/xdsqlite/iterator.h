@@ -19,14 +19,14 @@
 struct SlDataAccessInfo
 {
     std::wstring name;
+    int sqlite_type;
+    int tango_type;
     int col_ordinal;
     char* buf;
     int datalen;
 
     std::string result_str;
     std::wstring result_wstr;
-
-    tango::IColumnInfoPtr colinfo;
 };
 
 
@@ -92,11 +92,11 @@ public:
 
 private:
 
+    SlDatabase* m_database;
+    tango::IStructurePtr m_structure;
+
     std::vector<SlDataAccessInfo> m_columns;
 
-    SlDatabase* m_database;
-
-    tango::IStructurePtr m_set_structure;
     tango::tableord_t m_ordinal;
     std::wstring m_tablename;
 
@@ -106,12 +106,4 @@ private:
     sqlite3_stmt* m_stmt;
 };
 
-
-
-
 #endif
-
-
-
-
-

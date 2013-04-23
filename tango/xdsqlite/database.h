@@ -16,6 +16,7 @@
 #include "sqlite3.h"
 #include "../xdcommon/errorinfo.h"
 
+std::wstring sqliteGetTablenameFromPath(const std::wstring& path);
 
 class JobInfo;
 class SlDatabase : public tango::IDatabase
@@ -115,8 +116,6 @@ public:
     
     bool groupQuery(tango::GroupQueryInfo* info, tango::IJob* job);
 
-    tango::IStructurePtr getStructureFromPath(std::wstring& path);
-    
 private:
 
     std::wstring m_path;
