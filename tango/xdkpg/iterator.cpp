@@ -247,6 +247,7 @@ void KpgIterator::goFirst()
     m_data = (unsigned char*)m_reader->loadNextBlock(&m_data_len);
     m_cur_block = 0;
     m_row = m_data;
+    m_eof = (m_data == NULL) ? true : false;
 }
 
 void KpgIterator::goLast()
