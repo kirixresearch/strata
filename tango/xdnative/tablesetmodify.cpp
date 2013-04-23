@@ -217,15 +217,15 @@ inline void doCopy(tango::IRowInserter* dest,
 
                 case tango::typeCharacter:
                 {
-                    char buf[256];
+                    char buf[64];
                     
                     if (ci.src_type == tango::typeInteger)
                     {
-                        sprintf(buf, "%d", src->getInteger(ci.src_handle));
+                        snprintf(buf, 64, "%d", src->getInteger(ci.src_handle));
                     }
                      else
                     {
-                        sprintf(buf, "%.*f",
+                        snprintf(buf, 64, "%.*f",
                                      ci.src_scale,
                                      src->getDouble(ci.src_handle));
                     }
