@@ -173,8 +173,6 @@ bool sqlDelete(tango::IDatabasePtr db,
         return false;
     }
 
-
-    // TODO: reimplement RESTORE
     if (stmt.getKeywordExists(L"RESTORE"))
     {
         IXdsqlTablePtr tbl = xdb->openTable(table);

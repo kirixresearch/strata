@@ -3768,6 +3768,18 @@ tango::IIndexInfoEnumPtr XdnativeDatabase::getIndexEnum(const std::wstring& path
 
 tango::IStructurePtr XdnativeDatabase::describeTable(const std::wstring& path)
 {
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, cstr, rpath))
+    {
+        // action takes place in a mount
+        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return xcm::null;
+
+        return db->describeTable(rpath);
+    }
+
+
     IXdsqlTablePtr table = openTable(path);
     if (table.isNull())
         return xcm::null;
