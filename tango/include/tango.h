@@ -422,23 +422,6 @@ public:
 };
 
 
-xcm_interface IRelation : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("tango.IRelation")
-
-public:
-
-    virtual const std::wstring& getRelationId() = 0;
-    virtual const std::wstring& getTag() = 0;
-    virtual std::wstring getLeftExpression() = 0;
-    virtual std::wstring getRightExpression() = 0;
-    virtual std::wstring getLeftTable() = 0;
-    virtual std::wstring getRightTable() = 0;
-};
-
-
-
-
 xcm_interface IIterator : public xcm::IObject
 {
     XCM_INTERFACE_NAME("tango.IIterator")
@@ -755,6 +738,20 @@ public:
 // specialized interfaces
 
 
+xcm_interface IRelation : public xcm::IObject
+{
+    XCM_INTERFACE_NAME("tango.IRelation")
+
+public:
+
+    virtual const std::wstring& getRelationId() = 0;
+    virtual const std::wstring& getTag() = 0;
+    virtual std::wstring getLeftExpression() = 0;
+    virtual std::wstring getRightExpression() = 0;
+    virtual std::wstring getLeftTable() = 0;
+    virtual std::wstring getRightTable() = 0;
+};
+
 
 xcm_interface IRelationSchema : public xcm::IObject
 {
@@ -860,7 +857,7 @@ public:
 
 
 
-// -- updating interfaces (optional) --
+// updating interfaces (optional)
 
 struct ColumnUpdateInfo
 {
