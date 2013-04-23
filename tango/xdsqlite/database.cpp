@@ -129,7 +129,7 @@ bool SlDatabase::createDatabase(const std::wstring& path,
 
     if (xf_get_file_exist(path))
     {
-        // -- database already exists; overwrite it --
+        // database already exists; overwrite it
         if (!xf_remove(path))
         {
             return false;
@@ -142,12 +142,12 @@ bool SlDatabase::createDatabase(const std::wstring& path,
 
     if (SQLITE_OK != sqlite3_open(ascpath.c_str(), &db))
     {
-        // -- database could not be opened --
+        // database could not be opened
         return false;
     }
 
 
-    // -- create catalog table --
+    // create catalog table
 
     const char* sql1 = "CREATE TABLE catalog ("
                            "id INTEGER PRIMARY KEY, "
@@ -163,7 +163,7 @@ bool SlDatabase::createDatabase(const std::wstring& path,
         return false;
     }
 
-    // -- create columns table --
+    // create columns table
 
     const char* sql2 = "CREATE TABLE columns ("
                            "obj_id INTEGER, "
@@ -181,7 +181,7 @@ bool SlDatabase::createDatabase(const std::wstring& path,
     }
 
 
-    // -- insert entry for root folder --
+    // insert entry for root folder
 
     const char* sql3 = "INSERT INTO catalog "
                           "(id, folder_id, name, type, obj_name) "
@@ -208,7 +208,7 @@ bool SlDatabase::openDatabase(const std::wstring& path,
 {
     if (!xf_get_file_exist(path))
     {
-        // -- database does not exist --
+        // database does not exist
         return false;
     }
 
@@ -218,7 +218,7 @@ bool SlDatabase::openDatabase(const std::wstring& path,
 
     if (SQLITE_OK != sqlite3_open(ascpath.c_str(), &db))
     {
-        // -- database could not be opened --
+        // database could not be opened
         return false;
     }
 
@@ -501,7 +501,7 @@ bool SlDatabase::createTable(const std::wstring& path,
 
     std::wstring sql;
     sql = L"CREATE TABLE ";
-    sql += path;
+    sql += pathToObjectName(path);
     sql += L" (";
     
     int i, col_count = struct_config->getColumnCount();

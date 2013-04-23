@@ -130,7 +130,7 @@ bool SlIterator::init(const std::wstring& _query)
         if (dai.colinfo.isNull())
         {
             dai.colinfo = new ColumnInfo;
-            // -- fill this out --
+            // fill this out
         }
 
         m_columns.push_back(dai);
@@ -179,7 +179,7 @@ void SlIterator::skip(int delta)
             rc = sqlite3_step(m_stmt);
             if (rc == SQLITE_ROW)
             {
-                // -- record rowid --
+                // record rowid
                 m_oid = sqlite3_column_int64(m_stmt, 0);
                 break;
             }
@@ -399,7 +399,7 @@ tango::datetime_t SlIterator::getDateTime(tango::objhandle_t data_handle)
             ss = atoi(buf+17);
         }
 
-        // -- some quick checks --
+        // some quick checks
         if (y == 0)
             return 0;
         if (m < 1 || m > 12)

@@ -74,7 +74,7 @@ tango::IColumnInfoPtr parseSqliteColumnDescription(const std::wstring& _col_desc
     
 
 
-    // -- make column info --
+    // make column info
     ColumnInfo* colinfo = new ColumnInfo;
 
     colinfo->setName(field);
@@ -125,7 +125,7 @@ tango::IColumnInfoPtr parseSqliteColumnDescription(const std::wstring& _col_desc
     }
      else
     {
-        // -- bad type --
+        // bad type
         return xcm::null;
     }
 

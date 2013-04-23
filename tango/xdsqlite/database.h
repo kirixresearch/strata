@@ -40,7 +40,7 @@ public:
                       const std::wstring& username,
                       const std::wstring& password);
 
-    // -- tango::IDatabase interface --
+    // tango::IDatabase interface
 
     void close();
 

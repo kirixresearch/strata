@@ -36,13 +36,13 @@ public:
         if (provider.empty())
             return xcm::null;
         
-        // -- check if the provider is xdnative, or in a different DLL --
+        // check if the provider is xdnative, or in a different DLL
         if (provider != L"xdsqlite")
         {
             return xcm::null;
         }
         
-        // -- parse the connection string --
+        // parse the connection string
         
         std::wstring database = c.getValue(L"database");
         std::wstring uid = c.getValue(L"user id");
@@ -137,7 +137,7 @@ private:
 
 
 
-// -- these are the publicly creatable classes --
+// these are the publicly creatable classes
 
 XCM_BEGIN_DYNAMIC_MODULE(xdsqlite)
     XCM_BEGIN_CLASS_MAP()

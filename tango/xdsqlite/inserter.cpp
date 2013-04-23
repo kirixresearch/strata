@@ -110,7 +110,7 @@ bool SlRowInserter::startInsert(const std::wstring& col_list)
 
     col_count = cols.size();
 
-    // -- make sure all of the columns are real --
+    // make sure all of the columns are real
 
     for (i = 0; i < col_count; ++i)
     {
@@ -121,7 +121,8 @@ bool SlRowInserter::startInsert(const std::wstring& col_list)
     }
 
 
-    // -- create the SQL insert statement --
+    // create the SQL insert statement
+
     std::wstring sql;
     sql = L"INSERT INTO ";
     sql += m_table;
