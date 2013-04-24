@@ -3995,7 +3995,7 @@ void WebDoc::onWebViewNavigating(wxWebViewEvent& evt)
 
     if (loc.Left(7) == wxT("sdserv:") || loc.Left(8) == wxT("sdservs:"))
     {
-        //g_app->getAppController()->openDataLink(loc);
+        g_app->getAppController()->openAny(loc);
         evt.Veto();
 
         g_macro << "";
