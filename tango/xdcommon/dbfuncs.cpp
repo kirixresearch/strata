@@ -61,8 +61,11 @@ int xdcmnInsert(tango::IDatabasePtr dest_db,
     tango::IStructurePtr dest_structure = dest_db->describeTable(dest_table);
     tango::IStructurePtr src_structure = source_iter->getStructure();
 
-    int i;
-    int col_count = dest_structure->getColumnCount();
+    if (dest_structure.isNull() || src_structure.isNull())
+        return 0;
+
+
+    int i, col_count = dest_structure->getColumnCount();
 
     if (!insert->startInsert(L"*"))
     {
