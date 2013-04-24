@@ -4614,7 +4614,7 @@ bool AppController::openTable(const wxString& _location, int* site_id)
         ITableDocPtr doc = TableDocMgr::createTableDoc();
         if (!doc->open(location))
         {
-            wxFAIL_MSG(wxT("ITableDoc::open() returned false"));
+            appMessageBox(_("The specified table cannot be opened.  The data resource cannot be accessed or does not exist."));
             return false;
         }
 
