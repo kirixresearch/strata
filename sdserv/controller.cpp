@@ -886,13 +886,10 @@ void Controller::apiDescribeTable(RequestInfo& req)
     tango::IStructurePtr structure;
         
     std::wstring handle = req.getValue(L"handle");
-    std::wstring path = req.getValue(L"path");
+    std::wstring path = req.getURI();
     
-    if (path.length() > 0)
-    {
-        structure = db->describeTable(path);
-    }
-     else if (handle.length() > 0)
+
+    if (handle.length() > 0)
     {
         SessionQueryResult* so = (SessionQueryResult*)getServerSessionObject(handle);
         if (so && so->iter.isOk())
@@ -902,14 +899,13 @@ void Controller::apiDescribeTable(RequestInfo& req)
     }
      else
     {
-        returnApiError(req, "Missing parameter");
-        return;
+        structure = db->describeTable(path);
     }
-    
+
         
     if (structure.isNull())
     {
-        returnApiError(req, "Invalid handle");
+        returnApiError(req, "Invalid resource");
         return;
     }
 
@@ -1000,7 +996,7 @@ void Controller::apiRead(RequestInfo& req)
         }
 
 
-        tango::IIteratorPtr iter = db->createIterator(req.getURI(), L"", req.getValue("where"), req.getValue(L"order"), NULL);
+        tango::IIteratorPtr iter = db->createIterator(req.getURI(), L"", req.getValue(L"where"), req.getValue(L"order"), NULL);
         if (!iter.isOk())
         {
             req.setStatusCode(404);
