@@ -23,8 +23,6 @@ ClientRowInserter::ClientRowInserter(ClientDatabase* database, const std::wstrin
     m_database = database;
     m_database->ref();
 
-    m_structure = database->describeTable(path);
-
     m_path = path;
     m_inserting = false;
     m_rows = L"";
@@ -212,13 +210,21 @@ bool ClientRowInserter::putNull(tango::objhandle_t column_handle)
 
 bool ClientRowInserter::startInsert(const std::wstring& col_list)
 {
+    if (m_inserting)
+        return false;
+
+    m_structure = m_database->describeTable(m_path);
+    if (m_structure.isNull())
+        return false;
+
+
     std::vector<std::wstring> columns;
     std::vector<std::wstring>::iterator it;
     std::wstring field_list;
 
     kl::parseDelimitedList(col_list, columns, L',');
 
-    if (!wcscmp(col_list.c_str(), L"*"))
+    if (col_list == L"*")
     {
         columns.clear();
 
@@ -227,7 +233,6 @@ bool ClientRowInserter::startInsert(const std::wstring& col_list)
             columns.push_back(m_structure->getColumnName(i));
     }
 
-
     std::wstring scols;
     size_t c, cn = columns.size();
     for (c = 0; c < cn; ++c)
@@ -235,20 +240,6 @@ bool ClientRowInserter::startInsert(const std::wstring& col_list)
         if (c > 0) scols += L",";
         scols += columns[c];
     }
-
-
-    ServerCallParams params;
-    params.setParam(L"path", m_path);
-    params.setParam(L"columns", scols);
-    std::wstring sres = m_database->serverCall(L"", L"startbulkinsert", &params);
-    kl::JsonNode response;
-    response.fromString(sres);
-
-    if (!response["success"].getBoolean())
-        return false;
-
-    m_handle = response["handle"];
-
 
 
 
@@ -282,13 +273,16 @@ bool ClientRowInserter::startInsert(const std::wstring& col_list)
     m_rows.reserve(16384);
     m_rows = L"[";
     m_buffer_row_count = 0;
+    m_columns = scols;
 
     return true;
 }
 
 bool ClientRowInserter::insertRow()
 {
-    // make the insert statement
+    if (!m_inserting)
+        return false;
+
     std::vector<ClientInsertData>::iterator it;
     std::vector<ClientInsertData>::iterator begin_it = m_insert_data.begin();
     std::vector<ClientInsertData>::iterator end_it = m_insert_data.end();
@@ -311,7 +305,7 @@ bool ClientRowInserter::insertRow()
 
 
 
-    if (m_buffer_row_count == 100)
+    if (m_buffer_row_count == 1000)
     {
         if (!flush())
             return false;
@@ -324,7 +318,6 @@ bool ClientRowInserter::insertRow()
         it->m_specified = false;
     }
 
- 
 
     return true;
 }
@@ -335,10 +328,6 @@ void ClientRowInserter::finishInsert()
     {
         flush();
     }
-
-    ServerCallParams params;
-    params.setParam(L"handle", m_handle);
-    std::wstring sres = m_database->serverCall(L"", L"finishbulkinsert", &params);
 }
 
 bool ClientRowInserter::flush()
@@ -347,8 +336,8 @@ bool ClientRowInserter::flush()
 
     ServerCallParams params;
     params.setParam(L"rows", m_rows);
-    params.setParam(L"handle", m_handle);
-    std::wstring sres = m_database->serverCall(L"", L"bulkinsert", &params);
+    params.setParam(L"columns", m_columns);
+    std::wstring sres = m_database->serverCall(m_path, L"insertrows", &params);
     kl::JsonNode response;
     response.fromString(sres);
 

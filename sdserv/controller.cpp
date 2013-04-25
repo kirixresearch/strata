@@ -1163,8 +1163,177 @@ void Controller::apiRead(RequestInfo& req)
 }
 
 
+
+
+static tango::datetime_t parseDateTime(const std::wstring& wstr)
+{
+    char buf[32];
+    int parts[6] = { 0,0,0,0,0,0 };
+    size_t len = wstr.length();
+    if (len > 30)
+        return 0;
+        
+    std::string str = kl::tostring(wstr);
+    strcpy(buf, str.c_str());
+    
+    size_t i = 0;
+    char* start = buf;
+    size_t partcnt = 0;
+    bool last = false;
+    for (i = 0; i <= sizeof(buf); ++i)
+    {
+        if (buf[i] == '/' || buf[i] == '-' || buf[i] == ':' || buf[i] == '.' || buf[i] == ' ' || buf[i] == 0)
+        {
+            if (buf[i] == 0)
+                last = true;
+            buf[i] = 0;
+            parts[partcnt++] = atoi(start);
+            start = buf+i+1;
+            if (partcnt == 6 || last)
+                break;
+        }
+    }
+
+    if (partcnt < 3)
+    {
+        return 0;
+    }
+     else if (partcnt == 6)
+    {
+        tango::DateTime dt(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5]);
+        return dt.getDateTime();
+    }
+     else if (partcnt >= 3)
+    {
+        tango::DateTime dt(parts[0], parts[1], parts[2]);
+        return dt.getDateTime();
+    }
+
+    return 0;
+}
+
+
 void Controller::apiInsertRows(RequestInfo& req)
 {
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+        return;
+
+    std::wstring columns_param;
+
+    if (req.getValueExists(L"columns"))
+        columns_param = req.getValue(L"columns");
+
+    tango::IStructurePtr structure = db->describeTable(req.getURI());
+    if (structure.isNull())
+    {
+        returnApiError(req, "Invalid data resource");
+        return;
+    }
+
+
+    tango::IRowInserterPtr sp_inserter = db->bulkInsert(req.getURI());
+    tango::IRowInserter* inserter = sp_inserter.p;
+
+
+    if (!inserter->startInsert(columns_param))
+    {
+        returnApiError(req, "Insert operation not allowed");
+        return;
+    }
+
+
+
+    std::vector<SessionRowInserterColumn> columns;
+
+    std::vector<std::wstring> colvec;
+    kl::parseDelimitedList(columns_param, colvec, ',');
+    std::vector<std::wstring>::iterator it;
+    for (it = colvec.begin(); it != colvec.end(); ++it)
+    {
+        SessionRowInserterColumn ric;
+        ric.handle = inserter->getHandle(*it);
+        if (!ric.handle)
+        {
+            returnApiError(req, "Cannot not initialize inserter");
+            return;
+        }
+        
+        tango::IColumnInfoPtr colinfo = structure->getColumnInfo(*it);
+        if (colinfo.isNull())
+        {
+            returnApiError(req, "Cannot not initialize inserter");
+            return;
+        }
+        
+        ric.type = colinfo->getType();
+        
+        columns.push_back(ric);
+    }
+
+
+
+
+
+
+
+    std::wstring s_rows = req.getValue(L"rows");
+    kl::JsonNode rows;
+    rows.fromString(s_rows);
+    
+    size_t rown, row_cnt = rows.getChildCount();
+    size_t coln, col_cnt = columns.size();
+    for (rown = 0; rown < row_cnt; ++rown)
+    {
+        kl::JsonNode row = rows[rown];
+        if (row.getChildCount() != col_cnt)
+        {
+            returnApiError(req, "Column count mismatch");
+            return;
+        }
+        
+        for (coln = 0; coln < col_cnt; ++coln)
+        {
+            kl::JsonNode col = row[coln];
+            
+            if (col.isNull())
+            {
+                inserter->putNull(columns[coln].handle);
+                continue;
+            }
+            
+            switch (columns[coln].type)
+            {
+                default:
+                case tango::typeUndefined:     break;
+                case tango::typeInvalid:       break;
+                case tango::typeCharacter:     inserter->putWideString(columns[coln].handle, col.getString()); break; 
+                case tango::typeWideCharacter: inserter->putWideString(columns[coln].handle, col.getString()); break;
+                case tango::typeNumeric:       inserter->putDouble(columns[coln].handle, kl::nolocale_wtof(col.getString())); break;
+                case tango::typeDouble:        inserter->putDouble(columns[coln].handle, kl::nolocale_wtof(col.getString())); break;      break;
+                case tango::typeInteger:       inserter->putInteger(columns[coln].handle, kl::wtoi(col.getString())); break;
+                case tango::typeDate:          inserter->putDateTime(columns[coln].handle, parseDateTime(col.getString())); break;
+                case tango::typeDateTime:      inserter->putDateTime(columns[coln].handle, parseDateTime(col.getString())); break;
+                case tango::typeBoolean:       inserter->putBoolean(columns[coln].handle, col.getBoolean()); break;
+                case tango::typeBinary:        break;
+            }
+        }
+        
+        inserter->insertRow();
+    }
+    
+
+
+    inserter->finishInsert();
+
+    // return success to caller
+    kl::JsonNode response;
+    response["success"].setBoolean(true);
+    req.write(response.toString());
+
+
+
+
 /*
     tango::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
@@ -1444,53 +1613,6 @@ void Controller::apiRefresh(RequestInfo& req)
 
 
 
-
-static tango::datetime_t parseDateTime(const std::wstring& wstr)
-{
-    char buf[32];
-    int parts[6] = { 0,0,0,0,0,0 };
-    size_t len = wstr.length();
-    if (len > 30)
-        return 0;
-        
-    std::string str = kl::tostring(wstr);
-    strcpy(buf, str.c_str());
-    
-    size_t i = 0;
-    char* start = buf;
-    size_t partcnt = 0;
-    bool last = false;
-    for (i = 0; i <= sizeof(buf); ++i)
-    {
-        if (buf[i] == '/' || buf[i] == '-' || buf[i] == ':' || buf[i] == '.' || buf[i] == ' ' || buf[i] == 0)
-        {
-            if (buf[i] == 0)
-                last = true;
-            buf[i] = 0;
-            parts[partcnt++] = atoi(start);
-            start = buf+i+1;
-            if (partcnt == 6 || last)
-                break;
-        }
-    }
-
-    if (partcnt < 3)
-    {
-        return 0;
-    }
-     else if (partcnt == 6)
-    {
-        tango::DateTime dt(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5]);
-        return dt.getDateTime();
-    }
-     else if (partcnt >= 3)
-    {
-        tango::DateTime dt(parts[0], parts[1], parts[2]);
-        return dt.getDateTime();
-    }
-
-    return 0;
-}
 
 
     

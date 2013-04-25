@@ -68,6 +68,7 @@ private:
 
     std::wstring m_path;
     std::wstring m_handle;
+    std::wstring m_columns;
     bool m_inserting;
     std::wstring m_rows;
     int m_buffer_row_count;
