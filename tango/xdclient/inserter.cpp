@@ -11,108 +11,11 @@
 
 
 #include "xdclient.h"
-#include "set.h"
-#include "iterator.h"
+#include "inserter.h"
 #include "request.h"
 #include "kl/url.h"
 #include "kl/md5.h"
 #include "../xdcommon/dbfuncs.h"
-
-
-
-/*
-bool ClientSet::modifyStructure(tango::IStructure* struct_config, tango::IJob* job)
-{
-    if (!struct_config)
-        return false;
-
-    tango::IStructurePtr orig_structure = getStructure();
-    if (orig_structure.isNull())
-        return false;
-
-    m_database->clearDescribeTableCache(m_path);
-
-
-    tango::IStructurePtr structure = struct_config;
-    IStructureInternalPtr struct_internal = structure;
-    if (struct_internal.isNull())
-        return false;
-
-
-    kl::JsonNode json_actions;
-    json_actions.setArray();
-
-    std::vector<StructureAction>& actions = struct_internal->getStructureActions();
-    std::vector<StructureAction>::iterator it;
-    for (it = actions.begin(); it != actions.end(); ++it)
-    {
-        kl::JsonNode json_action = json_actions.appendElement();
-        
-        switch (it->m_action)
-        {
-            case StructureAction::actionCreate:  json_action[L"action"] = L"create"; break;
-            case StructureAction::actionModify:  json_action[L"action"] = L"modify"; break;
-            case StructureAction::actionDelete:  json_action[L"action"] = L"delete"; break;
-            case StructureAction::actionMove:    json_action[L"action"] = L"move";   break;
-            case StructureAction::actionInsert:  json_action[L"action"] = L"insert"; break;
-        }
-
-        if (it->m_action == StructureAction::actionModify ||
-            it->m_action == StructureAction::actionDelete ||
-            it->m_action == StructureAction::actionMove ||
-            it->m_action == StructureAction::actionInsert)
-        {
-            json_action[L"target_column"] = it->m_colname;
-        }
-
-        if (it->m_action == StructureAction::actionInsert)
-        {
-            json_action[L"position"] = it->m_pos;
-        }
-
-
-        if (it->m_params.isOk())
-        {
-            tango::IColumnInfoPtr orig_colinfo = orig_structure->getColumnInfo(it->m_colname);
-
-            if (it->m_params->getName().length() > 0)
-                json_action["params"]["name"] = it->m_params->getName();
-
-            if (it->m_params->getType() != -1)
-                json_action["params"]["type"] = tango::dbtypeToString(it->m_params->getType());
-
-            if (it->m_params->getWidth() != -1)
-                json_action["params"]["width"].setInteger(it->m_params->getWidth());
-
-            if (it->m_params->getScale() != -1)
-                json_action["params"]["scale"].setInteger(it->m_params->getScale());   
-
-            if (it->m_params->getExpression().length() > 0)
-                json_action["params"]["expression"] = it->m_params->getExpression();
-
-            if (orig_colinfo.isNull() || it->m_params->getCalculated() != orig_colinfo->getCalculated())
-                json_action["params"]["calculated"].setBoolean(it->m_params->getCalculated());
-        }
-    }
-
-
-
-    ServerCallParams params;
-    params.setParam(L"path", m_path);
-    params.setParam(L"actions", json_actions.toString());
-    
-    std::wstring sres = m_database->serverCall(L"", L"alter", &params);
-    kl::JsonNode response;
-    response.fromString(sres);
-
-    if (!response["success"].getBoolean())
-        return false;
-
-    return true;
-}
-*/
-
-
 
 
 ClientRowInserter::ClientRowInserter(ClientDatabase* database, const std::wstring& path)

@@ -10,7 +10,7 @@
 
 
 #include "xdclient.h"
-#include "set.h"
+#include "inserter.h"
 #include "iterator.h"
 #include "request.h"
 #include <kl/portable.h>

@@ -275,9 +275,9 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="inserter.cpp" />
     <ClCompile Include="iterator.cpp" />
     <ClCompile Include="request.cpp" />
-    <ClCompile Include="set.cpp" />
     <ClCompile Include="stream.cpp" />
     <ClCompile Include="xdclient.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -292,9 +292,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="database.h" />
+    <ClInclude Include="inserter.h" />
     <ClInclude Include="iterator.h" />
     <ClInclude Include="request.h" />
-    <ClInclude Include="set.h" />
     <ClInclude Include="stream.h" />
     <ClInclude Include="xdclient.h" />
   </ItemGroup>

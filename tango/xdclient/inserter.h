@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCLIENT_SET_H
-#define __XDCLIENT_SET_H
+#ifndef __XDCLIENT_INSERTER_H
+#define __XDCLIENT_INSERTER_H
 
 
 #include <xcm/xcm.h>
