@@ -69,7 +69,7 @@ public:
 
 private:
 
-    ServerSessionObject* getServerSessionObject(const std::wstring& name);
+    ServerSessionObject* getServerSessionObject(const std::wstring& name, const char* type_check = NULL);
     void addServerSessionObject(const std::wstring& name, ServerSessionObject* obj);
     void removeServerSessionObject(const std::wstring& name);
     void removeAllServerSessionObjects();

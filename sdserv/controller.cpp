@@ -109,9 +109,12 @@ bool Controller::onRequest(RequestInfo& req)
     return true;
 }
 
-ServerSessionObject* Controller::getServerSessionObject(const std::wstring& name)
+ServerSessionObject* Controller::getServerSessionObject(const std::wstring& name, const char* type_check)
 {
     XCM_AUTO_LOCK(m_session_object_mutex);
+
+    if (name.length() == 0)
+        return NULL;
 
     std::map< std::wstring, ServerSessionObject* >::iterator it, it_end;
     it_end = m_session_objects.end();
@@ -119,6 +122,12 @@ ServerSessionObject* Controller::getServerSessionObject(const std::wstring& name
     it = m_session_objects.find(name);
     if (it == it_end)
         return NULL;
+
+    if (type_check)
+    {
+        if (0 != strcmp(type_check, it->second->getType()))
+            return NULL;
+    }
 
     return it->second;
 }
@@ -630,7 +639,7 @@ void Controller::apiReadStream(RequestInfo& req)
     std::wstring handle = req.getValue(L"handle");
     std::wstring read_size = req.getValue(L"read_size");
     
-    SessionStream* so = (SessionStream*)getServerSessionObject(handle);
+    SessionStream* so = (SessionStream*)getServerSessionObject(handle, "SessionStream");
     if (!so)
     {
         returnApiError(req, "Invalid handle");
@@ -891,7 +900,7 @@ void Controller::apiDescribeTable(RequestInfo& req)
 
     if (handle.length() > 0)
     {
-        SessionQueryResult* so = (SessionQueryResult*)getServerSessionObject(handle);
+        SessionQueryResult* so = (SessionQueryResult*)getServerSessionObject(handle, "SessionQueryResult");
         if (so && so->iter.isOk())
         {
             structure = so->iter->getStructure();
@@ -1016,7 +1025,7 @@ void Controller::apiRead(RequestInfo& req)
      else
     {
         // add object to session
-        so = (SessionQueryResult*)getServerSessionObject(handle);
+        so = (SessionQueryResult*)getServerSessionObject(handle, "SessionQueryResult");
         if (!so)
         {
             returnApiError(req, "Invalid handle");
@@ -1271,7 +1280,7 @@ void Controller::apiClose(RequestInfo& req)
     {
         XCM_AUTO_LOCK(m_session_object_mutex);
 
-        so = (SessionQueryResult*)getServerSessionObject(handle);
+        so = (SessionQueryResult*)getServerSessionObject(handle, "SessionQueryResult");
         if (!so)
         {
             returnApiError(req, "Invalid handle");
@@ -1487,30 +1496,16 @@ static tango::datetime_t parseDateTime(const std::wstring& wstr)
     
 void Controller::apiStartBulkInsert(RequestInfo& req)
 {
-/*
-    SdservSession* session = getSdservSession(req);
-    if (!session)
-        return;
-    
     tango::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
         return;
     
-    
-    if (!req.getValueExists(L"path"))
-    {
-        returnApiError(req, "Missing path parameter");
-        return;
-    }
-    
-    if (!req.getValueExists(L"columns"))
-    {
-        returnApiError(req, "Missing columns parameter");
-        return;
-    }
-    
-    std::wstring path = req.getValue(L"path");
-    
+    std::wstring path = req.getURI();
+    std::wstring columns;
+
+    if (req.getValueExists(L"column"))
+        columns = req.getValue(L"columns");
+
     tango::IRowInserterPtr inserter = db->bulkInsert(path);
     tango::IStructurePtr structure = db->describeTable(path);
         
@@ -1520,16 +1515,19 @@ void Controller::apiStartBulkInsert(RequestInfo& req)
         return;
     }
     
-    if (!inserter->startInsert(req.getValue(L"columns")))
+    if (!inserter->startInsert(columns))
     {
         returnApiError(req, "Cannot not initialize inserter");
         return;
     }
     
 
+    // add object to session
     std::wstring handle = createHandle();
-    SessionRowInserter& ri = session->inserters[handle];
-    ri.inserter = inserter;
+    SessionRowInserter* so = new SessionRowInserter;
+    so->inserter = inserter;
+    addServerSessionObject(handle, so);
+
     
     std::vector<std::wstring> cols;
     kl::parseDelimitedList(req.getValue(L"columns"), cols, ',');
@@ -1553,7 +1551,7 @@ void Controller::apiStartBulkInsert(RequestInfo& req)
         
         ric.type = colinfo->getType();
         
-        ri.columns.push_back(ric);
+        so->columns.push_back(ric);
     }
 
     // return success to caller
@@ -1562,40 +1560,32 @@ void Controller::apiStartBulkInsert(RequestInfo& req)
     response["handle"] = handle;
     
     req.write(response.toString());
-*/
 }
 
 
 void Controller::apiBulkInsert(RequestInfo& req)
 {
-/*
-    SdservSession* session = getSdservSession(req);
-    if (!session)
-        return;
-    
     tango::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
         return;
     
-
     std::wstring handle = req.getValue(L"handle");
 
-    std::map<std::wstring, SessionRowInserter>::iterator it;
-    it = session->inserters.find(handle);
-    if (it == session->inserters.end())
+    SessionRowInserter* so = (SessionRowInserter*)getServerSessionObject(handle, "SessionRowInserter");
+    if (!so)
     {
         returnApiError(req, "Invalid handle");
         return;
     }
-    
-    SessionRowInserter& ri = it->second;
-    
+
+    tango::IRowInserter* inserter = so->inserter.p;
+
     std::wstring s_rows = req.getValue(L"rows");
     kl::JsonNode rows;
     rows.fromString(s_rows);
     
     size_t rown, row_cnt = rows.getChildCount();
-    size_t coln, col_cnt = ri.columns.size();
+    size_t coln, col_cnt = so->columns.size();
     for (rown = 0; rown < row_cnt; ++rown)
     {
         kl::JsonNode row = rows[rown];
@@ -1611,28 +1601,28 @@ void Controller::apiBulkInsert(RequestInfo& req)
             
             if (col.isNull())
             {
-                ri.inserter->putNull(ri.columns[coln].handle);
+                so->inserter->putNull(so->columns[coln].handle);
                 continue;
             }
             
-            switch (ri.columns[coln].type)
+            switch (so->columns[coln].type)
             {
                 default:
                 case tango::typeUndefined:     break;
                 case tango::typeInvalid:       break;
-                case tango::typeCharacter:     ri.inserter->putWideString(ri.columns[coln].handle, col.getString()); break; 
-                case tango::typeWideCharacter: ri.inserter->putWideString(ri.columns[coln].handle, col.getString()); break;
-                case tango::typeNumeric:       ri.inserter->putDouble(ri.columns[coln].handle, kl::nolocale_wtof(col.getString())); break;
-                case tango::typeDouble:        ri.inserter->putDouble(ri.columns[coln].handle, kl::nolocale_wtof(col.getString())); break;      break;
-                case tango::typeInteger:       ri.inserter->putInteger(ri.columns[coln].handle, kl::wtoi(col.getString())); break;
-                case tango::typeDate:          ri.inserter->putDateTime(ri.columns[coln].handle, parseDateTime(col.getString())); break;
-                case tango::typeDateTime:      ri.inserter->putDateTime(ri.columns[coln].handle, parseDateTime(col.getString())); break;
-                case tango::typeBoolean:       ri.inserter->putBoolean(ri.columns[coln].handle, col.getBoolean()); break;
+                case tango::typeCharacter:     inserter->putWideString(so->columns[coln].handle, col.getString()); break; 
+                case tango::typeWideCharacter: inserter->putWideString(so->columns[coln].handle, col.getString()); break;
+                case tango::typeNumeric:       inserter->putDouble(so->columns[coln].handle, kl::nolocale_wtof(col.getString())); break;
+                case tango::typeDouble:        inserter->putDouble(so->columns[coln].handle, kl::nolocale_wtof(col.getString())); break;      break;
+                case tango::typeInteger:       inserter->putInteger(so->columns[coln].handle, kl::wtoi(col.getString())); break;
+                case tango::typeDate:          inserter->putDateTime(so->columns[coln].handle, parseDateTime(col.getString())); break;
+                case tango::typeDateTime:      inserter->putDateTime(so->columns[coln].handle, parseDateTime(col.getString())); break;
+                case tango::typeBoolean:       inserter->putBoolean(so->columns[coln].handle, col.getBoolean()); break;
                 case tango::typeBinary:        break;
             }
         }
         
-        ri.inserter->insertRow();
+        inserter->insertRow();
     }
     
     // return success to caller
@@ -1641,38 +1631,26 @@ void Controller::apiBulkInsert(RequestInfo& req)
     response["handle"] = handle;
     
     req.write(response.toString());
-*/
 }
 
 void Controller::apiFinishBulkInsert(RequestInfo& req)
 {
-/*
-    SdservSession* session = getSdservSession(req);
-    if (!session)
-        return;
-    
-    tango::IDatabasePtr db = getSessionDatabase(req);
-    if (db.isNull())
-        return;
-    
-
     std::wstring handle = req.getValue(L"handle");
 
-    std::map<std::wstring, SessionRowInserter>::iterator it;
-    it = session->inserters.find(handle);
-    if (it == session->inserters.end())
+    SessionRowInserter* so = (SessionRowInserter*)getServerSessionObject(handle, "SessionRowInserter");
+    if (!so)
     {
         returnApiError(req, "Invalid handle");
         return;
     }
-            
-    it->second.inserter->finishInsert();
-    session->inserters.erase(it);
-    
+
+    so->inserter->finishInsert();
+    removeServerSessionObject(handle);
+    delete so;
+
     // return success to caller
     kl::JsonNode response;
     response["success"].setBoolean(true);
 
     req.write(response.toString());
-*/
 }
