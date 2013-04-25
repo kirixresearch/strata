@@ -102,10 +102,7 @@ private:
     void apiClone(RequestInfo& req);
     void apiClose(RequestInfo& req);
     void apiAlter(RequestInfo& req);
-    void apiRefresh(RequestInfo& req);
-    void apiStartBulkInsert(RequestInfo& req);
-    void apiFinishBulkInsert(RequestInfo& req);
-    void apiBulkInsert(RequestInfo& req);
+    void apiLoad(RequestInfo& req);
 
 private:
 

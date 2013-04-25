@@ -97,10 +97,7 @@ bool Controller::onRequest(RequestInfo& req)
     else if (apimethod == L"clone")            apiClone(req);
     else if (apimethod == L"close")            apiClose(req);
     else if (apimethod == L"alter")            apiAlter(req);
-    else if (apimethod == L"refresh")          apiRefresh(req);
-    else if (apimethod == L"startbulkinsert")  apiStartBulkInsert(req);
-    else if (apimethod == L"finishbulkinsert") apiFinishBulkInsert(req);
-    else if (apimethod == L"bulkinsert")       apiBulkInsert(req);
+    else if (apimethod == L"load")             apiLoad(req);
     else return false;
 
     end = clock();
@@ -375,34 +372,6 @@ void Controller::apiFileInfo(RequestInfo& req)
 }
 
 
-void Controller::apiCreateStream(RequestInfo& req)
-{
-    tango::IDatabasePtr db = getSessionDatabase(req);
-    if (db.isNull())
-        return;
-    
-    if (!req.getValueExists(L"path"))
-    {
-        returnApiError(req, "Missing path parameter");
-        return;
-    }
-    
-    std::wstring path = req.getValue(L"path");
-    std::wstring mime_type = req.getValue(L"mime_type");
-    
-    if (!db->createStream(path, mime_type))
-    {
-        returnApiError(req, "Cannot create object");
-        return;
-    }
-    
-    // return success to caller
-    kl::JsonNode response;
-    response["success"].setBoolean(true);
-
-    req.write(response.toString());
-}
-
 void Controller::apiCreateTable(RequestInfo& req)
 {
     tango::IDatabasePtr db = getSessionDatabase(req);
@@ -588,6 +557,36 @@ void Controller::apiCopyData(RequestInfo& req)
 }
 
 
+
+void Controller::apiCreateStream(RequestInfo& req)
+{
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+        return;
+    
+    if (!req.getValueExists(L"path"))
+    {
+        returnApiError(req, "Missing path parameter");
+        return;
+    }
+    
+    std::wstring path = req.getValue(L"path");
+    std::wstring mime_type = req.getValue(L"mime_type");
+    
+    if (!db->createStream(path, mime_type))
+    {
+        returnApiError(req, "Cannot create object");
+        return;
+    }
+    
+    // return success to caller
+    kl::JsonNode response;
+    response["success"].setBoolean(true);
+
+    req.write(response.toString());
+}
+
+
 void Controller::apiOpenStream(RequestInfo& req)
 {
     tango::IDatabasePtr db = getSessionDatabase(req);
@@ -687,13 +686,8 @@ void Controller::apiReadStream(RequestInfo& req)
 
 void Controller::apiWriteStream(RequestInfo& req)
 {
-/*
     tango::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
-        return;
-    
-    SdservSession* session = getSdservSession(req);
-    if (!session)
         return;
     
     if (!req.getValueExists(L"handle"))
@@ -704,28 +698,33 @@ void Controller::apiWriteStream(RequestInfo& req)
    
     if (!req.getValueExists(L"write_size"))
     {
-        returnApiError(req, "Missing read_size parameter");
+        returnApiError(req, "Missing write_size parameter");
         return;
     }
     
     std::wstring handle = req.getValue(L"handle");
     std::wstring s_write_size = req.getValue(L"write_size");
-    std::wstring data = req.getValue(L"data");
-    
+    std::wstring format = req.getValue(L"format");
     int write_size = kl::wtoi(s_write_size);
-    
-    std::map<std::wstring, tango::IStreamPtr>::iterator it;
-    it = session->streams.find(handle);
-    if (it == session->streams.end())
+
+    if (write_size < 0)
+    {
+        returnApiError(req, "Invalid write_size parameter");
+        return;
+    }
+
+    SessionStream* so = (SessionStream*)getServerSessionObject(handle, "SessionStream");
+    if (!so)
     {
         returnApiError(req, "Invalid handle");
         return;
     }
-    
-    tango::IStreamPtr stream = it->second;
+
+    tango::IStreamPtr stream = so->stream;
 
 
-    std::string content = kl::tostring(data);
+
+    std::string content = kl::tostring(req.getValue(L"data"));
     char* buf = new char[content.length()+1];
     kl::base64_decodestate state;
     kl::base64_init_decodestate(&state);
@@ -751,9 +750,7 @@ void Controller::apiWriteStream(RequestInfo& req)
     response["success"].setBoolean(true);
     response["written"] = (int)written;
     
-
     req.write(response.toString());
-    */
 }
 
 
@@ -1572,207 +1569,6 @@ void Controller::apiAlter(RequestInfo& req)
 
 
 
-
-void Controller::apiRefresh(RequestInfo& req)
+void Controller::apiLoad(RequestInfo& req)
 {
-/*
-    tango::IDatabasePtr db = getSessionDatabase(req);
-    if (db.isNull())
-        return;
-    
-    SdservSession* session = getSdservSession(req);
-    if (!session)
-        return;
-
-    std::wstring handle = req.getValue(L"handle");
-    if (handle.length() == 0)
-    {
-        returnApiError(req, "Missing handle parameter");
-        return;
-    }
-    
-
-    std::map<std::wstring, SessionQueryResult>::iterator it;
-    it = session->iters.find(handle);
-    if (it == session->iters.end())
-    {
-        returnApiError(req, "Invalid handle parameter");
-        return;
-    }
-
-    it->second.iter->refreshStructure();
-    it->second.columns.clear();
-    
-    // return success to caller
-    kl::JsonNode response;
-    response["success"].setBoolean(true);
-
-    req.write(response.toString());
-*/
-}
-
-
-
-
-
-    
-void Controller::apiStartBulkInsert(RequestInfo& req)
-{
-    tango::IDatabasePtr db = getSessionDatabase(req);
-    if (db.isNull())
-        return;
-    
-    std::wstring path = req.getURI();
-    std::wstring columns;
-
-    if (req.getValueExists(L"column"))
-        columns = req.getValue(L"columns");
-
-    tango::IRowInserterPtr inserter = db->bulkInsert(path);
-    tango::IStructurePtr structure = db->describeTable(path);
-        
-    if (inserter.isNull() || structure.isNull())
-    {
-        returnApiError(req, "Cannot open table for writing");
-        return;
-    }
-    
-    if (!inserter->startInsert(columns))
-    {
-        returnApiError(req, "Cannot not initialize inserter");
-        return;
-    }
-    
-
-    // add object to session
-    std::wstring handle = createHandle();
-    SessionRowInserter* so = new SessionRowInserter;
-    so->inserter = inserter;
-    addServerSessionObject(handle, so);
-
-    
-    std::vector<std::wstring> cols;
-    kl::parseDelimitedList(req.getValue(L"columns"), cols, ',');
-    std::vector<std::wstring>::iterator it;
-    for (it = cols.begin(); it != cols.end(); ++it)
-    {
-        SessionRowInserterColumn ric;
-        ric.handle = inserter->getHandle(*it);
-        if (!ric.handle)
-        {
-            returnApiError(req, "Cannot not initialize inserter");
-            return;
-        }
-        
-        tango::IColumnInfoPtr colinfo = structure->getColumnInfo(*it);
-        if (colinfo.isNull())
-        {
-            returnApiError(req, "Cannot not initialize inserter");
-            return;
-        }
-        
-        ric.type = colinfo->getType();
-        
-        so->columns.push_back(ric);
-    }
-
-    // return success to caller
-    kl::JsonNode response;
-    response["success"].setBoolean(true);
-    response["handle"] = handle;
-    
-    req.write(response.toString());
-}
-
-
-void Controller::apiBulkInsert(RequestInfo& req)
-{
-    tango::IDatabasePtr db = getSessionDatabase(req);
-    if (db.isNull())
-        return;
-    
-    std::wstring handle = req.getValue(L"handle");
-
-    SessionRowInserter* so = (SessionRowInserter*)getServerSessionObject(handle, "SessionRowInserter");
-    if (!so)
-    {
-        returnApiError(req, "Invalid handle");
-        return;
-    }
-
-    tango::IRowInserter* inserter = so->inserter.p;
-
-    std::wstring s_rows = req.getValue(L"rows");
-    kl::JsonNode rows;
-    rows.fromString(s_rows);
-    
-    size_t rown, row_cnt = rows.getChildCount();
-    size_t coln, col_cnt = so->columns.size();
-    for (rown = 0; rown < row_cnt; ++rown)
-    {
-        kl::JsonNode row = rows[rown];
-        if (row.getChildCount() != col_cnt)
-        {
-            returnApiError(req, "Column count mismatch");
-            return;
-        }
-        
-        for (coln = 0; coln < col_cnt; ++coln)
-        {
-            kl::JsonNode col = row[coln];
-            
-            if (col.isNull())
-            {
-                so->inserter->putNull(so->columns[coln].handle);
-                continue;
-            }
-            
-            switch (so->columns[coln].type)
-            {
-                default:
-                case tango::typeUndefined:     break;
-                case tango::typeInvalid:       break;
-                case tango::typeCharacter:     inserter->putWideString(so->columns[coln].handle, col.getString()); break; 
-                case tango::typeWideCharacter: inserter->putWideString(so->columns[coln].handle, col.getString()); break;
-                case tango::typeNumeric:       inserter->putDouble(so->columns[coln].handle, kl::nolocale_wtof(col.getString())); break;
-                case tango::typeDouble:        inserter->putDouble(so->columns[coln].handle, kl::nolocale_wtof(col.getString())); break;      break;
-                case tango::typeInteger:       inserter->putInteger(so->columns[coln].handle, kl::wtoi(col.getString())); break;
-                case tango::typeDate:          inserter->putDateTime(so->columns[coln].handle, parseDateTime(col.getString())); break;
-                case tango::typeDateTime:      inserter->putDateTime(so->columns[coln].handle, parseDateTime(col.getString())); break;
-                case tango::typeBoolean:       inserter->putBoolean(so->columns[coln].handle, col.getBoolean()); break;
-                case tango::typeBinary:        break;
-            }
-        }
-        
-        inserter->insertRow();
-    }
-    
-    // return success to caller
-    kl::JsonNode response;
-    response["success"].setBoolean(true);
-    response["handle"] = handle;
-    
-    req.write(response.toString());
-}
-
-void Controller::apiFinishBulkInsert(RequestInfo& req)
-{
-    std::wstring handle = req.getValue(L"handle");
-
-    SessionRowInserter* so = (SessionRowInserter*)getServerSessionObject(handle, "SessionRowInserter");
-    if (!so)
-    {
-        returnApiError(req, "Invalid handle");
-        return;
-    }
-
-    so->inserter->finishInsert();
-    removeServerSessionObject(handle);
-    delete so;
-
-    // return success to caller
-    kl::JsonNode response;
-    response["success"].setBoolean(true);
-
-    req.write(response.toString());
 }
