@@ -173,7 +173,6 @@ RequestInfo::RequestInfo(struct mg_connection* conn, const struct mg_request_inf
     m_header_sent = false;
     m_accept_compressed = false;
     m_content_length = -1;
-    parse();
 }
 
 RequestInfo::~RequestInfo()
@@ -182,7 +181,7 @@ RequestInfo::~RequestInfo()
 }
 
 
-void RequestInfo::parse()
+void RequestInfo::read()
 {    
     const char* boundary = NULL;
     size_t boundary_length = 0;
@@ -247,6 +246,14 @@ void RequestInfo::parse()
 
     if (*m_req->request_method == 'P')
     {
+        if (boundary)
+        {
+            readMultipart(boundary, boundary_length);
+            return;
+        }
+
+
+
         char buf[4096];
         int buf_len;
 
@@ -262,28 +269,42 @@ void RequestInfo::parse()
         char* post_data = (char*)m_post_data_buf.getData();
         size_t post_data_len = m_post_data_buf.getDataSize();
         
-        if (boundary)
-        {
-            const char* p = post_data;
-            while (parsePart(p, boundary, boundary_length, post_data + post_data_len, &p));
-        }
-         else
-        {
-            // post method -- regular
-            std::vector<request_member> parts;
-            std::vector<request_member>::iterator it;
-            std::string post_data(post_data, post_data_len);
-            extractPairs(kl::towstring(post_data), parts);
-            for (it = parts.begin(); it != parts.end(); ++it)
-            {
-                RequestPostInfo& info = m_post[it->key];
-                info.data = NULL;
-                info.str = it->value;
-                info.length = info.str.length();
-            }
-        }
 
+        // post method -- regular
+        std::vector<request_member> parts;
+        std::vector<request_member>::iterator it;
+        std::string s_post_data(post_data, post_data_len);
+        extractPairs(kl::towstring(s_post_data), parts);
+        for (it = parts.begin(); it != parts.end(); ++it)
+        {
+            RequestPostInfo& info = m_post[it->key];
+            info.data = NULL;
+            info.str = it->value;
+            info.length = info.str.length();
+        }
     }
+}
+
+
+void RequestInfo::readMultipart(const char* boundary, size_t boundary_length)
+{
+    char buf[4096];
+    int buf_len;
+
+    while (true)
+    {
+        buf_len = mg_read(m_conn, buf, 4096);
+        m_post_data_buf.append((unsigned char*)buf, buf_len);
+            
+        if (buf_len != 4096)
+            break;
+    }
+
+    char* post_data = (char*)m_post_data_buf.getData();
+    size_t post_data_len = m_post_data_buf.getDataSize();
+
+    const char* p = post_data;
+    while (parsePart(p, boundary, boundary_length, post_data + post_data_len, &p));
 }
 
 

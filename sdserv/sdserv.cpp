@@ -170,7 +170,9 @@ void* Server::callback(enum mg_event evt,
     if (evt == MG_NEW_REQUEST)
     {
         RequestInfo req(conn, request_info);
-    
+
+        req.read();
+
         if (!c.onRequest(req))
         {
             req.setStatusCode(404);

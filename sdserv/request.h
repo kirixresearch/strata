@@ -68,7 +68,7 @@ public:
                 const struct mg_request_info* ri);
     virtual ~RequestInfo();
 
-    void parse();
+    void read();
     
     std::wstring getURI();
     std::wstring getQuery();
@@ -108,6 +108,7 @@ public:
 
 protected:
 
+    void readMultipart(const char* boundary, size_t boundary_length);
     bool parsePart(const char* p,
                    const char* boundary,
                    size_t boundary_size,
