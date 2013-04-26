@@ -39,6 +39,8 @@ public:
     unsigned char* getData();
     size_t getDataSize() const;
     
+    unsigned char* takeOwnership();
+
 private:
 
     unsigned char* m_buf;

@@ -135,6 +135,16 @@ size_t membuf::getDataSize() const
     return m_size;
 }
 
+unsigned char* membuf::takeOwnership()
+{
+    unsigned char* buf = m_buf;
+
+    m_size = 0;
+    m_alloc_size = 0;
+    m_buf = NULL;
+
+    return buf;
+}
 
     
 };
