@@ -19,7 +19,6 @@
 #include <kl/utf8.h>
 
 
-// -- HttpRequestThread class --
 
 class HttpRequestThread : public kl::Thread
 {
@@ -76,9 +75,9 @@ size_t HttpRequest::http_header_writer(void* ptr, size_t size, size_t nmemb, voi
         str->append((const char*)ptr, total_size);
     }
 
-    // -- return the number of bytes actually taken care of; if it differs from
-    //    the amount passed to the function, it will signal an error to the library,
-    //    abort the transfer and return CURLE_WRITE_ERROR --
+    // return the number of bytes actually taken care of; if it differs from
+    // the amount passed to the function, it will signal an error to the library,
+    // abort the transfer and return CURLE_WRITE_ERROR
     return total_size;
 }
 
@@ -127,7 +126,7 @@ HttpRequest::HttpRequest()
     
     m_curl = curlCreateHandle();
     
-    // -- initialize header and form field pointers --
+    // initialize header and form field pointers
     m_headers = NULL;
     m_formfields = NULL;
     m_formfieldslast = NULL;
@@ -140,31 +139,31 @@ HttpRequest::HttpRequest()
     m_proxy = "";
     m_proxy_port = 0;
     
-    // -- see http://curl.haxx.se/lxr/source/docs/examples/https.c
-    //  these are necessary unless we want to include a certificate bundle --
+    // see http://curl.haxx.se/lxr/source/docs/examples/https.c
+    // these are necessary unless we want to include a certificate bundle
     curl_result = curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, FALSE);
     curl_result = curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYHOST, 0);
     
-    // -- follow redirects --
+    // follow redirects
     curl_result = curl_easy_setopt(m_curl, CURLOPT_FOLLOWLOCATION, TRUE);
     
-    // -- when redirecting, set the referer --
+    // when redirecting, set the referer
     curl_result = curl_easy_setopt(m_curl, CURLOPT_AUTOREFERER, TRUE);
     
-    // -- set the maximimum number of redirects to infinity --
+    // set the maximimum number of redirects to infinity
     curl_result = curl_easy_setopt(m_curl, CURLOPT_MAXREDIRS, -1);
     
-    // -- set the default proxy type --
+    // set the default proxy type
     //curl_result = curl_easy_setopt(m_curl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
     
-    // -- set the default authentication methods --
+    // set the default authentication methods
     curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
     curl_result = curl_easy_setopt(m_curl, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
     
-    // -- allow cookies --
+    // allow cookies
     curl_result = curl_easy_setopt(m_curl, CURLOPT_COOKIEFILE, "");
     
-    // -- include headers in body output --
+    // include headers in body output
     //curl_result = curl_easy_setopt(m_curl, CURLOPT_HEADER, TRUE);
     
     curl_version_info_data* a = curl_version_info(CURLVERSION_NOW);
@@ -172,7 +171,7 @@ HttpRequest::HttpRequest()
 
 HttpRequest::~HttpRequest()
 {
-    // -- clean up headers and form fields --
+    // clean up headers and form fields
     clearHeaders();
     clearFormFields();
 
@@ -645,12 +644,14 @@ void HttpRequest::setRequestHeader(kscript::ExprEnv* env, kscript::Value* retval
     if (env->getParamCount() < 1)
         return;
 
-    // -- get the input string --
+    // get the input string
+
     std::string header = kl::tostring(env->getParam(0)->getString());
 
-    // -- set the header; note: curl_slist_append creates a copy 
-    //    of the contents of header, and will clean up the copy in 
-    //    curl_slist_free_all(), which is called in clearHeaders() --
+    // set the header; note: curl_slist_append creates a copy 
+    // of the contents of header, and will clean up the copy in 
+    // curl_slist_free_all(), which is called in clearHeaders()
+
     m_headers = curl_slist_append(m_headers, header.c_str());
     curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTPHEADER, m_headers);
 }
@@ -691,7 +692,7 @@ void HttpRequest::setPostValue(kscript::ExprEnv* env, kscript::Value* retval)
 {
     std::wstring field, value;
     
-    // -- get the input --
+    // get the input
     if (env->getParamCount() >= 1)
         field = env->getParam(0)->getString();
     if (env->getParamCount() >= 2)
@@ -758,7 +759,7 @@ void HttpRequest::setPostFile(kscript::ExprEnv* env, kscript::Value* retval)
 {
     std::string field, fname;
     
-    // -- get the input --
+    // get the input
     if (env->getParamCount() >= 1)
         field = kl::tostring(env->getParam(0)->getString());
     if (env->getParamCount() >= 2)
@@ -806,7 +807,7 @@ void HttpRequest::setPostData(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() < 1)
         return;
 
-    // -- set the referer to a particular value --
+    // set the referer to a particular value
     std::wstring str = env->getParam(0)->getString();
     if (m_auto_encode)
     {
@@ -850,7 +851,7 @@ void HttpRequest::setReferrer(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() < 1)
         return;
 
-    // -- set the referer to a particular value --
+    // set the referer to a particular value
     m_referrer = kl::tostring(env->getParam(0)->getString());
     curl_result = curl_easy_setopt(m_curl, CURLOPT_REFERER, m_referrer.c_str());
 }
@@ -871,13 +872,13 @@ void HttpRequest::setTimeout(kscript::ExprEnv* env, kscript::Value* retval)
 {
     CURLcode curl_result;
 
-    // -- set the referer to a particular value --
+    // set the referer to a particular value
     int timeout = 0;
     kscript::Value* value = env->getParam(0);
 
-    // -- set the timeout value if the value is a finite, positive
-    //    number; if it's anything besides this, the timeout value
-    //    will be zero, which will disable the timeout --
+    // set the timeout value if the value is a finite, positive
+    // number; if it's anything besides this, the timeout value
+    // will be zero, which will disable the timeout
     if (!value->isAnyInfinity() && 
         !value->isNaN() && 
         !value->isUndefined())
@@ -907,7 +908,7 @@ void HttpRequest::setUserAgent(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() < 1)
         return;
 
-    // -- set the user agent to a particular value --
+    // set the user agent to a particular value
     m_user_agent = kl::tostring(env->getParam(0)->getString());
     curl_result = curl_easy_setopt(m_curl, CURLOPT_USERAGENT, m_user_agent.c_str());
 }
@@ -1267,7 +1268,7 @@ void HttpRequest::doSend()
         return;
 
 
-    // -- set the result functions --
+    // set the result functions
     curl_result = curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, (void*)this);
     if (curl_result != CURLE_OK)
         return;
@@ -1276,7 +1277,7 @@ void HttpRequest::doSend()
     if (curl_result != CURLE_OK)
         return;
         
-    // -- result header --
+    // result header
     std::string response_header;
     curl_result = curl_easy_setopt(m_curl, CURLOPT_WRITEHEADER, &response_header);
     if (curl_result != CURLE_OK)
@@ -1286,14 +1287,14 @@ void HttpRequest::doSend()
     if (curl_result != CURLE_OK)
         return;
 
-    // -- get the full body --    
+    //  get the full body 
     curl_result = curl_easy_setopt(m_curl, CURLOPT_NOBODY, FALSE);
     if (curl_result != CURLE_OK)
         return;
 
     if (m_method == methodGet)
     { 
-        // -- set the GET option --    
+        // set the GET option
         curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTPGET, TRUE);
         if (curl_result != CURLE_OK)
             return;
@@ -1302,14 +1303,14 @@ void HttpRequest::doSend()
     {
         if (m_post_multipart)
         {
-            // -- set the post multipart parameters --
+            // set the post multipart parameters
             curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTPPOST, m_formfields);
             if (curl_result != CURLE_OK)
                 return;
         }
          else
         {
-            // -- set the POST option --
+            // set the POST option
             curl_result = curl_easy_setopt(m_curl, CURLOPT_POST, TRUE);
             if (curl_result != CURLE_OK)
                 return;
@@ -1321,12 +1322,12 @@ void HttpRequest::doSend()
     }
      else if (m_method == methodHead)
     {
-        // -- set the GET option --
+        // set the GET option
         curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTPGET, TRUE);
         if (curl_result != CURLE_OK)
             return;
 
-        // -- only get the header -- 
+        // only get the header
         curl_result = curl_easy_setopt(m_curl, CURLOPT_NOBODY, TRUE);
         if (curl_result != CURLE_OK)
             return;
@@ -1342,7 +1343,7 @@ void HttpRequest::doSend()
         return;
     }
     
-    // -- retrieve the data from the URL --
+    // retrieve the data from the URL
     curl_result = curl_easy_perform(m_curl);
     if (curl_result != CURLE_OK)
         return;
@@ -1363,7 +1364,7 @@ void HttpRequest::doGet(kscript::ExprEnv* env, kscript::Value* retval)
     freeResponsePieces();
 
 
-    // -- see if we have an input string; if we do, set the location --
+    // see if we have an input string; if we do, set the location
     if (env->getParamCount() > 0)
         m_location = kl::tostring(env->getParam(0)->getString());
         
@@ -1372,7 +1373,7 @@ void HttpRequest::doGet(kscript::ExprEnv* env, kscript::Value* retval)
         return;
 
 
-    // -- set the result functions --
+    // set the result functions
     curl_result = curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, (void*)this);
     if (curl_result != CURLE_OK)
         return;
@@ -1381,7 +1382,7 @@ void HttpRequest::doGet(kscript::ExprEnv* env, kscript::Value* retval)
     if (curl_result != CURLE_OK)
         return;
         
-    // -- result header --
+    // result header
     std::string response_header;
     curl_result = curl_easy_setopt(m_curl, CURLOPT_WRITEHEADER, &response_header);
     if (curl_result != CURLE_OK)
@@ -1391,17 +1392,17 @@ void HttpRequest::doGet(kscript::ExprEnv* env, kscript::Value* retval)
     if (curl_result != CURLE_OK)
         return;
 
-    // -- set the GET option --    
+    // set the GET option 
     curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTPGET, TRUE);
     if (curl_result != CURLE_OK)
         return;
 
-    // -- get the full body --    
+    // get the full body
     curl_result = curl_easy_setopt(m_curl, CURLOPT_NOBODY, FALSE);
     if (curl_result != CURLE_OK)
         return;
     
-    // -- retrieve the data from the URL --
+    // retrieve the data from the URL
     curl_result = curl_easy_perform(m_curl);
     if (curl_result != CURLE_OK)
         return;
@@ -1427,7 +1428,7 @@ void HttpRequest::doHead(kscript::ExprEnv* env, kscript::Value* retval)
     // free any previous request
     freeResponsePieces();
 
-    // -- see if we have an input string; if we do, set the location --
+    // see if we have an input string; if we do, set the location
     if (env->getParamCount() > 0)
         m_location = kl::tostring(env->getParam(0)->getString());
         
@@ -1435,10 +1436,10 @@ void HttpRequest::doHead(kscript::ExprEnv* env, kscript::Value* retval)
     if (curl_result != CURLE_OK)
         return;
 
-    // -- result string --
+    // result string
     std::string result_string;
 
-    // -- set the result functions --
+    // set the result functions
     curl_result = curl_easy_setopt(m_curl, CURLOPT_WRITEHEADER, (void*)this);
     if (curl_result != CURLE_OK)
         return;
@@ -1447,35 +1448,34 @@ void HttpRequest::doHead(kscript::ExprEnv* env, kscript::Value* retval)
     if (curl_result != CURLE_OK)
         return;
         
-    // -- set the GET option --
+    // set the GET option
     curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTPGET, TRUE);
     if (curl_result != CURLE_OK)
         return;
 
-    // -- only get the header -- 
+    // only get the header
     curl_result = curl_easy_setopt(m_curl, CURLOPT_NOBODY, TRUE);
     if (curl_result != CURLE_OK)
         return;
     
-    // -- retrieve the data from the URL --
+    // retrieve the data from the URL
     curl_result = curl_easy_perform(m_curl);
     if (curl_result != CURLE_OK)
         return;
 
-    // -- return the result string --
+    // return the result string
     m_response_mutex.lock();
     std::wstring response = getResponseString();
     m_response_header = kl::tostring(response);
     retval->setString(response);
     m_response_mutex.unlock();
-
 }
 
 void HttpRequest::doPost(kscript::ExprEnv* env, kscript::Value* retval)
 {
     CURLcode curl_result;
 
-    // -- input and result string --
+    // input and result string
     std::string result_string;
 
     // free any previous request
@@ -1483,14 +1483,14 @@ void HttpRequest::doPost(kscript::ExprEnv* env, kscript::Value* retval)
 
     if (m_post_multipart)
     {
-        // -- set the post multipart parameters --
+        // set the post multipart parameters
         curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTPPOST, m_formfields);
         if (curl_result != CURLE_OK)
             return;
     }
      else
     {
-        // -- set the POST option --
+        // set the POST option
         curl_result = curl_easy_setopt(m_curl, CURLOPT_POST, TRUE);
         if (curl_result != CURLE_OK)
             return;
@@ -1500,12 +1500,12 @@ void HttpRequest::doPost(kscript::ExprEnv* env, kscript::Value* retval)
             return;
     }
 
-    // -- set the curl URL options to read the contents of the URL --
+    // set the curl URL options to read the contents of the URL
     if (env->getParamCount() > 0)
         m_location = kl::tostring(env->getParam(0)->getString());
     curl_result = curl_easy_setopt(m_curl, CURLOPT_URL, m_location.c_str());
 
-    // -- set the response header parameters --
+    // set the response header parameters
     std::string response_header;
     curl_result = curl_easy_setopt(m_curl, CURLOPT_WRITEHEADER, (void*)&m_response_header);
     if (curl_result != CURLE_OK)
@@ -1515,7 +1515,7 @@ void HttpRequest::doPost(kscript::ExprEnv* env, kscript::Value* retval)
     if (curl_result != CURLE_OK)
         return;
 
-    // -- set the response parameters --
+    // set the response parameters
     curl_result = curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, (void*)this);
     if (curl_result != CURLE_OK)
         return;
@@ -1524,7 +1524,7 @@ void HttpRequest::doPost(kscript::ExprEnv* env, kscript::Value* retval)
     if (curl_result != CURLE_OK)
         return;
 
-    // -- retrieve the data from the URL --
+    // retrieve the data from the URL
     curl_result = curl_easy_perform(m_curl);
     if (curl_result != CURLE_OK)
         return;
@@ -1560,14 +1560,14 @@ void HttpRequest::clearHeaders()
 {
     CURLcode curl_result;
 
-    // -- free the headers --
+    // free the headers
     if (m_headers != NULL)
     {
         curl_slist_free_all(m_headers);
         m_headers = NULL;
     }
 
-    // -- reset the headers --
+    // reset the headers
     curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTPHEADER, NULL);
 }
 
@@ -1575,7 +1575,7 @@ void HttpRequest::clearFormFields()
 {
     CURLcode curl_result;
 
-    // -- free the form fields --
+    // free the form fields
     if (m_formfields != NULL)
     {
         curl_formfree(m_formfields);
@@ -1583,7 +1583,7 @@ void HttpRequest::clearFormFields()
         m_formfieldslast = NULL;
     }
 
-    // -- reset the form fields --
+    // reset the form fields
     curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTPPOST, NULL);
     curl_result = curl_easy_setopt(m_curl, CURLOPT_POST, FALSE);
     
