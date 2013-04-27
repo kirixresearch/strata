@@ -21,15 +21,16 @@ struct mg_connection;
 class RequestPostInfo
 {
 public:
-    RequestPostInfo();
-    bool saveToFile(const std::wstring& path);
-    
-public:
-    const char* data;
-    size_t length;
-    std::wstring str;
+    std::wstring value;
 };
 
+
+class RequestFileInfo
+{
+public:
+    std::wstring post_filename;
+    std::wstring temp_filename;
+};
 
 class ResponseCookie
 {
@@ -79,12 +80,6 @@ public:
     bool getValueExists(const std::wstring& key) const;
     bool acceptCompressed();
     
-    std::map<std::wstring, std::wstring>& getCookies() { return m_cookies; }
-    std::map<std::wstring, std::wstring>& getGetValues() { return m_get; }
-    std::map<std::wstring, RequestPostInfo>& getPostValues() { return m_post; }
-    std::map<std::wstring, RequestPostInfo>& getFileValues() { return m_files; }
-    
-    //void writeResultCode(int code, const char* mime_type = NULL);
     void setStatusCode(int code, const char* msg = NULL);
     void setContentType(const char* content_type);
     void setContentLength(int length = -1);
@@ -109,12 +104,6 @@ public:
 protected:
 
     void readMultipart(const char* boundary, size_t boundary_length);
-    bool parsePart(const char* p,
-                   const char* boundary,
-                   size_t boundary_size,
-                   const char* endp,
-                   const char** next);
-
     void checkHeaderSent();
 
 private:
@@ -123,7 +112,7 @@ private:
     const struct mg_request_info* m_req;
     std::map<std::wstring, std::wstring> m_get;
     std::map<std::wstring, RequestPostInfo> m_post;
-    std::map<std::wstring, RequestPostInfo> m_files;
+    std::map<std::wstring, RequestFileInfo> m_files;
     std::map<std::wstring, std::wstring> m_cookies;
 
     std::vector<std::string> m_headers;

@@ -29,6 +29,26 @@ struct request_member
 };
 
 
+
+inline void* quickMemmem(const void* haystack, size_t haystack_len, 
+                         const void* needle, size_t needle_len) 
+{ 
+    const char* last = ((const char*)haystack + haystack_len - needle_len);
+    const char* p;
+ 
+    if (haystack_len < needle_len)
+        return NULL;
+ 
+    for (p = (const char*)haystack; p <= last; ++p)
+    {
+        if (0 == memcmp(p, needle, needle_len))
+            return (void*)p;
+    }
+
+    return NULL;
+} 
+
+
 static std::string compress_str(const std::string& str)
 {return "";/*
     unsigned long input_size = str.size();
@@ -110,56 +130,6 @@ static void extractPairs(const std::wstring& str,
     }
 }
 
-static std::wstring getQueryId(RequestInfo& ri)
-{
-    std::wstring result;
-    
-    // add the uri
-    std::wstring uri = ri.getURI();
-    result.append(uri);
-    
-    // add on the get parameters without the limit parameters
-    std::map< std::wstring, std::wstring > get_values = ri.getGetValues();
-    std::map< std::wstring, std::wstring >::iterator it, it_end;
-    it_end = get_values.end();
-    
-    bool first = true;
-    for (it = get_values.begin(); it != it_end; ++it)
-    {
-        if (first)
-        {
-            result.append(L"?");
-            first = false;
-        }
-        else
-        {
-            result.append(L"&");
-        }
-        
-        if (it->first == L"start")
-            continue;
-            
-        if (it->first == L"limit")
-            continue;
-        
-        result.append(it->first);
-        result.append(L"=");
-        result.append(it->second);
-    }
-    
-    return kl::md5str(result);
-}
-
-
-
-RequestPostInfo::RequestPostInfo()
-{
-}
-
-bool RequestPostInfo::saveToFile(const std::wstring& path)
-{
-    return false;
-}
 
 
 // -- RequestInfo class implementation --
@@ -177,13 +147,18 @@ RequestInfo::RequestInfo(struct mg_connection* conn, const struct mg_request_inf
 
 RequestInfo::~RequestInfo()
 {
+    // remove temporary post files
+    std::map<std::wstring, RequestFileInfo>::iterator f_it;
+    for (f_it = m_files.begin(); f_it != m_files.end(); ++f_it)
+        xf_remove(f_it->second.temp_filename);
+
     checkHeaderSent();
 }
 
 
 void RequestInfo::read()
 {    
-    const char* boundary = NULL;
+    char boundary[128];   // boundaries actually have a max length of 70, we'll allow 120
     size_t boundary_length = 0;
     size_t content_length = 0;
         
@@ -192,14 +167,21 @@ void RequestInfo::read()
     {
         if (0 == strncasecmp("Content-Type", m_req->http_headers[h].name, 12))
         {
-            boundary = strstr(m_req->http_headers[h].value, "boundary=");
-            if (!boundary)
+            const char* bptr = strstr(m_req->http_headers[h].value, "boundary=");
+            if (!bptr)
                 break;
-            boundary += 9;
-            if (*boundary == '"') boundary++;
-            boundary_length = strlen(boundary);
-            if (boundary_length > 0 && *(boundary+boundary_length-1) == '"')
+            bptr += 9;
+            if (*bptr == '"') bptr++;
+            boundary_length = strlen(bptr);
+            if (boundary_length > 0 && *(bptr+boundary_length-1) == '"')
                 boundary_length--;
+            if (boundary_length > 120)
+                return;
+            boundary[0] = '-';
+            boundary[1] = '-';
+            memcpy(boundary+2, bptr, boundary_length);
+            boundary_length+=2;
+            boundary[boundary_length] = 0;
         }
          else if (0 == strncasecmp("Content-Length", m_req->http_headers[h].name, 14))
         {
@@ -246,7 +228,7 @@ void RequestInfo::read()
 
     if (*m_req->request_method == 'P')
     {
-        if (boundary)
+        if (boundary_length > 0)
         {
             readMultipart(boundary, boundary_length);
             return;
@@ -278,190 +260,292 @@ void RequestInfo::read()
         for (it = parts.begin(); it != parts.end(); ++it)
         {
             RequestPostInfo& info = m_post[it->key];
-            info.data = NULL;
-            info.str = it->value;
-            info.length = info.str.length();
+
+            info.value = it->value;
         }
     }
 }
 
+
+
+
+
+
+class PostPartBase
+{
+public:
+
+    virtual ~PostPartBase() { }
+
+    virtual void start() { }
+    virtual void append(const unsigned char* buf, size_t len) = 0;
+    virtual void finish() { }
+
+public:
+
+    std::wstring m_name;
+    std::wstring m_filename;
+    std::wstring m_temp_filename;
+    kl::membuf m_membuf;
+};
+
+
+class PostPartMemory : public PostPartBase
+{
+public:
+
+    void append(const unsigned char* buf, size_t len) { m_membuf.append(buf, len); }
+};
+
+class PostPartFile : public PostPartBase
+{
+public:
+
+    virtual void start()
+    {
+        m_temp_filename = xf_get_temp_filename(L"sdupl", L"tmp");
+        m_f = xf_open(m_temp_filename, xfCreate, xfReadWrite, xfShareNone);
+    }
+
+    void append(const unsigned char* buf, size_t len)
+    {
+        xf_write(m_f, buf, 1, len);
+    }
+
+    virtual void finish()
+    {
+        xf_close(m_f);
+    }
+
+public:
+
+    xf_file_t m_f;
+};
+
+
+
+#define MULTIPART_BUFFER_SIZE 10000
+#define MULTIPART_OVERLAP_SIZE 200
+
+
+class MultipartHeaderInfo
+{
+public:
+    std::wstring name;
+    std::wstring filename;
+
+    void parseHeaders(const char* headers, const char* endp)
+    {
+        const char* p = headers;
+        name = L"";
+        filename = L"";
+
+        while (1)
+        {
+            if (p >= endp)
+                break;
+        
+            if ((*p == '\r' && *(p+1) == '\n') || p == headers)
+            {
+                if (*p == '\r' && *(p+1) == '\n')
+                    p += 2;
+            
+                if (0 == memcmp("Content-Disposition:", p, 20))
+                {
+                    extractValue(p + 20, endp, "name", name);
+                    extractValue(p + 20, endp, "filename", filename);
+                }
+            }
+        
+            ++p;
+        }
+    }
+
+private:
+
+    void extractValue(const char* haystack, const char* endp, const char* needle, std::wstring& value)
+    {
+        char prev_char = 0;  // previous significant character
+        int needle_len = strlen(needle);
+
+        value = L"";
+
+        const char* p = haystack;
+        while (p < endp - needle_len - 1 && *p != '\r' && *p != '\n')
+        {
+            if ((prev_char == ':' || prev_char == ';') &&
+                0 == memcmp(p, needle, needle_len) &&
+                (isspace(*(p+needle_len)) || *(p+needle_len) == '='))
+            {
+                // found the key, now extract everything between the quotes
+                p += needle_len;
+
+                bool quote = false;
+
+                while (p < endp && *p != '\r' && *p != '\n' && *p != ';')
+                {
+                    if (*p == '"')
+                    {
+                        if (quote)
+                            break;
+                        quote = true;
+                    }
+                     else
+                    {
+                        if (quote)
+                            value += (wchar_t)*p;
+                    }
+
+                    p++;
+                }
+
+                return;
+            }
+
+            if (!isspace(*p))
+                prev_char = *p;
+            ++p;
+        }
+    }
+};
 
 void RequestInfo::readMultipart(const char* boundary, size_t boundary_length)
 {
-    char buf[4096];
-    int buf_len;
+    std::vector<PostPartBase*> parts;
+    PostPartBase* curpart = NULL;
+    MultipartHeaderInfo hdrinfo;
+
+    char buf[MULTIPART_BUFFER_SIZE];
+    int buf_len = 0;
+    int r;
+    const char* boundary_pos;
+    const char* curpos;
+    const char* header;
+    const char* data_begin;
+
+    // inital read
+    r = mg_read(m_conn, buf, MULTIPART_BUFFER_SIZE);
+    buf_len = r;
+    curpos = buf;
 
     while (true)
     {
-        buf_len = mg_read(m_conn, buf, 4096);
-        m_post_data_buf.append((unsigned char*)buf, buf_len);
-            
-        if (buf_len != 4096)
-            break;
-    }
-
-    char* post_data = (char*)m_post_data_buf.getData();
-    size_t post_data_len = m_post_data_buf.getDataSize();
-
-    const char* p = post_data;
-    while (parsePart(p, boundary, boundary_length, post_data + post_data_len, &p));
-}
-
-
-static const char* findBoundary(const char* p,
-                                const char* boundary,
-                                size_t boundary_length,
-                                const char* endp)
-{
-    const char* start = p;
-    
-    while (p < endp)
-    {
-        p = (const char*)memchr(p, '-', endp-p);
-        if (!p)
-            return NULL;
-        if (p+1 >= endp)
-            return NULL;
-        if (*(p+1) != '-')
+        // look for boundary
+        boundary_pos = (const char*)quickMemmem(curpos, buf + buf_len - curpos, boundary, boundary_length);
+        if (boundary_pos)
         {
-            p++;
-            continue;
-        }
-        if (p-3 > start && (*(p-1) != '\n' || *(p-2) != '\r'))
-        {
-            p++;
-            continue;
-        }
-        p += 2;
-        if (p+boundary_length >= endp)
-        {
-            p++;
-            continue;
-        }
-        if (memcmp(p, boundary, boundary_length) == 0)
-        {
-            if (p-4 < start)
-                return start;
-                 else
-                return p-4;
-        }
-            
-        ++p;
-    }
-    
-    return NULL;
-}
-
-
-static const char* findHeaderEnd(const char* p, const char* endp)
-{
-    const char* e = (const char*)memchr(p, '\r', p-endp);
-    if (!e)
-        e = (const char*)memchr(p, '\n', p-endp);
-    return e;
-}
-
-static const char* findString(const char* str, const char* find, size_t find_len, const char* endp)
-{
-    while (str+find_len < endp)
-    {
-        if (memcmp(str, find, find_len) == 0)
-            return str;
-        str++;
-    }
-    return NULL;
-}
-
-inline const char* findChar(const char* str, const char find, const char* endp)
-{
-    return (const char*)memchr(str, find, endp-str);
-}
-
-bool RequestInfo::parsePart(const char* p,
-                            const char* boundary,
-                            size_t boundary_length,
-                            const char* endp,
-                            const char** next)
-{
-    p = findBoundary(p, boundary, boundary_length, endp);
-    if (!p)
-    {
-        // no start boundary found
-        return false;
-    }
-    
-    const char* end = findBoundary(p+boundary_length, boundary, boundary_length, endp);
-    if (!end)
-    {
-        // no end boundary found
-        return false;
-    }
-    
-    
-    p += boundary_length;
-    
-    std::string key;
-    bool is_file = false;
-    
-    while (1)
-    {
-        if (p >= endp)
-            return false;
-        
-        if (*p == '\r' && *(p+1) == '\n')
-        {
-            p += 2;
-            
-            if (*p == '\r' && *(p+1) == '\n')
+            // a boundary was found; add remaining data to the post part
+            if (curpart)
             {
-                // terminator -- content starts hereafter
-                p += 2;
+                // -2: we don't want the \r\n before the boundary
+                int data_len = boundary_pos - curpos - 2;
+                curpart->append((unsigned char*)curpos, data_len);
+            }
+
+            curpos = boundary_pos + boundary_length;
+            if (*curpos == '-' && *(curpos+1) == '-')
+            {
+                // found a terminator -- we are done
                 break;
             }
-            
-            if (0 == memcmp("Content-Disposition:", p, 20))
+
+            if (*curpos != 0x0d || *(curpos+1) != 0x0a)
             {
-                const char* end = findHeaderEnd(p, endp);
-                if (!end)
-                    return false;
-                
-                const char* name = findString(p, "name=", 5, end);
-                if (name)
+                // malformed
+                return;
+            }
+
+            header = curpos+2;
+
+            data_begin = (const char*)quickMemmem(header, buf_len - (header - buf), "\r\n\r\n", 4);
+            if (!data_begin)
+            {
+                // couldn't find data begin -- shift the buffer up and read in more data
+                int new_buf_len = (buf + buf_len) - header;
+                memmove(buf, boundary_pos + boundary_length, new_buf_len);
+                buf_len = new_buf_len;
+
+                r = mg_read(m_conn, buf + buf_len, MULTIPART_BUFFER_SIZE - buf_len);
+                buf_len += r;
+
+                data_begin = (const char*)quickMemmem(header, buf_len - (header - buf), "\r\n\r\n", 4);
+                if (!data_begin)
                 {
-                    name+=5;
-                    if (*name == '"')
-                        name++;
-                    const char* close_quote = findChar(name, '"', end);
-                    if (!close_quote)
-                        close_quote = end;
-                    key = std::string(name, close_quote-name);
-                    
-                    if (findString(p, "filename=", 9, end))
-                        is_file = true;
+                    // still couldn't find data begin -- malformed post
+                    return;
                 }
             }
+            data_begin += 4;
+
+            hdrinfo.parseHeaders(header, data_begin);
+
+            curpos = data_begin;
+
+            if (hdrinfo.filename.length() > 0)
+                curpart = new PostPartFile;
+                 else
+                curpart = new PostPartMemory;
+
+            curpart->m_name = hdrinfo.name;
+            curpart->m_filename = hdrinfo.filename;
+            curpart->start();
+            parts.push_back(curpart);
         }
-        
-        ++p;
+         else
+        {
+            // no boundary was found, add all data from the buffer, minus overlap
+            int commit_len = MULTIPART_BUFFER_SIZE - MULTIPART_OVERLAP_SIZE;
+            if (buf_len < commit_len)
+                commit_len = buf_len;
+
+            if (curpart)
+            {
+                curpart->append((unsigned char*)buf, commit_len);
+            }
+
+            int new_buf_len = buf_len - commit_len;
+            memmove(buf, buf + commit_len, new_buf_len);
+            buf_len = new_buf_len;
+
+
+            // fill up buffer with more data
+
+            r = mg_read(m_conn, buf + buf_len, MULTIPART_BUFFER_SIZE - buf_len);
+            buf_len += r;
+        }
     }
-    
-    
-    if (key.length() > 0)
+
+
+
+    std::vector<PostPartBase*>::iterator it;
+    for (it = parts.begin(); it != parts.end(); ++it)
     {
-        RequestPostInfo pi;
-        pi.data = p;
-        pi.length = end - pi.data;
-        
-        if (is_file)
-            m_files[kl::towstring(key)] = pi;
-             else
-            m_post[kl::towstring(key)] = pi;
+        curpart = *it;
+        curpart->finish();
+
+        if (curpart->m_filename.length() > 0)
+        {
+            // a multipart file post
+
+            RequestFileInfo& info = m_files[curpart->m_name];
+            info.temp_filename = curpart->m_temp_filename;
+            info.post_filename = curpart->m_filename;
+        }
+         else
+        {
+            // normal multipart post value
+
+            std::string data((const char*)curpart->m_membuf.getData(), curpart->m_membuf.getDataSize());
+            RequestPostInfo& info = m_post[curpart->m_name];
+            info.value = kl::url_decodeURI(kl::towstring(data));
+        }
+
+
+        delete curpart;
     }
-    
-    
-    *next = end;
-    return true;
+
 }
+
 
 std::wstring RequestInfo::getValue(const std::wstring& key, const std::wstring& def)
 {
@@ -469,15 +553,7 @@ std::wstring RequestInfo::getValue(const std::wstring& key, const std::wstring& 
     p_it = m_post.find(key);
     if (p_it != m_post.end())
     {
-        if (p_it->second.data)
-        {
-            std::string str(p_it->second.data, p_it->second.data + p_it->second.length);
-            return kl::towstring(str);
-        }
-         else
-        {
-            return p_it->second.str;
-        }
+        return p_it->second.value;
     }
     
     std::map<std::wstring, std::wstring>::iterator g_it;
@@ -518,15 +594,7 @@ std::wstring RequestInfo::getPostValue(const std::wstring& key)
     p_it = m_post.find(key);
     if (p_it != m_post.end())
     {
-        if (p_it->second.data)
-        {
-            std::string str(p_it->second.data, p_it->second.data + p_it->second.length);
-            return kl::towstring(str);
-        }
-         else
-        {
-            return p_it->second.str;
-        }
+        return p_it->second.value;
     }
     
     return L"";
