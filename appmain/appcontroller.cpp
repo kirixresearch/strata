@@ -44,8 +44,6 @@
 #include "jobscript.h"
 #include "jobscheduler.h"
 #include "jobimport.h"
-#include "jobimportpkg.h"
-#include "jobexportpkg.h"
 #include "jsonconfig.h"
 #include "querydoc.h"
 #include "sqldoc.h"

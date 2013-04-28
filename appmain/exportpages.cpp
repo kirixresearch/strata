@@ -15,7 +15,6 @@
 #include "exportpages.h"
 #include "exportwizard.h"
 #include "jobexport.h"
-#include "jobexportpkg.h"
 #include "structurevalidator.h"
 #include "dbdoc.h"
 
@@ -99,37 +98,6 @@ bool ExportTemplate::save(const wxString& path)
 
 jobs::IJobPtr ExportTemplate::execute()
 {
-    // check for package file export
-    if (m_ei.type == dbtypePackage)
-    {
-        ExportPkgJob* job = new ExportPkgJob;
-
-        if (m_ei.overwrite_file)
-        {
-            job->setPkgFilename(m_ei.path,
-                                ExportPkgJob::modeOverwrite,
-                                m_ei.kpg_version);
-        }
-         else
-        {
-            job->setPkgFilename(m_ei.path, ExportPkgJob::modeAppend);
-        }
-
-        std::vector<ExportTableSelection>::iterator it;
-        for (it = m_ei.tables.begin(); it != m_ei.tables.end(); ++it)
-        {
-            job->addExportObject(it->output_tablename,
-                                 it->input_tablename,
-                                 m_ei.kpg_compressed);
-        }
-
-        g_app->getJobQueue()->addJob(job, jobStateRunning);
-
-        return static_cast<jobs::IJob*>(job);
-    }
-
-
-
     ExportJob* job = new ExportJob;
     job->setExportType(m_ei.type);
     job->setFilename(towstr(m_ei.path), m_ei.overwrite_file);

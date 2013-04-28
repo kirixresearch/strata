@@ -17,7 +17,6 @@
 #include "dlgpagesetup.h"
 #include "dlgreportprops.h"
 #include "dbdoc.h"
-#include "jobexportpkg.h"
 #include "panelcolprops.h"
 #include "panelcolordoc.h"
 #include "querytemplate.h"
@@ -647,8 +646,6 @@ void ReportDoc::onSaveAsExternal(wxCommandEvent& evt)
     // target will be
     filter += _("PDF Files");
     filter += wxT(" (*.pdf)|*.pdf|");
-    filter += _("Package Files");
-    filter += wxT(" (*.kpg)|*.kpg|");
     filter.RemoveLast(); // get rid of the last pipe sign
 
     wxString filename = getFilenameFromPath(m_file_path, false);
@@ -667,29 +664,13 @@ void ReportDoc::onSaveAsExternal(wxCommandEvent& evt)
     switch (dlg.GetFilterIndex())
     {
         case 0: type = 0; break;    // TODO: implement proper filter indexes
-        case 1: type = dbtypePackage; break;
         default:
             wxFAIL_MSG(wxT("invalid filter index"));
             return;
     }
 
-    if (type != dbtypePackage)
-    {
-        // save as a pdf file
-        doSaveAsPdf(dlg.GetPath());
-    }
-     else
-    {
-        // create an export job    
-        ExportPkgJob* job = new ExportPkgJob;
-        job->setPkgFilename(dlg.GetPath(), ExportPkgJob::modeOverwrite);
-
-        job->addExportObject(m_doc_site->getCaption(),
-                             m_file_path,
-                             true /* compress */);
-
-        g_app->getJobQueue()->addJob(job, jobStateRunning);
-    }
+    // save as a pdf file
+    doSaveAsPdf(dlg.GetPath());
 }
 
 void ReportDoc::onReload(wxCommandEvent& evt)

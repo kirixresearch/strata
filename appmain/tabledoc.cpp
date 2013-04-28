@@ -16,7 +16,6 @@
 #include "tabledoc_private.h"
 #include "tangogridmodel.h"
 #include "jobexport.h"
-#include "jobexportpkg.h"
 #include "exprbuilder.h"
 #include "feedparser.h"
 #include "panelcolprops.h"
@@ -1660,16 +1659,20 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
         wxString title = wxString::Format(_("Saving '%s' as '%s'"),
                       stream_name.c_str(),
                       dlg.GetPath().AfterLast(PATH_SEPARATOR_CHAR).c_str());
-        
+
+/*
+    TODO: reimplement
+
         ExportPkgJob* job = new ExportPkgJob;
         job->getJobInfo()->setTitle(towstr(title));
         job->setPkgFilename(dlg.GetPath(), ExportPkgJob::modeOverwrite);
 
         job->addExportObject(stream_name,
                              this->m_path,
-                             true /* compress */);
+                             true);  // true means compress
 
-        g_app->getJobQueue()->addJob(job, jobStateRunning);    
+        g_app->getJobQueue()->addJob(job, jobStateRunning);
+*/
     }
      else
     {

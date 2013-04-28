@@ -19,9 +19,7 @@
 #include "scriptbitmap.h"
 #include "scriptwebdom.h"
 #include "jobexport.h"
-#include "jobexportpkg.h"
 #include "jobimport.h"
-#include "jobimportpkg.h"
 #include "extensionpkg.h"
 #include "reportlayout.h"
 #include "tabledoc.h"
@@ -3336,57 +3334,33 @@ void HostData::importData(kscript::ExprEnv* env, kscript::Value* retval)
         
         
 
-        jobs::IJobPtr job;
-        if (database_type == dbtypePackage)
+
+        ImportJob* import_job = new ImportJob;
+
+        import_job->setImportType(database_type);
+            
+        if (filename.length() > 0)
         {
-            ImportPkgJob* import_job = new ImportPkgJob;
-            import_job->setPkgFilename(filename);
-            
-            std::vector<HostImportExportFile>::iterator it;
-            for (it = files.begin(); it != files.end(); ++it)
-            {
-                import_job->addImportObject(towstr(it->source_path),
-                                            towstr(appendPath(target_path, it->dest_path)));
-            }
-            
-            job = static_cast<jobs::IJob*>(import_job);
+            import_job->setFilename(filename);
         }
          else
         {
-            ImportJob* import_job = new ImportJob;
-
-            import_job->setImportType(database_type);
-            
-            if (filename.length() > 0)
-            {
-                import_job->setFilename(filename);
-            }
-             else
-            {
-                import_job->setConnectionInfo(server, port, database, user_name, password);
-            }
-
-            
-            std::vector<HostImportExportFile>::iterator it;
-            for (it = files.begin(); it != files.end(); ++it)
-            {
-                ImportJobInfo info;
-                info.input_path = it->source_path;
-                info.output_path = appendPath(target_path, it->dest_path);
-                info.append = false;
-                
-                import_job->addImportSet(info);
-            }
-            
-            job = static_cast<jobs::IJob*>(import_job);
+            import_job->setConnectionInfo(server, port, database, user_name, password);
         }
-        
-        if (job.isNull())
+
+            
+        std::vector<HostImportExportFile>::iterator it;
+        for (it = files.begin(); it != files.end(); ++it)
         {
-            retval->setBoolean(false);
-            return;
+            ImportJobInfo info;
+            info.input_path = it->source_path;
+            info.output_path = appendPath(target_path, it->dest_path);
+            info.append = false;
+                
+            import_job->addImportSet(info);
         }
-        
+            
+        jobs::IJobPtr job = static_cast<jobs::IJob*>(import_job);
         job->runJob();
         job->runPostJob();
 
@@ -3532,58 +3506,32 @@ void HostData::exportData(kscript::ExprEnv* env, kscript::Value* retval)
             }
         }
         
-        jobs::IJobPtr job;
-        if (database_type == dbtypePackage)
+
+        ExportJob* export_job = new ExportJob;
+            
+        export_job->setExportType(database_type);
+            
+        if (filename.length() > 0)
         {
-            ExportPkgJob* export_job = new ExportPkgJob;
-            export_job->setPkgFilename(filename, ExportPkgJob::modeOverwrite);
-            export_job->setRawExport(raw);
-            
-            std::vector<HostImportExportFile>::iterator it;
-            for (it = files.begin(); it != files.end(); ++it)
-            {
-                export_job->addExportObject(it->dest_path,
-                                            it->source_path,
-                                            it->compress);
-            }
-            
-            job = static_cast<jobs::IJob*>(export_job);
+            export_job->setFilename(filename);
         }
-         else
+            else
         {
-            ExportJob* export_job = new ExportJob;
+            export_job->setConnectionInfo(server, port, database, user_name, password);
+        }
             
-            export_job->setExportType(database_type);
-            
-            if (filename.length() > 0)
-            {
-                export_job->setFilename(filename);
-            }
-             else
-            {
-                export_job->setConnectionInfo(server, port, database, user_name, password);
-            }
-            
-            std::vector<HostImportExportFile>::iterator it;
-            for (it = files.begin(); it != files.end(); ++it)
-            {
-                ExportJobInfo info;
-                info.input_path = it->source_path;
-                info.output_path = it->dest_path;
-                info.append = false;
+        std::vector<HostImportExportFile>::iterator it;
+        for (it = files.begin(); it != files.end(); ++it)
+        {
+            ExportJobInfo info;
+            info.input_path = it->source_path;
+            info.output_path = it->dest_path;
+            info.append = false;
                 
-                export_job->addExportSet(info);
-            }
-            
-            job = static_cast<jobs::IJob*>(export_job);
+            export_job->addExportSet(info);
         }
-        
-        if (job.isNull())
-        {
-            retval->setBoolean(false);
-            return;
-        }
-        
+                    
+        jobs::IJobPtr job = static_cast<jobs::IJob*>(export_job);
         job->runJob();
         //job->runPostJob(); // runPostJob() refreshes the tree, which we don't want
 

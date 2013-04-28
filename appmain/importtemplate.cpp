@@ -14,7 +14,6 @@
 #include "importwizard.h"
 #include "appcontroller.h"
 #include "jobimport.h"
-#include "jobimportpkg.h"
 #include "jsonconfig.h"
 #include <kl/crypt.h>
 
@@ -821,28 +820,6 @@ jobs::IJobPtr ImportTemplate::execute()
         it->output_tablename = new_output_path;
     }
 
-
-    // check for package file import
-
-    if (m_ii.type == dbtypePackage)
-    {
-        ImportPkgJob* job = new ImportPkgJob;
-        job->setPkgFilename(towstr(m_ii.path));
-
-        std::vector<ImportTableSelection>::iterator it;
-        for (it = m_ii.tables.begin(); it != m_ii.tables.end(); ++it)
-        {
-            if (!it->selected)
-                continue;
-
-            job->addImportObject(towstr(it->input_tablename),
-                                 towstr(it->output_tablename));
-        }
-
-        g_app->getJobQueue()->addJob(job, jobStateRunning);
-
-        return static_cast<jobs::IJob*>(job);
-    }
 
     // we have to do this here, since the path selection page is now used
     // for these types of imports (if we have a path of c:\myfile.txt,

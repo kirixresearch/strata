@@ -19,7 +19,6 @@
 #include "relationdiagram.h"
 #include "dlgdatabasefile.h"
 #include "structurevalidator.h"
-#include "jobexportpkg.h"
 #include <algorithm>
 #include <set>
 
@@ -2194,6 +2193,10 @@ void QueryDoc::onSaveAs(wxCommandEvent& evt)
 
 void QueryDoc::onSaveAsExternal(wxCommandEvent& evt)
 {
+/*
+    TODO: reimplement by just saving it to a .json file
+*/
+
     wxString filter;
 
     // NOTE: if you add or remove items from this
@@ -2225,25 +2228,6 @@ void QueryDoc::onSaveAsExternal(wxCommandEvent& evt)
             return;
     }
     
-    
-    
-    // create an export job
-    
-    if (type == dbtypePackage)
-    {
-        ExportPkgJob* job = new ExportPkgJob;
-        job->setPkgFilename(dlg.GetPath(), ExportPkgJob::modeOverwrite);
-
-        job->addExportObject(m_doc_site->getCaption(),
-                             m_path,
-                             true /* compress */);
-
-        g_app->getJobQueue()->addJob(job, jobStateRunning);
-    }
-     else
-    {
-        // empty right now
-    }
 }
 
 
