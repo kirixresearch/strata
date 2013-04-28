@@ -27,7 +27,7 @@ const std::wstring empty_wstring = L"";
 
 DrizzleIterator::DrizzleIterator()
 {
-    m_con = NULL;
+    m_drizzle = NULL;
     m_result = NULL;
     m_row = NULL;
     m_row_pos = 0;
@@ -42,8 +42,8 @@ DrizzleIterator::~DrizzleIterator()
     if (m_result)
         drizzle_result_free(m_result);
     
-    if (m_con)
-        drizzle_con_free(m_con);
+    if (m_drizzle)
+        drizzle_close(m_drizzle);
 
     // clean up field vector and expression vector
 
@@ -59,24 +59,22 @@ DrizzleIterator::~DrizzleIterator()
 
 bool DrizzleIterator::init(const std::wstring& query)
 {
-    IDrizzleDatabasePtr mydb = m_database;
-    
     drizzle_return_t ret;
     
-    if (m_con == NULL)
+    if (m_drizzle == NULL)
     {
-        m_con = mydb->open();
-        if (m_con == NULL)
+        m_drizzle = m_database->open();
+        if (m_drizzle == NULL)
             return false;
 
         std::string asc_command = kl::tostring(query);
 
-        m_result = drizzle_query_str(m_con, NULL, asc_command.c_str(), &ret);
+        m_result = drizzle_query(m_drizzle, asc_command.c_str(), asc_command.length(), &ret);
         if (ret != DRIZZLE_RETURN_OK || m_result == NULL)
         {
-            mydb->setError(tango::errorGeneral, kl::towstring(drizzle_error(m_drizzle)));
-            drizzle_con_free(m_con);
-            m_con = NULL;
+            m_database->setError(tango::errorGeneral, kl::towstring(drizzle_error(m_drizzle)));
+            drizzle_close(m_drizzle);
+            m_drizzle = NULL;
             return false;
         }
         
@@ -84,14 +82,14 @@ bool DrizzleIterator::init(const std::wstring& query)
         
         
         // make sure we have retrieved column info
-        if (!(m_result->options & DRIZZLE_RESULT_BUFFER_COLUMN))
+        //if (!(m_result->options & DRIZZLE_RESULT_BUFFER_COLUMN))
         {
             if (drizzle_column_buffer(m_result) != DRIZZLE_RETURN_OK)
             {
                 drizzle_result_free(m_result);
-                drizzle_con_free(m_con);
+                drizzle_close(m_drizzle);
                 m_result = NULL;
-                m_con = NULL;
+                m_drizzle = NULL;
             }
         }
         
@@ -106,8 +104,8 @@ bool DrizzleIterator::init(const std::wstring& query)
     {
         // query executed properly, but was not a SELECT query
         drizzle_result_free(m_result);
-        drizzle_con_free(m_con);
-        m_con = NULL;
+        drizzle_close(m_drizzle);
+        m_drizzle = NULL;
         m_result = NULL;
         return false;
     }
@@ -411,9 +409,7 @@ tango::IStructurePtr DrizzleIterator::getStructure()
 
 void DrizzleIterator::refreshStructure()
 {
-    if (m_set.isNull())
-        return;
-
+/*
     tango::IStructurePtr set_structure = m_set->getStructure();
     if (set_structure.isNull())
         return;
@@ -490,6 +486,7 @@ void DrizzleIterator::refreshStructure()
     {
         (*it)->expr = parse((*it)->expr_text);
     }
+*/
 }
 
 bool DrizzleIterator::modifyStructure(tango::IStructure* struct_config, tango::IJob* job)

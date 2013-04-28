@@ -25,319 +25,21 @@
 #include "iterator.h"
 
 
-// DrizzleSet class implementation
-
-DrizzleSet::DrizzleSet()
-{
-}
-
-DrizzleSet::~DrizzleSet()
-{
-}
-
-bool DrizzleSet::init()
-{    
-    // set the set info filename
-    if (m_tablename.length() > 0)
-    {
-        tango::IAttributesPtr attr = m_database->getAttributes();
-        std::wstring definition_path = attr->getStringAttribute(tango::dbattrDefinitionDirectory);
-
-        setConfigFilePath(ExtFileInfo::getConfigFilenameFromSetId(definition_path, getSetId()));
-    }
-    
-    return true;
-}
-
-
-
-std::wstring DrizzleSet::getSetId()
-{
-    IDrizzleDatabasePtr mydb = m_database;
-    
-    std::wstring id = L"xddrizzle:";
-    id += mydb->getServer();
-    id += L":";
-    id += mydb->getDatabase();
-    id += L":";
-    id += m_tablename;
-    
-    return kl::md5str(id);
-}
-
-tango::IStructurePtr DrizzleSet::getStructure()
-{
-    // get the quote characters
-    tango::IAttributesPtr attr = m_database->getAttributes();
-    std::wstring quote_openchar = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
-    std::wstring quote_closechar = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
-
-    // create select statement
-    std::wstring tablename = L"";
-    tablename += quote_openchar;
-    tablename += m_tablename;
-    tablename += quote_closechar;
-
-    wchar_t query[512];
-    swprintf(query, 512, L"SELECT * FROM %ls WHERE 1=0", tablename.c_str());
-
-
-    IDrizzleDatabasePtr mydb = m_database;
-    if (mydb.isNull())
-        return xcm::null;
-    drizzle_con_st* con = mydb->open();
-    if (!con)
-        return xcm::null;
-    
-    std::string asc_query = kl::tostring(query);
-    
-    
-    drizzle_return_t ret;
-    drizzle_result_st* result;
-    result = drizzle_query_str(con, NULL, asc_query.c_str(), &ret);
-    if (ret != DRIZZLE_RETURN_OK || result == NULL)
-    {
-        mydb->setError(tango::errorGeneral, kl::towstring(drizzle_error(m_drizzle)));
-        drizzle_con_free(con);
-        return xcm::null;
-    }
-    
-    
-    ret = drizzle_result_buffer(result);
-
-
-    // create new tango::IStructure
-    Structure* s = new Structure;
-
-    int i = 0;
-    drizzle_column_st* col;
-    
-    drizzle_column_seek(result, 0);
-    while ((col = drizzle_column_next(result)))
-    {
-        int drizzle_type = drizzle_column_type(col);
-        int tango_type = drizzle2tangoType(drizzle_type);
-
-        std::wstring wcol_name = kl::towstring(drizzle_column_name(col));
-
-        tango::IColumnInfoPtr colinfo = static_cast<tango::IColumnInfo*>(new ColumnInfo);
-        colinfo->setName(wcol_name);
-        colinfo->setType(tango_type);
-        colinfo->setWidth(drizzle_column_size(col));
-        colinfo->setScale(tango_type == tango::typeDouble ? 4 : drizzle_column_decimals(col));
-        colinfo->setColumnOrdinal(i);
-        
-        // limit blob/text fields to 4096 characters (for now) --
-        // this seems to be sensible behavior because copies of
-        // the table will not clog of the database space-wise
-        if ((drizzle_type == DRIZZLE_COLUMN_TYPE_BLOB || drizzle_type == DRIZZLE_COLUMN_TYPE_LONG_BLOB) && colinfo->getWidth() > 4096)
-            colinfo->setWidth(4096);
-
-        
-        s->addColumn(colinfo);
-        
-        i++;
-    }
-
-    drizzle_result_free(result);
-    drizzle_con_free(con);
-    
-    tango::IStructurePtr structure = static_cast<tango::IStructure*>(s);
-    appendCalcFields(structure);
-    return structure;
-}
-
-/*
-bool DrizzleSet::modifyStructure(tango::IStructure* struct_config,
-                               tango::IJob* job)
-{
-    XCM_AUTO_LOCK(m_object_mutex);
-
-    bool done_flag = false;
-    if (!CommonBaseSet::modifyStructure(struct_config, &done_flag))
-        return false;
-    if (done_flag)
-        return true;
-    
-    unsigned int processed_action_count = 0;
-
-    tango::IStructurePtr current_struct = getStructure();
-    IStructureInternalPtr s = struct_config;
-    std::vector<StructureAction>& actions = s->getStructureActions();
-    std::vector<StructureAction>::iterator it;
-
-    std::wstring command;
-    command.reserve(1024);
-
-    tango::IAttributesPtr attr = m_database->getAttributes();
-    std::wstring quote_openchar = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
-    std::wstring quote_closechar = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
-
-    // handle delete
-    for (it = actions.begin(); it != actions.end(); ++it)
-    {
-        if (it->m_action == StructureAction::actionDelete)
-        {
-            command = L"ALTER TABLE ";
-            command += quote_openchar;
-            command += m_tablename;
-            command += quote_closechar;
-            command += L" DROP COLUMN ";
-            command += quote_openchar;
-            command += it->m_colname;
-            command += quote_closechar;
-
-            xcm::IObjectPtr result_obj;
-            m_database->execute(command, 0, result_obj, NULL);
-            command = L"";
-        }
-    }
-
-    // handle modify
-    for (it = actions.begin(); it != actions.end(); ++it)
-    {
-        if (it->m_action == StructureAction::actionModify)
-        {
-        }
-    }
-
-    int i;
-    int col_count = current_struct->getColumnCount();
-    tango::IColumnInfoPtr col_info;
-    bool found = false;
-
-    // handle create
-    for (it = actions.begin(); it != actions.end(); ++it)
-    {
-        if (it->m_action == StructureAction::actionCreate)
-        {
-            for (i = 0; i < col_count; ++i)
-            {
-                col_info = current_struct->getColumnInfoByIdx(i);
-
-                if (!wcscasecmp(col_info->getName().c_str(), it->m_params->getName().c_str()))
-                {
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found)
-            {
-                std::wstring fieldname = L"";
-                fieldname += quote_openchar;
-                fieldname += it->m_params->getName();
-                fieldname += quote_closechar;
-            
-                command = L"ALTER TABLE ";
-                command += quote_openchar;
-                command += m_tablename;
-                command += quote_closechar;
-                command += L" ADD ";
-                command += createDrizzleFieldString(fieldname,
-                                                  it->m_params->getType(),
-                                                  it->m_params->getWidth(),
-                                                  it->m_params->getScale(), false);
-
-                xcm::IObjectPtr result_obj;
-                m_database->execute(command, 0, result_obj, NULL);
-                command = L"";
-            }
-
-            found = false;
-        }
-    }
-
-    return true;
-}
-*/
-
-
-
-tango::IIteratorPtr DrizzleSet::createIterator(const std::wstring& columns,
-                                               const std::wstring& order,
-                                               tango::IJob* job)
-{
-    tango::IAttributesPtr attr = m_database->getAttributes();
-    std::wstring quote_openchar = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
-    std::wstring quote_closechar = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
-
-    std::wstring query;
-    query = L"SELECT * FROM ";
-    query += quote_openchar;
-    query += m_tablename;
-    query += quote_closechar;
-
-    if (order.length() > 0)
-    {
-        query += L" ORDER BY ";
-        query += order;
-    }
-
-    DrizzleIterator* iter = new DrizzleIterator;
-    iter->m_database = m_database;
-    iter->m_set = this;
-    iter->init(query);
-    return static_cast<tango::IIterator*>(iter);
-}
-
-tango::rowpos_t DrizzleSet::getRowCount()
-{
-    tango::IAttributesPtr attr = m_database->getAttributes();
-    std::wstring quote_openchar = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
-    std::wstring quote_closechar = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
-
-    // create select statement
-    std::wstring query;
-    query += L"SELECT COUNT(*) FROM ";
-    query += quote_openchar;
-    query += m_tablename;
-    query += quote_closechar;
-
-    IDrizzleDatabasePtr mydb = m_database;
-    if (mydb.isNull())
-        return 0;
-    drizzle_con_st* con = mydb->open();
-    if (!con)
-        return 0;
-
-    std::string asc_query = kl::tostring(query);
-    
-    drizzle_return_t ret;
-    drizzle_result_st* result = drizzle_query_str(con, NULL, asc_query.c_str(), &ret);
-    if (ret != DRIZZLE_RETURN_OK || result == NULL)
-    {
-        mydb->setError(tango::errorGeneral, kl::towstring(drizzle_error(m_drizzle)));
-        drizzle_con_free(con);
-        return false;
-    }
-
-    char** row = (char**)drizzle_row_next(result);
-    tango::rowpos_t row_count = atoi(row[0]);
-    drizzle_result_free(result);
-    drizzle_con_free(con);
-    
-    return row_count;
-}
-
-
 
 // DrizzleRowInserter class implementation
 
-DrizzleRowInserter::DrizzleRowInserter(DrizzleSet* set)
+DrizzleRowInserter::DrizzleRowInserter(DrizzleDatabase* database, const std::wstring& table)
 {
-    m_drizzle = set->m_drizzle;
-    m_con = NULL;
+    m_database = database;
+    m_database->ref();
     
-    m_set = set;
-    m_set->ref();
-    
+    m_drizzle = NULL;
     m_inserting = false;
 
     m_asc_insert_stmt.reserve(65535);
     m_insert_stmt.reserve(65535);
     
-    tango::IAttributesPtr attr = m_set->m_database->getAttributes();
+    tango::IAttributesPtr attr = m_database->getAttributes();
     m_quote_openchar = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
     m_quote_closechar = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
 }
@@ -345,12 +47,12 @@ DrizzleRowInserter::DrizzleRowInserter(DrizzleSet* set)
 
 DrizzleRowInserter::~DrizzleRowInserter()
 {
-    if (m_con)
+    if (m_drizzle)
     {
-        drizzle_con_free(m_con);
+        drizzle_close(m_drizzle);
     }
     
-    m_set->unref();
+    m_database->unref();
 }
 
 tango::objhandle_t DrizzleRowInserter::getHandle(const std::wstring& column_name)
@@ -371,12 +73,15 @@ tango::IColumnInfoPtr DrizzleRowInserter::getInfo(tango::objhandle_t column_hand
     DrizzleInsertData* data = (DrizzleInsertData*)column_handle;
 
     if (!data)
-    {
         return xcm::null;
-    }
 
-    tango::IStructurePtr structure = m_set->getStructure();
-    return structure->getColumnInfo(data->m_col_name);
+    if (m_structure.isNull())
+        m_structure = m_database->describeTable(m_table);
+    
+    if (m_structure.isNull())
+        return xcm::null;
+
+    return m_structure->getColumnInfo(data->m_col_name);
 }
 
 
@@ -553,16 +258,9 @@ bool DrizzleRowInserter::putNull(tango::objhandle_t column_handle)
 
 bool DrizzleRowInserter::startInsert(const std::wstring& col_list)
 {
-    IDrizzleDatabasePtr mydb = m_set->m_database;
-    
-    if (mydb.isNull())
+    m_structure = m_database->describeTable(m_table);
+    if (m_structure.isNull())
         return false;
-        
-    m_con = mydb->open();
-    if (m_con == NULL)
-        return false;
-    
-    tango::IStructurePtr s = m_set->getStructure();
 
     std::vector<std::wstring> columns;
     std::vector<std::wstring>::iterator it;
@@ -575,17 +273,17 @@ bool DrizzleRowInserter::startInsert(const std::wstring& col_list)
     {
         columns.clear();
 
-        int i, col_count = s->getColumnCount();
+        int i, col_count = m_structure->getColumnCount();
 
         for (i = 0; i < col_count; ++i)
-            columns.push_back(s->getColumnName(i));
+            columns.push_back(m_structure->getColumnName(i));
     }
 
     m_insert_data.clear();
 
     for (it = columns.begin(); it != columns.end(); ++it)
     {
-        tango::IColumnInfoPtr col_info = s->getColumnInfo(*it);
+        tango::IColumnInfoPtr col_info = m_structure->getColumnInfo(*it);
 
         if (col_info.isNull())
             return false;
@@ -610,7 +308,7 @@ bool DrizzleRowInserter::startInsert(const std::wstring& col_list)
 
     m_insert_stub = L"INSERT INTO ";
     m_insert_stub += m_quote_openchar;
-    m_insert_stub += m_set->m_tablename;
+    m_insert_stub += m_table;
     m_insert_stub += m_quote_closechar;
     m_insert_stub += L" (";
     m_insert_stub += field_list;
@@ -659,7 +357,7 @@ bool DrizzleRowInserter::insertRow()
     {
         std::wstring insert_stub = L"INSERT INTO ";
         insert_stub += m_quote_openchar;
-        insert_stub += m_set->m_tablename;
+        insert_stub += m_table;
         insert_stub += m_quote_closechar;
         insert_stub += L" (";
         for (it = begin_it; it != end_it; ++it)
@@ -685,7 +383,7 @@ bool DrizzleRowInserter::insertRow()
     
     drizzle_return_t ret;
     drizzle_result_st* result;
-    result = drizzle_query_str(m_con, NULL, m_asc_insert_stmt.c_str(), &ret);
+    result = drizzle_query(m_drizzle, m_asc_insert_stmt.c_str(), m_asc_insert_stmt.length(), &ret);
     
     if (ret != DRIZZLE_RETURN_OK)
     {

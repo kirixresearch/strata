@@ -19,14 +19,14 @@
 #include "../xdcommon/keylayout.h"
 #include "../xdcommon/localrowcache.h"
 
-// -- utility functions --
+// utility functions
 
 int drizzle2tangoType(int drizzle_type);
 
 
 struct DrizzleDataAccessInfo
 {
-    // -- metadata --
+    // metadata
     std::wstring name;
     int type;
     int width;
@@ -35,7 +35,7 @@ struct DrizzleDataAccessInfo
 
     int drizzle_type;
 
-    // -- expression stuff --
+    // expression stuff
     std::wstring expr_text;
     kscript::ExprParser* expr;
     KeyLayout* key_layout;
@@ -185,10 +185,8 @@ private:
 private:
 
     DrizzleDatabase* m_database;
-    DrizzleSet* m_set;
 
     drizzle_st* m_drizzle;
-    drizzle_con_st* m_con;
     drizzle_result_st* m_result;
     char** m_row;                 // holds the results of each row
     size_t* m_lengths;            // lengths of the items in row

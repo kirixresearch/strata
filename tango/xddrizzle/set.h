@@ -9,52 +9,11 @@
  */
 
 
-#ifndef __XDDRIZZLE_SET_H
-#define __XDDRIZZLE_SET_H
+#ifndef __XDDRIZZLE_INSERTER_H
+#define __XDDRIZZLE_INSERTER_H
 
 
 #include <xcm/xcm.h>
-#include "../xdcommon/cmnbaseset.h"
-
-
-class DrizzleSet : public CommonBaseSet
-{
-friend class DrizzleDatabase;
-friend class DrizzleIterator;
-friend class DrizzleRowInserter;
-
-    XCM_CLASS_NAME("xddrizzle.Set")
-    XCM_BEGIN_INTERFACE_MAP(DrizzleSet)
-    XCM_END_INTERFACE_MAP()
-
-public:
-
-    DrizzleSet();
-    virtual ~DrizzleSet();
-    
-    bool init();
-    
-    std::wstring getSetId();
-
-    tango::IStructurePtr getStructure();
-
-    tango::IIteratorPtr createIterator(const std::wstring& columns,
-                                       const std::wstring& order,
-                                       tango::IJob* job);
-
-    tango::rowpos_t getRowCount();
-
-private:
-
-    tango::IDatabasePtr m_database;
-    drizzle_st* m_drizzle;
-    
-    std::wstring m_tablename;
-    xcm::mutex m_object_mutex;
-};
-
-
-
 
 class DrizzleInsertData
 {
@@ -69,7 +28,7 @@ public:
 };
 
 
-
+class DrizzleDatabase;
 class DrizzleRowInserter : public tango::IRowInserter
 {
     XCM_CLASS_NAME("xddrizzle.RowInserter")
@@ -80,7 +39,7 @@ class DrizzleRowInserter : public tango::IRowInserter
 
 public:
 
-    DrizzleRowInserter(DrizzleSet* set);
+    DrizzleRowInserter(DrizzleDatabase* database, const std::wstring& table);
     ~DrizzleRowInserter();
 
     tango::objhandle_t getHandle(const std::wstring& column_name);
@@ -106,9 +65,10 @@ private:
 
     void flushRow();
 
-    DrizzleSet* m_set;
+    DrizzleDatabase* m_database;
     drizzle_st* m_drizzle;
-    drizzle_con_st* m_con;
+    std::wstring m_table;
+    tango::IStructurePtr m_structure;
     
     std::string m_asc_insert_stmt;
     std::wstring m_insert_stmt;

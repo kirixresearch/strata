@@ -26,30 +26,11 @@ std::wstring createDrizzleFieldString(const std::wstring& name,
                                     bool null);
 
 
-xcm_interface IDrizzleDatabase : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("xddrizzle.IDrizzleDatabase")
-
-public:
-
-    virtual drizzle_con_st* open() = 0;
-    virtual std::wstring getServer() = 0;
-    virtual std::wstring getDatabase() = 0;
-    virtual void setError(int error_code, const std::wstring& error_string) = 0;
-
-};
-
-XCM_DECLARE_SMARTPTR(IDrizzleDatabase)
-
-
-
-class DrizzleDatabase : public tango::IDatabase,
-                        public IDrizzleDatabase
+class DrizzleDatabase : public tango::IDatabase
 {
     XCM_CLASS_NAME("xddrizzle.Database")
     XCM_BEGIN_INTERFACE_MAP(DrizzleDatabase)
         XCM_INTERFACE_ENTRY(tango::IDatabase)
-        XCM_INTERFACE_ENTRY(IDrizzleDatabase)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -63,7 +44,7 @@ public:
               const std::wstring& username,
               const std::wstring& password);
 
-    drizzle_con_st* open();
+    drizzle_st* open();
     std::wstring getServer();
     std::wstring getDatabase();
     
@@ -133,6 +114,8 @@ public:
                  xcm::IObjectPtr& result,
                  tango::IJob* job);
     
+    bool groupQuery(tango::GroupQueryInfo* info, tango::IJob* job);
+
     std::wstring getErrorString();
     int getErrorCode();
     void setError(int error_code, const std::wstring& error_string);
@@ -141,8 +124,6 @@ private:
 
     tango::IAttributesPtr m_attr;
     
-    drizzle_st m_drizzle;
-
     std::wstring m_db_name;
 
     std::wstring m_server;
