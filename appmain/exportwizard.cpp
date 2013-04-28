@@ -14,7 +14,6 @@
 #include "connectionpages.h"
 #include "exportwizard.h"
 #include "exportpages.h"
-#include "pkgfile.h"
 #include "structurevalidator.h"
 #include "dlgcustomprompt.h"
 #include <wx/filename.h>
@@ -642,6 +641,11 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
             return;
         }
 
+
+        /*
+
+        TODO: reimplement
+
         // CHECK: is the package file already open or in use?
         PkgFile pkgfile;
         if (!pkgfile.open(towstr(m_template.m_ei.path), PkgFile::modeRead))
@@ -708,6 +712,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         sigExportWizardFinished(this);
         m_frame->closeSite(m_doc_site);
         return;
+        */
     }
     
     

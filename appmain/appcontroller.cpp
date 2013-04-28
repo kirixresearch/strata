@@ -73,7 +73,6 @@
 #include "dbdoc.h"
 #include "linkbar.h"
 #include "dlglinkprops.h"
-#include "pkgfile.h"
 
 
 extern paladin::Authentication* g_auth;
@@ -5110,6 +5109,10 @@ bool AppController::openPackage(const wxString& location)
      else
         fn = getPhysPathFromMountPath(location);
 
+    /*
+    TODO: implement - if we want to have this verification, we'll
+    have to open the package file using the xdkpg driver
+
     // scoping so the package file closes
     {
         // make sure we've got a valid package file
@@ -5127,6 +5130,7 @@ bool AppController::openPackage(const wxString& location)
             return true;
         }
     }
+    */
     
     wxString title = fn.AfterLast(PATH_SEPARATOR_CHAR);
     title = wxString::Format(_("Import '%s'"), title.c_str());
@@ -5625,6 +5629,10 @@ bool AppController::print(const wxString& location)
 
 static void addDefaultItemsToProject(const wxString& project_path)
 {
+/*
+
+    TODO: implement
+
     wxFrame* wnd = g_app->getMainWindow();
     if (!wnd)
         return;
@@ -5710,6 +5718,8 @@ static void addDefaultItemsToProject(const wxString& project_path)
     // (since we'll be opening it again shortly)
     g_app->getAppController()->closeProject();
     wnd->Thaw();
+
+*/
 }
 
 bool AppController::createDefaultProject()

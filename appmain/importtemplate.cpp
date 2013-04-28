@@ -13,7 +13,6 @@
 #include "dlgdatabasefile.h"
 #include "importwizard.h"
 #include "appcontroller.h"
-#include "pkgfile.h"
 #include "jobimport.h"
 #include "jobimportpkg.h"
 #include "jsonconfig.h"

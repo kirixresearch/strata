@@ -11,7 +11,6 @@
 
 #include "appmain.h"
 #include "jobimportpkg.h"
-#include "pkgfile.h"
 #include "appcontroller.h"
 #include "tabledoc.h"
 #include <kl/crypt.h>

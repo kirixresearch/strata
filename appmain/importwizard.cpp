@@ -15,7 +15,6 @@
 #include "importpages.h"
 #include "appcontroller.h"
 #include "dlgdatabasefile.h"
-#include "pkgfile.h"
 
 
 #ifdef FindWindow
@@ -509,39 +508,6 @@ void ImportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
         }
     }
     
-    // package file error checking
-    
-    if (m_template.m_ii.type == dbtypePackage)
-    {
-        // the following error checks are also done in
-        // ImportTableSelectionPage::onPageChanged()
-        PkgFile pkgfile;
-        if (!pkgfile.open(towstr(m_template.m_ii.path), PkgFile::modeRead))
-        {
-            wxString msg = wxString::Format(_("The package file '%s' could not be read."),
-                                            m_template.m_ii.path.c_str());
-            appMessageBox(msg,
-                               _("Import Wizard"),
-                               wxOK | wxICON_EXCLAMATION | wxCENTER);
-            m_template.m_ii.tables.clear();
-            *allow = false;
-            return;
-        }
-
-        PkgStreamEnum* stream_enum = pkgfile.getStreamEnum();
-        int stream_count = stream_enum->getStreamCount();
-        if (!stream_enum)
-        {
-            wxString msg = wxString::Format(_("The package file '%s' is either empty or corrupt."),
-                                            m_template.m_ii.path.c_str());
-            appMessageBox(msg,
-                               _("Import Wizard"),
-                               wxOK | wxICON_EXCLAMATION | wxCENTER);
-            m_template.m_ii.tables.clear();
-            *allow = false;
-            return;
-        }
-    }
     
     // try to create an unmanaged connection for access and excel files
     if (m_template.m_ii.type == dbtypeAccess ||

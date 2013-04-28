@@ -11,7 +11,6 @@
 
 #include "appmain.h"
 #include "jobexportpkg.h"
-#include "pkgfile.h"
 #include "tabledoc.h"
 #include <kl/crypt.h>
 

@@ -14,7 +14,6 @@
 #include "importpages.h"
 #include "importtemplate.h"
 #include "dlgdatabasefile.h"
-#include "pkgfile.h"
 #include "jobimport.h"
 #include "jobimportpkg.h"
 #include "textview.h"
@@ -370,104 +369,6 @@ void ImportTableSelectionPage::onPageChanged()
         return;
     }
     
-    
-    // PACKAGE FILE: populate the grid from the list of tables
-    // stored in the package file
-    
-    if (m_ii->type == dbtypePackage)
-    {
-        // if the user went back in the wizard, but didn't select a new
-        // package file, we don't need to repopulate the grid
-        if (!m_last_path.IsEmpty())
-        {
-            if (m_last_path.CmpNoCase(m_ii->path) == 0)
-                return;
-        }
-        
-        // the following error checks are also done in
-        // ImportWizard::onPathSelectionPageChanging()
-        PkgFile pkgfile;
-        if (!pkgfile.open(towstr(m_ii->path), PkgFile::modeRead))
-        {
-            wxString msg = wxString::Format(_("The package file '%s' could not be read."),
-                                            m_ii->path.c_str());
-            appMessageBox(msg,
-                               _("Import Wizard"),
-                               wxOK | wxICON_EXCLAMATION | wxCENTER);
-            return;
-        }
-
-        PkgStreamEnum* stream_enum = pkgfile.getStreamEnum();
-        int stream_count = stream_enum->getStreamCount();
-        if (!stream_enum)
-        {
-            wxString msg = wxString::Format(_("The package file '%s' is either empty or corrupt."),
-                                            m_ii->path.c_str());
-            appMessageBox(msg,
-                               _("Import Wizard"),
-                               wxOK | wxICON_EXCLAMATION | wxCENTER);
-            return;
-        }
-
-        // populate the tablenames vector from the package file stream
-        std::vector<wxString> tablenames;
-        for (int i = 0; i < stream_count; ++i)
-        {
-            // don't show hidden stream names
-            wxString stream_name = stream_enum->getStreamName(i);
-            if (*(stream_name.c_str()) == '.')
-                continue;
-            
-            tablenames.push_back(stream_enum->getStreamName(i));
-        }
-
-        delete stream_enum;
-
-        // sort the tablenames vector
-        std::sort(tablenames.begin(), tablenames.end());
-
-        // populate the grid from the tablenames vector
-        int row = 0;
-        m_grid->deleteAllRows();
-        std::vector<wxString>::iterator it;
-        for (it = tablenames.begin(); it != tablenames.end(); ++it)
-        {
-            bool selected = true;
-            wxString src_tablename = *it;
-            wxString out_tablename = *it;
-            bool append = false;
-            
-            // correlate with the template
-            if (m_ii->tables.size() > 0)
-            {
-                // tables already exist in the template.  "selected" is
-                // by default off.  If the line exists in the template, use
-                // the info stored there.
-                selected = false;
-
-                ImportTableSelection* s = lookupTemplateTable(src_tablename);
-                if (s)
-                {
-                    out_tablename = s->output_tablename;
-                    append = s->append;
-                    selected = true;
-                }
-            }
-            
-            m_grid->insertRow(-1);
-            m_grid->setCellBoolean(row, ONOFF_IDX, selected);
-            m_grid->setCellString(row, SOURCE_TABLENAME_IDX, src_tablename);
-            m_grid->setCellString(row, DEST_TABLENAME_IDX, out_tablename);
-            m_grid->setCellBitmap(row, DEST_TABLENAME_IDX, GETBMP(xpm_blank_16));
-            m_grid->setCellBoolean(row, APPEND_IDX, append);
-            row++;
-        }
-        
-        checkOverlayText();
-        m_grid->refresh(kcl::Grid::refreshAll);
-        return;
-    }
-
 
     // ALL OTHER IMPORTS: get the list of tables from the import source
     //                    and populate the grid from this list
