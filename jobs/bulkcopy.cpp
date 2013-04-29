@@ -10,7 +10,7 @@
 
 
 #include "jobspch.h"
-#include "transform.h"
+#include "bulkcopy.h"
 
 
 namespace jobs
@@ -30,26 +30,26 @@ namespace jobs
 */
 
 
-// TransformJob implementation
+// BulkCopyJob implementation
 
-TransformJob::TransformJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
+BulkCopyJob::BulkCopyJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
 {
     m_config["metadata"]["type"] = L"application/vnd.kx.transform-job";
     m_config["metadata"]["version"] = 1;
 }
 
-TransformJob::~TransformJob()
+BulkCopyJob::~BulkCopyJob()
 {
 }
 
-bool TransformJob::isInputValid()
+bool BulkCopyJob::isInputValid()
 {
     // TODO: fill out
 
     return true;
 }
 
-int TransformJob::runJob()
+int BulkCopyJob::runJob()
 {
     // make sure we have a valid input
     if (!isInputValid())
@@ -98,7 +98,7 @@ int TransformJob::runJob()
     return 0;
 }
 
-void TransformJob::runPostJob()
+void BulkCopyJob::runPostJob()
 {
 }
 

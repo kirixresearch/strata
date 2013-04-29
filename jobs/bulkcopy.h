@@ -9,25 +9,25 @@
  */
 
 
-#ifndef __JOBS_TRANSFORM_H
-#define __JOBS_TRANSFORM_H
+#ifndef __JOBS_BULKCOPY_H
+#define __JOBS_BULKCOPY_H
 
 
 namespace jobs
 {
 
 
-class TransformJob : public XdJobBase
+class BulkCopyJob : public XdJobBase
 {
-    XCM_CLASS_NAME("jobs.TransformJob")
-    XCM_BEGIN_INTERFACE_MAP(TransformJob)
+    XCM_CLASS_NAME("jobs.BulkCopyJob")
+    XCM_BEGIN_INTERFACE_MAP(BulkCopyJob)
         XCM_INTERFACE_CHAIN(JobBase)
     XCM_END_INTERFACE_MAP()
 
 public:
 
-    TransformJob();
-    virtual ~TransformJob();
+    BulkCopyJob();
+    virtual ~BulkCopyJob();
 
     bool isInputValid();
     int runJob();
