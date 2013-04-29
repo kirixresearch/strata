@@ -14,6 +14,7 @@
 #include "aggregate.h"
 #include "alter.h"
 #include "append.h"
+#include "bulkcopy.h"
 #include "copy.h"
 #include "delete.h"
 #include "divide.h"
@@ -23,7 +24,6 @@
 #include "query.h"
 #include "relationship.h"
 #include "summarize.h"
-#include "bulkcopy.h"
 #include "update.h"
 
 

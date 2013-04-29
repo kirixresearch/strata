@@ -20,7 +20,7 @@ namespace jobs
 /*
 {
     "metadata" : {
-        "type" : "application/vnd.kx.transform-job",
+        "type" : "application/vnd.kx.bulkcopy-job",
         "version" : 1,
         "description" : ""
     },
@@ -34,7 +34,7 @@ namespace jobs
 
 BulkCopyJob::BulkCopyJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
 {
-    m_config["metadata"]["type"] = L"application/vnd.kx.transform-job";
+    m_config["metadata"]["type"] = L"application/vnd.kx.bulkcopy-job";
     m_config["metadata"]["version"] = 1;
 }
 
@@ -74,7 +74,7 @@ int BulkCopyJob::runJob()
 
 
 
-    // TODO: add transformation loop here
+    // TODO: add copy loop here
     tango::IJobPtr tango_job = m_db->createJob();
     setTangoJob(tango_job);
 
