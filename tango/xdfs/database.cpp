@@ -339,7 +339,7 @@ bool FsDatabase::getSetFormat(const std::wstring& path,
         info->format = tango::formatNative;
         return false;
     }
-       
+
     // figure out the config file name
     tango::IAttributesPtr attr = getAttributes();
     std::wstring definition_path = 
@@ -393,7 +393,12 @@ bool FsDatabase::getSetFormat(const std::wstring& path,
         info->format = tango::formatXbase;
         return true;
     }
-     else if (0 == wcscasecmp(ext.c_str(), L"csv") || 0 == wcscasecmp(ext.c_str(), L"icsv"))
+    if (0 == wcscasecmp(ext.c_str(), L"icsv"))
+    {
+        info->format = tango::formatTypedDelimitedText;
+        return true;
+    }
+     else if (0 == wcscasecmp(ext.c_str(), L"csv"))
     {
         info->format = tango::formatDelimitedText;
         info->delimiters = L",";
@@ -1407,13 +1412,19 @@ IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, int format)
     IXdfsSetPtr set;
     
     // open the set in the appropriate format
-    if (format == tango::formatXbase)
+    if (format == tango::formatXbase) // dbf
     {
         set = openXbaseSet(this, phys_path);
         if (set.isNull())
             return xcm::null;
     }
-     else if (format == tango::formatDelimitedText)
+     else if (format == tango::formatTypedDelimitedText) // icsv
+    {
+        set = openDelimitedTextSet(this, phys_path);
+        if (set.isNull())
+            return xcm::null;
+    }
+     else if (format == tango::formatDelimitedText) // csv or tsv
     {
         set = openDelimitedTextSet(this, phys_path);
         if (set.isNull())
@@ -1427,7 +1438,7 @@ IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, int format)
                 tset->setDelimiters(delimiters, true);
         }
     }       
-     else if (format == tango::formatFixedLengthText)
+     else if (format == tango::formatFixedLengthText) // fixed length
     {
         set = openFixedLengthTextSet(this, phys_path);
         if (set.isNull())
@@ -1786,8 +1797,11 @@ tango::IRowInserterPtr FsDatabase::bulkInsert(const std::wstring& path)
 
 tango::IStructurePtr FsDatabase::describeTable(const std::wstring& path)
 {
-    // TODO: implement
-    return xcm::null;
+    IXdsqlTablePtr tbl = openSetEx(path, tango::formatNative);
+    if (tbl.isNull())
+        return xcm::null;
+
+    return tbl->getStructure();
 }
 
 bool FsDatabase::modifyStructure(const std::wstring& path,

@@ -21,9 +21,8 @@
 #include "../xdcommon/extfileinfo.h"
 #include "drizzle_client.h"
 #include "database.h"
-#include "set.h"
 #include "iterator.h"
-
+#include "inserter.h"
 
 
 // DrizzleRowInserter class implementation

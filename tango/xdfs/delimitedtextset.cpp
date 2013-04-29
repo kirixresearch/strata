@@ -144,16 +144,15 @@ bool DelimitedTextSet::init(tango::IDatabasePtr db,
         if (xf_get_file_size(filename) < 2000000)
             rows_to_check = -1;
 
-        // originally, if we couldn't define the structure of the
-        // file, we would bail out; now simply try to determine the
-        // structure, but don't bail out if we can't determine it;
-        // the reason for this is that sometimes we need to create
-        // a set and then define the structure afterwards, such as
-        // when exporting to a text delimited file; in this case,
-        // trying to determine the rows ahead of time will cause
-        // the export to fail since the file we're exporting to
-        // doesn't have rows until after the structure is set and
-        // the row written out
+        // originally, if we couldn't define the structure of the file, we
+        // would bail out; now simply try to determine the structure, but
+        // don't bail out if we can't determine it; the reason for this is
+        // that sometimes we need to create a set and then define the
+        // structure afterwards, such as when exporting to a text delimited
+        // file; in this case, trying to determine the rows ahead of time
+        // will cause the export to fail since the file we're exporting to
+        // doesn't have rows until after the structure is set and the
+        // row written out
         determineColumns(rows_to_check, NULL);
     }
     

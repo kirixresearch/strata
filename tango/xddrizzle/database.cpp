@@ -264,7 +264,7 @@ static int sanityCheck()
 {
     const char *query = "select name from source_definition";
     drizzle_st drizzle;
-    drizzle_st* con;
+    drizzle_con_st* con;
     drizzle_result_st result;
     drizzle_return_t ret;
     char **row;
@@ -331,7 +331,7 @@ bool DrizzleDatabase::open(const std::wstring& server,
    // sanityCheck();
     
     m_error.clearError();
-    
+
     m_server = server;
     m_port = port;
     m_database = database;
@@ -342,12 +342,12 @@ bool DrizzleDatabase::open(const std::wstring& server,
     drizzle_st* con = open();
     if (!con)
         return false;
-    drizzle_close(con);
+    drizzle_free(con);
     
     
     wchar_t buf[1024];
     swprintf(buf, 1024, L"MySQL (%ls)", server.c_str());
-    m_attr->setStringAttribute(tango::dbattrDatabaseName, buf);
+    setDatabaseName(buf);
     
     
     // clear query cache -- this is an experimental measure which fixes the
@@ -385,13 +385,21 @@ drizzle_st* DrizzleDatabase::open()
         asc_server = "127.0.0.1";
 
 
-    return drizzle_create(asc_server.c_str(),
-                          (m_port != 0 ? m_port : 3306),
-                          asc_username.c_str(),
-                          asc_password.c_str(),
-                          asc_database.c_str(),
-                          NULL);
+    drizzle_options_st options;
+    options.
+    drizzle_st* db = drizzle_create(asc_server.c_str(),
+                                    (m_port != 0 ? m_port : 3306),
+                                    asc_username.c_str(),
+                                    asc_password.c_str(),
+                                    asc_database.c_str(),
+                                    NULL);
 
+    if (!db)
+        return NULL;
+
+    drizzle_set_timeout(db, 15000);
+
+    return db;
 }
 
 
@@ -416,6 +424,16 @@ void DrizzleDatabase::close()
     m_database = L"";
     m_username = L"";
     m_password = L"";
+}
+
+void DrizzleDatabase::setDatabaseName(const std::wstring& name)
+{
+    m_db_name = name;
+}
+
+std::wstring DrizzleDatabase::getDatabaseName()
+{
+    return m_db_name;
 }
 
 int DrizzleDatabase::getDatabaseType()
@@ -569,10 +587,10 @@ tango::IFileInfoEnumPtr DrizzleDatabase::getFolderInfo(const std::wstring& path)
     drizzle_result_st* result;
     char** row;
     
-    result = drizzle_query(con, "SHOW TABLES", 0, &ret);
+    result = drizzle_query_str(con, NULL, "SHOW TABLES", &ret);
     if (ret != DRIZZLE_RETURN_OK || result == NULL)
     {
-        m_error.setError(tango::errorGeneral, kl::towstring(drizzle_error(con)));
+        m_error.setError(tango::errorGeneral, kl::towstring(drizzle_error(&m_drizzle)));
         drizzle_close(con);
         return xcm::null;
     }
@@ -630,10 +648,10 @@ std::wstring DrizzleDatabase::getPrimaryKey(const std::wstring _path)
     drizzle_result_st* result;
     char** row;
     
-    result = drizzle_query(con, "SHOW TABLES", 0, &ret);
+    result = drizzle_query_str(con, NULL, "SHOW TABLES", &ret);
     if (ret != DRIZZLE_RETURN_OK || result == NULL)
     {
-        m_error.setError(tango::errorGeneral, kl::towstring(drizzle_error(con)));
+        m_error.setError(tango::errorGeneral, kl::towstring(drizzle_error(&m_drizzle)));
         drizzle_close(con);
         return L"";
     }
@@ -900,10 +918,10 @@ bool DrizzleDatabase::execute(const std::wstring& command,
             drizzle_return_t ret;
             drizzle_result_st* result;
             
-            result = drizzle_query(data, asc_command.c_str(), asc_command.length(), &ret);
+            result = drizzle_query_str(data, NULL, asc_command.c_str(), &ret);
             if (ret != DRIZZLE_RETURN_OK || result == NULL)
             {
-                m_error.setError(tango::errorGeneral, kl::towstring(drizzle_error(data)));
+                m_error.setError(tango::errorGeneral, kl::towstring(drizzle_error(&m_drizzle)));
                 drizzle_close(data);
                 return xcm::null;
             }
@@ -980,10 +998,10 @@ bool DrizzleDatabase::execute(const std::wstring& command,
             drizzle_result_st* result;
             char** row;
             
-            result = drizzle_query(con, asc_command.c_str(), asc_command.length(), &ret);
+            result = drizzle_query_str(con, NULL, asc_command.c_str(), &ret);
             if (ret != DRIZZLE_RETURN_OK || result == NULL)
             {
-                m_error.setError(tango::errorGeneral, kl::towstring(drizzle_error(con)));
+                m_error.setError(tango::errorGeneral, kl::towstring(drizzle_error(&m_drizzle)));
                 drizzle_close(con);
                 return false;
             }
@@ -996,11 +1014,6 @@ bool DrizzleDatabase::execute(const std::wstring& command,
 
         return true;
     }
-}
-
-bool DrizzleDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
-{
-    return false;
 }
 
 std::wstring DrizzleDatabase::getErrorString()
