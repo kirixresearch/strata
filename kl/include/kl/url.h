@@ -122,7 +122,7 @@ inline std::wstring urlToFilename(const std::wstring& file_url)
 }
 
 
-// transforms a filename into file:// url
+// transforms a filename into file:/// url
 
 inline std::wstring filenameToUrl(const std::wstring& _filename)
 {
@@ -130,6 +130,9 @@ inline std::wstring filenameToUrl(const std::wstring& _filename)
     
     std::wstring filename = _filename;
     kl::trim(filename);
+
+    if (filename.empty() || filename[0] != '/')
+        result += L'/';
 
     result += filename;
 
