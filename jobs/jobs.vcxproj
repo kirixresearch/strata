@@ -22,6 +22,7 @@
     <ClCompile Include="aggregate.cpp" />
     <ClCompile Include="alter.cpp" />
     <ClCompile Include="append.cpp" />
+    <ClCompile Include="bulkcopy.cpp" />
     <ClCompile Include="copy.cpp" />
     <ClCompile Include="delete.cpp" />
     <ClCompile Include="divide.cpp" />
@@ -38,7 +39,6 @@
     <ClCompile Include="query.cpp" />
     <ClCompile Include="relationship.cpp" />
     <ClCompile Include="summarize.cpp" />
-    <ClCompile Include="transform.cpp" />
     <ClCompile Include="update.cpp" />
     <ClCompile Include="util.cpp" />
   </ItemGroup>
@@ -46,6 +46,7 @@
     <ClInclude Include="aggregate.h" />
     <ClInclude Include="alter.h" />
     <ClInclude Include="append.h" />
+    <ClInclude Include="bulkcopy.h" />
     <ClInclude Include="copy.h" />
     <ClInclude Include="delete.h" />
     <ClInclude Include="divide.h" />
@@ -59,7 +60,6 @@
     <ClInclude Include="query.h" />
     <ClInclude Include="relationship.h" />
     <ClInclude Include="summarize.h" />
-    <ClInclude Include="transform.h" />
     <ClInclude Include="update.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="xdjobbase.h" />
