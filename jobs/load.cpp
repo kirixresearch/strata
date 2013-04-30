@@ -75,13 +75,6 @@ int LoadJob::runJob()
         return 0;
     }
 
-    // make sure the database is valid
-    if (m_db.isNull())
-    {
-        m_job_info->setState(jobStateFailed);
-        return 0;
-    }    
-
     // get the parameters
     kl::JsonNode params_node;
     params_node.fromString(getParameters());
@@ -93,8 +86,6 @@ int LoadJob::runJob()
         m_job_info->setState(jobStateFailed);
         return 0;
     }
-
-
 
     std::map<std::wstring, tango::IDatabasePtr> connection_pool;
 

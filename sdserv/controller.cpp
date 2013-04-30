@@ -250,6 +250,7 @@ tango::IDatabasePtr Controller::getSessionDatabase(RequestInfo& req)
 
 
 
+
 void Controller::apiFolderInfo(RequestInfo& req)
 {
     tango::IDatabasePtr db = getSessionDatabase(req);
@@ -1571,4 +1572,55 @@ void Controller::apiAlter(RequestInfo& req)
 
 void Controller::apiLoad(RequestInfo& req)
 {
+    std::wstring target_path = req.getURI();
+
+
+    RequestFileInfo fileinfo = req.getPostFileInfo(L"file");
+    if (!fileinfo.isOk())
+    {
+        returnApiError(req, "Missing file parameter");
+        return;
+    }
+
+    std::wstring icsv_name = xf_get_temp_filename(L"load", L"icsv");
+    if (!xf_move(fileinfo.temp_filename, icsv_name))
+    {
+        returnApiError(req, "Could not access uploaded file");
+        return;
+    }
+
+
+
+    jobs::IJobPtr job = jobs::createJob(L"application/vnd.kx.load-job");
+
+
+    std::wstring source_connection = L"Xdprovider=xdfs";
+    std::wstring destination_connection = g_server.getDatabaseConnectionString(L"/");
+
+    // configure the job parameters
+    kl::JsonNode params;
+
+    params["objects"].setArray();
+    kl::JsonNode objects = params["objects"];
+
+
+    // add our table to the import object
+    kl::JsonNode object = objects.appendElement();
+
+    object["source_connection"] = source_connection;
+    object["destination_connection"] = destination_connection;
+
+    object["source_path"] = icsv_name;
+    object["destination_path"] = target_path;
+
+
+    job->setParameters(params.toString());
+    job->runJob();
+    job->runPostJob();
+
+    // return success/failure to caller
+    kl::JsonNode response;
+    response["success"].setBoolean(true);
+    
+    req.write(response.toString());
 }

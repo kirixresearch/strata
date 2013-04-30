@@ -24,6 +24,7 @@
 #include <kl/memory.h>
 #include <kl/file.h>
 #include <kl/json.h>
+#include "../jobs/jobs.h"
 
 struct mg_connection;
 struct mg_request_info;

@@ -79,7 +79,6 @@ private:
 
     void returnApiError(RequestInfo& req, const char* msg, const char* code = "ERR0000");
     tango::IDatabasePtr getSessionDatabase(RequestInfo& req);
-    tango::IIteratorPtr getSessionIterator(RequestInfo& req);
 
     void apiFolderInfo(RequestInfo& req);
     void apiFileInfo(RequestInfo& req);

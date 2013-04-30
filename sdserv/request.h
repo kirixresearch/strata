@@ -28,6 +28,9 @@ public:
 class RequestFileInfo
 {
 public:
+
+    bool isOk() const { return post_filename.empty() ? false : true; }
+
     std::wstring post_filename;
     std::wstring temp_filename;
 };
@@ -76,6 +79,8 @@ public:
     std::wstring getValue(const std::wstring& key, const std::wstring& def = L"");
     std::wstring getGetValue(const std::wstring& key);
     std::wstring getPostValue(const std::wstring& key);
+    RequestFileInfo getPostFileInfo(const std::wstring& key);
+    bool movePostFile(const std::wstring& key, const std::wstring& dest_path);
     void setGetValue(const std::wstring& key, const std::wstring& value) { m_get[key] = value; }
     bool getValueExists(const std::wstring& key) const;
     bool acceptCompressed();

@@ -600,6 +600,19 @@ std::wstring RequestInfo::getPostValue(const std::wstring& key)
     return L"";
 }
 
+
+RequestFileInfo RequestInfo::getPostFileInfo(const std::wstring& key)
+{
+    std::map<std::wstring, RequestFileInfo>::iterator it;
+
+    it = m_files.find(key);
+
+    if (it == m_files.end())
+        return RequestFileInfo();
+
+    return it->second;
+}
+
 bool RequestInfo::acceptCompressed()
 {
     return m_accept_compressed;
