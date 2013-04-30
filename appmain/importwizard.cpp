@@ -314,7 +314,7 @@ void ImportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
         return;
     }
 
-    if (m_template.m_ii.path.IsEmpty())
+    if (m_template.m_ii.path.empty())
     {
         // the path was empty
         appMessageBox(_("A valid location needs to be specified to continue."),
@@ -342,22 +342,22 @@ void ImportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
 
     // quick space cleanup; then see if we have a delimited list or not; 
     // delimited list is characterized by a quote in the path (see #3 above)
-    m_template.m_ii.path.Trim(true);
-    m_template.m_ii.path.Trim(false);
+    kl::trim(m_template.m_ii.path);
+
     size_t pos = m_template.m_ii.path.find(L"\"");
     if (pos == m_template.m_ii.path.npos)
     {
         // no delimter; just save the string
-        paths.push_back(towstr(m_template.m_ii.path));
+        paths.push_back(m_template.m_ii.path);
     }
      else
     {
         // get an array of strings from the space-delimited string
-        kl::parseDelimitedList(towstr(m_template.m_ii.path), paths, wxT(' '), true);
+        kl::parseDelimitedList(m_template.m_ii.path, paths, wxT(' '), true);
 
         // if no strings were added to the array, add the whole path
         if (paths.size() == 0)
-            paths.push_back(towstr(m_template.m_ii.path));
+            paths.push_back(m_template.m_ii.path);
     }
 
 
@@ -754,7 +754,7 @@ void ImportWizard::onWizardFinished(kcl::Wizard* wizard)
 
 bool ImportWizard::loadTemplate(const wxString& path)
 {
-    return m_template.load(path);
+    return m_template.load(towstr(path));
 }
 
 bool ImportWizard::saveTemplate(const wxString& path)
@@ -766,7 +766,7 @@ bool ImportWizard::saveTemplate(const wxString& path)
     m_table_selection_page->savePageData();
     m_delimitedtext_settings_page->savePageData();
 
-    return m_template.save(path);
+    return m_template.save(towstr(path));
 }
 
 
@@ -775,8 +775,8 @@ void ImportWizard::onSave(wxCommandEvent& evt)
     if (!g_app->isDatabaseOpen())
     {
         appMessageBox(_("To save the import template, please create or open a project"),
-                           _("Import Wizard"),
-                           wxOK | wxICON_EXCLAMATION | wxCENTER);
+                      _("Import Wizard"),
+                      wxOK | wxICON_EXCLAMATION | wxCENTER);
 
         return;
     }

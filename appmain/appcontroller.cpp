@@ -5009,12 +5009,12 @@ bool AppController::openExcel(const wxString& location, int* site_id)
         job->setFilename(towstr(fn));
             
         selections = dlg.GetSelections();
-        int i, count = selections.Count();
+        size_t i, count = selections.Count();
         if (count == 0)
         {
             appMessageBox(_("No tables were opened from the Microsoft Excel file because no tables in the list were selected."),
-                               APPLICATION_NAME,
-                               wxOK | wxICON_INFORMATION | wxCENTER);
+                          APPLICATION_NAME,
+                          wxOK | wxICON_INFORMATION | wxCENTER);
 
             // we return true since we've already shown an
             // error message to the user (returning false
@@ -5540,7 +5540,7 @@ jobs::IJobPtr AppController::execute(const wxString& location)
         if (mime_type == L"application/vnd.kx.import")
         {
             ImportTemplate t;
-            if (!t.load(location))
+            if (!t.load(towstr(location)))
                 return xcm::null;
             return t.execute();
         }
@@ -5593,7 +5593,7 @@ jobs::IJobPtr AppController::execute(const wxString& location)
          else if (type == L"import")
         {
             ImportTemplate t;
-            if (!t.load(location))
+            if (!t.load(towstr(location)))
                 return xcm::null;
             return t.execute();
         }
@@ -6370,8 +6370,7 @@ void AppController::showImportWizard(const ImportInfo& info,
         ImportWizard* wizard = new ImportWizard;
         wizard->sigImportWizardFinished.connect(&onImportWizardFinished);
 
-        if (info.base_path.Length() > 0)
-            wizard->getTemplate().m_ii = info;
+        if (info.base_path.length() > 0) wizard->getTemplate().m_ii = info;
             
         if (!location.IsEmpty())
         {

@@ -101,7 +101,7 @@ ImportTemplate::ImportTemplate()
 
 }
 
-bool ImportTemplate::load(const wxString& path)
+bool ImportTemplate::load(const std::wstring& path)
 {
     // try to load the path in the new JSON format
     if (loadJson(path))
@@ -112,11 +112,11 @@ bool ImportTemplate::load(const wxString& path)
     return loadJsonFromNode(path);
 }
 
-bool ImportTemplate::loadJson(const wxString& path)
+bool ImportTemplate::loadJson(const std::wstring& path)
 {
     m_ii.tables.clear();
     
-    kl::JsonNode root = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(path));
+    kl::JsonNode root = JsonConfig::loadFromDb(g_app->getDatabase(), path);
     if (!root.isOk())
         return false;
 
@@ -257,9 +257,9 @@ bool ImportTemplate::loadJson(const wxString& path)
     return true;
 }
 
-bool ImportTemplate::loadJsonFromNode(const wxString& path)
+bool ImportTemplate::loadJsonFromNode(const std::wstring& path)
 {
-    kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(path));
+    kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), path);
     if (!node.isOk())
         return false;
 
@@ -695,7 +695,7 @@ bool usesConnectionPage(int type)
     return false;
 }
 
-bool ImportTemplate::save(const wxString& path)
+bool ImportTemplate::save(const std::wstring& path)
 {
     kl::JsonNode root;
     
@@ -710,30 +710,30 @@ bool ImportTemplate::save(const wxString& path)
     if (usesConnectionPage(m_ii.type))
     {
         kl::JsonNode connection_info = root["connection_info"];
-        connection_info["server"] = towstr(m_ii.server);
+        connection_info["server"] = m_ii.server;
         connection_info["port"] = m_ii.port;
-        connection_info["database"] = towstr(m_ii.database);
-        connection_info["username"] = towstr(m_ii.username);
-        connection_info["password"] = kl::encryptString(towstr(m_ii.password), PASSWORD_KEY);
+        connection_info["database"] = m_ii.database;
+        connection_info["username"] = m_ii.username;
+        connection_info["password"] = kl::encryptString(m_ii.password, PASSWORD_KEY);
     }
     else
     {
-        if (m_ii.path.Length() > 0)
+        if (m_ii.path.length() > 0)
         {
-            root["path"] = towstr(m_ii.path);
+            root["path"] = m_ii.path;
         }
     }
 
-    if (m_ii.base_path.Length() > 0)
+    if (m_ii.base_path.length() > 0)
     {
-        root["target_path"] = towstr(m_ii.base_path);
+        root["target_path"] = m_ii.base_path;
     }
 
     if (m_ii.type == dbtypeDelimitedText)
     {
         kl::JsonNode delimited_text = root["delimited_text"];
-        delimited_text["delimiter"] = towstr(m_ii.delimiters);
-        delimited_text["text_qualifier"] = towstr(m_ii.text_qualifier);
+        delimited_text["delimiter"] = m_ii.delimiters;
+        delimited_text["text_qualifier"] = m_ii.text_qualifier;
         delimited_text["first_row_header"].setBoolean(m_ii.first_row_header);
     }
     
@@ -757,15 +757,15 @@ bool ImportTemplate::save(const wxString& path)
 
         if (table_it->type == ImportTableSelection::typeTable)
         {
-            objects_node["input"] = towstr(table_it->input_tablename);
-            objects_node["output"] = towstr(table_it->output_tablename);
+            objects_node["input"] = table_it->input_tablename;
+            objects_node["output"] = table_it->output_tablename;
             if (table_it->append)
                 objects_node["append"].setBoolean(true);
         }
          else if (table_it->type == ImportTableSelection::typeQuery)
         {
-            objects_node["query"] = towstr(table_it->query);
-            objects_node["output"] = towstr(table_it->output_tablename);
+            objects_node["query"] = table_it->query;
+            objects_node["output"] = table_it->output_tablename;
             if (table_it->append)
                 objects_node["append"].setBoolean(true);
         }
@@ -773,7 +773,7 @@ bool ImportTemplate::save(const wxString& path)
     
 
 
-    return JsonConfig::saveToDb(root, g_app->getDatabase(), towstr(path), L"application/vnd.kx.import");
+    return JsonConfig::saveToDb(root, g_app->getDatabase(), path, L"application/vnd.kx.import");
 }
 
 static void onImportJobFinished(jobs::IJobPtr job)
@@ -799,18 +799,16 @@ jobs::IJobPtr ImportTemplate::execute()
 
         // handle empty base path
         if (new_output_path.IsEmpty())
-            new_output_path += wxT('/');
+            new_output_path += "/";
 
         // handle no slash between base path and tablename
-        if (new_output_path.Last() != wxT('/') &&
-            !it->output_tablename.StartsWith(wxT("/")))
+        if (new_output_path.Last() != '/' && it->output_tablename.substr(0, 1) == L"/")
         {
-            new_output_path += wxT("/");
+            new_output_path += "/";
         }
 
         // handle double slash between base path and tablename
-        if (new_output_path.Last() == wxT('/') &&
-            it->output_tablename.StartsWith(wxT("/")))
+        if (new_output_path.Last() == '/' && it->output_tablename.substr(0, 1) == L"/")
         {
             new_output_path.RemoveLast();
         }
@@ -821,181 +819,8 @@ jobs::IJobPtr ImportTemplate::execute()
     }
 
 
-    // we have to do this here, since the path selection page is now used
-    // for these types of imports (if we have a path of c:\myfile.txt,
-    // when we try to create an unmanaged connection, it will fail
-    // because that path is not a folder, it is a file
-    if (m_ii.type == dbtypeXbase ||
-        m_ii.type == dbtypeDelimitedText)
-        m_ii.path = wxEmptyString;
-        
-    ImportJob* job = new ImportJob;
-    job->sigJobFinished().connect(&onImportJobFinished);
-    job->setImportType(m_ii.type);
-    job->setFilename(towstr(m_ii.path));
-    job->setConnectionInfo(towstr(m_ii.server),
-                           m_ii.port,
-                           towstr(m_ii.database),
-                           towstr(m_ii.username),
-                           towstr(m_ii.password));
 
-    // set the job title
-    if (m_ii.type == dbtypePackage ||
-        m_ii.type == dbtypeExcel ||
-        m_ii.type == dbtypeAccess)
-    {
-        wxString title = m_ii.path.AfterLast(PATH_SEPARATOR_CHAR);
-        wxString job_title = wxString::Format(_("Importing from '%s'"),
-                                              title.c_str());
-        
-        job->getJobInfo()->setTitle(towstr(job_title));
-    }
-     else if (m_ii.type == dbtypeSqlServer ||
-              m_ii.type == dbtypeMySql     ||
-              m_ii.type == dbtypeOracle    ||
-              m_ii.type == dbtypeOdbc      ||
-              m_ii.type == dbtypeDb2)
-    {
-        wxString db_name;
-        switch (m_ii.type)
-        {
-            case dbtypeSqlServer:   db_name = _("SQL Server");  break;
-            case dbtypeMySql:       db_name = _("MySQL");       break;
-            case dbtypeOracle:      db_name = _("Oracle");      break;
-            case dbtypeOdbc:        db_name = _("ODBC");        break;
-            case dbtypeDb2:         db_name = _("DB2");         break;
-        }
-        
-        wxString job_title = wxString::Format(_("Importing from %s on '%s'"),
-                                              db_name.c_str(), m_ii.server.c_str());
-        
-        job->getJobInfo()->setTitle(towstr(job_title));
-    }
-
-    for (it = m_ii.tables.begin(); it != m_ii.tables.end(); ++it)
-    {
-        ImportJobInfo job_import_info;
-
-        if (!it->selected)
-            continue;
-
-        if (it->type == ImportTableSelection::typeTable)
-        {
-            job_import_info.delimiters = m_ii.delimiters;
-            job_import_info.text_qualifier = m_ii.text_qualifier;
-            job_import_info.first_row_header = m_ii.first_row_header;
-
-            job_import_info.input_path = it->input_tablename;
-            job_import_info.output_path = it->output_tablename;
-            job_import_info.append = it->append;
-            job_import_info.row_width = it->row_width;
-            job_import_info.field_info.clear();
-
-
-            if (m_ii.type == dbtypeFixedLengthText)
-            {
-                // fill out the field info for the fixed-length text set
-                FieldTransInfo fi;
-
-                std::vector<FixedLengthField>::iterator field_it;
-                for (field_it = it->fixed_fields.begin();
-                     field_it != it->fixed_fields.end();
-                     ++field_it)
-                {
-                    if (field_it->skip)
-                        continue;
-
-                    fi.input_offset = field_it->input_offset;
-                    fi.input_width = field_it->input_width;
-
-                    fi.output_name = field_it->output_name;
-                    fi.output_type = field_it->output_type;
-                    fi.output_width = field_it->output_width;
-                    fi.output_scale = field_it->output_scale;
-
-                    if (field_it->custom_expression.Length() > 0)
-                    {
-                        fi.expression = field_it->custom_expression;
-                    }
-                     else
-                    {
-                        fi.expression = field_it->hidden_expression;
-                    }
-
-                    job_import_info.field_info.push_back(fi);
-                }
-            }
-             else if (it->field_mapping_name.Length() > 0)
-            {
-                // try to find an appropriate field mapping
-                ImportTableSelection field_mapping;
-
-                bool found = false;
-
-                std::vector<ImportTableSelection>::iterator fm_it;
-
-                for (fm_it = m_ii.field_mappings.begin();
-                     fm_it != m_ii.field_mappings.end();
-                     ++fm_it)
-                {
-                    if (0 == fm_it->field_mapping_name.CmpNoCase(
-                                                      it->field_mapping_name))
-                    {
-                        field_mapping = *fm_it;
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found)
-                {
-                    // problem: specified field mapping could not
-                    // be found in the field mapping array
-                    return xcm::null;
-                }
-
-
-                job_import_info.query = field_mapping.query;
-
-
-                FieldTransInfo fi;
-
-                std::vector<FieldSelection>::iterator field_it;
-                for (field_it = field_mapping.output_fields.begin();
-                     field_it != field_mapping.output_fields.end();
-                     ++field_it)
-                {
-                    fi.input_name = field_it->input_name;
-                    fi.input_type = field_it->input_type;
-                    fi.input_width = field_it->input_width;
-                    fi.input_scale = field_it->input_scale;
-                    fi.input_offset = field_it->input_offset;
-
-                    fi.output_name = field_it->output_name;
-                    fi.output_type = field_it->output_type;
-                    fi.output_width = field_it->output_width;
-                    fi.output_scale = field_it->output_scale;
-
-                    fi.expression = field_it->expression;
-
-                    job_import_info.field_info.push_back(fi);
-                }
-            }
-        }
-         else if (it->type == ImportTableSelection::typeQuery)
-        {
-            job_import_info.query = it->query;
-            job_import_info.output_path = it->output_tablename;
-            job_import_info.append = it->append;
-            job_import_info.field_info.clear();
-        }
-
-        job->addImportSet(job_import_info);
-    }
-
-    g_app->getJobQueue()->addJob(job, jobStateRunning);
-
-    return static_cast<jobs::IJob*>(job);
+    return xcm::null;
 }
 
 

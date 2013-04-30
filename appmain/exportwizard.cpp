@@ -270,15 +270,15 @@ void ExportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
     }
     
     ExportInfo* ei = &(m_template.m_ei);
-    wxString ext = ei->path.AfterLast(wxT('.'));
+    std::wstring ext = kl::afterLast(ei->path, '.');
     
-    if (ei->path.IsEmpty())
+    if (ei->path.empty())
     {
         // an empty path is not a valid path
         appMessageBox(_("A valid location needs to be specified to continue."),
-                           _("Invalid Location"),
-                           wxOK | wxICON_EXCLAMATION | wxCENTER,
-                           g_app->getMainWindow());
+                      _("Invalid Location"),
+                      wxOK | wxICON_EXCLAMATION | wxCENTER,
+                      g_app->getMainWindow());
         *allow = false;
         return;
     }
@@ -286,16 +286,16 @@ void ExportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
     if (isFileExport(ei->type))
     {
         // a directory path is not a valid file path
-        if (xf_get_directory_exist(towstr(ei->path)))
+        if (xf_get_directory_exist(ei->path))
         {
             appMessageBox(_("The specified location is a folder.  Please specify a valid file location to continue."),
-                               _("Invalid Location"),
-                               wxOK | wxICON_EXCLAMATION | wxCENTER);
+                          _("Invalid Location"),
+                          wxOK | wxICON_EXCLAMATION | wxCENTER);
             *allow = false;
             return;
         }
         
-        if (xf_get_file_exist(towstr(ei->path)))
+        if (xf_get_file_exist(ei->path))
         {
             int ID_AppendToFile = 100;
             int ID_OverwriteFile = 101;
@@ -325,16 +325,16 @@ void ExportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
          else
         {
             // fix wrong file extension for package files
-            if (ei->type == dbtypePackage && ext.CmpNoCase(wxT("kpg")) != 0)
-                ei->path += wxT(".kpg");
+            if (ei->type == dbtypePackage && kl::iequals(ext, L"kpg"))
+                ei->path += L".kpg";
             
             // fix wrong file extension for Microsoft Access files
-            if (ei->type == dbtypeAccess && ext.CmpNoCase(wxT("mdb")) != 0)
-                ei->path += wxT(".mdb");
+            if (ei->type == dbtypeAccess && kl::iequals(ext, L"mdb"))
+                ei->path += L".mdb";
             
             // fix wrong file extension for Microsoft Excel files
-            if (ei->type == dbtypeExcel && ext.CmpNoCase(wxT("xls")) != 0)
-                ei->path += wxT(".xls");
+            if (ei->type == dbtypeExcel && kl::iequals(ext, L"xls"))
+                ei->path += L".xls";
             
             // check to see if the path entered is valid
             /*
@@ -350,11 +350,11 @@ void ExportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
                 valid = false;
             */
             
-            if (!xf_is_valid_file_path(towstr(ei->path)))
+            if (!xf_is_valid_file_path(ei->path))
             {
                 appMessageBox(_("The specified file path is invalid.  Please specify a valid file path to continue."),
-                                   _("Invalid File"),
-                                   wxOK | wxICON_EXCLAMATION | wxCENTER);
+                              _("Invalid File"),
+                              wxOK | wxICON_EXCLAMATION | wxCENTER);
                 *allow = false;
                 return;
             }
@@ -369,11 +369,11 @@ void ExportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
     if (isFolderExport(ei->type))
     {
         // do we have a valid folder path?
-        if (!xf_get_directory_exist(towstr(ei->path)))
+        if (!xf_get_directory_exist(ei->path))
         {
             appMessageBox(_("The specified folder path is invalid.  Please specify a valid folder path to continue."),
-                               _("Invalid Folder"),
-                               wxOK | wxICON_EXCLAMATION | wxCENTER);
+                          _("Invalid Folder"),
+                          wxOK | wxICON_EXCLAMATION | wxCENTER);
             *allow = false;
             return;
         }
@@ -633,7 +633,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
     
     if (m_template.m_ei.type == dbtypePackage)
     {
-        if (!xf_get_file_exist(towstr(m_template.m_ei.path)) ||
+        if (!xf_get_file_exist(m_template.m_ei.path) ||
              m_template.m_ei.overwrite_file)
         {
             sigExportWizardFinished(this);

@@ -85,7 +85,7 @@ public:
     int input_offset;
     int input_width;
 
-    wxString output_name;
+    std::wstring output_name;
     int output_type;
     int output_width;
     int output_scale;
@@ -93,12 +93,12 @@ public:
     bool skip;
     bool trim_leading_spaces;
     bool trim_leading_zeros;
-    wxString decimal_separator;
-    wxString negative_sign;
-    wxString date_order;
-    wxString boolean_format;
-    wxString custom_expression;
-    wxString hidden_expression;
+    std::wstring decimal_separator;
+    std::wstring negative_sign;
+    std::wstring date_order;
+    std::wstring boolean_format;
+    std::wstring custom_expression;
+    std::wstring hidden_expression;
 };
 
 
@@ -177,20 +177,20 @@ public:
 
 public:
 
-    wxString input_name;
+    std::wstring input_name;
     int input_type;
     int input_width;
     int input_scale;
     int input_offset;
 
-    wxString output_name;
+    std::wstring output_name;
     int output_type;
     int output_width;
     int output_scale;
 
     int dynamic;
     bool dyn_state;         // for the grid
-    wxString expression;
+    std::wstring expression;
 };
 
 
@@ -255,10 +255,10 @@ public:
     bool show;
     bool selected;
     bool append;
-    wxString input_tablename;
-    wxString output_tablename;
-    wxString field_mapping_name;
-    wxString query;
+    std::wstring input_tablename;
+    std::wstring output_tablename;
+    std::wstring field_mapping_name;
+    std::wstring query;
     std::vector<FieldSelection> output_fields;
 
     // fixed length text settings
@@ -273,10 +273,10 @@ public:
 
     ImportInfo()
     {
-        base_path = wxT("/");
-        delimiters = wxT(",");
-        text_qualifier = wxT("\"");
-        date_format_str = wxT("YMDhmsl");
+        base_path = L"/";
+        delimiters = L",";
+        text_qualifier = L"\"";
+        date_format_str = L"YMDhmsl";
         first_row_header = false;
     }
 
@@ -307,12 +307,12 @@ public:
 
     std::vector<ImportTableSelection> tables;
     std::vector<ImportTableSelection> field_mappings;
-    wxString base_path;
+    std::wstring base_path;
 
     // delimited text settings
-    wxString delimiters;
-    wxString text_qualifier;
-    wxString date_format_str;
+    std::wstring delimiters;
+    std::wstring text_qualifier;
+    std::wstring date_format_str;
     bool first_row_header;
 };
 
@@ -323,14 +323,14 @@ public:
 
     ImportTemplate();
 
-    bool load(const wxString& path);
-    bool save(const wxString& path);
+    bool load(const std::wstring& path);
+    bool save(const std::wstring& path);
     jobs::IJobPtr execute();
     
 public:
 
-    bool loadJson(const wxString& path);
-    bool loadJsonFromNode(const wxString& path);
+    bool loadJson(const std::wstring& path);
+    bool loadJsonFromNode(const std::wstring& path);
 
 public:
 
@@ -346,8 +346,7 @@ public:
      bool operator()(const ImportTableSelection& x,
                      const ImportTableSelection& y) const                
      {
-        return x.input_tablename.CmpNoCase(y.input_tablename) < 0 ?
-                                                true : false;
+        return wcscasecmp(x.input_tablename.c_str(), y.input_tablename.c_str()) < 0 ? true : false;
      }
 };
 

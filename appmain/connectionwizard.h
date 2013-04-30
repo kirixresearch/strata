@@ -75,17 +75,17 @@ public:
     {
         type = dbtypeUndefined;
         last_type = dbtypeUndefined;
-        description = wxT("");
+        description = L"";
 
-        server = wxT("");
+        server = L"";
         port = 0;
-        database = wxT("");
-        username = wxT("");
-        password = wxT("");
+        database = L"";
+        username = L"";
+        password = L"";
         save_password = false;
 
-        path = wxT("");
-        filter = wxT("");
+        path = L"";
+        filter = L"";
 
         kpg_compressed = true;
         kpg_version = 2;
@@ -144,23 +144,23 @@ public:
                               // this is the connection type before the change
     wxString description;
 
-    // -- used for databases --
-    wxString server;
+    // used for databases
+    std::wstring server;
     int port;
-    wxString database;
-    wxString username;
-    wxString password;
+    std::wstring database;
+    std::wstring username;
+    std::wstring password;
     bool save_password;
 
-    // -- used for directories and data projects --
-    wxString path;
-    wxString filter;
+    // used for directories and data projects
+    std::wstring path;
+    std::wstring filter;
 
-    // -- used for package files only --
+    // used for package files only
     bool kpg_compressed;
     int kpg_version;
 
-    // -- live connection ptr --
+    // live connection ptr
     IConnectionPtr m_conn_ptr;
 };
 
@@ -244,7 +244,6 @@ public:
 
 public:
 
-    // -- IDocument --
     bool initDoc(IFramePtr frame,
                  IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,
@@ -253,8 +252,8 @@ public:
     wxWindow* getDocumentWindow();
     void setDocumentFocus();
 
-    void setConnectionString(const wxString& cstr);
-    wxString getConnectionString();
+    void setConnectionString(const std::wstring& cstr);
+    std::wstring getConnectionString();
     
     void setConnectionInfo(const ConnectionInfo& cinfo);
     ConnectionInfo getConnectionInfo();
@@ -266,8 +265,7 @@ private:
     
     // wizard page's connected signals
     void onDataSourceSelectionPageChanged();
-    void onDataSourceSelectionPageChanging(bool forward,
-                                           bool* allow);
+    void onDataSourceSelectionPageChanging(bool forward, bool* allow);
     
     // wizard's connected signals
     void onConnectionTypeChanged(int type);

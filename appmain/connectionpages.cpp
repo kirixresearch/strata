@@ -295,7 +295,7 @@ bool PathSelectionPage::onPageChanging(bool forward)
         return allow;
     }
 
-    if (m_ci->path.IsEmpty())
+    if (m_ci->path.empty())
     {
         // the path was empty
         appMessageBox(_("A valid location needs to be specified to continue."),
@@ -311,7 +311,7 @@ bool PathSelectionPage::onPageChanging(bool forward)
     // see if the directory exists
     if (m_ci->type == dbtypeFilesystem)
     {
-        xf_dirhandle_t dir_handle = xf_opendir(towstr(m_ci->path));
+        xf_dirhandle_t dir_handle = xf_opendir(m_ci->path);
         if (dir_handle != NULL)
         {
             // we successfully opened the directory
@@ -869,13 +869,13 @@ void DataSourceSelectionPage::populate()
     // to the corresponding grid row
 
     int row_count = m_grid->getRowCount();
-    wxString cell_str;
+    std::wstring cell_str;
 
     for (i = 0; i < row_count; ++i)
     {
-        cell_str = m_grid->getCellString(i, 0);
+        cell_str = towstr(m_grid->getCellString(i, 0));
 
-        if (m_ci->server.CmpNoCase(cell_str) == 0)
+        if (kl::iequals(m_ci->server, cell_str))
         {
             m_grid->moveCursor(i, 0);
             break;

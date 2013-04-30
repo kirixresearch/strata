@@ -315,104 +315,104 @@ void ConnectionWizard::setDocumentFocus()
 // User Id     - user name used for authentication
 // Password    - password used for authentication
 
-wxString ConnectionWizard::getConnectionString()
+std::wstring ConnectionWizard::getConnectionString()
 {
-    wxString result;
-    wxString database;
+    std::wstring result;
+    std::wstring database;
     
     database = m_ci.database;
     
     switch (m_ci.type)
     {
         case dbtypeXdnative:
-            result += wxT("Xdprovider=xdnative;");
+            result += L"Xdprovider=xdnative;";
             database = m_ci.path;
             break;
         case dbtypeMySql:
             #ifdef __WXMSW__
-            result += wxT("Xdprovider=xdodbc;Xddbtype=mysql;");
+            result += L"Xdprovider=xdodbc;Xddbtype=mysql;";
             #else
-            result += wxT("Xdprovider=xddrizzle;");
-            //result += wxT("Xdprovider=xdmysql;");
+            result += L"Xdprovider=xddrizzle;";
+            //result += L"Xdprovider=xdmysql;";
             #endif
             break;
         case dbtypeOracle:
-            result += wxT("Xdprovider=xdoracle;");
+            result += L"Xdprovider=xdoracle;";
             break;
         case dbtypePostgres:
-            result += wxT("Xdprovider=xdpgsql;");
+            result += L"Xdprovider=xdpgsql;";
             break;
         case dbtypeOdbc:
-            result += wxT("Xdprovider=xdodbc;Xddbtype=dsn;");
+            result += L"Xdprovider=xdodbc;Xddbtype=dsn;";
             break;
         case dbtypeDb2:
-            result += wxT("Xdprovider=xdodbc;Xddbtype=db2;");
+            result += L"Xdprovider=xdodbc;Xddbtype=db2;";
             break;
         case dbtypeSqlServer:
-            result += wxT("Xdprovider=xdodbc;Xddbtype=mssql;");
+            result += L"Xdprovider=xdodbc;Xddbtype=mssql;";
             break;
         case dbtypeAccess:
-            result += wxT("Xdprovider=xdodbc;Xddbtype=access");
+            result += L"Xdprovider=xdodbc;Xddbtype=access";
             database = m_ci.path;
             break;
         case dbtypeExcel:
             // probably doesn't work yet
-            result += wxT("Xdprovider=xdfs;");
+            result += L"Xdprovider=xdfs;";
             database = m_ci.path;
             break;
         case dbtypeFilesystem:
-            result += wxT("Xdprovider=xdfs;");
+            result += L"Xdprovider=xdfs;";
             database = m_ci.path;
             break;
         case dbtypeClient:
-            result += wxT("Xdprovider=xdclient;");
+            result += L"Xdprovider=xdclient;";
             break;
         case dbtypeXbase:
-            result += wxT("Xdprovider=xdfs;Xdfiletype=xbase;");
+            result += L"Xdprovider=xdfs;Xdfiletype=xbase;";
             database = m_ci.path;
             break;
         case dbtypeDelimitedText:
-            result += wxT("Xdprovider=xdfs;Xdfiletype=delimitedtext;");
+            result += L"Xdprovider=xdfs;Xdfiletype=delimitedtext;";
             database = m_ci.path;
             break;
         case dbtypeFixedLengthText:
-            result += wxT("Xdprovider=xdfs;Xdfiletype=fixedtext;");
+            result += L"Xdprovider=xdfs;Xdfiletype=fixedtext;";
             database = m_ci.path;
             break;
     }
     
-    if (m_ci.server.Length() > 0)
+    if (m_ci.server.length() > 0)
     {
-        result += wxT("Host=");
+        result += L"Host=";
         result += m_ci.server;
-        result += wxT(";");
+        result += L";";
     }
     
     if (m_ci.port != 0)
     {
-        result += wxString::Format(wxT("Port=%d;"), m_ci.port);
+        result += L"Port=" + kl::itowstring(m_ci.port) + L";";
     }
     
-    result += wxString::Format(wxT("Database=%s;"), database.c_str());
+    result += L"Database=" + database + L";";
     
-    if (m_ci.username.Length() > 0)
+    if (m_ci.username.length() > 0)
     {
-        result += wxString::Format(wxT("User ID=%s;"), m_ci.username.c_str());
+        result += L"User ID=" + m_ci.username + L";";
     }
     
-    if (m_ci.password.Length() > 0)
+    if (m_ci.password.length() > 0)
     {
-        result += wxString::Format(wxT("Password=%s;"), m_ci.password.c_str());
+        result += L"Password=" + m_ci.password + L";";
     }
     
     return result;
 }
 
 
-void ConnectionWizard::setConnectionString(const wxString& str)
+void ConnectionWizard::setConnectionString(const std::wstring& str)
 {
     tango::IConnectionStrPtr cstr = tango::createConnectionStr();
-    cstr->parse(towstr(str));
+    cstr->parse(str);
     
     bool xdfs = false;
     
