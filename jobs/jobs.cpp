@@ -14,7 +14,7 @@
 #include "aggregate.h"
 #include "alter.h"
 #include "append.h"
-#include "bulkcopy.h"
+#include "load.h"
 #include "copy.h"
 #include "delete.h"
 #include "divide.h"
@@ -57,8 +57,8 @@ IJobPtr createJob(const std::wstring job_class)
         return static_cast<IJob*>(new RelationshipJob);
     if (job_class == L"application/vnd.kx.summarize-job")
         return static_cast<IJob*>(new SummarizeJob);
-    if (job_class == L"application/vnd.kx.bulkcopy-job")
-        return static_cast<IJob*>(new BulkCopyJob);
+    if (job_class == L"application/vnd.kx.load-job")
+        return static_cast<IJob*>(new LoadJob);
     if (job_class == L"application/vnd.kx.update-job")
         return static_cast<IJob*>(new UpdateJob);
 

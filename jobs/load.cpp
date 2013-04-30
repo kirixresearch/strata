@@ -10,46 +10,60 @@
 
 
 #include "jobspch.h"
-#include "bulkcopy.h"
+#include "load.h"
 
 
 namespace jobs
 {
 
 // example:
+
 /*
 {
     "metadata" : {
-        "type" : "application/vnd.kx.bulkcopy-job",
+        "type" : "application/vnd.kx.load-job",
         "version" : 1,
         "description" : ""
     },
     "params": {
+
+        objects: [
+
+            {
+                source_connection: "",
+                source_object: "",
+
+                destination_connection: "",
+                destination_object: ""
+            }
+        ]
+
+
     }
 }
 */
 
 
-// BulkCopyJob implementation
+// LoadJob implementation
 
-BulkCopyJob::BulkCopyJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
+LoadJob::LoadJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
 {
-    m_config["metadata"]["type"] = L"application/vnd.kx.bulkcopy-job";
+    m_config["metadata"]["type"] = L"application/vnd.kx.load-job";
     m_config["metadata"]["version"] = 1;
 }
 
-BulkCopyJob::~BulkCopyJob()
+LoadJob::~LoadJob()
 {
 }
 
-bool BulkCopyJob::isInputValid()
+bool LoadJob::isInputValid()
 {
     // TODO: fill out
 
     return true;
 }
 
-int BulkCopyJob::runJob()
+int LoadJob::runJob()
 {
     // make sure we have a valid input
     if (!isInputValid())
@@ -73,32 +87,101 @@ int BulkCopyJob::runJob()
     params_node.fromString(getParameters());
 
 
-
-    // TODO: add copy loop here
-    tango::IJobPtr tango_job = m_db->createJob();
-    setTangoJob(tango_job);
-
-
-
-    if (tango_job->getCancelled())
+    tango::IDatabaseMgrPtr dbmgr = tango::getDatabaseMgr();
+    if (dbmgr.isNull())
     {
-        m_job_info->setState(jobStateCancelling);
+        m_job_info->setState(jobStateFailed);
         return 0;
     }
 
-    if (tango_job->getStatus() == tango::jobFailed)
-    {
-        m_job_info->setState(jobStateFailed);
 
-        // TODO: need to decide how to handle error strings; these need to 
-        // be translated, so shouldn't be in this class
-        //m_job_info->setProgressString(towstr(_("Modify failed: The table may be in use by another user.")));
+
+    std::map<std::wstring, tango::IDatabasePtr> connection_pool;
+
+    kl::JsonNode objects_node = params_node["objects"];
+    size_t i, cnt = objects_node.getChildCount();
+    for (i = 0; i < cnt; ++i)
+    {
+        kl::JsonNode object = objects_node[i];
+
+
+        std::wstring source_connection = object["source_connection"];
+        std::wstring destination_connection = object["destination_connection"];
+
+        std::wstring source_path = object["source_path"];
+        std::wstring destination_path = object["destination_path"];
+
+
+        tango::IDatabasePtr source_db;
+        tango::IDatabasePtr destination_db;
+
+        source_db = connection_pool[source_connection];
+        if (source_db.isNull())
+        {
+            source_db = dbmgr->open(source_connection);
+            connection_pool[source_connection] = source_db;
+        }
+
+        destination_db = connection_pool[destination_connection];
+        if (destination_db.isNull())
+        {
+            destination_db = dbmgr->open(destination_connection);
+            connection_pool[destination_connection] = destination_db;
+        }
+
+
+        if (source_db.isNull() || destination_db.isNull())
+        {
+            m_job_info->setState(jobStateFailed);
+            return 0;
+        }
+
+
+
+        tango::IIteratorPtr source_iter = source_db->createIterator(source_path, L"", L"", L"", NULL);
+
+        if (source_iter.isNull())
+        {
+            m_job_info->setState(jobStateFailed);
+            return 0;
+        }
+
+
+
+        // right now there is no transformation happening -- just copy the whole table
+
+        tango::CopyInfo info;
+        info.iter_input = source_iter;
+        info.output = destination_path;
+        
+        // TODO: add copy loop here
+        tango::IJobPtr tango_job = destination_db->createJob();
+        setTangoJob(tango_job);
+
+        destination_db->copyData(&info, tango_job);
+
+        
+        if (tango_job->getCancelled())
+        {
+            m_job_info->setState(jobStateCancelling);
+            return 0;
+        }
+
+        if (tango_job->getStatus() == tango::jobFailed)
+        {
+            m_job_info->setState(jobStateFailed);
+
+            // TODO: need to decide how to handle error strings; these need to 
+            // be translated, so shouldn't be in this class
+            //m_job_info->setProgressString(towstr(_("Modify failed: The table may be in use by another user.")));
+        }
     }
+
 
     return 0;
 }
 
-void BulkCopyJob::runPostJob()
+void LoadJob::runPostJob()
 {
 }
 

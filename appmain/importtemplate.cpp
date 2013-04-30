@@ -27,7 +27,7 @@
 #endif
 
 
-// -- tableselection grid column indexes --
+// tableselection grid column indexes
 
 enum
 {
@@ -94,7 +94,7 @@ static int stringToServerType(const wxString& str)
 
 
 
-// -- ImportTemplate class implementation --
+// ImportTemplate class implementation
 
 ImportTemplate::ImportTemplate()
 {
@@ -787,7 +787,7 @@ static void onImportJobFinished(jobs::IJobPtr job)
 
 jobs::IJobPtr ImportTemplate::execute()
 {
-    // -- concatenate the base path and the table name --
+    // concatenate the base path and the table name
 
     std::vector<ImportTableSelection>::iterator it;
     for (it = m_ii.tables.begin(); it != m_ii.tables.end(); ++it)
@@ -894,7 +894,7 @@ jobs::IJobPtr ImportTemplate::execute()
 
             if (m_ii.type == dbtypeFixedLengthText)
             {
-                // -- fill out the field info for the fixed-length text set --
+                // fill out the field info for the fixed-length text set
                 FieldTransInfo fi;
 
                 std::vector<FixedLengthField>::iterator field_it;
@@ -927,7 +927,7 @@ jobs::IJobPtr ImportTemplate::execute()
             }
              else if (it->field_mapping_name.Length() > 0)
             {
-                // -- try to find an appropriate field mapping --
+                // try to find an appropriate field mapping
                 ImportTableSelection field_mapping;
 
                 bool found = false;
@@ -949,8 +949,8 @@ jobs::IJobPtr ImportTemplate::execute()
 
                 if (!found)
                 {
-                    // -- problem: specified field mapping could not
-                    //    be found in the field mapping array --
+                    // problem: specified field mapping could not
+                    // be found in the field mapping array
                     return xcm::null;
                 }
 

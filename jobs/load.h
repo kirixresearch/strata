@@ -17,17 +17,17 @@ namespace jobs
 {
 
 
-class BulkCopyJob : public XdJobBase
+class LoadJob : public XdJobBase
 {
-    XCM_CLASS_NAME("jobs.BulkCopyJob")
-    XCM_BEGIN_INTERFACE_MAP(BulkCopyJob)
+    XCM_CLASS_NAME("jobs.LoadJob")
+    XCM_BEGIN_INTERFACE_MAP(LoadJob)
         XCM_INTERFACE_CHAIN(JobBase)
     XCM_END_INTERFACE_MAP()
 
 public:
 
-    BulkCopyJob();
-    virtual ~BulkCopyJob();
+    LoadJob();
+    virtual ~LoadJob();
 
     bool isInputValid();
     int runJob();
