@@ -795,32 +795,62 @@ jobs::IJobPtr ImportTemplate::execute()
         if (!it->selected)
             continue;
 
-        wxString new_output_path = m_ii.base_path;
+        std::wstring new_output_path = m_ii.base_path;
 
         // handle empty base path
-        if (new_output_path.IsEmpty())
-            new_output_path += "/";
+        if (new_output_path.empty() || new_output_path[new_output_path.length() - 1] != '/')
+            new_output_path += L"/";
 
-        // handle no slash between base path and tablename
-        if (new_output_path.Last() != '/' && it->output_tablename.substr(0, 1) == L"/")
-        {
-            new_output_path += "/";
-        }
-
-        // handle double slash between base path and tablename
-        if (new_output_path.Last() == '/' && it->output_tablename.substr(0, 1) == L"/")
-        {
-            new_output_path.RemoveLast();
-        }
-
-        new_output_path += it->output_tablename;
+        if (it->output_tablename.substr(0, 1) == L"/")
+            new_output_path += it->output_tablename.substr(1);
+             else
+            new_output_path += it->output_tablename;
 
         it->output_tablename = new_output_path;
     }
 
 
+    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.load-job");
 
-    return xcm::null;
+
+
+    // determine source connection string
+
+    IConnectionPtr conn = createUnmanagedConnection();
+    conn->setType(m_ii.type);
+    conn->setDescription(m_ii.description);
+    conn->setHost(m_ii.server);
+    conn->setPort(m_ii.port);
+    conn->setDatabase(m_ii.database);
+    conn->setUsername(m_ii.username);
+    conn->setPassword(m_ii.password);
+    conn->setPath(m_ii.path);
+
+    std::wstring source_connection = conn->getConnectionString();
+    std::wstring destination_connection = towstr(g_app->getDatabaseConnectionString());
+
+    // configure the job parameters
+    kl::JsonNode params;
+
+    params["objects"].setArray();
+    kl::JsonNode objects = params["objects"];
+
+
+    for (it = m_ii.tables.begin(); it != m_ii.tables.end(); ++it)
+    {
+        kl::JsonNode object = objects.appendElement();
+
+        object["source_connection"] = source_connection;
+        object["destination_connection"] = destination_connection;
+
+        object["source_path"] = it->input_tablename;
+        object["destination_path"] = it->output_tablename;
+    }
+
+    job->setParameters(params.toString());
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
+
+    return job;
 }
 
 

@@ -46,41 +46,43 @@ xcm_interface IConnection : public xcm::IObject
 
 public:
 
+    virtual std::wstring getConnectionString() = 0;
+
     virtual bool open() = 0;
     virtual bool isOpen() = 0;
 
     virtual int getType() = 0;
     virtual void setType(int type) = 0;
 
-    virtual wxString getDescription() = 0;
-    virtual void setDescription(const wxString& new_val) = 0;
+    virtual std::wstring getDescription() = 0;
+    virtual void setDescription(const std::wstring& new_val) = 0;
 
-    virtual wxString getErrorString() = 0;
+    virtual std::wstring getErrorString() = 0;
     
-    // -- used for local connections --
+    // used for local connections
 
-    virtual wxString getPath() = 0;
-    virtual void setPath(const wxString& path) = 0;
+    virtual std::wstring getPath() = 0;
+    virtual void setPath(const std::wstring& path) = 0;
 
-    virtual wxString getFilter() = 0;
-    virtual void setFilter(const wxString& filter) = 0;
+    virtual std::wstring getFilter() = 0;
+    virtual void setFilter(const std::wstring& filter) = 0;
 
-    // -- used for remote connections --
+    // used for remote connections
 
-    virtual wxString getHost() = 0;
-    virtual void setHost(const wxString& new_val) = 0;
+    virtual std::wstring getHost() = 0;
+    virtual void setHost(const std::wstring& new_val) = 0;
 
     virtual int getPort() = 0;
     virtual void setPort(int new_val) = 0;
 
-    virtual wxString getDatabase() = 0;
-    virtual void setDatabase(const wxString& new_val) = 0;
+    virtual std::wstring getDatabase() = 0;
+    virtual void setDatabase(const std::wstring& new_val) = 0;
 
-    virtual wxString getUsername() = 0;
-    virtual void setUsername(const wxString& new_val) = 0;
+    virtual std::wstring getUsername() = 0;
+    virtual void setUsername(const std::wstring& new_val) = 0;
 
-    virtual wxString getPassword() = 0;
-    virtual void setPassword(const wxString& new_val) = 0;
+    virtual std::wstring getPassword() = 0;
+    virtual void setPassword(const std::wstring& new_val) = 0;
 
     virtual tango::IDatabasePtr getDatabasePtr() = 0;
     virtual void setDatabasePtr(tango::IDatabasePtr new_val) = 0;

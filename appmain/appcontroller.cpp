@@ -4954,7 +4954,7 @@ bool AppController::openExcel(const wxString& location, int* site_id)
 
     IConnectionPtr conn = createUnmanagedConnection();
     conn->setType(dbtypeExcel);
-    conn->setPath(fn);
+    conn->setPath(towstr(fn));
 
     // if we cannot open the connection, bail out
     if (!conn->open())
@@ -5062,7 +5062,7 @@ bool AppController::openAccess(const wxString& location)
     {
         IConnectionPtr conn = createUnmanagedConnection();
         conn->setType(dbtypeAccess);
-        conn->setPath(fn);
+        conn->setPath(towstr(fn));
 
         // if we cannot open the connection, bail out
         if (!conn->open())
@@ -6006,6 +6006,7 @@ bool AppController::openProject(const wxString& location,
 
     g_app->setDatabase(database);
     g_app->setDatabaseLocation(location);
+    g_app->setDatabaseConnectionString(cstr);
     
     if (m_dbdoc)
         m_dbdoc->setDatabase(database);

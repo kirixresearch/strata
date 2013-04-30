@@ -47,99 +47,13 @@ public:
 
     bool open()
     {
-        XCM_AUTO_LOCK(m_obj_mutex);
-
         tango::IDatabaseMgrPtr dbmgr = tango::getDatabaseMgr();
         if (dbmgr.isNull())
             return false;
         
+        std::wstring cstr = getConnectionString();
 
-        wxString provider;
-        wxString dbtype;
-        
-        switch (m_type)
-        {
-            case dbtypeXdnative:        provider = wxT("xdnative"); break;
-
-            #ifdef WIN32
-            case dbtypeAccess:       provider = wxT("xdodbc"); dbtype = wxT("access"); break;
-            case dbtypeSqlServer:    provider = wxT("xdodbc"); dbtype = wxT("mssql"); break;
-            case dbtypeMySql:        provider = wxT("xdodbc"); dbtype = wxT("mysql"); break;
-            #else
-            case dbtypeAccess:       provider = wxT("xdaccess"); break;
-            case dbtypeSqlServer:    provider = wxT("xdsqlserver"); break;
-            case dbtypeMySql:        provider = wxT("xddrizzle"); break;
-            //case dbtypeMySql:        provider = wxT("xdmysql"); break;
-            #endif
-
-            case dbtypeExcel:        provider = wxT("xdodbc"); dbtype = wxT("excel"); break;
-            case dbtypeSqlite:       provider = wxT("xdsqlite"); break;
-
-            case dbtypePostgres:     provider = wxT("xdpgsql"); break;
-            case dbtypeOracle:       provider = wxT("xdoracle"); break;
-            case dbtypeOdbc:         provider = wxT("xdodbc"); dbtype = wxT("dsn"); break;
-            case dbtypeDb2:          provider = wxT("xdodbc"); dbtype = wxT("db2"); break;
-            case dbtypeClient:       provider = wxT("xdclient"); break;
-            case dbtypeFilesystem:
-            case dbtypeXbase:
-            case dbtypeDelimitedText:
-            case dbtypeFixedLengthText:
-                                     provider = wxT("xdfs"); break;
-            default:
-                return false;
-        }
-
-
-        // -- build connection string --
-        
-        wxString cstr;
-        
-        cstr += wxT("xdprovider=");
-        cstr += provider;
-        cstr += wxT(";");
-        
-        if (dbtype.Length() > 0)
-        {
-            cstr += wxT("xddbtype=");
-            cstr += dbtype;
-            cstr += wxT(";");
-        }
-        
-        if (m_host.Length() > 0)
-        {
-            cstr += wxT("host=");
-            cstr += m_host;
-            cstr += wxT(";");
-        }
-        
-        if (m_port != 0)
-        {
-            cstr += wxString::Format(wxT("port=%d;"), m_port);
-        }
-        
-        cstr += wxT("user id=");
-        cstr += m_username;
-        cstr += wxT(";");
-        
-        cstr += wxT("password=");
-        cstr += m_password;
-        cstr += wxT(";");
-        
-        if (m_database.Length() > 0)
-        {
-            cstr += wxT("database=");
-            cstr += m_database;
-            cstr += wxT(";");
-        }
-         else
-        {
-            cstr += wxT("database=");
-            cstr += m_path;
-            cstr += wxT(";");
-        }
-        
-        m_db = dbmgr->open(towstr(cstr));
-        
+        m_db = dbmgr->open(cstr);
         
         // set the temp and definition directory from our main db
         if (m_db.isOk())
@@ -162,15 +76,117 @@ public:
             }
         }
         
-        // if an error occurred, get an error string
-        m_error_string.Clear();
-        if (m_db.isNull())
-            m_error_string = dbmgr->getErrorString();
-            
+
+        {
+            XCM_AUTO_LOCK(m_obj_mutex);
+
+            // if an error occurred, get an error string
+            m_error_string.clear();
+            if (m_db.isNull())
+                m_error_string = dbmgr->getErrorString();
+        }
+
+
         return m_db.isOk();
     }
 
-    wxString getErrorString()
+    std::wstring getConnectionString()
+    {
+        XCM_AUTO_LOCK(m_obj_mutex);
+
+        std::wstring cstr;
+        std::wstring provider;
+        std::wstring dbtype;
+        
+        switch (m_type)
+        {
+            case dbtypeXdnative:        provider = L"xdnative"; break;
+
+            #ifdef WIN32
+            case dbtypeAccess:       provider = L"xdodbc"; dbtype = L"access"; break;
+            case dbtypeSqlServer:    provider = L"xdodbc"; dbtype = L"mssql"; break;
+            case dbtypeMySql:        provider = L"xdodbc"; dbtype = L"mysql"; break;
+            #else
+            case dbtypeAccess:       provider = L"xdaccess"; break;
+            case dbtypeSqlServer:    provider = L"xdsqlserver"; break;
+            case dbtypeMySql:        provider = L"xddrizzle"; break;
+            //case dbtypeMySql:        provider = L"xdmysql"; break;
+            #endif
+
+            case dbtypeExcel:        provider = L"xdodbc"; dbtype = L"excel"; break;
+            case dbtypeSqlite:       provider = L"xdsqlite"; break;
+
+            case dbtypePostgres:     provider = L"xdpgsql"; break;
+            case dbtypeOracle:       provider = L"xdoracle"; break;
+            case dbtypeOdbc:         provider = L"xdodbc"; dbtype = L"dsn"; break;
+            case dbtypeDb2:          provider = L"xdodbc"; dbtype = L"db2"; break;
+            case dbtypeClient:       provider = L"xdclient"; break;
+            case dbtypeFilesystem:
+            case dbtypeXbase:
+            case dbtypeDelimitedText:
+            case dbtypeFixedLengthText:
+                                     provider = L"xdfs"; break;
+            case dbtypePackage:      provider = L"xdkpg"; break;
+            default:
+                return false;
+        }
+
+
+        // build connection string
+        
+
+        cstr += L"xdprovider=";
+        cstr += provider;
+        cstr += L";";
+        
+        if (dbtype.length() > 0)
+        {
+            cstr += L"xddbtype=";
+            cstr += dbtype;
+            cstr += L";";
+        }
+        
+        if (m_host.length() > 0)
+        {
+            cstr += L"host=";
+            cstr += m_host;
+            cstr += L";";
+        }
+        
+        if (m_port != 0)
+        {
+            cstr += L"port=";
+            cstr += kl::itowstring(m_port);
+            cstr += L";";
+        }
+        
+        cstr += L"user id=";
+        cstr += m_username;
+        cstr += L";";
+        
+        cstr += L"password=";
+        cstr += m_password;
+        cstr += L";";
+        
+        if (m_database.length() > 0)
+        {
+            cstr += L"database=";
+            cstr += m_database;
+            cstr += L";";
+        }
+         else
+        {
+            cstr += L"database=";
+            cstr += m_path;
+            cstr += L";";
+        }
+        
+        return cstr;
+    }
+
+
+
+    std::wstring getErrorString()
     {
         XCM_AUTO_LOCK(m_obj_mutex);
 
@@ -205,28 +221,28 @@ public:
         return m_type;
     }
 
-    wxString getDescription()
+    std::wstring getDescription()
     {
         XCM_AUTO_LOCK(m_obj_mutex);
 
         return m_description;
     }
 
-    void setDescription(const wxString& new_val)
+    void setDescription(const std::wstring& new_val)
     {
         XCM_AUTO_LOCK(m_obj_mutex);
 
         m_description = new_val;
     }
 
-    wxString getHost()
+    std::wstring getHost()
     {
         XCM_AUTO_LOCK(m_obj_mutex);
 
         return m_host;
     }
 
-    void setHost(const wxString& new_val)
+    void setHost(const std::wstring& new_val)
     {
         XCM_AUTO_LOCK(m_obj_mutex);
 
@@ -247,70 +263,70 @@ public:
         m_port = new_val;
     }
 
-    wxString getDatabase()
+    std::wstring getDatabase()
     {
         XCM_AUTO_LOCK(m_obj_mutex);
 
         return m_database;
     }
 
-    void setDatabase(const wxString& new_val)
+    void setDatabase(const std::wstring& new_val)
     {
         XCM_AUTO_LOCK(m_obj_mutex);
 
         m_database = new_val;
     }
 
-    wxString getUsername()
+    std::wstring getUsername()
     {
         XCM_AUTO_LOCK(m_obj_mutex);
 
         return m_username;
     }
 
-    void setUsername(const wxString& new_val)
+    void setUsername(const std::wstring& new_val)
     {
         XCM_AUTO_LOCK(m_obj_mutex);
 
         m_username = new_val;
     }
 
-    wxString getPassword()
+    std::wstring getPassword()
     {
         XCM_AUTO_LOCK(m_obj_mutex);
 
         return m_password;
     }
 
-    void setPassword(const wxString& new_val)
+    void setPassword(const std::wstring& new_val)
     {
         XCM_AUTO_LOCK(m_obj_mutex);
 
         m_password = new_val;
     }
 
-    wxString getPath()
+    std::wstring getPath()
     {
         XCM_AUTO_LOCK(m_obj_mutex);
 
         return m_path;
     }
 
-    void setPath(const wxString& path)
+    void setPath(const std::wstring& path)
     {
         XCM_AUTO_LOCK(m_obj_mutex);
 
         m_path = path;
     }
 
-    wxString getFilter()
+    std::wstring getFilter()
     {
         XCM_AUTO_LOCK(m_obj_mutex);
 
         return m_filter;
     }
 
-    void setFilter(const wxString& filter)
+    void setFilter(const std::wstring& filter)
     {
         XCM_AUTO_LOCK(m_obj_mutex);
 
@@ -336,22 +352,22 @@ private:
     xcm::mutex m_obj_mutex;
 
     int m_type;
-    wxString m_description;
+    std::wstring m_description;
 
-    // -- used for directories --
-    wxString m_path;
-    wxString m_filter;
+    // used for directories
+    std::wstring m_path;
+    std::wstring m_filter;
 
-    // -- used for databases --
-    wxString m_host;
+    // used for databases
+    std::wstring m_host;
     int m_port;
-    wxString m_database;
-    wxString m_username;
-    wxString m_password;
+    std::wstring m_database;
+    std::wstring m_username;
+    std::wstring m_password;
 
     tango::IDatabasePtr m_db;
     
-    wxString m_error_string;
+    std::wstring m_error_string;
 };
 
 

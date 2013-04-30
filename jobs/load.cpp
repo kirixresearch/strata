@@ -31,10 +31,10 @@ namespace jobs
 
             {
                 source_connection: "",
-                source_object: "",
+                source_path: "",
 
                 destination_connection: "",
-                destination_object: ""
+                destination_path: ""
             }
         ]
 
@@ -145,6 +145,8 @@ int LoadJob::runJob()
             m_job_info->setState(jobStateFailed);
             return 0;
         }
+
+        source_iter->goFirst();
 
 
 

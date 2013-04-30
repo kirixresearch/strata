@@ -2859,7 +2859,7 @@ void DbDoc::onFsItemEndLabelEdit(IFsItemPtr item,
             return;
         }
 
-        conn->setDescription(text);
+        conn->setDescription(towstr(text));
 
         *allow = true;
         return;

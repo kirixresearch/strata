@@ -142,7 +142,7 @@ public:
     int type;                 // connection type
     int last_type;            // if the user is changing the connection type,
                               // this is the connection type before the change
-    wxString description;
+    std::wstring description;
 
     // used for databases
     std::wstring server;
