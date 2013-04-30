@@ -176,9 +176,11 @@ public:
         }
          else
         {
+/*
             cstr += L"database=";
             cstr += m_path;
             cstr += L";";
+*/
         }
         
         return cstr;

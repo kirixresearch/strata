@@ -824,6 +824,7 @@ jobs::IJobPtr ImportTemplate::execute()
     conn->setDatabase(m_ii.database);
     conn->setUsername(m_ii.username);
     conn->setPassword(m_ii.password);
+
     conn->setPath(m_ii.path);
 
     std::wstring source_connection = conn->getConnectionString();
