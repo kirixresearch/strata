@@ -1582,8 +1582,12 @@ void Controller::apiLoad(RequestInfo& req)
         return;
     }
 
-    std::wstring icsv_name = xf_get_temp_filename(L"load", L"icsv");
-    if (!xf_move(fileinfo.temp_filename, icsv_name))
+
+    std::wstring ext = kl::afterLast(fileinfo.post_filename, '.');
+
+
+    std::wstring data_temp = xf_get_temp_filename(L"load", extension);
+    if (!xf_move(fileinfo.temp_filename, data_temp))
     {
         returnApiError(req, "Could not access uploaded file");
         return;
@@ -1610,7 +1614,7 @@ void Controller::apiLoad(RequestInfo& req)
     object["source_connection"] = source_connection;
     object["destination_connection"] = destination_connection;
 
-    object["source_path"] = icsv_name;
+    object["source_path"] = data_temp;
     object["destination_path"] = target_path;
 
 
