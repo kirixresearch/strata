@@ -1586,7 +1586,7 @@ void Controller::apiLoad(RequestInfo& req)
     std::wstring ext = kl::afterLast(fileinfo.post_filename, '.');
 
 
-    std::wstring data_temp = xf_get_temp_filename(L"load", extension);
+    std::wstring data_temp = xf_get_temp_filename(L"load", ext);
     if (!xf_move(fileinfo.temp_filename, data_temp))
     {
         returnApiError(req, "Could not access uploaded file");
