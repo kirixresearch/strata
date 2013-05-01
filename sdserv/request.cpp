@@ -498,14 +498,18 @@ void RequestInfo::readMultipart(const char* boundary, size_t boundary_length)
             if (buf_len < commit_len)
                 commit_len = buf_len;
 
+            commit_len -= (curpos - buf);
+
             if (curpart)
             {
-                curpart->append((unsigned char*)buf, commit_len);
+                curpart->append((unsigned char*)curpos, commit_len);
             }
 
-            int new_buf_len = buf_len - commit_len;
-            memmove(buf, buf + commit_len, new_buf_len);
-            buf_len = new_buf_len;
+
+            int remaining_bytes = buf_len - ((curpos + commit_len) - buf);
+            memmove(buf, curpos + commit_len, remaining_bytes);
+            buf_len = remaining_bytes;
+            curpos = buf;
 
 
             // fill up buffer with more data
