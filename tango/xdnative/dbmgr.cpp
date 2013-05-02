@@ -95,7 +95,7 @@ tango::IDatabasePtr DatabaseMgr::open(const std::wstring& _connection_str)
     }
 
 
-    xdcommon::ConnectionStr c(connection_str);
+    tango::ConnectionStringParser c(connection_str);
     std::wstring provider = c.getLowerValue(L"xdprovider");
     if (provider.empty())
         return xcm::null;

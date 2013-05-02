@@ -45,7 +45,6 @@ const int max_numeric_scale = 12;
 
 xcm_interface IAttributes;
 xcm_interface IColumnInfo;
-xcm_interface IConnectionStringParser;
 xcm_interface IDatabase;
 xcm_interface IDatabaseEntry;
 xcm_interface IDatabaseMgr;
@@ -70,7 +69,6 @@ xcm_interface IFixedLengthDefinition;
 XCM_DECLARE_SMARTPTR(IAttributes)
 XCM_DECLARE_SMARTPTR(IFileInfo)
 XCM_DECLARE_SMARTPTR(IColumnInfo)
-XCM_DECLARE_SMARTPTR(IConnectionStringParser)
 XCM_DECLARE_SMARTPTR(IDatabase)
 XCM_DECLARE_SMARTPTR(IDatabaseEntry)
 XCM_DECLARE_SMARTPTR(IDatabaseMgr)
@@ -537,21 +535,6 @@ public:
     virtual std::wstring getErrorString() = 0;    
 };
 
-
-
-xcm_interface IConnectionStringParser : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("xdnative.ConnectionStringParser")
-
-public:
-
-    virtual void parse(const std::wstring& str) = 0;
-    virtual std::wstring getConnectionString() = 0;
-    virtual std::wstring getLowerValue(const std::wstring& param) = 0;
-    virtual std::wstring getValue(const std::wstring& param) = 0;
-    virtual bool getValueExist(const std::wstring& param) = 0;
-    virtual void setValue(const std::wstring& param, const std::wstring& value) = 0;
-};
 
 
 

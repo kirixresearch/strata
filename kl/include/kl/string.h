@@ -123,7 +123,7 @@ inline std::string beforeFirst(const std::string& str, char ch)
 
 inline std::wstring beforeFirst(const std::wstring& str, wchar_t ch)
 {
-   size_t pos = str.find(ch);
+    size_t pos = str.find(ch);
     if (pos == str.npos)
         return str;
     return str.substr(0, pos);

@@ -411,64 +411,64 @@ std::wstring ConnectionWizard::getConnectionString()
 
 void ConnectionWizard::setConnectionString(const std::wstring& str)
 {
-    tango::IConnectionStringParserPtr cstr = tango::createConnectionStr();
-    cstr->parse(str);
+    tango::ConnectionStringParser cstr;
+    cstr.parse(str);
     
     bool xdfs = false;
     
     ConnectionInfo ci;
     
     // database type
-    if (cstr->getLowerValue(L"Xdprovider") == L"xdnative")
+    if (cstr.getLowerValue(L"Xdprovider") == L"xdnative")
         ci.type = dbtypeXdnative;
-    else if (cstr->getLowerValue(L"Xdprovider") == L"xdmysql")
+    else if (cstr.getLowerValue(L"Xdprovider") == L"xdmysql")
         ci.type = dbtypeMySql;
-    else if (cstr->getLowerValue(L"Xdprovider") == L"xdoracle")
+    else if (cstr.getLowerValue(L"Xdprovider") == L"xdoracle")
         ci.type = dbtypeOracle;
-    else if (cstr->getLowerValue(L"Xdprovider") == L"xdpgsql")
+    else if (cstr.getLowerValue(L"Xdprovider") == L"xdpgsql")
         ci.type = dbtypePostgres;
-    else if (cstr->getLowerValue(L"Xdprovider") == L"xdfs")
+    else if (cstr.getLowerValue(L"Xdprovider") == L"xdfs")
     {
         xdfs = true;
         ci.type = dbtypeFilesystem;
 
-        if (cstr->getLowerValue(L"Xdfiletype") == L"xbase")
+        if (cstr.getLowerValue(L"Xdfiletype") == L"xbase")
             ci.type = dbtypeXbase;
-        else if (cstr->getLowerValue(L"Xdfiletype") == L"delimitedtext")
+        else if (cstr.getLowerValue(L"Xdfiletype") == L"delimitedtext")
             ci.type = dbtypeDelimitedText;
-        else if (cstr->getLowerValue(L"Xdfiletype") == L"fixedlengthtext")
+        else if (cstr.getLowerValue(L"Xdfiletype") == L"fixedlengthtext")
             ci.type = dbtypeFixedLengthText;
     }
-    else if (cstr->getLowerValue(L"Xdprovider") == L"xdclient")
+    else if (cstr.getLowerValue(L"Xdprovider") == L"xdclient")
         ci.type = dbtypeClient;
-    else if (cstr->getLowerValue(L"Xdprovider") == L"xdodbc")
+    else if (cstr.getLowerValue(L"Xdprovider") == L"xdodbc")
     {
-        if (cstr->getLowerValue(L"Xddbtype") == L"dsn")
+        if (cstr.getLowerValue(L"Xddbtype") == L"dsn")
             ci.type = dbtypeOdbc;
-        else if (cstr->getLowerValue(L"Xddbtype") == L"db2")
+        else if (cstr.getLowerValue(L"Xddbtype") == L"db2")
             ci.type = dbtypeDb2;
-        else if (cstr->getLowerValue(L"Xddbtype") == L"mssql")
+        else if (cstr.getLowerValue(L"Xddbtype") == L"mssql")
             ci.type = dbtypeSqlServer;
-        else if (cstr->getLowerValue(L"Xddbtype") == L"access")
+        else if (cstr.getLowerValue(L"Xddbtype") == L"access")
             ci.type = dbtypeAccess;
-        else if (cstr->getLowerValue(L"Xddbtype") == L"mysql")
+        else if (cstr.getLowerValue(L"Xddbtype") == L"mysql")
             ci.type = dbtypeMySql;
     }
     
-    ci.server = cstr->getLowerValue(L"Host");
+    ci.server = cstr.getLowerValue(L"Host");
     ci.port = 0;
     
-    wxString port_str = cstr->getLowerValue(L"Port");
+    wxString port_str = cstr.getLowerValue(L"Port");
     if (port_str.Length() > 0)
         ci.port = wxAtoi(port_str);
     
     if (xdfs)
-        ci.path = cstr->getValue(L"Database");
+        ci.path = cstr.getValue(L"Database");
          else
-        ci.database = cstr->getValue(L"Database");
+        ci.database = cstr.getValue(L"Database");
         
-    ci.username = cstr->getValue(L"User ID");
-    ci.password = cstr->getValue(L"Password");
+    ci.username = cstr.getValue(L"User ID");
+    ci.password = cstr.getValue(L"Password");
     
     m_ci = ci;
 }

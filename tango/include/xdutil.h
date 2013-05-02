@@ -13,8 +13,10 @@
 #define __XDCOMMON_XDUTIL_H
 
 
-#include <ctime>    // getTemporaryName()
-
+#include <map>
+#include <string>
+#include <algorithm>
+#include <ctime>
 
 namespace tango
 {
@@ -28,14 +30,6 @@ inline IDatabaseMgrPtr getDatabaseMgr()
     dbmgr.create_instance("xdnative.DatabaseMgr");
     return dbmgr;
 }
-
-inline IConnectionStringParserPtr createConnectionStr()
-{
-    IConnectionStringParserPtr cstr;
-    cstr.create_instance("xdnative.ConnectionStr");
-    return cstr;
-}
-
 
 
 // Expression Binding Utility
@@ -232,9 +226,6 @@ inline void requoteAllIdentifiers(tango::IDatabasePtr db, std::vector<std::wstri
 
 inline std::wstring getTemporaryPath()
 {
-    static unsigned int seed = (unsigned)time(NULL);
-    srand(++seed);
-
     int i;
     wchar_t tempname[33];
     memset(tempname, 0, 33 * sizeof(wchar_t));
@@ -423,6 +414,164 @@ public:
 protected:
     int yy, mm, dd, h, m, s, ms;
 };
+
+
+
+
+
+
+struct xdcmpnocase : std::binary_function<const std::wstring&, const std::wstring&, bool>
+{
+    bool operator()(const std::wstring& lhs,  const std::wstring& rhs) const
+    {
+#ifdef _MSC_VER
+        return (wcsicmp(lhs.c_str(), rhs.c_str()) < 0);
+#else
+        return (wcscasecmp(lhs.c_str(), rhs.c_str()) < 0);
+#endif
+    }
+};
+
+
+inline std::wstring xdtrim(const std::wstring& s)
+{
+    size_t first = s.find_first_not_of(L" \t\n\r", 4);
+    size_t last = (first == s.npos ? s.npos : s.find_last_not_of(L" \t\n\r", 4));
+    if (first == s.npos || last == s.npos)
+        return L"";
+         else
+        return s.substr(first, last - first + 1);
+}
+
+class ConnectionStringParser
+{
+public:
+
+    ConnectionStringParser()
+    {
+    }
+
+    ConnectionStringParser(const std::wstring& str)
+    {
+        parse(str);
+    }
+
+    void parse(const std::wstring& str)
+    {
+        size_t next_pos = 0;
+    
+        m_map.clear();
+        m_keys.clear();
+    
+        bool last = false;
+    
+        while (1)
+        {
+            std::wstring chunk, key, value;
+        
+            // get the next chunk
+            size_t delim = str.find(L';', next_pos);
+            if (delim == str.npos)
+            {
+                last = true;
+                chunk = str.substr(next_pos, str.length() - next_pos);
+            }
+             else
+            {
+                chunk.assign(str, next_pos, delim-next_pos);
+            }
+            next_pos = delim+1;
+
+            // get the key name
+            size_t off = chunk.find('=');
+            if (off != chunk.npos) key = xdtrim(chunk.substr(0, off));
+            if (off != chunk.npos) value = xdtrim(chunk.substr(off+1));
+
+            if (key.empty())
+                value = L"";
+            
+            m_map[key] = value;
+        
+            // this separate vector of keys allows us to retain
+            // the order of the values when we reconstruct a
+            // connection string
+            m_keys.push_back(key);
+        
+            if (last)
+                break;
+        }
+
+    }
+
+    // returns the value of the parameter, in lowercase
+    std::wstring getLowerValue(const std::wstring& param)
+    {
+        std::wstring result = getValue(param);
+        std::transform(result.begin(), result.end(), result.begin(), ::towlower);
+        return result;
+    }
+
+    std::wstring getValue(const std::wstring& param)
+    {
+        std::map<std::wstring, std::wstring, xdcmpnocase>::iterator it;
+        it = m_map.find(param);
+    
+        if (it == m_map.end())
+            return L"";
+        
+        return it->second;
+    }
+
+    bool getValueExist(const std::wstring& param)
+    {
+        std::map<std::wstring, std::wstring, xdcmpnocase>::iterator it;
+        it = m_map.find(param);
+        return (it != m_map.end() ? true : false);
+    }
+
+
+    void setValue(const std::wstring& param, const std::wstring& value)
+    {
+        std::map<std::wstring, std::wstring, xdcmpnocase>::iterator it;
+        it = m_map.find(param);
+        if (it != m_map.end())
+        {
+            it->second = value;
+        }
+         else
+        {
+            m_map[param] = value;
+            m_keys.push_back(param);
+        }
+    }
+
+
+    std::wstring getConnectionString()
+    {
+        std::wstring result;
+    
+        std::vector<std::wstring>::iterator it;
+        for (it = m_keys.begin(); it != m_keys.end(); ++it)
+        {
+            if (!result.empty())
+                result += L";";
+            result += *it;
+            result += L"=";
+            result += m_map[*it];
+        }
+    
+        return result;
+    }
+
+private:
+
+    std::map<std::wstring, std::wstring, xdcmpnocase> m_map;
+    std::vector<std::wstring> m_keys;
+};
+
+
+
+
 
 
 

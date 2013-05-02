@@ -19,7 +19,6 @@
 XCM_BEGIN_DYNAMIC_MODULE(xdnative)
     XCM_BEGIN_CLASS_MAP()
         XCM_CLASS_ENTRY(DatabaseMgr)
-        XCM_CLASS_ENTRY(xdcommon::ConnectionStr)
     XCM_END_CLASS_MAP()
 XCM_END_DYNAMIC_MODULE(xdnative)
 
