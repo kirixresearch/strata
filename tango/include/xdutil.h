@@ -435,8 +435,8 @@ struct xdcmpnocase : std::binary_function<const std::wstring&, const std::wstrin
 
 inline std::wstring xdtrim(const std::wstring& s)
 {
-    size_t first = s.find_first_not_of(L" \t\n\r", 4);
-    size_t last = (first == s.npos ? s.npos : s.find_last_not_of(L" \t\n\r", 4));
+    size_t first = s.find_first_not_of(L" \t\n\r", 0, 4);
+    size_t last = s.find_last_not_of(L" \t\n\r", s.npos, 4);
     if (first == s.npos || last == s.npos)
         return L"";
          else
