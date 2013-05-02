@@ -29,9 +29,9 @@ inline IDatabaseMgrPtr getDatabaseMgr()
     return dbmgr;
 }
 
-inline IConnectionStrPtr createConnectionStr()
+inline IConnectionStringParserPtr createConnectionStr()
 {
-    IConnectionStrPtr cstr;
+    IConnectionStringParserPtr cstr;
     cstr.create_instance("xdnative.ConnectionStr");
     return cstr;
 }

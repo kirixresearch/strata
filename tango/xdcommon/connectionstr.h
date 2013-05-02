@@ -26,11 +26,11 @@ namespace xdcommon
 // this class can be used as an xcm object
 // or as a regular stack object
 
-class ConnectionStr : public tango::IConnectionStr
+class ConnectionStringParser : public tango::IConnectionStringParser
 {
-    XCM_CLASS_NAME("xdnative.ConnectionStr")
+    XCM_CLASS_NAME("xdnative.ConnectionStringParser")
     XCM_BEGIN_INTERFACE_MAP(ConnectionStr)
-        XCM_INTERFACE_ENTRY(tango::IConnectionStr)
+        XCM_INTERFACE_ENTRY(tango::IConnectionStringParser)
     XCM_END_INTERFACE_MAP()
 
 public:

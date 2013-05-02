@@ -411,7 +411,7 @@ std::wstring ConnectionWizard::getConnectionString()
 
 void ConnectionWizard::setConnectionString(const std::wstring& str)
 {
-    tango::IConnectionStrPtr cstr = tango::createConnectionStr();
+    tango::IConnectionStringParserPtr cstr = tango::createConnectionStr();
     cstr->parse(str);
     
     bool xdfs = false;

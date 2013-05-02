@@ -45,7 +45,7 @@ const int max_numeric_scale = 12;
 
 xcm_interface IAttributes;
 xcm_interface IColumnInfo;
-xcm_interface IConnectionStr;
+xcm_interface IConnectionStringParser;
 xcm_interface IDatabase;
 xcm_interface IDatabaseEntry;
 xcm_interface IDatabaseMgr;
@@ -70,7 +70,7 @@ xcm_interface IFixedLengthDefinition;
 XCM_DECLARE_SMARTPTR(IAttributes)
 XCM_DECLARE_SMARTPTR(IFileInfo)
 XCM_DECLARE_SMARTPTR(IColumnInfo)
-XCM_DECLARE_SMARTPTR(IConnectionStr)
+XCM_DECLARE_SMARTPTR(IConnectionStringParser)
 XCM_DECLARE_SMARTPTR(IDatabase)
 XCM_DECLARE_SMARTPTR(IDatabaseEntry)
 XCM_DECLARE_SMARTPTR(IDatabaseMgr)
@@ -539,9 +539,9 @@ public:
 
 
 
-xcm_interface IConnectionStr : public xcm::IObject
+xcm_interface IConnectionStringParser : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("tango.IConnectionStr")
+    XCM_INTERFACE_NAME("xdnative.ConnectionStringParser")
 
 public:
 
