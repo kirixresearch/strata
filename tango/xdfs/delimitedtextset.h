@@ -83,10 +83,10 @@ friend class DelimitedTextRowInserter;
 
 public:
 
-    DelimitedTextSet();
+    DelimitedTextSet(FsDatabase* database);
     ~DelimitedTextSet();
-    bool init(tango::IDatabasePtr db,
-              const std::wstring& filename);
+
+    bool init(const std::wstring& filename);
 
     void setCreateStructure(tango::IStructurePtr structure);
     
@@ -154,7 +154,7 @@ private:
 
 private:
 
-    tango::IDatabasePtr m_database;
+    FsDatabase* m_database;
     DelimitedTextFile m_file;
     std::wstring m_configfile_path;
 

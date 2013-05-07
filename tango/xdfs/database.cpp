@@ -1358,15 +1358,15 @@ static IXdfsSetPtr openFixedLengthTextSet(tango::IDatabasePtr db,
     return retval;
 }
 
-static IXdfsSetPtr openDelimitedTextSet(tango::IDatabasePtr db,
-                                           const std::wstring& path)
+static IXdfsSetPtr openDelimitedTextSet(FsDatabase* db,
+                                        const std::wstring& path)
 {
     // we need to manually protect the ref count because
     // smart pointer operations happen in init()
     
-    DelimitedTextSet* set = new DelimitedTextSet;
+    DelimitedTextSet* set = new DelimitedTextSet(db);
     set->ref();
-    if (!set->init(static_cast<tango::IDatabase*>(db), path))
+    if (!set->init(path))
     {
         set->unref();
         return xcm::null;
@@ -1469,6 +1469,34 @@ tango::IStructurePtr FsDatabase::createStructure()
     return static_cast<tango::IStructure*>(s);
 }
 
+static int tangoToDelimitedTextEncoding(int tango_encoding)
+{
+    switch (tango_encoding)
+    {
+        case tango::encodingASCII:
+        case tango::encodingISO8859_1:
+            return DelimitedTextFile::encodingISO88591;
+            break;
+                
+        case tango::encodingUTF8:
+            return DelimitedTextFile::encodingUTF8;
+            break;
+            
+        case tango::encodingUCS2:
+        case tango::encodingUTF16:
+            return DelimitedTextFile::encodingUTF16LE;
+            break;
+                
+        case tango::encodingUTF16BE:
+            return DelimitedTextFile::encodingUTF16BE;
+            break;
+            
+        default:
+            return -1;
+    }
+}
+
+
 bool FsDatabase::createTable(const std::wstring& _path,
                              tango::IStructurePtr struct_config,
                              tango::FormatInfo* format_info)
@@ -1518,7 +1546,7 @@ bool FsDatabase::createTable(const std::wstring& _path,
         // default to a csv
         format = tango::formatDelimitedText;
     }
-
+    
     if (format == tango::formatXbase)
     {
         // create an xbase file with no rows in it
@@ -1549,9 +1577,99 @@ bool FsDatabase::createTable(const std::wstring& _path,
         
         return xf_get_file_exist(path);
     }
-
-    if (format == tango::formatDelimitedText)
+     else if (format == tango::formatTypedDelimitedText)
     {
+        DelimitedTextFile file;
+
+        // create a text-delimited file
+        std::vector<std::wstring> fields;
+        bool unicode_data_found = false;
+        
+        // create vector of fields
+        for (i = 0; i < col_count; ++i)
+        {
+            tango::IColumnInfoPtr col_info;
+            col_info = struct_config->getColumnInfoByIdx(i);
+            if (col_info->getType() == tango::typeWideCharacter)
+                unicode_data_found = true;
+            
+            if (!col_info->getCalculated())
+            {
+                std::wstring fld = col_info->getName();
+                fld += L"(";
+                    
+                switch (col_info->getType())
+                {
+                    default:
+                    case tango::typeCharacter:
+                    case tango::typeWideCharacter:
+                    {
+                        wchar_t info[255];
+                        swprintf(info, 255, L"C %d", col_info->getWidth());
+                        fld += info;
+                        break;
+                    }
+                    case tango::typeNumeric:
+                    case tango::typeDouble:
+                    case tango::typeInteger:
+                    {
+                        wchar_t info[255];
+                        swprintf(info, 255, L"N %d %d", col_info->getWidth(), col_info->getScale());
+                        fld += info;
+                        break;
+                    }
+                    case tango::typeDate:
+                        fld += L"D";
+                        break;
+                    case tango::typeDateTime:
+                        fld += L"T";
+                        break;
+                    case tango::typeBoolean:
+                        fld += L"B";
+                        break;
+                }
+                    
+                fld += L")";
+                fields.push_back(fld);
+            }
+        }
+        
+        
+        // determine the encoding we will use in the icsv
+
+        int tango_encoding = tango::encodingUndefined;
+        if (format_info)
+            tango_encoding = format_info->default_encoding;
+        
+        if (tango_encoding == tango::encodingUndefined)
+        {
+            if (unicode_data_found)
+                tango_encoding = tango::encodingUTF8;
+                 else
+                tango_encoding = tango::encodingISO8859_1;
+        }
+
+        int csv_encoding = tangoToDelimitedTextEncoding(tango_encoding);
+        if (csv_encoding == -1)
+            return false; // unknown encoding
+        
+        if (format_info && !format_info->first_row_column_names)
+        {
+            // no field names
+            fields.clear();
+        }
+
+        file.createFile(path, fields, csv_encoding);
+        file.closeFile();
+
+        return xf_get_file_exist(path);
+    }
+     else if (format == tango::formatDelimitedText)
+    {
+        // create the text-delimited file
+        DelimitedTextFile file;
+    
+
         // look for an extension to yield some guidance as to which
         // file format to use by default -- if no extension, assume csv
         std::wstring ext;
@@ -1562,12 +1680,7 @@ bool FsDatabase::createTable(const std::wstring& _path,
             ext = L"csv";
         kl::makeLower(ext);
     
-        
     
-
-        // create the text-delimited file
-        DelimitedTextFile file;
-        
         if (ext == L"tsv")
         {
             file.setDelimiters(L"\t");
@@ -1588,7 +1701,6 @@ bool FsDatabase::createTable(const std::wstring& _path,
         
         // create a text-delimited file
         std::vector<std::wstring> fields;
-        
         bool unicode_data_found = false;
         
         // create vector of fields
@@ -1600,143 +1712,74 @@ bool FsDatabase::createTable(const std::wstring& _path,
                 unicode_data_found = true;
             
             if (!col_info->getCalculated())
-            {
-                if (ext == L"icsv")
-                {
-                    std::wstring fld = col_info->getName();
-                    fld += L"(";
-                    
-                    switch (col_info->getType())
-                    {
-                        default:
-                        case tango::typeCharacter:
-                        case tango::typeWideCharacter:
-                        {
-                            wchar_t info[255];
-                            swprintf(info, 255, L"C %d", col_info->getWidth());
-                            fld += info;
-                            break;
-                        }
-                        case tango::typeNumeric:
-                        case tango::typeDouble:
-                        case tango::typeInteger:
-                        {
-                            wchar_t info[255];
-                            swprintf(info, 255, L"N %d %d", col_info->getWidth(), col_info->getScale());
-                            fld += info;
-                            break;
-                        }
-                        case tango::typeDate:
-                            fld += L"D";
-                            break;
-                        case tango::typeDateTime:
-                            fld += L"T";
-                            break;
-                        case tango::typeBoolean:
-                            fld += L"B";
-                            break;
-                    }
-                    
-                    fld += L")";
-                    fields.push_back(fld);
-                }
-                 else
-                {
-                    fields.push_back(col_info->getName());
-                }
-            }
+                fields.push_back(col_info->getName());
         }
         
         
-        int encoding;
+        // determine the encoding we will use in the csv
+
         int tango_encoding = tango::encodingUndefined;
         if (format_info)
             tango_encoding = format_info->default_encoding;
         
-        switch (tango_encoding)
+        if (tango_encoding == tango::encodingUndefined)
         {
-            case tango::encodingUndefined:
-                if (unicode_data_found)
-                    encoding = DelimitedTextFile::encodingUTF8;
-                     else
-                    encoding = DelimitedTextFile::encodingISO88591;
-                break;
-            
-            case tango::encodingASCII:
-            case tango::encodingISO8859_1:
-                encoding = DelimitedTextFile::encodingISO88591;
-                break;
-                
-            case tango::encodingUTF8:
-                encoding = DelimitedTextFile::encodingUTF8;
-                break;
-            
-            case tango::encodingUCS2:
-            case tango::encodingUTF16:
-                encoding = DelimitedTextFile::encodingUTF16LE;
-                break;
-                
-            case tango::encodingUTF16BE:
-                encoding = DelimitedTextFile::encodingUTF16BE;
-                break;
-            
-            default:
-                // invalid or non-supported encoding
-                return false;
+            if (unicode_data_found)
+                tango_encoding = tango::encodingUTF8;
+                 else
+                tango_encoding = tango::encodingISO8859_1;
         }
+
+        int csv_encoding = tangoToDelimitedTextEncoding(tango_encoding);
+        if (csv_encoding == -1)
+            return false; // unknown encoding
         
 
         if (format_info && !format_info->first_row_column_names)
         {
             // no field names
-            std::vector<std::wstring> f;
-            file.createFile(path, f, encoding);
-        }
-         else
-        {
-            file.createFile(path, fields, encoding);
+            fields.clear();
         }
 
+        file.createFile(path, fields, csv_encoding);
         file.closeFile();
         
 
-        if (ext != L"icsv")
+        // save structure to edf
+        DelimitedTextSet* tset = new DelimitedTextSet(this);
+        if (!tset->init(path))
         {
-        /*
-            // TODO: implement
-
-            DelimitedTextSet* tset = static_cast<DelimitedTextSet*>(set.p);
-            tset->setCreateStructure(struct_config);
-
-            if (ext == L"tsv")
-            {
-                tset->setDelimiters(L"\t", false);
-                tset->setTextQualifier(L"", false);
-            }
-             else
-            {
-                // use the csv defaults as specified in
-                // the DelimitedTextFile constructor
-                if (format_info && format_info->line_delimiters.length() > 0)
-                    tset->setLineDelimiters(format_info->line_delimiters, false);
-                if (format_info && format_info->delimiters.length() > 0)
-                    tset->setDelimiters(format_info->delimiters, false);
-                if (format_info && format_info->text_qualifiers.length() > 0)
-                    tset->setTextQualifier(format_info->text_qualifiers, false);
-                if (format_info && !format_info->first_row_column_names)
-                    tset->setFirstRowColumnNames(false);
-            }
-
-            tset->saveConfiguration();
-
-            set.clear();
-            */
+            delete tset;
+            return false;
         }
 
-        return xf_get_file_exist(path);
-    }
+        tset->setCreateStructure(struct_config);
 
-    if (format == tango::formatFixedLengthText)
+        if (ext == L"tsv")
+        {
+            tset->setDelimiters(L"\t", false);
+            tset->setTextQualifier(L"", false);
+        }
+            else
+        {
+            // use the csv defaults as specified in
+            // the DelimitedTextFile constructor
+            if (format_info && format_info->line_delimiters.length() > 0)
+                tset->setLineDelimiters(format_info->line_delimiters, false);
+            if (format_info && format_info->delimiters.length() > 0)
+                tset->setDelimiters(format_info->delimiters, false);
+            if (format_info && format_info->text_qualifiers.length() > 0)
+                tset->setTextQualifier(format_info->text_qualifiers, false);
+            if (format_info && !format_info->first_row_column_names)
+                tset->setFirstRowColumnNames(false);
+        }
+
+        tset->saveConfiguration();
+        delete tset;
+
+        return true;
+    }
+     else if (format == tango::formatFixedLengthText)
     {
         // create the fixed length file
         xf_file_t file = xf_open(path, xfCreate, xfReadWrite, xfShareNone);
@@ -1792,7 +1835,11 @@ bool FsDatabase::createStream(const std::wstring& path, const std::wstring& mime
 
 tango::IRowInserterPtr FsDatabase::bulkInsert(const std::wstring& path)
 {
-    return xcm::null;
+    IXdfsSetPtr set = openSetEx(path, tango::formatNative);
+    if (set.isNull())
+        return xcm::null;
+    
+    return set->getRowInserter();
 }
 
 tango::IStructurePtr FsDatabase::describeTable(const std::wstring& path)

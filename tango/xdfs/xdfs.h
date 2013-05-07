@@ -24,6 +24,7 @@ xcm_interface IXdfsSet : public xcm::IObject
 
 public:
 
+    virtual tango::IRowInserterPtr getRowInserter() = 0;
 
 };
 

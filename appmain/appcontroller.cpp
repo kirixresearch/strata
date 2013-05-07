@@ -5004,6 +5004,9 @@ bool AppController::openExcel(const wxString& location, int* site_id)
         wxString job_title = wxString::Format(_("Importing from '%s'"),
                                               title.c_str());
         
+/*
+        TODO: reimplement
+
         ImportJob* job = new ImportJob;
         job->setImportType(dbtypeExcel);
         job->setFilename(towstr(fn));
@@ -5044,6 +5047,8 @@ bool AppController::openExcel(const wxString& location, int* site_id)
         job->getJobInfo()->setTitle(towstr(job_title));
         job->sigJobFinished().connect(&onOpenExcelJobFinished);
         g_app->getJobQueue()->addJob(job, jobStateRunning);
+*/
+
     }
 
     return true;

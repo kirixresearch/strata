@@ -3334,6 +3334,8 @@ void HostData::importData(kscript::ExprEnv* env, kscript::Value* retval)
         
         
 
+        /*
+        TODO: reimplement
 
         ImportJob* import_job = new ImportJob;
 
@@ -3363,11 +3365,15 @@ void HostData::importData(kscript::ExprEnv* env, kscript::Value* retval)
         jobs::IJobPtr job = static_cast<jobs::IJob*>(import_job);
         job->runJob();
         job->runPostJob();
+        */
 
         retval->setBoolean(true);
     }
      else if (env->getParamCount() >= 2)
     {
+/*
+        TODO: reimplement
+
         ImportJob* import_job = new ImportJob;
     
         
@@ -3388,6 +3394,7 @@ void HostData::importData(kscript::ExprEnv* env, kscript::Value* retval)
         
                 
         delete import_job;
+*/
     }
     
 }

@@ -35,11 +35,12 @@
 const int ROWS_TO_DETERMINE_STRUCTURE = 10000;
 
 
-// -- DelimitedTextSet class implementation --
+// DelimitedTextSet class implementation
 
-DelimitedTextSet::DelimitedTextSet()
+DelimitedTextSet::DelimitedTextSet(FsDatabase* database)
 {
-    m_database = xcm::null;
+    m_database = database;
+    m_database->ref();
     
     m_source_structure = static_cast<tango::IStructure*>(new Structure);
     m_dest_structure = static_cast<tango::IStructure*>(new Structure);
@@ -49,24 +50,24 @@ DelimitedTextSet::DelimitedTextSet()
     m_text_qualifier = L"\"";
     m_first_row_column_names = false;
     m_discover_first_row_column_names = true;
+
 }
 
 DelimitedTextSet::~DelimitedTextSet()
 {
     if (m_file.isOpen())
         m_file.closeFile();
+
+    m_database->unref();
 }
 
-bool DelimitedTextSet::init(tango::IDatabasePtr db,
-                            const std::wstring& filename)
+bool DelimitedTextSet::init(const std::wstring& filename)
 {
     if (!m_file.openFile(filename))
         return false;
 
-    m_database = db;
-
     // figure out the config file name
-    tango::IAttributesPtr attr = db->getAttributes();
+    tango::IAttributesPtr attr = m_database->getAttributes();
     std::wstring definition_path = attr->getStringAttribute(tango::dbattrDefinitionDirectory);
     m_configfile_path = ExtFileInfo::getConfigFilenameFromPath(definition_path, filename);
     
@@ -116,17 +117,14 @@ bool DelimitedTextSet::init(tango::IDatabasePtr db,
             m_first_row_column_names = false;
             
             // however, many csv files also use other delimiters, like semicolons
-            IFsDatabasePtr fsdb = db;
-            if (fsdb)
+
+            FsSetFormatInfo info;
+            if (m_database->getSetFormat(filename,
+                                         &info,
+                                         FsSetFormatInfo::maskFormat |
+                                         FsSetFormatInfo::maskDelimiters))
             {
-                FsSetFormatInfo info;
-                if (fsdb->getSetFormat(filename,
-                                       &info,
-                                       FsSetFormatInfo::maskFormat |
-                                       FsSetFormatInfo::maskDelimiters))
-                {
-                    m_delimiters = info.delimiters;
-                }
+                m_delimiters = info.delimiters;
             }
         }
 
@@ -1407,9 +1405,6 @@ bool DelimitedTextSet::determineColumns(int check_rows, tango::IJob* job)
     // get the database keywords and invalid column characters
     // for use in the makeValidFieldName() function below
     
-    if (m_database.isNull())
-        return false;
-    
     tango::IAttributesPtr attr = m_database->getAttributes();
     if (attr.isNull())
         return false;
@@ -1649,9 +1644,6 @@ void DelimitedTextSet::populateColumnNameMatchVector()
     
     // get the database keywords and invalid column characters
     // for use in the makeValidFieldName() function below
-    
-    if (m_database.isNull())
-        return;
     
     tango::IAttributesPtr attr = m_database->getAttributes();
     if (attr.isNull())
