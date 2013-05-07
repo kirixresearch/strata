@@ -18,8 +18,6 @@
 #include "scriptdb.h"
 #include "scriptbitmap.h"
 #include "scriptwebdom.h"
-#include "jobexport.h"
-#include "jobimport.h"
 #include "extensionpkg.h"
 #include "reportlayout.h"
 #include "tabledoc.h"
@@ -3514,6 +3512,9 @@ void HostData::exportData(kscript::ExprEnv* env, kscript::Value* retval)
         }
         
 
+        /* 
+        TODO: reimplement
+
         ExportJob* export_job = new ExportJob;
             
         export_job->setExportType(database_type);
@@ -3543,9 +3544,15 @@ void HostData::exportData(kscript::ExprEnv* env, kscript::Value* retval)
         //job->runPostJob(); // runPostJob() refreshes the tree, which we don't want
 
         retval->setBoolean(true);
+        */
+
     }
      else if (env->getParamCount() >= 2)
     {
+
+        /*
+        TODO: reimplement
+
         ExportJob* export_job = new ExportJob;
         
         
@@ -3565,6 +3572,8 @@ void HostData::exportData(kscript::ExprEnv* env, kscript::Value* retval)
         retval->setBoolean(true);
         
         delete export_job;
+
+        */
     }
     
 } 

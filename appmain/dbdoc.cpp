@@ -22,8 +22,6 @@
 #include "paneldatabaseinfo.h"
 #include "panelfileinfo.h"
 #include "panelrelationship.h"
-#include "jobimport.h"
-#include "jobexport.h"
 #include "jsonconfig.h"
 #include "toolbars.h"
 #include "dlgdatabasefile.h"
