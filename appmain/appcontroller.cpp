@@ -4600,12 +4600,12 @@ bool AppController::openTable(const wxString& _location, int* site_id)
 
     int format = fileinfo->getFormat();
 
-    if (format == tango::formatDelimitedText || format == tango::formatFixedLengthText)
-    {
-        // open text set
-        createTextDoc(location, NULL, site_id);
-    }
-     else
+   // if (format == tango::formatDelimitedText || format == tango::formatFixedLengthText)
+   // {
+   //     // open text set
+   //     createTextDoc(location, NULL, site_id);
+   // }
+   //  else
     {
         // open all normal table docs
         ITableDocPtr doc = TableDocMgr::createTableDoc();
