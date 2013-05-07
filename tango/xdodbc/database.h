@@ -212,6 +212,11 @@ private:
     
 private:
 
+    xcm::mutex m_obj_mutex;
+
+    int m_last_job;
+    std::vector<JobInfo*> m_jobs;
+
     tango::IAttributesPtr m_attr;
     
     HENV m_env;

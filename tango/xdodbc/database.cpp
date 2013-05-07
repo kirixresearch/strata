@@ -19,6 +19,7 @@
 #include "database.h"
 #include "../xdcommon/dbattr.h"
 #include "../xdcommon/fileinfo.h"
+#include "../xdcommon/dbfuncs.h"
 #include "iterator.h"
 #include "inserter.h"
 #include <set>
@@ -779,6 +780,8 @@ static int odbcStateToTangoError(SQLTCHAR* _s)
 
 OdbcDatabase::OdbcDatabase()
 {
+    m_last_job = 0;
+
     m_env = 0;
 
     m_db_name = L"";
@@ -1456,7 +1459,16 @@ bool OdbcDatabase::cleanup()
 
 tango::IJobPtr OdbcDatabase::createJob()
 {
-    return xcm::null;
+    XCM_AUTO_LOCK(m_obj_mutex);
+
+    m_last_job++;
+
+    JobInfo* job = new JobInfo;
+    job->setJobId(m_last_job);
+    job->ref();
+    m_jobs.push_back(job);
+
+    return static_cast<tango::IJob*>(job);
 }
 
 tango::IDatabasePtr OdbcDatabase::getMountDatabase(const std::wstring& path)
@@ -1537,7 +1549,71 @@ bool OdbcDatabase::copyFile(const std::wstring& src_path,
 
 bool OdbcDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
 {
-    return false;
+    tango::IStructurePtr structure;
+
+
+    if (info->iter_input.isOk())
+    {
+        if (!info->append)
+        {
+            tango::IStructurePtr structure = info->iter_input->getStructure();
+            if (structure.isNull())
+                return false;
+
+            deleteFile(info->output);
+
+            if (!createTable(info->output, structure, NULL))
+                return false;
+        }
+
+        // iterator copy - use xdcmnInsert
+        xdcmnInsert(static_cast<tango::IDatabase*>(this), info->iter_input, info->output, info->where, info->limit, job);
+        return true;
+    }
+     else
+    {
+        bool success = true;
+
+        SQLRETURN r;
+        HDBC conn = createConnection(&r);
+        if (!conn)
+            return false;
+
+        std::wstring intbl = getTablenameFromOfsPath(info->input);
+        std::wstring outtbl = getTablenameFromOfsPath(info->output);
+        std::wstring sql = L"create table %outtbl% as select * from %intbl%";
+        kl::replaceStr(sql, L"%intbl%", intbl);
+        kl::replaceStr(sql, L"%outtbl%", outtbl);
+
+        if (info->where.length() > 0)
+            sql += (L" where " + info->where);
+    
+        if (info->order.length() > 0)
+            sql += (L" order by " + info->order);
+
+
+        HSTMT stmt;
+        SQLAllocStmt(conn, &stmt);
+
+        SQLRETURN retval;
+        retval = SQLExecDirect(stmt, sqlt(sql), SQL_NTS);
+
+        if (retval != SQL_SUCCESS)
+        {
+            success = false;
+            errorSqlStmt(stmt);
+        }
+
+        if (stmt)
+        {
+            SQLCloseCursor(stmt);
+            SQLFreeHandle(SQL_HANDLE_STMT, stmt);
+        }
+
+        closeConnection(conn);
+        return success;
+    }
+
 }
 
 bool OdbcDatabase::deleteFile(const std::wstring& path)
