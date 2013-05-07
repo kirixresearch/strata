@@ -43,7 +43,6 @@
 #include "editordoc.h"
 #include "jobscript.h"
 #include "jobscheduler.h"
-#include "jobimport.h"
 #include "jsonconfig.h"
 #include "querydoc.h"
 #include "sqldoc.h"

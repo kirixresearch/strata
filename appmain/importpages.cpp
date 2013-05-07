@@ -14,7 +14,6 @@
 #include "importpages.h"
 #include "importtemplate.h"
 #include "dlgdatabasefile.h"
-#include "jobimport.h"
 #include "textview.h"
 #include "tangogridmodel.h"
 #include "structurevalidator.h"

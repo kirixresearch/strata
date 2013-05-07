@@ -13,7 +13,6 @@
 #include "dlgdatabasefile.h"
 #include "importwizard.h"
 #include "appcontroller.h"
-#include "jobimport.h"
 #include "jsonconfig.h"
 #include <kl/crypt.h>
 
