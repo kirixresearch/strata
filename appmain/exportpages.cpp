@@ -129,6 +129,7 @@ jobs::IJobPtr ExportTemplate::execute()
 
     std::wstring source_connection = towstr(g_app->getDatabaseConnectionString());
     std::wstring destination_connection = conn->getConnectionString();
+    destination_connection += L";create_if_not_exists=true";
 
     // configure the job parameters
     kl::JsonNode params;

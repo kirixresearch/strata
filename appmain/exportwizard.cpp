@@ -325,15 +325,15 @@ void ExportWizard::onPathSelectionPageChanging(bool forward, bool* allow)
          else
         {
             // fix wrong file extension for package files
-            if (ei->type == dbtypePackage && kl::iequals(ext, L"kpg"))
+            if (ei->type == dbtypePackage && !kl::iequals(ext, L"kpg"))
                 ei->path += L".kpg";
             
             // fix wrong file extension for Microsoft Access files
-            if (ei->type == dbtypeAccess && kl::iequals(ext, L"mdb"))
+            if (ei->type == dbtypeAccess && !kl::iequals(ext, L"mdb"))
                 ei->path += L".mdb";
             
             // fix wrong file extension for Microsoft Excel files
-            if (ei->type == dbtypeExcel && kl::iequals(ext, L"xls"))
+            if (ei->type == dbtypeExcel && !kl::iequals(ext, L"xls"))
                 ei->path += L".xls";
             
             // check to see if the path entered is valid

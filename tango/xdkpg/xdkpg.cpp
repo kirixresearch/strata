@@ -12,6 +12,7 @@
 #include <kl/klib.h>
 #include "tango.h"
 #include "database.h"
+#include "pkgfile.h"
 #include "../xdcommon/connectionstr.h"
 #include "../xdcommon/errorinfo.h"
 
@@ -44,11 +45,23 @@ public:
         
         // parse the connection string
         
+
+
         std::wstring database = c.getValue(L"database");
+
+
+        if (c.getValue(L"create_if_not_exists") == L"true")
+        {
+            if (!xf_get_file_exist(database))
+            {
+                return this->createDatabase(database, L"");
+            }
+        }
+
+
 
         KpgDatabase* db = new KpgDatabase;
         db->ref();
-
         if (!db->open(database))
         {
             m_error.setError(db->getErrorCode(), db->getErrorString());
@@ -63,7 +76,25 @@ public:
     tango::IDatabasePtr createDatabase(const std::wstring& location,
                                        const std::wstring& dbname)
     {
-        return xcm::null;
+        {
+            PkgFile file;
+            if (!file.create(location))
+                return xcm::null;
+            file.close();
+        }
+        
+
+        KpgDatabase* db = new KpgDatabase;
+        db->ref();
+        if (!db->open(location))
+        {
+            m_error.setError(db->getErrorCode(), db->getErrorString());
+
+            db->unref();
+            return xcm::null;
+        }
+
+        return tango::IDatabasePtr(db, false);
     }
 
     bool createDatabase(const std::wstring& location, int db_type)

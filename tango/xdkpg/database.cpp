@@ -21,6 +21,7 @@
 #include "../xdcommon/columninfo.h"
 #include "../xdcommon/indexinfo.h"
 #include "../xdcommon/jobinfo.h"
+#include "../xdcommon/dbfuncs.h"
 #include "../xdcommon/util.h"
 #include "database.h"
 #include "iterator.h"
@@ -335,7 +336,39 @@ bool KpgDatabase::copyFile(const std::wstring& src_path,
 
 bool KpgDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
 {
-    return false;
+    tango::IIteratorPtr iter;
+    tango::IStructurePtr structure;
+
+    if (info->iter_input.isOk())
+    {
+        iter = info->iter_input;
+        structure = iter->getStructure();
+    }
+     else
+    {
+        iter = createIterator(info->input, L"", info->where, info->order, NULL);
+        if (iter.isNull())
+            return false;
+
+        structure = iter->getStructure();
+        if (structure.isNull())
+            return false;
+    }
+
+
+    
+    if (!info->append)
+    {
+        deleteFile(info->output);
+        if (!createTable(info->output, structure, NULL))
+            return false;
+    }
+
+
+    xdcmnInsert(static_cast<tango::IDatabase*>(this), iter, info->output, info->where, info->limit, job);
+
+    return true;
+
 }
 
 bool KpgDatabase::deleteFile(const std::wstring& path)

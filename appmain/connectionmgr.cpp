@@ -176,11 +176,12 @@ public:
         }
          else
         {
-/*
-            cstr += L"database=";
-            cstr += m_path;
-            cstr += L";";
-*/
+            if (m_type == dbtypePackage || m_type == dbtypeAccess || m_type == dbtypeSqlite || m_type == dbtypeExcel)
+            {
+                cstr += L"database=";
+                cstr += m_path;
+                cstr += L";";
+            }
         }
         
         return cstr;
