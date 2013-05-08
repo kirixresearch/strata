@@ -810,6 +810,7 @@ jobs::IJobPtr ImportTemplate::execute()
 
 
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.load-job");
+    job->getJobInfo()->setTitle(towstr(_("Importing Data")));
 
 
 

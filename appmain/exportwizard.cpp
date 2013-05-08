@@ -26,7 +26,7 @@
 #endif
 
 
-// -- ExportWizard class implementation --
+// ExportWizard class implementation
 
 BEGIN_EVENT_TABLE(ExportWizard, wxWindow)
     EVT_BUTTON(wxID_CANCEL, ExportWizard::onClose)
@@ -63,7 +63,7 @@ bool ExportWizard::initDoc(IFramePtr frame,
                            wxWindow* docsite_wnd,
                            wxWindow* panesite_wnd)
 {
-    // -- create document's window --
+    // create document's window
     bool result = Create(docsite_wnd,
                          -1,
                          wxDefaultPosition,
@@ -746,7 +746,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
                                             wxYES_NO | wxICON_QUESTION | wxCENTER);
             if (result == wxYES)
             {
-                // -- traverse the path given and create all directories that do not exist --
+                // traverse the path given and create all directories that do not exist
 
                 wxString dirpath = m_template.m_ei.base_path.BeforeFirst(PATH_SEPARATOR_CHAR);
                 wxString remainder = m_template.m_ei.base_path.AfterFirst(PATH_SEPARATOR_CHAR);
@@ -982,7 +982,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
             }
         }
 
-        // -- every filename has been validated, we can continue --
+        // every filename has been validated, we can continue
 
         for (it = m_template.m_ei.tables.begin();
              it != m_template.m_ei.tables.end(); ++it)
@@ -1016,8 +1016,8 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
     int conn_type = conn->getType();
     wxString conn_path = conn->getPath();
     
-    // the location to copy the existing file to while we do our error checking
-    // -- if anything fails, copy this file back to its original location
+    // the location to copy the existing file to while we do our error checking;
+    // if anything fails, copy this file back to its original location
     std::wstring existing_file_temp_loc;
 
     // CHECK: overwrite access or excel ok?
@@ -1157,8 +1157,8 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         m_table_selection_page->refreshGrid();
         
         appMessageBox(_("One or more of the tables specified for export has an invalid name."),
-                           _("Export Wizard"),
-                           wxICON_EXCLAMATION | wxCENTER);
+                      _("Export Wizard"),
+                      wxICON_EXCLAMATION | wxCENTER);
         return;
     }
 
@@ -1191,8 +1191,8 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         m_table_selection_page->refreshGrid();
         
         appMessageBox(_("One or more of the tables specified for export no longer exists.\nRemove these tables from the list to continue."),
-                           _("Export Wizard"),
-                           wxICON_EXCLAMATION | wxCENTER);
+                      _("Export Wizard"),
+                      wxICON_EXCLAMATION | wxCENTER);
         return;
     }
     
@@ -1239,8 +1239,8 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         m_table_selection_page->refreshGrid();
         
         appMessageBox(_("One or more of the tables specified for export contains invalid fieldnames."),
-                           _("Export Wizard"),
-                           wxICON_EXCLAMATION | wxCENTER);
+                      _("Export Wizard"),
+                      wxICON_EXCLAMATION | wxCENTER);
         return;
     }
 
@@ -1300,8 +1300,8 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
             m_table_selection_page->refreshGrid();
             
             int result = appMessageBox(_("One or more of the table names specified for export already exists.  Would you like to overwrite these tables?"),
-                                            _("Export Wizard"),
-                                            wxYES_NO | wxNO_DEFAULT | wxICON_EXCLAMATION | wxCENTER);
+                                       _("Export Wizard"),
+                                       wxYES_NO | wxNO_DEFAULT | wxICON_EXCLAMATION | wxCENTER);
             if (result == wxNO)
                 return;
         }
@@ -1326,15 +1326,15 @@ bool ExportWizard::loadTemplate(const wxString& path)
 
 bool ExportWizard::saveTemplate(const wxString& path)
 {
-    // -- save the data on the page that is currently being edited --
+    // save the data on the page that is currently being edited
     m_path_selection_page->savePageData();
     m_datasource_selection_page->savePageData();
     m_server_properties_page->savePageData();
 
-    // -- save the template --
+    // save the template
     m_template.save(path);
 
-    // -- refresh tree --
+    // refresh tree
     g_app->getAppController()->refreshDbDoc();
 
     return true;

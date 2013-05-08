@@ -17,7 +17,7 @@
 class ExportInfo;
 
 
-// -- page to select the tables the user wants to export --
+// page to select the tables the user wants to export
 
 class ExportTableSelectionPage : public kcl::WizardPage,
                                  public xcm::signal_sink
@@ -66,7 +66,7 @@ private:
 };
 
 
-// -- page to specify the delimited text settings --
+// page to specify the delimited text settings
 
 class ExportDelimitedTextSettingsPage : public kcl::WizardPage
 {
