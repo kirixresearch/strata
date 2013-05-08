@@ -1394,7 +1394,10 @@ HDBC OdbcDatabase::createConnection(SQLRETURN* retval)
     SQLRETURN r;
 
     // allocate connection
-    SQLAllocConnect(m_env, &conn);
+    if (!SQL_SUCCEEDED(SQLAllocConnect(m_env, &conn)))
+        return NULL;
+    if (!conn)
+        return NULL;
 
     r = connect(conn);
     if (retval) *retval = r;

@@ -10,9 +10,12 @@
 
 
 #include <kl/string.h>
+#include <kl/file.h>
 #include "database.h"
 #include "../xdcommon/dbentry.h"
 #include "../xdcommon/connectionstr.h"
+
+
 
 #include <odbcinst.h>
 
@@ -197,6 +200,9 @@ public:
             std::wstring ext = kl::afterLast(database, L'.');
             kl::makeUpper(ext);
 
+            if (c.getValue(L"create_if_not_exists") == L"true" && !xf_get_file_exist(database))
+                return this->createDatabase(database, L"");
+
             if (ext == L"MDB" || ext == L"ACCDB")
             {
                 if (!db->open(tango::dbtypeAccess, L"", 0, L"", uid, password, database))
@@ -207,6 +213,7 @@ public:
             }
              else if (ext == L"XLS" || ext == L"XLSX")
             {
+
                 if (!db->open(tango::dbtypeExcel, L"", 0, L"", uid, password, database))
                 {
                     db->unref();
