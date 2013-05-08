@@ -535,64 +535,6 @@ inline wxString createFullFilePath(const wxString& base_path, const wxString& fi
     return retval;
 }
 
-static bool tryCreateFile(int conn_type,
-                          const wxString& try_create_loc,
-                          std::wstring* existing_file_temp_loc)
-{
-    if (conn_type != dbtypeAccess && conn_type != dbtypeExcel)
-        return false;
-
-    wxString ext = try_create_loc.AfterLast(wxT('.'));
-    *existing_file_temp_loc = xf_get_temp_filename(L"trycreate", towstr(ext));
-    if (!xf_move(towstr(try_create_loc), *existing_file_temp_loc))
-    {
-        *existing_file_temp_loc = L"";
-        return false;
-    }
-    
-    return true;
-}
-    
-static bool revertTryCreateFile(int conn_type,
-                                tango::IDatabasePtr conn_db,
-                                const wxString& try_create_loc,
-                                const std::wstring& existing_file_temp_loc)
-{
-    if (conn_type != dbtypeAccess && conn_type != dbtypeExcel)
-        return false;
-    
-    std::wstring w_try_create_loc = towstr(try_create_loc);
-    
-    // move the existing file back
-    if (existing_file_temp_loc.length() > 0)
-    {
-        // erase any junk we may have created
-        if (xf_get_file_exist(w_try_create_loc))
-        {
-            if (conn_db.isOk())
-                conn_db->close();
-            
-            xf_remove(w_try_create_loc);
-        }
-        
-        return xf_move(existing_file_temp_loc, w_try_create_loc);
-    }
-     else
-    {
-        // erase any junk we may have created
-        if (xf_get_file_exist(w_try_create_loc))
-        {
-            if (conn_db.isOk())
-                conn_db->close();
-            
-            xf_remove(w_try_create_loc);
-        }
-        
-        return true;
-    }
-    
-    return true;
-}
 
 void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
 {
@@ -1024,7 +966,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
     if ((conn_type == dbtypeAccess || conn_type == dbtypeExcel) &&
         m_template.m_ei.overwrite_file)
     {
-        // since we are dealing with an Access or Excel file,
+        // since we are dealing with an AccessExcel file,
         // we need to create the file before adding tables to it
         tango::IDatabaseMgrPtr db_mgr;
         db_mgr.create_instance("xdodbc.DatabaseMgr");
@@ -1053,21 +995,12 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         // save the existing file as a temp file 
         if (xf_get_file_exist(towstr(conn_path)))
         {
-            // move any existing file to a temp location and try
-            // to create the file specified in the connection
-            if (!tryCreateFile(conn_type, conn_path, &existing_file_temp_loc))
+            if (!xf_remove(towstr(conn_path)))
             {
-                // remove any cruft we've created and restore
-                // the original file if it existed
-                revertTryCreateFile(conn_type,
-                                    xcm::null,
-                                    conn_path,
-                                    existing_file_temp_loc);
-                
                 appMessageBox(wxString::Format(_("There specified %s is currently in use or you may not have permission to overwrite it.\nPlease make sure that the file to be overwritten is not currently in use."),
-                                                    filetype_name.c_str()),
-                                   _("Export Wizard"),
-                                   wxOK | wxICON_EXCLAMATION | wxCENTER);
+                                               filetype_name.c_str()),
+                              _("Export Wizard"),
+                              wxOK | wxICON_EXCLAMATION | wxCENTER);
                 return;
             }
         }
@@ -1075,17 +1008,10 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         db_ptr = db_mgr->createDatabase(towstr(conn_path), L"");
         if (db_ptr.isNull())
         {
-            // remove any cruft we've created and restore
-            // the original file if it existed
-            revertTryCreateFile(conn_type,
-                                xcm::null,
-                                conn_path,
-                                existing_file_temp_loc);
-            
             appMessageBox(wxString::Format(_("There was an error connecting to the specified %s.\nPlease make sure that the file exists and that it is not currently in use."),
-                                                filetype_name.c_str()),
-                               _("Export Wizard"),
-                               wxOK | wxICON_EXCLAMATION | wxCENTER);
+                                           filetype_name.c_str()),
+                          _("Export Wizard"),
+                          wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
         }
 
@@ -1095,19 +1021,16 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         // creating the file, bail out
         if (!conn->open())
         {
-            // remove any cruft we've created and restore
-            // the original file if it existed
-            revertTryCreateFile(conn_type,
-                                xcm::null,
-                                conn_path,
-                                existing_file_temp_loc);
-            
+            xf_remove(towstr(conn_path));
             appMessageBox(wxString::Format(_("There was an error connecting to the specified %s.\nPlease make sure that the file exists and that it is not currently in use."),
-                                                filetype_name.c_str()),
-                               _("Export Wizard"),
-                               wxOK | wxICON_EXCLAMATION | wxCENTER);
+                                           filetype_name.c_str()),
+                          _("Export Wizard"),
+                           wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
         }
+
+        conn.clear();
+        xf_remove(towstr(conn_path));
     }
      else
     {
@@ -1115,8 +1038,8 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         if (!conn->open())
         {
             appMessageBox(_("There was an error connecting to the specified database.\nPlease make sure that the connection information for the database is correct."),
-                               _("Export Wizard"),
-                               wxOK | wxICON_EXCLAMATION | wxCENTER);
+                          _("Export Wizard"),
+                          wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
         }
     }
@@ -1146,13 +1069,6 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
 
     if (invalid_tablenames.size() > 0)
     {
-        // remove any cruft we've created and restore
-        // the original file if it existed
-        revertTryCreateFile(conn_type,
-                            db_ptr,
-                            conn_path,
-                            existing_file_temp_loc);
-        
         // show what rows contain errors
         m_table_selection_page->refreshGrid();
         
@@ -1180,13 +1096,6 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
     
     if (missing_tables.size() > 0)
     {
-        // remove any cruft we've created and restore
-        // the original file if it existed
-        revertTryCreateFile(conn_type,
-                            db_ptr,
-                            conn_path,
-                            existing_file_temp_loc);
-        
         // show what rows contain errors
         m_table_selection_page->refreshGrid();
         
@@ -1228,13 +1137,6 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
 
     if (invalid_fieldnames.size() > 0)
     {
-        // remove any cruft we've created and restore
-        // the original file if it existed
-        revertTryCreateFile(conn_type,
-                            db_ptr,
-                            conn_path,
-                            existing_file_temp_loc);
-        
         // show what rows contain errors
         m_table_selection_page->refreshGrid();
         
@@ -1289,13 +1191,6 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
 
         if (tablenames_already_in_database)
         {
-            // remove any cruft we've created and restore
-            // the original file if it existed
-            revertTryCreateFile(conn_type,
-                                db_ptr,
-                                conn_path,
-                                existing_file_temp_loc);
-            
             // show what rows contain errors
             m_table_selection_page->refreshGrid();
             
@@ -1306,14 +1201,6 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
                 return;
         }
     }
-
-    // remove any cruft we've created and restore the original file
-    // if it existed (if we're supposed to overwrite it,
-    // it'll be overwritten in the export job)
-    revertTryCreateFile(conn_type,
-                        db_ptr,
-                        conn_path,
-                        existing_file_temp_loc);
 
     sigExportWizardFinished(this);
     m_frame->closeSite(m_doc_site);

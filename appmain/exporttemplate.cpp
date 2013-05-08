@@ -53,8 +53,14 @@ jobs::IJobPtr ExportTemplate::execute()
     job->setFirstRowHeader(m_ei.first_row_header);
     */
 
-    // determine destination connection string
 
+    if (m_ei.path.length() > 0 && m_ei.overwrite_file)
+    {
+        xf_remove(m_ei.path);
+    }
+
+
+    // determine destination connection string
     IConnectionPtr conn = createUnmanagedConnection();
     conn->setType(m_ei.type);
     conn->setHost(m_ei.server);
@@ -64,6 +70,9 @@ jobs::IJobPtr ExportTemplate::execute()
     conn->setPassword(m_ei.password);
 
     conn->setPath(m_ei.path);
+
+
+
 
     std::wstring source_connection = towstr(g_app->getDatabaseConnectionString());
     std::wstring destination_connection = conn->getConnectionString();
