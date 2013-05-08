@@ -515,13 +515,6 @@ bool XdnativeDatabase::openDatabase(const std::wstring& location,
     m_uid = uid;
 
 
-    // in 2005.1 and before, these folders were not 'folder' type objects, but
-    // rather generics.  These lines will convert them to folder objects, because
-    // having the generic type caused problems with the save dialog
-    createFolder(L"/.appdata");
-    createFolder(L"/.temp");
-    createFolder(L"/.system");
-
     // read database name
     INodeValuePtr dbname = openNodeFile(L"/.system/database_name");
     if (!dbname)
