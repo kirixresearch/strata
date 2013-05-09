@@ -353,7 +353,7 @@ bool ClientDatabase::copyFile(const std::wstring& src_path, const std::wstring& 
     return false;
 }
 
-bool ClientDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
+bool ClientDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
 {
     std::wstring handle;
     IClientIteratorPtr iter = info->iter_input;
@@ -784,7 +784,7 @@ bool ClientDatabase::execute(const std::wstring& command,
     return true;
 }
 
-bool ClientDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
+bool ClientDatabase::groupQuery(tango::GroupQueryParams* info, tango::IJob* job)
 {
     return false;
 }

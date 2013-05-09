@@ -665,7 +665,7 @@ bool PgsqlDatabase::copyFile(const std::wstring& src_path,
     return false;
 }
 
-bool PgsqlDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
+bool PgsqlDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
 {
     PGconn* conn = createConnection();
     if (!conn)
@@ -1403,7 +1403,7 @@ bool PgsqlDatabase::execute(const std::wstring& command,
 
 
 
-bool PgsqlDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
+bool PgsqlDatabase::groupQuery(tango::GroupQueryParams* info, tango::IJob* job)
 {
     bool detail_rows = false;
     size_t grouped_column_count = 0;

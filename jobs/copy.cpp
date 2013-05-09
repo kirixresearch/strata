@@ -86,7 +86,7 @@ int CopyJob::runJob()
 
 
     // get the input
-    tango::CopyInfo info;
+    tango::CopyParams info;
     info.input = params_node["input"].getString();
     info.output = params_node["output"].getString();
 

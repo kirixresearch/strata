@@ -404,7 +404,7 @@ bool SqlServerDatabase::copyFile(const std::wstring& src_path,
     return false;
 }
 
-bool SqlServerDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
+bool SqlServerDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
 {
     return false;
 }

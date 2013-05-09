@@ -205,17 +205,17 @@ public:
 };
 
 
-class GroupQueryInfo
+class GroupQueryParams
 {
 
 public:
 
-    GroupQueryInfo()
+    GroupQueryParams()
     {
         m_store_size = 0;
     }
 
-    ~GroupQueryInfo()
+    ~GroupQueryParams()
     {
         std::vector<GroupResult*>::iterator it;
         
@@ -530,7 +530,7 @@ bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
 
 
 
-    GroupQueryInfo* info = (GroupQueryInfo*)hook_info.hook_param;
+    GroupQueryParams* info = (GroupQueryParams*)hook_info.hook_param;
     
     GroupResult* result =  info->getResultObject(text);
     
@@ -685,7 +685,7 @@ void buf2str(std::string& str, char* ptr, int len)
 
 
 
-bool XdnativeDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
+bool XdnativeDatabase::groupQuery(tango::GroupQueryParams* info, tango::IJob* job)
 {
     std::wstring input = info->input;
     std::wstring group = info->group;
@@ -694,7 +694,7 @@ bool XdnativeDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
     std::wstring having = info->having;
 
 
-    GroupQueryInfo gi;
+    GroupQueryParams gi;
     std::vector<GroupOutputInfo> output_fields;
     kscript::ExprParser* having_parser = NULL;
     bool copy_detail = false;

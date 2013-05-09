@@ -577,9 +577,9 @@ struct FormatInfo
 
 
 
-struct CopyInfo
+struct CopyParams
 {
-    CopyInfo()
+    CopyParams()
     {
         append = false;
         limit = -1;
@@ -597,10 +597,6 @@ struct CopyInfo
 
 struct QueryParams
 {
-    QueryParams()
-    {
-    }
-
     std::wstring from;
     std::wstring columns;
     std::wstring where;
@@ -609,16 +605,10 @@ struct QueryParams
     IJobPtr job;
 };
 
-struct GroupQueryInfo
+struct GroupQueryParams
 {
-    GroupQueryInfo()
-    {
-        append = false;
-    }
-
     std::wstring input;
     std::wstring output;
-    bool append;
 
     std::wstring group;
     std::wstring columns;
@@ -654,7 +644,7 @@ public:
     virtual bool renameFile(const std::wstring& path, const std::wstring& new_name) = 0;
     virtual bool moveFile(const std::wstring& path, const std::wstring& new_folder) = 0;
     virtual bool copyFile(const std::wstring& src_path, const std::wstring& dest_path) = 0;
-    virtual bool copyData(const CopyInfo* info, IJob* job) = 0;
+    virtual bool copyData(const CopyParams* info, IJob* job) = 0;
     virtual bool deleteFile(const std::wstring& path) = 0;
     virtual bool getFileExist(const std::wstring& path) = 0;
     virtual IFileInfoPtr getFileInfo(const std::wstring& path) = 0;
@@ -695,7 +685,7 @@ public:
                          xcm::IObjectPtr& result,
                          IJob* job) = 0;
 
-    virtual bool groupQuery(GroupQueryInfo* info, IJob* job) = 0;
+    virtual bool groupQuery(GroupQueryParams* info, IJob* job) = 0;
 };
 
 

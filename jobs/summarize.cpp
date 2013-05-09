@@ -187,7 +187,7 @@ int SummarizeJob::runJob()
     if (params_node.childExists("where"))
         where_param = params_node["where"].getString();
 
-    tango::GroupQueryInfo info;
+    tango::GroupQueryParams info;
     info.input = input_path;
     info.output = group_output_set_path;
     info.columns = column_param,

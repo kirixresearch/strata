@@ -209,7 +209,7 @@ int AppendJob::runJob()
         tango_job = m_db->createJob();
         setTangoJob(tango_job, false);
 
-        tango::CopyInfo info;
+        tango::CopyParams info;
         info.input = *it;
         info.output = output_path;
         info.append = true;

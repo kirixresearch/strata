@@ -542,7 +542,7 @@ void Controller::apiCopyData(RequestInfo& req)
     if (db.isNull())
         return;
     
-    tango::CopyInfo info;
+    tango::CopyParams info;
     info.input = req.getValue(L"input");
     info.output = req.getValue(L"output");
     info.where = req.getValue(L"where");
@@ -856,7 +856,7 @@ void Controller::apiGroupQuery(RequestInfo& req)
     std::wstring wherep = req.getValue(L"where");
     std::wstring having = req.getValue(L"having");
 
-    tango::GroupQueryInfo info;
+    tango::GroupQueryParams info;
     info.input = path;
     info.output = output;
     info.columns = columns;
@@ -1366,7 +1366,7 @@ void Controller::apiInsertRows(RequestInfo& req)
 
     it->second.iter->goFirst();
 
-    tango::CopyInfo info;
+    tango::CopyParams info;
     info.iter_input = it->second.iter;
     info.append = true;
     info.where = req.getValue(L"where");

@@ -875,7 +875,7 @@ bool FsDatabase::copyFile(const std::wstring& src_path,
     return true;
 }
 
-bool FsDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
+bool FsDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
 {
     return false;
 }
@@ -1867,7 +1867,7 @@ bool FsDatabase::execute(const std::wstring& command,
                  command, flags, result, m_error, job);
 }
 
-bool FsDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
+bool FsDatabase::groupQuery(tango::GroupQueryParams* info, tango::IJob* job)
 {
     return false;
 }

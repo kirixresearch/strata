@@ -356,7 +356,7 @@ bool SlDatabase::copyFile(const std::wstring& src_path,
     return false;
 }
 
-bool SlDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
+bool SlDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
 {
     return false;
 }
@@ -742,7 +742,7 @@ bool SlDatabase::execute(const std::wstring& command,
     return true;
 }
 
-bool SlDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
+bool SlDatabase::groupQuery(tango::GroupQueryParams* info, tango::IJob* job)
 {
     return false;
 }

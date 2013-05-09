@@ -147,7 +147,7 @@ int DivideJob::runJob()
         tango_job = m_db->createJob();
         setTangoJob(tango_job);
 
-        tango::CopyInfo info;
+        tango::CopyParams info;
         info.iter_input = iter;
         info.output = output_path;
         info.limit = (rows_left >= output_row_count) ? output_row_count : rows_left;

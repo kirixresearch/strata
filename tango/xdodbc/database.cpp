@@ -1550,7 +1550,7 @@ bool OdbcDatabase::copyFile(const std::wstring& src_path,
     return false;
 }
 
-bool OdbcDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
+bool OdbcDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
 {
     tango::IStructurePtr structure;
 
@@ -2605,7 +2605,7 @@ bool OdbcDatabase::execute(const std::wstring& command,
     }
 }
 
-bool OdbcDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
+bool OdbcDatabase::groupQuery(tango::GroupQueryParams* info, tango::IJob* job)
 {
     return false;
 }

@@ -1808,7 +1808,7 @@ void DbConnection::save(kscript::ExprEnv* env, kscript::Value* retval)
     // add the records to the output set, reset the
     // iterator, and we're done
 
-    tango::CopyInfo info;
+    tango::CopyParams info;
     info.iter_input = input_iter;
     info.output = output_name;
     info.append = append;

@@ -218,17 +218,17 @@ public:
 };
 
 
-class GroupQueryInfo
+class GroupQueryParams
 {
 
 public:
 
-    GroupQueryInfo()
+    GroupQueryParams()
     {
         m_store_size = 0;
     }
 
-    ~GroupQueryInfo()
+    ~GroupQueryParams()
     {
         std::vector<GroupResult*>::iterator it;
         for (it = m_results.begin(); it != m_results.end(); ++it)
@@ -521,7 +521,7 @@ bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
 
 
 
-    GroupQueryInfo* info = (GroupQueryInfo*)hook_info.hook_param;
+    GroupQueryParams* info = (GroupQueryParams*)hook_info.hook_param;
     
     GroupResult* result =  info->getResultObject(text);
     
@@ -630,7 +630,7 @@ bool runGroupQuery(tango::IDatabasePtr db,
     if (db.isNull() || sp_iter.isNull())
         return false;
 
-    GroupQueryInfo gi;
+    GroupQueryParams gi;
     std::vector<GroupOutputInfo> output_fields;
     kscript::ExprParser* having_parser = NULL;
     bool copy_detail = false;

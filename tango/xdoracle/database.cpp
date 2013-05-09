@@ -808,7 +808,7 @@ bool OracleDatabase::copyFile(const std::wstring& src_path,
     return false;
 }
 
-bool OracleDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
+bool OracleDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
 {
     return false;
 }
@@ -1308,7 +1308,7 @@ bool OracleDatabase::execute(const std::wstring& _command,
 }
 
 
-bool OracleDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
+bool OracleDatabase::groupQuery(tango::GroupQueryParams* info, tango::IJob* job)
 {
     return false;
 }

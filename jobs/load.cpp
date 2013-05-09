@@ -143,7 +143,7 @@ int LoadJob::runJob()
 
         // right now there is no transformation happening -- just copy the whole table
 
-        tango::CopyInfo info;
+        tango::CopyParams info;
         info.iter_input = source_iter;
         info.output = destination_path;
         

@@ -111,7 +111,7 @@ public:
     bool renameFile(const std::wstring& path, const std::wstring& new_name);
     bool moveFile(const std::wstring& path, const std::wstring& new_folder);
     bool copyFile(const std::wstring& src_path, const std::wstring& dest_path);
-    bool copyData(const tango::CopyInfo* info, tango::IJob* job);
+    bool copyData(const tango::CopyParams* info, tango::IJob* job);
     bool deleteFile(const std::wstring& path);
     bool getFileExist(const std::wstring& path);
     tango::IFileInfoPtr getFileInfo(const std::wstring& path);
@@ -147,7 +147,7 @@ public:
                  xcm::IObjectPtr& result,
                  tango::IJob* job);
 
-    bool groupQuery(tango::GroupQueryInfo* info, tango::IJob* job);
+    bool groupQuery(tango::GroupQueryParams* info, tango::IJob* job);
 
 private:
 

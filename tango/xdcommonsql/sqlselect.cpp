@@ -3241,7 +3241,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         }
 
 
-        tango::GroupQueryInfo info;
+        tango::GroupQueryParams info;
         info.input = set;
         info.output = L"xtmp_" + kl::getUniqueString();
         info.columns = field_str;

@@ -1529,7 +1529,7 @@ static bool _copyTree(const std::wstring& path,
     return true;
 }
 
-bool XdnativeDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
+bool XdnativeDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
 {
     tango::IIteratorPtr iter;
     tango::IStructurePtr structure;

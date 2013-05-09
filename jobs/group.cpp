@@ -135,7 +135,7 @@ int GroupJob::runJob()
         tango_job = m_db->createJob();
         setTangoJob(tango_job);
 
-        tango::GroupQueryInfo info;
+        tango::GroupQueryParams info;
         info.input = input_path;
         info.output = output_path;
         info.group = group_params;
@@ -174,7 +174,7 @@ int GroupJob::runJob()
         tango_job = m_db->createJob();
         setTangoJob(tango_job);
 
-        tango::GroupQueryInfo info1;
+        tango::GroupQueryParams info1;
         info1.input = input_path;
         info1.output = L"xtmp_" + kl::getUniqueString();
         info1.group = group_params;
@@ -233,7 +233,7 @@ int GroupJob::runJob()
         tango_job = m_db->createJob();
         setTangoJob(tango_job);
 
-        tango::GroupQueryInfo info3;
+        tango::GroupQueryParams info3;
         info3.input = output2;
         info3.output = output_path;
         info3.group = group_params;

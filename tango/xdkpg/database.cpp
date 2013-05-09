@@ -334,7 +334,7 @@ bool KpgDatabase::copyFile(const std::wstring& src_path,
     return false;
 }
 
-bool KpgDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
+bool KpgDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
 {
     tango::IIteratorPtr iter;
     tango::IStructurePtr structure;
@@ -690,7 +690,7 @@ bool KpgDatabase::execute(const std::wstring& command,
     return false;
 }
 
-bool KpgDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
+bool KpgDatabase::groupQuery(tango::GroupQueryParams* info, tango::IJob* job)
 {
     return false;
 }
