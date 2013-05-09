@@ -42,7 +42,7 @@ ReplaceRowsPanel::~ReplaceRowsPanel()
 void ReplaceRowsPanel::setParameters(const wxString& path, const wxString& expr, const wxString& field)
 {
     m_path = path;
-    m_iter = g_app->getDatabase()->createIterator(towstr(path), L"", L"", L"", NULL);
+    m_iter = g_app->getDatabase()->query(towstr(path), L"", L"", L"", NULL);
     m_structure = m_iter->getStructure();
     m_default_expr = expr;
     m_default_field = field;

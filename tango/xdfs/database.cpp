@@ -1449,17 +1449,13 @@ IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, int format)
 }
 
 
-tango::IIteratorPtr FsDatabase::createIterator(const std::wstring& path,
-                                               const std::wstring& columns,
-                                               const std::wstring& wherec,
-                                               const std::wstring& order,
-                                               tango::IJob* job)
+tango::IIteratorPtr FsDatabase::query(const tango::QueryParams& qp)
 {
-    IXdsqlTablePtr tbl = openSetEx(path, tango::formatNative);
+    IXdsqlTablePtr tbl = openSetEx(qp.from, tango::formatNative);
     if (tbl.isNull())
         return xcm::null;
 
-    return tbl->createIterator(columns, order, job);
+    return tbl->createIterator(qp.columns, qp.order, qp.job);
 }
 
 

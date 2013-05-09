@@ -346,7 +346,12 @@ bool KpgDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
     }
      else
     {
-        iter = createIterator(info->input, L"", info->where, info->order, NULL);
+        tango::QueryParams qp;
+        qp.from = info->input;
+        qp.where = info->where;
+        qp.order = info->order;
+
+        iter = query(qp);
         if (iter.isNull())
             return false;
 
@@ -549,23 +554,16 @@ bool KpgDatabase::getStreamInfoBlock(const std::wstring& _path, std::wstring& ou
 }
 
 
-tango::IIteratorPtr KpgDatabase::createIterator(const std::wstring& _path,
-                                                const std::wstring& columns,
-                                                const std::wstring& wherec,
-                                                const std::wstring& order,
-                                                tango::IJob* job)
+tango::IIteratorPtr KpgDatabase::query(const tango::QueryParams& qp)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
-    std::wstring path = _path;
+    std::wstring path = qp.from;
     if (path.substr(0,1) == L"/")
         path.erase(0,1);
 
- 
-
     // create an iterator based on our select statement
     KpgIterator* iter = new KpgIterator(this);
-
 
     if (!iter->init(path))
     {

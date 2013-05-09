@@ -1134,25 +1134,21 @@ bool OracleDatabase::createStream(const std::wstring& ofs_path, const std::wstri
     return false;
 }
 
-tango::IIteratorPtr OracleDatabase::createIterator(const std::wstring& path,
-                                                   const std::wstring& _columns,
-                                                   const std::wstring& wherec,
-                                                   const std::wstring& order,
-                                                   tango::IJob* job)
+tango::IIteratorPtr OracleDatabase::query(const tango::QueryParams& qp)
 {
-    std::wstring columns = _columns;
+    std::wstring columns = qp.columns;
     if (columns.length() == 0)
         columns = L"*";
 
     std::wstring sql = L"SELECT %columns% FROM %table%";
     kl::replaceStr(sql, L"%columns%", columns);
-    kl::replaceStr(sql, L"%table%", path);
+    kl::replaceStr(sql, L"%table%", qp.from);
 
-    if (order.length() > 0)
-        sql += L" ORDER BY " + order;
+    if (qp.order.length() > 0)
+        sql += L" ORDER BY " + qp.order;
 
     xcm::IObjectPtr resobj;
-    if (!execute(sql, 0, resobj, job))
+    if (!execute(sql, 0, resobj, qp.job))
         return xcm::null;
 
     return resobj;

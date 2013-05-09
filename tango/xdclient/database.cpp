@@ -678,23 +678,19 @@ bool ClientDatabase::createStream(const std::wstring& path, const std::wstring& 
 }
 
 
-tango::IIteratorPtr ClientDatabase::createIterator(const std::wstring& path,
-                                                   const std::wstring& columns,
-                                                   const std::wstring& wherec,
-                                                   const std::wstring& order,
-                                                   tango::IJob* job)
+tango::IIteratorPtr ClientDatabase::query(const tango::QueryParams& qp)
 {
     std::wstring request_url;
-    if (path.find(L"://") != path.npos)
-        request_url = path;
+    if (qp.from.find(L"://") != qp.from.npos)
+        request_url = qp.from;
 
     ServerCallParams params;
-    params.setParam(L"columns", columns);
-    params.setParam(L"where", wherec);
-    params.setParam(L"order", order);
+    params.setParam(L"columns", qp.columns);
+    params.setParam(L"where", qp.where);
+    params.setParam(L"order", qp.order);
     params.setParam(L"limit", L"5");
 
-    std::wstring sres = serverCall(path, L"", &params);
+    std::wstring sres = serverCall(qp.from, L"", &params);
     kl::JsonNode response;
     response.fromString(sres);
 

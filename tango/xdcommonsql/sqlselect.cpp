@@ -1673,7 +1673,7 @@ static bool doJoin(tango::IDatabasePtr db,
     if (left.length() == 0)
         return false;
 
-    tango::IIteratorPtr left_iter = db->createIterator(left, L"", L"", L"", NULL);
+    tango::IIteratorPtr left_iter = db->query(left, L"", L"", L"", NULL);
     if (left_iter.isNull())
         return false;
 
@@ -1812,11 +1812,11 @@ static bool doJoin(tango::IDatabasePtr db,
         
 
         // create iterator
-        jit->right_iter = db->createIterator(jit->right_path, 
-                                             L"",
-                                             L"",
-                                             right_sort,
-                                             iter_job);
+        jit->right_iter = db->query(jit->right_path, 
+                                    L"",
+                                    L"",
+                                    right_sort,
+                                    iter_job);
 
 
         if (ijob)
@@ -3139,7 +3139,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
 #endif
         
         // create an iterator which we will insert from
-        tango::IIteratorPtr source_iter = db->createIterator(set, L"", L"", L"", NULL);
+        tango::IIteratorPtr source_iter = db->query(set, L"", L"", L"", NULL);
         if (source_iter.isNull())
         {
             error.setError(tango::errorSyntax, L"Could not create iterator");            
@@ -3358,11 +3358,11 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
 
 
     tango::IIteratorPtr iter;
-    iter = db->createIterator(set, 
-                              field_str,
-                              L"",
-                              order_by_str,
-                              create_iter_job);
+    iter = db->query(set, 
+                    field_str,
+                    L"",
+                    order_by_str,
+                    create_iter_job);
     
     if (create_iter_job->getCancelled())
     {
@@ -3462,7 +3462,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         }
     }
 
-    return db->createIterator(output_path, L"", L"", L"", NULL);
+    return db->query(output_path, L"", L"", L"", NULL);
 }
 
 

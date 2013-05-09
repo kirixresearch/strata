@@ -99,7 +99,7 @@ int DivideJob::runJob()
     }
 
     tango::IIteratorPtr iter;
-    iter = m_db->createIterator(input_path, L"", L"", L"", NULL);
+    iter = m_db->query(input_path, L"", L"", L"", NULL);
     if (iter.isNull())
     {
         m_job_info->setState(jobStateFailed);

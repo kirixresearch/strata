@@ -117,7 +117,7 @@ void TableDoc::setSortOrder(const wxString& expr)
         // set default order
         m_sort_order = wxT("");
         tango::IIteratorPtr iter;
-        iter = g_app->getDatabase()->createIterator(towstr(getBrowsePath()), L"", L"", L"", NULL);
+        iter = g_app->getDatabase()->query(towstr(getBrowsePath()), L"", L"", L"", NULL);
         setIterator(iter);
         return;
     }

@@ -2149,20 +2149,16 @@ bool OdbcDatabase::createStream(const std::wstring& ofs_path, const std::wstring
 }
 
 
-tango::IIteratorPtr OdbcDatabase::createIterator(const std::wstring& path,
-                                                 const std::wstring& _columns,
-                                                 const std::wstring& wherec,
-                                                 const std::wstring& order,
-                                                 tango::IJob* job)
+tango::IIteratorPtr OdbcDatabase::query(const tango::QueryParams& qp)
 {
     std::wstring query;
     query.reserve(1024);
 
-    std::wstring tablename = getTablenameFromOfsPath(path);
+    std::wstring tablename = getTablenameFromOfsPath(qp.from);
 
     if (m_db_type == tango::dbtypeAccess)
     {
-        tango::IStructurePtr s = describeTable(path);
+        tango::IStructurePtr s = describeTable(qp.from);
         if (s.isNull())
             return xcm::null;
 
@@ -2216,7 +2212,7 @@ tango::IIteratorPtr OdbcDatabase::createIterator(const std::wstring& path,
     }
      else if (m_db_type == tango::dbtypeOracle)
     {
-        tango::IStructurePtr s = describeTable(path);
+        tango::IStructurePtr s = describeTable(qp.from);
 
         int i, cnt = s->getColumnCount();
 
@@ -2244,16 +2240,16 @@ tango::IIteratorPtr OdbcDatabase::createIterator(const std::wstring& path,
         query += quote_closechar;
     }
 
-    if (wherec.length() > 0)
+    if (qp.where.length() > 0)
     {
         query += L" WHERE ";
-        query += wherec;
+        query += qp.where;
     }
 
-    if (order.length() > 0)
+    if (qp.order.length() > 0)
     {
         query += L" ORDER BY ";
-        query += order;
+        query += qp.order;
     }
     
     // create an iterator based on our select statement

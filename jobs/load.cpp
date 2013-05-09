@@ -129,7 +129,7 @@ int LoadJob::runJob()
 
 
 
-        tango::IIteratorPtr source_iter = source_db->createIterator(source_path, L"", L"", L"", NULL);
+        tango::IIteratorPtr source_iter = source_db->query(source_path, L"", L"", L"", NULL);
 
         if (source_iter.isNull())
         {

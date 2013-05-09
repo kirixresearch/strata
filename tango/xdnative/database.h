@@ -166,11 +166,7 @@ public:
     bool deleteSet(const std::wstring& ofs_path);
     bool deleteStream(const std::wstring& ofs_path);
     
-    tango::IIteratorPtr createIterator(const std::wstring& path,
-                                       const std::wstring& columns,
-                                       const std::wstring& wherec,
-                                       const std::wstring& sort,
-                                       tango::IJob* job);
+    tango::IIteratorPtr query(const tango::QueryParams& qp);
 
     tango::IRelationPtr createRelation(const std::wstring& tag,
                                        const std::wstring& left_set_path,

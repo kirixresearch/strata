@@ -1541,7 +1541,12 @@ bool XdnativeDatabase::copyData(const tango::CopyInfo* info, tango::IJob* job)
     }
      else
     {
-        iter = createIterator(info->input, L"", info->where, info->order, NULL);
+        tango::QueryParams qp;
+        qp.from = info->input;
+        qp.where = info->where;
+        qp.order = info->order;
+
+        iter = query(qp);
         if (iter.isNull())
             return false;
 
@@ -3205,27 +3210,25 @@ IXdsqlTablePtr XdnativeDatabase::openTable(const std::wstring& path)
 }
 
 
-tango::IIteratorPtr XdnativeDatabase::createIterator(const std::wstring& path,
-                                                     const std::wstring& columns,
-                                                     const std::wstring& wherec,
-                                                     const std::wstring& order,
-                                                     tango::IJob* job)
+tango::IIteratorPtr XdnativeDatabase::query(const tango::QueryParams& qp)
 {
     std::wstring cstr, rpath;
-    if (detectMountPoint(path, cstr, rpath))
+    if (detectMountPoint(qp.from, cstr, rpath))
     {
         // action takes place in a mount
         tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
             return xcm::null;
 
-        return db->createIterator(rpath, columns, wherec, order, job);
+        tango::QueryParams call_params = qp;
+        call_params.from = rpath;
+        return db->query(call_params);
     }
 
-    IXdsqlTablePtr table = openTable(path);
+    IXdsqlTablePtr table = openTable(qp.from);
     if (table.isNull())
         return xcm::null;
-    return table->createIterator(columns, order, job);
+    return table->createIterator(qp.columns, qp.order, qp.job);
 }
 
 

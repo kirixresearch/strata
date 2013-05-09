@@ -711,7 +711,10 @@ bool XdnativeDatabase::groupQuery(tango::GroupQueryInfo* info, tango::IJob* job)
 
     // create an iterator for the input file
 
-    sp_iter = createIterator(input, L"", L"", L"", NULL);
+    tango::QueryParams qp;
+    qp.from = input;
+
+    sp_iter = query(qp);
     if (sp_iter.isNull())
     {
         // iterator can't be made for some reason

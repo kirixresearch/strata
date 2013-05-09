@@ -577,29 +577,25 @@ tango::IStreamPtr SlDatabase::openStream(const std::wstring& path)
 }
 
 
-tango::IIteratorPtr SlDatabase::createIterator(const std::wstring& path,
-                                               const std::wstring& _columns,
-                                               const std::wstring& wherec,
-                                               const std::wstring& order,
-                                               tango::IJob* job)
+tango::IIteratorPtr SlDatabase::query(const tango::QueryParams& qp)
 {
-    std::wstring columns = _columns;
+    std::wstring columns = qp.columns;
     if (columns.length() == 0)
         columns = L"*";
 
     std::wstring sql = L"SELECT %columns% FROM %table%";
     kl::replaceStr(sql, L"%columns%", columns);
-    kl::replaceStr(sql, L"%table%", sqliteGetTablenameFromPath(path));
+    kl::replaceStr(sql, L"%table%", sqliteGetTablenameFromPath(qp.from));
 
-    if (wherec.length() > 0)
-        sql += L" WHERE " + wherec;
+    if (qp.where.length() > 0)
+        sql += L" WHERE " + qp.where;
 
-    if (order.length() > 0)
-        sql += L" ORDER BY " + order;
+    if (qp.order.length() > 0)
+        sql += L" ORDER BY " + qp.order;
 
 
     SlIterator* iter = new SlIterator(this);
-    iter->m_tablename = path;
+    iter->m_tablename = qp.from;
     iter->ref();
 
     if (!iter->init(sql))

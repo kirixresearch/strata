@@ -86,11 +86,7 @@ public:
     tango::IStreamPtr openStream(const std::wstring& path);
     bool createStream(const std::wstring& path, const std::wstring& mime_type);
 
-    tango::IIteratorPtr createIterator(const std::wstring& path,
-                                       const std::wstring& columns,
-                                       const std::wstring& wherec,
-                                       const std::wstring& sort,
-                                       tango::IJob* job);
+    tango::IIteratorPtr query(const tango::QueryParams& qp);
 
 	tango::IIndexInfoPtr createIndex(const std::wstring& path,
                                      const std::wstring& name,

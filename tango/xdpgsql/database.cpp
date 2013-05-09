@@ -1081,13 +1081,9 @@ bool PgsqlDatabase::createStream(const std::wstring& path, const std::wstring& m
     return true;
 }
 
-tango::IIteratorPtr PgsqlDatabase::createIterator(const std::wstring& path,
-                                                  const std::wstring& columns,
-                                                  const std::wstring& wherec,
-                                                  const std::wstring& order,
-                                                  tango::IJob* job)
+tango::IIteratorPtr PgsqlDatabase::query(const tango::QueryParams& qp)
 {
-    std::wstring tablename = pgsqlGetTablenameFromPath(path);
+    std::wstring tablename = pgsqlGetTablenameFromPath(qp.from);
 
 
     std::wstring query;
@@ -1101,10 +1097,10 @@ tango::IIteratorPtr PgsqlDatabase::createIterator(const std::wstring& path,
     query += tablename;
     query += quote_closechar;
 
-    if (order.length() > 0)
+    if (qp.order.length() > 0)
     {
         query += L" ORDER BY ";
-        query += order;
+        query += qp.order;
     }
     
 

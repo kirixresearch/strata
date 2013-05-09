@@ -2380,7 +2380,7 @@ bool TableDoc::open(const wxString& _path,
     }
      else
     {
-        browse_iter = db->createIterator(path, L"", L"", L"", NULL);
+        browse_iter = db->query(path, L"", L"", L"", NULL);
         if (browse_iter.isNull())
             return false; // something's wrong
     }
@@ -2405,7 +2405,7 @@ bool TableDoc::setBrowseSet(const wxString& path, tango::IIteratorPtr iter)
      else
     {
         // create a default iterator
-        tango::IIteratorPtr iter = db->createIterator(towstr(m_browse_path), L"", L"", L"", NULL);
+        tango::IIteratorPtr iter = db->query(towstr(m_browse_path), L"", L"", L"", NULL);
         if (iter.isNull())
             return false;
 

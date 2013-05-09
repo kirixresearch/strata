@@ -595,6 +595,20 @@ struct CopyInfo
     int limit;
 };
 
+struct QueryParams
+{
+    QueryParams()
+    {
+    }
+
+    std::wstring from;
+    std::wstring columns;
+    std::wstring where;
+    std::wstring order;
+
+    IJobPtr job;
+};
+
 struct GroupQueryInfo
 {
     GroupQueryInfo()
@@ -663,20 +677,23 @@ public:
 
     virtual tango::IStructurePtr describeTable(const std::wstring& path) = 0;
 
-    virtual bool execute(const std::wstring& command,
-                         unsigned int flags,
-                         xcm::IObjectPtr& result,
-                         IJob* job) = 0;
-
     virtual IRowInserterPtr bulkInsert(const std::wstring& path) = 0;
 
     virtual bool modifyStructure(const std::wstring& path, IStructurePtr struct_config, IJob* job) = 0;
 
-    virtual IIteratorPtr createIterator(const std::wstring& path,
-                                        const std::wstring& columns,
-                                        const std::wstring& wherec,
-                                        const std::wstring& order,
-                                        IJob* job) = 0;
+    virtual IIteratorPtr query(const std::wstring& path,
+                               const std::wstring& columns,
+                               const std::wstring& wherec,
+                               const std::wstring& order,
+                               IJob* job)
+    { QueryParams q; q.from = path; q.columns = columns; q.where = wherec; q.order = order; q.job = job; return query(q); }
+
+    virtual IIteratorPtr query(const QueryParams& params) = 0;
+
+    virtual bool execute(const std::wstring& command,
+                         unsigned int flags,
+                         xcm::IObjectPtr& result,
+                         IJob* job) = 0;
 
     virtual bool groupQuery(GroupQueryInfo* info, IJob* job) = 0;
 };
