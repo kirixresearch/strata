@@ -128,8 +128,10 @@ int LoadJob::runJob()
         }
 
 
+        tango::QueryParams qp;
+        qp.from = source_path;
 
-        tango::IIteratorPtr source_iter = source_db->query(source_path, L"", L"", L"", NULL);
+        tango::IIteratorPtr source_iter = source_db->query(qp);
 
         if (source_iter.isNull())
         {
@@ -140,12 +142,32 @@ int LoadJob::runJob()
         source_iter->goFirst();
 
 
+        // create the destination table
+
+        tango::FormatInfo* p_destination_format = NULL;
+        tango::FormatInfo destination_format;
+
+        if (object.childExists("destination_format"))
+        {
+            kl::JsonNode format = object["destination_format"];
+
+            destination_format.format = tango::formatDelimitedText;
+            destination_format.delimiters = format.getChild("delimiter").getString();
+            destination_format.text_qualifiers = format.getChild("text_qualifier").getString();
+            destination_format.first_row_column_names = format.getChild("header_row").getBoolean();
+            p_destination_format = &destination_format;
+        }
+
+        tango::IStructurePtr structure = source_iter->getStructure();
+        destination_db->createTable(destination_path, structure, p_destination_format);
+
 
         // right now there is no transformation happening -- just copy the whole table
 
         tango::CopyParams info;
         info.iter_input = source_iter;
         info.output = destination_path;
+        info.append = true;
         
         // TODO: add copy loop here
         tango::IJobPtr tango_job = destination_db->createJob();

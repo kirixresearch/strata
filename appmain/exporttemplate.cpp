@@ -96,6 +96,16 @@ jobs::IJobPtr ExportTemplate::execute()
         object["source_path"] = towstr(it->input_tablename);
         object["destination_path"] = towstr(it->output_tablename);
 
+        if (m_ei.type == dbtypeDelimitedText)
+        {
+            object["destination_format"].setObject();
+            kl::JsonNode format = object["destination_format"];
+            
+            format["delimiter"] = towstr(m_ei.delimiters);
+            format["text_qualifier"] = towstr(m_ei.text_qualifier);
+            format["header_row"].setBoolean(m_ei.first_row_header);
+        }
+
         //job_export_info.append = it->append;
     }
 

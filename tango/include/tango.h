@@ -560,15 +560,15 @@ struct FormatInfo
 {
     FormatInfo()
     {
-        table_format = formatNative;
-        default_encoding = encodingUndefined;
+        format = formatNative;
+        encoding = encodingUndefined;
         first_row_column_names = true;
     };
     
-    int table_format;
-    int default_encoding;
+    int format;
+    int encoding;
     
-    // extras for delimited files
+    // delimited files parameters (when format = formatDelimitedText)
     std::wstring text_qualifiers;
     std::wstring delimiters;
     std::wstring line_delimiters;
@@ -601,6 +601,8 @@ struct QueryParams
     std::wstring columns;
     std::wstring where;
     std::wstring order;
+
+    FormatInfo format;
 
     IJobPtr job;
 };

@@ -107,7 +107,7 @@ public:
 
     tango::IJobPtr createJob();
 
-    IXdfsSetPtr openSetEx(const std::wstring& path, int format);
+    IXdfsSetPtr openSetEx(const std::wstring& path, const tango::FormatInfo& fi);
 
     bool createFolder(const std::wstring& path);
     bool renameFile(const std::wstring& path, const std::wstring& new_name);

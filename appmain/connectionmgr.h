@@ -13,9 +13,8 @@
 #define __APP_CONNECTIONMGR_H
 
 
-// -- NOTE: these type numbers may NOT be changed.  You
-//    may, however, add and remove items from the list.  Just
-//    don't change the numbers around. --
+// NOTE: these type numbers may NOT be changed; You may, however, add and
+// remove items from the list;  Just don't change the numbers around
 
 enum
 {

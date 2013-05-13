@@ -800,12 +800,12 @@ void BufferedTextFile::close()
 
 int BufferedTextFile::detectEncoding()
 {
-    int default_encoding = encodingISO88591;
+    int encoding = encodingISO88591;
             
     xf_seek(m_file, m_data_start_offset, xfSeekSet);
     int r = xf_read(m_file, m_buf, 1, 16384);
     if (r <= 1)
-        return default_encoding;
+        return encoding;
     
     // check for utf8
     int cnt_utf8 = 0;
@@ -836,7 +836,7 @@ int BufferedTextFile::detectEncoding()
     if (cnt_8bit > 0)
         return encodingISO88591;
     
-    return default_encoding;
+    return encoding;
 }
 
 void BufferedTextFile::rewind()

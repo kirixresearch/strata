@@ -31,6 +31,7 @@
 #include "../xdcommon/extfileinfo.h"
 #include "../xdcommon/filestream.h"
 #include "../xdcommon/connectionstr.h"
+#include "../xdcommon/dbfuncs.h"
 #include <kl/url.h>
 
 
@@ -877,7 +878,64 @@ bool FsDatabase::copyFile(const std::wstring& src_path,
 
 bool FsDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
 {
-    return false;
+    tango::IIteratorPtr iter;
+    tango::IStructurePtr structure;
+
+    if (info->iter_input.isOk())
+    {
+        iter = info->iter_input;
+        structure = iter->getStructure();
+    }
+     else
+    {
+        tango::QueryParams qp;
+        qp.from = info->input;
+        qp.where = info->where;
+        qp.order = info->order;
+
+        iter = query(qp);
+        if (iter.isNull())
+            return false;
+
+        structure = iter->getStructure();
+        if (structure.isNull())
+            return false;
+    }
+
+
+    
+    if (info->append)
+    {
+        tango::FormatInfo fi;
+        fi.format = tango::formatNative;
+
+        IXdfsSetPtr output = openSetEx(info->output, fi);
+        if (output.isNull())
+            return false;
+    }
+     else
+    {
+        deleteFile(info->output);
+        if (!createTable(info->output, structure, NULL))
+            return false;
+    }
+
+
+    std::wstring cstr, rpath;
+    if (detectMountPoint(info->output, cstr, rpath))
+    {
+        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return false;
+
+        xdcmnInsert(db, iter, rpath, info->where, info->limit, job);
+    }
+     else
+    {
+        xdcmnInsert(static_cast<tango::IDatabase*>(this), iter, info->output, info->where, info->limit, job);
+    }
+
+    return true;
 }
 
 // from xdnative/database.cpp
@@ -1378,7 +1436,7 @@ static IXdfsSetPtr openDelimitedTextSet(FsDatabase* db,
 }
 
 
-IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, int format)
+IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, const tango::FormatInfo& fi)
 {
     // check for ptr sets
     if (path.substr(0, 12) == L"/.temp/.ptr/")
@@ -1397,6 +1455,8 @@ IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, int format)
     
     std::wstring delimiters = L"";
     
+    int format = fi.format;
+
     // if the native format was passed, have the database do it's best to
     // determine the format from the text definition or the file extension
     if (format == tango::formatNative)
@@ -1451,7 +1511,7 @@ IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, int format)
 
 tango::IIteratorPtr FsDatabase::query(const tango::QueryParams& qp)
 {
-    IXdsqlTablePtr tbl = openSetEx(qp.from, tango::formatNative);
+    IXdsqlTablePtr tbl = openSetEx(qp.from, qp.format);
     if (tbl.isNull())
         return xcm::null;
 
@@ -1501,7 +1561,7 @@ bool FsDatabase::createTable(const std::wstring& _path,
 
     int format = tango::formatNative;
     if (format_info)
-        format = format_info->table_format;
+        format = format_info->format;
     
     std::wstring path = makeFullPath(_path);
 
@@ -1635,7 +1695,7 @@ bool FsDatabase::createTable(const std::wstring& _path,
 
         int tango_encoding = tango::encodingUndefined;
         if (format_info)
-            tango_encoding = format_info->default_encoding;
+            tango_encoding = format_info->encoding;
         
         if (tango_encoding == tango::encodingUndefined)
         {
@@ -1716,7 +1776,7 @@ bool FsDatabase::createTable(const std::wstring& _path,
 
         int tango_encoding = tango::encodingUndefined;
         if (format_info)
-            tango_encoding = format_info->default_encoding;
+            tango_encoding = format_info->encoding;
         
         if (tango_encoding == tango::encodingUndefined)
         {
@@ -1831,7 +1891,10 @@ bool FsDatabase::createStream(const std::wstring& path, const std::wstring& mime
 
 tango::IRowInserterPtr FsDatabase::bulkInsert(const std::wstring& path)
 {
-    IXdfsSetPtr set = openSetEx(path, tango::formatNative);
+    tango::FormatInfo fi;
+    fi.format = tango::formatNative;
+
+    IXdfsSetPtr set = openSetEx(path, fi);
     if (set.isNull())
         return xcm::null;
     
@@ -1840,7 +1903,10 @@ tango::IRowInserterPtr FsDatabase::bulkInsert(const std::wstring& path)
 
 tango::IStructurePtr FsDatabase::describeTable(const std::wstring& path)
 {
-    IXdsqlTablePtr tbl = openSetEx(path, tango::formatNative);
+    tango::FormatInfo fi;
+    fi.format = tango::formatNative;
+
+    IXdsqlTablePtr tbl = openSetEx(path, fi);
     if (tbl.isNull())
         return xcm::null;
 
