@@ -277,7 +277,7 @@ public:
         delimiters = L",";
         text_qualifier = L"\"";
         date_format_str = L"YMDhmsl";
-        first_row_header = false;
+        first_row_header = true;
     }
 
     ImportInfo(const ImportInfo& c) : ConnectionInfo(c)
