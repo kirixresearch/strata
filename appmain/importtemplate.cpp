@@ -846,6 +846,16 @@ jobs::IJobPtr ImportTemplate::execute()
 
         object["source_path"] = it->input_tablename;
         object["destination_path"] = it->output_tablename;
+
+        if (m_ii.type == dbtypeDelimitedText)
+        {
+            object["source_format"].setObject();
+            kl::JsonNode format = object["source_format"];
+            
+            format["delimiter"] = m_ii.delimiters;
+            format["text_qualifier"] = m_ii.text_qualifier;
+            format["header_row"].setBoolean(m_ii.first_row_header);
+        }
     }
 
     job->setParameters(params.toString());

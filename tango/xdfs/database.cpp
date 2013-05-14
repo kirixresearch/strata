@@ -1489,14 +1489,48 @@ IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, const tango::FormatI
         set = openDelimitedTextSet(this, phys_path);
         if (set.isNull())
             return xcm::null;
-        
-        if (delimiters.length() > 0)
+
+        if (fi.format == tango::formatNative)
         {
             tango::IDelimitedTextSetPtr tset = set;
             
+            // default format specified
             if (delimiters != tset->getDelimiters())
-                tset->setDelimiters(delimiters, true);
+                tset->setDelimiters(fi.delimiters, true);
         }
+         else if (fi.format == tango::formatDelimitedText)
+        {
+            tango::IDelimitedTextSetPtr tset = set;
+            bool need_refresh = false;
+
+            if (fi.delimiters != tset->getDelimiters())
+            {
+                tset->setDelimiters(fi.delimiters, false);
+                need_refresh = true;
+            }
+            
+            if (fi.text_qualifiers != tset->getTextQualifier())
+            {
+                tset->setTextQualifier(fi.text_qualifiers, false);
+                need_refresh = true;
+            }
+
+            if (fi.line_delimiters != tset->getLineDelimiters())
+            {
+                tset->setLineDelimiters(fi.line_delimiters, false);
+                need_refresh = true;
+            }
+
+            if (fi.first_row_column_names != tset->isFirstRowColumnNames())
+            {
+                tset->setFirstRowColumnNames(fi.first_row_column_names);
+                need_refresh = true;
+            }
+
+            if (need_refresh)
+                tset->determineColumns(-1, NULL);
+        }
+
     }       
      else if (format == tango::formatFixedLengthText) // fixed length
     {

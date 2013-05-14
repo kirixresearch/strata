@@ -131,6 +131,16 @@ int LoadJob::runJob()
         tango::QueryParams qp;
         qp.from = source_path;
 
+        if (object.childExists("source_format"))
+        {
+            kl::JsonNode format = object["source_format"];
+
+            qp.format.format = tango::formatDelimitedText;
+            qp.format.delimiters = format.getChild("delimiter").getString();
+            qp.format.text_qualifiers = format.getChild("text_qualifier").getString();
+            qp.format.first_row_column_names = format.getChild("header_row").getBoolean();
+        }
+
         tango::IIteratorPtr source_iter = source_db->query(qp);
 
         if (source_iter.isNull())
