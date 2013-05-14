@@ -861,6 +861,7 @@ jobs::IJobPtr ImportTemplate::execute()
     }
 
     job->setParameters(params.toString());
+    job->sigJobFinished().connect(&onImportJobFinished);
     g_app->getJobQueue()->addJob(job, jobStateRunning);
 
     return job;

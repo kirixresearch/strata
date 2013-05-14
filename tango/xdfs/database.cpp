@@ -1523,7 +1523,9 @@ IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, const tango::FormatI
 
             if (fi.first_row_column_names != tset->isFirstRowColumnNames())
             {
+                tset->setDiscoverFirstRowColumnNames(false);
                 tset->setFirstRowColumnNames(fi.first_row_column_names);
+
                 need_refresh = true;
             }
 
