@@ -96,6 +96,8 @@ jobs::IJobPtr ExportTemplate::execute()
         object["source_path"] = towstr(it->input_tablename);
         object["destination_path"] = towstr(it->output_tablename);
 
+        object["overwrite"].setBoolean(true);
+
         if (m_ei.type == dbtypeDelimitedText)
         {
             object["destination_format"].setObject();

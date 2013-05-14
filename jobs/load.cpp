@@ -168,8 +168,34 @@ int LoadJob::runJob()
             p_destination_format = &destination_format;
         }
 
-        tango::IStructurePtr structure = source_iter->getStructure();
-        destination_db->createTable(destination_path, structure, p_destination_format);
+
+        
+        // if 'append' is not set or is false, drop the destination table
+        if (object.childExists("overwrite") && object.getChild("overwrite").getBoolean())
+        {
+            destination_db->deleteFile(destination_path);
+
+            tango::IStructurePtr structure = source_iter->getStructure();
+            if (!destination_db->createTable(destination_path, structure, p_destination_format))
+            {
+                // could not create output file
+                m_job_info->setState(jobStateFailed);
+                return 0;
+            }
+        }
+         else
+        {
+            if (!destination_db->getFileExist(destination_path))
+            {
+                tango::IStructurePtr structure = source_iter->getStructure();
+                if (!destination_db->createTable(destination_path, structure, p_destination_format))
+                {
+                    // could not create output file
+                    m_job_info->setState(jobStateFailed);
+                    return 0;
+                }
+            }
+        }
 
 
         // right now there is no transformation happening -- just copy the whole table

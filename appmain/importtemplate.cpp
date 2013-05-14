@@ -847,6 +847,8 @@ jobs::IJobPtr ImportTemplate::execute()
         object["source_path"] = it->input_tablename;
         object["destination_path"] = it->output_tablename;
 
+        object["overwrite"].setBoolean(true);
+
         if (m_ii.type == dbtypeDelimitedText)
         {
             object["source_format"].setObject();
