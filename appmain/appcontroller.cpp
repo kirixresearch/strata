@@ -5001,13 +5001,10 @@ bool AppController::openExcel(const wxString& location, int* site_id)
         wxString job_title = wxString::Format(_("Importing from '%s'"),
                                               title.c_str());
         
-/*
-        TODO: reimplement
+        ImportTemplate templ;
+        templ.m_ii.type = dbtypeExcel;
+        templ.m_ii.path = towstr(fn);
 
-        ImportJob* job = new ImportJob;
-        job->setImportType(dbtypeExcel);
-        job->setFilename(towstr(fn));
-            
         selections = dlg.GetSelections();
         size_t i, count = selections.Count();
         if (count == 0)
@@ -5028,24 +5025,23 @@ bool AppController::openExcel(const wxString& location, int* site_id)
         {
             int idx = selections[i];
             
-            ImportJobInfo job_import_info;
-            job_import_info.input_path = as[idx];
-            job_import_info.output_path = getTempTablename(fn, as[idx]);
-            job_import_info.append = false;
-            job->addImportSet(job_import_info);
+            ImportTableSelection tbl;
+            tbl.input_tablename = as[idx];
+            tbl.output_tablename = getTempTablename(fn, as[idx]);
+            tbl.append = false;
 
-            output_paths.push_back(job_import_info.output_path);
+            templ.m_ii.tables.push_back(tbl);
+
+            output_paths.push_back(tbl.output_tablename);
         }
 
-        // pass the output tables as a delimited list
+        jobs::IJobPtr job = templ.createJob();
         std::wstring output = kl::joinList(output_paths, L",");
         job->setExtraValue(L"appmain.output_tables", output);
 
         job->getJobInfo()->setTitle(towstr(job_title));
         job->sigJobFinished().connect(&onOpenExcelJobFinished);
         g_app->getJobQueue()->addJob(job, jobStateRunning);
-*/
-
     }
 
     return true;

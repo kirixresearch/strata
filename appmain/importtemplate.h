@@ -325,6 +325,8 @@ public:
 
     bool load(const std::wstring& path);
     bool save(const std::wstring& path);
+
+    jobs::IJobPtr createJob();
     jobs::IJobPtr execute();
     
 public:

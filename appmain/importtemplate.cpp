@@ -783,8 +783,18 @@ static void onImportJobFinished(jobs::IJobPtr job)
     g_app->getAppController()->refreshDbDoc();
 }
 
-
 jobs::IJobPtr ImportTemplate::execute()
+{
+    jobs::IJobPtr job = createJob();
+
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
+
+    return job;
+}
+
+
+
+jobs::IJobPtr ImportTemplate::createJob()
 {
     // concatenate the base path and the table name
 
@@ -862,7 +872,6 @@ jobs::IJobPtr ImportTemplate::execute()
 
     job->setParameters(params.toString());
     job->sigJobFinished().connect(&onImportJobFinished);
-    g_app->getJobQueue()->addJob(job, jobStateRunning);
 
     return job;
 }
