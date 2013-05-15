@@ -5105,17 +5105,14 @@ bool AppController::openPackage(const wxString& location)
      else
         fn = getPhysPathFromMountPath(location);
 
-    /*
-    TODO: implement - if we want to have this verification, we'll
-    have to open the package file using the xdkpg driver
 
-    // scoping so the package file closes
     {
-        // make sure we've got a valid package file
-        PkgFile pkgfile;
-        if (!pkgfile.open(towstr(fn), PkgFile::modeRead))
+        IConnectionPtr conn = createUnmanagedConnection();
+        conn->setType(dbtypePackage);
+        conn->setPath(towstr(fn));
+        if (!conn->open())
         {
-            wxString error_message = _("There was an error opening the specified package file.  Make sure the file is not open by another application.");
+            wxString error_message = _("There was an error opening the specified package file.  Make sure the file is valid, and is not open by another application.");
             appMessageBox(error_message,
                                APPLICATION_NAME,
                                wxOK | wxICON_EXCLAMATION | wxCENTER);
@@ -5126,8 +5123,8 @@ bool AppController::openPackage(const wxString& location)
             return true;
         }
     }
-    */
-    
+
+
     wxString title = fn.AfterLast(PATH_SEPARATOR_CHAR);
     title = wxString::Format(_("Import '%s'"), title.c_str());
     
