@@ -5545,14 +5545,10 @@ jobs::IJobPtr AppController::execute(const wxString& location)
             if (!t.load(location))
                 return xcm::null;
             return t.execute();
-
-            // TODO: QueryTemplate now returns jobs::IJobPtr; need to
-            // uncomment above once this function returns the same
         }
          else
         {
             // TODO: add hook for JSON job templates
-
 
             // most likely a script
             return executeScript(location);
