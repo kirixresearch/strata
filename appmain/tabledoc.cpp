@@ -38,6 +38,7 @@
 #include "querydoc.h"
 #include "sqldoc.h"
 #include "webdoc.h"
+#include "exporttemplate.h"
 #include "../kcl/griddnd.h"
 #include <algorithm>
 #include <set>
@@ -1648,7 +1649,7 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
         saveAsStructure(dlg.GetPath());
         return;
     }
-     else if (export_type == exportPackage)
+     else
     {
         wxString stream_name = m_caption;
         if (stream_name == _("(Untitled)"))
@@ -1658,62 +1659,40 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
                       stream_name.c_str(),
                       dlg.GetPath().AfterLast(PATH_SEPARATOR_CHAR).c_str());
 
-/*
-    TODO: reimplement
+        ExportTemplate templ;
+        templ.m_ei.type = dbtype;
 
-        ExportPkgJob* job = new ExportPkgJob;
-        job->getJobInfo()->setTitle(towstr(title));
-        job->setPkgFilename(dlg.GetPath(), ExportPkgJob::modeOverwrite);
-
-        job->addExportObject(stream_name,
-                             this->m_path,
-                             true);  // true means compress
-
-        g_app->getJobQueue()->addJob(job, jobStateRunning);
-*/
-    }
-     else
-    {
-
-
-/*
-    TODO: reimplement
-
-        wxString title = wxString::Format(_("Saving '%s' as '%s'"),
-                      getCaption().c_str(),
-                      dlg.GetPath().AfterLast(PATH_SEPARATOR_CHAR).c_str());
-
-        ExportJob* job = new ExportJob;
-        job->getJobInfo()->setTitle(towstr(title));
-        job->setExportType(dbtype);
-
-        ExportJobInfo job_export_info;
-        job_export_info.input_path = this->m_path;
-        job_export_info.output_path = dlg.GetPath();
-        job_export_info.append = false;
+        ExportTableSelection tbl;
+        tbl.input_tablename = towstr(this->m_path);
+        tbl.append = false;
 
         if (dbtype == dbtypeDelimitedText)
         {
-            job->setDelimiters(towstr(delimiters));
-            job->setTextQualifier(L"\"");
-            job->setFirstRowHeader(true);
+            templ.m_ei.delimiters = towstr(delimiters);
+            templ.m_ei.text_qualifier = L"\"";
+            templ.m_ei.first_row_header = true;
         }
         
-        if (dbtype == dbtypeAccess || dbtype == dbtypeExcel)
+        if (dbtype == dbtypeXbase || dbtype == dbtypeDelimitedText || dbtype == dbtypeFixedLengthText)
         {
-            job->setFilename(towstr(dlg.GetPath()));
-            job_export_info.output_path = kl::beforeLast( kl::afterLast(towstr(m_path), '/'), '.');
-            kl::replaceStr(job_export_info.output_path, L".", L"_");
-            kl::replaceStr(job_export_info.output_path, L" ", L"_");
-            kl::replaceStr(job_export_info.output_path, L"-", L"_");
-            if (job_export_info.output_path.empty())
-                job_export_info.output_path = L"exptable";
+            tbl.output_tablename = towstr(dlg.GetPath());
+        }
+         else
+        {
+            if (dbtype == dbtypeAccess || dbtype == dbtypeExcel || dbtype == dbtypePackage || dbtypeSqlite)
+                templ.m_ei.path = towstr(dlg.GetPath());
+
+            tbl.output_tablename = kl::beforeLast( kl::afterLast(towstr(this->m_path), '/'), '.');
+            kl::replaceStr(tbl.output_tablename, L".", L"_");
+            kl::replaceStr(tbl.output_tablename, L" ", L"_");
+            kl::replaceStr(tbl.output_tablename, L"-", L"_");
+            if (tbl.output_tablename.empty())
+                tbl.output_tablename = L"exptable";
         }
        
-        job->addExportSet(job_export_info);
+        templ.m_ei.tables.push_back(tbl);
 
-        g_app->getJobQueue()->addJob(job, jobStateRunning);
-*/
+        templ.execute();
     }
 }
 

@@ -93,8 +93,8 @@ jobs::IJobPtr ExportTemplate::execute()
         object["source_connection"] = source_connection;
         object["destination_connection"] = destination_connection;
 
-        object["source_path"] = towstr(it->input_tablename);
-        object["destination_path"] = towstr(it->output_tablename);
+        object["source_path"] = it->input_tablename;
+        object["destination_path"] = it->output_tablename;
 
         object["overwrite"].setBoolean(true);
 
@@ -103,8 +103,8 @@ jobs::IJobPtr ExportTemplate::execute()
             object["destination_format"].setObject();
             kl::JsonNode format = object["destination_format"];
             
-            format["delimiter"] = towstr(m_ei.delimiters);
-            format["text_qualifier"] = towstr(m_ei.text_qualifier);
+            format["delimiter"] = m_ei.delimiters;
+            format["text_qualifier"] = m_ei.text_qualifier;
             format["header_row"].setBoolean(m_ei.first_row_header);
         }
 

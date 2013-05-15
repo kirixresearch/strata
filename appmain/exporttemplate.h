@@ -12,6 +12,7 @@
 #ifndef __APP_EXPORTTEMPLATE_H
 #define __APP_EXPORTTEMPLATE_H
 
+#include "connectionwizard.h"
 
 
 class ExportTableSelection
@@ -43,8 +44,8 @@ public:
 public:
 
     bool append;
-    wxString input_tablename;
-    wxString output_tablename;
+    std::wstring input_tablename;
+    std::wstring output_tablename;
 };
 
 
@@ -91,10 +92,10 @@ public:
 public:
 
     std::vector<ExportTableSelection> tables;
-    wxString base_path;
-    wxString delimiters;
-    wxString text_qualifier;
-    wxString date_format_str;
+    std::wstring base_path;
+    std::wstring delimiters;
+    std::wstring text_qualifier;
+    std::wstring date_format_str;
     bool first_row_header;
     bool overwrite_file;
     bool fix_invalid_fieldnames;

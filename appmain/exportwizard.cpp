@@ -672,7 +672,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         std::vector<wxString> dirs_created; // in case we have to remove the dirs
 
         // CHECK: is the path of the destination folder empty?
-        if (m_template.m_ei.base_path.IsEmpty())
+        if (m_template.m_ei.base_path.empty())
         {
             appMessageBox(_("The specified destination folder is invalid.  Please specify a valid destination folder to continue."),
                                _("Export Wizard"),
@@ -681,7 +681,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         }
 
         // CHECK: does the destination folder exist?
-        if (!xf_get_directory_exist(towstr(m_template.m_ei.base_path)))
+        if (!xf_get_directory_exist(m_template.m_ei.base_path))
         {
             int result = appMessageBox(_("The specified destination folder does not exist.  Would you like to create it?"),
                                             _("Export Wizard"),
@@ -690,8 +690,8 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
             {
                 // traverse the path given and create all directories that do not exist
 
-                wxString dirpath = m_template.m_ei.base_path.BeforeFirst(PATH_SEPARATOR_CHAR);
-                wxString remainder = m_template.m_ei.base_path.AfterFirst(PATH_SEPARATOR_CHAR);
+                wxString dirpath = kl::beforeFirst(m_template.m_ei.base_path, PATH_SEPARATOR_CHAR);
+                wxString remainder = kl::afterFirst(m_template.m_ei.base_path, PATH_SEPARATOR_CHAR);
 
                 if (dirpath.IsEmpty())
                     dirpath = PATH_SEPARATOR_CHAR;
@@ -799,7 +799,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         for (it = m_template.m_ei.tables.begin();
              it != m_template.m_ei.tables.end(); ++it)
         {
-            tango::IStructurePtr structure = local_db->describeTable(towstr(it->input_tablename));
+            tango::IStructurePtr structure = local_db->describeTable(it->input_tablename);
 
             if (structure.isNull())
             {
@@ -1085,7 +1085,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
     for (it = m_template.m_ei.tables.begin();
          it != m_template.m_ei.tables.end(); ++it)
     {
-        if (!isValidTable(towstr(it->input_tablename), g_app->getDatabase()))
+        if (!isValidTable(it->input_tablename, g_app->getDatabase()))
         {
             m_table_selection_page->markProblemRow(row, true);
             missing_tables.push_back(it->input_tablename);
@@ -1115,7 +1115,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
     for (it = m_template.m_ei.tables.begin();
          it != m_template.m_ei.tables.end(); ++it)
     {
-        tango::IStructurePtr s = db->describeTable(towstr(it->input_tablename));
+        tango::IStructurePtr s = db->describeTable(it->input_tablename);
         if (s.isNull())
             continue;
 
@@ -1171,14 +1171,12 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
                 continue;
             }
 
-            wxString tablename;
-            int i, table_count = tables->size();
+            size_t i, table_count = tables->size();
             for (i = 0; i < table_count; ++i)
             {
                 tango::IFileInfoPtr info = tables->getItem(i);
-                tablename = info->getName();
 
-                if (!it->output_tablename.CmpNoCase(tablename))
+                if (kl::iequals(it->output_tablename, info->getName()))
                 {
                     m_table_selection_page->markProblemRow(row, true);
                     tablenames_already_in_database = true;
