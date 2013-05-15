@@ -1642,7 +1642,6 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
     
     
     
-    // -- create an export job --
     
     if (export_type == exportStructure)
     {
@@ -6755,98 +6754,40 @@ bool TableDoc::saveAsPdf(const wxString& path)
 
 static std::wstring tangoTypeToOutputType(int type)
 {
-    const wchar_t* result = L"";
     switch (type)
     {
         default:
-        case tango::typeUndefined:
-            result = L"DbType.Undefined";
-            break;
-    
-        case tango::typeInvalid:
-            result = L"DbType.Invalid";
-            break;
-    
-        case tango::typeCharacter:
-            result = L"DbType.Character";
-            break;
-            
-        case tango::typeWideCharacter:
-            result = L"DbType.WideCharacter";
-            break;
-            
-        case tango::typeNumeric:
-            result = L"DbType.Numeric";
-            break;
-
-        case tango::typeDouble:
-            result = L"DbType.Double";
-            break;
-            
-        case tango::typeInteger:
-            result = L"DbType.Integer";
-            break;
-
-        case tango::typeDate:
-            result = L"DbType.Date";
-            break;
-            
-        case tango::typeDateTime:
-            result = L"DbType.DateTime";
-            break;
-
-        case tango::typeBoolean:
-            result = L"DbType.Boolean";
-            break;
-            
-        case tango::typeBinary:
-            result = L"DbType.Binary";
-            break;
+        case tango::typeUndefined:     return L"undefined";
+        case tango::typeInvalid:       return L"invalid";
+        case tango::typeCharacter:     return L"character";
+        case tango::typeWideCharacter: return L"widecharacter";
+        case tango::typeNumeric:       return L"numeric";
+        case tango::typeDouble:        return L"double";
+        case tango::typeInteger:       return L"integer";
+        case tango::typeDate:          return L"date";
+        case tango::typeDateTime:      return L"datetime";
+        case tango::typeBoolean:       return L"boolean";
+        case tango::typeBinary:        return L"binary";
     }
-    
-    return kl::towstring(result);
 }
 
 bool TableDoc::saveAsStructure(const wxString& path)
 {
-    // note: saves structure with table definition; e.g.:
-    //  {
-    //  fields :
-    //  [
-    //      { name: "field1", type: DbType.Character, width: 6, scale: 0 },
-    //      { name: "field2", type: DbType.Numeric, width: 13, scale: 2 }
-    //  ]
-    //  }
-    // TODO: note, this should be made to be strict JSON once import templates
-    // can read this format:
-    //  "fields" :
-    //  [
-    //      { "name" : "field1", "type" : "character", "width" : 6, "scale" : 0 },
-    //      { "name" : "field2", "type" : "numeric", "width" : 13, "scale" : 2 }
-    //  ]
-    //  }    
-
     tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(m_path));
     if (structure.isNull())
         return false;
 
-
     // build up a string that we'll save
     std::wstring result_text = L"";
-
 
     int col_count = structure->getColumnCount();
     tango::IColumnInfoPtr colinfo;
 
 
-    // TODO: we could use the kl::JsonNode library here if we had
-    // pretty formatting and if the import templates could read strict
-    // JSON (see above); since the following will be used a lot in 
-    // templates, etc, build the JSON with formatting
+    // TODO: we could use the kl::JsonNode library here instead of hand-generating the JSON
     
-
     result_text += L"{\n";
-    result_text += L"    fields:";
+    result_text += L"    \"fields\":";
     result_text += L"\n    [\n";
 
     bool first = true;
@@ -6870,23 +6811,21 @@ bool TableDoc::saveAsStructure(const wxString& path)
         std::wstring scale(buf);
 
         result_text += L"        ";
-        result_text += L"{";
-        result_text += (L"name: \"" + name + L"\"");
-        result_text += (L", type: " + type);
-        result_text += (L", width: " + width);
-        result_text += (L", scale: " + scale);
+        result_text += L"{ ";
+        result_text += (L"\"name\": \"" + name + L"\"");
+        result_text += (L", \"type\": \"" + type + L"\"");
+        result_text += (L", \"width\": " + width);
+        result_text += (L", \"scale\": " + scale);
         
         if (colinfo->getCalculated())
-            result_text += (L", formula: \"" + kl::escape_string(colinfo->getExpression()) + L"\"");
+            result_text += (L", \"formula\": \"" + kl::escape_string(colinfo->getExpression()) + L"\"");
             true;
         
-        result_text += L"}";
+        result_text += L" }";
     }
     
     result_text += L"\n    ]";
     result_text += L"\n}\n";
-
-
 
 
     // save the text
@@ -6950,6 +6889,9 @@ bool TableDoc::saveAsStructure(const wxString& path)
 
     xf_write(f, buf, 1, buf_len);
     xf_close(f);
+
+
+    g_app->getAppController()->openScript(path);
 
     return false;
 }
