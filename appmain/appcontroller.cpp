@@ -253,15 +253,13 @@ BEGIN_EVENT_TABLE(AppController, wxEvtHandler)
     // disable the data commands if there's isn't a child
     EVT_UPDATE_UI_RANGE(ID_Format_First, ID_Format_Last, AppController::onUpdateUI_DisableIfNoChildren)
     
-
-    // explicity disable the save, save as and bookmark if we don't have a project; this will
+    // explicity disable the save and save as if we don't have a project; this will
     // allow us to use the webdoc without the project, if we chose, but only be able to
     // save externally; TODO: this is mostly working, except with the web tables, which 
     // require a project, so if we want to allow this safely, we'll have to disable tables 
     // in the webdoc, since these require a project
     EVT_UPDATE_UI(ID_File_Save, AppController::onUpdateUI_DisableIfNoProject)
     EVT_UPDATE_UI(ID_File_SaveAs, AppController::onUpdateUI_DisableIfNoProject)
-    EVT_UPDATE_UI(ID_File_Bookmark, AppController::onUpdateUI_DisableIfNoProject)
     
     // allow cut/copy/paste for dbdoc
     EVT_UPDATE_UI(ID_Edit_Cut, AppController::onUpdateUI_EnableIfNoChildren)
