@@ -99,7 +99,7 @@ public:
         return modelp;
     }
 
-    bool deleteModel(const std::wstring& set_id)
+    bool releaseModel(const std::wstring& set_id)
     {
         XCM_AUTO_LOCK(m_obj_mutex);
 
@@ -113,22 +113,11 @@ public:
             if (set_id == (*it)->getId())
             {
                 m_models.erase(it);
-                break;
+                return true;
             }
         }
 
-        // TODO: implement this right (see new path structure below)
-
-        // next attempt to delete the disk files
-        tango::IDatabasePtr db = g_app->getDatabase();
-        if (!db)
-            return false;
-
-        std::wstring path = kl::stdswprintf(L"/.appdata/%ls/dcfe/setinfo/%ls",
-                                            db->getActiveUid().c_str(),
-                                            set_id.c_str());
-
-        return db->deleteFile(path);
+        return false;
     }
 
     void cleanup()  // table model garbage collection
@@ -1514,7 +1503,30 @@ ITableDocModelPtr TableDocMgr::loadModel(const std::wstring& set_id)
 
 bool TableDocMgr::deleteModel(const std::wstring& set_id)
 {
-    return g_model_registry.deleteModel(set_id);
+    g_model_registry.releaseModel(set_id);
+
+    
+    tango::IDatabasePtr db = g_app->getDatabase();
+    kl::JsonNode node;
+
+    if (g_app->getDbDriver() == L"xdnative")
+    {
+        // with xdnative, tabledoc model stores its metadata in streams
+        std::wstring path = L"/.appdata/%usr%/tables/%id%";
+        kl::replaceStr(path, L"%usr%", db->getActiveUid());
+        kl::replaceStr(path, L"%id%", set_id);
+
+        return db->deleteFile(path);
+    }
+     else
+    {
+        // with direct connections to sql-type servers, store metadata locally
+        std::wstring path = getTableMetadataLocation();
+        path += PATH_SEPARATOR_CHAR;
+        path += set_id + L".json";
+
+        return xf_remove(path);
+    }
 }
 
 void TableDocMgr::clearModelRegistry()
