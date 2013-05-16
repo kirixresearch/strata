@@ -27,7 +27,7 @@
 // places (such as save/load) that relies on the "save password" checkbox, it's 
 // safest to set a flag that turns on/off all the features at the same time
 // that can be reviewed later
-bool enable_save_password = false;
+static bool enable_save_password = false;
 
 enum
 {

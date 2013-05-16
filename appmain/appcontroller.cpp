@@ -1745,11 +1745,6 @@ static bool setReportCreateInfo(IDocumentSitePtr doc_site,
     if (!generate_fields)
         return false;
 
-    // TODO: set the font? or use the defaults?
-    //wxFont font = grid->GetFont();
-    //data.font_facename = font.GetFaceName();
-    //data.font_size = font.GetPointSize();
-
     // set the source
     tango::IIteratorPtr iter = table_doc->getIterator();
     if (iter.isNull())
@@ -6882,15 +6877,13 @@ void AppController::showRelationshipManager()
 
 void AppController::showProjectPanel(bool show, bool focus)
 {
-    // TODO: this code parallels almost exactly the code for
-    // toggling the panel; the reason for this is that we have 
-    // various pieces of show/toggle code for different panels, 
-    // and there isn't a systematic implementation for showing 
-    // and/or hiding the panels; e.g. compare this implementation 
-    // with showConsolePanel() and then toggleConsolePanel(); at 
-    // this point, rather than trying to implement a systematic 
-    // method for showing hiding panels, its easier to implement 
-    // this function for the need at hand
+    // TODO: this code parallels almost exactly the code for toggling the
+    // panel; the reason is that we have  various pieces of show/toggle
+    // code for different panels,  and there isn't a systematic implementation
+    // for showing and/or hiding the panels; e.g. compare this implementation
+    // with showConsolePanel() and toggleConsolePanel(); at this point, rather
+    // than trying to implement a systematic method for showing hiding panels,
+    // its easier to implement this function for the need at hand
 
     IDocumentSitePtr dbdoc_site;
     if (m_dbdoc)
@@ -6901,9 +6894,9 @@ void AppController::showProjectPanel(bool show, bool focus)
 
     dbdoc_site->setVisible(show);
 
-    // if the project becomes visible, set the focus to
-    // the project, otherwise, set the focus back to the
-    // active child
+    // if the project becomes visible, set the focus to the project, otherwise,
+    // set the focus back to the active child
+
     if (dbdoc_site->getVisible())
     {
         IDocumentPtr dbdoc = dbdoc_site->getDocument();

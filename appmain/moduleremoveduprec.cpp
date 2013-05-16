@@ -406,10 +406,6 @@ void RemoveDupRecWizard::onWizardFinished(kcl::Wizard* wizard)
 
     job->sigJobFinished().connect(&onRemoveDupRecJobFinished);
     g_app->getJobQueue()->addJob(job, jobStateRunning);
-
-    // TODO: see if tango::sqlAlwaysCopy flag still needs to be set;
-    // this was set in the old query job:  job->setQuery(sql, tango::sqlAlwaysCopy);
-    // if it still needs to be set, then figure out how to set the tango
 }
 
 void RemoveDupRecWizard::onSize(wxSizeEvent& event)

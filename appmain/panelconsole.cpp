@@ -833,33 +833,6 @@ bool ConsolePanel::processClose(const std::vector<wxString> tokens)
     return true;
 }
 
-bool ConsolePanel::processSet(const std::vector<wxString> tokens)
-{
-    // syntax: SET <preference> <value>
-    // description: sets the preference to the specified value
-    // params <preference>: preference to set     
-    // params <value>: value to which to set the preference  
-
-    // reset the command db
-    m_command_db_path = wxT("");
-  
-    // if we don't have a preference and a value
-    if (tokens.size() < 3)
-    {
-        echoDatabaseInfo(xcm::null, m_command_db_path);
-        return true;
-    }
-
-    // get the preference and value
-    wxString preference = tokens[1];
-    wxString value = tokens[2];
-
-    // TODO: I don't believe this method actually does anything anymore,
-    // now that webserver.* is gone
-
-    return true;
-}
-
 bool ConsolePanel::processUse(const std::vector<wxString> tokens)
 {
     // syntax: USE <directory>
@@ -1117,9 +1090,6 @@ bool ConsolePanel::processNonSqlCommand(wxString& command)
 
     if (0 == command_keyword.CmpNoCase(wxT("PWD")))
         return processPwd(tokens);
-
-    if (0 == command_keyword.CmpNoCase(wxT("SET")))
-        return processSet(tokens);
 
     if (0 == command_keyword.CmpNoCase(wxT("USE")))
         return processUse(tokens);
