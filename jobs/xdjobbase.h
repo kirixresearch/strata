@@ -149,8 +149,11 @@ private:
         
         if (m_tango_job.p)
         {
-            m_job_info->setCurrentCount((double)m_tango_job.p->getCurrentCount());
-            m_job_info->setMaxCount((double)m_tango_job.p->getMaxCount());
+            if (m_usage & useTangoCurrentCount)
+                m_job_info->setCurrentCount((double)m_tango_job.p->getCurrentCount());
+
+            if (m_usage & useTangoMaxCount)
+                m_job_info->setMaxCount((double)m_tango_job.p->getMaxCount());
         }
 
         // free our job ptr
