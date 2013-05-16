@@ -5618,10 +5618,6 @@ bool AppController::print(const wxString& location)
 
 static void addDefaultItemsToProject(const wxString& project_path)
 {
-/*
-
-    TODO: implement
-
     wxFrame* wnd = g_app->getMainWindow();
     if (!wnd)
         return;
@@ -5629,11 +5625,8 @@ static void addDefaultItemsToProject(const wxString& project_path)
     // don't show any of this happening
     wnd->Freeze();
     
-    // the project login and password
-    // probably shouldn't be hardcoded here
-    if (!g_app->getAppController()->openProject(project_path,
-                                                wxT("admin"),
-                                                wxEmptyString))
+
+    if (!g_app->getAppController()->openProject(project_path, "admin", ""))
     {
         wnd->Thaw();
         return;
@@ -5647,56 +5640,68 @@ static void addDefaultItemsToProject(const wxString& project_path)
     filename += wxT("/../samples/startup.kpg");
     #endif
     
-    // the following error checks are also done in
-    // ImportWizard::onPathSelectionPageChanging()
-    PkgFile pkgfile;
-    if (!pkgfile.open(towstr(filename), PkgFile::modeRead))
+
+
+    IConnectionPtr conn = createUnmanagedConnection();
+    conn->setType(dbtypePackage);
+    conn->setPath(towstr(filename));
+
+    tango::IDatabasePtr db;
+
+    if (conn->open())
+        db = conn->getDatabasePtr();
+
+    if (db.isNull())
     {
         // make sure we close the project
         g_app->getAppController()->closeProject();
         wnd->Thaw();
         return;
     }
-    
-    // create a package stream (NOTE: we always need to destroy this)
-    PkgStreamEnum* stream_enum = pkgfile.getStreamEnum();
-    int stream_count = stream_enum->getStreamCount();
-    if (!stream_enum)
-    {
-        // make sure we close the project
-        g_app->getAppController()->closeProject();
-        wnd->Thaw();
-        return;
-    }
+
+
+
+    tango::IFileInfoEnumPtr objects = db->getFolderInfo(L"");
+
     
     // populate the item names vector from the package file stream
-    std::vector<wxString> item_names;
-    for (int i = 0; i < stream_count; ++i)
+    std::vector<std::wstring> item_names;
+
+    size_t i, object_count = objects->size();
+    for (i = 0; i < object_count; ++i)
     {
         // don't get hidden stream names
-        wxString stream_name = stream_enum->getStreamName(i);
-        if (*(stream_name.c_str()) == '.')
+        std::wstring object_name = objects->getItem(i)->getName();
+        if (object_name.empty() || object_name[0] == '.')
             continue;
         
-        item_names.push_back(stream_enum->getStreamName(i));
+        item_names.push_back(object_name);
     }
-    
-    delete stream_enum;
     
     // sort the tablenames vector
     std::sort(item_names.begin(), item_names.end());
     
-    // create the import package job        
-    ImportPkgJob* import_job = new ImportPkgJob;
-    import_job->setPkgFilename(towstr(filename));
-    
+
+
+    ImportTemplate templ;
+    templ.m_ii.type = dbtypePackage;
+    templ.m_ii.path = towstr(filename);
+
     // add the items to the import job
-    std::vector<wxString>::iterator it;
+    std::vector<std::wstring>::iterator it;
     for (it = item_names.begin(); it != item_names.end(); ++it)
-        import_job->addImportObject(towstr(*it), towstr(*it));
+    {
+        ImportTableSelection tbl;
+        tbl.input_tablename = *it;
+        tbl.output_tablename = *it;
+        tbl.append = false;
+
+        templ.m_ii.tables.push_back(tbl);
+    }
+
     
     // run the job
-    jobs::IJobPtr job = static_cast<jobs::IJob*>(import_job);
+    jobs::IJobPtr job = templ.createJob();
     if (job.isOk())
     {
         job->runJob();
@@ -5708,7 +5713,6 @@ static void addDefaultItemsToProject(const wxString& project_path)
     g_app->getAppController()->closeProject();
     wnd->Thaw();
 
-*/
 }
 
 bool AppController::createDefaultProject()
