@@ -185,9 +185,6 @@ void BaseIterator::refreshDAI()
          dai_it != dai_entries.end();
          ++dai_it)
     {
-        //if (!(*dai_it)->is_active)
-        //    continue;
-
         // does it still exist?
         
         colinfo.clear();
@@ -204,14 +201,6 @@ void BaseIterator::refreshDAI()
             }
         }
 
-     
-        // Ben to self: Should I add this?
-/*
-        if (colinfo.isNull() && m_iter_structure.isOk())
-        {
-            colinfo = m_iter_structure->getColumnInfo((*dai_it)->name);
-        }
-*/
         if (colinfo.isNull())
         {
             colinfo = m_set_structure->getColumnInfo((*dai_it)->name);
@@ -246,12 +235,7 @@ DataAccessInfo* BaseIterator::lookupDAI(const std::wstring& expr)
     it = m_dai_lookup.find(expr);
 
     if (it == m_dai_lookup.end())
-    {
         return NULL;
-    }
-
-    //if (!it->second->is_active)
-    //    return NULL;
 
     return it->second;
 }
@@ -261,9 +245,7 @@ DataAccessInfo* BaseIterator::lookupDAI(const std::wstring& expr)
 bool BaseIterator::baseClone(BaseIterator* new_iter)
 {
     if (!new_iter->init(m_database, m_set, m_columns))
-    {
         return false;
-    }
 
     return true;
 }
@@ -583,9 +565,7 @@ tango::IIteratorPtr BaseIterator::getFilteredChildIterator(tango::IRelationPtr r
         i.kl = NULL;
 
         if (!refreshRelInfo(i))
-        {
             return xcm::null;
-        }
 
         m_relations.push_back(i);
         info = &m_relations.back();
@@ -1203,28 +1183,24 @@ public:
 
 void BaseIterator::onSetRelationshipsUpdated()
 {
+    // clear out relations information
     m_rel_mutex.lock();
-
     std::vector<BaseIteratorRelInfo>::iterator r_it;
     for (r_it = m_relations.begin(); r_it != m_relations.end(); ++r_it)
         delete r_it->kl;
     m_relations.clear();
     m_relenum.clear();
-
     m_rel_mutex.unlock();
 
-
-
-
+    // reset aggregate results handles (they will be refreshed
+    // the next time they are referenced)
     m_agg_mutex.lock();
     std::vector<AggregateResult*>::iterator it;
-    for (it = m_aggregate_results.begin();
-         it != m_aggregate_results.end(); ++it)
+    for (it = m_aggregate_results.begin(); it != m_aggregate_results.end(); ++it)
     {
         (*it)->m_handle = 0;
     }
     m_agg_mutex.unlock();
-
 }
 
 
@@ -1246,7 +1222,6 @@ AggregateResult* BaseIterator::getAggResultObject(int agg_func,
     }
 
     // no suitable aggregate result object was found, so initialize a new one
-
     AggregateResult* agg_res = new AggregateResult;
     if (!agg_res->init(m_database, getTable(), agg_func, expr))
     {
@@ -2950,5 +2925,4 @@ void BaseIterator::flushRow()
 
     m_row_dirty = false;
 }
-
 

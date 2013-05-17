@@ -4441,7 +4441,7 @@ void TableDoc::updateChildWindows()
                 tango::IIteratorPtr right_iter = iter_r->getFilteredChildIterator(rel);
                 if (right_iter)
                 {
-                    table_doc->setIterator(right_iter, false);
+                    table_doc->setIterator(right_iter);
 
                     wxString suffix = " ";
                     suffix += _("[Matching Records]");

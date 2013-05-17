@@ -642,7 +642,12 @@ void CommonIndexIterator::setIteratorFlags(unsigned int mask, unsigned int value
 
 unsigned int CommonIndexIterator::getIteratorFlags()
 {
-    return m_data_iter->getIteratorFlags();
+    unsigned int flags = m_data_iter->getIteratorFlags();
+
+    if (m_key_filter_len > 0)
+        flags &= ~(tango::ifFastRowCount);
+
+    return flags;
 }
 
 void CommonIndexIterator::refreshStructure()
