@@ -210,6 +210,7 @@ public:
     void onActivate(wxActivateEvent& evt);
     void onClose(wxCloseEvent& evt);
     void onMove(wxMoveEvent& evt);
+    void onChildFocus(wxChildFocusEvent& evt);
 
 protected:
 

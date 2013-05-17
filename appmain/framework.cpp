@@ -1218,6 +1218,7 @@ BEGIN_EVENT_TABLE(ChildFrame, wxMDIChildFrame)
     EVT_ACTIVATE(ChildFrame::onActivate)
     EVT_CLOSE(ChildFrame::onClose)
     EVT_MOVE(ChildFrame::onMove)
+    EVT_CHILD_FOCUS(ChildFrame::onChildFocus)
 END_EVENT_TABLE()
 
 
@@ -1359,6 +1360,13 @@ void ChildFrame::onActivate(wxActivateEvent& evt)
             sigFrameDeactivated(this);
         }
     }
+}
+
+void ChildFrame::onChildFocus(wxChildFocusEvent& evt)
+{
+    int idx = m_parent->GetClientWindow()->GetPageIndex(this);
+    if (m_parent->GetClientWindow()->GetSelection() != idx)
+        m_parent->GetClientWindow()->SetSelection(idx);
 }
 
 void ChildFrame::onClose(wxCloseEvent& evt)
