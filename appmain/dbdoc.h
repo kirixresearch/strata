@@ -274,7 +274,7 @@ private:
 
     void onSetFocus(wxFocusEvent& evt);
     void onKillFocus(wxFocusEvent& evt);
-    void onKeyDown(const wxKeyEvent& evt);
+    void onKeyDown(const wxKeyEvent& evt, bool* handled);
 
 private:
 

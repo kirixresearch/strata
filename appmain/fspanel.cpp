@@ -1472,7 +1472,13 @@ void FsPanel::onFsTreeItemCollapsing(wxTreeEvent& evt)
 
 void FsPanel::onFsTreeKeyDown(wxTreeEvent& evt)
 {
-    sigKeyDown().fire(evt.GetKeyEvent());
+    bool handled = false;
+    sigKeyDown().fire(evt.GetKeyEvent(), &handled);
+
+    if (!handled)
+    {
+        evt.Skip();
+    }
 }
 
 
@@ -1596,7 +1602,10 @@ void FsPanel::onFsListKeyDown(wxListEvent& evt)
     wxKeyEvent e;
     e.m_keyCode = evt.GetKeyCode();
 
-    sigKeyDown().fire(e);
+    bool handled = false;
+    sigKeyDown().fire(e, &handled);
+    if (!handled)
+        evt.Skip();
 }
 
 

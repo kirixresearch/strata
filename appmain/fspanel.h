@@ -163,7 +163,7 @@ public:
     XCM_DECLARE_SIGNAL1(sigItemActivated, IFsItemPtr)
     XCM_DECLARE_SIGNAL1(sigItemSelected, IFsItemPtr)
     XCM_DECLARE_SIGNAL1(sigItemHighlightRequest, IFsItemPtr&)
-    XCM_DECLARE_SIGNAL1(sigKeyDown, const wxKeyEvent&)
+    XCM_DECLARE_SIGNAL2(sigKeyDown, const wxKeyEvent&, bool* /*handled*/)
     XCM_DECLARE_SIGNAL3(sigDragDrop, IFsItemPtr, wxDataObject*, wxDragResult*)
     XCM_DECLARE_SIGNAL0(sigDestructing)
 };

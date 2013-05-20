@@ -62,7 +62,7 @@ friend class FsTreeDropTarget;
     XCM_IMPLEMENT_SIGNAL1(sigItemActivated, IFsItemPtr)
     XCM_IMPLEMENT_SIGNAL1(sigItemSelected, IFsItemPtr)
     XCM_IMPLEMENT_SIGNAL1(sigItemHighlightRequest, IFsItemPtr&)
-    XCM_IMPLEMENT_SIGNAL1(sigKeyDown, const wxKeyEvent&)
+    XCM_IMPLEMENT_SIGNAL2(sigKeyDown, const wxKeyEvent&, bool* /*handled*/)
     XCM_IMPLEMENT_SIGNAL3(sigDragDrop, IFsItemPtr, wxDataObject*, wxDragResult*)
     XCM_IMPLEMENT_SIGNAL0(sigDestructing)
 

@@ -1341,18 +1341,23 @@ IFsItemPtr DbDoc::getFsItemFromPath(const wxString& path)
 }
 
 
-void DbDoc::onKeyDown(const wxKeyEvent& evt)
+void DbDoc::onKeyDown(const wxKeyEvent& evt, bool* handled)
 {
     if (evt.GetKeyCode() == WXK_RETURN)
     {
         openSelectedItems();
         toggleExpandOnSelectedItems();
+        *handled = true;
     }
-
-    if (evt.GetKeyCode() == WXK_DELETE)
+     else if (evt.GetKeyCode() == WXK_DELETE)
     {
         wxCommandEvent empty;
         onRemoveItem(empty);
+        *handled = true;
+    }
+     else
+    {
+        *handled = false;
     }
 }
 
