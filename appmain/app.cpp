@@ -887,6 +887,30 @@ void MainApp::onActivateApp(wxActivateEvent& evt)
     {
         if (m_frame)
         {
+            // if application frame was activated by the mouse being clicked
+            // on the DbDoc window, don't attempt to activate any child
+            // window, because this will cause drag-and-drop operations
+            // to not work properly (ex. dragging a table from the DbDoc to
+            // the relationship manager)
+            DbDoc* dbdoc = getDbDoc();
+            if (dbdoc)
+            {
+                wxWindow* dbdocwnd = dbdoc->getDocWindow();
+                if (dbdocwnd)
+                {
+                    wxRect rect = dbdocwnd->GetScreenRect();
+                    wxPoint pt = ::wxGetMousePosition();
+                    if (rect.Contains(pt))
+                    {
+                        dbdoc->getDbDocSite()->getDocument()->setDocumentFocus();
+                        evt.Skip();
+                        return;
+                    }
+                }
+            }
+
+
+
             IDocumentSitePtr site = m_frame->getActiveChild();
             if (site)
             {
@@ -902,7 +926,7 @@ void MainApp::onActivateApp(wxActivateEvent& evt)
     {
     }
     #endif
-    
+
     evt.Skip();
 }
 
