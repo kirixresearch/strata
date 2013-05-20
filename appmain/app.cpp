@@ -902,7 +902,6 @@ void MainApp::onActivateApp(wxActivateEvent& evt)
                     wxPoint pt = ::wxGetMousePosition();
                     if (rect.Contains(pt))
                     {
-                        dbdoc->getDbDocSite()->getDocument()->setDocumentFocus();
                         evt.Skip();
                         return;
                     }
