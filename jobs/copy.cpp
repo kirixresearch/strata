@@ -20,7 +20,7 @@ namespace jobs
 
 // CopyJob implementation
 
-CopyJob::CopyJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
+CopyJob::CopyJob() : XdJobBase()
 {
     m_config["metadata"]["type"] = L"application/vnd.kx.copy-job";
     m_config["metadata"]["version"] = 1;

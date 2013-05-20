@@ -1589,7 +1589,7 @@ bool XdnativeDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
 }
 
 bool XdnativeDatabase::copyFile(const std::wstring& src_path,
-                        const std::wstring& dest_path)
+                                const std::wstring& dest_path)
 {
     if (src_path.empty() || dest_path.empty())
         return false;
@@ -1909,18 +1909,12 @@ long long XdnativeDatabase::getFileSize(const std::wstring& ofs_path)
 
     // fix up set name problems
     std::wstring fixed_name;
-
-    if (*(ofs_path.c_str()) != L'/')
-    {
+    if (ofs_path[0] != L'/')
         fixed_name = L"/";
-    }
-
     fixed_name += ofs_path;
     kl::trimRight(fixed_name);
 
-
     // open up set file
-
     INodeValuePtr set_file = openNodeFile(fixed_name);
     if (!set_file)
         return 0;
@@ -1936,7 +1930,6 @@ long long XdnativeDatabase::getFileSize(const std::wstring& ofs_path)
 
     // generate set filename
     std::wstring path;
-    path.reserve(80);
     path = L"/.system/objects/";
     path += set_id;
 
@@ -1944,9 +1937,7 @@ long long XdnativeDatabase::getFileSize(const std::wstring& ofs_path)
 
     set_file = openNodeFile(path);
     if (!set_file)
-    {
         return 0;
-    }
 
     // load ordinal
     INodeValuePtr ordinal_node = set_file->getChild(L"ordinal", false);
@@ -1957,6 +1948,40 @@ long long XdnativeDatabase::getFileSize(const std::wstring& ofs_path)
 
     return xf_get_file_size(table_filename);
 }
+
+tango::rowpos_t XdnativeDatabase::getRowCount(const std::wstring& path)
+{
+    if (path.empty())
+        return 0;
+
+    // fix up set name problems
+    std::wstring fixed_name;
+    if (path[0] != L'/')
+        fixed_name = L"/";
+    fixed_name += path;
+    kl::trimRight(fixed_name);
+
+    // open up set file
+    INodeValuePtr set_file = openNodeFile(fixed_name);
+    if (!set_file)
+        return 0;
+
+    // load the set id
+    INodeValuePtr setid_node = set_file->getChild(L"set_id", false);
+    if (!setid_node)
+        return 0;
+
+    std::wstring set_id = setid_node->getString();
+    if (set_id.length() == 0)
+        return 0;
+
+    IXdnativeSetPtr set = openSetById(set_id);
+    if (set.isNull())
+        return 0;
+
+    return set->getRowCount();
+}
+
 
 std::wstring XdnativeDatabase::getFileMimeType(const std::wstring& path)
 {
@@ -2024,7 +2049,10 @@ public:
 
     tango::rowpos_t getRowCount()
     {
-        return 0;
+        if (type == tango::filetypeTable)
+            return db->getRowCount(path);
+             else
+            return 0;
     }
     
     const std::wstring& getMimeType()
@@ -2041,7 +2069,10 @@ public:
 
     unsigned int getFlags()
     {
-        return 0;
+        if (type == tango::filetypeTable)
+            return tango::sfFastRowCount;
+             else
+            return 0;
     }
     
     bool isMount()
@@ -2065,6 +2096,8 @@ public:
 
 public:
 
+    XdnativeDatabase* db;
+
     std::wstring name;
     std::wstring mime_type;
     std::wstring path;
@@ -2077,7 +2110,6 @@ public:
     
     bool fetched_mime_type;
     bool fetched_size;
-    XdnativeDatabase* db;
 };
 
 
@@ -2244,8 +2276,10 @@ tango::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& path)
 
 
     XdnativeFileInfo* f = new XdnativeFileInfo(this);
+    f->format = tango::formatNative;
     f->type = tango::filetypeNode;
     f->is_mount = false;
+    f->path = path;
     
     int slash_pos = path.find_last_of(L'/');
     if (slash_pos == -1)
@@ -2253,8 +2287,6 @@ tango::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& path)
          else
         f->name = path.substr(slash_pos+1);
 
-    f->path = path;
-    f->format = tango::formatNative;
     getFileType(path, &(f->type), &(f->is_mount));
 
     return static_cast<tango::IFileInfo*>(f);
@@ -2643,7 +2675,7 @@ bool XdnativeDatabase::deleteTempData()
 
 
 void XdnativeDatabase::getFolderUsedOrdinals(const std::wstring& folder_path,
-                                      std::set<int>& used_ordinals)
+                                             std::set<int>& used_ordinals)
 {
     // skip mounts
     tango::IFileInfoPtr fileinfo = getFileInfo(folder_path);

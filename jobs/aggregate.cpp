@@ -19,7 +19,7 @@ namespace jobs
 
 // AggregateJob implementation
 
-AggregateJob::AggregateJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
+AggregateJob::AggregateJob() : XdJobBase()
 {
     m_config["metadata"]["type"] = L"application/vnd.kx.aggregate-job";
     m_config["metadata"]["version"] = 1;

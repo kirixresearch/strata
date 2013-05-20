@@ -19,7 +19,7 @@ namespace jobs
 
 // DivideJob implementation
 
-DivideJob::DivideJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
+DivideJob::DivideJob() : XdJobBase()
 {
     m_config["metadata"]["type"] = L"application/vnd.kx.divide-job";
     m_config["metadata"]["version"] = 1;

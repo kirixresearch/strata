@@ -19,7 +19,7 @@ namespace jobs
 
 // DeleteJob implementation
 
-DeleteJob::DeleteJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
+DeleteJob::DeleteJob() : XdJobBase()
 {
     m_config["metadata"]["type"] = L"application/vnd.kx.delete-job";
     m_config["metadata"]["version"] = 1;

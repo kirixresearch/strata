@@ -19,7 +19,7 @@ namespace jobs
 
 // QueryJob implementation
 
-QueryJob::QueryJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
+QueryJob::QueryJob() : XdJobBase()
 {
     m_config["metadata"]["type"] = L"application/vnd.kx.query-job";
     m_config["metadata"]["version"] = 1;

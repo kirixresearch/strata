@@ -19,7 +19,7 @@ namespace jobs
 
 // AppendJob implementation
 
-AppendJob::AppendJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
+AppendJob::AppendJob() : XdJobBase()
 {
     m_config["metadata"]["type"] = L"application/vnd.kx.append-job";
     m_config["metadata"]["version"] = 1;

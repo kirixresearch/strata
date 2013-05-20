@@ -19,7 +19,7 @@ namespace jobs
 
 // ExecuteJob implementation
 
-ExecuteJob::ExecuteJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
+ExecuteJob::ExecuteJob() : XdJobBase()
 {
     m_config["metadata"]["type"] = L"application/vnd.kx.execute-job";
     m_config["metadata"]["version"] = 1;

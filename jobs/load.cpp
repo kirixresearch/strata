@@ -46,7 +46,7 @@ namespace jobs
 
 // LoadJob implementation
 
-LoadJob::LoadJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
+LoadJob::LoadJob() : XdJobBase()
 {
     m_config["metadata"]["type"] = L"application/vnd.kx.load-job";
     m_config["metadata"]["version"] = 1;

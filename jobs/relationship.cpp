@@ -20,7 +20,7 @@ namespace jobs
 
 // RelationshipJob implementation
 
-RelationshipJob::RelationshipJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
+RelationshipJob::RelationshipJob() : XdJobBase()
 {
     m_config["metadata"]["type"] = L"application/vnd.kx.relationship-job";
     m_config["metadata"]["version"] = 1;

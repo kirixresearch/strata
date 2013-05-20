@@ -50,7 +50,7 @@ kl::JsonNode schema_node;
 
 // AlterJob implementation
 
-AlterJob::AlterJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
+AlterJob::AlterJob() : XdJobBase()
 {
     m_config["metadata"]["type"] = L"application/vnd.kx.alter-job";
     m_config["metadata"]["version"] = 1;

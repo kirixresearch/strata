@@ -20,7 +20,7 @@ namespace jobs
 
 // GroupJob implementation
 
-GroupJob::GroupJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
+GroupJob::GroupJob() : XdJobBase()
 {
     m_config["metadata"]["type"] = L"application/vnd.kx.group-job";
     m_config["metadata"]["version"] = 1;

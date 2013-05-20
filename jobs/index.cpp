@@ -19,7 +19,7 @@ namespace jobs
 
 // IndexJob implementation
 
-IndexJob::IndexJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
+IndexJob::IndexJob() : XdJobBase()
 {
     m_config["metadata"]["type"] = L"application/vnd.kx.index-job";
     m_config["metadata"]["version"] = 1;

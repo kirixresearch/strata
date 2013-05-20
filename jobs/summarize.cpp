@@ -21,7 +21,7 @@ namespace jobs
 
 // SummarizeJob implementation
 
-SummarizeJob::SummarizeJob() : XdJobBase(XdJobBase::useTangoCurrentCount)
+SummarizeJob::SummarizeJob() : XdJobBase()
 {
     m_config["metadata"]["type"] = L"application/vnd.kx.summarize-job";
     m_config["metadata"]["version"] = 1;
