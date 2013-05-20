@@ -130,10 +130,8 @@ int xdcmnInsert(tango::IDatabasePtr dest_db,
 
     IJobInternalPtr ijob;
     tango::rowpos_t cur_count;
-    tango::rowpos_t max_count;
 
     cur_count = 0;
-    max_count = 0;
 
     if (job)
     {
@@ -144,7 +142,8 @@ int xdcmnInsert(tango::IDatabasePtr dest_db,
             return 0;
         }
 
-        ijob->setMaxCount(max_rows);
+        if (max_rows > 0)
+            ijob->setMaxCount(max_rows);
         ijob->setCurrentCount(0);
         ijob->setStatus(tango::jobRunning);
         ijob->setStartTime(time(NULL));

@@ -1553,6 +1553,17 @@ bool XdnativeDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
         structure = iter->getStructure();
         if (structure.isNull())
             return false;
+
+        if (qp.where.empty())
+        {
+            tango::IFileInfoPtr finfo = getFileInfo(qp.from);
+            if (finfo->getFlags() & tango::sfFastRowCount)
+            {
+                IJobInternalPtr ijob = job;
+                if (ijob)
+                    ijob->setMaxCount(finfo->getRowCount());
+            }
+        }
     }
 
 
