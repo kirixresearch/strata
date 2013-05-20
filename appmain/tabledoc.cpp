@@ -7281,11 +7281,32 @@ void onCopyRecordsJobFinished(jobs::IJobPtr job)
     if (job->getJobInfo()->getState() != jobStateFinished)
         return;
 
+    tango::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return;
+
     kl::JsonNode params;
     params.fromString(job->getParameters());
 
+    std::wstring input = params["input"].getString();
+    std::wstring output = params["output"].getString();
+
+    // copy tabledoc model
+    std::wstring input_id, output_id;
+    tango::IFileInfoPtr finfo;
+
+    finfo = db->getFileInfo(input);
+    if (finfo) input_id = finfo->getObjectId();
+
+    finfo = db->getFileInfo(output);
+    if (finfo) output_id = finfo->getObjectId();
+
+    if (input_id.length() > 0 && output_id.length() > 0)
+        TableDocMgr::copyModel(input_id, output_id);
+
     // open the result set in a new child window
-    g_app->getAppController()->openTable(params["output"].getString());
+    g_app->getAppController()->openTable(output);
+
 }
 
 void TableDoc::onCopyRecordsOk(ExprBuilderPanel* expr_panel)
@@ -7309,7 +7330,7 @@ void TableDoc::copyRecords(const wxString& condition)
     {
         final_condition = condition;
     }
-        else
+     else
     {
         if (condition.Length() > 0)
         {
@@ -7320,7 +7341,12 @@ void TableDoc::copyRecords(const wxString& condition)
         }
     }
 
-        // create a query job
+    // flush active view to model, because copy records attempts
+    // to copy the tabledoc model objects to the destination table
+    // when the copy job finishes
+    flushActiveView();
+
+    // create a query job
     wxString title = wxString::Format(_("Copying Records from '%s'"),
                                       getCaption().c_str());
 
