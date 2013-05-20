@@ -719,10 +719,10 @@ bool BaseIterator::initStructure()
             {
                 expr = *it;
                     
-                wchar_t buf[255];
+                wchar_t buf[64];
                 do
                 {
-                    swprintf(buf, 255, L"EXPR%03d", ++colname_counter);
+                    swprintf(buf, 64, L"EXPR%03d", ++colname_counter);
                 } while (m_set_structure->getColumnExist(buf));
 
                 colname = buf;

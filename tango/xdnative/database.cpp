@@ -810,8 +810,8 @@ bool XdnativeDatabase::setOrdinalTable(tango::tableord_t ordinal,
 
 
     // write out ordinal entry with table filename
-    wchar_t tableord_path[255];
-    swprintf(tableord_path, 255, L"/.system/ordinals/%u", ordinal);
+    wchar_t tableord_path[64];
+    swprintf(tableord_path, 64, L"/.system/ordinals/%u", ordinal);
 
     INodeValuePtr tableord;
     if (!getFileExist(tableord_path))
@@ -839,8 +839,8 @@ bool XdnativeDatabase::setOrdinalTable(tango::tableord_t ordinal,
 bool XdnativeDatabase::deleteOrdinal(tango::tableord_t ordinal)
 {
     // write out ordinal entry with table filename
-    wchar_t tableord_path[255];
-    swprintf(tableord_path, 255, L"/.system/ordinals/%u", ordinal);
+    wchar_t tableord_path[64];
+    swprintf(tableord_path, 64, L"/.system/ordinals/%u", ordinal);
     
     if (!deleteFile(tableord_path))
         return false;
@@ -2249,13 +2249,9 @@ tango::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& path)
     
     int slash_pos = path.find_last_of(L'/');
     if (slash_pos == -1)
-    {
         f->name = path;
-    }
-     else
-    {
+         else
         f->name = path.substr(slash_pos+1);
-    }
 
     f->path = path;
     f->format = tango::formatNative;
@@ -3015,8 +3011,8 @@ std::wstring XdnativeDatabase::getStreamFilename(const std::wstring& ofs_path)
 
 std::wstring XdnativeDatabase::getTableFilename(tango::tableord_t table_ordinal)
 {
-    wchar_t ord_key_name[255];
-    swprintf(ord_key_name, 255, L"/.system/ordinals/%d", table_ordinal);
+    wchar_t ord_key_name[64];
+    swprintf(ord_key_name, 64, L"/.system/ordinals/%d", table_ordinal);
 
     INodeValuePtr ordinal = openNodeFile(ord_key_name);
     if (!ordinal)

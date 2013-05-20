@@ -28,8 +28,8 @@ class Munch
 public:
     ~Munch()
     {
-        wchar_t b[255];
-        swprintf(b, 255, L"%d", countt);
+        wchar_t b[64];
+        swprintf(b, 64, L"%d", countt);
         ::MessageBox(NULL, b, L"", MB_OK);
     }
 };

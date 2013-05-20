@@ -422,8 +422,8 @@ void dbl2decstr(char* dest, double d, int width, int scale)
 
 std::wstring getTableSetId(tango::tableord_t table_ordinal)
 {
-    wchar_t buf[255];
-    swprintf(buf, 255, L"tbl%08u", table_ordinal);
+    wchar_t buf[64];
+    swprintf(buf, 64, L"tbl%08u", table_ordinal);
     return buf;
 }
 
