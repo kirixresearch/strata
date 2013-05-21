@@ -980,14 +980,10 @@ bool JsonNode::parse(wchar_t* expr)
     return true;
 }
 
-static std::wstring addspaces(unsigned int indent_level)
+inline std::wstring addspaces(unsigned int indent_level)
 {
-    std::wstring spaces = L"";
-    int spaces_per_indent_level = 4;
-
-    for (int i = 0; i < indent_level*spaces_per_indent_level; ++i)
-        spaces += L" ";
-
+    std::wstring spaces;
+    spaces.append(indent_level*4, L' ');
     return spaces;
 }
 
