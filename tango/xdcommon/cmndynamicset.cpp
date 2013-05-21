@@ -26,6 +26,40 @@
 
 
 
+
+
+class CommonDynamicIterator : public CommonIndexIterator
+{
+
+public:
+
+    CommonDynamicIterator(CommonDynamicSet* set) : CommonIndexIterator()
+    {
+        m_set = set;
+        m_set->ref();
+    }
+
+    ~CommonDynamicIterator()
+    {
+        m_set->unref();
+    }
+
+    unsigned int getIteratorFlags()
+    {
+        return tango::ifFastRowCount;
+    }
+
+    tango::rowpos_t getRowCount()
+    {
+        return m_set->m_row_count;
+    }
+
+private:
+
+    CommonDynamicSet* m_set;
+};
+
+
 CommonDynamicSet::CommonDynamicSet()
 {
     m_index = NULL;
@@ -348,6 +382,11 @@ tango::IIteratorPtr CommonDynamicSet::createIterator(const std::wstring& columns
                                                      const std::wstring& expr,
                                                      tango::IJob* job)
 {
+    tango::IIteratorPtr data_iter = m_database->query(m_base_path, columns, L"", L"", NULL);
+    if (data_iter.isNull())
+        return xcm::null;
+    data_iter->goFirst();
+
     if (expr.empty())
     {
         // create an index iterator
@@ -356,23 +395,9 @@ tango::IIteratorPtr CommonDynamicSet::createIterator(const std::wstring& columns
             return xcm::null;
         idx_iter->goFirst();
 
-        // create a physical-order iterator 
-        tango::IIteratorPtr data_iter = m_database->query(m_base_path, columns, L"", L"", NULL);
-        if (data_iter.isNull())
-            return xcm::null;
-        data_iter->goFirst();
-
-
-        IXdsqlTablePtr thisset = static_cast<IXdsqlTable*>(this);
-
-        
-
-        CommonIndexIterator* iter = new CommonIndexIterator(data_iter,
-                                                            idx_iter,
-                                                            L"",
-                                                            false);
+        CommonDynamicIterator* iter = new CommonDynamicIterator(this);
+        iter->init(data_iter, idx_iter, L"", false);
         iter->setTable(getObjectPath());
-        iter->setRefObj(thisset); // we want |this| to live as long as the index iterator
         idx_iter->unref();
         iter->goFirst();
         return static_cast<tango::IIterator*>(iter);
@@ -414,12 +439,21 @@ tango::IIteratorPtr CommonDynamicSet::createIterator(const std::wstring& columns
     e.key_length = e.key_expr->getKeyLength();
     m_indexes.push_back(e);
 
-    tango::IIteratorPtr data_iter = createIterator(columns, L"", NULL);
-    return createIteratorFromIndex(data_iter,
-                                   idx,
-                                   columns,
-                                   expr,
-                                   getObjectPath());
+
+
+    IIndexIterator* idx_iter = idx->createIterator();
+    if (!idx_iter)
+        return xcm::null;
+    idx_iter->goFirst();
+
+    CommonDynamicIterator* iter = new CommonDynamicIterator(this);
+    iter->init(data_iter, idx_iter, L"", true);
+    iter->setTable(getObjectPath());
+
+    idx_iter->unref();
+    iter->goFirst();
+
+    return static_cast<tango::IIterator*>(iter);
 }
 
 

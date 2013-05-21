@@ -30,6 +30,7 @@ public:
 
 class CommonDynamicSet : public IXdsqlTable
 {
+friend class CommonDynamicIterator;
 friend class CommonDynamicSetRowDeleter;
 
     XCM_CLASS_NAME("xdnative.CommonDynamicSet")

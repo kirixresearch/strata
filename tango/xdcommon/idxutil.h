@@ -57,15 +57,15 @@ class CommonIndexIterator : public tango::IIterator,
 
 public:
 
-    CommonIndexIterator(tango::IIterator* data_iter,
-                        IIndexIterator* idx_index,
-                        const std::wstring& order,
-                        bool value_side = true);
-
+    CommonIndexIterator();
     virtual ~CommonIndexIterator();
 
+    bool init(tango::IIterator* data_iter,
+              IIndexIterator* idx_index,
+              const std::wstring& order,
+              bool value_side = true);
+
     void setTable(const std::wstring& path) { m_table = path; }
-    void setRefObj(xcm::IObjectPtr refobj) { m_refobj = refobj; } // holds onto a reference
 
     void* getKey();
     int getKeyLength();

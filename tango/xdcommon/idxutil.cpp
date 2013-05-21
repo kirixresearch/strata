@@ -152,9 +152,6 @@ IIndex* createExternalIndex(tango::IDatabasePtr db,
     }
 
 
-
-    
-
     // add keys to the index
     tango::rowid_t rowid;
     index->startBulkInsert(max_count);
@@ -290,7 +287,8 @@ tango::IIteratorPtr createIteratorFromIndex(tango::IIteratorPtr data_iter,
     idx_iter->goFirst();
 
     CommonIndexIterator* iter;
-    iter = new CommonIndexIterator(data_iter, idx_iter, order, true);
+    iter = new CommonIndexIterator();
+    iter->init(data_iter, idx_iter, order, true);
     iter->setTable(table);
 
     idx_iter->unref();
@@ -303,33 +301,17 @@ tango::IIteratorPtr createIteratorFromIndex(tango::IIteratorPtr data_iter,
 
 // CommonIndexIterator Implementation
 
-CommonIndexIterator::CommonIndexIterator(tango::IIterator* data_iter,
-                                         IIndexIterator* idx_iter,
-                                         const std::wstring& order,
-                                         bool value_side)
+CommonIndexIterator::CommonIndexIterator()
 {
-    // store the data iterator pointer
-    m_data_iter = data_iter;
-    m_data_iter->ref();
-    
-    // store the index iterator pointer
-    m_idx_iter = idx_iter;
-    m_idx_iter->ref();
-
-    m_value_side = value_side;
-
+    m_data_iter = NULL;
+    m_idx_iter = NULL;
+    m_value_side = false;
     m_row_deleted = false;
-
-    // get key length
-    IIndex* idx = m_idx_iter->getIndex();
-    m_keylen = idx->getKeyLength();
-    idx->unref();
-
-    m_key_filter = new unsigned char[m_keylen];
+    m_keylen = 0;
+    m_key_filter = NULL;
     m_key_filter_len = 0;
-    
-    // store the key columns
-    m_order = order;
+
+    m_order = L"";
     m_layout = NULL;
 }
 
@@ -346,15 +328,47 @@ CommonIndexIterator::~CommonIndexIterator()
     delete[] m_key_filter;
 }
 
+bool CommonIndexIterator::init(tango::IIterator* data_iter,
+                               IIndexIterator* idx_iter,
+                               const std::wstring& order,
+                               bool value_side)
+{
+    // store the data iterator pointer
+    m_data_iter = data_iter;
+    m_data_iter->ref();
+    
+    // store the index iterator pointer
+    m_idx_iter = idx_iter;
+    m_idx_iter->ref();
+
+    m_value_side = value_side;
+
+    m_row_deleted = false;
+
+    // get key length
+    IIndex* idx = idx_iter->getIndex();
+    m_keylen = idx->getKeyLength();
+    idx->unref();
+
+    m_key_filter = new unsigned char[m_keylen];
+    m_key_filter_len = 0;
+    
+    // store the key columns
+    m_order = order;
+    m_layout = NULL;
+
+    return true;
+}
+
+
+
 tango::IIteratorPtr CommonIndexIterator::clone()
 {
     IIndexIterator* index_iter = m_idx_iter->clone();
     tango::IIteratorPtr data_iter = m_data_iter->clone();
     
-    CommonIndexIterator* new_iter = new CommonIndexIterator(data_iter.p,
-                                                            index_iter,
-                                                            m_order,
-                                                            m_value_side);
+    CommonIndexIterator* new_iter = new CommonIndexIterator;
+    new_iter->init(data_iter.p, index_iter, m_order, m_value_side);
     index_iter->unref();
     new_iter->setTable(m_table);
     memcpy(new_iter->m_key_filter, m_key_filter, m_keylen);

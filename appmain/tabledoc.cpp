@@ -7614,10 +7614,14 @@ void TableDoc::deleteRecords(const wxString& condition)
         cmd += towstr(condition);
         cmd += L");";
         
-        cmd += L"DELETE FROM ";
-        cmd += towstr(getBrowsePath());
-        cmd += L" WHERE ";
-        cmd += towstr(condition);
+        wxString browse_path = getBrowsePath();
+        if (browse_path.Length() > 0)
+        {
+            cmd += L"DELETE FROM ";
+            cmd += towstr(browse_path);
+            cmd += L" WHERE ";
+            cmd += towstr(condition);
+        }
     }
      else
     {
