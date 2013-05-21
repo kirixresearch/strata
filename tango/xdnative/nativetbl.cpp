@@ -1200,10 +1200,10 @@ std::wstring NativeTable::getMapFilename()
 }
 
 
-tango::IRowDeleterPtr NativeTable::getRowDeleter()
+IXdsqlRowDeleterPtr NativeTable::getRowDeleter()
 {
     NativeRowDeleter* deleter = new NativeRowDeleter(this);
-    return static_cast<tango::IRowDeleter*>(deleter);
+    return static_cast<IXdsqlRowDeleter*>(deleter);
 }
 
 bool NativeTable::restoreDeleted()

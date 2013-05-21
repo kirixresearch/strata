@@ -26,27 +26,30 @@
 
 
 
-static int doDelete(std::wstring path,
+static int doDelete(IXdsqlDatabasePtr db,
+                    const std::wstring& path,
                     const std::wstring& filter,
                     tango::IJob* job)
 {
-    return 0;
-
-/*
     int delete_count = 0;
 
-    // get a row deleter from this object
+    IXdsqlTablePtr tbl = db->openTable(path);
+    if (tbl.isNull())
+        return -1;
 
-    tango::IRowDeleterPtr sp_row_deleter = set->getRowDeleter();
+    // get a row deleter from this object
+    IXdsqlRowDeleterPtr sp_row_deleter = tbl->getRowDeleter();
     if (sp_row_deleter.isNull())
         return -1;
 
     // create physical iterator and initialize expression handles
-
-    tango::IIteratorPtr sp_iter = set->createIterator(L"", L"", L"", NULL);
-    if (sp_iter.isNull())
+    tango::IDatabasePtr tdb = db;
+    if (tdb.isNull())
         return -1;
 
+    tango::IIteratorPtr sp_iter = tdb->query(path, L"", L"", L"", NULL);
+    if (sp_iter.isNull())
+        return -1;
 
     // create an SqlIterator object
     
@@ -58,7 +61,7 @@ static int doDelete(std::wstring path,
 
 
     tango::IIterator* iter = sp_iter.p;
-    tango::IRowDeleter* row_deleter = sp_row_deleter.p;
+    IXdsqlRowDeleter* row_deleter = sp_row_deleter.p;
 
     // initialize job
     IJobInternalPtr ijob = job;
@@ -66,9 +69,10 @@ static int doDelete(std::wstring path,
     {
         tango::rowpos_t max_count = 0;
 
-        if (set->getSetFlags() & tango::sfFastRowCount)
+        tango::IFileInfoPtr finfo = tdb->getFileInfo(path);
+        if (finfo.isOk() && (finfo->getFlags() & tango::sfFastRowCount))
         {
-            max_count = set->getRowCount();
+            max_count = finfo->getRowCount();
         }
 
         ijob->setMaxCount(max_count);
@@ -120,7 +124,6 @@ static int doDelete(std::wstring path,
     }
     
     return delete_count;
-    */
 }
 
 
@@ -188,7 +191,7 @@ bool sqlDelete(tango::IDatabasePtr db,
         return true;
     }
 
-    int result = doDelete(table, filter, job);
+    int result = doDelete(db, table, filter, job);
     if (result == -1)
     {
         error.setError(tango::errorGeneral, L"Unable to process DELETE statement");

@@ -234,10 +234,10 @@ bool CommonDynamicSet::deleteRow(const tango::rowid_t& rowid)
 }
 
 
-tango::IRowDeleterPtr CommonDynamicSet::getRowDeleter()
+IXdsqlRowDeleterPtr CommonDynamicSet::getRowDeleter()
 {
     CommonDynamicSetRowDeleter* deleter = new CommonDynamicSetRowDeleter(this);
-    return static_cast<tango::IRowDeleter*>(deleter);
+    return static_cast<IXdsqlRowDeleter*>(deleter);
 }
 
 

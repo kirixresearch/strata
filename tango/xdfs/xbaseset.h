@@ -86,6 +86,7 @@ public:
                          tango::IJob* job);
 
     tango::IRowInserterPtr getRowInserter();
+    IXdsqlRowDeleterPtr getRowDeleter() { return xcm::null; }
 
     tango::IIteratorPtr createIterator(const std::wstring& columns,
                                        const std::wstring& expr,

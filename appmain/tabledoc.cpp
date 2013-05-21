@@ -7571,8 +7571,7 @@ void TableDoc::onRemoveFilter(wxCommandEvent& evt)
 }
 
 
-// -- Delete Rows Implementation --
-
+// Delete Records Implementation
 
 void TableDoc::onDeleteRecordsOk(ExprBuilderPanel* expr_panel)
 {
@@ -7687,8 +7686,6 @@ void TableDoc::onDeleteRecords(wxCommandEvent& evt)
 
 
 
-// -- Replace Rows Implementation --
-
 void TableDoc::showReplacePanel(const wxString& def_condition, const wxString& def_field)
 {
     if (!g_app->getAppController()->doReadOnlyCheck())
@@ -7776,7 +7773,7 @@ void TableDoc::onUpdateRecords(wxCommandEvent& evt)
 }
 
 
-// -- View Creation/Editing --
+
 
 void TableDoc::onViewEditFinished(ViewPanel* panel)
 {

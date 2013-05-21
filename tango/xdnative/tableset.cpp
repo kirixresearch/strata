@@ -660,10 +660,10 @@ tango::IRowInserterPtr TableSet::getRowInserter()
     return static_cast<tango::IRowInserter*>(inserter);
 }
 
-tango::IRowDeleterPtr TableSet::getRowDeleter()
+IXdsqlRowDeleterPtr TableSet::getRowDeleter()
 {
     TableSetRowDeleter* deleter = new TableSetRowDeleter(m_database, this);
-    return static_cast<tango::IRowDeleter*>(deleter);
+    return static_cast<IXdsqlRowDeleter*>(deleter);
 }
 
 bool TableSet::restoreDeleted()

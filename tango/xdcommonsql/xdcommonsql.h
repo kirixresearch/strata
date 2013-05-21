@@ -22,10 +22,11 @@ class ThreadErrorInfo;
 xcm_interface IXdsqlDatabase;
 XCM_DECLARE_SMARTPTR(IXdsqlDatabase)
 
-
 xcm_interface IXdsqlTable;
 XCM_DECLARE_SMARTPTR(IXdsqlTable)
 
+xcm_interface IXdsqlRowDeleter;
+XCM_DECLARE_SMARTPTR(IXdsqlRowDeleter)
 
 
 xcm_interface IXdsqlDatabase : public xcm::IObject
@@ -38,6 +39,17 @@ public:
 };
 
 
+xcm_interface IXdsqlRowDeleter : public xcm::IObject
+{
+    XCM_INTERFACE_NAME("tango.IRowDeleter")
+
+public:
+
+    virtual void startDelete() = 0;
+    virtual bool deleteRow(const tango::rowid_t& rowid) = 0;
+    virtual void finishDelete() = 0;
+    virtual void cancelDelete() = 0;
+};
 
 xcm_interface IXdsqlTable : public xcm::IObject
 {
@@ -50,6 +62,7 @@ public:
                                                tango::IJob* job) = 0;
     virtual tango::IStructurePtr getStructure() = 0;
 
+    virtual IXdsqlRowDeleterPtr getRowDeleter() = 0;
     virtual bool restoreDeleted() = 0;
 
     virtual bool updateRow(tango::rowid_t rowid,

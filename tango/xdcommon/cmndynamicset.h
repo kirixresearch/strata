@@ -63,7 +63,7 @@ public:
     tango::IIteratorPtr getRow(tango::rowid_t rowid);
     tango::rowpos_t getRowCount();
 
-    tango::IRowDeleterPtr getRowDeleter();
+    IXdsqlRowDeleterPtr getRowDeleter();
     bool restoreDeleted() { return false; }
 
     int insert(tango::IIteratorPtr source_iter,
@@ -96,11 +96,11 @@ private:
 
 
 
-class CommonDynamicSetRowDeleter : public tango::IRowDeleter
+class CommonDynamicSetRowDeleter : public IXdsqlRowDeleter
 {
     XCM_CLASS_NAME("xdnative.CommonDynamicSetRowDeleter")
     XCM_BEGIN_INTERFACE_MAP(CommonDynamicSetRowDeleter)
-        XCM_INTERFACE_ENTRY(tango::IRowDeleter)
+        XCM_INTERFACE_ENTRY(IXdsqlRowDeleter)
     XCM_END_INTERFACE_MAP()
 
 public:

@@ -186,7 +186,7 @@ public:
                                        tango::IJob* job);
 
     tango::IRowInserterPtr getRowInserter();
-    tango::IRowDeleterPtr getRowDeleter();
+    IXdsqlRowDeleterPtr getRowDeleter();
     bool restoreDeleted();
     
     tango::rowpos_t getRowCount();
@@ -235,11 +235,11 @@ private:
 
 
 class RowIdArray;
-class TableSetRowDeleter : public tango::IRowDeleter
+class TableSetRowDeleter : public IXdsqlRowDeleter
 {
     XCM_CLASS_NAME("xdnative.TableSetRowDeleter")
     XCM_BEGIN_INTERFACE_MAP(TableSetRowDeleter)
-        XCM_INTERFACE_ENTRY(tango::IRowDeleter)
+        XCM_INTERFACE_ENTRY(IXdsqlRowDeleter)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -258,7 +258,7 @@ private:
 
     bool doRowDelete(tango::rowid_t rowid);
 
-    tango::IRowDeleterPtr m_table_row_deleter;
+    IXdsqlRowDeleterPtr m_table_row_deleter;
     TableSet* m_set;
     RowIdArray* m_rowid_array;
 };

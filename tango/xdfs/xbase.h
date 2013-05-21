@@ -85,7 +85,7 @@ struct XbaseDate
 };
 
 
-// -- XbaseField struct declaration --
+// XbaseField struct declaration
 
 struct XbaseField
 {
@@ -146,7 +146,7 @@ struct XbaseField
 };
 
 
-// -- XbaseFile class declaration --
+// XbaseFile class declaration
 
 class XbaseFile
 {

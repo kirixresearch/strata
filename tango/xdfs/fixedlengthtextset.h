@@ -99,6 +99,8 @@ public:
     void setCreateStructure(tango::IStructurePtr structure);
 
     tango::IRowInserterPtr getRowInserter();
+    IXdsqlRowDeleterPtr getRowDeleter() { return xcm::null; }
+
     tango::IIteratorPtr createIterator(const std::wstring& columns,
                                        const std::wstring& order,
                                        tango::IJob* job);
