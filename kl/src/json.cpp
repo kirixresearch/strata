@@ -554,6 +554,10 @@ JsonNode& JsonNode::operator=(const JsonNode& _c)
     if (this == &_c)
         return *this;
 
+    // release old value
+    m_value->unref();
+
+    // assign new value
     m_value = _c.m_value;
     m_value->ref();
 

@@ -18,7 +18,7 @@
 #ifdef __WXMSW__
 class AppConfigRegImpl : public IAppConfig
 {
-    XCM_CLASS_NAME_NOREFCOUNT("appmain.AppConfigRegImpl")
+    XCM_CLASS_NAME("appmain.AppConfigRegImpl")
     XCM_BEGIN_INTERFACE_MAP(AppConfigRegImpl)
         XCM_INTERFACE_ENTRY(IAppConfig)
     XCM_END_INTERFACE_MAP()
@@ -275,7 +275,7 @@ protected:
 
 class AppConfigGenericImpl : public IAppConfig
 {
-    XCM_CLASS_NAME_NOREFCOUNT("appmain.AppConfigGenericImpl")
+    XCM_CLASS_NAME("appmain.AppConfigGenericImpl")
     XCM_BEGIN_INTERFACE_MAP(AppConfigGenericImpl)
         XCM_INTERFACE_ENTRY(IAppConfig)
     XCM_END_INTERFACE_MAP()
