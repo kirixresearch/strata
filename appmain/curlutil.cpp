@@ -23,23 +23,23 @@ public:
 
     CurlInit()
     {
-        // -- initialize curl --
+        // initialize curl
         if (0 != curl_global_init(CURL_GLOBAL_ALL))
         {
             // failure
             return;
         }
         
-        // -- initialize curl_easy_* functions --
+        // initialize curl_easy_* functions
         g_curl = curl_easy_init();
 
         if (g_curl != NULL)
         {
-            // -- from the curl documentation:  "When using multiple threads you 
-            //    should set the CURLOPT_NOSIGNAL option to TRUE for all handles. 
-            //    Everything will or might work fine except that timeouts are not 
-            //    honored during the DNS lookup ... On some platforms, libcurl simply 
-            //    will not function properly multi-threaded unless this option is set." --
+            // from the curl documentation:  "When using multiple threads you 
+            // should set the CURLOPT_NOSIGNAL option to TRUE for all handles. 
+            // Everything will or might work fine except that timeouts are not 
+            // honored during the DNS lookup ... On some platforms, libcurl simply 
+            // will not function properly multi-threaded unless this option is set."
             curl_easy_setopt(g_curl, CURLOPT_NOSIGNAL, TRUE);
         }
     }
@@ -51,6 +51,8 @@ public:
 
         curl_easy_cleanup(g_curl);
         g_curl = (CURL*)0;
+
+        curl_global_cleanup();
     }
 };
 
