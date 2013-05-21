@@ -110,7 +110,7 @@ private:
 };
 
 
-
+class NativeTable;
 class TableSet : public BaseSet,
                  public ITableEvents
 {
@@ -223,7 +223,7 @@ private:
     tango::rowpos_t m_deleted_row_count;
     tango::rowpos_t m_phys_row_count;
     unsigned long long m_idxrefresh_time;
-    ITable* m_table;
+    NativeTable* m_table;
     tango::IStructurePtr m_structure;
 
     xcm::mutex m_update_mutex;
@@ -235,6 +235,7 @@ private:
 
 
 class RowIdArray;
+class NativeRowDeleter;
 class TableSetRowDeleter : public IXdsqlRowDeleter
 {
     XCM_CLASS_NAME("xdnative.TableSetRowDeleter")
@@ -258,7 +259,7 @@ private:
 
     bool doRowDelete(tango::rowid_t rowid);
 
-    IXdsqlRowDeleterPtr m_table_row_deleter;
+    NativeRowDeleter* m_table_row_deleter;
     TableSet* m_set;
     RowIdArray* m_rowid_array;
 };

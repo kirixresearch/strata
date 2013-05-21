@@ -1199,13 +1199,6 @@ std::wstring NativeTable::getMapFilename()
     return m_map_filename;
 }
 
-
-IXdsqlRowDeleterPtr NativeTable::getRowDeleter()
-{
-    NativeRowDeleter* deleter = new NativeRowDeleter(this);
-    return static_cast<IXdsqlRowDeleter*>(deleter);
-}
-
 bool NativeTable::restoreDeleted()
 {
     if (!m_map_file)

@@ -169,7 +169,6 @@ public:
     virtual tango::tableord_t getTableOrdinal() = 0;
     virtual tango::rowpos_t getRowCount(tango::rowpos_t* deleted_row_cnt) = 0;
 
-    virtual IXdsqlRowDeleterPtr getRowDeleter() = 0;
     virtual bool isRowDeleted(tango::rowpos_t row) = 0;
     virtual bool restoreDeleted() = 0;
 

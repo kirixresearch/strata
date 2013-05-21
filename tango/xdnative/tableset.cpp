@@ -1851,7 +1851,7 @@ TableSetRowDeleter::TableSetRowDeleter(XdnativeDatabase* db, TableSet* set)
 {
     m_set = set;
     m_set->ref();
-    m_table_row_deleter = set->m_table->getRowDeleter();
+    m_table_row_deleter = new NativeRowDeleter(set->m_table);
     
     m_rowid_array = new RowIdArray(db->getTempPath());
 }
@@ -1860,6 +1860,7 @@ TableSetRowDeleter::~TableSetRowDeleter()
 {
     m_set->unref();
     delete m_rowid_array;
+    delete m_table_row_deleter;
 }
 
 

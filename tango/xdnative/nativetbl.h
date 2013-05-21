@@ -125,7 +125,6 @@ public:
     tango::rowpos_t setDeletedRowCount(int deleted_row_count);
     void recalcPhysRowCount();
 
-    IXdsqlRowDeleterPtr getRowDeleter();
     bool restoreDeleted();
 
     unsigned long long getStructureModifyTime();
@@ -163,12 +162,8 @@ private:
 
 
 
-class NativeRowDeleter : public IXdsqlRowDeleter
+class NativeRowDeleter
 {
-    XCM_CLASS_NAME("xdnative.NativeRowDeleter")
-    XCM_BEGIN_INTERFACE_MAP(NativeRowDeleter)
-        XCM_INTERFACE_ENTRY(IXdsqlRowDeleter)
-    XCM_END_INTERFACE_MAP()
 
 public:
 
