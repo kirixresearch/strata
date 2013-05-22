@@ -312,7 +312,12 @@ std::wstring getOrderExprFromJobParam(kl::JsonNode order_node)
             result += L",";
         first = false;
 
-        result += it->getString();
+        std::wstring expression = it->getChild(L"expression").getString();
+        std::wstring direction = it->getChild(L"direction").getString();
+
+        result += expression;
+        if (kl::iequals(direction, L"DESC"))
+            result += L" DESC";
     }
 
     return result;
