@@ -294,7 +294,7 @@ static bool compareViews(ITableDocView* v1, ITableDocView* v2)
     return true;
 }
 
-std::wstring getOrderExprFromJobParam(kl::JsonNode order_node)
+static std::wstring getOrderExprFromJobParam(kl::JsonNode order_node)
 {
     if (!order_node.isOk())
         return L"";
