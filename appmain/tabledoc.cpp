@@ -683,6 +683,7 @@ bool TableDoc::onSiteClosing(bool force)
 
     // save the view
     flushActiveView();
+    freeTemporaryHandles();
 
     // release all references to everything
     m_frame.clear();
