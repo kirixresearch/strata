@@ -769,8 +769,8 @@ void MarkMgrPanel::onFilterRows(wxCommandEvent& evt)
     if (mark.isNull())
         return;
 
-    wxString expr = mark->getExpression();
-    if (expr.Length() > 0)
+    std::wstring expr = mark->getExpression();
+    if (expr.length() > 0)
         tabledoc->setFilter(expr);
 }
 
@@ -786,8 +786,8 @@ void MarkMgrPanel::onCopyRows(wxCommandEvent& evt)
     if (mark.isNull())
         return;
     
-    wxString expr = mark->getExpression();
-    if (expr.Length() > 0)
+    std::wstring expr = mark->getExpression();
+    if (expr.length() > 0)
         tabledoc->copyRecords(expr);
 }
 
@@ -823,8 +823,8 @@ void MarkMgrPanel::onDeleteRows(wxCommandEvent& evt)
     if (mark.isNull())
         return;
     
-    wxString expr = mark->getExpression();
-    if (expr.Length() > 0)
+    std::wstring expr = mark->getExpression();
+    if (expr.length() > 0)
     {
         wxString message = wxString::Format(_("Performing this operation will permanently delete data.  Are you sure\nyou want to delete the records that meet the selected condition?"));
 

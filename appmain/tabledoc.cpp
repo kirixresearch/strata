@@ -409,10 +409,9 @@ bool TableDoc::isExternalTable()
 
 bool TableDoc::isTemporary()
 {
-    wxString prefix = m_path.AfterLast('/');
-    prefix = prefix.Left(5);
-    prefix.MakeLower();
-    if (prefix == wxT("xtmp_"))
+    std::wstring table_prefix = kl::afterLast(m_path, '/');
+    table_prefix = table_prefix.substr(0, 5);
+    if (kl::iequals(table_prefix, L"xtmp_"))
         return true;
          else
         return false;
@@ -421,7 +420,7 @@ bool TableDoc::isTemporary()
 
 bool TableDoc::canDeleteColumns(std::vector<int>& view_cols)
 {
-    // allow column deletion for the native driver
+    // allow column deletion for the native driver only
     if (!isExternalTable())
         return true;
     
@@ -431,7 +430,7 @@ bool TableDoc::canDeleteColumns(std::vector<int>& view_cols)
     if (db.isNull())
         return false;
 
-    tango::IStructurePtr structure = db->describeTable(towstr(m_path));
+    tango::IStructurePtr structure = db->describeTable(m_path);
     if (structure.isNull())
         return false;
     
@@ -598,7 +597,7 @@ wxString TableDoc::getDocumentLocation()
     if (querydoc)
         return querydoc->getDocumentLocation();
     
-    if (m_source_url.Length() > 0)
+    if (m_source_url.length() > 0)
         return m_source_url;
     
     return m_path;
@@ -654,7 +653,7 @@ bool TableDoc::onSiteClosing(bool force)
 
             if (dlg.ShowModal() == wxID_OK)
             {
-                if (g_app->getDatabase()->moveFile(towstr(m_path), towstr(dlg.getPath())))
+                if (g_app->getDatabase()->moveFile(m_path, towstr(dlg.getPath())))
                 {
                     g_app->getAppController()->refreshDbDoc();
 
@@ -761,7 +760,7 @@ void TableDoc::onFrameEvent(FrameworkEvent& evt)
         // get the event set path; refresh the tabledoc if the base or
         // browse sets have the same path
 
-        if (isSamePath(towstr(m_path), towstr(evt.s_param)))
+        if (isSamePath(m_path, towstr(evt.s_param)))
             m_grid->refresh(kcl::Grid::refreshAll);
     }
     else if (evt.name == FRAMEWORK_EVT_TABLEDOC_DO_VIEW_RELOAD &&
@@ -770,7 +769,7 @@ void TableDoc::onFrameEvent(FrameworkEvent& evt)
         TableDoc* td1 = (TableDoc*)evt.l_param;
         TableDoc* td2 = (TableDoc*)this;
 
-        if (isSamePath(towstr(td1->m_path), towstr(td2->m_path)))
+        if (isSamePath(td1->m_path, td2->m_path))
         {
             if (evt.l_param2 != (unsigned long)m_active_view.p)
             {
@@ -1180,7 +1179,7 @@ void TableDoc::onUpdateUI(wxUpdateUIEvent& evt)
         break;
 
         case ID_Data_RemoveSortFilter:
-            evt.Enable(m_sort_order.Length() > 0 || m_filter.Length() > 0 ? true : false);
+            evt.Enable(m_sort_order.length() > 0 || m_filter.length() > 0 ? true : false);
             break;
 
         case ID_Data_ModifyDynamicField:
@@ -1442,9 +1441,9 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
 
         if (!db->getMountPoint(folder, cstr, rpath))
         {
-            wxString save_path = dlg.getPath();
+            std::wstring save_path = towstr(dlg.getPath());
 
-            if (!db->moveFile(towstr(m_path), towstr(save_path)))
+            if (!db->moveFile(m_path, save_path))
             {
                 appMessageBox(_("The file could not be saved in the specified location.  The destination location may by in use."),
                                    APPLICATION_NAME,
@@ -1525,10 +1524,10 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
     job->getJobInfo()->setTitle(towstr(title));
     kl::JsonNode params;
 
-    params["input"].setString(towstr(m_path));
+    params["input"].setString(m_path);
     params["output"].setString(path);
-    params["where"].setString(towstr(getFilter()));
-    params["order"].setString(towstr(getSortOrder()));
+    params["where"].setString(getFilter());
+    params["order"].setString(getSortOrder());
     params["extra_docsite_id"].setInteger(m_doc_site->getId());
 
     job->setParameters(params.toString());
@@ -1568,7 +1567,7 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
 
     wxString filename = getFilenameFromPath(m_path, false);
     
-    if (isTemporaryTable(towstr(m_path)))
+    if (isTemporaryTable(m_path))
         filename = _("Untitled");
     
     wxFileDialog dlg(g_app->getMainWindow(),
@@ -1664,7 +1663,7 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
         templ.m_ei.type = dbtype;
 
         ExportTableSelection tbl;
-        tbl.input_tablename = towstr(this->m_path);
+        tbl.input_tablename = this->m_path;
         tbl.append = false;
 
         if (dbtype == dbtypeDelimitedText)
@@ -1683,7 +1682,7 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
             if (dbtype == dbtypeAccess || dbtype == dbtypeExcel || dbtype == dbtypePackage || dbtypeSqlite)
                 templ.m_ei.path = towstr(dlg.GetPath());
 
-            tbl.output_tablename = kl::beforeLast( kl::afterLast(towstr(this->m_path), '/'), '.');
+            tbl.output_tablename = kl::beforeLast( kl::afterLast(this->m_path, '/'), '.');
             kl::replaceStr(tbl.output_tablename, L".", L"_");
             kl::replaceStr(tbl.output_tablename, L" ", L"_");
             kl::replaceStr(tbl.output_tablename, L"-", L"_");
@@ -1779,19 +1778,19 @@ void TableDoc::onDoReloadRefresh(wxCommandEvent& evt)
         if (db.isNull())
             return;
 
-        tango::IFileInfoPtr old_file_info = db->getFileInfo(towstr(m_path));
+        tango::IFileInfoPtr old_file_info = db->getFileInfo(m_path);
         std::wstring old_set_id = old_file_info.isOk() ? old_file_info->getObjectId() : L"";
         
 
         FeedParser parser;
         if (!parser.loadAndParse(m_reload_filename))
         {
-            xf_remove(towstr(m_reload_filename));
+            xf_remove(m_reload_filename);
             // can't parse feed file
             return;
         }
         
-        xf_remove(towstr(m_reload_filename));
+        xf_remove(m_reload_filename);
         
         std::wstring output_path = L"xtmp_" + kl::getUniqueString();
         if (!parser.convertToTable(output_path))
@@ -1895,7 +1894,7 @@ void TableDoc::onReload(wxCommandEvent& evt)
 
             // configure the job parameters
             kl::JsonNode params;
-            params = createSortFilterJobParams(towstr(m_path), towstr(m_filter), towstr(m_sort_order));
+            params = createSortFilterJobParams(m_path, m_filter, m_sort_order);
 
 
             // set the job parameters and start the job
@@ -1929,7 +1928,7 @@ void TableDoc::onShareUrlRequested(wxString& url)
     }
 
 
-    std::wstring path = towstr(m_path);
+    std::wstring path = m_path;
 
     if (g_app->getDbDriver() != L"xdclient")
     {
@@ -1945,8 +1944,6 @@ void TableDoc::onShareUrlRequested(wxString& url)
             return;
 
         db = mount_db;
-
-
 
         path = path.substr(mount_path.length());
     }
@@ -1971,10 +1968,10 @@ void TableDoc::onShareUrlRequested(wxString& url)
 
     kl::JsonNode root;
     root["data"]["table"] = path;
-    root["data"]["where"] = towstr(getFilter());
-    root["data"]["order"] = towstr(getSortOrder());
+    root["data"]["where"] = getFilter();
+    root["data"]["order"] = getSortOrder();
 
-    root["display"]["group_break"] = towstr(getGroupBreak());
+    root["display"]["group_break"] = getGroupBreak();
 
     std::wstring json = root.toString();
 
@@ -2162,7 +2159,7 @@ void TableDoc::updateStatusBar(bool row_count_update)
     wxString position_text, reccount_text;
 
     wxString currow_text;
-    if (m_filter.Length() + m_sort_order.Length() > 0)
+    if (m_filter.length() + m_sort_order.length() > 0)
         currow_text = wxT("~");
     currow_text += kl::formattedNumber(m_grid->getCursorRow()+1);
 
@@ -2244,24 +2241,24 @@ void TableDoc::onColumnsDropped(kcl::GridDataDropTarget* drop_target)
 }
 
 
-wxString TableDoc::getPath()
+std::wstring TableDoc::getPath()
 {
     return m_path;
 }
 
-wxString TableDoc::getBrowsePath()
+std::wstring TableDoc::getBrowsePath()
 {
-    if (m_browse_path.Length() > 0)
+    if (m_browse_path.length() > 0)
         return m_browse_path;
     return m_path;
 }
 
 
 
-bool TableDoc::open(const wxString& _path,
+bool TableDoc::open(const std::wstring& _path,
                     tango::IIteratorPtr optional_iterator)
 {
-    std::wstring path = towstr(_path);
+    std::wstring path = _path;
 
     tango::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
@@ -2282,15 +2279,15 @@ bool TableDoc::open(const wxString& _path,
         m_db_type = db->getDatabaseType();
     }
     
-    m_filter = "";
-    m_sort_order = "";
-    m_caption_suffix = "";
+    m_filter = L"";
+    m_sort_order = L"";
+    m_caption_suffix = L"";
 
     m_path = _path;
 
     // if the set/table displayed has a url associated with it, display it
 
-    if (m_path.find("://") != m_path.npos)
+    if (m_path.find(L"://") != m_path.npos)
     {
         // path is itself a url, display that in the url bar
         setSourceUrl(m_path);
@@ -2369,7 +2366,7 @@ bool TableDoc::open(const wxString& _path,
     return true;
 }
 
-bool TableDoc::setBrowseSet(const wxString& path, tango::IIteratorPtr iter)
+bool TableDoc::setBrowseSet(const std::wstring& path, tango::IIteratorPtr iter)
 {
     tango::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
@@ -2384,7 +2381,7 @@ bool TableDoc::setBrowseSet(const wxString& path, tango::IIteratorPtr iter)
      else
     {
         // create a default iterator
-        tango::IIteratorPtr iter = db->query(towstr(m_browse_path), L"", L"", L"", NULL);
+        tango::IIteratorPtr iter = db->query(m_browse_path, L"", L"", L"", NULL);
         if (iter.isNull())
             return false;
 
@@ -2664,10 +2661,10 @@ void TableDoc::updateCaption()
     }
      else
     {
-        if (m_source_url.Length() > 0)
-            m_caption = m_source_url.AfterLast('/');
+        if (m_source_url.length() > 0)
+            m_caption = kl::afterLast(m_source_url, '/');
             else
-            m_caption = m_path.AfterLast('/');
+            m_caption = kl::afterLast(m_path, '/');
     }
 
     if (m_doc_site)
@@ -2685,15 +2682,14 @@ wxString TableDoc::makeCaption(const wxString& title)
     // make panel caption
     wxString caption = title;
 
-    if (!isTemporaryTable(towstr(m_path)))
+    if (!isTemporaryTable(m_path))
     {
-        wxString name = m_path.AfterLast('/');
+        wxString name = kl::afterLast(m_path, '/');
 
         caption += wxT(" - [");
         caption += name;
         caption += wxT("]");
     }
-
 
     return caption;
 }
@@ -2809,7 +2805,7 @@ void TableDoc::setIterator(tango::IIteratorPtr iter, bool go_first)
         // insertion of new rows is not allowed when
         // an order or a filter is set
 
-        if (m_sort_order.IsEmpty() && m_filter.IsEmpty())
+        if (m_sort_order.empty() && m_filter.empty())
         {
             m_grid->setOptionState(kcl::Grid::optGhostRow, true);
         }
@@ -2959,7 +2955,7 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
     if (rels.isNull())
         return;
 
-    tango::IStructurePtr s = db->describeTable(towstr(m_path));
+    tango::IStructurePtr s = db->describeTable(m_path);
     if (s.isNull())
         return;
 
@@ -2995,7 +2991,7 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
     // now try to find the set that has that column
     tango::IStructurePtr right_structure;
 
-    tango::IRelationEnumPtr rel_enum = rels->getRelationEnum(towstr(m_path));
+    tango::IRelationEnumPtr rel_enum = rels->getRelationEnum(m_path);
     tango::IRelationPtr rel;
     int rel_count = (int)rel_enum->size();
 
@@ -3120,7 +3116,7 @@ void TableDoc::onFilterJobFinished(jobs::IJobPtr job)
     g_app->getAppController()->updateQuickFilterToolBarItem();
 
     wxString suffix;
-    if (m_filter.Length() > 0)
+    if (m_filter.length() > 0)
     {
         suffix = wxT(" [");
         suffix += _("Filtered");
@@ -3150,8 +3146,8 @@ void TableDoc::onSortJobFinished(jobs::IJobPtr query_job)
         std::vector< std::pair<std::wstring, bool> > sort_fields;
         std::vector<std::wstring> group_fields;
 
-        sort_fields = sortExprToVector(towstr(m_sort_order));
-        kl::parseDelimitedList(towstr(m_group_break), group_fields, ',', true);
+        sort_fields = sortExprToVector(m_sort_order);
+        kl::parseDelimitedList(m_group_break, group_fields, ',', true);
 
         if (group_fields.size() <= sort_fields.size())
         {
@@ -3298,7 +3294,7 @@ void TableDoc::onAlterTableJobFinished(jobs::IJobPtr job)
         }
     }
 
-    open(input_path);
+    open(towstr(input_path));
 
     // remove the "Filtered" suffix
     setCaption(wxEmptyString, wxEmptyString);
@@ -3781,14 +3777,14 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
         // --------------------
 
         
-        setFilter(expr);
+        setFilter(towstr(expr));
     }
      else if (command >= 27200 && command <= 27299)
     {
         // copy rows
         wxString expr;
         getMenuItemExpr(colname, coltype, command-27200, value, expr);
-        copyRecords(expr);
+        copyRecords(towstr(expr));
     }
      else if (command >= 27300 && command <= 27399)
     {
@@ -3815,7 +3811,7 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
         {
             wxString expr;
             getMenuItemExpr(colname, coltype, command-27400, value, expr);
-            deleteRecords(expr);
+            deleteRecords(towstr(expr));
         }
     }
      else if (command >= 27500 && command <= 27599)
@@ -3910,7 +3906,7 @@ void TableDoc::onGridColumnRightClick(kcl::GridEvent& evt)
     
 
     tango::IStructurePtr iter_structure = m_iter->getStructure();
-    tango::IStructurePtr set_structure = g_app->getDatabase()->describeTable(towstr(m_path));
+    tango::IStructurePtr set_structure = g_app->getDatabase()->describeTable(m_path);
     if (set_structure.isNull())
         return;
 
@@ -3970,7 +3966,7 @@ void TableDoc::onGridColumnRightClick(kcl::GridEvent& evt)
     }
     
     tango::IDatabasePtr db = g_app->getDatabase();
-    tango::IIndexInfoEnumPtr index_enum = db->getIndexEnum(towstr(m_path));
+    tango::IIndexInfoEnumPtr index_enum = db->getIndexEnum(m_path);
 
     wxMenu menuPopup;
 
@@ -4031,13 +4027,13 @@ void TableDoc::onGridColumnRightClick(kcl::GridEvent& evt)
         // default sort order
         if (i == 0)
         {
-            setSortOrder(wxEmptyString);
+            setSortOrder(L"");
             return;
         }
 
 
         tango::IIndexInfoEnumPtr indexes;
-        indexes = db->getIndexEnum(towstr(m_path));
+        indexes = db->getIndexEnum(m_path);
         
         if (i >= (int)(indexes->size()+1))
         {
@@ -4196,7 +4192,7 @@ void TableDoc::resetChildWindows()
         return;
 
     tango::IRelationEnumPtr rel_enum;
-    rel_enum = rels->getRelationEnum(towstr(m_path));
+    rel_enum = rels->getRelationEnum(m_path);
 
     if (rel_enum->size() == 0)
         return;
@@ -4352,7 +4348,7 @@ void TableDoc::updateChildWindows()
         return;
 
     tango::IRelationEnumPtr rel_enum;
-    rel_enum = rels->getRelationEnum(towstr(m_path));
+    rel_enum = rels->getRelationEnum(m_path);
 
     if (rel_enum->size() == 0)
         return;
@@ -4413,7 +4409,7 @@ void TableDoc::updateChildWindows()
 
                 if (table_doc)
                 {
-                    std::wstring path = towstr(table_doc->getPath());
+                    std::wstring path = table_doc->getPath();
                     if (isSamePath(path, rel->getRightTable()))
                     {
                         found = true;
@@ -4750,7 +4746,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
         
     std::wstring primary_key;
 
-    tango::IFileInfoPtr info = db->getFileInfo(towstr(m_path));
+    tango::IFileInfoPtr info = db->getFileInfo(m_path);
     if (info.isOk())
     {
         primary_key = info->getPrimaryKey();
@@ -4877,7 +4873,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
     }
 
 
-    tango::IStructurePtr structure = db->describeTable(towstr(m_path));
+    tango::IStructurePtr structure = db->describeTable(m_path);
     if (structure.isNull())
         return;
 
@@ -5037,7 +5033,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
 
 
     wxString cmd = "UPDATE ";
-    cmd += tango::quoteIdentifierIfNecessary(db, towstr(m_path));
+    cmd += tango::quoteIdentifierIfNecessary(db, m_path);
     cmd += " SET ";
     cmd += str;
     cmd += where_str;
@@ -5085,7 +5081,7 @@ void TableDoc::onGridPreGhostRowInsert(kcl::GridEvent& evt)
         return;
     }
 
-    tango::IRowInserterPtr inserter = g_app->getDatabase()->bulkInsert(towstr(m_path));
+    tango::IRowInserterPtr inserter = g_app->getDatabase()->bulkInsert(m_path);
     if (inserter.isNull())
         return;
 
@@ -5204,7 +5200,7 @@ bool TableDoc::createDynamicField(const wxString& col_name,
     {
         tango::IDatabasePtr db = g_app->getDatabase();
 
-        tango::IStructurePtr structure = db->describeTable(towstr(m_path));
+        tango::IStructurePtr structure = db->describeTable(m_path);
         if (structure.isNull())
             return false;
 
@@ -5216,7 +5212,7 @@ bool TableDoc::createDynamicField(const wxString& col_name,
         col->setScale(scale);
         col->setExpression(towstr(expr));
 
-        if (!db->modifyStructure(towstr(m_path), structure, NULL))
+        if (!db->modifyStructure(m_path, structure, NULL))
         {
             return false;
         }
@@ -5294,7 +5290,7 @@ void TableDoc::showCreateDynamicField()
 
     m_grid->clearSelection();
 
-    tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(m_path));
+    tango::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
     if (structure.isNull())
         return;
 
@@ -5451,7 +5447,7 @@ void TableDoc::onMakeStatic(wxCommandEvent& evt)
 
     // make sure that the columns are all dynamic
 
-    tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(m_path));
+    tango::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
     tango::IColumnInfoPtr colinfo;
            
     std::set<wxString>::iterator it;
@@ -5594,7 +5590,7 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
 
     // add fields from child file(s)
 
-    tango::IRelationEnumPtr rel_enum = rels->getRelationEnum(towstr(m_path));
+    tango::IRelationEnumPtr rel_enum = rels->getRelationEnum(m_path);
     tango::IRelationPtr rel;
     size_t r, rel_count = rel_enum->size();
         
@@ -6158,7 +6154,7 @@ void TableDoc::onSummary(wxCommandEvent& evt)
     // if there was no selection, summarize all columns
     if (summary_columns.size() == 0)
     {
-        tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(m_path));
+        tango::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
         if (structure.isNull())
             return;
 
@@ -6172,10 +6168,10 @@ void TableDoc::onSummary(wxCommandEvent& evt)
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.summarize-job");
 
     kl::JsonNode params;
-    params["input"].setString(towstr(m_path));
+    params["input"].setString(m_path);
     params["output"].setString(L"xtmp_" + kl::getUniqueString());
     params["columns"].setArray();
-    params["where"].setString(towstr(getFilter()));
+    params["where"].setString(getFilter());
 
     std::vector<std::wstring>::iterator it, it_end;
     it_end = summary_columns.end();
@@ -6753,7 +6749,7 @@ static std::wstring tangoTypeToOutputType(int type)
 
 bool TableDoc::saveAsStructure(const wxString& path)
 {
-    tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(m_path));
+    tango::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
     if (structure.isNull())
         return false;
 
@@ -7094,7 +7090,7 @@ void TableDoc::onSetOrderExprEditFinished(KeyBuilderPanel* builder)
     }
 
 
-    setSortOrder(expr);
+    setSortOrder(towstr(expr));
 }
 
 
@@ -7104,7 +7100,7 @@ void TableDoc::onSetOrder(wxCommandEvent& evt)
     site = m_frame->lookupSite(wxT("SortPanel"));
     if (site.isNull())
     {
-        tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(m_path));
+        tango::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
         if (structure.isNull())
             return;
 
@@ -7147,7 +7143,7 @@ void TableDoc::onSetOrder(wxCommandEvent& evt)
 
 void TableDoc::onRemoveOrder(wxCommandEvent& evt)
 {
-    setSortOrder(wxT(""));
+    setSortOrder(L"");
 }
 
 
@@ -7189,7 +7185,7 @@ void TableDoc::onSetOrderAscending(wxCommandEvent& evt)
     // --------------------
 
 
-    setSortOrder(expr);
+    setSortOrder(towstr(expr));
 }
 
 void TableDoc::onSetOrderDescending(wxCommandEvent& evt)
@@ -7226,7 +7222,7 @@ void TableDoc::onSetOrderDescending(wxCommandEvent& evt)
                                 wxcstr(jsEscapeString(expr, '"')));
     // --------------------
 
-    setSortOrder(expr);
+    setSortOrder(towstr(expr));
 }
 
 
@@ -7257,7 +7253,7 @@ void TableDoc::onSetGroupBreakExpr(wxCommandEvent& evt)
                                 wxcstr(jsEscapeString(expr, '"')));
     // --------------------
 
-    setGroupBreak(expr);
+    setGroupBreak(towstr(expr));
 }
 
 
@@ -7320,25 +7316,25 @@ void TableDoc::onCopyRecordsOk(ExprBuilderPanel* expr_panel)
         g_app->getMainFrame()->closeSite(site);
     }
 
-    copyRecords(expr_panel->getExpression());
+    copyRecords(towstr(expr_panel->getExpression()));
 }
 
 
-void TableDoc::copyRecords(const wxString& condition)
+void TableDoc::copyRecords(const std::wstring& condition)
 {
-    wxString final_condition = getFilter();
-    if (final_condition.Length() == 0)
+    std::wstring final_condition = getFilter();
+    if (final_condition.length() == 0)
     {
         final_condition = condition;
     }
      else
     {
-        if (condition.Length() > 0)
+        if (condition.length() > 0)
         {
-            final_condition.Prepend(wxT("("));
-            final_condition += wxT(") AND (");
+            final_condition = L"(" + final_condition;
+            final_condition += L") AND (";
             final_condition += condition;
-            final_condition += wxT(")");
+            final_condition += L")";
         }
     }
 
@@ -7357,10 +7353,10 @@ void TableDoc::copyRecords(const wxString& condition)
 
     kl::JsonNode params;
 
-    params["input"].setString(towstr(m_path));
+    params["input"].setString(m_path);
     params["output"].setString(L"xtmp_" + kl::getUniqueString());
-    params["where"].setString(towstr(final_condition));
-    params["order"].setString(towstr(getSortOrder()));
+    params["where"].setString(final_condition);
+    params["order"].setString(getSortOrder());
 
     job->setParameters(params.toString());
     job->sigJobFinished().connect(&onCopyRecordsJobFinished);
@@ -7376,7 +7372,7 @@ void TableDoc::onCopyRecords(wxCommandEvent& evt)
         {
             AppBusyCursor bc;
 
-            tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(m_path));
+            tango::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
             if (structure.isNull())
                 return;
 
@@ -7441,9 +7437,10 @@ void TableDoc::onAppendRecords(wxCommandEvent& evt)
 
 void TableDoc::onFilterOk(ExprBuilderPanel* expr_panel)
 {
-    wxString expr = expr_panel->getExpression();
-    expr.Trim(true);
-    if (expr.IsEmpty())
+    std::wstring expr = towstr(expr_panel->getExpression());
+    kl::trim(expr);
+
+    if (expr.empty())
     {
         // if the expression is empty, remove the filter
         removeFilter();
@@ -7467,14 +7464,13 @@ void TableDoc::onFilterOk(ExprBuilderPanel* expr_panel)
     // --------------------
 
 
-
     setFilter(expr);
 }
 
 
 void TableDoc::onQuickFilter(wxCommandEvent& evt)
 {
-    if (m_filter.Length() > 0)
+    if (m_filter.length() > 0)
     {
         removeFilter();
         return;
@@ -7515,7 +7511,7 @@ void TableDoc::onQuickFilter(wxCommandEvent& evt)
 
 
     // set the quick filter
-    setQuickFilter(val);
+    setQuickFilter(towstr(val));
 
     // running a quick filter needs to add the value
     // to the find/filter combo control dropdown
@@ -7534,7 +7530,7 @@ void TableDoc::onFilter(wxCommandEvent& evt)
         {
             AppBusyCursor bc;
 
-            tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(m_path));
+            tango::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
             if (structure.isNull())
                 return;
 
@@ -7591,11 +7587,11 @@ void TableDoc::onDeleteRecordsOk(ExprBuilderPanel* expr_panel)
         g_app->getMainFrame()->closeSite(site);
     }
 
-    deleteRecords(expr);
+    deleteRecords(towstr(expr));
 }
 
 
-void TableDoc::deleteRecords(const wxString& condition)
+void TableDoc::deleteRecords(const std::wstring& condition)
 {
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.execute-job");
 
@@ -7604,32 +7600,32 @@ void TableDoc::deleteRecords(const wxString& condition)
     // see the changes; this is easier to do with an execute job
     // than an aggregate delete job, so, just build the command
     std::wstring cmd;
-    if (m_filter.Length() > 0)
+    if (m_filter.length() > 0)
     {
         cmd = L" DELETE FROM ";
-        cmd += towstr(getPath());
+        cmd += getPath();
         cmd += L" WHERE ";
         cmd += L"(";
-        cmd += towstr(m_filter);
+        cmd += m_filter;
         cmd += L") AND (";
-        cmd += towstr(condition);
+        cmd += condition;
         cmd += L");";
         
-        wxString browse_path = getBrowsePath();
-        if (browse_path.Length() > 0)
+        std::wstring browse_path = getBrowsePath();
+        if (browse_path.length() > 0)
         {
             cmd += L"DELETE FROM ";
-            cmd += towstr(browse_path);
+            cmd += browse_path;
             cmd += L" WHERE ";
-            cmd += towstr(condition);
+            cmd += condition;
         }
     }
      else
     {
         cmd += L" DELETE FROM ";
-        cmd += towstr(getPath());
+        cmd += getPath();
         cmd += L" WHERE ";
-        cmd += towstr(condition);
+        cmd += condition;
     }
 
     // run the job
@@ -7658,7 +7654,7 @@ void TableDoc::onDeleteRecords(wxCommandEvent& evt)
         {
             AppBusyCursor bc;
 
-            tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(m_path));
+            tango::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
             if (structure.isNull())
                 return;
 
@@ -7734,7 +7730,7 @@ void TableDoc::createOrShowStructureDoc()
     {
         // structuredoc contains the same set
         // as the tabledoc, we're good to go
-        if (isSamePath(towstr(m_path), structuredoc->getPath()))
+        if (isSamePath(m_path, structuredoc->getPath()))
         {
             switchToOtherDocument(m_doc_site, "appmain.StructureDoc");
             return;
@@ -7759,7 +7755,7 @@ void TableDoc::createOrShowStructureDoc()
         AppBusyCursor bc;
 
         StructureDoc* doc = new StructureDoc;
-        doc->setModifySet(towstr(m_path));
+        doc->setModifySet(m_path);
         
         wxWindow* container = m_doc_site->getContainerWindow();
 
@@ -7843,7 +7839,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
     tango::IDatabasePtr db = g_app->getDatabase();
 
     // get the original indexes that exist on this set
-    tango::IIndexInfoEnumPtr orig_indexes = db->getIndexEnum(towstr(m_path));
+    tango::IIndexInfoEnumPtr orig_indexes = db->getIndexEnum(m_path);
     bool found;
     
     // get all of the indexes that were created/updated in the IndexPanel
@@ -7875,14 +7871,14 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
         // delete the index if it's not found
         if (!found)
         {
-            db->deleteIndex(towstr(m_path), index->getTag());
+            db->deleteIndex(m_path, index->getTag());
         }
     }
     
     
     // we may have deleted some of the original indexes;
     // get the list of indexes again
-    orig_indexes = db->getIndexEnum(towstr(m_path));
+    orig_indexes = db->getIndexEnum(m_path);
     count = (int)orig_indexes->size();
     
     // rename indexes
@@ -7908,7 +7904,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
                 if (info->name.CmpNoCase(info->orig_name) != 0)
                 {
                     // have the set rename this index
-                    db->renameIndex(towstr(m_path),
+                    db->renameIndex(m_path,
                                     towstr(index_tag),
                                     towstr(info->name));
                     
@@ -7935,7 +7931,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
     
     // we may have deleted some of the original indexes;
     // get the list of indexes again
-    orig_indexes = db->getIndexEnum(towstr(m_path));
+    orig_indexes = db->getIndexEnum(m_path);
     count = (int)orig_indexes->size();
     bool index_deleted = false;
     
@@ -7949,7 +7945,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
         {
             // this is a new index; add it to the IndexJob
             kl::JsonNode index_item = indexes.appendElement();
-            index_item["input"].setString(towstr(m_path));
+            index_item["input"].setString(m_path);
             index_item["name"].setString(towstr(info->name));
             index_item["expression"].setString(towstr(info->expr));
 
@@ -7963,7 +7959,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
         // get the list of indexes again
         if (index_deleted)
         {
-            orig_indexes = db->getIndexEnum(towstr(m_path));
+            orig_indexes = db->getIndexEnum(m_path);
             count = (int)orig_indexes->size();
             index_deleted = false;
         }
@@ -7985,7 +7981,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
         {
             // we couldn't find the orginal index; create a new index
             kl::JsonNode index_item = indexes.appendElement();
-            index_item["input"].setString(towstr(m_path));
+            index_item["input"].setString(m_path);
             index_item["name"].setString(towstr(info->name));
             index_item["expression"].setString(towstr(info->expr));
 
@@ -8001,13 +7997,13 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
         // 2) the expression has changed; delete the old index
         //    and create a new one
         kl::JsonNode index_item = indexes.appendElement();
-        index_item["input"].setString(towstr(m_path));
+        index_item["input"].setString(m_path);
         index_item["name"].setString(towstr(info->name));
         index_item["expression"].setString(towstr(info->expr));        
         
         if (index.isOk())
         {
-            db->deleteIndex(towstr(m_path), index->getTag());
+            db->deleteIndex(m_path, index->getTag());
             index_deleted = true;
         }
     }
@@ -8030,7 +8026,7 @@ void TableDoc::showIndexPanel()
     if (site.isNull())
     {
         IndexPanel* panel = new IndexPanel;
-        if (!panel->setPath(towstr(m_path)))
+        if (!panel->setPath(m_path))
         {
             delete panel;
             return;
@@ -8151,7 +8147,7 @@ void TableDoc::onSetBreakExpr(wxCommandEvent& evt)
     if (model.isNull())
         return;
 
-    tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(m_path));
+    tango::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
     if (structure.isNull())
         return;
 
@@ -8211,7 +8207,7 @@ void TableDoc::onRequestRowColors(wxColor& fgcolor, wxColor& bgcolor)
         fgcolor = wxNullColour;
         bgcolor = wxNullColour;
         
-        if (m_relsync_mark_expr.Length() > 0)
+        if (m_relsync_mark_expr.length() > 0)
         {
             // mark for relationship syncing with context rows
             handle = getTemporaryHandle(m_relsync_mark_expr);
@@ -8292,7 +8288,7 @@ void TableDoc::setActiveView(ITableDocViewPtr active_view)
 
         if (table_doc.isOk())
         {
-            if (!isSamePath(towstr(m_path), towstr(table_doc->getPath())))
+            if (!isSamePath(m_path, table_doc->getPath()))
                 continue;
 
             ITableDocObjectPtr v1 = table_doc->getActiveView();
@@ -8366,7 +8362,7 @@ void TableDoc::refreshActiveView(bool repaint)
         if (table_doc.p == static_cast<ITableDoc*>(this))
             continue;
 
-        if (isSamePath(towstr(m_path), towstr(table_doc->getPath())))
+        if (isSamePath(m_path, table_doc->getPath()))
         {
             multiple_tabledocs_open = true;
             break;

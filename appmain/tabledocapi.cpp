@@ -17,9 +17,9 @@
 
 
 
-void TableDoc::setFilter(const wxString& filter)
+void TableDoc::setFilter(const std::wstring& filter)
 {
-    if (filter.IsEmpty())
+    if (filter.empty())
         removeFilter();
 
 
@@ -27,7 +27,7 @@ void TableDoc::setFilter(const wxString& filter)
 
     // configure the job parameters
     kl::JsonNode params;
-    params = createSortFilterJobParams(towstr(m_path), towstr(filter), towstr(m_sort_order));
+    params = createSortFilterJobParams(m_path, filter, m_sort_order);
 
 
     // set the job parameters and start the job
@@ -46,17 +46,17 @@ void TableDoc::setFilter(const wxString& filter)
         m_quick_filter_jobid = job->getJobInfo()->getJobId();
 }
 
-void TableDoc::setQuickFilter(const wxString& val)
+void TableDoc::setQuickFilter(const std::wstring& val)
 {
     bool match_case, whole_cell;
     getAppPrefsFindMatchCase(&match_case);
     getAppPrefsFindMatchWholeWord(&whole_cell);
 
     wxString filter_expr = getFindExprFromValue(val, match_case, whole_cell);
-    setFilter(filter_expr);
+    setFilter(towstr(filter_expr));
 }
 
-wxString TableDoc::getFilter()
+std::wstring TableDoc::getFilter()
 {
     return m_filter;
 }
@@ -79,7 +79,7 @@ void TableDoc::removeFilter()
     setCaption(wxEmptyString, wxEmptyString);
 }
 
-void TableDoc::setSortOrder(const wxString& expr)
+void TableDoc::setSortOrder(const std::wstring& expr)
 {
     if (m_grid->isEditing())
         m_grid->endEdit(true);
@@ -95,9 +95,7 @@ void TableDoc::setSortOrder(const wxString& expr)
     {
         // configure the job parameters
         kl::JsonNode params;
-        params = createSortFilterJobParams(towstr(m_path), 
-                                           towstr(getFilter()), 
-                                           towstr(expr));
+        params = createSortFilterJobParams(m_path, getFilter(), expr);
 
         // set the job parameters and start the job
         wxString title = wxString::Format(_("Sorting '%s'"),
@@ -112,12 +110,12 @@ void TableDoc::setSortOrder(const wxString& expr)
         return;
     }
 
-    if (expr.IsEmpty())
+    if (expr.empty())
     {
         // set default order
         m_sort_order = wxT("");
         tango::IIteratorPtr iter;
-        iter = g_app->getDatabase()->query(towstr(getBrowsePath()), L"", L"", L"", NULL);
+        iter = g_app->getDatabase()->query(getBrowsePath(), L"", L"", L"", NULL);
         setIterator(iter);
         return;
     }
@@ -125,9 +123,9 @@ void TableDoc::setSortOrder(const wxString& expr)
 
     // configure the job parameters
     kl::JsonNode params;
-    params = createSortFilterJobParams(towstr(getBrowsePath()), 
+    params = createSortFilterJobParams(getBrowsePath(), 
                                        L"",
-                                       towstr(expr));
+                                       expr);
 
     // set the job parameters and start the job
     wxString title = wxString::Format(_("Sorting '%s'"),
@@ -140,12 +138,12 @@ void TableDoc::setSortOrder(const wxString& expr)
     g_app->getJobQueue()->addJob(job, jobStateRunning);
 }
 
-wxString TableDoc::getSortOrder()
+std::wstring TableDoc::getSortOrder()
 {
     return m_sort_order;
 }
 
-void TableDoc::setGroupBreak(const wxString& _expr)
+void TableDoc::setGroupBreak(const std::wstring& _expr)
 {
     wxString expr = _expr;
     m_group_break = expr;
@@ -160,7 +158,7 @@ void TableDoc::setGroupBreak(const wxString& _expr)
     m_grid->refresh(kcl::Grid::refreshAll);
 }
 
-wxString TableDoc::getGroupBreak()
+std::wstring TableDoc::getGroupBreak()
 {
     return m_group_break;
 }
@@ -186,7 +184,7 @@ void TableDoc::createNewMark(const wxString& expr)
 
 
 
-// -- TableDoc scripting elements --
+// TableDoc scripting elements
 
 bool TableDoc::getScriptMember(const std::wstring& member,
                                kscript::Value* retval)
@@ -237,7 +235,7 @@ void TableDoc::scriptfuncSetFilter(kscript::ExprEnv* env,
                                    kscript::Value* retval)
 {
     TableDoc* pThis = (TableDoc*)param;
-    wxString val;
+    std::wstring val;
     if (env->getParamCount() > 0)
         val = env->getParam(0)->getString();
     pThis->setFilter(val);
@@ -249,7 +247,7 @@ void TableDoc::scriptfuncSetQuickFilter(kscript::ExprEnv* env,
                                    kscript::Value* retval)
 {
     TableDoc* pThis = (TableDoc*)param;
-    wxString val;
+    std::wstring val;
     if (env->getParamCount() > 0)
         val = env->getParam(0)->getString();
     pThis->setQuickFilter(val);
@@ -261,7 +259,7 @@ void TableDoc::scriptfuncGetFilter(kscript::ExprEnv* env,
                                    kscript::Value* retval)
 {
     TableDoc* pThis = (TableDoc*)param;
-    retval->setString(towstr(pThis->getFilter()));
+    retval->setString(pThis->getFilter());
 }
 
 // static
@@ -270,7 +268,7 @@ void TableDoc::scriptfuncSetSortOrder(kscript::ExprEnv* env,
                                       kscript::Value* retval)
 {
     TableDoc* pThis = (TableDoc*)param;
-    wxString val;
+    std::wstring val;
     if (env->getParamCount() > 0)
         val = env->getParam(0)->getString();
     pThis->setSortOrder(val);
@@ -282,7 +280,7 @@ void TableDoc::scriptfuncGetSortOrder(kscript::ExprEnv* env,
                                       kscript::Value* retval)
 {
     TableDoc* pThis = (TableDoc*)param;
-    retval->setString(towstr(pThis->getSortOrder()));
+    retval->setString(pThis->getSortOrder());
 }
 
 // static
@@ -291,7 +289,7 @@ void TableDoc::scriptfuncSetGroupBreak(kscript::ExprEnv* env,
                                        kscript::Value* retval)
 {
     TableDoc* pThis = (TableDoc*)param;
-    wxString val;
+    std::wstring val;
     if (env->getParamCount() > 0)
         val = env->getParam(0)->getString();
     pThis->setGroupBreak(val);
@@ -303,6 +301,6 @@ void TableDoc::scriptfuncGetGroupBreak(kscript::ExprEnv* env,
                                        kscript::Value* retval)
 {
     TableDoc* pThis = (TableDoc*)param;
-    retval->setString(towstr(pThis->getGroupBreak()));
+    retval->setString(pThis->getGroupBreak());
 }
 

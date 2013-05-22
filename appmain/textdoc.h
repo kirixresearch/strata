@@ -213,7 +213,7 @@ private:
 };
 
 
-ITextDocPtr createTextDoc(const wxString& filename, wxWindow* container_wnd, int* site_id);
+ITextDocPtr createTextDoc(const std::wstring& filename, wxWindow* container_wnd, int* site_id);
 
 
 #endif  // __APP_TEXTDOC_H

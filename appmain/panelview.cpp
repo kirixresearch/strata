@@ -57,7 +57,7 @@ ViewPanel::ViewPanel(ITableDocPtr tabledoc)
     m_available_fields = NULL;
     m_visible_fields = NULL;
     
-    std::wstring path = towstr(tabledoc->getPath());
+    std::wstring path = tabledoc->getPath();
 
     if (isTemporaryTable(path))
         m_set_path = "";

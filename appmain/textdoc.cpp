@@ -108,7 +108,7 @@ static int getBestDestinationInsertPosition(tango::IColumnInfoPtr src_coltoleft,
 
 // this function creates the TextDoc group of sites
 
-ITextDocPtr createTextDoc(const wxString& filename,
+ITextDocPtr createTextDoc(const std::wstring& filename,
                           wxWindow* container_wnd,
                           int* site_id)
 {

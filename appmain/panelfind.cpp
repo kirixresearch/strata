@@ -917,7 +917,7 @@ void FindComboControl::onFind(wxCommandEvent& evt)
         }
         
         // do a quick filter operation
-        tabledoc->setQuickFilter(val);
+        tabledoc->setQuickFilter(towstr(val));
     }
      else
     {

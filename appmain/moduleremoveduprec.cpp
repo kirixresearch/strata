@@ -296,7 +296,7 @@ bool RemoveDupRecWizard::initDoc(IFramePtr frame,
         ITableDocPtr table_doc = site->getDocument();
         if (table_doc.isOk())
         {
-            std::wstring path = towstr(table_doc->getPath());
+            std::wstring path = table_doc->getPath();
 
             if (!isTemporaryTable(path))
                 m_info->m_input_path = path;

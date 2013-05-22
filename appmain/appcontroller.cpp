@@ -6230,7 +6230,7 @@ bool AppController::checkForTemporaryFiles()
         if (table_doc.isNull())
             continue;
 
-        if (isTemporaryTable(towstr(table_doc->getPath())))
+        if (isTemporaryTable(table_doc->getPath()))
             return true;
     }
     

@@ -83,14 +83,14 @@ public:
 
     // ITableDoc
     
-    bool open(const wxString& path,
+    bool open(const std::wstring& path,
               tango::IIteratorPtr optional_iterator = xcm::null);
 
-    bool setBrowseSet(const wxString& path,
+    bool setBrowseSet(const std::wstring& path,
                       tango::IIteratorPtr optional_iterator = xcm::null);
 
-    wxString getPath();
-    wxString getBrowsePath();
+    std::wstring getPath();
+    std::wstring getBrowsePath();
 
     void closeSet();
     void setEnabled(bool new_val);
@@ -102,9 +102,6 @@ public:
     wxString getCaption();
     void setSourceUrl(const wxString& source_url);
     void setSourceMimeType(const wxString& source_mimetype);
-
-    void setSortOrder(const wxString& new_value);
-    wxString getSortOrder();
 
     ITableDocModelPtr getModel();
 
@@ -121,8 +118,8 @@ public:
     void insertColumnSeparator(int insert_pos);
     void insertChildColumn(int insert_pos, const wxString& expr);
     void hideColumn(int idx);
-    void copyRecords(const wxString& condition);
-    void deleteRecords(const wxString& condition);
+    void copyRecords(const std::wstring& condition);
+    void deleteRecords(const std::wstring& condition);
     void setFont(const wxFont& font);
     void reloadSettings(bool redraw);
     void showReplacePanel(const wxString& def_condition, const wxString& def_field = wxT(""));
@@ -157,12 +154,17 @@ public:
 
     // exposed API
 
-    void setFilter(const wxString& condition);
-    void setQuickFilter(const wxString& val);
+    void setFilter(const std::wstring& condition);
+    void setQuickFilter(const std::wstring& val);
+    std::wstring getFilter();
     void removeFilter();
-    wxString getFilter();
-    void setGroupBreak(const wxString& expr);
-    wxString getGroupBreak();
+
+    void setSortOrder(const std::wstring& new_value);
+    std::wstring getSortOrder();
+
+    void setGroupBreak(const std::wstring& expr);
+    std::wstring getGroupBreak();
+
     void createNewMark(const wxString& expr);
 
 
@@ -375,18 +377,18 @@ private:
 
     std::map<wxString, tango::objhandle_t> m_handle_map; // handle map for marks
 
-    wxString m_caption;               // window's caption/title
-    wxString m_caption_suffix;        // window's caption suffix
-    wxString m_path;                  // path (if any) of the current window
-    wxString m_browse_path;           // path of any filtered or subset
-    wxString m_filter;                // current filter, or empty if none
-    wxString m_sort_order;            // current sort order, or empty if none
-    wxString m_group_break;           // current group break, or empty if none
-    wxString m_site_name;             // name of the cfw document site
-    wxString m_source_url;            // url that generated this tabledoc (rss, csv, etc)
-    wxString m_source_mimetype;       // optional mimetype that describes resource type of m_source_url
-    wxString m_reload_filename;       // used during reload/refresh operations
-    wxString m_relsync_mark_expr;     // mark expression for context relationship syncing
+    std::wstring m_caption;               // window's caption/title
+    std::wstring m_caption_suffix;        // window's caption suffix
+    std::wstring m_path;                  // path (if any) of the current window
+    std::wstring m_browse_path;           // path of any filtered or subset
+    std::wstring m_filter;                // current filter, or empty if none
+    std::wstring m_sort_order;            // current sort order, or empty if none
+    std::wstring m_group_break;           // current group break, or empty if none
+    std::wstring m_site_name;             // name of the cfw document site
+    std::wstring m_source_url;            // url that generated this tabledoc (rss, csv, etc)
+    std::wstring m_source_mimetype;       // optional mimetype that describes resource type of m_source_url
+    std::wstring m_reload_filename;       // used during reload/refresh operations
+    std::wstring m_relsync_mark_expr;     // mark expression for context relationship syncing
     tango::rowpos_t m_stat_row_count; // last row count used by the status bar
     
     int m_text_wrapping;              // Grid::wrapDefault, Grid::wrapOn, or Grid::wrapOff

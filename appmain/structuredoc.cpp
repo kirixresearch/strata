@@ -439,7 +439,7 @@ bool StructureDoc::doSave()
         if (doc.isNull())
             continue;
         
-        if (isSamePath(towstr(doc->getPath()), getPath()))
+        if (isSamePath(doc->getPath(), getPath()))
         {
             if (doc->getIsChildSet())
             {
@@ -449,7 +449,7 @@ bool StructureDoc::doSave()
                 return false;
             }
             
-            if (doc->getFilter().Length() > 0)
+            if (doc->getFilter().length() > 0)
                 filtered_table = true;
         }
 
@@ -492,7 +492,7 @@ bool StructureDoc::doSave()
         if (doc.isNull())
             continue;
 
-        if (isSamePath(towstr(doc->getPath()), getPath()))
+        if (isSamePath(doc->getPath(), getPath()))
         {
             to_connect.push_back(doc.p);
             doc->closeSet();

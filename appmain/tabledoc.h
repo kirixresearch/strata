@@ -204,11 +204,11 @@ xcm_interface ITableDoc : public xcm::IObject
 
 public:
 
-    virtual bool open(const wxString& table,
+    virtual bool open(const std::wstring& path,
                       tango::IIteratorPtr optional_iterator = xcm::null) = 0;
 
     virtual bool setBrowseSet(
-                      const wxString& path,
+                      const std::wstring& path,
                       tango::IIteratorPtr optional_iter = xcm::null) = 0;
 
     virtual void setCaption(
@@ -232,22 +232,25 @@ public:
     virtual kcl::Grid* getGrid() = 0;
     virtual tango::IIteratorPtr getIterator() = 0;
     virtual ITableDocModelPtr getModel() = 0;
-    virtual wxString getPath() = 0;
-    virtual wxString getBrowsePath() = 0;
+
+    virtual std::wstring getPath() = 0;
+    virtual std::wstring getBrowsePath() = 0;
 
     virtual void connectAlterTableJob(jobs::IJobPtr job) = 0;
 
     virtual void onColumnNameChanged(const std::wstring& old_name,
                                      const std::wstring& new_name) = 0;
 
-    virtual void setSortOrder(const wxString& new_value) = 0;
-    virtual wxString getSortOrder() = 0;
-    virtual wxString getFilter() = 0;
-    virtual void setQuickFilter(const wxString& val) = 0;
-    virtual void setFilter(const wxString& condition) = 0;
+    virtual void setSortOrder(const std::wstring& new_value) = 0;
+    virtual std::wstring getSortOrder() = 0;
+
+    virtual std::wstring getFilter() = 0;
+    virtual void setQuickFilter(const std::wstring& val) = 0;
+    virtual void setFilter(const std::wstring& condition) = 0;
     virtual void removeFilter() = 0;
-    virtual void copyRecords(const wxString& condition) = 0;
-    virtual void deleteRecords(const wxString& condition) = 0;
+
+    virtual void copyRecords(const std::wstring& condition) = 0;
+    virtual void deleteRecords(const std::wstring& condition) = 0;
     virtual void insertColumnSeparator(int insert_pos) = 0;
     virtual void insertColumn(int insert_pos, const wxString& col_name) = 0;
     virtual void hideColumn(int idx) = 0;

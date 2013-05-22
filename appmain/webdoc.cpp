@@ -581,7 +581,7 @@ public:
         
         
         wxString file_url = filenameToUrl(m_filename);
-        createTextDoc(file_url, container_wnd, &site_id);
+        createTextDoc(towstr(file_url), container_wnd, &site_id);
         
         IDocumentSitePtr site = g_app->getMainFrame()->lookupSiteById(site_id);
         ITextDocPtr text_doc = lookupOtherDocument(site, "appmain.TextDoc");

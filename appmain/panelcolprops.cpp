@@ -223,7 +223,7 @@ bool ColPropsPanel::initDoc(IFramePtr frame,
     if (!m_tabledoc)
         return false;
 
-    m_path = towstr(m_tabledoc->getBrowsePath());
+    m_path = m_tabledoc->getBrowsePath();
 
     tango::IFileInfoPtr finfo = g_app->getDatabase()->getFileInfo(m_path);
     m_structure = g_app->getDatabase()->describeTable(m_path);
@@ -1018,7 +1018,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
 
 
     tango::IIndexInfoEnumPtr old_indexes;
-    old_indexes = db->getIndexEnum(towstr(m_tabledoc->getPath()));
+    old_indexes = db->getIndexEnum(m_tabledoc->getPath());
 
     if (!db->modifyStructure(m_path, structure, NULL))
     {
@@ -1061,7 +1061,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
     // some of the indexes may have been deleted during
     // the modifyStructure() operation
 
-    tango::IIndexInfoEnumPtr new_indexes = db->getIndexEnum(towstr(m_tabledoc->getPath()));
+    tango::IIndexInfoEnumPtr new_indexes = db->getIndexEnum(m_tabledoc->getPath());
 
     std::vector<tango::IIndexInfoPtr> to_recreate;
     int i, j, old_cnt, new_cnt;
