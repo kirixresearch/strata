@@ -466,7 +466,7 @@ void MarkMgrPanel::editMark(int mark_idx)
     m_builder->Show(true);
 }
 
-void MarkMgrPanel::onEditMark(wxCommandEvent& event)
+void MarkMgrPanel::onEditMark(wxCommandEvent& evt)
 {
     ITableDocPtr tabledoc = getActiveTableDoc();
     if (tabledoc.isNull())
@@ -484,7 +484,7 @@ void MarkMgrPanel::onEditMark(wxCommandEvent& event)
     editMark(m_grid->getCursorRow());
 }
 
-void MarkMgrPanel::onAddMark(wxCommandEvent& event)
+void MarkMgrPanel::onAddMark(wxCommandEvent& evt)
 {
     ITableDocPtr tabledoc = getActiveTableDoc();
     if (tabledoc.isNull())
@@ -529,7 +529,7 @@ void MarkMgrPanel::onAddMark(wxCommandEvent& event)
     editMark(row);
 }
 
-void MarkMgrPanel::onGridBeginEdit(kcl::GridEvent& event)
+void MarkMgrPanel::onGridBeginEdit(kcl::GridEvent& evt)
 {
     ITableDocPtr tabledoc = getActiveTableDoc();
     if (tabledoc.isNull())
@@ -541,35 +541,35 @@ void MarkMgrPanel::onGridBeginEdit(kcl::GridEvent& event)
     if (m_ghost_inserting)
     {
         m_ghost_inserting = false;
-        event.Veto();
+        evt.Veto();
     }
 }
 
-void MarkMgrPanel::onGridPreGhostRowInsert(kcl::GridEvent& event)
+void MarkMgrPanel::onGridPreGhostRowInsert(kcl::GridEvent& evt)
 {
     m_ghost_inserting = true;
 
     // we'll handle the processing of this event ourselves
-    event.Veto();
+    evt.Veto();
 
     // add a mark to the end of the grid
     wxCommandEvent unused;
     onAddMark(unused);
 }
 
-void MarkMgrPanel::onGridPreInvalidAreaInsert(kcl::GridEvent& event)
+void MarkMgrPanel::onGridPreInvalidAreaInsert(kcl::GridEvent& evt)
 {
     m_ghost_inserting = true;
     
     // we'll handle the processing of this event ourselves
-    event.Veto();
+    evt.Veto();
 
     // add a mark to the end of the grid
     wxCommandEvent unused;
     onAddMark(unused);
 }
 
-void MarkMgrPanel::onGridModelChange(kcl::GridEvent& event)
+void MarkMgrPanel::onGridModelChange(kcl::GridEvent& evt)
 {
     ITableDocPtr tabledoc = getActiveTableDoc();
     if (tabledoc.isNull())
@@ -579,8 +579,8 @@ void MarkMgrPanel::onGridModelChange(kcl::GridEvent& event)
     if (model.isNull())
         return;
     
-    int row = event.GetRow();
-    int model_col = event.GetColumn();
+    int row = evt.GetRow();
+    int model_col = evt.GetColumn();
     
     ITableDocMarkEnumPtr marks = getActiveTableDocMarks();
     ITableDocMarkPtr mark = marks->getItem(row);
@@ -604,19 +604,19 @@ void MarkMgrPanel::onGridModelChange(kcl::GridEvent& event)
     tabledoc->getGrid()->refresh(kcl::Grid::refreshAll);
 }
 
-void MarkMgrPanel::onGridEditExpressionClick(kcl::GridEvent& event)
+void MarkMgrPanel::onGridEditExpressionClick(kcl::GridEvent& evt)
 {
-    editMark(event.GetRow());
+    editMark(evt.GetRow());
 }
 
-void MarkMgrPanel::onGridColorClick(kcl::GridEvent& event)
+void MarkMgrPanel::onGridColorClick(kcl::GridEvent& evt)
 {
     // this really should be handled by the grid, but i'm just
     // too lazy to take care of it right now, and this is the
     // only place we have a color control in the grid
-    m_grid->moveCursor(event.GetRow(), event.GetColumn());
+    m_grid->moveCursor(evt.GetRow(), evt.GetColumn());
     
-    int col = event.GetColumn();
+    int col = evt.GetColumn();
     if (col != colColor)
         return;
     
@@ -629,7 +629,7 @@ void MarkMgrPanel::onGridColorClick(kcl::GridEvent& event)
         return;
     
     // find out if we clicked the foreground or background color
-    m_fgcolor_editing = event.GetBoolean();
+    m_fgcolor_editing = evt.GetBoolean();
     
     // if we had an old color panel, destroy it before we pop up a new one
     if (m_color_panel)
@@ -677,7 +677,7 @@ void MarkMgrPanel::onGridColorClick(kcl::GridEvent& event)
     m_color_panel_cont->doPopup(m_color_panel);
 }
 
-void MarkMgrPanel::onGridCellRightClick(kcl::GridEvent& event)
+void MarkMgrPanel::onGridCellRightClick(kcl::GridEvent& evt)
 {
     ITableDocPtr tabledoc = getActiveTableDoc();
     if (tabledoc.isNull())
@@ -692,8 +692,8 @@ void MarkMgrPanel::onGridCellRightClick(kcl::GridEvent& event)
         m_color_panel = NULL;
     }
 
-    int row = event.GetRow();
-    int col = event.GetColumn();
+    int row = evt.GetRow();
+    int col = evt.GetColumn();
     
     if (row < 0 || row >= m_grid->getRowCount() ||
         col < 0 || col >= m_grid->getColumnCount())
@@ -837,18 +837,18 @@ void MarkMgrPanel::onDeleteRows(wxCommandEvent& evt)
     }
 }
 
-void MarkMgrPanel::onSize(wxSizeEvent& event)
+void MarkMgrPanel::onSize(wxSizeEvent& evt)
 {
     GetClientSize(&m_cli_width, &m_cli_height);
     Layout();
 }
 
-void MarkMgrPanel::onSetFocus(wxFocusEvent& event)
+void MarkMgrPanel::onSetFocus(wxFocusEvent& evt)
 {
     setDocumentFocus();
 }
 
-void MarkMgrPanel::onKillFocus(wxFocusEvent& event)
+void MarkMgrPanel::onKillFocus(wxFocusEvent& evt)
 {
 }
 
