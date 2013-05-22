@@ -12,6 +12,7 @@
 #include "jobspch.h"
 #include "copy.h"
 #include "util.h"
+#include <kl/hex.h>
 
 
 namespace jobs
@@ -89,6 +90,13 @@ int CopyJob::runJob()
     tango::CopyParams info;
     info.input = params_node["input"].getString();
     info.output = params_node["output"].getString();
+
+    if (params_node.childExists("input_iterator"))
+    {
+        info.iter_input = (tango::IIterator*)(unsigned long)(kl::hexToUint64(params_node["input_iterator"].getString()));
+        info.input = L"";
+    }
+
 
     if (params_node.childExists("order"))
         info.order = params_node["order"].getString();

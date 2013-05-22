@@ -147,6 +147,13 @@ public:
         return m_result;
     }
 
+    virtual void setRefObject(xcm::IObjectPtr ref_object)
+    {
+        XCM_AUTO_LOCK(m_jobbase_mutex);
+
+        m_ref_object = ref_object;
+    }
+
     void setDatabase(tango::IDatabase* db)
     {
     }
@@ -180,6 +187,7 @@ protected:
     kl::JsonNode m_config;
     xcm::IObjectPtr m_result;
     std::map<std::wstring, std::wstring> m_extra;
+    xcm::IObjectPtr m_ref_object;
 
 private:
 

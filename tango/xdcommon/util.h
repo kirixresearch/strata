@@ -100,9 +100,6 @@ bool parseDateTime(const std::wstring& input,
 tango::datetime_t str2datetime(const char* str,
                                const char* fmt = "YMDhms");
 
-unsigned long long hex2uint64(const wchar_t* _code);
-
-
 tango::rowid_t bufToRowid(unsigned char* buf);
 void rowidToBuf(unsigned char* bytes, tango::rowid_t r);
 

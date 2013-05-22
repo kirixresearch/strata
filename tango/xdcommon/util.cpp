@@ -985,40 +985,6 @@ wchar_t* wcsrev(wchar_t* str)
 #endif
 
 
-unsigned long long hex2uint64(const wchar_t* _code)
-{
-    static const wchar_t* hexchars = L"0123456789ABCDEF";
-
-    wchar_t* code = wcsdup(_code);
-    wcsrev(code);
-
-    unsigned long long retval = 0;
-    unsigned long long multiplier = 1;
-
-    wchar_t* p = code;
-    while (*p)
-    {
-        wchar_t c = toupper(*p);
-        p++;
-
-        const wchar_t* pos = wcschr(hexchars, c);
-        if (!pos)
-        {
-            free(code);
-            return 0;
-        }
-
-        unsigned long long a = pos-hexchars;
-        retval += (a*multiplier);
-        multiplier *= 16;
-    }
-
-    free(code);
-
-    return retval;
-}
-
-
 
 void bindExprParser(kscript::ExprParser* parser)
 {

@@ -7273,7 +7273,7 @@ void TableDoc::onInsertColumnSeparator(wxCommandEvent& evt)
     insertColumnSeparator(m_grid->getCursorColumn());
 }
 
-void onCopyRecordsJobFinished(jobs::IJobPtr job)
+static void onCopyRecordsJobFinished(jobs::IJobPtr job)
 {
     if (job->getJobInfo()->getState() != jobStateFinished)
         return;
@@ -7292,7 +7292,7 @@ void onCopyRecordsJobFinished(jobs::IJobPtr job)
     std::wstring input_id, output_id;
     tango::IFileInfoPtr finfo;
 
-    finfo = db->getFileInfo(input);
+    finfo = db->getFileInfo(job->getExtraValue(L"source_tabledoc_model_path"));
     if (finfo) input_id = finfo->getObjectId();
 
     finfo = db->getFileInfo(output);
@@ -7322,45 +7322,82 @@ void TableDoc::onCopyRecordsOk(ExprBuilderPanel* expr_panel)
 
 void TableDoc::copyRecords(const std::wstring& condition)
 {
-    std::wstring final_condition = getFilter();
-    if (final_condition.length() == 0)
-    {
-        final_condition = condition;
-    }
-     else
-    {
-        if (condition.length() > 0)
-        {
-            final_condition = L"(" + final_condition;
-            final_condition += L") AND (";
-            final_condition += condition;
-            final_condition += L")";
-        }
-    }
+    if (m_iter.isNull())
+        return;
 
     // flush active view to model, because copy records attempts
     // to copy the tabledoc model objects to the destination table
     // when the copy job finishes
     flushActiveView();
 
-    // create a query job
-    wxString title = wxString::Format(_("Copying Records from '%s'"),
-                                      getCaption().c_str());
 
-    // set up the job from the info we gathered
-    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.copy-job");
-    job->getJobInfo()->setTitle(towstr(title));
+    tango::IIteratorPtr iter = m_iter->clone();
+    if (iter.isOk())
+    {
+        iter->goFirst();
 
-    kl::JsonNode params;
+        // iterator supports clone; use that as the basis for the copy job
+        // create a query job
 
-    params["input"].setString(m_path);
-    params["output"].setString(L"xtmp_" + kl::getUniqueString());
-    params["where"].setString(final_condition);
-    params["order"].setString(getSortOrder());
+        wxString title = wxString::Format(_("Copying Records from '%s'"),
+                                          getCaption().c_str());
 
-    job->setParameters(params.toString());
-    job->sigJobFinished().connect(&onCopyRecordsJobFinished);
-    g_app->getJobQueue()->addJob(job, jobStateRunning);
+        // set up the job from the info we gathered
+        jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.copy-job");
+        job->getJobInfo()->setTitle(towstr(title));
+
+        kl::JsonNode params;
+
+        params["input_iterator"].setString(kl::stdswprintf(L"%p", (const void*)iter.p));
+        params["output"].setString(L"xtmp_" + kl::getUniqueString());
+        params["where"].setString(condition);
+
+        job->setParameters(params.toString());
+        job->setRefObject(iter); // job will hold on to this object for object lifetime reasons
+        job->setExtraValue(L"source_tabledoc_model_path", getPath());
+        job->sigJobFinished().connect(&onCopyRecordsJobFinished);
+
+        g_app->getJobQueue()->addJob(job, jobStateRunning);
+    }
+     else
+    {
+        std::wstring final_condition = getFilter();
+        if (final_condition.length() == 0)
+        {
+            final_condition = condition;
+        }
+         else
+        {
+            if (condition.length() > 0)
+            {
+                final_condition = L"(" + final_condition;
+                final_condition += L") AND (";
+                final_condition += condition;
+                final_condition += L")";
+            }
+        }
+
+
+        // create a query job
+        wxString title = wxString::Format(_("Copying Records from '%s'"),
+                                          getCaption().c_str());
+
+        // set up the job from the info we gathered
+        jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.copy-job");
+        job->getJobInfo()->setTitle(towstr(title));
+
+        kl::JsonNode params;
+
+        params["input"].setString(m_path);
+        params["output"].setString(L"xtmp_" + kl::getUniqueString());
+        params["where"].setString(final_condition);
+        params["order"].setString(getSortOrder());
+
+        job->setParameters(params.toString());
+        job->setExtraValue(L"source_tabledoc_model_path", getPath());
+        job->sigJobFinished().connect(&onCopyRecordsJobFinished);
+        g_app->getJobQueue()->addJob(job, jobStateRunning);
+    }
 }
 
 void TableDoc::onCopyRecords(wxCommandEvent& evt)

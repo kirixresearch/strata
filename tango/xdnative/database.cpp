@@ -19,6 +19,7 @@
 #include <kl/crypt.h>
 #include <kl/url.h>
 #include <kl/system.h>
+#include <kl/hex.h>
 #include "tango.h"
 #include "../xdcommon/xdcommon.h"
 #include "../xdcommon/dbattr.h"
@@ -3236,7 +3237,7 @@ IXdsqlTablePtr XdnativeDatabase::openTable(const std::wstring& path)
     if (path.substr(0, 12) == L"/.temp/.ptr/")
     {
         std::wstring ptr_string = kl::afterLast(path, L'/');
-        unsigned long l = (unsigned long)hex2uint64(ptr_string.c_str());
+        unsigned long l = (unsigned long)kl::hexToUint64(ptr_string.c_str());
         IXdsqlTable* sptr = (IXdsqlTable*)l;
         return sptr;
     }

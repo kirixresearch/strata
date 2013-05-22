@@ -89,6 +89,8 @@ public:
     virtual void setExtraValue(const std::wstring& key, const std::wstring& value) = 0;
     virtual std::wstring getExtraValue(const std::wstring& key) = 0;
 
+    virtual void setRefObject(xcm::IObjectPtr ref_obj) = 0;
+
     virtual void setResultObject(xcm::IObjectPtr result) = 0;
     virtual xcm::IObjectPtr getResultObject() = 0;
 

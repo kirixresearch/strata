@@ -24,6 +24,7 @@
 #include "xdcommonsql.h"
 #include <kl/klib.h>
 #include <kl/regex.h>
+#include <kl/hex.h>
 
 
 SqlStatement::SqlStatement(const std::wstring& stmt)
@@ -938,7 +939,7 @@ SqlIterator* SqlIterator::createSqlIterator(tango::IIteratorPtr iter,
     klregex::wmatch rowid_matchres;    
     if (rowid_regex.match(condition.c_str(), rowid_matchres))
     {
-        tango::rowid_t rowid = hex2uint64(rowid_matchres[1].str().c_str());
+        tango::rowid_t rowid = kl::hexToUint64(rowid_matchres[1].str().c_str());
         
         SqlSingleRowIterator* ret_iter = new SqlSingleRowIterator();
         

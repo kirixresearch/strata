@@ -33,6 +33,7 @@
 #include "../xdcommon/connectionstr.h"
 #include "../xdcommon/dbfuncs.h"
 #include <kl/url.h>
+#include <kl/hex.h>
 
 
 #ifdef WIN32
@@ -1442,7 +1443,7 @@ IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, const tango::FormatI
     if (path.substr(0, 12) == L"/.temp/.ptr/")
     {
         std::wstring ptr_string = kl::afterLast(path, L'/');
-        unsigned long l = (unsigned long)hex2uint64(ptr_string.c_str());
+        unsigned long l = (unsigned long)kl::hexToUint64(ptr_string.c_str());
         IXdsqlTablePtr sptr = (IXdsqlTable*)l;
         return sptr;
     }
