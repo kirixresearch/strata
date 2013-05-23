@@ -406,7 +406,7 @@ bool TableDoc::isExternalTable()
     if (m_external_table == -1)
     {
         std::wstring db_driver = getDbDriver();
-        m_external_table = (db_driver != L"xdnative" && getDbDriver() != L"xdclient") ? 1 : 0;
+        m_external_table = (db_driver != L"xdnative" && db_driver != L"xdclient" && db_driver != L"xdcommon") ? 1 : 0;
     }
     
     return (m_external_table == 1) ? true : false;
@@ -4754,11 +4754,11 @@ std::wstring TableDoc::getWhereExpressionForRow(int row)
     std::wstring db_driver = getDbDriver();
 
     // can't update -- table doesn't have a primary key or a rowid
-    if (primary_key.empty() && db_driver != L"xdnative" && db_driver != L"xdclient")
+    if (primary_key.empty() && db_driver != L"xdnative" && db_driver != L"xdclient" && db_driver != L"xdcommon")
         return L"";
 
     tango::rowid_t rowid = tango_grid_model->getRowId(row);
-    if ((db_driver == L"xdnative" || db_driver == wxT("xdclient")) && rowid == 0)
+    if ((db_driver == L"xdnative" || db_driver == L"xdclient" || db_driver == L"xdcommon") && rowid == 0)
         return L"";
 
 
@@ -5862,13 +5862,16 @@ void TableDoc::deleteSelectedRows()
     // delete the records from the browse set,
     // if it is different from the base set
 
-    /*
-        std::set<tango::rowid_t>::iterator it;
-        for (it = rows.begin(); it != rows.end(); ++it)
+    if (m_filter.length() > 0 && m_browse_path != m_path)
+    {
+        for (it = deletecmds.begin(); it != deletecmds.end(); ++it)
         {
-            browse_set_deleter->deleteRow(*it);
+            sql = *it;
+            kl::replaceStr(sql, L"%tbl%", m_browse_path);
+            xcm::IObjectPtr resobj;
+            db->execute(sql, 0, resobj, NULL);
         }
-    */
+    }
 
     // reset the model; this forces the model to reload,
     // while keeping our position
