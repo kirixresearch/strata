@@ -37,10 +37,28 @@ public:
     {
         m_set = set;
         m_set->ref();
+
+        // register this iterator
+        m_set->m_iters_mutex.lock();
+        m_set->m_iters.push_back(this);
+        m_set->m_iters_mutex.unlock();
     }
 
     ~CommonDynamicIterator()
     {
+        // unregister this iterator
+        m_set->m_iters_mutex.lock();
+        std::vector<CommonDynamicIterator*>::iterator it;
+        for (it = m_set->m_iters.begin(); it != m_set->m_iters.end(); ++it)
+        {
+            if (*it == this)
+            {
+                m_set->m_iters.erase(it);
+                break;
+            }
+        }
+        m_set->m_iters_mutex.unlock();
+
         m_set->unref();
     }
 
@@ -112,15 +130,15 @@ CommonDynamicSet::~CommonDynamicSet()
 
 void CommonDynamicSet::setObjectPath(const std::wstring& new_path)
 {
-    if (m_ofspath.empty())
+    if (m_path.empty())
         return;
     
-    m_ofspath = new_path;
+    m_path = new_path;
 }
 
 std::wstring CommonDynamicSet::getObjectPath()
 {
-    if (m_ofspath.empty())
+    if (m_path.empty())
     {
         // return an object pointer -- see openSet or lookupSetId in xdnative and xdfs
         // to see how this curiosity plays out
@@ -129,7 +147,7 @@ std::wstring CommonDynamicSet::getObjectPath()
         return buf;
     }
     
-    return m_ofspath;
+    return m_path;
 }
 
 
@@ -240,7 +258,20 @@ bool CommonDynamicSet::deleteRow(const tango::rowid_t& rowid)
     m_index->remove(idx_iter);
     idx_iter->unref();
     m_row_count--;
-    //fire_onSetRowDeleted(rowid);
+
+
+
+    // let iterators know
+    m_iters_mutex.lock();
+    std::vector<CommonDynamicIterator*>::iterator iit;
+    for (iit = m_iters.begin(); iit != m_iters.end(); ++iit)
+    {
+        (*iit)->onRowDeleted(rowid);
+    }
+    m_iters_mutex.unlock();
+
+
+
 
 
     m_base_iter->goRow(rowid);
@@ -513,7 +544,6 @@ CommonDynamicSetRowDeleter::CommonDynamicSetRowDeleter(CommonDynamicSet* set)
     m_index->ref();
     
     m_rows_to_delete.reserve(1000);
-    
 }
 
 CommonDynamicSetRowDeleter::~CommonDynamicSetRowDeleter()

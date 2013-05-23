@@ -27,7 +27,7 @@ public:
 
 
 
-
+class CommonDynamicIterator;
 class CommonDynamicSet : public IXdsqlTable
 {
 friend class CommonDynamicIterator;
@@ -80,7 +80,11 @@ private:
 
     xcm::mutex m_object_mutex;
     tango::IDatabasePtr m_database;
-    std::wstring m_ofspath;
+
+    xcm::mutex m_iters_mutex;
+    std::vector<CommonDynamicIterator*> m_iters;
+
+    std::wstring m_path;
     std::wstring m_filename;
     std::wstring m_temp_path;
     std::vector<CommonDynamicSetIndexEntry> m_indexes;

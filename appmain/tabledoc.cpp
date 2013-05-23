@@ -4740,7 +4740,7 @@ std::wstring TableDoc::getWhereExpressionForRow(int row)
     if (tango_grid_model.isNull())
         return L"";
 
-    if (!model->isRowValid(row)) // (this also positions the model)
+    if (!model->isRowValid(row))
         return L"";
 
     std::wstring primary_key;

@@ -115,13 +115,18 @@ public:
     bool getBoolean(tango::objhandle_t data_handle);
     bool isNull(tango::objhandle_t data_handle);
 
-private:
+public:
+
+    void onRowUpdated(tango::rowid_t rowid);
+    void onRowDeleted(tango::rowid_t rowid);
+
+protected:
 
     void updatePos();
     bool movePrev();
     bool moveNext();
 
-private:
+protected:
 
     xcm::IObjectPtr m_refobj;
     std::wstring m_table;

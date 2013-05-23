@@ -518,6 +518,12 @@ bool CommonIndexIterator::seek(const unsigned char* key,
         {
             m_idx_iter->unref();
             m_idx_iter = idx_iter;
+
+            if (!eof())
+            {
+                updatePos();
+            }
+
             return true;
         }
     
@@ -611,13 +617,11 @@ double CommonIndexIterator::getPos()
 
 void CommonIndexIterator::goRow(const tango::rowid_t& rowid)
 {
+    seek((unsigned char*)&rowid, sizeof(tango::rowid_t), false);
     m_data_iter->goRow(rowid);
 }
 
-/*
-TODO: reimplement this some other way (if necessary)
-
-void CommonIndexIterator::onSetRowUpdated(tango::rowid_t rowid)
+void CommonIndexIterator::onRowUpdated(tango::rowid_t rowid)
 {
     if (rowid == m_rowid)
     {
@@ -626,16 +630,13 @@ void CommonIndexIterator::onSetRowUpdated(tango::rowid_t rowid)
     }
 }
 
-
-void CommonIndexIterator::onSetRowDeleted(tango::rowid_t rowid)
+void CommonIndexIterator::onRowDeleted(tango::rowid_t rowid)
 {
     if (rowid == m_rowid)
     {
         m_row_deleted = true;
     }
 }
-*/
-
 
 std::wstring CommonIndexIterator::getTable()
 {
