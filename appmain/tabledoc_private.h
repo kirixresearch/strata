@@ -231,6 +231,8 @@ private:
     tango::objhandle_t getTemporaryHandle(const wxString& expr);
     void freeTemporaryHandles();
 
+    std::wstring getWhereExpressionForRow(int row);
+
     void updateStatusSelectionSum();
     void updateStatusBar(bool row_count_update);
     void updateStatusBar();

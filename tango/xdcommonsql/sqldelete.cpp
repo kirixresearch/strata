@@ -21,6 +21,7 @@
 #include "../xdcommon/util.h"
 #include "../xdcommon/errorinfo.h"
 #include <kl/portable.h>
+#include <kl/string.h>
 #include <map>
 #include <ctime>
 
@@ -165,6 +166,14 @@ bool sqlDelete(tango::IDatabasePtr db,
     std::wstring table = stmt.getKeywordParam(L"FROM");
     std::wstring filter = stmt.getKeywordParam(L"WHERE");
 
+    kl::trim(filter);
+
+    if (stmt.getKeywordExists(L"WHERE") && filter.length() == 0)
+    {
+        error.setError(tango::errorSyntax, L"Invalid syntax; DELETE statement missing WHERE condition");
+        return false;
+    }
+        
     dequote(table, '[', ']');
     
     tango::IFileInfoPtr finfo = db->getFileInfo(table);

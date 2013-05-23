@@ -4727,6 +4727,138 @@ void TableDoc::onGridBeginEdit(kcl::GridEvent& evt)
     }
 }
 
+
+
+std::wstring TableDoc::getWhereExpressionForRow(int row)
+{
+    tango::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return L"";
+
+    kcl::IModelPtr model = m_grid->getModel();
+    ITangoGridModelPtr tango_grid_model = model;
+    if (tango_grid_model.isNull())
+        return L"";
+
+    if (!model->isRowValid(row)) // (this also positions the model)
+        return L"";
+
+    std::wstring primary_key;
+
+    tango::IFileInfoPtr info = db->getFileInfo(m_path);
+    if (info.isOk())
+    {
+        primary_key = info->getPrimaryKey();
+    }
+
+    std::wstring db_driver = getDbDriver();
+
+    // can't update -- table doesn't have a primary key or a rowid
+    if (primary_key.empty() && db_driver != L"xdnative" && db_driver != L"xdclient")
+        return L"";
+
+    tango::rowid_t rowid = tango_grid_model->getRowId(row);
+    if ((db_driver == L"xdnative" || db_driver == wxT("xdclient")) && rowid == 0)
+        return L"";
+
+
+    // first, we need to build a where clause
+    std::wstring where_str;
+    
+    if (primary_key.length() == 0)
+    {
+        // if we don't have a primary key, use the row id
+        where_str += L"rowid=";
+        where_str += kl::stdswprintf(L"'%08X%08X'",
+                                (unsigned int)(rowid >> 32),
+                                (unsigned int)(rowid & 0xffffffff));
+    }
+     else
+    {
+        // split out primary key field names into an array
+        std::vector<std::wstring> prikeys;
+        kl::parseDelimitedList(primary_key, prikeys, ',');
+
+        std::vector<std::wstring>::iterator it;
+        for (it = prikeys.begin(); it != prikeys.end(); ++it)
+        {
+            kl::trim(*it);
+
+            tango::objhandle_t handle = getTemporaryHandle(*it);
+            if (!handle)
+                return L"";
+            
+            int type = m_iter->getType(handle);
+            
+            std::wstring piece;
+            piece = L"(";
+            piece += tango::quoteIdentifierIfNecessary(db, *it);
+            piece += L"=";
+            
+            switch (type)
+            {
+                case tango::typeCharacter:
+                case tango::typeWideCharacter:
+                    piece += L"'";
+                    piece += m_iter->getWideString(handle);
+                    piece += L"'";
+                    break;
+                    
+                case tango::typeInteger:
+                {
+                    int i = m_iter->getInteger(handle);
+                    wxString str = wxString::Format(wxT("%d"), i);
+                    piece += towstr(str);
+                }
+                break;
+                
+                case tango::typeNumeric:
+                case tango::typeDouble:
+                {
+                    tango::IColumnInfoPtr info = m_iter->getInfo(handle);
+                    if (info.isNull())
+                        return L"";
+                    double d = m_iter->getDouble(handle);
+                    int scale = info->getScale();
+                    wxString str = wxString::Format(wxT("%.*f"), scale, d);
+                    piece += towstr(str);
+                }
+                break;
+                
+                case tango::typeDate:
+                {
+                    tango::datetime_t dtt = m_iter->getDateTime(handle);
+                    tango::DateTime dt;
+                    dt.setDateTime(dtt);
+                    wxString str;
+                    
+                    if (getDbDriver() == L"xdoracle")
+                    {
+                        str = wxString::Format(wxT("TO_DATE('%04d-%02d-%02d','YYYY-MM-DD')"),
+                                               dt.getYear(), dt.getMonth(), dt.getDay());
+                    } 
+                     else
+                    {
+                        str = wxString::Format(wxT("{d '%04d-%02d-%02d'}"),
+                                               dt.getYear(), dt.getMonth(), dt.getDay());
+                    }
+                    
+                    piece += towstr(str);
+                }
+                break;
+            }
+            
+            piece += L")";
+            
+            if (where_str.length() > 0)
+                where_str += L" AND ";
+            where_str += piece;            
+        }
+    }
+
+    return where_str;
+}
+
 void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
 {
     // check if the edit was cancelled
@@ -5649,7 +5781,6 @@ void TableDoc::onColumnListDblClicked(const std::vector<wxString>& items)
 
 void TableDoc::deleteSelectedRows()
 {
-/*
     // check for external data; if we're on external data, we're done
     if (isExternalTable())
     {
@@ -5664,35 +5795,38 @@ void TableDoc::deleteSelectedRows()
         return;
     }
 
+    tango::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return;
 
     // check for read-only flag; if it's set, we're done
     if (!g_app->getAppController()->doReadOnlyCheck())
         return;
 
-
     // check for the model
-    std::set<tango::rowid_t> rows;
     ITangoGridModelPtr model;
 
     model = m_grid->getModel();
     if (model.isNull())
         return;
 
+    std::vector<std::wstring> deletecmds;
+
     // get the selection count and make sure we only have rows
     kcl::SelectionRect sel;
-    unsigned int selection_count = m_grid->getSelectionCount();
+    size_t i, selection_count = m_grid->getSelectionCount();
 
-    int row;
-    for (unsigned int i = 0; i < selection_count; ++i)
+    for (i = 0; i < selection_count; ++i)
     {
         // if we don't have a row, we're done
         m_grid->getSelection(i, &sel);
         if (sel.m_start_col != 0 || sel.m_end_col != m_grid->getColumnCount()-1)
             return;
 
+        int row;
         for (row = sel.m_start_row; row <= sel.m_end_row; ++row)
         {
-            rows.insert(model->getRowId(row));
+            deletecmds.push_back(L"DELETE FROM %tbl% WHERE " + getWhereExpressionForRow(row));
         }
     }
 
@@ -5700,12 +5834,9 @@ void TableDoc::deleteSelectedRows()
     // ok, now actually do the deletion
     AppBusyCursor bc;
 
-    tango::IRowDeleterPtr base_set_deleter;
-    tango::IRowDeleterPtr browse_set_deleter;
-
     // show warning
     wxString message = wxString::Format(_("Performing this operation will permanently delete data.  Are you sure\nyou want to delete %d record(s)?"),
-                                        rows.size());
+                                        deletecmds.size());
 
     int res = wxMessageBox(message,
                            APPLICATION_NAME,
@@ -5715,35 +5846,29 @@ void TableDoc::deleteSelectedRows()
     if (res != wxYES)
         return;
 
-    // delete the records from the base set
-    if (base_set_deleter)
+    // delete the records from the table
+    std::wstring sql;
+
+    std::vector<std::wstring>::iterator it;
+    for (it = deletecmds.begin(); it != deletecmds.end(); ++it)
     {
-        base_set_deleter->startDelete();
-
-        std::set<tango::rowid_t>::iterator it;
-        for (it = rows.begin(); it != rows.end(); ++it)
-            base_set_deleter->deleteRow(*it);
-
-        base_set_deleter->finishDelete();
-        base_set_deleter.clear();
+        sql = *it;
+        kl::replaceStr(sql, L"%tbl%", m_path);
+        xcm::IObjectPtr resobj;
+        db->execute(sql, 0, resobj, NULL);
     }
 
 
     // delete the records from the browse set,
     // if it is different from the base set
-    if (browse_set_deleter)
-    {
-        browse_set_deleter->startDelete();
 
+    /*
         std::set<tango::rowid_t>::iterator it;
         for (it = rows.begin(); it != rows.end(); ++it)
         {
             browse_set_deleter->deleteRow(*it);
         }
-
-        browse_set_deleter->finishDelete();
-        browse_set_deleter.clear();
-    }
+    */
 
     // reset the model; this forces the model to reload,
     // while keeping our position
@@ -5784,7 +5909,6 @@ void TableDoc::deleteSelectedRows()
     // refresh the grid and status bar
     m_grid->refresh(kcl::Grid::refreshAll);
     updateStatusBar();
-*/
 }
 
 void TableDoc::deleteSelectedColumns()
