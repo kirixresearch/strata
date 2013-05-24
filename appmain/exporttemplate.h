@@ -113,6 +113,8 @@ public:
     bool save(const wxString& path);
     jobs::IJobPtr execute();
     
+    jobs::IJobPtr createJob();
+
 public:
 
     ExportInfo m_ei;

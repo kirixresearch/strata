@@ -12,7 +12,7 @@
 #include "appmain.h"
 #include "exportwizard.h"
 #include "exporttemplate.h"
-
+#include "tabledoc.h"
 
 // ExportTemplate class implementation
 
@@ -31,34 +31,82 @@ bool ExportTemplate::save(const wxString& path)
     return false;
 }
 
-jobs::IJobPtr ExportTemplate::execute()
+
+
+
+static void writeKpgMetadata(jobs::IJobPtr job)
+{
+    tango::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return;
+
+    IConnectionPtr conn = createUnmanagedConnection();
+    conn->setType(dbtypePackage);
+    conn->setPath(job->getExtraValue(L"kpg"));
+    conn->open();
+    
+    tango::IDatabasePtr kpg = conn->getDatabasePtr();
+    if (kpg.isNull())
+        return;
+
+    kl::JsonNode params;
+    params.fromString(job->getParameters());
+
+    size_t i;
+    for (i = 0; i < params["objects"].getChildCount(); ++i)
+    {
+        kl::JsonNode object = params["objects"][i];
+        
+        std::wstring source_path = object["source_path"];
+        std::wstring destination_path = object["destination_path"];
+
+        if (source_path.empty() || destination_path.empty())
+            continue;
+
+        // get object id of the source table we exported
+        tango::IFileInfoPtr finfo = db->getFileInfo(source_path);
+        if (finfo.isNull())
+            continue;
+        std::wstring object_id = finfo->getObjectId();
+        
+        // load the json from the model
+        ITableDocModelPtr model = TableDocMgr::loadModel(object_id);
+        if (model.isNull())
+            continue;
+        std::wstring json = model->toJson();
+
+        // write resource to kpg
+        destination_path = L".resource/" + destination_path;
+
+        writeStreamTextFile(kpg, destination_path, json);
+    }
+}
+
+static void onExportJobFinished(jobs::IJobPtr job)
+{
+    if (job->getJobInfo()->getState() != jobStateFinished)
+        return;
+
+    if (job->getExtraValue(L"kpg").length() > 0)
+        writeKpgMetadata(job);
+}
+
+
+jobs::IJobPtr ExportTemplate::createJob()
 {
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.load-job");
 
     job->getJobInfo()->setTitle(towstr(_("Exporting Data")));
 
-    /*
-    ExportJob* job = new ExportJob;
-    job->setExportType(m_ei.type);
-    job->setFilename(m_ei.path, m_ei.overwrite_file);
-    job->setFixInvalidFieldnames(m_ei.fix_invalid_fieldnames);
-    job->setConnectionInfo(m_ei.server,
-                           m_ei.port,
-                           m_ei.database,
-                           m_ei.username,
-                           m_ei.password);
-
-    job->setDelimiters(towstr(m_ei.delimiters));
-    job->setTextQualifier(towstr(m_ei.text_qualifier));
-    job->setFirstRowHeader(m_ei.first_row_header);
-    */
-
+    if (m_ei.type == dbtypePackage)
+    {
+        job->setExtraValue(L"kpg", m_ei.path);
+    }
 
     if (m_ei.path.length() > 0 && m_ei.overwrite_file)
     {
         xf_remove(m_ei.path);
     }
-
 
     // determine destination connection string
     IConnectionPtr conn = createUnmanagedConnection();
@@ -70,8 +118,6 @@ jobs::IJobPtr ExportTemplate::execute()
     conn->setPassword(m_ei.password);
 
     conn->setPath(m_ei.path);
-
-
 
 
     std::wstring source_connection = towstr(g_app->getDatabaseConnectionString());
@@ -112,9 +158,18 @@ jobs::IJobPtr ExportTemplate::execute()
     }
 
     job->setParameters(params.toString());
+    job->sigJobFinished().connect(&onExportJobFinished);
+    return job;
+}
+
+
+
+jobs::IJobPtr ExportTemplate::execute()
+{
+    jobs::IJobPtr job = createJob();
+
     g_app->getJobQueue()->addJob(job, jobStateRunning);
 
     return job;
 }
-
 

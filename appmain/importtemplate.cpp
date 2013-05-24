@@ -777,25 +777,17 @@ bool ImportTemplate::save(const std::wstring& path)
 }
 
 
-jobs::IJobPtr ImportTemplate::execute()
-{
-    jobs::IJobPtr job = createJob();
-
-    g_app->getJobQueue()->addJob(job, jobStateRunning);
-
-    return job;
-}
-
 
 static void readKpgMetadata(jobs::IJobPtr job)
 {
-    IConnectionPtr conn = createUnmanagedConnection();
-    conn->setType(dbtypePackage);
-    conn->setPath(job->getExtraValue(L"kpg"));
-
     tango::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return;
+
+    IConnectionPtr conn = createUnmanagedConnection();
+    conn->setType(dbtypePackage);
+    conn->setPath(job->getExtraValue(L"kpg"));
+    conn->open();
 
     tango::IDatabasePtr kpg = conn->getDatabasePtr();
     if (kpg.isNull())
@@ -834,7 +826,7 @@ static void readKpgMetadata(jobs::IJobPtr job)
         ITableDocModelPtr model = TableDocMgr::loadModel(object_id);
         if (model.isNull())
             continue;
-        model->importFromJson(json);
+        model->fromJson(json);
     }
 }
 
@@ -842,9 +834,6 @@ static void onImportJobFinished(jobs::IJobPtr job)
 {
     if (job->getJobInfo()->getState() != jobStateFinished)
         return;
-
-
-
 
     if (job->getExtraValue(L"kpg").length() > 0)
         readKpgMetadata(job);
@@ -937,4 +926,13 @@ jobs::IJobPtr ImportTemplate::createJob()
     return job;
 }
 
+
+jobs::IJobPtr ImportTemplate::execute()
+{
+    jobs::IJobPtr job = createJob();
+
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
+
+    return job;
+}
 

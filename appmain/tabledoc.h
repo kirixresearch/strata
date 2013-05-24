@@ -182,7 +182,9 @@ public:
     virtual const std::wstring& getId() = 0;
 
     virtual bool save() = 0;
-    virtual bool importFromJson(const std::wstring& json) = 0;
+
+    virtual bool fromJson(const std::wstring& json) = 0;
+    virtual std::wstring toJson() = 0;
 
     virtual bool writeObject(ITableDocObjectPtr obj, bool save_to_store = true) = 0;
     virtual bool writeMultipleObjects(ITableDocObjectEnumPtr obj) = 0;
