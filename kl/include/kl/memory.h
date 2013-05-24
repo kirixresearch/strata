@@ -39,6 +39,8 @@ public:
     unsigned char* getData();
     size_t getDataSize() const;
     
+    void popData(size_t len); // remove len bytes from beginning, shift remaining data
+
     unsigned char* takeOwnership();
 
 private:

@@ -135,6 +135,23 @@ size_t membuf::getDataSize() const
     return m_size;
 }
 
+void membuf::popData(size_t len)
+{
+    // remove len bytes from beginning, shift remaining data
+
+    if (len >= m_size)
+    {
+        // set data length to zero and return
+        m_size = 0;
+        return;
+    }
+
+    size_t remaining = m_size - len;
+    memmove(m_buf, m_buf + len, remaining);
+    m_size = remaining;
+}
+
+
 unsigned char* membuf::takeOwnership()
 {
     unsigned char* buf = m_buf;
