@@ -281,6 +281,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="pkgfile.cpp" />
+    <ClCompile Include="stream.cpp" />
     <ClCompile Include="util.cpp" />
     <ClCompile Include="xdkpg.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -298,6 +299,7 @@
     <ClInclude Include="inserter.h" />
     <ClInclude Include="iterator.h" />
     <ClInclude Include="pkgfile.h" />
+    <ClInclude Include="stream.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>
   <ItemGroup>

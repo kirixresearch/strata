@@ -1189,8 +1189,7 @@ bool TableDocModel::fromJson(const std::wstring& json)
         kl::replaceStr(path, L"%usr%", db->getActiveUid());
         kl::replaceStr(path, L"%id%", m_id);
 
-        if (!db->deleteFile(path))
-            return false;
+        db->deleteFile(path);
 
         if (!writeStreamTextFile(db, path, json))
             return false;

@@ -134,6 +134,7 @@ private:
     std::vector<JobInfo*> m_jobs;
 
     std::map<std::wstring, tango::IStructurePtr, kl::cmp_nocase> m_create_tables;
+    std::map<std::wstring, std::wstring /*mime type*/, kl::cmp_nocase> m_create_streams;
 
     ThreadErrorInfo m_error;
 };

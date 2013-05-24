@@ -27,6 +27,7 @@
 #include "iterator.h"
 #include "inserter.h"
 #include "pkgfile.h"
+#include "stream.h"
 #include <set>
 #include <kl/portable.h>
 #include <kl/string.h>
@@ -383,7 +384,11 @@ bool KpgDatabase::deleteFile(const std::wstring& path)
 
 bool KpgDatabase::getFileExist(const std::wstring& _path)
 {
-    std::wstring path = kl::afterFirst(_path, L'/');
+    std::wstring path = _path;
+    if (path.empty())
+        return false;
+    if (path[0] == '/')
+        path.erase(0,1);
 
     // there may be a faster way to do this.  In order to
     // determine if the file exists, we are going to get
@@ -393,8 +398,7 @@ bool KpgDatabase::getFileExist(const std::wstring& _path)
     if (!files)
         return false;
 
-    int count = files->size();
-    int i;
+    size_t i, count = files->size();
 
     for (i = 0 ; i < count; ++i)
     {
@@ -510,12 +514,47 @@ bool KpgDatabase::createTable(const std::wstring& _path,
 
 tango::IStreamPtr KpgDatabase::openStream(const std::wstring& path)
 {
-    return xcm::null;
+    std::wstring mime_type;
+
+    if (!getFileExist(path))
+    {
+        std::map<std::wstring, std::wstring /*mime type*/, kl::cmp_nocase>::iterator it;
+        it = m_create_streams.find(path);
+        if (it == m_create_streams.end())
+            return xcm::null;
+        mime_type = it->second;
+    }
+
+    KpgStream* pstream = new KpgStream(this);
+    if (!pstream->init(path, mime_type))
+    {
+        delete pstream;
+        return xcm::null;
+    }
+
+    return static_cast<tango::IStream*>(pstream);
 }
 
-bool KpgDatabase::createStream(const std::wstring& path, const std::wstring& mime_type)
+bool KpgDatabase::createStream(const std::wstring& _path, const std::wstring& mime_type)
 {
-    return false;
+    XCM_AUTO_LOCK(m_obj_mutex);
+
+    if (getFileExist(_path))
+    {
+        // object already exists
+        return false;
+    }
+
+    std::wstring path = _path;
+    if (path.substr(0,1) == L"/")
+        path.erase(0,1);
+
+    if (path.length() == 0)
+        return false;
+
+    m_create_streams[path] = mime_type;
+
+    return true;
 }
 
 

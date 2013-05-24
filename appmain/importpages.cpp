@@ -63,6 +63,10 @@ static void getAllSets(tango::IDatabasePtr db_ptr,
         tango::IFileInfoPtr info = items->getItem(i);
         item_type = info->getType();
 
+        // skip 'hidden' objects
+        if (info->getName().substr(0,1) == '.')
+            continue;
+
         if (item_type == tango::filetypeFolder)
         {
             wxString folder_path = path;
@@ -436,7 +440,6 @@ void ImportTableSelectionPage::onPageChanged()
         wxString src_tablename = *info_it;
         wxString out_tablename = info_it->AfterLast(wxT('/'));
         bool append = false;
-
 
         // remove slash from beginning
         if (src_tablename.Freq('/') == 1 && src_tablename[0] == '/')
