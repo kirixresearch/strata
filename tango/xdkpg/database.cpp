@@ -464,9 +464,18 @@ tango::IFileInfoEnumPtr KpgDatabase::getFolderInfo(const std::wstring& path)
             {
                 if (!entry.deleted)
                 {
+                    std::wstring stream_info;
+                    if (!getStreamInfoBlock(name, stream_info))
+                        continue;
+
+                    kl::xmlnode info;
+                    if (!info.parse(stream_info))
+                        continue;
+                    std::wstring object_type = info.getProperty(L"type").value;
+
                     xdcommon::FileInfo* f = new xdcommon::FileInfo;
                     f->name = entry.stream_name;
-                    f->type = tango::filetypeTable;
+                    f->type = (object_type == L"stream" ? tango::filetypeStream : tango::filetypeTable);
 
                     retval->append(static_cast<tango::IFileInfo*>(f));
                 }
@@ -512,9 +521,13 @@ bool KpgDatabase::createTable(const std::wstring& _path,
     return true;
 }
 
-tango::IStreamPtr KpgDatabase::openStream(const std::wstring& path)
+tango::IStreamPtr KpgDatabase::openStream(const std::wstring& _path)
 {
     std::wstring mime_type;
+
+    std::wstring path = _path;
+    if (path.substr(0,1) == L"/")
+        path.erase(0,1);
 
     if (!getFileExist(path))
     {
