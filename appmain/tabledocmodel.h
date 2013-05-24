@@ -34,6 +34,7 @@ public:
 
     bool load();
     bool save();
+    bool importFromJson(const std::wstring& json);
 
     bool writeObject(ITableDocObjectPtr obj, bool save_to_store = true);
     bool writeMultipleObjects(ITableDocObjectEnumPtr obj);

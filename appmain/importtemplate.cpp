@@ -14,6 +14,7 @@
 #include "importwizard.h"
 #include "appcontroller.h"
 #include "jsonconfig.h"
+#include "tabledoc.h"
 #include <kl/crypt.h>
 
 
@@ -775,13 +776,6 @@ bool ImportTemplate::save(const std::wstring& path)
     return JsonConfig::saveToDb(root, g_app->getDatabase(), path, L"application/vnd.kx.import");
 }
 
-static void onImportJobFinished(jobs::IJobPtr job)
-{
-    if (job->getJobInfo()->getState() != jobStateFinished)
-        return;
-
-    g_app->getAppController()->refreshDbDoc();
-}
 
 jobs::IJobPtr ImportTemplate::execute()
 {
@@ -793,6 +787,70 @@ jobs::IJobPtr ImportTemplate::execute()
 }
 
 
+static void readKpgMetadata(jobs::IJobPtr job)
+{
+    IConnectionPtr conn = createUnmanagedConnection();
+    conn->setType(dbtypePackage);
+    conn->setPath(job->getExtraValue(L"kpg"));
+
+    tango::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return;
+
+    tango::IDatabasePtr kpg = conn->getDatabasePtr();
+    if (kpg.isNull())
+        return;
+
+    kl::JsonNode params;
+    params.fromString(job->getParameters());
+
+    size_t i;
+    for (i = 0; i < params["objects"].getChildCount(); ++i)
+    {
+        kl::JsonNode object = params["objects"][i];
+        
+        std::wstring source_path = object["source_path"];
+        std::wstring destination_path = object["destination_path"];
+
+        if (source_path.empty() || destination_path.empty())
+            continue;
+
+        // get object id of the table we imported
+        tango::IFileInfoPtr finfo = db->getFileInfo(destination_path);
+        if (finfo.isNull())
+            continue;
+        std::wstring object_id = finfo->getObjectId();
+        
+
+        // read resource from kpg
+        source_path = L".resource/" + source_path;
+
+        std::wstring json;
+        if (!readStreamTextFile(kpg, source_path, json))
+            continue;
+
+
+        // load the json into the model
+        ITableDocModelPtr model = TableDocMgr::loadModel(object_id);
+        if (model.isNull())
+            continue;
+        model->importFromJson(json);
+    }
+}
+
+static void onImportJobFinished(jobs::IJobPtr job)
+{
+    if (job->getJobInfo()->getState() != jobStateFinished)
+        return;
+
+
+
+
+    if (job->getExtraValue(L"kpg").length() > 0)
+        readKpgMetadata(job);
+
+    g_app->getAppController()->refreshDbDoc();
+}
 
 jobs::IJobPtr ImportTemplate::createJob()
 {
@@ -822,7 +880,10 @@ jobs::IJobPtr ImportTemplate::createJob()
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.load-job");
     job->getJobInfo()->setTitle(towstr(_("Importing Data")));
 
-
+    if (m_ii.type == dbtypePackage)
+    {
+        job->setExtraValue(L"kpg", m_ii.path);
+    }
 
     // determine source connection string
 

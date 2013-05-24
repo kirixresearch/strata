@@ -764,6 +764,7 @@ void TableDocModel::init(const std::wstring& id)
         load();
 }
 
+
 bool TableDocModel::load()
 {
     if (m_id.empty())
@@ -793,6 +794,7 @@ bool TableDocModel::save()
 
     return saveJson();
 }
+
 
 bool TableDocModel::writeObject(ITableDocObjectPtr obj, bool save_to_store)
 {
@@ -1173,6 +1175,43 @@ bool TableDocModel::loadJson()
 
     return true;
 }
+
+
+bool TableDocModel::importFromJson(const std::wstring& json)
+{
+    tango::IDatabasePtr db = g_app->getDatabase();
+    kl::JsonNode node;
+
+    if (g_app->getDbDriver() == L"xdnative")
+    {
+        // with xdnative, tabledoc model stores its metadata in streams
+        std::wstring path = L"/.appdata/%usr%/tables/%id%";
+        kl::replaceStr(path, L"%usr%", db->getActiveUid());
+        kl::replaceStr(path, L"%id%", m_id);
+
+        if (!db->deleteFile(path))
+            return false;
+
+        if (!writeStreamTextFile(db, path, json))
+            return false;
+    }
+     else
+    {
+        // with direct connections to sql-type servers, store metadata locally
+        std::wstring path = getTableMetadataLocation();
+        path += PATH_SEPARATOR_CHAR;
+        path += m_id + L".json";
+
+        if (!xf_remove(path))
+            return false;
+
+        if (!xf_put_file_contents(path, json))
+            return false;
+    }
+
+    return loadJson();
+}
+
 
 bool TableDocModel::loadAndConvertOldVersionToNewJson()
 {
