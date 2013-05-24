@@ -883,6 +883,8 @@ wxString getPhysPathFromMountPath(const wxString& database_path)
     // find 'Database=' portion of the connection str
     wxString temps = conn_str;
     temps.MakeUpper();
+    if (temps.Find("XDPROVIDER=XDFS") == -1)
+        return wxEmptyString;
     int loc = temps.Find(wxT("DATABASE="));
     if (loc == wxNOT_FOUND)
         return wxEmptyString;

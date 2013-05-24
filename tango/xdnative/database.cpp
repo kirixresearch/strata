@@ -1542,6 +1542,10 @@ bool XdnativeDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
     }
      else
     {
+        tango::IFileInfoPtr finfo = getFileInfo(info->input);
+        if (finfo->getType() == tango::filetypeStream)
+            return copyFile(info->input, info->output);
+
         tango::QueryParams qp;
         qp.from = info->input;
         qp.where = info->where;
@@ -1557,7 +1561,7 @@ bool XdnativeDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
 
         if (qp.where.empty())
         {
-            tango::IFileInfoPtr finfo = getFileInfo(qp.from);
+
             if (finfo->getFlags() & tango::sfFastRowCount)
             {
                 IJobInternalPtr ijob = job;

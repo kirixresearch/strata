@@ -1078,6 +1078,9 @@ bool PgsqlDatabase::createStream(const std::wstring& path, const std::wstring& m
         return false;
     }
 
+    PQexec(conn, "COMMIT");
+
+    closeConnection(conn);
     return true;
 }
 
