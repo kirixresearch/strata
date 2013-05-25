@@ -33,6 +33,7 @@
 #include <kl/string.h>
 #include <kl/utf8.h>
 #include <kl/xml.h>
+#include <kl/md5.h>
 
 
 const wchar_t* sql92_keywords =
@@ -455,6 +456,9 @@ tango::IFileInfoEnumPtr KpgDatabase::getFolderInfo(const std::wstring& path)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
+    std::wstring lower_path = m_path;
+    kl::makeLower(lower_path);
+
     xcm::IVectorImpl<tango::IFileInfoPtr>* retval;
     retval = new xcm::IVectorImpl<tango::IFileInfoPtr>;
 
@@ -474,6 +478,9 @@ tango::IFileInfoEnumPtr KpgDatabase::getFolderInfo(const std::wstring& path)
                     if (!getStreamInfoBlock(name, stream_info))
                         continue;
 
+                    std::wstring lower_stream = name;
+                    kl::makeLower(lower_stream);
+
                     kl::xmlnode info;
                     if (!info.parse(stream_info))
                         continue;
@@ -482,6 +489,7 @@ tango::IFileInfoEnumPtr KpgDatabase::getFolderInfo(const std::wstring& path)
                     xdcommon::FileInfo* f = new xdcommon::FileInfo;
                     f->name = entry.stream_name;
                     f->type = (object_type == L"stream" ? tango::filetypeStream : tango::filetypeTable);
+                    f->object_id = kl::md5str(L"xdkpg:" + lower_path + L":" + lower_stream);
 
                     retval->append(static_cast<tango::IFileInfo*>(f));
                 }
