@@ -805,6 +805,7 @@ bool PkgFile::getAllDirEntries(std::vector<PkgDirEntry>& entries)
                 }
             }
 
+            entry.directory_entry_offset = dir_block_offset + 32 + (i*kpg_direntry_size);
             entry.deleted = false;
 
             lo = (unsigned int)buf2int(dir_entry+4);
@@ -880,5 +881,27 @@ PkgStreamWriter* PkgFile::createStream(const std::wstring& stream_name)
     return writer;
 }
 
+bool PkgFile::deleteStream(const std::wstring& stream_name)
+{
+    std::vector<PkgDirEntry> entries;
+    std::vector<PkgDirEntry>::iterator it;
+
+    if (!getAllDirEntries(entries))
+        return false;
+
+    for (it = entries.begin(); it != entries.end(); ++it)
+    {
+        if (!it->deleted && kl::iequals(it->stream_name, stream_name))
+        {
+            unsigned char buf[1];
+            buf[0] = 0x01;
+
+            xf_seek(m_file, it->directory_entry_offset, xfSeekSet);
+            return (xf_write(m_file, buf, 1, 1) == 1 ? true : false);
+        }
+    }
+
+    return false;
+}
 
 

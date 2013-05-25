@@ -377,9 +377,15 @@ bool KpgDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
 
 }
 
-bool KpgDatabase::deleteFile(const std::wstring& path)
+bool KpgDatabase::deleteFile(const std::wstring& _path)
 {
-    return true;
+    std::wstring path = _path;
+    if (path.empty())
+        return false;
+    if (path[0] == '/')
+        path.erase(0,1);
+
+    return m_kpg->deleteStream(path);
 }
 
 bool KpgDatabase::getFileExist(const std::wstring& _path)

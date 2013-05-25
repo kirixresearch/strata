@@ -21,6 +21,7 @@ public:
     std::wstring stream_name;
     xf_off_t uncompressed_size;
     xf_off_t first_block_offset;
+    xf_off_t directory_entry_offset;
     bool deleted;
 
     PkgDirEntry()
@@ -28,6 +29,7 @@ public:
         stream_name = L"";
         uncompressed_size = 0;
         first_block_offset = 0;
+        directory_entry_offset = 0;
         deleted = false;
     }
 
@@ -36,6 +38,7 @@ public:
         stream_name = c.stream_name;
         uncompressed_size = c.uncompressed_size;
         first_block_offset = c.first_block_offset;
+        directory_entry_offset = c.directory_entry_offset;
         deleted = c.deleted;
     }
 
@@ -44,6 +47,7 @@ public:
         stream_name = c.stream_name;
         uncompressed_size = c.uncompressed_size;
         first_block_offset = c.first_block_offset;
+        directory_entry_offset = c.directory_entry_offset;
         deleted = c.deleted;
         
         return *this;
@@ -160,6 +164,7 @@ public:
     PkgStreamEnum* getStreamEnum();
     PkgStreamReader* readStream(const std::wstring& stream_name);
     PkgStreamWriter* createStream(const std::wstring& stream_name);
+    bool deleteStream(const std::wstring& stream_name);
 
 private:
 
