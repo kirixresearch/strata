@@ -165,6 +165,7 @@ public:
     PkgStreamReader* readStream(const std::wstring& stream_name);
     PkgStreamWriter* createStream(const std::wstring& stream_name);
     bool deleteStream(const std::wstring& stream_name);
+    bool renameStream(const std::wstring& stream_name, const std::wstring& new_name);
 
 private:
 

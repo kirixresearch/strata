@@ -318,20 +318,33 @@ bool KpgDatabase::createFolder(const std::wstring& path)
     return false;
 }
 
-bool KpgDatabase::renameFile(const std::wstring& path,
-                               const std::wstring& new_name)
+bool KpgDatabase::renameFile(const std::wstring& _path,
+                             const std::wstring& new_name)
 {
-    return false;
+    std::wstring path = _path;
+    if (path.empty())
+        return false;
+    if (path[0] == '/')
+        path.erase(0,1);
+
+    std::wstring new_path;
+    if (path.find(L'/') == path.npos)
+        new_path = new_name;
+         else
+        new_path = kl::beforeLast(path, '/') + L"/" + new_name;
+
+    m_kpg->renameStream(L".resource/" + path, L".resource/" + new_path);
+    return m_kpg->renameStream(path, new_path);
 }
 
 bool KpgDatabase::moveFile(const std::wstring& path,
-                             const std::wstring& new_location)
+                           const std::wstring& new_location)
 {
     return false;
 }
 
 bool KpgDatabase::copyFile(const std::wstring& src_path,
-                             const std::wstring& dest_path)
+                           const std::wstring& dest_path)
 {
     return false;
 }

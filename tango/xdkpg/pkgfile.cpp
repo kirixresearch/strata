@@ -389,7 +389,7 @@ void PkgStreamWriter::finishWrite()
 PkgFile::PkgFile()
 {
     m_file = NULL;
-    m_version = 0;
+    m_version = 2;   // current version is 2
 }
 
 PkgFile::~PkgFile()
@@ -411,9 +411,6 @@ bool PkgFile::create(const std::wstring& filename)
     }
 
 
-    int version = 2;
-    m_version = version;
-    
     // attempt to open the file
 
     m_file = xf_open(filename, xfCreate, xfReadWrite, xfShareReadWrite);
@@ -430,7 +427,7 @@ bool PkgFile::create(const std::wstring& filename)
     int2buf(header+0, 0xffaa0011);
 
     // file version
-    int2buf(header+4, version);
+    int2buf(header+4, m_version);
 
     // offset of first directory block
     int2buf(header+8, 1024); // lower 32 bits
@@ -561,25 +558,18 @@ bool PkgFile::createDirEntry(const PkgDirEntry& entry)
     int2buf(dir_entry+12, (unsigned int)lo);
     int2buf(dir_entry+16, (unsigned int)hi);
 
-    // set stream name
-    if (m_version == 1)
+    // write out little-endian UCS-2 stream name
+    int i, len;
+    len = entry.stream_name.length();
+    if (len > 127) len = 127;
+    unsigned char* ptr = dir_entry+32;
+    for (i = 0; i < len; ++i)
     {
-        strcpy((char*)dir_entry+32, kl::tostring(entry.stream_name).c_str());
-    }
-     else
-    {
-        // write out little-endian UCS-2 stream name
-        int i, len;
-        len = entry.stream_name.length();
-        unsigned char* ptr = dir_entry+32;
-        for (i = 0; i < len; ++i)
-        {
-            wchar_t ch = entry.stream_name[i];
-            *ptr = ch & 0xff;
-            ptr++;
-            *ptr = (ch >> 8) & 0xff;
-            ptr++;
-        }
+        wchar_t ch = entry.stream_name[i];
+        *ptr = ch & 0xff;
+        ptr++;
+        *ptr = (ch >> 8) & 0xff;
+        ptr++;
     }
 
 
@@ -783,27 +773,21 @@ bool PkgFile::getAllDirEntries(std::vector<PkgDirEntry>& entries)
                 continue;
             }
 
-            if (m_version == 1)
+            // read little-endian UCS-2 stream name
+            entry.stream_name = L"";
+            unsigned char* ptr = dir_entry+32;
+            while (1)
             {
-                entry.stream_name = kl::towstring((char*)dir_entry+32);
+                wchar_t ch;
+                ch = *ptr;
+                ptr++;
+                ch |= (((wchar_t)*ptr) << 8);
+                ptr++;
+                if (ch == 0)
+                    break;
+                entry.stream_name += ch;
             }
-             else
-            {
-                // read little-endian UCS-2 stream name
-                entry.stream_name = L"";
-                unsigned char* ptr = dir_entry+32;
-                while (1)
-                {
-                    wchar_t ch;
-                    ch = *ptr;
-                    ptr++;
-                    ch |= (((wchar_t)*ptr) << 8);
-                    ptr++;
-                    if (ch == 0)
-                        break;
-                    entry.stream_name += ch;
-                }
-            }
+
 
             entry.directory_entry_offset = dir_block_offset + 32 + (i*kpg_direntry_size);
             entry.deleted = false;
@@ -904,4 +888,52 @@ bool PkgFile::deleteStream(const std::wstring& stream_name)
     return false;
 }
 
+
+bool PkgFile::renameStream(const std::wstring& stream_name, const std::wstring& new_name)
+{
+    std::vector<PkgDirEntry> entries;
+    std::vector<PkgDirEntry>::iterator it;
+
+    if (!getAllDirEntries(entries))
+        return false;
+
+    // see if the new name for the stream is already taken by
+    // an existing one
+    for (it = entries.begin(); it != entries.end(); ++it)
+    {
+        if (!it->deleted && kl::iequals(it->stream_name, new_name))
+            return false;   // new name already exists
+    }
+
+    // rename stream
+    for (it = entries.begin(); it != entries.end(); ++it)
+    {
+        if (!it->deleted && kl::iequals(it->stream_name, stream_name))
+        {
+            unsigned char buf[kpg_direntry_size];
+            xf_seek(m_file, it->directory_entry_offset, xfSeekSet);
+            if (kpg_direntry_size != xf_read(m_file, buf, 1, kpg_direntry_size))
+                return false;
+
+            // update the name
+            unsigned char* ptr = buf+32;
+            memset(ptr, 0, 256);
+            int i, len;
+            len = new_name.length();
+            if (len > 127) len = 127;
+            for (i = 0; i < len; ++i)
+            {
+                wchar_t ch = new_name[i];
+                *ptr = ch & 0xff;
+                ptr++;
+                *ptr = (ch >> 8) & 0xff;
+                ptr++;
+            }
+
+            return (xf_write(m_file, buf, 1, kpg_direntry_size) == kpg_direntry_size ? true : false);
+        }
+    }
+
+    return false;
+}
 
