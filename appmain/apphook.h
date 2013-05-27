@@ -17,6 +17,8 @@ void apphookInitFrame();
 void apphookInitCommands();
 void apphookInitMenuBar(wxMenuBar* menubar);
 
+void apphookPostOpenProject();
+
 bool apphookOpenTemplate(const wxString& location,
                          tango::IFileInfoPtr file_info,
                          bool* handled);

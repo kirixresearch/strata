@@ -6014,6 +6014,9 @@ bool AppController::openProject(const wxString& location,
     if (getAppPrefsBoolean(wxT("general.startup.open_last_project")))
         prefs->setString(wxT("general.startup.connection"), entry_name);
     
+    // let application hook handle post open project operations
+    apphookPostOpenProject();
+
     refreshDbDoc();
     return true;
 }
