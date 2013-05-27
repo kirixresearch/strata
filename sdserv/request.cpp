@@ -804,6 +804,7 @@ void RequestInfo::checkHeaderSent()
      else
     {
         mg_must_close(m_conn);
+        reply += "\r\n";
     }
 
     mg_write(m_conn, reply.c_str(), reply.length());

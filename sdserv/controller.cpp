@@ -766,11 +766,11 @@ void Controller::apiQuery(RequestInfo& req)
         
     if (req.getValue(L"mode") == L"createiterator")
     {
-        tango::IIteratorPtr iter = db->createIterator(req.getValue(L"path"),
-                                                      req.getValue(L"columns"),
-                                                      req.getValue(L"where"),
-                                                      req.getValue(L"order"),
-                                                      NULL);
+        tango::IIteratorPtr iter = db->query(req.getValue(L"path"),
+                                             req.getValue(L"columns"),
+                                             req.getValue(L"where"),
+                                             req.getValue(L"order"),
+                                             NULL);
         if (!iter.isOk())
         {
             returnApiError(req, "Could not create iterator");
@@ -1003,7 +1003,7 @@ void Controller::apiRead(RequestInfo& req)
         }
 
 
-        tango::IIteratorPtr iter = db->createIterator(req.getURI(), L"", req.getValue(L"where"), req.getValue(L"order"), NULL);
+        tango::IIteratorPtr iter = db->query(req.getURI(), L"", req.getValue(L"where"), req.getValue(L"order"), NULL);
         if (!iter.isOk())
         {
             req.setStatusCode(404);
