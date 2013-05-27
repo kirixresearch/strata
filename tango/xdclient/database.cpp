@@ -12,7 +12,7 @@
 #include "xdclient.h"
 #include "request.h"
 #include "stream.h"
-
+#include <kl/string.h>
 
 
 const wchar_t* xdclient_keywords =
@@ -745,6 +745,120 @@ tango::IIndexInfoEnumPtr ClientDatabase::getIndexEnum(const std::wstring& path)
     return vec;
 }
 
+
+
+
+// WARNING: until peekToken and popToken
+// are factored, if you make a change to popToken,
+// make sure to make the change to the function above
+
+static std::wstring popToken(std::wstring& str)
+{
+    const wchar_t* start = str.c_str();
+    const wchar_t* p = start;
+    std::wstring ret;
+    int chars = 0;
+
+    while (iswspace(*p))
+    {
+        p++;
+        chars++;
+    }
+
+    if (*p == '[')
+    {
+        // identifier quotation
+        const wchar_t* close = wcschr(p, ']');
+        if (close)
+        {
+            ret.assign(p, close-p+1);
+            str.erase(0, close-start+1);
+            return ret;
+        }
+    }
+    
+    while (*p)
+    {
+        if (0 != wcschr(L" \t\n\r!@#$%^&*-=|/+,()[]{}:'\"", *p))
+        {
+            if (ret.empty())
+            {
+                ret = *p;
+                str.erase(0,chars+1);
+                return ret;
+            }
+             else
+            {
+                break;
+            }
+        }
+
+        ret += *p;
+        ++p;
+        ++chars;
+    }
+
+    str.erase(0, chars);
+    return ret;
+}
+
+bool ClientDatabase::executePost(const std::wstring& _command)
+{
+    // parses and executes
+    // POST http://my.url SET param1='value', param2='value2'
+    std::wstring command = _command;
+
+    if (!kl::iequals(L"POST", popToken(command)))
+        return false;
+    kl::trim(command);
+
+    if (command.find(' ') == command.npos)
+        return false;
+
+    std::wstring url = kl::beforeFirst(command, ' ');
+    command = kl::afterFirst(command, ' ');
+
+    if (!kl::iequals(L"SET", popToken(command)))
+    {
+        // bad syntax
+        return false;
+    }
+
+    // rest of |command| is a comma delimited set of post parameters
+    std::vector<std::wstring> parts;
+    std::vector<std::wstring>::iterator it;
+
+    kl::parseDelimitedList(command, parts, ',', true);
+
+    ServerCallParams params;
+
+    for (it = parts.begin(); it != parts.end(); ++it)
+    {
+        if (it->find('=') == it->npos)
+            return false;
+        std::wstring key = kl::beforeFirst(*it, '=');
+        std::wstring value = kl::afterFirst(*it, '=');
+
+        kl::trim(key);
+        kl::trim(value);
+
+        if (value.length() < 2)
+            return false;  // syntax error - value must be quoted
+
+        if (value[0] != '\'' || value[value.length()-1] != '\'')
+            return false;
+
+        dequote(value, '\'', '\'');
+
+        params.setParam(key, value);
+    }
+
+
+    std::wstring sres = serverCall(url, L"", &params);
+
+    return true;
+}
+
 bool ClientDatabase::execute(const std::wstring& command,
                              unsigned int flags,
                              xcm::IObjectPtr& result,
@@ -752,6 +866,11 @@ bool ClientDatabase::execute(const std::wstring& command,
 {
     m_error.clearError();
     result.clear();
+
+    if (kl::iequals(command.substr(0,4), L"POST"))
+    {
+        return executePost(command);
+    }
 
 
     ServerCallParams params;
