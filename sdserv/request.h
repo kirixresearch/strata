@@ -74,6 +74,7 @@ public:
 
     void read();
     
+    bool isHTTP_1_1() const;
     std::wstring getURI();
     std::wstring getQuery();
     std::wstring getValue(const std::wstring& key, const std::wstring& def = L"");

@@ -266,7 +266,10 @@ void RequestInfo::read()
     }
 }
 
-
+bool RequestInfo::isHTTP_1_1() const
+{
+    return *(m_req->http_version + 2) == '1' ? true : false;
+}
 
 
 
@@ -786,17 +789,23 @@ void RequestInfo::checkHeaderSent()
     }    
     
     
-    
-    if (m_content_length == -1)
+    if (isHTTP_1_1())
     {
-        mg_must_close(m_conn);
-        reply += "Connection: close\r\n\r\n";
+        if (m_content_length == -1)
+        {
+            mg_must_close(m_conn);
+            reply += "Connection: close\r\n\r\n";
+        }
+         else
+        {
+            reply += "Connection: Keep-Alive\r\n\r\n";
+        }
     }
      else
     {
-        reply += "Connection: Keep-Alive\r\n\r\n";
+        mg_must_close(m_conn);
     }
-    
+
     mg_write(m_conn, reply.c_str(), reply.length());
 }
 
