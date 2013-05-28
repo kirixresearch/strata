@@ -149,6 +149,12 @@ public:
     tango::IStructurePtr jsonToStructure(kl::JsonNode& node);
     std::wstring structureToJson(tango::IStructurePtr structure);
     void columnToJsonNode(tango::IColumnInfoPtr colinfo, kl::JsonNode& column);
+    bool getCallCacheResult(const std::wstring& path,
+                            const std::wstring& method,
+                            const ServerCallParams* params,
+                            std::wstring& hash,
+                            std::wstring& result);
+    void addCallCacheResult(const std::wstring& hash, const std::wstring& value);
 
 private:
 
@@ -157,6 +163,7 @@ private:
     std::wstring m_database;
     std::wstring m_uid;
     std::wstring m_password;
+    std::wstring m_cookie_file;
 
     std::vector<JobInfo*> m_jobs;
     xcm::mutex m_obj_mutex;
@@ -170,6 +177,9 @@ private:
 
     xcm::mutex m_describe_mutex;
     std::map<std::wstring, tango::IStructurePtr> m_describe;
+
+    xcm::mutex m_call_cache_mutex;
+    std::map<std::wstring, std::pair<time_t /*age*/, std::wstring > > m_call_cache;
 
     xcm::threadid_t m_connection_thread_id;
 };

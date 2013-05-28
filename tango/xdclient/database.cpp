@@ -13,6 +13,8 @@
 #include "request.h"
 #include "stream.h"
 #include <kl/string.h>
+#include <kl/md5.h>
+#include <ctime>
 
 
 const wchar_t* xdclient_keywords =
@@ -61,6 +63,14 @@ ClientDatabase::ClientDatabase()
                                xdclient_invalid_object_starting_chars);
     m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"[");
     m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"]");
+
+    m_cookie_file = kl::stdswprintf(L"xdclient_%d_%p.dat", (int)time(NULL), this);
+
+    #ifdef WIN32
+    m_cookie_file = xf_get_temp_path() + L"\\" + m_cookie_file;
+    #else
+    m_cookie_file = xf_get_temp_path() + L"/" + m_cookie_file;
+    #endif
 }
 
 ClientDatabase::~ClientDatabase()
@@ -70,6 +80,8 @@ ClientDatabase::~ClientDatabase()
     {
         (*it)->unref();
     }
+
+    xf_remove(m_cookie_file);
 }
 
 bool ClientDatabase::open(const std::wstring& host,
@@ -153,11 +165,70 @@ HttpRequest* ClientDatabase::getHttpObject()
      else
     {
         HttpRequest* req = new HttpRequest;
+        req->setCookieFilePath(m_cookie_file);
         m_http_objects[thread_id] = req;
         return req;
     }
 }
 
+bool ClientDatabase::getCallCacheResult(const std::wstring& path,
+                                        const std::wstring& method,
+                                        const ServerCallParams* params,
+                                        std::wstring& hash,
+                                        std::wstring& result)
+{
+    hash = path;
+    hash += L":";
+    hash += method;
+
+    if (params)
+    {
+        std::vector<std::pair<std::wstring, std::wstring> >::const_iterator it;
+        for (it = params->m_params.begin(); it != params->m_params.end(); ++it)
+            hash += (it->first + L"=" + it->second + L",");
+    }
+
+    hash = kl::md5str(hash);
+    time_t t = time(NULL);
+
+    m_call_cache_mutex.lock();
+
+    // clear out expired entries out of call cache
+    std::map<std::wstring, std::pair<time_t, std::wstring > >::iterator it = m_call_cache.begin();
+    while (true)
+    {
+        if (it == m_call_cache.end())
+            break;
+        if ((t - it->second.first) > 5)
+        {
+            m_call_cache.erase(it);
+            it = m_call_cache.begin();
+            continue;
+        }
+
+        ++it;
+    }
+
+    it = m_call_cache.find(hash);
+    if (it != m_call_cache.end())
+    {
+        result = it->second.second;
+        m_call_cache_mutex.unlock();
+        return true;
+    }
+
+
+    m_call_cache_mutex.unlock();
+    return false;
+}
+
+
+void ClientDatabase::addCallCacheResult(const std::wstring& hash, const std::wstring& value)
+{
+    m_call_cache_mutex.lock();
+    m_call_cache[hash] = std::pair<time_t, std::wstring >(time(NULL), value);
+    m_call_cache_mutex.unlock();
+}
 
 std::wstring ClientDatabase::serverCall(const std::wstring& path,
                                         const std::wstring& method,
@@ -166,6 +237,11 @@ std::wstring ClientDatabase::serverCall(const std::wstring& path,
                                         int timeout)
 {
     std::vector<std::pair<std::wstring, std::wstring> >::const_iterator it;
+    std::wstring result;
+    std::wstring hash;
+
+    if (getCallCacheResult(path, method, params, hash, result))
+        return result;
 
     HttpRequest* http = getHttpObject();
 
@@ -186,13 +262,16 @@ std::wstring ClientDatabase::serverCall(const std::wstring& path,
 
     http->send();
 
-    std::wstring result = http->getResponseString();
+    result = http->getResponseString();
 
     if (xcm::get_current_thread_id() != m_connection_thread_id)
     {
         // keep connection open only on main database connection
         http->close();
     }
+
+    if (hash.length() > 0)
+        addCallCacheResult(hash, result);
 
     return result;
 }
