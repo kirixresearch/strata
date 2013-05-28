@@ -46,6 +46,7 @@ bool Controller::onRequest(RequestInfo& req)
         str = req.getValue(L"path");
     else if (req.getValueExists(L"handle"))
         str = req.getValue(L"handle");
+    else str = uri;
         
     if (str.length() > 43)
     {
@@ -71,6 +72,10 @@ bool Controller::onRequest(RequestInfo& req)
     {
         // no api method invoked, invoker wants data
         apiRead(req);
+
+        end = clock();
+        printf("%5d %4dms\n", req.getContentLength(), (end-start));
+    
         return true;
     }
  
@@ -98,7 +103,6 @@ bool Controller::onRequest(RequestInfo& req)
     else if (apimethod == L"close")            apiClose(req);
     else if (apimethod == L"alter")            apiAlter(req);
     else if (apimethod == L"load")             apiLoad(req);
-    else return false;
 
     end = clock();
     printf("%5d %4dms\n", req.getContentLength(), (end-start));
