@@ -132,14 +132,21 @@ void HttpRequest::init()
     curl_result = curl_easy_setopt(m_curl, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
     
     // allow cookies
-    curl_result = curl_easy_setopt(m_curl, CURLOPT_COOKIEFILE, "");
-    
+    if (m_cookie_file_path.length() > 0)
+    {
+        curl_result = curl_easy_setopt(m_curl, CURLOPT_COOKIEFILE, m_cookie_file_path.c_str());
+        curl_result = curl_easy_setopt(m_curl, CURLOPT_COOKIEJAR, m_cookie_file_path.c_str());
+    }
+     else
+    {
+        curl_result = curl_easy_setopt(m_curl, CURLOPT_COOKIEFILE, "");
+    }
+
     // include headers in body output
     //curl_result = curl_easy_setopt(m_curl, CURLOPT_HEADER, TRUE);
     
     curl_version_info_data* a = curl_version_info(CURLVERSION_NOW);
 }
-
 
 
 void HttpRequest::close()
@@ -152,6 +159,12 @@ void HttpRequest::close()
     freeResponsePieces();
     
     m_curl = NULL;
+}
+
+
+void HttpRequest::setCookieFilePath(const std::wstring& location)
+{
+    m_cookie_file_path = kl::tostring(location);
 }
 
 

@@ -39,6 +39,7 @@ public:
     HttpRequest();
     virtual ~HttpRequest();
 
+    void setCookieFilePath(const std::wstring& location);
     void setLocation(const std::wstring& location);
     void setTimeout(int timeout);
     void setPostValue(const std::wstring& key, const std::wstring& value);
@@ -72,6 +73,7 @@ private:
     struct curl_httppost* m_formfields;      // only used by multipart post
     struct curl_httppost* m_formfieldslast;  // only used by multipart post
     std::string m_post_string;               // only used by regular post
+    std::string m_cookie_file_path;
     bool m_post_multipart;
     int m_timeout;
 };
