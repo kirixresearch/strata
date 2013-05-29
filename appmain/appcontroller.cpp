@@ -4170,6 +4170,8 @@ bool AppController::openAny(const wxString& _location,
                             int open_mask,
                             int* site_id)
 {
+    AppBusyCursor bc;
+
     if (site_id)
         *site_id = 0;
         
