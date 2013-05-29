@@ -102,7 +102,6 @@ void TableDoc::setSortOrder(const std::wstring& expr)
 
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.query-job");
 
-
     // configure the job parameters
     kl::JsonNode params;
 
@@ -129,59 +128,6 @@ void TableDoc::setSortOrder(const std::wstring& expr)
 
     job->sigJobFinished().connect(this, &TableDoc::onSortJobFinished);
     g_app->getJobQueue()->addJob(job, jobStateRunning);
-
-
-
-/*
-    // if the database can't handle createIterator() with a different
-    // sort order on an existing set (e.g. must requery), do that here.
-    std::wstring db_driver = getDbDriver();
-    if (db_driver != L"xdnative" && db_driver != L"xdfs")
-    {
-        // configure the job parameters
-        kl::JsonNode params;
-        params = createSortFilterJobParams(m_path, getFilter(), expr);
-
-        // set the job parameters and start the job
-        wxString title = wxString::Format(_("Sorting '%s'"),
-                                          getCaption().c_str());
-
-        job->getJobInfo()->setTitle(towstr(title));
-        job->setParameters(params.toString());
-
-        job->sigJobFinished().connect(this, &TableDoc::onSortJobFinished);
-        g_app->getJobQueue()->addJob(job, jobStateRunning);
-
-        return;
-    }
-
-    if (expr.empty())
-    {
-        // set default order
-        m_sort_order = wxT("");
-        tango::IIteratorPtr iter;
-        iter = g_app->getDatabase()->query(getBrowsePath(), L"", L"", L"", NULL);
-        setIterator(iter);
-        return;
-    }
-
-
-    // configure the job parameters
-    kl::JsonNode params;
-    params = createSortFilterJobParams(getBrowsePath(), 
-                                       L"",
-                                       expr);
-
-    // set the job parameters and start the job
-    wxString title = wxString::Format(_("Sorting '%s'"),
-                                        getCaption().c_str());
-
-    job->getJobInfo()->setTitle(towstr(title));
-    job->setParameters(params.toString());
-
-    job->sigJobFinished().connect(this, &TableDoc::onSortJobFinished);
-    g_app->getJobQueue()->addJob(job, jobStateRunning);
-*/
 }
 
 std::wstring TableDoc::getSortOrder()
