@@ -256,6 +256,7 @@ private:
     void onShowContextMenu(wxWebEvent& evt);
     void onLeftUp(wxWebEvent& evt);
     void onMiddleUp(wxWebEvent& evt);
+    void onElementClick(wxWebEvent& evt);
     void onCreateBrowserRequest(wxWebEvent& evt);
     void onInitDownload(wxWebEvent& evt);
     void onOpenURI(wxWebEvent& evt);

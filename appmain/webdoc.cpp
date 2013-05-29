@@ -2116,6 +2116,7 @@ BEGIN_EVENT_TABLE(WebDoc, wxWindow)
     EVT_WEB_TITLECHANGE(wxID_WEB, WebDoc::onTitleChange)
     EVT_WEB_SHOWCONTEXTMENU(wxID_WEB, WebDoc::onShowContextMenu)
     EVT_WEB_LEFTUP(wxID_WEB, WebDoc::onLeftUp)
+    EVT_WEB_CLICK(wxID_WEB, WebDoc::onElementClick)
     EVT_WEB_MIDDLEUP(wxID_WEB, WebDoc::onMiddleUp)
     EVT_WEB_CREATEBROWSER(wxID_WEB, WebDoc::onCreateBrowserRequest)
     EVT_WEB_INITDOWNLOAD(wxID_WEB, WebDoc::onInitDownload)
@@ -3918,6 +3919,16 @@ void WebDoc::onUpdateUI(wxUpdateUIEvent& evt)
     }
 }
 
+void WebDoc::onElementClick(wxWebEvent& evt)
+{
+    if (evt.GetContentType() == "application/sdserv-table+json")
+    {
+        g_app->getAppController()->openTable(evt.GetHref());
+        return;
+    }
+
+    evt.Skip();
+}
 
 void WebDoc::onLeftUp(wxWebEvent& evt)
 {
