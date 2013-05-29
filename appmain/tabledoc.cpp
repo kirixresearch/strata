@@ -3910,15 +3910,17 @@ void TableDoc::onGridColumnRightClick(kcl::GridEvent& evt)
     m_allow_delete_menuid = isDeleteAllowed(this, false /* we're not deleting rows */);
     
 
-    tango::IStructurePtr iter_structure = m_iter->getStructure();
-    tango::IStructurePtr set_structure = g_app->getDatabase()->describeTable(m_path);
-    if (set_structure.isNull())
-        return;
+    // find out if the column properties panel is presently shown
 
+    bool column_props_panel_shown = false;
+    IDocumentSitePtr site = m_frame->lookupSite(wxT("CalculatedFieldPropertiesPanel"));
+    if (site.isOk())
+        column_props_panel_shown = site->getVisible();
 
     // find out if any calculated fields are selected
-    bool dynamic_selected = false;
-    bool static_selected = false;
+
+    int calculated_field_count = 0;
+    int fixed_field_count = 0;
     int selected_count = 0;
 
     kcl::IModelPtr model = m_grid->getModel();
@@ -3932,41 +3934,26 @@ void TableDoc::onGridColumnRightClick(kcl::GridEvent& evt)
             // increment the selected count
             selected_count++;
 
-            // this code fragement makes sure that we are not doing
-            // context column operations on calculated fields that are
-            // currently being modified; when checking, make sure we
-            // have a valid model column index (i.e., that we're not 
-            // on a column separator)
+            // this code fragement makes sure that we are not doing context
+            // column operations on calculated fields that are currently
+            // being modified; when checking, make sure we have a valid
+            // model column index (i.e., that we're not on a column separator)
+
             int model_idx = m_grid->getColumnModelIdx(i);
-            if (model_idx != -1)
-            {
-                kcl::IModelColumnPtr colinfo = model->getColumnInfo(model_idx);
-                wxString col_name = colinfo->getName();
-                tango::IColumnInfoPtr iter_col_info = iter_structure->getColumnInfo(towstr(col_name));
-                if (!iter_col_info)
-                    return;
-                tango::IColumnInfoPtr set_col_info = set_structure->getColumnInfo(towstr(col_name));
-                if (!set_col_info)
-                    return;
-                if (iter_col_info->getCalculated() != set_col_info->getCalculated())
-                    return;
-                if (iter_col_info->getCalculated())
-                {
-                    if (iter_col_info->getType() != set_col_info->getType())
-                        return;
-                    if (iter_col_info->getWidth() != set_col_info->getWidth())
-                        return;
-                    if (iter_col_info->getScale() != set_col_info->getScale())
-                        return;
-                    if (iter_col_info->getExpression() != set_col_info->getExpression())
-                        return;
-                }
-            }
 
             if (tmodel->getColumnCalculated(model_idx))
-                dynamic_selected = true;
+                calculated_field_count++;
                  else
-                static_selected = true;
+                fixed_field_count++;
+
+
+            if (m_grid->getColumnModelIdx(i) != -1  && /* check if on a real field, not a col separator */
+                tmodel->getColumnCalculated(model_idx) &&
+                column_props_panel_shown)
+            {
+                // if column properties panel is showing, don't allow any edit at the moment
+                return;
+            }
         }
     }
     
@@ -3985,9 +3972,9 @@ void TableDoc::onGridColumnRightClick(kcl::GridEvent& evt)
     menuPopup.Append(ID_Table_RemoveGroupBreak, _("Re&move Group Break"));
     menuPopup.AppendSeparator();
     menuPopup.Append(ID_Data_CreateDynamicField, _("Insert &Calculated Field..."));
-    if (dynamic_selected && selected_count == 1)
+    if (calculated_field_count > 0 && selected_count == 1)
         menuPopup.Append(ID_Data_ModifyDynamicField, _("&Edit Calculated Field..."));
-    if (!static_selected)
+    if (fixed_field_count == 0)
     {
         menuPopup.Append(ID_Data_MakeDynamicFieldStatic, _("Convert to Fixed &Field"));
         menuPopup.Append(ID_Edit_Delete, _("&Delete Calculated Field"));
