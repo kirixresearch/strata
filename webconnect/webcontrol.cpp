@@ -49,6 +49,7 @@ DEFINE_EVENT_TYPE(wxEVT_WEB_LEFTUP)
 DEFINE_EVENT_TYPE(wxEVT_WEB_MIDDLEUP)
 DEFINE_EVENT_TYPE(wxEVT_WEB_RIGHTUP)
 DEFINE_EVENT_TYPE(wxEVT_WEB_LEFTDCLICK)
+DEFINE_EVENT_TYPE(wxEVT_WEB_CLICK)
 DEFINE_EVENT_TYPE(wxEVT_WEB_DRAGDROP)
 DEFINE_EVENT_TYPE(wxEVT_WEB_INITDOWNLOAD)
 DEFINE_EVENT_TYPE(wxEVT_WEB_SHOULDHANDLECONTENT)
@@ -262,7 +263,13 @@ void BrowserChrome::ChromeInit()
                                             this,
                                             PR_TRUE,
                                             PR_FALSE, 2);
-                                                   
+
+    res = m_wnd->m_ptrs->m_event_target->AddEventListener(
+                                            NS_LITERAL_STRING("click"),
+                                            this,
+                                            PR_TRUE,
+                                            PR_FALSE, 2);
+                                                                  
     res = m_wnd->m_ptrs->m_event_target->AddEventListener(
                                             NS_LITERAL_STRING("dblclick"),
                                             this,
@@ -302,7 +309,12 @@ void BrowserChrome::ChromeUninit()
                                             NS_LITERAL_STRING("mouseup"),
                                             this,
                                             PR_TRUE);
-                                                   
+
+    res = m_wnd->m_ptrs->m_event_target->RemoveEventListener(
+                                            NS_LITERAL_STRING("click"),
+                                            this,
+                                            PR_TRUE);
+                                                                            
     res = m_wnd->m_ptrs->m_event_target->RemoveEventListener(
                                             NS_LITERAL_STRING("dblclick"),
                                             this,
@@ -739,7 +751,7 @@ NS_IMETHODIMP BrowserChrome::HandleEvent(nsIDOMEvent* evt)
     nsEmbedString nsstr_type;
     evt->GetType(nsstr_type);
     wxString type = ns2wx(nsstr_type);
-
+    
     if (type == wxT("dragdrop"))
     {
 
@@ -838,7 +850,8 @@ NS_IMETHODIMP BrowserChrome::HandleEvent(nsIDOMEvent* evt)
     if (type == wxT("mousedown") ||
         type == wxT("mouseup") ||
         type == wxT("dblclick") ||
-        type == wxT("dragdrop"))
+        type == wxT("dragdrop") ||
+        type == wxT("click"))
     {
         if (type == wxT("mousedown"))
         {
@@ -878,6 +891,10 @@ NS_IMETHODIMP BrowserChrome::HandleEvent(nsIDOMEvent* evt)
                 case 2: evtid = wxEVT_WEB_RIGHTUP; break;
             }
         }
+         else if (type == wxT("click"))
+        {
+            evtid = wxEVT_WEB_CLICK;
+        }
          else if (type == wxT("dblclick"))
         {
             evtid = wxEVT_WEB_LEFTDCLICK;
@@ -906,22 +923,32 @@ NS_IMETHODIMP BrowserChrome::HandleEvent(nsIDOMEvent* evt)
         anchor = node;
 
         // fill out and send a mouse event
-        wxWebEvent evt(evtid, m_wnd->GetId());
-        evt.m_target_node.m_data->setNode(target);
-        evt.SetEventObject(m_wnd);
+        wxWebEvent wxevt(evtid, m_wnd->GetId());
+        wxevt.m_target_node.m_data->setNode(target);
+        wxevt.SetEventObject(m_wnd);
         if (anchor)
         {
-            nsEmbedString nss;
-            anchor->GetHref(nss);
-            evt.SetHref(ns2wx(nss));
-            
+            nsEmbedString nss_href;
+            anchor->GetHref(nss_href);
+            wxevt.SetHref(ns2wx(nss_href));
+        
+            nsEmbedString nss_type;
+            anchor->GetType(nss_type);
+            wxevt.SetContentType(ns2wx(nss_type));
+
             // also, we can handle this here:  if a link was clicked, clear out
             // our favicon stuff to prepare for the next load
             m_wnd->ResetFavicon();
-            
         }
-        m_wnd->GetEventHandler()->ProcessEvent(evt);
-    
+        m_wnd->GetEventHandler()->ProcessEvent(wxevt);
+
+        if (!wxevt.GetSkipped())
+        {
+            evt->StopPropagation();
+            evt->PreventDefault();
+            return NS_OK;
+        }
+
         return NS_OK;
     }
 
@@ -1151,6 +1178,7 @@ public:
         
         m_current_url = ns2wx(spec);
         
+
         wxWebEvent evt(wxEVT_WEB_OPENURI, m_wnd->GetId());
         evt.SetEventObject(m_wnd);
         evt.SetHref(m_current_url);
