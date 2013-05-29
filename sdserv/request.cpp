@@ -625,6 +625,13 @@ bool RequestInfo::acceptCompressed()
     return m_accept_compressed;
 }
 
+std::wstring RequestInfo::getHost()
+{
+    const char* host = mg_get_header(this->m_conn, "Host");
+    if (!host) return L"";
+    return kl::towstring(host);
+}
+
 std::wstring RequestInfo::getURI()
 {
     return kl::towstring(m_req->uri);

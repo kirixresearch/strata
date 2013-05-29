@@ -11,8 +11,8 @@
 #include "sdserv.h"
 #include "controller.h"
 #include "request.h"
-
-
+#include <kl/regex.h>
+#include <kl/string.h>
 
 Controller::Controller()
 {
@@ -810,6 +810,12 @@ void Controller::apiQuery(RequestInfo& req)
             return;
         }
         
+        // translate any urls in the query to table paths
+        std::wstring host = kl::beforeLast(req.getHost(), L':');
+        klregex::wregex r(L"(https|sdservs|http|sdserv)://" + host + L":?[0-9]*/");
+        r.replace(sql, L"/");
+
+
         xcm::IObjectPtr obj;
         db->execute(sql, 0, obj, NULL);
 
