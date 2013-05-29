@@ -3944,6 +3944,12 @@ void WebDoc::onLeftUp(wxWebEvent& evt)
 
 void WebDoc::onMiddleUp(wxWebEvent& evt)
 {
+    if (evt.GetContentType() == "application/sdserv-table+json")
+    {
+        //g_app->getAppController()->openTable(evt.GetHref());
+        return;
+    }
+
     if (g_feed_content_handler)
     {
         g_feed_content_handler->setOpenedWithMiddleClick(true);
