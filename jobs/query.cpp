@@ -82,9 +82,11 @@ int QueryJob::runJob()
 
     kl::JsonNode input_node = params_node["input"];
     kl::JsonNode output_node = params_node["output"];
+    kl::JsonNode columns_node = params_node["columns"];
     kl::JsonNode where_node = params_node["where"];
     kl::JsonNode order_node = params_node["order"];
     kl::JsonNode distinct_node = params_node["distinct"];
+
 
     std::wstring input_str = input_node.getString();
     
@@ -93,15 +95,9 @@ int QueryJob::runJob()
     // hierarchical/folder namespaces
     if (kl::stringFrequency(input_str, '/') == 1 && input_str[0] == '/')
         input_str.erase(0, 1);
+    
 
-    std::wstring q_input_str = tango::quoteIdentifierIfNecessary(m_db, input_str);
-
-    std::wstring output_str = output_node.getString();
-    std::wstring q_output_str = tango::quoteIdentifierIfNecessary(m_db, output_node.getString());
-
-    std::wstring where_str = where_node.getString();
     std::wstring order_str;
-
     std::vector<kl::JsonNode> order_children_node = order_node.getChildren();
     std::vector<kl::JsonNode>::iterator it;
 
@@ -116,55 +112,81 @@ int QueryJob::runJob()
             order_str += L" DESC";
     }
 
-    bool distinct = false;
-    if (distinct_node.isOk())
-        distinct = distinct_node.getBoolean();
 
-    std::wstring sql;
-    sql += L" SELECT ";
-
-    if (distinct)
+    if (!distinct_node.isOk() && !output_node.isOk())
     {
-        sql += L" DISTINCT ";
-    }
+        tango::QueryParams qp;
+        qp.from = input_str;
+        qp.columns = columns_node.isOk() ? columns_node.getString() : L"";
+        qp.order = order_node.isOk() ? order_str : L"";
+        qp.where = where_node.isOk() ? where_node.getString() : L"";
+        qp.job = m_db->createJob();
 
-    sql += L" * ";
+        setTangoJob(qp.job);
 
-    if (output_str.length() > 0)
-    {
-        sql += L" INTO ";
-        sql += q_output_str;
-    }
+        tango::IIteratorPtr iter = m_db->query(qp);
+        setResultObject(iter);
 
-    sql += L" FROM ";
-    sql += q_input_str;
-
-    if (where_str.length() > 0)
-    {
-        sql += L" WHERE ";
-        sql += where_str;
-    }
-
-    if (order_str.length() > 0)
-    {
-        sql += L" ORDER BY ";
-        sql += order_str;
-    }
-
-
-    tango::IJobPtr tango_job = m_db->createJob();
-    setTangoJob(tango_job);
-
-    xcm::IObjectPtr result;
-    m_db->execute(sql, tango::sqlPassThrough, result, tango_job);
-    setResultObject(result);
-
-    if (tango_job->getCancelled())
-    {
-        m_job_info->setState(jobStateCancelling);
         return 0;
     }
+     else
+    {
+        std::wstring q_input_str = tango::quoteIdentifierIfNecessary(m_db, input_str);
 
+        std::wstring output_str = output_node.getString();
+        std::wstring q_output_str = tango::quoteIdentifierIfNecessary(m_db, output_node.getString());
+
+        std::wstring where_str = where_node.getString();
+
+        bool distinct = false;
+        if (distinct_node.isOk())
+            distinct = distinct_node.getBoolean();
+
+        std::wstring sql;
+        sql += L" SELECT ";
+
+        if (distinct)
+        {
+            sql += L" DISTINCT ";
+        }
+
+        sql += L" * ";
+
+        if (output_str.length() > 0)
+        {
+            sql += L" INTO ";
+            sql += q_output_str;
+        }
+
+        sql += L" FROM ";
+        sql += q_input_str;
+
+        if (where_str.length() > 0)
+        {
+            sql += L" WHERE ";
+            sql += where_str;
+        }
+
+        if (order_str.length() > 0)
+        {
+            sql += L" ORDER BY ";
+            sql += order_str;
+        }
+
+
+        tango::IJobPtr tango_job = m_db->createJob();
+        setTangoJob(tango_job);
+
+        xcm::IObjectPtr result;
+        m_db->execute(sql, tango::sqlPassThrough, result, tango_job);
+        setResultObject(result);
+
+        if (tango_job->getCancelled())
+        {
+            m_job_info->setState(jobStateCancelling);
+            return 0;
+        }
+    }
 
     return 0;
 }
