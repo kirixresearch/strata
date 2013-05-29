@@ -27,6 +27,7 @@
 #include "../xdcommon/filestream.h"
 #include "../xdcommon/connectionstr.h"
 #include "../xdcommon/dbfuncs.h"
+#include "../xdcommon/cmndynamicset.h"
 #include "nodefilestream.h"
 #include "database.h"
 #include "baseset.h"
@@ -3268,6 +3269,41 @@ tango::IIteratorPtr XdnativeDatabase::query(const tango::QueryParams& qp)
         call_params.from = rpath;
         return db->query(call_params);
     }
+
+    if (qp.where.length() > 0)
+    {
+        // create an iterator for the table we are interested in
+        IXdsqlTablePtr table = openTable(qp.from);
+        if (table.isNull())
+            return xcm::null;
+        tango::IIteratorPtr iter = table->createIterator(L"", L"", NULL);
+        if (iter.isNull())
+            return xcm::null;
+
+        // create a filtered record set
+        CommonDynamicSet* dynset = new CommonDynamicSet;
+        dynset->ref();
+        if (!dynset->create(static_cast<tango::IDatabase*>(this), qp.from))
+        {
+            // error.setError(tango::errorGeneral, L"Unable to process WHERE clause");
+            dynset->unref();
+            return xcm::null;
+        }
+        
+        // insert all rows meeting expression
+        int res = dynset->insert(iter, qp.where, 0, qp.job);
+        if (res == -1)
+        {
+            // error.setError(tango::errorGeneral, L"Unable to process WHERE clause");
+            dynset->unref();
+            return xcm::null;
+        }
+        
+        tango::IIteratorPtr result_iter = dynset->createIterator(qp.columns, qp.order, NULL);
+        dynset->unref();
+        return result_iter;
+    }
+
 
     IXdsqlTablePtr table = openTable(qp.from);
     if (table.isNull())

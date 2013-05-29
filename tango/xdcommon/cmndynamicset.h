@@ -14,6 +14,10 @@
 
 #include "../xdcommonsql/xdcommonsql.h"
 
+
+class IIndex;
+class KeyLayout;
+
 class CommonDynamicSetIndexEntry
 {
 public:

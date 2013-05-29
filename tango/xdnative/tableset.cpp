@@ -1332,7 +1332,6 @@ tango::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
                                              const std::wstring& order,
                                              tango::IJob* job)
 {
-
     if (order.empty())
     {
         // create an unordered iterator
@@ -1389,7 +1388,6 @@ tango::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
         full_index_filename =  makePathName(m_database->getBasePath(),
                                             L"temp",
                                             index_filename);
-
 
         idx = createExternalIndex(m_database,
                                   m_ofspath,
