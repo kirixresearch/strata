@@ -1400,6 +1400,9 @@ bool AppController::init()
         ext_mgr->startAllExtensions();
     }
     
+    // hook for 'app ready'
+    apphookAppReady();
+
     return true;
 }
 

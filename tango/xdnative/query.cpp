@@ -158,7 +158,7 @@ bool XdnativeDatabase::execute(const std::wstring& command,
             // it further
             if (rpath.length() > 0 && rpath[0] == '/')
                 rpath.erase(0, 1);
-            if (!kl::isFileUrl(rpath) && rpath.find(L"/") != -1)
+            if (rpath.find(L"://") == rpath.npos && rpath.find(L"/") != -1)
                 rpath = L"/" + rpath;
             
             rpath = quote_openchar + rpath + quote_closechar;

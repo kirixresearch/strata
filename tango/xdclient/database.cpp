@@ -767,7 +767,7 @@ tango::IIteratorPtr ClientDatabase::query(const tango::QueryParams& qp)
     params.setParam(L"columns", qp.columns);
     params.setParam(L"where", qp.where);
     params.setParam(L"order", qp.order);
-    params.setParam(L"limit", L"5");
+    params.setParam(L"limit", L"1");
 
     std::wstring sres = serverCall(qp.from, L"", &params);
     kl::JsonNode response;
@@ -938,6 +938,29 @@ bool ClientDatabase::executePost(const std::wstring& _command)
     return true;
 }
 
+
+
+
+static std::wstring getFromTable(const std::wstring& _sql)
+{
+    std::wstring part, sql = _sql;
+
+    while (true)
+    {
+        part = popToken(sql);
+        if (part.length() == 0)
+            return L"";
+        if (kl::iequals(L"FROM", part))
+        {
+            std::wstring from = popToken(sql);
+            dequote(from, '[', ']');
+            dequote(from, '`', '`');
+            return from;
+        }
+    }
+}
+
+
 bool ClientDatabase::execute(const std::wstring& command,
                              unsigned int flags,
                              xcm::IObjectPtr& result,
@@ -956,8 +979,11 @@ bool ClientDatabase::execute(const std::wstring& command,
     params.setParam(L"mode", L"sql");
     params.setParam(L"sql", command);
 
+    std::wstring from = getFromTable(command);
+    if (from.empty())
+        return false;
 
-    std::wstring sres = serverCall(L"", L"query", &params);
+    std::wstring sres = serverCall(from, L"query", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -970,7 +996,7 @@ bool ClientDatabase::execute(const std::wstring& command,
 
     // initialize the iterator
     ClientIterator* iter = new ClientIterator(this);
-    if (!iter->init(response["handle"], L""))
+    if (!iter->init(response["handle"], from))
     {
         delete iter;
         return xcm::null;

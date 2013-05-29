@@ -16,6 +16,7 @@
 void apphookInitFrame();
 void apphookInitCommands();
 void apphookInitMenuBar(wxMenuBar* menubar);
+void apphookAppReady();
 
 void apphookPostOpenProject();
 
