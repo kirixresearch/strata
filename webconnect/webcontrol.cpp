@@ -940,9 +940,9 @@ NS_IMETHODIMP BrowserChrome::HandleEvent(nsIDOMEvent* evt)
             // our favicon stuff to prepare for the next load
             m_wnd->ResetFavicon();
         }
-        m_wnd->GetEventHandler()->ProcessEvent(wxevt);
 
-        if (!wxevt.GetSkipped())
+
+        if (m_wnd->GetEventHandler()->ProcessEvent(wxevt))
         {
             evt->StopPropagation();
             evt->PreventDefault();
