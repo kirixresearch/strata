@@ -84,10 +84,55 @@ void TableDoc::setSortOrder(const std::wstring& expr)
     if (m_grid->isEditing())
         m_grid->endEdit(true);
 
+    if (expr.empty())
+    {
+        std::wstring path = m_browse_path;
+        if (path.empty())
+            path = m_path;
+
+        // set default order
+        m_sort_order = L"";
+        tango::IIteratorPtr iter;
+        iter = g_app->getDatabase()->query(path, L"", L"", L"", NULL);
+        setIterator(iter);
+        return;
+    }
+
+
 
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.query-job");
 
 
+    // configure the job parameters
+    kl::JsonNode params;
+
+    if (m_browse_path.length() > 0)
+    {
+        // there's a path reference to the filtered table;
+        // use that instead of re-filtering (N.B. only some databases
+        // support this, like xdnative.  Most SQL databases need to
+        // re-filter using a WHERE clause)
+
+        params = createSortFilterJobParams(m_browse_path, L"", expr);
+    }
+     else
+    {
+        params = createSortFilterJobParams(m_path, getFilter(), expr);
+    }
+
+    // set the job parameters and start the job
+    wxString title = wxString::Format(_("Sorting '%s'"),
+                                        getCaption().c_str());
+
+    job->getJobInfo()->setTitle(towstr(title));
+    job->setParameters(params.toString());
+
+    job->sigJobFinished().connect(this, &TableDoc::onSortJobFinished);
+    g_app->getJobQueue()->addJob(job, jobStateRunning);
+
+
+
+/*
     // if the database can't handle createIterator() with a different
     // sort order on an existing set (e.g. must requery), do that here.
     std::wstring db_driver = getDbDriver();
@@ -136,6 +181,7 @@ void TableDoc::setSortOrder(const std::wstring& expr)
 
     job->sigJobFinished().connect(this, &TableDoc::onSortJobFinished);
     g_app->getJobQueue()->addJob(job, jobStateRunning);
+*/
 }
 
 std::wstring TableDoc::getSortOrder()
