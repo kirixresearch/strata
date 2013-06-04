@@ -20,7 +20,7 @@ all:
 	cd tango/xdnative && $(MAKE) -w
 	cd tango/xdodbc && $(MAKE) -w
 #	cd tango/xdoracle && $(MAKE) -w
-	cd tango/xddrizzle && $(MAKE) -w
+#	cd tango/xddrizzle && $(MAKE) -w
 	cd jobs && $(MAKE) -w
 	cd kcl && $(MAKE) -w
 	cd webconnect && $(MAKE) -w
@@ -37,7 +37,7 @@ clean:
 	cd tango/xdnative && $(MAKE) -w clean
 	cd tango/xdodbc && $(MAKE) -w clean
 #	cd tango/xdoracle && $(MAKE) -w clean
-	cd tango/xddrizzle && $(MAKE) -w clean
+#	cd tango/xddrizzle && $(MAKE) -w clean
 	cd jobs && $(MAKE) -w clean
 	cd kcl && $(MAKE) -w clean
 	cd webconnect && $(MAKE) -w clean

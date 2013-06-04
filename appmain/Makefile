@@ -49,9 +49,7 @@ OBJECTS = \
 	appmain.o \
 	appprefs.o \
 	appprint.o \
-	apputil.o \
 	bitmapmgr.o \
-	bookmark.o \
 	bookmarkfs.o \
 	commandmgr.o \
 	commands.o \
@@ -180,6 +178,7 @@ OBJECTS = \
 	toolbars.o \
 	transformationdoc.o \
 	updater.o \
+	util.o \
 	webdoc.o \
 	webserver.o
 

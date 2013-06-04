@@ -45,8 +45,8 @@ public:
 };
 
 
-int thread_create(thread_t *thread, const thread_t *attr,
-                  unsigned (__stdcall *start_routine) (void *), void *arg);
+int thread_create(thread_t* thread, const thread_t* attr,
+                  unsigned (*start_routine) (void *), void* arg);
 
 void thread_sleep(unsigned int milliseconds);
 

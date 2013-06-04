@@ -160,8 +160,10 @@ endif
 
 # curl configuration
 #
-CURL_CFLAGS := -I${SUPP_DIR}/curl/include
-CURL_LIBS := ${SUPP_DIR}/curl/lib/.libs/libcurl.a ${SUPP_DIR}/libssh2/src/.libs/libssh2.a /usr/lib/libssl.a /usr/lib/libcrypto.a
+#CURL_CFLAGS := -I${SUPP_DIR}/curl/include
+#CURL_LIBS := ${SUPP_DIR}/curl/lib/.libs/libcurl.a ${SUPP_DIR}/libssh2/src/.libs/libssh2.a /usr/lib/libssl.a /usr/lib/libcrypto.a
+CURL_CFLAGS := 
+CURL_LIBS := -lcurl -lssh2 -lssl -lcrypto
 
 
 # haru configuration

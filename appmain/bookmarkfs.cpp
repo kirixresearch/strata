@@ -28,7 +28,7 @@ static std::wstring getBookmarksLocation()
     if (!g_bookmarks_path.empty())
         return g_bookmarks_path;
 
-    std::wstring path = g_app->getAppDataPath();
+    std::wstring path = towstr(g_app->getAppDataPath());
     path += PATH_SEPARATOR_CHAR;
     path += L"Bookmarks";
 
