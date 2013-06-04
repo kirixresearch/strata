@@ -32,10 +32,10 @@ OBJECTS = \
 	jobinfo.o \
 	jobs.o \
 	jobspch.o \
+	load.o \
 	query.o \
 	relationship.o \
 	summarize.o \
-	transform.o \
 	update.o \
 	util.o 
  
