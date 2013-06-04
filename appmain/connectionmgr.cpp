@@ -128,7 +128,7 @@ public:
                                      provider = L"xdfs"; break;
             case dbtypePackage:      provider = L"xdkpg"; break;
             default:
-                return false;
+                return L"";
         }
 
 

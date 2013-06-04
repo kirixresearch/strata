@@ -78,21 +78,9 @@ OBJECTS = \
 	importtemplate.o \
 	importwizard.o \
 	inetauth.o \
-	jobappend.o \
-	jobcopy.o \
-	jobexport.o \
-	jobexportpkg.o \
-	jobgroup.o \
 	jobfindinfiles.o \
-	jobftp.o \
-	jobimport.o \
-	jobimportpkg.o \
-	jobindex.o \
-	jobmodifystruct.o \
-	jobquery.o \
 	jobscheduler.o \
 	jobscript.o \
-	jobsplit.o \
 	jsonconfig.o \
 	linkbar.o \
 	moduleremoveduprec.o \

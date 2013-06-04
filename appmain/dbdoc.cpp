@@ -3514,9 +3514,9 @@ void DbDoc::onDragDrop(IFsItemPtr target,
     {
         IFsItemPtr item = items->getItem(i);
 
-        std::wstring src_path = getFsItemPath(item);
+        std::wstring src_path = towstr(getFsItemPath(item));
         std::wstring src_name = kl::afterLast(src_path, '/');
-        std::wstring dest_folder = getFsItemPath(target);
+        std::wstring dest_folder = towstr(getFsItemPath(target));
 
         tango::IDatabasePtr db = g_app->getDatabase();
         tango::IDatabasePtr source_db = getItemDatabase(item);

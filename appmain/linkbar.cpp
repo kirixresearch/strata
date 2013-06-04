@@ -140,7 +140,7 @@ LRESULT WXDLLEXPORT APIENTRY wxWndProc(HWND, UINT, WPARAM, LPARAM);
 std::wstring xf_get_win32_error_msg();
 
 
-#if wxCHECK_VERSION(2,9,0)
+#if wxCHECK_VERSION(2,9,0) && defined(__WXMSW__)
 class DropShadowPopupTransientWindow : public wxPopupTransientWindow
 {
 
@@ -2020,7 +2020,7 @@ void LinkBar::onFsDataFolderDrop(IFsItemPtr target, wxDataObject* data, wxDragRe
             {
                 IFsItemPtr item = items->getItem(i);
                 std::wstring src_path = BookmarkFs::getBookmarkItemPath(item);
-                std::wstring dest_path = target_folder + L"/" + item->getLabel();
+                std::wstring dest_path = target_folder + L"/" + towstr(item->getLabel());
 
                 BookmarkFs::moveItem(src_path, dest_path);
                 BookmarkFs::setFileVisualLocation(dest_path, target_idx + i);
