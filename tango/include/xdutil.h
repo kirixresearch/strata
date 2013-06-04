@@ -17,6 +17,7 @@
 #include <string>
 #include <algorithm>
 #include <ctime>
+#include <cwctype>
 
 namespace tango
 {

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ $# -le 1 ]; then
+if [ $# -lt 1 ]; then
    echo Current settings:
    cat app_config.mak
    exit
