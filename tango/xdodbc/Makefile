@@ -20,8 +20,8 @@ LIBS = ../xdcommon/libxdcommon.a -lodbc -lodbcinst -lkscript -lkl -lpthread -ldl
 LINKFLAGS = -fPIC -shared -Wl,-soname,libxdodbc.so.1
 
 OBJECTS = database.o \
+	inserter.o \
 	iterator.o \
-	set.o \
 	xdodbc.o
 
 
