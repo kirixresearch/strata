@@ -32,6 +32,7 @@ struct SessionQueryResult : public ServerSessionObject
     tango::IIteratorPtr iter;
     std::vector<SessionQueryResultColumn> columns;
     tango::rowpos_t rowpos;
+    tango::rowpos_t rowcount;
 };
 
 struct SessionStream : public ServerSessionObject

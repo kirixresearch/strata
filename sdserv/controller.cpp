@@ -1028,6 +1028,10 @@ void Controller::apiRead(RequestInfo& req)
         so = new SessionQueryResult;
         so->iter = iter;
         so->rowpos = 1;
+        if (finfo->getFlags() & tango::sfFastRowCount)
+            so->rowcount = iter->getRowCount();
+             else
+            so->rowcount = -1;
         addServerSessionObject(handle, so);
     }
      else
@@ -1084,7 +1088,13 @@ void Controller::apiRead(RequestInfo& req)
         }
     }
 
-    str = L"{ \"success\": true, \"handle\": \"" + handle + L"\", \"rows\": [ ";
+    str = L"";
+    str += L"{ \"success\": true, \"handle\": \"" + handle + L"\", ";
+
+    if (so->rowcount != -1)
+        str += L"\"total_count\": \"" +  kl::itowstring(so->rowcount) + L"\", ";
+
+    str += L"\"rows\": [ ";
     std::wstring cell;
     
     int row = 0, col, rowcnt = 0;
