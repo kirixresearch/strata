@@ -86,7 +86,7 @@ void Thread::exit()
 
 
 int thread_create(thread_t* thread, const thread_t* attr,
-                  unsigned (*start_routine) (void *), void* arg)
+                  unsigned (KLTHREAD_CALLING_CONVENTION *start_routine) (void *), void* arg)
 {
     // use of the c runtime library should use a _beginthreadex instead
     // of CreateThread; see: http://support.microsoft.com/kb/104641/en-us

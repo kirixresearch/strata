@@ -45,8 +45,14 @@ public:
 };
 
 
+#ifdef _MSC_VER
+#define KLTHREAD_CALLING_CONVENTION __stdcall
+#else
+#define KLTHREAD_CALLING_CONVENTION
+#endif
+
 int thread_create(thread_t* thread, const thread_t* attr,
-                  unsigned (*start_routine) (void *), void* arg);
+                  unsigned (KLTHREAD_CALLING_CONVENTION *start_routine) (void *), void* arg);
 
 void thread_sleep(unsigned int milliseconds);
 
