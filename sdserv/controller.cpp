@@ -786,7 +786,7 @@ void Controller::apiQuery(RequestInfo& req)
         std::wstring handle = createHandle();
         SessionQueryResult* so = new SessionQueryResult;
         so->iter = iter;
-        so->rowpos = 1;
+        so->rowpos = 0;
         addServerSessionObject(handle, so);
         
         // return success to caller
@@ -830,7 +830,7 @@ void Controller::apiQuery(RequestInfo& req)
         std::wstring handle = createHandle();
         SessionQueryResult* so = new SessionQueryResult;
         so->iter = iter;
-        so->rowpos = 1;
+        so->rowpos = 0;
         addServerSessionObject(handle, so);
         
         // return success to caller
@@ -1027,7 +1027,7 @@ void Controller::apiRead(RequestInfo& req)
         handle = createHandle();
         so = new SessionQueryResult;
         so->iter = iter;
-        so->rowpos = 1;
+        so->rowpos = 0;
         if (finfo->getFlags() & tango::sfFastRowCount)
             so->rowcount = iter->getRowCount();
              else
@@ -1069,12 +1069,18 @@ void Controller::apiRead(RequestInfo& req)
     std::wstring str;
     str.reserve((limit>0?limit:100)*180);
     
-    if (start != -1)
+
+    if (start == -1)
     {
-        if (start == 1)
+        iter->goFirst();
+        so->rowpos = 0;
+    }
+     else
+    {
+        if (start == 0)
         {
             iter->goFirst();
-            so->rowpos = 1;
+            so->rowpos = 0;
         }
          else
         {
