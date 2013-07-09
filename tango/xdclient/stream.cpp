@@ -50,6 +50,14 @@ bool ClientStream::read(void* pv,
     // overrun if one decodes to a buffer of the exact expected size
 
     std::string content = kl::tostring(response["data"].getString());
+    size_t content_len = content.length();
+    if (content_len == 0)
+    {
+        if (read_count)
+            *read_count = 0;
+        return false;
+    }
+
     char* tmpbuf = new char[content.length()];
     kl::base64_decodestate state;
     kl::base64_init_decodestate(&state);
