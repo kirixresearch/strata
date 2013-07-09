@@ -14,6 +14,7 @@
 #include "stream.h"
 #include <kl/string.h>
 #include <kl/md5.h>
+#include <kl/url.h>
 #include <ctime>
 
 
@@ -124,24 +125,33 @@ std::wstring ClientDatabase::getRequestPath(const std::wstring& path, const std:
     }
 
 
-    if (m_port == L"4820")
-        res.append(L"https://");
-         else
-        res.append(L"http://");
-
-    res.append(m_host);
-    if (m_port.length() > 0 && m_port != L"0")
+    // if m_host already has a url protocol, don't build it up
+    if (m_host.find(L"://") != m_host.npos)
     {
-        res.append(L":");
-        res.append(m_port); 
+        res = m_host;
+    }
+     else
+    {
+        if (m_port == L"4820" || m_port == L"443")
+            res.append(L"https://");
+             else
+            res.append(L"http://");
+
+        res.append(m_host);
+        if (m_port.length() > 0 && m_port != L"0")
+        {
+            res.append(L":");
+            res.append(m_port); 
+        }
     }
 
-    if (path.length() > 0)
+
+    if (path.length() > 0 && path != L"/")
     {
         if (path[0] != '/')
             res += '/';
             
-        res += path;
+        res += kl::url_encodeURI(path);
     }
 
     if (method.length() > 0)
