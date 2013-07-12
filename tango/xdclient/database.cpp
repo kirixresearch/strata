@@ -187,6 +187,11 @@ bool ClientDatabase::getCallCacheResult(const std::wstring& path,
                                         std::wstring& hash,
                                         std::wstring& result)
 {
+    // call cache, which functionally working, sometimes causes unexpected results
+    // we'll disable it for now
+    return false;
+
+
     hash = path;
     hash += L":";
     hash += method;
@@ -757,9 +762,8 @@ tango::IStreamPtr ClientDatabase::openStream(const std::wstring& path)
 bool ClientDatabase::createStream(const std::wstring& path, const std::wstring& mime_type)
 {
     ServerCallParams params;
-    params.setParam(L"path", path);
     params.setParam(L"mime_type", mime_type);
-    std::wstring sres = serverCall(L"", L"createstream", &params);
+    std::wstring sres = serverCall(path, L"createstream", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
