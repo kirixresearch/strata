@@ -919,44 +919,43 @@ std::wstring getMountRoot(tango::IDatabasePtr db, const std::wstring _path)
     }
 }
 
-bool getMountPointHelper(tango::IDatabasePtr& db, const wxString& _path, wxString& cstr, wxString& rpath)
+bool getMountPointHelper(tango::IDatabasePtr& db, const std::wstring& _path, std::wstring& cstr, std::wstring& rpath)
 {
-    std::vector<wxString> parts;
+    std::vector<std::wstring> parts;
 
-    wxString path = _path;
-    path.Trim(true);
-    path.Trim(false);
+    std::wstring path = _path;
+    kl::trim(path);
     
-    if (path.Length() == 0 || path[0] != wxT('/'))
-        path.Prepend(wxT("/"));
-    if (path.Length() > 0 && path.Last() == wxT('/'))
-        path.RemoveLast();
+    if (path.length() == 0 || path[0] != L'/')
+        path = L"/" + path;
+    if (path.length() > 0 && path[path.length()-1] == L'/')
+        path = path.substr(0, path.length()-1);
     
-    while (path.Length() > 0)
+    while (path.length() > 0)
     {
         std::wstring wcstr, wrpath;
-        if (db->getMountPoint(towstr(path), wcstr, wrpath))
+        if (db->getMountPoint(path, wcstr, wrpath))
         {
-            rpath = "";
+            rpath = L"";
             cstr = wcstr;
             
-            std::vector<wxString>::iterator it;
+            std::vector<std::wstring>::iterator it;
             for (it = parts.begin(); it != parts.end(); ++it)
             {
-                rpath += wxT("/");
+                rpath += L"/";
                 rpath += *it;
             }
             
-            if (wrpath != L"" && wrpath != wxT("/"))
-                rpath.Prepend(wrpath);
+            if (wrpath.length() > 0 && wrpath != L"/")
+                rpath = wrpath + rpath;
             return true;
         }
 
 
-        if (path.Freq(wxT('/')) <= 1)
+        if (kl::stringFrequency(path, '/') <= 1)
             return false;
-        parts.push_back(path.AfterLast('/'));
-        path = path.BeforeLast('/');
+        parts.push_back(kl::afterLast(path, '/'));
+        path = kl::beforeLast(path, '/');
     }
     
     return false;

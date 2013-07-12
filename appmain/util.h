@@ -239,7 +239,7 @@ bool isSamePath(const std::wstring& path1, const std::wstring& path2);
 wxString getObjectPathFromMountPath(const wxString& database_path);
 wxString getPhysPathFromMountPath(const wxString& database_path);
 std::wstring getMountRoot(tango::IDatabasePtr db, const std::wstring path);
-bool getMountPointHelper(tango::IDatabasePtr& db, const wxString& _path, wxString& cstr, wxString& rpath);
+bool getMountPointHelper(tango::IDatabasePtr& db, const std::wstring& path, std::wstring& cstr, std::wstring& rpath);
 bool isTemporaryTable(const std::wstring& path);
 
 // gets the filename from the path

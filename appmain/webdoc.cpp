@@ -2497,9 +2497,9 @@ void WebDoc::onFsDataDropped(wxWebEvent& evt)
     for (i = 0; i < count; ++i)
     {
         IFsItemPtr item = items->getItem(i);
-        wxString path = DbDoc::getFsItemPath(item);
+        std::wstring path = towstr(DbDoc::getFsItemPath(item));
         
-        wxString cstr, rpath;
+        std::wstring cstr, rpath;
         if (!getMountPointHelper(db, path, cstr, rpath))
             continue;
         

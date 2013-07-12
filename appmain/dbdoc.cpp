@@ -2463,7 +2463,7 @@ void DbDoc::onNewScript(wxCommandEvent& evt)
     wxString path = getDefaultNewFileName(parent, _("New Script"));
     if (!EditorDoc::newFile(path))
     {
-        appMessageBox(_("A file could not be created in this folder."),
+        deferredAppMessageBox(_("A file could not be created in this folder."),
                            APPLICATION_NAME,
                            wxOK | wxICON_ERROR | wxCENTER);
         return;
@@ -3554,7 +3554,8 @@ void DbDoc::onDragDrop(IFsItemPtr target,
 
         bool cross_mount = false;
         std::wstring cstr, rpath;
-        if (db->getMountPoint(dest_folder, cstr, rpath))
+        //if (db->getMountPoint(dest_folder, cstr, rpath))
+        if (getMountPointHelper(db, dest_folder, cstr, rpath))
             cross_mount = true;
 
 
