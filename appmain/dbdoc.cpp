@@ -3521,9 +3521,10 @@ void DbDoc::onDragDrop(IFsItemPtr target,
         tango::IDatabasePtr db = g_app->getDatabase();
         tango::IDatabasePtr source_db = getItemDatabase(item);
         tango::IDatabasePtr dest_db = getItemDatabase(target);
+        std::wstring dest_driver = getDbDriver(dest_db);
 
         std::wstring dest_name = src_name;
-        if (getDbDriver(dest_db) == L"xdfs")
+        if (dest_driver == L"xdfs")
         {
             // if we're saving the file to a filesystem mount and no extension
             // is specified, then automatically add a 'csv' or 'js' extension; this

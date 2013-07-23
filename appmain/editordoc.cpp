@@ -2071,8 +2071,8 @@ void EditorDoc::onExecute(wxCommandEvent& evt)
     // save the file; use saveFile() which saves the
     // file without updating the temporary path flag, 
     // preserving the (Untitled) caption
-    if (!saveFile())
-        return;
+    saveFile();
+    
 
     IDocumentSiteEnumPtr docsites;
     IDocumentSitePtr site;
