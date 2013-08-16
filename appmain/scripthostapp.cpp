@@ -348,16 +348,39 @@ void Extension::getTextResource(kscript::ExprEnv* env, void*, kscript::Value* re
      else
     {
         // load the image from the directory the script is in
+        std::wstring path;
         
-        wxString path = script_host->getStartupPath();
-        if (path.Length() == 0 || path.Last() != PATH_SEPARATOR_CHAR)
+        tango::IDatabasePtr db = g_app->getDatabase();
+        if (db.isOk())
+        {
+            path = towstr(script_host->getStartupPath());
+            if (path.length() == 0 || path[path.length()-1] != '/')
+                path += '/';
+
+            if (filename.length() > 0 && filename[0] == '/')
+                path = path.substr(0, path.length() - 1);
+            path += filename;
+
+            if (db->getFileExist(path))
+            {
+                std::wstring res;
+                if (readStreamTextFile(db, path, res))
+                {
+                    retval->setString(res);
+                    return;
+                }
+            }
+        }
+        
+        path = towstr(script_host->getStartupPath());
+        if (path.length() == 0 || path[path.length()-1] != PATH_SEPARATOR_CHAR)
             path += PATH_SEPARATOR_CHAR;
             
         if (filename.length() > 0 && filename[0] == PATH_SEPARATOR_CHAR)
-            path.RemoveLast();
+            path = path.substr(0, path.length() - 1);
         path += filename;
         
-        if (!xf_get_file_exist(towstr(path)))
+        if (!xf_get_file_exist(path))
         {
             // file doesn't exist
             retval->setNull();
@@ -365,7 +388,7 @@ void Extension::getTextResource(kscript::ExprEnv* env, void*, kscript::Value* re
         }
         
 
-        xf_file_t f = xf_open(towstr(path), xfOpen, xfRead, xfShareRead);
+        xf_file_t f = xf_open(path, xfOpen, xfRead, xfShareRead);
         if (!f)
         {
             // cannot open file
@@ -493,6 +516,24 @@ void HostApp::init(kscript::ExprParser* expr, Application* app)
 
 void HostApp::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
+}
+
+
+// (METHOD) HostApp.getDatabaseConnectionString
+//
+// Description: Returns the application's current database connection
+//
+// Syntax: function HostApp.getDatabaseConnectionString() : String
+//
+// Remarks: Returns a string containing the connection string used
+//     to connect to the current database project
+//
+// Returns: A string containing the current database's connection string
+
+
+void HostApp::getDatabaseConnectionString(kscript::ExprEnv* env, kscript::Value* retval)
+{
+    retval->setString(towstr(g_app->getDatabaseConnectionString()));
 }
 
 

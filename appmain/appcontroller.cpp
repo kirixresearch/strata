@@ -5539,17 +5539,36 @@ jobs::IJobPtr AppController::execute(const wxString& location)
                 return xcm::null;
             return t.execute();
         }
-        else if (mime_type == L"application/vnd.kx.query")
+         else if (mime_type == L"application/vnd.kx.query")
         {
             QueryTemplate t;
             if (!t.load(location))
                 return xcm::null;
             return t.execute();
         }
+         else if (mime_type.substr(0, 16) == L"application/vnd.")
+        {
+            std::wstring wval;
+            if (!readStreamTextFile(db, towstr(location), wval))
+                return xcm::null;
+
+            kl::JsonNode jobjson;
+            if (!jobjson.fromString(wval))
+                return xcm::null;
+            
+            kl::JsonNode params = jobjson.getChild(L"params");
+            if (!params.isOk())
+                return xcm::null;
+            
+            jobs::IJobPtr job = appCreateJob(mime_type);
+            job->setParameters(params.toString());
+
+            g_app->getJobQueue()->addJob(job, jobStateRunning);
+
+            return job;
+        }
          else
         {
-            // TODO: add hook for JSON job templates
-
             // most likely a script
             return executeScript(location);
         }

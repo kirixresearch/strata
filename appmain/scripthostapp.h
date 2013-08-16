@@ -92,6 +92,7 @@ public:
     BEGIN_KSCRIPT_CLASS("HostApp", HostApp)
         KSCRIPT_METHOD("constructor", HostApp::constructor)
         KSCRIPT_GUI_METHOD("getDatabase", HostApp::getDatabase)
+        KSCRIPT_GUI_METHOD("getDatabaseConnectionString", HostApp::getDatabaseConnectionString)
         KSCRIPT_GUI_METHOD("openDatabase", HostApp::openDatabase)
         KSCRIPT_GUI_METHOD("createDatabase", HostApp::createDatabase)
         KSCRIPT_GUI_METHOD("getCurrentLocation", HostApp::getCurrentLocation)
@@ -143,6 +144,7 @@ public:
 
     void constructor(kscript::ExprEnv* env, kscript::Value* retval);
     void getDatabase(kscript::ExprEnv* env, kscript::Value* retval);
+    void getDatabaseConnectionString(kscript::ExprEnv* env, kscript::Value* retval);
     void openDatabase(kscript::ExprEnv* env, kscript::Value* retval);
     void createDatabase(kscript::ExprEnv* env, kscript::Value* retval);
     void getCurrentLocation(kscript::ExprEnv* env, kscript::Value* retval);

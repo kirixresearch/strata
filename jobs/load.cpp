@@ -27,14 +27,14 @@ namespace jobs
     },
     "params": {
 
-        objects: [
+        "objects": [
 
             {
-                source_connection: "",
-                source_path: "",
+                "source_connection": "",
+                "source_path": "",
 
-                destination_connection: "",
-                destination_path: ""
+                "destination_connection": "",
+                "destination_path": ""
             }
         ]
 
