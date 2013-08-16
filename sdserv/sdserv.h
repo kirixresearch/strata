@@ -26,8 +26,6 @@
 #include <kl/json.h>
 #include "../jobs/jobs.h"
 
-struct mg_connection;
-struct mg_request_info;
 
 class Server
 {
@@ -44,10 +42,6 @@ private:
 
     bool useConfigFile(const std::wstring& config_file);
     
-    static void* callback(enum mg_event evt,
-                          struct mg_connection* conn,
-                          const struct mg_request_info* request_info);
-                       
 private:
 
     std::wstring m_config_file;

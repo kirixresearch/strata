@@ -162,10 +162,9 @@ bool Server::useConfigFile(const std::wstring& config_file)
     return true;
 }
 
-//static
-void* Server::callback(enum mg_event evt,
-                       struct mg_connection* conn,
-                       const struct mg_request_info* request_info)
+static void* request_callback(enum mg_event evt,
+                              struct mg_connection* conn,
+                              const struct mg_request_info* request_info)
 {
     if (evt == MG_NEW_REQUEST)
     {
@@ -196,7 +195,7 @@ int Server::runServer()
     if (m_options[0] == 0)
         return 0;
         
-    ctx = mg_start(&Server::callback, NULL, m_options);
+    ctx = mg_start(request_callback, NULL, m_options);
     
     while (1)
         ::Sleep(1000);
