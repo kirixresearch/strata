@@ -49,39 +49,6 @@ inline void* quickMemmem(const void* haystack, size_t haystack_len,
 } 
 
 
-static std::string compress_str(const std::string& str)
-{return "";/*
-    unsigned long input_size = str.size();
-    const char* input = str.c_str();
-
-    unsigned long output_size = (unsigned long)(input_size + input_size*0.1 + 12);   // per zlib comment, must be at least 0.1% input_size plus 12 bytes
-    char* output = new char[output_size];
-
-    // compress the string
-    int result = compress((unsigned char*)output, &output_size, (const unsigned char*)input, input_size);
-    if (result != Z_OK)
-        return "";
-
-    return std::string(output, output_size);*/
-}
-
-static std::string uncompress_str(const std::string& str, unsigned long len)
-{return "";/*
-    unsigned long input_size = str.size();
-    const char* input = str.c_str();
-
-    unsigned long output_size = len + len*0.1 + 100;
-    const char* output = new char[output_size];
-
-    // compress the string
-    int result = uncompress((unsigned char*)output, &output_size, (const unsigned char*)input, input_size);
-    if (result != Z_OK)
-        return "";
-
-    return std::string(output, output_size);*/
-}
-
-
 static void extractPairs(const std::wstring& str,
                          std::vector<request_member>& info)
 {
