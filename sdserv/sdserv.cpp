@@ -13,11 +13,12 @@
 #include "mongoose.h"
 #include "request.h"
 #include "controller.h"
+#include "proxy.h"
 
 
 
 
-Server g_server;
+Sdserv g_sdserv;
 Controller c;
 
 
@@ -51,17 +52,17 @@ static kl::JsonNode getJsonNodeFromFile(const std::wstring& filename)
 }
 
 
-Server::Server()
+Sdserv::Sdserv()
 {
     m_options[0] = 0;
 }
 
-Server::~Server()
+Sdserv::~Sdserv()
 {
 }
 
 
-std::wstring Server::getDatabaseConnectionString(const std::wstring& database_name)
+std::wstring Sdserv::getDatabaseConnectionString(const std::wstring& database_name)
 {
     kl::JsonNode config = getJsonNodeFromFile(m_config_file);
     if (config.isNull())
@@ -75,7 +76,7 @@ std::wstring Server::getDatabaseConnectionString(const std::wstring& database_na
 }
 
 
-bool Server::useConfigFile(const std::wstring& config_file)
+bool Sdserv::useConfigFile(const std::wstring& config_file)
 {
     static char s_ports[255];
     size_t i;
@@ -188,7 +189,7 @@ static void* request_callback(enum mg_event evt,
 }
 
 
-int Server::runServer()
+int Sdserv::runServer()
 {
     struct mg_context *ctx;
 
@@ -205,7 +206,7 @@ int Server::runServer()
 
 
 
-bool Server::initOptions(int argc, const char* argv[])
+bool Sdserv::initOptions(int argc, const char* argv[])
 {
     //const char *options[40] = { "listening_ports",   LISTENING_PORT,
     //                            "enable_keep_alive", "yes",
@@ -251,9 +252,26 @@ bool Server::initOptions(int argc, const char* argv[])
 
 int main(int argc, const char** argv)
 {
-    if (!g_server.initOptions(argc, argv))
+    if (!g_sdserv.initOptions(argc, argv))
         return 0;
 
-    return g_server.runServer();
+
+    if (argc > 1 && argv[1][0] != '-')
+    {
+        std::wstring cstr = g_sdserv.getDatabaseConnectionString(kl::towstring(argv[1]));
+        if (cstr.empty())
+        {
+            printf("Unknown database '%ls'.  Exiting...\n", cstr.c_str());
+            return 1;
+        }
+
+        c.setConnectionString(cstr);
+        g_sdserv.runServer();
+        return 0;
+    }
+
+    Proxy p;
+    p.runServer();
+    return 0;
 }
 

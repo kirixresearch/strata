@@ -179,6 +179,7 @@ int mg_read(struct mg_connection *, void *buf, size_t len);
 
 
 void mg_must_close(struct mg_connection *);
+void mg_force_close(struct mg_connection *);
 
 // Get the value of particular HTTP header.
 //

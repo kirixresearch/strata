@@ -67,6 +67,7 @@ public:
     virtual ~Controller();
 
     bool onRequest(RequestInfo& ri);
+    void setConnectionString(const std::wstring& cstr) { m_connection_string = cstr; }
 
 private:
 
@@ -111,6 +112,8 @@ private:
 
     std::map< std::wstring , tango::IDatabasePtr > m_databases;
     xcm::mutex m_databases_object_mutex;
+    tango::IDatabasePtr m_database;
+    std::wstring m_connection_string;
 };
 
 

@@ -219,6 +219,24 @@ void Controller::returnApiError(RequestInfo& req, const char* msg, const char* c
 
 tango::IDatabasePtr Controller::getSessionDatabase(RequestInfo& req)
 {
+    XCM_AUTO_LOCK(m_databases_object_mutex);
+    
+    if (m_database.isOk())
+        return m_database;
+
+    tango::IDatabaseMgrPtr dbmgr = tango::getDatabaseMgr();
+    if (dbmgr.isNull())
+        return xcm::null;
+
+    tango::IDatabasePtr db = dbmgr->open(m_connection_string);
+
+    if (db.isNull())
+        return xcm::null;
+
+    m_database = db;
+    return db;
+
+/*
     std::wstring base_path = L"/";
 
     std::map< std::wstring , tango::IDatabasePtr >::iterator it;
@@ -235,7 +253,7 @@ tango::IDatabasePtr Controller::getSessionDatabase(RequestInfo& req)
         return xcm::null;
 
 
-    std::wstring cstr = g_server.getDatabaseConnectionString(L"/");
+    std::wstring cstr = g_sdserv.getDatabaseConnectionString();
     if (cstr.length() == 0)
         return xcm::null;
 
@@ -250,6 +268,7 @@ tango::IDatabasePtr Controller::getSessionDatabase(RequestInfo& req)
         m_databases[base_path] = db;
         return db;
     }
+    */
 }
 
 
@@ -1625,7 +1644,7 @@ void Controller::apiLoad(RequestInfo& req)
 
 
     std::wstring source_connection = L"Xdprovider=xdfs";
-    std::wstring destination_connection = g_server.getDatabaseConnectionString(L"/");
+    std::wstring destination_connection = g_sdserv.getDatabaseConnectionString();
 
     // configure the job parameters
     kl::JsonNode params;

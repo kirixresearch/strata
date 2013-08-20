@@ -8,6 +8,9 @@
  *
  */
 
+ 
+#ifndef __SDSERV_SDSERV_H
+#define __SDSERV_SDSERV_H
 
 #include <string>
 #include <map>
@@ -27,16 +30,18 @@
 #include "../jobs/jobs.h"
 
 
-class Server
+class Sdserv
 {
 public:
     
-    Server();
-    ~Server();
+    Sdserv();
+    ~Sdserv();
     
     bool initOptions(int argc, const char* argv[]);
+    const char** getOptions() { return m_options; }
+
     int runServer();
-    std::wstring getDatabaseConnectionString(const std::wstring& database);
+    std::wstring getDatabaseConnectionString(const std::wstring& database = L"");
     
 private:
 
@@ -51,4 +56,7 @@ private:
 };
 
 
-extern Server g_server;
+extern Sdserv g_sdserv;
+
+
+#endif
