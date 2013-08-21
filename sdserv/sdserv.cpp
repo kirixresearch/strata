@@ -13,8 +13,6 @@
 #include "mongoose.h"
 #include "request.h"
 #include "controller.h"
-#include "proxy.h"
-
 
 
 
@@ -212,22 +210,37 @@ bool Sdserv::initOptions(int argc, const char* argv[])
     //                            "enable_keep_alive", "yes",
     //                            NULL };
     
-    const char* options[255];
-    options[0] = NULL;
-    
+
 
     std::wstring cfg_file;
-    
+    std::wstring database;
+    std::wstring home_cfg_file;
+    int port = 0;
+    bool ssl = false;
+
 #ifdef WIN32
-    cfg_file = _wgetenv(L"HOMEDRIVE");
-    cfg_file += _wgetenv(L"HOMEPATH");
-    cfg_file += L"\\sdserv.conf";
+    home_cfg_file  = _wgetenv(L"HOMEDRIVE");
+    home_cfg_file += _wgetenv(L"HOMEPATH");
+    home_cfg_file += L"\\sdserv.conf";
 #endif
 
-              
-    if (argc >= 3 && 0 == strcmp(argv[1], "-f"))
+    int i;
+    for (i = 1; i < argc; ++i)
     {
-        if (!useConfigFile(kl::towstring(argv[2])))
+        if (0 == strcmp(argv[i], "-f") && i+1 < argc)
+            cfg_file = kl::towstring(argv[i+1]);
+        if (0 == strcmp(argv[i], "-d") && i+1 < argc)
+            database = kl::towstring(argv[i+1]);
+        if (0 == strcmp(argv[i], "-p") && i+1 < argc)
+            port = atoi(argv[i+1]);
+        if (0 == strcmp(argv[i], "-s"))
+            ssl = true;
+    }
+
+
+    if (cfg_file.length() > 0)
+    {
+        if (!useConfigFile(cfg_file))
             return false;
     }
      else if (xf_get_file_exist(L"sdserv.conf"))
@@ -235,17 +248,47 @@ bool Sdserv::initOptions(int argc, const char* argv[])
         if (!useConfigFile(L"sdserv.conf"))
             return false;
     }
-     else if (cfg_file.length() > 0 && xf_get_file_exist(cfg_file))
+     else if (xf_get_file_exist(home_cfg_file))
     {
-        if (!useConfigFile(cfg_file))
+        if (!useConfigFile(home_cfg_file))
             return false;
     }
-     else
+
+
+
+
+
+    if (port != 0)
     {
-        printf("Missing config file.  Please specify a config file with the -f option");
-        return false;
+        int i = 0;
+        for (i = 0; i < sizeof(m_options); ++i)
+        {
+            if (!m_options[i])
+                break;
+
+            if (0 == strcmp(m_options[i], "listening_ports"))
+            {
+                if (ssl)
+                    sprintf((char*)m_options[i+1], "%ds", port);
+                     else
+                    sprintf((char*)m_options[i+1], "%d", port);
+            }
+        }
     }
-    
+
+    if (database.length() > 0)
+    {
+        std::wstring cstr = g_sdserv.getDatabaseConnectionString(database);
+        if (cstr.empty())
+        {
+            printf("Unknown database '%ls'.  Exiting...\n", database.c_str());
+            return 1;
+        }
+
+        c.setConnectionString(cstr);
+    }
+
+
     return true;
 }
 
@@ -255,23 +298,8 @@ int main(int argc, const char** argv)
     if (!g_sdserv.initOptions(argc, argv))
         return 0;
 
+    g_sdserv.runServer();
 
-    if (argc > 1 && argv[1][0] != '-')
-    {
-        std::wstring cstr = g_sdserv.getDatabaseConnectionString(kl::towstring(argv[1]));
-        if (cstr.empty())
-        {
-            printf("Unknown database '%ls'.  Exiting...\n", cstr.c_str());
-            return 1;
-        }
-
-        c.setConnectionString(cstr);
-        g_sdserv.runServer();
-        return 0;
-    }
-
-    Proxy p;
-    p.runServer();
     return 0;
 }
 
