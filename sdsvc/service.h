@@ -14,12 +14,14 @@
 #define __SDSVC_SERVICE_H
 
 
-class SdServers
+class SdServer
 {
 public:
 
-    std::wstring name;
+    std::string instance;
     HANDLE process;
+    HANDLE thread;
+    int port;
 };
 
 class Service
@@ -31,6 +33,7 @@ public:
 
     void run();
     void stop();
+    int getServerPort(const std::string& instance);
 
 protected:
 
@@ -38,7 +41,10 @@ protected:
 
 public:
 
-    std::vector<SdServers> m_servers;
+    xcm::mutex m_mutex;
+    std::map<std::string, SdServer> m_servers;
+    int m_next_port;
+
     bool m_running;
 };
 

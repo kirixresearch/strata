@@ -12,12 +12,8 @@
 #ifndef __SDSVC_SDSVC_H
 #define __SDSVC_SDSVC_H
 
-#include <windows.h>
+#include <xcm/xcm.h>
 
-extern const TCHAR* g_service_id;
-extern const TCHAR* g_service_description;
-extern const TCHAR* g_service_appexe;
-extern const TCHAR* g_service_cmdline;
 
 #endif
 

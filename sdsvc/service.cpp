@@ -12,6 +12,7 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 
 
+#include "sdsvc.h"
 #include <windows.h>
 #include <tchar.h>
 #include <cstdio>
@@ -19,7 +20,6 @@
 #include <kl/file.h>
 #include <kl/string.h>
 #include <kl/json.h>
-#include "sdsvc.h"
 #include "service.h"
 #include "mongoose.h"
 
@@ -37,15 +37,49 @@ static void* request_callback(enum mg_event evt,
     {
         mg_force_close(conn);
 
+
+        std::string instance;
+
+        const char* uri = request_info->uri;
+        if (uri)
+        {
+            if (*uri=='/') ++uri;
+            const char* slash = strchr(uri,'/');
+            if (slash)
+            {
+                instance.assign(uri, slash-uri);
+                uri = slash;
+            }
+             else
+            {
+                instance = uri;
+                uri = "/";
+            }
+        }
+
+        if (instance.empty() || instance == "favicon.ico")
+            return L"processed";
+
+
         int sock;
         char* ipaddress = "127.0.0.1";
-        int port = 4800;
+        int port = 0;
         struct sockaddr_in serveraddr;
         std::string request;
 
+
+        port = g_service.getServerPort(instance);
+
+        if (port == 0)
+        {
+            mg_write(conn, "HTTP/1.0 404 Not Found\r\n", 24);
+            return "processed";
+        }
+
+
         //request += "GET / HTTP/1.0\r\n";
         request += "GET ";
-        request += request_info->uri;
+        request += uri;
         request += " HTTP/1.0\r\n";
 
         request += "Host: localhost\r\n";
@@ -53,6 +87,7 @@ static void* request_callback(enum mg_event evt,
         request += "\r\n";
 
         printf("\n\n-----------------------------------------------------\n");
+        printf("instance: %s\n", instance.c_str());
         printf("%s\n\n", request.c_str());
 
         // open socket
@@ -72,7 +107,7 @@ static void* request_callback(enum mg_event evt,
             return "processed"; // sent bytes mismatched request bytes
 
         // get response
-        #define BUFFERSIZE 4096
+        #define BUFFERSIZE 16384
         char buf[BUFFERSIZE+1];
         int len;
         while (true)
@@ -135,6 +170,8 @@ static kl::JsonNode getJsonNodeFromFile(const std::wstring& filename)
 
 Service::Service()
 {
+    m_running = false;
+    m_next_port = 28000;
 }
 
 Service::~Service()
@@ -144,6 +181,72 @@ Service::~Service()
 
 void Service::readConfig()
 {
+}
+
+int Service::getServerPort(const std::string& instance)
+{
+    XCM_AUTO_LOCK(m_mutex);
+
+
+    SdServer info;
+    info.port = 0;
+
+    std::map<std::string, SdServer>::iterator it = m_servers.find(instance);
+    if (it != m_servers.end())
+        info = it->second;
+
+
+    if (info.port == 0)
+    {
+        // find a free port
+        info.instance = instance;
+        info.process = NULL;
+        info.thread = NULL;
+        info.port = m_next_port++;
+
+        // get our path
+        TCHAR temps[MAX_PATH];
+        if (!GetModuleFileName(NULL, temps, MAX_PATH))
+            return 0;
+        std::wstring exepath = kl::beforeLast(temps, '\\');
+        exepath += L"\\sdserv.exe";
+
+        // start the appropriate server
+        wchar_t cmdline[255];
+        swprintf(cmdline, 255, L"%ls -d %hs -p %d", exepath.c_str(), instance.c_str(), info.port);
+
+        DWORD result = 0;
+        STARTUPINFO startup_info;
+        PROCESS_INFORMATION process_info;
+        memset(&startup_info, 0, sizeof(STARTUPINFO));
+        memset(&process_info, 0, sizeof(PROCESS_INFORMATION));
+        startup_info.cb = sizeof(STARTUPINFO);
+
+        if (CreateProcess(NULL,
+                          cmdline,
+                          0, 0, false,
+                          0, // CREATE_DEFAULT_ERROR_MODE,
+                          0, 0,
+                          &startup_info,
+                          &process_info) != false)
+        {
+            result = ERROR_SUCCESS;
+        }
+         else
+        {
+            result = GetLastError();
+        }
+    
+        info.process = process_info.hProcess;
+        info.thread = process_info.hThread;
+        m_servers[instance] = info;
+
+        ::Sleep(1000);
+
+        return info.port;
+    }
+
+    return info.port;
 }
 
 
@@ -166,6 +269,8 @@ void Service::run()
         
     ctx = mg_start(request_callback, NULL, options);
     
+    m_running = true;
+
     while (m_running)
         ::Sleep(1000);
     

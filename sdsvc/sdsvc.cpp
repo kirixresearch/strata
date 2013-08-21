@@ -12,6 +12,7 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 
 
+#include "sdsvc.h"
 #include <windows.h>
 #include <tchar.h>
 #include <cstdio>
@@ -352,13 +353,6 @@ void __cdecl _tmain(int argc, TCHAR *argv[])
         return;
     }
     
-    if (argc >= 2 && 0 == lstrcmpi(argv[1], _T("run")))
-    {
-        // run interactively
-        ServiceExecutionThread(NULL);
-        return;
-    }
-
 
     static TCHAR service_id[255];
     _tcscpy(service_id, g_service_id);
@@ -373,8 +367,9 @@ void __cdecl _tmain(int argc, TCHAR *argv[])
     // this call will block until the service is finished running
     if (!StartServiceCtrlDispatcher(DispatchTable))
     {
-        SvcReportEvent(TEXT("StartServiceCtrlDispatcher"));
-    }
+        //SvcReportEvent(TEXT("StartServiceCtrlDispatcher"));
 
-    return;
+        // run interactively
+        ServiceExecutionThread(NULL);
+    }
 }
