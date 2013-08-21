@@ -16,18 +16,16 @@
 #include <tchar.h>
 #include <cstdio>
 #include <vector>
+#include <kl/file.h>
 #include <kl/string.h>
+#include <kl/json.h>
 #include "sdsvc.h"
+#include "service.h"
 #include "mongoose.h"
 
 
-bool g_running = true;
 
-bool StopApplicationProcess()
-{
-    g_running = false;
-    return true;
-}
+Service g_service;
 
 
 
@@ -102,9 +100,63 @@ static void* request_callback(enum mg_event evt,
 }
 
 
-DWORD ServiceExecutionThread(DWORD* param)
+
+
+static kl::JsonNode getJsonNodeFromFile(const std::wstring& filename)
 {
-    struct mg_context *ctx;
+    xf_off_t size = xf_get_file_size(filename);
+    if (size < 0 || size > 1000000)
+        return kl::JsonNode();
+    
+    xf_file_t f = xf_open(filename, xfOpen, xfRead, xfShareNone);
+    if (!f)
+    {
+        printf("Could not open config file for reading.\n");
+        
+        kl::JsonNode null_return;
+        return null_return;
+    }
+    
+    char* buf = new char[((int)size)+1];
+    buf[0] = 0;
+    xf_off_t read_bytes = xf_read(f, buf, 1, (unsigned int)size);
+    buf[read_bytes] = 0;
+    xf_close(f);
+    
+    kl::JsonNode config;
+    config.fromString(kl::towstring(buf));
+    delete[] buf;
+    
+    return config;
+}
+
+
+
+
+Service::Service()
+{
+}
+
+Service::~Service()
+{
+}
+
+
+void Service::readConfig()
+{
+}
+
+
+void Service::stop()
+{
+    m_running = false;
+}
+
+void Service::run()
+{
+    readConfig();
+
+    struct mg_context* ctx;
 
     const char* options[40] = { "listening_ports",   "8080",
                                 "enable_keep_alive", "yes",
@@ -114,11 +166,9 @@ DWORD ServiceExecutionThread(DWORD* param)
         
     ctx = mg_start(request_callback, NULL, options);
     
-    while (g_running)
+    while (m_running)
         ::Sleep(1000);
     
     mg_stop(ctx);
-
-    return 0;
 }
 

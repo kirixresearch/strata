@@ -18,6 +18,7 @@
 #include <kl/json.h>
 #include <kl/string.h>
 #include <kl/file.h>
+#include "service.h"
 
 
 
@@ -235,7 +236,7 @@ void WINAPI SvcCtrlHandler(DWORD dwCtrl)
         case SERVICE_CONTROL_STOP:
             ReportSvcStatus(SERVICE_STOP_PENDING, NO_ERROR, 0);
 
-            StopApplicationProcess();
+            g_service.stop();
             
             // signal the service to stop
             SetEvent(g_svc_stop_event);
@@ -253,6 +254,12 @@ void WINAPI SvcCtrlHandler(DWORD dwCtrl)
 }
 
 
+
+DWORD ServiceExecutionThread(DWORD* param)
+{
+    g_service.run();
+    return 0;
+}
 
 
 

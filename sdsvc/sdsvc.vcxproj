@@ -255,6 +255,7 @@
   <ItemGroup>
     <ClInclude Include="mongoose.h" />
     <ClInclude Include="sdsvc.h" />
+    <ClInclude Include="service.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
