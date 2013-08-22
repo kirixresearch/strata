@@ -370,6 +370,7 @@ int main(int argc, const char** argv)
 
     if (!g_sdserv.initOptions(argc, argv))
     {
+        delete c;
         g_sdserv.signalServerNotReady();
         return 0;
     }
