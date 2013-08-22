@@ -172,6 +172,7 @@ Service::Service()
 {
     m_running = false;
     m_next_port = 28000;
+    m_options[0] = NULL;
 }
 
 Service::~Service()
@@ -179,8 +180,88 @@ Service::~Service()
 }
 
 
-void Service::readConfig()
+bool Service::readConfig(const std::wstring& config_file)
 {
+    static char s_ports[255];
+    size_t i;
+    size_t options_arr_size = 0;
+    
+    
+    kl::JsonNode config = getJsonNodeFromFile(config_file);
+    if (config.isNull())
+        return L"";
+    
+    kl::JsonNode server = config["server"];
+    if (server.isNull())
+    {
+        printf("Missing server node in configuration file.\n");
+        return false;
+    }
+    
+
+
+    // handle 'ports' and 'ssl_ports'
+    std::string tmps;
+    
+    kl::JsonNode ports_node = server["ports"];
+    for (i = 0; i < ports_node.getChildCount(); ++i)
+    {
+        if (tmps.length() > 0)
+            tmps += ",";
+        tmps += kl::itostring(ports_node[i].getInteger());
+    }
+    
+    kl::JsonNode ssl_ports_node = server["ssl_ports"];
+    for (i = 0; i < ssl_ports_node.getChildCount(); ++i)
+    {
+        if (tmps.length() > 0)
+            tmps += ",";
+        tmps += kl::itostring(ssl_ports_node[i].getInteger());
+        tmps += "s";
+    }
+    
+    if (tmps.length() == 0 || tmps.length() >= sizeof(s_ports)-1)
+    {
+        printf("Please specify at least one port or ssl_port.\n");
+        return false;
+    }
+    strcpy(s_ports, tmps.c_str());
+    
+    
+    m_options[options_arr_size++] = "listening_ports";
+    m_options[options_arr_size++] = s_ports;
+    
+    // enable keep alive by default
+    m_options[options_arr_size++] = "enable_keep_alive";
+    m_options[options_arr_size++] = "yes";
+
+    // enable keep alive by default
+    m_options[options_arr_size++] = "num_threads";
+    m_options[options_arr_size++] = "30";
+    
+    
+    kl::JsonNode ssl_cert = server["ssl_cert"];
+    if (ssl_cert.isOk())
+    {
+        std::wstring cert_file = ssl_cert.getString();
+        if (!xf_get_file_exist(cert_file))
+        {
+            printf("Certificate %ls does not exist.\n", cert_file.c_str());
+            return false;
+        }
+        
+        std::string cert_file_asc = kl::tostring(cert_file);
+        strcpy(m_cert_file_path, cert_file_asc.c_str());
+        
+        m_options[options_arr_size++] = "ssl_certificate";
+        m_options[options_arr_size++] = m_cert_file_path;
+    }
+    
+    
+    // terminator
+    m_options[options_arr_size++] = NULL;
+
+    return true;
 }
 
 int Service::getServerPort(const std::string& instance)
@@ -316,17 +397,32 @@ void Service::stop()
 
 void Service::run()
 {
-    readConfig();
+    std::wstring home_cfg_file;
+
+#ifdef WIN32
+    home_cfg_file  = _wgetenv(L"HOMEDRIVE");
+    home_cfg_file += _wgetenv(L"HOMEPATH");
+    home_cfg_file += L"\\sdserv.conf";
+#endif
+
+    if (xf_get_file_exist(home_cfg_file))
+    {
+        if (!readConfig(home_cfg_file))
+            return;
+    }
+
+    printf("Server started. Options are: \n\n");
+    const char** options = m_options;
+    while (*options)
+    {
+        printf("%-22s: %s\n", *options, *(options+1));
+        options += 2;
+    }
+
 
     struct mg_context* ctx;
 
-    const char* options[40] = { "listening_ports",   "8080",
-                                "enable_keep_alive", "yes",
-                                "num_threads", "30",
-
-                               NULL };
-        
-    ctx = mg_start(request_callback, NULL, options);
+    ctx = mg_start(request_callback, NULL, m_options);
     
     m_running = true;
 

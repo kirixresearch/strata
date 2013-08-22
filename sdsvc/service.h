@@ -37,9 +37,12 @@ public:
 
 protected:
 
-    void readConfig();
+    bool readConfig(const std::wstring& config_file);
 
 public:
+
+    const char* m_options[255];
+    char m_cert_file_path[255];
 
     xcm::mutex m_mutex;
     std::map<std::string, SdServer> m_servers;
