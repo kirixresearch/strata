@@ -17,7 +17,7 @@
 
 
 Sdserv g_sdserv;
-Controller c;
+Controller* c = NULL;
 
 
 static kl::JsonNode getJsonNodeFromFile(const std::wstring& filename)
@@ -130,7 +130,7 @@ bool Sdserv::useConfigFile(const std::wstring& config_file)
     // enable keep alive by default
     m_options[options_arr_size++] = "enable_keep_alive";
     m_options[options_arr_size++] = "yes";
-   
+
     // enable keep alive by default
     m_options[options_arr_size++] = "num_threads";
     m_options[options_arr_size++] = "30";
@@ -175,7 +175,7 @@ static void* request_callback(enum mg_event evt,
 
         req.read();
 
-        if (!c.onRequest(req))
+        if (!c->onRequest(req))
         {
             req.setStatusCode(404);
             req.setContentType("text/html");
@@ -269,7 +269,8 @@ int Sdserv::runServer()
         }
     }
     
-    mg_stop(ctx);
+    // causing a hang right now.  Maybe has something to do with keep alive?
+    //mg_stop(ctx);
 
     return 0;
 }
@@ -354,7 +355,7 @@ bool Sdserv::initOptions(int argc, const char* argv[])
             return 1;
         }
 
-        c.setConnectionString(cstr);
+        c->setConnectionString(cstr);
     }
 
 
@@ -365,6 +366,8 @@ bool Sdserv::initOptions(int argc, const char* argv[])
 
 int main(int argc, const char** argv)
 {
+    c = new Controller;
+
     if (!g_sdserv.initOptions(argc, argv))
     {
         g_sdserv.signalServerNotReady();
@@ -372,6 +375,8 @@ int main(int argc, const char** argv)
     }
 
     g_sdserv.runServer();
+
+    delete c;
 
     return 0;
 }
