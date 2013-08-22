@@ -42,14 +42,21 @@ public:
 
     int runServer();
     std::wstring getDatabaseConnectionString(const std::wstring& database = L"");
+
+    void signalServerReady();
+    void signalServerNotReady();
     
 private:
 
     bool useConfigFile(const std::wstring& config_file);
-    
+
 private:
 
     std::wstring m_config_file;
+
+    std::wstring m_ready_evtid;
+    std::wstring m_notready_evtid;
+
     char m_cert_file_path[255];
     
     const char* m_options[255];

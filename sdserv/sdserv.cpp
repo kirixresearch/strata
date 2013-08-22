@@ -187,15 +187,52 @@ static void* request_callback(enum mg_event evt,
 }
 
 
+void Sdserv::signalServerReady()
+{
+    if (m_ready_evtid.length() > 0)
+    {
+        HANDLE evt_ready = CreateEvent(NULL, FALSE, FALSE, m_ready_evtid.c_str());
+        if (evt_ready)
+        {
+            SetEvent(evt_ready);
+            CloseHandle(evt_ready);
+        }
+    }
+}
+
+
+void Sdserv::signalServerNotReady()
+{
+    if (m_notready_evtid.length() > 0)
+    {
+        HANDLE evt_notready = CreateEvent(NULL, FALSE, FALSE, m_notready_evtid.c_str());
+        if (evt_notready)
+        {
+            SetEvent(evt_notready);
+            CloseHandle(evt_notready);
+        }
+    }
+}
+
 int Sdserv::runServer()
 {
     struct mg_context *ctx;
 
     if (m_options[0] == 0)
+    {
+        signalServerNotReady();
         return 0;
+    }
         
     ctx = mg_start(request_callback, NULL, m_options);
+    if (!ctx)
+    {
+        signalServerNotReady();
+        return 0;
+    }
     
+    signalServerReady();
+
     while (1)
         ::Sleep(1000);
         
@@ -215,8 +252,7 @@ bool Sdserv::initOptions(int argc, const char* argv[])
     std::wstring cfg_file;
     std::wstring database;
     std::wstring home_cfg_file;
-    int port = 0;
-    bool ssl = false;
+    std::string port;
 
 #ifdef WIN32
     home_cfg_file  = _wgetenv(L"HOMEDRIVE");
@@ -232,9 +268,11 @@ bool Sdserv::initOptions(int argc, const char* argv[])
         if (0 == strcmp(argv[i], "-d") && i+1 < argc)
             database = kl::towstring(argv[i+1]);
         if (0 == strcmp(argv[i], "-p") && i+1 < argc)
-            port = atoi(argv[i+1]);
-        if (0 == strcmp(argv[i], "-s"))
-            ssl = true;
+            port = argv[i+1];
+        if (0 == strcmp(argv[i], "--win32evt-ready") && i+1 < argc)
+            m_ready_evtid = kl::towstring(argv[i+1]);
+        if (0 == strcmp(argv[i], "--win32evt-notready") && i+1 < argc)
+            m_notready_evtid = kl::towstring(argv[i+1]);
     }
 
 
@@ -255,10 +293,7 @@ bool Sdserv::initOptions(int argc, const char* argv[])
     }
 
 
-
-
-
-    if (port != 0)
+    if (port.length() > 0 && port.length() < 80)
     {
         int i = 0;
         for (i = 0; i < sizeof(m_options); ++i)
@@ -268,10 +303,7 @@ bool Sdserv::initOptions(int argc, const char* argv[])
 
             if (0 == strcmp(m_options[i], "listening_ports"))
             {
-                if (ssl)
-                    sprintf((char*)m_options[i+1], "%ds", port);
-                     else
-                    sprintf((char*)m_options[i+1], "%d", port);
+                strcpy((char*)m_options[i+1], port.c_str());
             }
         }
     }
@@ -289,6 +321,7 @@ bool Sdserv::initOptions(int argc, const char* argv[])
     }
 
 
+
     return true;
 }
 
@@ -296,7 +329,10 @@ bool Sdserv::initOptions(int argc, const char* argv[])
 int main(int argc, const char** argv)
 {
     if (!g_sdserv.initOptions(argc, argv))
+    {
+        g_sdserv.signalServerNotReady();
         return 0;
+    }
 
     g_sdserv.runServer();
 

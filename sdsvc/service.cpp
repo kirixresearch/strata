@@ -185,15 +185,24 @@ void Service::readConfig()
 
 int Service::getServerPort(const std::string& instance)
 {
-    XCM_AUTO_LOCK(m_mutex);
-
-
     SdServer info;
     info.port = 0;
 
+    m_mutex.lock();
     std::map<std::string, SdServer>::iterator it = m_servers.find(instance);
     if (it != m_servers.end())
+    {
         info = it->second;
+    }
+     else
+    {
+        info.instance = instance;
+        info.port = 0;
+        info.process = NULL;
+        info.thread = NULL;
+        m_servers[instance] = info;
+    }
+    m_mutex.unlock();
 
 
     if (info.port == 0)
@@ -204,6 +213,9 @@ int Service::getServerPort(const std::string& instance)
         info.thread = NULL;
         info.port = m_next_port++;
 
+        wchar_t port_str[128];
+        swprintf(port_str, 128, L"127.0.0.1:%d", info.port);
+
         // get our path
         TCHAR temps[MAX_PATH];
         if (!GetModuleFileName(NULL, temps, MAX_PATH))
@@ -211,9 +223,16 @@ int Service::getServerPort(const std::string& instance)
         std::wstring exepath = kl::beforeLast(temps, '\\');
         exepath += L"\\sdserv.exe";
 
+
+        // create two events which will help us synchronize the server starting
+        std::wstring ready_evtid = kl::getUniqueString();
+        std::wstring notready_evtid = kl::getUniqueString();
+        HANDLE ready_evt = CreateEvent(NULL, FALSE, FALSE, ready_evtid.c_str());
+        HANDLE notready_evt = CreateEvent(NULL, FALSE, FALSE, notready_evtid.c_str());
+
         // start the appropriate server
         wchar_t cmdline[255];
-        swprintf(cmdline, 255, L"%ls -d %hs -p %d", exepath.c_str(), instance.c_str(), info.port);
+        swprintf(cmdline, 255, L"%ls -d %hs -p %ls --win32evt-ready %ls --win32evt-notready %ls", exepath.c_str(), instance.c_str(), port_str, ready_evtid.c_str(), notready_evtid.c_str());
 
         DWORD result = 0;
         STARTUPINFO startup_info;
@@ -234,14 +253,31 @@ int Service::getServerPort(const std::string& instance)
         }
          else
         {
+            CloseHandle(ready_evt);
+            CloseHandle(notready_evt);
             result = GetLastError();
+            return 0;
         }
     
-        info.process = process_info.hProcess;
-        info.thread = process_info.hThread;
-        m_servers[instance] = info;
+        // wait until the server is running
+        HANDLE events[2];
+        events[0] = ready_evt;
+        events[1] = notready_evt;
+        DWORD dwresult = WaitForMultipleObjects(2, events, false, INFINITE);
+        CloseHandle(ready_evt);
+        CloseHandle(notready_evt);
 
-        ::Sleep(1000);
+        if (dwresult == WAIT_OBJECT_0)
+        {
+            info.process = process_info.hProcess;
+            info.thread = process_info.hThread;
+            m_servers[instance] = info;
+        }
+         else
+        {
+            // failure
+        }
+
 
         return info.port;
     }
