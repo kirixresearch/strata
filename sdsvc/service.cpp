@@ -187,6 +187,7 @@ int Service::getServerPort(const std::string& instance)
 {
     SdServer info;
     info.port = 0;
+    info.process = NULL;
 
     m_mutex.lock();
     std::map<std::string, SdServer>::iterator it = m_servers.find(instance);
@@ -203,6 +204,29 @@ int Service::getServerPort(const std::string& instance)
         m_servers[instance] = info;
     }
     m_mutex.unlock();
+
+
+    if (info.process)
+    {
+        DWORD exit_code = 0;
+        GetExitCodeProcess(info.process, &exit_code);
+        if (exit_code != STILL_ACTIVE)
+        {
+            CloseHandle(info.process);
+            CloseHandle(info.thread);
+            info.port = 0;
+            info.process = NULL;
+            info.thread = NULL;
+
+            // process no longer appears to be running.  Restart it
+            m_mutex.lock();
+            std::map<std::string, SdServer>::iterator it = m_servers.find(instance);
+            it->second.port = 0;
+            it->second.process = NULL;
+            it->second.thread = NULL;
+            m_mutex.unlock();
+        }
+    }
 
 
     if (info.port == 0)
@@ -232,7 +256,7 @@ int Service::getServerPort(const std::string& instance)
 
         // start the appropriate server
         wchar_t cmdline[255];
-        swprintf(cmdline, 255, L"%ls -d %hs -p %ls --win32evt-ready %ls --win32evt-notready %ls", exepath.c_str(), instance.c_str(), port_str, ready_evtid.c_str(), notready_evtid.c_str());
+        swprintf(cmdline, 255, L"%ls -d %hs -p %ls --win32evt-ready %ls --win32evt-notready %ls --idle-quit 60", exepath.c_str(), instance.c_str(), port_str, ready_evtid.c_str(), notready_evtid.c_str());
 
         DWORD result = 0;
         STARTUPINFO startup_info;
@@ -277,7 +301,6 @@ int Service::getServerPort(const std::string& instance)
         {
             // failure
         }
-
 
         return info.port;
     }
