@@ -83,6 +83,11 @@ static void* request_callback(enum mg_event evt,
         request += request_info->request_method;
         request += ' ';
         request += uri;
+        if (request_info->query_string && *(request_info->query_string))
+        {
+            request += '?';
+            request += request_info->query_string;
+        }
         request += " HTTP/1.0\r\n";
 
         request += "Host: localhost\r\n";
