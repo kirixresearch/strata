@@ -53,6 +53,8 @@ static kl::JsonNode getJsonNodeFromFile(const std::wstring& filename)
 Sdserv::Sdserv()
 {
     m_options[0] = 0;
+    m_last_access = time(NULL);
+    m_idle_quit = 0;
 }
 
 Sdserv::~Sdserv()
@@ -167,6 +169,8 @@ static void* request_callback(enum mg_event evt,
 {
     if (evt == MG_NEW_REQUEST)
     {
+        g_sdserv.updateLastAccessTimestamp();
+
         RequestInfo req(conn, request_info);
 
         req.read();
@@ -214,6 +218,13 @@ void Sdserv::signalServerNotReady()
     }
 }
 
+void Sdserv::updateLastAccessTimestamp()
+{
+    m_last_access_mutex.lock();
+    m_last_access = time(NULL);
+    m_last_access_mutex.unlock();
+}
+
 int Sdserv::runServer()
 {
     struct mg_context *ctx;
@@ -233,9 +244,33 @@ int Sdserv::runServer()
     
     signalServerReady();
 
+    int counter = 0;
+
     while (1)
+    {
         ::Sleep(1000);
-        
+
+        if (m_idle_quit > 0)
+        {
+            counter++;
+            if ((counter % 10) == 0)
+            {
+                time_t t = time(NULL);
+                bool quit = false;
+
+                m_last_access_mutex.lock();
+                if (t - m_last_access > m_idle_quit)
+                    quit = true;
+                m_last_access_mutex.unlock();
+
+                if (quit)
+                    break;
+            }
+        }
+    }
+    
+    mg_stop(ctx);
+
     return 0;
 }
 
@@ -273,6 +308,8 @@ bool Sdserv::initOptions(int argc, const char* argv[])
             m_ready_evtid = kl::towstring(argv[i+1]);
         if (0 == strcmp(argv[i], "--win32evt-notready") && i+1 < argc)
             m_notready_evtid = kl::towstring(argv[i+1]);
+        if (0 == strcmp(argv[i], "--idle-quit") && i+1 < argc)
+            m_idle_quit = atoi(argv[i+1]);
     }
 
 
