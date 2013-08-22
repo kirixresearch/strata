@@ -20,6 +20,7 @@
 #include <kl/file.h>
 #include <kl/string.h>
 #include <kl/json.h>
+#include <kl/portable.h>
 #include "service.h"
 #include "mongoose.h"
 
@@ -40,6 +41,7 @@ static void* request_callback(enum mg_event evt,
 
         std::string instance;
 
+        
         const char* uri = request_info->uri;
         if (uri)
         {
@@ -78,12 +80,28 @@ static void* request_callback(enum mg_event evt,
 
 
         //request += "GET / HTTP/1.0\r\n";
-        request += "GET ";
+        request += request_info->request_method;
+        request += ' ';
         request += uri;
         request += " HTTP/1.0\r\n";
 
         request += "Host: localhost\r\n";
         request += "Connection: close\r\n";
+
+        for (int h = 0; h < request_info->num_headers; ++h)
+        {
+            if (0 == strcasecmp(request_info->http_headers[h].name, "Connection") ||
+                0 == strcasecmp(request_info->http_headers[h].name, "Host"))
+            {
+                continue;
+            }
+
+            request += request_info->http_headers[h].name;
+            request += ": ";
+            request += request_info->http_headers[h].value;
+            request += "\r\n";
+        }
+
         request += "\r\n";
 
         printf("\n\n-----------------------------------------------------\n");
