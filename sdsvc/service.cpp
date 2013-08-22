@@ -129,9 +129,28 @@ static void* request_callback(enum mg_event evt,
         if (send(sock, request.c_str(), request.length(), 0) != request.length())
             return "processed"; // sent bytes mismatched request bytes
 
-        // get response
+
         #define BUFFERSIZE 16384
         char buf[BUFFERSIZE+1];
+
+
+        if (*(request_info->request_method) == 'P')
+        {
+            int buf_len;
+
+            while (true)
+            {
+                buf_len = mg_read(conn, buf, BUFFERSIZE);
+                
+                send(sock, buf, buf_len, 0);
+            
+                if (buf_len != BUFFERSIZE)
+                    break;
+            }
+        }
+
+
+        // get response
         int len;
         while (true)
         {
