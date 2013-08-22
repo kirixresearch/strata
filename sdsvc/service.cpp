@@ -256,7 +256,7 @@ int Service::getServerPort(const std::string& instance)
 
         // start the appropriate server
         wchar_t cmdline[255];
-        swprintf(cmdline, 255, L"%ls -d %hs -p %ls --win32evt-ready %ls --win32evt-notready %ls --idle-quit 60", exepath.c_str(), instance.c_str(), port_str, ready_evtid.c_str(), notready_evtid.c_str());
+        swprintf(cmdline, 255, L"%ls -d %hs -p %ls --win32evt-ready %ls --win32evt-notready %ls --idle-quit 300", exepath.c_str(), instance.c_str(), port_str, ready_evtid.c_str(), notready_evtid.c_str());
 
         DWORD result = 0;
         STARTUPINFO startup_info;
