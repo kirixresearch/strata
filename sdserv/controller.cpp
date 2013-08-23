@@ -1644,7 +1644,7 @@ void Controller::apiLoad(RequestInfo& req)
 
 
     std::wstring source_connection = L"Xdprovider=xdfs";
-    std::wstring destination_connection = g_sdserv.getDatabaseConnectionString();
+    std::wstring destination_connection = m_connection_string;
 
     // configure the job parameters
     kl::JsonNode params;
