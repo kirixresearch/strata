@@ -103,6 +103,8 @@ bool Controller::onRequest(RequestInfo& req)
     else if (apimethod == L"close")            apiClose(req);
     else if (apimethod == L"alter")            apiAlter(req);
     else if (apimethod == L"load")             apiLoad(req);
+    else if (apimethod == L"importupload")     apiImportUpload(req);
+    else if (apimethod == L"importload")       apiImportLoad(req);
 
     end = clock();
     printf("%5d %4dms\n", req.getContentLength(), (end-start));
@@ -1660,6 +1662,130 @@ void Controller::apiLoad(RequestInfo& req)
     object["destination_connection"] = destination_connection;
 
     object["source_path"] = data_temp;
+    object["destination_path"] = target_path;
+
+
+    job->setParameters(params.toString());
+    job->runJob();
+    job->runPostJob();
+
+    // return success/failure to caller
+    kl::JsonNode response;
+    response["success"].setBoolean(true);
+    
+    req.write(response.toString());
+}
+
+
+void Controller::apiImportUpload(RequestInfo& req)
+{
+    // create handle to file
+    std::wstring handle = createHandle();
+
+
+    RequestFileInfo fileinfo = req.getPostFileInfo(L"file");
+    if (!fileinfo.isOk())
+    {
+        returnApiError(req, "Missing file parameter");
+        return;
+    }
+
+#ifdef WIN32
+    std::wstring path_separator = L"\\";
+#else
+    std::wstring path_separator = L"/";
+#endif
+
+    std::wstring ext = kl::afterLast(fileinfo.post_filename, '.');
+    std::wstring data_temp = xf_get_temp_path() + path_separator + handle + L"." + ext;
+    if (!xf_move(fileinfo.temp_filename, data_temp))
+    {
+        returnApiError(req, "Could not access uploaded file");
+        return;
+    }
+
+
+    // store information about the file to import
+    kl::JsonNode infonode;
+    infonode["handle"].setString(handle);
+    infonode["datafile"].setString(data_temp);
+    std::wstring info = infonode.toString();
+    xf_put_file_contents(xf_get_temp_path() + path_separator + handle + L".load_info", info);
+
+
+
+    // return success/failure to caller
+    kl::JsonNode response;
+    response["success"].setBoolean(true);
+    response["handle"].setString(handle);
+    req.write(response.toString());
+}
+
+
+
+
+void Controller::apiImportLoad(RequestInfo& req)
+{
+    if (!req.getValueExists(L"handle"))
+    {
+        returnApiError(req, "Missing handle parameter");
+        return;
+    }
+
+    std::wstring handle = req.getValue(L"handle");
+    std::wstring target_path = req.getValue(L"target_path");
+
+#ifdef WIN32
+    std::wstring path_separator = L"\\";
+#else
+    std::wstring path_separator = L"/";
+#endif
+
+
+    std::wstring info_file_path = xf_get_temp_path() + path_separator + handle + L".load_info";
+    if (!xf_get_file_exist(info_file_path))
+    {
+        returnApiError(req, "Invalid handle parameter");
+        return;
+    }
+
+
+    std::wstring info = xf_get_file_contents(info_file_path);
+    kl::JsonNode infonode;
+    if (!infonode.fromString(info))
+    {
+        returnApiError(req, "Invalid file information");
+        return;
+    }
+
+    std::wstring datafile = infonode["datafile"];
+    if (!xf_get_file_exist(datafile))
+    {
+        returnApiError(req, "Data file does not exist");
+        return;
+    }
+
+
+    jobs::IJobPtr job = jobs::createJob(L"application/vnd.kx.load-job");
+
+
+    std::wstring source_connection = L"Xdprovider=xdfs";
+    std::wstring destination_connection = m_connection_string;
+
+    // configure the job parameters
+    kl::JsonNode params;
+
+    params["objects"].setArray();
+    kl::JsonNode objects = params["objects"];
+
+
+    // add our table to the import object
+    kl::JsonNode object = objects.appendElement();
+
+    object["source_connection"] = source_connection;
+    object["destination_connection"] = destination_connection;
+
+    object["source_path"] = datafile;
     object["destination_path"] = target_path;
 
 

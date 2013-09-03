@@ -104,6 +104,8 @@ private:
     void apiClose(RequestInfo& req);
     void apiAlter(RequestInfo& req);
     void apiLoad(RequestInfo& req);
+    void apiImportUpload(RequestInfo& req);
+    void apiImportLoad(RequestInfo& req);
 
 private:
 
