@@ -2,7 +2,7 @@
  *
  * Copyright (c) 2002-2013, Kirix Research, LLC.  All rights reserved.
  *
- * Project:  Application Client
+ * Project:  Job Automation Library
  * Author:   Benjamin I. Williams
  * Created:  2002-01-30
  *

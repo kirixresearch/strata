@@ -11,6 +11,7 @@
 
 #include "jobspch.h"
 #include "jobinfo.h"
+#include "jobqueue.h"
 #include "aggregate.h"
 #include "alter.h"
 #include "append.h"
@@ -91,6 +92,11 @@ IJobPtr createAggregateJob(std::vector<IJobPtr>& jobs)
 IJobInfoPtr createJobInfoObject()
 {
     return static_cast<IJobInfo*>(new JobInfo);
+}
+
+IJobQueuePtr createJobQueueObject()
+{
+    return static_cast<IJobQueue*>(new JobQueue);
 }
 
 

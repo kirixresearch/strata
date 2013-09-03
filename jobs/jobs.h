@@ -160,9 +160,30 @@ public:
 };
 
 
+xcm_interface IJobQueue : public xcm::IObject
+{
+    XCM_INTERFACE_NAME("appmain.IJobQueue")
+
+public:
+
+    virtual int addJob(jobs::IJobPtr job, int initial_state) = 0;
+    virtual int addJobInfo(jobs::IJobInfoPtr job, int initial_state) = 0;
+    virtual jobs::IJobPtr lookupJob(int job_id) = 0;
+    virtual bool startJob(int job_id) = 0;
+
+    virtual jobs::IJobInfoPtr getJobInfo(int job_id) = 0;
+    virtual jobs::IJobInfoEnumPtr getJobInfoEnum(int job_state_mask) = 0;
+    virtual bool getJobsActive() = 0;
+
+    XCM_DECLARE_SIGNAL0(sigQueueChanged);
+    XCM_DECLARE_SIGNAL1(sigJobAdded, jobs::IJobInfoPtr);
+};
+
+
 IJobPtr createAggregateJob(std::vector<IJobPtr>& jobs);
 IJobPtr createJob(const std::wstring job_class);
 IJobInfoPtr createJobInfoObject();
+IJobQueuePtr createJobQueueObject();
 
 
 };
