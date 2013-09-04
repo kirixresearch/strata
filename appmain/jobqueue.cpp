@@ -16,6 +16,11 @@
 const int ID_JobFinishedNotify = 59984;
 
 
+BEGIN_EVENT_TABLE(JobQueue, wxEvtHandler)
+    EVT_MENU(ID_JobFinishedNotify, JobQueue::onJobFinished)
+END_EVENT_TABLE()
+
+
 void JobQueue::onJobFinished(wxCommandEvent& event)
 {
     int job_id = event.GetInt();

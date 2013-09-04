@@ -26,6 +26,10 @@ protected:
     // function called from within thread; implementation
     // overridden to post event in main thread
     void onJobFinished(int job_id);
+
+private:
+
+    DECLARE_EVENT_TABLE()
 };
 
 
