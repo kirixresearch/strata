@@ -285,7 +285,7 @@ void JobListCtrl::updateJobItem(kcl::ScrollListItem* item)
         double pct = job_info->getPercentage();
         bool is_indeterminate = false;
         
-        if (kl::dblcompare(job_info->getMaxCount(), 0.0) == 0)
+        if (kl::dblcompare(pct, 0.0) == 0)
         {
             is_indeterminate = true;
         }
