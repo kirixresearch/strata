@@ -35,6 +35,8 @@ JobInfo::JobInfo()
     m_phase_count = 1;
     m_phase_counter = 0;
     m_phase_pct = 100;
+    m_percentage_set = false;
+    m_percentage = 0.0;
 }
 
 JobInfo::~JobInfo()
@@ -103,6 +105,14 @@ void JobInfo::setMaxCount(tango::rowpos_t new_val)
     XCM_AUTO_LOCK(m_obj_mutex);
 
     m_max_count = new_val;
+}
+
+void JobInfo::setPercentage(double percentage)
+{
+    XCM_AUTO_LOCK(m_obj_mutex);
+
+    m_percentage_set = true;
+    m_percentage = percentage;
 }
 
 void JobInfo::setPhases(int phase_count, int* phase_pcts)
@@ -255,6 +265,7 @@ tango::rowpos_t JobInfo::getMaxCount()
     return m_max_count;
 }
 
+
 int JobInfo::getPhaseCount()
 {
     XCM_AUTO_LOCK(m_obj_mutex);
@@ -282,6 +293,9 @@ double JobInfo::getPercentage()
         return m_base_pct+((pct*m_phase_pct)/100);
     }
 
+    if (m_percentage_set)
+        return m_percentage;
+    
     if (m_max_count == 0)
         return 0.0;
 

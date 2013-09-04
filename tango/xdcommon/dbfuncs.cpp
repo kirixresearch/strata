@@ -130,6 +130,7 @@ int xdcmnInsert(tango::IDatabasePtr dest_db,
 
     IJobInternalPtr ijob;
     tango::rowpos_t cur_count;
+    bool max_count_known = false;
 
     cur_count = 0;
 
@@ -147,6 +148,9 @@ int xdcmnInsert(tango::IDatabasePtr dest_db,
         ijob->setCurrentCount(0);
         ijob->setStatus(tango::jobRunning);
         ijob->setStartTime(time(NULL));
+
+        if (ijob->getMaxCount() != 0)
+            max_count_known = true;
     }
 
 
@@ -241,6 +245,16 @@ int xdcmnInsert(tango::IDatabasePtr dest_db,
         if (job && (cur_count % 1000) == 0)
         {
             ijob->setCurrentCount(cur_count);
+
+            if (!max_count_known)
+            {
+                // if the max count isn't known, perhaps we can
+                // use IIterator::getPos() to get an approximate percentage
+                double pos = source_iter->getPos();
+                if (kl::dblcompare(pos, 0.0) != 0)
+                    ijob->setPercentage(pos*100);
+            }
+
             if (job->getCancelled())
             {
                 break;

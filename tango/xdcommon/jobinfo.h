@@ -31,6 +31,7 @@ public:
 
     virtual void setCurrentCount(tango::rowpos_t new_val) = 0;
     virtual void setMaxCount(tango::rowpos_t new_val) = 0;
+    virtual void setPercentage(double percentage) = 0;
 
     virtual void setPhases(int new_val, int* phase_pcts = NULL) = 0;
     virtual void startPhase(tango::IJobPtr embedded_job_info = xcm::null) = 0;
@@ -60,7 +61,7 @@ public:
     JobInfo();
     virtual ~JobInfo();
 
-    // -- IJobInfoInternal --.
+    // IJobInfoInternal
     void setJobId(tango::jobid_t new_val);
     void setCanCancel(bool new_val);
 
@@ -73,13 +74,14 @@ public:
 
     void setCurrentCount(tango::rowpos_t new_val);
     void setMaxCount(tango::rowpos_t new_val);
+    void setPercentage(double pct);
 
     void setPhases(int new_val, int* phase_pcts);
     void startPhase(tango::IJobPtr embedded_job_info);
     void setJobFinished();
     void setError(int error_code, const std::wstring& error_string);
 
-    // -- IJobInfo --
+    // IJobInfo
     tango::jobid_t getJobId();
     bool getCanCancel();
     bool getCancelled();
@@ -109,6 +111,9 @@ protected:
     tango::jobid_t m_jobid;
     bool m_can_cancel;
     bool m_cancelled;
+
+    bool m_percentage_set;
+    double m_percentage;
 
     time_t m_start_time;
     time_t m_finish_time;
