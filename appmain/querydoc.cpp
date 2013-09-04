@@ -2238,7 +2238,7 @@ void QueryDoc::onExecute(wxCommandEvent& evt)
 
 bool QueryDoc::isRunning()
 {
-    return (m_job_info.isOk() && m_job_info->getState() == jobStateRunning) ? true : false;
+    return (m_job_info.isOk() && m_job_info->getState() == jobs::jobStateRunning) ? true : false;
 }
 
 bool QueryDoc::execute()

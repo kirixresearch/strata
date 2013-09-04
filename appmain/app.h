@@ -41,8 +41,8 @@ public:
     MainApp();
 
     bool getJobsActive();
-    IJobQueuePtr getJobQueue();
-    IJobQueuePtr getScriptJobQueue();
+    jobs::IJobQueuePtr getJobQueue();
+    jobs::IJobQueuePtr getScriptJobQueue();
     
     wxFrame* getMainWindow();
     JobScheduler* getJobScheduler();
@@ -119,8 +119,8 @@ private:
 
     IAppPreferencesPtr m_app_preferences;
     IAppPreferencesPtr m_app_default_preferences;
-    IJobQueuePtr m_job_queue;
-    IJobQueuePtr m_script_job_queue;
+    jobs::IJobQueuePtr m_job_queue;
+    jobs::IJobQueuePtr m_script_job_queue;
     
     IFrame* m_frame;
     JobScheduler* m_job_scheduler;

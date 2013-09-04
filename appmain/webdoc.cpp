@@ -69,13 +69,13 @@ public:
         }
         
         m_job_info->setTitle(wxT("Download"));
-        m_job_info->setInfoMask(jobMaskTitle |
-                            jobMaskStartTime |
-                            jobMaskFinishTime |
-                            jobMaskPercentage |
-                            jobMaskProgressString |
-                            jobMaskProgressBar |
-                            jobMaskCurrentCount);
+        m_job_info->setInfoMask(jobs::jobMaskTitle |
+                            jobs::jobMaskStartTime |
+                            jobs::jobMaskFinishTime |
+                            jobs::jobMaskPercentage |
+                            jobs::jobMaskProgressString |
+                            jobs::jobMaskProgressBar |
+                            jobs::jobMaskCurrentCount);
     }
 
     virtual void Init(const wxString& url,
@@ -97,14 +97,14 @@ public:
     virtual void OnStart()
     {
         m_job_info->setStartTime(time(NULL));
-        m_job_id = g_app->getJobQueue()->addJobInfo(m_job_info, jobStateRunning);
+        m_job_id = g_app->getJobQueue()->addJobInfo(m_job_info, jobs::jobStateRunning);
     }
 
     virtual void OnFinish()
     {
         // set job to finished
         m_job_info->setFinishTime(time(NULL));
-        m_job_info->setState(jobStateFinished);
+        m_job_info->setState(jobs::jobStateFinished);
 
         delete this;
     }
@@ -112,7 +112,7 @@ public:
     virtual void OnError(const wxString& message)
     {
         m_job_info->setFinishTime(time(NULL));
-        m_job_info->setState(jobStateFailed);
+        m_job_info->setState(jobs::jobStateFailed);
     }
     
     virtual void OnProgressChange(wxLongLong cur_progress,
@@ -121,11 +121,11 @@ public:
         m_job_info->setMaxCount(max_progress.ToDouble());
         m_job_info->setCurrentCount(cur_progress.ToDouble());
         
-        if (m_job_info->getState() == jobStateCancelling ||
-            m_job_info->getState() == jobStateCancelled)
+        if (m_job_info->getState() == jobs::jobStateCancelling ||
+            m_job_info->getState() == jobs::jobStateCancelled)
         {
             m_job_info->setFinishTime(time(NULL));
-            m_job_info->setState(jobStateCancelled);
+            m_job_info->setState(jobs::jobStateCancelled);
             Cancel();
         }
     }
@@ -510,13 +510,13 @@ public:
         
         m_job_info = jobs::createJobInfoObject();
         m_job_info->setTitle(wxT("Download"));
-        m_job_info->setInfoMask(jobMaskTitle |
-                            jobMaskStartTime |
-                            jobMaskFinishTime |
-                            jobMaskPercentage |
-                            jobMaskProgressString |
-                            jobMaskProgressBar |
-                            jobMaskCurrentCount);
+        m_job_info->setInfoMask(jobs::jobMaskTitle |
+                            jobs::jobMaskStartTime |
+                            jobs::jobMaskFinishTime |
+                            jobs::jobMaskPercentage |
+                            jobs::jobMaskProgressString |
+                            jobs::jobMaskProgressBar |
+                            jobs::jobMaskCurrentCount);
     }
 
     virtual void Init(const wxString& url,
@@ -557,7 +557,7 @@ public:
         m_job_info->sigStateChanged().connect(this, &DelimitedTextProgressListener::onJobInfoStateChanged);
         
         m_job_info->setStartTime(time(NULL));
-        g_app->getJobQueue()->addJobInfo(m_job_info, jobStateRunning);
+        g_app->getJobQueue()->addJobInfo(m_job_info, jobs::jobStateRunning);
     }
 
     virtual void OnFinish()
@@ -612,7 +612,7 @@ public:
         
         // set job to finished
         m_job_info->setFinishTime(time(NULL));
-        m_job_info->setState(jobStateFinished);
+        m_job_info->setState(jobs::jobStateFinished);
 
         
         delete this;
@@ -624,7 +624,7 @@ public:
         m_bitmap_updater.Stop();
 
         m_job_info->setFinishTime(time(NULL));
-        m_job_info->setState(jobStateFailed);
+        m_job_info->setState(jobs::jobStateFailed);
     }
     
     virtual void OnProgressChange(wxLongLong cur_progress,
@@ -653,7 +653,7 @@ public:
     // close the site if the job is cancelled
     void onJobInfoStateChanged(jobs::IJobInfoPtr job_info)
     {
-        if (job_info->getState() == jobStateCancelling)
+        if (job_info->getState() == jobs::jobStateCancelling)
             cancelDownload(true);
     }
 
@@ -669,10 +669,10 @@ public:
         Cancel();
         
         // update the job info
-        if (m_job_info->getState() != jobStateCancelled)
+        if (m_job_info->getState() != jobs::jobStateCancelled)
         {
             m_job_info->setFinishTime(time(NULL));
-            m_job_info->setState(jobStateCancelled);
+            m_job_info->setState(jobs::jobStateCancelled);
         }
         
         // make sure the associated document site is closed

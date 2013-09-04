@@ -29,38 +29,42 @@ class JobQueue : public IJobQueue,
     XCM_END_INTERFACE_MAP()
 
     XCM_IMPLEMENT_SIGNAL0(sigQueueChanged);
-    XCM_IMPLEMENT_SIGNAL1(sigJobAdded, jobs::IJobInfoPtr);
+    XCM_IMPLEMENT_SIGNAL1(sigJobAdded, IJobInfoPtr);
 
 public:
     
     JobQueue();
     ~JobQueue();
 
-    int addJob(jobs::IJobPtr job, int initial_state);
-    int addJobInfo(jobs::IJobInfoPtr job, int initial_state);
+    int addJob(IJobPtr job, int initial_state);
+    int addJobInfo(IJobInfoPtr job, int initial_state);
 
-    jobs::IJobPtr lookupJob(int job_id);
+    IJobPtr lookupJob(int job_id);
     bool startJob(int job_id);
 
-    jobs::IJobInfoPtr getJobInfo(int job_id);
-    jobs::IJobInfoEnumPtr getJobInfoEnum(int job_state_mask);
+    IJobInfoPtr getJobInfo(int job_id);
+    IJobInfoEnumPtr getJobInfoEnum(int job_state_mask);
     bool getJobsActive();
+
+protected:
+
+    // called from within thread; derived implementations
+    // need to be thread safe
+    virtual void onJobFinished(int job_id);
+    IJobPtr removeJob(int job_id);
 
 private:
 
-    bool startJob(jobs::IJobPtr& job);
+    bool startJob(IJobPtr& job);
     void incrementActiveJobs();
     void decrementActiveJobs();
-
-    // TODO: get rid of wxCommandEvent dependency
-    //void onJobFinished(wxCommandEvent& evt);
-    void onJobInfoEntryStateChanged(jobs::IJobInfoPtr job_info);
+    void onJobInfoEntryStateChanged(IJobInfoPtr job_info);
 
 private:
 
     xcm::mutex m_obj_mutex;
-    std::vector<jobs::IJobPtr> m_jobs;
-    std::vector<jobs::IJobInfoPtr> m_job_info;
+    std::vector<IJobPtr> m_jobs;
+    std::vector<IJobInfoPtr> m_job_info;
     int m_job_id_counter;
     
     xcm::mutex m_active_jobs_mutex;

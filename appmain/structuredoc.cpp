@@ -536,7 +536,7 @@ bool StructureDoc::doSave()
         (*it)->connectAlterTableJob(job);
     }
 
-    g_app->getJobQueue()->addJob(job, jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
 
     return true;
 }

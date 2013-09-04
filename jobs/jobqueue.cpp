@@ -30,7 +30,6 @@ public:
     int m_job_id;
     bool* m_started_flag;
 
-
     JobThread(JobQueue* queue, IJobPtr job, bool* started_flag) : kl::Thread()
     {
         m_job = job;
@@ -87,10 +86,7 @@ public:
 
     void exit()
     {
-        // TODO: get rid of wxCommandEvent dependency
-        //wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED, ID_JobFinishedNotify);
-        //event.SetInt(m_job_id);
-        //::wxPostEvent(m_job_queue, event);
+        m_job_queue->onJobFinished(m_job_id);
     }
 };
 
@@ -232,6 +228,48 @@ bool JobQueue::getJobsActive()
     return (m_active_jobs > 0) ? true : false;
 }
 
+void JobQueue::onJobFinished(int job_id)
+{
+    IJobPtr job;
+    job = removeJob(job_id);    
+
+    if (job)
+    {
+        // run post job
+        job->runPostJob();
+
+        // fire the job's finished signal
+        job->sigJobFinished().fire(job);
+
+        job.clear();
+    }
+
+    sigQueueChanged().fire();
+}
+
+IJobPtr JobQueue::removeJob(int job_id)
+{
+    std::vector<IJobPtr>::iterator it;
+    IJobPtr job;
+
+    m_obj_mutex.lock();
+    for (it = m_jobs.begin(); it != m_jobs.end(); ++it)
+    {
+        if (it->p->getJobId() == job_id)
+        {
+            job = it->p;
+            
+            // remove from the active job list
+            m_jobs.erase(it);
+
+            break;
+        }
+    }
+    m_obj_mutex.unlock();
+
+    return job;
+}
+
 bool JobQueue::startJob(IJobPtr& job)
 {
     bool started_flag = false;
@@ -267,6 +305,12 @@ void JobQueue::decrementActiveJobs()
 }
 
 /*
+
+// TODO: get rid of wxCommandEvent dependency
+//wxCommandEvent event(wxEVT_COMMAND_MENU_SELECTED, ID_JobFinishedNotify);
+//event.SetInt(m_job_id);
+//::wxPostEvent(m_job_queue, event);
+
 void JobQueue::onJobFinished(wxCommandEvent& event)
 {
     std::vector<IJobPtr>::iterator it;

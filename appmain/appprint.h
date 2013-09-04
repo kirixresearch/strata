@@ -81,13 +81,13 @@ public:
         
         m_job_info = jobs::createJobInfoObject();
         m_job_info->setTitle(wxT("Print"));
-        m_job_info->setInfoMask(jobMaskTitle |
-                            jobMaskStartTime |
-                            jobMaskFinishTime |
-                            jobMaskPercentage |
-                            jobMaskProgressString |
-                            jobMaskProgressBar |
-                            jobMaskCurrentCount);
+        m_job_info->setInfoMask(jobs::jobMaskTitle |
+                            jobs::jobMaskStartTime |
+                            jobs::jobMaskFinishTime |
+                            jobs::jobMaskPercentage |
+                            jobs::jobMaskProgressString |
+                            jobs::jobMaskProgressBar |
+                            jobs::jobMaskCurrentCount);
     }
 
     void Init(const wxString& url,
@@ -118,7 +118,7 @@ public:
         m_job_info->setStartTime(time(NULL));
         if (m_max_page_count != -1)
             m_job_info->setMaxCount(m_max_page_count);
-        m_job_id = g_app->getJobQueue()->addJobInfo(m_job_info, jobStateRunning);
+        m_job_id = g_app->getJobQueue()->addJobInfo(m_job_info, jobs::jobStateRunning);
     }
 
     void OnFinish()
@@ -127,7 +127,7 @@ public:
         if (!IsCancelled() && !IsFailed())
         {
             m_job_info->setFinishTime(time(NULL));
-            m_job_info->setState(jobStateFinished);
+            m_job_info->setState(jobs::jobStateFinished);
         }
 
         delete this;
@@ -136,7 +136,7 @@ public:
     void OnError(const wxString& message)
     {
         m_job_info->setFinishTime(time(NULL));
-        m_job_info->setState(jobStateFailed);
+        m_job_info->setState(jobs::jobStateFailed);
     }
     
     void OnProgressChange(wxLongLong cur_progress,
@@ -144,11 +144,11 @@ public:
     {
         m_job_info->setCurrentCount(cur_progress.ToDouble());
         
-        if (m_job_info->getState() == jobStateCancelling ||
-            m_job_info->getState() == jobStateCancelled)
+        if (m_job_info->getState() == jobs::jobStateCancelling ||
+            m_job_info->getState() == jobs::jobStateCancelled)
         {
             m_job_info->setFinishTime(time(NULL));
-            m_job_info->setState(jobStateCancelled);
+            m_job_info->setState(jobs::jobStateCancelled);
             
             // set the cancelled flag
             m_cancelled = true;

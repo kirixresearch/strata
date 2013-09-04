@@ -19,7 +19,7 @@
 
 static void onQueryJobFinished(jobs::IJobPtr job)
 {
-    if (job->getJobInfo()->getState() != jobStateFinished)
+    if (job->getJobInfo()->getState() != jobs::jobStateFinished)
         return;
 
 
@@ -144,7 +144,7 @@ jobs::IJobPtr QueryTemplate::execute(int site_id)
     job->getJobInfo()->setTitle(towstr(_("Query")));
     job->setParameters(params.toString());
     job->sigJobFinished().connect(onQueryJobFinished);
-    g_app->getJobQueue()->addJob(job, jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
 
     return static_cast<jobs::IJob*>(job);
 }

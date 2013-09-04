@@ -80,7 +80,7 @@ public:
     {
         XCM_AUTO_LOCK(m_obj_mutex);
 
-        if (job->getJobInfo()->getState() == jobStateCancelled)
+        if (job->getJobInfo()->getState() == jobs::jobStateCancelled)
         {
             m_exit = true;
         }

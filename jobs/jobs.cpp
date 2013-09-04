@@ -96,7 +96,7 @@ IJobInfoPtr createJobInfoObject()
 
 IJobQueuePtr createJobQueueObject()
 {
-    return static_cast<IJobQueue*>(new JobQueue);
+    return static_cast<jobs::IJobQueue*>(new JobQueue);
 }
 
 

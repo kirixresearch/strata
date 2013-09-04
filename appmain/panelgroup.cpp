@@ -595,7 +595,7 @@ bool GroupPanel::validateGroupQuery()
 
 static void onGroupJobFinished(jobs::IJobPtr job)
 {
-    if (job->getJobInfo()->getState() != jobStateFinished)
+    if (job->getJobInfo()->getState() != jobs::jobStateFinished)
         return;
 
     kl::JsonNode params;
@@ -924,7 +924,7 @@ void GroupPanel::onExecute(wxCommandEvent& evt)
     job->setParameters(params.toString());
 
     job->sigJobFinished().connect(&onGroupJobFinished);
-    g_app->getJobQueue()->addJob(job, jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
 
     // close the site
     g_app->getMainFrame()->closeSite(m_doc_site);

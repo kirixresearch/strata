@@ -2073,7 +2073,7 @@ void DbDoc::doPaste()
                 aggregate_job->setDatabase(g_app->getDatabase());
                 aggregate_job->setExtraValue(L"refresh-folder", towstr(target_location));
 
-                g_app->getJobQueue()->addJob(aggregate_job, jobStateRunning);
+                g_app->getJobQueue()->addJob(aggregate_job, jobs::jobStateRunning);
                 
                 aggregate_job->sigJobFinished().connect(this, &DbDoc::onCopyJobFinished);
             }
@@ -3606,7 +3606,7 @@ void DbDoc::onDragDrop(IFsItemPtr target,
         aggregate_job->setDatabase(g_app->getDatabase());
         aggregate_job->setExtraValue(L"refresh-folder", towstr(target_path));
 
-        g_app->getJobQueue()->addJob(aggregate_job, jobStateRunning);
+        g_app->getJobQueue()->addJob(aggregate_job, jobs::jobStateRunning);
                 
         aggregate_job->sigJobFinished().connect(this, &DbDoc::onCopyJobFinished);
     }

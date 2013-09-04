@@ -778,7 +778,7 @@ void FindPanel::onFindAll(wxCommandEvent& evt)
                          m_wholecell_checkbox->IsChecked(),
                          vec);
     
-    g_app->getJobQueue()->addJob(job, jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
     
     site = g_app->getMainFrame()->lookupSite(wxT("FindPanel"));
     if (site)

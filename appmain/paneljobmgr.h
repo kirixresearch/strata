@@ -41,7 +41,7 @@ private:
 private:
 
     JobListCtrlTimer* m_timer;
-    IJobQueuePtr m_job_queue;
+    jobs::IJobQueuePtr m_job_queue;
 
     DECLARE_EVENT_TABLE()
 };

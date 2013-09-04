@@ -409,7 +409,7 @@ static void onAppendJobFinished(jobs::IJobPtr job)
     {
         // this is a merge job
         
-        if (job->getJobInfo()->getState() != jobStateFinished)
+        if (job->getJobInfo()->getState() != jobs::jobStateFinished)
             return;
 
         std::wstring output_path = params["output"];
@@ -494,7 +494,7 @@ void MergePanel::onOK(wxCommandEvent& evt)
 
 
     job->sigJobFinished().connect(&onAppendJobFinished);
-    g_app->getJobQueue()->addJob(job, jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
 
     m_frame->closeSite(m_doc_site);
 }

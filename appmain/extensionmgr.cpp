@@ -356,7 +356,7 @@ std::vector<ExtensionInfo>& ExtensionMgr::getExtensions()
 
 void onScriptJobFinished(jobs::IJobPtr job)
 {
-    if (job->getJobInfo()->getState() != jobStateFinished)
+    if (job->getJobInfo()->getState() != jobs::jobStateFinished)
         return;
 
     wxString script_job_guid = job->getExtraValue(L"appmain.extension.guid");
@@ -427,7 +427,7 @@ bool ExtensionMgr::startAllExtensions()
         {
             jobs::IJobInfoPtr job_info = job->getJobInfo();
             if (job_info.isOk() &&
-                job_info->getState() == jobStateRunning)
+                job_info->getState() == jobs::jobStateRunning)
             {
                 job->sigJobFinished().connect(&onScriptJobFinished);
                 job->setExtraValue(L"appmain.extension.guid", towstr(it->guid));
@@ -444,11 +444,11 @@ bool ExtensionMgr::stopAllExtensions()
     std::vector<jobs::IJobInfoPtr> job_infos_to_watch;
     
     
-    IJobQueuePtr job_queue = g_app->getScriptJobQueue();
+    jobs::IJobQueuePtr job_queue = g_app->getScriptJobQueue();
     if (job_queue.isNull())
         return false;
     
-    jobs::IJobInfoEnumPtr job_info_enum = job_queue->getJobInfoEnum(jobStateRunning);
+    jobs::IJobInfoEnumPtr job_info_enum = job_queue->getJobInfoEnum(jobs::jobStateRunning);
     if (job_info_enum.isNull())
         return false;
         
@@ -511,9 +511,9 @@ bool ExtensionMgr::stopAllExtensions()
         {
             int job_state = (*it)->getState();
             
-            if (job_state == jobStateFinished ||
-                job_state == jobStateFailed ||
-                job_state == jobStateCancelled)
+            if (job_state == jobs::jobStateFinished ||
+                job_state == jobs::jobStateFailed ||
+                job_state == jobs::jobStateCancelled)
             {
                 finish_count++;
             }
@@ -553,7 +553,7 @@ bool ExtensionMgr::startExtension(const wxString& guid)
     if (job.isOk())
     {
         jobs::IJobInfoPtr job_info = job->getJobInfo();
-        if (job_info.isOk() && job_info->getState() == jobStateRunning)
+        if (job_info.isOk() && job_info->getState() == jobs::jobStateRunning)
         {
             job->sigJobFinished().connect(&onScriptJobFinished);
             job->setExtraValue(L"appmain.extension.guid", towstr(info.guid));
@@ -570,11 +570,11 @@ bool ExtensionMgr::startExtension(const wxString& guid)
 
 bool ExtensionMgr::stopExtension(const wxString& guid)
 {
-    IJobQueuePtr job_queue = g_app->getScriptJobQueue();
+    jobs::IJobQueuePtr job_queue = g_app->getScriptJobQueue();
     if (job_queue.isNull())
         return false;
     
-    jobs::IJobInfoEnumPtr job_info_enum = job_queue->getJobInfoEnum(jobStateRunning);
+    jobs::IJobInfoEnumPtr job_info_enum = job_queue->getJobInfoEnum(jobs::jobStateRunning);
     if (job_info_enum.isNull())
         return false;
     

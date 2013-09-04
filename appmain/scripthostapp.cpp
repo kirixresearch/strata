@@ -1773,7 +1773,7 @@ void HostApp::execute(kscript::ExprEnv* env, kscript::Value* retval)
             if (wait < 1000)
                 wait++;
             kl::Thread::sleep(wait);
-        } while (job_info->getState() == jobStateRunning);
+        } while (job_info->getState() == jobs::jobStateRunning);
     }
      else
     {
@@ -2246,13 +2246,13 @@ HostJob::HostJob()
     m_job_info->setTitle(wxT(""));
     m_job_info->setMaxCount(100);
     
-    m_job_info->setInfoMask(jobMaskTitle |
-                        jobMaskStartTime |
-                        jobMaskFinishTime |
-                        jobMaskPercentage |
-                        jobMaskProgressString |
-                        jobMaskProgressBar |
-                        jobMaskCurrentCount);
+    m_job_info->setInfoMask(jobs::jobMaskTitle |
+                        jobs::jobMaskStartTime |
+                        jobs::jobMaskFinishTime |
+                        jobs::jobMaskPercentage |
+                        jobs::jobMaskProgressString |
+                        jobs::jobMaskProgressBar |
+                        jobs::jobMaskCurrentCount);
 }
 
 HostJob::~HostJob()
@@ -2271,7 +2271,7 @@ void HostJob::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 void HostJob::cancel(kscript::ExprEnv* env, kscript::Value* retval)
 {
     m_job_info->setFinishTime(time(NULL));
-    m_job_info->setState(jobStateCancelled);
+    m_job_info->setState(jobs::jobStateCancelled);
 }
 
 
@@ -2281,7 +2281,7 @@ void HostJob::cancel(kscript::ExprEnv* env, kscript::Value* retval)
 
 void HostJob::isCancelling(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    retval->setBoolean(m_job_info->getState() == jobStateCancelling ? true : false);
+    retval->setBoolean(m_job_info->getState() == jobs::jobStateCancelling ? true : false);
 }
 
 
@@ -2292,7 +2292,7 @@ void HostJob::isCancelling(kscript::ExprEnv* env, kscript::Value* retval)
 void HostJob::start(kscript::ExprEnv* env, kscript::Value* retval)
 {
     m_job_info->setStartTime(time(NULL));
-    g_app->getJobQueue()->addJobInfo(m_job_info, jobStateRunning);
+    g_app->getJobQueue()->addJobInfo(m_job_info, jobs::jobStateRunning);
 }
 
 
@@ -2303,7 +2303,7 @@ void HostJob::start(kscript::ExprEnv* env, kscript::Value* retval)
 void HostJob::finish(kscript::ExprEnv* env, kscript::Value* retval)
 {
     m_job_info->setFinishTime(time(NULL));
-    m_job_info->setState(jobStateFinished);
+    m_job_info->setState(jobs::jobStateFinished);
 }
 
 
@@ -3428,7 +3428,7 @@ void HostData::importData(kscript::ExprEnv* env, kscript::Value* retval)
         import_job->runPostJob();
         
         // need to make sure that the states are working before re-enabling this line 7/18/07
-        //retval->setBoolean((export_job->getJobInfo()->getState() == jobStateFinished) ? true : false);
+        //retval->setBoolean((export_job->getJobInfo()->getState() == jobs::jobStateFinished) ? true : false);
         retval->setBoolean(true);
         
                 
@@ -3609,7 +3609,7 @@ void HostData::exportData(kscript::ExprEnv* env, kscript::Value* retval)
         //job->runPostJob(); // runPostJob() refreshes the tree, which we don't want
         
         // need to make sure that the states are working before re-enabling this line 7/18/07
-        // retval->setBoolean((export_job->getJobInfo()->getState() == jobStateFinished) ? true : false);
+        // retval->setBoolean((export_job->getJobInfo()->getState() == jobs::jobStateFinished) ? true : false);
         retval->setBoolean(true);
         
         delete export_job;
@@ -4012,7 +4012,7 @@ kscript::Value* HostAutomation::getMember(const std::wstring& name)
 void HostAutomation::waitForRunningJobs(kscript::ExprEnv* env, kscript::Value* retval)
 {
     int wait_ms = 10;
-    IJobQueuePtr job_queue = g_app->getJobQueue();
+    jobs::IJobQueuePtr job_queue = g_app->getJobQueue();
     while (job_queue->getJobsActive())
     {
         kl::Thread::sleep(wait_ms);

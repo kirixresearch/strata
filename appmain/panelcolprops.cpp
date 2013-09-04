@@ -1131,7 +1131,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
             job->getJobInfo()->setTitle(towstr(_("Creating Index")));
             job->setParameters(params.toString());
 
-            g_app->getJobQueue()->addJob(job, jobStateRunning);
+            g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
         }
     }
 }

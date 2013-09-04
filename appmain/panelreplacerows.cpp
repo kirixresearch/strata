@@ -424,7 +424,7 @@ void ReplaceRowsPanel::onOKPressed(ExprBuilderPanel* panel)
     job->setParameters(params.toString());
 
     job->sigJobFinished().connect(&onUpdateJobFinished);
-    g_app->getJobQueue()->addJob(job, jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
 
     g_app->getMainFrame()->closeSite(m_doc_site);
 }

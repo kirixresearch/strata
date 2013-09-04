@@ -832,7 +832,7 @@ static void readKpgMetadata(jobs::IJobPtr job)
 
 static void onImportJobFinished(jobs::IJobPtr job)
 {
-    if (job->getJobInfo()->getState() != jobStateFinished)
+    if (job->getJobInfo()->getState() != jobs::jobStateFinished)
         return;
 
     if (job->getExtraValue(L"kpg").length() > 0)
@@ -931,7 +931,7 @@ jobs::IJobPtr ImportTemplate::execute()
 {
     jobs::IJobPtr job = createJob();
 
-    g_app->getJobQueue()->addJob(job, jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
 
     return job;
 }

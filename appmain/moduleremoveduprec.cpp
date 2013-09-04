@@ -342,7 +342,7 @@ void RemoveDupRecWizard::onWizardCancelled(kcl::Wizard* wizard)
 
 static void onRemoveDupRecJobFinished(jobs::IJobPtr job)
 {
-    if (job->getJobInfo()->getState() != jobStateFinished)
+    if (job->getJobInfo()->getState() != jobs::jobStateFinished)
         return;
 
     kl::JsonNode params;
@@ -405,7 +405,7 @@ void RemoveDupRecWizard::onWizardFinished(kcl::Wizard* wizard)
     job->setParameters(params.toString());
 
     job->sigJobFinished().connect(&onRemoveDupRecJobFinished);
-    g_app->getJobQueue()->addJob(job, jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
 }
 
 void RemoveDupRecWizard::onSize(wxSizeEvent& event)

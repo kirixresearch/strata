@@ -937,12 +937,12 @@ bool MainApp::getJobsActive()
     return m_job_queue->getJobsActive();
 }
 
-IJobQueuePtr MainApp::getJobQueue()
+jobs::IJobQueuePtr MainApp::getJobQueue()
 {
     return m_job_queue;
 }
 
-IJobQueuePtr MainApp::getScriptJobQueue()
+jobs::IJobQueuePtr MainApp::getScriptJobQueue()
 {
     return m_script_job_queue;
 }

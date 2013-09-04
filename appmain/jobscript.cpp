@@ -19,11 +19,11 @@ ScriptJob::ScriptJob()
     m_script_host = NULL;
     m_job_info->setTitle(towstr(_("Script")));
 
-    m_job_info->setInfoMask(jobMaskTitle |
-                            jobMaskStartTime |
-                            jobMaskFinishTime |
-                            jobMaskProgressString |
-                            jobMaskProgressBar);
+    m_job_info->setInfoMask(jobs::jobMaskTitle |
+                            jobs::jobMaskStartTime |
+                            jobs::jobMaskFinishTime |
+                            jobs::jobMaskProgressString |
+                            jobs::jobMaskProgressBar);
 
     m_job_info->sigOnGetCurrentCount().connect(this, &ScriptJob::onGetCurrentCount);
     m_job_info->sigOnGetMaxCount().connect(this, &ScriptJob::onGetMaxCount);

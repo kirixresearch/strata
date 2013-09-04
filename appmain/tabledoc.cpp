@@ -1340,7 +1340,7 @@ void TableDoc::onSaveAsJobFinished(jobs::IJobPtr job)
     // re-enabled the GUI
     setEnabled(true);
     
-    if (job->getJobInfo()->getState() != jobStateFinished)
+    if (job->getJobInfo()->getState() != jobs::jobStateFinished)
         return;
     
     g_app->getAppController()->refreshDbDoc();
@@ -1537,7 +1537,7 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
 
     job->setParameters(params.toString());
     job->sigJobFinished().connect(this, &TableDoc::onSaveAsJobFinished);
-    g_app->getJobQueue()->addJob(job, jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
 }
 
 
@@ -1711,7 +1711,7 @@ void TableDoc::onReloadDownloadFinished(jobs::IJobInfoPtr job_info)
     // of the way xulrunner thread marshals the call;
     // we want to handle this later, so fire another signal
     
-    if (job_info->getState() != jobStateFinished)
+    if (job_info->getState() != jobs::jobStateFinished)
         return;
 
     wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED, ID_DoReloadRefresh);
@@ -1910,7 +1910,7 @@ void TableDoc::onReload(wxCommandEvent& evt)
             job->setParameters(params.toString());
 
             job->sigJobFinished().connect(this, &TableDoc::onFilterJobFinished);
-            g_app->getJobQueue()->addJob(job, jobStateRunning);
+            g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
         }
     }
 }
@@ -3094,12 +3094,12 @@ void TableDoc::onFilterJobFinished(jobs::IJobPtr job)
             m_quick_filter_jobid = quickFilterNotPending;
     }
 
-    if (job->getJobInfo()->getState() != jobStateFinished)
+    if (job->getJobInfo()->getState() != jobs::jobStateFinished)
     {
         // if the job is cancelled or failed, update the filter toolbar item
         // and we're done
-        if (job->getJobInfo()->getState() == jobStateCancelled ||
-            job->getJobInfo()->getState() == jobStateFailed)
+        if (job->getJobInfo()->getState() == jobs::jobStateCancelled ||
+            job->getJobInfo()->getState() == jobs::jobStateFailed)
         {
             g_app->getAppController()->updateQuickFilterToolBarItem();    
         }
@@ -3133,7 +3133,7 @@ void TableDoc::onFilterJobFinished(jobs::IJobPtr job)
 
 void TableDoc::onSortJobFinished(jobs::IJobPtr query_job)
 {
-    if (query_job->getJobInfo()->getState() != jobStateFinished)
+    if (query_job->getJobInfo()->getState() != jobs::jobStateFinished)
         return;
 
     bool remove_group_break = true;
@@ -3289,7 +3289,7 @@ void TableDoc::onAlterTableJobFinished(jobs::IJobPtr job)
     // and will try to refresh the view with the old names, causing them
     // to be removed if they aren't in sync with the model
 
-    if (job->getJobInfo()->getState() == jobStateFinished)
+    if (job->getJobInfo()->getState() == jobs::jobStateFinished)
     {
         std::vector<std::pair<std::wstring, std::wstring> >::iterator rename_iter;
         for (rename_iter = to_rename.begin();
@@ -3304,7 +3304,7 @@ void TableDoc::onAlterTableJobFinished(jobs::IJobPtr job)
     // remove the "Filtered" suffix
     setCaption(wxEmptyString, wxEmptyString);
     
-    if (job->getJobInfo()->getState() != jobStateFinished)
+    if (job->getJobInfo()->getState() != jobs::jobStateFinished)
         return;
 
     // do inserts for each new field
@@ -5629,7 +5629,7 @@ void TableDoc::onMakeStatic(wxCommandEvent& evt)
     job->setParameters(params.toString());
 
     job->sigJobFinished().connect(this, &TableDoc::onAlterTableJobFinished);
-    g_app->getJobQueue()->addJob(job, jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
 }
 
 
@@ -5993,7 +5993,7 @@ void TableDoc::deleteSelectedColumns()
     job->setParameters(params.toString());
 
     job->sigJobFinished().connect(this, &TableDoc::onAlterTableJobFinished);
-    g_app->getJobQueue()->addJob(job, jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
 }
 
 bool TableDoc::deleteSelectedRowsColumns()
@@ -6238,7 +6238,7 @@ void TableDoc::onGridSelectionChange(kcl::GridEvent& evt)
 
 static void onSummaryJobFinished(jobs::IJobPtr job)
 {
-    if (job->getJobInfo()->getState() != jobStateFinished)
+    if (job->getJobInfo()->getState() != jobs::jobStateFinished)
         return;
 
     kl::JsonNode params;
@@ -6308,7 +6308,7 @@ void TableDoc::onSummary(wxCommandEvent& evt)
     job->setParameters(params.toString());
 
     job->sigJobFinished().connect(&onSummaryJobFinished);
-    g_app->getJobQueue()->addJob(job, jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
 }
 
 
@@ -7394,7 +7394,7 @@ void TableDoc::onInsertColumnSeparator(wxCommandEvent& evt)
 
 static void onCopyRecordsJobFinished(jobs::IJobPtr job)
 {
-    if (job->getJobInfo()->getState() != jobStateFinished)
+    if (job->getJobInfo()->getState() != jobs::jobStateFinished)
         return;
 
     tango::IDatabasePtr db = g_app->getDatabase();
@@ -7476,7 +7476,7 @@ void TableDoc::copyRecords(const std::wstring& condition)
         job->setExtraValue(L"source_tabledoc_model_path", getPath());
         job->sigJobFinished().connect(&onCopyRecordsJobFinished);
 
-        g_app->getJobQueue()->addJob(job, jobStateRunning);
+        g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
     }
      else
     {
@@ -7515,7 +7515,7 @@ void TableDoc::copyRecords(const std::wstring& condition)
         job->setParameters(params.toString());
         job->setExtraValue(L"source_tabledoc_model_path", getPath());
         job->sigJobFinished().connect(&onCopyRecordsJobFinished);
-        g_app->getJobQueue()->addJob(job, jobStateRunning);
+        g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
     }
 }
 
@@ -7794,7 +7794,7 @@ void TableDoc::deleteRecords(const std::wstring& condition)
     job->getJobInfo()->setTitle(towstr(title));
     job->setParameters(params.toString());
     job->sigJobFinished().connect(this, &TableDoc::onDeleteJobFinished);
-    g_app->getJobQueue()->addJob(job, jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
 }
 
 
@@ -8171,7 +8171,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
     job->getJobInfo()->setTitle(towstr(_("Creating Index")));
     job->setParameters(params.toString());
 
-    g_app->getJobQueue()->addJob(job, jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
 }
 
 void TableDoc::showIndexPanel()

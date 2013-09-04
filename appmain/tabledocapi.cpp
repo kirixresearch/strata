@@ -38,7 +38,7 @@ void TableDoc::setFilter(const std::wstring& filter)
     job->setParameters(params.toString());
 
     job->sigJobFinished().connect(this, &TableDoc::onFilterJobFinished);
-    g_app->getJobQueue()->addJob(job, jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
 
 
     // if the job is a quick filter job, track the ID
@@ -127,7 +127,7 @@ void TableDoc::setSortOrder(const std::wstring& expr)
     job->setParameters(params.toString());
 
     job->sigJobFinished().connect(this, &TableDoc::onSortJobFinished);
-    g_app->getJobQueue()->addJob(job, jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
 }
 
 std::wstring TableDoc::getSortOrder()

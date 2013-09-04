@@ -2477,7 +2477,7 @@ END_EVENT_TABLE()
 
 JobGaugeUpdateTimer::JobGaugeUpdateTimer(
                     IStatusBarPtr statusbar,
-                    IJobQueuePtr job_queue,
+                    jobs::IJobQueuePtr job_queue,
                     wxGauge* gauge)
 {
     m_statusbar = statusbar;
@@ -2561,7 +2561,7 @@ void JobGaugeUpdateTimer::Notify()
     bool is_indeterminate = false;
     
     // determine the overall progress
-    jobs::IJobInfoEnumPtr jobs = m_job_queue->getJobInfoEnum(jobStateRunning);
+    jobs::IJobInfoEnumPtr jobs = m_job_queue->getJobInfoEnum(jobs::jobStateRunning);
     size_t i, job_count = jobs->size();
     
     // this check is here because sometimes the running job count is
@@ -2589,7 +2589,7 @@ void JobGaugeUpdateTimer::Notify()
         
         // update the total percentage
         double pct = job_info->getPercentage();
-        if ((job_info->getInfoMask() & jobMaskPercentage) && pct >= 0.0)
+        if ((job_info->getInfoMask() & jobs::jobMaskPercentage) && pct >= 0.0)
             tot_pct_done += pct;
 
         // determine if the job is indeterminate or not
@@ -2702,7 +2702,7 @@ void JobGaugeUpdateTimer::onJobStateChangedInMainThread(wxCommandEvent& evt)
     wxASSERT_MSG(::wxIsMainThread(), wxT("Being called outside of main/gui thread!"));
 
     jobs::IJobInfoPtr job_info = (jobs::IJobInfo*)evt.GetExtraLong();
-    if (job_info->getState() == jobStateFailed)
+    if (job_info->getState() == jobs::jobStateFailed)
     {
         // if any of the jobs in the queue fail,
         // show a job failed icon

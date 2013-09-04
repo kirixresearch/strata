@@ -84,7 +84,7 @@ static void writeKpgMetadata(jobs::IJobPtr job)
 
 static void onExportJobFinished(jobs::IJobPtr job)
 {
-    if (job->getJobInfo()->getState() != jobStateFinished)
+    if (job->getJobInfo()->getState() != jobs::jobStateFinished)
         return;
 
     if (job->getExtraValue(L"kpg").length() > 0)
@@ -168,7 +168,7 @@ jobs::IJobPtr ExportTemplate::execute()
 {
     jobs::IJobPtr job = createJob();
 
-    g_app->getJobQueue()->addJob(job, jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
 
     return job;
 }

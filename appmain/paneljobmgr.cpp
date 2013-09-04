@@ -70,9 +70,9 @@ END_EVENT_TABLE()
 static wxString getJobElapsedTimeString(jobs::IJobInfoPtr job_info)
 {
     int job_state = job_info->getState();
-    if (job_state == jobStatePaused)
+    if (job_state == jobs::jobStatePaused)
         return _("Paused");
-         else if (job_state == jobStateQueued)
+         else if (job_state == jobs::jobStateQueued)
         return _("Queued");
 
     // calcuate the duration of the job
@@ -80,14 +80,14 @@ static wxString getJobElapsedTimeString(jobs::IJobInfoPtr job_info)
     time_t finish_time = job_info->getFinishTime();
     time_t duration, current_time = time(NULL);
     
-    if (job_state == jobStateCancelled ||
-        job_state == jobStateFinished ||
-        job_state == jobStateFailed)
+    if (job_state == jobs::jobStateCancelled ||
+        job_state == jobs::jobStateFinished ||
+        job_state == jobs::jobStateFailed)
     {
         time_t finish_time = job_info->getFinishTime();
         duration = finish_time - start_time;
     }
-     else if (job_state == jobStateQueued)
+     else if (job_state == jobs::jobStateQueued)
     {
         duration = 0;
     }
@@ -120,24 +120,24 @@ static wxString getJobElapsedTimeString(jobs::IJobInfoPtr job_info)
     
     switch (job_state)
     {
-        case jobStateRunning:
+        case jobs::jobStateRunning:
             return wxString::Format(_("Running (%s)"), time_str.c_str());
 
-        case jobStateFinished:
+        case jobs::jobStateFinished:
             return wxString::Format(_("Finished on %s at %s (%s)"),
                                     finish_date_str.c_str(),
                                     finish_time_str.c_str(),
                                     time_str.c_str());
 
-        case jobStateCancelling:
+        case jobs::jobStateCancelling:
             return wxString::Format(_("Cancelling (%s)"), time_str.c_str());
 
-        case jobStateCancelled:
+        case jobs::jobStateCancelled:
             return wxString::Format(_("Cancelled on %s at %s (%s)"),
                                     finish_date_str.c_str(),
                                     finish_time_str.c_str(),
                                     time_str.c_str());
-        case jobStateFailed:
+        case jobs::jobStateFailed:
             return wxString::Format(_("Failed on %s at %s (%s)"),
                                     finish_date_str.c_str(),
                                     finish_time_str.c_str(),
@@ -272,15 +272,15 @@ void JobListCtrl::updateJobItem(kcl::ScrollListItem* item)
     
     // update bitmap
     element = item->getElement(wxT("bitmap"));
-    if (job_state == jobStateFinished)
+    if (job_state == jobs::jobStateFinished)
         element->setBitmap(GETBMP(gf_checkmark_32));
-         else if (job_state == jobStateCancelled)
+         else if (job_state == jobs::jobStateCancelled)
         element->setBitmap(GETBMP(gf_x_32));
-         else if (job_state == jobStateFailed)
+         else if (job_state == jobs::jobStateFailed)
         element->setBitmap(GETBMP(gf_exclamation_32));
     
     // update progress gauge
-    if (job_state == jobStateRunning)
+    if (job_state == jobs::jobStateRunning)
     {
         double pct = job_info->getPercentage();
         bool is_indeterminate = false;
@@ -349,9 +349,9 @@ void JobListCtrl::refreshItems()
         updateJobItem(*it);
         
         int state = info->getState();
-        if (state == jobStateFinished ||
-            state == jobStateCancelled ||
-            state == jobStateFailed)
+        if (state == jobs::jobStateFinished ||
+            state == jobs::jobStateCancelled ||
+            state == jobs::jobStateFailed)
         {
             // make job list not update this job anymore
             (*it)->setUpdated(false);
@@ -369,7 +369,7 @@ void JobListCtrl::refreshItems()
     }
 
     // now look for new jobs
-    jobs::IJobInfoEnumPtr jobs = m_job_queue->getJobInfoEnum(jobStateAll);
+    jobs::IJobInfoEnumPtr jobs = m_job_queue->getJobInfoEnum(jobs::jobStateAll);
     bool item_count_changed = false;
     int job_count = jobs->size();
     int i;
@@ -381,9 +381,9 @@ void JobListCtrl::refreshItems()
         job_id = job_info->getJobId();
         int state = job_info->getState();
 
-        if (state == jobStateFinished ||
-            state == jobStateCancelled ||
-            state == jobStateFailed)
+        if (state == jobs::jobStateFinished ||
+            state == jobs::jobStateCancelled ||
+            state == jobs::jobStateFailed)
         {
             continue;
         }
@@ -407,7 +407,7 @@ void JobListCtrl::clearInactiveJobs()
 {
     checkIfInMainThread();
 
-    jobs::IJobInfoEnumPtr jobs = m_job_queue->getJobInfoEnum(jobStateAll);
+    jobs::IJobInfoEnumPtr jobs = m_job_queue->getJobInfoEnum(jobs::jobStateAll);
     jobs::IJobInfoPtr job_info;
     int job_count = jobs->size();
     int i;
@@ -420,10 +420,10 @@ void JobListCtrl::clearInactiveJobs()
         jobs::IJobInfoPtr job_info = jobs->getItem(i);
         int state = job_info->getState();
         
-        if (state == jobStateFinished ||
-            state == jobStateCancelling ||
-            state == jobStateCancelled ||
-            state == jobStateFailed)
+        if (state == jobs::jobStateFinished ||
+            state == jobs::jobStateCancelling ||
+            state == jobs::jobStateCancelled ||
+            state == jobs::jobStateFailed)
         {
             job_info->setVisible(false);
         }
@@ -449,7 +449,7 @@ void JobListCtrl::populate()
 {
     checkIfInMainThread();
 
-    jobs::IJobInfoEnumPtr jobs = m_job_queue->getJobInfoEnum(jobStateAll);
+    jobs::IJobInfoEnumPtr jobs = m_job_queue->getJobInfoEnum(jobs::jobStateAll);
     jobs::IJobInfoPtr job_info;
     size_t i, job_count = jobs->size();
 
@@ -509,7 +509,7 @@ void JobListCtrl::onCancelButtonClicked(wxCommandEvent& evt)
         if (job_info)
         {
             job_info->setFinishTime(time(NULL));
-            job_info->setState(jobStateCancelling);
+            job_info->setState(jobs::jobStateCancelling);
         }
     }
 }

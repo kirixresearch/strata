@@ -391,7 +391,7 @@ void SplitPanel::onOK(wxCommandEvent& event)
     job->setParameters(params.toString());
 
     job->sigJobFinished().connect(&onDivideJobFinished);
-    g_app->getJobQueue()->addJob(job, jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
 
     m_frame->closeSite(m_doc_site);    
 }

@@ -250,7 +250,7 @@ public:
         m_curl = curlCreateHandle();
         if (!m_curl)
         {
-            m_job_info->setState(jobStateFailed);
+            m_job_info->setState(jobs::jobStateFailed);
             return 0;
         }
         
@@ -274,7 +274,7 @@ public:
         m_f = xf_open(output_filename, xfCreate, xfWrite, xfShareNone);
         if (!m_f)
         {
-            m_job_info->setState(jobStateFailed);
+            m_job_info->setState(jobs::jobStateFailed);
             return 0;
         }
         
@@ -579,14 +579,14 @@ bool Updater::parseUpdateFile(const wxString& xml, UpdaterInfo& info)
 
 static void onUpdateDownloadFinished(jobs::IJobPtr job)
 {
-    if (job->getJobInfo()->getState() != jobStateFinished)
+    if (job->getJobInfo()->getState() != jobs::jobStateFinished)
         return;
         
     IUpdateDownloadJobPtr u = job;
     wxASSERT(u.p);
     
     
-    IJobQueuePtr job_queue = g_app->getJobQueue();
+    jobs::IJobQueuePtr job_queue = g_app->getJobQueue();
     if (job_queue.isOk() && job_queue->getJobsActive())
     {
         wxString appname = APPLICATION_NAME;
@@ -672,7 +672,7 @@ static void onUpdateCheckFinished(jobs::IJobPtr job)
         g_dlg = NULL;
     }
     
-    if (job->getJobInfo()->getState() != jobStateFinished)
+    if (job->getJobInfo()->getState() != jobs::jobStateFinished)
         return;
     
     IUpdateCheckJobPtr u = job;
@@ -689,7 +689,7 @@ static void onUpdateCheckFinished(jobs::IJobPtr job)
     
     if (Updater::showAskForUpdate())
     {
-        IJobQueuePtr job_queue = g_app->getJobQueue();
+        jobs::IJobQueuePtr job_queue = g_app->getJobQueue();
         if (job_queue.isOk() && job_queue->getJobsActive())
         {
             wxString appname = APPLICATION_NAME;
@@ -703,7 +703,7 @@ static void onUpdateCheckFinished(jobs::IJobPtr job)
         UpdateDownloadJob* job = new UpdateDownloadJob;
         job->setInformation(info.fetch_url, info.user_name, info.password);
         job->sigJobFinished().connect(&onUpdateDownloadFinished);
-        g_app->getJobQueue()->addJob(job, jobStateRunning);
+        g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
     }
 }
 
@@ -722,7 +722,7 @@ void Updater::checkForUpdates(bool full_gui)
     // at the bottom
     UpdateCheckJob* job = new UpdateCheckJob;
     job->sigJobFinished().connect(&onUpdateCheckFinished);
-    g_app->getScriptJobQueue()->addJob(job, jobStateRunning);
+    g_app->getScriptJobQueue()->addJob(job, jobs::jobStateRunning);
 
     
     if (full_gui)

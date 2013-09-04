@@ -1206,7 +1206,7 @@ void TangoModel::execute(bool block)
         job->getJobInfo()->setTitle(towstr(_("Query")));
         job->setParameters(params.toString());
         job->sigJobFinished().connect(this, &TangoModel::onQueryJobFinished);
-        g_app->getJobQueue()->addJob(job, jobStateRunning);
+        g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
     }
      else
     {
@@ -1699,7 +1699,7 @@ void TangoModel::onQueryJobFinished(jobs::IJobPtr job)
 {
     m_job.clear();
     
-    if (job->getJobInfo()->getState() != jobStateFinished)
+    if (job->getJobInfo()->getState() != jobs::jobStateFinished)
         return;
 
     tango::IIteratorPtr iter = job->getResultObject();

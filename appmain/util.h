@@ -620,7 +620,7 @@ class JobGaugeUpdateTimer : public wxTimer,
 public:
 
     JobGaugeUpdateTimer(IStatusBarPtr _statusbar,
-                        IJobQueuePtr _job_queue,
+                        jobs::IJobQueuePtr _job_queue,
                         wxGauge* _gauge);
     
     ~JobGaugeUpdateTimer();
@@ -640,7 +640,7 @@ public:
 private:
 
     IStatusBarPtr m_statusbar;
-    IJobQueuePtr m_job_queue;
+    jobs::IJobQueuePtr m_job_queue;
     
     IStatusBarItemPtr m_job_text_item;
     IStatusBarItemPtr m_job_separator_item;

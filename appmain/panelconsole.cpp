@@ -718,7 +718,7 @@ void ConsolePanel::onCommand(wxString& command)
 
 void ConsolePanel::onQueryJobFinished(jobs::IJobPtr job)
 {
-    if (job->getJobInfo()->getState() == jobStateFailed)
+    if (job->getJobInfo()->getState() == jobs::jobStateFailed)
     {
         // the job failed; add an error code and populate the text
         wxString error_string = job->getJobInfo()->getErrorString();
@@ -735,7 +735,7 @@ void ConsolePanel::onQueryJobFinished(jobs::IJobPtr job)
         return;
     }
 
-    if (job->getJobInfo()->getState() != jobStateFinished)
+    if (job->getJobInfo()->getState() != jobs::jobStateFinished)
         return;
 
 
@@ -1057,7 +1057,7 @@ void ConsolePanel::runCommand(wxString& command)
     job->getJobInfo()->setTitle(towstr(_("Query")));
     job->setParameters(params.toString());
     job->sigJobFinished().connect(this, &ConsolePanel::onQueryJobFinished);
-    g_app->getJobQueue()->addJob(job, jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
 
 
     SetFocus();

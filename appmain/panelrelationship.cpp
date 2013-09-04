@@ -424,7 +424,7 @@ struct UpdateInfo
 
 static void onRelationshipJobFinished(jobs::IJobPtr job)
 {
-    if (job->getJobInfo()->getState() != jobStateFinished)
+    if (job->getJobInfo()->getState() != jobs::jobStateFinished)
         return;
 
     g_app->getMainFrame()->postEvent(new FrameworkEvent(FRAMEWORK_EVT_APPMAIN_RELATIONSHIPS_UPDATED));
@@ -607,7 +607,7 @@ void RelationshipPanel::onUpdateRelationships(wxCommandEvent& evt)
     job->setParameters(params.toString());
 
     job->sigJobFinished().connect(&onRelationshipJobFinished);
-    g_app->getJobQueue()->addJob(job, jobStateRunning);
+    g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
 
 
     m_diagram->resetModified();

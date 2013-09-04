@@ -2247,7 +2247,7 @@ void AppController::onCloseChild(wxCommandEvent& evt)
 
 void AppController::onStop(wxCommandEvent& evt)
 {
-    IJobQueuePtr job_queue = g_app->getJobQueue();
+    jobs::IJobQueuePtr job_queue = g_app->getJobQueue();
     if (job_queue.isNull())
         return;
     
@@ -2255,7 +2255,7 @@ void AppController::onStop(wxCommandEvent& evt)
         return;
     
     jobs::IJobInfoEnumPtr jobs;
-    jobs = job_queue->getJobInfoEnum(jobStateRunning);
+    jobs = job_queue->getJobInfoEnum(jobs::jobStateRunning);
     if (jobs.isNull())
         return;
     
@@ -4814,7 +4814,7 @@ static wxString getTempTablename(const wxString& filename, const wxString& table
 
 static void onOpenExcelJobFinished(jobs::IJobPtr job)
 {
-    if (job->getJobInfo()->getState() != jobStateFinished)
+    if (job->getJobInfo()->getState() != jobs::jobStateFinished)
         return;
 
     // get the list of output tables;
@@ -5041,7 +5041,7 @@ bool AppController::openExcel(const wxString& location, int* site_id)
 
         job->getJobInfo()->setTitle(towstr(job_title));
         job->sigJobFinished().connect(&onOpenExcelJobFinished);
-        g_app->getJobQueue()->addJob(job, jobStateRunning);
+        g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
     }
 
     return true;
@@ -5460,7 +5460,7 @@ jobs::IJobPtr AppController::executeScript(const wxString& _location,
     script_job->setScriptHost(script_host);
     jobs::IJobPtr job = static_cast<jobs::IJob*>(script_job);
 
-    g_app->getScriptJobQueue()->addJob(job, jobStateRunning);
+    g_app->getScriptJobQueue()->addJob(job, jobs::jobStateRunning);
     return job;
 }
 
@@ -5499,7 +5499,7 @@ jobs::IJobPtr AppController::executeCode(const wxString& value,
     script_job->setScriptHost(script_host);
     jobs::IJobPtr job = static_cast<jobs::IJob*>(script_job);
 
-    g_app->getScriptJobQueue()->addJob(job, jobStateRunning);
+    g_app->getScriptJobQueue()->addJob(job, jobs::jobStateRunning);
     return job;
 }
 
@@ -5563,7 +5563,7 @@ jobs::IJobPtr AppController::execute(const wxString& location)
             jobs::IJobPtr job = appCreateJob(mime_type);
             job->setParameters(params.toString());
 
-            g_app->getJobQueue()->addJob(job, jobStateRunning);
+            g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
 
             return job;
         }
@@ -6149,7 +6149,7 @@ bool AppController::checkForRunningJobs(bool exit_message)
     int ID_KeepJobsRunning = 101;
     int ID_ForceExit = 102;
 
-    IJobQueuePtr job_queue = g_app->getJobQueue();
+    jobs::IJobQueuePtr job_queue = g_app->getJobQueue();
     if (job_queue->getJobsActive())
     {
         wxString appname = APPLICATION_NAME;
@@ -6196,7 +6196,7 @@ bool AppController::checkForRunningJobs(bool exit_message)
             wxMilliSleep(1500);
             
             // cancel all running jobs
-            jobs::IJobInfoEnumPtr jobs = job_queue->getJobInfoEnum(jobStateRunning);
+            jobs::IJobInfoEnumPtr jobs = job_queue->getJobInfoEnum(jobs::jobStateRunning);
             size_t i, job_count = jobs->size();
             for (i = 0; i < job_count; i++)
             {
@@ -6212,7 +6212,7 @@ bool AppController::checkForRunningJobs(bool exit_message)
             bool cancelling = true;
             while (cancelling)
             {
-                jobs = job_queue->getJobInfoEnum(jobStateCancelling);
+                jobs = job_queue->getJobInfoEnum(jobs::jobStateCancelling);
                 if (jobs->size() == 0)
                 {
                     wait_dlg->Show(false);
