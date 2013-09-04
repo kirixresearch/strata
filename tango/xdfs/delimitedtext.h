@@ -122,7 +122,7 @@ public:
     
     size_t getRowCellCount() const { return m_row.getValueCount(); }
     xf_off_t getRowOffset() const { return m_row.offset; }
-    
+
     const std::wstring& getString(size_t col_idx) const { return m_row.getValue(col_idx); }
     const DelimitedTextRow& getRow() { return m_row; }
     
@@ -134,6 +134,7 @@ public:
     bool rewind();
     void skip(int delta);
     void goOffset(xf_off_t offset);
+    double getPos() const;
     
 private:
 

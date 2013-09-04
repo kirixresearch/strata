@@ -443,6 +443,18 @@ void DelimitedTextFile::goOffset(xf_off_t offset)
 }
 
 
+double DelimitedTextFile::getPos() const
+{
+    double offset = (double)m_file.getOffset();
+    double file_size = xf_get_file_size(m_filename);
+
+    if (kl::dblcompare(file_size, 0.0) == 0)
+        return 0.0;
+
+    return (offset / file_size);
+}
+
+
 bool DelimitedTextFile::safeIsSpace(wchar_t c) const
 {
     if (isLineDelimiter(c))

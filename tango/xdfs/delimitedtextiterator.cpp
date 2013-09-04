@@ -200,7 +200,7 @@ bool DelimitedTextIterator::setPos(double pct)
 
 double DelimitedTextIterator::getPos()
 {
-    return 0.0;
+    return m_file.getPos();
 }
 
 void DelimitedTextIterator::goRow(const tango::rowid_t& rowid)
