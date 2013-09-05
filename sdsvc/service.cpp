@@ -34,151 +34,151 @@ static int request_callback( struct mg_connection* conn)
     const struct mg_request_info* request_info = mg_get_request_info(conn);
 
 
-        mg_force_close(conn);
+    mg_force_close(conn);
 
 
-        std::string instance;
+    std::string instance;
 
         
-        const char* uri = request_info->uri;
-        if (uri)
+    const char* uri = request_info->uri;
+    if (uri)
+    {
+        if (*uri=='/') ++uri;
+        const char* slash = strchr(uri,'/');
+        if (slash)
         {
-            if (*uri=='/') ++uri;
-            const char* slash = strchr(uri,'/');
-            if (slash)
-            {
-                instance.assign(uri, slash-uri);
-                uri = slash;
-            }
-             else
-            {
-                instance = uri;
-                uri = "/";
-            }
+            instance.assign(uri, slash-uri);
+            uri = slash;
+        }
+            else
+        {
+            instance = uri;
+            uri = "/";
+        }
+    }
+
+    if (instance.empty() || instance == "favicon.ico")
+        return 1;
+
+
+    int sock;
+    char* ipaddress = "127.0.0.1";
+    int port = 0;
+    struct sockaddr_in serveraddr;
+    std::string request;
+
+
+    port = g_service.getServerPort(instance);
+
+    if (port == 0)
+    {
+        mg_write(conn, "HTTP/1.0 404 Not Found\r\n", 24);
+        return 1;
+    }
+
+
+    //request += "GET / HTTP/1.0\r\n";
+    request += request_info->request_method;
+    request += ' ';
+    request += uri;
+    if (request_info->query_string && *(request_info->query_string))
+    {
+        request += '?';
+        request += request_info->query_string;
+    }
+    request += " HTTP/1.0\r\n";
+
+    request += "Host: localhost\r\n";
+    request += "Connection: close\r\n";
+
+    for (int h = 0; h < request_info->num_headers; ++h)
+    {
+        if (0 == strcasecmp(request_info->http_headers[h].name, "Connection") ||
+            0 == strcasecmp(request_info->http_headers[h].name, "Host"))
+        {
+            continue;
         }
 
-        if (instance.empty() || instance == "favicon.ico")
-            return 1;
-
-
-        int sock;
-        char* ipaddress = "127.0.0.1";
-        int port = 0;
-        struct sockaddr_in serveraddr;
-        std::string request;
-
-
-        port = g_service.getServerPort(instance);
-
-        if (port == 0)
-        {
-            mg_write(conn, "HTTP/1.0 404 Not Found\r\n", 24);
-            return 1;
-        }
-
-
-        //request += "GET / HTTP/1.0\r\n";
-        request += request_info->request_method;
-        request += ' ';
-        request += uri;
-        if (request_info->query_string && *(request_info->query_string))
-        {
-            request += '?';
-            request += request_info->query_string;
-        }
-        request += " HTTP/1.0\r\n";
-
-        request += "Host: localhost\r\n";
-        request += "Connection: close\r\n";
-
-        for (int h = 0; h < request_info->num_headers; ++h)
-        {
-            if (0 == strcasecmp(request_info->http_headers[h].name, "Connection") ||
-                0 == strcasecmp(request_info->http_headers[h].name, "Host"))
-            {
-                continue;
-            }
-
-            request += request_info->http_headers[h].name;
-            request += ": ";
-            request += request_info->http_headers[h].value;
-            request += "\r\n";
-        }
-
+        request += request_info->http_headers[h].name;
+        request += ": ";
+        request += request_info->http_headers[h].value;
         request += "\r\n";
+    }
 
-        printf("\n\n-----------------------------------------------------\n");
-        printf("instance: %s\n", instance.c_str());
-        printf("%s\n\n", request.c_str());
+    request += "\r\n";
 
-        // open socket
-        if ((sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
-            return 1;  // socket() failed
+    printf("\n\n-----------------------------------------------------\n");
+    printf("instance: %s\n", instance.c_str());
+    printf("%s\n\n", request.c_str());
 
-        // connect
-        memset(&serveraddr, 0, sizeof(serveraddr));
-        serveraddr.sin_family = AF_INET;
-        serveraddr.sin_addr.s_addr = inet_addr(ipaddress);
-        serveraddr.sin_port = htons((unsigned short) port);
-        if (connect(sock, (struct sockaddr*)&serveraddr, sizeof(serveraddr)) < 0)
-            return 1; // connect() failed
+    // open socket
+    if ((sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
+        return 1;  // socket() failed
 
-        // send request
-        if (send(sock, request.c_str(), request.length(), 0) != request.length())
-            return 1; // sent bytes mismatched request bytes
+    // connect
+    memset(&serveraddr, 0, sizeof(serveraddr));
+    serveraddr.sin_family = AF_INET;
+    serveraddr.sin_addr.s_addr = inet_addr(ipaddress);
+    serveraddr.sin_port = htons((unsigned short) port);
+    if (connect(sock, (struct sockaddr*)&serveraddr, sizeof(serveraddr)) < 0)
+        return 1; // connect() failed
 
-
-        #define BUFFERSIZE 16384
-        char buf[BUFFERSIZE+1];
+    // send request
+    if (send(sock, request.c_str(), request.length(), 0) != request.length())
+        return 1; // sent bytes mismatched request bytes
 
 
-        if (*(request_info->request_method) == 'P')
+    #define BUFFERSIZE 16384
+    char buf[BUFFERSIZE+1];
+
+
+    if (*(request_info->request_method) == 'P')
+    {
+        int h;
+        int content_length = -1;
+        for (h = 0; h < request_info->num_headers; ++h)
         {
-            int h;
-            int content_length = -1;
-            for (h = 0; h < request_info->num_headers; ++h)
-            {
-                if (0 == strncasecmp("Content-Length", request_info->http_headers[h].name, 14))
-                    content_length = atoi(request_info->http_headers[h].value);
-            }
-
-            printf("expected content length: %d\n", content_length);
-
-            int buf_len;
-            int received_bytes = 0;
-
-            while (true)
-            {
-                buf_len = mg_read(conn, buf, BUFFERSIZE);
-                
-                send(sock, buf, buf_len, 0);
-                
-                received_bytes += buf_len;
-
-                if (buf_len != BUFFERSIZE)
-                    break;
-            }
-
-            printf("received bytes: %d\n", received_bytes);
+            if (0 == strncasecmp("Content-Length", request_info->http_headers[h].name, 14))
+                content_length = atoi(request_info->http_headers[h].value);
         }
 
+        printf("expected content length: %d\n", content_length);
 
-        // get response
-        int len;
+        int buf_len;
+        int received_bytes = 0;
+
         while (true)
         {
-            len = recv(sock, (char*)&buf, BUFFERSIZE, 0);
-            if (len <= 0)
+            buf_len = mg_read(conn, buf, BUFFERSIZE);
+                
+            send(sock, buf, buf_len, 0);
+                
+            received_bytes += buf_len;
+
+            if (buf_len != BUFFERSIZE)
                 break;
-
-            buf[len] = 0;
-            
-            //printf("%s",buf);
-
-            mg_write(conn, buf, (size_t)len);
         }
 
-        closesocket(sock);
+        printf("received bytes: %d\n", received_bytes);
+    }
+
+
+    // get response
+    int len;
+    while (true)
+    {
+        len = recv(sock, (char*)&buf, BUFFERSIZE, 0);
+        if (len <= 0)
+            break;
+
+        buf[len] = 0;
+            
+        //printf("%s",buf);
+
+        mg_write(conn, buf, (size_t)len);
+    }
+
+    closesocket(sock);
 
 
     return 1;
