@@ -163,31 +163,23 @@ bool Sdserv::useConfigFile(const std::wstring& config_file)
     return true;
 }
 
-static void* request_callback(enum mg_event evt,
-                              struct mg_connection* conn,
-                              const struct mg_request_info* request_info)
+static int request_callback( struct mg_connection* conn)
 {
-    if (evt == MG_NEW_REQUEST)
+    const struct mg_request_info* request_info = mg_get_request_info(conn);
+
+    g_sdserv.updateLastAccessTimestamp();
+
+    RequestInfo req(conn, request_info);
+    req.read();
+
+    if (!c->onRequest(req))
     {
-        g_sdserv.updateLastAccessTimestamp();
-
-        RequestInfo req(conn, request_info);
-
-        req.read();
-
-        if (!c->onRequest(req))
-        {
-            req.setStatusCode(404);
-            req.setContentType("text/html");
-            req.write("<html><body><h2>Not found</h2></body></html>");
-        }
-    }
-     else if (evt == MG_EVENT_LOG)
-    {
-        printf("ERROR: %s\n", request_info->log_message);
+        req.setStatusCode(404);
+        req.setContentType("text/html");
+        req.write("<html><body><h2>Not found</h2></body></html>");
     }
 
-    return "processed";
+    return 1;
 }
 
 
@@ -227,15 +219,19 @@ void Sdserv::updateLastAccessTimestamp()
 
 int Sdserv::runServer()
 {
-    struct mg_context *ctx;
+    struct mg_context* ctx;
+    struct mg_callbacks callbacks;
 
     if (m_options[0] == 0)
     {
         signalServerNotReady();
         return 0;
     }
-        
-    ctx = mg_start(request_callback, NULL, m_options);
+    
+    memset(&callbacks, 0, sizeof(callbacks));
+    callbacks.begin_request = request_callback;
+
+    ctx = mg_start(&callbacks, NULL, m_options);
     if (!ctx)
     {
         signalServerNotReady();
