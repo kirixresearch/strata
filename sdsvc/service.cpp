@@ -293,7 +293,7 @@ bool Service::readConfig(const std::wstring& config_file)
 
     // enable keep alive by default
     m_options[options_arr_size++] = "num_threads";
-    m_options[options_arr_size++] = "30";
+    m_options[options_arr_size++] = "50";
     
     
     kl::JsonNode ssl_cert = server["ssl_cert"];
