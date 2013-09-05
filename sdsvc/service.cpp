@@ -160,6 +160,12 @@ static int request_callback( struct mg_connection* conn)
         }
 
         printf("received bytes: %d\n", received_bytes);
+
+        if (content_length != -1 && received_bytes != content_length)
+        {
+            closesocket(sock);
+            return 1;
+        }
     }
 
 
