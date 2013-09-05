@@ -134,17 +134,32 @@ static int request_callback( struct mg_connection* conn)
 
         if (*(request_info->request_method) == 'P')
         {
+            int h;
+            int content_length = -1;
+            for (h = 0; h < request_info->num_headers; ++h)
+            {
+                if (0 == strncasecmp("Content-Length", request_info->http_headers[h].name, 14))
+                    content_length = atoi(request_info->http_headers[h].value);
+            }
+
+            printf("expected content length: %d\n", content_length);
+
             int buf_len;
+            int received_bytes = 0;
 
             while (true)
             {
                 buf_len = mg_read(conn, buf, BUFFERSIZE);
                 
                 send(sock, buf, buf_len, 0);
-            
+                
+                received_bytes += buf_len;
+
                 if (buf_len != BUFFERSIZE)
                     break;
             }
+
+            printf("received bytes: %d\n", received_bytes);
         }
 
 
