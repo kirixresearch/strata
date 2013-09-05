@@ -29,13 +29,11 @@
 Service g_service;
 
 
-
-static void* request_callback(enum mg_event evt,
-                              struct mg_connection* conn,
-                              const struct mg_request_info* request_info)
+static int request_callback( struct mg_connection* conn)
 {
-    if (evt == MG_NEW_REQUEST)
-    {
+    const struct mg_request_info* request_info = mg_get_request_info(conn);
+
+
         mg_force_close(conn);
 
 
@@ -60,7 +58,7 @@ static void* request_callback(enum mg_event evt,
         }
 
         if (instance.empty() || instance == "favicon.ico")
-            return L"processed";
+            return 1;
 
 
         int sock;
@@ -75,7 +73,7 @@ static void* request_callback(enum mg_event evt,
         if (port == 0)
         {
             mg_write(conn, "HTTP/1.0 404 Not Found\r\n", 24);
-            return "processed";
+            return 1;
         }
 
 
@@ -115,7 +113,7 @@ static void* request_callback(enum mg_event evt,
 
         // open socket
         if ((sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
-            return "processed";  // socket() failed
+            return 1;  // socket() failed
 
         // connect
         memset(&serveraddr, 0, sizeof(serveraddr));
@@ -123,11 +121,11 @@ static void* request_callback(enum mg_event evt,
         serveraddr.sin_addr.s_addr = inet_addr(ipaddress);
         serveraddr.sin_port = htons((unsigned short) port);
         if (connect(sock, (struct sockaddr*)&serveraddr, sizeof(serveraddr)) < 0)
-            return "processed"; // connect() failed
+            return 1; // connect() failed
 
         // send request
         if (send(sock, request.c_str(), request.length(), 0) != request.length())
-            return "processed"; // sent bytes mismatched request bytes
+            return 1; // sent bytes mismatched request bytes
 
 
         #define BUFFERSIZE 16384
@@ -167,13 +165,8 @@ static void* request_callback(enum mg_event evt,
 
         closesocket(sock);
 
-    }
-     else if (evt == MG_EVENT_LOG)
-    {
-        printf("ERROR: %s\n", request_info->log_message);
-    }
 
-    return "processed";
+    return 1;
 }
 
 
@@ -463,8 +456,13 @@ void Service::run()
 
 
     struct mg_context* ctx;
+    struct mg_callbacks callbacks;
 
-    ctx = mg_start(request_callback, NULL, m_options);
+    memset(&callbacks, 0, sizeof(callbacks));
+    callbacks.begin_request = request_callback;
+
+
+    ctx = mg_start(&callbacks, NULL, m_options);
     
     m_running = true;
 
