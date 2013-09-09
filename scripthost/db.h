@@ -9,12 +9,15 @@
  */
 
 
-#ifndef __APP_SCRIPTDB_H
-#define __APP_SCRIPTDB_H
+#ifndef __SCRIPTHOST_SCRIPTDB_H
+#define __SCRIPTHOST_SCRIPTDB_H
 
 
 #include <tango.h>
 #include <kl/string.h>
+
+namespace scripthost
+{
 
 
 class DbError;
@@ -466,6 +469,10 @@ private:
     const wchar_t** m_seek_data;
     size_t m_seek_arr_size;
 };
+
+
+
+}; // namespace scripthost
 
 
 #endif

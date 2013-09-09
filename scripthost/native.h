@@ -9,8 +9,11 @@
  */
 
 
-#ifndef __APP_SCRIPTNATIVE_H
-#define __APP_SCRIPTNATIVE_H
+#ifndef __SCRIPTHOST_SCRIPTNATIVE_H
+#define __SCRIPTHOST_SCRIPTNATIVE_H
+
+namespace scripthost
+{
 
 
 class NativeType : public kscript::ValueObject
@@ -143,6 +146,8 @@ private:
 };
 
 
+
+}; // namespace scripthost
 
 
 #endif

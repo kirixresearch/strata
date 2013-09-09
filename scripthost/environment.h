@@ -9,11 +9,14 @@
  */
 
 
-#ifndef __APP_SCRIPTENVIRONMENT_H
-#define __APP_SCRIPTENVIRONMENT_H
+#ifndef __SCRIPTHOST_SCRIPTENVIRONMENT_H
+#define __SCRIPTHOST_SCRIPTENVIRONMENT_H
 
 
 #include "../kscript/kscript.h"
+
+namespace scripthost
+{
 
 
 class Environment : public kscript::ValueObject
@@ -41,6 +44,10 @@ public:
     static void getProgramFilesPath(kscript::ExprEnv* env, void* param, kscript::Value* retval);
     static void getDirectorySeparator(kscript::ExprEnv* env, void* param, kscript::Value* retval);
 };
+
+
+
+}; // namespace scripthost
 
 
 #endif

@@ -9,11 +9,17 @@
  */
 
 
-#ifndef __APP_SCRIPTXML_H
-#define __APP_SCRIPTXML_H
+#ifndef __SCRIPTHOST_SCRIPTXML_H
+#define __SCRIPTHOST_SCRIPTXML_H
+
 
 
 #include <kl/xml.h>
+
+
+
+namespace scripthost
+{
 
 
 class ref_xmlnode : public kl::xmlnode
@@ -107,6 +113,10 @@ public:
     kl::xmlnode* m_node;
     ref_xmlnode* m_xmldoc;
 };
+
+
+}; // namespace scripthost
+
 
 #endif
 

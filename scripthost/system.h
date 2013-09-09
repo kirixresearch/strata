@@ -9,8 +9,11 @@
  */
 
 
-#ifndef __APP_SCRIPTSYSTEM_H
-#define __APP_SCRIPTSYSTEM_H
+#ifndef __SCRIPTHOST_SCRIPTSYSTEM_H
+#define __SCRIPTHOST_SCRIPTSYSTEM_H
+
+namespace scripthost
+{
 
 
 class System : public kscript::ValueObject
@@ -41,6 +44,8 @@ public:
     static void sleep(kscript::ExprEnv* env, void* param, kscript::Value* retval);
     static void execute(kscript::ExprEnv* env, void* param, kscript::Value* retval);
 };
+
+}; // namespace scripthost
 
 
 #endif

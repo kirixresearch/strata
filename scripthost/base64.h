@@ -9,8 +9,11 @@
  */
 
 
-#ifndef __APP_SCRIPTBASE64_H
-#define __APP_SCRIPTBASE64_H
+#ifndef __SCRIPTHOST_SCRIPTBASE64_H
+#define __SCRIPTHOST_SCRIPTBASE64_H
+
+namespace scripthost
+{
 
 
 class Base64 : public kscript::ValueObject
@@ -34,5 +37,8 @@ public:
     static void decodeToBuffer(kscript::ExprEnv* env, void* param, kscript::Value* retval);
 };
 
+
+
+}; // namespace scripthost
 
 #endif

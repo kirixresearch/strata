@@ -28,6 +28,10 @@
 #endif
 
 
+namespace scripthost
+{
+
+
 // (CLASS) Directory
 // Category: IO
 // Description: A class that provides information about directories.
@@ -2043,3 +2047,7 @@ void Log::fatal(kscript::ExprEnv* env, kscript::Value* retval)
     retval->setBoolean(true);
 }
 
+
+
+
+}; // namespace scripthost

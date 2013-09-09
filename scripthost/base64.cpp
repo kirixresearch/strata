@@ -17,6 +17,11 @@
 #include <kl/string.h>
 
 
+
+namespace scripthost
+{
+
+
 // (CLASS) Base64
 // Category: Encryption
 // Description: A class that provides base64 routines.
@@ -173,3 +178,7 @@ void Base64::decodeToBuffer(kscript::ExprEnv* env, void* param, kscript::Value* 
     
     delete[] buf;
 }
+
+
+
+}; // namespace scripthost

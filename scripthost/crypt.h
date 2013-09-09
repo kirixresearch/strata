@@ -9,8 +9,11 @@
  */
 
 
-#ifndef __APP_SCRIPTCRYPT_H
-#define __APP_SCRIPTCRYPT_H
+#ifndef __SCRIPTHOST_SCRIPTCRYPT_H
+#define __SCRIPTHOST_SCRIPTCRYPT_H
+
+namespace scripthost
+{
 
 
 class SymmetricCrypt : public kscript::ValueObject
@@ -31,6 +34,9 @@ public:
     static void encryptString(kscript::ExprEnv* env, void* param, kscript::Value* retval);
     static void decryptString(kscript::ExprEnv* env, void* param, kscript::Value* retval);
 };
+
+
+}; // namespace scripthost
 
 
 #endif

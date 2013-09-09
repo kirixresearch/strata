@@ -14,6 +14,11 @@
 #include <kl/string.h>
 
 
+
+namespace scripthost
+{
+
+
 // (CLASS) MemoryBuffer
 // Category: IO
 // Description: A class that encapsulates read/write operations to the memory.
@@ -383,3 +388,6 @@ bool MemoryBuffer::setSizeInternal(int size)
     return true;
 }
 
+
+
+}; // namespace scripthost

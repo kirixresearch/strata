@@ -9,8 +9,12 @@
  */
 
 
-#ifndef __APP_SCRIPTHASH_H
-#define __APP_SCRIPTHASH_H
+#ifndef __SCRIPTHOST_SCRIPTHASH_H
+#define __SCRIPTHOST_SCRIPTHASH_H
+
+
+namespace scripthost
+{
 
 
 class Hash : public kscript::ValueObject
@@ -31,6 +35,9 @@ public:
     static void md5(kscript::ExprEnv* env, void* param, kscript::Value* retval);
     static void md5sum(kscript::ExprEnv* env, void* param, kscript::Value* retval);
 };
+
+
+}; // namespace scripthost
 
 
 #endif

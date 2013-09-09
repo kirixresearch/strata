@@ -21,6 +21,12 @@
 #endif
 
 
+
+namespace scripthost
+{
+
+
+
 // (CLASS) Environment
 // Category: System
 // Description: A class that provides information about the computer and 
@@ -193,3 +199,8 @@ void Environment::getDirectorySeparator(kscript::ExprEnv* env, void* param, kscr
     retval->setString(L"/");
 #endif
 }
+
+
+
+
+}; // namespace scripthost

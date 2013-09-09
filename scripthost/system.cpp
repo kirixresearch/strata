@@ -19,6 +19,12 @@
 #endif
 
 
+
+
+namespace scripthost
+{
+
+
 // (CLASS) System
 // Category: System
 // Description: A class that provides system utility functions.
@@ -200,3 +206,7 @@ void System::execute(kscript::ExprEnv* env, void* param, kscript::Value* retval)
     */
     // TODO: reimplement
 }
+
+
+
+}; // namespace scripthost

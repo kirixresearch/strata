@@ -21,6 +21,11 @@
 #endif
 
 
+
+namespace scripthost
+{
+
+
 static void* openLibrary(const std::wstring& filename)
 {
 #ifdef WIN32
@@ -467,3 +472,7 @@ void NativeCall::toFunction(kscript::ExprEnv* env, kscript::Value* retval)
     retval->setValue(&invoke_func);
 }
 
+
+
+
+}; // namespace scripthost

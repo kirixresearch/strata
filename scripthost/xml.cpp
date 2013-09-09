@@ -13,6 +13,12 @@
 #include "xml.h"
 
 
+
+
+namespace scripthost
+{
+
+
 // (CLASS) XmlNode
 // Category: XML
 // Description: A class that represents an XML data structure, allowing 
@@ -663,3 +669,7 @@ void XmlNode::hasAttributes(kscript::ExprEnv* env, kscript::Value* retval)
     retval->setBoolean(m_node->getPropertyCount() > 0 ? true : false);
 }
 
+
+
+
+}; // namespace scripthost

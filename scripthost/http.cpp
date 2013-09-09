@@ -20,6 +20,10 @@
 
 
 
+namespace scripthost
+{
+
+
 
 class HttpRequestThread : public kl::Thread
 {
@@ -1687,3 +1691,7 @@ void HttpRequest::freeResponsePieces()
     m_response_pieces.clear();
 }
 
+
+
+
+}; // namespace scripthost

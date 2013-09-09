@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_SCRIPTHOST_H
-#define __APP_SCRIPTHOST_H
+#ifndef __SCRIPTHOST_SCRIPTHOST_H
+#define __SCRIPTHOST_SCRIPTHOST_H
 
 
 #include <queue>
@@ -20,6 +20,11 @@
 #include "../kscript/kscript.h"
 #include "../kscript/jsobject.h"
 #include "../kscript/jsarray.h"
+
+
+namespace scripthost
+{
+
 
 
 class ScriptHost;
@@ -135,6 +140,8 @@ private:
     xcm::mutex m_obj_mutex;
 };
 
+
+}; // namespace scripthost
 
 
 #endif

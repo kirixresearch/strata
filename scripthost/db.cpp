@@ -19,6 +19,12 @@
 
 
 
+
+namespace scripthost
+{
+
+
+
 // -- DbDatabaseTypes class implementation --
 
 // TODO: should we document these?
@@ -2154,3 +2160,7 @@ void DbError::getMessage(kscript::ExprEnv* env, kscript::Value* retval)
     retval->setString(message);
 }
 
+
+
+
+}; // namespace scripthost

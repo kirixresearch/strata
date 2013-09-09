@@ -9,11 +9,14 @@
  */
 
 
-#ifndef __APP_SCRIPTFILETRANSFER_H
-#define __APP_SCRIPTFILETRANSFER_H
+#ifndef __SCRIPTHOST_SCRIPTFILETRANSFER_H
+#define __SCRIPTHOST_SCRIPTFILETRANSFER_H
 
 
-#include "scripthost.h"
+
+namespace scripthost
+{
+
 
 class FileTransfer : public ScriptHostBase
 {    
@@ -63,6 +66,9 @@ public:
     double m_total_bytes;
     bool m_cancelled;
 };
+
+
+}; // namespace scripthost
 
 
 #endif

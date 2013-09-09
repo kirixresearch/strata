@@ -15,6 +15,12 @@
 #include <kl/md5.h>
 
 
+
+namespace scripthost
+{
+
+
+
 // (CLASS) Hash
 // Category: Encryption
 // Description: A class that provides hashing routines.
@@ -101,3 +107,7 @@ void Hash::md5sum(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
     retval->setString(kl::md5resultToString(res));
 }
+
+
+
+}; // namespace scripthost

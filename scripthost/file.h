@@ -9,10 +9,13 @@
  */
 
 
-#ifndef __APP_SCRIPTFILE_H
-#define __APP_SCRIPTFILE_H
+#ifndef __SCRIPTHOST_SCRIPTFILE_H
+#define __SCRIPTHOST_SCRIPTFILE_H
 
 #include <kl/file.h>
+
+namespace scripthost
+{
 
 
 class Directory : public kscript::ValueObject
@@ -427,6 +430,10 @@ private:
     int m_mask;
     bool m_console_output;
 };
+
+
+
+}; // namespace scripthost
 
 
 

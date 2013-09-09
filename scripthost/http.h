@@ -9,11 +9,18 @@
  */
 
 
-#ifndef __APP_SCRIPTHTTP_H
-#define __APP_SCRIPTHTTP_H
+#ifndef __SCRIPTHOST_SCRIPTHTTP_H
+#define __SCRIPTHOST_SCRIPTHTTP_H
 
 
 #include <list>
+
+
+struct curl_slist;
+struct curl_httppost;
+
+namespace scripthost
+{
 
 
 class HttpResponsePiece
@@ -198,7 +205,7 @@ private:
     kscript::Value m_event_callback;
     
     // -- curl headers and form fields --
-    struct curl_slist* m_headers;
+    curl_slist* m_headers;
 
     std::string m_location;
     std::string m_referrer;
@@ -217,13 +224,17 @@ private:
     xcm::mutex m_state_mutex;
     bool m_busy;
     
-    struct curl_httppost* m_formfields;      // only used by multipart post
-    struct curl_httppost* m_formfieldslast;  // only used by multipart post
+    curl_httppost* m_formfields;      // only used by multipart post
+    curl_httppost* m_formfieldslast;  // only used by multipart post
     std::string m_post_string;               // only used by regular post
     bool m_post_multipart;
     bool m_auto_encode;
     bool m_async;
 };
+
+
+
+}; // namespace scripthost
 
 
 #endif

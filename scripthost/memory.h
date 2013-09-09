@@ -9,8 +9,13 @@
  */
 
 
-#ifndef __APP_SCRIPTMEMORY_H
-#define __APP_SCRIPTMEMORY_H
+#ifndef __SCRIPTHOST_SCRIPTMEMORY_H
+#define __SCRIPTHOST_SCRIPTMEMORY_H
+
+
+namespace scripthost
+{
+
 
 
 class MemoryBuffer : public kscript::ValueObject
@@ -56,6 +61,9 @@ private:
     kscript::Value m_val; // value for getMember()
 };
 
+
+
+}; // namespace scripthost
 
 
 #endif

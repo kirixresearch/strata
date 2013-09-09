@@ -31,6 +31,10 @@
 
 
 
+namespace scripthost
+{
+
+
 // -- ScriptHostBase class implementation --
 
 // you can derive your class from kscript::ValueObject if you want;
@@ -636,3 +640,6 @@ kscript::Value* ScriptHost::getRetval()
     return m_retval;
 }
 
+
+
+}; // namespace scripthost

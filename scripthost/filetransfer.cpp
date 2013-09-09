@@ -16,6 +16,11 @@
 #include <kl/string.h>
 
 
+
+namespace scripthost
+{
+
+
 // -- FileTransferThread class --
 
 class FileTransferThread : public kl::Thread
@@ -516,3 +521,8 @@ void FileTransfer::fireFinishedEvent()
     //TODO: reimplement
     //invokeJsEvent(L"finished");
 }
+
+
+
+
+}; // namespace scripthost

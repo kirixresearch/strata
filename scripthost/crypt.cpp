@@ -14,6 +14,10 @@
 #include <kl/crypt.h>
 
 
+
+namespace scripthost
+{
+
 // (CLASS) SymmetricCrypt
 // Category: Encryption
 // Description: A class that provides symmetric encryption routines.
@@ -112,3 +116,6 @@ void SymmetricCrypt::decryptString(kscript::ExprEnv* env, void* param, kscript::
     retval->setString(result);
 }
 
+
+
+}; // namespace scripthost
