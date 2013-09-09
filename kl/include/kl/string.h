@@ -374,6 +374,8 @@ void ucsbe2wstring(std::wstring& dest,
                    const unsigned char* src,
                    int buf_len);
 
+bool is_unicode_string(const std::wstring& val);
+
 class tstr
 {
 public:

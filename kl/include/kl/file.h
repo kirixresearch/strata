@@ -16,6 +16,13 @@
 #include <string>
 
 
+
+#ifdef _MSC_VER
+const wchar_t xf_path_separator_wchar = L'\\';
+#else
+const wchar_t xf_path_separator_wchar = L'/';
+#endif
+
 // -- directory API --
 
 const int xfFileTypeNormal = 1;

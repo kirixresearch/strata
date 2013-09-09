@@ -755,5 +755,20 @@ void ucsbe2wstring(std::wstring& dest,
 
 
 
+bool is_unicode_string(const std::wstring& val)
+{
+    const wchar_t* p = val.c_str();
+    while (*p)
+    {
+        if (*p > 127)
+            return true;
+        ++p;
+    }
+    
+    return false;
+}
+
+
+
 };
 
