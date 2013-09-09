@@ -36,7 +36,7 @@
 #include "scriptwebbrowser.h"
 #include "scriptwebdom.h"
 #include "scriptxml.h"
-#include "scriptenvironment.h"
+#include "../scripthost/environment.h"
 #include "scriptprogress.h"
 #include "scriptbanner.h"
 #include "scriptfont.h"
@@ -523,7 +523,7 @@ ScriptHost::ScriptHost()
     Directory::compiletimeBind(m_expr);
     DirectoryDialog::compiletimeBind(m_expr);
     DriveInfo::compiletimeBind(m_expr);
-    Environment::compiletimeBind(m_expr);
+    scripthost::Environment::compiletimeBind(m_expr);
     Extension::compiletimeBind(m_expr);
     File::compiletimeBind(m_expr);
     FileAccess::compiletimeBind(m_expr);

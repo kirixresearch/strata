@@ -112,7 +112,11 @@ void Environment::getEnvironmentVariable(kscript::ExprEnv* env, void* param, ksc
 
 void Environment::getTempPath(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {
-    retval->setString(xf_get_temp_path());
+    std::wstring temps = xf_get_temp_path();
+    if (temps.length() > 0 && temps[temps.length()-1] == xf_path_separator_wchar)
+        retval->setString(temps.c_str(), temps.length()-1);
+         else
+        retval->setString(temps);
 }
 
 // (METHOD) Environment.getDocumentsPath
@@ -129,6 +133,7 @@ void Environment::getDocumentsPath(kscript::ExprEnv* env, void* param, kscript::
 #ifdef WIN32
     wchar_t path[MAX_PATH];
     SHGetFolderPathW(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, path);
+    retval->setString(path);
 #else
     retval->setString(getenv("HOME"));
 #endif
