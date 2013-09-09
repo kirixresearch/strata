@@ -211,7 +211,12 @@ static bool tryIncludeFile(const std::wstring& filename, std::wstring& res_strin
     if (!f)
         return false;
         
-    xf_off_t fsize = xf_get_file_size(filename);
+    xf_off_t long_fsize = xf_get_file_size(filename);
+    if (long_fsize >= 10000000)
+        return false;
+
+    unsigned int fsize = (unsigned int)long_fsize;
+
     unsigned char* buf = new unsigned char[fsize+1];
     if (!buf)
         return false;
@@ -222,14 +227,14 @@ static bool tryIncludeFile(const std::wstring& filename, std::wstring& res_strin
     {
         // little endian UCS-2
         std::wstring wval;
-        kl::ucsle2wstring(wval, buf+2, (readbytes-2)/2);
+        kl::ucsle2wstring(wval, buf+2, ((unsigned int)readbytes-2)/2);
         res_string = wval;
     }
      else if (readbytes >= 3 && buf[0] == 0xef && buf[1] == 0xbb && buf[2] == 0xbf)
     {
         // utf-8
         wchar_t* tempbuf = new wchar_t[fsize+1];
-        kl::utf8_utf8tow(tempbuf, fsize+1, (char*)buf+3, readbytes);
+        kl::utf8_utf8tow(tempbuf, fsize+1, (char*)buf+3, (size_t)readbytes);
         res_string = tempbuf;
         delete[] tempbuf;
     }
