@@ -130,19 +130,6 @@ wxString makeProperIfNecessary(const wxString& input)
     return makeProper(input);
 }
 
-bool isUnicodeString(const std::wstring& val)
-{
-    const wchar_t* p = val.c_str();
-    while (*p)
-    {
-        if (*p > 127)
-            return true;
-        ++p;
-    }
-    
-    return false;
-}
-
 wxString filenameToUrl(const wxString& _filename)
 {
     return kl::filenameToUrl(towstr(_filename));
@@ -264,25 +251,7 @@ wxString urlEscape(const wxString& input)
     return result;
 }
 
-wxString multipartEncode(const wxString& input)
-{
-    wxString result;
-    result.Alloc(input.Length() + 10);
-    
-    const wxChar* ch = input.c_str();
-    unsigned int c;
-    
-    while ((c = *ch))
-    {
-        if (c > 255)
-            result += wxString::Format(wxT("&#%d;"), c);
-             else
-            result += *ch;
-        ++ch;
-    }
 
-    return result;
-}
 
 wxString removeChar(const wxString& s, wxChar c)
 {
@@ -1194,7 +1163,7 @@ bool writeStreamTextFile(tango::IDatabasePtr db,
     if (db.isNull())
         return false;
         
-    bool uses_unicode = isUnicodeString(val);
+    bool uses_unicode = kl::is_unicode_string(val);
     
 
     size_t buf_len = (val.size() * 4) + 3;

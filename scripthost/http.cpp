@@ -9,14 +9,15 @@
  */
 
 
-#include "appmain.h"
 #include "scripthost.h"
-#include "scripthttp.h"
-#include "scriptmemory.h"
-#include "curlutil.h"
+#include "http.h"
+#include "memory.h"
 #include <curl/curl.h>
 #include <kl/file.h>
 #include <kl/utf8.h>
+#include <kl/string.h>
+#include <kl/url.h>
+
 
 
 
@@ -55,25 +56,35 @@ public:
 };
 
 
-static wxString multipartEncode(const wxString& input)
+static std::wstring multipartEncode(const std::wstring& input)
 {
-    wxString result;
-    result.Alloc(input.Length() + 10);
+    std::wstring result;
+    result.reserve(input.length() + 10);
     
-    const wxChar* ch = input.c_str();
+    const wchar_t* ch = input.c_str();
     unsigned int c;
     
-    while ((c = *ch))
+    wchar_t buf[80];
+
+    while ((c = (unsigned int)*ch))
     {
         if (c > 255)
-            result += wxString::Format(wxT("&#%d;"), c);
-             else
+        {
+            swprintf(buf, 80, L"&#%d;", c);
+            result += buf;
+        }
+         else
+        {
             result += *ch;
+        }
+
         ++ch;
     }
 
     return result;
 }
+
+
 
 // writer function for the http header
 
@@ -144,7 +155,7 @@ HttpRequest::HttpRequest()
     m_curl = (CURL*)0;
     curl_result = CURLE_OK;
     
-    m_curl = curlCreateHandle();
+    m_curl = curl_easy_init();
     
     // initialize header and form field pointers
     m_headers = NULL;
@@ -195,7 +206,7 @@ HttpRequest::~HttpRequest()
     clearHeaders();
     clearFormFields();
 
-    curlDestroyHandle(m_curl);
+    curl_easy_cleanup(m_curl);
     
     freeResponsePieces();
 }
@@ -211,6 +222,9 @@ void HttpRequest::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
     initComponent(env);
     
+    /*
+
+    // TODO: reimplement
     IAppPreferencesPtr prefs = g_app->getAppPreferences();
     if (prefs)
     {
@@ -226,8 +240,10 @@ void HttpRequest::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     CURLcode curl_result;
     curl_result = curl_easy_setopt(m_curl, CURLOPT_PROXY, m_proxy.c_str());
     curl_result = curl_easy_setopt(m_curl, CURLOPT_PROXYPORT, m_proxy_port);
-    
-    getMember(L"finished")->setObject(Event::createObject(env));
+    */
+
+
+    //getMember(L"finished")->setObject(Event::createObject(env));
 }
 
 // (METHOD) HttpRequest.send
@@ -728,19 +744,25 @@ void HttpRequest::setPostValue(kscript::ExprEnv* env, kscript::Value* retval)
     
     if (m_auto_encode)
     {
+        std::string multipart_field = kl::tostring(multipartEncode(field));
+        std::string multipart_value = kl::tostring(multipartEncode(value));
+
+        std::string escape_field = kl::tostring(kl::url_escape(field));
+        std::string escape_value = kl::tostring(kl::url_escape(value));
+
         // append the value to our post structure (note
         // this is only used in the case of multipart posts)
         curl_formadd(&m_formfields, &m_formfieldslast,
-                     CURLFORM_COPYNAME, (const char*)multipartEncode(field).mbc_str(), //field.c_str(),
-                     CURLFORM_COPYCONTENTS, (const char*)multipartEncode(value).mbc_str(), //value.c_str(), 
+                     CURLFORM_COPYNAME, (const char*)multipart_field.c_str(),
+                     CURLFORM_COPYCONTENTS, (const char*)multipart_value.c_str(),
                      CURLFORM_END);
         
         // append the value to our post string (regular, non-multipart post)
         if (m_post_string.length() > 0)
             m_post_string += "&";
-        m_post_string += (const char*)urlEscape(field).mbc_str();
+        m_post_string += escape_field;
         m_post_string += "=";
-        m_post_string += (const char*)urlEscape(value).mbc_str();
+        m_post_string += escape_value;
     }
      else
     {
@@ -831,7 +853,7 @@ void HttpRequest::setPostData(kscript::ExprEnv* env, kscript::Value* retval)
     std::wstring str = env->getParam(0)->getString();
     if (m_auto_encode)
     {
-        m_post_string = urlEscape(str).mbc_str();
+        m_post_string = kl::tostring(kl::url_escape(str));
     }
      else
     {
@@ -1564,7 +1586,8 @@ void HttpRequest::doPost(kscript::ExprEnv* env, kscript::Value* retval)
 
 void HttpRequest::fireFinishedEvent()
 {
-    invokeJsEvent(L"finished");
+    //TODO: reimplement
+    //invokeJsEvent(L"finished");
 }
 
 bool HttpRequest::isLoadingInternal()

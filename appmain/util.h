@@ -153,7 +153,6 @@ wxString doubleQuote(const wxString& src, wxChar quote = L'\'');
 wxString makeProper(const wxString& input);
 wxString makeProperIfNecessary(const wxString& input);
 
-bool isUnicodeString(const std::wstring& val);
 
 // shortcut so we don't have to use towx everywhere
 // this should be able to go away in future versions of wx
@@ -164,7 +163,6 @@ void trimUnwantedUrlChars(wxString& str);
 
 wxString jsEscapeString(const wxString& input, wxChar quote);
 wxString urlEscape(const wxString& input);
-wxString multipartEncode(const wxString& input);
 
 // this function was necessary because wxString::Replace(..., wxEmptyString)
 // was truncating strings

@@ -9,18 +9,24 @@
  */
 
 
-#include "appmain.h"
-#include "appcontroller.h"
 #include "scripthost.h"
-#include "scriptfile.h"
-#include "scriptmemory.h"
-#include "../kscript/jsdate.h"
+#include "file.h"
+#include "memory.h"
 
-#include <wx/stdpaths.h>
+#include <kl/string.h>
 #include <kl/portable.h>
 #include <kl/utf8.h>
+#include <kl/memory.h>
 #include <limits>
-#include <wx/dir.h>
+
+#include "../kscript/jsdate.h"
+
+
+#ifdef WIN32
+#include <windows.h>
+#include <tchar.h>
+#endif
+
 
 // (CLASS) Directory
 // Category: IO
@@ -62,7 +68,7 @@ void Directory::exists(kscript::ExprEnv* env, void*, kscript::Value* retval)
      else
     {
         std::wstring path = env->getParam(0)->getString();
-        retval->setBoolean(wxDir::Exists(path));
+        retval->setBoolean(xf_get_directory_exist(path));
     }
 }
 
@@ -86,9 +92,8 @@ void Directory::createDirectory(kscript::ExprEnv* env, void*, kscript::Value* re
     }
      else
     {
-        wxLogNull log;
         std::wstring path = env->getParam(0)->getString();
-        retval->setBoolean(::wxMkdir(path));
+        retval->setBoolean(xf_mkdir(path));
     }
 }
 
@@ -129,7 +134,7 @@ void Directory::zdelete(kscript::ExprEnv* env, void*, kscript::Value* retval)
      else
     {
         std::wstring path = env->getParam(0)->getString();
-        retval->setBoolean(::wxRmdir(path));
+        retval->setBoolean(xf_rmdir(path));
     }
     
 }
@@ -155,25 +160,28 @@ void Directory::getAll(kscript::ExprEnv* env, void*, kscript::Value* retval)
     if (env->getParamCount() < 1)
         return;
     
-    retval->setArray(env);
 
     std::wstring dir_path = env->getParam(0)->getString();
     if (!xf_get_directory_exist(dir_path))
         return;
 
-    wxDir dir(dir_path);
-    wxString filename;
-    size_t i = 0;
+    xf_dirhandle_t dir = xf_opendir(dir_path);
+    if (!dir)
+        return;
+
+    retval->setArray(env);
+
     
-    bool ok = dir.GetFirst(&filename);
-    while (ok)
+    xf_direntry_t entry;
+
+    while (xf_readdir(dir, &entry))
     {
         kscript::Value val;
-        val.setString(towstr(filename));
+        val.setString(entry.m_name);
         retval->appendMember(&val);
-        
-        ok = dir.GetNext(&filename);
     }
+
+    xf_closedir(dir);
 }
 
 
@@ -205,19 +213,20 @@ void Directory::getFiles(kscript::ExprEnv* env, void*, kscript::Value* retval)
     if (!xf_get_directory_exist(dir_path))
         return;
 
-    wxDir d(dir_path);
-    wxString filename;
+    xf_dirhandle_t dir = xf_opendir(dir_path);
+
+    std::wstring filename;
     size_t i = 0;
     
-    bool ok = d.GetFirst(&filename, wxEmptyString, wxDIR_FILES | wxDIR_HIDDEN);
-    while (ok)
+    xf_direntry_t entry;
+    while (xf_readdir(dir, &entry))
     {
         kscript::Value val;
-        val.setString(towstr(filename));
+        val.setString(entry.m_name);
         retval->appendMember(&val);
-
-        ok = d.GetNext(&filename);
     }
+
+    xf_close(dir);
 }
 
 
@@ -249,19 +258,20 @@ void Directory::getDirectories(kscript::ExprEnv* env, void*, kscript::Value* ret
     if (!xf_get_directory_exist(dir_path))
         return;
 
-    wxDir d(dir_path);
-    wxString filename;
+    xf_dirhandle_t dir = xf_opendir(dir_path);
+
+    std::wstring filename;
     size_t i = 0;
     
-    bool ok = d.GetFirst(&filename, wxEmptyString, wxDIR_DIRS | wxDIR_HIDDEN);
-    while (ok)
+    xf_direntry_t entry;
+    while (xf_readdir(dir, &entry))
     {
         kscript::Value val;
-        val.setString(towstr(filename));
+        val.setString(entry.m_name);
         retval->appendMember(&val);
-
-        ok = d.GetNext(&filename);
     }
+
+    xf_closedir(dir);
 }
 
 
@@ -1093,19 +1103,20 @@ void File::exists(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 
 void File::getTempFilename(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {    
-    wxString res = wxStandardPaths::Get().GetTempDir();
-    if (res.Length() == 0 || res.Last() != PATH_SEPARATOR_CHAR)
-        res += PATH_SEPARATOR_CHAR;
+    std::wstring res = xf_get_temp_path();
+    if (res.length() == 0 || res[res.length()-1] != xf_path_separator_wchar)
+        res += xf_path_separator_wchar;
     
     static int counter = 0;
     ++counter;
-    res += wxString::Format(wxT("%08x%08x%04x%04x.tmp"),
-                                (unsigned int)clock(),
-                                (unsigned int)time(NULL),
-                                (unsigned int)(rand() & 0xffff),
-                                (unsigned int)(counter & 0xffff));
+
+    res += kl::stdswprintf(L"%08x%08x%04x%04x.tmp",
+                           (unsigned int)clock(),
+                           (unsigned int)time(NULL),
+                           (unsigned int)(rand() & 0xffff),
+                           (unsigned int)(counter & 0xffff));
     
-    retval->setString(towstr(res));
+    retval->setString(res);
 }
 
 
@@ -1182,7 +1193,7 @@ void File::getContents(kscript::ExprEnv* env, void* param, kscript::Value* retva
     }
     
     // load stream data
-    wxMemoryBuffer buf;
+    kl::membuf buf;
     
     xf_file_t f = xf_open(env->getParam(0)->getString(), xfOpen, xfRead, xfShareReadWrite);
     if (!f)
@@ -1200,7 +1211,7 @@ void File::getContents(kscript::ExprEnv* env, void* param, kscript::Value* retva
         if (read == 0)
             break;
           
-        buf.AppendData(tempbuf, read);
+        buf.append(tempbuf, read);
         
         if (read != 32768)
             break;
@@ -1215,8 +1226,8 @@ void File::getContents(kscript::ExprEnv* env, void* param, kscript::Value* retva
     std::wstring result_text = L"";
     
 
-    unsigned char* ptr = (unsigned char*)buf.GetData();
-    size_t buf_len = buf.GetDataLen();
+    unsigned char* ptr = (unsigned char*)buf.getData();
+    size_t buf_len = buf.getDataSize();
     if (buf_len >= 2 && ptr[0] == 0xff && ptr[1] == 0xfe)
     {
         kl::ucsle2wstring(result_text, ptr+2, (buf_len-2)/2);
@@ -1231,8 +1242,9 @@ void File::getContents(kscript::ExprEnv* env, void* param, kscript::Value* retva
     }
      else
     {
-        buf.AppendByte(0);
-        result_text = towstr((const char*)buf.GetData());
+        unsigned char zero[1]; zero[0] = 0;
+        buf.append(zero, 1);
+        result_text = kl::towstring((const char*)buf.getData());
     }
 
     retval->setString(result_text);
@@ -1731,7 +1743,8 @@ void Log::addLogLine(int level, const std::wstring& str)
     
     if (m_console_output)
     {
-        g_app->getAppController()->printConsoleText(line);
+        // TODO: reimplement
+       // g_app->getAppController()->printConsoleText(line);
     }
 }
 
