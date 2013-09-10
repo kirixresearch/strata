@@ -41,7 +41,8 @@
 #include "scriptbanner.h"
 #include "scriptfont.h"
 #include "scripthostapp.h"
-#include "scriptsystem.h"
+#include "scriptsystemgui.h"
+#include "../scripthost/system.h"
 #include "../scripthost/native.h"
 #include "../scripthost/base64.h"
 #include "../scripthost/crypt.h"
@@ -506,12 +507,16 @@ ScriptHost::ScriptHost()
     ProjectFileDialog::compiletimeBind(m_expr);
     RadioButton::compiletimeBind(m_expr);
     //RadioButtonGroup::compiletimeBind(m_expr);
+    Report::compiletimeBind(m_expr);
     SaveFileDialog::compiletimeBind(m_expr);
     Slider::compiletimeBind(m_expr);
     SpinButton::compiletimeBind(m_expr);
     SpinBox::compiletimeBind(m_expr);
     zStatusBarItem::compiletimeBind(m_expr);
     zStatusBar::compiletimeBind(m_expr);
+    SystemColors::compiletimeBind(m_expr);
+    SystemMetrics::compiletimeBind(m_expr);
+    SystemFonts::compiletimeBind(m_expr);
     TableBox::compiletimeBind(m_expr);
     TextBox::compiletimeBind(m_expr);
     TextEntryDialog::compiletimeBind(m_expr);
@@ -520,7 +525,6 @@ ScriptHost::ScriptHost()
     TreeViewItem::compiletimeBind(m_expr);
     TreeView::compiletimeBind(m_expr);
     WebBrowser::compiletimeBind(m_expr);
-   
     
     // -- non-gui --
     scripthost::Directory::compiletimeBind(m_expr);
@@ -540,17 +544,13 @@ ScriptHost::ScriptHost()
     MenuItem::compiletimeBind(m_expr);
     Node::compiletimeBind(m_expr);
     scripthost::NativeCall::compiletimeBind(m_expr);
-    NativeType::compiletimeBind(m_expr);
-    NativeModule::compiletimeBind(m_expr);
+    scripthost::NativeType::compiletimeBind(m_expr);
+    scripthost::NativeModule::compiletimeBind(m_expr);
     Process::compiletimeBind(m_expr);
     ProcessOutputStream::compiletimeBind(m_expr);
-    Report::compiletimeBind(m_expr);
     scripthost::SeekOrigin::compiletimeBind(m_expr);
     scripthost::SymmetricCrypt::compiletimeBind(m_expr);
-    System::compiletimeBind(m_expr);
-    SystemColors::compiletimeBind(m_expr);
-    SystemMetrics::compiletimeBind(m_expr);
-    SystemFonts::compiletimeBind(m_expr);
+    scripthost::System::compiletimeBind(m_expr);
     scripthost::TextReader::compiletimeBind(m_expr);
     scripthost::TextWriter::compiletimeBind(m_expr);
     zTimer::compiletimeBind(m_expr);

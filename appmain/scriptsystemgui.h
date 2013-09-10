@@ -96,35 +96,6 @@ private:
 };
 
 
-class System : public kscript::ValueObject
-{
-public:
-
-    BEGIN_KSCRIPT_CLASS("System", System)
-        KSCRIPT_METHOD("constructor", System::constructor)
-        KSCRIPT_STATIC_GUI_METHOD("beep", System::beep)
-        KSCRIPT_STATIC_METHOD("time", System::ztime)
-        KSCRIPT_STATIC_METHOD("clock", System::clock)
-        KSCRIPT_STATIC_METHOD("getClocksPerSecond", System::getClocksPerSecond)
-        KSCRIPT_STATIC_METHOD("sleep", System::sleep)        
-        KSCRIPT_STATIC_GUI_METHOD("execute", System::execute)
-    END_KSCRIPT_CLASS()
-
-public:
-
-    System();
-    ~System();
-
-    void constructor(kscript::ExprEnv* env, kscript::Value* retval);
-
-    static void beep(kscript::ExprEnv* env, void* param, kscript::Value* retval);
-    static void ztime(kscript::ExprEnv* env, void* param, kscript::Value* retval);
-    static void clock(kscript::ExprEnv* env, void* param, kscript::Value* retval);
-    static void getClocksPerSecond(kscript::ExprEnv* env, void* param, kscript::Value* retval);
-    static void sleep(kscript::ExprEnv* env, void* param, kscript::Value* retval);
-    static void execute(kscript::ExprEnv* env, void* param, kscript::Value* retval);
-};
-
 
 #endif
 
