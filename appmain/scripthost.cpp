@@ -460,6 +460,35 @@ ScriptHost::ScriptHost()
     
     m_retval = new kscript::Value;
 
+    // -- non-gui --
+    scripthost::Directory::compiletimeBind(m_expr);
+    scripthost::DriveInfo::compiletimeBind(m_expr);
+    scripthost::Environment::compiletimeBind(m_expr);
+    scripthost::File::compiletimeBind(m_expr);
+    scripthost::FileAccess::compiletimeBind(m_expr);
+    scripthost::FileMode::compiletimeBind(m_expr);
+    scripthost::FileShare::compiletimeBind(m_expr);
+    scripthost::FileTransfer::compiletimeBind(m_expr);
+    scripthost::FileInfo::compiletimeBind(m_expr);
+    scripthost::FileStream::compiletimeBind(m_expr);
+    scripthost::Base64::compiletimeBind(m_expr);
+    scripthost::Hash::compiletimeBind(m_expr);
+    scripthost::Log::compiletimeBind(m_expr);
+    scripthost::MemoryBuffer::compiletimeBind(m_expr);
+    scripthost::NativeCall::compiletimeBind(m_expr);
+    scripthost::NativeType::compiletimeBind(m_expr);
+    scripthost::NativeModule::compiletimeBind(m_expr);
+    Process::compiletimeBind(m_expr);
+    ProcessOutputStream::compiletimeBind(m_expr);
+    scripthost::SeekOrigin::compiletimeBind(m_expr);
+    scripthost::SymmetricCrypt::compiletimeBind(m_expr);
+    scripthost::System::compiletimeBind(m_expr);
+    scripthost::TextReader::compiletimeBind(m_expr);
+    scripthost::TextWriter::compiletimeBind(m_expr);
+    zTimer::compiletimeBind(m_expr);
+    scripthost::XmlNode::compiletimeBind(m_expr);
+    scripthost::HttpRequest::compiletimeBind(m_expr);
+
 
     // -- gui related --
     Application::compiletimeBind(m_expr);
@@ -498,6 +527,7 @@ ScriptHost::ScriptHost()
     ListView::compiletimeBind(m_expr);
     zMenu::compiletimeBind(m_expr);
     MenuBar::compiletimeBind(m_expr);
+    MenuItem::compiletimeBind(m_expr);
     OpenFileDialog::compiletimeBind(m_expr);
     PasswordEntryDialog::compiletimeBind(m_expr);
     Pen::compiletimeBind(m_expr);
@@ -526,36 +556,6 @@ ScriptHost::ScriptHost()
     TreeView::compiletimeBind(m_expr);
     WebBrowser::compiletimeBind(m_expr);
     
-    // -- non-gui --
-    scripthost::Directory::compiletimeBind(m_expr);
-    scripthost::DriveInfo::compiletimeBind(m_expr);
-    scripthost::Environment::compiletimeBind(m_expr);
-    scripthost::File::compiletimeBind(m_expr);
-    scripthost::FileAccess::compiletimeBind(m_expr);
-    scripthost::FileMode::compiletimeBind(m_expr);
-    scripthost::FileShare::compiletimeBind(m_expr);
-    scripthost::FileTransfer::compiletimeBind(m_expr);
-    scripthost::zFileInfo::compiletimeBind(m_expr);
-    scripthost::FileStream::compiletimeBind(m_expr);
-    scripthost::Base64::compiletimeBind(m_expr);
-    scripthost::Hash::compiletimeBind(m_expr);
-    scripthost::Log::compiletimeBind(m_expr);
-    scripthost::MemoryBuffer::compiletimeBind(m_expr);
-    MenuItem::compiletimeBind(m_expr);
-    Node::compiletimeBind(m_expr);
-    scripthost::NativeCall::compiletimeBind(m_expr);
-    scripthost::NativeType::compiletimeBind(m_expr);
-    scripthost::NativeModule::compiletimeBind(m_expr);
-    Process::compiletimeBind(m_expr);
-    ProcessOutputStream::compiletimeBind(m_expr);
-    scripthost::SeekOrigin::compiletimeBind(m_expr);
-    scripthost::SymmetricCrypt::compiletimeBind(m_expr);
-    scripthost::System::compiletimeBind(m_expr);
-    scripthost::TextReader::compiletimeBind(m_expr);
-    scripthost::TextWriter::compiletimeBind(m_expr);
-    zTimer::compiletimeBind(m_expr);
-    scripthost::XmlNode::compiletimeBind(m_expr);
-    scripthost::HttpRequest::compiletimeBind(m_expr);
 
     // -- host application
     HostApp::compiletimeBind(m_expr);
@@ -585,6 +585,7 @@ ScriptHost::ScriptHost()
     DbConnection::compiletimeBind(m_expr);
     
     // -- web --
+    Node::compiletimeBind(m_expr);
     WebDOMNode::compiletimeBind(m_expr);
     WebDOMText::compiletimeBind(m_expr);
     WebDOMAttr::compiletimeBind(m_expr);
