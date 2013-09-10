@@ -29,13 +29,13 @@
 #include "../scripthost/memory.h"
 #include "../scripthost/file.h"
 #include "../scripthost/http.h"
-#include "scriptfiletransfer.h"
+#include "../scripthost/filetransfer.h"
 #include "scriptslider.h"
 #include "scriptspin.h"
 #include "scriptstatusbar.h"
 #include "scriptwebbrowser.h"
 #include "scriptwebdom.h"
-#include "scriptxml.h"
+#include "../scripthost/xml.h"
 #include "../scripthost/environment.h"
 #include "scriptprogress.h"
 #include "scriptbanner.h"
@@ -44,7 +44,7 @@
 #include "scriptsystem.h"
 #include "scriptnative.h"
 #include "../scripthost/base64.h"
-#include "scriptcrypt.h"
+#include "../scripthost/crypt.h"
 #include "../scripthost/hash.h"
 #include "scriptreport.h"
 #include "scripttable.h"
@@ -484,6 +484,7 @@ ScriptHost::ScriptHost()
     DialogResult::compiletimeBind(m_expr);
     DirectoryDialog::compiletimeBind(m_expr);
     Event::compiletimeBind(m_expr);
+    FileDialog::compiletimeBind(m_expr);
     zFont::compiletimeBind(m_expr);
     Form::compiletimeBind(m_expr);
     FormControl::compiletimeBind(m_expr);
@@ -513,12 +514,13 @@ ScriptHost::ScriptHost()
     zStatusBar::compiletimeBind(m_expr);
     TableBox::compiletimeBind(m_expr);
     TextBox::compiletimeBind(m_expr);
+    TextEntryDialog::compiletimeBind(m_expr);
     ToolBarItem::compiletimeBind(m_expr);
     ToolBar::compiletimeBind(m_expr);
     TreeViewItem::compiletimeBind(m_expr);
     TreeView::compiletimeBind(m_expr);
     WebBrowser::compiletimeBind(m_expr);
-    
+   
     
     // -- non-gui --
     scripthost::Directory::compiletimeBind(m_expr);
@@ -527,10 +529,9 @@ ScriptHost::ScriptHost()
     Extension::compiletimeBind(m_expr);
     scripthost::File::compiletimeBind(m_expr);
     scripthost::FileAccess::compiletimeBind(m_expr);
-    FileDialog::compiletimeBind(m_expr);
     scripthost::FileMode::compiletimeBind(m_expr);
     scripthost::FileShare::compiletimeBind(m_expr);
-    FileTransfer::compiletimeBind(m_expr);
+    scripthost::FileTransfer::compiletimeBind(m_expr);
     scripthost::zFileInfo::compiletimeBind(m_expr);
     scripthost::FileStream::compiletimeBind(m_expr);
     scripthost::Base64::compiletimeBind(m_expr);
@@ -556,16 +557,15 @@ ScriptHost::ScriptHost()
     ProcessOutputStream::compiletimeBind(m_expr);
     Report::compiletimeBind(m_expr);
     scripthost::SeekOrigin::compiletimeBind(m_expr);
-    SymmetricCrypt::compiletimeBind(m_expr);
+    scripthost::SymmetricCrypt::compiletimeBind(m_expr);
     System::compiletimeBind(m_expr);
     SystemColors::compiletimeBind(m_expr);
     SystemMetrics::compiletimeBind(m_expr);
     SystemFonts::compiletimeBind(m_expr);
     scripthost::TextReader::compiletimeBind(m_expr);
     scripthost::TextWriter::compiletimeBind(m_expr);
-    TextEntryDialog::compiletimeBind(m_expr);
     zTimer::compiletimeBind(m_expr);
-    XmlNode::compiletimeBind(m_expr);
+    scripthost::XmlNode::compiletimeBind(m_expr);
     scripthost::HttpRequest::compiletimeBind(m_expr);
 
     // -- database --
