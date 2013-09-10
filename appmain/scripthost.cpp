@@ -42,7 +42,7 @@
 #include "scriptfont.h"
 #include "scripthostapp.h"
 #include "scriptsystem.h"
-#include "scriptnative.h"
+#include "../scripthost/native.h"
 #include "../scripthost/base64.h"
 #include "../scripthost/crypt.h"
 #include "../scripthost/hash.h"
@@ -526,7 +526,6 @@ ScriptHost::ScriptHost()
     scripthost::Directory::compiletimeBind(m_expr);
     scripthost::DriveInfo::compiletimeBind(m_expr);
     scripthost::Environment::compiletimeBind(m_expr);
-    Extension::compiletimeBind(m_expr);
     scripthost::File::compiletimeBind(m_expr);
     scripthost::FileAccess::compiletimeBind(m_expr);
     scripthost::FileMode::compiletimeBind(m_expr);
@@ -536,21 +535,11 @@ ScriptHost::ScriptHost()
     scripthost::FileStream::compiletimeBind(m_expr);
     scripthost::Base64::compiletimeBind(m_expr);
     scripthost::Hash::compiletimeBind(m_expr);
-    HostApp::compiletimeBind(m_expr);
-    HostAutomation::compiletimeBind(m_expr);
-    HostBitmap::compiletimeBind(m_expr);
-    HostData::compiletimeBind(m_expr);
-    HostDocument::compiletimeBind(m_expr);
-    HostGlobal::compiletimeBind(m_expr);
-    HostJob::compiletimeBind(m_expr);
-    HostPreferences::compiletimeBind(m_expr);
-    HostPrinting::compiletimeBind(m_expr);
-    HostServices::compiletimeBind(m_expr);
     scripthost::Log::compiletimeBind(m_expr);
     scripthost::MemoryBuffer::compiletimeBind(m_expr);
     MenuItem::compiletimeBind(m_expr);
     Node::compiletimeBind(m_expr);
-    NativeCall::compiletimeBind(m_expr);
+    scripthost::NativeCall::compiletimeBind(m_expr);
     NativeType::compiletimeBind(m_expr);
     NativeModule::compiletimeBind(m_expr);
     Process::compiletimeBind(m_expr);
@@ -567,6 +556,20 @@ ScriptHost::ScriptHost()
     zTimer::compiletimeBind(m_expr);
     scripthost::XmlNode::compiletimeBind(m_expr);
     scripthost::HttpRequest::compiletimeBind(m_expr);
+
+    // -- host application
+    HostApp::compiletimeBind(m_expr);
+    HostAutomation::compiletimeBind(m_expr);
+    HostBitmap::compiletimeBind(m_expr);
+    HostData::compiletimeBind(m_expr);
+    HostDocument::compiletimeBind(m_expr);
+    HostGlobal::compiletimeBind(m_expr);
+    HostJob::compiletimeBind(m_expr);
+    HostPreferences::compiletimeBind(m_expr);
+    HostPrinting::compiletimeBind(m_expr);
+    HostServices::compiletimeBind(m_expr);
+    Extension::compiletimeBind(m_expr);
+
 
     // -- database --
     DbBulkInsert::compiletimeBind(m_expr);
