@@ -287,11 +287,11 @@ void Directory::getDirectories(kscript::ExprEnv* env, void*, kscript::Value* ret
 // Remarks: The FileInfo class provides information about a file, including data about
 //     the length of the file and the last modified date/time of the file.
 
-zFileInfo::zFileInfo()
+FileInfo::FileInfo()
 {
 }
 
-zFileInfo::~zFileInfo()
+FileInfo::~FileInfo()
 {
 }
 
@@ -307,16 +307,16 @@ zFileInfo::~zFileInfo()
 // Param(filename): The filename of the file.
 
 
-void zFileInfo::staticConstructor(kscript::ExprEnv* env,
+void FileInfo::staticConstructor(kscript::ExprEnv* env,
                                  void* param,
                                  kscript::Value* retval)
 {
-    zFileInfo* f = zFileInfo::createObject(env);
+    FileInfo* f = FileInfo::createObject(env);
     f->constructor(env, retval);
     retval->setObject(f);
 }
 
-void zFileInfo::constructor(kscript::ExprEnv* env, kscript::Value* retval)
+void FileInfo::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
     if (env->getParamCount() > 0)
     {
@@ -337,7 +337,7 @@ void zFileInfo::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 // Returns: The length of the file.
 
 
-void zFileInfo::getLength(kscript::ExprEnv* env, kscript::Value* retval)
+void FileInfo::getLength(kscript::ExprEnv* env, kscript::Value* retval)
 {
     retval->setDouble(0.0);
     
@@ -361,7 +361,7 @@ void zFileInfo::getLength(kscript::ExprEnv* env, kscript::Value* retval)
 //      was encountered.
 
 
-void zFileInfo::getLastWriteTime(kscript::ExprEnv* env, kscript::Value* retval)
+void FileInfo::getLastWriteTime(kscript::ExprEnv* env, kscript::Value* retval)
 {
     retval->setNull();
     

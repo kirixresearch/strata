@@ -50,18 +50,18 @@ public:
 
 
 
-class zFileInfo : public kscript::ValueObject
+class FileInfo : public kscript::ValueObject
 {
-    BEGIN_KSCRIPT_CLASS("FileInfo", zFileInfo)
-        KSCRIPT_METHOD("constructor", zFileInfo::constructor)
-        KSCRIPT_METHOD("getLength", zFileInfo::getLength)
-        KSCRIPT_METHOD("getLastWriteTime", zFileInfo::getLastWriteTime)
+    BEGIN_KSCRIPT_CLASS("FileInfo", FileInfo)
+        KSCRIPT_METHOD("constructor", FileInfo::constructor)
+        KSCRIPT_METHOD("getLength", FileInfo::getLength)
+        KSCRIPT_METHOD("getLastWriteTime", FileInfo::getLastWriteTime)
     END_KSCRIPT_CLASS()
 
 public:
 
-    zFileInfo();
-    ~zFileInfo();
+    FileInfo();
+    ~FileInfo();
 
     static void staticConstructor(kscript::ExprEnv* env,
                                   void* param,

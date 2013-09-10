@@ -104,7 +104,7 @@ void FileTransfer::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     m_proxy = tostr(getAppPrefsString(wxT("internet.proxy.ftp")));
     m_proxy_port = g_app->getAppPreferences()->getLong(wxT("internet.proxy.ftp_port"), 21);
     
-    getMember(L"finished")->setObject(Event::createObject(env));
+    getMember(L"finished")->setObject(scripthost::Event::createObject(env));
 
     */
 }

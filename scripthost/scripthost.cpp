@@ -10,6 +10,7 @@
 
 
 #include "scripthost.h"
+#include "event.h"
 #include "db.h"
 #include "memory.h"
 #include "file.h"
@@ -35,6 +36,10 @@ namespace scripthost
 {
 
 
+
+// TODO: Please note that Event and ScriptHostBase aren't yet entirely ported from appmain
+
+
 // -- ScriptHostBase class implementation --
 
 // you can derive your class from kscript::ValueObject if you want;
@@ -47,6 +52,18 @@ ScriptHostBase::ScriptHostBase()
 {
     m_script_host = NULL;
 }
+
+/*
+Application* ScriptHostBase::getApp()
+{
+    Application* ret = m_app.getApp();
+    
+    // note if this is returning NULL, you probably forgot to call
+    // FormComponent::initComponent() from your component's constructor
+    
+    return ret;
+}
+*/
 
 ScriptHost* ScriptHostBase::getScriptHost()
 {
@@ -64,13 +81,76 @@ void ScriptHostBase::initComponent(kscript::ExprEnv* env)
         return;
         
     kscript::ExprParser* parser = env->getParser();
+    wxASSERT_MSG(parser != NULL, wxT("parser != NULL"));
+    
     m_script_host = (ScriptHost*)parser->getExtraLong();
+    wxASSERT_MSG(m_script_host, wxT("Script host ptr is null"));
     
     kscript::Value* val = parser->getBindVariable(L"Application");
+    wxASSERT_MSG(val != NULL, wxT("val != NULL"));
+    
     Application* app = (Application*)val->getObject();
+    wxASSERT_MSG(app != NULL, wxT("app != NULL"));
     
     m_app.setApp(app);
     */
+}
+
+size_t ScriptHostBase::getJsEventSinkCount(const std::wstring& evt)
+{
+    kscript::Value* vevt = getMember(evt);
+    if (!vevt)
+        return 0;
+
+    scripthost::Event* e = (scripthost::Event*)vevt->getObject();
+    if (!e)
+        return 0;
+        
+    return e->getSinkCountInternal();
+}
+
+size_t ScriptHostBase::invokeJsEvent(const std::wstring& evt,
+                                     kscript::Value* event_args,
+                                     unsigned int event_flags)
+{
+    kscript::Value* vevt = getMember(evt);
+    if (!vevt)
+        return 0;
+
+    return invokeJsEvent(vevt, event_args, event_flags);
+}
+
+size_t ScriptHostBase::invokeJsEvent(kscript::Value* vevt,
+                                     kscript::Value* event_args,
+                                     unsigned int event_flags)
+{
+    if (!vevt->isObject())
+        return 0;
+        
+    kscript::ValueObject* vobj = vevt->getObject();
+    if (!vobj->isKindOf(scripthost::Event::staticGetClassId()))
+        return 0;
+        
+    scripthost::Event* e = (scripthost::Event*)vobj;
+    
+    // if there are no receivers for the event,
+    // don't even fire it
+    size_t sink_count = e->getSinkCountInternal();
+    if (sink_count == 0)
+    {
+        delete event_args;
+        return 0;
+    }
+
+/*
+    Application* app = getApp();
+    if (app)
+    {
+        app->postEvent(e, this, event_args, event_flags);
+    }
+*/
+   
+    return sink_count;
 }
 
 
@@ -102,12 +182,12 @@ ScriptHost::ScriptHost()
     Directory::compiletimeBind(m_expr);
     DriveInfo::compiletimeBind(m_expr);
     Environment::compiletimeBind(m_expr);
+    Event::compiletimeBind(m_expr);
     File::compiletimeBind(m_expr);
     FileAccess::compiletimeBind(m_expr);
     FileMode::compiletimeBind(m_expr);
     FileShare::compiletimeBind(m_expr);
     FileTransfer::compiletimeBind(m_expr);
-    zFileInfo::compiletimeBind(m_expr);
     FileStream::compiletimeBind(m_expr);
     Base64::compiletimeBind(m_expr);
     Hash::compiletimeBind(m_expr);

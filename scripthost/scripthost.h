@@ -30,6 +30,8 @@ namespace scripthost
 class ScriptHost;
 
 
+// TODO: Please note that Event and ScriptHostBase aren't yet entirely ported from appmain
+
 class ScriptHostBase : public kscript::ValueObject
 {
 public:
@@ -37,12 +39,25 @@ public:
     ScriptHostBase();
     void initComponent(kscript::ExprEnv* env);
     
+   // Application* getApp();
     ScriptHost* getScriptHost();
     
+    size_t getJsEventSinkCount(const std::wstring& evt);
+    
+    size_t invokeJsEvent(const std::wstring& evt,
+                         kscript::Value* event_args = NULL,
+                         unsigned int event_flags = 0);
+                         
+    size_t invokeJsEvent(kscript::Value* evt,
+                         kscript::Value* event_args = NULL,
+                         unsigned int event_flags = 0);
+      
 private:
 
+   // ApplicationWeakReference m_app;
     ScriptHost* m_script_host;
 };
+
 
 
 

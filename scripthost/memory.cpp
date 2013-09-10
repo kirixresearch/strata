@@ -233,7 +233,7 @@ void MemoryBuffer::free(kscript::ExprEnv* env, kscript::Value* retval)
 //
 // Syntax: function MemoryBuffer.copy() : MemoryBuffer
 // Syntax: function MemoryBuffer.copy(offset : Integer,
-//                           length : Integer) : MemoryBuffer
+//                                    length : Integer) : MemoryBuffer
 //
 // Remarks: Copies a portion of the buffer specified by the |offset|
 //     and |length| parameters.  If the |length| parameter is

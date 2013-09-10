@@ -247,7 +247,7 @@ void HttpRequest::constructor(kscript::ExprEnv* env, kscript::Value* retval)
     */
 
 
-    //getMember(L"finished")->setObject(Event::createObject(env));
+    //getMember(L"finished")->setObject(scripthost::Event::createObject(env));
 }
 
 // (METHOD) HttpRequest.send

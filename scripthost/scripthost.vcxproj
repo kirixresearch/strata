@@ -23,6 +23,7 @@
     <ClCompile Include="crypt.cpp" />
     <ClCompile Include="db.cpp" />
     <ClCompile Include="environment.cpp" />
+    <ClCompile Include="event.cpp" />
     <ClCompile Include="file.cpp" />
     <ClCompile Include="filetransfer.cpp" />
     <ClCompile Include="hash.cpp" />
@@ -38,6 +39,7 @@
     <ClInclude Include="crypt.h" />
     <ClInclude Include="db.h" />
     <ClInclude Include="environment.h" />
+    <ClInclude Include="event.h" />
     <ClInclude Include="file.h" />
     <ClInclude Include="filetransfer.h" />
     <ClInclude Include="hash.h" />
