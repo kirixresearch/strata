@@ -3477,31 +3477,6 @@ void HostData::importData(kscript::ExprEnv* env, kscript::Value* retval)
         // need to make sure that the states are working before re-enabling this line 7/18/07
         //retval->setBoolean((job->getJobInfo()->getState() == jobs::jobStateFinished) ? true : false);
         retval->setBoolean(true);
-
-/*
-        TODO: reimplement
-
-        ImportJob* import_job = new ImportJob;
-    
-        
-        ImportJobInfo info;
-        info.input_path = env->getParam(0)->getString();
-        info.output_path = env->getParam(1)->getString();
-        info.append = false;
-        info.specify_text_params = false;
-        import_job->addImportSet(info);
-        import_job->setImportType(extensionToDbtype(info.input_path));
-        
-        import_job->runJob();
-        import_job->runPostJob();
-        
-        // need to make sure that the states are working before re-enabling this line 7/18/07
-        //retval->setBoolean((export_job->getJobInfo()->getState() == jobs::jobStateFinished) ? true : false);
-        retval->setBoolean(true);
-        
-                
-        delete import_job;
-*/
     }
     
 }
@@ -3566,6 +3541,7 @@ void HostData::exportData(kscript::ExprEnv* env, kscript::Value* retval)
             case scripthost::DbDatabaseType::Excel:        database_type = dbtypeExcel;        break;
             case scripthost::DbDatabaseType::Filesystem:   database_type = dbtypeFilesystem;   break;
             default:
+                // unknown database type
                 return;
         }
     
@@ -3621,68 +3597,97 @@ void HostData::exportData(kscript::ExprEnv* env, kscript::Value* retval)
         }
         
 
-        /* 
-        TODO: reimplement
 
-        ExportJob* export_job = new ExportJob;
-            
-        export_job->setExportType(database_type);
-            
-        if (filename.length() > 0)
-        {
-            export_job->setFilename(filename);
-        }
-            else
-        {
-            export_job->setConnectionInfo(server, port, database, user_name, password);
-        }
-            
+
+        // generate connection string
+
+        IConnectionPtr conn = createUnmanagedConnection();
+        conn->setType(database_type);
+        conn->setHost(server);
+        if (port != -1)
+            conn->setPort(port);
+        conn->setDatabase(database);
+        conn->setUsername(user_name);
+        conn->setPassword(password);
+        conn->setPath(filename);
+
+        std::wstring cstr = conn->getConnectionString();
+        cstr += L";create_if_not_exists=true";
+
+        jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.load-job");
+
+
+        // configure the job parameters
+        kl::JsonNode params;
+
+        params["objects"].setArray();
+        kl::JsonNode objects = params["objects"];
+
+
         std::vector<HostImportExportFile>::iterator it;
         for (it = files.begin(); it != files.end(); ++it)
         {
-            ExportJobInfo info;
-            info.input_path = it->source_path;
-            info.output_path = it->dest_path;
-            info.append = false;
-                
-            export_job->addExportSet(info);
+            kl::JsonNode object = objects.appendElement();
+
+            object["source_connection"] = g_app->getDatabaseConnectionString();
+            object["destination_connection"] = cstr;
+
+            object["source_path"] = it->source_path;
+            object["destination_path"] = it->destination_path;
+
+            object["overwrite"].setBoolean(true);
+
+            /*
+            if (database_type == dbtypeDelimitedText)
+            {
+                object["source_format"].setObject();
+                kl::JsonNode format = object["source_format"];
+            
+                format["delimiter"] = m_ii.delimiters;
+                format["text_qualifier"] = m_ii.text_qualifier;
+                format["header_row"].setBoolean(m_ii.first_row_header);
+            }
+            */
         }
-                    
-        jobs::IJobPtr job = static_cast<jobs::IJob*>(export_job);
+
+        job->setParameters(params.toString());
         job->runJob();
-        //job->runPostJob(); // runPostJob() refreshes the tree, which we don't want
+        job->runPostJob();
+
 
         retval->setBoolean(true);
-        */
-
     }
      else if (env->getParamCount() >= 2)
     {
+        // get input and output path
+        std::wstring source_path = env->getParam(0)->getString();
+        std::wstring destination_path = env->getParam(1)->getString();
 
-        /*
-        TODO: reimplement
 
-        ExportJob* export_job = new ExportJob;
-        
-        
-        ExportJobInfo info;
-        info.input_path = env->getParam(0)->getString();
-        info.output_path = env->getParam(1)->getString();
-        info.append = false;
-        export_job->setExportType(extensionToDbtype(info.output_path));
+        jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.load-job");
 
-        export_job->addExportSet(info);
-        
-        export_job->runJob();
-        //job->runPostJob(); // runPostJob() refreshes the tree, which we don't want
-        
-        // need to make sure that the states are working before re-enabling this line 7/18/07
-        // retval->setBoolean((export_job->getJobInfo()->getState() == jobs::jobStateFinished) ? true : false);
+
+        // configure the job parameters
+        kl::JsonNode params;
+
+        params["objects"].setArray();
+        kl::JsonNode objects = params["objects"];
+
+
+        kl::JsonNode object = objects.appendElement();
+        object["source_connection"] = g_app->getDatabaseConnectionString();
+        object["destination_connection"] = L"Xdprovider=xdfs";
+        object["source_path"] = source_path;
+        object["destination_path"] = destination_path;
+        object["overwrite"].setBoolean(true);
+
+
+        job->setParameters(params.toString());
+        job->runJob();
+        job->runPostJob();
+
+
         retval->setBoolean(true);
-        
-        delete export_job;
-
-        */
     }
     
 } 
