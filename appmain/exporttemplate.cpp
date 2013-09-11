@@ -120,7 +120,7 @@ jobs::IJobPtr ExportTemplate::createJob()
     conn->setPath(m_ei.path);
 
 
-    std::wstring source_connection = towstr(g_app->getDatabaseConnectionString());
+    std::wstring source_connection = g_app->getDatabaseConnectionString();
     std::wstring destination_connection = conn->getConnectionString();
     destination_connection += L";create_if_not_exists=true";
 

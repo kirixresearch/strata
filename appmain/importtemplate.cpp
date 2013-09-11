@@ -888,7 +888,7 @@ jobs::IJobPtr ImportTemplate::createJob()
     conn->setPath(m_ii.path);
 
     std::wstring source_connection = conn->getConnectionString();
-    std::wstring destination_connection = towstr(g_app->getDatabaseConnectionString());
+    std::wstring destination_connection = g_app->getDatabaseConnectionString();
 
     // configure the job parameters
     kl::JsonNode params;

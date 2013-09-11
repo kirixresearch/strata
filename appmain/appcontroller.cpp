@@ -6020,7 +6020,7 @@ bool AppController::openProject(const wxString& location,
 
     g_app->setDatabase(database);
     g_app->setDatabaseLocation(location);
-    g_app->setDatabaseConnectionString(cstr);
+    g_app->setDatabaseConnectionString(towstr(cstr));
     
     if (m_dbdoc)
         m_dbdoc->setDatabase(database);

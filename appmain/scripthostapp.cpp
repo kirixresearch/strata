@@ -15,7 +15,7 @@
 #include "scripthostapp.h"
 #include "scriptgui.h"
 #include "scriptmenu.h"
-#include "scriptdb.h"
+#include "../scripthost/db.h"
 #include "scriptbitmap.h"
 #include "scriptwebdom.h"
 #include "extensionpkg.h"
@@ -533,7 +533,7 @@ void HostApp::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 
 void HostApp::getDatabaseConnectionString(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    retval->setString(towstr(g_app->getDatabaseConnectionString()));
+    retval->setString(g_app->getDatabaseConnectionString());
 }
 
 
@@ -554,7 +554,7 @@ void HostApp::getDatabaseConnectionString(kscript::ExprEnv* env, kscript::Value*
 
 void HostApp::getDatabase(kscript::ExprEnv* env, kscript::Value* retval)
 {
-    DbConnection* db = DbConnection::createObject(env);
+    scripthost::DbConnection* db = scripthost::DbConnection::createObject(env);
     db->setDatabase(g_app->getDatabase());
     retval->setObject(db);
 }
@@ -584,7 +584,7 @@ void HostApp::createDatabase(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() < 2)
         return;
         
-    int db_type = DbDatabaseType::toTangoDatabaseType(env->getParam(1)->getInteger());
+    int db_type = scripthost::DbDatabaseType::toTangoDatabaseType(env->getParam(1)->getInteger());
     
     bool result = dbmgr->createDatabase(env->getParam(0)->getString(), db_type);
     
@@ -637,7 +637,7 @@ void HostApp::openDatabase(kscript::ExprEnv* env, kscript::Value* retval)
         kscript::ValueObject* vobj = env->getParam(0)->getObject();
         if (vobj->isKindOf(L"DbConnection"))
         {
-            DbConnection* conn = (DbConnection*)vobj;
+            scripthost::DbConnection* conn = (scripthost::DbConnection*)vobj;
             tango::IDatabasePtr db = conn->getDatabase();
             if (db.isOk())
             {
@@ -2929,11 +2929,11 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
                     if (mval->getMemberExists(L"source_width"))
                         field.source_width = mval->getMember(L"source_width")->getInteger();
                     if (mval->getMemberExists(L"source_encoding"))
-                        field.source_encoding = DbEncoding::toTangoEncoding(mval->getMember(L"source_encoding")->getInteger());
+                        field.source_encoding = scripthost::DbEncoding::toTangoEncoding(mval->getMember(L"source_encoding")->getInteger());
                     if (mval->getMemberExists(L"name"))
                         field.name = mval->getMember(L"name")->getString();
                     if (mval->getMemberExists(L"type"))
-                        field.type = DbType::toTangoType(mval->getMember(L"type"));
+                        field.type = scripthost::DbType::toTangoType(mval->getMember(L"type"));
                     if (mval->getMemberExists(L"width"))
                         field.width = mval->getMember(L"width")->getInteger();
                     if (mval->getMemberExists(L"scale"))
@@ -3104,7 +3104,7 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
                     if (mval->getMemberExists(L"name"))
                         field.name = mval->getMember(L"name")->getString();
                     if (mval->getMemberExists(L"type"))
-                        field.type = DbType::toTangoType(mval->getMember(L"type"));
+                        field.type = scripthost::DbType::toTangoType(mval->getMember(L"type"));
                     if (mval->getMemberExists(L"width"))
                         field.width = mval->getMember(L"width")->getInteger();
                     if (mval->getMemberExists(L"scale"))
@@ -3226,8 +3226,8 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
 class HostImportExportFile
 {
 public:
-    wxString source_path;
-    wxString dest_path;
+    std::wstring source_path;
+    std::wstring destination_path;
     bool compress;
 };
 
@@ -3299,7 +3299,7 @@ void HostData::importData(kscript::ExprEnv* env, kscript::Value* retval)
         if (info->getMemberExists(L"database_type"))
         {
             if (info->getMember(L"database_type")->isString())
-                binding_database_type = DbDatabaseType::fromString(info->getMember(L"database_type")->getString());
+                binding_database_type = scripthost::DbDatabaseType::fromString(info->getMember(L"database_type")->getString());
                  else
                 binding_database_type = info->getMember(L"database_type")->getInteger();
         }
@@ -3321,10 +3321,25 @@ void HostData::importData(kscript::ExprEnv* env, kscript::Value* retval)
             target_path = info->getMember(L"target_path")->getString();
         
         
-        database_type = DbDatabaseType::toConnectionDatabaseType(binding_database_type);
-        if (database_type == dbtypeUndefined)
-            return;
-    
+        switch (binding_database_type)
+        {
+            // TODO: FIXME: there are missing types from this list, Xbase, etc.
+            case scripthost::DbDatabaseType::Xdnative:     database_type = dbtypeXdnative;          break;
+            case scripthost::DbDatabaseType::Package:      database_type = dbtypePackage;           break;
+            case scripthost::DbDatabaseType::Oracle:       database_type = dbtypeOracle;            break;
+            case scripthost::DbDatabaseType::Postgres:     database_type = dbtypePostgres;          break;
+            case scripthost::DbDatabaseType::SqlServer:    database_type = dbtypeSqlServer;         break;
+            case scripthost::DbDatabaseType::MySQL:        database_type = dbtypeMySql;             break;
+            case scripthost::DbDatabaseType::Odbc:         database_type = dbtypeOdbc;              break;
+            case scripthost::DbDatabaseType::Access:       database_type = dbtypeAccess;            break;
+            case scripthost::DbDatabaseType::Excel:        database_type = dbtypeExcel;             break;
+            case scripthost::DbDatabaseType::Filesystem:   database_type = dbtypeFilesystem;        break;
+            default:
+                // unknown database type
+                return;
+        }
+
+
         std::vector<HostImportExportFile> files;
         
         // old name was 'tables', but now it is 'objects'
@@ -3363,7 +3378,7 @@ void HostData::importData(kscript::ExprEnv* env, kscript::Value* retval)
                         {
                             HostImportExportFile f;
                             f.source_path = src;
-                            f.dest_path = dest;
+                            f.destination_path = dest;
                             files.push_back(f);
                         }
                     }
@@ -3372,6 +3387,62 @@ void HostData::importData(kscript::ExprEnv* env, kscript::Value* retval)
         }
         
         
+
+
+        // generate connection string
+
+        IConnectionPtr conn = createUnmanagedConnection();
+        conn->setType(database_type);
+        conn->setHost(server);
+        if (port != -1)
+            conn->setPort(port);
+        conn->setDatabase(database);
+        conn->setUsername(user_name);
+        conn->setPassword(password);
+        conn->setPath(filename);
+
+        std::wstring cstr = conn->getConnectionString();
+
+        jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.load-job");
+
+
+        // configure the job parameters
+        kl::JsonNode params;
+
+        params["objects"].setArray();
+        kl::JsonNode objects = params["objects"];
+
+
+        std::vector<HostImportExportFile>::iterator it;
+        for (it = files.begin(); it != files.end(); ++it)
+        {
+            kl::JsonNode object = objects.appendElement();
+
+            object["source_connection"] = cstr;
+            object["destination_connection"] = g_app->getDatabaseConnectionString();
+
+            object["source_path"] = it->source_path;
+            object["destination_path"] = it->destination_path;
+
+            object["overwrite"].setBoolean(true);
+
+            /*
+            if (database_type == dbtypeDelimitedText)
+            {
+                object["source_format"].setObject();
+                kl::JsonNode format = object["source_format"];
+            
+                format["delimiter"] = m_ii.delimiters;
+                format["text_qualifier"] = m_ii.text_qualifier;
+                format["header_row"].setBoolean(m_ii.first_row_header);
+            }
+            */
+        }
+
+        job->setParameters(params.toString());
+        job->runJob();
+        job->runPostJob();
+
 
         /*
         TODO: reimplement
@@ -3462,7 +3533,7 @@ void HostData::exportData(kscript::ExprEnv* env, kscript::Value* retval)
         if (info->getMemberExists(L"database_type"))
         {
             if (info->getMember(L"database_type")->isString())
-                binding_database_type = DbDatabaseType::fromString(info->getMember(L"database_type")->getString());
+                binding_database_type = scripthost::DbDatabaseType::fromString(info->getMember(L"database_type")->getString());
                  else
                 binding_database_type = info->getMember(L"database_type")->getInteger();
         }
@@ -3488,15 +3559,15 @@ void HostData::exportData(kscript::ExprEnv* env, kscript::Value* retval)
         switch (binding_database_type)
         {
             // TODO: FIXME: there are missing types from this list, Xbase, etc.
-            case DbDatabaseType::Xdnative:     database_type = dbtypeXdnative;     break;
-            case DbDatabaseType::Package:      database_type = dbtypePackage;      break;
-            case DbDatabaseType::Oracle:       database_type = dbtypeOracle;       break;
-            case DbDatabaseType::SqlServer:    database_type = dbtypeSqlServer;    break;
-            case DbDatabaseType::MySQL:        database_type = dbtypeMySql;        break;
-            case DbDatabaseType::Odbc:         database_type = dbtypeOdbc;         break;
-            case DbDatabaseType::Access:       database_type = dbtypeAccess;       break;
-            case DbDatabaseType::Excel:        database_type = dbtypeExcel;        break;
-            case DbDatabaseType::Filesystem:   database_type = dbtypeFilesystem;   break;
+            case scripthost::DbDatabaseType::Xdnative:     database_type = dbtypeXdnative;     break;
+            case scripthost::DbDatabaseType::Package:      database_type = dbtypePackage;      break;
+            case scripthost::DbDatabaseType::Oracle:       database_type = dbtypeOracle;       break;
+            case scripthost::DbDatabaseType::SqlServer:    database_type = dbtypeSqlServer;    break;
+            case scripthost::DbDatabaseType::MySQL:        database_type = dbtypeMySql;        break;
+            case scripthost::DbDatabaseType::Odbc:         database_type = dbtypeOdbc;         break;
+            case scripthost::DbDatabaseType::Access:       database_type = dbtypeAccess;       break;
+            case scripthost::DbDatabaseType::Excel:        database_type = dbtypeExcel;        break;
+            case scripthost::DbDatabaseType::Filesystem:   database_type = dbtypeFilesystem;   break;
             default:
                 return;
         }
@@ -3543,7 +3614,7 @@ void HostData::exportData(kscript::ExprEnv* env, kscript::Value* retval)
                         {
                             HostImportExportFile f;
                             f.source_path = src;
-                            f.dest_path = dest;
+                            f.destination_path = dest;
                             f.compress = compress;
                             files.push_back(f);
                         }

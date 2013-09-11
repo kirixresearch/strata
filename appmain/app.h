@@ -71,8 +71,8 @@ public:
     void setDatabaseLocation(const wxString& string);
     wxString getDatabaseLocation();
 
-    void setDatabaseConnectionString(const wxString& string) { m_db_connstr = string; }
-    wxString getDatabaseConnectionString() { return m_db_connstr; }
+    void setDatabaseConnectionString(const std::wstring& string) { m_db_connstr = string; }
+    std::wstring getDatabaseConnectionString() { return m_db_connstr; }
 
     DbDoc* getDbDoc();
     void setDbDoc(DbDoc* dbdoc);
@@ -137,7 +137,7 @@ private:
     
     tango::IDatabasePtr m_database;
     wxString m_db_location;
-    wxString m_db_connstr;
+    std::wstring m_db_connstr;
     
     wxString m_install_path;
     bool m_inited;

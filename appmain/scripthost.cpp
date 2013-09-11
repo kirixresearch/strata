@@ -10,8 +10,28 @@
 
 
 #include "appmain.h"
+
+#include <wx/url.h>
+#include <wx/wfstream.h>
+#include <wx/txtstrm.h>
+#include <kl/utf8.h>
+#include <kl/thread.h>
+
 #include "scripthost.h"
-#include "scriptdb.h"
+
+#include "../scripthost/memory.h"
+#include "../scripthost/file.h"
+#include "../scripthost/http.h"
+#include "../scripthost/filetransfer.h"
+#include "../scripthost/db.h"
+#include "../scripthost/xml.h"
+#include "../scripthost/environment.h"
+#include "../scripthost/system.h"
+#include "../scripthost/native.h"
+#include "../scripthost/base64.h"
+#include "../scripthost/crypt.h"
+#include "../scripthost/hash.h"
+
 #include "scriptdlg.h"
 #include "scriptgraphics.h"
 #include "scriptbitmap.h"
@@ -26,30 +46,20 @@
 #include "scriptlayout.h"
 #include "scriptlist.h"
 #include "scriptlistview.h"
-#include "../scripthost/memory.h"
-#include "../scripthost/file.h"
-#include "../scripthost/http.h"
-#include "../scripthost/filetransfer.h"
 #include "scriptslider.h"
 #include "scriptspin.h"
 #include "scriptstatusbar.h"
 #include "scriptwebbrowser.h"
 #include "scriptwebdom.h"
-#include "../scripthost/xml.h"
-#include "../scripthost/environment.h"
 #include "scriptprogress.h"
 #include "scriptbanner.h"
 #include "scriptfont.h"
 #include "scripthostapp.h"
 #include "scriptsystemgui.h"
-#include "../scripthost/system.h"
-#include "../scripthost/native.h"
-#include "../scripthost/base64.h"
-#include "../scripthost/crypt.h"
-#include "../scripthost/hash.h"
 #include "scriptreport.h"
 #include "scripttable.h"
 #include "scriptprocess.h"
+
 #include "appcontroller.h"
 #include "panelconsole.h"
 #include "dlgdatabasefile.h"
@@ -57,12 +67,6 @@
 #include "extensionmgr.h"
 #include "extensionpkg.h"
 
-
-#include <wx/url.h>
-#include <wx/wfstream.h>
-#include <wx/txtstrm.h>
-#include <kl/utf8.h>
-#include <kl/thread.h>
 
 
 enum
@@ -485,10 +489,23 @@ ScriptHost::ScriptHost()
     scripthost::System::compiletimeBind(m_expr);
     scripthost::TextReader::compiletimeBind(m_expr);
     scripthost::TextWriter::compiletimeBind(m_expr);
-    zTimer::compiletimeBind(m_expr);
     scripthost::XmlNode::compiletimeBind(m_expr);
     scripthost::HttpRequest::compiletimeBind(m_expr);
 
+    
+    // -- database --
+    scripthost::DbBulkInsert::compiletimeBind(m_expr);
+    scripthost::DbColumn::compiletimeBind(m_expr);
+    scripthost::DbDatabaseType::compiletimeBind(m_expr);
+    scripthost::DbEncoding::compiletimeBind(m_expr);
+    scripthost::DbError::compiletimeBind(m_expr);
+    scripthost::DbException::compiletimeBind(m_expr);
+    scripthost::DbObjectInfo::compiletimeBind(m_expr);
+    scripthost::DbType::compiletimeBind(m_expr);
+    scripthost::DbInsertMode::compiletimeBind(m_expr);
+    scripthost::DbResult::compiletimeBind(m_expr);
+    scripthost::DbConnection::compiletimeBind(m_expr);
+    
 
     // -- gui related --
     Application::compiletimeBind(m_expr);
@@ -556,8 +573,10 @@ ScriptHost::ScriptHost()
     TreeView::compiletimeBind(m_expr);
     WebBrowser::compiletimeBind(m_expr);
     
+    zTimer::compiletimeBind(m_expr);
 
-    // -- host application
+
+    // -- host application --
     HostApp::compiletimeBind(m_expr);
     HostAutomation::compiletimeBind(m_expr);
     HostBitmap::compiletimeBind(m_expr);
@@ -571,19 +590,6 @@ ScriptHost::ScriptHost()
     Extension::compiletimeBind(m_expr);
 
 
-    // -- database --
-    DbBulkInsert::compiletimeBind(m_expr);
-    DbColumn::compiletimeBind(m_expr);
-    DbDatabaseType::compiletimeBind(m_expr);
-    DbEncoding::compiletimeBind(m_expr);
-    DbError::compiletimeBind(m_expr);
-    DbException::compiletimeBind(m_expr);
-    DbObjectInfo::compiletimeBind(m_expr);
-    DbType::compiletimeBind(m_expr);
-    DbInsertMode::compiletimeBind(m_expr);
-    DbResult::compiletimeBind(m_expr);
-    DbConnection::compiletimeBind(m_expr);
-    
     // -- web --
     Node::compiletimeBind(m_expr);
     WebDOMNode::compiletimeBind(m_expr);
