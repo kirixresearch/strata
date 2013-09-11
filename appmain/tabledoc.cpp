@@ -6061,7 +6061,7 @@ bool TableDoc::deleteSelectedRowsColumns()
 void TableDoc::deleteAllRelations()
 {
     //getBaseSet()->deleteAllRelations();
-    //TODO: make sure the above line gets re-implemented
+    //TODO: make sure the above line gets reimplemented
 }
 
 void TableDoc::onRemoveAllRelationships(wxCommandEvent& evt)

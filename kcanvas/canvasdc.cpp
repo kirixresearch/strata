@@ -322,7 +322,7 @@ void CanvasDC::drawCheckBox(int x, int y, int w, int h, bool checked)
     if (!m_draw_dc)
         return;
 
-    // TODO: need to re-implement; commented out when underiving Canvas 
+    // TODO: need to reimplement; commented out when underiving Canvas 
     // from wxControl; need a way to get the renderer
     
     /*
