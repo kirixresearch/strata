@@ -120,8 +120,7 @@ bool PgsqlIterator::init(const std::wstring& query)
 
             m_server_side_cursor = true;
 
-            if (!init(conn, res))
-                return false;
+            return init(conn, res);
         }
          else
         {
