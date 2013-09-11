@@ -128,9 +128,8 @@ bool PgsqlIterator::init(const std::wstring& query)
             use_server_side_cursor = false;
 
             PQexec(conn, "END");
-
-            //m_database->closeConnection(conn);
-            //return false;
+            m_database->closeConnection(conn);
+            return false;
         }
     } 
     
