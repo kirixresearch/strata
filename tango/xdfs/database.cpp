@@ -1636,8 +1636,21 @@ bool FsDatabase::createTable(const std::wstring& _path,
 
     if (format == tango::formatNative)
     {
+        // look for an extension to yield some guidance as to which
+        // file format to use by default -- if no extension, assume csv
+        std::wstring ext;
+        int ext_pos = path.find_last_of(L'.');
+        if (ext_pos >= 0)
+            ext = path.substr(ext_pos+1);
+        kl::makeLower(ext);
+
         // default to a csv
         format = tango::formatDelimitedText;
+
+        if (ext == L"icsv")
+            format = tango::formatTypedDelimitedText;
+        else if (ext == L"dbf")
+            format = tango::formatXbase;
     }
     
     if (format == tango::formatXbase)
