@@ -111,25 +111,30 @@ bool PgsqlIterator::init(const std::wstring& query)
         status = PQresultStatus(res);
         PQclear(res);
 
-        if (status != PGRES_COMMAND_OK)
+        if (status == PGRES_COMMAND_OK)
         {
-            PQexec(conn, "END");
-            m_database->closeConnection(conn);
-            return false;
+            res = PQexec(conn, "FETCH 100 from xdpgsqlcursor");
+            m_block_start = 1;
+            m_block_row = 0;
+            m_block_rowcount = PQntuples(res);
+
+            m_server_side_cursor = true;
+
+            if (!init(conn, res))
+                return false;
         }
+         else
+        {
+            use_server_side_cursor = false;
 
+            PQexec(conn, "END");
 
-        res = PQexec(conn, "FETCH 100 from xdpgsqlcursor");
-        m_block_start = 1;
-        m_block_row = 0;
-        m_block_rowcount = PQntuples(res);
-
-        m_server_side_cursor = true;
-
-        if (!init(conn, res))
-            return false;
+            //m_database->closeConnection(conn);
+            //return false;
+        }
     } 
-     else
+    
+    if (!use_server_side_cursor)
     {
         PGresult* res = PQexec(conn, kl::toUtf8(query));
         if (!res)
