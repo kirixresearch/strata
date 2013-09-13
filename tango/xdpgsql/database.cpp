@@ -743,6 +743,7 @@ bool PgsqlDatabase::deleteFile(const std::wstring& path)
         return true;
     }
 
+    /*
     std::wstring command;
     command.reserve(1024);
     command = L"DROP TABLE ";
@@ -750,6 +751,44 @@ bool PgsqlDatabase::deleteFile(const std::wstring& path)
 
     xcm::IObjectPtr result_obj;
     execute(command, 0, result_obj, NULL);
+    */
+
+    PGresult* res;
+    PGconn* conn = createConnection();
+    if (!conn)
+        return false;
+
+    res = PQexec(conn, "BEGIN");
+    if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
+    {
+        closeConnection(conn);
+        return false;
+    }
+
+
+    std::wstring command;
+    std::wstring tbl = pgsqlGetTablenameFromPath(path);
+
+    command = L"LOCK TABLE " + tbl + L" IN ACCESS EXCLUSIVE MODE NOWAIT";
+    res = PQexec(conn, kl::toUtf8(command));
+    if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
+    {
+        PQexec(conn, "ROLLBACK");
+        closeConnection(conn);
+        return false;
+    }
+
+    command = L"DROP TABLE " + tbl;
+    res = PQexec(conn, kl::toUtf8(command));
+    if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
+    {
+        PQexec(conn, "ROLLBACK");
+        closeConnection(conn);
+        return false;
+    }
+
+    res = PQexec(conn, "COMMIT");
+    closeConnection(conn);
 
     return true;
 }
