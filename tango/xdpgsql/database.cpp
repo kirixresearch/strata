@@ -1376,10 +1376,36 @@ bool PgsqlDatabase::execute(const std::wstring& command,
         // create an iterator based on our select statement
         PgsqlIterator* iter = new PgsqlIterator(this);
 
-        if (!iter->init(command))
+        if (flags & tango::sqlAlwaysCopy)
         {
-            delete iter;
-            return false;
+            std::wstring tbl = L"xtmp_" + kl::getUniqueString();
+            std::wstring command2 = L"CREATE TABLE " + tbl + L" AS " + command;
+
+            xcm::IObjectPtr resobj;
+            bool res = execute(command2, 0, resobj, job);
+            if (res)
+            {
+                if (!iter->init(L"SELECT * FROM " + tbl))
+                {
+                    delete iter;
+                    return false;
+                }
+
+                iter->setTable(tbl);
+            }
+             else
+            {
+                delete iter;
+                return false;
+            }
+        }
+         else
+        {
+            if (!iter->init(command))
+            {
+                delete iter;
+                return false;
+            }
         }
 
         result = static_cast<xcm::IObject*>(static_cast<tango::IIterator*>(iter));

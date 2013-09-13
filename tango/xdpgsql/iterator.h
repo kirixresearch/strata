@@ -117,6 +117,7 @@ public:
 
     // tango::IIterator
 
+    void setTable(const std::wstring& table);
     std::wstring getTable();
     tango::rowpos_t getRowCount();
     tango::IDatabasePtr getDatabase();
@@ -191,6 +192,8 @@ private:
     tango::rowpos_t m_block_start;
     int m_block_row;
     int m_block_rowcount;
+
+    std::wstring m_path;
 };
 
 

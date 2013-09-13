@@ -208,10 +208,17 @@ bool PgsqlIterator::init(PGconn* conn, PGresult* res)
     return true;
 }
 
+void PgsqlIterator::setTable(const std::wstring& table)
+{
+    m_path = table;
+}
+
+
 std::wstring PgsqlIterator::getTable()
 {
-    // TODO: implement
-    return L"";
+    // m_path is usually empty, but if the iterator specifically represents a
+    // concrete table object, we can express that here
+    return m_path;
 }
 
 tango::rowpos_t PgsqlIterator::getRowCount()
