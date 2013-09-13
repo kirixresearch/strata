@@ -18,6 +18,7 @@
 #include "libpq/libpq-fs.h"
 #include "tango.h"
 #include "../xdcommon/dbattr.h"
+#include "../xdcommon/dbfuncs.h"
 #include "../xdcommon/fileinfo.h"
 #include "../xdcommon/structure.h"
 #include "../xdcommon/columninfo.h"
@@ -667,6 +668,33 @@ bool PgsqlDatabase::copyFile(const std::wstring& src_path,
 
 bool PgsqlDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
 {
+    if (info->iter_input.isOk())
+    {
+        tango::IIteratorPtr iter = info->iter_input;
+        tango::IStructurePtr structure = iter->getStructure();
+        if (structure.isNull())
+            return false;
+    
+        if (info->append)
+        {
+            if (!getFileExist(info->output))
+                return false;
+        }
+         else
+        {
+            deleteFile(info->output);
+            if (!createTable(info->output, structure, NULL))
+                return false;
+        }
+
+
+        xdcmnInsert(static_cast<tango::IDatabase*>(this), iter, info->output, info->where, info->limit, job);
+        return true;
+    }
+
+
+
+
     PGconn* conn = createConnection();
     if (!conn)
         return xcm::null;
