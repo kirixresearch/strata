@@ -142,22 +142,38 @@ std::wstring JobInfo::getProgressString()
     if (m_progress_string.size() > 0)
         return m_progress_string;
     
-    std::wstring format_str;
+    bool maxcount_shown;
+
+    std::wstring* format_str;
     if (kl::dblcompare(getMaxCount(), 0.0) > 0)
-        format_str = m_progress_string_format_max;
-         else
-        format_str = m_progress_string_format_nomax;
+    {
+        maxcount_shown = true;
+        format_str = &m_progress_string_format_max;
+    }
+     else
+    {
+        maxcount_shown = false;
+        format_str = &m_progress_string_format_nomax;
+    }
     
     // if a format string has been set, translate the format string and show it
-    if (format_str.size() > 0)
+    if (format_str->size() > 0)
     {
         std::wstring str, repl;
-        std::wstring progress_str = format_str;
+        std::wstring progress_str = *format_str;
 
         if (progress_str.find(L"$c") != progress_str.npos)
         {
+            double cur_count = getCurrentCount();
+            if (!maxcount_shown && kl::dblcompare(cur_count, 0.0) == 0)
+            {
+                // some jobs don't actually incremenet 'current count' past zero;
+                // return empty string until current count is greater than zero
+                return L"";
+            }
+
             str  = L"$c";
-            repl = kl::formattedNumber(ceil(getCurrentCount()));
+            repl = kl::formattedNumber(ceil(cur_count));
             kl::replaceStr(progress_str, str.c_str(), repl.c_str());
         }
         

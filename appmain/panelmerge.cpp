@@ -98,8 +98,7 @@ bool MergePanel::initDoc(IFramePtr frame,
     // create the output table sizer
     wxStaticText* label_output_table = new wxStaticText(this, -1, _("Output Table:"));
     wxStaticText* static_output_table = new wxStaticText(this, -1, m_output_path);
-    wxString default_output_path = m_output_path.IsEmpty() ? wxT("/") : m_output_path;
-    m_output_table = new wxTextCtrl(this, ID_OutputTableTextCtrl, default_output_path);
+    m_output_table = new wxTextCtrl(this, ID_OutputTableTextCtrl, m_output_path);
     wxButton* browse_button = new wxButton(this, ID_BrowseButton, _("Browse..."));
 
     wxBoxSizer* output_table_sizer = new wxBoxSizer(wxHORIZONTAL);

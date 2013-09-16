@@ -706,20 +706,62 @@ bool PgsqlDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
             pjob->setConnection(conn); 
     }
 
+
+
     std::wstring intbl = pgsqlGetTablenameFromPath(info->input);
     std::wstring outtbl = pgsqlGetTablenameFromPath(info->output);
-    std::wstring sql = L"create table %outtbl% as select * from %intbl%";
-    kl::replaceStr(sql, L"%intbl%", intbl);
-    kl::replaceStr(sql, L"%outtbl%", outtbl);
+    std::wstring sql;
 
-    if (info->where.length() > 0)
-        sql += (L" where " + info->where);
+    if (info->append)
+    {
+        tango::IStructurePtr instruct = describeTable(info->input);
+        tango::IStructurePtr outstruct = describeTable(info->output);
+
+        std::vector<std::wstring> common_fields;
+        std::vector<std::wstring>::iterator it;
+
+        int i, cnt = instruct->getColumnCount();
+        for (i = 0; i < cnt; ++i)
+        {
+            std::wstring colname = instruct->getColumnName(i);
+            if (outstruct->getColumnExist(colname))
+                common_fields.push_back(colname);
+        } 
+
+        std::wstring collist;
+        for (it = common_fields.begin(); it != common_fields.end(); ++it)
+        {
+            if (it != common_fields.begin())
+                collist += L",";
+            collist += *it;
+        }
+
+        sql = L"insert into %outtbl% (%collist%) SELECT %collist% from %intbl%";
+        kl::replaceStr(sql, L"%intbl%", intbl);
+        kl::replaceStr(sql, L"%outtbl%", outtbl);
+        kl::replaceStr(sql, L"%collist%", collist);
+
+        if (info->where.length() > 0)
+            sql += (L" where " + info->where);
     
-    if (info->order.length() > 0)
-        sql += (L" order by " + info->order);
+        if (info->order.length() > 0)
+            sql += (L" order by " + info->order);
+    }
+     else
+    {
+        sql = L"create table %outtbl% as select * from %intbl%";
+        kl::replaceStr(sql, L"%intbl%", intbl);
+        kl::replaceStr(sql, L"%outtbl%", outtbl);
+
+        if (info->where.length() > 0)
+            sql += (L" where " + info->where);
+    
+        if (info->order.length() > 0)
+            sql += (L" order by " + info->order);
+    }
 
     PGresult* res = PQexec(conn, kl::toUtf8(sql));
-    if (!res || PQresultStatus(res) != PGRES_TUPLES_OK)
+    if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
     {
         if (res)
             PQclear(res);
@@ -1166,6 +1208,13 @@ tango::IIteratorPtr PgsqlDatabase::query(const tango::QueryParams& qp)
     query += quote_openchar;
     query += tablename;
     query += quote_closechar;
+
+    if (qp.where.length() > 0)
+    {
+        query += L" WHERE ";
+        query += qp.where;
+    }
+
 
     if (qp.order.length() > 0)
     {
