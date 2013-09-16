@@ -813,15 +813,6 @@ bool PgsqlDatabase::deleteFile(const std::wstring& path)
         return true;
     }
 
-    /*
-    std::wstring command;
-    command.reserve(1024);
-    command = L"DROP TABLE ";
-    command += pgsqlGetTablenameFromPath(path);
-
-    xcm::IObjectPtr result_obj;
-    execute(command, 0, result_obj, NULL);
-    */
 
     PGresult* res;
     PGconn* conn = createConnection();
@@ -908,9 +899,7 @@ tango::IFileInfoPtr PgsqlDatabase::getFileInfo(const std::wstring& path)
     }
     
     tango::IFileInfoEnumPtr files = getFolderInfo(folder);
-    int i, count;
-    
-    count = files->size();
+    int i, count = files->size();
     for (i = 0; i < count; ++i)
     {
         tango::IFileInfoPtr finfo = files->getItem(i);
