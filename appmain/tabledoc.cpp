@@ -6105,17 +6105,27 @@ bool TableDoc::getIsChildSet()
 std::wstring TableDoc::getDbDriver()
 {
     xcm::IObject* p;
+    std::wstring class_name;
+    xcm::class_info* class_info;
 
     if (m_iter.isOk())
+    {
         p = m_iter.p;
-         else
-        p = g_app->getDatabase().p;
+        class_info = xcm::get_class_info(p);
+        class_name = towstr(class_info->get_name());
+        class_name = kl::beforeFirst(class_name, '.');
+        if (class_name != L"xdcommon")
+            return class_name; // if it's xdcommon, check the database ptr instead
+    }
+    
 
+    
+    p = g_app->getDatabase().p;
     if (!p)
         return L"";
 
-    xcm::class_info* class_info = xcm::get_class_info(p);
-    std::wstring class_name = towstr(class_info->get_name());
+    class_info = xcm::get_class_info(p);
+    class_name = towstr(class_info->get_name());
     return kl::beforeFirst(class_name, '.');
 }
 
@@ -7747,54 +7757,93 @@ void TableDoc::onDeleteRecordsOk(ExprBuilderPanel* expr_panel)
 }
 
 
+static std::wstring formatSqlPath(const std::wstring& path)
+{
+    std::wstring result = path;
+    kl::trim(result);
+    if (result.length() > 0 && kl::stringFrequency(path, '/') == 1 && result[0] == '/')
+        return result.substr(1);
+         else
+        return result;
+}
+
+
 void TableDoc::deleteRecords(const std::wstring& condition)
 {
-    jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.execute-job");
 
-    // if a filter is active, delete from both the base set as well 
-    // as the browse set so the user doesn't have to refresh to
-    // see the changes; this is easier to do with an execute job
-    // than an aggregate delete job, so, just build the command
-    std::wstring cmd;
+
+    std::wstring main_delete_sql;
+    std::wstring browse_delete_sql;
+
     if (m_filter.length() > 0)
     {
-        cmd = L" DELETE FROM ";
-        cmd += getPath();
-        cmd += L" WHERE ";
-        cmd += L"(";
-        cmd += m_filter;
-        cmd += L") AND (";
-        cmd += condition;
-        cmd += L");";
-        
-        std::wstring browse_path = getBrowsePath();
-        if (browse_path.length() > 0)
+        main_delete_sql = L"DELETE FROM ";
+        main_delete_sql += formatSqlPath(getPath());
+        main_delete_sql += L" WHERE ";
+        main_delete_sql += L"(";
+        main_delete_sql += m_filter;
+        main_delete_sql += L") AND (";
+        main_delete_sql += condition;
+        main_delete_sql += L");";
+
+        if (getDbDriver() == L"xdnative")
         {
-            cmd += L"DELETE FROM ";
-            cmd += browse_path;
-            cmd += L" WHERE ";
-            cmd += condition;
+            std::wstring browse_path = getBrowsePath();
+            if (browse_path.length() > 0)
+            {
+                browse_delete_sql += L"DELETE FROM ";
+                browse_delete_sql += formatSqlPath(browse_path);
+                browse_delete_sql += L" WHERE ";
+                browse_delete_sql += condition;
+            }
         }
     }
      else
     {
-        cmd += L" DELETE FROM ";
-        cmd += getPath();
-        cmd += L" WHERE ";
-        cmd += condition;
+        main_delete_sql += L" DELETE FROM ";
+        main_delete_sql += formatSqlPath(getPath());
+        main_delete_sql += L" WHERE ";
+        main_delete_sql += condition;
     }
 
-    // run the job
-    kl::JsonNode params;
-    params["command"].setString(cmd);
 
-    wxString title = wxString::Format(_("Deleting records in '%s'"),
-                                      getCaption().c_str());
+    std::wstring title = towstr(wxString::Format(_("Deleting records in '%s'"), getCaption().c_str()));
 
-    job->getJobInfo()->setTitle(towstr(title));
-    job->setParameters(params.toString());
-    job->sigJobFinished().connect(this, &TableDoc::onDeleteJobFinished);
-    g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
+    if (browse_delete_sql.length() == 0)
+    {
+        jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.execute-job");
+        job->getJobInfo()->setTitle(title);
+
+        kl::JsonNode params;
+        params["command"].setString(main_delete_sql);
+        job->setParameters(params.toString());
+
+        job->sigJobFinished().connect(this, &TableDoc::onDeleteJobFinished);
+        g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
+    }
+     else
+    {
+        std::vector<jobs::IJobPtr> jobs;
+
+        jobs::IJobPtr job1 = appCreateJob(L"application/vnd.kx.execute-job");
+        kl::JsonNode params1;
+        params1["command"].setString(main_delete_sql);
+        job1->setParameters(params1.toString());
+        jobs.push_back(job1);
+
+        jobs::IJobPtr job2 = appCreateJob(L"application/vnd.kx.execute-job");
+        kl::JsonNode params2;
+        params2["command"].setString(browse_delete_sql);
+        job2->setParameters(params2.toString());
+        jobs.push_back(job2);
+
+
+        jobs::IJobPtr aggregate_job = jobs::createAggregateJob(jobs);
+        aggregate_job->getJobInfo()->setTitle(title);
+        aggregate_job->setDatabase(g_app->getDatabase());
+        aggregate_job->sigJobFinished().connect(this, &TableDoc::onDeleteJobFinished);
+        g_app->getJobQueue()->addJob(aggregate_job, jobs::jobStateRunning);
+    }
 }
 
 

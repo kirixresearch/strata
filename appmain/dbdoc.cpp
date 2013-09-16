@@ -2072,10 +2072,8 @@ void DbDoc::doPaste()
                 jobs::IJobPtr aggregate_job = jobs::createAggregateJob(jobs);
                 aggregate_job->setDatabase(g_app->getDatabase());
                 aggregate_job->setExtraValue(L"refresh-folder", towstr(target_location));
-
-                g_app->getJobQueue()->addJob(aggregate_job, jobs::jobStateRunning);
-                
                 aggregate_job->sigJobFinished().connect(this, &DbDoc::onCopyJobFinished);
+                g_app->getJobQueue()->addJob(aggregate_job, jobs::jobStateRunning);
             }
 
         /*
