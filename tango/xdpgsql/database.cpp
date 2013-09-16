@@ -1522,6 +1522,14 @@ bool PgsqlDatabase::execute(const std::wstring& command,
         if (!conn)
             return false;
 
+        if (job)
+        {
+            IPgsqlJobInfoPtr pjob = job;
+            if (pjob)
+                pjob->setConnection(conn); 
+        }
+
+
         PGresult* res = PQexec(conn, kl::toUtf8(command));
         if (!res)
             return false;
