@@ -6845,7 +6845,7 @@ void AppController::showProjectManager()
         {
             // the project that we selected is already open; do nothing
             #ifdef WIN32
-                if (info.location.CmpNoCase(g_app->getDatabaseLocation()) == 0)
+                if (kl::iequals(info.location, towstr(g_app->getDatabaseLocation())))
                     return;
             #else
                 if (info.location == g_app->getDatabaseLocation())

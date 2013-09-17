@@ -15,11 +15,11 @@
 
 struct ProjectInfo
 {
-    wxString entry_name;
-    wxString name;
-    wxString location;
-    wxString user_id;
-    wxString passwd;
+    std::wstring entry_name;
+    std::wstring name;
+    std::wstring location;
+    std::wstring user_id;
+    std::wstring passwd;
     bool local;
 };
 
@@ -31,7 +31,7 @@ public:
      bool operator()(const ProjectInfo& x,
                      const ProjectInfo& y) const                
      {
-        return x.name.CmpNoCase(y.name) < 0 ? true : false;
+        return wcscasecmp(x.name.c_str(), y.name.c_str()) < 0 ? true : false;
      }
 };
 

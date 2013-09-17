@@ -390,7 +390,7 @@ public:
             std::vector<ProjectInfo>::iterator it;
             for (it = m_projects.begin(); it != m_projects.end(); ++it)
             {
-                if (it->entry_name.CmpNoCase(m_pi->general_startup_connection) == 0)
+                if (kl::iequals(it->entry_name, towstr(m_pi->general_startup_connection)))
                 {
                     found = true;
                     break;
@@ -431,15 +431,15 @@ public:
         if (sel == 0 || sel == -1)
         {
             m_pi->general_startup_open_last_project = true;
-            m_pi->general_startup_connection = wxEmptyString;
+            m_pi->general_startup_connection = L"";
         
             // 'Last Open Project' dropdown item was selected; set
             // the startup connection based on the current project's location
-            wxString project_loc = g_app->getDatabaseLocation();
+            std::wstring project_loc = g_app->getDatabaseLocation();
             std::vector<ProjectInfo>::iterator it;
             for (it = m_projects.begin(); it != m_projects.end(); ++it)
             {
-                if (it->location.CmpNoCase(project_loc) == 0)
+                if (kl::iequals(it->location, project_loc))
                 {
                     m_pi->general_startup_connection = it->entry_name;
                     break;

@@ -71,8 +71,8 @@ void ProjectMgr::refresh()
             if (lowercase_loc.find(L"xdprovider") == lowercase_loc.npos)
             {
                 c.name = c.location;
-                int idx = c.name.Find(PATH_SEPARATOR_CHAR, true);
-                if (idx >= 0)
+                size_t idx = c.name.find_last_of(PATH_SEPARATOR_CHAR);
+                if (idx != c.name.npos)
                     c.name = c.name.substr(idx+1);
             }
         }
@@ -124,7 +124,7 @@ bool ProjectMgr::modifyProjectEntry(int idx,
 {
     IAppConfigPtr config = g_app->getAppConfig();
     config->setPath(L"/RecentDatabases");
-    config->setPath(towstr(m_projects[idx].entry_name));
+    config->setPath(m_projects[idx].entry_name);
 
     if (name.Length() > 0)
         config->write(wxT("Name"), towstr(name));
@@ -147,7 +147,7 @@ bool ProjectMgr::deleteProjectEntry(int idx)
 {
     IAppConfigPtr config = g_app->getAppConfig();
     config->setPath(L"/RecentDatabases");
-    config->deleteGroup(towstr(m_projects[idx].entry_name));
+    config->deleteGroup(m_projects[idx].entry_name);
 
     refresh();
 
@@ -183,7 +183,7 @@ int ProjectMgr::getIdxFromLocation(const wxString& location)
     {
 #ifdef __WXMSW__
         // windows paths are case insensitive
-        if (it->location.CmpNoCase(location) == 0)
+        if (0 == wcscasecmp(it->location.c_str(), location.c_str()))
             return idx;
 #else
         if (it->location == location)
@@ -451,7 +451,7 @@ public:
 
 
         // empty path, bail out
-        if (m_info->location.Length() == 0)
+        if (m_info->location.length() == 0)
         {
             appMessageBox(_("The specified location is empty.  Please enter the location of the project you would like to add."),
                                APPLICATION_NAME,
@@ -462,11 +462,11 @@ public:
 
         // if we're not using a raw connection string or a remote location, 
         // do some checks on the location that's been provided
-        if (m_info->location.Find(L"xdprovider=") == -1 && 
-            m_info->location.SubString(0,6) != wxT("http://") && 
-            m_info->location.SubString(0,7) != wxT("https://"))
+        if (m_info->location.find(L"xdprovider=") == m_info->location.npos && 
+            m_info->location.substr(0,6) != L"http://" && 
+            m_info->location.substr(0,7) != L"https://")
         {
-            if (!xf_get_directory_exist(towstr(m_info->location)))
+            if (!xf_get_directory_exist(m_info->location))
             {
                 appMessageBox(_("The specified folder does not exist or is invalid."),
                                    APPLICATION_NAME,
@@ -475,11 +475,11 @@ public:
                 return false;
             }
         
-            wxString test_path = m_info->location;
+            std::wstring test_path = m_info->location;
             test_path += PATH_SEPARATOR_STR;
-            test_path += wxT("ofs");
+            test_path += L"ofs";
 
-            if (!xf_get_directory_exist(towstr(test_path)))
+            if (!xf_get_directory_exist(test_path))
             {
                 appMessageBox(_("The specified folder does not contain a valid project."),
                                    APPLICATION_NAME,
@@ -496,8 +496,7 @@ public:
         std::vector<ProjectInfo>::iterator it;
         for (it = connections.begin(); it != connections.end(); ++it)
         {
-            wxString loc = it->location;
-            if (loc.CmpNoCase(m_info->location) == 0)
+            if (kl::iequals(it->location, m_info->location))
             {
                 appMessageBox(_("The specified project already exists in the project manager list."),
                                    APPLICATION_NAME,
@@ -524,7 +523,7 @@ public:
         
         // empty path, bail out
 
-        if (m_info->location.Length() == 0)
+        if (m_info->location.length() == 0)
         {
             appMessageBox(_("The specified location is empty.  Please enter the location of the project you would like to create."),
                                APPLICATION_NAME,
@@ -533,9 +532,9 @@ public:
             return false;
         }
     
-        if (!xf_get_directory_exist(towstr(m_info->location)))
+        if (!xf_get_directory_exist(m_info->location))
         {
-            if (xf_is_valid_directory_path(towstr(m_info->location)))
+            if (xf_is_valid_directory_path(m_info->location))
             {
                 // try to create all of the folders needed to create this path
                 // (this function deletes the created folders on success or failure)
@@ -578,7 +577,7 @@ public:
             
             bool has_children = false;
             
-            xf_dirhandle_t handle = xf_opendir(towstr(m_info->location));
+            xf_dirhandle_t handle = xf_opendir(m_info->location);
             xf_direntry_t dirinfo;
 
             while (xf_readdir(handle, &dirinfo))
