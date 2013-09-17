@@ -90,6 +90,12 @@ int UpdateJob::runJob()
     // get the input parameters
     std::wstring input_path = params_node["input"].getString();
 
+    kl::trim(input_path);
+    if (kl::stringFrequency(input_path,'/') == 1 && input_path[0] == '/')
+        input_path.erase(0, 1);
+
+
+
     std::wstring where_param;
     if (params_node.childExists("where"))
         where_param = params_node["where"].getString();
@@ -101,18 +107,16 @@ int UpdateJob::runJob()
     // build the update SQL
     std::wstring update_sql = L"";
     update_sql += L"UPDATE ";
-    update_sql += tango::quoteIdentifier(m_db, input_path);
+    update_sql += tango::quoteIdentifierIfNecessary(m_db, input_path);
     update_sql += L" SET ";
 
     std::vector<kl::JsonNode>::iterator it, it_end;
     it_end = set_nodes.end();
 
-    bool first = true;
     for (it = set_nodes.begin(); it != it_end; ++it)
     {
-        if (!first)
+        if (it != set_nodes.begin())
             update_sql += L",";
-        first = false;
 
         std::wstring column, expression;
         if (!it->childExists("column") || !it->childExists("expression"))
@@ -121,8 +125,8 @@ int UpdateJob::runJob()
         column = it->getChild("column").getString();
         expression = it->getChild("expression").getString();
 
-        update_sql += tango::quoteIdentifier(m_db, column);
-        update_sql += L" = ";
+        update_sql += tango::quoteIdentifierIfNecessary(m_db, column);
+        update_sql += L"=";
         update_sql += expression;
     }
 

@@ -4846,6 +4846,18 @@ std::wstring TableDoc::getWhereExpressionForRow(int row)
     return where_str;
 }
 
+
+static std::wstring formatSqlPath(const std::wstring& path)
+{
+    std::wstring result = path;
+    kl::trim(result);
+    if (result.length() > 0 && kl::stringFrequency(path, '/') == 1 && result[0] == '/')
+        return result.substr(1);
+         else
+        return result;
+}
+
+
 void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
 {
     // check if the edit was cancelled
@@ -5156,14 +5168,14 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
         return;
 
 
-    wxString cmd = "UPDATE ";
-    cmd += tango::quoteIdentifierIfNecessary(db, m_path);
-    cmd += " SET ";
-    cmd += str;
+    std::wstring cmd = L"UPDATE ";
+    cmd += tango::quoteIdentifierIfNecessary(db, formatSqlPath(m_path));
+    cmd += L" SET ";
+    cmd += towstr(str);
     cmd += where_str;
             
     xcm::IObjectPtr result_obj;
-    if (g_app->getDatabase()->execute(towstr(cmd),
+    if (g_app->getDatabase()->execute(cmd,
                                       tango::sqlPassThrough,
                                       result_obj,
                                       NULL))
@@ -7756,16 +7768,6 @@ void TableDoc::onDeleteRecordsOk(ExprBuilderPanel* expr_panel)
     deleteRecords(towstr(expr));
 }
 
-
-static std::wstring formatSqlPath(const std::wstring& path)
-{
-    std::wstring result = path;
-    kl::trim(result);
-    if (result.length() > 0 && kl::stringFrequency(path, '/') == 1 && result[0] == '/')
-        return result.substr(1);
-         else
-        return result;
-}
 
 
 void TableDoc::deleteRecords(const std::wstring& condition)

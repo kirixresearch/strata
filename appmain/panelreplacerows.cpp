@@ -346,7 +346,7 @@ void ReplaceRowsPanel::onOKPressed(ExprBuilderPanel* panel)
 
     if (is_value)
     {
-        // -- must adjust for value replace --
+        // must adjust for value replace
 
         int col_type = colinfo->getType();
 
@@ -358,22 +358,22 @@ void ReplaceRowsPanel::onOKPressed(ExprBuilderPanel* panel)
             wxString temp;
             temp.Alloc(len + 20);
 
-            temp = wxT("\"");
+            temp = "'";
 
             wxChar c;
             for (int i = 0; i < len; ++i)
             {
                 c = replace_value.GetChar(i);
-                if (c == wxT('"'))
+                if (c == '\'')
                 {
-                    temp += wxT("\"\"");
+                    temp += "''";
                 }
                  else
                 {
                     temp += c;
                 }
             }
-            temp += wxT("\"");
+            temp += "'";
             replace_value = temp;
         }
          else if (col_type == tango::typeDate ||
