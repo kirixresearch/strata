@@ -254,6 +254,15 @@ std::wstring pgsqlGetTablenameFromPath(const std::wstring& path)
          else
         res = path;
 
+    kl::trim(res);
+
+    if (res.empty())
+        return L"";
+
+    if (res[res.length()-1] == '/')
+        res = res.substr(0, res.length()-1);
+
+    kl::replaceStr(res, L"/", L"__");
     kl::replaceStr(res, L"\"", L"");
     kl::makeLower(res);
 
@@ -558,7 +567,7 @@ int PgsqlDatabase::getDatabaseType()
 
 std::wstring PgsqlDatabase::getActiveUid()
 {
-    return L"";
+    return m_username;
 }
 
 tango::IAttributesPtr PgsqlDatabase::getAttributes()
@@ -621,33 +630,132 @@ bool PgsqlDatabase::getMountPoint(const std::wstring& path,
 
 bool PgsqlDatabase::createFolder(const std::wstring& path)
 {
-    return false;
+    deleteFile(path);
+
+
+    PGconn* conn = createConnection();
+    PGresult* res;
+    if (!conn)
+        return false;
+
+
+    PQexec(conn, "BEGIN");
+
+    std::wstring sql, tbl;
+
+    tbl = pgsqlGetTablenameFromPath(path);
+    sql = L"CREATE TABLE %tbl% (xdpgsql_folder VARCHAR(80))";
+    kl::replaceStr(sql, L"%tbl%", tbl);
+
+    res = PQexec(conn, kl::toUtf8(sql));
+    if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
+    {
+        closeConnection(conn);
+        return false;
+    }
+
+
+
+
+    sql = L"COMMENT ON TABLE %tbl% IS 'folder;'";
+    kl::replaceStr(sql, L"%tbl%", tbl);
+
+    res = PQexec(conn, kl::toUtf8(sql));
+    if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
+    {
+        closeConnection(conn);
+        return false;
+    }
+
+    PQexec(conn, "COMMIT");
+
+    closeConnection(conn);
+    return true;
 }
 
 bool PgsqlDatabase::renameFile(const std::wstring& path,
                                const std::wstring& new_name)
 {
-    std::wstring command;
+    if (!getFileExist(path))
+        return false;
 
-
-    command = L"ALTER TABLE ";
-    command += pgsqlGetTablenameFromPath(path);
-    command += L" RENAME TO ";
-    command += pgsqlGetTablenameFromPath(new_name);
-
-    if (command.length() > 0)
-    {
-        xcm::IObjectPtr result_obj;
-        return execute(command, 0, result_obj, NULL);
-    }
     
-    return false;
+
+    std::wstring folder;
+    int slash_pos = path.find_last_of(L'/');
+    if (slash_pos == path.npos)
+        folder = L"";
+         else
+        folder = path.substr(0, slash_pos);
+
+
+
+
+    PGconn* conn = createConnection();
+    PGresult* res;
+    if (!conn)
+        return false;
+
+
+    PQexec(conn, "BEGIN");
+
+    std::wstring sql, tbl, newname;
+    tbl = pgsqlGetTablenameFromPath(path);
+    newname = pgsqlGetTablenameFromPath(folder + L"/" + new_name);
+
+    sql = L"ALTER TABLE %tbl% RENAME TO %newname%";
+    kl::replaceStr(sql, L"%tbl%", tbl);
+    kl::replaceStr(sql, L"%newname%", newname);
+
+    res = PQexec(conn, kl::toUtf8(sql));
+    if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
+    {
+        closeConnection(conn);
+        return false;
+    }
+
+    PQexec(conn, "COMMIT");
+
+    closeConnection(conn);
+    return true;
 }
 
 bool PgsqlDatabase::moveFile(const std::wstring& path,
                              const std::wstring& new_location)
 {
-    return false;
+    if (!getFileExist(path))
+        return false;
+
+    if (getFileExist(new_location))
+        return false;
+
+    PGconn* conn = createConnection();
+    PGresult* res;
+    if (!conn)
+        return false;
+
+
+    PQexec(conn, "BEGIN");
+
+    std::wstring sql, tbl, newname;
+    tbl = pgsqlGetTablenameFromPath(path);
+    newname = pgsqlGetTablenameFromPath(new_location);
+
+    sql = L"ALTER TABLE %tbl% RENAME TO %newname%";
+    kl::replaceStr(sql, L"%tbl%", tbl);
+    kl::replaceStr(sql, L"%newname%", newname);
+
+    res = PQexec(conn, kl::toUtf8(sql));
+    if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
+    {
+        closeConnection(conn);
+        return false;
+    }
+
+    PQexec(conn, "COMMIT");
+
+    closeConnection(conn);
+    return true;
 }
 
 bool PgsqlDatabase::copyFile(const std::wstring& src_path,
@@ -844,29 +952,28 @@ bool PgsqlDatabase::deleteFile(const std::wstring& path)
     return true;
 }
 
-bool PgsqlDatabase::getFileExist(const std::wstring& _path)
+bool PgsqlDatabase::getFileExist(const std::wstring& path)
 {
-    std::wstring path = kl::afterFirst(_path, L'/');
+    std::wstring table = pgsqlGetTablenameFromPath(path);
 
-    // there may be a faster way to do this.  In order to
-    // determine if the file exists, we are going to get
-    // a list of all tables and look for 'path'
-
-    tango::IFileInfoEnumPtr files = getFolderInfo(L"");
-    if (!files)
+    PGconn* conn = createConnection();
+    if (!conn)
         return false;
 
-    int count = files->size();
-    int i;
+    std::wstring command = L"select count(*) from pg_class where relname='%tbl%' and relkind='r'";
+    kl::replaceStr(command, L"%tbl%", table);
 
-    for (i = 0 ; i < count; ++i)
+    bool found = false;
+
+    PGresult* res = PQexec(conn, kl::toUtf8(command));
+    if (PQresultStatus(res) == PGRES_TUPLES_OK && PQntuples(res) == 1)
     {
-        tango::IFileInfoPtr info = files->getItem(i);
-        if (kl::iequals(info->getName(), path))
-            return true;
+        if (0 == strcmp(PQgetvalue(res, 0, 0), "1"))
+            found = true;
     }
 
-    return false;
+    closeConnection(conn);
+    return found;
 }
 
 tango::IFileInfoPtr PgsqlDatabase::getFileInfo(const std::wstring& path)
@@ -907,21 +1014,33 @@ tango::IFileInfoEnumPtr PgsqlDatabase::getFolderInfo(const std::wstring& path)
     xcm::IVectorImpl<tango::IFileInfoPtr>* retval;
     retval = new xcm::IVectorImpl<tango::IFileInfoPtr>;
 
+    std::string prefix = "";
+    if (path.length() > 0 && path != L"/")
+        prefix = kl::tostring(pgsqlGetTablenameFromPath(path)) + "__";
+
+
     PGconn* conn = createConnection();
     if (!conn)
         return retval;
 
-    PGresult* res = PQexec(conn, "select t.tablename as name, coalesce(d.description,'') as type from pg_tables t "
-                                 "inner join pg_class as c on c.relname=t.tablename "
-                                 "left outer join pg_description as d on c.oid=d.objoid "
-                                 "where t.schemaname <> 'pg_catalog' and t.schemaname <> 'information_schema' "
 
-                                 " UNION "
+    std::string command = "select t.tablename as name, coalesce(d.description,'') as type from pg_tables t "
+                          "inner join pg_class as c on c.relname=t.tablename "
+                          "left outer join pg_description as d on c.oid=d.objoid "
+                          "where t.schemaname <> 'pg_catalog' and t.schemaname <> 'information_schema' ";
+                          
+    if (prefix.length() > 0) command += (" and t.tablename like '" + (prefix + "%' "));
 
-                                 "select viewname  as name, 'view' as type from pg_views  where schemaname <> 'pg_catalog' and schemaname <> 'information_schema'");
+    command +=            " UNION "
+                          "select viewname  as name, 'view' as type from pg_views  where schemaname <> 'pg_catalog' and schemaname <> 'information_schema'";
+
+    PGresult* res = PQexec(conn, command.c_str());
 
     if (PQresultStatus(res) != PGRES_TUPLES_OK)
+    {
+        closeConnection(conn);
         return retval;
+    }
 
     std::wstring name, type;
 
@@ -931,12 +1050,15 @@ tango::IFileInfoEnumPtr PgsqlDatabase::getFolderInfo(const std::wstring& path)
         name = kl::towstring(PQgetvalue(res, i, 0));
         type = kl::towstring(PQgetvalue(res, i, 1));
 
+        if (prefix.length() > 0)
+            name.erase(0, prefix.length());
+
         PgsqlFileInfo* f = new PgsqlFileInfo(this);
         f->name = name;
         f->type = tango::filetypeTable;
         f->format = tango::formatNative;
 
-        if (type.substr(0, 6) == L"stream")
+        if (type.substr(0, 7) == L"stream;")
         {
             f->type = tango::filetypeStream;
 
@@ -947,6 +1069,11 @@ tango::IFileInfoEnumPtr PgsqlDatabase::getFolderInfo(const std::wstring& path)
             f->mime_type = type;
 
             kl::trim(f->mime_type);
+        }
+         else if (type.substr(0, 7) == L"folder;")
+        {
+            f->type = tango::filetypeFolder;
+            f->mime_type = L"";
         }
 
         retval->append(f);

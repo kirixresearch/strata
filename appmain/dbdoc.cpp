@@ -3037,10 +3037,8 @@ void DbDoc::onFsItemEndLabelEdit(IFsItemPtr item,
         }
          else
         {
-            wxString message = wxString::Format(_("The rename operation could not execute.  The table may be locked."),
-                                                label.c_str());
-
-            message += wxT("\n");
+            wxString message = _("The rename operation could not execute.  The table may be locked.");
+            message += "\n";
             message += db->getErrorString();
             
             deferredAppMessageBox(message,

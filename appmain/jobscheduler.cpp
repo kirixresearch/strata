@@ -451,15 +451,19 @@ bool JobScheduler::load()
     if (db.isNull())
         return false;
 
+    std::wstring active_user = db->getActiveUid();
+    if (active_user.empty())
+        return false;
+
     // if the old jobs location exists, delete it
     std::wstring old_location = kl::stdswprintf(L"/.appdata/%ls/dcfe/jobscheduler",
-                                                db->getActiveUid().c_str());
+                                                active_user.c_str());
 
     if (db->getFileExist(old_location))
         db->deleteFile(old_location);
 
     std::wstring path = kl::stdswprintf(L"/.appdata/%ls/panels/jobscheduler",
-                                        db->getActiveUid().c_str());
+                                        active_user.c_str());
 
     // open the new location
     kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), path);
