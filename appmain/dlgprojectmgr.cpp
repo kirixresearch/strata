@@ -63,23 +63,23 @@ void ProjectMgr::refresh()
         c.user_id = dbuser;
         c.passwd = dbpasswd;
 
-        if (c.name.Length() == 0)
+        if (c.name.length() == 0)
         {
-            c.name = c.location;
-            int idx = c.name.Find(PATH_SEPARATOR_CHAR, true);
-            if (idx >= 0)
+            std::wstring lowercase_loc = c.location;
+            kl::makeLower(lowercase_loc);
+            
+            if (lowercase_loc.find(L"xdprovider") == lowercase_loc.npos)
             {
-                c.name = c.name.Mid(idx+1);
+                c.name = c.location;
+                int idx = c.name.Find(PATH_SEPARATOR_CHAR, true);
+                if (idx >= 0)
+                    c.name = c.name.substr(idx+1);
             }
         }
         
-        if (!c.name.IsEmpty())
-        {
-            c.name.SetChar(0, wxToupper(c.name.GetChar(0)));
-        }
         
         // fix stupid bug we had
-        if (c.user_id == wxT("admin") && c.passwd == wxT("admin"))
+        if (c.user_id == "admin" && c.passwd == "admin")
             c.passwd = wxT("");
 
         m_projects.push_back(c);

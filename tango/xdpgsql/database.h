@@ -139,11 +139,6 @@ private:
 
     tango::IAttributesPtr m_attr;
 
-    std::wstring m_db_name;
-    std::wstring m_conn_str;
-
-    bool m_using_dsn;
-    int m_db_type;
     int m_port;
     std::wstring m_server;
     std::wstring m_database;

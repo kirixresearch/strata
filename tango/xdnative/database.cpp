@@ -104,18 +104,6 @@ XdnativeDatabase::~XdnativeDatabase()
     deleteTempData();
 }
 
-/*
-void XdnativeDatabase::setDatabaseName(const std::wstring& db_name)
-{
-    m_attr->setStringAttribute(tango::dbattrDatabaseName, db_name);
-
-    INodeValuePtr node = openNodeFile(L"/.system/database_name");
-    if (node)
-    {
-        node->setString(db_name);
-    }
-}
-*/
 
 bool XdnativeDatabase::setBaseDirectory(const std::wstring& base_dir)
 {    

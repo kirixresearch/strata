@@ -404,11 +404,6 @@ private:
 
 PgsqlDatabase::PgsqlDatabase()
 {
-    m_db_name = L"";
-    m_conn_str = L"";
-
-    m_using_dsn = false;
-    m_db_type = -1;
     m_port = 0;
     m_server = L"";
     m_database = L"";
@@ -542,17 +537,12 @@ bool PgsqlDatabase::open(const std::wstring& server,
 
     closeConnection(conn);
 
-
     return true;
 }
 
 
 void PgsqlDatabase::close()
 {
-    m_db_name = L"";
-    m_conn_str = L"";
-
-    m_db_type = -1;
     m_port = 0;
     m_server = L"";
     m_database = L"";
@@ -563,7 +553,7 @@ void PgsqlDatabase::close()
 
 int PgsqlDatabase::getDatabaseType()
 {
-    return m_db_type;
+    return tango::dbtypePostgres;
 }
 
 std::wstring PgsqlDatabase::getActiveUid()
@@ -1062,7 +1052,7 @@ bool PgsqlDatabase::createTable(const std::wstring& _path,
                                   width,
                                   scale,
                                   true,
-                                  m_db_type);
+                                  tango::dbtypePostgres);
 
         command += field;
 
