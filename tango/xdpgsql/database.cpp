@@ -1016,7 +1016,15 @@ tango::IFileInfoEnumPtr PgsqlDatabase::getFolderInfo(const std::wstring& path)
 
     std::string prefix = "";
     if (path.length() > 0 && path != L"/")
-        prefix = kl::tostring(pgsqlGetTablenameFromPath(path)) + "__";
+    {
+        std::wstring temps = path;
+        kl::trim(temps);
+        if (temps.empty())
+            return retval;
+        if (temps[0] == '/') temps = temps.substr(1);
+        kl::replaceStr(temps, L"/", L"__");
+        prefix = kl::tostring(temps) + "__";
+    }
 
 
     PGconn* conn = createConnection();
