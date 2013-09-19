@@ -3172,6 +3172,9 @@ void MainFrame::removeWindowEventHandler(wxEvtHandler* event_handler)
 
     if (it != m_winevent_handlers.end())
     {
+        if (!event_handler->IsUnlinked())
+            this->RemoveEventHandler(event_handler);
+
         m_winevent_handlers.erase(it);
     }
 
