@@ -35,6 +35,11 @@
 #include <kl/utf8.h>
 #include <kl/md5.h>
 
+
+
+#define FOLDER_SEPARATOR L"__"
+
+
 const wchar_t* sql92_keywords =
                 L"ABSOLUTE,ACTION,ADA,ADD,ALL,ALLOCATE,ALTER,AND,"
                 L"ANY,ARE,AS,ASC,ASSERTION,AT,AUTHORIZATION,AVG,"
@@ -262,12 +267,9 @@ std::wstring pgsqlGetTablenameFromPath(const std::wstring& path)
     if (res[res.length()-1] == '/')
         res = res.substr(0, res.length()-1);
 
-    kl::replaceStr(res, L"/", L"__");
+    kl::replaceStr(res, L"/", FOLDER_SEPARATOR);
     kl::replaceStr(res, L"\"", L"");
     kl::makeLower(res);
-
-    if (res.find(' ') != res.npos)
-        res = L"\"" + res + L"\"";
 
     return res;
 }
@@ -645,7 +647,7 @@ bool PgsqlDatabase::createFolder(const std::wstring& path)
 
     tbl = pgsqlGetTablenameFromPath(path);
     sql = L"CREATE TABLE %tbl% (xdpgsql_folder VARCHAR(80))";
-    kl::replaceStr(sql, L"%tbl%", tbl);
+    kl::replaceStr(sql, L"%tbl%", pgsqlQuoteIdentifierIfNecessary(tbl));
 
     res = PQexec(conn, kl::toUtf8(sql));
     if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
@@ -704,8 +706,8 @@ bool PgsqlDatabase::renameFile(const std::wstring& path,
     newname = pgsqlGetTablenameFromPath(folder + L"/" + new_name);
 
     sql = L"ALTER TABLE %tbl% RENAME TO %newname%";
-    kl::replaceStr(sql, L"%tbl%", tbl);
-    kl::replaceStr(sql, L"%newname%", newname);
+    kl::replaceStr(sql, L"%tbl%", pgsqlQuoteIdentifierIfNecessary(tbl));
+    kl::replaceStr(sql, L"%newname%", pgsqlQuoteIdentifierIfNecessary(newname));
 
     res = PQexec(conn, kl::toUtf8(sql));
     if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
@@ -742,8 +744,8 @@ bool PgsqlDatabase::moveFile(const std::wstring& path,
     newname = pgsqlGetTablenameFromPath(new_location);
 
     sql = L"ALTER TABLE %tbl% RENAME TO %newname%";
-    kl::replaceStr(sql, L"%tbl%", tbl);
-    kl::replaceStr(sql, L"%newname%", newname);
+    kl::replaceStr(sql, L"%tbl%", pgsqlQuoteIdentifierIfNecessary(tbl));
+    kl::replaceStr(sql, L"%newname%", pgsqlQuoteIdentifierIfNecessary(newname));
 
     res = PQexec(conn, kl::toUtf8(sql));
     if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
@@ -835,8 +837,8 @@ bool PgsqlDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
         }
 
         sql = L"insert into %outtbl% (%collist%) SELECT %collist% from %intbl%";
-        kl::replaceStr(sql, L"%intbl%", intbl);
-        kl::replaceStr(sql, L"%outtbl%", outtbl);
+        kl::replaceStr(sql, L"%intbl%", pgsqlQuoteIdentifierIfNecessary(intbl));
+        kl::replaceStr(sql, L"%outtbl%", pgsqlQuoteIdentifierIfNecessary(outtbl));
         kl::replaceStr(sql, L"%collist%", collist);
 
         if (info->where.length() > 0)
@@ -885,7 +887,7 @@ bool PgsqlDatabase::deleteFile(const std::wstring& path)
 
         std::wstring tbl = pgsqlGetTablenameFromPath(path);
         std::wstring sql = L"select blob_id from %tbl%";
-        kl::replaceStr(sql, L"%tbl%", tbl);
+        kl::replaceStr(sql, L"%tbl%", pgsqlQuoteIdentifierIfNecessary(tbl));
 
         PGresult* res = PQexec(conn, kl::toUtf8(sql));
         if (!res || PQresultStatus(res) != PGRES_TUPLES_OK)
@@ -928,7 +930,7 @@ bool PgsqlDatabase::deleteFile(const std::wstring& path)
     std::wstring command;
     std::wstring tbl = pgsqlGetTablenameFromPath(path);
 
-    command = L"LOCK TABLE " + tbl + L" IN ACCESS EXCLUSIVE MODE NOWAIT";
+    command = L"LOCK TABLE " + pgsqlQuoteIdentifierIfNecessary(tbl) + L" IN ACCESS EXCLUSIVE MODE NOWAIT";
     res = PQexec(conn, kl::toUtf8(command));
     if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
     {
@@ -954,14 +956,14 @@ bool PgsqlDatabase::deleteFile(const std::wstring& path)
 
 bool PgsqlDatabase::getFileExist(const std::wstring& path)
 {
-    std::wstring table = pgsqlGetTablenameFromPath(path);
+    std::wstring tbl = pgsqlGetTablenameFromPath(path);
 
     PGconn* conn = createConnection();
     if (!conn)
         return false;
 
     std::wstring command = L"select count(*) from pg_class where relname='%tbl%' and relkind='r'";
-    kl::replaceStr(command, L"%tbl%", table);
+    kl::replaceStr(command, L"%tbl%", tbl);
 
     bool found = false;
 
@@ -1022,8 +1024,8 @@ tango::IFileInfoEnumPtr PgsqlDatabase::getFolderInfo(const std::wstring& path)
         if (temps.empty())
             return retval;
         if (temps[0] == '/') temps = temps.substr(1);
-        kl::replaceStr(temps, L"/", L"__");
-        prefix = kl::tostring(temps) + "__";
+        kl::replaceStr(temps, L"/", FOLDER_SEPARATOR);
+        prefix = kl::tostring(temps + FOLDER_SEPARATOR);
     }
 
 
@@ -1060,6 +1062,9 @@ tango::IFileInfoEnumPtr PgsqlDatabase::getFolderInfo(const std::wstring& path)
 
         if (prefix.length() > 0)
             name.erase(0, prefix.length());
+        
+        if (name.find(FOLDER_SEPARATOR) != name.npos)
+            continue; // this item is contained in a 'sub-folder'
 
         PgsqlFileInfo* f = new PgsqlFileInfo(this);
         f->name = name;
@@ -1096,7 +1101,7 @@ tango::IFileInfoEnumPtr PgsqlDatabase::getFolderInfo(const std::wstring& path)
 
 std::wstring PgsqlDatabase::getPrimaryKey(const std::wstring path)
 {
-    std::wstring table = pgsqlGetTablenameFromPath(path);
+    std::wstring tbl = pgsqlGetTablenameFromPath(path);
     std::wstring pk;
 
     PGconn* conn = createConnection();
@@ -1112,7 +1117,7 @@ std::wstring PgsqlDatabase::getPrimaryKey(const std::wstring path)
                          L"       pg_attribute.attnum = any(pg_index.indkey) AND "
                          L"       indisprimary";
 
-    kl::replaceStr(query, L"%tbl%", table);
+    kl::replaceStr(query, L"%tbl%", pgsqlQuoteIdentifierIfNecessary(tbl));
 
     PGresult* res = PQexec(conn, kl::toUtf8(query));
 
@@ -1143,13 +1148,12 @@ tango::IStructurePtr PgsqlDatabase::createStructure()
     return static_cast<tango::IStructure*>(s);
 }
 
-bool PgsqlDatabase::createTable(const std::wstring& _path,
+bool PgsqlDatabase::createTable(const std::wstring& path,
                                 tango::IStructurePtr struct_config,
                                 tango::FormatInfo* format_info)
 {
-    std::wstring path = _path;
-    if (path == L"")
-        path = getUniqueString();
+    std::wstring tbl = pgsqlQuoteIdentifierIfNecessary(path);
+
 
     std::wstring quote_openchar = m_attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
     std::wstring quote_closechar = m_attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
@@ -1158,7 +1162,7 @@ bool PgsqlDatabase::createTable(const std::wstring& _path,
     command.reserve(1024);
 
     command = L"CREATE TABLE ";
-    command += pgsqlQuoteIdentifierIfNecessary(pgsqlGetTablenameFromPath(path));
+    command += pgsqlQuoteIdentifierIfNecessary(pgsqlGetTablenameFromPath(tbl));
     command += L" (";
 
     std::wstring field;
@@ -1218,7 +1222,7 @@ tango::IStreamPtr PgsqlDatabase::openStream(const std::wstring& path)
 
     std::wstring tbl = pgsqlGetTablenameFromPath(path);
     std::wstring sql = L"select blob_id from %tbl%";
-    kl::replaceStr(sql, L"%tbl%", tbl);
+    kl::replaceStr(sql, L"%tbl%", pgsqlQuoteIdentifierIfNecessary(tbl));
 
     PGresult* res = PQexec(conn, kl::toUtf8(sql));
     if (!res || PQresultStatus(res) != PGRES_TUPLES_OK)
@@ -1261,7 +1265,7 @@ bool PgsqlDatabase::createStream(const std::wstring& path, const std::wstring& m
 
     tbl = pgsqlGetTablenameFromPath(path);
     sql = L"CREATE TABLE %tbl% (xdpgsql_stream VARCHAR(80), mime_type VARCHAR(80), blob_id oid)";
-    kl::replaceStr(sql, L"%tbl%", tbl);
+    kl::replaceStr(sql, L"%tbl%", pgsqlQuoteIdentifierIfNecessary(tbl));
 
     res = PQexec(conn, kl::toUtf8(sql));
     if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
@@ -1309,19 +1313,14 @@ bool PgsqlDatabase::createStream(const std::wstring& path, const std::wstring& m
 
 tango::IIteratorPtr PgsqlDatabase::query(const tango::QueryParams& qp)
 {
-    std::wstring tablename = pgsqlGetTablenameFromPath(qp.from);
+    std::wstring tbl = pgsqlGetTablenameFromPath(qp.from);
 
 
     std::wstring query;
 
-    tango::IAttributesPtr attr = getAttributes();
-    std::wstring quote_openchar = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
-    std::wstring quote_closechar = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);    
-    
+
     query = L"SELECT * FROM ";
-    query += quote_openchar;
-    query += tablename;
-    query += quote_closechar;
+    query += pgsqlQuoteIdentifierIfNecessary(tbl);
 
     if (qp.where.length() > 0)
     {
@@ -1356,7 +1355,7 @@ tango::IIndexInfoPtr PgsqlDatabase::createIndex(const std::wstring& path,
                                                 const std::wstring& expr,
                                                 tango::IJob* job)
 {
-    std::wstring table = pgsqlGetTablenameFromPath(path);
+    std::wstring tbl = pgsqlGetTablenameFromPath(path);
 
     PGconn* conn = createConnection();
     if (!conn)
@@ -1364,7 +1363,7 @@ tango::IIndexInfoPtr PgsqlDatabase::createIndex(const std::wstring& path,
 
     std::wstring query = L"CREATE INDEX %idx% ON %tbl% (%expr%)";
     kl::replaceStr(query, L"%idx%", pgsqlQuoteIdentifierIfNecessary(name));
-    kl::replaceStr(query, L"%tbl%", pgsqlQuoteIdentifierIfNecessary(table));
+    kl::replaceStr(query, L"%tbl%", pgsqlQuoteIdentifierIfNecessary(tbl));
     kl::replaceStr(query, L"%expr%", expr);
 
     PGresult* res = PQexec(conn, kl::toUtf8(query));
@@ -1418,7 +1417,7 @@ tango::IIndexInfoEnumPtr PgsqlDatabase::getIndexEnum(const std::wstring& path)
     vec = new xcm::IVectorImpl<tango::IIndexInfoPtr>;
 
 
-    std::wstring table = pgsqlGetTablenameFromPath(path);
+    std::wstring tbl = pgsqlGetTablenameFromPath(path);
 
     PGconn* conn = createConnection();
     if (!conn)
@@ -1439,7 +1438,7 @@ tango::IIndexInfoEnumPtr PgsqlDatabase::getIndexEnum(const std::wstring& path)
                          L"     t.relname, "
                          L"     i.relname ";
 
-    kl::replaceStr(query, L"%tbl%", table);
+    kl::replaceStr(query, L"%tbl%", pgsqlQuoteIdentifierIfNecessary(tbl));
 
     PGresult* res = PQexec(conn, kl::toUtf8(query));
 
@@ -1753,7 +1752,7 @@ bool PgsqlDatabase::groupQuery(tango::GroupQueryParams* info, tango::IJob* job)
 
 
 
-    sql += L" FROM " + pgsqlGetTablenameFromPath(info->input);
+    sql += L" FROM " + pgsqlQuoteIdentifierIfNecessary(pgsqlGetTablenameFromPath(info->input));
 
 
     if (info->where.length() > 0)
@@ -1792,7 +1791,7 @@ bool PgsqlDatabase::groupQuery(tango::GroupQueryParams* info, tango::IJob* job)
 
 
         std::wstring outer_sql = L"SELECT %grpcols%, a.* FROM %tbl% AS a, (%sql%) AS b WHERE ";
-        kl::replaceStr(outer_sql, L"%tbl%", pgsqlGetTablenameFromPath(info->input));
+        kl::replaceStr(outer_sql, L"%tbl%", pgsqlQuoteIdentifierIfNecessary(pgsqlGetTablenameFromPath(info->input)));
         kl::replaceStr(outer_sql, L"%sql%", sql);
         kl::replaceStr(outer_sql, L"%grpcols%", grpcols);
         for (it = group_parts.begin(); it != group_parts.end(); ++it)
@@ -1809,7 +1808,7 @@ bool PgsqlDatabase::groupQuery(tango::GroupQueryParams* info, tango::IJob* job)
     }
 
     if (info->output.length() > 0)
-        sql = L"CREATE TABLE " + pgsqlGetTablenameFromPath(info->output) + L" AS " + sql;
+        sql = L"CREATE TABLE " + pgsqlQuoteIdentifierIfNecessary(pgsqlGetTablenameFromPath(info->output)) + L" AS " + sql;
 
 
 
