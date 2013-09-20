@@ -660,7 +660,7 @@ bool PgsqlDatabase::createFolder(const std::wstring& path)
 
 
     sql = L"COMMENT ON TABLE %tbl% IS 'folder;'";
-    kl::replaceStr(sql, L"%tbl%", tbl);
+    kl::replaceStr(sql, L"%tbl%", pgsqlQuoteIdentifierIfNecessary(tbl));
 
     res = PQexec(conn, kl::toUtf8(sql));
     if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
@@ -1039,7 +1039,13 @@ tango::IFileInfoEnumPtr PgsqlDatabase::getFolderInfo(const std::wstring& path)
                           "left outer join pg_description as d on c.oid=d.objoid "
                           "where t.schemaname <> 'pg_catalog' and t.schemaname <> 'information_schema' ";
                           
-    if (prefix.length() > 0) command += (" and t.tablename like '" + (prefix + "%' "));
+    if (prefix.length() > 0)
+    {
+        std::wstring wprefix = kl::towstring(prefix);
+        kl::replaceStr(wprefix, L"_", L"\\_");
+        std::string like = kl::tostring(wprefix) + "%";
+        command += (" and t.tablename like '" + like + "' ");
+    }
 
     command +=            " UNION "
                           "select viewname  as name, 'view' as type from pg_views  where schemaname <> 'pg_catalog' and schemaname <> 'information_schema'";
