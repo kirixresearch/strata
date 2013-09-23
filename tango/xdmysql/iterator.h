@@ -24,9 +24,9 @@
 int mysql2tangoType(int mysql_type);
 
 
-struct MySqlDataAccessInfo
+struct MysqlDataAccessInfo
 {
-    // -- metadata --
+    // metadata
     std::wstring name;
     int type;
     int width;
@@ -35,7 +35,7 @@ struct MySqlDataAccessInfo
 
     int mysql_type;
 
-    // -- expression stuff --
+    // expression stuff
     std::wstring expr_text;
     kscript::ExprParser* expr;
     KeyLayout* key_layout;
@@ -43,13 +43,13 @@ struct MySqlDataAccessInfo
     std::wstring wstr_result;
     std::string str_result;
 
-    MySqlDataAccessInfo()
+    MysqlDataAccessInfo()
     {
         expr = NULL;
         key_layout = NULL;
     }
 
-    ~MySqlDataAccessInfo()
+    ~MysqlDataAccessInfo()
     {
         delete expr;
         delete key_layout;
@@ -64,22 +64,22 @@ struct MySqlDataAccessInfo
 
 
 
-class MySqlIterator : public CommonBaseIterator,
+class MysqlIterator : public CommonBaseIterator,
                       public tango::ICacheRowUpdate
 {
-friend class MySqlDatabase;
+friend class MysqlDatabase;
 friend class MySqlSet;
 
     XCM_CLASS_NAME("xdmysql.Iterator")
-    XCM_BEGIN_INTERFACE_MAP(MySqlIterator)
+    XCM_BEGIN_INTERFACE_MAP(MysqlIterator)
         XCM_INTERFACE_ENTRY(tango::IIterator)
         XCM_INTERFACE_ENTRY(tango::ICacheRowUpdate)
     XCM_END_INTERFACE_MAP()
 
 public:
 
-    MySqlIterator();
-    ~MySqlIterator();
+    MysqlIterator(MysqlDatabase* database);
+    ~MysqlIterator();
     bool init(const std::wstring& query);
 
     void setTable(const std::wstring& table);
@@ -136,7 +136,7 @@ private:
     
 private:
 
-    tango::IDatabasePtr m_database;
+    MysqlDatabase* m_database;
 
     MYSQL* m_data;
     MYSQL_RES* m_res;
@@ -145,14 +145,16 @@ private:
     int m_row_arr_size;        // number of elements in m_row
     tango::rowpos_t m_row_pos;
 
-    std::vector<MySqlDataAccessInfo*> m_fields;
-    std::vector<MySqlDataAccessInfo*> m_exprs;
+    std::vector<MysqlDataAccessInfo*> m_fields;
+    std::vector<MysqlDataAccessInfo*> m_exprs;
 
     LocalRowCache m_cache;
     LocalRow m_cache_row;
     MYSQL_ROW m_cache_row_ptrs;  // holds the results of a row
                                  // when retrieved from cache
     bool m_cache_active;
+
+    std::wstring m_path;
 };
 
 

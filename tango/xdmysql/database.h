@@ -17,7 +17,7 @@
 #include "../xdcommon/errorinfo.h"
 
 
-// -- utility functions --
+// utility functions
 int mysql2tangoType(int mysql_type);
 std::wstring createMySqlFieldString(const std::wstring& name,
                                     int type,
@@ -25,36 +25,22 @@ std::wstring createMySqlFieldString(const std::wstring& name,
                                     int scale,
                                     bool null);
 
-
-xcm_interface IMySqlDatabase : public xcm::IObject
-{
-    XCM_INTERFACE_NAME("xdmysql.IMySqlDatabase")
-
-public:
-
-    virtual MYSQL* open() = 0;
-    virtual MYSQL* getMySqlPtr() = 0;
-    virtual std::wstring getServer() = 0;
-    virtual std::wstring getDatabase() = 0;
-};
-
-XCM_DECLARE_SMARTPTR(IMySqlDatabase)
+std::wstring mysqlGetTablenameFromPath(const std::wstring& path);
+std::wstring mysqlQuoteIdentifier(const std::wstring& str);
+std::wstring mysqlQuoteIdentifierIfNecessary(const std::wstring& str);
 
 
-
-class MySqlDatabase : public tango::IDatabase,
-                      public IMySqlDatabase
+class MysqlDatabase : public tango::IDatabase
 {
     XCM_CLASS_NAME("xdmysql.Database")
-    XCM_BEGIN_INTERFACE_MAP(MySqlDatabase)
+    XCM_BEGIN_INTERFACE_MAP(MysqlDatabase)
         XCM_INTERFACE_ENTRY(tango::IDatabase)
-        XCM_INTERFACE_ENTRY(IMySqlDatabase)
     XCM_END_INTERFACE_MAP()
 
 public:
 
-    MySqlDatabase();
-    ~MySqlDatabase();
+    MysqlDatabase();
+    ~MysqlDatabase();
     
     bool open(const std::wstring& server,
               int port,

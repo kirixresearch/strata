@@ -30,8 +30,11 @@ static std::string empty_string = "";
 static std::wstring empty_wstring = L"";
 
 
-MySqlIterator::MySqlIterator()
+MysqlIterator::MysqlIterator(MysqlDatabase* database)
 {
+    m_database = database;
+    m_database->ref();
+
     m_data = NULL;
     m_res = NULL;
     m_row = NULL;
@@ -40,7 +43,7 @@ MySqlIterator::MySqlIterator()
     m_cache_row_ptrs = NULL;
 }
 
-MySqlIterator::~MySqlIterator()
+MysqlIterator::~MysqlIterator()
 {
     if (m_res)
     {
@@ -54,7 +57,7 @@ MySqlIterator::~MySqlIterator()
 
     // clean up field vector and expression vector
 
-    std::vector<MySqlDataAccessInfo*>::iterator it;
+    std::vector<MysqlDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
         delete (*it);
 
@@ -62,15 +65,15 @@ MySqlIterator::~MySqlIterator()
         delete (*it);
     
     delete[] m_cache_row_ptrs;
+
+    m_database->unref();
 }
 
-bool MySqlIterator::init(const std::wstring& query)
+bool MysqlIterator::init(const std::wstring& query)
 {
-    IMySqlDatabasePtr mydb = m_database;
-    
     if (m_data == NULL)
     {
-        m_data = mydb->open();
+        m_data = m_database->open();
         if (m_data == NULL)
             return false;
     
@@ -101,7 +104,7 @@ bool MySqlIterator::init(const std::wstring& query)
 
         std::wstring wcol_name = kl::towstring(colinfo->name);
 
-        MySqlDataAccessInfo* dai = new MySqlDataAccessInfo;
+        MysqlDataAccessInfo* dai = new MysqlDataAccessInfo;
         dai->name = wcol_name;
         dai->type = type;
         dai->mysql_type = colinfo->type;
@@ -133,53 +136,94 @@ bool MySqlIterator::init(const std::wstring& query)
 }
 
 
-void MySqlIterator::setTable(const std::wstring& table)
+void MysqlIterator::setTable(const std::wstring& table)
 {
+    m_path = table;
 }
 
-std::wstring MySqlIterator::getTable()
+std::wstring MysqlIterator::getTable()
 {
-    return L"";
+    return m_path;
 }
 
-tango::rowpos_t MySqlIterator::getRowCount()
+tango::rowpos_t MysqlIterator::getRowCount()
 {
+    if (m_path.length() > 0)
+    {
+        std::wstring query;
+        query += L"SELECT COUNT(*) FROM ";
+        query += L"`";
+        query += mysqlGetTablenameFromPath(m_path);
+        query += L"`";
+
+        MYSQL* db = m_database->open();
+        if (!db)
+            return 0;
+
+        std::string asc_query = kl::tostring(query);
+        int error = mysql_query(db, asc_query.c_str());
+
+        if (!error)
+        {
+            MYSQL_RES* res = mysql_use_result(db);
+            MYSQL_ROW row = mysql_fetch_row(res);
+            tango::rowpos_t row_count = atoi(row[0]);
+            mysql_free_result(res);
+            mysql_close(db);
+            return row_count;
+        }
+         else
+        {
+            mysql_close(db);
+            return 0;
+        }
+    }
+
     return 0;
 }
 
 // -- IIterator interface implementation --
 
-tango::IDatabasePtr MySqlIterator::getDatabase()
+tango::IDatabasePtr MysqlIterator::getDatabase()
 {
     return m_database;
 }
 
-tango::IIteratorPtr MySqlIterator::clone()
+tango::IIteratorPtr MysqlIterator::clone()
 {
     return xcm::null;
 }
 
-void MySqlIterator::setIteratorFlags(unsigned int mask, unsigned int value)
+void MysqlIterator::setIteratorFlags(unsigned int mask, unsigned int value)
 {
     m_cache_active = ((mask & value & tango::ifReverseRowCache) != 0) ? true : false;
 }
 
-unsigned int MySqlIterator::getIteratorFlags()
+unsigned int MysqlIterator::getIteratorFlags()
 {
+    unsigned int flags = 0;
+
+
     // if we have a unidirectional iterator, but the back-scroll
     // cache is on, then we still can scroll back
-    if (m_cache_active)
+    if (!m_cache_active)
     {
-        return 0;
+        flags |= tango::ifForwardOnly;
     }
     
-    // forward only
-    return tango::ifForwardOnly;
+
+    if (m_path.length() > 0)
+    {
+        flags |= tango::ifFastRowCount;
+    }
+
+
+    return flags;
 }
 
 
 
-void MySqlIterator::saveRowToCache()
+void MysqlIterator::saveRowToCache()
 {
     if (!m_row)
     {
@@ -215,7 +259,7 @@ void MySqlIterator::saveRowToCache()
 
 
 
-void MySqlIterator::readRowFromCache(tango::rowpos_t row)
+void MysqlIterator::readRowFromCache(tango::rowpos_t row)
 {
     m_cache.goRow((tango::rowpos_t)row);
     m_cache.getRow(m_cache_row);
@@ -237,7 +281,7 @@ void MySqlIterator::readRowFromCache(tango::rowpos_t row)
     }      
 }
 
-void MySqlIterator::skipWithCache(int delta)
+void MysqlIterator::skipWithCache(int delta)
 {
     if (delta == 0)
         return;
@@ -294,7 +338,7 @@ void MySqlIterator::skipWithCache(int delta)
     }
 }
 
-void MySqlIterator::skip(int delta)
+void MysqlIterator::skip(int delta)
 {
 
     if (m_cache_active)
@@ -345,7 +389,7 @@ void MySqlIterator::skip(int delta)
     m_lengths = mysql_fetch_lengths(m_res);
 }
 
-void MySqlIterator::goFirst()
+void MysqlIterator::goFirst()
 {
     if (m_cache_active)
     {
@@ -358,55 +402,55 @@ void MySqlIterator::goFirst()
     //m_lengths = mysql_fetch_lengths(m_res);
 }
 
-void MySqlIterator::goLast()
+void MysqlIterator::goLast()
 {
 
 }
 
-double MySqlIterator::getPos()
+double MysqlIterator::getPos()
 {
     return 0.0;
 }
 
-tango::rowid_t MySqlIterator::getRowId()
+tango::rowid_t MysqlIterator::getRowId()
 {
     return m_row_pos;
 }
 
-bool MySqlIterator::bof()
+bool MysqlIterator::bof()
 {
     return false;
 }
 
-bool MySqlIterator::eof()
+bool MysqlIterator::eof()
 {
     return m_row ? false : true;
 }
 
-bool MySqlIterator::seek(const unsigned char* key, int length, bool soft)
+bool MysqlIterator::seek(const unsigned char* key, int length, bool soft)
 {
     return false;
 }
 
-bool MySqlIterator::seekValues(const wchar_t* arr[], size_t arr_size, bool soft)
+bool MysqlIterator::seekValues(const wchar_t* arr[], size_t arr_size, bool soft)
 {
     return false;
 }
 
-bool MySqlIterator::setPos(double pct)
+bool MysqlIterator::setPos(double pct)
 {
     return false;
 }
 
-void MySqlIterator::goRow(const tango::rowid_t& rowid)
+void MysqlIterator::goRow(const tango::rowid_t& rowid)
 {
 }
 
-tango::IStructurePtr MySqlIterator::getStructure()
+tango::IStructurePtr MysqlIterator::getStructure()
 {
     Structure* s = new Structure;
 
-    std::vector<MySqlDataAccessInfo*>::iterator it;
+    std::vector<MysqlDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
         tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
@@ -423,7 +467,7 @@ tango::IStructurePtr MySqlIterator::getStructure()
     return static_cast<tango::IStructure*>(s);
 }
 
-void MySqlIterator::refreshStructure()
+void MysqlIterator::refreshStructure()
 {
 /*
     tango::IStructurePtr set_structure = m_set->getStructure();
@@ -456,7 +500,7 @@ void MySqlIterator::refreshStructure()
     
     // find new calc fields
     
-    std::vector<MySqlDataAccessInfo*>::iterator it;
+    std::vector<MysqlDataAccessInfo*>::iterator it;
     col_count = set_structure->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
@@ -483,7 +527,7 @@ void MySqlIterator::refreshStructure()
         if (!found)
         {
             // add new calc field
-            MySqlDataAccessInfo* dai = new MySqlDataAccessInfo;
+            MysqlDataAccessInfo* dai = new MysqlDataAccessInfo;
             dai->name = col->getName();
             dai->type = col->getType();
             dai->width = col->getWidth();
@@ -505,13 +549,13 @@ void MySqlIterator::refreshStructure()
     */
 }
 
-bool MySqlIterator::modifyStructure(tango::IStructure* struct_config, tango::IJob* job)
+bool MysqlIterator::modifyStructure(tango::IStructure* struct_config, tango::IJob* job)
 {
     IStructureInternalPtr struct_int = struct_config;
 
     std::vector<StructureAction>& actions = struct_int->getStructureActions();
     std::vector<StructureAction>::iterator it;
-    std::vector<MySqlDataAccessInfo*>::iterator it2;
+    std::vector<MysqlDataAccessInfo*>::iterator it2;
     
     // handle delete
     for (it = actions.begin(); it != actions.end(); ++it)
@@ -525,7 +569,7 @@ bool MySqlIterator::modifyStructure(tango::IStructure* struct_config, tango::IJo
         {
             if (0 == wcscasecmp(it->m_colname.c_str(), (*it2)->name.c_str()))
             {
-                MySqlDataAccessInfo* dai = *(it2);
+                MysqlDataAccessInfo* dai = *(it2);
                 m_fields.erase(it2);
                 delete dai;
                 break;
@@ -586,7 +630,7 @@ bool MySqlIterator::modifyStructure(tango::IStructure* struct_config, tango::IJo
 
         if (it->m_params->getExpression().length() > 0)
         {
-            MySqlDataAccessInfo* dai = new MySqlDataAccessInfo;
+            MysqlDataAccessInfo* dai = new MysqlDataAccessInfo;
             dai->name = it->m_params->getName();
             dai->type = it->m_params->getType();
             dai->width = it->m_params->getWidth();
@@ -611,7 +655,7 @@ bool MySqlIterator::modifyStructure(tango::IStructure* struct_config, tango::IJo
         
         if (it->m_params->getExpression().length() > 0)
         {
-            MySqlDataAccessInfo* dai = new MySqlDataAccessInfo;
+            MysqlDataAccessInfo* dai = new MysqlDataAccessInfo;
             dai->name = it->m_params->getName();
             dai->type = it->m_params->getType();
             dai->width = it->m_params->getWidth();
@@ -627,9 +671,9 @@ bool MySqlIterator::modifyStructure(tango::IStructure* struct_config, tango::IJo
 }
 
 
-tango::objhandle_t MySqlIterator::getHandle(const std::wstring& expr)
+tango::objhandle_t MysqlIterator::getHandle(const std::wstring& expr)
 {
-    std::vector<MySqlDataAccessInfo*>::iterator it;
+    std::vector<MysqlDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
         if (!wcscasecmp((*it)->name.c_str(), expr.c_str()))
@@ -640,7 +684,7 @@ tango::objhandle_t MySqlIterator::getHandle(const std::wstring& expr)
     // test for binary keys
     if (0 == wcsncasecmp(expr.c_str(), L"KEY:", 4))
     {
-        MySqlDataAccessInfo* dai = new MySqlDataAccessInfo;
+        MysqlDataAccessInfo* dai = new MysqlDataAccessInfo;
         dai->expr = NULL;
         dai->type = tango::typeBinary;
         dai->key_layout = new KeyLayout;
@@ -665,7 +709,7 @@ tango::objhandle_t MySqlIterator::getHandle(const std::wstring& expr)
     }
 
 
-    MySqlDataAccessInfo* dai = new MySqlDataAccessInfo;
+    MysqlDataAccessInfo* dai = new MysqlDataAccessInfo;
     dai->expr = parser;
     dai->type = kscript2tangoType(parser->getType());
     m_exprs.push_back(dai);
@@ -673,9 +717,9 @@ tango::objhandle_t MySqlIterator::getHandle(const std::wstring& expr)
     return (tango::objhandle_t)dai;
 }
 
-bool MySqlIterator::releaseHandle(tango::objhandle_t data_handle)
+bool MysqlIterator::releaseHandle(tango::objhandle_t data_handle)
 {
-    std::vector<MySqlDataAccessInfo*>::iterator it;
+    std::vector<MysqlDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
         if ((tango::objhandle_t)(*it) == data_handle)
@@ -697,9 +741,9 @@ bool MySqlIterator::releaseHandle(tango::objhandle_t data_handle)
     return false;
 }
 
-tango::IColumnInfoPtr MySqlIterator::getInfo(tango::objhandle_t data_handle)
+tango::IColumnInfoPtr MysqlIterator::getInfo(tango::objhandle_t data_handle)
 {
-    MySqlDataAccessInfo* dai = (MySqlDataAccessInfo*)data_handle;
+    MysqlDataAccessInfo* dai = (MysqlDataAccessInfo*)data_handle;
     if (dai == NULL)
     {
         return xcm::null;
@@ -735,18 +779,18 @@ tango::IColumnInfoPtr MySqlIterator::getInfo(tango::objhandle_t data_handle)
     return static_cast<tango::IColumnInfo*>(colinfo);
 }
 
-int MySqlIterator::getType(tango::objhandle_t data_handle)
+int MysqlIterator::getType(tango::objhandle_t data_handle)
 {
-    MySqlDataAccessInfo* dai = (MySqlDataAccessInfo*)data_handle;
+    MysqlDataAccessInfo* dai = (MysqlDataAccessInfo*)data_handle;
     if (dai == NULL)
         return 0;
 
     return dai->type;
 }
 
-int MySqlIterator::getRawWidth(tango::objhandle_t data_handle)
+int MysqlIterator::getRawWidth(tango::objhandle_t data_handle)
 {
-    MySqlDataAccessInfo* dai = (MySqlDataAccessInfo*)data_handle;
+    MysqlDataAccessInfo* dai = (MysqlDataAccessInfo*)data_handle;
     if (dai && dai->key_layout)
     {
         return dai->key_layout->getKeyLength();
@@ -755,9 +799,9 @@ int MySqlIterator::getRawWidth(tango::objhandle_t data_handle)
     return 0;
 }
 
-const unsigned char* MySqlIterator::getRawPtr(tango::objhandle_t data_handle)
+const unsigned char* MysqlIterator::getRawPtr(tango::objhandle_t data_handle)
 {
-    MySqlDataAccessInfo* dai = (MySqlDataAccessInfo*)data_handle;
+    MysqlDataAccessInfo* dai = (MysqlDataAccessInfo*)data_handle;
     if (dai == NULL)
         return NULL;
     
@@ -769,9 +813,9 @@ const unsigned char* MySqlIterator::getRawPtr(tango::objhandle_t data_handle)
     return NULL;
 }
 
-const std::string& MySqlIterator::getString(tango::objhandle_t data_handle)
+const std::string& MysqlIterator::getString(tango::objhandle_t data_handle)
 {
-    MySqlDataAccessInfo* dai = (MySqlDataAccessInfo*)data_handle;
+    MysqlDataAccessInfo* dai = (MysqlDataAccessInfo*)data_handle;
     if (dai == NULL)
     {
         return empty_string;
@@ -789,9 +833,9 @@ const std::string& MySqlIterator::getString(tango::objhandle_t data_handle)
     return dai->str_result;
 }
 
-const std::wstring& MySqlIterator::getWideString(tango::objhandle_t data_handle)
+const std::wstring& MysqlIterator::getWideString(tango::objhandle_t data_handle)
 {
-    MySqlDataAccessInfo* dai = (MySqlDataAccessInfo*)data_handle;
+    MysqlDataAccessInfo* dai = (MysqlDataAccessInfo*)data_handle;
     if (dai == NULL)
     {
         return empty_wstring;
@@ -819,9 +863,9 @@ const std::wstring& MySqlIterator::getWideString(tango::objhandle_t data_handle)
     return empty_wstring;
 }
 
-tango::datetime_t MySqlIterator::getDateTime(tango::objhandle_t data_handle)
+tango::datetime_t MysqlIterator::getDateTime(tango::objhandle_t data_handle)
 {
-    MySqlDataAccessInfo* dai = (MySqlDataAccessInfo*)data_handle;
+    MysqlDataAccessInfo* dai = (MysqlDataAccessInfo*)data_handle;
     if (dai == NULL)
     {
         tango::DateTime dt;
@@ -981,9 +1025,9 @@ tango::datetime_t MySqlIterator::getDateTime(tango::objhandle_t data_handle)
     return 0;
 }
 
-double MySqlIterator::getDouble(tango::objhandle_t data_handle)
+double MysqlIterator::getDouble(tango::objhandle_t data_handle)
 {
-    MySqlDataAccessInfo* dai = (MySqlDataAccessInfo*)data_handle;
+    MysqlDataAccessInfo* dai = (MysqlDataAccessInfo*)data_handle;
     if (dai == NULL)
     {
         return 0.0;
@@ -999,9 +1043,9 @@ double MySqlIterator::getDouble(tango::objhandle_t data_handle)
                     0.0 : atof(m_row[dai->ordinal]);
 }
 
-int MySqlIterator::getInteger(tango::objhandle_t data_handle)
+int MysqlIterator::getInteger(tango::objhandle_t data_handle)
 {
-    MySqlDataAccessInfo* dai = (MySqlDataAccessInfo*)data_handle;
+    MysqlDataAccessInfo* dai = (MysqlDataAccessInfo*)data_handle;
     if (dai == NULL)
     {
         return 0;
@@ -1017,9 +1061,9 @@ int MySqlIterator::getInteger(tango::objhandle_t data_handle)
                     0 : atoi(m_row[dai->ordinal]);
 }
 
-bool MySqlIterator::getBoolean(tango::objhandle_t data_handle)
+bool MysqlIterator::getBoolean(tango::objhandle_t data_handle)
 {
-    MySqlDataAccessInfo* dai = (MySqlDataAccessInfo*)data_handle;
+    MysqlDataAccessInfo* dai = (MysqlDataAccessInfo*)data_handle;
     if (dai == NULL)
     {
         return false;
@@ -1035,9 +1079,9 @@ bool MySqlIterator::getBoolean(tango::objhandle_t data_handle)
                       false : (*m_row[dai->ordinal] ? true : false);
 }
 
-bool MySqlIterator::isNull(tango::objhandle_t data_handle)
+bool MysqlIterator::isNull(tango::objhandle_t data_handle)
 {
-    MySqlDataAccessInfo* dai = (MySqlDataAccessInfo*)data_handle;
+    MysqlDataAccessInfo* dai = (MysqlDataAccessInfo*)data_handle;
     if (dai == NULL)
     {
         return false;
@@ -1050,7 +1094,7 @@ bool MySqlIterator::isNull(tango::objhandle_t data_handle)
 
 // tango::ICacheRowUpdate::updateCacheRow()
 
-bool MySqlIterator::updateCacheRow(tango::rowid_t rowid,
+bool MysqlIterator::updateCacheRow(tango::rowid_t rowid,
                                    tango::ColumnUpdateInfo* info,
                                    size_t info_size)
 {
@@ -1059,7 +1103,7 @@ bool MySqlIterator::updateCacheRow(tango::rowid_t rowid,
     size_t i;
     for (i = 0; i < info_size; ++i, ++info)
     {
-        MySqlDataAccessInfo* dai = (MySqlDataAccessInfo*)info->handle;
+        MysqlDataAccessInfo* dai = (MysqlDataAccessInfo*)info->handle;
         int column = dai->ordinal;
         
         if (info->null)

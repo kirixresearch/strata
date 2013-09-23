@@ -69,7 +69,7 @@ public:
         std::wstring password = c.getValue(L"password");
         
 
-        MySqlDatabase* db = new MySqlDatabase;
+        MysqlDatabase* db = new MysqlDatabase;
         db->ref();
 
         if (!db->open(host, kl::wtoi(port), database, uid, password))
@@ -114,7 +114,7 @@ public:
 XCM_BEGIN_DYNAMIC_MODULE(xdmysql)
     XCM_BEGIN_CLASS_MAP()
         XCM_CLASS_ENTRY(DatabaseMgr)
-        XCM_CLASS_ENTRY(MySqlDatabase)
+        XCM_CLASS_ENTRY(MysqlDatabase)
     XCM_END_CLASS_MAP()
 XCM_END_DYNAMIC_MODULE(xdmysql)
 

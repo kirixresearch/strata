@@ -12,7 +12,7 @@
 #ifndef __XDMYSQL_SET_H
 #define __XDMYSQL_SET_H
 
-class MySqlDatabase;
+class MysqlDatabase;
 
 class MySqlInsertData
 {
@@ -27,18 +27,18 @@ public:
 };
 
 
-class MySqlRowInserter : public tango::IRowInserter
+class MysqlRowInserter : public tango::IRowInserter
 {
     XCM_CLASS_NAME("xdmysql.RowInserter")
-    XCM_BEGIN_INTERFACE_MAP(MySqlRowInserter)
+    XCM_BEGIN_INTERFACE_MAP(MysqlRowInserter)
         XCM_INTERFACE_ENTRY(tango::IRowInserter)
     XCM_END_INTERFACE_MAP()
 
 
 public:
 
-    MySqlRowInserter(MySqlDatabase* db, const std::wstring& table);
-    ~MySqlRowInserter();
+    MysqlRowInserter(MysqlDatabase* db, const std::wstring& table);
+    ~MysqlRowInserter();
 
     tango::objhandle_t getHandle(const std::wstring& column_name);
     tango::IColumnInfoPtr getInfo(tango::objhandle_t column_handle);
@@ -63,7 +63,7 @@ private:
 
     void flushRow();
 
-    MySqlDatabase* m_database;
+    MysqlDatabase* m_database;
     MYSQL* m_mysql;
 
     bool m_inserting;
