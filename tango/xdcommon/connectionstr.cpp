@@ -108,14 +108,7 @@ std::wstring urlToConnectionStr(const std::wstring& url)
         protocol == L"odbc")
     {
         if (protocol == L"mysql")
-        {
-            #ifdef WIN32
-            cstr += L"xdprovider=xdodbc;xddbtype=mysql";
-            #else
-            cstr += L"xdprovider=xddrizzle";
-            //cstr += L"xdprovider=xdmysql";
-            #endif
-        }
+            cstr += L"xdprovider=xdmysql";
         else if (protocol == L"mssql")
             cstr += L"xdprovider=xdodbc;xddbtype=mssql";
         else if (protocol == L"oracle")

@@ -329,12 +329,7 @@ std::wstring ConnectionWizard::getConnectionString()
             database = m_ci.path;
             break;
         case dbtypeMySql:
-            #ifdef __WXMSW__
-            result += L"Xdprovider=xdodbc;Xddbtype=mysql;";
-            #else
-            result += L"Xdprovider=xddrizzle;";
-            //result += L"Xdprovider=xdmysql;";
-            #endif
+            result += L"Xdprovider=xdmysql;";
             break;
         case dbtypeOracle:
             result += L"Xdprovider=xdoracle;";

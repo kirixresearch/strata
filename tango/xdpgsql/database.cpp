@@ -1468,10 +1468,7 @@ tango::IIndexInfoEnumPtr PgsqlDatabase::getIndexEnum(const std::wstring& path)
         indexes[index_name] += index_column;
     }
 
-
     closeConnection(conn);
-
-
 
     std::map<std::wstring, std::wstring>::iterator it;
     for (it = indexes.begin(); it != indexes.end(); ++it)
@@ -1483,10 +1480,8 @@ tango::IIndexInfoEnumPtr PgsqlDatabase::getIndexEnum(const std::wstring& path)
         vec->append(static_cast<tango::IIndexInfo*>(ii));
     }
 
-
     return vec;
 }
-
 
 
 tango::IRowInserterPtr PgsqlDatabase::bulkInsert(const std::wstring& path)

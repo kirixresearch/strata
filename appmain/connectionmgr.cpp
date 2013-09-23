@@ -105,16 +105,14 @@ public:
             #ifdef WIN32
             case dbtypeAccess:       provider = L"xdodbc"; dbtype = L"access"; break;
             case dbtypeSqlServer:    provider = L"xdodbc"; dbtype = L"mssql"; break;
-            case dbtypeMySql:        provider = L"xdodbc"; dbtype = L"mysql"; break;
             #else
             case dbtypeAccess:       provider = L"xdaccess"; break;
             case dbtypeSqlServer:    provider = L"xdsqlserver"; break;
-            case dbtypeMySql:        provider = L"xddrizzle"; break;
-            //case dbtypeMySql:        provider = L"xdmysql"; break;
             #endif
 
             case dbtypeExcel:        provider = L"xdodbc"; dbtype = L"excel"; break;
             case dbtypeSqlite:       provider = L"xdsqlite"; break;
+            case dbtypeMySql:        provider = L"xdmysql"; break;
 
             case dbtypePostgres:     provider = L"xdpgsql"; break;
             case dbtypeOracle:       provider = L"xdoracle"; break;
