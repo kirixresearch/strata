@@ -2051,7 +2051,7 @@ void DbDoc::doPaste()
 
 
                 jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.copy-job");
-                
+
                 kl::JsonNode params;
                 params["input"] = input;
                 params["output"] = output;
@@ -2070,129 +2070,13 @@ void DbDoc::doPaste()
             if (jobs.size() > 0)
             {
                 jobs::IJobPtr aggregate_job = jobs::createAggregateJob(jobs);
+                aggregate_job->getJobInfo()->setTitle(towstr(_("Copying Records")));
                 aggregate_job->setDatabase(g_app->getDatabase());
                 aggregate_job->setExtraValue(L"refresh-folder", towstr(target_location));
                 aggregate_job->sigJobFinished().connect(this, &DbDoc::onCopyJobFinished);
                 g_app->getJobQueue()->addJob(aggregate_job, jobs::jobStateRunning);
             }
 
-        /*
-            CopyJob* job = new CopyJob;
-            
-            // set folder to refresh after paste operation
-            job->setExtraString(towstr(target_location));
-            
-            for (it = g_cutcopy_items.begin(); it != g_cutcopy_items.end(); ++it)
-            {
-                wxString src_path = getFsItemPath(*it);
-                wxString fname = stripExtension(src_path.AfterLast(wxT('/')));
-                wxString target_path;
-
-                int counter = 0;
-                do
-                {
-                    target_path = target_location;
-                    if (target_path.IsEmpty() || target_path.Last() != wxT('/'))
-                    {
-                        target_path += wxT("/");
-                    }
-
-                    target_path += fname;
-                    if (counter > 0)
-                    {
-                        target_path += wxString::Format(wxT("_%d"), counter+1);
-                    }
-
-
-                    // if we're saving the file to a filesystem mount and no
-                    // extension is specified, then automatically add a 'csv'
-                    // or 'js' extension; this is a usability issue since without 
-                    // the extension, the user usually ends up adding this as the 
-                    // first item of business after saving
-                    IDbObjectFsItemPtr dbobject_item = *it;
-                    if (dbobject_item.isOk())
-                    {
-                        if (dbobject_item->getType() == dbobjtypeSet)
-                            target_path = addExtensionIfExternalFsDatabase(target_path, L".csv");
-                        if (dbobject_item->getType() == dbobjtypeScript)
-                            target_path = addExtensionIfExternalFsDatabase(target_path, L".js");
-                    }
-
-
-                    counter++;
-                } while (db->getFileExist(towstr(target_path)));
-
-
-
-                
-
-                tango::IDatabasePtr db = g_app->getDatabase();
-                tango::IDatabasePtr source_db = getItemDatabase(*it);
-                tango::IDatabasePtr dest_db = target_database;
-                wxString dest_path = target_path;
-
-                std::wstring cstr;
-                std::wstring rpath;
-                if (db->getMountPoint(towstr(dest_path), cstr, rpath))
-                {
-                    dest_db = db->getMountDatabase(towstr(dest_path));
-                    dest_path = rpath;
-                    if (dest_db.isNull())
-                        return;
-                }
-
-
-
-                
-                if (source_db != dest_db)
-                {
-                    job->addCopyInstruction(source_db,
-                                            src_path,
-                                            dest_db,
-                                            dest_path);
-                    continue;
-                }
-
-
-                tango::IFileInfoPtr file_info = db->getFileInfo(towstr(src_path));
-                if (!file_info)
-                {
-                    appMessageBox(_("One or more source files are in use, and cannot be accessed at this time."),
-                                       APPLICATION_NAME,
-                                       wxOK | wxICON_EXCLAMATION | wxCENTER);
-                    delete job;
-                    return;
-                }
-
-                if (file_info->getType() == tango::filetypeTable ||
-                    file_info->getType() == tango::filetypeStream)
-                {
-                    job->addCopyInstruction(g_app->getDatabase(),
-                                            src_path,
-                                            target_database,
-                                            target_path);
-                }
-                 else
-                {
-                    db->copyFile(towstr(src_path), towstr(target_path));
-                }
-            }
-
-
-
-            if (g_cutcopy_items.size() > job->getInstructionCount())
-            {
-                m_fspanel->refreshItem(target);
-            }
-
-            if (job->getInstructionCount() > 0)
-            {
-                g_app->getJobQueue()->addJob(job, jobStateRunning);
-                
-                job->sigJobFinished().connect(this, &DbDoc::onCopyJobFinished);
-            }
-
-*/
         }
 
 
@@ -3559,7 +3443,7 @@ void DbDoc::onDragDrop(IFsItemPtr target,
         if (cross_mount)
         {
             jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.copy-job");
-                
+
             kl::JsonNode params;
             params["input"] = src_path;
             params["output"] = dest_path;
@@ -3599,6 +3483,7 @@ void DbDoc::onDragDrop(IFsItemPtr target,
     if (jobs.size() > 0)
     {
         jobs::IJobPtr aggregate_job = jobs::createAggregateJob(jobs);
+        aggregate_job->getJobInfo()->setTitle(towstr(_("Copying Records")));
         aggregate_job->setDatabase(g_app->getDatabase());
         aggregate_job->setExtraValue(L"refresh-folder", towstr(target_path));
 
