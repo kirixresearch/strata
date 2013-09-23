@@ -58,7 +58,6 @@ public:
 
     bool flush();
 
-
 private:
 
     void flushRow();
@@ -75,7 +74,6 @@ private:
 
     std::wstring m_quote_openchar;
     std::wstring m_quote_closechar;
-
 
     std::vector<MySqlInsertData> m_insert_data;
 };
