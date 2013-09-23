@@ -10,18 +10,21 @@
 
 
 #ifdef WIN32
+#include <winsock2.h>
 #include <windows.h>
 #endif
 
 
 #include "mysql.h"
 
-
-#include <xcm/xcm.h>
 #include "tango.h"
+#include "xdutil.h"
+
 #include "database.h"
 #include "../xdcommon/connectionstr.h"
 #include "../xdcommon/errorinfo.h"
+#include <xcm/xcm.h>
+#include <kl/string.h>
 
 
 class DatabaseMgr : public tango::IDatabaseMgr
@@ -46,7 +49,7 @@ public:
 
     tango::IDatabasePtr open(const std::wstring& connection_str)
     {
-        xdcommon::ConnectionStr c(connection_str);
+        tango::ConnectionStringParser c(connection_str);
         std::wstring provider = c.getLowerValue(L"xdprovider");
         if (provider.empty())
             return xcm::null;

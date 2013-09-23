@@ -10,6 +10,7 @@
 
 
 #ifdef WIN32
+#include <winsock2.h>
 #include <windows.h>
 #endif
 
@@ -26,9 +27,8 @@
 #include "../xdcommon/dbattr.h"
 #include "../xdcommon/fileinfo.h"
 #include "../xdcommon/util.h"
-#include "../xdcommon/sqlcommon.h"
+#include "../xdcommonsql/xdcommonsql.h"
 #include "database.h"
-#include "set.h"
 #include "iterator.h"
 
 
@@ -464,16 +464,6 @@ bool MySqlDatabase::createFolder(const std::wstring& path)
     return false;
 }
 
-tango::INodeValuePtr MySqlDatabase::createNodeFile(const std::wstring& path)
-{
-    return xcm::null;
-}
-
-tango::INodeValuePtr MySqlDatabase::openNodeFile(const std::wstring& path)
-{
-    return xcm::null;
-}
-
 bool MySqlDatabase::renameFile(const std::wstring& path, const std::wstring& new_name)
 {
     std::wstring command;
@@ -497,6 +487,11 @@ bool MySqlDatabase::moveFile(const std::wstring& path, const std::wstring& new_l
 }
 
 bool MySqlDatabase::copyFile(const std::wstring& src_path, const std::wstring& dest_path)
+{
+    return false;
+}
+
+bool MySqlDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
 {
     return false;
 }
@@ -603,7 +598,7 @@ tango::IFileInfoEnumPtr MySqlDatabase::getFolderInfo(const std::wstring& path)
         MySqlFileInfo* f = new MySqlFileInfo(this);
         kl::trim(wtable_name);
         f->name = wtable_name;
-        f->type = tango::filetypeSet;
+        f->type = tango::filetypeTable;
         f->format = tango::formatNative;
 
         retval->append(f);
@@ -693,9 +688,9 @@ tango::IStructurePtr MySqlDatabase::createStructure()
     return static_cast<tango::IStructure*>(s);
 }
 
-tango::ISetPtr MySqlDatabase::createSet(const std::wstring& path,
-                                        tango::IStructurePtr struct_config,
-                                        tango::FormatInfo* format_info)
+bool MySqlDatabase::createTable(const std::wstring& path,
+                                tango::IStructurePtr struct_config,
+                                tango::FormatInfo* format_info)
 {
 /*
     std::wstring command;
@@ -777,9 +772,7 @@ tango::ISetPtr MySqlDatabase::createSet(const std::wstring& path,
     command += L" )";
 
     xcm::IObjectPtr result_obj;
-    execute(command, 0, result_obj, NULL);
-
-    return openSet(path);
+    return execute(command, 0, result_obj, NULL);
 }
 
 tango::IStreamPtr MySqlDatabase::openStream(const std::wstring& path)
@@ -787,10 +780,74 @@ tango::IStreamPtr MySqlDatabase::openStream(const std::wstring& path)
     return xcm::null;
 }
 
-tango::IStreamPtr MySqlDatabase::createStream(const std::wstring& path, const std::wstring& mime_type)
+bool MySqlDatabase::createStream(const std::wstring& path, const std::wstring& mime_type)
+{
+    return false;
+}
+
+
+tango::IIteratorPtr MySqlDatabase::query(const tango::QueryParams& qp)
 {
     return xcm::null;
 }
+
+
+tango::IIndexInfoPtr MySqlDatabase::createIndex(const std::wstring& path,
+                                                const std::wstring& name,
+                                                const std::wstring& expr,
+                                                tango::IJob* job)
+{
+    return xcm::null;
+}
+
+
+bool MySqlDatabase::renameIndex(const std::wstring& path,
+                                const std::wstring& name,
+                                const std::wstring& new_name)
+{
+    return false;
+}
+
+
+bool MySqlDatabase::deleteIndex(const std::wstring& path,
+                                const std::wstring& name)
+{
+    return false;
+}
+
+
+tango::IIndexInfoEnumPtr MySqlDatabase::getIndexEnum(const std::wstring& path)
+{
+    xcm::IVectorImpl<tango::IIndexInfoPtr>* vec;
+    vec = new xcm::IVectorImpl<tango::IIndexInfoPtr>;
+
+    return vec;
+}
+
+
+
+tango::IRowInserterPtr MySqlDatabase::bulkInsert(const std::wstring& path)
+{
+    //std::wstring tbl = pgsqlGetTablenameFromPath(path);
+    //PgsqlRowInserter* inserter = new PgsqlRowInserter(this, tbl);
+    //return static_cast<tango::IRowInserter*>(inserter);
+
+    return xcm::null;
+}
+
+tango::IStructurePtr MySqlDatabase::describeTable(const std::wstring& path)
+{
+    return xcm::null;
+}
+
+
+bool MySqlDatabase::modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job)
+{
+    return false;
+}
+
+
+/*
 
 tango::ISetPtr MySqlDatabase::openSet(const std::wstring& path)
 {
@@ -832,18 +889,8 @@ tango::ISetPtr MySqlDatabase::openSet(const std::wstring& path)
     
     return static_cast<tango::ISet*>(set);
 }
-
-tango::ISetPtr MySqlDatabase::openSetEx(const std::wstring& ofs_path,
-                                        int format)
-{
-    return openSet(ofs_path);
-}
-                             
-tango::IRelationEnumPtr MySqlDatabase::getRelationEnum()
-{
-    xcm::IVectorImpl<tango::IRelationPtr>* relations = new xcm::IVectorImpl<tango::IRelationPtr>;
-    return relations;
-}
+*/
+                   
 
 bool MySqlDatabase::execute(const std::wstring& command,
                             unsigned int flags,
@@ -983,15 +1030,11 @@ bool MySqlDatabase::execute(const std::wstring& command,
     }
 }
 
-tango::ISetPtr MySqlDatabase::runGroupQuery(tango::ISetPtr set,
-                                            const std::wstring& group,
-                                            const std::wstring& output,
-                                            const std::wstring& where,
-                                            const std::wstring& having,
-                                            tango::IJob* job)
+bool MySqlDatabase::groupQuery(tango::GroupQueryParams* info, tango::IJob* job)
 {
-    return xcm::null;
+    return false;
 }
+
 
 std::wstring MySqlDatabase::getErrorString()
 {

@@ -62,15 +62,13 @@ public:
               const std::wstring& username,
               const std::wstring& password);
 
+    void close();
+
     MYSQL* open();
     MYSQL* getMySqlPtr();
     std::wstring getServer();
     std::wstring getDatabase();
     
-    // -- tango::IDatabase interface --
-
-    void close();
-
     void setDatabaseName(const std::wstring& name);
     std::wstring getDatabaseName();
     int getDatabaseType();
@@ -87,11 +85,10 @@ public:
     tango::IJobPtr getJob(tango::jobid_t job_id);
 
     bool createFolder(const std::wstring& path);
-    tango::INodeValuePtr createNodeFile(const std::wstring& path);
-    tango::INodeValuePtr openNodeFile(const std::wstring& path);
     bool renameFile(const std::wstring& path, const std::wstring& new_name);
     bool moveFile(const std::wstring& path, const std::wstring& new_folder);
     bool copyFile(const std::wstring& src_path, const std::wstring& dest_path);
+    bool copyData(const tango::CopyParams* info, tango::IJob* job);
     bool deleteFile(const std::wstring& path);
     bool getFileExist(const std::wstring& path);
     tango::IFileInfoPtr getFileInfo(const std::wstring& path);
@@ -109,25 +106,34 @@ public:
                        std::wstring& remote_path);
 
     tango::IStructurePtr createStructure();
-    tango::ISetPtr createSet(const std::wstring& path, tango::IStructurePtr struct_config, tango::FormatInfo* format_info);
+    bool createTable(const std::wstring& path, tango::IStructurePtr struct_config, tango::FormatInfo* format_info);
     tango::IStreamPtr openStream(const std::wstring& path);
-    tango::IStreamPtr createStream(const std::wstring& path, const std::wstring& mime_type);
-    tango::ISetPtr openSet(const std::wstring& path);
-    tango::ISetPtr openSetEx(const std::wstring& path,
-                             int format);
-    tango::IRelationEnumPtr getRelationEnum();
-                                 
+    bool createStream(const std::wstring& path, const std::wstring& mime_type);
+
+    tango::IIteratorPtr query(const tango::QueryParams& qp);
+
+    tango::IIndexInfoPtr createIndex(const std::wstring& path,
+                                     const std::wstring& name,
+                                     const std::wstring& expr,
+                                     tango::IJob* job);
+    bool renameIndex(const std::wstring& path,
+                     const std::wstring& name,
+                     const std::wstring& new_name);
+    bool deleteIndex(const std::wstring& path,
+                     const std::wstring& name);
+    tango::IIndexInfoEnumPtr getIndexEnum(const std::wstring& path);
+
+    tango::IRowInserterPtr bulkInsert(const std::wstring& path);
+    tango::IStructurePtr describeTable(const std::wstring& path);
+
+    bool modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job);
+
     bool execute(const std::wstring& command,
                  unsigned int flags,
                  xcm::IObjectPtr& result,
                  tango::IJob* job);
-                 
-    tango::ISetPtr runGroupQuery(tango::ISetPtr set,
-                                 const std::wstring& group,
-                                 const std::wstring& output,
-                                 const std::wstring& where,
-                                 const std::wstring& having,
-                                 tango::IJob* job);
+    
+    bool groupQuery(tango::GroupQueryParams* info, tango::IJob* job);
 
     std::wstring getErrorString();
     int getErrorCode();

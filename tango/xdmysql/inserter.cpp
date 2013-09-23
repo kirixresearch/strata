@@ -10,15 +10,16 @@
 
 
 #ifdef WIN32
+#include <winsock2.h>
 #include <windows.h>
 #endif
 
-
-#include "mysql.h"
 #include <xcm/xcm.h>
 #include <kl/string.h>
 #include <kl/portable.h>
 #include <kl/md5.h>
+
+#include "mysql.h"
 #include "tango.h"
 #include "../xdcommon/structure.h"
 #include "../xdcommon/dbfuncs.h"
@@ -26,10 +27,10 @@
 #include "../xdcommon/columninfo.h"
 #include "../xdcommon/extfileinfo.h"
 #include "database.h"
-#include "set.h"
-#include "iterator.h"
+#include "inserter.h"
 
 
+/*
 // -- MySqlSet class implementation --
 
 MySqlSet::MySqlSet()
@@ -276,17 +277,6 @@ bool MySqlSet::modifyStructure(tango::IStructure* struct_config,
     return true;
 }
 
-tango::IRowInserterPtr MySqlSet::getRowInserter()
-{
-    MySqlRowInserter* inserter = new MySqlRowInserter(this);
-    return static_cast<tango::IRowInserter*>(inserter);
-}
-
-tango::IRowDeleterPtr MySqlSet::getRowDeleter()
-{
-    return xcm::null;
-}
-
 int MySqlSet::insert(tango::IIteratorPtr source_iter,
                      const std::wstring& where_condition,
                      int max_rows,
@@ -428,23 +418,25 @@ tango::rowpos_t MySqlSet::getRowCount()
     }
 }
 
+*/
 
 
 // -- MySqlRowInserter class implementation --
 
-MySqlRowInserter::MySqlRowInserter(MySqlSet* set)
+MySqlRowInserter::MySqlRowInserter(MySqlDatabase* db, const std::wstring& table)
 {
     m_mysql = NULL;
     
-    m_set = set;
-    m_set->ref();
-    
+    m_database = db;
+    m_database->ref();
+
     m_inserting = false;
+    m_table = table;
 
     m_asc_insert_stmt.reserve(65535);
     m_insert_stmt.reserve(65535);
     
-    tango::IAttributesPtr attr = m_set->m_database->getAttributes();
+    tango::IAttributesPtr attr = m_database->getAttributes();
     m_quote_openchar = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
     m_quote_closechar = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
 }
@@ -458,7 +450,7 @@ MySqlRowInserter::~MySqlRowInserter()
         m_mysql = NULL;
     }
 
-    m_set->unref();
+    m_database->unref();
 }
 
 tango::objhandle_t MySqlRowInserter::getHandle(const std::wstring& column_name)
@@ -483,7 +475,7 @@ tango::IColumnInfoPtr MySqlRowInserter::getInfo(tango::objhandle_t column_handle
         return xcm::null;
     }
 
-    tango::IStructurePtr structure = m_set->getStructure();
+    tango::IStructurePtr structure = m_database->describeTable(m_table);
     return structure->getColumnInfo(data->m_col_name);
 }
 
@@ -663,16 +655,11 @@ bool MySqlRowInserter::putNull(tango::objhandle_t column_handle)
 
 bool MySqlRowInserter::startInsert(const std::wstring& col_list)
 {
-    IMySqlDatabasePtr mydb = m_set->m_database;
-    
-    if (mydb.isNull())
-        return false;
-        
-    m_mysql = mydb->open();
+    m_mysql = m_database->open();
     if (m_mysql == NULL)
         return false;
     
-    tango::IStructurePtr s = m_set->getStructure();
+    tango::IStructurePtr s = m_database->describeTable(m_table);
 
     std::vector<std::wstring> columns;
     std::vector<std::wstring>::iterator it;
@@ -727,7 +714,7 @@ bool MySqlRowInserter::startInsert(const std::wstring& col_list)
 
     m_insert_stub = L"INSERT INTO ";
     m_insert_stub += m_quote_openchar;
-    m_insert_stub += m_set->m_tablename;
+    m_insert_stub += m_table;
     m_insert_stub += m_quote_closechar;
     m_insert_stub += L" (";
     m_insert_stub += field_list;
@@ -778,7 +765,7 @@ bool MySqlRowInserter::insertRow()
     {
         std::wstring insert_stub = L"INSERT INTO ";
         insert_stub += m_quote_openchar;
-        insert_stub += m_set->m_tablename;
+        insert_stub += m_table;
         insert_stub += m_quote_closechar;
         insert_stub += L" (";
         for (it = begin_it; it != end_it; ++it)

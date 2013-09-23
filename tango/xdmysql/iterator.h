@@ -82,9 +82,9 @@ public:
     ~MySqlIterator();
     bool init(const std::wstring& query);
 
-    // -- IIterator interface implementation --
-
-    tango::ISetPtr getSet();
+    void setTable(const std::wstring& table);
+    std::wstring getTable();
+    tango::rowpos_t getRowCount();
     tango::IDatabasePtr getDatabase();
     tango::IIteratorPtr clone();
 
@@ -137,7 +137,6 @@ private:
 private:
 
     tango::IDatabasePtr m_database;
-    tango::ISetPtr m_set;
 
     MYSQL* m_data;
     MYSQL_RES* m_res;
@@ -155,6 +154,7 @@ private:
                                  // when retrieved from cache
     bool m_cache_active;
 };
+
 
 
 

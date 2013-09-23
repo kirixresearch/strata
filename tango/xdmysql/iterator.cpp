@@ -10,26 +10,24 @@
 
 
 #ifdef WIN32
+#include <winsock2.h>
 #include <windows.h>
 #endif
-
-
-#include "mysql.h"
-
 
 #include <xcm/xcm.h>
 #include <kl/string.h>
 #include <kl/portable.h>
+
+#include "mysql.h"
 #include "tango.h"
 #include "../xdcommon/xdcommon.h"
-#include "../xdcommon/sqlcommon.h"
+#include "../xdcommonsql/xdcommonsql.h"
 #include "database.h"
-#include "set.h"
 #include "iterator.h"
 
 
-const std::string empty_string = "";
-const std::wstring empty_wstring = L"";
+static std::string empty_string = "";
+static std::wstring empty_wstring = L"";
 
 
 MySqlIterator::MySqlIterator()
@@ -128,35 +126,28 @@ bool MySqlIterator::init(const std::wstring& query)
     // position cursor at the beginning of the table
     m_row = mysql_fetch_row(m_res);
     m_lengths = mysql_fetch_lengths(m_res);
-
-
-    // if m_set is null, create a placeholder set
-    if (m_set.isNull())
-    {
-        // create set and initialize variables
-        MySqlSet* set = new MySqlSet;
-        set->m_database = m_database;
-        set->m_tablename = getTableNameFromSql(query);
-        
-        // initialize Odbc connection for this set
-        if (!set->init())
-            return false;
-
-        m_set = static_cast<tango::ISet*>(set);
-    }
-    
     
     refreshStructure();
     
     return true;
 }
 
-// -- IIterator interface implementation --
 
-tango::ISetPtr MySqlIterator::getSet()
+void MySqlIterator::setTable(const std::wstring& table)
 {
-    return m_set;
 }
+
+std::wstring MySqlIterator::getTable()
+{
+    return L"";
+}
+
+tango::rowpos_t MySqlIterator::getRowCount()
+{
+    return 0;
+}
+
+// -- IIterator interface implementation --
 
 tango::IDatabasePtr MySqlIterator::getDatabase()
 {
@@ -266,7 +257,7 @@ void MySqlIterator::skipWithCache(int delta)
     saveRowToCache();
     
         
-    tango::tango_int64_t desired_row = ((tango::tango_int64_t)m_row_pos) + delta;
+    long long desired_row = ((long long)m_row_pos) + delta;
     if (desired_row < 0)
         desired_row = 0;
     
@@ -434,9 +425,7 @@ tango::IStructurePtr MySqlIterator::getStructure()
 
 void MySqlIterator::refreshStructure()
 {
-    if (m_set.isNull())
-        return;
-
+/*
     tango::IStructurePtr set_structure = m_set->getStructure();
     if (set_structure.isNull())
         return;
@@ -513,6 +502,7 @@ void MySqlIterator::refreshStructure()
     {
         (*it)->expr = parse((*it)->expr_text);
     }
+    */
 }
 
 bool MySqlIterator::modifyStructure(tango::IStructure* struct_config, tango::IJob* job)
