@@ -98,15 +98,36 @@ public:
     int runJob();
     void runPostJob();
 
-    IJobInfoPtr getJobInfo()
+    void setCurrentJob(IJobPtr job)
     {
         XCM_AUTO_LOCK(m_jobbase_mutex);
-        return static_cast<IJobInfo*>(m_agg_jobinfo);
+        m_current_job = job;
+    }
+
+
+    bool cancel()
+    {
+        XCM_AUTO_LOCK(m_jobbase_mutex);
+
+        if (!m_job_info->getCancelAllowed())
+            return false;
+        
+        if (m_current_job.isOk() && !m_current_job->getJobInfo()->getCancelAllowed())
+            return false;
+
+        m_job_info->setState(jobStateCancelling);
+        m_cancelling = true;
+
+        if (m_current_job.isOk())
+            return m_current_job->cancel();
+
+        return true;
     }
 
 private:
 
     AggregateJobInfo* m_agg_jobinfo;
+    IJobPtr m_current_job;
 };
 
 

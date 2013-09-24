@@ -34,6 +34,8 @@ AggregateJob::AggregateJob() : XdJobBase()
 
     m_agg_jobinfo = new AggregateJobInfo;
     m_agg_jobinfo->ref();
+
+    setJobInfo(static_cast<IJobInfo*>(m_agg_jobinfo));
 }
 
 AggregateJob::~AggregateJob()
@@ -119,11 +121,14 @@ int AggregateJob::runJob()
     std::vector<jobs::IJobPtr>::iterator jit;
     for (jit = jobs.begin(); jit != jobs.end(); ++jit)
     {
+        setCurrentJob(*jit);
         m_agg_jobinfo->setCurrentJobInfo((*jit)->getJobInfo());
 
         (*jit)->runJob();
         (*jit)->runPostJob();
     }
+
+    setCurrentJob(xcm::null);
 
 
     return 0;

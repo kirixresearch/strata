@@ -93,7 +93,8 @@ public:
     void setJobInfo(IJobInfoPtr new_val)
     {
         XCM_AUTO_LOCK(m_jobbase_mutex);
-        m_job_info = new_val;
+        m_sp_job_info = new_val;
+        m_job_info = m_sp_job_info.p;
     }
 
     void setParameters(const std::wstring& json)
@@ -190,8 +191,6 @@ protected:
     xcm::IObjectPtr m_result;
     std::map<std::wstring, std::wstring> m_extra;
     xcm::IObjectPtr m_ref_object;
-
-private:
 
     int m_jobbase_jobid;
     bool m_cancelling;
