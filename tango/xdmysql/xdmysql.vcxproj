@@ -120,7 +120,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;wsock32.lib;../xdcommon/lib/xdcommonu.lib;../xdcommonsql/lib/xdcommonsqlud.lib;../../kscript/lib/kscriptu.lib;../../kl/lib/klu.lib;../../supp/libmariadb/libmysql/Release/mariadbclient.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;wsock32.lib;../xdcommon/lib/xdcommonu.lib;../xdcommonsql/lib/xdcommonsqlu.lib;../../kscript/lib/kscriptu.lib;../../kl/lib/klu.lib;../../supp/libmariadb/libmysql/Release/mariadbclient.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ProgramDatabaseFile>.\ReleaseUnicode/xdmysql.pdb</ProgramDatabaseFile>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>

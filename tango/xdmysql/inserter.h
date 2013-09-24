@@ -71,9 +71,12 @@ private:
     std::string m_asc_insert_stmt;
     std::wstring m_insert_stmt;
     std::wstring m_insert_stub;
+    std::wstring m_row;
 
     std::wstring m_quote_openchar;
     std::wstring m_quote_closechar;
+
+    int m_rows_in_buf;
 
     std::vector<MySqlInsertData> m_insert_data;
 };

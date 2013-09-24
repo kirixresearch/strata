@@ -40,10 +40,12 @@ MysqlRowInserter::MysqlRowInserter(MysqlDatabase* db, const std::wstring& table)
 
     m_inserting = false;
     m_table = table;
+    m_rows_in_buf = 0;
 
     m_asc_insert_stmt.reserve(65535);
     m_insert_stmt.reserve(65535);
-    
+    m_row.reserve(16384);
+
     tango::IAttributesPtr attr = m_database->getAttributes();
     m_quote_openchar = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
     m_quote_closechar = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
@@ -326,7 +328,7 @@ bool MysqlRowInserter::startInsert(const std::wstring& col_list)
     m_insert_stub += m_quote_closechar;
     m_insert_stub += L" (";
     m_insert_stub += field_list;
-    m_insert_stub += L") VALUES (";
+    m_insert_stub += L") VALUES ";
 
     m_inserting = true;
 
@@ -345,8 +347,8 @@ bool MysqlRowInserter::insertRow()
     std::vector<MySqlInsertData>::iterator begin_it = m_insert_data.begin();
     std::vector<MySqlInsertData>::iterator end_it = m_insert_data.end();
 
-    m_insert_stmt = L"";
 
+    m_row = L"(";
 
     size_t fields_specified = 0;
     
@@ -355,56 +357,62 @@ bool MysqlRowInserter::insertRow()
         if (it->m_specified)
         {
             if (fields_specified > 0)
-                m_insert_stmt += L',';
+                m_row += L',';
 
-            m_insert_stmt += it->m_text;
+            m_row += it->m_text;
             fields_specified++;
         }
     }
 
-    m_insert_stmt += L')';
+    m_row += L')';
 
 
     if (fields_specified == m_insert_data.size())
     {
-        m_insert_stmt.insert(0, m_insert_stub);
+        if (m_rows_in_buf > 0)
+            m_insert_stmt += L",";
+        m_insert_stmt += m_row;
+        m_rows_in_buf++;
+
+        if (m_rows_in_buf >= 500)
+            flush();
     }
      else
     {
-        std::wstring insert_stub = L"INSERT INTO ";
-        insert_stub += m_quote_openchar;
-        insert_stub += m_table;
-        insert_stub += m_quote_closechar;
-        insert_stub += L" (";
+        flush();
+
+        std::wstring stmt = L"INSERT INTO ";
+        stmt += m_quote_openchar;
+        stmt += m_table;
+        stmt += m_quote_closechar;
+        stmt += L" (";
         for (it = begin_it; it != end_it; ++it)
         {
             if (it->m_specified)
             {
                 if (fields_specified > 0)
-                    insert_stub += L',';
-                insert_stub += m_quote_openchar;
-                insert_stub += it->m_col_name;
-                insert_stub += m_quote_closechar;
+                    stmt += L',';
+                stmt += m_quote_openchar;
+                stmt += it->m_col_name;
+                stmt += m_quote_closechar;
                 fields_specified++;
             }
         }
-        insert_stub += L") VALUES (";
-        m_insert_stmt.insert(0, insert_stub);
+        stmt += L") VALUES ";
+        stmt += m_row;
+
+        // execute the insert statement
+        m_asc_insert_stmt = kl::tostring(stmt);
+        int error = mysql_real_query(m_mysql, m_asc_insert_stmt.c_str(), m_asc_insert_stmt.length());
+        if (error != 0)
+        {
+            const char* err = mysql_error(m_mysql);
+            return false;
+        }
     }
 
 
 
-    // execute the insert statement
-    m_asc_insert_stmt = kl::tostring(m_insert_stmt);
-    int error = mysql_real_query(m_mysql,
-                                 m_asc_insert_stmt.c_str(),
-                                 m_asc_insert_stmt.length());
-    if (error != 0)
-    {
-        const char* err = mysql_error(m_mysql);
-        
-        return false;
-    }
 
 
     // clear out values for the next row
@@ -420,11 +428,34 @@ bool MysqlRowInserter::insertRow()
 
 bool MysqlRowInserter::flush()
 {
+    // execute the insert statement
+
+    m_asc_insert_stmt = kl::tostring(m_insert_stub);
+    m_asc_insert_stmt += kl::tostring(m_insert_stmt);
+
+    m_rows_in_buf = 0;
+    m_insert_stmt = L"";
+
+    int error = mysql_real_query(m_mysql,
+                                 m_asc_insert_stmt.c_str(),
+                                 m_asc_insert_stmt.length());
+    if (error != 0)
+    {
+        const char* err = mysql_error(m_mysql);
+        
+        return false;
+    }
+
     return true;
 }
 
 void MysqlRowInserter::finishInsert()
 {
+    if (m_inserting)
+    {
+        flush();
+    }
+
     m_inserting = false;
 }
 
