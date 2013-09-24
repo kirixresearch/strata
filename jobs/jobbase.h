@@ -182,6 +182,8 @@ public:
 
 protected:
 
+    xcm::mutex m_jobbase_mutex;
+
     IJobInfoPtr m_sp_job_info;
     IJobInfo* m_job_info;
     kl::JsonNode m_config;
@@ -192,7 +194,6 @@ protected:
 private:
 
     int m_jobbase_jobid;
-    xcm::mutex m_jobbase_mutex;
     bool m_cancelling;
 };
 

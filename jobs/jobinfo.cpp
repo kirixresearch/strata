@@ -37,6 +37,10 @@ JobInfo::JobInfo()
                   jobMaskPercentage | jobMaskProgressBar;
 }
 
+JobInfo::~JobInfo()
+{
+}
+
 void JobInfo::setJobId(int job_id)
 {
     XCM_AUTO_LOCK(m_obj_mutex);

@@ -45,6 +45,7 @@ class JobInfo : public IJobInfo
 public:
 
     JobInfo();
+    virtual ~JobInfo();
 
     void setJobId(int job_id);
     int getJobId();
@@ -92,7 +93,7 @@ public:
 
     double getPercentage();
 
-private:
+protected:
 
     xcm::mutex m_obj_mutex;
     time_t m_start_time;

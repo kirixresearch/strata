@@ -17,16 +17,28 @@ namespace jobs
 {
 
 
+
+
+
+
+
+
+
+
 // AggregateJob implementation
 
 AggregateJob::AggregateJob() : XdJobBase()
 {
     m_config["metadata"]["type"] = L"application/vnd.kx.aggregate-job";
     m_config["metadata"]["version"] = 1;
+
+    m_agg_jobinfo = new AggregateJobInfo;
+    m_agg_jobinfo->ref();
 }
 
 AggregateJob::~AggregateJob()
 {
+    m_agg_jobinfo->unref();
 }
 
 bool AggregateJob::isInputValid()
@@ -107,6 +119,8 @@ int AggregateJob::runJob()
     std::vector<jobs::IJobPtr>::iterator jit;
     for (jit = jobs.begin(); jit != jobs.end(); ++jit)
     {
+        m_agg_jobinfo->setCurrentJobInfo((*jit)->getJobInfo());
+
         (*jit)->runJob();
         (*jit)->runPostJob();
     }
