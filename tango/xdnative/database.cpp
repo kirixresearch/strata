@@ -1129,7 +1129,7 @@ bool XdnativeDatabase::setMountPoint(const std::wstring& path,
                              const std::wstring& remote_path)
 {
     std::wstring cstr, rpath;
-    if (detectMountPoint(path, cstr, rpath))
+    if (detectMountPoint(path, &cstr, &rpath))
     {
         bool file_exists = xf_get_file_exist(ofsToPhysFilename(path, false));
 
@@ -1171,7 +1171,7 @@ bool XdnativeDatabase::setMountPoint(const std::wstring& path,
 tango::IDatabasePtr XdnativeDatabase::getMountDatabase(const std::wstring& path)
 {
     std::wstring cstr, rpath;
-    if (detectMountPoint(path, cstr, rpath))
+    if (detectMountPoint(path, &cstr, &rpath))
     {
         return lookupOrOpenMountDb(cstr);
     }
@@ -1205,7 +1205,7 @@ bool XdnativeDatabase::getMountPoint(const std::wstring& path,
 bool XdnativeDatabase::createFolder(const std::wstring& path)
 {
     std::wstring cstr, rpath;
-    if (detectMountPoint(path, cstr, rpath))
+    if (detectMountPoint(path, &cstr, &rpath))
     {
         // action takes place in a mount
         tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
@@ -1577,7 +1577,7 @@ bool XdnativeDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
 
 
     std::wstring cstr, rpath;
-    if (detectMountPoint(info->output, cstr, rpath))
+    if (detectMountPoint(info->output, &cstr, &rpath))
     {
         tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
@@ -1664,7 +1664,7 @@ bool XdnativeDatabase::renameFile(const std::wstring& path,
 
 
     std::wstring cstr, rpath;
-    if (detectMountPoint(path, cstr, rpath) && !getLocalFileExist(path))
+    if (detectMountPoint(path, &cstr, &rpath) && !getLocalFileExist(path))
     {
         tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
@@ -1769,10 +1769,10 @@ bool XdnativeDatabase::moveFile(const std::wstring& _src_path,
         std::wstring src_cstr, src_rpath;
         std::wstring dest_cstr, dest_rpath;
         
-        if (detectMountPoint(src_path, src_cstr, src_rpath))
+        if (detectMountPoint(src_path, &src_cstr, &src_rpath))
             src_path = src_rpath;
             
-        if (detectMountPoint(dest_path, dest_cstr, dest_rpath))
+        if (detectMountPoint(dest_path, &dest_cstr, &dest_rpath))
             dest_path = dest_rpath;
         
         if (src_cstr != dest_cstr)
@@ -1823,7 +1823,7 @@ bool XdnativeDatabase::moveFile(const std::wstring& _src_path,
 bool XdnativeDatabase::deleteFile(const std::wstring& path)
 {
     std::wstring cstr, rpath;
-    if (detectMountPoint(path, cstr, rpath))
+    if (detectMountPoint(path, &cstr, &rpath))
     {
         // check if the mount is just a single
         // mount to another file
@@ -1889,7 +1889,7 @@ bool XdnativeDatabase::getFileExist(const std::wstring& path)
         return false;
 
     std::wstring cstr, rpath;
-    if (detectMountPoint(path, cstr, rpath))
+    if (detectMountPoint(path, &cstr, &rpath))
     {
         // root always exists
         if (rpath.empty() || rpath == L"/")
@@ -2219,7 +2219,7 @@ tango::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& path)
 
 
     std::wstring cstr, rpath;
-    if (detectMountPoint(path, cstr, rpath))
+    if (detectMountPoint(path, &cstr, &rpath))
     {
         // if it's the root, it's automatically a folder
         if (rpath.empty() || rpath == L"/")
@@ -2345,8 +2345,9 @@ tango::IDatabasePtr XdnativeDatabase::lookupOrOpenMountDb(const std::wstring& cs
 
 
 bool XdnativeDatabase::detectMountPoint(const std::wstring& path,
-                                        std::wstring& connection_str,
-                                        std::wstring& remote_path)
+                                        std::wstring* connection_str,
+                                        std::wstring* remote_path,
+                                        std::wstring* mount_root)
 {
     // /.system folder never contains mounts
     if (0 == path.compare(0, 8, L"/.system"))
@@ -2354,21 +2355,31 @@ bool XdnativeDatabase::detectMountPoint(const std::wstring& path,
     if (0 == path.compare(0, 9, L"/.appdata"))
         return false;
 
+    std::wstring cstr, rpath;
+
     if (0 == path.compare(0, 7, L"file://"))
     {
-        connection_str = L"Xdprovider=xdfs;Database=;User ID=;Password=;";
-        remote_path = path.substr(7);
-        if (remote_path.empty())
+        cstr = L"Xdprovider=xdfs;Database=;User ID=;Password=;";
+        rpath = path.substr(7);
+        if (rpath.empty())
             return false;
-        if (remote_path.length() >= 3 && remote_path[0] == '/' && remote_path[2] == ':') // ex: file:///c:/abc.txt
-            remote_path.erase(0, 1);
+        if (rpath.length() >= 3 && rpath[0] == '/' && rpath[2] == ':') // ex: file:///c:/abc.txt
+            rpath.erase(0, 1);
+
+        if (connection_str)
+            *connection_str = cstr;
+        if (remote_path)
+            *remote_path = rpath;
+
         return true;
     }
 
     if (0 == path.compare(0, 7, L"http://") || 0 == path.compare(0, 8, L"https://") || 0 == path.compare(0, 9, L"sdserv://") || 0 == path.compare(0, 10, L"sdservs://"))
     {
-        connection_str = L"Xdprovider=xdclient;Database=;User ID=;Password=;";
-        remote_path = path;
+        if (connection_str)
+            *connection_str = L"Xdprovider=xdclient;Database=;User ID=;Password=;";
+        if (remote_path)
+            *remote_path = path;
         return true;
     }
 
@@ -2417,22 +2428,29 @@ bool XdnativeDatabase::detectMountPoint(const std::wstring& path,
             continue;
         
         if (cs.isOk() && rp.isOk())
-        {  
-            connection_str = xdcommon::decryptConnectionStringPassword(cs->getString());
-            remote_path = rp->getString();
+        {
+            cstr = xdcommon::decryptConnectionStringPassword(cs->getString());
+            rpath = rp->getString();
 
             for (it2 = it+1; it2 < parts.end(); ++it2)
             {
-                if (remote_path.empty() || remote_path[remote_path.length()-1] != '/')
+                if (rpath.empty() || rpath[rpath.length()-1] != '/')
                 {
-                    remote_path += L'/';
+                    rpath += L'/';
                 }
                 
-                remote_path += *it2;
+                rpath += *it2;
                 if (it2+1 < parts.end())
-                    remote_path += L'/';
+                    rpath += L'/';
             }
             
+            if (connection_str)
+                *connection_str = cstr;
+            if (remote_path)
+                *remote_path = rpath;
+            if (mount_root)
+                *mount_root = fpath;
+
             return true;
         }
     }
@@ -2466,7 +2484,7 @@ bool XdnativeDatabase::checkCircularMountInternal(std::set<std::wstring, kl::cmp
         return true;
        
     std::wstring cstr, rpath;
-    if (!detectMountPoint(remote_path, cstr, rpath))
+    if (!detectMountPoint(remote_path, &cstr, &rpath))
     {
         // remote is not a reference itself, so not circular
         return false;
@@ -2516,7 +2534,7 @@ tango::IFileInfoEnumPtr XdnativeDatabase::getFolderInfo(const std::wstring& _mas
     
     std::wstring cstr, rpath;
     
-    if (detectMountPoint(mask, cstr, rpath))
+    if (detectMountPoint(mask, &cstr, &rpath))
     {
         tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
@@ -2782,7 +2800,7 @@ bool XdnativeDatabase::cleanup()
 tango::IStreamPtr XdnativeDatabase::openStream(const std::wstring& path)
 {
     std::wstring cstr, rpath;
-    if (detectMountPoint(path, cstr, rpath))
+    if (detectMountPoint(path, &cstr, &rpath))
     {
         tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
@@ -2826,7 +2844,7 @@ tango::IStreamPtr XdnativeDatabase::openStream(const std::wstring& path)
 bool XdnativeDatabase::createStream(const std::wstring& path, const std::wstring& mime_type)
 {
     std::wstring cstr, rpath;
-    if (detectMountPoint(path, cstr, rpath))
+    if (detectMountPoint(path, &cstr, &rpath))
     {
         tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
@@ -2981,7 +2999,7 @@ bool XdnativeDatabase::createTable(const std::wstring& path,
         return false;  // already exists
 
     std::wstring cstr, rpath;
-    if (detectMountPoint(path, cstr, rpath))
+    if (detectMountPoint(path, &cstr, &rpath))
     {
         tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
@@ -3245,8 +3263,8 @@ IXdsqlTablePtr XdnativeDatabase::openTable(const std::wstring& path)
 
 tango::IIteratorPtr XdnativeDatabase::query(const tango::QueryParams& qp)
 {
-    std::wstring cstr, rpath;
-    if (detectMountPoint(qp.from, cstr, rpath))
+    std::wstring cstr, rpath, mount_root;
+    if (detectMountPoint(qp.from, &cstr, &rpath, &mount_root))
     {
         // action takes place in a mount
         tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
@@ -3255,7 +3273,19 @@ tango::IIteratorPtr XdnativeDatabase::query(const tango::QueryParams& qp)
 
         tango::QueryParams call_params = qp;
         call_params.from = rpath;
-        return db->query(call_params);
+        
+        tango::IIteratorPtr ret = db->query(call_params);
+        if (ret.isOk())
+        {
+            std::wstring tbl = ret->getTable();
+            if (tbl.length() > 0)
+            {
+                tbl = tango::appendPath(mount_root, tbl);
+                ret->setTable(tbl);
+            }
+
+            return ret;
+        }
     }
 
     if (qp.where.length() > 0)
@@ -3727,7 +3757,7 @@ tango::IIndexInfoPtr XdnativeDatabase::createIndex(const std::wstring& path,
                                            tango::IJob* job)
 {
     std::wstring cstr, rpath;
-    if (detectMountPoint(path, cstr, rpath))
+    if (detectMountPoint(path, &cstr, &rpath))
     {
         // action takes place in a mount
         tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
@@ -3763,7 +3793,7 @@ bool XdnativeDatabase::renameIndex(const std::wstring& path,
                            const std::wstring& new_name)
 {
     std::wstring cstr, rpath;
-    if (detectMountPoint(path, cstr, rpath))
+    if (detectMountPoint(path, &cstr, &rpath))
     {
         // action takes place in a mount
         tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
@@ -3785,7 +3815,7 @@ bool XdnativeDatabase::deleteIndex(const std::wstring& path,
                                    const std::wstring& name)
 {
     std::wstring cstr, rpath;
-    if (detectMountPoint(path, cstr, rpath))
+    if (detectMountPoint(path, &cstr, &rpath))
     {
         // action takes place in a mount
         tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
@@ -3806,7 +3836,7 @@ bool XdnativeDatabase::deleteIndex(const std::wstring& path,
 tango::IIndexInfoEnumPtr XdnativeDatabase::getIndexEnum(const std::wstring& path)
 {
     std::wstring cstr, rpath;
-    if (detectMountPoint(path, cstr, rpath))
+    if (detectMountPoint(path, &cstr, &rpath))
     {
         // action takes place in a mount
         tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
@@ -3833,7 +3863,7 @@ tango::IIndexInfoEnumPtr XdnativeDatabase::getIndexEnum(const std::wstring& path
 tango::IStructurePtr XdnativeDatabase::describeTable(const std::wstring& path)
 {
     std::wstring cstr, rpath;
-    if (detectMountPoint(path, cstr, rpath))
+    if (detectMountPoint(path, &cstr, &rpath))
     {
         // action takes place in a mount
         tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
@@ -3854,7 +3884,7 @@ tango::IStructurePtr XdnativeDatabase::describeTable(const std::wstring& path)
 tango::IRowInserterPtr XdnativeDatabase::bulkInsert(const std::wstring& path)
 {
     std::wstring cstr, rpath;
-    if (detectMountPoint(path, cstr, rpath))
+    if (detectMountPoint(path, &cstr, &rpath))
     {
         // action takes place in a mount
         tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);

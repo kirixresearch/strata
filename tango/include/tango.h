@@ -428,7 +428,9 @@ public:
     virtual void setIteratorFlags(unsigned int mask, unsigned int value) = 0;
     virtual unsigned int getIteratorFlags() = 0;
     
+    virtual void setTable(const std::wstring& table) = 0;
     virtual std::wstring getTable() = 0;
+
     virtual rowpos_t getRowCount() = 0;
     virtual IIteratorPtr clone() = 0;
 

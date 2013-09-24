@@ -40,7 +40,7 @@ tango::IDatabasePtr XdnativeDatabase::getPassThroughMount(const std::vector<std:
             continue;
 
         // look for the mount point            
-        if (detectMountPoint(table_name, cstr, rpath))
+        if (detectMountPoint(table_name, &cstr, &rpath))
         {
             tango::IDatabasePtr current_db = lookupOrOpenMountDb(cstr);
             if (db.isNull())
@@ -150,7 +150,7 @@ bool XdnativeDatabase::execute(const std::wstring& command,
     std::wstring cstr, rpath;
     for (it = tables.begin(); it != it_end; ++it)
     {
-        if (detectMountPoint(*it, cstr, rpath))
+        if (detectMountPoint(*it, &cstr, &rpath))
         {
 
             // remove any leading slash -- but if there are any remaining

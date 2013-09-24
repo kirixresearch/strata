@@ -412,6 +412,10 @@ bool OracleIterator::init(const std::wstring& query)
     return true;
 }
 
+void OracleIterator::setTable(const std::wstring& tbl)
+{
+    // TODO: implement
+}
 
 std::wstring OracleIterator::getTable()
 {

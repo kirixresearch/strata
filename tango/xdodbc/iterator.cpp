@@ -387,9 +387,14 @@ bool OdbcIterator::init(const std::wstring& query)
 }
 
 
+void OdbcIterator::setTable(const std::wstring& tbl)
+{
+    m_path = tbl;
+}
+
 std::wstring OdbcIterator::getTable()
 {
-    return L"";
+    return m_path;
 }
 
 tango::rowpos_t OdbcIterator::getRowCount()

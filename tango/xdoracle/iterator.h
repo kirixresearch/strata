@@ -97,7 +97,9 @@ public:
 
     // tango::IIterator
 
+    void setTable(const std::wstring& tbl);
     std::wstring getTable();
+
     tango::rowpos_t getRowCount();
     tango::IDatabasePtr getDatabase();
     tango::IIteratorPtr clone();

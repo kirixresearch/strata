@@ -204,8 +204,9 @@ public:
 private:
 
     bool detectMountPoint(const std::wstring& path,
-                          std::wstring& connection_str,
-                          std::wstring& remote_path);
+                          std::wstring* connection_str = NULL,
+                          std::wstring* remote_path = NULL,
+                          std::wstring* mount_root = NULL);
                           
     tango::IDatabasePtr lookupOrOpenMountDb(const std::wstring& connection);
 

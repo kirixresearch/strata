@@ -148,12 +148,12 @@ std::wstring MysqlIterator::getTable()
 
 tango::rowpos_t MysqlIterator::getRowCount()
 {
-    if (m_path.length() > 0)
+    if (m_table.length() > 0)
     {
         std::wstring query;
         query += L"SELECT COUNT(*) FROM ";
         query += L"`";
-        query += mysqlGetTablenameFromPath(m_path);
+        query += m_table;
         query += L"`";
 
         MYSQL* db = m_database->open();
@@ -212,7 +212,7 @@ unsigned int MysqlIterator::getIteratorFlags()
     }
     
 
-    if (m_path.length() > 0)
+    if (m_table.length() > 0)
     {
         flags |= tango::ifFastRowCount;
     }

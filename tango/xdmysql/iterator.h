@@ -82,6 +82,8 @@ public:
     ~MysqlIterator();
     bool init(const std::wstring& query);
 
+    void setMySqlTable(const std::wstring& tbl) { m_table = tbl; }
+
     void setTable(const std::wstring& table);
     std::wstring getTable();
     tango::rowpos_t getRowCount();
@@ -155,6 +157,7 @@ private:
     bool m_cache_active;
 
     std::wstring m_path;
+    std::wstring m_table;
 };
 
 

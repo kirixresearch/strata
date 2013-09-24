@@ -733,6 +733,10 @@ void FixedLengthTextIterator::updateDaiEntry(FixedLengthTextDataAccessInfo* dai)
 }
 
 
+void FixedLengthTextIterator::setTable(const std::wstring& tbl)
+{
+}
+
 std::wstring FixedLengthTextIterator::getTable()
 {
     if (m_set)

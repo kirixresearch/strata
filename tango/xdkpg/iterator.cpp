@@ -136,6 +136,11 @@ bool KpgIterator::init(const std::wstring& path)
 }
 
 
+void KpgIterator::setTable(const std::wstring& tbl)
+{
+    m_path = tbl;
+}
+
 
 std::wstring KpgIterator::getTable()
 {

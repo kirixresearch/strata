@@ -253,6 +253,21 @@ inline std::wstring getTemporaryPath()
 }
 
 
+
+inline std::wstring appendPath(const std::wstring& path, const std::wstring& newpart, wchar_t ch = '/')
+{
+    if (newpart.empty()) return path;
+    std::wstring ret = path;
+    if (ret.length() > 0 && ret[ret.length()-1] != ch)
+        ret += ch;
+    if (newpart[0] == ch)
+        ret += newpart.substr(1);
+         else
+        ret += newpart;
+    return ret;
+}
+
+
 // DateTime support
 
 class DateTime

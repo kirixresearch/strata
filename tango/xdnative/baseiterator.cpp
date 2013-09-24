@@ -973,6 +973,10 @@ void BaseIterator::onSetRowDeleted(tango::rowid_t rowid)
 }
 
 
+void BaseIterator::setTable(const std::wstring& tbl)
+{
+}
+
 std::wstring BaseIterator::getTable()
 {
     return L"";

@@ -109,6 +109,10 @@ void DelimitedTextIterator::setUseSourceIterator(bool use_source_iterator)
 }
 
 
+void DelimitedTextIterator::setTable(const std::wstring& tbl)
+{
+}
+
 std::wstring DelimitedTextIterator::getTable()
 {
     if (m_set)

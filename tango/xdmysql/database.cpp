@@ -22,6 +22,7 @@
 #include <kl/string.h>
 #include <kl/portable.h>
 #include <kl/regex.h>
+#include <kl/md5.h>
 #include "tango.h"
 #include "../xdcommon/structure.h"
 #include "../xdcommon/dbattr.h"
@@ -284,6 +285,20 @@ public:
         primary_key = m_db->getPrimaryKey(name);
         return primary_key;
     }
+
+    const std::wstring& getObjectId()
+    {
+        if (!object_id.empty())
+            return object_id;
+        std::wstring hashsrc;
+        hashsrc += m_db->getServer() + L";";
+        hashsrc += m_db->getActiveUid() + L";";
+        hashsrc += name;
+        kl::makeLower(hashsrc);
+        object_id = kl::md5str(hashsrc);
+        return object_id;
+    }
+
 
 private:
 
@@ -879,7 +894,14 @@ tango::IIteratorPtr MysqlDatabase::query(const tango::QueryParams& qp)
     }
 
     if (qp.where.length() == 0)
+    {
+        // we know the exact table name; this can be used to retrieve
+        // better metrics, like row count; pass this table name on to
+        // the iterator object
+        iter->setMySqlTable(mysqlGetTablenameFromPath(qp.from));
+
         iter->setTable(qp.from);
+    }
 
     return static_cast<tango::IIterator*>(iter);
 

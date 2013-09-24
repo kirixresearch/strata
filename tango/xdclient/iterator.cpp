@@ -64,6 +64,11 @@ bool ClientIterator::init(const std::wstring& handle, const std::wstring& url_qu
     return refreshDataAccessInfo();
 }
 
+void ClientIterator::setTable(const std::wstring& tbl)
+{
+    // TODO: implement
+}
+
 std::wstring ClientIterator::getTable()
 {
     // TODO: implement

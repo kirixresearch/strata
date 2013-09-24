@@ -142,6 +142,7 @@ public:
 
     // tango::IIterator
 
+    void setTable(const std::wstring& tbl);
     std::wstring getTable();
     tango::rowpos_t getRowCount();
     tango::IDatabasePtr getDatabase();
@@ -221,6 +222,9 @@ private:
  
     bool m_eof;
     tango::rowpos_t m_row_pos;
+
+
+    std::wstring m_path;
 
     // info from OdbcDatabase
     int m_db_type;
