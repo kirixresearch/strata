@@ -429,6 +429,8 @@ bool MysqlRowInserter::insertRow()
 bool MysqlRowInserter::flush()
 {
     // execute the insert statement
+    if (m_rows_in_buf == 0)
+        return true;
 
     m_asc_insert_stmt = kl::tostring(m_insert_stub);
     m_asc_insert_stmt += kl::tostring(m_insert_stmt);
