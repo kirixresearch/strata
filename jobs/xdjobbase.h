@@ -41,7 +41,24 @@ public:
     void setXdJob(tango::IJobPtr _xdjob)
     {
         XCM_AUTO_LOCK(m_obj_mutex);
+
+        if (xdjob.isOk())
+        {
+            // now that the job is going away, record values
+            m_current_count = (double)xdjob->getCurrentCount();
+            m_max_count = (double)xdjob->getMaxCount();
+            pct = xdjob->getPercentage();
+        }
+
         xdjob = _xdjob;
+
+        if (xdjob.isOk())
+        {
+            // now that the job is going away, record values
+            m_current_count = (double)xdjob->getCurrentCount();
+            m_max_count = (double)xdjob->getMaxCount();
+            pct = xdjob->getPercentage();
+        }
     }
 
     double getCurrentCount()
