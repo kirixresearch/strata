@@ -229,6 +229,15 @@ std::wstring JobInfo::getProgressString()
     return L"";
 }
 
+void JobInfo::getProgressStringFormat(std::wstring* no_max_count_format,
+                                      std::wstring* max_count_format)
+{
+    XCM_AUTO_LOCK(m_obj_mutex);
+
+    if (no_max_count_format) *no_max_count_format = m_progress_string_format_nomax;
+    if (max_count_format)    *max_count_format = m_progress_string_format_max;
+}
+
 void JobInfo::setProgressStringFormat(const std::wstring& no_max_count_format,
                                       const std::wstring& max_count_format)
 {

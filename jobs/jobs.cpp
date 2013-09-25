@@ -82,6 +82,15 @@ IJobPtr createAggregateJob(std::vector<IJobPtr>& jobs)
     {
         kl::JsonNode job_entry = jobs_node.appendElement();
         job_entry.fromString((*it)->toJson());
+
+
+        std::wstring progress_string_format_nomax;
+        std::wstring progress_string_format_max;
+
+        (*it)->getJobInfo()->getProgressStringFormat(&progress_string_format_nomax, &progress_string_format_max);
+
+        job_entry["__progress_string_format_nomax"] = progress_string_format_nomax;
+        job_entry["__progress_string_format_max"] = progress_string_format_max;
     }
 
     job->setParameters(agg_params.toString());

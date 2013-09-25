@@ -68,6 +68,9 @@ public:
     // see note above on how to create a format string
     void setProgressStringFormat(const std::wstring& no_max_count_format,
                                  const std::wstring& max_count_format);
+    void getProgressStringFormat(std::wstring* no_max_count_format,
+                                 std::wstring* max_count_format);
+
     void setProgressString(const std::wstring& new_val);
     std::wstring getProgressString();
 

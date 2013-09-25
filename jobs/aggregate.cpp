@@ -111,6 +111,18 @@ int AggregateJob::runJob()
             return 0;
         }
 
+        
+        // if progress string format information is passed (see jobs.cpp),
+        // then set the job info parameters accordingly
+        std::wstring progress_string_format_nomax;
+        std::wstring progress_string_format_max;
+        if (job_node.childExists("__progress_string_format_nomax"))
+            progress_string_format_nomax = job_node["__progress_string_format_nomax"];
+        if (job_node.childExists("__progress_string_format_max"))
+            progress_string_format_max = job_node["__progress_string_format_max"];
+        job->getJobInfo()->setProgressStringFormat(progress_string_format_nomax, progress_string_format_max);
+
+
         job->setDatabase(m_db);
         job->setParameters(params.toString());
 
