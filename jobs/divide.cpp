@@ -145,7 +145,7 @@ int DivideJob::runJob()
             rows_left = 0;
 
         tango_job = m_db->createJob();
-        setTangoJob(tango_job);
+        setXdJob(tango_job);
 
         tango::CopyParams info;
         info.iter_input = iter;

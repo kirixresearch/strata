@@ -37,9 +37,6 @@ class JobInfo : public IJobInfo
         XCM_INTERFACE_ENTRY(IJobInfo)
     XCM_END_INTERFACE_MAP()
 
-    XCM_IMPLEMENT_SIGNAL1(sigOnGetCurrentCount, double*)
-    XCM_IMPLEMENT_SIGNAL1(sigOnGetMaxCount, double*)
-    XCM_IMPLEMENT_SIGNAL1(sigOnGetPercentage, double*)
     XCM_IMPLEMENT_SIGNAL1(sigStateChanged, IJobInfoPtr)
 
 public:

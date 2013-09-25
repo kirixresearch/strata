@@ -104,7 +104,6 @@ public:
         m_current_job = job;
     }
 
-
     bool cancel()
     {
         XCM_AUTO_LOCK(m_jobbase_mutex);

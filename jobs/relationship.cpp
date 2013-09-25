@@ -135,7 +135,7 @@ int RelationshipJob::runJob()
 
         // create the indexes
         tango::IJobPtr job = m_db->createJob();
-        setTangoJob(job);
+        setXdJob(job);
         xcm::IObjectPtr null_result;
         m_db->execute(sql, 0, null_result, job);
     }

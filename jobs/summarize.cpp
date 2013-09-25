@@ -181,7 +181,7 @@ int SummarizeJob::runJob()
 
     tango::IJobPtr tango_job;
     tango_job = m_db->createJob();
-    setTangoJob(tango_job);
+    setXdJob(tango_job);
 
     std::wstring where_param;
     if (params_node.childExists("where"))

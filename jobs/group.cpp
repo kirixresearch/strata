@@ -133,7 +133,7 @@ int GroupJob::runJob()
     if (!unique_records)
     {
         tango_job = m_db->createJob();
-        setTangoJob(tango_job);
+        setXdJob(tango_job);
 
         tango::GroupQueryParams info;
         info.input = input_path;
@@ -172,7 +172,7 @@ int GroupJob::runJob()
         // specified and the expected output size is small
 
         tango_job = m_db->createJob();
-        setTangoJob(tango_job);
+        setXdJob(tango_job);
 
         tango::GroupQueryParams info1;
         info1.input = input_path;
@@ -208,7 +208,7 @@ int GroupJob::runJob()
         m_to_delete.push_back(output2);
 
         tango_job = m_db->createJob();
-        setTangoJob(tango_job);
+        setXdJob(tango_job);
 
         xcm::IObjectPtr result;
         m_db->execute(sql, 0, result, tango_job.p);
@@ -231,7 +231,7 @@ int GroupJob::runJob()
 
 
         tango_job = m_db->createJob();
-        setTangoJob(tango_job);
+        setXdJob(tango_job);
 
         tango::GroupQueryParams info3;
         info3.input = output2;

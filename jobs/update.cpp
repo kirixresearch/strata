@@ -135,7 +135,7 @@ int UpdateJob::runJob()
 
 
     tango::IJobPtr tango_job = m_db->createJob();
-    setTangoJob(tango_job);
+    setXdJob(tango_job);
 
     xcm::IObjectPtr result;
     m_db->execute(update_sql, tango::sqlPassThrough, result, tango_job);

@@ -207,7 +207,7 @@ int AppendJob::runJob()
     for (it = tables.begin(); it != tables.end(); ++it)
     {
         tango_job = m_db->createJob();
-        setTangoJob(tango_job, false);
+        setXdJob(tango_job);
 
         tango::CopyParams info;
         info.input = *it;

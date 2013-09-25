@@ -307,11 +307,6 @@ double JobInfo::getCurrentCount()
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
-    if (sigOnGetCurrentCount().isActive())
-    {
-        sigOnGetCurrentCount().fire(&m_current_count);
-    }
-
     return m_current_count;
 }
 
@@ -326,23 +321,11 @@ double JobInfo::getMaxCount()
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
-    if (sigOnGetMaxCount().isActive())
-    {
-        sigOnGetMaxCount().fire(&m_max_count);
-    }
-
     return m_max_count;
 }
 
 double JobInfo::getPercentage()
 {
-    if (sigOnGetPercentage().isActive())
-    {
-        double d;
-        sigOnGetPercentage().fire(&d);
-        return d;
-    }
-
     double max_rows = getMaxCount();
     if (max_rows == 0.0)
         return 0.0;

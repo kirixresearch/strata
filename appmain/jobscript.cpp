@@ -24,10 +24,6 @@ ScriptJob::ScriptJob()
                             jobs::jobMaskFinishTime |
                             jobs::jobMaskProgressString |
                             jobs::jobMaskProgressBar);
-
-    m_job_info->sigOnGetCurrentCount().connect(this, &ScriptJob::onGetCurrentCount);
-    m_job_info->sigOnGetMaxCount().connect(this, &ScriptJob::onGetMaxCount);
-    m_job_info->sigOnGetPercentage().connect(this, &ScriptJob::onGetPercentage);
 }
 
 ScriptJob::~ScriptJob()

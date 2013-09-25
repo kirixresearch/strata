@@ -79,7 +79,7 @@ int CopyJob::runJob()
 
 
     tango::IJobPtr tango_job = m_db->createJob();
-    setTangoJob(tango_job);
+    setXdJob(tango_job);
 
     // get the parameters
     kl::JsonNode params_node;

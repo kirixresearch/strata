@@ -113,7 +113,7 @@ int IndexJob::runJob()
 
 
         tango::IJobPtr job = m_db->createJob();
-        setTangoJob(job);
+        setXdJob(job);
 
         // quote identifiers
         std::wstring q_name = tango::quoteIdentifier(m_db, name);

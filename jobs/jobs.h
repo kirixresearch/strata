@@ -153,9 +153,6 @@ public:
 
     virtual double getPercentage() = 0;
 
-    XCM_DECLARE_SIGNAL1(sigOnGetCurrentCount, double*)
-    XCM_DECLARE_SIGNAL1(sigOnGetMaxCount, double*)
-    XCM_DECLARE_SIGNAL1(sigOnGetPercentage, double*)
     XCM_DECLARE_SIGNAL1(sigStateChanged, IJobInfoPtr)
 };
 

@@ -13,31 +13,87 @@
 #define __JOBS_XDJOBBASE_H
 
 
+#include "jobinfo.h"
+
+
 namespace jobs
 {
+
+
+
+
+class XdJobInfo : public JobInfo
+{
+public:
+
+    XdJobInfo() : JobInfo()
+    {
+        pct = 0.0;
+    }
+
+    bool getCancelAllowed()
+    {
+        if (xdjob.isOk() && !xdjob->getCanCancel())
+            return false;
+        return JobInfo::getCancelAllowed();
+    }
+
+    void setXdJob(tango::IJobPtr _xdjob)
+    {
+        XCM_AUTO_LOCK(m_obj_mutex);
+        xdjob = _xdjob;
+    }
+
+    double getCurrentCount()
+    {
+        XCM_AUTO_LOCK(m_obj_mutex);
+        if (xdjob.isOk())
+            m_current_count = (double)xdjob->getCurrentCount();
+        return m_current_count;
+    }
+
+    double getMaxCount()
+    {
+        XCM_AUTO_LOCK(m_obj_mutex);
+        if (xdjob.isOk())
+            m_max_count = (double)xdjob->getMaxCount();
+        return m_max_count;
+    }
+
+    double getPercentage()
+    {
+        XCM_AUTO_LOCK(m_obj_mutex);
+        if (xdjob.isOk())
+            pct = xdjob->getPercentage();
+        return pct;
+    }
+
+public:
+
+    tango::IJobPtr xdjob;
+    double pct;
+};
 
 
 class XdJobBase : public JobBase,
                   public xcm::signal_sink
 {
-public:
-
-    enum
-    {
-        useTangoCurrentCount = 0x01,
-        useTangoMaxCount = 0x02,
-        useTangoPercentage = 0x04,
-        useTangoAll = 0xffffffff
-    };
 
 public:
 
-    XdJobBase(int usage = useTangoAll) : JobBase()
+    XdJobBase() : JobBase()
     {
         sigJobFinished().connect(this, &XdJobBase::onJobFinished);
 
-        m_base_count = 0.0;
-        m_usage = usage;
+        m_xd_jobinfo = new XdJobInfo;
+        m_xd_jobinfo->ref();
+
+        setJobInfo(static_cast<IJobInfo*>(m_xd_jobinfo));
+    }
+
+    virtual ~XdJobBase()
+    {
+        m_xd_jobinfo->unref();
     }
 
     void setDatabase(tango::IDatabase* db)
@@ -47,117 +103,24 @@ public:
 
     bool cancel()
     {
-        if (!m_tango_job)
-        {
-            return JobBase::cancel();
-        }
-
-        if (!m_job_info->getCancelAllowed())
+        if (!m_xd_jobinfo->getCancelAllowed())
             return false;
 
-        m_tango_job->cancel();
+        m_xd_jobinfo->xdjob->cancel();
 
         return JobBase::cancel();
     }
 
 protected:
 
-    void setTangoJob(tango::IJobPtr new_val, bool reset = true)
+    void setXdJob(tango::IJobPtr xdjob)
     {
-        if (new_val.isOk())
-        {
-            if (m_usage & useTangoCurrentCount)
-            {
-                m_job_info->sigOnGetCurrentCount().connect(this, &XdJobBase::onGetCurrentCount);
-            }
-
-            if (m_usage & useTangoMaxCount)
-            {
-                m_job_info->sigOnGetMaxCount().connect(this, &XdJobBase::onGetMaxCount);
-            }
-
-            if (m_usage & useTangoPercentage)
-            {
-                m_job_info->sigOnGetPercentage().connect(this, &XdJobBase::onGetPercentage);
-            }
-        }
-         else
-        {
-            m_job_info->sigOnGetCurrentCount().disconnect();
-            m_job_info->sigOnGetMaxCount().disconnect();
-            m_job_info->sigOnGetPercentage().disconnect();
-        }
-
-        if (reset)
-        {
-            m_base_count = 0.0;
-        }
-         else
-        {
-            if (!m_tango_job)
-                m_base_count = 0.0;
-                 else
-                onGetCurrentCount(&m_base_count);
-        }
-
-        m_tango_job = new_val;
-    }
-
-private:
-
-    void onGetCurrentCount(double* result)
-    {
-        if (m_tango_job.p)
-        {
-            *result = (long long)m_tango_job.p->getCurrentCount() + m_base_count;
-        }
-         else
-        {
-            *result = m_job_info->getCurrentCount();
-        }
-    }
-
-    void onGetMaxCount(double* result)
-    {
-        if (m_tango_job.p)
-        {
-            *result = (double)(long long)m_tango_job.p->getMaxCount();
-        }
-         else
-        {
-            *result = m_job_info->getMaxCount();
-        }
-    }
-
-    void onGetPercentage(double* result)
-    {
-        if (m_tango_job.p)
-        {
-            *result = m_tango_job.p->getPercentage();
-        }
-         else
-        {
-            *result = m_job_info->getPercentage();
-        }
+        m_xd_jobinfo->setXdJob(xdjob);
     }
 
     void onJobFinished(IJobPtr job)
     {
-        m_job_info->sigOnGetCurrentCount().disconnect();
-        m_job_info->sigOnGetMaxCount().disconnect();
-        m_job_info->sigOnGetPercentage().disconnect();
-        
-        if (m_tango_job.p)
-        {
-            if (m_usage & useTangoCurrentCount)
-                m_job_info->setCurrentCount((double)m_tango_job.p->getCurrentCount());
-
-            if (m_usage & useTangoMaxCount)
-                m_job_info->setMaxCount((double)m_tango_job.p->getMaxCount());
-        }
-
-        // free our job ptr
-        m_tango_job.clear();
+        m_xd_jobinfo->setXdJob(xcm::null);
     }
 
 protected:
@@ -166,9 +129,8 @@ protected:
 
 private:
 
-    tango::IJobPtr m_tango_job;
-    double m_base_count;
     unsigned int m_usage;
+    XdJobInfo* m_xd_jobinfo;
 };
 
 

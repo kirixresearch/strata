@@ -207,7 +207,7 @@ int LoadJob::runJob()
         
         // TODO: add copy loop here
         tango::IJobPtr tango_job = destination_db->createJob();
-        setTangoJob(tango_job);
+        setXdJob(tango_job);
 
         destination_db->copyData(&info, tango_job);
 

@@ -84,7 +84,7 @@ int ExecuteJob::runJob()
 
 
     tango::IJobPtr tango_job = m_db->createJob();
-    setTangoJob(tango_job);
+    setXdJob(tango_job);
 
 
     unsigned int flags = tango::sqlPassThrough;
