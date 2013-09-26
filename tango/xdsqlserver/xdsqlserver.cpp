@@ -42,21 +42,7 @@ public:
     
     tango::IDatabasePtr open(const std::wstring& connection_str)
     {
-        return xcm::null;
-    }
-    
-    tango::IDatabasePtr openLocalDatabase(const std::wstring&,
-                                          const std::wstring& uid,
-                                          const std::wstring& password)
-    {
-        return xcm::null;
-    }
-
-    tango::IDatabasePtr openRemoteDatabase(int type, const std::wstring& host, 
-                                           int port, const std::wstring& database,
-                                           const std::wstring& uid,
-                                           const std::wstring& password)
-    {
+/*
         SqlServerDatabase* db = new SqlServerDatabase;
         db->ref();
 
@@ -81,6 +67,9 @@ public:
         }
 
         return tango::IDatabasePtr(db, false);
+        */
+
+        return xcm::null;
     }
 
     tango::IDatabaseEntryEnumPtr getDatabaseList(const std::wstring& host, int port,

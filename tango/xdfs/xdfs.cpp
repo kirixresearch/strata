@@ -99,22 +99,6 @@ public:
         return tango::IDatabasePtr(db, false);
     }
     
-    tango::IDatabasePtr openLocalDatabase(const std::wstring& location,
-                                          const std::wstring& uid,
-                                          const std::wstring& password)
-    {
-        return xcm::null;
-    }
-    
-    tango::IDatabasePtr openRemoteDatabase(int type,
-                                           const std::wstring& host, 
-                                           int port,
-                                           const std::wstring& database,
-                                           const std::wstring& uid,
-                                           const std::wstring& password)
-    {
-        return xcm::null;
-    }
 
     tango::IDatabaseEntryEnumPtr getDatabaseList(const std::wstring& host, int port,
                                                  const std::wstring& uid,

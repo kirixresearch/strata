@@ -83,46 +83,6 @@ public:
         return tango::IDatabasePtr(db, false);
     }
     
-    tango::IDatabasePtr openLocalDatabase(const std::wstring&,
-                                          const std::wstring& uid,
-                                          const std::wstring& password)
-    {
-        return xcm::null;
-    }
-
-    tango::IDatabasePtr openRemoteDatabase(int type, const std::wstring& host, 
-                                           int port, const std::wstring& database,
-                                           const std::wstring& uid,
-                                           const std::wstring& password)
-    {
-        OracleDatabase* db = new OracleDatabase;
-        db->ref();
-
-        // remove leading '\\', if necessary
-
-        std::wstring host_fixed;
-        if (wcsncmp(host.c_str(), L"\\\\", 2) == 0)
-        {
-            host_fixed = host.c_str() + 2;
-        }
-         else
-        {
-            host_fixed = host;
-        }
-
-        // attempt to open the database
-
-        if (!db->open(host_fixed, port, database, uid, password))
-        {
-            m_error.setError(db->getErrorCode(), db->getErrorString());
-
-            db->unref();
-            return xcm::null;
-        }
-
-        return tango::IDatabasePtr(db, false);
-    }
-
     tango::IDatabaseEntryEnumPtr getDatabaseList(const std::wstring& host,
                                                  int port,
                                                  const std::wstring& uid,
