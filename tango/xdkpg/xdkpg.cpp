@@ -32,57 +32,30 @@ public:
 
     tango::IDatabasePtr open(const std::wstring& connection_str)
     {
+        // parse the connection string
         tango::ConnectionStringParser c(connection_str);
         std::wstring provider = c.getLowerValue(L"xdprovider");
         if (provider.empty())
             return xcm::null;
         
-        // check if the provider is xdkpg, or in a different DLL
+        // check if the provider refers to us, or a different dll/shared lib
         if (provider != L"xdkpg")
         {
             return xcm::null;
         }
         
-        // parse the connection string
-        
-
-
-        std::wstring database = c.getValue(L"database");
-
+ 
+        std::wstring location = c.getValue(L"database");
 
         if (c.getValue(L"create_if_not_exists") == L"true")
         {
-            if (!xf_get_file_exist(database))
+            if (!xf_get_file_exist(location))
             {
-                return this->createDatabase(database, L"");
+                return this->createDatabase(location);
             }
         }
 
 
-
-        KpgDatabase* db = new KpgDatabase;
-        db->ref();
-        if (!db->open(database))
-        {
-            m_error.setError(db->getErrorCode(), db->getErrorString());
-
-            db->unref();
-            return xcm::null;
-        }
-
-        return tango::IDatabasePtr(db, false);
-    }
-    
-    tango::IDatabasePtr createDatabase(const std::wstring& location,
-                                       const std::wstring& dbname)
-    {
-        {
-            PkgFile file;
-            if (!file.create(location))
-                return xcm::null;
-            file.close();
-        }
-        
 
         KpgDatabase* db = new KpgDatabase;
         db->ref();
@@ -96,10 +69,27 @@ public:
 
         return tango::IDatabasePtr(db, false);
     }
-
-    bool createDatabase(const std::wstring& location, int db_type)
+    
+    bool createDatabase(const std::wstring& connection_str)
     {
-        return false;
+        tango::ConnectionStringParser c(connection_str);
+        std::wstring provider = c.getLowerValue(L"xdprovider");
+        if (provider.empty())
+            return false;
+        
+        // check if the provider refers to us, or a different dll/shared lib
+        if (provider != L"xdkpg")
+            return false;
+
+        std::wstring location = c.getValue(L"database");
+
+
+        PkgFile file;
+        if (!file.create(location))
+            return false;
+        file.close();
+
+        return true;
     }
 
     tango::IDatabaseEntryEnumPtr getDatabaseList(const std::wstring& host,

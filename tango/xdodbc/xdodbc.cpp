@@ -36,9 +36,15 @@ public:
         m_conn = 0;
     }
 
-    tango::IDatabasePtr createDatabase(const std::wstring& location,
-                                       const std::wstring& dbname)
+    bool createDatabase(const std::wstring& connection_str)
     {
+        tango::ConnectionStringParser c(connection_str);
+        std::wstring provider = c.getLowerValue(L"xdprovider");
+        if (provider.empty())
+            return false;
+
+        std::wstring location = c.getValue(L"database");
+
         // create an MDB database
         std::wstring ext = kl::afterLast(location, L'.');
         kl::makeUpper(ext);
@@ -56,7 +62,7 @@ public:
                                        _t("Microsoft Access Driver (*.mdb)"),
                                        sqlt(cmd)))
             {
-                return xcm::null;
+                return false;
             }
 #else
             // the unicode api on linux isn't quite right,
@@ -66,7 +72,7 @@ public:
                                        "Microsoft Access Driver (*.mdb)",
                                        kl::tostring(cmd).c_str()))
             {
-                return xcm::null;
+                return false;
             }
 #endif
 
@@ -77,17 +83,15 @@ public:
             if (!db->open(tango::dbtypeAccess, L"", 0, L"", L"admin", L"", location))
             {
                 db->unref();
-                return xcm::null;
+                return false;
             }
       
-            tango::IDatabasePtr ret = static_cast<tango::IDatabase*>(db);
             db->unref();
-            return ret;
+            return true;
         }
          else if (ext == L"XLS" || ext == L"XLSX")
         {
             // create an XLS file
-            
 
             std::vector<std::wstring> drivers;
             getOdbcDriverNames(drivers);
@@ -147,20 +151,13 @@ public:
             if (!db->open(tango::dbtypeExcel, L"", 0, L"", L"admin", L"", location))
             {
                 db->unref();
-                return xcm::null;
+                return false;
             }
       
-            tango::IDatabasePtr ret = static_cast<tango::IDatabase*>(db);
             db->unref();
-            return ret;
+            return true;
         }
         
-        return xcm::null;
-    }
-    
-    
-    bool createDatabase(const std::wstring& location, int db_type)
-    {
         return false;
     }
     
@@ -172,7 +169,7 @@ public:
         if (provider.empty())
             return xcm::null;
         
-        // check if the provider is xdnative, or in a different DLL
+        // check if the provider refers to us, or a different dll/shared lib
         if (provider != L"xdodbc")
         {
             return xcm::null;
@@ -201,7 +198,7 @@ public:
             kl::makeUpper(ext);
 
             if (c.getValue(L"create_if_not_exists") == L"true" && !xf_get_file_exist(database))
-                return this->createDatabase(database, L"");
+                return this->createDatabase(database);
 
             if (ext == L"MDB" || ext == L"ACCDB")
             {

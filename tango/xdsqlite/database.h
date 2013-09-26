@@ -34,8 +34,7 @@ public:
     SlDatabase();
     ~SlDatabase();
 
-    bool createDatabase(const std::wstring& path,
-                        const std::wstring& db_name);
+    bool createDatabase(const std::wstring& path);
 
     bool openDatabase(const std::wstring& path,
                       const std::wstring& username,

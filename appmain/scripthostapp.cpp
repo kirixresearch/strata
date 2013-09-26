@@ -576,7 +576,10 @@ void HostApp::getDatabase(kscript::ExprEnv* env, kscript::Value* retval)
 void HostApp::createDatabase(kscript::ExprEnv* env, kscript::Value* retval)
 {
     retval->setBoolean(false);
-    
+
+    // TODO: reimplement
+
+/*  
     tango::IDatabaseMgrPtr dbmgr = tango::getDatabaseMgr();
     if (dbmgr.isNull())
         return;
@@ -589,6 +592,7 @@ void HostApp::createDatabase(kscript::ExprEnv* env, kscript::Value* retval)
     bool result = dbmgr->createDatabase(env->getParam(0)->getString(), db_type);
     
     retval->setBoolean(result);
+*/
 }
 
 

@@ -695,12 +695,8 @@ xcm_interface IDatabaseMgr : public xcm::IObject
 
 public:
 
-    virtual IDatabasePtr open(const std::wstring& connection_str) = 0;
-    
-    virtual IDatabasePtr createDatabase(const std::wstring& location,
-                                        const std::wstring& dbname) = 0;
-                                        
-    virtual bool createDatabase(const std::wstring& location, int db_type) = 0;
+    virtual IDatabasePtr open(const std::wstring& connection_str) = 0;      
+    virtual bool createDatabase(const std::wstring& connection_str) = 0;
 
     virtual IDatabaseEntryEnumPtr getDatabaseList(
                                         const std::wstring& host,

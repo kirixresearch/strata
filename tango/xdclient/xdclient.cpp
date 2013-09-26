@@ -34,7 +34,7 @@ public:
         if (provider.empty())
             return xcm::null;
         
-        // check if the provider is xdnative, or in a different DLL
+        // check if the provider refers to us, or a different dll/shared lib
         if (provider != L"xdclient")
         {
             return xcm::null;
@@ -61,14 +61,8 @@ public:
 
         return tango::IDatabasePtr(db, false);
     }
-    
-    tango::IDatabasePtr createDatabase(const std::wstring& location,
-                                       const std::wstring& dbname)
-    {
-        return xcm::null;
-    }
 
-    bool createDatabase(const std::wstring& location, int db_type)
+    bool createDatabase(const std::wstring& connection_str)
     {
         return false;
     }

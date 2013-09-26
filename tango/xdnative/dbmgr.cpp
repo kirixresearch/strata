@@ -17,64 +17,46 @@
 #include <kl/portable.h>
 
 
-tango::IDatabasePtr DatabaseMgr::createDatabase(const std::wstring& location,
-                                                const std::wstring& dbname)
+bool DatabaseMgr::createDatabase(const std::wstring& connection_str)
 {
-    // create the database class
-
-    XdnativeDatabase* db = new XdnativeDatabase;
-    db->ref();
-
-    if (!db->createDatabase(dbname, location))
-    {
-        delete db;
-        return xcm::null;
-    }
-
-    return tango::IDatabasePtr(db, false);
-}
-
-
-bool DatabaseMgr::createDatabase(const std::wstring& location, int db_type)
-{
-    std::string forward;
-    
-    switch (db_type)
-    {
-        case tango::dbtypeXdnative:
-        {
-            // get name of database
-            std::wstring dbname,s2;
-            dbname = kl::afterLast(location, L'\\');
-            s2 = kl::afterLast(location, L'/');
-            if (dbname.length() > s2.length())
-                dbname = s2;
-                
-            XdnativeDatabase* db = new XdnativeDatabase;
-            db->ref();
-
-            if (!db->createDatabase(dbname, location))
-            {
-                db->unref();
-                return false;
-            }
-
-            db->unref();
-            return true;
-        }
+    tango::ConnectionStringParser c(connection_str);
+    std::wstring provider = c.getLowerValue(L"xdprovider");
+    if (provider.empty())
+        return false;
         
-        case tango::dbtypeAccess:   forward = "xdodbc.DatabaseMgr"; break;
-        case tango::dbtypeExcel:    forward = "xdodbc.DatabaseMgr"; break;
-        case tango::dbtypeSqlite:   forward = "xdsqlite.DatabaseMgr"; break;
-    }
-    
-    if (forward.length() > 0)
+    // check if the provider refers to us, or a different dll/shared lib
+    if (provider == L"xdnative")
     {
+        std::wstring location = c.getValue(L"database");
+
+        // get name of database
+        std::wstring dbname,s2;
+        dbname = kl::afterLast(location, L'\\');
+        s2 = kl::afterLast(location, L'/');
+        if (dbname.length() > s2.length())
+            dbname = s2;
+                
+        XdnativeDatabase* db = new XdnativeDatabase;
+        db->ref();
+
+        if (!db->createDatabase(dbname, location))
+        {
+            db->unref();
+            return false;
+        }
+
+        db->unref();
+        return true;
+    }
+     else
+    {
+        std::string forward = kl::tostring(provider) + ".DatabaseMgr";
+
         tango::IDatabaseMgrPtr dbmgr;
         dbmgr.create_instance(forward.c_str());
         if (dbmgr.isOk())
         {
-            return dbmgr->createDatabase(location, db_type);
+            return dbmgr->createDatabase(connection_str);
         }
     }
     
@@ -100,7 +82,7 @@ tango::IDatabasePtr DatabaseMgr::open(const std::wstring& _connection_str)
     if (provider.empty())
         return xcm::null;
     
-    // check if the provider is xdnative, or in a different DLL
+    // check if the provider refers to us, or a different dll/shared lib
     if (provider != L"xdnative")
     {
         // the provider is some other tango DLL; we need to

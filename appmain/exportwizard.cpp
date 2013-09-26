@@ -966,8 +966,9 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
     if ((conn_type == dbtypeAccess || conn_type == dbtypeExcel) &&
         m_template.m_ei.overwrite_file)
     {
-        // since we are dealing with an AccessExcel file,
+        // since we are dealing with an Access or Excel file,
         // we need to create the file before adding tables to it
+
         tango::IDatabaseMgrPtr db_mgr;
         db_mgr.create_instance("xdodbc.DatabaseMgr");
         if (db_mgr.isNull())
@@ -1005,17 +1006,18 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
             }
         }
 
-        db_ptr = db_mgr->createDatabase(towstr(conn_path), L"");
-        if (db_ptr.isNull())
+
+        std::wstring cstr = L"Xdprovider=xdodbc;database=" + towstr(conn_path);
+
+        bool res = db_mgr->createDatabase(cstr);
+        if (!res)
         {
-            appMessageBox(wxString::Format(_("There was an error connecting to the specified %s.\nPlease make sure that the file exists and that it is not currently in use."),
-                                           filetype_name.c_str()),
+            appMessageBox(wxString::Format(_("There was an error connecting to the specified %s.\nPlease make sure that the file exists and that it is not currently in use."), filetype_name.c_str()),
                           _("Export Wizard"),
                           wxOK | wxICON_EXCLAMATION | wxCENTER);
             return;
         }
 
-        db_ptr.clear();
 
         // if we still cannot open a connection to the file after
         // creating the file, bail out

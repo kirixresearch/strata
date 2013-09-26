@@ -36,7 +36,7 @@ public:
         if (provider.empty())
             return xcm::null;
         
-        // check if the provider is xdnative, or in a different DLL
+        // check if the provider refers to us, or a different dll/shared lib
         if (provider != L"xdsqlite")
         {
             return xcm::null;
@@ -63,24 +63,31 @@ public:
         return tango::IDatabasePtr(db, false);
     }
     
-    tango::IDatabasePtr createDatabase(const std::wstring& location,
-                                       const std::wstring& dbname)
+    bool createDatabase(const std::wstring& connection_str)
     {
+        tango::ConnectionStringParser c(connection_str);
+        std::wstring provider = c.getLowerValue(L"xdprovider");
+        if (provider.empty())
+            return false;
+        
+        // check if the provider refers to us, or a different dll/shared lib
+        if (provider != L"xdsqlite")
+            return false;
+
+
+        std::wstring location = c.getValue(L"database");
+
         SlDatabase* db = new SlDatabase;
         db->ref();
 
-        if (!db->createDatabase(location, dbname))
+        if (!db->createDatabase(location))
         {
             db->unref();
-            return xcm::null;
+            return false;
         }
 
-        return tango::IDatabasePtr(db, false);
-    }
-
-    bool createDatabase(const std::wstring& location, int db_type)
-    {
-        return false;
+        db->unref();
+        return true;
     }
     
     tango::IDatabaseEntryEnumPtr getDatabaseList(const std::wstring& host,

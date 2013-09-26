@@ -122,8 +122,7 @@ SlDatabase::~SlDatabase()
     }
 }
 
-bool SlDatabase::createDatabase(const std::wstring& path,
-                                const std::wstring& db_name)
+bool SlDatabase::createDatabase(const std::wstring& path)
 {
     m_sqlite = NULL;
     m_path = L"";

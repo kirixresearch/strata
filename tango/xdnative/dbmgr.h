@@ -28,10 +28,7 @@ class DatabaseMgr : public tango::IDatabaseMgr,
 
 public:
 
-    tango::IDatabasePtr createDatabase(const std::wstring& location,
-                                       const std::wstring& dbname);
-
-    bool createDatabase(const std::wstring& location, int db_type);
+    bool createDatabase(const std::wstring& connection_str);
 
     tango::IDatabasePtr open(const std::wstring& connection_str);
 

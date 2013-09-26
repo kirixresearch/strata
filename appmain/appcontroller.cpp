@@ -9,9 +9,6 @@
  */
 
 
-//#define USE_XDSL
-
-
 #include "appmain.h"
 #include "apphook.h"
 #include "appcontroller.h"
@@ -5814,11 +5811,7 @@ bool AppController::createProject(const wxString& location,
     // actually create the database
 
     xcm::ptr<tango::IDatabaseMgr> dbmgr;
-#ifdef USE_XDSL
-    dbmgr.create_instance("xdsl.DatabaseMgr");
-#else
     dbmgr.create_instance("xdnative.DatabaseMgr");
-#endif
 
     if (dbmgr.isNull())
     {
@@ -5829,15 +5822,20 @@ bool AppController::createProject(const wxString& location,
         return false;
     }
     
-    // create the folder in the filesystem
+    // recursively create project folder
     if (!createFolderStructure(location))
         return false;
 
-    tango::IDatabasePtr database;
-    database = dbmgr->createDatabase(towstr(location), towstr(db_name));
+    // create the database
+    std::wstring cstr = L"Xdprovider=xdnative;Database=" + towstr(location);
+
+    if (!dbmgr->createDatabase(cstr))
+        return false;
+
+    tango::IDatabasePtr database = dbmgr->open(cstr + L";User Id=admin;Password=");
     if (database.isNull())
         return false;
-    
+
     // add an entry in the project manager
     ProjectMgr projmgr;
     projmgr.addProjectEntry(db_name,
@@ -5883,7 +5881,6 @@ bool AppController::openProject(const wxString& location,
     wxString lower_location = location;
     lower_location.MakeLower();
 
-#ifndef USE_XDSL
 
     if (lower_location.Find(L"xdprovider=") == -1 && 
         lower_location.SubString(0,6) != wxT("http://") && 
@@ -5935,8 +5932,6 @@ bool AppController::openProject(const wxString& location,
         }
     }
     
-#endif // #ifndef USE_XDSL
-
 
     wxString cstr;
     if (lower_location.Find(wxT("xdprovider=")) != -1)
