@@ -5828,7 +5828,6 @@ bool AppController::createProject(const wxString& location,
 
     // create the database
     std::wstring cstr = L"Xdprovider=xdnative;Database=" + towstr(location);
-
     if (!dbmgr->createDatabase(cstr))
         return false;
 
