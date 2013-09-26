@@ -24,6 +24,14 @@ void apphookInitMenuBar(wxMenuBar* menubar)
 {
 }
 
+void apphookAppReady()
+{
+}
+
+void apphookPostOpenProject()
+{
+}
+
 bool apphookOpenTemplate(const wxString& location,
                          tango::IFileInfoPtr file_info,
                          bool* handled)

@@ -118,10 +118,10 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;comctl32.lib;wsock32.lib;rpcrt4.lib;wxbase29ud.lib;wxbase29ud_net.lib;wxbase29ud_xml.lib;wxmsw29ud_core.lib;wxmsw29ud_adv.lib;wxmsw29ud_aui.lib;wxmsw29ud_html.lib;wxmsw29ud_stc.lib;wxmsw29ud_webview.lib;wxexpatd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxscintillad.lib;../supp/haru/lib/harud.lib;../supp/curl/builds/libcurl-debug-static-ipv6-sspi-spnego-winssl/lib/libcurl_a_debug.lib;../kl/lib/klud.lib;../kcl/lib/kclud.lib;../jobs/lib/jobsud.lib;../paladin/lib/paladinud.lib;../kscript/lib/kscriptud.lib;../kcanvas/lib/kcanvasud.lib;../webconnect/lib/webconnectud.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;comctl32.lib;wsock32.lib;rpcrt4.lib;wxbase29ud.lib;wxbase29ud_net.lib;wxbase29ud_xml.lib;wxmsw29ud_core.lib;wxmsw29ud_adv.lib;wxmsw29ud_aui.lib;wxmsw29ud_html.lib;wxmsw29ud_stc.lib;wxmsw29ud_webview.lib;wxexpatd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxscintillad.lib;../supp/haru/lib/harud.lib;llibcurl_a_debug.lib;../kl/lib/klud.lib;../kcl/lib/kclud.lib;../jobs/lib/jobsud.lib;../paladin/lib/paladinud.lib;../kscript/lib/kscriptud.lib;../scripthost/lib/scripthostud.lib;../kcanvas/lib/kcanvasud.lib;../webconnect/lib/webconnectud.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>../supp/wxWidgets/lib/vc_lib;../supp/wxpdfdoc/lib;../supp/curl/lib/debug-ssl;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../supp/wxWidgets/lib/vc_lib;../supp/curl/builds/libcurl-debug-static-ssl-static-ipv6-sspi-spnego/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>.\DebugUnicode/appstrata.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
@@ -227,10 +227,10 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;comctl32.lib;wsock32.lib;rpcrt4.lib;wxbase29u.lib;wxbase29u_net.lib;wxbase29u_xml.lib;wxmsw29u_core.lib;wxmsw29u_adv.lib;wxmsw29u_aui.lib;wxmsw29u_html.lib;wxmsw29u_stc.lib;wxmsw29u_webview.lib;wxexpat.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;wxscintilla.lib;../supp/haru/lib/haru.lib;../supp/curl/builds/libcurl-release-static-ipv6-sspi-spnego-winssl/lib/libcurl_a.lib;../kl/lib/klu.lib;../kcl/lib/kclu.lib;../jobs/lib/jobsu.lib;../paladin/lib/paladinu.lib;../kscript/lib/kscriptu.lib;../kcanvas/lib/kcanvasu.lib;../webconnect/lib/webconnectu.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;comctl32.lib;wsock32.lib;rpcrt4.lib;wxbase29u.lib;wxbase29u_net.lib;wxbase29u_xml.lib;wxmsw29u_core.lib;wxmsw29u_adv.lib;wxmsw29u_aui.lib;wxmsw29u_html.lib;wxmsw29u_stc.lib;wxmsw29u_webview.lib;wxexpat.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;wxscintilla.lib;../supp/haru/lib/haru.lib;libcurl_a.lib;../kl/lib/klu.lib;../kcl/lib/kclu.lib;../jobs/lib/jobsu.lib;../paladin/lib/paladinu.lib;../kscript/lib/kscriptu.lib;../scripthost/lib/scripthostu.lib;../kcanvas/lib/kcanvasu.lib;../webconnect/lib/webconnectu.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>../supp/wxWidgets/lib/vc_lib;../supp/wxpdfdoc/lib;../supp/curl/lib/release-ssl;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../supp/wxWidgets/lib/vc_lib;../supp/curl/builds/libcurl-release-static-ssl-static-ipv6-sspi-spnego/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>.\ReleaseUnicode/appstrata.pdb</ProgramDatabaseFile>
       <GenerateMapFile>true</GenerateMapFile>
       <MapFileName>
@@ -329,7 +329,6 @@
     <ClCompile Include="..\appmain\appprint.cpp" />
     <ClCompile Include="..\appmain\artprovider.cpp" />
     <ClCompile Include="..\appmain\bitmapmgr.cpp" />
-    <ClCompile Include="..\appmain\bookmark.cpp" />
     <ClCompile Include="..\appmain\bookmarkfs.cpp" />
     <ClCompile Include="..\appmain\commandmgr.cpp" />
     <ClCompile Include="..\appmain\commands.cpp" />
@@ -377,6 +376,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="..\appmain\exportpages.cpp" />
+    <ClCompile Include="..\appmain\exporttemplate.cpp" />
     <ClCompile Include="..\appmain\exportwizard.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -429,107 +429,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="..\appmain\inetauth.cpp" />
-    <ClCompile Include="..\appmain\jobappend.cpp">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="..\appmain\jobcopy.cpp">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="..\appmain\jobexport.cpp">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="..\appmain\jobexportpkg.cpp">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
     <ClCompile Include="..\appmain\jobfindinfiles.cpp" />
-    <ClCompile Include="..\appmain\jobgroup.cpp">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="..\appmain\jobimport.cpp">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="..\appmain\jobimportpkg.cpp">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="..\appmain\jobindex.cpp">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="..\appmain\jobmodifystruct.cpp">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="..\appmain\jobquery.cpp">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
     <ClCompile Include="..\appmain\jobqueue.cpp" />
     <ClCompile Include="..\appmain\jobscheduler.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -541,26 +441,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="..\appmain\jobscript.cpp">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="..\appmain\jobsplit.cpp">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
+    <ClCompile Include="..\appmain\jobscript.cpp" />
     <ClCompile Include="..\appmain\jsonconfig.cpp" />
     <ClCompile Include="..\appmain\linkbar.cpp" />
     <ClCompile Include="..\appmain\moduleremoveduprec.cpp" />
@@ -728,16 +609,6 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="..\appmain\pkgfile.cpp">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
     <ClCompile Include="..\appmain\prefs.cpp" />
     <ClCompile Include="..\appmain\querydoc.cpp" />
     <ClCompile Include="..\appmain\querytemplate.cpp" />
@@ -756,32 +627,15 @@
     <ClCompile Include="..\appmain\reportengine.cpp" />
     <ClCompile Include="..\appmain\reportlayout.cpp" />
     <ClCompile Include="..\appmain\reportmodel.cpp" />
-    <ClCompile Include="..\appmain\reportstore.cpp">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
     <ClCompile Include="..\appmain\scriptapp.cpp" />
     <ClCompile Include="..\appmain\scriptbanner.cpp" />
-    <ClCompile Include="..\appmain\scriptbase64.cpp" />
     <ClCompile Include="..\appmain\scriptbitmap.cpp" />
     <ClCompile Include="..\appmain\scriptbutton.cpp" />
     <ClCompile Include="..\appmain\scriptcombo.cpp" />
-    <ClCompile Include="..\appmain\scriptcrypt.cpp" />
-    <ClCompile Include="..\appmain\scriptdb.cpp" />
     <ClCompile Include="..\appmain\scriptdlg.cpp" />
-    <ClCompile Include="..\appmain\scriptenvironment.cpp" />
-    <ClCompile Include="..\appmain\scriptfile.cpp" />
-    <ClCompile Include="..\appmain\scriptfiletransfer.cpp" />
     <ClCompile Include="..\appmain\scriptfont.cpp" />
     <ClCompile Include="..\appmain\scriptgraphics.cpp" />
     <ClCompile Include="..\appmain\scriptgui.cpp" />
-    <ClCompile Include="..\appmain\scripthash.cpp" />
     <ClCompile Include="..\appmain\scripthost.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -794,20 +648,17 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="..\appmain\scripthostapp.cpp" />
-    <ClCompile Include="..\appmain\scripthttp.cpp" />
     <ClCompile Include="..\appmain\scriptlayout.cpp" />
     <ClCompile Include="..\appmain\scriptlist.cpp" />
     <ClCompile Include="..\appmain\scriptlistview.cpp" />
-    <ClCompile Include="..\appmain\scriptmemory.cpp" />
     <ClCompile Include="..\appmain\scriptmenu.cpp" />
-    <ClCompile Include="..\appmain\scriptnative.cpp" />
     <ClCompile Include="..\appmain\scriptprocess.cpp" />
     <ClCompile Include="..\appmain\scriptprogress.cpp" />
     <ClCompile Include="..\appmain\scriptreport.cpp" />
     <ClCompile Include="..\appmain\scriptslider.cpp" />
     <ClCompile Include="..\appmain\scriptspin.cpp" />
     <ClCompile Include="..\appmain\scriptstatusbar.cpp" />
-    <ClCompile Include="..\appmain\scriptsystem.cpp" />
+    <ClCompile Include="..\appmain\scriptsystemgui.cpp" />
     <ClCompile Include="..\appmain\scripttable.cpp" />
     <ClCompile Include="..\appmain\scripttext.cpp" />
     <ClCompile Include="..\appmain\scripttoolbar.cpp" />
@@ -816,7 +667,6 @@
     </ClCompile>
     <ClCompile Include="..\appmain\scriptwebbrowser.cpp" />
     <ClCompile Include="..\appmain\scriptwebdom.cpp" />
-    <ClCompile Include="..\appmain\scriptxml.cpp" />
     <ClCompile Include="..\appmain\sqldoc.cpp" />
     <ClCompile Include="..\appmain\statusbar.cpp" />
     <ClCompile Include="..\appmain\structuredoc.cpp" />
@@ -890,7 +740,6 @@
     <ClInclude Include="..\appmain\appprint.h" />
     <ClInclude Include="..\appmain\artprovider.h" />
     <ClInclude Include="..\appmain\bitmapmgr.h" />
-    <ClInclude Include="..\appmain\bookmark.h" />
     <ClInclude Include="..\appmain\bookmarkfs.h" />
     <ClInclude Include="..\appmain\commandmgr.h" />
     <ClInclude Include="..\appmain\commands.h" />
@@ -912,6 +761,7 @@
     <ClInclude Include="..\appmain\dociface.h" />
     <ClInclude Include="..\appmain\editordoc.h" />
     <ClInclude Include="..\appmain\exportpages.h" />
+    <ClInclude Include="..\appmain\exporttemplate.h" />
     <ClInclude Include="..\appmain\exportwizard.h" />
     <ClInclude Include="..\appmain\exprbuilder.h" />
     <ClInclude Include="..\appmain\extensionmgr.h" />
@@ -931,22 +781,10 @@
     <ClInclude Include="..\appmain\importtemplate.h" />
     <ClInclude Include="..\appmain\importwizard.h" />
     <ClInclude Include="..\appmain\inetauth.h" />
-    <ClInclude Include="..\appmain\jobappend.h" />
-    <ClInclude Include="..\appmain\jobcopy.h" />
-    <ClInclude Include="..\appmain\jobexport.h" />
-    <ClInclude Include="..\appmain\jobexportpkg.h" />
     <ClInclude Include="..\appmain\jobfindinfiles.h" />
-    <ClInclude Include="..\appmain\jobgroup.h" />
-    <ClInclude Include="..\appmain\jobimport.h" />
-    <ClInclude Include="..\appmain\jobimportpkg.h" />
-    <ClInclude Include="..\appmain\jobindex.h" />
-    <ClInclude Include="..\appmain\jobmodifystruct.h" />
-    <ClInclude Include="..\appmain\jobquery.h" />
     <ClInclude Include="..\appmain\jobqueue.h" />
-    <ClInclude Include="..\appmain\jobqueue_private.h" />
     <ClInclude Include="..\appmain\jobscheduler.h" />
     <ClInclude Include="..\appmain\jobscript.h" />
-    <ClInclude Include="..\appmain\jobsplit.h" />
     <ClInclude Include="..\appmain\jsonconfig.h" />
     <ClInclude Include="..\appmain\linkbar.h" />
     <ClInclude Include="..\appmain\moduleremoveduprec.h" />
@@ -970,7 +808,6 @@
     <ClInclude Include="..\appmain\panelreplacerows.h" />
     <ClInclude Include="..\appmain\panelsplit.h" />
     <ClInclude Include="..\appmain\panelview.h" />
-    <ClInclude Include="..\appmain\pkgfile.h" />
     <ClInclude Include="..\appmain\prefs.h" />
     <ClInclude Include="..\appmain\prefs_private.h" />
     <ClInclude Include="..\appmain\querydoc.h" />
@@ -982,46 +819,34 @@
     <ClInclude Include="..\appmain\reportengine.h" />
     <ClInclude Include="..\appmain\reportlayout.h" />
     <ClInclude Include="..\appmain\reportmodel.h" />
-    <ClInclude Include="..\appmain\reportstore.h" />
     <ClInclude Include="..\appmain\scriptapp.h" />
     <ClInclude Include="..\appmain\scriptbanner.h" />
-    <ClInclude Include="..\appmain\scriptbase64.h" />
     <ClInclude Include="..\appmain\scriptbitmap.h" />
     <ClInclude Include="..\appmain\scriptbutton.h" />
     <ClInclude Include="..\appmain\scriptcombo.h" />
-    <ClInclude Include="..\appmain\scriptcrypt.h" />
-    <ClInclude Include="..\appmain\scriptdb.h" />
     <ClInclude Include="..\appmain\scriptdlg.h" />
-    <ClInclude Include="..\appmain\scriptenvironment.h" />
-    <ClInclude Include="..\appmain\scriptfile.h" />
-    <ClInclude Include="..\appmain\scriptfiletransfer.h" />
     <ClInclude Include="..\appmain\scriptfont.h" />
     <ClInclude Include="..\appmain\scriptgraphics.h" />
     <ClInclude Include="..\appmain\scriptgui.h" />
-    <ClInclude Include="..\appmain\scripthash.h" />
     <ClInclude Include="..\appmain\scripthost.h" />
     <ClInclude Include="..\appmain\scripthostapp.h" />
-    <ClInclude Include="..\appmain\scripthttp.h" />
     <ClInclude Include="..\appmain\scriptlayout.h" />
     <ClInclude Include="..\appmain\scriptlist.h" />
     <ClInclude Include="..\appmain\scriptlistview.h" />
-    <ClInclude Include="..\appmain\scriptmemory.h" />
     <ClInclude Include="..\appmain\scriptmenu.h" />
-    <ClInclude Include="..\appmain\scriptnative.h" />
     <ClInclude Include="..\appmain\scriptprocess.h" />
     <ClInclude Include="..\appmain\scriptprogress.h" />
     <ClInclude Include="..\appmain\scriptreport.h" />
     <ClInclude Include="..\appmain\scriptslider.h" />
     <ClInclude Include="..\appmain\scriptspin.h" />
     <ClInclude Include="..\appmain\scriptstatusbar.h" />
-    <ClInclude Include="..\appmain\scriptsystem.h" />
+    <ClInclude Include="..\appmain\scriptsystemgui.h" />
     <ClInclude Include="..\appmain\scripttable.h" />
     <ClInclude Include="..\appmain\scripttext.h" />
     <ClInclude Include="..\appmain\scripttoolbar.h" />
     <ClInclude Include="..\appmain\scripttreeview.h" />
     <ClInclude Include="..\appmain\scriptwebbrowser.h" />
     <ClInclude Include="..\appmain\scriptwebdom.h" />
-    <ClInclude Include="..\appmain\scriptxml.h" />
     <ClInclude Include="..\appmain\sqldoc.h" />
     <ClInclude Include="..\appmain\statusbar.h" />
     <ClInclude Include="..\appmain\structuredoc.h" />
