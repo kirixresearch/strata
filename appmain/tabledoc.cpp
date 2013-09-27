@@ -3596,8 +3596,8 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
 
     // get column info from the grid
     kcl::IModelPtr model = m_grid->getModel();
-    IXdGridModelPtr tango_grid_model = model;
-    if (!tango_grid_model)
+    IXdGridModelPtr xd_grid_model = model;
+    if (!xd_grid_model)
         return;
         
     kcl::IModelColumnPtr grid_colinfo = model->getColumnInfo(model_col);
@@ -3631,14 +3631,14 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
         case xd::typeCharacter:
         {
             // we'll handle quoting in the menu expression function
-            value = tango_grid_model->getCellString(row, model_col);
+            value = xd_grid_model->getCellString(row, model_col);
             break;
         }
 
         case xd::typeDouble:
         case xd::typeNumeric:
         {
-            double d = tango_grid_model->getCellDouble(row, model_col);
+            double d = xd_grid_model->getCellDouble(row, model_col);
             value = wxString::Format(wxT("%.*f"), colinfo->getScale(), d);
             value.Replace(wxT(","), wxT("."));
         }
@@ -3646,14 +3646,14 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
 
         case xd::typeInteger:
         {
-            int i = tango_grid_model->getCellInteger(row, model_col);
+            int i = xd_grid_model->getCellInteger(row, model_col);
             value = wxString::Format(wxT("%d"), i);
         }
         break;
 
         case xd::typeDate:
         {   
-            xd::datetime_t d = tango_grid_model->getCellDateTime(row, model_col);
+            xd::datetime_t d = xd_grid_model->getCellDateTime(row, model_col);
             if (d == 0)
                 value = wxT("null");
             else
@@ -3683,7 +3683,7 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
 
         case xd::typeDateTime:
         {
-            xd::datetime_t d = tango_grid_model->getCellDateTime(row, model_col);
+            xd::datetime_t d = xd_grid_model->getCellDateTime(row, model_col);
             if (d == 0)
                 value = wxT("null");
             else
@@ -3716,7 +3716,7 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
 
         case xd::typeBoolean:
         {
-            bool bool_value = tango_grid_model->getCellBoolean(row, model_col);        
+            bool bool_value = xd_grid_model->getCellBoolean(row, model_col);        
             switch (m_db_type)
             {            
                 default:
@@ -4723,8 +4723,8 @@ std::wstring TableDoc::getWhereExpressionForRow(int row)
         return L"";
 
     kcl::IModelPtr model = m_grid->getModel();
-    IXdGridModelPtr tango_grid_model = model;
-    if (tango_grid_model.isNull())
+    IXdGridModelPtr xd_grid_model = model;
+    if (xd_grid_model.isNull())
         return L"";
 
     if (!model->isRowValid(row))
@@ -4744,7 +4744,7 @@ std::wstring TableDoc::getWhereExpressionForRow(int row)
     if (primary_key.empty() && db_driver != L"xdnative" && db_driver != L"xdclient" && db_driver != L"xdcommon")
         return L"";
 
-    xd::rowid_t rowid = tango_grid_model->getRowId(row);
+    xd::rowid_t rowid = xd_grid_model->getRowId(row);
     if ((db_driver == L"xdnative" || db_driver == L"xdclient" || db_driver == L"xdcommon") && rowid == 0)
         return L"";
 
@@ -4872,8 +4872,8 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
     xd::IDatabasePtr db = g_app->getDatabase();
     kcl::IModelPtr model = m_grid->getModel();
 
-    IXdGridModelPtr tango_grid_model = model;
-    if (tango_grid_model.isNull())
+    IXdGridModelPtr xd_grid_model = model;
+    if (xd_grid_model.isNull())
         return;
 
     kcl::IModelColumnPtr model_colinfo = model->getColumnInfo(model_col);
@@ -4901,7 +4901,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
 
     wxString col_name = model_colinfo->getName();
 
-    xd::rowid_t rowid = tango_grid_model->getRowId(m_grid->getCursorRow());
+    xd::rowid_t rowid = xd_grid_model->getRowId(m_grid->getCursorRow());
     if ((db_driver == L"xdnative" || db_driver == wxT("xdclient")) && rowid == 0)
         return;
 
@@ -7019,10 +7019,10 @@ bool TableDoc::findNextMatch(const wxString& _expr,
                              bool whole_cell)
 {
     // make sure the eof is known
-    IXdGridModelPtr tango_grid_model = m_grid_model;
-    if (!tango_grid_model->isEofKnown())
+    IXdGridModelPtr xd_grid_model = m_grid_model;
+    if (!xd_grid_model->isEofKnown())
     {
-        tango_grid_model->discoverEof();
+        xd_grid_model->discoverEof();
         m_grid->refresh(kcl::Grid::refreshAll);
     }
 
