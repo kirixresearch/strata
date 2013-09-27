@@ -11,7 +11,7 @@
 #include <kl/portable.h>
 #include <kl/math.h>
 #include <kl/string.h>
-#include "tango.h"
+#include <xd/xd.h>
 #include "groupquery.h"
 #include "jobinfo.h"
 #include "util.h"

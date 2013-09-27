@@ -14,7 +14,7 @@
 #endif
 
 
-#include "tango.h"
+#include <xd/xd.h>
 #include "../xdcommon/xdcommon.h"
 #include "../xdcommon/exindex.h"
 #include "../xdcommon/idxutil.h"

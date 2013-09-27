@@ -13,7 +13,7 @@
 #define __XDCOMMON_XDCOMMON_H
 
 
-#include "tango.h"
+#include <xd/xd.h>
 #include "structure.h"
 #include "columninfo.h"
 #include "jobinfo.h"

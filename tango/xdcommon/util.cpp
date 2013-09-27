@@ -20,7 +20,7 @@
 #include <xcm/xcm.h>
 #include <kl/portable.h>
 #include <kl/string.h>
-#include "tango.h"
+#include <xd/xd.h>
 #include "util.h"
 #include "../../kscript/kscript.h"
 #include "../../kscript/functions.h"

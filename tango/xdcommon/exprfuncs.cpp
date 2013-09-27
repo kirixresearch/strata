@@ -14,7 +14,7 @@
 #endif
 
 
-#include "tango.h"
+#include <xd/xd.h>
 #include "util.h"
 #include <kl/string.h>
 #include <kl/portable.h>

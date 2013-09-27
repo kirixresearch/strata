@@ -25,7 +25,7 @@
 #include <kl/md5.h>
 
 
-#include "tango.h"
+#include <xd/xd.h>
 #include "database.h"
 #include "inserter.h"
 #include "iterator.h"

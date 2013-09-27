@@ -15,7 +15,7 @@
 
 #include "libpq-fe.h"
 #include "libpq/libpq-fs.h"
-#include "tango.h"
+#include <xd/xd.h>
 #include "database.h"
 #include "stream.h"
 

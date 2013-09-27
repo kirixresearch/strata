@@ -10,7 +10,7 @@
 
 
 #include "libpq-fe.h"
-#include "tango.h"
+#include <xd/xd.h>
 #include "database.h"
 #include "iterator.h"
 #include "../xdcommon/xdcommon.h"

@@ -16,7 +16,7 @@
 
 #include <ctime>
 #include "xbase.h"
-#include "tango.h"
+#include <xd/xd.h>
 #include "../xdcommon/util.h"
 
 

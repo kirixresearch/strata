@@ -10,7 +10,7 @@
 
 
 #include <kl/file.h>
-#include "tango.h"
+#include <xd/xd.h>
 #include "exkeypool.h"
 #include "rowidarray.h"
 #include "util.h"

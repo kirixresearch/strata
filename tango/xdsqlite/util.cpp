@@ -9,7 +9,7 @@
  */
 
 
-#include "tango.h"
+#include <xd/xd.h>
 #include "../xdcommon/columninfo.h"
 #include "../xdcommon/structure.h"
 #include "../xdcommon/util.h"

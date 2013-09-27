@@ -15,7 +15,7 @@
 #include <kl/klib.h>
 #include <kl/md5.h>
 #include <kl/utf8.h>
-#include "tango.h"
+#include <xd/xd.h>
 #include "database.h"
 #include "inserter.h"
 #include "iterator.h"

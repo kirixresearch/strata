@@ -14,7 +14,7 @@
 #endif
 
 
-#include "tango.h"
+#include <xd/xd.h>
 #include "../xdcommon/tango_private.h"
 #include "../xdcommon/errorinfo.h"
 #include "../xdcommon/util.h"

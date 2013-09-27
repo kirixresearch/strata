@@ -14,7 +14,7 @@
 #endif
 
 
-#include "tango.h"
+#include <xd/xd.h>
 #include "nodefilestream.h"
 #include "database.h"
 #include "ofs.h"

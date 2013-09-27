@@ -19,7 +19,7 @@
 #include <kl/portable.h>
 #include <kl/math.h>
 #include <set>
-#include "tango.h"
+#include <xd/xd.h>
 #include "util.h"
 #include "../xdcommon/util.h"
 #include "../../kscript/kscript.h"

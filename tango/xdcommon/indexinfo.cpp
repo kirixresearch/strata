@@ -9,7 +9,7 @@
  */
 
 
-#include "tango.h"
+#include <xd/xd.h>
 #include "indexinfo.h"
 
 

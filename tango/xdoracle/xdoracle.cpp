@@ -14,7 +14,7 @@
 #endif
 
 
-#include "tango.h"
+#include <xd/xd.h>
 #include <oci.h>
 #include "database.h"
 #include "../xdcommon/connectionstr.h"

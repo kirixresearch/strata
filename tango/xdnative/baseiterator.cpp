@@ -17,7 +17,7 @@
 #include <kl/portable.h>
 #include <kl/math.h>
 #include <algorithm>
-#include "tango.h"
+#include <xd/xd.h>
 #include "database.h"
 #include "baseset.h"
 #include "baseiterator.h"

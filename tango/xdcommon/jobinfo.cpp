@@ -15,7 +15,7 @@
 
 
 #include <ctime>
-#include "tango.h"
+#include <xd/xd.h>
 #include "jobinfo.h"
 
 

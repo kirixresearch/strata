@@ -13,7 +13,7 @@
 #define __APP_TANGOGRIDMODEL_H
 
 
-#include "tango.h"
+#include <xd/xd.h>
 #include <wx/hashmap.h>
 
 

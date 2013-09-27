@@ -14,7 +14,7 @@
 #endif
 
 
-#include "tango.h"
+#include <xd/xd.h>
 #include "structure.h"
 #include "columninfo.h"
 #include "util.h"

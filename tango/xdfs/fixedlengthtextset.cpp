@@ -15,7 +15,7 @@
 
 
 #include <cmath>
-#include "tango.h"
+#include <xd/xd.h>
 #include "xdfs.h"
 #include "database.h"
 #include "rawtext.h"

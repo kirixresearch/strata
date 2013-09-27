@@ -17,7 +17,7 @@
 #include <kl/portable.h>
 #include <kl/string.h>
 #include <kl/regex.h>
-#include "tango.h"
+#include <xd/xd.h>
 #include "xdcommonsql.h"
 #include "../xdcommon/util.h"
 #include "../xdcommon/exindex.h"

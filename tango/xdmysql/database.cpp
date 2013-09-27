@@ -23,7 +23,7 @@
 #include <kl/portable.h>
 #include <kl/regex.h>
 #include <kl/md5.h>
-#include "tango.h"
+#include <xd/xd.h>
 #include "../xdcommon/structure.h"
 #include "../xdcommon/dbattr.h"
 #include "../xdcommon/fileinfo.h"

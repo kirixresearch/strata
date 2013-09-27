@@ -9,7 +9,7 @@
  */
 
 
-#include "tango.h"
+#include <xd/xd.h>
 #include "xdcommon.h"
 #include "extfileinfo.h"
 #include <kl/file.h>

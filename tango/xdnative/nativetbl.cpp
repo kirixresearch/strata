@@ -18,7 +18,7 @@
 #include <ctime>
 #include <xcm/xcm.h>
 #include <kl/klib.h>
-#include "tango.h"
+#include <xd/xd.h>
 #include "nativetbl.h"
 #include "bitmapfile.h"
 #include "util.h"

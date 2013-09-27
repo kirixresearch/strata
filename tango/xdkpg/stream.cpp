@@ -16,7 +16,7 @@
 
 #include <kl/file.h>
 #include <kl/xml.h>
-#include "tango.h"
+#include <xd/xd.h>
 #include "database.h"
 #include "stream.h"
 #include "pkgfile.h"

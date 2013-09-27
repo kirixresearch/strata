@@ -18,7 +18,7 @@
 #include <kl/portable.h>
 #include <map>
 #include <ctime>
-#include "tango.h"
+#include <xd/xd.h>
 #include "xdcommonsql.h"
 #include "../xdcommon/util.h"
 #include "../xdcommon/jobinfo.h"

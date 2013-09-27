@@ -12,7 +12,7 @@
 
 
 #include "libpq-fe.h"
-#include "tango.h"
+#include <xd/xd.h>
 #include "database.h"
 #include "inserter.h"
 #include <kl/portable.h>

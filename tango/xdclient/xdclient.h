@@ -4,7 +4,7 @@
 #include <xcm/xcm.h>
 #include "../../kscript/kscript.h"
 
-#include "tango.h"
+#include <xd/xd.h>
 
 #include "../xdcommon/xdcommon.h"
 #include "../xdcommon/errorinfo.h"

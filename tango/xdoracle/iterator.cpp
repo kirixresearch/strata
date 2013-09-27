@@ -16,7 +16,7 @@
 
 #include <kl/klib.h>
 #include <oci.h>
-#include "tango.h"
+#include <xd/xd.h>
 #include "database.h"
 #include "set.h"
 #include "iterator.h"

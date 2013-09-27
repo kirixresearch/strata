@@ -16,7 +16,7 @@
 
 #include "libpq-fe.h"
 #include "libpq/libpq-fs.h"
-#include "tango.h"
+#include <xd/xd.h>
 #include "../xdcommon/dbattr.h"
 #include "../xdcommon/dbfuncs.h"
 #include "../xdcommon/fileinfo.h"

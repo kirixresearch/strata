@@ -17,7 +17,7 @@
 #include <kl/math.h>
 #include <kl/json.h>
 #include "jobs.h"
-#include "tango.h"
+#include <xd/xd.h>
 #include "jobbase.h"
 #include "xdjobbase.h"
 

@@ -10,7 +10,7 @@
 
 
 #include <kl/klib.h>
-#include "tango.h"
+#include <xd/xd.h>
 #include "database.h"
 #include "pkgfile.h"
 #include "../xdcommon/connectionstr.h"

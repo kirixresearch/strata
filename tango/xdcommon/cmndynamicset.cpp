@@ -14,7 +14,7 @@
 #endif
 
 
-#include "tango.h"
+#include <xd/xd.h>
 #include "util.h"
 #include "exindex.h"
 #include "keylayout.h"

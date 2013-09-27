@@ -13,7 +13,7 @@
 #define __XDNATIVE_DBMGR_H
 
 
-#include "tango.h"
+#include <xd/xd.h>
 #include "../xdcommon/errorinfo.h"
 
 

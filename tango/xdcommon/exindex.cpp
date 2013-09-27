@@ -20,7 +20,7 @@
 #include <kl/math.h>
 #include <kl/memory.h>
 #include <kl/portable.h>
-#include "tango.h"
+#include <xd/xd.h>
 #include "exindex.h"
 #include "exkeypool.h"
 #include "../xdcommon/xdcommon.h"

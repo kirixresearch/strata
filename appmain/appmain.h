@@ -59,7 +59,7 @@
 #include <kl/klib.h>
 #include <kl/json.h>
 #include <kl/thread.h>
-#include "tango.h"
+#include <xd/xd.h>
 #include "commands.h"
 
 // framework/control includes

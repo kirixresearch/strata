@@ -16,7 +16,7 @@
 
 #include <tds.h>
 #include <ctpublic.h>
-#include "tango.h"
+#include <xd/xd.h>
 #include "database.h"
 
 

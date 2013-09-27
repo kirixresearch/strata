@@ -10,7 +10,7 @@
 
 
 #include <kl/klib.h>
-#include "tango.h"
+#include <xd/xd.h>
 #include "bufiterator.h"
 #include "util.h"
 #include "../xdcommon/exindex.h"

@@ -17,7 +17,7 @@
 #include <tds.h>
 #include <ctpublic.h>
 #include <kl/klib.h>
-#include "tango.h"
+#include <xd/xd.h>
 #include "database.h"
 #include "set.h"
 #include "iterator.h"

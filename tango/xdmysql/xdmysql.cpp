@@ -17,8 +17,8 @@
 
 #include "mysql.h"
 
-#include "tango.h"
-#include "xdutil.h"
+#include <xd/xd.h>
+#include <xd/util.h>
 
 #include "database.h"
 #include "../xdcommon/connectionstr.h"

@@ -18,7 +18,7 @@
 #include <ctime>
 #include <kl/portable.h>
 #include <kl/math.h>
-#include "tango.h"
+#include <xd/xd.h>
 #include "database.h"
 #include "../xdcommon/xdcommon.h"
 #include "../xdcommon/exindex.h"

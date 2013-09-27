@@ -11,7 +11,7 @@
 
 #include <kl/klib.h>
 #include <ctime>
-#include "tango.h"
+#include <xd/xd.h>
 #include "jobinfo.h"
 #include "dbfuncs.h"
 

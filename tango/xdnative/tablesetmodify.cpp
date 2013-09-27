@@ -11,7 +11,7 @@
 
 #include <ctime>
 #include <kl/klib.h>
-#include "tango.h"
+#include <xd/xd.h>
 #include "xdnative_private.h"
 #include "util.h"
 #include "nativetbl.h"

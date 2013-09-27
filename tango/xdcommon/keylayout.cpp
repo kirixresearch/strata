@@ -10,7 +10,7 @@
 
 
 #include <kl/klib.h>
-#include "tango.h"
+#include <xd/xd.h>
 #include "keylayout.h"
 #include "../xdcommon/util.h"
 
