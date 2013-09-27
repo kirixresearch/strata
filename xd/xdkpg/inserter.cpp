@@ -183,7 +183,7 @@ bool KpgRowInserter::startInsert(const std::wstring& col_list)
         {
             KpgInsertFieldData fd;
             fd.m_name = colinfo->getName();
-            fd.m_tango_type = colinfo->getType();
+            fd.m_xd_type = colinfo->getType();
             fd.m_width = colinfo->getWidth();
             fd.m_scale = colinfo->getScale();
             fd.m_offset = total_phys_width;
@@ -342,7 +342,7 @@ bool KpgRowInserter::insertRow()
     for (it = m_fields.begin(); it != it_end; ++it)
     {
 
-        switch (it->m_tango_type)
+        switch (it->m_xd_type)
         {
             case xd::typeCharacter:
             {

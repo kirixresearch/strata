@@ -194,7 +194,7 @@ public:
                     ModelValue* v = static_cast<ModelValue*>(retval);
                     if (v)
                     {
-                        v->m_tango_type = type;
+                        v->m_xd_type = type;
                     }
                     */
                 }
@@ -275,7 +275,7 @@ CellExpression::CellExpression()
     m_parsehook_param = NULL;
 
     // expression field info
-    m_tango_type = typeInvalid;
+    m_xd_type = typeInvalid;
     m_max_scale = 0;
 }
 
@@ -293,7 +293,7 @@ CellExpression::CellExpression(const CellExpression& c)
     m_parsehook_param = c.m_parsehook_param;
 
     // expression field info
-    m_tango_type = c.m_tango_type;
+    m_xd_type = c.m_xd_type;
     m_max_scale = c.m_max_scale;
 }
 
@@ -414,7 +414,7 @@ bool CellExpression::getResult(wxString& result)
 
                     kscript::ExprDateTime dt = m_retval->getDateTime();
                     
-                    if (m_tango_type != typeDateTime)
+                    if (m_xd_type != typeDateTime)
                     {
                         // if the kscript type is a date and the tango type is
                         // anything besides a datetime, format the date without
@@ -430,7 +430,7 @@ bool CellExpression::getResult(wxString& result)
                                                              day).c_str();
                         }
                     }
-                    else if (m_tango_type == typeDateTime)
+                    else if (m_xd_type == typeDateTime)
                     {
                         // if the kscript type is a date and the tango type is
                         // datetime, format the date with the timestamp portion
@@ -474,11 +474,11 @@ bool CellExpression::getResult(wxString& result)
 
 void CellExpression::trackType(int type)
 {
-    if (type == typeDate && m_tango_type != typeDateTime)
-        m_tango_type = typeDate;
+    if (type == typeDate && m_xd_type != typeDateTime)
+        m_xd_type = typeDate;
 
     if (type == typeDateTime)
-        m_tango_type = typeDateTime;
+        m_xd_type = typeDateTime;
 }
 
 void CellExpression::trackScale(int scale)
@@ -501,7 +501,7 @@ ModelColumn::ModelColumn()
 {
     m_name = wxT("");
     m_handle = 0;
-    m_tango_type = 0;
+    m_xd_type = 0;
     m_type = 0;
     m_width = 0;
     m_scale = 0;
@@ -1320,7 +1320,7 @@ wxString TangoModel::getString(int col_idx, int function)
         return wxT("");
 
     wxString value;
-    int col_type = m_columns[col_idx]->m_tango_type;
+    int col_type = m_columns[col_idx]->m_xd_type;
 
     switch (col_type)
     {
@@ -1404,7 +1404,7 @@ xd::DateTime TangoModel::getDateTime(int col_idx, int function)
         return value;
 
     // get the column
-    int col_type = m_columns[col_idx]->m_tango_type;
+    int col_type = m_columns[col_idx]->m_xd_type;
 
     // get the value
     switch (col_type)
@@ -1472,7 +1472,7 @@ double TangoModel::getDouble(int col_idx, int function)
         return 0.0f;
 
     double value;
-    int col_type = m_columns[col_idx]->m_tango_type;
+    int col_type = m_columns[col_idx]->m_xd_type;
 
     // if the type is not double or numeric, return 0
     if (col_type != xd::typeDouble && col_type != xd::typeNumeric)
@@ -1558,7 +1558,7 @@ int TangoModel::getInteger(int col_idx, int function)
         return 0;
 
     int value;
-    int col_type = m_columns[col_idx]->m_tango_type;
+    int col_type = m_columns[col_idx]->m_xd_type;
 
     // if the type is not integer, return 0
     if (col_type != xd::typeInteger)
@@ -1644,7 +1644,7 @@ bool TangoModel::getBoolean(int col_idx, int function)
         return false;
 
     bool value = false;
-    int col_type = m_columns[col_idx]->m_tango_type;
+    int col_type = m_columns[col_idx]->m_xd_type;
 
     // if the type is not boolean, return false
     if (col_type != xd::typeBoolean)
@@ -1868,11 +1868,11 @@ void TangoModel::refresh()
         m_columns[i]->m_name = structure->getColumnName(i);
         m_columns[i]->m_handle = m_iter->getHandle(towstr(m_columns[i]->m_name));
         spCol = m_iter->getInfo(m_columns[i]->m_handle);
-        m_columns[i]->m_tango_type = spCol->getType();
+        m_columns[i]->m_xd_type = spCol->getType();
         m_columns[i]->m_width = spCol->getWidth();
         m_columns[i]->m_scale = spCol->getScale();
 
-        switch (m_columns[i]->m_tango_type)
+        switch (m_columns[i]->m_xd_type)
         {
             case xd::typeCharacter:     m_columns[i]->m_type = typeCharacter; break;
             case xd::typeWideCharacter: m_columns[i]->m_type = typeCharacter; break;

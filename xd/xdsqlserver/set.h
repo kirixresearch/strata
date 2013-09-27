@@ -60,7 +60,7 @@ class SqlServerInsertData
 public:
     std::wstring m_col_name;
 
-    int m_tango_type;
+    int m_xd_type;
     int m_tango_width;
     int m_tango_scale;
 

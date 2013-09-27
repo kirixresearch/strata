@@ -86,7 +86,7 @@ bool OdbcRowInserter::putString(xd::objhandle_t column_handle,
         return false;
     }
 
-    if (f->m_tango_type == xd::typeWideCharacter)
+    if (f->m_xd_type == xd::typeWideCharacter)
     {
         return putWideString(column_handle, kl::towstring(value));
     }
@@ -111,7 +111,7 @@ bool OdbcRowInserter::putWideString(xd::objhandle_t column_handle,
         return false;
     }
 
-    if (f->m_tango_type == xd::typeCharacter)
+    if (f->m_xd_type == xd::typeCharacter)
     {
         return putString(column_handle, kl::tostring(value));
     }
@@ -224,7 +224,7 @@ bool OdbcRowInserter::putDateTime(xd::objhandle_t column_handle,
         f->m_datetime_val.minute = dt.getMinute();
         f->m_datetime_val.second = dt.getSecond();
         f->m_datetime_val.fraction = 0;
-        if (f->m_tango_type == xd::typeDateTime)
+        if (f->m_xd_type == xd::typeDateTime)
         {
             f->m_datetime_val.fraction = dt.getMillisecond()*1000000;
         }
@@ -312,7 +312,7 @@ bool OdbcRowInserter::startInsert(const std::wstring& col_list)
 
         OdbcInsertFieldData* field = new OdbcInsertFieldData;
         field->m_name = col_info->getName();
-        field->m_tango_type = tango_type;
+        field->m_xd_type = tango_type;
         field->m_sql_c_type = tango2sqlCType(tango_type);
         field->m_sql_type = tango2sqlType(tango_type);
         field->m_width = col_info->getWidth();

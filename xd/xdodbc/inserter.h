@@ -18,7 +18,7 @@ const int insert_row_count = 500;
 struct OdbcInsertFieldData
 {
     std::wstring m_name;
-    int m_tango_type;
+    int m_xd_type;
     SQLSMALLINT m_sql_c_type;
     SQLSMALLINT m_sql_type;
     int m_width;
@@ -40,7 +40,7 @@ struct OdbcInsertFieldData
     OdbcInsertFieldData()
     {
         m_name = L"";
-        m_tango_type = xd::typeCharacter;
+        m_xd_type = xd::typeCharacter;
         m_sql_c_type = 0;
         m_sql_type = 0;
         m_width = 0;

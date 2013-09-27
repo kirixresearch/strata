@@ -166,12 +166,12 @@ bool PgsqlRowInserter::putDateTime(xd::objhandle_t column_handle,
     xd::DateTime dt(datetime);
     wchar_t buf[64];
 
-    if (f->m_tango_type == xd::typeDate)
+    if (f->m_xd_type == xd::typeDate)
     {
         swprintf(buf, 63, L"%04d-%02d-%02d", dt.getYear(), dt.getMonth(),  dt.getDay());
         f->m_value = buf;
     }
-     else if (f->m_tango_type == xd::typeDateTime) //datetime
+     else if (f->m_xd_type == xd::typeDateTime) //datetime
     {
         swprintf(buf, 63, L"%04d-%02d-%02d %02d:%02d:%02d", dt.getYear(), dt.getMonth(), dt.getDay(), dt.getHour(), dt.getMinute(), dt.getSecond());
         f->m_value = buf;
@@ -231,7 +231,7 @@ bool PgsqlRowInserter::startInsert(const std::wstring& col_list)
 
         PgsqlInsertFieldData d;
         d.m_name = col_info->getName();
-        d.m_tango_type = col_info->getType();
+        d.m_xd_type = col_info->getType();
         d.m_width = col_info->getWidth();
         d.m_scale = col_info->getScale();
         d.m_value = L"";

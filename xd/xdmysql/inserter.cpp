@@ -97,7 +97,7 @@ bool MysqlRowInserter::putRawPtr(xd::objhandle_t column_handle,
 /*
     MySqlInsertData* data = (MySqlInsertData*)column_handle;
 
-    switch (data->m_tango_type)
+    switch (data->m_xd_type)
     {
         case xd::typeCharacter:
             doubleQuoteCopy(data->m_text, (const char*)value, length);
@@ -313,7 +313,7 @@ bool MysqlRowInserter::startInsert(const std::wstring& col_list)
 
         MySqlInsertData d;
         d.m_col_name = col_info->getName();
-        d.m_tango_type = col_info->getType();
+        d.m_xd_type = col_info->getType();
         d.m_tango_width = col_info->getWidth();
         d.m_tango_scale = col_info->getScale();
         d.m_text = L"NULL";

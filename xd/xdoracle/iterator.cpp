@@ -259,7 +259,7 @@ bool OracleIterator::init(const std::wstring& query)
         field->str_len = 0;
         m_fields.push_back(field);
 
-        //printf("%s - type %d tango_type %d width %d\n", col_name, col_type, field->m_tango_type, col_width);
+        //printf("%s - type %d tango_type %d width %d\n", col_name, col_type, field->m_xd_type, col_width);
         
         ub2 csid_ucs2 = OCI_UCS2ID;
         ub2 csid_iso8859_1 = OCINlsCharSetNameToId(m_env, (const oratext*)"WE8ISO8859P1");

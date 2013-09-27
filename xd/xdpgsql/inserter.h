@@ -18,7 +18,7 @@ const int insert_row_count = 500;
 struct PgsqlInsertFieldData
 {
     std::wstring m_name;
-    int m_tango_type;
+    int m_xd_type;
     int m_width;
     int m_scale;
     int m_idx;
@@ -28,7 +28,7 @@ struct PgsqlInsertFieldData
     PgsqlInsertFieldData()
     {
         m_name = L"";
-        m_tango_type = xd::typeCharacter;
+        m_xd_type = xd::typeCharacter;
         m_width = 0;
         m_scale = 0;
         m_idx = 0;

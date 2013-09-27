@@ -163,7 +163,7 @@ private:
     // likewise, it allows us to know whether a datetime result 
     // value comes from a date column or a datetime column
     
-    // m_tango_type is equal to 1) typeDateTime if a datetime column
+    // m_xd_type is equal to 1) typeDateTime if a datetime column
     // is used in the expression, 2) typeDate if a date column is
     // used in the expression and no datetime column is used in
     // the expression, and 3) typeInvalid if neither a datetime
@@ -173,7 +173,7 @@ private:
     // used in the expression; if no numeric columns are used in
     // the expression, the max scale is set to -1
 
-    int m_tango_type;
+    int m_xd_type;
     int m_max_scale;
 };
 
@@ -203,7 +203,7 @@ private:
 
     wxString m_name;
     xd::objhandle_t m_handle;
-    int m_tango_type;
+    int m_xd_type;
     int m_type;
     int m_width;
     int m_scale;

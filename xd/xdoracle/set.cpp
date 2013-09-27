@@ -505,7 +505,7 @@ bool OracleRowInserter::putWideString(xd::objhandle_t column_handle,
 {
     OracleInsertData* f = (OracleInsertData*)column_handle;
 
-    if (f->m_tango_type == xd::typeCharacter)
+    if (f->m_xd_type == xd::typeCharacter)
     {
         return putString(column_handle, kl::tostring(value));
     }
@@ -587,7 +587,7 @@ bool OracleRowInserter::putBoolean(xd::objhandle_t column_handle,
 {
     OracleInsertData* f = (OracleInsertData*)column_handle;
 
-    if (f->m_tango_type == xd::typeBoolean)
+    if (f->m_xd_type == xd::typeBoolean)
     {
         memcpy(m_buf+(m_cur_buf_row*m_row_width)+f->m_buf_offset,
                &value,
@@ -595,7 +595,7 @@ bool OracleRowInserter::putBoolean(xd::objhandle_t column_handle,
         return true;
     }
     
-    if (f->m_tango_type == xd::typeCharacter)
+    if (f->m_xd_type == xd::typeCharacter)
     {
         return putString(column_handle, value ? "T" : "F");
     }
@@ -688,11 +688,11 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
         
         field->m_buf_offset = buf_offset;
 
-        field->m_tango_type = col_info->getType();
+        field->m_xd_type = col_info->getType();
         field->m_tango_width = col_info->getWidth();
         field->m_tango_scale = col_info->getScale();
 
-        switch (field->m_tango_type)
+        switch (field->m_xd_type)
         {
             case xd::typeCharacter:
                 field->m_oracle_type = SQLT_STR;
@@ -810,7 +810,7 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
         
         // if this field is a unicode string,
         // set the bind attribute to OCI_UCS2ID
-        if ((*it2)->m_tango_type == xd::typeCharacter)
+        if ((*it2)->m_xd_type == xd::typeCharacter)
         {
             m_set->m_database->checkerr(m_err, OCIAttrSet((*it2)->m_bind,
                                OCI_HTYPE_BIND,
@@ -819,7 +819,7 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
                                OCI_ATTR_CHARSET_ID,
                                m_err));
         }
-         else if ((*it2)->m_tango_type == xd::typeWideCharacter)
+         else if ((*it2)->m_xd_type == xd::typeWideCharacter)
         {
             m_set->m_database->checkerr(m_err, OCIAttrSet((*it2)->m_bind,
                                        (ub4)OCI_HTYPE_BIND,
