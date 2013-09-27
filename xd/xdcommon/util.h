@@ -13,6 +13,9 @@
 #define __XDCOMMON_UTIL_H
 
 
+#include <xd/xd.h>
+
+
 // forward declarations
 
 namespace kscript

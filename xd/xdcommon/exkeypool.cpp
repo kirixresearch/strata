@@ -12,7 +12,6 @@
 #include <kl/file.h>
 #include <cstring>
 #include "exkeypool.h"
-#include "../include/tango.h"
 #include "util.h"
 
 

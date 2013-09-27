@@ -16,7 +16,6 @@
 #include <kl/portable.h>
 #include "zlib.h"
 #include "pkgfile.h"
-#include "../include/tango.h"
 #include "../xdcommon/util.h"
 
 

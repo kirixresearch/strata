@@ -19,7 +19,7 @@
 #include <cwchar>
 #include <ctime>
 #include <windows.h>
-#include <tango.h>
+#include <xd/xd.h>
 #include <kl/string.h>
 #include <kl/md5.h>
 #include <kl/base64.h>

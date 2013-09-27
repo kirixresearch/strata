@@ -13,7 +13,7 @@
 #define __XDCOMMON_COLUMNINFO_H
 
 
-class ColumnInfo :    public xd::IColumnInfo
+class ColumnInfo : public xd::IColumnInfo
 {
     XCM_CLASS_NAME("tango.ColumnInfo")
     XCM_BEGIN_INTERFACE_MAP(ColumnInfo)

@@ -9,9 +9,11 @@
  */
 
 
-#include "../include/tango.h"
+#include <string>
+#include <kl/portable.h>
+#include <xd/xd.h>
 #include "columninfo.h"
-#include "kl/portable.h"
+
 
 
 ColumnInfo::ColumnInfo()

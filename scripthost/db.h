@@ -13,7 +13,7 @@
 #define __SCRIPTHOST_SCRIPTDB_H
 
 
-#include <tango.h>
+#include <xd/xd.h>
 #include <kl/string.h>
 
 namespace scripthost
