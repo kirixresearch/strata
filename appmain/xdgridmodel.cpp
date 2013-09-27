@@ -66,11 +66,11 @@ void XdGridModel::copyRowIntoCache(int row)
 
     while ((int)m_cache.size() <= row)
     {
-        m_cache.push_back(TangoGridRowData());
+        m_cache.push_back(XdGridRowData());
         m_cache.back().m_cols.resize(column_count);
     }
 
-    TangoGridRowData& cache_row = m_cache[row];
+    XdGridRowData& cache_row = m_cache[row];
 
     cache_row.rowid = m_it->getRowId();
 

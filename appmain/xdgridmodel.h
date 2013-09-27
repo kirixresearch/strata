@@ -86,7 +86,7 @@ public:
     bool m_null;
 };
 
-class TangoGridRowData
+class XdGridRowData
 {
 public:
     std::vector<XdGridCellData> m_cols;
@@ -223,7 +223,7 @@ private:
     bool m_find_match_case;
     bool m_find_whole_cell;
 
-    std::vector<TangoGridRowData> m_cache;
+    std::vector<XdGridRowData> m_cache;
     XdGridCellData m_empty_cell;
 };
 
