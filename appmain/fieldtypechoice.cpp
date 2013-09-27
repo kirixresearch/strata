@@ -70,7 +70,7 @@ int FieldTypeChoice::getTangoType()
 
 void FieldTypeChoice::setTangoChoice(int tango_type)
 {
-    int idx = tango2choice(tango_type);
+    int idx = xd2choice(tango_type);
     SetSelection(idx);
 }
 

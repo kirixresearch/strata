@@ -794,7 +794,7 @@ void TransformationDoc::insertRow(int row, bool dynamic)
     m_grid->setRowData(row, (long)f);
     m_grid->setCellBitmap(row, colRowNumber, dynamic ? GETBMP(gf_lightning_16)
                                                      : GETBMP(xpm_blank_16));
-    m_grid->setCellComboSel(row, colFieldType, tango2choice(f->output_type));
+    m_grid->setCellComboSel(row, colFieldType, xd2choice(f->output_type));
     m_grid->setCellString(row, colFieldName, f->output_name);
     m_grid->setCellInteger(row, colFieldWidth, f->output_width);
     m_grid->setCellInteger(row, colFieldScale, f->output_scale);
@@ -864,7 +864,7 @@ void TransformationDoc::insertRowFromColumnInfo(int row,
     m_grid->insertRow(row);
     m_grid->setRowData(row, (long)f);
     m_grid->setCellString(row, colFieldName, f->output_name);
-    m_grid->setCellComboSel(row, colFieldType, tango2choice(f->output_type));
+    m_grid->setCellComboSel(row, colFieldType, xd2choice(f->output_type));
     m_grid->setCellInteger(row, colFieldWidth, f->output_width);
     m_grid->setCellInteger(row, colFieldScale, f->output_scale);
     if (f->dynamic)

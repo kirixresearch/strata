@@ -785,7 +785,7 @@ void StructureDoc::onColumnListDblClicked(const std::vector<wxString>& items)
         
         insertRow(row, colinfo->getCalculated());
         m_grid->setCellString(row, colFieldName, colinfo->getName());
-        m_grid->setCellComboSel(row, colFieldType, tango2choice(colinfo->getType()));
+        m_grid->setCellComboSel(row, colFieldType, xd2choice(colinfo->getType()));
         m_grid->setCellInteger(row, colFieldWidth, colinfo->getWidth());
         m_grid->setCellInteger(row, colFieldScale, colinfo->getScale());
         m_grid->setCellString(row, colFieldFormula, colinfo->getExpression());
@@ -823,7 +823,7 @@ void StructureDoc::insertRow(int row, bool dynamic)
     m_grid->setRowData(row, (long)f);
     m_grid->setCellBitmap(row, colRowNumber, dynamic ? GETBMP(gf_lightning_16)
                                                      : GETBMP(xpm_blank_16));
-    m_grid->setCellComboSel(row, colFieldType, tango2choice(f->type));
+    m_grid->setCellComboSel(row, colFieldType, xd2choice(f->type));
     m_grid->setCellInteger(row, colFieldWidth, f->width);
     m_grid->setCellInteger(row, colFieldScale, f->scale);
     m_grid->setCellBitmap(row, colFieldFormula, GETBMP(xpm_blank_16));
@@ -1483,7 +1483,7 @@ void StructureDoc::populateGridFromStructure()
         m_grid->setRowData(i, (long)f);
         m_grid->setCellBitmap(i,   colRowNumber,    col->getCalculated() ? GETBMP(gf_lightning_16) : GETBMP(xpm_blank_16));
         m_grid->setCellString(i,   colFieldName,    col->getName());
-        m_grid->setCellComboSel(i, colFieldType,    tango2choice(col->getType()));
+        m_grid->setCellComboSel(i, colFieldType,    xd2choice(col->getType()));
         m_grid->setCellInteger(i,  colFieldWidth,   col->getWidth());
         m_grid->setCellInteger(i,  colFieldScale,   col->getScale());
         m_grid->setCellString(i,   colFieldFormula, col->getExpression());
@@ -2255,7 +2255,7 @@ void StructureDoc::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
                 
                 insertRow(drop_row, colinfo->getCalculated());
                 m_grid->setCellString(drop_row, colFieldName, colinfo->getName());
-                m_grid->setCellComboSel(drop_row, colFieldType, tango2choice(colinfo->getType()));
+                m_grid->setCellComboSel(drop_row, colFieldType, xd2choice(colinfo->getType()));
                 m_grid->setCellInteger(drop_row, colFieldWidth, colinfo->getWidth());
                 m_grid->setCellInteger(drop_row, colFieldScale, colinfo->getScale());
                 m_grid->setCellString(drop_row, colFieldFormula, colinfo->getExpression());

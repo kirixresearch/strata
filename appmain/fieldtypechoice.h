@@ -54,7 +54,7 @@ static inline wxString tango2text(int tango_type)
     return wxT("");
 }
 
-static inline int tango2choice(int tango_type)
+static inline int xd2choice(int tango_type)
 {
     switch(tango_type)
     {
