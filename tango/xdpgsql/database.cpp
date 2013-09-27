@@ -1744,7 +1744,7 @@ bool PgsqlDatabase::groupQuery(tango::GroupQueryParams* info, tango::IJob* job)
     std::vector<std::wstring>::iterator it;
 
     kl::parseDelimitedList(info->columns, columns, ',', true);
-    kl::parseDelimitedList(info->group,   group_parts, ',', true);
+    kl::parseDelimitedList(info->group, group_parts, ',', true);
 
 
     for (it = columns.begin(); it != columns.end(); ++it)
@@ -1754,25 +1754,6 @@ bool PgsqlDatabase::groupQuery(tango::GroupQueryParams* info, tango::IJob* job)
             columns.erase(it);
             detail_rows = true;
             break;
-        }
-    }
-    if (detail_rows)
-    {
-        // we need to make sure that all grouping fields make it into the inner grouping sql,
-        // because these will be used to join the detail back to the aggregate output
-
-        std::set<std::wstring, kl::cmp_nocase> idx;
-        for (it = columns.begin(); it != columns.end(); ++it)
-        {
-            idx.insert( kl::beforeFirst(*it, '='));
-        }
-
-        grouped_column_count = columns.size();
-
-        for (it = group_parts.begin(); it != group_parts.end(); ++it)
-        {
-            if (idx.find(*it) == idx.end())
-                columns.push_back(*it + L"=" + *it);
         }
     }
 
@@ -1810,6 +1791,20 @@ bool PgsqlDatabase::groupQuery(tango::GroupQueryParams* info, tango::IJob* job)
         cnt++;
     }
 
+    if (detail_rows)
+    {
+        // we need to make sure that all grouping fields make it into the inner grouping sql,
+        // because these will be used to join the detail back to the aggregate output
+        int counter = 0;
+        for (it = group_parts.begin(); it != group_parts.end(); ++it)
+        {
+            sql += L",";
+            sql += *it;
+            sql += L" AS ";
+            sql += kl::stdswprintf(L"xdgrpfld%02d", counter++);
+        }
+    }
+
 
 
     sql += L" FROM " + pgsqlQuoteIdentifierIfNecessary(pgsqlGetTablenameFromPath(info->input));
@@ -1826,21 +1821,18 @@ bool PgsqlDatabase::groupQuery(tango::GroupQueryParams* info, tango::IJob* job)
     
     if (detail_rows)
     {
-        std::vector<std::wstring>::iterator it;
-        kl::parseDelimitedList(info->group, group_parts, ',');
-
-        std::wstring grpcols; // grouped output columns (aggregate results)
+        std::wstring aggcols; // grouped output columns (aggregate results)
         std::wstring order;
 
         size_t i;
-        for (i = 0; i < grouped_column_count; ++i)
+        for (i = 0; i < columns.size(); ++i)
         {
             std::wstring fld = kl::beforeFirst(columns[i], '=');
             std::wstring expr = kl::afterFirst(columns[i], '=');
 
             if (i > 0)
-                grpcols += L",";
-            grpcols += L"b." + fld;
+                aggcols += L",";
+            aggcols += L"b." + fld;
 
             if (kl::iequals(expr.substr(0,8), L"groupid("))
             {
@@ -1850,15 +1842,17 @@ bool PgsqlDatabase::groupQuery(tango::GroupQueryParams* info, tango::IJob* job)
         }
 
 
-        std::wstring outer_sql = L"SELECT %grpcols%, a.* FROM %tbl% AS a, (%sql%) AS b WHERE ";
+        std::wstring outer_sql = L"SELECT %aggcols%, a.* FROM %tbl% AS a, (%sql%) AS b WHERE ";
         kl::replaceStr(outer_sql, L"%tbl%", pgsqlQuoteIdentifierIfNecessary(pgsqlGetTablenameFromPath(info->input)));
         kl::replaceStr(outer_sql, L"%sql%", sql);
-        kl::replaceStr(outer_sql, L"%grpcols%", grpcols);
+        kl::replaceStr(outer_sql, L"%aggcols%", aggcols);
+
+        int counter = 0;
         for (it = group_parts.begin(); it != group_parts.end(); ++it)
         {
             if (it != group_parts.begin())
                 outer_sql += L" AND ";
-            outer_sql += L"a." + *it + L" = b." + *it;
+            outer_sql +=  *it + L" = " + kl::stdswprintf(L"b.xdgrpfld%02d", counter++);
         }
 
         if (order.length() > 0)
@@ -1869,8 +1863,6 @@ bool PgsqlDatabase::groupQuery(tango::GroupQueryParams* info, tango::IJob* job)
 
     if (info->output.length() > 0)
         sql = L"CREATE TABLE " + pgsqlQuoteIdentifierIfNecessary(pgsqlGetTablenameFromPath(info->output)) + L" AS " + sql;
-
-
 
 
     PGconn* conn = createConnection();

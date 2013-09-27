@@ -340,6 +340,8 @@ void parseDelimitedList(const std::wstring& s,
                         wchar_t delimiter,
                         bool zero_level)
 {
+    vec.clear();
+
     const wchar_t* piece = s.c_str();
     const wchar_t* comma;
 
