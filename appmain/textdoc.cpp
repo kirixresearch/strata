@@ -1601,25 +1601,25 @@ void TextDoc::onFileTypeChanged(wxCommandEvent& evt)
 void TextDoc::onEncodingChanged(wxCommandEvent& evt)
 {
     int sel = evt.GetSelection();
-    int tango_encoding;
+    int xd_encoding;
     
     if (sel == 0)
     {
         m_encoding = TextDoc::StandardEncoding;
-        tango_encoding = xd::encodingASCII;
-        m_textview->setCharEncoding(tango_encoding);
+        xd_encoding = xd::encodingASCII;
+        m_textview->setCharEncoding(xd_encoding);
     }
      else
     {
         m_encoding = TextDoc::EbcdicEncoding;
-        tango_encoding = xd::encodingEBCDIC;
-        m_textview->setCharEncoding(tango_encoding);
+        xd_encoding = xd::encodingEBCDIC;
+        m_textview->setCharEncoding(xd_encoding);
     }
     
     
     if (m_textview->getColumnCount() == 1)
     {
-        m_textview->modifyColumn(0, -1, -1, tango_encoding, wxT(""));
+        m_textview->modifyColumn(0, -1, -1, xd_encoding, wxT(""));
     }
 
     

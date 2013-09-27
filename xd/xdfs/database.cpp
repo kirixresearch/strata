@@ -1562,9 +1562,9 @@ xd::IStructurePtr FsDatabase::createStructure()
     return static_cast<xd::IStructure*>(s);
 }
 
-static int tangoToDelimitedTextEncoding(int tango_encoding)
+static int tangoToDelimitedTextEncoding(int xd_encoding)
 {
-    switch (tango_encoding)
+    switch (xd_encoding)
     {
         case xd::encodingASCII:
         case xd::encodingISO8859_1:
@@ -1743,19 +1743,19 @@ bool FsDatabase::createTable(const std::wstring& _path,
         
         // determine the encoding we will use in the icsv
 
-        int tango_encoding = xd::encodingUndefined;
+        int xd_encoding = xd::encodingUndefined;
         if (format_info)
-            tango_encoding = format_info->encoding;
+            xd_encoding = format_info->encoding;
         
-        if (tango_encoding == xd::encodingUndefined)
+        if (xd_encoding == xd::encodingUndefined)
         {
             if (unicode_data_found)
-                tango_encoding = xd::encodingUTF8;
+                xd_encoding = xd::encodingUTF8;
                  else
-                tango_encoding = xd::encodingISO8859_1;
+                xd_encoding = xd::encodingISO8859_1;
         }
 
-        int csv_encoding = tangoToDelimitedTextEncoding(tango_encoding);
+        int csv_encoding = tangoToDelimitedTextEncoding(xd_encoding);
         if (csv_encoding == -1)
             return false; // unknown encoding
         
@@ -1824,19 +1824,19 @@ bool FsDatabase::createTable(const std::wstring& _path,
         
         // determine the encoding we will use in the csv
 
-        int tango_encoding = xd::encodingUndefined;
+        int xd_encoding = xd::encodingUndefined;
         if (format_info)
-            tango_encoding = format_info->encoding;
+            xd_encoding = format_info->encoding;
         
-        if (tango_encoding == xd::encodingUndefined)
+        if (xd_encoding == xd::encodingUndefined)
         {
             if (unicode_data_found)
-                tango_encoding = xd::encodingUTF8;
+                xd_encoding = xd::encodingUTF8;
                  else
-                tango_encoding = xd::encodingISO8859_1;
+                xd_encoding = xd::encodingISO8859_1;
         }
 
-        int csv_encoding = tangoToDelimitedTextEncoding(tango_encoding);
+        int csv_encoding = tangoToDelimitedTextEncoding(xd_encoding);
         if (csv_encoding == -1)
             return false; // unknown encoding
         
