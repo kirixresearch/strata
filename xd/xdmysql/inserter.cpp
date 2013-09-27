@@ -170,7 +170,7 @@ bool MysqlRowInserter::putDouble(xd::objhandle_t column_handle, double value)
     MySqlInsertData* data = (MySqlInsertData*)column_handle;
 
     wchar_t buf[64];
-    swprintf(buf, 64, L"'%.*f'", data->m_tango_scale, value);
+    swprintf(buf, 64, L"'%.*f'", data->m_xd_scale, value);
 
     data->m_text = buf;
     data->m_specified = true;
@@ -315,7 +315,7 @@ bool MysqlRowInserter::startInsert(const std::wstring& col_list)
         d.m_col_name = col_info->getName();
         d.m_xd_type = col_info->getType();
         d.m_xd_width = col_info->getWidth();
-        d.m_tango_scale = col_info->getScale();
+        d.m_xd_scale = col_info->getScale();
         d.m_text = L"NULL";
         d.m_specified = false;
 

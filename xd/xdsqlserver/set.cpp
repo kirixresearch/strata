@@ -424,7 +424,7 @@ bool SqlServerRowInserter::putDouble(xd::objhandle_t column_handle,
     SqlServerInsertData* data = (SqlServerInsertData*)column_handle;
 
     char buf[64];
-    sprintf(buf, "%.*f", data->m_tango_scale, value);
+    sprintf(buf, "%.*f", data->m_xd_scale, value);
 
     // -- convert a euro decimal character to a decimal point --
     char* p = buf;
@@ -571,7 +571,7 @@ bool SqlServerRowInserter::startInsert(const std::wstring& col_list)
         d.m_col_name = col_info->getName();
         d.m_xd_type = col_info->getType();
         d.m_xd_width = col_info->getWidth();
-        d.m_tango_scale = col_info->getScale();
+        d.m_xd_scale = col_info->getScale();
         d.m_text = "NULL";
 
         m_insert_data.push_back(d);

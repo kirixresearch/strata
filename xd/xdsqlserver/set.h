@@ -62,7 +62,7 @@ public:
 
     int m_xd_type;
     int m_xd_width;
-    int m_tango_scale;
+    int m_xd_scale;
 
     std::string m_text;
 };

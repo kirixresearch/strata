@@ -690,7 +690,7 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
 
         field->m_xd_type = col_info->getType();
         field->m_xd_width = col_info->getWidth();
-        field->m_tango_scale = col_info->getScale();
+        field->m_xd_scale = col_info->getScale();
 
         switch (field->m_xd_type)
         {
@@ -727,7 +727,7 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
                 break;
         }
 
-        field->m_oracle_scale = field->m_tango_scale;
+        field->m_oracle_scale = field->m_xd_scale;
 
         m_fields.push_back(field);
 
