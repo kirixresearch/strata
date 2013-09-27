@@ -28,7 +28,7 @@ public:
                       const wxSize& size = wxDefaultSize,
                       long style = kcl::DEFAULT_BORDER);
 
-    void setStructure(tango::IStructurePtr structure);
+    void setStructure(xd::IStructurePtr structure);
 
     wxString GetValue();
     void SetValue(const wxString& value);
@@ -74,7 +74,7 @@ public:
     void setEmptyOk(bool empty_ok);
     void setValidationEnabled(bool enable) { m_validation = enable; }
 
-    void setStructure(tango::IStructurePtr structure);
+    void setStructure(xd::IStructurePtr structure);
     wxString getExpression();
     int getExpressionType();
     void setExpression(const wxString& expr);
@@ -110,7 +110,7 @@ protected:
 
 protected:
     
-    tango::IStructurePtr m_structure;
+    xd::IStructurePtr m_structure;
     wxString m_ok_text;
     wxString m_cancel_text;
     int m_type_only;
@@ -157,7 +157,7 @@ public:
     void setNoOrders();
     void setOverlayText(const wxString& expr);
 
-    void setStructure(tango::IStructurePtr structure);
+    void setStructure(xd::IStructurePtr structure);
 
     void setExpression(const wxString& expr);
     wxString getExpression();
@@ -194,7 +194,7 @@ protected:
 
 protected:
 
-    tango::IStructurePtr m_structure;
+    xd::IStructurePtr m_structure;
     wxString m_ok_text;
     wxString m_cancel_text;
     wxString m_expr;
@@ -230,7 +230,7 @@ public:
     void onCancelPressed(ExprBuilderPanel*);
     void onCancel(wxCommandEvent& evt);
     
-    void setStructure(tango::IStructurePtr structure);
+    void setStructure(xd::IStructurePtr structure);
     wxString getExpression();
     void setExpression(const wxString& expr);
     void setTypeOnly(int type);
@@ -264,7 +264,7 @@ public:
     DlgKeyBuilder(wxWindow* parent,
                   const wxString& title = _("Key Builder"));
 
-    void setStructure(tango::IStructurePtr structure);
+    void setStructure(xd::IStructurePtr structure);
     wxString getExpression();
     void setExpression(const wxString& expr);
     void setEmptyOk(bool empty_ok);

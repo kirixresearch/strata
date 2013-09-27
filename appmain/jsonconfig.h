@@ -18,14 +18,14 @@ class JsonConfig
 public:
 
     // kl::JsonNode implementation
-    static kl::JsonNode loadFromDb(tango::IDatabasePtr db, const std::wstring& path);
+    static kl::JsonNode loadFromDb(xd::IDatabasePtr db, const std::wstring& path);
     static kl::JsonNode loadFromString(const std::wstring& json);
     static kl::JsonNode loadFromFile(const std::wstring& path); 
 
     static bool saveToString(kl::JsonNode& node, std::wstring& dest);
     
     static bool saveToDb(kl::JsonNode& node,
-                         tango::IDatabasePtr db,
+                         xd::IDatabasePtr db,
                          const std::wstring& path,
                          const std::wstring& mime_type = wxT("text/plain"));
 

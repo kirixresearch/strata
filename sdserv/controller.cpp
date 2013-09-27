@@ -180,7 +180,7 @@ std::wstring Controller::createHandle() const
     return kl::towstring(kl::md5str(buf));
 }
 
-static void JsonNodeToColumn(kl::JsonNode& column, tango::IColumnInfoPtr col)
+static void JsonNodeToColumn(kl::JsonNode& column, xd::IColumnInfoPtr col)
 {
     if (column.childExists("name"))
         col->setName(column["name"]);
@@ -188,7 +188,7 @@ static void JsonNodeToColumn(kl::JsonNode& column, tango::IColumnInfoPtr col)
     if (column.childExists("type"))
     {
         std::wstring type = column["type"];
-        int ntype = tango::stringToDbtype(type);
+        int ntype = xd::stringToDbtype(type);
         col->setType(ntype);
     }
     
@@ -219,18 +219,18 @@ void Controller::returnApiError(RequestInfo& req, const char* msg, const char* c
     req.write(response.toString());
 }
 
-tango::IDatabasePtr Controller::getSessionDatabase(RequestInfo& req)
+xd::IDatabasePtr Controller::getSessionDatabase(RequestInfo& req)
 {
     XCM_AUTO_LOCK(m_databases_object_mutex);
     
     if (m_database.isOk())
         return m_database;
 
-    tango::IDatabaseMgrPtr dbmgr = tango::getDatabaseMgr();
+    xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
     if (dbmgr.isNull())
         return xcm::null;
 
-    tango::IDatabasePtr db = dbmgr->open(m_connection_string);
+    xd::IDatabasePtr db = dbmgr->open(m_connection_string);
 
     if (db.isNull())
         return xcm::null;
@@ -241,7 +241,7 @@ tango::IDatabasePtr Controller::getSessionDatabase(RequestInfo& req)
 /*
     std::wstring base_path = L"/";
 
-    std::map< std::wstring , tango::IDatabasePtr >::iterator it;
+    std::map< std::wstring , xd::IDatabasePtr >::iterator it;
     
     {
         XCM_AUTO_LOCK(m_databases_object_mutex);
@@ -250,7 +250,7 @@ tango::IDatabasePtr Controller::getSessionDatabase(RequestInfo& req)
             return it->second;
     }
 
-    tango::IDatabaseMgrPtr dbmgr = tango::getDatabaseMgr();
+    xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
     if (dbmgr.isNull())
         return xcm::null;
 
@@ -260,7 +260,7 @@ tango::IDatabasePtr Controller::getSessionDatabase(RequestInfo& req)
         return xcm::null;
 
 
-    tango::IDatabasePtr db = dbmgr->open(cstr);
+    xd::IDatabasePtr db = dbmgr->open(cstr);
 
     if (db.isNull())
         return xcm::null;
@@ -278,7 +278,7 @@ tango::IDatabasePtr Controller::getSessionDatabase(RequestInfo& req)
 
 void Controller::apiFolderInfo(RequestInfo& req)
 {
-    tango::IDatabasePtr db = getSessionDatabase(req);
+    xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
         return;
 
@@ -289,7 +289,7 @@ void Controller::apiFolderInfo(RequestInfo& req)
     response["success"].setBoolean(true);
     kl::JsonNode items = response["items"];
 
-    tango::IFileInfoEnumPtr folder_info = db->getFolderInfo(path);
+    xd::IFileInfoEnumPtr folder_info = db->getFolderInfo(path);
     if (folder_info.isOk())
     {
         size_t i, cnt = folder_info->size();
@@ -297,25 +297,25 @@ void Controller::apiFolderInfo(RequestInfo& req)
         {
             kl::JsonNode item = items.appendElement();
 
-            tango::IFileInfoPtr finfo = folder_info->getItem(i);
+            xd::IFileInfoPtr finfo = folder_info->getItem(i);
             item["name"] = finfo->getName();
 
             switch (finfo->getType())
             {
-                case tango::filetypeFolder: item["type"] = "folder"; break;
-                case tango::filetypeNode: item["type"] = "node";     break;
-                case tango::filetypeTable: item["type"] = "table";     break;
-                case tango::filetypeStream: item["type"] = "stream"; break;
+                case xd::filetypeFolder: item["type"] = "folder"; break;
+                case xd::filetypeNode: item["type"] = "node";     break;
+                case xd::filetypeTable: item["type"] = "table";     break;
+                case xd::filetypeStream: item["type"] = "stream"; break;
                 default: continue;
             }
             
             switch (finfo->getFormat())
             {
-                case tango::formatNative:          item["format"] = "native";            break;
-                case tango::formatXbase:           item["format"] = "xbase";             break;
-                case tango::formatDelimitedText:   item["format"] = "delimited_text";    break;
-                case tango::formatFixedLengthText: item["format"] = "fixedlength_text";  break;
-                case tango::formatText:            item["format"] = "fixed_length_text"; break;
+                case xd::formatNative:          item["format"] = "native";            break;
+                case xd::formatXbase:           item["format"] = "xbase";             break;
+                case xd::formatDelimitedText:   item["format"] = "delimited_text";    break;
+                case xd::formatFixedLengthText: item["format"] = "fixedlength_text";  break;
+                case xd::formatText:            item["format"] = "fixed_length_text"; break;
                 default: item["type"] = "unknown"; break;
             }
 
@@ -338,7 +338,7 @@ void Controller::apiFolderInfo(RequestInfo& req)
 
 void Controller::apiFileInfo(RequestInfo& req)
 {
-    tango::IDatabasePtr db = getSessionDatabase(req);
+    xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
         return;
     
@@ -349,27 +349,27 @@ void Controller::apiFileInfo(RequestInfo& req)
     response["success"].setBoolean(true);
     kl::JsonNode file_info = response["file_info"];
 
-    tango::IFileInfoPtr finfo = db->getFileInfo(path);
+    xd::IFileInfoPtr finfo = db->getFileInfo(path);
     if (finfo.isOk())
     {
         file_info["name"] = finfo->getName();
         
         switch (finfo->getType())
         {
-            case tango::filetypeFolder: file_info["type"] = "folder"; break;
-            case tango::filetypeNode: file_info["type"] = "node";     break;
-            case tango::filetypeTable: file_info["type"] = "table";     break;
-            case tango::filetypeStream: file_info["type"] = "stream"; break;
+            case xd::filetypeFolder: file_info["type"] = "folder"; break;
+            case xd::filetypeNode: file_info["type"] = "node";     break;
+            case xd::filetypeTable: file_info["type"] = "table";     break;
+            case xd::filetypeStream: file_info["type"] = "stream"; break;
             default: file_info["type"] = "unknown"; break;
         }
 
         switch (finfo->getFormat())
         {
-            case tango::formatNative:          file_info["format"] = "native";            break;
-            case tango::formatXbase:           file_info["format"] = "xbase";             break;
-            case tango::formatDelimitedText:   file_info["format"] = "delimited_text";    break;
-            case tango::formatFixedLengthText: file_info["format"] = "fixedlength_text";  break;
-            case tango::formatText:            file_info["format"] = "fixed_length_text"; break;
+            case xd::formatNative:          file_info["format"] = "native";            break;
+            case xd::formatXbase:           file_info["format"] = "xbase";             break;
+            case xd::formatDelimitedText:   file_info["format"] = "delimited_text";    break;
+            case xd::formatFixedLengthText: file_info["format"] = "fixedlength_text";  break;
+            case xd::formatText:            file_info["format"] = "fixed_length_text"; break;
             default: file_info["type"] = "unknown"; break;
         }
 
@@ -379,9 +379,9 @@ void Controller::apiFileInfo(RequestInfo& req)
         file_info["size"] = (double)finfo->getSize();
         file_info["object_id"] = finfo->getObjectId();
 
-        if (finfo->getType() == tango::filetypeTable)
+        if (finfo->getType() == xd::filetypeTable)
         {
-            if (finfo->getFlags() & tango::sfFastRowCount)
+            if (finfo->getFlags() & xd::sfFastRowCount)
             {
                 file_info["row_count"] = (double)finfo->getRowCount();
                 file_info["fast_row_count"].setBoolean(true);
@@ -400,7 +400,7 @@ void Controller::apiFileInfo(RequestInfo& req)
 
 void Controller::apiCreateTable(RequestInfo& req)
 {
-    tango::IDatabasePtr db = getSessionDatabase(req);
+    xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
         return;
     
@@ -416,16 +416,16 @@ void Controller::apiCreateTable(RequestInfo& req)
     kl::JsonNode columns;
     columns.fromString(s_columns);
     
-    tango::IStructurePtr structure = db->createStructure();
+    xd::IStructurePtr structure = db->createStructure();
 
     int i, cnt = columns.getChildCount();
     for (i = 0; i < cnt; ++i)
     {
-        tango::IColumnInfoPtr col = structure->createColumn();
+        xd::IColumnInfoPtr col = structure->createColumn();
         
         kl::JsonNode column = columns[i];
         std::wstring type = column["type"];
-        int ntype = tango::stringToDbtype(type);
+        int ntype = xd::stringToDbtype(type);
 
         col->setName(column["name"]);
         col->setType(ntype);
@@ -454,7 +454,7 @@ void Controller::apiCreateTable(RequestInfo& req)
 
 void Controller::apiCreateFolder(RequestInfo& req)
 {
-    tango::IDatabasePtr db = getSessionDatabase(req);
+    xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
         return;
     
@@ -477,7 +477,7 @@ void Controller::apiCreateFolder(RequestInfo& req)
 
 void Controller::apiMoveFile(RequestInfo& req)
 {
-    tango::IDatabasePtr db = getSessionDatabase(req);
+    xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
         return;
 
@@ -507,7 +507,7 @@ void Controller::apiMoveFile(RequestInfo& req)
 
 void Controller::apiRenameFile(RequestInfo& req)
 {
-    tango::IDatabasePtr db = getSessionDatabase(req);
+    xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
         return;
     
@@ -536,7 +536,7 @@ void Controller::apiRenameFile(RequestInfo& req)
 
 void Controller::apiDeleteFile(RequestInfo& req)
 {
-    tango::IDatabasePtr db = getSessionDatabase(req);
+    xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
         return;
     
@@ -563,11 +563,11 @@ void Controller::apiDeleteFile(RequestInfo& req)
 
 void Controller::apiCopyData(RequestInfo& req)
 {
-    tango::IDatabasePtr db = getSessionDatabase(req);
+    xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
         return;
     
-    tango::CopyParams info;
+    xd::CopyParams info;
     info.input = req.getValue(L"input");
     info.output = req.getValue(L"output");
     info.where = req.getValue(L"where");
@@ -586,7 +586,7 @@ void Controller::apiCopyData(RequestInfo& req)
 
 void Controller::apiCreateStream(RequestInfo& req)
 {
-    tango::IDatabasePtr db = getSessionDatabase(req);
+    xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
         return;
     
@@ -615,13 +615,13 @@ void Controller::apiCreateStream(RequestInfo& req)
 
 void Controller::apiOpenStream(RequestInfo& req)
 {
-    tango::IDatabasePtr db = getSessionDatabase(req);
+    xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
         return;
     
     std::wstring path = req.getURI();
     
-    tango::IStreamPtr stream = db->openStream(path);
+    xd::IStreamPtr stream = db->openStream(path);
     if (stream.isNull())
     {
         returnApiError(req, "Cannot open object");
@@ -645,7 +645,7 @@ void Controller::apiOpenStream(RequestInfo& req)
 
 void Controller::apiReadStream(RequestInfo& req)
 {
-    tango::IDatabasePtr db = getSessionDatabase(req);
+    xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
         return;
         
@@ -672,7 +672,7 @@ void Controller::apiReadStream(RequestInfo& req)
     }
 
 
-    tango::IStreamPtr stream = so->stream;
+    xd::IStreamPtr stream = so->stream;
 
 
     unsigned long read_size_n = (unsigned long)kl::wtoi(read_size);
@@ -712,7 +712,7 @@ void Controller::apiReadStream(RequestInfo& req)
 
 void Controller::apiWriteStream(RequestInfo& req)
 {
-    tango::IDatabasePtr db = getSessionDatabase(req);
+    xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
         return;
     
@@ -746,7 +746,7 @@ void Controller::apiWriteStream(RequestInfo& req)
         return;
     }
 
-    tango::IStreamPtr stream = so->stream;
+    xd::IStreamPtr stream = so->stream;
 
 
 
@@ -784,14 +784,14 @@ void Controller::apiWriteStream(RequestInfo& req)
 
 void Controller::apiQuery(RequestInfo& req)
 {
-    tango::IDatabasePtr db = getSessionDatabase(req);
+    xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
         return;
     
         
     if (req.getValue(L"mode") == L"createiterator")
     {
-        tango::IIteratorPtr iter = db->query(req.getValue(L"path"),
+        xd::IIteratorPtr iter = db->query(req.getValue(L"path"),
                                              req.getValue(L"columns"),
                                              req.getValue(L"where"),
                                              req.getValue(L"order"),
@@ -815,7 +815,7 @@ void Controller::apiQuery(RequestInfo& req)
         response["success"].setBoolean(true);
         response["handle"] = handle;
         
-        if (iter.isOk() && (iter->getIteratorFlags() & tango::ifFastRowCount))
+        if (iter.isOk() && (iter->getIteratorFlags() & xd::ifFastRowCount))
         {
             response["row_count"] = (double)iter->getRowCount();
         }
@@ -840,7 +840,7 @@ void Controller::apiQuery(RequestInfo& req)
         xcm::IObjectPtr obj;
         db->execute(sql, 0, obj, NULL);
 
-        tango::IIteratorPtr iter = obj;
+        xd::IIteratorPtr iter = obj;
         if (iter.isNull())
         {
             returnApiError(req, "SQL syntax error");
@@ -859,7 +859,7 @@ void Controller::apiQuery(RequestInfo& req)
         response["success"].setBoolean(true);
         response["handle"] = handle;
         
-        if (iter->getIteratorFlags() & tango::ifFastRowCount)
+        if (iter->getIteratorFlags() & xd::ifFastRowCount)
         {
             response["row_count"] = (double)iter->getRowCount();
         }
@@ -876,7 +876,7 @@ void Controller::apiQuery(RequestInfo& req)
 
 void Controller::apiGroupQuery(RequestInfo& req)
 {
-    tango::IDatabasePtr db = getSessionDatabase(req);
+    xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
         return;
 
@@ -887,7 +887,7 @@ void Controller::apiGroupQuery(RequestInfo& req)
     std::wstring wherep = req.getValue(L"where");
     std::wstring having = req.getValue(L"having");
 
-    tango::GroupQueryParams info;
+    xd::GroupQueryParams info;
     info.input = path;
     info.output = output;
     info.columns = columns;
@@ -913,7 +913,7 @@ void Controller::apiGroupQuery(RequestInfo& req)
 
 void Controller::apiDescribeTable(RequestInfo& req)
 {
-    tango::IDatabasePtr db = getSessionDatabase(req);
+    xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
         return;
     
@@ -921,7 +921,7 @@ void Controller::apiDescribeTable(RequestInfo& req)
     kl::JsonNode response;
     
     
-    tango::IStructurePtr structure;
+    xd::IStructurePtr structure;
         
     std::wstring handle = req.getValue(L"handle");
     std::wstring path = req.getURI();
@@ -958,9 +958,9 @@ void Controller::apiDescribeTable(RequestInfo& req)
     {
         kl::JsonNode item = columns.appendElement();
         
-        tango::IColumnInfoPtr info = structure->getColumnInfoByIdx(idx);
+        xd::IColumnInfoPtr info = structure->getColumnInfoByIdx(idx);
         item["name"] = info->getName();
-        item["type"] = tango::dbtypeToString(info->getType());
+        item["type"] = xd::dbtypeToString(info->getType());
         item["width"].setInteger(info->getWidth());
         item["scale"].setInteger(info->getScale());
         item["expression"] = info->getExpression();
@@ -994,11 +994,11 @@ void Controller::apiRead(RequestInfo& req)
 
     if (handle.empty())
     {
-        tango::IDatabasePtr db = getSessionDatabase(req);
+        xd::IDatabasePtr db = getSessionDatabase(req);
         if (db.isNull())
             return;
 
-        tango::IFileInfoPtr finfo = db->getFileInfo(req.getURI());
+        xd::IFileInfoPtr finfo = db->getFileInfo(req.getURI());
         if (finfo.isNull())
         {
             req.setStatusCode(404);
@@ -1007,15 +1007,15 @@ void Controller::apiRead(RequestInfo& req)
             return;
         }
 
-        if (finfo->getType() == tango::filetypeFolder)
+        if (finfo->getType() == xd::filetypeFolder)
         {
             req.setGetValue(L"path", req.getURI());
             apiFolderInfo(req);
             return;
         }
-         else if (finfo->getType() == tango::filetypeStream)
+         else if (finfo->getType() == xd::filetypeStream)
         {
-            tango::IStreamPtr stream = db->openStream(req.getURI());
+            xd::IStreamPtr stream = db->openStream(req.getURI());
             if (stream.isNull())
             {
                 req.setStatusCode(404);
@@ -1034,7 +1034,7 @@ void Controller::apiRead(RequestInfo& req)
         }
 
 
-        tango::IIteratorPtr iter = db->query(req.getURI(), L"", req.getValue(L"where"), req.getValue(L"order"), NULL);
+        xd::IIteratorPtr iter = db->query(req.getURI(), L"", req.getValue(L"where"), req.getValue(L"order"), NULL);
         if (!iter.isOk())
         {
             req.setStatusCode(404);
@@ -1049,7 +1049,7 @@ void Controller::apiRead(RequestInfo& req)
         so = new SessionQueryResult;
         so->iter = iter;
         so->rowpos = 0;
-        if (finfo->getFlags() & tango::sfFastRowCount)
+        if (finfo->getFlags() & xd::sfFastRowCount)
             so->rowcount = iter->getRowCount();
              else
             so->rowcount = -1;
@@ -1066,15 +1066,15 @@ void Controller::apiRead(RequestInfo& req)
         }
     }
     
-    tango::IIterator* iter = so->iter.p;
+    xd::IIterator* iter = so->iter.p;
     
     if (so->columns.size() == 0)
     {
         // init handles;
-        tango::IStructurePtr s = iter->getStructure();
+        xd::IStructurePtr s = iter->getStructure();
         for (int i = 0; i < s->getColumnCount(); ++i)
         {
-            tango::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
+            xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
             
             SessionQueryResultColumn qrc;
             qrc.name = colinfo->getName();
@@ -1110,7 +1110,7 @@ void Controller::apiRead(RequestInfo& req)
             if (newpos != 0)
             {
                 iter->skip((int)newpos);
-                so->rowpos = (tango::rowpos_t)start;
+                so->rowpos = (xd::rowpos_t)start;
             }
         }
     }
@@ -1151,16 +1151,16 @@ void Controller::apiRead(RequestInfo& req)
                     cell = iter->getWideString(so->columns[col].handle);
                     break;
                 
-                case tango::typeInteger:
+                case xd::typeInteger:
                     cell = kl::itowstring(iter->getInteger(so->columns[col].handle));
                     break;
                 
-                case tango::typeBoolean:
+                case xd::typeBoolean:
                     cell = iter->getBoolean(so->columns[col].handle) ? L"true" : L"false";
                     break;
                 
-                case tango::typeNumeric:
-                case tango::typeDouble:
+                case xd::typeNumeric:
+                case xd::typeDouble:
                 {
                     wchar_t buf[64];
                     swprintf(buf, 64, L"%.*f", so->columns[col].scale, iter->getDouble(so->columns[col].handle));
@@ -1168,22 +1168,22 @@ void Controller::apiRead(RequestInfo& req)
                 }
                 break;
                 
-                case tango::typeDate:
+                case xd::typeDate:
                 {
                     wchar_t buf[16];
                     buf[0] = 0;
-                    tango::DateTime dt = iter->getDateTime(so->columns[col].handle);
+                    xd::DateTime dt = iter->getDateTime(so->columns[col].handle);
                     if (!dt.isNull())
                         swprintf(buf, 16, L"%04d-%02d-%02d", dt.getYear(), dt.getMonth(), dt.getDay());
                     cell = buf;
                 }
                 break;
                 
-                case tango::typeDateTime:
+                case xd::typeDateTime:
                 {
                     wchar_t buf[32];
                     buf[0] = 0;
-                    tango::DateTime dt = iter->getDateTime(so->columns[col].handle);
+                    xd::DateTime dt = iter->getDateTime(so->columns[col].handle);
                     if (!dt.isNull())
                         swprintf(buf, 32, L"%04d-%02d-%02d %02d:%02d:%02d", dt.getYear(), dt.getMonth(), dt.getDay(), dt.getHour(), dt.getMinute(), dt.getSecond());
                     cell = buf;
@@ -1210,7 +1210,7 @@ void Controller::apiRead(RequestInfo& req)
 
 
 
-static tango::datetime_t parseDateTime(const std::wstring& wstr)
+static xd::datetime_t parseDateTime(const std::wstring& wstr)
 {
     char buf[32];
     int parts[6] = { 0,0,0,0,0,0 };
@@ -1245,12 +1245,12 @@ static tango::datetime_t parseDateTime(const std::wstring& wstr)
     }
      else if (partcnt == 6)
     {
-        tango::DateTime dt(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5]);
+        xd::DateTime dt(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5]);
         return dt.getDateTime();
     }
      else if (partcnt >= 3)
     {
-        tango::DateTime dt(parts[0], parts[1], parts[2]);
+        xd::DateTime dt(parts[0], parts[1], parts[2]);
         return dt.getDateTime();
     }
 
@@ -1260,7 +1260,7 @@ static tango::datetime_t parseDateTime(const std::wstring& wstr)
 
 void Controller::apiInsertRows(RequestInfo& req)
 {
-    tango::IDatabasePtr db = getSessionDatabase(req);
+    xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
         return;
 
@@ -1269,7 +1269,7 @@ void Controller::apiInsertRows(RequestInfo& req)
     if (req.getValueExists(L"columns"))
         columns_param = req.getValue(L"columns");
 
-    tango::IStructurePtr structure = db->describeTable(req.getURI());
+    xd::IStructurePtr structure = db->describeTable(req.getURI());
     if (structure.isNull())
     {
         returnApiError(req, "Invalid data resource");
@@ -1277,8 +1277,8 @@ void Controller::apiInsertRows(RequestInfo& req)
     }
 
 
-    tango::IRowInserterPtr sp_inserter = db->bulkInsert(req.getURI());
-    tango::IRowInserter* inserter = sp_inserter.p;
+    xd::IRowInserterPtr sp_inserter = db->bulkInsert(req.getURI());
+    xd::IRowInserter* inserter = sp_inserter.p;
 
 
     if (!inserter->startInsert(columns_param))
@@ -1304,7 +1304,7 @@ void Controller::apiInsertRows(RequestInfo& req)
             return;
         }
         
-        tango::IColumnInfoPtr colinfo = structure->getColumnInfo(*it);
+        xd::IColumnInfoPtr colinfo = structure->getColumnInfo(*it);
         if (colinfo.isNull())
         {
             returnApiError(req, "Cannot not initialize inserter");
@@ -1350,17 +1350,17 @@ void Controller::apiInsertRows(RequestInfo& req)
             switch (columns[coln].type)
             {
                 default:
-                case tango::typeUndefined:     break;
-                case tango::typeInvalid:       break;
-                case tango::typeCharacter:     inserter->putWideString(columns[coln].handle, col.getString()); break; 
-                case tango::typeWideCharacter: inserter->putWideString(columns[coln].handle, col.getString()); break;
-                case tango::typeNumeric:       inserter->putDouble(columns[coln].handle, kl::nolocale_wtof(col.getString())); break;
-                case tango::typeDouble:        inserter->putDouble(columns[coln].handle, kl::nolocale_wtof(col.getString())); break;      break;
-                case tango::typeInteger:       inserter->putInteger(columns[coln].handle, kl::wtoi(col.getString())); break;
-                case tango::typeDate:          inserter->putDateTime(columns[coln].handle, parseDateTime(col.getString())); break;
-                case tango::typeDateTime:      inserter->putDateTime(columns[coln].handle, parseDateTime(col.getString())); break;
-                case tango::typeBoolean:       inserter->putBoolean(columns[coln].handle, col.getBoolean()); break;
-                case tango::typeBinary:        break;
+                case xd::typeUndefined:     break;
+                case xd::typeInvalid:       break;
+                case xd::typeCharacter:     inserter->putWideString(columns[coln].handle, col.getString()); break; 
+                case xd::typeWideCharacter: inserter->putWideString(columns[coln].handle, col.getString()); break;
+                case xd::typeNumeric:       inserter->putDouble(columns[coln].handle, kl::nolocale_wtof(col.getString())); break;
+                case xd::typeDouble:        inserter->putDouble(columns[coln].handle, kl::nolocale_wtof(col.getString())); break;      break;
+                case xd::typeInteger:       inserter->putInteger(columns[coln].handle, kl::wtoi(col.getString())); break;
+                case xd::typeDate:          inserter->putDateTime(columns[coln].handle, parseDateTime(col.getString())); break;
+                case xd::typeDateTime:      inserter->putDateTime(columns[coln].handle, parseDateTime(col.getString())); break;
+                case xd::typeBoolean:       inserter->putBoolean(columns[coln].handle, col.getBoolean()); break;
+                case xd::typeBinary:        break;
             }
         }
         
@@ -1380,7 +1380,7 @@ void Controller::apiInsertRows(RequestInfo& req)
 
 
 /*
-    tango::IDatabasePtr db = getSessionDatabase(req);
+    xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
         return;
     
@@ -1413,7 +1413,7 @@ void Controller::apiInsertRows(RequestInfo& req)
 
     it->second.iter->goFirst();
 
-    tango::CopyParams info;
+    xd::CopyParams info;
     info.iter_input = it->second.iter;
     info.append = true;
     info.where = req.getValue(L"where");
@@ -1434,7 +1434,7 @@ void Controller::apiInsertRows(RequestInfo& req)
 void Controller::apiClone(RequestInfo& req)
 {
 /*
-    tango::IDatabasePtr db = getSessionDatabase(req);
+    xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
         return;
     
@@ -1457,7 +1457,7 @@ void Controller::apiClone(RequestInfo& req)
         return;
     }
     
-    tango::IIteratorPtr iter = it->second.iter->clone();
+    xd::IIteratorPtr iter = it->second.iter->clone();
     if (iter.isNull())
     {
         returnApiError(req, "Clone not supported");
@@ -1524,7 +1524,7 @@ void Controller::apiClose(RequestInfo& req)
 
 void Controller::apiAlter(RequestInfo& req)
 {
-    tango::IDatabasePtr db = getSessionDatabase(req);
+    xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
         return;
     
@@ -1544,7 +1544,7 @@ void Controller::apiAlter(RequestInfo& req)
     std::wstring s_actions = req.getValue(L"actions");
     
     
-    tango::IStructurePtr structure = db->describeTable(path);
+    xd::IStructurePtr structure = db->describeTable(path);
     if (structure.isNull())
     {
         returnApiError(req, "Could not access table");
@@ -1565,14 +1565,14 @@ void Controller::apiAlter(RequestInfo& req)
         
         if (action["action"].getString() == L"create")
         {
-            tango::IColumnInfoPtr colinfo = structure->createColumn();
+            xd::IColumnInfoPtr colinfo = structure->createColumn();
 
             kl::JsonNode params = action["params"];
             JsonNodeToColumn(params, colinfo);
         }
          else if (action["action"].getString() == L"insert")
         {
-            tango::IColumnInfoPtr colinfo = structure->insertColumn(action["position"].getInteger());
+            xd::IColumnInfoPtr colinfo = structure->insertColumn(action["position"].getInteger());
             if (colinfo.isNull())
             {
                 returnApiError(req, "Invalid insert position");
@@ -1584,7 +1584,7 @@ void Controller::apiAlter(RequestInfo& req)
         }
          else if (action["action"].getString() == L"modify")
         {
-            tango::IColumnInfoPtr colinfo = structure->modifyColumn(action["target_column"]);
+            xd::IColumnInfoPtr colinfo = structure->modifyColumn(action["target_column"]);
             if (colinfo.isNull())
             {
                 returnApiError(req, "Invalid target column for modify operation");

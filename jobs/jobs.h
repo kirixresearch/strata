@@ -13,7 +13,7 @@
 #define __JOBS_JOBS_H
 
 
-namespace tango
+namespace xd
 {
     xcm_interface IDatabase;
 };
@@ -94,7 +94,7 @@ public:
     virtual void setResultObject(xcm::IObjectPtr result) = 0;
     virtual xcm::IObjectPtr getResultObject() = 0;
 
-    virtual void setDatabase(tango::IDatabase* db) = 0;
+    virtual void setDatabase(xd::IDatabase* db) = 0;
 
     virtual bool cancel() = 0;
 

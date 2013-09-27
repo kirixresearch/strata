@@ -46,17 +46,17 @@ class NativeTableModify
 
 public:
 
-    NativeTableModify(tango::IDatabasePtr database);
+    NativeTableModify(xd::IDatabasePtr database);
 
     bool modify(const char* filename,
                 std::vector<StructureAction>& actions,
-                tango::IJob* job);
+                xd::IJob* job);
 
 private:
 
     std::vector<StructureField> m_old_fields;
     std::vector<StructureField> m_new_fields;
-    tango::IDatabasePtr m_database;
+    xd::IDatabasePtr m_database;
 };
 
 

@@ -50,50 +50,50 @@ static void getDefaultExprWidthAndScale(const std::wstring& expr, int type, int*
     // or scale are, so use reasonable values
     switch (type)
     {
-        case tango::typeCharacter:
-        case tango::typeWideCharacter:
+        case xd::typeCharacter:
+        case xd::typeWideCharacter:
         {
             *width = 160;
             *scale = 0;
         }
         break;
 
-        case tango::typeDouble:
+        case xd::typeDouble:
         {
             *width = 8;
             *scale = 4;
         }
         break;
             
-        case tango::typeNumeric:
+        case xd::typeNumeric:
         {
             *width = 18;
             *scale = 4;
         }
         break;
 
-        case tango::typeInteger:
+        case xd::typeInteger:
         {
             *width = 4;
             *scale = 0;
         }
         break;
 
-        case tango::typeBoolean:
+        case xd::typeBoolean:
         {
             *width = 1;
             *scale = 0;
         }
         break;
 
-        case tango::typeDate:
+        case xd::typeDate:
         {
             *width = 4;
             *scale = 0;
         }                        
         break;
 
-        case tango::typeDateTime:
+        case xd::typeDateTime:
         {
             *width = 8;
             *scale = 0;
@@ -112,7 +112,7 @@ public:
     std::wstring m_val_wstring;
     double m_val_double;
     bool m_val_bool;
-    tango::datetime_t m_val_datetime;
+    xd::datetime_t m_val_datetime;
     
     std::vector<std::wstring> m_arr_string;
 
@@ -123,7 +123,7 @@ public:
     int m_type;
     int m_width;
     int m_scale;
-    tango::objhandle_t m_handle;
+    xd::objhandle_t m_handle;
 };
 
 
@@ -131,7 +131,7 @@ class GroupIndexInputInfo
 {
 public:
     
-    tango::objhandle_t m_input_handle;
+    xd::objhandle_t m_input_handle;
     std::wstring m_name;
     int m_type;
     int m_width;
@@ -145,7 +145,7 @@ class GroupOutputInfo
 public:
 
     // info for the output file
-    tango::objhandle_t m_output_handle;  // handle for the row inserter
+    xd::objhandle_t m_output_handle;  // handle for the row inserter
     std::wstring m_name;                 // field name
     int m_type;                          // field type
     int m_width;                         // field width
@@ -155,7 +155,7 @@ public:
     std::wstring m_detail_source_field;  // detail source field
     int m_store_offset;                  // source store offset (-1 if not used)
     GroupResult* m_result;               // source group result (NULL if not used)
-    tango::objhandle_t m_input_handle;   // source handle (0 if not used)
+    xd::objhandle_t m_input_handle;   // source handle (0 if not used)
 };
 
 
@@ -169,26 +169,26 @@ public:
     {
         switch (m_result->m_type)
         {
-            case tango::typeCharacter:
+            case xd::typeCharacter:
             {
                 std::wstring s = kl::towstring(m_result->m_val_string);
                 retval->setString(s.c_str());
             }
             break;
 
-            case tango::typeWideCharacter:
+            case xd::typeWideCharacter:
                 retval->setString(m_result->m_val_wstring.c_str());
                 break;
-            case tango::typeNumeric:
-            case tango::typeDouble:
-            case tango::typeInteger:
+            case xd::typeNumeric:
+            case xd::typeDouble:
+            case xd::typeInteger:
                 retval->setDouble(m_result->m_val_double);
                 break;
-            case tango::typeBoolean:
+            case xd::typeBoolean:
                 retval->setBoolean(m_result->m_val_bool);
                 break;
-            case tango::typeDate:
-            case tango::typeDateTime:
+            case xd::typeDate:
+            case xd::typeDateTime:
                 retval->setDateTime((unsigned int)(m_result->m_val_datetime >> 32),
                                     (unsigned int)(m_result->m_val_datetime & 0xffffffff));
                 break;
@@ -202,17 +202,17 @@ public:
         switch (m_result->m_type)
         {
             default:
-            case tango::typeInvalid:       return kscript::Value::typeNull; 
-            case tango::typeUndefined:     return kscript::Value::typeUndefined;
-            case tango::typeBoolean:       return kscript::Value::typeBoolean;
-            case tango::typeNumeric:       return kscript::Value::typeDouble;
-            case tango::typeInteger:       return kscript::Value::typeInteger;
-            case tango::typeDouble:        return kscript::Value::typeDouble;
-            case tango::typeCharacter:     return kscript::Value::typeString;
-            case tango::typeWideCharacter: return kscript::Value::typeString;
-            case tango::typeDateTime:      return kscript::Value::typeDateTime;
-            case tango::typeDate:          return kscript::Value::typeDateTime;
-            case tango::typeBinary:        return kscript::Value::typeBinary;
+            case xd::typeInvalid:       return kscript::Value::typeNull; 
+            case xd::typeUndefined:     return kscript::Value::typeUndefined;
+            case xd::typeBoolean:       return kscript::Value::typeBoolean;
+            case xd::typeNumeric:       return kscript::Value::typeDouble;
+            case xd::typeInteger:       return kscript::Value::typeInteger;
+            case xd::typeDouble:        return kscript::Value::typeDouble;
+            case xd::typeCharacter:     return kscript::Value::typeString;
+            case xd::typeWideCharacter: return kscript::Value::typeString;
+            case xd::typeDateTime:      return kscript::Value::typeDateTime;
+            case xd::typeDate:          return kscript::Value::typeDateTime;
+            case xd::typeBinary:        return kscript::Value::typeBinary;
         }
     }
 };
@@ -305,7 +305,7 @@ public:
         if (group_func != GroupFunc_Count &&
             group_func != GroupFunc_GroupID)
         {
-            if (param_type == tango::typeInvalid)
+            if (param_type == xd::typeInvalid)
                 return NULL;
         }
 
@@ -315,12 +315,12 @@ public:
             group_func == GroupFunc_Stddev ||
             group_func == GroupFunc_Variance)
         {
-            if (param_type == tango::typeInvalid)
+            if (param_type == xd::typeInvalid)
                 return NULL;
 
-            if (param_type != tango::typeInteger &&
-                param_type != tango::typeDouble &&
-                param_type != tango::typeNumeric)
+            if (param_type != xd::typeInteger &&
+                param_type != xd::typeDouble &&
+                param_type != xd::typeNumeric)
             {
                 return NULL;
             }
@@ -341,12 +341,12 @@ public:
 
 
     // index value store functions
-    bool addStoreCountField(tango::IIteratorPtr iter,
+    bool addStoreCountField(xd::IIteratorPtr iter,
                             const std::wstring& count_filter,
                             int* out_offset)
     {
         // get the handle of the count condition
-        tango::objhandle_t h = 0;
+        xd::objhandle_t h = 0;
         
         if (count_filter.length() > 0)
         {
@@ -357,7 +357,7 @@ public:
                 GroupIndexInputInfo ii;
                 ii.m_input_handle = h;
                 ii.m_name = L"";
-                ii.m_type = tango::typeBoolean;
+                ii.m_type = xd::typeBoolean;
                 ii.m_width = 1;
                 ii.m_scale = 0;
                 ii.m_offset = m_store_size;
@@ -378,7 +378,7 @@ public:
         return false;
     }
 
-    bool addOrLookupStoreField(tango::IIteratorPtr iter,
+    bool addOrLookupStoreField(xd::IIteratorPtr iter,
                                const std::wstring& field,
                                int* out_offset)
     {
@@ -389,7 +389,7 @@ public:
         {
             m_unique_store_fields.insert(uppercase_field);
 
-            tango::objhandle_t handle = iter->getHandle(field);
+            xd::objhandle_t handle = iter->getHandle(field);
             if (!handle)
                 return false;
 
@@ -397,7 +397,7 @@ public:
             ii.m_input_handle = handle;
             ii.m_offset = m_store_size;
 
-            tango::IColumnInfoPtr colinfo = m_structure->getColumnInfo(field);
+            xd::IColumnInfoPtr colinfo = m_structure->getColumnInfo(field);
             if (colinfo.isOk())
             {
                 // if we have a regular column, get the info
@@ -421,19 +421,19 @@ public:
             }
             
             
-            if (ii.m_type == tango::typeWideCharacter)
+            if (ii.m_type == xd::typeWideCharacter)
             {
                 m_store_size += (ii.m_width * 2);
             }
-             else if (ii.m_type == tango::typeNumeric)
+             else if (ii.m_type == xd::typeNumeric)
             {
                 m_store_size += sizeof(double);
             }
-             else if (ii.m_type == tango::typeDateTime)
+             else if (ii.m_type == xd::typeDateTime)
             {
                 m_store_size += 8;
             }
-             else if (ii.m_type == tango::typeDate)
+             else if (ii.m_type == xd::typeDate)
             {
                 m_store_size += 4;
             }
@@ -468,7 +468,7 @@ public:
     }
     
     
-    void releaseStoreFieldHandles(tango::IIteratorPtr iter)
+    void releaseStoreFieldHandles(xd::IIteratorPtr iter)
     {
         std::vector<GroupIndexInputInfo>::iterator it;
         for (it = m_store_fields.begin(); it != m_store_fields.end(); ++it)
@@ -486,7 +486,7 @@ public:
     int m_store_size;
     
     GroupResult* m_last_result;
-    tango::IStructurePtr m_structure;
+    xd::IStructurePtr m_structure;
     std::vector<kscript::ExprParser*> m_to_destroy;
 };
 
@@ -539,13 +539,13 @@ bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
         result->m_group_func == GroupFunc_GroupID)
     {
         // NUMERIC(10,0) to accomodate tables >= 10 billion rows
-        result->m_type = tango::typeNumeric;
+        result->m_type = xd::typeNumeric;
         result->m_width = 10;
         result->m_scale = 0;
     }
      else
     {
-        tango::IColumnInfoPtr colinfo;
+        xd::IColumnInfoPtr colinfo;
         colinfo = info->m_structure->getColumnInfo(result->m_param_text);
 
         if (colinfo.isNull())
@@ -568,13 +568,13 @@ bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
         if (result->m_group_func == GroupFunc_MaxDistance)
         {
             // DISTANCE() always returns a number
-            result->m_type = tango::typeNumeric;
+            result->m_type = xd::typeNumeric;
             result->m_width = 10;
             result->m_scale = 0;
         }
 
         // adjust the width if we're summing on a numeric type
-        if (result->m_type == tango::typeNumeric && (result->m_group_func == GroupFunc_Sum ||
+        if (result->m_type == xd::typeNumeric && (result->m_group_func == GroupFunc_Sum ||
                                                      result->m_group_func == GroupFunc_Stddev ||
                                                      result->m_group_func == GroupFunc_Variance))
         {
@@ -618,14 +618,14 @@ void buf2str(std::string& str, char* ptr, int len)
 }
 
 
-bool runGroupQuery(tango::IDatabasePtr db,
-                   tango::IIteratorPtr sp_iter,
+bool runGroupQuery(xd::IDatabasePtr db,
+                   xd::IIteratorPtr sp_iter,
                    const std::wstring& output_path,
                    const std::wstring& group,
                    const std::wstring& output,
                    const std::wstring& condition,
                    const std::wstring& having,
-                   tango::IJob* job)
+                   xd::IJob* job)
 {
     if (db.isNull() || sp_iter.isNull())
         return false;
@@ -635,14 +635,14 @@ bool runGroupQuery(tango::IDatabasePtr db,
     kscript::ExprParser* having_parser = NULL;
     bool copy_detail = false;
     bool store_detail = false;
-    tango::IIterator* iter = sp_iter.p;
-    tango::IStructurePtr structure;
-    tango::rowpos_t row_count = 0;
-    tango::rowpos_t current_row = 0;
+    xd::IIterator* iter = sp_iter.p;
+    xd::IStructurePtr structure;
+    xd::rowpos_t row_count = 0;
+    xd::rowpos_t current_row = 0;
 
     // try to get the row count
     {
-        if (sp_iter->getIteratorFlags() & tango::ifFastRowCount)
+        if (sp_iter->getIteratorFlags() & xd::ifFastRowCount)
         {
             row_count = sp_iter->getRowCount();
         }
@@ -670,13 +670,13 @@ bool runGroupQuery(tango::IDatabasePtr db,
             // determine if the detail records must be stored in the index's
             // value side.  This is the case when the iterator is forward only,
             // or can't support goRow()
-            if (iter->getIteratorFlags() & tango::ifForwardOnly)
+            if (iter->getIteratorFlags() & xd::ifForwardOnly)
                 store_detail = true;
 
             int colcount = structure->getColumnCount();
             for (int i = 0; i < colcount; ++i)
             {
-                tango::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
+                xd::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
 
                 GroupOutputInfo of;
                 of.m_detail_source_field = colinfo->getName();
@@ -785,7 +785,7 @@ bool runGroupQuery(tango::IDatabasePtr db,
             return xcm::null;
 
         ijob->setStartTime(time(NULL));
-        ijob->setStatus(tango::jobRunning);
+        ijob->setStatus(xd::jobRunning);
         ijob->setMaxCount(row_count);
         ijob->setCurrentCount(0);
     }

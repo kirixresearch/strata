@@ -123,7 +123,7 @@ static std::wstring popToken(std::wstring& str)
 
 
 // this code is from xdcommon/sqlcreate.cpp
-tango::IColumnInfoPtr parseSqliteColumnDescription(const std::wstring& _col_desc)
+xd::IColumnInfoPtr parseSqliteColumnDescription(const std::wstring& _col_desc)
 {
     std::wstring col_desc = _col_desc;
     
@@ -185,7 +185,7 @@ tango::IColumnInfoPtr parseSqliteColumnDescription(const std::wstring& _col_desc
         type == L"CHARACTER" ||
         type == L"TEXT")
     {
-        colinfo->setType(tango::typeCharacter);
+        colinfo->setType(xd::typeCharacter);
         if (scale != 0)
             return xcm::null;
         if (width <= 0)
@@ -195,7 +195,7 @@ tango::IColumnInfoPtr parseSqliteColumnDescription(const std::wstring& _col_desc
               type == L"INT" ||
               type == L"SMALLINT")
     {
-        colinfo->setType(tango::typeInteger);
+        colinfo->setType(xd::typeInteger);
         if (scale != 0)
             return xcm::null;
     }
@@ -204,25 +204,25 @@ tango::IColumnInfoPtr parseSqliteColumnDescription(const std::wstring& _col_desc
               type == L"NUMERIC" ||
               type == L"NUMBER")
     {
-        colinfo->setType(tango::typeNumeric);
+        colinfo->setType(xd::typeNumeric);
     }
      else if (type == L"DOUBLE" ||
               type == L"FLOAT" ||
               type == L"REAL")
     {  
-        colinfo->setType(tango::typeDouble);
+        colinfo->setType(xd::typeDouble);
     }
      else if (type == L"DATE")
     {
-        colinfo->setType(tango::typeDate);
+        colinfo->setType(xd::typeDate);
     }
      else if (type == L"DATETIME")
     {
-        colinfo->setType(tango::typeDateTime);
+        colinfo->setType(xd::typeDateTime);
     }
      else if (type == L"BOOLEAN")
     {
-        colinfo->setType(tango::typeBoolean);
+        colinfo->setType(xd::typeBoolean);
     }
      else
     {
@@ -255,12 +255,12 @@ tango::IColumnInfoPtr parseSqliteColumnDescription(const std::wstring& _col_desc
         colinfo->setCalculated(true);
     }
     
-    return static_cast<tango::IColumnInfo*>(colinfo);
+    return static_cast<xd::IColumnInfo*>(colinfo);
 }
 
 
 
-tango::IStructurePtr parseCreateStatement(const std::wstring& create)
+xd::IStructurePtr parseCreateStatement(const std::wstring& create)
 {
     std::wstring params = kl::afterFirst(create, L'(');
     std::wstring columns = kl::beforeLast(params, L')');
@@ -270,19 +270,19 @@ tango::IStructurePtr parseCreateStatement(const std::wstring& create)
 
 
     Structure* s = new Structure;
-    tango::IStructurePtr sp = static_cast<tango::IStructure*>(s);
+    xd::IStructurePtr sp = static_cast<xd::IStructure*>(s);
 
     std::vector<std::wstring>::iterator it;
     for (it = colvec.begin();
          it != colvec.end();
          ++it)
     {
-        tango::IColumnInfoPtr col = parseSqliteColumnDescription(*it);
+        xd::IColumnInfoPtr col = parseSqliteColumnDescription(*it);
         if (col.isNull())
             return xcm::null;
             
         s->addColumn(col);
     }
 
-    return static_cast<tango::IStructure*>(s);
+    return static_cast<xd::IStructure*>(s);
 }

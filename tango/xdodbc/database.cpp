@@ -273,11 +273,11 @@ std::wstring createOdbcFieldString(const std::wstring& name,
 
     switch (type)
     {
-        case tango::typeCharacter:
+        case xd::typeCharacter:
         {
             bool compression = false;
 
-            if (db_type == tango::dbtypeAccess)
+            if (db_type == xd::dbtypeAccess)
             {
                 compression = true;
 
@@ -285,7 +285,7 @@ std::wstring createOdbcFieldString(const std::wstring& name,
                     width = 255;
             }
             
-            if (db_type == tango::dbtypeExcel)
+            if (db_type == xd::dbtypeExcel)
             {
                 if (width >= 255)
                     width = 255;
@@ -299,12 +299,12 @@ std::wstring createOdbcFieldString(const std::wstring& name,
             return buf;
         }
 
-        case tango::typeWideCharacter:
+        case xd::typeWideCharacter:
         {
             bool character_set = false;
             bool compression = false;
             
-            if (db_type == tango::dbtypeSqlServer)
+            if (db_type == xd::dbtypeSqlServer)
             {
                 swprintf(buf, 255, L"%ls nvarchar (%d)%ls",
                                     name.c_str(),
@@ -312,15 +312,15 @@ std::wstring createOdbcFieldString(const std::wstring& name,
                                     allow_nulls ? L" NULL" : L"");
                 return buf;
             }
-             else if (db_type == tango::dbtypeMySql)
+             else if (db_type == xd::dbtypeMySql)
             {
                 character_set = true;
             }
-             else if (db_type == tango::dbtypeAccess)
+             else if (db_type == xd::dbtypeAccess)
             {
                 compression = true;
             }
-             else if (db_type == tango::dbtypeExcel)
+             else if (db_type == xd::dbtypeExcel)
             {
                 if (width >= 255)
                     width = 255;
@@ -335,14 +335,14 @@ std::wstring createOdbcFieldString(const std::wstring& name,
             return buf;
         }
 
-        case tango::typeNumeric:
+        case xd::typeNumeric:
         {
             if (width > 28)
             {
                 width = 28;
             }
 
-            if (db_type == tango::dbtypeMySql)
+            if (db_type == xd::dbtypeMySql)
             {
                 // we need to add 2 to the width of decimal fields in
                 // MySql for backward compatibility as versions below
@@ -359,7 +359,7 @@ std::wstring createOdbcFieldString(const std::wstring& name,
             return buf;
         }
 
-        case tango::typeInteger:
+        case xd::typeInteger:
         {
             swprintf(buf, 255, L"%ls integer%ls",
                                 name.c_str(),
@@ -367,7 +367,7 @@ std::wstring createOdbcFieldString(const std::wstring& name,
             return buf;
         }
 
-        case tango::typeDouble:
+        case xd::typeDouble:
         {
             swprintf(buf, 255, L"%ls float%ls",
                                 name.c_str(),
@@ -375,7 +375,7 @@ std::wstring createOdbcFieldString(const std::wstring& name,
             return buf;
         }
 
-        case tango::typeBoolean:
+        case xd::typeBoolean:
         {
             swprintf(buf, 255, L"%ls bit%ls",
                                 name.c_str(),
@@ -383,17 +383,17 @@ std::wstring createOdbcFieldString(const std::wstring& name,
             return buf;
         }
 
-        case tango::typeDate:
+        case xd::typeDate:
         {
-            if (db_type == tango::dbtypeMySql ||
-                db_type == tango::dbtypeDb2 ||
-				db_type == tango::dbtypePostgres)
+            if (db_type == xd::dbtypeMySql ||
+                db_type == xd::dbtypeDb2 ||
+				db_type == xd::dbtypePostgres)
             {
                 swprintf(buf, 255, L"%ls date%ls",
                                     name.c_str(),
                                     allow_nulls ? L"" : L" NOT NULL");
             }
-             else if (db_type == tango::dbtypeFirebird)
+             else if (db_type == xd::dbtypeFirebird)
             {
                 swprintf(buf, 255, L"%ls timestamp%ls",
                         name.c_str(),
@@ -409,11 +409,11 @@ std::wstring createOdbcFieldString(const std::wstring& name,
             return buf;
         }
 
-        case tango::typeDateTime:
+        case xd::typeDateTime:
         {
-            if (db_type == tango::dbtypeDb2 ||
-                db_type == tango::dbtypeFirebird ||
-				db_type == tango::dbtypePostgres)
+            if (db_type == xd::dbtypeDb2 ||
+                db_type == xd::dbtypeFirebird ||
+				db_type == xd::dbtypePostgres)
             {
                 swprintf(buf, 255, L"%ls timestamp%ls",
                                     name.c_str(),
@@ -438,20 +438,20 @@ SQLSMALLINT tango2sqlType(int tango_type)
 {
     switch (tango_type)
     {
-        case tango::typeCharacter:
+        case xd::typeCharacter:
             return SQL_VARCHAR;
-        case tango::typeWideCharacter:
+        case xd::typeWideCharacter:
             return SQL_WVARCHAR;
-        case tango::typeNumeric:
-        case tango::typeDouble:
+        case xd::typeNumeric:
+        case xd::typeDouble:
             return SQL_DOUBLE;
-        case tango::typeInteger:
+        case xd::typeInteger:
             return SQL_INTEGER;
-        case tango::typeDate:
+        case xd::typeDate:
             return SQL_TYPE_DATE;
-        case tango::typeDateTime:
+        case xd::typeDateTime:
             return SQL_TYPE_TIMESTAMP;
-        case tango::typeBoolean:
+        case xd::typeBoolean:
             return SQL_BIT;
     }
 
@@ -462,20 +462,20 @@ SQLSMALLINT tango2sqlCType(int tango_type)
 {
     switch (tango_type)
     {
-        case tango::typeCharacter:
+        case xd::typeCharacter:
             return SQL_C_CHAR;
-        case tango::typeWideCharacter:
+        case xd::typeWideCharacter:
             return SQL_C_WCHAR;
-        case tango::typeNumeric:
-        case tango::typeDouble:
+        case xd::typeNumeric:
+        case xd::typeDouble:
             return SQL_C_DOUBLE;
-        case tango::typeInteger:
+        case xd::typeInteger:
             return SQL_C_SLONG;
-        case tango::typeDate:
+        case xd::typeDate:
             return SQL_C_DATE;
-        case tango::typeDateTime:
+        case xd::typeDateTime:
             return SQL_C_TIMESTAMP;
-        case tango::typeBoolean:
+        case xd::typeBoolean:
             return SQL_C_BIT;
     }
 
@@ -513,46 +513,46 @@ int sql2tangoType(SQLSMALLINT sql_type)
         case SQL_VARBINARY:
         case SQL_LONGVARBINARY:
         case SQL_GUID:
-            return tango::typeCharacter;
+            return xd::typeCharacter;
         case SQL_WCHAR:
         case SQL_WVARCHAR:
         case SQL_WLONGVARCHAR:
-            return tango::typeWideCharacter;
+            return xd::typeWideCharacter;
         case SQL_NUMERIC:
         case SQL_DECIMAL:
-            return tango::typeNumeric;
+            return xd::typeNumeric;
         case SQL_BIGINT:
         case SQL_FLOAT:
         case SQL_DOUBLE:
         case SQL_REAL:
-            return tango::typeDouble;
+            return xd::typeDouble;
         case SQL_SMALLINT:
         case SQL_TINYINT:
-            return tango::typeInteger;
+            return xd::typeInteger;
         case SQL_INTEGER:
-            return tango::typeNumeric;
+            return xd::typeNumeric;
         case SQL_TYPE_DATE:
         case SQL_DATE:
-            return tango::typeDate;
+            return xd::typeDate;
         case SQL_TYPE_TIME:
         case SQL_TYPE_TIMESTAMP:
         case SQL_TIME:
         case SQL_TIMESTAMP:
-            return tango::typeDateTime;
+            return xd::typeDateTime;
         case SQL_BIT:
-            return tango::typeBoolean;
+            return xd::typeBoolean;
         default:
-            return tango::typeInvalid;
+            return xd::typeInvalid;
     }
 
-    return tango::typeInvalid;
+    return xd::typeInvalid;
 }
 
 
 // this function consolidates all the rules for creating a
 // tango column info structure from odbc field information
 
-tango::IColumnInfoPtr createColInfo(int db_type,
+xd::IColumnInfoPtr createColInfo(int db_type,
                                     const std::wstring& col_name,
                                     int col_odbc_type,
                                     int col_width,
@@ -563,13 +563,13 @@ tango::IColumnInfoPtr createColInfo(int db_type,
     int col_tango_type = sql2tangoType(col_odbc_type);
     col_scale = sql2tangoScale(col_odbc_type, col_scale);
 
-    if (col_tango_type == tango::typeInvalid)
+    if (col_tango_type == xd::typeInvalid)
     {
         return xcm::null;
     }
 
-    if (col_tango_type == tango::typeCharacter ||
-        col_tango_type == tango::typeWideCharacter)
+    if (col_tango_type == xd::typeCharacter ||
+        col_tango_type == xd::typeWideCharacter)
     {
         // mysql allows a zero-length character field,
         // which is not allowed presently in tango
@@ -578,12 +578,12 @@ tango::IColumnInfoPtr createColInfo(int db_type,
             col_width = 1;
     }
 
-    if (col_tango_type == tango::typeDate &&
+    if (col_tango_type == xd::typeDate &&
         datetime_sub != -1)
     {
         if (datetime_sub == SQL_CODE_TIMESTAMP)
         {
-            col_tango_type = tango::typeDateTime;
+            col_tango_type = xd::typeDateTime;
         }
     }
 
@@ -604,50 +604,50 @@ tango::IColumnInfoPtr createColInfo(int db_type,
             col_width = 8192;
     }
 
-    if (db_type == tango::dbtypeExcel &&
+    if (db_type == xd::dbtypeExcel &&
         col_scale == 0 &&
-        (col_tango_type == tango::typeDouble ||
-         col_tango_type == tango::typeNumeric))
+        (col_tango_type == xd::typeDouble ||
+         col_tango_type == xd::typeNumeric))
     {
         // excel odbc drivers always return 0 for column scale, so we
         // will set it to a more acceptable value
         col_scale = 2;
     }
 
-    if (db_type == tango::dbtypeAccess &&
-        col_tango_type == tango::typeCharacter)
+    if (db_type == xd::dbtypeAccess &&
+        col_tango_type == xd::typeCharacter)
     {
         // access always uses Wide Characters
-        col_tango_type = tango::typeWideCharacter;
+        col_tango_type = xd::typeWideCharacter;
     }
 
     // handle column width
-    if (col_tango_type == tango::typeNumeric)
+    if (col_tango_type == xd::typeNumeric)
     {
         if (col_width > 18 || col_width < 1)
             col_width = 18;
     }
 
-    if (col_tango_type == tango::typeDateTime ||
-        col_tango_type == tango::typeDouble)
+    if (col_tango_type == xd::typeDateTime ||
+        col_tango_type == xd::typeDouble)
     {
         col_width = 8;
     }
 
-    if (col_tango_type == tango::typeDate ||
-        col_tango_type == tango::typeInteger)
+    if (col_tango_type == xd::typeDate ||
+        col_tango_type == xd::typeInteger)
     {
         col_width = 4;
     }
 
-    if (col_tango_type == tango::typeBoolean)
+    if (col_tango_type == xd::typeBoolean)
     {
         col_width = 1;
     }
 
     // handle column scale
-    if (col_tango_type != tango::typeNumeric &&
-        col_tango_type != tango::typeDouble)
+    if (col_tango_type != xd::typeNumeric &&
+        col_tango_type != xd::typeDouble)
     {
         col_scale = 0;
     }
@@ -660,14 +660,14 @@ tango::IColumnInfoPtr createColInfo(int db_type,
     }
 
     // for numeric types, make sure the width is at least 2 greater than the scale
-    if (col_tango_type == tango::typeNumeric)
+    if (col_tango_type == xd::typeNumeric)
     {
         if (col_width < col_scale + 2)
             col_width = col_scale + 2;
     }
 
-    tango::IColumnInfoPtr col;
-    col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+    xd::IColumnInfoPtr col;
+    col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
 
     col->setName(col_name);
     col->setType(col_tango_type);
@@ -755,24 +755,24 @@ static int odbcStateToTangoError(SQLTCHAR* _s)
     if (*_s == '0' && *(_s+1) == '1')
     {
         // just a warning
-        return tango::errorNone;
+        return xd::errorNone;
     }
         
-    if (IS_STATE("00000")) return tango::errorNone;
-    if (IS_STATE("42000")) return tango::errorSyntax;
-    if (IS_STATE("42S02")) return tango::errorObjectNotFound;
-    if (IS_STATE("42S22")) return tango::errorColumnNotFound;
-    if (IS_STATE("42S12")) return tango::errorIndexNotFound;
-    if (IS_STATE("08S01")) return tango::errorTransmission;
-    if (IS_STATE("HY000")) return tango::errorGeneral;
-    if (IS_STATE("22012")) return tango::errorDivisionByZero;
-    if (IS_STATE("HY001")) return tango::errorMemory;
-    if (IS_STATE("HY013")) return tango::errorMemory;
-    if (IS_STATE("HY014")) return tango::errorMemory;
-    if (IS_STATE("HY008")) return tango::errorCancelled;
-    if (IS_STATE("HYT00")) return tango::errorTimeoutExceeded;
+    if (IS_STATE("00000")) return xd::errorNone;
+    if (IS_STATE("42000")) return xd::errorSyntax;
+    if (IS_STATE("42S02")) return xd::errorObjectNotFound;
+    if (IS_STATE("42S22")) return xd::errorColumnNotFound;
+    if (IS_STATE("42S12")) return xd::errorIndexNotFound;
+    if (IS_STATE("08S01")) return xd::errorTransmission;
+    if (IS_STATE("HY000")) return xd::errorGeneral;
+    if (IS_STATE("22012")) return xd::errorDivisionByZero;
+    if (IS_STATE("HY001")) return xd::errorMemory;
+    if (IS_STATE("HY013")) return xd::errorMemory;
+    if (IS_STATE("HY014")) return xd::errorMemory;
+    if (IS_STATE("HY008")) return xd::errorCancelled;
+    if (IS_STATE("HYT00")) return xd::errorTimeoutExceeded;
     
-    return tango::errorGeneral;
+    return xd::errorGeneral;
 }
 
 
@@ -795,7 +795,7 @@ OdbcDatabase::OdbcDatabase()
     m_username = L"";
     m_password = L"";
     
-    m_attr = static_cast<tango::IAttributes*>(new DatabaseAttributes);
+    m_attr = static_cast<xd::IAttributes*>(new DatabaseAttributes);
 }
 
 OdbcDatabase::~OdbcDatabase()
@@ -846,7 +846,7 @@ void OdbcDatabase::errorSqlConn(HDBC hdbc)
     }
      else
     {
-        m_error.setError(tango::errorGeneral, L"");
+        m_error.setError(xd::errorGeneral, L"");
     }
                           
 }
@@ -897,7 +897,7 @@ std::wstring OdbcDatabase::getPath()
 
 std::wstring OdbcDatabase::getTempFileDirectory()
 {
-    std::wstring result = m_attr->getStringAttribute(tango::dbattrTempDirectory);
+    std::wstring result = m_attr->getStringAttribute(xd::dbattrTempDirectory);
     if (result.empty())
     {
         result = xf_get_temp_path();
@@ -908,7 +908,7 @@ std::wstring OdbcDatabase::getTempFileDirectory()
 
 std::wstring OdbcDatabase::getDefinitionDirectory()
 {
-    std::wstring result = m_attr->getStringAttribute(tango::dbattrDefinitionDirectory);
+    std::wstring result = m_attr->getStringAttribute(xd::dbattrDefinitionDirectory);
     if (result.empty())
     {
         result = xf_get_temp_path();
@@ -921,37 +921,37 @@ void OdbcDatabase::setAttributes(HDBC connection)
 {
     std::wstring kws = sql92_keywords;
 
-    if (m_db_type == tango::dbtypeAccess)
+    if (m_db_type == xd::dbtypeAccess)
     {
         kws += L",";
         kws += access_keywords;
 
-        m_attr->setIntAttribute(tango::dbattrColumnMaxNameLength, 64);
-        m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 64);
-        m_attr->setStringAttribute(tango::dbattrColumnInvalidChars, L"./\":!#&-`*[]");
-        m_attr->setStringAttribute(tango::dbattrTableInvalidChars, L"./\":!#&-`*[]");
-        m_attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars, L" ");
-        m_attr->setStringAttribute(tango::dbattrTableInvalidStartingChars, L" ");
-        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"[");
-        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"]");
-        m_attr->setStringAttribute(tango::dbattrIdentifierCharsNeedingQuote, L"");        
+        m_attr->setIntAttribute(xd::dbattrColumnMaxNameLength, 64);
+        m_attr->setIntAttribute(xd::dbattrTableMaxNameLength, 64);
+        m_attr->setStringAttribute(xd::dbattrColumnInvalidChars, L"./\":!#&-`*[]");
+        m_attr->setStringAttribute(xd::dbattrTableInvalidChars, L"./\":!#&-`*[]");
+        m_attr->setStringAttribute(xd::dbattrColumnInvalidStartingChars, L" ");
+        m_attr->setStringAttribute(xd::dbattrTableInvalidStartingChars, L" ");
+        m_attr->setStringAttribute(xd::dbattrIdentifierQuoteOpenChar, L"[");
+        m_attr->setStringAttribute(xd::dbattrIdentifierQuoteCloseChar, L"]");
+        m_attr->setStringAttribute(xd::dbattrIdentifierCharsNeedingQuote, L"");        
     }
-     else if (m_db_type == tango::dbtypeExcel)
+     else if (m_db_type == xd::dbtypeExcel)
     {
         kws += L",";
         kws += excel_keywords;
 
-        m_attr->setIntAttribute(tango::dbattrColumnMaxNameLength, 31);
-        m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 31);
-        m_attr->setStringAttribute(tango::dbattrColumnInvalidChars, L":\\/?*[]");
-        m_attr->setStringAttribute(tango::dbattrTableInvalidChars, L":\\/?*[]");
-        m_attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars, L" ");
-        m_attr->setStringAttribute(tango::dbattrTableInvalidStartingChars, L" ");
-        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"[");
-        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"]");
-        m_attr->setStringAttribute(tango::dbattrIdentifierCharsNeedingQuote, L"");        
+        m_attr->setIntAttribute(xd::dbattrColumnMaxNameLength, 31);
+        m_attr->setIntAttribute(xd::dbattrTableMaxNameLength, 31);
+        m_attr->setStringAttribute(xd::dbattrColumnInvalidChars, L":\\/?*[]");
+        m_attr->setStringAttribute(xd::dbattrTableInvalidChars, L":\\/?*[]");
+        m_attr->setStringAttribute(xd::dbattrColumnInvalidStartingChars, L" ");
+        m_attr->setStringAttribute(xd::dbattrTableInvalidStartingChars, L" ");
+        m_attr->setStringAttribute(xd::dbattrIdentifierQuoteOpenChar, L"[");
+        m_attr->setStringAttribute(xd::dbattrIdentifierQuoteCloseChar, L"]");
+        m_attr->setStringAttribute(xd::dbattrIdentifierCharsNeedingQuote, L"");        
     }
-     else if (m_db_type == tango::dbtypeMySql)
+     else if (m_db_type == xd::dbtypeMySql)
     {
         // illegal characters in a table name include \/. and characters illegal
         // in filenames, the superset of which includes: \/:*?<>|    
@@ -959,46 +959,46 @@ void OdbcDatabase::setAttributes(HDBC connection)
         kws += L",";
         kws += mysql_keywords;
 
-        m_attr->setIntAttribute(tango::dbattrColumnMaxNameLength, 64);
-        m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 64);
-        m_attr->setStringAttribute(tango::dbattrColumnInvalidChars, 
+        m_attr->setIntAttribute(xd::dbattrColumnMaxNameLength, 64);
+        m_attr->setIntAttribute(xd::dbattrTableMaxNameLength, 64);
+        m_attr->setStringAttribute(xd::dbattrColumnInvalidChars, 
                                    L"\\./\x00\xFF");
-        m_attr->setStringAttribute(tango::dbattrTableInvalidChars, 
+        m_attr->setStringAttribute(xd::dbattrTableInvalidChars, 
                                    L"\\./:*?<>|\x00\xFF");
-        m_attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars,
+        m_attr->setStringAttribute(xd::dbattrColumnInvalidStartingChars,
                                    L"\\./\x00\xFF");
-        m_attr->setStringAttribute(tango::dbattrTableInvalidStartingChars,
+        m_attr->setStringAttribute(xd::dbattrTableInvalidStartingChars,
                                    L"\\./:*?<>|\x00\xFF");                               
-        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"`");
-        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"`");
-        m_attr->setStringAttribute(tango::dbattrIdentifierCharsNeedingQuote, L"`~# $!@%^&(){}-+.");
+        m_attr->setStringAttribute(xd::dbattrIdentifierQuoteOpenChar, L"`");
+        m_attr->setStringAttribute(xd::dbattrIdentifierQuoteCloseChar, L"`");
+        m_attr->setStringAttribute(xd::dbattrIdentifierCharsNeedingQuote, L"`~# $!@%^&(){}-+.");
     }
-     else if (m_db_type == tango::dbtypeSqlServer)
+     else if (m_db_type == xd::dbtypeSqlServer)
     {
         kws += L",";
         kws += sqlserver_keywords;
         kws += L",";
         kws += sqlserver_keywords2;
 
-        m_attr->setIntAttribute(tango::dbattrColumnMaxNameLength, 128);
-        m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 128);
-        m_attr->setStringAttribute(tango::dbattrColumnInvalidChars, L"");
-        m_attr->setStringAttribute(tango::dbattrTableInvalidChars, L"");
-        m_attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars, L" ");
-        m_attr->setStringAttribute(tango::dbattrTableInvalidStartingChars, L" ");
-        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"[");
-        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"]");
-        m_attr->setStringAttribute(tango::dbattrIdentifierCharsNeedingQuote, L"");        
+        m_attr->setIntAttribute(xd::dbattrColumnMaxNameLength, 128);
+        m_attr->setIntAttribute(xd::dbattrTableMaxNameLength, 128);
+        m_attr->setStringAttribute(xd::dbattrColumnInvalidChars, L"");
+        m_attr->setStringAttribute(xd::dbattrTableInvalidChars, L"");
+        m_attr->setStringAttribute(xd::dbattrColumnInvalidStartingChars, L" ");
+        m_attr->setStringAttribute(xd::dbattrTableInvalidStartingChars, L" ");
+        m_attr->setStringAttribute(xd::dbattrIdentifierQuoteOpenChar, L"[");
+        m_attr->setStringAttribute(xd::dbattrIdentifierQuoteCloseChar, L"]");
+        m_attr->setStringAttribute(xd::dbattrIdentifierCharsNeedingQuote, L"");        
     }
-	 else if (m_db_type == tango::dbtypePostgres)
+	 else if (m_db_type == xd::dbtypePostgres)
     {
         kws += L",";
         kws += sqlserver_keywords;
         kws += L",";
         kws += sqlserver_keywords2;
 
-        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"\"");
-        m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"\"");
+        m_attr->setStringAttribute(xd::dbattrIdentifierQuoteOpenChar, L"\"");
+        m_attr->setStringAttribute(xd::dbattrIdentifierQuoteCloseChar, L"\"");
     }
      else
     {
@@ -1013,18 +1013,18 @@ void OdbcDatabase::setAttributes(HDBC connection)
             retval = SQLGetInfo(connection, SQL_IDENTIFIER_QUOTE_CHAR, dbms_quote, 16, &out_length);;
             dbms_quote_str = sql2wstring(dbms_quote);
 
-            m_attr->setStringAttribute(tango::dbattrColumnInvalidChars, 
+            m_attr->setStringAttribute(xd::dbattrColumnInvalidChars, 
                                        L"\\./\x00\xFF");
-            m_attr->setStringAttribute(tango::dbattrTableInvalidChars,
+            m_attr->setStringAttribute(xd::dbattrTableInvalidChars,
                                        L"\\./:*?<>|\x00\xFF");
-            m_attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars,
+            m_attr->setStringAttribute(xd::dbattrColumnInvalidStartingChars,
                                        L"\\./\x00\xFF");
-            m_attr->setStringAttribute(tango::dbattrTableInvalidStartingChars,
+            m_attr->setStringAttribute(xd::dbattrTableInvalidStartingChars,
                                        L"\\./:*?<>|\x00\xFF");
 
-            m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, dbms_quote_str);
-            m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, dbms_quote_str);
-            m_attr->setStringAttribute(tango::dbattrIdentifierCharsNeedingQuote, L"`~# $!@%^&(){}-+.");
+            m_attr->setStringAttribute(xd::dbattrIdentifierQuoteOpenChar, dbms_quote_str);
+            m_attr->setStringAttribute(xd::dbattrIdentifierQuoteCloseChar, dbms_quote_str);
+            m_attr->setStringAttribute(xd::dbattrIdentifierCharsNeedingQuote, L"`~# $!@%^&(){}-+.");
         }
          else
         {
@@ -1032,13 +1032,13 @@ void OdbcDatabase::setAttributes(HDBC connection)
             // explicitly know the quote identifier (e.g. some ODBC drivers), 
             // SQL statements using quote identifiers will still work if the 
             // driver supports SQL92 (quote is the quoting character in SQL92)
-            m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"\"");
-            m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"\"");
+            m_attr->setStringAttribute(xd::dbattrIdentifierQuoteOpenChar, L"\"");
+            m_attr->setStringAttribute(xd::dbattrIdentifierQuoteCloseChar, L"\"");
         }
     }
 
-    m_attr->setStringAttribute(tango::dbattrKeywords, kws);
-    m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 32);
+    m_attr->setStringAttribute(xd::dbattrKeywords, kws);
+    m_attr->setIntAttribute(xd::dbattrTableMaxNameLength, 32);
 }
 
 bool OdbcDatabase::open(int type,
@@ -1089,9 +1089,9 @@ bool OdbcDatabase::open(int type,
     // attempt a connection, based on requested driver type
     switch (type)
     {
-        case tango::dbtypeSqlServer:
+        case xd::dbtypeSqlServer:
         {
-            m_db_type = tango::dbtypeSqlServer;
+            m_db_type = xd::dbtypeSqlServer;
 
             swprintf(db_label_buf, 1024, L"Microsoft SQL Server (%ls)", server.c_str());
             swprintf(conn_buf, 4096,
@@ -1120,9 +1120,9 @@ bool OdbcDatabase::open(int type,
             break;
         }
 
-        case tango::dbtypeAccess:
+        case xd::dbtypeAccess:
         {
-            m_db_type = tango::dbtypeAccess;
+            m_db_type = xd::dbtypeAccess;
 
             std::vector<std::wstring> drivers;
             getOdbcDriverNames(drivers);
@@ -1148,9 +1148,9 @@ bool OdbcDatabase::open(int type,
             break;
         }
 
-        case tango::dbtypeExcel:
+        case xd::dbtypeExcel:
         {
-            m_db_type = tango::dbtypeExcel;
+            m_db_type = xd::dbtypeExcel;
 
             std::vector<std::wstring> drivers;
             getOdbcDriverNames(drivers);
@@ -1176,9 +1176,9 @@ bool OdbcDatabase::open(int type,
             break;
         }
 
-        case tango::dbtypeMySql:
+        case xd::dbtypeMySql:
         {
-            m_db_type = tango::dbtypeMySql;
+            m_db_type = xd::dbtypeMySql;
 
             std::vector<std::wstring> drivers;
             getOdbcDriverNames(drivers);
@@ -1194,7 +1194,7 @@ bool OdbcDatabase::open(int type,
 
             if (!driver)
             {
-                m_error.setError(tango::errorNoDriver, L"The required MySQL ODBC driver was not found");
+                m_error.setError(xd::errorNoDriver, L"The required MySQL ODBC driver was not found");
                 return false;
             }
             
@@ -1210,9 +1210,9 @@ bool OdbcDatabase::open(int type,
             break;
         }
 
-        case tango::dbtypeDb2:
+        case xd::dbtypeDb2:
         {
-            m_db_type = tango::dbtypeDb2;
+            m_db_type = xd::dbtypeDb2;
 
             swprintf(db_label_buf, 1024, L"DB2 (%ls)", server.c_str());
             swprintf(conn_buf, 4096,
@@ -1229,10 +1229,10 @@ bool OdbcDatabase::open(int type,
         }
 
         default:
-        case tango::dbtypeOdbc: // (dsn)
+        case xd::dbtypeOdbc: // (dsn)
         {
             m_using_dsn = true;
-            m_db_type = tango::dbtypeOdbc;
+            m_db_type = xd::dbtypeOdbc;
             
             m_conn_str = L"DSN=";
             
@@ -1294,18 +1294,18 @@ bool OdbcDatabase::open(int type,
 
     if (!wcscasecmp(dbms_name_str.c_str(), L"Microsoft SQL Server"))
     {
-        m_db_type = tango::dbtypeSqlServer;
+        m_db_type = xd::dbtypeSqlServer;
         swprintf(db_label_buf, 1024, L"SQL Server (%ls)", server.c_str());
     }
      else if (!wcscasecmp(dbms_name_str.c_str(), L"Oracle") ||
               !wcscasecmp(dbms_name_str.c_str(), L"Oracle8"))
     {
-        m_db_type = tango::dbtypeOracle;
+        m_db_type = xd::dbtypeOracle;
         swprintf(db_label_buf, 1024, L"Oracle (%ls)", server.c_str());
     }
      else if (!wcscasecmp(dbms_name_str.c_str(), L"MySQL"))
     {
-        if (m_db_type == tango::dbtypeOdbc)
+        if (m_db_type == xd::dbtypeOdbc)
         {
             // add some parameters to the connection string
             // (which will be used to open new connections by
@@ -1316,28 +1316,28 @@ bool OdbcDatabase::open(int type,
             m_conn_str += L"Option=3145731";
         }
         
-        m_db_type = tango::dbtypeMySql;
+        m_db_type = xd::dbtypeMySql;
         
         swprintf(db_label_buf, 1024, L"MySQL (%ls)", server.c_str());
     }
      else if (!wcscasecmp(dbms_name_str.c_str(), L"Firebird"))
     {
-        m_db_type = tango::dbtypeFirebird;
+        m_db_type = xd::dbtypeFirebird;
         swprintf(db_label_buf, 1024, L"Firebird (%ls)", server.c_str());
     }
      else if (!wcscasecmp(dbms_name_str.c_str(), L"PostgreSQL"))
     {
-        m_db_type = tango::dbtypePostgres;
+        m_db_type = xd::dbtypePostgres;
         swprintf(db_label_buf, 1024, L"PostgreSQL (%ls)", server.c_str());
     }
      else if (!wcscasecmp(dbms_name_str.c_str(), L"Excel"))
     {
-        m_db_type = tango::dbtypeExcel;
+        m_db_type = xd::dbtypeExcel;
         swprintf(db_label_buf, 1024, L"Microsoft Excel (%ls)", path.c_str());
     }
 
     
-    if (m_db_type == tango::dbtypeSqlServer)
+    if (m_db_type == xd::dbtypeSqlServer)
     {
         // for the main connection (used by renames, other admin calls)
         // set a lock timeout of 10 seconds
@@ -1355,7 +1355,7 @@ bool OdbcDatabase::open(int type,
 
     // set the database attributes
     
-    m_attr->setStringAttribute(tango::dbattrDatabaseName, db_label_buf);
+    m_attr->setStringAttribute(xd::dbattrDatabaseName, db_label_buf);
     setAttributes(conn);
 
     m_port = port;
@@ -1432,7 +1432,7 @@ std::wstring OdbcDatabase::getActiveUid()
     return L"";
 }
 
-tango::IAttributesPtr OdbcDatabase::getAttributes()
+xd::IAttributesPtr OdbcDatabase::getAttributes()
 {
     return m_attr;
 }
@@ -1460,7 +1460,7 @@ bool OdbcDatabase::cleanup()
     return true;
 }
 
-tango::IJobPtr OdbcDatabase::createJob()
+xd::IJobPtr OdbcDatabase::createJob()
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
@@ -1471,10 +1471,10 @@ tango::IJobPtr OdbcDatabase::createJob()
     job->ref();
     m_jobs.push_back(job);
 
-    return static_cast<tango::IJob*>(job);
+    return static_cast<xd::IJob*>(job);
 }
 
-tango::IDatabasePtr OdbcDatabase::getMountDatabase(const std::wstring& path)
+xd::IDatabasePtr OdbcDatabase::getMountDatabase(const std::wstring& path)
 {
     return xcm::null;
 }
@@ -1503,10 +1503,10 @@ bool OdbcDatabase::renameFile(const std::wstring& path,
 {
     std::wstring command;
 
-    std::wstring quote_openchar = m_attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
-    std::wstring quote_closechar = m_attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
+    std::wstring quote_openchar = m_attr->getStringAttribute(xd::dbattrIdentifierQuoteOpenChar);
+    std::wstring quote_closechar = m_attr->getStringAttribute(xd::dbattrIdentifierQuoteCloseChar);
 
-    if (m_db_type == tango::dbtypeSqlServer)
+    if (m_db_type == xd::dbtypeSqlServer)
     {
         command = L"sp_rename ";
         command += quote_openchar;       
@@ -1550,16 +1550,16 @@ bool OdbcDatabase::copyFile(const std::wstring& src_path,
     return false;
 }
 
-bool OdbcDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
+bool OdbcDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 {
-    tango::IStructurePtr structure;
+    xd::IStructurePtr structure;
 
 
     if (info->iter_input.isOk())
     {
         if (!info->append)
         {
-            tango::IStructurePtr structure = info->iter_input->getStructure();
+            xd::IStructurePtr structure = info->iter_input->getStructure();
             if (structure.isNull())
                 return false;
 
@@ -1570,7 +1570,7 @@ bool OdbcDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
         }
 
         // iterator copy - use xdcmnInsert
-        xdcmnInsert(static_cast<tango::IDatabase*>(this), info->iter_input, info->output, info->where, info->limit, job);
+        xdcmnInsert(static_cast<xd::IDatabase*>(this), info->iter_input, info->output, info->where, info->limit, job);
         return true;
     }
      else
@@ -1621,7 +1621,7 @@ bool OdbcDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
 
 bool OdbcDatabase::deleteFile(const std::wstring& path)
 {
-    if (m_db_type == tango::dbtypeExcel)
+    if (m_db_type == xd::dbtypeExcel)
     {
         std::wstring command;
         command.reserve(1024);
@@ -1634,8 +1634,8 @@ bool OdbcDatabase::deleteFile(const std::wstring& path)
     }
      else
     {
-        std::wstring quote_openchar = m_attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
-        std::wstring quote_closechar = m_attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);    
+        std::wstring quote_openchar = m_attr->getStringAttribute(xd::dbattrIdentifierQuoteOpenChar);
+        std::wstring quote_closechar = m_attr->getStringAttribute(xd::dbattrIdentifierQuoteCloseChar);    
     
         std::wstring command;
         command.reserve(1024);
@@ -1659,7 +1659,7 @@ bool OdbcDatabase::getFileExist(const std::wstring& _path)
     // determine if the file exists, we are going to get
     // a list of all tables and look for 'path'
 
-    tango::IFileInfoEnumPtr files = getFolderInfo(L"");
+    xd::IFileInfoEnumPtr files = getFolderInfo(L"");
     if (!files)
         return false;
 
@@ -1668,7 +1668,7 @@ bool OdbcDatabase::getFileExist(const std::wstring& _path)
 
     for (i = 0 ; i < count; ++i)
     {
-        tango::IFileInfoPtr info = files->getItem(i);
+        xd::IFileInfoPtr info = files->getItem(i);
         if (wcscasecmp(info->getName().c_str(), path.c_str()) == 0)
         {
             return true;
@@ -1678,7 +1678,7 @@ bool OdbcDatabase::getFileExist(const std::wstring& _path)
     return false;
 }
 
-tango::IFileInfoPtr OdbcDatabase::getFileInfo(const std::wstring& path)
+xd::IFileInfoPtr OdbcDatabase::getFileInfo(const std::wstring& path)
 {
     std::wstring folder;
     std::wstring name;
@@ -1687,9 +1687,9 @@ tango::IFileInfoPtr OdbcDatabase::getFileInfo(const std::wstring& path)
     {
         OdbcFileInfo* f = new OdbcFileInfo(this);
         f->name = L"/";
-        f->type = tango::filetypeFolder;
-        f->format = tango::formatNative;
-        return static_cast<tango::IFileInfo*>(f);
+        f->type = xd::filetypeFolder;
+        f->format = xd::formatNative;
+        return static_cast<xd::IFileInfo*>(f);
     }
      else
     {
@@ -1697,13 +1697,13 @@ tango::IFileInfoPtr OdbcDatabase::getFileInfo(const std::wstring& path)
         name = kl::afterLast(path, L'/');
     }
     
-    tango::IFileInfoEnumPtr files = getFolderInfo(folder);
+    xd::IFileInfoEnumPtr files = getFolderInfo(folder);
     int i, count;
     
     count = files->size();
     for (i = 0; i < count; ++i)
     {
-        tango::IFileInfoPtr finfo = files->getItem(i);
+        xd::IFileInfoPtr finfo = files->getItem(i);
         if (0 == wcscasecmp(finfo->getName().c_str(), name.c_str()))
         {
             return finfo;
@@ -1713,10 +1713,10 @@ tango::IFileInfoPtr OdbcDatabase::getFileInfo(const std::wstring& path)
     return xcm::null;
 }
 
-tango::IFileInfoEnumPtr OdbcDatabase::getTreeFolderInfo(const std::wstring& path)
+xd::IFileInfoEnumPtr OdbcDatabase::getTreeFolderInfo(const std::wstring& path)
 {
-    xcm::IVectorImpl<tango::IFileInfoPtr>* retval;
-    retval = new xcm::IVectorImpl<tango::IFileInfoPtr>;
+    xcm::IVectorImpl<xd::IFileInfoPtr>* retval;
+    retval = new xcm::IVectorImpl<xd::IFileInfoPtr>;
 
     // db2 needs to represent it's tablespace as a tree
 
@@ -1770,8 +1770,8 @@ tango::IFileInfoEnumPtr OdbcDatabase::getTreeFolderInfo(const std::wstring& path
         {
             OdbcFileInfo* f = new OdbcFileInfo(this);
             f->name = *it;
-            f->type = tango::filetypeFolder;
-            f->format = tango::formatNative;
+            f->type = xd::filetypeFolder;
+            f->format = xd::formatNative;
 
             retval->append(f);
         }
@@ -1829,8 +1829,8 @@ tango::IFileInfoEnumPtr OdbcDatabase::getTreeFolderInfo(const std::wstring& path
         {
             OdbcFileInfo* f = new OdbcFileInfo(this);
             f->name = kl::towstring((char*)table_name);
-            f->type = tango::filetypeTable;
-            f->format = tango::formatNative;
+            f->type = xd::filetypeTable;
+            f->format = xd::formatNative;
 
             kl::trim(f->name);
             kl::makeLower(f->name);
@@ -1851,15 +1851,15 @@ tango::IFileInfoEnumPtr OdbcDatabase::getTreeFolderInfo(const std::wstring& path
     return retval;
 }
 
-tango::IFileInfoEnumPtr OdbcDatabase::getFolderInfo(const std::wstring& path)
+xd::IFileInfoEnumPtr OdbcDatabase::getFolderInfo(const std::wstring& path)
 {
-    if (m_db_type == tango::dbtypeDb2)
+    if (m_db_type == xd::dbtypeDb2)
     {
         return getTreeFolderInfo(path);
     }
 
-    xcm::IVectorImpl<tango::IFileInfoPtr>* retval;
-    retval = new xcm::IVectorImpl<tango::IFileInfoPtr>;
+    xcm::IVectorImpl<xd::IFileInfoPtr>* retval;
+    retval = new xcm::IVectorImpl<xd::IFileInfoPtr>;
 
     //unsigned char table_qualifier[255];
     unsigned char table_owner[255];
@@ -1887,7 +1887,7 @@ tango::IFileInfoEnumPtr OdbcDatabase::getFolderInfo(const std::wstring& path)
 
     std::wstring filter;
     
-    if (m_db_type == tango::dbtypeExcel)
+    if (m_db_type == xd::dbtypeExcel)
         filter = L"TABLE,SYSTEM TABLE";
          else
         filter = L"TABLE,VIEW";
@@ -1920,7 +1920,7 @@ tango::IFileInfoEnumPtr OdbcDatabase::getFolderInfo(const std::wstring& path)
 */
 
         // this comparison is specific to sql server
-        if (m_db_type == tango::dbtypeSqlServer)
+        if (m_db_type == xd::dbtypeSqlServer)
         {
             if (0 == strcasecmp((const char*)table_owner, "sys"))
                 continue;
@@ -1930,7 +1930,7 @@ tango::IFileInfoEnumPtr OdbcDatabase::getFolderInfo(const std::wstring& path)
                 continue;
         }
 
-        if (m_db_type == tango::dbtypeExcel)
+        if (m_db_type == xd::dbtypeExcel)
         {
             if (wtablename.find(L'$') == -1)
                 continue;
@@ -1964,8 +1964,8 @@ tango::IFileInfoEnumPtr OdbcDatabase::getFolderInfo(const std::wstring& path)
         
         OdbcFileInfo* f = new OdbcFileInfo(this);
         f->name = wtablename;
-        f->type = tango::filetypeTable;
-        f->format = tango::formatNative;
+        f->type = xd::filetypeTable;
+        f->format = xd::formatNative;
 
         retval->append(f);
     }
@@ -2071,18 +2071,18 @@ std::wstring OdbcDatabase::getPrimaryKey(const std::wstring _path)
     return result;
 }
 
-tango::IStructurePtr OdbcDatabase::createStructure()
+xd::IStructurePtr OdbcDatabase::createStructure()
 {
     Structure* s = new Structure;
-    return static_cast<tango::IStructure*>(s);
+    return static_cast<xd::IStructure*>(s);
 }
 
 bool OdbcDatabase::createTable(const std::wstring& path,
-                               tango::IStructurePtr struct_config,
-                               tango::FormatInfo* format_info)
+                               xd::IStructurePtr struct_config,
+                               xd::FormatInfo* format_info)
 {
-    std::wstring quote_openchar = m_attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
-    std::wstring quote_closechar = m_attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
+    std::wstring quote_openchar = m_attr->getStringAttribute(xd::dbattrIdentifierQuoteOpenChar);
+    std::wstring quote_closechar = m_attr->getStringAttribute(xd::dbattrIdentifierQuoteCloseChar);
 
     std::wstring command;
     command.reserve(1024);
@@ -2105,7 +2105,7 @@ bool OdbcDatabase::createTable(const std::wstring& path,
 
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr col_info;
+        xd::IColumnInfoPtr col_info;
         col_info = struct_config->getColumnInfoByIdx(i);
 
         // quote the fieldname
@@ -2138,7 +2138,7 @@ bool OdbcDatabase::createTable(const std::wstring& path,
     return execute(command, 0, result_obj, NULL);
 }
 
-tango::IStreamPtr OdbcDatabase::openStream(const std::wstring& ofs_path)
+xd::IStreamPtr OdbcDatabase::openStream(const std::wstring& ofs_path)
 {
     return xcm::null;
 }
@@ -2149,16 +2149,16 @@ bool OdbcDatabase::createStream(const std::wstring& ofs_path, const std::wstring
 }
 
 
-tango::IIteratorPtr OdbcDatabase::query(const tango::QueryParams& qp)
+xd::IIteratorPtr OdbcDatabase::query(const xd::QueryParams& qp)
 {
     std::wstring query;
     query.reserve(1024);
 
     std::wstring tablename = getTablenameFromOfsPath(qp.from);
 
-    if (m_db_type == tango::dbtypeAccess)
+    if (m_db_type == xd::dbtypeAccess)
     {
-        tango::IStructurePtr s = describeTable(qp.from);
+        xd::IStructurePtr s = describeTable(qp.from);
         if (s.isNull())
             return xcm::null;
 
@@ -2167,7 +2167,7 @@ tango::IIteratorPtr OdbcDatabase::query(const tango::QueryParams& qp)
         query = L"SELECT ";
         for (i = 0; i < cnt; ++i)
         {
-            tango::IColumnInfoPtr colinfo;
+            xd::IColumnInfoPtr colinfo;
             colinfo = s->getColumnInfoByIdx(i);
 
             if (colinfo->getCalculated())
@@ -2178,8 +2178,8 @@ tango::IIteratorPtr OdbcDatabase::query(const tango::QueryParams& qp)
                 query += L",";
             }
             
-            if (colinfo->getType() == tango::typeNumeric ||
-                colinfo->getType() == tango::typeDouble)
+            if (colinfo->getType() == xd::typeNumeric ||
+                colinfo->getType() == xd::typeDouble)
             {
                 query += L"IIF(ISNUMERIC([";
                 query += colinfo->getName();
@@ -2203,16 +2203,16 @@ tango::IIteratorPtr OdbcDatabase::query(const tango::QueryParams& qp)
         query += tablename;
         query += L"]";
     }
-     else if (m_db_type == tango::dbtypeExcel)
+     else if (m_db_type == xd::dbtypeExcel)
     {
         query = L"SELECT * FROM ";
         query += L"\"";
         query += tablename;
         query += L"$\"";
     }
-     else if (m_db_type == tango::dbtypeOracle)
+     else if (m_db_type == xd::dbtypeOracle)
     {
-        tango::IStructurePtr s = describeTable(qp.from);
+        xd::IStructurePtr s = describeTable(qp.from);
 
         int i, cnt = s->getColumnCount();
 
@@ -2230,9 +2230,9 @@ tango::IIteratorPtr OdbcDatabase::query(const tango::QueryParams& qp)
     }
      else
     {
-        tango::IAttributesPtr attr = this->getAttributes();
-        std::wstring quote_openchar = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
-        std::wstring quote_closechar = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);    
+        xd::IAttributesPtr attr = this->getAttributes();
+        std::wstring quote_openchar = attr->getStringAttribute(xd::dbattrIdentifierQuoteOpenChar);
+        std::wstring quote_closechar = attr->getStringAttribute(xd::dbattrIdentifierQuoteCloseChar);    
     
         query = L"SELECT * FROM ";
         query += quote_openchar;
@@ -2258,17 +2258,17 @@ tango::IIteratorPtr OdbcDatabase::query(const tango::QueryParams& qp)
     if (!iter->init(query))
         return xcm::null;
 
-    return static_cast<tango::IIterator*>(iter);
+    return static_cast<xd::IIterator*>(iter);
 }
 
 
 
 
 
-tango::IIndexInfoPtr OdbcDatabase::createIndex(const std::wstring& path,
+xd::IIndexInfoPtr OdbcDatabase::createIndex(const std::wstring& path,
                                                const std::wstring& name,
                                                const std::wstring& expr,
-                                               tango::IJob* job)
+                                               xd::IJob* job)
 {
     return xcm::null;
 }
@@ -2289,24 +2289,24 @@ bool OdbcDatabase::deleteIndex(const std::wstring& path,
 }
 
 
-tango::IIndexInfoEnumPtr OdbcDatabase::getIndexEnum(const std::wstring& path)
+xd::IIndexInfoEnumPtr OdbcDatabase::getIndexEnum(const std::wstring& path)
 {
-    xcm::IVectorImpl<tango::IIndexInfoPtr>* vec;
-    vec = new xcm::IVectorImpl<tango::IIndexInfoPtr>;
+    xcm::IVectorImpl<xd::IIndexInfoPtr>* vec;
+    vec = new xcm::IVectorImpl<xd::IIndexInfoPtr>;
 
     return vec;
 }
 
-tango::IRowInserterPtr OdbcDatabase::bulkInsert(const std::wstring& path)
+xd::IRowInserterPtr OdbcDatabase::bulkInsert(const std::wstring& path)
 {
     std::wstring tablename = getTablenameFromOfsPath(path);
 
     OdbcRowInserter* inserter = new OdbcRowInserter(this, tablename);
-    return static_cast<tango::IRowInserter*>(inserter);
+    return static_cast<xd::IRowInserter*>(inserter);
 }
 
 
-tango::IStructurePtr OdbcDatabase::describeTable(const std::wstring& path)
+xd::IStructurePtr OdbcDatabase::describeTable(const std::wstring& path)
 {
     HDBC conn = createConnection();
     if (!conn)
@@ -2346,7 +2346,7 @@ tango::IStructurePtr OdbcDatabase::describeTable(const std::wstring& path)
     }
 
 
-    if (m_db_type == tango::dbtypeExcel)
+    if (m_db_type == xd::dbtypeExcel)
     {
         // excel wants a $ at the end
         tablename += L"$";
@@ -2354,8 +2354,8 @@ tango::IStructurePtr OdbcDatabase::describeTable(const std::wstring& path)
 
 
     SQLRETURN r;
-    if (m_db_type == tango::dbtypeExcel ||
-        m_db_type == tango::dbtypeAccess ||
+    if (m_db_type == xd::dbtypeExcel ||
+        m_db_type == xd::dbtypeAccess ||
         schema.empty())
     {
         // excel and access drivers cannot tolerate even an 
@@ -2404,7 +2404,7 @@ tango::IStructurePtr OdbcDatabase::describeTable(const std::wstring& path)
         // bind columns in result set to buffers
         
         int c_ord = 5;
-        if (m_db_type == tango::dbtypeOracle)
+        if (m_db_type == xd::dbtypeOracle)
         {
             c_ord = 14;
         }
@@ -2441,7 +2441,7 @@ tango::IStructurePtr OdbcDatabase::describeTable(const std::wstring& path)
                        sizeof(short int),
                        &col_scale_ind);
 
-        if (m_db_type == tango::dbtypeOracle)
+        if (m_db_type == xd::dbtypeOracle)
         {
             r = SQLBindCol(stmt,
                            15,
@@ -2478,7 +2478,7 @@ tango::IStructurePtr OdbcDatabase::describeTable(const std::wstring& path)
                 std::wstring wcol_name;
                 wcol_name = col_name;
 
-                tango::IColumnInfoPtr col;
+                xd::IColumnInfoPtr col;
                 
                 col = createColInfo(m_db_type,
                                     wcol_name,
@@ -2512,7 +2512,7 @@ tango::IStructurePtr OdbcDatabase::describeTable(const std::wstring& path)
     }
 
 
-    if (m_db_type == tango::dbtypeAccess)
+    if (m_db_type == xd::dbtypeAccess)
     {
         odbcFixAccessStructure(conn, tablename, s);
     }
@@ -2520,17 +2520,17 @@ tango::IStructurePtr OdbcDatabase::describeTable(const std::wstring& path)
     closeConnection(conn);
 
     /*
-    tango::IStructurePtr ret = m_structure->clone();
+    xd::IStructurePtr ret = m_structure->clone();
     appendCalcFields(ret);
     return ret;
     */
 
-    return static_cast<tango::IStructure*>(s);
+    return static_cast<xd::IStructure*>(s);
 }
 
 bool OdbcDatabase::modifyStructure(const std::wstring& path,
-                                   tango::IStructurePtr struct_config,
-                                   tango::IJob* job)
+                                   xd::IStructurePtr struct_config,
+                                   xd::IJob* job)
 {
     return false;
 }
@@ -2539,7 +2539,7 @@ bool OdbcDatabase::modifyStructure(const std::wstring& path,
 bool OdbcDatabase::execute(const std::wstring& command,
                            unsigned int flags,
                            xcm::IObjectPtr& result,
-                           tango::IJob* job)
+                           xd::IJob* job)
 {
     m_error.clearError();
     result.clear();
@@ -2565,7 +2565,7 @@ bool OdbcDatabase::execute(const std::wstring& command,
             return false;
         }
 
-        result = static_cast<xcm::IObject*>(static_cast<tango::IIterator*>(iter));
+        result = static_cast<xcm::IObject*>(static_cast<xd::IIterator*>(iter));
         return true;
     }
      else
@@ -2605,7 +2605,7 @@ bool OdbcDatabase::execute(const std::wstring& command,
     }
 }
 
-bool OdbcDatabase::groupQuery(tango::GroupQueryParams* info, tango::IJob* job)
+bool OdbcDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
 {
     return false;
 }
@@ -2619,7 +2619,7 @@ bool OdbcDatabase::groupQuery(tango::GroupQueryParams* info, tango::IJob* job)
 
 struct TempInfo
 {
-    tango::IColumnInfoPtr colinfo;
+    xd::IColumnInfoPtr colinfo;
     std::wstring colname;
     char buf[255];
     SQLLEN indicator;
@@ -2634,7 +2634,7 @@ void odbcFixAccessStructure(HDBC conn, const std::wstring& tablename, Structure*
     // scale by performing a query to look at the data itself
 
     std::wstring query;
-    tango::IColumnInfoPtr colinfo;
+    xd::IColumnInfoPtr colinfo;
     int col_count = s->getColumnCount();
     int i;
     std::vector<TempInfo> cols;
@@ -2646,8 +2646,8 @@ void odbcFixAccessStructure(HDBC conn, const std::wstring& tablename, Structure*
     for (i = 0; i < col_count; ++i)
     {
         colinfo = s->getColumnInfoByIdx(i);
-        if (colinfo->getType() == tango::typeNumeric ||
-            colinfo->getType() == tango::typeDouble)
+        if (colinfo->getType() == xd::typeNumeric ||
+            colinfo->getType() == xd::typeDouble)
         {
             if (!first)
                 query += L",";

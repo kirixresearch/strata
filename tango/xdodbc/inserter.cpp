@@ -53,31 +53,31 @@ OdbcRowInserter::~OdbcRowInserter()
     m_database->unref();
 }
 
-tango::objhandle_t OdbcRowInserter::getHandle(const std::wstring& column_name)
+xd::objhandle_t OdbcRowInserter::getHandle(const std::wstring& column_name)
 {
     std::vector<OdbcInsertFieldData*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
         if (!wcscasecmp((*it)->m_name.c_str(), column_name.c_str()))
-            return (tango::objhandle_t)(*it);
+            return (xd::objhandle_t)(*it);
     }
 
     return 0;
 }
 
-tango::IColumnInfoPtr OdbcRowInserter::getInfo(tango::objhandle_t column_handle)
+xd::IColumnInfoPtr OdbcRowInserter::getInfo(xd::objhandle_t column_handle)
 {
     return xcm::null;
 }
 
-bool OdbcRowInserter::putRawPtr(tango::objhandle_t column_handle,
+bool OdbcRowInserter::putRawPtr(xd::objhandle_t column_handle,
                                 const unsigned char* value,
                                 int length)
 {
     return false;
 }
 
-bool OdbcRowInserter::putString(tango::objhandle_t column_handle,
+bool OdbcRowInserter::putString(xd::objhandle_t column_handle,
                                 const std::string& value)
 {
     OdbcInsertFieldData* f = (OdbcInsertFieldData*)column_handle;
@@ -86,7 +86,7 @@ bool OdbcRowInserter::putString(tango::objhandle_t column_handle,
         return false;
     }
 
-    if (f->m_tango_type == tango::typeWideCharacter)
+    if (f->m_tango_type == xd::typeWideCharacter)
     {
         return putWideString(column_handle, kl::towstring(value));
     }
@@ -102,7 +102,7 @@ bool OdbcRowInserter::putString(tango::objhandle_t column_handle,
     return true;
 }
 
-bool OdbcRowInserter::putWideString(tango::objhandle_t column_handle,
+bool OdbcRowInserter::putWideString(xd::objhandle_t column_handle,
                                     const std::wstring& value)
 {
     OdbcInsertFieldData* f = (OdbcInsertFieldData*)column_handle;
@@ -111,7 +111,7 @@ bool OdbcRowInserter::putWideString(tango::objhandle_t column_handle,
         return false;
     }
 
-    if (f->m_tango_type == tango::typeCharacter)
+    if (f->m_tango_type == xd::typeCharacter)
     {
         return putString(column_handle, kl::tostring(value));
     }
@@ -127,7 +127,7 @@ bool OdbcRowInserter::putWideString(tango::objhandle_t column_handle,
     return true;
 }
 
-bool OdbcRowInserter::putDouble(tango::objhandle_t column_handle,
+bool OdbcRowInserter::putDouble(xd::objhandle_t column_handle,
                                 double value)
 {
     OdbcInsertFieldData* f = (OdbcInsertFieldData*)column_handle;
@@ -143,7 +143,7 @@ bool OdbcRowInserter::putDouble(tango::objhandle_t column_handle,
     return true;
 }
 
-bool OdbcRowInserter::putInteger(tango::objhandle_t column_handle,
+bool OdbcRowInserter::putInteger(xd::objhandle_t column_handle,
                                  int value)
 {
     OdbcInsertFieldData* f = (OdbcInsertFieldData*)column_handle;
@@ -153,7 +153,7 @@ bool OdbcRowInserter::putInteger(tango::objhandle_t column_handle,
     }
 
     // exception case for Microsoft Excel
-    if (m_db_type == tango::dbtypeExcel)
+    if (m_db_type == xd::dbtypeExcel)
         f->m_dbl_val = value;
 
     f->m_indicator = 0;
@@ -163,7 +163,7 @@ bool OdbcRowInserter::putInteger(tango::objhandle_t column_handle,
     return true;
 }
 
-bool OdbcRowInserter::putBoolean(tango::objhandle_t column_handle,
+bool OdbcRowInserter::putBoolean(xd::objhandle_t column_handle,
                                  bool value)
 {
     OdbcInsertFieldData* f = (OdbcInsertFieldData*)column_handle;
@@ -180,8 +180,8 @@ bool OdbcRowInserter::putBoolean(tango::objhandle_t column_handle,
     return true;
 }
 
-bool OdbcRowInserter::putDateTime(tango::objhandle_t column_handle,
-                                  tango::datetime_t datetime)
+bool OdbcRowInserter::putDateTime(xd::objhandle_t column_handle,
+                                  xd::datetime_t datetime)
 {
     OdbcInsertFieldData* f = (OdbcInsertFieldData*)column_handle;
     if (!f)
@@ -201,7 +201,7 @@ bool OdbcRowInserter::putDateTime(tango::objhandle_t column_handle,
 
     if (f->m_sql_c_type == SQL_C_DATE)
     {
-        tango::DateTime dt(datetime);
+        xd::DateTime dt(datetime);
 
         f->m_date_val.year = dt.getYear();
         f->m_date_val.month = dt.getMonth();
@@ -215,7 +215,7 @@ bool OdbcRowInserter::putDateTime(tango::objhandle_t column_handle,
     }
      else if (f->m_sql_c_type == SQL_C_TIMESTAMP)
     {
-        tango::DateTime dt(datetime);
+        xd::DateTime dt(datetime);
 
         f->m_datetime_val.year = dt.getYear();
         f->m_datetime_val.month = dt.getMonth();
@@ -224,7 +224,7 @@ bool OdbcRowInserter::putDateTime(tango::objhandle_t column_handle,
         f->m_datetime_val.minute = dt.getMinute();
         f->m_datetime_val.second = dt.getSecond();
         f->m_datetime_val.fraction = 0;
-        if (f->m_tango_type == tango::typeDateTime)
+        if (f->m_tango_type == xd::typeDateTime)
         {
             f->m_datetime_val.fraction = dt.getMillisecond()*1000000;
         }
@@ -241,7 +241,7 @@ bool OdbcRowInserter::putDateTime(tango::objhandle_t column_handle,
     return true;
 }
 
-bool OdbcRowInserter::putNull(tango::objhandle_t column_handle)
+bool OdbcRowInserter::putNull(xd::objhandle_t column_handle)
 {
     OdbcInsertFieldData* f = (OdbcInsertFieldData*)column_handle;
     if (!f)
@@ -275,12 +275,12 @@ bool OdbcRowInserter::startInsert(const std::wstring& col_list)
 
 
     // get the quote characters
-    tango::IAttributesPtr attr = m_database->getAttributes();
-    std::wstring quote_openchar = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
-    std::wstring quote_closechar = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
+    xd::IAttributesPtr attr = m_database->getAttributes();
+    std::wstring quote_openchar = attr->getStringAttribute(xd::dbattrIdentifierQuoteOpenChar);
+    std::wstring quote_closechar = attr->getStringAttribute(xd::dbattrIdentifierQuoteCloseChar);
 
 
-    tango::IStructurePtr s = m_database->describeTable(m_table);
+    xd::IStructurePtr s = m_database->describeTable(m_table);
     if (s.isNull())
         return false;
 
@@ -301,7 +301,7 @@ bool OdbcRowInserter::startInsert(const std::wstring& col_list)
             values_list += L", ";
         }
 
-        tango::IColumnInfoPtr col_info = s->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr col_info = s->getColumnInfoByIdx(i);
         
         field_list += quote_openchar;
         field_list += col_info->getName();

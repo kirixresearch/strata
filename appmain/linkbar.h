@@ -38,7 +38,7 @@ public:
     IFsItemPtr getItemFromId(int id);
     bool isPopupWindowOpen();
     void showPopupWindow(int id, bool popup_mode,
-                         tango::IFileInfoEnumPtr items = xcm::null);
+                         xd::IFileInfoEnumPtr items = xcm::null);
     void closePopupWindow();
     LinkBarItem* getItemFromCurrentPosition(bool ignore_ypos = false);
     

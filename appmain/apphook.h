@@ -21,11 +21,11 @@ void apphookAppReady();
 void apphookPostOpenProject();
 
 bool apphookOpenTemplate(const wxString& location,
-                         tango::IFileInfoPtr file_info,
+                         xd::IFileInfoPtr file_info,
                          bool* handled);
                          
 jobs::IJobPtr apphookExecute(const wxString& location,
-                             tango::IFileInfoPtr file_info,
+                             xd::IFileInfoPtr file_info,
                              bool* handled);
 
 void apphookUninitFrame();

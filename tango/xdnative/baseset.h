@@ -35,15 +35,15 @@ public:
 
     IXdnativeSet* getRawXdnativeSetPtr() { return this; }
 
-    bool modifyStructure(tango::IStructure* struct_config, tango::IJob* job) { return false; }
+    bool modifyStructure(xd::IStructure* struct_config, xd::IJob* job) { return false; }
 
     unsigned int getSetFlags();
     void setSetFlags(unsigned int new_val);
     void setSetId(const std::wstring& new_val);
     std::wstring getSetId();
 
-    tango::IRowInserterPtr getRowInserter();
-    tango::rowpos_t getRowCount();
+    xd::IRowInserterPtr getRowInserter();
+    xd::rowpos_t getRowCount();
 
     // IXdnativeSet
 
@@ -51,9 +51,9 @@ public:
     bool removeEventHandler(IXdnativeSetEvents* handler);
 
 
-    tango::IIndexInfoPtr createIndex(const std::wstring& name,
+    xd::IIndexInfoPtr createIndex(const std::wstring& name,
                                      const std::wstring& expr,
-                                     tango::IJob* job)
+                                     xd::IJob* job)
     {
         return xcm::null;
     }
@@ -69,16 +69,16 @@ public:
         return false;
     }
 
-    tango::IIndexInfoEnumPtr getIndexEnum()
+    xd::IIndexInfoEnumPtr getIndexEnum()
     {
-        xcm::IVectorImpl<tango::IIndexInfoEnumPtr>* vec;
-        vec = new xcm::IVectorImpl<tango::IIndexInfoEnumPtr>;
+        xcm::IVectorImpl<xd::IIndexInfoEnumPtr>* vec;
+        vec = new xcm::IVectorImpl<xd::IIndexInfoEnumPtr>;
         return vec;
     }
 
 
-    bool updateRow(tango::rowid_t rowid,
-                   tango::ColumnUpdateInfo* info,
+    bool updateRow(xd::rowid_t rowid,
+                   xd::ColumnUpdateInfo* info,
                    size_t info_size);
 
     virtual unsigned long long getStructureModifyTime();
@@ -87,14 +87,14 @@ protected:
 
     INodeValuePtr openSetDefinition(bool create_if_not_exist);
 
-    bool modifyStructure(tango::IStructure* struct_config,
+    bool modifyStructure(xd::IStructure* struct_config,
                          bool* done);
 
-    bool createCalcField(tango::IColumnInfoPtr params);
+    bool createCalcField(xd::IColumnInfoPtr params);
     bool deleteCalcField(const std::wstring& name);
     bool modifyCalcField(const std::wstring& name,
-                         tango::IColumnInfoPtr params);
-    void appendCalcFields(tango::IStructure* structure);
+                         xd::IColumnInfoPtr params);
+    void appendCalcFields(xd::IStructure* structure);
 
     void onOfsPathChanged(const std::wstring& new_path) { }
     void onRelationshipsUpdated();
@@ -103,8 +103,8 @@ protected:
     void fire_onSetDomainUpdated();
     void fire_onSetStructureUpdated();
     void fire_onSetRelationshipsUpdated();
-    void fire_onSetRowUpdated(tango::rowid_t rowid);
-    void fire_onSetRowDeleted(tango::rowid_t rowid);
+    void fire_onSetRowUpdated(xd::rowid_t rowid);
+    void fire_onSetRowDeleted(xd::rowid_t rowid);
     
 protected:
 
@@ -120,7 +120,7 @@ private:
     unsigned int m_set_flags;
 
     std::vector<IXdnativeSetEvents*> m_event_handlers;
-    std::vector<tango::IColumnInfoPtr> m_calc_fields;
+    std::vector<xd::IColumnInfoPtr> m_calc_fields;
     unsigned long long m_calcrefresh_time;
     bool m_rel_init;
 };

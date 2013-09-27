@@ -2204,7 +2204,7 @@ void ReportDoc::getColumnListItems(std::vector<ColumnListItem>& list)
     if (data_source.Length() == 0)
         return;
 
-    tango::IStructurePtr structure;
+    xd::IStructurePtr structure;
     structure = g_app->getDatabase()->describeTable(towstr(data_source));
     if (structure.isOk())
     {
@@ -2214,7 +2214,7 @@ void ReportDoc::getColumnListItems(std::vector<ColumnListItem>& list)
         
         for (i = 0; i < col_count; i++)
         {
-            tango::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
+            xd::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
 
             ColumnListItem item;
             item.text = makeProperIfNecessary(colinfo->getName());
@@ -3283,7 +3283,7 @@ void ReportDoc::onCanvasDropEvent(kcanvas::IEventPtr evt)
             fieldname.Trim(true);
             fieldname.Trim(false);
             
-            wxString qfieldname = tango::quoteIdentifier(g_app->getDatabase(), towstr(fieldname));
+            wxString qfieldname = xd::quoteIdentifier(g_app->getDatabase(), towstr(fieldname));
             wxString value = wxT("=") + qfieldname;
 
             kcanvas::CellRange range(row_end, col_end);
@@ -4691,7 +4691,7 @@ void ReportDoc::insertFormula(int command_id)
 
             wxString data_source = getDesignComponentRaw()->getDataSource();
 
-            tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(data_source));
+            xd::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(data_source));
 
             if (structure.isOk())
                 panel->setStructure(structure);

@@ -22,11 +22,11 @@
 #include <kl/url.h>
 
 
-tango::IDatabasePtr XdnativeDatabase::getPassThroughMount(const std::vector<std::wstring>& tables)
+xd::IDatabasePtr XdnativeDatabase::getPassThroughMount(const std::vector<std::wstring>& tables)
 {
     // check to see if all the tables are in the same database
     // if they are
-    tango::IDatabasePtr db;
+    xd::IDatabasePtr db;
     bool pass_through = true;
     
     std::vector<std::wstring>::const_iterator it, it_end;
@@ -42,7 +42,7 @@ tango::IDatabasePtr XdnativeDatabase::getPassThroughMount(const std::vector<std:
         // look for the mount point            
         if (detectMountPoint(table_name, &cstr, &rpath))
         {
-            tango::IDatabasePtr current_db = lookupOrOpenMountDb(cstr);
+            xd::IDatabasePtr current_db = lookupOrOpenMountDb(cstr);
             if (db.isNull())
             {
                 // if it's the first database we've come to,
@@ -73,7 +73,7 @@ tango::IDatabasePtr XdnativeDatabase::getPassThroughMount(const std::vector<std:
 bool XdnativeDatabase::execute(const std::wstring& command,
                        unsigned int flags,
                        xcm::IObjectPtr& result,
-                       tango::IJob* job)
+                       xd::IJob* job)
 {
     result.clear();
     m_error.clearError();
@@ -88,7 +88,7 @@ bool XdnativeDatabase::execute(const std::wstring& command,
         std::wstring mount_name = kl::beforeFirst(first_char+1, ']');
         std::wstring sql = kl::afterFirst(command, ']');
         kl::trim(mount_name);
-        tango::IDatabasePtr db = getMountDatabase(mount_name);
+        xd::IDatabasePtr db = getMountDatabase(mount_name);
         if (db.isNull())
             return false;
 
@@ -99,9 +99,9 @@ bool XdnativeDatabase::execute(const std::wstring& command,
 
 
     // if the pass through flag is set to false, simply run the SQL locally
-    if (!(flags & tango::sqlPassThrough))
+    if (!(flags & xd::sqlPassThrough))
     {
-        return doSQL(static_cast<tango::IDatabase*>(this),
+        return doSQL(static_cast<xd::IDatabase*>(this),
                      command, flags, result, m_error, job);
     }
 
@@ -118,20 +118,20 @@ bool XdnativeDatabase::execute(const std::wstring& command,
     // check to see if all the tables are in the same database; if they are,
     // we'll pass the SQL through to that database; otherwise, we'll run
     // it locally
-    tango::IDatabasePtr mount_db = getPassThroughMount(tables);
+    xd::IDatabasePtr mount_db = getPassThroughMount(tables);
 
     // we can't pass through the SQL because the tables referenced
     // in the SQL are part of different databases; run the SQL locally
     if (mount_db.isNull())
     {
-        return doSQL(static_cast<tango::IDatabase*>(this),
+        return doSQL(static_cast<xd::IDatabase*>(this),
                      command, flags, result, m_error, job);
     }
     
     // find out what the mount databases uses as quote chars
-    tango::IAttributesPtr attr = mount_db->getAttributes();
-    std::wstring quote_openchar = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
-    std::wstring quote_closechar = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
+    xd::IAttributesPtr attr = mount_db->getAttributes();
+    std::wstring quote_openchar = attr->getStringAttribute(xd::dbattrIdentifierQuoteOpenChar);
+    std::wstring quote_closechar = attr->getStringAttribute(xd::dbattrIdentifierQuoteCloseChar);
 
     // discover primary table name
     std::wstring primary_table_name;
@@ -197,7 +197,7 @@ bool XdnativeDatabase::execute(const std::wstring& command,
 
     // if it's a query, rename the path to correspond to its mount path
     
-    tango::IIteratorPtr iter = result;                 
+    xd::IIteratorPtr iter = result;                 
     if (iter.isOk())
     {
         iter->setObjectPath(primary_table_name);

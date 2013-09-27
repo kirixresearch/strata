@@ -76,7 +76,7 @@ int RelationshipJob::runJob()
         return 0;
     }
 
-    tango::IRelationSchemaPtr rels = m_db;
+    xd::IRelationSchemaPtr rels = m_db;
 
     // make sure the database is valid
     if (m_db.isNull() || rels.isNull())
@@ -107,21 +107,21 @@ int RelationshipJob::runJob()
 
 
         // get the indexes
-        tango::IIndexInfoEnumPtr right_set_indexes = m_db->getIndexEnum(right_path);
+        xd::IIndexInfoEnumPtr right_set_indexes = m_db->getIndexEnum(right_path);
 
         // if we're on an external database, then move on
         if (jobs::getMountRoot(m_db, right_path).length() != 0)
             continue;
 
         // if the index already exists, then move on
-        tango::IIndexInfoPtr idx = jobs::lookupIndex(right_set_indexes, right_expr, false);
+        xd::IIndexInfoPtr idx = jobs::lookupIndex(right_set_indexes, right_expr, false);
         if (idx.isOk())
             continue;
 
 
         // quote identifiers
-        std::wstring q_name = tango::quoteIdentifier(m_db, name);
-        std::wstring q_input = tango::quoteIdentifier(m_db, right_path);
+        std::wstring q_name = xd::quoteIdentifier(m_db, name);
+        std::wstring q_input = xd::quoteIdentifier(m_db, right_path);
 
 
         std:: wstring sql;
@@ -134,7 +134,7 @@ int RelationshipJob::runJob()
         sql += L"); ";
 
         // create the indexes
-        tango::IJobPtr job = m_db->createJob();
+        xd::IJobPtr job = m_db->createJob();
         setXdJob(job);
         xcm::IObjectPtr null_result;
         m_db->execute(sql, 0, null_result, job);

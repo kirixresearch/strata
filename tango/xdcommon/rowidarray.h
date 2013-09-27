@@ -25,12 +25,12 @@ public:
     RowIdArray(const std::wstring& temp_dir);
     virtual ~RowIdArray();
     
-    void append(tango::rowid_t rowid);
+    void append(xd::rowid_t rowid);
     
     void goFirst();
     void goNext();
     bool isEof();
-    tango::rowid_t getItem();
+    xd::rowid_t getItem();
 
 private:
 

@@ -80,14 +80,14 @@ int LoadJob::runJob()
     params_node.fromString(getParameters());
 
 
-    tango::IDatabaseMgrPtr dbmgr = tango::getDatabaseMgr();
+    xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
     if (dbmgr.isNull())
     {
         m_job_info->setState(jobStateFailed);
         return 0;
     }
 
-    std::map<std::wstring, tango::IDatabasePtr> connection_pool;
+    std::map<std::wstring, xd::IDatabasePtr> connection_pool;
 
     kl::JsonNode objects_node = params_node["objects"];
     size_t i, cnt = objects_node.getChildCount();
@@ -103,8 +103,8 @@ int LoadJob::runJob()
         std::wstring destination_path = object["destination_path"];
 
 
-        tango::IDatabasePtr source_db;
-        tango::IDatabasePtr destination_db;
+        xd::IDatabasePtr source_db;
+        xd::IDatabasePtr destination_db;
 
         source_db = connection_pool[source_connection];
         if (source_db.isNull())
@@ -128,20 +128,20 @@ int LoadJob::runJob()
         }
 
 
-        tango::QueryParams qp;
+        xd::QueryParams qp;
         qp.from = source_path;
 
         if (object.childExists("source_format"))
         {
             kl::JsonNode format = object["source_format"];
 
-            qp.format.format = tango::formatDelimitedText;
+            qp.format.format = xd::formatDelimitedText;
             qp.format.delimiters = format.getChild("delimiter").getString();
             qp.format.text_qualifiers = format.getChild("text_qualifier").getString();
             qp.format.first_row_column_names = format.getChild("header_row").getBoolean();
         }
 
-        tango::IIteratorPtr source_iter = source_db->query(qp);
+        xd::IIteratorPtr source_iter = source_db->query(qp);
 
         if (source_iter.isNull())
         {
@@ -154,14 +154,14 @@ int LoadJob::runJob()
 
         // create the destination table
 
-        tango::FormatInfo* p_destination_format = NULL;
-        tango::FormatInfo destination_format;
+        xd::FormatInfo* p_destination_format = NULL;
+        xd::FormatInfo destination_format;
 
         if (object.childExists("destination_format"))
         {
             kl::JsonNode format = object["destination_format"];
 
-            destination_format.format = tango::formatDelimitedText;
+            destination_format.format = xd::formatDelimitedText;
             destination_format.delimiters = format.getChild("delimiter").getString();
             destination_format.text_qualifiers = format.getChild("text_qualifier").getString();
             destination_format.first_row_column_names = format.getChild("header_row").getBoolean();
@@ -175,7 +175,7 @@ int LoadJob::runJob()
         {
             destination_db->deleteFile(destination_path);
 
-            tango::IStructurePtr structure = source_iter->getStructure();
+            xd::IStructurePtr structure = source_iter->getStructure();
             if (!destination_db->createTable(destination_path, structure, p_destination_format))
             {
                 // could not create output file
@@ -187,7 +187,7 @@ int LoadJob::runJob()
         {
             if (!destination_db->getFileExist(destination_path))
             {
-                tango::IStructurePtr structure = source_iter->getStructure();
+                xd::IStructurePtr structure = source_iter->getStructure();
                 if (!destination_db->createTable(destination_path, structure, p_destination_format))
                 {
                     // could not create output file
@@ -200,13 +200,13 @@ int LoadJob::runJob()
 
         // right now there is no transformation happening -- just copy the whole table
 
-        tango::CopyParams info;
+        xd::CopyParams info;
         info.iter_input = source_iter;
         info.output = destination_path;
         info.append = true;
         
         // TODO: add copy loop here
-        tango::IJobPtr tango_job = destination_db->createJob();
+        xd::IJobPtr tango_job = destination_db->createJob();
         setXdJob(tango_job);
 
         destination_db->copyData(&info, tango_job);
@@ -218,7 +218,7 @@ int LoadJob::runJob()
             return 0;
         }
 
-        if (tango_job->getStatus() == tango::jobFailed)
+        if (tango_job->getStatus() == xd::jobFailed)
         {
             m_job_info->setState(jobStateFailed);
 

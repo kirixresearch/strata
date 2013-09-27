@@ -56,7 +56,7 @@ SlRowInserter::~SlRowInserter()
     m_database->unref();
 }
 
-tango::objhandle_t SlRowInserter::getHandle(const std::wstring& column_name)
+xd::objhandle_t SlRowInserter::getHandle(const std::wstring& column_name)
 {
     std::vector<SlRowInserterData>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
@@ -64,14 +64,14 @@ tango::objhandle_t SlRowInserter::getHandle(const std::wstring& column_name)
         if (0 == wcscasecmp(column_name.c_str(),
                             it->name.c_str()))
         {
-            return (tango::objhandle_t)(&(*it));
+            return (xd::objhandle_t)(&(*it));
         }
     }
 
     return 0;
 }
 
-tango::IColumnInfoPtr SlRowInserter::getInfo(tango::objhandle_t column_handle)
+xd::IColumnInfoPtr SlRowInserter::getInfo(xd::objhandle_t column_handle)
 {
     SlRowInserterData* r = (SlRowInserterData*)column_handle;
     if (!r)
@@ -86,7 +86,7 @@ bool SlRowInserter::startInsert(const std::wstring& col_list)
 {
     std::vector<std::wstring> cols;
 
-    tango::IStructurePtr structure = m_database->describeTable(m_table);
+    xd::IStructurePtr structure = m_database->describeTable(m_table);
     if (structure.isNull())
         return false;
 
@@ -98,7 +98,7 @@ bool SlRowInserter::startInsert(const std::wstring& col_list)
         col_count = structure->getColumnCount();
         for (i = 0; i < col_count; ++i)
         {
-            tango::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
+            xd::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
             cols.push_back(colinfo->getName());
         }
     }
@@ -182,8 +182,8 @@ bool SlRowInserter::startInsert(const std::wstring& col_list)
         data.name = cols[i];
         
         data.buf_len = (data.length * 5) + 1;
-        if (data.type == tango::typeDate || 
-            data.type == tango::typeDateTime)
+        if (data.type == xd::typeDate || 
+            data.type == xd::typeDateTime)
         {
             data.buf_len = 30;
         }
@@ -242,14 +242,14 @@ bool SlRowInserter::flush()
     return false;
 }
 
-bool SlRowInserter::putRawPtr(tango::objhandle_t column_handle,
+bool SlRowInserter::putRawPtr(xd::objhandle_t column_handle,
                               const unsigned char* value,
                               int length)
 {
     return false;
 }
 
-bool SlRowInserter::putString(tango::objhandle_t column_handle,
+bool SlRowInserter::putString(xd::objhandle_t column_handle,
                               const std::string& value)
 {
     SlRowInserterData* r = (SlRowInserterData*)column_handle;
@@ -272,7 +272,7 @@ bool SlRowInserter::putString(tango::objhandle_t column_handle,
     return true;
 }
 
-bool SlRowInserter::putWideString(tango::objhandle_t column_handle,
+bool SlRowInserter::putWideString(xd::objhandle_t column_handle,
                                   const std::wstring& value)
 {
     SlRowInserterData* r = (SlRowInserterData*)column_handle;
@@ -295,7 +295,7 @@ bool SlRowInserter::putWideString(tango::objhandle_t column_handle,
     return true;
 }
 
-bool SlRowInserter::putDouble(tango::objhandle_t column_handle,
+bool SlRowInserter::putDouble(xd::objhandle_t column_handle,
                               double value)
 {
     SlRowInserterData* r = (SlRowInserterData*)column_handle;
@@ -312,7 +312,7 @@ bool SlRowInserter::putDouble(tango::objhandle_t column_handle,
     return true;
 }
 
-bool SlRowInserter::putInteger(tango::objhandle_t column_handle,
+bool SlRowInserter::putInteger(xd::objhandle_t column_handle,
                                int value)
 {
     SlRowInserterData* r = (SlRowInserterData*)column_handle;
@@ -329,7 +329,7 @@ bool SlRowInserter::putInteger(tango::objhandle_t column_handle,
     return true;
 }
 
-bool SlRowInserter::putBoolean(tango::objhandle_t column_handle,
+bool SlRowInserter::putBoolean(xd::objhandle_t column_handle,
                                bool value)
 {
     SlRowInserterData* r = (SlRowInserterData*)column_handle;
@@ -351,8 +351,8 @@ bool SlRowInserter::putBoolean(tango::objhandle_t column_handle,
     return true;
 }
 
-bool SlRowInserter::putDateTime(tango::objhandle_t column_handle,
-                                tango::datetime_t datetime)
+bool SlRowInserter::putDateTime(xd::objhandle_t column_handle,
+                                xd::datetime_t datetime)
 {
     SlRowInserterData* r = (SlRowInserterData*)column_handle;
     if (!r)
@@ -365,7 +365,7 @@ bool SlRowInserter::putDateTime(tango::objhandle_t column_handle,
     {
         julianToDate(datetime >> 32, &y, &m, &d);
 
-        tango::datetime_t time_stamp = (datetime >> 32);
+        xd::datetime_t time_stamp = (datetime >> 32);
         if (time_stamp)
         {
             hh = (int)(time_stamp / 3600000);
@@ -379,7 +379,7 @@ bool SlRowInserter::putDateTime(tango::objhandle_t column_handle,
 
 
 
-    if (r->type == tango::typeDate)
+    if (r->type == xd::typeDate)
     {
         sprintf(r->str_data,
                 "%04d-%02d-%02d",
@@ -405,7 +405,7 @@ bool SlRowInserter::putDateTime(tango::objhandle_t column_handle,
     return true;
 }
 
-bool SlRowInserter::putNull(tango::objhandle_t column_handle)
+bool SlRowInserter::putNull(xd::objhandle_t column_handle)
 {
     SlRowInserterData* r = (SlRowInserterData*)column_handle;
     if (!r)

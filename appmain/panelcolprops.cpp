@@ -39,33 +39,33 @@ static int dlgtype2tangotype(int dlg_type)
 {
     switch (dlg_type)
     {
-        case 1: return tango::typeCharacter;
-        case 2: return tango::typeWideCharacter;
-        case 3: return tango::typeNumeric;
-        case 4: return tango::typeDouble;
-        case 5: return tango::typeInteger;
-        case 6: return tango::typeDate;
-        case 7: return tango::typeDateTime;
-        case 8: return tango::typeBoolean;
+        case 1: return xd::typeCharacter;
+        case 2: return xd::typeWideCharacter;
+        case 3: return xd::typeNumeric;
+        case 4: return xd::typeDouble;
+        case 5: return xd::typeInteger;
+        case 6: return xd::typeDate;
+        case 7: return xd::typeDateTime;
+        case 8: return xd::typeBoolean;
     }
 
-    return tango::typeInvalid;
+    return xd::typeInvalid;
 }
 
 static int tangotype2dlgtype(int tango_type)
 {
     switch (tango_type)
     {
-        case tango::typeUndefined:     return 0;
-        case tango::typeInvalid:       return 0;
-        case tango::typeCharacter:     return 1;
-        case tango::typeWideCharacter: return 2;
-        case tango::typeNumeric:       return 3;
-        case tango::typeDouble:        return 4;
-        case tango::typeInteger:       return 5;
-        case tango::typeDate:          return 6;
-        case tango::typeDateTime:      return 7;
-        case tango::typeBoolean:       return 8;
+        case xd::typeUndefined:     return 0;
+        case xd::typeInvalid:       return 0;
+        case xd::typeCharacter:     return 1;
+        case xd::typeWideCharacter: return 2;
+        case xd::typeNumeric:       return 3;
+        case xd::typeDouble:        return 4;
+        case xd::typeInteger:       return 5;
+        case xd::typeDate:          return 6;
+        case xd::typeDateTime:      return 7;
+        case xd::typeBoolean:       return 8;
     }
 
     return 0;
@@ -163,7 +163,7 @@ bool ColPropsPanel::initDoc(IFramePtr frame,
                                      wxSize(60,14),
                                      wxSP_ARROW_KEYS,
                                      0,
-                                     tango::max_numeric_scale);
+                                     xd::max_numeric_scale);
 
     wxBoxSizer* colparam_sizer = new wxBoxSizer(wxHORIZONTAL);
 
@@ -225,7 +225,7 @@ bool ColPropsPanel::initDoc(IFramePtr frame,
 
     m_path = m_tabledoc->getBrowsePath();
 
-    tango::IFileInfoPtr finfo = g_app->getDatabase()->getFileInfo(m_path);
+    xd::IFileInfoPtr finfo = g_app->getDatabase()->getFileInfo(m_path);
     m_structure = g_app->getDatabase()->describeTable(m_path);
     if (finfo.isNull() || m_structure.isNull())
     {
@@ -318,7 +318,7 @@ wxString ColPropsPanel::getModifyField()
 
 void ColPropsPanel::populate()
 {
-    tango::IColumnInfoPtr colinfo;
+    xd::IColumnInfoPtr colinfo;
     colinfo = m_iter->getInfo(m_iter->getHandle(towstr(m_modify_field)));
 
     if (!colinfo)
@@ -334,17 +334,17 @@ void ColPropsPanel::populate()
     m_orig_scale = colinfo->getScale();
     m_orig_expr = colinfo->getExpression();
 
-    tango::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
+    xd::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
     m_orig_existed = structure->getColumnExist(towstr(m_orig_name));
 
 
-    if (m_orig_type == tango::typeCharacter ||
-        m_orig_type == tango::typeWideCharacter)
+    if (m_orig_type == xd::typeCharacter ||
+        m_orig_type == xd::typeWideCharacter)
     {
         m_saved_character_width = m_orig_width;
     }
-     else if (m_orig_type == tango::typeNumeric ||
-              m_orig_type == tango::typeDouble)
+     else if (m_orig_type == xd::typeNumeric ||
+              m_orig_type == xd::typeDouble)
     {
         m_saved_numeric_width = m_orig_width;
         m_saved_numeric_scale = m_orig_scale;
@@ -352,13 +352,13 @@ void ColPropsPanel::populate()
 
 
     setName(makeProper(m_orig_name));
-    if (m_orig_type == tango::typeDateTime)
+    if (m_orig_type == xd::typeDateTime)
     {
-        setType(tango::typeDateTime);
+        setType(xd::typeDateTime);
     }
      else
     {
-        setType(tango::typeUndefined); // auto type
+        setType(xd::typeUndefined); // auto type
     }
 
     setWidth(colinfo->getWidth());
@@ -464,7 +464,7 @@ void ColPropsPanel::onTypeChanged(wxCommandEvent& evt)
     if (combo_selection == 0)
     {
         // auto type; tell expression builder to allow all types
-        m_expr_panel->setTypeOnly(tango::typeUndefined);
+        m_expr_panel->setTypeOnly(xd::typeUndefined);
         m_expr_panel->validate();
 
         m_last_expr = wxT("");
@@ -480,8 +480,8 @@ void ColPropsPanel::onTypeChanged(wxCommandEvent& evt)
     {
         m_last_type = type;
 
-        tango::IStructurePtr iter_structure = m_iter->getStructure();
-        tango::IColumnInfoPtr colinfo;
+        xd::IStructurePtr iter_structure = m_iter->getStructure();
+        xd::IColumnInfoPtr colinfo;
         
         colinfo = iter_structure->modifyColumn(towstr(m_modify_field));
 
@@ -489,23 +489,23 @@ void ColPropsPanel::onTypeChanged(wxCommandEvent& evt)
         {
             colinfo->setType(type);
 
-            if (type == tango::typeCharacter ||
-                type == tango::typeWideCharacter ||
-                type == tango::typeDate ||
-                type == tango::typeDateTime ||
-                type == tango::typeInteger ||
-                type == tango::typeBoolean)
+            if (type == xd::typeCharacter ||
+                type == xd::typeWideCharacter ||
+                type == xd::typeDate ||
+                type == xd::typeDateTime ||
+                type == xd::typeInteger ||
+                type == xd::typeBoolean)
             {
                 colinfo->setScale(0);
             }
 
 
             // limit numeric width, if necessary
-            if (type == tango::typeNumeric &&
-                m_last_width > tango::max_numeric_width)
+            if (type == xd::typeNumeric &&
+                m_last_width > xd::max_numeric_width)
             {
-                colinfo->setWidth(tango::max_numeric_width);
-                setWidth(tango::max_numeric_width);
+                colinfo->setWidth(xd::max_numeric_width);
+                setWidth(xd::max_numeric_width);
             }
 
             if (m_iter->modifyStructure(iter_structure, NULL))
@@ -543,24 +543,24 @@ void ColPropsPanel::onWidthChanged(wxCommandEvent& evt)
         width = 1;
     }
 
-    if (m_last_type == tango::typeNumeric)
+    if (m_last_type == xd::typeNumeric)
     {
         m_saved_numeric_width = width;
     }
 
-    if (m_last_type == tango::typeCharacter)
+    if (m_last_type == xd::typeCharacter)
     {
         m_saved_character_width = width;
     }
 
     // check for maximum allowed numeric width
-    if (m_last_type == tango::typeNumeric ||
-        m_expr_panel->getExpressionType() == tango::typeNumeric)
+    if (m_last_type == xd::typeNumeric ||
+        m_expr_panel->getExpressionType() == xd::typeNumeric)
     {
-        if (width > tango::max_numeric_width)
+        if (width > xd::max_numeric_width)
         {
             m_saved_numeric_width = width;
-            setWidth(tango::max_numeric_width);
+            setWidth(xd::max_numeric_width);
             return;
         }
     }
@@ -569,8 +569,8 @@ void ColPropsPanel::onWidthChanged(wxCommandEvent& evt)
     {
         m_last_width = width;
 
-        tango::IStructurePtr iter_structure = m_iter->getStructure();
-        tango::IColumnInfoPtr colinfo;
+        xd::IStructurePtr iter_structure = m_iter->getStructure();
+        xd::IColumnInfoPtr colinfo;
         colinfo = iter_structure->modifyColumn(towstr(m_modify_field));
         if (colinfo.isOk())
         {
@@ -604,15 +604,15 @@ void ColPropsPanel::onScaleChanged(wxCommandEvent& evt)
     if (scale < 0)
         scale = 0;
 
-    if (m_last_type == tango::typeNumeric ||
-        m_last_type == tango::typeDouble)
+    if (m_last_type == xd::typeNumeric ||
+        m_last_type == xd::typeDouble)
     {
         m_saved_numeric_scale = scale;
     }
 
-    if (scale > tango::max_numeric_scale)
+    if (scale > xd::max_numeric_scale)
     {
-        scale = tango::max_numeric_scale;
+        scale = xd::max_numeric_scale;
         m_saved_numeric_scale = scale;
         setScale(scale);
         return;
@@ -622,8 +622,8 @@ void ColPropsPanel::onScaleChanged(wxCommandEvent& evt)
     {
         m_last_scale = scale;
 
-        tango::IStructurePtr iter_structure = m_iter->getStructure();
-        tango::IColumnInfoPtr colinfo;
+        xd::IStructurePtr iter_structure = m_iter->getStructure();
+        xd::IColumnInfoPtr colinfo;
         colinfo = iter_structure->modifyColumn(towstr(m_modify_field));
         if (colinfo.isOk())
         {
@@ -662,13 +662,13 @@ void ColPropsPanel::onExpressionChanged(ExprBuilderPanel*)
     bool auto_type = (m_coltype_combo->GetSelection() == 0 ? true : false);
 
     if (expr != m_last_expr &&
-        m_expr_panel->getExpressionType() != tango::typeInvalid)
+        m_expr_panel->getExpressionType() != xd::typeInvalid)
     {
         m_last_expr = expr;
 
         // update the calcfield in the grid
-        tango::IStructurePtr iter_structure = m_iter->getStructure();
-        tango::IColumnInfoPtr colinfo;
+        xd::IStructurePtr iter_structure = m_iter->getStructure();
+        xd::IColumnInfoPtr colinfo;
         colinfo = iter_structure->modifyColumn(towstr(m_modify_field));
         if (colinfo.isOk())
         {
@@ -679,9 +679,9 @@ void ColPropsPanel::onExpressionChanged(ExprBuilderPanel*)
             {
                 int cur_type = m_expr_panel->getExpressionType();
 
-                if (cur_type == tango::typeDateTime)
+                if (cur_type == xd::typeDateTime)
                 {
-                    cur_type = tango::typeDate;
+                    cur_type = xd::typeDate;
                 }
 
                 if (cur_type != m_last_type)
@@ -693,23 +693,23 @@ void ColPropsPanel::onExpressionChanged(ExprBuilderPanel*)
                     type_changed = true;
 
                     // limit numeric width, if necessary
-                    if (cur_type == tango::typeNumeric &&
-                        m_last_width > tango::max_numeric_width)
+                    if (cur_type == xd::typeNumeric &&
+                        m_last_width > xd::max_numeric_width)
                     {
-                        colinfo->setWidth(tango::max_numeric_width);
-                        setWidth(tango::max_numeric_width);
+                        colinfo->setWidth(xd::max_numeric_width);
+                        setWidth(xd::max_numeric_width);
                     }
 
-                    if ((cur_type == tango::typeNumeric ||
-                         cur_type == tango::typeDouble) &&
-                        (last_type == tango::typeUndefined ||
-                         last_type == tango::typeCharacter ||
-                         last_type == tango::typeWideCharacter ||
-                         last_type == tango::typeBoolean ||
-                         last_type == tango::typeDate ||
-                         last_type == tango::typeDateTime ||
-                         last_type == tango::typeDouble ||
-                         last_type == tango::typeInteger))
+                    if ((cur_type == xd::typeNumeric ||
+                         cur_type == xd::typeDouble) &&
+                        (last_type == xd::typeUndefined ||
+                         last_type == xd::typeCharacter ||
+                         last_type == xd::typeWideCharacter ||
+                         last_type == xd::typeBoolean ||
+                         last_type == xd::typeDate ||
+                         last_type == xd::typeDateTime ||
+                         last_type == xd::typeDouble ||
+                         last_type == xd::typeInteger))
                     {
                         colinfo->setScale(m_saved_numeric_scale);
                         setScale(m_saved_numeric_scale);
@@ -718,13 +718,13 @@ void ColPropsPanel::onExpressionChanged(ExprBuilderPanel*)
                     // if the last type was some fixed-width type
                     // and the new type is numeric, update the width
 
-                    if ((cur_type == tango::typeCharacter ||
-                         cur_type == tango::typeWideCharacter) &&
-                        (last_type == tango::typeBoolean ||
-                         last_type == tango::typeDate ||
-                         last_type == tango::typeDateTime ||
-                         last_type == tango::typeDouble ||
-                         last_type == tango::typeInteger))
+                    if ((cur_type == xd::typeCharacter ||
+                         cur_type == xd::typeWideCharacter) &&
+                        (last_type == xd::typeBoolean ||
+                         last_type == xd::typeDate ||
+                         last_type == xd::typeDateTime ||
+                         last_type == xd::typeDouble ||
+                         last_type == xd::typeInteger))
                     {
                         colinfo->setWidth(m_saved_character_width);
                         setWidth(m_saved_character_width);
@@ -837,39 +837,39 @@ void ColPropsPanel::updateSpinBoxes()
 
     switch (type)
     {
-        case tango::typeCharacter:
+        case xd::typeCharacter:
             setWidth(m_saved_character_width);
             m_colwidth_text->Enable(true);
             break;
 
-        case tango::typeNumeric:
+        case xd::typeNumeric:
             setWidth(m_saved_numeric_width);
             setScale(m_saved_numeric_scale);
             m_colwidth_text->Enable(true);
             break;
 
-        case tango::typeDate:
+        case xd::typeDate:
             setWidth(4);
             m_colwidth_text->Enable(false);
             break;
 
-        case tango::typeDateTime:
+        case xd::typeDateTime:
             setWidth(8);
             m_colwidth_text->Enable(false);
             break;
 
-        case tango::typeBoolean:
+        case xd::typeBoolean:
             setWidth(1);
             m_colwidth_text->Enable(false);
             break;
 
-        case tango::typeDouble:
+        case xd::typeDouble:
             setWidth(8);
             setScale(m_saved_numeric_scale);
             m_colwidth_text->Enable(false);
             break;
 
-        case tango::typeInteger:
+        case xd::typeInteger:
             setWidth(4);
             m_colwidth_text->Enable(false);
             break;
@@ -884,9 +884,9 @@ void ColPropsPanel::updateSpinBoxes()
 
     enable = false;
 
-    if (type == tango::typeNumeric ||
-        type == tango::typeDouble ||
-        type == tango::typeInvalid)
+    if (type == xd::typeNumeric ||
+        type == xd::typeDouble ||
+        type == xd::typeInvalid)
     {
         enable = true;
     }
@@ -902,7 +902,7 @@ void ColPropsPanel::updateSpinBoxes()
 
 void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
 
 
     changeColumnCaption(wxEmptyString);
@@ -939,9 +939,9 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
         new_type = m_expr_panel->getExpressionType();
 
         // implicit typing prefers 'Date' to 'DateTime'
-        if (new_type == tango::typeDateTime)
+        if (new_type == xd::typeDateTime)
         {
-            new_type = tango::typeDate;
+            new_type = xd::typeDate;
             new_width = 4;
             new_scale = 0;
         }
@@ -949,11 +949,11 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
 
 
     // scale/width sanity check
-    if (new_type == tango::typeNumeric ||
-        new_type == tango::typeDouble)
+    if (new_type == xd::typeNumeric ||
+        new_type == xd::typeDouble)
     {
-        if (new_scale >= tango::max_numeric_scale)
-            new_scale = tango::max_numeric_scale;
+        if (new_scale >= xd::max_numeric_scale)
+            new_scale = xd::max_numeric_scale;
         if (new_width <= new_scale)
             new_width = new_scale+1;
     }
@@ -969,7 +969,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
         return;
     }
 
-    tango::IStructurePtr structure = db->describeTable(m_path);
+    xd::IStructurePtr structure = db->describeTable(m_path);
     if (structure->getColumnExist(towstr(m_orig_name)))
     {
         if (!m_orig_existed)
@@ -981,7 +981,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
         }
 
 
-        tango::IColumnInfoPtr colinfo;
+        xd::IColumnInfoPtr colinfo;
         colinfo = structure->modifyColumn(towstr(m_orig_name));
         if (!colinfo)
         {
@@ -1002,7 +1002,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
     }
      else
     {
-        tango::IColumnInfoPtr colinfo = structure->createColumn();
+        xd::IColumnInfoPtr colinfo = structure->createColumn();
         if (!colinfo)
         {
             closeSite();
@@ -1017,7 +1017,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
     }
 
 
-    tango::IIndexInfoEnumPtr old_indexes;
+    xd::IIndexInfoEnumPtr old_indexes;
     old_indexes = db->getIndexEnum(m_tabledoc->getPath());
 
     if (!db->modifyStructure(m_path, structure, NULL))
@@ -1061,20 +1061,20 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
     // some of the indexes may have been deleted during
     // the modifyStructure() operation
 
-    tango::IIndexInfoEnumPtr new_indexes = db->getIndexEnum(m_tabledoc->getPath());
+    xd::IIndexInfoEnumPtr new_indexes = db->getIndexEnum(m_tabledoc->getPath());
 
-    std::vector<tango::IIndexInfoPtr> to_recreate;
+    std::vector<xd::IIndexInfoPtr> to_recreate;
     int i, j, old_cnt, new_cnt;
     old_cnt = old_indexes->size();
     new_cnt = new_indexes->size();
     for (i = 0; i < old_cnt; ++i)
     {
-        tango::IIndexInfoPtr oldidx = old_indexes->getItem(i);
+        xd::IIndexInfoPtr oldidx = old_indexes->getItem(i);
         bool found = false;
 
         for (j = 0; j < new_cnt; ++j)
         {
-            tango::IIndexInfoPtr newidx = new_indexes->getItem(j);
+            xd::IIndexInfoPtr newidx = new_indexes->getItem(j);
 
             if (0 == wcscasecmp(oldidx->getTag().c_str(),
                                 newidx->getTag().c_str()))
@@ -1116,7 +1116,7 @@ void ColPropsPanel::onOkPressed(ExprBuilderPanel*)
             kl::JsonNode params;
             kl::JsonNode indexes = params["indexes"];
 
-            std::vector<tango::IIndexInfoPtr>::iterator it;
+            std::vector<xd::IIndexInfoPtr>::iterator it;
             for (it = to_recreate.begin();
                  it != to_recreate.end();
                  ++it)
@@ -1156,8 +1156,8 @@ void ColPropsPanel::revertChanges()
 
     // restore calculated field
 
-    tango::IStructurePtr iter_structure = m_iter->getStructure();
-    tango::IColumnInfoPtr colinfo;
+    xd::IStructurePtr iter_structure = m_iter->getStructure();
+    xd::IColumnInfoPtr colinfo;
     
     colinfo = iter_structure->modifyColumn(towstr(m_modify_field));
     if (!colinfo)

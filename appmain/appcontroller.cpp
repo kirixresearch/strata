@@ -1746,7 +1746,7 @@ static bool setReportCreateInfo(IDocumentSitePtr doc_site,
         return false;
 
     // set the source
-    tango::IIteratorPtr iter = table_doc->getIterator();
+    xd::IIteratorPtr iter = table_doc->getIterator();
     if (iter.isNull())
         return false;
 
@@ -4344,25 +4344,25 @@ bool AppController::openAny(const wxString& _location,
 
 
     // try to open all other files as a table
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
     {
         // otherwise open the location in a browser
         return openWeb(location, NULL, appOpenDefault, site_id);
     }
     
-    tango::IFileInfoPtr file_info;
+    xd::IFileInfoPtr file_info;
     file_info = db->getFileInfo(towstr(location));
     if (file_info.isOk())
     {
         int item_type = file_info->getType();
   
-        if (item_type == tango::filetypeTable)
+        if (item_type == xd::filetypeTable)
         {
             if (openTable(location, site_id))
                 return true;
         }
-         else if (item_type == tango::filetypeStream)
+         else if (item_type == xd::filetypeStream)
         {
             std::wstring mime_type = file_info->getMimeType();
             if (mime_type.substr(0, 19) == L"application/vnd.kx.")
@@ -4376,7 +4376,7 @@ bool AppController::openAny(const wxString& _location,
                     return true;
             }
         }
-         else if (item_type == tango::filetypeNode)
+         else if (item_type == xd::filetypeNode)
         {
             kl::JsonNode node;
         
@@ -4517,7 +4517,7 @@ bool AppController::openScript(const wxString& _location, int* site_id)
             
             if (location == old_location)
             {
-                tango::IDatabasePtr db = g_app->getDatabase();
+                xd::IDatabasePtr db = g_app->getDatabase();
                 
                 if (db.isOk() && db->getFileExist(towstr(location)))
                 {
@@ -4578,7 +4578,7 @@ bool AppController::openTable(const wxString& _location, int* site_id)
         
     AppBusyCursor bc;
     
-    tango::IDatabasePtr database = g_app->getDatabase();
+    xd::IDatabasePtr database = g_app->getDatabase();
     wxASSERT_MSG(database.isOk(), wxT("Current database is NULL."));
     
     if (database.isNull())
@@ -4588,13 +4588,13 @@ bool AppController::openTable(const wxString& _location, int* site_id)
     kl::trim(location);
 
 
-    tango::IFileInfoPtr fileinfo = database->getFileInfo(location);
+    xd::IFileInfoPtr fileinfo = database->getFileInfo(location);
     if (fileinfo.isNull())
         return false;
 
     int format = fileinfo->getFormat();
 
-   // if (format == tango::formatDelimitedText || format == tango::formatFixedLengthText)
+   // if (format == xd::formatDelimitedText || format == xd::formatFixedLengthText)
    // {
    //     // open text set
    //     createTextDoc(location, NULL, site_id);
@@ -4631,11 +4631,11 @@ bool AppController::openTemplate(const wxString& location,
 {
     AppBusyCursor bc;
 
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (!db)
         return false;
     
-    tango::IFileInfoPtr file_info;
+    xd::IFileInfoPtr file_info;
     file_info = db->getFileInfo(towstr(location));
     if (!file_info.isOk())
         return false;
@@ -4651,7 +4651,7 @@ bool AppController::openTemplate(const wxString& location,
 
 
     // handle it ourselves
-    if (file_info->getType() == tango::filetypeStream)
+    if (file_info->getType() == xd::filetypeStream)
     {
         std::wstring mime_type = file_info->getMimeType();
         if (mime_type == L"application/vnd.kx.report")
@@ -4670,7 +4670,7 @@ bool AppController::openTemplate(const wxString& location,
         
         return true;
     }
-     else if (file_info->getType() == tango::filetypeNode)
+     else if (file_info->getType() == xd::filetypeNode)
     {
         kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(location));
         if (!node.isOk())
@@ -4753,11 +4753,11 @@ bool AppController::openWeb(const wxString& _location,
 
 // -- utility functions (ripped straight out of importpages.cpp) --
 
-static void getAllSets(tango::IDatabasePtr db_ptr,
+static void getAllSets(xd::IDatabasePtr db_ptr,
                        const wxString& path,
                        std::vector<wxString>& retval)
 {
-    tango::IFileInfoEnumPtr items = db_ptr->getFolderInfo(towstr(path));
+    xd::IFileInfoEnumPtr items = db_ptr->getFolderInfo(towstr(path));
     if (items.isNull())
         return;
 
@@ -4766,10 +4766,10 @@ static void getAllSets(tango::IDatabasePtr db_ptr,
 
     for (i = 0; i < count; ++i)
     {
-        tango::IFileInfoPtr info = items->getItem(i);
+        xd::IFileInfoPtr info = items->getItem(i);
         item_type = info->getType();
 
-        if (item_type == tango::filetypeFolder)
+        if (item_type == xd::filetypeFolder)
         {
             wxString folder_path = path;
             folder_path += info->getName();
@@ -4778,7 +4778,7 @@ static void getAllSets(tango::IDatabasePtr db_ptr,
             // recursively traverse this folder
             getAllSets(db_ptr, folder_path, retval);
         }
-         else if (item_type == tango::filetypeTable)
+         else if (item_type == xd::filetypeTable)
         {
             wxString name = path;
             
@@ -4845,7 +4845,7 @@ static void onOpenExcelJobFinished(jobs::IJobPtr job)
     g_app->getAppController()->refreshDbDoc();
 }
 
-static void makeSafeConnectionName(tango::IDatabasePtr db, wxString& name)
+static void makeSafeConnectionName(xd::IDatabasePtr db, wxString& name)
 {
     name.Trim();
     name.Trim(false);
@@ -5343,7 +5343,7 @@ jobs::IJobPtr AppController::executeScript(const wxString& _location,
     }
      else
     {
-        tango::IDatabasePtr db = g_app->getDatabase();
+        xd::IDatabasePtr db = g_app->getDatabase();
         if (db.isNull())
         {
             // no database, try an xdfs next
@@ -5359,7 +5359,7 @@ jobs::IJobPtr AppController::executeScript(const wxString& _location,
             }
         }
         
-        tango::IStreamPtr stream = db->openStream(towstr(location));
+        xd::IStreamPtr stream = db->openStream(towstr(location));
         if (!stream)
         {
             if (error)
@@ -5506,11 +5506,11 @@ jobs::IJobPtr AppController::executeCode(const wxString& value,
 
 jobs::IJobPtr AppController::execute(const wxString& location)
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (!db)
         return xcm::null;
 
-    tango::IFileInfoPtr file_info = db->getFileInfo(towstr(location));
+    xd::IFileInfoPtr file_info = db->getFileInfo(towstr(location));
     if (!file_info)
         return xcm::null;
         
@@ -5525,7 +5525,7 @@ jobs::IJobPtr AppController::execute(const wxString& location)
     }
 
 
-    if (file_info->getType() == tango::filetypeStream)
+    if (file_info->getType() == xd::filetypeStream)
     {
         std::wstring mime_type = file_info->getMimeType();
 
@@ -5570,7 +5570,7 @@ jobs::IJobPtr AppController::execute(const wxString& location)
             return executeScript(location);
         }
     }
-     else if (file_info->getType() == tango::filetypeNode)
+     else if (file_info->getType() == xd::filetypeNode)
     {
         kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(location));
         if (!node.isOk())
@@ -5662,7 +5662,7 @@ static void addDefaultItemsToProject(const wxString& project_path)
     conn->setType(dbtypePackage);
     conn->setPath(towstr(filename));
 
-    tango::IDatabasePtr db;
+    xd::IDatabasePtr db;
 
     if (conn->open())
         db = conn->getDatabasePtr();
@@ -5677,7 +5677,7 @@ static void addDefaultItemsToProject(const wxString& project_path)
 
 
 
-    tango::IFileInfoEnumPtr objects = db->getFolderInfo(L"");
+    xd::IFileInfoEnumPtr objects = db->getFolderInfo(L"");
 
     
     // populate the item names vector from the package file stream
@@ -5810,7 +5810,7 @@ bool AppController::createProject(const wxString& location,
 {
     // actually create the database
 
-    xcm::ptr<tango::IDatabaseMgr> dbmgr;
+    xcm::ptr<xd::IDatabaseMgr> dbmgr;
     dbmgr.create_instance("xdnative.DatabaseMgr");
 
     if (dbmgr.isNull())
@@ -5831,7 +5831,7 @@ bool AppController::createProject(const wxString& location,
     if (!dbmgr->createDatabase(cstr))
         return false;
 
-    tango::IDatabasePtr database = dbmgr->open(cstr + L";User Id=admin;Password=");
+    xd::IDatabasePtr database = dbmgr->open(cstr + L";User Id=admin;Password=");
     if (database.isNull())
         return false;
 
@@ -5867,7 +5867,7 @@ bool AppController::openProject(const wxString& location,
         return false;
 
     // create the database manager
-    tango::IDatabaseMgrPtr dbmgr = tango::getDatabaseMgr();
+    xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
     if (dbmgr.isNull())
     {
         appMessageBox(_("Your system is missing a software component.  To correct this problem, please reinstall the software."),
@@ -5990,7 +5990,7 @@ bool AppController::openProject(const wxString& location,
         cstr += wxT(";");
     }
     
-    tango::IDatabasePtr database = dbmgr->open(towstr(cstr));
+    xd::IDatabasePtr database = dbmgr->open(towstr(cstr));
     if (database.isNull())
     {
         appMessageBox(_("The specified project could not be opened."),
@@ -6036,7 +6036,7 @@ bool AppController::openProject(const wxString& location,
 }
 
 
-bool AppController::openProject(tango::IDatabasePtr database)
+bool AppController::openProject(xd::IDatabasePtr database)
 {
     g_app->setDatabase(database);
     
@@ -6279,7 +6279,7 @@ bool AppController::closeProject()
 
     TableDocMgr::clearModelRegistry();
 
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     g_app->setDatabase(xcm::null);
 
     if (db.isOk())
@@ -6330,7 +6330,7 @@ void AppController::createMountPoint(const wxString& conn_str,
     if (path.Mid(0, 1) != wxT("/"))
         path.Prepend(wxT("/"));
 
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     db->setMountPoint(towstr(path), towstr(conn_str), L"/");
     
     if (refresh_tree)

@@ -81,7 +81,7 @@ int DivideJob::runJob()
     std::wstring output_prefix = params_node["output"].getString();
     size_t output_row_count = params_node["row_count"].getInteger();
 
-    tango::IFileInfoPtr finfo = m_db->getFileInfo(input_path);
+    xd::IFileInfoPtr finfo = m_db->getFileInfo(input_path);
     if (finfo.isNull())
     {
         m_job_info->setState(jobStateFailed);
@@ -89,7 +89,7 @@ int DivideJob::runJob()
         return 0;    
     }
 
-    tango::IStructurePtr structure;
+    xd::IStructurePtr structure;
     structure = m_db->describeTable(input_path);
     if (structure.isNull())
     {
@@ -98,7 +98,7 @@ int DivideJob::runJob()
         return 0; 
     }
 
-    tango::IIteratorPtr iter;
+    xd::IIteratorPtr iter;
     iter = m_db->query(input_path, L"", L"", L"", NULL);
     if (iter.isNull())
     {
@@ -119,7 +119,7 @@ int DivideJob::runJob()
     m_job_info->setMaxCount(max_row_count);
 
 
-    tango::IJobPtr tango_job;
+    xd::IJobPtr tango_job;
 
     iter->goFirst();
 
@@ -147,7 +147,7 @@ int DivideJob::runJob()
         tango_job = m_db->createJob();
         setXdJob(tango_job);
 
-        tango::CopyParams info;
+        xd::CopyParams info;
         info.iter_input = iter;
         info.output = output_path;
         info.limit = (rows_left >= output_row_count) ? output_row_count : rows_left;

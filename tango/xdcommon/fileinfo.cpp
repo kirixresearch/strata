@@ -60,7 +60,7 @@ long long FileInfo::getSize()
     return size;
 }
 
-tango::rowpos_t FileInfo::getRowCount()
+xd::rowpos_t FileInfo::getRowCount()
 {
     return row_count;
 }

@@ -21,7 +21,7 @@ public:
     {
         name = wxEmptyString;
         bitmap = wxNullBitmap;
-        type = tango::typeUndefined;
+        type = xd::typeUndefined;
         width = 0;
         scale = 0;
         enabled = true;
@@ -109,11 +109,11 @@ public:
     void clearSelection();
     void sortList(int sort_state);
     void setDragFormat(const wxString& format);
-    void setStructure(tango::IStructurePtr structure);
+    void setStructure(xd::IStructurePtr structure);
     void setItemEnabled(const wxString& item_name, bool enabled = true);
     void addCustomItem(const wxString& text,
                        const wxBitmap& bitmap = wxNullBitmap,
-                       int type = tango::typeCharacter,
+                       int type = xd::typeCharacter,
                        int width = 20,
                        int scale = 0);
     
@@ -139,7 +139,7 @@ private:
 
     int m_sort_state;
     kcl::RowSelectionGrid* m_grid;
-    tango::IStructurePtr m_structure;
+    xd::IStructurePtr m_structure;
     std::vector<FieldListItem> m_custom_items;
     std::vector<FieldListItem*> m_to_delete;
 

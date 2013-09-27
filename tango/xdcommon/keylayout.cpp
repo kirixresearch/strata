@@ -34,7 +34,7 @@ KeyLayout::~KeyLayout()
     }
 }
 
-bool KeyLayout::setKeyExpr(tango::IIteratorPtr iter,
+bool KeyLayout::setKeyExpr(xd::IIteratorPtr iter,
                            const std::wstring& expr,
                            bool hold_ref)
 {
@@ -106,7 +106,7 @@ const unsigned char* KeyLayout::getKey()
         ptr = m_buf + part_it->offset;
         switch (part_it->type)
         {
-            case tango::typeCharacter:
+            case xd::typeCharacter:
             {
                 const std::string& s = m_iter->getString(part_it->handle);
                 int copy_len = s.length();
@@ -120,7 +120,7 @@ const unsigned char* KeyLayout::getKey()
             }
             break;
 
-            case tango::typeWideCharacter:
+            case xd::typeWideCharacter:
             {
                 const std::wstring& s = m_iter->getWideString(part_it->handle);
                 int copy_len = s.length();
@@ -134,7 +134,7 @@ const unsigned char* KeyLayout::getKey()
             }
             break;
 
-            case tango::typeInteger:
+            case xd::typeInteger:
             {
                 // for debugging:
                 //unsigned int tempui;
@@ -176,8 +176,8 @@ const unsigned char* KeyLayout::getKey()
                 break;
             }
         
-            case tango::typeNumeric:
-            case tango::typeDouble:
+            case xd::typeNumeric:
+            case xd::typeDouble:
             {
                 double tempd;
                 unsigned char* tempd_src = (unsigned char*)&tempd;
@@ -207,9 +207,9 @@ const unsigned char* KeyLayout::getKey()
             }
             break;
 
-            case tango::typeDate:
+            case xd::typeDate:
             {
-                tango::datetime_t d1, d2;
+                xd::datetime_t d1, d2;
                 
                 d1 = m_iter->getDateTime(part_it->handle);
 
@@ -232,9 +232,9 @@ const unsigned char* KeyLayout::getKey()
             }
             break;
 
-            case tango::typeDateTime:
+            case xd::typeDateTime:
             {
-                tango::datetime_t tempdt = m_iter->getDateTime(part_it->handle);
+                xd::datetime_t tempdt = m_iter->getDateTime(part_it->handle);
 
                 ptr[0] = (unsigned char)((tempdt >> 56) & 0xff);
                 ptr[1] = (unsigned char)((tempdt >> 48) & 0xff);
@@ -247,7 +247,7 @@ const unsigned char* KeyLayout::getKey()
             }
             break;
 
-            case tango::typeBoolean:
+            case xd::typeBoolean:
             {
                 bool tempb = m_iter->getBoolean(part_it->handle);
                 if (tempb)
@@ -257,7 +257,7 @@ const unsigned char* KeyLayout::getKey()
             }
             break;
 
-            case tango::typeBinary:
+            case xd::typeBinary:
             {
                 memcpy(ptr, m_iter->getRawPtr(part_it->handle), part_it->width);
             }
@@ -278,7 +278,7 @@ const unsigned char* KeyLayout::getKey()
 }
 
 
-tango::datetime_t internalParseDateTime(const wchar_t* str)
+xd::datetime_t internalParseDateTime(const wchar_t* str)
 {
     int year, month, day, hour, minute, second;
     if (!parseDateTime(str, &year, &month, &day, &hour, &minute, &second))
@@ -291,7 +291,7 @@ tango::datetime_t internalParseDateTime(const wchar_t* str)
         second = 0;
     }
     
-    tango::DateTime d(year, month, day, hour, minute, second, 0);
+    xd::DateTime d(year, month, day, hour, minute, second, 0);
     return d.getDateTime();
 }
 
@@ -326,7 +326,7 @@ const unsigned char* KeyLayout::getKeyFromValues(const wchar_t* values[], size_t
         
         switch (part_it->type)
         {
-            case tango::typeCharacter:
+            case xd::typeCharacter:
             {
                 if (wcslen(part_ptr) > (size_t)part_it->width)
                     m_trunc = true;
@@ -340,7 +340,7 @@ const unsigned char* KeyLayout::getKeyFromValues(const wchar_t* values[], size_t
             }
             break;
 
-            case tango::typeWideCharacter:
+            case xd::typeWideCharacter:
             {
                 std::wstring s = part_ptr;
                 size_t copy_len = s.length();
@@ -354,7 +354,7 @@ const unsigned char* KeyLayout::getKeyFromValues(const wchar_t* values[], size_t
             }
             break;
 
-            case tango::typeInteger:
+            case xd::typeInteger:
             {
                 // for debugging:
                 //unsigned int tempui;
@@ -396,8 +396,8 @@ const unsigned char* KeyLayout::getKeyFromValues(const wchar_t* values[], size_t
                 break;
             }
         
-            case tango::typeNumeric:
-            case tango::typeDouble:
+            case xd::typeNumeric:
+            case xd::typeDouble:
             {
                 double tempd;
                 unsigned char* tempd_src = (unsigned char*)&tempd;
@@ -427,9 +427,9 @@ const unsigned char* KeyLayout::getKeyFromValues(const wchar_t* values[], size_t
             }
             break;
 
-            case tango::typeDate:
+            case xd::typeDate:
             {
-                tango::datetime_t d1, d2;
+                xd::datetime_t d1, d2;
                 
                 d1 = internalParseDateTime(part_ptr);
 
@@ -452,9 +452,9 @@ const unsigned char* KeyLayout::getKeyFromValues(const wchar_t* values[], size_t
             }
             break;
 
-            case tango::typeDateTime:
+            case xd::typeDateTime:
             {
-                tango::datetime_t tempdt = internalParseDateTime(part_ptr);
+                xd::datetime_t tempdt = internalParseDateTime(part_ptr);
 
                 ptr[0] = (unsigned char)((tempdt >> 56) & 0xff);
                 ptr[1] = (unsigned char)((tempdt >> 48) & 0xff);
@@ -467,7 +467,7 @@ const unsigned char* KeyLayout::getKeyFromValues(const wchar_t* values[], size_t
             }
             break;
 
-            case tango::typeBoolean:
+            case xd::typeBoolean:
             {
                 bool tempb = (towupper(*part_ptr) == 'T') ? true : false;
                 if (tempb)
@@ -477,7 +477,7 @@ const unsigned char* KeyLayout::getKeyFromValues(const wchar_t* values[], size_t
             }
             break;
 
-            case tango::typeBinary:
+            case xd::typeBinary:
             {
                 memcpy(ptr, (unsigned char*)part_ptr, part_it->width);
             }
@@ -508,7 +508,7 @@ bool KeyLayout::getTruncation()
     return m_trunc;
 }
 
-void KeyLayout::setIterator(tango::IIteratorPtr iter, bool hold_ref)
+void KeyLayout::setIterator(xd::IIteratorPtr iter, bool hold_ref)
 {
     // -- release old iterator --
     if (m_iter)
@@ -567,7 +567,7 @@ bool KeyLayout::addKeyPart(const std::wstring& expr,
     if (!part.handle)
         return false;
 
-    tango::IColumnInfoPtr info = m_iter_structure->getColumnInfo(expr);
+    xd::IColumnInfoPtr info = m_iter_structure->getColumnInfo(expr);
 
     if (info)
     {
@@ -590,7 +590,7 @@ bool KeyLayout::addKeyPart(const std::wstring& expr,
 
         if (part.width == -1)
         {
-            if (part.type == tango::typeCharacter)
+            if (part.type == xd::typeCharacter)
             {
                 // -- idx part is a character expression, so
                 //    the width is unpredictable. We will choose
@@ -598,7 +598,7 @@ bool KeyLayout::addKeyPart(const std::wstring& expr,
 
                 part.width = 50;
             }
-             else if (part.type == tango::typeWideCharacter)
+             else if (part.type == xd::typeWideCharacter)
             {
                 part.width = 100;
             }
@@ -611,28 +611,28 @@ bool KeyLayout::addKeyPart(const std::wstring& expr,
             // -- width is already set --
             break;
 
-        case tango::typeWideCharacter:
+        case xd::typeWideCharacter:
             part.width *= 2;
             break;
 
-        case tango::typeInteger:
+        case xd::typeInteger:
             part.width = sizeof(int);
             break;
         
-        case tango::typeNumeric:
-        case tango::typeDouble:
+        case xd::typeNumeric:
+        case xd::typeDouble:
             part.width = sizeof(double);
             break;
 
-        case tango::typeDate:
+        case xd::typeDate:
             part.width = sizeof(int);
             break;
 
-        case tango::typeDateTime:
+        case xd::typeDateTime:
             part.width = sizeof(int) * 2;
             break;
 
-        case tango::typeBoolean:
+        case xd::typeBoolean:
             part.width = 1;
             break;
     }

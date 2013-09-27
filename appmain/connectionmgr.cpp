@@ -47,7 +47,7 @@ public:
 
     bool open()
     {
-        tango::IDatabaseMgrPtr dbmgr = tango::getDatabaseMgr();
+        xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
         if (dbmgr.isNull())
             return false;
         
@@ -58,19 +58,19 @@ public:
         // set the temp and definition directory from our main db
         if (m_db.isOk())
         {
-            tango::IDatabasePtr main_db = g_app->getDatabase();
+            xd::IDatabasePtr main_db = g_app->getDatabase();
             if (main_db.isOk())
             {
-                tango::IAttributesPtr attr = main_db->getAttributes();
+                xd::IAttributesPtr attr = main_db->getAttributes();
                 if (attr.isOk())
                 {
-                    std::wstring def_dir = attr->getStringAttribute(tango::dbattrDefinitionDirectory);
-                    std::wstring temp_dir = attr->getStringAttribute(tango::dbattrTempDirectory);
+                    std::wstring def_dir = attr->getStringAttribute(xd::dbattrDefinitionDirectory);
+                    std::wstring temp_dir = attr->getStringAttribute(xd::dbattrTempDirectory);
                     attr = m_db->getAttributes();
                     if (attr.isOk())
                     {
-                        attr->setStringAttribute(tango::dbattrDefinitionDirectory, def_dir);
-                        attr->setStringAttribute(tango::dbattrTempDirectory, temp_dir);
+                        attr->setStringAttribute(xd::dbattrDefinitionDirectory, def_dir);
+                        attr->setStringAttribute(xd::dbattrTempDirectory, temp_dir);
                     }
                 }
             }
@@ -334,14 +334,14 @@ public:
         m_filter = filter;
     }
 
-    tango::IDatabasePtr getDatabasePtr()
+    xd::IDatabasePtr getDatabasePtr()
     {
         XCM_AUTO_LOCK(m_obj_mutex);
 
         return m_db;
     }
 
-    void setDatabasePtr(tango::IDatabasePtr new_val)
+    void setDatabasePtr(xd::IDatabasePtr new_val)
     {
         XCM_AUTO_LOCK(m_obj_mutex);
 
@@ -366,7 +366,7 @@ private:
     std::wstring m_username;
     std::wstring m_password;
 
-    tango::IDatabasePtr m_db;
+    xd::IDatabasePtr m_db;
     
     std::wstring m_error_string;
 };

@@ -20,14 +20,14 @@ namespace xdcommon
 
 
 
-bool runGroupQuery(tango::IDatabasePtr db,
-                   tango::IIteratorPtr iter,
+bool runGroupQuery(xd::IDatabasePtr db,
+                   xd::IIteratorPtr iter,
                    const std::wstring& output_path,
                    const std::wstring& group,
                    const std::wstring& output,
                    const std::wstring& condition,
                    const std::wstring& having,
-                   tango::IJob* job);
+                   xd::IJob* job);
 
 
 }; // namespace xdcommon

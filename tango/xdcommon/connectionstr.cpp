@@ -168,7 +168,7 @@ std::wstring decryptConnectionStringPassword(const std::wstring& connection_str)
 {
     // decrypt password from string, if any
     std::wstring pw;
-    tango::ConnectionStringParser cstr(connection_str);
+    xd::ConnectionStringParser cstr(connection_str);
 
     bool changed = false;
     
@@ -199,7 +199,7 @@ std::wstring encryptConnectionStringPassword(const std::wstring& connection_str)
 {
     // scramble password, if any
     std::wstring pw;
-    tango::ConnectionStringParser cstr(connection_str);
+    xd::ConnectionStringParser cstr(connection_str);
 
     bool changed = false;
 

@@ -96,15 +96,15 @@ static std::wstring stripExtension(const std::wstring& s)
 
 static wxString getDatabaseNameProjectLabel()
 {
-    tango::IDatabasePtr database = g_app->getDatabase();
+    xd::IDatabasePtr database = g_app->getDatabase();
     if (database.isNull())
         return wxT("");
 
-    tango::IAttributesPtr attr = database->getAttributes();
+    xd::IAttributesPtr attr = database->getAttributes();
     if (attr.isNull())
         return wxT("");
 
-    wxString project_name = attr->getStringAttribute(tango::dbattrDatabaseName);
+    wxString project_name = attr->getStringAttribute(xd::dbattrDatabaseName);
 
     wxString label;
     if (project_name.Length() > 0)
@@ -116,7 +116,7 @@ static wxString getDatabaseNameProjectLabel()
 }
 
 
-static std::wstring getDbDriver(tango::IDatabasePtr& db)
+static std::wstring getDbDriver(xd::IDatabasePtr& db)
 {
     if (db.isNull())
         return wxEmptyString;
@@ -271,22 +271,22 @@ class FileInfoLess
 {
 public:
 
-     bool operator()(const tango::IFileInfoPtr& f1,
-                     const tango::IFileInfoPtr& f2) const                
+     bool operator()(const xd::IFileInfoPtr& f1,
+                     const xd::IFileInfoPtr& f2) const                
      {
         int f1_type = f1->getType();
         int f2_type = f2->getType();
         
         // folders always float to the top
 
-        if (f1_type == tango::filetypeFolder || f2_type == tango::filetypeFolder)
+        if (f1_type == xd::filetypeFolder || f2_type == xd::filetypeFolder)
         {
             if (f1_type == f2_type)
             {
                 return wcscasecmp(f1->getName().c_str(),
                                   f2->getName().c_str()) < 0 ? true : false;
             }
-             else if (f1_type == tango::filetypeFolder)
+             else if (f1_type == xd::filetypeFolder)
             {
                 return true;
             }
@@ -307,13 +307,13 @@ public:
 
 // helper function for sorting IFileInfoPtr objects
 
-static void sortFolderInfo(tango::IFileInfoEnumPtr& f)
+static void sortFolderInfo(xd::IFileInfoEnumPtr& f)
 {
     if (f.isNull())
         return;
 
-    std::vector<tango::IFileInfoPtr> vec;
-    std::vector<tango::IFileInfoPtr>::iterator it;
+    std::vector<xd::IFileInfoPtr> vec;
+    std::vector<xd::IFileInfoPtr>::iterator it;
     
     size_t i, count = f->size();
     
@@ -355,12 +355,12 @@ IConnectionPtr DbFolderFsItem::getConnection()
     return m_conn;
 }
 
-void DbFolderFsItem::setDatabase(tango::IDatabasePtr db)
+void DbFolderFsItem::setDatabase(xd::IDatabasePtr db)
 {
     m_db = db;
 }
 
-tango::IDatabasePtr DbFolderFsItem::getDatabase()
+xd::IDatabasePtr DbFolderFsItem::getDatabase()
 {
     return m_db;
 }
@@ -418,7 +418,7 @@ void DbFolderFsItem::setTablesOnly(bool new_val)
 // this function sets a specific file info enumerator to use for this folder,
 // which will be used in getChildren() as an override instead of actually
 // trying to get the children of the folder item
-void DbFolderFsItem::setChildrenOverride(tango::IFileInfoEnumPtr children_override)
+void DbFolderFsItem::setChildrenOverride(xd::IFileInfoEnumPtr children_override)
 {
     m_children_override = children_override;
 }
@@ -490,7 +490,7 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
     }
 
     // if we're overriding the children enum, use that
-    tango::IFileInfoEnumPtr files;
+    xd::IFileInfoEnumPtr files;
     if (m_children_override.isOk())
         files = m_children_override;
          else
@@ -529,15 +529,15 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
     // now add other items
     for (i = 0; i < count; ++i)
     {
-        tango::IFileInfoPtr info = files->getItem(i);
+        xd::IFileInfoPtr info = files->getItem(i);
 
         wxString item_name = info->getName();
         int item_type = info->getType();
         
-        if ((item_type != tango::filetypeTable && item_type != tango::filetypeFolder) && m_only_tables)
+        if ((item_type != xd::filetypeTable && item_type != xd::filetypeFolder) && m_only_tables)
             continue;
         
-        if (item_type != tango::filetypeFolder && m_only_folders)
+        if (item_type != xd::filetypeFolder && m_only_folders)
             continue;
 
         // don't show hidden files (hidden files begin
@@ -571,7 +571,7 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
                 continue;
         }
 
-        if (item_type == tango::filetypeFolder)
+        if (item_type == xd::filetypeFolder)
         {
             DbFolderFsItem* item = new DbFolderFsItem;
             item->setBitmap(DECIDE_BMP(gf_folder_closed_16), fsbmpSmall);
@@ -592,11 +592,11 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
             
             vec->append(static_cast<IFsItem*>(item));
         }
-         else if (item_type == tango::filetypeTable)
+         else if (item_type == xd::filetypeTable)
         {
             // it appears that all files that are in mounted folders
-            // except scripts (which are of type tango::filetypeStream)
-            // are of type tango::filetypeTable, so we need to determine
+            // except scripts (which are of type xd::filetypeStream)
+            // are of type xd::filetypeTable, so we need to determine
             // the db object type based on the file's extension
 
             wxBitmap bmp = DECIDE_BMP(gf_table_16);
@@ -637,7 +637,7 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
             item->setOwner(this);
             vec->append(static_cast<IFsItem*>(item));
         }
-         else if (item_type == tango::filetypeNode)
+         else if (item_type == xd::filetypeNode)
         {
             // we have an old nodefile; open it as a stream and get what we need
             wxString path = appendPath(m_path, item_name);
@@ -655,7 +655,7 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
                 std::wstring cstr, rpath;
                 if (m_db->getMountPoint(towstr(path), cstr, rpath))
                 {
-                    tango::IDatabasePtr db2 = m_db->getMountDatabase(towstr(path));
+                    xd::IDatabasePtr db2 = m_db->getMountDatabase(towstr(path));
                     if (db2)
                         node = JsonConfig::loadFromDb(db2, towstr(path));
                 }
@@ -720,7 +720,7 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
 
             vec->append(static_cast<IFsItem*>(item));
         }
-         else if (item_type == tango::filetypeStream)
+         else if (item_type == xd::filetypeStream)
         {
             const std::wstring& mime_type = info->getMimeType();
             if (mime_type == L"application/vnd.kx.report")
@@ -1054,7 +1054,7 @@ wxWindow* DbDoc::getDocWindow()
     return doc->getDocumentWindow();
 }
 
-void DbDoc::setDatabase(tango::IDatabasePtr db, const wxString& root_path)
+void DbDoc::setDatabase(xd::IDatabasePtr db, const wxString& root_path)
 {
     if (db)
     {
@@ -1090,7 +1090,7 @@ void DbDoc::setRootItem(IDbFolderFsItemPtr root_folder)
 
 bool DbDoc::isFsItemExternal(IFsItemPtr item)
 {
-    tango::IDatabasePtr db = getItemDatabase(item);
+    xd::IDatabasePtr db = getItemDatabase(item);
     if (db != g_app->getDatabase())
         return true;
 
@@ -1289,7 +1289,7 @@ bool DbDoc::isItemInMount(IFsItemPtr item)
     }
 }
 
-tango::IDatabasePtr DbDoc::getItemDatabase(IFsItemPtr _item)
+xd::IDatabasePtr DbDoc::getItemDatabase(IFsItemPtr _item)
 {
     IDbObjectFsItemPtr item = _item;
     
@@ -1321,7 +1321,7 @@ tango::IDatabasePtr DbDoc::getItemDatabase(IFsItemPtr _item)
         IDbFolderFsItemPtr folder = item;
         if (folder.isOk())
         {
-            tango::IDatabasePtr db = folder->getDatabase();
+            xd::IDatabasePtr db = folder->getDatabase();
             if (db.isOk())
                 return db;
         }
@@ -1470,11 +1470,11 @@ void DbDoc::onItemProperties(wxCommandEvent& evt)
         {
             std::wstring path = towstr(folder->getPath());
             
-            tango::IDatabasePtr db = getItemDatabase(folder);
+            xd::IDatabasePtr db = getItemDatabase(folder);
             if (db.isNull())
                 return;
                 
-            tango::IFileInfoPtr file_info = db->getFileInfo(path);
+            xd::IFileInfoPtr file_info = db->getFileInfo(path);
             
             if (file_info.isOk() && file_info->isMount())
             {   
@@ -1894,7 +1894,7 @@ void DbDoc::doCopy()
 
 void DbDoc::doPaste()
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
 
 
     if (g_cutcopy_items.size() == 0)
@@ -1922,7 +1922,7 @@ void DbDoc::doPaste()
     wxString target_location = getFsItemPath(target);
     
     
-    tango::IDatabasePtr target_database = getItemDatabase(target);
+    xd::IDatabasePtr target_database = getItemDatabase(target);
 
     std::vector<IFsItemPtr>::iterator it;
 
@@ -2116,7 +2116,7 @@ void DbDoc::onNewShortcut(wxCommandEvent& evt)
         return;
 
 
-    tango::IDatabasePtr db = getItemDatabase(parent_item);
+    xd::IDatabasePtr db = getItemDatabase(parent_item);
     wxString path = getFsItemPath(parent_item);
     path += wxT("/New_Shortcut");
 
@@ -2136,7 +2136,7 @@ void DbDoc::onNewShortcut(wxCommandEvent& evt)
 
 IFsItemPtr DbDoc::getNewFileParent()
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return xcm::null;
     
@@ -2152,7 +2152,7 @@ wxString DbDoc::getDefaultNewFileName(IFsItemPtr parent, const wxString& name)
 {
     wxASSERT(parent.isOk());
     
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return wxEmptyString;
 
@@ -2227,7 +2227,7 @@ void DbDoc::onNewFolder(wxCommandEvent& evt)
         
     wxString path = getDefaultNewFileName(parent, _("New Folder"));
     
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (!db->createFolder(towstr(path)))
     {
         appMessageBox(_("A folder could not be created in this location."),
@@ -2492,7 +2492,7 @@ void DbDoc::deleteFsItem(IFsPanelPtr tree,
 
 
 
-    tango::IDatabasePtr db = getItemDatabase(item);
+    xd::IDatabasePtr db = getItemDatabase(item);
 
     if (db.isNull())
     {
@@ -2504,8 +2504,8 @@ void DbDoc::deleteFsItem(IFsPanelPtr tree,
     {
         // first check if we're deleting a mount
         {
-            tango::IDatabasePtr db = g_app->getDatabase();
-            tango::IFileInfoPtr file_info = db->getFileInfo(towstr(folder->getPath()));
+            xd::IDatabasePtr db = g_app->getDatabase();
+            xd::IFileInfoPtr file_info = db->getFileInfo(towstr(folder->getPath()));
             
             if (file_info.isOk() && file_info->isMount())
             {
@@ -2563,7 +2563,7 @@ void DbDoc::deleteFsItem(IFsPanelPtr tree,
 
             bool problem = false;
 
-            tango::IFileInfoPtr info = db->getFileInfo(towstr(obj->getPath()));
+            xd::IFileInfoPtr info = db->getFileInfo(towstr(obj->getPath()));
 
             if (info.isOk())
             {
@@ -2794,7 +2794,7 @@ void DbDoc::onFsItemEndLabelEdit(IFsItemPtr item,
             filename += wxT("/");
         filename += label;
 
-        tango::IDatabasePtr db = g_app->getDatabase();
+        xd::IDatabasePtr db = g_app->getDatabase();
 
         // find out if a file with the new name already exists
         if (db->getFileExist(towstr(filename)))
@@ -2830,7 +2830,7 @@ void DbDoc::onFsItemEndLabelEdit(IFsItemPtr item,
     }
      else if (m_edit_mode == editRename)
     {
-        tango::IDatabasePtr db = g_app->getDatabase();
+        xd::IDatabasePtr db = g_app->getDatabase();
         wxString old_path;
 
         // check if edit was cancelled or was empty
@@ -2986,7 +2986,7 @@ void DbDoc::onFsItemRightClicked(IFsItemPtr item)
         for (i = 0; i < selected_count; ++i)
         {
             IFsItemPtr item = tree_items->getItem(i);
-            tango::IDatabasePtr db = getItemDatabase(item);
+            xd::IDatabasePtr db = getItemDatabase(item);
             
             if (!isItemMount(item))
                 all_mounts = false;
@@ -3214,8 +3214,8 @@ void DbDoc::onFsItemRightClicked(IFsItemPtr item)
             // TODO: is there a better way to find out if the
             // current item is part of a filesystem?
             bool fs_mount = false;
-            tango::IDatabasePtr db = g_app->getDatabase()->getMountDatabase(towstr(getFsItemPath(item)));
-            if (db.isOk() && db->getDatabaseType() == tango::dbtypeFilesystem)
+            xd::IDatabasePtr db = g_app->getDatabase()->getMountDatabase(towstr(getFsItemPath(item)));
+            if (db.isOk() && db->getDatabaseType() == xd::dbtypeFilesystem)
                 fs_mount = true;
 
             menuPopup.Append(ID_Open, _("&Open"));
@@ -3398,9 +3398,9 @@ void DbDoc::onDragDrop(IFsItemPtr target,
         std::wstring src_name = kl::afterLast(src_path, '/');
         std::wstring dest_folder = towstr(getFsItemPath(target));
 
-        tango::IDatabasePtr db = g_app->getDatabase();
-        tango::IDatabasePtr source_db = getItemDatabase(item);
-        tango::IDatabasePtr dest_db = getItemDatabase(target);
+        xd::IDatabasePtr db = g_app->getDatabase();
+        xd::IDatabasePtr source_db = getItemDatabase(item);
+        xd::IDatabasePtr dest_db = getItemDatabase(target);
         std::wstring dest_driver = getDbDriver(dest_db);
 
         std::wstring dest_name = src_name;
@@ -3531,7 +3531,7 @@ void DbDoc::onSetConnectionPropertiesFinished(ConnectionWizard* dlg)
 {
     // get the connection string
     wxString conn_str = dlg->getConnectionString();
-    tango::IDatabasePtr db = getItemDatabase(m_edit_item);
+    xd::IDatabasePtr db = getItemDatabase(m_edit_item);
     wxASSERT_MSG(db.p, wxT("Missing db"));
     
     // set the mount point

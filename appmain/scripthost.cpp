@@ -790,14 +790,14 @@ static bool tryIncludeProjectFile(const wxString& _filename, wxString& res_strin
 {
     std::wstring filename = towstr(_filename);
     
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     
     if (!db->getFileExist(filename))
         return false;
     
     
 
-    tango::IStreamPtr stream = db->openStream(filename);
+    xd::IStreamPtr stream = db->openStream(filename);
     if (stream)
     {
         std::wstring value;
@@ -883,7 +883,7 @@ bool ScriptHost::getFullIncludePath(const wxString& include_path, ScriptHostIncl
     {
         // absolute path name
         
-        tango::IDatabasePtr db = g_app->getDatabase();
+        xd::IDatabasePtr db = g_app->getDatabase();
 
         if (db->getFileExist(towstr(include_path)))
         {
@@ -976,7 +976,7 @@ bool ScriptHost::getFullIncludePath(const wxString& include_path, ScriptHostIncl
         
         if (it->type == ScriptHostInclude::includeProjectFile)
         {
-            tango::IDatabasePtr db = g_app->getDatabase();
+            xd::IDatabasePtr db = g_app->getDatabase();
     
             if (db->getFileExist(towstr(result_path)))
             {

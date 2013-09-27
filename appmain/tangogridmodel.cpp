@@ -83,23 +83,23 @@ void TangoGridModel::copyRowIntoCache(int row)
         switch (m_columns[col].m_col_type)
         {
             default:
-            case tango::typeWideCharacter:
-            case tango::typeCharacter:
+            case xd::typeWideCharacter:
+            case xd::typeCharacter:
                 cell.m_str_val = m_it->getWideString(m_columns[col].m_col_handle);
                 break;
 
-            case tango::typeDouble:
-            case tango::typeNumeric:
+            case xd::typeDouble:
+            case xd::typeNumeric:
                 cell.m_dbl_val = m_it->getDouble(m_columns[col].m_col_handle);
                 break;
 
-            case tango::typeInteger:
+            case xd::typeInteger:
                 cell.m_int_val = m_it->getInteger(m_columns[col].m_col_handle);
                 break;
 
-            case tango::typeDate:
+            case xd::typeDate:
             {
-                tango::datetime_t d;
+                xd::datetime_t d;
                 d = m_it->getDateTime(m_columns[col].m_col_handle);
 
                 if (d == 0)
@@ -108,7 +108,7 @@ void TangoGridModel::copyRowIntoCache(int row)
                 }
                  else
                 {
-                    tango::DateTime dt = d;
+                    xd::DateTime dt = d;
                     cell.m_str_val = wxString::Format(wxT("%02d/%02d/%04d"), dt.getMonth(), dt.getDay(), dt.getYear());
                 }
                 
@@ -116,9 +116,9 @@ void TangoGridModel::copyRowIntoCache(int row)
             }
             break;
 
-            case tango::typeDateTime:
+            case xd::typeDateTime:
             {
-                tango::datetime_t d;
+                xd::datetime_t d;
                 d = m_it->getDateTime(m_columns[col].m_col_handle);
 
                 if (d == 0)
@@ -127,7 +127,7 @@ void TangoGridModel::copyRowIntoCache(int row)
                 }
                  else
                 {
-                    tango::DateTime dt = d;
+                    xd::DateTime dt = d;
                     cell.m_str_val = wxString::Format(
                                           wxT("%02d/%02d/%04d %02d:%02d:%02d"),
                                           dt.getMonth(),
@@ -142,7 +142,7 @@ void TangoGridModel::copyRowIntoCache(int row)
             }
             break;
 
-            case tango::typeBoolean:
+            case xd::typeBoolean:
                 cell.m_bool_val = m_it->getBoolean(m_columns[col].m_col_handle);
                 break;
         }
@@ -203,11 +203,11 @@ void TangoGridModel::goRow(int row)
     {
         // (this code is ok even if m_current_row is -1; it is just an approximation
         unsigned int iter_flags = m_it->getIteratorFlags();
-        if (iter_flags & tango::ifFastRowCount)
+        if (iter_flags & xd::ifFastRowCount)
         {
 
             // if a large skip runs fast, we don't need to to the long jump approximation
-            if (!(iter_flags & tango::ifFastSkip))
+            if (!(iter_flags & xd::ifFastSkip))
             {
                 if (m_current_row < 0)
                     m_current_row = 1;
@@ -327,13 +327,13 @@ void TangoGridModel::refresh()
 
     if (m_it)
     {
-        tango::IStructurePtr structure = m_it->getStructure();
+        xd::IStructurePtr structure = m_it->getStructure();
         int col_count = structure->getColumnCount();
         int i;
 
         m_columns.resize(col_count);
 
-        tango::IColumnInfoPtr spCol;
+        xd::IColumnInfoPtr spCol;
         for (i = 0; i < col_count; i++)
         {
             TangoGridColumnInfo& gci = m_columns[i];
@@ -349,19 +349,19 @@ void TangoGridModel::refresh()
 
             switch (gci.m_col_type)
             {
-                case tango::typeDate:
+                case xd::typeDate:
                     gci.m_col_width = 20;
                     break;
-                case tango::typeDateTime:
+                case xd::typeDateTime:
                     gci.m_col_width = 20;
                     break;
-                case tango::typeBoolean:
+                case xd::typeBoolean:
                     gci.m_col_width = 1;
                     break;
-                case tango::typeInteger:
+                case xd::typeInteger:
                     gci.m_col_width = 10;
                     break;
-                case tango::typeDouble:
+                case xd::typeDouble:
                     gci.m_col_width = 20;
                     break;
             }
@@ -382,7 +382,7 @@ void TangoGridModel::reset()
 
 
 
-void TangoGridModel::setIterator(tango::IIterator* it)
+void TangoGridModel::setIterator(xd::IIterator* it)
 {
     if (m_it)
     {
@@ -417,7 +417,7 @@ void TangoGridModel::setIterator(tango::IIterator* it)
     {
         m_cursor_rowid = it->getRowId();
 
-        m_forward_only = (it->getIteratorFlags() & tango::ifForwardOnly) ? true : false;
+        m_forward_only = (it->getIteratorFlags() & xd::ifForwardOnly) ? true : false;
 
         if (m_grid)
         {
@@ -433,7 +433,7 @@ void TangoGridModel::setIterator(tango::IIterator* it)
     }
 }
 
-tango::IIteratorPtr TangoGridModel::getIterator()
+xd::IIteratorPtr TangoGridModel::getIterator()
 {
     return m_it;
 }
@@ -441,7 +441,7 @@ tango::IIteratorPtr TangoGridModel::getIterator()
 
 bool TangoGridModel::isEofKnown()
 {
-    if (m_it.isOk() && (m_it->getIteratorFlags() & tango::ifFastRowCount))
+    if (m_it.isOk() && (m_it->getIteratorFlags() & xd::ifFastRowCount))
         return true;
 
     return (m_row_count == -1) ? false : true;
@@ -520,15 +520,15 @@ kcl::IModelColumnPtr TangoGridModel::getColumnInfo(int idx)
     switch (gci.m_col_type)
     {
         default:
-        case tango::typeCharacter: m->setType(kcl::Grid::typeCharacter);     break;
-        case tango::typeWideCharacter: m->setType(kcl::Grid::typeCharacter); break;
-        case tango::typeInvalid: m->setType(kcl::Grid::typeInvalid);         break;
-        case tango::typeNumeric: m->setType(kcl::Grid::typeDouble);          break;
-        case tango::typeDouble: m->setType(kcl::Grid::typeDouble);           break;
-        case tango::typeInteger: m->setType(kcl::Grid::typeInteger);         break;
-        case tango::typeDate: m->setType(kcl::Grid::typeDate);               break;
-        case tango::typeDateTime: m->setType(kcl::Grid::typeDateTime);       break;
-        case tango::typeBoolean: m->setType(kcl::Grid::typeBoolean);         break;
+        case xd::typeCharacter: m->setType(kcl::Grid::typeCharacter);     break;
+        case xd::typeWideCharacter: m->setType(kcl::Grid::typeCharacter); break;
+        case xd::typeInvalid: m->setType(kcl::Grid::typeInvalid);         break;
+        case xd::typeNumeric: m->setType(kcl::Grid::typeDouble);          break;
+        case xd::typeDouble: m->setType(kcl::Grid::typeDouble);           break;
+        case xd::typeInteger: m->setType(kcl::Grid::typeInteger);         break;
+        case xd::typeDate: m->setType(kcl::Grid::typeDate);               break;
+        case xd::typeDateTime: m->setType(kcl::Grid::typeDateTime);       break;
+        case xd::typeBoolean: m->setType(kcl::Grid::typeBoolean);         break;
     }
 
     m->setWidth(gci.m_col_width);
@@ -580,7 +580,7 @@ void TangoGridModel::getColumnBitmap(int col,
                                      wxBitmap* bitmap,
                                      int* alignment)
 {
-    tango::IColumnInfoPtr spCol;
+    xd::IColumnInfoPtr spCol;
     if (m_columns[col].m_col_calculated)
     {
         *bitmap = GETBMP(gf_lightning_16);
@@ -674,14 +674,14 @@ void TangoGridModel::getCellProperties(int row,
     {
         if (m_boolean_checkbox)
         {
-            if (m_columns[col].m_col_type == tango::typeBoolean)
+            if (m_columns[col].m_col_type == xd::typeBoolean)
             {
                 cell_props->ctrltype = kcl::Grid::ctrltypeCheckBox;
             }
         }
          else
         {
-            if (m_columns[col].m_col_type == tango::typeBoolean)
+            if (m_columns[col].m_col_type == xd::typeBoolean)
             {
                 cell_props->ctrltype = kcl::Grid::ctrltypeText;
             }
@@ -730,29 +730,29 @@ wxString TangoGridModel::getCellString(int row, int col)
     switch (m_columns[col].m_col_type)
     {
         default:
-        case tango::typeCharacter:
+        case xd::typeCharacter:
             return m_it->getString(m_columns[col].m_col_handle);
 
-        case tango::typeWideCharacter:
+        case xd::typeWideCharacter:
             return m_it->getWideString(m_columns[col].m_col_handle);
 
-        case tango::typeDouble:
-        case tango::typeNumeric:
+        case xd::typeDouble:
+        case xd::typeNumeric:
         {
             double d = m_it->getDouble(m_columns[col].m_col_handle);
             return wxString::Format(wxT("%.*f"), m_columns[col].m_col_scale, d);
         }
 
-        case tango::typeInteger:
+        case xd::typeInteger:
         {
             int i = m_it->getInteger(m_columns[col].m_col_handle);
             return wxString::Format(wxT("%d"), i);
         }
 
-        case tango::typeDate:
+        case xd::typeDate:
         {
-            tango::DateTime dt;
-            tango::datetime_t d;
+            xd::DateTime dt;
+            xd::datetime_t d;
             
             d = m_it->getDateTime(m_columns[col].m_col_handle);
             if (d == 0)
@@ -767,10 +767,10 @@ wxString TangoGridModel::getCellString(int row, int col)
                                            dt.getDay());
         }
 
-        case tango::typeDateTime:
+        case xd::typeDateTime:
         {
-            tango::DateTime dt;
-            tango::datetime_t d;
+            xd::DateTime dt;
+            xd::datetime_t d;
 
             d = m_it->getDateTime(m_columns[col].m_col_handle);
             if (d == 0)
@@ -788,7 +788,7 @@ wxString TangoGridModel::getCellString(int row, int col)
                                            dt.getSecond());
         }
 
-        case tango::typeBoolean:
+        case xd::typeBoolean:
             return m_it->getBoolean(m_columns[col].m_col_handle) ?
                                     wxT("T") : wxT("F");
     }
@@ -832,7 +832,7 @@ bool TangoGridModel::getCellBoolean(int row, int col)
     return m_it->getBoolean(m_columns[col].m_col_handle);
 }
 
-tango::datetime_t TangoGridModel::getCellDateTime(int row, int col)
+xd::datetime_t TangoGridModel::getCellDateTime(int row, int col)
 {
     goRow(row);
 
@@ -953,9 +953,9 @@ int TangoGridModel::getRowCount()
         return 0;
     }
     
-    if (m_it->getIteratorFlags() & tango::ifFastRowCount)
+    if (m_it->getIteratorFlags() & xd::ifFastRowCount)
     {
-        tango::rowpos_t row_count = m_it->getRowCount();
+        xd::rowpos_t row_count = m_it->getRowCount();
 
         // clamp it off at 2 billion
         if (row_count > 2000000000)
@@ -1005,7 +1005,7 @@ void TangoGridModel::onCursorRowChanged()
 {
 }
 
-tango::rowid_t TangoGridModel::getRowId(int row)
+xd::rowid_t TangoGridModel::getRowId(int row)
 {
     goRow(row);
 

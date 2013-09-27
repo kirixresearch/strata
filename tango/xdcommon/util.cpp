@@ -145,7 +145,7 @@ void dequote(std::wstring& str, wchar_t ch1, wchar_t ch2)
     }
 }
 
-void dequoteIfField(tango::IStructurePtr& structure, std::wstring& str, wchar_t ch1, wchar_t ch2)
+void dequoteIfField(xd::IStructurePtr& structure, std::wstring& str, wchar_t ch1, wchar_t ch2)
 {
     size_t len = str.length();
     if (len > 1)
@@ -339,7 +339,7 @@ bool parseDateTime(const std::wstring& input,
 
 
 
-tango::datetime_t str2datetime(const char* str, const char* fmt)
+xd::datetime_t str2datetime(const char* str, const char* fmt)
 {
     const char* p;
     const char* d;
@@ -427,8 +427,8 @@ tango::datetime_t str2datetime(const char* str, const char* fmt)
         p++;
     }
 
-    tango::datetime_t dt;
-    tango::datetime_t ts;
+    xd::datetime_t dt;
+    xd::datetime_t ts;
 
     dt = dateToJulian(Y, M, D);
     dt <<= 32;
@@ -802,7 +802,7 @@ void crc64(const unsigned char* s, int length, unsigned long long* result)
 
 
 
-tango::IIndexInfoPtr xdLookupIndex(tango::IIndexInfoEnumPtr idx_enum,
+xd::IIndexInfoPtr xdLookupIndex(xd::IIndexInfoEnumPtr idx_enum,
                                  const std::wstring& expr,
                                  bool exact_column_order)
 {
@@ -811,14 +811,14 @@ tango::IIndexInfoPtr xdLookupIndex(tango::IIndexInfoEnumPtr idx_enum,
 
     std::vector<std::wstring> expr_cols;
     size_t i, idx_count = idx_enum->size();
-    tango::IIndexInfoPtr result;
+    xd::IIndexInfoPtr result;
 
     kl::parseDelimitedList(expr, expr_cols, L',', true);
     
     for (i = 0; i < idx_count; ++i)
     {
         std::vector<std::wstring> idx_cols;
-        tango::IIndexInfoPtr idx = idx_enum->getItem(i);
+        xd::IIndexInfoPtr idx = idx_enum->getItem(i);
 
         kl::parseDelimitedList(idx->getExpression(), idx_cols, L',', true);
 
@@ -924,22 +924,22 @@ int tango2kscriptType(int type)
 {
     switch (type)
     {
-        case tango::typeCharacter:
-        case tango::typeWideCharacter:
+        case xd::typeCharacter:
+        case xd::typeWideCharacter:
             return kscript::Value::typeString;
 
-        case tango::typeNumeric:
-        case tango::typeDouble:
+        case xd::typeNumeric:
+        case xd::typeDouble:
             return kscript::Value::typeDouble;
 
-        case tango::typeInteger:
+        case xd::typeInteger:
             return kscript::Value::typeInteger;
 
-        case tango::typeDate:
-        case tango::typeDateTime:
+        case xd::typeDate:
+        case xd::typeDateTime:
             return kscript::Value::typeDateTime;
 
-        case tango::typeBoolean:
+        case xd::typeBoolean:
             return kscript::Value::typeBoolean;
         
         default:
@@ -951,17 +951,17 @@ int kscript2tangoType(int type)
 {
     switch (type)
     {
-        case kscript::Value::typeNull:       return tango::typeInvalid;
-        case kscript::Value::typeUndefined:  return tango::typeUndefined;
-        case kscript::Value::typeBoolean:    return tango::typeBoolean;
-        case kscript::Value::typeInteger:    return tango::typeInteger;
-        case kscript::Value::typeDouble:     return tango::typeNumeric;
-        case kscript::Value::typeString:     return tango::typeCharacter;
-        case kscript::Value::typeDateTime:   return tango::typeDateTime;
-        case kscript::Value::typeBinary:     return tango::typeBinary;
+        case kscript::Value::typeNull:       return xd::typeInvalid;
+        case kscript::Value::typeUndefined:  return xd::typeUndefined;
+        case kscript::Value::typeBoolean:    return xd::typeBoolean;
+        case kscript::Value::typeInteger:    return xd::typeInteger;
+        case kscript::Value::typeDouble:     return xd::typeNumeric;
+        case kscript::Value::typeString:     return xd::typeCharacter;
+        case kscript::Value::typeDateTime:   return xd::typeDateTime;
+        case kscript::Value::typeBinary:     return xd::typeBinary;
     }
 
-    return tango::typeInvalid;
+    return xd::typeInvalid;
 }
 
 
@@ -1198,7 +1198,7 @@ kscript::ExprParser* createExprParser()
 
 
 
-tango::rowid_t bufToRowid(unsigned char* buf)
+xd::rowid_t bufToRowid(unsigned char* buf)
 {
     long long result, tempv;
     tempv = buf[7];
@@ -1220,7 +1220,7 @@ tango::rowid_t bufToRowid(unsigned char* buf)
     return result;
 }
 
-void rowidToBuf(unsigned char* bytes, tango::rowid_t r)
+void rowidToBuf(unsigned char* bytes, xd::rowid_t r)
 {
     bytes[7] = (unsigned char)((r) & 0xff);
     bytes[6] = (unsigned char)((r >> 8) & 0xff);

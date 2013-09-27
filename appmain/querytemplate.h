@@ -65,7 +65,7 @@ struct QueryBuilderSourceTable
     wxString alias;
     wxString path;
     std::vector<QueryJoin> joins;
-    tango::IStructurePtr structure;
+    xd::IStructurePtr structure;
     int x, y, width, height;
 };
 
@@ -89,7 +89,7 @@ public:
 
     QueryBuilderSourceTable* lookupTableByPath(const wxString& path);
     QueryBuilderSourceTable* lookupTableByAlias(const wxString& alias);
-    tango::IColumnInfoPtr lookupColumnInfo(const wxString& input);
+    xd::IColumnInfoPtr lookupColumnInfo(const wxString& input);
     wxString buildJoinString(QueryBuilderSourceTable& tbl);
     wxString stripAllAliases(const wxString& input);
     wxString completeFilter(const wxString& _expr,
@@ -118,7 +118,7 @@ public:
     std::vector<QueryBuilderParam> m_params;
     wxString m_output_path;
     bool m_distinct;
-    tango::IStructurePtr m_validation_struct;
+    xd::IStructurePtr m_validation_struct;
     int m_disposition;
 };
 

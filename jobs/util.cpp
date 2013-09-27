@@ -36,7 +36,7 @@ void vectorToDelimitedString(const std::vector<std::wstring>& vec, std::wstring&
     }
 }
 
-std::wstring getMountRoot(tango::IDatabasePtr db, const std::wstring _path)
+std::wstring getMountRoot(xd::IDatabasePtr db, const std::wstring _path)
 {
     std::wstring path = _path;
     size_t old_len = 0;
@@ -57,21 +57,21 @@ std::wstring getMountRoot(tango::IDatabasePtr db, const std::wstring _path)
     }
 }
 
-tango::IIndexInfoPtr lookupIndex(tango::IIndexInfoEnumPtr idx_enum, const std::wstring& expr, bool exact_column_order)
+xd::IIndexInfoPtr lookupIndex(xd::IIndexInfoEnumPtr idx_enum, const std::wstring& expr, bool exact_column_order)
 {
     if (idx_enum.isNull())
         return xcm::null;
 
     std::vector<std::wstring> expr_cols;
     size_t i, idx_count = idx_enum->size();;
-    tango::IIndexInfoPtr result;
+    xd::IIndexInfoPtr result;
 
     kl::parseDelimitedList(expr, expr_cols, L',', true);
     
     for (i = 0; i < idx_count; ++i)
     {
         std::vector<std::wstring> idx_cols;
-        tango::IIndexInfoPtr idx = idx_enum->getItem(i);
+        xd::IIndexInfoPtr idx = idx_enum->getItem(i);
 
         kl::parseDelimitedList(idx->getExpression(), idx_cols, L',', true);
 

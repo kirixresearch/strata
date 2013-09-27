@@ -225,7 +225,7 @@ public:
 public:
 
     std::vector<ReportCreateField> content_fields;
-    tango::IIteratorPtr iterator;
+    xd::IIteratorPtr iterator;
 
     wxString path;
     wxString filter_expr;

@@ -242,7 +242,7 @@ wxString ExprEditorControl::GetValue()
     return GetText();
 }
 
-void ExprEditorControl::setStructure(tango::IStructurePtr structure)
+void ExprEditorControl::setStructure(xd::IStructurePtr structure)
 {
 
 }
@@ -519,9 +519,9 @@ END_EVENT_TABLE()
 ExprBuilderPanel::ExprBuilderPanel()
 {
     m_mask_signals = false;
-    m_type_only = tango::typeUndefined;
+    m_type_only = xd::typeUndefined;
     m_empty_ok = false;
-    m_expr_type = tango::typeInvalid;
+    m_expr_type = xd::typeInvalid;
     m_validation = true;
 
     m_ok_button = NULL;
@@ -541,9 +541,9 @@ ExprBuilderPanel::ExprBuilderPanel(wxWindow* parent) :
                                    wxTAB_TRAVERSAL)
 {
     m_mask_signals = false;
-    m_type_only = tango::typeUndefined;
+    m_type_only = xd::typeUndefined;
     m_empty_ok = false;
-    m_expr_type = tango::typeInvalid;
+    m_expr_type = xd::typeInvalid;
     m_validation = true;
 
     m_ok_button = NULL;
@@ -870,7 +870,7 @@ void ExprBuilderPanel::setEnabled(bool enabled)
 
 // type only causes the expression builder to accept only expression types
 // that are equal to that which is passed in the "type" parameter.  If
-// tango::typeUndefined is passed, all types are allowed again
+// xd::typeUndefined is passed, all types are allowed again
 
 void ExprBuilderPanel::setTypeOnly(int type)
 {
@@ -894,7 +894,7 @@ void ExprBuilderPanel::setEmptyOk(bool empty_ok)
     }
 }
 
-void ExprBuilderPanel::setStructure(tango::IStructurePtr structure)
+void ExprBuilderPanel::setStructure(xd::IStructurePtr structure)
 {
     m_structure = structure;
 
@@ -956,7 +956,7 @@ bool ExprBuilderPanel::validate()
         
     wxString text = m_expr_text->GetValue();
     bool valid = false;
-    int type = tango::typeInvalid;
+    int type = xd::typeInvalid;
     
     if (m_structure)
     {
@@ -966,8 +966,8 @@ bool ExprBuilderPanel::validate()
     wxString valid_text;
     valid_text = getDbColumnTypeText(type);
 
-    if (m_type_only != tango::typeUndefined &&
-        !tango::isTypeCompatible(type, m_type_only))
+    if (m_type_only != xd::typeUndefined &&
+        !xd::isTypeCompatible(type, m_type_only))
     {
         valid_text = _("Invalid");
     }
@@ -980,7 +980,7 @@ bool ExprBuilderPanel::validate()
     m_valid_control->setValidLabel(valid_text);
     m_valid_control->setInvalidLabel(valid_text);
 
-    if (type == tango::typeInvalid)
+    if (type == xd::typeInvalid)
     {
         valid = false;
     }
@@ -988,9 +988,9 @@ bool ExprBuilderPanel::validate()
     {
         valid = true;
 
-        if (m_type_only != tango::typeUndefined)
+        if (m_type_only != xd::typeUndefined)
         {
-            if (!tango::isTypeCompatible(type, m_type_only))
+            if (!xd::isTypeCompatible(type, m_type_only))
                 valid = false;
         }
     }
@@ -1021,7 +1021,7 @@ void ExprBuilderPanel::onExprChanged(wxCommandEvent& evt)
 
 void ExprBuilderPanel::onColumnActivated(int row, const wxString& text)
 {
-    wxString quoted_text = tango::quoteIdentifier(g_app->getDatabase(), towstr(text));
+    wxString quoted_text = xd::quoteIdentifier(g_app->getDatabase(), towstr(text));
     insertText(quoted_text);
 }
 
@@ -1575,7 +1575,7 @@ void KeyBuilderPanel::setEmptyOk(bool empty_ok)
     validate();
 }
 
-void KeyBuilderPanel::setStructure(tango::IStructurePtr structure)
+void KeyBuilderPanel::setStructure(xd::IStructurePtr structure)
 {
     m_structure = structure;
 
@@ -1671,7 +1671,7 @@ DlgExprBuilder::DlgExprBuilder(wxWindow* parent, const wxString& title)
     Layout();
 }
 
-void DlgExprBuilder::setStructure(tango::IStructurePtr structure)
+void DlgExprBuilder::setStructure(xd::IStructurePtr structure)
 {
     m_panel->setStructure(structure);
 }
@@ -1787,7 +1787,7 @@ DlgKeyBuilder::DlgKeyBuilder(wxWindow* parent, const wxString& title)
     SetSizer(m_main_sizer);
 }
 
-void DlgKeyBuilder::setStructure(tango::IStructurePtr structure)
+void DlgKeyBuilder::setStructure(xd::IStructurePtr structure)
 {
     m_panel->setStructure(structure);
 }

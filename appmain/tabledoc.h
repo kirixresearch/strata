@@ -208,11 +208,11 @@ xcm_interface ITableDoc : public xcm::IObject
 public:
 
     virtual bool open(const std::wstring& path,
-                      tango::IIteratorPtr optional_iterator = xcm::null) = 0;
+                      xd::IIteratorPtr optional_iterator = xcm::null) = 0;
 
     virtual bool setBrowseSet(
                       const std::wstring& path,
-                      tango::IIteratorPtr optional_iter = xcm::null) = 0;
+                      xd::IIteratorPtr optional_iter = xcm::null) = 0;
 
     virtual void setCaption(
                       const wxString& caption,
@@ -231,9 +231,9 @@ public:
 
     virtual void setTemporaryModel(bool new_val) = 0;
 
-    virtual void setIterator(tango::IIteratorPtr iter, bool go_first = true) = 0;
+    virtual void setIterator(xd::IIteratorPtr iter, bool go_first = true) = 0;
     virtual kcl::Grid* getGrid() = 0;
-    virtual tango::IIteratorPtr getIterator() = 0;
+    virtual xd::IIteratorPtr getIterator() = 0;
     virtual ITableDocModelPtr getModel() = 0;
 
     virtual std::wstring getPath() = 0;

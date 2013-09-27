@@ -102,7 +102,7 @@ int AlterJob::runJob()
 
 
     // build the structure configuration from the action list
-    tango::IStructurePtr structure = m_db->describeTable(input_path);
+    xd::IStructurePtr structure = m_db->describeTable(input_path);
     if (structure.isNull())
     {
         m_job_info->setState(jobStateFailed);
@@ -110,7 +110,7 @@ int AlterJob::runJob()
     }
 
 
-    tango::IColumnInfoPtr col;
+    xd::IColumnInfoPtr col;
 
     std::vector<kl::JsonNode>::iterator it, it_end;
     it_end = action_nodes.end();
@@ -155,7 +155,7 @@ int AlterJob::runJob()
             }
             if (params.childExists("type"))
             {
-                type = tango::stringToDbtype(params.getChild("type").getString());
+                type = xd::stringToDbtype(params.getChild("type").getString());
                 type_exists = true;
             }
             if (params.childExists("width"))
@@ -193,7 +193,7 @@ int AlterJob::runJob()
 
         if (action == L"add")
         {
-            tango::IColumnInfoPtr col = structure->createColumn();
+            xd::IColumnInfoPtr col = structure->createColumn();
             col->setName(name);
             col->setType(type);
             col->setWidth(width);
@@ -214,7 +214,7 @@ int AlterJob::runJob()
 
         if (action == L"modify")
         {
-            tango::IColumnInfoPtr col = structure->modifyColumn(column);
+            xd::IColumnInfoPtr col = structure->modifyColumn(column);
 
             if (name_exists)
                 col->setName(name);
@@ -244,7 +244,7 @@ int AlterJob::runJob()
     }
 
 
-    tango::IJobPtr tango_job = m_db->createJob();
+    xd::IJobPtr tango_job = m_db->createJob();
     setXdJob(tango_job);
 
     bool res = m_db->modifyStructure(input_path, structure, tango_job);
@@ -255,7 +255,7 @@ int AlterJob::runJob()
         return 0;
     }
 
-    if (tango_job->getStatus() == tango::jobFailed || !res)
+    if (tango_job->getStatus() == xd::jobFailed || !res)
     {
         m_job_info->setState(jobStateFailed);
 

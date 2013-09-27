@@ -116,18 +116,18 @@ std::wstring createSqlServerFieldString(const std::wstring& name,
 
     switch (type)
     {
-        case tango::typeCharacter:
-        case tango::typeWideCharacter:
+        case xd::typeCharacter:
+        case xd::typeWideCharacter:
         {
             swprintf(buf, 255, L"%ls varchar (%d)%ls", name.c_str(), width, null ? L" NULL" : L"");
             return buf;
         }
 
-        case tango::typeDouble:
+        case xd::typeDouble:
             width = 18;
             // fall through
 
-        case tango::typeNumeric:
+        case xd::typeNumeric:
         {
             if (width > 28)
             {
@@ -138,7 +138,7 @@ std::wstring createSqlServerFieldString(const std::wstring& name,
             return buf;
         }
 
-        case tango::typeInteger:
+        case xd::typeInteger:
         {
             swprintf(buf, 255, L"%ls int%ls", name.c_str(), null ? L" NULL" : L"");
             return buf;
@@ -148,20 +148,20 @@ std::wstring createSqlServerFieldString(const std::wstring& name,
         // decimal places.  (our native double fields round
         // to scale, making them unlike other dbms doubles)
 
-        //case tango::typeDouble:
+        //case xd::typeDouble:
         //{
         //    swprintf(buf, 255, L"%ls float%ls", name.c_str(), null ? L" NULL" : L"");
         //    return buf;
         //}
 
-        case tango::typeBoolean:
+        case xd::typeBoolean:
         {
             swprintf(buf, 255, L"%ls bit%ls", name.c_str(), null ? L" NULL" : L"");
             return buf;
         }
 
-        case tango::typeDate:
-        case tango::typeDateTime:
+        case xd::typeDate:
+        case xd::typeDateTime:
         {
             swprintf(buf, 255, L"%ls datetime%ls", name.c_str(), null ? L" NULL" : L"");
             return buf;
@@ -193,11 +193,11 @@ SqlServerDatabase::SqlServerDatabase()
     kws += sqlserver_keywords2;
 
     m_attr = new DatabaseAttributes;
-    m_attr->setStringAttribute(tango::dbattrKeywords, kws);
-    m_attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars, L" ");
-    m_attr->setStringAttribute(tango::dbattrTableInvalidStartingChars, L" ");
-    m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 80);
-    m_attr->setIntAttribute(tango::dbattrColumnMaxNameLength, 80);
+    m_attr->setStringAttribute(xd::dbattrKeywords, kws);
+    m_attr->setStringAttribute(xd::dbattrColumnInvalidStartingChars, L" ");
+    m_attr->setStringAttribute(xd::dbattrTableInvalidStartingChars, L" ");
+    m_attr->setIntAttribute(xd::dbattrTableMaxNameLength, 80);
+    m_attr->setIntAttribute(xd::dbattrColumnMaxNameLength, 80);
 }
 
 SqlServerDatabase::~SqlServerDatabase()
@@ -277,7 +277,7 @@ bool SqlServerDatabase::open(const std::wstring& server,
 
         wchar_t buf[1024];
         swprintf(buf, 1024, L"SQL Server (%ls)", server.c_str());
-        m_attr->setStringAttribute(tango::dbattrDatabaseName, buf);
+        m_attr->setStringAttribute(xd::dbattrDatabaseName, buf);
 
         return true;
     }
@@ -287,7 +287,7 @@ bool SqlServerDatabase::open(const std::wstring& server,
     }
 }
 
-// tango::IDatabase interface implementation
+// xd::IDatabase interface implementation
 
 void SqlServerDatabase::close()
 {
@@ -311,7 +311,7 @@ void SqlServerDatabase::close()
 
 int SqlServerDatabase::getDatabaseType()
 {
-    return tango::dbtypeSqlServer;
+    return xd::dbtypeSqlServer;
 }
 
 std::wstring SqlServerDatabase::getActiveUid()
@@ -319,9 +319,9 @@ std::wstring SqlServerDatabase::getActiveUid()
     return L"";
 }
 
-tango::IAttributesPtr SqlServerDatabase::getAttributes()
+xd::IAttributesPtr SqlServerDatabase::getAttributes()
 {
-    return static_cast<tango::IAttributes*>(m_attr);
+    return static_cast<xd::IAttributes*>(m_attr);
 }
 
 
@@ -332,7 +332,7 @@ std::wstring SqlServerDatabase::getErrorString()
 
 int SqlServerDatabase::getErrorCode()
 {
-    return tango::errorNone;
+    return xd::errorNone;
 }
 
 
@@ -346,12 +346,12 @@ bool SqlServerDatabase::cleanup()
     return true;
 }
 
-tango::IJobPtr SqlServerDatabase::createJob()
+xd::IJobPtr SqlServerDatabase::createJob()
 {
     return xcm::null;
 }
 
-tango::IDatabasePtr SqlServerDatabase::getMountDatabase(const std::wstring& path)
+xd::IDatabasePtr SqlServerDatabase::getMountDatabase(const std::wstring& path)
 {
     return xcm::null;
 }
@@ -404,7 +404,7 @@ bool SqlServerDatabase::copyFile(const std::wstring& src_path,
     return false;
 }
 
-bool SqlServerDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
+bool SqlServerDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 {
     return false;
 }
@@ -431,7 +431,7 @@ bool SqlServerDatabase::getFileExist(const std::wstring& _path)
     // determine if the file exists, we are going to get
     // a list of all tables and look for 'path'
 
-    tango::IFileInfoEnumPtr files = getFolderInfo(L"");
+    xd::IFileInfoEnumPtr files = getFolderInfo(L"");
     if (!files)
         return false;
 
@@ -439,7 +439,7 @@ bool SqlServerDatabase::getFileExist(const std::wstring& _path)
 
     for (i = 0 ; i < count; ++i)
     {
-        tango::IFileInfoPtr info = files->getItem(i);
+        xd::IFileInfoPtr info = files->getItem(i);
         if (wcscasecmp(info->getName().c_str(), path.c_str()) == 0)
         {
             return true;
@@ -449,14 +449,14 @@ bool SqlServerDatabase::getFileExist(const std::wstring& _path)
     return false;
 }
 
-tango::IFileInfoPtr SqlServerDatabase::getFileInfo(const std::wstring& path)
+xd::IFileInfoPtr SqlServerDatabase::getFileInfo(const std::wstring& path)
 {
     return xcm::null;
 }
 
-tango::IFileInfoEnumPtr SqlServerDatabase::getFolderInfo(const std::wstring& path)
+xd::IFileInfoEnumPtr SqlServerDatabase::getFolderInfo(const std::wstring& path)
 {
-    xcm::IVectorImpl<tango::IFileInfoPtr>* retval = new xcm::IVectorImpl<tango::IFileInfoPtr>;
+    xcm::IVectorImpl<xd::IFileInfoPtr>* retval = new xcm::IVectorImpl<xd::IFileInfoPtr>;
 
     TDS_INT table_res;
     TDS_INT row_res;
@@ -522,8 +522,8 @@ tango::IFileInfoEnumPtr SqlServerDatabase::getFolderInfo(const std::wstring& pat
 
                     xdcommon::FileInfo* f = new xdcommon::FileInfo;
                     f->name = table_name;
-                    f->type = tango::filetypeTable;
-                    f->format = tango::formatNative;
+                    f->type = xd::filetypeTable;
+                    f->format = xd::formatNative;
 
                     retval->append(f);
                 }
@@ -535,15 +535,15 @@ tango::IFileInfoEnumPtr SqlServerDatabase::getFolderInfo(const std::wstring& pat
     return retval;
 }
 
-tango::IStructurePtr SqlServerDatabase::createStructure()
+xd::IStructurePtr SqlServerDatabase::createStructure()
 {
     Structure* s = new Structure;
-    return static_cast<tango::IStructure*>(s);
+    return static_cast<xd::IStructure*>(s);
 }
 
 bool SqlServerDatabase::createTable(const std::wstring& path,
-                                    tango::IStructurePtr struct_config,
-                                    tango::FormatInfo* format_info)
+                                    xd::IStructurePtr struct_config,
+                                    xd::FormatInfo* format_info)
 {
     std::wstring command;
     command.reserve(1024);
@@ -569,7 +569,7 @@ bool SqlServerDatabase::createTable(const std::wstring& path,
 
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr col_info = struct_config->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr col_info = struct_config->getColumnInfoByIdx(i);
         
         name = col_info->getName();
         type = col_info->getType();
@@ -590,7 +590,7 @@ bool SqlServerDatabase::createTable(const std::wstring& path,
     return execute(command, 0, result, NULL);
 }
 
-tango::IStreamPtr SqlServerDatabase::openStream(const std::wstring& ofs_path)
+xd::IStreamPtr SqlServerDatabase::openStream(const std::wstring& ofs_path)
 {
     return xcm::null;
 }
@@ -601,7 +601,7 @@ bool SqlServerDatabase::createStream(const std::wstring& ofs_path, const std::ws
 }
 
 
-tango::IIteratorPtr SqlServerDatabase::query(const tango::QueryParams& qp)
+xd::IIteratorPtr SqlServerDatabase::query(const xd::QueryParams& qp)
 {
     // TODO: implement
     return xcm::null;
@@ -610,10 +610,10 @@ tango::IIteratorPtr SqlServerDatabase::query(const tango::QueryParams& qp)
 
 
 
-tango::IIndexInfoPtr SqlServerDatabase::createIndex(const std::wstring& path,
+xd::IIndexInfoPtr SqlServerDatabase::createIndex(const std::wstring& path,
                                                     const std::wstring& name,
                                                     const std::wstring& expr,
-                                                    tango::IJob* job)
+                                                    xd::IJob* job)
 {
     return xcm::null;
 }
@@ -634,29 +634,29 @@ bool SqlServerDatabase::deleteIndex(const std::wstring& path,
 }
 
 
-tango::IIndexInfoEnumPtr SqlServerDatabase::getIndexEnum(const std::wstring& path)
+xd::IIndexInfoEnumPtr SqlServerDatabase::getIndexEnum(const std::wstring& path)
 {
-    xcm::IVectorImpl<tango::IIndexInfoPtr>* vec;
-    vec = new xcm::IVectorImpl<tango::IIndexInfoPtr>;
+    xcm::IVectorImpl<xd::IIndexInfoPtr>* vec;
+    vec = new xcm::IVectorImpl<xd::IIndexInfoPtr>;
 
     return vec;
 }
 
-tango::IRowInserterPtr SqlServerDatabase::bulkInsert(const std::wstring& path)
+xd::IRowInserterPtr SqlServerDatabase::bulkInsert(const std::wstring& path)
 {
     //SqlServerRowInserter* inserter = new SqlServerRowInserter(this);
-    //return static_cast<tango::IRowInserter*>(inserter);
+    //return static_cast<xd::IRowInserter*>(inserter);
 
     return xcm::null;
 }
 
-tango::IStructurePtr SqlServerDatabase::describeTable(const std::wstring& path)
+xd::IStructurePtr SqlServerDatabase::describeTable(const std::wstring& path)
 {
     // TODO: implement
     return xcm::null;
 }
 
-bool SqlServerDatabase::modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job)
+bool SqlServerDatabase::modifyStructure(const std::wstring& path, xd::IStructurePtr struct_config, xd::IJob* job)
 {
     return false;
 }
@@ -665,7 +665,7 @@ bool SqlServerDatabase::modifyStructure(const std::wstring& path, tango::IStruct
 bool SqlServerDatabase::execute(const std::wstring& command,
                                 unsigned int flags,
                                 xcm::IObjectPtr& result,
-                                tango::IJob* job)
+                                xd::IJob* job)
 {
     m_error.clearError();
     result.clear();

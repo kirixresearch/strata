@@ -32,7 +32,7 @@ static void onQueryJobFinished(jobs::IJobPtr job)
         querydoc_site = g_app->getMainFrame()->lookupSiteById(querydoc_site_id);
     
     // check if there is an output set
-    tango::IIteratorPtr result_iter = job->getResultObject();
+    xd::IIteratorPtr result_iter = job->getResultObject();
 
     std::wstring output_path = result_iter->getTable();
 
@@ -89,7 +89,7 @@ static void onQueryJobFinished(jobs::IJobPtr job)
 QueryTemplate::QueryTemplate()
 {
     m_distinct = false;
-    m_disposition = tango::dbtypeXdnative;
+    m_disposition = xd::dbtypeXdnative;
 }
 
 QueryTemplate::~QueryTemplate()
@@ -118,7 +118,7 @@ jobs::IJobPtr QueryTemplate::execute(int site_id)
 
 
     // determine the sql execute flags
-    if (getDatabaseDisposition() == tango::dbtypeXdnative)
+    if (getDatabaseDisposition() == xd::dbtypeXdnative)
     {
         // local database queries require this because of
         // view bugs in queries that don't return all columns
@@ -193,15 +193,15 @@ wxString QueryTemplate::getQueryString()
     // first, and then issues the query locally.
     int disposition = -1;
     
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isOk())
     {
         for (tbl_it = m_source_tables.begin();
              tbl_it != m_source_tables.end(); ++tbl_it)
         {
-            int d = tango::dbtypeXdnative;
+            int d = xd::dbtypeXdnative;
             
-            tango::IDatabasePtr mnt_db = db->getMountDatabase(towstr(tbl_it->path));
+            xd::IDatabasePtr mnt_db = db->getMountDatabase(towstr(tbl_it->path));
             if (mnt_db)
             {
                 d = mnt_db->getDatabaseType();
@@ -211,14 +211,14 @@ wxString QueryTemplate::getQueryString()
                 disposition = d;
             if (disposition != d)
             {
-                disposition = tango::dbtypeXdnative;
+                disposition = xd::dbtypeXdnative;
                 break;
             }
         }
     }
     
     if (disposition == -1)
-        disposition = tango::dbtypeXdnative;
+        disposition = xd::dbtypeXdnative;
     
     m_disposition = disposition;
     
@@ -539,9 +539,9 @@ QueryBuilderSourceTable* QueryTemplate::lookupTableByAlias(const wxString& alias
     return NULL;
 }
 
-tango::IColumnInfoPtr QueryTemplate::lookupColumnInfo(const wxString& input)
+xd::IColumnInfoPtr QueryTemplate::lookupColumnInfo(const wxString& input)
 {
-    tango::IColumnInfoPtr colinfo;
+    xd::IColumnInfoPtr colinfo;
     QueryBuilderSourceTable* tbl;
     
     if (input.IsEmpty())
@@ -685,9 +685,9 @@ wxString QueryTemplate::completeFilter(const wxString& _expr,
 
     type = m_validation_struct->getExprType(towstr(_input));
     
-    if (type == tango::typeInvalid || type == tango::typeUndefined)
+    if (type == xd::typeInvalid || type == xd::typeUndefined)
     {
-        tango::IColumnInfoPtr colinfo;
+        xd::IColumnInfoPtr colinfo;
         colinfo = lookupColumnInfo(_input);
         if (colinfo.isOk())
         {
@@ -695,16 +695,16 @@ wxString QueryTemplate::completeFilter(const wxString& _expr,
         }
     }
 
-    if (type == tango::typeInvalid || type == tango::typeUndefined)
+    if (type == xd::typeInvalid || type == xd::typeUndefined)
     {
         switch (group_func)
         {
             case QueryGroupFunction_Count:
-                type = tango::typeNumeric;
+                type = xd::typeNumeric;
                 break;
 
             case QueryGroupFunction_GroupID:
-                type = tango::typeNumeric;
+                type = xd::typeNumeric;
                 break;
 
             default:
@@ -717,7 +717,7 @@ wxString QueryTemplate::completeFilter(const wxString& _expr,
                     return wxEmptyString;
                 
                 type = m_source_tables[0].structure->getExprType(towstr(stripAllAliases(_input)));
-                if (type == tango::typeInvalid || type == tango::typeUndefined)
+                if (type == xd::typeInvalid || type == xd::typeUndefined)
                     return wxEmptyString;
             }
         }
@@ -775,7 +775,7 @@ wxString QueryTemplate::completeFilter(const wxString& _expr,
     test = output;
     test += expr;
 
-    if (m_validation_struct->getExprType(towstr(test)) == tango::typeBoolean)
+    if (m_validation_struct->getExprType(towstr(test)) == xd::typeBoolean)
     {
         return test;
     }
@@ -783,8 +783,8 @@ wxString QueryTemplate::completeFilter(const wxString& _expr,
 
     switch (type)
     {
-        case tango::typeWideCharacter:
-        case tango::typeCharacter:
+        case xd::typeWideCharacter:
+        case xd::typeCharacter:
         {
             output += wxT("'");
 
@@ -804,8 +804,8 @@ wxString QueryTemplate::completeFilter(const wxString& _expr,
         }
         break;
 
-        case tango::typeNumeric:
-        case tango::typeDouble:
+        case xd::typeNumeric:
+        case xd::typeDouble:
         {
             expr.Replace(wxT(","), wxT("."));
 
@@ -829,7 +829,7 @@ wxString QueryTemplate::completeFilter(const wxString& _expr,
         }
         break;
 
-        case tango::typeInteger:
+        case xd::typeInteger:
         {
             // check that all of the characters are digits
             const wxChar* c = expr.c_str();
@@ -845,8 +845,8 @@ wxString QueryTemplate::completeFilter(const wxString& _expr,
         }
         break;
 
-        case tango::typeDate:
-        case tango::typeDateTime:
+        case xd::typeDate:
+        case xd::typeDateTime:
         {
             int y, m, d, hh, mm, ss;
             bool valid = Locale::parseDateTime(expr,
@@ -861,17 +861,17 @@ wxString QueryTemplate::completeFilter(const wxString& _expr,
                 switch (m_disposition)
                 {
                     default:
-                    case tango::dbtypeXdnative:
+                    case xd::dbtypeXdnative:
                         output += wxString::Format(wxT("DATE(%d,%d,%d)"),
                                                    y, m, d);
                         break;
-                    case tango::dbtypeOdbc:
-                    case tango::dbtypeSqlServer:
-                    case tango::dbtypeMySql:
+                    case xd::dbtypeOdbc:
+                    case xd::dbtypeSqlServer:
+                    case xd::dbtypeMySql:
                         output += wxString::Format(wxT("{d '%04d-%02d-%02d'}"),
                                                    y, m, d);
                         break;
-                    case tango::dbtypeOracle:
+                    case xd::dbtypeOracle:
                         output += wxString::Format(wxT("TO_DATE('%04d-%02d-%02d','YYYY-MM-DD')"),
                                                    y, m, d);
                         break;
@@ -882,17 +882,17 @@ wxString QueryTemplate::completeFilter(const wxString& _expr,
                 switch (m_disposition)
                 {
                     default:
-                    case tango::dbtypeXdnative:
+                    case xd::dbtypeXdnative:
                         output += wxString::Format(wxT("DATE(%d,%d,%d,%d,%d,%d)"),
                                                    y, m, d, hh, mm, ss);
                         break;
-                    case tango::dbtypeOdbc:
-                    case tango::dbtypeSqlServer:
-                    case tango::dbtypeMySql:
+                    case xd::dbtypeOdbc:
+                    case xd::dbtypeSqlServer:
+                    case xd::dbtypeMySql:
                         output += wxString::Format(wxT("{ts '%04d-%02d-%02d %02d:%02d:%02d'}"),
                                                    y, m, d, hh, mm, ss);
                         break;
-                    case tango::dbtypeOracle:
+                    case xd::dbtypeOracle:
                         output += wxString::Format(wxT("TO_DATE('%04d-%02d-%02d %02d:%02d:%02d', 'YYYY-MM-DD HH24:MI:SS')"),
                                                    y, m, d, hh, mm, ss);
                         break;
@@ -901,7 +901,7 @@ wxString QueryTemplate::completeFilter(const wxString& _expr,
         }
         break;
 
-        case tango::typeBoolean:
+        case xd::typeBoolean:
             if (0 != expr.CmpNoCase(wxT("TRUE")) &&
                 0 != expr.CmpNoCase(wxT("FALSE")))
             {
@@ -937,7 +937,7 @@ void QueryTemplate::updateValidationStructure()
 
         for (i = 0; i < col_count; ++i)
         {
-            tango::IColumnInfoPtr colinfo;
+            xd::IColumnInfoPtr colinfo;
             colinfo = tbl_it->structure->getColumnInfoByIdx(i);
             std::wstring fname = colinfo->getName();
             kl::makeLower(fname);
@@ -959,7 +959,7 @@ void QueryTemplate::updateValidationStructure()
 
         for (i = 0; i < col_count; ++i)
         {
-            tango::IColumnInfoPtr colinfo;
+            xd::IColumnInfoPtr colinfo;
             colinfo = tbl_it->structure->getColumnInfoByIdx(i);
 
             std::wstring alias = tbl_it->alias;
@@ -967,7 +967,7 @@ void QueryTemplate::updateValidationStructure()
             
 
 
-            tango::IColumnInfoPtr newcol = m_validation_struct->createColumn();
+            xd::IColumnInfoPtr newcol = m_validation_struct->createColumn();
             newcol->setName(alias + L"." + column);
             newcol->setType(colinfo->getType());
             newcol->setWidth(colinfo->getWidth());
@@ -975,15 +975,15 @@ void QueryTemplate::updateValidationStructure()
             newcol->setCalculated(colinfo->getCalculated());
             newcol->setExpression(colinfo->getExpression());
 
-            tango::IColumnInfoPtr newcol1 = m_validation_struct->createColumn();
+            xd::IColumnInfoPtr newcol1 = m_validation_struct->createColumn();
             newcol->copyTo(newcol1);
             newcol1->setName(L"[" + alias + L"]." + column);
 
-            tango::IColumnInfoPtr newcol2 = m_validation_struct->createColumn();
+            xd::IColumnInfoPtr newcol2 = m_validation_struct->createColumn();
             newcol->copyTo(newcol2);
             newcol1->setName(alias + L".[" + column + L"]");
 
-            tango::IColumnInfoPtr newcol3 = m_validation_struct->createColumn();
+            xd::IColumnInfoPtr newcol3 = m_validation_struct->createColumn();
             newcol->copyTo(newcol3);
             newcol1->setName(L"[" + alias + L"].[" + column + L"]");
 
@@ -992,7 +992,7 @@ void QueryTemplate::updateValidationStructure()
             kl::makeLower(fname);
             if (non_unique_field_names.find(fname) == non_unique_field_names.end())
             {
-                tango::IColumnInfoPtr newcol = m_validation_struct->createColumn();
+                xd::IColumnInfoPtr newcol = m_validation_struct->createColumn();
                 newcol->setName(colinfo->getName());
                 newcol->setType(colinfo->getType());
                 newcol->setWidth(colinfo->getWidth());
@@ -1011,12 +1011,12 @@ void QueryTemplate::updateValidationStructure()
          param_iter != m_params.end();
          ++param_iter)
     {
-        tango::IColumnInfoPtr colinfo;
+        xd::IColumnInfoPtr colinfo;
         colinfo = lookupColumnInfo(param_iter->input_expr);
 
         if (colinfo.isOk() && param_iter->output_field.length() > 0)
         {
-            tango::IColumnInfoPtr newcol = m_validation_struct->createColumn();
+            xd::IColumnInfoPtr newcol = m_validation_struct->createColumn();
             newcol->setName(towstr(param_iter->output_field));
             newcol->setType(colinfo->getType());
             newcol->setWidth(colinfo->getWidth());
@@ -1215,10 +1215,10 @@ bool QueryTemplate::loadJson(const wxString& path)
                 query_table.height = table["height"].getInteger();
 
             // attempt to open the set and get it's structure
-            tango::IFileInfoPtr finfo = g_app->getDatabase()->getFileInfo(towstr(query_table.path));
+            xd::IFileInfoPtr finfo = g_app->getDatabase()->getFileInfo(towstr(query_table.path));
             if (finfo.isNull())
                 continue;
-            tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(query_table.path));
+            xd::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(query_table.path));
             if (structure.isNull())
                 continue;
 
@@ -1435,7 +1435,7 @@ bool QueryTemplate::loadJsonFromNode(const wxString& path)
 
         // attempt to open the set and get it's structure
         {
-            tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(tbl.path));
+            xd::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(tbl.path));
             if (structure)
                 tbl.structure = structure;
                  else
@@ -1583,11 +1583,11 @@ wxString QueryTemplate::quoteTable(const wxString& _str)
 {
     std::wstring str = towstr(_str);
 
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return str;
 
-    str = tango::quoteIdentifier(db, str);
+    str = xd::quoteIdentifier(db, str);
     return str;
 }
 
@@ -1596,21 +1596,21 @@ wxString QueryTemplate::quoteAlias(const wxString& _str)
     // note: quote alias is used for output fieldnames
 
     wxString str = _str;
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return str;
 
     if (str.Freq('.') == 0)
     {
-        str = tango::quoteIdentifier(g_app->getDatabase(), towstr(str));
+        str = xd::quoteIdentifier(g_app->getDatabase(), towstr(str));
     }
      else
     {
         wxString alias = str.BeforeLast('.');
         wxString field = str.AfterLast('.');
 
-        alias = tango::quoteIdentifier(db, towstr(alias));
-        field = tango::quoteIdentifier(db, towstr(field));
+        alias = xd::quoteIdentifier(db, towstr(alias));
+        field = xd::quoteIdentifier(db, towstr(field));
         str = alias + wxT(".") + field;
     }
 
@@ -1620,7 +1620,7 @@ wxString QueryTemplate::quoteAlias(const wxString& _str)
 wxString QueryTemplate::quoteField(const wxString& _str)
 {
     wxString str = _str;
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return str;
 
@@ -1633,7 +1633,7 @@ wxString QueryTemplate::quoteField(const wxString& _str)
     it_end = m_source_tables.end();
     for (it = m_source_tables.begin(); it != it_end; ++it)
     {
-        tango::IStructurePtr structure = it->structure;
+        xd::IStructurePtr structure = it->structure;
         if (structure.isNull())
             continue;
         
@@ -1662,15 +1662,15 @@ wxString QueryTemplate::quoteField(const wxString& _str)
 
     if (str.Freq('.') == 0)
     {
-        str = tango::quoteIdentifier(g_app->getDatabase(), towstr(str));
+        str = xd::quoteIdentifier(g_app->getDatabase(), towstr(str));
     }
      else
     {
         wxString alias = str.BeforeLast('.');
         wxString field = str.AfterLast('.');
 
-        alias = tango::quoteIdentifier(db, towstr(alias));
-        field = tango::quoteIdentifier(db, towstr(field));
+        alias = xd::quoteIdentifier(db, towstr(alias));
+        field = xd::quoteIdentifier(db, towstr(field));
         str = alias + wxT(".") + field;
     }
 

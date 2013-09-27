@@ -92,7 +92,7 @@ void TableDoc::setSortOrder(const std::wstring& expr)
 
         // set default order
         m_sort_order = L"";
-        tango::IIteratorPtr iter;
+        xd::IIteratorPtr iter;
         iter = g_app->getDatabase()->query(path, L"", L"", L"", NULL);
         setIterator(iter);
         return;

@@ -535,7 +535,7 @@ void func_lpad(kscript::ExprEnv* env, void* param, kscript::Value* retval)
     int fill_i = 0;
     int fill_size = 1;
 
-    if (fill_len <= 0 || fill_len > tango::max_character_width)
+    if (fill_len <= 0 || fill_len > xd::max_character_width)
     {
         retval->setString(L"");
         return;
@@ -581,7 +581,7 @@ void func_rpad(kscript::ExprEnv* env, void* param, kscript::Value* retval)
     int fill_i = 0;
     int fill_size = 1;
 
-    if (fill_len <= 0 || fill_len > tango::max_character_width)
+    if (fill_len <= 0 || fill_len > xd::max_character_width)
     {
         retval->setString(L"");
         return;
@@ -1563,7 +1563,7 @@ static size_t getMaxLocaleWeekdayLength()
 
 void func_tochar_datetime(kscript::ExprEnv* env, void* param, kscript::Value* retval)
 {
-    tango::DateTime dt;
+    xd::DateTime dt;
     const wchar_t* format;
     const wchar_t* f;
     wchar_t buf[64];
@@ -1572,7 +1572,7 @@ void func_tochar_datetime(kscript::ExprEnv* env, void* param, kscript::Value* re
     
     kscript::ExprDateTime edt;
     env->getParam(0)->getDateTime(&edt);
-    tango::datetime_t tdt = edt.date;
+    xd::datetime_t tdt = edt.date;
     tdt <<= 32;
     tdt |= edt.time;
     dt.setDateTime(tdt);
@@ -2518,7 +2518,7 @@ void func_left(kscript::ExprEnv* env, void* param, kscript::Value* retval)
     int p0_len = env->m_eval_params[0]->getDataLen();
     int p1 = env->m_eval_params[1]->getInteger();
 
-    if (p1 <= 0 || p1 > tango::max_character_width)
+    if (p1 <= 0 || p1 > xd::max_character_width)
     {
         retval->setString(L"");
         return;
@@ -2544,7 +2544,7 @@ void func_right(kscript::ExprEnv* env, void* param, kscript::Value* retval)
         off = 0;
     }
 
-    if (p1 < 0 || p1 > tango::max_character_width)
+    if (p1 < 0 || p1 > xd::max_character_width)
     {
         retval->setString(L"");
         return;
@@ -2579,7 +2579,7 @@ void func_lfind(kscript::ExprEnv* env, void* param, kscript::Value* retval)
     if (env->m_param_count == 3)
     {
         occurance = env->m_eval_params[2]->getInteger();
-        if (occurance <= 0 || occurance > tango::max_character_width)
+        if (occurance <= 0 || occurance > xd::max_character_width)
         {
             // invalid occurance value specified
             retval->setInteger(0);
@@ -2620,7 +2620,7 @@ void func_rfind(kscript::ExprEnv* env, void* param, kscript::Value* retval)
     if (env->m_param_count == 3)
     {
         occurance = env->m_eval_params[2]->getInteger();
-        if (occurance <= 0 || occurance > tango::max_character_width)
+        if (occurance <= 0 || occurance > xd::max_character_width)
         {
             // invalid occurance value specified
             retval->setInteger(0);
@@ -2677,7 +2677,7 @@ void func_repeat(kscript::ExprEnv* env, void* param, kscript::Value* retval)
     int p1 = env->m_eval_params[1]->getInteger();
     int p0_len = env->m_eval_params[0]->getDataLen();
 
-    if (p0_len == 0 || p1 <= 0 || p1 > tango::max_character_width)
+    if (p0_len == 0 || p1 <= 0 || p1 > xd::max_character_width)
     {
         retval->setString(L"");
         return;

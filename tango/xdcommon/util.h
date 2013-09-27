@@ -65,7 +65,7 @@ void requote(std::wstring& str, wchar_t ch1, wchar_t ch2,
                                 wchar_t new_ch1, wchar_t new_ch2);
 
 void dequote(std::wstring& str, wchar_t ch1, wchar_t ch2);
-void dequoteIfField(tango::IStructurePtr& structure, std::wstring& str, wchar_t ch1, wchar_t ch2);
+void dequoteIfField(xd::IStructurePtr& structure, std::wstring& str, wchar_t ch1, wchar_t ch2);
 
 std::wstring makePathName(const std::wstring& base_dir,
                           const std::wstring& subdir,
@@ -85,7 +85,7 @@ kscript::ExprParser* createExprParser();
 int kscript2tangoType(int type);
 int tango2kscriptType(int type);
 
-tango::IIndexInfoPtr xdLookupIndex(tango::IIndexInfoEnumPtr enums,
+xd::IIndexInfoPtr xdLookupIndex(xd::IIndexInfoEnumPtr enums,
                                    const std::wstring& expr,
                                    bool exact_column_order);
 
@@ -97,11 +97,11 @@ bool parseDateTime(const std::wstring& input,
                    int* minute,
                    int* second);
 
-tango::datetime_t str2datetime(const char* str,
+xd::datetime_t str2datetime(const char* str,
                                const char* fmt = "YMDhms");
 
-tango::rowid_t bufToRowid(unsigned char* buf);
-void rowidToBuf(unsigned char* bytes, tango::rowid_t r);
+xd::rowid_t bufToRowid(unsigned char* buf);
+void rowidToBuf(unsigned char* bytes, xd::rowid_t r);
 
 int levenshtein(const wchar_t* s, const wchar_t* t);
 
@@ -285,30 +285,30 @@ inline bool isTypeCompatible(int type1, int type2)
 
     switch (type1)
     {
-        case tango::typeCharacter:
-        case tango::typeWideCharacter:
-            if (type2 == tango::typeCharacter ||
-                type2 == tango::typeWideCharacter)
+        case xd::typeCharacter:
+        case xd::typeWideCharacter:
+            if (type2 == xd::typeCharacter ||
+                type2 == xd::typeWideCharacter)
             {
                 return true;
             }
             break;
 
-        case tango::typeNumeric:
-        case tango::typeDouble:
-        case tango::typeInteger:
-            if (type2 == tango::typeNumeric ||
-                type2 == tango::typeDouble ||
-                type2 == tango::typeInteger)
+        case xd::typeNumeric:
+        case xd::typeDouble:
+        case xd::typeInteger:
+            if (type2 == xd::typeNumeric ||
+                type2 == xd::typeDouble ||
+                type2 == xd::typeInteger)
             {
                 return true;
             }
             break;
 
-        case tango::typeDate:
-        case tango::typeDateTime:
-            if (type2 == tango::typeDate ||
-                type2 == tango::typeDateTime)
+        case xd::typeDate:
+        case xd::typeDateTime:
+            if (type2 == xd::typeDate ||
+                type2 == xd::typeDateTime)
             {
                 return true;
             }

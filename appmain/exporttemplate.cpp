@@ -36,7 +36,7 @@ bool ExportTemplate::save(const wxString& path)
 
 static void writeKpgMetadata(jobs::IJobPtr job)
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return;
 
@@ -45,7 +45,7 @@ static void writeKpgMetadata(jobs::IJobPtr job)
     conn->setPath(job->getExtraValue(L"kpg"));
     conn->open();
     
-    tango::IDatabasePtr kpg = conn->getDatabasePtr();
+    xd::IDatabasePtr kpg = conn->getDatabasePtr();
     if (kpg.isNull())
         return;
 
@@ -64,7 +64,7 @@ static void writeKpgMetadata(jobs::IJobPtr job)
             continue;
 
         // get object id of the source table we exported
-        tango::IFileInfoPtr finfo = db->getFileInfo(source_path);
+        xd::IFileInfoPtr finfo = db->getFileInfo(source_path);
         if (finfo.isNull())
             continue;
         std::wstring object_id = finfo->getObjectId();

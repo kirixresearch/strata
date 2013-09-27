@@ -21,7 +21,7 @@ const int native_header_len = 1024;
 const int native_column_descriptor_len = 256;
 
 // in general these constants should be the same as
-// tango::max_numeric_width and tango::max_numeric_scale
+// xd::max_numeric_width and xd::max_numeric_scale
 
 const int native_max_numeric_width = 20;
 const int native_max_numeric_scale = 12;
@@ -77,7 +77,7 @@ class NativeTable : public ITable
     
     
 public:
-    static bool create(const std::wstring& filename, tango::IStructure* structure);
+    static bool create(const std::wstring& filename, xd::IStructure* structure);
 
 public:
     
@@ -89,7 +89,7 @@ public:
     bool removeEventHandler(ITableEvents* handler);
     
     bool open(const std::wstring& filename,
-              tango::tableord_t ordinal);
+              xd::tableord_t ordinal);
 
     bool reopen(bool exclusive);
 
@@ -99,30 +99,30 @@ public:
     std::wstring getMapFilename();
 
     int getRowWidth();
-    tango::tableord_t getTableOrdinal();
-    tango::rowpos_t getRowCount(tango::rowpos_t* deleted_row_count);
-    tango::IStructurePtr getStructure();
+    xd::tableord_t getTableOrdinal();
+    xd::rowpos_t getRowCount(xd::rowpos_t* deleted_row_count);
+    xd::IStructurePtr getStructure();
 
-    tango::rowpos_t findNextRowPos(tango::rowpos_t offset, int delta);
-    bool getRow(tango::rowpos_t row, unsigned char* buf);
+    xd::rowpos_t findNextRowPos(xd::rowpos_t offset, int delta);
+    bool getRow(xd::rowpos_t row, unsigned char* buf);
     int getRows(unsigned char* buf,
-                tango::rowpos_t* rowpos_arr,
+                xd::rowpos_t* rowpos_arr,
                 int skip,
-                tango::rowpos_t start_row,
+                xd::rowpos_t start_row,
                 int row_count,
                 bool direction,
                 bool include_deleted);
     int appendRows(unsigned char* buf, int row_count);
 
-    bool isRowDeleted(tango::rowpos_t row);
-    bool writeRow(tango::rowpos_t row, unsigned char* buf);
+    bool isRowDeleted(xd::rowpos_t row);
+    bool writeRow(xd::rowpos_t row, unsigned char* buf);
     bool writeColumnInfo(int col,
                          const std::wstring& col_name,
                          int type,
                          int width,
                          int scale);
 
-    tango::rowpos_t setDeletedRowCount(int deleted_row_count);
+    xd::rowpos_t setDeletedRowCount(int deleted_row_count);
     void recalcPhysRowCount();
 
     bool restoreDeleted();
@@ -132,8 +132,8 @@ public:
 
 private:
 
-    tango::rowpos_t _findNextRowPos(BitmapFileScroller* _bfs,
-                                    tango::rowpos_t offset,
+    xd::rowpos_t _findNextRowPos(BitmapFileScroller* _bfs,
+                                    xd::rowpos_t offset,
                                     int delta);
 
     bool upgradeVersion1(unsigned char* header);
@@ -143,17 +143,17 @@ private:
 
     XdnativeDatabase* m_database;
 
-    tango::IStructurePtr m_structure;
+    xd::IStructurePtr m_structure;
     xf_file_t m_file;
     BitmapFile* m_map_file;
 
-    tango::tableord_t m_ordinal;
+    xd::tableord_t m_ordinal;
     std::wstring m_filename;
     std::wstring m_map_filename;
 
     std::vector<ITableEvents*> m_event_handlers;
 
-    tango::rowpos_t m_phys_row_count;     // number of rows in this table
+    xd::rowpos_t m_phys_row_count;     // number of rows in this table
     unsigned int m_row_width;             // row width
     unsigned int m_data_offset;           // offset where the data rows begin
     long long m_modified_time; // time that an update has occurred
@@ -171,7 +171,7 @@ public:
     virtual ~NativeRowDeleter();
 
     void startDelete();
-    bool deleteRow(const tango::rowid_t& rowid);
+    bool deleteRow(const xd::rowid_t& rowid);
     void finishDelete();
     void cancelDelete() { }
 

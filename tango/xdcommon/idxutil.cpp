@@ -23,8 +23,8 @@
 class BulkInsertProgress : public IIndexProgress
 {
 public:
-    void updateProgress(tango::rowpos_t cur_count,
-                        tango::rowpos_t max_count,
+    void updateProgress(xd::rowpos_t cur_count,
+                        xd::rowpos_t max_count,
                         bool* cancel)
     {
         if (cur_count == 0)
@@ -54,7 +54,7 @@ public:
             {
                 if (ijob)
                 {
-                    ijob->setStatus(tango::jobFailed);
+                    ijob->setStatus(xd::jobFailed);
                     *cancel = true;
                     cancelled = true;
                 }
@@ -63,7 +63,7 @@ public:
     }
 
 public:
-    tango::IJob* job;
+    xd::IJob* job;
     IJobInternal* ijob;
     std::wstring filename;
     bool cancelled;
@@ -71,29 +71,29 @@ public:
 };
 
 
-IIndex* createExternalIndex(tango::IDatabasePtr db,
+IIndex* createExternalIndex(xd::IDatabasePtr db,
                             const std::wstring& table_path,
                             const std::wstring& index_filename,
                             const std::wstring& tempfile_path,
                             const std::wstring& expr,
                             bool allow_dups,
-                            tango::IJob* job)
+                            xd::IJob* job)
 {
-    tango::IFileInfoPtr finfo = db->getFileInfo(table_path);
+    xd::IFileInfoPtr finfo = db->getFileInfo(table_path);
     if (finfo.isNull())
         return false;
 
     // job information
     IJobInternalPtr ijob;
-    tango::rowpos_t cur_count;
-    tango::rowpos_t max_count;
+    xd::rowpos_t cur_count;
+    xd::rowpos_t max_count;
 
     cur_count = 0;
     max_count = 0;
 
     if (job)
     {
-        if (finfo->getFlags() & tango::sfFastRowCount)
+        if (finfo->getFlags() & xd::sfFastRowCount)
         {
             max_count = finfo->getRowCount();
         }
@@ -106,7 +106,7 @@ IIndex* createExternalIndex(tango::IDatabasePtr db,
 
         ijob->setMaxCount(max_count);
         ijob->setCurrentCount(0);
-        ijob->setStatus(tango::jobRunning);
+        ijob->setStatus(xd::jobRunning);
         ijob->setStartTime(time(NULL));
         int phase_pcts[] = { 70, 30 };
         ijob->setPhases(2, phase_pcts);
@@ -115,11 +115,11 @@ IIndex* createExternalIndex(tango::IDatabasePtr db,
 
 
     // create an unordered iterator
-    tango::IIteratorPtr sp_iter = db->query(table_path, L"", L"", L"", NULL);
+    xd::IIteratorPtr sp_iter = db->query(table_path, L"", L"", L"", NULL);
     if (!sp_iter)
         return NULL;
 
-    tango::IIterator* iter = sp_iter.p;
+    xd::IIterator* iter = sp_iter.p;
     iter->ref();
     sp_iter = xcm::null;
 
@@ -143,7 +143,7 @@ IIndex* createExternalIndex(tango::IDatabasePtr db,
 
     if (!index->create(index_filename,
                        key_length,
-                       sizeof(tango::rowid_t),
+                       sizeof(xd::rowid_t),
                        true))
     {
         delete index;
@@ -153,7 +153,7 @@ IIndex* createExternalIndex(tango::IDatabasePtr db,
 
 
     // add keys to the index
-    tango::rowid_t rowid;
+    xd::rowid_t rowid;
     index->startBulkInsert(max_count);
     while (!iter->eof())
     {
@@ -163,9 +163,9 @@ IIndex* createExternalIndex(tango::IDatabasePtr db,
         if (index->insert(kl.getKey(),
                           key_length,
                           &rowid,
-                          sizeof(tango::rowid_t)) != idxErrSuccess)
+                          sizeof(xd::rowid_t)) != idxErrSuccess)
         {
-            ijob->setStatus(tango::jobFailed);
+            ijob->setStatus(xd::jobFailed);
             index->cancelBulkInsert();
             index->unref();
 
@@ -221,7 +221,7 @@ IIndex* createExternalIndex(tango::IDatabasePtr db,
     {
         ijob->setCurrentCount(cur_count);
         ijob->setFinishTime(time(NULL));
-        ijob->setStatus(tango::jobFinished);
+        ijob->setStatus(xd::jobFinished);
     }
 
     return index;
@@ -236,7 +236,7 @@ IIndex* createExternalIndex(tango::IDatabasePtr db,
 IIndexIterator* seekRow(IIndex* idx,
                         const unsigned char* key,
                         int key_len,
-                        tango::rowid_t rowid)
+                        xd::rowid_t rowid)
 {
     // attempt to seek
 
@@ -245,12 +245,12 @@ IIndexIterator* seekRow(IIndex* idx,
     if (!iter)
         return NULL;
 
-    tango::rowid_t idx_rowid;
+    xd::rowid_t idx_rowid;
 
     bool found = false;
     while (1)
     {
-        memcpy(&idx_rowid, iter->getValue(), sizeof(tango::rowid_t));
+        memcpy(&idx_rowid, iter->getValue(), sizeof(xd::rowid_t));
 
         if (idx_rowid == rowid)
         {
@@ -275,7 +275,7 @@ IIndexIterator* seekRow(IIndex* idx,
 }
 
 
-tango::IIteratorPtr createIteratorFromIndex(tango::IIteratorPtr data_iter,
+xd::IIteratorPtr createIteratorFromIndex(xd::IIteratorPtr data_iter,
                                             IIndex* idx,
                                             const std::wstring& columns,
                                             const std::wstring& order,
@@ -328,7 +328,7 @@ CommonIndexIterator::~CommonIndexIterator()
     delete[] m_key_filter;
 }
 
-bool CommonIndexIterator::init(tango::IIterator* data_iter,
+bool CommonIndexIterator::init(xd::IIterator* data_iter,
                                IIndexIterator* idx_iter,
                                const std::wstring& order,
                                bool value_side)
@@ -362,10 +362,10 @@ bool CommonIndexIterator::init(tango::IIterator* data_iter,
 
 
 
-tango::IIteratorPtr CommonIndexIterator::clone()
+xd::IIteratorPtr CommonIndexIterator::clone()
 {
     IIndexIterator* index_iter = m_idx_iter->clone();
-    tango::IIteratorPtr data_iter = m_data_iter->clone();
+    xd::IIteratorPtr data_iter = m_data_iter->clone();
     
     CommonIndexIterator* new_iter = new CommonIndexIterator;
     new_iter->init(data_iter.p, index_iter, m_order, m_value_side);
@@ -376,7 +376,7 @@ tango::IIteratorPtr CommonIndexIterator::clone()
 
     new_iter->updatePos();
 
-    return static_cast<tango::IIterator*>(new_iter);
+    return static_cast<xd::IIterator*>(new_iter);
 }
 
 void* CommonIndexIterator::getKey()
@@ -428,7 +428,7 @@ void CommonIndexIterator::updatePos()
     
     if (m_value_side)
     {
-        memcpy(&m_rowid, m_idx_iter->getValue(), sizeof(tango::rowid_t));
+        memcpy(&m_rowid, m_idx_iter->getValue(), sizeof(xd::rowid_t));
     }
      else
     {
@@ -470,7 +470,7 @@ void CommonIndexIterator::goLast()
     updatePos();
 }
 
-tango::rowid_t CommonIndexIterator::getRowId()
+xd::rowid_t CommonIndexIterator::getRowId()
 {
     return m_rowid;
 }
@@ -507,12 +507,12 @@ bool CommonIndexIterator::seek(const unsigned char* key,
         // we are seeking for a record number.
         // 'key' contains a 64-bit record id
 
-        tango::rowid_t fixed_rowid;
+        xd::rowid_t fixed_rowid;
         invert_rowid_endianness((unsigned char*)&fixed_rowid,
                                 (unsigned char*)key);
 
         IIndexIterator* idx_iter;
-        idx_iter = idx->seek(&fixed_rowid, sizeof(tango::rowid_t), false);
+        idx_iter = idx->seek(&fixed_rowid, sizeof(xd::rowid_t), false);
 
         if (idx_iter != NULL)
         {
@@ -615,13 +615,13 @@ double CommonIndexIterator::getPos()
     return m_idx_iter->getPos();
 }
 
-void CommonIndexIterator::goRow(const tango::rowid_t& rowid)
+void CommonIndexIterator::goRow(const xd::rowid_t& rowid)
 {
-    seek((unsigned char*)&rowid, sizeof(tango::rowid_t), false);
+    seek((unsigned char*)&rowid, sizeof(xd::rowid_t), false);
     m_data_iter->goRow(rowid);
 }
 
-void CommonIndexIterator::onRowUpdated(tango::rowid_t rowid)
+void CommonIndexIterator::onRowUpdated(xd::rowid_t rowid)
 {
     if (rowid == m_rowid)
     {
@@ -630,7 +630,7 @@ void CommonIndexIterator::onRowUpdated(tango::rowid_t rowid)
     }
 }
 
-void CommonIndexIterator::onRowDeleted(tango::rowid_t rowid)
+void CommonIndexIterator::onRowDeleted(xd::rowid_t rowid)
 {
     if (rowid == m_rowid)
     {
@@ -646,7 +646,7 @@ std::wstring CommonIndexIterator::getTable()
     return m_data_iter->getTable();
 }
 
-tango::rowpos_t CommonIndexIterator::getRowCount()
+xd::rowpos_t CommonIndexIterator::getRowCount()
 {
     return m_data_iter->getRowCount();
 }
@@ -660,7 +660,7 @@ unsigned int CommonIndexIterator::getIteratorFlags()
     unsigned int flags = m_data_iter->getIteratorFlags();
 
     if (m_key_filter_len > 0)
-        flags &= ~(tango::ifFastRowCount);
+        flags &= ~(xd::ifFastRowCount);
 
     return flags;
 }
@@ -670,94 +670,94 @@ void CommonIndexIterator::refreshStructure()
     m_data_iter->refreshStructure();
 }
 
-tango::IStructurePtr CommonIndexIterator::getStructure()
+xd::IStructurePtr CommonIndexIterator::getStructure()
 {
     return m_data_iter->getStructure();
 }
 
-bool CommonIndexIterator::modifyStructure(tango::IStructure* struct_config, tango::IJob* job)
+bool CommonIndexIterator::modifyStructure(xd::IStructure* struct_config, xd::IJob* job)
 {
     return m_data_iter->modifyStructure(struct_config, job);
 }
 
-tango::IIteratorPtr CommonIndexIterator::getChildIterator(tango::IRelationPtr relation)
+xd::IIteratorPtr CommonIndexIterator::getChildIterator(xd::IRelationPtr relation)
 {
-    tango::IIteratorRelationPtr iter = m_data_iter;
+    xd::IIteratorRelationPtr iter = m_data_iter;
     if (!iter)
         return xcm::null;
     return iter->getChildIterator(relation);
 }
 
-tango::IIteratorPtr CommonIndexIterator::getFilteredChildIterator(tango::IRelationPtr relation)
+xd::IIteratorPtr CommonIndexIterator::getFilteredChildIterator(xd::IRelationPtr relation)
 {
-    tango::IIteratorRelationPtr iter = m_data_iter;
+    xd::IIteratorRelationPtr iter = m_data_iter;
     if (!iter)
         return xcm::null;
     return iter->getFilteredChildIterator(relation);
 }
 
-tango::objhandle_t CommonIndexIterator::getHandle(const std::wstring& expr)
+xd::objhandle_t CommonIndexIterator::getHandle(const std::wstring& expr)
 {
     return m_data_iter->getHandle(expr);
 }
 
-tango::IColumnInfoPtr CommonIndexIterator::getInfo(tango::objhandle_t data_handle)
+xd::IColumnInfoPtr CommonIndexIterator::getInfo(xd::objhandle_t data_handle)
 {
     return m_data_iter->getInfo(data_handle);
 }
 
-int CommonIndexIterator::getType(tango::objhandle_t data_handle)
+int CommonIndexIterator::getType(xd::objhandle_t data_handle)
 {
     return m_data_iter->getType(data_handle);
 }
 
-bool CommonIndexIterator::releaseHandle(tango::objhandle_t data_handle)
+bool CommonIndexIterator::releaseHandle(xd::objhandle_t data_handle)
 {
     return m_data_iter->releaseHandle(data_handle);
 }
 
 
-const unsigned char* CommonIndexIterator::getRawPtr(tango::objhandle_t data_handle)
+const unsigned char* CommonIndexIterator::getRawPtr(xd::objhandle_t data_handle)
 {
     return m_data_iter->getRawPtr(data_handle);
 }
 
-int CommonIndexIterator::getRawWidth(tango::objhandle_t data_handle)
+int CommonIndexIterator::getRawWidth(xd::objhandle_t data_handle)
 {
     return m_data_iter->getRawWidth(data_handle);
 }
 
-const std::string& CommonIndexIterator::getString(tango::objhandle_t data_handle)
+const std::string& CommonIndexIterator::getString(xd::objhandle_t data_handle)
 {
     return m_data_iter->getString(data_handle);
 }
 
-const std::wstring& CommonIndexIterator::getWideString(tango::objhandle_t data_handle)
+const std::wstring& CommonIndexIterator::getWideString(xd::objhandle_t data_handle)
 {
     return m_data_iter->getWideString(data_handle);
 }
 
-tango::datetime_t CommonIndexIterator::getDateTime(tango::objhandle_t data_handle)
+xd::datetime_t CommonIndexIterator::getDateTime(xd::objhandle_t data_handle)
 {
     return m_data_iter->getDateTime(data_handle);
 }
 
-double CommonIndexIterator::getDouble(tango::objhandle_t data_handle)
+double CommonIndexIterator::getDouble(xd::objhandle_t data_handle)
 {
     return m_data_iter->getDouble(data_handle);
 }
 
-int CommonIndexIterator::getInteger(tango::objhandle_t data_handle)
+int CommonIndexIterator::getInteger(xd::objhandle_t data_handle)
 {
     return m_data_iter->getInteger(data_handle);
 }
 
-bool CommonIndexIterator::getBoolean(tango::objhandle_t data_handle)
+bool CommonIndexIterator::getBoolean(xd::objhandle_t data_handle)
 {
     return m_data_iter->getBoolean(data_handle);
 }
 
-bool CommonIndexIterator::isNull(tango::objhandle_t data_handle)
+bool CommonIndexIterator::isNull(xd::objhandle_t data_handle)
 {
     return m_data_iter->isNull(data_handle);
 }

@@ -23,14 +23,14 @@
 #include <map>
 
 
-tango::IColumnInfoPtr parseColumnDescription(const std::wstring& str, ThreadErrorInfo& error);
+xd::IColumnInfoPtr parseColumnDescription(const std::wstring& str, ThreadErrorInfo& error);
 
 
 
-bool sqlAlter(tango::IDatabasePtr db,
+bool sqlAlter(xd::IDatabasePtr db,
               const std::wstring& _command,
               ThreadErrorInfo& error,
-              tango::IJob* job)
+              xd::IJob* job)
 {
     SqlStatement stmt(_command);
 
@@ -42,7 +42,7 @@ bool sqlAlter(tango::IDatabasePtr db,
 
     if (!stmt.getKeywordExists(L"TABLE"))
     {
-        error.setError(tango::errorSyntax, L"Invalid syntax; ALTER statement missing TABLE keyword");
+        error.setError(xd::errorSyntax, L"Invalid syntax; ALTER statement missing TABLE keyword");
         return false;
     }
 
@@ -54,7 +54,7 @@ bool sqlAlter(tango::IDatabasePtr db,
     if (!blank)
     {
         // missing parameter after table name
-        error.setError(tango::errorSyntax, L"Invalid syntax; TABLE clause missing parameter");        
+        error.setError(xd::errorSyntax, L"Invalid syntax; TABLE clause missing parameter");        
         return false;
     }
     
@@ -64,14 +64,14 @@ bool sqlAlter(tango::IDatabasePtr db,
     
     dequote(table_name, '[', ']');
     
-    tango::IStructurePtr structure = db->describeTable(table_name);
+    xd::IStructurePtr structure = db->describeTable(table_name);
 
     if (structure.isNull())
     {
         // input set could not be opened
         wchar_t buf[1024]; // some paths might be long
         swprintf(buf, 1024, L"Unable to open table [%s]", table_name.c_str());
-        error.setError(tango::errorGeneral, buf);
+        error.setError(xd::errorGeneral, buf);
         return false;
     }
 
@@ -94,7 +94,7 @@ bool sqlAlter(tango::IDatabasePtr db,
                 popToken(*it);
             
             
-            tango::IColumnInfoPtr new_params = parseColumnDescription(*it, error);
+            xd::IColumnInfoPtr new_params = parseColumnDescription(*it, error);
             if (new_params.isNull())
             {
                 // something wrong with the column description section;
@@ -110,16 +110,16 @@ bool sqlAlter(tango::IDatabasePtr db,
                 msg += L"' already exists";
                 
                 // can't add column
-                error.setError(tango::errorGeneral, msg);
+                error.setError(xd::errorGeneral, msg);
                 return false;
             }
             
 
-            tango::IColumnInfoPtr colinfo = structure->createColumn();
+            xd::IColumnInfoPtr colinfo = structure->createColumn();
             if (colinfo.isNull())
             {
                 // can't add column
-                error.setError(tango::errorGeneral, L"Unable to add column in ALTER statement");
+                error.setError(xd::errorGeneral, L"Unable to add column in ALTER statement");
                 return false;
             }
         
@@ -139,7 +139,7 @@ bool sqlAlter(tango::IDatabasePtr db,
             if (stmt.getKeywordExists(L"BEFORE"))
             {
                 std::wstring before = stmt.getKeywordParam(L"BEFORE");
-                tango::IColumnInfoPtr col = structure->getColumnInfo(before);
+                xd::IColumnInfoPtr col = structure->getColumnInfo(before);
                 if (col.isNull())
                 {
                     std::wstring msg = L"Unable to add column in ALTER statement; column '";
@@ -153,7 +153,7 @@ bool sqlAlter(tango::IDatabasePtr db,
             if (stmt.getKeywordExists(L"AFTER"))
             {
                 std::wstring after = stmt.getKeywordParam(L"AFTER");
-                tango::IColumnInfoPtr col = structure->getColumnInfo(after);
+                xd::IColumnInfoPtr col = structure->getColumnInfo(after);
                 if (col.isNull())
                 {
                     std::wstring msg = L"Unable to add column in ALTER statement; column '";
@@ -178,7 +178,7 @@ bool sqlAlter(tango::IDatabasePtr db,
                 // column didn't exist in the first place
                 wchar_t buf[1024];
                 swprintf(buf, 1024, L"Unable to drop column [%ls] in ALTER statement", column.c_str());
-                error.setError(tango::errorGeneral, buf);               
+                error.setError(xd::errorGeneral, buf);               
                 return false;
             }
         }
@@ -193,7 +193,7 @@ bool sqlAlter(tango::IDatabasePtr db,
             if (0 != wcscasecmp(to.c_str(), L"TO"))
             {
                 // missing TO
-                error.setError(tango::errorSyntax, L"Invalid syntax; RENAME clause missing TO keyword");
+                error.setError(xd::errorSyntax, L"Invalid syntax; RENAME clause missing TO keyword");
                 return false;
             }
             
@@ -201,20 +201,20 @@ bool sqlAlter(tango::IDatabasePtr db,
             if (new_name.empty())
             {
                 // missing new name
-                error.setError(tango::errorSyntax, L"Invalid syntax; RENAME clause missing new name parameter");
+                error.setError(xd::errorSyntax, L"Invalid syntax; RENAME clause missing new name parameter");
                 return false;
             }
             
             dequote(column, '[', ']');
             dequote(new_name, '[', ']');
 
-            tango::IColumnInfoPtr colinfo = structure->modifyColumn(column);
+            xd::IColumnInfoPtr colinfo = structure->modifyColumn(column);
             if (colinfo.isNull())
             {
                 // column doesn't exist
                 wchar_t buf[1024];
                 swprintf(buf, 1024, L"Unable to rename column [%ls] in ALTER statement", column.c_str());
-                error.setError(tango::errorGeneral, buf);
+                error.setError(xd::errorGeneral, buf);
                 return false;
             }
             
@@ -228,7 +228,7 @@ bool sqlAlter(tango::IDatabasePtr db,
                 popToken(*it);
             
             
-            tango::IColumnInfoPtr new_params = parseColumnDescription(*it, error);
+            xd::IColumnInfoPtr new_params = parseColumnDescription(*it, error);
             if (new_params.isNull())
             {
                 // something wrong with the column description section;
@@ -237,13 +237,13 @@ bool sqlAlter(tango::IDatabasePtr db,
             }
 
             std::wstring colname = new_params->getName();
-            tango::IColumnInfoPtr colinfo = structure->modifyColumn(colname);
+            xd::IColumnInfoPtr colinfo = structure->modifyColumn(colname);
             if (colinfo.isNull())
             {
                 // column doesn't exist
                 wchar_t buf[1024];
                 swprintf(buf, 1024, L"Unable to alter column [%ls] in ALTER statement", colname.c_str());
-                error.setError(tango::errorGeneral, buf);                 
+                error.setError(xd::errorGeneral, buf);                 
                 return false;
             }
         
@@ -269,7 +269,7 @@ bool sqlAlter(tango::IDatabasePtr db,
                 if (old_name.empty())
                 {
                     // missing original column name
-                    error.setError(tango::errorSyntax, L"Invalid syntax; missing original column in MODIFY clause of ALTER statement");
+                    error.setError(xd::errorSyntax, L"Invalid syntax; missing original column in MODIFY clause of ALTER statement");
                     return false;
                 }
                 
@@ -278,11 +278,11 @@ bool sqlAlter(tango::IDatabasePtr db,
                 if (0 != wcscasecmp(to.c_str(), L"TO"))
                 {
                     // missing TO
-                    error.setError(tango::errorSyntax, L"Invalid syntax; missing TO keyword in MODIFY clause of ALTER statement");
+                    error.setError(xd::errorSyntax, L"Invalid syntax; missing TO keyword in MODIFY clause of ALTER statement");
                     return false;
                 }
                 
-                tango::IColumnInfoPtr new_params = parseColumnDescription(*col_it, error);
+                xd::IColumnInfoPtr new_params = parseColumnDescription(*col_it, error);
                 if (new_params.isNull())
                 {
                     // something wrong with the column description section;
@@ -290,13 +290,13 @@ bool sqlAlter(tango::IDatabasePtr db,
                     return false;
                 }
                 
-                tango::IColumnInfoPtr colinfo = structure->modifyColumn(old_name);
+                xd::IColumnInfoPtr colinfo = structure->modifyColumn(old_name);
                 if (colinfo.isNull())
                 {
                     // column doesn't exist
                     wchar_t buf[1024];
                     swprintf(buf, 1024, L"Unable to modify column [%ls] in ALTER statement", old_name.c_str());
-                    error.setError(tango::errorGeneral, buf);                    
+                    error.setError(xd::errorGeneral, buf);                    
                     return false;
                 }
             

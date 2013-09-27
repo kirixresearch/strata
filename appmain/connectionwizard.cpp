@@ -406,7 +406,7 @@ std::wstring ConnectionWizard::getConnectionString()
 
 void ConnectionWizard::setConnectionString(const std::wstring& str)
 {
-    tango::ConnectionStringParser cstr;
+    xd::ConnectionStringParser cstr;
     cstr.parse(str);
     
     bool xdfs = false;

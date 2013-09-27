@@ -27,7 +27,7 @@ RowIdArray::~RowIdArray()
     delete m_pool;
 }
     
-void RowIdArray::append(tango::rowid_t rowid)
+void RowIdArray::append(xd::rowid_t rowid)
 {
     unsigned char buf[8];
     rowidToBuf(buf, rowid);
@@ -49,9 +49,9 @@ bool RowIdArray::isEof()
     return m_pool->isEof();
 }
 
-tango::rowid_t RowIdArray::getItem()
+xd::rowid_t RowIdArray::getItem()
 {
-    tango::rowid_t result;
+    xd::rowid_t result;
     result = bufToRowid(m_pool->getEntryPtr());
     return result;
 }

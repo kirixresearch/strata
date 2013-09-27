@@ -17,15 +17,15 @@
 #include "cmnbaseiterator.h"
 
 
-IIndex* createExternalIndex(tango::IDatabasePtr db,
+IIndex* createExternalIndex(xd::IDatabasePtr db,
                             const std::wstring& table_path,
                             const std::wstring& index_filename,
                             const std::wstring& tempfile_path,
                             const std::wstring& expr,
                             bool allow_dups,
-                            tango::IJob* job);
+                            xd::IJob* job);
                             
-tango::IIteratorPtr createIteratorFromIndex(tango::IIteratorPtr data_iter,
+xd::IIteratorPtr createIteratorFromIndex(xd::IIteratorPtr data_iter,
                                             IIndex* idx,
                                             const std::wstring& columns,
                                             const std::wstring& order,
@@ -39,19 +39,19 @@ tango::IIteratorPtr createIteratorFromIndex(tango::IIteratorPtr data_iter,
 IIndexIterator* seekRow(IIndex* idx,
                         const unsigned char* key,
                         int key_len,
-                        tango::rowid_t rowid);
+                        xd::rowid_t rowid);
 
 
 class KeyLayout;
 
-class CommonIndexIterator : public tango::IIterator,
-                            public tango::IIteratorRelation,
+class CommonIndexIterator : public xd::IIterator,
+                            public xd::IIteratorRelation,
                             public IIteratorKeyAccess
 {
     XCM_CLASS_NAME("xdcommon.CommonIndexIterator")
     XCM_BEGIN_INTERFACE_MAP(CommonIndexIterator)
-        XCM_INTERFACE_ENTRY(tango::IIterator)
-        XCM_INTERFACE_ENTRY(tango::IIteratorRelation)
+        XCM_INTERFACE_ENTRY(xd::IIterator)
+        XCM_INTERFACE_ENTRY(xd::IIteratorRelation)
         XCM_INTERFACE_ENTRY(IIteratorKeyAccess)
     XCM_END_INTERFACE_MAP()
 
@@ -60,7 +60,7 @@ public:
     CommonIndexIterator();
     virtual ~CommonIndexIterator();
 
-    bool init(tango::IIterator* data_iter,
+    bool init(xd::IIterator* data_iter,
               IIndexIterator* idx_index,
               const std::wstring& order,
               bool value_side = true);
@@ -74,51 +74,51 @@ public:
     bool setFirstKey();
 
     
-    tango::IIteratorPtr clone();
+    xd::IIteratorPtr clone();
     void skip(int delta);
     void goFirst();
     void goLast();
-    tango::rowid_t getRowId();
+    xd::rowid_t getRowId();
     bool bof();
     bool eof();
     bool seek(const unsigned char* key, int length, bool soft);
     bool seekValues(const wchar_t* arr[], size_t arr_size, bool soft);
     bool setPos(double pct);
     double getPos();
-    void goRow(const tango::rowid_t& rowid);
+    void goRow(const xd::rowid_t& rowid);
     
     std::wstring getTable();
-    tango::rowpos_t getRowCount();
+    xd::rowpos_t getRowCount();
 
     void setIteratorFlags(unsigned int mask, unsigned int value);
     unsigned int getIteratorFlags();
 
     void refreshStructure();
-    tango::IStructurePtr getStructure();
-    bool modifyStructure(tango::IStructure* struct_config, tango::IJob* job);
+    xd::IStructurePtr getStructure();
+    bool modifyStructure(xd::IStructure* struct_config, xd::IJob* job);
 
-    tango::IIteratorPtr getChildIterator(tango::IRelationPtr relation);
-    tango::IIteratorPtr getFilteredChildIterator(tango::IRelationPtr relation);
+    xd::IIteratorPtr getChildIterator(xd::IRelationPtr relation);
+    xd::IIteratorPtr getFilteredChildIterator(xd::IRelationPtr relation);
 
-    tango::objhandle_t getHandle(const std::wstring& expr);
-    tango::IColumnInfoPtr getInfo(tango::objhandle_t data_handle);
-    int getType(tango::objhandle_t data_handle);
-    bool releaseHandle(tango::objhandle_t data_handle);
+    xd::objhandle_t getHandle(const std::wstring& expr);
+    xd::IColumnInfoPtr getInfo(xd::objhandle_t data_handle);
+    int getType(xd::objhandle_t data_handle);
+    bool releaseHandle(xd::objhandle_t data_handle);
 
-    const unsigned char* getRawPtr(tango::objhandle_t data_handle);
-    int getRawWidth(tango::objhandle_t data_handle);
-    const std::string& getString(tango::objhandle_t data_handle);
-    const std::wstring& getWideString(tango::objhandle_t data_handle);
-    tango::datetime_t getDateTime(tango::objhandle_t data_handle);
-    double getDouble(tango::objhandle_t data_handle);
-    int getInteger(tango::objhandle_t data_handle);
-    bool getBoolean(tango::objhandle_t data_handle);
-    bool isNull(tango::objhandle_t data_handle);
+    const unsigned char* getRawPtr(xd::objhandle_t data_handle);
+    int getRawWidth(xd::objhandle_t data_handle);
+    const std::string& getString(xd::objhandle_t data_handle);
+    const std::wstring& getWideString(xd::objhandle_t data_handle);
+    xd::datetime_t getDateTime(xd::objhandle_t data_handle);
+    double getDouble(xd::objhandle_t data_handle);
+    int getInteger(xd::objhandle_t data_handle);
+    bool getBoolean(xd::objhandle_t data_handle);
+    bool isNull(xd::objhandle_t data_handle);
 
 public:
 
-    void onRowUpdated(tango::rowid_t rowid);
-    void onRowDeleted(tango::rowid_t rowid);
+    void onRowUpdated(xd::rowid_t rowid);
+    void onRowDeleted(xd::rowid_t rowid);
 
 protected:
 
@@ -130,14 +130,14 @@ protected:
 
     xcm::IObjectPtr m_refobj;
     std::wstring m_table;
-    tango::IIterator* m_data_iter;
+    xd::IIterator* m_data_iter;
     IIndexIterator* m_idx_iter;
     
     std::wstring m_order;
     KeyLayout* m_layout;
     
     bool m_value_side;
-    tango::rowid_t m_rowid;
+    xd::rowid_t m_rowid;
     unsigned int m_keylen;
     bool m_row_deleted;
 

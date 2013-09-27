@@ -83,8 +83,8 @@ private:
     wxSizerItem* m_spacer;
     
     bool m_prefix_edited;
-    tango::IFileInfoPtr m_finfo;
-    tango::IStructurePtr m_structure;
+    xd::IFileInfoPtr m_finfo;
+    xd::IStructurePtr m_structure;
     wxString m_path;
 
     DECLARE_EVENT_TABLE()

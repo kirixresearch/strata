@@ -51,7 +51,7 @@ void BufIterator::setRowBuffer(unsigned char* buf, int row_width)
     m_row_width = row_width;
 }
 
-tango::IIteratorPtr BufIterator::clone()
+xd::IIteratorPtr BufIterator::clone()
 {
     BufIterator* new_iter = new BufIterator;
     if (!baseClone(new_iter))
@@ -60,7 +60,7 @@ tango::IIteratorPtr BufIterator::clone()
         return xcm::null;
     }
 
-    return static_cast<tango::IIterator*>(new_iter);
+    return static_cast<xd::IIterator*>(new_iter);
 }
 
 void BufIterator::skip(int delta)
@@ -77,7 +77,7 @@ void BufIterator::goLast()
 {
 }
 
-tango::rowid_t BufIterator::getRowId()
+xd::rowid_t BufIterator::getRowId()
 {
     return 0;
 }

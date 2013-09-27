@@ -25,7 +25,7 @@
 
 const int PACKAGE_BLOCK_SIZE = 1000000;
 
-KpgRowInserter::KpgRowInserter(KpgDatabase* db, const std::wstring& table, tango::IStructurePtr structure)
+KpgRowInserter::KpgRowInserter(KpgDatabase* db, const std::wstring& table, xd::IStructurePtr structure)
 {
     m_database = db;
     m_database->ref();
@@ -33,7 +33,7 @@ KpgRowInserter::KpgRowInserter(KpgDatabase* db, const std::wstring& table, tango
     m_structure = structure;
     m_data = NULL;
 
-    tango::IAttributesPtr attr = m_database->getAttributes();
+    xd::IAttributesPtr attr = m_database->getAttributes();
 
     m_buf_rows = 0;
     m_rows_per_buf = 0;
@@ -48,7 +48,7 @@ KpgRowInserter::~KpgRowInserter()
     m_database->unref();
 }
 
-tango::objhandle_t KpgRowInserter::getHandle(const std::wstring& column_name)
+xd::objhandle_t KpgRowInserter::getHandle(const std::wstring& column_name)
 {
     std::vector<KpgInsertFieldData>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
@@ -60,19 +60,19 @@ tango::objhandle_t KpgRowInserter::getHandle(const std::wstring& column_name)
     return 0;
 }
 
-tango::IColumnInfoPtr KpgRowInserter::getInfo(tango::objhandle_t column_handle)
+xd::IColumnInfoPtr KpgRowInserter::getInfo(xd::objhandle_t column_handle)
 {
     return xcm::null;
 }
 
-bool KpgRowInserter::putRawPtr(tango::objhandle_t column_handle,
+bool KpgRowInserter::putRawPtr(xd::objhandle_t column_handle,
                                const unsigned char* value,
                                int length)
 {
     return false;
 }
 
-bool KpgRowInserter::putString(tango::objhandle_t column_handle,
+bool KpgRowInserter::putString(xd::objhandle_t column_handle,
                                  const std::string& value)
 {
     KpgInsertFieldData* f = (KpgInsertFieldData*)column_handle;
@@ -86,7 +86,7 @@ bool KpgRowInserter::putString(tango::objhandle_t column_handle,
     return true;
 }
 
-bool KpgRowInserter::putWideString(tango::objhandle_t column_handle,
+bool KpgRowInserter::putWideString(xd::objhandle_t column_handle,
                                    const std::wstring& value)
 {
     KpgInsertFieldData* f = (KpgInsertFieldData*)column_handle;
@@ -100,7 +100,7 @@ bool KpgRowInserter::putWideString(tango::objhandle_t column_handle,
     return true;
 }
 
-bool KpgRowInserter::putDouble(tango::objhandle_t column_handle,
+bool KpgRowInserter::putDouble(xd::objhandle_t column_handle,
                                double value)
 {
     KpgInsertFieldData* f = (KpgInsertFieldData*)column_handle;
@@ -114,7 +114,7 @@ bool KpgRowInserter::putDouble(tango::objhandle_t column_handle,
     return true;
 }
 
-bool KpgRowInserter::putInteger(tango::objhandle_t column_handle,
+bool KpgRowInserter::putInteger(xd::objhandle_t column_handle,
                                 int value)
 {
     KpgInsertFieldData* f = (KpgInsertFieldData*)column_handle;
@@ -128,7 +128,7 @@ bool KpgRowInserter::putInteger(tango::objhandle_t column_handle,
     return true;
 }
 
-bool KpgRowInserter::putBoolean(tango::objhandle_t column_handle,
+bool KpgRowInserter::putBoolean(xd::objhandle_t column_handle,
                                 bool value)
 {
     KpgInsertFieldData* f = (KpgInsertFieldData*)column_handle;
@@ -142,8 +142,8 @@ bool KpgRowInserter::putBoolean(tango::objhandle_t column_handle,
     return true;
 }
 
-bool KpgRowInserter::putDateTime(tango::objhandle_t column_handle,
-                                 tango::datetime_t value)
+bool KpgRowInserter::putDateTime(xd::objhandle_t column_handle,
+                                 xd::datetime_t value)
 {
     KpgInsertFieldData* f = (KpgInsertFieldData*)column_handle;
     if (!f)
@@ -156,7 +156,7 @@ bool KpgRowInserter::putDateTime(tango::objhandle_t column_handle,
     return true;
 }
 
-bool KpgRowInserter::putNull(tango::objhandle_t column_handle)
+bool KpgRowInserter::putNull(xd::objhandle_t column_handle)
 {
     KpgInsertFieldData* f = (KpgInsertFieldData*)column_handle;
     if (!f)
@@ -175,7 +175,7 @@ bool KpgRowInserter::startInsert(const std::wstring& col_list)
     // calculate the total physical row width
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr colinfo;
+        xd::IColumnInfoPtr colinfo;
 
         colinfo = m_structure->getColumnInfoByIdx(i);
 
@@ -194,28 +194,28 @@ bool KpgRowInserter::startInsert(const std::wstring& col_list)
             
             switch (colinfo->getType())
             {
-                case tango::typeCharacter:
+                case xd::typeCharacter:
                     width = colinfo->getWidth();
                     break;
-                case tango::typeWideCharacter:
+                case xd::typeWideCharacter:
                     width = colinfo->getWidth() * 2;
                     break;
-                case tango::typeNumeric:
+                case xd::typeNumeric:
                     width = colinfo->getWidth();
                     break;
-                case tango::typeDouble:
+                case xd::typeDouble:
                     width = sizeof(double);
                     break;
-                case tango::typeInteger:
+                case xd::typeInteger:
                     width = sizeof(int);
                     break;
-                case tango::typeBoolean:
+                case xd::typeBoolean:
                     width = 1;
                     break;
-                case tango::typeDate:
+                case xd::typeDate:
                     width = 4;
                     break;
-                case tango::typeDateTime:
+                case xd::typeDateTime:
                     width = 8;
                     break;
             }
@@ -239,7 +239,7 @@ bool KpgRowInserter::startInsert(const std::wstring& col_list)
     // remove table from the shadow m_create_tables map in KpgDatabase
     {
         XCM_AUTO_LOCK(m_database->m_obj_mutex);
-        std::map<std::wstring, tango::IStructurePtr, kl::cmp_nocase>::iterator it;
+        std::map<std::wstring, xd::IStructurePtr, kl::cmp_nocase>::iterator it;
         it = m_database->m_create_tables.find(m_table);
         if (it != m_database->m_create_tables.end())
             m_database->m_create_tables.erase(it);
@@ -335,7 +335,7 @@ bool KpgRowInserter::insertRow()
 
     it_end = m_fields.end();
     size_t len;
-    tango::datetime_t dt;
+    xd::datetime_t dt;
 
     memset(buf, 0, m_row_width);
 
@@ -344,7 +344,7 @@ bool KpgRowInserter::insertRow()
 
         switch (it->m_tango_type)
         {
-            case tango::typeCharacter:
+            case xd::typeCharacter:
             {
                 str = kl::tostring(it->m_str_val);
                 len = str.length();
@@ -353,30 +353,30 @@ bool KpgRowInserter::insertRow()
                 memcpy(buf + it->m_offset, str.c_str(), len);
                 break;
             }
-            case tango::typeWideCharacter:
+            case xd::typeWideCharacter:
                 kl::wstring2ucsle(buf + it->m_offset, it->m_str_val, it->m_width);
                 break;
-            case tango::typeNumeric:
+            case xd::typeNumeric:
                 dbl2decstr((char*)buf + it->m_offset, it->m_dbl_val, it->m_width, it->m_scale);
                 break;
-            case tango::typeDouble:
+            case xd::typeDouble:
                 // little-endian only
                 memcpy(buf + it->m_offset, &it->m_dbl_val, sizeof(double));
                 break;
-            case tango::typeInteger:
+            case xd::typeInteger:
                 // little-endian only
                 memcpy(buf + it->m_offset, &it->m_int_val, sizeof(int));
                 break;
-            case tango::typeBoolean:
+            case xd::typeBoolean:
                 // little-endian only
                 *(buf + it->m_offset) = it->m_bool_val ? 'T' : 'F';
                 break;
-            case tango::typeDate:
+            case xd::typeDate:
                 dt = it->m_datetime_val;
                 dt >>= 32;
                 int2buf(buf + it->m_offset, (unsigned int)dt);
                 break;
-            case tango::typeDateTime:
+            case xd::typeDateTime:
                 int2buf(buf + it->m_offset, (unsigned int)(it->m_datetime_val >> 32));
                 int2buf(buf + it->m_offset + 4, (unsigned int)(it->m_datetime_val & 0xffffffff));
                 break;

@@ -52,8 +52,8 @@ private:
 private:
 
     wxString m_path;
-    tango::IStructurePtr m_structure;
-    tango::IIteratorPtr m_iter;
+    xd::IStructurePtr m_structure;
+    xd::IIteratorPtr m_iter;
     IDocumentSitePtr m_doc_site;
     wxString m_default_expr;
     wxString m_default_field;

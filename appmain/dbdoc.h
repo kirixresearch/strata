@@ -47,8 +47,8 @@ public:
     virtual void setOwner(IDbFolderFsItemPtr owner) = 0;
     virtual IDbFolderFsItemPtr getOwner() = 0;
     
-    virtual void setDatabase(tango::IDatabasePtr db) = 0;
-    virtual tango::IDatabasePtr getDatabase() = 0;
+    virtual void setDatabase(xd::IDatabasePtr db) = 0;
+    virtual xd::IDatabasePtr getDatabase() = 0;
 
     virtual void setConnection(IConnectionPtr conn) = 0;
     virtual IConnectionPtr getConnection() = 0;
@@ -104,8 +104,8 @@ public:
     void setConnection(IConnectionPtr conn);
     IConnectionPtr getConnection();
 
-    void setDatabase(tango::IDatabasePtr db);
-    tango::IDatabasePtr getDatabase();
+    void setDatabase(xd::IDatabasePtr db);
+    xd::IDatabasePtr getDatabase();
 
     wxString getPath();
     void setPath(const wxString& s);
@@ -119,7 +119,7 @@ public:
     void setOwner(IDbFolderFsItemPtr owner);
     IDbFolderFsItemPtr getOwner();
     
-    void setChildrenOverride(tango::IFileInfoEnumPtr children_override);
+    void setChildrenOverride(xd::IFileInfoEnumPtr children_override);
     void setFoldersOnly(bool new_val);
     void setTablesOnly(bool new_val);
 
@@ -131,8 +131,8 @@ public:
 private:
 
     wxString m_path;
-    tango::IDatabasePtr m_db;
-    tango::IFileInfoEnumPtr m_children_override;
+    xd::IDatabasePtr m_db;
+    xd::IFileInfoEnumPtr m_children_override;
     IConnectionPtr m_conn;
     IDbFolderFsItemPtr m_owner;
     bool m_only_folders;
@@ -193,7 +193,7 @@ public:
     // public utility API for DbDoc
     static void actionActivate(IFsItemPtr item, int open_mask);
     static void actionActivateDeferred(IFsItemPtr item, int open_mask);
-    static tango::IDatabasePtr getItemDatabase(IFsItemPtr item);
+    static xd::IDatabasePtr getItemDatabase(IFsItemPtr item);
     static bool isItemMount(IFsItemPtr item);
     static bool isItemInMount(IFsItemPtr item);
     static wxString getFsItemPath(IFsItemPtr source);
@@ -227,7 +227,7 @@ public:
     
     IFsItemPtr getFsItemFromPath(const wxString& string);
     bool isFsItemExternal(IFsItemPtr item);
-    void setDatabase(tango::IDatabasePtr db, const wxString& root_path = wxEmptyString);
+    void setDatabase(xd::IDatabasePtr db, const wxString& root_path = wxEmptyString);
     void setRootItem(IDbFolderFsItemPtr root_folder);
     void refresh();
 

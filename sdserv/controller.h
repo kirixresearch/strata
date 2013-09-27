@@ -18,7 +18,7 @@
 
 struct SessionQueryResultColumn
 {
-    tango::objhandle_t handle;
+    xd::objhandle_t handle;
     std::wstring name;
     int type;
     int width;
@@ -29,23 +29,23 @@ struct SessionQueryResult : public ServerSessionObject
 {
     SessionQueryResult() : ServerSessionObject() { setType("SessionQueryResult"); }
 
-    tango::IIteratorPtr iter;
+    xd::IIteratorPtr iter;
     std::vector<SessionQueryResultColumn> columns;
-    tango::rowpos_t rowpos;
-    tango::rowpos_t rowcount;
+    xd::rowpos_t rowpos;
+    xd::rowpos_t rowcount;
 };
 
 struct SessionStream : public ServerSessionObject
 {
     SessionStream() : ServerSessionObject() { setType("SessionStream"); }
 
-    tango::IStreamPtr stream;
+    xd::IStreamPtr stream;
 };
 
 
 struct SessionRowInserterColumn
 {
-    tango::objhandle_t handle;
+    xd::objhandle_t handle;
     int type;
 };
 
@@ -53,7 +53,7 @@ struct SessionRowInserter : public ServerSessionObject
 {
     SessionRowInserter() : ServerSessionObject() { setType("SessionRowInserter"); }
 
-    tango::IRowInserterPtr inserter;
+    xd::IRowInserterPtr inserter;
     std::vector<SessionRowInserterColumn> columns;
 };
 
@@ -80,7 +80,7 @@ private:
 private:
 
     void returnApiError(RequestInfo& req, const char* msg, const char* code = "ERR0000");
-    tango::IDatabasePtr getSessionDatabase(RequestInfo& req);
+    xd::IDatabasePtr getSessionDatabase(RequestInfo& req);
 
     void apiFolderInfo(RequestInfo& req);
     void apiFileInfo(RequestInfo& req);
@@ -112,9 +112,9 @@ private:
     std::map< std::wstring , ServerSessionObject* > m_session_objects;
     xcm::mutex m_session_object_mutex;
 
-    std::map< std::wstring , tango::IDatabasePtr > m_databases;
+    std::map< std::wstring , xd::IDatabasePtr > m_databases;
     xcm::mutex m_databases_object_mutex;
-    tango::IDatabasePtr m_database;
+    xd::IDatabasePtr m_database;
     std::wstring m_connection_string;
 };
 

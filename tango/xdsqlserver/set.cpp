@@ -33,10 +33,10 @@ int tds2tangoType(TDSCOLUMN* tds_col);
 /* -- NOTE: This function is reverse engineering the tds_datecrack
       function and currently only handles dates, not datetimes -- */
 
-void tango2tdsdate(const tango::datetime_t& src, TDS_DATETIME* res)
+void tango2tdsdate(const xd::datetime_t& src, TDS_DATETIME* res)
 {
-    tango::datetime_t julian_days = (src >> 32);
-    tango::datetime_t time_ms = (src & 0xffffffff);
+    xd::datetime_t julian_days = (src >> 32);
+    xd::datetime_t time_ms = (src & 0xffffffff);
 
     // -- make julian days based off of 1-1-1900 --
     julian_days -= 2415021;
@@ -49,10 +49,10 @@ std::wstring SqlServerSet::getSetId()
     return L"";
 }
 
-tango::IStructurePtr SqlServerSet::getStructure()
+xd::IStructurePtr SqlServerSet::getStructure()
 {
-    // -- create new tango::IStructure --
-    tango::IStructurePtr s = static_cast<tango::IStructure*>(new Structure);
+    // -- create new xd::IStructure --
+    xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
 
     if (!m_connect_info)
     {
@@ -103,17 +103,17 @@ tango::IStructurePtr SqlServerSet::getStructure()
         sql_type = colinfo->column_type;
         tango_type = tds2tangoType(colinfo);
 
-        if (tango_type == tango::typeInvalid)
+        if (tango_type == xd::typeInvalid)
         {
             // -- certain complex types are not supported --
             continue;
         }
 
-        tango::IColumnInfoPtr col = s->createColumn();
+        xd::IColumnInfoPtr col = s->createColumn();
         col->setName(kl::towstring(colinfo->column_name));
         col->setType(tango_type);
 
-        if (tango_type == tango::typeNumeric)
+        if (tango_type == xd::typeNumeric)
         {
             col->setWidth(colinfo->column_prec);
         }
@@ -148,14 +148,14 @@ tango::IStructurePtr SqlServerSet::getStructure()
 }
 
 /*
-bool SqlServerSet::modifyStructure(tango::IStructure* struct_config,
-                                   tango::IJob* job)
+bool SqlServerSet::modifyStructure(xd::IStructure* struct_config,
+                                   xd::IJob* job)
 {
     XCM_AUTO_LOCK(m_object_mutex);
 
     unsigned int processed_action_count = 0;
 
-    tango::IStructurePtr current_struct = getStructure();
+    xd::IStructurePtr current_struct = getStructure();
     IStructureInternalPtr s = struct_config;
     std::vector<StructureAction>& actions = s->getStructureActions();
     std::vector<StructureAction>::iterator it;
@@ -189,7 +189,7 @@ bool SqlServerSet::modifyStructure(tango::IStructure* struct_config,
 
     int i;
     int col_count = current_struct->getColumnCount();
-    tango::IColumnInfoPtr colinfo;
+    xd::IColumnInfoPtr colinfo;
     bool found = false;
 
     // handle create
@@ -238,9 +238,9 @@ bool SqlServerSet::modifyStructure(tango::IStructure* struct_config,
 */
 
 
-tango::IIteratorPtr SqlServerSet::createIterator(const std::wstring& columns,
+xd::IIteratorPtr SqlServerSet::createIterator(const std::wstring& columns,
                                                  const std::wstring& order,
-                                                 tango::IJob* job)
+                                                 xd::IJob* job)
 {
     std::wstring query;
     query.reserve(1024);
@@ -261,10 +261,10 @@ tango::IIteratorPtr SqlServerSet::createIterator(const std::wstring& columns,
     iter->m_name = m_tablename;
     iter->init(query);
 
-    return static_cast<tango::IIterator*>(iter);
+    return static_cast<xd::IIterator*>(iter);
 }
 
-tango::rowpos_t SqlServerSet::getRowCount()
+xd::rowpos_t SqlServerSet::getRowCount()
 {
     wchar_t query[1024];
     swprintf(query, 1024, L"SELECT rows FROM sysindexes WHERE id = OBJECT_ID('%ls') AND indid < 2", m_tablename.c_str());
@@ -284,7 +284,7 @@ tango::rowpos_t SqlServerSet::getRowCount()
 
     iter->goFirst();
 
-    tango::rowpos_t row_count;
+    xd::rowpos_t row_count;
     row_count = iter->getInteger(iter->getHandle(L"rows"));
     delete iter;
 
@@ -322,20 +322,20 @@ SqlServerRowInserter::~SqlServerRowInserter()
     m_set->unref();
 }
 
-tango::objhandle_t SqlServerRowInserter::getHandle(const std::wstring& column_name)
+xd::objhandle_t SqlServerRowInserter::getHandle(const std::wstring& column_name)
 {
     std::vector<SqlServerInsertData>::iterator it;
 
     for (it = m_insert_data.begin(); it != m_insert_data.end(); ++it)
     {
         if (!wcscasecmp(it->m_col_name.c_str(), column_name.c_str()))
-            return (tango::objhandle_t)&(*it);
+            return (xd::objhandle_t)&(*it);
     }
 
     return 0;
 }
 
-tango::IColumnInfoPtr SqlServerRowInserter::getInfo(tango::objhandle_t column_handle)
+xd::IColumnInfoPtr SqlServerRowInserter::getInfo(xd::objhandle_t column_handle)
 {
     SqlServerInsertData* data = (SqlServerInsertData*)column_handle;
 
@@ -344,11 +344,11 @@ tango::IColumnInfoPtr SqlServerRowInserter::getInfo(tango::objhandle_t column_ha
         return xcm::null;
     }
 
-    tango::IStructurePtr structure = m_set->getStructure();
+    xd::IStructurePtr structure = m_set->getStructure();
     return structure->getColumnInfo(data->m_col_name);
 }
 
-bool SqlServerRowInserter::putRawPtr(tango::objhandle_t column_handle,
+bool SqlServerRowInserter::putRawPtr(xd::objhandle_t column_handle,
                                      const unsigned char* value,
                                      int length)
 {
@@ -388,7 +388,7 @@ void doubleQuoteCopy(std::string& output, const std::string& input)
     output += '\'';
 }
 
-bool SqlServerRowInserter::putString(tango::objhandle_t column_handle,
+bool SqlServerRowInserter::putString(xd::objhandle_t column_handle,
                                      const std::string& value)
 {
     SqlServerInsertData* data = (SqlServerInsertData*)column_handle;
@@ -403,7 +403,7 @@ bool SqlServerRowInserter::putString(tango::objhandle_t column_handle,
     return true;
 }
 
-bool SqlServerRowInserter::putWideString(tango::objhandle_t column_handle,
+bool SqlServerRowInserter::putWideString(xd::objhandle_t column_handle,
                                          const std::wstring& value)
 {
     SqlServerInsertData* data = (SqlServerInsertData*)column_handle;
@@ -418,7 +418,7 @@ bool SqlServerRowInserter::putWideString(tango::objhandle_t column_handle,
     return true;
 }
 
-bool SqlServerRowInserter::putDouble(tango::objhandle_t column_handle,
+bool SqlServerRowInserter::putDouble(xd::objhandle_t column_handle,
                                      double value)
 {
     SqlServerInsertData* data = (SqlServerInsertData*)column_handle;
@@ -439,7 +439,7 @@ bool SqlServerRowInserter::putDouble(tango::objhandle_t column_handle,
     return true;
 }
 
-bool SqlServerRowInserter::putInteger(tango::objhandle_t column_handle,
+bool SqlServerRowInserter::putInteger(xd::objhandle_t column_handle,
                                       int value)
 {
     SqlServerInsertData* data = (SqlServerInsertData*)column_handle;
@@ -454,7 +454,7 @@ bool SqlServerRowInserter::putInteger(tango::objhandle_t column_handle,
     return true;
 }
 
-bool SqlServerRowInserter::putBoolean(tango::objhandle_t column_handle,
+bool SqlServerRowInserter::putBoolean(xd::objhandle_t column_handle,
                                       bool value)
 {
     SqlServerInsertData* data = (SqlServerInsertData*)column_handle;
@@ -476,8 +476,8 @@ bool SqlServerRowInserter::putBoolean(tango::objhandle_t column_handle,
     return true;
 }
 
-bool SqlServerRowInserter::putDateTime(tango::objhandle_t column_handle,
-                                       tango::datetime_t datetime)
+bool SqlServerRowInserter::putDateTime(xd::objhandle_t column_handle,
+                                       xd::datetime_t datetime)
 {
     SqlServerInsertData* data = (SqlServerInsertData*)column_handle;
 
@@ -492,7 +492,7 @@ bool SqlServerRowInserter::putDateTime(tango::objhandle_t column_handle,
     }
      else
     {
-        tango::DateTime dt(datetime);
+        xd::DateTime dt(datetime);
 
         if (dt.isNull())
         {
@@ -510,7 +510,7 @@ bool SqlServerRowInserter::putDateTime(tango::objhandle_t column_handle,
     return true;
 }
 
-bool SqlServerRowInserter::putNull(tango::objhandle_t column_handle)
+bool SqlServerRowInserter::putNull(xd::objhandle_t column_handle)
 {
     SqlServerInsertData* data = (SqlServerInsertData*)column_handle;
 
@@ -526,7 +526,7 @@ bool SqlServerRowInserter::putNull(tango::objhandle_t column_handle)
 
 bool SqlServerRowInserter::startInsert(const std::wstring& col_list)
 {
-    tango::IStructurePtr s = m_set->getStructure();
+    xd::IStructurePtr s = m_set->getStructure();
 
     std::vector<std::wstring> columns;
     std::vector<std::wstring>::iterator it;
@@ -553,7 +553,7 @@ bool SqlServerRowInserter::startInsert(const std::wstring& col_list)
 
     for (it = columns.begin(); it != columns.end(); ++it)
     {
-        tango::IColumnInfoPtr col_info = s->getColumnInfo(*it);
+        xd::IColumnInfoPtr col_info = s->getColumnInfo(*it);
 
         if (col_info.isNull())
         {

@@ -203,7 +203,7 @@ static wxString buildSelectedColumnExpression(kcl::Grid* grid, bool descending =
 
             // add the column
             std::wstring col_name = towstr(model->getColumnInfo(model_idx)->getName());
-            expr += tango::quoteIdentifierIfNecessary(g_app->getDatabase(), col_name);
+            expr += xd::quoteIdentifierIfNecessary(g_app->getDatabase(), col_name);
 
             // if the descending flag is set, add the
             // descending keyword
@@ -340,13 +340,13 @@ TableDoc::TableDoc()
     m_default_view_created = false;
     m_override_beginedit = false;
     m_text_wrapping = tabledocWrapOff;
-    m_stat_row_count = (tango::rowpos_t)-1;
+    m_stat_row_count = (xd::rowpos_t)-1;
     m_allow_delete_menuid = false;
     m_external_table = -1;
     m_doing_reload = false;
     m_quick_filter_jobid = quickFilterNotPending;
     
-    m_db_type = tango::dbtypeXdnative;
+    m_db_type = xd::dbtypeXdnative;
 }
 
 
@@ -431,11 +431,11 @@ bool TableDoc::canDeleteColumns(std::vector<int>& view_cols)
     
     // we're checking an external set
     
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return false;
 
-    tango::IStructurePtr structure = db->describeTable(m_path);
+    xd::IStructurePtr structure = db->describeTable(m_path);
     if (structure.isNull())
         return false;
     
@@ -452,7 +452,7 @@ bool TableDoc::canDeleteColumns(std::vector<int>& view_cols)
             return false;
         
         // don't allow deletes on static fields in external sets
-        tango::IColumnInfoPtr colinfo;
+        xd::IColumnInfoPtr colinfo;
         colinfo = structure->getColumnInfoByIdx(model_col);
         if (colinfo.isNull() || !colinfo->getCalculated())
             return false;
@@ -1108,7 +1108,7 @@ void TableDoc::onUpdateUI(wxUpdateUIEvent& evt)
             return;
         }
 
-        if ((m_iter->getIteratorFlags() & tango::ifFastRowCount) == 0)
+        if ((m_iter->getIteratorFlags() & xd::ifFastRowCount) == 0)
         {
             evt.Enable(false);
             return;
@@ -1246,8 +1246,8 @@ void TableDoc::onUpdateUI(wxUpdateUIEvent& evt)
 
 
             // for now, limit deleting to calculated fields
-            tango::IStructurePtr structure = m_iter->getStructure();
-            tango::IColumnInfoPtr colinfo;
+            xd::IStructurePtr structure = m_iter->getStructure();
+            xd::IColumnInfoPtr colinfo;
 
             int col_count = m_grid->getColumnCount();
             int i;
@@ -1423,7 +1423,7 @@ void TableDoc::onSaveAsJobFinished(jobs::IJobPtr job)
 
 void TableDoc::onSaveAs(wxCommandEvent& evt)
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return;
 
@@ -1490,7 +1490,7 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
 
 
     bool is_indeterminate = false;
-    tango::IIteratorPtr source_iter = m_iter->clone();
+    xd::IIteratorPtr source_iter = m_iter->clone();
     if (source_iter.isOk())
     {
         source_iter->goFirst();
@@ -1498,8 +1498,8 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
         /*
         TODO: reimplement
         // determine if the copy job's progress is indeterminate or not
-        tango::IFixedLengthDefinitionPtr fset = source_iter->getSet();
-        tango::IDelimitedTextSetPtr dset = source_iter->getSet();
+        xd::IFixedLengthDefinitionPtr fset = source_iter->getSet();
+        xd::IDelimitedTextSetPtr dset = source_iter->getSet();
         if ((fset.isOk() && !fset->isLineDelimited()) || dset.isOk())
             is_indeterminate = true;
         */
@@ -1779,11 +1779,11 @@ void TableDoc::onDoReloadRefresh(wxCommandEvent& evt)
     }
      else if (m_source_mimetype == wxT("application/rss+xml"))
     {
-        tango::IDatabasePtr db = g_app->getDatabase();
+        xd::IDatabasePtr db = g_app->getDatabase();
         if (db.isNull())
             return;
 
-        tango::IFileInfoPtr old_file_info = db->getFileInfo(m_path);
+        xd::IFileInfoPtr old_file_info = db->getFileInfo(m_path);
         std::wstring old_set_id = old_file_info.isOk() ? old_file_info->getObjectId() : L"";
         
 
@@ -1801,7 +1801,7 @@ void TableDoc::onDoReloadRefresh(wxCommandEvent& evt)
         if (!parser.convertToTable(output_path))
             return;
 
-        tango::IFileInfoPtr new_file_info = db->getFileInfo(output_path);
+        xd::IFileInfoPtr new_file_info = db->getFileInfo(output_path);
         std::wstring new_set_id = new_file_info.isOk() ? new_file_info->getObjectId() : L"";
 
         if (old_set_id.length() > 0 && new_set_id.length() > 0)
@@ -1925,7 +1925,7 @@ void TableDoc::onPrint(wxCommandEvent& evt)
 
 void TableDoc::onShareUrlRequested(wxString& url)
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
     {
         url = wxT("Invalid database");
@@ -1937,7 +1937,7 @@ void TableDoc::onShareUrlRequested(wxString& url)
 
     if (g_app->getDbDriver() != L"xdclient")
     {
-        tango::IDatabasePtr mount_db = db->getMountDatabase(path);
+        xd::IDatabasePtr mount_db = db->getMountDatabase(path);
         if (mount_db.isNull())
         {
             url = wxT("Table is not stored in a centrally accessible location");
@@ -1957,8 +1957,8 @@ void TableDoc::onShareUrlRequested(wxString& url)
     std::wstring dburl;
 
 
-    tango::IAttributesPtr attr = db->getAttributes();
-    dburl = attr->getStringAttribute(tango::dbattrDatabaseUrl);
+    xd::IAttributesPtr attr = db->getAttributes();
+    dburl = attr->getStringAttribute(xd::dbattrDatabaseUrl);
 
     if (dburl.length() == 0)
     {
@@ -2050,10 +2050,10 @@ void TableDoc::updateStatusSelectionSum()
     // below;  note we can use the status bar's cached row count
     // value here to save some time, as fetching the row count from
     // the database can take relatively long (even if the data set has
-    // tango::sfFastRowCount)
-    tango::rowpos_t row_count;
+    // xd::sfFastRowCount)
+    xd::rowpos_t row_count;
     
-    if (m_stat_row_count != (tango::rowpos_t)-1)
+    if (m_stat_row_count != (xd::rowpos_t)-1)
         row_count = m_stat_row_count;
      else
         row_count = m_grid->getRowCount();
@@ -2170,17 +2170,17 @@ void TableDoc::updateStatusBar(bool row_count_update)
 
     if (row_count_update)
     {
-        if (m_iter->getIteratorFlags() & tango::ifFastRowCount)
+        if (m_iter->getIteratorFlags() & xd::ifFastRowCount)
         {
             m_stat_row_count = m_iter->getRowCount();
         }
          else
         {
-            m_stat_row_count = (tango::rowpos_t)-1;
+            m_stat_row_count = (xd::rowpos_t)-1;
         }
     }
         
-    if (m_stat_row_count != (tango::rowpos_t)-1)
+    if (m_stat_row_count != (xd::rowpos_t)-1)
     {
         position_text = wxString::Format(_("Position: %s"), currow_text.c_str());
         reccount_text = wxString::Format(_("Record Count: %s"),
@@ -2261,16 +2261,16 @@ std::wstring TableDoc::getBrowsePath()
 
 
 bool TableDoc::open(const std::wstring& _path,
-                    tango::IIteratorPtr optional_iterator)
+                    xd::IIteratorPtr optional_iterator)
 {
     std::wstring path = _path;
 
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return false;
 
-    tango::IFileInfoPtr file_info = db->getFileInfo(path);
-    if (file_info.isNull() || file_info->getType() != tango::filetypeTable)
+    xd::IFileInfoPtr file_info = db->getFileInfo(path);
+    if (file_info.isNull() || file_info->getType() != xd::filetypeTable)
         return false;
 
     // make sure we know the database type
@@ -2300,8 +2300,8 @@ bool TableDoc::open(const std::wstring& _path,
      else
     {
 
-        tango::IAttributesPtr attr = db->getAttributes();
-        std::wstring url = attr->getStringAttribute(tango::dbattrDatabaseUrl);
+        xd::IAttributesPtr attr = db->getAttributes();
+        std::wstring url = attr->getStringAttribute(xd::dbattrDatabaseUrl);
         if (url.length() > 0)
         {
             // project is a remote project
@@ -2313,12 +2313,12 @@ bool TableDoc::open(const std::wstring& _path,
             std::wstring mount_root = getMountRoot(db, path);
 
             std::wstring url;
-            tango::IDatabasePtr mount_db = db->getMountDatabase(mount_root);
+            xd::IDatabasePtr mount_db = db->getMountDatabase(mount_root);
             if (mount_db.isOk())
             {
                 attr = mount_db->getAttributes();
                 if (attr)
-                    url = attr->getStringAttribute(tango::dbattrDatabaseUrl);
+                    url = attr->getStringAttribute(xd::dbattrDatabaseUrl);
             }
 
             if (url.length() > 0)
@@ -2352,7 +2352,7 @@ bool TableDoc::open(const std::wstring& _path,
         m_model = TableDocMgr::loadModel(file_info->getObjectId());
 
 
-    tango::IIteratorPtr browse_iter;
+    xd::IIteratorPtr browse_iter;
 
     if (optional_iterator.isOk())
     {
@@ -2371,9 +2371,9 @@ bool TableDoc::open(const std::wstring& _path,
     return true;
 }
 
-bool TableDoc::setBrowseSet(const std::wstring& path, tango::IIteratorPtr iter)
+bool TableDoc::setBrowseSet(const std::wstring& path, xd::IIteratorPtr iter)
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return false;
 
@@ -2386,7 +2386,7 @@ bool TableDoc::setBrowseSet(const std::wstring& path, tango::IIteratorPtr iter)
      else
     {
         // create a default iterator
-        tango::IIteratorPtr iter = db->query(m_browse_path, L"", L"", L"", NULL);
+        xd::IIteratorPtr iter = db->query(m_browse_path, L"", L"", L"", NULL);
         if (iter.isNull())
             return false;
 
@@ -2740,7 +2740,7 @@ wxWindow* TableDoc::getDocumentWindow()
     return static_cast<wxWindow*>(this);
 }
 
-void TableDoc::setIterator(tango::IIteratorPtr iter, bool go_first)
+void TableDoc::setIterator(xd::IIteratorPtr iter, bool go_first)
 {
     // save the cursor column and column selections so
     // we can restore them after we set the iterator
@@ -2759,11 +2759,11 @@ void TableDoc::setIterator(tango::IIteratorPtr iter, bool go_first)
     m_external_table = -1;
 
     m_iter = iter;
-    if (m_iter->getIteratorFlags() & tango::ifForwardOnly)
+    if (m_iter->getIteratorFlags() & xd::ifForwardOnly)
     {
         // if the iterator is forward-only, try to turn on
         // tango's backward scroll row cache
-        m_iter->setIteratorFlags(tango::ifReverseRowCache, tango::ifReverseRowCache);
+        m_iter->setIteratorFlags(xd::ifReverseRowCache, xd::ifReverseRowCache);
     }
     
     if (go_first)
@@ -2794,7 +2794,7 @@ void TableDoc::setIterator(tango::IIteratorPtr iter, bool go_first)
         // will be flushed later on
 
         ITableDocViewPtr defview = m_model->createViewObject();
-        tango::IStructurePtr s = m_iter->getStructure();
+        xd::IStructurePtr s = m_iter->getStructure();
         initializeDefaultView(defview, s);
         defview->setDescription(towstr(_("Default View")));
         setActiveView(defview);
@@ -2855,7 +2855,7 @@ kcl::Grid* TableDoc::getGrid()
     return m_grid;
 }
 
-tango::IIteratorPtr TableDoc::getIterator()
+xd::IIteratorPtr TableDoc::getIterator()
 {
     return m_iter;
 }
@@ -2952,21 +2952,21 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
 {
     // try to find an existing calculated field which contains
     // the calculated field expression
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return;
 
-    tango::IRelationSchemaPtr rels = db;
+    xd::IRelationSchemaPtr rels = db;
     if (rels.isNull())
         return;
 
-    tango::IStructurePtr s = db->describeTable(m_path);
+    xd::IStructurePtr s = db->describeTable(m_path);
     if (s.isNull())
         return;
 
     int i, col_count = s->getColumnCount();
 
-    tango::IColumnInfoPtr colinfo;
+    xd::IColumnInfoPtr colinfo;
     for (i = 0; i < col_count; ++i)
     {
         colinfo = s->getColumnInfoByIdx(i);
@@ -2994,10 +2994,10 @@ void TableDoc::insertChildColumn(int insert_pos, const wxString& text)
 
 
     // now try to find the set that has that column
-    tango::IStructurePtr right_structure;
+    xd::IStructurePtr right_structure;
 
-    tango::IRelationEnumPtr rel_enum = rels->getRelationEnum(m_path);
-    tango::IRelationPtr rel;
+    xd::IRelationEnumPtr rel_enum = rels->getRelationEnum(m_path);
+    xd::IRelationPtr rel;
     int rel_count = (int)rel_enum->size();
 
     for (i = 0; i < rel_count; ++i)
@@ -3107,7 +3107,7 @@ void TableDoc::onFilterJobFinished(jobs::IJobPtr job)
         return;
     }
 
-    tango::IIteratorPtr iter = job->getResultObject();
+    xd::IIteratorPtr iter = job->getResultObject();
     if (iter.isOk())
     {
         kl::JsonNode params_node;
@@ -3179,7 +3179,7 @@ void TableDoc::onSortJobFinished(jobs::IJobPtr query_job)
         setGroupBreak(wxT(""));
 
     // set the browse set and update the status bar
-    tango::IIteratorPtr iter = query_job->getResultObject();
+    xd::IIteratorPtr iter = query_job->getResultObject();
     if (iter.isOk())
         setBrowseSet(iter->getTable(), iter);
 
@@ -3373,10 +3373,10 @@ static bool getMenuItemExpr(const wxString& field,
                             const wxString& value,
                             wxString& result)
 {
-    wxString lhs = tango::quoteIdentifierIfNecessary(g_app->getDatabase(), towstr(field));
+    wxString lhs = xd::quoteIdentifierIfNecessary(g_app->getDatabase(), towstr(field));
     wxString rhs = value;
 
-    if (type == tango::typeBoolean)
+    if (type == xd::typeBoolean)
     {
         if (oper == ID_ExprMenuItem_Equal)
         {
@@ -3395,7 +3395,7 @@ static bool getMenuItemExpr(const wxString& field,
     }
 
     // handle null dates with special expression
-    if ((type == tango::typeDate || type == tango::typeDateTime) &&
+    if ((type == xd::typeDate || type == xd::typeDateTime) &&
          value == wxT("null"))
     {
         if (oper == ID_ExprMenuItem_Equal)
@@ -3417,7 +3417,7 @@ static bool getMenuItemExpr(const wxString& field,
 
     // quote character field values; handle special case for LIKE 
     // with character field
-    if (type == tango::typeCharacter || type == tango::typeWideCharacter)
+    if (type == xd::typeCharacter || type == xd::typeWideCharacter)
     {
         // double single quotes
         rhs = doubleQuote(rhs, L'\'');
@@ -3519,7 +3519,7 @@ static wxMenu* createViewsMenu(ITableDocViewEnumPtr views,
     return menu;
 }
 
-static wxMenu* createIndexesMenu(tango::IIndexInfoEnumPtr indexes,
+static wxMenu* createIndexesMenu(xd::IIndexInfoEnumPtr indexes,
                                  const wxString sort_order_expr,
                                  int base_id)
 {
@@ -3535,7 +3535,7 @@ static wxMenu* createIndexesMenu(tango::IIndexInfoEnumPtr indexes,
     int i, count = indexes->size();
     for (i = 0; i < count; ++i)
     {
-        tango::IIndexInfoPtr index = indexes->getItem(i);
+        xd::IIndexInfoPtr index = indexes->getItem(i);
         wxString index_tag = index->getTag();
         wxString index_expr = index->getExpression();
         
@@ -3610,11 +3610,11 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
     wxString colname = grid_colinfo->getName();
 
     //  get column type from the iterator
-    tango::objhandle_t colhandle = m_iter->getHandle(towstr(colname));
+    xd::objhandle_t colhandle = m_iter->getHandle(towstr(colname));
     if (!colhandle)
         return;
 
-    tango::IColumnInfoPtr colinfo = m_iter->getInfo(colhandle);
+    xd::IColumnInfoPtr colinfo = m_iter->getInfo(colhandle);
     if (colinfo.isNull())
         return;
 
@@ -3627,16 +3627,16 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
 
     switch (coltype)
     {
-        case tango::typeWideCharacter:
-        case tango::typeCharacter:
+        case xd::typeWideCharacter:
+        case xd::typeCharacter:
         {
             // we'll handle quoting in the menu expression function
             value = tango_grid_model->getCellString(row, model_col);
             break;
         }
 
-        case tango::typeDouble:
-        case tango::typeNumeric:
+        case xd::typeDouble:
+        case xd::typeNumeric:
         {
             double d = tango_grid_model->getCellDouble(row, model_col);
             value = wxString::Format(wxT("%.*f"), colinfo->getScale(), d);
@@ -3644,34 +3644,34 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
         }
         break;
 
-        case tango::typeInteger:
+        case xd::typeInteger:
         {
             int i = tango_grid_model->getCellInteger(row, model_col);
             value = wxString::Format(wxT("%d"), i);
         }
         break;
 
-        case tango::typeDate:
+        case xd::typeDate:
         {   
-            tango::datetime_t d = tango_grid_model->getCellDateTime(row, model_col);
+            xd::datetime_t d = tango_grid_model->getCellDateTime(row, model_col);
             if (d == 0)
                 value = wxT("null");
             else
             {
-                tango::DateTime dt = d;
+                xd::DateTime dt = d;
                         
                 switch (m_db_type)
                 {
                     default:
-                    case tango::dbtypeXdnative:
+                    case xd::dbtypeXdnative:
                         value = wxString::Format(wxT("DATE('%04d-%02d-%02d')"),
                                                  dt.getYear(), dt.getMonth(), dt.getDay());
                         break;
-                    case tango::dbtypeSqlServer:
+                    case xd::dbtypeSqlServer:
                         value = wxString::Format(wxT("{d '%04d-%02d-%02d' }"),
                                                  dt.getYear(), dt.getMonth(), dt.getDay());
                         break;
-                    case tango::dbtypeOracle:
+                    case xd::dbtypeOracle:
                         value = wxString::Format(wxT("TO_DATE('%04d-%02d-%02d', 'YYYY-MM-DD')"),
                                                  dt.getYear(), dt.getMonth(), dt.getDay());
                         break;
@@ -3681,29 +3681,29 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
             break;
         }
 
-        case tango::typeDateTime:
+        case xd::typeDateTime:
         {
-            tango::datetime_t d = tango_grid_model->getCellDateTime(row, model_col);
+            xd::datetime_t d = tango_grid_model->getCellDateTime(row, model_col);
             if (d == 0)
                 value = wxT("null");
             else
             {
-                tango::DateTime dt = d;
+                xd::DateTime dt = d;
                  
                 switch (m_db_type)
                 {
                     default:
-                    case tango::dbtypeXdnative:
+                    case xd::dbtypeXdnative:
                         value = wxString::Format(wxT("DATE('%04d-%02d-%02d %02d:%02d:%02d')"),
                                                  dt.getYear(), dt.getMonth(), dt.getDay(),
                                                  dt.getHour(), dt.getMinute(), dt.getSecond());
                         break;
-                    case tango::dbtypeSqlServer:
+                    case xd::dbtypeSqlServer:
                         value = wxString::Format(wxT("{ts '%04d-%02d-%02d %02d:%02d:%02d' }"),
                                                  dt.getYear(), dt.getMonth(), dt.getDay(),
                                                  dt.getHour(), dt.getMinute(), dt.getSecond());
                         break;
-                    case tango::dbtypeOracle:
+                    case xd::dbtypeOracle:
                         value = wxString::Format(wxT("TO_DATE('%04d-%02d-%02d %02d:%02d:%02d', 'YYYY-MM-DD HH24:MI:SS')"),
                                                  dt.getYear(), dt.getMonth(), dt.getDay(),
                                                  dt.getHour(), dt.getMinute(), dt.getSecond());
@@ -3714,17 +3714,17 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
             break;
         }
 
-        case tango::typeBoolean:
+        case xd::typeBoolean:
         {
             bool bool_value = tango_grid_model->getCellBoolean(row, model_col);        
             switch (m_db_type)
             {            
                 default:
-                case tango::dbtypeXdnative:
+                case xd::dbtypeXdnative:
                     value = bool_value ? wxT("true") : wxT("false");
                     break;
 
-                case tango::dbtypeSqlServer:
+                case xd::dbtypeSqlServer:
                     value = bool_value ? wxT("1") : wxT("0");
                     break;
             }
@@ -3957,8 +3957,8 @@ void TableDoc::onGridColumnRightClick(kcl::GridEvent& evt)
         }
     }
     
-    tango::IDatabasePtr db = g_app->getDatabase();
-    tango::IIndexInfoEnumPtr index_enum = db->getIndexEnum(m_path);
+    xd::IDatabasePtr db = g_app->getDatabase();
+    xd::IIndexInfoEnumPtr index_enum = db->getIndexEnum(m_path);
 
     wxMenu menuPopup;
 
@@ -4024,7 +4024,7 @@ void TableDoc::onGridColumnRightClick(kcl::GridEvent& evt)
         }
 
 
-        tango::IIndexInfoEnumPtr indexes;
+        xd::IIndexInfoEnumPtr indexes;
         indexes = db->getIndexEnum(m_path);
         
         if (i >= (int)(indexes->size()+1))
@@ -4036,7 +4036,7 @@ void TableDoc::onGridColumnRightClick(kcl::GridEvent& evt)
         {
             // user clicked on one of the indexes;
             // set that index as the sort order
-            tango::IIndexInfoPtr index = indexes->getItem(i-1);
+            xd::IIndexInfoPtr index = indexes->getItem(i-1);
             setSortOrder(index->getExpression());
         }
     }
@@ -4177,13 +4177,13 @@ static void setColumnProps(wxColor* fill_color,
 
 void TableDoc::resetChildWindows()
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
 
-    tango::IRelationSchemaPtr rels = db;
+    xd::IRelationSchemaPtr rels = db;
     if (rels.isNull())
         return;
 
-    tango::IRelationEnumPtr rel_enum;
+    xd::IRelationEnumPtr rel_enum;
     rel_enum = rels->getRelationEnum(m_path);
 
     if (rel_enum->size() == 0)
@@ -4192,7 +4192,7 @@ void TableDoc::resetChildWindows()
     wxString site_name;
     IDocumentSitePtr site;
     ITableDocPtr table_doc;
-    tango::IRelationPtr rel;
+    xd::IRelationPtr rel;
     
     size_t i,rel_count = rel_enum->size();
 
@@ -4229,8 +4229,8 @@ void TableDoc::resetChildWindows()
 static wxString generateContextSyncMarkExpression(
                                 const wxString& left_expr,
                                 const wxString& right_expr,
-                                tango::IIteratorPtr& left_iter,
-                                tango::IIteratorPtr& right_iter)
+                                xd::IIteratorPtr& left_iter,
+                                xd::IIteratorPtr& right_iter)
 {
     std::vector<wxString> left_parts;
     std::vector<wxString> right_parts;
@@ -4262,46 +4262,46 @@ static wxString generateContextSyncMarkExpression(
     {
         wxString part, value;
         
-        tango::objhandle_t lh = left_iter->getHandle(towstr(left_parts[idx]));
+        xd::objhandle_t lh = left_iter->getHandle(towstr(left_parts[idx]));
         idx++;
         if (!lh)
             return "";
         
-        tango::objhandle_t rh = right_iter->getHandle(towstr(*it));
+        xd::objhandle_t rh = right_iter->getHandle(towstr(*it));
         if (!rh)
             return "";
         
-        part = tango::quoteIdentifierIfNecessary(g_app->getDatabase(), towstr(*it));
+        part = xd::quoteIdentifierIfNecessary(g_app->getDatabase(), towstr(*it));
         part += "=";
         
-        tango::IColumnInfoPtr info = right_iter->getInfo(rh);
+        xd::IColumnInfoPtr info = right_iter->getInfo(rh);
         if (info.isNull())
             return "";
             
         switch (info->getType())
         {
-            case tango::typeCharacter:
-            case tango::typeWideCharacter:
+            case xd::typeCharacter:
+            case xd::typeWideCharacter:
                 part += "'";
                 part += doubleQuote(left_iter->getWideString(lh), '\'');
                 part += "'";
                 break;
             
-            case tango::typeInteger:
+            case xd::typeInteger:
                 part += wxString::Format("%d", left_iter->getInteger(lh));
                 break;
                 
-            case tango::typeNumeric:
-            case tango::typeDouble:
+            case xd::typeNumeric:
+            case xd::typeDouble:
                 value = wxString::Format("%.*f", info->getScale(), left_iter->getDouble(lh));
                 value.Replace(",", ".");
                 part += value;
                 break;
                 
-            case tango::typeDate:
+            case xd::typeDate:
             {
-                tango::datetime_t dtt = left_iter->getDateTime(lh);
-                tango::DateTime dt;
+                xd::datetime_t dtt = left_iter->getDateTime(lh);
+                xd::DateTime dt;
                 dt.setDateTime(dtt);
 
                 part += wxString::Format(wxT("{d '%04d-%02d-%02d'}"),
@@ -4309,10 +4309,10 @@ static wxString generateContextSyncMarkExpression(
                 break;
             }
             
-            case tango::typeDateTime:
+            case xd::typeDateTime:
             {
-                tango::datetime_t dtt = left_iter->getDateTime(lh);
-                tango::DateTime dt;
+                xd::datetime_t dtt = left_iter->getDateTime(lh);
+                xd::DateTime dt;
                 dt.setDateTime(dtt);
 
                 part += wxString::Format(wxT("{ts '%04d-%02d-%02d %02d:%02d:%02d' }"),
@@ -4335,11 +4335,11 @@ void TableDoc::updateChildWindows()
     if (m_relationship_sync == tabledocRelationshipSyncNone)
         return;
 
-    tango::IRelationSchemaPtr rels = g_app->getDatabase();
+    xd::IRelationSchemaPtr rels = g_app->getDatabase();
     if (rels.isNull())
         return;
 
-    tango::IRelationEnumPtr rel_enum;
+    xd::IRelationEnumPtr rel_enum;
     rel_enum = rels->getRelationEnum(m_path);
 
     if (rel_enum->size() == 0)
@@ -4360,7 +4360,7 @@ void TableDoc::updateChildWindows()
     wxString site_name;
     IDocumentSitePtr site;
     ITableDocPtr table_doc;
-    tango::IRelationPtr rel;
+    xd::IRelationPtr rel;
     size_t i, rel_count = rel_enum->size();
 
 
@@ -4421,13 +4421,13 @@ void TableDoc::updateChildWindows()
         table_doc = site->getDocument();
         if (table_doc.isOk())
         {
-            tango::IIteratorRelationPtr iter_r = m_iter;
+            xd::IIteratorRelationPtr iter_r = m_iter;
             if (iter_r.isNull())
                 return;
                     
             if (m_relationship_sync == tabledocRelationshipSyncFilter)
             {       
-                tango::IIteratorPtr right_iter = iter_r->getFilteredChildIterator(rel);
+                xd::IIteratorPtr right_iter = iter_r->getFilteredChildIterator(rel);
                 if (right_iter)
                 {
                     table_doc->setIterator(right_iter);
@@ -4443,7 +4443,7 @@ void TableDoc::updateChildWindows()
             }
              else if (m_relationship_sync == tabledocRelationshipSyncSeek)
             {
-                tango::IIteratorPtr right_iter = iter_r->getChildIterator(rel);
+                xd::IIteratorPtr right_iter = iter_r->getChildIterator(rel);
                 if (right_iter)
                 {
                     wxString expr = generateContextSyncMarkExpression(
@@ -4605,11 +4605,11 @@ void TableDoc::onGridNeedTooltipText(kcl::GridEvent& event)
 
     if (row == -1)
     {
-        tango::objhandle_t colhandle = m_iter->getHandle(towstr(colname));
+        xd::objhandle_t colhandle = m_iter->getHandle(towstr(colname));
         if (!colhandle)
             return;
 
-        tango::IColumnInfoPtr colinfo = m_iter->getInfo(colhandle);
+        xd::IColumnInfoPtr colinfo = m_iter->getInfo(colhandle);
         if (colinfo.isNull())
             return;
 
@@ -4621,22 +4621,22 @@ void TableDoc::onGridNeedTooltipText(kcl::GridEvent& event)
     }
      else
     {
-        tango::objhandle_t colhandle = m_iter->getHandle(towstr(colname));
+        xd::objhandle_t colhandle = m_iter->getHandle(towstr(colname));
         if (!colhandle)
             return;
 
-        tango::IColumnInfoPtr colinfo = m_iter->getInfo(colhandle);
+        xd::IColumnInfoPtr colinfo = m_iter->getInfo(colhandle);
         if (colinfo.isNull())
             return;
 
         int coltype = colinfo->getType();
 
-        if (coltype == tango::typeDate ||
-            coltype == tango::typeDateTime)
+        if (coltype == xd::typeDate ||
+            coltype == xd::typeDateTime)
         {
             const wxChar* date_rep = wxT("%#c");
 
-            if (coltype == tango::typeDate)
+            if (coltype == xd::typeDate)
             {
                 date_rep = wxT("%#x");
             }
@@ -4648,10 +4648,10 @@ void TableDoc::onGridNeedTooltipText(kcl::GridEvent& event)
                 return;
             }
 
-            tango::datetime_t dt = m_iter->getDateTime(colhandle);
+            xd::datetime_t dt = m_iter->getDateTime(colhandle);
             if (dt != 0)
             {
-                tango::DateTime d(dt);
+                xd::DateTime d(dt);
 
                 if (d.getYear() < 1900 || d.getYear() > 3000 ||
                     d.getHour() < 0 || d.getHour() > 23)
@@ -4718,7 +4718,7 @@ void TableDoc::onGridBeginEdit(kcl::GridEvent& evt)
 
 std::wstring TableDoc::getWhereExpressionForRow(int row)
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return L"";
 
@@ -4732,7 +4732,7 @@ std::wstring TableDoc::getWhereExpressionForRow(int row)
 
     std::wstring primary_key;
 
-    tango::IFileInfoPtr info = db->getFileInfo(m_path);
+    xd::IFileInfoPtr info = db->getFileInfo(m_path);
     if (info.isOk())
     {
         primary_key = info->getPrimaryKey();
@@ -4744,7 +4744,7 @@ std::wstring TableDoc::getWhereExpressionForRow(int row)
     if (primary_key.empty() && db_driver != L"xdnative" && db_driver != L"xdclient" && db_driver != L"xdcommon")
         return L"";
 
-    tango::rowid_t rowid = tango_grid_model->getRowId(row);
+    xd::rowid_t rowid = tango_grid_model->getRowId(row);
     if ((db_driver == L"xdnative" || db_driver == L"xdclient" || db_driver == L"xdcommon") && rowid == 0)
         return L"";
 
@@ -4771,7 +4771,7 @@ std::wstring TableDoc::getWhereExpressionForRow(int row)
         {
             kl::trim(*it);
 
-            tango::objhandle_t handle = getTemporaryHandle(*it);
+            xd::objhandle_t handle = getTemporaryHandle(*it);
             if (!handle)
                 return L"";
             
@@ -4779,19 +4779,19 @@ std::wstring TableDoc::getWhereExpressionForRow(int row)
             
             std::wstring piece;
             piece = L"(";
-            piece += tango::quoteIdentifierIfNecessary(db, *it);
+            piece += xd::quoteIdentifierIfNecessary(db, *it);
             piece += L"=";
             
             switch (type)
             {
-                case tango::typeCharacter:
-                case tango::typeWideCharacter:
+                case xd::typeCharacter:
+                case xd::typeWideCharacter:
                     piece += L"'";
                     piece += m_iter->getWideString(handle);
                     piece += L"'";
                     break;
                     
-                case tango::typeInteger:
+                case xd::typeInteger:
                 {
                     int i = m_iter->getInteger(handle);
                     wxString str = wxString::Format(wxT("%d"), i);
@@ -4799,10 +4799,10 @@ std::wstring TableDoc::getWhereExpressionForRow(int row)
                 }
                 break;
                 
-                case tango::typeNumeric:
-                case tango::typeDouble:
+                case xd::typeNumeric:
+                case xd::typeDouble:
                 {
-                    tango::IColumnInfoPtr info = m_iter->getInfo(handle);
+                    xd::IColumnInfoPtr info = m_iter->getInfo(handle);
                     if (info.isNull())
                         return L"";
                     double d = m_iter->getDouble(handle);
@@ -4812,10 +4812,10 @@ std::wstring TableDoc::getWhereExpressionForRow(int row)
                 }
                 break;
                 
-                case tango::typeDate:
+                case xd::typeDate:
                 {
-                    tango::datetime_t dtt = m_iter->getDateTime(handle);
-                    tango::DateTime dt;
+                    xd::datetime_t dtt = m_iter->getDateTime(handle);
+                    xd::DateTime dt;
                     dt.setDateTime(dtt);
                     wxString str;
                     
@@ -4869,7 +4869,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
     if (model_col == -1)
         return;
 
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     kcl::IModelPtr model = m_grid->getModel();
 
     ITangoGridModelPtr tango_grid_model = model;
@@ -4882,7 +4882,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
         
     std::wstring primary_key;
 
-    tango::IFileInfoPtr info = db->getFileInfo(m_path);
+    xd::IFileInfoPtr info = db->getFileInfo(m_path);
     if (info.isOk())
     {
         primary_key = info->getPrimaryKey();
@@ -4901,7 +4901,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
 
     wxString col_name = model_colinfo->getName();
 
-    tango::rowid_t rowid = tango_grid_model->getRowId(m_grid->getCursorRow());
+    xd::rowid_t rowid = tango_grid_model->getRowId(m_grid->getCursorRow());
     if ((db_driver == L"xdnative" || db_driver == wxT("xdclient")) && rowid == 0)
         return;
 
@@ -4928,13 +4928,13 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
             wxString s = t.GetNextToken();
             s.Trim();
             s.Trim(false);
-            prikeys.push_back(tango::dequoteIdentifier(db, towstr(s)));
+            prikeys.push_back(xd::dequoteIdentifier(db, towstr(s)));
         }
         
         std::vector<wxString>::iterator it;
         for (it = prikeys.begin(); it != prikeys.end(); ++it)
         {
-            tango::objhandle_t handle = getTemporaryHandle(*it);
+            xd::objhandle_t handle = getTemporaryHandle(*it);
             if (!handle)
                 return;
             
@@ -4942,19 +4942,19 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
             
             std::wstring piece;
             piece = L"(";
-            piece += tango::quoteIdentifierIfNecessary(db, towstr(*it));
+            piece += xd::quoteIdentifierIfNecessary(db, towstr(*it));
             piece += L"=";
             
             switch (type)
             {
-                case tango::typeCharacter:
-                case tango::typeWideCharacter:
+                case xd::typeCharacter:
+                case xd::typeWideCharacter:
                     piece += L"'";
                     piece += m_iter->getWideString(handle);
                     piece += L"'";
                     break;
                     
-                case tango::typeInteger:
+                case xd::typeInteger:
                 {
                     int i = m_iter->getInteger(handle);
                     wxString str = wxString::Format(wxT("%d"), i);
@@ -4962,10 +4962,10 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
                 }
                 break;
                 
-                case tango::typeNumeric:
-                case tango::typeDouble:
+                case xd::typeNumeric:
+                case xd::typeDouble:
                 {
-                    tango::IColumnInfoPtr info = m_iter->getInfo(handle);
+                    xd::IColumnInfoPtr info = m_iter->getInfo(handle);
                     if (info.isNull())
                         return;
                     double d = m_iter->getDouble(handle);
@@ -4975,10 +4975,10 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
                 }
                 break;
                 
-                case tango::typeDate:
+                case xd::typeDate:
                 {
-                    tango::datetime_t dtt = m_iter->getDateTime(handle);
-                    tango::DateTime dt;
+                    xd::datetime_t dtt = m_iter->getDateTime(handle);
+                    xd::DateTime dt;
                     dt.setDateTime(dtt);
                     wxString str;
                     
@@ -5009,28 +5009,28 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
     }
 
 
-    tango::IStructurePtr structure = db->describeTable(m_path);
+    xd::IStructurePtr structure = db->describeTable(m_path);
     if (structure.isNull())
         return;
 
-    tango::IColumnInfoPtr col_info = structure->getColumnInfo(towstr(col_name));
+    xd::IColumnInfoPtr col_info = structure->getColumnInfo(towstr(col_name));
     if (col_info.isNull())
         return;
 
 
-    wxString quoted_col_name = tango::quoteIdentifierIfNecessary(db, towstr(col_name));
+    wxString quoted_col_name = xd::quoteIdentifierIfNecessary(db, towstr(col_name));
 
 
     // update_info is used by ICacheRowUpdate below, however only
     // iterators that employ a row cache need this
-    tango::ColumnUpdateInfo update_info;
+    xd::ColumnUpdateInfo update_info;
     update_info.null = false;
 
     wxString str;
     switch (col_info->getType())
     {
-        case tango::typeCharacter:
-        case tango::typeWideCharacter:
+        case xd::typeCharacter:
+        case xd::typeWideCharacter:
         {
             // fill out update_info for ICacheRowUpdate below
             update_info.wstr_val = towstr(evt.GetString());
@@ -5059,7 +5059,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
             break;
         }
 
-        case tango::typeInteger:
+        case xd::typeInteger:
             // fill out update_info for ICacheRowUpdate below
             update_info.int_val = evt.GetInt();
 
@@ -5067,8 +5067,8 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
                                                  evt.GetInt());
             break;
             
-        case tango::typeDouble:
-        case tango::typeNumeric:
+        case xd::typeDouble:
+        case xd::typeNumeric:
         {
             // fill out update_info for ICacheRowUpdate below
             update_info.dbl_val = evt.GetDouble();
@@ -5083,7 +5083,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
         }
         break;
         
-        case tango::typeBoolean:
+        case xd::typeBoolean:
             // fill out update_info for ICacheRowUpdate below
             update_info.bool_val = evt.GetBoolean();
 
@@ -5100,8 +5100,8 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
             
             break;
             
-        case tango::typeDateTime:
-        case tango::typeDate:
+        case xd::typeDateTime:
+        case xd::typeDate:
         {
             int y, m, d, hh, mm, ss;
             bool valid = Locale::parseDateTime(evt.GetString(),
@@ -5125,7 +5125,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
 
             if (hh == -1 || mm == -1)
             {
-                update_info.date_val = tango::DateTime(y, m, d);
+                update_info.date_val = xd::DateTime(y, m, d);
                 
                 
                 if (getDbDriver() == L"xdoracle")
@@ -5143,7 +5143,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
             }
              else
             {
-                update_info.date_val = tango::DateTime(y, m, d, hh, mm, ss);
+                update_info.date_val = xd::DateTime(y, m, d, hh, mm, ss);
                 
                 if (getDbDriver() == L"xdoracle")
                 {
@@ -5169,22 +5169,22 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
 
 
     std::wstring cmd = L"UPDATE ";
-    cmd += tango::quoteIdentifierIfNecessary(db, formatSqlPath(m_path));
+    cmd += xd::quoteIdentifierIfNecessary(db, formatSqlPath(m_path));
     cmd += L" SET ";
     cmd += towstr(str);
     cmd += where_str;
             
     xcm::IObjectPtr result_obj;
     if (g_app->getDatabase()->execute(cmd,
-                                      tango::sqlPassThrough,
+                                      xd::sqlPassThrough,
                                       result_obj,
                                       NULL))
     {
         // some iterators are forward-only and cache the data, so that
         // the grid view can be scrolled bidirectionally.  If this is the
         // case, update the iterators cache.
-        tango::ICacheRowUpdatePtr update = m_iter;
-        tango::objhandle_t handle = getTemporaryHandle(col_name);
+        xd::ICacheRowUpdatePtr update = m_iter;
+        xd::objhandle_t handle = getTemporaryHandle(col_name);
         if (update.isOk() && handle)
         {
             update_info.handle = handle;
@@ -5217,7 +5217,7 @@ void TableDoc::onGridPreGhostRowInsert(kcl::GridEvent& evt)
         return;
     }
 
-    tango::IRowInserterPtr inserter = g_app->getDatabase()->bulkInsert(m_path);
+    xd::IRowInserterPtr inserter = g_app->getDatabase()->bulkInsert(m_path);
     if (inserter.isNull())
         return;
 
@@ -5311,9 +5311,9 @@ bool TableDoc::createDynamicField(const wxString& col_name,
 {
     freeTemporaryHandles();
         
-    tango::IStructurePtr structure = m_iter->getStructure();
+    xd::IStructurePtr structure = m_iter->getStructure();
 
-    tango::IColumnInfoPtr col;
+    xd::IColumnInfoPtr col;
     col = structure->createColumn();
 
     col->setName(towstr(col_name));
@@ -5334,13 +5334,13 @@ bool TableDoc::createDynamicField(const wxString& col_name,
 
     if (on_set)
     {
-        tango::IDatabasePtr db = g_app->getDatabase();
+        xd::IDatabasePtr db = g_app->getDatabase();
 
-        tango::IStructurePtr structure = db->describeTable(m_path);
+        xd::IStructurePtr structure = db->describeTable(m_path);
         if (structure.isNull())
             return false;
 
-        tango::IColumnInfoPtr col = structure->createColumn();
+        xd::IColumnInfoPtr col = structure->createColumn();
 
         col->setName(towstr(col_name));
         col->setType(type);
@@ -5385,7 +5385,7 @@ void TableDoc::onCreateDynamicFieldCancelled(ColPropsPanel* panel)
     
     // we are deleting just calculated fields
     wxString modify_struct = panel->getModifyField();
-    tango::IStructurePtr structure = m_iter->getStructure();
+    xd::IStructurePtr structure = m_iter->getStructure();
     structure->deleteColumn(towstr(modify_struct));
     if (m_iter->modifyStructure(structure, NULL))
     {
@@ -5426,7 +5426,7 @@ void TableDoc::showCreateDynamicField()
 
     m_grid->clearSelection();
 
-    tango::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
+    xd::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
     if (structure.isNull())
         return;
 
@@ -5440,7 +5440,7 @@ void TableDoc::showCreateDynamicField()
 
 
     if (createDynamicField(column_name,
-                           tango::typeCharacter,
+                           xd::typeCharacter,
                            30, 0, wxT("\"\""), false))
     {
         // insert column at cursor position
@@ -5583,8 +5583,8 @@ void TableDoc::onMakeStatic(wxCommandEvent& evt)
 
     // make sure that the columns are all dynamic
 
-    tango::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
-    tango::IColumnInfoPtr colinfo;
+    xd::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
+    xd::IColumnInfoPtr colinfo;
            
     std::set<wxString>::iterator it;
     for (it = cols.begin(); it != cols.end(); ++it)
@@ -5678,22 +5678,22 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
 {
     list.clear();
     
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return;
 
-    tango::IRelationSchemaPtr rels = db;
+    xd::IRelationSchemaPtr rels = db;
     if (rels.isNull())
         return;
 
-    tango::IStructurePtr structure = m_iter->getStructure();
+    xd::IStructurePtr structure = m_iter->getStructure();
     if (structure.isNull())
         return;
     
     int i, col_count = structure->getColumnCount();
     list.reserve(col_count);
     
-    tango::IColumnInfoPtr colinfo;
+    xd::IColumnInfoPtr colinfo;
 
     for (i = 0; i < col_count; i++)
     {
@@ -5726,8 +5726,8 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
 
     // add fields from child file(s)
 
-    tango::IRelationEnumPtr rel_enum = rels->getRelationEnum(m_path);
-    tango::IRelationPtr rel;
+    xd::IRelationEnumPtr rel_enum = rels->getRelationEnum(m_path);
+    xd::IRelationPtr rel;
     size_t r, rel_count = rel_enum->size();
         
     wxString s;
@@ -5741,7 +5741,7 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
 
         std::wstring right_path = rel->getRightTable();
 
-        tango::IStructurePtr right_structure = db->describeTable(right_path);
+        xd::IStructurePtr right_structure = db->describeTable(right_path);
         if (right_structure.isNull())
             continue;
 
@@ -5794,7 +5794,7 @@ void TableDoc::deleteSelectedRows()
         return;
     }
 
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return;
 
@@ -5920,8 +5920,8 @@ void TableDoc::deleteSelectedColumns()
         return;
 
     wxString object_path = m_path;
-    tango::IStructurePtr structure = m_iter->getStructure();
-    tango::IColumnInfoPtr colinfo;
+    xd::IStructurePtr structure = m_iter->getStructure();
+    xd::IColumnInfoPtr colinfo;
 
     std::set<wxString> cols;
     std::set<wxString>::iterator it;
@@ -6295,7 +6295,7 @@ void TableDoc::onSummary(wxCommandEvent& evt)
     // if there was no selection, summarize all columns
     if (summary_columns.size() == 0)
     {
-        tango::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
+        xd::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
         if (structure.isNull())
             return;
 
@@ -6436,8 +6436,8 @@ wxString TableDoc::getFindExprFromValue(const wxString& _search,
 
     // if the search criterion is an expression, just return it
 
-    tango::objhandle_t handle = m_iter->getHandle(towstr(search));
-    if (handle != 0 && m_iter->getType(handle) == tango::typeBoolean)
+    xd::objhandle_t handle = m_iter->getHandle(towstr(search));
+    if (handle != 0 && m_iter->getType(handle) == xd::typeBoolean)
     {
         return search;
     }
@@ -6448,12 +6448,12 @@ wxString TableDoc::getFindExprFromValue(const wxString& _search,
     // will first check for any selected columns that will
     // limit the scope of our search
 
-    tango::IStructurePtr iter_struct = m_iter->getStructure();
+    xd::IStructurePtr iter_struct = m_iter->getStructure();
 
 
-    std::vector<tango::IColumnInfoPtr> search_cols;
+    std::vector<xd::IColumnInfoPtr> search_cols;
 
-    tango::IColumnInfoPtr colinfo;
+    xd::IColumnInfoPtr colinfo;
     int col_count = m_grid->getColumnCount();
     int i;
 
@@ -6506,20 +6506,20 @@ wxString TableDoc::getFindExprFromValue(const wxString& _search,
 
     wxString expr;
 
-    std::vector<tango::IColumnInfoPtr>::iterator it;
+    std::vector<xd::IColumnInfoPtr>::iterator it;
     for (it = search_cols.begin(); it != search_cols.end(); ++it)
     {
         wxString piece, left, right;
-        wxString colname = tango::quoteIdentifierIfNecessary(g_app->getDatabase(), (*it)->getName());        
+        wxString colname = xd::quoteIdentifierIfNecessary(g_app->getDatabase(), (*it)->getName());        
         
         switch ((*it)->getType())
         {
             default:
-            case tango::typeBoolean:
+            case xd::typeBoolean:
                 continue;
 
-            case tango::typeCharacter:
-            case tango::typeWideCharacter:
+            case xd::typeCharacter:
+            case xd::typeWideCharacter:
             {
                 if (match_case)
                     left = colname;
@@ -6532,9 +6532,9 @@ wxString TableDoc::getFindExprFromValue(const wxString& _search,
             }
             break;
 
-            case tango::typeNumeric:
-            case tango::typeDouble:
-            case tango::typeInteger:
+            case xd::typeNumeric:
+            case xd::typeDouble:
+            case xd::typeInteger:
                 left = colname;
                 break;
 
@@ -6543,7 +6543,7 @@ wxString TableDoc::getFindExprFromValue(const wxString& _search,
             // format, allowing the user to use different date formats
             // when searching; if we can't parse it as a date, search
             // on the actual text they entered
-            case tango::typeDate:
+            case xd::typeDate:
             {
                 if (!is_date)
                     left = colname;
@@ -6556,7 +6556,7 @@ wxString TableDoc::getFindExprFromValue(const wxString& _search,
             }
             break;
     
-            case tango::typeDateTime:
+            case xd::typeDateTime:
             {
                 if (!is_date)
                     left = colname;
@@ -6604,7 +6604,7 @@ wxString TableDoc::getFindExprFromValue(const wxString& _search,
 
 void TableDoc::gotoRecord()
 {
-    if ((m_iter->getIteratorFlags() & tango::ifFastRowCount) == 0)
+    if ((m_iter->getIteratorFlags() & xd::ifFastRowCount) == 0)
         return;
 
     if (m_grid->getRowCount() > 0)
@@ -6874,23 +6874,23 @@ static std::wstring tangoTypeToOutputType(int type)
     switch (type)
     {
         default:
-        case tango::typeUndefined:     return L"undefined";
-        case tango::typeInvalid:       return L"invalid";
-        case tango::typeCharacter:     return L"character";
-        case tango::typeWideCharacter: return L"widecharacter";
-        case tango::typeNumeric:       return L"numeric";
-        case tango::typeDouble:        return L"double";
-        case tango::typeInteger:       return L"integer";
-        case tango::typeDate:          return L"date";
-        case tango::typeDateTime:      return L"datetime";
-        case tango::typeBoolean:       return L"boolean";
-        case tango::typeBinary:        return L"binary";
+        case xd::typeUndefined:     return L"undefined";
+        case xd::typeInvalid:       return L"invalid";
+        case xd::typeCharacter:     return L"character";
+        case xd::typeWideCharacter: return L"widecharacter";
+        case xd::typeNumeric:       return L"numeric";
+        case xd::typeDouble:        return L"double";
+        case xd::typeInteger:       return L"integer";
+        case xd::typeDate:          return L"date";
+        case xd::typeDateTime:      return L"datetime";
+        case xd::typeBoolean:       return L"boolean";
+        case xd::typeBinary:        return L"binary";
     }
 }
 
 bool TableDoc::saveAsStructure(const wxString& path)
 {
-    tango::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
+    xd::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
     if (structure.isNull())
         return false;
 
@@ -6898,7 +6898,7 @@ bool TableDoc::saveAsStructure(const wxString& path)
     std::wstring result_text = L"";
 
     int col_count = structure->getColumnCount();
-    tango::IColumnInfoPtr colinfo;
+    xd::IColumnInfoPtr colinfo;
 
 
     // TODO: we could use the kl::JsonNode library here instead of hand-generating the JSON
@@ -7053,22 +7053,22 @@ bool TableDoc::findNextMatch(const wxString& _expr,
     kcl::IModelPtr model = m_grid->getModel();
     model->isRowValid(start_row);
 
-    tango::IIteratorPtr sp_iter = m_iter->clone();
+    xd::IIteratorPtr sp_iter = m_iter->clone();
     if (sp_iter.isNull())
     {
         return false;
     }
 
-    tango::IIterator* iter = sp_iter.p;
+    xd::IIterator* iter = sp_iter.p;
 
     if (iter->eof())
     {
         return false;
     }
 
-    tango::objhandle_t handle = iter->getHandle(towstr(expr));
+    xd::objhandle_t handle = iter->getHandle(towstr(expr));
 
-    if (handle == 0 || iter->getType(handle) != tango::typeBoolean)
+    if (handle == 0 || iter->getType(handle) != xd::typeBoolean)
     {
         return false;
     }
@@ -7241,7 +7241,7 @@ void TableDoc::onSetOrder(wxCommandEvent& evt)
     site = m_frame->lookupSite(wxT("SortPanel"));
     if (site.isNull())
     {
-        tango::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
+        xd::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
         if (structure.isNull())
             return;
 
@@ -7292,7 +7292,7 @@ void TableDoc::onRemoveOrder(wxCommandEvent& evt)
 void TableDoc::onSetOrderAscending(wxCommandEvent& evt)
 {
     wxString col_caption;
-    //tango::objhandle_t data_handle;
+    //xd::objhandle_t data_handle;
 
     // create order string
     wxString expr = buildSelectedColumnExpression(m_grid);
@@ -7304,7 +7304,7 @@ void TableDoc::onSetOrderAscending(wxCommandEvent& evt)
         kcl::IModelPtr model = m_grid->getModel();
         kcl::IModelColumnPtr model_colinfo;
         wxString col_name;
-        tango::IStructurePtr structure = m_iter->getStructure();
+        xd::IStructurePtr structure = m_iter->getStructure();
         int model_idx = m_grid->getColumnModelIdx(m_grid->getCursorColumn());
         if (model_idx == -1)
         {
@@ -7313,7 +7313,7 @@ void TableDoc::onSetOrderAscending(wxCommandEvent& evt)
         model_colinfo = model->getColumnInfo(model_idx);
         col_name = model_colinfo->getName();
 
-        expr = tango::quoteIdentifierIfNecessary(g_app->getDatabase(), towstr(col_name));
+        expr = xd::quoteIdentifierIfNecessary(g_app->getDatabase(), towstr(col_name));
     }
 
 
@@ -7343,7 +7343,7 @@ void TableDoc::onSetOrderDescending(wxCommandEvent& evt)
         kcl::IModelPtr model = m_grid->getModel();
         kcl::IModelColumnPtr model_colinfo;
         wxString col_name;
-        tango::IStructurePtr structure = m_iter->getStructure();
+        xd::IStructurePtr structure = m_iter->getStructure();
         int model_idx = m_grid->getColumnModelIdx(m_grid->getCursorColumn());
         if (model_idx == -1)
             return;
@@ -7351,7 +7351,7 @@ void TableDoc::onSetOrderDescending(wxCommandEvent& evt)
         model_colinfo = model->getColumnInfo(model_idx);
         col_name = model_colinfo->getName();
 
-        expr = tango::quoteIdentifierIfNecessary(g_app->getDatabase(), towstr(col_name));
+        expr = xd::quoteIdentifierIfNecessary(g_app->getDatabase(), towstr(col_name));
         expr += " DESC";
     }
 
@@ -7378,7 +7378,7 @@ void TableDoc::onSetGroupBreakExpr(wxCommandEvent& evt)
         kcl::IModelPtr model = m_grid->getModel();
         kcl::IModelColumnPtr model_colinfo;
         wxString col_name;
-        tango::IStructurePtr structure = m_iter->getStructure();
+        xd::IStructurePtr structure = m_iter->getStructure();
         int model_idx = m_grid->getColumnModelIdx(m_grid->getCursorColumn());
         if (model_idx == -1)
             return;
@@ -7419,7 +7419,7 @@ static void onCopyRecordsJobFinished(jobs::IJobPtr job)
     if (job->getJobInfo()->getState() != jobs::jobStateFinished)
         return;
 
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return;
 
@@ -7431,7 +7431,7 @@ static void onCopyRecordsJobFinished(jobs::IJobPtr job)
 
     // copy tabledoc model
     std::wstring input_id, output_id;
-    tango::IFileInfoPtr finfo;
+    xd::IFileInfoPtr finfo;
 
     finfo = db->getFileInfo(job->getExtraValue(L"source_tabledoc_model_path"));
     if (finfo) input_id = finfo->getObjectId();
@@ -7472,7 +7472,7 @@ void TableDoc::copyRecords(const std::wstring& condition)
     flushActiveView();
 
 
-    tango::IIteratorPtr iter = m_iter->clone();
+    xd::IIteratorPtr iter = m_iter->clone();
     if (iter.isOk())
     {
         iter->goFirst();
@@ -7550,12 +7550,12 @@ void TableDoc::onCopyRecords(wxCommandEvent& evt)
         {
             AppBusyCursor bc;
 
-            tango::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
+            xd::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
             if (structure.isNull())
                 return;
 
             ExprBuilderDocPanel* panel = new ExprBuilderDocPanel;
-            panel->setValidationEnabled(m_db_type == tango::dbtypeXdnative ? true : false);
+            panel->setValidationEnabled(m_db_type == xd::dbtypeXdnative ? true : false);
             panel->setOKText(_("Run"));
             site = m_frame->createSite(panel,
                                        sitetypeModeless |
@@ -7566,7 +7566,7 @@ void TableDoc::onCopyRecords(wxCommandEvent& evt)
             site->setName(wxT("CopyPanel"));
 
             panel->sigOkPressed.connect(this, &TableDoc::onCopyRecordsOk);
-            panel->setTypeOnly(tango::typeBoolean);
+            panel->setTypeOnly(xd::typeBoolean);
             panel->setOKText(_("Run"));
             panel->setEmptyOk(true);
             panel->setStructure(structure);
@@ -7708,13 +7708,13 @@ void TableDoc::onFilter(wxCommandEvent& evt)
         {
             AppBusyCursor bc;
 
-            tango::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
+            xd::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
             if (structure.isNull())
                 return;
 
             ExprBuilderDocPanel* panel = new ExprBuilderDocPanel;
             panel->setOKText(_("Run"));
-            panel->setValidationEnabled(m_db_type == tango::dbtypeXdnative ? true : false);
+            panel->setValidationEnabled(m_db_type == xd::dbtypeXdnative ? true : false);
             site = m_frame->createSite(panel,
                                        sitetypeModeless |
                                        siteHidden,
@@ -7727,7 +7727,7 @@ void TableDoc::onFilter(wxCommandEvent& evt)
             panel->setExpression(m_filter);
             panel->setOKText(_("Run"));
             panel->sigOkPressed.connect(this, &TableDoc::onFilterOk);
-            panel->setTypeOnly(tango::typeBoolean);
+            panel->setTypeOnly(xd::typeBoolean);
             panel->setEmptyOk(true);
         }
 
@@ -7861,13 +7861,13 @@ void TableDoc::onDeleteRecords(wxCommandEvent& evt)
         {
             AppBusyCursor bc;
 
-            tango::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
+            xd::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
             if (structure.isNull())
                 return;
 
             ExprBuilderDocPanel* panel = new ExprBuilderDocPanel;
             panel->setOKText(_("Run"));
-            panel->setValidationEnabled(m_db_type == tango::dbtypeXdnative ? true : false);
+            panel->setValidationEnabled(m_db_type == xd::dbtypeXdnative ? true : false);
             site = m_frame->createSite(panel,
                                        sitetypeModeless |
                                        siteHidden,
@@ -7879,7 +7879,7 @@ void TableDoc::onDeleteRecords(wxCommandEvent& evt)
             panel->setStructure(structure);
             panel->sigOkPressed.connect(this, &TableDoc::onDeleteRecordsOk);
             panel->setOKText(_("Run"));
-            panel->setTypeOnly(tango::typeBoolean);
+            panel->setTypeOnly(xd::typeBoolean);
             panel->setEmptyOk(false);
         }
 
@@ -8029,10 +8029,10 @@ static bool isKeyExpressionSame(const std::wstring& expr1, const std::wstring& e
 
     for (i = 0; i < cnt; ++i)
     {
-        tango::dequoteIdentifier(parts1[i], '[', ']');
-        tango::dequoteIdentifier(parts1[i], '"', '"');
-        tango::dequoteIdentifier(parts2[i], '[', ']');
-        tango::dequoteIdentifier(parts2[i], '"', '"');
+        xd::dequoteIdentifier(parts1[i], '[', ']');
+        xd::dequoteIdentifier(parts1[i], '"', '"');
+        xd::dequoteIdentifier(parts2[i], '[', ']');
+        xd::dequoteIdentifier(parts2[i], '"', '"');
 
         if (0 != wcscasecmp(parts1[i].c_str(), parts2[i].c_str()))
             return false;
@@ -8043,10 +8043,10 @@ static bool isKeyExpressionSame(const std::wstring& expr1, const std::wstring& e
 
 void TableDoc::onIndexEditFinished(IndexPanel* panel)
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
 
     // get the original indexes that exist on this set
-    tango::IIndexInfoEnumPtr orig_indexes = db->getIndexEnum(m_path);
+    xd::IIndexInfoEnumPtr orig_indexes = db->getIndexEnum(m_path);
     bool found;
     
     // get all of the indexes that were created/updated in the IndexPanel
@@ -8059,7 +8059,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
     int i, count = (int)orig_indexes->size();
     for (i = count-1; i >= 0; --i)
     {
-        tango::IIndexInfoPtr index = orig_indexes->getItem(i);
+        xd::IIndexInfoPtr index = orig_indexes->getItem(i);
         wxString index_tag = index->getTag();
         found = false;
         
@@ -8091,7 +8091,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
     // rename indexes
     for (i = count-1; i >= 0; --i)
     {
-        tango::IIndexInfoPtr index = orig_indexes->getItem(i);
+        xd::IIndexInfoPtr index = orig_indexes->getItem(i);
         wxString index_tag = index->getTag();
         
         // find the original index and rename if
@@ -8159,7 +8159,7 @@ void TableDoc::onIndexEditFinished(IndexPanel* panel)
             continue;
         }
         
-        tango::IIndexInfoPtr index;
+        xd::IIndexInfoPtr index;
         wxString index_tag, index_expr;
         
         // we may have deleted some of the original indexes;
@@ -8354,7 +8354,7 @@ void TableDoc::onSetBreakExpr(wxCommandEvent& evt)
     if (model.isNull())
         return;
 
-    tango::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
+    xd::IStructurePtr structure = g_app->getDatabase()->describeTable(m_path);
     if (structure.isNull())
         return;
 
@@ -8388,7 +8388,7 @@ void TableDoc::onRequestRowColors(wxColor& fgcolor, wxColor& bgcolor)
     size_t i, mark_count = markvec->size();
     int hit_count = 0;
 
-    tango::objhandle_t handle;
+    xd::objhandle_t handle;
 
     for (i = 0; i < mark_count; ++i)
     {
@@ -8399,7 +8399,7 @@ void TableDoc::onRequestRowColors(wxColor& fgcolor, wxColor& bgcolor)
             handle = getTemporaryHandle(mark->getExpression());
 
             if (handle &&
-                m_iter->getType(handle) == tango::typeBoolean &&
+                m_iter->getType(handle) == xd::typeBoolean &&
                 m_iter->getBoolean(handle))
             {
                 hit_count++;
@@ -8420,7 +8420,7 @@ void TableDoc::onRequestRowColors(wxColor& fgcolor, wxColor& bgcolor)
             handle = getTemporaryHandle(m_relsync_mark_expr);
 
             if (handle &&
-                m_iter->getType(handle) == tango::typeBoolean &&
+                m_iter->getType(handle) == xd::typeBoolean &&
                 m_iter->getBoolean(handle))
             {
                 fgcolor = *wxBLACK;
@@ -8442,13 +8442,13 @@ void TableDoc::onRequestRowColors(wxColor& fgcolor, wxColor& bgcolor)
 }
 
 void TableDoc::initializeDefaultView(ITableDocViewPtr view,
-                                     tango::IStructurePtr v_struct)
+                                     xd::IStructurePtr v_struct)
 {
     view->deleteAllColumns();
 
     if (v_struct)
     {
-        tango::IColumnInfoPtr colinfo;
+        xd::IColumnInfoPtr colinfo;
         ITableDocViewColPtr viewcol;
 
         int col_count;
@@ -8694,7 +8694,7 @@ void TableDoc::refreshActiveView(bool repaint)
         {
             if (col_count > 0 && ((bad_columns >= col_count) || (col_count > 2 && bad_columns >= col_count/2)))
             {
-                tango::IStructurePtr s = m_iter->getStructure();
+                xd::IStructurePtr s = m_iter->getStructure();
                 initializeDefaultView(m_active_view, s);
                 m_grid->setHorizontalOffset(0);
                 m_model->writeObject(m_active_view);
@@ -8716,19 +8716,19 @@ bool TableDoc::isQuickFilterPending()
 }
 
 
-tango::objhandle_t TableDoc::getTemporaryHandle(const wxString& expr)
+xd::objhandle_t TableDoc::getTemporaryHandle(const wxString& expr)
 {
     if (m_iter.isNull())
         return 0;
 
-    std::map<wxString, tango::objhandle_t>::iterator it;
+    std::map<wxString, xd::objhandle_t>::iterator it;
     
     it = m_handle_map.find(expr);
     if (it != m_handle_map.end())
         return it->second;
         
 
-    tango::objhandle_t handle = m_iter->getHandle(towstr(expr));
+    xd::objhandle_t handle = m_iter->getHandle(towstr(expr));
     if (handle)
     {
         m_handle_map[expr] = handle;
@@ -8744,7 +8744,7 @@ void TableDoc::freeTemporaryHandles()
     if (!m_iter)
         return;
         
-    std::map<wxString, tango::objhandle_t>::iterator it;
+    std::map<wxString, xd::objhandle_t>::iterator it;
     for (it = m_handle_map.begin(); it != m_handle_map.end(); ++it)
     {
         if (it->second != 0)

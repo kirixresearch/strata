@@ -265,7 +265,7 @@ static wxString StripHTML(const wxString& str)
 
 bool FeedParser::convertToTable(const std::wstring& output_path)
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return xcm::null;
 
@@ -294,36 +294,36 @@ bool FeedParser::convertToTable(const std::wstring& output_path)
     max_id_len = (max_id_len*150)/100;
 
     // create the output file
-    tango::IStructurePtr structure = g_app->getDatabase()->createStructure();
-    tango::IColumnInfoPtr colinfo;
+    xd::IStructurePtr structure = g_app->getDatabase()->createStructure();
+    xd::IColumnInfoPtr colinfo;
     
     colinfo = structure->createColumn();
     colinfo->setName(L"link");
-    colinfo->setType(tango::typeWideCharacter);
+    colinfo->setType(xd::typeWideCharacter);
     colinfo->setWidth(max_link_len);
     colinfo->setScale(0);
     
     colinfo = structure->createColumn();
     colinfo->setName(L"title");
-    colinfo->setType(tango::typeWideCharacter);
+    colinfo->setType(xd::typeWideCharacter);
     colinfo->setWidth(max_title_len);
     colinfo->setScale(0);
     
     colinfo = structure->createColumn();
     colinfo->setName(L"description");
-    colinfo->setType(tango::typeWideCharacter);
+    colinfo->setType(xd::typeWideCharacter);
     colinfo->setWidth(max_description_len);
     colinfo->setScale(0);
     
     colinfo = structure->createColumn();
     colinfo->setName(L"publication_date");
-    colinfo->setType(tango::typeDateTime);
+    colinfo->setType(xd::typeDateTime);
     colinfo->setWidth(8);
     colinfo->setScale(0);
     
     colinfo = structure->createColumn();
     colinfo->setName(L"id");
-    colinfo->setType(tango::typeWideCharacter);
+    colinfo->setType(xd::typeWideCharacter);
     colinfo->setWidth(max_id_len);
     colinfo->setScale(0);
 
@@ -331,17 +331,17 @@ bool FeedParser::convertToTable(const std::wstring& output_path)
     if (!db->createTable(output_path, structure, NULL))
         return false;
 
-    tango::IRowInserterPtr row_inserter = db->bulkInsert(output_path);
+    xd::IRowInserterPtr row_inserter = db->bulkInsert(output_path);
     if (row_inserter.isNull())
         return false;
         
     row_inserter->startInsert(L"");
     
-    tango::objhandle_t link_handle = row_inserter->getHandle(L"link");
-    tango::objhandle_t title_handle = row_inserter->getHandle(L"title");
-    tango::objhandle_t description_handle = row_inserter->getHandle(L"description");
-    tango::objhandle_t pubdate_handle = row_inserter->getHandle(L"publication_date");
-    tango::objhandle_t id_handle = row_inserter->getHandle(L"id");
+    xd::objhandle_t link_handle = row_inserter->getHandle(L"link");
+    xd::objhandle_t title_handle = row_inserter->getHandle(L"title");
+    xd::objhandle_t description_handle = row_inserter->getHandle(L"description");
+    xd::objhandle_t pubdate_handle = row_inserter->getHandle(L"publication_date");
+    xd::objhandle_t id_handle = row_inserter->getHandle(L"id");
 
 
     for (i = 0; i < item_count; ++i)
@@ -376,7 +376,7 @@ bool FeedParser::convertToTable(const std::wstring& output_path)
             if (success)
             {
                 row_inserter->putDateTime(pubdate_handle, 
-                                tango::DateTime(yy, mm, dd, h, m, s));
+                                xd::DateTime(yy, mm, dd, h, m, s));
             }
              else
             {

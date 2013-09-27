@@ -28,8 +28,8 @@ xcm_interface ITangoGridModel : public xcm::IObject
 
 public:
 
-    virtual void setIterator(tango::IIterator* it) = 0;
-    virtual tango::IIteratorPtr getIterator() = 0;
+    virtual void setIterator(xd::IIterator* it) = 0;
+    virtual xd::IIteratorPtr getIterator() = 0;
 
     virtual void discoverEof() = 0;
     virtual bool isEofKnown() = 0;
@@ -42,7 +42,7 @@ public:
     virtual void refreshView() = 0;
     virtual bool getColumnCalculated(int model_col) = 0;
 
-    virtual tango::rowid_t getRowId(int row) = 0;
+    virtual xd::rowid_t getRowId(int row) = 0;
     virtual void setCurrentRow(int row) = 0;
 
     virtual void setFindHighlight(const wxString& value,
@@ -55,7 +55,7 @@ public:
     virtual double getCellDouble(int row, int col) = 0;
     virtual int getCellInteger(int row, int col) = 0;
     virtual bool getCellBoolean(int row, int col) = 0;
-    virtual tango::datetime_t getCellDateTime(int row, int col) = 0;
+    virtual xd::datetime_t getCellDateTime(int row, int col) = 0;
     virtual int getCellComboSel(int row, int col) = 0;
     virtual bool isNull(int row, int col) = 0;
 };
@@ -65,7 +65,7 @@ class TangoGridColumnInfo
 {
 public:
     wxString m_col_name;
-    tango::objhandle_t m_col_handle;
+    xd::objhandle_t m_col_handle;
     int m_col_type;
     int m_col_width;
     int m_col_scale;
@@ -81,7 +81,7 @@ public:
     wxString m_str_val;
     int m_int_val;
     double m_dbl_val;
-    tango::datetime_t m_datetime_val;
+    xd::datetime_t m_datetime_val;
     bool m_bool_val;
     bool m_null;
 };
@@ -90,7 +90,7 @@ class TangoGridRowData
 {
 public:
     std::vector<TangoGridCellData> m_cols;
-    tango::rowid_t rowid;
+    xd::rowid_t rowid;
 };
 
 
@@ -113,8 +113,8 @@ public:
     virtual ~TangoGridModel();
 
     // -- ITangoGridModel --
-    void setIterator(tango::IIterator* it);
-    tango::IIteratorPtr getIterator();
+    void setIterator(xd::IIterator* it);
+    xd::IIteratorPtr getIterator();
 
     void setBooleanCheckbox(bool val);
 
@@ -127,7 +127,7 @@ public:
     void refreshView();
     bool getColumnCalculated(int model_col);
 
-    tango::rowid_t getRowId(int row);
+    xd::rowid_t getRowId(int row);
     void setCurrentRow(int row);
 
     void setFindHighlight(const wxString& value,
@@ -160,7 +160,7 @@ public:
     double getCellDouble(int row, int col);
     int getCellInteger(int row, int col);
     bool getCellBoolean(int row, int col);
-    tango::datetime_t getCellDateTime(int row, int col);
+    xd::datetime_t getCellDateTime(int row, int col);
     int getCellComboSel(int row, int col);
     bool isNull(int row, int col);
 
@@ -199,13 +199,13 @@ private:
 
 private:
 
-    tango::IIteratorPtr m_it;
+    xd::IIteratorPtr m_it;
     bool m_forward_only;
     int m_fwdonly_row;
     std::vector<TangoGridColumnInfo> m_columns;
     ColLookupHashMap m_column_lookup;
     kcl::Grid* m_grid;
-    tango::rowid_t m_cursor_rowid;
+    xd::rowid_t m_cursor_rowid;
     int m_current_row;
     int m_current_mark_row;
     int m_row_count;
@@ -215,7 +215,7 @@ private:
     bool m_boolean_checkbox;
     bool m_break_result;
     wxString m_break_expr;
-    tango::objhandle_t m_break_handle;
+    xd::objhandle_t m_break_handle;
 
     wxColor m_fgcolor;
     wxColor m_bgcolor;

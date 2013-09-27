@@ -182,7 +182,7 @@ LocalRowCache::LocalRowCache()
     m_append_rownum = 0;
     
     m_read_reclen = 0;
-    m_read_currow = (tango::rowpos_t)-1;
+    m_read_currow = (xd::rowpos_t)-1;
 }
 
 LocalRowCache::~LocalRowCache()
@@ -215,7 +215,7 @@ bool LocalRowCache::isOk() const
 }
 
 
-tango::rowpos_t LocalRowCache::getRowCount()
+xd::rowpos_t LocalRowCache::getRowCount()
 {
     return m_row_count;
 }
@@ -394,9 +394,9 @@ void LocalRowCache::goFirst()
     m_read_currow = buf2int(buf+4);
 }
 
-void LocalRowCache::goRow(tango::rowpos_t row)
+void LocalRowCache::goRow(xd::rowpos_t row)
 {
-    if (m_read_currow == (tango::rowpos_t)-1)
+    if (m_read_currow == (xd::rowpos_t)-1)
     {
         goFirst();
     }
@@ -424,7 +424,7 @@ void LocalRowCache::goRow(tango::rowpos_t row)
 
 void LocalRowCache::goPrev()
 {
-    if (m_read_currow == (tango::rowpos_t)-1)
+    if (m_read_currow == (xd::rowpos_t)-1)
     {
         goFirst();
     }
@@ -465,7 +465,7 @@ void LocalRowCache::goPrev()
 
 void LocalRowCache::goNext()
 {
-    if (m_read_currow == (tango::rowpos_t)-1)
+    if (m_read_currow == (xd::rowpos_t)-1)
     {
         goFirst();
     }
@@ -539,14 +539,14 @@ bool LocalRowCache::getRow(LocalRow& row)
 
 
 
-void LocalRowCache::updateValue(tango::rowpos_t row,
+void LocalRowCache::updateValue(xd::rowpos_t row,
                                 int col,
                                 unsigned char* data,
                                 unsigned int size)
 {
     LocalRowUpdates* update_row = NULL;
     
-    std::map<tango::rowpos_t, LocalRowUpdates*>::iterator it;
+    std::map<xd::rowpos_t, LocalRowUpdates*>::iterator it;
     it = m_updates.find(row);
     if (it == m_updates.end())
     {
@@ -572,7 +572,7 @@ void LocalRowCache::updateValue(tango::rowpos_t row,
 
 void LocalRowCache::clearUpdateValues()
 {
-    std::map<tango::rowpos_t, LocalRowUpdates*>::iterator it, it_end;
+    std::map<xd::rowpos_t, LocalRowUpdates*>::iterator it, it_end;
     it_end = m_updates.end();
     for (it = m_updates.begin(); it != it_end; ++it)
         delete it->second;
@@ -585,10 +585,10 @@ unsigned char* LocalRowCache::getUpdateValue(int col)
     if (m_updates.size() == 0)
         return NULL;
         
-    if (m_read_currow == (tango::rowpos_t)-1)
+    if (m_read_currow == (xd::rowpos_t)-1)
         return NULL;
     
-    std::map<tango::rowpos_t, LocalRowUpdates*>::iterator it;
+    std::map<xd::rowpos_t, LocalRowUpdates*>::iterator it;
     it = m_updates.find(m_read_currow);
     if (it == m_updates.end())
         return NULL;

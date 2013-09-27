@@ -22,10 +22,10 @@
 #include <kl/portable.h>
 
 
-bool sqlDrop(tango::IDatabasePtr db,
+bool sqlDrop(xd::IDatabasePtr db,
              const std::wstring& _command,
              ThreadErrorInfo& error,
-             tango::IJob* job)
+             xd::IJob* job)
 {
     SqlStatement stmt(_command);
 
@@ -40,7 +40,7 @@ bool sqlDrop(tango::IDatabasePtr db,
 
     if (!stmt.getKeywordExists(L"DROP"))
     {
-        error.setError(tango::errorSyntax, L"Invalid syntax; DROP statement missing DROP clause");
+        error.setError(xd::errorSyntax, L"Invalid syntax; DROP statement missing DROP clause");
         return false;
     }
 
@@ -49,7 +49,7 @@ bool sqlDrop(tango::IDatabasePtr db,
         !stmt.getKeywordExists(L"INDEX") && 
         !stmt.getKeywordExists(L"DIRECTORY"))
     {
-        error.setError(tango::errorSyntax, L"Invalid syntax; DROP statement missing TABLE, MOUNT, INDEX, or DIRECTORY clause");    
+        error.setError(xd::errorSyntax, L"Invalid syntax; DROP statement missing TABLE, MOUNT, INDEX, or DIRECTORY clause");    
         return false;
     }
 
@@ -76,7 +76,7 @@ bool sqlDrop(tango::IDatabasePtr db,
         {
             wchar_t buf[1024]; // some paths might be long
             swprintf(buf, 1024, L"Unable to drop mount [%ls]", param.c_str());
-            error.setError(tango::errorGeneral, buf);
+            error.setError(xd::errorGeneral, buf);
             return false;
         }
         
@@ -99,7 +99,7 @@ bool sqlDrop(tango::IDatabasePtr db,
         {
             wchar_t buf[1024]; // some paths might be long
             swprintf(buf, 1024, L"Unable to drop directory [%ls]", param.c_str());
-            error.setError(tango::errorGeneral, buf);
+            error.setError(xd::errorGeneral, buf);
             return false;
         }
         
@@ -125,7 +125,7 @@ bool sqlDrop(tango::IDatabasePtr db,
         {
             wchar_t buf[1024]; // some paths might be long
             swprintf(buf, 1024, L"Unable to drop index [%ls]", param.c_str());        
-            error.setError(tango::errorGeneral, buf);
+            error.setError(xd::errorGeneral, buf);
             return false;
         }
         
@@ -148,7 +148,7 @@ bool sqlDrop(tango::IDatabasePtr db,
         {
             wchar_t buf[1024]; // some paths might be long
             swprintf(buf, 1024, L"Unable to drop table [%ls]", param.c_str());        
-            error.setError(tango::errorGeneral, buf);
+            error.setError(xd::errorGeneral, buf);
             return false;
         }
         
@@ -156,7 +156,7 @@ bool sqlDrop(tango::IDatabasePtr db,
     }
      else
     {
-        error.setError(tango::errorGeneral, L"Unable to process DROP statement");
+        error.setError(xd::errorGeneral, L"Unable to process DROP statement");
         return false;
     }
 

@@ -187,40 +187,40 @@ std::vector< std::pair<std::wstring, bool> > sortExprToVector(const std::wstring
 
 // checks if a string is a keyword
 bool isKeyword(const wxString& str,
-               tango::IDatabasePtr db = xcm::null);
+               xd::IDatabasePtr db = xcm::null);
 
 // checks if a field name is valid
 bool isValidFieldName(
                const wxString& str,
-               tango::IDatabasePtr db = xcm::null,
+               xd::IDatabasePtr db = xcm::null,
                int* err_idx = NULL);
 
 // checks if an object name is valid
 bool isValidObjectName(
                const wxString& str,
-               tango::IDatabasePtr db = xcm::null,
+               xd::IDatabasePtr db = xcm::null,
                int* err_idx = NULL);
 
 // checks is a path name is valid (same as isObjectNameValid() + slashes)
 bool isValidObjectPath(
                const wxString& str,
-               tango::IDatabasePtr db = xcm::null,
+               xd::IDatabasePtr db = xcm::null,
                int* err_idx = NULL);
 
 bool isValidTable(
                const std::wstring& str,
-               tango::IDatabasePtr db = xcm::null);
+               xd::IDatabasePtr db = xcm::null);
 
 
 // makes a valid field name out of the given string
 wxString makeValidFieldName(
                const wxString& str,
-               tango::IDatabasePtr db = xcm::null);
+               xd::IDatabasePtr db = xcm::null);
 
 // makes a valid object name out of the given string
 wxString makeValidObjectName(
                const wxString& str,
-               tango::IDatabasePtr db = xcm::null);
+               xd::IDatabasePtr db = xcm::null);
 
 // returns a localized name for a given type
 wxString getDbColumnTypeText(int tango_type);
@@ -236,8 +236,8 @@ bool isSamePath(const std::wstring& path1, const std::wstring& path2);
 // the actual object path or actual filename, respectively
 wxString getObjectPathFromMountPath(const wxString& database_path);
 wxString getPhysPathFromMountPath(const wxString& database_path);
-std::wstring getMountRoot(tango::IDatabasePtr db, const std::wstring path);
-bool getMountPointHelper(tango::IDatabasePtr& db, const std::wstring& path, std::wstring& cstr, std::wstring& rpath);
+std::wstring getMountRoot(xd::IDatabasePtr db, const std::wstring path);
+bool getMountPointHelper(xd::IDatabasePtr& db, const std::wstring& path, std::wstring& cstr, std::wstring& rpath);
 bool isTemporaryTable(const std::wstring& path);
 
 // gets the filename from the path
@@ -252,11 +252,11 @@ std::wstring determineMimeType(const std::wstring& path);
 std::wstring addExtensionIfExternalFsDatabase(const std::wstring& path, const std::wstring& ext);
 
 // stream text file loading and saving routines
-bool readStreamTextFile(tango::IDatabasePtr db,
+bool readStreamTextFile(xd::IDatabasePtr db,
                         const std::wstring& path,
                         std::wstring& result_text);
 
-bool writeStreamTextFile(tango::IDatabasePtr db,
+bool writeStreamTextFile(xd::IDatabasePtr db,
                         const std::wstring& path,
                         const std::wstring& text,
                         const std::wstring& mime_type = L"text/plain");
@@ -281,7 +281,7 @@ double getProjectSize(const wxString& project_path);
 // returns the default location where projects are created
 wxString getDefaultProjectsPath();
 
-tango::IIndexInfoPtr lookupIndex(tango::IIndexInfoEnumPtr indexes, 
+xd::IIndexInfoPtr lookupIndex(xd::IIndexInfoEnumPtr indexes, 
                                  const std::wstring& fields, bool order_matters);
 
 

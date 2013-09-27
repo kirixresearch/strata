@@ -159,7 +159,7 @@ kscript::ExprParser* FixedLengthTextIterator::createCastingExprParser()
 
 
 
-bool FixedLengthTextIterator::init(tango::IDatabasePtr db,
+bool FixedLengthTextIterator::init(xd::IDatabasePtr db,
                                    FixedLengthTextSet* set,
                                    const std::wstring& columns)
 {
@@ -178,11 +178,11 @@ bool FixedLengthTextIterator::init(tango::IDatabasePtr db,
 
 
     // get the source structure, put it in m_source_fields
-    tango::IStructurePtr src_structure = m_set->getSourceStructure();
+    xd::IStructurePtr src_structure = m_set->getSourceStructure();
     col_count = src_structure->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr src_colinfo;
+        xd::IColumnInfoPtr src_colinfo;
         src_colinfo = src_structure->getColumnInfoByIdx(i);
 
         FixedLengthTextDataAccessInfo* dai = new FixedLengthTextDataAccessInfo;
@@ -191,7 +191,7 @@ bool FixedLengthTextIterator::init(tango::IDatabasePtr db,
         dai->src_width = src_colinfo->getWidth();
         dai->src_encoding = src_colinfo->getEncoding();
         dai->name = src_colinfo->getName();
-        dai->type = tango::typeCharacter;
+        dai->type = xd::typeCharacter;
         dai->src_offset = src_colinfo->getOffset();
         dai->src_width = src_colinfo->getWidth();
         dai->width = src_colinfo->getWidth();
@@ -205,12 +205,12 @@ bool FixedLengthTextIterator::init(tango::IDatabasePtr db,
     
     
     // get the destination structure, put it in m_fields
-    tango::IStructurePtr dest_structure = m_set->getDestinationStructure();
+    xd::IStructurePtr dest_structure = m_set->getDestinationStructure();
     col_count = dest_structure->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr colinfo;
-        tango::IColumnInfoPtr src_colinfo;
+        xd::IColumnInfoPtr colinfo;
+        xd::IColumnInfoPtr src_colinfo;
         
         colinfo = dest_structure->getColumnInfoByIdx(i);
         src_colinfo = src_structure->getColumnInfo(colinfo->getExpression());
@@ -254,11 +254,11 @@ bool FixedLengthTextIterator::init(tango::IDatabasePtr db,
 
 
     // get the calculated fields, add them to m_fields
-    tango::IStructurePtr final_structure = m_set->getStructure();
+    xd::IStructurePtr final_structure = m_set->getStructure();
     col_count = final_structure->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr colinfo;
+        xd::IColumnInfoPtr colinfo;
         colinfo = final_structure->getColumnInfoByIdx(i);
         
         if (!colinfo->getCalculated())
@@ -294,11 +294,11 @@ bool FixedLengthTextIterator::init(tango::IDatabasePtr db,
 
         kl::parseDelimitedList(m_columns_string, colvec, L',', true);
 
-        tango::IStructurePtr structure = getParserStructure();
+        xd::IStructurePtr structure = getParserStructure();
         
         for (it = colvec.begin(); it != colvec.end(); ++it)
         {
-            tango::IColumnInfoPtr col = structure->getColumnInfo(*it);
+            xd::IColumnInfoPtr col = structure->getColumnInfo(*it);
             if (col.isOk())
             {
                 m_columns.push_back(*it);
@@ -346,8 +346,8 @@ bool FixedLengthTextIterator::init(tango::IDatabasePtr db,
             int expr_type = p->getType();
 
             int tango_type = kscript2tangoType(expr_type);
-            if (tango_type == tango::typeInvalid ||
-                tango_type == tango::typeUndefined)
+            if (tango_type == xd::typeInvalid ||
+                tango_type == xd::typeUndefined)
             {
                 delete p;
                 return false;
@@ -358,15 +358,15 @@ bool FixedLengthTextIterator::init(tango::IDatabasePtr db,
 
             switch (tango_type)
             {
-                case tango::typeNumeric:
+                case xd::typeNumeric:
                     width = 18;
                     break;
-                case tango::typeDate:
-                case tango::typeInteger:
+                case xd::typeDate:
+                case xd::typeInteger:
                     width = 4;
                     break;
-                case tango::typeDateTime:
-                case tango::typeDouble:
+                case xd::typeDateTime:
+                case xd::typeDouble:
                     width = 8;
                     break;
                 default:
@@ -673,8 +673,8 @@ void FixedLengthTextIterator::updateDaiEntry(FixedLengthTextDataAccessInfo* dai)
     dai->wstr_result.reserve(len);
 
 
-    if (dai->src_encoding == tango::encodingUCS2 ||
-        dai->src_encoding == tango::encodingUTF16)
+    if (dai->src_encoding == xd::encodingUCS2 ||
+        dai->src_encoding == xd::encodingUTF16)
     {
         wchar_t ch1, ch2;
         while (len > 0)
@@ -690,7 +690,7 @@ void FixedLengthTextIterator::updateDaiEntry(FixedLengthTextDataAccessInfo* dai)
         
         kl::trim(dai->wstr_result);
     }
-     else if (dai->src_encoding == tango::encodingEBCDIC)
+     else if (dai->src_encoding == xd::encodingEBCDIC)
     {
         while (len-- > 0)
         {
@@ -701,7 +701,7 @@ void FixedLengthTextIterator::updateDaiEntry(FixedLengthTextDataAccessInfo* dai)
         
         kl::trim(dai->wstr_result);
     }
-     else if (dai->src_encoding == tango::encodingCOMP)
+     else if (dai->src_encoding == xd::encodingCOMP)
     {
         unsigned char buf[48];
         size_t i;
@@ -712,7 +712,7 @@ void FixedLengthTextIterator::updateDaiEntry(FixedLengthTextDataAccessInfo* dai)
         
         compToString(buf, len, 0, dai->wstr_result);
     }
-     else if (dai->src_encoding == tango::encodingCOMP3)
+     else if (dai->src_encoding == xd::encodingCOMP3)
     {
         unsigned char buf[48];
         size_t i;
@@ -745,17 +745,17 @@ std::wstring FixedLengthTextIterator::getTable()
 }
 
 
-tango::rowpos_t FixedLengthTextIterator::getRowCount()
+xd::rowpos_t FixedLengthTextIterator::getRowCount()
 {
     return 0;
 }
 
-tango::IDatabasePtr FixedLengthTextIterator::getDatabase()
+xd::IDatabasePtr FixedLengthTextIterator::getDatabase()
 {
     return m_database;
 }
 
-tango::IIteratorPtr FixedLengthTextIterator::clone()
+xd::IIteratorPtr FixedLengthTextIterator::clone()
 {
     FixedLengthTextIterator* iter = new FixedLengthTextIterator;
     
@@ -769,13 +769,13 @@ tango::IIteratorPtr FixedLengthTextIterator::clone()
     iter->m_cur_row_offset = m_cur_row_offset;
     iter->m_cur_row_length = m_cur_row_length;
     
-    return static_cast<tango::IIterator*>(iter);
+    return static_cast<xd::IIterator*>(iter);
 }
 
 unsigned int FixedLengthTextIterator::getIteratorFlags()
 {
     if (m_file_type == FixedLengthDefinition::FixedWidth)
-        return tango::ifFastSkip;
+        return xd::ifFastSkip;
 
     return 0;
 }
@@ -810,7 +810,7 @@ void FixedLengthTextIterator::goLast()
         return;
 }
 
-tango::rowid_t FixedLengthTextIterator::getRowId()
+xd::rowid_t FixedLengthTextIterator::getRowId()
 {
     //return m_cur_row_offset;
     return m_cur_row;
@@ -863,21 +863,21 @@ double FixedLengthTextIterator::getPos()
     return 0.0;
 }
 
-void FixedLengthTextIterator::goRow(const tango::rowid_t& rowid)
+void FixedLengthTextIterator::goRow(const xd::rowid_t& rowid)
 {
     getChar(rowid, 0);
 }
 
 
-tango::IStructurePtr FixedLengthTextIterator::getParserStructure()
+xd::IStructurePtr FixedLengthTextIterator::getParserStructure()
 {
-    tango::IStructurePtr s = static_cast<tango::IStructure*>(new Structure);
+    xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
     IStructureInternalPtr struct_int = s;
     
     std::vector<FixedLengthTextDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
         
         col->setName((*it)->name);
         col->setType((*it)->type);
@@ -898,7 +898,7 @@ tango::IStructurePtr FixedLengthTextIterator::getParserStructure()
 }
 
 
-tango::IStructurePtr FixedLengthTextIterator::getStructure()
+xd::IStructurePtr FixedLengthTextIterator::getStructure()
 {
     // if we want all the columns, just return the m_fields structure
     if (m_columns_string == L"" || m_columns_string == L"*")
@@ -908,15 +908,15 @@ tango::IStructurePtr FixedLengthTextIterator::getStructure()
     
 
     // there were columns in m_columns specified, get those instead
-    tango::IStructurePtr parser_structure = getParserStructure();
+    xd::IStructurePtr parser_structure = getParserStructure();
     
-    tango::IStructurePtr s = static_cast<tango::IStructure*>(new Structure);
+    xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
     IStructureInternalPtr struct_int = s;
     
     std::vector<std::wstring>::iterator it;
     for (it = m_columns.begin(); it != m_columns.end(); ++it)
     {
-        tango::IColumnInfoPtr col = parser_structure->getColumnInfo(*it);
+        xd::IColumnInfoPtr col = parser_structure->getColumnInfo(*it);
         if (col)
             struct_int->addColumn(col);
     }
@@ -929,8 +929,8 @@ void FixedLengthTextIterator::refreshStructure()
 
 }
 
-bool FixedLengthTextIterator::modifyStructure(tango::IStructure* struct_config,
-                                            tango::IJob* job)
+bool FixedLengthTextIterator::modifyStructure(xd::IStructure* struct_config,
+                                            xd::IJob* job)
 {
     IStructureInternalPtr struct_int = struct_config;
 
@@ -1055,13 +1055,13 @@ bool FixedLengthTextIterator::modifyStructure(tango::IStructure* struct_config,
 }
 
 
-tango::objhandle_t FixedLengthTextIterator::getHandle(const std::wstring& expr)
+xd::objhandle_t FixedLengthTextIterator::getHandle(const std::wstring& expr)
 {
     std::vector<FixedLengthTextDataAccessInfo*>::reverse_iterator it;
     for (it = m_fields.rbegin(); it != m_fields.rend(); ++it)
     {
         if (!wcscasecmp((*it)->name.c_str(), expr.c_str()))
-            return (tango::objhandle_t)(*it);
+            return (xd::objhandle_t)(*it);
     }
     
     // test for binary keys
@@ -1071,10 +1071,10 @@ tango::objhandle_t FixedLengthTextIterator::getHandle(const std::wstring& expr)
         dai->iter = this;
         dai->expr = NULL;
         dai->expr_text = expr;
-        dai->type = tango::typeBinary;
+        dai->type = xd::typeBinary;
         dai->key_layout = new KeyLayout;
 
-        if (!dai->key_layout->setKeyExpr(static_cast<tango::IIterator*>(this),
+        if (!dai->key_layout->setKeyExpr(static_cast<xd::IIterator*>(this),
                                     expr.substr(4),
                                     false))
         {
@@ -1083,12 +1083,12 @@ tango::objhandle_t FixedLengthTextIterator::getHandle(const std::wstring& expr)
         }
         
         m_exprs.push_back(dai);
-        return (tango::objhandle_t)dai;
+        return (xd::objhandle_t)dai;
     }
 
     kscript::ExprParser* parser = parse(expr);
     if (!parser)
-        return (tango::objhandle_t)0;
+        return (xd::objhandle_t)0;
 
     FixedLengthTextDataAccessInfo* dai = new FixedLengthTextDataAccessInfo;
     dai->iter = this;
@@ -1097,21 +1097,21 @@ tango::objhandle_t FixedLengthTextIterator::getHandle(const std::wstring& expr)
     dai->type = kscript2tangoType(parser->getType());
     m_exprs.push_back(dai);
 
-    return (tango::objhandle_t)dai;
+    return (xd::objhandle_t)dai;
 }
 
-bool FixedLengthTextIterator::releaseHandle(tango::objhandle_t data_handle)
+bool FixedLengthTextIterator::releaseHandle(xd::objhandle_t data_handle)
 {
     std::vector<FixedLengthTextDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        if ((tango::objhandle_t)(*it) == data_handle)
+        if ((xd::objhandle_t)(*it) == data_handle)
             return true;
     }
 
     for (it = m_exprs.begin(); it != m_exprs.end(); ++it)
     {
-        if ((tango::objhandle_t)(*it) == data_handle)
+        if ((xd::objhandle_t)(*it) == data_handle)
         {
             delete (*it);
             m_exprs.erase(it);
@@ -1122,7 +1122,7 @@ bool FixedLengthTextIterator::releaseHandle(tango::objhandle_t data_handle)
     return false;
 }
 
-tango::IColumnInfoPtr FixedLengthTextIterator::getInfo(tango::objhandle_t data_handle)
+xd::IColumnInfoPtr FixedLengthTextIterator::getInfo(xd::objhandle_t data_handle)
 {
     FixedLengthTextDataAccessInfo* dai = (FixedLengthTextDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -1136,17 +1136,17 @@ tango::IColumnInfoPtr FixedLengthTextIterator::getInfo(tango::objhandle_t data_h
     colinfo->setWidth(dai->width);
     colinfo->setScale(dai->scale);
 
-    if (dai->type == tango::typeDate ||
-        dai->type == tango::typeInteger)
+    if (dai->type == xd::typeDate ||
+        dai->type == xd::typeInteger)
     {
         colinfo->setWidth(4);
     }
-     else if (dai->type == tango::typeDateTime ||
-              dai->type == tango::typeDouble)
+     else if (dai->type == xd::typeDateTime ||
+              dai->type == xd::typeDouble)
     {
         colinfo->setWidth(8);
     }
-     else if (dai->type == tango::typeBoolean)
+     else if (dai->type == xd::typeBoolean)
     {
         colinfo->setWidth(1);
     }
@@ -1162,10 +1162,10 @@ tango::IColumnInfoPtr FixedLengthTextIterator::getInfo(tango::objhandle_t data_h
         colinfo->setExpression(dai->expr_text);
     }
 
-    return static_cast<tango::IColumnInfo*>(colinfo);
+    return static_cast<xd::IColumnInfo*>(colinfo);
 }
 
-int FixedLengthTextIterator::getType(tango::objhandle_t data_handle)
+int FixedLengthTextIterator::getType(xd::objhandle_t data_handle)
 {
     FixedLengthTextDataAccessInfo* dai = (FixedLengthTextDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -1176,7 +1176,7 @@ int FixedLengthTextIterator::getType(tango::objhandle_t data_handle)
     return dai->type;
 }
 
-int FixedLengthTextIterator::getRawWidth(tango::objhandle_t data_handle)
+int FixedLengthTextIterator::getRawWidth(xd::objhandle_t data_handle)
 {
     FixedLengthTextDataAccessInfo* dai = (FixedLengthTextDataAccessInfo*)data_handle;
     if (dai && dai->key_layout)
@@ -1187,7 +1187,7 @@ int FixedLengthTextIterator::getRawWidth(tango::objhandle_t data_handle)
     return 0;
 }
 
-const unsigned char* FixedLengthTextIterator::getRawPtr(tango::objhandle_t data_handle)
+const unsigned char* FixedLengthTextIterator::getRawPtr(xd::objhandle_t data_handle)
 {
     FixedLengthTextDataAccessInfo* dai = (FixedLengthTextDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -1203,7 +1203,7 @@ const unsigned char* FixedLengthTextIterator::getRawPtr(tango::objhandle_t data_
 
 
 
-const std::string& FixedLengthTextIterator::getString(tango::objhandle_t data_handle)
+const std::string& FixedLengthTextIterator::getString(xd::objhandle_t data_handle)
 {
     FixedLengthTextDataAccessInfo* dai = (FixedLengthTextDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -1228,8 +1228,8 @@ const std::string& FixedLengthTextIterator::getString(tango::objhandle_t data_ha
     // -- NOTE: this is only for REAL strings... since all of the other
     //    get functions base their function off of getString().  This resizes
     //    the string so that it appears correctly in the preview grid --
-    if (dai->type == tango::typeCharacter ||
-        dai->type == tango::typeWideCharacter)
+    if (dai->type == xd::typeCharacter ||
+        dai->type == xd::typeWideCharacter)
     {
         if (dai->width < dai->src_width)
         {
@@ -1242,7 +1242,7 @@ const std::string& FixedLengthTextIterator::getString(tango::objhandle_t data_ha
 */
 }
 
-const std::wstring& FixedLengthTextIterator::getWideString(tango::objhandle_t data_handle)
+const std::wstring& FixedLengthTextIterator::getWideString(xd::objhandle_t data_handle)
 {
     FixedLengthTextDataAccessInfo* dai = (FixedLengthTextDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -1256,8 +1256,8 @@ const std::wstring& FixedLengthTextIterator::getWideString(tango::objhandle_t da
         // -- NOTE: this is only for REAL strings... since all of the other
         //    get functions base their function off of getString().  This resizes
         //    the string so that it appears correctly in the preview grid --
-        if (dai->type == tango::typeCharacter ||
-            dai->type == tango::typeWideCharacter)
+        if (dai->type == xd::typeCharacter ||
+            dai->type == xd::typeWideCharacter)
         {
             if (dai->wstr_result.length() > (size_t)dai->width)
             {
@@ -1285,7 +1285,7 @@ const std::wstring& FixedLengthTextIterator::getWideString(tango::objhandle_t da
 */
 }
 
-tango::datetime_t FixedLengthTextIterator::getDateTime(tango::objhandle_t data_handle)
+xd::datetime_t FixedLengthTextIterator::getDateTime(xd::objhandle_t data_handle)
 {
     FixedLengthTextDataAccessInfo* dai = (FixedLengthTextDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -1296,11 +1296,11 @@ tango::datetime_t FixedLengthTextIterator::getDateTime(tango::objhandle_t data_h
         dai->expr->eval(&dai->expr_result);
         kscript::ExprDateTime edt = dai->expr_result.getDateTime();
 
-        tango::datetime_t dt;
+        xd::datetime_t dt;
         dt = edt.date;
         dt <<= 32;
         
-        if (dai->type == tango::typeDateTime)
+        if (dai->type == xd::typeDateTime)
             dt |= edt.time;
         
         return dt;
@@ -1316,7 +1316,7 @@ tango::datetime_t FixedLengthTextIterator::getDateTime(tango::objhandle_t data_h
     return str2datetime(dai->str_result.c_str());
 }
 
-double FixedLengthTextIterator::getDouble(tango::objhandle_t data_handle)
+double FixedLengthTextIterator::getDouble(xd::objhandle_t data_handle)
 {
     FixedLengthTextDataAccessInfo* dai = (FixedLengthTextDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -1338,7 +1338,7 @@ double FixedLengthTextIterator::getDouble(tango::objhandle_t data_handle)
     return kl::nolocale_atof(dai->str_result.c_str());
 }
 
-int FixedLengthTextIterator::getInteger(tango::objhandle_t data_handle)
+int FixedLengthTextIterator::getInteger(xd::objhandle_t data_handle)
 {
     FixedLengthTextDataAccessInfo* dai = (FixedLengthTextDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -1360,7 +1360,7 @@ int FixedLengthTextIterator::getInteger(tango::objhandle_t data_handle)
     return atoi(dai->str_result.c_str());
 }
 
-bool FixedLengthTextIterator::getBoolean(tango::objhandle_t data_handle)
+bool FixedLengthTextIterator::getBoolean(xd::objhandle_t data_handle)
 {
     FixedLengthTextDataAccessInfo* dai = (FixedLengthTextDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -1391,7 +1391,7 @@ bool FixedLengthTextIterator::getBoolean(tango::objhandle_t data_handle)
     }
 }
 
-bool FixedLengthTextIterator::isNull(tango::objhandle_t data_handle)
+bool FixedLengthTextIterator::isNull(xd::objhandle_t data_handle)
 {
     FixedLengthTextDataAccessInfo* dai = (FixedLengthTextDataAccessInfo*)data_handle;
     if (dai == NULL)

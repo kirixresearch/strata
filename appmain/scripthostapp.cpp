@@ -350,7 +350,7 @@ void Extension::getTextResource(kscript::ExprEnv* env, void*, kscript::Value* re
         // load the image from the directory the script is in
         std::wstring path;
         
-        tango::IDatabasePtr db = g_app->getDatabase();
+        xd::IDatabasePtr db = g_app->getDatabase();
         if (db.isOk())
         {
             path = towstr(script_host->getStartupPath());
@@ -580,7 +580,7 @@ void HostApp::createDatabase(kscript::ExprEnv* env, kscript::Value* retval)
     // TODO: reimplement
 
 /*  
-    tango::IDatabaseMgrPtr dbmgr = tango::getDatabaseMgr();
+    xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
     if (dbmgr.isNull())
         return;
     
@@ -625,11 +625,11 @@ void HostApp::openDatabase(kscript::ExprEnv* env, kscript::Value* retval)
             return;
         }
         
-        tango::IDatabaseMgrPtr dbmgr = tango::getDatabaseMgr();
+        xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
         if (dbmgr.isNull())
             return;
         
-        tango::IDatabasePtr db = dbmgr->open(cstr);
+        xd::IDatabasePtr db = dbmgr->open(cstr);
         if (db.isNull())
             return;
             
@@ -642,7 +642,7 @@ void HostApp::openDatabase(kscript::ExprEnv* env, kscript::Value* retval)
         if (vobj->isKindOf(L"DbConnection"))
         {
             scripthost::DbConnection* conn = (scripthost::DbConnection*)vobj;
-            tango::IDatabasePtr db = conn->getDatabase();
+            xd::IDatabasePtr db = conn->getDatabase();
             if (db.isOk())
             {
                 bool result = g_app->getAppController()->openProject(db);
@@ -1652,7 +1652,7 @@ public:
          else if (m_flags & HostApp::ExecuteTemplate)
         {
             // get database ptr
-            tango::IDatabasePtr db = g_app->getDatabase();
+            xd::IDatabasePtr db = g_app->getDatabase();
             if (db.isNull())
                 return 0;
                 
@@ -1875,7 +1875,7 @@ void HostApp::evalExpression(kscript::ExprEnv* env, kscript::Value* retval)
 
     // this line adds standard database functions to the expression parser
     // (for example SUBSTR())
-    tango::bindExprParser((void*)expr_parser);
+    xd::bindExprParser((void*)expr_parser);
 
     // parse and evaluate the expression
     if (env->getParamCount() > 0)
@@ -2980,8 +2980,8 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
             /*
             // TODO: implement
 
-            tango::IFixedLengthDefinitionPtr set;
-            set = g_app->getDatabase()->openSetEx(set_path, tango::formatFixedLengthText);
+            xd::IFixedLengthDefinitionPtr set;
+            set = g_app->getDatabase()->openSetEx(set_path, xd::formatFixedLengthText);
             if (!set)
                 return;
             
@@ -2998,7 +2998,7 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
                 set->setLineDelimited(false);
             
             
-            tango::IStructurePtr s;
+            xd::IStructurePtr s;
             size_t col_count;
             std::vector<HostDataDefinitionField>::iterator it;
 
@@ -3021,7 +3021,7 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
             s = set->getSourceStructure();
             for (it = fields.begin(); it != fields.end(); ++it)
             {
-                tango::IColumnInfoPtr col = s->createColumn();
+                xd::IColumnInfoPtr col = s->createColumn();
                 col->setName(it->source_name);
                 col->setOffset(it->source_offset);
                 col->setWidth(it->source_width);
@@ -3044,11 +3044,11 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
             for (i = 0; i < col_count; ++i)
                 s->deleteColumn(s->getColumnName(i));
             
-            tango::IStructurePtr source_structure = set->getSourceStructure();
+            xd::IStructurePtr source_structure = set->getSourceStructure();
             int idx = 0;
             for (it = fields.begin(); it != fields.end(); ++it)
             {
-                tango::IColumnInfoPtr col = s->createColumn();
+                xd::IColumnInfoPtr col = s->createColumn();
                 col->setName(it->name);
                 col->setType(it->type);
                 col->setWidth(it->width);
@@ -3139,8 +3139,8 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
         /*
         TODO: implement
 
-        tango::IDelimitedTextSetPtr set;
-        set = g_app->getDatabase()->openSetEx(set_path, tango::formatDelimitedText);
+        xd::IDelimitedTextSetPtr set;
+        set = g_app->getDatabase()->openSetEx(set_path, xd::formatDelimitedText);
         if (set.isNull())
         {
             retval->setBoolean(false);
@@ -3154,9 +3154,9 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
         set->determineColumns(5000, NULL);
         set->setFirstRowColumnNames(first_row_column_names);
         
-        tango::IStructurePtr source_structure = set->getSourceStructure();
+        xd::IStructurePtr source_structure = set->getSourceStructure();
         
-        tango::IStructurePtr s;
+        xd::IStructurePtr s;
         size_t i, col_count;
         std::vector<HostDataDefinitionField>::iterator it;
 
@@ -3182,7 +3182,7 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
         int idx = 0;
         for (it = fields.begin(); it != fields.end(); ++it)
         {
-            tango::IColumnInfoPtr col = s->createColumn();
+            xd::IColumnInfoPtr col = s->createColumn();
             col->setName(it->name);
             col->setType(it->type);
             col->setWidth(it->width);
@@ -3728,7 +3728,7 @@ void HostData::importBinaryFile(kscript::ExprEnv* env, kscript::Value* retval)
     
     
     
-    tango::IStreamPtr stream = g_app->getDatabase()->createStream(output_path, mime_type);
+    xd::IStreamPtr stream = g_app->getDatabase()->createStream(output_path, mime_type);
     if (!stream)
     {
         retval->setBoolean(false);
@@ -3765,7 +3765,7 @@ void HostData::exportBinaryFile(kscript::ExprEnv* env, kscript::Value* retval)
     std::wstring output_path = env->getParam(1)->getString();
 
 
-    tango::IStreamPtr src = g_app->getDatabase()->openStream(input_path);
+    xd::IStreamPtr src = g_app->getDatabase()->openStream(input_path);
 
     if (src.isNull())
     {
@@ -3813,21 +3813,21 @@ void HostData::copyFile(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() < 2)
         return;
         
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return;
         
     std::wstring param1 = env->getParam(0)->getString();
     std::wstring param2 = env->getParam(1)->getString();
     
-    tango::IFileInfoPtr f = db->getFileInfo(param1);
+    xd::IFileInfoPtr f = db->getFileInfo(param1);
     
     if (f.isNull())
         return;
         
-    if (f->getType() == tango::filetypeTable)
+    if (f->getType() == xd::filetypeTable)
     {
-        tango::CopyParams info;
+        xd::CopyParams info;
         info.input = param1;
         info.output = param2;
 
@@ -3847,7 +3847,7 @@ void HostData::readTextStream(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() < 1)
         return;
     
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return;
         
@@ -3866,7 +3866,7 @@ void HostData::writeTextStream(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() < 2)
         return;
     
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return;
         

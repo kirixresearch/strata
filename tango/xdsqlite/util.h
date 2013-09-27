@@ -13,7 +13,7 @@
 #define __XDSQLITE_UTIL_H
 
 
-tango::IStructurePtr parseCreateStatement(const std::wstring& create);
+xd::IStructurePtr parseCreateStatement(const std::wstring& create);
 
 
 #endif

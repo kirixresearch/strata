@@ -31,15 +31,15 @@ public:
 
 protected:
 
-    bool modifyStructure(tango::IStructure* struct_config,
+    bool modifyStructure(xd::IStructure* struct_config,
                                         bool* done_flag);
 
     // calculated field routines
-    bool createCalcField(tango::IColumnInfoPtr colinfo);
+    bool createCalcField(xd::IColumnInfoPtr colinfo);
     bool deleteCalcField(const std::wstring& _name);
     bool modifyCalcField(const std::wstring& name,
-                         tango::IColumnInfoPtr colinfo);
-    void appendCalcFields(tango::IStructure* structure);
+                         xd::IColumnInfoPtr colinfo);
+    void appendCalcFields(xd::IStructure* structure);
 
 private:
 
@@ -48,7 +48,7 @@ private:
 private:
 
     xcm::mutex m_object_mutex;
-    std::vector<tango::IColumnInfoPtr> m_calc_fields;
+    std::vector<xd::IColumnInfoPtr> m_calc_fields;
     std::wstring m_obj_path;
     std::wstring m_config_file_path;
 };

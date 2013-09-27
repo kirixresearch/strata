@@ -92,8 +92,8 @@ private:
     // container context info
     IDocumentSitePtr m_doc_site;         // our document's site
     std::wstring m_path;                 // path of the table
-    tango::IStructurePtr m_structure;    // table m_path's structure
-    tango::IIteratorPtr m_iter;          // tabledoc's iterator
+    xd::IStructurePtr m_structure;    // table m_path's structure
+    xd::IIteratorPtr m_iter;          // tabledoc's iterator
     IDocumentSitePtr m_tabledoc_site;    // tabledoc's site
     ITableDocPtr m_tabledoc;             // tabledoc ptr
     bool m_ok_pressed;

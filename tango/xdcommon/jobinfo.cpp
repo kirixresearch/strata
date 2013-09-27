@@ -26,7 +26,7 @@ JobInfo::JobInfo()
     m_finish_time = 0;
     m_description = L"";
     m_progress_str = L"";
-    m_status = tango::jobStopped;
+    m_status = xd::jobStopped;
     m_current_count = 0;
     m_max_count = 0;
     m_cancelled = false;
@@ -43,7 +43,7 @@ JobInfo::~JobInfo()
 {
 }
 
-void JobInfo::setJobId(tango::jobid_t new_val)
+void JobInfo::setJobId(xd::jobid_t new_val)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
@@ -93,14 +93,14 @@ void JobInfo::setStatus(int new_val)
 }
 
 
-void JobInfo::setCurrentCount(tango::rowpos_t new_val)
+void JobInfo::setCurrentCount(xd::rowpos_t new_val)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
     m_current_count = new_val;
 }
 
-void JobInfo::setMaxCount(tango::rowpos_t new_val)
+void JobInfo::setMaxCount(xd::rowpos_t new_val)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
@@ -129,7 +129,7 @@ void JobInfo::setPhases(int phase_count, int* phase_pcts)
     }
 }
 
-void JobInfo::startPhase(tango::IJobPtr embedded_job_info)
+void JobInfo::startPhase(xd::IJobPtr embedded_job_info)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
@@ -139,7 +139,7 @@ void JobInfo::startPhase(tango::IJobPtr embedded_job_info)
     {
         m_start_time = time(NULL);
     }
-    m_status = tango::jobRunning;
+    m_status = xd::jobRunning;
     m_phase_job = embedded_job_info;
 
     if (m_phase_counter == 0)
@@ -174,7 +174,7 @@ void JobInfo::setJobFinished()
     XCM_AUTO_LOCK(m_obj_mutex);
 
     m_finish_time = time(NULL);
-    m_status = tango::jobFinished;
+    m_status = xd::jobFinished;
 }
 
 void JobInfo::setError(int error_code, const std::wstring& error_string)
@@ -185,7 +185,7 @@ void JobInfo::setError(int error_code, const std::wstring& error_string)
     m_error_string = error_string;
 }
 
-tango::jobid_t JobInfo::getJobId()
+xd::jobid_t JobInfo::getJobId()
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
@@ -241,7 +241,7 @@ int JobInfo::getStatus()
     return m_status;
 }
 
-tango::rowpos_t JobInfo::getCurrentCount()
+xd::rowpos_t JobInfo::getCurrentCount()
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
@@ -253,7 +253,7 @@ tango::rowpos_t JobInfo::getCurrentCount()
     return m_current_count;
 }
 
-tango::rowpos_t JobInfo::getMaxCount()
+xd::rowpos_t JobInfo::getMaxCount()
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
@@ -332,7 +332,7 @@ bool JobInfo::cancel()
     {
         if (m_phase_job.p->cancel())
         {
-            m_status = tango::jobCancelled;
+            m_status = xd::jobCancelled;
             m_cancelled = true;
             return true;
         }
@@ -342,7 +342,7 @@ bool JobInfo::cancel()
         }
     }
 
-    m_status = tango::jobCancelled;
+    m_status = xd::jobCancelled;
     m_cancelled = true;
     return true;
 }

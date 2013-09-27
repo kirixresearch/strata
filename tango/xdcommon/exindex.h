@@ -40,8 +40,8 @@ class IIndexProgress
 {
 public:
 
-    virtual void updateProgress(tango::rowpos_t cur_count,
-                                tango::rowpos_t tot_count,
+    virtual void updateProgress(xd::rowpos_t cur_count,
+                                xd::rowpos_t tot_count,
                                 bool* cancelled) = 0;
 };
 
@@ -81,7 +81,7 @@ public:
     virtual unsigned int getKeyLength() = 0;
     virtual unsigned int getValueLength() = 0;
     virtual bool remove(IIndexIterator* iter) = 0;
-    virtual void startBulkInsert(tango::rowpos_t total_keys) = 0;
+    virtual void startBulkInsert(xd::rowpos_t total_keys) = 0;
     virtual xcm::result insert(const void* key, int keylen, const void* value, int vallen) = 0;
     virtual void cancelBulkInsert() = 0;
     virtual void finishBulkInsert(IIndexProgress* progress) = 0;
@@ -177,7 +177,7 @@ public:
     unsigned int getKeyCount();
     unsigned int getKeyLength();
     unsigned int getValueLength();
-    void startBulkInsert(tango::rowpos_t total_keys);
+    void startBulkInsert(xd::rowpos_t total_keys);
     xcm::result insert(const void* key, int keylen, const void* value, int vallen);
     void cancelBulkInsert();
     void finishBulkInsert(IIndexProgress* progress);
@@ -256,7 +256,7 @@ private:
     std::wstring m_filename;
 
     bool m_bulk_insert;
-    tango::rowpos_t m_bulk_total;
+    xd::rowpos_t m_bulk_total;
     std::wstring m_bulk_filestub;
     int m_bulk_filenum;
 

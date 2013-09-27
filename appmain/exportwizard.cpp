@@ -568,7 +568,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
     }
     
     
-    tango::IDatabasePtr local_db = g_app->getDatabase();
+    xd::IDatabasePtr local_db = g_app->getDatabase();
             
 
     // PACKAGE FILE: do some error checking and start the export
@@ -663,10 +663,10 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
     if (m_template.m_ei.type == dbtypeXbase ||
         m_template.m_ei.type == dbtypeDelimitedText)
     {
-        tango::IDatabasePtr fs_db;
+        xd::IDatabasePtr fs_db;
         fs_db.create_instance("xdfs.Database");
 
-        tango::IAttributesPtr attr;
+        xd::IAttributesPtr attr;
         attr = fs_db->getAttributes();
         
         std::vector<wxString> dirs_created; // in case we have to remove the dirs
@@ -799,7 +799,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         for (it = m_template.m_ei.tables.begin();
              it != m_template.m_ei.tables.end(); ++it)
         {
-            tango::IStructurePtr structure = local_db->describeTable(it->input_tablename);
+            xd::IStructurePtr structure = local_db->describeTable(it->input_tablename);
 
             if (structure.isNull())
             {
@@ -969,7 +969,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
         // since we are dealing with an Access or Excel file,
         // we need to create the file before adding tables to it
 
-        tango::IDatabaseMgrPtr db_mgr;
+        xd::IDatabaseMgrPtr db_mgr;
         db_mgr.create_instance("xdodbc.DatabaseMgr");
         if (db_mgr.isNull())
         {
@@ -981,9 +981,9 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
             return;
         }
         
-        tango::IDatabasePtr db_ptr;
-        tango::IFileInfoEnumPtr items;
-        tango::IFileInfoPtr info;
+        xd::IDatabasePtr db_ptr;
+        xd::IFileInfoEnumPtr items;
+        xd::IFileInfoPtr info;
 
         wxString filetype_name;
         if (conn_type == dbtypeAccess)
@@ -1048,8 +1048,8 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
 
 
     // get the destination database pointer and list of existing tables
-    tango::IDatabasePtr db_ptr = conn->getDatabasePtr();
-    tango::IFileInfoEnumPtr tables = db_ptr->getFolderInfo(L"/");
+    xd::IDatabasePtr db_ptr = conn->getDatabasePtr();
+    xd::IFileInfoEnumPtr tables = db_ptr->getFolderInfo(L"/");
 
 
     // CHECK: are all of the specified tablenames valid?
@@ -1108,7 +1108,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
     }
     
 
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
 
     // CHECK: are all of the fieldnames in the tables valid?
     std::vector<wxString> invalid_fieldnames;
@@ -1117,14 +1117,14 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
     for (it = m_template.m_ei.tables.begin();
          it != m_template.m_ei.tables.end(); ++it)
     {
-        tango::IStructurePtr s = db->describeTable(it->input_tablename);
+        xd::IStructurePtr s = db->describeTable(it->input_tablename);
         if (s.isNull())
             continue;
 
         int i, col_count = s->getColumnCount();
         for (i = 0; i < col_count; ++i)
         {
-            tango::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
+            xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
             wxString colname = colinfo->getName();
 
             if (!isValidFieldName(colname, db_ptr))
@@ -1176,7 +1176,7 @@ void ExportWizard::onWizardFinished(kcl::Wizard* wizard)
             size_t i, table_count = tables->size();
             for (i = 0; i < table_count; ++i)
             {
-                tango::IFileInfoPtr info = tables->getItem(i);
+                xd::IFileInfoPtr info = tables->getItem(i);
 
                 if (kl::iequals(it->output_tablename, info->getName()))
                 {

@@ -20,7 +20,7 @@ class BufIterator : public BaseIterator
 {
     XCM_CLASS_NAME("xdnative.BufIterator")
     XCM_BEGIN_INTERFACE_MAP(BufIterator)
-        XCM_INTERFACE_ENTRY(tango::IIterator)
+        XCM_INTERFACE_ENTRY(xd::IIterator)
         XCM_INTERFACE_CHAIN(BaseIterator)
     XCM_END_INTERFACE_MAP()
 
@@ -39,9 +39,9 @@ public:
 
 private:
 
-    tango::IIteratorPtr clone();
+    xd::IIteratorPtr clone();
     void goLast();
-    tango::rowid_t getRowId();
+    xd::rowid_t getRowId();
     bool bof();
     bool eof();
     bool seek(const unsigned char* key, int length, bool soft);

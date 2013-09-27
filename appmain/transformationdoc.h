@@ -23,13 +23,13 @@ public:
     TransformField()
     {
         input_name = wxEmptyString;
-        input_type = tango::typeCharacter;
+        input_type = xd::typeCharacter;
         input_width = 20;
         input_scale = 0;
         input_offset = 0;
 
         output_name = wxEmptyString;
-        output_type = tango::typeCharacter;
+        output_type = xd::typeCharacter;
         output_width = 20;
         output_scale = 0;
         output_expression = wxEmptyString;
@@ -109,7 +109,7 @@ public:
     virtual void getTransformation(std::vector<TransformField>& result) = 0;
 
     virtual void setInputStructure(const std::vector<TransformField>& input_fields) = 0;
-    virtual void setInputStructure(tango::IStructurePtr structure) = 0;
+    virtual void setInputStructure(xd::IStructurePtr structure) = 0;
 };
 
 XCM_DECLARE_SMARTPTR(ITransformationDoc)
@@ -155,7 +155,7 @@ public:
     void getTransformation(std::vector<TransformField>& result);
 
     void setInputStructure(const std::vector<TransformField>& input_fields);
-    void setInputStructure(tango::IStructurePtr structure);
+    void setInputStructure(xd::IStructurePtr structure);
 
 private:
 
@@ -180,8 +180,8 @@ private:
     void insertRow(int row, bool dynamic = false);
     void insertSelectedRows(bool dynamic = false);
     void insertRowFromColumnInfo(int row,
-                                 tango::IColumnInfoPtr colinfo,
-                                 tango::IStructurePtr validate_against = xcm::null);
+                                 xd::IColumnInfoPtr colinfo,
+                                 xd::IStructurePtr validate_against = xcm::null);
 
     void updateNumberColumn();
     void updateExpressionIcon(int row, int validation_res);
@@ -195,7 +195,7 @@ private:
     void markProblemRow(int row, bool scroll_to);
     int checkDuplicateFieldnames(int check_flags);
     int checkInvalidFieldnames(int check_flags);
-    int validateExpression(tango::IStructurePtr structure, const wxString& expr, int type = tango::typeUndefined);
+    int validateExpression(xd::IStructurePtr structure, const wxString& expr, int type = xd::typeUndefined);
     int validateStructure();
     bool doErrorCheck();
     
@@ -208,8 +208,8 @@ private:
                                           int* format_comboidx);
 
     void populateSourceFieldDropDown();
-    tango::IStructurePtr createStructureFromGrid();
-    tango::IStructurePtr getSourceStructure();
+    xd::IStructurePtr createStructureFromGrid();
+    xd::IStructurePtr getSourceStructure();
     
     bool doSave();
 

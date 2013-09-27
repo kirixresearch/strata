@@ -83,8 +83,8 @@ public:
     virtual std::wstring getPassword() = 0;
     virtual void setPassword(const std::wstring& new_val) = 0;
 
-    virtual tango::IDatabasePtr getDatabasePtr() = 0;
-    virtual void setDatabasePtr(tango::IDatabasePtr new_val) = 0;
+    virtual xd::IDatabasePtr getDatabasePtr() = 0;
+    virtual void setDatabasePtr(xd::IDatabasePtr new_val) = 0;
 };
 
 XCM_DECLARE_SMARTPTR(IConnection)

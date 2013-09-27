@@ -106,7 +106,7 @@ int QueryJob::runJob()
         if (it != order_children_node.begin())
             order_str += L",";
 
-        order_str += tango::quoteIdentifierIfNecessary(m_db, (*it)["expression"]);
+        order_str += xd::quoteIdentifierIfNecessary(m_db, (*it)["expression"]);
         
         if (it->childExists("direction") && 0 == wcscasecmp((*it)["direction"].getString().c_str(), L"DESC"))
             order_str += L" DESC";
@@ -115,7 +115,7 @@ int QueryJob::runJob()
 
     if (!distinct_node.isOk() && !output_node.isOk())
     {
-        tango::QueryParams qp;
+        xd::QueryParams qp;
         qp.from = input_str;
         qp.columns = columns_node.isOk() ? columns_node.getString() : L"";
         qp.order = order_node.isOk() ? order_str : L"";
@@ -124,17 +124,17 @@ int QueryJob::runJob()
 
         setXdJob(qp.job);
 
-        tango::IIteratorPtr iter = m_db->query(qp);
+        xd::IIteratorPtr iter = m_db->query(qp);
         setResultObject(iter);
 
         return 0;
     }
      else
     {
-        std::wstring q_input_str = tango::quoteIdentifierIfNecessary(m_db, input_str);
+        std::wstring q_input_str = xd::quoteIdentifierIfNecessary(m_db, input_str);
 
         std::wstring output_str = output_node.getString();
-        std::wstring q_output_str = tango::quoteIdentifierIfNecessary(m_db, output_node.getString());
+        std::wstring q_output_str = xd::quoteIdentifierIfNecessary(m_db, output_node.getString());
 
         std::wstring where_str = where_node.getString();
 
@@ -174,11 +174,11 @@ int QueryJob::runJob()
         }
 
 
-        tango::IJobPtr tango_job = m_db->createJob();
+        xd::IJobPtr tango_job = m_db->createJob();
         setXdJob(tango_job);
 
         xcm::IObjectPtr result;
-        m_db->execute(sql, tango::sqlPassThrough, result, tango_job);
+        m_db->execute(sql, xd::sqlPassThrough, result, tango_job);
         setResultObject(result);
 
         if (tango_job->getCancelled())

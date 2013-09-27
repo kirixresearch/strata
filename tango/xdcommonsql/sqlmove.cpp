@@ -23,10 +23,10 @@
 #include <kl/portable.h>
 
 
-bool sqlMove(tango::IDatabasePtr db,
+bool sqlMove(xd::IDatabasePtr db,
              const std::wstring& _command,
              ThreadErrorInfo& error,
-             tango::IJob* job)
+             xd::IJob* job)
 {
     SqlStatement stmt(_command);
 
@@ -38,13 +38,13 @@ bool sqlMove(tango::IDatabasePtr db,
 
     if (!stmt.getKeywordExists(L"MOVE") && !stmt.getKeywordExists(L"RENAME"))
     {
-        error.setError(tango::errorSyntax, L"Invalid syntax; MOVE statement missing MOVE or RENAME clause");
+        error.setError(xd::errorSyntax, L"Invalid syntax; MOVE statement missing MOVE or RENAME clause");
         return false;
     }
     
     if (!stmt.getKeywordExists(L"TO"))
     {
-        error.setError(tango::errorSyntax, L"Invalid syntax; MOVE statement missing TO clause");    
+        error.setError(xd::errorSyntax, L"Invalid syntax; MOVE statement missing TO clause");    
         return false;
     }
     
@@ -73,7 +73,7 @@ bool sqlMove(tango::IDatabasePtr db,
      else
     {
         // can't find source file
-        error.setError(tango::errorSyntax, L"Invalid syntax; no source table before TO clause");
+        error.setError(xd::errorSyntax, L"Invalid syntax; no source table before TO clause");
         return false;
     }
 
@@ -88,7 +88,7 @@ bool sqlMove(tango::IDatabasePtr db,
         {
             wchar_t buf[1024]; // some paths might be long
             swprintf(buf, 1024, L"Unable to rename [%ls] to [%ls]", src.c_str(), dest.c_str());
-            error.setError(tango::errorGeneral, buf);        
+            error.setError(xd::errorGeneral, buf);        
             return false;
         }
         
@@ -99,7 +99,7 @@ bool sqlMove(tango::IDatabasePtr db,
     {
         wchar_t buf[1024]; // some paths might be long
         swprintf(buf, 1024, L"Unable to move [%ls] to [%ls]", src.c_str(), dest.c_str());
-        error.setError(tango::errorGeneral, buf);
+        error.setError(xd::errorGeneral, buf);
         return false;
     }
     

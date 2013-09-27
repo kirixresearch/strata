@@ -255,12 +255,12 @@ RelationBox::~RelationBox()
 {
 }
 
-tango::IStructurePtr RelationBox::getStructure()
+xd::IStructurePtr RelationBox::getStructure()
 {
     return m_structure;
 }
 
-void RelationBox::setStructure(tango::IStructurePtr s)
+void RelationBox::setStructure(xd::IStructurePtr s)
 {
     m_structure = s;
     populate();
@@ -1138,7 +1138,7 @@ void RelationBox::populate()
     i = 0;
     for (it = items.begin(); it != items.end(); ++it)
     {
-        tango::IColumnInfoPtr col_info;
+        xd::IColumnInfoPtr col_info;
         col_info = m_structure->getColumnInfo(towstr(*it));
 
         wxBitmap icon;
@@ -1496,7 +1496,7 @@ RelationDiagram::~RelationDiagram()
 
 bool RelationDiagram::save()
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return false;
 
@@ -1547,7 +1547,7 @@ bool RelationDiagram::save()
 
 bool RelationDiagram::load()
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return false;
 
@@ -2099,7 +2099,7 @@ bool RelationDiagram::addBox(const wxString& path,
     if (height <= 0)
         height = BOX_DEFAULT_HEIGHT;
 
-    tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(path));
+    xd::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(path));
     if (structure.isNull())
         return false;
 
@@ -2399,7 +2399,7 @@ void RelationDiagram::onSetStructureChanged(const wxString& set_path)
     if (!box)
         return;
     
-    tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(set_path));
+    xd::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(set_path));
     if (structure.isNull())
         return;
     
@@ -2408,7 +2408,7 @@ void RelationDiagram::onSetStructureChanged(const wxString& set_path)
     int i, count = structure->getColumnCount();
     for (i = 0; i < count; ++i)
     {
-        tango::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
         fieldnames.push_back(colinfo->getName());
     }
     

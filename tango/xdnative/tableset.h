@@ -70,7 +70,7 @@ public:
     const unsigned char* getRowBuffer();
     int getRowBufferWidth();
 
-    tango::IIteratorPtr clone();
+    xd::IIteratorPtr clone();
     void skip(int delta);
     void goFirst();
     void goLast();
@@ -82,9 +82,9 @@ public:
     double getPos();
 
     void flushRow();
-    tango::rowpos_t getRowNumber();
+    xd::rowpos_t getRowNumber();
 
-    void onSetRowUpdated(tango::rowid_t rowid);
+    void onSetRowUpdated(xd::rowid_t rowid);
     void onSetStructureUpdated();
 
 private:
@@ -93,17 +93,17 @@ private:
 
 private:
 
-    tango::tableord_t m_table_ord;
-    tango::rowpos_t m_row_count;
+    xd::tableord_t m_table_ord;
+    xd::rowpos_t m_row_count;
     TableSet* m_table_set;
     ITable* m_table;
     int m_table_rowwidth;
     int m_read_ahead_rowcount;
     unsigned char* m_buf;
-    tango::rowpos_t* m_rowpos_buf;
+    xd::rowpos_t* m_rowpos_buf;
     int m_buf_rowcount;
     int m_buf_pos;
-    tango::rowpos_t m_row_num;    // sequential row number for ROWNUM()
+    xd::rowpos_t m_row_num;    // sequential row number for ROWNUM()
     bool m_eof;
     bool m_bof;
     bool m_include_deleted;
@@ -162,44 +162,44 @@ public:
     TableSet(XdnativeDatabase* database);
     virtual ~TableSet();
 
-    bool create(tango::IStructure* struct_config, const std::wstring& path);
+    bool create(xd::IStructure* struct_config, const std::wstring& path);
     bool load(INodeValuePtr file);
     bool save();
 
     void updateRowCount();
 
-    tango::IStructurePtr getStructure();
-    bool modifyStructure(tango::IStructure* struct_config,
-                         tango::IJob* job);
+    xd::IStructurePtr getStructure();
+    bool modifyStructure(xd::IStructure* struct_config,
+                         xd::IJob* job);
 
-    tango::IIndexInfoEnumPtr getIndexEnum();
+    xd::IIndexInfoEnumPtr getIndexEnum();
 
-    tango::IIndexInfoPtr createIndex(const std::wstring& tag,
+    xd::IIndexInfoPtr createIndex(const std::wstring& tag,
                                      const std::wstring& expr,
-                                     tango::IJob* job);
+                                     xd::IJob* job);
     bool deleteIndex(const std::wstring& name);
     bool renameIndex(const std::wstring& name,
                      const std::wstring& new_name);
 
-    tango::IIteratorPtr createIterator(const std::wstring& columns,
+    xd::IIteratorPtr createIterator(const std::wstring& columns,
                                        const std::wstring& order,
-                                       tango::IJob* job);
+                                       xd::IJob* job);
 
-    tango::IRowInserterPtr getRowInserter();
+    xd::IRowInserterPtr getRowInserter();
     IXdsqlRowDeleterPtr getRowDeleter();
     bool restoreDeleted();
     
-    tango::rowpos_t getRowCount();
+    xd::rowpos_t getRowCount();
 
-    bool updateRow(tango::rowid_t rowid,
-                   tango::ColumnUpdateInfo* info,
+    bool updateRow(xd::rowid_t rowid,
+                   xd::ColumnUpdateInfo* info,
                    size_t info_size);
 
     unsigned long long getStructureModifyTime();
 
     // ITableEvents
-    void onTableRowUpdated(tango::rowid_t rowid);
-    void onTableRowDeleted(tango::rowid_t rowid);
+    void onTableRowUpdated(xd::rowid_t rowid);
+    void onTableRowDeleted(xd::rowid_t rowid);
     void onTableRowCountUpdated();
 
 private:
@@ -217,14 +217,14 @@ private:
 private:
 
     bool m_temporary;
-    tango::tableord_t m_ordinal;
+    xd::tableord_t m_ordinal;
     std::wstring m_ofspath;
-    tango::rowpos_t m_row_count;
-    tango::rowpos_t m_deleted_row_count;
-    tango::rowpos_t m_phys_row_count;
+    xd::rowpos_t m_row_count;
+    xd::rowpos_t m_deleted_row_count;
+    xd::rowpos_t m_phys_row_count;
     unsigned long long m_idxrefresh_time;
     NativeTable* m_table;
-    tango::IStructurePtr m_structure;
+    xd::IStructurePtr m_structure;
 
     xcm::mutex m_update_mutex;
     std::vector<IndexEntry> m_indexes;
@@ -251,13 +251,13 @@ public:
     void addIndex(IIndex* index, const std::wstring& expr);
 
     void startDelete();
-    bool deleteRow(const tango::rowid_t& rowid);
+    bool deleteRow(const xd::rowid_t& rowid);
     void finishDelete();
     void cancelDelete();
 
 private:
 
-    bool doRowDelete(tango::rowid_t rowid);
+    bool doRowDelete(xd::rowid_t rowid);
 
     NativeRowDeleter* m_table_row_deleter;
     TableSet* m_set;
@@ -266,11 +266,11 @@ private:
 
 
 
-class TableSetRowInserter : public tango::IRowInserter
+class TableSetRowInserter : public xd::IRowInserter
 {
     XCM_CLASS_NAME("xdnative.TableSetRowInserter")
     XCM_BEGIN_INTERFACE_MAP(TableSetRowInserter)
-        XCM_INTERFACE_ENTRY(tango::IRowInserter)
+        XCM_INTERFACE_ENTRY(xd::IRowInserter)
     XCM_END_INTERFACE_MAP()
 
 
@@ -279,36 +279,36 @@ public:
     TableSetRowInserter(XdnativeDatabase* db, TableSet* set);
     virtual ~TableSetRowInserter();
 
-    tango::objhandle_t getHandle(const std::wstring& column_name);
-    tango::IColumnInfoPtr getInfo(tango::objhandle_t column_handle);
+    xd::objhandle_t getHandle(const std::wstring& column_name);
+    xd::IColumnInfoPtr getInfo(xd::objhandle_t column_handle);
 
-    bool putRawPtr(tango::objhandle_t column_handle,
+    bool putRawPtr(xd::objhandle_t column_handle,
                    const unsigned char* value,
                    int length);
 
-    bool putString(tango::objhandle_t column_handle,
+    bool putString(xd::objhandle_t column_handle,
                    const std::string& value);
 
-    bool putWideString(tango::objhandle_t column_handle,
+    bool putWideString(xd::objhandle_t column_handle,
                    const std::wstring& value);
 
-    bool putDouble(tango::objhandle_t column_handle,
+    bool putDouble(xd::objhandle_t column_handle,
                    double value);
 
-    bool putInteger(tango::objhandle_t column_handle,
+    bool putInteger(xd::objhandle_t column_handle,
                    int value);
 
-    bool putBoolean(tango::objhandle_t column_handle,
+    bool putBoolean(xd::objhandle_t column_handle,
                    bool value);
 
-    bool putDateTime(tango::objhandle_t column_handle,
-                   tango::datetime_t datetime);
+    bool putDateTime(xd::objhandle_t column_handle,
+                   xd::datetime_t datetime);
 
-    bool putNull(tango::objhandle_t column_handle);
+    bool putNull(xd::objhandle_t column_handle);
 
     bool startInsert(const std::wstring& col_list);
     bool insertRow();
-    bool insertRowFrom(tango::IIterator* iter);
+    bool insertRowFrom(xd::IIterator* iter);
     void finishInsert();
 
     bool flush();

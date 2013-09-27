@@ -39,7 +39,7 @@ friend class SlSet;
 
     XCM_CLASS_NAME("xdsqlite.Iterator")
     XCM_BEGIN_INTERFACE_MAP(SlIterator)
-        XCM_INTERFACE_ENTRY(tango::IIterator)
+        XCM_INTERFACE_ENTRY(xd::IIterator)
     XCM_END_INTERFACE_MAP()
 
 private:
@@ -52,57 +52,57 @@ public:
 
     bool init(const std::wstring& query);
 
-    // tango::IIterator
+    // xd::IIterator
 
     void setTable(const std::wstring& tbl);
     std::wstring getTable();
 
-    tango::rowpos_t getRowCount();
-    tango::IDatabasePtr getDatabase();
-    tango::IIteratorPtr clone();
+    xd::rowpos_t getRowCount();
+    xd::IDatabasePtr getDatabase();
+    xd::IIteratorPtr clone();
 
     unsigned int getIteratorFlags();
 
     void skip(int delta);
     void goFirst();
     void goLast();
-    tango::rowid_t getRowId();
+    xd::rowid_t getRowId();
     bool bof();
     bool eof();
     bool seek(const unsigned char* key, int length, bool soft);
     bool seekValues(const wchar_t* arr[], size_t arr_size, bool soft);
     bool setPos(double pct);
     double getPos();
-    void goRow(const tango::rowid_t& rowid);
+    void goRow(const xd::rowid_t& rowid);
 
-    tango::IStructurePtr getStructure();
+    xd::IStructurePtr getStructure();
     void refreshStructure();
-    bool modifyStructure(tango::IStructure* struct_config, tango::IJob* job);
+    bool modifyStructure(xd::IStructure* struct_config, xd::IJob* job);
 
-    tango::objhandle_t getHandle(const std::wstring& expr);
-    tango::IColumnInfoPtr getInfo(tango::objhandle_t data_handle);
-    int getType(tango::objhandle_t data_handle);
-    bool releaseHandle(tango::objhandle_t data_handle);
+    xd::objhandle_t getHandle(const std::wstring& expr);
+    xd::IColumnInfoPtr getInfo(xd::objhandle_t data_handle);
+    int getType(xd::objhandle_t data_handle);
+    bool releaseHandle(xd::objhandle_t data_handle);
 
-    const unsigned char* getRawPtr(tango::objhandle_t data_handle);
-    int getRawWidth(tango::objhandle_t data_handle);
-    const std::string& getString(tango::objhandle_t data_handle);
-    const std::wstring& getWideString(tango::objhandle_t data_handle);
-    tango::datetime_t getDateTime(tango::objhandle_t data_handle);
-    double getDouble(tango::objhandle_t data_handle);
-    int getInteger(tango::objhandle_t data_handle);
-    bool getBoolean(tango::objhandle_t data_handle);
-    bool isNull(tango::objhandle_t data_handle);
+    const unsigned char* getRawPtr(xd::objhandle_t data_handle);
+    int getRawWidth(xd::objhandle_t data_handle);
+    const std::string& getString(xd::objhandle_t data_handle);
+    const std::wstring& getWideString(xd::objhandle_t data_handle);
+    xd::datetime_t getDateTime(xd::objhandle_t data_handle);
+    double getDouble(xd::objhandle_t data_handle);
+    int getInteger(xd::objhandle_t data_handle);
+    bool getBoolean(xd::objhandle_t data_handle);
+    bool isNull(xd::objhandle_t data_handle);
 
 private:
 
     SlDatabase* m_database;
-    tango::IStructurePtr m_structure;
-    tango::IStructurePtr m_table_structure;
+    xd::IStructurePtr m_structure;
+    xd::IStructurePtr m_table_structure;
 
     std::vector<SlDataAccessInfo> m_columns;
 
-    tango::tableord_t m_ordinal;
+    xd::tableord_t m_ordinal;
     std::wstring m_tablename;
     std::wstring m_path;
 

@@ -1953,7 +1953,7 @@ bool ExIndex::_sortedInsert(IKeyList* pool,
     unsigned char* ptr;
     bool split;
     bool cancelled = false;
-    tango::rowpos_t count = 0;
+    xd::rowpos_t count = 0;
 
     insert_loc = 0;
     split = false;
@@ -2050,7 +2050,7 @@ bool ExIndex::_sortedInsert(IKeyList* pool,
 }
 
 
-void ExIndex::startBulkInsert(tango::rowpos_t total_keys)
+void ExIndex::startBulkInsert(xd::rowpos_t total_keys)
 {
     if (m_pool)
     {

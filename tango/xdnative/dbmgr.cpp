@@ -19,7 +19,7 @@
 
 bool DatabaseMgr::createDatabase(const std::wstring& connection_str)
 {
-    tango::ConnectionStringParser c(connection_str);
+    xd::ConnectionStringParser c(connection_str);
     std::wstring provider = c.getLowerValue(L"xdprovider");
     if (provider.empty())
         return false;
@@ -52,7 +52,7 @@ bool DatabaseMgr::createDatabase(const std::wstring& connection_str)
     {
         std::string forward = kl::tostring(provider) + ".DatabaseMgr";
 
-        tango::IDatabaseMgrPtr dbmgr;
+        xd::IDatabaseMgrPtr dbmgr;
         dbmgr.create_instance(forward.c_str());
         if (dbmgr.isOk())
         {
@@ -64,7 +64,7 @@ bool DatabaseMgr::createDatabase(const std::wstring& connection_str)
     return false;
 }
     
-tango::IDatabasePtr DatabaseMgr::open(const std::wstring& _connection_str)
+xd::IDatabasePtr DatabaseMgr::open(const std::wstring& _connection_str)
 {
     m_error.clearError();
 
@@ -77,7 +77,7 @@ tango::IDatabasePtr DatabaseMgr::open(const std::wstring& _connection_str)
     }
 
 
-    tango::ConnectionStringParser c(connection_str);
+    xd::ConnectionStringParser c(connection_str);
     std::wstring provider = c.getLowerValue(L"xdprovider");
     if (provider.empty())
         return xcm::null;
@@ -90,16 +90,16 @@ tango::IDatabasePtr DatabaseMgr::open(const std::wstring& _connection_str)
         std::string dbmgr_class = kl::tostring(provider);
         dbmgr_class += ".DatabaseMgr";
         
-        tango::IDatabaseMgrPtr dbmgr;
+        xd::IDatabaseMgrPtr dbmgr;
         if (!dbmgr.create_instance(dbmgr_class.c_str()))
         {
             wchar_t buf[255];
             swprintf(buf, 254, L"The driver component '%ls' could either not be initialized or is missing. %hs", provider.c_str(), xcm::get_last_error());
-            m_error.setError(tango::errorGeneral, buf);
+            m_error.setError(xd::errorGeneral, buf);
             return xcm::null;
         }
         
-        tango::IDatabasePtr res_db = dbmgr->open(connection_str);
+        xd::IDatabasePtr res_db = dbmgr->open(connection_str);
         
         m_error.setError(dbmgr->getErrorCode(), dbmgr->getErrorString());
 
@@ -122,15 +122,15 @@ tango::IDatabasePtr DatabaseMgr::open(const std::wstring& _connection_str)
         return xcm::null;
     }
 
-    return tango::IDatabasePtr(db, false);
+    return xd::IDatabasePtr(db, false);
 }
 
-tango::IDatabaseEntryEnumPtr DatabaseMgr::getDatabaseList(const std::wstring& host,
+xd::IDatabaseEntryEnumPtr DatabaseMgr::getDatabaseList(const std::wstring& host,
                                                           int port,
                                                           const std::wstring& uid,
                                                           const std::wstring& password)
 {
-    xcm::IVectorImpl<tango::IDatabaseEntryPtr>* vec = new xcm::IVectorImpl<tango::IDatabaseEntryPtr>;
+    xcm::IVectorImpl<xd::IDatabaseEntryPtr>* vec = new xcm::IVectorImpl<xd::IDatabaseEntryPtr>;
     return vec;
 }
 

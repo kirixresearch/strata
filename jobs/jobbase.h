@@ -155,7 +155,7 @@ public:
         m_ref_object = ref_object;
     }
 
-    void setDatabase(tango::IDatabase* db)
+    void setDatabase(xd::IDatabase* db)
     {
     }
 

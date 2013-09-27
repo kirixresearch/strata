@@ -116,7 +116,7 @@ TextViewModel::TextViewModel()
     m_cur_row = 0;
     m_cur_row_offset = 0;
 
-    m_char_encoding = tango::encodingASCII;
+    m_char_encoding = xd::encodingASCII;
     m_line_delimiters = wxT("\x0a");
     m_row_width = 0;
     m_skip_chars = 0;
@@ -285,7 +285,7 @@ wxChar TextViewModel::getCharAtOffset(xf_off_t offset)
 
     // if the character is in memory, return it
     if (off >= m_chunk_offset && off < m_chunk_offset+m_chunk_size)
-        return (m_char_encoding == tango::encodingEBCDIC) ? ebcdic2ascii(m_buf[off-m_chunk_offset])
+        return (m_char_encoding == xd::encodingEBCDIC) ? ebcdic2ascii(m_buf[off-m_chunk_offset])
                                                        : m_buf[off-m_chunk_offset];
 
     // character was not in the buffer, so we need to read in a new chunk
@@ -301,7 +301,7 @@ wxChar TextViewModel::getCharAtOffset(xf_off_t offset)
 
     // return the character (if not beyond EOF)
     if (off >= m_chunk_offset && off < m_chunk_offset+m_chunk_size)
-        return (m_char_encoding == tango::encodingEBCDIC) ? ebcdic2ascii(m_buf[off-m_chunk_offset])
+        return (m_char_encoding == xd::encodingEBCDIC) ? ebcdic2ascii(m_buf[off-m_chunk_offset])
                                                        : m_buf[off-m_chunk_offset];
     
     return wxT('\0');
@@ -692,7 +692,7 @@ TextView::TextView(wxWindow* parent,
 
     m_dirty = false;
 
-    m_default_char_encoding = tango::encodingASCII;
+    m_default_char_encoding = xd::encodingASCII;
 
     m_cursor_x = -1;
     m_cursor_y = -1;
@@ -2316,15 +2316,15 @@ void TextView::onMouseRightDown(wxMouseEvent& evt)
     
             switch (m_cols[col].encoding)
             {
-                case tango::encodingUndefined: menuPopup.Check(ID_PopupMenu_EncodingDefault, true); break;
-                case tango::encodingASCII:     menuPopup.Check(ID_PopupMenu_EncodingASCII, true); break;
-                case tango::encodingEBCDIC:    menuPopup.Check(ID_PopupMenu_EncodingEBCDIC, true); break;
-                case tango::encodingUTF8:      break;
-                case tango::encodingUTF16:     break;
-                case tango::encodingUTF32:     break;
-                case tango::encodingUCS2:      menuPopup.Check(ID_PopupMenu_EncodingUCS2, true); break;
-                case tango::encodingCOMP:      menuPopup.Check(ID_PopupMenu_EncodingCOMP, true); break;
-                case tango::encodingCOMP3:     menuPopup.Check(ID_PopupMenu_EncodingCOMP3, true); break;
+                case xd::encodingUndefined: menuPopup.Check(ID_PopupMenu_EncodingDefault, true); break;
+                case xd::encodingASCII:     menuPopup.Check(ID_PopupMenu_EncodingASCII, true); break;
+                case xd::encodingEBCDIC:    menuPopup.Check(ID_PopupMenu_EncodingEBCDIC, true); break;
+                case xd::encodingUTF8:      break;
+                case xd::encodingUTF16:     break;
+                case xd::encodingUTF32:     break;
+                case xd::encodingUCS2:      menuPopup.Check(ID_PopupMenu_EncodingUCS2, true); break;
+                case xd::encodingCOMP:      menuPopup.Check(ID_PopupMenu_EncodingCOMP, true); break;
+                case xd::encodingCOMP3:     menuPopup.Check(ID_PopupMenu_EncodingCOMP3, true); break;
             };
             
             wxPoint pt_mouse = ::wxGetMousePosition();
@@ -2342,12 +2342,12 @@ void TextView::onMouseRightDown(wxMouseEvent& evt)
                 switch (command)
                 {
                     case ID_PopupMenu_RenameColumn:   break;
-                    case ID_PopupMenu_EncodingDefault: new_encoding = tango::encodingUndefined; break;
-                    case ID_PopupMenu_EncodingASCII:   new_encoding = tango::encodingASCII; break;
-                    case ID_PopupMenu_EncodingUCS2:    new_encoding = tango::encodingUCS2; break;
-                    case ID_PopupMenu_EncodingEBCDIC:  new_encoding = tango::encodingEBCDIC; break;
-                    case ID_PopupMenu_EncodingCOMP:    new_encoding = tango::encodingCOMP; break;
-                    case ID_PopupMenu_EncodingCOMP3:   new_encoding = tango::encodingCOMP3; break;
+                    case ID_PopupMenu_EncodingDefault: new_encoding = xd::encodingUndefined; break;
+                    case ID_PopupMenu_EncodingASCII:   new_encoding = xd::encodingASCII; break;
+                    case ID_PopupMenu_EncodingUCS2:    new_encoding = xd::encodingUCS2; break;
+                    case ID_PopupMenu_EncodingEBCDIC:  new_encoding = xd::encodingEBCDIC; break;
+                    case ID_PopupMenu_EncodingCOMP:    new_encoding = xd::encodingCOMP; break;
+                    case ID_PopupMenu_EncodingCOMP3:   new_encoding = xd::encodingCOMP3; break;
                 };
                 
                 if (new_encoding != -1)

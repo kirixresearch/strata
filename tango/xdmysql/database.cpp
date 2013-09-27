@@ -98,29 +98,29 @@ int mysql2tangoType(int mysql_type)
         case FIELD_TYPE_LONG:
         case FIELD_TYPE_INT24:
         case FIELD_TYPE_YEAR:
-            return tango::typeInteger;
+            return xd::typeInteger;
         case FIELD_TYPE_LONGLONG:
         case FIELD_TYPE_DECIMAL:
         case MYSQL_TYPE_NEWDECIMAL:
-            return tango::typeNumeric;
+            return xd::typeNumeric;
         case FIELD_TYPE_FLOAT:
         case FIELD_TYPE_DOUBLE:
-            return tango::typeDouble;
+            return xd::typeDouble;
         case FIELD_TYPE_DATE:
-            return tango::typeDate;
+            return xd::typeDate;
         case FIELD_TYPE_TIME:
         case FIELD_TYPE_TIMESTAMP:
         case FIELD_TYPE_DATETIME:
-            return tango::typeDateTime;
+            return xd::typeDateTime;
         case FIELD_TYPE_STRING:
         case FIELD_TYPE_VAR_STRING:
         case FIELD_TYPE_BLOB:
         case FIELD_TYPE_SET:
         case FIELD_TYPE_ENUM:
-            return tango::typeCharacter;
+            return xd::typeCharacter;
         case FIELD_TYPE_NULL:
         default:
-            return tango::typeInvalid;
+            return xd::typeInvalid;
     }
 
     // TODO: the following types have not been added yet
@@ -148,19 +148,19 @@ std::wstring createMySqlFieldString(const std::wstring& name, int type, int widt
 
     switch (type)
     {
-        case tango::typeCharacter:
+        case xd::typeCharacter:
         {
             swprintf(buf, 255, L"%ls varchar (%d)%ls", name.c_str(), width, null ? L" NULL" : L"");
             return buf;
         }
 
-        case tango::typeWideCharacter:
+        case xd::typeWideCharacter:
         {
             swprintf(buf, 255, L"%ls varchar (%d)%ls", name.c_str(), width, null ? L" NULL" : L"");
             return buf;
         }
 
-        case tango::typeNumeric:
+        case xd::typeNumeric:
         {
             if (width > 28)
             {
@@ -171,31 +171,31 @@ std::wstring createMySqlFieldString(const std::wstring& name, int type, int widt
             return buf;
         }
 
-        case tango::typeInteger:
+        case xd::typeInteger:
         {
             swprintf(buf, 255, L"%ls int%ls", name.c_str(), null ? L" NULL" : L"");
             return buf;
         }
 
-        case tango::typeDouble:
+        case xd::typeDouble:
         {
             swprintf(buf, 255, L"%ls float%ls", name.c_str(), null ? L" NULL" : L"");
             return buf;
         }
 
-        case tango::typeDate:
+        case xd::typeDate:
         {
             swprintf(buf, 255, L"%ls date%ls", name.c_str(), null ? L" NULL" : L"");
             return buf;
         }
 
-        case tango::typeDateTime:
+        case xd::typeDateTime:
         {
             swprintf(buf, 255, L"%ls datetime%ls", name.c_str(), null ? L" NULL" : L"");
             return buf;
         }
         
-        case tango::typeBoolean:
+        case xd::typeBoolean:
         {
             swprintf(buf, 255, L"%ls tinyint%ls", name.c_str(), null ? L" NULL" : L"");
             return buf;
@@ -322,21 +322,21 @@ MysqlDatabase::MysqlDatabase()
     // illegal characters in a table name include \/. and characters illegal
     // in filenames, the superset of which includes: \/:*?<>|
     
-    m_attr = static_cast<tango::IAttributes*>(new DatabaseAttributes);
-    m_attr->setIntAttribute(tango::dbattrColumnMaxNameLength, 64);
-    m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 64);
-    m_attr->setStringAttribute(tango::dbattrKeywords, kws);    
-    m_attr->setStringAttribute(tango::dbattrColumnInvalidChars, 
+    m_attr = static_cast<xd::IAttributes*>(new DatabaseAttributes);
+    m_attr->setIntAttribute(xd::dbattrColumnMaxNameLength, 64);
+    m_attr->setIntAttribute(xd::dbattrTableMaxNameLength, 64);
+    m_attr->setStringAttribute(xd::dbattrKeywords, kws);    
+    m_attr->setStringAttribute(xd::dbattrColumnInvalidChars, 
                                L"\\./\x00\xFF");
-    m_attr->setStringAttribute(tango::dbattrTableInvalidChars, 
+    m_attr->setStringAttribute(xd::dbattrTableInvalidChars, 
                                L"\\./:*?<>|\x00\xFF");
-    m_attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars,
+    m_attr->setStringAttribute(xd::dbattrColumnInvalidStartingChars,
                                L"\\./\x00\xFF");
-    m_attr->setStringAttribute(tango::dbattrTableInvalidStartingChars,
+    m_attr->setStringAttribute(xd::dbattrTableInvalidStartingChars,
                                L"\\./:*?<>|\x00\xFF");
-    m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"`");
-    m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"`");
-    m_attr->setStringAttribute(tango::dbattrIdentifierCharsNeedingQuote, L"`~# $!@%^&(){}-+.");
+    m_attr->setStringAttribute(xd::dbattrIdentifierQuoteOpenChar, L"`");
+    m_attr->setStringAttribute(xd::dbattrIdentifierQuoteCloseChar, L"`");
+    m_attr->setStringAttribute(xd::dbattrIdentifierCharsNeedingQuote, L"`~# $!@%^&(){}-+.");
 }
 
 MysqlDatabase::~MysqlDatabase()
@@ -423,14 +423,14 @@ MYSQL* MysqlDatabase::open()
         {
             if (mysql_select_db(mysql, asc_database.c_str()) < 0)
             {
-                m_error.setError(tango::errorGeneral, kl::towstring(mysql_error(mysql)));
+                m_error.setError(xd::errorGeneral, kl::towstring(mysql_error(mysql)));
                 mysql_close(mysql);
                 return NULL;
             }
         }
          else
         {
-            m_error.setError(tango::errorGeneral, kl::towstring(mysql_error(mysql)));
+            m_error.setError(xd::errorGeneral, kl::towstring(mysql_error(mysql)));
             mysql_close(mysql);
             return NULL;
         }
@@ -492,7 +492,7 @@ std::wstring MysqlDatabase::getDatabaseName()
 
 int MysqlDatabase::getDatabaseType()
 {
-    return tango::dbtypeMySql;
+    return xd::dbtypeMySql;
 }
 
 std::wstring MysqlDatabase::getActiveUid()
@@ -500,9 +500,9 @@ std::wstring MysqlDatabase::getActiveUid()
     return L"";
 }
 
-tango::IAttributesPtr MysqlDatabase::getAttributes()
+xd::IAttributesPtr MysqlDatabase::getAttributes()
 {
-    return static_cast<tango::IAttributes*>(m_attr);
+    return static_cast<xd::IAttributes*>(m_attr);
 }
 
 double MysqlDatabase::getFreeSpace()
@@ -525,12 +525,12 @@ bool MysqlDatabase::storeObject(xcm::IObject* obj, const std::wstring& ofs_path)
     return false;
 }
 
-tango::IJobPtr MysqlDatabase::createJob()
+xd::IJobPtr MysqlDatabase::createJob()
 {
     return xcm::null;
 }
 
-tango::IJobPtr MysqlDatabase::getJob(tango::jobid_t job_id)
+xd::IJobPtr MysqlDatabase::getJob(xd::jobid_t job_id)
 {
     return xcm::null;
 }
@@ -545,13 +545,13 @@ bool MysqlDatabase::renameFile(const std::wstring& path, const std::wstring& new
     std::wstring command;
     command.reserve(1024);
     command = L"RENAME TABLE ";
-    command += m_attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
+    command += m_attr->getStringAttribute(xd::dbattrIdentifierQuoteOpenChar);
     command += getTablenameFromOfsPath(path);
-    command += m_attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
+    command += m_attr->getStringAttribute(xd::dbattrIdentifierQuoteCloseChar);
     command += L" TO ";
-    command += m_attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
+    command += m_attr->getStringAttribute(xd::dbattrIdentifierQuoteOpenChar);
     command += new_name;
-    command += m_attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
+    command += m_attr->getStringAttribute(xd::dbattrIdentifierQuoteCloseChar);
 
     xcm::IObjectPtr result_obj;
     return execute(command, 0, result_obj, NULL);
@@ -567,7 +567,7 @@ bool MysqlDatabase::copyFile(const std::wstring& src_path, const std::wstring& d
     return false;
 }
 
-bool MysqlDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
+bool MysqlDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 {
     return false;
 }
@@ -577,9 +577,9 @@ bool MysqlDatabase::deleteFile(const std::wstring& path)
     std::wstring command;
     command.reserve(1024);
     command = L"DROP TABLE ";
-    command += m_attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
+    command += m_attr->getStringAttribute(xd::dbattrIdentifierQuoteOpenChar);
     command += getTablenameFromOfsPath(path);
-    command += m_attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
+    command += m_attr->getStringAttribute(xd::dbattrIdentifierQuoteCloseChar);
 
     xcm::IObjectPtr result_obj;
     return execute(command, 0, result_obj, NULL);
@@ -593,7 +593,7 @@ bool MysqlDatabase::getFileExist(const std::wstring& _path)
     // determine if the file exists, we are going to get
     // a list of all tables and look for 'path'
 
-    tango::IFileInfoEnumPtr files = getFolderInfo(L"");
+    xd::IFileInfoEnumPtr files = getFolderInfo(L"");
     if (!files)
         return false;
 
@@ -601,7 +601,7 @@ bool MysqlDatabase::getFileExist(const std::wstring& _path)
 
     for (i = 0 ; i < count; ++i)
     {
-        tango::IFileInfoPtr info = files->getItem(i);
+        xd::IFileInfoPtr info = files->getItem(i);
         
         if (wcscasecmp(info->getName().c_str(), path.c_str()) == 0)
             return true;
@@ -610,7 +610,7 @@ bool MysqlDatabase::getFileExist(const std::wstring& _path)
     return false;
 }
 
-tango::IFileInfoPtr MysqlDatabase::getFileInfo(const std::wstring& path)
+xd::IFileInfoPtr MysqlDatabase::getFileInfo(const std::wstring& path)
 {
     std::wstring folder;
     std::wstring name;
@@ -619,9 +619,9 @@ tango::IFileInfoPtr MysqlDatabase::getFileInfo(const std::wstring& path)
     {
         MySqlFileInfo* f = new MySqlFileInfo(this);
         f->name = L"/";
-        f->type = tango::filetypeFolder;
-        f->format = tango::formatNative;
-        return static_cast<tango::IFileInfo*>(f);
+        f->type = xd::filetypeFolder;
+        f->format = xd::formatNative;
+        return static_cast<xd::IFileInfo*>(f);
     }
      else
     {
@@ -629,13 +629,13 @@ tango::IFileInfoPtr MysqlDatabase::getFileInfo(const std::wstring& path)
         name = kl::afterLast(path, L'/');
     }
     
-    tango::IFileInfoEnumPtr files = getFolderInfo(folder);
+    xd::IFileInfoEnumPtr files = getFolderInfo(folder);
     int i, count;
     
     count = files->size();
     for (i = 0; i < count; ++i)
     {
-        tango::IFileInfoPtr finfo = files->getItem(i);
+        xd::IFileInfoPtr finfo = files->getItem(i);
         if (0 == wcscasecmp(finfo->getName().c_str(), name.c_str()))
         {
             return finfo;
@@ -645,9 +645,9 @@ tango::IFileInfoPtr MysqlDatabase::getFileInfo(const std::wstring& path)
     return xcm::null;
 }
 
-tango::IFileInfoEnumPtr MysqlDatabase::getFolderInfo(const std::wstring& path)
+xd::IFileInfoEnumPtr MysqlDatabase::getFolderInfo(const std::wstring& path)
 {
-    xcm::IVectorImpl<tango::IFileInfoPtr>* retval = new xcm::IVectorImpl<tango::IFileInfoPtr>;
+    xcm::IVectorImpl<xd::IFileInfoPtr>* retval = new xcm::IVectorImpl<xd::IFileInfoPtr>;
     
     MYSQL* db = open();
     if (!db)
@@ -674,8 +674,8 @@ tango::IFileInfoEnumPtr MysqlDatabase::getFolderInfo(const std::wstring& path)
         MySqlFileInfo* f = new MySqlFileInfo(this);
         kl::trim(wtable_name);
         f->name = wtable_name;
-        f->type = tango::filetypeTable;
-        f->format = tango::formatNative;
+        f->type = xd::filetypeTable;
+        f->format = xd::formatNative;
 
         retval->append(f);
     }
@@ -692,9 +692,9 @@ std::wstring MysqlDatabase::getPrimaryKey(const std::wstring _path)
     std::wstring result;
 
     // get the quote characters
-    tango::IAttributesPtr attr = getAttributes();
-    std::wstring quote_openchar = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
-    std::wstring quote_closechar = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
+    xd::IAttributesPtr attr = getAttributes();
+    std::wstring quote_openchar = attr->getStringAttribute(xd::dbattrIdentifierQuoteOpenChar);
+    std::wstring quote_closechar = attr->getStringAttribute(xd::dbattrIdentifierQuoteCloseChar);
 
     // create select statement
     std::wstring tablename = L"";
@@ -739,7 +739,7 @@ std::wstring MysqlDatabase::getPrimaryKey(const std::wstring _path)
     return result;
 }
 
-tango::IDatabasePtr MysqlDatabase::getMountDatabase(const std::wstring& path)
+xd::IDatabasePtr MysqlDatabase::getMountDatabase(const std::wstring& path)
 {
     return xcm::null;
 }
@@ -758,15 +758,15 @@ bool MysqlDatabase::getMountPoint(const std::wstring& path,
     return false;
 }
 
-tango::IStructurePtr MysqlDatabase::createStructure()
+xd::IStructurePtr MysqlDatabase::createStructure()
 {
     Structure* s = new Structure;
-    return static_cast<tango::IStructure*>(s);
+    return static_cast<xd::IStructure*>(s);
 }
 
 bool MysqlDatabase::createTable(const std::wstring& path,
-                                tango::IStructurePtr struct_config,
-                                tango::FormatInfo* format_info)
+                                xd::IStructurePtr struct_config,
+                                xd::FormatInfo* format_info)
 {
 /*
     std::wstring command;
@@ -809,9 +809,9 @@ bool MysqlDatabase::createTable(const std::wstring& path,
     command.reserve(1024);
 
     command = L"CREATE TABLE ";
-    command += m_attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
+    command += m_attr->getStringAttribute(xd::dbattrIdentifierQuoteOpenChar);
     command += getTablenameFromOfsPath(path);
-    command += m_attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);    
+    command += m_attr->getStringAttribute(xd::dbattrIdentifierQuoteCloseChar);    
     command += L" ( ";
 
     std::wstring field;
@@ -826,12 +826,12 @@ bool MysqlDatabase::createTable(const std::wstring& path,
     int i;
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr col_info = struct_config->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr col_info = struct_config->getColumnInfoByIdx(i);
 
         name = L"";
-        name += m_attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
+        name += m_attr->getStringAttribute(xd::dbattrIdentifierQuoteOpenChar);
         name += col_info->getName();
-        name += m_attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
+        name += m_attr->getStringAttribute(xd::dbattrIdentifierQuoteCloseChar);
 
         type = col_info->getType();
         width = col_info->getWidth();
@@ -851,7 +851,7 @@ bool MysqlDatabase::createTable(const std::wstring& path,
     return execute(command, 0, result_obj, NULL);
 }
 
-tango::IStreamPtr MysqlDatabase::openStream(const std::wstring& path)
+xd::IStreamPtr MysqlDatabase::openStream(const std::wstring& path)
 {
     return xcm::null;
 }
@@ -862,7 +862,7 @@ bool MysqlDatabase::createStream(const std::wstring& path, const std::wstring& m
 }
 
 
-tango::IIteratorPtr MysqlDatabase::query(const tango::QueryParams& qp)
+xd::IIteratorPtr MysqlDatabase::query(const xd::QueryParams& qp)
 {
     std::wstring tbl = mysqlGetTablenameFromPath(qp.from);
 
@@ -903,15 +903,15 @@ tango::IIteratorPtr MysqlDatabase::query(const tango::QueryParams& qp)
         iter->setTable(qp.from);
     }
 
-    return static_cast<tango::IIterator*>(iter);
+    return static_cast<xd::IIterator*>(iter);
 
 }
 
 
-tango::IIndexInfoPtr MysqlDatabase::createIndex(const std::wstring& path,
+xd::IIndexInfoPtr MysqlDatabase::createIndex(const std::wstring& path,
                                                 const std::wstring& name,
                                                 const std::wstring& expr,
-                                                tango::IJob* job)
+                                                xd::IJob* job)
 {
     return xcm::null;
 }
@@ -932,24 +932,24 @@ bool MysqlDatabase::deleteIndex(const std::wstring& path,
 }
 
 
-tango::IIndexInfoEnumPtr MysqlDatabase::getIndexEnum(const std::wstring& path)
+xd::IIndexInfoEnumPtr MysqlDatabase::getIndexEnum(const std::wstring& path)
 {
-    xcm::IVectorImpl<tango::IIndexInfoPtr>* vec;
-    vec = new xcm::IVectorImpl<tango::IIndexInfoPtr>;
+    xcm::IVectorImpl<xd::IIndexInfoPtr>* vec;
+    vec = new xcm::IVectorImpl<xd::IIndexInfoPtr>;
 
     return vec;
 }
 
 
 
-tango::IRowInserterPtr MysqlDatabase::bulkInsert(const std::wstring& path)
+xd::IRowInserterPtr MysqlDatabase::bulkInsert(const std::wstring& path)
 {
     std::wstring tbl = mysqlGetTablenameFromPath(path);
     MysqlRowInserter* inserter = new MysqlRowInserter(this, tbl);
-    return static_cast<tango::IRowInserter*>(inserter);
+    return static_cast<xd::IRowInserter*>(inserter);
 }
 
-tango::IStructurePtr MysqlDatabase::describeTable(const std::wstring& path)
+xd::IStructurePtr MysqlDatabase::describeTable(const std::wstring& path)
 {
     // create select statement
     std::wstring tablename = L"";
@@ -968,7 +968,7 @@ tango::IStructurePtr MysqlDatabase::describeTable(const std::wstring& path)
     std::string asc_query = kl::tostring(query);
     int error = mysql_query(db, asc_query.c_str());
     
-    // create new tango::IStructure
+    // create new xd::IStructure
     Structure* s = new Structure;
 
     if (!error)
@@ -983,11 +983,11 @@ tango::IStructurePtr MysqlDatabase::describeTable(const std::wstring& path)
 
             std::wstring wcol_name = kl::towstring(colinfo->name);
 
-            tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+            xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
             col->setName(wcol_name);
             col->setType(type);
             col->setWidth(colinfo->length);
-            col->setScale(type == tango::typeDouble ? 4 : colinfo->decimals);
+            col->setScale(type == xd::typeDouble ? 4 : colinfo->decimals);
             col->setColumnOrdinal(i);
             
             // limit blob/text fields to 4096 characters (for now) --
@@ -1007,12 +1007,12 @@ tango::IStructurePtr MysqlDatabase::describeTable(const std::wstring& path)
 
     mysql_close(db);
     
-    tango::IStructurePtr ret = static_cast<tango::IStructure*>(s);
+    xd::IStructurePtr ret = static_cast<xd::IStructure*>(s);
     return ret;
 }
 
 
-bool MysqlDatabase::modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job)
+bool MysqlDatabase::modifyStructure(const std::wstring& path, xd::IStructurePtr struct_config, xd::IJob* job)
 {
     return false;
 }
@@ -1020,10 +1020,10 @@ bool MysqlDatabase::modifyStructure(const std::wstring& path, tango::IStructureP
 
 /*
 
-tango::ISetPtr MysqlDatabase::openSet(const std::wstring& path)
+xd::ISetPtr MysqlDatabase::openSet(const std::wstring& path)
 {
     // get a list of tables
-    tango::IFileInfoEnumPtr tables = getFolderInfo(L"/");
+    xd::IFileInfoEnumPtr tables = getFolderInfo(L"/");
 
     std::wstring tablename1 = getTablenameFromOfsPath(path);
     std::wstring tablename2;
@@ -1032,7 +1032,7 @@ tango::ISetPtr MysqlDatabase::openSet(const std::wstring& path)
     size_t i, table_count = tables->size();
     for (i = 0; i < table_count; ++i)
     {
-        tango::IFileInfoPtr info = tables->getItem(i);
+        xd::IFileInfoPtr info = tables->getItem(i);
         tablename2 = info->getName();
         
         if (0 == wcscasecmp(tablename1.c_str(), tablename2.c_str()))
@@ -1058,7 +1058,7 @@ tango::ISetPtr MysqlDatabase::openSet(const std::wstring& path)
         return xcm::null;
     }
     
-    return static_cast<tango::ISet*>(set);
+    return static_cast<xd::ISet*>(set);
 }
 */
                    
@@ -1066,7 +1066,7 @@ tango::ISetPtr MysqlDatabase::openSet(const std::wstring& path)
 bool MysqlDatabase::execute(const std::wstring& command,
                             unsigned int flags,
                             xcm::IObjectPtr& result,
-                            tango::IJob* job)
+                            xd::IJob* job)
 {
     m_error.clearError();
     result.clear();
@@ -1080,7 +1080,7 @@ bool MysqlDatabase::execute(const std::wstring& command,
         MYSQL* data = open();
         if (!data)
         {
-            m_error.setError(tango::errorGeneral);
+            m_error.setError(xd::errorGeneral);
             return xcm::null;
         }
 
@@ -1114,7 +1114,7 @@ bool MysqlDatabase::execute(const std::wstring& command,
             int error = mysql_query(data, asc_command.c_str());
             if (error)
             {
-                m_error.setError(tango::errorGeneral, kl::towstring(mysql_error(data)));
+                m_error.setError(xd::errorGeneral, kl::towstring(mysql_error(data)));
                 mysql_close(data);
                 return xcm::null;
             }
@@ -1131,7 +1131,7 @@ bool MysqlDatabase::execute(const std::wstring& command,
                     iter->m_data = data;
                     if (iter->init(*it))
                     {
-                        result = static_cast<xcm::IObject*>(static_cast<tango::IIterator*>(iter));
+                        result = static_cast<xcm::IObject*>(static_cast<xd::IIterator*>(iter));
                         return true;
                     }
                      else
@@ -1143,7 +1143,7 @@ bool MysqlDatabase::execute(const std::wstring& command,
                         
                         if (!m_error.isError() && mysql_errno(iter->m_data))
                         {
-                            m_error.setError(tango::errorGeneral);
+                            m_error.setError(xd::errorGeneral);
                         }
 
                         delete iter;
@@ -1184,7 +1184,7 @@ bool MysqlDatabase::execute(const std::wstring& command,
 
             if (error)
             {
-                m_error.setError(tango::errorGeneral, kl::towstring(mysql_error(m_data)));
+                m_error.setError(xd::errorGeneral, kl::towstring(mysql_error(m_data)));
                 return false;
             }
             
@@ -1201,7 +1201,7 @@ bool MysqlDatabase::execute(const std::wstring& command,
     }
 }
 
-bool MysqlDatabase::groupQuery(tango::GroupQueryParams* info, tango::IJob* job)
+bool MysqlDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
 {
     return false;
 }

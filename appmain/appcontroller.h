@@ -132,7 +132,7 @@ public:
     // project commands
     bool createDefaultProject();
     void createDefaultLinks();
-    bool openProject(tango::IDatabasePtr database);
+    bool openProject(xd::IDatabasePtr database);
     bool openProject(const wxString& location,
                      const wxString& uid,
                      const wxString& password);

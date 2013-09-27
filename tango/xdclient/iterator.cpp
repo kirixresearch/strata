@@ -75,17 +75,17 @@ std::wstring ClientIterator::getTable()
     return L"";
 }
 
-tango::rowpos_t ClientIterator::getRowCount()
+xd::rowpos_t ClientIterator::getRowCount()
 {
     return 0;
 }
 
-tango::IDatabasePtr ClientIterator::getDatabase()
+xd::IDatabasePtr ClientIterator::getDatabase()
 {
     return m_database;
 }
 
-tango::IIteratorPtr ClientIterator::clone()
+xd::IIteratorPtr ClientIterator::clone()
 {
     ServerCallParams params;
     params.setParam(L"handle", m_handle);
@@ -103,7 +103,7 @@ tango::IIteratorPtr ClientIterator::clone()
         return xcm::null;
     }
 
-    return static_cast<tango::IIterator*>(iter);
+    return static_cast<xd::IIterator*>(iter);
 }
 
 unsigned int ClientIterator::getIteratorFlags()
@@ -384,7 +384,7 @@ double ClientIterator::getPos()
     return m_current_row;
 }
 
-tango::rowid_t ClientIterator::getRowId()
+xd::rowid_t ClientIterator::getRowId()
 {
     return m_current_row;
 }
@@ -422,13 +422,13 @@ bool ClientIterator::setPos(double pct)
     return false;
 }
 
-void ClientIterator::goRow(const tango::rowid_t& rowid)
+void ClientIterator::goRow(const xd::rowid_t& rowid)
 {
     int offset = (int)(rowid - m_current_row);
     skip(offset);
 }
 
-tango::IStructurePtr ClientIterator::getStructure()
+xd::IStructurePtr ClientIterator::getStructure()
 {
     if (m_structure.isOk())
         return m_structure->clone();
@@ -438,9 +438,9 @@ tango::IStructurePtr ClientIterator::getStructure()
     std::vector<HttpDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        tango::IColumnInfoPtr col;
+        xd::IColumnInfoPtr col;
 
-        col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+        col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
         col->setName((*it)->name);
         col->setType((*it)->type);
         col->setWidth((*it)->width);
@@ -457,7 +457,7 @@ tango::IStructurePtr ClientIterator::getStructure()
         s->addColumn(col);
     }
     
-    m_structure = static_cast<tango::IStructure*>(s);
+    m_structure = static_cast<xd::IStructure*>(s);
     return m_structure->clone();
 }
 
@@ -476,7 +476,7 @@ void ClientIterator::refreshStructure()
     skip(0);  // reload data into cache
 }
 
-bool ClientIterator::modifyStructure(tango::IStructure* struct_config, tango::IJob* job)
+bool ClientIterator::modifyStructure(xd::IStructure* struct_config, xd::IJob* job)
 {
     IStructureInternalPtr struct_int = struct_config;
 
@@ -604,13 +604,13 @@ bool ClientIterator::modifyStructure(tango::IStructure* struct_config, tango::IJ
     return true;
 }
 
-tango::objhandle_t ClientIterator::getHandle(const std::wstring& expr)
+xd::objhandle_t ClientIterator::getHandle(const std::wstring& expr)
 {
     std::vector<HttpDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
         if (!wcscasecmp((*it)->name.c_str(), expr.c_str()))
-            return (tango::objhandle_t)(*it);
+            return (xd::objhandle_t)(*it);
     }
 
     // test for binary keys
@@ -618,10 +618,10 @@ tango::objhandle_t ClientIterator::getHandle(const std::wstring& expr)
     {
         HttpDataAccessInfo* dai = new HttpDataAccessInfo;
         dai->expr = NULL;
-        dai->type = tango::typeBinary;
+        dai->type = xd::typeBinary;
         dai->key_layout = new KeyLayout;
 
-        if (!dai->key_layout->setKeyExpr(static_cast<tango::IIterator*>(this),
+        if (!dai->key_layout->setKeyExpr(static_cast<xd::IIterator*>(this),
                                          expr.substr(4),
                                          false))
         {
@@ -630,22 +630,22 @@ tango::objhandle_t ClientIterator::getHandle(const std::wstring& expr)
         }
         
         m_exprs.push_back(dai);
-        return (tango::objhandle_t)dai;
+        return (xd::objhandle_t)dai;
     }
     
     kscript::ExprParser* parser = parse(expr);
     if (!parser)
-        return (tango::objhandle_t)0;
+        return (xd::objhandle_t)0;
 
     HttpDataAccessInfo* dai = new HttpDataAccessInfo;
     dai->expr = parser;
     dai->type = kscript2tangoType(parser->getType());
     m_exprs.push_back(dai);
 
-    return (tango::objhandle_t)dai;
+    return (xd::objhandle_t)dai;
 }
 
-tango::IColumnInfoPtr ClientIterator::getInfo(tango::objhandle_t data_handle)
+xd::IColumnInfoPtr ClientIterator::getInfo(xd::objhandle_t data_handle)
 {
     HttpDataAccessInfo* dai = (HttpDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -659,24 +659,24 @@ tango::IColumnInfoPtr ClientIterator::getInfo(tango::objhandle_t data_handle)
     colinfo->setExpression(dai->expr_text);
     colinfo->setCalculated(dai->isCalculated());
 
-    return static_cast<tango::IColumnInfo*>(colinfo);
+    return static_cast<xd::IColumnInfo*>(colinfo);
 }
 
-int ClientIterator::getType(tango::objhandle_t data_handle)
+int ClientIterator::getType(xd::objhandle_t data_handle)
 {
     HttpDataAccessInfo* dai = (HttpDataAccessInfo*)data_handle;
     if (dai == NULL)
-        return tango::typeInvalid;
+        return xd::typeInvalid;
 
     return dai->type;
 }
 
-bool ClientIterator::releaseHandle(tango::objhandle_t data_handle)
+bool ClientIterator::releaseHandle(xd::objhandle_t data_handle)
 {
     std::vector<HttpDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        if ((tango::objhandle_t)(*it) == data_handle)
+        if ((xd::objhandle_t)(*it) == data_handle)
         {
             return true;
         }
@@ -684,7 +684,7 @@ bool ClientIterator::releaseHandle(tango::objhandle_t data_handle)
 
     for (it = m_exprs.begin(); it != m_exprs.end(); ++it)
     {
-        if ((tango::objhandle_t)(*it) == data_handle)
+        if ((xd::objhandle_t)(*it) == data_handle)
         {
             delete (*it);
             m_exprs.erase(it);
@@ -695,7 +695,7 @@ bool ClientIterator::releaseHandle(tango::objhandle_t data_handle)
     return false;
 }
 
-int ClientIterator::getRawWidth(tango::objhandle_t data_handle)
+int ClientIterator::getRawWidth(xd::objhandle_t data_handle)
 {
     HttpDataAccessInfo* dai = (HttpDataAccessInfo*)data_handle;
     if (dai && dai->key_layout)
@@ -706,7 +706,7 @@ int ClientIterator::getRawWidth(tango::objhandle_t data_handle)
     return 0;
 }
 
-const unsigned char* ClientIterator::getRawPtr(tango::objhandle_t data_handle)
+const unsigned char* ClientIterator::getRawPtr(xd::objhandle_t data_handle)
 {
     HttpDataAccessInfo* dai = (HttpDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -721,7 +721,7 @@ const unsigned char* ClientIterator::getRawPtr(tango::objhandle_t data_handle)
 }
 
 
-const std::string& ClientIterator::getString(tango::objhandle_t data_handle)
+const std::string& ClientIterator::getString(xd::objhandle_t data_handle)
 {
     HttpDataAccessInfo* handle = (HttpDataAccessInfo*)data_handle;
     if (handle == NULL)
@@ -741,7 +741,7 @@ const std::string& ClientIterator::getString(tango::objhandle_t data_handle)
     return handle->str_result;
 }
 
-const std::wstring& ClientIterator::getWideString(tango::objhandle_t data_handle)
+const std::wstring& ClientIterator::getWideString(xd::objhandle_t data_handle)
 {
     HttpDataAccessInfo* handle = (HttpDataAccessInfo*)data_handle;
     if (handle == NULL)
@@ -761,7 +761,7 @@ const std::wstring& ClientIterator::getWideString(tango::objhandle_t data_handle
     return handle->wstr_result;
 }
 
-static tango::datetime_t parseDateTime2(const std::wstring& wstr)
+static xd::datetime_t parseDateTime2(const std::wstring& wstr)
 {
     char buf[32];
     int parts[6] = { 0,0,0,0,0,0 };
@@ -796,19 +796,19 @@ static tango::datetime_t parseDateTime2(const std::wstring& wstr)
     }
      else if (partcnt == 6)
     {
-        tango::DateTime dt(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5]);
+        xd::DateTime dt(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5]);
         return dt.getDateTime();
     }
      else if (partcnt >= 3)
     {
-        tango::DateTime dt(parts[0], parts[1], parts[2]);
+        xd::DateTime dt(parts[0], parts[1], parts[2]);
         return dt.getDateTime();
     }
 
     return 0;
 }
 
-tango::datetime_t ClientIterator::getDateTime(tango::objhandle_t data_handle)
+xd::datetime_t ClientIterator::getDateTime(xd::objhandle_t data_handle)
 {
     HttpDataAccessInfo* handle = (HttpDataAccessInfo*)data_handle;
     if (handle == NULL)
@@ -819,10 +819,10 @@ tango::datetime_t ClientIterator::getDateTime(tango::objhandle_t data_handle)
         handle->expr->eval(&handle->expr_result);
         kscript::ExprDateTime edt = handle->expr_result.getDateTime();
 
-        tango::datetime_t dt;
+        xd::datetime_t dt;
         dt = edt.date;
         dt <<= 32;
-        if (handle->type == tango::typeDateTime)
+        if (handle->type == xd::typeDateTime)
             dt |= edt.time;
 
         return dt;
@@ -834,7 +834,7 @@ tango::datetime_t ClientIterator::getDateTime(tango::objhandle_t data_handle)
     return parseDateTime2(m_current_row_ptr->values[handle->ordinal]);
 }
 
-double ClientIterator::getDouble(tango::objhandle_t data_handle)
+double ClientIterator::getDouble(xd::objhandle_t data_handle)
 {
     HttpDataAccessInfo* handle = (HttpDataAccessInfo*)data_handle;
     if (handle == NULL)
@@ -852,7 +852,7 @@ double ClientIterator::getDouble(tango::objhandle_t data_handle)
     return kl::wtof(m_current_row_ptr->values[handle->ordinal]);
 }
 
-int ClientIterator::getInteger(tango::objhandle_t data_handle)
+int ClientIterator::getInteger(xd::objhandle_t data_handle)
 {
     HttpDataAccessInfo* handle = (HttpDataAccessInfo*)data_handle;
     if (handle == NULL)
@@ -870,7 +870,7 @@ int ClientIterator::getInteger(tango::objhandle_t data_handle)
     return kl::wtoi(m_current_row_ptr->values[handle->ordinal]);
 }
 
-bool ClientIterator::getBoolean(tango::objhandle_t data_handle)
+bool ClientIterator::getBoolean(xd::objhandle_t data_handle)
 {
     HttpDataAccessInfo* handle = (HttpDataAccessInfo*)data_handle;
     if (handle == NULL)
@@ -888,7 +888,7 @@ bool ClientIterator::getBoolean(tango::objhandle_t data_handle)
     return (m_current_row_ptr->values[handle->ordinal] == L"true" ? true : false);
 }
 
-bool ClientIterator::isNull(tango::objhandle_t data_handle)
+bool ClientIterator::isNull(xd::objhandle_t data_handle)
 {
     HttpDataAccessInfo* handle = (HttpDataAccessInfo*)data_handle;
     if (handle == NULL)
@@ -897,8 +897,8 @@ bool ClientIterator::isNull(tango::objhandle_t data_handle)
     return false;
 }
 
-bool ClientIterator::updateCacheRow(tango::rowid_t rowid,
-                                   tango::ColumnUpdateInfo* info,
+bool ClientIterator::updateCacheRow(xd::rowid_t rowid,
+                                   xd::ColumnUpdateInfo* info,
                                    size_t info_size)
 {
     return false;
@@ -922,7 +922,7 @@ bool ClientIterator::refreshDataAccessInfo()
     if (!response["success"].getBoolean())
         return xcm::null;
 
-    tango::IStructurePtr structure = m_database->jsonToStructure(response);
+    xd::IStructurePtr structure = m_database->jsonToStructure(response);
 
 
 
@@ -932,7 +932,7 @@ bool ClientIterator::refreshDataAccessInfo()
 
     for (idx = 0; idx < count; ++idx)
     {
-        tango::IColumnInfoPtr info = structure->getColumnInfoByIdx(idx);
+        xd::IColumnInfoPtr info = structure->getColumnInfoByIdx(idx);
 
         HttpDataAccessInfo* dai = new HttpDataAccessInfo;
         dai->name = info->getName();

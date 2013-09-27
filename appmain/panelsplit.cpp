@@ -51,7 +51,7 @@ int SplitPanel::getSetRowWidth()
     int i, col_count = m_structure->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr col = m_structure->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr col = m_structure->getColumnInfoByIdx(i);
         if (col->getCalculated())
             continue;
 
@@ -593,7 +593,7 @@ void SplitPanel::populate()
     {
         case 0: /* split by row count */
         {
-            if (m_finfo->getFlags() & tango::sfFastRowCount)
+            if (m_finfo->getFlags() & xd::sfFastRowCount)
             {
                 table_row_count = m_finfo->getRowCount();
                 split_row_count = wxAtoi(m_rowcount_textctrl->GetValue());
@@ -634,7 +634,7 @@ void SplitPanel::populate()
         
         case 1: /* split by table count */
         {
-            if (m_finfo->getFlags() & tango::sfFastRowCount)
+            if (m_finfo->getFlags() & xd::sfFastRowCount)
             {
                 table_row_count = m_finfo->getRowCount();
                 split_table_count = wxAtoi(m_tablecount_textctrl->GetValue());
@@ -674,7 +674,7 @@ void SplitPanel::populate()
         
         case 2: /* split by table size */
         {
-            if (m_finfo->getFlags() & tango::sfFastRowCount)
+            if (m_finfo->getFlags() & xd::sfFastRowCount)
             {
                 table_row_count = m_finfo->getRowCount();
                 split_table_size = wxAtof(m_tablesize_textctrl->GetValue());

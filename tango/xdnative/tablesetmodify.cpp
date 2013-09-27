@@ -22,8 +22,8 @@
 
 struct ModifyField
 {
-    tango::objhandle_t src_handle;
-    tango::objhandle_t dest_handle;
+    xd::objhandle_t src_handle;
+    xd::objhandle_t dest_handle;
 
     bool calculated;
 
@@ -107,15 +107,15 @@ struct ModifyField
 
 
 
-inline void doCopy(tango::IRowInserter* dest,
-                   tango::IIterator* src,
+inline void doCopy(xd::IRowInserter* dest,
+                   xd::IIterator* src,
                    const ModifyField& ci)
 {
     switch (ci.src_type)
     {
-        case tango::typeWideCharacter:
+        case xd::typeWideCharacter:
         {
-            if (ci.dest_type == tango::typeWideCharacter)
+            if (ci.dest_type == xd::typeWideCharacter)
             {
                 dest->putWideString(ci.dest_handle, src->getWideString(ci.src_handle));
                 break;
@@ -123,32 +123,32 @@ inline void doCopy(tango::IRowInserter* dest,
         }
         // fall through
         
-        case tango::typeCharacter:
+        case xd::typeCharacter:
         {
             switch (ci.dest_type)
             {
-                case tango::typeCharacter:
-                case tango::typeWideCharacter:
+                case xd::typeCharacter:
+                case xd::typeWideCharacter:
                 {
                     dest->putString(ci.dest_handle, src->getString(ci.src_handle));
                 }
                 break;
 
-                case tango::typeDouble:
-                case tango::typeNumeric:
+                case xd::typeDouble:
+                case xd::typeNumeric:
                 {
                     dest->putDouble(ci.dest_handle, kl::nolocale_atof(src->getString(ci.src_handle)));
                 }
                 break;
 
-                case tango::typeInteger:
+                case xd::typeInteger:
                 {
                     dest->putInteger(ci.dest_handle, atoi(src->getString(ci.src_handle).c_str()));
                 }
                 break;
 
-                case tango::typeDate:
-                case tango::typeDateTime:
+                case xd::typeDate:
+                case xd::typeDateTime:
                 {
                     // note: similar to way numbers are converted to dates
                     // if this logic is changed, change logic for how numbers
@@ -164,13 +164,13 @@ inline void doCopy(tango::IRowInserter* dest,
                             ss = 0;
                         }
                         
-                        tango::DateTime dt(y, m, d, hh, mm, ss);
+                        xd::DateTime dt(y, m, d, hh, mm, ss);
                         dest->putDateTime(ci.dest_handle, dt);
                     }
                 }
                 break;
 
-                case tango::typeBoolean:
+                case xd::typeBoolean:
                 {
                     // get the value and convert it to upper for a case-insensitive comparison
                     std::string value = src->getString(ci.src_handle);
@@ -188,17 +188,17 @@ inline void doCopy(tango::IRowInserter* dest,
 
         break;
 
-        case tango::typeInteger:
-        case tango::typeDouble:
-        case tango::typeNumeric:
+        case xd::typeInteger:
+        case xd::typeDouble:
+        case xd::typeNumeric:
         {
             switch (ci.dest_type)
             {
-                case tango::typeNumeric:
-                case tango::typeInteger:
-                case tango::typeDouble:
+                case xd::typeNumeric:
+                case xd::typeInteger:
+                case xd::typeDouble:
                 {
-                    if (ci.src_type == tango::typeDouble)
+                    if (ci.src_type == xd::typeDouble)
                     {
                         // this is a small workaround for when the user changes
                         // both type and numeric scale at the same time.  Using
@@ -215,11 +215,11 @@ inline void doCopy(tango::IRowInserter* dest,
                 }
                 break;
 
-                case tango::typeCharacter:
+                case xd::typeCharacter:
                 {
                     char buf[64];
                     
-                    if (ci.src_type == tango::typeInteger)
+                    if (ci.src_type == xd::typeInteger)
                     {
                         snprintf(buf, 64, "%d", src->getInteger(ci.src_handle));
                     }
@@ -234,11 +234,11 @@ inline void doCopy(tango::IRowInserter* dest,
                 }
                 break;
 
-                case tango::typeWideCharacter:
+                case xd::typeWideCharacter:
                 {
                     wchar_t buf[64];
                     
-                    if (ci.src_type == tango::typeInteger)
+                    if (ci.src_type == xd::typeInteger)
                     {
                         swprintf(buf, 64, L"%d", src->getInteger(ci.src_handle));
                     }
@@ -253,8 +253,8 @@ inline void doCopy(tango::IRowInserter* dest,
                 }
                 break;
 
-                case tango::typeDateTime:
-                case tango::typeDate:
+                case xd::typeDateTime:
+                case xd::typeDate:
                 {
                     // note: similar to way strings are converted to dates
                     // if this logic is changed, change logic for how strings
@@ -263,7 +263,7 @@ inline void doCopy(tango::IRowInserter* dest,
                     // convert the number to a string
                     wchar_t buf[64];
                     
-                    if (ci.src_type == tango::typeInteger)
+                    if (ci.src_type == xd::typeInteger)
                     {
                         swprintf(buf, 64, L"%d", src->getInteger(ci.src_handle));
                     }
@@ -286,13 +286,13 @@ inline void doCopy(tango::IRowInserter* dest,
                             ss = 0;
                         }
 
-                        tango::DateTime dt(y, m, d, hh, mm, ss);
+                        xd::DateTime dt(y, m, d, hh, mm, ss);
                         dest->putDateTime(ci.dest_handle, dt);
                     }
                 }
                 break;
 
-                case tango::typeBoolean:
+                case xd::typeBoolean:
                     
                     if (!kl::dblcompare(src->getDouble(ci.src_handle), 0.0))
                     {
@@ -309,16 +309,16 @@ inline void doCopy(tango::IRowInserter* dest,
         break;
 
 
-        case tango::typeDateTime:
+        case xd::typeDateTime:
         {
             switch (ci.dest_type)
             {
-                case tango::typeCharacter:
+                case xd::typeCharacter:
                 {
                     char buf[64];
                     int y, m, d, hh, mm, ss;
 
-                    tango::DateTime dt = src->getDateTime(ci.src_handle);
+                    xd::DateTime dt = src->getDateTime(ci.src_handle);
                     y = dt.getYear();
                     m = dt.getMonth();
                     d = dt.getDay();
@@ -334,12 +334,12 @@ inline void doCopy(tango::IRowInserter* dest,
                 }
                 break;
 
-                case tango::typeWideCharacter:
+                case xd::typeWideCharacter:
                 {
                     wchar_t buf[64];
                     int y, m, d, hh, mm, ss;
 
-                    tango::DateTime dt = src->getDateTime(ci.src_handle);
+                    xd::DateTime dt = src->getDateTime(ci.src_handle);
                     y = dt.getYear();
                     m = dt.getMonth();
                     d = dt.getDay();
@@ -355,24 +355,24 @@ inline void doCopy(tango::IRowInserter* dest,
                 }
                 break;
 
-                case tango::typeDate:
-                case tango::typeDateTime:
+                case xd::typeDate:
+                case xd::typeDateTime:
                     dest->putDateTime(ci.dest_handle, src->getDateTime(ci.src_handle));
                     break;
             }
         }
         break;
         
-        case tango::typeDate:
+        case xd::typeDate:
         {
             switch (ci.dest_type)
             {
-                case tango::typeCharacter:
+                case xd::typeCharacter:
                 {
                     char buf[64];
                     int y, m, d;
 
-                    tango::DateTime dt = src->getDateTime(ci.src_handle);
+                    xd::DateTime dt = src->getDateTime(ci.src_handle);
                     y = dt.getYear();
                     m = dt.getMonth();
                     d = dt.getDay();
@@ -385,12 +385,12 @@ inline void doCopy(tango::IRowInserter* dest,
                 }
                 break;
 
-                case tango::typeWideCharacter:
+                case xd::typeWideCharacter:
                 {
                     wchar_t buf[64];
                     int y, m, d;
 
-                    tango::DateTime dt = src->getDateTime(ci.src_handle);
+                    xd::DateTime dt = src->getDateTime(ci.src_handle);
                     y = dt.getYear();
                     m = dt.getMonth();
                     d = dt.getDay();
@@ -403,19 +403,19 @@ inline void doCopy(tango::IRowInserter* dest,
                 }
                 break;
 
-                case tango::typeDate:
-                case tango::typeDateTime:
+                case xd::typeDate:
+                case xd::typeDateTime:
                     dest->putDateTime(ci.dest_handle, src->getDateTime(ci.src_handle));
                     break;
             }
         }
         break;
 
-        case tango::typeBoolean:
+        case xd::typeBoolean:
         {
             switch (ci.dest_type)
             {
-                case tango::typeCharacter:
+                case xd::typeCharacter:
                     if (src->getBoolean(ci.src_handle))
                     {
                         dest->putString(ci.dest_handle, "T");
@@ -426,7 +426,7 @@ inline void doCopy(tango::IRowInserter* dest,
                     }
                     break;
 
-                case tango::typeWideCharacter:
+                case xd::typeWideCharacter:
                     if (src->getBoolean(ci.src_handle))
                     {
                         dest->putWideString(ci.dest_handle, L"T");
@@ -437,9 +437,9 @@ inline void doCopy(tango::IRowInserter* dest,
                     }
                     break;
 
-                case tango::typeDouble:
-                case tango::typeNumeric:
-                case tango::typeInteger:
+                case xd::typeDouble:
+                case xd::typeNumeric:
+                case xd::typeInteger:
                     if (src->getBoolean(ci.src_handle))
                     {
                         dest->putDouble(ci.dest_handle, 1.0);
@@ -450,7 +450,7 @@ inline void doCopy(tango::IRowInserter* dest,
                     }
                     break;
                 
-                case tango::typeBoolean:
+                case xd::typeBoolean:
                     dest->putBoolean(ci.dest_handle, src->getBoolean(ci.src_handle));
                     break;
                      
@@ -472,14 +472,14 @@ private:
 
 public:
 
-    JobInfoManager(tango::IJob* job)
+    JobInfoManager(xd::IJob* job)
     {
         ijob = job;
 
         if (ijob)
         {
             ijob->setStartTime(time(NULL));
-            ijob->setStatus(tango::jobRunning);
+            ijob->setStatus(xd::jobRunning);
             ijob->setCanCancel(true);
             ijob->setMaxCount(0);
             ijob->setCurrentCount(0);
@@ -490,14 +490,14 @@ public:
     {
         if (ijob)
         {
-            tango::IJobPtr job = ijob;
+            xd::IJobPtr job = ijob;
 
             // set the job to finished
             ijob->setFinishTime(time(NULL));
 
-            if (job->getStatus() == tango::jobRunning)
+            if (job->getStatus() == xd::jobRunning)
             {
-                ijob->setStatus(tango::jobFinished);
+                ijob->setStatus(xd::jobFinished);
 
                 int max_count = (int)job->getMaxCount();
                 if (max_count > 0)
@@ -513,14 +513,14 @@ public:
 
 
 
-bool TableSet::modifyStructure(tango::IStructure* struct_config,
-                               tango::IJob* job)
+bool TableSet::modifyStructure(xd::IStructure* struct_config,
+                               xd::IJob* job)
 {
     IJobInternalPtr ijob = job;
     IStructureInternalPtr struct_internal = struct_config;
     std::vector<StructureAction>& actions = struct_internal->getStructureActions();
     std::vector<StructureAction>::iterator it_sa;
-    tango::IStructurePtr src_structure = getStructure();
+    xd::IStructurePtr src_structure = getStructure();
 
 
     // start the job
@@ -591,8 +591,8 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
 
 
     // get row count information and set job info
-    tango::rowpos_t phys_row_count;
-    tango::rowpos_t deleted_row_count;
+    xd::rowpos_t phys_row_count;
+    xd::rowpos_t deleted_row_count;
     phys_row_count = m_table->getRowCount(&deleted_row_count);
 
     if (job)
@@ -607,7 +607,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
 
         if (ijob.isOk())
         {
-            ijob->setStatus(tango::jobFailed);
+            ijob->setStatus(xd::jobFailed);
         }
 
         return false;
@@ -621,7 +621,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
 
         if (ijob.isOk())
         {
-            ijob->setStatus(tango::jobFailed);
+            ijob->setStatus(xd::jobFailed);
         }
 
         return false;
@@ -632,7 +632,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
     std::vector<ModifyField>::iterator it_mf;
     ModifyField mf;
 
-    tango::IColumnInfoPtr col_info;
+    xd::IColumnInfoPtr col_info;
 
     int col_count = src_structure->getColumnCount();
     int i;
@@ -689,7 +689,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
                 if (pos < 0)
                     pos = modfields.size();
                     
-                if (mf.dest_type == tango::typeNumeric &&
+                if (mf.dest_type == xd::typeNumeric &&
                     mf.dest_width > native_max_numeric_width)
                 {
                     mf.dest_width = native_max_numeric_width;
@@ -729,8 +729,8 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
                             it_mf->dest_width = it_sa->m_params->getWidth();
                             write_all = true;
 
-                            if ((it_mf->dest_type == -1 && it_mf->src_type == tango::typeNumeric) ||
-                                (it_mf->dest_type == tango::typeNumeric))
+                            if ((it_mf->dest_type == -1 && it_mf->src_type == xd::typeNumeric) ||
+                                (it_mf->dest_type == xd::typeNumeric))
                             {
                                 if (it_mf->dest_width > native_max_numeric_width)
                                 {
@@ -742,7 +742,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
                         if (it_sa->m_params->getScale() != -1)
                         {
                             it_mf->dest_scale = it_sa->m_params->getScale();
-                            if (it_mf->src_type != tango::typeDouble)
+                            if (it_mf->src_type != xd::typeDouble)
                             {
                                 // if we are changing the scale of a double,
                                 // we don't need to write the whole file out
@@ -846,7 +846,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
                     continue;
                 }
 
-                tango::IColumnInfoPtr col = src_structure->getColumnInfoByIdx(idx);
+                xd::IColumnInfoPtr col = src_structure->getColumnInfoByIdx(idx);
                 if (col->getCalculated())
                 {
                     // skip calculated fields (they have already been processed)
@@ -904,7 +904,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
 
 
     // create output table
-    tango::IStructurePtr output_structure = m_database->createStructure();
+    xd::IStructurePtr output_structure = m_database->createStructure();
 
     for (it_mf = modfields.begin(); it_mf != modfields.end(); ++it_mf)
     {
@@ -929,7 +929,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
 
         if (ijob.isOk())
         {
-            ijob->setStatus(tango::jobFailed);
+            ijob->setStatus(xd::jobFailed);
         }
 
         return false;
@@ -949,7 +949,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
 
         if (ijob.isOk())
         {
-            ijob->setStatus(tango::jobFailed);
+            ijob->setStatus(xd::jobFailed);
         }
 
         return false;
@@ -960,7 +960,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
     
 
     // create a row inserter for the output set
-    tango::IRowInserterPtr sp_output_inserter = tbl_set->getRowInserter();
+    xd::IRowInserterPtr sp_output_inserter = tbl_set->getRowInserter();
     if (sp_output_inserter.isNull())
     {
         // unlock set
@@ -968,19 +968,19 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
 
         if (ijob.isOk())
         {
-            ijob->setStatus(tango::jobFailed);
+            ijob->setStatus(xd::jobFailed);
         }
 
         return false;
     }
 
-    tango::IRowInserter* output_inserter = sp_output_inserter.p;
+    xd::IRowInserter* output_inserter = sp_output_inserter.p;
 
 
     // create an unordered iterator for the input set
     // (including deleted records)
 
-    tango::IIteratorPtr sp_iter = createPhysicalIterator(L"", true);
+    xd::IIteratorPtr sp_iter = createPhysicalIterator(L"", true);
     if (sp_iter.isNull())
     {
         // unlock set
@@ -988,12 +988,12 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
 
         if (ijob.isOk())
         {
-            ijob->setStatus(tango::jobFailed);
+            ijob->setStatus(xd::jobFailed);
         }
 
         return false;
     }
-    tango::IIterator* iter = sp_iter.p;
+    xd::IIterator* iter = sp_iter.p;
 
 
     // get input and output handles
@@ -1013,7 +1013,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
 
                 if (ijob.isOk())
                 {
-                    ijob->setStatus(tango::jobFailed);
+                    ijob->setStatus(xd::jobFailed);
                 }
 
                 return false;
@@ -1028,7 +1028,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
 
             if (ijob.isOk())
             {
-                ijob->setStatus(tango::jobFailed);
+                ijob->setStatus(xd::jobFailed);
             }
 
             return false;
@@ -1036,7 +1036,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
     }
 
 
-    tango::rowpos_t rows_processed = 0;
+    xd::rowpos_t rows_processed = 0;
     bool cancelled = false;
 
 
@@ -1076,7 +1076,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
                     double p = (double)(long long)phys_row_count;
                     double t = (double)(long long)(phys_row_count - deleted_row_count);
 
-                    ijob->setCurrentCount((tango::rowpos_t)(((r*t)/p)));
+                    ijob->setCurrentCount((xd::rowpos_t)(((r*t)/p)));
                 }
 
                 if (job->getCancelled())
@@ -1091,7 +1091,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
         {
             if (ijob)
             {
-                ijob->setStatus(tango::jobFailed);
+                ijob->setStatus(xd::jobFailed);
             }
 
             failed = true;
@@ -1115,7 +1115,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
 
         if (ijob.isOk() && !cancelled)
         {
-            ijob->setStatus(tango::jobFailed);
+            ijob->setStatus(xd::jobFailed);
         }
 
         return false;
@@ -1146,7 +1146,7 @@ bool TableSet::modifyStructure(tango::IStructure* struct_config,
 
         if (ijob.isOk())
         {
-            ijob->setStatus(tango::jobFailed);
+            ijob->setStatus(xd::jobFailed);
         }
 
         return false;

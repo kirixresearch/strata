@@ -435,17 +435,17 @@ static void onRelationshipJobFinished(jobs::IJobPtr job)
         g_app->getAppController()->updateTableDocRelationshipSync(synctype);
 }
 
-static tango::IRelationPtr lookupSetRelation(tango::IDatabasePtr& db, const std::wstring& table_path, const std::wstring& tag)
+static xd::IRelationPtr lookupSetRelation(xd::IDatabasePtr& db, const std::wstring& table_path, const std::wstring& tag)
 {
-    tango::IRelationSchemaPtr rels = db;
+    xd::IRelationSchemaPtr rels = db;
     if (rels.isNull())
         return xcm::null;
 
-    tango::IRelationEnumPtr rel_enum = rels->getRelationEnum(table_path);
+    xd::IRelationEnumPtr rel_enum = rels->getRelationEnum(table_path);
     size_t i, n = rel_enum->size();
     for (i = 0; i < n; ++i)
     {
-        tango::IRelationPtr rel = rel_enum->getItem(i);
+        xd::IRelationPtr rel = rel_enum->getItem(i);
 
         if (0 == wcscasecmp(rel->getTag().c_str(), tag.c_str()))
             return rel;
@@ -464,11 +464,11 @@ void RelationshipPanel::onUpdateRelationships(wxCommandEvent& evt)
         g_app->getAppController()->updateTableDocRelationshipSync(tabledocRelationshipSyncNone);
 
     // update the relationships
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (!db)
         return;
 
-    tango::IRelationSchemaPtr rels = db;
+    xd::IRelationSchemaPtr rels = db;
     if (rels.isNull())
         return;
 
@@ -533,7 +533,7 @@ void RelationshipPanel::onUpdateRelationships(wxCommandEvent& evt)
 
             if (!found)
             {
-                tango::IRelationPtr rel = lookupSetRelation(db, towstr(*it), towstr(oi_it->tag));
+                xd::IRelationPtr rel = lookupSetRelation(db, towstr(*it), towstr(oi_it->tag));
                 if (rel)
                     rels->deleteRelation(rel->getRelationId());
             }
@@ -545,7 +545,7 @@ void RelationshipPanel::onUpdateRelationships(wxCommandEvent& evt)
         {
             // delete all existing relationships for this table
 
-            tango::IRelationEnumPtr rel_enum = rels->getRelationEnum(towstr(*it));
+            xd::IRelationEnumPtr rel_enum = rels->getRelationEnum(towstr(*it));
             size_t i, rel_count = rel_enum->size();
             for (i = 0; i < rel_count; ++i)
                 rels->deleteRelation(rel_enum->getItem(i)->getRelationId());
@@ -621,20 +621,20 @@ void RelationshipPanel::loadRelationships()
 {
     m_diagram->deleteAllLines();
 
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
 
-    tango::IRelationSchemaPtr rels = db;
+    xd::IRelationSchemaPtr rels = db;
     if (rels.isNull())
         return;
 
-    tango::IRelationEnumPtr rel_enum = rels->getRelationEnum(L"");
+    xd::IRelationEnumPtr rel_enum = rels->getRelationEnum(L"");
 
     bool update_button = false;
 
     int i, rel_count = rel_enum->size();
     for (i = 0; i < rel_count; ++i)
     {
-        tango::IRelationPtr rel = rel_enum->getItem(i);
+        xd::IRelationPtr rel = rel_enum->getItem(i);
 
         std::vector<wxString> left_parts;
         std::vector<wxString> right_parts;
@@ -658,8 +658,8 @@ void RelationshipPanel::loadRelationships()
 
             if (right_set_path.length() > 0)
             {
-                tango::IIndexInfoEnumPtr right_set_indexes = db->getIndexEnum(right_set_path);
-                tango::IIndexInfoPtr idx = lookupIndex(right_set_indexes, rel->getRightExpression(), false);
+                xd::IIndexInfoEnumPtr right_set_indexes = db->getIndexEnum(right_set_path);
+                xd::IIndexInfoPtr idx = lookupIndex(right_set_indexes, rel->getRightExpression(), false);
 
                 if (idx.isNull())
                 {

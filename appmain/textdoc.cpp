@@ -85,13 +85,13 @@ static int showOverwriteTransformationChangesDialog()
 // based on the offset of the column to the left of the column that we
 // inserted in the source structure
 
-static int getBestDestinationInsertPosition(tango::IColumnInfoPtr src_coltoleft,
-                                            tango::IStructurePtr dest_struct)
+static int getBestDestinationInsertPosition(xd::IColumnInfoPtr src_coltoleft,
+                                            xd::IStructurePtr dest_struct)
 {
     if (!src_coltoleft)
         return 0;
         
-    tango::IColumnInfoPtr dest_col;
+    xd::IColumnInfoPtr dest_col;
     
     int i, col_count = dest_struct->getColumnCount();
     for (i = 0; i < col_count; ++i)
@@ -495,20 +495,20 @@ bool TextDoc::updateColumnList()
 }
 
 
-tango::IStructurePtr TextDoc::getStructure()
+xd::IStructurePtr TextDoc::getStructure()
 {
 /*
     TODO: implement
 
     if (m_view == TextDoc::TextDelimitedView)
     {
-        tango::IDelimitedTextSetPtr s = m_textdelimited_set;
+        xd::IDelimitedTextSetPtr s = m_textdelimited_set;
         if (s)
             return s->getStructure();
     }
      else if (m_view == TextDoc::FixedLengthView)
     {
-        tango::IFixedLengthDefinitionPtr s = m_fixedlength_set;
+        xd::IFixedLengthDefinitionPtr s = m_fixedlength_set;
         if (s)
             return s->getStructure();
     }
@@ -533,13 +533,13 @@ void TextDoc::getColumnListItems(std::vector<ColumnListItem>& list)
 
     TODO: reimplement
 
-    tango::IxSetPtr set = getTextSet();
+    xd::IxSetPtr set = getTextSet();
     if (set.isNull())
         return;
 
-    tango::IStructurePtr structure;
-    tango::IFixedLengthDefinitionPtr fset = set;
-    tango::IDelimitedTextSetPtr tset = set;
+    xd::IStructurePtr structure;
+    xd::IFixedLengthDefinitionPtr fset = set;
+    xd::IDelimitedTextSetPtr tset = set;
     if (fset)
         structure = fset->getSourceStructure();
     if (tset)
@@ -553,7 +553,7 @@ void TextDoc::getColumnListItems(std::vector<ColumnListItem>& list)
     
     for (i = 0; i < col_count; i++)
     {
-        tango::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
         if (colinfo.isNull())
             continue;
         
@@ -569,21 +569,21 @@ void TextDoc::getColumnListItems(std::vector<ColumnListItem>& list)
 bool TextDoc::initFixedLengthView()
 {
 /*
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return false;
     
     // open the set
     m_textdelimited_set.clear();
     m_fixedlength_set = db->openSetEx(towstr(m_path),
-                                      tango::formatFixedLengthText);
+                                      xd::formatFixedLengthText);
 
     // if we don't have a set, bail out
     if (m_fixedlength_set.isNull())
         return false;
 
     // if the set is not a fixed-length text set, bail out
-    tango::IFixedLengthDefinitionPtr fset = m_fixedlength_set;
+    xd::IFixedLengthDefinitionPtr fset = m_fixedlength_set;
     if (fset.isNull())
         return false;
 
@@ -638,7 +638,7 @@ bool TextDoc::initFixedLengthView()
     m_textview->deleteAllColumns();
     
     // get the source structure from the fixed-length text set
-    tango::IStructurePtr fstruct = fset->getSourceStructure();
+    xd::IStructurePtr fstruct = fset->getSourceStructure();
     if (fstruct.isNull())
     {
         m_loading_definition = false;
@@ -649,7 +649,7 @@ bool TextDoc::initFixedLengthView()
     int i, field_count = fstruct->getColumnCount();
     for (i = 0; i < field_count; ++i)
     {
-        tango::IColumnInfoPtr colinfo;
+        xd::IColumnInfoPtr colinfo;
         colinfo = fstruct->getColumnInfoByIdx(i);
         
         m_textview->addColumn(colinfo->getOffset(),
@@ -720,12 +720,12 @@ inline void setTextQualifierComboBoxSelection(wxComboBox* combobox,
 bool TextDoc::open(const wxString& filename)
 {
 /*
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return false;
 
     // get the format of the file from the database
-    tango::IFileInfoPtr file_info = db->getFileInfo(towstr(filename));
+    xd::IFileInfoPtr file_info = db->getFileInfo(towstr(filename));
     if (file_info.isNull())
         return false;
 
@@ -735,7 +735,7 @@ bool TextDoc::open(const wxString& filename)
     
     if (m_view == -1)
     {
-        if (file_info->getFormat() == tango::formatDelimitedText)
+        if (file_info->getFormat() == xd::formatDelimitedText)
             m_view = TextDoc::TextDelimitedView;
              else
             m_view = TextDoc::FixedLengthView;
@@ -758,13 +758,13 @@ bool TextDoc::open(const wxString& filename)
         if (m_view == TextDoc::FixedLengthView)
         {
             m_fixedlength_set = db->openSetEx(towstr(m_path),
-                                              tango::formatFixedLengthText);
+                                              xd::formatFixedLengthText);
             return m_fixedlength_set.isOk();
         }
          else if (m_view == TextDoc::TextDelimitedView)
         {
             m_textdelimited_set = db->openSetEx(towstr(m_path),
-                                                tango::formatDelimitedText);
+                                                xd::formatDelimitedText);
             return m_textdelimited_set.isOk();
         }
     }
@@ -784,7 +784,7 @@ void TextDoc::close()
 
 bool TextDoc::initTextDelimitedView()
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return false;
 
@@ -792,14 +792,14 @@ bool TextDoc::initTextDelimitedView()
     // open the set
     m_fixedlength_set.clear();
     m_textdelimited_set = db->openSetEx(towstr(m_path),
-                                        tango::formatDelimitedText);
+                                        xd::formatDelimitedText);
 
     // if we don't have a set, bail out
     if (m_textdelimited_set.isNull())
         return false;
 
     // if the set is not a text-delimited set, bail out
-    tango::IDelimitedTextSetPtr tset = m_textdelimited_set;
+    xd::IDelimitedTextSetPtr tset = m_textdelimited_set;
     if (tset.isNull())
         return false;
 
@@ -1044,7 +1044,7 @@ void TextDoc::refreshGrid()
 {
 /*
     // if the set is not a text-delimited set, bail out
-    tango::IDelimitedTextSetPtr tset = m_textdelimited_set;
+    xd::IDelimitedTextSetPtr tset = m_textdelimited_set;
     if (tset.isNull())
         return;
 
@@ -1085,7 +1085,7 @@ void TextDoc::updateStatusBar()
         int col = m_textview->getCursorOffset();
         int field_count = 0;
         
-        tango::IFixedLengthDefinitionPtr fset = m_fixedlength_set;
+        xd::IFixedLengthDefinitionPtr fset = m_fixedlength_set;
         if (fset)
             field_count = fset->getSourceStructure()->getColumnCount();
         
@@ -1247,27 +1247,27 @@ void TextDoc::onTextViewColumnAdded(TextViewColumn col)
 
 
     // insert the column into the fixed-length text set
-    tango::IFixedLengthDefinitionPtr fset = m_fixedlength_set;
+    xd::IFixedLengthDefinitionPtr fset = m_fixedlength_set;
     if (fset.isOk())
     {
-        tango::IStructurePtr ss = fset->getSourceStructure();
-        tango::IColumnInfoPtr colinfo = ss->insertColumn(idx);
+        xd::IStructurePtr ss = fset->getSourceStructure();
+        xd::IColumnInfoPtr colinfo = ss->insertColumn(idx);
         colinfo->setOffset(col.offset);
-        colinfo->setType(tango::typeCharacter);
+        colinfo->setType(xd::typeCharacter);
         colinfo->setWidth(col.width);
         colinfo->setName(towstr(col.name));
         if (m_encoding == EbcdicEncoding)
-            colinfo->setEncoding(tango::encodingEBCDIC);
+            colinfo->setEncoding(xd::encodingEBCDIC);
         fset->modifySourceStructure(ss, NULL);
         
         colinfo = ss->getColumnInfoByIdx(idx-1);
         
-        tango::IStructurePtr ds = fset->getDestinationStructure();
+        xd::IStructurePtr ds = fset->getDestinationStructure();
         int insert_idx = getBestDestinationInsertPosition(colinfo, ds);
         
         colinfo = ds->insertColumn(insert_idx);
         colinfo->setName(towstr(col.name));
-        colinfo->setType(tango::typeCharacter);
+        colinfo->setType(xd::typeCharacter);
         colinfo->setWidth(col.width);
         colinfo->setScale(0);
         colinfo->setExpression(towstr(col.name));
@@ -1324,11 +1324,11 @@ void TextDoc::onTextViewColumnDeleted(TextViewColumn col)
     size_t idx = m_textview->getColumnIdxFromOffset(col.offset);
     
     // delete the column into the fixed-length text set
-    tango::IFixedLengthDefinitionPtr fset = m_fixedlength_set;
+    xd::IFixedLengthDefinitionPtr fset = m_fixedlength_set;
     if (fset.isOk())
     {
-        tango::IStructurePtr s = fset->getSourceStructure();
-        tango::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(idx);
+        xd::IStructurePtr s = fset->getSourceStructure();
+        xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(idx);
         s->deleteColumn(colinfo->getName());
         fset->modifySourceStructure(s, NULL);
         
@@ -1392,12 +1392,12 @@ void TextDoc::onTextViewColumnModified(TextViewColumn col,
     size_t idx = m_textview->getColumnIdxFromOffset(col.offset);
     
     // modify the column in the fixed-length text set
-    tango::IFixedLengthDefinitionPtr fset = m_fixedlength_set;
+    xd::IFixedLengthDefinitionPtr fset = m_fixedlength_set;
     if (fset.isOk())
     {
-        tango::IStructurePtr s = fset->getSourceStructure();
-        tango::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(idx);
-        tango::IColumnInfoPtr modinfo = s->modifyColumn(colinfo->getName());
+        xd::IStructurePtr s = fset->getSourceStructure();
+        xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(idx);
+        xd::IColumnInfoPtr modinfo = s->modifyColumn(colinfo->getName());
         modinfo->setOffset(new_settings.offset);
         modinfo->setWidth(new_settings.width);
         modinfo->setEncoding(new_settings.encoding);
@@ -1510,7 +1510,7 @@ void TextDoc::onSave(wxCommandEvent& evt)
 /*
     if (m_view == TextDoc::FixedLengthView)
     {
-        tango::IFixedLengthDefinitionPtr fset = m_fixedlength_set;
+        xd::IFixedLengthDefinitionPtr fset = m_fixedlength_set;
         if (fset)
         {
             fset->saveConfiguration();
@@ -1520,7 +1520,7 @@ void TextDoc::onSave(wxCommandEvent& evt)
      else if (m_view == TextDoc::TextDelimitedView)
     {
 
-        tango::IDelimitedTextSetPtr tset = m_textdelimited_set;
+        xd::IDelimitedTextSetPtr tset = m_textdelimited_set;
         if (tset)
         {
             tset->saveConfiguration();
@@ -1606,13 +1606,13 @@ void TextDoc::onEncodingChanged(wxCommandEvent& evt)
     if (sel == 0)
     {
         m_encoding = TextDoc::StandardEncoding;
-        tango_encoding = tango::encodingASCII;
+        tango_encoding = xd::encodingASCII;
         m_textview->setCharEncoding(tango_encoding);
     }
      else
     {
         m_encoding = TextDoc::EbcdicEncoding;
-        tango_encoding = tango::encodingEBCDIC;
+        tango_encoding = xd::encodingEBCDIC;
         m_textview->setCharEncoding(tango_encoding);
     }
     
@@ -1651,7 +1651,7 @@ void TextDoc::onFixedLengthSkipCharTextEnter(wxCommandEvent& evt)
     m_textview->refresh();
 
     // update the fixed-length text set's metadata
-    tango::IFixedLengthDefinitionPtr fset = m_fixedlength_set;
+    xd::IFixedLengthDefinitionPtr fset = m_fixedlength_set;
     if (fset.isOk())
         fset->setBeginningSkipCharacterCount(val);
     
@@ -1691,7 +1691,7 @@ void TextDoc::onFixedLengthRowWidthTextEnter(wxCommandEvent& evt)
     m_textview->refresh();
     
     // update the fixed-length text set's metadata
-    tango::IFixedLengthDefinitionPtr fset = m_fixedlength_set;
+    xd::IFixedLengthDefinitionPtr fset = m_fixedlength_set;
     if (fset.isOk())
         fset->setRowWidth(val);
     
@@ -1719,7 +1719,7 @@ void TextDoc::onFixedLengthSkipCharSpun(wxSpinEvent& evt)
     m_textview->refresh();
 
     // update the fixed-length text set's metadata
-    tango::IFixedLengthDefinitionPtr fset = m_fixedlength_set;
+    xd::IFixedLengthDefinitionPtr fset = m_fixedlength_set;
     if (fset.isOk())
         fset->setBeginningSkipCharacterCount(val);
     
@@ -1745,7 +1745,7 @@ void TextDoc::onFixedLengthRowWidthSpun(wxSpinEvent& evt)
     m_textview->refresh();
 
     // update the fixed-length text set's metadata
-    tango::IFixedLengthDefinitionPtr fset = m_fixedlength_set;
+    xd::IFixedLengthDefinitionPtr fset = m_fixedlength_set;
     if (fset.isOk())
         fset->setRowWidth(val);
     
@@ -1774,7 +1774,7 @@ void TextDoc::onFixedLengthLineDelimitedChecked(wxCommandEvent& evt)
     m_textview->refresh();
 
     // update the fixed-length text set's metadata
-    tango::IFixedLengthDefinitionPtr fset = m_fixedlength_set;
+    xd::IFixedLengthDefinitionPtr fset = m_fixedlength_set;
     if (fset.isOk())
         fset->setLineDelimited(val);
     
@@ -1825,7 +1825,7 @@ void TextDoc::onTextDelimitedFieldDelimiterTextEnter(wxCommandEvent& evt)
     m_last_delimiters = s;
     
     // set the parameters for a text-delimited set
-    tango::IDelimitedTextSetPtr tset = m_textdelimited_set;
+    xd::IDelimitedTextSetPtr tset = m_textdelimited_set;
     if (tset.isOk())
     {
         AppBusyCursor busy_cursor;
@@ -1869,7 +1869,7 @@ void TextDoc::onTextDelimitedTextQualifierTextEnter(wxCommandEvent& evt)
     m_last_textqualifier = s;
     
     // set the parameters for a text-delimited set
-    tango::IDelimitedTextSetPtr tset = m_textdelimited_set;
+    xd::IDelimitedTextSetPtr tset = m_textdelimited_set;
     if (tset.isOk())
     {
         AppBusyCursor busy_cursor;
@@ -1945,7 +1945,7 @@ void TextDoc::onTextDelimitedFieldDelimiterCombo(wxCommandEvent& evt)
     m_last_delimiters = getFieldDelimiters();
     
     // set the parameters for a text-delimited set
-    tango::IDelimitedTextSetPtr tset = m_textdelimited_set;
+    xd::IDelimitedTextSetPtr tset = m_textdelimited_set;
     if (tset.isOk())
     {
         AppBusyCursor busy_cursor;
@@ -2001,7 +2001,7 @@ void TextDoc::onTextDelimitedTextQualifierCombo(wxCommandEvent& evt)
     m_last_textqualifier = getTextQualifier();
 
     // set the parameters for a text-delimited set
-    tango::IDelimitedTextSetPtr tset = m_textdelimited_set;
+    xd::IDelimitedTextSetPtr tset = m_textdelimited_set;
     if (tset.isOk())
     {
         AppBusyCursor busy_cursor;
@@ -2025,11 +2025,11 @@ void TextDoc::onTextDelimitedFirstRowFieldNamesChecked(wxCommandEvent& evt)
     std::pair<wxString, wxString> name_pair;
     
     // set the parameters for a text-delimited set
-    tango::IDelimitedTextSetPtr tset = m_textdelimited_set;
+    xd::IDelimitedTextSetPtr tset = m_textdelimited_set;
     if (tset.isOk())
     {
-        tango::IStructurePtr s = tset->getSourceStructure();
-        tango::IColumnInfoPtr colinfo;
+        xd::IStructurePtr s = tset->getSourceStructure();
+        xd::IColumnInfoPtr colinfo;
         
         // get the old field names
         int i, col_count = s->getColumnCount();
@@ -2100,16 +2100,16 @@ void TextDoc::onTextDelimitedCaptionEndEdit(kcl::GridEvent& evt)
     }
 
     // make sure we're dealing with a text-delimited set
-    tango::IDelimitedTextSetPtr tset = m_textdelimited_set;
+    xd::IDelimitedTextSetPtr tset = m_textdelimited_set;
     if (tset.isNull())
         return;
 
     // get the column's info
-    tango::IStructurePtr src_struct = tset->getSourceStructure();
+    xd::IStructurePtr src_struct = tset->getSourceStructure();
     if (src_struct.isNull())
         return;
     
-    tango::IColumnInfoPtr colinfo = src_struct->getColumnInfoByIdx(mod_idx);
+    xd::IColumnInfoPtr colinfo = src_struct->getColumnInfoByIdx(mod_idx);
     if (colinfo.isNull())
         return;
     
@@ -2174,9 +2174,9 @@ bool TextDoc::isDestinationSameAsSourceStructure()
     // this function determines if the user has edited
     // anything in the TransformationDoc or not
 
-    tango::IDelimitedTextSetPtr tset = getTextSet();
-    tango::IFixedLengthDefinitionPtr fset = getTextSet();
-    tango::IStructurePtr src_struct, dest_struct;
+    xd::IDelimitedTextSetPtr tset = getTextSet();
+    xd::IFixedLengthDefinitionPtr fset = getTextSet();
+    xd::IStructurePtr src_struct, dest_struct;
     
     if (tset)
     {
@@ -2195,8 +2195,8 @@ bool TextDoc::isDestinationSameAsSourceStructure()
     if (src_colcount != dest_colcount)
         return false;
         
-    tango::IColumnInfoPtr src_colinfo;
-    tango::IColumnInfoPtr dest_colinfo;
+    xd::IColumnInfoPtr src_colinfo;
+    xd::IColumnInfoPtr dest_colinfo;
     int i;
     
     for (i = 0; i < src_colcount; ++i)
@@ -2235,11 +2235,11 @@ void TextDoc::resetTransformationDocAndTableDoc()
     ITableDocPtr tabledoc = lookupOtherDocument(m_doc_site, "appmain.TableDoc");
     if (tabledoc)
     {
-        tango::IxSetPtr set = getTextSet();
+        xd::IxSetPtr set = getTextSet();
         if (set.isNull())
             return;
 
-        tango::IFileInfoPtr finfo = g_app->getDatabase()->getFileInfo(towstr(m_path));
+        xd::IFileInfoPtr finfo = g_app->getDatabase()->getFileInfo(towstr(m_path));
         if (finfo.isNull())
             return;
 
@@ -2324,21 +2324,21 @@ bool TextDoc::saveLayoutTemplate(const wxString& path)
         kl::JsonNode fields = root["fields"];
 
         // if the set is not a text-delimited set, bail out
-        tango::IDelimitedTextSetPtr tset = m_textdelimited_set;
+        xd::IDelimitedTextSetPtr tset = m_textdelimited_set;
         if (tset.isNull())
             return false;
 
-        tango::IStructurePtr s = tset->getDestinationStructure();
+        xd::IStructurePtr s = tset->getDestinationStructure();
         
         int i, count = s->getColumnCount();
         for (i = 0; i < count; ++i)
         {
-            tango::IColumnInfoPtr e = s->getColumnInfoByIdx(i);
+            xd::IColumnInfoPtr e = s->getColumnInfoByIdx(i);
             
             kl::JsonNode field = fields.appendElement();
             
             field["name"] = e->getName();
-            field["type"] = tango::dbtypeToString(e->getType());
+            field["type"] = xd::dbtypeToString(e->getType());
             field["width"] = e->getWidth();
             field["scale"] = e->getScale();
         }

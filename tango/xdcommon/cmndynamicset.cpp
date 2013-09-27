@@ -64,10 +64,10 @@ public:
 
     unsigned int getIteratorFlags()
     {
-        return tango::ifFastRowCount;
+        return xd::ifFastRowCount;
     }
 
-    tango::rowpos_t getRowCount()
+    xd::rowpos_t getRowCount()
     {
         return m_set->m_row_count;
     }
@@ -163,13 +163,13 @@ std::wstring CommonDynamicSet::getSetId()
     return m_set_id;
 }
 
-tango::IStructurePtr CommonDynamicSet::getStructure()
+xd::IStructurePtr CommonDynamicSet::getStructure()
 {
     return m_base_table->getStructure();
 }
 
 
-bool CommonDynamicSet::create(tango::IDatabasePtr database,
+bool CommonDynamicSet::create(xd::IDatabasePtr database,
                               const std::wstring& base_path)
 {
     IXdsqlDatabasePtr xdb = database;
@@ -183,8 +183,8 @@ bool CommonDynamicSet::create(tango::IDatabasePtr database,
     //std::wstring filename = dbi->getUniqueFilename();
     //filename += L".dyn";
     
-    tango::IAttributesPtr attr = database->getAttributes();
-    std::wstring temp_directory = attr->getStringAttribute(tango::dbattrTempDirectory);
+    xd::IAttributesPtr attr = database->getAttributes();
+    std::wstring temp_directory = attr->getStringAttribute(xd::dbattrTempDirectory);
     if (!temp_directory.empty())
         m_temp_path = temp_directory;
     
@@ -198,7 +198,7 @@ bool CommonDynamicSet::create(tango::IDatabasePtr database,
     // filename specified, so create a disk index
     ExIndex* di = new ExIndex;
     di->setTempFilePath(m_temp_path);
-    if (!di->create(filename, sizeof(tango::rowid_t), 0, false))
+    if (!di->create(filename, sizeof(xd::rowid_t), 0, false))
     {
         delete di;
         return false;
@@ -227,26 +227,26 @@ void CommonDynamicSet::finishBulkInsert()
     m_index->reopen();
 }
 
-bool CommonDynamicSet::insertRow(const tango::rowid_t& rowid)
+bool CommonDynamicSet::insertRow(const xd::rowid_t& rowid)
 {
-    tango::rowid_t fixed_rowid;
+    xd::rowid_t fixed_rowid;
     invert_rowid_endianness((unsigned char*)&fixed_rowid,
                             (unsigned char*)&rowid);
-    m_index->insert((void*)&fixed_rowid, sizeof(tango::rowid_t), NULL, 0);
+    m_index->insert((void*)&fixed_rowid, sizeof(xd::rowid_t), NULL, 0);
     
     m_row_count++;
     
     return true;
 }
 
-bool CommonDynamicSet::deleteRow(const tango::rowid_t& rowid)
+bool CommonDynamicSet::deleteRow(const xd::rowid_t& rowid)
 {
-    tango::rowid_t fixed_rowid;
+    xd::rowid_t fixed_rowid;
     invert_rowid_endianness((unsigned char*)&fixed_rowid,
                             (unsigned char*)&rowid);
 
     IIndexIterator* idx_iter = m_index->seek(&fixed_rowid,
-                                             sizeof(tango::rowid_t),
+                                             sizeof(xd::rowid_t),
                                              false);
 
     if (!idx_iter)
@@ -306,10 +306,10 @@ IXdsqlRowDeleterPtr CommonDynamicSet::getRowDeleter()
 }
 
 
-int CommonDynamicSet::insert(tango::IIteratorPtr source_iter,
+int CommonDynamicSet::insert(xd::IIteratorPtr source_iter,
                              const std::wstring& condition,
                              int max_rows,
-                             tango::IJob* job)
+                             xd::IJob* job)
 {
     IJobInternalPtr sp_ijob = job;
     IJobInternal* ijob = sp_ijob.p;
@@ -318,7 +318,7 @@ int CommonDynamicSet::insert(tango::IIteratorPtr source_iter,
     {
         ijob->setMaxCount(max_rows);
         ijob->setCurrentCount(0);
-        ijob->setStatus(tango::jobRunning);
+        ijob->setStatus(xd::jobRunning);
         ijob->setStartTime(time(NULL));
     }
 
@@ -326,7 +326,7 @@ int CommonDynamicSet::insert(tango::IIteratorPtr source_iter,
 
     // if the constraint set is a filter set, we can perform the
     // operation faster by just parsing the filter expression locally
-    tango::objhandle_t filter_handle = 0;
+    xd::objhandle_t filter_handle = 0;
     if (condition.length() > 0)
     {
         filter_handle = source_iter->getHandle(condition);
@@ -336,8 +336,8 @@ int CommonDynamicSet::insert(tango::IIteratorPtr source_iter,
 
     int counter = 0;
     int inserted = 0;
-    tango::rowid_t rowid;
-    tango::rowid_t fixed_rowid;
+    xd::rowid_t rowid;
+    xd::rowid_t fixed_rowid;
     bool cancelled = false;
     bool result = true;
 
@@ -357,7 +357,7 @@ int CommonDynamicSet::insert(tango::IIteratorPtr source_iter,
                                     (unsigned char*)&rowid);
 
             m_index->insert((void*)&fixed_rowid,
-                            sizeof(tango::rowid_t),
+                            sizeof(xd::rowid_t),
                             NULL,
                             0);
 
@@ -400,7 +400,7 @@ int CommonDynamicSet::insert(tango::IIteratorPtr source_iter,
         if (!job->getCancelled())
         {
             ijob->setCurrentCount(counter);
-            ijob->setStatus(tango::jobFinished);
+            ijob->setStatus(xd::jobFinished);
             ijob->setFinishTime(time(NULL));
         }
     }
@@ -409,11 +409,11 @@ int CommonDynamicSet::insert(tango::IIteratorPtr source_iter,
 }
 
 
-tango::IIteratorPtr CommonDynamicSet::createIterator(const std::wstring& columns,
+xd::IIteratorPtr CommonDynamicSet::createIterator(const std::wstring& columns,
                                                      const std::wstring& expr,
-                                                     tango::IJob* job)
+                                                     xd::IJob* job)
 {
-    tango::IIteratorPtr data_iter = m_database->query(m_base_path, columns, L"", L"", NULL);
+    xd::IIteratorPtr data_iter = m_database->query(m_base_path, columns, L"", L"", NULL);
     if (data_iter.isNull())
         return xcm::null;
     data_iter->goFirst();
@@ -431,7 +431,7 @@ tango::IIteratorPtr CommonDynamicSet::createIterator(const std::wstring& columns
         iter->setTable(getObjectPath());
         idx_iter->unref();
         iter->goFirst();
-        return static_cast<tango::IIterator*>(iter);
+        return static_cast<xd::IIterator*>(iter);
     }
 
 
@@ -484,11 +484,11 @@ tango::IIteratorPtr CommonDynamicSet::createIterator(const std::wstring& columns
     idx_iter->unref();
     iter->goFirst();
 
-    return static_cast<tango::IIterator*>(iter);
+    return static_cast<xd::IIterator*>(iter);
 }
 
 
-tango::rowpos_t CommonDynamicSet::getRowCount()
+xd::rowpos_t CommonDynamicSet::getRowCount()
 {
     return m_row_count;
 }
@@ -496,8 +496,8 @@ tango::rowpos_t CommonDynamicSet::getRowCount()
 
 
 /*
-bool CommonDynamicSet::modifyStructure(tango::IStructure* struct_config,
-                                       tango::IJob* job)
+bool CommonDynamicSet::modifyStructure(xd::IStructure* struct_config,
+                                       xd::IJob* job)
 {
 
     // release all indexes
@@ -527,8 +527,8 @@ bool CommonDynamicSet::modifyStructure(tango::IStructure* struct_config,
 
 
 
-bool CommonDynamicSet::updateRow(tango::rowid_t rowid,
-                           tango::ColumnUpdateInfo* info,
+bool CommonDynamicSet::updateRow(xd::rowid_t rowid,
+                           xd::ColumnUpdateInfo* info,
                            size_t info_size)
 {
     return m_base_table->updateRow(rowid, info, info_size);
@@ -556,7 +556,7 @@ void CommonDynamicSetRowDeleter::startDelete()
 {
 }
 
-bool CommonDynamicSetRowDeleter::deleteRow(const tango::rowid_t& rowid)
+bool CommonDynamicSetRowDeleter::deleteRow(const xd::rowid_t& rowid)
 {
     m_rows_to_delete.push_back(rowid);
     return true;
@@ -564,7 +564,7 @@ bool CommonDynamicSetRowDeleter::deleteRow(const tango::rowid_t& rowid)
 
 void CommonDynamicSetRowDeleter::finishDelete()
 {
-    std::vector<tango::rowid_t>::iterator it, it_end = m_rows_to_delete.end();
+    std::vector<xd::rowid_t>::iterator it, it_end = m_rows_to_delete.end();
     for (it = m_rows_to_delete.begin(); it != it_end; ++it)
         m_set->deleteRow(*it);
 }

@@ -23,7 +23,7 @@ public:
         input_width = 0;
         
         output_name = wxT("");
-        output_type = tango::typeCharacter;
+        output_type = xd::typeCharacter;
         output_width = 20;
         output_scale = 0;
 
@@ -122,13 +122,13 @@ public:
     FieldSelection()
     {
         input_name = wxT("");
-        input_type = tango::typeCharacter;
+        input_type = xd::typeCharacter;
         input_width = 20;
         input_scale = 0;
         input_offset = 0;
 
         output_name = wxT("");
-        output_type = tango::typeCharacter;
+        output_type = xd::typeCharacter;
         output_width = 20;
         output_scale = 0;
 

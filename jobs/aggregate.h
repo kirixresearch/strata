@@ -44,7 +44,7 @@ public:
     int getErrorCode()
     {
         XCM_AUTO_LOCK(m_obj_mutex);
-        if (curjob.isNull()) return tango::errorNone;
+        if (curjob.isNull()) return xd::errorNone;
         return curjob->getErrorCode();
     }
 

@@ -17,11 +17,11 @@ namespace xdcommon
 {
 
 
-class FileInfo : public tango::IFileInfo
+class FileInfo : public xd::IFileInfo
 {
     XCM_CLASS_NAME("tango.FileInfo")
     XCM_BEGIN_INTERFACE_MAP(FileInfo)
-        XCM_INTERFACE_ENTRY(tango::IFileInfo)
+        XCM_INTERFACE_ENTRY(xd::IFileInfo)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -35,7 +35,7 @@ public:
     unsigned int getFlags();
     const std::wstring& getMimeType();
     long long getSize();
-    tango::rowpos_t getRowCount();
+    xd::rowpos_t getRowCount();
     bool isMount();
     const std::wstring& getPrimaryKey();
     const std::wstring& getObjectId();
@@ -50,7 +50,7 @@ public:
     int format;
     int flags;
     long long size;
-    tango::rowpos_t row_count;
+    xd::rowpos_t row_count;
     bool is_mount;
 };
 

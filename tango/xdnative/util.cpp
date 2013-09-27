@@ -84,7 +84,7 @@ bool getOrderExpressionMatch(const std::wstring& expr1,
 struct FindFieldInfo
 {
     std::set<std::wstring> found_fields;
-    tango::IStructurePtr structure;
+    xd::IStructurePtr structure;
 };
 
 static bool findfield_parse_hook(kscript::ExprParseHookInfo& hook_info)
@@ -117,15 +117,15 @@ static bool findfield_parse_hook(kscript::ExprParseHookInfo& hook_info)
             func_name == L"STDDEV" ||
             func_name == L"VARIANCE")
         {
-            tango::IColumnInfoPtr colinfo = info->structure->getColumnInfo(param);
+            xd::IColumnInfoPtr colinfo = info->structure->getColumnInfo(param);
             if (colinfo.isNull())
                 return true;
         
             int type = colinfo->getType();
 
-            if (type != tango::typeNumeric &&
-                type != tango::typeInteger &&
-                type != tango::typeDouble)
+            if (type != xd::typeNumeric &&
+                type != xd::typeInteger &&
+                type != xd::typeDouble)
             {
                 // fail
                 return true;
@@ -138,14 +138,14 @@ static bool findfield_parse_hook(kscript::ExprParseHookInfo& hook_info)
         }
          else if (func_name == L"MERGE")
         {
-            tango::IColumnInfoPtr colinfo = info->structure->getColumnInfo(param);
+            xd::IColumnInfoPtr colinfo = info->structure->getColumnInfo(param);
             if (colinfo.isNull())
                 return true;
         
             int type = colinfo->getType();
 
-            if (type != tango::typeCharacter &&
-                type != tango::typeWideCharacter)
+            if (type != xd::typeCharacter &&
+                type != xd::typeWideCharacter)
             {
                 // fail
                 return true;
@@ -193,7 +193,7 @@ static bool findfield_parse_hook(kscript::ExprParseHookInfo& hook_info)
     }
 
 
-    tango::IColumnInfoPtr colinfo;
+    xd::IColumnInfoPtr colinfo;
     colinfo = info->structure->getColumnInfo(expr_text);
 
     if (colinfo.isNull())
@@ -206,25 +206,25 @@ static bool findfield_parse_hook(kscript::ExprParseHookInfo& hook_info)
 
     switch (colinfo->getType())
     {
-        case tango::typeCharacter:
-        case tango::typeWideCharacter:
+        case xd::typeCharacter:
+        case xd::typeWideCharacter:
             v->setString(L"");
             break;
-        case tango::typeNumeric:
-        case tango::typeDouble:
+        case xd::typeNumeric:
+        case xd::typeDouble:
             v->setDouble(0.0);
             break;
-        case tango::typeInteger:
+        case xd::typeInteger:
             v->setInteger(0);
             break;
-        case tango::typeBoolean:
+        case xd::typeBoolean:
             v->setBoolean(true);
             break;
-        case tango::typeDateTime:
-        case tango::typeDate:
+        case xd::typeDateTime:
+        case xd::typeDate:
             v->setDateTime(0,0);
             break;
-        case tango::typeBinary:
+        case xd::typeBinary:
             v->setType(kscript::Value::typeBinary);
             break;
         default:
@@ -242,7 +242,7 @@ static bool findfield_parse_hook(kscript::ExprParseHookInfo& hook_info)
 
 
 static void _findFieldsInExpr(const std::wstring& expr,
-                              tango::IStructurePtr s,
+                              xd::IStructurePtr s,
                               bool recurse_calc_fields,
                               std::set<std::wstring>& fields)
 {
@@ -299,7 +299,7 @@ static void _findFieldsInExpr(const std::wstring& expr,
              it != info.found_fields.end();
              ++it)
         {
-            tango::IColumnInfoPtr colinfo;
+            xd::IColumnInfoPtr colinfo;
             colinfo = s->getColumnInfo(*it);
             if (colinfo.isNull())
                 continue;
@@ -316,7 +316,7 @@ static void _findFieldsInExpr(const std::wstring& expr,
 }
 
 std::vector<std::wstring> getFieldsInExpr(const std::wstring& expr,
-                                          tango::IStructurePtr s,
+                                          xd::IStructurePtr s,
                                           bool recurse_calcfields)
 {
     std::set<std::wstring> flds;
@@ -337,7 +337,7 @@ std::vector<std::wstring> getFieldsInExpr(const std::wstring& expr,
 
 bool findFieldInExpr(const std::wstring& _field,
                      const std::wstring& expr,
-                     tango::IStructurePtr s,
+                     xd::IStructurePtr s,
                      bool recurse_calcfields)
 {
     std::wstring field = _field;
@@ -420,14 +420,14 @@ void dbl2decstr(char* dest, double d, int width, int scale)
 
 // conversion between set id's and table ord's
 
-std::wstring getTableSetId(tango::tableord_t table_ordinal)
+std::wstring getTableSetId(xd::tableord_t table_ordinal)
 {
     wchar_t buf[64];
     swprintf(buf, 64, L"tbl%08u", table_ordinal);
     return buf;
 }
 
-tango::tableord_t getSetTableOrd(const std::wstring& set_id)
+xd::tableord_t getSetTableOrd(const std::wstring& set_id)
 {
     // check to make sure that set id indeed refers to an ordinal
     const wchar_t* s = set_id.c_str();

@@ -57,7 +57,7 @@ struct OrderByField
 struct SourceTable
 {
     std::wstring path;
-    tango::IStructurePtr structure;
+    xd::IStructurePtr structure;
     std::wstring alias;
     std::wstring join_expr;
     int join_type;
@@ -74,9 +74,9 @@ struct JoinField
     int scale;
 
     SourceTable* source_table;
-    tango::IIteratorPtr source_iter;
-    tango::objhandle_t source_handle;
-    tango::objhandle_t dest_handle;
+    xd::IIteratorPtr source_iter;
+    xd::objhandle_t source_handle;
+    xd::objhandle_t dest_handle;
 };
 
 
@@ -84,8 +84,8 @@ struct JoinInfo
 {
     std::wstring left_path;
     std::wstring right_path;
-    tango::IStructurePtr right_structure;
-    tango::IIteratorPtr right_iter;
+    xd::IStructurePtr right_structure;
+    xd::IIteratorPtr right_iter;
     KeyLayout left_key;
     KeyLayout right_key;
     std::wstring left;
@@ -247,7 +247,7 @@ static wchar_t* zl_strrchr(wchar_t* str,
 }
 
 
-static tango::IColumnInfoPtr getColumnInfoMulti(std::vector<SourceTable>& s,
+static xd::IColumnInfoPtr getColumnInfoMulti(std::vector<SourceTable>& s,
                                                 const std::wstring& field_name,
                                                 SourceTable** tbl = NULL)
 {
@@ -290,7 +290,7 @@ static tango::IColumnInfoPtr getColumnInfoMulti(std::vector<SourceTable>& s,
     {
         for (it = s.begin(); it != s.end(); ++it)
         {
-            tango::IColumnInfoPtr col_info = it->structure->getColumnInfo(field_name);
+            xd::IColumnInfoPtr col_info = it->structure->getColumnInfo(field_name);
             if (col_info)
             {
                 if (tbl)
@@ -310,7 +310,7 @@ static tango::IColumnInfoPtr getColumnInfoMulti(std::vector<SourceTable>& s,
                 continue;
         }
         
-        tango::IColumnInfoPtr col_info = it->structure->getColumnInfo(field_part);
+        xd::IColumnInfoPtr col_info = it->structure->getColumnInfo(field_part);
         if (col_info)
         {
             if (tbl)
@@ -519,7 +519,7 @@ static std::wstring normalizeFieldNames(std::vector<SourceTable>& source_tables,
             std::wstring full_name;
             std::wstring colname = st_it->structure->getColumnName(i);
             std::wstring q_colname = L"[" + colname + L"]";
-            tango::IColumnInfoPtr colinfo;
+            xd::IColumnInfoPtr colinfo;
 
             if (isUniqueFieldName(source_tables, colname))
             {       
@@ -635,7 +635,7 @@ static void normalizeFieldNames(std::vector<SourceTable>& source_tables,
             std::wstring full_name;
             std::wstring colname = st_it->structure->getColumnName(i);
             std::wstring q_colname = L"[" + colname + L"]";
-            tango::IColumnInfoPtr colinfo;
+            xd::IColumnInfoPtr colinfo;
 
             if (isUniqueFieldName(source_tables, colname))
             {
@@ -692,17 +692,17 @@ static void normalizeFieldNames(std::vector<SourceTable>& source_tables,
 struct InsertDistinctField
 {
     int type;
-    tango::objhandle_t source_handle;
-    tango::objhandle_t dest_handle;
+    xd::objhandle_t source_handle;
+    xd::objhandle_t dest_handle;
 };
 
 
-inline bool getBitState(unsigned char* buf, tango::rowpos_t bit)
+inline bool getBitState(unsigned char* buf, xd::rowpos_t bit)
 {
     return (buf[bit/8] & (1 << (bit%8))) ? true : false;
 }
 
-inline void setBitState(unsigned char* buf, tango::rowpos_t bit)
+inline void setBitState(unsigned char* buf, xd::rowpos_t bit)
 {
     buf[bit/8] |= (1 << (bit%8));
 }
@@ -710,13 +710,13 @@ inline void setBitState(unsigned char* buf, tango::rowpos_t bit)
 class DistinctBulkInsertProgress : public IIndexProgress
 {
 public:
-    tango::IJob* job;
+    xd::IJob* job;
     IJobInternal* ijob;
     std::wstring filename;
     bool cancelled;
 
-    void updateProgress(tango::rowpos_t cur_count,
-                        tango::rowpos_t max_count,
+    void updateProgress(xd::rowpos_t cur_count,
+                        xd::rowpos_t max_count,
                         bool* cancel)
     {
         if (cur_count % 1000 == 0)
@@ -738,7 +738,7 @@ public:
             {
                 if (ijob)
                 {
-                    ijob->setStatus(tango::jobFailed);
+                    ijob->setStatus(xd::jobFailed);
                     *cancel = true;
                     cancelled = true;
                 }
@@ -748,20 +748,20 @@ public:
 };
 
 
-static bool insertDistinct(tango::IDatabase* db,
+static bool insertDistinct(xd::IDatabase* db,
                            const std::wstring& target,
-                           tango::IIteratorPtr src_iter,
-                           tango::IJob* job)
+                           xd::IIteratorPtr src_iter,
+                           xd::IJob* job)
 {
     ExIndex* index = new ExIndex;
     std::vector<InsertDistinctField> fields;
     std::vector<InsertDistinctField>::iterator fit;
     
     // put index file and temporary files in the temp path
-    tango::IAttributesPtr attr = db->getAttributes();
+    xd::IAttributesPtr attr = db->getAttributes();
     if (!attr)
         return false;
-    std::wstring temp_dir = attr->getStringAttribute(tango::dbattrTempDirectory);
+    std::wstring temp_dir = attr->getStringAttribute(xd::dbattrTempDirectory);
     if (temp_dir.empty())
     {
         temp_dir = xf_get_temp_path();
@@ -779,7 +779,7 @@ static bool insertDistinct(tango::IDatabase* db,
     // create the index file
     if (!index->create(index_filename,
                        sizeof(unsigned long long),
-                       sizeof(tango::rowpos_t),
+                       sizeof(xd::rowpos_t),
                        true))
     {
         return false;
@@ -787,9 +787,9 @@ static bool insertDistinct(tango::IDatabase* db,
 
     // create row inserter
 
-    tango::IRowInserterPtr sp_output = db->bulkInsert(target);
-    tango::IRowInserter* output = sp_output.p;
-    tango::IIterator* iter = src_iter.p;
+    xd::IRowInserterPtr sp_output = db->bulkInsert(target);
+    xd::IRowInserter* output = sp_output.p;
+    xd::IIterator* iter = src_iter.p;
     output->startInsert(L"*");
 
     // create the key layout and get input and output handles
@@ -797,14 +797,14 @@ static bool insertDistinct(tango::IDatabase* db,
     KeyLayout key;
     key.setIterator(src_iter);
 
-    tango::IStructurePtr s = src_iter->getStructure();
+    xd::IStructurePtr s = src_iter->getStructure();
 
     int col_count = s->getColumnCount();
     int i, key_len;
 
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr info = s->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr info = s->getColumnInfoByIdx(i);
         std::wstring col_name = info->getName();
 
         key.addKeyPart(col_name);
@@ -822,8 +822,8 @@ static bool insertDistinct(tango::IDatabase* db,
 
     IJobInternalPtr sp_ijob = job;
     IJobInternal* ijob = sp_ijob.p;
-    tango::rowpos_t cur_row = 1;
-    tango::rowpos_t row_count;
+    xd::rowpos_t cur_row = 1;
+    xd::rowpos_t row_count;
 
 
     // PHASE 1: populate the index with crc64 hash values
@@ -842,7 +842,7 @@ static bool insertDistinct(tango::IDatabase* db,
         index->insert(&crc,
                       sizeof(unsigned long long),
                       &cur_row,
-                      sizeof(tango::rowpos_t));
+                      sizeof(xd::rowpos_t));
 
         iter->skip(1);
         ++cur_row;
@@ -919,7 +919,7 @@ static bool insertDistinct(tango::IDatabase* db,
         crc = *(unsigned long long*)idx_iter->getKey();
         if (crc != last_crc)
         {
-            setBitState(bitmask, *(tango::rowpos_t*)idx_iter->getValue());
+            setBitState(bitmask, *(xd::rowpos_t*)idx_iter->getValue());
         }
 
         last_crc = crc;
@@ -975,34 +975,34 @@ static bool insertDistinct(tango::IDatabase* db,
 
                 switch (fit->type)
                 {
-                    case tango::typeCharacter:
+                    case xd::typeCharacter:
                         output->putString(fit->dest_handle,
                                   iter->getString(fit->source_handle));
                         break;
 
-                    case tango::typeWideCharacter:
+                    case xd::typeWideCharacter:
                         output->putWideString(fit->dest_handle,
                                   iter->getWideString(fit->source_handle));
                         break;
 
-                    case tango::typeDouble:
-                    case tango::typeNumeric:
+                    case xd::typeDouble:
+                    case xd::typeNumeric:
                         output->putDouble(fit->dest_handle,
                                   iter->getDouble(fit->source_handle));
                         break;
 
-                    case tango::typeInteger:
+                    case xd::typeInteger:
                         output->putInteger(fit->dest_handle,
                                   iter->getInteger(fit->source_handle));
                         break;
 
-                    case tango::typeDate:
-                    case tango::typeDateTime:
+                    case xd::typeDate:
+                    case xd::typeDateTime:
                         output->putDateTime(fit->dest_handle,
                                   iter->getDateTime(fit->source_handle));
                         break;
 
-                    case tango::typeBoolean:
+                    case xd::typeBoolean:
                         output->putBoolean(fit->dest_handle,
                                   iter->getBoolean(fit->source_handle));
                         break;
@@ -1026,7 +1026,7 @@ static bool insertDistinct(tango::IDatabase* db,
         }
     }
 
-    if (job && (job->getStatus() != tango::jobCancelled))
+    if (job && (job->getStatus() != xd::jobCancelled))
     {
         ijob->setCurrentCount(cur_row-1);
     }
@@ -1106,7 +1106,7 @@ static void _bindFieldDateTime(kscript::ExprEnv*,
         return;
     }
 
-    tango::datetime_t dt, d, t;
+    xd::datetime_t dt, d, t;
     dt = jf->source_iter->getDateTime(jf->source_handle);
     d = dt >> 32;
     t = dt & 0xffffffff;
@@ -1152,7 +1152,7 @@ static bool join_parse_hook(kscript::ExprParseHookInfo& hook_info)
         return false;
 
 
-    tango::IColumnInfoPtr colinfo;
+    xd::IColumnInfoPtr colinfo;
     SourceTable* p1 = NULL;
     SourceTable* p2 = NULL;
     std::wstring left;
@@ -1276,7 +1276,7 @@ static kscript::ExprParser* createJoinExprParser(std::vector<JoinField>& all_fie
 
         switch (jf_it->type)
         {
-            case tango::typeCharacter:
+            case xd::typeCharacter:
                 for (n_it = names.begin(); n_it != names.end(); ++n_it)
                 {
                     parser->addVarBinding(*n_it,
@@ -1287,8 +1287,8 @@ static kscript::ExprParser* createJoinExprParser(std::vector<JoinField>& all_fie
                 }
                 break;
 
-            case tango::typeNumeric:
-            case tango::typeDouble:
+            case xd::typeNumeric:
+            case xd::typeDouble:
                 for (n_it = names.begin(); n_it != names.end(); ++n_it)
                 {
                     parser->addVarBinding(*n_it,
@@ -1299,7 +1299,7 @@ static kscript::ExprParser* createJoinExprParser(std::vector<JoinField>& all_fie
                 }
                 break;
 
-            case tango::typeInteger:
+            case xd::typeInteger:
                 for (n_it = names.begin(); n_it != names.end(); ++n_it)
                 {
                     parser->addVarBinding(*n_it,
@@ -1310,8 +1310,8 @@ static kscript::ExprParser* createJoinExprParser(std::vector<JoinField>& all_fie
                 }
                 break;
 
-            case tango::typeDate:
-            case tango::typeDateTime:
+            case xd::typeDate:
+            case xd::typeDateTime:
                 for (n_it = names.begin(); n_it != names.end(); ++n_it)
                 {
                     parser->addVarBinding(*n_it,
@@ -1322,7 +1322,7 @@ static kscript::ExprParser* createJoinExprParser(std::vector<JoinField>& all_fie
                 }
                 break;
 
-            case tango::typeBoolean:
+            case xd::typeBoolean:
                 for (n_it = names.begin(); n_it != names.end(); ++n_it)
                 {
                     parser->addVarBinding(*n_it,
@@ -1474,7 +1474,7 @@ static void getReferencedFields(std::vector<SourceTable>& s,
 }
 
 
-static void joinDoInsert(tango::IRowInserter* output,
+static void joinDoInsert(xd::IRowInserter* output,
                          std::vector<JoinField>& fields,
                          kscript::ExprParser* where_expr)
 {
@@ -1505,34 +1505,34 @@ static void joinDoInsert(tango::IRowInserter* output,
         {
             switch (fit->type)
             {
-                case tango::typeCharacter:
+                case xd::typeCharacter:
                     output->putString(fit->dest_handle,
                               fit->source_iter->getString(fit->source_handle));
                     break;
 
-                case tango::typeWideCharacter:
+                case xd::typeWideCharacter:
                     output->putWideString(fit->dest_handle,
                               fit->source_iter->getWideString(fit->source_handle));
                     break;
 
-                case tango::typeDouble:
-                case tango::typeNumeric:
+                case xd::typeDouble:
+                case xd::typeNumeric:
                     output->putDouble(fit->dest_handle,
                               fit->source_iter->getDouble(fit->source_handle));
                     break;
 
-                case tango::typeInteger:
+                case xd::typeInteger:
                     output->putInteger(fit->dest_handle,
                               fit->source_iter->getInteger(fit->source_handle));
                     break;
 
-                case tango::typeDate:
-                case tango::typeDateTime:
+                case xd::typeDate:
+                case xd::typeDateTime:
                     output->putDateTime(fit->dest_handle,
                               fit->source_iter->getDateTime(fit->source_handle));
                     break;
 
-                case tango::typeBoolean:
+                case xd::typeBoolean:
                     output->putBoolean(fit->dest_handle,
                               fit->source_iter->getBoolean(fit->source_handle));
                     break;
@@ -1544,15 +1544,15 @@ static void joinDoInsert(tango::IRowInserter* output,
 }
 
 
-static void joinIterLoop(tango::IIterator* left,
-                         tango::IRowInserter* output,
+static void joinIterLoop(xd::IIterator* left,
+                         xd::IRowInserter* output,
                          std::vector<JoinInfo>& joins,
                          std::vector<JoinField>& fields,
                          kscript::ExprParser* where_expr,
                          int join_idx,
                          int join_count)
 {
-    tango::IIterator* right = joins[join_idx].right_iter.p;
+    xd::IIterator* right = joins[join_idx].right_iter.p;
 
     const unsigned char* val = joins[join_idx].left_key.getKey();
     int val_width = joins[join_idx].left_key.getKeyLength();
@@ -1638,14 +1638,14 @@ static void joinIterLoop(tango::IIterator* left,
 }
 
 
-static bool doJoin(tango::IDatabasePtr db, 
+static bool doJoin(xd::IDatabasePtr db, 
                    std::vector<SourceTable>& source_tables,
                    std::vector<SelectField>& columns,
                    std::vector<std::wstring>& group_by_fields,
                    const std::wstring& having,
                    const std::wstring& where_expr,
                    const std::wstring& output_path,
-                   tango::IJob* job)
+                   xd::IJob* job)
 {
     std::wstring left;
     std::vector<JoinField> jfields;
@@ -1673,7 +1673,7 @@ static bool doJoin(tango::IDatabasePtr db,
     if (left.length() == 0)
         return false;
 
-    tango::IIteratorPtr left_iter = db->query(left, L"", L"", L"", NULL);
+    xd::IIteratorPtr left_iter = db->query(left, L"", L"", L"", NULL);
     if (left_iter.isNull())
         return false;
 
@@ -1734,7 +1734,7 @@ static bool doJoin(tango::IDatabasePtr db,
 
         std::vector<std::wstring> left_parts;
         std::vector<std::wstring>::iterator it;
-        tango::IColumnInfoPtr colinfo;
+        xd::IColumnInfoPtr colinfo;
 
         kl::parseDelimitedList(jparse.left, left_parts, ',', true);
 
@@ -1772,7 +1772,7 @@ static bool doJoin(tango::IDatabasePtr db,
 
     for (jit = joins.begin(); jit != joins.end(); ++jit)
     {
-        tango::IJobPtr iter_job = db->createJob();
+        xd::IJobPtr iter_job = db->createJob();
 
         if (job)
         {
@@ -1803,7 +1803,7 @@ static bool doJoin(tango::IDatabasePtr db,
             }
         }
 
-        tango::rowpos_t old_max_count = 0;
+        xd::rowpos_t old_max_count = 0;
         if (ijob)
         {
             old_max_count = job->getMaxCount();
@@ -1861,7 +1861,7 @@ static bool doJoin(tango::IDatabasePtr db,
 
 
         // find left iterator
-        tango::IIteratorPtr join_left_iter;
+        xd::IIteratorPtr join_left_iter;
         for (jit2 = joins.begin(); jit2 != joins.end(); ++jit2)
         {
             if (&(*jit2) == &(*jit))
@@ -1888,7 +1888,7 @@ static bool doJoin(tango::IDatabasePtr db,
         int idx = 0;
         for (it = right_parts.begin(); it != right_parts.end(); ++it)
         {
-            tango::IColumnInfoPtr colinfo;
+            xd::IColumnInfoPtr colinfo;
   
             SourceTable* tbl = NULL;
             colinfo = getColumnInfoMulti(source_tables, *it, &tbl);
@@ -1997,7 +1997,7 @@ static bool doJoin(tango::IDatabasePtr db,
     for (jf_it = jfields.begin(); jf_it != jfields.end(); ++jf_it)
     {
         SourceTable* src_table = NULL;
-        tango::IColumnInfoPtr colinfo;
+        xd::IColumnInfoPtr colinfo;
 
         // get the column info for the join field
         colinfo = getColumnInfoMulti(source_tables, jf_it->name, &src_table);
@@ -2043,11 +2043,11 @@ static bool doJoin(tango::IDatabasePtr db,
 
 
     // create output structure
-    tango::IStructurePtr output_structure = db->createStructure();
+    xd::IStructurePtr output_structure = db->createStructure();
 
     for (jf_it = jfields.begin(); jf_it != jfields.end(); ++jf_it)
     {
-        tango::IColumnInfoPtr colinfo = output_structure->createColumn();
+        xd::IColumnInfoPtr colinfo = output_structure->createColumn();
         colinfo->setName(jf_it->name);
         colinfo->setType(jf_it->type);
         colinfo->setWidth(jf_it->width);
@@ -2059,11 +2059,11 @@ static bool doJoin(tango::IDatabasePtr db,
 
     // create output row inserter
 
-    tango::IRowInserterPtr sp_output = db->bulkInsert(output_path);
+    xd::IRowInserterPtr sp_output = db->bulkInsert(output_path);
     if (sp_output.isNull())
         return false;
 
-    tango::IRowInserter* output = sp_output.p;
+    xd::IRowInserter* output = sp_output.p;
 
     output->startInsert(L"*");
 
@@ -2091,7 +2091,7 @@ static bool doJoin(tango::IDatabasePtr db,
 
         for (i = 0; i < col_count; ++i)
         {
-            tango::IColumnInfoPtr colinfo;
+            xd::IColumnInfoPtr colinfo;
             colinfo = st_it->structure->getColumnInfoByIdx(i);
 
             JoinField f;
@@ -2169,8 +2169,8 @@ static bool doJoin(tango::IDatabasePtr db,
 
 
     int join_count = joins.size();
-    tango::rowpos_t cur_row = 0;
-    tango::IIterator* l = left_iter.p;
+    xd::rowpos_t cur_row = 0;
+    xd::IIterator* l = left_iter.p;
 
     while (!l->eof())
     {
@@ -2206,10 +2206,10 @@ static bool doJoin(tango::IDatabasePtr db,
 
 
 // see note below about convertToNativeTables.
-bool convertToNativeTables(tango::IDatabasePtr db,
+bool convertToNativeTables(xd::IDatabasePtr db,
                            std::vector<SourceTable>& source_tables,
                            const std::wstring& mainset,
-                           tango::IJob* job)
+                           xd::IJob* job)
 {
     /*
     std::vector<SourceTable>::iterator st_it;
@@ -2235,7 +2235,7 @@ bool convertToNativeTables(tango::IDatabasePtr db,
         }
         
         // need to make an xdnative copy of the set
-        tango::IStructurePtr structure = st_it->set->getStructure();
+        xd::IStructurePtr structure = st_it->set->getStructure();
         std::wstring output_path = L"xtmp_" + kl::getUniqueString();
         if (!db->createTable(output_path, structure, NULL))
         {
@@ -2244,7 +2244,7 @@ bool convertToNativeTables(tango::IDatabasePtr db,
         }
 
         
-        tango::IIteratorPtr iter = st_it->set->createIterator(L"", L"", L"", NULL);
+        xd::IIteratorPtr iter = st_it->set->createIterator(L"", L"", L"", NULL);
         if (iter.isNull())
             return false;
         iter->goFirst();
@@ -2295,15 +2295,15 @@ static wchar_t* findJoin(wchar_t* s)
 
 
 
-tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
+xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
                               const std::wstring& _command,
                               unsigned int flags,
                               ThreadErrorInfo& error,
-                              tango::IJob* job)
+                              xd::IJob* job)
 {
     if (_command.length() == 0)
     {
-        error.setError(tango::errorSyntax, L"Invalid syntax; empty SELECT statement");
+        error.setError(xd::errorSyntax, L"Invalid syntax; empty SELECT statement");
         return xcm::null;
     }
 
@@ -2408,35 +2408,35 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
 
     if (!p_from)
     {
-        error.setError(tango::errorSyntax, L"Invalid syntax; missing FROM clause");
+        error.setError(xd::errorSyntax, L"Invalid syntax; missing FROM clause");
         return xcm::null;
     }
 
     if (p_where && p_where < p_from)
     {
         // WHERE clause can't be before FROM
-        error.setError(tango::errorSyntax, L"Invalid syntax; WHERE clause is before FROM clause");        
+        error.setError(xd::errorSyntax, L"Invalid syntax; WHERE clause is before FROM clause");        
         return xcm::null;
     }
     
     if (p_where && p_where < p_join)
     {
         // WHERE clause can't be before FROM
-        error.setError(tango::errorSyntax, L"Invalid syntax; WHERE clause is before JOIN clause");        
+        error.setError(xd::errorSyntax, L"Invalid syntax; WHERE clause is before JOIN clause");        
         return xcm::null;
     }
     
     if (p_into && p_into > p_from)
     {
         // INTO clause can't be after FROM
-        error.setError(tango::errorSyntax, L"Invalid syntax; INTO clause is after FROM clause");        
+        error.setError(xd::errorSyntax, L"Invalid syntax; INTO clause is after FROM clause");        
         return xcm::null;
     }
     
     if (p_group_by && (p_group_by < p_where || p_group_by < p_from))
     {
         // GROUP BY clause can't be before FROM or WHERE
-        error.setError(tango::errorSyntax, L"Invalid syntax; GROUP BY clause is before FROM clause or WHERE clause");
+        error.setError(xd::errorSyntax, L"Invalid syntax; GROUP BY clause is before FROM clause or WHERE clause");
         return xcm::null;
     }
 
@@ -2445,7 +2445,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
                      p_having < p_from))
     {
         // HAVING clause can't be before FROM or WHERE or GROUP BY
-        error.setError(tango::errorSyntax, L"Invalid syntax; HAVING clause is before FROM clause, WHERE clause, or GROUP BY clause");
+        error.setError(xd::errorSyntax, L"Invalid syntax; HAVING clause is before FROM clause, WHERE clause, or GROUP BY clause");
         return xcm::null;
     }
 
@@ -2455,7 +2455,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
                        p_order_by < p_from))
     {
         // ORDER BY clause must be last
-        error.setError(tango::errorSyntax, L"Invalid syntax; ORDER BY clause is not at the end of the statement");        
+        error.setError(xd::errorSyntax, L"Invalid syntax; ORDER BY clause is not at the end of the statement");        
         return xcm::null;
     }
 
@@ -2488,7 +2488,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
             join = zl_stristr(jloc, L"JOIN", true, true);
             if (!join)
             {
-                error.setError(tango::errorSyntax, L"Invalid syntax; JOIN clause missing JOIN keyword");
+                error.setError(xd::errorSyntax, L"Invalid syntax; JOIN clause missing JOIN keyword");
                 return xcm::null;
             }
 
@@ -2509,7 +2509,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
             wchar_t* on = zl_stristr(jloc, L"ON", true, true);
             if (!on)
             {
-                error.setError(tango::errorSyntax, L"Invalid syntax; JOIN clause missing ON keyword");            
+                error.setError(xd::errorSyntax, L"Invalid syntax; JOIN clause missing ON keyword");            
                 return xcm::null;
             }
 
@@ -2538,7 +2538,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
             {
                 wchar_t buf[1024]; // some paths might be long
                 swprintf(buf, 1024, L"Unable to open table [%ls]", tbl.c_str()); 
-                error.setError(tango::errorGeneral, buf);
+                error.setError(xd::errorGeneral, buf);
                 return xcm::null;
             }
 
@@ -2553,7 +2553,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
             
             if (j.join_type == joinRightOuter || j.join_type == joinFullOuter)
             {
-                error.setError(tango::errorSyntax, L"Invalid syntax; FULL and RIGHT OUTER joins are not supported");                 
+                error.setError(xd::errorSyntax, L"Invalid syntax; FULL and RIGHT OUTER joins are not supported");                 
                 return xcm::null;
             }
 
@@ -2563,7 +2563,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
 
                 if (!full && !left && !right)
                 {
-                    error.setError(tango::errorSyntax, L"Invalid syntax; JOIN clause has OUTER keyword but is missing FULL keyword, LEFT keyword, or RIGHT keyword");                 
+                    error.setError(xd::errorSyntax, L"Invalid syntax; JOIN clause has OUTER keyword but is missing FULL keyword, LEFT keyword, or RIGHT keyword");                 
                     return xcm::null;
                 }
             }
@@ -2571,7 +2571,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
             // make sure only one type of outer join is specified
             if ((full ? 1 : 0) + (left ? 1 : 0) + (right ? 1 : 0) > 1)
             {
-                error.setError(tango::errorSyntax, L"Invalid syntax; JOIN clause contains invalid combinations of FULL keyword, LEFT keyword, or RIGHT keyword");
+                error.setError(xd::errorSyntax, L"Invalid syntax; JOIN clause contains invalid combinations of FULL keyword, LEFT keyword, or RIGHT keyword");
                 return xcm::null;
             }
         
@@ -2590,7 +2590,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
     }
 
 
-    tango::IStructurePtr set_structure;
+    xd::IStructurePtr set_structure;
 
     // parse the from table
     {
@@ -2602,7 +2602,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         if (set_paths.size() != 1)
         {
             // the old join syntax is not (yet) supported
-            error.setError(tango::errorSyntax, L"Invalid syntax; alternate JOIN syntax not supported");                    
+            error.setError(xd::errorSyntax, L"Invalid syntax; alternate JOIN syntax not supported");                    
             return xcm::null;
         }
         
@@ -2615,7 +2615,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         {
             wchar_t buf[1024]; // some paths might be long
             swprintf(buf, 1024, L"Unable to open table [%ls]", table.c_str());
-            error.setError(tango::errorGeneral, buf);       
+            error.setError(xd::errorGeneral, buf);       
             return xcm::null;
         }
         set = table;
@@ -2637,7 +2637,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
 
     if (field_strs.size() == 0)
     {
-        error.setError(tango::errorSyntax, L"Invalid syntax; missing column or expression in SELECT clause");
+        error.setError(xd::errorSyntax, L"Invalid syntax; missing column or expression in SELECT clause");
         return xcm::null;
     }
 
@@ -2651,7 +2651,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
 
         if (fstr_it->empty())
         {
-            error.setError(tango::errorSyntax, L"Invalid syntax; missing column or expression in SELECT clause");
+            error.setError(xd::errorSyntax, L"Invalid syntax; missing column or expression in SELECT clause");
             return xcm::null;
         }
 
@@ -2671,7 +2671,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
                 for (i = 0; i < col_count; ++i)
                 {
                     std::wstring colname = st_it->structure->getColumnName(i);
-                    tango::IColumnInfoPtr colinfo;
+                    xd::IColumnInfoPtr colinfo;
 
                     f.name = colname;
 
@@ -2730,7 +2730,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
 
             if (f.name.length() == 0)
             {
-                error.setError(tango::errorSyntax, L"missing AS parameter");
+                error.setError(xd::errorSyntax, L"missing AS parameter");
                 return xcm::null;
             }
         }
@@ -2789,14 +2789,14 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         {
             dequoteField(*it);
 
-            tango::IColumnInfoPtr colinfo;
+            xd::IColumnInfoPtr colinfo;
             colinfo = getColumnInfoMulti(source_tables, *it);
             
             if (colinfo.isNull())
             {
                 wchar_t buf[255];            
                 swprintf(buf, 255, L"Invalid syntax; unknown column [%ls] in GROUP BY clause", (*it).c_str());
-                error.setError(tango::errorSyntax, buf);
+                error.setError(xd::errorSyntax, buf);
                 return xcm::null;
             }
         }
@@ -2814,7 +2814,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         for (it = order_vec.begin(); it != order_vec.end(); ++it)
         {
             OrderByField f;
-            tango::IColumnInfoPtr colinfo;
+            xd::IColumnInfoPtr colinfo;
             
             kl::trim(*it);
 
@@ -2894,7 +2894,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
                 {
                     wchar_t buf[255];            
                     swprintf(buf, 255, L"Invalid syntax; unknown column [%ls] in ORDER BY clause", (*it).c_str());
-                    error.setError(tango::errorSyntax, buf);
+                    error.setError(xd::errorSyntax, buf);
                     return xcm::null;
                 }
 
@@ -2936,13 +2936,13 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
     
     if (!convertToNativeTables(db, source_tables, set, job))
     {
-        error.setError(tango::errorGeneral);
+        error.setError(xd::errorGeneral);
         return xcm::null;
     }
 
     if (job && job->getCancelled())
     {
-        error.setError(tango::errorCancelled, L"Job cancelled");
+        error.setError(xd::errorCancelled, L"Job cancelled");
         return xcm::null;
     }
 
@@ -2965,14 +2965,14 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
     
     if (ijob)
     {
-        tango::IFileInfoPtr left_finfo = db->getFileInfo(left);
+        xd::IFileInfoPtr left_finfo = db->getFileInfo(left);
         if (left_finfo.isNull())
         {
-            error.setError(tango::errorGeneral);
+            error.setError(xd::errorGeneral);
             return xcm::null;
         }
 
-        if (left_finfo->getFlags() & tango::sfFastRowCount)
+        if (left_finfo->getFlags() & xd::sfFastRowCount)
             ijob->setMaxCount(left_finfo->getRowCount());
              else
             ijob->setMaxCount(0);
@@ -2995,7 +2995,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         phase_count++;
 
     // final set creation
-    if ((flags & tango::sqlAlwaysCopy) != 0 || p_distinct || p_into)
+    if ((flags & xd::sqlAlwaysCopy) != 0 || p_distinct || p_into)
     {
         if (p_distinct)
             phase_count += 4;
@@ -3033,7 +3033,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
     {
         std::wstring join_output_path = L"xtmp_" + kl::getUniqueString();
 
-        bool res = doJoin(static_cast<tango::IDatabase*>(db),
+        bool res = doJoin(static_cast<xd::IDatabase*>(db),
                           source_tables,
                           fields,
                           group_by_fields,
@@ -3044,7 +3044,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
 
         if (!res)
         {
-            error.setError(tango::errorGeneral, L"Unable to process JOIN statement");
+            error.setError(xd::errorGeneral, L"Unable to process JOIN statement");
             return xcm::null;
         }
 
@@ -3075,16 +3075,16 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
     {
 #if 0
         // create an iterator which we will insert from
-        tango::IIteratorPtr source_iter = set->createIterator(L"", L"", L"", NULL);
+        xd::IIteratorPtr source_iter = set->createIterator(L"", L"", L"", NULL);
         
         /*
         // this step is taken care of a few lines below
         
         // make sure the where expression is valid
-        tango::objhandle_t h = source_iter->getHandle(where_cond);
+        xd::objhandle_t h = source_iter->getHandle(where_cond);
         if (h == 0)
         {
-            error.setError(tango::errorSyntax, L"Invalid syntax; expression in WHERE clause does not evaluate to a true or false value");            
+            error.setError(xd::errorSyntax, L"Invalid syntax; expression in WHERE clause does not evaluate to a true or false value");            
             return xcm::null;
         }
         source_iter->releaseHandle(h);
@@ -3094,7 +3094,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         CommonDynamicSet* dyn_set = new CommonDynamicSet;
         if (!dyn_set->create(db, set->getObjectPath()))
         {
-            error.setError(tango::errorGeneral, L"Unable to process WHERE clause");
+            error.setError(xd::errorGeneral, L"Unable to process WHERE clause");
             delete dyn_set;
             return xcm::null;
         }
@@ -3102,7 +3102,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         SqlIterator* s_iter = SqlIterator::createSqlIterator(source_iter, where_cond, job);
         if (!s_iter)
         {
-            error.setError(tango::errorSyntax, L"Invalid syntax; expression in WHERE clause does not evaluate to a true or false value");            
+            error.setError(xd::errorSyntax, L"Invalid syntax; expression in WHERE clause does not evaluate to a true or false value");            
             return xcm::null;
         }
         
@@ -3127,30 +3127,30 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         
         if (s_iter->isCancelled())
         {
-            error.setError(tango::errorCancelled, L"Job cancelled");
+            error.setError(xd::errorCancelled, L"Job cancelled");
             delete dyn_set;
             delete s_iter;
             return xcm::null;
         }
 
-        set = static_cast<tango::IxSet*>(dyn_set);
+        set = static_cast<xd::IxSet*>(dyn_set);
         delete s_iter;
         
 #endif
         
         // create an iterator which we will insert from
-        tango::IIteratorPtr source_iter = db->query(set, L"", L"", L"", NULL);
+        xd::IIteratorPtr source_iter = db->query(set, L"", L"", L"", NULL);
         if (source_iter.isNull())
         {
-            error.setError(tango::errorSyntax, L"Could not create iterator");            
+            error.setError(xd::errorSyntax, L"Could not create iterator");            
             return xcm::null;
         }
 
         // make sure the where expression is valid
-        tango::objhandle_t h = source_iter->getHandle(where_cond);
+        xd::objhandle_t h = source_iter->getHandle(where_cond);
         if (h == 0)
         {
-            error.setError(tango::errorSyntax, L"Invalid syntax; expression in WHERE clause does not evaluate to a true or false value");            
+            error.setError(xd::errorSyntax, L"Invalid syntax; expression in WHERE clause does not evaluate to a true or false value");            
             return xcm::null;
         }
         
@@ -3160,7 +3160,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         CommonDynamicSet* dyn_set = new CommonDynamicSet;
         if (!dyn_set->create(db, set))
         {
-            error.setError(tango::errorGeneral, L"Unable to process WHERE clause");
+            error.setError(xd::errorGeneral, L"Unable to process WHERE clause");
             delete dyn_set;
             return xcm::null;
         }
@@ -3176,7 +3176,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         int res = dyn_set->insert(source_iter, where_cond, 0, job);
         if (res == -1)
         {
-            error.setError(tango::errorGeneral, L"Unable to process WHERE clause");
+            error.setError(xd::errorGeneral, L"Unable to process WHERE clause");
             delete dyn_set;
             return xcm::null;
         }
@@ -3187,7 +3187,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
 
     if (job && job->getCancelled())
     {
-        error.setError(tango::errorCancelled, L"Job cancelled");
+        error.setError(xd::errorCancelled, L"Job cancelled");
         return xcm::null;
     }
 
@@ -3212,7 +3212,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
 
             if (group_by_str.length() == 0)
             {
-                error.setError(tango::errorSyntax, L"Invalid syntax; missing column or expression in GROUP BY clause");
+                error.setError(xd::errorSyntax, L"Invalid syntax; missing column or expression in GROUP BY clause");
                 return xcm::null;
             }
         }
@@ -3241,7 +3241,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         }
 
 
-        tango::GroupQueryParams info;
+        xd::GroupQueryParams info;
         info.input = set;
         info.output = L"xtmp_" + kl::getUniqueString();
         info.columns = field_str;
@@ -3252,13 +3252,13 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
 
         if (job && job->getCancelled())
         {
-            error.setError(tango::errorCancelled, L"Job cancelled");
+            error.setError(xd::errorCancelled, L"Job cancelled");
             return xcm::null;
         }
 
         if (!res)
         {
-            error.setError(tango::errorGeneral, L"Unable to process GROUP BY clause");        
+            error.setError(xd::errorGeneral, L"Unable to process GROUP BY clause");        
             return xcm::null;
         }
 
@@ -3297,7 +3297,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         if (!f_it->expr.empty() && !isSameField(f_it->expr, f_it->name))
         {
             std::wstring f = f_it->expr;
-            tango::IColumnInfoPtr colinfo = getColumnInfoMulti(source_tables, f);
+            xd::IColumnInfoPtr colinfo = getColumnInfoMulti(source_tables, f);
             if (colinfo.isOk())
             {
                 dequoteField(f);
@@ -3345,7 +3345,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
 
     // create iterator
 
-    tango::IJobPtr create_iter_job = db->createJob();
+    xd::IJobPtr create_iter_job = db->createJob();
 
     if (order_by_str.length() > 0)
     {
@@ -3357,7 +3357,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
 
 
 
-    tango::IIteratorPtr iter;
+    xd::IIteratorPtr iter;
     iter = db->query(set, 
                     field_str,
                     L"",
@@ -3371,33 +3371,33 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
             job->cancel();
         }
 
-        error.setError(tango::errorCancelled, L"Job cancelled");
+        error.setError(xd::errorCancelled, L"Job cancelled");
         return xcm::null;
     }
 
     if (iter.isNull())
     {
-        error.setError(tango::errorGeneral, L"Unable to process SELECT statement");     
+        error.setError(xd::errorGeneral, L"Unable to process SELECT statement");     
         return xcm::null;
     }
 
 
-    if ((flags & tango::sqlAlwaysCopy) == 0 && !p_distinct && !p_into)
+    if ((flags & xd::sqlAlwaysCopy) == 0 && !p_distinct && !p_into)
     {
         return iter;
     }
 
     // create output set
     
-    tango::IStructurePtr output_structure = db->createStructure();
-    tango::IStructurePtr iter_structure = iter->getStructure();
+    xd::IStructurePtr output_structure = db->createStructure();
+    xd::IStructurePtr iter_structure = iter->getStructure();
 
     int iter_column_count = iter_structure->getColumnCount();
 
     for (f_it = fields.begin(); f_it != fields.end(); ++f_it)
     {
-        tango::IColumnInfoPtr itercol;
-        tango::IColumnInfoPtr colinfo;
+        xd::IColumnInfoPtr itercol;
+        xd::IColumnInfoPtr colinfo;
 
         itercol = iter_structure->getColumnInfo(f_it->name);
 
@@ -3428,7 +3428,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
 
     if (!create_result)
     {
-        error.setError(tango::errorGeneral, L"Unable to process SELECT statement");
+        error.setError(xd::errorGeneral, L"Unable to process SELECT statement");
         return xcm::null;
     }
 
@@ -3441,7 +3441,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         if (job && job->getCancelled())
         {
             db->deleteFile(output_path);
-            error.setError(tango::errorCancelled, L"Job cancelled");
+            error.setError(xd::errorCancelled, L"Job cancelled");
             return xcm::null;
         }
     }
@@ -3457,7 +3457,7 @@ tango::IIteratorPtr sqlSelect(tango::IDatabasePtr db,
         if (job && job->getCancelled())
         {
             db->deleteFile(output_path);
-            error.setError(tango::errorCancelled, L"Job cancelled");
+            error.setError(xd::errorCancelled, L"Job cancelled");
             return xcm::null;
         }
     }

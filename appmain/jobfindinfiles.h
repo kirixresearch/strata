@@ -38,8 +38,8 @@ public:
 
 private:
 
-    void lookInPath(tango::IDatabasePtr& db, const wxString& path);
-    void lookInFile(tango::IDatabasePtr& db, const wxString& path);
+    void lookInPath(xd::IDatabasePtr& db, const wxString& path);
+    void lookInFile(xd::IDatabasePtr& db, const wxString& path);
     
     std::vector<wxString> m_paths;
     wxString m_find_str;

@@ -384,7 +384,7 @@ bool JobScheduler::save()
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (!db)
         return false;
 
@@ -447,7 +447,7 @@ bool JobScheduler::load()
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return false;
 

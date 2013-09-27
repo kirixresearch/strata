@@ -594,7 +594,7 @@ void LinkBar::closePopupWindow()
     
 void LinkBar::showPopupWindow(int id,
                               bool popup_mode,
-                              tango::IFileInfoEnumPtr items)
+                              xd::IFileInfoEnumPtr items)
 {
     if (m_popup_id == id)
     {
@@ -1157,7 +1157,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
                 
                 if (dlg.ShowModal() == wxID_OK)
                 {
-                    tango::IDatabasePtr db = g_app->getDatabase();
+                    xd::IDatabasePtr db = g_app->getDatabase();
                     if (db.isNull())
                         return;
                     
@@ -1319,8 +1319,8 @@ void LinkBar::onOverflowClick(wxAuiToolBarEvent& evt)
     if (isPopupWindowOpen() && m_popup_id == LinkBarDropDownId)
         return;
     
-    xcm::IVectorImpl<tango::IFileInfoPtr>* vec;
-    vec = new xcm::IVectorImpl<tango::IFileInfoPtr>;
+    xcm::IVectorImpl<xd::IFileInfoPtr>* vec;
+    vec = new xcm::IVectorImpl<xd::IFileInfoPtr>;
 
     /*
     // only show items that don't fit in the dropdown
@@ -1329,7 +1329,7 @@ void LinkBar::onOverflowClick(wxAuiToolBarEvent& evt)
     {
         if (!GetToolFits(ID_FirstLinkBarId+i))
         {
-            tango::IFileInfoPtr info = fsItemToFileInfo(m_items[i]);
+            xd::IFileInfoPtr info = fsItemToFileInfo(m_items[i]);
             if (info.isOk())
                 vec->append(info);
         }
@@ -1445,7 +1445,7 @@ void LinkBar::refresh()
     SetToolShortHelp(ID_App_ToggleRelationshipSync, _("Filter Related Records"));
 
     
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
     {
         Realize();

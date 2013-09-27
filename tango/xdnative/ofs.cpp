@@ -407,27 +407,27 @@ int OfsValue::get_ref_count()
 static int stringTypeToFileType(const std::wstring& type)
 {
     if (type.empty())
-        return tango::filetypeNode;
+        return xd::filetypeNode;
         
     if (0 == wcscasecmp(type.c_str(), L"node") ||
         0 == wcscasecmp(type.c_str(), L"generic"))
     {
-        return tango::filetypeNode;
+        return xd::filetypeNode;
     }
      else if (0 == wcscasecmp(type.c_str(), L"folder"))
     {
-        return tango::filetypeFolder;
+        return xd::filetypeFolder;
     }
      else if (0 == wcscasecmp(type.c_str(), L"set"))
     {
-        return tango::filetypeTable;
+        return xd::filetypeTable;
     }
      else if (0 == wcscasecmp(type.c_str(), L"stream"))
     {
-        return tango::filetypeStream;
+        return xd::filetypeStream;
     }
     
-    return tango::filetypeNode;
+    return xd::filetypeNode;
 }
 
 
@@ -436,10 +436,10 @@ static std::wstring fileTypeToStringType(int type)
     switch (type)
     {
         default:
-        case tango::filetypeNode:    return L"generic";
-        case tango::filetypeFolder:  return L"folder";
-        case tango::filetypeTable:     return L"set";
-        case tango::filetypeStream:  return L"stream";
+        case xd::filetypeNode:    return L"generic";
+        case xd::filetypeFolder:  return L"folder";
+        case xd::filetypeTable:     return L"set";
+        case xd::filetypeStream:  return L"stream";
     }
     
     return L"generic";
@@ -530,7 +530,7 @@ OfsFile::OfsFile(XdnativeDatabase* db)
     m_root_node->m_name = L"root";
     m_root_node->m_value = L"";
 
-    m_type = tango::filetypeNode;
+    m_type = xd::filetypeNode;
     m_dirty = false;
     m_database = db;
     m_database->ref();
@@ -572,7 +572,7 @@ bool OfsFile::readFile()
     int type_idx = doc.getChildIdx(L"file_type");
     if (type_idx == -1)
     {
-        m_type = tango::filetypeNode;
+        m_type = xd::filetypeNode;
     }
      else
     {
@@ -628,7 +628,7 @@ bool OfsFile::writeFile()
     m_dirty = false;
 
 
-    if (m_type == tango::filetypeFolder)
+    if (m_type == xd::filetypeFolder)
     {
         // if 'this' is a folder, create it if it doesn't exist
         if (m_key_path != L"/")
@@ -736,7 +736,7 @@ OfsFile* OfsFile::createFile(XdnativeDatabase* db,
                 file->m_key_path = build_key;
                 file->m_ofs_root = ofs_root;
                 file->setDirty(true);
-                file->setType(tango::filetypeFolder);
+                file->setType(xd::filetypeFolder);
                 file->writeFile();
                 file->unref();
             }
@@ -808,7 +808,7 @@ OfsFile* OfsFile::openFile(XdnativeDatabase* db,
      else
     {
         // root directory is a folder
-        file->setType(tango::filetypeFolder);
+        file->setType(xd::filetypeFolder);
         file->setDirty(false);
     }
 

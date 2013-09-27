@@ -50,20 +50,20 @@ ClientDatabase::ClientDatabase()
     m_last_job = 0;
     m_connection_thread_id = 0;
 
-    m_attr = static_cast<tango::IAttributes*>(new DatabaseAttributes);
-    m_attr->setStringAttribute(tango::dbattrKeywords, xdclient_keywords);
-    m_attr->setIntAttribute(tango::dbattrColumnMaxNameLength, 80);
-    m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 80);
-    m_attr->setStringAttribute(tango::dbattrColumnInvalidChars,
+    m_attr = static_cast<xd::IAttributes*>(new DatabaseAttributes);
+    m_attr->setStringAttribute(xd::dbattrKeywords, xdclient_keywords);
+    m_attr->setIntAttribute(xd::dbattrColumnMaxNameLength, 80);
+    m_attr->setIntAttribute(xd::dbattrTableMaxNameLength, 80);
+    m_attr->setStringAttribute(xd::dbattrColumnInvalidChars,
                                xdclient_invalid_column_chars);
-    m_attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars,
+    m_attr->setStringAttribute(xd::dbattrColumnInvalidStartingChars,
                                xdclient_invalid_column_starting_chars);
-    m_attr->setStringAttribute(tango::dbattrTableInvalidChars,
+    m_attr->setStringAttribute(xd::dbattrTableInvalidChars,
                                xdclient_invalid_object_chars);
-    m_attr->setStringAttribute(tango::dbattrTableInvalidStartingChars,
+    m_attr->setStringAttribute(xd::dbattrTableInvalidStartingChars,
                                xdclient_invalid_object_starting_chars);
-    m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"[");
-    m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"]");
+    m_attr->setStringAttribute(xd::dbattrIdentifierQuoteOpenChar, L"[");
+    m_attr->setStringAttribute(xd::dbattrIdentifierQuoteCloseChar, L"]");
 
     m_cookie_file = kl::stdswprintf(L"xdclient_%d_%p.dat", (int)time(NULL), this);
 
@@ -105,7 +105,7 @@ bool ClientDatabase::open(const std::wstring& host,
     url += m_port;
     url += L"/";
     url += (m_database.length() > 0 && m_database[0] == '/') ? m_database.substr(1) : m_database;
-    m_attr->setStringAttribute(tango::dbattrDatabaseUrl, url);
+    m_attr->setStringAttribute(xd::dbattrDatabaseUrl, url);
 
     return true;
 }
@@ -291,7 +291,7 @@ std::wstring ClientDatabase::serverCall(const std::wstring& path,
     return result;
 }
 
-tango::IStructurePtr ClientDatabase::jsonToStructure(kl::JsonNode& node)
+xd::IStructurePtr ClientDatabase::jsonToStructure(kl::JsonNode& node)
 {
     Structure* s = new Structure;
 
@@ -302,9 +302,9 @@ tango::IStructurePtr ClientDatabase::jsonToStructure(kl::JsonNode& node)
     {
         kl::JsonNode column = columns[i];
 
-        tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
         col->setName(column["name"]);
-        col->setType(tango::stringToDbtype(column["type"]));
+        col->setType(xd::stringToDbtype(column["type"]));
         col->setWidth(column["width"].getInteger());
         col->setScale(column["scale"].getInteger());
         col->setColumnOrdinal(i);
@@ -314,14 +314,14 @@ tango::IStructurePtr ClientDatabase::jsonToStructure(kl::JsonNode& node)
         s->addColumn(col);
     }
 
-    return static_cast<tango::IStructure*>(s);
+    return static_cast<xd::IStructure*>(s);
 }
 
 
-void ClientDatabase::columnToJsonNode(tango::IColumnInfoPtr info, kl::JsonNode& column)
+void ClientDatabase::columnToJsonNode(xd::IColumnInfoPtr info, kl::JsonNode& column)
 {  
     column["name"] = info->getName();
-    column["type"] = tango::dbtypeToString(info->getType());
+    column["type"] = xd::dbtypeToString(info->getType());
     column["width"].setInteger(info->getWidth());
     column["scale"].setInteger(info->getScale());   
     column["expression"] = info->getExpression();
@@ -331,7 +331,7 @@ void ClientDatabase::columnToJsonNode(tango::IColumnInfoPtr info, kl::JsonNode& 
 
 
 
-std::wstring ClientDatabase::structureToJson(tango::IStructurePtr structure)
+std::wstring ClientDatabase::structureToJson(xd::IStructurePtr structure)
 {
     // set the total number of items
     int idx, count = structure->getColumnCount();
@@ -343,9 +343,9 @@ std::wstring ClientDatabase::structureToJson(tango::IStructurePtr structure)
     {
         kl::JsonNode column = columns.appendElement();
             
-        tango::IColumnInfoPtr info = structure->getColumnInfoByIdx(idx);
+        xd::IColumnInfoPtr info = structure->getColumnInfoByIdx(idx);
         column["name"] = info->getName();
-        column["type"] = tango::dbtypeToString(info->getType());
+        column["type"] = xd::dbtypeToString(info->getType());
         column["width"].setInteger(info->getWidth());
         column["scale"].setInteger(info->getScale());
         column["expression"] = info->getExpression();
@@ -361,10 +361,10 @@ void ClientDatabase::close()
 
 int ClientDatabase::getDatabaseType()
 {
-    return tango::dbtypeClient;
+    return xd::dbtypeClient;
 }
 
-tango::IAttributesPtr ClientDatabase::getAttributes()
+xd::IAttributesPtr ClientDatabase::getAttributes()
 {
     return m_attr;
 }
@@ -394,7 +394,7 @@ bool ClientDatabase::cleanup()
     return false;
 }
 
-tango::IJobPtr ClientDatabase::createJob()
+xd::IJobPtr ClientDatabase::createJob()
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
@@ -405,7 +405,7 @@ tango::IJobPtr ClientDatabase::createJob()
     job->ref();
     m_jobs.push_back(job);
 
-    return static_cast<tango::IJob*>(job);
+    return static_cast<xd::IJob*>(job);
 }
 
 
@@ -447,7 +447,7 @@ bool ClientDatabase::copyFile(const std::wstring& src_path, const std::wstring& 
     return false;
 }
 
-bool ClientDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
+bool ClientDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 {
     std::wstring handle;
     IClientIteratorPtr iter = info->iter_input;
@@ -487,7 +487,7 @@ bool ClientDatabase::getFileExist(const std::wstring& path)
 }
 
 
-tango::IFileInfoPtr ClientDatabase::getFileInfo(const std::wstring& path)
+xd::IFileInfoPtr ClientDatabase::getFileInfo(const std::wstring& path)
 {
     ServerCallParams params;
     std::wstring sres = serverCall(path, L"fileinfo", &params);
@@ -503,20 +503,20 @@ tango::IFileInfoPtr ClientDatabase::getFileInfo(const std::wstring& path)
     f->name = file_info["name"];
     
     std::wstring type = file_info["type"];
-         if (type == L"folder")          f->type = tango::filetypeFolder;
-    else if (type == L"node")            f->type = tango::filetypeNode;
-    else if (type == L"set")             f->type = tango::filetypeTable;
-    else if (type == L"table")           f->type = tango::filetypeTable;
-    else if (type == L"stream")          f->type = tango::filetypeStream;
-    else f->type = tango::filetypeTable;
+         if (type == L"folder")          f->type = xd::filetypeFolder;
+    else if (type == L"node")            f->type = xd::filetypeNode;
+    else if (type == L"set")             f->type = xd::filetypeTable;
+    else if (type == L"table")           f->type = xd::filetypeTable;
+    else if (type == L"stream")          f->type = xd::filetypeStream;
+    else f->type = xd::filetypeTable;
 
     std::wstring format = file_info["format"];
-         if (format == L"native")          f->format = tango::formatNative;
-    else if (format == L"delimitedtext")   f->format = tango::formatDelimitedText;
-    else if (format == L"fixedlengthtext") f->format = tango::formatFixedLengthText;
-    else if (format == L"text")            f->format = tango::formatText;
-    else if (format == L"xbase")           f->format = tango::formatXbase;            
-    else f->format = tango::formatNative;
+         if (format == L"native")          f->format = xd::formatNative;
+    else if (format == L"delimitedtext")   f->format = xd::formatDelimitedText;
+    else if (format == L"fixedlengthtext") f->format = xd::formatFixedLengthText;
+    else if (format == L"text")            f->format = xd::formatText;
+    else if (format == L"xbase")           f->format = xd::formatXbase;            
+    else f->format = xd::formatNative;
 
     f->mime_type = file_info["mime_type"];
     f->is_mount = file_info["is_mount"].getBoolean();
@@ -524,12 +524,12 @@ tango::IFileInfoPtr ClientDatabase::getFileInfo(const std::wstring& path)
     f->size = (long long)file_info["size"].getDouble();
     f->object_id = file_info["object_id"];
 
-    return static_cast<tango::IFileInfo*>(f);
+    return static_cast<xd::IFileInfo*>(f);
 }
 
 
 
-tango::IFileInfoEnumPtr ClientDatabase::getFolderInfo(const std::wstring& path)
+xd::IFileInfoEnumPtr ClientDatabase::getFolderInfo(const std::wstring& path)
 {
     ServerCallParams params;
     std::wstring sres = serverCall(path, L"folderinfo", &params);
@@ -543,7 +543,7 @@ tango::IFileInfoEnumPtr ClientDatabase::getFolderInfo(const std::wstring& path)
     kl::JsonNode items = response["items"];
     count = items.getChildCount();
 
-    xcm::IVectorImpl<tango::IFileInfoPtr>* retval = new xcm::IVectorImpl<tango::IFileInfoPtr>;
+    xcm::IVectorImpl<xd::IFileInfoPtr>* retval = new xcm::IVectorImpl<xd::IFileInfoPtr>;
 
     for (i = 0; i < count; ++i)
     {
@@ -553,21 +553,21 @@ tango::IFileInfoEnumPtr ClientDatabase::getFolderInfo(const std::wstring& path)
         f->name = item["name"];
         
         std::wstring type = item["type"];
-             if (type == L"folder")          f->type = tango::filetypeFolder;
-        else if (type == L"node")            f->type = tango::filetypeNode;
-        else if (type == L"set")             f->type = tango::filetypeTable;
-        else if (type == L"table")           f->type = tango::filetypeTable;
-        else if (type == L"stream")          f->type = tango::filetypeStream;
-        else f->type = tango::filetypeTable;
+             if (type == L"folder")          f->type = xd::filetypeFolder;
+        else if (type == L"node")            f->type = xd::filetypeNode;
+        else if (type == L"set")             f->type = xd::filetypeTable;
+        else if (type == L"table")           f->type = xd::filetypeTable;
+        else if (type == L"stream")          f->type = xd::filetypeStream;
+        else f->type = xd::filetypeTable;
 
 
         std::wstring format = item["format"];
-             if (format == L"native")          f->format = tango::formatNative;
-        else if (format == L"delimitedtext")   f->format = tango::formatDelimitedText;
-        else if (format == L"fixedlengthtext") f->format = tango::formatFixedLengthText;
-        else if (format == L"text")            f->format = tango::formatText;
-        else if (format == L"xbase")           f->format = tango::formatXbase;            
-        else f->format = tango::formatNative;
+             if (format == L"native")          f->format = xd::formatNative;
+        else if (format == L"delimitedtext")   f->format = xd::formatDelimitedText;
+        else if (format == L"fixedlengthtext") f->format = xd::formatFixedLengthText;
+        else if (format == L"text")            f->format = xd::formatText;
+        else if (format == L"xbase")           f->format = xd::formatXbase;            
+        else f->format = xd::formatNative;
 
         
         f->mime_type = item["mime_type"];
@@ -582,12 +582,12 @@ tango::IFileInfoEnumPtr ClientDatabase::getFolderInfo(const std::wstring& path)
 }
 
 
-tango::IRowInserterPtr ClientDatabase::bulkInsert(const std::wstring& path)
+xd::IRowInserterPtr ClientDatabase::bulkInsert(const std::wstring& path)
 {
-    return static_cast<tango::IRowInserter*>(new ClientRowInserter(this, path));
+    return static_cast<xd::IRowInserter*>(new ClientRowInserter(this, path));
 }
 
-tango::IStructurePtr ClientDatabase::describeTable(const std::wstring& path)
+xd::IStructurePtr ClientDatabase::describeTable(const std::wstring& path)
 {
     ServerCallParams params;
     std::wstring sres = serverCall(path, L"describetable", &params);
@@ -602,20 +602,20 @@ tango::IStructurePtr ClientDatabase::describeTable(const std::wstring& path)
 }
 
 
-bool ClientDatabase::modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job)
+bool ClientDatabase::modifyStructure(const std::wstring& path, xd::IStructurePtr struct_config, xd::IJob* job)
 {
 /*
     if (!struct_config)
         return false;
 
-    tango::IStructurePtr orig_structure = getStructure();
+    xd::IStructurePtr orig_structure = getStructure();
     if (orig_structure.isNull())
         return false;
 
     m_database->clearDescribeTableCache(m_path);
 
 
-    tango::IStructurePtr structure = struct_config;
+    xd::IStructurePtr structure = struct_config;
     IStructureInternalPtr struct_internal = structure;
     if (struct_internal.isNull())
         return false;
@@ -655,13 +655,13 @@ bool ClientDatabase::modifyStructure(const std::wstring& path, tango::IStructure
 
         if (it->m_params.isOk())
         {
-            tango::IColumnInfoPtr orig_colinfo = orig_structure->getColumnInfo(it->m_colname);
+            xd::IColumnInfoPtr orig_colinfo = orig_structure->getColumnInfo(it->m_colname);
 
             if (it->m_params->getName().length() > 0)
                 json_action["params"]["name"] = it->m_params->getName();
 
             if (it->m_params->getType() != -1)
-                json_action["params"]["type"] = tango::dbtypeToString(it->m_params->getType());
+                json_action["params"]["type"] = xd::dbtypeToString(it->m_params->getType());
 
             if (it->m_params->getWidth() != -1)
                 json_action["params"]["width"].setInteger(it->m_params->getWidth());
@@ -706,7 +706,7 @@ void ClientDatabase::clearDescribeTableCache(const std::wstring& path)
 
 
 
-tango::IDatabasePtr ClientDatabase::getMountDatabase(const std::wstring& path)
+xd::IDatabasePtr ClientDatabase::getMountDatabase(const std::wstring& path)
 {
     return xcm::null;
 }
@@ -725,15 +725,15 @@ bool ClientDatabase::getMountPoint(const std::wstring& path,
     return false;
 }
 
-tango::IStructurePtr ClientDatabase::createStructure()
+xd::IStructurePtr ClientDatabase::createStructure()
 {
     Structure* s = new Structure;
-    return static_cast<tango::IStructure*>(s);
+    return static_cast<xd::IStructure*>(s);
 }
 
 bool ClientDatabase::createTable(const std::wstring& path,
-                                 tango::IStructurePtr structure,
-                                 tango::FormatInfo* format_info)
+                                 xd::IStructurePtr structure,
+                                 xd::FormatInfo* format_info)
 {
     std::wstring columns = structureToJson(structure);
 
@@ -746,7 +746,7 @@ bool ClientDatabase::createTable(const std::wstring& path,
     return response["success"].getBoolean();
 }
 
-tango::IStreamPtr ClientDatabase::openStream(const std::wstring& path)
+xd::IStreamPtr ClientDatabase::openStream(const std::wstring& path)
 {
     ServerCallParams params;
     std::wstring sres = serverCall(path, L"openstream", &params);
@@ -756,7 +756,7 @@ tango::IStreamPtr ClientDatabase::openStream(const std::wstring& path)
     if (!response["success"].getBoolean())
         return xcm::null;
 
-    return static_cast<tango::IStream*>(new ClientStream(this, response["handle"]));
+    return static_cast<xd::IStream*>(new ClientStream(this, response["handle"]));
 }
 
 bool ClientDatabase::createStream(const std::wstring& path, const std::wstring& mime_type)
@@ -771,7 +771,7 @@ bool ClientDatabase::createStream(const std::wstring& path, const std::wstring& 
 }
 
 
-tango::IIteratorPtr ClientDatabase::query(const tango::QueryParams& qp)
+xd::IIteratorPtr ClientDatabase::query(const xd::QueryParams& qp)
 {
     std::wstring request_url;
     if (qp.from.find(L"://") != qp.from.npos)
@@ -800,16 +800,16 @@ tango::IIteratorPtr ClientDatabase::query(const tango::QueryParams& qp)
         return xcm::null;
     }
     
-    return static_cast<tango::IIterator*>(iter);
+    return static_cast<xd::IIterator*>(iter);
 }
 
 
 
 
-tango::IIndexInfoPtr ClientDatabase::createIndex(const std::wstring& path,
+xd::IIndexInfoPtr ClientDatabase::createIndex(const std::wstring& path,
                                                  const std::wstring& name,
                                                  const std::wstring& expr,
-                                                 tango::IJob* job)
+                                                 xd::IJob* job)
 {
     return xcm::null;
 }
@@ -830,10 +830,10 @@ bool ClientDatabase::deleteIndex(const std::wstring& path,
 }
 
 
-tango::IIndexInfoEnumPtr ClientDatabase::getIndexEnum(const std::wstring& path)
+xd::IIndexInfoEnumPtr ClientDatabase::getIndexEnum(const std::wstring& path)
 {
-    xcm::IVectorImpl<tango::IIndexInfoEnumPtr>* vec;
-    vec = new xcm::IVectorImpl<tango::IIndexInfoEnumPtr>;
+    xcm::IVectorImpl<xd::IIndexInfoEnumPtr>* vec;
+    vec = new xcm::IVectorImpl<xd::IIndexInfoEnumPtr>;
 
     return vec;
 }
@@ -978,7 +978,7 @@ static std::wstring getFromTable(const std::wstring& _sql)
 bool ClientDatabase::execute(const std::wstring& command,
                              unsigned int flags,
                              xcm::IObjectPtr& result,
-                             tango::IJob* job)
+                             xd::IJob* job)
 {
     m_error.clearError();
     result.clear();
@@ -1017,12 +1017,12 @@ bool ClientDatabase::execute(const std::wstring& command,
     }
     
 
-    tango::IIteratorPtr sp_iter = static_cast<tango::IIterator*>(iter);
+    xd::IIteratorPtr sp_iter = static_cast<xd::IIterator*>(iter);
     result = sp_iter;
     return true;
 }
 
-bool ClientDatabase::groupQuery(tango::GroupQueryParams* info, tango::IJob* job)
+bool ClientDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
 {
     return false;
 }

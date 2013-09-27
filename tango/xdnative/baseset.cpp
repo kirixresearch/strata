@@ -94,7 +94,7 @@ std::wstring BaseSet::getSetId()
     return m_set_id;
 }
 
-tango::IRowInserterPtr BaseSet::getRowInserter()
+xd::IRowInserterPtr BaseSet::getRowInserter()
 {
     // default does nothing
     return xcm::null;
@@ -104,7 +104,7 @@ tango::IRowInserterPtr BaseSet::getRowInserter()
 
 // calculated Field routines
 
-bool BaseSet::createCalcField(tango::IColumnInfoPtr colinfo)
+bool BaseSet::createCalcField(xd::IColumnInfoPtr colinfo)
 {
     XCM_AUTO_LOCK(m_structure_mutex);
 
@@ -142,7 +142,7 @@ bool BaseSet::createCalcField(tango::IColumnInfoPtr colinfo)
     INodeValuePtr expr_node = item_node->createChild(L"expression");
     expr_node->setString(colinfo->getExpression());
 
-    tango::IColumnInfoPtr newcol = colinfo->clone();
+    xd::IColumnInfoPtr newcol = colinfo->clone();
     newcol->setCalculated(true);
 
     m_calc_fields.push_back(newcol);
@@ -152,7 +152,7 @@ bool BaseSet::createCalcField(tango::IColumnInfoPtr colinfo)
 
 
 bool BaseSet::modifyCalcField(const std::wstring& _name,
-                              tango::IColumnInfoPtr colinfo)
+                              xd::IColumnInfoPtr colinfo)
 {
     XCM_AUTO_LOCK(m_structure_mutex);
 
@@ -253,7 +253,7 @@ bool BaseSet::deleteCalcField(const std::wstring& _name)
 }
 
 
-void BaseSet::appendCalcFields(tango::IStructure* structure)
+void BaseSet::appendCalcFields(xd::IStructure* structure)
 {
     // do this before the m_structure_mutex of BaseSet is locked;
     // this will avoid interlocking the mutexes of NativeTable
@@ -319,13 +319,13 @@ void BaseSet::appendCalcFields(tango::IStructure* structure)
 
             colinfo->setCalculated(true);
 
-            m_calc_fields.push_back(static_cast<tango::IColumnInfo*>(colinfo));
+            m_calc_fields.push_back(static_cast<xd::IColumnInfo*>(colinfo));
         }
     }
 
     IStructureInternalPtr intstruct = structure;
 
-    std::vector<tango::IColumnInfoPtr>::iterator it;
+    std::vector<xd::IColumnInfoPtr>::iterator it;
     for (it = m_calc_fields.begin();
          it != m_calc_fields.end();
          ++it)
@@ -343,7 +343,7 @@ void BaseSet::onRelationshipsUpdated()
 
 
 
-bool BaseSet::modifyStructure(tango::IStructure* struct_config,
+bool BaseSet::modifyStructure(xd::IStructure* struct_config,
                               bool* done_flag)
 {
     XCM_AUTO_LOCK(m_structure_mutex);
@@ -419,7 +419,7 @@ bool BaseSet::modifyStructure(tango::IStructure* struct_config,
 
 
 
-tango::rowpos_t BaseSet::getRowCount()
+xd::rowpos_t BaseSet::getRowCount()
 {
     // we don't know how many rows are in the set
     return 0;
@@ -447,8 +447,8 @@ bool BaseSet::removeEventHandler(IXdnativeSetEvents* handler)
     return true;
 }
 
-bool BaseSet::updateRow(tango::rowid_t rowid,
-                        tango::ColumnUpdateInfo* info,
+bool BaseSet::updateRow(xd::rowid_t rowid,
+                        xd::ColumnUpdateInfo* info,
                         size_t info_size)
 {
     return false;
@@ -500,7 +500,7 @@ void BaseSet::fire_onSetRelationshipsUpdated()
     }
 }
 
-void BaseSet::fire_onSetRowUpdated(tango::rowid_t rowid)
+void BaseSet::fire_onSetRowUpdated(xd::rowid_t rowid)
 {
     XCM_AUTO_LOCK(m_event_mutex);
 
@@ -513,7 +513,7 @@ void BaseSet::fire_onSetRowUpdated(tango::rowid_t rowid)
     }
 }
 
-void BaseSet::fire_onSetRowDeleted(tango::rowid_t rowid)
+void BaseSet::fire_onSetRowDeleted(xd::rowid_t rowid)
 {
     XCM_AUTO_LOCK(m_event_mutex);
 

@@ -84,10 +84,10 @@ public:
     // ITableDoc
     
     bool open(const std::wstring& path,
-              tango::IIteratorPtr optional_iterator = xcm::null);
+              xd::IIteratorPtr optional_iterator = xcm::null);
 
     bool setBrowseSet(const std::wstring& path,
-                      tango::IIteratorPtr optional_iterator = xcm::null);
+                      xd::IIteratorPtr optional_iterator = xcm::null);
 
     std::wstring getPath();
     std::wstring getBrowsePath();
@@ -106,8 +106,8 @@ public:
     ITableDocModelPtr getModel();
 
     kcl::Grid* getGrid();
-    tango::IIteratorPtr getIterator();
-    void setIterator(tango::IIteratorPtr iter, bool go_first = true);
+    xd::IIteratorPtr getIterator();
+    void setIterator(xd::IIteratorPtr iter, bool go_first = true);
 
     void connectAlterTableJob(jobs::IJobPtr job);
 
@@ -226,9 +226,9 @@ private:
     void updateCaption();
     wxString makeCaption(const wxString& title);
     void initializeDefaultView(ITableDocViewPtr view,
-                               tango::IStructurePtr v_struct);
+                               xd::IStructurePtr v_struct);
 
-    tango::objhandle_t getTemporaryHandle(const wxString& expr);
+    xd::objhandle_t getTemporaryHandle(const wxString& expr);
     void freeTemporaryHandles();
 
     std::wstring getWhereExpressionForRow(int row);
@@ -368,7 +368,7 @@ private:
 
 private:
 
-    tango::IIteratorPtr m_iter;
+    xd::IIteratorPtr m_iter;
     ITableDocViewPtr m_active_view;
 
     IFramePtr m_frame;                                  // ptr to the application frame
@@ -377,7 +377,7 @@ private:
     ITableDocModelPtr m_model;                          // our model (stores marks, views, etc)
     kcl::Grid* m_grid;                                  // grid control
 
-    std::map<wxString, tango::objhandle_t> m_handle_map; // handle map for marks
+    std::map<wxString, xd::objhandle_t> m_handle_map; // handle map for marks
 
     std::wstring m_caption;               // window's caption/title
     std::wstring m_caption_suffix;        // window's caption suffix
@@ -391,7 +391,7 @@ private:
     std::wstring m_source_mimetype;       // optional mimetype that describes resource type of m_source_url
     std::wstring m_reload_filename;       // used during reload/refresh operations
     std::wstring m_relsync_mark_expr;     // mark expression for context relationship syncing
-    tango::rowpos_t m_stat_row_count; // last row count used by the status bar
+    xd::rowpos_t m_stat_row_count; // last row count used by the status bar
     
     int m_text_wrapping;              // Grid::wrapDefault, Grid::wrapOn, or Grid::wrapOff
 
@@ -407,8 +407,8 @@ private:
     
     bool m_allow_delete_menuid;       // this flag is set to enable/disable the ID_Edit_Delete menu ID
     int m_external_table;             // -1 = uninitialized; 0 = no; 1 = yes
-    int m_db_type;                    // database type (tango::dbtype enum)
-    tango::IDatabasePtr m_mount_db;   // native db for the table (null for native)
+    int m_db_type;                    // database type (xd::dbtype enum)
+    xd::IDatabasePtr m_mount_db;   // native db for the table (null for native)
 
     DECLARE_EVENT_TABLE()
 };

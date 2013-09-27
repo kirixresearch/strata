@@ -30,7 +30,7 @@
 static int doDelete(IXdsqlDatabasePtr db,
                     const std::wstring& path,
                     const std::wstring& filter,
-                    tango::IJob* job)
+                    xd::IJob* job)
 {
     int delete_count = 0;
 
@@ -44,11 +44,11 @@ static int doDelete(IXdsqlDatabasePtr db,
         return -1;
 
     // create physical iterator and initialize expression handles
-    tango::IDatabasePtr tdb = db;
+    xd::IDatabasePtr tdb = db;
     if (tdb.isNull())
         return -1;
 
-    tango::IIteratorPtr sp_iter = tdb->query(path, L"", L"", L"", NULL);
+    xd::IIteratorPtr sp_iter = tdb->query(path, L"", L"", L"", NULL);
     if (sp_iter.isNull())
         return -1;
 
@@ -61,24 +61,24 @@ static int doDelete(IXdsqlDatabasePtr db,
     }
 
 
-    tango::IIterator* iter = sp_iter.p;
+    xd::IIterator* iter = sp_iter.p;
     IXdsqlRowDeleter* row_deleter = sp_row_deleter.p;
 
     // initialize job
     IJobInternalPtr ijob = job;
     if (ijob)
     {
-        tango::rowpos_t max_count = 0;
+        xd::rowpos_t max_count = 0;
 
-        tango::IFileInfoPtr finfo = tdb->getFileInfo(path);
-        if (finfo.isOk() && (finfo->getFlags() & tango::sfFastRowCount))
+        xd::IFileInfoPtr finfo = tdb->getFileInfo(path);
+        if (finfo.isOk() && (finfo->getFlags() & xd::sfFastRowCount))
         {
             max_count = finfo->getRowCount();
         }
 
         ijob->setMaxCount(max_count);
         ijob->setCurrentCount(0);
-        ijob->setStatus(tango::jobRunning);
+        ijob->setStatus(xd::jobRunning);
         ijob->setStartTime(time(NULL));
     }
 
@@ -119,7 +119,7 @@ static int doDelete(IXdsqlDatabasePtr db,
         if (!job->getCancelled())
         {
             ijob->setCurrentCount(ijob->getMaxCount());
-            ijob->setStatus(tango::jobFinished);
+            ijob->setStatus(xd::jobFinished);
             ijob->setFinishTime(time(NULL));
         }
     }
@@ -129,10 +129,10 @@ static int doDelete(IXdsqlDatabasePtr db,
 
 
 
-bool sqlDelete(tango::IDatabasePtr db,
+bool sqlDelete(xd::IDatabasePtr db,
                const std::wstring& _command,
                ThreadErrorInfo& error,
-               tango::IJob* job)
+               xd::IJob* job)
 {
     IXdsqlDatabasePtr xdb = db;
     if (xdb.isNull())
@@ -147,19 +147,19 @@ bool sqlDelete(tango::IDatabasePtr db,
 
     if (!stmt.getKeywordExists(L"DELETE"))
     {
-        error.setError(tango::errorSyntax, L"Invalid syntax; DELETE statement missing DELETE clause");
+        error.setError(xd::errorSyntax, L"Invalid syntax; DELETE statement missing DELETE clause");
         return false;
     }
 
     if (!stmt.getKeywordExists(L"FROM"))
     {
-        error.setError(tango::errorSyntax, L"Invalid syntax; DELETE statement missing FROM clause");
+        error.setError(xd::errorSyntax, L"Invalid syntax; DELETE statement missing FROM clause");
         return false;
     }
 
     if (!stmt.getKeywordExists(L"WHERE") && !stmt.getKeywordExists(L"RESTORE"))
     {
-        error.setError(tango::errorSyntax, L"Invalid syntax; DELETE statement missing WHERE clause");
+        error.setError(xd::errorSyntax, L"Invalid syntax; DELETE statement missing WHERE clause");
         return false;
     }
 
@@ -170,18 +170,18 @@ bool sqlDelete(tango::IDatabasePtr db,
 
     if (stmt.getKeywordExists(L"WHERE") && filter.length() == 0)
     {
-        error.setError(tango::errorSyntax, L"Invalid syntax; DELETE statement missing WHERE condition");
+        error.setError(xd::errorSyntax, L"Invalid syntax; DELETE statement missing WHERE condition");
         return false;
     }
         
     dequote(table, '[', ']');
     
-    tango::IFileInfoPtr finfo = db->getFileInfo(table);
-    if (finfo.isNull() || finfo->getType() != tango::filetypeTable)
+    xd::IFileInfoPtr finfo = db->getFileInfo(table);
+    if (finfo.isNull() || finfo->getType() != xd::filetypeTable)
     {
         wchar_t buf[1024]; // some paths might be long
         swprintf(buf, 1024, L"Unable to delete rows because table [%ls] cannot be opened", table.c_str());
-        error.setError(tango::errorGeneral, buf);
+        error.setError(xd::errorGeneral, buf);
         return false;
     }
 
@@ -193,7 +193,7 @@ bool sqlDelete(tango::IDatabasePtr db,
         {
             wchar_t buf[1024]; // some paths might be long
             swprintf(buf, 1024, L"Unable to restore deleted rows in table [%ls]", table.c_str());
-            error.setError(tango::errorGeneral, buf);
+            error.setError(xd::errorGeneral, buf);
             return false;
         }
         
@@ -203,7 +203,7 @@ bool sqlDelete(tango::IDatabasePtr db,
     int result = doDelete(db, table, filter, job);
     if (result == -1)
     {
-        error.setError(tango::errorGeneral, L"Unable to process DELETE statement");
+        error.setError(xd::errorGeneral, L"Unable to process DELETE statement");
         return false;
     }
 

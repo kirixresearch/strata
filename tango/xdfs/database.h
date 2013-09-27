@@ -65,12 +65,12 @@ XCM_DECLARE_SMARTPTR(IFsDatabase)
 
 
 
-class FsDatabase : public tango::IDatabase,
+class FsDatabase : public xd::IDatabase,
                    public IFsDatabase
 {
     XCM_CLASS_NAME("xdfs.Database")
     XCM_BEGIN_INTERFACE_MAP(FsDatabase)
-        XCM_INTERFACE_ENTRY(tango::IDatabase)
+        XCM_INTERFACE_ENTRY(xd::IDatabase)
         XCM_INTERFACE_ENTRY(IFsDatabase)
     XCM_END_INTERFACE_MAP()
 
@@ -80,7 +80,7 @@ public:
     ~FsDatabase();
     bool open(const std::wstring& path);
     
-    // tango::IDatabase
+    // xd::IDatabase
     
     bool getSetFormat(const std::wstring& path,
                       FsSetFormatInfo* info,
@@ -89,12 +89,12 @@ public:
     std::wstring getDefinitionDirectory();
     
     
-    // tango::IDatabase
+    // xd::IDatabase
 
     void close();
 
     int getDatabaseType();
-    tango::IAttributesPtr getAttributes();
+    xd::IAttributesPtr getAttributes();
     std::wstring getActiveUid();
     
     std::wstring getErrorString();
@@ -105,22 +105,22 @@ public:
     double getUsedSpace();
     bool cleanup();
 
-    tango::IJobPtr createJob();
+    xd::IJobPtr createJob();
 
-    IXdfsSetPtr openSetEx(const std::wstring& path, const tango::FormatInfo& fi);
+    IXdfsSetPtr openSetEx(const std::wstring& path, const xd::FormatInfo& fi);
 
     bool createFolder(const std::wstring& path);
     bool renameFile(const std::wstring& path, const std::wstring& new_name);
     bool moveFile(const std::wstring& path, const std::wstring& new_folder);
     bool copyFile(const std::wstring& src_path, const std::wstring& dest_path);
-    bool copyData(const tango::CopyParams* info, tango::IJob* job);
+    bool copyData(const xd::CopyParams* info, xd::IJob* job);
     bool deleteFile(const std::wstring& path);
     bool getFileExist(const std::wstring& path);
     bool getLocalFileExist(const std::wstring& path);
-    tango::IFileInfoPtr getFileInfo(const std::wstring& path);
-    tango::IFileInfoEnumPtr getFolderInfo(const std::wstring& path);
+    xd::IFileInfoPtr getFileInfo(const std::wstring& path);
+    xd::IFileInfoEnumPtr getFolderInfo(const std::wstring& path);
 
-    tango::IDatabasePtr getMountDatabase(const std::wstring& path);
+    xd::IDatabasePtr getMountDatabase(const std::wstring& path);
 
     bool setMountPoint(const std::wstring& path,
                        const std::wstring& connection_str,
@@ -130,36 +130,36 @@ public:
                        std::wstring& connection_str,
                        std::wstring& remote_path);
 
-    tango::IStructurePtr createStructure();
-    bool createTable(const std::wstring& path, tango::IStructurePtr struct_config, tango::FormatInfo* format_info);
-    tango::IStreamPtr openStream(const std::wstring& ofs_path);
+    xd::IStructurePtr createStructure();
+    bool createTable(const std::wstring& path, xd::IStructurePtr struct_config, xd::FormatInfo* format_info);
+    xd::IStreamPtr openStream(const std::wstring& ofs_path);
     bool createStream(const std::wstring& ofs_path, const std::wstring& mime_type);
 
-    tango::IIteratorPtr query(const tango::QueryParams& qp);
+    xd::IIteratorPtr query(const xd::QueryParams& qp);
 
-    tango::IIndexInfoPtr createIndex(const std::wstring& path,
+    xd::IIndexInfoPtr createIndex(const std::wstring& path,
                                      const std::wstring& name,
                                      const std::wstring& expr,
-                                     tango::IJob* job);
+                                     xd::IJob* job);
     bool renameIndex(const std::wstring& path,
                      const std::wstring& name,
                      const std::wstring& new_name);
     bool deleteIndex(const std::wstring& path,
                      const std::wstring& name);
-    tango::IIndexInfoEnumPtr getIndexEnum(const std::wstring& path);
+    xd::IIndexInfoEnumPtr getIndexEnum(const std::wstring& path);
 
-    tango::IRowInserterPtr bulkInsert(const std::wstring& path);
+    xd::IRowInserterPtr bulkInsert(const std::wstring& path);
 
-    tango::IStructurePtr describeTable(const std::wstring& path);
+    xd::IStructurePtr describeTable(const std::wstring& path);
 
-    bool modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job);
+    bool modifyStructure(const std::wstring& path, xd::IStructurePtr struct_config, xd::IJob* job);
 
     bool execute(const std::wstring& command,
                  unsigned int flags,
                  xcm::IObjectPtr& result,
-                 tango::IJob* job);
+                 xd::IJob* job);
 
-    bool groupQuery(tango::GroupQueryParams* info, tango::IJob* job);
+    bool groupQuery(xd::GroupQueryParams* info, xd::IJob* job);
 
 private:
 
@@ -169,22 +169,22 @@ private:
                           std::wstring& connection_str,
                           std::wstring& remote_path);
                           
-    tango::IDatabasePtr lookupOrOpenMountDb(const std::wstring& connection);
+    xd::IDatabasePtr lookupOrOpenMountDb(const std::wstring& connection);
     
     bool checkCircularMount(const std::wstring& path,
-                            tango::IDatabasePtr remote_db, 
+                            xd::IDatabasePtr remote_db, 
                             const std::wstring remote_path);
 
 private:
 
     xcm::mutex m_obj_mutex;
-    std::map<std::wstring, tango::IDatabasePtr> m_mounted_dbs;
-    tango::IDatabaseMgrPtr m_db_mgr;
+    std::map<std::wstring, xd::IDatabasePtr> m_mounted_dbs;
+    xd::IDatabaseMgrPtr m_db_mgr;
 
     std::wstring m_base_path;
     int m_last_job;
     std::vector<JobInfo*> m_jobs;
-    tango::IAttributesPtr m_attr;
+    xd::IAttributesPtr m_attr;
     
     ThreadErrorInfo m_error;
 };

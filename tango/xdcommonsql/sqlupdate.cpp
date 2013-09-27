@@ -29,26 +29,26 @@ struct BaseSetReplaceInfo
 {
     std::wstring col_text;
     int col_type;
-    tango::objhandle_t col_handle;
+    xd::objhandle_t col_handle;
 
     std::wstring replace_text;
     int replace_type;
-    tango::objhandle_t replace_handle;
+    xd::objhandle_t replace_handle;
 };
 
 
-static int doUpdate(tango::IDatabasePtr db,
+static int doUpdate(xd::IDatabasePtr db,
                     const std::wstring& path,
                     const std::wstring& filter,
                     const std::wstring& _params,
                     ThreadErrorInfo& error,
-                    tango::IJob* job)
+                    xd::IJob* job)
 {
     IXdsqlDatabasePtr xdb = db;
     if (xdb.isNull())
         return -1;
 
-    tango::IFileInfoPtr finfo = db->getFileInfo(path);
+    xd::IFileInfoPtr finfo = db->getFileInfo(path);
     if (finfo.isNull())
         return -1;
 
@@ -56,11 +56,11 @@ static int doUpdate(tango::IDatabasePtr db,
     if (set.isNull())
         return -1;
 
-    tango::IStructurePtr structure = db->describeTable(path);
+    xd::IStructurePtr structure = db->describeTable(path);
     if (structure.isNull())
         return -1;
 
-    tango::ColumnUpdateInfo* col_update;
+    xd::ColumnUpdateInfo* col_update;
     std::vector<BaseSetReplaceInfo> replace;
     std::vector<BaseSetReplaceInfo>::iterator rit;
 
@@ -71,7 +71,7 @@ static int doUpdate(tango::IDatabasePtr db,
 
     if (params.size() == 0)
     {
-        error.setError(tango::errorSyntax, L"Invalid syntax; no replace parameters were specified");
+        error.setError(xd::errorSyntax, L"Invalid syntax; no replace parameters were specified");
         return -1;
     }
 
@@ -85,7 +85,7 @@ static int doUpdate(tango::IDatabasePtr db,
         if (eq_pos < 1)
         {
             // parse error
-            error.setError(tango::errorSyntax, L"Invalid syntax; missing '=' in replace parameters");
+            error.setError(xd::errorSyntax, L"Invalid syntax; missing '=' in replace parameters");
             return -1;
         }
 
@@ -110,18 +110,18 @@ static int doUpdate(tango::IDatabasePtr db,
     if (sp_set_update.isNull())
     {
         // could not get a row update interface
-        error.setError(tango::errorGeneral, L"Unable to process the UPDATE statement");
+        error.setError(xd::errorGeneral, L"Unable to process the UPDATE statement");
         return -1;
     }
 
 
     // create physical iterator and initialize expression handles
-    tango::IIteratorPtr sp_iter = db->query(path, L"", L"", L"", NULL);
-    tango::IIterator* iter = sp_iter.p;
+    xd::IIteratorPtr sp_iter = db->query(path, L"", L"", L"", NULL);
+    xd::IIterator* iter = sp_iter.p;
     if (sp_iter.isNull())
     {
         // could not create an unordered iterator
-        error.setError(tango::errorGeneral, L"Unable to process the UPDATE statement");        
+        error.setError(xd::errorGeneral, L"Unable to process the UPDATE statement");        
         return -1;
     }
     
@@ -131,18 +131,18 @@ static int doUpdate(tango::IDatabasePtr db,
     SqlIterator* s_iter = SqlIterator::createSqlIterator(sp_iter, filter, job);
     if (!s_iter)
     {
-        error.setError(tango::errorGeneral, L"Unable to process the UPDATE statement");    
+        error.setError(xd::errorGeneral, L"Unable to process the UPDATE statement");    
         return -1;
     }
 
 
-    // perpare the tango::ColumnUpdateInfo array; this involves
+    // perpare the xd::ColumnUpdateInfo array; this involves
     // getting all writer handles
     
-    col_update = new tango::ColumnUpdateInfo[replace.size()];
+    col_update = new xd::ColumnUpdateInfo[replace.size()];
     size_t i;
     
-    tango::IColumnInfoPtr colinfo;
+    xd::IColumnInfoPtr colinfo;
 
     bool success = true;
     for (rit = replace.begin(), i = 0; rit != replace.end(); ++rit, ++i)
@@ -152,7 +152,7 @@ static int doUpdate(tango::IDatabasePtr db,
         {
             wchar_t buf[1024]; // some paths might be long
             swprintf(buf, 1024, L"Invalid syntax: Column [%ls] does not exist", (rit->col_text).c_str());
-            error.setError(tango::errorSyntax, buf);
+            error.setError(xd::errorSyntax, buf);
             
             success = false;
             break;
@@ -164,7 +164,7 @@ static int doUpdate(tango::IDatabasePtr db,
         {
             wchar_t buf[1024]; // some paths might be long
             swprintf(buf, 1024, L"Invalid syntax: Unable to get handle for column [%ls]", (rit->col_text).c_str());
-            error.setError(tango::errorSyntax, buf);
+            error.setError(xd::errorSyntax, buf);
 
             success = false;
             break;
@@ -173,7 +173,7 @@ static int doUpdate(tango::IDatabasePtr db,
         rit->replace_handle = iter->getHandle(rit->replace_text);
         if (rit->replace_handle == NULL)
         {
-            error.setError(tango::errorSyntax, L"Invalid syntax: invalid replace expression");        
+            error.setError(xd::errorSyntax, L"Invalid syntax: invalid replace expression");        
 
             success = false;
             break;
@@ -183,9 +183,9 @@ static int doUpdate(tango::IDatabasePtr db,
 
         if (rit->col_type != rit->replace_type)
         {
-            if (!tango::isTypeCompatible(rit->col_type, rit->replace_type))
+            if (!xd::isTypeCompatible(rit->col_type, rit->replace_type))
             {
-                error.setError(tango::errorSyntax, L"Invalid syntax: replace expression type incompatible with column type being replaced");              
+                error.setError(xd::errorSyntax, L"Invalid syntax: replace expression type incompatible with column type being replaced");              
             
                 success = false;
                 break;
@@ -212,7 +212,7 @@ static int doUpdate(tango::IDatabasePtr db,
             IJobInternalPtr ijob = job;
             if (ijob)
             {
-                ijob->setStatus(tango::jobFailed);
+                ijob->setStatus(xd::jobFailed);
             }
         }
 
@@ -224,16 +224,16 @@ static int doUpdate(tango::IDatabasePtr db,
     IJobInternalPtr ijob = job;
     if (ijob)
     {
-        tango::rowpos_t max_count = 0;
+        xd::rowpos_t max_count = 0;
         
-        if (finfo->getFlags() & tango::sfFastRowCount)
+        if (finfo->getFlags() & xd::sfFastRowCount)
         {
             max_count = finfo->getRowCount();
         }
 
         ijob->setMaxCount(max_count);
         ijob->setCurrentCount(0);
-        ijob->setStatus(tango::jobRunning);
+        ijob->setStatus(xd::jobRunning);
         ijob->setStartTime(time(NULL));
     }
 
@@ -262,29 +262,29 @@ static int doUpdate(tango::IDatabasePtr db,
             
             switch (replace[col].col_type)
             {
-                case tango::typeCharacter:
+                case xd::typeCharacter:
                     col_update[col].str_val = iter->getString(replace[col].replace_handle);
                     break;
 
-                case tango::typeWideCharacter:
+                case xd::typeWideCharacter:
                     col_update[col].wstr_val = iter->getWideString(replace[col].replace_handle);
                     break;
 
-                case tango::typeNumeric:
-                case tango::typeDouble:
+                case xd::typeNumeric:
+                case xd::typeDouble:
                     col_update[col].dbl_val = iter->getDouble(replace[col].replace_handle);
                     break;
 
-                case tango::typeInteger:
+                case xd::typeInteger:
                     col_update[col].int_val = iter->getInteger(replace[col].replace_handle);
                     break;
 
-                case tango::typeDate:
-                case tango::typeDateTime:
+                case xd::typeDate:
+                case xd::typeDateTime:
                     col_update[col].date_val = iter->getDateTime(replace[col].replace_handle);
                     break;
 
-                case tango::typeBoolean:
+                case xd::typeBoolean:
                     col_update[col].bool_val = iter->getBoolean(replace[col].replace_handle);
                     break;
             }
@@ -321,7 +321,7 @@ static int doUpdate(tango::IDatabasePtr db,
         if (!job->getCancelled())
         {
             ijob->setCurrentCount(ijob->getMaxCount());
-            ijob->setStatus(tango::jobFinished);
+            ijob->setStatus(xd::jobFinished);
             ijob->setFinishTime(time(NULL));
         }
     }
@@ -333,10 +333,10 @@ static int doUpdate(tango::IDatabasePtr db,
  }
  
  
-bool sqlUpdate(tango::IDatabasePtr db,
+bool sqlUpdate(xd::IDatabasePtr db,
                const std::wstring& _command,
                ThreadErrorInfo& error,
-               tango::IJob* job)
+               xd::IJob* job)
 {
     SqlStatement stmt(_command);
 
@@ -346,13 +346,13 @@ bool sqlUpdate(tango::IDatabasePtr db,
 
     if (!stmt.getKeywordExists(L"UPDATE"))
     {
-        error.setError(tango::errorSyntax, L"Invalid syntax; UPDATE statement missing UPDATE clause");
+        error.setError(xd::errorSyntax, L"Invalid syntax; UPDATE statement missing UPDATE clause");
         return false;
     }
 
     if (!stmt.getKeywordExists(L"SET"))
     {
-        error.setError(tango::errorSyntax, L"Invalid syntax; UPDATE statement missing SET clause");
+        error.setError(xd::errorSyntax, L"Invalid syntax; UPDATE statement missing SET clause");
         return false;
     }
 
@@ -367,12 +367,12 @@ bool sqlUpdate(tango::IDatabasePtr db,
     
     dequote(update, '[', ']');
     
-    tango::IFileInfoPtr finfo = db->getFileInfo(update);
-    if (finfo.isNull() || finfo->getType() != tango::filetypeTable)
+    xd::IFileInfoPtr finfo = db->getFileInfo(update);
+    if (finfo.isNull() || finfo->getType() != xd::filetypeTable)
     {
         wchar_t buf[1024]; // some paths might be long
         swprintf(buf, 1024, L"Unable to update rows because table [%ls] cannot be opened", update.c_str());
-        error.setError(tango::errorGeneral, buf);
+        error.setError(xd::errorGeneral, buf);
         return false;
     }
 

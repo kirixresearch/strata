@@ -89,16 +89,16 @@ int DeleteJob::runJob()
     // build the delete SQL
     std::wstring delete_sql = L"";
     delete_sql += L"DELETE FROM ";
-    delete_sql += tango::quoteIdentifier(m_db, input_path);
+    delete_sql += xd::quoteIdentifier(m_db, input_path);
     delete_sql += L" WHERE ";
     delete_sql += where_param;
 
 
-    tango::IJobPtr tango_job = m_db->createJob();
+    xd::IJobPtr tango_job = m_db->createJob();
     setXdJob(tango_job);
 
     xcm::IObjectPtr result;
-    m_db->execute(delete_sql, tango::sqlPassThrough, result, tango_job);
+    m_db->execute(delete_sql, xd::sqlPassThrough, result, tango_job);
 
 
     if (tango_job->getCancelled())
@@ -107,7 +107,7 @@ int DeleteJob::runJob()
         return 0;
     }
 
-    if (tango_job->getStatus() == tango::jobFailed)
+    if (tango_job->getStatus() == xd::jobFailed)
     {
         m_job_info->setState(jobStateFailed);
 

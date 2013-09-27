@@ -83,13 +83,13 @@ int ExecuteJob::runJob()
     std::wstring sql = command_node.getString();
 
 
-    tango::IJobPtr tango_job = m_db->createJob();
+    xd::IJobPtr tango_job = m_db->createJob();
     setXdJob(tango_job);
 
 
-    unsigned int flags = tango::sqlPassThrough;
+    unsigned int flags = xd::sqlPassThrough;
     if (getExtraValue(L"tango.sqlAlwaysCopy") == L"true")
-        flags = tango::sqlAlwaysCopy;
+        flags = xd::sqlAlwaysCopy;
 
     xcm::IObjectPtr result;
     m_db->execute(sql, flags, result, tango_job);

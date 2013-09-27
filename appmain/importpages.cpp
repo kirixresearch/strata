@@ -45,11 +45,11 @@ enum
 
 // -- utility functions --
 
-static void getAllSets(tango::IDatabasePtr db_ptr,
+static void getAllSets(xd::IDatabasePtr db_ptr,
                        const wxString& path,
                        std::vector<wxString>& retval)
 {
-    tango::IFileInfoEnumPtr items = db_ptr->getFolderInfo(towstr(path));
+    xd::IFileInfoEnumPtr items = db_ptr->getFolderInfo(towstr(path));
 
     if (items.isNull())
         return;
@@ -60,14 +60,14 @@ static void getAllSets(tango::IDatabasePtr db_ptr,
 
     for (i = 0; i < count; ++i)
     {
-        tango::IFileInfoPtr info = items->getItem(i);
+        xd::IFileInfoPtr info = items->getItem(i);
         item_type = info->getType();
 
         // skip 'hidden' objects
         if (info->getName().substr(0,1) == '.')
             continue;
 
-        if (item_type == tango::filetypeFolder)
+        if (item_type == xd::filetypeFolder)
         {
             wxString folder_path = path;
             folder_path += info->getName();
@@ -76,7 +76,7 @@ static void getAllSets(tango::IDatabasePtr db_ptr,
             // recursively traverse this folder
             getAllSets(db_ptr, folder_path, retval);
         }
-         else if (item_type == tango::filetypeTable)
+         else if (item_type == xd::filetypeTable)
         {
             wxString name = path;
             

@@ -105,7 +105,7 @@ public:
         name = wxEmptyString;
         offset = 0;
         width = 0;
-        encoding = tango::encodingASCII;
+        encoding = xd::encodingASCII;
     }
     
     TextViewColumn(const TextViewColumn& c)

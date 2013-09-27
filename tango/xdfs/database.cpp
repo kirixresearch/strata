@@ -83,27 +83,27 @@ FsDatabase::FsDatabase()
     // additional restrictions for quoting and items that would cause
     // parsing-related issues (e.g. [],"'=)
     
-    m_attr = static_cast<tango::IAttributes*>(new DatabaseAttributes);
-    m_attr->setIntAttribute(tango::dbattrColumnMaxNameLength, 80);
-    m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 80);
-    m_attr->setStringAttribute(tango::dbattrKeywords, kws);    
-    m_attr->setStringAttribute(tango::dbattrColumnInvalidChars,
+    m_attr = static_cast<xd::IAttributes*>(new DatabaseAttributes);
+    m_attr->setIntAttribute(xd::dbattrColumnMaxNameLength, 80);
+    m_attr->setIntAttribute(xd::dbattrTableMaxNameLength, 80);
+    m_attr->setStringAttribute(xd::dbattrKeywords, kws);    
+    m_attr->setStringAttribute(xd::dbattrColumnInvalidChars,
                                L"*|:\"<>?[]\\;'=,/\x00\x09\x0A\x0B\x0C\x0D\xFF");
-    m_attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars,
+    m_attr->setStringAttribute(xd::dbattrColumnInvalidStartingChars,
                                L"*|:\"<>?[]\\;'=,/\x00\x09\x0A\x0B\x0C\x0D\xFF");
-    m_attr->setStringAttribute(tango::dbattrTableInvalidChars,
+    m_attr->setStringAttribute(xd::dbattrTableInvalidChars,
                                L"*|:\"<>?[]\\;'=,/\x00\x09\x0A\x0B\x0C\x0D\xFF");
-    m_attr->setStringAttribute(tango::dbattrTableInvalidStartingChars,
+    m_attr->setStringAttribute(xd::dbattrTableInvalidStartingChars,
                                L"*|:\"<>?[]\\;'=,/\x00\x09\x0A\x0B\x0C\x0D\xFF");
-    m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"[");
-    m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"]");
-    m_attr->setStringAttribute(tango::dbattrIdentifierCharsNeedingQuote, L"`~# $!@%^&(){}-+.");    
+    m_attr->setStringAttribute(xd::dbattrIdentifierQuoteOpenChar, L"[");
+    m_attr->setStringAttribute(xd::dbattrIdentifierQuoteCloseChar, L"]");
+    m_attr->setStringAttribute(xd::dbattrIdentifierCharsNeedingQuote, L"`~# $!@%^&(){}-+.");    
 
-    m_attr->setStringAttribute(tango::dbattrTempDirectory, xf_get_temp_path());
-    m_attr->setStringAttribute(tango::dbattrDefinitionDirectory, xf_get_temp_path());
+    m_attr->setStringAttribute(xd::dbattrTempDirectory, xf_get_temp_path());
+    m_attr->setStringAttribute(xd::dbattrDefinitionDirectory, xf_get_temp_path());
 
     
-    m_db_mgr = tango::getDatabaseMgr();
+    m_db_mgr = xd::getDatabaseMgr();
 }
 
 FsDatabase::~FsDatabase()
@@ -130,7 +130,7 @@ bool FsDatabase::open(const std::wstring& path)
 
 std::wstring FsDatabase::getTempFileDirectory()
 {
-    std::wstring result = m_attr->getStringAttribute(tango::dbattrTempDirectory);
+    std::wstring result = m_attr->getStringAttribute(xd::dbattrTempDirectory);
     if (result.empty())
     {
         result = xf_get_temp_path();
@@ -141,7 +141,7 @@ std::wstring FsDatabase::getTempFileDirectory()
 
 std::wstring FsDatabase::getDefinitionDirectory()
 {
-    std::wstring result = m_attr->getStringAttribute(tango::dbattrDefinitionDirectory);
+    std::wstring result = m_attr->getStringAttribute(xd::dbattrDefinitionDirectory);
     if (result.empty())
     {
         result = xf_get_temp_path();
@@ -171,7 +171,7 @@ static bool determineSetFormatInfo(const std::wstring& path,
         
     if (!f.openFile(path, xfRead, xfShareReadWrite))
     {
-        info->format = tango::formatNative;
+        info->format = xd::formatNative;
         return false;
     }
     
@@ -214,7 +214,7 @@ static bool determineSetFormatInfo(const std::wstring& path,
     // there's nothing in the file, bail out
     if (lines.size() == 0)
     {
-        info->format = tango::formatFixedLengthText;
+        info->format = xd::formatFixedLengthText;
         return true;
     }
     
@@ -302,12 +302,12 @@ static bool determineSetFormatInfo(const std::wstring& path,
          else if (max == tilde_line_count)
             info->delimiters = L"~";
          
-        info->format = tango::formatDelimitedText;
+        info->format = xd::formatDelimitedText;
         return true;
     }
     
     // default format is fixed-length
-    info->format = tango::formatFixedLengthText;
+    info->format = xd::formatFixedLengthText;
     return true;
 }
 
@@ -338,14 +338,14 @@ bool FsDatabase::getSetFormat(const std::wstring& path,
     std::wstring phys_path = makeFullPath(path);
     if (!xf_get_file_exist(phys_path))
     {
-        info->format = tango::formatNative;
+        info->format = xd::formatNative;
         return false;
     }
 
     // figure out the config file name
-    tango::IAttributesPtr attr = getAttributes();
+    xd::IAttributesPtr attr = getAttributes();
     std::wstring definition_path = 
-        attr->getStringAttribute(tango::dbattrDefinitionDirectory);
+        attr->getStringAttribute(xd::dbattrDefinitionDirectory);
     std::wstring configfile_path =
         ExtFileInfo::getConfigFilenameFromPath(definition_path, phys_path);
 
@@ -361,7 +361,7 @@ bool FsDatabase::getSetFormat(const std::wstring& path,
             format_str == L"text/csv" ||
             format_str == L"text_delimited")
         {
-            info->format = tango::formatDelimitedText;
+            info->format = xd::formatDelimitedText;
             
             if (delims.length() > 0)
                 info->delimiters = delims;
@@ -373,12 +373,12 @@ bool FsDatabase::getSetFormat(const std::wstring& path,
          else if (format_str == L"text/fixed" ||
                   format_str == L"fixed_length")
         {
-            info->format = tango::formatFixedLengthText;
+            info->format = xd::formatFixedLengthText;
             return true;
         }
          else if (format_str == L"text/plain")
         {
-            info->format = tango::formatText;
+            info->format = xd::formatText;
             return true;
         }
     }
@@ -392,17 +392,17 @@ bool FsDatabase::getSetFormat(const std::wstring& path,
     // use the file extension to determine the format
     if (0 == wcscasecmp(ext.c_str(), L"dbf"))
     {
-        info->format = tango::formatXbase;
+        info->format = xd::formatXbase;
         return true;
     }
     if (0 == wcscasecmp(ext.c_str(), L"icsv"))
     {
-        info->format = tango::formatTypedDelimitedText;
+        info->format = xd::formatTypedDelimitedText;
         return true;
     }
      else if (0 == wcscasecmp(ext.c_str(), L"csv"))
     {
-        info->format = tango::formatDelimitedText;
+        info->format = xd::formatDelimitedText;
         info->delimiters = L",";
         
         
@@ -422,18 +422,18 @@ bool FsDatabase::getSetFormat(const std::wstring& path,
         // guess anything different (happens sometimes with one-column csv's,
         // because there are no delimiters)
         
-        info->format = tango::formatDelimitedText;
+        info->format = xd::formatDelimitedText;
         return res;
     }
      else if (0 == wcscasecmp(ext.c_str(), L"tsv"))
     {
-        info->format = tango::formatDelimitedText;
+        info->format = xd::formatDelimitedText;
         info->delimiters = L"\t";
         return true;
     }
      else if (isTextFileExtension(ext))
     {
-        info->format = tango::formatText;
+        info->format = xd::formatText;
         return true;
     }
     
@@ -448,7 +448,7 @@ void FsDatabase::close()
 
 int FsDatabase::getDatabaseType()
 {
-    return tango::dbtypeFilesystem;
+    return xd::dbtypeFilesystem;
 }
 
 std::wstring FsDatabase::getActiveUid()
@@ -456,7 +456,7 @@ std::wstring FsDatabase::getActiveUid()
     return L"";
 }
 
-tango::IAttributesPtr FsDatabase::getAttributes()
+xd::IAttributesPtr FsDatabase::getAttributes()
 {
     return m_attr;
 }
@@ -482,7 +482,7 @@ bool FsDatabase::cleanup()
     return true;
 }
 
-tango::IJobPtr FsDatabase::createJob()
+xd::IJobPtr FsDatabase::createJob()
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
@@ -493,7 +493,7 @@ tango::IJobPtr FsDatabase::createJob()
     job->ref();
     m_jobs.push_back(job);
 
-    return static_cast<tango::IJob*>(job);
+    return static_cast<xd::IJob*>(job);
 }
 
 
@@ -708,24 +708,24 @@ bool FsDatabase::detectMountPoint(const std::wstring& path,
 
 
 bool FsDatabase::checkCircularMount(const std::wstring& path,
-                                    tango::IDatabasePtr remote_db, 
+                                    xd::IDatabasePtr remote_db, 
                                     const std::wstring remote_path)
 {
     // TODO: implement
     return false;
 }
                             
-tango::IDatabasePtr FsDatabase::lookupOrOpenMountDb(const std::wstring& cstr)
+xd::IDatabasePtr FsDatabase::lookupOrOpenMountDb(const std::wstring& cstr)
 {
     if (cstr.empty())
     {
-        return static_cast<tango::IDatabase*>(this);
+        return static_cast<xd::IDatabase*>(this);
     }
 
 
-    tango::IDatabasePtr db;
+    xd::IDatabasePtr db;
     
-    std::map<std::wstring, tango::IDatabasePtr>::iterator it;
+    std::map<std::wstring, xd::IDatabasePtr>::iterator it;
     it = m_mounted_dbs.find(cstr);
     if (it != m_mounted_dbs.end())
     {
@@ -740,12 +740,12 @@ tango::IDatabasePtr FsDatabase::lookupOrOpenMountDb(const std::wstring& cstr)
         {
             // tell the mount database to store its temporary files
             // in our temporary directory
-            tango::IAttributesPtr attr = db->getAttributes();
+            xd::IAttributesPtr attr = db->getAttributes();
             
             if (attr)
             {
-                attr->setStringAttribute(tango::dbattrTempDirectory, m_attr->getStringAttribute(tango::dbattrTempDirectory));
-                attr->setStringAttribute(tango::dbattrDefinitionDirectory, m_attr->getStringAttribute(tango::dbattrDefinitionDirectory));
+                attr->setStringAttribute(xd::dbattrTempDirectory, m_attr->getStringAttribute(xd::dbattrTempDirectory));
+                attr->setStringAttribute(xd::dbattrDefinitionDirectory, m_attr->getStringAttribute(xd::dbattrDefinitionDirectory));
             }
         }      
         
@@ -757,7 +757,7 @@ tango::IDatabasePtr FsDatabase::lookupOrOpenMountDb(const std::wstring& cstr)
 
 
 
-tango::IDatabasePtr FsDatabase::getMountDatabase(const std::wstring& path)
+xd::IDatabasePtr FsDatabase::getMountDatabase(const std::wstring& path)
 {
     std::wstring cstr, rpath;
     if (detectMountPoint(path, cstr, rpath))
@@ -877,10 +877,10 @@ bool FsDatabase::copyFile(const std::wstring& src_path,
     return true;
 }
 
-bool FsDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
+bool FsDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 {
-    tango::IIteratorPtr iter;
-    tango::IStructurePtr structure;
+    xd::IIteratorPtr iter;
+    xd::IStructurePtr structure;
 
     if (info->iter_input.isOk())
     {
@@ -889,7 +889,7 @@ bool FsDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
     }
      else
     {
-        tango::QueryParams qp;
+        xd::QueryParams qp;
         qp.from = info->input;
         qp.where = info->where;
         qp.order = info->order;
@@ -907,8 +907,8 @@ bool FsDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
     
     if (info->append)
     {
-        tango::FormatInfo fi;
-        fi.format = tango::formatNative;
+        xd::FormatInfo fi;
+        fi.format = xd::formatNative;
 
         IXdfsSetPtr output = openSetEx(info->output, fi);
         if (output.isNull())
@@ -925,7 +925,7 @@ bool FsDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
     std::wstring cstr, rpath;
     if (detectMountPoint(info->output, cstr, rpath))
     {
-        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
             return false;
 
@@ -933,7 +933,7 @@ bool FsDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
     }
      else
     {
-        xdcmnInsert(static_cast<tango::IDatabase*>(this), iter, info->output, info->where, info->limit, job);
+        xdcmnInsert(static_cast<xd::IDatabase*>(this), iter, info->output, info->where, info->limit, job);
     }
 
     return true;
@@ -984,7 +984,7 @@ bool FsDatabase::deleteFile(const std::wstring& _path)
         if (xf_get_file_exist(path))
             return xf_remove(path);
         
-        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
             return false;
 
@@ -1020,7 +1020,7 @@ bool FsDatabase::getFileExist(const std::wstring& path)
         if (rpath.empty() || rpath == L"/")
             return true;
             
-        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
             return false;
 
@@ -1045,11 +1045,11 @@ bool FsDatabase::getLocalFileExist(const std::wstring& path)
     return true;
 }
 
-class XdfsFileInfo : public tango::IFileInfo
+class XdfsFileInfo : public xd::IFileInfo
 {
     XCM_CLASS_NAME("xdnative.FileInfo")
     XCM_BEGIN_INTERFACE_MAP(XdfsFileInfo)
-        XCM_INTERFACE_ENTRY(tango::IFileInfo)
+        XCM_INTERFACE_ENTRY(xd::IFileInfo)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -1079,13 +1079,13 @@ public:
             switch (format)
             {
                 default:
-                case tango::formatNative:
-                case tango::formatXbase:
-                case tango::formatDelimitedText:
-                case tango::formatFixedLengthText:
-                    return tango::filetypeTable;
-                case tango::formatText:
-                    return tango::filetypeStream;
+                case xd::formatNative:
+                case xd::formatXbase:
+                case xd::formatDelimitedText:
+                case xd::formatFixedLengthText:
+                    return xd::filetypeTable;
+                case xd::formatText:
+                    return xd::filetypeStream;
             }
         }
         
@@ -1121,7 +1121,7 @@ public:
         return xf_get_file_size(phys_path);
     }
 
-    tango::rowpos_t getRowCount()
+    xd::rowpos_t getRowCount()
     {
         return row_count;
     }
@@ -1154,10 +1154,10 @@ public:
     bool is_mount;
     IFsDatabasePtr db;
     bool fetched_format;
-    tango::rowpos_t row_count;
+    xd::rowpos_t row_count;
 };
 
-tango::IFileInfoPtr FsDatabase::getFileInfo(const std::wstring& path)
+xd::IFileInfoPtr FsDatabase::getFileInfo(const std::wstring& path)
 {
     std::wstring phys_path = makeFullPath(path);
 
@@ -1171,27 +1171,27 @@ tango::IFileInfoPtr FsDatabase::getFileInfo(const std::wstring& path)
         {
             xdcommon::FileInfo* f = new xdcommon::FileInfo;
             f->name = kl::afterLast(path, L'/');
-            f->type = tango::filetypeFolder;
-            f->format = tango::formatNative;
+            f->type = xd::filetypeFolder;
+            f->format = xd::formatNative;
             f->is_mount = true;
-            return static_cast<tango::IFileInfo*>(f);
+            return static_cast<xd::IFileInfo*>(f);
         }
          else
         {
             std::wstring file_primary_key;
-            int file_type = tango::filetypeTable;
-            int file_format = tango::formatNative;
+            int file_type = xd::filetypeTable;
+            int file_format = xd::formatNative;
             int is_mount = -1;
             
             if (getLocalFileExist(path))
                 is_mount = 1;
                 
-            tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+            xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
             if (db.isOk())
             {
                 if (!checkCircularMount(path, db, rpath))
                 {
-                    tango::IFileInfoPtr file_info = db->getFileInfo(rpath);
+                    xd::IFileInfoPtr file_info = db->getFileInfo(rpath);
                     if (file_info.isOk())
                     {
                         file_type = file_info->getType();
@@ -1210,7 +1210,7 @@ tango::IFileInfoPtr FsDatabase::getFileInfo(const std::wstring& path)
             f->is_mount = (is_mount == 1 ? true : false);
             f->primary_key = file_primary_key;
             
-            return static_cast<tango::IFileInfo*>(f);
+            return static_cast<xd::IFileInfo*>(f);
         }
     }
 
@@ -1223,10 +1223,10 @@ tango::IFileInfoPtr FsDatabase::getFileInfo(const std::wstring& path)
         xdcommon::FileInfo* f = new xdcommon::FileInfo;
         f->name = kl::afterLast(phys_path, PATH_SEPARATOR_CHAR);
         kl::trim(f->name);
-        f->type = tango::filetypeFolder;
-        f->format = tango::formatNative;
+        f->type = xd::filetypeFolder;
+        f->format = xd::formatNative;
         
-        return static_cast<tango::IFileInfo*>(f);
+        return static_cast<xd::IFileInfo*>(f);
     }
      else
     {
@@ -1240,17 +1240,17 @@ tango::IFileInfoPtr FsDatabase::getFileInfo(const std::wstring& path)
             f->type = -1;  // auto-determine type
             // file info's format field is retrieved on demand
             
-            return static_cast<tango::IFileInfo*>(f);
+            return static_cast<xd::IFileInfo*>(f);
         }
     }
            
     return xcm::null;
 }
 
-tango::IFileInfoEnumPtr FsDatabase::getFolderInfo(const std::wstring& path)
+xd::IFileInfoEnumPtr FsDatabase::getFolderInfo(const std::wstring& path)
 {
-    xcm::IVectorImpl<tango::IFileInfoPtr>* retval;
-    retval = new xcm::IVectorImpl<tango::IFileInfoPtr>;
+    xcm::IVectorImpl<xd::IFileInfoPtr>* retval;
+    retval = new xcm::IVectorImpl<xd::IFileInfoPtr>;
 
 
     // detect if the specified folder is a mount point
@@ -1259,7 +1259,7 @@ tango::IFileInfoEnumPtr FsDatabase::getFolderInfo(const std::wstring& path)
     
     if (detectMountPoint(path, cstr, rpath))
     {
-        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
             return retval;
             
@@ -1295,8 +1295,8 @@ tango::IFileInfoEnumPtr FsDatabase::getFolderInfo(const std::wstring& path)
         {
             xdcommon::FileInfo* f = new xdcommon::FileInfo;
             f->name = *it;
-            f->type = tango::filetypeFolder;
-            f->format = tango::formatNative;
+            f->type = xd::filetypeFolder;
+            f->format = xd::formatNative;
             retval->append(f);
         }
         
@@ -1320,8 +1320,8 @@ tango::IFileInfoEnumPtr FsDatabase::getFolderInfo(const std::wstring& path)
             xdcommon::FileInfo* f = new xdcommon::FileInfo;
             f->name = info.m_name;
             kl::trim(f->name);
-            f->type = tango::filetypeFolder;
-            f->format = tango::formatNative;
+            f->type = xd::filetypeFolder;
+            f->format = xd::formatNative;
             retval->append(f);
         }
          else if (info.m_type == xfFileTypeNormal)
@@ -1333,7 +1333,7 @@ tango::IFileInfoEnumPtr FsDatabase::getFolderInfo(const std::wstring& path)
                 if (mount_path.length() == 0 || mount_path[mount_path.length()-1] != '/')
                     mount_path += L"/";
                 mount_path += info.m_name;
-                tango::IFileInfoPtr file_info = getFileInfo(mount_path);
+                xd::IFileInfoPtr file_info = getFileInfo(mount_path);
                 if (file_info)
                     retval->append(file_info);
                 continue;
@@ -1363,7 +1363,7 @@ tango::IFileInfoEnumPtr FsDatabase::getFolderInfo(const std::wstring& path)
     return retval;
 }
 
-tango::IStreamPtr FsDatabase::openStream(const std::wstring& path)
+xd::IStreamPtr FsDatabase::openStream(const std::wstring& path)
 {
     FileStream* stream = new FileStream;
     
@@ -1375,11 +1375,11 @@ tango::IStreamPtr FsDatabase::openStream(const std::wstring& path)
         return xcm::null;
     }
     
-    return static_cast<tango::IStream*>(stream);
+    return static_cast<xd::IStream*>(stream);
 }
 
 
-static IXdfsSetPtr openXbaseSet(tango::IDatabasePtr db,
+static IXdfsSetPtr openXbaseSet(xd::IDatabasePtr db,
                                    const std::wstring& path)
 {
     // we need to manually protect the ref count because
@@ -1387,7 +1387,7 @@ static IXdfsSetPtr openXbaseSet(tango::IDatabasePtr db,
     
     XbaseSet* set = new XbaseSet;
     set->ref();
-    if (!set->init(static_cast<tango::IDatabase*>(db), path))
+    if (!set->init(static_cast<xd::IDatabase*>(db), path))
     {
         set->unref();
         return xcm::null;
@@ -1398,7 +1398,7 @@ static IXdfsSetPtr openXbaseSet(tango::IDatabasePtr db,
     return retval;
 }
 
-static IXdfsSetPtr openFixedLengthTextSet(tango::IDatabasePtr db,
+static IXdfsSetPtr openFixedLengthTextSet(xd::IDatabasePtr db,
                                              const std::wstring& path)
 {
     // we need to manually protect the ref count because
@@ -1406,7 +1406,7 @@ static IXdfsSetPtr openFixedLengthTextSet(tango::IDatabasePtr db,
     
     FixedLengthTextSet* set = new FixedLengthTextSet;
     set->ref();
-    if (!set->init(static_cast<tango::IDatabase*>(db), path))
+    if (!set->init(static_cast<xd::IDatabase*>(db), path))
     {
         set->unref();
         return xcm::null;
@@ -1437,7 +1437,7 @@ static IXdfsSetPtr openDelimitedTextSet(FsDatabase* db,
 }
 
 
-IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, const tango::FormatInfo& fi)
+IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatInfo& fi)
 {
     // check for ptr sets
     if (path.substr(0, 12) == L"/.temp/.ptr/")
@@ -1460,7 +1460,7 @@ IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, const tango::FormatI
 
     // if the native format was passed, have the database do it's best to
     // determine the format from the text definition or the file extension
-    if (format == tango::formatNative)
+    if (format == xd::formatNative)
     {
         FsSetFormatInfo info;
         getSetFormat(path, &info, FsSetFormatInfo::maskFormat | FsSetFormatInfo::maskDelimiters);
@@ -1473,35 +1473,35 @@ IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, const tango::FormatI
     IXdfsSetPtr set;
     
     // open the set in the appropriate format
-    if (format == tango::formatXbase) // dbf
+    if (format == xd::formatXbase) // dbf
     {
         set = openXbaseSet(this, phys_path);
         if (set.isNull())
             return xcm::null;
     }
-     else if (format == tango::formatTypedDelimitedText) // icsv
+     else if (format == xd::formatTypedDelimitedText) // icsv
     {
         set = openDelimitedTextSet(this, phys_path);
         if (set.isNull())
             return xcm::null;
     }
-     else if (format == tango::formatDelimitedText) // csv or tsv
+     else if (format == xd::formatDelimitedText) // csv or tsv
     {
         set = openDelimitedTextSet(this, phys_path);
         if (set.isNull())
             return xcm::null;
 
-        if (fi.format == tango::formatNative)
+        if (fi.format == xd::formatNative)
         {
-            tango::IDelimitedTextSetPtr tset = set;
+            xd::IDelimitedTextSetPtr tset = set;
             
             // default format specified
             if (delimiters != tset->getDelimiters())
                 tset->setDelimiters(fi.delimiters, true);
         }
-         else if (fi.format == tango::formatDelimitedText)
+         else if (fi.format == xd::formatDelimitedText)
         {
-            tango::IDelimitedTextSetPtr tset = set;
+            xd::IDelimitedTextSetPtr tset = set;
             bool need_refresh = false;
 
             if (fi.delimiters != tset->getDelimiters())
@@ -1535,7 +1535,7 @@ IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, const tango::FormatI
         }
 
     }       
-     else if (format == tango::formatFixedLengthText) // fixed length
+     else if (format == xd::formatFixedLengthText) // fixed length
     {
         set = openFixedLengthTextSet(this, phys_path);
         if (set.isNull())
@@ -1546,7 +1546,7 @@ IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, const tango::FormatI
 }
 
 
-tango::IIteratorPtr FsDatabase::query(const tango::QueryParams& qp)
+xd::IIteratorPtr FsDatabase::query(const xd::QueryParams& qp)
 {
     IXdsqlTablePtr tbl = openSetEx(qp.from, qp.format);
     if (tbl.isNull())
@@ -1556,31 +1556,31 @@ tango::IIteratorPtr FsDatabase::query(const tango::QueryParams& qp)
 }
 
 
-tango::IStructurePtr FsDatabase::createStructure()
+xd::IStructurePtr FsDatabase::createStructure()
 {
     Structure* s = new Structure;
-    return static_cast<tango::IStructure*>(s);
+    return static_cast<xd::IStructure*>(s);
 }
 
 static int tangoToDelimitedTextEncoding(int tango_encoding)
 {
     switch (tango_encoding)
     {
-        case tango::encodingASCII:
-        case tango::encodingISO8859_1:
+        case xd::encodingASCII:
+        case xd::encodingISO8859_1:
             return DelimitedTextFile::encodingISO88591;
             break;
                 
-        case tango::encodingUTF8:
+        case xd::encodingUTF8:
             return DelimitedTextFile::encodingUTF8;
             break;
             
-        case tango::encodingUCS2:
-        case tango::encodingUTF16:
+        case xd::encodingUCS2:
+        case xd::encodingUTF16:
             return DelimitedTextFile::encodingUTF16LE;
             break;
                 
-        case tango::encodingUTF16BE:
+        case xd::encodingUTF16BE:
             return DelimitedTextFile::encodingUTF16BE;
             break;
             
@@ -1591,12 +1591,12 @@ static int tangoToDelimitedTextEncoding(int tango_encoding)
 
 
 bool FsDatabase::createTable(const std::wstring& _path,
-                             tango::IStructurePtr struct_config,
-                             tango::FormatInfo* format_info)
+                             xd::IStructurePtr struct_config,
+                             xd::FormatInfo* format_info)
 {
     size_t i, col_count = struct_config->getColumnCount();
 
-    int format = tango::formatNative;
+    int format = xd::formatNative;
     if (format_info)
         format = format_info->format;
     
@@ -1634,7 +1634,7 @@ bool FsDatabase::createTable(const std::wstring& _path,
         }
     }
 
-    if (format == tango::formatNative)
+    if (format == xd::formatNative)
     {
         // look for an extension to yield some guidance as to which
         // file format to use by default -- if no extension, assume csv
@@ -1645,15 +1645,15 @@ bool FsDatabase::createTable(const std::wstring& _path,
         kl::makeLower(ext);
 
         // default to a csv
-        format = tango::formatDelimitedText;
+        format = xd::formatDelimitedText;
 
         if (ext == L"icsv")
-            format = tango::formatTypedDelimitedText;
+            format = xd::formatTypedDelimitedText;
         else if (ext == L"dbf")
-            format = tango::formatXbase;
+            format = xd::formatXbase;
     }
     
-    if (format == tango::formatXbase)
+    if (format == xd::formatXbase)
     {
         // create an xbase file with no rows in it
         
@@ -1662,7 +1662,7 @@ bool FsDatabase::createTable(const std::wstring& _path,
         // create vector of XbaseFields
         for (i = 0; i < col_count; ++i)
         {
-            tango::IColumnInfoPtr col_info;
+            xd::IColumnInfoPtr col_info;
             col_info = struct_config->getColumnInfoByIdx(i);
 
             XbaseField f;
@@ -1683,7 +1683,7 @@ bool FsDatabase::createTable(const std::wstring& _path,
         
         return xf_get_file_exist(path);
     }
-     else if (format == tango::formatTypedDelimitedText)
+     else if (format == xd::formatTypedDelimitedText)
     {
         DelimitedTextFile file;
 
@@ -1694,9 +1694,9 @@ bool FsDatabase::createTable(const std::wstring& _path,
         // create vector of fields
         for (i = 0; i < col_count; ++i)
         {
-            tango::IColumnInfoPtr col_info;
+            xd::IColumnInfoPtr col_info;
             col_info = struct_config->getColumnInfoByIdx(i);
-            if (col_info->getType() == tango::typeWideCharacter)
+            if (col_info->getType() == xd::typeWideCharacter)
                 unicode_data_found = true;
             
             if (!col_info->getCalculated())
@@ -1707,30 +1707,30 @@ bool FsDatabase::createTable(const std::wstring& _path,
                 switch (col_info->getType())
                 {
                     default:
-                    case tango::typeCharacter:
-                    case tango::typeWideCharacter:
+                    case xd::typeCharacter:
+                    case xd::typeWideCharacter:
                     {
                         wchar_t info[255];
                         swprintf(info, 255, L"C %d", col_info->getWidth());
                         fld += info;
                         break;
                     }
-                    case tango::typeNumeric:
-                    case tango::typeDouble:
-                    case tango::typeInteger:
+                    case xd::typeNumeric:
+                    case xd::typeDouble:
+                    case xd::typeInteger:
                     {
                         wchar_t info[255];
                         swprintf(info, 255, L"N %d %d", col_info->getWidth(), col_info->getScale());
                         fld += info;
                         break;
                     }
-                    case tango::typeDate:
+                    case xd::typeDate:
                         fld += L"D";
                         break;
-                    case tango::typeDateTime:
+                    case xd::typeDateTime:
                         fld += L"T";
                         break;
-                    case tango::typeBoolean:
+                    case xd::typeBoolean:
                         fld += L"B";
                         break;
                 }
@@ -1743,16 +1743,16 @@ bool FsDatabase::createTable(const std::wstring& _path,
         
         // determine the encoding we will use in the icsv
 
-        int tango_encoding = tango::encodingUndefined;
+        int tango_encoding = xd::encodingUndefined;
         if (format_info)
             tango_encoding = format_info->encoding;
         
-        if (tango_encoding == tango::encodingUndefined)
+        if (tango_encoding == xd::encodingUndefined)
         {
             if (unicode_data_found)
-                tango_encoding = tango::encodingUTF8;
+                tango_encoding = xd::encodingUTF8;
                  else
-                tango_encoding = tango::encodingISO8859_1;
+                tango_encoding = xd::encodingISO8859_1;
         }
 
         int csv_encoding = tangoToDelimitedTextEncoding(tango_encoding);
@@ -1770,7 +1770,7 @@ bool FsDatabase::createTable(const std::wstring& _path,
 
         return xf_get_file_exist(path);
     }
-     else if (format == tango::formatDelimitedText)
+     else if (format == xd::formatDelimitedText)
     {
         // create the text-delimited file
         DelimitedTextFile file;
@@ -1812,9 +1812,9 @@ bool FsDatabase::createTable(const std::wstring& _path,
         // create vector of fields
         for (i = 0; i < col_count; ++i)
         {
-            tango::IColumnInfoPtr col_info;
+            xd::IColumnInfoPtr col_info;
             col_info = struct_config->getColumnInfoByIdx(i);
-            if (col_info->getType() == tango::typeWideCharacter)
+            if (col_info->getType() == xd::typeWideCharacter)
                 unicode_data_found = true;
             
             if (!col_info->getCalculated())
@@ -1824,16 +1824,16 @@ bool FsDatabase::createTable(const std::wstring& _path,
         
         // determine the encoding we will use in the csv
 
-        int tango_encoding = tango::encodingUndefined;
+        int tango_encoding = xd::encodingUndefined;
         if (format_info)
             tango_encoding = format_info->encoding;
         
-        if (tango_encoding == tango::encodingUndefined)
+        if (tango_encoding == xd::encodingUndefined)
         {
             if (unicode_data_found)
-                tango_encoding = tango::encodingUTF8;
+                tango_encoding = xd::encodingUTF8;
                  else
-                tango_encoding = tango::encodingISO8859_1;
+                tango_encoding = xd::encodingISO8859_1;
         }
 
         int csv_encoding = tangoToDelimitedTextEncoding(tango_encoding);
@@ -1885,7 +1885,7 @@ bool FsDatabase::createTable(const std::wstring& _path,
 
         return true;
     }
-     else if (format == tango::formatFixedLengthText)
+     else if (format == xd::formatFixedLengthText)
     {
         // create the fixed length file
         xf_file_t file = xf_open(path, xfCreate, xfReadWrite, xfShareNone);
@@ -1939,10 +1939,10 @@ bool FsDatabase::createStream(const std::wstring& path, const std::wstring& mime
 
 
 
-tango::IRowInserterPtr FsDatabase::bulkInsert(const std::wstring& path)
+xd::IRowInserterPtr FsDatabase::bulkInsert(const std::wstring& path)
 {
-    tango::FormatInfo fi;
-    fi.format = tango::formatNative;
+    xd::FormatInfo fi;
+    fi.format = xd::formatNative;
 
     IXdfsSetPtr set = openSetEx(path, fi);
     if (set.isNull())
@@ -1951,10 +1951,10 @@ tango::IRowInserterPtr FsDatabase::bulkInsert(const std::wstring& path)
     return set->getRowInserter();
 }
 
-tango::IStructurePtr FsDatabase::describeTable(const std::wstring& path)
+xd::IStructurePtr FsDatabase::describeTable(const std::wstring& path)
 {
-    tango::FormatInfo fi;
-    fi.format = tango::formatNative;
+    xd::FormatInfo fi;
+    fi.format = xd::formatNative;
 
     IXdsqlTablePtr tbl = openSetEx(path, fi);
     if (tbl.isNull())
@@ -1964,8 +1964,8 @@ tango::IStructurePtr FsDatabase::describeTable(const std::wstring& path)
 }
 
 bool FsDatabase::modifyStructure(const std::wstring& path,
-                                 tango::IStructurePtr struct_config,
-                                 tango::IJob* job)
+                                 xd::IStructurePtr struct_config,
+                                 xd::IJob* job)
 {
     return false;
 }
@@ -1974,26 +1974,26 @@ bool FsDatabase::modifyStructure(const std::wstring& path,
 bool FsDatabase::execute(const std::wstring& command,
                          unsigned int flags,
                          xcm::IObjectPtr& result,
-                         tango::IJob* job)
+                         xd::IJob* job)
 {
     m_error.clearError();
     result.clear();
 
-    return doSQL(static_cast<tango::IDatabase*>(this),
+    return doSQL(static_cast<xd::IDatabase*>(this),
                  command, flags, result, m_error, job);
 }
 
-bool FsDatabase::groupQuery(tango::GroupQueryParams* info, tango::IJob* job)
+bool FsDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
 {
     return false;
 }
 
 
 
-tango::IIndexInfoPtr FsDatabase::createIndex(const std::wstring& path,
+xd::IIndexInfoPtr FsDatabase::createIndex(const std::wstring& path,
                                              const std::wstring& name,
                                              const std::wstring& expr,
-                                             tango::IJob* job)
+                                             xd::IJob* job)
 {
     return xcm::null;
 }
@@ -2014,10 +2014,10 @@ bool FsDatabase::deleteIndex(const std::wstring& path,
 }
 
 
-tango::IIndexInfoEnumPtr FsDatabase::getIndexEnum(const std::wstring& path)
+xd::IIndexInfoEnumPtr FsDatabase::getIndexEnum(const std::wstring& path)
 {
-    xcm::IVectorImpl<tango::IIndexInfoPtr>* vec;
-    vec = new xcm::IVectorImpl<tango::IIndexInfoPtr>;
+    xcm::IVectorImpl<xd::IIndexInfoPtr>* vec;
+    vec = new xcm::IVectorImpl<xd::IIndexInfoPtr>;
 
     return vec;
 }

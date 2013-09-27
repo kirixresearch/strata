@@ -184,7 +184,7 @@ public:
             case typeDate:
             case typeDateTime:
                 {
-                    tango::datetime_t dt, d, t;
+                    xd::datetime_t dt, d, t;
                     dt = m_model->getDateTime(idx, m_func);
                     d = dt >> 32;
                     t = dt & 0xffffffff;
@@ -338,7 +338,7 @@ bool CellExpression::getResult(wxString& result)
 
         // this line adds standard database functions to the expression parser
         // (for example SUBSTR())
-        tango::bindExprParser((void*)m_expr_parser);
+        xd::bindExprParser((void*)m_expr_parser);
         
         if (m_parsehook_func != NULL && m_parsehook_param != NULL)
         {
@@ -1220,7 +1220,7 @@ void TangoModel::execute(bool block)
         job->runJob();
         job->runPostJob();
 
-        tango::IIteratorPtr iter = job->getResultObject();
+        xd::IIteratorPtr iter = job->getResultObject();
         setIterator(iter);
     }
 }
@@ -1326,11 +1326,11 @@ wxString TangoModel::getString(int col_idx, int function)
     {
         default:
 
-        case tango::typeCharacter:
+        case xd::typeCharacter:
             value = m_iter->getString(m_columns[col_idx]->m_handle);
             break;
 
-        case tango::typeWideCharacter:
+        case xd::typeWideCharacter:
             value = m_iter->getWideString(m_columns[col_idx]->m_handle);
             break;
 
@@ -1354,11 +1354,11 @@ wxString TangoModel::getString(int col_idx, int function)
         {
             default:
 
-            case tango::typeCharacter:
+            case xd::typeCharacter:
                 new_value = m_iter->getString(m_columns[col_idx]->m_handle);
                 break;
 
-            case tango::typeWideCharacter:
+            case xd::typeWideCharacter:
                 new_value = m_iter->getWideString(m_columns[col_idx]->m_handle);
                 break;
         }
@@ -1389,10 +1389,10 @@ wxString TangoModel::getString(int col_idx, int function)
     return value;
 }
 
-tango::DateTime TangoModel::getDateTime(int col_idx, int function)
+xd::DateTime TangoModel::getDateTime(int col_idx, int function)
 {
     // used throughout
-    tango::DateTime value;
+    xd::DateTime value;
 
     // if we don't have an iterator, return a blank date
     if (!m_iter)
@@ -1411,8 +1411,8 @@ tango::DateTime TangoModel::getDateTime(int col_idx, int function)
     {
         default:
 
-        case tango::typeDate:
-        case tango::typeDateTime:
+        case xd::typeDate:
+        case xd::typeDateTime:
             value = m_iter->getDateTime(m_columns[col_idx]->m_handle);
             break;
 
@@ -1436,7 +1436,7 @@ tango::DateTime TangoModel::getDateTime(int col_idx, int function)
     }
 
     // find the function value
-    tango::DateTime new_value;
+    xd::DateTime new_value;
     while (!eog())
     {
         new_value = m_iter->getDateTime(m_columns[col_idx]->m_handle);
@@ -1475,7 +1475,7 @@ double TangoModel::getDouble(int col_idx, int function)
     int col_type = m_columns[col_idx]->m_tango_type;
 
     // if the type is not double or numeric, return 0
-    if (col_type != tango::typeDouble && col_type != tango::typeNumeric)
+    if (col_type != xd::typeDouble && col_type != xd::typeNumeric)
         return 0.0f;
 
     // find the value
@@ -1561,7 +1561,7 @@ int TangoModel::getInteger(int col_idx, int function)
     int col_type = m_columns[col_idx]->m_tango_type;
 
     // if the type is not integer, return 0
-    if (col_type != tango::typeInteger)
+    if (col_type != xd::typeInteger)
         return 0;
 
     // find the value
@@ -1647,7 +1647,7 @@ bool TangoModel::getBoolean(int col_idx, int function)
     int col_type = m_columns[col_idx]->m_tango_type;
 
     // if the type is not boolean, return false
-    if (col_type != tango::typeBoolean)
+    if (col_type != xd::typeBoolean)
         return false;
 
     // find the value
@@ -1702,7 +1702,7 @@ void TangoModel::onQueryJobFinished(jobs::IJobPtr job)
     if (job->getJobInfo()->getState() != jobs::jobStateFinished)
         return;
 
-    tango::IIteratorPtr iter = job->getResultObject();
+    xd::IIteratorPtr iter = job->getResultObject();
     setIterator(iter);
 
     // fire a signal indicating that the data has been loaded
@@ -1716,7 +1716,7 @@ void TangoModel::onQueryJobFinished(jobs::IJobPtr job)
     dispatchEvent(notify_evt);
 }
 
-void TangoModel::setIterator(tango::IIterator* it)
+void TangoModel::setIterator(xd::IIterator* it)
 {
     // reset state variables
     m_group_label = PROP_REPORT_DETAIL;
@@ -1738,11 +1738,11 @@ void TangoModel::setIterator(tango::IIterator* it)
         m_iter = it;
         m_iter->ref();
 
-        if (m_iter->getIteratorFlags() & tango::ifForwardOnly)
+        if (m_iter->getIteratorFlags() & xd::ifForwardOnly)
         {
             // if the iterator is forward-only, try to turn on
             // tango's backward scroll row cache
-            m_iter->setIteratorFlags(tango::ifReverseRowCache, tango::ifReverseRowCache);
+            m_iter->setIteratorFlags(xd::ifReverseRowCache, xd::ifReverseRowCache);
         }
 
         refresh();
@@ -1855,13 +1855,13 @@ void TangoModel::clear()
 void TangoModel::refresh()
 {
     // refresh columns
-    tango::IStructurePtr structure = m_iter->getStructure();
+    xd::IStructurePtr structure = m_iter->getStructure();
     int col_count = structure->getColumnCount();
     int i;
 
     m_columns.resize(col_count, NULL);
 
-    tango::IColumnInfoPtr spCol;
+    xd::IColumnInfoPtr spCol;
     for (i = 0; i < col_count; ++i)
     {
         m_columns[i] = new ModelColumn;
@@ -1874,14 +1874,14 @@ void TangoModel::refresh()
 
         switch (m_columns[i]->m_tango_type)
         {
-            case tango::typeCharacter:     m_columns[i]->m_type = typeCharacter; break;
-            case tango::typeWideCharacter: m_columns[i]->m_type = typeCharacter; break;
-            case tango::typeNumeric:       m_columns[i]->m_type = typeDouble;    break;
-            case tango::typeDouble:        m_columns[i]->m_type = typeDouble;    break;
-            case tango::typeInteger:       m_columns[i]->m_type = typeInteger;   break;
-            case tango::typeDate:          m_columns[i]->m_type = typeDate;      break;
-            case tango::typeDateTime:      m_columns[i]->m_type = typeDateTime;  break;
-            case tango::typeBoolean:       m_columns[i]->m_type = typeBoolean;   break;
+            case xd::typeCharacter:     m_columns[i]->m_type = typeCharacter; break;
+            case xd::typeWideCharacter: m_columns[i]->m_type = typeCharacter; break;
+            case xd::typeNumeric:       m_columns[i]->m_type = typeDouble;    break;
+            case xd::typeDouble:        m_columns[i]->m_type = typeDouble;    break;
+            case xd::typeInteger:       m_columns[i]->m_type = typeInteger;   break;
+            case xd::typeDate:          m_columns[i]->m_type = typeDate;      break;
+            case xd::typeDateTime:      m_columns[i]->m_type = typeDateTime;  break;
+            case xd::typeBoolean:       m_columns[i]->m_type = typeBoolean;   break;
         }
     }
     

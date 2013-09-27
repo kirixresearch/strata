@@ -77,7 +77,7 @@ private:
 private:
 
     IDocumentSitePtr m_doc_site;
-    tango::IStructurePtr m_structure;
+    xd::IStructurePtr m_structure;
     
     wxString m_path;
     wxString m_where_condition;

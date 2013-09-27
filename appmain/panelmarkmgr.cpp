@@ -442,7 +442,7 @@ void MarkMgrPanel::editMark(int mark_idx)
     if (mark.isNull())
         return;
     
-    tango::IIteratorPtr iter = tabledoc->getIterator();
+    xd::IIteratorPtr iter = tabledoc->getIterator();
     if (iter.isNull())
         return;
     
@@ -458,7 +458,7 @@ void MarkMgrPanel::editMark(int mark_idx)
     m_builder = new DlgExprBuilder(this, caption);
     m_builder->SetMinSize(wxSize(560, 300));
     m_builder->SetMaxSize(wxSize(680, 420));
-    m_builder->setTypeOnly(tango::typeBoolean);
+    m_builder->setTypeOnly(xd::typeBoolean);
     m_builder->sigExprEditFinished.connect(this, &MarkMgrPanel::onExprEditFinished);
     m_builder->sigExprEditCancelled.connect(this, &MarkMgrPanel::onExprEditCancelled);
     m_builder->setStructure(iter->getStructure());

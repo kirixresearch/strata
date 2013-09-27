@@ -298,13 +298,13 @@ void DbComboPopup::setRootFolder(const wxString& path, const wxString& root_labe
     wxString label = root_label;
     if (label.IsEmpty())
     {
-        tango::IDatabasePtr db = g_app->getDatabase();
-        tango::IAttributesPtr attr = db->getAttributes();
+        xd::IDatabasePtr db = g_app->getDatabase();
+        xd::IAttributesPtr attr = db->getAttributes();
         
         wxString project_name;
         
         if (attr)
-            project_name = attr->getStringAttribute(tango::dbattrDatabaseName);
+            project_name = attr->getStringAttribute(xd::dbattrDatabaseName);
 
         if (project_name.Length() > 0)
             label = wxString::Format(_("Project '%s'"), project_name.c_str());

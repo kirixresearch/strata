@@ -42,15 +42,15 @@ XbaseSet::~XbaseSet()
         m_file.closeFile();
 }
 
-bool XbaseSet::init(tango::IDatabasePtr db,
+bool XbaseSet::init(xd::IDatabasePtr db,
                     const std::wstring& filename)
 {
     if (!m_file.openFile(filename))
         return false;
 
     // set the set info filename
-    tango::IAttributesPtr attr = db->getAttributes();
-    std::wstring definition_path = attr->getStringAttribute(tango::dbattrDefinitionDirectory);
+    xd::IAttributesPtr attr = db->getAttributes();
+    std::wstring definition_path = attr->getStringAttribute(xd::dbattrDefinitionDirectory);
     
     setConfigFilePath(ExtFileInfo::getConfigFilenameFromPath(definition_path, filename));
 
@@ -76,10 +76,10 @@ std::wstring XbaseSet::getSetId()
     return kl::md5str(set_id);
 }
 
-tango::IStructurePtr XbaseSet::getStructure()
+xd::IStructurePtr XbaseSet::getStructure()
 {
-    // create new tango::IStructure
-    tango::IStructurePtr s = static_cast<tango::IStructure*>(new Structure);
+    // create new xd::IStructure
+    xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
     IStructureInternalPtr struct_int = s;
     
     // if we can't open the file, return an empty structure
@@ -93,7 +93,7 @@ tango::IStructurePtr XbaseSet::getStructure()
     std::vector<XbaseField>::iterator it;
     for (it = fields.begin(); it != fields.end(); ++it)
     {
-        tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
         struct_int->addColumn(col);
 
         col->setName(kl::towstring(it->name));
@@ -105,12 +105,12 @@ tango::IStructurePtr XbaseSet::getStructure()
         // handle column information for specific types (currency, etc.)
         if (it->type == 'Y')    // xbase currency type
             col->setWidth(18);
-        if (col->getType() == tango::typeDouble)
+        if (col->getType() == xd::typeDouble)
             col->setWidth(8);
-        if (col->getType() == tango::typeNumeric &&
-            col->getWidth() > tango::max_numeric_width)
+        if (col->getType() == xd::typeNumeric &&
+            col->getWidth() > xd::max_numeric_width)
         {
-            col->setWidth(tango::max_numeric_width);
+            col->setWidth(xd::max_numeric_width);
         }
     }
 
@@ -118,24 +118,24 @@ tango::IStructurePtr XbaseSet::getStructure()
     return s;
 }
 
-bool XbaseSet::modifyStructure(tango::IStructure* struct_config,
-                               tango::IJob* job)
+bool XbaseSet::modifyStructure(xd::IStructure* struct_config,
+                               xd::IJob* job)
 {
     bool done_flag = false;
     CommonBaseSet::modifyStructure(struct_config, &done_flag);
     return true;
 }
 
-tango::IRowInserterPtr XbaseSet::getRowInserter()
+xd::IRowInserterPtr XbaseSet::getRowInserter()
 {
     XbaseRowInserter* inserter = new XbaseRowInserter(this);
-    return static_cast<tango::IRowInserter*>(inserter);
+    return static_cast<xd::IRowInserter*>(inserter);
 }
 
 
-tango::IIteratorPtr XbaseSet::createIterator(const std::wstring& columns,
+xd::IIteratorPtr XbaseSet::createIterator(const std::wstring& columns,
                                              const std::wstring& order,
-                                             tango::IJob* job)
+                                             xd::IJob* job)
 {
     if (order.empty())
     {
@@ -149,7 +149,7 @@ tango::IIteratorPtr XbaseSet::createIterator(const std::wstring& columns,
         }
         
         iter->goFirst();
-        return static_cast<tango::IIterator*>(iter);
+        return static_cast<xd::IIterator*>(iter);
     }
     
     // find out where the database should put temporary files
@@ -179,7 +179,7 @@ tango::IIteratorPtr XbaseSet::createIterator(const std::wstring& columns,
         return xcm::null;
     }
 
-    tango::IIteratorPtr data_iter = createIterator(columns, L"", NULL);
+    xd::IIteratorPtr data_iter = createIterator(columns, L"", NULL);
     return createIteratorFromIndex(data_iter,
                                    idx,
                                    columns,
@@ -187,13 +187,13 @@ tango::IIteratorPtr XbaseSet::createIterator(const std::wstring& columns,
                                    getObjectPath());
 }
 
-tango::rowpos_t XbaseSet::getRowCount()
+xd::rowpos_t XbaseSet::getRowCount()
 {
-    return (tango::rowpos_t)m_file.getRowCount();
+    return (xd::rowpos_t)m_file.getRowCount();
 }
 
-bool XbaseSet::updateRow(tango::rowid_t rowid,
-                         tango::ColumnUpdateInfo* info,
+bool XbaseSet::updateRow(xd::rowid_t rowid,
+                         xd::ColumnUpdateInfo* info,
                          size_t info_size)
 {
     if (!m_file.isOpen())
@@ -210,7 +210,7 @@ bool XbaseSet::updateRow(tango::rowid_t rowid,
     size_t i;
     for (i = 0; i < info_size; ++i)
     {
-        tango::ColumnUpdateInfo* colp = &(info[i]);
+        xd::ColumnUpdateInfo* colp = &(info[i]);
         XbaseDataAccessInfo* dai = (XbaseDataAccessInfo*)colp->handle;
         int col_idx = dai->ordinal;
         
@@ -222,31 +222,31 @@ bool XbaseSet::updateRow(tango::rowid_t rowid,
         
         switch (dai->type)
         {
-            case tango::typeCharacter:
+            case xd::typeCharacter:
             {
                 m_file.putString(col_idx, colp->str_val);
                 break;
             }
-            case tango::typeWideCharacter:
+            case xd::typeWideCharacter:
             {
                 m_file.putString(col_idx, kl::tostring(colp->wstr_val));
                 break;
             }
-            case tango::typeNumeric:
-            case tango::typeDouble:
+            case xd::typeNumeric:
+            case xd::typeDouble:
             {
                 m_file.putDouble(col_idx, colp->dbl_val);
                 break;
             }
-            case tango::typeInteger:
+            case xd::typeInteger:
             {
                 m_file.putInteger(col_idx, colp->int_val);
                 break;
             }
-            case tango::typeDate:
-            case tango::typeDateTime:
+            case xd::typeDate:
+            case xd::typeDateTime:
             {
-                tango::DateTime dt = colp->date_val;
+                xd::DateTime dt = colp->date_val;
                 XbaseDate value(dt.getYear(),
                                 dt.getMonth(),
                                 dt.getDay(),
@@ -257,7 +257,7 @@ bool XbaseSet::updateRow(tango::rowid_t rowid,
                 m_file.putDateTime(col_idx, value);
                 break;
             }
-            case tango::typeBoolean:
+            case xd::typeBoolean:
             {
                 m_file.putBoolean(col_idx, colp->bool_val);
                 break;
@@ -293,10 +293,10 @@ XbaseRowInserter::~XbaseRowInserter()
     m_set->unref();
 }
 
-tango::objhandle_t XbaseRowInserter::getHandle(const std::wstring& column_name)
+xd::objhandle_t XbaseRowInserter::getHandle(const std::wstring& column_name)
 {
     if (!m_inserting)
-        return (tango::objhandle_t)0;
+        return (xd::objhandle_t)0;
 
 
     std::string asc_col_name = kl::tostring(column_name);
@@ -306,14 +306,14 @@ tango::objhandle_t XbaseRowInserter::getHandle(const std::wstring& column_name)
     {
         if (strcasecmp(asc_col_name.c_str(), (*it)->name.c_str()) == 0)
         {
-            return (tango::objhandle_t)(*it);
+            return (xd::objhandle_t)(*it);
         }
     }
 
-    return (tango::objhandle_t)0;
+    return (xd::objhandle_t)0;
 }
 
-tango::IColumnInfoPtr XbaseRowInserter::getInfo(tango::objhandle_t column_handle)
+xd::IColumnInfoPtr XbaseRowInserter::getInfo(xd::objhandle_t column_handle)
 {
     XbaseField* f = (XbaseField*)column_handle;
     if (!f)
@@ -321,8 +321,8 @@ tango::IColumnInfoPtr XbaseRowInserter::getInfo(tango::objhandle_t column_handle
         return xcm::null;
     }
 
-    // create new tango::IColumnInfoPtr
-    tango::IColumnInfoPtr col_info = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+    // create new xd::IColumnInfoPtr
+    xd::IColumnInfoPtr col_info = static_cast<xd::IColumnInfo*>(new ColumnInfo);
     col_info->setName(kl::towstring(f->name));
     col_info->setType(xbase2tangoType(f->type));
     col_info->setWidth(f->width);
@@ -331,7 +331,7 @@ tango::IColumnInfoPtr XbaseRowInserter::getInfo(tango::objhandle_t column_handle
     return col_info;
 }
 
-bool XbaseRowInserter::putRawPtr(tango::objhandle_t column_handle,
+bool XbaseRowInserter::putRawPtr(xd::objhandle_t column_handle,
                                  const unsigned char* value,
                                  int length)
 {
@@ -344,7 +344,7 @@ bool XbaseRowInserter::putRawPtr(tango::objhandle_t column_handle,
     return m_file->putRaw(f->ordinal, value, length);
 }
 
-bool XbaseRowInserter::putString(tango::objhandle_t column_handle,
+bool XbaseRowInserter::putString(xd::objhandle_t column_handle,
                                  const std::string& value)
 {
     XbaseField* f = (XbaseField*)column_handle;
@@ -356,7 +356,7 @@ bool XbaseRowInserter::putString(tango::objhandle_t column_handle,
     return m_file->putString(f->ordinal, value);
 }
 
-bool XbaseRowInserter::putWideString(tango::objhandle_t column_handle,
+bool XbaseRowInserter::putWideString(xd::objhandle_t column_handle,
                                      const std::wstring& value)
 {
     XbaseField* f = (XbaseField*)column_handle;
@@ -368,7 +368,7 @@ bool XbaseRowInserter::putWideString(tango::objhandle_t column_handle,
     return putString(column_handle, kl::tostring(value));
 }
 
-bool XbaseRowInserter::putDouble(tango::objhandle_t column_handle,
+bool XbaseRowInserter::putDouble(xd::objhandle_t column_handle,
                                  double value)
 {
     XbaseField* f = (XbaseField*)column_handle;
@@ -380,7 +380,7 @@ bool XbaseRowInserter::putDouble(tango::objhandle_t column_handle,
     return m_file->putDouble(f->ordinal, value);
 }
 
-bool XbaseRowInserter::putInteger(tango::objhandle_t column_handle,
+bool XbaseRowInserter::putInteger(xd::objhandle_t column_handle,
                                   int value)
 {
     XbaseField* f = (XbaseField*)column_handle;
@@ -392,7 +392,7 @@ bool XbaseRowInserter::putInteger(tango::objhandle_t column_handle,
     return m_file->putInteger(f->ordinal, value);
 }
 
-bool XbaseRowInserter::putBoolean(tango::objhandle_t column_handle,
+bool XbaseRowInserter::putBoolean(xd::objhandle_t column_handle,
                                   bool value)
 {
     XbaseField* f = (XbaseField*)column_handle;
@@ -404,8 +404,8 @@ bool XbaseRowInserter::putBoolean(tango::objhandle_t column_handle,
     return m_file->putBoolean(f->ordinal, value);
 }
 
-bool XbaseRowInserter::putDateTime(tango::objhandle_t column_handle,
-                                   tango::datetime_t value)
+bool XbaseRowInserter::putDateTime(xd::objhandle_t column_handle,
+                                   xd::datetime_t value)
 {
     XbaseField* f = (XbaseField*)column_handle;
     if (!f)
@@ -419,7 +419,7 @@ bool XbaseRowInserter::putDateTime(tango::objhandle_t column_handle,
         return m_file->putDateTime(f->ordinal, XbaseDate());
     }
 
-    tango::DateTime dt(value);
+    xd::DateTime dt(value);
     XbaseDate xbase_date(dt.getYear(),
                          dt.getMonth(),
                          dt.getDay(),
@@ -436,7 +436,7 @@ bool XbaseRowInserter::putRowBuffer(const unsigned char* value)
     return m_file->putRowBuffer(value);
 }
 
-bool XbaseRowInserter::putNull(tango::objhandle_t column_handle)
+bool XbaseRowInserter::putNull(xd::objhandle_t column_handle)
 {
     XbaseField* f = (XbaseField*)column_handle;
     if (!f)

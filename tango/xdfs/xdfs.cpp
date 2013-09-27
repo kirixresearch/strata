@@ -50,11 +50,11 @@ void testFunc3(double dbl)
 */
 
 
-class DatabaseMgr : public tango::IDatabaseMgr
+class DatabaseMgr : public xd::IDatabaseMgr
 {
     XCM_CLASS_NAME("xdfs.DatabaseMgr")
     XCM_BEGIN_INTERFACE_MAP(DatabaseMgr)
-        XCM_INTERFACE_ENTRY(tango::IDatabaseMgr)
+        XCM_INTERFACE_ENTRY(xd::IDatabaseMgr)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -65,9 +65,9 @@ public:
         return false;
     }
     
-    tango::IDatabasePtr open(const std::wstring& connection_str)
+    xd::IDatabasePtr open(const std::wstring& connection_str)
     {
-        tango::ConnectionStringParser c(connection_str);
+        xd::ConnectionStringParser c(connection_str);
         std::wstring provider = c.getLowerValue(L"xdprovider");
         if (provider.empty())
             return xcm::null;
@@ -91,15 +91,15 @@ public:
             return xcm::null;
         }
 
-        return tango::IDatabasePtr(db, false);
+        return xd::IDatabasePtr(db, false);
     }
     
 
-    tango::IDatabaseEntryEnumPtr getDatabaseList(const std::wstring& host, int port,
+    xd::IDatabaseEntryEnumPtr getDatabaseList(const std::wstring& host, int port,
                                                  const std::wstring& uid,
                                                  const std::wstring& password)
     {
-        xcm::IVectorImpl<tango::IDatabaseEntryPtr>* vec = new xcm::IVectorImpl<tango::IDatabaseEntryPtr>;
+        xcm::IVectorImpl<xd::IDatabaseEntryPtr>* vec = new xcm::IVectorImpl<xd::IDatabaseEntryPtr>;
         return vec;
     }
 

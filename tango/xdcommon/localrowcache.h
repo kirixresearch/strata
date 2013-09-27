@@ -76,11 +76,11 @@ public:
     void goFirst();
     void goNext();
     void goPrev();
-    void goRow(tango::rowpos_t row);
+    void goRow(xd::rowpos_t row);
     bool eof();
     
     bool getRow(LocalRow& row);
-    tango::rowpos_t getRowCount();
+    xd::rowpos_t getRowCount();
 
 
     // -- writing/appending functions --
@@ -91,7 +91,7 @@ public:
     void reserveAppendBuffer(unsigned int row_width);
     
     // -- updating functions --
-    void updateValue(tango::rowpos_t row, int col, unsigned char* data, unsigned int size);
+    void updateValue(xd::rowpos_t row, int col, unsigned char* data, unsigned int size);
     void clearUpdateValues();
     unsigned char* getUpdateValue(int col);
 
@@ -103,12 +103,12 @@ private:
 
     xf_file_t m_f;
     std::wstring m_filename;
-    tango::rowpos_t m_row_count;
-    tango::rowpos_t m_curpos;
+    xd::rowpos_t m_row_count;
+    xd::rowpos_t m_curpos;
     
     // -- reading variables --
     unsigned int m_read_reclen;
-    tango::rowpos_t m_read_currow;
+    xd::rowpos_t m_read_currow;
     bool m_eof;
     xf_off_t m_offset;
 
@@ -119,7 +119,7 @@ private:
     unsigned int m_append_allocsize;
     unsigned int m_append_rownum;
     
-    std::map<tango::rowpos_t, LocalRowUpdates*> m_updates;
+    std::map<xd::rowpos_t, LocalRowUpdates*> m_updates;
 };
 
 

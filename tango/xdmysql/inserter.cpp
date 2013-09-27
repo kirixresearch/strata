@@ -46,9 +46,9 @@ MysqlRowInserter::MysqlRowInserter(MysqlDatabase* db, const std::wstring& table)
     m_insert_stmt.reserve(65535);
     m_row.reserve(16384);
 
-    tango::IAttributesPtr attr = m_database->getAttributes();
-    m_quote_openchar = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
-    m_quote_closechar = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
+    xd::IAttributesPtr attr = m_database->getAttributes();
+    m_quote_openchar = attr->getStringAttribute(xd::dbattrIdentifierQuoteOpenChar);
+    m_quote_closechar = attr->getStringAttribute(xd::dbattrIdentifierQuoteCloseChar);
 }
 
 
@@ -63,20 +63,20 @@ MysqlRowInserter::~MysqlRowInserter()
     m_database->unref();
 }
 
-tango::objhandle_t MysqlRowInserter::getHandle(const std::wstring& column_name)
+xd::objhandle_t MysqlRowInserter::getHandle(const std::wstring& column_name)
 {
     std::vector<MySqlInsertData>::iterator it;
 
     for (it = m_insert_data.begin(); it != m_insert_data.end(); ++it)
     {
         if (!wcscasecmp(it->m_col_name.c_str(), column_name.c_str()))
-            return (tango::objhandle_t)&(*it);
+            return (xd::objhandle_t)&(*it);
     }
 
     return 0;
 }
 
-tango::IColumnInfoPtr MysqlRowInserter::getInfo(tango::objhandle_t column_handle)
+xd::IColumnInfoPtr MysqlRowInserter::getInfo(xd::objhandle_t column_handle)
 {
     MySqlInsertData* data = (MySqlInsertData*)column_handle;
 
@@ -85,12 +85,12 @@ tango::IColumnInfoPtr MysqlRowInserter::getInfo(tango::objhandle_t column_handle
         return xcm::null;
     }
 
-    tango::IStructurePtr structure = m_database->describeTable(m_table);
+    xd::IStructurePtr structure = m_database->describeTable(m_table);
     return structure->getColumnInfo(data->m_col_name);
 }
 
 
-bool MysqlRowInserter::putRawPtr(tango::objhandle_t column_handle,
+bool MysqlRowInserter::putRawPtr(xd::objhandle_t column_handle,
                                  const unsigned char* value,
                                  int length)
 {
@@ -99,7 +99,7 @@ bool MysqlRowInserter::putRawPtr(tango::objhandle_t column_handle,
 
     switch (data->m_tango_type)
     {
-        case tango::typeCharacter:
+        case xd::typeCharacter:
             doubleQuoteCopy(data->m_text, (const char*)value, length);
             return true;
         // FIXME: other tango types should be filled out here
@@ -144,7 +144,7 @@ static void doubleQuoteCopy(std::wstring& output, const std::string& input)
     output += L'\'';
 }
 
-bool MysqlRowInserter::putString(tango::objhandle_t column_handle,
+bool MysqlRowInserter::putString(xd::objhandle_t column_handle,
                                  const std::string& value)
 {
     MySqlInsertData* data = (MySqlInsertData*)column_handle;
@@ -159,13 +159,13 @@ bool MysqlRowInserter::putString(tango::objhandle_t column_handle,
     return true;
 }
 
-bool MysqlRowInserter::putWideString(tango::objhandle_t column_handle,
+bool MysqlRowInserter::putWideString(xd::objhandle_t column_handle,
                                      const std::wstring& value)
 {
     return putString(column_handle, kl::tostring(value));
 }
 
-bool MysqlRowInserter::putDouble(tango::objhandle_t column_handle, double value)
+bool MysqlRowInserter::putDouble(xd::objhandle_t column_handle, double value)
 {
     MySqlInsertData* data = (MySqlInsertData*)column_handle;
 
@@ -178,7 +178,7 @@ bool MysqlRowInserter::putDouble(tango::objhandle_t column_handle, double value)
     return true;
 }
 
-bool MysqlRowInserter::putInteger(tango::objhandle_t column_handle, int value)
+bool MysqlRowInserter::putInteger(xd::objhandle_t column_handle, int value)
 {
     MySqlInsertData* data = (MySqlInsertData*)column_handle;
     
@@ -194,7 +194,7 @@ bool MysqlRowInserter::putInteger(tango::objhandle_t column_handle, int value)
     return true;
 }
 
-bool MysqlRowInserter::putBoolean(tango::objhandle_t column_handle, bool value)
+bool MysqlRowInserter::putBoolean(xd::objhandle_t column_handle, bool value)
 {
     MySqlInsertData* data = (MySqlInsertData*)column_handle;
 
@@ -216,8 +216,8 @@ bool MysqlRowInserter::putBoolean(tango::objhandle_t column_handle, bool value)
     return true;
 }
 
-bool MysqlRowInserter::putDateTime(tango::objhandle_t column_handle,
-                                   tango::datetime_t datetime)
+bool MysqlRowInserter::putDateTime(xd::objhandle_t column_handle,
+                                   xd::datetime_t datetime)
 {
     MySqlInsertData* data = (MySqlInsertData*)column_handle;
 
@@ -226,7 +226,7 @@ bool MysqlRowInserter::putDateTime(tango::objhandle_t column_handle,
         return false;
     }
 
-    tango::DateTime dt(datetime);
+    xd::DateTime dt(datetime);
 
     if (dt.isNull())
     {
@@ -248,7 +248,7 @@ bool MysqlRowInserter::putDateTime(tango::objhandle_t column_handle,
 }
 
 
-bool MysqlRowInserter::putNull(tango::objhandle_t column_handle)
+bool MysqlRowInserter::putNull(xd::objhandle_t column_handle)
 {
     MySqlInsertData* data = (MySqlInsertData*)column_handle;
 
@@ -269,7 +269,7 @@ bool MysqlRowInserter::startInsert(const std::wstring& col_list)
     if (m_mysql == NULL)
         return false;
     
-    tango::IStructurePtr s = m_database->describeTable(m_table);
+    xd::IStructurePtr s = m_database->describeTable(m_table);
 
     std::vector<std::wstring> columns;
     std::vector<std::wstring>::iterator it;
@@ -295,7 +295,7 @@ bool MysqlRowInserter::startInsert(const std::wstring& col_list)
 
     for (it = columns.begin(); it != columns.end(); ++it)
     {
-        tango::IColumnInfoPtr col_info = s->getColumnInfo(*it);
+        xd::IColumnInfoPtr col_info = s->getColumnInfo(*it);
 
         if (col_info.isNull())
         {

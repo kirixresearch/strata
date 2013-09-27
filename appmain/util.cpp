@@ -477,12 +477,12 @@ static bool isValid(const wxString& str,
 }
 
 bool isKeyword(const wxString& str,
-               tango::IDatabasePtr db)
+               xd::IDatabasePtr db)
 {
     if (db.isNull())
         db = g_app->getDatabase();
 
-    tango::IAttributesPtr attr = db->getAttributes();
+    xd::IAttributesPtr attr = db->getAttributes();
     if (!attr)
     {
         // couldn't get attributes from database,
@@ -492,7 +492,7 @@ bool isKeyword(const wxString& str,
 
     std::vector<wxString> vec;
 
-    wxStringTokenizer t(attr->getStringAttribute(tango::dbattrKeywords), ",");
+    wxStringTokenizer t(attr->getStringAttribute(xd::dbattrKeywords), ",");
     while (t.HasMoreTokens())
     {
         wxString s = t.GetNextToken();
@@ -513,7 +513,7 @@ bool isKeyword(const wxString& str,
 }
 
 bool isValidFieldName(const wxString& str,
-                      tango::IDatabasePtr db,
+                      xd::IDatabasePtr db,
                       int* err_idx)
 {
     // if the string is empty, it's invalid
@@ -523,7 +523,7 @@ bool isValidFieldName(const wxString& str,
     if (db.isNull())
         db = g_app->getDatabase();
 
-    tango::IAttributesPtr attr = db->getAttributes();
+    xd::IAttributesPtr attr = db->getAttributes();
     if (!attr)
         return false;
 
@@ -537,8 +537,8 @@ bool isValidFieldName(const wxString& str,
         return false;
     }
 
-    wxString invalid_starting = attr->getStringAttribute(tango::dbattrColumnInvalidStartingChars);
-    wxString invalid = attr->getStringAttribute(tango::dbattrColumnInvalidChars);
+    wxString invalid_starting = attr->getStringAttribute(xd::dbattrColumnInvalidStartingChars);
+    wxString invalid = attr->getStringAttribute(xd::dbattrColumnInvalidChars);
 
     // test the content
     if (!isValid(str, invalid_starting, invalid, err_idx))
@@ -550,7 +550,7 @@ bool isValidFieldName(const wxString& str,
 }
 
 bool isValidObjectName(const wxString& str,
-                       tango::IDatabasePtr db,
+                       xd::IDatabasePtr db,
                        int* err_idx)
 {
     // if the string is empty, it's invalid
@@ -560,15 +560,15 @@ bool isValidObjectName(const wxString& str,
     if (db.isNull())
         db = g_app->getDatabase();
 
-    tango::IAttributesPtr attr = db->getAttributes();
+    xd::IAttributesPtr attr = db->getAttributes();
     if (!attr)
         return false;
 
     if (isKeyword(str, db))
         return false;
 
-    wxString invalid_starting = attr->getStringAttribute(tango::dbattrTableInvalidStartingChars);
-    wxString invalid = attr->getStringAttribute(tango::dbattrTableInvalidChars);
+    wxString invalid_starting = attr->getStringAttribute(xd::dbattrTableInvalidStartingChars);
+    wxString invalid = attr->getStringAttribute(xd::dbattrTableInvalidChars);
 
     // test the content
     if (!isValid(str, invalid_starting, invalid, err_idx))
@@ -576,7 +576,7 @@ bool isValidObjectName(const wxString& str,
 
 
     // test the length
-    if (str.Length() > (size_t)attr->getIntAttribute(tango::dbattrTableMaxNameLength))
+    if (str.Length() > (size_t)attr->getIntAttribute(xd::dbattrTableMaxNameLength))
     {
         if (err_idx)
         {
@@ -589,7 +589,7 @@ bool isValidObjectName(const wxString& str,
 }
 
 bool isValidObjectPath(const wxString& str,
-                       tango::IDatabasePtr db,
+                       xd::IDatabasePtr db,
                        int* err_idx)
 {
     // if the string is empty, it's invalid
@@ -622,7 +622,7 @@ bool isValidObjectPath(const wxString& str,
 
 bool isValidTable(
                const std::wstring& str,
-               tango::IDatabasePtr db)
+               xd::IDatabasePtr db)
 {
     // if the string is empty, it's invalid
     if (str.length() == 0)
@@ -634,8 +634,8 @@ bool isValidTable(
     if (db.isNull())
         return false;
 
-    tango::IFileInfoPtr finfo = db->getFileInfo(str);
-    if (finfo.isOk() && finfo->getType() == tango::filetypeTable)
+    xd::IFileInfoPtr finfo = db->getFileInfo(str);
+    if (finfo.isOk() && finfo->getType() == xd::filetypeTable)
         return true;
          else
         return false;
@@ -643,7 +643,7 @@ bool isValidTable(
 
 
 wxString makeValidFieldName(const wxString& str,
-                            tango::IDatabasePtr db)
+                            xd::IDatabasePtr db)
 {
     if (db.isNull())
         db = g_app->getDatabase();
@@ -686,7 +686,7 @@ wxString makeValidFieldName(const wxString& str,
 }
 
 wxString makeValidObjectName(const wxString& str,
-                             tango::IDatabasePtr db)
+                             xd::IDatabasePtr db)
 {
     if (db.isNull())
         db = g_app->getDatabase();
@@ -734,17 +734,17 @@ wxString getDbColumnTypeText(int tango_type)
     switch (tango_type)
     {
         default:
-        case tango::typeUndefined:      return _("Undefined");
-        case tango::typeInvalid:        return _("Invalid");
-        case tango::typeCharacter:      return _("Character");
-        case tango::typeWideCharacter:  return _("Wide Character");
-        case tango::typeBinary:         return _("Binary");
-        case tango::typeNumeric:        return _("Numeric");
-        case tango::typeDouble:         return _("Double");
-        case tango::typeInteger:        return _("Integer");
-        case tango::typeDate:           return _("Date");
-        case tango::typeDateTime:       return _("DateTime");
-        case tango::typeBoolean:        return _("Boolean");
+        case xd::typeUndefined:      return _("Undefined");
+        case xd::typeInvalid:        return _("Invalid");
+        case xd::typeCharacter:      return _("Character");
+        case xd::typeWideCharacter:  return _("Wide Character");
+        case xd::typeBinary:         return _("Binary");
+        case xd::typeNumeric:        return _("Numeric");
+        case xd::typeDouble:         return _("Double");
+        case xd::typeInteger:        return _("Integer");
+        case xd::typeDate:           return _("Date");
+        case xd::typeDateTime:       return _("DateTime");
+        case xd::typeBoolean:        return _("Boolean");
     }
 
     return wxT("");
@@ -752,11 +752,11 @@ wxString getDbColumnTypeText(int tango_type)
 
 bool getRemotePathIfExists(wxString& path)
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return false;
 
-    tango::IFileInfoPtr info = db->getFileInfo(towstr(path));
+    xd::IFileInfoPtr info = db->getFileInfo(towstr(path));
     if (info.isNull())
         return false;
     
@@ -792,7 +792,7 @@ bool isSamePath(const std::wstring& path1, const std::wstring& path2)
 
 wxString getObjectPathFromMountPath(const wxString& database_path)
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return database_path;
     
@@ -812,7 +812,7 @@ wxString getObjectPathFromMountPath(const wxString& database_path)
 
 wxString getPhysPathFromMountPath(const wxString& database_path)
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return wxEmptyString;
     
@@ -867,7 +867,7 @@ wxString getPhysPathFromMountPath(const wxString& database_path)
     return res;
 }
 
-std::wstring getMountRoot(tango::IDatabasePtr db, const std::wstring _path)
+std::wstring getMountRoot(xd::IDatabasePtr db, const std::wstring _path)
 {
     std::wstring path = _path;
     size_t old_len = 0;
@@ -888,7 +888,7 @@ std::wstring getMountRoot(tango::IDatabasePtr db, const std::wstring _path)
     }
 }
 
-bool getMountPointHelper(tango::IDatabasePtr& db, const std::wstring& _path, std::wstring& cstr, std::wstring& rpath)
+bool getMountPointHelper(xd::IDatabasePtr& db, const std::wstring& _path, std::wstring& cstr, std::wstring& rpath)
 {
     std::vector<std::wstring> parts;
 
@@ -1090,8 +1090,8 @@ std::wstring addExtensionIfExternalFsDatabase(const std::wstring& _path, const s
 {
     std::wstring path = _path;
     std::wstring extension;
-    tango::IDatabasePtr mount_db = g_app->getDatabase()->getMountDatabase(path);
-    if (!mount_db.isNull() && mount_db->getDatabaseType() == tango::dbtypeFilesystem)
+    xd::IDatabasePtr mount_db = g_app->getDatabase()->getMountDatabase(path);
+    if (!mount_db.isNull() && mount_db->getDatabaseType() == xd::dbtypeFilesystem)
     {
         extension = getExtensionFromPath(path);
         if (extension.length() == 0)
@@ -1101,14 +1101,14 @@ std::wstring addExtensionIfExternalFsDatabase(const std::wstring& _path, const s
     return path;
 }
 
-bool readStreamTextFile(tango::IDatabasePtr db,
+bool readStreamTextFile(xd::IDatabasePtr db,
                         const std::wstring& path,
                         std::wstring& result_text)
 {
     if (db.isNull())
         return false;
         
-    tango::IStreamPtr stream = db->openStream(path);
+    xd::IStreamPtr stream = db->openStream(path);
     if (!stream)
         return false;
     
@@ -1155,7 +1155,7 @@ bool readStreamTextFile(tango::IDatabasePtr db,
     return true;
 }
 
-bool writeStreamTextFile(tango::IDatabasePtr db,
+bool writeStreamTextFile(xd::IDatabasePtr db,
                          const std::wstring& path,
                          const std::wstring& val,
                          const std::wstring& mime_type)
@@ -1211,7 +1211,7 @@ bool writeStreamTextFile(tango::IDatabasePtr db,
     }
 
 
-    tango::IStreamPtr stream = db->openStream(path);
+    xd::IStreamPtr stream = db->openStream(path);
     if (stream.isNull())
     {
         delete[] buf;
@@ -1324,21 +1324,21 @@ wxString getDefaultProjectsPath()
     return project_path;
 }
 
-tango::IIndexInfoPtr lookupIndex(tango::IIndexInfoEnumPtr idx_enum, const std::wstring& expr, bool exact_column_order)
+xd::IIndexInfoPtr lookupIndex(xd::IIndexInfoEnumPtr idx_enum, const std::wstring& expr, bool exact_column_order)
 {
     if (idx_enum.isNull())
         return xcm::null;
 
     std::vector<std::wstring> expr_cols;
     size_t i, idx_count = idx_enum->size();;
-    tango::IIndexInfoPtr result;
+    xd::IIndexInfoPtr result;
 
     kl::parseDelimitedList(expr, expr_cols, L',', true);
     
     for (i = 0; i < idx_count; ++i)
     {
         std::vector<std::wstring> idx_cols;
-        tango::IIndexInfoPtr idx = idx_enum->getItem(i);
+        xd::IIndexInfoPtr idx = idx_enum->getItem(i);
 
         kl::parseDelimitedList(idx->getExpression(), idx_cols, L',', true);
 
@@ -1427,7 +1427,7 @@ kl::JsonNode createSortFilterJobParams(const std::wstring& path,
         {
             std::wstring order_field_str;
 
-            std::wstring field = tango::dequoteIdentifier(g_app->getDatabase(), it->first);
+            std::wstring field = xd::dequoteIdentifier(g_app->getDatabase(), it->first);
 
             kl::JsonNode order_field_node = params["order"].appendElement();
             order_field_node["expression"] = it->first;
@@ -1811,12 +1811,12 @@ bool doOutputPathCheck(const wxString& output_path, wxWindow* parent)
 
         stub += token;
 
-        tango::IFileInfoPtr file_info;
+        xd::IFileInfoPtr file_info;
         file_info = g_app->getDatabase()->getFileInfo(towstr(stub));
         if (file_info.isNull())
             break;
 
-        if (file_info->getType() != tango::filetypeFolder)
+        if (file_info->getType() != xd::filetypeFolder)
         {
             appMessageBox(_("The specified output path is invalid because it does not specify a valid folder."),
                                APPLICATION_NAME,
@@ -1842,14 +1842,14 @@ bool doOutputPathCheck(const wxString& output_path, wxWindow* parent)
     if (!g_app->getDatabase()->getFileExist(towstr(output_path)))
         return true;
 
-    tango::IFileInfoPtr file_info;
+    xd::IFileInfoPtr file_info;
     file_info = g_app->getDatabase()->getFileInfo(towstr(output_path));
     if (file_info.isNull())
         return true;
 
     int file_type = file_info->getType();
 
-    if (file_type == tango::filetypeFolder)
+    if (file_type == xd::filetypeFolder)
     {
         appMessageBox(_("The specified output path is invalid because it specifies a folder that already exists."),
                            APPLICATION_NAME,
@@ -1857,7 +1857,7 @@ bool doOutputPathCheck(const wxString& output_path, wxWindow* parent)
                            parent);
         return false;
     }
-     else if (file_type == tango::filetypeTable)
+     else if (file_type == xd::filetypeTable)
     {
         int result;
         result = appMessageBox(_("The specified output file name already exists.  Would you like to overwrite it?"),

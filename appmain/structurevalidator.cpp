@@ -114,7 +114,7 @@ int StructureValidator::showErrorMessage(int errorcode, bool* block)
     return -1;
 }
 
-int StructureValidator::validateExpression(tango::IStructurePtr structure,
+int StructureValidator::validateExpression(xd::IStructurePtr structure,
                                            const wxString& expr,
                                            int match_fieldtype)
 {
@@ -126,15 +126,15 @@ int StructureValidator::validateExpression(tango::IStructurePtr structure,
         return ExpressionInvalid;
     
     int expr_type = structure->getExprType(towstr(expr));
-    if (expr_type == tango::typeInvalid ||
-        expr_type == tango::typeUndefined)
+    if (expr_type == xd::typeInvalid ||
+        expr_type == xd::typeUndefined)
     {
         return ExpressionInvalid;
     }
      else
     {
-        if (match_fieldtype != tango::typeUndefined &&
-            !tango::isTypeCompatible(match_fieldtype, expr_type))
+        if (match_fieldtype != xd::typeUndefined &&
+            !xd::isTypeCompatible(match_fieldtype, expr_type))
         {
             // the expression return type and specified type differ
             return ExpressionTypeMismatch;
@@ -149,7 +149,7 @@ int StructureValidator::validateExpression(tango::IStructurePtr structure,
 }
 
 bool StructureValidator::findInvalidExpressions(std::vector<RowErrorChecker>& vec,
-                                                tango::IStructurePtr structure)
+                                                xd::IStructurePtr structure)
 {
     bool found = false;
     std::vector<RowErrorChecker>::iterator it;
@@ -278,14 +278,14 @@ bool StructureValidator::findDuplicateObjectNames(std::vector<RowErrorChecker>& 
     return found;
 }
 
-bool StructureValidator::findInvalidFieldNames(tango::IStructurePtr structure,
-                                               tango::IDatabasePtr db)
+bool StructureValidator::findInvalidFieldNames(xd::IStructurePtr structure,
+                                               xd::IDatabasePtr db)
 {
     bool found = false;
     size_t i, count = structure->getColumnCount();
     for (i = 0; i < count; ++i)
     {
-        tango::IColumnInfoPtr col = structure->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr col = structure->getColumnInfoByIdx(i);
         if (!isValidFieldName(col->getName(), db))
         {
             found = true;
@@ -297,7 +297,7 @@ bool StructureValidator::findInvalidFieldNames(tango::IStructurePtr structure,
 }
 
 bool StructureValidator::findInvalidFieldNames(std::vector<RowErrorChecker>& vec,
-                                               tango::IDatabasePtr db)
+                                               xd::IDatabasePtr db)
 {
     bool found = false;
     std::vector<RowErrorChecker>::iterator it;
@@ -314,7 +314,7 @@ bool StructureValidator::findInvalidFieldNames(std::vector<RowErrorChecker>& vec
 }
 
 bool StructureValidator::findInvalidObjectNames(std::vector<RowErrorChecker>& vec,
-                                                tango::IDatabasePtr db)
+                                                xd::IDatabasePtr db)
 {
     bool found = false;
     std::vector<RowErrorChecker>::iterator it;
@@ -335,57 +335,57 @@ bool StructureValidator::updateFieldWidthAndScale(int type, int* width, int* sca
     int old_width = *width;
     int old_scale = *scale;
 
-    if (type == tango::typeCharacter || type == tango::typeWideCharacter)
+    if (type == xd::typeCharacter || type == xd::typeWideCharacter)
     {
-        if (*width < tango::min_character_width)
-            *width = tango::min_character_width;
-        if (*width > tango::max_character_width)
-            *width = tango::max_character_width;
+        if (*width < xd::min_character_width)
+            *width = xd::min_character_width;
+        if (*width > xd::max_character_width)
+            *width = xd::max_character_width;
         *scale = 0;
     }
 
-    if (type == tango::typeNumeric)
+    if (type == xd::typeNumeric)
     {
-        if (*width < tango::min_numeric_width)
-            *width = tango::min_numeric_width;
-        if (*width > tango::max_numeric_width)
-            *width = tango::max_numeric_width;
+        if (*width < xd::min_numeric_width)
+            *width = xd::min_numeric_width;
+        if (*width > xd::max_numeric_width)
+            *width = xd::max_numeric_width;
         if (*width <= *scale)
             *scale = *width - 1;
-        if (*scale > tango::max_numeric_scale)
-            *scale = tango::max_numeric_scale;
-        if (*scale < tango::min_numeric_scale)
-            *scale = tango::min_numeric_scale;
+        if (*scale > xd::max_numeric_scale)
+            *scale = xd::max_numeric_scale;
+        if (*scale < xd::min_numeric_scale)
+            *scale = xd::min_numeric_scale;
     }
 
-    if (type == tango::typeDouble)
+    if (type == xd::typeDouble)
     {
         *width = 8;
-        if (*scale > tango::max_numeric_scale)
-            *scale = tango::max_numeric_scale;
-        if (*scale < tango::min_numeric_scale)
-            *scale = tango::min_numeric_scale;
+        if (*scale > xd::max_numeric_scale)
+            *scale = xd::max_numeric_scale;
+        if (*scale < xd::min_numeric_scale)
+            *scale = xd::min_numeric_scale;
     }
 
-    if (type == tango::typeInteger)
+    if (type == xd::typeInteger)
     {
         *width = 4;
         *scale = 0;
     }
 
-    if (type == tango::typeDate)
+    if (type == xd::typeDate)
     {
         *width = 4;
         *scale = 0;
     }
 
-    if (type == tango::typeDateTime)
+    if (type == xd::typeDateTime)
     {
         *width = 8;
         *scale = 0;
     }
 
-    if (type == tango::typeBoolean)
+    if (type == xd::typeBoolean)
     {
         *width = 1;
         *scale = 0;

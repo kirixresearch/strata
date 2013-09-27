@@ -50,7 +50,7 @@ TableIterator::TableIterator() : BaseIterator()
     m_bof = false;
     m_include_deleted = false;
 
-    setIteratorFlags(tango::ifFastSkip | tango::ifFastRowCount);
+    setIteratorFlags(xd::ifFastSkip | xd::ifFastRowCount);
 }
 
 TableIterator::~TableIterator()
@@ -93,7 +93,7 @@ bool TableIterator::init(XdnativeDatabase* database,
     }
 
     m_buf = new unsigned char[m_read_ahead_rowcount * m_table_rowwidth];
-    m_rowpos_buf = new tango::rowpos_t[m_read_ahead_rowcount];
+    m_rowpos_buf = new xd::rowpos_t[m_read_ahead_rowcount];
     
     return true;
 }
@@ -104,7 +104,7 @@ std::wstring TableIterator::getTable()
 }
 
 
-tango::IIteratorPtr TableIterator::clone()
+xd::IIteratorPtr TableIterator::clone()
 {
     TableIterator* new_iter = new TableIterator;
     if (!baseClone(new_iter))
@@ -124,15 +124,15 @@ tango::IIteratorPtr TableIterator::clone()
     new_iter->m_read_ahead_rowcount = m_read_ahead_rowcount;
 
     new_iter->m_buf = new unsigned char[m_table_rowwidth * m_read_ahead_rowcount];
-    new_iter->m_rowpos_buf = new tango::rowpos_t[m_read_ahead_rowcount];
+    new_iter->m_rowpos_buf = new xd::rowpos_t[m_read_ahead_rowcount];
     new_iter->m_buf_rowcount = m_buf_rowcount;
     new_iter->m_buf_pos = m_buf_pos;
     memcpy(new_iter->m_buf, m_buf, m_table_rowwidth * m_buf_rowcount);
-    memcpy(new_iter->m_rowpos_buf, m_rowpos_buf, sizeof(tango::rowpos_t) * m_buf_rowcount);
+    memcpy(new_iter->m_rowpos_buf, m_rowpos_buf, sizeof(xd::rowpos_t) * m_buf_rowcount);
 
     new_iter->updatePosition();
 
-    return static_cast<tango::IIterator*>(new_iter);
+    return static_cast<xd::IIterator*>(new_iter);
 }
 
 void TableIterator::updatePosition()
@@ -287,15 +287,15 @@ bool TableIterator::eof()
 bool TableIterator::seek(const unsigned char* key, int length, bool soft)
 {
     // keys on table iterators indicate rowid
-    if (length != sizeof(tango::rowid_t))
+    if (length != sizeof(xd::rowid_t))
         return false;
 
-    tango::rowid_t* rowid = (tango::rowid_t*)key;
+    xd::rowid_t* rowid = (xd::rowid_t*)key;
 
     if (rowidGetTableOrd(*rowid) != m_table_ord)
         return false;
 
-    tango::rowpos_t row = rowidGetRowPos(*rowid);
+    xd::rowpos_t row = rowidGetRowPos(*rowid);
 
     m_buf_rowcount = m_table->getRows(m_buf,
                                       m_rowpos_buf,
@@ -356,12 +356,12 @@ void TableIterator::flushRow()
     m_row_dirty = false;
 }
 
-tango::rowpos_t TableIterator::getRowNumber()
+xd::rowpos_t TableIterator::getRowNumber()
 {
     return m_row_num;
 }
 
-void TableIterator::onSetRowUpdated(tango::rowid_t rowid)
+void TableIterator::onSetRowUpdated(xd::rowid_t rowid)
 {
     if (m_row_dirty)
         return;
@@ -415,7 +415,7 @@ TableSet::TableSet(XdnativeDatabase* database) : BaseSet(database)
     m_update_buf = NULL;
     m_idxrefresh_time = 0;
 
-    setSetFlags(tango::sfFastRowCount);
+    setSetFlags(xd::sfFastRowCount);
 }
 
 
@@ -476,7 +476,7 @@ TableSet::~TableSet()
 
 
 
-bool TableSet::create(tango::IStructure* struct_config, const std::wstring& path)
+bool TableSet::create(xd::IStructure* struct_config, const std::wstring& path)
 {
     // generate a unique filename for the table
     std::wstring table_filename = m_database->getUniqueFilename();
@@ -503,7 +503,7 @@ bool TableSet::create(tango::IStructure* struct_config, const std::wstring& path
     if (!file)
         return false;
     
-    m_database->setFileType(path, tango::filetypeTable);
+    m_database->setFileType(path, xd::filetypeTable);
 
     INodeValuePtr setid_node = file->getChild(L"set_id", true);
     if (!setid_node)
@@ -514,7 +514,7 @@ bool TableSet::create(tango::IStructure* struct_config, const std::wstring& path
 
     // add the calculated fields
     int col_count = struct_config->getColumnCount();
-    tango::IColumnInfoPtr colinfo;
+    xd::IColumnInfoPtr colinfo;
     for (int col = 0; col < col_count; ++col)
     {
         colinfo = struct_config->getColumnInfoByIdx(col);
@@ -654,10 +654,10 @@ void TableSet::onOfsPathChanged(const std::wstring& new_path)
     m_ofspath = new_path;
 }
 
-tango::IRowInserterPtr TableSet::getRowInserter()
+xd::IRowInserterPtr TableSet::getRowInserter()
 {
     TableSetRowInserter* inserter = new TableSetRowInserter(m_database, this);
-    return static_cast<tango::IRowInserter*>(inserter);
+    return static_cast<xd::IRowInserter*>(inserter);
 }
 
 IXdsqlRowDeleterPtr TableSet::getRowDeleter()
@@ -716,10 +716,10 @@ bool TableSet::prepareIndexEntry(IndexEntry& e)
     e.update = false;
     e.orig_key = new unsigned char[e.key_length];
     e.key_expr = new KeyLayout;
-    e.key_expr->setKeyExpr(static_cast<tango::IIterator*>(m_update_iter),
+    e.key_expr->setKeyExpr(static_cast<xd::IIterator*>(m_update_iter),
                            e.expr);
 
-    tango::IStructurePtr structure = getStructure();
+    xd::IStructurePtr structure = getStructure();
     if (structure.isNull())
         return false;
         
@@ -749,7 +749,7 @@ bool TableSet::prepareIndexEntry(IndexEntry& e)
             colname = piece;
         }
 
-        tango::IColumnInfoPtr info = structure->getColumnInfo(colname);
+        xd::IColumnInfoPtr info = structure->getColumnInfo(colname);
 
         if (info.isOk())
         {
@@ -943,12 +943,12 @@ void TableSet::refreshIndexEntries()
     }
 }
 
-tango::IIndexInfoEnumPtr TableSet::getIndexEnum()
+xd::IIndexInfoEnumPtr TableSet::getIndexEnum()
 {
     XCM_AUTO_LOCK(m_update_mutex);
 
-    xcm::IVectorImpl<tango::IIndexInfoPtr>* indexes;
-    indexes = new xcm::IVectorImpl<tango::IIndexInfoPtr>;
+    xcm::IVectorImpl<xd::IIndexInfoPtr>* indexes;
+    indexes = new xcm::IVectorImpl<xd::IIndexInfoPtr>;
 
     if (!m_table)
     {
@@ -972,7 +972,7 @@ tango::IIndexInfoEnumPtr TableSet::getIndexEnum()
             ii->setTag(it->tag);
             ii->setExpression(it->expr);
 
-            indexes->append(static_cast<tango::IIndexInfo*>(ii));
+            indexes->append(static_cast<xd::IIndexInfo*>(ii));
         }
     }
 
@@ -980,9 +980,9 @@ tango::IIndexInfoEnumPtr TableSet::getIndexEnum()
 }
 
 
-tango::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
+xd::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
                                            const std::wstring& expr,
-                                           tango::IJob* job)
+                                           xd::IJob* job)
 {
     XCM_AUTO_LOCK(m_update_mutex);
 
@@ -1000,7 +1000,7 @@ tango::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
         if (job)
         {
             IJobInternalPtr ijob = job;
-            ijob->setStatus(tango::jobFailed);
+            ijob->setStatus(xd::jobFailed);
         }
         return xcm::null;
     }
@@ -1039,7 +1039,7 @@ tango::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
                 if (job)
                 {
                     IJobInternalPtr ijob = job;
-                    ijob->setStatus(tango::jobFailed);
+                    ijob->setStatus(xd::jobFailed);
                 }
 
                 return xcm::null;
@@ -1091,7 +1091,7 @@ tango::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
         if (job)
         {
             IJobInternalPtr ijob = job;
-            ijob->setStatus(tango::jobFailed);
+            ijob->setStatus(xd::jobFailed);
         }
 
         return xcm::null;
@@ -1138,7 +1138,7 @@ tango::IIndexInfoPtr TableSet::createIndex(const std::wstring& tag,
     ii->setTag(tag);
     ii->setExpression(expr);
 
-    return static_cast<tango::IIndexInfo*>(ii);
+    return static_cast<xd::IIndexInfo*>(ii);
 }
 
 
@@ -1328,14 +1328,14 @@ TableIterator* TableSet::createPhysicalIterator(const std::wstring& columns,
 
 
 
-tango::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
+xd::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
                                              const std::wstring& order,
-                                             tango::IJob* job)
+                                             xd::IJob* job)
 {
     if (order.empty())
     {
         // create an unordered iterator
-        return static_cast<tango::IIterator*>(createPhysicalIterator(columns, false));
+        return static_cast<xd::IIterator*>(createPhysicalIterator(columns, false));
     }
 
     // attempt to find a suitable existing index
@@ -1364,12 +1364,12 @@ tango::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
             ijob->setFinishTime(time(NULL));
             ijob->setCurrentCount(m_row_count);
             ijob->setMaxCount(m_row_count);
-            ijob->setStatus(tango::jobFinished);
+            ijob->setStatus(xd::jobFinished);
         }
 
-        tango::IIteratorPtr data_iter = createIterator(columns, L"", NULL);
+        xd::IIteratorPtr data_iter = createIterator(columns, L"", NULL);
 
-        tango::IIteratorPtr res;
+        xd::IIteratorPtr res;
         res = createIteratorFromIndex(data_iter,
                                       idx,
                                       columns,
@@ -1418,7 +1418,7 @@ tango::IIteratorPtr TableSet::createIterator(const std::wstring& columns,
 
         m_indexes.push_back(entry);
 
-        tango::IIteratorPtr data_iter = createIterator(columns, L"", NULL);
+        xd::IIteratorPtr data_iter = createIterator(columns, L"", NULL);
         return createIteratorFromIndex(data_iter,
                                        idx,
                                        columns,
@@ -1437,18 +1437,18 @@ unsigned long long TableSet::getStructureModifyTime()
 }
 
 
-bool TableSet::updateRow(tango::rowid_t rowid,
-                         tango::ColumnUpdateInfo* info,
+bool TableSet::updateRow(xd::rowid_t rowid,
+                         xd::ColumnUpdateInfo* info,
                          size_t info_size)
 {
     XCM_AUTO_LOCK(m_update_mutex);
 
     size_t coli;
-    tango::ColumnUpdateInfo* col_it;
+    xd::ColumnUpdateInfo* col_it;
 
     if (rowidGetTableOrd(rowid) != m_ordinal)
         return false;
-    tango::rowpos_t row = rowidGetRowPos(rowid);
+    xd::rowpos_t row = rowidGetRowPos(rowid);
 
     if (!m_update_iter)
         refreshUpdateBuffer();
@@ -1490,7 +1490,7 @@ bool TableSet::updateRow(tango::rowid_t rowid,
     {
         col_it = &info[coli];
 
-        tango::objhandle_t handle = col_it->handle;
+        xd::objhandle_t handle = col_it->handle;
         DataAccessInfo* dai = (DataAccessInfo*)handle;
         if (!dai)
             continue;
@@ -1503,29 +1503,29 @@ bool TableSet::updateRow(tango::rowid_t rowid,
 
         switch (dai->type)
         {
-            case tango::typeCharacter:
+            case xd::typeCharacter:
                 m_update_iter->putString(handle, col_it->str_val);
                 break;
 
-            case tango::typeWideCharacter:
+            case xd::typeWideCharacter:
                 m_update_iter->putWideString(handle, col_it->wstr_val);
                 break;
 
-            case tango::typeNumeric:
-            case tango::typeDouble:
+            case xd::typeNumeric:
+            case xd::typeDouble:
                 m_update_iter->putDouble(handle, col_it->dbl_val);
                 break;
 
-            case tango::typeInteger:
+            case xd::typeInteger:
                 m_update_iter->putInteger(handle, col_it->int_val);
                 break;
 
-            case tango::typeDate:
-            case tango::typeDateTime:
+            case xd::typeDate:
+            case xd::typeDateTime:
                 m_update_iter->putDateTime(handle, col_it->date_val);
                 break;
 
-            case tango::typeBoolean:
+            case xd::typeBoolean:
                 m_update_iter->putBoolean(handle, col_it->bool_val);
                 break;
         }
@@ -1568,27 +1568,27 @@ bool TableSet::updateRow(tango::rowid_t rowid,
         idx_it->index->insert(new_key,
                               idx_it->key_length,
                               &rowid,
-                              sizeof(tango::rowid_t));
+                              sizeof(xd::rowid_t));
     }
 
     return true;
 }
 
 
-tango::IStructurePtr TableSet::getStructure()
+xd::IStructurePtr TableSet::getStructure()
 {
-    tango::IStructurePtr s = m_table->getStructure();
+    xd::IStructurePtr s = m_table->getStructure();
     appendCalcFields(s);
     return s;
 }
 
-void TableSet::onTableRowUpdated(tango::rowid_t rowid)
+void TableSet::onTableRowUpdated(xd::rowid_t rowid)
 {
     // ask BaseSet to notify all iterators that a row was updated
     fire_onSetRowUpdated(rowid);
 }
 
-void TableSet::onTableRowDeleted(tango::rowid_t rowid)
+void TableSet::onTableRowDeleted(xd::rowid_t rowid)
 {
     // ask BaseSet to notify all iterators that a row was updated
     fire_onSetRowDeleted(rowid);
@@ -1605,7 +1605,7 @@ void TableSet::updateRowCount()
     m_row_count = m_phys_row_count - m_deleted_row_count;
 }
 
-tango::rowpos_t TableSet::getRowCount()
+xd::rowpos_t TableSet::getRowCount()
 {
     return m_row_count;
 }
@@ -1658,61 +1658,61 @@ TableSetRowInserter::~TableSetRowInserter()
         m_database->unref();
 }
 
-tango::objhandle_t TableSetRowInserter::getHandle(const std::wstring& column)
+xd::objhandle_t TableSetRowInserter::getHandle(const std::wstring& column)
 {
     return m_iter->getHandle(column);
 }
 
-tango::IColumnInfoPtr TableSetRowInserter::getInfo(tango::objhandle_t handle)
+xd::IColumnInfoPtr TableSetRowInserter::getInfo(xd::objhandle_t handle)
 {
     return m_iter->getInfo(handle);
 }
 
-bool TableSetRowInserter::putRawPtr(tango::objhandle_t column_handle,
+bool TableSetRowInserter::putRawPtr(xd::objhandle_t column_handle,
                                     const unsigned char* value,
                                     int length)
 {
     return false;
 }
 
-bool TableSetRowInserter::putString(tango::objhandle_t column_handle,
+bool TableSetRowInserter::putString(xd::objhandle_t column_handle,
                                     const std::string& value)
 {
     return m_iter->putString(column_handle, value);
 }
 
-bool TableSetRowInserter::putWideString(tango::objhandle_t column_handle,
+bool TableSetRowInserter::putWideString(xd::objhandle_t column_handle,
                                         const std::wstring& value)
 {
     return m_iter->putWideString(column_handle, value);
 }
 
-bool TableSetRowInserter::putDouble(tango::objhandle_t column_handle,
+bool TableSetRowInserter::putDouble(xd::objhandle_t column_handle,
                                     double value)
 {
     return m_iter->putDouble(column_handle, value);
 }
 
-bool TableSetRowInserter::putInteger(tango::objhandle_t column_handle,
+bool TableSetRowInserter::putInteger(xd::objhandle_t column_handle,
                                      int value)
 {
     return m_iter->putInteger(column_handle, value);
 }
 
-bool TableSetRowInserter::putBoolean(tango::objhandle_t column_handle,
+bool TableSetRowInserter::putBoolean(xd::objhandle_t column_handle,
                                      bool value)
 {
     return m_iter->putBoolean(column_handle, value);
 }
 
-bool TableSetRowInserter::putDateTime(tango::objhandle_t column_handle,
-                                      tango::datetime_t value)
+bool TableSetRowInserter::putDateTime(xd::objhandle_t column_handle,
+                                      xd::datetime_t value)
 {
     return m_iter->putDateTime(column_handle, value);
 }
 
 
-bool TableSetRowInserter::putNull(tango::objhandle_t column_handle)
+bool TableSetRowInserter::putNull(xd::objhandle_t column_handle)
 {
     return m_iter->putNull(column_handle);
 }
@@ -1797,8 +1797,8 @@ bool TableSetRowInserter::flush()
 
     XCM_AUTO_LOCK(m_set->m_update_mutex);
 
-    tango::rowpos_t row = m_table->getRowCount(NULL) + 1;
-    tango::tableord_t table_ord = m_table->getTableOrdinal();
+    xd::rowpos_t row = m_table->getRowCount(NULL) + 1;
+    xd::tableord_t table_ord = m_table->getTableOrdinal();
 
     int rows_added = m_table->appendRows(m_buf, m_buf_row);
 
@@ -1810,7 +1810,7 @@ bool TableSetRowInserter::flush()
     if (m_set->m_indexes.size() > 0)
     {    
         int i;
-        tango::rowid_t rowid;
+        xd::rowid_t rowid;
 
         m_set->m_update_iter->setRowBuffer(m_buf, m_row_width);
 
@@ -1826,7 +1826,7 @@ bool TableSetRowInserter::flush()
                 it->index->insert(it->key_expr->getKey(),
                                   it->key_length,
                                   &rowid,
-                                  sizeof(tango::rowid_t));
+                                  sizeof(xd::rowid_t));
             }
 
             m_set->m_update_iter->skip(1);
@@ -1866,7 +1866,7 @@ void TableSetRowDeleter::startDelete()
 {
 }
 
-bool TableSetRowDeleter::deleteRow(const tango::rowid_t& rowid)
+bool TableSetRowDeleter::deleteRow(const xd::rowid_t& rowid)
 {
     m_rowid_array->append(rowid);
     return true;
@@ -1896,13 +1896,13 @@ void TableSetRowDeleter::cancelDelete()
 }
 
 
-bool TableSetRowDeleter::doRowDelete(tango::rowid_t rowid)
+bool TableSetRowDeleter::doRowDelete(xd::rowid_t rowid)
 {
     if (!m_table_row_deleter->deleteRow(rowid))
         return false;
 
     // delete the index keys associated with this row
-    tango::rowpos_t row = rowidGetRowPos(rowid);
+    xd::rowpos_t row = rowidGetRowPos(rowid);
 
     // read the row
     m_set->m_table->getRow(row, m_set->m_update_buf);

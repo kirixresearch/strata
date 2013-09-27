@@ -38,7 +38,7 @@ public:
         return JobInfo::getCancelAllowed();
     }
 
-    void setXdJob(tango::IJobPtr _xdjob)
+    void setXdJob(xd::IJobPtr _xdjob)
     {
         XCM_AUTO_LOCK(m_obj_mutex);
 
@@ -87,7 +87,7 @@ public:
 
 public:
 
-    tango::IJobPtr xdjob;
+    xd::IJobPtr xdjob;
     double pct;
 };
 
@@ -113,7 +113,7 @@ public:
         m_xd_jobinfo->unref();
     }
 
-    void setDatabase(tango::IDatabase* db)
+    void setDatabase(xd::IDatabase* db)
     {
         m_db = db;
     }
@@ -130,7 +130,7 @@ public:
 
 protected:
 
-    void setXdJob(tango::IJobPtr xdjob)
+    void setXdJob(xd::IJobPtr xdjob)
     {
         m_xd_jobinfo->setXdJob(xdjob);
     }
@@ -142,7 +142,7 @@ protected:
 
 protected:
 
-    tango::IDatabasePtr m_db;
+    xd::IDatabasePtr m_db;
 
 private:
 

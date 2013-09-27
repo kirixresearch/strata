@@ -369,7 +369,7 @@ void DlgDatabaseFile::onEnterPressed(wxCommandEvent& evt)
 
 void DlgDatabaseFile::onOK(wxCommandEvent& evt)
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
 
     wxString path = getPath();
 
@@ -409,11 +409,11 @@ void DlgDatabaseFile::onOK(wxCommandEvent& evt)
 
             stub += token;
 
-            tango::IFileInfoPtr file_info = g_app->getDatabase()->getFileInfo(towstr(stub));
+            xd::IFileInfoPtr file_info = g_app->getDatabase()->getFileInfo(towstr(stub));
             if (file_info.isNull())
                 break;
 
-            if (file_info->getType() != tango::filetypeFolder)
+            if (file_info->getType() != xd::filetypeFolder)
             {
                 appMessageBox(_("The specified output path is invalid because it does not specify a valid folder."),
                                    APPLICATION_NAME,
@@ -437,11 +437,11 @@ void DlgDatabaseFile::onOK(wxCommandEvent& evt)
                        m_mode == modeSaveSmall))
         {
             // -- make sure it's a file --
-            tango::IFileInfoPtr file_info = db->getFileInfo(towstr(path));
+            xd::IFileInfoPtr file_info = db->getFileInfo(towstr(path));
 
             if (file_info)
             {
-                if (file_info->getType() == tango::filetypeFolder)
+                if (file_info->getType() == xd::filetypeFolder)
                 {
                     appMessageBox(_("The file name you have entered is a folder. A folder is not valid for this operation."),
                                        APPLICATION_NAME,
@@ -461,11 +461,11 @@ void DlgDatabaseFile::onOK(wxCommandEvent& evt)
         
         if ((m_mode == modeSave || m_mode == modeSaveSmall) && exists)
         {
-            tango::IFileInfoPtr file_info = db->getFileInfo(towstr(path));
+            xd::IFileInfoPtr file_info = db->getFileInfo(towstr(path));
             if (file_info.isNull())
                 return;
 
-            if (file_info->getType() == tango::filetypeFolder)
+            if (file_info->getType() == xd::filetypeFolder)
             {
                 appMessageBox(_("The file name you have entered is a folder, and is not a valid target location."),
                                    APPLICATION_NAME,
@@ -580,13 +580,13 @@ void DlgDatabaseFile::onItemActivated(IFsItemPtr item)
     {
         wxString path = getPath();
         
-        tango::IFileInfoPtr file_info;
+        xd::IFileInfoPtr file_info;
         file_info = g_app->getDatabase()->getFileInfo(towstr(path));
 
         if (!file_info)
             return;
 
-        if (file_info->getType() == tango::filetypeFolder)
+        if (file_info->getType() == xd::filetypeFolder)
             return;
     }
 

@@ -79,20 +79,20 @@ static std::vector<wxString> getColumnsFromSource(const std::wstring& source)
     if (!exists)
         return columns;
 
-    tango::IFileInfoPtr info;
+    xd::IFileInfoPtr info;
     info = g_app->getDatabase()->getFileInfo(source);
     
     // table source
-    if (info->getType() == tango::filetypeTable)
+    if (info->getType() == xd::filetypeTable)
     {
-        tango::IDatabasePtr db = g_app->getDatabase();
+        xd::IDatabasePtr db = g_app->getDatabase();
         if (db.isNull())
             return columns;
 
         if (!isValidTable(source, db))
             return columns;
 
-        tango::IStructurePtr set_structure = db->describeTable(source);
+        xd::IStructurePtr set_structure = db->describeTable(source);
         if (set_structure.isNull())
             return columns;
 
@@ -101,7 +101,7 @@ static std::vector<wxString> getColumnsFromSource(const std::wstring& source)
 
         for (int i = 0; i < column_count; ++i)
         {
-            tango::IColumnInfoPtr info = set_structure->getColumnInfoByIdx(i);
+            xd::IColumnInfoPtr info = set_structure->getColumnInfoByIdx(i);
             columns.push_back(info->getName());
         }
 
@@ -109,7 +109,7 @@ static std::vector<wxString> getColumnsFromSource(const std::wstring& source)
     }
 
     // query source, node format
-    if (info->getType() == tango::filetypeNode)
+    if (info->getType() == xd::filetypeNode)
     {
         kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), source);
         if (!node.isOk())
@@ -139,7 +139,7 @@ static std::vector<wxString> getColumnsFromSource(const std::wstring& source)
     }
 
     // query source, JSON format
-    if (info->getType() == tango::filetypeStream)
+    if (info->getType() == xd::filetypeStream)
     {
         std::wstring mime_type = info->getMimeType();
         if (mime_type == L"application/vnd.kx.query")

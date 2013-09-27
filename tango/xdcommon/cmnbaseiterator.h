@@ -22,14 +22,14 @@ namespace kscript
 }
 
 
-class CommonBaseIterator : public tango::IIterator
+class CommonBaseIterator : public xd::IIterator
 {
 public:
 
     CommonBaseIterator();
     ~CommonBaseIterator();
 
-    virtual tango::IStructurePtr getParserStructure();
+    virtual xd::IStructurePtr getParserStructure();
     kscript::ExprParser* parse(const std::wstring& expr);
     
     void setIteratorFlags(unsigned int mask, unsigned int value)

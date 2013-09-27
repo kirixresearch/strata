@@ -76,13 +76,13 @@ int ThreadErrorInfo::getErrorCode()
             return it->error_code;
     }
 
-    return tango::errorNone;
+    return xd::errorNone;
 }
 
 bool ThreadErrorInfo::isError()
 {
     int code = getErrorCode();
-    if (code == tango::errorNone)
+    if (code == xd::errorNone)
         return false;
     return true;
 }

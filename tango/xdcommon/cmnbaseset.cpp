@@ -41,7 +41,7 @@ void CommonBaseSet::setConfigFilePath(const std::wstring& path)
 }
 
 
-bool CommonBaseSet::modifyStructure(tango::IStructure* struct_config,
+bool CommonBaseSet::modifyStructure(xd::IStructure* struct_config,
                                     bool* done_flag)
 {
     XCM_AUTO_LOCK(m_object_mutex);
@@ -99,13 +99,13 @@ bool CommonBaseSet::modifyStructure(tango::IStructure* struct_config,
 
 // Calculated Field routines
 
-bool CommonBaseSet::createCalcField(tango::IColumnInfoPtr colinfo)
+bool CommonBaseSet::createCalcField(xd::IColumnInfoPtr colinfo)
 {
     XCM_AUTO_LOCK(m_object_mutex);
     
     if (m_config_file_path.empty())
     {
-        tango::IColumnInfoPtr c = colinfo->clone();
+        xd::IColumnInfoPtr c = colinfo->clone();
         c->setCalculated(true);
         m_calc_fields.push_back(c);
         return true;
@@ -140,7 +140,7 @@ bool CommonBaseSet::deleteCalcField(const std::wstring& _name)
 
     if (m_config_file_path.empty())
     {
-        std::vector<tango::IColumnInfoPtr>::iterator it;
+        std::vector<xd::IColumnInfoPtr>::iterator it;
         for (it = m_calc_fields.begin(); it != m_calc_fields.end(); ++it)
         {
             if (!wcscasecmp((*it)->getName().c_str(), _name.c_str()))
@@ -189,7 +189,7 @@ bool CommonBaseSet::deleteCalcField(const std::wstring& _name)
 }
 
 bool CommonBaseSet::modifyCalcField(const std::wstring& name,
-                                    tango::IColumnInfoPtr colinfo)
+                                    xd::IColumnInfoPtr colinfo)
 {
     XCM_AUTO_LOCK(m_object_mutex);
     
@@ -206,7 +206,7 @@ bool CommonBaseSet::modifyCalcField(const std::wstring& name,
     if (m_config_file_path.empty())
     {
         // find the calculated field and modify it
-        std::vector<tango::IColumnInfoPtr>::iterator it;
+        std::vector<xd::IColumnInfoPtr>::iterator it;
         for (it = m_calc_fields.begin(); it != m_calc_fields.end(); ++it)
         {
             if (!wcscasecmp((*it)->getName().c_str(), name.c_str()))
@@ -283,7 +283,7 @@ bool CommonBaseSet::modifyCalcField(const std::wstring& name,
     return true;
 }
 
-void CommonBaseSet::appendCalcFields(tango::IStructure* structure)
+void CommonBaseSet::appendCalcFields(xd::IStructure* structure)
 {
     XCM_AUTO_LOCK(m_object_mutex);
 
@@ -295,7 +295,7 @@ void CommonBaseSet::appendCalcFields(tango::IStructure* structure)
     std::wstring set_id = getSetId();
     if (set_id.empty())
     {
-        std::vector<tango::IColumnInfoPtr>::iterator it;
+        std::vector<xd::IColumnInfoPtr>::iterator it;
         for (it = m_calc_fields.begin(); it != m_calc_fields.end(); ++it)
         {
             intstruct->addColumn((*it)->clone());
@@ -322,7 +322,7 @@ void CommonBaseSet::appendCalcFields(tango::IStructure* structure)
             scale = kl::wtoi(field.getChildContents(L"scale"));
             expression = field.getChildContents(L"expression");
 
-            tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+            xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
             col->setName(name);
             col->setType(type);
             col->setWidth(width);

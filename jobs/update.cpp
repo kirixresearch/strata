@@ -107,7 +107,7 @@ int UpdateJob::runJob()
     // build the update SQL
     std::wstring update_sql = L"";
     update_sql += L"UPDATE ";
-    update_sql += tango::quoteIdentifierIfNecessary(m_db, input_path);
+    update_sql += xd::quoteIdentifierIfNecessary(m_db, input_path);
     update_sql += L" SET ";
 
     std::vector<kl::JsonNode>::iterator it, it_end;
@@ -125,7 +125,7 @@ int UpdateJob::runJob()
         column = it->getChild("column").getString();
         expression = it->getChild("expression").getString();
 
-        update_sql += tango::quoteIdentifierIfNecessary(m_db, column);
+        update_sql += xd::quoteIdentifierIfNecessary(m_db, column);
         update_sql += L"=";
         update_sql += expression;
     }
@@ -134,11 +134,11 @@ int UpdateJob::runJob()
         update_sql += (L" WHERE " + where_param);
 
 
-    tango::IJobPtr tango_job = m_db->createJob();
+    xd::IJobPtr tango_job = m_db->createJob();
     setXdJob(tango_job);
 
     xcm::IObjectPtr result;
-    m_db->execute(update_sql, tango::sqlPassThrough, result, tango_job);
+    m_db->execute(update_sql, xd::sqlPassThrough, result, tango_job);
 
 
     if (tango_job->getCancelled())
@@ -147,7 +147,7 @@ int UpdateJob::runJob()
         return 0;
     }
 
-    if (tango_job->getStatus() == tango::jobFailed)
+    if (tango_job->getStatus() == xd::jobFailed)
     {
         m_job_info->setState(jobStateFailed);
 

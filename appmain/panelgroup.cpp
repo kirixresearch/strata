@@ -342,7 +342,7 @@ bool GroupPanel::initDoc(IFramePtr frame,
         caption += wxT("]");
     }
 
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     m_structure = db->describeTable(towstr(m_path));
     if (m_structure.isNull())
         return false;
@@ -587,7 +587,7 @@ bool GroupPanel::validateGroupQuery()
     if (value.Length() == 0)
         return true;
 
-    bool valid = (m_structure->getExprType(towstr(value)) == tango::typeBoolean);
+    bool valid = (m_structure->getExprType(towstr(value)) == xd::typeBoolean);
     m_adv_group_query_valid->setValid(valid);
 
     return valid;
@@ -639,13 +639,13 @@ void GroupPanel::addGroupField(const wxString& input)
 
 void GroupPanel::onExecute(wxCommandEvent& evt)
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return;
 
     m_grid->endEdit(true);
 
-    tango::IColumnInfoPtr colinfo;
+    xd::IColumnInfoPtr colinfo;
     int i, row_count = m_grid->getRowCount();
     int combo_sel;
 
@@ -754,7 +754,7 @@ void GroupPanel::onExecute(wxCommandEvent& evt)
         {
             int type = m_structure->getExprType(input_name);
 
-            if (type != tango::typeBoolean)
+            if (type != xd::typeBoolean)
             {
                 appMessageBox(_("Parameters for the count function must evaluate to either true or false."),
                                    APPLICATION_NAME,
@@ -769,9 +769,9 @@ void GroupPanel::onExecute(wxCommandEvent& evt)
             func == GroupFunc_Stddev ||
             func == GroupFunc_Variance)
         {
-            if (input_type != tango::typeDouble &&
-                input_type != tango::typeNumeric &&
-                input_type != tango::typeInteger)
+            if (input_type != xd::typeDouble &&
+                input_type != xd::typeNumeric &&
+                input_type != xd::typeInteger)
             {
                 appMessageBox(_("One or more group field definitions has an invalid function type."),
                                    APPLICATION_NAME,
@@ -836,7 +836,7 @@ void GroupPanel::onExecute(wxCommandEvent& evt)
         kl::makeUpper(input_colname);
         kl::trim(input_colname);
 
-        std::wstring quoted_colname = tango::quoteIdentifierIfNecessary(g_app->getDatabase(), input_colname);
+        std::wstring quoted_colname = xd::quoteIdentifierIfNecessary(g_app->getDatabase(), input_colname);
         group_columns.push_back(quoted_colname);
     }
 
@@ -867,8 +867,8 @@ void GroupPanel::onExecute(wxCommandEvent& evt)
             continue;
         }
 
-        std::wstring quoted_inputfield = tango::quoteIdentifierIfNecessary(g_app->getDatabase(), groupcol_inputfield);
-        std::wstring quoted_outputfield = tango::quoteIdentifierIfNecessary(g_app->getDatabase(), groupcol_outputfield);
+        std::wstring quoted_inputfield = xd::quoteIdentifierIfNecessary(g_app->getDatabase(), groupcol_inputfield);
+        std::wstring quoted_outputfield = xd::quoteIdentifierIfNecessary(g_app->getDatabase(), groupcol_outputfield);
 
         // construct the output field specifier, which as the form <output_name>=<group_func>(<input_name>)
         std::wstring output_col_expr;

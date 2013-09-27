@@ -19,11 +19,11 @@ class KpgDatabase;
 class PkgStreamReader;
 class PkgStreamWriter;
 
-class KpgStream : public tango::IStream
+class KpgStream : public xd::IStream
 {
     XCM_CLASS_NAME("xdpgsql.KpgStream")
     XCM_BEGIN_INTERFACE_MAP(KpgStream)
-        XCM_INTERFACE_ENTRY(tango::IStream)
+        XCM_INTERFACE_ENTRY(xd::IStream)
     XCM_END_INTERFACE_MAP()
 
 public:

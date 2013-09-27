@@ -17,11 +17,11 @@
 #include "../xdcommon/cmnbaseset.h"
 
 
-class FixedLengthDefinition : public tango::IFixedLengthDefinition
+class FixedLengthDefinition : public xd::IFixedLengthDefinition
 {
     XCM_CLASS_NAME("xdfs.FixedLengthDefinition")
     XCM_BEGIN_INTERFACE_MAP(FixedLengthDefinition)
-        XCM_INTERFACE_ENTRY(tango::IFixedLengthDefinition)
+        XCM_INTERFACE_ENTRY(xd::IFixedLengthDefinition)
     XCM_END_INTERFACE_MAP()
     
 public:
@@ -45,13 +45,13 @@ public:
     virtual bool saveConfiguration() { return false; }
     virtual bool deleteConfiguration() { return false; }
 
-    virtual tango::IStructurePtr getSourceStructure() { return m_source_structure; }
-    virtual tango::IStructurePtr getDestinationStructure() { return m_dest_structure; }
-    virtual tango::IStructurePtr getStructure() { return xcm::null; }
+    virtual xd::IStructurePtr getSourceStructure() { return m_source_structure; }
+    virtual xd::IStructurePtr getDestinationStructure() { return m_dest_structure; }
+    virtual xd::IStructurePtr getStructure() { return xcm::null; }
     
-    virtual bool modifySourceStructure(tango::IStructure* struct_config, tango::IJob* job) { return false; }
-    virtual bool modifyDestinationStructure(tango::IStructure* struct_config, tango::IJob* job) { return false; }
-    virtual bool modifyStructure(tango::IStructure* struct_config, tango::IJob* job) { return false; }
+    virtual bool modifySourceStructure(xd::IStructure* struct_config, xd::IJob* job) { return false; }
+    virtual bool modifyDestinationStructure(xd::IStructure* struct_config, xd::IJob* job) { return false; }
+    virtual bool modifyStructure(xd::IStructure* struct_config, xd::IJob* job) { return false; }
         
     virtual void setBeginningSkipCharacterCount(size_t new_val) { m_skip_chars = new_val; }
     virtual size_t getBeginningSkipCharacterCount() { return m_skip_chars; }
@@ -63,8 +63,8 @@ public:
     virtual bool isLineDelimited() { return (m_file_type == LineDelimited) ? true : false; }
     
 public:
-    tango::IStructurePtr m_source_structure;
-    tango::IStructurePtr m_dest_structure;
+    xd::IStructurePtr m_source_structure;
+    xd::IStructurePtr m_dest_structure;
     std::wstring m_line_delimiters; // character array containing one or more line delimiters
     size_t m_row_width;             // user-specified width of each row
     int m_file_type;                // fixed or line-delimited (see fixedlengthtextset.h)
@@ -75,7 +75,7 @@ public:
 class FixedLengthTextSet : public CommonBaseSet,
                            public IXdfsSet,
                            public IXdsqlTable,
-                           public tango::IFixedLengthDefinition
+                           public xd::IFixedLengthDefinition
 {
 friend class FsDatabase;
 friend class FixedLengthTextIterator;
@@ -86,45 +86,45 @@ friend class FixedLengthTextRowInserter;
         XCM_INTERFACE_ENTRY(CommonBaseSet)
         XCM_INTERFACE_ENTRY(IXdfsSet)
         XCM_INTERFACE_ENTRY(IXdsqlTable)
-        XCM_INTERFACE_ENTRY(tango::IFixedLengthDefinition)
+        XCM_INTERFACE_ENTRY(xd::IFixedLengthDefinition)
     XCM_END_INTERFACE_MAP()
 
 public:
 
     FixedLengthTextSet();
     ~FixedLengthTextSet();
-    bool init(tango::IDatabasePtr db,
+    bool init(xd::IDatabasePtr db,
               const std::wstring& filename);
 
-    void setCreateStructure(tango::IStructurePtr structure);
+    void setCreateStructure(xd::IStructurePtr structure);
 
-    tango::IRowInserterPtr getRowInserter();
+    xd::IRowInserterPtr getRowInserter();
     IXdsqlRowDeleterPtr getRowDeleter() { return xcm::null; }
 
-    tango::IIteratorPtr createIterator(const std::wstring& columns,
+    xd::IIteratorPtr createIterator(const std::wstring& columns,
                                        const std::wstring& order,
-                                       tango::IJob* job);
+                                       xd::IJob* job);
 
-    tango::rowpos_t getRowCount();
+    xd::rowpos_t getRowCount();
 
     bool restoreDeleted() { return false; }
 
-    bool updateRow(tango::rowid_t rowid,
-                   tango::ColumnUpdateInfo* info,
+    bool updateRow(xd::rowid_t rowid,
+                   xd::ColumnUpdateInfo* info,
                    size_t info_size) { return false; }
 
-    // tango::IFixedLengthDefinition
+    // xd::IFixedLengthDefinition
 
     bool saveConfiguration();
     bool deleteConfiguration();
     
-    tango::IStructurePtr getSourceStructure();
-    tango::IStructurePtr getDestinationStructure();
-    tango::IStructurePtr getStructure();
+    xd::IStructurePtr getSourceStructure();
+    xd::IStructurePtr getDestinationStructure();
+    xd::IStructurePtr getStructure();
     
-    bool modifySourceStructure(tango::IStructure* struct_config, tango::IJob* job);
-    bool modifyDestinationStructure(tango::IStructure* struct_config, tango::IJob* job);
-    bool modifyStructure(tango::IStructure* struct_config, tango::IJob* job);
+    bool modifySourceStructure(xd::IStructure* struct_config, xd::IJob* job);
+    bool modifyDestinationStructure(xd::IStructure* struct_config, xd::IJob* job);
+    bool modifyStructure(xd::IStructure* struct_config, xd::IJob* job);
         
     void setBeginningSkipCharacterCount(size_t new_val);
     size_t getBeginningSkipCharacterCount();
@@ -142,13 +142,13 @@ private:
 
 private:
 
-    tango::IDatabasePtr m_database;
+    xd::IDatabasePtr m_database;
     std::wstring m_path;
     std::wstring m_configfile_path;
 
     FixedLengthDefinition* m_definition;
     
-    tango::rowpos_t m_row_count;    // number of rows in the file
+    xd::rowpos_t m_row_count;    // number of rows in the file
     xf_off_t m_file_size;           // size of the file
 };
 
@@ -168,11 +168,11 @@ struct FixedLengthTextInsertData
     std::string m_str_val;
 };
 
-class FixedLengthTextRowInserter : public tango::IRowInserter
+class FixedLengthTextRowInserter : public xd::IRowInserter
 {
     XCM_CLASS_NAME("xdfs.FixedLengthTextRowInserter")
     XCM_BEGIN_INTERFACE_MAP(FixedLengthTextRowInserter)
-        XCM_INTERFACE_ENTRY(tango::IRowInserter)
+        XCM_INTERFACE_ENTRY(xd::IRowInserter)
     XCM_END_INTERFACE_MAP()
 
 
@@ -181,18 +181,18 @@ public:
     FixedLengthTextRowInserter(FixedLengthTextSet* set);
     ~FixedLengthTextRowInserter();
 
-    tango::objhandle_t getHandle(const std::wstring& column_name);
-    tango::IColumnInfoPtr getInfo(tango::objhandle_t column_handle);
+    xd::objhandle_t getHandle(const std::wstring& column_name);
+    xd::IColumnInfoPtr getInfo(xd::objhandle_t column_handle);
 
-    bool putRawPtr(tango::objhandle_t column_handle, const unsigned char* value, int length);
-    bool putString(tango::objhandle_t column_handle, const std::string& value);
-    bool putWideString(tango::objhandle_t column_handle, const std::wstring& value);
-    bool putDouble(tango::objhandle_t column_handle, double value);
-    bool putInteger(tango::objhandle_t column_handle, int value);
-    bool putBoolean(tango::objhandle_t column_handle, bool value);
-    bool putDateTime(tango::objhandle_t column_handle, tango::datetime_t value);
+    bool putRawPtr(xd::objhandle_t column_handle, const unsigned char* value, int length);
+    bool putString(xd::objhandle_t column_handle, const std::string& value);
+    bool putWideString(xd::objhandle_t column_handle, const std::wstring& value);
+    bool putDouble(xd::objhandle_t column_handle, double value);
+    bool putInteger(xd::objhandle_t column_handle, int value);
+    bool putBoolean(xd::objhandle_t column_handle, bool value);
+    bool putDateTime(xd::objhandle_t column_handle, xd::datetime_t value);
     bool putRowBuffer(const unsigned char* value);
-    bool putNull(tango::objhandle_t column_handle);
+    bool putNull(xd::objhandle_t column_handle);
 
     bool startInsert(const std::wstring& col_list);
     bool insertRow();

@@ -78,7 +78,7 @@ DelimitedTextIterator::~DelimitedTextIterator()
     }
 }
 
-bool DelimitedTextIterator::init(tango::IDatabasePtr db,
+bool DelimitedTextIterator::init(xd::IDatabasePtr db,
                                  DelimitedTextSet* set,
                                  const std::wstring& filename)
 {
@@ -121,17 +121,17 @@ std::wstring DelimitedTextIterator::getTable()
 }
 
 
-tango::rowpos_t DelimitedTextIterator::getRowCount()
+xd::rowpos_t DelimitedTextIterator::getRowCount()
 {
     return 0;
 }
 
-tango::IDatabasePtr DelimitedTextIterator::getDatabase()
+xd::IDatabasePtr DelimitedTextIterator::getDatabase()
 {
     return m_database;
 }
 
-tango::IIteratorPtr DelimitedTextIterator::clone()
+xd::IIteratorPtr DelimitedTextIterator::clone()
 {
     DelimitedTextIterator* iter = new DelimitedTextIterator;
     
@@ -140,10 +140,10 @@ tango::IIteratorPtr DelimitedTextIterator::clone()
         return xcm::null;
     }
     
-    tango::rowid_t rowid = m_file.getRowOffset();
+    xd::rowid_t rowid = m_file.getRowOffset();
     iter->goRow(rowid);
     
-    return static_cast<tango::IIterator*>(iter);
+    return static_cast<xd::IIterator*>(iter);
 }
 
 unsigned int DelimitedTextIterator::getIteratorFlags()
@@ -172,7 +172,7 @@ void DelimitedTextIterator::goLast()
 
 }
 
-tango::rowid_t DelimitedTextIterator::getRowId()
+xd::rowid_t DelimitedTextIterator::getRowId()
 {
     return m_file.getRowOffset();
 }
@@ -207,20 +207,20 @@ double DelimitedTextIterator::getPos()
     return m_file.getPos();
 }
 
-void DelimitedTextIterator::goRow(const tango::rowid_t& rowid)
+void DelimitedTextIterator::goRow(const xd::rowid_t& rowid)
 {
     m_file.goOffset(rowid);
 }
 
-tango::IStructurePtr DelimitedTextIterator::getStructure()
+xd::IStructurePtr DelimitedTextIterator::getStructure()
 {
-    tango::IStructurePtr s = static_cast<tango::IStructure*>(new Structure);
+    xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
     IStructureInternalPtr struct_int = s;
     
     std::vector<DelimitedTextDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
         struct_int->addColumn(col);
         
         col->setName((*it)->name);
@@ -249,9 +249,9 @@ void DelimitedTextIterator::refreshStructure()
     m_fields.clear();
 
 
-    tango::IStructurePtr source_structure = m_set->getSourceStructure();
-    tango::IStructurePtr destination_structure = m_set->getDestinationStructure();
-    tango::IStructurePtr final_structure = m_set->getStructure();
+    xd::IStructurePtr source_structure = m_set->getSourceStructure();
+    xd::IStructurePtr destination_structure = m_set->getDestinationStructure();
+    xd::IStructurePtr final_structure = m_set->getStructure();
     
     // if m_use_source_iterator is true, populate the DAI from the set's source
     // structure, otherwise, populate the DAI from the set's structure
@@ -260,7 +260,7 @@ void DelimitedTextIterator::refreshStructure()
         int i, col_count = source_structure->getColumnCount();
         for (i = 0; i < col_count; ++i)
         {
-            tango::IColumnInfoPtr colinfo;
+            xd::IColumnInfoPtr colinfo;
             colinfo = source_structure->getColumnInfoByIdx(i);
             
             DelimitedTextDataAccessInfo* dai = new DelimitedTextDataAccessInfo;
@@ -277,7 +277,7 @@ void DelimitedTextIterator::refreshStructure()
         int i, col_count = final_structure->getColumnCount();
         for (i = 0; i < col_count; ++i)
         {
-            tango::IColumnInfoPtr colinfo;
+            xd::IColumnInfoPtr colinfo;
             colinfo = final_structure->getColumnInfoByIdx(i);
             
             DelimitedTextDataAccessInfo* dai = new DelimitedTextDataAccessInfo;
@@ -297,7 +297,7 @@ void DelimitedTextIterator::refreshStructure()
             {
                 // this is not a calculated field, lookup and
                 // parse the destination structure's expression
-                tango::IColumnInfoPtr dest_colinfo;
+                xd::IColumnInfoPtr dest_colinfo;
                 dest_colinfo = destination_structure->getColumnInfoByIdx(i);
                 if (dest_colinfo.isNull())
                 {
@@ -319,8 +319,8 @@ void DelimitedTextIterator::refreshStructure()
     }
 }
 
-bool DelimitedTextIterator::modifyStructure(tango::IStructure* struct_config,
-                                            tango::IJob* job)
+bool DelimitedTextIterator::modifyStructure(xd::IStructure* struct_config,
+                                            xd::IJob* job)
 {
     IStructureInternalPtr struct_int = struct_config;
 
@@ -461,14 +461,14 @@ kscript::ExprParser* DelimitedTextIterator::parseSourceExpression(const std::wst
     
     kscript::ExprParser* parser = createExprParser();
 
-    tango::IStructurePtr structure = m_set->getSourceStructure();
+    xd::IStructurePtr structure = m_set->getSourceStructure();
     if (!structure)
         return NULL;
         
     int i, col_count = structure->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
        
         DelimitedSourceBindInfo* info = new DelimitedSourceBindInfo;
         info->file = &m_file;
@@ -503,13 +503,13 @@ kscript::ExprParser* DelimitedTextIterator::parseDestinationExpression(const std
 
 
 
-tango::objhandle_t DelimitedTextIterator::getHandle(const std::wstring& expr)
+xd::objhandle_t DelimitedTextIterator::getHandle(const std::wstring& expr)
 {
     std::vector<DelimitedTextDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
         if (!wcscasecmp((*it)->name.c_str(), expr.c_str()))
-            return (tango::objhandle_t)(*it);
+            return (xd::objhandle_t)(*it);
     }
 
     // test for binary keys
@@ -518,10 +518,10 @@ tango::objhandle_t DelimitedTextIterator::getHandle(const std::wstring& expr)
         DelimitedTextDataAccessInfo* dai = new DelimitedTextDataAccessInfo;
         dai->expr = NULL;
         dai->expr_text = expr;
-        dai->type = tango::typeBinary;
+        dai->type = xd::typeBinary;
         dai->key_layout = new KeyLayout;
 
-        if (!dai->key_layout->setKeyExpr(static_cast<tango::IIterator*>(this),
+        if (!dai->key_layout->setKeyExpr(static_cast<xd::IIterator*>(this),
                                     expr.substr(4),
                                     false))
         {
@@ -530,13 +530,13 @@ tango::objhandle_t DelimitedTextIterator::getHandle(const std::wstring& expr)
         }
 
         m_exprs.push_back(dai);
-        return (tango::objhandle_t)dai;
+        return (xd::objhandle_t)dai;
     }
     
 
     kscript::ExprParser* parser = parse(expr);
     if (!parser)
-        return (tango::objhandle_t)0;
+        return (xd::objhandle_t)0;
 
     DelimitedTextDataAccessInfo* dai = new DelimitedTextDataAccessInfo;
     dai->expr = parser;
@@ -544,21 +544,21 @@ tango::objhandle_t DelimitedTextIterator::getHandle(const std::wstring& expr)
     dai->type = kscript2tangoType(parser->getType());
     m_exprs.push_back(dai);
 
-    return (tango::objhandle_t)dai;
+    return (xd::objhandle_t)dai;
 }
 
-bool DelimitedTextIterator::releaseHandle(tango::objhandle_t data_handle)
+bool DelimitedTextIterator::releaseHandle(xd::objhandle_t data_handle)
 {
     std::vector<DelimitedTextDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        if ((tango::objhandle_t)(*it) == data_handle)
+        if ((xd::objhandle_t)(*it) == data_handle)
             return true;
     }
 
     for (it = m_exprs.begin(); it != m_exprs.end(); ++it)
     {
-        if ((tango::objhandle_t)(*it) == data_handle)
+        if ((xd::objhandle_t)(*it) == data_handle)
         {
             delete (*it);
             m_exprs.erase(it);
@@ -569,7 +569,7 @@ bool DelimitedTextIterator::releaseHandle(tango::objhandle_t data_handle)
     return false;
 }
 
-tango::IColumnInfoPtr DelimitedTextIterator::getInfo(tango::objhandle_t data_handle)
+xd::IColumnInfoPtr DelimitedTextIterator::getInfo(xd::objhandle_t data_handle)
 {
     DelimitedTextDataAccessInfo* dai = (DelimitedTextDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -582,17 +582,17 @@ tango::IColumnInfoPtr DelimitedTextIterator::getInfo(tango::objhandle_t data_han
     colinfo->setScale(dai->scale);
     colinfo->setExpression(dai->expr_text);
 
-    if (dai->type == tango::typeDate ||
-        dai->type == tango::typeInteger)
+    if (dai->type == xd::typeDate ||
+        dai->type == xd::typeInteger)
     {
         colinfo->setWidth(4);
     }
-     else if (dai->type == tango::typeDateTime ||
-              dai->type == tango::typeDouble)
+     else if (dai->type == xd::typeDateTime ||
+              dai->type == xd::typeDouble)
     {
         colinfo->setWidth(8);
     }
-     else if (dai->type == tango::typeBoolean)
+     else if (dai->type == xd::typeBoolean)
     {
         colinfo->setWidth(1);
     }
@@ -604,10 +604,10 @@ tango::IColumnInfoPtr DelimitedTextIterator::getInfo(tango::objhandle_t data_han
     if (dai->expr_text.length() > 0)
         colinfo->setCalculated(true);
 
-    return static_cast<tango::IColumnInfo*>(colinfo);
+    return static_cast<xd::IColumnInfo*>(colinfo);
 }
 
-int DelimitedTextIterator::getType(tango::objhandle_t data_handle)
+int DelimitedTextIterator::getType(xd::objhandle_t data_handle)
 {
     DelimitedTextDataAccessInfo* dai = (DelimitedTextDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -616,7 +616,7 @@ int DelimitedTextIterator::getType(tango::objhandle_t data_handle)
     return dai->type;
 }
 
-int DelimitedTextIterator::getRawWidth(tango::objhandle_t data_handle)
+int DelimitedTextIterator::getRawWidth(xd::objhandle_t data_handle)
 {
     DelimitedTextDataAccessInfo* dai = (DelimitedTextDataAccessInfo*)data_handle;
     if (dai && dai->key_layout)
@@ -625,7 +625,7 @@ int DelimitedTextIterator::getRawWidth(tango::objhandle_t data_handle)
     return 0;
 }
 
-const unsigned char* DelimitedTextIterator::getRawPtr(tango::objhandle_t data_handle)
+const unsigned char* DelimitedTextIterator::getRawPtr(xd::objhandle_t data_handle)
 {
     DelimitedTextDataAccessInfo* dai = (DelimitedTextDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -639,7 +639,7 @@ const unsigned char* DelimitedTextIterator::getRawPtr(tango::objhandle_t data_ha
     return 0;
 }
 
-const std::string& DelimitedTextIterator::getString(tango::objhandle_t data_handle)
+const std::string& DelimitedTextIterator::getString(xd::objhandle_t data_handle)
 {
     DelimitedTextDataAccessInfo* dai = (DelimitedTextDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -672,7 +672,7 @@ const std::string& DelimitedTextIterator::getString(tango::objhandle_t data_hand
     return dai->str_result;
 }
 
-const std::wstring& DelimitedTextIterator::getWideString(tango::objhandle_t data_handle)
+const std::wstring& DelimitedTextIterator::getWideString(xd::objhandle_t data_handle)
 {
     DelimitedTextDataAccessInfo* dai = (DelimitedTextDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -680,12 +680,12 @@ const std::wstring& DelimitedTextIterator::getWideString(tango::objhandle_t data
         return empty_wstring;
     }
 
-    if (dai->type == tango::typeCharacter)
+    if (dai->type == xd::typeCharacter)
     {
         dai->wstr_result = kl::towstring(getString(data_handle));
         return dai->wstr_result;
     }
-     else if (dai->type == tango::typeWideCharacter)
+     else if (dai->type == xd::typeWideCharacter)
     {
         if (dai->expr)
         {
@@ -709,21 +709,21 @@ const std::wstring& DelimitedTextIterator::getWideString(tango::objhandle_t data
 
 
 
-inline tango::datetime_t implicitStringToDateTime(const wchar_t* str)
+inline xd::datetime_t implicitStringToDateTime(const wchar_t* str)
 {
     int y,m,d;
     
     if (!parseDelimitedStringDate(str, &y, &m, &d))
         return 0;
     
-    tango::datetime_t dt;
+    xd::datetime_t dt;
     dt = dateToJulian(y, m, d);
     dt <<= 32;
     return dt;
 }
 
 
-tango::datetime_t DelimitedTextIterator::getDateTime(tango::objhandle_t data_handle)
+xd::datetime_t DelimitedTextIterator::getDateTime(xd::objhandle_t data_handle)
 {
     DelimitedTextDataAccessInfo* dai = (DelimitedTextDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -735,10 +735,10 @@ tango::datetime_t DelimitedTextIterator::getDateTime(tango::objhandle_t data_han
         if (dai->expr_result.isDateTime())
         {
             kscript::ExprDateTime edt = dai->expr_result.getDateTime();
-            tango::datetime_t dt;
+            xd::datetime_t dt;
             dt = edt.date;
             dt <<= 32;
-            if (dai->type == tango::typeDateTime)
+            if (dai->type == xd::typeDateTime)
                 dt |= edt.time;
             return dt;
         }
@@ -763,7 +763,7 @@ inline double implicitStringToDouble(const wchar_t* str)
     return kl::nolocale_wtof(str);
 }
 
-double DelimitedTextIterator::getDouble(tango::objhandle_t data_handle)
+double DelimitedTextIterator::getDouble(xd::objhandle_t data_handle)
 {
     DelimitedTextDataAccessInfo* dai = (DelimitedTextDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -796,7 +796,7 @@ inline int implicitStringToInteger(const wchar_t* str)
     return kl::wtoi(str);
 }
 
-int DelimitedTextIterator::getInteger(tango::objhandle_t data_handle)
+int DelimitedTextIterator::getInteger(xd::objhandle_t data_handle)
 {
     DelimitedTextDataAccessInfo* dai = (DelimitedTextDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -830,7 +830,7 @@ inline bool implicitStringToBool(const wchar_t* str)
     return (ch == '1' || ch == 'T' || ch == 'Y') ? true : false;
 }
 
-bool DelimitedTextIterator::getBoolean(tango::objhandle_t data_handle)
+bool DelimitedTextIterator::getBoolean(xd::objhandle_t data_handle)
 {
     DelimitedTextDataAccessInfo* dai = (DelimitedTextDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -857,7 +857,7 @@ bool DelimitedTextIterator::getBoolean(tango::objhandle_t data_handle)
     return implicitStringToBool(m_file.getString(dai->ordinal).c_str());
 }
 
-bool DelimitedTextIterator::isNull(tango::objhandle_t data_handle)
+bool DelimitedTextIterator::isNull(xd::objhandle_t data_handle)
 {
     DelimitedTextDataAccessInfo* dai = (DelimitedTextDataAccessInfo*)data_handle;
     if (dai == NULL)

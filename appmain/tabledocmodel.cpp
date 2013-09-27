@@ -770,7 +770,7 @@ bool TableDocModel::load()
     if (m_id.empty())
         return false;
 
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return false;
 
@@ -788,7 +788,7 @@ bool TableDocModel::save()
     if (m_id.empty())
         return false;
 
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return false;
 
@@ -971,7 +971,7 @@ ITableDocViewEnumPtr TableDocModel::getViewEnum()
 
 bool TableDocModel::saveJson()
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
 
     std::vector<ITableDocObjectPtr> marks = m_marks;
     std::vector<ITableDocObjectPtr> views = m_views;
@@ -1113,7 +1113,7 @@ bool TableDocModel::saveJson()
 
 bool TableDocModel::loadJson()
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     kl::JsonNode node;
 
     if (g_app->getDbDriver() == L"xdnative")
@@ -1179,7 +1179,7 @@ bool TableDocModel::loadJson()
 
 bool TableDocModel::fromJson(const std::wstring& json)
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     kl::JsonNode node;
 
     if (g_app->getDbDriver() == L"xdnative")
@@ -1216,7 +1216,7 @@ std::wstring TableDocModel::toJson()
 {
     saveJson();
 
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     kl::JsonNode node;
 
     if (g_app->getDbDriver() == L"xdnative")
@@ -1474,11 +1474,11 @@ wxColour TableDocModel::getNextMarkColor()
 
 bool TableDocMgr::newFile(const std::wstring& _path)
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return false;
 
-    std::wstring path = tango::dequoteIdentifier(db, _path);
+    std::wstring path = xd::dequoteIdentifier(db, _path);
     std::wstring sql = L"CREATE TABLE [";
     sql += path;
     sql += L"] (field1 VARCHAR(40))";
@@ -1577,7 +1577,7 @@ bool TableDocMgr::deleteModel(const std::wstring& set_id)
     g_model_registry.releaseModel(set_id);
 
     
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     kl::JsonNode node;
 
     if (g_app->getDbDriver() == L"xdnative")

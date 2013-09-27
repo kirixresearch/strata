@@ -78,7 +78,7 @@ int CopyJob::runJob()
     }    
 
 
-    tango::IJobPtr tango_job = m_db->createJob();
+    xd::IJobPtr tango_job = m_db->createJob();
     setXdJob(tango_job);
 
     // get the parameters
@@ -87,13 +87,13 @@ int CopyJob::runJob()
 
 
     // get the input
-    tango::CopyParams info;
+    xd::CopyParams info;
     info.input = params_node["input"].getString();
     info.output = params_node["output"].getString();
 
     if (params_node.childExists("input_iterator"))
     {
-        info.iter_input = (tango::IIterator*)(unsigned long)(kl::hexToUint64(params_node["input_iterator"].getString()));
+        info.iter_input = (xd::IIterator*)(unsigned long)(kl::hexToUint64(params_node["input_iterator"].getString()));
         info.input = L"";
     }
 

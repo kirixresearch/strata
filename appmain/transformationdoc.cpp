@@ -148,20 +148,20 @@ static const int format2comboIdx(int tango_type, int format_idx)
 {
     switch (tango_type)
     {
-        case tango::typeCharacter:
-        case tango::typeWideCharacter:
+        case xd::typeCharacter:
+        case xd::typeWideCharacter:
             return (format_idx-charfmtBegin);
         
-        case tango::typeNumeric:
-        case tango::typeInteger:
-        case tango::typeDouble:
+        case xd::typeNumeric:
+        case xd::typeInteger:
+        case xd::typeDouble:
             return (format_idx-numfmtBegin);
         
-        case tango::typeDateTime:
-        case tango::typeDate:
+        case xd::typeDateTime:
+        case xd::typeDate:
             return (format_idx-datefmtBegin);
         
-        case tango::typeBoolean:
+        case xd::typeBoolean:
             return (format_idx-boolfmtBegin);
             
         default:
@@ -175,20 +175,20 @@ static const int combo2formatIdx(int tango_type, int combo_idx)
 {
     switch (tango_type)
     {
-        case tango::typeCharacter:
-        case tango::typeWideCharacter:
+        case xd::typeCharacter:
+        case xd::typeWideCharacter:
             return (combo_idx == -1) ? charfmtEmpty : (charfmtBegin+combo_idx);
         
-        case tango::typeNumeric:
-        case tango::typeInteger:
-        case tango::typeDouble:
+        case xd::typeNumeric:
+        case xd::typeInteger:
+        case xd::typeDouble:
             return (combo_idx == -1) ? numfmtEmpty : (numfmtBegin+combo_idx);
         
-        case tango::typeDateTime:
-        case tango::typeDate:
+        case xd::typeDateTime:
+        case xd::typeDate:
             return (combo_idx == -1) ? datefmtEmpty : (datefmtBegin+combo_idx);
         
-        case tango::typeBoolean:
+        case xd::typeBoolean:
             return (combo_idx == -1) ? boolfmtEmpty : (boolfmtBegin+combo_idx);
             
         default:
@@ -243,9 +243,9 @@ static std::vector<RowErrorChecker> getRowErrorCheckerVector(
     return vec;
 }
 
-tango::IStructurePtr getTextSourceStructure(IDocumentSitePtr doc_site)
+xd::IStructurePtr getTextSourceStructure(IDocumentSitePtr doc_site)
 {
-    tango::IStructurePtr source_struct;
+    xd::IStructurePtr source_struct;
     
     /*
 
@@ -253,9 +253,9 @@ tango::IStructurePtr getTextSourceStructure(IDocumentSitePtr doc_site)
     ITextDocPtr textdoc = lookupOtherDocument(doc_site, "appmain.TextDoc");
     if (textdoc.isOk())
     {
-        tango::IxSetPtr set = textdoc->getTextSet();
-        tango::IFixedLengthDefinitionPtr fset = set;
-        tango::IDelimitedTextSetPtr tset = set;
+        xd::IxSetPtr set = textdoc->getTextSet();
+        xd::IFixedLengthDefinitionPtr fset = set;
+        xd::IDelimitedTextSetPtr tset = set;
         if (fset.isOk())
             source_struct = fset->getSourceStructure();
              else if (tset.isOk())
@@ -468,14 +468,14 @@ bool TransformationDoc::initDoc(IFramePtr frame,
     props.mask = kcl::CellProperties::cpmaskCtrlType |
                  kcl::CellProperties::cpmaskCbChoices;
     props.ctrltype = kcl::Grid::ctrltypeDropList;
-    props.cbchoices.push_back(tango2text(tango::typeCharacter));
-    props.cbchoices.push_back(tango2text(tango::typeWideCharacter));
-    props.cbchoices.push_back(tango2text(tango::typeNumeric));
-    props.cbchoices.push_back(tango2text(tango::typeDouble));
-    props.cbchoices.push_back(tango2text(tango::typeInteger));
-    props.cbchoices.push_back(tango2text(tango::typeDate));
-    props.cbchoices.push_back(tango2text(tango::typeDateTime));
-    props.cbchoices.push_back(tango2text(tango::typeBoolean));
+    props.cbchoices.push_back(tango2text(xd::typeCharacter));
+    props.cbchoices.push_back(tango2text(xd::typeWideCharacter));
+    props.cbchoices.push_back(tango2text(xd::typeNumeric));
+    props.cbchoices.push_back(tango2text(xd::typeDouble));
+    props.cbchoices.push_back(tango2text(xd::typeInteger));
+    props.cbchoices.push_back(tango2text(xd::typeDate));
+    props.cbchoices.push_back(tango2text(xd::typeDateTime));
+    props.cbchoices.push_back(tango2text(xd::typeBoolean));
     m_grid->setModelColumnProperties(colFieldType, &props);
     
     props.mask = kcl::CellProperties::cpmaskEditable |
@@ -574,18 +574,18 @@ void TransformationDoc::onSiteActivated()
 void TransformationDoc::initFromSet(const wxString& path)
 {
 /*
-    tango::IStructurePtr source_structure;
-    tango::IStructurePtr structure;
-    tango::IColumnInfoPtr colinfo;
+    xd::IStructurePtr source_structure;
+    xd::IStructurePtr structure;
+    xd::IColumnInfoPtr colinfo;
 
-    tango::IFixedLengthDefinitionPtr fset = set;
+    xd::IFixedLengthDefinitionPtr fset = set;
     if (fset)
     {
         source_structure = fset->getSourceStructure();
         structure = fset->getDestinationStructure();
     }
     
-    tango::IDelimitedTextSetPtr tset = set;
+    xd::IDelimitedTextSetPtr tset = set;
     if (tset)
     {
         source_structure = tset->getSourceStructure();
@@ -675,7 +675,7 @@ void TransformationDoc::setInputStructure(const std::vector<TransformField>& inp
     populateSourceFieldDropDown();
 }
 
-void TransformationDoc::setInputStructure(tango::IStructurePtr structure)
+void TransformationDoc::setInputStructure(xd::IStructurePtr structure)
 {
     m_source_fields.clear();
     
@@ -684,7 +684,7 @@ void TransformationDoc::setInputStructure(tango::IStructurePtr structure)
     int i, count = structure->getColumnCount();
     for (i = 0; i < count; ++i)
     {
-        tango::IColumnInfoPtr col = structure->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr col = structure->getColumnInfoByIdx(i);
         if (col)
         {
             field.input_name = col->getName();
@@ -715,7 +715,7 @@ void TransformationDoc::getColumnListItems(std::vector<ColumnListItem>& items)
 
 void TransformationDoc::onColumnListDblClicked(const std::vector<wxString>& items)
 {
-    tango::IStructurePtr s = getTextSourceStructure(m_doc_site);
+    xd::IStructurePtr s = getTextSourceStructure(m_doc_site);
     if (s.isNull())
         return;
         
@@ -728,7 +728,7 @@ void TransformationDoc::onColumnListDblClicked(const std::vector<wxString>& item
     for (it = items.begin(); it != items.end(); ++it)
     {
         // get the column info from the column name we double-clicked
-        tango::IColumnInfoPtr colinfo = s->getColumnInfo(towstr(*it));
+        xd::IColumnInfoPtr colinfo = s->getColumnInfo(towstr(*it));
         if (colinfo.isNull())
             continue;
         
@@ -778,12 +778,12 @@ void TransformationDoc::insertRow(int row, bool dynamic)
     
     TransformField* f = new TransformField;
     f->input_name = wxEmptyString;
-    f->input_type = tango::typeCharacter;
+    f->input_type = xd::typeCharacter;
     f->input_width = 20;
     f->input_scale = 0;
     f->input_offset = 0;
     f->output_name = wxEmptyString;
-    f->output_type = tango::typeCharacter;
+    f->output_type = xd::typeCharacter;
     f->output_width = 20;
     f->output_scale = 0;
     f->output_expression = wxT("\"\"");
@@ -841,15 +841,15 @@ void TransformationDoc::insertSelectedRows(bool dynamic)
 }
 
 void TransformationDoc::insertRowFromColumnInfo(int row,
-                                                tango::IColumnInfoPtr colinfo,
-                                                tango::IStructurePtr validate_against)
+                                                xd::IColumnInfoPtr colinfo,
+                                                xd::IStructurePtr validate_against)
 {
     if (row == -1)
         row = m_grid->getRowCount();
         
     TransformField* f = new TransformField;
     f->input_name = colinfo->getName();
-    f->input_type = tango::typeCharacter;
+    f->input_type = xd::typeCharacter;
     f->input_width = colinfo->getWidth();
     f->input_scale = colinfo->getScale();
     f->input_offset = colinfo->getOffset();
@@ -934,35 +934,35 @@ void TransformationDoc::updateRowCellProps(int row)
     // determine if the width and decimal cells are editable
     switch (type)
     {
-        case tango::typeCharacter:
-        case tango::typeWideCharacter:
+        case xd::typeCharacter:
+        case xd::typeWideCharacter:
             decimal_editable = false;
             cellprops.cbchoices = m_char_format_choices;
             break;
             
-        case tango::typeNumeric:
+        case xd::typeNumeric:
             cellprops.cbchoices = m_numeric_format_choices;
             break;
 
-        case tango::typeInteger:
+        case xd::typeInteger:
             width_editable = false;
             decimal_editable = false;
             cellprops.cbchoices = m_numeric_format_choices;
             break;
             
-        case tango::typeDouble:
+        case xd::typeDouble:
             width_editable = false;
             cellprops.cbchoices = m_numeric_format_choices;
             break;
 
-        case tango::typeDateTime:
-        case tango::typeDate:
+        case xd::typeDateTime:
+        case xd::typeDate:
             width_editable = false;
             decimal_editable = false;
             cellprops.cbchoices = m_date_format_choices;
             break;
 
-        case tango::typeBoolean:
+        case xd::typeBoolean:
             width_editable = false;
             decimal_editable = false;
             cellprops.cbchoices = m_bool_format_choices;
@@ -1063,11 +1063,11 @@ void TransformationDoc::updateRowWidthAndScale(int row)
     
     TransformField* f = (TransformField*)(m_grid->getRowData(row));
     
-    if (tango_type == tango::typeCharacter ||
-        tango_type == tango::typeWideCharacter)
+    if (tango_type == xd::typeCharacter ||
+        tango_type == xd::typeWideCharacter)
     {
-        if (last_tango_type == tango::typeCharacter ||
-            last_tango_type == tango::typeWideCharacter)
+        if (last_tango_type == xd::typeCharacter ||
+            last_tango_type == xd::typeWideCharacter)
         {
             return;
         }
@@ -1081,15 +1081,15 @@ void TransformationDoc::updateRowWidthAndScale(int row)
         }
     }
     
-    if (tango_type == tango::typeNumeric)
+    if (tango_type == xd::typeNumeric)
     {
         // if the width of the field was set to something above
         // the max numeric width, cap it off
         int width = m_grid->getCellInteger(row, colFieldWidth);
-        if (width > tango::max_numeric_width)
+        if (width > xd::max_numeric_width)
         {
             m_grid->setCellInteger(row, colFieldWidth,
-                                   tango::max_numeric_width);
+                                   xd::max_numeric_width);
         }
     }
 }
@@ -1130,7 +1130,7 @@ wxString TransformationDoc::createDestinationExpression(int row)
     int tango_type = choice2tango(m_grid->getCellComboSel(row, colFieldType));
     int format_comboidx = m_grid->getCellComboSel(row, colFieldFormula);
     wxString source_name = m_grid->getCellString(row, colSourceName);
-    wxString quoted_source_name = tango::quoteIdentifier(g_app->getDatabase(), towstr(source_name));
+    wxString quoted_source_name = xd::quoteIdentifier(g_app->getDatabase(), towstr(source_name));
     
     // translate from the combobox index and tango type
     // to the expression format index
@@ -1345,7 +1345,7 @@ int TransformationDoc::checkInvalidFieldnames(int check_flags)
                          : StructureValidator::ErrorNone);
 }
 
-int TransformationDoc::validateExpression(tango::IStructurePtr structure, const wxString& expr, int type)
+int TransformationDoc::validateExpression(xd::IStructurePtr structure, const wxString& expr, int type)
 {
     if (structure.isNull())
         structure = getSourceStructure();
@@ -1362,7 +1362,7 @@ int TransformationDoc::validateStructure()
     if (m_grid->getRowCount() == 0)
         return StructureValidator::ErrorNoFields;
 
-    tango::IStructurePtr source_structure = getSourceStructure();
+    xd::IStructurePtr source_structure = getSourceStructure();
     
     // CHECK: check for invalid expressions
     wxString expr;
@@ -1432,15 +1432,15 @@ bool TransformationDoc::doErrorCheck()
     return true;
 }
 
-tango::IStructurePtr TransformationDoc::createStructureFromGrid()
+xd::IStructurePtr TransformationDoc::createStructureFromGrid()
 {
-    // -- create the tango::IStructure --
-    tango::IStructurePtr s = g_app->getDatabase()->createStructure();
+    // -- create the xd::IStructure --
+    xd::IStructurePtr s = g_app->getDatabase()->createStructure();
 
     int row, row_count = m_grid->getRowCount();
     for (row = 0; row < row_count; ++row)
     {
-        tango::IColumnInfoPtr col = s->createColumn();
+        xd::IColumnInfoPtr col = s->createColumn();
         col->setName(towstr(m_grid->getCellString(row, colFieldName)));
         col->setType(choice2tango(m_grid->getCellComboSel(row, colFieldType)));
         col->setWidth(m_grid->getCellInteger(row, colFieldWidth));
@@ -1451,14 +1451,14 @@ tango::IStructurePtr TransformationDoc::createStructureFromGrid()
     return s;
 }
 
-tango::IStructurePtr TransformationDoc::getSourceStructure()
+xd::IStructurePtr TransformationDoc::getSourceStructure()
 {
 /*
-    tango::IStructurePtr s;
+    xd::IStructurePtr s;
     if (m_init_set.isOk())
     {
-        tango::IFixedLengthDefinitionPtr fset = m_init_set;
-        tango::IDelimitedTextSetPtr tset = m_init_set;
+        xd::IFixedLengthDefinitionPtr fset = m_init_set;
+        xd::IDelimitedTextSetPtr tset = m_init_set;
         if (fset)
             return fset->getSourceStructure();
          else if (tset)
@@ -1683,31 +1683,31 @@ bool TransformationDoc::doSave()
         int width = -1;
         int scale = -1;
         
-        if (type == tango::typeCharacter ||
-            type == tango::typeWideCharacter)
+        if (type == xd::typeCharacter ||
+            type == xd::typeWideCharacter)
         {
             scale = 0;
         }
         
-        if (type == tango::typeDouble)
+        if (type == xd::typeDouble)
         {
             width = 8;
         }
         
-        if (type == tango::typeDateTime)
+        if (type == xd::typeDateTime)
         {
             width = 8;
             scale = 0;
         }
         
-        if (type == tango::typeInteger ||
-            type == tango::typeDate)
+        if (type == xd::typeInteger ||
+            type == xd::typeDate)
         {
             width = 4;
             scale = 0;
         }
         
-        if (type == tango::typeBoolean)
+        if (type == xd::typeBoolean)
         {
             width = 1;
             scale = 0;
@@ -1720,9 +1720,9 @@ bool TransformationDoc::doSave()
     }
 
     /*
-    tango::IxSetPtr text_set;
-    tango::IFixedLengthDefinitionPtr fset;
-    tango::IDelimitedTextSetPtr tset;
+    xd::IxSetPtr text_set;
+    xd::IFixedLengthDefinitionPtr fset;
+    xd::IDelimitedTextSetPtr tset;
 
     wxString name, source_name, expression;
     int type, width, scale, format_sel;
@@ -1746,8 +1746,8 @@ bool TransformationDoc::doSave()
         tset = text_set;
         
         // get a structure that we can configure
-        tango::IStructurePtr new_struct = textdoc->getStructure();
-        tango::IColumnInfoPtr colinfo;
+        xd::IStructurePtr new_struct = textdoc->getStructure();
+        xd::IColumnInfoPtr colinfo;
         
         // populate the new structure
         int row, row_count = m_grid->getRowCount();
@@ -1773,7 +1773,7 @@ bool TransformationDoc::doSave()
         if (fset)
         {
             // purge the old destination structure
-            tango::IStructurePtr s = fset->getDestinationStructure();
+            xd::IStructurePtr s = fset->getDestinationStructure();
             
             int col, col_count = s->getColumnCount();
             for (col = 0; col < col_count; ++col)
@@ -1794,8 +1794,8 @@ bool TransformationDoc::doSave()
         if (tset)
         {
             // purge the old destination structure
-            tango::IStructurePtr s = tset->getDestinationStructure();
-            tango::IColumnInfoPtr colinfo;
+            xd::IStructurePtr s = tset->getDestinationStructure();
+            xd::IColumnInfoPtr colinfo;
             
             int col, col_count = s->getColumnCount();
             for (col = 0; col < col_count; ++col)
@@ -1832,7 +1832,7 @@ bool TransformationDoc::doSave()
         ITableDocViewPtr tabledocview = tabledoc->getActiveView();
         if (tabledocview)
         {
-            tango::IStructurePtr s;
+            xd::IStructurePtr s;
             if (fset)
                 s = fset->getDestinationStructure();
             if (tset)
@@ -1841,7 +1841,7 @@ bool TransformationDoc::doSave()
             int i, col_count = s->getColumnCount();
             for (i = 0; i < col_count; ++i)
             {
-                tango::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
+                xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
                 int viewidx = tabledocview->getColumnIdx(colinfo->getName());
                 
                 // only add the column to our view if it doesn't already exist
@@ -1995,13 +1995,13 @@ void TransformationDoc::onGridEndEdit(kcl::GridEvent& evt)
             return;
 
         // conform to max character field width
-        if (type == tango::typeCharacter || type == tango::typeWideCharacter)
+        if (type == xd::typeCharacter || type == xd::typeWideCharacter)
         {
             int width = evt.GetInt();
-            if (width > tango::max_character_width)
+            if (width > xd::max_character_width)
             {
                 evt.Veto();
-                width = tango::max_character_width;
+                width = xd::max_character_width;
                 m_grid->setCellInteger(row, colFieldWidth, width);
                 m_grid->refreshColumn(kcl::Grid::refreshAll, colFieldWidth);
             }
@@ -2015,16 +2015,16 @@ void TransformationDoc::onGridEndEdit(kcl::GridEvent& evt)
             }
         }
 
-        if (type == tango::typeNumeric)
+        if (type == xd::typeNumeric)
         {
             int width = evt.GetInt();
             int scale = m_grid->getCellInteger(row, colFieldScale);
 
             // conform to max numeric field width
-            if (width > tango::max_numeric_width)
+            if (width > xd::max_numeric_width)
             {
                 evt.Veto();
-                width = tango::max_numeric_width;
+                width = xd::max_numeric_width;
                 m_grid->setCellInteger(row, colFieldWidth, width);
                 m_grid->refreshColumn(kcl::Grid::refreshAll, colFieldWidth);
             }
@@ -2052,16 +2052,16 @@ void TransformationDoc::onGridEndEdit(kcl::GridEvent& evt)
         if (evt.GetEditCancelled())
             return;
 
-        if (type == tango::typeDouble || type == tango::typeNumeric)
+        if (type == xd::typeDouble || type == xd::typeNumeric)
         {
             int scale = evt.GetInt();
             int width = m_grid->getCellInteger(row, colFieldWidth);
 
             // conform to max double/numeric field scale
-            if (scale > tango::max_numeric_scale)
+            if (scale > xd::max_numeric_scale)
             {
                 evt.Veto();
-                scale = tango::max_numeric_scale;
+                scale = xd::max_numeric_scale;
                 m_grid->setCellInteger(row, colFieldScale, scale);
                 m_grid->refreshColumn(kcl::Grid::refreshAll, colFieldScale);
             }
@@ -2335,11 +2335,11 @@ void TransformationDoc::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
         }
          else if (fmt.GetId() == kcl::getGridDataFormat(wxT("fieldspanel")))
         {
-            tango::IStructurePtr s = getTextSourceStructure(m_doc_site);
+            xd::IStructurePtr s = getTextSourceStructure(m_doc_site);
             if (s.isNull())
                 return;
                 
-            tango::IColumnInfoPtr colinfo;
+            xd::IColumnInfoPtr colinfo;
             
             int drop_row = drop_target->getDropRow();
 

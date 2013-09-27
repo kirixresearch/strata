@@ -34,7 +34,7 @@ static void onCheckInvalidChars(kcl::Grid* grid,
     
     std::wstring s, bad_chars;
     bad_chars = g_app->getDatabase()->getAttributes()->
-                getStringAttribute(tango::dbattrTableInvalidChars);
+                getStringAttribute(xd::dbattrTableInvalidChars);
     
     int row, row_count = grid->getRowCount();
     for (row = 0; row < row_count; ++row)
@@ -57,7 +57,7 @@ static void onCheckInvalidStartingChars(kcl::Grid* grid,
     wchar_t* c;
     std::wstring s, bad_chars;
     bad_chars = g_app->getDatabase()->getAttributes()->
-                getStringAttribute(tango::dbattrTableInvalidStartingChars);
+                getStringAttribute(xd::dbattrTableInvalidStartingChars);
     
     int row, row_count = grid->getRowCount();
     for (row = 0; row < row_count; ++row)
@@ -81,7 +81,7 @@ static kcl::GridActionRule* addCheckInvalidCharsRule(kcl::GridActionValidator* v
     wxString error_text = _("Index names cannot contain the following characters:");
     error_text += wxT(" ");
     error_text += g_app->getDatabase()->getAttributes()->
-                       getStringAttribute(tango::dbattrTableInvalidChars);
+                       getStringAttribute(xd::dbattrTableInvalidChars);
     
     kcl::GridActionRule* rule = validator->addRule();
     rule->setColumn(col);
@@ -97,7 +97,7 @@ static kcl::GridActionRule* addCheckInvalidStartingCharsRule(kcl::GridActionVali
     wxString error_text = _("Index names cannot begin with the following characters:");
     error_text += wxT(" ");
     error_text += g_app->getDatabase()->getAttributes()->
-                       getStringAttribute(tango::dbattrTableInvalidStartingChars);
+                       getStringAttribute(xd::dbattrTableInvalidStartingChars);
     
     kcl::GridActionRule* rule = validator->addRule();
     rule->setColumn(col);
@@ -139,7 +139,7 @@ IndexPanel::~IndexPanel()
 
 bool IndexPanel::setPath(const std::wstring& path)
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
 
     m_structure = db->describeTable(path);
     if (m_structure.isNull())
@@ -401,7 +401,7 @@ static void expr2vec(IndexInfo* info)
             }
 
             // make sure the column name is dequoted
-            c.name = tango::dequoteIdentifier(g_app->getDatabase(), towstr(c.name));
+            c.name = xd::dequoteIdentifier(g_app->getDatabase(), towstr(c.name));
             info->cols.push_back(c);
         }
     }
@@ -415,7 +415,7 @@ static void vec2expr(IndexInfo* info)
     std::vector<IndexColumnInfo>::iterator it;
     for (it = info->cols.begin(); it != info->cols.end(); ++it)
     {
-        wxString q_name = tango::quoteIdentifier(g_app->getDatabase(), towstr(it->name));
+        wxString q_name = xd::quoteIdentifier(g_app->getDatabase(), towstr(it->name));
         expr += q_name;
         
         if (!it->ascending)
@@ -449,8 +449,8 @@ std::vector<IndexInfo*> IndexPanel::getAllIndexes()
 
 void IndexPanel::populateIndexesList()
 {
-    tango::IIndexInfoPtr index;
-    tango::IIndexInfoEnumPtr indexes;
+    xd::IIndexInfoPtr index;
+    xd::IIndexInfoEnumPtr indexes;
     indexes = g_app->getDatabase()->getIndexEnum(m_path);
     if (indexes.isNull())
         return;
@@ -562,7 +562,7 @@ void IndexPanel::insertIndexColumn(int row,
     
     // determine if this field is a calculated field
     bool dynamic = false;
-    tango::IColumnInfoPtr colinfo = m_structure->getColumnInfo(towstr(col_name));
+    xd::IColumnInfoPtr colinfo = m_structure->getColumnInfo(towstr(col_name));
     if (colinfo.isOk())
         dynamic = colinfo->getCalculated();
     

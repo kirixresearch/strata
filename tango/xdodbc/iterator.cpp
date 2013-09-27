@@ -96,7 +96,7 @@ bool OdbcIterator::init(const std::wstring& query)
     //SQLSetConnectOption(m_conn, SQL_ODBC_CURSORS, SQL_CUR_USE_DRIVER);
 
     // MS Access supports bidirectional
-    if (m_db_type == tango::dbtypeAccess /*|| m_db_type == tango::dbtypeMySql*/ )
+    if (m_db_type == xd::dbtypeAccess /*|| m_db_type == xd::dbtypeMySql*/ )
     {
         m_bidirectional = true;
     }
@@ -199,7 +199,7 @@ bool OdbcIterator::init(const std::wstring& query)
         col_name = sql2wstring(col_buf);
         col_tango_type = sql2tangoType(col_type);
         
-        if (col_tango_type == tango::typeInvalid)
+        if (col_tango_type == xd::typeInvalid)
             continue;
 
 
@@ -220,31 +220,31 @@ bool OdbcIterator::init(const std::wstring& query)
                 col_width = 8192;
         }
 
-        if (m_db_type == tango::dbtypeExcel &&
+        if (m_db_type == xd::dbtypeExcel &&
             col_scale == 0 &&
-            (col_tango_type == tango::typeDouble ||
-             col_tango_type == tango::typeNumeric))
+            (col_tango_type == xd::typeDouble ||
+             col_tango_type == xd::typeNumeric))
         {
             // excel odbc drivers always return 0 for column scale,
             // so we will set it to a more acceptable value
             col_scale = 2;
         }
 
-        if (m_db_type == tango::dbtypeAccess &&
-            col_tango_type == tango::typeCharacter)
+        if (m_db_type == xd::dbtypeAccess &&
+            col_tango_type == xd::typeCharacter)
         {
             // access always uses Wide Characters
-            col_tango_type = tango::typeWideCharacter;
+            col_tango_type = xd::typeWideCharacter;
         }
 
         // handle column scale
-        if (col_tango_type != tango::typeNumeric &&
-            col_tango_type != tango::typeDouble)
+        if (col_tango_type != xd::typeNumeric &&
+            col_tango_type != xd::typeDouble)
         {
             col_scale = 0;
         }
 
-        if (col_tango_type == tango::typeNumeric)
+        if (col_tango_type == xd::typeNumeric)
         {
             // numeric fields have a max width of 18
             col_width > 18 ? col_width = 18 : 0;
@@ -280,7 +280,7 @@ bool OdbcIterator::init(const std::wstring& query)
     {
         switch ((*it)->type)
         {
-            case tango::typeCharacter:
+            case xd::typeCharacter:
             {
                 retval = SQLBindCol(m_stmt,
                                     (*it)->ordinal,
@@ -291,7 +291,7 @@ bool OdbcIterator::init(const std::wstring& query)
                 break;
             }
 
-            case tango::typeWideCharacter:
+            case xd::typeWideCharacter:
             {
                 retval = SQLBindCol(m_stmt,
                                     (*it)->ordinal,
@@ -302,8 +302,8 @@ bool OdbcIterator::init(const std::wstring& query)
                 break;
             }
 
-            case tango::typeNumeric:
-            case tango::typeDouble:
+            case xd::typeNumeric:
+            case xd::typeDouble:
             {
                 retval = SQLBindCol(m_stmt,
                                     (*it)->ordinal,
@@ -314,7 +314,7 @@ bool OdbcIterator::init(const std::wstring& query)
                 break;
             }
 
-            case tango::typeInteger:
+            case xd::typeInteger:
             {
                 retval = SQLBindCol(m_stmt,
                                     (*it)->ordinal,
@@ -325,7 +325,7 @@ bool OdbcIterator::init(const std::wstring& query)
                 break;
             }
 
-            case tango::typeDate:
+            case xd::typeDate:
             {
                 retval = SQLBindCol(m_stmt,
                                     (*it)->ordinal,
@@ -336,7 +336,7 @@ bool OdbcIterator::init(const std::wstring& query)
                 break;
             }
 
-            case tango::typeDateTime:
+            case xd::typeDateTime:
             {
                 retval = SQLBindCol(m_stmt,
                                     (*it)->ordinal,
@@ -348,7 +348,7 @@ bool OdbcIterator::init(const std::wstring& query)
                 break;
             }
 
-            case tango::typeBoolean:
+            case xd::typeBoolean:
             {
                 retval = SQLBindCol(m_stmt,
                                     (*it)->ordinal,
@@ -397,17 +397,17 @@ std::wstring OdbcIterator::getTable()
     return m_path;
 }
 
-tango::rowpos_t OdbcIterator::getRowCount()
+xd::rowpos_t OdbcIterator::getRowCount()
 {
     return 0;
 }
 
-tango::IDatabasePtr OdbcIterator::getDatabase()
+xd::IDatabasePtr OdbcIterator::getDatabase()
 {
     return m_database;
 }
 
-tango::IIteratorPtr OdbcIterator::clone()
+xd::IIteratorPtr OdbcIterator::clone()
 {
     return xcm::null;
 }
@@ -415,7 +415,7 @@ tango::IIteratorPtr OdbcIterator::clone()
 
 void OdbcIterator::setIteratorFlags(unsigned int mask, unsigned int value)
 {
-    m_cache_active = ((mask & value & tango::ifReverseRowCache) != 0) ? true : false;
+    m_cache_active = ((mask & value & xd::ifReverseRowCache) != 0) ? true : false;
 }
     
     
@@ -436,7 +436,7 @@ unsigned int OdbcIterator::getIteratorFlags()
     }
     
     // otherwise, indicate that this iterator is forward-only
-    return tango::ifForwardOnly;
+    return xd::ifForwardOnly;
 }
 
 void OdbcIterator::clearFieldData()
@@ -500,7 +500,7 @@ void OdbcIterator::saveRowToCache()
 
         switch ((*it)->type)
         {
-            case tango::typeCharacter:
+            case xd::typeCharacter:
                 if ((*it)->indicator == SQL_NTS)
                     width = strlen((*it)->str_val);
                      else
@@ -513,7 +513,7 @@ void OdbcIterator::saveRowToCache()
                                          width*sizeof(char));
                 break;
 
-            case tango::typeWideCharacter:
+            case xd::typeWideCharacter:
                 if ((*it)->indicator == SQL_NTS)
                     width = wcslen((*it)->wstr_val) * sizeof(wchar_t);
                      else
@@ -526,28 +526,28 @@ void OdbcIterator::saveRowToCache()
                                           width);
                 break;
 
-            case tango::typeNumeric:
-            case tango::typeDouble:
+            case xd::typeNumeric:
+            case xd::typeDouble:
                 m_cache.appendColumnData((unsigned char*)&((*it)->dbl_val),
                                          sizeof(double));
                 break;
 
-            case tango::typeInteger:
+            case xd::typeInteger:
                 m_cache.appendColumnData((unsigned char*)&((*it)->int_val),
                                          sizeof(int));
                 break;
 
-            case tango::typeDate:
+            case xd::typeDate:
                 m_cache.appendColumnData((unsigned char*)&((*it)->date_val),
                                          sizeof(SQL_DATE_STRUCT));
                 break;
 
-            case tango::typeDateTime:
+            case xd::typeDateTime:
                 m_cache.appendColumnData((unsigned char*)&((*it)->datetime_val),
                                          sizeof(SQL_TIMESTAMP_STRUCT));
                 break;
 
-            case tango::typeBoolean:
+            case xd::typeBoolean:
                 m_cache.appendColumnData((unsigned char*)&((*it)->bool_val),
                                          sizeof(bool));
                 break;
@@ -557,9 +557,9 @@ void OdbcIterator::saveRowToCache()
     m_cache.finishRow();
 }
 
-void OdbcIterator::readRowFromCache(tango::rowpos_t row)
+void OdbcIterator::readRowFromCache(xd::rowpos_t row)
 {
-    m_cache.goRow((tango::rowpos_t)row);
+    m_cache.goRow((xd::rowpos_t)row);
     m_cache.getRow(m_cache_row);
 
     bool is_null;
@@ -598,35 +598,35 @@ void OdbcIterator::readRowFromCache(tango::rowpos_t row)
         
         switch ((*it)->type)
         {
-            case tango::typeCharacter:
+            case xd::typeCharacter:
                 memcpy((*it)->str_val, data, data_size);
                 break;
 
-            case tango::typeWideCharacter:
+            case xd::typeWideCharacter:
                 memcpy((*it)->wstr_val, data, data_size);
                 //data_size /= sizeof(wchar_t);
                 (*it)->indicator = data_size;
                 break;
 
 
-            case tango::typeNumeric:
-            case tango::typeDouble:
+            case xd::typeNumeric:
+            case xd::typeDouble:
                 (*it)->dbl_val = *(double*)data;
                 break;
 
-            case tango::typeInteger:
+            case xd::typeInteger:
                 (*it)->int_val = *(int*)data;
                 break;
 
-            case tango::typeDate:
+            case xd::typeDate:
                 memcpy(&((*it)->date_val), data, sizeof(SQL_DATE_STRUCT));
                 break;
 
-            case tango::typeDateTime:
+            case xd::typeDateTime:
                 memcpy(&((*it)->datetime_val), data, sizeof(SQL_TIMESTAMP_STRUCT));
                 break;
 
-            case tango::typeBoolean:
+            case xd::typeBoolean:
                 (*it)->bool_val = *(bool*)data;
                 break;
         }
@@ -658,7 +658,7 @@ void OdbcIterator::skipWithCache(int delta)
     if (desired_row < 0)
         desired_row = 0;
     
-    if ((tango::rowpos_t)desired_row < m_cache.getRowCount())
+    if ((xd::rowpos_t)desired_row < m_cache.getRowCount())
     {
         readRowFromCache(desired_row);
 
@@ -794,7 +794,7 @@ void OdbcIterator::goLast()
 {
 }
 
-tango::rowid_t OdbcIterator::getRowId()
+xd::rowid_t OdbcIterator::getRowId()
 {
     return 0;
 }
@@ -829,7 +829,7 @@ bool OdbcIterator::setPos(double pct)
     return false;
 }
 
-void OdbcIterator::goRow(const tango::rowid_t& rowid)
+void OdbcIterator::goRow(const xd::rowid_t& rowid)
 {
 }
 
@@ -838,7 +838,7 @@ double OdbcIterator::getPos()
     return (double)(long long)m_row_pos;
 }
 
-tango::IStructurePtr OdbcIterator::getStructure()
+xd::IStructurePtr OdbcIterator::getStructure()
 {
     if (m_structure.isOk())
         return m_structure->clone();
@@ -851,8 +851,8 @@ tango::IStructurePtr OdbcIterator::getStructure()
     {
         if ((*it)->isCalculated())
         {
-            tango::IColumnInfoPtr col;
-            col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+            xd::IColumnInfoPtr col;
+            col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
             col->setName((*it)->name);
             col->setType((*it)->type);
             col->setWidth((*it)->width);
@@ -866,7 +866,7 @@ tango::IStructurePtr OdbcIterator::getStructure()
         {
             // generate column info from the
             // field info from the query result
-            tango::IColumnInfoPtr col;
+            xd::IColumnInfoPtr col;
 
             col = createColInfo(m_db_type,
                                 (*it)->name,
@@ -881,7 +881,7 @@ tango::IStructurePtr OdbcIterator::getStructure()
         }
     }
     
-    m_structure = static_cast<tango::IStructure*>(s);
+    m_structure = static_cast<xd::IStructure*>(s);
 
     return m_structure->clone();
 }
@@ -891,8 +891,8 @@ void OdbcIterator::refreshStructure()
 
 }
 
-bool OdbcIterator::modifyStructure(tango::IStructure* struct_config,
-                                   tango::IJob* job)
+bool OdbcIterator::modifyStructure(xd::IStructure* struct_config,
+                                   xd::IJob* job)
 {
     IStructureInternalPtr struct_int = struct_config;
 
@@ -1002,13 +1002,13 @@ bool OdbcIterator::modifyStructure(tango::IStructure* struct_config,
 
 
 
-tango::objhandle_t OdbcIterator::getHandle(const std::wstring& expr)
+xd::objhandle_t OdbcIterator::getHandle(const std::wstring& expr)
 {
     std::vector<OdbcDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
         if (!wcscasecmp((*it)->name.c_str(), expr.c_str()))
-            return (tango::objhandle_t)(*it);
+            return (xd::objhandle_t)(*it);
     }
 
     // test for binary keys
@@ -1017,10 +1017,10 @@ tango::objhandle_t OdbcIterator::getHandle(const std::wstring& expr)
         OdbcDataAccessInfo* dai = new OdbcDataAccessInfo;
         dai->expr = NULL;
         dai->expr_text = expr;
-        dai->type = tango::typeBinary;
+        dai->type = xd::typeBinary;
         dai->key_layout = new KeyLayout;
 
-        if (!dai->key_layout->setKeyExpr(static_cast<tango::IIterator*>(this),
+        if (!dai->key_layout->setKeyExpr(static_cast<xd::IIterator*>(this),
                                     expr.substr(4),
                                     false))
         {
@@ -1029,14 +1029,14 @@ tango::objhandle_t OdbcIterator::getHandle(const std::wstring& expr)
         }
         
         m_exprs.push_back(dai);
-        return (tango::objhandle_t)dai;
+        return (xd::objhandle_t)dai;
     }
     
     
     kscript::ExprParser* parser = parse(expr);
     if (!parser)
     {
-        return (tango::objhandle_t)0;
+        return (xd::objhandle_t)0;
     }
 
     OdbcDataAccessInfo* dai = new OdbcDataAccessInfo;
@@ -1045,15 +1045,15 @@ tango::objhandle_t OdbcIterator::getHandle(const std::wstring& expr)
     dai->type = kscript2tangoType(parser->getType());
     m_exprs.push_back(dai);
 
-    return (tango::objhandle_t)dai;
+    return (xd::objhandle_t)dai;
 }
 
-bool OdbcIterator::releaseHandle(tango::objhandle_t data_handle)
+bool OdbcIterator::releaseHandle(xd::objhandle_t data_handle)
 {
     std::vector<OdbcDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        if ((tango::objhandle_t)(*it) == data_handle)
+        if ((xd::objhandle_t)(*it) == data_handle)
         {
             return true;
         }
@@ -1061,7 +1061,7 @@ bool OdbcIterator::releaseHandle(tango::objhandle_t data_handle)
 
     for (it = m_exprs.begin(); it != m_exprs.end(); ++it)
     {
-        if ((tango::objhandle_t)(*it) == data_handle)
+        if ((xd::objhandle_t)(*it) == data_handle)
         {
             delete (*it);
             m_exprs.erase(it);
@@ -1072,7 +1072,7 @@ bool OdbcIterator::releaseHandle(tango::objhandle_t data_handle)
     return false;
 }
 
-tango::IColumnInfoPtr OdbcIterator::getInfo(tango::objhandle_t data_handle)
+xd::IColumnInfoPtr OdbcIterator::getInfo(xd::objhandle_t data_handle)
 {
     OdbcDataAccessInfo* dai = (OdbcDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -1084,12 +1084,12 @@ tango::IColumnInfoPtr OdbcIterator::getInfo(tango::objhandle_t data_handle)
 
     if (m_structure.isNull())
     {
-        tango::IStructurePtr s = getStructure();
+        xd::IStructurePtr s = getStructure();
     }
 
     if (m_structure.isOk())
     {
-        tango::IColumnInfoPtr colinfo;
+        xd::IColumnInfoPtr colinfo;
         colinfo = m_structure->getColumnInfo(dai->name);
         if (colinfo.isOk())
         {
@@ -1109,18 +1109,18 @@ tango::IColumnInfoPtr OdbcIterator::getInfo(tango::objhandle_t data_handle)
                          -1);
 }
 
-int OdbcIterator::getType(tango::objhandle_t data_handle)
+int OdbcIterator::getType(xd::objhandle_t data_handle)
 {
     OdbcDataAccessInfo* dai = (OdbcDataAccessInfo*)data_handle;
     if (dai == NULL)
     {
-        return tango::typeInvalid;
+        return xd::typeInvalid;
     }
     
     return dai->type;
 }
 
-int OdbcIterator::getRawWidth(tango::objhandle_t data_handle)
+int OdbcIterator::getRawWidth(xd::objhandle_t data_handle)
 {
     OdbcDataAccessInfo* dai = (OdbcDataAccessInfo*)data_handle;
     if (dai && dai->key_layout)
@@ -1131,7 +1131,7 @@ int OdbcIterator::getRawWidth(tango::objhandle_t data_handle)
     return 0;
 }
 
-const unsigned char* OdbcIterator::getRawPtr(tango::objhandle_t data_handle)
+const unsigned char* OdbcIterator::getRawPtr(xd::objhandle_t data_handle)
 {
     OdbcDataAccessInfo* dai = (OdbcDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -1188,7 +1188,7 @@ static void decodeHexString(const char* buf, std::string& out)
     }
 }
 
-const std::string& OdbcIterator::getString(tango::objhandle_t data_handle)
+const std::string& OdbcIterator::getString(xd::objhandle_t data_handle)
 {
     OdbcDataAccessInfo* dai = (OdbcDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -1221,19 +1221,19 @@ const std::string& OdbcIterator::getString(tango::objhandle_t data_handle)
     if (width > dai->width)
         width = dai->width;
     
-    if (m_db_type == tango::dbtypeMySql &&
+    if (m_db_type == xd::dbtypeMySql &&
         (dai->odbc_type == SQL_BINARY || dai->odbc_type == SQL_VARBINARY || dai->odbc_type == SQL_LONGVARBINARY))
     {
         decodeHexString(dai->str_val, dai->str_result);
         return dai->str_result;   
     }
     
-    if (dai->type == tango::typeCharacter)
+    if (dai->type == xd::typeCharacter)
     {
         dai->str_result.assign(dai->str_val, width);
         return dai->str_result;
     }
-     else if (dai->type == tango::typeWideCharacter)
+     else if (dai->type == xd::typeWideCharacter)
     {
         dai->wstr_result.assign(dai->wstr_val, width);
         dai->str_result = kl::tostring(dai->wstr_result);
@@ -1243,7 +1243,7 @@ const std::string& OdbcIterator::getString(tango::objhandle_t data_handle)
     return empty_string;
 }
 
-const std::wstring& OdbcIterator::getWideString(tango::objhandle_t data_handle)
+const std::wstring& OdbcIterator::getWideString(xd::objhandle_t data_handle)
 {
     OdbcDataAccessInfo* dai = (OdbcDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -1273,12 +1273,12 @@ const std::wstring& OdbcIterator::getWideString(tango::objhandle_t data_handle)
          else
         width = (dai->indicator/sizeof(wchar_t));
 
-    if (dai->type == tango::typeCharacter)
+    if (dai->type == xd::typeCharacter)
     {
         dai->wstr_result = kl::towstring(getString(data_handle));
         return dai->wstr_result;
     }
-     else if (dai->type == tango::typeWideCharacter)
+     else if (dai->type == xd::typeWideCharacter)
     {
         dai->wstr_result.assign(dai->wstr_val, width);
         return dai->wstr_result;
@@ -1287,7 +1287,7 @@ const std::wstring& OdbcIterator::getWideString(tango::objhandle_t data_handle)
     return empty_wstring;
 }
 
-tango::datetime_t OdbcIterator::getDateTime(tango::objhandle_t data_handle)
+xd::datetime_t OdbcIterator::getDateTime(xd::objhandle_t data_handle)
 {
     OdbcDataAccessInfo* dai = (OdbcDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -1300,10 +1300,10 @@ tango::datetime_t OdbcIterator::getDateTime(tango::objhandle_t data_handle)
         dai->expr->eval(&dai->expr_result);
         kscript::ExprDateTime edt = dai->expr_result.getDateTime();
 
-        tango::datetime_t dt;
+        xd::datetime_t dt;
         dt = edt.date;
         dt <<= 32;
-        if (dai->type == tango::typeDateTime)
+        if (dai->type == xd::typeDateTime)
             dt |= edt.time;
 
         return dt;
@@ -1326,12 +1326,12 @@ tango::datetime_t OdbcIterator::getDateTime(tango::objhandle_t data_handle)
     }
 
 
-    if (dai->type == tango::typeDate)
+    if (dai->type == xd::typeDate)
     {
         if (dai->date_val.year == 0)
             return 0;
 
-        tango::DateTime dt(dai->date_val.year,
+        xd::DateTime dt(dai->date_val.year,
                            dai->date_val.month,
                            dai->date_val.day);
         return dt;
@@ -1341,7 +1341,7 @@ tango::datetime_t OdbcIterator::getDateTime(tango::objhandle_t data_handle)
         if (dai->datetime_val.year == 0)
             return 0;
 
-        tango::DateTime dt(dai->datetime_val.year,
+        xd::DateTime dt(dai->datetime_val.year,
                            dai->datetime_val.month,
                            dai->datetime_val.day,
                            dai->datetime_val.hour,
@@ -1352,7 +1352,7 @@ tango::datetime_t OdbcIterator::getDateTime(tango::objhandle_t data_handle)
     }
 }
 
-double OdbcIterator::getDouble(tango::objhandle_t data_handle)
+double OdbcIterator::getDouble(xd::objhandle_t data_handle)
 {
     OdbcDataAccessInfo* dai = (OdbcDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -1375,12 +1375,12 @@ double OdbcIterator::getDouble(tango::objhandle_t data_handle)
     if (dai->indicator == SQL_NULL_DATA)
         return 0.0;
 
-    if (dai->type == tango::typeNumeric ||
-        dai->type == tango::typeDouble)
+    if (dai->type == xd::typeNumeric ||
+        dai->type == xd::typeDouble)
     {
         return dai->dbl_val;
     }
-     else if (dai->type == tango::typeInteger)
+     else if (dai->type == xd::typeInteger)
     {
         return (double)dai->int_val;
     }
@@ -1388,7 +1388,7 @@ double OdbcIterator::getDouble(tango::objhandle_t data_handle)
     return 0;
 }
 
-int OdbcIterator::getInteger(tango::objhandle_t data_handle)
+int OdbcIterator::getInteger(xd::objhandle_t data_handle)
 {
     OdbcDataAccessInfo* dai = (OdbcDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -1411,12 +1411,12 @@ int OdbcIterator::getInteger(tango::objhandle_t data_handle)
     if (dai->indicator == SQL_NULL_DATA)
         return 0;
 
-    if (dai->type == tango::typeInteger)
+    if (dai->type == xd::typeInteger)
     {
         return dai->int_val;
     }
-     else if (dai->type == tango::typeNumeric ||
-              dai->type == tango::typeDouble)
+     else if (dai->type == xd::typeNumeric ||
+              dai->type == xd::typeDouble)
     {
         return (int)dai->dbl_val;
     }
@@ -1424,7 +1424,7 @@ int OdbcIterator::getInteger(tango::objhandle_t data_handle)
     return 0;
 }
 
-bool OdbcIterator::getBoolean(tango::objhandle_t data_handle)
+bool OdbcIterator::getBoolean(xd::objhandle_t data_handle)
 {
     OdbcDataAccessInfo* dai = (OdbcDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -1450,7 +1450,7 @@ bool OdbcIterator::getBoolean(tango::objhandle_t data_handle)
     return dai->bool_val ? true : false;
 }
 
-bool OdbcIterator::isNull(tango::objhandle_t data_handle)
+bool OdbcIterator::isNull(xd::objhandle_t data_handle)
 {
     OdbcDataAccessInfo* dai = (OdbcDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -1474,12 +1474,12 @@ bool OdbcIterator::isNull(tango::objhandle_t data_handle)
 }
 
 /*
-tango::IxSetPtr OdbcIterator::getChildSet(tango::IRelationPtr relation)
+xd::IxSetPtr OdbcIterator::getChildSet(xd::IRelationPtr relation)
 {
     if (eof())
         return xcm::null;
 
-    tango::IxSetPtr setptr = relation->getRightSetPtr();
+    xd::IxSetPtr setptr = relation->getRightSetPtr();
     IOdbcSetPtr set = setptr;
     if (set.isNull())
         return xcm::null;
@@ -1530,9 +1530,9 @@ tango::IxSetPtr OdbcIterator::getChildSet(tango::IRelationPtr relation)
     }
 
 
-    tango::IAttributesPtr attr = m_database->getAttributes();
-    std::wstring quote_openchar = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
-    std::wstring quote_closechar = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
+    xd::IAttributesPtr attr = m_database->getAttributes();
+    std::wstring quote_openchar = attr->getStringAttribute(xd::dbattrIdentifierQuoteOpenChar);
+    std::wstring quote_closechar = attr->getStringAttribute(xd::dbattrIdentifierQuoteCloseChar);
 
 
     std::wstring expr;
@@ -1549,43 +1549,43 @@ tango::IxSetPtr OdbcIterator::getChildSet(tango::IRelationPtr relation)
 
         switch (fit->left_type)
         {
-            case tango::typeCharacter:
-            case tango::typeWideCharacter:
+            case xd::typeCharacter:
+            case xd::typeWideCharacter:
                 expr += L"'";
                 expr += getWideString(fit->left_handle);
                 expr += L"'";
                 break;
-            case tango::typeInteger:
+            case xd::typeInteger:
                 expr += kl::itowstring(getInteger(fit->left_handle));
                 break;
-            case tango::typeNumeric:
-            case tango::typeDouble:
+            case xd::typeNumeric:
+            case xd::typeDouble:
                 expr += kl::dbltostr(getDouble(fit->left_handle));
                 break;
-            case tango::typeDate:
+            case xd::typeDate:
             {
-                tango::datetime_t dt = getDateTime(fit->left_handle);
+                xd::datetime_t dt = getDateTime(fit->left_handle);
                 if (dt == 0)
                 {
                     expr += L"NULL";
                 }
                  else
                 {
-                    tango::DateTime d(dt);
+                    xd::DateTime d(dt);
                     expr += kl::stdswprintf(L"{d '%04d-%02d-%02d'}", d.getYear(), d.getMonth(), d.getDay());
                 }
                 break;
             }
-            case tango::typeDateTime:
+            case xd::typeDateTime:
             {
-                tango::datetime_t dt = getDateTime(fit->left_handle);
+                xd::datetime_t dt = getDateTime(fit->left_handle);
                 if (dt == 0)
                 {
                     expr += L"NULL";
                 }
                  else
                 {
-                    tango::DateTime d(dt);
+                    xd::DateTime d(dt);
                     expr += kl::stdswprintf(L"{ts '%04d-%02d-%02d %02d:%02d:%02d.%03d'}", d.getYear(), d.getMonth(), d.getDay(), d.getHour(), d.getMinute(), d.getSecond(), d.getMillisecond());
                 }
                 break;
@@ -1602,22 +1602,22 @@ tango::IxSetPtr OdbcIterator::getChildSet(tango::IRelationPtr relation)
 }
 */
 
-tango::IIteratorPtr OdbcIterator::getChildIterator(tango::IRelationPtr relation)
+xd::IIteratorPtr OdbcIterator::getChildIterator(xd::IRelationPtr relation)
 {
     return xcm::null;
 }
 
 
-tango::IIteratorPtr OdbcIterator::getFilteredChildIterator(tango::IRelationPtr relation)
+xd::IIteratorPtr OdbcIterator::getFilteredChildIterator(xd::IRelationPtr relation)
 {
     return xcm::null;
 }
 
 
-// tango::ICacheRowUpdate::updateCacheRow()
+// xd::ICacheRowUpdate::updateCacheRow()
 
-bool OdbcIterator::updateCacheRow(tango::rowid_t rowid,
-                                  tango::ColumnUpdateInfo* info,
+bool OdbcIterator::updateCacheRow(xd::rowid_t rowid,
+                                  xd::ColumnUpdateInfo* info,
                                   size_t info_size)
 {
     saveRowToCache();
@@ -1634,14 +1634,14 @@ bool OdbcIterator::updateCacheRow(tango::rowid_t rowid,
 
         switch (dai->type)
         {
-            case tango::typeCharacter:
+            case xd::typeCharacter:
                 m_cache.updateValue(m_row_pos,
                                     column,
                                     (unsigned char*)info->str_val.c_str(),
                                     info->str_val.length());
                 break;
 
-            case tango::typeWideCharacter:
+            case xd::typeWideCharacter:
                 m_cache.updateValue(m_row_pos,
                                     column,
                                     (unsigned char*)info->wstr_val.c_str(),
@@ -1649,26 +1649,26 @@ bool OdbcIterator::updateCacheRow(tango::rowid_t rowid,
                 break;
 
 
-            case tango::typeNumeric:
-            case tango::typeDouble:
+            case xd::typeNumeric:
+            case xd::typeDouble:
                 m_cache.updateValue(m_row_pos,
                                     column,
                                     (unsigned char*)&info->dbl_val,
                                     sizeof(double));
                 break;
 
-            case tango::typeInteger:
+            case xd::typeInteger:
                 m_cache.updateValue(m_row_pos,
                                     column,
                                     (unsigned char*)&info->int_val,
                                     sizeof(int));
                 break;
 
-            case tango::typeDate:
+            case xd::typeDate:
             {
                 SQL_DATE_STRUCT date;
                 
-                tango::DateTime dt;
+                xd::DateTime dt;
                 dt.setDateTime(info->date_val);
                 
                 date.year = dt.getYear();
@@ -1683,11 +1683,11 @@ bool OdbcIterator::updateCacheRow(tango::rowid_t rowid,
             }
             break;
             
-            case tango::typeDateTime:
+            case xd::typeDateTime:
             {
                 SQL_TIMESTAMP_STRUCT datetime;
                 
-                tango::DateTime dt;
+                xd::DateTime dt;
                 dt.setDateTime(info->date_val);
                 
                 datetime.year = dt.getYear();
@@ -1705,7 +1705,7 @@ bool OdbcIterator::updateCacheRow(tango::rowid_t rowid,
             }
             break;
 
-            case tango::typeBoolean:
+            case xd::typeBoolean:
                 m_cache.updateValue(m_row_pos,
                                     column,
                                     (unsigned char*)&info->bool_val,

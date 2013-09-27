@@ -44,8 +44,8 @@ const int BUF_ROW_COUNT = 10000;
 
 FixedLengthDefinition::FixedLengthDefinition()
 {
-    m_source_structure = static_cast<tango::IStructure*>(new Structure);
-    m_dest_structure = static_cast<tango::IStructure*>(new Structure);
+    m_source_structure = static_cast<xd::IStructure*>(new Structure);
+    m_dest_structure = static_cast<xd::IStructure*>(new Structure);
     
     m_line_delimiters = L"\x0a";
     m_skip_chars = 0;
@@ -78,7 +78,7 @@ FixedLengthTextSet::~FixedLengthTextSet()
     m_definition->unref();
 }
 
-bool FixedLengthTextSet::init(tango::IDatabasePtr db,
+bool FixedLengthTextSet::init(xd::IDatabasePtr db,
                               const std::wstring& filename)
 {
     if (!xf_get_file_exist(filename))
@@ -89,8 +89,8 @@ bool FixedLengthTextSet::init(tango::IDatabasePtr db,
     m_path = filename;
     
     // figure out the config file name
-    tango::IAttributesPtr attr = db->getAttributes();
-    std::wstring definition_path = attr->getStringAttribute(tango::dbattrDefinitionDirectory);
+    xd::IAttributesPtr attr = db->getAttributes();
+    std::wstring definition_path = attr->getStringAttribute(xd::dbattrDefinitionDirectory);
     m_configfile_path = ExtFileInfo::getConfigFilenameFromPath(definition_path, filename);
 
     // set the set info filename
@@ -114,9 +114,9 @@ bool FixedLengthTextSet::init(tango::IDatabasePtr db,
         if (m_definition->m_source_structure->getColumnCount() == 0)
         {
             // create a default column in the source structure
-            tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+            xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
             col->setOffset(0);
-            col->setType(tango::typeCharacter);
+            col->setType(xd::typeCharacter);
             col->setWidth(m_definition->m_row_width);
             col->setName(L"Field1");
             
@@ -128,16 +128,16 @@ bool FixedLengthTextSet::init(tango::IDatabasePtr db,
     return true;
 }
 
-void FixedLengthTextSet::setCreateStructure(tango::IStructurePtr structure)
+void FixedLengthTextSet::setCreateStructure(xd::IStructurePtr structure)
 {
     // this function is used when creating a new from a structure, 
     // such as when exporting to fixed-length; code adapted from 
     // DelimitedTextSet::setCreateStructure()
     
-    m_definition->m_source_structure = static_cast<tango::IStructure*>(new Structure);
+    m_definition->m_source_structure = static_cast<xd::IStructure*>(new Structure);
     IStructureInternalPtr src_struct_int = m_definition->m_source_structure;
     
-    m_definition->m_dest_structure = static_cast<tango::IStructure*>(new Structure);
+    m_definition->m_dest_structure = static_cast<xd::IStructure*>(new Structure);
     IStructureInternalPtr dest_struct_int = m_definition->m_dest_structure;
 
     int row_width = 0;
@@ -145,7 +145,7 @@ void FixedLengthTextSet::setCreateStructure(tango::IStructurePtr structure)
     
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr orig_col = structure->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr orig_col = structure->getColumnInfoByIdx(i);
         if (orig_col->getCalculated())
             continue;
     
@@ -157,19 +157,19 @@ void FixedLengthTextSet::setCreateStructure(tango::IStructurePtr structure)
         
         switch (orig_col->getType())
         {
-            case tango::typeDate:
+            case xd::typeDate:
                 new_width = 10;
                 break;
-            case tango::typeDateTime:
+            case xd::typeDateTime:
                 new_width = 20;
                 break;
-            case tango::typeInteger:
+            case xd::typeInteger:
                 new_width = 12; // size of 2^32 + sign + 1 to round to 12
                 break;
-            case tango::typeDouble:
+            case xd::typeDouble:
                 new_width = 20;
                 break;
-            case tango::typeNumeric:
+            case xd::typeNumeric:
                 new_width += 2; // dec place and sign
                 break;
         }
@@ -180,7 +180,7 @@ void FixedLengthTextSet::setCreateStructure(tango::IStructurePtr structure)
         // writing to the underlying structure, we can format a string
         // with the correct number of decimal places as well as right-
         // justify numbers
-        tango::IColumnInfoPtr src_col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+        xd::IColumnInfoPtr src_col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
         src_col->setName(orig_col->getName());
         src_col->setType(orig_col->getType());
         src_col->setWidth(new_width);
@@ -195,15 +195,15 @@ void FixedLengthTextSet::setCreateStructure(tango::IStructurePtr structure)
         // TODO: automatically add type and formulas to restore 
         // original types so that when file is reopened, the definition 
         // is automatically set
-        tango::IColumnInfoPtr dest_col = orig_col->clone();
+        xd::IColumnInfoPtr dest_col = orig_col->clone();
         dest_col->setName(orig_col->getName());
         dest_col->setType(orig_col->getType());
         dest_col->setWidth(orig_col->getWidth());
         dest_col->setScale(orig_col->getScale());
 
         std::wstring expr = src_col->getName();
-        if (orig_col->getType() == tango::typeDate ||
-            orig_col->getType() == tango::typeDateTime)
+        if (orig_col->getType() == xd::typeDate ||
+            orig_col->getType() == xd::typeDateTime)
         {
             expr = L"((DATE(TRIM(" + expr + L"))))";
         }
@@ -220,7 +220,7 @@ void FixedLengthTextSet::setCreateStructure(tango::IStructurePtr structure)
     // add the calculated fields
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr orig_col = structure->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr orig_col = structure->getColumnInfoByIdx(i);
         if (!orig_col->getCalculated())
             continue;
 
@@ -252,16 +252,16 @@ std::wstring FixedLengthTextSet::getSetId()
 }
 */
 
-tango::IRowInserterPtr FixedLengthTextSet::getRowInserter()
+xd::IRowInserterPtr FixedLengthTextSet::getRowInserter()
 {
     FixedLengthTextRowInserter* inserter = new FixedLengthTextRowInserter(this);
-    return static_cast<tango::IRowInserter*>(inserter);
+    return static_cast<xd::IRowInserter*>(inserter);
 }
 
-tango::IIteratorPtr FixedLengthTextSet::createIterator(
+xd::IIteratorPtr FixedLengthTextSet::createIterator(
                                         const std::wstring& columns,
                                         const std::wstring& order,
-                                        tango::IJob* job)
+                                        xd::IJob* job)
 {
     if (order.empty())
     {
@@ -272,7 +272,7 @@ tango::IIteratorPtr FixedLengthTextSet::createIterator(
             return xcm::null;
         }
             
-        return static_cast<tango::IIterator*>(iter);
+        return static_cast<xd::IIterator*>(iter);
     }
     
     // find out where the database should put temporary files
@@ -302,7 +302,7 @@ tango::IIteratorPtr FixedLengthTextSet::createIterator(
         return xcm::null;
     }
 
-    tango::IIteratorPtr data_iter = createIterator(columns, L"", NULL);
+    xd::IIteratorPtr data_iter = createIterator(columns, L"", NULL);
     return createIteratorFromIndex(data_iter,
                                    idx,
                                    columns,
@@ -312,7 +312,7 @@ tango::IIteratorPtr FixedLengthTextSet::createIterator(
 }
 
 
-tango::rowpos_t FixedLengthTextSet::getRowCount()
+xd::rowpos_t FixedLengthTextSet::getRowCount()
 {
 /*
     if (m_definition->m_file_type == FixedLengthDefinition::FixedWidth)
@@ -333,7 +333,7 @@ tango::rowpos_t FixedLengthTextSet::getRowCount()
 }
 
 
-// -- tango::IFixedLengthDefinition interface --
+// -- xd::IFixedLengthDefinition interface --
 
 bool FixedLengthTextSet::loadConfiguration()
 {
@@ -361,7 +361,7 @@ bool FixedLengthTextSet::loadConfiguration()
 
     // clear out any existing source structure in the set 
     m_definition->m_source_structure.clear();
-    m_definition->m_source_structure = static_cast<tango::IStructure*>(new Structure);
+    m_definition->m_source_structure = static_cast<xd::IStructure*>(new Structure);
     IStructureInternalPtr src_struct_int = m_definition->m_source_structure;
     
     int offset, width, type, scale, encoding;
@@ -377,7 +377,7 @@ bool FixedLengthTextSet::loadConfiguration()
         offset = kl::wtoi(field.getChildContents(L"offset"));
         width = kl::wtoi(field.getChildContents(L"width"));
         name = field.getChildContents(L"name");
-        encoding = tango::encodingUndefined;
+        encoding = xd::encodingUndefined;
         
         ExtFileEntry encoding_entry = field.getChild(L"encoding");
         if (encoding_entry.isOk())
@@ -386,11 +386,11 @@ bool FixedLengthTextSet::loadConfiguration()
             encoding = kl::wtoi(encoding_entry.getContents());
         }
         
-        tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
         col->setOffset(offset);
         col->setWidth(width);
         col->setName(name);
-        col->setType(tango::typeCharacter);
+        col->setType(xd::typeCharacter);
         col->setColumnOrdinal(i);
         col->setEncoding(encoding);
         src_struct_int->addColumn(col);
@@ -398,7 +398,7 @@ bool FixedLengthTextSet::loadConfiguration()
     
     // clear out any existing destination structure in the set
     m_definition->m_dest_structure.clear();
-    m_definition->m_dest_structure = static_cast<tango::IStructure*>(new Structure);
+    m_definition->m_dest_structure = static_cast<xd::IStructure*>(new Structure);
     IStructureInternalPtr dest_struct_int = m_definition->m_dest_structure;
 
     // now, get the destination structure from the file
@@ -415,7 +415,7 @@ bool FixedLengthTextSet::loadConfiguration()
         scale = kl::wtoi(field.getChildContents(L"scale"));
         expression = field.getChildContents(L"expression");
 
-        tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
         col->setName(name);
         col->setType(type);
         col->setWidth(width);
@@ -448,12 +448,12 @@ bool FixedLengthTextSet::saveConfiguration()
     entry = base.addChild(L"fields");
 
     // save the source structure to the file
-    tango::IStructurePtr s = getSourceStructure();
+    xd::IStructurePtr s = getSourceStructure();
     int i, col_count = s->getColumnCount();
     
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
 
         ExtFileEntry field = entry.addChild(L"field");
         field.addChild(L"name", colinfo->getName());
@@ -474,7 +474,7 @@ bool FixedLengthTextSet::saveConfiguration()
     
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
         
         ExtFileEntry field = entry.addChild(L"field");
         field.addChild(L"name", colinfo->getName());
@@ -492,17 +492,17 @@ bool FixedLengthTextSet::deleteConfiguration()
     return xf_remove(m_configfile_path);
 }
 
-inline tango::IStructurePtr createDefaultStructure(tango::IStructurePtr source)
+inline xd::IStructurePtr createDefaultStructure(xd::IStructurePtr source)
 {
-    tango::IStructurePtr s = static_cast<tango::IStructure*>(new Structure);
+    xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
     IStructureInternalPtr struct_int = s;
     
     int i, col_count = source->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr sourcecol = source->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr sourcecol = source->getColumnInfoByIdx(i);
         
-        tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
         col->setName(sourcecol->getName());
         col->setType(sourcecol->getType());
         col->setWidth(sourcecol->getWidth());
@@ -515,12 +515,12 @@ inline tango::IStructurePtr createDefaultStructure(tango::IStructurePtr source)
     return s;
 }
 
-tango::IStructurePtr FixedLengthTextSet::getSourceStructure()
+xd::IStructurePtr FixedLengthTextSet::getSourceStructure()
 {
     return m_definition->m_source_structure->clone();
 }
 
-tango::IStructurePtr FixedLengthTextSet::getDestinationStructure()
+xd::IStructurePtr FixedLengthTextSet::getDestinationStructure()
 {
     if (m_definition->m_dest_structure->getColumnCount() == 0)
         m_definition->m_dest_structure = createDefaultStructure(m_definition->m_source_structure);
@@ -528,13 +528,13 @@ tango::IStructurePtr FixedLengthTextSet::getDestinationStructure()
     return m_definition->m_dest_structure->clone();
 }
 
-tango::IStructurePtr FixedLengthTextSet::getStructure()
+xd::IStructurePtr FixedLengthTextSet::getStructure()
 {
-    tango::IStructurePtr s = getDestinationStructure();
+    xd::IStructurePtr s = getDestinationStructure();
     int i, col_count = s->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
         colinfo->setExpression(L"");
         colinfo->setCalculated(false);
     }
@@ -543,20 +543,20 @@ tango::IStructurePtr FixedLengthTextSet::getStructure()
     return s;
 }
 
-inline void resetColumnOrdinals(tango::IStructurePtr s)
+inline void resetColumnOrdinals(xd::IStructurePtr s)
 {
     int i, col_count = s->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
         
         if (colinfo->getColumnOrdinal() != i)
             colinfo->setColumnOrdinal(i);
     }
 }
 
-bool FixedLengthTextSet::modifySourceStructure(tango::IStructure* struct_config,
-                                               tango::IJob* job)
+bool FixedLengthTextSet::modifySourceStructure(xd::IStructure* struct_config,
+                                               xd::IJob* job)
 {
     // get the structure actions from the
     // structure configuration that was passed
@@ -600,7 +600,7 @@ bool FixedLengthTextSet::modifySourceStructure(tango::IStructure* struct_config,
         if (it->m_action != StructureAction::actionCreate)
             continue;
 
-        tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
         col->setName(it->m_params->getName());
         col->setType(it->m_params->getType());
         col->setWidth(it->m_params->getWidth());
@@ -619,7 +619,7 @@ bool FixedLengthTextSet::modifySourceStructure(tango::IStructure* struct_config,
 
         int insert_idx = it->m_pos;
         
-        tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
         col->setName(it->m_params->getName());
         col->setType(it->m_params->getType());
         col->setWidth(it->m_params->getWidth());
@@ -635,8 +635,8 @@ bool FixedLengthTextSet::modifySourceStructure(tango::IStructure* struct_config,
     return true;
 }
 
-bool FixedLengthTextSet::modifyDestinationStructure(tango::IStructure* struct_config,
-                                                    tango::IJob* job)
+bool FixedLengthTextSet::modifyDestinationStructure(xd::IStructure* struct_config,
+                                                    xd::IJob* job)
 {
     // get the structure actions from the
     // structure configuration that was passed
@@ -663,7 +663,7 @@ bool FixedLengthTextSet::modifyDestinationStructure(tango::IStructure* struct_co
         if (it->m_action != StructureAction::actionModify)
             continue;
 
-        tango::IColumnInfoPtr colinfo;
+        xd::IColumnInfoPtr colinfo;
         colinfo = m_definition->m_dest_structure->getColumnInfo(it->m_colname);
         
         struct_int->modifyColumn(it->m_colname,
@@ -694,7 +694,7 @@ bool FixedLengthTextSet::modifyDestinationStructure(tango::IStructure* struct_co
         if (it->m_action != StructureAction::actionCreate)
             continue;
 
-        tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
         col->setName(it->m_params->getName());
         col->setType(it->m_params->getType());
         col->setWidth(it->m_params->getWidth());
@@ -712,7 +712,7 @@ bool FixedLengthTextSet::modifyDestinationStructure(tango::IStructure* struct_co
 
         int insert_idx = it->m_pos;
         
-        tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
         col->setName(it->m_params->getName());
         col->setType(it->m_params->getType());
         col->setWidth(it->m_params->getWidth());
@@ -727,8 +727,8 @@ bool FixedLengthTextSet::modifyDestinationStructure(tango::IStructure* struct_co
     return true;
 }
 
-bool FixedLengthTextSet::modifyStructure(tango::IStructure* struct_config,
-                                         tango::IJob* job)
+bool FixedLengthTextSet::modifyStructure(xd::IStructure* struct_config,
+                                         xd::IJob* job)
 {
     bool done_flag = false;
     CommonBaseSet::modifyStructure(struct_config, &done_flag);
@@ -757,9 +757,9 @@ void FixedLengthTextSet::setRowWidth(size_t new_val)
     m_definition->m_row_width = new_val;
     
     // the structure which we'll populate with the structure actions
-    tango::IStructurePtr mod_struct = getSourceStructure();
+    xd::IStructurePtr mod_struct = getSourceStructure();
     
-    tango::IColumnInfoPtr colinfo;
+    xd::IColumnInfoPtr colinfo;
     int i, col_count = m_definition->m_source_structure->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
@@ -833,7 +833,7 @@ FixedLengthTextRowInserter::~FixedLengthTextRowInserter()
     m_set->unref();
 }
 
-tango::objhandle_t FixedLengthTextRowInserter::getHandle(const std::wstring& column_name)
+xd::objhandle_t FixedLengthTextRowInserter::getHandle(const std::wstring& column_name)
 {
     std::vector<FixedLengthTextInsertData*>::iterator it;
 
@@ -842,13 +842,13 @@ tango::objhandle_t FixedLengthTextRowInserter::getHandle(const std::wstring& col
     for (it = m_insert_data.begin(); it != m_insert_data.end(); ++it)
     {
         if (!strcasecmp((*it)->m_colname.c_str(), asc_colname.c_str()))
-            return (tango::objhandle_t)(*it);
+            return (xd::objhandle_t)(*it);
     }
 
     return 0;
 }
 
-tango::IColumnInfoPtr FixedLengthTextRowInserter::getInfo(tango::objhandle_t column_handle)
+xd::IColumnInfoPtr FixedLengthTextRowInserter::getInfo(xd::objhandle_t column_handle)
 {
     FixedLengthTextInsertData* f = (FixedLengthTextInsertData*)column_handle;
     if (!f)
@@ -856,19 +856,19 @@ tango::IColumnInfoPtr FixedLengthTextRowInserter::getInfo(tango::objhandle_t col
         return xcm::null;
     }
 
-    tango::IStructurePtr structure = m_set->getStructure();
-    tango::IColumnInfoPtr col = structure->getColumnInfo(kl::towstring(f->m_colname));
+    xd::IStructurePtr structure = m_set->getStructure();
+    xd::IColumnInfoPtr col = structure->getColumnInfo(kl::towstring(f->m_colname));
     return col;
 }
 
-bool FixedLengthTextRowInserter::putRawPtr(tango::objhandle_t column_handle,
+bool FixedLengthTextRowInserter::putRawPtr(xd::objhandle_t column_handle,
                                          const unsigned char* value,
                                          int length)
 {
     return true;
 }
 
-bool FixedLengthTextRowInserter::putString(tango::objhandle_t column_handle,
+bool FixedLengthTextRowInserter::putString(xd::objhandle_t column_handle,
                                          const std::string& value)
 {
     FixedLengthTextInsertData* f = (FixedLengthTextInsertData*)column_handle;
@@ -881,7 +881,7 @@ bool FixedLengthTextRowInserter::putString(tango::objhandle_t column_handle,
     return true;
 }
 
-bool FixedLengthTextRowInserter::putWideString(tango::objhandle_t column_handle,
+bool FixedLengthTextRowInserter::putWideString(xd::objhandle_t column_handle,
                                              const std::wstring& value)
 {
     FixedLengthTextInsertData* f = (FixedLengthTextInsertData*)column_handle;
@@ -893,7 +893,7 @@ bool FixedLengthTextRowInserter::putWideString(tango::objhandle_t column_handle,
     return putString(column_handle, kl::tostring(value));
 }
 
-bool FixedLengthTextRowInserter::putDouble(tango::objhandle_t column_handle,
+bool FixedLengthTextRowInserter::putDouble(xd::objhandle_t column_handle,
                                          double value)
 {
     FixedLengthTextInsertData* f = (FixedLengthTextInsertData*)column_handle;
@@ -918,7 +918,7 @@ bool FixedLengthTextRowInserter::putDouble(tango::objhandle_t column_handle,
     return true;
 }
 
-bool FixedLengthTextRowInserter::putInteger(tango::objhandle_t column_handle,
+bool FixedLengthTextRowInserter::putInteger(xd::objhandle_t column_handle,
                                           int value)
 {
     FixedLengthTextInsertData* f = (FixedLengthTextInsertData*)column_handle;
@@ -933,7 +933,7 @@ bool FixedLengthTextRowInserter::putInteger(tango::objhandle_t column_handle,
     return true;
 }
 
-bool FixedLengthTextRowInserter::putBoolean(tango::objhandle_t column_handle,
+bool FixedLengthTextRowInserter::putBoolean(xd::objhandle_t column_handle,
                                           bool value)
 {
     FixedLengthTextInsertData* f = (FixedLengthTextInsertData*)column_handle;
@@ -946,8 +946,8 @@ bool FixedLengthTextRowInserter::putBoolean(tango::objhandle_t column_handle,
     return true;
 }
 
-bool FixedLengthTextRowInserter::putDateTime(tango::objhandle_t column_handle,
-                                           tango::datetime_t value)
+bool FixedLengthTextRowInserter::putDateTime(xd::objhandle_t column_handle,
+                                           xd::datetime_t value)
 {
     FixedLengthTextInsertData* f = (FixedLengthTextInsertData*)column_handle;
     if (!f)
@@ -961,7 +961,7 @@ bool FixedLengthTextRowInserter::putDateTime(tango::objhandle_t column_handle,
         return true;
     }
 
-    tango::DateTime dt(value);
+    xd::DateTime dt(value);
 
     int y = dt.getYear();
     int m = dt.getMonth();
@@ -990,7 +990,7 @@ bool FixedLengthTextRowInserter::putRowBuffer(const unsigned char* value)
     return true;
 }
 
-bool FixedLengthTextRowInserter::putNull(tango::objhandle_t column_handle)
+bool FixedLengthTextRowInserter::putNull(xd::objhandle_t column_handle)
 {
     return true;
 }
@@ -1006,7 +1006,7 @@ bool FixedLengthTextRowInserter::startInsert(const std::wstring& col_list)
     }
 
     // get the source structure since we're inserting records
-    tango::IStructurePtr s = m_set->getSourceStructure();
+    xd::IStructurePtr s = m_set->getSourceStructure();
 
     int i;
     int col_count = s->getColumnCount();
@@ -1014,7 +1014,7 @@ bool FixedLengthTextRowInserter::startInsert(const std::wstring& col_list)
     
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
 
         FixedLengthTextInsertData* field = new FixedLengthTextInsertData;
         field->m_colname = kl::tostring(colinfo->getName());
@@ -1029,9 +1029,9 @@ bool FixedLengthTextRowInserter::startInsert(const std::wstring& col_list)
                 break;
 
             // right-align numerics                
-            case tango::typeNumeric:
-            case tango::typeDouble:
-            case tango::typeInteger:
+            case xd::typeNumeric:
+            case xd::typeDouble:
+            case xd::typeInteger:
                 field->m_align_right = true;
                 break;
         }

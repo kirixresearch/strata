@@ -13,11 +13,11 @@
 #define __XDCOMMON_COLUMNINFO_H
 
 
-class ColumnInfo :    public tango::IColumnInfo
+class ColumnInfo :    public xd::IColumnInfo
 {
     XCM_CLASS_NAME("tango.ColumnInfo")
     XCM_BEGIN_INTERFACE_MAP(ColumnInfo)
-        XCM_INTERFACE_ENTRY(tango::IColumnInfo)
+        XCM_INTERFACE_ENTRY(xd::IColumnInfo)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -58,8 +58,8 @@ public:
     void setTableOrdinal(int new_val);
     int getTableOrdinal();
 
-    tango::IColumnInfoPtr clone();
-    void copyTo(tango::IColumnInfoPtr dest);
+    xd::IColumnInfoPtr clone();
+    void copyTo(xd::IColumnInfoPtr dest);
 
 
 private:

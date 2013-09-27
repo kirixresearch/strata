@@ -781,7 +781,7 @@ bool MainApp::runCommandLineScript()
     }
 
 
-    tango::IDatabasePtr db = getDatabase();
+    xd::IDatabasePtr db = getDatabase();
     if (db.isNull())
     {
         // no database, try an xdfs next
@@ -1092,12 +1092,12 @@ void MainApp::setMainFrame(IFramePtr frame)
         m_frame_wnd = NULL;
 }
 
-tango::IDatabasePtr MainApp::getDatabase()
+xd::IDatabasePtr MainApp::getDatabase()
 {
     return m_database;
 }
 
-void MainApp::setDatabase(tango::IDatabasePtr database)
+void MainApp::setDatabase(xd::IDatabasePtr database)
 {
     m_database = database;
 
@@ -1165,11 +1165,11 @@ wxString MainApp::getProjectName()
     if (m_database.isNull())
         return wxT("");
 
-    tango::IAttributesPtr attr = m_database->getAttributes();
+    xd::IAttributesPtr attr = m_database->getAttributes();
     if (attr.isNull())
         return wxT("");
 
-    return attr->getStringAttribute(tango::dbattrDatabaseName);
+    return attr->getStringAttribute(xd::dbattrDatabaseName);
 }
 
 void MainApp::setProjectName(const wxString& name)
@@ -1177,13 +1177,13 @@ void MainApp::setProjectName(const wxString& name)
     if (m_database.isNull())
         return;
 
-    tango::IAttributesPtr attr = m_database->getAttributes();
+    xd::IAttributesPtr attr = m_database->getAttributes();
     if (attr.isNull())
         return;
 
-    wxString old_project_name = attr->getStringAttribute(tango::dbattrDatabaseName);
+    wxString old_project_name = attr->getStringAttribute(xd::dbattrDatabaseName);
 
-    attr->setStringAttribute(tango::dbattrDatabaseName, towstr(name));
+    attr->setStringAttribute(xd::dbattrDatabaseName, towstr(name));
 
     ProjectMgr projmgr;
     int idx = projmgr.getIdxFromLocation(getDatabaseLocation());

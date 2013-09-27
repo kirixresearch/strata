@@ -34,106 +34,106 @@ int tds2tangoType(TDSCOLUMN* tds_col)
         case SYBCHAR:
             if (tds_col->on_server.column_type == XSYBNCHAR)
             {
-                return tango::typeWideCharacter;
+                return xd::typeWideCharacter;
             }
-            return tango::typeCharacter;
+            return xd::typeCharacter;
 
         case XSYBVARCHAR:
         case SYBVARCHAR:
             if (tds_col->on_server.column_type == SYBNVARCHAR ||
                 tds_col->on_server.column_type == XSYBNVARCHAR)
             {
-                return tango::typeWideCharacter;
+                return xd::typeWideCharacter;
             }
 
-            return tango::typeCharacter;
+            return xd::typeCharacter;
 
         case SYBTEXT:
             if (tds_col->on_server.column_type == SYBNTEXT)
             {
-                return tango::typeWideCharacter;
+                return xd::typeWideCharacter;
             }
-            return tango::typeCharacter;
+            return xd::typeCharacter;
 
         case XSYBNCHAR:
-            return tango::typeWideCharacter;
+            return xd::typeWideCharacter;
 
         case XSYBNVARCHAR:
         case SYBNVARCHAR:
-            return tango::typeWideCharacter;
+            return xd::typeWideCharacter;
 
         case SYBNTEXT:
-            return tango::typeWideCharacter;
+            return xd::typeWideCharacter;
 
         case SYBINT1:
-            return tango::typeInteger;
+            return xd::typeInteger;
         case SYBINT2:
-            return tango::typeInteger;
+            return xd::typeInteger;
         case SYBINT4:
-            return tango::typeInteger;
+            return xd::typeInteger;
         case SYBINTN:
-            return tango::typeInteger;
+            return xd::typeInteger;
         case SYBINT8:
-            return tango::typeInteger;
+            return xd::typeInteger;
 
 
         case SYBFLTN:
-            return tango::typeDouble;
+            return xd::typeDouble;
         case SYBFLT8:
-            return tango::typeDouble;
+            return xd::typeDouble;
         case SYBREAL:
-            return tango::typeDouble;
+            return xd::typeDouble;
 
 
         case SYBDECIMAL:
-            return tango::typeNumeric;
+            return xd::typeNumeric;
         case SYBNUMERIC:
-            return tango::typeNumeric;
+            return xd::typeNumeric;
         case SYBMONEYN:
-            return tango::typeNumeric;
+            return xd::typeNumeric;
         case SYBMONEY:
-            return tango::typeNumeric;
+            return xd::typeNumeric;
         case SYBMONEY4:
-            return tango::typeNumeric;
+            return xd::typeNumeric;
 
 
         case SYBDATETIMN:
-            return tango::typeDate;
+            return xd::typeDate;
         case SYBDATETIME:
-            return tango::typeDate;
+            return xd::typeDate;
         case SYBDATETIME4:
-            return tango::typeDate;
+            return xd::typeDate;
 /*
         case SYBDATETIMN:
-            return tango::typeDateTime;
+            return xd::typeDateTime;
         case SYBDATETIME:
-            return tango::typeDateTime;
+            return xd::typeDateTime;
         case SYBDATETIME4:
-            return tango::typeDateTime;
+            return xd::typeDateTime;
 */
 
         case SYBBITN:
-            return tango::typeBoolean;
+            return xd::typeBoolean;
         case SYBBIT:
-            return tango::typeBoolean;
+            return xd::typeBoolean;
 
 
         case SYBIMAGE:
-            return tango::typeInvalid;
+            return xd::typeInvalid;
         case SYBBINARY:
-            return tango::typeInvalid;
+            return xd::typeInvalid;
         case SYBVARBINARY:
-            return tango::typeInvalid;
+            return xd::typeInvalid;
         case SYBVOID:
-            return tango::typeInvalid;
-            return tango::typeInvalid;
+            return xd::typeInvalid;
+            return xd::typeInvalid;
         case XSYBVARBINARY:
-            return tango::typeInvalid;
+            return xd::typeInvalid;
         case XSYBBINARY:
-            return tango::typeInvalid;
+            return xd::typeInvalid;
     }
 
-    return tango::typeInvalid;
+    return xd::typeInvalid;
 }
 
 
@@ -227,7 +227,7 @@ bool SqlServerIterator::init(const std::wstring& query)
         int sql_type = colinfo->column_type;
         int tango_type = tds2tangoType(colinfo);
 
-        if (tango_type == tango::typeInvalid)
+        if (tango_type == xd::typeInvalid)
         {
             // -- certain complex types are not supported --
             continue;
@@ -239,7 +239,7 @@ bool SqlServerIterator::init(const std::wstring& query)
         dai->m_width = colinfo->column_size;
         dai->m_ordinal = i;
 
-        if (tango_type == tango::typeDouble)
+        if (tango_type == xd::typeDouble)
         {
             dai->m_scale = 4;
         }
@@ -286,24 +286,24 @@ std::wstring SqlServerIterator::getTable()
     return m_set->getObjectPath();
 }
 
-tango::rowpos_t SqlServerIterator::getRowCount()
+xd::rowpos_t SqlServerIterator::getRowCount()
 {
     return 0;
 }
 
-tango::IDatabasePtr SqlServerIterator::getDatabase()
+xd::IDatabasePtr SqlServerIterator::getDatabase()
 {
     return m_database;
 }
 
-tango::IIteratorPtr SqlServerIterator::clone()
+xd::IIteratorPtr SqlServerIterator::clone()
 {
     return xcm::null;
 }
 
 unsigned int SqlServerIterator::getIteratorFlags()
 {
-    return tango::ifForwardOnly;
+    return xd::ifForwardOnly;
 }
 
 void SqlServerIterator::skip(int delta)
@@ -348,7 +348,7 @@ void SqlServerIterator::goLast()
 }
 
 
-tango::rowid_t SqlServerIterator::getRowId()
+xd::rowid_t SqlServerIterator::getRowId()
 {
     return xcm::null;
 }
@@ -388,19 +388,19 @@ double SqlServerIterator::getPos()
     return 0.0;
 }
 
-void SqlServerIterator::goRow(const tango::rowid_t& row)
+void SqlServerIterator::goRow(const xd::rowid_t& row)
 {
 }
 
 
-tango::IStructurePtr SqlServerIterator::getStructure()
+xd::IStructurePtr SqlServerIterator::getStructure()
 {
     Structure* s = new Structure;
 
     std::vector<SqlServerDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        tango::IColumnInfoPtr col = s->createColumn();
+        xd::IColumnInfoPtr col = s->createColumn();
         col->setName((*it)->m_name);
         col->setType((*it)->m_type);
         col->setWidth((*it)->m_width);
@@ -408,7 +408,7 @@ tango::IStructurePtr SqlServerIterator::getStructure()
         col->setColumnOrdinal((*it)->m_ordinal);
     }
     
-    return static_cast<tango::IStructure*>(s);
+    return static_cast<xd::IStructure*>(s);
 }
 
 void SqlServerIterator::refreshStructure()
@@ -416,25 +416,25 @@ void SqlServerIterator::refreshStructure()
 
 }
 
-bool SqlServerIterator::modifyStructure(tango::IStructure* struct_config, tango::IJob* job)
+bool SqlServerIterator::modifyStructure(xd::IStructure* struct_config, xd::IJob* job)
 {
     return false;
 }
 
 
-tango::objhandle_t SqlServerIterator::getHandle(const std::wstring& expr)
+xd::objhandle_t SqlServerIterator::getHandle(const std::wstring& expr)
 {
     std::vector<SqlServerDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
         if (!wcscasecmp((*it)->m_name.c_str(), expr.c_str()))
-            return (tango::objhandle_t)(*it);
+            return (xd::objhandle_t)(*it);
     }
 
     kscript::ExprParser* parser = parse(expr);
     if (!parser)
     {
-        return (tango::objhandle_t)0;
+        return (xd::objhandle_t)0;
     }
 
 
@@ -443,15 +443,15 @@ tango::objhandle_t SqlServerIterator::getHandle(const std::wstring& expr)
     dai->m_type = kscript2tangoType(parser->getType());
     m_exprs.push_back(dai);
 
-    return (tango::objhandle_t)dai;
+    return (xd::objhandle_t)dai;
 }
 
-bool SqlServerIterator::releaseHandle(tango::objhandle_t data_handle)
+bool SqlServerIterator::releaseHandle(xd::objhandle_t data_handle)
 {
     std::vector<SqlServerDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        if ((tango::objhandle_t)(*it) == data_handle)
+        if ((xd::objhandle_t)(*it) == data_handle)
         {
             return true;
         }
@@ -459,7 +459,7 @@ bool SqlServerIterator::releaseHandle(tango::objhandle_t data_handle)
 
     for (it = m_exprs.begin(); it != m_exprs.end(); ++it)
     {
-        if ((tango::objhandle_t)(*it) == data_handle)
+        if ((xd::objhandle_t)(*it) == data_handle)
         {
             delete (*it);
             m_exprs.erase(it);
@@ -470,7 +470,7 @@ bool SqlServerIterator::releaseHandle(tango::objhandle_t data_handle)
     return false;
 }
 
-tango::IColumnInfoPtr SqlServerIterator::getInfo(tango::objhandle_t data_handle)
+xd::IColumnInfoPtr SqlServerIterator::getInfo(xd::objhandle_t data_handle)
 {
     SqlServerDataAccessInfo* dai = (SqlServerDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -484,17 +484,17 @@ tango::IColumnInfoPtr SqlServerIterator::getInfo(tango::objhandle_t data_handle)
     colinfo->setWidth(dai->m_width);
     colinfo->setScale(dai->m_scale);
 
-    if (dai->m_type == tango::typeDate ||
-        dai->m_type == tango::typeInteger)
+    if (dai->m_type == xd::typeDate ||
+        dai->m_type == xd::typeInteger)
     {
         colinfo->setWidth(4);
     }
-     else if (dai->m_type == tango::typeDateTime ||
-              dai->m_type == tango::typeDouble)
+     else if (dai->m_type == xd::typeDateTime ||
+              dai->m_type == xd::typeDouble)
     {
         colinfo->setWidth(8);
     }
-     else if (dai->m_type == tango::typeBoolean)
+     else if (dai->m_type == xd::typeBoolean)
     {
         colinfo->setWidth(1);
     }
@@ -503,15 +503,15 @@ tango::IColumnInfoPtr SqlServerIterator::getInfo(tango::objhandle_t data_handle)
         colinfo->setWidth(dai->m_width);
     }
 
-    return static_cast<tango::IColumnInfo*>(colinfo);
+    return static_cast<xd::IColumnInfo*>(colinfo);
 }
 
-int SqlServerIterator::getType(tango::objhandle_t data_handle)
+int SqlServerIterator::getType(xd::objhandle_t data_handle)
 {
     return 0;
 }
 
-int SqlServerIterator::getRawWidth(tango::objhandle_t data_handle)
+int SqlServerIterator::getRawWidth(xd::objhandle_t data_handle)
 {
     SqlServerDataAccessInfo* dai = (SqlServerDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -522,7 +522,7 @@ int SqlServerIterator::getRawWidth(tango::objhandle_t data_handle)
     return dai->m_width;
 }
 
-const unsigned char* SqlServerIterator::getRawPtr(tango::objhandle_t data_handle)
+const unsigned char* SqlServerIterator::getRawPtr(xd::objhandle_t data_handle)
 {
     SqlServerDataAccessInfo* dai = (SqlServerDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -543,7 +543,7 @@ const unsigned char* SqlServerIterator::getRawPtr(tango::objhandle_t data_handle
     return ptr;
 }
 
-const std::string& SqlServerIterator::getString(tango::objhandle_t data_handle)
+const std::string& SqlServerIterator::getString(xd::objhandle_t data_handle)
 {
     SqlServerDataAccessInfo* dai = (SqlServerDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -568,7 +568,7 @@ const std::string& SqlServerIterator::getString(tango::objhandle_t data_handle)
 */
 
 
-    if (dai->m_type == tango::typeCharacter)
+    if (dai->m_type == xd::typeCharacter)
     {
         unsigned char* src;
         TDS_INT src_len;
@@ -589,7 +589,7 @@ const std::string& SqlServerIterator::getString(tango::objhandle_t data_handle)
         dai->m_str_result.assign((char*)src, src_len);
         return dai->m_str_result;
     }
-     else if (dai->m_type == tango::typeWideCharacter)
+     else if (dai->m_type == xd::typeWideCharacter)
     {
         dai->m_str_result = kl::tostring(getWideString(data_handle));
         return dai->m_str_result;
@@ -598,7 +598,7 @@ const std::string& SqlServerIterator::getString(tango::objhandle_t data_handle)
     return empty_string;
 }
 
-const std::wstring& SqlServerIterator::getWideString(tango::objhandle_t data_handle)
+const std::wstring& SqlServerIterator::getWideString(xd::objhandle_t data_handle)
 {
     SqlServerDataAccessInfo* dai = (SqlServerDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -616,12 +616,12 @@ const std::wstring& SqlServerIterator::getWideString(tango::objhandle_t data_han
 */
 
 
-    if (dai->m_type == tango::typeCharacter)
+    if (dai->m_type == xd::typeCharacter)
     {
         dai->m_wstr_result = kl::towstring(getString(data_handle));
         return dai->m_wstr_result;
     }
-     else if (dai->m_type == tango::typeWideCharacter)
+     else if (dai->m_type == xd::typeWideCharacter)
     {
         if (dai->m_expr)
         {
@@ -679,7 +679,7 @@ const std::wstring& SqlServerIterator::getWideString(tango::objhandle_t data_han
     return empty_wstring;
 }
 
-tango::datetime_t SqlServerIterator::getDateTime(tango::objhandle_t data_handle)
+xd::datetime_t SqlServerIterator::getDateTime(xd::objhandle_t data_handle)
 {
     SqlServerDataAccessInfo* dai = (SqlServerDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -692,11 +692,11 @@ tango::datetime_t SqlServerIterator::getDateTime(tango::objhandle_t data_handle)
         dai->m_expr->eval(&dai->m_expr_result);
         kscript::ExprDateTime edt = dai->m_expr_result.getDateTime();
 
-        tango::datetime_t dt;
+        xd::datetime_t dt;
         dt = edt.date;
         dt <<= 32;
         
-        if (dai->m_type == tango::typeDateTime)
+        if (dai->m_type == xd::typeDateTime)
             dt |= edt.time;
 
         return dt;
@@ -751,7 +751,7 @@ tango::datetime_t SqlServerIterator::getDateTime(tango::objhandle_t data_handle)
             break;
     }
 
-    tango::datetime_t dt;
+    xd::datetime_t dt;
 
     dt = dateToJulian(daterec.year, daterec.month + 1, daterec.day);
     dt <<= 32;
@@ -814,7 +814,7 @@ inline double tdsnum2double(unsigned char* src)
 }
 
 
-double SqlServerIterator::getDouble(tango::objhandle_t data_handle)
+double SqlServerIterator::getDouble(xd::objhandle_t data_handle)
 {
     SqlServerDataAccessInfo* dai = (SqlServerDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -905,7 +905,7 @@ double SqlServerIterator::getDouble(tango::objhandle_t data_handle)
     return 0.0;
 }
 
-int SqlServerIterator::getInteger(tango::objhandle_t data_handle)
+int SqlServerIterator::getInteger(xd::objhandle_t data_handle)
 {
     SqlServerDataAccessInfo* dai = (SqlServerDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -957,7 +957,7 @@ int SqlServerIterator::getInteger(tango::objhandle_t data_handle)
     return 0;
 }
 
-bool SqlServerIterator::getBoolean(tango::objhandle_t data_handle)
+bool SqlServerIterator::getBoolean(xd::objhandle_t data_handle)
 {
     SqlServerDataAccessInfo* dai = (SqlServerDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -991,7 +991,7 @@ bool SqlServerIterator::getBoolean(tango::objhandle_t data_handle)
     return res_conv.ti ? true : false;
 }
 
-bool SqlServerIterator::isNull(tango::objhandle_t data_handle)
+bool SqlServerIterator::isNull(xd::objhandle_t data_handle)
 {
     SqlServerDataAccessInfo* dai = (SqlServerDataAccessInfo*)data_handle;
     if (dai == NULL)

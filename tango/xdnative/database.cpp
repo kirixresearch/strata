@@ -73,23 +73,23 @@ XdnativeDatabase::XdnativeDatabase()
     kws += L",";
     kws += xdnative_keywords2;
 
-    m_attr = static_cast<tango::IAttributes*>(new DatabaseAttributes);
-    m_attr->setIntAttribute(tango::dbattrColumnMaxNameLength, 80);
-    m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 80);
-    m_attr->setStringAttribute(tango::dbattrKeywords, kws);
-    m_attr->setStringAttribute(tango::dbattrColumnInvalidChars,
+    m_attr = static_cast<xd::IAttributes*>(new DatabaseAttributes);
+    m_attr->setIntAttribute(xd::dbattrColumnMaxNameLength, 80);
+    m_attr->setIntAttribute(xd::dbattrTableMaxNameLength, 80);
+    m_attr->setStringAttribute(xd::dbattrKeywords, kws);
+    m_attr->setStringAttribute(xd::dbattrColumnInvalidChars,
                                L"*|:\"<>?[]\\;'=,/\x00\x09\x0A\x0B\x0C\x0D\xFF");
-    m_attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars,
+    m_attr->setStringAttribute(xd::dbattrColumnInvalidStartingChars,
                                L"*|:\"<>?[]\\;'=,/\x00\x09\x0A\x0B\x0C\x0D\xFF");
-    m_attr->setStringAttribute(tango::dbattrTableInvalidChars,
+    m_attr->setStringAttribute(xd::dbattrTableInvalidChars,
                                L"*|:\"<>?[]\\;'=,/\x00\x09\x0A\x0B\x0C\x0D\xFF");
-    m_attr->setStringAttribute(tango::dbattrTableInvalidStartingChars,
+    m_attr->setStringAttribute(xd::dbattrTableInvalidStartingChars,
                                L"*|:\"<>?[]\\;'=,/\x00\x09\x0A\x0B\x0C\x0D\xFF");
-    m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"[");
-    m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"]");
-    m_attr->setStringAttribute(tango::dbattrIdentifierCharsNeedingQuote, L"`~# $!@%^&(){}-+.");
+    m_attr->setStringAttribute(xd::dbattrIdentifierQuoteOpenChar, L"[");
+    m_attr->setStringAttribute(xd::dbattrIdentifierQuoteCloseChar, L"]");
+    m_attr->setStringAttribute(xd::dbattrIdentifierCharsNeedingQuote, L"`~# $!@%^&(){}-+.");
 
-    m_db_mgr = static_cast<tango::IDatabaseMgr*>(new DatabaseMgr);
+    m_db_mgr = static_cast<xd::IDatabaseMgr*>(new DatabaseMgr);
 }
 
 XdnativeDatabase::~XdnativeDatabase()
@@ -129,8 +129,8 @@ bool XdnativeDatabase::setBaseDirectory(const std::wstring& base_dir)
     m_ordinal_counter_path = ofsToPhysFilename(L"/.system/ordinal_counter", false);
 
     // update these database attributes
-    m_attr->setStringAttribute(tango::dbattrTempDirectory, getTempPath());
-    m_attr->setStringAttribute(tango::dbattrDefinitionDirectory, getDefinitionPath());
+    m_attr->setStringAttribute(xd::dbattrTempDirectory, getTempPath());
+    m_attr->setStringAttribute(xd::dbattrDefinitionDirectory, getDefinitionPath());
 
     return true;
 }
@@ -141,7 +141,7 @@ std::wstring XdnativeDatabase::getActiveUid()
 }
 
 
-tango::IAttributesPtr XdnativeDatabase::getAttributes()
+xd::IAttributesPtr XdnativeDatabase::getAttributes()
 {
     return m_attr;
 }
@@ -363,7 +363,7 @@ IJobInternalPtr XdnativeDatabase::createJobEntry()
     return static_cast<IJobInternal*>(job);
 }
 
-tango::IJobPtr XdnativeDatabase::createJob()
+xd::IJobPtr XdnativeDatabase::createJob()
 {
     XCM_AUTO_LOCK(m_jobs_mutex);
 
@@ -374,7 +374,7 @@ tango::IJobPtr XdnativeDatabase::createJob()
     job->ref();
     m_jobs.push_back(job);
 
-    return static_cast<tango::IJob*>(job);
+    return static_cast<xd::IJob*>(job);
 }
 
 
@@ -450,7 +450,7 @@ bool XdnativeDatabase::createDatabase(const std::wstring& db_name,
         return false;
     node->setString(db_name);
 
-    m_attr->setStringAttribute(tango::dbattrDatabaseName, db_name);
+    m_attr->setStringAttribute(xd::dbattrDatabaseName, db_name);
 
     node = createNodeFile(L"/.system/database_version");
     if (!node)
@@ -460,7 +460,7 @@ bool XdnativeDatabase::createDatabase(const std::wstring& db_name,
     m_uid = L"admin";
 
     // create an ordinal file
-    tango::tableord_t ord = allocOrdinal();
+    xd::tableord_t ord = allocOrdinal();
 
     // create a mount point for external files
     setMountPoint(L"/.fs", L"Xdprovider=xdfs;Database=;User ID=;Password=;", L"/");
@@ -510,7 +510,7 @@ bool XdnativeDatabase::openDatabase(const std::wstring& location,
     if (!dbname)
         return false;
 
-    m_attr->setStringAttribute(tango::dbattrDatabaseName, dbname->getString());
+    m_attr->setStringAttribute(xd::dbattrDatabaseName, dbname->getString());
 
     // ensure that an ordinal counter exists
     INodeValuePtr last_ord = openNodeFile(L"/.system/ordinal_counter");
@@ -632,7 +632,7 @@ bool XdnativeDatabase::getUserExist(const std::wstring& uid)
     return getFileExist(path);
 }
 
-tango::tableord_t XdnativeDatabase::getMaximumOrdinal()
+xd::tableord_t XdnativeDatabase::getMaximumOrdinal()
 {
     kl::xmlnode ofs_file;
 
@@ -650,7 +650,7 @@ tango::tableord_t XdnativeDatabase::getMaximumOrdinal()
     return kl::wtoi(value.getNodeValue());
 }
 
-tango::tableord_t XdnativeDatabase::allocOrdinal()
+xd::tableord_t XdnativeDatabase::allocOrdinal()
 {
     if (!xf_get_file_exist(m_ordinal_counter_path))
     {
@@ -770,7 +770,7 @@ tango::tableord_t XdnativeDatabase::allocOrdinal()
     return ordinal;
 }
 
-bool XdnativeDatabase::setOrdinalTable(tango::tableord_t ordinal,
+bool XdnativeDatabase::setOrdinalTable(xd::tableord_t ordinal,
                                        const std::wstring& _filename)
 {
     std::wstring filename;
@@ -826,7 +826,7 @@ bool XdnativeDatabase::setOrdinalTable(tango::tableord_t ordinal,
     return true;
 }
 
-bool XdnativeDatabase::deleteOrdinal(tango::tableord_t ordinal)
+bool XdnativeDatabase::deleteOrdinal(xd::tableord_t ordinal)
 {
     // write out ordinal entry with table filename
     wchar_t tableord_path[64];
@@ -883,8 +883,8 @@ void XdnativeDatabase::updateSetReference(const std::wstring& ofs_path)
 
 void XdnativeDatabase::recursiveReferenceUpdate(const std::wstring& folder_path)
 {
-    tango::IFileInfoEnumPtr files = getFolderInfo(folder_path);
-    tango::IFileInfoPtr info;
+    xd::IFileInfoEnumPtr files = getFolderInfo(folder_path);
+    xd::IFileInfoPtr info;
 
     int file_count = files->size();
     int i;
@@ -896,11 +896,11 @@ void XdnativeDatabase::recursiveReferenceUpdate(const std::wstring& folder_path)
 
         std::wstring path = combineOfsPath(folder_path, info->getName());
 
-        if (file_type == tango::filetypeTable)
+        if (file_type == xd::filetypeTable)
         {
             updateSetReference(path);
         }
-         else if (file_type == tango::filetypeFolder)
+         else if (file_type == xd::filetypeFolder)
         {
             recursiveReferenceUpdate(path);
         }
@@ -911,11 +911,11 @@ void XdnativeDatabase::recursiveReferenceUpdate(const std::wstring& folder_path)
 
 bool XdnativeDatabase::deleteStream(const std::wstring& ofs_path)
 {
-    tango::IFileInfoPtr file_info = getFileInfo(ofs_path);
+    xd::IFileInfoPtr file_info = getFileInfo(ofs_path);
     if (!file_info)
         return false;
 
-    if (file_info->getType() != tango::filetypeStream)
+    if (file_info->getType() != xd::filetypeStream)
         return false;
     file_info.clear();
         
@@ -966,11 +966,11 @@ bool XdnativeDatabase::deleteStream(const std::wstring& ofs_path)
 bool XdnativeDatabase::deleteSet(const std::wstring& ofs_path)
 {
     // make sure we are dealing with a file
-    tango::IFileInfoPtr file_info = getFileInfo(ofs_path);
+    xd::IFileInfoPtr file_info = getFileInfo(ofs_path);
     if (!file_info)
         return false;
 
-    if (file_info->getType() != tango::filetypeTable)
+    if (file_info->getType() != xd::filetypeTable)
         return false;
 
     file_info.clear();
@@ -1041,7 +1041,7 @@ bool XdnativeDatabase::deleteSet(const std::wstring& ofs_path)
             return false;
         }
 
-        tango::tableord_t ordinal = ordinal_node->getInteger();
+        xd::tableord_t ordinal = ordinal_node->getInteger();
 
 
         // delete the table file and it's map file
@@ -1117,7 +1117,7 @@ bool XdnativeDatabase::deleteSet(const std::wstring& ofs_path)
 
     // update the global relationship table. note
     // that this routine takes care of its own cleanup
-    tango::IRelationEnumPtr rel_enum;
+    xd::IRelationEnumPtr rel_enum;
     rel_enum = getRelationEnum(L"");
 
     return true;
@@ -1136,7 +1136,7 @@ bool XdnativeDatabase::setMountPoint(const std::wstring& path,
         if (!file_exists)
         {
             // move takes place in a mount
-            tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+            xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
             if (db.isNull())
                 return false;
 
@@ -1152,7 +1152,7 @@ bool XdnativeDatabase::setMountPoint(const std::wstring& path,
 
     
     // try to create or open a file to store the mount point in
-    OfsFile* file = OfsFile::createFile(this, path, tango::filetypeNode);
+    OfsFile* file = OfsFile::createFile(this, path, xd::filetypeNode);
     if (!file)
         return false;
 
@@ -1168,7 +1168,7 @@ bool XdnativeDatabase::setMountPoint(const std::wstring& path,
     return true;
 }
 
-tango::IDatabasePtr XdnativeDatabase::getMountDatabase(const std::wstring& path)
+xd::IDatabasePtr XdnativeDatabase::getMountDatabase(const std::wstring& path)
 {
     std::wstring cstr, rpath;
     if (detectMountPoint(path, &cstr, &rpath))
@@ -1208,14 +1208,14 @@ bool XdnativeDatabase::createFolder(const std::wstring& path)
     if (detectMountPoint(path, &cstr, &rpath))
     {
         // action takes place in a mount
-        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
             return xcm::null;
 
         return db->createFolder(rpath);
     }
 
-    OfsFile* f = OfsFile::createFile(this, path, tango::filetypeFolder);
+    OfsFile* f = OfsFile::createFile(this, path, xd::filetypeFolder);
 
     if (!f)
     {
@@ -1230,7 +1230,7 @@ bool XdnativeDatabase::createFolder(const std::wstring& path)
 
 INodeValuePtr XdnativeDatabase::createNodeFile(const std::wstring& path)
 {
-    OfsFile* file = OfsFile::createFile(this, path, tango::filetypeNode);
+    OfsFile* file = OfsFile::createFile(this, path, xd::filetypeNode);
 
     if (!file)
     {
@@ -1519,10 +1519,10 @@ static bool _copyTree(const std::wstring& path,
     return true;
 }
 
-bool XdnativeDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
+bool XdnativeDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 {
-    tango::IIteratorPtr iter;
-    tango::IStructurePtr structure;
+    xd::IIteratorPtr iter;
+    xd::IStructurePtr structure;
 
     if (info->iter_input.isOk())
     {
@@ -1531,11 +1531,11 @@ bool XdnativeDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
     }
      else
     {
-        tango::IFileInfoPtr finfo = getFileInfo(info->input);
-        if (finfo->getType() == tango::filetypeStream)
+        xd::IFileInfoPtr finfo = getFileInfo(info->input);
+        if (finfo->getType() == xd::filetypeStream)
             return copyFile(info->input, info->output);
 
-        tango::QueryParams qp;
+        xd::QueryParams qp;
         qp.from = info->input;
         qp.where = info->where;
         qp.order = info->order;
@@ -1551,7 +1551,7 @@ bool XdnativeDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
         if (qp.where.empty())
         {
 
-            if (finfo->getFlags() & tango::sfFastRowCount)
+            if (finfo->getFlags() & xd::sfFastRowCount)
             {
                 IJobInternalPtr ijob = job;
                 if (ijob)
@@ -1579,7 +1579,7 @@ bool XdnativeDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
     std::wstring cstr, rpath;
     if (detectMountPoint(info->output, &cstr, &rpath))
     {
-        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
             return false;
 
@@ -1587,7 +1587,7 @@ bool XdnativeDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
     }
      else
     {
-        xdcmnInsert(static_cast<tango::IDatabase*>(this), iter, info->output, info->where, info->limit, job);
+        xdcmnInsert(static_cast<xd::IDatabase*>(this), iter, info->output, info->where, info->limit, job);
     }
 
     return true;
@@ -1600,17 +1600,17 @@ bool XdnativeDatabase::copyFile(const std::wstring& src_path,
         return false;
 
     // find out if we are copying a stream
-    tango::IFileInfoPtr info = getFileInfo(src_path);
-    if (info.isOk() && info->getType() == tango::filetypeStream)
+    xd::IFileInfoPtr info = getFileInfo(src_path);
+    if (info.isOk() && info->getType() == xd::filetypeStream)
     {
-        tango::IStreamPtr src_stream = openStream(src_path);
+        xd::IStreamPtr src_stream = openStream(src_path);
         if (src_stream.isNull())
             return false;
         
         if (!createStream(dest_path, info->getMimeType()))
             return false;
 
-        tango::IStreamPtr dest_stream = openStream(dest_path);
+        xd::IStreamPtr dest_stream = openStream(dest_path);
         if (dest_stream.isNull())
             return false;
 
@@ -1666,7 +1666,7 @@ bool XdnativeDatabase::renameFile(const std::wstring& path,
     std::wstring cstr, rpath;
     if (detectMountPoint(path, &cstr, &rpath) && !getLocalFileExist(path))
     {
-        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
             return false;
 
@@ -1695,7 +1695,7 @@ bool XdnativeDatabase::renameFile(const std::wstring& path,
 
 
 
-    tango::IFileInfoPtr file_info = getFileInfo(new_path);
+    xd::IFileInfoPtr file_info = getFileInfo(new_path);
     if (file_info.isNull())
         return false;
 
@@ -1703,12 +1703,12 @@ bool XdnativeDatabase::renameFile(const std::wstring& path,
     {
         int type = file_info->getType();
 
-        if (type == tango::filetypeFolder)
+        if (type == xd::filetypeFolder)
         {
             // it is a folder, so all references underneath must be updated
             recursiveReferenceUpdate(new_path);
         }
-         else if (type == tango::filetypeTable)
+         else if (type == xd::filetypeTable)
         {
             // the set reference must be updated
             updateSetReference(new_path);
@@ -1736,8 +1736,8 @@ bool XdnativeDatabase::moveFile(const std::wstring& _src_path,
     // if dest_path is an existing folder, the user wants
     // to move src_path while retaining its original name
     // into the existing dest_path folder
-    tango::IFileInfoPtr dest_info = getFileInfo(dest_path);
-    if (dest_info.isOk() && dest_info->getType() == tango::filetypeFolder)
+    xd::IFileInfoPtr dest_info = getFileInfo(dest_path);
+    if (dest_info.isOk() && dest_info->getType() == xd::filetypeFolder)
     {
         std::wstring f = src_path;
         
@@ -1757,7 +1757,7 @@ bool XdnativeDatabase::moveFile(const std::wstring& _src_path,
 
 
     bool source_item_is_mount = false;
-    tango::IFileInfoPtr info = getFileInfo(src_path);
+    xd::IFileInfoPtr info = getFileInfo(src_path);
     if (info.isOk())
     {
         source_item_is_mount = info->isMount();
@@ -1784,7 +1784,7 @@ bool XdnativeDatabase::moveFile(const std::wstring& _src_path,
         if (src_cstr.length() > 0)
         {
             // move takes place in a mount
-            tango::IDatabasePtr db = lookupOrOpenMountDb(src_cstr);
+            xd::IDatabasePtr db = lookupOrOpenMountDb(src_cstr);
             if (db.isNull())
                 return false;
 
@@ -1796,7 +1796,7 @@ bool XdnativeDatabase::moveFile(const std::wstring& _src_path,
     if (!moveOfsFile(src_path, dest_path))
         return false;
 
-    tango::IFileInfoPtr file_info = getFileInfo(dest_path);
+    xd::IFileInfoPtr file_info = getFileInfo(dest_path);
     if (file_info.isNull())
         return false;
 
@@ -1804,13 +1804,13 @@ bool XdnativeDatabase::moveFile(const std::wstring& _src_path,
     {
         int type = file_info->getType();
 
-        if (type == tango::filetypeFolder)
+        if (type == xd::filetypeFolder)
         {
             // it is a folder, so all references underneath
             // must be updated
             recursiveReferenceUpdate(dest_path);
         }
-         else if (type == tango::filetypeTable)
+         else if (type == xd::filetypeTable)
         {
             // the set reference must be updated
             updateSetReference(dest_path);
@@ -1835,7 +1835,7 @@ bool XdnativeDatabase::deleteFile(const std::wstring& path)
         }
         
   
-        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
             return false;
 
@@ -1844,7 +1844,7 @@ bool XdnativeDatabase::deleteFile(const std::wstring& path)
     
     
     
-    tango::IFileInfoPtr file_info = getFileInfo(path);
+    xd::IFileInfoPtr file_info = getFileInfo(path);
     if (file_info.isNull())
     {
         // no file existed in the first place
@@ -1858,11 +1858,11 @@ bool XdnativeDatabase::deleteFile(const std::wstring& path)
 
     int type = file_info->getType();
 
-    if (type == tango::filetypeTable)
+    if (type == xd::filetypeTable)
     {
         return deleteSet(path);
     }
-     else if (type == tango::filetypeStream)
+     else if (type == xd::filetypeStream)
     {
         return deleteStream(path);
     }
@@ -1895,7 +1895,7 @@ bool XdnativeDatabase::getFileExist(const std::wstring& path)
         if (rpath.empty() || rpath == L"/")
             return true;
             
-        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
             return false;
 
@@ -1954,7 +1954,7 @@ long long XdnativeDatabase::getFileSize(const std::wstring& ofs_path)
     return xf_get_file_size(table_filename);
 }
 
-tango::rowpos_t XdnativeDatabase::getRowCount(const std::wstring& path)
+xd::rowpos_t XdnativeDatabase::getRowCount(const std::wstring& path)
 {
     if (path.empty())
         return 0;
@@ -2004,11 +2004,11 @@ std::wstring XdnativeDatabase::getFileMimeType(const std::wstring& path)
     return mime_type->getString();
 }
 
-class XdnativeFileInfo : public tango::IFileInfo
+class XdnativeFileInfo : public xd::IFileInfo
 {
     XCM_CLASS_NAME("xdnative.XdnativeFileInfo")
     XCM_BEGIN_INTERFACE_MAP(XdnativeFileInfo)
-        XCM_INTERFACE_ENTRY(tango::IFileInfo)
+        XCM_INTERFACE_ENTRY(xd::IFileInfo)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -2052,9 +2052,9 @@ public:
         return size;
     }
 
-    tango::rowpos_t getRowCount()
+    xd::rowpos_t getRowCount()
     {
-        if (type == tango::filetypeTable)
+        if (type == xd::filetypeTable)
             return db->getRowCount(path);
              else
             return 0;
@@ -2074,8 +2074,8 @@ public:
 
     unsigned int getFlags()
     {
-        if (type == tango::filetypeTable)
-            return tango::sfFastRowCount;
+        if (type == xd::filetypeTable)
+            return xd::sfFastRowCount;
              else
             return 0;
     }
@@ -2159,7 +2159,7 @@ bool XdnativeDatabase::getFileType(const std::wstring& path, int* type, bool* is
     {
         // caller wants file type information for root folder
         if (type)
-            *type = tango::filetypeFolder;
+            *type = xd::filetypeFolder;
         if (is_mount)
             *is_mount = false;
         return true;
@@ -2202,7 +2202,7 @@ bool XdnativeDatabase::getFileType(const std::wstring& path, int* type, bool* is
 }
 
 
-tango::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& path)
+xd::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& path)
 {
     if (path.empty())
         return xcm::null;
@@ -2211,10 +2211,10 @@ tango::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& path)
     {
         xdcommon::FileInfo* f = new xdcommon::FileInfo;
         f->name = kl::afterLast(path, '/');
-        f->type = tango::filetypeTable;
-        f->format = tango::formatNative;
+        f->type = xd::filetypeTable;
+        f->format = xd::formatNative;
         f->is_mount = false;
-        return static_cast<tango::IFileInfo*>(f);
+        return static_cast<xd::IFileInfo*>(f);
     }
 
 
@@ -2226,16 +2226,16 @@ tango::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& path)
         {
             xdcommon::FileInfo* f = new xdcommon::FileInfo;
             f->name = kl::afterLast(path, '/');
-            f->type = tango::filetypeFolder;
-            f->format = tango::formatNative;
+            f->type = xd::filetypeFolder;
+            f->format = xd::formatNative;
             f->is_mount = true;
-            return static_cast<tango::IFileInfo*>(f);
+            return static_cast<xd::IFileInfo*>(f);
         }
          else
         {
             std::wstring file_primary_key;
-            int file_type = tango::filetypeTable;
-            int file_format = tango::formatNative;
+            int file_type = xd::filetypeTable;
+            int file_format = xd::formatNative;
             int is_mount = -1;
             std::wstring file_mime_type;
             std::wstring file_object_id;
@@ -2243,12 +2243,12 @@ tango::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& path)
             if (getLocalFileExist(path))
                 is_mount = 1;
                 
-            tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+            xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
             if (db.isOk())
             {
                 if (!checkCircularMount(path, db, rpath))
                 {
-                    tango::IFileInfoPtr file_info = db->getFileInfo(rpath);
+                    xd::IFileInfoPtr file_info = db->getFileInfo(rpath);
                     if (file_info.isOk())
                     {
                         file_type = file_info->getType();
@@ -2271,7 +2271,7 @@ tango::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& path)
             f->mime_type = file_mime_type;
             f->object_id = file_object_id;
             
-            return static_cast<tango::IFileInfo*>(f);
+            return static_cast<xd::IFileInfo*>(f);
         }
     }
 
@@ -2281,8 +2281,8 @@ tango::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& path)
 
 
     XdnativeFileInfo* f = new XdnativeFileInfo(this);
-    f->format = tango::formatNative;
-    f->type = tango::filetypeNode;
+    f->format = xd::formatNative;
+    f->type = xd::filetypeNode;
     f->is_mount = false;
     f->path = path;
     
@@ -2294,22 +2294,22 @@ tango::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& path)
 
     getFileType(path, &(f->type), &(f->is_mount));
 
-    return static_cast<tango::IFileInfo*>(f);
+    return static_cast<xd::IFileInfo*>(f);
 }
 
 
-tango::IDatabasePtr XdnativeDatabase::lookupOrOpenMountDb(const std::wstring& cstr)
+xd::IDatabasePtr XdnativeDatabase::lookupOrOpenMountDb(const std::wstring& cstr)
 {
     if (cstr.empty())
     {
-        return static_cast<tango::IDatabase*>(this);
+        return static_cast<xd::IDatabase*>(this);
     }
 
 
-    tango::IDatabasePtr db;
+    xd::IDatabasePtr db;
     
     m_mountdbs_mutex.lock();
-    std::map<std::wstring, tango::IDatabasePtr>::iterator it;
+    std::map<std::wstring, xd::IDatabasePtr>::iterator it;
     it = m_mounted_dbs.find(cstr);
     if (it != m_mounted_dbs.end())
         db = it->second;
@@ -2325,12 +2325,12 @@ tango::IDatabasePtr XdnativeDatabase::lookupOrOpenMountDb(const std::wstring& cs
         {
             // tell the mount database to store its temporary files
             // in our temporary directory
-            tango::IAttributesPtr attr = db->getAttributes();
+            xd::IAttributesPtr attr = db->getAttributes();
             
             if (attr)
             {
-                attr->setStringAttribute(tango::dbattrTempDirectory, getTempPath());
-                attr->setStringAttribute(tango::dbattrDefinitionDirectory, getDefinitionPath());
+                attr->setStringAttribute(xd::dbattrTempDirectory, getTempPath());
+                attr->setStringAttribute(xd::dbattrDefinitionDirectory, getDefinitionPath());
             }
         }      
         
@@ -2460,10 +2460,10 @@ bool XdnativeDatabase::detectMountPoint(const std::wstring& path,
 
 /*
 bool XdnativeDatabase::checkCircularMount(const std::wstring& path,
-                                  tango::IDatabasePtr remote_db, 
+                                  xd::IDatabasePtr remote_db, 
                                   const std::wstring remote_path)
 {
-    if (static_cast<tango::IDatabase*>(this) != remote_db.p)
+    if (static_cast<xd::IDatabase*>(this) != remote_db.p)
         return false;
         
     return (0 == wcscasecmp(remote_path.c_str(), path.c_str())) ? true : false;
@@ -2473,11 +2473,11 @@ bool XdnativeDatabase::checkCircularMount(const std::wstring& path,
 
 
 bool XdnativeDatabase::checkCircularMountInternal(std::set<std::wstring, kl::cmp_nocase>& bad_paths,
-                                          tango::IDatabasePtr remote_db, 
+                                          xd::IDatabasePtr remote_db, 
                                           const std::wstring remote_path)
 {
     // if remote is a different db, it's not circular
-    if (static_cast<tango::IDatabase*>(this) != remote_db.p)
+    if (static_cast<xd::IDatabase*>(this) != remote_db.p)
         return false;
         
     if (bad_paths.find(remote_path) != bad_paths.end())
@@ -2498,7 +2498,7 @@ bool XdnativeDatabase::checkCircularMountInternal(std::set<std::wstring, kl::cmp
         return false;
     }
     
-    tango::IDatabasePtr rdb = lookupOrOpenMountDb(cstr);
+    xd::IDatabasePtr rdb = lookupOrOpenMountDb(cstr);
     bad_paths.insert(remote_path);
     
     return checkCircularMountInternal(bad_paths, rdb, rpath);
@@ -2508,7 +2508,7 @@ bool XdnativeDatabase::checkCircularMountInternal(std::set<std::wstring, kl::cmp
 
 
 bool XdnativeDatabase::checkCircularMount(const std::wstring& path,
-                                  tango::IDatabasePtr remote_db, 
+                                  xd::IDatabasePtr remote_db, 
                                   const std::wstring remote_path)
 {
     std::set<std::wstring, kl::cmp_nocase> bad_paths;
@@ -2519,10 +2519,10 @@ bool XdnativeDatabase::checkCircularMount(const std::wstring& path,
 
 
 
-tango::IFileInfoEnumPtr XdnativeDatabase::getFolderInfo(const std::wstring& _mask)
+xd::IFileInfoEnumPtr XdnativeDatabase::getFolderInfo(const std::wstring& _mask)
 { 
-    xcm::IVectorImpl<tango::IFileInfoPtr>* retval;
-    retval = new xcm::IVectorImpl<tango::IFileInfoPtr>;
+    xcm::IVectorImpl<xd::IFileInfoPtr>* retval;
+    retval = new xcm::IVectorImpl<xd::IFileInfoPtr>;
     
     // if the parameter is empty, assume they want the root folder
     std::wstring mask = _mask;
@@ -2536,7 +2536,7 @@ tango::IFileInfoEnumPtr XdnativeDatabase::getFolderInfo(const std::wstring& _mas
     
     if (detectMountPoint(mask, &cstr, &rpath))
     {
-        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
             return retval;
             
@@ -2588,7 +2588,7 @@ tango::IFileInfoEnumPtr XdnativeDatabase::getFolderInfo(const std::wstring& _mas
             std::wstring ofs_path = base_ofs_path;
             ofs_path += file_name;
 
-            tango::IFileInfoPtr file_info = getFileInfo(ofs_path);
+            xd::IFileInfoPtr file_info = getFileInfo(ofs_path);
             if (file_info.isOk())
             {
                 retval->append(file_info);
@@ -2701,13 +2701,13 @@ void XdnativeDatabase::getFolderUsedOrdinals(const std::wstring& folder_path,
                                              std::set<int>& used_ordinals)
 {
     // skip mounts
-    tango::IFileInfoPtr fileinfo = getFileInfo(folder_path);
+    xd::IFileInfoPtr fileinfo = getFileInfo(folder_path);
     if (fileinfo.isNull() || fileinfo->isMount())
         return;
     
 
-    tango::IFileInfoEnumPtr files = getFolderInfo(folder_path);
-    tango::IFileInfoPtr info;
+    xd::IFileInfoEnumPtr files = getFolderInfo(folder_path);
+    xd::IFileInfoPtr info;
 
     int file_count = files->size();
     int i;
@@ -2724,7 +2724,7 @@ void XdnativeDatabase::getFolderUsedOrdinals(const std::wstring& folder_path,
         std::wstring path = combineOfsPath(folder_path, info->getName());
 
 
-        if (file_type == tango::filetypeTable)
+        if (file_type == xd::filetypeTable)
         {
             INodeValuePtr set_file = openNodeFile(path);
             if (set_file)
@@ -2797,12 +2797,12 @@ bool XdnativeDatabase::cleanup()
 }
 
 
-tango::IStreamPtr XdnativeDatabase::openStream(const std::wstring& path)
+xd::IStreamPtr XdnativeDatabase::openStream(const std::wstring& path)
 {
     std::wstring cstr, rpath;
     if (detectMountPoint(path, &cstr, &rpath))
     {
-        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
             return xcm::null;
 
@@ -2812,8 +2812,8 @@ tango::IStreamPtr XdnativeDatabase::openStream(const std::wstring& path)
 
     // see if the file is a node file; if it is, open the
     // stream from the node
-    tango::IFileInfoPtr info = getFileInfo(path);
-    if (info.isOk() && info->getType() == tango::filetypeNode)
+    xd::IFileInfoPtr info = getFileInfo(path);
+    if (info.isOk() && info->getType() == xd::filetypeNode)
     {
         NodeFileStream* stream = new NodeFileStream(this);
         if (!stream->open(path))
@@ -2822,7 +2822,7 @@ tango::IStreamPtr XdnativeDatabase::openStream(const std::wstring& path)
             return xcm::null;
         }
 
-        return static_cast<tango::IStream*>(stream);
+        return static_cast<xd::IStream*>(stream);
     }
 
 
@@ -2838,7 +2838,7 @@ tango::IStreamPtr XdnativeDatabase::openStream(const std::wstring& path)
         return xcm::null;
     }
 
-    return static_cast<tango::IStream*>(stream);
+    return static_cast<xd::IStream*>(stream);
 }
 
 bool XdnativeDatabase::createStream(const std::wstring& path, const std::wstring& mime_type)
@@ -2846,7 +2846,7 @@ bool XdnativeDatabase::createStream(const std::wstring& path, const std::wstring
     std::wstring cstr, rpath;
     if (detectMountPoint(path, &cstr, &rpath))
     {
-        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
             return false;
 
@@ -2898,7 +2898,7 @@ bool XdnativeDatabase::createStream(const std::wstring& path, const std::wstring
     
     
     // create or open an ofs node file
-    OfsFile* file = OfsFile::createFile(this, path, tango::filetypeStream);
+    OfsFile* file = OfsFile::createFile(this, path, xd::filetypeStream);
     if (!file)
     {
         return false;
@@ -2982,15 +2982,15 @@ IXdnativeSet* XdnativeDatabase::lookupSet(const std::wstring& set_id)
 }
 
 
-tango::IStructurePtr XdnativeDatabase::createStructure()
+xd::IStructurePtr XdnativeDatabase::createStructure()
 {
     Structure* s = new Structure;
-    return static_cast<tango::IStructure*>(s);
+    return static_cast<xd::IStructure*>(s);
 }
 
 bool XdnativeDatabase::createTable(const std::wstring& path,
-                                   tango::IStructurePtr structure,
-                                   tango::FormatInfo* format_info)
+                                   xd::IStructurePtr structure,
+                                   xd::FormatInfo* format_info)
 {
     if (path.length() == 0)
         return false;
@@ -3001,7 +3001,7 @@ bool XdnativeDatabase::createTable(const std::wstring& path,
     std::wstring cstr, rpath;
     if (detectMountPoint(path, &cstr, &rpath))
     {
-        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
             return xcm::null;
 
@@ -3024,7 +3024,7 @@ bool XdnativeDatabase::createTable(const std::wstring& path,
 
 int XdnativeDatabase::getDatabaseType()
 {
-    return tango::dbtypeXdnative;
+    return xd::dbtypeXdnative;
 }
 
 std::wstring XdnativeDatabase::getStreamFilename(const std::wstring& ofs_path)
@@ -3064,7 +3064,7 @@ std::wstring XdnativeDatabase::getStreamFilename(const std::wstring& ofs_path)
 }
 
 
-std::wstring XdnativeDatabase::getTableFilename(tango::tableord_t table_ordinal)
+std::wstring XdnativeDatabase::getTableFilename(xd::tableord_t table_ordinal)
 {
     wchar_t ord_key_name[64];
     swprintf(ord_key_name, 64, L"/.system/ordinals/%d", table_ordinal);
@@ -3086,7 +3086,7 @@ std::wstring XdnativeDatabase::getTableFilename(tango::tableord_t table_ordinal)
 }
 
 
-ITablePtr XdnativeDatabase::openTableByOrdinal(tango::tableord_t table_ordinal)
+ITablePtr XdnativeDatabase::openTableByOrdinal(xd::tableord_t table_ordinal)
 {
     {
         XCM_AUTO_LOCK(m_objregistry_mutex);
@@ -3261,26 +3261,26 @@ IXdsqlTablePtr XdnativeDatabase::openTable(const std::wstring& path)
 }
 
 
-tango::IIteratorPtr XdnativeDatabase::query(const tango::QueryParams& qp)
+xd::IIteratorPtr XdnativeDatabase::query(const xd::QueryParams& qp)
 {
     std::wstring cstr, rpath, mount_root;
     if (detectMountPoint(qp.from, &cstr, &rpath, &mount_root))
     {
         // action takes place in a mount
-        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
             return xcm::null;
 
-        tango::QueryParams call_params = qp;
+        xd::QueryParams call_params = qp;
         call_params.from = rpath;
         
-        tango::IIteratorPtr ret = db->query(call_params);
+        xd::IIteratorPtr ret = db->query(call_params);
         if (ret.isOk())
         {
             std::wstring tbl = ret->getTable();
             if (tbl.length() > 0)
             {
-                tbl = tango::appendPath(mount_root, tbl);
+                tbl = xd::appendPath(mount_root, tbl);
                 ret->setTable(tbl);
             }
 
@@ -3294,16 +3294,16 @@ tango::IIteratorPtr XdnativeDatabase::query(const tango::QueryParams& qp)
         IXdsqlTablePtr table = openTable(qp.from);
         if (table.isNull())
             return xcm::null;
-        tango::IIteratorPtr iter = table->createIterator(L"", L"", NULL);
+        xd::IIteratorPtr iter = table->createIterator(L"", L"", NULL);
         if (iter.isNull())
             return xcm::null;
 
         // create a filtered record set
         CommonDynamicSet* dynset = new CommonDynamicSet;
         dynset->ref();
-        if (!dynset->create(static_cast<tango::IDatabase*>(this), qp.from))
+        if (!dynset->create(static_cast<xd::IDatabase*>(this), qp.from))
         {
-            // error.setError(tango::errorGeneral, L"Unable to process WHERE clause");
+            // error.setError(xd::errorGeneral, L"Unable to process WHERE clause");
             dynset->unref();
             return xcm::null;
         }
@@ -3312,12 +3312,12 @@ tango::IIteratorPtr XdnativeDatabase::query(const tango::QueryParams& qp)
         int res = dynset->insert(iter, qp.where, 0, qp.job);
         if (res == -1)
         {
-            // error.setError(tango::errorGeneral, L"Unable to process WHERE clause");
+            // error.setError(xd::errorGeneral, L"Unable to process WHERE clause");
             dynset->unref();
             return xcm::null;
         }
         
-        tango::IIteratorPtr result_iter = dynset->createIterator(qp.columns, qp.order, NULL);
+        xd::IIteratorPtr result_iter = dynset->createIterator(qp.columns, qp.order, NULL);
         dynset->unref();
         return result_iter;
     }
@@ -3370,12 +3370,12 @@ bool XdnativeDatabase::getSetLocked(const std::wstring& set_id)
 }
 
 
-class RelationInfo : public tango::IRelation,
+class RelationInfo : public xd::IRelation,
                      public IRelationInternal
 {
     XCM_CLASS_NAME("xdnative.RelationInfo")
     XCM_BEGIN_INTERFACE_MAP(RelationInfo)
-        XCM_INTERFACE_ENTRY(tango::IRelation)
+        XCM_INTERFACE_ENTRY(xd::IRelation)
         XCM_INTERFACE_ENTRY(IRelationInternal)
     XCM_END_INTERFACE_MAP()
 
@@ -3497,10 +3497,10 @@ private:
 };
 
 
-tango::IRelationEnumPtr XdnativeDatabase::getRelationEnum(const std::wstring& path)
+xd::IRelationEnumPtr XdnativeDatabase::getRelationEnum(const std::wstring& path)
 {
-    xcm::IVectorImpl<tango::IRelationPtr>* vec;
-    vec = new xcm::IVectorImpl<tango::IRelationPtr>;
+    xcm::IVectorImpl<xd::IRelationPtr>* vec;
+    vec = new xcm::IVectorImpl<xd::IRelationPtr>;
 
     bool filter_active = path.length() > 0 ? true : false;
     std::wstring filter_set_id = getSetIdFromPath(path);
@@ -3608,7 +3608,7 @@ tango::IRelationEnumPtr XdnativeDatabase::getRelationEnum(const std::wstring& pa
         relation->setLeftExpression(left_expr);
         relation->setRightExpression(right_expr);
 
-        tango::IRelationPtr r = static_cast<tango::IRelation*>(relation);
+        xd::IRelationPtr r = static_cast<xd::IRelation*>(relation);
         vec->append(r);
     }
 
@@ -3621,9 +3621,9 @@ tango::IRelationEnumPtr XdnativeDatabase::getRelationEnum(const std::wstring& pa
     return vec;
 }
 
-tango::IRelationPtr XdnativeDatabase::getRelation(const std::wstring& relation_id)
+xd::IRelationPtr XdnativeDatabase::getRelation(const std::wstring& relation_id)
 {
-    tango::IRelationEnumPtr rel_enum = getRelationEnum(L"");
+    xd::IRelationEnumPtr rel_enum = getRelationEnum(L"");
     size_t i, rel_count = rel_enum->size();
     for (i = 0; i < rel_count; ++i)
     {
@@ -3634,7 +3634,7 @@ tango::IRelationPtr XdnativeDatabase::getRelation(const std::wstring& relation_i
     return xcm::null;
 }
 
-tango::IRelationPtr XdnativeDatabase::createRelation(const std::wstring& tag,
+xd::IRelationPtr XdnativeDatabase::createRelation(const std::wstring& tag,
                                              const std::wstring& left_set_path,
                                              const std::wstring& right_set_path,
                                              const std::wstring& left_expr,
@@ -3710,13 +3710,13 @@ tango::IRelationPtr XdnativeDatabase::createRelation(const std::wstring& tag,
             set_int->onRelationshipsUpdated();
     }
 
-    return static_cast<tango::IRelation*>(relation);
+    return static_cast<xd::IRelation*>(relation);
 }
 
 
 bool XdnativeDatabase::deleteRelation(const std::wstring& relation_id)
 {
-    tango::IRelationPtr rel = getRelation(relation_id);
+    xd::IRelationPtr rel = getRelation(relation_id);
     if (rel.isNull())
         return false;
 
@@ -3751,16 +3751,16 @@ bool XdnativeDatabase::deleteRelation(const std::wstring& relation_id)
 
 
 
-tango::IIndexInfoPtr XdnativeDatabase::createIndex(const std::wstring& path,
+xd::IIndexInfoPtr XdnativeDatabase::createIndex(const std::wstring& path,
                                            const std::wstring& name,
                                            const std::wstring& expr,
-                                           tango::IJob* job)
+                                           xd::IJob* job)
 {
     std::wstring cstr, rpath;
     if (detectMountPoint(path, &cstr, &rpath))
     {
         // action takes place in a mount
-        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
             return xcm::null;
 
@@ -3796,7 +3796,7 @@ bool XdnativeDatabase::renameIndex(const std::wstring& path,
     if (detectMountPoint(path, &cstr, &rpath))
     {
         // action takes place in a mount
-        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
             return xcm::null;
 
@@ -3818,7 +3818,7 @@ bool XdnativeDatabase::deleteIndex(const std::wstring& path,
     if (detectMountPoint(path, &cstr, &rpath))
     {
         // action takes place in a mount
-        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
             return xcm::null;
 
@@ -3833,13 +3833,13 @@ bool XdnativeDatabase::deleteIndex(const std::wstring& path,
 }
 
 
-tango::IIndexInfoEnumPtr XdnativeDatabase::getIndexEnum(const std::wstring& path)
+xd::IIndexInfoEnumPtr XdnativeDatabase::getIndexEnum(const std::wstring& path)
 {
     std::wstring cstr, rpath;
     if (detectMountPoint(path, &cstr, &rpath))
     {
         // action takes place in a mount
-        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
             return xcm::null;
 
@@ -3850,8 +3850,8 @@ tango::IIndexInfoEnumPtr XdnativeDatabase::getIndexEnum(const std::wstring& path
     if (set_int.isNull())
     {
         // IXdnativeSet not supported -- return no indexes
-        xcm::IVectorImpl<tango::IIndexInfoPtr>* vec;
-        vec = new xcm::IVectorImpl<tango::IIndexInfoPtr>;
+        xcm::IVectorImpl<xd::IIndexInfoPtr>* vec;
+        vec = new xcm::IVectorImpl<xd::IIndexInfoPtr>;
         return vec;
     }
     
@@ -3860,13 +3860,13 @@ tango::IIndexInfoEnumPtr XdnativeDatabase::getIndexEnum(const std::wstring& path
 
 
 
-tango::IStructurePtr XdnativeDatabase::describeTable(const std::wstring& path)
+xd::IStructurePtr XdnativeDatabase::describeTable(const std::wstring& path)
 {
     std::wstring cstr, rpath;
     if (detectMountPoint(path, &cstr, &rpath))
     {
         // action takes place in a mount
-        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
             return xcm::null;
 
@@ -3881,13 +3881,13 @@ tango::IStructurePtr XdnativeDatabase::describeTable(const std::wstring& path)
     return table->getStructure();
 }
 
-tango::IRowInserterPtr XdnativeDatabase::bulkInsert(const std::wstring& path)
+xd::IRowInserterPtr XdnativeDatabase::bulkInsert(const std::wstring& path)
 {
     std::wstring cstr, rpath;
     if (detectMountPoint(path, &cstr, &rpath))
     {
         // action takes place in a mount
-        tango::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
             return xcm::null;
 
@@ -3904,7 +3904,7 @@ tango::IRowInserterPtr XdnativeDatabase::bulkInsert(const std::wstring& path)
 
 
 
-bool XdnativeDatabase::modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job)
+bool XdnativeDatabase::modifyStructure(const std::wstring& path, xd::IStructurePtr struct_config, xd::IJob* job)
 {
     IXdnativeSetPtr set = openTable(path);
     if (set.isNull())

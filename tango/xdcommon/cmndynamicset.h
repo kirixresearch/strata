@@ -47,7 +47,7 @@ public:
     CommonDynamicSet();
     virtual ~CommonDynamicSet();
 
-    bool create(tango::IDatabasePtr database,
+    bool create(xd::IDatabasePtr database,
                 const std::wstring& base_path);
 
     void setObjectPath(const std::wstring& new_path);
@@ -55,35 +55,35 @@ public:
 
     void startBulkInsert();
     void finishBulkInsert();
-    bool insertRow(const tango::rowid_t& rowid);
-    bool deleteRow(const tango::rowid_t& rowid);
+    bool insertRow(const xd::rowid_t& rowid);
+    bool deleteRow(const xd::rowid_t& rowid);
     
     std::wstring getSetId();
 
-    tango::IStructurePtr getStructure();
-    tango::IIteratorPtr createIterator(const std::wstring& columns,
+    xd::IStructurePtr getStructure();
+    xd::IIteratorPtr createIterator(const std::wstring& columns,
                                        const std::wstring& expr,
-                                       tango::IJob* job);
+                                       xd::IJob* job);
 
-    tango::IIteratorPtr getRow(tango::rowid_t rowid);
-    tango::rowpos_t getRowCount();
+    xd::IIteratorPtr getRow(xd::rowid_t rowid);
+    xd::rowpos_t getRowCount();
 
     IXdsqlRowDeleterPtr getRowDeleter();
     bool restoreDeleted() { return false; }
 
-    int insert(tango::IIteratorPtr source_iter,
+    int insert(xd::IIteratorPtr source_iter,
                const std::wstring& where_condition,
                int max_rows,
-               tango::IJob* job);
+               xd::IJob* job);
 
-    bool updateRow(tango::rowid_t rowid,
-                   tango::ColumnUpdateInfo* info,
+    bool updateRow(xd::rowid_t rowid,
+                   xd::ColumnUpdateInfo* info,
                    size_t info_size);
     
 private:
 
     xcm::mutex m_object_mutex;
-    tango::IDatabasePtr m_database;
+    xd::IDatabasePtr m_database;
 
     xcm::mutex m_iters_mutex;
     std::vector<CommonDynamicIterator*> m_iters;
@@ -94,8 +94,8 @@ private:
     std::vector<CommonDynamicSetIndexEntry> m_indexes;
     std::wstring m_base_path;
     IXdsqlTablePtr m_base_table;
-    tango::IIteratorPtr m_base_iter;
-    tango::rowpos_t m_row_count;
+    xd::IIteratorPtr m_base_iter;
+    xd::rowpos_t m_row_count;
     std::wstring m_set_id;
 
     IIndex* m_index;
@@ -118,7 +118,7 @@ public:
     ~CommonDynamicSetRowDeleter();
 
     void startDelete();
-    bool deleteRow(const tango::rowid_t& rowid);
+    bool deleteRow(const xd::rowid_t& rowid);
     void finishDelete();
     void cancelDelete();
     
@@ -126,7 +126,7 @@ private:
 
     CommonDynamicSet* m_set;
     IIndex* m_index;
-    std::vector<tango::rowid_t> m_rows_to_delete;
+    std::vector<xd::rowid_t> m_rows_to_delete;
 };
 
 

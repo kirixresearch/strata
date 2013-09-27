@@ -780,7 +780,7 @@ bool ImportTemplate::save(const std::wstring& path)
 
 static void readKpgMetadata(jobs::IJobPtr job)
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return;
 
@@ -789,7 +789,7 @@ static void readKpgMetadata(jobs::IJobPtr job)
     conn->setPath(job->getExtraValue(L"kpg"));
     conn->open();
 
-    tango::IDatabasePtr kpg = conn->getDatabasePtr();
+    xd::IDatabasePtr kpg = conn->getDatabasePtr();
     if (kpg.isNull())
         return;
 
@@ -808,7 +808,7 @@ static void readKpgMetadata(jobs::IJobPtr job)
             continue;
 
         // get object id of the table we imported
-        tango::IFileInfoPtr finfo = db->getFileInfo(destination_path);
+        xd::IFileInfoPtr finfo = db->getFileInfo(destination_path);
         if (finfo.isNull())
             continue;
         std::wstring object_id = finfo->getObjectId();

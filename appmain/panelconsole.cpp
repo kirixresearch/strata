@@ -741,7 +741,7 @@ void ConsolePanel::onQueryJobFinished(jobs::IJobPtr job)
 
     bool success = false;
 
-    tango::IIteratorPtr result_iter = job->getResultObject();
+    xd::IIteratorPtr result_iter = job->getResultObject();
     if (result_iter.isOk())
     {
         std::wstring table_path = result_iter->getTable();
@@ -858,15 +858,15 @@ bool ConsolePanel::processUse(const std::vector<wxString> tokens)
     removeQuotes(path, m_lquote, m_rquote);
 
     // if a mount is specified, make we can mount the db
-    tango::IDatabasePtr db = g_app->getDatabase();
-    tango::IDatabasePtr mount_db;
+    xd::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr mount_db;
     if (db.isOk())
     {
         mount_db = db->getMountDatabase(towstr(path));
 
         if (mount_db.isOk())
         {
-            // note: don't store the tango::IDatabasePtr directly
+            // note: don't store the xd::IDatabasePtr directly
             // since if the user changes the mount information
             // to another database in the project panel, we want 
             // the command to go to the new database
@@ -887,8 +887,8 @@ bool ConsolePanel::processPwd(const std::vector<wxString> tokens)
 
 
     // if a mount is specified, make we can mount the db
-    tango::IDatabasePtr db = g_app->getDatabase();
-    tango::IDatabasePtr mount_db;
+    xd::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr mount_db;
     if (db.isOk())
     {
         mount_db = db->getMountDatabase(towstr(m_command_db_path));
@@ -985,7 +985,7 @@ void ConsolePanel::runCommand(wxString& command)
     }
 
     // process Sql commands
-    int flags = tango::sqlPassThrough;        
+    int flags = xd::sqlPassThrough;        
     if (command[0] == '~')
     {
         // for debugging purposes (not specifying sqlAlwaysCopy)
@@ -1000,14 +1000,14 @@ void ConsolePanel::runCommand(wxString& command)
         // is, turn on 'always copy';  tabledoc can't yet
         // directly handle certain types of queries like
         // select field1,field2 FROM tbl
-        tango::IDatabasePtr db = g_app->getDatabase();
+        xd::IDatabasePtr db = g_app->getDatabase();
         if (db.isOk())
         {
-            tango::IDatabasePtr mount_db;                    
+            xd::IDatabasePtr mount_db;                    
             mount_db = db->getMountDatabase(table);
 
             if (mount_db.isNull())
-                flags |= tango::sqlAlwaysCopy;
+                flags |= xd::sqlAlwaysCopy;
         }
     }
 
@@ -1020,8 +1020,8 @@ void ConsolePanel::runCommand(wxString& command)
 
     // if a command database is specified, set the database so
     // the command are passed directly through to that database
-    tango::IDatabasePtr db = g_app->getDatabase();
-    tango::IDatabasePtr mount_db;
+    xd::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr mount_db;
     if (db.isOk())
     {
         mount_db = db->getMountDatabase(towstr(m_command_db_path));
@@ -1046,7 +1046,7 @@ void ConsolePanel::runCommand(wxString& command)
 
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.execute-job");
 
-    if (flags & tango::sqlAlwaysCopy)
+    if (flags & xd::sqlAlwaysCopy)
         job->setExtraValue(L"tango.sqlAlwaysCopy", L"true");
 
 
@@ -1202,7 +1202,7 @@ void ConsolePanel::echo(const wxString& text)
     m_text_ctrl->EchoText(text + wxT("\n\n"));
 }
 
-void ConsolePanel::echoDatabaseInfo(tango::IDatabasePtr command_db, const wxString& command_path)
+void ConsolePanel::echoDatabaseInfo(xd::IDatabasePtr command_db, const wxString& command_path)
 {
     // echo the new database to use
     wxString response;

@@ -42,8 +42,8 @@ DelimitedTextSet::DelimitedTextSet(FsDatabase* database)
     m_database = database;
     m_database->ref();
     
-    m_source_structure = static_cast<tango::IStructure*>(new Structure);
-    m_dest_structure = static_cast<tango::IStructure*>(new Structure);
+    m_source_structure = static_cast<xd::IStructure*>(new Structure);
+    m_dest_structure = static_cast<xd::IStructure*>(new Structure);
 
     m_delimiters = L",";
     m_line_delimiters = L"\x0d\x0a";  // CR/LF
@@ -67,8 +67,8 @@ bool DelimitedTextSet::init(const std::wstring& filename)
         return false;
 
     // figure out the config file name
-    tango::IAttributesPtr attr = m_database->getAttributes();
-    std::wstring definition_path = attr->getStringAttribute(tango::dbattrDefinitionDirectory);
+    xd::IAttributesPtr attr = m_database->getAttributes();
+    std::wstring definition_path = attr->getStringAttribute(xd::dbattrDefinitionDirectory);
     m_configfile_path = ExtFileInfo::getConfigFilenameFromPath(definition_path, filename);
     
     // set the set info filename
@@ -175,13 +175,13 @@ std::wstring DelimitedTextSet::getSetId()
     return kl::md5str(set_id);
 }
 
-tango::IRowInserterPtr DelimitedTextSet::getRowInserter()
+xd::IRowInserterPtr DelimitedTextSet::getRowInserter()
 {
     DelimitedTextRowInserter* inserter = new DelimitedTextRowInserter(this);
-    return static_cast<tango::IRowInserter*>(inserter);
+    return static_cast<xd::IRowInserter*>(inserter);
 }
 
-tango::IIteratorPtr DelimitedTextSet::createSourceIterator(tango::IJob* job)
+xd::IIteratorPtr DelimitedTextSet::createSourceIterator(xd::IJob* job)
 {
     DelimitedTextIterator* iter = new DelimitedTextIterator;
     iter->setUseSourceIterator(true);
@@ -193,12 +193,12 @@ tango::IIteratorPtr DelimitedTextSet::createSourceIterator(tango::IJob* job)
         return xcm::null;
     }
         
-    return static_cast<tango::IIterator*>(iter);
+    return static_cast<xd::IIterator*>(iter);
 }
 
-tango::IIteratorPtr DelimitedTextSet::createIterator(const std::wstring& columns,
+xd::IIteratorPtr DelimitedTextSet::createIterator(const std::wstring& columns,
                                                      const std::wstring& order,
-                                                     tango::IJob* job)
+                                                     xd::IJob* job)
 {
     if (order.empty())
     {
@@ -211,7 +211,7 @@ tango::IIteratorPtr DelimitedTextSet::createIterator(const std::wstring& columns
             return xcm::null;
         }
             
-        return static_cast<tango::IIterator*>(iter);
+        return static_cast<xd::IIterator*>(iter);
     }
     
     // find out where the database should put temporary files
@@ -241,7 +241,7 @@ tango::IIteratorPtr DelimitedTextSet::createIterator(const std::wstring& columns
         return xcm::null;
     }
 
-    tango::IIteratorPtr data_iter = createIterator(columns, L"", NULL);
+    xd::IIteratorPtr data_iter = createIterator(columns, L"", NULL);
     return createIteratorFromIndex(data_iter,
                                    idx,
                                    columns,
@@ -249,7 +249,7 @@ tango::IIteratorPtr DelimitedTextSet::createIterator(const std::wstring& columns
                                    getObjectPath());
 }
 
-tango::rowpos_t DelimitedTextSet::getRowCount()
+xd::rowpos_t DelimitedTextSet::getRowCount()
 {
     return 0;
 }
@@ -257,17 +257,17 @@ tango::rowpos_t DelimitedTextSet::getRowCount()
 
 
 
-static tango::IStructurePtr createDefaultDestinationStructure(tango::IStructurePtr source)
+static xd::IStructurePtr createDefaultDestinationStructure(xd::IStructurePtr source)
 {
-    tango::IStructurePtr s = static_cast<tango::IStructure*>(new Structure);
+    xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
     IStructureInternalPtr struct_int = s;
     
     int i, col_count = source->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr sourcecol = source->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr sourcecol = source->getColumnInfoByIdx(i);
         
-        tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
         col->setName(sourcecol->getName());
         col->setType(sourcecol->getType());
         col->setWidth(sourcecol->getWidth());
@@ -281,7 +281,7 @@ static tango::IStructurePtr createDefaultDestinationStructure(tango::IStructureP
 }
 
 
-// -- tango::IDelimitedTextSet interface --
+// -- xd::IDelimitedTextSet interface --
 
 bool DelimitedTextSet::loadConfigurationFromDataFile()
 {
@@ -289,12 +289,12 @@ bool DelimitedTextSet::loadConfigurationFromDataFile()
     if (m_file.eof())
         return false;
     
-    std::vector<tango::IColumnInfoPtr> fields;
+    std::vector<xd::IColumnInfoPtr> fields;
     
     size_t i, row_cell_count = m_file.getRowCellCount();
     for (i = 0; i < row_cell_count; ++i)
     {
-        tango::IColumnInfoPtr colinfo = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+        xd::IColumnInfoPtr colinfo = static_cast<xd::IColumnInfo*>(new ColumnInfo);
         fields.push_back(colinfo);
         
         std::wstring str = m_file.getString(i);
@@ -339,7 +339,7 @@ bool DelimitedTextSet::loadConfigurationFromDataFile()
             if (width < 1)
                 return false;
             
-            colinfo->setType(tango::typeCharacter);
+            colinfo->setType(xd::typeCharacter);
             colinfo->setWidth(width);
         }
          else if (params[0] == L"N")
@@ -351,7 +351,7 @@ bool DelimitedTextSet::loadConfigurationFromDataFile()
             if (width < 1)
                 return false;
             
-            colinfo->setType(tango::typeNumeric);
+            colinfo->setType(xd::typeNumeric);
             colinfo->setWidth(width);
             
             if (params.size() >= 3)
@@ -364,17 +364,17 @@ bool DelimitedTextSet::loadConfigurationFromDataFile()
         }
          else if (params[0] == L"D")
         {
-            colinfo->setType(tango::typeDate);
+            colinfo->setType(xd::typeDate);
             colinfo->setWidth(4);
         }
          else if (params[0] == L"T")
         {
-            colinfo->setType(tango::typeDateTime);
+            colinfo->setType(xd::typeDateTime);
             colinfo->setWidth(8);
         }
          else if (params[0] == L"B")
         {
-            colinfo->setType(tango::typeBoolean);
+            colinfo->setType(xd::typeBoolean);
             colinfo->setWidth(1);
         }
     }
@@ -382,14 +382,14 @@ bool DelimitedTextSet::loadConfigurationFromDataFile()
 
     // update the types and widths in the source structure
     m_source_structure.clear();
-    m_source_structure = static_cast<tango::IStructure*>(new Structure);
+    m_source_structure = static_cast<xd::IStructure*>(new Structure);
     IStructureInternalPtr src_struct_int = m_source_structure;
 
     for (i = 0; i < fields.size(); ++i)
     {        
-        tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
         col->setName(fields[i]->getName());
-        col->setType(tango::typeCharacter);
+        col->setType(xd::typeCharacter);
         col->setScale(0);
         col->setExpression(L"");
         col->setColumnOrdinal(i);
@@ -397,14 +397,14 @@ bool DelimitedTextSet::loadConfigurationFromDataFile()
         switch (fields[i]->getType())
         {
             default:
-            case tango::typeCharacter:
-            case tango::typeWideCharacter:
+            case xd::typeCharacter:
+            case xd::typeWideCharacter:
                 col->setWidth(fields[i]->getWidth());
                 break;
-            case tango::typeDate:
+            case xd::typeDate:
                 col->setWidth(50);
                 break;
-            case tango::typeNumeric:
+            case xd::typeNumeric:
                 col->setWidth(50);
                 break;
         }
@@ -421,7 +421,7 @@ bool DelimitedTextSet::loadConfigurationFromDataFile()
     // update the destination structure with the proper types we detected
     for (i = 0; i < fields.size(); ++i)
     {
-        tango::IColumnInfoPtr col = m_dest_structure->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr col = m_dest_structure->getColumnInfoByIdx(i);
         col->setType(fields[i]->getType());
         col->setWidth(fields[i]->getWidth());
         col->setScale(fields[i]->getScale());
@@ -470,7 +470,7 @@ bool DelimitedTextSet::loadConfigurationFromConfigFile()
     // clear out any existing source structure in the set 
     m_colname_matches.clear();
     m_source_structure.clear();
-    m_source_structure = static_cast<tango::IStructure*>(new Structure);
+    m_source_structure = static_cast<xd::IStructure*>(new Structure);
     IStructureInternalPtr src_struct_int = m_source_structure;
     
     std::wstring name, expression, type_string;
@@ -487,14 +487,14 @@ bool DelimitedTextSet::loadConfigurationFromConfigFile()
         type_string = field.getChildContents(L"type");
         width = kl::wtoi(field.getChildContents(L"width"));
 
-        int ftype = tango::typeCharacter;
+        int ftype = xd::typeCharacter;
         if (type_string.length() > 0)
         {
             if (type_string == L"wide_character")
-                ftype = tango::typeWideCharacter;
+                ftype = xd::typeWideCharacter;
         }
 
-        tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
         col->setName(name);
         col->setType(ftype);
         col->setWidth(width);
@@ -518,7 +518,7 @@ bool DelimitedTextSet::loadConfigurationFromConfigFile()
 
     // clear out any existing destination structure in the set
     m_dest_structure.clear();
-    m_dest_structure = static_cast<tango::IStructure*>(new Structure);
+    m_dest_structure = static_cast<xd::IStructure*>(new Structure);
     IStructureInternalPtr dest_struct_int = m_dest_structure;
 
     // now, get the destination structure from the file
@@ -535,7 +535,7 @@ bool DelimitedTextSet::loadConfigurationFromConfigFile()
         scale = kl::wtoi(field.getChildContents(L"scale"));
         expression = field.getChildContents(L"expression");
 
-        tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
         col->setName(name);
         col->setType(type);
         col->setWidth(width);
@@ -569,15 +569,15 @@ bool DelimitedTextSet::saveConfiguration()
     entry = base.addChild(L"fields");
 
     // save the source structure to the file
-    tango::IStructurePtr s = getSourceStructure();
+    xd::IStructurePtr s = getSourceStructure();
     int i,col_count = s->getColumnCount();
     
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
         
         std::wstring type_string = L"character";
-        if (colinfo->getType() == tango::typeWideCharacter)
+        if (colinfo->getType() == xd::typeWideCharacter)
             type_string = L"wide_character";
         
         ExtFileEntry field = entry.addChild(L"field");
@@ -598,7 +598,7 @@ bool DelimitedTextSet::saveConfiguration()
     
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
         
         ExtFileEntry field = entry.addChild(L"field");
         field.addChild(L"name", colinfo->getName());
@@ -618,7 +618,7 @@ bool DelimitedTextSet::deleteConfiguration()
 
 
 
-void DelimitedTextSet::setCreateStructure(tango::IStructurePtr structure)
+void DelimitedTextSet::setCreateStructure(xd::IStructurePtr structure)
 {
     // this function is used when creating a set.  When a set is created,
     // only the field headers are present in the file.  The newly created
@@ -627,17 +627,17 @@ void DelimitedTextSet::setCreateStructure(tango::IStructurePtr structure)
     // determined.  This function allows FsDatabase::createTable() explicity
     // set up the structure of set.
     
-    m_source_structure = static_cast<tango::IStructure*>(new Structure);
+    m_source_structure = static_cast<xd::IStructure*>(new Structure);
     IStructureInternalPtr src_struct_int = m_source_structure;
     
-    m_dest_structure = static_cast<tango::IStructure*>(new Structure);
+    m_dest_structure = static_cast<xd::IStructure*>(new Structure);
     IStructureInternalPtr dest_struct_int = m_dest_structure;
 
     int i, col_count = structure->getColumnCount();
     
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr orig_col = structure->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr orig_col = structure->getColumnInfoByIdx(i);
         if (orig_col->getCalculated())
             continue;
     
@@ -645,27 +645,27 @@ void DelimitedTextSet::setCreateStructure(tango::IStructurePtr structure)
         
         switch (orig_col->getType())
         {
-            case tango::typeDate:
+            case xd::typeDate:
                 new_width = 10;
                 break;
-            case tango::typeDateTime:
+            case xd::typeDateTime:
                 new_width = 20;
                 break;
-            case tango::typeInteger:
+            case xd::typeInteger:
                 new_width = 12; // size of 2^32 + sign + 1 to round to 12
                 break;
-            case tango::typeDouble:
+            case xd::typeDouble:
                 new_width = 20;
                 break;
-            case tango::typeNumeric:
+            case xd::typeNumeric:
                 new_width += 2; // dec place and sign
                 break;
         }
     
     
-        tango::IColumnInfoPtr src_col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+        xd::IColumnInfoPtr src_col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
         src_col->setName(orig_col->getName());
-        src_col->setType(tango::typeCharacter);
+        src_col->setType(xd::typeCharacter);
         src_col->setWidth(new_width);
         src_col->setScale(0);
         src_col->setColumnOrdinal(i);
@@ -673,7 +673,7 @@ void DelimitedTextSet::setCreateStructure(tango::IStructurePtr structure)
         
         
         
-        tango::IColumnInfoPtr dest_col = orig_col->clone();
+        xd::IColumnInfoPtr dest_col = orig_col->clone();
         dest_col->setExpression(src_col->getName());
         dest_col->setColumnOrdinal(i);
         dest_struct_int->addColumn(dest_col);
@@ -682,7 +682,7 @@ void DelimitedTextSet::setCreateStructure(tango::IStructurePtr structure)
     // add the calculated fields
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr orig_col = structure->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr orig_col = structure->getColumnInfoByIdx(i);
         if (!orig_col->getCalculated())
             continue;
 
@@ -694,30 +694,30 @@ void DelimitedTextSet::setCreateStructure(tango::IStructurePtr structure)
 
 
 
-tango::IStructurePtr DelimitedTextSet::getSourceStructure()
+xd::IStructurePtr DelimitedTextSet::getSourceStructure()
 {
-    tango::IStructurePtr s = m_source_structure->clone();
+    xd::IStructurePtr s = m_source_structure->clone();
     return s;
 }
 
-tango::IStructurePtr DelimitedTextSet::getDestinationStructure()
+xd::IStructurePtr DelimitedTextSet::getDestinationStructure()
 {
     if (m_dest_structure->getColumnCount() == 0)
     {
         m_dest_structure = createDefaultDestinationStructure(m_source_structure);
     }
     
-    tango::IStructurePtr s = m_dest_structure->clone();
+    xd::IStructurePtr s = m_dest_structure->clone();
     return s;
 }
 
-tango::IStructurePtr DelimitedTextSet::getStructure()
+xd::IStructurePtr DelimitedTextSet::getStructure()
 {
-    tango::IStructurePtr s = getDestinationStructure();
+    xd::IStructurePtr s = getDestinationStructure();
     int i, col_count = s->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
         colinfo->setExpression(L"");
     }
 
@@ -725,12 +725,12 @@ tango::IStructurePtr DelimitedTextSet::getStructure()
     return s;
 }
 
-inline void resetColumnOrdinals(tango::IStructurePtr s)
+inline void resetColumnOrdinals(xd::IStructurePtr s)
 {
     int i, col_count = s->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
         
         if (colinfo->getColumnOrdinal() != i)
             colinfo->setColumnOrdinal(i);
@@ -740,11 +740,11 @@ inline void resetColumnOrdinals(tango::IStructurePtr s)
 bool DelimitedTextSet::renameSourceColumn(const std::wstring& source_col,
                                           const std::wstring& new_val)
 {
-    tango::IStructurePtr dest_struct = getDestinationStructure();
-    tango::IStructurePtr src_struct = getSourceStructure();
+    xd::IStructurePtr dest_struct = getDestinationStructure();
+    xd::IStructurePtr src_struct = getSourceStructure();
 
-    tango::IColumnInfoPtr colinfo;
-    tango::IColumnInfoPtr modinfo;
+    xd::IColumnInfoPtr colinfo;
+    xd::IColumnInfoPtr modinfo;
 
     bool source_retval, dest_retval;
     
@@ -786,8 +786,8 @@ bool DelimitedTextSet::renameSourceColumn(const std::wstring& source_col,
     return (source_retval && dest_retval);
 }
 
-bool DelimitedTextSet::modifySourceStructure(tango::IStructure* struct_config,
-                                             tango::IJob* job)
+bool DelimitedTextSet::modifySourceStructure(xd::IStructure* struct_config,
+                                             xd::IJob* job)
 {
     // get the structure actions from the
     // structure configuration that was passed
@@ -831,7 +831,7 @@ bool DelimitedTextSet::modifySourceStructure(tango::IStructure* struct_config,
         if (it->m_action != StructureAction::actionCreate)
             continue;
 
-        tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
         col->setName(it->m_params->getName());
         col->setType(it->m_params->getType());
         col->setWidth(it->m_params->getWidth());
@@ -849,7 +849,7 @@ bool DelimitedTextSet::modifySourceStructure(tango::IStructure* struct_config,
 
         int insert_idx = it->m_pos;
         
-        tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
         col->setName(it->m_params->getName());
         col->setType(it->m_params->getType());
         col->setWidth(it->m_params->getWidth());
@@ -864,8 +864,8 @@ bool DelimitedTextSet::modifySourceStructure(tango::IStructure* struct_config,
     return true;
 }
 
-bool DelimitedTextSet::modifyDestinationStructure(tango::IStructure* struct_config,
-                                                  tango::IJob* job)
+bool DelimitedTextSet::modifyDestinationStructure(xd::IStructure* struct_config,
+                                                  xd::IJob* job)
 {
     // get the structure actions from the
     // structure configuration that was passed
@@ -892,7 +892,7 @@ bool DelimitedTextSet::modifyDestinationStructure(tango::IStructure* struct_conf
         if (it->m_action != StructureAction::actionModify)
             continue;
 
-        tango::IColumnInfoPtr colinfo;
+        xd::IColumnInfoPtr colinfo;
         colinfo = m_dest_structure->getColumnInfo(it->m_colname);
         
         struct_int->modifyColumn(it->m_colname,
@@ -923,7 +923,7 @@ bool DelimitedTextSet::modifyDestinationStructure(tango::IStructure* struct_conf
         if (it->m_action != StructureAction::actionCreate)
             continue;
 
-        tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
         col->setName(it->m_params->getName());
         col->setType(it->m_params->getType());
         col->setWidth(it->m_params->getWidth());
@@ -941,7 +941,7 @@ bool DelimitedTextSet::modifyDestinationStructure(tango::IStructure* struct_conf
 
         int insert_idx = it->m_pos;
         
-        tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
         col->setName(it->m_params->getName());
         col->setType(it->m_params->getType());
         col->setWidth(it->m_params->getWidth());
@@ -956,8 +956,8 @@ bool DelimitedTextSet::modifyDestinationStructure(tango::IStructure* struct_conf
     return true;
 }
 
-bool DelimitedTextSet::modifyStructure(tango::IStructure* struct_config,
-                                       tango::IJob* job)
+bool DelimitedTextSet::modifyStructure(xd::IStructure* struct_config,
+                                       xd::IJob* job)
 {
     bool done_flag = false;
     CommonBaseSet::modifyStructure(struct_config, &done_flag);
@@ -1348,7 +1348,7 @@ struct DetermineColumnInfo
     
     DetermineColumnInfo()
     {
-        type = tango::typeDate;
+        type = xd::typeDate;
         max_width = 1;
         max_scale = 0;
     }
@@ -1370,7 +1370,7 @@ struct DetermineColumnInfo
 };
 
 
-bool DelimitedTextSet::determineColumns(int check_rows, tango::IJob* job)
+bool DelimitedTextSet::determineColumns(int check_rows, xd::IJob* job)
 {
     // if field information is stored in the header row, no need to sense structure
     if (loadConfigurationFromDataFile())
@@ -1380,7 +1380,7 @@ bool DelimitedTextSet::determineColumns(int check_rows, tango::IJob* job)
     if (job)
     {
         ijob->setStartTime(time(NULL));
-        ijob->setStatus(tango::jobRunning);
+        ijob->setStatus(xd::jobRunning);
         ijob->setCanCancel(true);
         ijob->setCurrentCount(0);
         ijob->setMaxCount((check_rows != -1) ? check_rows : 0);
@@ -1389,8 +1389,8 @@ bool DelimitedTextSet::determineColumns(int check_rows, tango::IJob* job)
     // clear out any existing structure
     m_source_structure.clear();
     m_dest_structure.clear();
-    m_source_structure = static_cast<tango::IStructure*>(new Structure);
-    m_dest_structure = static_cast<tango::IStructure*>(new Structure);
+    m_source_structure = static_cast<xd::IStructure*>(new Structure);
+    m_dest_structure = static_cast<xd::IStructure*>(new Structure);
 
     // pass through file metadata to the DelimitedTextFile class
     m_file.setDelimiters(m_delimiters);
@@ -1405,15 +1405,15 @@ bool DelimitedTextSet::determineColumns(int check_rows, tango::IJob* job)
     // get the database keywords and invalid column characters
     // for use in the makeValidFieldName() function below
     
-    tango::IAttributesPtr attr = m_database->getAttributes();
+    xd::IAttributesPtr attr = m_database->getAttributes();
     if (attr.isNull())
         return false;
     
     std::wstring keyword_list;
-    keyword_list = attr->getStringAttribute(tango::dbattrKeywords);
+    keyword_list = attr->getStringAttribute(xd::dbattrKeywords);
     
     std::wstring invalid_col_chars;
-    invalid_col_chars = attr->getStringAttribute(tango::dbattrColumnInvalidChars);
+    invalid_col_chars = attr->getStringAttribute(xd::dbattrColumnInvalidChars);
     
     bool cancelled = false;
     int i, j, width, col_count = 0;
@@ -1456,9 +1456,9 @@ bool DelimitedTextSet::determineColumns(int check_rows, tango::IJob* job)
                  else
                 colname = temps;
             
-            tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+            xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
             col->setName(colname);
-            col->setType(m_file.isUnicode() ? tango::typeWideCharacter : tango::typeCharacter);
+            col->setType(m_file.isUnicode() ? xd::typeWideCharacter : xd::typeCharacter);
             col->setWidth(1);
             col->setScale(0);
             col->setColumnOrdinal(col_count);
@@ -1492,17 +1492,17 @@ bool DelimitedTextSet::determineColumns(int check_rows, tango::IJob* job)
             {
                 int scale = 0;
                 
-                if (col_stats[j].type == tango::typeDate)
+                if (col_stats[j].type == xd::typeDate)
                 {
                     // check if the field value is a date
                     if (!parseDelimitedStringDate(str))
                     {
                         // if not, then fall back to a numeric
-                        col_stats[j].type = tango::typeNumeric;
+                        col_stats[j].type = xd::typeNumeric;
                     }
                 }
                 
-                if (col_stats[j].type == tango::typeNumeric)
+                if (col_stats[j].type == xd::typeNumeric)
                 {
                     if (isDelimitedStringNumeric(str, &scale))
                     {
@@ -1513,7 +1513,7 @@ bool DelimitedTextSet::determineColumns(int check_rows, tango::IJob* job)
                      else
                     {
                         // field is no longer numeric 
-                        col_stats[j].type = (m_file.isUnicode() ? tango::typeWideCharacter : tango::typeCharacter);
+                        col_stats[j].type = (m_file.isUnicode() ? xd::typeWideCharacter : xd::typeCharacter);
                         col_stats[j].max_scale = 0;
                     }
                 }
@@ -1569,20 +1569,20 @@ bool DelimitedTextSet::determineColumns(int check_rows, tango::IJob* job)
     // check numeric-typed fields for width/scale conformance
     for (i = 0; i < col_count; ++i)
     {
-        if (col_stats[i].type == tango::typeNumeric)
+        if (col_stats[i].type == xd::typeNumeric)
         {
-            if (col_stats[i].max_width > tango::max_numeric_width)
+            if (col_stats[i].max_width > xd::max_numeric_width)
             {
-                col_stats[i].type = tango::typeDouble;
+                col_stats[i].type = xd::typeDouble;
             }
         }
         
-        if (col_stats[i].type == tango::typeNumeric ||
-            col_stats[i].type == tango::typeDouble)
+        if (col_stats[i].type == xd::typeNumeric ||
+            col_stats[i].type == xd::typeDouble)
         {
-            if (col_stats[i].max_scale > tango::max_numeric_scale)
+            if (col_stats[i].max_scale > xd::max_numeric_scale)
             {
-                col_stats[i].max_scale = tango::max_numeric_scale;
+                col_stats[i].max_scale = xd::max_numeric_scale;
             }
         }
     }
@@ -1593,14 +1593,14 @@ bool DelimitedTextSet::determineColumns(int check_rows, tango::IJob* job)
         ijob->setCurrentCount(rows_read);
         ijob->setMaxCount(rows_read);
         ijob->setFinishTime(time(NULL));
-        ijob->setStatus(tango::jobFinished);
+        ijob->setStatus(xd::jobFinished);
     }
 
     // update the types and widths in the source structure
     col_count = m_source_structure->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr col = m_source_structure->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr col = m_source_structure->getColumnInfoByIdx(i);
         col->setWidth(col_stats[i].max_width);
     }
     modifySourceStructure(m_source_structure, NULL);
@@ -1614,9 +1614,9 @@ bool DelimitedTextSet::determineColumns(int check_rows, tango::IJob* job)
     // update the destination structure with the proper types we detected
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr col = m_dest_structure->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr col = m_dest_structure->getColumnInfoByIdx(i);
         col->setType(col_stats[i].type);
-        if (col_stats[i].type == tango::typeNumeric)
+        if (col_stats[i].type == xd::typeNumeric)
         {
             col->setScale(col_stats[i].max_scale);
         }
@@ -1645,15 +1645,15 @@ void DelimitedTextSet::populateColumnNameMatchVector()
     // get the database keywords and invalid column characters
     // for use in the makeValidFieldName() function below
     
-    tango::IAttributesPtr attr = m_database->getAttributes();
+    xd::IAttributesPtr attr = m_database->getAttributes();
     if (attr.isNull())
         return;
     
     std::wstring keyword_list;
-    keyword_list = attr->getStringAttribute(tango::dbattrKeywords);
+    keyword_list = attr->getStringAttribute(xd::dbattrKeywords);
     
     std::wstring invalid_col_chars;
-    invalid_col_chars = attr->getStringAttribute(tango::dbattrColumnInvalidChars);
+    invalid_col_chars = attr->getStringAttribute(xd::dbattrColumnInvalidChars);
     
     // populate the first row column names vector
     m_file.rewind();
@@ -1719,13 +1719,13 @@ void DelimitedTextSet::populateColumnNameMatchVector()
 
 void DelimitedTextSet::updateColumnNames()
 {
-    tango::IStructurePtr dest_struct = getDestinationStructure();
-    tango::IStructurePtr src_struct = getSourceStructure();
+    xd::IStructurePtr dest_struct = getDestinationStructure();
+    xd::IStructurePtr src_struct = getSourceStructure();
     
     int dest_colcount = dest_struct->getColumnCount();
     int src_colcount = src_struct->getColumnCount();
     
-    tango::IColumnInfoPtr dest_colinfo, src_colinfo;
+    xd::IColumnInfoPtr dest_colinfo, src_colinfo;
     std::wstring name, new_name;
     
     std::vector<std::wstring> old_names;
@@ -1832,29 +1832,29 @@ DelimitedTextRowInserter::~DelimitedTextRowInserter()
     m_set->unref();
 }
 
-tango::objhandle_t DelimitedTextRowInserter::getHandle(const std::wstring& column_name)
+xd::objhandle_t DelimitedTextRowInserter::getHandle(const std::wstring& column_name)
 {
     if (!m_inserting)
-        return (tango::objhandle_t)0;
+        return (xd::objhandle_t)0;
     
     std::vector<DelimitedTextDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
         if (!wcscasecmp((*it)->name.c_str(), column_name.c_str()))
-            return (tango::objhandle_t)(*it);
+            return (xd::objhandle_t)(*it);
     }
 
-    return (tango::objhandle_t)0;
+    return (xd::objhandle_t)0;
 }
 
-tango::IColumnInfoPtr DelimitedTextRowInserter::getInfo(tango::objhandle_t column_handle)
+xd::IColumnInfoPtr DelimitedTextRowInserter::getInfo(xd::objhandle_t column_handle)
 {
     DelimitedTextDataAccessInfo* f = (DelimitedTextDataAccessInfo*)column_handle;
     if (!f)
         return xcm::null;
 
-    // create new tango::IColumnInfoPtr
-    tango::IColumnInfoPtr col_info = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+    // create new xd::IColumnInfoPtr
+    xd::IColumnInfoPtr col_info = static_cast<xd::IColumnInfo*>(new ColumnInfo);
     col_info->setName(f->name);
     col_info->setType(f->type);
     col_info->setWidth(f->width);
@@ -1863,14 +1863,14 @@ tango::IColumnInfoPtr DelimitedTextRowInserter::getInfo(tango::objhandle_t colum
     return col_info;
 }
 
-bool DelimitedTextRowInserter::putRawPtr(tango::objhandle_t column_handle,
+bool DelimitedTextRowInserter::putRawPtr(xd::objhandle_t column_handle,
                                          const unsigned char* value,
                                          int length)
 {
     return false;
 }
 
-bool DelimitedTextRowInserter::putString(tango::objhandle_t column_handle,
+bool DelimitedTextRowInserter::putString(xd::objhandle_t column_handle,
                                          const std::string& value)
 {
     DelimitedTextDataAccessInfo* f = (DelimitedTextDataAccessInfo*)column_handle;
@@ -1880,7 +1880,7 @@ bool DelimitedTextRowInserter::putString(tango::objhandle_t column_handle,
     return m_row.putString(f->ordinal, kl::towstring(value));
 }
 
-bool DelimitedTextRowInserter::putWideString(tango::objhandle_t column_handle,
+bool DelimitedTextRowInserter::putWideString(xd::objhandle_t column_handle,
                                              const std::wstring& value)
 {
     DelimitedTextDataAccessInfo* f = (DelimitedTextDataAccessInfo*)column_handle;
@@ -1890,7 +1890,7 @@ bool DelimitedTextRowInserter::putWideString(tango::objhandle_t column_handle,
     return m_row.putString(f->ordinal, value);
 }
 
-bool DelimitedTextRowInserter::putDouble(tango::objhandle_t column_handle,
+bool DelimitedTextRowInserter::putDouble(xd::objhandle_t column_handle,
                                          double value)
 {
     DelimitedTextDataAccessInfo* f = (DelimitedTextDataAccessInfo*)column_handle;
@@ -1900,7 +1900,7 @@ bool DelimitedTextRowInserter::putDouble(tango::objhandle_t column_handle,
     return m_row.putDouble(f->ordinal, value);
 }
 
-bool DelimitedTextRowInserter::putInteger(tango::objhandle_t column_handle,
+bool DelimitedTextRowInserter::putInteger(xd::objhandle_t column_handle,
                                           int value)
 {
     DelimitedTextDataAccessInfo* f = (DelimitedTextDataAccessInfo*)column_handle;
@@ -1910,7 +1910,7 @@ bool DelimitedTextRowInserter::putInteger(tango::objhandle_t column_handle,
     return m_row.putInteger(f->ordinal, value);
 }
 
-bool DelimitedTextRowInserter::putBoolean(tango::objhandle_t column_handle,
+bool DelimitedTextRowInserter::putBoolean(xd::objhandle_t column_handle,
                                           bool value)
 {
     DelimitedTextDataAccessInfo* f = (DelimitedTextDataAccessInfo*)column_handle;
@@ -1920,8 +1920,8 @@ bool DelimitedTextRowInserter::putBoolean(tango::objhandle_t column_handle,
     return m_row.putBoolean(f->ordinal, value);
 }
 
-bool DelimitedTextRowInserter::putDateTime(tango::objhandle_t column_handle,
-                                           tango::datetime_t value)
+bool DelimitedTextRowInserter::putDateTime(xd::objhandle_t column_handle,
+                                           xd::datetime_t value)
 {
     DelimitedTextDataAccessInfo* f = (DelimitedTextDataAccessInfo*)column_handle;
     if (!f)
@@ -1933,7 +1933,7 @@ bool DelimitedTextRowInserter::putDateTime(tango::objhandle_t column_handle,
         return m_row.putDateTime(f->ordinal, L"");
     }
     
-    tango::DateTime dt(value);
+    xd::DateTime dt(value);
 
     int y = dt.getYear();
     int m = dt.getMonth();
@@ -1961,7 +1961,7 @@ bool DelimitedTextRowInserter::putRowBuffer(const unsigned char* value)
     return false;
 }
 
-bool DelimitedTextRowInserter::putNull(tango::objhandle_t column_handle)
+bool DelimitedTextRowInserter::putNull(xd::objhandle_t column_handle)
 {
     DelimitedTextDataAccessInfo* f = (DelimitedTextDataAccessInfo*)column_handle;
     if (!f)
@@ -1972,12 +1972,12 @@ bool DelimitedTextRowInserter::putNull(tango::objhandle_t column_handle)
 
 bool DelimitedTextRowInserter::startInsert(const std::wstring& col_list)
 {
-    tango::IStructurePtr s = m_set->getStructure();
+    xd::IStructurePtr s = m_set->getStructure();
     
     int i, col_count = s->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
         
         DelimitedTextDataAccessInfo* f = new DelimitedTextDataAccessInfo;
         f->name = colinfo->getName();

@@ -101,13 +101,13 @@ int SummarizeJob::runJob()
     {
         // make sure identifer is quoted
         std::wstring col = it_node->getString();
-        tango::dequoteIdentifier(m_db, col);
-        tango::quoteIdentifier(m_db, col);
+        xd::dequoteIdentifier(m_db, col);
+        xd::quoteIdentifier(m_db, col);
 
         summary_columns.push_back(col);
     }
 
-    tango::IStructurePtr input_structure = m_db->describeTable(input_path);
+    xd::IStructurePtr input_structure = m_db->describeTable(input_path);
     if (input_structure.isNull())
     {
         m_job_info->setState(jobStateFailed);
@@ -121,7 +121,7 @@ int SummarizeJob::runJob()
     std::wstring column_param;
     int output_max_scale = 0;   // used to format the numeric summary output
 
-    tango::IColumnInfoPtr input_colinfo;
+    xd::IColumnInfoPtr input_colinfo;
     for (it = summary_columns.begin(); it != it_end; ++it)
     {
         // see if we're already gathering information about the column
@@ -137,8 +137,8 @@ int SummarizeJob::runJob()
 
         wchar_t outcol[256];
 
-        if (input_colinfo->getType() == tango::typeCharacter ||
-            input_colinfo->getType() == tango::typeWideCharacter)
+        if (input_colinfo->getType() == xd::typeCharacter ||
+            input_colinfo->getType() == xd::typeWideCharacter)
         {
             swprintf(outcol, 256, L"%s_0result0_minlength=min(length([%s])),", it->c_str(), it->c_str());
             column_param += outcol;
@@ -147,9 +147,9 @@ int SummarizeJob::runJob()
             column_param += outcol;        
         }
 
-        if (input_colinfo->getType() == tango::typeInteger ||
-            input_colinfo->getType() == tango::typeDouble ||
-            input_colinfo->getType() == tango::typeNumeric)
+        if (input_colinfo->getType() == xd::typeInteger ||
+            input_colinfo->getType() == xd::typeDouble ||
+            input_colinfo->getType() == xd::typeNumeric)
         {
             int scale = input_colinfo->getScale();
             if (scale > output_max_scale)
@@ -179,7 +179,7 @@ int SummarizeJob::runJob()
 
     std::wstring group_output_set_path = L"xtmp_" + kl::getUniqueString();
 
-    tango::IJobPtr tango_job;
+    xd::IJobPtr tango_job;
     tango_job = m_db->createJob();
     setXdJob(tango_job);
 
@@ -187,7 +187,7 @@ int SummarizeJob::runJob()
     if (params_node.childExists("where"))
         where_param = params_node["where"].getString();
 
-    tango::GroupQueryParams info;
+    xd::GroupQueryParams info;
     info.input = input_path;
     info.output = group_output_set_path;
     info.columns = column_param,
@@ -203,7 +203,7 @@ int SummarizeJob::runJob()
         return 0;
     }
 
-    if (tango_job->getStatus() == tango::jobFailed)
+    if (tango_job->getStatus() == xd::jobFailed)
     {
         m_job_info->setState(jobStateFailed);
         // TODO: error code?
@@ -213,8 +213,8 @@ int SummarizeJob::runJob()
 
     // STEP 3: pivot the output
 
-    tango::IStructurePtr output_structure = m_db->createStructure();
-    tango::IColumnInfoPtr output_colinfo;
+    xd::IStructurePtr output_structure = m_db->createStructure();
+    xd::IColumnInfoPtr output_colinfo;
 
     const wchar_t* fields[] = { L"Field",
                                 L"Minimum",
@@ -227,7 +227,7 @@ int SummarizeJob::runJob()
                                 L"Total_Count",
                                 0 };
 
-    tango::objhandle_t field_handles[255];
+    xd::objhandle_t field_handles[255];
 
     int i;
     
@@ -236,14 +236,14 @@ int SummarizeJob::runJob()
     {
         output_colinfo = output_structure->createColumn();
         output_colinfo->setName(fields[i]);
-        output_colinfo->setType(tango::typeWideCharacter);
+        output_colinfo->setType(xd::typeWideCharacter);
         output_colinfo->setWidth(255);
         output_colinfo->setScale(0);
 
         if (0 == wcscasecmp(fields[i], L"Sum_Amount") ||
             0 == wcscasecmp(fields[i], L"Average"))
         {
-            output_colinfo->setType(tango::typeNumeric);
+            output_colinfo->setType(xd::typeNumeric);
             output_colinfo->setWidth(15);
             output_colinfo->setScale(output_max_scale);
         }
@@ -253,7 +253,7 @@ int SummarizeJob::runJob()
             0 == wcscasecmp(fields[i], L"Total_Count") ||
             0 == wcscasecmp(fields[i], L"Empty_Count"))
         {
-            output_colinfo->setType(tango::typeNumeric);
+            output_colinfo->setType(xd::typeNumeric);
             output_colinfo->setWidth(12);
         }
 
@@ -266,7 +266,7 @@ int SummarizeJob::runJob()
         return 0;
     }
 
-    tango::IRowInserterPtr output_inserter = m_db->bulkInsert(output_path);
+    xd::IRowInserterPtr output_inserter = m_db->bulkInsert(output_path);
     if (output_inserter.isNull())
     {
         m_job_info->setState(jobStateFailed);
@@ -283,7 +283,7 @@ int SummarizeJob::runJob()
     }
 
 
-    tango::IIteratorPtr group_result_iter = m_db->query(group_output_set_path, L"", L"", L"", NULL);
+    xd::IIteratorPtr group_result_iter = m_db->query(group_output_set_path, L"", L"", L"", NULL);
     if (group_result_iter.isNull())
     {
         m_job_info->setState(jobStateFailed);
@@ -291,7 +291,7 @@ int SummarizeJob::runJob()
         return 0;
     }
 
-    tango::IStructurePtr group_result_structure = group_result_iter->getStructure();
+    xd::IStructurePtr group_result_structure = group_result_iter->getStructure();
 
     group_result_iter->goFirst();
     if (group_result_iter->eof())
@@ -306,7 +306,7 @@ int SummarizeJob::runJob()
     std::wstring col_name;
     
 
-    tango::objhandle_t total_count_handle = group_result_iter->getHandle(L"total_count");
+    xd::objhandle_t total_count_handle = group_result_iter->getHandle(L"total_count");
     double total_count = group_result_iter->getDouble(total_count_handle);
     group_result_iter->releaseHandle(total_count_handle);
 
@@ -327,7 +327,7 @@ int SummarizeJob::runJob()
         kl::makeUpper(type);
 
         field_name = col_name.substr(0,idx);
-        tango::objhandle_t h = 0;
+        xd::objhandle_t h = 0;
 
         if (type == L"MIN")
             h = field_handles[1];
@@ -367,8 +367,8 @@ int SummarizeJob::runJob()
         }
 
 
-        tango::objhandle_t result_col_handle = group_result_iter->getHandle(col_name);
-        tango::IColumnInfoPtr result_col_info = group_result_iter->getInfo(result_col_handle);
+        xd::objhandle_t result_col_handle = group_result_iter->getHandle(col_name);
+        xd::IColumnInfoPtr result_col_info = group_result_iter->getInfo(result_col_handle);
     
         // empty count
         if (h == field_handles[7])
@@ -379,14 +379,14 @@ int SummarizeJob::runJob()
 
         switch (result_col_info->getType())
         {
-            case tango::typeWideCharacter:
-            case tango::typeCharacter:
+            case xd::typeWideCharacter:
+            case xd::typeCharacter:
                 output_inserter->putWideString(h, group_result_iter->getWideString(result_col_handle));
                 break;
 
-            case tango::typeDate:
+            case xd::typeDate:
             {
-                tango::DateTime dt = group_result_iter->getDateTime(result_col_handle);
+                xd::DateTime dt = group_result_iter->getDateTime(result_col_handle);
                 std::wstring s;
 
                 if (!dt.isNull())
@@ -400,9 +400,9 @@ int SummarizeJob::runJob()
             }
             break;
 
-            case tango::typeDateTime:
+            case xd::typeDateTime:
             {
-                tango::DateTime dt = group_result_iter->getDateTime(result_col_handle);
+                xd::DateTime dt = group_result_iter->getDateTime(result_col_handle);
                 std::wstring s;
 
                 if (!dt.isNull())
@@ -417,9 +417,9 @@ int SummarizeJob::runJob()
             break;
 
 
-            case tango::typeDouble:
-            case tango::typeNumeric:
-            case tango::typeInteger:
+            case xd::typeDouble:
+            case xd::typeNumeric:
+            case xd::typeInteger:
             {
                 if (type == L"SUM" || type == L"AVG")
                 {
@@ -438,7 +438,7 @@ int SummarizeJob::runJob()
             }
             break;
 
-            case tango::typeBoolean:
+            case xd::typeBoolean:
             {
                 output_inserter->putWideString(h, group_result_iter->getBoolean(result_col_handle) ? L"TRUE" : L"FALSE");
             }

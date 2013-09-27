@@ -26,7 +26,7 @@
 
 // -- modify structure helper functions --
 
-static void modColumn(tango::IColumnInfoPtr target_col,
+static void modColumn(xd::IColumnInfoPtr target_col,
                       const std::wstring& name,
                       int type,
                       int width,
@@ -84,22 +84,22 @@ static void modColumn(tango::IColumnInfoPtr target_col,
     {
         switch (type)
         {
-            case tango::typeDate:
+            case xd::typeDate:
                 target_col->setWidth(4);
                 target_col->setScale(0);
                 break;
-            case tango::typeInteger:
+            case xd::typeInteger:
                 target_col->setWidth(4);
                 target_col->setScale(0);
                 break;
-            case tango::typeDouble:
+            case xd::typeDouble:
                 target_col->setWidth(8);
                 break;
-            case tango::typeBoolean:
+            case xd::typeBoolean:
                 target_col->setWidth(1);
                 target_col->setScale(0);
                 break;
-            case tango::typeDateTime:
+            case xd::typeDateTime:
                 target_col->setWidth(8);
                 target_col->setScale(0);
                 break;
@@ -110,8 +110,8 @@ static void modColumn(tango::IColumnInfoPtr target_col,
 
 
 bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
-                               tango::IStructurePtr _mod_struct,
-                               std::vector<tango::IColumnInfoPtr>* calc_fields,
+                               xd::IStructurePtr _mod_struct,
+                               std::vector<xd::IColumnInfoPtr>* calc_fields,
                                bool* done_flag)
 {
     IStructureInternalPtr mod_struct = _mod_struct;
@@ -121,7 +121,7 @@ bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
     unsigned int processed_action_count = 0;
 
     std::vector<StructureAction>::iterator it;
-    std::vector<tango::IColumnInfoPtr>::iterator cit;
+    std::vector<xd::IColumnInfoPtr>::iterator cit;
 
     // -- handle delete --
     for (it = actions.begin(); it != actions.end(); ++it)
@@ -224,7 +224,7 @@ bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
             {
                 if (calc_fields)
                 {
-                    tango::IColumnInfoPtr col = it->m_params->clone();
+                    xd::IColumnInfoPtr col = it->m_params->clone();
                     col->setCalculated(true);
                     calc_fields->push_back(col);
                 }
@@ -247,7 +247,7 @@ bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
             {
                 if (calc_fields)
                 {
-                    tango::IColumnInfoPtr col = it->m_params->clone();
+                    xd::IColumnInfoPtr col = it->m_params->clone();
                     col->setCalculated(true);
                     calc_fields->push_back(col);
                 }
@@ -290,7 +290,7 @@ std::vector<StructureAction>& Structure::getStructureActions()
     return m_actions;
 }
 
-void Structure::addColumn(tango::IColumnInfoPtr col)
+void Structure::addColumn(xd::IColumnInfoPtr col)
 {
     m_cols.push_back(col);
 
@@ -300,7 +300,7 @@ void Structure::addColumn(tango::IColumnInfoPtr col)
     }
 }
 
-bool Structure::internalInsertColumn(tango::IColumnInfoPtr col, int insert_idx)
+bool Structure::internalInsertColumn(xd::IColumnInfoPtr col, int insert_idx)
 {
     // we're just adding a column to the end of the structure
     if (insert_idx == -1)
@@ -325,14 +325,14 @@ bool Structure::internalInsertColumn(tango::IColumnInfoPtr col, int insert_idx)
 
 bool Structure::internalMoveColumn(const std::wstring& column_name, int new_idx)
 {
-    std::vector<tango::IColumnInfoPtr>::iterator it;
+    std::vector<xd::IColumnInfoPtr>::iterator it;
 
     for (it = m_cols.begin(); it != m_cols.end(); ++it)
     {
         if (!wcscasecmp((*it)->getName().c_str(), column_name.c_str()))
         {
             // -- save the element so we can reinsert it into our vector --
-            tango::IColumnInfoPtr insert_col = *it;
+            xd::IColumnInfoPtr insert_col = *it;
             
             // -- remove the element from our vector and clear the map
             //    to force it to renumber the elements --
@@ -356,7 +356,7 @@ bool Structure::modifyColumn(const std::wstring& column_name,
                              int encoding,
                              int ordinal)
 {
-    std::vector<tango::IColumnInfoPtr>::iterator it;
+    std::vector<xd::IColumnInfoPtr>::iterator it;
     for (it = m_cols.begin(); it != m_cols.end(); ++it)
     {
         if (!wcscasecmp((*it)->getName().c_str(), column_name.c_str()))
@@ -394,7 +394,7 @@ bool Structure::removeColumn(const std::wstring& column_name)
 Structure* Structure::internalClone()
 {
     Structure* s = new Structure;
-    std::vector<tango::IColumnInfoPtr>::iterator it, it_end;
+    std::vector<xd::IColumnInfoPtr>::iterator it, it_end;
 
     s->m_cols.reserve(m_cols.size());
 
@@ -407,17 +407,17 @@ Structure* Structure::internalClone()
     return s;
 }
 
-tango::IStructurePtr Structure::clone()
+xd::IStructurePtr Structure::clone()
 {
     Structure* s = internalClone();
-    return static_cast<tango::IStructure*>(s);
+    return static_cast<xd::IStructure*>(s);
 }
 
 int Structure::getColumnIdx(const std::wstring& name)
 {
     if (m_map.empty())
     {
-        std::vector<tango::IColumnInfoPtr>::iterator it;
+        std::vector<xd::IColumnInfoPtr>::iterator it;
         int i = 0;
 
         for (it = m_cols.begin(); it != m_cols.end(); ++it)
@@ -444,7 +444,7 @@ std::wstring Structure::getColumnName(int idx)
     return m_cols[idx]->getName();
 }
 
-tango::IColumnInfoPtr Structure::getColumnInfoByIdx(int idx)
+xd::IColumnInfoPtr Structure::getColumnInfoByIdx(int idx)
 {
     if (idx < 0 || (size_t)idx >= m_cols.size())
         return xcm::null;
@@ -452,7 +452,7 @@ tango::IColumnInfoPtr Structure::getColumnInfoByIdx(int idx)
     return m_cols[idx];
 }
 
-tango::IColumnInfoPtr Structure::getColumnInfo(const std::wstring& column_name)
+xd::IColumnInfoPtr Structure::getColumnInfo(const std::wstring& column_name)
 {
     int idx = getColumnIdx(column_name);
     if (idx == -1)
@@ -489,7 +489,7 @@ bool Structure::moveColumn(const std::wstring& column_name, int new_idx)
     return true;
 }
 
-tango::IColumnInfoPtr Structure::modifyColumn(const std::wstring& column_name)
+xd::IColumnInfoPtr Structure::modifyColumn(const std::wstring& column_name)
 {
     int idx = getColumnIdx(column_name);
     if (idx == -1)
@@ -516,11 +516,11 @@ tango::IColumnInfoPtr Structure::modifyColumn(const std::wstring& column_name)
     return action_params;
 }
 
-tango::IColumnInfoPtr Structure::createColumn()
+xd::IColumnInfoPtr Structure::createColumn()
 {
     ColumnInfo* action_params = new ColumnInfo;
     action_params->setName(L"");
-    action_params->setType(tango::typeInvalid);
+    action_params->setType(xd::typeInvalid);
     action_params->setWidth(0);
     action_params->setScale(0);
 
@@ -536,7 +536,7 @@ tango::IColumnInfoPtr Structure::createColumn()
     return action_params;
 }
 
-tango::IColumnInfoPtr Structure::insertColumn(int idx)
+xd::IColumnInfoPtr Structure::insertColumn(int idx)
 {
     // both of these options are the same as calling createColumn()
     if (idx == -1 || idx == (int)m_cols.size())
@@ -547,7 +547,7 @@ tango::IColumnInfoPtr Structure::insertColumn(int idx)
 
     ColumnInfo* action_params = new ColumnInfo;
     action_params->setName(L"");
-    action_params->setType(tango::typeInvalid);
+    action_params->setType(xd::typeInvalid);
     action_params->setWidth(0);
     action_params->setScale(0);
 
@@ -605,7 +605,7 @@ static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
         }
 
 
-        tango::IColumnInfoPtr col = structure->getColumnInfo(hook_info.expr_text);
+        xd::IColumnInfoPtr col = structure->getColumnInfo(hook_info.expr_text);
         if (col.isNull())
             return false;
         
@@ -648,7 +648,7 @@ static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
             func_name == L"MIN" ||
             func_name == L"MAX")
         {
-            tango::IColumnInfoPtr colinfo;
+            xd::IColumnInfoPtr colinfo;
             
             colinfo = structure->getColumnInfo(param);
             if (colinfo.isNull())
@@ -678,25 +678,25 @@ static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
             
             switch (colinfo->getType())
             {
-                case tango::typeCharacter:
-                case tango::typeWideCharacter:
+                case xd::typeCharacter:
+                case xd::typeWideCharacter:
                     v->setString(L"");
                     break;
-                case tango::typeNumeric:
-                case tango::typeDouble:
+                case xd::typeNumeric:
+                case xd::typeDouble:
                     v->setDouble(0.0);
                     break;
-                case tango::typeInteger:
+                case xd::typeInteger:
                     v->setInteger(0);
                     break;
-                case tango::typeBoolean:
+                case xd::typeBoolean:
                     v->setBoolean(true);
                     break;
-                case tango::typeDateTime:
-                case tango::typeDate:
+                case xd::typeDateTime:
+                case xd::typeDate:
                     v->setDateTime(0,0);
                     break;
-                case tango::typeBinary:
+                case xd::typeBinary:
                     v->setType(kscript::Value::typeBinary);
                     break;
                 default:
@@ -712,7 +712,7 @@ static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
                   func_name == L"STDDEV" ||
                   func_name == L"VARIANCE")
         {
-            tango::IColumnInfoPtr colinfo;
+            xd::IColumnInfoPtr colinfo;
             
             colinfo = structure->getColumnInfo(param);
 
@@ -739,9 +739,9 @@ static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
             
             int type = colinfo->getType();
 
-            if (type != tango::typeNumeric &&
-                type != tango::typeInteger &&
-                type != tango::typeDouble)
+            if (type != xd::typeNumeric &&
+                type != xd::typeInteger &&
+                type != xd::typeDouble)
             {
                 return true;
             }
@@ -760,7 +760,7 @@ static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
         }
          else if (func_name == L"MERGE")
         {
-            tango::IColumnInfoPtr colinfo;
+            xd::IColumnInfoPtr colinfo;
             
             colinfo = structure->getColumnInfo(param);
 
@@ -787,8 +787,8 @@ static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
             
             int type = colinfo->getType();
 
-            if (type != tango::typeCharacter &&
-                type != tango::typeWideCharacter)
+            if (type != xd::typeCharacter &&
+                type != xd::typeWideCharacter)
             {
                 return true;
             }
@@ -820,7 +820,7 @@ int Structure::getExprType(const std::wstring& expression)
     // if the expression is a column name, simply look it up via getColumnInfo
     std::wstring dequoted_expression = expression;
     dequote(dequoted_expression, '[', ']');
-    tango::IColumnInfoPtr colinfo = getColumnInfo(dequoted_expression);
+    xd::IColumnInfoPtr colinfo = getColumnInfo(dequoted_expression);
     if (colinfo.isOk())
         return colinfo->getType();
 
@@ -847,7 +847,7 @@ int Structure::getExprType(const std::wstring& expression)
     if (!parser->parse(expression))
     {
         delete parser;
-        return tango::typeInvalid;
+        return xd::typeInvalid;
     }
 
     int type = kscript2tangoType(parser->getType());

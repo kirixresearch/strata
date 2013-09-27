@@ -160,7 +160,7 @@ private:
     // error checking functions
     bool doErrorCheck();
     int validateStructure();
-    int validateExpression(const wxString& expr, int type = tango::typeUndefined);
+    int validateExpression(const wxString& expr, int type = xd::typeUndefined);
     int checkInvalidExpressions(int check_flags);    
     int checkInvalidFieldnames(int check_flags);
     int checkDuplicateFieldnames(int check_flags);
@@ -170,7 +170,7 @@ private:
 
     // structural
     bool createTable();
-    tango::IStructurePtr createStructureFromGrid();
+    xd::IStructurePtr createStructureFromGrid();
     void populateGridFromStructure();
     
     bool isChanged();
@@ -216,8 +216,8 @@ private:
 
 private:
 
-    tango::IStructurePtr m_structure;
-    tango::IStructurePtr m_expr_edit_structure;
+    xd::IStructurePtr m_structure;
+    xd::IStructurePtr m_expr_edit_structure;
     
     IFramePtr m_frame;
     IDocumentSitePtr m_doc_site;

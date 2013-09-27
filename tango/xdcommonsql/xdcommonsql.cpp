@@ -532,12 +532,12 @@ void splitSQL(const std::wstring& _sql,
 }
            
 
-bool doSQL(tango::IDatabasePtr db,
+bool doSQL(xd::IDatabasePtr db,
            const std::wstring& _sql,
            unsigned int flags,
            xcm::IObjectPtr& result_obj,
            ThreadErrorInfo& error,
-           tango::IJob* job)
+           xd::IJob* job)
 {
     error.clearError();
     
@@ -561,7 +561,7 @@ bool doSQL(tango::IDatabasePtr db,
             if (it == commands.begin())
             {
                 if (!error.isError())
-                    error.setError(tango::errorGeneral);
+                    error.setError(xd::errorGeneral);
                 return false;
             }
             
@@ -586,7 +586,7 @@ bool doSQL(tango::IDatabasePtr db,
          else if (0 == wcsncasecmp(command_cstr, L"SELECT", 6) &&
                   iswspace(command_cstr[6]))
         {
-            tango::IIteratorPtr iter = sqlSelect(db, command, flags, error, job);
+            xd::IIteratorPtr iter = sqlSelect(db, command, flags, error, job);
             result = iter.isOk();
             result_obj = iter;
         }
@@ -630,7 +630,7 @@ bool doSQL(tango::IDatabasePtr db,
             {
                 // there was an error, but it was not marked in the error
                 // object, so set a generic error
-                error.setError(tango::errorGeneral);
+                error.setError(xd::errorGeneral);
             }
             
             return false;
@@ -672,9 +672,9 @@ public:
         }
     }
      
-    bool init(tango::IIteratorPtr iter,
+    bool init(xd::IIteratorPtr iter,
               const std::wstring& condition,
-              tango::IJob* job)
+              xd::IJob* job)
     {
         m_sp_iter = iter;
         m_iter = m_sp_iter.p;
@@ -691,7 +691,7 @@ public:
         return true;
     }
     
-    tango::IIterator* getIterator()
+    xd::IIterator* getIterator()
     {
         return m_iter;
     }
@@ -755,12 +755,12 @@ public:
     
 public:
 
-    tango::IIteratorPtr m_sp_iter;
-    tango::IIterator* m_iter;
+    xd::IIteratorPtr m_sp_iter;
+    xd::IIterator* m_iter;
     IJobInternalPtr m_job;
     
-    tango::objhandle_t m_cond;
-    tango::rowpos_t m_curpos;
+    xd::objhandle_t m_cond;
+    xd::rowpos_t m_curpos;
     bool m_cancelled;
 };
 
@@ -779,9 +779,9 @@ public:
     {
     }
      
-    bool init(tango::IIteratorPtr iter,
-              tango::rowid_t rowid,
-              tango::IJob* job)
+    bool init(xd::IIteratorPtr iter,
+              xd::rowid_t rowid,
+              xd::IJob* job)
     {
         m_sp_iter = iter;
         m_iter = m_sp_iter.p;
@@ -791,7 +791,7 @@ public:
         return true;
     }
     
-    tango::IIterator* getIterator()
+    xd::IIterator* getIterator()
     {
         return m_iter;
     }
@@ -825,9 +825,9 @@ public:
     
 public:
 
-    tango::IIteratorPtr m_sp_iter;
-    tango::IIterator* m_iter;
-    tango::rowid_t m_rowid;
+    xd::IIteratorPtr m_sp_iter;
+    xd::IIterator* m_iter;
+    xd::rowid_t m_rowid;
     bool m_done;
 };
 
@@ -848,10 +848,10 @@ public:
     {
     }
      
-    bool init(tango::IxSetPtr set,
+    bool init(xd::IxSetPtr set,
               const std::wstring& key_field,
               const std::wstring& key_value,
-              tango::IJob* job)
+              xd::IJob* job)
     {        
         m_sp_iter = set->createIterator(L"", key_field, NULL);
         if (!m_sp_iter)
@@ -879,7 +879,7 @@ public:
         return true;
     }
 
-    tango::IIterator* getIterator()
+    xd::IIterator* getIterator()
     {
         return m_iter;
     }
@@ -920,26 +920,26 @@ public:
     
 public:
 
-    tango::IIteratorPtr m_sp_iter;
-    tango::IIterator* m_iter;
+    xd::IIteratorPtr m_sp_iter;
+    xd::IIterator* m_iter;
     IJobInternalPtr m_job;
     
-    tango::rowpos_t m_curpos;
+    xd::rowpos_t m_curpos;
     bool m_cancelled;
 };
 */
 
 
-SqlIterator* SqlIterator::createSqlIterator(tango::IIteratorPtr iter,
+SqlIterator* SqlIterator::createSqlIterator(xd::IIteratorPtr iter,
                                             const std::wstring& condition,
-                                            tango::IJob* job)
+                                            xd::IJob* job)
 {
     // test for a condition that looks like (rowid = '0123456789abcdef')
     klregex::wregex rowid_regex(L"(?i)^\\s*rowid\\s*[=]\\s*['\"]([0-9a-f]+)['\"]\\s*$");
     klregex::wmatch rowid_matchres;    
     if (rowid_regex.match(condition.c_str(), rowid_matchres))
     {
-        tango::rowid_t rowid = kl::hexToUint64(rowid_matchres[1].str().c_str());
+        xd::rowid_t rowid = kl::hexToUint64(rowid_matchres[1].str().c_str());
         
         SqlSingleRowIterator* ret_iter = new SqlSingleRowIterator();
         
@@ -964,10 +964,10 @@ SqlIterator* SqlIterator::createSqlIterator(tango::IIteratorPtr iter,
         kl::trim(field);
         dequote(field, '[', ']');
 
-        tango::IxSetPtr set = iter->getSet();
+        xd::IxSetPtr set = iter->getSet();
         if (set)
         {
-            tango::IIndexInfoPtr index = set->lookupIndex(field, true);
+            xd::IIndexInfoPtr index = set->lookupIndex(field, true);
             if (index)
             {
                 SqlSeekIterator* ret_iter = new SqlSeekIterator();

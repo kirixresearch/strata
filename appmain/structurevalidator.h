@@ -46,22 +46,22 @@ public:
     static int showErrorMessage(int errorcode, bool* block);
     
     // this function validates an expression based on the input structure
-    static int validateExpression(tango::IStructurePtr structure,
+    static int validateExpression(xd::IStructurePtr structure,
                                   const wxString& expr,
-                                  int match_fieldtype = tango::typeUndefined);
+                                  int match_fieldtype = xd::typeUndefined);
 
     // finds invald expressions in the row check vector, specifies
     // a corresponding error code for each row in the vector and returns 
     // true/false based on if any are found (should be used
     // when you have a list of expressions)    
     static bool findInvalidExpressions(std::vector<RowErrorChecker>& vec,
-                                       tango::IStructurePtr structure);
+                                       xd::IStructurePtr structure);
     
     // returns true/false if any invalid field names exist
     // in the specified structure based on the attributes
     // of the database that is provided
-    static bool findInvalidFieldNames(tango::IStructurePtr structure,
-                                      tango::IDatabasePtr db = xcm::null);
+    static bool findInvalidFieldNames(xd::IStructurePtr structure,
+                                      xd::IDatabasePtr db = xcm::null);
     
     // finds invalid/duplicate fields in the row checker vector,
     // specifies a corresponding error code for each row in the vector
@@ -69,7 +69,7 @@ public:
     // when you have a list of fields)
     static bool findDuplicateFieldNames(std::vector<RowErrorChecker>& vec);
     static bool findInvalidFieldNames(std::vector<RowErrorChecker>& vec,
-                                      tango::IDatabasePtr db = xcm::null);
+                                      xd::IDatabasePtr db = xcm::null);
 
     // finds invalid/duplicate objects in the row checker vector,
     // specifies a corresponding error code for each row in the vector
@@ -77,7 +77,7 @@ public:
     // when you have a list of tables, scripts, etc.)
     static bool findDuplicateObjectNames(std::vector<RowErrorChecker>& vec);
     static bool findInvalidObjectNames(std::vector<RowErrorChecker>& vec,
-                                       tango::IDatabasePtr db = xcm::null);
+                                       xd::IDatabasePtr db = xcm::null);
                                        
     static bool updateFieldWidthAndScale(int type, int* width, int* scale);
 };
@@ -91,7 +91,7 @@ public:
     {
         row = -1;
         name = wxEmptyString;
-        type = tango::typeInvalid;
+        type = xd::typeInvalid;
         expression = wxEmptyString;
         calculated_field = false;        
         errors = StructureValidator::ErrorNone;
@@ -101,7 +101,7 @@ public:
     {
         row = _row;
         name = _name;
-        type = tango::typeInvalid;
+        type = xd::typeInvalid;
         expression = wxEmptyString;
         calculated_field = false;
         errors = StructureValidator::ErrorNone;

@@ -28,12 +28,12 @@ std::wstring combineOfsPath(const std::wstring& base_folder,
                             const std::wstring& file_name);
 
 std::vector<std::wstring> getFieldsInExpr(const std::wstring& expr,
-                                          tango::IStructurePtr s,
+                                          xd::IStructurePtr s,
                                           bool recurse_calcfields);
 
 bool findFieldInExpr(const std::wstring& field,
                      const std::wstring& expr,
-                     tango::IStructurePtr s,
+                     xd::IStructurePtr s,
                      bool recurse_calcfields);
 
 
@@ -44,8 +44,8 @@ void dbl2decstr(char* dest, double d, int width, int scale);
 
 // conversion between set id's and table ord's
 
-std::wstring getTableSetId(tango::tableord_t table_ordinal);
-tango::tableord_t getSetTableOrd(const std::wstring& set_id);
+std::wstring getTableSetId(xd::tableord_t table_ordinal);
+xd::tableord_t getSetTableOrd(const std::wstring& set_id);
 
 #endif
 

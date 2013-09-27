@@ -836,7 +836,7 @@ void DataSourceSelectionPage::onGridCellLeftDClick(kcl::GridEvent& evt)
 
 void DataSourceSelectionPage::populate()
 {
-    xcm::ptr<tango::IDatabaseMgr> dbmgr;
+    xcm::ptr<xd::IDatabaseMgr> dbmgr;
     dbmgr.create_instance("xdodbc.DatabaseMgr");
 
     if (dbmgr.isNull())
@@ -849,7 +849,7 @@ void DataSourceSelectionPage::populate()
         return;
     }
 
-    tango::IDatabaseEntryEnumPtr odbc_databases;
+    xd::IDatabaseEntryEnumPtr odbc_databases;
     odbc_databases = dbmgr->getDatabaseList(L"", 0, L"", L"");
 
     m_grid->deleteAllRows();
@@ -860,7 +860,7 @@ void DataSourceSelectionPage::populate()
     {
         m_grid->insertRow(-1);
 
-        tango::IDatabaseEntryPtr item = odbc_databases->getItem(i);
+        xd::IDatabaseEntryPtr item = odbc_databases->getItem(i);
         m_grid->setCellString(i, 0, item->getName());
         m_grid->setCellString(i, 1, item->getDescription());
     }

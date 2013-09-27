@@ -41,16 +41,16 @@ enum
 
 // rowid creation/extraction functions
 
-inline tango::rowid_t rowidCreate(tango::tableord_t table_ordinal,
-                                  tango::rowpos_t row_num)
+inline xd::rowid_t rowidCreate(xd::tableord_t table_ordinal,
+                                  xd::rowpos_t row_num)
 {
-    tango::rowid_t r;
-    r = ((tango::rowid_t)table_ordinal) << 36;
+    xd::rowid_t r;
+    r = ((xd::rowid_t)table_ordinal) << 36;
     r |= row_num;
     return r;
 }
 
-inline tango::rowpos_t rowidGetRowPos(tango::rowid_t rowid)
+inline xd::rowpos_t rowidGetRowPos(xd::rowid_t rowid)
 {
     #ifdef _MSC_VER
     return (rowid & 0xfffffffff);
@@ -59,7 +59,7 @@ inline tango::rowpos_t rowidGetRowPos(tango::rowid_t rowid)
     #endif
 }
 
-inline tango::tableord_t rowidGetTableOrd(tango::rowid_t rowid)
+inline xd::tableord_t rowidGetTableOrd(xd::rowid_t rowid)
 {
     return (rowid >> 36);
 }
@@ -140,8 +140,8 @@ xcm_interface ITableEvents : public xcm::IObject
 
 public:
 
-    virtual void onTableRowUpdated(tango::rowid_t rowid) = 0;
-    virtual void onTableRowDeleted(tango::rowid_t rowid) = 0;
+    virtual void onTableRowUpdated(xd::rowid_t rowid) = 0;
+    virtual void onTableRowDeleted(xd::rowid_t rowid) = 0;
     virtual void onTableRowCountUpdated() = 0;
 };
 
@@ -159,33 +159,33 @@ public:
     virtual std::wstring getMapFilename() = 0;
 
     virtual bool open(const std::wstring& filename,
-                      tango::tableord_t ordinal) = 0;
+                      xd::tableord_t ordinal) = 0;
 
     virtual bool reopen(bool exclusive) = 0;
 
     virtual void close() = 0;
 
-    virtual tango::IStructurePtr getStructure() = 0;
-    virtual tango::tableord_t getTableOrdinal() = 0;
-    virtual tango::rowpos_t getRowCount(tango::rowpos_t* deleted_row_cnt) = 0;
+    virtual xd::IStructurePtr getStructure() = 0;
+    virtual xd::tableord_t getTableOrdinal() = 0;
+    virtual xd::rowpos_t getRowCount(xd::rowpos_t* deleted_row_cnt) = 0;
 
-    virtual bool isRowDeleted(tango::rowpos_t row) = 0;
+    virtual bool isRowDeleted(xd::rowpos_t row) = 0;
     virtual bool restoreDeleted() = 0;
 
     virtual int getRowWidth() = 0;
 
     virtual int getRows(unsigned char* buf,
-                        tango::rowpos_t* rowpos_arr,
+                        xd::rowpos_t* rowpos_arr,
                         int skip,
-                        tango::rowpos_t start_row,
+                        xd::rowpos_t start_row,
                         int row_count,
                         bool direction,
                         bool include_deleted) = 0;
 
-    virtual bool getRow(tango::rowpos_t row,
+    virtual bool getRow(xd::rowpos_t row,
                         unsigned char* buf) = 0;
 
-    virtual bool writeRow(tango::rowpos_t row,
+    virtual bool writeRow(xd::rowpos_t row,
                           unsigned char* buf) = 0;
 
     virtual bool writeColumnInfo(int col,
@@ -213,27 +213,27 @@ public:
     virtual std::wstring getSetId() = 0;
     virtual IXdnativeSet* getRawXdnativeSetPtr() = 0;
 
-    virtual tango::rowpos_t getRowCount() = 0;
-    virtual tango::IStructurePtr getStructure() = 0;
+    virtual xd::rowpos_t getRowCount() = 0;
+    virtual xd::IStructurePtr getStructure() = 0;
 
     virtual bool addEventHandler(IXdnativeSetEvents* handler) = 0;
     virtual bool removeEventHandler(IXdnativeSetEvents* handler) = 0;
 
-    virtual void appendCalcFields(tango::IStructure* s) = 0;
+    virtual void appendCalcFields(xd::IStructure* s) = 0;
     virtual void onOfsPathChanged(const std::wstring& new_path) = 0;
     virtual void onRelationshipsUpdated() = 0;
     
-    virtual tango::IIteratorPtr createIterator(const std::wstring& columns,
+    virtual xd::IIteratorPtr createIterator(const std::wstring& columns,
                                                const std::wstring& order,
-                                               tango::IJob* job) = 0;
+                                               xd::IJob* job) = 0;
 
-    virtual bool modifyStructure(tango::IStructure* struct_config, tango::IJob* job) = 0;
-    virtual tango::IRowInserterPtr getRowInserter() = 0;
+    virtual bool modifyStructure(xd::IStructure* struct_config, xd::IJob* job) = 0;
+    virtual xd::IRowInserterPtr getRowInserter() = 0;
 
-    virtual tango::IIndexInfoEnumPtr getIndexEnum() = 0;
-    virtual tango::IIndexInfoPtr createIndex(const std::wstring& name,
+    virtual xd::IIndexInfoEnumPtr getIndexEnum() = 0;
+    virtual xd::IIndexInfoPtr createIndex(const std::wstring& name,
                                              const std::wstring& expr,
-                                             tango::IJob* job) = 0;
+                                             xd::IJob* job) = 0;
     virtual bool renameIndex(const std::wstring& name,
                              const std::wstring& new_name) = 0;
     virtual  bool deleteIndex(const std::wstring& name) = 0;
@@ -251,8 +251,8 @@ public:
     virtual void onSetDomainUpdated() = 0;   // (right now only used with BookmarkSet)
     virtual void onSetStructureUpdated() = 0;
     virtual void onSetRelationshipsUpdated() = 0;
-    virtual void onSetRowUpdated(tango::rowid_t rowid) = 0;
-    virtual void onSetRowDeleted(tango::rowid_t rowid) = 0;
+    virtual void onSetRowUpdated(xd::rowid_t rowid) = 0;
+    virtual void onSetRowDeleted(xd::rowid_t rowid) = 0;
 };
 
 

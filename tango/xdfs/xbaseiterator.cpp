@@ -54,7 +54,7 @@ XbaseIterator::~XbaseIterator()
         m_set->unref();
 }
 
-bool XbaseIterator::init(tango::IDatabasePtr db,
+bool XbaseIterator::init(xd::IDatabasePtr db,
                          XbaseSet* set,
                          const std::wstring& filename)
 {
@@ -83,17 +83,17 @@ std::wstring XbaseIterator::getTable()
     return m_set->getObjectPath();
 }
 
-tango::rowpos_t XbaseIterator::getRowCount()
+xd::rowpos_t XbaseIterator::getRowCount()
 {
     return 0;
 }
 
-tango::IDatabasePtr XbaseIterator::getDatabase()
+xd::IDatabasePtr XbaseIterator::getDatabase()
 {
     return m_database;
 }
 
-tango::IIteratorPtr XbaseIterator::clone()
+xd::IIteratorPtr XbaseIterator::clone()
 {
     XbaseIterator* iter = new XbaseIterator;
     
@@ -104,7 +104,7 @@ tango::IIteratorPtr XbaseIterator::clone()
     
     iter->goRow(m_current_row);
     
-    return static_cast<tango::IIterator*>(iter);
+    return static_cast<xd::IIterator*>(iter);
 }
 
 unsigned int XbaseIterator::getIteratorFlags()
@@ -149,7 +149,7 @@ void XbaseIterator::goLast()
     goRow(m_current_row);
 }
 
-tango::rowid_t XbaseIterator::getRowId()
+xd::rowid_t XbaseIterator::getRowId()
 {
     return m_current_row;
 }
@@ -184,21 +184,21 @@ double XbaseIterator::getPos()
     return 0.0;
 }
 
-void XbaseIterator::goRow(const tango::rowid_t& rowid)
+void XbaseIterator::goRow(const xd::rowid_t& rowid)
 {
     m_current_row = (unsigned int)rowid;
     m_file.goRow(m_current_row);
 }
 
-tango::IStructurePtr XbaseIterator::getStructure()
+xd::IStructurePtr XbaseIterator::getStructure()
 {
-    tango::IStructurePtr s = static_cast<tango::IStructure*>(new Structure);
+    xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
     IStructureInternalPtr struct_int = s;
     
     std::vector<XbaseDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        tango::IColumnInfoPtr col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+        xd::IColumnInfoPtr col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
         struct_int->addColumn(col);
         
         col->setName((*it)->name);
@@ -210,12 +210,12 @@ tango::IStructurePtr XbaseIterator::getStructure()
         
         if ((*it)->xbase_type == 'Y')    // currency
             col->setWidth(18);
-        if (col->getType() == tango::typeDouble)
+        if (col->getType() == xd::typeDouble)
             col->setWidth(8);
-        if (col->getType() == tango::typeNumeric &&
-            col->getWidth() > tango::max_numeric_width)
+        if (col->getType() == xd::typeNumeric &&
+            col->getWidth() > xd::max_numeric_width)
         {
-            col->setWidth(tango::max_numeric_width);
+            col->setWidth(xd::max_numeric_width);
         }
         if (col->getExpression().length() > 0)
             col->setCalculated(true);
@@ -236,7 +236,7 @@ void XbaseIterator::refreshStructure()
     m_fields.clear();
 
 
-    tango::IStructurePtr s = m_set->getStructure();
+    xd::IStructurePtr s = m_set->getStructure();
     int col_count = s->getColumnCount();
     int i;
 
@@ -245,7 +245,7 @@ void XbaseIterator::refreshStructure()
     
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
         
         XbaseDataAccessInfo* dai = new XbaseDataAccessInfo;
         dai->xbase_type = tango2xbaseType(colinfo->getType());
@@ -277,8 +277,8 @@ void XbaseIterator::refreshStructure()
     }
 }
 
-bool XbaseIterator::modifyStructure(tango::IStructure* struct_config,
-                                    tango::IJob* job)
+bool XbaseIterator::modifyStructure(xd::IStructure* struct_config,
+                                    xd::IJob* job)
 {
     IStructureInternalPtr struct_int = struct_config;
 
@@ -400,13 +400,13 @@ bool XbaseIterator::modifyStructure(tango::IStructure* struct_config,
 }
 
 
-tango::objhandle_t XbaseIterator::getHandle(const std::wstring& expr)
+xd::objhandle_t XbaseIterator::getHandle(const std::wstring& expr)
 {
     std::vector<XbaseDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
         if (!wcscasecmp((*it)->name.c_str(), expr.c_str()))
-            return (tango::objhandle_t)(*it);
+            return (xd::objhandle_t)(*it);
     }
 
     // test for binary keys
@@ -415,10 +415,10 @@ tango::objhandle_t XbaseIterator::getHandle(const std::wstring& expr)
         XbaseDataAccessInfo* dai = new XbaseDataAccessInfo;
         dai->expr = NULL;
         dai->expr_text = expr;
-        dai->type = tango::typeBinary;
+        dai->type = xd::typeBinary;
         dai->key_layout = new KeyLayout;
 
-        if (!dai->key_layout->setKeyExpr(static_cast<tango::IIterator*>(this),
+        if (!dai->key_layout->setKeyExpr(static_cast<xd::IIterator*>(this),
                                     expr.substr(4),
                                     false))
         {
@@ -427,14 +427,14 @@ tango::objhandle_t XbaseIterator::getHandle(const std::wstring& expr)
         }
         
         m_exprs.push_back(dai);
-        return (tango::objhandle_t)dai;
+        return (xd::objhandle_t)dai;
     }
 
 
     kscript::ExprParser* parser = parse(expr);
     if (!parser)
     {
-        return (tango::objhandle_t)0;
+        return (xd::objhandle_t)0;
     }
 
     XbaseDataAccessInfo* dai = new XbaseDataAccessInfo;
@@ -443,15 +443,15 @@ tango::objhandle_t XbaseIterator::getHandle(const std::wstring& expr)
     dai->type = kscript2tangoType(parser->getType());
     m_exprs.push_back(dai);
 
-    return (tango::objhandle_t)dai;
+    return (xd::objhandle_t)dai;
 }
 
-bool XbaseIterator::releaseHandle(tango::objhandle_t data_handle)
+bool XbaseIterator::releaseHandle(xd::objhandle_t data_handle)
 {
     std::vector<XbaseDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        if ((tango::objhandle_t)(*it) == data_handle)
+        if ((xd::objhandle_t)(*it) == data_handle)
         {
             return true;
         }
@@ -459,7 +459,7 @@ bool XbaseIterator::releaseHandle(tango::objhandle_t data_handle)
 
     for (it = m_exprs.begin(); it != m_exprs.end(); ++it)
     {
-        if ((tango::objhandle_t)(*it) == data_handle)
+        if ((xd::objhandle_t)(*it) == data_handle)
         {
             delete (*it);
             m_exprs.erase(it);
@@ -470,7 +470,7 @@ bool XbaseIterator::releaseHandle(tango::objhandle_t data_handle)
     return false;
 }
 
-tango::IColumnInfoPtr XbaseIterator::getInfo(tango::objhandle_t data_handle)
+xd::IColumnInfoPtr XbaseIterator::getInfo(xd::objhandle_t data_handle)
 {
     XbaseDataAccessInfo* dai = (XbaseDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -485,17 +485,17 @@ tango::IColumnInfoPtr XbaseIterator::getInfo(tango::objhandle_t data_handle)
     colinfo->setScale(dai->scale);
     colinfo->setExpression(dai->expr_text);
     
-    if (dai->type == tango::typeDate ||
-        dai->type == tango::typeInteger)
+    if (dai->type == xd::typeDate ||
+        dai->type == xd::typeInteger)
     {
         colinfo->setWidth(4);
     }
-     else if (dai->type == tango::typeDateTime ||
-              dai->type == tango::typeDouble)
+     else if (dai->type == xd::typeDateTime ||
+              dai->type == xd::typeDouble)
     {
         colinfo->setWidth(8);
     }
-     else if (dai->type == tango::typeBoolean)
+     else if (dai->type == xd::typeBoolean)
     {
         colinfo->setWidth(1);
     }
@@ -507,10 +507,10 @@ tango::IColumnInfoPtr XbaseIterator::getInfo(tango::objhandle_t data_handle)
     if (dai->expr_text.length() > 0)
         colinfo->setCalculated(true);
 
-    return static_cast<tango::IColumnInfo*>(colinfo);
+    return static_cast<xd::IColumnInfo*>(colinfo);
 }
 
-int XbaseIterator::getType(tango::objhandle_t data_handle)
+int XbaseIterator::getType(xd::objhandle_t data_handle)
 {
     XbaseDataAccessInfo* dai = (XbaseDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -521,7 +521,7 @@ int XbaseIterator::getType(tango::objhandle_t data_handle)
     return dai->type;
 }
 
-int XbaseIterator::getRawWidth(tango::objhandle_t data_handle)
+int XbaseIterator::getRawWidth(xd::objhandle_t data_handle)
 {
     XbaseDataAccessInfo* dai = (XbaseDataAccessInfo*)data_handle;
     if (dai && dai->key_layout)
@@ -532,7 +532,7 @@ int XbaseIterator::getRawWidth(tango::objhandle_t data_handle)
     return 0;
 }
 
-const unsigned char* XbaseIterator::getRawPtr(tango::objhandle_t data_handle)
+const unsigned char* XbaseIterator::getRawPtr(xd::objhandle_t data_handle)
 {
     XbaseDataAccessInfo* dai = (XbaseDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -546,7 +546,7 @@ const unsigned char* XbaseIterator::getRawPtr(tango::objhandle_t data_handle)
     return m_file.getRaw(dai->ordinal);
 }
 
-const std::string& XbaseIterator::getString(tango::objhandle_t data_handle)
+const std::string& XbaseIterator::getString(xd::objhandle_t data_handle)
 {
     XbaseDataAccessInfo* dai = (XbaseDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -571,7 +571,7 @@ const std::string& XbaseIterator::getString(tango::objhandle_t data_handle)
     return dai->str_result;
 }
 
-const std::wstring& XbaseIterator::getWideString(tango::objhandle_t data_handle)
+const std::wstring& XbaseIterator::getWideString(xd::objhandle_t data_handle)
 {
     XbaseDataAccessInfo* dai = (XbaseDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -579,12 +579,12 @@ const std::wstring& XbaseIterator::getWideString(tango::objhandle_t data_handle)
         return empty_wstring;
     }
 
-    if (dai->type == tango::typeCharacter)
+    if (dai->type == xd::typeCharacter)
     {
         dai->wstr_result = kl::towstring(getString(data_handle));
         return dai->wstr_result;
     }
-     else if (dai->type == tango::typeWideCharacter)
+     else if (dai->type == xd::typeWideCharacter)
     {
         if (dai->expr)
         {
@@ -606,12 +606,12 @@ const std::wstring& XbaseIterator::getWideString(tango::objhandle_t data_handle)
     return empty_wstring;
 }
 
-tango::datetime_t XbaseIterator::getDateTime(tango::objhandle_t data_handle)
+xd::datetime_t XbaseIterator::getDateTime(xd::objhandle_t data_handle)
 {
     XbaseDataAccessInfo* dai = (XbaseDataAccessInfo*)data_handle;
     if (dai == NULL)
     {
-        tango::DateTime dt;
+        xd::DateTime dt;
         return dt;
     }
 
@@ -620,11 +620,11 @@ tango::datetime_t XbaseIterator::getDateTime(tango::objhandle_t data_handle)
         dai->expr->eval(&dai->expr_result);
         kscript::ExprDateTime edt = dai->expr_result.getDateTime();
 
-        tango::datetime_t dt;
+        xd::datetime_t dt;
         dt = edt.date;
         dt <<= 32;
         
-        if (dai->type == tango::typeDateTime)
+        if (dai->type == xd::typeDateTime)
             dt |= edt.time;
 
         return dt;
@@ -640,7 +640,7 @@ tango::datetime_t XbaseIterator::getDateTime(tango::objhandle_t data_handle)
     if (xbase_date.isNull())
         return 0;
     
-    tango::DateTime dt(xbase_date.year,
+    xd::DateTime dt(xbase_date.year,
                        xbase_date.month,
                        xbase_date.day,
                        xbase_date.hour,
@@ -650,7 +650,7 @@ tango::datetime_t XbaseIterator::getDateTime(tango::objhandle_t data_handle)
     return dt;
 }
 
-double XbaseIterator::getDouble(tango::objhandle_t data_handle)
+double XbaseIterator::getDouble(xd::objhandle_t data_handle)
 {
     XbaseDataAccessInfo* dai = (XbaseDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -673,7 +673,7 @@ double XbaseIterator::getDouble(tango::objhandle_t data_handle)
     return m_file.getDouble(dai->ordinal);
 }
 
-int XbaseIterator::getInteger(tango::objhandle_t data_handle)
+int XbaseIterator::getInteger(xd::objhandle_t data_handle)
 {
     XbaseDataAccessInfo* dai = (XbaseDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -696,7 +696,7 @@ int XbaseIterator::getInteger(tango::objhandle_t data_handle)
     return m_file.getInteger(dai->ordinal);
 }
 
-bool XbaseIterator::getBoolean(tango::objhandle_t data_handle)
+bool XbaseIterator::getBoolean(xd::objhandle_t data_handle)
 {
     XbaseDataAccessInfo* dai = (XbaseDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -719,7 +719,7 @@ bool XbaseIterator::getBoolean(tango::objhandle_t data_handle)
     return m_file.getBoolean(dai->ordinal);
 }
 
-bool XbaseIterator::isNull(tango::objhandle_t data_handle)
+bool XbaseIterator::isNull(xd::objhandle_t data_handle)
 {
     XbaseDataAccessInfo* dai = (XbaseDataAccessInfo*)data_handle;
     if (dai == NULL)

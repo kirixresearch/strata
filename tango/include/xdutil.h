@@ -19,7 +19,7 @@
 #include <ctime>
 #include <cwctype>
 
-namespace tango
+namespace xd
 {
 
 
@@ -65,34 +65,34 @@ inline std::wstring dbtypeToString(int type)
     switch (type)
     {
         default:
-        case tango::typeUndefined:     return L"undefined";    
-        case tango::typeInvalid:       return L"invalid";      
-        case tango::typeCharacter:     return L"character";    
-        case tango::typeWideCharacter: return L"widecharacter";
-        case tango::typeNumeric:       return L"numeric";      
-        case tango::typeDouble:        return L"double";       
-        case tango::typeInteger:       return L"integer";      
-        case tango::typeDate:          return L"date";         
-        case tango::typeDateTime:      return L"datetime";     
-        case tango::typeBoolean:       return L"boolean";      
-        case tango::typeBinary:        return L"binary";       
+        case xd::typeUndefined:     return L"undefined";    
+        case xd::typeInvalid:       return L"invalid";      
+        case xd::typeCharacter:     return L"character";    
+        case xd::typeWideCharacter: return L"widecharacter";
+        case xd::typeNumeric:       return L"numeric";      
+        case xd::typeDouble:        return L"double";       
+        case xd::typeInteger:       return L"integer";      
+        case xd::typeDate:          return L"date";         
+        case xd::typeDateTime:      return L"datetime";     
+        case xd::typeBoolean:       return L"boolean";      
+        case xd::typeBinary:        return L"binary";       
     }
 }
 
 inline int stringToDbtype(const std::wstring& type)
 {
-         if (type == L"undefined")     return tango::typeUndefined;
-    else if (type == L"invalid")       return tango::typeInvalid;
-    else if (type == L"character")     return tango::typeCharacter;
-    else if (type == L"widecharacter") return tango::typeWideCharacter;
-    else if (type == L"numeric")       return tango::typeNumeric;
-    else if (type == L"double")        return tango::typeDouble;
-    else if (type == L"integer")       return tango::typeInteger;
-    else if (type == L"date")          return tango::typeDate;
-    else if (type == L"datetime")      return tango::typeDateTime;
-    else if (type == L"boolean")       return tango::typeBoolean;
-    else if (type == L"binary")        return tango::typeBinary;
-    else return tango::typeUndefined;
+         if (type == L"undefined")     return xd::typeUndefined;
+    else if (type == L"invalid")       return xd::typeInvalid;
+    else if (type == L"character")     return xd::typeCharacter;
+    else if (type == L"widecharacter") return xd::typeWideCharacter;
+    else if (type == L"numeric")       return xd::typeNumeric;
+    else if (type == L"double")        return xd::typeDouble;
+    else if (type == L"integer")       return xd::typeInteger;
+    else if (type == L"date")          return xd::typeDate;
+    else if (type == L"datetime")      return xd::typeDateTime;
+    else if (type == L"boolean")       return xd::typeBoolean;
+    else if (type == L"binary")        return xd::typeBinary;
+    else return xd::typeUndefined;
 }
 
 inline bool isTypeCompatible(int type1, int type2)
@@ -104,32 +104,32 @@ inline bool isTypeCompatible(int type1, int type2)
 
     switch (type1)
     {
-        case tango::typeCharacter:
-        case tango::typeWideCharacter:
+        case xd::typeCharacter:
+        case xd::typeWideCharacter:
 
-            if (type2 == tango::typeCharacter ||
-                type2 == tango::typeWideCharacter)
+            if (type2 == xd::typeCharacter ||
+                type2 == xd::typeWideCharacter)
             {
                 return true;
             }
             break;
 
-        case tango::typeNumeric:
-        case tango::typeDouble:
-        case tango::typeInteger:
+        case xd::typeNumeric:
+        case xd::typeDouble:
+        case xd::typeInteger:
 
-            if (type2 == tango::typeNumeric ||
-                type2 == tango::typeDouble ||
-                type2 == tango::typeInteger)
+            if (type2 == xd::typeNumeric ||
+                type2 == xd::typeDouble ||
+                type2 == xd::typeInteger)
             {
                 return true;
             }
             break;
 
-        case tango::typeDate:
-        case tango::typeDateTime:
+        case xd::typeDate:
+        case xd::typeDateTime:
 
-            if (type2 == tango::typeDate || type2 == tango::typeDateTime)
+            if (type2 == xd::typeDate || type2 == xd::typeDateTime)
                 return true;
             break;
     }
@@ -138,17 +138,17 @@ inline bool isTypeCompatible(int type1, int type2)
 }
 
 
-inline std::wstring quoteIdentifier(tango::IDatabasePtr db, const std::wstring& identifier)
+inline std::wstring quoteIdentifier(xd::IDatabasePtr db, const std::wstring& identifier)
 {
     if (db.isOk())
     {
-        tango::IAttributesPtr attr = db->getAttributes();
+        xd::IAttributesPtr attr = db->getAttributes();
         if (attr)
         {
             std::wstring result;
-            result += attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
+            result += attr->getStringAttribute(xd::dbattrIdentifierQuoteOpenChar);
             result += identifier;
-            result += attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
+            result += attr->getStringAttribute(xd::dbattrIdentifierQuoteCloseChar);
             return result;
         }
     }
@@ -156,7 +156,7 @@ inline std::wstring quoteIdentifier(tango::IDatabasePtr db, const std::wstring& 
     return identifier;
 }
 
-inline std::wstring quoteIdentifierIfNecessary(tango::IDatabasePtr db, const std::wstring& identifier)
+inline std::wstring quoteIdentifierIfNecessary(xd::IDatabasePtr db, const std::wstring& identifier)
 {
      if (identifier.find(' ') == identifier.npos)
         return identifier;
@@ -165,19 +165,19 @@ inline std::wstring quoteIdentifierIfNecessary(tango::IDatabasePtr db, const std
 }
 
 
-inline std::wstring dequoteIdentifier(tango::IDatabasePtr db, const std::wstring& identifier)
+inline std::wstring dequoteIdentifier(xd::IDatabasePtr db, const std::wstring& identifier)
 {
     if (db.isOk())
     {
-        tango::IAttributesPtr attr = db->getAttributes();
+        xd::IAttributesPtr attr = db->getAttributes();
         if (attr)
         {
             size_t length = identifier.size();
             if (length == 0)
                 return identifier;
 
-            wchar_t open_char = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar)[0];
-            wchar_t close_char = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar)[0];
+            wchar_t open_char = attr->getStringAttribute(xd::dbattrIdentifierQuoteOpenChar)[0];
+            wchar_t close_char = attr->getStringAttribute(xd::dbattrIdentifierQuoteCloseChar)[0];
             wchar_t first_char = identifier[0];
             wchar_t last_char = identifier[length-1];
 
@@ -210,7 +210,7 @@ inline void dequoteIdentifier(std::wstring& str, wchar_t ch1, wchar_t ch2)
 
 
 
-inline void requoteAllIdentifiers(tango::IDatabasePtr db, std::vector<std::wstring>& identifiers)
+inline void requoteAllIdentifiers(xd::IDatabasePtr db, std::vector<std::wstring>& identifiers)
 {
     std::vector<std::wstring> identifiers_copy = identifiers;
     std::vector<std::wstring>::iterator it, it_end;
@@ -219,8 +219,8 @@ inline void requoteAllIdentifiers(tango::IDatabasePtr db, std::vector<std::wstri
     identifiers.clear();
     for (it = identifiers_copy.begin(); it != it_end; ++it)
     {
-        std::wstring identifier = tango::dequoteIdentifier(db, *it);
-        identifier = tango::quoteIdentifier(db, identifier);
+        std::wstring identifier = xd::dequoteIdentifier(db, *it);
+        identifier = xd::quoteIdentifier(db, identifier);
         identifiers.push_back(identifier);
     }
 }
@@ -591,7 +591,7 @@ private:
 
 
 
-}; // namespace tango
+}; // namespace xd
 
 
 #endif

@@ -21,11 +21,11 @@
 
 void getOdbcDriverNames(std::vector<std::wstring>& drivers);
 
-class DatabaseMgr : public tango::IDatabaseMgr
+class DatabaseMgr : public xd::IDatabaseMgr
 {
     XCM_CLASS_NAME("xdodbc.DatabaseMgr")
     XCM_BEGIN_INTERFACE_MAP(DatabaseMgr)
-        XCM_INTERFACE_ENTRY(tango::IDatabaseMgr)
+        XCM_INTERFACE_ENTRY(xd::IDatabaseMgr)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -38,7 +38,7 @@ public:
 
     bool createDatabase(const std::wstring& connection_str)
     {
-        tango::ConnectionStringParser c(connection_str);
+        xd::ConnectionStringParser c(connection_str);
         std::wstring provider = c.getLowerValue(L"xdprovider");
         if (provider.empty())
             return false;
@@ -80,7 +80,7 @@ public:
             OdbcDatabase* db = new OdbcDatabase;
             db->ref();
             
-            if (!db->open(tango::dbtypeAccess, L"", 0, L"", L"admin", L"", location))
+            if (!db->open(xd::dbtypeAccess, L"", 0, L"", L"admin", L"", location))
             {
                 db->unref();
                 return false;
@@ -148,7 +148,7 @@ public:
             OdbcDatabase* db = new OdbcDatabase;
             db->ref();
             
-            if (!db->open(tango::dbtypeExcel, L"", 0, L"", L"admin", L"", location))
+            if (!db->open(xd::dbtypeExcel, L"", 0, L"", L"admin", L"", location))
             {
                 db->unref();
                 return false;
@@ -162,9 +162,9 @@ public:
     }
     
     
-    tango::IDatabasePtr open(const std::wstring& connection_str)
+    xd::IDatabasePtr open(const std::wstring& connection_str)
     {
-        tango::ConnectionStringParser c(connection_str);
+        xd::ConnectionStringParser c(connection_str);
         std::wstring provider = c.getLowerValue(L"xdprovider");
         if (provider.empty())
             return xcm::null;
@@ -202,7 +202,7 @@ public:
 
             if (ext == L"MDB" || ext == L"ACCDB")
             {
-                if (!db->open(tango::dbtypeAccess, L"", 0, L"", uid, password, database))
+                if (!db->open(xd::dbtypeAccess, L"", 0, L"", uid, password, database))
                 {
                     db->unref();
                     return xcm::null;
@@ -211,7 +211,7 @@ public:
              else if (ext == L"XLS" || ext == L"XLSX")
             {
 
-                if (!db->open(tango::dbtypeExcel, L"", 0, L"", uid, password, database))
+                if (!db->open(xd::dbtypeExcel, L"", 0, L"", uid, password, database))
                 {
                     db->unref();
                     return xcm::null;
@@ -224,7 +224,7 @@ public:
             }
             
 
-            return tango::IDatabasePtr(db, false);
+            return xd::IDatabasePtr(db, false);
         }
          else
         {
@@ -244,20 +244,20 @@ public:
             }
             
             
-            int tango_dbtype = tango::dbtypeOdbc;
+            int tango_dbtype = xd::dbtypeOdbc;
             
             if (dbtype == L"mssql")
-                tango_dbtype = tango::dbtypeSqlServer;
+                tango_dbtype = xd::dbtypeSqlServer;
             else if (dbtype == L"mysql")
-                tango_dbtype = tango::dbtypeMySql;
+                tango_dbtype = xd::dbtypeMySql;
             else if (dbtype == L"db2")
-                tango_dbtype = tango::dbtypeDb2;
+                tango_dbtype = xd::dbtypeDb2;
             else if (dbtype == L"oracle")
-                tango_dbtype = tango::dbtypeOracle;
+                tango_dbtype = xd::dbtypeOracle;
             else if (dbtype == L"access")
-                tango_dbtype = tango::dbtypeAccess;
+                tango_dbtype = xd::dbtypeAccess;
             else if (dbtype == L"dsn")
-                tango_dbtype = tango::dbtypeOdbc;
+                tango_dbtype = xd::dbtypeOdbc;
             
             
             // check for pass-through connection string    
@@ -277,13 +277,13 @@ public:
                 return xcm::null;
             }
 
-            return tango::IDatabasePtr(db, false); 
+            return xd::IDatabasePtr(db, false); 
         }
         
         return xcm::null;
     }
 
-    tango::IDatabaseEntryEnumPtr getDatabaseList(const std::wstring& host,
+    xd::IDatabaseEntryEnumPtr getDatabaseList(const std::wstring& host,
                                                  int port,
                                                  const std::wstring& uid,
                                                  const std::wstring& password)
@@ -294,8 +294,8 @@ public:
         SQLSetConnectOption(m_conn, SQL_ODBC_CURSORS, SQL_CUR_USE_ODBC);
 
 
-        xcm::IVectorImpl<tango::IDatabaseEntryPtr>* db_list;
-        db_list = new xcm::IVectorImpl<tango::IDatabaseEntryPtr>;
+        xcm::IVectorImpl<xd::IDatabaseEntryPtr>* db_list;
+        db_list = new xcm::IVectorImpl<xd::IDatabaseEntryPtr>;
 
         SQLRETURN r;
 

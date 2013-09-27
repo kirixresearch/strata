@@ -62,7 +62,7 @@ DataAccessInfo::DataAccessInfo()
     dai_text = L"";
     name = L"";
     expr_text = L"";
-    type = tango::typeInvalid;
+    type = xd::typeInvalid;
     offset = 0;
     width = 0;
     scale = 0;
@@ -176,11 +176,11 @@ void BaseIterator::refreshDAI()
     // by subsequent calls to colinfo2dai
 
     std::vector<DataAccessInfo*> dai_entries = m_dai_entries;
-    std::vector<tango::IColumnInfoPtr>::iterator cit;
+    std::vector<xd::IColumnInfoPtr>::iterator cit;
 
     // find out if anything changed in our existing dai entries
     std::vector<DataAccessInfo*>::iterator dai_it;
-    tango::IColumnInfoPtr colinfo;
+    xd::IColumnInfoPtr colinfo;
     for (dai_it = dai_entries.begin();
          dai_it != dai_entries.end();
          ++dai_it)
@@ -317,24 +317,24 @@ BaseIteratorTableEntry* BaseIterator::registerTable(ITablePtr tbl)
 
 
 
-void BaseIterator::setRowId(const tango::rowid_t& rowid)
+void BaseIterator::setRowId(const xd::rowid_t& rowid)
 {
     m_rowid = rowid;
 }
 
 
-tango::rowid_t BaseIterator::getRowId()
+xd::rowid_t BaseIterator::getRowId()
 {
     return m_rowid;
 }
 
 
-void BaseIterator::goRow(const tango::rowid_t& rowid)
+void BaseIterator::goRow(const xd::rowid_t& rowid)
 {
     // find the table entry
 
-    tango::tableord_t table_ord = rowidGetTableOrd(rowid);
-    tango::rowpos_t row_pos = rowidGetRowPos(rowid);
+    xd::tableord_t table_ord = rowidGetTableOrd(rowid);
+    xd::rowpos_t row_pos = rowidGetRowPos(rowid);
     BaseIteratorTableEntry* te = NULL;
 
     std::vector<BaseIteratorTableEntry>::iterator it;
@@ -386,10 +386,10 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
     }
     info.tag = L"";
     
-    tango::IRelationPtr rel;
+    xd::IRelationPtr rel;
 
     // try to find the correct relation id
-    tango::IRelationEnumPtr rel_enum = m_database->getRelationEnum(getTable());
+    xd::IRelationEnumPtr rel_enum = m_database->getRelationEnum(getTable());
     size_t i, rel_count = rel_enum->size();
     for (i = 0; i < rel_count; ++i)
     {
@@ -409,13 +409,13 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
     if (!right_set_int)
         return false;
 
-    tango::IStructurePtr right_structure = right_set_int->getStructure();
+    xd::IStructurePtr right_structure = right_set_int->getStructure();
     if (right_structure.isNull())
         return false;
 
     // lookup the index on the right set
-    tango::IIndexInfoEnumPtr idx_enum = m_database->getIndexEnum(getTable());
-    tango::IIndexInfoPtr idx = xdLookupIndex(idx_enum, rel->getRightExpression(), false);
+    xd::IIndexInfoEnumPtr idx_enum = m_database->getIndexEnum(getTable());
+    xd::IIndexInfoPtr idx = xdLookupIndex(idx_enum, rel->getRightExpression(), false);
     if (!idx)
         return false;
 
@@ -440,7 +440,7 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
 
 
     info.kl = new KeyLayout;
-    info.kl->setIterator(static_cast<tango::IIterator*>(this), false);
+    info.kl->setIterator(static_cast<xd::IIterator*>(this), false);
 
 
     for (x = 0; x < count; ++x)
@@ -449,7 +449,7 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
         {
             if (!wcscasecmp(right_list[j].c_str(), idx_list[x].c_str()))
             {
-                tango::IColumnInfoPtr colinfo;
+                xd::IColumnInfoPtr colinfo;
 
                 colinfo = right_structure->getColumnInfo(right_list[j]);
                 if (colinfo.isNull())
@@ -479,7 +479,7 @@ bool BaseIterator::refreshRelInfo(BaseIteratorRelInfo& info)
     return true;
 }
 
-tango::IIteratorPtr BaseIterator::getChildIterator(tango::IRelationPtr relation)
+xd::IIteratorPtr BaseIterator::getChildIterator(xd::IRelationPtr relation)
 {
     XCM_AUTO_LOCK(m_rel_mutex);
 
@@ -538,7 +538,7 @@ tango::IIteratorPtr BaseIterator::getChildIterator(tango::IRelationPtr relation)
 }
 
 
-tango::IIteratorPtr BaseIterator::getFilteredChildIterator(tango::IRelationPtr relation)
+xd::IIteratorPtr BaseIterator::getFilteredChildIterator(xd::IRelationPtr relation)
 {
     XCM_AUTO_LOCK(m_rel_mutex);
 
@@ -611,24 +611,24 @@ tango::IIteratorPtr BaseIterator::getFilteredChildIterator(tango::IRelationPtr r
 }
 
 
-tango::IStructurePtr BaseIterator::getStructure()
+xd::IStructurePtr BaseIterator::getStructure()
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
-    tango::IStructurePtr s = m_iter_structure->clone();
+    xd::IStructurePtr s = m_iter_structure->clone();
     appendCalcFields(s);
 
     return s;
 }
 
 
-void BaseIterator::appendCalcFields(tango::IStructure* structure)
+void BaseIterator::appendCalcFields(xd::IStructure* structure)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
     IStructureInternalPtr intstruct = structure;
 
-    std::vector<tango::IColumnInfoPtr>::iterator it;
+    std::vector<xd::IColumnInfoPtr>::iterator it;
     for (it = m_calc_fields.begin(); it != m_calc_fields.end(); ++it)
     {
         intstruct->addColumn((*it)->clone());
@@ -667,7 +667,7 @@ bool BaseIterator::initStructure()
             std::wstring part = *it;
             kl::trim(part);
 
-            tango::IColumnInfoPtr col;
+            xd::IColumnInfoPtr col;
             
             col = m_set_structure->getColumnInfo(part);
             if (col)
@@ -761,8 +761,8 @@ bool BaseIterator::initStructure()
             delete p;
 
             int tango_type = kscript2tangoType(expr_type);
-            if (tango_type == tango::typeInvalid ||
-                tango_type == tango::typeUndefined)
+            if (tango_type == xd::typeInvalid ||
+                tango_type == xd::typeUndefined)
             {
                 delete s;
                 return false;
@@ -773,19 +773,19 @@ bool BaseIterator::initStructure()
 
             switch (tango_type)
             {
-                case tango::typeNumeric:
+                case xd::typeNumeric:
                     width = 18;
                     scale = bind_info.max_scale;
                     break;
-                case tango::typeDouble:
+                case xd::typeDouble:
                     width = 8;
                     scale = bind_info.max_scale;
                     break;
-                case tango::typeDate:
-                case tango::typeInteger:
+                case xd::typeDate:
+                case xd::typeInteger:
                     width = 4;
                     break;
-                case tango::typeDateTime:
+                case xd::typeDateTime:
                     width = 8;
                     break;
                 default:
@@ -813,8 +813,8 @@ bool BaseIterator::initStructure()
             c->setExpression(expr);
             c->setCalculated(true);
 
-            //s->addColumn(static_cast<tango::IColumnInfo*>(c));
-            m_calc_fields.push_back(static_cast<tango::IColumnInfo*>(c));
+            //s->addColumn(static_cast<xd::IColumnInfo*>(c));
+            m_calc_fields.push_back(static_cast<xd::IColumnInfo*>(c));
         }
 
         m_iter_structure = s;
@@ -832,8 +832,8 @@ void BaseIterator::refreshStructure()
     std::vector<BaseIteratorRelInfo>::iterator r_it;
     for (r_it = m_relations.begin(); r_it != m_relations.end(); ++r_it)
     {
-        tango::IIterator* p = r_it->right_iter.p;
-        if (p != NULL && p != ((tango::IIterator*)this))
+        xd::IIterator* p = r_it->right_iter.p;
+        if (p != NULL && p != ((xd::IIterator*)this))
         {
             p->refreshStructure();
         }
@@ -863,8 +863,8 @@ void BaseIterator::refreshStructure()
 
 
 
-bool BaseIterator::modifyStructure(tango::IStructure* struct_config,
-                                   tango::IJob* job)
+bool BaseIterator::modifyStructure(xd::IStructure* struct_config,
+                                   xd::IJob* job)
 { 
     XCM_AUTO_LOCK(m_obj_mutex);
     
@@ -887,7 +887,7 @@ bool BaseIterator::modifyStructure(tango::IStructure* struct_config,
 
 
 void BaseIterator::colinfo2dai(DataAccessInfo* dai,
-                               tango::IColumnInfo* colinfo)
+                               xd::IColumnInfo* colinfo)
 {
     if (dai->result)
     {
@@ -924,7 +924,7 @@ void BaseIterator::colinfo2dai(DataAccessInfo* dai,
     {
         dai->result = new kscript::Value;
 
-        if (dai->type == tango::typeCharacter)
+        if (dai->type == xd::typeCharacter)
         {
             // allocate a place for calculated field results
             // (this is needed for the getRawPtr() function
@@ -933,11 +933,11 @@ void BaseIterator::colinfo2dai(DataAccessInfo* dai,
             dai->result->setType(kscript::Value::typeString);
             dai->result->allocMem(dai->width + 1);
         }
-         else if (dai->type == tango::typeDouble)
+         else if (dai->type == xd::typeDouble)
         {
             dai->raw_buf = new unsigned char[sizeof(double)];
         }
-         else if (dai->type == tango::typeInteger)
+         else if (dai->type == xd::typeInteger)
         {
             dai->raw_buf = new unsigned char[sizeof(int)];
         }
@@ -964,11 +964,11 @@ void BaseIterator::onSetStructureUpdated()
 {
 }
 
-void BaseIterator::onSetRowUpdated(tango::rowid_t rowid)
+void BaseIterator::onSetRowUpdated(xd::rowid_t rowid)
 {
 }
 
-void BaseIterator::onSetRowDeleted(tango::rowid_t rowid)
+void BaseIterator::onSetRowDeleted(xd::rowid_t rowid)
 {
 }
 
@@ -982,7 +982,7 @@ std::wstring BaseIterator::getTable()
     return L"";
 }
 
-tango::rowpos_t BaseIterator::getRowCount()
+xd::rowpos_t BaseIterator::getRowCount()
 {
     return m_set->getRowCount();
 }
@@ -1050,8 +1050,8 @@ public:
             dequote(column, '[', ']');
         }
 
-        tango::IRelationEnumPtr rel_enum;
-        tango::IRelationPtr rel;
+        xd::IRelationEnumPtr rel_enum;
+        xd::IRelationPtr rel;
 
         rel_enum = database->getRelationEnum(path);
         size_t i, rel_count = rel_enum->size();
@@ -1067,7 +1067,7 @@ public:
 
         if (agg_func == GroupFunc_Count)
         {
-            m_expr_type = tango::typeNumeric;
+            m_expr_type = xd::typeNumeric;
             
             // if it's just a count, we're done
             return true;
@@ -1078,11 +1078,11 @@ public:
         if (right_set_internal.isNull())
             return false;
 
-        tango::IStructurePtr s = right_set_internal->getStructure();
+        xd::IStructurePtr s = right_set_internal->getStructure();
         if (s.isNull())
             return false;
 
-        tango::IColumnInfoPtr colinfo = s->getColumnInfo(column);
+        xd::IColumnInfoPtr colinfo = s->getColumnInfo(column);
         if (colinfo.isNull())
             return false;
 
@@ -1096,7 +1096,7 @@ public:
 
     int m_ref_count;
 
-    tango::objhandle_t m_handle;
+    xd::objhandle_t m_handle;
 
     std::wstring m_link_tag;
     std::wstring m_expr;
@@ -1106,10 +1106,10 @@ public:
     std::wstring m_str_result;
     double m_dbl_result;
     bool m_bool_result;
-    tango::datetime_t m_dt_result;
+    xd::datetime_t m_dt_result;
 
     // rowid for which this result is valid
-    tango::rowid_t m_valid_rowid;
+    xd::rowid_t m_valid_rowid;
 };
 
 
@@ -1142,20 +1142,20 @@ public:
 
         switch (m_agg_result->m_expr_type)
         {
-            case tango::typeWideCharacter:
-            case tango::typeCharacter:
+            case xd::typeWideCharacter:
+            case xd::typeCharacter:
                 retval->setString(m_agg_result->m_str_result.c_str());
                 break;
-            case tango::typeNumeric:
-            case tango::typeDouble:
-            case tango::typeInteger:
+            case xd::typeNumeric:
+            case xd::typeDouble:
+            case xd::typeInteger:
                 retval->setDouble(m_agg_result->m_dbl_result);
                 break;
-            case tango::typeBoolean:
+            case xd::typeBoolean:
                 retval->setBoolean(m_agg_result->m_bool_result);
                 break;
-            case tango::typeDate:
-            case tango::typeDateTime:
+            case xd::typeDate:
+            case xd::typeDateTime:
                 retval->setDateTime((unsigned int)(m_agg_result->m_dt_result >> 32),
                                     (unsigned int)(m_agg_result->m_dt_result & 0xffffffff));
                 break;
@@ -1169,17 +1169,17 @@ public:
         switch (m_agg_result->m_expr_type)
         {
             default:
-            case tango::typeInvalid:       return kscript::Value::typeNull;
-            case tango::typeUndefined:     return kscript::Value::typeUndefined;
-            case tango::typeBoolean:       return kscript::Value::typeBoolean;
-            case tango::typeNumeric:       return kscript::Value::typeDouble;
-            case tango::typeInteger:       return kscript::Value::typeInteger;
-            case tango::typeDouble:        return kscript::Value::typeDouble;
-            case tango::typeCharacter:     return kscript::Value::typeString;
-            case tango::typeWideCharacter: return kscript::Value::typeString;
-            case tango::typeDateTime:      return kscript::Value::typeDateTime;
-            case tango::typeDate:          return kscript::Value::typeDateTime;
-            case tango::typeBinary:        return kscript::Value::typeBinary;
+            case xd::typeInvalid:       return kscript::Value::typeNull;
+            case xd::typeUndefined:     return kscript::Value::typeUndefined;
+            case xd::typeBoolean:       return kscript::Value::typeBoolean;
+            case xd::typeNumeric:       return kscript::Value::typeDouble;
+            case xd::typeInteger:       return kscript::Value::typeInteger;
+            case xd::typeDouble:        return kscript::Value::typeDouble;
+            case xd::typeCharacter:     return kscript::Value::typeString;
+            case xd::typeWideCharacter: return kscript::Value::typeString;
+            case xd::typeDateTime:      return kscript::Value::typeDateTime;
+            case xd::typeDate:          return kscript::Value::typeDateTime;
+            case xd::typeBinary:        return kscript::Value::typeBinary;
         }
     }
 };
@@ -1283,7 +1283,7 @@ void BaseIterator::recalcAggResults()
     m_rel_mutex.lock();
     if (m_relenum.isNull())
         m_relenum = m_database->getRelationEnum(getTable());
-    tango::IRelationEnumPtr rel_enum = m_relenum;
+    xd::IRelationEnumPtr rel_enum = m_relenum;
     m_rel_mutex.unlock();
 
     size_t rel_count = rel_enum->size();
@@ -1297,12 +1297,12 @@ void BaseIterator::recalcAggResults()
 
     int r, result_count;
 
-    tango::IRelationPtr rel;
-    tango::IIteratorPtr sp_iter;
-    tango::IIterator* iter;
+    xd::IRelationPtr rel;
+    xd::IIteratorPtr sp_iter;
+    xd::IIterator* iter;
 
     bool only_first;
-    tango::objhandle_t obj_handle;
+    xd::objhandle_t obj_handle;
 
 
 
@@ -1357,20 +1357,20 @@ void BaseIterator::recalcAggResults()
 
                 switch (results[r]->m_expr_type)
                 {
-                    case tango::typeWideCharacter:
-                    case tango::typeCharacter:
+                    case xd::typeWideCharacter:
+                    case xd::typeCharacter:
                         results[r]->m_str_result = iter->getWideString(obj_handle);
                         break;
-                    case tango::typeNumeric:
-                    case tango::typeInteger:
-                    case tango::typeDouble:
+                    case xd::typeNumeric:
+                    case xd::typeInteger:
+                    case xd::typeDouble:
                         results[r]->m_dbl_result = iter->getDouble(obj_handle);
                         break;
-                    case tango::typeBoolean:
+                    case xd::typeBoolean:
                         results[r]->m_bool_result = iter->getBoolean(obj_handle);
                         break;
-                    case tango::typeDate:
-                    case tango::typeDateTime:
+                    case xd::typeDate:
+                    case xd::typeDateTime:
                         results[r]->m_dt_result = iter->getDateTime(obj_handle);
                         break;
                 }
@@ -1404,13 +1404,13 @@ void BaseIterator::recalcAggResults()
                             std::wstring str_result;
                             double dbl_result;
                             bool bool_result;
-                            tango::datetime_t dt_result;
+                            xd::datetime_t dt_result;
                             int agg_func = results[r]->m_agg_func;
 
                             switch (results[r]->m_expr_type)
                             {
-                                case tango::typeWideCharacter:
-                                case tango::typeCharacter:
+                                case xd::typeWideCharacter:
+                                case xd::typeCharacter:
                                     str_result = iter->getWideString(obj_handle);
 
                                     if (first_row ||
@@ -1420,9 +1420,9 @@ void BaseIterator::recalcAggResults()
                                         results[r]->m_str_result = str_result;
                                     }
                                     break;
-                                case tango::typeNumeric:
-                                case tango::typeInteger:
-                                case tango::typeDouble:
+                                case xd::typeNumeric:
+                                case xd::typeInteger:
+                                case xd::typeDouble:
                                     dbl_result = iter->getDouble(obj_handle);
                                     if (first_row ||
                                         (agg_func == GroupFunc_Min && dbl_result < results[r]->m_dbl_result) ||
@@ -1431,7 +1431,7 @@ void BaseIterator::recalcAggResults()
                                         results[r]->m_dbl_result = dbl_result;
                                     }
                                     break;
-                                case tango::typeBoolean:
+                                case xd::typeBoolean:
                                     bool_result = iter->getBoolean(obj_handle);
                                     if (first_row ||
                                         (agg_func == GroupFunc_Min && !bool_result) ||
@@ -1440,8 +1440,8 @@ void BaseIterator::recalcAggResults()
                                         results[r]->m_bool_result = bool_result;
                                     }
                                     break;
-                                case tango::typeDate:
-                                case tango::typeDateTime:
+                                case xd::typeDate:
+                                case xd::typeDateTime:
                                     dt_result = iter->getDateTime(obj_handle);
                                     if (first_row ||
                                         (agg_func == GroupFunc_Min && dt_result < results[r]->m_dt_result) ||
@@ -1461,20 +1461,20 @@ void BaseIterator::recalcAggResults()
                         case GroupFunc_Last:
                             switch (results[r]->m_expr_type)
                             {
-                                case tango::typeWideCharacter:
-                                case tango::typeCharacter:
+                                case xd::typeWideCharacter:
+                                case xd::typeCharacter:
                                     results[r]->m_str_result = iter->getWideString(obj_handle);
                                     break;
-                                case tango::typeNumeric:
-                                case tango::typeInteger:
-                                case tango::typeDouble:
+                                case xd::typeNumeric:
+                                case xd::typeInteger:
+                                case xd::typeDouble:
                                     results[r]->m_dbl_result = iter->getDouble(obj_handle);
                                     break;
-                                case tango::typeBoolean:
+                                case xd::typeBoolean:
                                     results[r]->m_bool_result = iter->getBoolean(obj_handle);
                                     break;
-                                case tango::typeDate:
-                                case tango::typeDateTime:
+                                case xd::typeDate:
+                                case xd::typeDateTime:
                                     results[r]->m_dt_result = iter->getDateTime(obj_handle);
                                     break;
                             }
@@ -1666,7 +1666,7 @@ static void _bindFieldDouble(kscript::ExprEnv*,
         return;
     }
 
-    retval->setDouble(dai->it->getDouble((tango::objhandle_t)dai));
+    retval->setDouble(dai->it->getDouble((xd::objhandle_t)dai));
     retval->setScale(dai->scale);
 }
 
@@ -1681,7 +1681,7 @@ static void _bindFieldInteger(kscript::ExprEnv*,
         return;
     }
 
-    retval->setInteger(dai->it->getInteger((tango::objhandle_t)dai));
+    retval->setInteger(dai->it->getInteger((xd::objhandle_t)dai));
 }
 
 static void _bindFieldDateTime(kscript::ExprEnv*,
@@ -1695,12 +1695,12 @@ static void _bindFieldDateTime(kscript::ExprEnv*,
         return;
     }
 
-    tango::datetime_t dt, d, t;
-    dt = dai->it->getDateTime((tango::objhandle_t)dai);
+    xd::datetime_t dt, d, t;
+    dt = dai->it->getDateTime((xd::objhandle_t)dai);
     d = dt >> 32;
     t = dt & 0xffffffff;
     retval->setDateTime((unsigned int)d, (unsigned int)t);
-    retval->setDataLen((dai->type == tango::typeDateTime) ? 8 : 4);
+    retval->setDataLen((dai->type == xd::typeDateTime) ? 8 : 4);
 }
 
 static void _bindFieldBoolean(kscript::ExprEnv*,
@@ -1714,7 +1714,7 @@ static void _bindFieldBoolean(kscript::ExprEnv*,
         return;
     }
 
-    retval->setBoolean(dai->it->getBoolean((tango::objhandle_t)dai));
+    retval->setBoolean(dai->it->getBoolean((xd::objhandle_t)dai));
 }
 
 
@@ -1731,7 +1731,7 @@ void func_recno(kscript::ExprEnv* env,
                 kscript::Value* retval)
 {
     BaseIterator* it = (BaseIterator*)param;
-    tango::rowpos_t rowpos = rowidGetRowPos(it->m_rowid);
+    xd::rowpos_t rowpos = rowidGetRowPos(it->m_rowid);
     retval->setDouble((double)(long long)rowpos);
 }
 
@@ -1740,8 +1740,8 @@ void func_recid(kscript::ExprEnv* env,
                 kscript::Value* retval)
 {
     BaseIterator* it = (BaseIterator*)param;
-    tango::tableord_t ordinal = rowidGetTableOrd(it->m_rowid);
-    tango::rowpos_t rowpos = rowidGetRowPos(it->m_rowid);
+    xd::tableord_t ordinal = rowidGetTableOrd(it->m_rowid);
+    xd::rowpos_t rowpos = rowidGetRowPos(it->m_rowid);
     unsigned int hrowpos = (unsigned int)(rowpos >> 32);
     unsigned int lrowpos = (unsigned int)(rowpos & 0xffffffff);
     wchar_t buf[32];
@@ -1852,7 +1852,7 @@ bool BaseIterator::base_iterator_parse_hook(kscript::ExprParseHookInfo& hook_inf
             }
         }
             
-        tango::IColumnInfoPtr colinfo;
+        xd::IColumnInfoPtr colinfo;
         colinfo = iter->m_set_structure->getColumnInfo(hook_info.expr_text);
         if (colinfo.isNull())
         {
@@ -1870,7 +1870,7 @@ bool BaseIterator::base_iterator_parse_hook(kscript::ExprParseHookInfo& hook_inf
         if (colinfo.isNull())
             return false;
         
-        if (colinfo->getType() == tango::typeNumeric || colinfo->getType() == tango::typeDouble)
+        if (colinfo->getType() == xd::typeNumeric || colinfo->getType() == xd::typeDouble)
         {
             bind_param->max_scale = std::max(bind_param->max_scale, colinfo->getScale());
             if (bind_param->max_scale > 10)
@@ -1913,7 +1913,7 @@ bool BaseIterator::base_iterator_parse_hook(kscript::ExprParseHookInfo& hook_inf
 
         switch (dai->type)
         {
-            case tango::typeWideCharacter:
+            case xd::typeWideCharacter:
                 if (dai->expr_text.length() == 0)
                 {
                     val->setGetVal(kscript::Value::typeString,
@@ -1928,7 +1928,7 @@ bool BaseIterator::base_iterator_parse_hook(kscript::ExprParseHookInfo& hook_inf
                 }
                 break;
 
-            case tango::typeCharacter:
+            case xd::typeCharacter:
                 if (dai->expr_text.length() == 0)
                 {
                     val->setGetVal(kscript::Value::typeString,
@@ -1943,27 +1943,27 @@ bool BaseIterator::base_iterator_parse_hook(kscript::ExprParseHookInfo& hook_inf
                 }
                 break;
 
-            case tango::typeNumeric:
-            case tango::typeDouble:
+            case xd::typeNumeric:
+            case xd::typeDouble:
                 val->setGetVal(kscript::Value::typeDouble,
                    _bindFieldDouble,
                    (void*)dai);
                 break;
 
-            case tango::typeInteger:
+            case xd::typeInteger:
                 val->setGetVal(kscript::Value::typeInteger,
                    _bindFieldInteger,
                    (void*)dai);
                 break;
 
-            case tango::typeDate:
-            case tango::typeDateTime:
+            case xd::typeDate:
+            case xd::typeDateTime:
                 val->setGetVal(kscript::Value::typeDateTime,
                    _bindFieldDateTime,
                    (void*)dai);
                 break;
 
-            case tango::typeBoolean:
+            case xd::typeBoolean:
                 val->setGetVal(kscript::Value::typeBoolean,
                    _bindFieldBoolean,
                    (void*)dai);
@@ -1994,7 +1994,7 @@ void BaseIterator::bindExprParser(kscript::ExprParser* parser,
 
 
 
-tango::IColumnInfoPtr BaseIterator::getInfo(tango::objhandle_t data_handle)
+xd::IColumnInfoPtr BaseIterator::getInfo(xd::objhandle_t data_handle)
 {
     DataAccessInfo* dai = (DataAccessInfo*)data_handle;
 
@@ -2011,11 +2011,11 @@ tango::IColumnInfoPtr BaseIterator::getInfo(tango::objhandle_t data_handle)
     colinfo->setExpression(dai->expr_text);
     colinfo->setCalculated(dai->expr_text.length() > 0 ? true : false);
 
-    return static_cast<tango::IColumnInfo*>(colinfo);
+    return static_cast<xd::IColumnInfo*>(colinfo);
 }
 
 
-tango::objhandle_t BaseIterator::getHandle(const std::wstring& expr)
+xd::objhandle_t BaseIterator::getHandle(const std::wstring& expr)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
@@ -2027,7 +2027,7 @@ tango::objhandle_t BaseIterator::getHandle(const std::wstring& expr)
     dai = lookupDAI(expr);
     if (dai)
     {
-        return (tango::objhandle_t)dai;
+        return (xd::objhandle_t)dai;
     }
 
 
@@ -2045,7 +2045,7 @@ tango::objhandle_t BaseIterator::getHandle(const std::wstring& expr)
         dai->expr_text = expr;
         dai->scale = 0;
 
-        if (!dai->key_layout->setKeyExpr(static_cast<tango::IIterator*>(this),
+        if (!dai->key_layout->setKeyExpr(static_cast<xd::IIterator*>(this),
                                     expr.substr(4),
                                     false))
         {
@@ -2053,7 +2053,7 @@ tango::objhandle_t BaseIterator::getHandle(const std::wstring& expr)
             return 0;
         }
 
-        return (tango::objhandle_t)dai;
+        return (xd::objhandle_t)dai;
     }
 
 
@@ -2062,9 +2062,9 @@ tango::objhandle_t BaseIterator::getHandle(const std::wstring& expr)
 
 
     // try calc fields 
-    tango::IColumnInfoPtr colinfo;
+    xd::IColumnInfoPtr colinfo;
 
-    std::vector<tango::IColumnInfoPtr>::iterator cit;
+    std::vector<xd::IColumnInfoPtr>::iterator cit;
     for (cit = m_calc_fields.begin(); cit != m_calc_fields.end(); ++cit)
     {
         if (!wcscasecmp((*cit)->getName().c_str(), expr.c_str()))
@@ -2097,7 +2097,7 @@ tango::objhandle_t BaseIterator::getHandle(const std::wstring& expr)
 
         colinfo2dai(dai, colinfo.p);
 
-        return (tango::objhandle_t)dai;
+        return (xd::objhandle_t)dai;
     }
 
     // couldn't find it in the structure, so try to parse it as an expr
@@ -2122,15 +2122,15 @@ tango::objhandle_t BaseIterator::getHandle(const std::wstring& expr)
     }
 
     dai->type = kscript2tangoType(dai->expr->getType());
-    return (tango::objhandle_t)dai;
+    return (xd::objhandle_t)dai;
 }
 
-int BaseIterator::getType(tango::objhandle_t data_handle)
+int BaseIterator::getType(xd::objhandle_t data_handle)
 {
     DataAccessInfo* dai = (DataAccessInfo*)data_handle;
     if (dai == NULL)
     {
-        return tango::typeInvalid;
+        return xd::typeInvalid;
     }
     if (dai->expr == NULL)
     {
@@ -2140,7 +2140,7 @@ int BaseIterator::getType(tango::objhandle_t data_handle)
     return kscript2tangoType(dai->expr->getType());
 }
 
-bool BaseIterator::releaseHandle(tango::objhandle_t data_handle)
+bool BaseIterator::releaseHandle(xd::objhandle_t data_handle)
 {
     if (data_handle == 0)
         return false;
@@ -2197,7 +2197,7 @@ int BaseIterator::getRowBufferWidth()
 
 
 
-const unsigned char* BaseIterator::getRawPtr(tango::objhandle_t column_handle)
+const unsigned char* BaseIterator::getRawPtr(xd::objhandle_t column_handle)
 {
     DataAccessInfo* dai = (DataAccessInfo*)column_handle;
 
@@ -2221,7 +2221,7 @@ const unsigned char* BaseIterator::getRawPtr(tango::objhandle_t column_handle)
 
     int expr_type = dai->expr->getType();
 
-    if (dai->type == tango::typeDouble)
+    if (dai->type == xd::typeDouble)
     {
         if (expr_type == kscript::Value::typeDouble ||
             expr_type == kscript::Value::typeInteger)
@@ -2233,7 +2233,7 @@ const unsigned char* BaseIterator::getRawPtr(tango::objhandle_t column_handle)
 
         return NULL;
     }
-     else if (dai->type == tango::typeInteger)
+     else if (dai->type == xd::typeInteger)
     {
         if (expr_type == kscript::Value::typeDouble ||
             expr_type == kscript::Value::typeInteger)
@@ -2253,7 +2253,7 @@ const unsigned char* BaseIterator::getRawPtr(tango::objhandle_t column_handle)
     return NULL;
 }
 
-int BaseIterator::getRawWidth(tango::objhandle_t column_handle)
+int BaseIterator::getRawWidth(xd::objhandle_t column_handle)
 {
     DataAccessInfo* dai = (DataAccessInfo*)column_handle;
 
@@ -2269,7 +2269,7 @@ int BaseIterator::getRawWidth(tango::objhandle_t column_handle)
     return dai->result->getDataLen();
 }
 
-const std::string& BaseIterator::getString(tango::objhandle_t column_handle)
+const std::string& BaseIterator::getString(xd::objhandle_t column_handle)
 {
     DataAccessInfo* dai = (DataAccessInfo*)column_handle;
 
@@ -2281,7 +2281,7 @@ const std::string& BaseIterator::getString(tango::objhandle_t column_handle)
         if (!m_rowptr)
             return empty_string;
 
-        if (dai->type == tango::typeCharacter)
+        if (dai->type == xd::typeCharacter)
         {
             // return field data
             const char* ptr = (char*)(m_rowptr + dai->offset);
@@ -2299,7 +2299,7 @@ const std::string& BaseIterator::getString(tango::objhandle_t column_handle)
 
             return dai->str_result;
         }
-         else if (dai->type == tango::typeWideCharacter)
+         else if (dai->type == xd::typeWideCharacter)
         {
             kl::ucsle2string(dai->str_result,
                              m_rowptr + dai->offset,
@@ -2348,7 +2348,7 @@ const std::string& BaseIterator::getString(tango::objhandle_t column_handle)
     return dai->str_result;
 }
 
-const std::wstring& BaseIterator::getWideString(tango::objhandle_t column_handle)
+const std::wstring& BaseIterator::getWideString(xd::objhandle_t column_handle)
 {
     DataAccessInfo* dai = (DataAccessInfo*)column_handle;
 
@@ -2363,14 +2363,14 @@ const std::wstring& BaseIterator::getWideString(tango::objhandle_t column_handle
             return empty_wstring;
 
         // return field data
-        if (dai->type == tango::typeWideCharacter)
+        if (dai->type == xd::typeWideCharacter)
         {
             kl::ucsle2wstring(dai->wstr_result,
                               m_rowptr + dai->offset,
                               dai->width);
             return dai->wstr_result;
         }
-         else if (dai->type == tango::typeCharacter)
+         else if (dai->type == xd::typeCharacter)
         {
             const char* ptr = (char*)(m_rowptr + dai->offset);
             int width = dai->width;
@@ -2414,7 +2414,7 @@ const std::wstring& BaseIterator::getWideString(tango::objhandle_t column_handle
     return dai->wstr_result;
 }
 
-tango::datetime_t BaseIterator::getDateTime(tango::objhandle_t column_handle)
+xd::datetime_t BaseIterator::getDateTime(xd::objhandle_t column_handle)
 {
     DataAccessInfo* dai = (DataAccessInfo*)column_handle;
 
@@ -2428,18 +2428,18 @@ tango::datetime_t BaseIterator::getDateTime(tango::objhandle_t column_handle)
         if (!m_rowptr)
             return 0;
 
-        if (dai->type == tango::typeDate)
+        if (dai->type == xd::typeDate)
         {
-            tango::datetime_t dt = buf2int(m_rowptr+dai->offset);
+            xd::datetime_t dt = buf2int(m_rowptr+dai->offset);
             dt <<= 32;
 
             return dt;
         }
         
-        if (dai->type == tango::typeDateTime)
+        if (dai->type == xd::typeDateTime)
         {
-            tango::datetime_t dt = buf2int(m_rowptr+dai->offset);
-            tango::datetime_t ts = buf2int(m_rowptr+dai->offset+4);
+            xd::datetime_t dt = buf2int(m_rowptr+dai->offset);
+            xd::datetime_t ts = buf2int(m_rowptr+dai->offset+4);
 
             dt <<= 32;
             dt |= ts;
@@ -2457,31 +2457,31 @@ tango::datetime_t BaseIterator::getDateTime(tango::objhandle_t column_handle)
     }
 
     kscript::ExprDateTime edt = dai->result->getDateTime();
-    tango::datetime_t dt;
+    xd::datetime_t dt;
     dt = edt.date;
     dt <<= 32;
     
-    if (dai->type == tango::typeDateTime)
+    if (dai->type == xd::typeDateTime)
         dt |= edt.time;
 
     return dt;
 }
 
 
-double BaseIterator::getDouble(tango::objhandle_t column_handle)
+double BaseIterator::getDouble(xd::objhandle_t column_handle)
 {
     DataAccessInfo* dai = (DataAccessInfo*)column_handle;
 
     if (!dai->is_active)
         return 0.0;
 
-    if (dai->type == tango::typeInteger)
+    if (dai->type == xd::typeInteger)
     {
         // implicit conversion from integer -> double
         return getInteger(column_handle);
     }
-     else if (dai->type == tango::typeCharacter ||
-              dai->type == tango::typeWideCharacter)
+     else if (dai->type == xd::typeCharacter ||
+              dai->type == xd::typeWideCharacter)
     {
         return kl::nolocale_atof(getString(column_handle).c_str());
     }
@@ -2491,13 +2491,13 @@ double BaseIterator::getDouble(tango::objhandle_t column_handle)
         if (!m_rowptr)
             return 0.0;
 
-        if (dai->type == tango::typeNumeric)
+        if (dai->type == xd::typeNumeric)
         {
             return kl::dblround(
                     decstr2dbl((char*)m_rowptr + dai->offset, dai->width, dai->scale),
                     dai->scale);
         }
-         else if (dai->type == tango::typeDouble)
+         else if (dai->type == xd::typeDouble)
         {
             // FIXME: this will only work on little-endian (intel) processors
             double d;
@@ -2530,7 +2530,7 @@ double BaseIterator::getDouble(tango::objhandle_t column_handle)
         return kl::dblround(d, dai->scale);
 }
 
-bool BaseIterator::getBoolean(tango::objhandle_t column_handle)
+bool BaseIterator::getBoolean(xd::objhandle_t column_handle)
 {
     DataAccessInfo* dai = (DataAccessInfo*)column_handle;
 
@@ -2555,21 +2555,21 @@ bool BaseIterator::getBoolean(tango::objhandle_t column_handle)
 }
 
 
-int BaseIterator::getInteger(tango::objhandle_t column_handle)
+int BaseIterator::getInteger(xd::objhandle_t column_handle)
 {
     DataAccessInfo* dai = (DataAccessInfo*)column_handle;
 
     if (!dai->is_active)
         return 0;
 
-    if (dai->type == tango::typeDouble || dai->type == tango::typeNumeric)
+    if (dai->type == xd::typeDouble || dai->type == xd::typeNumeric)
     {
         // implicit conversion from numeric/double -> integer
         double d = getDouble(column_handle);
         return (int)kl::dblround(d, 0);
     }
-     else if (dai->type == tango::typeCharacter ||
-              dai->type == tango::typeWideCharacter)
+     else if (dai->type == xd::typeCharacter ||
+              dai->type == xd::typeWideCharacter)
     {
         return atoi(getString(column_handle).c_str());
     }
@@ -2601,7 +2601,7 @@ int BaseIterator::getInteger(tango::objhandle_t column_handle)
 }
 
 
-bool BaseIterator::isNull(tango::objhandle_t column_handle)
+bool BaseIterator::isNull(xd::objhandle_t column_handle)
 {
     DataAccessInfo* dai = (DataAccessInfo*)column_handle;
 
@@ -2648,7 +2648,7 @@ bool BaseIterator::putRowBuffer(const unsigned char* value, int length)
 }
 
 
-bool BaseIterator::putString(tango::objhandle_t column_handle,
+bool BaseIterator::putString(xd::objhandle_t column_handle,
                              const std::string& value)
 {
     DataAccessInfo* dai = (DataAccessInfo*)column_handle;
@@ -2656,7 +2656,7 @@ bool BaseIterator::putString(tango::objhandle_t column_handle,
         return false;
 
     // set data
-    if (dai->type == tango::typeCharacter)
+    if (dai->type == xd::typeCharacter)
     {
         memset(m_rowptr + dai->offset, 0, dai->width);
 
@@ -2666,7 +2666,7 @@ bool BaseIterator::putString(tango::objhandle_t column_handle,
 
         memcpy(m_rowptr + dai->offset, value.c_str(), write_len);
     }
-     else if (dai->type == tango::typeWideCharacter)
+     else if (dai->type == xd::typeWideCharacter)
     {
         kl::string2ucsle(m_rowptr + dai->offset, value, dai->width);
     }
@@ -2688,7 +2688,7 @@ bool BaseIterator::putString(tango::objhandle_t column_handle,
     return true;
 }
 
-bool BaseIterator::putWideString(tango::objhandle_t column_handle,
+bool BaseIterator::putWideString(xd::objhandle_t column_handle,
                                  const std::wstring& value)
 {
     DataAccessInfo* dai = (DataAccessInfo*)column_handle;
@@ -2696,11 +2696,11 @@ bool BaseIterator::putWideString(tango::objhandle_t column_handle,
         return false;
 
     // set data
-    if (dai->type == tango::typeWideCharacter)
+    if (dai->type == xd::typeWideCharacter)
     {
         kl::wstring2ucsle(m_rowptr + dai->offset, value, dai->width);
     }
-     else if (dai->type == tango::typeCharacter)
+     else if (dai->type == xd::typeCharacter)
     {
         memset(m_rowptr + dai->offset, 0, dai->width);
 
@@ -2730,21 +2730,21 @@ bool BaseIterator::putWideString(tango::objhandle_t column_handle,
     return true;
 }
 
-bool BaseIterator::putDateTime(tango::objhandle_t column_handle,
-                               tango::datetime_t value)
+bool BaseIterator::putDateTime(xd::objhandle_t column_handle,
+                               xd::datetime_t value)
 {
     DataAccessInfo* dai = (DataAccessInfo*)column_handle;
     if (dai->expr != NULL || !dai->is_active || !m_rowptr)
         return false;
 
     // set data
-    if (dai->type == tango::typeDate)
+    if (dai->type == xd::typeDate)
     {
         unsigned int julian_day = (unsigned int)(value >> 32);
 
         int2buf(m_rowptr+dai->offset, julian_day);
     }
-     else if (dai->type == tango::typeDateTime)
+     else if (dai->type == xd::typeDateTime)
     {
         unsigned int julian_day = (unsigned int)(value >> 32);
         unsigned int time_stamp = (unsigned int)(value & 0xffffffff);
@@ -2771,7 +2771,7 @@ bool BaseIterator::putDateTime(tango::objhandle_t column_handle,
 }
 
 
-bool BaseIterator::putDouble(tango::objhandle_t column_handle,
+bool BaseIterator::putDouble(xd::objhandle_t column_handle,
                              double value)
 {
     DataAccessInfo* dai = (DataAccessInfo*)column_handle;
@@ -2781,19 +2781,19 @@ bool BaseIterator::putDouble(tango::objhandle_t column_handle,
     if (dai->width < 1)
         return false;
 
-    if (dai->type == tango::typeNumeric)
+    if (dai->type == xd::typeNumeric)
     {
         dbl2decstr((char*)m_rowptr + dai->offset,
                    value,
                    dai->width,
                    dai->scale);
     }
-     else if (dai->type == tango::typeDouble)
+     else if (dai->type == xd::typeDouble)
     {
         // FIXME: this will only work on little-endian (intel) processors
         memcpy(m_rowptr + dai->offset, &value, sizeof(double));
     }
-     else if (dai->type == tango::typeInteger)
+     else if (dai->type == xd::typeInteger)
     {
         int2buf(m_rowptr + dai->offset, (int)value);
     }
@@ -2816,14 +2816,14 @@ bool BaseIterator::putDouble(tango::objhandle_t column_handle,
 }
 
 
-bool BaseIterator::putInteger(tango::objhandle_t column_handle,
+bool BaseIterator::putInteger(xd::objhandle_t column_handle,
                               int value)
 {
     DataAccessInfo* dai = (DataAccessInfo*)column_handle;
     if (dai->expr != NULL || !dai->is_active || !m_rowptr)
         return false;
 
-    if (dai->type == tango::typeInteger)
+    if (dai->type == xd::typeInteger)
     {
         // set data --
         unsigned char* ptr = m_rowptr+dai->offset;
@@ -2833,14 +2833,14 @@ bool BaseIterator::putInteger(tango::objhandle_t column_handle,
         *(ptr+2) = (v >> 16) & 0xff;
         *(ptr+3) = (v >> 24) & 0xff;
     }
-     else if (dai->type == tango::typeNumeric)
+     else if (dai->type == xd::typeNumeric)
     {
         dbl2decstr((char*)m_rowptr + dai->offset,
                    value,
                    dai->width,
                    dai->scale);
     }
-     else if (dai->type == tango::typeDouble)
+     else if (dai->type == xd::typeDouble)
     {
         // FIXME: this will only work on little-endian (intel) processors
         double d = value;
@@ -2860,7 +2860,7 @@ bool BaseIterator::putInteger(tango::objhandle_t column_handle,
     return true;
 }
 
-bool BaseIterator::putBoolean(tango::objhandle_t column_handle, bool value)
+bool BaseIterator::putBoolean(xd::objhandle_t column_handle, bool value)
 {
     DataAccessInfo* dai = (DataAccessInfo*)column_handle;
     if (dai->expr != NULL || !dai->is_active || !m_rowptr)
@@ -2883,7 +2883,7 @@ bool BaseIterator::putBoolean(tango::objhandle_t column_handle, bool value)
 }
 
 
-bool BaseIterator::putNull(tango::objhandle_t column_handle)
+bool BaseIterator::putNull(xd::objhandle_t column_handle)
 {
     DataAccessInfo* dai = (DataAccessInfo*)column_handle;
     if (dai->expr != NULL || !dai->is_active || !m_rowptr)
@@ -2906,8 +2906,8 @@ void BaseIterator::flushRow()
     if (!m_row_dirty)
         return;
 
-    tango::tableord_t table_ord = rowidGetTableOrd(m_rowid);
-    tango::rowpos_t row_pos = rowidGetRowPos(m_rowid);
+    xd::tableord_t table_ord = rowidGetTableOrd(m_rowid);
+    xd::rowpos_t row_pos = rowidGetRowPos(m_rowid);
     BaseIteratorTableEntry* te = NULL;
 
     std::vector<BaseIteratorTableEntry>::iterator it;

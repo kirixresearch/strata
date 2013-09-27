@@ -52,7 +52,7 @@ struct FixedLengthTextDataAccessInfo
         src_encoding = 0;
         
         name = L"";
-        type = tango::typeUndefined;
+        type = xd::typeUndefined;
         width = 0;
         scale = 0;
         ordinal = 0;
@@ -87,7 +87,7 @@ friend class FixedLengthTextSet;
 
     XCM_CLASS_NAME("xdfs.FixedLengthTextIterator")
     XCM_BEGIN_INTERFACE_MAP(FixedLengthTextIterator)
-        XCM_INTERFACE_ENTRY(tango::IIterator)
+        XCM_INTERFACE_ENTRY(xd::IIterator)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -95,7 +95,7 @@ public:
     FixedLengthTextIterator();
     ~FixedLengthTextIterator();
 
-    bool init(tango::IDatabasePtr db,
+    bool init(xd::IDatabasePtr db,
               FixedLengthTextSet* set,
               const std::wstring& columns);
 
@@ -103,42 +103,42 @@ public:
 
     void setTable(const std::wstring& tbl);
     std::wstring getTable();
-    tango::rowpos_t getRowCount();
-    tango::IDatabasePtr getDatabase();
-    tango::IIteratorPtr clone();
+    xd::rowpos_t getRowCount();
+    xd::IDatabasePtr getDatabase();
+    xd::IIteratorPtr clone();
 
     unsigned int getIteratorFlags();
 
     void skip(int delta);
     void goFirst();
     void goLast();
-    tango::rowid_t getRowId();
+    xd::rowid_t getRowId();
     bool bof();
     bool eof();
     bool seek(const unsigned char* key, int length, bool soft);
     bool seekValues(const wchar_t* arr[], size_t arr_size, bool soft);
     bool setPos(double pct);
     double getPos();
-    void goRow(const tango::rowid_t& rowid);
+    void goRow(const xd::rowid_t& rowid);
 
-    tango::IStructurePtr getStructure();
+    xd::IStructurePtr getStructure();
     void refreshStructure();
-    bool modifyStructure(tango::IStructure* struct_config, tango::IJob* job);
+    bool modifyStructure(xd::IStructure* struct_config, xd::IJob* job);
 
-    tango::objhandle_t getHandle(const std::wstring& expr);
-    tango::IColumnInfoPtr getInfo(tango::objhandle_t data_handle);
-    int getType(tango::objhandle_t data_handle);
-    bool releaseHandle(tango::objhandle_t data_handle);
+    xd::objhandle_t getHandle(const std::wstring& expr);
+    xd::IColumnInfoPtr getInfo(xd::objhandle_t data_handle);
+    int getType(xd::objhandle_t data_handle);
+    bool releaseHandle(xd::objhandle_t data_handle);
 
-    const unsigned char* getRawPtr(tango::objhandle_t data_handle);
-    int getRawWidth(tango::objhandle_t data_handle);
-    const std::string& getString(tango::objhandle_t data_handle);
-    const std::wstring& getWideString(tango::objhandle_t data_handle);
-    tango::datetime_t getDateTime(tango::objhandle_t data_handle);
-    double getDouble(tango::objhandle_t data_handle);
-    int getInteger(tango::objhandle_t data_handle);
-    bool getBoolean(tango::objhandle_t data_handle);
-    bool isNull(tango::objhandle_t data_handle);
+    const unsigned char* getRawPtr(xd::objhandle_t data_handle);
+    int getRawWidth(xd::objhandle_t data_handle);
+    const std::string& getString(xd::objhandle_t data_handle);
+    const std::wstring& getWideString(xd::objhandle_t data_handle);
+    xd::datetime_t getDateTime(xd::objhandle_t data_handle);
+    double getDouble(xd::objhandle_t data_handle);
+    int getInteger(xd::objhandle_t data_handle);
+    bool getBoolean(xd::objhandle_t data_handle);
+    bool isNull(xd::objhandle_t data_handle);
     
     void updateDaiEntry(FixedLengthTextDataAccessInfo* dai);
 
@@ -161,11 +161,11 @@ private:
 
     // override from the CommonBaseIterator.  This function
     // gets the field names used in the expression parser
-    virtual tango::IStructurePtr getParserStructure();
+    virtual xd::IStructurePtr getParserStructure();
 
 private:
 
-    tango::IDatabasePtr m_database;
+    xd::IDatabasePtr m_database;
     FixedLengthTextSet* m_set;
 
     std::wstring m_columns_string;
@@ -182,7 +182,7 @@ private:
     int m_file_type;                // fixed or line-delimited (see fixedlengthtextset.h)
     std::wstring m_line_delimiters; // character array containing one or more delimiters
     
-    tango::rowpos_t m_cur_row;      // the current row that we're on
+    xd::rowpos_t m_cur_row;      // the current row that we're on
     xf_off_t m_cur_row_offset;      // offset where the current row begins
     size_t m_cur_row_length;        // length of the current row
     size_t m_row_width;             // user-specified width of each row

@@ -202,7 +202,7 @@ public:
 private:
 
     wxString m_name;
-    tango::objhandle_t m_handle;
+    xd::objhandle_t m_handle;
     int m_tango_type;
     int m_type;
     int m_width;
@@ -260,7 +260,7 @@ private:
     std::vector<wxString> m_group_columns;
     std::vector<ModelGroupCache> m_cache;
 
-    tango::objhandle_t m_handle;
+    xd::objhandle_t m_handle;
 };
 
 
@@ -329,7 +329,7 @@ public:
 
     bool getColumnInfo(const wxString& col_name, int* idx, int* type, int* width, int* scale) const;
     wxString getString(int col_idx, int function);
-    tango::DateTime getDateTime(int col_idx, int function);
+    xd::DateTime getDateTime(int col_idx, int function);
     double getDouble(int col_idx, int function);
     int getInteger(int col_idx, int function);
     bool getBoolean(int col_idx, int function);
@@ -354,7 +354,7 @@ private:
 
 private:
 
-    void setIterator(tango::IIterator* it);
+    void setIterator(xd::IIterator* it);
     bool gotoRow(int row);
     void clear();
     void refresh();
@@ -374,7 +374,7 @@ private:
 
     // query and iterator
     wxString m_query;
-    tango::IIterator* m_iter;
+    xd::IIterator* m_iter;
 
     // current group and row position
     wxString m_group_label;

@@ -89,7 +89,7 @@ bool KpgIterator::init(const std::wstring& path)
     int off = 0;
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr colinfo = m_structure->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr colinfo = m_structure->getColumnInfoByIdx(i);
 
         KpgDataAccessInfo* field = new KpgDataAccessInfo;
         field->name = colinfo->getName();
@@ -101,22 +101,22 @@ bool KpgIterator::init(const std::wstring& path)
         switch (field->type)
         {
             default:
-            case tango::typeCharacter:
+            case xd::typeCharacter:
                 field->buf_width = field->width;
                 break;
-            case tango::typeWideCharacter:
+            case xd::typeWideCharacter:
                 field->buf_width = field->width * 2;
                 break;
-            case tango::typeDouble:
+            case xd::typeDouble:
                 field->buf_width = 8;
                 break;
-            case tango::typeDate:
+            case xd::typeDate:
                 field->buf_width = 4;
                 break;
-            case tango::typeDateTime:
+            case xd::typeDateTime:
                 field->buf_width = 8;
                 break;
-            case tango::typeBoolean:
+            case xd::typeBoolean:
                 field->buf_width = 1;
                 break;
         }
@@ -147,17 +147,17 @@ std::wstring KpgIterator::getTable()
     return m_path;
 }
 
-tango::rowpos_t KpgIterator::getRowCount()
+xd::rowpos_t KpgIterator::getRowCount()
 {
     return 0;
 }
 
-tango::IDatabasePtr KpgIterator::getDatabase()
+xd::IDatabasePtr KpgIterator::getDatabase()
 {
-    return static_cast<tango::IDatabase*>(m_database);
+    return static_cast<xd::IDatabase*>(m_database);
 }
 
-tango::IIteratorPtr KpgIterator::clone()
+xd::IIteratorPtr KpgIterator::clone()
 {
     KpgIterator* iter = new KpgIterator(m_database);
     if (!iter->init(m_path))
@@ -175,7 +175,7 @@ tango::IIteratorPtr KpgIterator::clone()
     iter->m_data = (unsigned char*)iter->m_reader->loadBlockAtOffset(iter->m_block_offsets[iter->m_cur_block], &iter->m_data_len);
     iter->m_row = iter->m_data + (m_row - m_data);
 
-    return static_cast<tango::IIterator*>(iter);
+    return static_cast<xd::IIterator*>(iter);
 }
 
 
@@ -259,7 +259,7 @@ void KpgIterator::goLast()
 {
 }
 
-tango::rowid_t KpgIterator::getRowId()
+xd::rowid_t KpgIterator::getRowId()
 {
     return m_row_pos;
 }
@@ -289,7 +289,7 @@ bool KpgIterator::setPos(double pct)
     return false;
 }
 
-void KpgIterator::goRow(const tango::rowid_t& rowid)
+void KpgIterator::goRow(const xd::rowid_t& rowid)
 {
 }
 
@@ -298,7 +298,7 @@ double KpgIterator::getPos()
     return (double)(long long)m_row_pos;
 }
 
-tango::IStructurePtr KpgIterator::getStructure()
+xd::IStructurePtr KpgIterator::getStructure()
 {
     return m_structure->clone();
 }
@@ -307,21 +307,21 @@ void KpgIterator::refreshStructure()
 {
 }
 
-bool KpgIterator::modifyStructure(tango::IStructure* struct_config,
-                                   tango::IJob* job)
+bool KpgIterator::modifyStructure(xd::IStructure* struct_config,
+                                   xd::IJob* job)
 {
     return false;
 }
 
 
 
-tango::objhandle_t KpgIterator::getHandle(const std::wstring& expr)
+xd::objhandle_t KpgIterator::getHandle(const std::wstring& expr)
 {
     std::vector<KpgDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
         if (kl::iequals((*it)->name, expr))
-            return (tango::objhandle_t)(*it);
+            return (xd::objhandle_t)(*it);
     }
 
     // test for binary keys
@@ -330,10 +330,10 @@ tango::objhandle_t KpgIterator::getHandle(const std::wstring& expr)
         KpgDataAccessInfo* dai = new KpgDataAccessInfo;
         dai->expr = NULL;
         dai->expr_text = expr;
-        dai->type = tango::typeBinary;
+        dai->type = xd::typeBinary;
         dai->key_layout = new KeyLayout;
 
-        if (!dai->key_layout->setKeyExpr(static_cast<tango::IIterator*>(this),
+        if (!dai->key_layout->setKeyExpr(static_cast<xd::IIterator*>(this),
                                     expr.substr(4),
                                     false))
         {
@@ -342,14 +342,14 @@ tango::objhandle_t KpgIterator::getHandle(const std::wstring& expr)
         }
         
         m_exprs.push_back(dai);
-        return (tango::objhandle_t)dai;
+        return (xd::objhandle_t)dai;
     }
     
     
     kscript::ExprParser* parser = parse(expr);
     if (!parser)
     {
-        return (tango::objhandle_t)0;
+        return (xd::objhandle_t)0;
     }
 
     KpgDataAccessInfo* dai = new KpgDataAccessInfo;
@@ -358,15 +358,15 @@ tango::objhandle_t KpgIterator::getHandle(const std::wstring& expr)
     dai->type = kscript2tangoType(parser->getType());
     m_exprs.push_back(dai);
 
-    return (tango::objhandle_t)dai;
+    return (xd::objhandle_t)dai;
 }
 
-bool KpgIterator::releaseHandle(tango::objhandle_t data_handle)
+bool KpgIterator::releaseHandle(xd::objhandle_t data_handle)
 {
     std::vector<KpgDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        if ((tango::objhandle_t)(*it) == data_handle)
+        if ((xd::objhandle_t)(*it) == data_handle)
         {
             return true;
         }
@@ -374,7 +374,7 @@ bool KpgIterator::releaseHandle(tango::objhandle_t data_handle)
 
     for (it = m_exprs.begin(); it != m_exprs.end(); ++it)
     {
-        if ((tango::objhandle_t)(*it) == data_handle)
+        if ((xd::objhandle_t)(*it) == data_handle)
         {
             delete (*it);
             m_exprs.erase(it);
@@ -385,7 +385,7 @@ bool KpgIterator::releaseHandle(tango::objhandle_t data_handle)
     return false;
 }
 
-tango::IColumnInfoPtr KpgIterator::getInfo(tango::objhandle_t data_handle)
+xd::IColumnInfoPtr KpgIterator::getInfo(xd::objhandle_t data_handle)
 {
     KpgDataAccessInfo* dai = (KpgDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -397,12 +397,12 @@ tango::IColumnInfoPtr KpgIterator::getInfo(tango::objhandle_t data_handle)
 
     if (m_structure.isNull())
     {
-        tango::IStructurePtr s = getStructure();
+        xd::IStructurePtr s = getStructure();
     }
 
     if (m_structure.isOk())
     {
-        tango::IColumnInfoPtr colinfo;
+        xd::IColumnInfoPtr colinfo;
         colinfo = m_structure->getColumnInfo(dai->name);
         if (colinfo.isOk())
         {
@@ -423,18 +423,18 @@ tango::IColumnInfoPtr KpgIterator::getInfo(tango::objhandle_t data_handle)
     return xcm::null;
 }
 
-int KpgIterator::getType(tango::objhandle_t data_handle)
+int KpgIterator::getType(xd::objhandle_t data_handle)
 {
     KpgDataAccessInfo* dai = (KpgDataAccessInfo*)data_handle;
     if (dai == NULL)
     {
-        return tango::typeInvalid;
+        return xd::typeInvalid;
     }
     
     return dai->type;
 }
 
-int KpgIterator::getRawWidth(tango::objhandle_t data_handle)
+int KpgIterator::getRawWidth(xd::objhandle_t data_handle)
 {
     KpgDataAccessInfo* dai = (KpgDataAccessInfo*)data_handle;
     if (dai && dai->key_layout)
@@ -445,7 +445,7 @@ int KpgIterator::getRawWidth(tango::objhandle_t data_handle)
     return 0;
 }
 
-const unsigned char* KpgIterator::getRawPtr(tango::objhandle_t data_handle)
+const unsigned char* KpgIterator::getRawPtr(xd::objhandle_t data_handle)
 {
 
 
@@ -453,7 +453,7 @@ const unsigned char* KpgIterator::getRawPtr(tango::objhandle_t data_handle)
 }
 
 
-const std::string& KpgIterator::getString(tango::objhandle_t data_handle)
+const std::string& KpgIterator::getString(xd::objhandle_t data_handle)
 {
     KpgDataAccessInfo* dai = (KpgDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -481,7 +481,7 @@ const std::string& KpgIterator::getString(tango::objhandle_t data_handle)
     }
 
     // look for a zero terminator
-    if (dai->type == tango::typeWideCharacter)
+    if (dai->type == xd::typeWideCharacter)
     {
         dai->str_result = kl::tostring(getWideString(data_handle));
     }
@@ -498,7 +498,7 @@ const std::string& KpgIterator::getString(tango::objhandle_t data_handle)
     return dai->str_result;
 }
 
-const std::wstring& KpgIterator::getWideString(tango::objhandle_t data_handle)
+const std::wstring& KpgIterator::getWideString(xd::objhandle_t data_handle)
 {
     KpgDataAccessInfo* dai = (KpgDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -526,7 +526,7 @@ const std::wstring& KpgIterator::getWideString(tango::objhandle_t data_handle)
         return dai->wstr_result;
     }
 
-    if (dai->type == tango::typeCharacter)
+    if (dai->type == xd::typeCharacter)
     {
         dai->wstr_result = kl::towstring(getString(data_handle));
     }
@@ -539,7 +539,7 @@ const std::wstring& KpgIterator::getWideString(tango::objhandle_t data_handle)
     return dai->wstr_result;
 }
 
-tango::datetime_t KpgIterator::getDateTime(tango::objhandle_t data_handle)
+xd::datetime_t KpgIterator::getDateTime(xd::objhandle_t data_handle)
 {
     KpgDataAccessInfo* dai = (KpgDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -552,10 +552,10 @@ tango::datetime_t KpgIterator::getDateTime(tango::objhandle_t data_handle)
         dai->expr->eval(&dai->expr_result);
         kscript::ExprDateTime edt = dai->expr_result.getDateTime();
 
-        tango::datetime_t dt;
+        xd::datetime_t dt;
         dt = edt.date;
         dt <<= 32;
-        if (dai->type == tango::typeDateTime)
+        if (dai->type == xd::typeDateTime)
             dt |= edt.time;
 
         return dt;
@@ -570,23 +570,23 @@ tango::datetime_t KpgIterator::getDateTime(tango::objhandle_t data_handle)
     if (eof())
         return 0;
 
-    if (dai->type == tango::typeDate)
+    if (dai->type == xd::typeDate)
     {
-        tango::datetime_t dt;
+        xd::datetime_t dt;
         dt = *(unsigned int*)(m_row+dai->offset);
         dt <<= 32;
         return dt;
     }
-     else if (dai->type == tango::typeDateTime)
+     else if (dai->type == xd::typeDateTime)
     {
-        return *(tango::datetime_t*)(m_row+dai->offset);
+        return *(xd::datetime_t*)(m_row+dai->offset);
     }
      else
     {
         return 0;
     }
 
-    return (tango::datetime_t)(m_row+dai->offset);
+    return (xd::datetime_t)(m_row+dai->offset);
 }
 
 static double decstr2dbl(const char* c, int width, int scale)
@@ -618,7 +618,7 @@ static double decstr2dbl(const char* c, int width, int scale)
 }
 
 
-double KpgIterator::getDouble(tango::objhandle_t data_handle)
+double KpgIterator::getDouble(xd::objhandle_t data_handle)
 {
     KpgDataAccessInfo* dai = (KpgDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -645,11 +645,11 @@ double KpgIterator::getDouble(tango::objhandle_t data_handle)
 
     switch (dai->type)
     {
-        case tango::typeDouble:
+        case xd::typeDouble:
             return *(double*)col_data;    
-        case tango::typeInteger:
+        case xd::typeInteger:
             return *(int*)col_data;
-        case tango::typeNumeric:
+        case xd::typeNumeric:
             return kl::dblround(decstr2dbl((char*)col_data, dai->width, dai->scale),
                                 dai->scale);
         default:
@@ -657,7 +657,7 @@ double KpgIterator::getDouble(tango::objhandle_t data_handle)
     }
 }
 
-int KpgIterator::getInteger(tango::objhandle_t data_handle)
+int KpgIterator::getInteger(xd::objhandle_t data_handle)
 {
     KpgDataAccessInfo* dai = (KpgDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -684,11 +684,11 @@ int KpgIterator::getInteger(tango::objhandle_t data_handle)
 
     switch (dai->type)
     {
-        case tango::typeDouble:
+        case xd::typeDouble:
             return (int)(*(double*)col_data);    
-        case tango::typeInteger:
+        case xd::typeInteger:
             return *(int*)col_data;
-        case tango::typeNumeric:
+        case xd::typeNumeric:
             return (int)(kl::dblround(decstr2dbl((char*)col_data, dai->width, dai->scale),
                                       dai->scale));
         default:
@@ -696,7 +696,7 @@ int KpgIterator::getInteger(tango::objhandle_t data_handle)
     }
 }
 
-bool KpgIterator::getBoolean(tango::objhandle_t data_handle)
+bool KpgIterator::getBoolean(xd::objhandle_t data_handle)
 {
     KpgDataAccessInfo* dai = (KpgDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -724,7 +724,7 @@ bool KpgIterator::getBoolean(tango::objhandle_t data_handle)
     return (*col_data == 'T' ? true : false);
 }
 
-bool KpgIterator::isNull(tango::objhandle_t data_handle)
+bool KpgIterator::isNull(xd::objhandle_t data_handle)
 {
     KpgDataAccessInfo* dai = (KpgDataAccessInfo*)data_handle;
     if (dai == NULL)

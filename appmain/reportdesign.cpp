@@ -1153,7 +1153,7 @@ bool CompReportDesign::load(const ReportCreateInfo& data)
     for (it = data.content_fields.begin(); it != it_end; ++it)
     {
         std::wstring quoted_field_name;
-        quoted_field_name = tango::quoteIdentifier(g_app->getDatabase(), towstr(it->field_name));
+        quoted_field_name = xd::quoteIdentifier(g_app->getDatabase(), towstr(it->field_name));
 
         wxString value = "=";
         value += quoted_field_name;
@@ -4357,13 +4357,13 @@ void CompReportDesign::setGroupsFromSortExpr(const wxString& sort_expr)
 
     // insert a group for each field in reverse order,
     // since the last field corresponds to the innermost group
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     std::vector< std::pair<std::wstring, bool> >::reverse_iterator itr, itr_end;
     itr_end = sort_fields.rend();
     
     for (itr = sort_fields.rbegin(); itr != itr_end; ++itr)
     {
-        wxString field = tango::dequoteIdentifier(db, itr->first);
+        wxString field = xd::dequoteIdentifier(db, itr->first);
         insertGroup(wxT(""), field, itr->second, false);
     }
 }

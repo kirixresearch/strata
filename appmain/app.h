@@ -63,8 +63,8 @@ public:
     IFramePtr getMainFrame();
     void setMainFrame(IFramePtr frame);
 
-    tango::IDatabasePtr getDatabase();
-    void setDatabase(tango::IDatabasePtr database);
+    xd::IDatabasePtr getDatabase();
+    void setDatabase(xd::IDatabasePtr database);
 
     std::wstring getDbDriver();
 
@@ -135,7 +135,7 @@ private:
     
     wxArrayString m_font_names;
     
-    tango::IDatabasePtr m_database;
+    xd::IDatabasePtr m_database;
     wxString m_db_location;
     std::wstring m_db_connstr;
     

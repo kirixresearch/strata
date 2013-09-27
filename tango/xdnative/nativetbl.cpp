@@ -79,14 +79,14 @@ char convertType_tango2native(int tango_type)
 {
     switch (tango_type)
     {
-        case tango::typeCharacter:      return 'C';
-        case tango::typeWideCharacter:  return 'W';
-        case tango::typeNumeric:        return 'N';
-        case tango::typeDouble:         return 'B';
-        case tango::typeDate:           return 'D';
-        case tango::typeDateTime:       return 'T';
-        case tango::typeBoolean:        return 'L';
-        case tango::typeInteger:        return 'I';
+        case xd::typeCharacter:      return 'C';
+        case xd::typeWideCharacter:  return 'W';
+        case xd::typeNumeric:        return 'N';
+        case xd::typeDouble:         return 'B';
+        case xd::typeDate:           return 'D';
+        case xd::typeDateTime:       return 'T';
+        case xd::typeBoolean:        return 'L';
+        case xd::typeInteger:        return 'I';
     }
 
     return ' ';
@@ -96,18 +96,18 @@ int convertType_native2tango(int native_type)
 {
     switch (native_type)
     {
-        case 'C':   return tango::typeCharacter;
-        case 'W':   return tango::typeWideCharacter;
-        case 'N':   return tango::typeNumeric;
-        case 'B':   return tango::typeDouble;
-        case 'F':   return tango::typeNumeric;
-        case 'D':   return tango::typeDate;
-        case 'T':   return tango::typeDateTime;
-        case 'L':   return tango::typeBoolean;
-        case 'I':   return tango::typeInteger;
+        case 'C':   return xd::typeCharacter;
+        case 'W':   return xd::typeWideCharacter;
+        case 'N':   return xd::typeNumeric;
+        case 'B':   return xd::typeDouble;
+        case 'F':   return xd::typeNumeric;
+        case 'D':   return xd::typeDate;
+        case 'T':   return xd::typeDateTime;
+        case 'L':   return xd::typeBoolean;
+        case 'I':   return xd::typeInteger;
     }
 
-    return tango::typeInvalid;
+    return xd::typeInvalid;
 }
 
 
@@ -157,9 +157,9 @@ bool NativeTable::removeEventHandler(ITableEvents* handler)
     return true;
 }
 
-bool NativeTable::create(const std::wstring& filename, tango::IStructure* structure)
+bool NativeTable::create(const std::wstring& filename, xd::IStructure* structure)
 {
-    tango::IColumnInfoPtr colinfo;
+    xd::IColumnInfoPtr colinfo;
     int column_count = structure->getColumnCount();
     int i;
     int col_type;
@@ -177,14 +177,14 @@ bool NativeTable::create(const std::wstring& filename, tango::IStructure* struct
         col_width = colinfo->getWidth();
         col_scale = colinfo->getScale();
 
-        if (col_type == tango::typeNumeric)
+        if (col_type == xd::typeNumeric)
         {
-            if (col_width > tango::max_numeric_width)
+            if (col_width > xd::max_numeric_width)
             {
-                col_width = tango::max_numeric_width;
+                col_width = xd::max_numeric_width;
             }
 
-            if (col_scale > tango::max_numeric_scale)
+            if (col_scale > xd::max_numeric_scale)
                 return false;
 
             if (col_scale < 0)
@@ -194,9 +194,9 @@ bool NativeTable::create(const std::wstring& filename, tango::IStructure* struct
                 return false;
         }
 
-        if (col_type == tango::typeCharacter)
+        if (col_type == xd::typeCharacter)
         {
-            if (col_width > tango::max_character_width)
+            if (col_width > xd::max_character_width)
                 return false;
 
             if (col_width < 1)
@@ -258,11 +258,11 @@ bool NativeTable::create(const std::wstring& filename, tango::IStructure* struct
 
         switch (col_type)
         {
-            case tango::typeDate:     col_width = 4; col_scale = 0; break;
-            case tango::typeInteger:  col_width = 4; col_scale = 0; break;
-            case tango::typeDouble:   col_width = 8; break;
-            case tango::typeBoolean:  col_width = 1; col_scale = 0; break;
-            case tango::typeDateTime: col_width = 8; col_scale = 0; break;
+            case xd::typeDate:     col_width = 4; col_scale = 0; break;
+            case xd::typeInteger:  col_width = 4; col_scale = 0; break;
+            case xd::typeDouble:   col_width = 8; break;
+            case xd::typeBoolean:  col_width = 1; col_scale = 0; break;
+            case xd::typeDateTime: col_width = 8; col_scale = 0; break;
             default:                  break;
         };
         
@@ -296,7 +296,7 @@ bool NativeTable::create(const std::wstring& filename, tango::IStructure* struct
 
         offset += col_width;
 
-        if (col_type == tango::typeWideCharacter)
+        if (col_type == xd::typeWideCharacter)
         {
             // UCS-2 fields take up twice the space
             offset += col_width;
@@ -429,7 +429,7 @@ bool NativeTable::upgradeVersion1(unsigned char* header)
 
 
 bool NativeTable::open(const std::wstring& filename,
-                       tango::tableord_t ordinal)
+                       xd::tableord_t ordinal)
 {
     XCM_AUTO_LOCK(m_object_mutex);
 
@@ -509,10 +509,10 @@ bool NativeTable::open(const std::wstring& filename,
 
     // calculate the actual physical row count from the file size
     xf_seek(m_file, 0, xfSeekEnd);
-    tango::rowpos_t file_size = xf_get_file_pos(m_file);
-    tango::rowpos_t row_width = m_row_width;
+    xd::rowpos_t file_size = xf_get_file_pos(m_file);
+    xd::rowpos_t row_width = m_row_width;
     file_size -= m_data_offset;
-    tango::rowpos_t real_phys_row_count = (file_size/m_row_width);
+    xd::rowpos_t real_phys_row_count = (file_size/m_row_width);
 
     // compare that to the stats
     if (real_phys_row_count != m_phys_row_count)
@@ -569,14 +569,14 @@ bool NativeTable::open(const std::wstring& filename,
         col->setTableOrdinal(m_ordinal);
         col->setNullsAllowed((*(fld+13) & 0x01) ? true : false);
 
-        structure->addColumn(static_cast<tango::IColumnInfo*>(col));
+        structure->addColumn(static_cast<xd::IColumnInfo*>(col));
 
         fld += native_column_descriptor_len;
     }
 
     delete[] flds;
 
-    m_structure = static_cast<tango::IStructure*>(structure);
+    m_structure = static_cast<xd::IStructure*>(structure);
 
     return true;
 }
@@ -632,16 +632,16 @@ void NativeTable::close()
 
 
 
-tango::tableord_t NativeTable::getTableOrdinal()
+xd::tableord_t NativeTable::getTableOrdinal()
 {
     return m_ordinal;
 }
 
 
 int NativeTable::getRows(unsigned char* buf,
-                         tango::rowpos_t* rowpos_arr,
+                         xd::rowpos_t* rowpos_arr,
                          int skip,
-                         tango::rowpos_t start_row,
+                         xd::rowpos_t start_row,
                          int row_count,
                          bool direction,
                          bool include_deleted)
@@ -685,7 +685,7 @@ int NativeTable::getRows(unsigned char* buf,
     {
         rowposarr_idx = 0;
 
-        tango::rowpos_t rowpos = start_row;
+        xd::rowpos_t rowpos = start_row;
 
         while (1)
         {
@@ -717,7 +717,7 @@ int NativeTable::getRows(unsigned char* buf,
     {
         rowposarr_idx = row_count-1;
 
-        tango::rowpos_t rowpos = start_row;
+        xd::rowpos_t rowpos = start_row;
 
         while (1)
         {
@@ -814,7 +814,7 @@ int NativeTable::getRows(unsigned char* buf,
     return read_count;
 }
 
-bool NativeTable::getRow(tango::rowpos_t row, unsigned char* buf)
+bool NativeTable::getRow(xd::rowpos_t row, unsigned char* buf)
 {
     XCM_AUTO_LOCK(m_object_mutex);
 
@@ -828,8 +828,8 @@ bool NativeTable::getRow(tango::rowpos_t row, unsigned char* buf)
 }
 
 
-tango::rowpos_t NativeTable::_findNextRowPos(BitmapFileScroller* bfs,
-                                             tango::rowpos_t offset,
+xd::rowpos_t NativeTable::_findNextRowPos(BitmapFileScroller* bfs,
+                                             xd::rowpos_t offset,
                                              int delta)
 {
     if (delta == 0)
@@ -854,7 +854,7 @@ tango::rowpos_t NativeTable::_findNextRowPos(BitmapFileScroller* bfs,
     {
         if (delta > 0)
         {
-            tango::rowpos_t row = offset;
+            xd::rowpos_t row = offset;
 
             // map files have 0-based offsets
             row--;
@@ -901,7 +901,7 @@ tango::rowpos_t NativeTable::_findNextRowPos(BitmapFileScroller* bfs,
         {
             delta = -delta;
 
-            tango::rowpos_t row = offset;
+            xd::rowpos_t row = offset;
 
             // map files have 0-based offsets
             row--;
@@ -967,7 +967,7 @@ int NativeTable::appendRows(unsigned char* buf, int row_count)
 }
 
 
-bool NativeTable::writeRow(tango::rowpos_t row, unsigned char* buf)
+bool NativeTable::writeRow(xd::rowpos_t row, unsigned char* buf)
 {
     XCM_AUTO_LOCK(m_object_mutex);
 
@@ -989,7 +989,7 @@ bool NativeTable::writeRow(tango::rowpos_t row, unsigned char* buf)
 
     // send notification
     std::vector<ITableEvents*>::iterator it;
-    tango::rowid_t rowid = rowidCreate(m_ordinal, row);
+    xd::rowid_t rowid = rowidCreate(m_ordinal, row);
     for (it = m_event_handlers.begin(); it != m_event_handlers.end(); ++it)
     {
         (*it)->onTableRowUpdated(rowid);
@@ -1018,7 +1018,7 @@ bool NativeTable::writeColumnInfo(int col_idx,
     xf_seek(m_file, native_header_len+(native_column_descriptor_len*col_idx), xfSeekSet);
     xf_read(m_file, col_desc, native_column_descriptor_len, 1);
 
-    tango::IColumnInfoPtr col = m_structure->getColumnInfoByIdx(col_idx);
+    xd::IColumnInfoPtr col = m_structure->getColumnInfoByIdx(col_idx);
 
     if (col_name.length() > 0)
     {
@@ -1110,13 +1110,13 @@ int NativeTable::getRowWidth()
     return m_row_width;
 }
 
-tango::IStructurePtr NativeTable::getStructure()
+xd::IStructurePtr NativeTable::getStructure()
 {
     return m_structure->clone();
 }
 
 
-bool NativeTable::isRowDeleted(tango::rowpos_t row)
+bool NativeTable::isRowDeleted(xd::rowpos_t row)
 {
     if (m_map_file == NULL)
         return false;
@@ -1126,12 +1126,12 @@ bool NativeTable::isRowDeleted(tango::rowpos_t row)
     return deleted;
 }
 
-tango::rowpos_t NativeTable::setDeletedRowCount(int deleted_row_count)
+xd::rowpos_t NativeTable::setDeletedRowCount(int deleted_row_count)
 {
     return 0;
 }
 
-tango::rowpos_t NativeTable::getRowCount(tango::rowpos_t* deleted_row_count)
+xd::rowpos_t NativeTable::getRowCount(xd::rowpos_t* deleted_row_count)
 {
     if (deleted_row_count)
     {
@@ -1155,10 +1155,10 @@ void NativeTable::recalcPhysRowCount()
 
     // calculate the actual physical row count from the file size
     xf_seek(m_file, 0, xfSeekEnd);
-    tango::rowpos_t file_size = xf_get_file_pos(m_file);
-    tango::rowpos_t row_width = m_row_width;
+    xd::rowpos_t file_size = xf_get_file_pos(m_file);
+    xd::rowpos_t row_width = m_row_width;
     file_size -= m_data_offset;
-    tango::rowpos_t real_phys_row_count = (file_size/m_row_width);
+    xd::rowpos_t real_phys_row_count = (file_size/m_row_width);
 
     if (real_phys_row_count != m_phys_row_count)
     {
@@ -1265,7 +1265,7 @@ void NativeRowDeleter::startDelete()
     m_map_scroller->setState(m_table->m_phys_row_count+100, false);
 }
 
-bool NativeRowDeleter::deleteRow(const tango::rowid_t& rowid)
+bool NativeRowDeleter::deleteRow(const xd::rowid_t& rowid)
 {
     if (!m_map_scroller)
         return false;

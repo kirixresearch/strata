@@ -25,16 +25,16 @@
 #include "../xdcommonsql/xdcommonsql.h"
 
 
-inline tango::rowid_t rowidCreate(tango::tableord_t table_ordinal,
-                                  tango::rowpos_t row_num)
+inline xd::rowid_t rowidCreate(xd::tableord_t table_ordinal,
+                                  xd::rowpos_t row_num)
 {
-    tango::rowid_t r;
-    r = ((tango::rowid_t)table_ordinal) << 36;
+    xd::rowid_t r;
+    r = ((xd::rowid_t)table_ordinal) << 36;
     r |= row_num;
     return r;
 }
 
-inline tango::rowpos_t rowidGetRowPos(tango::rowid_t rowid)
+inline xd::rowpos_t rowidGetRowPos(xd::rowid_t rowid)
 {
     #ifdef _MSC_VER
     return (rowid & 0xfffffffff);
@@ -43,7 +43,7 @@ inline tango::rowpos_t rowidGetRowPos(tango::rowid_t rowid)
     #endif
 }
 
-inline tango::tableord_t rowidGetTableOrd(tango::rowid_t rowid)
+inline xd::tableord_t rowidGetTableOrd(xd::rowid_t rowid)
 {
     return (rowid >> 36);
 }
@@ -134,19 +134,19 @@ bool SlIterator::init(const std::wstring& _query)
 
         switch (dai.sqlite_type)
         {
-            case SQLITE_INTEGER: dai.tango_type = tango::typeInteger; break;
-            case SQLITE_FLOAT:   dai.tango_type = tango::typeDouble; break;
-            case SQLITE_BLOB:    dai.tango_type = tango::typeBinary; break;
-            case SQLITE_TEXT:    dai.tango_type = tango::typeCharacter; break;
+            case SQLITE_INTEGER: dai.tango_type = xd::typeInteger; break;
+            case SQLITE_FLOAT:   dai.tango_type = xd::typeDouble; break;
+            case SQLITE_BLOB:    dai.tango_type = xd::typeBinary; break;
+            case SQLITE_TEXT:    dai.tango_type = xd::typeCharacter; break;
         }
 
         dai.width = 30;
         dai.scale = 0;
 
-        tango::IColumnInfoPtr colinfo;
+        xd::IColumnInfoPtr colinfo;
         if (m_table_structure.isOk())
         {
-            tango::IColumnInfoPtr colinfo = m_table_structure->getColumnInfo(dai.name);
+            xd::IColumnInfoPtr colinfo = m_table_structure->getColumnInfo(dai.name);
             if (colinfo.isOk())
             {
                 dai.tango_type = colinfo->getType();
@@ -173,24 +173,24 @@ std::wstring SlIterator::getTable()
     return m_path;
 }
 
-tango::rowpos_t SlIterator::getRowCount()
+xd::rowpos_t SlIterator::getRowCount()
 {
     return 0;
 }
 
-tango::IDatabasePtr SlIterator::getDatabase()
+xd::IDatabasePtr SlIterator::getDatabase()
 {
     return m_database;
 }
 
-tango::IIteratorPtr SlIterator::clone()
+xd::IIteratorPtr SlIterator::clone()
 {
     return xcm::null;
 }
 
 unsigned int SlIterator::getIteratorFlags()
 {
-    return tango::ifForwardOnly;
+    return xd::ifForwardOnly;
 }
 
 void SlIterator::clearFieldData()
@@ -239,7 +239,7 @@ void SlIterator::goLast()
 
 }
 
-tango::rowid_t SlIterator::getRowId()
+xd::rowid_t SlIterator::getRowId()
 {
     return rowidCreate(m_ordinal, m_oid);
 }
@@ -279,11 +279,11 @@ double SlIterator::getPos()
     return 0.0;
 }
 
-void SlIterator::goRow(const tango::rowid_t& rowid)
+void SlIterator::goRow(const xd::rowid_t& rowid)
 {
 }
 
-tango::IStructurePtr SlIterator::getStructure()
+xd::IStructurePtr SlIterator::getStructure()
 {
     if (m_structure.isOk())
         return m_structure->clone();
@@ -299,10 +299,10 @@ tango::IStructurePtr SlIterator::getStructure()
         col->setWidth(it->width);
         col->setScale(it->scale);
         col->setColumnOrdinal(it->col_ordinal);
-        s->addColumn(static_cast<tango::IColumnInfo*>(col));
+        s->addColumn(static_cast<xd::IColumnInfo*>(col));
     }
     
-    m_structure = static_cast<tango::IStructure*>(s);
+    m_structure = static_cast<xd::IStructure*>(s);
 
     return m_structure->clone();
 
@@ -312,14 +312,14 @@ void SlIterator::refreshStructure()
 {
 }
 
-bool SlIterator::modifyStructure(tango::IStructure* struct_config,
-                                   tango::IJob* job)
+bool SlIterator::modifyStructure(xd::IStructure* struct_config,
+                                   xd::IJob* job)
 {
     return false;
 }
 
 
-tango::objhandle_t SlIterator::getHandle(const std::wstring& expr)
+xd::objhandle_t SlIterator::getHandle(const std::wstring& expr)
 {
     std::vector<SlDataAccessInfo>::iterator it;
     for (it = m_columns.begin();
@@ -329,14 +329,14 @@ tango::objhandle_t SlIterator::getHandle(const std::wstring& expr)
         if (0 == wcscasecmp(it->name.c_str(),
                             expr.c_str()))
         {
-            return (tango::objhandle_t)(&(*it));
+            return (xd::objhandle_t)(&(*it));
         }
     }
 
     return 0;
 }
 
-bool SlIterator::releaseHandle(tango::objhandle_t data_handle)
+bool SlIterator::releaseHandle(xd::objhandle_t data_handle)
 {
     if (!data_handle)
         return false;
@@ -344,7 +344,7 @@ bool SlIterator::releaseHandle(tango::objhandle_t data_handle)
     return true;
 }
 
-tango::IColumnInfoPtr SlIterator::getInfo(tango::objhandle_t data_handle)
+xd::IColumnInfoPtr SlIterator::getInfo(xd::objhandle_t data_handle)
 {
     SlDataAccessInfo* dai = (SlDataAccessInfo*)data_handle;
 
@@ -355,26 +355,26 @@ tango::IColumnInfoPtr SlIterator::getInfo(tango::objhandle_t data_handle)
     col->setScale(dai->scale);
     col->setColumnOrdinal(dai->col_ordinal);
     
-    return static_cast<tango::IColumnInfo*>(col);
+    return static_cast<xd::IColumnInfo*>(col);
 }
 
-int SlIterator::getType(tango::objhandle_t data_handle)
+int SlIterator::getType(xd::objhandle_t data_handle)
 {
     SlDataAccessInfo* dai = (SlDataAccessInfo*)data_handle;
     return dai->tango_type;
 }
 
-int SlIterator::getRawWidth(tango::objhandle_t data_handle)
+int SlIterator::getRawWidth(xd::objhandle_t data_handle)
 {
     return 0;
 }
 
-const unsigned char* SlIterator::getRawPtr(tango::objhandle_t data_handle)
+const unsigned char* SlIterator::getRawPtr(xd::objhandle_t data_handle)
 {
     return NULL;
 }
 
-const std::string& SlIterator::getString(tango::objhandle_t data_handle)
+const std::string& SlIterator::getString(xd::objhandle_t data_handle)
 {
     SlDataAccessInfo* dai = (SlDataAccessInfo*)data_handle;
 
@@ -390,7 +390,7 @@ const std::string& SlIterator::getString(tango::objhandle_t data_handle)
     return dai->result_str;
 }
 
-const std::wstring& SlIterator::getWideString(tango::objhandle_t data_handle)
+const std::wstring& SlIterator::getWideString(xd::objhandle_t data_handle)
 {
     SlDataAccessInfo* dai = (SlDataAccessInfo*)data_handle;
 
@@ -407,7 +407,7 @@ const std::wstring& SlIterator::getWideString(tango::objhandle_t data_handle)
 
 }
 
-tango::datetime_t SlIterator::getDateTime(tango::objhandle_t data_handle)
+xd::datetime_t SlIterator::getDateTime(xd::objhandle_t data_handle)
 {
     SlDataAccessInfo* dai = (SlDataAccessInfo*)data_handle;
 
@@ -416,7 +416,7 @@ tango::datetime_t SlIterator::getDateTime(tango::objhandle_t data_handle)
         return 0;
     }
 
-    tango::datetime_t dt, tm;
+    xd::datetime_t dt, tm;
     
     int y = 0, m = 0, d = 0, hh = 0, mm = 0, ss = 0;
     char buf[25];
@@ -471,7 +471,7 @@ tango::datetime_t SlIterator::getDateTime(tango::objhandle_t data_handle)
     return dt;
 }
 
-double SlIterator::getDouble(tango::objhandle_t data_handle)
+double SlIterator::getDouble(xd::objhandle_t data_handle)
 {
     SlDataAccessInfo* dai = (SlDataAccessInfo*)data_handle;
 
@@ -481,7 +481,7 @@ double SlIterator::getDouble(tango::objhandle_t data_handle)
     return sqlite3_column_double(m_stmt, dai->col_ordinal);
 }
 
-int SlIterator::getInteger(tango::objhandle_t data_handle)
+int SlIterator::getInteger(xd::objhandle_t data_handle)
 {
     SlDataAccessInfo* dai = (SlDataAccessInfo*)data_handle;
 
@@ -491,7 +491,7 @@ int SlIterator::getInteger(tango::objhandle_t data_handle)
     return sqlite3_column_int(m_stmt, dai->col_ordinal);
 }
 
-bool SlIterator::getBoolean(tango::objhandle_t data_handle)
+bool SlIterator::getBoolean(xd::objhandle_t data_handle)
 {
     SlDataAccessInfo* dai = (SlDataAccessInfo*)data_handle;
 
@@ -501,7 +501,7 @@ bool SlIterator::getBoolean(tango::objhandle_t data_handle)
     return (sqlite3_column_int(m_stmt, dai->col_ordinal) == 0) ? false : true;
 }
 
-bool SlIterator::isNull(tango::objhandle_t data_handle)
+bool SlIterator::isNull(xd::objhandle_t data_handle)
 {
     SlDataAccessInfo* dai = (SlDataAccessInfo*)data_handle;
     if (!dai)

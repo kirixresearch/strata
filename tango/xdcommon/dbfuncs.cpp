@@ -21,45 +21,45 @@ struct InsertInfo
     bool copy;
     int src_type;
     int src_width;
-    tango::objhandle_t src_handle;
+    xd::objhandle_t src_handle;
 
     int dest_type;
     int dest_width;
-    tango::objhandle_t dest_handle;
+    xd::objhandle_t dest_handle;
 
     char* buf;
 };
 
 
 
-int xdcmnInsert(tango::IDatabasePtr dest_db,
-                tango::IIteratorPtr sp_source_iter,
+int xdcmnInsert(xd::IDatabasePtr dest_db,
+                xd::IIteratorPtr sp_source_iter,
                 const std::wstring& dest_table,
                 const std::wstring& constraint,
                 int max_rows,
-                tango::IJob* job)
+                xd::IJob* job)
 {
     if (sp_source_iter.isNull())
         return 0;
 
-    tango::IIterator* source_iter = sp_source_iter.p;
+    xd::IIterator* source_iter = sp_source_iter.p;
 
 
     // this code assumes for the time being that columns are named the same
     // in the source and destination databases
 
-    tango::IRowInserterPtr sp_insert = dest_db->bulkInsert(dest_table);
+    xd::IRowInserterPtr sp_insert = dest_db->bulkInsert(dest_table);
     if (sp_insert.isNull())
     {
         return 0;
     }
 
-    tango::IRowInserter* insert = sp_insert.p;
+    xd::IRowInserter* insert = sp_insert.p;
 
     // get table structure
-    tango::IColumnInfoPtr src_colinfo, dest_colinfo;
-    tango::IStructurePtr dest_structure = dest_db->describeTable(dest_table);
-    tango::IStructurePtr src_structure = source_iter->getStructure();
+    xd::IColumnInfoPtr src_colinfo, dest_colinfo;
+    xd::IStructurePtr dest_structure = dest_db->describeTable(dest_table);
+    xd::IStructurePtr src_structure = source_iter->getStructure();
 
     if (dest_structure.isNull() || src_structure.isNull())
         return 0;
@@ -71,7 +71,7 @@ int xdcmnInsert(tango::IDatabasePtr dest_db,
     {
         IJobInternalPtr ijob = job;
         if (ijob)
-            ijob->setError(tango::errorGeneral, L"cannot initialize inserter object");
+            ijob->setError(xd::errorGeneral, L"cannot initialize inserter object");
         return 0; // error encountered
     }
 
@@ -129,7 +129,7 @@ int xdcmnInsert(tango::IDatabasePtr dest_db,
     // set up job
 
     IJobInternalPtr ijob;
-    tango::rowpos_t cur_count;
+    xd::rowpos_t cur_count;
     bool max_count_known = false;
 
     cur_count = 0;
@@ -146,7 +146,7 @@ int xdcmnInsert(tango::IDatabasePtr dest_db,
         if (max_rows > 0)
             ijob->setMaxCount(max_rows);
         ijob->setCurrentCount(0);
-        ijob->setStatus(tango::jobRunning);
+        ijob->setStatus(xd::jobRunning);
         ijob->setStartTime(time(NULL));
 
         if (ijob->getMaxCount() != 0)
@@ -157,7 +157,7 @@ int xdcmnInsert(tango::IDatabasePtr dest_db,
 
     // if the constraint set is a filter set, we can perform the
     // operation faster by just parsing the filter expression locally
-    tango::objhandle_t filter_handle = 0;
+    xd::objhandle_t filter_handle = 0;
     bool result = true;
 
     if (constraint.length() > 0)
@@ -193,36 +193,36 @@ int xdcmnInsert(tango::IDatabasePtr dest_db,
                         
                 switch (insert_info[i].src_type)
                 {
-                    case tango::typeWideCharacter:
+                    case xd::typeWideCharacter:
                         insert->putWideString(insert_info[i].dest_handle,
                                           source_iter->getWideString(insert_info[i].src_handle));
 
                         break;
 
-                    case tango::typeCharacter:
+                    case xd::typeCharacter:
                         insert->putString(insert_info[i].dest_handle,
                                           source_iter->getString(insert_info[i].src_handle));
 
                         break;
 
-                    case tango::typeDouble:
-                    case tango::typeNumeric:
+                    case xd::typeDouble:
+                    case xd::typeNumeric:
                         insert->putDouble(insert_info[i].dest_handle,
                                           source_iter->getDouble(insert_info[i].src_handle));
                         break;
 
-                    case tango::typeInteger:
+                    case xd::typeInteger:
                         insert->putInteger(insert_info[i].dest_handle,
                                            source_iter->getInteger(insert_info[i].src_handle));
                         break;
 
-                    case tango::typeDate:
-                    case tango::typeDateTime:
+                    case xd::typeDate:
+                    case xd::typeDateTime:
                         insert->putDateTime(insert_info[i].dest_handle,
                                             source_iter->getDateTime(insert_info[i].src_handle));
                         break;
 
-                    case tango::typeBoolean:
+                    case xd::typeBoolean:
                         insert->putBoolean(insert_info[i].dest_handle,
                                            source_iter->getBoolean(insert_info[i].src_handle));
                         break;
@@ -233,7 +233,7 @@ int xdcmnInsert(tango::IDatabasePtr dest_db,
             {
                 if (job)
                 {
-                    ijob->setStatus(tango::jobFailed);
+                    ijob->setStatus(xd::jobFailed);
                     break;
                 }
             }
@@ -294,7 +294,7 @@ int xdcmnInsert(tango::IDatabasePtr dest_db,
 
     if (job)
     {
-        if (job->getStatus() == tango::jobFailed)
+        if (job->getStatus() == xd::jobFailed)
         {
             return cur_count;
         }
@@ -302,7 +302,7 @@ int xdcmnInsert(tango::IDatabasePtr dest_db,
         if (!job->getCancelled())
         {
             ijob->setCurrentCount(cur_count);
-            ijob->setStatus(tango::jobFinished);
+            ijob->setStatus(xd::jobFinished);
             ijob->setFinishTime(time(NULL));
         }
     }
@@ -314,16 +314,16 @@ int xdcmnInsert(tango::IDatabasePtr dest_db,
 
 
 
-bool physStructureEqual(tango::IStructurePtr s1, tango::IStructurePtr s2)
+bool physStructureEqual(xd::IStructurePtr s1, xd::IStructurePtr s2)
 {
     int s1_col_count = s1->getColumnCount();
     int s2_col_count = s2->getColumnCount();
     int i;
 
-    tango::IColumnInfoPtr colinfo;
+    xd::IColumnInfoPtr colinfo;
 
-    std::vector<tango::IColumnInfoPtr> s1_fields;
-    std::vector<tango::IColumnInfoPtr> s2_fields;
+    std::vector<xd::IColumnInfoPtr> s1_fields;
+    std::vector<xd::IColumnInfoPtr> s2_fields;
 
     // copy physical column infos
     for (i = 0; i < s1_col_count; ++i)
@@ -353,7 +353,7 @@ bool physStructureEqual(tango::IStructurePtr s1, tango::IStructurePtr s2)
 
     for (i = 0; i < count; ++i)
     {
-        tango::IColumnInfoPtr col1, col2;
+        xd::IColumnInfoPtr col1, col2;
 
         col1 = s1_fields[i];
         col2 = s2_fields[i];

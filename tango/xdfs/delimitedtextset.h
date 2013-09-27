@@ -67,7 +67,7 @@ public:
 class DelimitedTextSet : public CommonBaseSet,
                          public IXdfsSet,
                          public IXdsqlTable,
-                         public tango::IDelimitedTextSet
+                         public xd::IDelimitedTextSet
 {
 friend class FsDatabase;
 friend class DelimitedTextIterator;
@@ -78,7 +78,7 @@ friend class DelimitedTextRowInserter;
         XCM_INTERFACE_ENTRY(CommonBaseSet)
         XCM_INTERFACE_ENTRY(IXdfsSet)
         XCM_INTERFACE_ENTRY(IXdsqlTable)
-        XCM_INTERFACE_ENTRY(tango::IDelimitedTextSet)
+        XCM_INTERFACE_ENTRY(xd::IDelimitedTextSet)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -88,37 +88,37 @@ public:
 
     bool init(const std::wstring& filename);
 
-    void setCreateStructure(tango::IStructurePtr structure);
+    void setCreateStructure(xd::IStructurePtr structure);
     
     std::wstring getSetId();
 
-    tango::IRowInserterPtr getRowInserter();
+    xd::IRowInserterPtr getRowInserter();
     IXdsqlRowDeleterPtr getRowDeleter() { return xcm::null; }
 
-    tango::IIteratorPtr createIterator(const std::wstring& columns,
+    xd::IIteratorPtr createIterator(const std::wstring& columns,
                                        const std::wstring& expr,
-                                       tango::IJob* job);
+                                       xd::IJob* job);
 
-    tango::rowpos_t getRowCount();
+    xd::rowpos_t getRowCount();
 
     bool restoreDeleted() { return false; }
 
-    bool updateRow(tango::rowid_t rowid,
-                   tango::ColumnUpdateInfo* info,
+    bool updateRow(xd::rowid_t rowid,
+                   xd::ColumnUpdateInfo* info,
                    size_t info_size) { return false; }
 
-    // tango::IDelimitedTextSet
+    // xd::IDelimitedTextSet
 
     bool saveConfiguration();
     bool deleteConfiguration();
     
-    tango::IStructurePtr getSourceStructure();
-    tango::IStructurePtr getDestinationStructure();
-    tango::IStructurePtr getStructure();
+    xd::IStructurePtr getSourceStructure();
+    xd::IStructurePtr getDestinationStructure();
+    xd::IStructurePtr getStructure();
 
-    bool modifySourceStructure(tango::IStructure* struct_config, tango::IJob* job);
-    bool modifyDestinationStructure(tango::IStructure* struct_config, tango::IJob* job);
-    bool modifyStructure(tango::IStructure* struct_config, tango::IJob* job);
+    bool modifySourceStructure(xd::IStructure* struct_config, xd::IJob* job);
+    bool modifyDestinationStructure(xd::IStructure* struct_config, xd::IJob* job);
+    bool modifyStructure(xd::IStructure* struct_config, xd::IJob* job);
     
     // this function should only be used by outside callers as it
     // also modifies values in the m_colname_matches vector
@@ -141,9 +141,9 @@ public:
     void setFirstRowColumnNames(bool new_val);
     bool isFirstRowColumnNames();
     
-    tango::IIteratorPtr createSourceIterator(tango::IJob* job);
+    xd::IIteratorPtr createSourceIterator(xd::IJob* job);
     
-    bool determineColumns(int check_rows, tango::IJob* job);
+    bool determineColumns(int check_rows, xd::IJob* job);
 
 private:
 
@@ -159,8 +159,8 @@ private:
     DelimitedTextFile m_file;
     std::wstring m_configfile_path;
 
-    tango::IStructurePtr m_source_structure;
-    tango::IStructurePtr m_dest_structure;
+    xd::IStructurePtr m_source_structure;
+    xd::IStructurePtr m_dest_structure;
     
     // variables to describe the file structure
     std::wstring m_delimiters;
@@ -174,11 +174,11 @@ private:
 
 
 struct DelimitedTextDataAccessInfo;
-class DelimitedTextRowInserter : public tango::IRowInserter
+class DelimitedTextRowInserter : public xd::IRowInserter
 {
     XCM_CLASS_NAME("xdfs.DelimitedTextRowInserter")
     XCM_BEGIN_INTERFACE_MAP(DelimitedTextRowInserter)
-        XCM_INTERFACE_ENTRY(tango::IRowInserter)
+        XCM_INTERFACE_ENTRY(xd::IRowInserter)
     XCM_END_INTERFACE_MAP()
 
 
@@ -187,18 +187,18 @@ public:
     DelimitedTextRowInserter(DelimitedTextSet* set);
     ~DelimitedTextRowInserter();
 
-    tango::objhandle_t getHandle(const std::wstring& column_name);
-    tango::IColumnInfoPtr getInfo(tango::objhandle_t column_handle);
+    xd::objhandle_t getHandle(const std::wstring& column_name);
+    xd::IColumnInfoPtr getInfo(xd::objhandle_t column_handle);
 
-    bool putRawPtr(tango::objhandle_t column_handle, const unsigned char* value, int length);
-    bool putString(tango::objhandle_t column_handle, const std::string& value);
-    bool putWideString(tango::objhandle_t column_handle, const std::wstring& value);
-    bool putDouble(tango::objhandle_t column_handle, double value);
-    bool putInteger(tango::objhandle_t column_handle, int value);
-    bool putBoolean(tango::objhandle_t column_handle, bool value);
-    bool putDateTime(tango::objhandle_t column_handle, tango::datetime_t value);
+    bool putRawPtr(xd::objhandle_t column_handle, const unsigned char* value, int length);
+    bool putString(xd::objhandle_t column_handle, const std::string& value);
+    bool putWideString(xd::objhandle_t column_handle, const std::wstring& value);
+    bool putDouble(xd::objhandle_t column_handle, double value);
+    bool putInteger(xd::objhandle_t column_handle, int value);
+    bool putBoolean(xd::objhandle_t column_handle, bool value);
+    bool putDateTime(xd::objhandle_t column_handle, xd::datetime_t value);
     bool putRowBuffer(const unsigned char* value);
-    bool putNull(tango::objhandle_t column_handle);
+    bool putNull(xd::objhandle_t column_handle);
 
     bool startInsert(const std::wstring& col_list);
     bool insertRow();

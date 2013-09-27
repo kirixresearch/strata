@@ -113,7 +113,7 @@ private:
                       wchar_t lquote = L'[', wchar_t rquote = L']');
 
     void echo(const wxString& text);
-    void echoDatabaseInfo(tango::IDatabasePtr command_db, const wxString& command_path);
+    void echoDatabaseInfo(xd::IDatabasePtr command_db, const wxString& command_path);
 
     void doSizing();
 

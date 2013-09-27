@@ -83,7 +83,7 @@ bool ReplaceRowsPanel::initDoc(IFramePtr frame,
     replace_sizer->Add(m_valid_control, 0, wxALIGN_CENTER);
 
     m_expr_panel = new ExprBuilderPanel;
-    m_expr_panel->setTypeOnly(tango::typeBoolean);
+    m_expr_panel->setTypeOnly(xd::typeBoolean);
     m_expr_panel->setEmptyOk(true);
     m_expr_panel->sigOkPressed.connect(this, &ReplaceRowsPanel::onOKPressed);
     m_expr_panel->sigCancelPressed.connect(this, &ReplaceRowsPanel::onCancelPressed);
@@ -150,7 +150,7 @@ void ReplaceRowsPanel::populate()
     m_expr_panel->setStructure(m_structure);
 
     // populate choicebox
-    tango::IColumnInfoPtr colinfo;
+    xd::IColumnInfoPtr colinfo;
 
     std::vector<wxString> fields;
 
@@ -176,20 +176,20 @@ bool ReplaceRowsPanel::isValidValue()
     replace_value.Trim(TRUE);
     
     wxString replace_field = m_field_choice->GetStringSelection();
-    tango::IColumnInfoPtr colinfo = m_structure->getColumnInfo(towstr(replace_field));
+    xd::IColumnInfoPtr colinfo = m_structure->getColumnInfo(towstr(replace_field));
     if (colinfo.isNull())
         return false;
 
     switch (colinfo->getType())
     {
-        case tango::typeWideCharacter:
-        case tango::typeCharacter:
+        case xd::typeWideCharacter:
+        case xd::typeCharacter:
             if (replace_value.Length() > (size_t)colinfo->getWidth())
                 return false;
             return true;
 
-        case tango::typeDate:
-        case tango::typeDateTime:
+        case xd::typeDate:
+        case xd::typeDateTime:
         {
             int y, m, d, hh, mm, ss;
             if (Locale::parseDateTime(replace_value, &y, &m, &d, &hh, &mm, &ss))
@@ -198,9 +198,9 @@ bool ReplaceRowsPanel::isValidValue()
             return false;
         }
 
-        case tango::typeInteger:
-        case tango::typeNumeric:
-        case tango::typeDouble:
+        case xd::typeInteger:
+        case xd::typeNumeric:
+        case xd::typeDouble:
         {
             if (replace_value.length() == 0)
                 return false;
@@ -231,7 +231,7 @@ void ReplaceRowsPanel::checkEnableRun()
         return;
 
     wxString replace_field = m_field_choice->GetStringSelection();
-    tango::IColumnInfoPtr colinfo = m_structure->getColumnInfo(towstr(replace_field));
+    xd::IColumnInfoPtr colinfo = m_structure->getColumnInfo(towstr(replace_field));
     
     if (replace_field.IsEmpty() || colinfo.isNull())
     {
@@ -253,11 +253,11 @@ bool ReplaceRowsPanel::validate(bool* value)
     wxString replace_value = m_replace_text->GetValue();
     wxString replace_field = m_field_choice->GetStringSelection();
 
-    tango::IColumnInfoPtr colinfo = m_structure->getColumnInfo(towstr(replace_field));
+    xd::IColumnInfoPtr colinfo = m_structure->getColumnInfo(towstr(replace_field));
     if (colinfo.isOk())
     {
         int type = m_structure->getExprType(towstr(replace_value));
-        valid = tango::isTypeCompatible(type, colinfo->getType());
+        valid = xd::isTypeCompatible(type, colinfo->getType());
     }
 
 
@@ -305,7 +305,7 @@ void ReplaceRowsPanel::onOKPressed(ExprBuilderPanel* panel)
     bool is_value = false;
     
     wxString replace_field = m_field_choice->GetStringSelection();
-    tango::IColumnInfoPtr colinfo = m_structure->getColumnInfo(towstr(replace_field));
+    xd::IColumnInfoPtr colinfo = m_structure->getColumnInfo(towstr(replace_field));
     
     if (replace_field.IsEmpty())
     {
@@ -350,8 +350,8 @@ void ReplaceRowsPanel::onOKPressed(ExprBuilderPanel* panel)
 
         int col_type = colinfo->getType();
 
-        if (col_type == tango::typeCharacter ||
-            col_type == tango::typeWideCharacter)
+        if (col_type == xd::typeCharacter ||
+            col_type == xd::typeWideCharacter)
         {
             int len = replace_value.Length();
 
@@ -376,8 +376,8 @@ void ReplaceRowsPanel::onOKPressed(ExprBuilderPanel* panel)
             temp += "'";
             replace_value = temp;
         }
-         else if (col_type == tango::typeDate ||
-                  col_type == tango::typeDateTime)
+         else if (col_type == xd::typeDate ||
+                  col_type == xd::typeDateTime)
         {
             int y, m, d, hh, mm, ss;
 
@@ -396,9 +396,9 @@ void ReplaceRowsPanel::onOKPressed(ExprBuilderPanel* panel)
                                        y, m, d, hh, mm, ss);
             }
         }
-         else if (col_type == tango::typeInteger ||
-                  col_type == tango::typeDouble ||
-                  col_type == tango::typeNumeric)
+         else if (col_type == xd::typeInteger ||
+                  col_type == xd::typeDouble ||
+                  col_type == xd::typeNumeric)
         {
             replace_value.Replace(wxT(","), wxT("."));
         }

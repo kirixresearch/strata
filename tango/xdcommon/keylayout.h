@@ -18,7 +18,7 @@
 class KeyPart
 {
 public:
-    tango::objhandle_t handle;
+    xd::objhandle_t handle;
     int type;
     int offset;
     int width;
@@ -32,7 +32,7 @@ public:
     KeyLayout();
     ~KeyLayout();
 
-    bool setKeyExpr(tango::IIteratorPtr iter,
+    bool setKeyExpr(xd::IIteratorPtr iter,
                     const std::wstring& expr,
                     bool hold_ref = true);
 
@@ -43,7 +43,7 @@ public:
                              // getKey() had to truncate char data
 
     // -- manual functions --
-    void setIterator(tango::IIteratorPtr iter,
+    void setIterator(xd::IIteratorPtr iter,
                      bool hold_ref = true);
 
     bool addKeyPart(const std::wstring& expr,
@@ -55,9 +55,9 @@ private:
 
     unsigned char* m_buf;
     std::vector<KeyPart> m_parts;
-    tango::IIterator* m_iter;
-    tango::IIteratorPtr m_sp_iter;
-    tango::IStructurePtr m_iter_structure;
+    xd::IIterator* m_iter;
+    xd::IIteratorPtr m_sp_iter;
+    xd::IStructurePtr m_iter_structure;
     int m_key_length;
     bool m_hold_ref;
     bool m_trunc;

@@ -38,17 +38,17 @@ static inline wxString tango2text(int tango_type)
     switch (tango_type)
     {
         default:
-        case tango::typeUndefined:      return _("Undefined");
-        case tango::typeInvalid:        return _("Invalid");
-        case tango::typeCharacter:      return _("Character");
-        case tango::typeWideCharacter:  return _("Wide Character");
-        case tango::typeBinary:         return _("Binary");
-        case tango::typeNumeric:        return _("Numeric");
-        case tango::typeDouble:         return _("Double");
-        case tango::typeInteger:        return _("Integer");
-        case tango::typeDate:           return _("Date");
-        case tango::typeDateTime:       return _("DateTime");
-        case tango::typeBoolean:        return _("Boolean");
+        case xd::typeUndefined:      return _("Undefined");
+        case xd::typeInvalid:        return _("Invalid");
+        case xd::typeCharacter:      return _("Character");
+        case xd::typeWideCharacter:  return _("Wide Character");
+        case xd::typeBinary:         return _("Binary");
+        case xd::typeNumeric:        return _("Numeric");
+        case xd::typeDouble:         return _("Double");
+        case xd::typeInteger:        return _("Integer");
+        case xd::typeDate:           return _("Date");
+        case xd::typeDateTime:       return _("DateTime");
+        case xd::typeBoolean:        return _("Boolean");
     }
 
     return wxT("");
@@ -58,14 +58,14 @@ static inline int tango2choice(int tango_type)
 {
     switch(tango_type)
     {
-        case tango::typeCharacter:      return comboCharacter;
-        case tango::typeWideCharacter:  return comboWideCharacter;
-        case tango::typeNumeric:        return comboNumeric;
-        case tango::typeDouble:         return comboDouble;
-        case tango::typeInteger:        return comboInteger;
-        case tango::typeDate:           return comboDate;
-        case tango::typeDateTime:       return comboDateTime;
-        case tango::typeBoolean:        return comboBoolean;
+        case xd::typeCharacter:      return comboCharacter;
+        case xd::typeWideCharacter:  return comboWideCharacter;
+        case xd::typeNumeric:        return comboNumeric;
+        case xd::typeDouble:         return comboDouble;
+        case xd::typeInteger:        return comboInteger;
+        case xd::typeDate:           return comboDate;
+        case xd::typeDateTime:       return comboDateTime;
+        case xd::typeBoolean:        return comboBoolean;
     }
 
     return comboCharacter;
@@ -75,17 +75,17 @@ static inline int choice2tango(int choice_idx)
 {
     switch(choice_idx)
     {
-        case comboCharacter:        return tango::typeCharacter;
-        case comboWideCharacter:    return tango::typeWideCharacter;
-        case comboNumeric:          return tango::typeNumeric;
-        case comboDouble:           return tango::typeDouble;
-        case comboInteger:          return tango::typeInteger;
-        case comboDate:             return tango::typeDate;
-        case comboDateTime:         return tango::typeDateTime;
-        case comboBoolean:          return tango::typeBoolean;
+        case comboCharacter:        return xd::typeCharacter;
+        case comboWideCharacter:    return xd::typeWideCharacter;
+        case comboNumeric:          return xd::typeNumeric;
+        case comboDouble:           return xd::typeDouble;
+        case comboInteger:          return xd::typeInteger;
+        case comboDate:             return xd::typeDate;
+        case comboDateTime:         return xd::typeDateTime;
+        case comboBoolean:          return xd::typeBoolean;
     }
 
-    return tango::typeUndefined;
+    return xd::typeUndefined;
 }
 
 

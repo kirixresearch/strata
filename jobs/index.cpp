@@ -112,12 +112,12 @@ int IndexJob::runJob()
             continue;
 
 
-        tango::IJobPtr job = m_db->createJob();
+        xd::IJobPtr job = m_db->createJob();
         setXdJob(job);
 
         // quote identifiers
-        std::wstring q_name = tango::quoteIdentifier(m_db, name);
-        std::wstring q_input = tango::quoteIdentifier(m_db, input);
+        std::wstring q_name = xd::quoteIdentifier(m_db, name);
+        std::wstring q_input = xd::quoteIdentifier(m_db, input);
 
         std::wstring sql;
         sql += L"CREATE INDEX ";

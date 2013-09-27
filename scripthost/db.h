@@ -229,8 +229,8 @@ public:
     DbConnection();
     ~DbConnection();
     
-    void setDatabase(tango::IDatabasePtr db);
-    tango::IDatabasePtr getDatabase();
+    void setDatabase(xd::IDatabasePtr db);
+    xd::IDatabasePtr getDatabase();
     
     void constructor(kscript::ExprEnv* env, kscript::Value* retval);
     void connect(kscript::ExprEnv* env, kscript::Value* retval);
@@ -249,7 +249,7 @@ public:
     
 private:
 
-    tango::IDatabasePtr m_db;
+    xd::IDatabasePtr m_db;
     bool m_exceptions_enabled;
     DbError* m_error;
 };
@@ -353,7 +353,7 @@ struct DbBulkInsertColumn
     std::wstring name;
     int type;
     kscript::Value val;
-    tango::objhandle_t handle;
+    xd::objhandle_t handle;
 };
 
 class DbBulkInsert : public kscript::ValueObject
@@ -373,7 +373,7 @@ public:
     DbBulkInsert();
     ~DbBulkInsert();
     
-    bool init(tango::IDatabasePtr db,
+    bool init(xd::IDatabasePtr db,
               const std::wstring& table,
               const std::wstring& columns);
 
@@ -387,8 +387,8 @@ public:
     
 private:
 
-    tango::IRowInserterPtr m_sp_ri;
-    tango::IRowInserter* m_ri;
+    xd::IRowInserterPtr m_sp_ri;
+    xd::IRowInserter* m_ri;
     std::vector<DbBulkInsertColumn> m_cols;
 };
 
@@ -400,7 +400,7 @@ struct DbResultColumn
     std::wstring name;
     int type;
     int scale;
-    tango::objhandle_t handle;
+    xd::objhandle_t handle;
 };
 
 class DbResult : public kscript::ValueObject
@@ -426,7 +426,7 @@ public:
     DbResult();
     ~DbResult();
 
-    void init(tango::IIteratorPtr iter);
+    void init(xd::IIteratorPtr iter);
 
     void constructor(kscript::ExprEnv* env, kscript::Value* retval);
     void getString(kscript::ExprEnv* env, kscript::Value* retval);
@@ -445,8 +445,8 @@ public:
 
     // public members that aren't part of the script api
     kscript::Value* getMember(const std::wstring& name);
-    tango::IStructurePtr getStructure();
-    tango::IIteratorPtr getIterator();
+    xd::IStructurePtr getStructure();
+    xd::IIteratorPtr getIterator();
 
 private:
 
@@ -457,8 +457,8 @@ private:
 private:
 
     kscript::ExprParser* m_parser;
-    tango::IIteratorPtr m_iter;
-    tango::IStructurePtr m_structure;
+    xd::IIteratorPtr m_iter;
+    xd::IStructurePtr m_structure;
     std::vector<DbResultColumn> m_cols;
     std::map<std::wstring, int, kl::cmp_nocase> m_cols_map;
     kscript::Value m_member_val;

@@ -1535,7 +1535,7 @@ bool EditorDoc::readFile(const wxString _path,
 {
     std::wstring path = towstr(_path);
 
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (!db)
         return false;
 
@@ -1581,7 +1581,7 @@ bool EditorDoc::readFile(const wxString _path,
     }
      else
     {
-        tango::IFileInfoPtr file_info = db->getFileInfo(path);
+        xd::IFileInfoPtr file_info = db->getFileInfo(path);
         if (!file_info)
             return false;
 
@@ -1589,7 +1589,7 @@ bool EditorDoc::readFile(const wxString _path,
         // format for scripts was never used in a release per previous
         // comment
 
-        tango::IStreamPtr stream = db->openStream(path);
+        xd::IStreamPtr stream = db->openStream(path);
         if (!stream)
             return false;
             
@@ -1680,7 +1680,7 @@ bool EditorDoc::getFileHash(const wxString path, std::wstring& hash)
 {
     if (!m_external)
     {
-        tango::IDatabasePtr db = g_app->getDatabase();
+        xd::IDatabasePtr db = g_app->getDatabase();
         xcm::class_info* class_info = xcm::get_class_info(db.p);
         wxString class_name = class_info->get_name();
         wxString driver = class_name.BeforeFirst('.');
@@ -1782,7 +1782,7 @@ bool EditorDoc::saveFile()
     }
      else
     {
-        tango::IDatabasePtr db = g_app->getDatabase();
+        xd::IDatabasePtr db = g_app->getDatabase();
         if (db.isNull())
             return false;
       
@@ -1792,7 +1792,7 @@ bool EditorDoc::saveFile()
             return false;
         }
 
-        tango::IStreamPtr stream = db->openStream(towstr(m_path));
+        xd::IStreamPtr stream = db->openStream(towstr(m_path));
         if (stream.isNull())
         {
             delete[] buf;

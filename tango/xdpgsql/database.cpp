@@ -98,8 +98,8 @@ std::wstring pgsqlCreateFieldString(const std::wstring& name,
 
     switch (type)
     {
-        case tango::typeWideCharacter:
-        case tango::typeCharacter:
+        case xd::typeWideCharacter:
+        case xd::typeCharacter:
         {
             swprintf(buf, 255, L"%ls varchar (%d)%ls",
                                 name.c_str(),
@@ -109,7 +109,7 @@ std::wstring pgsqlCreateFieldString(const std::wstring& name,
         }
 
         /*
-        case tango::typeWideCharacter:
+        case xd::typeWideCharacter:
         {
             swprintf(buf, 255, L"%ls nvarchar (%d)%ls",
                                 name.c_str(),
@@ -119,7 +119,7 @@ std::wstring pgsqlCreateFieldString(const std::wstring& name,
         }
         */
 
-        case tango::typeNumeric:
+        case xd::typeNumeric:
         {
             if (width > 28)
             {
@@ -134,7 +134,7 @@ std::wstring pgsqlCreateFieldString(const std::wstring& name,
             return buf;
         }
 
-        case tango::typeInteger:
+        case xd::typeInteger:
         {
             swprintf(buf, 255, L"%ls integer%ls",
                                 name.c_str(),
@@ -142,7 +142,7 @@ std::wstring pgsqlCreateFieldString(const std::wstring& name,
             return buf;
         }
 
-        case tango::typeDouble:
+        case xd::typeDouble:
         {
             swprintf(buf, 255, L"%ls double precision%ls",
                                 name.c_str(),
@@ -150,7 +150,7 @@ std::wstring pgsqlCreateFieldString(const std::wstring& name,
             return buf;
         }
 
-        case tango::typeBoolean:
+        case xd::typeBoolean:
         {
             swprintf(buf, 255, L"%ls boolean%ls",
                                 name.c_str(),
@@ -158,7 +158,7 @@ std::wstring pgsqlCreateFieldString(const std::wstring& name,
             return buf;
         }
 
-        case tango::typeDate:
+        case xd::typeDate:
         {
             swprintf(buf, 255, L"%ls date%ls",
                                 name.c_str(),
@@ -167,7 +167,7 @@ std::wstring pgsqlCreateFieldString(const std::wstring& name,
             return buf;
         }
 
-        case tango::typeDateTime:
+        case xd::typeDateTime:
         {
             swprintf(buf, 255, L"%ls timestamp%ls",
                                 name.c_str(),
@@ -186,44 +186,44 @@ int pgsqlToTangoType(int pg_type)
     switch (pg_type)
     {
         case 16:  // boolean
-            return tango::typeBoolean;
+            return xd::typeBoolean;
 
         case 17:  // bytea
         case 20:  // int8
         case 21:  // int2
         case 23:  // int4
         case 26:  // oid
-            return tango::typeInteger;
+            return xd::typeInteger;
 
         case 1700: // numeric
         case 790:  // money
-            return tango::typeNumeric;
+            return xd::typeNumeric;
 
         case 700:  // float4
         case 701:  // float8
-            return tango::typeDouble;
+            return xd::typeDouble;
 
         case 1114: // timestamp
         case 1184: // timestamptz
-            return tango::typeDateTime;
+            return xd::typeDateTime;
 
         case 1083: // time
         case 1266: // timetz
         case 1082: // date
-            return tango::typeDate;
+            return xd::typeDate;
 
         default:
         case 18:   // char
         case 25:   // text
         case 1043: // varchar
-            return tango::typeCharacter;
+            return xd::typeCharacter;
 
     }
 
-    return tango::typeInvalid;
+    return xd::typeInvalid;
 }
 
-tango::IColumnInfoPtr pgsqlCreateColInfo(const std::wstring& col_name,
+xd::IColumnInfoPtr pgsqlCreateColInfo(const std::wstring& col_name,
                                          int col_pg_type,
                                          int col_width,
                                          int col_scale,
@@ -232,8 +232,8 @@ tango::IColumnInfoPtr pgsqlCreateColInfo(const std::wstring& col_name,
 {
     int col_tango_type = pgsqlToTangoType(col_pg_type);
 
-    tango::IColumnInfoPtr col;
-    col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+    xd::IColumnInfoPtr col;
+    col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
 
     col->setName(col_name);
     col->setType(col_tango_type);
@@ -370,7 +370,7 @@ public:
 
     XCM_CLASS_NAME("xdpgsql.PgsqlJobInfo")
     XCM_BEGIN_INTERFACE_MAP(PgsqlJobInfo)
-        XCM_INTERFACE_ENTRY(tango::IJob)
+        XCM_INTERFACE_ENTRY(xd::IJob)
         XCM_INTERFACE_ENTRY(IJobInternal)
         XCM_INTERFACE_ENTRY(IPgsqlJobInfo)
     XCM_END_INTERFACE_MAP()
@@ -421,22 +421,22 @@ PgsqlDatabase::PgsqlDatabase()
     m_username = L"";
     m_password = L"";
     
-    m_attr = static_cast<tango::IAttributes*>(new DatabaseAttributes);
+    m_attr = static_cast<xd::IAttributes*>(new DatabaseAttributes);
 
-    m_attr->setIntAttribute(tango::dbattrColumnMaxNameLength, 63);
-    m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 63);
-    m_attr->setStringAttribute(tango::dbattrKeywords, sql92_keywords);    
-    m_attr->setStringAttribute(tango::dbattrColumnInvalidChars, 
+    m_attr->setIntAttribute(xd::dbattrColumnMaxNameLength, 63);
+    m_attr->setIntAttribute(xd::dbattrTableMaxNameLength, 63);
+    m_attr->setStringAttribute(xd::dbattrKeywords, sql92_keywords);    
+    m_attr->setStringAttribute(xd::dbattrColumnInvalidChars, 
                                L"\\./\x00\xFF");
-    m_attr->setStringAttribute(tango::dbattrTableInvalidChars, 
+    m_attr->setStringAttribute(xd::dbattrTableInvalidChars, 
                                L"\\./:*?<>|\x00\xFF");
-    m_attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars,
+    m_attr->setStringAttribute(xd::dbattrColumnInvalidStartingChars,
                                L"\\./\x00\xFF");
-    m_attr->setStringAttribute(tango::dbattrTableInvalidStartingChars,
+    m_attr->setStringAttribute(xd::dbattrTableInvalidStartingChars,
                                L"\\./:*?<>|\x00\xFF");
-    m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"\"");
-    m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"\"");
-    m_attr->setStringAttribute(tango::dbattrIdentifierCharsNeedingQuote, L"`\"~# $!@%^&(){}-+.");   
+    m_attr->setStringAttribute(xd::dbattrIdentifierQuoteOpenChar, L"\"");
+    m_attr->setStringAttribute(xd::dbattrIdentifierQuoteCloseChar, L"\"");
+    m_attr->setStringAttribute(xd::dbattrIdentifierCharsNeedingQuote, L"`\"~# $!@%^&(){}-+.");   
 }
 
 PgsqlDatabase::~PgsqlDatabase()
@@ -465,7 +465,7 @@ std::wstring PgsqlDatabase::getPath()
 
 std::wstring PgsqlDatabase::getTempFileDirectory()
 {
-    std::wstring result = m_attr->getStringAttribute(tango::dbattrTempDirectory);
+    std::wstring result = m_attr->getStringAttribute(xd::dbattrTempDirectory);
     if (result.empty())
     {
         result = xf_get_temp_path();
@@ -476,7 +476,7 @@ std::wstring PgsqlDatabase::getTempFileDirectory()
 
 std::wstring PgsqlDatabase::getDefinitionDirectory()
 {
-    std::wstring result = m_attr->getStringAttribute(tango::dbattrDefinitionDirectory);
+    std::wstring result = m_attr->getStringAttribute(xd::dbattrDefinitionDirectory);
     if (result.empty())
     {
         result = xf_get_temp_path();
@@ -506,7 +506,7 @@ PGconn* PgsqlDatabase::createConnection()
 
     if (PQstatus(conn) != CONNECTION_OK)
     {
-        m_error.setError(tango::errorGeneral, kl::towstring(PQerrorMessage(conn)));
+        m_error.setError(xd::errorGeneral, kl::towstring(PQerrorMessage(conn)));
 
         PQfinish(conn);
         return NULL;
@@ -564,7 +564,7 @@ void PgsqlDatabase::close()
 
 int PgsqlDatabase::getDatabaseType()
 {
-    return tango::dbtypePostgres;
+    return xd::dbtypePostgres;
 }
 
 std::wstring PgsqlDatabase::getActiveUid()
@@ -572,7 +572,7 @@ std::wstring PgsqlDatabase::getActiveUid()
     return m_username;
 }
 
-tango::IAttributesPtr PgsqlDatabase::getAttributes()
+xd::IAttributesPtr PgsqlDatabase::getAttributes()
 {
     return m_attr;
 }
@@ -598,7 +598,7 @@ bool PgsqlDatabase::cleanup()
     return true;
 }
 
-tango::IJobPtr PgsqlDatabase::createJob()
+xd::IJobPtr PgsqlDatabase::createJob()
 {
     XCM_AUTO_LOCK(m_jobs_mutex);
 
@@ -607,11 +607,11 @@ tango::IJobPtr PgsqlDatabase::createJob()
     job->ref();
     m_jobs.push_back(job);
 
-    return static_cast<tango::IJob*>(job);
+    return static_cast<xd::IJob*>(job);
 }
 
 
-tango::IDatabasePtr PgsqlDatabase::getMountDatabase(const std::wstring& path)
+xd::IDatabasePtr PgsqlDatabase::getMountDatabase(const std::wstring& path)
 {
     return xcm::null;
 }
@@ -790,12 +790,12 @@ bool PgsqlDatabase::copyFile(const std::wstring& src_path,
     return false;
 }
 
-bool PgsqlDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
+bool PgsqlDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 {
     if (info->iter_input.isOk())
     {
-        tango::IIteratorPtr iter = info->iter_input;
-        tango::IStructurePtr structure = iter->getStructure();
+        xd::IIteratorPtr iter = info->iter_input;
+        xd::IStructurePtr structure = iter->getStructure();
         if (structure.isNull())
             return false;
     
@@ -812,7 +812,7 @@ bool PgsqlDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
         }
 
 
-        xdcmnInsert(static_cast<tango::IDatabase*>(this), iter, info->output, info->where, info->limit, job);
+        xdcmnInsert(static_cast<xd::IDatabase*>(this), iter, info->output, info->where, info->limit, job);
         return true;
     }
 
@@ -838,8 +838,8 @@ bool PgsqlDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
 
     if (info->append)
     {
-        tango::IStructurePtr instruct = describeTable(info->input);
-        tango::IStructurePtr outstruct = describeTable(info->output);
+        xd::IStructurePtr instruct = describeTable(info->input);
+        xd::IStructurePtr outstruct = describeTable(info->output);
 
         std::vector<std::wstring> common_fields;
         std::vector<std::wstring>::iterator it;
@@ -899,11 +899,11 @@ bool PgsqlDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
 
 bool PgsqlDatabase::deleteFile(const std::wstring& path)
 {
-    tango::IFileInfoPtr info = getFileInfo(path);
+    xd::IFileInfoPtr info = getFileInfo(path);
     if (info.isNull())
         return false;
 
-    if (info->getType() == tango::filetypeStream)
+    if (info->getType() == xd::filetypeStream)
     {
         PGconn* conn = createConnection();
         if (!conn)
@@ -1002,7 +1002,7 @@ bool PgsqlDatabase::getFileExist(const std::wstring& path)
     return found;
 }
 
-tango::IFileInfoPtr PgsqlDatabase::getFileInfo(const std::wstring& path)
+xd::IFileInfoPtr PgsqlDatabase::getFileInfo(const std::wstring& path)
 {
     std::wstring tbl = pgsqlGetTablenameFromPath(path);
     std::wstring folder = L"";
@@ -1044,12 +1044,12 @@ tango::IFileInfoPtr PgsqlDatabase::getFileInfo(const std::wstring& path)
 
     PgsqlFileInfo* f = new PgsqlFileInfo(this);
     f->name = name;
-    f->type = tango::filetypeTable;
-    f->format = tango::formatNative;
+    f->type = xd::filetypeTable;
+    f->format = xd::formatNative;
 
     if (type.substr(0, 7) == L"stream;")
     {
-        f->type = tango::filetypeStream;
+        f->type = xd::filetypeStream;
 
         type = kl::afterFirst(type, L';');
         type = kl::beforeFirst(type, L';');
@@ -1061,7 +1061,7 @@ tango::IFileInfoPtr PgsqlDatabase::getFileInfo(const std::wstring& path)
     }
      else if (type.substr(0, 7) == L"folder;")
     {
-        f->type = tango::filetypeFolder;
+        f->type = xd::filetypeFolder;
         f->mime_type = L"";
     }
 
@@ -1069,13 +1069,13 @@ tango::IFileInfoPtr PgsqlDatabase::getFileInfo(const std::wstring& path)
 
     PQclear(res);
     closeConnection(conn);
-    return static_cast<tango::IFileInfo*>(f);
+    return static_cast<xd::IFileInfo*>(f);
 }
 
-tango::IFileInfoEnumPtr PgsqlDatabase::getFolderInfo(const std::wstring& path)
+xd::IFileInfoEnumPtr PgsqlDatabase::getFolderInfo(const std::wstring& path)
 {
-    xcm::IVectorImpl<tango::IFileInfoPtr>* retval;
-    retval = new xcm::IVectorImpl<tango::IFileInfoPtr>;
+    xcm::IVectorImpl<xd::IFileInfoPtr>* retval;
+    retval = new xcm::IVectorImpl<xd::IFileInfoPtr>;
 
     std::string prefix = "";
     if (path.length() > 0 && path != L"/")
@@ -1135,12 +1135,12 @@ tango::IFileInfoEnumPtr PgsqlDatabase::getFolderInfo(const std::wstring& path)
 
         PgsqlFileInfo* f = new PgsqlFileInfo(this);
         f->name = name;
-        f->type = tango::filetypeTable;
-        f->format = tango::formatNative;
+        f->type = xd::filetypeTable;
+        f->format = xd::formatNative;
 
         if (type.substr(0, 7) == L"stream;")
         {
-            f->type = tango::filetypeStream;
+            f->type = xd::filetypeStream;
 
             type = kl::afterFirst(type, L';');
             type = kl::beforeFirst(type, L';');
@@ -1152,7 +1152,7 @@ tango::IFileInfoEnumPtr PgsqlDatabase::getFolderInfo(const std::wstring& path)
         }
          else if (type.substr(0, 7) == L"folder;")
         {
-            f->type = tango::filetypeFolder;
+            f->type = xd::filetypeFolder;
             f->mime_type = L"";
         }
 
@@ -1209,21 +1209,21 @@ std::wstring PgsqlDatabase::getPrimaryKey(const std::wstring path)
     return pk;
 }
 
-tango::IStructurePtr PgsqlDatabase::createStructure()
+xd::IStructurePtr PgsqlDatabase::createStructure()
 {
     Structure* s = new Structure;
-    return static_cast<tango::IStructure*>(s);
+    return static_cast<xd::IStructure*>(s);
 }
 
 bool PgsqlDatabase::createTable(const std::wstring& path,
-                                tango::IStructurePtr struct_config,
-                                tango::FormatInfo* format_info)
+                                xd::IStructurePtr struct_config,
+                                xd::FormatInfo* format_info)
 {
     std::wstring tbl = pgsqlQuoteIdentifierIfNecessary(path);
 
 
-    std::wstring quote_openchar = m_attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
-    std::wstring quote_closechar = m_attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
+    std::wstring quote_openchar = m_attr->getStringAttribute(xd::dbattrIdentifierQuoteOpenChar);
+    std::wstring quote_closechar = m_attr->getStringAttribute(xd::dbattrIdentifierQuoteCloseChar);
 
     std::wstring command;
     command.reserve(1024);
@@ -1243,7 +1243,7 @@ bool PgsqlDatabase::createTable(const std::wstring& path,
     int i, col_count = struct_config->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr col_info;
+        xd::IColumnInfoPtr col_info;
         col_info = struct_config->getColumnInfoByIdx(i);
 
         // quote the fieldname
@@ -1258,7 +1258,7 @@ bool PgsqlDatabase::createTable(const std::wstring& path,
                                   width,
                                   scale,
                                   true,
-                                  tango::dbtypePostgres);
+                                  xd::dbtypePostgres);
 
         command += field;
 
@@ -1279,7 +1279,7 @@ bool PgsqlDatabase::createTable(const std::wstring& path,
     return true;
 }
 
-tango::IStreamPtr PgsqlDatabase::openStream(const std::wstring& path)
+xd::IStreamPtr PgsqlDatabase::openStream(const std::wstring& path)
 {
     PGconn* conn = createConnection();
     if (!conn)
@@ -1312,7 +1312,7 @@ tango::IStreamPtr PgsqlDatabase::openStream(const std::wstring& path)
         return xcm::null;
     }
 
-    return static_cast<tango::IStream*>(pstream);
+    return static_cast<xd::IStream*>(pstream);
 }
 
 bool PgsqlDatabase::createStream(const std::wstring& path, const std::wstring& mime_type)
@@ -1378,7 +1378,7 @@ bool PgsqlDatabase::createStream(const std::wstring& path, const std::wstring& m
     return true;
 }
 
-tango::IIteratorPtr PgsqlDatabase::query(const tango::QueryParams& qp)
+xd::IIteratorPtr PgsqlDatabase::query(const xd::QueryParams& qp)
 {
     std::wstring tbl = pgsqlGetTablenameFromPath(qp.from);
 
@@ -1412,15 +1412,15 @@ tango::IIteratorPtr PgsqlDatabase::query(const tango::QueryParams& qp)
         return xcm::null;
     }
 
-    return static_cast<tango::IIterator*>(iter);
+    return static_cast<xd::IIterator*>(iter);
 }
 
 
 
-tango::IIndexInfoPtr PgsqlDatabase::createIndex(const std::wstring& path,
+xd::IIndexInfoPtr PgsqlDatabase::createIndex(const std::wstring& path,
                                                 const std::wstring& name,
                                                 const std::wstring& expr,
-                                                tango::IJob* job)
+                                                xd::IJob* job)
 {
     std::wstring tbl = pgsqlGetTablenameFromPath(path);
 
@@ -1445,7 +1445,7 @@ tango::IIndexInfoPtr PgsqlDatabase::createIndex(const std::wstring& path,
     ii->setTag(name);
     ii->setExpression(expr);
 
-    return static_cast<tango::IIndexInfo*>(ii);
+    return static_cast<xd::IIndexInfo*>(ii);
 }
 
 
@@ -1478,10 +1478,10 @@ bool PgsqlDatabase::deleteIndex(const std::wstring& path,
 }
 
 
-tango::IIndexInfoEnumPtr PgsqlDatabase::getIndexEnum(const std::wstring& path)
+xd::IIndexInfoEnumPtr PgsqlDatabase::getIndexEnum(const std::wstring& path)
 {
-    xcm::IVectorImpl<tango::IIndexInfoPtr>* vec;
-    vec = new xcm::IVectorImpl<tango::IIndexInfoPtr>;
+    xcm::IVectorImpl<xd::IIndexInfoPtr>* vec;
+    vec = new xcm::IVectorImpl<xd::IIndexInfoPtr>;
 
 
     std::wstring tbl = pgsqlGetTablenameFromPath(path);
@@ -1538,24 +1538,24 @@ tango::IIndexInfoEnumPtr PgsqlDatabase::getIndexEnum(const std::wstring& path)
         ii->setTag(it->first);
         ii->setExpression(it->second);
 
-        vec->append(static_cast<tango::IIndexInfo*>(ii));
+        vec->append(static_cast<xd::IIndexInfo*>(ii));
     }
 
     return vec;
 }
 
 
-tango::IRowInserterPtr PgsqlDatabase::bulkInsert(const std::wstring& path)
+xd::IRowInserterPtr PgsqlDatabase::bulkInsert(const std::wstring& path)
 {
     std::wstring tbl = pgsqlGetTablenameFromPath(path);
 
     PgsqlRowInserter* inserter = new PgsqlRowInserter(this, tbl);
-    return static_cast<tango::IRowInserter*>(inserter);
+    return static_cast<xd::IRowInserter*>(inserter);
 }
 
 
 
-tango::IStructurePtr PgsqlDatabase::describeTable(const std::wstring& path)
+xd::IStructurePtr PgsqlDatabase::describeTable(const std::wstring& path)
 {
     std::wstring tbl = pgsqlGetTablenameFromPath(path);
 
@@ -1576,7 +1576,7 @@ tango::IStructurePtr PgsqlDatabase::describeTable(const std::wstring& path)
         return xcm::null;
     }
 
-    // create new tango::IStructure
+    // create new xd::IStructure
     Structure* s = new Structure;
 
     std::wstring colname;
@@ -1594,23 +1594,23 @@ tango::IStructurePtr PgsqlDatabase::describeTable(const std::wstring& path)
         type_mod = atoi(PQgetvalue(res, i, 2));
         tango_type = pgsqlToTangoType(pg_type);
         
-        if (tango_type == tango::typeNumeric || tango_type == tango::typeDouble)
+        if (tango_type == xd::typeNumeric || tango_type == xd::typeDouble)
         {
             type_mod -= 4;
             col_width = (type_mod >> 16);
             col_scale = (type_mod & 0xffff);
         }
-         else if (tango_type == tango::typeCharacter || tango_type == tango::typeWideCharacter)
+         else if (tango_type == xd::typeCharacter || tango_type == xd::typeWideCharacter)
         {
             col_width = type_mod - 4;
             col_scale = 0;
         }
-         else if (tango_type == tango::typeDateTime)
+         else if (tango_type == xd::typeDateTime)
         {
             col_width = 8;
             col_scale = 0;
         }
-         else if (tango_type == tango::typeInteger || tango_type == tango::typeDate)
+         else if (tango_type == xd::typeInteger || tango_type == xd::typeDate)
         {
             col_width = 4;
             col_scale = 0;
@@ -1621,7 +1621,7 @@ tango::IStructurePtr PgsqlDatabase::describeTable(const std::wstring& path)
             col_scale = 0;
         }
 
-        tango::IColumnInfoPtr colinfo = pgsqlCreateColInfo(colname,
+        xd::IColumnInfoPtr colinfo = pgsqlCreateColInfo(colname,
                                                            pg_type, 
                                                            col_width,
                                                            col_scale,
@@ -1634,11 +1634,11 @@ tango::IStructurePtr PgsqlDatabase::describeTable(const std::wstring& path)
 
     closeConnection(conn);
 
-    return static_cast<tango::IStructure*>(s);
+    return static_cast<xd::IStructure*>(s);
 }
 
 
-bool PgsqlDatabase::modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job)
+bool PgsqlDatabase::modifyStructure(const std::wstring& path, xd::IStructurePtr struct_config, xd::IJob* job)
 {
     return false;
 }
@@ -1647,7 +1647,7 @@ bool PgsqlDatabase::modifyStructure(const std::wstring& path, tango::IStructureP
 bool PgsqlDatabase::execute(const std::wstring& command,
                             unsigned int flags,
                             xcm::IObjectPtr& result,
-                            tango::IJob* job)
+                            xd::IJob* job)
 {
     m_error.clearError();
     result.clear();
@@ -1667,7 +1667,7 @@ bool PgsqlDatabase::execute(const std::wstring& command,
         // create an iterator based on our select statement
         PgsqlIterator* iter = new PgsqlIterator(this);
 
-        if (flags & tango::sqlAlwaysCopy)
+        if (flags & xd::sqlAlwaysCopy)
         {
             std::wstring tbl = L"xtmp_" + kl::getUniqueString();
             std::wstring command2 = L"CREATE TABLE " + tbl + L" AS " + command;
@@ -1699,7 +1699,7 @@ bool PgsqlDatabase::execute(const std::wstring& command,
             }
         }
 
-        result = static_cast<xcm::IObject*>(static_cast<tango::IIterator*>(iter));
+        result = static_cast<xcm::IObject*>(static_cast<xd::IIterator*>(iter));
         return true;
     }
      else
@@ -1731,7 +1731,7 @@ bool PgsqlDatabase::execute(const std::wstring& command,
 
 
 
-bool PgsqlDatabase::groupQuery(tango::GroupQueryParams* info, tango::IJob* job)
+bool PgsqlDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
 {
     bool detail_rows = false;
     size_t grouped_column_count = 0;

@@ -178,13 +178,13 @@ bool PgsqlIterator::init(PGconn* conn, PGresult* res)
         col_width = 255;
         fmod = PQfmod(m_res, i);
 
-        if (col_tango_type == tango::typeNumeric || col_tango_type == tango::typeDouble)
+        if (col_tango_type == xd::typeNumeric || col_tango_type == xd::typeDouble)
         {
             fmod -= 4;
             col_width = (fmod >> 16);
             col_scale = (fmod & 0xffff);
         }
-         else if (col_tango_type == tango::typeCharacter || col_tango_type == tango::typeWideCharacter)
+         else if (col_tango_type == xd::typeCharacter || col_tango_type == xd::typeWideCharacter)
         {
             col_width = fmod - 4;
             col_scale = 0;
@@ -221,17 +221,17 @@ std::wstring PgsqlIterator::getTable()
     return m_path;
 }
 
-tango::rowpos_t PgsqlIterator::getRowCount()
+xd::rowpos_t PgsqlIterator::getRowCount()
 {
     return 0;
 }
 
-tango::IDatabasePtr PgsqlIterator::getDatabase()
+xd::IDatabasePtr PgsqlIterator::getDatabase()
 {
-    return static_cast<tango::IDatabase*>(m_database);
+    return static_cast<xd::IDatabase*>(m_database);
 }
 
-tango::IIteratorPtr PgsqlIterator::clone()
+xd::IIteratorPtr PgsqlIterator::clone()
 {
     return xcm::null;
 }
@@ -239,7 +239,7 @@ tango::IIteratorPtr PgsqlIterator::clone()
 
 void PgsqlIterator::setIteratorFlags(unsigned int mask, unsigned int value)
 {
-    m_cache_active = ((mask & value & tango::ifReverseRowCache) != 0) ? true : false;
+    m_cache_active = ((mask & value & xd::ifReverseRowCache) != 0) ? true : false;
 }
     
     
@@ -337,7 +337,7 @@ void PgsqlIterator::goLast()
 {
 }
 
-tango::rowid_t PgsqlIterator::getRowId()
+xd::rowid_t PgsqlIterator::getRowId()
 {
     return m_row_pos;
 }
@@ -367,7 +367,7 @@ bool PgsqlIterator::setPos(double pct)
     return false;
 }
 
-void PgsqlIterator::goRow(const tango::rowid_t& rowid)
+void PgsqlIterator::goRow(const xd::rowid_t& rowid)
 {
 }
 
@@ -376,7 +376,7 @@ double PgsqlIterator::getPos()
     return (double)(long long)m_row_pos;
 }
 
-tango::IStructurePtr PgsqlIterator::getStructure()
+xd::IStructurePtr PgsqlIterator::getStructure()
 {
     if (m_structure.isOk())
         return m_structure->clone();
@@ -388,7 +388,7 @@ tango::IStructurePtr PgsqlIterator::getStructure()
     std::vector<PgsqlDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        tango::IColumnInfoPtr col;
+        xd::IColumnInfoPtr col;
      
         if (col.isOk())
         {
@@ -399,8 +399,8 @@ tango::IStructurePtr PgsqlIterator::getStructure()
         {
             if ((*it)->isCalculated())
             {
-                tango::IColumnInfoPtr col;
-                col = static_cast<tango::IColumnInfo*>(new ColumnInfo);
+                xd::IColumnInfoPtr col;
+                col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
                 col->setName((*it)->name);
                 col->setType((*it)->type);
                 col->setWidth((*it)->width);
@@ -414,7 +414,7 @@ tango::IStructurePtr PgsqlIterator::getStructure()
             {
                 // generate column info from the
                 // field info from the query result
-                tango::IColumnInfoPtr col;
+                xd::IColumnInfoPtr col;
 
                 col = pgsqlCreateColInfo((*it)->name,
                                          (*it)->pg_type,
@@ -429,14 +429,14 @@ tango::IStructurePtr PgsqlIterator::getStructure()
         }
     }
     
-    m_structure = static_cast<tango::IStructure*>(s);
+    m_structure = static_cast<xd::IStructure*>(s);
 
     return m_structure->clone();
 }
 
 void PgsqlIterator::refreshStructure()
 {
-    tango::IStructurePtr set_structure = m_database->describeTable(getTable());
+    xd::IStructurePtr set_structure = m_database->describeTable(getTable());
     if (set_structure.isNull())
         return;
 
@@ -450,7 +450,7 @@ void PgsqlIterator::refreshStructure()
         delete m_fields[i]->expr;
         m_fields[i]->expr = NULL;
 
-        tango::IColumnInfoPtr col = set_structure->getColumnInfo(m_fields[i]->name);
+        xd::IColumnInfoPtr col = set_structure->getColumnInfo(m_fields[i]->name);
         if (col.isNull())
         {
             m_fields.erase(m_fields.begin() + i);
@@ -471,7 +471,7 @@ void PgsqlIterator::refreshStructure()
     std::vector<PgsqlDataAccessInfo*>::iterator it;
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr col;
+        xd::IColumnInfoPtr col;
         
         col = set_structure->getColumnInfoByIdx(i);
         if (!col->getCalculated())
@@ -518,8 +518,8 @@ void PgsqlIterator::refreshStructure()
     m_structure.clear();
 }
 
-bool PgsqlIterator::modifyStructure(tango::IStructure* struct_config,
-                                   tango::IJob* job)
+bool PgsqlIterator::modifyStructure(xd::IStructure* struct_config,
+                                   xd::IJob* job)
 {
     IStructureInternalPtr struct_int = struct_config;
 
@@ -619,13 +619,13 @@ bool PgsqlIterator::modifyStructure(tango::IStructure* struct_config,
 
 
 
-tango::objhandle_t PgsqlIterator::getHandle(const std::wstring& expr)
+xd::objhandle_t PgsqlIterator::getHandle(const std::wstring& expr)
 {
     std::vector<PgsqlDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
         if (kl::iequals((*it)->name, expr))
-            return (tango::objhandle_t)(*it);
+            return (xd::objhandle_t)(*it);
     }
 
     // test for binary keys
@@ -634,10 +634,10 @@ tango::objhandle_t PgsqlIterator::getHandle(const std::wstring& expr)
         PgsqlDataAccessInfo* dai = new PgsqlDataAccessInfo;
         dai->expr = NULL;
         dai->expr_text = expr;
-        dai->type = tango::typeBinary;
+        dai->type = xd::typeBinary;
         dai->key_layout = new KeyLayout;
 
-        if (!dai->key_layout->setKeyExpr(static_cast<tango::IIterator*>(this),
+        if (!dai->key_layout->setKeyExpr(static_cast<xd::IIterator*>(this),
                                     expr.substr(4),
                                     false))
         {
@@ -646,14 +646,14 @@ tango::objhandle_t PgsqlIterator::getHandle(const std::wstring& expr)
         }
         
         m_exprs.push_back(dai);
-        return (tango::objhandle_t)dai;
+        return (xd::objhandle_t)dai;
     }
     
     
     kscript::ExprParser* parser = parse(expr);
     if (!parser)
     {
-        return (tango::objhandle_t)0;
+        return (xd::objhandle_t)0;
     }
 
     PgsqlDataAccessInfo* dai = new PgsqlDataAccessInfo;
@@ -662,15 +662,15 @@ tango::objhandle_t PgsqlIterator::getHandle(const std::wstring& expr)
     dai->type = kscript2tangoType(parser->getType());
     m_exprs.push_back(dai);
 
-    return (tango::objhandle_t)dai;
+    return (xd::objhandle_t)dai;
 }
 
-bool PgsqlIterator::releaseHandle(tango::objhandle_t data_handle)
+bool PgsqlIterator::releaseHandle(xd::objhandle_t data_handle)
 {
     std::vector<PgsqlDataAccessInfo*>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
     {
-        if ((tango::objhandle_t)(*it) == data_handle)
+        if ((xd::objhandle_t)(*it) == data_handle)
         {
             return true;
         }
@@ -678,7 +678,7 @@ bool PgsqlIterator::releaseHandle(tango::objhandle_t data_handle)
 
     for (it = m_exprs.begin(); it != m_exprs.end(); ++it)
     {
-        if ((tango::objhandle_t)(*it) == data_handle)
+        if ((xd::objhandle_t)(*it) == data_handle)
         {
             delete (*it);
             m_exprs.erase(it);
@@ -689,7 +689,7 @@ bool PgsqlIterator::releaseHandle(tango::objhandle_t data_handle)
     return false;
 }
 
-tango::IColumnInfoPtr PgsqlIterator::getInfo(tango::objhandle_t data_handle)
+xd::IColumnInfoPtr PgsqlIterator::getInfo(xd::objhandle_t data_handle)
 {
     PgsqlDataAccessInfo* dai = (PgsqlDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -701,12 +701,12 @@ tango::IColumnInfoPtr PgsqlIterator::getInfo(tango::objhandle_t data_handle)
 
     if (m_structure.isNull())
     {
-        tango::IStructurePtr s = getStructure();
+        xd::IStructurePtr s = getStructure();
     }
 
     if (m_structure.isOk())
     {
-        tango::IColumnInfoPtr colinfo;
+        xd::IColumnInfoPtr colinfo;
         colinfo = m_structure->getColumnInfo(dai->name);
         if (colinfo.isOk())
         {
@@ -725,18 +725,18 @@ tango::IColumnInfoPtr PgsqlIterator::getInfo(tango::objhandle_t data_handle)
                               -1);
 }
 
-int PgsqlIterator::getType(tango::objhandle_t data_handle)
+int PgsqlIterator::getType(xd::objhandle_t data_handle)
 {
     PgsqlDataAccessInfo* dai = (PgsqlDataAccessInfo*)data_handle;
     if (dai == NULL)
     {
-        return tango::typeInvalid;
+        return xd::typeInvalid;
     }
     
     return dai->type;
 }
 
-int PgsqlIterator::getRawWidth(tango::objhandle_t data_handle)
+int PgsqlIterator::getRawWidth(xd::objhandle_t data_handle)
 {
     PgsqlDataAccessInfo* dai = (PgsqlDataAccessInfo*)data_handle;
     if (dai && dai->key_layout)
@@ -747,7 +747,7 @@ int PgsqlIterator::getRawWidth(tango::objhandle_t data_handle)
     return 0;
 }
 
-const unsigned char* PgsqlIterator::getRawPtr(tango::objhandle_t data_handle)
+const unsigned char* PgsqlIterator::getRawPtr(xd::objhandle_t data_handle)
 {
     PgsqlDataAccessInfo* dai = (PgsqlDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -802,7 +802,7 @@ static void decodeHexString(const char* buf, std::string& out)
     }
 }
 
-const std::string& PgsqlIterator::getString(tango::objhandle_t data_handle)
+const std::string& PgsqlIterator::getString(xd::objhandle_t data_handle)
 {
     PgsqlDataAccessInfo* dai = (PgsqlDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -830,7 +830,7 @@ const std::string& PgsqlIterator::getString(tango::objhandle_t data_handle)
     return dai->str_result;
 }
 
-const std::wstring& PgsqlIterator::getWideString(tango::objhandle_t data_handle)
+const std::wstring& PgsqlIterator::getWideString(xd::objhandle_t data_handle)
 {
     PgsqlDataAccessInfo* dai = (PgsqlDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -858,7 +858,7 @@ const std::wstring& PgsqlIterator::getWideString(tango::objhandle_t data_handle)
     return dai->wstr_result;
 }
 
-tango::datetime_t PgsqlIterator::getDateTime(tango::objhandle_t data_handle)
+xd::datetime_t PgsqlIterator::getDateTime(xd::objhandle_t data_handle)
 {
     PgsqlDataAccessInfo* dai = (PgsqlDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -871,10 +871,10 @@ tango::datetime_t PgsqlIterator::getDateTime(tango::objhandle_t data_handle)
         dai->expr->eval(&dai->expr_result);
         kscript::ExprDateTime edt = dai->expr_result.getDateTime();
 
-        tango::datetime_t dt;
+        xd::datetime_t dt;
         dt = edt.date;
         dt <<= 32;
-        if (dai->type == tango::typeDateTime)
+        if (dai->type == xd::typeDateTime)
             dt |= edt.time;
 
         return dt;
@@ -893,7 +893,7 @@ tango::datetime_t PgsqlIterator::getDateTime(tango::objhandle_t data_handle)
     char buf[8];
     int y, m, d, h, mm, s;
 
-    if (dai->type == tango::typeDate)
+    if (dai->type == xd::typeDate)
     {
         memcpy(buf, c, 4);
         buf[4] = 0;
@@ -910,7 +910,7 @@ tango::datetime_t PgsqlIterator::getDateTime(tango::objhandle_t data_handle)
         if (y == 0)
             return 0;
 
-        tango::DateTime dt(y, m, d);
+        xd::DateTime dt(y, m, d);
         return dt;
     }
      else
@@ -942,12 +942,12 @@ tango::datetime_t PgsqlIterator::getDateTime(tango::objhandle_t data_handle)
         if (y == 0)
             return 0;
 
-        tango::DateTime dt(y, m, d, h, mm, s, 0);
+        xd::DateTime dt(y, m, d, h, mm, s, 0);
         return dt;
     }
 }
 
-double PgsqlIterator::getDouble(tango::objhandle_t data_handle)
+double PgsqlIterator::getDouble(xd::objhandle_t data_handle)
 {
     PgsqlDataAccessInfo* dai = (PgsqlDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -972,12 +972,12 @@ double PgsqlIterator::getDouble(tango::objhandle_t data_handle)
 
     const char* c = PQgetvalue(m_res, m_block_row, dai->ordinal);
 
-    if (dai->type == tango::typeNumeric ||
-        dai->type == tango::typeDouble)
+    if (dai->type == xd::typeNumeric ||
+        dai->type == xd::typeDouble)
     {
         return kl::nolocale_atof(c);
     }
-     else if (dai->type == tango::typeInteger)
+     else if (dai->type == xd::typeInteger)
     {
         return atoi(c);
     }
@@ -987,7 +987,7 @@ double PgsqlIterator::getDouble(tango::objhandle_t data_handle)
     }
 }
 
-int PgsqlIterator::getInteger(tango::objhandle_t data_handle)
+int PgsqlIterator::getInteger(xd::objhandle_t data_handle)
 {
     PgsqlDataAccessInfo* dai = (PgsqlDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -1012,12 +1012,12 @@ int PgsqlIterator::getInteger(tango::objhandle_t data_handle)
 
     const char* c = PQgetvalue(m_res, m_block_row, dai->ordinal);
 
-    if (dai->type == tango::typeNumeric ||
-        dai->type == tango::typeDouble)
+    if (dai->type == xd::typeNumeric ||
+        dai->type == xd::typeDouble)
     {
         return (int)kl::nolocale_atof(c);
     }
-     else if (dai->type == tango::typeInteger)
+     else if (dai->type == xd::typeInteger)
     {
         return atoi(c);
     }
@@ -1027,7 +1027,7 @@ int PgsqlIterator::getInteger(tango::objhandle_t data_handle)
     }
 }
 
-bool PgsqlIterator::getBoolean(tango::objhandle_t data_handle)
+bool PgsqlIterator::getBoolean(xd::objhandle_t data_handle)
 {
     PgsqlDataAccessInfo* dai = (PgsqlDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -1053,7 +1053,7 @@ bool PgsqlIterator::getBoolean(tango::objhandle_t data_handle)
     //return dai->bool_val ? true : false;
 }
 
-bool PgsqlIterator::isNull(tango::objhandle_t data_handle)
+bool PgsqlIterator::isNull(xd::objhandle_t data_handle)
 {
     PgsqlDataAccessInfo* dai = (PgsqlDataAccessInfo*)data_handle;
     if (dai == NULL)
@@ -1073,21 +1073,21 @@ bool PgsqlIterator::isNull(tango::objhandle_t data_handle)
 
 
 
-tango::IIteratorPtr PgsqlIterator::getChildIterator(tango::IRelationPtr relation)
+xd::IIteratorPtr PgsqlIterator::getChildIterator(xd::IRelationPtr relation)
 {
     return xcm::null;
 }
 
-tango::IIteratorPtr PgsqlIterator::getFilteredChildIterator(tango::IRelationPtr relation)
+xd::IIteratorPtr PgsqlIterator::getFilteredChildIterator(xd::IRelationPtr relation)
 {
     return xcm::null;
 }
 
 
-// tango::ICacheRowUpdate::updateCacheRow()
+// xd::ICacheRowUpdate::updateCacheRow()
 
-bool PgsqlIterator::updateCacheRow(tango::rowid_t rowid,
-                                   tango::ColumnUpdateInfo* info,
+bool PgsqlIterator::updateCacheRow(xd::rowid_t rowid,
+                                   xd::ColumnUpdateInfo* info,
                                    size_t info_size)
 {
 /*
@@ -1105,14 +1105,14 @@ bool PgsqlIterator::updateCacheRow(tango::rowid_t rowid,
 
         switch (dai->type)
         {
-            case tango::typeCharacter:
+            case xd::typeCharacter:
                 m_cache.updateValue(m_row_pos,
                                     column,
                                     (unsigned char*)info->str_val.c_str(),
                                     info->str_val.length());
                 break;
 
-            case tango::typeWideCharacter:
+            case xd::typeWideCharacter:
                 m_cache.updateValue(m_row_pos,
                                     column,
                                     (unsigned char*)info->wstr_val.c_str(),
@@ -1120,26 +1120,26 @@ bool PgsqlIterator::updateCacheRow(tango::rowid_t rowid,
                 break;
 
 
-            case tango::typeNumeric:
-            case tango::typeDouble:
+            case xd::typeNumeric:
+            case xd::typeDouble:
                 m_cache.updateValue(m_row_pos,
                                     column,
                                     (unsigned char*)&info->dbl_val,
                                     sizeof(double));
                 break;
 
-            case tango::typeInteger:
+            case xd::typeInteger:
                 m_cache.updateValue(m_row_pos,
                                     column,
                                     (unsigned char*)&info->int_val,
                                     sizeof(int));
                 break;
 
-            case tango::typeDate:
+            case xd::typeDate:
             {
                 SQL_DATE_STRUCT date;
                 
-                tango::DateTime dt;
+                xd::DateTime dt;
                 dt.setDateTime(info->date_val);
                 
                 date.year = dt.getYear();
@@ -1154,11 +1154,11 @@ bool PgsqlIterator::updateCacheRow(tango::rowid_t rowid,
             }
             break;
             
-            case tango::typeDateTime:
+            case xd::typeDateTime:
             {
                 SQL_TIMESTAMP_STRUCT datetime;
                 
-                tango::DateTime dt;
+                xd::DateTime dt;
                 dt.setDateTime(info->date_val);
                 
                 datetime.year = dt.getYear();
@@ -1176,7 +1176,7 @@ bool PgsqlIterator::updateCacheRow(tango::rowid_t rowid,
             }
             break;
 
-            case tango::typeBoolean:
+            case xd::typeBoolean:
                 m_cache.updateValue(m_row_pos,
                                     column,
                                     (unsigned char*)&info->bool_val,

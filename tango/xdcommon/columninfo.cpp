@@ -18,14 +18,14 @@ ColumnInfo::ColumnInfo()
 {
     m_name[0] = 0;
     m_expression = NULL;
-    m_type = tango::typeInvalid;
+    m_type = xd::typeInvalid;
     m_width = 0;
     m_scale = 0;
     m_calculated = false;
     m_offset = 0;
     m_col_ord = 0;
     m_table_ord = 0;
-    m_encoding = tango::encodingUndefined;
+    m_encoding = xd::encodingUndefined;
     m_nulls_allowed = false;
 }
 
@@ -157,7 +157,7 @@ int ColumnInfo::getTableOrdinal()
 }
 
 
-tango::IColumnInfoPtr ColumnInfo::clone()
+xd::IColumnInfoPtr ColumnInfo::clone()
 {
     ColumnInfo* p = new ColumnInfo;
 
@@ -177,10 +177,10 @@ tango::IColumnInfoPtr ColumnInfo::clone()
         p->m_expression = wcsdup(m_expression);
     }
 
-    return static_cast<tango::IColumnInfo*>(p);
+    return static_cast<xd::IColumnInfo*>(p);
 }
 
-void ColumnInfo::copyTo(tango::IColumnInfoPtr dest)
+void ColumnInfo::copyTo(xd::IColumnInfoPtr dest)
 {
     dest->setName(m_name);
     dest->setType(m_type);

@@ -17,22 +17,22 @@
 #include "../xdcommon/errorinfo.h"
 
 
-class DatabaseMgr : public tango::IDatabaseMgr,
-                    public tango::IDatabaseParserBinder
+class DatabaseMgr : public xd::IDatabaseMgr,
+                    public xd::IDatabaseParserBinder
 {
     XCM_CLASS_NAME("xdnative.DatabaseMgr")
     XCM_BEGIN_INTERFACE_MAP(DatabaseMgr)
-        XCM_INTERFACE_ENTRY(tango::IDatabaseMgr)
-        XCM_INTERFACE_ENTRY(tango::IDatabaseParserBinder)
+        XCM_INTERFACE_ENTRY(xd::IDatabaseMgr)
+        XCM_INTERFACE_ENTRY(xd::IDatabaseParserBinder)
     XCM_END_INTERFACE_MAP()
 
 public:
 
     bool createDatabase(const std::wstring& connection_str);
 
-    tango::IDatabasePtr open(const std::wstring& connection_str);
+    xd::IDatabasePtr open(const std::wstring& connection_str);
 
-    tango::IDatabaseEntryEnumPtr getDatabaseList(const std::wstring& host,
+    xd::IDatabaseEntryEnumPtr getDatabaseList(const std::wstring& host,
                                                 int port,
                                                 const std::wstring& uid,
                                                 const std::wstring& password);

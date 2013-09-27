@@ -65,15 +65,15 @@ struct MysqlDataAccessInfo
 
 
 class MysqlIterator : public CommonBaseIterator,
-                      public tango::ICacheRowUpdate
+                      public xd::ICacheRowUpdate
 {
 friend class MysqlDatabase;
 friend class MySqlSet;
 
     XCM_CLASS_NAME("xdmysql.Iterator")
     XCM_BEGIN_INTERFACE_MAP(MysqlIterator)
-        XCM_INTERFACE_ENTRY(tango::IIterator)
-        XCM_INTERFACE_ENTRY(tango::ICacheRowUpdate)
+        XCM_INTERFACE_ENTRY(xd::IIterator)
+        XCM_INTERFACE_ENTRY(xd::ICacheRowUpdate)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -86,9 +86,9 @@ public:
 
     void setTable(const std::wstring& table);
     std::wstring getTable();
-    tango::rowpos_t getRowCount();
-    tango::IDatabasePtr getDatabase();
-    tango::IIteratorPtr clone();
+    xd::rowpos_t getRowCount();
+    xd::IDatabasePtr getDatabase();
+    xd::IIteratorPtr clone();
 
     unsigned int getIteratorFlags();
     void setIteratorFlags(unsigned int mask, unsigned int value);
@@ -97,44 +97,44 @@ public:
     void goFirst();
     void goLast();
     double getPos();
-    tango::rowid_t getRowId();
+    xd::rowid_t getRowId();
     bool bof();
     bool eof();
     bool seek(const unsigned char* key, int length, bool soft);
     bool seekValues(const wchar_t* arr[], size_t arr_size, bool soft);
     bool setPos(double pct);
-    void goRow(const tango::rowid_t& rowid);
+    void goRow(const xd::rowid_t& rowid);
 
-    tango::IStructurePtr getStructure();
+    xd::IStructurePtr getStructure();
     void refreshStructure();
-    bool modifyStructure(tango::IStructure* struct_config, tango::IJob* job);
+    bool modifyStructure(xd::IStructure* struct_config, xd::IJob* job);
 
-    tango::objhandle_t getHandle(const std::wstring& expr);
-    tango::IColumnInfoPtr getInfo(tango::objhandle_t data_handle);
-    int getType(tango::objhandle_t data_handle);
-    bool releaseHandle(tango::objhandle_t data_handle);
+    xd::objhandle_t getHandle(const std::wstring& expr);
+    xd::IColumnInfoPtr getInfo(xd::objhandle_t data_handle);
+    int getType(xd::objhandle_t data_handle);
+    bool releaseHandle(xd::objhandle_t data_handle);
 
-    const unsigned char* getRawPtr(tango::objhandle_t data_handle);
-    int getRawWidth(tango::objhandle_t data_handle);
-    const std::string& getString(tango::objhandle_t data_handle);
-    const std::wstring& getWideString(tango::objhandle_t data_handle);
-    tango::datetime_t getDateTime(tango::objhandle_t data_handle);
-    double getDouble(tango::objhandle_t data_handle);
-    int getInteger(tango::objhandle_t data_handle);
-    bool getBoolean(tango::objhandle_t data_handle);
-    bool isNull(tango::objhandle_t data_handle);
+    const unsigned char* getRawPtr(xd::objhandle_t data_handle);
+    int getRawWidth(xd::objhandle_t data_handle);
+    const std::string& getString(xd::objhandle_t data_handle);
+    const std::wstring& getWideString(xd::objhandle_t data_handle);
+    xd::datetime_t getDateTime(xd::objhandle_t data_handle);
+    double getDouble(xd::objhandle_t data_handle);
+    int getInteger(xd::objhandle_t data_handle);
+    bool getBoolean(xd::objhandle_t data_handle);
+    bool isNull(xd::objhandle_t data_handle);
 
-    // -- tango::ICacheRowUpdate --
+    // -- xd::ICacheRowUpdate --
 
-    bool updateCacheRow(tango::rowid_t rowid,
-                        tango::ColumnUpdateInfo* info,
+    bool updateCacheRow(xd::rowid_t rowid,
+                        xd::ColumnUpdateInfo* info,
                         size_t info_size);
                                 
 private:
 
     void skipWithCache(int delta);
     void saveRowToCache();
-    void readRowFromCache(tango::rowpos_t row);
+    void readRowFromCache(xd::rowpos_t row);
     
 private:
 
@@ -145,7 +145,7 @@ private:
     MYSQL_ROW m_row;           // holds the results of each row
     unsigned long* m_lengths;  // lenghts of the items in row
     int m_row_arr_size;        // number of elements in m_row
-    tango::rowpos_t m_row_pos;
+    xd::rowpos_t m_row_pos;
 
     std::vector<MysqlDataAccessInfo*> m_fields;
     std::vector<MysqlDataAccessInfo*> m_exprs;

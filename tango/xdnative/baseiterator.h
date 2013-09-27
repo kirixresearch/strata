@@ -55,7 +55,7 @@ struct DataAccessInfo
     int ordinal;
     bool nulls_allowed;
 
-    tango::tableord_t tableord;
+    xd::tableord_t tableord;
     kscript::ExprParser* expr;
     unsigned int depth;   // prevents against infinite recursion
     BaseIterator* it;     // for bindings
@@ -74,7 +74,7 @@ struct DataAccessInfo
 
 struct BaseIteratorTableEntry
 {
-    tango::tableord_t table_ord;
+    xd::tableord_t table_ord;
     ITablePtr table_ptr;
     int row_width;
     unsigned char* row_buf;
@@ -84,23 +84,23 @@ struct BaseIteratorRelInfo
 {
     std::wstring relation_id;
     std::wstring tag;
-    tango::IIteratorPtr right_iter;
+    xd::IIteratorPtr right_iter;
     IIteratorKeyAccessPtr right_iter_int;
     KeyLayout* kl;
 };
 
 class AggregateResult;
 class XdnativeDatabase;
-class BaseIterator :  public tango::IIterator,
+class BaseIterator :  public xd::IIterator,
                       public IIteratorKeyAccess,
-                      public tango::IIteratorRelation,
+                      public xd::IIteratorRelation,
                       public IXdnativeSetEvents
 {
     XCM_CLASS_NAME("xdnative.BaseIterator")
     XCM_BEGIN_INTERFACE_MAP(BaseIterator)
-        XCM_INTERFACE_ENTRY(tango::IIterator)
+        XCM_INTERFACE_ENTRY(xd::IIterator)
         XCM_INTERFACE_ENTRY(IIteratorKeyAccess)
-        XCM_INTERFACE_ENTRY(tango::IIteratorRelation)
+        XCM_INTERFACE_ENTRY(xd::IIteratorRelation)
         XCM_INTERFACE_ENTRY(IXdnativeSetEvents)
     XCM_END_INTERFACE_MAP()
 
@@ -115,7 +115,7 @@ public:
     virtual bool setKeyFilter(const void* key, int len) { return false; }
     virtual void getKeyFilter(const void** key, int* len) { *key = NULL; *len = 0; }
     virtual bool setFirstKey() { return false; }
-    virtual tango::rowpos_t getRowNumber() { return 0; }
+    virtual xd::rowpos_t getRowNumber() { return 0; }
     
     void setIteratorFlags(unsigned int mask, unsigned int value) { }
 
@@ -127,88 +127,88 @@ public:
     void releaseAggResultObject(AggregateResult* agg_res);
     void recalcAggResults();
 
-    // tango::IIterator
+    // xd::IIterator
     void setTable(const std::wstring& tbl);
     std::wstring getTable();
-    tango::rowpos_t getRowCount();
+    xd::rowpos_t getRowCount();
     void setSet(IXdnativeSetPtr set);
 
-    tango::IStructurePtr getStructure();
+    xd::IStructurePtr getStructure();
     void refreshStructure();
-    bool modifyStructure(tango::IStructure* struct_config, tango::IJob* job);
+    bool modifyStructure(xd::IStructure* struct_config, xd::IJob* job);
 
     unsigned int getIteratorFlags();
     void setIteratorFlags(unsigned int new_val);
 
-    tango::IIteratorPtr getChildIterator(tango::IRelationPtr relation);
-    tango::IIteratorPtr getFilteredChildIterator(tango::IRelationPtr relation);
+    xd::IIteratorPtr getChildIterator(xd::IRelationPtr relation);
+    xd::IIteratorPtr getFilteredChildIterator(xd::IRelationPtr relation);
 
-    tango::objhandle_t getHandle(const std::wstring& expr);
-    int getType(tango::objhandle_t data_handle);
-    bool releaseHandle(tango::objhandle_t data_handle);
-    tango::IColumnInfoPtr getInfo(tango::objhandle_t data_handle);
+    xd::objhandle_t getHandle(const std::wstring& expr);
+    int getType(xd::objhandle_t data_handle);
+    bool releaseHandle(xd::objhandle_t data_handle);
+    xd::IColumnInfoPtr getInfo(xd::objhandle_t data_handle);
 
-    tango::rowid_t getRowId();
+    xd::rowid_t getRowId();
 
     const unsigned char* getRowBuffer();
     int getRowBufferWidth();
-    const unsigned char* getRawPtr(tango::objhandle_t column_handle);
-    int getRawWidth(tango::objhandle_t column_handle);
-    const std::string& getString(tango::objhandle_t column_handle);
-    const std::wstring& getWideString(tango::objhandle_t column_handle);
-    tango::datetime_t getDateTime(tango::objhandle_t column_handle);
-    double getDouble(tango::objhandle_t column_handle);
-    int getInteger(tango::objhandle_t column_handle);
-    bool getBoolean(tango::objhandle_t column_handle);
-    bool isNull(tango::objhandle_t column_handle);
+    const unsigned char* getRawPtr(xd::objhandle_t column_handle);
+    int getRawWidth(xd::objhandle_t column_handle);
+    const std::string& getString(xd::objhandle_t column_handle);
+    const std::wstring& getWideString(xd::objhandle_t column_handle);
+    xd::datetime_t getDateTime(xd::objhandle_t column_handle);
+    double getDouble(xd::objhandle_t column_handle);
+    int getInteger(xd::objhandle_t column_handle);
+    bool getBoolean(xd::objhandle_t column_handle);
+    bool isNull(xd::objhandle_t column_handle);
 
     // row buffer modifiers
 
     bool putRowBuffer(const unsigned char* buf, int length);
-    bool putString(tango::objhandle_t column_handle, const std::string& value);
-    bool putWideString(tango::objhandle_t column_handle, const std::wstring& value);
-    bool putDateTime(tango::objhandle_t column_handle, tango::datetime_t value);
-    bool putDouble(tango::objhandle_t column_handle, double value);
-    bool putInteger(tango::objhandle_t column_handle, int value);
-    bool putBoolean(tango::objhandle_t column_handle, bool value);
-    bool putNull(tango::objhandle_t column_handle);
+    bool putString(xd::objhandle_t column_handle, const std::string& value);
+    bool putWideString(xd::objhandle_t column_handle, const std::wstring& value);
+    bool putDateTime(xd::objhandle_t column_handle, xd::datetime_t value);
+    bool putDouble(xd::objhandle_t column_handle, double value);
+    bool putInteger(xd::objhandle_t column_handle, int value);
+    bool putBoolean(xd::objhandle_t column_handle, bool value);
+    bool putNull(xd::objhandle_t column_handle);
     void flushRow();
 
     // IXdnativeSetEvents 
     void onSetDomainUpdated();
     void onSetStructureUpdated();
     void onSetRelationshipsUpdated();
-    void onSetRowUpdated(tango::rowid_t rowid);
-    void onSetRowDeleted(tango::rowid_t rowid);
+    void onSetRowUpdated(xd::rowid_t rowid);
+    void onSetRowDeleted(xd::rowid_t rowid);
 
 protected:
 
     void clearDAI();
     void refreshDAI();
     DataAccessInfo* lookupDAI(const std::wstring& expr);
-    void colinfo2dai(DataAccessInfo* dai, tango::IColumnInfo* colinfo);
+    void colinfo2dai(DataAccessInfo* dai, xd::IColumnInfo* colinfo);
     BaseIteratorTableEntry* registerTable(ITablePtr tbl);
     bool baseClone(BaseIterator* new_iter);
     void bindExprParser(kscript::ExprParser* parser, ParserBindInfo* info);
     bool initStructure();
-    void appendCalcFields(tango::IStructure* structure);
+    void appendCalcFields(xd::IStructure* structure);
     bool refreshRelInfo(BaseIteratorRelInfo& info);
 
-    void goRow(const tango::rowid_t& rowid);
-    void setRowId(const tango::rowid_t& rowid);
+    void goRow(const xd::rowid_t& rowid);
+    void setRowId(const xd::rowid_t& rowid);
 
     static bool base_iterator_parse_hook(kscript::ExprParseHookInfo& hook_info);
 
 public:
     unsigned char* m_rowptr;
     bool m_row_dirty;
-    tango::rowid_t m_rowid;
+    xd::rowid_t m_rowid;
     
 protected:
     XdnativeDatabase* m_database;
     std::wstring m_columns;
-    tango::IStructurePtr m_iter_structure;  // iter structure
-    tango::IStructurePtr m_set_structure;   // set structure
+    xd::IStructurePtr m_iter_structure;  // iter structure
+    xd::IStructurePtr m_set_structure;   // set structure
     IXdnativeSetPtr m_set;                  // set internal ptr
 
 private:
@@ -221,9 +221,9 @@ private:
     std::map<std::wstring, DataAccessInfo*, kl::cmp_nocase> m_dai_lookup;
     std::vector<BaseIteratorTableEntry> m_tables;
     std::vector<AggregateResult*> m_aggregate_results;
-    std::vector<tango::IColumnInfoPtr> m_calc_fields;
+    std::vector<xd::IColumnInfoPtr> m_calc_fields;
     std::vector<BaseIteratorRelInfo> m_relations;
-    tango::IRelationEnumPtr m_relenum;
+    xd::IRelationEnumPtr m_relenum;
 
     unsigned int m_iter_flags;
 };

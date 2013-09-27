@@ -27,15 +27,15 @@ struct InsertFieldInfo
 public:
 
     int type;
-    tango::objhandle_t handle;
+    xd::objhandle_t handle;
 };
 
 
 
-bool sqlInsert(tango::IDatabasePtr db,
+bool sqlInsert(xd::IDatabasePtr db,
                const std::wstring& _command,
                ThreadErrorInfo& error,
-               tango::IJob* job)
+               xd::IJob* job)
 {
     SqlStatement stmt(_command);
 
@@ -46,13 +46,13 @@ bool sqlInsert(tango::IDatabasePtr db,
 
     if (!stmt.getKeywordExists(L"INSERT"))
     {
-        error.setError(tango::errorSyntax, L"Invalid syntax; INSERT statement missing INSERT clause");
+        error.setError(xd::errorSyntax, L"Invalid syntax; INSERT statement missing INSERT clause");
         return false;
     }
 
     if (!stmt.getKeywordExists(L"INTO"))
     {
-        error.setError(tango::errorSyntax, L"Invalid syntax; INSERT statement missing INTO clause");
+        error.setError(xd::errorSyntax, L"Invalid syntax; INSERT statement missing INTO clause");
         return false;
     }
 
@@ -64,7 +64,7 @@ bool sqlInsert(tango::IDatabasePtr db,
     {
         // make sure it's either a INSERT INTO tbl (...) VALUES (...)" statement
         // or a INSERT INTO tbl SELECT statement
-        error.setError(tango::errorSyntax, L"Invalid syntax; INSERT statement missing VALUES or SELECT clause");        
+        error.setError(xd::errorSyntax, L"Invalid syntax; INSERT statement missing VALUES or SELECT clause");        
         return false;
     }
 
@@ -91,28 +91,28 @@ bool sqlInsert(tango::IDatabasePtr db,
         size_t pos = stmt.getKeywordPosition(L"SELECT");
         if (pos == (size_t)-1)
         {
-            error.setError(tango::errorSyntax, L"Invalid syntax; INSERT statement missing SELECT clause");          
+            error.setError(xd::errorSyntax, L"Invalid syntax; INSERT statement missing SELECT clause");          
             return false;
         }
             
         std::wstring select_stmt = _command.substr(pos);
         
-        tango::IFileInfoPtr finfo = db->getFileInfo(table);
-        if (finfo.isNull() || finfo->getType() != tango::filetypeTable)
+        xd::IFileInfoPtr finfo = db->getFileInfo(table);
+        if (finfo.isNull() || finfo->getType() != xd::filetypeTable)
         {
             wchar_t buf[1024]; // some paths might be long
             swprintf(buf, 1024, L"Unable to insert rows because table [%ls] cannot be accessed", table.c_str());
-            error.setError(tango::errorGeneral, buf);
+            error.setError(xd::errorGeneral, buf);
             return false;
         }
         
         xcm::IObjectPtr result;
         db->execute(select_stmt, 0, result, NULL);
-        tango::IIteratorPtr src_iter = result;
+        xd::IIteratorPtr src_iter = result;
         
         if (src_iter.isNull())
         {
-            error.setError(tango::errorGeneral, L"Unable to insert rows because select clause could not be processed");        
+            error.setError(xd::errorGeneral, L"Unable to insert rows because select clause could not be processed");        
             return false;
         }
 
@@ -129,7 +129,7 @@ bool sqlInsert(tango::IDatabasePtr db,
 
     if (temps.empty() || temps[0] != L'(' || temps[temps.length()-1] != L')')
     {
-        error.setError(tango::errorSyntax, L"Invalid syntax; VALUES clause missing parameters");          
+        error.setError(xd::errorSyntax, L"Invalid syntax; VALUES clause missing parameters");          
         return false;
     }
 
@@ -150,19 +150,19 @@ bool sqlInsert(tango::IDatabasePtr db,
     if (fieldvec.size() != valuesvec.size())
     {
         // field list/value list size mismatch
-        error.setError(tango::errorSyntax, L"Invalid syntax; number of values to insert differs from number of fields to insert into");
+        error.setError(xd::errorSyntax, L"Invalid syntax; number of values to insert differs from number of fields to insert into");
         return false;
     }
 
     // try to open the target set
 
-    tango::IStructurePtr structure = db->describeTable(table);
+    xd::IStructurePtr structure = db->describeTable(table);
 
     if (structure.isNull())
     {
         wchar_t buf[1024]; // some paths might be long
         swprintf(buf, 1024, L"Unable to insert values because table [%ls] could not be accessed", table.c_str());
-        error.setError(tango::errorGeneral, buf);
+        error.setError(xd::errorGeneral, buf);
         return false;
     }
 
@@ -170,7 +170,7 @@ bool sqlInsert(tango::IDatabasePtr db,
 
     // do the insert
 
-    tango::IRowInserterPtr inserter = db->bulkInsert(table);
+    xd::IRowInserterPtr inserter = db->bulkInsert(table);
 
 
     // get field info
@@ -181,12 +181,12 @@ bool sqlInsert(tango::IDatabasePtr db,
     {
         dequote(*it, '[', ']');
         
-        tango::IColumnInfoPtr colinfo = structure->getColumnInfo(*it);
+        xd::IColumnInfoPtr colinfo = structure->getColumnInfo(*it);
         if (colinfo.isNull())
         {
             wchar_t buf[1024]; // some paths might be long
             swprintf(buf, 1024, L"Invalid syntax: Column [%ls] does not exist", (*it).c_str());
-            error.setError(tango::errorSyntax, buf);
+            error.setError(xd::errorSyntax, buf);
             return false;
         }
 
@@ -198,7 +198,7 @@ bool sqlInsert(tango::IDatabasePtr db,
         {
             wchar_t buf[1024]; // some paths might be long
             swprintf(buf, 1024, L"Invalid syntax: Unable to get handle for column [%ls]", (*it).c_str());
-            error.setError(tango::errorSyntax, buf);        
+            error.setError(xd::errorSyntax, buf);        
             return false;
         }
 
@@ -208,7 +208,7 @@ bool sqlInsert(tango::IDatabasePtr db,
 
     if (!inserter->startInsert(fields))
     {
-        error.setError(tango::errorGeneral, L"Unable to process INSERT statement");    
+        error.setError(xd::errorGeneral, L"Unable to process INSERT statement");    
         return false;
     }
 
@@ -225,15 +225,15 @@ bool sqlInsert(tango::IDatabasePtr db,
         kl::trim(s);
         int len = s.length();
 
-        if (insert_it->type == tango::typeCharacter ||
-            insert_it->type == tango::typeWideCharacter)
+        if (insert_it->type == xd::typeCharacter ||
+            insert_it->type == xd::typeWideCharacter)
         {
             if (s.length() < 2)
             {
                 // since character fields require two quotes, length should be
                 // at least two            
                 inserter->finishInsert();
-                error.setError(tango::errorSyntax, L"Invalid syntax: missing character value; make sure list of values to insert contains properly quoted values");
+                error.setError(xd::errorSyntax, L"Invalid syntax: missing character value; make sure list of values to insert contains properly quoted values");
                 return false;
             }
 
@@ -242,7 +242,7 @@ bool sqlInsert(tango::IDatabasePtr db,
             {
                 // missing quotation mark -- either " or ' required
                 inserter->finishInsert();
-                error.setError(tango::errorSyntax, L"Invalid syntax: missing quote around character value; make sure list of values to insert contains properly quoted values");
+                error.setError(xd::errorSyntax, L"Invalid syntax: missing quote around character value; make sure list of values to insert contains properly quoted values");
                 return false;
             }
 
@@ -250,7 +250,7 @@ bool sqlInsert(tango::IDatabasePtr db,
             {
                 // close quote is not the same as the open quote
                 inserter->finishInsert();
-                error.setError(tango::errorSyntax, L"Invalid syntax: closing and opening quote differ for some of the values to insert");                
+                error.setError(xd::errorSyntax, L"Invalid syntax: closing and opening quote differ for some of the values to insert");                
                 return false;
             }            
 
@@ -265,7 +265,7 @@ bool sqlInsert(tango::IDatabasePtr db,
                     if (s[i+1] != quote_char)
                     {
                         inserter->finishInsert();
-                        error.setError(tango::errorSyntax, L"Invalid syntax: missing quote around character value; make sure list of values to insert contains properly quoted values");
+                        error.setError(xd::errorSyntax, L"Invalid syntax: missing quote around character value; make sure list of values to insert contains properly quoted values");
                         return false;
                     }
 
@@ -275,15 +275,15 @@ bool sqlInsert(tango::IDatabasePtr db,
 
             inserter->putWideString(insert_it->handle, result);
         }
-         else if (insert_it->type == tango::typeInteger ||
-                  insert_it->type == tango::typeNumeric ||
-                  insert_it->type == tango::typeDouble)
+         else if (insert_it->type == xd::typeInteger ||
+                  insert_it->type == xd::typeNumeric ||
+                  insert_it->type == xd::typeDouble)
         {
             double d = kl::wtof(s);
             inserter->putDouble(insert_it->handle, d);
         }
-         else if (insert_it->type == tango::typeDateTime ||
-                  insert_it->type == tango::typeDate)
+         else if (insert_it->type == xd::typeDateTime ||
+                  insert_it->type == xd::typeDate)
         {
             int y,m,d,hh,mm,ss;
 
@@ -292,7 +292,7 @@ bool sqlInsert(tango::IDatabasePtr db,
                 // since date/datetime fields require two quotes, length should be
                 // at least two            
                 inserter->finishInsert();
-                error.setError(tango::errorSyntax, L"Invalid syntax: missing date value; make sure list of values to insert contains properly quoted values");
+                error.setError(xd::errorSyntax, L"Invalid syntax: missing date value; make sure list of values to insert contains properly quoted values");
                 return false;
             }
 
@@ -301,7 +301,7 @@ bool sqlInsert(tango::IDatabasePtr db,
             {
                 // missing quotation mark -- either " or ' required
                 inserter->finishInsert();
-                error.setError(tango::errorSyntax, L"Invalid syntax: missing quote around date value; make sure list of values to insert contains properly quoted values");
+                error.setError(xd::errorSyntax, L"Invalid syntax: missing quote around date value; make sure list of values to insert contains properly quoted values");
                 return false;
             }
             
@@ -309,7 +309,7 @@ bool sqlInsert(tango::IDatabasePtr db,
             {
                 // close quote is not the same as the open quote
                 inserter->finishInsert();
-                error.setError(tango::errorSyntax, L"Invalid syntax: closing and opening quote differ for some of the values to insert");
+                error.setError(xd::errorSyntax, L"Invalid syntax: closing and opening quote differ for some of the values to insert");
                 return false;
             }
 
@@ -319,7 +319,7 @@ bool sqlInsert(tango::IDatabasePtr db,
             if (!parseDateTime(temps, &y, &m, &d, &hh, &mm, &ss))
             {
                 inserter->finishInsert();
-                error.setError(tango::errorSyntax, L"Invalid syntax: date value not properly formatted; date values should be inserted in the form YYYY-MM-DD; datetime values should be inserted in the form YYYY-MM-DD HH:MM:SS");
+                error.setError(xd::errorSyntax, L"Invalid syntax: date value not properly formatted; date values should be inserted in the form YYYY-MM-DD; datetime values should be inserted in the form YYYY-MM-DD HH:MM:SS");
                 return false;
             }
 
@@ -330,10 +330,10 @@ bool sqlInsert(tango::IDatabasePtr db,
                 ss = 0;
             }
 
-            tango::DateTime dt(y, m, d, hh, mm, ss);
+            xd::DateTime dt(y, m, d, hh, mm, ss);
             inserter->putDateTime(insert_it->handle, dt.getDateTime());
         }
-         else if (insert_it->type == tango::typeBoolean)
+         else if (insert_it->type == xd::typeBoolean)
         {
             bool b = false;
 
@@ -348,7 +348,7 @@ bool sqlInsert(tango::IDatabasePtr db,
              else
             {
                 inserter->finishInsert();
-                error.setError(tango::errorSyntax, L"Invalid syntax: boolean value not properly formatted; boolean values should be inserted using values of 'true' or 'false'");
+                error.setError(xd::errorSyntax, L"Invalid syntax: boolean value not properly formatted; boolean values should be inserted using values of 'true' or 'false'");
                 return false;
             }
 

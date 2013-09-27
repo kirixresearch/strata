@@ -68,8 +68,8 @@ int AppendJob::runJob()
         return 0;
     }
 
-    tango::IJobPtr tango_job;
-    tango::IIteratorPtr source_iter;
+    xd::IJobPtr tango_job;
+    xd::IIteratorPtr source_iter;
 
     long long max_count = 0;
     bool valid_max_count = true;
@@ -90,7 +90,7 @@ int AppendJob::runJob()
     {
         std::wstring path = input_arr[i].getString();
 
-        tango::IFileInfoPtr finfo = m_db->getFileInfo(path);
+        xd::IFileInfoPtr finfo = m_db->getFileInfo(path);
         if (finfo.isNull())
         {
             m_job_info->setState(jobStateFailed);
@@ -98,7 +98,7 @@ int AppendJob::runJob()
             return 0;
         }
 
-        if (finfo->getFlags() & tango::sfFastRowCount)
+        if (finfo->getFlags() & xd::sfFastRowCount)
             max_count += finfo->getRowCount();
              else
             valid_max_count = false;  // can't get a reliable total number of records
@@ -137,8 +137,8 @@ int AppendJob::runJob()
     if (m_db->getFileExist(output_path))
     {
         // append to existing table
-        tango::IFileInfoPtr finfo = m_db->getFileInfo(output_path);
-        if (finfo.isNull() || finfo->getType() != tango::filetypeTable)
+        xd::IFileInfoPtr finfo = m_db->getFileInfo(output_path);
+        if (finfo.isNull() || finfo->getType() != xd::filetypeTable)
         {
             m_job_info->setState(jobStateFailed);
             m_job_info->setError(jobserrWriteError, L"");
@@ -148,10 +148,10 @@ int AppendJob::runJob()
      else
     {
         // output target does not yet exist;  create an output table with a merged structure
-        tango::IStructurePtr input_structure = xcm::null;
-        tango::IStructurePtr output_structure = xcm::null;
-        tango::IColumnInfoPtr input_colinfo = xcm::null;
-        tango::IColumnInfoPtr output_colinfo = xcm::null;
+        xd::IStructurePtr input_structure = xcm::null;
+        xd::IStructurePtr output_structure = xcm::null;
+        xd::IColumnInfoPtr input_colinfo = xcm::null;
+        xd::IColumnInfoPtr output_colinfo = xcm::null;
 
         int col_idx = 0;
         int input_col_count = 0;
@@ -209,13 +209,13 @@ int AppendJob::runJob()
         tango_job = m_db->createJob();
         setXdJob(tango_job);
 
-        tango::CopyParams info;
+        xd::CopyParams info;
         info.input = *it;
         info.output = output_path;
         info.append = true;
         m_db->copyData(&info, tango_job.p);
 
-        if (tango_job->getStatus() == tango::jobFailed)
+        if (tango_job->getStatus() == xd::jobFailed)
         {
             m_job_info->setState(jobStateFailed);
             m_job_info->setError(jobserrInsufficientDiskSpace, L"");

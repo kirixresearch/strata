@@ -27,7 +27,7 @@ public:
     virtual bool open(const wxString& filename) = 0;
     virtual void close() = 0;
     virtual wxString getPath() = 0;
-    virtual tango::IStructurePtr getStructure() = 0;
+    virtual xd::IStructurePtr getStructure() = 0;
     virtual void setSourceUrl(const wxString& source_url) = 0; // allows override of displayed url
 };
 
@@ -84,7 +84,7 @@ public:
 
     // ITextDoc
     void setSourceUrl(const wxString& source_url);
-    tango::IStructurePtr getStructure();
+    xd::IStructurePtr getStructure();
     bool open(const wxString& filename);
     void close();
     wxString getPath();
@@ -187,7 +187,7 @@ private:
     wxCheckBox* m_firstrowfieldnames_checkbox;
     
 
-    tango::IIteratorPtr m_textdelimited_iter;
+    xd::IIteratorPtr m_textdelimited_iter;
     ITangoGridModelPtr m_grid_model;
     
     wxString m_path;

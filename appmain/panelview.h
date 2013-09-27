@@ -108,7 +108,7 @@ private:
     ViewInfo* m_selected_view_info;
     ITableDocViewEnumPtr m_views;
     ITableDocViewPtr m_original_view;
-    tango::IStructurePtr m_structure;
+    xd::IStructurePtr m_structure;
     IDocumentSitePtr m_doc_site;
     
     DECLARE_EVENT_TABLE()

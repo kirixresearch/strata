@@ -723,7 +723,7 @@ void QueryDoc::getColumnListItems(std::vector<ColumnListItem>& items)
     for (it = m_info.m_source_tables.begin(); it != it_end; ++it)
     {
         // get the structure
-        tango::IStructurePtr structure = it->structure;
+        xd::IStructurePtr structure = it->structure;
         
         // if the structure is invalid, move on
         if (structure.isNull())
@@ -733,7 +733,7 @@ void QueryDoc::getColumnListItems(std::vector<ColumnListItem>& items)
         int i, col_count = structure->getColumnCount();
         for (i = 0; i < col_count; i++)
         {
-            tango::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
+            xd::IColumnInfoPtr colinfo = structure->getColumnInfoByIdx(i);
          
             ColumnListItem item;
             item.text = it->alias;
@@ -1157,10 +1157,10 @@ void QueryDoc::onTreeDataDropped(FsDataObject* data)
     for (it = res.begin(); it != res.end(); ++it)
     {
         wxString path = *it;
-        tango::IFileInfoPtr finfo = g_app->getDatabase()->getFileInfo(towstr(path));
-        if (finfo.isOk() && finfo->getType() == tango::filetypeTable)
+        xd::IFileInfoPtr finfo = g_app->getDatabase()->getFileInfo(towstr(path));
+        if (finfo.isOk() && finfo->getType() == xd::filetypeTable)
         {
-            tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(path));
+            xd::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(path));
 
             if (structure.isOk())
             {
@@ -1203,11 +1203,11 @@ void QueryDoc::onDiagramSetAdded(wxString path, bool* allow)
         }
     }
 
-    tango::IFileInfoPtr finfo = g_app->getDatabase()->getFileInfo(towstr(path));
-    if (finfo.isNull() || finfo->getType() != tango::filetypeTable)
+    xd::IFileInfoPtr finfo = g_app->getDatabase()->getFileInfo(towstr(path));
+    if (finfo.isNull() || finfo->getType() != xd::filetypeTable)
         return;
 
-    tango::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(path));
+    xd::IStructurePtr structure = g_app->getDatabase()->describeTable(towstr(path));
     if (structure.isNull())
         return;
 

@@ -25,9 +25,9 @@ PgsqlRowInserter::PgsqlRowInserter(PgsqlDatabase* db, const std::wstring& table)
     m_database = db;
     m_database->ref();
     
-    tango::IAttributesPtr attr = m_database->getAttributes();
-    m_quote_openchar = attr->getStringAttribute(tango::dbattrIdentifierQuoteOpenChar);
-    m_quote_closechar = attr->getStringAttribute(tango::dbattrIdentifierQuoteCloseChar);
+    xd::IAttributesPtr attr = m_database->getAttributes();
+    m_quote_openchar = attr->getStringAttribute(xd::dbattrIdentifierQuoteOpenChar);
+    m_quote_closechar = attr->getStringAttribute(xd::dbattrIdentifierQuoteCloseChar);
 
     m_conn = NULL;
 
@@ -51,7 +51,7 @@ PgsqlRowInserter::~PgsqlRowInserter()
     m_database->unref();
 }
 
-tango::objhandle_t PgsqlRowInserter::getHandle(const std::wstring& column_name)
+xd::objhandle_t PgsqlRowInserter::getHandle(const std::wstring& column_name)
 {
     std::vector<PgsqlInsertFieldData>::iterator it;
     for (it = m_fields.begin(); it != m_fields.end(); ++it)
@@ -63,19 +63,19 @@ tango::objhandle_t PgsqlRowInserter::getHandle(const std::wstring& column_name)
     return 0;
 }
 
-tango::IColumnInfoPtr PgsqlRowInserter::getInfo(tango::objhandle_t column_handle)
+xd::IColumnInfoPtr PgsqlRowInserter::getInfo(xd::objhandle_t column_handle)
 {
     return xcm::null;
 }
 
-bool PgsqlRowInserter::putRawPtr(tango::objhandle_t column_handle,
+bool PgsqlRowInserter::putRawPtr(xd::objhandle_t column_handle,
                                  const unsigned char* value,
                                  int length)
 {
     return false;
 }
 
-bool PgsqlRowInserter::putString(tango::objhandle_t column_handle,
+bool PgsqlRowInserter::putString(xd::objhandle_t column_handle,
                                  const std::string& value)
 {
     PgsqlInsertFieldData* f = (PgsqlInsertFieldData*)column_handle;
@@ -88,7 +88,7 @@ bool PgsqlRowInserter::putString(tango::objhandle_t column_handle,
     return true;
 }
 
-bool PgsqlRowInserter::putWideString(tango::objhandle_t column_handle,
+bool PgsqlRowInserter::putWideString(xd::objhandle_t column_handle,
                                      const std::wstring& value)
 {
     PgsqlInsertFieldData* f = (PgsqlInsertFieldData*)column_handle;
@@ -102,7 +102,7 @@ bool PgsqlRowInserter::putWideString(tango::objhandle_t column_handle,
     return true;
 }
 
-bool PgsqlRowInserter::putDouble(tango::objhandle_t column_handle,
+bool PgsqlRowInserter::putDouble(xd::objhandle_t column_handle,
                                  double value)
 {
     PgsqlInsertFieldData* f = (PgsqlInsertFieldData*)column_handle;
@@ -118,7 +118,7 @@ bool PgsqlRowInserter::putDouble(tango::objhandle_t column_handle,
     return true;
 }
 
-bool PgsqlRowInserter::putInteger(tango::objhandle_t column_handle,
+bool PgsqlRowInserter::putInteger(xd::objhandle_t column_handle,
                                   int value)
 {
     PgsqlInsertFieldData* f = (PgsqlInsertFieldData*)column_handle;
@@ -134,7 +134,7 @@ bool PgsqlRowInserter::putInteger(tango::objhandle_t column_handle,
     return true;
 }
 
-bool PgsqlRowInserter::putBoolean(tango::objhandle_t column_handle,
+bool PgsqlRowInserter::putBoolean(xd::objhandle_t column_handle,
                                   bool value)
 {
     PgsqlInsertFieldData* f = (PgsqlInsertFieldData*)column_handle;
@@ -149,8 +149,8 @@ bool PgsqlRowInserter::putBoolean(tango::objhandle_t column_handle,
     return true;
 }
 
-bool PgsqlRowInserter::putDateTime(tango::objhandle_t column_handle,
-                                   tango::datetime_t datetime)
+bool PgsqlRowInserter::putDateTime(xd::objhandle_t column_handle,
+                                   xd::datetime_t datetime)
 {
     PgsqlInsertFieldData* f = (PgsqlInsertFieldData*)column_handle;
     if (!f)
@@ -163,15 +163,15 @@ bool PgsqlRowInserter::putDateTime(tango::objhandle_t column_handle,
         return putNull(column_handle);
     }
 
-    tango::DateTime dt(datetime);
+    xd::DateTime dt(datetime);
     wchar_t buf[64];
 
-    if (f->m_tango_type == tango::typeDate)
+    if (f->m_tango_type == xd::typeDate)
     {
         swprintf(buf, 63, L"%04d-%02d-%02d", dt.getYear(), dt.getMonth(),  dt.getDay());
         f->m_value = buf;
     }
-     else if (f->m_tango_type == tango::typeDateTime) //datetime
+     else if (f->m_tango_type == xd::typeDateTime) //datetime
     {
         swprintf(buf, 63, L"%04d-%02d-%02d %02d:%02d:%02d", dt.getYear(), dt.getMonth(), dt.getDay(), dt.getHour(), dt.getMinute(), dt.getSecond());
         f->m_value = buf;
@@ -184,7 +184,7 @@ bool PgsqlRowInserter::putDateTime(tango::objhandle_t column_handle,
     return true;
 }
 
-bool PgsqlRowInserter::putNull(tango::objhandle_t column_handle)
+bool PgsqlRowInserter::putNull(xd::objhandle_t column_handle)
 {
     PgsqlInsertFieldData* f = (PgsqlInsertFieldData*)column_handle;
     if (!f)
@@ -199,7 +199,7 @@ bool PgsqlRowInserter::putNull(tango::objhandle_t column_handle)
 
 bool PgsqlRowInserter::startInsert(const std::wstring& col_list)
 {
-    tango::IStructurePtr s = m_database->describeTable(m_table);
+    xd::IStructurePtr s = m_database->describeTable(m_table);
     if (s.isNull())
         return false;
 
@@ -224,7 +224,7 @@ bool PgsqlRowInserter::startInsert(const std::wstring& col_list)
 
     for (it = columns.begin(); it != columns.end(); ++it)
     {
-        tango::IColumnInfoPtr col_info = s->getColumnInfo(*it);
+        xd::IColumnInfoPtr col_info = s->getColumnInfo(*it);
 
         if (col_info.isNull())
             return false;

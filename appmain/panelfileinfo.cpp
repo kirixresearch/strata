@@ -63,26 +63,26 @@ static bool sortByRecordsD(const ProjectFileInfo& l, const ProjectFileInfo& r)
 }
 
 // function to determine the project info type for a given item
-// (only needs to be used when the file info's type is tango::filetypeNode)
+// (only needs to be used when the file info's type is xd::filetypeNode)
 int determineProjectInfoType(const wxString& path)
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
-    tango::IFileInfoPtr file = db->getFileInfo(towstr(path));
+    xd::IDatabasePtr db = g_app->getDatabase();
+    xd::IFileInfoPtr file = db->getFileInfo(towstr(path));
     if (file.isNull())
         return ProjectFileInfo::typeOther;
     
     int file_type = file->getType();
     
-    if (file_type == tango::filetypeFolder)
+    if (file_type == xd::filetypeFolder)
         return ProjectFileInfo::typeFolder;
         
-    if (file_type == tango::filetypeTable)
+    if (file_type == xd::filetypeTable)
         return ProjectFileInfo::typeTable;
         
-    if (file_type == tango::filetypeStream)
+    if (file_type == xd::filetypeStream)
         return ProjectFileInfo::typeScript;
         
-    if (file_type == tango::filetypeNode)
+    if (file_type == xd::filetypeNode)
     {
         kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(path));
         if (node.isOk())
@@ -140,14 +140,14 @@ void MultiFileInfoPanel::addFile(const wxString& path)
     m_inserted_items.insert(temps);
 
     // can't get file info; bail out
-    tango::IDatabasePtr db = g_app->getDatabase();
-    tango::IFileInfoPtr finfo = db->getFileInfo(towstr(path));
+    xd::IDatabasePtr db = g_app->getDatabase();
+    xd::IFileInfoPtr finfo = db->getFileInfo(towstr(path));
     if (finfo.isNull())
         return;
         
     switch (finfo->getType())
     {
-        case tango::filetypeFolder:
+        case xd::filetypeFolder:
         {
             // create the project file info
             ProjectFileInfo f;
@@ -160,7 +160,7 @@ void MultiFileInfoPanel::addFile(const wxString& path)
             {
                 // native project folder; traverse the folder
                 
-                tango::IFileInfoEnumPtr files;
+                xd::IFileInfoEnumPtr files;
                 files = db->getFolderInfo(towstr(path));
 
                 int i, count = files->size();
@@ -180,11 +180,11 @@ void MultiFileInfoPanel::addFile(const wxString& path)
         }
         break;
 
-        case tango::filetypeTable:
+        case xd::filetypeTable:
         {
             // get the record count
             long long rec_count = -1;
-            if (finfo->getFlags() & tango::sfFastRowCount)
+            if (finfo->getFlags() & xd::sfFastRowCount)
                 rec_count = finfo->getRowCount();
 
             // create the project file info
@@ -199,7 +199,7 @@ void MultiFileInfoPanel::addFile(const wxString& path)
         }
         break;
         
-        case tango::filetypeStream:
+        case xd::filetypeStream:
         {
             // create the project file info
             ProjectFileInfo f;
@@ -213,7 +213,7 @@ void MultiFileInfoPanel::addFile(const wxString& path)
         }
         break;
         
-        case tango::filetypeNode:
+        case xd::filetypeNode:
         {
             // create the project file info
             ProjectFileInfo f;
@@ -486,35 +486,35 @@ void MultiFileInfoPanel::onOK(wxCommandEvent& event)
 
 void MultiFileInfoPanel::onSave(wxCommandEvent& event)
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return;
 
-    tango::IStructurePtr output_structure;
-    tango::IColumnInfoPtr colinfo;
+    xd::IStructurePtr output_structure;
+    xd::IColumnInfoPtr colinfo;
     output_structure = db->createStructure();
 
     colinfo = output_structure->createColumn();
     colinfo->setName(L"Filename");
-    colinfo->setType(tango::typeWideCharacter);
+    colinfo->setType(xd::typeWideCharacter);
     colinfo->setWidth(255);
     colinfo->setScale(0);
 
     colinfo = output_structure->createColumn();
     colinfo->setName(L"Type");
-    colinfo->setType(tango::typeWideCharacter);
+    colinfo->setType(xd::typeWideCharacter);
     colinfo->setWidth(30);
     colinfo->setScale(0);
 
     colinfo = output_structure->createColumn();
     colinfo->setName(L"Size");
-    colinfo->setType(tango::typeDouble);
+    colinfo->setType(xd::typeDouble);
     colinfo->setWidth(8);
     colinfo->setScale(0);
 
     colinfo = output_structure->createColumn();
     colinfo->setName(L"Records");
-    colinfo->setType(tango::typeDouble);
+    colinfo->setType(xd::typeDouble);
     colinfo->setWidth(8);
     colinfo->setScale(0);
 
@@ -523,16 +523,16 @@ void MultiFileInfoPanel::onSave(wxCommandEvent& event)
     if (!db->createTable(output_path, output_structure, NULL))
         return;
 
-    tango::IRowInserterPtr output_inserter = db->bulkInsert(output_path);
+    xd::IRowInserterPtr output_inserter = db->bulkInsert(output_path);
     if (!output_inserter)
         return;
 
     output_inserter->startInsert(L"*");
 
-    tango::objhandle_t filename_handle = output_inserter->getHandle(L"filename");
-    tango::objhandle_t type_handle = output_inserter->getHandle(L"type");
-    tango::objhandle_t size_handle = output_inserter->getHandle(L"size");
-    tango::objhandle_t records_handle = output_inserter->getHandle(L"records");
+    xd::objhandle_t filename_handle = output_inserter->getHandle(L"filename");
+    xd::objhandle_t type_handle = output_inserter->getHandle(L"type");
+    xd::objhandle_t size_handle = output_inserter->getHandle(L"size");
+    xd::objhandle_t records_handle = output_inserter->getHandle(L"records");
 
     std::vector<ProjectFileInfo>::iterator it;
     for (it = m_info.begin(); it != m_info.end(); ++it)

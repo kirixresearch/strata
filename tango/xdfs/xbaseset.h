@@ -24,14 +24,14 @@ inline char tango2xbaseType(int tango_type)
 {
     switch (tango_type)
     {
-        case tango::typeCharacter:      return 'C';
-        case tango::typeWideCharacter:  return 'C';
-        case tango::typeNumeric:        return 'N';
-        case tango::typeDouble:         return 'B';
-        case tango::typeDate:           return 'D';
-        case tango::typeDateTime:       return 'T';
-        case tango::typeBoolean:        return 'L';
-        case tango::typeInteger:        return 'I';
+        case xd::typeCharacter:      return 'C';
+        case xd::typeWideCharacter:  return 'C';
+        case xd::typeNumeric:        return 'N';
+        case xd::typeDouble:         return 'B';
+        case xd::typeDate:           return 'D';
+        case xd::typeDateTime:       return 'T';
+        case xd::typeBoolean:        return 'L';
+        case xd::typeInteger:        return 'I';
     }
 
     return ' ';
@@ -41,18 +41,18 @@ inline int xbase2tangoType(unsigned char xbase_type)
 {
     switch (xbase_type)
     {
-        case 'C':   return tango::typeCharacter;
-        case 'N':   return tango::typeNumeric;
-        case 'Y':   return tango::typeNumeric;
-        case 'F':   return tango::typeDouble;
-        case 'B':   return tango::typeDouble;
-        case 'D':   return tango::typeDate;
-        case 'T':   return tango::typeDateTime;
-        case 'L':   return tango::typeBoolean;
-        case 'I':   return tango::typeInteger;
+        case 'C':   return xd::typeCharacter;
+        case 'N':   return xd::typeNumeric;
+        case 'Y':   return xd::typeNumeric;
+        case 'F':   return xd::typeDouble;
+        case 'B':   return xd::typeDouble;
+        case 'D':   return xd::typeDate;
+        case 'T':   return xd::typeDateTime;
+        case 'L':   return xd::typeBoolean;
+        case 'I':   return xd::typeInteger;
     }
 
-    return tango::typeInvalid;
+    return xd::typeInvalid;
 }
 
 
@@ -77,42 +77,42 @@ public:
     XbaseSet();
     ~XbaseSet();
 
-    bool init(tango::IDatabasePtr db, const std::wstring& filename);
+    bool init(xd::IDatabasePtr db, const std::wstring& filename);
 
     std::wstring getSetId();
 
-    tango::IStructurePtr getStructure();
-    bool modifyStructure(tango::IStructure* struct_config, 
-                         tango::IJob* job);
+    xd::IStructurePtr getStructure();
+    bool modifyStructure(xd::IStructure* struct_config, 
+                         xd::IJob* job);
 
-    tango::IRowInserterPtr getRowInserter();
+    xd::IRowInserterPtr getRowInserter();
     IXdsqlRowDeleterPtr getRowDeleter() { return xcm::null; }
 
-    tango::IIteratorPtr createIterator(const std::wstring& columns,
+    xd::IIteratorPtr createIterator(const std::wstring& columns,
                                        const std::wstring& expr,
-                                       tango::IJob* job);
+                                       xd::IJob* job);
 
-    tango::rowpos_t getRowCount();
+    xd::rowpos_t getRowCount();
 
     bool restoreDeleted() { return false; }
 
-    bool updateRow(tango::rowid_t rowid,
-                   tango::ColumnUpdateInfo* info,
+    bool updateRow(xd::rowid_t rowid,
+                   xd::ColumnUpdateInfo* info,
                    size_t info_size);
 
 private:
 
-    tango::IDatabasePtr m_database;
+    xd::IDatabasePtr m_database;
     XbaseFile m_file;
 };
 
 
 
-class XbaseRowInserter : public tango::IRowInserter
+class XbaseRowInserter : public xd::IRowInserter
 {
     XCM_CLASS_NAME("xdfs.XbaseRowInserter")
     XCM_BEGIN_INTERFACE_MAP(XbaseRowInserter)
-        XCM_INTERFACE_ENTRY(tango::IRowInserter)
+        XCM_INTERFACE_ENTRY(xd::IRowInserter)
     XCM_END_INTERFACE_MAP()
 
 
@@ -121,33 +121,33 @@ public:
     XbaseRowInserter(XbaseSet* set);
     ~XbaseRowInserter();
 
-    tango::objhandle_t getHandle(const std::wstring& column_name);
-    tango::IColumnInfoPtr getInfo(tango::objhandle_t column_handle);
+    xd::objhandle_t getHandle(const std::wstring& column_name);
+    xd::IColumnInfoPtr getInfo(xd::objhandle_t column_handle);
 
-    bool putRawPtr(tango::objhandle_t column_handle,
+    bool putRawPtr(xd::objhandle_t column_handle,
                    const unsigned char* value,
                    int length);
 
-    bool putString(tango::objhandle_t column_handle,
+    bool putString(xd::objhandle_t column_handle,
                    const std::string& value);
 
-    bool putWideString(tango::objhandle_t column_handle,
+    bool putWideString(xd::objhandle_t column_handle,
                        const std::wstring& value);
 
-    bool putDouble(tango::objhandle_t column_handle,
+    bool putDouble(xd::objhandle_t column_handle,
                    double value);
 
-    bool putInteger(tango::objhandle_t column_handle,
+    bool putInteger(xd::objhandle_t column_handle,
                     int value);
 
-    bool putBoolean(tango::objhandle_t column_handle,
+    bool putBoolean(xd::objhandle_t column_handle,
                     bool value);
 
-    bool putDateTime(tango::objhandle_t column_handle,
-                     tango::datetime_t value);
+    bool putDateTime(xd::objhandle_t column_handle,
+                     xd::datetime_t value);
 
     bool putRowBuffer(const unsigned char* value);
-    bool putNull(tango::objhandle_t column_handle);
+    bool putNull(xd::objhandle_t column_handle);
 
     bool startInsert(const std::wstring& col_list);
     bool insertRow();

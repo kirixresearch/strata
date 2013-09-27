@@ -120,22 +120,22 @@ int GroupJob::runJob()
     // following is a possibility, except that column values
     // are of the form <output_name>=<group_func<input>, so
     // requoting doesn't work:
-    //tango::requoteAllIdentifiers(m_db, group_values);
-    //tango::requoteAllIdentifiers(m_db, column_values);
+    //xd::requoteAllIdentifiers(m_db, group_values);
+    //xd::requoteAllIdentifiers(m_db, column_values);
 
     std::wstring group_params, column_params;
     jobs::vectorToDelimitedString(group_values, group_params);
     jobs::vectorToDelimitedString(column_values, column_params);
 
 
-    tango::IJobPtr tango_job;
+    xd::IJobPtr tango_job;
 
     if (!unique_records)
     {
         tango_job = m_db->createJob();
         setXdJob(tango_job);
 
-        tango::GroupQueryParams info;
+        xd::GroupQueryParams info;
         info.input = input_path;
         info.output = output_path;
         info.group = group_params;
@@ -151,7 +151,7 @@ int GroupJob::runJob()
             return 0;
         }
 
-        if (tango_job->getStatus() == tango::jobFailed)
+        if (tango_job->getStatus() == xd::jobFailed)
         {
             m_job_info->setState(jobStateFailed);
 
@@ -174,7 +174,7 @@ int GroupJob::runJob()
         tango_job = m_db->createJob();
         setXdJob(tango_job);
 
-        tango::GroupQueryParams info1;
+        xd::GroupQueryParams info1;
         info1.input = input_path;
         info1.output = L"xtmp_" + kl::getUniqueString();
         info1.group = group_params;
@@ -190,7 +190,7 @@ int GroupJob::runJob()
             return 0;
         }
 
-        if (!res1 || tango_job->getStatus() == tango::jobFailed)
+        if (!res1 || tango_job->getStatus() == xd::jobFailed)
         {
             m_job_info->setState(jobStateFailed);
 
@@ -213,7 +213,7 @@ int GroupJob::runJob()
         xcm::IObjectPtr result;
         m_db->execute(sql, 0, result, tango_job.p);
 
-        tango::IIteratorPtr iter = result;
+        xd::IIteratorPtr iter = result;
 
         if (tango_job->getCancelled())
         {
@@ -233,7 +233,7 @@ int GroupJob::runJob()
         tango_job = m_db->createJob();
         setXdJob(tango_job);
 
-        tango::GroupQueryParams info3;
+        xd::GroupQueryParams info3;
         info3.input = output2;
         info3.output = output_path;
         info3.group = group_params;
@@ -250,7 +250,7 @@ int GroupJob::runJob()
             return 0;
         }
 
-        if (!res3 || tango_job->getStatus() == tango::jobFailed)
+        if (!res3 || tango_job->getStatus() == xd::jobFailed)
         {
             m_job_info->setState(jobStateFailed);
 

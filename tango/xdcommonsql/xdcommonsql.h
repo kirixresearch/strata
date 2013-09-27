@@ -46,7 +46,7 @@ xcm_interface IXdsqlRowDeleter : public xcm::IObject
 public:
 
     virtual void startDelete() = 0;
-    virtual bool deleteRow(const tango::rowid_t& rowid) = 0;
+    virtual bool deleteRow(const xd::rowid_t& rowid) = 0;
     virtual void finishDelete() = 0;
     virtual void cancelDelete() = 0;
 };
@@ -57,16 +57,16 @@ xcm_interface IXdsqlTable : public xcm::IObject
 
 public:
 
-    virtual tango::IIteratorPtr createIterator(const std::wstring& columns,
+    virtual xd::IIteratorPtr createIterator(const std::wstring& columns,
                                                const std::wstring& order,
-                                               tango::IJob* job) = 0;
-    virtual tango::IStructurePtr getStructure() = 0;
+                                               xd::IJob* job) = 0;
+    virtual xd::IStructurePtr getStructure() = 0;
 
     virtual IXdsqlRowDeleterPtr getRowDeleter() = 0;
     virtual bool restoreDeleted() = 0;
 
-    virtual bool updateRow(tango::rowid_t rowid,
-                           tango::ColumnUpdateInfo* info,
+    virtual bool updateRow(xd::rowid_t rowid,
+                           xd::ColumnUpdateInfo* info,
                            size_t info_size) = 0;
 };
 
@@ -106,14 +106,14 @@ class SqlIterator
 {
 public:
 
-    static SqlIterator* createSqlIterator(tango::IIteratorPtr iter,
+    static SqlIterator* createSqlIterator(xd::IIteratorPtr iter,
                                           const std::wstring& condition,
-                                          tango::IJob* job);
+                                          xd::IJob* job);
     
     SqlIterator() { }
     virtual ~SqlIterator() { }
     
-    virtual tango::IIterator* getIterator() = 0;
+    virtual xd::IIterator* getIterator() = 0;
     virtual void goFirst() = 0;
     virtual void goNext() = 0;
     virtual bool isDone() = 0;
@@ -130,62 +130,62 @@ void splitSQL(const std::wstring& sql,
            std::vector<std::wstring>& commands);
 
 
-bool doSQL(tango::IDatabasePtr db,
+bool doSQL(xd::IDatabasePtr db,
            const std::wstring& sql,
            unsigned int flags,
            xcm::IObjectPtr& result_obj,
            ThreadErrorInfo& error,
-           tango::IJob* job);
+           xd::IJob* job);
 
-tango::IIteratorPtr sqlSelect(
-           tango::IDatabasePtr db,
+xd::IIteratorPtr sqlSelect(
+           xd::IDatabasePtr db,
            const std::wstring& command,
            unsigned int flags,
            ThreadErrorInfo& error,
-           tango::IJob* job);
+           xd::IJob* job);
            
 bool sqlInsert(
-           tango::IDatabasePtr db,
+           xd::IDatabasePtr db,
            const std::wstring& command,
            ThreadErrorInfo& error,
-           tango::IJob* job);
+           xd::IJob* job);
 
 bool sqlCreate(
-           tango::IDatabasePtr db,
+           xd::IDatabasePtr db,
            const std::wstring& command,
            xcm::IObjectPtr& result,
            ThreadErrorInfo& error,
-           tango::IJob* job);
+           xd::IJob* job);
 
 bool sqlDelete(
-           tango::IDatabasePtr db,
+           xd::IDatabasePtr db,
            const std::wstring& command,
            ThreadErrorInfo& error,
-           tango::IJob* job);
+           xd::IJob* job);
 
 bool sqlUpdate(
-           tango::IDatabasePtr db,
+           xd::IDatabasePtr db,
            const std::wstring& command,
            ThreadErrorInfo& error,
-           tango::IJob* job);
+           xd::IJob* job);
 
 bool sqlDrop(
-           tango::IDatabasePtr db,
+           xd::IDatabasePtr db,
            const std::wstring& command,
            ThreadErrorInfo& error,
-           tango::IJob* job);
+           xd::IJob* job);
            
 bool sqlMove(
-           tango::IDatabasePtr db,
+           xd::IDatabasePtr db,
            const std::wstring& command,
            ThreadErrorInfo& error,
-           tango::IJob* job);
+           xd::IJob* job);
            
 bool sqlAlter(
-           tango::IDatabasePtr db,
+           xd::IDatabasePtr db,
            const std::wstring& command,
            ThreadErrorInfo& error,
-           tango::IJob* job);
+           xd::IJob* job);
 
 std::wstring popToken(std::wstring& str);
 std::wstring peekToken(const std::wstring& str);

@@ -1736,5 +1736,5 @@ Value* Value::getLvalue(ExprEnv* env)
 
 
 
-};  // namespace tango
+};  // namespace xd
 

@@ -14,11 +14,11 @@
 #include "../xdcommon/errorinfo.h"
 
 
-class DatabaseMgr : public tango::IDatabaseMgr
+class DatabaseMgr : public xd::IDatabaseMgr
 {
     XCM_CLASS_NAME("xdclient.DatabaseMgr")
     XCM_BEGIN_INTERFACE_MAP(DatabaseMgr)
-        XCM_INTERFACE_ENTRY(tango::IDatabaseMgr)
+        XCM_INTERFACE_ENTRY(xd::IDatabaseMgr)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -27,9 +27,9 @@ public:
     {
     }
 
-    tango::IDatabasePtr open(const std::wstring& connection_str)
+    xd::IDatabasePtr open(const std::wstring& connection_str)
     {
-        tango::ConnectionStringParser c(connection_str);
+        xd::ConnectionStringParser c(connection_str);
         std::wstring provider = c.getLowerValue(L"xdprovider");
         if (provider.empty())
             return xcm::null;
@@ -59,7 +59,7 @@ public:
             return xcm::null;
         }
 
-        return tango::IDatabasePtr(db, false);
+        return xd::IDatabasePtr(db, false);
     }
 
     bool createDatabase(const std::wstring& connection_str)
@@ -67,7 +67,7 @@ public:
         return false;
     }
     
-    tango::IDatabaseEntryEnumPtr getDatabaseList(const std::wstring& host,
+    xd::IDatabaseEntryEnumPtr getDatabaseList(const std::wstring& host,
                                                  int port,
                                                  const std::wstring& uid,
                                                  const std::wstring& password)

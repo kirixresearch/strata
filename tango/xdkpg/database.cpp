@@ -79,11 +79,11 @@ const wchar_t* sql92_keywords =
 
 
 
-void xdkpgStructureToXml(tango::IStructurePtr s, kl::xmlnode& node)
+void xdkpgStructureToXml(xd::IStructurePtr s, kl::xmlnode& node)
 {
     node.setNodeName(L"structure");
 
-    tango::IColumnInfoPtr colinfo;
+    xd::IColumnInfoPtr colinfo;
     int i, col_count;
 
     col_count = s->getColumnCount();
@@ -105,9 +105,9 @@ void xdkpgStructureToXml(tango::IStructurePtr s, kl::xmlnode& node)
 
 
 
-tango::IStructurePtr xdkpgXmlToStructure(kl::xmlnode& node)
+xd::IStructurePtr xdkpgXmlToStructure(kl::xmlnode& node)
 {
-    tango::IStructurePtr s = static_cast<tango::IStructure*>(new Structure);
+    xd::IStructurePtr s = static_cast<xd::IStructure*>(new Structure);
 
     int child_count = node.getChildCount();
     int i;
@@ -137,7 +137,7 @@ tango::IStructurePtr xdkpgXmlToStructure(kl::xmlnode& node)
             return xcm::null;
         }
 
-        tango::IColumnInfoPtr colinfo = s->createColumn();
+        xd::IColumnInfoPtr colinfo = s->createColumn();
         colinfo->setName(colname.getNodeValue());
         colinfo->setType(kl::wtoi(coltype.getNodeValue()));
         colinfo->setWidth(kl::wtoi(colwidth.getNodeValue()));
@@ -159,22 +159,22 @@ tango::IStructurePtr xdkpgXmlToStructure(kl::xmlnode& node)
 
 KpgDatabase::KpgDatabase()
 {
-    m_attr = static_cast<tango::IAttributes*>(new DatabaseAttributes);
+    m_attr = static_cast<xd::IAttributes*>(new DatabaseAttributes);
 
-    m_attr->setIntAttribute(tango::dbattrColumnMaxNameLength, 63);
-    m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 63);
-    m_attr->setStringAttribute(tango::dbattrKeywords, sql92_keywords);    
-    m_attr->setStringAttribute(tango::dbattrColumnInvalidChars, 
+    m_attr->setIntAttribute(xd::dbattrColumnMaxNameLength, 63);
+    m_attr->setIntAttribute(xd::dbattrTableMaxNameLength, 63);
+    m_attr->setStringAttribute(xd::dbattrKeywords, sql92_keywords);    
+    m_attr->setStringAttribute(xd::dbattrColumnInvalidChars, 
                                L"\\./\x00\xFF");
-    m_attr->setStringAttribute(tango::dbattrTableInvalidChars, 
+    m_attr->setStringAttribute(xd::dbattrTableInvalidChars, 
                                L"\\./:*?<>|\x00\xFF");
-    m_attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars,
+    m_attr->setStringAttribute(xd::dbattrColumnInvalidStartingChars,
                                L"\\./\x00\xFF");
-    m_attr->setStringAttribute(tango::dbattrTableInvalidStartingChars,
+    m_attr->setStringAttribute(xd::dbattrTableInvalidStartingChars,
                                L"\\./:*?<>|\x00\xFF");
-    m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"\"");
-    m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"\"");
-    m_attr->setStringAttribute(tango::dbattrIdentifierCharsNeedingQuote, L"`\"~# $!@%^&(){}-+.");   
+    m_attr->setStringAttribute(xd::dbattrIdentifierQuoteOpenChar, L"\"");
+    m_attr->setStringAttribute(xd::dbattrIdentifierQuoteCloseChar, L"\"");
+    m_attr->setStringAttribute(xd::dbattrIdentifierCharsNeedingQuote, L"`\"~# $!@%^&(){}-+.");   
 }
 
 KpgDatabase::~KpgDatabase()
@@ -191,7 +191,7 @@ std::wstring KpgDatabase::getPath()
 
 std::wstring KpgDatabase::getTempFileDirectory()
 {
-    std::wstring result = m_attr->getStringAttribute(tango::dbattrTempDirectory);
+    std::wstring result = m_attr->getStringAttribute(xd::dbattrTempDirectory);
     if (result.empty())
     {
         result = xf_get_temp_path();
@@ -202,7 +202,7 @@ std::wstring KpgDatabase::getTempFileDirectory()
 
 std::wstring KpgDatabase::getDefinitionDirectory()
 {
-    std::wstring result = m_attr->getStringAttribute(tango::dbattrDefinitionDirectory);
+    std::wstring result = m_attr->getStringAttribute(xd::dbattrDefinitionDirectory);
     if (result.empty())
     {
         result = xf_get_temp_path();
@@ -256,7 +256,7 @@ std::wstring KpgDatabase::getActiveUid()
     return L"";
 }
 
-tango::IAttributesPtr KpgDatabase::getAttributes()
+xd::IAttributesPtr KpgDatabase::getAttributes()
 {
     return m_attr;
 }
@@ -282,7 +282,7 @@ bool KpgDatabase::cleanup()
     return true;
 }
 
-tango::IJobPtr KpgDatabase::createJob()
+xd::IJobPtr KpgDatabase::createJob()
 {
     XCM_AUTO_LOCK(m_jobs_mutex);
 
@@ -291,10 +291,10 @@ tango::IJobPtr KpgDatabase::createJob()
     job->ref();
     m_jobs.push_back(job);
 
-    return static_cast<tango::IJob*>(job);
+    return static_cast<xd::IJob*>(job);
 }
 
-tango::IDatabasePtr KpgDatabase::getMountDatabase(const std::wstring& path)
+xd::IDatabasePtr KpgDatabase::getMountDatabase(const std::wstring& path)
 {
     return xcm::null;
 }
@@ -349,10 +349,10 @@ bool KpgDatabase::copyFile(const std::wstring& src_path,
     return false;
 }
 
-bool KpgDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
+bool KpgDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 {
-    tango::IIteratorPtr iter;
-    tango::IStructurePtr structure;
+    xd::IIteratorPtr iter;
+    xd::IStructurePtr structure;
 
     if (info->iter_input.isOk())
     {
@@ -361,7 +361,7 @@ bool KpgDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
     }
      else
     {
-        tango::QueryParams qp;
+        xd::QueryParams qp;
         qp.from = info->input;
         qp.where = info->where;
         qp.order = info->order;
@@ -385,7 +385,7 @@ bool KpgDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
     }
 
 
-    xdcmnInsert(static_cast<tango::IDatabase*>(this), iter, info->output, info->where, info->limit, job);
+    xdcmnInsert(static_cast<xd::IDatabase*>(this), iter, info->output, info->where, info->limit, job);
 
     return true;
 
@@ -414,7 +414,7 @@ bool KpgDatabase::getFileExist(const std::wstring& _path)
     // determine if the file exists, we are going to get
     // a list of all tables and look for 'path'
 
-    tango::IFileInfoEnumPtr files = getFolderInfo(L"");
+    xd::IFileInfoEnumPtr files = getFolderInfo(L"");
     if (!files)
         return false;
 
@@ -422,7 +422,7 @@ bool KpgDatabase::getFileExist(const std::wstring& _path)
 
     for (i = 0 ; i < count; ++i)
     {
-        tango::IFileInfoPtr info = files->getItem(i);
+        xd::IFileInfoPtr info = files->getItem(i);
         if (kl::iequals(info->getName(), path))
             return true;
     }
@@ -430,7 +430,7 @@ bool KpgDatabase::getFileExist(const std::wstring& _path)
     return false;
 }
 
-tango::IFileInfoPtr KpgDatabase::getFileInfo(const std::wstring& path)
+xd::IFileInfoPtr KpgDatabase::getFileInfo(const std::wstring& path)
 {
     std::wstring folder;
     std::wstring name;
@@ -439,9 +439,9 @@ tango::IFileInfoPtr KpgDatabase::getFileInfo(const std::wstring& path)
     {
         xdcommon::FileInfo* f = new xdcommon::FileInfo();
         f->name = L"/";
-        f->type = tango::filetypeFolder;
-        f->format = tango::formatNative;
-        return static_cast<tango::IFileInfo*>(f);
+        f->type = xd::filetypeFolder;
+        f->format = xd::formatNative;
+        return static_cast<xd::IFileInfo*>(f);
     }
      else
     {
@@ -449,13 +449,13 @@ tango::IFileInfoPtr KpgDatabase::getFileInfo(const std::wstring& path)
         name = kl::afterLast(path, L'/');
     }
     
-    tango::IFileInfoEnumPtr files = getFolderInfo(folder);
+    xd::IFileInfoEnumPtr files = getFolderInfo(folder);
     int i, count;
     
     count = files->size();
     for (i = 0; i < count; ++i)
     {
-        tango::IFileInfoPtr finfo = files->getItem(i);
+        xd::IFileInfoPtr finfo = files->getItem(i);
         if (kl::iequals(finfo->getName(), name))
         {
             return finfo;
@@ -465,15 +465,15 @@ tango::IFileInfoPtr KpgDatabase::getFileInfo(const std::wstring& path)
     return xcm::null;
 }
 
-tango::IFileInfoEnumPtr KpgDatabase::getFolderInfo(const std::wstring& path)
+xd::IFileInfoEnumPtr KpgDatabase::getFolderInfo(const std::wstring& path)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
     std::wstring lower_path = m_path;
     kl::makeLower(lower_path);
 
-    xcm::IVectorImpl<tango::IFileInfoPtr>* retval;
-    retval = new xcm::IVectorImpl<tango::IFileInfoPtr>;
+    xcm::IVectorImpl<xd::IFileInfoPtr>* retval;
+    retval = new xcm::IVectorImpl<xd::IFileInfoPtr>;
 
     PkgStreamEnum* kpgenum = m_kpg->getStreamEnum();
     if (kpgenum)
@@ -501,10 +501,10 @@ tango::IFileInfoEnumPtr KpgDatabase::getFolderInfo(const std::wstring& path)
 
                     xdcommon::FileInfo* f = new xdcommon::FileInfo;
                     f->name = entry.stream_name;
-                    f->type = (object_type == L"stream" ? tango::filetypeStream : tango::filetypeTable);
+                    f->type = (object_type == L"stream" ? xd::filetypeStream : xd::filetypeTable);
                     f->object_id = kl::md5str(L"xdkpg:" + lower_path + L":" + lower_stream);
 
-                    retval->append(static_cast<tango::IFileInfo*>(f));
+                    retval->append(static_cast<xd::IFileInfo*>(f));
                 }
             }
         }
@@ -518,15 +518,15 @@ std::wstring KpgDatabase::getPrimaryKey(const std::wstring path)
     return L"";
 }
 
-tango::IStructurePtr KpgDatabase::createStructure()
+xd::IStructurePtr KpgDatabase::createStructure()
 {
     Structure* s = new Structure;
-    return static_cast<tango::IStructure*>(s);
+    return static_cast<xd::IStructure*>(s);
 }
 
 bool KpgDatabase::createTable(const std::wstring& _path,
-                              tango::IStructurePtr struct_config,
-                              tango::FormatInfo* format_info)
+                              xd::IStructurePtr struct_config,
+                              xd::FormatInfo* format_info)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
@@ -548,7 +548,7 @@ bool KpgDatabase::createTable(const std::wstring& _path,
     return true;
 }
 
-tango::IStreamPtr KpgDatabase::openStream(const std::wstring& _path)
+xd::IStreamPtr KpgDatabase::openStream(const std::wstring& _path)
 {
     std::wstring mime_type;
 
@@ -572,7 +572,7 @@ tango::IStreamPtr KpgDatabase::openStream(const std::wstring& _path)
         return xcm::null;
     }
 
-    return static_cast<tango::IStream*>(pstream);
+    return static_cast<xd::IStream*>(pstream);
 }
 
 bool KpgDatabase::createStream(const std::wstring& _path, const std::wstring& mime_type)
@@ -633,7 +633,7 @@ bool KpgDatabase::getStreamInfoBlock(const std::wstring& _path, std::wstring& ou
 }
 
 
-tango::IIteratorPtr KpgDatabase::query(const tango::QueryParams& qp)
+xd::IIteratorPtr KpgDatabase::query(const xd::QueryParams& qp)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
@@ -650,15 +650,15 @@ tango::IIteratorPtr KpgDatabase::query(const tango::QueryParams& qp)
         return xcm::null;
     }
 
-    return static_cast<tango::IIterator*>(iter);
+    return static_cast<xd::IIterator*>(iter);
 }
 
 
 
-tango::IIndexInfoPtr KpgDatabase::createIndex(const std::wstring& path,
+xd::IIndexInfoPtr KpgDatabase::createIndex(const std::wstring& path,
                                               const std::wstring& name,
                                               const std::wstring& expr,
-                                              tango::IJob* job)
+                                              xd::IJob* job)
 {
     return xcm::null;
 }
@@ -679,17 +679,17 @@ bool KpgDatabase::deleteIndex(const std::wstring& path,
 }
 
 
-tango::IIndexInfoEnumPtr KpgDatabase::getIndexEnum(const std::wstring& path)
+xd::IIndexInfoEnumPtr KpgDatabase::getIndexEnum(const std::wstring& path)
 {
-    xcm::IVectorImpl<tango::IIndexInfoPtr>* vec;
-    vec = new xcm::IVectorImpl<tango::IIndexInfoPtr>;
+    xcm::IVectorImpl<xd::IIndexInfoPtr>* vec;
+    vec = new xcm::IVectorImpl<xd::IIndexInfoPtr>;
 
     return vec;
 }
 
 
 
-tango::IRowInserterPtr KpgDatabase::bulkInsert(const std::wstring& _path)
+xd::IRowInserterPtr KpgDatabase::bulkInsert(const std::wstring& _path)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
@@ -697,9 +697,9 @@ tango::IRowInserterPtr KpgDatabase::bulkInsert(const std::wstring& _path)
     if (path.substr(0,1) == L"/")
         path.erase(0,1);
 
-    tango::IStructurePtr structure;
+    xd::IStructurePtr structure;
 
-    std::map<std::wstring, tango::IStructurePtr, kl::cmp_nocase>::iterator it;
+    std::map<std::wstring, xd::IStructurePtr, kl::cmp_nocase>::iterator it;
     it = m_create_tables.find(path);
     if (it != m_create_tables.end())
     {
@@ -714,11 +714,11 @@ tango::IRowInserterPtr KpgDatabase::bulkInsert(const std::wstring& _path)
         return xcm::null;
 
     KpgRowInserter* inserter = new KpgRowInserter(this, path, structure);
-    return static_cast<tango::IRowInserter*>(inserter);
+    return static_cast<xd::IRowInserter*>(inserter);
 }
 
 
-tango::IStructurePtr KpgDatabase::describeTable(const std::wstring& _path)
+xd::IStructurePtr KpgDatabase::describeTable(const std::wstring& _path)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 
@@ -726,9 +726,9 @@ tango::IStructurePtr KpgDatabase::describeTable(const std::wstring& _path)
     if (path.substr(0,1) == L"/")
         path.erase(0,1);
 
-    tango::IStructurePtr structure;
+    xd::IStructurePtr structure;
 
-    std::map<std::wstring, tango::IStructurePtr, kl::cmp_nocase>::iterator it;
+    std::map<std::wstring, xd::IStructurePtr, kl::cmp_nocase>::iterator it;
     it = m_create_tables.find(path);
     if (it != m_create_tables.end())
     {
@@ -756,7 +756,7 @@ tango::IStructurePtr KpgDatabase::describeTable(const std::wstring& _path)
     return xdkpgXmlToStructure(structure_node);
 }
 
-bool KpgDatabase::modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job)
+bool KpgDatabase::modifyStructure(const std::wstring& path, xd::IStructurePtr struct_config, xd::IJob* job)
 {
     return false;
 }
@@ -764,12 +764,12 @@ bool KpgDatabase::modifyStructure(const std::wstring& path, tango::IStructurePtr
 bool KpgDatabase::execute(const std::wstring& command,
                           unsigned int flags,
                           xcm::IObjectPtr& result,
-                          tango::IJob* job)
+                          xd::IJob* job)
 {
     return false;
 }
 
-bool KpgDatabase::groupQuery(tango::GroupQueryParams* info, tango::IJob* job)
+bool KpgDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
 {
     return false;
 }

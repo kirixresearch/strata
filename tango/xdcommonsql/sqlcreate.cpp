@@ -25,7 +25,7 @@
 #include <map>
 
 
-tango::IColumnInfoPtr parseColumnDescription(const std::wstring& _col_desc, ThreadErrorInfo& error)
+xd::IColumnInfoPtr parseColumnDescription(const std::wstring& _col_desc, ThreadErrorInfo& error)
 {
     std::wstring col_desc = _col_desc;
     
@@ -35,7 +35,7 @@ tango::IColumnInfoPtr parseColumnDescription(const std::wstring& _col_desc, Thre
     if (field.empty())
     {
         // empty field name (probably a trailing comma);
-        error.setError(tango::errorSyntax, L"Invalid syntax; empty field name in the column parameters");
+        error.setError(xd::errorSyntax, L"Invalid syntax; empty field name in the column parameters");
         return xcm::null;
     }
     
@@ -91,32 +91,32 @@ tango::IColumnInfoPtr parseColumnDescription(const std::wstring& _col_desc, Thre
         type == L"CHAR" ||
         type == L"CHARACTER")
     {
-        colinfo->setType(tango::typeCharacter);
+        colinfo->setType(xd::typeCharacter);
         if (width <= 0)
         {
-            error.setError(tango::errorSyntax, L"Invalid syntax; character field has a width <= 0 in the column parameters");
+            error.setError(xd::errorSyntax, L"Invalid syntax; character field has a width <= 0 in the column parameters");
             return xcm::null;
         }
         
         if (scale != 0)
         {
-            error.setError(tango::errorSyntax, L"Invalid syntax; character field has a scale != 0 in the column parameters");        
+            error.setError(xd::errorSyntax, L"Invalid syntax; character field has a scale != 0 in the column parameters");        
             return xcm::null;
         }
     }
      else if (type == L"NVARCHAR" ||
               type == L"NCHAR")
     {
-        colinfo->setType(tango::typeWideCharacter);
+        colinfo->setType(xd::typeWideCharacter);
         if (width <= 0)
         {
-            error.setError(tango::errorSyntax, L"Invalid syntax; character field has a width <= 0 in the column parameters");
+            error.setError(xd::errorSyntax, L"Invalid syntax; character field has a width <= 0 in the column parameters");
             return xcm::null;
         }
         
         if (scale != 0)
         {
-            error.setError(tango::errorSyntax, L"Invalid syntax; character field has a scale != 0 in the column parameters");        
+            error.setError(xd::errorSyntax, L"Invalid syntax; character field has a scale != 0 in the column parameters");        
             return xcm::null;
         }
     }
@@ -124,10 +124,10 @@ tango::IColumnInfoPtr parseColumnDescription(const std::wstring& _col_desc, Thre
               type == L"INT" ||
               type == L"SMALLINT")
     {
-        colinfo->setType(tango::typeInteger);
+        colinfo->setType(xd::typeInteger);
         if (scale != 0)
         {
-            error.setError(tango::errorSyntax, L"Invalid syntax; integer field has a scale != 0 in the column parameters");        
+            error.setError(xd::errorSyntax, L"Invalid syntax; integer field has a scale != 0 in the column parameters");        
             return xcm::null;
         }
     }
@@ -136,32 +136,32 @@ tango::IColumnInfoPtr parseColumnDescription(const std::wstring& _col_desc, Thre
               type == L"NUMERIC" ||
               type == L"NUMBER")
     {
-        colinfo->setType(tango::typeNumeric);
+        colinfo->setType(xd::typeNumeric);
     }
      else if (type == L"DOUBLE" ||
               type == L"FLOAT" ||
               type == L"REAL")
     {  
-        colinfo->setType(tango::typeDouble);
+        colinfo->setType(xd::typeDouble);
     }
      else if (type == L"DATE")
     {
-        colinfo->setType(tango::typeDate);
+        colinfo->setType(xd::typeDate);
     }
      else if (type == L"DATETIME")
     {
-        colinfo->setType(tango::typeDateTime);
+        colinfo->setType(xd::typeDateTime);
     }
      else if (type == L"BOOLEAN")
     {
-        colinfo->setType(tango::typeBoolean);
+        colinfo->setType(xd::typeBoolean);
     }
      else
     {
         // -- bad type --
         wchar_t buf[1024]; // some paths might be long
         swprintf(buf, 1024, L"Invalid syntax; invalid column type [%ls] in the column parameters", type.c_str()); 
-        error.setError(tango::errorSyntax, buf);        
+        error.setError(xd::errorSyntax, buf);        
         return xcm::null;
     }
 
@@ -175,7 +175,7 @@ tango::IColumnInfoPtr parseColumnDescription(const std::wstring& _col_desc, Thre
         if (0 != wcscasecmp(as.c_str(), L"AS"))
         {
             // missing AS
-            error.setError(tango::errorSyntax, L"Invalid syntax; missing AS in the column parameters");
+            error.setError(xd::errorSyntax, L"Invalid syntax; missing AS in the column parameters");
             return xcm::null;
         }
         
@@ -184,7 +184,7 @@ tango::IColumnInfoPtr parseColumnDescription(const std::wstring& _col_desc, Thre
         if (expr.empty())
         {
             // empty expression
-            error.setError(tango::errorSyntax, L"Invalid syntax; empty expression in the column parameters");            
+            error.setError(xd::errorSyntax, L"Invalid syntax; empty expression in the column parameters");            
             return xcm::null;
         }
         
@@ -192,17 +192,17 @@ tango::IColumnInfoPtr parseColumnDescription(const std::wstring& _col_desc, Thre
         colinfo->setCalculated(true);
     }
     
-    return static_cast<tango::IColumnInfo*>(colinfo);
+    return static_cast<xd::IColumnInfo*>(colinfo);
 }
 
 
 
 
-bool sqlCreate(tango::IDatabasePtr db,
+bool sqlCreate(xd::IDatabasePtr db,
                const std::wstring& _command,
                xcm::IObjectPtr& result_obj,
                ThreadErrorInfo& error,
-               tango::IJob* job)
+               xd::IJob* job)
 {
     result_obj.clear();
     
@@ -218,7 +218,7 @@ bool sqlCreate(tango::IDatabasePtr db,
 
     if (!stmt.getKeywordExists(L"CREATE"))
     {
-        error.setError(tango::errorSyntax, L"Invalid syntax; CREATE statement missing CREATE clause");    
+        error.setError(xd::errorSyntax, L"Invalid syntax; CREATE statement missing CREATE clause");    
         return false;
     }
 
@@ -232,7 +232,7 @@ bool sqlCreate(tango::IDatabasePtr db,
         {
             wchar_t buf[1024]; // some paths might be long
             swprintf(buf, 1024, L"Unable to create directory [%ls]", param.c_str());
-            error.setError(tango::errorGeneral, buf);
+            error.setError(xd::errorGeneral, buf);
             return false;
         }
         
@@ -245,7 +245,7 @@ bool sqlCreate(tango::IDatabasePtr db,
         std::wstring path = stmt.getKeywordParam(L"PATH");
         if (connection_string.empty() && path.empty())
         {
-            error.setError(tango::errorSyntax, L"Invalid syntax; MOUNT clause missing connection string and path");
+            error.setError(xd::errorSyntax, L"Invalid syntax; MOUNT clause missing connection string and path");
             return false;
         }
         
@@ -255,7 +255,7 @@ bool sqlCreate(tango::IDatabasePtr db,
         {
             wchar_t buf[1024]; // some paths might be long
             swprintf(buf, 1024, L"Unable to create mount [%ls]", mount_path.c_str());
-            error.setError(tango::errorGeneral, buf);
+            error.setError(xd::errorGeneral, buf);
             return false;
         }
         
@@ -269,7 +269,7 @@ bool sqlCreate(tango::IDatabasePtr db,
         if (0 != wcscasecmp(token.c_str(), L"INDEX"))
         {
             // missing INDEX keyword
-            error.setError(tango::errorSyntax, L"Invalid syntax; INDEX clause missing INDEX keyword");
+            error.setError(xd::errorSyntax, L"Invalid syntax; INDEX clause missing INDEX keyword");
             return false;
         }
         
@@ -280,7 +280,7 @@ bool sqlCreate(tango::IDatabasePtr db,
         if (0 != wcscasecmp(on.c_str(), L"ON"))
         {
             // missing ON keyword
-            error.setError(tango::errorSyntax, L"Invalid syntax; INDEX clause missing ON keyword");            
+            error.setError(xd::errorSyntax, L"Invalid syntax; INDEX clause missing ON keyword");            
             return false;
         }
         
@@ -293,7 +293,7 @@ bool sqlCreate(tango::IDatabasePtr db,
             // missing open parenthesis
             // CREATE INDEX idx ON table(col1)
             //                          ^^
-            error.setError(tango::errorSyntax, L"Invalid syntax; INDEX clause missing open parenthesis");             
+            error.setError(xd::errorSyntax, L"Invalid syntax; INDEX clause missing open parenthesis");             
             return false;
         }
         
@@ -301,7 +301,7 @@ bool sqlCreate(tango::IDatabasePtr db,
         
         
 
-        tango::IIndexInfoPtr index;
+        xd::IIndexInfoPtr index;
         
         index = db->createIndex(table, name, col_list, job);
         
@@ -309,7 +309,7 @@ bool sqlCreate(tango::IDatabasePtr db,
         {
             wchar_t buf[1024]; // some paths might be long
             swprintf(buf, 1024, L"Unable to create index [%ls] on table [%ls]", name.c_str(), table.c_str()); 
-            error.setError(tango::errorGeneral, buf);         
+            error.setError(xd::errorGeneral, buf);         
             return false;
         }
         
@@ -325,7 +325,7 @@ bool sqlCreate(tango::IDatabasePtr db,
         if (!left_paren)
         {
             // missing left parenthesis
-            error.setError(tango::errorSyntax, L"Invalid syntax; TABLE clause missing open parenthesis");
+            error.setError(xd::errorSyntax, L"Invalid syntax; TABLE clause missing open parenthesis");
             return false;
         }
         
@@ -342,14 +342,14 @@ bool sqlCreate(tango::IDatabasePtr db,
 
 
         Structure* s = new Structure;
-        tango::IStructurePtr sp = static_cast<tango::IStructure*>(s);
+        xd::IStructurePtr sp = static_cast<xd::IStructure*>(s);
 
         std::vector<std::wstring>::iterator it;
         for (it = colvec.begin();
              it != colvec.end();
              ++it)
         {
-            tango::IColumnInfoPtr col = parseColumnDescription(*it, error);
+            xd::IColumnInfoPtr col = parseColumnDescription(*it, error);
             if (col.isNull())
                 return false;
                 
@@ -361,7 +361,7 @@ bool sqlCreate(tango::IDatabasePtr db,
             // object or table already exists
             wchar_t buf[1024]; // some paths might be long
             swprintf(buf, 1024, L"Unable to create table [%ls] because table already exists", table_name.c_str()); 
-            error.setError(tango::errorGeneral, buf);  
+            error.setError(xd::errorGeneral, buf);  
             return false;
         }
         
@@ -370,13 +370,13 @@ bool sqlCreate(tango::IDatabasePtr db,
         {
             wchar_t buf[1024]; // some paths might be long
             swprintf(buf, 1024, L"Unable to create table [%ls]", table_name.c_str()); 
-            error.setError(tango::errorGeneral, buf);
+            error.setError(xd::errorGeneral, buf);
             return false;
         }
     }
      else
     {
-        error.setError(tango::errorGeneral, L"Unable to process CREATE statement");
+        error.setError(xd::errorGeneral, L"Unable to process CREATE statement");
         return false;
     }
     

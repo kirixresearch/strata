@@ -123,8 +123,8 @@ public:
     void setSetPath(const wxString& set_path);
     wxString getSetPath();
     
-    void setStructure(tango::IStructurePtr s);
-    tango::IStructurePtr getStructure();
+    void setStructure(xd::IStructurePtr s);
+    xd::IStructurePtr getStructure();
     
     bool getItemExists(const wxString& expr);
     int getItemY(const wxString& expr);
@@ -164,7 +164,7 @@ private:
     
 private:
 
-    tango::IStructurePtr m_structure;
+    xd::IStructurePtr m_structure;
 
     wxString m_set_path;
     wxString m_caption;

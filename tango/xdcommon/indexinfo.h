@@ -13,11 +13,11 @@
 #define __XDCOMMON_INDEXINFO_H
 
 
-class IndexInfo : public tango::IIndexInfo
+class IndexInfo : public xd::IIndexInfo
 {
     XCM_CLASS_NAME("tango.IndexInfo")
     XCM_BEGIN_INTERFACE_MAP(IndexInfo)
-        XCM_INTERFACE_ENTRY(tango::IIndexInfo)
+        XCM_INTERFACE_ENTRY(xd::IIndexInfo)
     XCM_END_INTERFACE_MAP()
 
     std::wstring m_tag;

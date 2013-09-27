@@ -110,7 +110,7 @@ private:
     IndexInfo* m_selected_index_info;
 
     std::wstring m_path;
-    tango::IStructurePtr m_structure;
+    xd::IStructurePtr m_structure;
     IDocumentSitePtr m_doc_site;
     
     DECLARE_EVENT_TABLE()

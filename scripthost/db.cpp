@@ -58,17 +58,17 @@ int DbDatabaseType::toTangoDatabaseType(int binding_database_type)
 {
     switch (binding_database_type)
     {
-        case DbDatabaseType::Xdnative:     return tango::dbtypeXdnative;   break;
-        case DbDatabaseType::Package:      return tango::dbtypeUndefined;  break;
-        case DbDatabaseType::Oracle:       return tango::dbtypeOracle;     break;
-        case DbDatabaseType::Postgres:     return tango::dbtypePostgres;   break;
-        case DbDatabaseType::SqlServer:    return tango::dbtypeSqlServer;  break;
-        case DbDatabaseType::MySQL:        return tango::dbtypeMySql;      break;
-        case DbDatabaseType::Odbc:         return tango::dbtypeOdbc;       break;
-        case DbDatabaseType::Access:       return tango::dbtypeAccess;     break;
-        case DbDatabaseType::Excel:        return tango::dbtypeExcel;      break;
-        case DbDatabaseType::Filesystem:   return tango::dbtypeFilesystem; break;
-        default:                           return tango::dbtypeUndefined;  break;
+        case DbDatabaseType::Xdnative:     return xd::dbtypeXdnative;   break;
+        case DbDatabaseType::Package:      return xd::dbtypeUndefined;  break;
+        case DbDatabaseType::Oracle:       return xd::dbtypeOracle;     break;
+        case DbDatabaseType::Postgres:     return xd::dbtypePostgres;   break;
+        case DbDatabaseType::SqlServer:    return xd::dbtypeSqlServer;  break;
+        case DbDatabaseType::MySQL:        return xd::dbtypeMySql;      break;
+        case DbDatabaseType::Odbc:         return xd::dbtypeOdbc;       break;
+        case DbDatabaseType::Access:       return xd::dbtypeAccess;     break;
+        case DbDatabaseType::Excel:        return xd::dbtypeExcel;      break;
+        case DbDatabaseType::Filesystem:   return xd::dbtypeFilesystem; break;
+        default:                           return xd::dbtypeUndefined;  break;
     }
 }
 
@@ -125,30 +125,30 @@ int DbType::toTangoType(kscript::Value* val)
     {
         std::wstring str = val->getString();
         if (str == L"character")
-            return tango::typeCharacter;
+            return xd::typeCharacter;
         else if (str == L"widecharacter")
-            return tango::typeWideCharacter;
+            return xd::typeWideCharacter;
         else if (str == L"binary")
-            return tango::typeBinary;
+            return xd::typeBinary;
         else if (str == L"numeric")
-            return tango::typeNumeric;
+            return xd::typeNumeric;
         else if (str == L"double")
-            return tango::typeDouble;
+            return xd::typeDouble;
         else if (str == L"integer")
-            return tango::typeInteger;
+            return xd::typeInteger;
         else if (str == L"date")
-            return tango::typeDate;
+            return xd::typeDate;
         else if (str == L"datetime")
-            return tango::typeDateTime;
+            return xd::typeDateTime;
         else if (str == L"boolean")
-            return tango::typeBoolean;
+            return xd::typeBoolean;
     }
      else
     {
         return DbType::toTangoType(val->getInteger());
     }
     
-    return tango::typeUndefined;
+    return xd::typeUndefined;
 }
 
 
@@ -157,17 +157,17 @@ int DbType::toTangoType(int type)
     switch (type)
     {
         default:
-        case Undefined:       return tango::typeUndefined;
-        case Invalid:         return tango::typeInvalid;
-        case Character:       return tango::typeCharacter;
-        case WideCharacter:   return tango::typeWideCharacter;
-        case Binary:          return tango::typeBinary;
-        case Numeric:         return tango::typeNumeric;
-        case Double:          return tango::typeDouble;
-        case Integer:         return tango::typeInteger;
-        case Date:            return tango::typeDate;
-        case DateTime:        return tango::typeDateTime;
-        case Boolean:         return tango::typeBoolean;
+        case Undefined:       return xd::typeUndefined;
+        case Invalid:         return xd::typeInvalid;
+        case Character:       return xd::typeCharacter;
+        case WideCharacter:   return xd::typeWideCharacter;
+        case Binary:          return xd::typeBinary;
+        case Numeric:         return xd::typeNumeric;
+        case Double:          return xd::typeDouble;
+        case Integer:         return xd::typeInteger;
+        case Date:            return xd::typeDate;
+        case DateTime:        return xd::typeDateTime;
+        case Boolean:         return xd::typeBoolean;
     }
 }
 
@@ -176,17 +176,17 @@ int DbType::fromTangoType(int type)
     switch (type)
     {
         default:
-        case tango::typeUndefined:     return Undefined;
-        case tango::typeInvalid:       return Invalid;
-        case tango::typeCharacter:     return Character;
-        case tango::typeWideCharacter: return WideCharacter;
-        case tango::typeBinary:        return Binary;
-        case tango::typeNumeric:       return Numeric;
-        case tango::typeDouble:        return Double;
-        case tango::typeInteger:       return Integer;
-        case tango::typeDate:          return Date;
-        case tango::typeDateTime:      return DateTime;
-        case tango::typeBoolean:       return Boolean;
+        case xd::typeUndefined:     return Undefined;
+        case xd::typeInvalid:       return Invalid;
+        case xd::typeCharacter:     return Character;
+        case xd::typeWideCharacter: return WideCharacter;
+        case xd::typeBinary:        return Binary;
+        case xd::typeNumeric:       return Numeric;
+        case xd::typeDouble:        return Double;
+        case xd::typeInteger:       return Integer;
+        case xd::typeDate:          return Date;
+        case xd::typeDateTime:      return DateTime;
+        case xd::typeBoolean:       return Boolean;
     }
 }
 
@@ -232,16 +232,16 @@ int DbEncoding::toTangoEncoding(int type)
     switch (type)
     {
         default:
-        case DbEncoding::Invalid:   return tango::encodingInvalid;
-        case DbEncoding::Undefined: return tango::encodingUndefined;
-        case DbEncoding::ASCII:     return tango::encodingASCII;
-        case DbEncoding::UTF8:      return tango::encodingUTF8;
-        case DbEncoding::UTF16:     return tango::encodingUTF16;
-        case DbEncoding::UTF32:     return tango::encodingUTF32;
-        case DbEncoding::UCS2:      return tango::encodingUCS2;
-        case DbEncoding::EBCDIC:    return tango::encodingEBCDIC;
-        case DbEncoding::COMP:      return tango::encodingCOMP;
-        case DbEncoding::COMP3:     return tango::encodingCOMP3;
+        case DbEncoding::Invalid:   return xd::encodingInvalid;
+        case DbEncoding::Undefined: return xd::encodingUndefined;
+        case DbEncoding::ASCII:     return xd::encodingASCII;
+        case DbEncoding::UTF8:      return xd::encodingUTF8;
+        case DbEncoding::UTF16:     return xd::encodingUTF16;
+        case DbEncoding::UTF32:     return xd::encodingUTF32;
+        case DbEncoding::UCS2:      return xd::encodingUCS2;
+        case DbEncoding::EBCDIC:    return xd::encodingEBCDIC;
+        case DbEncoding::COMP:      return xd::encodingCOMP;
+        case DbEncoding::COMP3:     return xd::encodingCOMP3;
     }
 }
 
@@ -250,16 +250,16 @@ int DbEncoding::fromTangoEncoding(int type)
     switch (type)
     {
         default:
-        case tango::encodingInvalid:   return DbEncoding::Invalid;
-        case tango::encodingUndefined: return DbEncoding::Undefined;
-        case tango::encodingASCII:     return DbEncoding::ASCII;
-        case tango::encodingUTF8:      return DbEncoding::UTF8;
-        case tango::encodingUTF16:     return DbEncoding::UTF16;
-        case tango::encodingUTF32:     return DbEncoding::UTF32;
-        case tango::encodingUCS2:      return DbEncoding::UCS2;
-        case tango::encodingEBCDIC:    return DbEncoding::EBCDIC;
-        case tango::encodingCOMP:      return DbEncoding::COMP;
-        case tango::encodingCOMP3:     return DbEncoding::COMP3;
+        case xd::encodingInvalid:   return DbEncoding::Invalid;
+        case xd::encodingUndefined: return DbEncoding::Undefined;
+        case xd::encodingASCII:     return DbEncoding::ASCII;
+        case xd::encodingUTF8:      return DbEncoding::UTF8;
+        case xd::encodingUTF16:     return DbEncoding::UTF16;
+        case xd::encodingUTF32:     return DbEncoding::UTF32;
+        case xd::encodingUCS2:      return DbEncoding::UCS2;
+        case xd::encodingEBCDIC:    return DbEncoding::EBCDIC;
+        case xd::encodingCOMP:      return DbEncoding::COMP;
+        case xd::encodingCOMP3:     return DbEncoding::COMP3;
     }
 }
 
@@ -356,7 +356,7 @@ DbResult::~DbResult()
 }
 
 
-void DbResult::init(tango::IIteratorPtr iter)
+void DbResult::init(xd::IIteratorPtr iter)
 {
     m_iter = iter;
     m_structure = m_iter->getStructure();
@@ -369,7 +369,7 @@ void DbResult::init(tango::IIteratorPtr iter)
     
     for (i = 0; i < colcount; ++i)
     {
-        tango::IColumnInfoPtr colinfo = m_structure->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr colinfo = m_structure->getColumnInfoByIdx(i);
 
         DbResultColumn c;
         c.name = colinfo->getName();
@@ -444,15 +444,15 @@ void DbResult::getString(kscript::ExprEnv* env, kscript::Value* retval)
 
     switch (col->type)
     {
-        case tango::typeCharacter:
-        case tango::typeWideCharacter:
+        case xd::typeCharacter:
+        case xd::typeWideCharacter:
         {
             retval->setString(m_iter->getWideString(col->handle));
             break;
         }
 
-        case tango::typeNumeric:
-        case tango::typeDouble:
+        case xd::typeNumeric:
+        case xd::typeDouble:
         {
             wchar_t buf[80];
             swprintf(buf, 79, L"%.*f",
@@ -463,7 +463,7 @@ void DbResult::getString(kscript::ExprEnv* env, kscript::Value* retval)
             break;
         }
 
-        case tango::typeInteger:
+        case xd::typeInteger:
         {
             wchar_t buf[80];
             swprintf(buf,
@@ -474,11 +474,11 @@ void DbResult::getString(kscript::ExprEnv* env, kscript::Value* retval)
             break;
         }
 
-        case tango::typeDate:
+        case xd::typeDate:
         {
             wchar_t buf[80];
 
-            tango::DateTime dt = m_iter->getDateTime(col->handle);
+            xd::DateTime dt = m_iter->getDateTime(col->handle);
 
             swprintf(buf,
                      79,
@@ -490,11 +490,11 @@ void DbResult::getString(kscript::ExprEnv* env, kscript::Value* retval)
             break;
         }
 
-        case tango::typeDateTime:
+        case xd::typeDateTime:
         {
             wchar_t buf[80];
 
-            tango::DateTime dt = m_iter->getDateTime(col->handle);
+            xd::DateTime dt = m_iter->getDateTime(col->handle);
 
             swprintf(buf,
                      79,
@@ -511,7 +511,7 @@ void DbResult::getString(kscript::ExprEnv* env, kscript::Value* retval)
             break;
         }
 
-        case tango::typeBoolean:
+        case xd::typeBoolean:
         {
             if (m_iter->getBoolean(col->handle))
                 retval->setString(L"true");
@@ -598,7 +598,7 @@ void DbResult::getColumnInfo(kscript::ExprEnv* env, kscript::Value* retval)
         return;
     }
     
-    tango::IColumnInfoPtr col;
+    xd::IColumnInfoPtr col;
     
     
     if (env->getParam(0)->isString() ||
@@ -704,40 +704,40 @@ void DbResult::getColValue(int colidx, kscript::Value* val)
 
     switch (col->type)
     {
-        case tango::typeCharacter:
-        case tango::typeWideCharacter:
+        case xd::typeCharacter:
+        case xd::typeWideCharacter:
         {
             val->setString(m_iter->getWideString(col->handle));
             break;
         }
 
-        case tango::typeNumeric:
-        case tango::typeDouble:
+        case xd::typeNumeric:
+        case xd::typeDouble:
         {
             val->setDouble(kl::dblround(m_iter->getDouble(col->handle),
                                         col->scale));
             break;
         }
 
-        case tango::typeInteger:
+        case xd::typeInteger:
         {
             val->setInteger(m_iter->getInteger(col->handle));
             break;
         }
 
         
-        case tango::typeDate:
+        case xd::typeDate:
         {
             wchar_t buf[80];
 
-            tango::datetime_t d = m_iter->getDateTime(col->handle);
+            xd::datetime_t d = m_iter->getDateTime(col->handle);
             if (d == 0)
             {
                 val->setString(L"");
                 break;
             }
                 
-            tango::DateTime dt = d;
+            xd::DateTime dt = d;
 
             swprintf(buf,
                      79,
@@ -749,18 +749,18 @@ void DbResult::getColValue(int colidx, kscript::Value* val)
             break;
         }
 
-        case tango::typeDateTime:
+        case xd::typeDateTime:
         {
             wchar_t buf[80];
 
-            tango::datetime_t d = m_iter->getDateTime(col->handle);
+            xd::datetime_t d = m_iter->getDateTime(col->handle);
             if (d == 0)
             {
                 val->setString(L"");
                 break;
             }
                 
-            tango::DateTime dt = d;
+            xd::DateTime dt = d;
             
             swprintf(buf,
                      79,
@@ -777,7 +777,7 @@ void DbResult::getColValue(int colidx, kscript::Value* val)
         }
 
 
-        case tango::typeBoolean:
+        case xd::typeBoolean:
         {
             val->setBoolean(m_iter->getBoolean(col->handle));
             break;
@@ -888,12 +888,12 @@ kscript::Value* DbResult::getMember(const std::wstring& name)
     return ValueObject::getMember(name);
 }
 
-tango::IStructurePtr DbResult::getStructure()
+xd::IStructurePtr DbResult::getStructure()
 {
     return m_structure;
 }
 
-tango::IIteratorPtr DbResult::getIterator()
+xd::IIteratorPtr DbResult::getIterator()
 {
     return m_iter;
 }
@@ -1000,14 +1000,14 @@ DbBulkInsert::~DbBulkInsert()
     }
 }
 
-bool DbBulkInsert::init(tango::IDatabasePtr db,
+bool DbBulkInsert::init(xd::IDatabasePtr db,
                         const std::wstring& table,
                         const std::wstring& _columns)
 {
     std::wstring columns = _columns;
     kl::trim(columns);
         
-    tango::IStructurePtr structure = db->describeTable(table);
+    xd::IStructurePtr structure = db->describeTable(table);
     if (!structure.isOk())
         return false;
         
@@ -1026,7 +1026,7 @@ bool DbBulkInsert::init(tango::IDatabasePtr db,
         size_t i, col_count = (size_t)structure->getColumnCount();
         for (i = 0; i < col_count; ++i)
         {
-            tango::IColumnInfoPtr sp_col = structure->getColumnInfoByIdx(i);
+            xd::IColumnInfoPtr sp_col = structure->getColumnInfoByIdx(i);
             
             DbBulkInsertColumn col;
             col.name = sp_col->getName();
@@ -1046,7 +1046,7 @@ bool DbBulkInsert::init(tango::IDatabasePtr db,
             std::wstring token = *it;
             kl::trim(token);
             
-            tango::IColumnInfoPtr sp_col = structure->getColumnInfo(token);
+            xd::IColumnInfoPtr sp_col = structure->getColumnInfo(token);
             if (!sp_col)
             {
                 // column not found, fail
@@ -1238,28 +1238,28 @@ void DbBulkInsert::insertRow(kscript::ExprEnv* env, kscript::Value* retval)
         
         switch (it->type)
         {
-            case tango::typeCharacter:
-            case tango::typeWideCharacter:
+            case xd::typeCharacter:
+            case xd::typeWideCharacter:
             {
                 m_ri->putWideString(it->handle, it->val.getString());
                 break;
             }
 
-            case tango::typeNumeric:
-            case tango::typeDouble:
+            case xd::typeNumeric:
+            case xd::typeDouble:
             {
                 m_ri->putDouble(it->handle, it->val.getDouble());
                 break;
             }
 
-            case tango::typeInteger:
+            case xd::typeInteger:
             {
                 m_ri->putInteger(it->handle, it->val.getInteger());
                 break;
             }
 
-            case tango::typeDateTime:
-            case tango::typeDate:
+            case xd::typeDateTime:
+            case xd::typeDate:
             {
                 int yy=-1,mm,dd,h=-1,m,s,ms = 0;
                 
@@ -1284,7 +1284,7 @@ void DbBulkInsert::insertRow(kscript::ExprEnv* env, kscript::Value* retval)
                     }
                 }
                 
-                if (it->type == tango::typeDate || h == -1)
+                if (it->type == xd::typeDate || h == -1)
                 {
                     h = 0;
                     m = 0;
@@ -1297,14 +1297,14 @@ void DbBulkInsert::insertRow(kscript::ExprEnv* env, kscript::Value* retval)
                 }
                  else
                 {    
-                    tango::DateTime dt(yy,mm,dd,h,m,s,ms);
+                    xd::DateTime dt(yy,mm,dd,h,m,s,ms);
                     m_ri->putDateTime(it->handle, dt);
                 }
                 
                 break;
             }
             
-            case tango::typeBoolean:
+            case xd::typeBoolean:
             {
                 m_ri->putBoolean(it->handle, it->val.getBoolean());
                 break;
@@ -1453,12 +1453,12 @@ DbConnection::~DbConnection()
 
 // provide a way for the C++ side to set the internal
 // database pointer of the DbConnection object
-void DbConnection::setDatabase(tango::IDatabasePtr db)
+void DbConnection::setDatabase(xd::IDatabasePtr db)
 {
     m_db = db;
 }
 
-tango::IDatabasePtr DbConnection::getDatabase()
+xd::IDatabasePtr DbConnection::getDatabase()
 {
     return m_db;
 }
@@ -1507,7 +1507,7 @@ void DbConnection::constructor(kscript::ExprEnv* env, kscript::Value* retval)
         kl::trim(cstr);
         if (!cstr.empty())
         {
-            tango::IDatabaseMgrPtr dbmgr = tango::getDatabaseMgr();
+            xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
             m_db = dbmgr->open(cstr);
             
             if (!m_db)
@@ -1605,7 +1605,7 @@ void DbConnection::connect(kscript::ExprEnv* env, kscript::Value* retval)
         }
          else
         {
-            tango::IDatabaseMgrPtr dbmgr = tango::getDatabaseMgr();
+            xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
             if (dbmgr.isNull())
             {
                 retval->setBoolean(false);
@@ -1708,7 +1708,7 @@ void DbConnection::execute(kscript::ExprEnv* env, kscript::Value* retval)
         return;
     }
     
-    tango::IIteratorPtr iter = result_obj;
+    xd::IIteratorPtr iter = result_obj;
     if (iter)
     {
         DbResult* d = DbResult::createObject(env);
@@ -1773,7 +1773,7 @@ void DbConnection::save(kscript::ExprEnv* env, kscript::Value* retval)
         return;
 
     DbResult* input = (DbResult*)env->getParam(0)->getObject();
-    tango::IIteratorPtr input_iter = input->getIterator();
+    xd::IIteratorPtr input_iter = input->getIterator();
     if (input_iter.isNull())
         return;
 
@@ -1791,7 +1791,7 @@ void DbConnection::save(kscript::ExprEnv* env, kscript::Value* retval)
     // add the records to the output set, reset the
     // iterator, and we're done
 
-    tango::CopyParams info;
+    xd::CopyParams info;
     info.iter_input = input_iter;
     info.output = output_name;
     info.append = append;
@@ -1863,7 +1863,7 @@ void DbConnection::getObjects(kscript::ExprEnv* env, kscript::Value* retval)
 
     // get the info from the database
     
-    tango::IFileInfoEnumPtr fi_enum = m_db->getFolderInfo(schema);
+    xd::IFileInfoEnumPtr fi_enum = m_db->getFolderInfo(schema);
     if (fi_enum.isNull())
     {
         retval->setNull();
@@ -1881,15 +1881,15 @@ void DbConnection::getObjects(kscript::ExprEnv* env, kscript::Value* retval)
     
     for (i = 0; i < count; ++i)
     {
-        tango::IFileInfoPtr fi = fi_enum->getItem(i);
+        xd::IFileInfoPtr fi = fi_enum->getItem(i);
         
         
         switch (fi->getType())
         {
-            case tango::filetypeNode:   oi_type = L"NODE"; break;
-            case tango::filetypeFolder: oi_type = L"DIRECTORY"; break;
-            case tango::filetypeTable:    oi_type = L"TABLE"; break;
-            case tango::filetypeStream: oi_type = L"STREAM"; break;
+            case xd::filetypeNode:   oi_type = L"NODE"; break;
+            case xd::filetypeFolder: oi_type = L"DIRECTORY"; break;
+            case xd::filetypeTable:    oi_type = L"TABLE"; break;
+            case xd::filetypeStream: oi_type = L"STREAM"; break;
             default:
                 oi_type = L"UNKNOWN"; break;
         }    
@@ -1992,7 +1992,7 @@ void DbConnection::describeTable(kscript::ExprEnv* env, kscript::Value* retval)
     
     std::wstring table_name = env->getParam(0)->getString();
     
-    tango::IStructurePtr structure = m_db->describeTable(table_name);
+    xd::IStructurePtr structure = m_db->describeTable(table_name);
     
     if (structure.isNull())
     {
@@ -2006,7 +2006,7 @@ void DbConnection::describeTable(kscript::ExprEnv* env, kscript::Value* retval)
     int i, col_count = structure->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr col = structure->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr col = structure->getColumnInfoByIdx(i);
 
         // TODO: if members are added, make sure to change
         // documentation next to class definition, as well

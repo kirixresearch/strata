@@ -41,20 +41,20 @@ void FindInFilesJob::setInstructions(
     m_paths = paths;
 }
 
-void FindInFilesJob::lookInPath(tango::IDatabasePtr& db, const wxString& path)
+void FindInFilesJob::lookInPath(xd::IDatabasePtr& db, const wxString& path)
 {
-    tango::IFileInfoPtr f = db->getFileInfo(towstr(path));
+    xd::IFileInfoPtr f = db->getFileInfo(towstr(path));
 
     if (f.isNull())
         return;
 
-    if (f->getType() != tango::filetypeFolder)
+    if (f->getType() != xd::filetypeFolder)
     {
         lookInFile(db, path);
         return;
     }
     
-    tango::IFileInfoEnumPtr folder_info = db->getFolderInfo(towstr(path));
+    xd::IFileInfoEnumPtr folder_info = db->getFolderInfo(towstr(path));
     if (folder_info.isNull())
         return;
         
@@ -66,7 +66,7 @@ void FindInFilesJob::lookInPath(tango::IDatabasePtr& db, const wxString& path)
         if (isCancelling())
             return;
             
-        tango::IFileInfoPtr info = folder_info->getItem(i);
+        xd::IFileInfoPtr info = folder_info->getItem(i);
         if (info.isNull())
             continue;
         
@@ -81,7 +81,7 @@ void FindInFilesJob::lookInPath(tango::IDatabasePtr& db, const wxString& path)
             full_path += wxT("/");
         full_path += filename;
         
-        if (info->getType() == tango::filetypeFolder)
+        if (info->getType() == xd::filetypeFolder)
             lookInPath(db, full_path);
              else
             lookInFile(db, full_path);
@@ -99,9 +99,9 @@ static unsigned char* moveNextOffset(unsigned char* offset,
         return np+1;
 }
 
-void FindInFilesJob::lookInFile(tango::IDatabasePtr& db, const wxString& path)
+void FindInFilesJob::lookInFile(xd::IDatabasePtr& db, const wxString& path)
 {
-    tango::IStreamPtr stream = db->openStream(towstr(path));
+    xd::IStreamPtr stream = db->openStream(towstr(path));
     if (stream.isNull())
         return;
     
@@ -173,7 +173,7 @@ void FindInFilesJob::lookInFile(tango::IDatabasePtr& db, const wxString& path)
 
 int FindInFilesJob::runJob()
 {
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     
     std::vector<wxString>::iterator it;
     for (it = m_paths.begin(); it != m_paths.end(); ++it)

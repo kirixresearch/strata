@@ -88,7 +88,7 @@ void StructureDoc::createModifyJobInstructions(kl::JsonNode& params,
 
     *_action_count = 0;
 
-    tango::IColumnInfoPtr col;
+    xd::IColumnInfoPtr col;
     
     int row_count = m_grid->getRowCount();
     size_t action_count = 0;
@@ -188,7 +188,7 @@ void StructureDoc::createModifyJobInstructions(kl::JsonNode& params,
 
             kl::JsonNode modify_param = node["params"];
             modify_param["name"].setString(towstr(name));
-            modify_param["type"].setString(tango::dbtypeToString(choice2tango(type)));
+            modify_param["type"].setString(xd::dbtypeToString(choice2tango(type)));
             modify_param["width"].setInteger(width);
             modify_param["scale"].setInteger(scale);
             modify_param["expression"].setString(towstr(expr));
@@ -219,7 +219,7 @@ void StructureDoc::createModifyJobInstructions(kl::JsonNode& params,
                 if (f->name.Cmp(name) != 0)
                     modify_param["name"].setString(towstr(name));
                 if (f->type != choice2tango(type))
-                    modify_param["type"].setString(tango::dbtypeToString(choice2tango(type)));
+                    modify_param["type"].setString(xd::dbtypeToString(choice2tango(type)));
                 if (f->width != width)
                     modify_param["width"].setInteger(width);
                 if (f->scale != scale)
@@ -603,14 +603,14 @@ bool StructureDoc::initDoc(IFramePtr frame,
     props.mask = kcl::CellProperties::cpmaskCtrlType |
                  kcl::CellProperties::cpmaskCbChoices;
     props.ctrltype = kcl::Grid::ctrltypeDropList;
-    props.cbchoices.push_back(tango2text(tango::typeCharacter));
-    props.cbchoices.push_back(tango2text(tango::typeWideCharacter));
-    props.cbchoices.push_back(tango2text(tango::typeNumeric));
-    props.cbchoices.push_back(tango2text(tango::typeDouble));
-    props.cbchoices.push_back(tango2text(tango::typeInteger));
-    props.cbchoices.push_back(tango2text(tango::typeDate));
-    props.cbchoices.push_back(tango2text(tango::typeDateTime));
-    props.cbchoices.push_back(tango2text(tango::typeBoolean));
+    props.cbchoices.push_back(tango2text(xd::typeCharacter));
+    props.cbchoices.push_back(tango2text(xd::typeWideCharacter));
+    props.cbchoices.push_back(tango2text(xd::typeNumeric));
+    props.cbchoices.push_back(tango2text(xd::typeDouble));
+    props.cbchoices.push_back(tango2text(xd::typeInteger));
+    props.cbchoices.push_back(tango2text(xd::typeDate));
+    props.cbchoices.push_back(tango2text(xd::typeDateTime));
+    props.cbchoices.push_back(tango2text(xd::typeBoolean));
     m_grid->setModelColumnProperties(colFieldType, &props);
     
     props.mask = kcl::CellProperties::cpmaskEditable |
@@ -743,7 +743,7 @@ void StructureDoc::getColumnListItems(std::vector<ColumnListItem>& items)
 
     for (i = 0; i < col_count; i++)
     {
-        tango::IColumnInfoPtr colinfo = m_structure->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr colinfo = m_structure->getColumnInfoByIdx(i);
      
         ColumnListItem item;
         item.text = makeProperIfNecessary(colinfo->getName());
@@ -779,7 +779,7 @@ void StructureDoc::onColumnListDblClicked(const std::vector<wxString>& items)
     for (it = items.begin(); it != items.end(); ++it)
     {
         // get the column info from the column name we dragged in
-        tango::IColumnInfoPtr colinfo = m_structure->getColumnInfo(towstr(*it));
+        xd::IColumnInfoPtr colinfo = m_structure->getColumnInfo(towstr(*it));
         if (colinfo.isNull())
             continue;
         
@@ -810,7 +810,7 @@ void StructureDoc::insertRow(int row, bool dynamic)
     
     StructureField* f = new StructureField;
     f->name = wxEmptyString;
-    f->type = tango::typeCharacter;
+    f->type = xd::typeCharacter;
     f->width = 20;
     f->scale = 0;
     f->dynamic = dynamic;
@@ -937,21 +937,21 @@ void StructureDoc::updateRowWidthAndScale(int row)
     StructureField* f = (StructureField*)(m_grid->getRowData(row));
 
 
-    if (tango_type == tango::typeCharacter || 
-        tango_type == tango::typeWideCharacter)
+    if (tango_type == xd::typeCharacter || 
+        tango_type == xd::typeWideCharacter)
     {
         // if we're moving from one character type to another, leave
         // everything as the user set it    
-        if (last_tango_type == tango::typeWideCharacter ||
-            last_tango_type == tango::typeCharacter)
+        if (last_tango_type == xd::typeWideCharacter ||
+            last_tango_type == xd::typeCharacter)
         {
             return;
         }
         
         // if the original type is a character type and we're coming from
         // a non-character type, restore the original width
-        if (f->type == tango::typeCharacter || 
-            f->type == tango::typeWideCharacter)
+        if (f->type == xd::typeCharacter || 
+            f->type == xd::typeWideCharacter)
         {
             m_grid->setCellInteger(row, colFieldWidth, f->width);
         }
@@ -959,7 +959,7 @@ void StructureDoc::updateRowWidthAndScale(int row)
 
     // if the original type is a numeric type and we're coming from
     // a different type, restore the original width
-    if (f->type == tango::typeNumeric && last_tango_type != tango::typeNumeric)
+    if (f->type == xd::typeNumeric && last_tango_type != xd::typeNumeric)
     {
         m_grid->setCellInteger(row, colFieldWidth, f->width);
         return;
@@ -967,12 +967,12 @@ void StructureDoc::updateRowWidthAndScale(int row)
 
     // handle default widths when we're converting to a
     // character type
-    if (tango_type == tango::typeCharacter ||
-        tango_type == tango::typeWideCharacter)
+    if (tango_type == xd::typeCharacter ||
+        tango_type == xd::typeWideCharacter)
     {
         // if we're converting from a date type, allow enough room 
         // for the date to be represented as a string
-        if (f->type == tango::typeDate)
+        if (f->type == xd::typeDate)
         {
             // YYYY-MM-DD = 10 characters
             int new_width = 10;
@@ -981,7 +981,7 @@ void StructureDoc::updateRowWidthAndScale(int row)
 
         // if we're converting from a datetime type, allow enough room 
         // for the datetime to be represented as a string
-        if (f->type == tango::typeDateTime)
+        if (f->type == xd::typeDateTime)
         {
             // YYYY-MM-DD HH:MM:SS = 19 characters; round to 20
             int new_width = 20;
@@ -990,7 +990,7 @@ void StructureDoc::updateRowWidthAndScale(int row)
 
         // if we're converting from a number type, allow enough room 
         // for the number to be represented as a string
-        if (f->type == tango::typeNumeric)
+        if (f->type == xd::typeNumeric)
         { 
             // width = numeric_width + 2 (for decimal place and sign)
             int new_width = f->width + 2;
@@ -999,7 +999,7 @@ void StructureDoc::updateRowWidthAndScale(int row)
 
         // if we're converting from a double type, allow enough room 
         // for the double to be represented as a string
-        if (f->type == tango::typeDouble)
+        if (f->type == xd::typeDouble)
         {
             // width = 20 (large enough for double); parallels
             // code in tango\xdfs\delimitedtextset.cpp
@@ -1009,7 +1009,7 @@ void StructureDoc::updateRowWidthAndScale(int row)
 
         // if we're converting from an integer type, allow enough room 
         // for the integer to be represented as a string
-        if (f->type == tango::typeInteger)
+        if (f->type == xd::typeInteger)
         {
             // width = 12 (size of 2^32 + sign + 1 to round to 12);
             // parallels code in tango\xdfs\delimitedtextset.cpp
@@ -1018,11 +1018,11 @@ void StructureDoc::updateRowWidthAndScale(int row)
         }
     }
 
-    if (tango_type == tango::typeNumeric)
+    if (tango_type == xd::typeNumeric)
     {
         // if we're converting from a double type, allow enough room
         // for the double to fit
-        if (f->type == tango::typeDouble)
+        if (f->type == xd::typeDouble)
         {
             int new_width = 18;
             m_grid->setCellInteger(row, colFieldWidth, new_width);
@@ -1030,7 +1030,7 @@ void StructureDoc::updateRowWidthAndScale(int row)
 
         // if we're converting from an integer type, allow enough room
         // for the integer to fit
-        if (f->type == tango::typeInteger)
+        if (f->type == xd::typeInteger)
         {
             // width = 10 (size of 2^32)
             int new_width = 10;
@@ -1040,10 +1040,10 @@ void StructureDoc::updateRowWidthAndScale(int row)
         // in any case, if the width of the field was set to something 
         // above the max numeric width, cap it off
         int width = m_grid->getCellInteger(row, colFieldWidth);
-        if (width > tango::max_numeric_width)
+        if (width > xd::max_numeric_width)
         {
             m_grid->setCellInteger(row, colFieldWidth,
-                                   tango::max_numeric_width);
+                                   xd::max_numeric_width);
         }
     }
 }
@@ -1059,22 +1059,22 @@ void StructureDoc::updateRowCellProps(int row)
 
     switch (type)
     {
-        case tango::typeWideCharacter:
-        case tango::typeCharacter:
+        case xd::typeWideCharacter:
+        case xd::typeCharacter:
             decimal_editable = false;
             break;
 
-        case tango::typeNumeric:
+        case xd::typeNumeric:
             break;
 
-        case tango::typeDouble:
+        case xd::typeDouble:
             width_editable = false;
             break;
 
-        case tango::typeBoolean:
-        case tango::typeDateTime:
-        case tango::typeDate:
-        case tango::typeInteger:
+        case xd::typeBoolean:
+        case xd::typeDateTime:
+        case xd::typeDate:
+        case xd::typeInteger:
             width_editable = false;
             decimal_editable = false;
             break;
@@ -1373,8 +1373,8 @@ bool StructureDoc::createTable()
         return false;
 
     // create the structure
-    tango::IStructurePtr structure = g_app->getDatabase()->createStructure();
-    tango::IColumnInfoPtr col;
+    xd::IStructurePtr structure = g_app->getDatabase()->createStructure();
+    xd::IColumnInfoPtr col;
 
     wxString name;
     int type;
@@ -1433,15 +1433,15 @@ bool StructureDoc::createTable()
     return true;
 }
 
-tango::IStructurePtr StructureDoc::createStructureFromGrid()
+xd::IStructurePtr StructureDoc::createStructureFromGrid()
 {
-    // create the tango::IStructure
-    tango::IStructurePtr s = g_app->getDatabase()->createStructure();
+    // create the xd::IStructure
+    xd::IStructurePtr s = g_app->getDatabase()->createStructure();
 
     int row, row_count = m_grid->getRowCount();
     for (row = 0; row < row_count; ++row)
     {
-        tango::IColumnInfoPtr col = s->createColumn();
+        xd::IColumnInfoPtr col = s->createColumn();
         col->setName(towstr(m_grid->getCellString(row, colFieldName)));
         col->setType(choice2tango(m_grid->getCellComboSel(row, colFieldType)));
         col->setWidth(m_grid->getCellInteger(row, colFieldWidth));
@@ -1465,7 +1465,7 @@ void StructureDoc::populateGridFromStructure()
     int i, col_count = m_structure->getColumnCount();
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr col;
+        xd::IColumnInfoPtr col;
         col = m_structure->getColumnInfoByIdx(i);
 
         StructureField* f = new StructureField;
@@ -2235,7 +2235,7 @@ void StructureDoc::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
             if (m_path.length() == 0)
                 return;
 
-            tango::IColumnInfoPtr colinfo;
+            xd::IColumnInfoPtr colinfo;
                         
             int drop_row = drop_target->getDropRow();
 

@@ -59,8 +59,8 @@ bool OracleSet::init()
     // set the set info filename
     if (m_tablename.length() > 0)
     {
-        tango::IAttributesPtr attr = m_database->getAttributes();
-        std::wstring definition_path = attr->getStringAttribute(tango::dbattrDefinitionDirectory);
+        xd::IAttributesPtr attr = m_database->getAttributes();
+        std::wstring definition_path = attr->getStringAttribute(xd::dbattrDefinitionDirectory);
 
         setConfigFilePath(ExtFileInfo::getConfigFilenameFromSetId(definition_path, getSetId()));
     }
@@ -84,7 +84,7 @@ std::wstring OracleSet::getSetId()
     return kl::md5str(id);
 }
 
-tango::IStructurePtr OracleSet::getStructure()
+xd::IStructurePtr OracleSet::getStructure()
 {
     if (!m_env)
     {
@@ -96,7 +96,7 @@ tango::IStructurePtr OracleSet::getStructure()
         return xcm::null;
     }
     
-    // create new tango::IStructure
+    // create new xd::IStructure
     Structure* s = new Structure;
 
     // allocate error handle
@@ -240,8 +240,8 @@ tango::IStructurePtr OracleSet::getStructure()
                         
         std::wstring wcol_name = kl::towstring((char*)col_name);
 
-        // create the column in the tango::IStructure
-        tango::IColumnInfoPtr col;
+        // create the column in the xd::IStructure
+        xd::IColumnInfoPtr col;
         col = createColInfo(wcol_name,
                             col_type,
                             col_charset,
@@ -260,14 +260,14 @@ tango::IStructurePtr OracleSet::getStructure()
     }
 
 
-    tango::IStructurePtr ret = s;
+    xd::IStructurePtr ret = s;
     appendCalcFields(ret);
     return ret;
 }
 
 /*
-bool OracleSet::modifyStructure(tango::IStructure* struct_config,
-                                tango::IJob* job)
+bool OracleSet::modifyStructure(xd::IStructure* struct_config,
+                                xd::IJob* job)
 {
     XCM_AUTO_LOCK(m_object_mutex);
 
@@ -279,7 +279,7 @@ bool OracleSet::modifyStructure(tango::IStructure* struct_config,
         
     unsigned int processed_action_count = 0;
 
-    tango::IStructurePtr current_struct = getStructure();
+    xd::IStructurePtr current_struct = getStructure();
     IStructureInternalPtr s = struct_config;
     std::vector<StructureAction>& actions = s->getStructureActions();
     std::vector<StructureAction>::iterator it;
@@ -313,7 +313,7 @@ bool OracleSet::modifyStructure(tango::IStructure* struct_config,
 
     int i;
     int col_count = current_struct->getColumnCount();
-    tango::IColumnInfoPtr col_info;
+    xd::IColumnInfoPtr col_info;
     bool found = false;
 
     // handle create
@@ -357,9 +357,9 @@ bool OracleSet::modifyStructure(tango::IStructure* struct_config,
 }
 */
 
-tango::IIteratorPtr OracleSet::createIterator(const std::wstring& columns,
+xd::IIteratorPtr OracleSet::createIterator(const std::wstring& columns,
                                               const std::wstring& order,
-                                              tango::IJob* job)
+                                              xd::IJob* job)
 {
     std::wstring query;
     query.reserve(1024);
@@ -383,10 +383,10 @@ tango::IIteratorPtr OracleSet::createIterator(const std::wstring& columns,
         return xcm::null;
     }
 
-    return static_cast<tango::IIterator*>(iter);
+    return static_cast<xd::IIterator*>(iter);
 }
 
-tango::rowpos_t OracleSet::getRowCount()
+xd::rowpos_t OracleSet::getRowCount()
 {
     return 0;
 }
@@ -440,7 +440,7 @@ OracleRowInserter::~OracleRowInserter()
     m_set->unref();
 }
 
-tango::objhandle_t OracleRowInserter::getHandle(const std::wstring& column_name)
+xd::objhandle_t OracleRowInserter::getHandle(const std::wstring& column_name)
 {
     if (!m_inserting)
         return 0;
@@ -450,23 +450,23 @@ tango::objhandle_t OracleRowInserter::getHandle(const std::wstring& column_name)
     {
         if (wcscasecmp(column_name.c_str(), (*it)->m_name.c_str()) == 0)
         {
-            return (tango::objhandle_t)(*it);
+            return (xd::objhandle_t)(*it);
         }
     }
 
-    return (tango::objhandle_t)0;
+    return (xd::objhandle_t)0;
 }
 
-tango::IColumnInfoPtr OracleRowInserter::getInfo(tango::objhandle_t column_handle)
+xd::IColumnInfoPtr OracleRowInserter::getInfo(xd::objhandle_t column_handle)
 {
     OracleInsertData* f = (OracleInsertData*)column_handle;
 
-    tango::IStructurePtr structure = m_set->getStructure();
-    tango::IColumnInfoPtr col = structure->getColumnInfo(f->m_name);
+    xd::IStructurePtr structure = m_set->getStructure();
+    xd::IColumnInfoPtr col = structure->getColumnInfo(f->m_name);
     return col;
 }
 
-bool OracleRowInserter::putRawPtr(tango::objhandle_t column_handle,
+bool OracleRowInserter::putRawPtr(xd::objhandle_t column_handle,
                                   const unsigned char* value,
                                   int length)
 {
@@ -479,7 +479,7 @@ bool OracleRowInserter::putRawPtr(tango::objhandle_t column_handle,
     return true;
 }
 
-bool OracleRowInserter::putString(tango::objhandle_t column_handle,
+bool OracleRowInserter::putString(xd::objhandle_t column_handle,
                                   const std::string& value)
 {
     OracleInsertData* f = (OracleInsertData*)column_handle;
@@ -500,12 +500,12 @@ bool OracleRowInserter::putString(tango::objhandle_t column_handle,
     return true;
 }
 
-bool OracleRowInserter::putWideString(tango::objhandle_t column_handle,
+bool OracleRowInserter::putWideString(xd::objhandle_t column_handle,
                                       const std::wstring& value)
 {
     OracleInsertData* f = (OracleInsertData*)column_handle;
 
-    if (f->m_tango_type == tango::typeCharacter)
+    if (f->m_tango_type == xd::typeCharacter)
     {
         return putString(column_handle, kl::tostring(value));
     }
@@ -529,7 +529,7 @@ bool OracleRowInserter::putWideString(tango::objhandle_t column_handle,
     return true;
 }
 
-bool OracleRowInserter::putDouble(tango::objhandle_t column_handle,
+bool OracleRowInserter::putDouble(xd::objhandle_t column_handle,
                                   double value)
 {
     OracleInsertData* f = (OracleInsertData*)column_handle;
@@ -556,7 +556,7 @@ bool OracleRowInserter::putDouble(tango::objhandle_t column_handle,
     return true;
 }
 
-bool OracleRowInserter::putInteger(tango::objhandle_t column_handle,
+bool OracleRowInserter::putInteger(xd::objhandle_t column_handle,
                                    int value)
 {
     OracleInsertData* f = (OracleInsertData*)column_handle;
@@ -582,12 +582,12 @@ bool OracleRowInserter::putInteger(tango::objhandle_t column_handle,
     return true;
 }
 
-bool OracleRowInserter::putBoolean(tango::objhandle_t column_handle,
+bool OracleRowInserter::putBoolean(xd::objhandle_t column_handle,
                                    bool value)
 {
     OracleInsertData* f = (OracleInsertData*)column_handle;
 
-    if (f->m_tango_type == tango::typeBoolean)
+    if (f->m_tango_type == xd::typeBoolean)
     {
         memcpy(m_buf+(m_cur_buf_row*m_row_width)+f->m_buf_offset,
                &value,
@@ -595,7 +595,7 @@ bool OracleRowInserter::putBoolean(tango::objhandle_t column_handle,
         return true;
     }
     
-    if (f->m_tango_type == tango::typeCharacter)
+    if (f->m_tango_type == xd::typeCharacter)
     {
         return putString(column_handle, value ? "T" : "F");
     }
@@ -603,11 +603,11 @@ bool OracleRowInserter::putBoolean(tango::objhandle_t column_handle,
     return true;
 }
 
-bool OracleRowInserter::putDateTime(tango::objhandle_t column_handle,
-                                    tango::datetime_t datetime)
+bool OracleRowInserter::putDateTime(xd::objhandle_t column_handle,
+                                    xd::datetime_t datetime)
 {
     OracleInsertData* f = (OracleInsertData*)column_handle;
-    tango::DateTime dt(datetime);
+    xd::DateTime dt(datetime);
 
     int c = dt.getYear();
     int y = c%100;
@@ -633,7 +633,7 @@ bool OracleRowInserter::putRowBuffer(const unsigned char* value)
     return true;
 }
 
-bool OracleRowInserter::putNull(tango::objhandle_t column_handle)
+bool OracleRowInserter::putNull(xd::objhandle_t column_handle)
 {
     if (!column_handle)
         return false;
@@ -649,7 +649,7 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
     // for now insert all fields; later a parameter
     // will be passed in startInsert() which must be parsed
 
-    tango::IStructurePtr s = m_set->getStructure();
+    xd::IStructurePtr s = m_set->getStructure();
 
     int i;
     int col_count = s->getColumnCount();
@@ -657,7 +657,7 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
 
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr col_info = s->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr col_info = s->getColumnInfoByIdx(i);
         insert_fields.push_back(col_info->getName());
     }
 
@@ -672,7 +672,7 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
     std::vector<std::wstring>::iterator it;
     for (it = insert_fields.begin(); it != insert_fields.end(); ++it)
     {
-        tango::IColumnInfoPtr col_info = s->getColumnInfo(*it);
+        xd::IColumnInfoPtr col_info = s->getColumnInfo(*it);
         if (col_info.isNull())
             return false;
 
@@ -694,34 +694,34 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
 
         switch (field->m_tango_type)
         {
-            case tango::typeCharacter:
+            case xd::typeCharacter:
                 field->m_oracle_type = SQLT_STR;
                 field->m_oracle_width = (field->m_tango_width+1)*sizeof(char);
                 break;
 
-            case tango::typeWideCharacter:
+            case xd::typeWideCharacter:
                 field->m_oracle_type = SQLT_STR;
                 field->m_oracle_width = (field->m_tango_width+1)*(sizeof(wchar_t));
                 break;
 
-            case tango::typeInteger:
+            case xd::typeInteger:
                 field->m_oracle_type = SQLT_INT;
                 field->m_oracle_width = sizeof(int);
                 break;
 
-            case tango::typeDouble:
-            case tango::typeNumeric:
+            case xd::typeDouble:
+            case xd::typeNumeric:
                 field->m_oracle_type = SQLT_FLT;
                 field->m_oracle_width = sizeof(double);
                 break;
 
-            case tango::typeBoolean:
+            case xd::typeBoolean:
                 field->m_oracle_type = SQLT_CHR;
                 field->m_oracle_width = 1;
                 break;
 
-            case tango::typeDate:
-            case tango::typeDateTime:
+            case xd::typeDate:
+            case xd::typeDateTime:
                 field->m_oracle_type = SQLT_DAT;
                 field->m_oracle_width = 7;
                 break;
@@ -810,7 +810,7 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
         
         // if this field is a unicode string,
         // set the bind attribute to OCI_UCS2ID
-        if ((*it2)->m_tango_type == tango::typeCharacter)
+        if ((*it2)->m_tango_type == xd::typeCharacter)
         {
             m_set->m_database->checkerr(m_err, OCIAttrSet((*it2)->m_bind,
                                OCI_HTYPE_BIND,
@@ -819,7 +819,7 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
                                OCI_ATTR_CHARSET_ID,
                                m_err));
         }
-         else if ((*it2)->m_tango_type == tango::typeWideCharacter)
+         else if ((*it2)->m_tango_type == xd::typeWideCharacter)
         {
             m_set->m_database->checkerr(m_err, OCIAttrSet((*it2)->m_bind,
                                        (ub4)OCI_HTYPE_BIND,

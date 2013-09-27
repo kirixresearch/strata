@@ -19,7 +19,7 @@ xcm_interface IJobInternal : public xcm::IObject
 
 public:
 
-    virtual void setJobId(tango::jobid_t new_val) = 0;
+    virtual void setJobId(xd::jobid_t new_val) = 0;
     virtual void setCanCancel(bool new_val) = 0;
 
     virtual void setStartTime(time_t new_val) = 0;
@@ -29,17 +29,17 @@ public:
     virtual void setProgressString(const std::wstring& new_val) = 0;
     virtual void setStatus(int new_val) = 0;
 
-    virtual void setCurrentCount(tango::rowpos_t new_val) = 0;
-    virtual void setMaxCount(tango::rowpos_t new_val) = 0;
+    virtual void setCurrentCount(xd::rowpos_t new_val) = 0;
+    virtual void setMaxCount(xd::rowpos_t new_val) = 0;
     virtual void setPercentage(double percentage) = 0;
 
     virtual void setPhases(int new_val, int* phase_pcts = NULL) = 0;
-    virtual void startPhase(tango::IJobPtr embedded_job_info = xcm::null) = 0;
+    virtual void startPhase(xd::IJobPtr embedded_job_info = xcm::null) = 0;
     virtual void setJobFinished() = 0;
     virtual void setError(int error_code, const std::wstring& error_string) = 0;
     
     virtual bool getCancelled() = 0;
-    virtual tango::rowpos_t getMaxCount() = 0;
+    virtual xd::rowpos_t getMaxCount() = 0;
 };
 
 XCM_DECLARE_SMARTPTR(IJobInternal)
@@ -47,12 +47,12 @@ XCM_DECLARE_SMARTPTR(IJobInternal)
 
 
 
-class JobInfo : public tango::IJob,
+class JobInfo : public xd::IJob,
                 public IJobInternal
 {
     XCM_CLASS_NAME("tango.Job")
     XCM_BEGIN_INTERFACE_MAP(JobInfo)
-        XCM_INTERFACE_ENTRY(tango::IJob)
+        XCM_INTERFACE_ENTRY(xd::IJob)
         XCM_INTERFACE_ENTRY(IJobInternal)
     XCM_END_INTERFACE_MAP()
 
@@ -62,7 +62,7 @@ public:
     virtual ~JobInfo();
 
     // IJobInfoInternal
-    void setJobId(tango::jobid_t new_val);
+    void setJobId(xd::jobid_t new_val);
     void setCanCancel(bool new_val);
 
     void setStartTime(time_t new_val);
@@ -72,17 +72,17 @@ public:
     void setProgressString(const std::wstring& new_val);
     void setStatus(int new_val);
 
-    void setCurrentCount(tango::rowpos_t new_val);
-    void setMaxCount(tango::rowpos_t new_val);
+    void setCurrentCount(xd::rowpos_t new_val);
+    void setMaxCount(xd::rowpos_t new_val);
     void setPercentage(double pct);
 
     void setPhases(int new_val, int* phase_pcts);
-    void startPhase(tango::IJobPtr embedded_job_info);
+    void startPhase(xd::IJobPtr embedded_job_info);
     void setJobFinished();
     void setError(int error_code, const std::wstring& error_string);
 
     // IJobInfo
-    tango::jobid_t getJobId();
+    xd::jobid_t getJobId();
     bool getCanCancel();
     bool getCancelled();
     bool cancel();
@@ -94,8 +94,8 @@ public:
     std::wstring getProgressString();
     int getStatus();
 
-    tango::rowpos_t getCurrentCount();
-    tango::rowpos_t getMaxCount();
+    xd::rowpos_t getCurrentCount();
+    xd::rowpos_t getMaxCount();
     double getPercentage();
 
     int getPhaseCount();
@@ -108,7 +108,7 @@ protected:
 
     xcm::mutex m_obj_mutex;
 
-    tango::jobid_t m_jobid;
+    xd::jobid_t m_jobid;
     bool m_can_cancel;
     bool m_cancelled;
 
@@ -120,8 +120,8 @@ protected:
     std::wstring m_description;
     std::wstring m_progress_str;
     int m_status;
-    tango::rowpos_t m_current_count;
-    tango::rowpos_t m_max_count;
+    xd::rowpos_t m_current_count;
+    xd::rowpos_t m_max_count;
 
     int m_error_code;
     std::wstring m_error_string;
@@ -131,7 +131,7 @@ protected:
     int m_phase_counter;
     int m_phase_pct;
     std::vector<int> m_phase_pcts;
-    tango::IJobPtr m_phase_job;
+    xd::IJobPtr m_phase_job;
 };
 
 

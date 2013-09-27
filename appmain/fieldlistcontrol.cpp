@@ -26,17 +26,17 @@ wxString tango2text(int tango_type)
     switch (tango_type)
     {
         default:
-        case tango::typeUndefined:      return _("Undefined");
-        case tango::typeInvalid:        return _("Invalid");
-        case tango::typeCharacter:      return _("Character");
-        case tango::typeWideCharacter:  return _("Wide Char.");
-        case tango::typeBinary:         return _("Binary");
-        case tango::typeNumeric:        return _("Numeric");
-        case tango::typeDouble:         return _("Double");
-        case tango::typeInteger:        return _("Integer");
-        case tango::typeDate:           return _("Date");
-        case tango::typeDateTime:       return _("DateTime");
-        case tango::typeBoolean:        return _("Boolean");
+        case xd::typeUndefined:      return _("Undefined");
+        case xd::typeInvalid:        return _("Invalid");
+        case xd::typeCharacter:      return _("Character");
+        case xd::typeWideCharacter:  return _("Wide Char.");
+        case xd::typeBinary:         return _("Binary");
+        case xd::typeNumeric:        return _("Numeric");
+        case xd::typeDouble:         return _("Double");
+        case xd::typeInteger:        return _("Integer");
+        case xd::typeDate:           return _("Date");
+        case xd::typeDateTime:       return _("DateTime");
+        case xd::typeBoolean:        return _("Boolean");
     }
 
     return wxT("");
@@ -45,36 +45,36 @@ wxString tango2text(int tango_type)
 int text2tango(const wxString& text)
 {
     if (text.CmpNoCase(_("Invalid")) == 0)
-        return tango::typeInvalid;
+        return xd::typeInvalid;
 
     if (text.CmpNoCase(_("Character")) == 0)
-        return tango::typeCharacter;
+        return xd::typeCharacter;
 
     if (text.CmpNoCase(_("Wide Char.")) == 0)
-        return tango::typeWideCharacter;
+        return xd::typeWideCharacter;
 
     if (text.CmpNoCase(_("Binary")) == 0)
-        return tango::typeBinary;
+        return xd::typeBinary;
 
     if (text.CmpNoCase(_("Numeric")) == 0)
-        return tango::typeNumeric;
+        return xd::typeNumeric;
 
     if (text.CmpNoCase(_("Double")) == 0)
-        return tango::typeDouble;
+        return xd::typeDouble;
 
     if (text.CmpNoCase(_("Integer")) == 0)
-        return tango::typeInteger;
+        return xd::typeInteger;
 
     if (text.CmpNoCase(_("Date")) == 0)
-        return tango::typeDate;
+        return xd::typeDate;
 
     if (text.CmpNoCase(_("DateTime")) == 0)
-        return tango::typeDateTime;
+        return xd::typeDateTime;
 
     if (text.CmpNoCase(_("Boolean")) == 0)
-        return tango::typeBoolean;
+        return xd::typeBoolean;
 
-    return tango::typeUndefined;
+    return xd::typeUndefined;
 }
 
 
@@ -231,7 +231,7 @@ void FieldListControl::setDragFormat(const wxString& format)
     m_grid->setDragFormat(format);
 }
 
-void FieldListControl::setStructure(tango::IStructurePtr structure)
+void FieldListControl::setStructure(xd::IStructurePtr structure)
 {
     m_structure = structure;
     populate();
@@ -324,7 +324,7 @@ void FieldListControl::populate()
     // first, clear out the grid
     m_grid->deleteAllRows();
 
-    tango::IColumnInfoPtr colinfo;
+    xd::IColumnInfoPtr colinfo;
     int col_count = m_structure->getColumnCount();
 
     // create a temporary vector of field list items

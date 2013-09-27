@@ -24,8 +24,8 @@
 class CmnBaseIteratorBindInfo
 {
 public:
-    tango::IIterator* iter;
-    tango::objhandle_t handle;
+    xd::IIterator* iter;
+    xd::objhandle_t handle;
 };
 
 
@@ -94,7 +94,7 @@ static void _bindFieldDateTime(kscript::ExprEnv*,
         retval->setNull();
         return;
     }
-    tango::datetime_t dt, d, t;
+    xd::datetime_t dt, d, t;
     dt = info->iter->getDateTime(info->handle);
     d = dt >> 32;
     t = dt & 0xffffffff;
@@ -114,7 +114,7 @@ static void _bindFieldBoolean(kscript::ExprEnv*,
     retval->setBoolean(info->iter->getBoolean(info->handle));
 }
 
-tango::IStructurePtr CommonBaseIterator::getParserStructure()
+xd::IStructurePtr CommonBaseIterator::getParserStructure()
 {
     // default is to just use the normal iterator structure
     // as source fields for the expression.  This can, however,
@@ -129,7 +129,7 @@ tango::IStructurePtr CommonBaseIterator::getParserStructure()
 struct CommonBaseIteratorParseHookInfo
 {
     CommonBaseIterator* iter;
-    tango::IStructurePtr structure;
+    xd::IStructurePtr structure;
 };
 
 
@@ -138,7 +138,7 @@ bool CommonBaseIterator::script_parse_hook(kscript::ExprParseHookInfo& hook_info
 {
     if (hook_info.element_type == kscript::ExprParseHookInfo::typeIdentifier)
     {
-        tango::IStructurePtr& structure = ((CommonBaseIteratorParseHookInfo*)hook_info.hook_param)->structure;
+        xd::IStructurePtr& structure = ((CommonBaseIteratorParseHookInfo*)hook_info.hook_param)->structure;
         CommonBaseIterator* iter = ((CommonBaseIteratorParseHookInfo*)hook_info.hook_param)->iter;
         
         if (hook_info.expr_text.length() > 1 &&
@@ -151,11 +151,11 @@ bool CommonBaseIterator::script_parse_hook(kscript::ExprParseHookInfo& hook_info
         }
 
 
-        tango::IColumnInfoPtr colinfo = structure->getColumnInfo(hook_info.expr_text);
+        xd::IColumnInfoPtr colinfo = structure->getColumnInfo(hook_info.expr_text);
         if (colinfo.isNull())
             return false;
         
-        tango::objhandle_t handle = iter->getHandle(hook_info.expr_text);
+        xd::objhandle_t handle = iter->getHandle(hook_info.expr_text);
         
         if (handle == 0)
             return false;
@@ -169,34 +169,34 @@ bool CommonBaseIterator::script_parse_hook(kscript::ExprParseHookInfo& hook_info
         kscript::Value* val = new kscript::Value;
         switch (colinfo->getType())
         {
-            case tango::typeCharacter:
-            case tango::typeWideCharacter:
+            case xd::typeCharacter:
+            case xd::typeWideCharacter:
                 val->setGetVal(kscript::Value::typeString,
                                _bindFieldString,
                                (void*)bind_info);
                 break;
 
-            case tango::typeNumeric:
-            case tango::typeDouble:
+            case xd::typeNumeric:
+            case xd::typeDouble:
                 val->setGetVal(kscript::Value::typeDouble,
                                _bindFieldDouble,
                                (void*)bind_info);
                 break;
 
-            case tango::typeInteger:
+            case xd::typeInteger:
                 val->setGetVal(kscript::Value::typeInteger,
                                _bindFieldInteger,
                                (void*)bind_info);
                 break;
 
-            case tango::typeDate:
-            case tango::typeDateTime:
+            case xd::typeDate:
+            case xd::typeDateTime:
                 val->setGetVal(kscript::Value::typeDateTime,
                                _bindFieldDateTime,
                                (void*)bind_info);
                 break;
 
-            case tango::typeBoolean:
+            case xd::typeBoolean:
                 val->setGetVal(kscript::Value::typeBoolean,
                                _bindFieldBoolean,
                                (void*)bind_info);

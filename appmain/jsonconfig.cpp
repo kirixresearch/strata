@@ -14,7 +14,7 @@
 #include <kl/utf8.h>
 
 
-kl::JsonNode JsonConfig::loadFromDb(tango::IDatabasePtr db, const std::wstring& path)
+kl::JsonNode JsonConfig::loadFromDb(xd::IDatabasePtr db, const std::wstring& path)
 {
     kl::JsonNode node;
 
@@ -60,7 +60,7 @@ bool JsonConfig::saveToString(kl::JsonNode& node, std::wstring& dest)
 }
 
 bool JsonConfig::saveToDb(kl::JsonNode& node,
-                          tango::IDatabasePtr db,
+                          xd::IDatabasePtr db,
                           const std::wstring& path,
                           const std::wstring& mime_type)
 {

@@ -239,7 +239,7 @@ void SlDatabase::close()
 
 int SlDatabase::getDatabaseType()
 {
-    return tango::dbtypeSqlite;
+    return xd::dbtypeSqlite;
 }
 
 std::wstring SlDatabase::getActiveUid()
@@ -247,23 +247,23 @@ std::wstring SlDatabase::getActiveUid()
     return L"";
 }
 
-tango::IAttributesPtr SlDatabase::getAttributes()
+xd::IAttributesPtr SlDatabase::getAttributes()
 {
     DatabaseAttributes* attr = new DatabaseAttributes;
 
     std::wstring kws = sql92_keywords;
 
-    attr->setIntAttribute(tango::dbattrColumnMaxNameLength, 64);
-    attr->setIntAttribute(tango::dbattrTableMaxNameLength, 64);
-    attr->setStringAttribute(tango::dbattrColumnInvalidChars, L"./\":!#&-`*[]");
-    attr->setStringAttribute(tango::dbattrTableInvalidChars, L"./\":!#&-`*[]");
-    attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars, L" ");
-    attr->setStringAttribute(tango::dbattrTableInvalidStartingChars, L" ");
+    attr->setIntAttribute(xd::dbattrColumnMaxNameLength, 64);
+    attr->setIntAttribute(xd::dbattrTableMaxNameLength, 64);
+    attr->setStringAttribute(xd::dbattrColumnInvalidChars, L"./\":!#&-`*[]");
+    attr->setStringAttribute(xd::dbattrTableInvalidChars, L"./\":!#&-`*[]");
+    attr->setStringAttribute(xd::dbattrColumnInvalidStartingChars, L" ");
+    attr->setStringAttribute(xd::dbattrTableInvalidStartingChars, L" ");
 
-    attr->setStringAttribute(tango::dbattrKeywords, kws);
-    attr->setIntAttribute(tango::dbattrTableMaxNameLength, 32);
+    attr->setStringAttribute(xd::dbattrKeywords, kws);
+    attr->setIntAttribute(xd::dbattrTableMaxNameLength, 32);
     
-    return static_cast<tango::IAttributes*>(attr);
+    return static_cast<xd::IAttributes*>(attr);
 }
 
 std::wstring SlDatabase::getErrorString()
@@ -273,7 +273,7 @@ std::wstring SlDatabase::getErrorString()
 
 int SlDatabase::getErrorCode()
 {
-    return tango::errorNone;
+    return xd::errorNone;
 }
 
 void SlDatabase::setError(int error_code, const std::wstring& error_string)
@@ -287,7 +287,7 @@ bool SlDatabase::cleanup()
 }
 
 
-tango::IJobPtr SlDatabase::createJob()
+xd::IJobPtr SlDatabase::createJob()
 {
     m_last_job++;
 
@@ -355,7 +355,7 @@ bool SlDatabase::copyFile(const std::wstring& src_path,
     return false;
 }
 
-bool SlDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
+bool SlDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 {
     return false;
 }
@@ -380,7 +380,7 @@ bool SlDatabase::deleteFile(const std::wstring& path)
 
 bool SlDatabase::getFileExist(const std::wstring& path)
 {
-    tango::IFileInfoEnumPtr files = getFolderInfo(L"");
+    xd::IFileInfoEnumPtr files = getFolderInfo(L"");
     if (!files)
         return false;
 
@@ -388,7 +388,7 @@ bool SlDatabase::getFileExist(const std::wstring& path)
 
     for (i = 0 ; i < count; ++i)
     {
-        tango::IFileInfoPtr info = files->getItem(i);
+        xd::IFileInfoPtr info = files->getItem(i);
         
         if (wcscasecmp(info->getName().c_str(), path.c_str()) == 0)
             return true;
@@ -398,7 +398,7 @@ bool SlDatabase::getFileExist(const std::wstring& path)
 }
 
 
-tango::IFileInfoPtr SlDatabase::getFileInfo(const std::wstring& path)
+xd::IFileInfoPtr SlDatabase::getFileInfo(const std::wstring& path)
 {
     std::wstring objname = kl::afterFirst(path, L'/');
 
@@ -422,22 +422,22 @@ tango::IFileInfoPtr SlDatabase::getFileInfo(const std::wstring& path)
     
     xdcommon::FileInfo* f = new xdcommon::FileInfo;
     f->name = objname;
-    f->type = tango::filetypeTable;
+    f->type = xd::filetypeTable;
 
     std::wstring str = m_path + L":" + path;
     kl::makeLower(str);
     f->object_id = kl::md5str(str);
     
     if (type.find(L"xdsqlite_folder") != -1)
-        f->type = tango::filetypeFolder;
+        f->type = xd::filetypeFolder;
 
-    return static_cast<tango::IFileInfo*>(f);
+    return static_cast<xd::IFileInfo*>(f);
 }
 
-tango::IFileInfoEnumPtr SlDatabase::getFolderInfo(const std::wstring& path)
+xd::IFileInfoEnumPtr SlDatabase::getFolderInfo(const std::wstring& path)
 {
-    xcm::IVectorImpl<tango::IFileInfoPtr>* retval;
-    retval = new xcm::IVectorImpl<tango::IFileInfoPtr>;
+    xcm::IVectorImpl<xd::IFileInfoPtr>* retval;
+    retval = new xcm::IVectorImpl<xd::IFileInfoPtr>;
 
     int rc = 0;
     
@@ -476,11 +476,11 @@ tango::IFileInfoEnumPtr SlDatabase::getFolderInfo(const std::wstring& path)
 
         xdcommon::FileInfo* f = new xdcommon::FileInfo;
         f->name = name;
-        f->type = tango::filetypeTable;
+        f->type = xd::filetypeTable;
         
         std::wstring sql = kl::fromUtf8(s_sql);
         if (sql.find(L"xdsqlite_folder") != -1)
-            f->type = tango::filetypeFolder;
+            f->type = xd::filetypeFolder;
             
         retval->append(f);
     }
@@ -490,16 +490,16 @@ tango::IFileInfoEnumPtr SlDatabase::getFolderInfo(const std::wstring& path)
     return retval;
 }
 
-tango::IStructurePtr SlDatabase::createStructure()
+xd::IStructurePtr SlDatabase::createStructure()
 {
     Structure* s = new Structure;
-    return static_cast<tango::IStructure*>(s);
+    return static_cast<xd::IStructure*>(s);
 }
 
 
 bool SlDatabase::createTable(const std::wstring& path,
-                             tango::IStructurePtr struct_config,
-                             tango::FormatInfo* format_info)
+                             xd::IStructurePtr struct_config,
+                             xd::FormatInfo* format_info)
 {
     // generate table name, SQL CREATE statment, and execute
 
@@ -512,7 +512,7 @@ bool SlDatabase::createTable(const std::wstring& path,
 
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr colinfo;
+        xd::IColumnInfoPtr colinfo;
         colinfo = struct_config->getColumnInfoByIdx(i);
         
         std::wstring piece;
@@ -522,33 +522,33 @@ bool SlDatabase::createTable(const std::wstring& path,
         std::wstring type;
         switch (colinfo->getType())
         {
-            case tango::typeCharacter:
-            case tango::typeWideCharacter:
+            case xd::typeCharacter:
+            case xd::typeWideCharacter:
                 type = L"TEXT";
                 break;
-            case tango::typeInteger:
+            case xd::typeInteger:
                 type = L"INTEGER";
                 break;
-            case tango::typeDouble:
+            case xd::typeDouble:
                 type = L"REAL";
                 break;
-            case tango::typeNumeric:
+            case xd::typeNumeric:
                 {
                     wchar_t buf[255];
                     swprintf(buf, 255, L"NUMERIC(%d,%d)", colinfo->getWidth(), colinfo->getScale());
                     type = buf;
                 }
                 break;
-            case tango::typeDate:
+            case xd::typeDate:
                 type = L"DATE";
                 break;
-            case tango::typeDateTime:
+            case xd::typeDateTime:
                 type = L"DATETIME";
                 break;
-            case tango::typeBoolean:
+            case xd::typeBoolean:
                 type = L"BOOLEAN";
                 break;
-            case tango::typeBinary:
+            case xd::typeBinary:
                 type = L"BLOB";
                 break;
         }
@@ -570,13 +570,13 @@ bool SlDatabase::createTable(const std::wstring& path,
 }
 
 
-tango::IStreamPtr SlDatabase::openStream(const std::wstring& path)
+xd::IStreamPtr SlDatabase::openStream(const std::wstring& path)
 {
     return xcm::null;
 }
 
 
-tango::IIteratorPtr SlDatabase::query(const tango::QueryParams& qp)
+xd::IIteratorPtr SlDatabase::query(const xd::QueryParams& qp)
 {
     std::wstring columns = qp.columns;
     if (columns.length() == 0)
@@ -603,17 +603,17 @@ tango::IIteratorPtr SlDatabase::query(const tango::QueryParams& qp)
         return xcm::null;
     }
 
-    tango::IIteratorPtr result = static_cast<xcm::IObject*>(iter);
+    xd::IIteratorPtr result = static_cast<xcm::IObject*>(iter);
     iter->unref();
 
     return result;
 }
 
 
-tango::IIndexInfoPtr SlDatabase::createIndex(const std::wstring& path,
+xd::IIndexInfoPtr SlDatabase::createIndex(const std::wstring& path,
                                              const std::wstring& name,
                                              const std::wstring& expr,
-                                             tango::IJob* job)
+                                             xd::IJob* job)
 {
     return xcm::null;
 }
@@ -633,13 +633,13 @@ bool SlDatabase::deleteIndex(const std::wstring& path,
     return false;
 }
 
-tango::IRowInserterPtr SlDatabase::bulkInsert(const std::wstring& path)
+xd::IRowInserterPtr SlDatabase::bulkInsert(const std::wstring& path)
 {
     SlRowInserter* inserter = new SlRowInserter(this, path);
-    return static_cast<tango::IRowInserter*>(inserter);
+    return static_cast<xd::IRowInserter*>(inserter);
 }
 
-tango::IStructurePtr SlDatabase::describeTable(const std::wstring& _path)
+xd::IStructurePtr SlDatabase::describeTable(const std::wstring& _path)
 {
     std::wstring path = sqliteGetTablenameFromPath(_path);
 
@@ -666,23 +666,23 @@ tango::IStructurePtr SlDatabase::describeTable(const std::wstring& _path)
     return parseCreateStatement(create_stmt);
 }
 
-bool SlDatabase::modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job)
+bool SlDatabase::modifyStructure(const std::wstring& path, xd::IStructurePtr struct_config, xd::IJob* job)
 {
     return false;
 }
 
 
-tango::IIndexInfoEnumPtr SlDatabase::getIndexEnum(const std::wstring& path)
+xd::IIndexInfoEnumPtr SlDatabase::getIndexEnum(const std::wstring& path)
 {
-    xcm::IVectorImpl<tango::IIndexInfoPtr>* vec;
-    vec = new xcm::IVectorImpl<tango::IIndexInfoPtr>;
+    xcm::IVectorImpl<xd::IIndexInfoPtr>* vec;
+    vec = new xcm::IVectorImpl<xd::IIndexInfoPtr>;
 
     return vec;
 }
 
 
 
-tango::IDatabasePtr SlDatabase::getMountDatabase(const std::wstring& path)
+xd::IDatabasePtr SlDatabase::getMountDatabase(const std::wstring& path)
 {
     return xcm::null;
 }
@@ -704,7 +704,7 @@ bool SlDatabase::getMountPoint(const std::wstring& path,
 bool SlDatabase::execute(const std::wstring& command,
                          unsigned int flags,
                          xcm::IObjectPtr& result,
-                         tango::IJob* job)
+                         xd::IJob* job)
 {
     m_error.clearError();
     result.clear();
@@ -741,7 +741,7 @@ bool SlDatabase::execute(const std::wstring& command,
     return true;
 }
 
-bool SlDatabase::groupQuery(tango::GroupQueryParams* info, tango::IJob* job)
+bool SlDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
 {
     return false;
 }

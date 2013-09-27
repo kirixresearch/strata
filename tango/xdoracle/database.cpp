@@ -99,7 +99,7 @@ std::wstring createOracleFieldString(const std::wstring& _name,
 
     switch (type)
     {
-        case tango::typeCharacter:
+        case xd::typeCharacter:
         {
             if (width > 4000)
             {
@@ -113,7 +113,7 @@ std::wstring createOracleFieldString(const std::wstring& _name,
             return buf;
         }
 
-        case tango::typeWideCharacter:
+        case xd::typeWideCharacter:
         {
             if (width > 2000)
             {
@@ -127,7 +127,7 @@ std::wstring createOracleFieldString(const std::wstring& _name,
             return buf;
         }
 
-        case tango::typeNumeric:
+        case xd::typeNumeric:
         {
             if (width > 21)
             {
@@ -142,7 +142,7 @@ std::wstring createOracleFieldString(const std::wstring& _name,
             return buf;
         }
 
-        case tango::typeInteger:
+        case xd::typeInteger:
         {
             swprintf(buf, 255, L"%ls number(12)%ls",
                                     name.c_str(),
@@ -150,7 +150,7 @@ std::wstring createOracleFieldString(const std::wstring& _name,
             return buf;
         }
 
-        case tango::typeDouble:
+        case xd::typeDouble:
         {
             swprintf(buf, 255, L"%ls number(21,%d)%ls",
                                     name.c_str(),
@@ -159,7 +159,7 @@ std::wstring createOracleFieldString(const std::wstring& _name,
             return buf;
         }
 
-        case tango::typeBoolean:
+        case xd::typeBoolean:
         {
             swprintf(buf, 255, L"%ls char(1)%ls",
                                     name.c_str(),
@@ -167,8 +167,8 @@ std::wstring createOracleFieldString(const std::wstring& _name,
             return buf;
         }
 
-        case tango::typeDate:
-        case tango::typeDateTime:
+        case xd::typeDate:
+        case xd::typeDateTime:
         {
             swprintf(buf, 255, L"%ls date%ls",
                                     name.c_str(),
@@ -188,7 +188,7 @@ int oracle2tangoType(int oracle_type, int oracle_charset)
         case OCI_TYPECODE_CHAR:              /* SQL CHAR(N)  OTS SQL_CHAR(N) */
         case OCI_TYPECODE_VARCHAR:           /* SQL VARCHAR(N)  OTS SQL_VARCHAR(N) */
         case OCI_TYPECODE_VARCHAR2:          /* SQL VARCHAR2(N)  OTS SQL_VARCHAR2(N) */
-            return (oracle_charset == SQLCS_NCHAR) ? tango::typeWideCharacter : tango::typeCharacter;
+            return (oracle_charset == SQLCS_NCHAR) ? xd::typeWideCharacter : xd::typeCharacter;
 
         case OCI_TYPECODE_SMALLINT:          /* SQL SMALLINT  OTS SMALLINT */
         case OCI_TYPECODE_INTEGER:           /* SQL INTEGER  OTS INTEGER */
@@ -198,30 +198,30 @@ int oracle2tangoType(int oracle_type, int oracle_charset)
         case OCI_TYPECODE_UNSIGNED8:         /* SQL UNSIGNED INTEGER(8)  OTS UINT8 */
         case OCI_TYPECODE_UNSIGNED16:        /* SQL UNSIGNED INTEGER(16)  OTS UINT16 */
         case OCI_TYPECODE_UNSIGNED32:        /* SQL UNSIGNED INTEGER(32)  OTS UINT32 */
-            return tango::typeInteger;
+            return xd::typeInteger;
 
         case OCI_TYPECODE_NUMBER:            /* SQL NUMBER(P S)  OTS NUMBER(P S) */
         case OCI_TYPECODE_DECIMAL:           /* SQL DECIMAL(P S)  OTS DECIMAL(P S) */
-            return tango::typeNumeric;
+            return xd::typeNumeric;
 
         case OCI_TYPECODE_REAL:              /* SQL REAL  OTS SQL_REAL */
         case OCI_TYPECODE_DOUBLE:            /* SQL DOUBLE PRECISION  OTS SQL_DOUBLE */
         case OCI_TYPECODE_FLOAT:             /* SQL FLOAT(P)  OTS FLOAT(P) */
-            return tango::typeDouble;
+            return xd::typeDouble;
 
         case OCI_TYPECODE_DATE:              /* SQL DATE  OTS DATE */
-            return tango::typeDate;
+            return xd::typeDate;
 
         case OCI_TYPECODE_TIME:              /* SQL/OTS TIME */
         case OCI_TYPECODE_TIME_TZ:           /* SQL/OTS TIME_TZ */
         case OCI_TYPECODE_TIMESTAMP:         /* SQL/OTS TIMESTAMP */
         case OCI_TYPECODE_TIMESTAMP_TZ:      /* SQL/OTS TIMESTAMP_TZ */
         case OCI_TYPECODE_TIMESTAMP_LTZ:     /* TIMESTAMP_LTZ */
-            return tango::typeDateTime;
+            return xd::typeDateTime;
 
     }
 
-    return tango::typeInvalid;
+    return xd::typeInvalid;
 }
 
 int tango2oracleType(int tango_type)
@@ -229,32 +229,32 @@ int tango2oracleType(int tango_type)
     switch (tango_type)
     {
         default:
-        case tango::typeCharacter:
-        case tango::typeWideCharacter:
+        case xd::typeCharacter:
+        case xd::typeWideCharacter:
             return OCI_TYPECODE_VARCHAR2;
 
-        case tango::typeBoolean:
-        case tango::typeInteger:
+        case xd::typeBoolean:
+        case xd::typeInteger:
             return OCI_TYPECODE_INTEGER;
         
-        case tango::typeNumeric:
+        case xd::typeNumeric:
             return OCI_TYPECODE_NUMBER;
             
-        case tango::typeDouble:
+        case xd::typeDouble:
             return OCI_TYPECODE_DOUBLE;
 
-        case tango::typeDate:
+        case xd::typeDate:
             return OCI_TYPECODE_DATE;
             
-        case tango::typeDateTime:
+        case xd::typeDateTime:
             return OCI_TYPECODE_TIMESTAMP;
     }
 
-    return tango::typeInvalid;
+    return xd::typeInvalid;
 }
 
 
-tango::IColumnInfoPtr createColInfo(const std::wstring& col_name,
+xd::IColumnInfoPtr createColInfo(const std::wstring& col_name,
                                     int oracle_type,
                                     int oracle_charset,
                                     int width,
@@ -264,13 +264,13 @@ tango::IColumnInfoPtr createColInfo(const std::wstring& col_name,
 {
     int tango_type = oracle2tangoType(oracle_type, oracle_charset);
 
-    if (tango_type == tango::typeNumeric)
+    if (tango_type == xd::typeNumeric)
     {
         width = precision;
 
-        if (width > tango::max_numeric_width)
+        if (width > xd::max_numeric_width)
         {
-            width = tango::max_numeric_width;
+            width = xd::max_numeric_width;
         }
         
         if (width <= 0 || scale < 0)
@@ -282,26 +282,26 @@ tango::IColumnInfoPtr createColInfo(const std::wstring& col_name,
                 width = 18;
         }
     }
-     else if (tango_type == tango::typeDateTime)
+     else if (tango_type == xd::typeDateTime)
     {
         width = 8;
         scale = 0;
     }
-     else if (tango_type == tango::typeDouble)
+     else if (tango_type == xd::typeDouble)
     {
         width = 8;
     }
-     else if (tango_type == tango::typeDate)
+     else if (tango_type == xd::typeDate)
     {
         width = 4;
         scale = 0;
     }
-     else if (tango_type == tango::typeInteger)
+     else if (tango_type == xd::typeInteger)
     {
         width = 4;
         scale = 0;
     }
-     else if (tango_type == tango::typeBoolean)
+     else if (tango_type == xd::typeBoolean)
     {
         width = 1;
         scale = 0;
@@ -321,7 +321,7 @@ tango::IColumnInfoPtr createColInfo(const std::wstring& col_name,
         c->setCalculated(true);
     }
 
-    return static_cast<tango::IColumnInfo*>(c);
+    return static_cast<xd::IColumnInfo*>(c);
 }
 
 
@@ -406,7 +406,7 @@ sword OracleDatabase::checkerr(OCIError* err, sword status)
     {
         char errbuf[512];
         ::checkerr(err, status, errbuf, 500);
-        m_error.setError(tango::errorGeneral, kl::towstring(errbuf));
+        m_error.setError(xd::errorGeneral, kl::towstring(errbuf));
     }
     
     return status;
@@ -440,21 +440,21 @@ OracleDatabase::OracleDatabase()
     kws += L",";
     kws += oracle_keywords2;
 
-    m_attr = static_cast<tango::IAttributes*>(new DatabaseAttributes);
-    m_attr->setIntAttribute(tango::dbattrColumnMaxNameLength, 30);
-    m_attr->setIntAttribute(tango::dbattrTableMaxNameLength, 30);
-    m_attr->setStringAttribute(tango::dbattrKeywords, kws);
-    m_attr->setStringAttribute(tango::dbattrColumnInvalidChars,
+    m_attr = static_cast<xd::IAttributes*>(new DatabaseAttributes);
+    m_attr->setIntAttribute(xd::dbattrColumnMaxNameLength, 30);
+    m_attr->setIntAttribute(xd::dbattrTableMaxNameLength, 30);
+    m_attr->setStringAttribute(xd::dbattrKeywords, kws);
+    m_attr->setStringAttribute(xd::dbattrColumnInvalidChars,
                                L"~`!@%^&*()-=+{}[]|\\:;\"'<,>.?/ \t");
-    m_attr->setStringAttribute(tango::dbattrTableInvalidChars,
+    m_attr->setStringAttribute(xd::dbattrTableInvalidChars,
                                L"~`!@%^&*()-=+{}[]|\\:;\"'<,>.?/ \t");
-    m_attr->setStringAttribute(tango::dbattrColumnInvalidStartingChars,
+    m_attr->setStringAttribute(xd::dbattrColumnInvalidStartingChars,
                                L"~`!@#$%^&*()-_=+{}[]|\\:;\"'<,>.?/0123456789 \t");
-    m_attr->setStringAttribute(tango::dbattrTableInvalidStartingChars,
+    m_attr->setStringAttribute(xd::dbattrTableInvalidStartingChars,
                                L"~`!@#$%^&*()-_=+{}[]|\\:;\"'<,>.?/0123456789 \t");
-    m_attr->setStringAttribute(tango::dbattrIdentifierQuoteOpenChar, L"\"");
-    m_attr->setStringAttribute(tango::dbattrIdentifierQuoteCloseChar, L"\"");
-    m_attr->setStringAttribute(tango::dbattrIdentifierCharsNeedingQuote, L"");    
+    m_attr->setStringAttribute(xd::dbattrIdentifierQuoteOpenChar, L"\"");
+    m_attr->setStringAttribute(xd::dbattrIdentifierQuoteCloseChar, L"\"");
+    m_attr->setStringAttribute(xd::dbattrIdentifierCharsNeedingQuote, L"");    
 }
 
 OracleDatabase::~OracleDatabase()
@@ -509,7 +509,7 @@ bool OracleDatabase::open(const std::wstring& server,
                                                    (size_t)0,
                                                    (void **)0)))
     {
-        m_error.setError(tango::errorGeneral, L"The Oracle client environment could not be created.");
+        m_error.setError(xd::errorGeneral, L"The Oracle client environment could not be created.");
 
         return false;
     }
@@ -679,7 +679,7 @@ bool OracleDatabase::open(const std::wstring& server,
 
     wchar_t buf[1024];
     swprintf(buf, 1024, L"Oracle (%ls)", server.c_str());
-    m_attr->setStringAttribute(tango::dbattrDatabaseName, buf);
+    m_attr->setStringAttribute(xd::dbattrDatabaseName, buf);
     return true;
 }
 
@@ -713,11 +713,11 @@ void OracleDatabase::close()
 
 
 
-// tango::IDatabase
+// xd::IDatabase
 
 int OracleDatabase::getDatabaseType()
 {
-    return tango::dbtypeOracle;
+    return xd::dbtypeOracle;
 }
 
 std::wstring OracleDatabase::getActiveUid()
@@ -725,9 +725,9 @@ std::wstring OracleDatabase::getActiveUid()
     return L"";
 }
 
-tango::IAttributesPtr OracleDatabase::getAttributes()
+xd::IAttributesPtr OracleDatabase::getAttributes()
 {
-    return static_cast<tango::IAttributes*>(m_attr);
+    return static_cast<xd::IAttributes*>(m_attr);
 }
 
 std::wstring OracleDatabase::getErrorString()
@@ -752,12 +752,12 @@ bool OracleDatabase::cleanup()
     return true;
 }
 
-tango::IJobPtr OracleDatabase::createJob()
+xd::IJobPtr OracleDatabase::createJob()
 {
     return xcm::null;
 }
 
-tango::IDatabasePtr OracleDatabase::getMountDatabase(const std::wstring& path)
+xd::IDatabasePtr OracleDatabase::getMountDatabase(const std::wstring& path)
 {
     return xcm::null;
 }
@@ -808,7 +808,7 @@ bool OracleDatabase::copyFile(const std::wstring& src_path,
     return false;
 }
 
-bool OracleDatabase::copyData(const tango::CopyParams* info, tango::IJob* job)
+bool OracleDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 {
     return false;
 }
@@ -855,11 +855,11 @@ bool OracleDatabase::getFileExist(const std::wstring& path)
     if (!execute(sql, 0, result_obj, NULL))
         return false;
         
-    tango::IIteratorPtr iter = result_obj;
+    xd::IIteratorPtr iter = result_obj;
     if (iter.isNull())
         return false;
     
-    tango::objhandle_t h = iter->getHandle(L"TABLE_NAME");
+    xd::objhandle_t h = iter->getHandle(L"TABLE_NAME");
     if (!h)
         return false;
     
@@ -898,7 +898,7 @@ private:
 };
 
 
-tango::IFileInfoPtr OracleDatabase::getFileInfo(const std::wstring& _path)
+xd::IFileInfoPtr OracleDatabase::getFileInfo(const std::wstring& _path)
 {
     std::wstring path = _path;
 
@@ -909,15 +909,15 @@ tango::IFileInfoPtr OracleDatabase::getFileInfo(const std::wstring& _path)
     
     OracleFileInfo* f = new OracleFileInfo(this);
     f->name = kl::afterFirst(path, '.');
-    f->type = tango::filetypeTable;
-    f->format = tango::formatNative;
-    return static_cast<tango::IFileInfo*>(f);
+    f->type = xd::filetypeTable;
+    f->format = xd::formatNative;
+    return static_cast<xd::IFileInfo*>(f);
 }
 
-tango::IFileInfoEnumPtr OracleDatabase::getFolderInfo(const std::wstring& path)
+xd::IFileInfoEnumPtr OracleDatabase::getFolderInfo(const std::wstring& path)
 {
-    xcm::IVectorImpl<tango::IFileInfoPtr>* retval;
-    retval = new xcm::IVectorImpl<tango::IFileInfoPtr>;
+    xcm::IVectorImpl<xd::IFileInfoPtr>* retval;
+    retval = new xcm::IVectorImpl<xd::IFileInfoPtr>;
 
     if (path.empty() || path == L"/")
     {
@@ -941,7 +941,7 @@ tango::IFileInfoEnumPtr OracleDatabase::getFolderInfo(const std::wstring& path)
 
         iter->goFirst();
         
-        tango::objhandle_t handle = iter->getHandle(L"OWNER");
+        xd::objhandle_t handle = iter->getHandle(L"OWNER");
         
         while (!iter->eof())
         {
@@ -950,8 +950,8 @@ tango::IFileInfoEnumPtr OracleDatabase::getFolderInfo(const std::wstring& path)
             OracleFileInfo* f = new OracleFileInfo(this);
             f->name = kl::towstring(owner);
             kl::trim(f->name);
-            f->type = tango::filetypeFolder;
-            f->format = tango::formatNative;
+            f->type = xd::filetypeFolder;
+            f->format = xd::formatNative;
             retval->append(f);
 
             iter->skip(1);
@@ -988,7 +988,7 @@ tango::IFileInfoEnumPtr OracleDatabase::getFolderInfo(const std::wstring& path)
 
         iter->goFirst();
         
-        tango::objhandle_t handle = iter->getHandle(L"NAME");
+        xd::objhandle_t handle = iter->getHandle(L"NAME");
         
         while (!iter->eof())
         {
@@ -997,8 +997,8 @@ tango::IFileInfoEnumPtr OracleDatabase::getFolderInfo(const std::wstring& path)
             OracleFileInfo* f = new OracleFileInfo(this);
             f->name = kl::towstring(table_name);
             kl::trim(f->name);
-            f->type = tango::filetypeTable;
-            f->format = tango::formatNative;
+            f->type = xd::filetypeTable;
+            f->format = xd::formatNative;
             retval->append(f);
 
             iter->skip(1);
@@ -1050,11 +1050,11 @@ std::wstring OracleDatabase::getPrimaryKey(const std::wstring& _table)
     if (!execute(sql, 0, result_obj, NULL))
         return L"";
         
-    tango::IIteratorPtr iter = result_obj;
+    xd::IIteratorPtr iter = result_obj;
     if (iter.isNull())
         return L"";
     
-    tango::objhandle_t h = iter->getHandle(L"column_name");
+    xd::objhandle_t h = iter->getHandle(L"column_name");
     if (!h)
         return L"";
     
@@ -1074,15 +1074,15 @@ std::wstring OracleDatabase::getPrimaryKey(const std::wstring& _table)
 
 
 
-tango::IStructurePtr OracleDatabase::createStructure()
+xd::IStructurePtr OracleDatabase::createStructure()
 {
     Structure* s = new Structure;
-    return static_cast<tango::IStructure*>(s);
+    return static_cast<xd::IStructure*>(s);
 }
 
 bool OracleDatabase::createTable(const std::wstring& path,
-                                 tango::IStructurePtr struct_config,
-                                 tango::FormatInfo* format_info)
+                                 xd::IStructurePtr struct_config,
+                                 xd::FormatInfo* format_info)
 {
     std::wstring command;
     command.reserve(1024);
@@ -1103,7 +1103,7 @@ bool OracleDatabase::createTable(const std::wstring& path,
 
     for (i = 0; i < col_count; ++i)
     {
-        tango::IColumnInfoPtr col_info = struct_config->getColumnInfoByIdx(i);
+        xd::IColumnInfoPtr col_info = struct_config->getColumnInfoByIdx(i);
         
         name = col_info->getName();
         type = col_info->getType();
@@ -1124,7 +1124,7 @@ bool OracleDatabase::createTable(const std::wstring& path,
     return execute(command, 0, result_obj, NULL);
 }
 
-tango::IStreamPtr OracleDatabase::openStream(const std::wstring& ofs_path)
+xd::IStreamPtr OracleDatabase::openStream(const std::wstring& ofs_path)
 {
     return xcm::null;
 }
@@ -1134,7 +1134,7 @@ bool OracleDatabase::createStream(const std::wstring& ofs_path, const std::wstri
     return false;
 }
 
-tango::IIteratorPtr OracleDatabase::query(const tango::QueryParams& qp)
+xd::IIteratorPtr OracleDatabase::query(const xd::QueryParams& qp)
 {
     std::wstring columns = qp.columns;
     if (columns.length() == 0)
@@ -1156,10 +1156,10 @@ tango::IIteratorPtr OracleDatabase::query(const tango::QueryParams& qp)
 
 
 
-tango::IIndexInfoPtr OracleDatabase::createIndex(const std::wstring& path,
+xd::IIndexInfoPtr OracleDatabase::createIndex(const std::wstring& path,
                                                  const std::wstring& name,
                                                  const std::wstring& expr,
-                                                 tango::IJob* job)
+                                                 xd::IJob* job)
 {
     return xcm::null;
 }
@@ -1180,31 +1180,31 @@ bool OracleDatabase::deleteIndex(const std::wstring& path,
 }
 
 
-tango::IIndexInfoEnumPtr OracleDatabase::getIndexEnum(const std::wstring& path)
+xd::IIndexInfoEnumPtr OracleDatabase::getIndexEnum(const std::wstring& path)
 {
-    xcm::IVectorImpl<tango::IIndexInfoPtr>* vec;
-    vec = new xcm::IVectorImpl<tango::IIndexInfoPtr>;
+    xcm::IVectorImpl<xd::IIndexInfoPtr>* vec;
+    vec = new xcm::IVectorImpl<xd::IIndexInfoPtr>;
 
     return vec;
 }
 
 
-tango::IRowInserterPtr OracleDatabase::bulkInsert(const std::wstring& path)
+xd::IRowInserterPtr OracleDatabase::bulkInsert(const std::wstring& path)
 {
     //OracleRowInserter* inserter = new OracleRowInserter(this);
-    //return static_cast<tango::IRowInserter*>(inserter);
+    //return static_cast<xd::IRowInserter*>(inserter);
     return xcm::null;
 }
 
 
-tango::IStructurePtr OracleDatabase::describeTable(const std::wstring& path)
+xd::IStructurePtr OracleDatabase::describeTable(const std::wstring& path)
 {
     // TODO: implement
     return xcm::null;
 }
 
 
-bool OracleDatabase::modifyStructure(const std::wstring& path, tango::IStructurePtr struct_config, tango::IJob* job)
+bool OracleDatabase::modifyStructure(const std::wstring& path, xd::IStructurePtr struct_config, xd::IJob* job)
 {
     return false;
 }
@@ -1213,7 +1213,7 @@ bool OracleDatabase::modifyStructure(const std::wstring& path, tango::IStructure
 bool OracleDatabase::execute(const std::wstring& _command,
                              unsigned int flags,
                              xcm::IObjectPtr& result,
-                             tango::IJob* job)
+                             xd::IJob* job)
 {
     m_error.clearError();
     result.clear();
@@ -1248,7 +1248,7 @@ bool OracleDatabase::execute(const std::wstring& _command,
             return false;
         }
 
-        result = static_cast<xcm::IObject*>(static_cast<tango::IIterator*>(iter));
+        result = static_cast<xcm::IObject*>(static_cast<xd::IIterator*>(iter));
         return true;
     }
      else
@@ -1308,7 +1308,7 @@ bool OracleDatabase::execute(const std::wstring& _command,
 }
 
 
-bool OracleDatabase::groupQuery(tango::GroupQueryParams* info, tango::IJob* job)
+bool OracleDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
 {
     return false;
 }

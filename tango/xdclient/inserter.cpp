@@ -34,20 +34,20 @@ ClientRowInserter::~ClientRowInserter()
     m_database->unref();
 }
 
-tango::objhandle_t ClientRowInserter::getHandle(const std::wstring& column_name)
+xd::objhandle_t ClientRowInserter::getHandle(const std::wstring& column_name)
 {
     std::vector<ClientInsertData>::iterator it;
 
     for (it = m_insert_data.begin(); it != m_insert_data.end(); ++it)
     {
         if (!wcscasecmp(it->m_col_name.c_str(), column_name.c_str()))
-            return (tango::objhandle_t)&(*it);
+            return (xd::objhandle_t)&(*it);
     }
 
     return 0;
 }
 
-tango::IColumnInfoPtr ClientRowInserter::getInfo(tango::objhandle_t column_handle)
+xd::IColumnInfoPtr ClientRowInserter::getInfo(xd::objhandle_t column_handle)
 {
     ClientInsertData* data = (ClientInsertData*)column_handle;
 
@@ -59,7 +59,7 @@ tango::IColumnInfoPtr ClientRowInserter::getInfo(tango::objhandle_t column_handl
 
 
 
-bool ClientRowInserter::putRawPtr(tango::objhandle_t column_handle,
+bool ClientRowInserter::putRawPtr(xd::objhandle_t column_handle,
                                    const unsigned char* value,
                                    int length)
 {
@@ -88,7 +88,7 @@ static void escapedQuoteCopy(std::wstring& output, const std::string& input)
     output += L'"';
 }
 
-bool ClientRowInserter::putString(tango::objhandle_t column_handle,
+bool ClientRowInserter::putString(xd::objhandle_t column_handle,
                                   const std::string& value)
 {
     ClientInsertData* data = (ClientInsertData*)column_handle;
@@ -101,13 +101,13 @@ bool ClientRowInserter::putString(tango::objhandle_t column_handle,
     return true;
 }
 
-bool ClientRowInserter::putWideString(tango::objhandle_t column_handle,
+bool ClientRowInserter::putWideString(xd::objhandle_t column_handle,
                                      const std::wstring& value)
 {
     return putString(column_handle, kl::tostring(value));
 }
 
-bool ClientRowInserter::putDouble(tango::objhandle_t column_handle, double value)
+bool ClientRowInserter::putDouble(xd::objhandle_t column_handle, double value)
 {
     ClientInsertData* data = (ClientInsertData*)column_handle;
 
@@ -120,7 +120,7 @@ bool ClientRowInserter::putDouble(tango::objhandle_t column_handle, double value
     return true;
 }
 
-bool ClientRowInserter::putInteger(tango::objhandle_t column_handle, int value)
+bool ClientRowInserter::putInteger(xd::objhandle_t column_handle, int value)
 {
     ClientInsertData* data = (ClientInsertData*)column_handle;
     
@@ -136,7 +136,7 @@ bool ClientRowInserter::putInteger(tango::objhandle_t column_handle, int value)
     return true;
 }
 
-bool ClientRowInserter::putBoolean(tango::objhandle_t column_handle, bool value)
+bool ClientRowInserter::putBoolean(xd::objhandle_t column_handle, bool value)
 {
     ClientInsertData* data = (ClientInsertData*)column_handle;
 
@@ -158,8 +158,8 @@ bool ClientRowInserter::putBoolean(tango::objhandle_t column_handle, bool value)
     return true;
 }
 
-bool ClientRowInserter::putDateTime(tango::objhandle_t column_handle,
-                                   tango::datetime_t datetime)
+bool ClientRowInserter::putDateTime(xd::objhandle_t column_handle,
+                                   xd::datetime_t datetime)
 {
     ClientInsertData* data = (ClientInsertData*)column_handle;
 
@@ -168,7 +168,7 @@ bool ClientRowInserter::putDateTime(tango::objhandle_t column_handle,
         return false;
     }
 
-    tango::DateTime dt(datetime);
+    xd::DateTime dt(datetime);
 
     if (dt.isNull())
     {
@@ -190,7 +190,7 @@ bool ClientRowInserter::putDateTime(tango::objhandle_t column_handle,
 }
 
 
-bool ClientRowInserter::putNull(tango::objhandle_t column_handle)
+bool ClientRowInserter::putNull(xd::objhandle_t column_handle)
 {
     ClientInsertData* data = (ClientInsertData*)column_handle;
 
@@ -247,7 +247,7 @@ bool ClientRowInserter::startInsert(const std::wstring& col_list)
 
     for (it = columns.begin(); it != columns.end(); ++it)
     {
-        tango::IColumnInfoPtr col_info = m_structure->getColumnInfo(*it);
+        xd::IColumnInfoPtr col_info = m_structure->getColumnInfo(*it);
 
         if (col_info.isNull())
             return false;

@@ -1151,7 +1151,7 @@ struct HtmlTableFieldInfo
 {
     wxString name;
     size_t max_len;
-    tango::objhandle_t handle;
+    xd::objhandle_t handle;
     int type;
     int max_dec;
     int date_faults;
@@ -1163,7 +1163,7 @@ struct HtmlTableFieldInfo
         name = wxT("");
         max_len = 0;
         handle = 0;
-        type = tango::typeDate; // fall back in this order Date -> Numeric -> Character
+        type = xd::typeDate; // fall back in this order Date -> Numeric -> Character
         max_dec = 0;
         date_faults = 0;
         numeric_faults = 0;
@@ -1458,13 +1458,13 @@ static double extractNumber(const wxString& num, int* dec_places = NULL)
 static bool makeTableFromDom(wxDOMNode& _node, const std::wstring& output_path)
 {
     std::vector<HtmlTableFieldInfo> fields;
-    tango::IStructurePtr dest_struct;
+    xd::IStructurePtr dest_struct;
     wxDOMNode node = _node;
     wxDOMNode table_node;
     size_t i, count;
     
     
-    tango::IDatabasePtr dest_db = g_app->getDatabase();
+    xd::IDatabasePtr dest_db = g_app->getDatabase();
     
     if (dest_db.isNull())
         return xcm::null;
@@ -1565,47 +1565,47 @@ static bool makeTableFromDom(wxDOMNode& _node, const std::wstring& output_path)
             info.name = wxString::Format(wxT("FIELD%d"), td_count);
             
             
-            if (info.type == tango::typeDate && !parseDelimitedStringDate(val))
+            if (info.type == xd::typeDate && !parseDelimitedStringDate(val))
             {
                 if (rown > 0) // first row might/likely is a header, so don't count it as a fault
                     info.date_faults++;
                 if (info.date_faults >= 2 || row_count <= 3)
                 {
-                    info.type = tango::typeNumeric;
+                    info.type = xd::typeNumeric;
                 }
             }
             
-            if (info.type == tango::typeNumeric && !isNumericValue(val))
+            if (info.type == xd::typeNumeric && !isNumericValue(val))
             {      
                 if (rown > 0) // first row might/likely is a header, so don't count it as a fault
                     info.numeric_faults++;
                 if (info.numeric_faults >= 2 || row_count <= 3)
                 {
-                    info.type = tango::typeWideCharacter;
+                    info.type = xd::typeWideCharacter;
                 }
             }
             
             // determine the number of decimal places in this cell value;
             // update the field's maximum # of decimal places
-            if (info.type == tango::typeNumeric)
+            if (info.type == xd::typeNumeric)
             {
                 int dec_places = 0;
                 double d = extractNumber(val, &dec_places);
                 if (dec_places > info.max_dec)
                 {
                     info.max_dec = dec_places;
-                    if (info.max_dec > tango::max_numeric_scale)
-                        info.max_dec = tango::max_numeric_scale;
+                    if (info.max_dec > xd::max_numeric_scale)
+                        info.max_dec = xd::max_numeric_scale;
                 }
             }
             
             if (val.Length() > info.max_len)
                 info.max_len = val.Length();
             
-            if (info.type == tango::typeNumeric)
+            if (info.type == xd::typeNumeric)
             {
-                if (info.max_len > tango::max_numeric_width)
-                    info.max_len = tango::max_numeric_width;
+                if (info.max_len > xd::max_numeric_width)
+                    info.max_len = xd::max_numeric_width;
             }
             
             // fields should always be at least one character
@@ -1740,7 +1740,7 @@ static bool makeTableFromDom(wxDOMNode& _node, const std::wstring& output_path)
                 if (i >= field_count)
                     break;
                     
-                if (fields[i].type == tango::typeNumeric)
+                if (fields[i].type == xd::typeNumeric)
                 {
                     if (!isNumericValue(*it))
                     {
@@ -1750,7 +1750,7 @@ static bool makeTableFromDom(wxDOMNode& _node, const std::wstring& output_path)
                     }
                 }
                 
-                if (fields[i].type == tango::typeDate)
+                if (fields[i].type == xd::typeDate)
                 {
                     if (!parseDelimitedStringDate(*it))
                     {
@@ -1856,8 +1856,8 @@ static bool makeTableFromDom(wxDOMNode& _node, const std::wstring& output_path)
     // fix up field names that are key words
     
     std::set<wxString> keywords;
-    tango::IAttributesPtr attr = dest_db->getAttributes();
-    wxStringTokenizer t(attr->getStringAttribute(tango::dbattrKeywords), ",");
+    xd::IAttributesPtr attr = dest_db->getAttributes();
+    wxStringTokenizer t(attr->getStringAttribute(xd::dbattrKeywords), ",");
     while (t.HasMoreTokens())
     {
         wxString s = t.GetNextToken();
@@ -1902,7 +1902,7 @@ static bool makeTableFromDom(wxDOMNode& _node, const std::wstring& output_path)
     {
         if (fields[i].empty)
         {
-            fields[i].type = tango::typeWideCharacter;
+            fields[i].type = xd::typeWideCharacter;
             fields[i].max_len = 1;
             fields[i].max_dec = 0;
         }
@@ -1918,17 +1918,17 @@ static bool makeTableFromDom(wxDOMNode& _node, const std::wstring& output_path)
     std::vector<HtmlTableFieldInfo>::iterator field_it;
     for (field_it = fields.begin(); field_it != fields.end(); ++field_it)
     {
-        tango::IColumnInfoPtr col_info = dest_struct->createColumn();
+        xd::IColumnInfoPtr col_info = dest_struct->createColumn();
         col_info->setName(towstr(field_it->name));
         col_info->setType(field_it->type);
         col_info->setWidth(field_it->max_len);
-        col_info->setScale(field_it->type == tango::typeNumeric ? field_it->max_dec : 0);
+        col_info->setScale(field_it->type == xd::typeNumeric ? field_it->max_dec : 0);
     }
 
     if (!dest_db->createTable(output_path, dest_struct, NULL))
         return false;
         
-    tango::IRowInserterPtr row_inserter = dest_db->bulkInsert(output_path);
+    xd::IRowInserterPtr row_inserter = dest_db->bulkInsert(output_path);
     if (row_inserter.isNull())
         return false;
         
@@ -2020,19 +2020,19 @@ static bool makeTableFromDom(wxDOMNode& _node, const std::wstring& output_path)
                 
             switch (info.type)
             {
-                case tango::typeNumeric:
+                case xd::typeNumeric:
                 {
                     row_inserter->putDouble(info.handle, extractNumber(val));
                     break;
                 }
                 
-                case tango::typeDate:
-                case tango::typeDateTime:
+                case xd::typeDate:
+                case xd::typeDateTime:
                 {
                     int y = 0, m = 0, d = 0;
                     if (parseDelimitedStringDate(val, &y, &m, &d))
                     {
-                        tango::DateTime dt(y, m, d);
+                        xd::DateTime dt(y, m, d);
                         row_inserter->putDateTime(info.handle, dt);
                     }
                     break;
@@ -2060,7 +2060,7 @@ static bool makeTableFromDom(wxDOMNode& _node, const std::wstring& output_path)
             // clear out write buffer
             for (field_it = fields.begin(); field_it != fields.end(); ++field_it)
             {
-                if (field_it->type == tango::typeNumeric)
+                if (field_it->type == xd::typeNumeric)
                     row_inserter->putDouble(field_it->handle, 0.0);
                      else
                     row_inserter->putWideString(field_it->handle, L"");
@@ -2463,7 +2463,7 @@ void WebDoc::onFsDataDropped(wxWebEvent& evt)
         return;
     }
     
-    tango::IDatabasePtr db = g_app->getDatabase();
+    xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
         return;
     

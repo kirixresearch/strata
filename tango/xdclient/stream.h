@@ -13,11 +13,11 @@
 
 class ClientDatabase;
 
-class ClientStream : public tango::IStream
+class ClientStream : public xd::IStream
 {
     XCM_CLASS_NAME("xdclient.ClientStream")
     XCM_BEGIN_INTERFACE_MAP(ClientStream)
-        XCM_INTERFACE_ENTRY(tango::IStream)
+        XCM_INTERFACE_ENTRY(xd::IStream)
     XCM_END_INTERFACE_MAP()
 
 public:
