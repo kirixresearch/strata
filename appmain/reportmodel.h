@@ -72,7 +72,7 @@ enum ModelColumnFunctions
 xcm_interface IModel;
 XCM_DECLARE_SMARTPTR(IModel)
 
-class TangoModel;
+class XdModel;
 
 
 // interface definitions
@@ -123,8 +123,8 @@ public:
 
     void setParseHook(kscript::ExprParseHookFunc func, void* param);
 
-    void setModel(TangoModel* model);
-    TangoModel* getModel();
+    void setModel(XdModel* model);
+    XdModel* getModel();
 
     void setExpression(const wxString& expr);
     wxString getExpression();
@@ -141,7 +141,7 @@ private:
 private:
 
     // model
-    TangoModel* m_tango_model;
+    XdModel* m_tango_model;
 
     // cell expression
     wxString m_expr;
@@ -180,7 +180,7 @@ private:
 
 class ModelColumn
 {
-friend class TangoModel;
+friend class XdModel;
 
 public:
 
@@ -226,7 +226,7 @@ public:
 
 class ModelGroup
 {
-friend class TangoModel;
+friend class XdModel;
 
 public:
 
@@ -264,12 +264,12 @@ private:
 };
 
 
-class TangoModel : public IModel,
+class XdModel : public IModel,
                    public kcanvas::IEventTarget,
                    public xcm::signal_sink
 {
-    XCM_CLASS_NAME("appmain.TangoModel")
-    XCM_BEGIN_INTERFACE_MAP(TangoModel)
+    XCM_CLASS_NAME("appmain.XdModel")
+    XCM_BEGIN_INTERFACE_MAP(XdModel)
         XCM_INTERFACE_ENTRY(IModel)
         XCM_INTERFACE_ENTRY(kcanvas::IEventTarget)
     XCM_END_INTERFACE_MAP()
@@ -280,8 +280,8 @@ public:
 
 public:
 
-    TangoModel();
-    virtual ~TangoModel();
+    XdModel();
+    virtual ~XdModel();
 
     // IModel
     

@@ -19,7 +19,7 @@ void func_pagenumber(kscript::ExprEnv* env,
                      kscript::Value* retval)
 {
     CellExpression* cellexpr = (CellExpression*)param;
-    TangoModel* tango_model = cellexpr->getModel();
+    XdModel* tango_model = cellexpr->getModel();
     
     if (tango_model == NULL)
     {
@@ -42,7 +42,7 @@ void func_pagecount(kscript::ExprEnv* env,
                     kscript::Value* retval)
 {
     CellExpression* cellexpr = (CellExpression*)param;
-    TangoModel* tango_model = cellexpr->getModel();
+    XdModel* tango_model = cellexpr->getModel();
     
     if (tango_model == NULL)
     {
@@ -65,7 +65,7 @@ void func_currentdate(kscript::ExprEnv* env,
                       kscript::Value* retval)
 {
     CellExpression* cellexpr = (CellExpression*)param;
-    TangoModel* tango_model = cellexpr->getModel();
+    XdModel* tango_model = cellexpr->getModel();
     
     if (tango_model == NULL)
     {
@@ -88,7 +88,7 @@ void func_datasource(kscript::ExprEnv* env,
                      kscript::Value* retval)
 {
     CellExpression* cellexpr = (CellExpression*)param;
-    TangoModel* tango_model = cellexpr->getModel();
+    XdModel* tango_model = cellexpr->getModel();
     
     if (tango_model == NULL)
     {
@@ -120,7 +120,7 @@ class FieldExprElement : public kscript::ExprElement
 {
 public:
 
-    FieldExprElement(TangoModel* model, const wxString& expr, int function)
+    FieldExprElement(XdModel* model, const wxString& expr, int function)
     {
         m_model = model;
         m_expr = expr;
@@ -255,7 +255,7 @@ public:
 
 public:
 
-    TangoModel* m_model;
+    XdModel* m_model;
     wxString m_expr;
     int m_func;
 };
@@ -308,12 +308,12 @@ void CellExpression::setParseHook(kscript::ExprParseHookFunc func, void* param)
     m_parsehook_param = param;
 }
 
-void CellExpression::setModel(TangoModel* model)
+void CellExpression::setModel(XdModel* model)
 {
     m_tango_model = model;
 }
 
-TangoModel* CellExpression::getModel()
+XdModel* CellExpression::getModel()
 {
     return m_tango_model;
 }
@@ -726,7 +726,7 @@ void ModelGroup::clearCache()
 }
 
 
-TangoModel::TangoModel()
+XdModel::XdModel()
 {
     m_iter = NULL;
     m_group_label = PROP_REPORT_DETAIL;
@@ -742,12 +742,12 @@ TangoModel::TangoModel()
     m_rowpos = -1;
 }
 
-TangoModel::~TangoModel()
+XdModel::~XdModel()
 {
     setIterator(NULL);
 }
 
-void TangoModel::setQuery(const std::vector<wxString>& queries, const wxString& order)
+void XdModel::setQuery(const std::vector<wxString>& queries, const wxString& order)
 {
     // for now, just use the first query
     if (queries.size() > 0)
@@ -756,59 +756,59 @@ void TangoModel::setQuery(const std::vector<wxString>& queries, const wxString& 
     setIterator(NULL);
 }
 
-void TangoModel::setQuery(const wxString& query)
+void XdModel::setQuery(const wxString& query)
 {
     // set the query string and reset the iterator
     m_query = query;
     setIterator(NULL);
 }
 
-bool TangoModel::isLoaded()
+bool XdModel::isLoaded()
 {
     return (m_iter != NULL) ? true : false;
 }
 
-void TangoModel::addProperty(const wxString& prop_name, const kcanvas::PropertyValue& value)
+void XdModel::addProperty(const wxString& prop_name, const kcanvas::PropertyValue& value)
 {
     m_properties.add(prop_name, value);
 }
 
-void TangoModel::addProperties(const kcanvas::Properties& properties)
+void XdModel::addProperties(const kcanvas::Properties& properties)
 {
     m_properties.add(properties);
 }
 
-void TangoModel::removeProperty(const wxString& prop_name)
+void XdModel::removeProperty(const wxString& prop_name)
 {
     m_properties.remove(prop_name);
 }
 
-bool TangoModel::setProperty(const wxString& prop_name, const kcanvas::PropertyValue& value)
+bool XdModel::setProperty(const wxString& prop_name, const kcanvas::PropertyValue& value)
 {
     return m_properties.set(prop_name, value);
 }
 
-bool TangoModel::setProperties(const kcanvas::Properties& properties)
+bool XdModel::setProperties(const kcanvas::Properties& properties)
 {
     return m_properties.set(properties);
 }
 
-bool TangoModel::getProperty(const wxString& prop_name, kcanvas::PropertyValue& value) const
+bool XdModel::getProperty(const wxString& prop_name, kcanvas::PropertyValue& value) const
 {
     return m_properties.get(prop_name, value);
 }
 
-bool TangoModel::getProperties(kcanvas::Properties& properties) const
+bool XdModel::getProperties(kcanvas::Properties& properties) const
 {
     return m_properties.get(properties);
 }
 
-kcanvas::Properties& TangoModel::getPropertiesRef()
+kcanvas::Properties& XdModel::getPropertiesRef()
 {
     return m_properties;
 }
 
-bool TangoModel::addGroup(const wxString& label, const std::vector<wxString>& columns)
+bool XdModel::addGroup(const wxString& label, const std::vector<wxString>& columns)
 {
     if (!m_iter)
         return false;
@@ -850,7 +850,7 @@ bool TangoModel::addGroup(const wxString& label, const std::vector<wxString>& co
     return true;
 }
 
-bool TangoModel::setGroup(const wxString& label)
+bool XdModel::setGroup(const wxString& label)
 {
     // if the group exists, set the label and return true;
     // return false otherwise
@@ -865,7 +865,7 @@ bool TangoModel::setGroup(const wxString& label)
     return true;
 }
 
-void TangoModel::removeAllGroups()
+void XdModel::removeAllGroups()
 {
     // if we don't have an iterator, we're done
     if (!m_iter)
@@ -897,7 +897,7 @@ void TangoModel::removeAllGroups()
     addGroup(PROP_REPORT_FOOTER, no_columns);
 }
 
-void TangoModel::goFirst()
+void XdModel::goFirst()
 {
     if (!m_iter)
         return;
@@ -906,7 +906,7 @@ void TangoModel::goFirst()
     m_rowpos = 1;
 }
 
-void TangoModel::skip(int delta_rows)
+void XdModel::skip(int delta_rows)
 {
     if (!m_iter)
         return;
@@ -921,7 +921,7 @@ void TangoModel::skip(int delta_rows)
         m_rowpos = -1;
 }
 
-bool TangoModel::eof()
+bool XdModel::eof()
 {
     if (!m_iter)
         return true;
@@ -929,7 +929,7 @@ bool TangoModel::eof()
     return m_iter->eof();
 }
 
-bool TangoModel::bog()
+bool XdModel::bog()
 {
     // if we don't have an iterator, return false
     if (!m_iter)
@@ -989,7 +989,7 @@ bool TangoModel::bog()
     return result;
 }
 
-bool TangoModel::eog()
+bool XdModel::eog()
 {
     // if we don't have an iterator, return false
     if (!m_iter)
@@ -1072,7 +1072,7 @@ static bool func_tangomodel_parse_hook(kscript::ExprParseHookInfo& hook_info)
     if (hook_info.element_type == kscript::ExprParseHookInfo::typeFunction)
     {  
         CellExpression* cellexpr = (CellExpression*)hook_info.hook_param;
-        TangoModel* tango_model = cellexpr->getModel();
+        XdModel* tango_model = cellexpr->getModel();
         
         if (tango_model == NULL)
             return false;
@@ -1152,7 +1152,7 @@ static bool func_tangomodel_parse_hook(kscript::ExprParseHookInfo& hook_info)
 
 
         CellExpression* cellexpr = (CellExpression*)hook_info.hook_param;
-        TangoModel* tango_model = cellexpr->getModel();
+        XdModel* tango_model = cellexpr->getModel();
 
         if (tango_model == NULL)
             return false;
@@ -1181,7 +1181,7 @@ static bool func_tangomodel_parse_hook(kscript::ExprParseHookInfo& hook_info)
     return false;
 }
 
-void TangoModel::execute(bool block)
+void XdModel::execute(bool block)
 {
     // reset the iterator
     setIterator(NULL);
@@ -1205,7 +1205,7 @@ void TangoModel::execute(bool block)
 
         job->getJobInfo()->setTitle(towstr(_("Query")));
         job->setParameters(params.toString());
-        job->sigJobFinished().connect(this, &TangoModel::onQueryJobFinished);
+        job->sigJobFinished().connect(this, &XdModel::onQueryJobFinished);
         g_app->getJobQueue()->addJob(job, jobs::jobStateRunning);
     }
      else
@@ -1225,7 +1225,7 @@ void TangoModel::execute(bool block)
     }
 }
 
-bool TangoModel::eval(int row, const wxString& expr, wxString& result)
+bool XdModel::eval(int row, const wxString& expr, wxString& result)
 {
     // try to go to the row in question; don't worry about
     // returning false if we can't get there: some expressions
@@ -1251,26 +1251,26 @@ bool TangoModel::eval(int row, const wxString& expr, wxString& result)
     return cell_expr->getResult(result);
 }
 
-bool TangoModel::addEventHandler(const wxString& name,
+bool XdModel::addEventHandler(const wxString& name,
                                  kcanvas::IEventHandlerPtr handler,
                                  bool capture_phase)
 {
     return m_event_target.addEventHandler(name, handler, capture_phase);
 }
 
-bool TangoModel::removeEventHandler(const wxString& name,
+bool XdModel::removeEventHandler(const wxString& name,
                                     kcanvas::IEventHandlerPtr handler,
                                     bool capture_phase)
 {
     return m_event_target.removeEventHandler(name, handler, capture_phase);
 }
 
-void TangoModel::removeAllEventHandlers()
+void XdModel::removeAllEventHandlers()
 {
     m_event_target.removeAllEventHandlers();
 }
 
-void TangoModel::dispatchEvent(kcanvas::IEventPtr evt)
+void XdModel::dispatchEvent(kcanvas::IEventPtr evt)
 {
     // because the model isn't a member of a hierarchy,
     // the event is always dispatched at the target;
@@ -1279,7 +1279,7 @@ void TangoModel::dispatchEvent(kcanvas::IEventPtr evt)
     m_event_target.dispatchEvent(evt);
 }
 
-bool TangoModel::getColumnInfo(const wxString& col_name, 
+bool XdModel::getColumnInfo(const wxString& col_name, 
                                int* idx, 
                                int* type, 
                                int* width, 
@@ -1311,7 +1311,7 @@ bool TangoModel::getColumnInfo(const wxString& col_name,
     return false;
 }
 
-wxString TangoModel::getString(int col_idx, int function)
+wxString XdModel::getString(int col_idx, int function)
 {
     if (!m_iter)
         return wxT("");
@@ -1389,7 +1389,7 @@ wxString TangoModel::getString(int col_idx, int function)
     return value;
 }
 
-xd::DateTime TangoModel::getDateTime(int col_idx, int function)
+xd::DateTime XdModel::getDateTime(int col_idx, int function)
 {
     // used throughout
     xd::DateTime value;
@@ -1466,7 +1466,7 @@ xd::DateTime TangoModel::getDateTime(int col_idx, int function)
     return value;
 }
 
-double TangoModel::getDouble(int col_idx, int function)
+double XdModel::getDouble(int col_idx, int function)
 {
     if (!m_iter)
         return 0.0f;
@@ -1552,7 +1552,7 @@ double TangoModel::getDouble(int col_idx, int function)
     return value;
 }
 
-int TangoModel::getInteger(int col_idx, int function)
+int XdModel::getInteger(int col_idx, int function)
 {
     if (!m_iter)
         return 0;
@@ -1638,7 +1638,7 @@ int TangoModel::getInteger(int col_idx, int function)
     return value;
 }
 
-bool TangoModel::getBoolean(int col_idx, int function)
+bool XdModel::getBoolean(int col_idx, int function)
 {
     if (!m_iter)
         return false;
@@ -1695,7 +1695,7 @@ bool TangoModel::getBoolean(int col_idx, int function)
     return value;
 }
 
-void TangoModel::onQueryJobFinished(jobs::IJobPtr job)
+void XdModel::onQueryJobFinished(jobs::IJobPtr job)
 {
     m_job.clear();
     
@@ -1716,7 +1716,7 @@ void TangoModel::onQueryJobFinished(jobs::IJobPtr job)
     dispatchEvent(notify_evt);
 }
 
-void TangoModel::setIterator(xd::IIterator* it)
+void XdModel::setIterator(xd::IIterator* it)
 {
     // reset state variables
     m_group_label = PROP_REPORT_DETAIL;
@@ -1749,7 +1749,7 @@ void TangoModel::setIterator(xd::IIterator* it)
     }
 }
 
-bool TangoModel::gotoRow(int row)
+bool XdModel::gotoRow(int row)
 {
     // note: this is a simple function to that allows us to skip
     // to a location based on knowledge of where we are so that 
@@ -1799,7 +1799,7 @@ bool TangoModel::gotoRow(int row)
     return true;
 }
 
-void TangoModel::clear()
+void XdModel::clear()
 {
     // if we don't have an iterator, we're done
     if (!m_iter)
@@ -1852,7 +1852,7 @@ void TangoModel::clear()
     m_cell_expressions.clear();
 }
 
-void TangoModel::refresh()
+void XdModel::refresh()
 {
     // refresh columns
     xd::IStructurePtr structure = m_iter->getStructure();
