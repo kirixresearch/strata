@@ -248,7 +248,7 @@ void XbaseIterator::refreshStructure()
         xd::IColumnInfoPtr colinfo = s->getColumnInfoByIdx(i);
         
         XbaseDataAccessInfo* dai = new XbaseDataAccessInfo;
-        dai->xbase_type = tango2xbaseType(colinfo->getType());
+        dai->xbase_type = xd2xbaseType(colinfo->getType());
         dai->name = colinfo->getName();
         dai->type = colinfo->getType();
         dai->width = colinfo->getWidth();

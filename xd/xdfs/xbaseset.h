@@ -20,7 +20,7 @@
 
 // utility functions
 
-inline char tango2xbaseType(int tango_type)
+inline char xd2xbaseType(int tango_type)
 {
     switch (tango_type)
     {
@@ -37,7 +37,7 @@ inline char tango2xbaseType(int tango_type)
     return ' ';
 }
 
-inline int xbase2tangoType(unsigned char xbase_type)
+inline int xbase2xdType(unsigned char xbase_type)
 {
     switch (xbase_type)
     {

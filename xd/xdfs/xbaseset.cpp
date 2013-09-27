@@ -97,7 +97,7 @@ xd::IStructurePtr XbaseSet::getStructure()
         struct_int->addColumn(col);
 
         col->setName(kl::towstring(it->name));
-        col->setType(xbase2tangoType(it->type));
+        col->setType(xbase2xdType(it->type));
         col->setWidth(it->width);
         col->setScale(it->scale);
         col->setColumnOrdinal(it->ordinal);
@@ -324,7 +324,7 @@ xd::IColumnInfoPtr XbaseRowInserter::getInfo(xd::objhandle_t column_handle)
     // create new xd::IColumnInfoPtr
     xd::IColumnInfoPtr col_info = static_cast<xd::IColumnInfo*>(new ColumnInfo);
     col_info->setName(kl::towstring(f->name));
-    col_info->setType(xbase2tangoType(f->type));
+    col_info->setType(xbase2xdType(f->type));
     col_info->setWidth(f->width);
     col_info->setScale(f->scale);
     col_info->setColumnOrdinal(f->ordinal);

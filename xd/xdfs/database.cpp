@@ -1667,7 +1667,7 @@ bool FsDatabase::createTable(const std::wstring& _path,
 
             XbaseField f;
             f.name = kl::tostring(col_info->getName());
-            f.type = tango2xbaseType(col_info->getType());
+            f.type = xd2xbaseType(col_info->getType());
             f.width = col_info->getWidth();
             f.scale = col_info->getScale();
             f.ordinal = i;
