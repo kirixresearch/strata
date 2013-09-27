@@ -755,6 +755,18 @@ bool PgsqlDatabase::moveFile(const std::wstring& path,
     tbl = pgsqlGetTablenameFromPath(path);
     newname = pgsqlGetTablenameFromPath(new_location);
 
+
+    sql = L"LOCK TABLE " + pgsqlQuoteIdentifierIfNecessary(tbl) + L" IN ACCESS EXCLUSIVE MODE NOWAIT";
+    res = PQexec(conn, kl::toUtf8(sql));
+    if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
+    {
+        PQexec(conn, "ROLLBACK");
+        closeConnection(conn);
+        return false;
+    }
+
+
+
     sql = L"ALTER TABLE %tbl% RENAME TO %newname%";
     kl::replaceStr(sql, L"%tbl%", pgsqlQuoteIdentifierIfNecessary(tbl));
     kl::replaceStr(sql, L"%newname%", pgsqlQuoteIdentifierIfNecessary(newname));
@@ -951,7 +963,7 @@ bool PgsqlDatabase::deleteFile(const std::wstring& path)
         return false;
     }
 
-    command = L"DROP TABLE " + tbl;
+    command = L"DROP TABLE " + pgsqlQuoteIdentifierIfNecessary(tbl);
     res = PQexec(conn, kl::toUtf8(command));
     if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
     {
