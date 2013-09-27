@@ -246,7 +246,7 @@ inline std::wstring getTemporaryPath()
     }
 
     std::wstring temp_path;
-    temp_path.append(L"/.temp/");
+    temp_path.append(L"xtmp_");
     temp_path.append(tempname);
 
     return temp_path;

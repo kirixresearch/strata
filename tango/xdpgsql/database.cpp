@@ -992,35 +992,72 @@ bool PgsqlDatabase::getFileExist(const std::wstring& path)
 
 tango::IFileInfoPtr PgsqlDatabase::getFileInfo(const std::wstring& path)
 {
-    std::wstring folder;
-    std::wstring name;
-    
-    if (path.empty() || path == L"/")
+    std::wstring tbl = pgsqlGetTablenameFromPath(path);
+    std::wstring folder = L"";
+    std::wstring name = L"";
+
+
+    if (kl::stringFrequency(path, '/') >= 1)
     {
-        PgsqlFileInfo* f = new PgsqlFileInfo(this);
-        f->name = L"/";
-        f->type = tango::filetypeFolder;
-        f->format = tango::formatNative;
-        return static_cast<tango::IFileInfo*>(f);
+        folder = kl::beforeLast(path, '/');
+        name = kl::afterLast(path, '/');
     }
      else
     {
-        folder = kl::beforeLast(path, L'/');
-        name = kl::afterLast(path, L'/');
+        folder = L"";
+        name = path;
     }
-    
-    tango::IFileInfoEnumPtr files = getFolderInfo(folder);
-    int i, count = files->size();
-    for (i = 0; i < count; ++i)
+
+    PGconn* conn = createConnection();
+    if (!conn)
+        return xcm::null;
+
+    std::wstring command = L"select t.tablename as name, coalesce(d.description,'') as type from pg_tables t "
+                           L"inner join pg_class as c on c.relname=t.tablename "
+                           L"left outer join pg_description as d on c.oid=d.objoid "
+                           L"where t.schemaname <> 'pg_catalog' and t.schemaname <> 'information_schema' and c.relname='%tbl%'";
+                          
+    kl::replaceStr(command, L"%tbl%", tbl);
+
+
+    PGresult* res = PQexec(conn, kl::toUtf8(command));
+    if (!res || PQresultStatus(res) != PGRES_TUPLES_OK || PQntuples(res) != 1)
     {
-        tango::IFileInfoPtr finfo = files->getItem(i);
-        if (kl::iequals(finfo->getName(), name))
-        {
-            return finfo;
-        }
+        PQclear(res);
+        closeConnection(conn);
+        return xcm::null;
     }
-    
-    return xcm::null;
+
+    std::wstring type = kl::towstring(PQgetvalue(res, 0, 1));
+
+    PgsqlFileInfo* f = new PgsqlFileInfo(this);
+    f->name = name;
+    f->type = tango::filetypeTable;
+    f->format = tango::formatNative;
+
+    if (type.substr(0, 7) == L"stream;")
+    {
+        f->type = tango::filetypeStream;
+
+        type = kl::afterFirst(type, L';');
+        type = kl::beforeFirst(type, L';');
+        kl::trim(type);
+
+        f->mime_type = type;
+
+        kl::trim(f->mime_type);
+    }
+     else if (type.substr(0, 7) == L"folder;")
+    {
+        f->type = tango::filetypeFolder;
+        f->mime_type = L"";
+    }
+
+
+
+    PQclear(res);
+    closeConnection(conn);
+    return static_cast<tango::IFileInfo*>(f);
 }
 
 tango::IFileInfoEnumPtr PgsqlDatabase::getFolderInfo(const std::wstring& path)
@@ -1709,10 +1746,8 @@ bool PgsqlDatabase::groupQuery(tango::GroupQueryParams* info, tango::IJob* job)
     }
     if (detail_rows)
     {
-        // we need to make sure that all grouping fields
-        // make it into the inner grouping sql, because
-        // these will be used to join the detail back to
-        // the aggregate output
+        // we need to make sure that all grouping fields make it into the inner grouping sql,
+        // because these will be used to join the detail back to the aggregate output
 
         std::set<std::wstring, kl::cmp_nocase> idx;
         for (it = columns.begin(); it != columns.end(); ++it)
