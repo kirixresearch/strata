@@ -244,20 +244,20 @@ public:
             }
             
             
-            int tango_dbtype = xd::dbtypeOdbc;
+            int xd_dbtype = xd::dbtypeOdbc;
             
             if (dbtype == L"mssql")
-                tango_dbtype = xd::dbtypeSqlServer;
+                xd_dbtype = xd::dbtypeSqlServer;
             else if (dbtype == L"mysql")
-                tango_dbtype = xd::dbtypeMySql;
+                xd_dbtype = xd::dbtypeMySql;
             else if (dbtype == L"db2")
-                tango_dbtype = xd::dbtypeDb2;
+                xd_dbtype = xd::dbtypeDb2;
             else if (dbtype == L"oracle")
-                tango_dbtype = xd::dbtypeOracle;
+                xd_dbtype = xd::dbtypeOracle;
             else if (dbtype == L"access")
-                tango_dbtype = xd::dbtypeAccess;
+                xd_dbtype = xd::dbtypeAccess;
             else if (dbtype == L"dsn")
-                tango_dbtype = xd::dbtypeOdbc;
+                xd_dbtype = xd::dbtypeOdbc;
             
             
             // check for pass-through connection string    
@@ -269,7 +269,7 @@ public:
 
 
             // attempt to open the database
-            if (!db->open(tango_dbtype, host_fixed, kl::wtoi(port), database, uid, password, L""))
+            if (!db->open(xd_dbtype, host_fixed, kl::wtoi(port), database, uid, password, L""))
             {
                 m_error.setError(db->getErrorCode(), db->getErrorString());
                 
