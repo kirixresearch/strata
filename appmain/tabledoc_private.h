@@ -24,7 +24,7 @@ class KeyBuilderPanel;
 
 #include "panelcolumnlist.h"
 #include "panelfind.h"
-#include "tangogridmodel.h"
+#include "xdgridmodel.h"
 #include <map>
 
 
@@ -373,7 +373,7 @@ private:
 
     IFramePtr m_frame;                                  // ptr to the application frame
     IDocumentSitePtr m_doc_site;                        // ptr to our document site
-    ITangoGridModelPtr m_grid_model;                    // grid's model
+    IXdGridModelPtr m_grid_model;                    // grid's model
     ITableDocModelPtr m_model;                          // our model (stores marks, views, etc)
     kcl::Grid* m_grid;                                  // grid control
 

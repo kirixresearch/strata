@@ -142,7 +142,7 @@ void TableDoc::setGroupBreak(const std::wstring& _expr)
     if (expr.Length() > 0)
         expr.Prepend(wxT("KEY:"));
 
-    ITangoGridModelPtr model = m_grid->getModel();
+    IXdGridModelPtr model = m_grid->getModel();
     if (model.isNull())
         return;
 

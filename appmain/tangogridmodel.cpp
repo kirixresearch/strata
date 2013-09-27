@@ -15,11 +15,11 @@
 
 
 #include "appmain.h"
-#include "tangogridmodel.h"
+#include "xdgridmodel.h"
 
 
 
-TangoGridModel::TangoGridModel()
+XdGridModel::XdGridModel()
 {
     m_it = xcm::null;
     m_forward_only = false;
@@ -48,7 +48,7 @@ TangoGridModel::TangoGridModel()
     m_empty_cell.m_null = true;
 }
 
-TangoGridModel::~TangoGridModel()
+XdGridModel::~XdGridModel()
 {
     if (m_break_buf)
     {
@@ -59,7 +59,7 @@ TangoGridModel::~TangoGridModel()
 
 
 
-void TangoGridModel::copyRowIntoCache(int row)
+void XdGridModel::copyRowIntoCache(int row)
 {
     int col;
     int column_count = m_columns.size();
@@ -76,7 +76,7 @@ void TangoGridModel::copyRowIntoCache(int row)
 
     for (col = 0; col < column_count; ++col)
     {
-        TangoGridCellData& cell = cache_row.m_cols[col];
+        XdGridCellData& cell = cache_row.m_cols[col];
 
         cell.m_null = m_it->isNull(m_columns[col].m_col_handle);
 
@@ -150,7 +150,7 @@ void TangoGridModel::copyRowIntoCache(int row)
 }
 
 
-void TangoGridModel::goRowFwdOnly(int row)
+void XdGridModel::goRowFwdOnly(int row)
 {
     if (m_current_row == -1)
     {
@@ -177,7 +177,7 @@ void TangoGridModel::goRowFwdOnly(int row)
 
 
 
-void TangoGridModel::goRow(int row)
+void XdGridModel::goRow(int row)
 {
     if (m_forward_only)
     {
@@ -311,17 +311,17 @@ void TangoGridModel::goRow(int row)
 }
 
 
-void TangoGridModel::initModel(kcl::Grid* grid)
+void XdGridModel::initModel(kcl::Grid* grid)
 {
     m_grid = grid;
 }
 
-void TangoGridModel::refreshView()
+void XdGridModel::refreshView()
 {
 
 }
 
-void TangoGridModel::refresh()
+void XdGridModel::refresh()
 {
     m_column_lookup.clear();
 
@@ -375,14 +375,14 @@ void TangoGridModel::refresh()
 }
 
 
-void TangoGridModel::reset()
+void XdGridModel::reset()
 {
     m_current_row = -1;
 }
 
 
 
-void TangoGridModel::setIterator(xd::IIterator* it)
+void XdGridModel::setIterator(xd::IIterator* it)
 {
     if (m_it)
     {
@@ -433,13 +433,13 @@ void TangoGridModel::setIterator(xd::IIterator* it)
     }
 }
 
-xd::IIteratorPtr TangoGridModel::getIterator()
+xd::IIteratorPtr XdGridModel::getIterator()
 {
     return m_it;
 }
 
 
-bool TangoGridModel::isEofKnown()
+bool XdGridModel::isEofKnown()
 {
     if (m_it.isOk() && (m_it->getIteratorFlags() & xd::ifFastRowCount))
         return true;
@@ -447,7 +447,7 @@ bool TangoGridModel::isEofKnown()
     return (m_row_count == -1) ? false : true;
 }
 
-void TangoGridModel::discoverEof()
+void XdGridModel::discoverEof()
 {
     if (isEofKnown())
         return;
@@ -463,12 +463,12 @@ void TangoGridModel::discoverEof()
 }
 
 
-void TangoGridModel::setBooleanCheckbox(bool val)
+void XdGridModel::setBooleanCheckbox(bool val)
 {
     m_boolean_checkbox = val;
 }
 
-void TangoGridModel::setGroupBreakExpr(const wxString& new_val)
+void XdGridModel::setGroupBreakExpr(const wxString& new_val)
 {
     if (m_break_handle)
     {
@@ -494,18 +494,18 @@ void TangoGridModel::setGroupBreakExpr(const wxString& new_val)
 }
 
 
-wxString TangoGridModel::getGroupBreakExpr()
+wxString XdGridModel::getGroupBreakExpr()
 {
     return m_break_expr;
 }
 
 
-int TangoGridModel::getColumnCount()
+int XdGridModel::getColumnCount()
 {
     return m_columns.size();
 }
 
-kcl::IModelColumnPtr TangoGridModel::getColumnInfo(int idx)
+kcl::IModelColumnPtr XdGridModel::getColumnInfo(int idx)
 {
     if (idx < 0 || (size_t)idx >= m_columns.size())
         return xcm::null;
@@ -539,7 +539,7 @@ kcl::IModelColumnPtr TangoGridModel::getColumnInfo(int idx)
 }
 
 
-int TangoGridModel::getColumnIndex(const wxString& col_name)
+int XdGridModel::getColumnIndex(const wxString& col_name)
 {
     if (m_column_lookup.size() != m_columns.size())
     {
@@ -567,7 +567,7 @@ int TangoGridModel::getColumnIndex(const wxString& col_name)
 }
 
 
-bool TangoGridModel::getColumnCalculated(int model_col)
+bool XdGridModel::getColumnCalculated(int model_col)
 {
     if (model_col < 0 || (size_t)model_col >= m_columns.size())
         return false;
@@ -576,7 +576,7 @@ bool TangoGridModel::getColumnCalculated(int model_col)
 }
 
 
-void TangoGridModel::getColumnBitmap(int col,
+void XdGridModel::getColumnBitmap(int col,
                                      wxBitmap* bitmap,
                                      int* alignment)
 {
@@ -588,21 +588,21 @@ void TangoGridModel::getColumnBitmap(int col,
     }
 }
 
-void TangoGridModel::setColumnBitmap(int col,
+void XdGridModel::setColumnBitmap(int col,
                                      const wxBitmap& bitmap,
                                      int alignment)
 {
 }
 
 
-bool TangoGridModel::setColumnProperties(int col,
+bool XdGridModel::setColumnProperties(int col,
                                          kcl::CellProperties* cell_props)
 {
     // this model does not support this operation
     return false;
 }
 
-void TangoGridModel::getCellProperties(int row,
+void XdGridModel::getCellProperties(int row,
                                        int col,
                                        kcl::CellProperties* cell_props)
 {
@@ -690,7 +690,7 @@ void TangoGridModel::getCellProperties(int row,
 }
 
 
-bool TangoGridModel::setCellProperties(int row,
+bool XdGridModel::setCellProperties(int row,
                                        int col,
                                        kcl::CellProperties* cell_props)
 {
@@ -698,16 +698,16 @@ bool TangoGridModel::setCellProperties(int row,
     return false;
 }
 
-long TangoGridModel::getRowData(int row)
+long XdGridModel::getRowData(int row)
 {
     return 0;
 }
 
-void TangoGridModel::setRowData(int row, long data)
+void XdGridModel::setRowData(int row, long data)
 {
 }
 
-void TangoGridModel::getCellBitmap(int row,
+void XdGridModel::getCellBitmap(int row,
                                    int col,
                                    wxBitmap* bitmap,
                                    int* alignment)
@@ -715,7 +715,7 @@ void TangoGridModel::getCellBitmap(int row,
 }
 
 
-wxString TangoGridModel::getCellString(int row, int col)
+wxString XdGridModel::getCellString(int row, int col)
 {
     goRow(row);
 
@@ -796,7 +796,7 @@ wxString TangoGridModel::getCellString(int row, int col)
     return wxT("");
 }
 
-double TangoGridModel::getCellDouble(int row, int col)
+double XdGridModel::getCellDouble(int row, int col)
 {
     goRow(row);
 
@@ -808,7 +808,7 @@ double TangoGridModel::getCellDouble(int row, int col)
     return m_it->getDouble(m_columns[col].m_col_handle);
 }
 
-int TangoGridModel::getCellInteger(int row, int col)
+int XdGridModel::getCellInteger(int row, int col)
 {
     goRow(row);
 
@@ -820,7 +820,7 @@ int TangoGridModel::getCellInteger(int row, int col)
     return m_it->getInteger(m_columns[col].m_col_handle);
 }
 
-bool TangoGridModel::getCellBoolean(int row, int col)
+bool XdGridModel::getCellBoolean(int row, int col)
 {
     goRow(row);
 
@@ -832,7 +832,7 @@ bool TangoGridModel::getCellBoolean(int row, int col)
     return m_it->getBoolean(m_columns[col].m_col_handle);
 }
 
-xd::datetime_t TangoGridModel::getCellDateTime(int row, int col)
+xd::datetime_t XdGridModel::getCellDateTime(int row, int col)
 {
     goRow(row);
 
@@ -844,12 +844,12 @@ xd::datetime_t TangoGridModel::getCellDateTime(int row, int col)
     return m_it->getDateTime(m_columns[col].m_col_handle);
 }
 
-int TangoGridModel::getCellComboSel(int row, int col)
+int XdGridModel::getCellComboSel(int row, int col)
 {
     return -1;
 }
 
-bool TangoGridModel::isNull(int row, int col)
+bool XdGridModel::isNull(int row, int col)
 {
     goRow(row);
 
@@ -861,7 +861,7 @@ bool TangoGridModel::isNull(int row, int col)
     return m_it->isNull(m_columns[col].m_col_handle);
 }
 
-bool TangoGridModel::setCellBitmap(int row,
+bool XdGridModel::setCellBitmap(int row,
                                    int col,
                                    const wxBitmap& bitmap,
                                    int alignment)
@@ -871,33 +871,33 @@ bool TangoGridModel::setCellBitmap(int row,
     return false;
 }
 
-bool TangoGridModel::setCellString(int row, int col, const wxString& value)
+bool XdGridModel::setCellString(int row, int col, const wxString& value)
 {
     return false;
 }
 
-bool TangoGridModel::setCellDouble(int row, int col, double value)
+bool XdGridModel::setCellDouble(int row, int col, double value)
 {
     return false;
 }
 
-bool TangoGridModel::setCellInteger(int row, int col, int value)
+bool XdGridModel::setCellInteger(int row, int col, int value)
 {
     return false;
 }
 
-bool TangoGridModel::setCellBoolean(int row, int col, bool value)
+bool XdGridModel::setCellBoolean(int row, int col, bool value)
 {
     return false;
 }
 
-bool TangoGridModel::setCellComboSel(int row, int col, int sel)
+bool XdGridModel::setCellComboSel(int row, int col, int sel)
 {
     return false;
 }
 
 
-int TangoGridModel::createColumn(int position,
+int XdGridModel::createColumn(int position,
                                  const wxString& name,
                                  int type,
                                  int width,
@@ -907,7 +907,7 @@ int TangoGridModel::createColumn(int position,
     return -1;
 }
 
-bool TangoGridModel::modifyColumn(int position,
+bool XdGridModel::modifyColumn(int position,
                                   const wxString& str,
                                   int type,
                                   int width,
@@ -917,31 +917,31 @@ bool TangoGridModel::modifyColumn(int position,
     return false;
 }
 
-bool TangoGridModel::deleteColumn(int position)
+bool XdGridModel::deleteColumn(int position)
 {
     // this model does not support column deletion
     return false;
 }
 
-int TangoGridModel::insertRow(int position)
+int XdGridModel::insertRow(int position)
 {
     // this model does not yet support row insertion
     return -1;
 }
 
-bool TangoGridModel::deleteRow(int position)
+bool XdGridModel::deleteRow(int position)
 {
     // this model does not yet support row deletion
     return false;
 }
 
-bool TangoGridModel::deleteAllRows()
+bool XdGridModel::deleteAllRows()
 {
     // this model does not yet support row deletion
     return false;
 }
 
-int TangoGridModel::getRowCount()
+int XdGridModel::getRowCount()
 {
     // next line is for 2.2 only (it fixes
     // the one-record mark problem)
@@ -949,7 +949,7 @@ int TangoGridModel::getRowCount()
 
     if (m_it.isNull())
     {
-        wxFAIL_MSG(wxT("in TangoGridModel::getRowCount(), m_it is null"));
+        wxFAIL_MSG(wxT("in XdGridModel::getRowCount(), m_it is null"));
         return 0;
     }
     
@@ -977,7 +977,7 @@ int TangoGridModel::getRowCount()
 }
 
 
-bool TangoGridModel::isRowValid(int row)
+bool XdGridModel::isRowValid(int row)
 {
     goRow(row);
 
@@ -990,22 +990,22 @@ bool TangoGridModel::isRowValid(int row)
 }
 
 
-bool TangoGridModel::getGroupBreak()
+bool XdGridModel::getGroupBreak()
 {
     return m_break_result;
 }
 
-bool TangoGridModel::getGroupBreaksActive()
+bool XdGridModel::getGroupBreaksActive()
 {
     return (m_break_handle != 0 ? true : false);
 }
 
 
-void TangoGridModel::onCursorRowChanged()
+void XdGridModel::onCursorRowChanged()
 {
 }
 
-xd::rowid_t TangoGridModel::getRowId(int row)
+xd::rowid_t XdGridModel::getRowId(int row)
 {
     goRow(row);
 
@@ -1018,7 +1018,7 @@ xd::rowid_t TangoGridModel::getRowId(int row)
 }
 
 
-TangoGridCellData& TangoGridModel::getCacheCell(int row, int col)
+XdGridCellData& XdGridModel::getCacheCell(int row, int col)
 {
     if (!m_forward_only)
         return m_empty_cell;
@@ -1033,7 +1033,7 @@ TangoGridCellData& TangoGridModel::getCacheCell(int row, int col)
 }
 
 
-bool TangoGridModel::inCache(int row, int col)
+bool XdGridModel::inCache(int row, int col)
 {
     if (!m_forward_only)
         return false;
@@ -1044,18 +1044,18 @@ bool TangoGridModel::inCache(int row, int col)
     return true;
 }
 
-void TangoGridModel::clearCache()
+void XdGridModel::clearCache()
 {
     m_cache.clear();
 }
 
-void TangoGridModel::setCurrentRow(int row)
+void XdGridModel::setCurrentRow(int row)
 {
     m_current_row = row;
 }
 
 
-void TangoGridModel::setFindHighlight(const wxString& value,
+void XdGridModel::setFindHighlight(const wxString& value,
                                       bool match_case,
                                       bool whole_cell)
 {

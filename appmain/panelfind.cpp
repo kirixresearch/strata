@@ -16,7 +16,7 @@
 #include "exprbuilder.h"
 #include "appcontroller.h"
 #include "tabledoc.h"
-#include "tangogridmodel.h"
+#include "xdgridmodel.h"
 #include "jobfindinfiles.h"
 #include "dlgdatabasefile.h"
 

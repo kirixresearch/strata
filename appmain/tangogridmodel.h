@@ -9,22 +9,22 @@
  */
 
 
-#ifndef __APP_TANGOGRIDMODEL_H
-#define __APP_TANGOGRIDMODEL_H
+#ifndef __APP_XDGRIDMODEL_H
+#define __APP_XDGRIDMODEL_H
 
 
 #include <xd/xd.h>
 #include <wx/hashmap.h>
 
 
-xcm_interface ITangoGridModel;
-XCM_DECLARE_SMARTPTR(ITangoGridModel)
+xcm_interface IXdGridModel;
+XCM_DECLARE_SMARTPTR(IXdGridModel)
 
 
 
-xcm_interface ITangoGridModel : public xcm::IObject
+xcm_interface IXdGridModel : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("appmain.ITangoGridModel")
+    XCM_INTERFACE_NAME("appmain.IXdGridModel")
 
 public:
 
@@ -75,7 +75,7 @@ public:
 };
 
 
-class TangoGridCellData
+class XdGridCellData
 {
 public:
     wxString m_str_val;
@@ -89,7 +89,7 @@ public:
 class TangoGridRowData
 {
 public:
-    std::vector<TangoGridCellData> m_cols;
+    std::vector<XdGridCellData> m_cols;
     xd::rowid_t rowid;
 };
 
@@ -98,21 +98,20 @@ public:
 WX_DECLARE_STRING_HASH_MAP(int, ColLookupHashMap);
 
 
-class TangoGridModel : public kcl::IModel,
-                       public ITangoGridModel
+class XdGridModel : public kcl::IModel,
+                       public IXdGridModel
 {
-    XCM_CLASS_NAME("appmain.TangoGridModel")
-    XCM_BEGIN_INTERFACE_MAP(TangoGridModel)
+    XCM_CLASS_NAME("appmain.XdGridModel")
+    XCM_BEGIN_INTERFACE_MAP(XdGridModel)
         XCM_INTERFACE_ENTRY(kcl::IModel)
-        XCM_INTERFACE_ENTRY(ITangoGridModel)
+        XCM_INTERFACE_ENTRY(IXdGridModel)
     XCM_END_INTERFACE_MAP()
 
 public:
 
-    TangoGridModel();
-    virtual ~TangoGridModel();
+    XdGridModel();
+    virtual ~XdGridModel();
 
-    // -- ITangoGridModel --
     void setIterator(xd::IIterator* it);
     xd::IIteratorPtr getIterator();
 
@@ -194,7 +193,7 @@ private:
     void goRowFwdOnly(int row);
     void copyRowIntoCache(int row);
 
-    TangoGridCellData& getCacheCell(int row, int col);
+    XdGridCellData& getCacheCell(int row, int col);
     bool inCache(int row, int col);
 
 private:
@@ -225,7 +224,7 @@ private:
     bool m_find_whole_cell;
 
     std::vector<TangoGridRowData> m_cache;
-    TangoGridCellData m_empty_cell;
+    XdGridCellData m_empty_cell;
 };
 
 

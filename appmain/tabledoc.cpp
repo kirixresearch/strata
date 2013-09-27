@@ -14,7 +14,7 @@
 #include "appcontroller.h"
 #include "tabledoc.h"
 #include "tabledoc_private.h"
-#include "tangogridmodel.h"
+#include "xdgridmodel.h"
 #include "exprbuilder.h"
 #include "feedparser.h"
 #include "panelcolprops.h"
@@ -387,14 +387,14 @@ void TableDoc::setTemporaryModel(bool new_val)
 
 void TableDoc::createModel()
 {
-    TangoGridModel* model = new TangoGridModel;
+    XdGridModel* model = new XdGridModel;
     model->sigRequestRowColors.connect(this, &TableDoc::onRequestRowColors);
 
     // set the boolean checkbox preference for the grid
     bool bool_checkbox = g_app->getAppPreferences()->getBoolean(wxT("grid.boolean_checkbox"), true);
     model->setBooleanCheckbox(bool_checkbox);
 
-    m_grid_model = static_cast<ITangoGridModel*>(model);
+    m_grid_model = static_cast<IXdGridModel*>(model);
 }
 
 bool TableDoc::isExternalTable()
@@ -1175,7 +1175,7 @@ void TableDoc::onUpdateUI(wxUpdateUIEvent& evt)
     {
         case ID_Table_RemoveGroupBreak:
         {
-            ITangoGridModelPtr model = m_grid_model;
+            IXdGridModelPtr model = m_grid_model;
             if (model)
             {
                 evt.Enable(model->getGroupBreakExpr().length() > 0 ? true : false);
@@ -2453,7 +2453,7 @@ void TableDoc::reloadSettings(bool redraw)
     if (prefs->exists(wxT("grid.boolean_checkbox")))
     {
         kcl::IModelPtr model = m_grid->getModel();
-        ITangoGridModelPtr tg_model = model;
+        IXdGridModelPtr tg_model = model;
 
         if (tg_model)
         {
@@ -3596,7 +3596,7 @@ void TableDoc::onGridCellRightClick(kcl::GridEvent& event)
 
     // get column info from the grid
     kcl::IModelPtr model = m_grid->getModel();
-    ITangoGridModelPtr tango_grid_model = model;
+    IXdGridModelPtr tango_grid_model = model;
     if (!tango_grid_model)
         return;
         
@@ -3924,7 +3924,7 @@ void TableDoc::onGridColumnRightClick(kcl::GridEvent& evt)
     int selected_count = 0;
 
     kcl::IModelPtr model = m_grid->getModel();
-    ITangoGridModelPtr tmodel = model;
+    IXdGridModelPtr tmodel = model;
     
     int col_count = m_grid->getColumnCount();
     for (i = 0; i < col_count; ++i)
@@ -4349,7 +4349,7 @@ void TableDoc::updateChildWindows()
     // on the correct row
     if (m_grid)
     {
-        ITangoGridModelPtr grid_model = m_grid->getModel();
+        IXdGridModelPtr grid_model = m_grid->getModel();
         if (grid_model)
         {
             grid_model->getRowId(m_grid->getCursorRow());
@@ -4702,7 +4702,7 @@ void TableDoc::onGridBeginEdit(kcl::GridEvent& evt)
     int model_idx = m_grid->getColumnModelIdx(evt.GetColumn());
     if (model_idx != -1)
     {
-        ITangoGridModelPtr model = m_grid->getModel();
+        IXdGridModelPtr model = m_grid->getModel();
         if (model.isNull())
             return;
 
@@ -4723,7 +4723,7 @@ std::wstring TableDoc::getWhereExpressionForRow(int row)
         return L"";
 
     kcl::IModelPtr model = m_grid->getModel();
-    ITangoGridModelPtr tango_grid_model = model;
+    IXdGridModelPtr tango_grid_model = model;
     if (tango_grid_model.isNull())
         return L"";
 
@@ -4872,7 +4872,7 @@ void TableDoc::onGridEndEdit(kcl::GridEvent& evt)
     xd::IDatabasePtr db = g_app->getDatabase();
     kcl::IModelPtr model = m_grid->getModel();
 
-    ITangoGridModelPtr tango_grid_model = model;
+    IXdGridModelPtr tango_grid_model = model;
     if (tango_grid_model.isNull())
         return;
 
@@ -5544,7 +5544,7 @@ void TableDoc::onMakeStatic(wxCommandEvent& evt)
 
     // find out which columns are selected
     kcl::IModelPtr model = m_grid->getModel();
-    ITangoGridModelPtr tmodel = model;
+    IXdGridModelPtr tmodel = model;
 
     std::set<wxString> cols;
     
@@ -5803,7 +5803,7 @@ void TableDoc::deleteSelectedRows()
         return;
 
     // check for the model
-    ITangoGridModelPtr model;
+    IXdGridModelPtr model;
 
     model = m_grid->getModel();
     if (model.isNull())
@@ -7019,7 +7019,7 @@ bool TableDoc::findNextMatch(const wxString& _expr,
                              bool whole_cell)
 {
     // make sure the eof is known
-    ITangoGridModelPtr tango_grid_model = m_grid_model;
+    IXdGridModelPtr tango_grid_model = m_grid_model;
     if (!tango_grid_model->isEofKnown())
     {
         tango_grid_model->discoverEof();
@@ -8350,7 +8350,7 @@ void TableDoc::onGroup(wxCommandEvent& evt)
 
 void TableDoc::onSetBreakExpr(wxCommandEvent& evt)
 {
-    ITangoGridModelPtr model = m_grid->getModel();
+    IXdGridModelPtr model = m_grid->getModel();
     if (model.isNull())
         return;
 

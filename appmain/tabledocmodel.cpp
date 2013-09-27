@@ -228,7 +228,7 @@ protected:
 class TableDocMark :  public ITableDocMark,
                       public TableDocObjectBase
 {
-friend class TangoGridModel;
+friend class XdGridModel;
 
     XCM_CLASS_NAME("appmain.TableDocMark")
     XCM_BEGIN_INTERFACE_MAP(TableDocMark)

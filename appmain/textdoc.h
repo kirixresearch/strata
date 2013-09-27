@@ -14,7 +14,7 @@
 
 
 #include "textview.h"
-#include "tangogridmodel.h"
+#include "xdgridmodel.h"
 #include "panelcolumnlist.h"
 
 
@@ -188,7 +188,7 @@ private:
     
 
     xd::IIteratorPtr m_textdelimited_iter;
-    ITangoGridModelPtr m_grid_model;
+    IXdGridModelPtr m_grid_model;
     
     wxString m_path;
     wxString m_source_url;          // source url (can override what's displayed in the url bar)

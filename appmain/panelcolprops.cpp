@@ -11,7 +11,7 @@
 
 #include "appmain.h"
 #include "panelcolprops.h"
-#include "tangogridmodel.h"
+#include "xdgridmodel.h"
 #include "exprbuilder.h"
 #include "appcontroller.h"
 
@@ -785,7 +785,7 @@ void ColPropsPanel::refreshDynamicFields()
     if (!grid)
         return;
 
-    ITangoGridModelPtr grid_model = grid->getModel();
+    IXdGridModelPtr grid_model = grid->getModel();
     if (grid_model.isNull())
         return;
 

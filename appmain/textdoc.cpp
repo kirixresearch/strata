@@ -835,7 +835,7 @@ bool TextDoc::initTextDelimitedView()
     
     // set up the grid for the text-delimited set    
     m_textdelimited_iter = tset->createSourceIterator(NULL);
-    m_grid_model = new TangoGridModel;
+    m_grid_model = new XdGridModel;
     m_grid_model->setIterator(m_textdelimited_iter);
     
     m_grid->setModel(m_grid_model);
