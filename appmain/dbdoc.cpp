@@ -2921,7 +2921,7 @@ void DbDoc::onFsItemEndLabelEdit(IFsItemPtr item,
         }
          else
         {
-            wxString message = _("The rename operation could not execute.  The table may be locked.");
+            wxString message = _("The file or table cannot be renamed right now.  The file or table may be in use or otherwise locked.   Please try again later.");
             message += "\n";
             message += db->getErrorString();
             

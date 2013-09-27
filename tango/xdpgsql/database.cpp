@@ -705,6 +705,18 @@ bool PgsqlDatabase::renameFile(const std::wstring& path,
     tbl = pgsqlGetTablenameFromPath(path);
     newname = pgsqlGetTablenameFromPath(folder + L"/" + new_name);
 
+
+    sql = L"LOCK TABLE " + pgsqlQuoteIdentifierIfNecessary(tbl) + L" IN ACCESS EXCLUSIVE MODE NOWAIT";
+    res = PQexec(conn, kl::toUtf8(sql));
+    if (!res || PQresultStatus(res) != PGRES_COMMAND_OK)
+    {
+        PQexec(conn, "ROLLBACK");
+        closeConnection(conn);
+        return false;
+    }
+
+
+
     sql = L"ALTER TABLE %tbl% RENAME TO %newname%";
     kl::replaceStr(sql, L"%tbl%", pgsqlQuoteIdentifierIfNecessary(tbl));
     kl::replaceStr(sql, L"%newname%", pgsqlQuoteIdentifierIfNecessary(newname));
