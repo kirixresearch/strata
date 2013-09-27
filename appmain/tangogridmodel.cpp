@@ -272,17 +272,20 @@ void TangoGridModel::goRow(int row)
 
         if (m_break_handle && row-m_current_row == 1)
         {
-            check_break = true;
             unsigned char* b = (unsigned char*)m_it->getRawPtr(m_break_handle);
-            int break_len = m_it->getRawWidth(m_break_handle);
-
-            if (break_len > m_break_buf_len)
+            if (b)
             {
-                m_break_buf = (unsigned char*)realloc(m_break_buf, break_len);
-            }
+                check_break = true;
+                int break_len = m_it->getRawWidth(m_break_handle);
 
-            m_break_buf_len = break_len;
-            memcpy(m_break_buf, b, break_len);
+                if (break_len > m_break_buf_len)
+                {
+                    m_break_buf = (unsigned char*)realloc(m_break_buf, break_len);
+                }
+
+                m_break_buf_len = break_len;
+                memcpy(m_break_buf, b, break_len);
+            }
         }
 
         m_it->skip(row-m_current_row);

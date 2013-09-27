@@ -749,20 +749,14 @@ int PgsqlIterator::getRawWidth(tango::objhandle_t data_handle)
 
 const unsigned char* PgsqlIterator::getRawPtr(tango::objhandle_t data_handle)
 {
-/*
     PgsqlDataAccessInfo* dai = (PgsqlDataAccessInfo*)data_handle;
     if (dai == NULL)
-    {
         return NULL;
-    }
     
     if (dai->key_layout)
     {
         return dai->key_layout->getKey();
     }
-
-    return (const unsigned char*)dai->str_val;
-*/
 
     return NULL;
 }
