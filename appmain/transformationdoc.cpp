@@ -144,9 +144,9 @@ static ExpressionLookupInfo expr_lookup_arr[] =
 
 // utility functions
 
-static const int format2comboIdx(int tango_type, int format_idx)
+static const int format2comboIdx(int xd_type, int format_idx)
 {
-    switch (tango_type)
+    switch (xd_type)
     {
         case xd::typeCharacter:
         case xd::typeWideCharacter:
@@ -171,9 +171,9 @@ static const int format2comboIdx(int tango_type, int format_idx)
     return -1;
 }
 
-static const int combo2formatIdx(int tango_type, int combo_idx)
+static const int combo2formatIdx(int xd_type, int combo_idx)
 {
-    switch (tango_type)
+    switch (xd_type)
     {
         case xd::typeCharacter:
         case xd::typeWideCharacter:
@@ -1058,16 +1058,16 @@ void TransformationDoc::updateRowWidthAndScale(int row)
     if (m_last_selected_fieldtype == -1)
         return;
     
-    int last_tango_type = choice2xd(m_last_selected_fieldtype);
-    int tango_type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
+    int last_xd_type = choice2xd(m_last_selected_fieldtype);
+    int xd_type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
     
     TransformField* f = (TransformField*)(m_grid->getRowData(row));
     
-    if (tango_type == xd::typeCharacter ||
-        tango_type == xd::typeWideCharacter)
+    if (xd_type == xd::typeCharacter ||
+        xd_type == xd::typeWideCharacter)
     {
-        if (last_tango_type == xd::typeCharacter ||
-            last_tango_type == xd::typeWideCharacter)
+        if (last_xd_type == xd::typeCharacter ||
+            last_xd_type == xd::typeWideCharacter)
         {
             return;
         }
@@ -1081,7 +1081,7 @@ void TransformationDoc::updateRowWidthAndScale(int row)
         }
     }
     
-    if (tango_type == xd::typeNumeric)
+    if (xd_type == xd::typeNumeric)
     {
         // if the width of the field was set to something above
         // the max numeric width, cap it off
@@ -1127,14 +1127,14 @@ void TransformationDoc::updateStatusBar()
 
 wxString TransformationDoc::createDestinationExpression(int row)
 {
-    int tango_type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
+    int xd_type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
     int format_comboidx = m_grid->getCellComboSel(row, colFieldFormula);
     wxString source_name = m_grid->getCellString(row, colSourceName);
     wxString quoted_source_name = xd::quoteIdentifier(g_app->getDatabase(), towstr(source_name));
     
     // translate from the combobox index and tango type
     // to the expression format index
-    int expr_format = combo2formatIdx(tango_type, format_comboidx);
+    int expr_format = combo2formatIdx(xd_type, format_comboidx);
     wxString retval;
     
     // we couldn't find the expression index for the lookup below, so
@@ -1160,7 +1160,7 @@ wxString TransformationDoc::createDestinationExpression(int row)
 
 bool TransformationDoc::getInfoFromDestinationExpression(
                                              const wxString& expression,
-                                             int tango_type,
+                                             int xd_type,
                                              wxString* source_name,
                                              int* format_comboidx)
 {
@@ -1207,7 +1207,7 @@ bool TransformationDoc::getInfoFromDestinationExpression(
             source_name->Trim(false);
             
             // fill out the format combobox's index
-            *format_comboidx = format2comboIdx(tango_type,
+            *format_comboidx = format2comboIdx(xd_type,
                                                expr_lookup_arr[i].format);
             return true;
         }
@@ -2186,9 +2186,9 @@ void TransformationDoc::onGridEditChange(kcl::GridEvent& evt)
     }
      else if (col == colFieldFormula)
     {
-        int tango_type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
+        int xd_type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
         int combo_idx  = evt.GetExtraLong();
-        int format_idx = combo2formatIdx(tango_type, combo_idx);
+        int format_idx = combo2formatIdx(xd_type, combo_idx);
         
         if (format_idx == charfmtOther ||
             format_idx == numfmtOther  ||

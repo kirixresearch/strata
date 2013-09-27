@@ -249,7 +249,7 @@ bool OracleIterator::init(const std::wstring& query)
         field->name = kl::towstring((char*)col_name);
         field->oracle_type = col_type;
         field->oracle_charset = col_charset;
-        field->tango_type = oracle2tangoType(field->oracle_type, field->oracle_charset);
+        field->xd_type = oracle2tangoType(field->oracle_type, field->oracle_charset);
         field->width = col_width;
         field->precision = col_precision;
         field->scale = col_scale;
@@ -259,13 +259,13 @@ bool OracleIterator::init(const std::wstring& query)
         field->str_len = 0;
         m_fields.push_back(field);
 
-        //printf("%s - type %d tango_type %d width %d\n", col_name, col_type, field->m_xd_type, col_width);
+        //printf("%s - type %d xd_type %d width %d\n", col_name, col_type, field->m_xd_type, col_width);
         
         ub2 csid_ucs2 = OCI_UCS2ID;
         ub2 csid_iso8859_1 = OCINlsCharSetNameToId(m_env, (const oratext*)"WE8ISO8859P1");
         ub1 csform_nchar = SQLCS_NCHAR;
 
-        switch (field->tango_type)
+        switch (field->xd_type)
         {
             case xd::typeWideCharacter:
                 m_database->checkerr(m_err, OCIDefineByPos(m_stmt,
@@ -487,7 +487,7 @@ void OracleIterator::saveRowToCache()
             continue;
         }
 
-        switch ((*it)->tango_type)
+        switch ((*it)->xd_type)
         {
             case xd::typeWideCharacter:
                 m_cache.appendColumnData((unsigned char*)((*it)->wstr_val),
@@ -569,7 +569,7 @@ void OracleIterator::readRowFromCache(xd::rowpos_t row)
             (*it)->indicator = 0;
         }
         
-        switch ((*it)->tango_type)
+        switch ((*it)->xd_type)
         {
             case xd::typeWideCharacter:
                 memcpy((*it)->wstr_val, data, data_size);
@@ -796,8 +796,8 @@ void OracleIterator::refreshStructure()
             continue;
         }
   
-        m_fields[i]->tango_type = col->getType();
-        m_fields[i]->oracle_type = tango2oracleType(m_fields[i]->tango_type);
+        m_fields[i]->xd_type = col->getType();
+        m_fields[i]->oracle_type = tango2oracleType(m_fields[i]->xd_type);
         m_fields[i]->width = col->getWidth();
         m_fields[i]->scale = col->getScale();
         m_fields[i]->expr_text = col->getExpression();
@@ -835,8 +835,8 @@ void OracleIterator::refreshStructure()
             // add new calc field
             OracleDataAccessInfo* dai = new OracleDataAccessInfo;
             dai->name = col->getName();
-            dai->tango_type = col->getType();
-            dai->oracle_type = tango2oracleType(dai->tango_type);
+            dai->xd_type = col->getType();
+            dai->oracle_type = tango2oracleType(dai->xd_type);
             dai->width = col->getWidth();
             dai->scale = col->getScale();
             dai->ordinal = m_fields.size();
@@ -904,8 +904,8 @@ bool OracleIterator::modifyStructure(xd::IStructure* struct_config,
 
                 if (it->m_params->getType() != -1)
                 {
-                    (*it2)->tango_type = it->m_params->getType();
-                    (*it2)->oracle_type = tango2oracleType((*it2)->tango_type);
+                    (*it2)->xd_type = it->m_params->getType();
+                    (*it2)->oracle_type = tango2oracleType((*it2)->xd_type);
                 }
 
                 if (it->m_params->getWidth() != -1)
@@ -939,8 +939,8 @@ bool OracleIterator::modifyStructure(xd::IStructure* struct_config,
         {
             OracleDataAccessInfo* dai = new OracleDataAccessInfo;
             dai->name = it->m_params->getName();
-            dai->tango_type = it->m_params->getType();
-            dai->oracle_type = tango2oracleType(dai->tango_type);
+            dai->xd_type = it->m_params->getType();
+            dai->oracle_type = tango2oracleType(dai->xd_type);
             dai->width = it->m_params->getWidth();
             dai->scale = it->m_params->getScale();
             dai->ordinal = m_fields.size();
@@ -965,8 +965,8 @@ bool OracleIterator::modifyStructure(xd::IStructure* struct_config,
         {
             OracleDataAccessInfo* dai = new OracleDataAccessInfo;
             dai->name = it->m_params->getName();
-            dai->tango_type = it->m_params->getType();
-            dai->oracle_type = tango2oracleType(dai->tango_type);
+            dai->xd_type = it->m_params->getType();
+            dai->oracle_type = tango2oracleType(dai->xd_type);
             dai->width = it->m_params->getWidth();
             dai->scale = it->m_params->getScale();
             dai->ordinal = m_fields.size();
@@ -996,7 +996,7 @@ xd::objhandle_t OracleIterator::getHandle(const std::wstring& expr)
         OracleDataAccessInfo* dai = new OracleDataAccessInfo;
         dai->expr = NULL;
         dai->expr_text = expr;
-        dai->tango_type = xd::typeBinary;
+        dai->xd_type = xd::typeBinary;
         dai->key_layout = new KeyLayout;
 
         if (!dai->key_layout->setKeyExpr(static_cast<xd::IIterator*>(this),
@@ -1023,8 +1023,8 @@ xd::objhandle_t OracleIterator::getHandle(const std::wstring& expr)
 
     OracleDataAccessInfo* dai = new OracleDataAccessInfo;
     dai->expr = parser;
-    dai->tango_type = kscript2tangoType(parser->getType());
-    dai->oracle_type = tango2oracleType(dai->tango_type);
+    dai->xd_type = kscript2tangoType(parser->getType());
+    dai->oracle_type = tango2oracleType(dai->xd_type);
     m_exprs.push_back(dai);
 
     return (xd::objhandle_t)dai;
@@ -1079,7 +1079,7 @@ int OracleIterator::getType(xd::objhandle_t data_handle)
     OracleDataAccessInfo* dai = (OracleDataAccessInfo*)data_handle;
     if (!dai)
         return 0;
-    return dai->tango_type;
+    return dai->xd_type;
 }
 
 int OracleIterator::getRawWidth(xd::objhandle_t data_handle)
@@ -1129,12 +1129,12 @@ const std::string& OracleIterator::getString(xd::objhandle_t data_handle)
         return empty_string;
 
 
-    if (dai->tango_type == xd::typeWideCharacter)
+    if (dai->xd_type == xd::typeWideCharacter)
     {
         dai->str_result = kl::tostring(getWideString(data_handle));
         return dai->str_result;
     }
-     else if (dai->tango_type == xd::typeCharacter)
+     else if (dai->xd_type == xd::typeCharacter)
     {
         dai->str_result.assign(dai->str_val, dai->str_len);
         return dai->str_result;
@@ -1155,12 +1155,12 @@ const std::wstring& OracleIterator::getWideString(xd::objhandle_t data_handle)
     if (!dai->expr && dai->indicator)
         return empty_wstring;
 
-    if (dai->tango_type == xd::typeCharacter)
+    if (dai->xd_type == xd::typeCharacter)
     {
         dai->wstr_result = kl::towstring(getString(data_handle));
         return dai->wstr_result;
     }
-     else if (dai->tango_type == xd::typeWideCharacter)
+     else if (dai->xd_type == xd::typeWideCharacter)
     {
         if (dai->expr)
         {
@@ -1193,7 +1193,7 @@ xd::datetime_t OracleIterator::getDateTime(xd::objhandle_t data_handle)
         dt = edt.date;
         dt <<= 32;
         
-        if (dai->tango_type == xd::typeDateTime)
+        if (dai->xd_type == xd::typeDateTime)
             dt |= edt.time;
 
         return dt;
@@ -1313,7 +1313,7 @@ bool OracleIterator::updateCacheRow(xd::rowid_t rowid,
         if (info->null)
             m_cache.updateValue(m_row_pos, column, NULL, 0);
         
-        switch (dai->tango_type)
+        switch (dai->xd_type)
         {
             case xd::typeCharacter:
                 m_cache.updateValue(m_row_pos,

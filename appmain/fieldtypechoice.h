@@ -33,9 +33,9 @@ enum FieldTypeChoiceIndex
 // -- utility functions --
 
 
-static inline wxString xd2text(int tango_type)
+static inline wxString xd2text(int xd_type)
 {
-    switch (tango_type)
+    switch (xd_type)
     {
         default:
         case xd::typeUndefined:      return _("Undefined");
@@ -54,9 +54,9 @@ static inline wxString xd2text(int tango_type)
     return wxT("");
 }
 
-static inline int xd2choice(int tango_type)
+static inline int xd2choice(int xd_type)
 {
-    switch(tango_type)
+    switch(xd_type)
     {
         case xd::typeCharacter:      return comboCharacter;
         case xd::typeWideCharacter:  return comboWideCharacter;
@@ -107,7 +107,7 @@ public:
     ~FieldTypeChoice();
 
     int getTangoType();
-    void setTangoChoice(int tango_type);
+    void setTangoChoice(int xd_type);
 
 private:
 

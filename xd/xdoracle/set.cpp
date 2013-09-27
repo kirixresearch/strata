@@ -487,14 +487,14 @@ bool OracleRowInserter::putString(xd::objhandle_t column_handle,
     int len = value.length();
     unsigned char* pos = m_buf+(m_cur_buf_row*m_row_width)+f->m_buf_offset;
 
-    if (len <= f->m_tango_width)
+    if (len <= f->m_xd_width)
     {
         memcpy(pos, value.c_str(), len+1);
     }
      else
     {
-        memcpy(pos, value.c_str(), f->m_tango_width);
-        pos[f->m_tango_width] = 0;
+        memcpy(pos, value.c_str(), f->m_xd_width);
+        pos[f->m_xd_width] = 0;
     }
 
     return true;
@@ -513,17 +513,17 @@ bool OracleRowInserter::putWideString(xd::objhandle_t column_handle,
     int len = value.length();
     unsigned char* pos = m_buf+(m_cur_buf_row*m_row_width)+f->m_buf_offset;
 
-    if (len <= f->m_tango_width)
+    if (len <= f->m_xd_width)
     {
         memcpy(pos, value.c_str(), (len+1)*sizeof(wchar_t));
     }
      else
     {
-        memcpy(pos, value.c_str(), f->m_tango_width * sizeof(wchar_t));
+        memcpy(pos, value.c_str(), f->m_xd_width * sizeof(wchar_t));
         
         // because the buffer is ucs2, we need a word-lengthed zero terminator
-        pos[f->m_tango_width] = 0;
-        pos[f->m_tango_width+1] = 0;
+        pos[f->m_xd_width] = 0;
+        pos[f->m_xd_width+1] = 0;
     }
 
     return true;
@@ -689,19 +689,19 @@ bool OracleRowInserter::startInsert(const std::wstring& col_list)
         field->m_buf_offset = buf_offset;
 
         field->m_xd_type = col_info->getType();
-        field->m_tango_width = col_info->getWidth();
+        field->m_xd_width = col_info->getWidth();
         field->m_tango_scale = col_info->getScale();
 
         switch (field->m_xd_type)
         {
             case xd::typeCharacter:
                 field->m_oracle_type = SQLT_STR;
-                field->m_oracle_width = (field->m_tango_width+1)*sizeof(char);
+                field->m_oracle_width = (field->m_xd_width+1)*sizeof(char);
                 break;
 
             case xd::typeWideCharacter:
                 field->m_oracle_type = SQLT_STR;
-                field->m_oracle_width = (field->m_tango_width+1)*(sizeof(wchar_t));
+                field->m_oracle_width = (field->m_xd_width+1)*(sizeof(wchar_t));
                 break;
 
             case xd::typeInteger:

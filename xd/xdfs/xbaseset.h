@@ -20,9 +20,9 @@
 
 // utility functions
 
-inline char xd2xbaseType(int tango_type)
+inline char xd2xbaseType(int xd_type)
 {
-    switch (tango_type)
+    switch (xd_type)
     {
         case xd::typeCharacter:      return 'C';
         case xd::typeWideCharacter:  return 'C';

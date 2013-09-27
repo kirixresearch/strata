@@ -931,19 +931,19 @@ void StructureDoc::updateRowWidthAndScale(int row)
     if (m_last_selected_fieldtype == -1)
         return;
     
-    int last_tango_type = choice2xd(m_last_selected_fieldtype);
-    int tango_type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
+    int last_xd_type = choice2xd(m_last_selected_fieldtype);
+    int xd_type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
     
     StructureField* f = (StructureField*)(m_grid->getRowData(row));
 
 
-    if (tango_type == xd::typeCharacter || 
-        tango_type == xd::typeWideCharacter)
+    if (xd_type == xd::typeCharacter || 
+        xd_type == xd::typeWideCharacter)
     {
         // if we're moving from one character type to another, leave
         // everything as the user set it    
-        if (last_tango_type == xd::typeWideCharacter ||
-            last_tango_type == xd::typeCharacter)
+        if (last_xd_type == xd::typeWideCharacter ||
+            last_xd_type == xd::typeCharacter)
         {
             return;
         }
@@ -959,7 +959,7 @@ void StructureDoc::updateRowWidthAndScale(int row)
 
     // if the original type is a numeric type and we're coming from
     // a different type, restore the original width
-    if (f->type == xd::typeNumeric && last_tango_type != xd::typeNumeric)
+    if (f->type == xd::typeNumeric && last_xd_type != xd::typeNumeric)
     {
         m_grid->setCellInteger(row, colFieldWidth, f->width);
         return;
@@ -967,8 +967,8 @@ void StructureDoc::updateRowWidthAndScale(int row)
 
     // handle default widths when we're converting to a
     // character type
-    if (tango_type == xd::typeCharacter ||
-        tango_type == xd::typeWideCharacter)
+    if (xd_type == xd::typeCharacter ||
+        xd_type == xd::typeWideCharacter)
     {
         // if we're converting from a date type, allow enough room 
         // for the date to be represented as a string
@@ -1018,7 +1018,7 @@ void StructureDoc::updateRowWidthAndScale(int row)
         }
     }
 
-    if (tango_type == xd::typeNumeric)
+    if (xd_type == xd::typeNumeric)
     {
         // if we're converting from a double type, allow enough room
         // for the double to fit

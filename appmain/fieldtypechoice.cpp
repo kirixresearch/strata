@@ -68,9 +68,9 @@ int FieldTypeChoice::getTangoType()
     return retval;
 }
 
-void FieldTypeChoice::setTangoChoice(int tango_type)
+void FieldTypeChoice::setTangoChoice(int xd_type)
 {
-    int idx = xd2choice(tango_type);
+    int idx = xd2choice(xd_type);
     SetSelection(idx);
 }
 

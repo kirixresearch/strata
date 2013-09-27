@@ -29,7 +29,7 @@ struct OracleInsertData
     int m_oracle_scale;
 
     int m_xd_type;
-    int m_tango_width;
+    int m_xd_width;
     int m_tango_scale;
 
     // -- bind variables --

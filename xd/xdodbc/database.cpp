@@ -434,9 +434,9 @@ std::wstring createOdbcFieldString(const std::wstring& name,
 }
 
 
-SQLSMALLINT tango2sqlType(int tango_type)
+SQLSMALLINT tango2sqlType(int xd_type)
 {
-    switch (tango_type)
+    switch (xd_type)
     {
         case xd::typeCharacter:
             return SQL_VARCHAR;
@@ -458,9 +458,9 @@ SQLSMALLINT tango2sqlType(int tango_type)
     return 0;
 }
 
-SQLSMALLINT tango2sqlCType(int tango_type)
+SQLSMALLINT tango2sqlCType(int xd_type)
 {
-    switch (tango_type)
+    switch (xd_type)
     {
         case xd::typeCharacter:
             return SQL_C_CHAR;

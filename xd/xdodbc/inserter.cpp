@@ -288,7 +288,7 @@ bool OdbcRowInserter::startInsert(const std::wstring& col_list)
 
     std::wstring field_list;
     std::wstring values_list;
-    int tango_type;
+    int xd_type;
 
     m_fields.clear();
 
@@ -308,13 +308,13 @@ bool OdbcRowInserter::startInsert(const std::wstring& col_list)
         field_list += quote_closechar;
         values_list += L"?";
 
-        tango_type = col_info->getType();
+        xd_type = col_info->getType();
 
         OdbcInsertFieldData* field = new OdbcInsertFieldData;
         field->m_name = col_info->getName();
-        field->m_xd_type = tango_type;
-        field->m_sql_c_type = tango2sqlCType(tango_type);
-        field->m_sql_type = tango2sqlType(tango_type);
+        field->m_xd_type = xd_type;
+        field->m_sql_c_type = tango2sqlCType(xd_type);
+        field->m_sql_type = tango2sqlType(xd_type);
         field->m_width = col_info->getWidth();
         field->m_scale = col_info->getScale();
         field->m_idx = i+1;

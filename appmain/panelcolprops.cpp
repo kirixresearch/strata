@@ -52,9 +52,9 @@ static int dlgtype2tangotype(int dlg_type)
     return xd::typeInvalid;
 }
 
-static int tangotype2dlgtype(int tango_type)
+static int tangotype2dlgtype(int xd_type)
 {
-    switch (tango_type)
+    switch (xd_type)
     {
         case xd::typeUndefined:     return 0;
         case xd::typeInvalid:       return 0;

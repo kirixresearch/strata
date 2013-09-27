@@ -75,7 +75,7 @@ xd::IStructurePtr SqlServerSet::getStructure()
     TDS_INT res;
     TDS_INT res_type;
     TDSCOLUMN* colinfo;
-    int tango_type;
+    int xd_type;
     int sql_type;
     int col_count = 0;
 
@@ -101,9 +101,9 @@ xd::IStructurePtr SqlServerSet::getStructure()
     {
         colinfo = tds->res_info->columns[i];
         sql_type = colinfo->column_type;
-        tango_type = tds2tangoType(colinfo);
+        xd_type = tds2tangoType(colinfo);
 
-        if (tango_type == xd::typeInvalid)
+        if (xd_type == xd::typeInvalid)
         {
             // -- certain complex types are not supported --
             continue;
@@ -111,9 +111,9 @@ xd::IStructurePtr SqlServerSet::getStructure()
 
         xd::IColumnInfoPtr col = s->createColumn();
         col->setName(kl::towstring(colinfo->column_name));
-        col->setType(tango_type);
+        col->setType(xd_type);
 
-        if (tango_type == xd::typeNumeric)
+        if (xd_type == xd::typeNumeric)
         {
             col->setWidth(colinfo->column_prec);
         }
@@ -570,7 +570,7 @@ bool SqlServerRowInserter::startInsert(const std::wstring& col_list)
         SqlServerInsertData d;
         d.m_col_name = col_info->getName();
         d.m_xd_type = col_info->getType();
-        d.m_tango_width = col_info->getWidth();
+        d.m_xd_width = col_info->getWidth();
         d.m_tango_scale = col_info->getScale();
         d.m_text = "NULL";
 

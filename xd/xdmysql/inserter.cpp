@@ -314,7 +314,7 @@ bool MysqlRowInserter::startInsert(const std::wstring& col_list)
         MySqlInsertData d;
         d.m_col_name = col_info->getName();
         d.m_xd_type = col_info->getType();
-        d.m_tango_width = col_info->getWidth();
+        d.m_xd_width = col_info->getWidth();
         d.m_tango_scale = col_info->getScale();
         d.m_text = L"NULL";
         d.m_specified = false;

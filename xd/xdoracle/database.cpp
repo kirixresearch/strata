@@ -224,9 +224,9 @@ int oracle2tangoType(int oracle_type, int oracle_charset)
     return xd::typeInvalid;
 }
 
-int tango2oracleType(int tango_type)
+int tango2oracleType(int xd_type)
 {
-    switch (tango_type)
+    switch (xd_type)
     {
         default:
         case xd::typeCharacter:
@@ -262,9 +262,9 @@ xd::IColumnInfoPtr createColInfo(const std::wstring& col_name,
                                     int scale,
                                     const std::wstring& expr)
 {
-    int tango_type = oracle2tangoType(oracle_type, oracle_charset);
+    int xd_type = oracle2tangoType(oracle_type, oracle_charset);
 
-    if (tango_type == xd::typeNumeric)
+    if (xd_type == xd::typeNumeric)
     {
         width = precision;
 
@@ -282,26 +282,26 @@ xd::IColumnInfoPtr createColInfo(const std::wstring& col_name,
                 width = 18;
         }
     }
-     else if (tango_type == xd::typeDateTime)
+     else if (xd_type == xd::typeDateTime)
     {
         width = 8;
         scale = 0;
     }
-     else if (tango_type == xd::typeDouble)
+     else if (xd_type == xd::typeDouble)
     {
         width = 8;
     }
-     else if (tango_type == xd::typeDate)
+     else if (xd_type == xd::typeDate)
     {
         width = 4;
         scale = 0;
     }
-     else if (tango_type == xd::typeInteger)
+     else if (xd_type == xd::typeInteger)
     {
         width = 4;
         scale = 0;
     }
-     else if (tango_type == xd::typeBoolean)
+     else if (xd_type == xd::typeBoolean)
     {
         width = 1;
         scale = 0;
@@ -311,7 +311,7 @@ xd::IColumnInfoPtr createColInfo(const std::wstring& col_name,
     ColumnInfo* c = new ColumnInfo;
 
     c->setName(col_name);
-    c->setType(tango_type);
+    c->setType(xd_type);
     c->setWidth(width);
     c->setScale(scale);
 

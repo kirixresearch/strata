@@ -75,9 +75,9 @@
 const int native_read_ahead_size = 500;             // still used by row inserter
 
 
-char convertType_tango2native(int tango_type)
+char convertType_tango2native(int xd_type)
 {
-    switch (tango_type)
+    switch (xd_type)
     {
         case xd::typeCharacter:      return 'C';
         case xd::typeWideCharacter:  return 'W';

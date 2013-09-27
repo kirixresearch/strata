@@ -760,9 +760,9 @@ bool BaseIterator::initStructure()
 
             delete p;
 
-            int tango_type = kscript2tangoType(expr_type);
-            if (tango_type == xd::typeInvalid ||
-                tango_type == xd::typeUndefined)
+            int xd_type = kscript2tangoType(expr_type);
+            if (xd_type == xd::typeInvalid ||
+                xd_type == xd::typeUndefined)
             {
                 delete s;
                 return false;
@@ -771,7 +771,7 @@ bool BaseIterator::initStructure()
             int width;
             int scale = 0;
 
-            switch (tango_type)
+            switch (xd_type)
             {
                 case xd::typeNumeric:
                     width = 18;
@@ -798,7 +798,7 @@ bool BaseIterator::initStructure()
             col = m_set_structure->getColumnInfo(dequote_expr);
             if (col)
             {
-                tango_type = col->getType();
+                xd_type = col->getType();
                 width = col->getWidth();
                 scale = col->getScale();
             }
@@ -807,7 +807,7 @@ bool BaseIterator::initStructure()
 
             ColumnInfo* c = new ColumnInfo;
             c->setName(colname);
-            c->setType(tango_type);
+            c->setType(xd_type);
             c->setWidth(width);
             c->setScale(scale);
             c->setExpression(expr);

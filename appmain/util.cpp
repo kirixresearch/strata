@@ -729,9 +729,9 @@ wxString makeValidObjectName(const wxString& str,
     return work_str;
 }
 
-wxString getDbColumnTypeText(int tango_type)
+wxString getDbColumnTypeText(int xd_type)
 {
-    switch (tango_type)
+    switch (xd_type)
     {
         default:
         case xd::typeUndefined:      return _("Undefined");

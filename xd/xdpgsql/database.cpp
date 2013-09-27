@@ -1581,7 +1581,7 @@ xd::IStructurePtr PgsqlDatabase::describeTable(const std::wstring& path)
 
     std::wstring colname;
     int pg_type;
-    int tango_type;
+    int xd_type;
     int type_mod;
     int col_width;
     int col_scale;
@@ -1592,25 +1592,25 @@ xd::IStructurePtr PgsqlDatabase::describeTable(const std::wstring& path)
         colname = kl::towstring(PQgetvalue(res, i, 0));
         pg_type = atoi(PQgetvalue(res, i, 1));
         type_mod = atoi(PQgetvalue(res, i, 2));
-        tango_type = pgsqlToTangoType(pg_type);
+        xd_type = pgsqlToTangoType(pg_type);
         
-        if (tango_type == xd::typeNumeric || tango_type == xd::typeDouble)
+        if (xd_type == xd::typeNumeric || xd_type == xd::typeDouble)
         {
             type_mod -= 4;
             col_width = (type_mod >> 16);
             col_scale = (type_mod & 0xffff);
         }
-         else if (tango_type == xd::typeCharacter || tango_type == xd::typeWideCharacter)
+         else if (xd_type == xd::typeCharacter || xd_type == xd::typeWideCharacter)
         {
             col_width = type_mod - 4;
             col_scale = 0;
         }
-         else if (tango_type == xd::typeDateTime)
+         else if (xd_type == xd::typeDateTime)
         {
             col_width = 8;
             col_scale = 0;
         }
-         else if (tango_type == xd::typeInteger || tango_type == xd::typeDate)
+         else if (xd_type == xd::typeInteger || xd_type == xd::typeDate)
         {
             col_width = 4;
             col_scale = 0;

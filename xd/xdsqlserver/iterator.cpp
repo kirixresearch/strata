@@ -225,9 +225,9 @@ bool SqlServerIterator::init(const std::wstring& query)
         colinfo = m_tds->res_info->columns[i];
 
         int sql_type = colinfo->column_type;
-        int tango_type = tds2tangoType(colinfo);
+        int xd_type = tds2tangoType(colinfo);
 
-        if (tango_type == xd::typeInvalid)
+        if (xd_type == xd::typeInvalid)
         {
             // -- certain complex types are not supported --
             continue;
@@ -235,11 +235,11 @@ bool SqlServerIterator::init(const std::wstring& query)
 
         SqlServerDataAccessInfo* dai = new SqlServerDataAccessInfo;
         dai->m_name = kl::towstring(colinfo->column_name);
-        dai->m_type = tango_type;
+        dai->m_type = xd_type;
         dai->m_width = colinfo->column_size;
         dai->m_ordinal = i;
 
-        if (tango_type == xd::typeDouble)
+        if (xd_type == xd::typeDouble)
         {
             dai->m_scale = 4;
         }

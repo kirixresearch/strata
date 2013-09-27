@@ -31,7 +31,7 @@ class BitmapFile;
 class BitmapFileScroller;
 
 
-char convertType_tango2native(int tango_type);
+char convertType_tango2native(int xd_type);
 int convertType_native2tango(int native_type);
 
 

@@ -345,9 +345,9 @@ bool FixedLengthTextIterator::init(xd::IDatabasePtr db,
 
             int expr_type = p->getType();
 
-            int tango_type = kscript2tangoType(expr_type);
-            if (tango_type == xd::typeInvalid ||
-                tango_type == xd::typeUndefined)
+            int xd_type = kscript2tangoType(expr_type);
+            if (xd_type == xd::typeInvalid ||
+                xd_type == xd::typeUndefined)
             {
                 delete p;
                 return false;
@@ -356,7 +356,7 @@ bool FixedLengthTextIterator::init(xd::IDatabasePtr db,
             int width;
             int scale = 0;
 
-            switch (tango_type)
+            switch (xd_type)
             {
                 case xd::typeNumeric:
                     width = 18;
@@ -378,7 +378,7 @@ bool FixedLengthTextIterator::init(xd::IDatabasePtr db,
             col = structure->getColumnInfo(expr);
             if (col)
             {
-                tango_type = col->getType();
+                xd_type = col->getType();
                 width = col->getWidth();
                 scale = col->getScale();
             }
@@ -387,7 +387,7 @@ bool FixedLengthTextIterator::init(xd::IDatabasePtr db,
             FixedLengthTextDataAccessInfo* dai = new FixedLengthTextDataAccessInfo;
             dai->iter = this;
             dai->name = colname;
-            dai->type = tango_type;
+            dai->type = xd_type;
             dai->width = width;
             dai->scale = scale;
             dai->expr_text = expr;

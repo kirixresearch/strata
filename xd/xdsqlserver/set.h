@@ -61,7 +61,7 @@ public:
     std::wstring m_col_name;
 
     int m_xd_type;
-    int m_tango_width;
+    int m_xd_width;
     int m_tango_scale;
 
     std::string m_text;

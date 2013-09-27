@@ -223,7 +223,7 @@ wxString makeValidObjectName(
                xd::IDatabasePtr db = xcm::null);
 
 // returns a localized name for a given type
-wxString getDbColumnTypeText(int tango_type);
+wxString getDbColumnTypeText(int xd_type);
 
 // this function determines if the specified path is an internal mount,
 // and if it is, converts the string that was passed in to the remote

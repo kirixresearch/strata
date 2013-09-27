@@ -20,7 +20,7 @@ struct SlDataAccessInfo
 {
     std::wstring name;
     int sqlite_type;
-    int tango_type;
+    int xd_type;
     int width;
     int scale;
     int col_ordinal;

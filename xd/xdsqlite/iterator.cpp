@@ -134,10 +134,10 @@ bool SlIterator::init(const std::wstring& _query)
 
         switch (dai.sqlite_type)
         {
-            case SQLITE_INTEGER: dai.tango_type = xd::typeInteger; break;
-            case SQLITE_FLOAT:   dai.tango_type = xd::typeDouble; break;
-            case SQLITE_BLOB:    dai.tango_type = xd::typeBinary; break;
-            case SQLITE_TEXT:    dai.tango_type = xd::typeCharacter; break;
+            case SQLITE_INTEGER: dai.xd_type = xd::typeInteger; break;
+            case SQLITE_FLOAT:   dai.xd_type = xd::typeDouble; break;
+            case SQLITE_BLOB:    dai.xd_type = xd::typeBinary; break;
+            case SQLITE_TEXT:    dai.xd_type = xd::typeCharacter; break;
         }
 
         dai.width = 30;
@@ -149,7 +149,7 @@ bool SlIterator::init(const std::wstring& _query)
             xd::IColumnInfoPtr colinfo = m_table_structure->getColumnInfo(dai.name);
             if (colinfo.isOk())
             {
-                dai.tango_type = colinfo->getType();
+                dai.xd_type = colinfo->getType();
                 dai.width = colinfo->getWidth();
                 dai.scale = colinfo->getScale();
             }
@@ -295,7 +295,7 @@ xd::IStructurePtr SlIterator::getStructure()
     {
         ColumnInfo* col = new ColumnInfo;
         col->setName(it->name);
-        col->setType(it->tango_type);
+        col->setType(it->xd_type);
         col->setWidth(it->width);
         col->setScale(it->scale);
         col->setColumnOrdinal(it->col_ordinal);
@@ -350,7 +350,7 @@ xd::IColumnInfoPtr SlIterator::getInfo(xd::objhandle_t data_handle)
 
     ColumnInfo* col = new ColumnInfo;
     col->setName(dai->name);
-    col->setType(dai->tango_type);
+    col->setType(dai->xd_type);
     col->setWidth(dai->width);
     col->setScale(dai->scale);
     col->setColumnOrdinal(dai->col_ordinal);
@@ -361,7 +361,7 @@ xd::IColumnInfoPtr SlIterator::getInfo(xd::objhandle_t data_handle)
 int SlIterator::getType(xd::objhandle_t data_handle)
 {
     SlDataAccessInfo* dai = (SlDataAccessInfo*)data_handle;
-    return dai->tango_type;
+    return dai->xd_type;
 }
 
 int SlIterator::getRawWidth(xd::objhandle_t data_handle)

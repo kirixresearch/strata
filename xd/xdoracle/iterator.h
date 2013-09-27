@@ -25,7 +25,7 @@ struct OracleDataAccessInfo
     std::wstring name;
     int oracle_charset;
     int oracle_type;
-    int tango_type;
+    int xd_type;
     int width;
     int precision;
     int scale;

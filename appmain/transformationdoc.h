@@ -203,7 +203,7 @@ private:
     wxString getFieldExpression(int row);
     wxString createDestinationExpression(int row);
     bool getInfoFromDestinationExpression(const wxString& expression,
-                                          int tango_type,
+                                          int xd_type,
                                           wxString* source_name,
                                           int* format_comboidx);
 

@@ -21,9 +21,9 @@ enum
 
 // utility functions
 
-wxString xd2text(int tango_type)
+wxString xd2text(int xd_type)
 {
-    switch (tango_type)
+    switch (xd_type)
     {
         default:
         case xd::typeUndefined:      return _("Undefined");
