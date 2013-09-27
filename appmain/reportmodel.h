@@ -141,7 +141,7 @@ private:
 private:
 
     // model
-    XdModel* m_tango_model;
+    XdModel* m_xd_model;
 
     // cell expression
     wxString m_expr;

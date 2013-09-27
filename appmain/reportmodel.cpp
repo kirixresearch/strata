@@ -19,9 +19,9 @@ void func_pagenumber(kscript::ExprEnv* env,
                      kscript::Value* retval)
 {
     CellExpression* cellexpr = (CellExpression*)param;
-    XdModel* tango_model = cellexpr->getModel();
+    XdModel* xd_model = cellexpr->getModel();
     
-    if (tango_model == NULL)
+    if (xd_model == NULL)
     {
         retval->setInteger(0);
         return;
@@ -29,7 +29,7 @@ void func_pagenumber(kscript::ExprEnv* env,
 
     // get the property
     kcanvas::PropertyValue value;
-    tango_model->getProperty(PROP_REPORT_PAGE_NUMBER, value);
+    xd_model->getProperty(PROP_REPORT_PAGE_NUMBER, value);
     int result = value.getInteger();
 
     // set the return value
@@ -42,9 +42,9 @@ void func_pagecount(kscript::ExprEnv* env,
                     kscript::Value* retval)
 {
     CellExpression* cellexpr = (CellExpression*)param;
-    XdModel* tango_model = cellexpr->getModel();
+    XdModel* xd_model = cellexpr->getModel();
     
-    if (tango_model == NULL)
+    if (xd_model == NULL)
     {
         retval->setInteger(0);
         return;
@@ -52,7 +52,7 @@ void func_pagecount(kscript::ExprEnv* env,
 
     // get the property
     kcanvas::PropertyValue value;
-    tango_model->getProperty(PROP_REPORT_PAGE_COUNT, value);
+    xd_model->getProperty(PROP_REPORT_PAGE_COUNT, value);
     int result = value.getInteger();
 
     // set the return value
@@ -65,9 +65,9 @@ void func_currentdate(kscript::ExprEnv* env,
                       kscript::Value* retval)
 {
     CellExpression* cellexpr = (CellExpression*)param;
-    XdModel* tango_model = cellexpr->getModel();
+    XdModel* xd_model = cellexpr->getModel();
     
-    if (tango_model == NULL)
+    if (xd_model == NULL)
     {
         retval->setString(wxEmptyString);
         return;
@@ -75,7 +75,7 @@ void func_currentdate(kscript::ExprEnv* env,
 
     // get the property
     kcanvas::PropertyValue value;
-    tango_model->getProperty(PROP_REPORT_CURRENT_DATE, value);
+    xd_model->getProperty(PROP_REPORT_CURRENT_DATE, value);
     wxString result = value.getString();
 
     // set the return value
@@ -88,9 +88,9 @@ void func_datasource(kscript::ExprEnv* env,
                      kscript::Value* retval)
 {
     CellExpression* cellexpr = (CellExpression*)param;
-    XdModel* tango_model = cellexpr->getModel();
+    XdModel* xd_model = cellexpr->getModel();
     
-    if (tango_model == NULL)
+    if (xd_model == NULL)
     {
         retval->setString(wxEmptyString);
         return;
@@ -98,7 +98,7 @@ void func_datasource(kscript::ExprEnv* env,
 
     // get the property
     kcanvas::PropertyValue value;
-    tango_model->getProperty(PROP_REPORT_DATA_SOURCE, value);
+    xd_model->getProperty(PROP_REPORT_DATA_SOURCE, value);
     wxString result = value.getString();
 
     // set the return value
@@ -264,7 +264,7 @@ public:
 CellExpression::CellExpression()
 {
     // model
-    m_tango_model = NULL;
+    m_xd_model = NULL;
 
     // expression parser and return value
     m_expr_parser = NULL;
@@ -282,7 +282,7 @@ CellExpression::CellExpression()
 CellExpression::CellExpression(const CellExpression& c)
 {
     // model
-    m_tango_model = c.m_tango_model;
+    m_xd_model = c.m_xd_model;
 
     // expression parser and return value
     m_expr_parser = c.m_expr_parser;
@@ -310,12 +310,12 @@ void CellExpression::setParseHook(kscript::ExprParseHookFunc func, void* param)
 
 void CellExpression::setModel(XdModel* model)
 {
-    m_tango_model = model;
+    m_xd_model = model;
 }
 
 XdModel* CellExpression::getModel()
 {
-    return m_tango_model;
+    return m_xd_model;
 }
 
 void CellExpression::setExpression(const wxString& expr)
@@ -1072,9 +1072,9 @@ static bool func_tangomodel_parse_hook(kscript::ExprParseHookInfo& hook_info)
     if (hook_info.element_type == kscript::ExprParseHookInfo::typeFunction)
     {  
         CellExpression* cellexpr = (CellExpression*)hook_info.hook_param;
-        XdModel* tango_model = cellexpr->getModel();
+        XdModel* xd_model = cellexpr->getModel();
         
-        if (tango_model == NULL)
+        if (xd_model == NULL)
             return false;
 
         int len = hook_info.expr_text.length();
@@ -1121,7 +1121,7 @@ static bool func_tangomodel_parse_hook(kscript::ExprParseHookInfo& hook_info)
         
         if (agg_func != funcNone && 
             agg_func != funcCount &&
-            !tango_model->getColumnInfo(expr, &idx, &type, &width, &scale))
+            !xd_model->getColumnInfo(expr, &idx, &type, &width, &scale))
         {
             return false;
         }
@@ -1133,7 +1133,7 @@ static bool func_tangomodel_parse_hook(kscript::ExprParseHookInfo& hook_info)
 
         // create a field expression element for actually
         // calculating the results
-        FieldExprElement* e = new FieldExprElement(tango_model, expr, agg_func);
+        FieldExprElement* e = new FieldExprElement(xd_model, expr, agg_func);
         hook_info.res_element = static_cast<kscript::ExprElement*>(e);
         return true;
     }
@@ -1152,9 +1152,9 @@ static bool func_tangomodel_parse_hook(kscript::ExprParseHookInfo& hook_info)
 
 
         CellExpression* cellexpr = (CellExpression*)hook_info.hook_param;
-        XdModel* tango_model = cellexpr->getModel();
+        XdModel* xd_model = cellexpr->getModel();
 
-        if (tango_model == NULL)
+        if (xd_model == NULL)
             return false;
 
         int len = hook_info.expr_text.length();
@@ -1163,7 +1163,7 @@ static bool func_tangomodel_parse_hook(kscript::ExprParseHookInfo& hook_info)
 
         // if we don't have a valid field, we're done
         int idx, type, width, scale;
-        if (!tango_model->getColumnInfo(hook_info.expr_text, &idx, &type, &width, &scale))
+        if (!xd_model->getColumnInfo(hook_info.expr_text, &idx, &type, &width, &scale))
             return false;
 
         // track the field type and scale so we can automatically
@@ -1173,7 +1173,7 @@ static bool func_tangomodel_parse_hook(kscript::ExprParseHookInfo& hook_info)
 
         // create a field expression element for actually
         // calculating the results
-        FieldExprElement* e = new FieldExprElement(tango_model, hook_info.expr_text, funcNone);
+        FieldExprElement* e = new FieldExprElement(xd_model, hook_info.expr_text, funcNone);
         hook_info.res_element = static_cast<kscript::ExprElement*>(e);
         return true;
     }
