@@ -328,7 +328,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\xdutil.h" />
+    <ClInclude Include="..\include\xd\util.h" />
+    <ClInclude Include="..\include\xd\xd.h" />
     <ClInclude Include="block.h" />
     <ClInclude Include="cmnbaseiterator.h" />
     <ClInclude Include="cmnbaseset.h" />
@@ -357,7 +358,6 @@
     <ClInclude Include="util.h" />
     <ClInclude Include="xdcommon.h" />
     <ClInclude Include="modversion.h" />
-    <ClInclude Include="..\include\tango.h" />
     <ClInclude Include="tango_private.h" />
   </ItemGroup>
   <ItemGroup>
