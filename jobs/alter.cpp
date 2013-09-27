@@ -244,18 +244,18 @@ int AlterJob::runJob()
     }
 
 
-    xd::IJobPtr tango_job = m_db->createJob();
-    setXdJob(tango_job);
+    xd::IJobPtr xd_job = m_db->createJob();
+    setXdJob(xd_job);
 
-    bool res = m_db->modifyStructure(input_path, structure, tango_job);
+    bool res = m_db->modifyStructure(input_path, structure, xd_job);
 
-    if (tango_job->getCancelled())
+    if (xd_job->getCancelled())
     {
         m_job_info->setState(jobStateCancelling);
         return 0;
     }
 
-    if (tango_job->getStatus() == xd::jobFailed || !res)
+    if (xd_job->getStatus() == xd::jobFailed || !res)
     {
         m_job_info->setState(jobStateFailed);
 

@@ -128,12 +128,12 @@ int GroupJob::runJob()
     jobs::vectorToDelimitedString(column_values, column_params);
 
 
-    xd::IJobPtr tango_job;
+    xd::IJobPtr xd_job;
 
     if (!unique_records)
     {
-        tango_job = m_db->createJob();
-        setXdJob(tango_job);
+        xd_job = m_db->createJob();
+        setXdJob(xd_job);
 
         xd::GroupQueryParams info;
         info.input = input_path;
@@ -143,15 +143,15 @@ int GroupJob::runJob()
         info.where = where_params;
         info.having = having_params;
 
-        bool res = m_db->groupQuery(&info, tango_job.p);
+        bool res = m_db->groupQuery(&info, xd_job.p);
 
-        if (!res || tango_job->getCancelled())
+        if (!res || xd_job->getCancelled())
         {
             m_job_info->setState(jobStateCancelling);
             return 0;
         }
 
-        if (tango_job->getStatus() == xd::jobFailed)
+        if (xd_job->getStatus() == xd::jobFailed)
         {
             m_job_info->setState(jobStateFailed);
 
@@ -171,8 +171,8 @@ int GroupJob::runJob()
         // it's optimized for instances where "where" and "having" are
         // specified and the expected output size is small
 
-        tango_job = m_db->createJob();
-        setXdJob(tango_job);
+        xd_job = m_db->createJob();
+        setXdJob(xd_job);
 
         xd::GroupQueryParams info1;
         info1.input = input_path;
@@ -181,16 +181,16 @@ int GroupJob::runJob()
         info1.columns = L"[DETAIL]";
         info1.where = where_params;
         info1.having = having_params;
-        bool res1 = m_db->groupQuery(&info1, tango_job.p);
+        bool res1 = m_db->groupQuery(&info1, xd_job.p);
         m_to_delete.push_back(info1.output);
 
-        if (tango_job->getCancelled())
+        if (xd_job->getCancelled())
         {
             m_job_info->setState(jobStateCancelling);
             return 0;
         }
 
-        if (!res1 || tango_job->getStatus() == xd::jobFailed)
+        if (!res1 || xd_job->getStatus() == xd::jobFailed)
         {
             m_job_info->setState(jobStateFailed);
 
@@ -207,15 +207,15 @@ int GroupJob::runJob()
         std::wstring sql = L"SELECT DISTINCT * INTO " + output2 + L" FROM " + info1.output;
         m_to_delete.push_back(output2);
 
-        tango_job = m_db->createJob();
-        setXdJob(tango_job);
+        xd_job = m_db->createJob();
+        setXdJob(xd_job);
 
         xcm::IObjectPtr result;
-        m_db->execute(sql, 0, result, tango_job.p);
+        m_db->execute(sql, 0, result, xd_job.p);
 
         xd::IIteratorPtr iter = result;
 
-        if (tango_job->getCancelled())
+        if (xd_job->getCancelled())
         {
             m_job_info->setState(jobStateCancelling);
             return 0;
@@ -230,8 +230,8 @@ int GroupJob::runJob()
 
 
 
-        tango_job = m_db->createJob();
-        setXdJob(tango_job);
+        xd_job = m_db->createJob();
+        setXdJob(xd_job);
 
         xd::GroupQueryParams info3;
         info3.input = output2;
@@ -242,15 +242,15 @@ int GroupJob::runJob()
         info3.having = having_params;
         m_to_delete.push_back(info1.output);
 
-        bool res3 =  m_db->groupQuery(&info1, tango_job.p);
+        bool res3 =  m_db->groupQuery(&info1, xd_job.p);
 
-        if (tango_job->getCancelled())
+        if (xd_job->getCancelled())
         {
             m_job_info->setState(jobStateCancelling);
             return 0;
         }
 
-        if (!res3 || tango_job->getStatus() == xd::jobFailed)
+        if (!res3 || xd_job->getStatus() == xd::jobFailed)
         {
             m_job_info->setState(jobStateFailed);
 

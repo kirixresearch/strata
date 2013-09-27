@@ -206,19 +206,19 @@ int LoadJob::runJob()
         info.append = true;
         
         // TODO: add copy loop here
-        xd::IJobPtr tango_job = destination_db->createJob();
-        setXdJob(tango_job);
+        xd::IJobPtr xd_job = destination_db->createJob();
+        setXdJob(xd_job);
 
-        destination_db->copyData(&info, tango_job);
+        destination_db->copyData(&info, xd_job);
 
         
-        if (tango_job->getCancelled())
+        if (xd_job->getCancelled())
         {
             m_job_info->setState(jobStateCancelling);
             return 0;
         }
 
-        if (tango_job->getStatus() == xd::jobFailed)
+        if (xd_job->getStatus() == xd::jobFailed)
         {
             m_job_info->setState(jobStateFailed);
 

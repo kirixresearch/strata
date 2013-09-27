@@ -119,7 +119,7 @@ int DivideJob::runJob()
     m_job_info->setMaxCount(max_row_count);
 
 
-    xd::IJobPtr tango_job;
+    xd::IJobPtr xd_job;
 
     iter->goFirst();
 
@@ -144,14 +144,14 @@ int DivideJob::runJob()
                 else
             rows_left = 0;
 
-        tango_job = m_db->createJob();
-        setXdJob(tango_job);
+        xd_job = m_db->createJob();
+        setXdJob(xd_job);
 
         xd::CopyParams info;
         info.iter_input = iter;
         info.output = output_path;
         info.limit = (rows_left >= output_row_count) ? output_row_count : rows_left;
-        m_db->copyData(&info, tango_job);
+        m_db->copyData(&info, xd_job);
 
         if (isCancelling())
             break;

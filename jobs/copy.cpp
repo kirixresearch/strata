@@ -78,8 +78,8 @@ int CopyJob::runJob()
     }    
 
 
-    xd::IJobPtr tango_job = m_db->createJob();
-    setXdJob(tango_job);
+    xd::IJobPtr xd_job = m_db->createJob();
+    setXdJob(xd_job);
 
     // get the parameters
     kl::JsonNode params_node;
@@ -103,7 +103,7 @@ int CopyJob::runJob()
     if (params_node.childExists("where"))
         info.where = params_node["where"].getString();
 
-    m_db->copyData(&info, tango_job.p);
+    m_db->copyData(&info, xd_job.p);
 
     return 0;
 }

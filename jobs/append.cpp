@@ -68,7 +68,7 @@ int AppendJob::runJob()
         return 0;
     }
 
-    xd::IJobPtr tango_job;
+    xd::IJobPtr xd_job;
     xd::IIteratorPtr source_iter;
 
     long long max_count = 0;
@@ -206,23 +206,23 @@ int AppendJob::runJob()
 
     for (it = tables.begin(); it != tables.end(); ++it)
     {
-        tango_job = m_db->createJob();
-        setXdJob(tango_job);
+        xd_job = m_db->createJob();
+        setXdJob(xd_job);
 
         xd::CopyParams info;
         info.input = *it;
         info.output = output_path;
         info.append = true;
-        m_db->copyData(&info, tango_job.p);
+        m_db->copyData(&info, xd_job.p);
 
-        if (tango_job->getStatus() == xd::jobFailed)
+        if (xd_job->getStatus() == xd::jobFailed)
         {
             m_job_info->setState(jobStateFailed);
             m_job_info->setError(jobserrInsufficientDiskSpace, L"");
             break;
         }
 
-        if (tango_job->getCancelled())
+        if (xd_job->getCancelled())
         {
             if (params_node["mode"].getString() == L"overwrite")
                 m_db->deleteFile(output_path);

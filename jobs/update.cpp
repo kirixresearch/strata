@@ -134,20 +134,20 @@ int UpdateJob::runJob()
         update_sql += (L" WHERE " + where_param);
 
 
-    xd::IJobPtr tango_job = m_db->createJob();
-    setXdJob(tango_job);
+    xd::IJobPtr xd_job = m_db->createJob();
+    setXdJob(xd_job);
 
     xcm::IObjectPtr result;
-    m_db->execute(update_sql, xd::sqlPassThrough, result, tango_job);
+    m_db->execute(update_sql, xd::sqlPassThrough, result, xd_job);
 
 
-    if (tango_job->getCancelled())
+    if (xd_job->getCancelled())
     {
         m_job_info->setState(jobStateCancelling);
         return 0;
     }
 
-    if (tango_job->getStatus() == xd::jobFailed)
+    if (xd_job->getStatus() == xd::jobFailed)
     {
         m_job_info->setState(jobStateFailed);
 

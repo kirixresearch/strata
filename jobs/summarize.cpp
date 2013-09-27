@@ -179,9 +179,9 @@ int SummarizeJob::runJob()
 
     std::wstring group_output_set_path = L"xtmp_" + kl::getUniqueString();
 
-    xd::IJobPtr tango_job;
-    tango_job = m_db->createJob();
-    setXdJob(tango_job);
+    xd::IJobPtr xd_job;
+    xd_job = m_db->createJob();
+    setXdJob(xd_job);
 
     std::wstring where_param;
     if (params_node.childExists("where"))
@@ -193,17 +193,17 @@ int SummarizeJob::runJob()
     info.columns = column_param,
     info.where = where_param;
 
-    bool res = m_db->groupQuery(&info, tango_job.p);
+    bool res = m_db->groupQuery(&info, xd_job.p);
 
     m_to_delete.push_back(info.output);
 
-    if (!res || tango_job->getCancelled())
+    if (!res || xd_job->getCancelled())
     {
         m_job_info->setState(jobStateCancelling);
         return 0;
     }
 
-    if (tango_job->getStatus() == xd::jobFailed)
+    if (xd_job->getStatus() == xd::jobFailed)
     {
         m_job_info->setState(jobStateFailed);
         // TODO: error code?
