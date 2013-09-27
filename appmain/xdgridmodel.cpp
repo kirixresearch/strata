@@ -336,7 +336,7 @@ void XdGridModel::refresh()
         xd::IColumnInfoPtr spCol;
         for (i = 0; i < col_count; i++)
         {
-            TangoGridColumnInfo& gci = m_columns[i];
+            XdGridColumnInfo& gci = m_columns[i];
 
             gci.m_col_name = structure->getColumnName(i);
             gci.m_col_handle = m_it->getHandle(towstr(gci.m_col_name));
@@ -392,7 +392,7 @@ void XdGridModel::setIterator(xd::IIterator* it)
             m_break_handle = 0;
         }
 
-        std::vector<TangoGridColumnInfo>::iterator col_it;
+        std::vector<XdGridColumnInfo>::iterator col_it;
         for (col_it = m_columns.begin(); col_it != m_columns.end(); ++col_it)
         {
             m_it->releaseHandle(col_it->m_col_handle);
@@ -510,7 +510,7 @@ kcl::IModelColumnPtr XdGridModel::getColumnInfo(int idx)
     if (idx < 0 || (size_t)idx >= m_columns.size())
         return xcm::null;
     
-    TangoGridColumnInfo& gci = m_columns[idx];
+    XdGridColumnInfo& gci = m_columns[idx];
     if (gci.m_model_col)
         return gci.m_model_col;
         
@@ -545,7 +545,7 @@ int XdGridModel::getColumnIndex(const wxString& col_name)
     {
         // create a column lookup cache
         int idx = 0;
-        std::vector<TangoGridColumnInfo>::iterator col_it;
+        std::vector<XdGridColumnInfo>::iterator col_it;
         for (col_it = m_columns.begin(); col_it != m_columns.end(); ++col_it)
         {
             wxString s = col_it->m_col_name;

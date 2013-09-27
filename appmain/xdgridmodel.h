@@ -61,7 +61,7 @@ public:
 };
 
 
-class TangoGridColumnInfo
+class XdGridColumnInfo
 {
 public:
     wxString m_col_name;
@@ -201,7 +201,7 @@ private:
     xd::IIteratorPtr m_it;
     bool m_forward_only;
     int m_fwdonly_row;
-    std::vector<TangoGridColumnInfo> m_columns;
+    std::vector<XdGridColumnInfo> m_columns;
     ColLookupHashMap m_column_lookup;
     kcl::Grid* m_grid;
     xd::rowid_t m_cursor_rowid;
