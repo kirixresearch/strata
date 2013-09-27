@@ -21,7 +21,7 @@ enum
 
 // utility functions
 
-wxString tango2text(int tango_type)
+wxString xd2text(int tango_type)
 {
     switch (tango_type)
     {
@@ -42,7 +42,7 @@ wxString tango2text(int tango_type)
     return wxT("");
 }
 
-int text2tango(const wxString& text)
+int text2xd(const wxString& text)
 {
     if (text.CmpNoCase(_("Invalid")) == 0)
         return xd::typeInvalid;
@@ -381,7 +381,7 @@ void FieldListControl::populate()
         }
 
         if (m_grid->getColumnViewIdx(ColTypeIdx) != -1)
-            m_grid->setCellString(idx, ColTypeIdx, tango2text(it->type));
+            m_grid->setCellString(idx, ColTypeIdx, xd2text(it->type));
 
         if (m_grid->getColumnViewIdx(ColWidthIdx) != -1)
             m_grid->setCellInteger(idx, ColWidthIdx, it->width);
@@ -415,7 +415,7 @@ void FieldListControl::populate()
         }
 
         if (m_grid->getColumnViewIdx(ColTypeIdx) != -1)
-            m_grid->setCellString(idx, ColTypeIdx, tango2text(it->type));
+            m_grid->setCellString(idx, ColTypeIdx, xd2text(it->type));
 
         if (m_grid->getColumnViewIdx(ColWidthIdx) != -1)
             m_grid->setCellInteger(idx, ColWidthIdx, it->width);

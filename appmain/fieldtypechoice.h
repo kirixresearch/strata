@@ -33,7 +33,7 @@ enum FieldTypeChoiceIndex
 // -- utility functions --
 
 
-static inline wxString tango2text(int tango_type)
+static inline wxString xd2text(int tango_type)
 {
     switch (tango_type)
     {
