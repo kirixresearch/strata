@@ -161,7 +161,7 @@ bool PgsqlIterator::init(PGconn* conn, PGresult* res)
     std::wstring col_name;
     col_name.reserve(80);
     int col_pg_type;
-    int col_tango_type;
+    int col_xd_type;
     int col_width = 20;
     int col_scale = 0;
     int fmod;
@@ -174,17 +174,17 @@ bool PgsqlIterator::init(PGconn* conn, PGresult* res)
     {
         col_name = kl::towstring(PQfname(m_res, i));
         col_pg_type = PQftype(m_res, i);
-        col_tango_type = pgsqlToTangoType(col_pg_type);
+        col_xd_type = pgsqlToTangoType(col_pg_type);
         col_width = 255;
         fmod = PQfmod(m_res, i);
 
-        if (col_tango_type == xd::typeNumeric || col_tango_type == xd::typeDouble)
+        if (col_xd_type == xd::typeNumeric || col_xd_type == xd::typeDouble)
         {
             fmod -= 4;
             col_width = (fmod >> 16);
             col_scale = (fmod & 0xffff);
         }
-         else if (col_tango_type == xd::typeCharacter || col_tango_type == xd::typeWideCharacter)
+         else if (col_xd_type == xd::typeCharacter || col_xd_type == xd::typeWideCharacter)
         {
             col_width = fmod - 4;
             col_scale = 0;
@@ -194,7 +194,7 @@ bool PgsqlIterator::init(PGconn* conn, PGresult* res)
         PgsqlDataAccessInfo* field = new PgsqlDataAccessInfo;
         field->name = col_name;
         field->pg_type = col_pg_type;
-        field->type = col_tango_type;
+        field->type = col_xd_type;
         field->width = col_width;
         field->scale = col_scale;
         field->ordinal = i;

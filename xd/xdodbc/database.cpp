@@ -560,16 +560,16 @@ xd::IColumnInfoPtr createColInfo(int db_type,
                                     const std::wstring& col_expr,
                                     int datetime_sub)
 {
-    int col_tango_type = sql2tangoType(col_odbc_type);
+    int col_xd_type = sql2tangoType(col_odbc_type);
     col_scale = sql2tangoScale(col_odbc_type, col_scale);
 
-    if (col_tango_type == xd::typeInvalid)
+    if (col_xd_type == xd::typeInvalid)
     {
         return xcm::null;
     }
 
-    if (col_tango_type == xd::typeCharacter ||
-        col_tango_type == xd::typeWideCharacter)
+    if (col_xd_type == xd::typeCharacter ||
+        col_xd_type == xd::typeWideCharacter)
     {
         // mysql allows a zero-length character field,
         // which is not allowed presently in tango
@@ -578,12 +578,12 @@ xd::IColumnInfoPtr createColInfo(int db_type,
             col_width = 1;
     }
 
-    if (col_tango_type == xd::typeDate &&
+    if (col_xd_type == xd::typeDate &&
         datetime_sub != -1)
     {
         if (datetime_sub == SQL_CODE_TIMESTAMP)
         {
-            col_tango_type = xd::typeDateTime;
+            col_xd_type = xd::typeDateTime;
         }
     }
 
@@ -606,8 +606,8 @@ xd::IColumnInfoPtr createColInfo(int db_type,
 
     if (db_type == xd::dbtypeExcel &&
         col_scale == 0 &&
-        (col_tango_type == xd::typeDouble ||
-         col_tango_type == xd::typeNumeric))
+        (col_xd_type == xd::typeDouble ||
+         col_xd_type == xd::typeNumeric))
     {
         // excel odbc drivers always return 0 for column scale, so we
         // will set it to a more acceptable value
@@ -615,39 +615,39 @@ xd::IColumnInfoPtr createColInfo(int db_type,
     }
 
     if (db_type == xd::dbtypeAccess &&
-        col_tango_type == xd::typeCharacter)
+        col_xd_type == xd::typeCharacter)
     {
         // access always uses Wide Characters
-        col_tango_type = xd::typeWideCharacter;
+        col_xd_type = xd::typeWideCharacter;
     }
 
     // handle column width
-    if (col_tango_type == xd::typeNumeric)
+    if (col_xd_type == xd::typeNumeric)
     {
         if (col_width > 18 || col_width < 1)
             col_width = 18;
     }
 
-    if (col_tango_type == xd::typeDateTime ||
-        col_tango_type == xd::typeDouble)
+    if (col_xd_type == xd::typeDateTime ||
+        col_xd_type == xd::typeDouble)
     {
         col_width = 8;
     }
 
-    if (col_tango_type == xd::typeDate ||
-        col_tango_type == xd::typeInteger)
+    if (col_xd_type == xd::typeDate ||
+        col_xd_type == xd::typeInteger)
     {
         col_width = 4;
     }
 
-    if (col_tango_type == xd::typeBoolean)
+    if (col_xd_type == xd::typeBoolean)
     {
         col_width = 1;
     }
 
     // handle column scale
-    if (col_tango_type != xd::typeNumeric &&
-        col_tango_type != xd::typeDouble)
+    if (col_xd_type != xd::typeNumeric &&
+        col_xd_type != xd::typeDouble)
     {
         col_scale = 0;
     }
@@ -660,7 +660,7 @@ xd::IColumnInfoPtr createColInfo(int db_type,
     }
 
     // for numeric types, make sure the width is at least 2 greater than the scale
-    if (col_tango_type == xd::typeNumeric)
+    if (col_xd_type == xd::typeNumeric)
     {
         if (col_width < col_scale + 2)
             col_width = col_scale + 2;
@@ -670,7 +670,7 @@ xd::IColumnInfoPtr createColInfo(int db_type,
     col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
 
     col->setName(col_name);
-    col->setType(col_tango_type);
+    col->setType(col_xd_type);
     col->setWidth(col_width);
     col->setScale(col_scale);
     col->setExpression(col_expr);

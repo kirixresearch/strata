@@ -168,7 +168,7 @@ bool OdbcIterator::init(const std::wstring& query)
     SQLULEN col_width;
     SQLSMALLINT col_scale;
     SQLSMALLINT col_nullable;
-    int col_tango_type;
+    int col_xd_type;
 
     SQLSMALLINT i;
     SQLSMALLINT col_count;
@@ -197,9 +197,9 @@ bool OdbcIterator::init(const std::wstring& query)
         }
 
         col_name = sql2wstring(col_buf);
-        col_tango_type = sql2tangoType(col_type);
+        col_xd_type = sql2tangoType(col_type);
         
-        if (col_tango_type == xd::typeInvalid)
+        if (col_xd_type == xd::typeInvalid)
             continue;
 
 
@@ -222,8 +222,8 @@ bool OdbcIterator::init(const std::wstring& query)
 
         if (m_db_type == xd::dbtypeExcel &&
             col_scale == 0 &&
-            (col_tango_type == xd::typeDouble ||
-             col_tango_type == xd::typeNumeric))
+            (col_xd_type == xd::typeDouble ||
+             col_xd_type == xd::typeNumeric))
         {
             // excel odbc drivers always return 0 for column scale,
             // so we will set it to a more acceptable value
@@ -231,20 +231,20 @@ bool OdbcIterator::init(const std::wstring& query)
         }
 
         if (m_db_type == xd::dbtypeAccess &&
-            col_tango_type == xd::typeCharacter)
+            col_xd_type == xd::typeCharacter)
         {
             // access always uses Wide Characters
-            col_tango_type = xd::typeWideCharacter;
+            col_xd_type = xd::typeWideCharacter;
         }
 
         // handle column scale
-        if (col_tango_type != xd::typeNumeric &&
-            col_tango_type != xd::typeDouble)
+        if (col_xd_type != xd::typeNumeric &&
+            col_xd_type != xd::typeDouble)
         {
             col_scale = 0;
         }
 
-        if (col_tango_type == xd::typeNumeric)
+        if (col_xd_type == xd::typeNumeric)
         {
             // numeric fields have a max width of 18
             col_width > 18 ? col_width = 18 : 0;
@@ -253,7 +253,7 @@ bool OdbcIterator::init(const std::wstring& query)
         OdbcDataAccessInfo* field = new OdbcDataAccessInfo;
         field->name = col_name;
         field->odbc_type = col_type;
-        field->type = col_tango_type;
+        field->type = col_xd_type;
         field->width = col_width;
         field->scale = col_scale;
         field->ordinal = i;

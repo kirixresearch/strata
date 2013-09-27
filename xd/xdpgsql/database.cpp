@@ -230,13 +230,13 @@ xd::IColumnInfoPtr pgsqlCreateColInfo(const std::wstring& col_name,
                                          const std::wstring& col_expr,
                                          int datetime_sub)
 {
-    int col_tango_type = pgsqlToTangoType(col_pg_type);
+    int col_xd_type = pgsqlToTangoType(col_pg_type);
 
     xd::IColumnInfoPtr col;
     col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
 
     col->setName(col_name);
-    col->setType(col_tango_type);
+    col->setType(col_xd_type);
     col->setWidth(col_width);
     col->setScale(col_scale);
     col->setExpression(col_expr);
