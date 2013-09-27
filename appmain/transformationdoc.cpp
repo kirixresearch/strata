@@ -659,7 +659,7 @@ void TransformationDoc::getTransformation(std::vector<TransformField>& result)
         
         TransformField field = getInputFieldByName(input_name);
         field.output_name = name;
-        field.output_type = choice2tango(type);
+        field.output_type = choice2xd(type);
         field.output_width = width;
         field.output_scale = scale;
         field.output_expression = expression;
@@ -921,7 +921,7 @@ void TransformationDoc::insertRowFromColumnInfo(int row,
 
 void TransformationDoc::updateRowCellProps(int row)
 {
-    int type = choice2tango(m_grid->getCellComboSel(row, colFieldType));
+    int type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
     
     bool width_editable = true;
     bool decimal_editable = true;
@@ -1058,8 +1058,8 @@ void TransformationDoc::updateRowWidthAndScale(int row)
     if (m_last_selected_fieldtype == -1)
         return;
     
-    int last_tango_type = choice2tango(m_last_selected_fieldtype);
-    int tango_type = choice2tango(m_grid->getCellComboSel(row, colFieldType));
+    int last_tango_type = choice2xd(m_last_selected_fieldtype);
+    int tango_type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
     
     TransformField* f = (TransformField*)(m_grid->getRowData(row));
     
@@ -1127,7 +1127,7 @@ void TransformationDoc::updateStatusBar()
 
 wxString TransformationDoc::createDestinationExpression(int row)
 {
-    int tango_type = choice2tango(m_grid->getCellComboSel(row, colFieldType));
+    int tango_type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
     int format_comboidx = m_grid->getCellComboSel(row, colFieldFormula);
     wxString source_name = m_grid->getCellString(row, colSourceName);
     wxString quoted_source_name = xd::quoteIdentifier(g_app->getDatabase(), towstr(source_name));
@@ -1371,7 +1371,7 @@ int TransformationDoc::validateStructure()
     int row, row_count = m_grid->getRowCount();
     for (row = 0; row < row_count; ++row)
     {
-        type = choice2tango(m_grid->getCellComboSel(row, colFieldType));
+        type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
         expr = getFieldExpression(row);
         
         valid = validateExpression(source_structure, expr, type);
@@ -1442,7 +1442,7 @@ xd::IStructurePtr TransformationDoc::createStructureFromGrid()
     {
         xd::IColumnInfoPtr col = s->createColumn();
         col->setName(towstr(m_grid->getCellString(row, colFieldName)));
-        col->setType(choice2tango(m_grid->getCellComboSel(row, colFieldType)));
+        col->setType(choice2xd(m_grid->getCellComboSel(row, colFieldType)));
         col->setWidth(m_grid->getCellInteger(row, colFieldWidth));
         col->setScale(m_grid->getCellInteger(row, colFieldScale));
         col->setCalculated(isFieldDynamic(m_grid, row));
@@ -1679,7 +1679,7 @@ bool TransformationDoc::doSave()
     int row, row_count = m_grid->getRowCount();
     for (row = 0; row < row_count; ++row)
     {
-        int type = choice2tango(m_grid->getCellComboSel(row, colFieldType));
+        int type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
         int width = -1;
         int scale = -1;
         
@@ -1763,7 +1763,7 @@ bool TransformationDoc::doSave()
 
             colinfo = new_struct->createColumn();
             colinfo->setName(towstr(name));
-            colinfo->setType(choice2tango(type));
+            colinfo->setType(choice2xd(type));
             colinfo->setWidth(width);
             colinfo->setScale(scale);
             colinfo->setExpression(towstr(expression));
@@ -1935,7 +1935,7 @@ void TransformationDoc::onGridNeedTooltipText(kcl::GridEvent& evt)
         {
             if (it->row == row)
             {
-                int type = choice2tango(m_grid->getCellComboSel(row, colFieldType));
+                int type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
                 wxString expr = getFieldExpression(row);
                 int res = validateExpression(getSourceStructure(), expr, type);
                 
@@ -1969,7 +1969,7 @@ void TransformationDoc::onGridEndEdit(kcl::GridEvent& evt)
 {
     int col = evt.GetColumn();
     int row = evt.GetRow();
-    int type = choice2tango(m_grid->getCellComboSel(row, colFieldType));
+    int type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
 
     m_last_selected_fieldtype = -1;
 
@@ -2150,7 +2150,7 @@ void TransformationDoc::onGridEditChange(kcl::GridEvent& evt)
     {
         if (m_grid->getCellComboSel(row, colFieldFormula) == -1)
         {
-            int type = choice2tango(m_grid->getCellComboSel(row, colFieldType));
+            int type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
             wxString expr = getFieldExpression(row);
         
             int res = validateExpression(getSourceStructure(), expr, type);
@@ -2176,7 +2176,7 @@ void TransformationDoc::onGridEditChange(kcl::GridEvent& evt)
     }
      else if (col == colSourceName)
     {
-        int type = choice2tango(m_grid->getCellComboSel(row, colFieldType));
+        int type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
         wxString expr = getFieldExpression(row);
         
         // make sure either a source field or an expression is specified
@@ -2186,7 +2186,7 @@ void TransformationDoc::onGridEditChange(kcl::GridEvent& evt)
     }
      else if (col == colFieldFormula)
     {
-        int tango_type = choice2tango(m_grid->getCellComboSel(row, colFieldType));
+        int tango_type = choice2xd(m_grid->getCellComboSel(row, colFieldType));
         int combo_idx  = evt.GetExtraLong();
         int format_idx = combo2formatIdx(tango_type, combo_idx);
         

@@ -64,7 +64,7 @@ FieldTypeChoice::~FieldTypeChoice()
 
 int FieldTypeChoice::getTangoType()
 {
-    int retval = choice2tango(GetSelection());
+    int retval = choice2xd(GetSelection());
     return retval;
 }
 

@@ -71,7 +71,7 @@ static inline int tango2choice(int tango_type)
     return comboCharacter;
 }
 
-static inline int choice2tango(int choice_idx)
+static inline int choice2xd(int choice_idx)
 {
     switch(choice_idx)
     {
