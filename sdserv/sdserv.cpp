@@ -68,11 +68,33 @@ std::wstring Sdserv::getDatabaseConnectionString(const std::wstring& database_na
     if (config.isNull())
         return L"";
 
+    if (database_name.empty())
+        return L"";
+
     kl::JsonNode databases = config["databases"];
-    kl::JsonNode database = databases[database_name];
-    kl::JsonNode connection_string = database["connection_string"];
-    
-    return connection_string.getString();
+    if (databases.childExists(database_name))
+    {
+        kl::JsonNode database = databases[database_name];
+        kl::JsonNode connection_string = database["connection_string"];
+        return connection_string.getString();
+    }
+     else
+    {
+        // check for wild card entry
+        if (databases.childExists("*"))
+        {
+            kl::JsonNode wildcard = databases["*"];
+            std::wstring cstr = wildcard["connection_string"].getString();
+            if (cstr.empty())
+                return L"";
+
+            kl::replaceStr(cstr, L"%database%", database_name);
+            return cstr;
+        }
+
+    }
+
+    return L"";
 }
 
 
@@ -163,7 +185,7 @@ bool Sdserv::useConfigFile(const std::wstring& config_file)
     return true;
 }
 
-static int request_callback( struct mg_connection* conn)
+static int request_callback(struct mg_connection* conn)
 {
     const struct mg_request_info* request_info = mg_get_request_info(conn);
 

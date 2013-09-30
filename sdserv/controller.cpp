@@ -13,9 +13,13 @@
 #include "request.h"
 #include <kl/regex.h>
 #include <kl/string.h>
+#include <kl/thread.h>
+
 
 Controller::Controller()
 {
+    // don't allow job id of zero
+    m_job_info_vec.push_back(xcm::null);
 }
 
 Controller::~Controller()
@@ -105,6 +109,7 @@ bool Controller::onRequest(RequestInfo& req)
     else if (apimethod == L"load")             apiLoad(req);
     else if (apimethod == L"importupload")     apiImportUpload(req);
     else if (apimethod == L"importload")       apiImportLoad(req);
+    else if (apimethod == L"jobinfo")          apiJobInfo(req);
 
     end = clock();
     printf("%5d %4dms\n", req.getContentLength(), (end-start));
@@ -233,7 +238,21 @@ xd::IDatabasePtr Controller::getSessionDatabase(RequestInfo& req)
     xd::IDatabasePtr db = dbmgr->open(m_connection_string);
 
     if (db.isNull())
-        return xcm::null;
+    {
+
+        if (m_connection_string.find(L"pgsql") != m_connection_string.npos)
+        {
+            // allow auto-create for pgsql
+            dbmgr->createDatabase(m_connection_string);
+            db = dbmgr->open(m_connection_string);
+            printf("creating database: %ls\n", m_connection_string.c_str());
+            if (db.isNull())
+                printf("...but couldn't open database right away...\n");
+        }
+
+        if (db.isNull())
+            return xcm::null;
+    }
 
     m_database = db;
     return db;
@@ -1724,11 +1743,70 @@ void Controller::apiImportUpload(RequestInfo& req)
 
 
 
+
+class ImportJobThread : public kl::Thread
+{
+public:
+
+    ImportJobThread() : kl::Thread()
+    {
+        m_job = jobs::createJob(L"application/vnd.kx.load-job");
+    }
+
+    jobs::IJobInfoPtr getJobInfo()
+    {
+        return m_job->getJobInfo();
+    }
+
+    unsigned int entry()
+    {
+        // configure the job parameters
+        kl::JsonNode params;
+
+        params["objects"].setArray();
+        kl::JsonNode objects = params["objects"];
+
+
+        // add our table to the import object
+        kl::JsonNode object = objects.appendElement();
+
+        object["source_connection"] = m_source_connection;
+        object["destination_connection"] = m_target_connection;
+
+        object["source_path"] = m_source_table;
+        object["destination_path"] = m_target_table;
+
+
+        m_job->setParameters(params.toString());
+        m_job->runJob();
+        m_job->runPostJob();
+
+        m_job->getJobInfo()->setState(jobs::jobStateFinished);
+
+        return 0;
+    }
+
+public:
+
+    jobs::IJobPtr m_job;
+    std::wstring m_source_connection;
+    std::wstring m_target_connection;
+    std::wstring m_target_table;
+    std::wstring m_source_table;
+};
+
+
 void Controller::apiImportLoad(RequestInfo& req)
 {
     if (!req.getValueExists(L"handle") || !req.getValueExists(L"target_path"))
     {
         returnApiError(req, "Missing handle parameter");
+        return;
+    }
+
+    if (!req.getValueExists(L"target_path"))
+    {
+        returnApiError(req, "Missing target_path parameter");
         return;
     }
 
@@ -1766,36 +1844,76 @@ void Controller::apiImportLoad(RequestInfo& req)
     }
 
 
-    jobs::IJobPtr job = jobs::createJob(L"application/vnd.kx.load-job");
+    tango::IDatabasePtr db = getSessionDatabase(req);
+    if (db.isNull())
+    {
+        returnApiError(req, "Target database cannot be reached");
+        return;
+    }
 
 
-    std::wstring source_connection = L"Xdprovider=xdfs";
-    std::wstring destination_connection = m_connection_string;
+    ImportJobThread* import_job = new ImportJobThread;
+    import_job->m_source_connection = L"Xdprovider=xdfs";
+    import_job->m_target_connection = m_connection_string;
+    import_job->m_source_table = datafile;
+    import_job->m_target_table = target_path;
 
-    // configure the job parameters
-    kl::JsonNode params;
+    jobs::IJobInfoPtr job_info = import_job->getJobInfo();
+    m_job_info_mutex.lock();
+    int job_id = (int)m_job_info_vec.size();
+    m_job_info_vec.push_back(job_info);
+    m_job_info_mutex.unlock();
 
-    params["objects"].setArray();
-    kl::JsonNode objects = params["objects"];
-
-
-    // add our table to the import object
-    kl::JsonNode object = objects.appendElement();
-
-    object["source_connection"] = source_connection;
-    object["destination_connection"] = destination_connection;
-
-    object["source_path"] = datafile;
-    object["destination_path"] = target_path;
-
-
-    job->setParameters(params.toString());
-    job->runJob();
-    job->runPostJob();
+    import_job->create();
 
     // return success/failure to caller
     kl::JsonNode response;
     response["success"].setBoolean(true);
+    response["job_id"].setInteger(job_id);
     
     req.write(response.toString());
 }
+
+
+
+void Controller::apiJobInfo(RequestInfo& req)
+{
+    if (!req.getValueExists(L"job_id"))
+    {
+        returnApiError(req, "Missing job_id parameter");
+        return;
+    }
+
+    size_t idx = (size_t)kl::wtoi(req.getValue(L"job_id"));
+
+
+    jobs::IJobInfoPtr job_info;
+
+    m_job_info_mutex.lock();
+    if (idx < m_job_info_vec.size())
+        job_info = m_job_info_vec[idx];
+    m_job_info_mutex.unlock();
+
+    if (job_info.isNull())
+    {
+        kl::JsonNode response;
+        response["success"].setBoolean(false);
+        response["msg"].setString(L"Invalid job id");    
+        req.write(response.toString());
+        return;
+    }
+
+    std::wstring status_string = L"running";
+    if (job_info->getState() == jobs::jobStateFinished)
+        status_string = L"finished";
+
+    // return success/failure to caller
+    kl::JsonNode response;
+    response["success"].setBoolean(true);
+    response["pct"].setInteger((int)job_info->getPercentage());
+    response["current_count"].setInteger((int)job_info->getCurrentCount());
+    response["status"] = status_string;
+    
+    req.write(response.toString());
+}
+

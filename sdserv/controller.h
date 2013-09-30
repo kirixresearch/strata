@@ -106,6 +106,7 @@ private:
     void apiLoad(RequestInfo& req);
     void apiImportUpload(RequestInfo& req);
     void apiImportLoad(RequestInfo& req);
+    void apiJobInfo(RequestInfo& req);
 
 private:
 
@@ -116,6 +117,9 @@ private:
     xcm::mutex m_databases_object_mutex;
     xd::IDatabasePtr m_database;
     std::wstring m_connection_string;
+
+    xcm::mutex m_job_info_mutex;
+    std::vector<jobs::IJobInfoPtr> m_job_info_vec;
 };
 
 
