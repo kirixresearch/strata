@@ -458,7 +458,7 @@ SQLSMALLINT tango2sqlType(int xd_type)
     return 0;
 }
 
-SQLSMALLINT tango2sqlCType(int xd_type)
+SQLSMALLINT xd2sqlCType(int xd_type)
 {
     switch (xd_type)
     {
@@ -484,7 +484,7 @@ SQLSMALLINT tango2sqlCType(int xd_type)
 
 int sql2tangoScale(SQLSMALLINT sql_type, int scale)
 {
-    // in sql2tangoType, we handle some integer types with the DOUBLE
+    // in sql2xdType, we handle some integer types with the DOUBLE
     // or NUMERIC data type; in these cases, the ODBC driver may return
     // a non-zero precision because of the way the data is stored in the
     // native database (SQLite sometimes stores numbers as REAL), and
@@ -502,7 +502,7 @@ int sql2tangoScale(SQLSMALLINT sql_type, int scale)
     return scale;
 }
 
-int sql2tangoType(SQLSMALLINT sql_type)
+int sql2xdType(SQLSMALLINT sql_type)
 {
     switch (sql_type)
     {
@@ -560,7 +560,7 @@ xd::IColumnInfoPtr createColInfo(int db_type,
                                     const std::wstring& col_expr,
                                     int datetime_sub)
 {
-    int col_xd_type = sql2tangoType(col_odbc_type);
+    int col_xd_type = sql2xdType(col_odbc_type);
     col_scale = sql2tangoScale(col_odbc_type, col_scale);
 
     if (col_xd_type == xd::typeInvalid)

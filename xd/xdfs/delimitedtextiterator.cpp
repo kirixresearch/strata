@@ -541,7 +541,7 @@ xd::objhandle_t DelimitedTextIterator::getHandle(const std::wstring& expr)
     DelimitedTextDataAccessInfo* dai = new DelimitedTextDataAccessInfo;
     dai->expr = parser;
     dai->expr_text = expr;
-    dai->type = kscript2tangoType(parser->getType());
+    dai->type = kscript2xdType(parser->getType());
     m_exprs.push_back(dai);
 
     return (xd::objhandle_t)dai;

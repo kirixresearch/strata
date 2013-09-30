@@ -26,7 +26,7 @@
 #include "../xdcommon/xdcommon.h"
 
 
-int tds2tangoType(TDSCOLUMN* tds_col)
+int tds2xdType(TDSCOLUMN* tds_col)
 {
     switch (tds_col->column_type)
     {
@@ -225,7 +225,7 @@ bool SqlServerIterator::init(const std::wstring& query)
         colinfo = m_tds->res_info->columns[i];
 
         int sql_type = colinfo->column_type;
-        int xd_type = tds2tangoType(colinfo);
+        int xd_type = tds2xdType(colinfo);
 
         if (xd_type == xd::typeInvalid)
         {
@@ -440,7 +440,7 @@ xd::objhandle_t SqlServerIterator::getHandle(const std::wstring& expr)
 
     SqlServerDataAccessInfo* dai = new SqlServerDataAccessInfo;
     dai->m_expr = parser;
-    dai->m_type = kscript2tangoType(parser->getType());
+    dai->m_type = kscript2xdType(parser->getType());
     m_exprs.push_back(dai);
 
     return (xd::objhandle_t)dai;

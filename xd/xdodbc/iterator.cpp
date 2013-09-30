@@ -197,7 +197,7 @@ bool OdbcIterator::init(const std::wstring& query)
         }
 
         col_name = sql2wstring(col_buf);
-        col_xd_type = sql2tangoType(col_type);
+        col_xd_type = sql2xdType(col_type);
         
         if (col_xd_type == xd::typeInvalid)
             continue;
@@ -1042,7 +1042,7 @@ xd::objhandle_t OdbcIterator::getHandle(const std::wstring& expr)
     OdbcDataAccessInfo* dai = new OdbcDataAccessInfo;
     dai->expr = parser;
     dai->expr_text = expr;
-    dai->type = kscript2tangoType(parser->getType());
+    dai->type = kscript2xdType(parser->getType());
     m_exprs.push_back(dai);
 
     return (xd::objhandle_t)dai;

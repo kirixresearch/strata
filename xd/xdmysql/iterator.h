@@ -21,7 +21,7 @@
 
 // -- utility functions --
 
-int mysql2tangoType(int mysql_type);
+int mysql2xdType(int mysql_type);
 
 
 struct MysqlDataAccessInfo

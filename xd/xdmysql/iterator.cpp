@@ -100,7 +100,7 @@ bool MysqlIterator::init(const std::wstring& query)
 
     while ((colinfo = mysql_fetch_field(m_res)))
     {
-        int type = mysql2tangoType(colinfo->type);
+        int type = mysql2xdType(colinfo->type);
 
         std::wstring wcol_name = kl::towstring(colinfo->name);
 
@@ -711,7 +711,7 @@ xd::objhandle_t MysqlIterator::getHandle(const std::wstring& expr)
 
     MysqlDataAccessInfo* dai = new MysqlDataAccessInfo;
     dai->expr = parser;
-    dai->type = kscript2tangoType(parser->getType());
+    dai->type = kscript2xdType(parser->getType());
     m_exprs.push_back(dai);
 
     return (xd::objhandle_t)dai;

@@ -1498,7 +1498,7 @@ kcanvas::IComponentPtr ReportLayoutEngine::createTableLayout()
 
 IModelPtr ReportLayoutEngine::createDataModel()
 {
-    // create a new tango model
+    // create a new xd model
     XdModel* model = new XdModel;
     model->sigModelLoaded().connect(this, &ReportLayoutEngine::onModelLoaded);
 

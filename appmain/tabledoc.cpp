@@ -2762,7 +2762,7 @@ void TableDoc::setIterator(xd::IIteratorPtr iter, bool go_first)
     if (m_iter->getIteratorFlags() & xd::ifForwardOnly)
     {
         // if the iterator is forward-only, try to turn on
-        // tango's backward scroll row cache
+        // xd's backward scroll row cache
         m_iter->setIteratorFlags(xd::ifReverseRowCache, xd::ifReverseRowCache);
     }
     
@@ -6869,7 +6869,7 @@ bool TableDoc::saveAsPdf(const wxString& path)
     return false;
 }
 
-static std::wstring tangoTypeToOutputType(int type)
+static std::wstring xdTypeToOutputType(int type)
 {
     switch (type)
     {
@@ -6919,7 +6919,7 @@ bool TableDoc::saveAsStructure(const wxString& path)
  
         // initial tab space (use spaces instead of tab)
         std::wstring name = colinfo->getName();
-        std::wstring type = tangoTypeToOutputType(colinfo->getType());
+        std::wstring type = xdTypeToOutputType(colinfo->getType());
 
         wchar_t buf[30];
         swprintf(buf, 30, L"%d", colinfo->getWidth());

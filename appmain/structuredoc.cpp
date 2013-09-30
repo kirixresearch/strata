@@ -1002,7 +1002,7 @@ void StructureDoc::updateRowWidthAndScale(int row)
         if (f->type == xd::typeDouble)
         {
             // width = 20 (large enough for double); parallels
-            // code in tango\xdfs\delimitedtextset.cpp
+            // code in xd\xdfs\delimitedtextset.cpp
             int new_width = 20;
             m_grid->setCellInteger(row, colFieldWidth, new_width);
         }
@@ -1012,7 +1012,7 @@ void StructureDoc::updateRowWidthAndScale(int row)
         if (f->type == xd::typeInteger)
         {
             // width = 12 (size of 2^32 + sign + 1 to round to 12);
-            // parallels code in tango\xdfs\delimitedtextset.cpp
+            // parallels code in xd\xdfs\delimitedtextset.cpp
             int new_width = 12;
             m_grid->setCellInteger(row, colFieldWidth, new_width);
         }

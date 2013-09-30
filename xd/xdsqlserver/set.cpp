@@ -26,7 +26,7 @@
 #include "../xdcommon/dbfuncs.h"
 
 
-int tds2tangoType(TDSCOLUMN* tds_col);
+int tds2xdType(TDSCOLUMN* tds_col);
 
 // -- utility function to convert tango dates to FreeTDS dates --
 
@@ -101,7 +101,7 @@ xd::IStructurePtr SqlServerSet::getStructure()
     {
         colinfo = tds->res_info->columns[i];
         sql_type = colinfo->column_type;
-        xd_type = tds2tangoType(colinfo);
+        xd_type = tds2xdType(colinfo);
 
         if (xd_type == xd::typeInvalid)
         {

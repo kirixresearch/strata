@@ -18,7 +18,7 @@
 
 
 // utility functions
-int mysql2tangoType(int mysql_type);
+int mysql2xdType(int mysql_type);
 std::wstring createMySqlFieldString(const std::wstring& name,
                                     int type,
                                     int width,

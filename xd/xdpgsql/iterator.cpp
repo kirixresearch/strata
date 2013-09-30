@@ -659,7 +659,7 @@ xd::objhandle_t PgsqlIterator::getHandle(const std::wstring& expr)
     PgsqlDataAccessInfo* dai = new PgsqlDataAccessInfo;
     dai->expr = parser;
     dai->expr_text = expr;
-    dai->type = kscript2tangoType(parser->getType());
+    dai->type = kscript2xdType(parser->getType());
     m_exprs.push_back(dai);
 
     return (xd::objhandle_t)dai;

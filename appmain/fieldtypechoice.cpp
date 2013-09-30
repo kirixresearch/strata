@@ -62,13 +62,13 @@ FieldTypeChoice::~FieldTypeChoice()
 
 }
 
-int FieldTypeChoice::getTangoType()
+int FieldTypeChoice::getXdType()
 {
     int retval = choice2xd(GetSelection());
     return retval;
 }
 
-void FieldTypeChoice::setTangoChoice(int xd_type)
+void FieldTypeChoice::setXdChoice(int xd_type)
 {
     int idx = xd2choice(xd_type);
     SetSelection(idx);

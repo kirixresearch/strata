@@ -416,7 +416,7 @@ bool CellExpression::getResult(wxString& result)
                     
                     if (m_xd_type != typeDateTime)
                     {
-                        // if the kscript type is a date and the tango type is
+                        // if the kscript type is a date and the xd type is
                         // anything besides a datetime, format the date without
                         // the timestamp portion
 
@@ -432,7 +432,7 @@ bool CellExpression::getResult(wxString& result)
                     }
                     else if (m_xd_type == typeDateTime)
                     {
-                        // if the kscript type is a date and the tango type is
+                        // if the kscript type is a date and the xd type is
                         // datetime, format the date with the timestamp portion
 
                         kscript::ExprDateTime dt = m_retval->getDateTime();
@@ -1067,7 +1067,7 @@ bool XdModel::eog()
     return result;
 }
 
-static bool func_tangomodel_parse_hook(kscript::ExprParseHookInfo& hook_info)
+static bool func_xdmodel_parse_hook(kscript::ExprParseHookInfo& hook_info)
 {
     if (hook_info.element_type == kscript::ExprParseHookInfo::typeFunction)
     {  
@@ -1242,7 +1242,7 @@ bool XdModel::eval(int row, const wxString& expr, wxString& result)
 
     // if we don't have an expression, add it
     CellExpression* cell_expr = new CellExpression;
-    cell_expr->setParseHook(func_tangomodel_parse_hook, cell_expr);
+    cell_expr->setParseHook(func_xdmodel_parse_hook, cell_expr);
     cell_expr->setModel(this);
     cell_expr->setExpression(expr);
     m_cell_expressions[expr] = cell_expr;

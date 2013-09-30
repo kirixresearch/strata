@@ -51,8 +51,8 @@ inline std::wstring sql2wstring(const SQLWCHAR* s)
 void testSqlStmt(HSTMT stmt);
 void testSqlConn(HDBC hdbc);
 SQLSMALLINT tango2sqlType(int xd_type);
-SQLSMALLINT tango2sqlCType(int xd_type);
-int sql2tangoType(SQLSMALLINT sql_type);
+SQLSMALLINT xd2sqlCType(int xd_type);
+int sql2xdType(SQLSMALLINT sql_type);
 
 std::wstring createOdbcFieldString(const std::wstring& name,
                                    int type,

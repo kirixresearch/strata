@@ -21,9 +21,9 @@
 
 // conversion functions for tango and sql types
 
-int sql2tangoType(SQLSMALLINT sql_type);
+int sql2xdType(SQLSMALLINT sql_type);
 SQLSMALLINT tango2sqlType(int xd_type);
-SQLSMALLINT tango2sqlCType(int xd_type);
+SQLSMALLINT xd2sqlCType(int xd_type);
 
 
 

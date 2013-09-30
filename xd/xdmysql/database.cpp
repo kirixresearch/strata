@@ -89,7 +89,7 @@ const wchar_t* kws =
 
 // -- utility functions--
 
-int mysql2tangoType(int mysql_type)
+int mysql2xdType(int mysql_type)
 {
     switch (mysql_type)
     {
@@ -979,7 +979,7 @@ xd::IStructurePtr MysqlDatabase::describeTable(const std::wstring& path)
         MYSQL_FIELD* colinfo;
         while ((colinfo = mysql_fetch_field(res)))
         {
-            int type = mysql2tangoType(colinfo->type);
+            int type = mysql2xdType(colinfo->type);
 
             std::wstring wcol_name = kl::towstring(colinfo->name);
 

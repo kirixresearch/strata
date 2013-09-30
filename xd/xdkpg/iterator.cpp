@@ -355,7 +355,7 @@ xd::objhandle_t KpgIterator::getHandle(const std::wstring& expr)
     KpgDataAccessInfo* dai = new KpgDataAccessInfo;
     dai->expr = parser;
     dai->expr_text = expr;
-    dai->type = kscript2tangoType(parser->getType());
+    dai->type = kscript2xdType(parser->getType());
     m_exprs.push_back(dai);
 
     return (xd::objhandle_t)dai;

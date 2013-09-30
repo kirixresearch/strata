@@ -35,7 +35,7 @@ BEGIN_EVENT_TABLE(ColPropsPanel, wxPanel)
 END_EVENT_TABLE()
 
 
-static int dlgtype2tangotype(int dlg_type)
+static int dlgtype2xdtype(int dlg_type)
 {
     switch (dlg_type)
     {
@@ -459,7 +459,7 @@ void ColPropsPanel::onTypeChanged(wxCommandEvent& evt)
         return;
 
     int combo_selection = m_coltype_combo->GetSelection();
-    long type = dlgtype2tangotype(m_coltype_combo->GetSelection());
+    long type = dlgtype2xdtype(m_coltype_combo->GetSelection());
 
     if (combo_selection == 0)
     {
@@ -831,7 +831,7 @@ void ColPropsPanel::updateSpinBoxes()
     if (combo_selection > 0)
     {
         // we are not on auto, so use the type from the combo box
-        type = dlgtype2tangotype(m_coltype_combo->GetSelection());
+        type = dlgtype2xdtype(m_coltype_combo->GetSelection());
     }
 
 

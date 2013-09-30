@@ -106,8 +106,8 @@ public:
 
     ~FieldTypeChoice();
 
-    int getTangoType();
-    void setTangoChoice(int xd_type);
+    int getXdType();
+    void setXdChoice(int xd_type);
 
 private:
 

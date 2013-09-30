@@ -85,7 +85,7 @@ void crc64(const unsigned char* s,
 void bindExprParser(kscript::ExprParser* parser);
 kscript::ExprParser* createExprParser();
 
-int kscript2tangoType(int type);
+int kscript2xdType(int type);
 int tango2kscriptType(int type);
 
 xd::IIndexInfoPtr xdLookupIndex(xd::IIndexInfoEnumPtr enums,

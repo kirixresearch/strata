@@ -760,7 +760,7 @@ bool BaseIterator::initStructure()
 
             delete p;
 
-            int xd_type = kscript2tangoType(expr_type);
+            int xd_type = kscript2xdType(expr_type);
             if (xd_type == xd::typeInvalid ||
                 xd_type == xd::typeUndefined)
             {
@@ -2121,7 +2121,7 @@ xd::objhandle_t BaseIterator::getHandle(const std::wstring& expr)
         return 0;
     }
 
-    dai->type = kscript2tangoType(dai->expr->getType());
+    dai->type = kscript2xdType(dai->expr->getType());
     return (xd::objhandle_t)dai;
 }
 
@@ -2137,7 +2137,7 @@ int BaseIterator::getType(xd::objhandle_t data_handle)
         return dai->type;
     }
 
-    return kscript2tangoType(dai->expr->getType());
+    return kscript2xdType(dai->expr->getType());
 }
 
 bool BaseIterator::releaseHandle(xd::objhandle_t data_handle)

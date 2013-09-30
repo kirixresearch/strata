@@ -947,7 +947,7 @@ int tango2kscriptType(int type)
     }
 }
 
-int kscript2tangoType(int type)
+int kscript2xdType(int type)
 {
     switch (type)
     {

@@ -440,7 +440,7 @@ xd::objhandle_t XbaseIterator::getHandle(const std::wstring& expr)
     XbaseDataAccessInfo* dai = new XbaseDataAccessInfo;
     dai->expr = parser;
     dai->expr_text = expr;
-    dai->type = kscript2tangoType(parser->getType());
+    dai->type = kscript2xdType(parser->getType());
     m_exprs.push_back(dai);
 
     return (xd::objhandle_t)dai;

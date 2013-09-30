@@ -850,7 +850,7 @@ int Structure::getExprType(const std::wstring& expression)
         return xd::typeInvalid;
     }
 
-    int type = kscript2tangoType(parser->getType());
+    int type = kscript2xdType(parser->getType());
     delete parser;
 
     return type;
