@@ -357,7 +357,7 @@
     <ClInclude Include="util.h" />
     <ClInclude Include="xdcommon.h" />
     <ClInclude Include="modversion.h" />
-    <ClInclude Include="tango_private.h" />
+    <ClInclude Include="xd_private.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile" />

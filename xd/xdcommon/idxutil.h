@@ -13,7 +13,7 @@
 #define __XDCOMMON_IDXUTIL_H
 
 
-#include "tango_private.h"
+#include "xd_private.h"
 #include "cmnbaseiterator.h"
 
 

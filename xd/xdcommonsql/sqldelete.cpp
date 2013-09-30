@@ -15,7 +15,7 @@
 
 
 #include <xd/xd.h>
-#include "../xdcommon/tango_private.h"
+#include "../xdcommon/xd_private.h"
 #include "xdcommonsql.h"
 #include "../xdcommon/jobinfo.h"
 #include "../xdcommon/util.h"

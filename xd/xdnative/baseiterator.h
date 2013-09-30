@@ -23,7 +23,7 @@
 #include <functional>
 
 #include "xdnative_private.h"
-#include "../xdcommon/tango_private.h"
+#include "../xdcommon/xd_private.h"
 
 
 class BaseIterator;

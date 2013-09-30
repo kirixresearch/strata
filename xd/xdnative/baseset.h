@@ -13,7 +13,7 @@
 #define __XDNATIVE_BASESET_H
 
 
-#include "../xdcommon/tango_private.h"
+#include "../xdcommon/xd_private.h"
 #include "../xdcommonsql/xdcommonsql.h"
 #include "xdnative_private.h"
 #include "database.h"

@@ -16,7 +16,7 @@
 
 #include "baseset.h"
 #include "baseiterator.h"
-#include "../xdcommon/tango_private.h"
+#include "../xdcommon/xd_private.h"
 
 
 xcm_interface ITable;
