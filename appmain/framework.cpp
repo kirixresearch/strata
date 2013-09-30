@@ -2370,7 +2370,7 @@ void MainFrame::onModelessContainerDestructing(wxWindow* window)
 
 wxString MainFrame::getUniqueSiteName()
 {
-    // this code is originally from tango/util.h
+    // this code is originally from xd's util.h
     static unsigned int seed = (unsigned)time(NULL);
     srand(++seed);
 

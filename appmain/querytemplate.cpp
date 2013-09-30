@@ -189,7 +189,7 @@ wxString QueryTemplate::getQueryString()
     // calculate the 'database disposition'.  If the various source tables
     // are from the same database or mount, then we'll use that database's
     // SQL semantics.  If the source tables are from different databases, we'll
-    // use tango's native sql engine, which pulls the source tables down
+    // use xd's native sql engine, which pulls the source tables down
     // first, and then issues the query locally.
     int disposition = -1;
     

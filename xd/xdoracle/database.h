@@ -24,8 +24,8 @@ inline bool oraSucceeded(sword res)
     return (res == OCI_SUCCESS || res == OCI_SUCCESS_WITH_INFO) ? true : false;
 }
 
-int oracle2tangoType(int oracle_type, int oracle_charset = SQLCS_IMPLICIT);
-int tango2xdType(int xd_type);
+int oracle2xdType(int oracle_type, int oracle_charset = SQLCS_IMPLICIT);
+int xd2oracleType(int xd_type);
 
 std::wstring createOracleFieldString(const std::wstring& name,
                                      int type,

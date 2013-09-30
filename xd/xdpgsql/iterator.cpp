@@ -174,7 +174,7 @@ bool PgsqlIterator::init(PGconn* conn, PGresult* res)
     {
         col_name = kl::towstring(PQfname(m_res, i));
         col_pg_type = PQftype(m_res, i);
-        col_xd_type = pgsqlToTangoType(col_pg_type);
+        col_xd_type = pgsqlToXdType(col_pg_type);
         col_width = 255;
         fmod = PQfmod(m_res, i);
 

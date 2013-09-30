@@ -168,7 +168,7 @@ wxString urlEscape(const wxString& input);
 // was truncating strings
 wxString removeChar(const wxString& s, wxChar c);
 
-// TODO: borrowed from expr_util in tango; also exists in kscript
+// TODO: borrowed from expr_util in xd; also exists in kscript
 // and parts of kl; should factor
 wxChar* zl_strchr(wxChar* str, wxChar ch);
 

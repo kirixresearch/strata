@@ -1741,7 +1741,7 @@ void XdModel::setIterator(xd::IIterator* it)
         if (m_iter->getIteratorFlags() & xd::ifForwardOnly)
         {
             // if the iterator is forward-only, try to turn on
-            // tango's backward scroll row cache
+            // xd's backward scroll row cache
             m_iter->setIteratorFlags(xd::ifReverseRowCache, xd::ifReverseRowCache);
         }
 

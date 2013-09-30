@@ -235,7 +235,7 @@ bool OracleIterator::init(const std::wstring& query)
                 col_precision = 18;
         }
         
-        if (oracle2tangoType(col_type) == xd::typeNumeric)
+        if (oracle2xdType(col_type) == xd::typeNumeric)
         {
             if (col_precision <= 0)
             {
@@ -249,7 +249,7 @@ bool OracleIterator::init(const std::wstring& query)
         field->name = kl::towstring((char*)col_name);
         field->oracle_type = col_type;
         field->oracle_charset = col_charset;
-        field->xd_type = oracle2tangoType(field->oracle_type, field->oracle_charset);
+        field->xd_type = oracle2xdType(field->oracle_type, field->oracle_charset);
         field->width = col_width;
         field->precision = col_precision;
         field->scale = col_scale;
@@ -797,7 +797,7 @@ void OracleIterator::refreshStructure()
         }
   
         m_fields[i]->xd_type = col->getType();
-        m_fields[i]->oracle_type = tango2xdType(m_fields[i]->xd_type);
+        m_fields[i]->oracle_type = xd2oracleType(m_fields[i]->xd_type);
         m_fields[i]->width = col->getWidth();
         m_fields[i]->scale = col->getScale();
         m_fields[i]->expr_text = col->getExpression();
@@ -836,7 +836,7 @@ void OracleIterator::refreshStructure()
             OracleDataAccessInfo* dai = new OracleDataAccessInfo;
             dai->name = col->getName();
             dai->xd_type = col->getType();
-            dai->oracle_type = tango2xdType(dai->xd_type);
+            dai->oracle_type = xd2oracleType(dai->xd_type);
             dai->width = col->getWidth();
             dai->scale = col->getScale();
             dai->ordinal = m_fields.size();
@@ -905,7 +905,7 @@ bool OracleIterator::modifyStructure(xd::IStructure* struct_config,
                 if (it->m_params->getType() != -1)
                 {
                     (*it2)->xd_type = it->m_params->getType();
-                    (*it2)->oracle_type = tango2xdType((*it2)->xd_type);
+                    (*it2)->oracle_type = xd2oracleType((*it2)->xd_type);
                 }
 
                 if (it->m_params->getWidth() != -1)
@@ -940,7 +940,7 @@ bool OracleIterator::modifyStructure(xd::IStructure* struct_config,
             OracleDataAccessInfo* dai = new OracleDataAccessInfo;
             dai->name = it->m_params->getName();
             dai->xd_type = it->m_params->getType();
-            dai->oracle_type = tango2xdType(dai->xd_type);
+            dai->oracle_type = xd2oracleType(dai->xd_type);
             dai->width = it->m_params->getWidth();
             dai->scale = it->m_params->getScale();
             dai->ordinal = m_fields.size();
@@ -966,7 +966,7 @@ bool OracleIterator::modifyStructure(xd::IStructure* struct_config,
             OracleDataAccessInfo* dai = new OracleDataAccessInfo;
             dai->name = it->m_params->getName();
             dai->xd_type = it->m_params->getType();
-            dai->oracle_type = tango2xdType(dai->xd_type);
+            dai->oracle_type = xd2oracleType(dai->xd_type);
             dai->width = it->m_params->getWidth();
             dai->scale = it->m_params->getScale();
             dai->ordinal = m_fields.size();
@@ -1024,7 +1024,7 @@ xd::objhandle_t OracleIterator::getHandle(const std::wstring& expr)
     OracleDataAccessInfo* dai = new OracleDataAccessInfo;
     dai->expr = parser;
     dai->xd_type = kscript2xdType(parser->getType());
-    dai->oracle_type = tango2xdType(dai->xd_type);
+    dai->oracle_type = xd2oracleType(dai->xd_type);
     m_exprs.push_back(dai);
 
     return (xd::objhandle_t)dai;

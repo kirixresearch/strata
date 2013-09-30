@@ -25,7 +25,7 @@ xd::IColumnInfoPtr pgsqlCreateColInfo(const std::wstring& col_name,
                                          const std::wstring& col_expr,
                                          int datetime_sub);
 
-int pgsqlToTangoType(int pg_type);
+int pgsqlToXdType(int pg_type);
 
 std::wstring pgsqlQuoteIdentifier(const std::wstring& str);
 std::wstring pgsqlQuoteIdentifierIfNecessary(const std::wstring& str);

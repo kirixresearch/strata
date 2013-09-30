@@ -28,12 +28,12 @@
 
 int tds2xdType(TDSCOLUMN* tds_col);
 
-// -- utility function to convert tango dates to FreeTDS dates --
+// utility function to convert xd dates to FreeTDS dates
 
 /* -- NOTE: This function is reverse engineering the tds_datecrack
       function and currently only handles dates, not datetimes -- */
 
-void tango2tdsdate(const xd::datetime_t& src, TDS_DATETIME* res)
+void xd2tdsdate(const xd::datetime_t& src, TDS_DATETIME* res)
 {
     xd::datetime_t julian_days = (src >> 32);
     xd::datetime_t time_ms = (src & 0xffffffff);

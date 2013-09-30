@@ -181,7 +181,7 @@ std::wstring pgsqlCreateFieldString(const std::wstring& name,
 }
 
 
-int pgsqlToTangoType(int pg_type)
+int pgsqlToXdType(int pg_type)
 {
     switch (pg_type)
     {
@@ -230,7 +230,7 @@ xd::IColumnInfoPtr pgsqlCreateColInfo(const std::wstring& col_name,
                                          const std::wstring& col_expr,
                                          int datetime_sub)
 {
-    int col_xd_type = pgsqlToTangoType(col_pg_type);
+    int col_xd_type = pgsqlToXdType(col_pg_type);
 
     xd::IColumnInfoPtr col;
     col = static_cast<xd::IColumnInfo*>(new ColumnInfo);
@@ -1592,7 +1592,7 @@ xd::IStructurePtr PgsqlDatabase::describeTable(const std::wstring& path)
         colname = kl::towstring(PQgetvalue(res, i, 0));
         pg_type = atoi(PQgetvalue(res, i, 1));
         type_mod = atoi(PQgetvalue(res, i, 2));
-        xd_type = pgsqlToTangoType(pg_type);
+        xd_type = pgsqlToXdType(pg_type);
         
         if (xd_type == xd::typeNumeric || xd_type == xd::typeDouble)
         {

@@ -181,7 +181,7 @@ std::wstring createOracleFieldString(const std::wstring& _name,
 }
 
 
-int oracle2tangoType(int oracle_type, int oracle_charset)
+int oracle2xdType(int oracle_type, int oracle_charset)
 {
     switch (oracle_type)
     {
@@ -224,7 +224,7 @@ int oracle2tangoType(int oracle_type, int oracle_charset)
     return xd::typeInvalid;
 }
 
-int tango2xdType(int xd_type)
+int xd2oracleType(int xd_type)
 {
     switch (xd_type)
     {
@@ -262,7 +262,7 @@ xd::IColumnInfoPtr createColInfo(const std::wstring& col_name,
                                     int scale,
                                     const std::wstring& expr)
 {
-    int xd_type = oracle2tangoType(oracle_type, oracle_charset);
+    int xd_type = oracle2xdType(oracle_type, oracle_charset);
 
     if (xd_type == xd::typeNumeric)
     {

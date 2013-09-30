@@ -1132,7 +1132,7 @@ wxString TransformationDoc::createDestinationExpression(int row)
     wxString source_name = m_grid->getCellString(row, colSourceName);
     wxString quoted_source_name = xd::quoteIdentifier(g_app->getDatabase(), towstr(source_name));
     
-    // translate from the combobox index and tango type
+    // translate from the combobox index and xd type
     // to the expression format index
     int expr_format = combo2formatIdx(xd_type, format_comboidx);
     wxString retval;
