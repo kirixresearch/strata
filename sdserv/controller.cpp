@@ -1844,7 +1844,7 @@ void Controller::apiImportLoad(RequestInfo& req)
     }
 
 
-    tango::IDatabasePtr db = getSessionDatabase(req);
+    xd::IDatabasePtr db = getSessionDatabase(req);
     if (db.isNull())
     {
         returnApiError(req, "Target database cannot be reached");
