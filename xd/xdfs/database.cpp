@@ -1562,7 +1562,7 @@ xd::IStructurePtr FsDatabase::createStructure()
     return static_cast<xd::IStructure*>(s);
 }
 
-static int tangoToDelimitedTextEncoding(int xd_encoding)
+static int xdToDelimitedTextEncoding(int xd_encoding)
 {
     switch (xd_encoding)
     {
@@ -1755,7 +1755,7 @@ bool FsDatabase::createTable(const std::wstring& _path,
                 xd_encoding = xd::encodingISO8859_1;
         }
 
-        int csv_encoding = tangoToDelimitedTextEncoding(xd_encoding);
+        int csv_encoding = xdToDelimitedTextEncoding(xd_encoding);
         if (csv_encoding == -1)
             return false; // unknown encoding
         
@@ -1836,7 +1836,7 @@ bool FsDatabase::createTable(const std::wstring& _path,
                 xd_encoding = xd::encodingISO8859_1;
         }
 
-        int csv_encoding = tangoToDelimitedTextEncoding(xd_encoding);
+        int csv_encoding = xdToDelimitedTextEncoding(xd_encoding);
         if (csv_encoding == -1)
             return false; // unknown encoding
         

@@ -89,7 +89,7 @@ xd::IStructurePtr XbaseSet::getStructure()
     // get structure from xbase file
     std::vector<XbaseField> fields = m_file.getFields();
     
-    // fill out tango structure from xbase structure
+    // fill out xd structure from xbase structure
     std::vector<XbaseField>::iterator it;
     for (it = fields.begin(); it != fields.end(); ++it)
     {

@@ -102,7 +102,7 @@ bool MysqlRowInserter::putRawPtr(xd::objhandle_t column_handle,
         case xd::typeCharacter:
             doubleQuoteCopy(data->m_text, (const char*)value, length);
             return true;
-        // FIXME: other tango types should be filled out here
+        // FIXME: other xd types should be filled out here
         default:
             return false;
     }

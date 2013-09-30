@@ -26,7 +26,7 @@
 #include "../xdcommon/columninfo.h"
 
 
-// ------------------ FILE FORMAT: Tango Native Table --------------------
+// ------------------ FILE FORMAT: xdnative Native Table --------------------
 //
 // -- file header --
 // offset   00:   (uint32) signature 0xddaa2299;
@@ -75,7 +75,7 @@
 const int native_read_ahead_size = 500;             // still used by row inserter
 
 
-char convertType_tango2native(int xd_type)
+char convertType_xd2native(int xd_type)
 {
     switch (xd_type)
     {
@@ -92,7 +92,7 @@ char convertType_tango2native(int xd_type)
     return ' ';
 }
 
-int convertType_native2tango(int native_type)
+int convertType_native2xd(int native_type)
 {
     switch (native_type)
     {
@@ -273,7 +273,7 @@ bool NativeTable::create(const std::wstring& filename, xd::IStructure* structure
         }
 
         // type
-        entry_ptr[0] = convertType_tango2native(col_type);
+        entry_ptr[0] = convertType_xd2native(col_type);
 
         // offset
         int2buf(entry_ptr+1, offset);
@@ -560,7 +560,7 @@ bool NativeTable::open(const std::wstring& filename,
         kl::ucsle2wstring(col_name, fld+64, 80);
         
         col->setName(col_name);
-        col->setType(convertType_native2tango(fld[0]));
+        col->setType(convertType_native2xd(fld[0]));
         col->setWidth(buf2int(fld+5));
         col->setScale(buf2int(fld+9));
         col->setOffset(buf2int(fld+1));
@@ -1029,7 +1029,7 @@ bool NativeTable::writeColumnInfo(int col_idx,
 
     if (type != -1)
     {
-        col_desc[0] = convertType_tango2native(type);
+        col_desc[0] = convertType_xd2native(type);
         col->setType(type);
     }
 

@@ -14,7 +14,7 @@
 #include "util.h"
 
 
-// ------------------ FILE FORMAT: Tango Native Table --------------------
+// ------------------ FILE FORMAT: xdnative Native Table --------------------
 //
 // -- file header --
 // offset   00:   (uint32) signature 0xa2d022e4;

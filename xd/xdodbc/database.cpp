@@ -482,7 +482,7 @@ SQLSMALLINT xd2sqlCType(int xd_type)
     return 0;
 }
 
-int sql2tangoScale(SQLSMALLINT sql_type, int scale)
+int sql2xdScale(SQLSMALLINT sql_type, int scale)
 {
     // in sql2xdType, we handle some integer types with the DOUBLE
     // or NUMERIC data type; in these cases, the ODBC driver may return
@@ -561,7 +561,7 @@ xd::IColumnInfoPtr createColInfo(int db_type,
                                     int datetime_sub)
 {
     int col_xd_type = sql2xdType(col_odbc_type);
-    col_scale = sql2tangoScale(col_odbc_type, col_scale);
+    col_scale = sql2xdScale(col_odbc_type, col_scale);
 
     if (col_xd_type == xd::typeInvalid)
     {
@@ -744,7 +744,7 @@ void getOdbcDriverNames(std::vector<std::wstring>& drivers)
 }
 
 
-static int odbcStateToTangoError(SQLTCHAR* _s)
+static int odbcStateToXdError(SQLTCHAR* _s)
 {
 #ifdef _UNICODE
     #define IS_STATE(state) (0 == wcscmp((const wchar_t*)_s, L##state))
@@ -822,7 +822,7 @@ void OdbcDatabase::errorSqlStmt(HSTMT stmt)
                                 2048,
                                 &text_len_ptr);
     
-    m_error.setError(odbcStateToTangoError(state), kl::towstring((TCHAR*)message));
+    m_error.setError(odbcStateToXdError(state), kl::towstring((TCHAR*)message));
 }
 
 void OdbcDatabase::errorSqlConn(HDBC hdbc)
@@ -842,7 +842,7 @@ void OdbcDatabase::errorSqlConn(HDBC hdbc)
                                     message,
                                     2048,
                                     &text_len_ptr);
-        m_error.setError(odbcStateToTangoError(state), kl::towstring((TCHAR*)message));
+        m_error.setError(odbcStateToXdError(state), kl::towstring((TCHAR*)message));
     }
      else
     {

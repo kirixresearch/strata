@@ -31,8 +31,8 @@ class BitmapFile;
 class BitmapFileScroller;
 
 
-char convertType_tango2native(int xd_type);
-int convertType_native2tango(int native_type);
+char convertType_xd2native(int xd_type);
+int convertType_native2xd(int native_type);
 
 
 class NativeTable : public ITable
