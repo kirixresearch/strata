@@ -54,7 +54,7 @@ void DbDatabaseType::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
 }
 
-int DbDatabaseType::toTangoDatabaseType(int binding_database_type)
+int DbDatabaseType::toXdDatabaseType(int binding_database_type)
 {
     switch (binding_database_type)
     {
@@ -119,7 +119,7 @@ void DbType::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 }
 
 
-int DbType::toTangoType(kscript::Value* val)
+int DbType::toXdType(kscript::Value* val)
 {
     if (val->isString())
     {
@@ -145,14 +145,14 @@ int DbType::toTangoType(kscript::Value* val)
     }
      else
     {
-        return DbType::toTangoType(val->getInteger());
+        return DbType::toXdType(val->getInteger());
     }
     
     return xd::typeUndefined;
 }
 
 
-int DbType::toTangoType(int type)
+int DbType::toXdType(int type)
 {
     switch (type)
     {
@@ -171,7 +171,7 @@ int DbType::toTangoType(int type)
     }
 }
 
-int DbType::fromTangoType(int type)
+int DbType::fromXdType(int type)
 {
     switch (type)
     {
@@ -227,7 +227,7 @@ void DbEncoding::constructor(kscript::ExprEnv* env, kscript::Value* retval)
 {
 }
 
-int DbEncoding::toTangoEncoding(int type)
+int DbEncoding::toXdEncoding(int type)
 {
     switch (type)
     {
@@ -245,7 +245,7 @@ int DbEncoding::toTangoEncoding(int type)
     }
 }
 
-int DbEncoding::fromTangoEncoding(int type)
+int DbEncoding::fromXdEncoding(int type)
 {
     switch (type)
     {
@@ -625,7 +625,7 @@ void DbResult::getColumnInfo(kscript::ExprEnv* env, kscript::Value* retval)
     // as the other instance where DbColumn is used
     DbColumn* dbcol = DbColumn::createObject(env);
     dbcol->getMember(L"name")->setString(col->getName());
-    dbcol->getMember(L"type")->setInteger(DbType::fromTangoType(col->getType()));
+    dbcol->getMember(L"type")->setInteger(DbType::fromXdType(col->getType()));
     dbcol->getMember(L"width")->setInteger(col->getWidth());
     dbcol->getMember(L"scale")->setInteger(col->getScale());
     dbcol->getMember(L"expression")->setString(col->getExpression());
@@ -2013,7 +2013,7 @@ void DbConnection::describeTable(kscript::ExprEnv* env, kscript::Value* retval)
         // as the other instance where DbColumn is used
         DbColumn* dbcol = DbColumn::createObject(env);
         dbcol->getMember(L"name")->setString(col->getName());
-        dbcol->getMember(L"type")->setInteger(DbType::fromTangoType(col->getType()));
+        dbcol->getMember(L"type")->setInteger(DbType::fromXdType(col->getType()));
         dbcol->getMember(L"width")->setInteger(col->getWidth());
         dbcol->getMember(L"scale")->setInteger(col->getScale());
         dbcol->getMember(L"expression")->setString(col->getExpression());

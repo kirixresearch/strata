@@ -434,7 +434,7 @@ std::wstring createOdbcFieldString(const std::wstring& name,
 }
 
 
-SQLSMALLINT tango2sqlType(int xd_type)
+SQLSMALLINT xd2sqlType(int xd_type)
 {
     switch (xd_type)
     {
@@ -550,7 +550,7 @@ int sql2xdType(SQLSMALLINT sql_type)
 
 
 // this function consolidates all the rules for creating a
-// tango column info structure from odbc field information
+// xd column info structure from odbc field information
 
 xd::IColumnInfoPtr createColInfo(int db_type,
                                     const std::wstring& col_name,
@@ -572,7 +572,7 @@ xd::IColumnInfoPtr createColInfo(int db_type,
         col_xd_type == xd::typeWideCharacter)
     {
         // mysql allows a zero-length character field,
-        // which is not allowed presently in tango
+        // which is not allowed presently in xd
         
         if (col_width == 0)
             col_width = 1;

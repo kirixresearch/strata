@@ -15,7 +15,7 @@
 
 class ColumnInfo : public xd::IColumnInfo
 {
-    XCM_CLASS_NAME("tango.ColumnInfo")
+    XCM_CLASS_NAME("xd.ColumnInfo")
     XCM_BEGIN_INTERFACE_MAP(ColumnInfo)
         XCM_INTERFACE_ENTRY(xd::IColumnInfo)
     XCM_END_INTERFACE_MAP()

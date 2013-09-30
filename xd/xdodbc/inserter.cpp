@@ -314,7 +314,7 @@ bool OdbcRowInserter::startInsert(const std::wstring& col_list)
         field->m_name = col_info->getName();
         field->m_xd_type = xd_type;
         field->m_sql_c_type = xd2sqlCType(xd_type);
-        field->m_sql_type = tango2sqlType(xd_type);
+        field->m_sql_type = xd2sqlType(xd_type);
         field->m_width = col_info->getWidth();
         field->m_scale = col_info->getScale();
         field->m_idx = i+1;

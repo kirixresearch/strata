@@ -50,7 +50,7 @@ inline std::wstring sql2wstring(const SQLWCHAR* s)
 
 void testSqlStmt(HSTMT stmt);
 void testSqlConn(HDBC hdbc);
-SQLSMALLINT tango2sqlType(int xd_type);
+SQLSMALLINT xd2sqlType(int xd_type);
 SQLSMALLINT xd2sqlCType(int xd_type);
 int sql2xdType(SQLSMALLINT sql_type);
 

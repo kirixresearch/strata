@@ -587,7 +587,7 @@ void HostApp::createDatabase(kscript::ExprEnv* env, kscript::Value* retval)
     if (env->getParamCount() < 2)
         return;
         
-    int db_type = scripthost::DbDatabaseType::toTangoDatabaseType(env->getParam(1)->getInteger());
+    int db_type = scripthost::DbDatabaseType::toXdDatabaseType(env->getParam(1)->getInteger());
     
     bool result = dbmgr->createDatabase(env->getParam(0)->getString(), db_type);
     
@@ -2933,11 +2933,11 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
                     if (mval->getMemberExists(L"source_width"))
                         field.source_width = mval->getMember(L"source_width")->getInteger();
                     if (mval->getMemberExists(L"source_encoding"))
-                        field.source_encoding = scripthost::DbEncoding::toTangoEncoding(mval->getMember(L"source_encoding")->getInteger());
+                        field.source_encoding = scripthost::DbEncoding::toXdEncoding(mval->getMember(L"source_encoding")->getInteger());
                     if (mval->getMemberExists(L"name"))
                         field.name = mval->getMember(L"name")->getString();
                     if (mval->getMemberExists(L"type"))
-                        field.type = scripthost::DbType::toTangoType(mval->getMember(L"type"));
+                        field.type = scripthost::DbType::toXdType(mval->getMember(L"type"));
                     if (mval->getMemberExists(L"width"))
                         field.width = mval->getMember(L"width")->getInteger();
                     if (mval->getMemberExists(L"scale"))
@@ -2989,7 +2989,7 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
             set->setRowWidth(row_width);
             set->setBeginningSkipCharacterCount(start_offset);
             
-            // FIXME: the tango interface needs to be fixed to
+            // FIXME: the xd interface needs to be fixed to
             // accept an actual list of line delimiters; right now
             // "\n" is assumed
             if (line_delimiters.length() > 0)
@@ -3108,7 +3108,7 @@ void HostData::assignDefinition(kscript::ExprEnv* env, kscript::Value* retval)
                     if (mval->getMemberExists(L"name"))
                         field.name = mval->getMember(L"name")->getString();
                     if (mval->getMemberExists(L"type"))
-                        field.type = scripthost::DbType::toTangoType(mval->getMember(L"type"));
+                        field.type = scripthost::DbType::toXdType(mval->getMember(L"type"));
                     if (mval->getMemberExists(L"width"))
                         field.width = mval->getMember(L"width")->getInteger();
                     if (mval->getMemberExists(L"scale"))

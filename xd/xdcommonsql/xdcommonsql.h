@@ -31,7 +31,7 @@ XCM_DECLARE_SMARTPTR(IXdsqlRowDeleter)
 
 xcm_interface IXdsqlDatabase : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("tango.IXdsqlDatabase")
+    XCM_INTERFACE_NAME("xd.IXdsqlDatabase")
 
 public:
 
@@ -41,7 +41,7 @@ public:
 
 xcm_interface IXdsqlRowDeleter : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("tango.IRowDeleter")
+    XCM_INTERFACE_NAME("xd.IRowDeleter")
 
 public:
 
@@ -53,7 +53,7 @@ public:
 
 xcm_interface IXdsqlTable : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("tango.IXdsqlTable")
+    XCM_INTERFACE_NAME("xd.IXdsqlTable")
 
 public:
 

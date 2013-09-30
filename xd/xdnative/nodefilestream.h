@@ -19,7 +19,7 @@
 class XdnativeDatabase;
 class NodeFileStream : public xd::IStream
 {
-    XCM_CLASS_NAME("tango.NodeFileStream")
+    XCM_CLASS_NAME("xd.NodeFileStream")
     XCM_BEGIN_INTERFACE_MAP(NodeFileStream)
         XCM_INTERFACE_ENTRY(xd::IStream)
     XCM_END_INTERFACE_MAP()

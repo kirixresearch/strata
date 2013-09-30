@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCOMMON_TANGO_H
-#define __XDCOMMON_TANGO_H
+#ifndef __XDCOMMON_XD_H
+#define __XDCOMMON_XD_H
 
 
 #include <xcm/xcm.h>
@@ -19,7 +19,7 @@
 namespace xd
 {
 
-// tango type definitions
+// xd type definitions
 
 typedef void* objhandle_t;
 typedef unsigned int jobid_t;
@@ -307,7 +307,7 @@ enum
 
 xcm_interface IStream : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("tango.IStream")
+    XCM_INTERFACE_NAME("xd.IStream")
     
 public:
 
@@ -323,7 +323,7 @@ public:
 
 xcm_interface IFileInfo : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("tango.IFileInfo")
+    XCM_INTERFACE_NAME("xd.IFileInfo")
 
 public:
 
@@ -343,7 +343,7 @@ public:
 
 xcm_interface IColumnInfo : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("tango.IColumnInfo")
+    XCM_INTERFACE_NAME("xd.IColumnInfo")
 
 public:
 
@@ -387,7 +387,7 @@ public:
 
 xcm_interface IStructure : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("tango.IStructure")
+    XCM_INTERFACE_NAME("xd.IStructure")
 
 public:
 
@@ -410,7 +410,7 @@ public:
 
 xcm_interface IIndexInfo : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("tango.IIndexInfo")
+    XCM_INTERFACE_NAME("xd.IIndexInfo")
 
 public:
 
@@ -421,7 +421,7 @@ public:
 
 xcm_interface IIterator : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("tango.IIterator")
+    XCM_INTERFACE_NAME("xd.IIterator")
 
 public:
 
@@ -469,7 +469,7 @@ public:
 
 xcm_interface IRowInserter : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("tango.IRowInserter")
+    XCM_INTERFACE_NAME("xd.IRowInserter")
 
 public:
 
@@ -495,7 +495,7 @@ public:
 
 xcm_interface IJob : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("tango.IJob")
+    XCM_INTERFACE_NAME("xd.IJob")
 
 public:
 
@@ -527,7 +527,7 @@ public:
 
 xcm_interface IAttributes : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("tango.IAttributes")
+    XCM_INTERFACE_NAME("xd.IAttributes")
 
 public:
     
@@ -608,7 +608,7 @@ struct GroupQueryParams
 
 xcm_interface IDatabase : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("tango.IDatabase")
+    XCM_INTERFACE_NAME("xd.IDatabase")
 
 public:
 
@@ -680,7 +680,7 @@ public:
 
 xcm_interface IDatabaseEntry : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("tango.IDatabaseEntry")
+    XCM_INTERFACE_NAME("xd.IDatabaseEntry")
 
 public:
 
@@ -691,7 +691,7 @@ public:
 
 xcm_interface IDatabaseMgr : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("tango.IDatabaseMgr")
+    XCM_INTERFACE_NAME("xd.IDatabaseMgr")
 
 public:
 
@@ -716,7 +716,7 @@ public:
 
 xcm_interface IRelation : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("tango.IRelation")
+    XCM_INTERFACE_NAME("xd.IRelation")
 
 public:
 
@@ -731,7 +731,7 @@ public:
 
 xcm_interface IRelationSchema : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("tango.IIRelationSchema")
+    XCM_INTERFACE_NAME("xd.IIRelationSchema")
 
 public:
 
@@ -749,7 +749,7 @@ public:
 
 xcm_interface IDelimitedTextSet : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("tango.IDelimitedTextSet")
+    XCM_INTERFACE_NAME("xd.IDelimitedTextSet")
 
 public:
 
@@ -793,7 +793,7 @@ public:
 
 xcm_interface IFixedLengthDefinition : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("tango.IFixedLengthDefinition")
+    XCM_INTERFACE_NAME("xd.IFixedLengthDefinition")
 
 public:
 
@@ -822,7 +822,7 @@ public:
 
 xcm_interface IIteratorRelation : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("tango.IteratorRelation")
+    XCM_INTERFACE_NAME("xd.IteratorRelation")
 
 public:
     
@@ -850,7 +850,7 @@ struct ColumnUpdateInfo
 
 xcm_interface ICacheRowUpdate : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("tango.ICacheRowUpdate")
+    XCM_INTERFACE_NAME("xd.ICacheRowUpdate")
 
 public:
 

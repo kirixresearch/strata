@@ -15,7 +15,7 @@
 
 xcm_interface IJobInternal : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("tango.IJobInternal")
+    XCM_INTERFACE_NAME("xd.IJobInternal")
 
 public:
 
@@ -50,7 +50,7 @@ XCM_DECLARE_SMARTPTR(IJobInternal)
 class JobInfo : public xd::IJob,
                 public IJobInternal
 {
-    XCM_CLASS_NAME("tango.Job")
+    XCM_CLASS_NAME("xd.Job")
     XCM_BEGIN_INTERFACE_MAP(JobInfo)
         XCM_INTERFACE_ENTRY(xd::IJob)
         XCM_INTERFACE_ENTRY(IJobInternal)

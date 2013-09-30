@@ -122,12 +122,12 @@ jobs::IJobPtr QueryTemplate::execute(int site_id)
     {
         // local database queries require this because of
         // view bugs in queries that don't return all columns
-        job->setExtraValue(L"tango.sqlAlwaysCopy", L"true");
+        job->setExtraValue(L"xd.sqlAlwaysCopy", L"true");
     }
      else
     {
         // for non-local queries, use pass-through to increase performance
-        job->setExtraValue(L"tango.sqlPassThrough", L"true");
+        job->setExtraValue(L"xd.sqlPassThrough", L"true");
     }
 
 

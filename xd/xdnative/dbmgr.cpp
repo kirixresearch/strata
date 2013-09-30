@@ -85,7 +85,7 @@ xd::IDatabasePtr DatabaseMgr::open(const std::wstring& _connection_str)
     // check if the provider refers to us, or a different dll/shared lib
     if (provider != L"xdnative")
     {
-        // the provider is some other tango DLL; we need to
+        // the provider is some other xd DLL; we need to
         // load it and pass the connection string to it
         std::string dbmgr_class = kl::tostring(provider);
         dbmgr_class += ".DatabaseMgr";

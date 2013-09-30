@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __XDCOMMON_TANGO_PRIVATE_H
-#define __XDCOMMON_TANGO_PRIVATE_H
+#ifndef __XDCOMMON_XD_PRIVATE_H
+#define __XDCOMMON_XD_PRIVATE_H
 
 
 xcm_interface IIteratorKeyAccess;
@@ -18,7 +18,7 @@ XCM_DECLARE_SMARTPTR(IIteratorKeyAccess)
 
 xcm_interface IIteratorKeyAccess : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("tango.IIteratorKeyAccess")
+    XCM_INTERFACE_NAME("xd.IIteratorKeyAccess")
 
 public:
 

@@ -15,7 +15,7 @@
 
 class IndexInfo : public xd::IIndexInfo
 {
-    XCM_CLASS_NAME("tango.IndexInfo")
+    XCM_CLASS_NAME("xd.IndexInfo")
     XCM_BEGIN_INTERFACE_MAP(IndexInfo)
         XCM_INTERFACE_ENTRY(xd::IIndexInfo)
     XCM_END_INTERFACE_MAP()

@@ -19,10 +19,10 @@
 #include "../../kscript/kscript.h"
 
 
-// conversion functions for tango and sql types
+// conversion functions for xd and sql types
 
 int sql2xdType(SQLSMALLINT sql_type);
-SQLSMALLINT tango2sqlType(int xd_type);
+SQLSMALLINT xd2sqlType(int xd_type);
 SQLSMALLINT xd2sqlCType(int xd_type);
 
 

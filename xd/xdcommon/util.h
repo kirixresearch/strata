@@ -86,7 +86,7 @@ void bindExprParser(kscript::ExprParser* parser);
 kscript::ExprParser* createExprParser();
 
 int kscript2xdType(int type);
-int tango2kscriptType(int type);
+int xd2kscriptType(int type);
 
 xd::IIndexInfoPtr xdLookupIndex(xd::IIndexInfoEnumPtr enums,
                                    const std::wstring& expr,

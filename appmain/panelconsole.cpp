@@ -1047,7 +1047,7 @@ void ConsolePanel::runCommand(wxString& command)
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.execute-job");
 
     if (flags & xd::sqlAlwaysCopy)
-        job->setExtraValue(L"tango.sqlAlwaysCopy", L"true");
+        job->setExtraValue(L"xd.sqlAlwaysCopy", L"true");
 
 
     // run the job

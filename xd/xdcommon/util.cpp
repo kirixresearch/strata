@@ -920,7 +920,7 @@ std::wstring getUniqueString()
 
 
 
-int tango2kscriptType(int type)
+int xd2kscriptType(int type)
 {
     switch (type)
     {

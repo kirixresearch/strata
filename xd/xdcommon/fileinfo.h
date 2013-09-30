@@ -19,7 +19,7 @@ namespace xdcommon
 
 class FileInfo : public xd::IFileInfo
 {
-    XCM_CLASS_NAME("tango.FileInfo")
+    XCM_CLASS_NAME("xd.FileInfo")
     XCM_BEGIN_INTERFACE_MAP(FileInfo)
         XCM_INTERFACE_ENTRY(xd::IFileInfo)
     XCM_END_INTERFACE_MAP()

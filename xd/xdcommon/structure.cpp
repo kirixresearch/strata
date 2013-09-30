@@ -610,7 +610,7 @@ static bool group_parse_hook(kscript::ExprParseHookInfo& hook_info)
             return false;
         
         kscript::Value* v = new kscript::Value;
-        v->setGetVal(tango2kscriptType(col->getType()),
+        v->setGetVal(xd2kscriptType(col->getType()),
                      NULL,
                      NULL);
         hook_info.res_element = v;

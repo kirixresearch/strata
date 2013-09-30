@@ -51,7 +51,7 @@ bool calcfieldsModifyStructure(std::vector<StructureAction>& actions,
 
 xcm_interface IStructureInternal : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("tango.IStructureInternal")
+    XCM_INTERFACE_NAME("xd.IStructureInternal")
 
 public:
 
@@ -80,7 +80,7 @@ XCM_DECLARE_SMARTPTR(IStructureInternal)
 class Structure : public xd::IStructure,
                   public IStructureInternal
 {
-    XCM_CLASS_NAME("tango.Structure")
+    XCM_CLASS_NAME("xd.Structure")
     XCM_BEGIN_INTERFACE_MAP(Structure)
         XCM_INTERFACE_ENTRY(xd::IStructure)
         XCM_INTERFACE_ENTRY(IStructureInternal)

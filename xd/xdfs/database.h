@@ -50,7 +50,7 @@ public:
 
 xcm_interface IFsDatabase : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("tango.IFsDatabase")
+    XCM_INTERFACE_NAME("xd.IFsDatabase")
 
 public:
 

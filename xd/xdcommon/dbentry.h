@@ -15,7 +15,7 @@
 
 class DatabaseEntry : public xd::IDatabaseEntry
 {
-    XCM_CLASS_NAME("tango.DatabaseEntry")
+    XCM_CLASS_NAME("xd.DatabaseEntry")
     XCM_BEGIN_INTERFACE_MAP(DatabaseEntry)
         XCM_INTERFACE_ENTRY(xd::IDatabaseEntry)
     XCM_END_INTERFACE_MAP()

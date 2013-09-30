@@ -74,7 +74,7 @@ public:
 
     void constructor(kscript::ExprEnv* env, kscript::Value* retval);
     
-    static int toTangoDatabaseType(int type);
+    static int toXdDatabaseType(int type);
     static int fromString(const std::wstring& str);
 };
 
@@ -120,8 +120,8 @@ public:
 
     void constructor(kscript::ExprEnv* env, kscript::Value* retval);
     
-    static int toTangoEncoding(int type);
-    static int fromTangoEncoding(int type);
+    static int toXdEncoding(int type);
+    static int fromXdEncoding(int type);
 };
 
 
@@ -171,9 +171,9 @@ public:
 
     void constructor(kscript::ExprEnv* env, kscript::Value* retval);
     
-    static int toTangoType(kscript::Value* val);
-    static int toTangoType(int type);
-    static int fromTangoType(int type);
+    static int toXdType(kscript::Value* val);
+    static int toXdType(int type);
+    static int fromXdType(int type);
 };
 
 

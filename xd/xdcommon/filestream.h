@@ -18,7 +18,7 @@
 
 class FileStream : public xd::IStream
 {
-    XCM_CLASS_NAME("tango.FileStream")
+    XCM_CLASS_NAME("xd.FileStream")
     XCM_BEGIN_INTERFACE_MAP(FileStream)
         XCM_INTERFACE_ENTRY(xd::IStream)
     XCM_END_INTERFACE_MAP()

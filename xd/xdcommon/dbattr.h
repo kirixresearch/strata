@@ -18,7 +18,7 @@
 
 class DatabaseAttributes : public xd::IAttributes
 {
-    XCM_CLASS_NAME("tango.DatabaseAttributes")
+    XCM_CLASS_NAME("xd.DatabaseAttributes")
     XCM_BEGIN_INTERFACE_MAP(DatabaseAttributes)
         XCM_INTERFACE_ENTRY(xd::IAttributes)
     XCM_END_INTERFACE_MAP()

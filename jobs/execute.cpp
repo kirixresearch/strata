@@ -88,7 +88,7 @@ int ExecuteJob::runJob()
 
 
     unsigned int flags = xd::sqlPassThrough;
-    if (getExtraValue(L"tango.sqlAlwaysCopy") == L"true")
+    if (getExtraValue(L"xd.sqlAlwaysCopy") == L"true")
         flags = xd::sqlAlwaysCopy;
 
     xcm::IObjectPtr result;

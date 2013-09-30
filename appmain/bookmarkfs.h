@@ -56,7 +56,7 @@ public:
 
 xcm_interface IFsBookmarkItem : public xcm::IObject
 {
-    XCM_INTERFACE_NAME("tango.IFsBookmarkItem")
+    XCM_INTERFACE_NAME("appmain.IFsBookmarkItem")
 
 public:
 

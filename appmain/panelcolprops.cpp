@@ -52,7 +52,7 @@ static int dlgtype2xdtype(int dlg_type)
     return xd::typeInvalid;
 }
 
-static int tangotype2dlgtype(int xd_type)
+static int xdtype2dlgtype(int xd_type)
 {
     switch (xd_type)
     {
@@ -391,7 +391,7 @@ void ColPropsPanel::setName(const wxString& name)
 void ColPropsPanel::setType(int type)
 {
     m_last_type = type;
-    m_coltype_combo->SetSelection(tangotype2dlgtype(type));
+    m_coltype_combo->SetSelection(xdtype2dlgtype(type));
 }
 
 void ColPropsPanel::setWidth(int width)
