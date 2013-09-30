@@ -1726,7 +1726,7 @@ void Controller::apiImportUpload(RequestInfo& req)
 
 void Controller::apiImportLoad(RequestInfo& req)
 {
-    if (!req.getValueExists(L"handle"))
+    if (!req.getValueExists(L"handle") || !req.getValueExists(L"target_path"))
     {
         returnApiError(req, "Missing handle parameter");
         return;

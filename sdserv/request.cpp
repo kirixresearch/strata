@@ -209,6 +209,9 @@ void RequestInfo::read()
         while (true)
         {
             buf_len = mg_read(m_conn, buf, 4096);
+            if (buf_len == -1)
+                break;
+
             m_post_data_buf.append((unsigned char*)buf, buf_len);
             
             if (buf_len != 4096)
