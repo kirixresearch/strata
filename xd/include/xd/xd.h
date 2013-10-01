@@ -639,7 +639,7 @@ public:
     virtual IFileInfoPtr getFileInfo(const std::wstring& path) = 0;
     virtual IFileInfoEnumPtr getFolderInfo(const std::wstring& path) = 0;
     
-    virtual xd::IDatabasePtr getMountDatabase(const std::wstring& path) = 0;
+    virtual IDatabasePtr getMountDatabase(const std::wstring& path) = 0;
     virtual bool setMountPoint(const std::wstring& path, const std::wstring& connection_str,  const std::wstring& remote_path) = 0;
     virtual bool getMountPoint(const std::wstring& path, std::wstring& connection_str,  std::wstring& remote_path) = 0;
 
@@ -654,7 +654,7 @@ public:
                              const std::wstring& name) = 0;
     virtual IIndexInfoEnumPtr getIndexEnum(const std::wstring& path) = 0;
 
-    virtual xd::IStructurePtr describeTable(const std::wstring& path) = 0;
+    virtual IStructurePtr describeTable(const std::wstring& path) = 0;
 
     virtual IRowInserterPtr bulkInsert(const std::wstring& path) = 0;
 
@@ -756,9 +756,9 @@ public:
     virtual bool saveConfiguration() = 0;
     virtual bool deleteConfiguration() = 0;
     
-    virtual xd::IStructurePtr getSourceStructure() = 0;
-    virtual xd::IStructurePtr getDestinationStructure() = 0;
-    virtual xd::IStructurePtr getStructure() = 0;
+    virtual IStructurePtr getSourceStructure() = 0;
+    virtual IStructurePtr getDestinationStructure() = 0;
+    virtual IStructurePtr getStructure() = 0;
     
     virtual bool modifySourceStructure(IStructure* struct_config, IJob* job) = 0;
     virtual bool modifyDestinationStructure(IStructure* struct_config, IJob* job) = 0;
@@ -787,7 +787,7 @@ public:
     
     // check rows specifies the number of rows to check; -1 instructs
     // the function to check all rows
-    virtual bool determineColumns(int check_rows, xd::IJob* job) = 0;
+    virtual bool determineColumns(int check_rows, IJob* job) = 0;
 };
 
 
@@ -800,9 +800,9 @@ public:
     virtual bool saveConfiguration() = 0;
     virtual bool deleteConfiguration() = 0;
 
-    virtual xd::IStructurePtr getSourceStructure() = 0;
-    virtual xd::IStructurePtr getDestinationStructure() = 0;
-    virtual xd::IStructurePtr getStructure() = 0;
+    virtual IStructurePtr getSourceStructure() = 0;
+    virtual IStructurePtr getDestinationStructure() = 0;
+    virtual IStructurePtr getStructure() = 0;
     
     virtual bool modifySourceStructure(IStructure* struct_config, IJob* job) = 0;
     virtual bool modifyDestinationStructure(IStructure* struct_config, IJob* job) = 0;
@@ -826,8 +826,8 @@ xcm_interface IIteratorRelation : public xcm::IObject
 
 public:
     
-    virtual IIteratorPtr getChildIterator(xd::IRelationPtr relation) = 0;
-    virtual IIteratorPtr getFilteredChildIterator(xd::IRelationPtr relation) = 0;
+    virtual IIteratorPtr getChildIterator(IRelationPtr relation) = 0;
+    virtual IIteratorPtr getFilteredChildIterator(IRelationPtr relation) = 0;
 };
 
 
@@ -837,12 +837,12 @@ public:
 
 struct ColumnUpdateInfo
 {
-    xd::objhandle_t handle;
+    objhandle_t handle;
     std::string str_val;
     std::wstring wstr_val;
     double dbl_val;
     int int_val;
-    xd::datetime_t date_val;
+    datetime_t date_val;
     bool bool_val;
     bool null;
 };
@@ -854,21 +854,16 @@ xcm_interface ICacheRowUpdate : public xcm::IObject
 
 public:
 
-    virtual bool updateCacheRow(xd::rowid_t rowid,
-                                xd::ColumnUpdateInfo* info,
+    virtual bool updateCacheRow(rowid_t rowid,
+                                ColumnUpdateInfo* info,
                                 size_t info_size) = 0;
 };
-
 
 
 }; // namespace xd
 
 
 
-
 #include <xd/util.h>
 
-
 #endif
-
-
