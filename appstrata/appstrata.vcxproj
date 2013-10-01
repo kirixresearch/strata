@@ -118,7 +118,7 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;comctl32.lib;wsock32.lib;rpcrt4.lib;wxbase29ud.lib;wxbase29ud_net.lib;wxbase29ud_xml.lib;wxmsw29ud_core.lib;wxmsw29ud_adv.lib;wxmsw29ud_aui.lib;wxmsw29ud_html.lib;wxmsw29ud_stc.lib;wxmsw29ud_webview.lib;wxexpatd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxscintillad.lib;../supp/haru/lib/harud.lib;llibcurl_a_debug.lib;../kl/lib/klud.lib;../kcl/lib/kclud.lib;../jobs/lib/jobsud.lib;../paladin/lib/paladinud.lib;../kscript/lib/kscriptud.lib;../scripthost/lib/scripthostud.lib;../kcanvas/lib/kcanvasud.lib;../webconnect/lib/webconnectud.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>odbc32.lib;odbccp32.lib;comctl32.lib;wsock32.lib;rpcrt4.lib;wxbase29ud.lib;wxbase29ud_net.lib;wxbase29ud_xml.lib;wxmsw29ud_core.lib;wxmsw29ud_adv.lib;wxmsw29ud_aui.lib;wxmsw29ud_html.lib;wxmsw29ud_stc.lib;wxmsw29ud_webview.lib;wxexpatd.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;wxscintillad.lib;../supp/haru/lib/harud.lib;libcurl_a_debug.lib;../kl/lib/klud.lib;../kcl/lib/kclud.lib;../jobs/lib/jobsud.lib;../paladin/lib/paladinud.lib;../kscript/lib/kscriptud.lib;../scripthost/lib/scripthostud.lib;../kcanvas/lib/kcanvasud.lib;../webconnect/lib/webconnectud.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../supp/wxWidgets/lib/vc_lib;../supp/curl/builds/libcurl-debug-static-ssl-static-ipv6-sspi-spnego/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
