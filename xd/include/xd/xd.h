@@ -550,6 +550,7 @@ struct FormatInfo
         format = formatNative;
         encoding = encodingUndefined;
         first_row_column_names = true;
+        determine_structure = false;
     };
     
     int format;
@@ -560,6 +561,7 @@ struct FormatInfo
     std::wstring delimiters;
     std::wstring line_delimiters;
     bool first_row_column_names;
+    bool determine_structure;
 };
 
 

@@ -1498,6 +1498,9 @@ IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatInfo
             // default format specified
             if (delimiters != tset->getDelimiters())
                 tset->setDelimiters(fi.delimiters, true);
+
+            if (fi.determine_structure)
+                tset->determineColumns(-1, NULL);
         }
          else if (fi.format == xd::formatDelimitedText)
         {
@@ -1530,7 +1533,7 @@ IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatInfo
                 need_refresh = true;
             }
 
-            if (need_refresh)
+            if (need_refresh || fi.determine_structure)
                 tset->determineColumns(-1, NULL);
         }
 

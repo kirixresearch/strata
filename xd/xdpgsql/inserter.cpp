@@ -301,7 +301,10 @@ void PgsqlRowInserter::finishInsert()
 
     flush();
 
-    int res = PQputCopyEnd(m_conn, NULL);
+    PQputCopyEnd(m_conn, NULL);
+
+    PGresult* res = PQgetResult(m_conn);
+
 
     if (m_utf8data)
     {

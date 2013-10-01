@@ -130,6 +130,7 @@ int LoadJob::runJob()
 
         xd::QueryParams qp;
         qp.from = source_path;
+        qp.format.determine_structure = true; // for csvs where we don't know the structure, perform a full scan to get correct metrics
 
         if (object.childExists("source_format"))
         {
