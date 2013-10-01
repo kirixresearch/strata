@@ -244,10 +244,18 @@ bool PgsqlRowInserter::startInsert(const std::wstring& col_list)
     if (!m_conn)
         return false;
 
+    for (it = columns.begin(); it != columns.end(); ++it)
+    {
+        if (it != columns.begin())
+            field_list += L",";
+        field_list +=  pgsqlQuoteIdentifierIfNecessary(*it);
+    }
+
 
     std::wstring sql;
-    sql = L"COPY %tbl% FROM stdin";
+    sql = L"COPY %tbl% (%cols%) FROM stdin";
     kl::replaceStr(sql, L"%tbl%", pgsqlQuoteIdentifierIfNecessary(m_table));
+    kl::replaceStr(sql, L"%cols%", field_list);
 
     PGresult* res = PQexec(m_conn, kl::toUtf8(sql));
     PQclear(res);
@@ -293,7 +301,7 @@ void PgsqlRowInserter::finishInsert()
 
     flush();
 
-    PQputCopyEnd(m_conn, NULL);
+    int res = PQputCopyEnd(m_conn, NULL);
 
     if (m_utf8data)
     {
@@ -328,7 +336,7 @@ bool PgsqlRowInserter::flush()
     kl::utf8_wtoutf8(m_utf8data, m_utf8data_len, m_wdata.c_str(), m_wdata.length(), &output_buf_size);
     m_utf8data[output_buf_size] = 0;
 
-    PQputCopyData(m_conn, m_utf8data, (int)output_buf_size);
+    int res = PQputCopyData(m_conn, m_utf8data, (int)output_buf_size);
 
     m_buf_rows = 0;
     m_wdata = L"";
