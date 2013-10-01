@@ -1776,6 +1776,8 @@ public:
         object["source_path"] = m_source_table;
         object["destination_path"] = m_target_table;
 
+        object["overwrite"] = true;
+
 
         m_job->setParameters(params.toString());
         m_job->runJob();
