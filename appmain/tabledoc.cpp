@@ -704,6 +704,12 @@ bool TableDoc::onSiteClosing(bool force)
     if (isTemporary())
     {
         TableDocMgr::deleteModel(m_model->getId());
+
+        xd::IDatabasePtr db = g_app->getDatabase();
+        if (db.isOk())
+        {
+            db->deleteFile(m_path);
+        }
     }
 
     return true;
