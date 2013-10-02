@@ -518,7 +518,7 @@ void MultiFileInfoPanel::onSave(wxCommandEvent& event)
     colinfo->setWidth(8);
     colinfo->setScale(0);
 
-    std::wstring output_path = L"xtmp_" + kl::getUniqueString();
+    std::wstring output_path = xd::getTemporaryPath();
 
     if (!db->createTable(output_path, output_structure, NULL))
         return;

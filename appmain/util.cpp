@@ -930,16 +930,6 @@ bool getMountPointHelper(xd::IDatabasePtr& db, const std::wstring& _path, std::w
     return false;
 }
 
-bool isTemporaryTable(const std::wstring& path)
-{
-    if (path.find(L"xtmp_") != path.npos ||
-        path.find(L".temp") != path.npos)
-    {
-        return true;
-    }
-
-    return false;
-}
 
 // gets the filename from the path
 wxString getFilenameFromPath(const wxString& path, bool include_extension)

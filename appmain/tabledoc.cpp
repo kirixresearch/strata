@@ -1572,7 +1572,7 @@ void TableDoc::onSaveAsExternal(wxCommandEvent& evt)
 
     wxString filename = getFilenameFromPath(m_path, false);
     
-    if (isTemporaryTable(m_path))
+    if (xd::isTemporaryPath(m_path))
         filename = _("Untitled");
     
     wxFileDialog dlg(g_app->getMainWindow(),
@@ -1797,7 +1797,7 @@ void TableDoc::onDoReloadRefresh(wxCommandEvent& evt)
         
         xf_remove(m_reload_filename);
         
-        std::wstring output_path = L"xtmp_" + kl::getUniqueString();
+        std::wstring output_path = xd::getTemporaryPath();
         if (!parser.convertToTable(output_path))
             return;
 
@@ -2687,7 +2687,7 @@ wxString TableDoc::makeCaption(const wxString& title)
     // make panel caption
     wxString caption = title;
 
-    if (!isTemporaryTable(m_path))
+    if (!xd::isTemporaryPath(m_path))
     {
         wxString name = kl::afterLast(m_path, '/');
 
@@ -6310,7 +6310,7 @@ void TableDoc::onSummary(wxCommandEvent& evt)
 
     kl::JsonNode params;
     params["input"].setString(m_path);
-    params["output"].setString(L"xtmp_" + kl::getUniqueString());
+    params["output"].setString(xd::getTemporaryPath());
     params["columns"].setArray();
     params["where"].setString(getFilter());
 
@@ -7490,7 +7490,7 @@ void TableDoc::copyRecords(const std::wstring& condition)
         kl::JsonNode params;
 
         params["input_iterator"].setString(kl::stdswprintf(L"%p", (const void*)iter.p));
-        params["output"].setString(L"xtmp_" + kl::getUniqueString());
+        params["output"].setString(xd::getTemporaryPath());
         params["where"].setString(condition);
 
         job->setParameters(params.toString());
@@ -7530,7 +7530,7 @@ void TableDoc::copyRecords(const std::wstring& condition)
         kl::JsonNode params;
 
         params["input"].setString(m_path);
-        params["output"].setString(L"xtmp_" + kl::getUniqueString());
+        params["output"].setString(xd::getTemporaryPath());
         params["where"].setString(final_condition);
         params["order"].setString(getSortOrder());
 

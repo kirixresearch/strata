@@ -334,7 +334,7 @@ bool GroupPanel::initDoc(IFramePtr frame,
 
     wxString caption = _("Group");
 
-    if (!isTemporaryTable(towstr(m_path)))
+    if (!xd::isTemporaryPath(towstr(m_path)))
     {
         wxString name = m_path.AfterLast(wxT('/'));
         caption += wxT(" - [");
@@ -896,7 +896,7 @@ void GroupPanel::onExecute(wxCommandEvent& evt)
 
     kl::JsonNode params;
     params["input"].setString(towstr(m_path));
-    params["output"].setString(L"xtmp_" + kl::getUniqueString());
+    params["output"].setString(xd::getTemporaryPath());
     params["group"].setArray();
     params["columns"].setArray();
     params["where"].setString(towstr(m_where_condition));

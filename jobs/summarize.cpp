@@ -177,7 +177,7 @@ int SummarizeJob::runJob()
 
     // STEP 2: create a group job and pass the summarize parameters
 
-    std::wstring group_output_set_path = L"xtmp_" + kl::getUniqueString();
+    std::wstring group_output_set_path = xd::getTemporaryPath();
 
     xd::IJobPtr xd_job;
     xd_job = m_db->createJob();

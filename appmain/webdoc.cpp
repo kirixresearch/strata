@@ -779,7 +779,7 @@ public:
         
         xf_remove(towstr(filename));
 
-        std::wstring output_path = L"xtmp_" + kl::getUniqueString();
+        std::wstring output_path = xd::getTemporaryPath();
 
 
         if (!parser.convertToTable(output_path))
@@ -3267,7 +3267,7 @@ void WebDoc::onShowContextMenu(wxWebEvent& evt)
             
                 wxDOMNode target = evt.GetTargetNode();
                 
-                std::wstring output_path = L"xtmp_" + kl::getUniqueString();
+                std::wstring output_path = xd::getTemporaryPath();
 
                 if (!makeTableFromDom(target, output_path))
                     return;

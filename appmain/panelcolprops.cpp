@@ -238,7 +238,7 @@ bool ColPropsPanel::initDoc(IFramePtr frame,
     wxString caption = _("Calculated Field");
 
 
-    if (!isTemporaryTable(m_path))
+    if (!xd::isTemporaryPath(m_path))
     {
         caption += " - [";
         caption += m_path;

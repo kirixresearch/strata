@@ -2236,7 +2236,7 @@ bool convertToNativeTables(xd::IDatabasePtr db,
         
         // need to make an xdnative copy of the set
         xd::IStructurePtr structure = st_it->set->getStructure();
-        std::wstring output_path = L"xtmp_" + kl::getUniqueString();
+        std::wstring output_path = xd::getTemporaryPath();
         if (!db->createTable(output_path, structure, NULL))
         {
             // fail out
@@ -3031,7 +3031,7 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
 
     if (join_operation)
     {
-        std::wstring join_output_path = L"xtmp_" + kl::getUniqueString();
+        std::wstring join_output_path = xd::getTemporaryPath();
 
         bool res = doJoin(static_cast<xd::IDatabase*>(db),
                           source_tables,
@@ -3243,7 +3243,7 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
 
         xd::GroupQueryParams info;
         info.input = set;
-        info.output = L"xtmp_" + kl::getUniqueString();
+        info.output = xd::getTemporaryPath();
         info.columns = field_str;
         info.having = having;
         info.group = group_by_str;
@@ -3422,7 +3422,7 @@ xd::IIteratorPtr sqlSelect(xd::IDatabasePtr db,
     }
      else
     {
-        output_path = L"xtmp_" + kl::getUniqueString();
+        output_path = xd::getTemporaryPath();
         create_result = db->createTable(output_path, output_structure, NULL);
     }
 

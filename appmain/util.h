@@ -238,7 +238,7 @@ wxString getObjectPathFromMountPath(const wxString& database_path);
 wxString getPhysPathFromMountPath(const wxString& database_path);
 std::wstring getMountRoot(xd::IDatabasePtr db, const std::wstring path);
 bool getMountPointHelper(xd::IDatabasePtr& db, const std::wstring& path, std::wstring& cstr, std::wstring& rpath);
-bool isTemporaryTable(const std::wstring& path);
+bool xd::isTemporaryPath(const std::wstring& path);
 
 // gets the filename from the path
 wxString getFilenameFromPath(const wxString& path, bool include_extension = true);

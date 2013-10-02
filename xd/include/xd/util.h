@@ -252,6 +252,16 @@ inline std::wstring getTemporaryPath()
     return temp_path;
 }
 
+inline bool isTemporaryPath(const std::wstring& path)
+{
+    if (path.find(L"xtmp_") != path.npos ||
+        path.find(L".temp") != path.npos)
+    {
+        return true;
+    }
+
+    return false;
+}
 
 
 inline std::wstring appendPath(const std::wstring& path, const std::wstring& newpart, wchar_t ch = '/')

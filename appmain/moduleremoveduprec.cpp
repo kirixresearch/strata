@@ -298,7 +298,7 @@ bool RemoveDupRecWizard::initDoc(IFramePtr frame,
         {
             std::wstring path = table_doc->getPath();
 
-            if (!isTemporaryTable(path))
+            if (!xd::isTemporaryPath(path))
                 m_info->m_input_path = path;
         }        
     }
@@ -393,7 +393,7 @@ void RemoveDupRecWizard::onWizardFinished(kcl::Wizard* wizard)
     // configure the job parameters
     kl::JsonNode params;
     params["input"].setString(towstr(m_info->m_input_path));
-    params["output"].setString(L"xtmp_" + kl::getUniqueString());
+    params["output"].setString(xd::getTemporaryPath());
 
     if (m_info->m_output_path.Length() > 0)
         params["output"].setString(towstr(m_info->m_output_path));

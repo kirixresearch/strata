@@ -328,7 +328,7 @@ bool StructureDoc::setModifySet(const std::wstring& path)
 
         m_path = path;
 
-        if (isTemporaryTable(m_path))
+        if (xd::isTemporaryPath(m_path))
         {
             // fire this event so that the URL will be updated with the new path
             if (m_frame.isOk())

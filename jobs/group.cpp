@@ -176,7 +176,7 @@ int GroupJob::runJob()
 
         xd::GroupQueryParams info1;
         info1.input = input_path;
-        info1.output = L"xtmp_" + kl::getUniqueString();
+        info1.output = xd::getTemporaryPath();
         info1.group = group_params;
         info1.columns = L"[DETAIL]";
         info1.where = where_params;
@@ -203,7 +203,7 @@ int GroupJob::runJob()
 
 
 
-        std::wstring output2 = L"xtmp_" + kl::getUniqueString();
+        std::wstring output2 = xd::getTemporaryPath();
         std::wstring sql = L"SELECT DISTINCT * INTO " + output2 + L" FROM " + info1.output;
         m_to_delete.push_back(output2);
 

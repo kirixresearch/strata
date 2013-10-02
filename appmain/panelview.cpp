@@ -59,7 +59,7 @@ ViewPanel::ViewPanel(ITableDocPtr tabledoc)
     
     std::wstring path = tabledoc->getPath();
 
-    if (isTemporaryTable(path))
+    if (xd::isTemporaryPath(path))
         m_set_path = "";
             else
         m_set_path = path;

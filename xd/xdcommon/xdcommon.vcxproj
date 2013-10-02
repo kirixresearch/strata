@@ -328,6 +328,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\xd\util.h" />
     <ClInclude Include="..\include\xd\xd.h" />
     <ClInclude Include="block.h" />
     <ClInclude Include="cmnbaseiterator.h" />

@@ -114,7 +114,7 @@ bool ReplaceRowsPanel::initDoc(IFramePtr frame,
     //  make panel caption
     wxString caption = _("Update");
 
-    if (!isTemporaryTable(towstr(m_path)))
+    if (!xd::isTemporaryPath(towstr(m_path)))
     {
         caption += wxT(" - [");
         caption += m_path;

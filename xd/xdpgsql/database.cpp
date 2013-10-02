@@ -1669,7 +1669,7 @@ bool PgsqlDatabase::execute(const std::wstring& command,
 
         if (flags & xd::sqlAlwaysCopy)
         {
-            std::wstring tbl = L"xtmp_" + kl::getUniqueString();
+            std::wstring tbl = xd::getTemporaryPath();
             std::wstring command2 = L"CREATE TABLE " + tbl + L" AS " + command;
 
             xcm::IObjectPtr resobj;
