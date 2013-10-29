@@ -1477,7 +1477,7 @@ static std::wstring num2str(Value* num,
          else
         swprintf(fmt, 32, L"%%%s%s%d.%d%c", left_justify ? "-" : "", zero_padded ? "0" : "", pad, scale, fmt_char);
     
-    if (fmt_char == 'd')
+    if (fmt_char == 'd' || fmt_char == 'u')
         swprintf(res, 255, fmt, num->getInteger());
          else
         swprintf(res, 255, fmt, num->getDouble());
@@ -1614,6 +1614,7 @@ void String::sprintf(ExprEnv* env, void* param, Value* retval)
                 case 'x':
                 case 'X':
                 case 'd':
+                case 'u':
                 case 'f':
                     result.append(num2str(val_arg, *p, left_justified, zero_padded, padding, scale));
                     break;
