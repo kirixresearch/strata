@@ -11,167 +11,155 @@
 
 #include "appmain.h"
 #include "dlgpassword.h"
+#include <wx/artprov.h>
 
 
-enum
-{
-    ID_UsernameTextCtrl = wxID_HIGHEST + 1,
-    ID_PasswordTextCtrl
-};
 
-
-BEGIN_EVENT_TABLE(DlgPassword, wxWindow)
+BEGIN_EVENT_TABLE(DlgPassword, wxDialog)
     EVT_BUTTON(wxID_OK, DlgPassword::onOK)
     EVT_BUTTON(wxID_CANCEL, DlgPassword::onCancel)
 END_EVENT_TABLE()
 
 
-DlgPassword::DlgPassword()
+DlgPassword::DlgPassword(wxWindow* parent) : wxDialog(parent,
+                                -1,
+                                _("Sign In"),
+                                wxDefaultPosition,
+                                wxSize(400, 200),
+                                wxDEFAULT_DIALOG_STYLE |
+                                wxCENTER)
 {
-    m_message = _("Enter username and password for this web site:");
-    m_username = wxEmptyString;
-}
-
-DlgPassword::~DlgPassword()
-{
-
-}
-
-bool DlgPassword::initDoc(IFramePtr frame,
-                          IDocumentSitePtr doc_site,
-                          wxWindow* docsite_wnd,
-                          wxWindow* panesite_wnd)
-{
-    // -- create document's window --
-    bool result = Create(docsite_wnd,
-                         -1,
-                         wxDefaultPosition,
-                         wxSize(320, 124),
-                         wxNO_FULL_REPAINT_ON_RESIZE);
-    if (!result)
-    {
-        return false;
-    }
-
-    doc_site->setCaption(_("Login"));
-    m_doc_site = doc_site;
-
-
-    wxStaticText* label_message = new wxStaticText(this, -1, m_message);
-    resizeStaticText(label_message);
-    
-    
-    // -- create the username sizer --
-    
+    // create the username sizer
+        
     wxStaticText* label_username = new wxStaticText(this,
                                                     -1,
-                                                    _("Username:"),
+                                                    _("User Name:"),
                                                     wxDefaultPosition,
-                                                    wxDefaultSize,
-                                                    wxALIGN_RIGHT);
+                                                    wxDefaultSize);
     m_username_ctrl = new wxTextCtrl(this, ID_UsernameTextCtrl, m_username);
-    
+        
     wxBoxSizer* username_sizer = new wxBoxSizer(wxHORIZONTAL);
     username_sizer->Add(label_username, 0, wxALIGN_CENTER);
-    username_sizer->AddSpacer(5);
     username_sizer->Add(m_username_ctrl, 1, wxEXPAND);
-    
-    
-    // -- create the password sizer --
-    
+        
+        
+    // create the password sizer
+        
     wxStaticText* label_password = new wxStaticText(this,
                                                     -1,
                                                     _("Password:"),
                                                     wxDefaultPosition,
-                                                    wxDefaultSize,
-                                                    wxALIGN_RIGHT);
-    m_password_ctrl = new wxTextCtrl(this, ID_PasswordTextCtrl);
-    
+                                                    wxDefaultSize);
+    m_password_ctrl = new wxTextCtrl(this,
+                                        ID_PasswordTextCtrl,
+                                        wxEmptyString,
+                                        wxDefaultPosition,
+                                        wxDefaultSize,
+                                        wxTE_PASSWORD);
+        
     wxBoxSizer* password_sizer = new wxBoxSizer(wxHORIZONTAL);
     password_sizer->Add(label_password, 0, wxALIGN_CENTER);
-    password_sizer->AddSpacer(5);
     password_sizer->Add(m_password_ctrl, 1, wxEXPAND);
 
 
-    // -- create a platform standards-compliant OK/Cancel sizer --
-    
+    // create a platform standards-compliant OK/Cancel sizer
+        
+    wxButton* ok_button = new wxButton(this, wxID_OK);
+    wxButton* cancel_button = new wxButton(this, wxID_CANCEL);
+        
     wxStdDialogButtonSizer* ok_cancel_sizer = new wxStdDialogButtonSizer;
-    ok_cancel_sizer->AddButton(new wxButton(this, wxID_OK));
-    ok_cancel_sizer->AddButton(new wxButton(this, wxID_CANCEL));
+    ok_cancel_sizer->AddButton(ok_button);
+    ok_cancel_sizer->AddButton(cancel_button);
     ok_cancel_sizer->Realize();
     ok_cancel_sizer->AddSpacer(5);
-    
-    // -- this code is necessary to get the sizer's bottom margin to 8 --
+        
+    ok_button->SetDefault();
+        
+    // this code is necessary to get the sizer's bottom margin to 8
     wxSize min_size = ok_cancel_sizer->GetMinSize();
     min_size.SetHeight(min_size.GetHeight()+16);
     ok_cancel_sizer->SetMinSize(min_size);
-    
-    
-    // -- code to allow us to line up the static text elements --
-    wxSize max_size = getMaxTextSize(label_username,
-                                          label_password);
-    max_size.x += 20;
+        
+        
+    // code to allow us to line up the static text elements
+    wxSize s1 = label_username->GetSize();
+    wxSize s2 = label_password->GetSize();
+    wxSize max_size = wxSize(wxMax(s1.x, s2.x), wxMax(s1.y, s2.y));
+    max_size.x += 10;
     username_sizer->SetItemMinSize(label_username, max_size);
     password_sizer->SetItemMinSize(label_password, max_size);
 
 
+    // create username/password sizer
+        
+    wxBitmap bmp = wxArtProvider::GetBitmap(wxART_QUESTION, wxART_MESSAGE_BOX);
+    wxStaticBitmap* bitmap_question = new wxStaticBitmap(this, -1, bmp);
+    m_message_ctrl = new wxStaticText(this, -1, m_message);
+        
+    wxBoxSizer* vert_sizer = new wxBoxSizer(wxVERTICAL);
+    vert_sizer->Add(m_message_ctrl, 0, wxEXPAND);
+    vert_sizer->AddSpacer(16);
+    vert_sizer->Add(username_sizer, 0, wxEXPAND);
+    vert_sizer->AddSpacer(8);
+    vert_sizer->Add(password_sizer, 0, wxEXPAND);
+        
+    // create top sizer
+        
+    wxBoxSizer* top_sizer = new wxBoxSizer(wxHORIZONTAL);
+    top_sizer->AddSpacer(7);
+    top_sizer->Add(bitmap_question, 0, wxTOP, 7);
+    top_sizer->AddSpacer(15);
+    top_sizer->Add(vert_sizer, 1, wxEXPAND | wxTOP, 7);
+
     // create main sizer
-    
+        
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
     main_sizer->AddSpacer(8);
-    main_sizer->Add(label_message, 0, wxEXPAND | wxLEFT | wxRIGHT, 8);
-    main_sizer->AddSpacer(16);
-    main_sizer->Add(username_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 8);
-    main_sizer->AddSpacer(8);
-    main_sizer->Add(password_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 8);
+    main_sizer->Add(top_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 8);
+    main_sizer->AddStretchSpacer();
     main_sizer->Add(ok_cancel_sizer, 0, wxEXPAND);
 
     SetSizer(main_sizer);
     Layout();
-    
-    doc_site->getContainerWindow()->SetClientSize(main_sizer->GetSize());
-    return true;
+
+
 }
 
-wxWindow* DlgPassword::getDocumentWindow()
+DlgPassword::~DlgPassword()
 {
-    return static_cast<wxWindow*>(this);
+    // clear out password in memory
+    m_password = wxT("            ");
 }
 
-void DlgPassword::setDocumentFocus()
-{
-
-}
-
-wxString DlgPassword::getUsername()
-{
-    return m_username_ctrl->GetValue();
-}
-
-wxString DlgPassword::getPassword()
-{
-    return m_password_ctrl->GetValue();
-}
 
 void DlgPassword::setMessage(const wxString& message)
 {
     m_message = message;
+    m_message_ctrl->SetLabel(m_message);
+    wxSizer* sizer = m_message_ctrl->GetContainingSizer();
+    m_message_ctrl->Wrap(sizer->GetSize().GetWidth());
+    Layout();
 }
-
-void DlgPassword::setUsername(const wxString& username)
+    
+void DlgPassword::setUserName(const wxString& username)
 {
     m_username = username;
 }
+    
 
-void DlgPassword::onOK(wxCommandEvent& event)
+void DlgPassword::onOK(wxCommandEvent& evt)
 {
-    g_app->getMainFrame()->closeSite(m_doc_site);
+    m_username = m_username_ctrl->GetValue();
+    m_password = m_password_ctrl->GetValue();
+        
+    EndModal(wxID_OK);
 }
-
-void DlgPassword::onCancel(wxCommandEvent& event)
+    
+void DlgPassword::onCancel(wxCommandEvent& evt)
 {
-    g_app->getMainFrame()->closeSite(m_doc_site);
+    m_username = wxT("");
+    m_password = wxT("");
+        
+    EndModal(wxID_CANCEL);
 }
-
-
 

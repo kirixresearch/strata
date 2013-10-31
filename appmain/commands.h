@@ -38,6 +38,7 @@ DEFINE_COMMAND("app.exit",                     ID_App_Exit)
 DEFINE_COMMAND("app.about",                    ID_App_About)
 DEFINE_COMMAND("app.start_record",             ID_App_StartRecord)
 DEFINE_COMMAND("app.stop_record",              ID_App_StopRecord)
+DEFINE_COMMAND("app.sign_in",                  ID_App_SignIn)
 DEFINE_COMMAND("app.last",                     ID_App_Last)
 
 

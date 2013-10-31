@@ -13,7 +13,7 @@
 #include <curl/curl.h>
 
 
-// -- curl machinery --
+// curl machinery
 
 CURL* g_curl = (CURL*)0;
 
@@ -99,8 +99,8 @@ size_t curl_string_writer(void* ptr, size_t size, size_t nmemb, void *stream)
         str->append((const char*)ptr, total_size);
     }
 
-    // -- return the number of bytes actually taken care of; if it differs from
-    //    the amount passed to the function, it will signal an error to the library,
-    //    abort the transfer and return CURLE_WRITE_ERROR --
+    // return the number of bytes actually taken care of; if it differs from
+    // the amount passed to the function, it will signal an error to the library,
+    // abort the transfer and return CURLE_WRITE_ERROR
     return total_size;
 }

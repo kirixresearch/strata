@@ -139,7 +139,7 @@ public:
         wxStopWatch sw;
         sw.Start();
         
-        wxString update_xml = getWebFile(APP_UPDATE_URL);
+        wxString update_xml = doHttpRequest(APP_UPDATE_URL);
     
         if (update_xml.IsEmpty())
             return 0;

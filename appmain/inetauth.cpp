@@ -21,7 +21,7 @@ wxString InetAuth::getAuthServer()
     wxString server = APP_INETAUTH_SERVER;
 
     // first, get the list of authorization servers from the main authorization server
-    wxString auth_servers_xml = getWebFile(APP_INETAUTH_AUTHSERVERLIST);
+    wxString auth_servers_xml = doHttpRequest(APP_INETAUTH_AUTHSERVERLIST);
         
     if (!auth_servers_xml.IsEmpty())
     {
@@ -172,13 +172,13 @@ static wxString getFullUserName()
     LPWSTR pdc_computer;
     DWORD cnt = 254;
 
-    // -- get login domain and user id --
+    // get login domain and user id
     if (NERR_Success!= NetWkstaUserGetInfo(NULL, 1, (LPBYTE*)&wksta_user_info))
     {
         return ::wxGetUserName();
     }
 
-    // -- get computer name of the domain controller --
+    // get computer name of the domain controller
     if (NERR_Success != NetGetDCName(NULL,
                                      wksta_user_info->wkui1_logon_domain,
                                      (LPBYTE*)&pdc_computer))
@@ -269,8 +269,7 @@ int InetAuth::authorize(paladin::Authentication* auth,
     addGetParam(urlstring, wxT("check"), check);
 
 #ifdef WIN32
-    // -- for Terminal Server and Citrix environments,
-    //    we will enforce per-user licensing --
+    // for Terminal Server and Citrix environments, we will enforce per-user licensing
 
     // 0x1000 = SM_REMOTESESSION
     if (GetSystemMetrics(0x1000))
@@ -295,8 +294,7 @@ int InetAuth::authorize(paladin::Authentication* auth,
 */
     
     
-    wxString result;
-    result = getWebFile(urlstring);
+    wxString result = doHttpRequest(towstr(urlstring));
 
     if (result.IsEmpty())
     {
@@ -346,8 +344,7 @@ int InetAuth::deauthorize(paladin::Authentication* auth,
     addGetParam(urlstring, wxT("check"), check);
 
 #ifdef WIN32
-    // -- for Terminal Server and Citrix environments,
-    //    we will enforce per-user licensing --
+    // for Terminal Server and Citrix environments, we will enforce per-user licensing
 
     if (GetSystemMetrics(0x1000 /*SM_REMOTESESSION*/))
     {
@@ -359,8 +356,7 @@ int InetAuth::deauthorize(paladin::Authentication* auth,
 
 
     
-    wxString result;
-    result = getWebFile(urlstring);
+    wxString result = doHttpRequest(towstr(urlstring));
     
     //appMessageBox(result, urlstring);
 
@@ -370,7 +366,7 @@ int InetAuth::deauthorize(paladin::Authentication* auth,
     }
 
 
-    // -- determine whether there was an error or not --
+    // determine whether there was an error or not
 
     kl::xmlnode root;
     if (!root.parse(towstr(result)))
@@ -383,7 +379,7 @@ int InetAuth::deauthorize(paladin::Authentication* auth,
         return errorFailure;
 
 
-    // -- actually deauthorize this computer --
+    // actually deauthorize this computer
 
     auth->deactivate();
 

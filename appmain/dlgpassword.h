@@ -13,53 +13,53 @@
 #define __APP_DLGPASSWORD_H
 
 
-class DlgPassword : public wxWindow,
-                       public IDocument
+
+
+
+class DlgPassword : public wxDialog
 {
 
-XCM_CLASS_NAME_NOREFCOUNT("appmain.DlgPassword")
-XCM_BEGIN_INTERFACE_MAP(DlgPassword)
-    XCM_INTERFACE_ENTRY(IDocument)
-XCM_END_INTERFACE_MAP()
-
+    enum
+    {
+        ID_UsernameTextCtrl = wxID_HIGHEST+1,
+        ID_PasswordTextCtrl
+    };
+    
 public:
 
-    DlgPassword();
+    DlgPassword(wxWindow* parent);
     ~DlgPassword();
 
-    // -- IDocument --
-    bool initDoc(IFramePtr frame,
-                 IDocumentSitePtr doc_site,
-                 wxWindow* docsite_wnd,
-                 wxWindow* panesite_wnd);
-    wxWindow* getDocumentWindow();
-    void setDocumentFocus();
-
-    wxString getUsername();
-    wxString getPassword();
+    wxString getUserName() const { return m_username; }
+    wxString getPassword() const { return m_password; }
     
     void setMessage(const wxString& message);
-    void setUsername(const wxString& username);
+    void setUserName(const wxString& username);
     
 private:
 
     // event handlers
     
-    void onOK(wxCommandEvent& event);
-    void onCancel(wxCommandEvent& event);
+    void onOK(wxCommandEvent& evt);
+    void onCancel(wxCommandEvent& evt);
 
 private:
-
-    IDocumentSitePtr m_doc_site;
     
     wxString m_message;
     wxString m_username;
+    wxString m_password;
     
+    wxStaticText* m_message_ctrl;
     wxTextCtrl* m_username_ctrl;
     wxTextCtrl* m_password_ctrl;
     
     DECLARE_EVENT_TABLE()
 };
+
+
+
+
+
 
 #endif
 

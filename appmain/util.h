@@ -333,8 +333,8 @@ jobs::IJobPtr appCreateJob(const std::wstring& job_id);
 
 bool isValidFileVersion(kl::JsonNode node, const std::wstring& type, int version);
 
-// get small web files, returning them as strings
-wxString getWebFile(const wxString& urlstring);
+// perform simple/small web requests, returning result as a string
+std::wstring doHttpRequest(const std::wstring& url, const std::map<std::wstring,std::wstring>& post_params = std::map<std::wstring,std::wstring>());
 
 // checks an output path for g_app->getDatabase().  It will
 // pop up an error message if something is wrong.

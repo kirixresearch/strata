@@ -1720,9 +1720,9 @@ bool isValidFileVersion(kl::JsonNode node, const std::wstring& type, int version
     return true;
 }
 
-wxString getWebFile(const wxString& urlstring)
+std::wstring doHttpRequest(const std::wstring& url, const std::map<std::wstring,std::wstring>& post_params)
 {
-    std::string fetch_url = (const char*)urlstring.mbc_str();
+    std::string fetch_url = kl::tostring(url);
     std::string result_string;
     
     CURL* curl = curlCreateHandle();
@@ -1776,7 +1776,7 @@ wxString getWebFile(const wxString& urlstring)
     // retrieve the data from the URL
     curl_result = curl_easy_perform(curl);
     
-    return wxString::FromUTF8(result_string.c_str());
+    return kl::towstring(result_string);
 }
 
 bool doOutputPathCheck(const wxString& output_path, wxWindow* parent)
