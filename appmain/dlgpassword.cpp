@@ -122,7 +122,7 @@ DlgPassword::DlgPassword(wxWindow* parent) : wxDialog(parent,
     SetSizer(main_sizer);
     Layout();
 
-
+    Center();
 }
 
 DlgPassword::~DlgPassword()

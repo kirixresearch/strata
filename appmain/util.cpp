@@ -1724,6 +1724,7 @@ std::wstring doHttpRequest(const std::wstring& url, const std::map<std::wstring,
 {
     std::string fetch_url = kl::tostring(url);
     std::string result_string;
+    std::string post_string;
     
     CURL* curl = curlCreateHandle();
     CurlAutoDestroy ad(curl);
@@ -1739,6 +1740,39 @@ std::wstring doHttpRequest(const std::wstring& url, const std::map<std::wstring,
     curl_result = curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "");
     curl_result = curl_easy_setopt(curl, CURLOPT_URL, fetch_url.c_str());
     
+
+    if (post_params.size() > 0)
+    {
+        std::map<std::wstring,std::wstring>::const_iterator it;
+        for (it = post_params.cbegin(); it != post_params.cend(); ++it)
+        {
+            // append the value to our post string (regular, non-multipart post)
+            if (post_string.length() > 0)
+                post_string += "&";
+            post_string += kl::tostring(kl::url_escape(it->first));
+            post_string += "=";
+            post_string += kl::tostring(kl::url_escape(it->second));
+        }
+
+
+        // set the POST option
+        curl_result = curl_easy_setopt(curl, CURLOPT_POST, TRUE);
+        if (curl_result != CURLE_OK)
+            return L"";
+                
+        curl_result = curl_easy_setopt(curl, CURLOPT_POSTFIELDS, (const char*)post_string.c_str());
+        if (curl_result != CURLE_OK)
+            return L"";
+    }
+     else
+    {
+        // set the GET option  
+        curl_result = curl_easy_setopt(curl, CURLOPT_HTTPGET, TRUE);
+        if (curl_result != CURLE_OK)
+            return L"";
+
+    }
+
     // get http proxy info from the registry
     if (g_app->getAppPreferences()->getLong(wxT("internet.proxy.type"), prefProxyDirect) != prefProxyDirect)
     {
@@ -1757,21 +1791,17 @@ std::wstring doHttpRequest(const std::wstring& url, const std::map<std::wstring,
     // set the result functions
     curl_result = curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)&result_string);
     if (curl_result != CURLE_OK)
-        return wxEmptyString;
+        return L"";
     
     curl_result = curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, (void*)curl_string_writer);
     if (curl_result != CURLE_OK)
-        return wxEmptyString;
+        return L"";
     
-    // set the GET option  
-    curl_result = curl_easy_setopt(curl, CURLOPT_HTTPGET, TRUE);
-    if (curl_result != CURLE_OK)
-        return wxEmptyString;
     
     // get the full body
     curl_result = curl_easy_setopt(curl, CURLOPT_NOBODY, FALSE);
     if (curl_result != CURLE_OK)
-        return wxEmptyString;
+        return L"";
     
     // retrieve the data from the URL
     curl_result = curl_easy_perform(curl);

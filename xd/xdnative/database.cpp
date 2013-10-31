@@ -1145,9 +1145,14 @@ bool XdnativeDatabase::setMountPoint(const std::wstring& path,
     }    
 
 
-    std::wstring final_connection_string = connection_str;
-    if (final_connection_string.find(L"://") != -1)
+    std::wstring final_connection_string;
+    
+    std::wstring test = kl::beforeFirst(connection_str, '=');  // some connection strings have urls as parameters
+    if (test.find(L"://") != -1)
         final_connection_string = xdcommon::urlToConnectionStr(connection_str);
+         else
+        final_connection_string = connection_str;
+
     final_connection_string = xdcommon::encryptConnectionStringPassword(final_connection_string);
 
     

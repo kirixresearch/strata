@@ -277,14 +277,23 @@ public:
         int f1_type = f1->getType();
         int f2_type = f2->getType();
         
+        const std::wstring& f1_name = f1->getName();
+        const std::wstring& f2_name = f2->getName();
+
+        // we want the "cloud" folder to always be on top
+
+        if (kl::iequals(f1_name, L"cloud"))
+            return true;
+        if (kl::iequals(f2_name, L"cloud"))
+            return false;
+
         // folders always float to the top
 
         if (f1_type == xd::filetypeFolder || f2_type == xd::filetypeFolder)
         {
             if (f1_type == f2_type)
             {
-                return wcscasecmp(f1->getName().c_str(),
-                                  f2->getName().c_str()) < 0 ? true : false;
+                return wcscasecmp(f1_name.c_str(), f2_name.c_str()) < 0 ? true : false;
             }
              else if (f1_type == xd::filetypeFolder)
             {
