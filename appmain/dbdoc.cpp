@@ -306,8 +306,7 @@ public:
         }
         
             
-        return wcscasecmp(f1->getName().c_str(),
-                          f2->getName().c_str()) < 0 ? true : false;
+        return wcscasecmp(f1_name.c_str(), f2_name.c_str()) < 0 ? true : false;
      }
 };
 
