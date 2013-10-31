@@ -85,6 +85,7 @@ public:
     virtual void setLabel(const wxString& label) = 0;
     virtual void setBitmap(const wxBitmap& bitmap, unsigned int bitmap_type = fsbmpSmall) = 0;
     virtual void setItemData(long data) = 0;
+    virtual void setItemBold(bool bold) = 0;
     virtual void setItemStringData(const wxString& data) = 0;
 
     virtual void onRenamed(wxString label) = 0;
@@ -188,6 +189,7 @@ public:
         m_base_item_long = 0;
         m_base_has_children = true;
         m_base_is_deferred = false;
+        m_base_item_bold = false;
     }
 
     bool isDeferred()
@@ -283,6 +285,11 @@ public:
         m_base_item_string = s;
     }
 
+    void setItemBold(bool bold)
+    {
+        m_base_item_bold = bold;
+    }
+
     // event handlers
 
     void onRenamed(wxString label)
@@ -319,6 +326,7 @@ private:
     long m_base_item_long;
     bool m_base_has_children;
     bool m_base_is_deferred;
+    bool m_base_item_bold;
     
     wxBitmap m_base_bitmap;
     wxBitmap m_base_expanded_bitmap;
