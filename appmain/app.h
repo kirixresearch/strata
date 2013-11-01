@@ -58,7 +58,6 @@ public:
     wxArrayString getFontNames();
     wxString getInstallPath();
     wxString getAppDataPath();
-    wxString getBookmarksFolder();
 
     IFramePtr getMainFrame();
     void setMainFrame(IFramePtr frame);

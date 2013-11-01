@@ -957,55 +957,6 @@ wxArrayString MainApp::getFontNames()
     return m_font_names;
 }
 
-wxString MainApp::getBookmarksFolder()
-{
-    wxASSERT(m_database.p);
-    
-    if (m_database.isNull())
-        return wxEmptyString;
-        
-    wxString res;
-
-    // first we will look if the users settings override the
-    // location of the bookmark toolbar
-    std::wstring path = L"/.appdata/";
-    path += m_database->getActiveUid();
-    path += L"/dcfe/bookmarkloc";
-
-    kl::JsonNode node = JsonConfig::loadFromDb(g_app->getDatabase(), path);
-    if (node.isOk())
-    {
-        kl::JsonNode root_node = node["root"];
-        if (root_node.isOk())
-        {
-            kl::JsonNode path_node = root_node["path"];
-            if (path_node.isOk())
-            {
-                res = path_node.getString();
-                if (res.Length() > 0)
-                {
-                    if (res.Last() == wxT('/'))
-                        res.RemoveLast();
-                
-                    if (!m_database->getFileExist(towstr(res)))
-                        m_database->createFolder(towstr(res));
-                
-                    return res;
-                }
-            }
-        }
-    }
-
-    res = L"/.appdata/";
-    res += m_database->getActiveUid();
-    res += L"/bookmarks";
-
-    if (!m_database->getFileExist(towstr(res)))
-        m_database->createFolder(towstr(res));
-    
-    return res;
-}
-
 
 
 IFramePtr MainApp::getMainFrame()

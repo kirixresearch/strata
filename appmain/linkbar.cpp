@@ -615,6 +615,7 @@ void LinkBar::showPopupWindow(int id,
     // show the linkbar "overflow" popup
     if (id == LinkBarDropDownId)
     {
+    /*
         if (items.isNull())
             return;
         
@@ -624,6 +625,9 @@ void LinkBar::showPopupWindow(int id,
         folder_raw->setChildrenOverride(items);
         folder_raw->setDatabase(g_app->getDatabase());
         folder = static_cast<IFsItem*>(folder_raw);
+    */
+        return;
+
     }
      else
     {
@@ -1040,7 +1044,7 @@ void LinkBar::onRightClick(wxAuiToolBarEvent& evt)
     
     // if we right-clicked on a folder, make sure the starting folder
     // for the LinkPropsDialog is that folders path
-    wxString start_folder = g_app->getBookmarksFolder();
+    wxString start_folder = "";
     if (is_folder_clicked)
     {
         start_folder += wxT("/");
@@ -1451,9 +1455,6 @@ void LinkBar::refresh()
         Realize();
         return;
     }
-
-    if (m_base_path.IsEmpty())
-        m_base_path = g_app->getBookmarksFolder();
 
     IFsItemPtr root_item = BookmarkFs::getBookmarkFolderItem(L"/");
     
