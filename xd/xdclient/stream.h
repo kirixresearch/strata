@@ -22,7 +22,7 @@ class ClientStream : public xd::IStream
 
 public:
 
-    ClientStream(ClientDatabase* database, const std::wstring& handle);
+    ClientStream(ClientDatabase* database, const std::wstring& path, const std::wstring& handle);
     ~ClientStream();
 
     bool read(void* pv,
@@ -36,6 +36,7 @@ public:
 private:
 
     ClientDatabase* m_database;
+    std::wstring m_path;
     std::wstring m_handle;
 };
 

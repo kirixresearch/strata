@@ -756,7 +756,7 @@ xd::IStreamPtr ClientDatabase::openStream(const std::wstring& path)
     if (!response["success"].getBoolean())
         return xcm::null;
 
-    return static_cast<xd::IStream*>(new ClientStream(this, response["handle"]));
+    return static_cast<xd::IStream*>(new ClientStream(this, path, response["handle"]));
 }
 
 bool ClientDatabase::createStream(const std::wstring& path, const std::wstring& mime_type)
@@ -773,10 +773,6 @@ bool ClientDatabase::createStream(const std::wstring& path, const std::wstring& 
 
 xd::IIteratorPtr ClientDatabase::query(const xd::QueryParams& qp)
 {
-    std::wstring request_url;
-    if (qp.from.find(L"://") != qp.from.npos)
-        request_url = qp.from;
-
     ServerCallParams params;
     params.setParam(L"columns", qp.columns);
     params.setParam(L"where", qp.where);
@@ -794,7 +790,7 @@ xd::IIteratorPtr ClientDatabase::query(const xd::QueryParams& qp)
 
     // initialize the iterator
     ClientIterator* iter = new ClientIterator(this);
-    if (!iter->init(response["handle"], request_url))
+    if (!iter->init(response["handle"], qp.from))
     {
         delete iter;
         return xcm::null;

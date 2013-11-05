@@ -16,10 +16,11 @@
 #include <kl/base64.h>
 
 
-ClientStream::ClientStream(ClientDatabase* database, const std::wstring& handle)
+ClientStream::ClientStream(ClientDatabase* database, const std::wstring& path, const std::wstring& handle)
 {
     m_database = database;
     m_database->ref();
+    m_path = path;
     m_handle = handle;
 }
 
@@ -39,7 +40,7 @@ bool ClientStream::read(void* pv,
     ServerCallParams params;
     params.setParam(L"handle", m_handle);
     params.setParam(L"read_size", s_read_size);
-    std::wstring sres = m_database->serverCall(L"", L"readstream", &params);
+    std::wstring sres = m_database->serverCall(m_path, L"readstream", &params);
     kl::JsonNode response;
     response.fromString(sres);
 
@@ -100,7 +101,7 @@ bool ClientStream::write(const void* pv,
     params.setParam(L"data", kl::towstring(base64_buf));
     delete[] base64_buf;
 
-    std::wstring sres = m_database->serverCall(L"", L"writestream", &params, true);
+    std::wstring sres = m_database->serverCall(m_path, L"writestream", &params, true);
     kl::JsonNode response;
     response.fromString(sres);
 
