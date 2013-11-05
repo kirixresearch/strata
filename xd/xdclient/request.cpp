@@ -238,6 +238,7 @@ void HttpRequest::send()
             curl_result = curl_easy_setopt(m_curl, CURLOPT_POSTFIELDS, (const char*)m_post_string.c_str());
             if (curl_result != CURLE_OK)
                 return;
+            curl_result = curl_easy_setopt(m_curl, CURLOPT_POSTFIELDSIZE, (long)m_post_string.length());
         }
     }
 
