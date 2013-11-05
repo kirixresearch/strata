@@ -2676,7 +2676,13 @@ IFsItemPtr DbDoc::_findFsItem(IFsItemPtr item,
 
 void DbDoc::onFsItemActivated(IFsItemPtr item)
 {
-    actionActivateDeferred(item, appOpenDefault);
+    int open_mask = appOpenDefault;
+
+    IDbObjectFsItemPtr obj = item;
+    if (obj.isOk() && obj->getType() == dbobjtypeSet)
+        open_mask = appOpenAsTable;
+
+    actionActivateDeferred(item, open_mask);
 }
 
 void DbDoc::onFsItemBeginLabelEdit(IFsItemPtr item,
