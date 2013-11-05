@@ -38,6 +38,8 @@ static int request_callback( struct mg_connection* conn)
 
 
     std::string instance;
+    clock_t c1, c2;
+
 
         
     const char* uri = request_info->uri;
@@ -67,6 +69,9 @@ static int request_callback( struct mg_connection* conn)
     struct sockaddr_in serveraddr;
     std::string request;
 
+    #define BUFFERSIZE 16384
+    char buf[BUFFERSIZE+1];
+
 
     port = g_service.getServerPort(instance);
 
@@ -88,7 +93,7 @@ static int request_callback( struct mg_connection* conn)
     }
     request += " HTTP/1.0\r\n";
 
-    request += "Host: localhost\r\n";
+    request += "Host: 127.0.0.1\r\n";
     request += "Connection: close\r\n";
 
     for (int h = 0; h < request_info->num_headers; ++h)
@@ -111,6 +116,8 @@ static int request_callback( struct mg_connection* conn)
     printf("instance: %s\n", instance.c_str());
     printf("%s\n\n", request.c_str());
 
+    c1 = clock();
+
     // open socket
     if ((sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
         return 1;  // socket() failed
@@ -123,50 +130,84 @@ static int request_callback( struct mg_connection* conn)
     if (connect(sock, (struct sockaddr*)&serveraddr, sizeof(serveraddr)) < 0)
         return 1; // connect() failed
 
-    // send request
-    if (send(sock, request.c_str(), request.length(), 0) != request.length())
-        return 1; // sent bytes mismatched request bytes
 
 
-    #define BUFFERSIZE 16384
-    char buf[BUFFERSIZE+1];
 
-
-    if (*(request_info->request_method) == 'P')
+    if (*(request_info->request_method) == 'G')
+    {
+        // send request
+        if (send(sock, request.c_str(), request.length(), 0) != request.length())
+            return 1; // sent bytes mismatched request bytes
+    }
+     else if (*(request_info->request_method) == 'P')
     {
         int h;
         int content_length = -1;
         for (h = 0; h < request_info->num_headers; ++h)
         {
             if (0 == strncasecmp("Content-Length", request_info->http_headers[h].name, 14))
+            {
                 content_length = atoi(request_info->http_headers[h].value);
+                break;
+            }
         }
 
         printf("expected content length: %d\n", content_length);
 
-        int buf_len;
-        int received_bytes = 0;
 
-        while (true)
+
+        if (content_length >= 0 && content_length < 4096 && request.length() < 4096)
         {
-            buf_len = mg_read(conn, buf, BUFFERSIZE);
-                
+            int buf_len = request.length();
+            int bytes_read;
+
+            memcpy(buf, request.c_str(), buf_len);
+            bytes_read = mg_read(conn, buf+buf_len, content_length);
+            if (bytes_read != content_length)
+                return 1;
+
+            buf_len += bytes_read;
+
             send(sock, buf, buf_len, 0);
-                
-            received_bytes += buf_len;
-
-            if (buf_len != BUFFERSIZE)
-                break;
         }
-
-        printf("received bytes: %d\n", received_bytes);
-
-        if (content_length != -1 && received_bytes != content_length)
+         else
         {
-            closesocket(sock);
-            return 1;
+            if (send(sock, request.c_str(), request.length(), 0) != request.length())
+                return 1; // sent bytes mismatched request bytes
+
+            int buf_len;
+            int received_bytes = 0;
+            int bytes_left = content_length;
+            int wanted_bytes;
+
+            while (true)
+            {
+                if (bytes_left != -1)
+                    wanted_bytes = std::min(BUFFERSIZE, bytes_left);
+
+                buf_len = mg_read(conn, buf, wanted_bytes);
+                send(sock, buf, buf_len, 0);
+                
+                received_bytes += buf_len;
+                if (bytes_left != -1)
+                    bytes_left -= buf_len;
+            
+                if (bytes_left == 0)
+                    break;
+                if (buf_len != wanted_bytes)
+                    break;
+            }
+
+            printf("received bytes: %d\n", received_bytes);
+
+            if (content_length != -1 && received_bytes != content_length)
+            {
+                closesocket(sock);
+                return 1;
+            }
         }
     }
+
 
 
     // get response
@@ -186,6 +227,9 @@ static int request_callback( struct mg_connection* conn)
 
     closesocket(sock);
 
+
+    c2 = clock();
+    printf("Total proxy time: %d\n", (c2-c1));
 
     return 1;
 }
@@ -322,6 +366,9 @@ bool Service::readConfig(const std::wstring& config_file)
 
 int Service::getServerPort(const std::string& instance)
 {
+    // for debugging
+    //return 28000;
+
     SdServer info;
     info.port = 0;
     info.process = NULL;
