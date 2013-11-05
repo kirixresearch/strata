@@ -425,7 +425,7 @@ void Controller::apiCreateTable(RequestInfo& req)
     
     if (!req.getValueExists(L"columns"))
     {
-        returnApiError(req, "Missing path parameter");
+        returnApiError(req, "Missing columns parameter");
         return;
     }
     

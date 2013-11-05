@@ -127,7 +127,7 @@ void RequestInfo::read()
 {    
     char boundary[128];   // boundaries actually have a max length of 70, we'll allow 120
     size_t boundary_length = 0;
-    size_t content_length = 0;
+    size_t content_length = -1;
         
     int h;
     for (h = 0; h < m_req->num_headers; ++h)
@@ -202,19 +202,30 @@ void RequestInfo::read()
         }
 
 
+        #define BUFFERSIZE 4096
 
-        char buf[4096];
+        char buf[BUFFERSIZE];
         int buf_len;
+        int wanted_bytes;
+        int bytes_left = content_length;
 
         while (true)
         {
-            buf_len = mg_read(m_conn, buf, 4096);
+            if (bytes_left != -1)
+                wanted_bytes = std::min(BUFFERSIZE, wanted_bytes);
+
+            buf_len = mg_read(m_conn, buf, wanted_bytes);
             if (buf_len == -1)
                 break;
+            
+            if (bytes_left != -1)
+                bytes_left -= buf_len;
 
             m_post_data_buf.append((unsigned char*)buf, buf_len);
             
-            if (buf_len != 4096)
+            if (bytes_left == 0)
+                break;
+            if (buf_len != wanted_bytes)
                 break;
         }
 
