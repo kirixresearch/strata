@@ -2267,7 +2267,8 @@ std::wstring TableDoc::getBrowsePath()
 
 
 bool TableDoc::open(const std::wstring& _path,
-                    xd::IIteratorPtr optional_iterator)
+                    xd::IIteratorPtr optional_iterator,
+                    xd::IFileInfoPtr optional_fileinfo)
 {
     std::wstring path = _path;
 
@@ -2275,9 +2276,13 @@ bool TableDoc::open(const std::wstring& _path,
     if (db.isNull())
         return false;
 
-    xd::IFileInfoPtr file_info = db->getFileInfo(path);
-    if (file_info.isNull() || file_info->getType() != xd::filetypeTable)
-        return false;
+    xd::IFileInfoPtr file_info = optional_fileinfo;
+    if (file_info.isNull())
+    {
+        file_info = db->getFileInfo(path);
+        if (file_info.isNull() || file_info->getType() != xd::filetypeTable)
+            return false;
+    }
 
     // make sure we know the database type
     m_mount_db = db->getMountDatabase(path);

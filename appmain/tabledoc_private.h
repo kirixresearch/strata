@@ -84,7 +84,8 @@ public:
     // ITableDoc
     
     bool open(const std::wstring& path,
-              xd::IIteratorPtr optional_iterator = xcm::null);
+              xd::IIteratorPtr optional_iterator = xcm::null,
+              xd::IFileInfoPtr optional_fileinfo = xcm::null);
 
     bool setBrowseSet(const std::wstring& path,
                       xd::IIteratorPtr optional_iterator = xcm::null);

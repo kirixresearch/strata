@@ -208,7 +208,8 @@ xcm_interface ITableDoc : public xcm::IObject
 public:
 
     virtual bool open(const std::wstring& path,
-                      xd::IIteratorPtr optional_iterator = xcm::null) = 0;
+                      xd::IIteratorPtr optional_iterator = xcm::null,
+                      xd::IFileInfoPtr optional_fileinfo = xcm::null) = 0;
 
     virtual bool setBrowseSet(
                       const std::wstring& path,
