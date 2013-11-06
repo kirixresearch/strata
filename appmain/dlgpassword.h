@@ -22,7 +22,8 @@ class DlgPassword : public wxDialog
     enum
     {
         ID_UsernameTextCtrl = wxID_HIGHEST+1,
-        ID_PasswordTextCtrl
+        ID_PasswordTextCtrl,
+        ID_ServiceTextCtrl
     };
     
 public:
@@ -32,9 +33,11 @@ public:
 
     wxString getUserName() const { return m_username; }
     wxString getPassword() const { return m_password; }
+    wxString getService() const { return m_service; }
     
     void setMessage(const wxString& message);
     void setUserName(const wxString& username);
+    void setService(const wxString& service);
     
 private:
 
@@ -48,10 +51,12 @@ private:
     wxString m_message;
     wxString m_username;
     wxString m_password;
+    wxString m_service;
     
     wxStaticText* m_message_ctrl;
     wxTextCtrl* m_username_ctrl;
     wxTextCtrl* m_password_ctrl;
+    wxTextCtrl* m_service_ctrl;
     
     DECLARE_EVENT_TABLE()
 };
