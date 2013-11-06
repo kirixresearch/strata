@@ -343,6 +343,34 @@ public:
         return object_id;
     }
 
+    unsigned int getFlags()
+    {
+        if (type == xd::filetypeTable)
+            return xd::sfFastRowCount;
+             else
+            return 0;
+    }
+
+    xd::rowpos_t getRowCount()
+    {
+        PGconn* conn = m_db->createConnection();
+        if (!conn)
+            return false;
+
+        std::wstring command = L"explain select * from " + name;
+        const char* info = NULL;
+
+        PGresult* res = PQexec(conn, kl::toUtf8(command));
+        if (PQresultStatus(res) == PGRES_TUPLES_OK && PQntuples(res) == 1)
+        {
+            info = PQgetvalue(res, 0, 0);
+        }
+
+        m_db->closeConnection(conn);
+
+        return 5;
+    }
+
 private:
 
     PgsqlDatabase* m_db;

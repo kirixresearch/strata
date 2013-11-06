@@ -183,6 +183,7 @@ private:
     LocalRow m_cache_row;
     bool m_cache_active;
     xd::rowpos_t m_cache_dbrowpos;
+    xd::rowpos_t m_row_count;
     
     bool m_server_side_cursor;
  
@@ -192,6 +193,8 @@ private:
     xd::rowpos_t m_block_start;
     int m_block_row;
     int m_block_rowcount;
+
+
 
     std::wstring m_path;
 };

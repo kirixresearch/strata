@@ -43,6 +43,8 @@ PgsqlIterator::PgsqlIterator(PgsqlDatabase* database)
     
     m_cache_active = false;
     m_cache_dbrowpos = 0;
+
+    m_row_count = (xd::rowpos_t)-1;
 }
 
 PgsqlIterator::~PgsqlIterator()
@@ -96,6 +98,26 @@ bool PgsqlIterator::init(const std::wstring& query)
     {
         PGresult* res;
         int status;
+
+
+        std::wstring command = L"explain " + query;
+        const char* info = NULL;
+        res = PQexec(conn, kl::toUtf8(command));
+        if (PQresultStatus(res) == PGRES_TUPLES_OK && PQntuples(res) > 0)
+        {
+            info = PQgetvalue(res, 0, 0);
+            const char* rows = strstr(info, "rows=");
+            if (rows)
+            {
+                xd::rowpos_t rowcnt = atoi(rows+5);
+                if (rowcnt <= 1000000)
+                {
+                    m_row_count = rowcnt;
+                }
+            }
+        }
+        PQclear(res);
+
 
         res = PQexec(conn, "BEGIN");
         status = PQresultStatus(res);
@@ -223,6 +245,8 @@ std::wstring PgsqlIterator::getTable()
 
 xd::rowpos_t PgsqlIterator::getRowCount()
 {
+    if (m_row_count != (xd::rowpos_t)-1)
+        return m_row_count;
     return 0;
 }
 
@@ -245,6 +269,9 @@ void PgsqlIterator::setIteratorFlags(unsigned int mask, unsigned int value)
     
 unsigned int PgsqlIterator::getIteratorFlags()
 {
+    if (m_row_count != (xd::rowpos_t)-1)
+        return xd::ifFastRowCount;
+    
     return 0;
 }
 
