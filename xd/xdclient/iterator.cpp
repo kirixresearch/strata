@@ -29,6 +29,8 @@ ClientIterator::ClientIterator(ClientDatabase* database)
     m_cache_row_count = 0;
     m_cache_start = 0;
 
+    m_row_count = (xd::rowpos_t)-1;
+
     m_database = database;
     m_database->ref();
 }
@@ -64,6 +66,31 @@ bool ClientIterator::init(const std::wstring& handle, const std::wstring& url_qu
     return refreshDataAccessInfo();
 }
 
+bool ClientIterator::init(const xd::QueryParams& qp)
+{
+    ServerCallParams params;
+    params.setParam(L"columns", qp.columns);
+    params.setParam(L"where", qp.where);
+    params.setParam(L"order", qp.order);
+    params.setParam(L"limit", L"1");
+
+    std::wstring sres = m_database->serverCall(qp.from, L"", &params);
+    kl::JsonNode response;
+    response.fromString(sres);
+
+    if (response.childExists("total_count"))
+    {
+        m_row_count = response["total_count"].getInteger();
+    }
+
+    if (!response["success"].getBoolean())
+    {
+        return xcm::null;
+    }
+
+    return init(response["handle"], qp.from);
+}
+
 void ClientIterator::setTable(const std::wstring& tbl)
 {
     // TODO: implement
@@ -77,6 +104,8 @@ std::wstring ClientIterator::getTable()
 
 xd::rowpos_t ClientIterator::getRowCount()
 {
+    if (m_row_count != (xd::rowpos_t)-1)
+        return m_row_count;
     return 0;
 }
 
@@ -108,6 +137,9 @@ xd::IIteratorPtr ClientIterator::clone()
 
 unsigned int ClientIterator::getIteratorFlags()
 {
+    if (m_row_count != (xd::rowpos_t)-1)
+        return xd::ifFastRowCount;
+    
     return 0;
 }
 

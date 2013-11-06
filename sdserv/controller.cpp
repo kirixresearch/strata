@@ -1068,7 +1068,7 @@ void Controller::apiRead(RequestInfo& req)
         so = new SessionQueryResult;
         so->iter = iter;
         so->rowpos = 0;
-        if (finfo->getFlags() & xd::sfFastRowCount)
+        if (iter->getIteratorFlags() & xd::ifFastRowCount)
             so->rowcount = iter->getRowCount();
              else
             so->rowcount = -1;

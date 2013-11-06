@@ -773,24 +773,9 @@ bool ClientDatabase::createStream(const std::wstring& path, const std::wstring& 
 
 xd::IIteratorPtr ClientDatabase::query(const xd::QueryParams& qp)
 {
-    ServerCallParams params;
-    params.setParam(L"columns", qp.columns);
-    params.setParam(L"where", qp.where);
-    params.setParam(L"order", qp.order);
-    params.setParam(L"limit", L"1");
-
-    std::wstring sres = serverCall(qp.from, L"", &params);
-    kl::JsonNode response;
-    response.fromString(sres);
-
-    if (!response["success"].getBoolean())
-    {
-        return xcm::null;
-    }
-
     // initialize the iterator
     ClientIterator* iter = new ClientIterator(this);
-    if (!iter->init(response["handle"], qp.from))
+    if (!iter->init(qp))
     {
         delete iter;
         return xcm::null;

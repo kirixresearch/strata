@@ -104,7 +104,9 @@ public:
 
     ClientIterator(ClientDatabase* database);
     ~ClientIterator();
+
     bool init(const std::wstring& handle, const std::wstring& url_query);
+    bool init(const xd::QueryParams& qp);
 
     // xd::IIterator
 
@@ -184,6 +186,8 @@ private:
     xd::rowid_t m_current_row;
     xd::rowid_t m_cache_row_count;
     xd::rowid_t m_cache_start;
+
+    xd::rowpos_t m_row_count;
 };
 
 
