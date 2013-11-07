@@ -142,11 +142,12 @@ bool PgsqlIterator::init(const std::wstring& query)
                 if (rowcnt < 200000)
                 {
                     PQclear(res);
-                    command = L"MOVE 210000 in xdpgsqlcursor";
-                    res = PQexec(conn, kl::toUtf8(command));
+                    res = PQexec(conn, "MOVE 210000 in xdpgsqlcursor");
                     info = PQcmdStatus(res);
                     if (PQresultStatus(res) == PGRES_COMMAND_OK && info)
                         m_row_count = atoi(info+5);
+                    PQclear(res);
+                    res = PQexec(conn, "MOVE ABSOLUTE 0 in xdpgsqlcursor");
                 }
             }
         }
@@ -155,7 +156,7 @@ bool PgsqlIterator::init(const std::wstring& query)
 
 
 
-        res = PQexec(conn, "FETCH 100 from xdpgsqlcursor");
+        res = PQexec(conn, "FETCH 1 from xdpgsqlcursor");
         m_block_start = 1;
         m_block_row = 0;
         m_block_rowcount = PQntuples(res);
