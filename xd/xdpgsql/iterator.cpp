@@ -310,7 +310,7 @@ void PgsqlIterator::skip(int delta)
 
             // reposition
             char q[80];
-            snprintf(q, 80, "FETCH ABSOLUTE %d from xdpgsqlcursor", (int)(m_row_pos-1));
+            snprintf(q, 80, "MOVE ABSOLUTE %d from xdpgsqlcursor", (int)(m_row_pos-1));
             m_res = PQexec(m_conn, q);
             PQclear(m_res);
 
@@ -345,7 +345,7 @@ void PgsqlIterator::goFirst()
 
         PQclear(m_res);
 
-        m_res = PQexec(m_conn, "FETCH ABSOLUTE 0 from xdpgsqlcursor");
+        m_res = PQexec(m_conn, "MOVE ABSOLUTE 0 from xdpgsqlcursor");
         PQclear(m_res);
 
         m_res = PQexec(m_conn, "FETCH 100 from xdpgsqlcursor");

@@ -5693,10 +5693,6 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
     if (db.isNull())
         return;
 
-    xd::IRelationSchemaPtr rels = db;
-    if (rels.isNull())
-        return;
-
     xd::IStructurePtr structure = m_iter->getStructure();
     if (structure.isNull())
         return;
@@ -5737,40 +5733,44 @@ void TableDoc::getColumnListItems(std::vector<ColumnListItem>& list)
 
     // add fields from child file(s)
 
-    xd::IRelationEnumPtr rel_enum = rels->getRelationEnum(m_path);
-    xd::IRelationPtr rel;
-    size_t r, rel_count = rel_enum->size();
-        
-    wxString s;
-
-    for (r = 0; r < rel_count; ++r)
+    xd::IRelationSchemaPtr rels = db;
+    if (rels.isOk())
     {
-        rel = rel_enum->getItem(r);
+        xd::IRelationEnumPtr rel_enum = rels->getRelationEnum(m_path);
+        xd::IRelationPtr rel;
+        size_t r, rel_count = rel_enum->size();
+        
+        wxString s;
 
-        if (rel.isNull())
-            continue;
-
-        std::wstring right_path = rel->getRightTable();
-
-        xd::IStructurePtr right_structure = db->describeTable(right_path);
-        if (right_structure.isNull())
-            continue;
-
-        int i, col_count = right_structure->getColumnCount();
- 
-        for (i = 0; i < col_count; ++i)
+        for (r = 0; r < rel_count; ++r)
         {
-            colinfo = right_structure->getColumnInfoByIdx(i);
+            rel = rel_enum->getItem(r);
 
-            s = wxString::Format(wxT("%s.%s"),
-                        makeProperIfNecessary(rel->getTag()).c_str(),
-                        makeProperIfNecessary(colinfo->getName()).c_str());
+            if (rel.isNull())
+                continue;
+
+            std::wstring right_path = rel->getRightTable();
+
+            xd::IStructurePtr right_structure = db->describeTable(right_path);
+            if (right_structure.isNull())
+                continue;
+
+            int i, col_count = right_structure->getColumnCount();
+ 
+            for (i = 0; i < col_count; ++i)
+            {
+                colinfo = right_structure->getColumnInfoByIdx(i);
+
+                s = wxString::Format(wxT("%s.%s"),
+                            makeProperIfNecessary(rel->getTag()).c_str(),
+                            makeProperIfNecessary(colinfo->getName()).c_str());
                 
-            ColumnListItem item;
-            item.text = s;
-            item.bitmap = GETBMP(gf_related_field_16);
-            item.active = true;
-            list.push_back(item);
+                ColumnListItem item;
+                item.text = s;
+                item.bitmap = GETBMP(gf_related_field_16);
+                item.active = true;
+                list.push_back(item);
+            }
         }
     }
 
