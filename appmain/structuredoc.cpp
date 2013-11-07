@@ -495,6 +495,7 @@ bool StructureDoc::doSave()
         if (isSamePath(doc->getPath(), getPath()))
         {
             to_connect.push_back(doc.p);
+            doc->setEnabled(false);
             doc->closeSet();
         }
     }

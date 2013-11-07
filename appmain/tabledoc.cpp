@@ -1454,6 +1454,20 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
         {
             std::wstring save_path = towstr(dlg.getPath());
 
+            bool needs_close = false;
+
+            if (getDbDriver() != L"xdnative")
+            {
+                // because pgsql has the cursor open, the db->moveFile() call below won't
+                // work because the table is locked;  We need to close the table, rename it,
+                // and re-open it in order for that to work
+                needs_close = true;
+            }
+
+
+            if (needs_close)
+                closeSet();
+
             if (!db->moveFile(m_path, save_path))
             {
                 appMessageBox(_("The file could not be saved in the specified location.  The destination location may by in use."),
@@ -1462,6 +1476,14 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
                 return;
             }
 
+
+            if (needs_close)
+            {
+                createModel();
+                m_grid->setModel(m_grid_model);
+
+                open(save_path);
+            }
 
             g_app->getAppController()->refreshDbDoc();
             g_app->getAppController()->updateURLToolbar();
@@ -2412,8 +2434,6 @@ bool TableDoc::setBrowseSet(const std::wstring& path, xd::IIteratorPtr iter)
 
 void TableDoc::closeSet()
 {
-    setEnabled(false);
-
     freeTemporaryHandles();
     m_grid->setModel(xcm::null);
 
@@ -5622,6 +5642,8 @@ void TableDoc::onMakeStatic(wxCommandEvent& evt)
         }
     }
 
+
+    setEnabled(false);
     closeSet();
 
 
@@ -5990,8 +6012,10 @@ void TableDoc::deleteSelectedColumns()
     m_grid->refresh(kcl::Grid::refreshAll);
 
     if (total_phys_fields_to_delete > 0)
+    {
+        setEnabled(false);
         closeSet();
-
+    }
 
     // set up the job from the info we gathered
     jobs::IJobPtr job = appCreateJob(L"application/vnd.kx.alter-job");
