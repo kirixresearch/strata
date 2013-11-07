@@ -243,6 +243,19 @@ std::wstring PgsqlIterator::getTable()
     return m_path;
 }
 
+void PgsqlIterator::setIteratorFlags(unsigned int mask, unsigned int value)
+{
+    m_cache_active = ((mask & value & xd::ifReverseRowCache) != 0) ? true : false;
+}
+    
+unsigned int PgsqlIterator::getIteratorFlags()
+{
+    if (m_row_count != (xd::rowpos_t)-1)
+        return xd::ifFastRowCount;
+    
+    return 0;
+}
+
 xd::rowpos_t PgsqlIterator::getRowCount()
 {
     if (m_row_count != (xd::rowpos_t)-1)
@@ -260,20 +273,6 @@ xd::IIteratorPtr PgsqlIterator::clone()
     return xcm::null;
 }
 
-
-void PgsqlIterator::setIteratorFlags(unsigned int mask, unsigned int value)
-{
-    m_cache_active = ((mask & value & xd::ifReverseRowCache) != 0) ? true : false;
-}
-    
-    
-unsigned int PgsqlIterator::getIteratorFlags()
-{
-    if (m_row_count != (xd::rowpos_t)-1)
-        return xd::ifFastRowCount;
-    
-    return 0;
-}
 
 void PgsqlIterator::skip(int delta)
 {
