@@ -99,12 +99,7 @@ bool ClientDatabase::open(const std::wstring& host,
     m_uid = uid;
     m_password = password;
 
-    std::wstring url = L"sdserv://";
-    url += m_host;
-    url += L":";
-    url += m_port;
-    url += L"/";
-    url += (m_database.length() > 0 && m_database[0] == '/') ? m_database.substr(1) : m_database;
+    std::wstring url = m_host;
     m_attr->setStringAttribute(xd::dbattrDatabaseUrl, url);
 
     return true;
