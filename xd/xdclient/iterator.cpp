@@ -102,6 +102,20 @@ std::wstring ClientIterator::getTable()
     return L"";
 }
 
+
+void ClientIterator::setIteratorFlags(unsigned int mask, unsigned int value)
+{
+}
+
+
+unsigned int ClientIterator::getIteratorFlags()
+{
+    if (m_row_count != (xd::rowpos_t)-1)
+        return xd::ifFastRowCount;
+    
+    return 0;
+}
+
 xd::rowpos_t ClientIterator::getRowCount()
 {
     if (m_row_count != (xd::rowpos_t)-1)
@@ -133,18 +147,6 @@ xd::IIteratorPtr ClientIterator::clone()
     }
 
     return static_cast<xd::IIterator*>(iter);
-}
-
-unsigned int ClientIterator::getIteratorFlags()
-{
-    if (m_row_count != (xd::rowpos_t)-1)
-        return xd::ifFastRowCount;
-    
-    return 0;
-}
-
-void ClientIterator::setIteratorFlags(unsigned int mask, unsigned int value)
-{
 }
 
 
