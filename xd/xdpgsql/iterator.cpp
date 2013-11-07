@@ -135,7 +135,7 @@ bool PgsqlIterator::init(const std::wstring& query)
             if (rows)
             {
                 xd::rowpos_t rowcnt = atoi(rows+5);
-                if (rowcnt <= 10000000)
+                if (rowcnt <= 2000000)
                 {
                     m_row_count = rowcnt;
                 }
