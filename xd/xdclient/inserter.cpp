@@ -337,7 +337,7 @@ bool ClientRowInserter::flush()
     ServerCallParams params;
     params.setParam(L"rows", m_rows);
     params.setParam(L"columns", m_columns);
-    std::wstring sres = m_database->serverCall(m_path, L"insertrows", &params);
+    std::wstring sres = m_database->serverCall(m_path, L"insertrows", &params, true);
     kl::JsonNode response;
     response.fromString(sres);
 
