@@ -1319,14 +1319,14 @@ void Controller::apiInsertRows(RequestInfo& req)
         ric.handle = inserter->getHandle(*it);
         if (!ric.handle)
         {
-            returnApiError(req, "Cannot not initialize inserter");
+            returnApiError(req, "Cannot initialize inserter (invalid column handle)");
             return;
         }
         
         xd::IColumnInfoPtr colinfo = structure->getColumnInfo(*it);
         if (colinfo.isNull())
         {
-            returnApiError(req, "Cannot not initialize inserter");
+            returnApiError(req, "Cannot initialize inserter (invalid column info)");
             return;
         }
         
