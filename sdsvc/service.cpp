@@ -367,7 +367,7 @@ bool Service::readConfig(const std::wstring& config_file)
 int Service::getServerPort(const std::string& instance)
 {
     // for debugging
-    //return 28000;
+    return 28000;
 
     SdServer info;
     info.port = 0;

@@ -212,7 +212,9 @@ void RequestInfo::read()
         while (true)
         {
             if (bytes_left != -1)
-                wanted_bytes = std::min(BUFFERSIZE, wanted_bytes);
+                wanted_bytes = std::min(BUFFERSIZE, bytes_left);
+                 else
+                wanted_bytes = BUFFERSIZE;
 
             buf_len = mg_read(m_conn, buf, wanted_bytes);
             if (buf_len == -1)
