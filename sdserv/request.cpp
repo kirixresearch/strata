@@ -502,6 +502,12 @@ void RequestInfo::readMultipart(const char* boundary, size_t boundary_length)
 
             r = mg_read(m_conn, buf + buf_len, MULTIPART_BUFFER_SIZE - buf_len);
             buf_len += r;
+
+            if (buf_len == 0)
+            {
+                // unterminated part
+                return;
+            }
         }
     }
 
