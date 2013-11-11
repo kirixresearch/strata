@@ -334,6 +334,10 @@ bool ClientRowInserter::flush()
 {
     m_rows += L"]";
 
+    // debugging:
+    // m_rows = xf_get_file_contents(L"c:\\users\\bwilliams\\rows.txt");
+    // m_columns = xf_get_file_contents(L"c:\\users\\bwilliams\\columns.txt");
+
     ServerCallParams params;
     params.setParam(L"rows", m_rows);
     params.setParam(L"columns", m_columns);
