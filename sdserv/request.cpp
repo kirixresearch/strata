@@ -395,22 +395,30 @@ private:
     }
 };
 
+void dump(char* buf, int len, const char* comment)
+{
+    buf[len] = 0;
+    printf("READ (%s): %s\n\n\n\n", comment, buf);
+}
+
+
 void RequestInfo::readMultipart(const char* boundary, size_t boundary_length)
 {
     std::vector<PostPartBase*> parts;
     PostPartBase* curpart = NULL;
     MultipartHeaderInfo hdrinfo;
 
-    char buf[MULTIPART_BUFFER_SIZE];
+    char buf[MULTIPART_BUFFER_SIZE+1];
     int buf_len = 0;
     int r;
     const char* boundary_pos;
     const char* curpos;
-    const char* header;
     const char* data_begin;
 
     // inital read
     r = mg_read(m_conn, buf, MULTIPART_BUFFER_SIZE);
+    dump(buf, r, "initial");
+
     buf_len = r;
     curpos = buf;
 
@@ -441,20 +449,21 @@ void RequestInfo::readMultipart(const char* boundary, size_t boundary_length)
                 return;
             }
 
-            header = curpos+2;
+            curpos += 2;
 
-            data_begin = (const char*)quickMemmem(header, buf_len - (header - buf), "\r\n\r\n", 4);
+            data_begin = (const char*)quickMemmem(curpos, buf_len - (curpos - buf), "\r\n\r\n", 4);
             if (!data_begin)
             {
                 // couldn't find data begin -- shift the buffer up and read in more data
-                int new_buf_len = (buf + buf_len) - header;
-                memmove(buf, boundary_pos + boundary_length, new_buf_len);
-                buf_len = new_buf_len;
+                buf_len = buf_len - (curpos-buf); // new buffer size
+                memmove(buf, curpos, buf_len);
+                curpos = buf;
 
                 r = mg_read(m_conn, buf + buf_len, MULTIPART_BUFFER_SIZE - buf_len);
+                dump(buf+buf_len, r, "needed more");
                 buf_len += r;
 
-                data_begin = (const char*)quickMemmem(header, buf_len - (header - buf), "\r\n\r\n", 4);
+                data_begin = (const char*)quickMemmem(curpos, buf_len - (curpos - buf), "\r\n\r\n", 4);
                 if (!data_begin)
                 {
                     // still couldn't find data begin -- malformed post
@@ -463,7 +472,7 @@ void RequestInfo::readMultipart(const char* boundary, size_t boundary_length)
             }
             data_begin += 4;
 
-            hdrinfo.parseHeaders(header, data_begin);
+            hdrinfo.parseHeaders(curpos, data_begin);
 
             curpos = data_begin;
 
@@ -480,27 +489,23 @@ void RequestInfo::readMultipart(const char* boundary, size_t boundary_length)
          else
         {
             // no boundary was found, add all data from the buffer, minus overlap
-            int commit_len = MULTIPART_BUFFER_SIZE - MULTIPART_OVERLAP_SIZE;
-            if (buf_len < commit_len)
-                commit_len = buf_len;
-
-            commit_len -= (curpos - buf);
-
-            if (curpart)
+            int commit_len = buf_len - (curpos - buf);
+            commit_len -= MULTIPART_OVERLAP_SIZE;
+            if (commit_len > 0)
             {
                 curpart->append((unsigned char*)curpos, commit_len);
+                curpos += commit_len;
             }
 
-
-            int remaining_bytes = buf_len - ((curpos + commit_len) - buf);
-            memmove(buf, curpos + commit_len, remaining_bytes);
-            buf_len = remaining_bytes;
+            buf_len = buf_len - (curpos-buf); // new buffer size
+            memmove(buf, curpos, buf_len);
             curpos = buf;
 
 
             // fill up buffer with more data
 
             r = mg_read(m_conn, buf + buf_len, MULTIPART_BUFFER_SIZE - buf_len);
+            dump(buf+buf_len, r, "last");
             buf_len += r;
 
             if (buf_len == 0)
