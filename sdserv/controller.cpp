@@ -1499,7 +1499,7 @@ void Controller::apiClose(RequestInfo& req)
     {
         XCM_AUTO_LOCK(m_session_object_mutex);
 
-        so = (SessionQueryResult*)getServerSessionObject(handle, "SessionQueryResult");
+        so = (SessionQueryResult*)getServerSessionObject(handle);
         if (!so)
         {
             returnApiError(req, "Invalid handle");
