@@ -601,8 +601,8 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
 
             if (item_name.CmpNoCase("cloud") == 0)
             {
-                item->setBitmap(GETBMP(kx_cloud_16), fsbmpSmall);
-                item->setBitmap(GETBMP(kx_cloud_16), fsbmpSmallExpanded);
+                item->setBitmap(GETBMP(gf_globe_16), fsbmpSmall);
+                item->setBitmap(GETBMP(gf_globe_16), fsbmpSmallExpanded);
             }
                 
             vec->append(static_cast<IFsItem*>(item));
