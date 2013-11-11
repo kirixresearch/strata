@@ -179,7 +179,7 @@ void HttpRequest::send()
     if (m_curl == NULL)
         init();
 
-    //curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTP_VERSION, (long)CURL_HTTP_VERSION_1_0);
+    curl_result = curl_easy_setopt(m_curl, CURLOPT_HTTP_VERSION, (long)CURL_HTTP_VERSION_1_0);
 
     curl_result = curl_easy_setopt(m_curl, CURLOPT_URL, m_location.c_str());
     if (curl_result != CURLE_OK)
