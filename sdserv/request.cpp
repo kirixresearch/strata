@@ -417,7 +417,7 @@ void RequestInfo::readMultipart(const char* boundary, size_t boundary_length)
 
     // inital read
     r = mg_read(m_conn, buf, MULTIPART_BUFFER_SIZE);
-    dump(buf, r, "initial");
+    //dump(buf, r, "initial");
 
     buf_len = r;
     curpos = buf;
@@ -460,7 +460,7 @@ void RequestInfo::readMultipart(const char* boundary, size_t boundary_length)
                 curpos = buf;
 
                 r = mg_read(m_conn, buf + buf_len, MULTIPART_BUFFER_SIZE - buf_len);
-                dump(buf+buf_len, r, "needed more");
+                //dump(buf+buf_len, r, "needed more");
                 buf_len += r;
 
                 data_begin = (const char*)quickMemmem(curpos, buf_len - (curpos - buf), "\r\n\r\n", 4);
@@ -505,7 +505,7 @@ void RequestInfo::readMultipart(const char* boundary, size_t boundary_length)
             // fill up buffer with more data
 
             r = mg_read(m_conn, buf + buf_len, MULTIPART_BUFFER_SIZE - buf_len);
-            dump(buf+buf_len, r, "last");
+            //dump(buf+buf_len, r, "last");
             buf_len += r;
 
             if (buf_len == 0)

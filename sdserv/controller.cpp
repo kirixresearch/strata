@@ -1138,7 +1138,7 @@ void Controller::apiRead(RequestInfo& req)
     str += L"{ \"success\": true, \"handle\": \"" + handle + L"\", ";
 
     if (so->rowcount != -1)
-        str += L"\"total_count\": \"" +  kl::itowstring(so->rowcount) + L"\", ";
+        str += L"\"total_count\": \"" +  kl::itowstring((int)so->rowcount) + L"\", ";
 
     str += L"\"rows\": [ ";
     std::wstring cell;
@@ -1283,56 +1283,90 @@ void Controller::apiInsertRows(RequestInfo& req)
     if (db.isNull())
         return;
 
-    std::wstring columns_param;
+    std::wstring columns_param, handle;
 
     if (req.getValueExists(L"columns"))
         columns_param = req.getValue(L"columns");
 
-    xd::IStructurePtr structure = db->describeTable(req.getURI());
-    if (structure.isNull())
-    {
-        returnApiError(req, "Invalid data resource");
-        return;
-    }
+    if (req.getValueExists(L"handle"))
+        handle = req.getValue(L"handle");
 
-
-    xd::IRowInserterPtr sp_inserter = db->bulkInsert(req.getURI());
-    xd::IRowInserter* inserter = sp_inserter.p;
-
-
-    if (!inserter->startInsert(columns_param))
-    {
-        returnApiError(req, "Insert operation not allowed");
-        return;
-    }
-
-
+    xd::IRowInserterPtr sp_inserter;
+    xd::IRowInserter* inserter = NULL;
 
     std::vector<SessionRowInserterColumn> columns;
+    std::vector<SessionRowInserterColumn>* p_columns = &columns;
 
-    std::vector<std::wstring> colvec;
-    kl::parseDelimitedList(columns_param, colvec, ',');
-    std::vector<std::wstring>::iterator it;
-    for (it = colvec.begin(); it != colvec.end(); ++it)
+
+    if (handle == L"" || handle == L"create")
     {
-        SessionRowInserterColumn ric;
-        ric.handle = inserter->getHandle(*it);
-        if (!ric.handle)
+        xd::IStructurePtr structure = db->describeTable(req.getURI());
+        if (structure.isNull())
         {
-            returnApiError(req, kl::tostring(L"Cannot initialize inserter (invalid column handle) " + *it).c_str());
+            returnApiError(req, "Invalid data resource");
             return;
         }
-        
-        xd::IColumnInfoPtr colinfo = structure->getColumnInfo(*it);
-        if (colinfo.isNull())
+
+
+        sp_inserter = db->bulkInsert(req.getURI());
+        inserter = sp_inserter.p;
+
+
+        if (!inserter->startInsert(columns_param))
         {
-            returnApiError(req, kl::tostring(L"Cannot initialize inserter (invalid column info) " + *it).c_str());
+            returnApiError(req, "Insert operation not allowed");
             return;
         }
+
+
+        std::vector<SessionRowInserterColumn> columns;
+
+        std::vector<std::wstring> colvec;
+        kl::parseDelimitedList(columns_param, colvec, ',');
+        std::vector<std::wstring>::iterator it;
+        for (it = colvec.begin(); it != colvec.end(); ++it)
+        {
+            SessionRowInserterColumn ric;
+            ric.handle = inserter->getHandle(*it);
+            if (!ric.handle)
+            {
+                returnApiError(req, kl::tostring(L"Cannot initialize inserter (invalid column handle) " + *it).c_str());
+                return;
+            }
         
-        ric.type = colinfo->getType();
+            xd::IColumnInfoPtr colinfo = structure->getColumnInfo(*it);
+            if (colinfo.isNull())
+            {
+                returnApiError(req, kl::tostring(L"Cannot initialize inserter (invalid column info) " + *it).c_str());
+                return;
+            }
         
-        columns.push_back(ric);
+            ric.type = colinfo->getType();
+        
+            columns.push_back(ric);
+        }
+
+
+
+        // add object to session
+        handle = createHandle();
+        SessionRowInserter* so = new SessionRowInserter;
+        so->inserter = sp_inserter;
+        so->columns = columns;
+        addServerSessionObject(handle, so);
+    }
+     else
+    {
+        SessionRowInserter* so = (SessionRowInserter*)getServerSessionObject(handle, "SessionRowInserter");
+        if (!so)
+        {
+            returnApiError(req, "Invalid handle");
+            return;
+        }
+
+        sp_inserter = so->inserter;
+        inserter = sp_inserter.p;
+        p_columns = &(so->columns);
     }
 
 
@@ -1340,112 +1374,64 @@ void Controller::apiInsertRows(RequestInfo& req)
 
 
 
-
-    std::wstring s_rows = req.getValue(L"rows");
-    kl::JsonNode rows;
-    rows.fromString(s_rows);
-    
-    size_t rown, row_cnt = rows.getChildCount();
-    size_t coln, col_cnt = columns.size();
-    for (rown = 0; rown < row_cnt; ++rown)
+    if (req.getValueExists(L"rows"))
     {
-        kl::JsonNode row = rows[rown];
-        if (row.getChildCount() != col_cnt)
-        {
-            returnApiError(req, "Column count mismatch");
-            return;
-        }
-        
-        for (coln = 0; coln < col_cnt; ++coln)
-        {
-            kl::JsonNode col = row[coln];
-            
-            if (col.isNull())
-            {
-                inserter->putNull(columns[coln].handle);
-                continue;
-            }
-            
-            switch (columns[coln].type)
-            {
-                default:
-                case xd::typeUndefined:     break;
-                case xd::typeInvalid:       break;
-                case xd::typeCharacter:     inserter->putWideString(columns[coln].handle, col.getString()); break; 
-                case xd::typeWideCharacter: inserter->putWideString(columns[coln].handle, col.getString()); break;
-                case xd::typeNumeric:       inserter->putDouble(columns[coln].handle, kl::nolocale_wtof(col.getString())); break;
-                case xd::typeDouble:        inserter->putDouble(columns[coln].handle, kl::nolocale_wtof(col.getString())); break;      break;
-                case xd::typeInteger:       inserter->putInteger(columns[coln].handle, kl::wtoi(col.getString())); break;
-                case xd::typeDate:          inserter->putDateTime(columns[coln].handle, parseDateTime(col.getString())); break;
-                case xd::typeDateTime:      inserter->putDateTime(columns[coln].handle, parseDateTime(col.getString())); break;
-                case xd::typeBoolean:       inserter->putBoolean(columns[coln].handle, col.getBoolean()); break;
-                case xd::typeBinary:        break;
-            }
-        }
-        
-        inserter->insertRow();
-    }
+        std::wstring s_rows = req.getValue(L"rows");
+        kl::JsonNode rows;
+        rows.fromString(s_rows);
     
+        size_t rown, row_cnt = rows.getChildCount();
+        size_t coln, col_cnt = p_columns->size();
+        for (rown = 0; rown < row_cnt; ++rown)
+        {
+            kl::JsonNode row = rows[rown];
+            if (row.getChildCount() != col_cnt)
+            {
+                returnApiError(req, "Column count mismatch");
+                return;
+            }
+        
+            for (coln = 0; coln < col_cnt; ++coln)
+            {
+                kl::JsonNode col = row[coln];
+            
+                if (col.isNull())
+                {
+                    inserter->putNull((*p_columns)[coln].handle);
+                    continue;
+                }
+            
+                switch ((*p_columns)[coln].type)
+                {
+                    default:
+                    case xd::typeUndefined:     break;
+                    case xd::typeInvalid:       break;
+                    case xd::typeCharacter:     inserter->putWideString((*p_columns)[coln].handle, col.getString()); break; 
+                    case xd::typeWideCharacter: inserter->putWideString((*p_columns)[coln].handle, col.getString()); break;
+                    case xd::typeNumeric:       inserter->putDouble((*p_columns)[coln].handle, kl::nolocale_wtof(col.getString())); break;
+                    case xd::typeDouble:        inserter->putDouble((*p_columns)[coln].handle, kl::nolocale_wtof(col.getString())); break;      break;
+                    case xd::typeInteger:       inserter->putInteger((*p_columns)[coln].handle, kl::wtoi(col.getString())); break;
+                    case xd::typeDate:          inserter->putDateTime((*p_columns)[coln].handle, parseDateTime(col.getString())); break;
+                    case xd::typeDateTime:      inserter->putDateTime((*p_columns)[coln].handle, parseDateTime(col.getString())); break;
+                    case xd::typeBoolean:       inserter->putBoolean((*p_columns)[coln].handle, col.getBoolean()); break;
+                    case xd::typeBinary:        break;
+                }
+            }
+        
+            inserter->insertRow();
+        }
+    }
 
 
-    inserter->finishInsert();
+    if (handle.empty())
+        inserter->finishInsert();
+
 
     // return success to caller
     kl::JsonNode response;
     response["success"].setBoolean(true);
+    response["handle"] = handle;
     req.write(response.toString());
-
-
-
-
-/*
-    xd::IDatabasePtr db = getSessionDatabase(req);
-    if (db.isNull())
-        return;
-    
-    SdservSession* session = getSdservSession(req);
-    if (!session)
-        return;
-
-    std::wstring path = req.getValue(L"path");
-    if (path.length() == 0)
-    {
-        returnApiError(req, "Missing path parameter");
-        return;
-    }
-    
-    std::wstring source_handle = req.getValue(L"source_handle");
-    if (source_handle.length() == 0)
-    {
-        returnApiError(req, "Missing source_handle parameter");
-        return;
-    }
-    
-    std::map<std::wstring, SessionQueryResult>::iterator it;
-    it = session->iters.find(source_handle);
-    if (it == session->iters.end())
-    {
-        returnApiError(req, "Invalid source_handle parameter");
-        return;
-    }
-
-
-    it->second.iter->goFirst();
-
-    xd::CopyParams info;
-    info.iter_input = it->second.iter;
-    info.append = true;
-    info.where = req.getValue(L"where");
-    if (req.getValueExists(L"limit"))
-        info.limit = kl::wtoi(req.getValue(L"limit"));
-
-    // return success to caller
-    kl::JsonNode response;
-    response["success"].setBoolean(true);
-    //response["row_count"].setInteger(row_count);
-    
-    req.write(response.toString());
-    */
 }
 
 
@@ -1529,6 +1515,13 @@ void Controller::apiClose(RequestInfo& req)
         for (cit = so->columns.begin(); cit != so->columns.end(); ++cit)
             so->iter->releaseHandle(cit->handle);
     }
+
+    if (so->isType("SessionRowInserter"))
+    {
+        SessionRowInserter* sri = (SessionRowInserter*)so;
+        sri->inserter->finishInsert();
+    }
+
 
     delete so;
 
