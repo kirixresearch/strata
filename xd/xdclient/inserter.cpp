@@ -275,6 +275,19 @@ bool ClientRowInserter::startInsert(const std::wstring& col_list)
     m_buffer_row_count = 0;
     m_columns = scols;
 
+
+    ServerCallParams params;
+    params.setParam(L"columns", m_columns);
+    params.setParam(L"handle", L"create");
+    std::wstring sres = m_database->serverCall(m_path, L"insertrows", &params, true);
+    kl::JsonNode response;
+    response.fromString(sres);
+
+    if (!response["success"].getBoolean())
+        return false;
+
+    m_handle = response["handle"];
+
     return true;
 }
 
@@ -328,6 +341,12 @@ void ClientRowInserter::finishInsert()
     {
         flush();
     }
+
+    ServerCallParams params;
+    params.setParam(L"handle", m_handle);
+    std::wstring sres = m_database->serverCall(m_path, L"close", &params, true);
+    kl::JsonNode response;
+    response.fromString(sres);
 }
 
 bool ClientRowInserter::flush()
@@ -341,6 +360,7 @@ bool ClientRowInserter::flush()
     ServerCallParams params;
     params.setParam(L"rows", m_rows);
     params.setParam(L"columns", m_columns);
+    params.setParam(L"handle", m_handle);
     std::wstring sres = m_database->serverCall(m_path, L"insertrows", &params, true);
     kl::JsonNode response;
     response.fromString(sres);
