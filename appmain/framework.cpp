@@ -1388,7 +1388,9 @@ void ChildFrame::onClose(wxCloseEvent& evt)
         }
     }
 
+    #ifndef CFW_USE_TABMDI
     Show(false);
+    #endif
 
     // At least under win32, the child window must be closed before
     // deactivation.  Otherwise, menu un-merging happens incorrectly
@@ -2575,7 +2577,10 @@ IDocumentSitePtr MainFrame::createSite(IDocumentPtr document,
                                            wxPoint(4000, 4000),
                                            wxSize(site_width,site_height),
                                            frame_style);
+        
+        #ifndef CFW_USE_TABMDI
         container->Show(false);
+        #endif
 
         DocumentSite* raw_site = new DocumentSite;
         raw_site->setId(m_unique_id);
@@ -2685,7 +2690,9 @@ IDocumentSitePtr MainFrame::createSite(IDocumentPtr document,
 
         if (!(site_type & siteHidden))
         {
+            #ifndef CFW_USE_TABMDI
             container->Show(true);
+            #endif
         }
 
         return static_cast<IDocumentSite*>(site);
