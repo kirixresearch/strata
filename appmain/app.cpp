@@ -63,7 +63,7 @@ static wxString getAppDataPath()
 
     wxString retval;
     
-    wxStandardPaths sp;
+    wxStandardPaths& sp = wxStandardPaths::Get();
     wxString default_appdata_path = sp.GetUserConfigDir();
     
     if (default_appdata_path.Right(1) != PATH_SEPARATOR_STR)
@@ -337,7 +337,7 @@ bool MainApp::OnInit()
     g_app = this;
 
     // get our install location
-    wxStandardPaths sp;
+    wxStandardPaths& sp = wxStandardPaths::Get();
     m_install_path = sp.GetExecutablePath().BeforeLast(PATH_SEPARATOR_CHAR);
 
     // initialize the paladin object (checks for license authenticity)

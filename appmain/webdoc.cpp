@@ -2127,9 +2127,9 @@ BEGIN_EVENT_TABLE(WebDoc, wxWindow)
     EVT_WEB_DRAGDROP(wxID_WEB, WebDoc::onFsDataDropped)
     
     // for wxWebView alternative component
-    EVT_WEB_VIEW_LOADED(wxID_WEBVIEW, WebDoc::onWebViewDocumentLoaded)
-    EVT_WEB_VIEW_TITLE_CHANGED(wxID_WEBVIEW, WebDoc::onWebViewTitleChanged)
-    EVT_WEB_VIEW_NAVIGATING(wxID_WEBVIEW, WebDoc::onWebViewNavigating)
+    EVT_WEBVIEW_LOADED(wxID_WEBVIEW, WebDoc::onWebViewDocumentLoaded)
+    EVT_WEBVIEW_TITLE_CHANGED(wxID_WEBVIEW, WebDoc::onWebViewTitleChanged)
+    EVT_WEBVIEW_NAVIGATING(wxID_WEBVIEW, WebDoc::onWebViewNavigating)
 
     // disable the data items
     EVT_UPDATE_UI_RANGE(ID_Data_First, ID_Data_Last, WebDoc::onUpdateUI_DisableAlways)
@@ -2269,7 +2269,7 @@ bool WebDoc::initDoc(IFramePtr frame,
         }
 #endif
 
-        m_webview = wxWebView::New(this, wxID_WEBVIEW, wxWebViewDefaultURLStr, wxPoint(0,0), docsite_wnd->GetClientSize(), wxWEB_VIEW_BACKEND_DEFAULT, wxBORDER_NONE);
+        m_webview = wxWebView::New(this, wxID_WEBVIEW, wxWebViewDefaultURLStr, wxPoint(0,0), docsite_wnd->GetClientSize(), wxWebViewBackendDefault, wxBORDER_NONE);
         m_web = m_webview;
     }
 
@@ -2964,12 +2964,12 @@ void WebDoc::onZoomIn(wxCommandEvent& evt)
     {
         switch (m_webview->GetZoom())
         {
-            case wxWEB_VIEW_ZOOM_TINY:      m_webview->SetZoom(wxWEB_VIEW_ZOOM_SMALL);   break;
-            case wxWEB_VIEW_ZOOM_SMALL:     m_webview->SetZoom(wxWEB_VIEW_ZOOM_MEDIUM);  break;
+            case wxWEBVIEW_ZOOM_TINY:      m_webview->SetZoom(wxWEBVIEW_ZOOM_SMALL);   break;
+            case wxWEBVIEW_ZOOM_SMALL:     m_webview->SetZoom(wxWEBVIEW_ZOOM_MEDIUM);  break;
             default:
-            case wxWEB_VIEW_ZOOM_MEDIUM:    m_webview->SetZoom(wxWEB_VIEW_ZOOM_LARGE);   break;
-            case wxWEB_VIEW_ZOOM_LARGE:	    m_webview->SetZoom(wxWEB_VIEW_ZOOM_LARGEST); break;
-            case wxWEB_VIEW_ZOOM_LARGEST:   break;
+            case wxWEBVIEW_ZOOM_MEDIUM:    m_webview->SetZoom(wxWEBVIEW_ZOOM_LARGE);   break;
+            case wxWEBVIEW_ZOOM_LARGE:	    m_webview->SetZoom(wxWEBVIEW_ZOOM_LARGEST); break;
+            case wxWEBVIEW_ZOOM_LARGEST:   break;
         }
     }
 }
@@ -2986,12 +2986,12 @@ void WebDoc::onZoomOut(wxCommandEvent& evt)
     {
         switch (m_webview->GetZoom())
         {
-            case wxWEB_VIEW_ZOOM_TINY:      break;
-            case wxWEB_VIEW_ZOOM_SMALL:     m_webview->SetZoom(wxWEB_VIEW_ZOOM_TINY);  break;
+            case wxWEBVIEW_ZOOM_TINY:      break;
+            case wxWEBVIEW_ZOOM_SMALL:     m_webview->SetZoom(wxWEBVIEW_ZOOM_TINY);  break;
             default:
-            case wxWEB_VIEW_ZOOM_MEDIUM:    m_webview->SetZoom(wxWEB_VIEW_ZOOM_SMALL);  break;
-            case wxWEB_VIEW_ZOOM_LARGE:	    m_webview->SetZoom(wxWEB_VIEW_ZOOM_MEDIUM); break;
-            case wxWEB_VIEW_ZOOM_LARGEST:   m_webview->SetZoom(wxWEB_VIEW_ZOOM_LARGE);  break;
+            case wxWEBVIEW_ZOOM_MEDIUM:    m_webview->SetZoom(wxWEBVIEW_ZOOM_SMALL);  break;
+            case wxWEBVIEW_ZOOM_LARGE:	    m_webview->SetZoom(wxWEBVIEW_ZOOM_MEDIUM); break;
+            case wxWEBVIEW_ZOOM_LARGEST:   m_webview->SetZoom(wxWEBVIEW_ZOOM_LARGE);  break;
         }
     }
 }
@@ -3004,7 +3004,7 @@ void WebDoc::onZoomToActual(wxCommandEvent& evt)
     } 
      else
     {
-        m_webview->SetZoom(wxWEB_VIEW_ZOOM_MEDIUM);
+        m_webview->SetZoom(wxWEBVIEW_ZOOM_MEDIUM);
     }
 }
 
