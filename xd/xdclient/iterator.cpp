@@ -231,7 +231,6 @@ void ClientIterator::skip(int delta)
     int new_row = (int)m_current_row + delta;
 
 
-
     if (m_cache_start != 0 && new_row >= m_cache_start && new_row <= m_cache_start + m_cache_row_count - 1)
     {
         // row is in cache
@@ -240,17 +239,28 @@ void ClientIterator::skip(int delta)
     }
      else
     {
+        int rows_to_fetch;
+
+        // if getting random access calls, fetch a smaller buffer,
+        // otherwise fetch a buffer with a larger read-ahead
+        // for sequential access
+
+        if (abs(delta) < 50)
+            rows_to_fetch = 300;
+             else
+            rows_to_fetch = 50;
+
         // the row is not in the cache, so we need to fetch it
 
         ServerCallParams params;
         params.setParam(L"handle", m_handle);
         params.setParam(L"start", kl::itowstring(new_row));
-        params.setParam(L"limit", L"100");
+        params.setParam(L"limit", kl::itowstring(rows_to_fetch));
         std::wstring sres = m_database->serverCall(m_url_query, L"read", &params);
 
 
         m_cache_rows.clear();
-        m_cache_rows.resize(100);
+        m_cache_rows.resize(rows_to_fetch);
 
         wchar_t* data = (wchar_t*)sres.c_str();
         wchar_t* row_start;
@@ -312,7 +322,7 @@ void ClientIterator::skip(int delta)
 
         /*
         m_cache_rows.clear();
-        m_cache_rows.resize(100);
+        m_cache_rows.resize(300);
 
         std::vector<std::wstring> colvec;
         std::wstring rowstr;

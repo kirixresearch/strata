@@ -1418,7 +1418,9 @@ void ChildFrame::onMove(wxMoveEvent& evt)
 
 void ChildFrame::setVisible(bool visible)
 {
+#ifndef CFW_USE_TABMDI
     Show(visible);
+#endif
 }
 
 bool ChildFrame::getVisible()
