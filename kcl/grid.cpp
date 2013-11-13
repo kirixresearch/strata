@@ -5689,7 +5689,8 @@ void Grid::render(wxRect* update_rect, bool cursor_visible)
         {
             if (m_selection.getSelectionCount() == 1 &&
                 m_cursor_type == cursorNormal &&
-                m_cursor_visible)
+                m_cursor_visible &&
+                m_viewcols.size() > 0)
             {
                 bool separator = false;
                 if (m_cursor_col >= 0 && m_cursor_col < (int)m_viewcols.size())

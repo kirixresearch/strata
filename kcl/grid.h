@@ -628,6 +628,8 @@ public:
     Grid();
     ~Grid();
 
+    bool AcceptsFocus() const { return true; }
+
     bool Create(wxWindow* parent,
                 wxWindowID id,
                 const wxPoint& pos = wxDefaultPosition,
