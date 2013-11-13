@@ -557,12 +557,12 @@ bool TestModel::deleteAllRows()
 
 int TestModel::getRowCount()
 {
-    return 100000;
+    return 10000;
 }
 
 bool TestModel::isRowValid(int row)
 {
-    return (row >= 0 && row < 100000 ? true : false);
+    return (row >= 0 && row < 10000 ? true : false);
 }
 
 void TestModel::onCursorRowChanged()
@@ -1645,7 +1645,7 @@ bool Grid::Create(wxWindow* parent,
                                  id,
                                  p,
                                  s,
-                                 wxCLIP_CHILDREN | wxHSCROLL | wxVSCROLL | m_border_type);
+                                 wxCLIP_CHILDREN | wxHSCROLL | wxVSCROLL | wxWANTS_CHARS | m_border_type);
     if (!res)
     {
         return false;

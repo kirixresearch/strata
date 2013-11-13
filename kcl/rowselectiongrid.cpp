@@ -56,7 +56,7 @@ RowSelectionGrid::RowSelectionGrid(wxWindow* parent,
                                    const wxSize& size,
                                    long style,
                                    bool drag_source,
-                                   bool drop_target)
+                                   bool drop_target) : Grid()
 {
     // initialize row selection variables
     m_row_selection_grid_flags = RowSelectionGrid::refreshAll;
