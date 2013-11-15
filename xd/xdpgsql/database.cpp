@@ -519,7 +519,7 @@ PGconn* PgsqlDatabase::createConnection()
     m_error.clearError();
 
     std::wstring connstr;
-    connstr += L"hostaddr='" + m_server + L"'";
+    connstr += L"host='" + m_server + L"'";
 
     int port = m_port; if (port == 0) port = 5432;
     connstr += L" port='" + kl::itowstring(port) + L"'";

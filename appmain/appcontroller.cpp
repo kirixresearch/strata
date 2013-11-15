@@ -4907,6 +4907,7 @@ static void onCreateExternalConnectionWizardFinished(ConnectionWizard* dlg)
     switch (info.type)
     {
         case dbtypeSqlServer:
+        case dbtypePostgres:
         case dbtypeMySql:
             conn_name = wxString::Format(_("%s on %s"),
                                          info.database.c_str(),

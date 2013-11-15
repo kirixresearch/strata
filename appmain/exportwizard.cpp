@@ -153,6 +153,7 @@ void ExportWizard::onExportTypeChanged(int type)
     switch (type)
     {
         case ConnectionBar::typeMySql:     export_type = dbtypeMySql;        break;
+        case ConnectionBar::typePostgres:  export_type = dbtypePostgres;     break;
         case ConnectionBar::typeSqlServer: export_type = dbtypeSqlServer;    break;
         case ConnectionBar::typeOracle:    export_type = dbtypeOracle;       break;
         case ConnectionBar::typeDb2:       export_type = dbtypeDb2;          break;
@@ -178,10 +179,12 @@ void ExportWizard::onExportTypeChanged(int type)
         
         case ConnectionBar::typeSqlServer:
         case ConnectionBar::typeMySql:
+        case ConnectionBar::typePostgres:
         case ConnectionBar::typeOracle:
         case ConnectionBar::typeDb2:
         {
             if (export_type == dbtypeMySql)     { m_template.m_ei.port = 3306;  }
+            if (export_type == dbtypePostgres)  { m_template.m_ei.port = 5432;  }
             if (export_type == dbtypeSqlServer) { m_template.m_ei.port = 1433;  }
             if (export_type == dbtypeOracle)    { m_template.m_ei.port = 1521;  }
             if (export_type == dbtypeDb2)       { m_template.m_ei.port = 50000; }

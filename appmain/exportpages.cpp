@@ -202,6 +202,7 @@ void ExportTableSelectionPage::onPageChanged()
     
     
     if (m_ei->type == dbtypeMySql ||
+        m_ei->type == dbtypePostgres ||
         m_ei->type == dbtypeSqlServer ||
         m_ei->type == dbtypeOracle ||
         m_ei->type == dbtypeDb2 ||

@@ -30,6 +30,9 @@ int getConnectionBarType(int connection_type)
 
     if (connection_type == dbtypeOracle)
         return ConnectionBar::typeOracle;
+
+    if (connection_type == dbtypePostgres)
+        return ConnectionBar::typePostgres;
     
     if (connection_type == dbtypeDb2)
         return ConnectionBar::typeDb2;
@@ -133,6 +136,15 @@ void ConnectionBar::populate()
             default_item = item;
     }
     
+    if (m_types & dbtypePostgres)
+    {
+        item = addItem(ConnectionBar::typePostgres,
+                       GETBMP(gf_db_pg_32),
+                       _("Postgres"));
+        if (default_item == NULL)
+            default_item = item;
+    }
+
     if (m_types & dbtypeSqlServer)
     {
         item = addItem(ConnectionBar::typeSqlServer,
@@ -150,6 +162,7 @@ void ConnectionBar::populate()
         if (default_item == NULL)
             default_item = item;
     }
+
     
     if (m_types & dbtypeDb2)
     {
@@ -522,6 +535,7 @@ void ConnectionWizard::onConnectionTypeChanged(int type)
     switch (type)
     {
         case ConnectionBar::typeMySql:     conn_type = dbtypeMySql;      break;
+        case ConnectionBar::typePostgres:  conn_type = dbtypePostgres;   break;
         case ConnectionBar::typeSqlServer: conn_type = dbtypeSqlServer;  break;
         case ConnectionBar::typeOracle:    conn_type = dbtypeOracle;     break;
         case ConnectionBar::typeDb2:       conn_type = dbtypeDb2;        break;
@@ -549,6 +563,7 @@ void ConnectionWizard::onConnectionTypeChanged(int type)
         m_ci.username = wxEmptyString;
         m_ci.password = wxEmptyString;
         if (conn_type == dbtypeMySql)     { m_ci.port = 3306;  }
+        if (conn_type == dbtypePostgres)  { m_ci.port = 5432;  }
         if (conn_type == dbtypeSqlServer) { m_ci.port = 1433;  }
         if (conn_type == dbtypeOracle)    { m_ci.port = 1521;  }
         if (conn_type == dbtypeDb2)       { m_ci.port = 50000; }
@@ -560,6 +575,7 @@ void ConnectionWizard::onConnectionTypeChanged(int type)
     switch (conn_type)
     {
         case dbtypeMySql:
+        case dbtypePostgres:
         case dbtypeSqlServer:
         case dbtypeOracle:
         case dbtypeDb2:
@@ -616,6 +632,7 @@ void ConnectionWizard::onConnectionTypeChanged(int type)
     }
     
     if (conn_type == dbtypeMySql ||
+        conn_type == dbtypePostgres ||
         conn_type == dbtypeSqlServer ||
         conn_type == dbtypeOracle ||
         conn_type == dbtypeDb2 ||

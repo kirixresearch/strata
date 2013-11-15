@@ -157,6 +157,7 @@ bool ImportWizard::initDoc(IFramePtr frame,
         {
             default:              type = ConnectionBar::typeFile;      break;
             case dbtypeMySql:     type = ConnectionBar::typeMySql;     break;
+            case dbtypePostgres:  type = ConnectionBar::typePostgres;  break;
             case dbtypeSqlServer: type = ConnectionBar::typeSqlServer; break;
             case dbtypeDb2:       type = ConnectionBar::typeDb2;       break;
             case dbtypeOracle:    type = ConnectionBar::typeOracle;    break;
@@ -224,6 +225,7 @@ void ImportWizard::updatePageRouting()
         
         case dbtypeSqlServer:
         case dbtypeMySql:
+        case dbtypePostgres:
         case dbtypeOracle:
         case dbtypeDb2:
         {
@@ -271,6 +273,7 @@ void ImportWizard::onImportTypeChanged(int type)
     switch (type)
     {
         case ConnectionBar::typeMySql:     import_type = dbtypeMySql;        break;
+        case ConnectionBar::typePostgres:  import_type = dbtypePostgres;     break;
         case ConnectionBar::typeSqlServer: import_type = dbtypeSqlServer;    break;
         case ConnectionBar::typeOracle:    import_type = dbtypeOracle;       break;
         case ConnectionBar::typeDb2:       import_type = dbtypeDb2;          break;
@@ -285,6 +288,7 @@ void ImportWizard::onImportTypeChanged(int type)
     
     
     if (import_type == dbtypeMySql)     { m_template.m_ii.port = 3306;  }
+    if (import_type == dbtypePostgres)  { m_template.m_ii.port = 5432;  }
     if (import_type == dbtypeSqlServer) { m_template.m_ii.port = 1433;  }
     if (import_type == dbtypeOracle)    { m_template.m_ii.port = 1521;  }
     if (import_type == dbtypeDb2)       { m_template.m_ii.port = 50000; }

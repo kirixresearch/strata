@@ -26,6 +26,7 @@ enum ConnectionTypes
         #endif
 
         dbtypeMySql |
+        dbtypePostgres |
         dbtypeDb2 |
         dbtypePackage |
         dbtypeAccess |
@@ -46,6 +47,7 @@ enum ConnectionTypes
         #endif
 
         dbtypeMySql |
+        dbtypePostgres |
         dbtypeDb2 |
         dbtypePackage |
         dbtypeSqlServer |
@@ -59,6 +61,7 @@ enum ConnectionTypes
     
         dbtypeSqlServer |
         dbtypeMySql |
+        dbtypePostgres |
         dbtypeOracle |
         dbtypeDb2 |
         dbtypeOdbc |
@@ -181,6 +184,7 @@ public:
         typeSqlServer,
         typeDb2,
         typeOracle,
+        typePostgres,
         typeOdbc,
         typeClient
     };
