@@ -12,6 +12,7 @@
 #include "sdserv.h"
 #include "request.h"
 #include "controller.h"
+#include "websockets.h"
 
 
 
@@ -54,6 +55,7 @@ Sdserv::Sdserv()
     m_options[0] = 0;
     m_last_access = time(NULL);
     m_idle_quit = 0;
+    m_server_type = serverHttp;
 }
 
 Sdserv::~Sdserv()
@@ -220,8 +222,17 @@ void Sdserv::updateLastAccessTimestamp()
 
 int Sdserv::runServer()
 {
-    HttpServer http;
-    http.run(m_options);
+    if (m_server_type == serverHttp)
+    {
+        HttpServer http;
+        http.run(m_options);
+    }
+     else if (m_server_type == serverWebSocketsClient)
+    {
+        WebSocketsClient ws;
+        ws.run();
+    }
+
     return 0;
 }
 
@@ -261,6 +272,8 @@ bool Sdserv::initOptions(int argc, const char* argv[])
             m_notready_evtid = kl::towstring(argv[i+1]);
         if (0 == strcmp(argv[i], "--idle-quit") && i+1 < argc)
             m_idle_quit = atoi(argv[i+1]);
+        if (0 == strcmp(argv[i], "--ws"))
+            m_server_type = serverWebSocketsClient;
     }
 
 

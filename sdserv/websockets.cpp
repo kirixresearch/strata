@@ -17,13 +17,14 @@
 
 
 #define MAX_MESSAGE_PAYLOAD 1400
-#define SITE_URL "echo.websocket.org"
+#define SITE_URL "dataex.goldprairie.com"
 
 struct websockets_message_data
 {
 	unsigned char buf[LWS_SEND_BUFFER_PRE_PADDING + MAX_MESSAGE_PAYLOAD + LWS_SEND_BUFFER_POST_PADDING];
 	unsigned int len;
 	unsigned int index;
+    std::string val;
 };
 
 
@@ -35,7 +36,7 @@ static int websockets_callback(struct libwebsocket_context* context,
                                enum libwebsocket_callback_reasons reason,
                                void* user,
                                void* in,
-                              size_t len)
+                               size_t len)
 {
 	struct websockets_message_data* data = (struct websockets_message_data*)user;
     char* buf;
@@ -48,7 +49,16 @@ static int websockets_callback(struct libwebsocket_context* context,
             break;
 
         case LWS_CALLBACK_CLIENT_RECEIVE:
-            break;
+        {
+            size_t remaining = libwebsockets_remaining_packet_payload(wsi);
+            data->val.append((char*)in, len);
+            if (remaining == 0)
+            {
+                printf("%s\n", data->val.c_str());
+                data->val = "";
+            }
+        }
+        break;
 
         case LWS_CALLBACK_CLIENT_WRITEABLE:
             // send packet
@@ -76,7 +86,7 @@ bool WebSocketsClient::run()
     static struct libwebsocket_protocols protocols[] =
     {
         {
-            "default",              // name
+            "",              // name
             websockets_callback,    // callback
             sizeof(struct websockets_message_data)   // per_session_data_size
         },
@@ -107,6 +117,12 @@ bool WebSocketsClient::run()
     {
         // connect failed
         return false;
+    }
+
+    int res = 0;
+    while (res >= 0)
+    {
+        res = libwebsocket_service(context, 50);
     }
 
     return true;

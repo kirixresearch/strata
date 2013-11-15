@@ -32,7 +32,17 @@
 
 class Sdserv
 {
-friend class HttpServer;
+    friend class HttpServer;
+
+public:
+
+    enum
+    {
+        serverHttp = 1,
+        serverWebSocketsClient = 2
+    };
+
+
 public:
     
     Sdserv();
@@ -66,6 +76,8 @@ private:
     int m_idle_quit;
     xcm::mutex m_last_access_mutex;
     time_t m_last_access;
+
+    int m_server_type;
 };
 
 
