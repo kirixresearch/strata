@@ -10,14 +10,13 @@
 
 
 #include "sdserv.h"
-#include "mongoose.h"
 #include "request.h"
 #include "controller.h"
 
 
 
 Sdserv g_sdserv;
-Controller* c = NULL;
+Controller g_controller;
 
 
 static kl::JsonNode getJsonNodeFromFile(const std::wstring& filename)
@@ -185,26 +184,6 @@ bool Sdserv::useConfigFile(const std::wstring& config_file)
     return true;
 }
 
-static int request_callback(struct mg_connection* conn)
-{
-    const struct mg_request_info* request_info = mg_get_request_info(conn);
-
-    g_sdserv.updateLastAccessTimestamp();
-
-    RequestInfo req(conn, request_info);
-    req.read();
-
-    if (!c->onRequest(req))
-    {
-        req.setStatusCode(404);
-        req.setContentType("text/html");
-        req.write("<html><body><h2>Not found</h2></body></html>");
-    }
-
-    return 1;
-}
-
-
 void Sdserv::signalServerReady()
 {
     if (m_ready_evtid.length() > 0)
@@ -241,55 +220,8 @@ void Sdserv::updateLastAccessTimestamp()
 
 int Sdserv::runServer()
 {
-    struct mg_context* ctx;
-    struct mg_callbacks callbacks;
-
-    if (m_options[0] == 0)
-    {
-        signalServerNotReady();
-        return 0;
-    }
-    
-    memset(&callbacks, 0, sizeof(callbacks));
-    callbacks.begin_request = request_callback;
-
-    ctx = mg_start(&callbacks, NULL, m_options);
-    if (!ctx)
-    {
-        signalServerNotReady();
-        return 0;
-    }
-    
-    signalServerReady();
-
-    int counter = 0;
-
-    while (1)
-    {
-        ::Sleep(1000);
-
-        if (m_idle_quit > 0)
-        {
-            counter++;
-            if ((counter % 10) == 0)
-            {
-                time_t t = time(NULL);
-                bool quit = false;
-
-                m_last_access_mutex.lock();
-                if (t - m_last_access > m_idle_quit)
-                    quit = true;
-                m_last_access_mutex.unlock();
-
-                if (quit)
-                    break;
-            }
-        }
-    }
-    
-    // causing a hang right now.  Maybe has something to do with keep alive?
-    //mg_stop(ctx);
-
+    HttpServer http;
+    http.run(m_options);
     return 0;
 }
 
@@ -373,7 +305,7 @@ bool Sdserv::initOptions(int argc, const char* argv[])
             return 1;
         }
 
-        c->setConnectionString(cstr);
+        g_controller.setConnectionString(cstr);
     }
 
 
@@ -384,18 +316,13 @@ bool Sdserv::initOptions(int argc, const char* argv[])
 
 int main(int argc, const char** argv)
 {
-    c = new Controller;
-
     if (!g_sdserv.initOptions(argc, argv))
     {
-        delete c;
         g_sdserv.signalServerNotReady();
         return 0;
     }
 
     g_sdserv.runServer();
-
-    delete c;
 
     return 0;
 }

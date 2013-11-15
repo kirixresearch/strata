@@ -32,6 +32,7 @@
 
 class Sdserv
 {
+friend class HttpServer;
 public:
     
     Sdserv();
@@ -61,6 +62,7 @@ private:
     char m_cert_file_path[255];
     const char* m_options[255];
 
+
     int m_idle_quit;
     xcm::mutex m_last_access_mutex;
     time_t m_last_access;
@@ -68,6 +70,5 @@ private:
 
 
 extern Sdserv g_sdserv;
-
 
 #endif

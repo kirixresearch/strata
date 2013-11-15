@@ -70,6 +70,7 @@ public:
 
     RequestInfo(struct mg_connection* conn,
                 const struct mg_request_info* ri);
+
     virtual ~RequestInfo();
 
     void read();
@@ -135,6 +136,17 @@ private:
 };
 
 
+
+class HttpServer
+{
+public:
+    void run(const char* options[]);
+
+
+private:
+    static int HttpServer::request_callback(struct mg_connection* conn);
+
+};
 
 
 

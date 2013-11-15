@@ -122,5 +122,6 @@ private:
     std::vector<jobs::IJobInfoPtr> m_job_info_vec;
 };
 
+extern Controller g_controller;
 
 #endif

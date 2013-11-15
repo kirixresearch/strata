@@ -12,11 +12,16 @@
 #include "sdserv.h"
 #include "request.h"
 #include "mongoose.h"
+#include "controller.h"
 #include <kl/portable.h>
 #include <kl/url.h>
 #include <kl/md5.h>
 #include <kl/memory.h>
 
+
+
+
+extern Controller g_controller;
 
 
 // member and function helpers for extracting 
@@ -880,3 +885,89 @@ bool RequestInfo::isMethodPost() const
     return false;
 }
 
+
+
+
+
+
+
+
+
+//static
+int HttpServer::request_callback(struct mg_connection* conn)
+{
+    const struct mg_request_info* request_info = mg_get_request_info(conn);
+
+    g_sdserv.updateLastAccessTimestamp();
+
+    RequestInfo req(conn, request_info);
+    req.read();
+
+    if (!g_controller.onRequest(req))
+    {
+        req.setStatusCode(404);
+        req.setContentType("text/html");
+        req.write("<html><body><h2>Not found</h2></body></html>");
+    }
+
+    return 1;
+}
+
+
+
+
+//static
+void HttpServer::run(const char* options[])
+{
+
+    struct mg_context* ctx;
+    struct mg_callbacks callbacks;
+
+    if (options[0] == 0)
+    {
+        g_sdserv.signalServerNotReady();
+        return;
+    }
+    
+    memset(&callbacks, 0, sizeof(callbacks));
+    callbacks.begin_request = request_callback;
+
+    ctx = mg_start(&callbacks, NULL, options);
+    if (!ctx)
+    {
+        g_sdserv.signalServerNotReady();
+        return;
+    }
+    
+    g_sdserv.signalServerReady();
+
+    int counter = 0;
+
+    while (1)
+    {
+        ::Sleep(1000);
+
+        if (g_sdserv.m_idle_quit > 0)
+        {
+            counter++;
+            if ((counter % 10) == 0)
+            {
+                time_t t = time(NULL);
+                bool quit = false;
+
+                g_sdserv.m_last_access_mutex.lock();
+                if (t - g_sdserv.m_last_access > g_sdserv.m_idle_quit)
+                    quit = true;
+                g_sdserv.m_last_access_mutex.unlock();
+
+                if (quit)
+                    break;
+            }
+        }
+    }
+    
+    // causing a hang right now.  Maybe has something to do with keep alive?
+    //mg_stop(ctx);
+
+    return;
+}
