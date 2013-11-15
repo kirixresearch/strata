@@ -85,12 +85,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../kl/include;../supp/openssl/inc32;../xd/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../kl/include;../supp/openssl/inc32;../xd/include;../supp/libwebsockets/lib</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ws2_32.lib;../kl/lib/klud.lib;../jobs/lib/jobsud.lib;../supp/openssl/out32.dbg/libeay32.lib;../supp/openssl/out32.dbg/ssleay32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;../kl/lib/klud.lib;../jobs/lib/jobsud.lib;../supp/openssl/out32.dbg/libeay32.lib;../supp/openssl/out32.dbg/ssleay32.lib;../supp/libwebsockets/lib/Debug/websockets_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -117,14 +117,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../kl/include;../supp/openssl/inc32;../xd/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../kl/include;../supp/openssl/inc32;../xd/include;../supp/libwebsockets/lib</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>ws2_32.lib;../kl/lib/klu.lib;../jobs/lib/jobsu.lib;../supp/openssl/out32/libeay32.lib;../supp/openssl/out32/ssleay32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;../kl/lib/klu.lib;../jobs/lib/jobsu.lib;../supp/openssl/out32/libeay32.lib;../supp/openssl/out32/ssleay32.lib;../supp/libwebsockets/lib/Release/websockets_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -151,12 +151,14 @@
     <ClCompile Include="mongoose.c" />
     <ClCompile Include="request.cpp" />
     <ClCompile Include="sdserv.cpp" />
+    <ClCompile Include="websockets.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="controller.h" />
     <ClInclude Include="mongoose.h" />
     <ClInclude Include="request.h" />
     <ClInclude Include="sdserv.h" />
+    <ClInclude Include="websockets.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

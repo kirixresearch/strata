@@ -9,8 +9,8 @@
  */
 
  
-#ifndef __SDSERV_SDSERV_H
-#define __SDSERV_SDSERV_H
+#ifndef __SDSERV_WEBSOCKETS_H
+#define __SDSERV_WEBSOCKETS_H
 
 
 
@@ -20,7 +20,7 @@ class WebSocketsClient
 {
 public:
 
-    void run();
+    bool run();
 
 };
 
