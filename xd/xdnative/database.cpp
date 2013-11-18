@@ -2104,6 +2104,11 @@ public:
         return object_id;
     }
 
+    const std::wstring& getUrl()
+    {
+        return url;
+    }
+
 public:
 
     XdnativeDatabase* db;
@@ -2113,6 +2118,8 @@ public:
     std::wstring path;
     std::wstring primary_key;
     std::wstring object_id;
+    std::wstring url;
+
     long long size;
     int type;
     int format;

@@ -397,6 +397,7 @@ void Controller::apiFileInfo(RequestInfo& req)
         file_info["primary_key"] = finfo->getPrimaryKey();
         file_info["size"] = (double)finfo->getSize();
         file_info["object_id"] = finfo->getObjectId();
+        file_info["url"] = finfo->getUrl();
 
         if (finfo->getType() == xd::filetypeTable)
         {

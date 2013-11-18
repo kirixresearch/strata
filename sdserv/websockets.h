@@ -22,6 +22,9 @@ public:
 
     bool run();
 
+public:
+
+    void onMessage(const std::string& msg);
 };
 
 

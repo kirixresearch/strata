@@ -39,6 +39,7 @@ public:
     bool isMount();
     const std::wstring& getPrimaryKey();
     const std::wstring& getObjectId();
+    const std::wstring& getUrl();
 
 public:
 
@@ -46,6 +47,7 @@ public:
     std::wstring mime_type;
     std::wstring primary_key;
     std::wstring object_id;
+    std::wstring url;
     int type;
     int format;
     int flags;

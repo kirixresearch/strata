@@ -38,6 +38,7 @@ static int websockets_callback(struct libwebsocket_context* context,
                                void* in,
                                size_t len)
 {
+    WebSocketsClient* wsclient = (WebSocketsClient*)libwebsocket_context_user(context);
 	struct websockets_message_data* data = (struct websockets_message_data*)user;
     char* buf;
 	int n;
@@ -54,7 +55,7 @@ static int websockets_callback(struct libwebsocket_context* context,
             data->val.append((char*)in, len);
             if (remaining == 0)
             {
-                printf("%s\n", data->val.c_str());
+                wsclient->onMessage(data->val);
                 data->val = "";
             }
         }
@@ -77,6 +78,11 @@ static int websockets_callback(struct libwebsocket_context* context,
 }
 
 
+void WebSocketsClient::onMessage(const std::string& msg)
+{
+    printf("%s\n\n\n", msg.c_str());
+}
+
 bool WebSocketsClient::run()
 {
     struct lws_context_creation_info info;
@@ -86,8 +92,8 @@ bool WebSocketsClient::run()
     static struct libwebsocket_protocols protocols[] =
     {
         {
-            "",              // name
-            websockets_callback,    // callback
+            "",                                      // name
+            websockets_callback,                     // callback
             sizeof(struct websockets_message_data)   // per_session_data_size
         },
 
@@ -101,6 +107,7 @@ bool WebSocketsClient::run()
     memset(&info, 0, sizeof info);
     info.port = CONTEXT_PORT_NO_LISTEN;
     info.protocols = protocols;
+    info.user = (void*)this;
 
 	context = libwebsocket_create_context(&info);
 

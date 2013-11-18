@@ -80,4 +80,11 @@ const std::wstring& FileInfo::getObjectId()
     return object_id;
 }
 
+const std::wstring& FileInfo::getUrl()
+{
+    return url;
+}
+
+
+
 }; // namespace xdcommon

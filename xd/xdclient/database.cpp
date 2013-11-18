@@ -518,6 +518,7 @@ xd::IFileInfoPtr ClientDatabase::getFileInfo(const std::wstring& path)
     f->primary_key = file_info["primary_key"];
     f->size = (long long)file_info["size"].getDouble();
     f->object_id = file_info["object_id"];
+    f->url = file_info["url"];
 
     return static_cast<xd::IFileInfo*>(f);
 }

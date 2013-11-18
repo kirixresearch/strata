@@ -1141,6 +1141,11 @@ public:
         return object_id;
     }
     
+    const std::wstring& getUrl()
+    {
+        return url;
+    }
+    
 public:
 
     std::wstring name;
@@ -1149,6 +1154,7 @@ public:
     std::wstring phys_path;
     std::wstring primary_key;
     std::wstring object_id;
+    std::wstring url;
     int type;
     int format;
     bool is_mount;

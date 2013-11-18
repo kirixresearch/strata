@@ -337,6 +337,7 @@ public:
     virtual bool isMount() = 0;                      // true if file/folder is a mount
     virtual const std::wstring& getPrimaryKey() = 0; // primary key of a table
     virtual const std::wstring& getObjectId() = 0;   // object id (i.e. set id, oid, etc)
+    virtual const std::wstring& getUrl() = 0;        // url associated with object
 };
 
 
