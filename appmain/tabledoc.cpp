@@ -2330,6 +2330,10 @@ bool TableDoc::open(const std::wstring& _path,
         // path is itself a url, display that in the url bar
         setSourceUrl(m_path);
     }
+     else if (file_info->getUrl().length() > 0)
+    {
+        setSourceUrl(file_info->getUrl());
+    }
      else
     {
 

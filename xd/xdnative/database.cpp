@@ -2251,6 +2251,7 @@ xd::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& path)
             int is_mount = -1;
             std::wstring file_mime_type;
             std::wstring file_object_id;
+            std::wstring file_url;
 
             if (getLocalFileExist(path))
                 is_mount = 1;
@@ -2268,6 +2269,7 @@ xd::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& path)
                         file_primary_key = file_info->getPrimaryKey();
                         file_mime_type = file_info->getMimeType();
                         file_object_id = file_info->getObjectId();
+                        file_url = file_info->getUrl();
                         if (is_mount == -1)
                             is_mount = file_info->isMount() ? 1 : 0;
                     }
@@ -2282,6 +2284,7 @@ xd::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& path)
             f->primary_key = file_primary_key;
             f->mime_type = file_mime_type;
             f->object_id = file_object_id;
+            f->url = file_url;
             
             return static_cast<xd::IFileInfo*>(f);
         }
