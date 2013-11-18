@@ -1880,8 +1880,13 @@ void AppController::onOpenURL(wxCommandEvent& evt)
     // get the url string
     wxString url_str = evt.GetString();
 
+    int open_mask = appOpenDefault;
+
+    if (url_str.Find("/resource/xd/") > 0)
+        open_mask = appOpenAsTable;
+
     // open the url
-    openAny(url_str);
+    openAny(url_str, open_mask);
 }
 
 static bool isValidOpenExtension(const wxString& ext)
