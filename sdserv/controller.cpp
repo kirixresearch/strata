@@ -240,15 +240,11 @@ xd::IDatabasePtr Controller::getSessionDatabase(RequestInfo& req)
     if (db.isNull())
     {
 
-        if (m_connection_string.find(L"pgsql") != m_connection_string.npos)
-        {
-            // allow auto-create for pgsql
-            dbmgr->createDatabase(m_connection_string);
-            db = dbmgr->open(m_connection_string);
-            printf("creating database: %ls\n", m_connection_string.c_str());
-            if (db.isNull())
-                printf("...but couldn't open database right away...\n");
-        }
+        dbmgr->createDatabase(m_connection_string);
+        db = dbmgr->open(m_connection_string);
+        printf("creating database: %ls\n", m_connection_string.c_str());
+        if (db.isNull())
+            printf("...but couldn't open database right away...\n");
 
         if (db.isNull())
             return xcm::null;
@@ -1012,6 +1008,9 @@ void Controller::apiRead(RequestInfo& req)
     int limit = kl::wtoi(req.getValue(L"limit", L"-1"));
     SessionQueryResult* so = NULL;
 
+    if (limit < 0)
+        limit = 0;
+
     if (handle.empty())
     {
         xd::IDatabasePtr db = getSessionDatabase(req);
@@ -1145,7 +1144,7 @@ void Controller::apiRead(RequestInfo& req)
     std::wstring cell;
     
     int row = 0, col, rowcnt = 0;
-    for (row = 0; (limit > 0 ? row < limit : true); ++row)
+    for (row = 0; (limit >= 0 ? row < limit : true); ++row)
     {
         if (iter->eof())
             break;
