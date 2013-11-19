@@ -2701,10 +2701,7 @@ void TableDoc::updateCaption()
     }
      else
     {
-        if (m_source_url.length() > 0)
-            m_caption = kl::afterLast(m_source_url, '/');
-            else
-            m_caption = kl::afterLast(m_path, '/');
+        m_caption = kl::afterLast(m_path, '/');
     }
 
     if (m_doc_site)

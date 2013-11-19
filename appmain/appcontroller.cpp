@@ -1880,13 +1880,8 @@ void AppController::onOpenURL(wxCommandEvent& evt)
     // get the url string
     wxString url_str = evt.GetString();
 
-    int open_mask = appOpenDefault;
-
-    if (url_str.Find("/resource/xd/") > 0)
-        open_mask = appOpenAsTable;
-
     // open the url
-    openAny(url_str, open_mask);
+    openAny(url_str);
 }
 
 static bool isValidOpenExtension(const wxString& ext)
@@ -4176,11 +4171,14 @@ bool AppController::openAny(const wxString& _location,
 
     if (site_id)
         *site_id = 0;
-        
+
     // trim the location of leading and trailing spaces
     wxString location = _location;
     location.Trim(true);
     location.Trim(false);
+
+    if (open_mask == appOpenDefault && location.Find("/resource/xd/") > 0)
+        open_mask = appOpenAsTable;
 
     wxString protocol = location.BeforeFirst(wxT(':'));
     protocol.MakeLower();
