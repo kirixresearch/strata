@@ -163,6 +163,9 @@ int LoadJob::runJob()
             kl::JsonNode format = object["destination_format"];
 
             destination_format.format = xd::formatDelimitedText;
+            if (kl::icontains(destination_path, L".icsv"))
+                destination_format.format = xd::formatTypedDelimitedText;
+
             destination_format.delimiters = format.getChild("delimiter").getString();
             destination_format.text_qualifiers = format.getChild("text_qualifier").getString();
             destination_format.first_row_column_names = format.getChild("header_row").getBoolean();
