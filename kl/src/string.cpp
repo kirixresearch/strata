@@ -582,6 +582,25 @@ bool iequals(const std::wstring& s1, const std::string& _s2)
     return (0 == wcscasecmp(s1.c_str(), s2.c_str()));
 }
 
+bool icontains(const std::wstring& _s1, const std::wstring& _s2)
+{
+    std::wstring s1 = _s1, s2 = _s2;
+    kl::makeLower(s1);
+    kl::makeLower(s2);
+    return (s1.find(s2) != s1.npos);
+}
+
+bool icontains(const std::string& _s1, const std::string& _s2)
+{
+    std::string s1 = _s1, s2 = _s2;
+    kl::makeLower(s1);
+    kl::makeLower(s2);
+    return (s1.find(s2) != s1.npos);
+}
+
+
+
+
 
 // these functions convert a std::(w)string to a UCS-2 buffer and vice versa.
 // Big-endian and little-endian versions are provided
