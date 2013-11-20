@@ -33,8 +33,16 @@ bool Controller::onRequest(RequestInfo& req)
     uri = kl::beforeFirst(uri, '?');
     if (uri.length() > 0 && uri[uri.length()-1] == '/')
        uri = uri.substr(0, uri.length()-1);
- 
- 
+
+    std::wstring method = req.getValue(L"m");
+    
+    invokeApi(uri, method, req);
+    return true;
+}
+
+
+void Controller::invokeApi(const std::wstring& uri, const std::wstring& method, RequestInfo& req)
+{
     // debugging code
 
     clock_t start = clock(), end;
@@ -45,6 +53,7 @@ bool Controller::onRequest(RequestInfo& req)
         printf("\n");
     last_time = t;
     
+
     std::wstring str;
     if (req.getValueExists(L"path"))
         str = req.getValue(L"path");
@@ -59,63 +68,49 @@ bool Controller::onRequest(RequestInfo& req)
         if (ending_start < 10)
             ending_start = 10;
         str = str.substr(0, 10) + L"..." + str.substr(ending_start,30);
-    }
-    
-    std::wstring apimethod = req.getValue(L"m");
-    
 
+    }
     struct tm tm;
     localtime_r(&t, &tm);
     char timestamp[255];
     strftime(timestamp, 255, "%H:%M:%S", &tm);
-    printf("%s %-13ls %-44ls", timestamp, apimethod.c_str(), str.c_str());
+    printf("%s %-13ls %-44ls", timestamp, method.c_str(), str.c_str());
     // end debugging code
  
 
-    if (apimethod.empty())
-    {
-        // no api method invoked, invoker wants data
-        apiRead(req);
 
-        end = clock();
-        printf("%5d %4dms\n", req.getContentLength(), (end-start));
-    
-        return true;
-    }
- 
-
-    //     if (apimethod == L"login")            apiLogin(req);
-    //else if (apimethod == L"selectdb")         apiSelectDb(req);
-         if (apimethod == L"folderinfo")       apiFolderInfo(req);
-    else if (apimethod == L"fileinfo")         apiFileInfo(req);
-    else if (apimethod == L"createstream")     apiCreateStream(req);
-    else if (apimethod == L"createtable")      apiCreateTable(req);
-    else if (apimethod == L"createfolder")     apiCreateFolder(req);
-    else if (apimethod == L"movefile")         apiMoveFile(req);
-    else if (apimethod == L"renamefile")       apiRenameFile(req);
-    else if (apimethod == L"deletefile")       apiDeleteFile(req);
-    else if (apimethod == L"copydata")         apiCopyData(req);
-    else if (apimethod == L"openstream")       apiOpenStream(req);
-    else if (apimethod == L"readstream")       apiReadStream(req);
-    else if (apimethod == L"writestream")      apiWriteStream(req);
-    else if (apimethod == L"query")            apiQuery(req);
-    else if (apimethod == L"groupquery")       apiGroupQuery(req);
-    else if (apimethod == L"describetable")    apiDescribeTable(req);
-    else if (apimethod == L"read")             apiRead(req);
-    else if (apimethod == L"insertrows")       apiInsertRows(req);
-    else if (apimethod == L"clone")            apiClone(req);
-    else if (apimethod == L"close")            apiClose(req);
-    else if (apimethod == L"alter")            apiAlter(req);
-    else if (apimethod == L"load")             apiLoad(req);
-    else if (apimethod == L"importupload")     apiImportUpload(req);
-    else if (apimethod == L"importload")       apiImportLoad(req);
-    else if (apimethod == L"jobinfo")          apiJobInfo(req);
+    //     if (method == L"login")                 apiLogin(req);
+    //else if (method == L"selectdb")              apiSelectDb(req);
+         if (method == L"folderinfo")            apiFolderInfo(req);
+    else if (method == L"fileinfo")              apiFileInfo(req);
+    else if (method == L"createstream")          apiCreateStream(req);
+    else if (method == L"createtable")           apiCreateTable(req);
+    else if (method == L"createfolder")          apiCreateFolder(req);
+    else if (method == L"movefile")              apiMoveFile(req);
+    else if (method == L"renamefile")            apiRenameFile(req);
+    else if (method == L"deletefile")            apiDeleteFile(req);
+    else if (method == L"copydata")              apiCopyData(req);
+    else if (method == L"openstream")            apiOpenStream(req);
+    else if (method == L"readstream")            apiReadStream(req);
+    else if (method == L"writestream")           apiWriteStream(req);
+    else if (method == L"query")                 apiQuery(req);
+    else if (method == L"groupquery")            apiGroupQuery(req);
+    else if (method == L"describetable")         apiDescribeTable(req);
+    else if (method == L"read" || method == L"") apiRead(req);
+    else if (method == L"insertrows")            apiInsertRows(req);
+    else if (method == L"clone")                 apiClone(req);
+    else if (method == L"close")                 apiClose(req);
+    else if (method == L"alter")                 apiAlter(req);
+    else if (method == L"load")                  apiLoad(req);
+    else if (method == L"importupload")          apiImportUpload(req);
+    else if (method == L"importload")            apiImportLoad(req);
+    else if (method == L"jobinfo")               apiJobInfo(req);
 
     end = clock();
     printf("%5d %4dms\n", req.getContentLength(), (end-start));
-    
-    return true;
+
 }
+
 
 ServerSessionObject* Controller::getServerSessionObject(const std::wstring& name, const char* type_check)
 {

@@ -87,6 +87,7 @@ public:
     Controller();
     virtual ~Controller();
 
+    void invokeApi(const std::wstring& uri, const std::wstring& method, RequestInfo& req);
     bool onRequest(RequestInfo& ri);
     void setConnectionString(const std::wstring& cstr) { m_connection_string = cstr; }
 

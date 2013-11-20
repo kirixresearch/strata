@@ -16,9 +16,112 @@
 #include "libwebsockets.h"
 
 
+extern Controller g_controller;
+
+
+
+
+
+
+
+
+
+
+WebSocketsRequestInfo::WebSocketsRequestInfo(WebSocketsClient* client)
+{
+    m_content_length = 0;
+    m_client = client;
+}
+
+
+std::wstring WebSocketsRequestInfo::getURI()
+{
+    return m_uri;
+}
+
+std::wstring WebSocketsRequestInfo::getValue(const std::wstring& key, const std::wstring& def)
+{
+    std::map<std::wstring, std::wstring>::const_iterator p_it;
+    p_it = m_params.find(key);
+    if (p_it != m_params.end())
+        return def;
+    return p_it->second;
+}
+
+bool WebSocketsRequestInfo::getValueExists(const std::wstring& key)
+{
+    std::map<std::wstring, std::wstring>::const_iterator p_it;
+    p_it = m_params.find(key);
+    if (p_it != m_params.end())
+        return true;
+    return false;
+}
+
+void WebSocketsRequestInfo::setValue(const std::wstring& key, const std::wstring& value)
+{
+    m_params[key] = value;
+}
+
+
+int WebSocketsRequestInfo::getContentLength()
+{
+    return m_content_length;
+}
+
+RequestFileInfo WebSocketsRequestInfo::getPostFileInfo(const std::wstring& key)
+{
+    RequestFileInfo rfi;
+    return rfi;
+}
+
+
+void WebSocketsRequestInfo::setContentType(const char* content_type)
+{
+    m_content_type = content_type;
+}
+
+size_t WebSocketsRequestInfo::write(const void* ptr, size_t length)
+{
+    std::string msg((char*)ptr, length);
+    m_client->send(msg);
+    return msg.length();
+}
+
+size_t WebSocketsRequestInfo::write(const std::string& str)
+{
+    m_client->send(str);
+    return str.length();
+}
+
+size_t WebSocketsRequestInfo::write(const std::wstring& str)
+{
+    m_client->send(kl::tostring(str));
+    return str.length();
+}
+
+void WebSocketsRequestInfo::sendNotFoundError()
+{
+    m_client->send("{ \"success\": false, \"msg\": \"Not found\" }");
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #define MAX_MESSAGE_PAYLOAD 1400
-
-
 struct websockets_message_data
 {
 	unsigned char buf[LWS_SEND_BUFFER_PRE_PADDING + MAX_MESSAGE_PAYLOAD + LWS_SEND_BUFFER_POST_PADDING];
@@ -26,9 +129,6 @@ struct websockets_message_data
 	unsigned int index;
     std::string val;
 };
-
-
-
 
 
 static int websockets_callback(struct libwebsocket_context* context,
@@ -74,22 +174,23 @@ static int websockets_callback(struct libwebsocket_context* context,
                 {
                     memcpy(buf, front.c_str(), len);
                     n = libwebsocket_write(wsi, (unsigned char*)buf, len, LWS_WRITE_TEXT);
-                    wsclient->m_write_bufs.pop();
-
-                    // schedule another write if there's more to write
-                    if (!wsclient->m_write_bufs.empty())
-                        libwebsocket_callback_on_writable(context, wsi);
                 }
                  else
                 {
-                    memcpy(buf, front.c_str(), MAX_MESSAGE_PAYLOAD);
-                    n = libwebsocket_write(wsi, (unsigned char*)buf, len, LWS_WRITE_TEXT);
-                    front = front.substr(MAX_MESSAGE_PAYLOAD);
-                    
+                    buf = new char[LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING];
+                    memcpy(buf + LWS_SEND_BUFFER_PRE_PADDING, front.c_str(), len);
+                    n = libwebsocket_write(wsi, (unsigned char*)(buf+LWS_SEND_BUFFER_PRE_PADDING), len, LWS_WRITE_TEXT);
+                    delete[] buf;
+
                     // schedule another write
                     libwebsocket_callback_on_writable(context, wsi);
                 }
 
+                wsclient->m_write_bufs.pop();
+
+                // schedule another write if there's more to write
+                if (!wsclient->m_write_bufs.empty())
+                    libwebsocket_callback_on_writable(context, wsi);
 
                 break;
             }
@@ -114,12 +215,18 @@ void WebSocketsClient::onMessage(const std::string& msg)
     if (node.childExists("token"))
     {
         std::wstring token = node["token"];
-        
+        std::wstring method = node["method"];
+
         kl::JsonNode result;
         result["token"] = token;
 
-        std::string reply = kl::tostring(result.toString());
-        send(reply);
+
+        WebSocketsRequestInfo req(this);
+        req.m_uri = node["path"];
+        
+
+        g_controller.invokeApi(req.m_uri, method, req);
+
     }
 }
 
@@ -138,9 +245,11 @@ bool WebSocketsClient::run(const std::string& server, int port, bool ssl)
     static struct libwebsocket_protocols protocols[] =
     {
         {
-            "",                                      // name
-            websockets_callback,                     // callback
-            sizeof(struct websockets_message_data)   // per_session_data_size
+            "",                                       // name
+            websockets_callback,                      // callback
+            sizeof(struct websockets_message_data),   // per_session_data_size
+            81920,                                     // rx_buffer_size
+            0                                         // no_buffer_all_partial_tx
         },
 
         {
