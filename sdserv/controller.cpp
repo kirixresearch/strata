@@ -10,7 +10,7 @@
 
 #include "sdserv.h"
 #include "controller.h"
-#include "request.h"
+#include "http.h"
 #include <kl/regex.h>
 #include <kl/string.h>
 #include <kl/thread.h>

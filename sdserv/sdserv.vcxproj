@@ -148,15 +148,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="controller.cpp" />
+    <ClCompile Include="http.cpp" />
     <ClCompile Include="mongoose.c" />
-    <ClCompile Include="request.cpp" />
     <ClCompile Include="sdserv.cpp" />
     <ClCompile Include="websockets.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="controller.h" />
+    <ClInclude Include="http.h" />
     <ClInclude Include="mongoose.h" />
-    <ClInclude Include="request.h" />
     <ClInclude Include="sdserv.h" />
     <ClInclude Include="websockets.h" />
   </ItemGroup>

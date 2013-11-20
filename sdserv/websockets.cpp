@@ -10,7 +10,7 @@
 
 #define _WINSOCKAPI_
 #include "sdserv.h"
-#include "request.h"
+#include "http.h"
 #include "controller.h"
 #include "websockets.h"
 #include "libwebsockets.h"
