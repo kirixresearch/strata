@@ -12,7 +12,10 @@
 #ifndef __SDSERV_WEBSOCKETS_H
 #define __SDSERV_WEBSOCKETS_H
 
+#include <queue>
 
+struct libwebsocket;
+struct libwebsocket_context;
 
 
 
@@ -25,6 +28,13 @@ public:
 public:
 
     void onMessage(const std::string& msg);
+    void send(const std::string& msg);
+
+public:
+
+    struct libwebsocket_context* m_context;
+    struct libwebsocket* m_wsi;
+    std::queue<std::string> m_write_bufs;
 };
 
 

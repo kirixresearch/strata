@@ -47,6 +47,7 @@ static int websockets_callback(struct libwebsocket_context* context,
     {
         case LWS_CALLBACK_CLIENT_ESTABLISHED:
             data->index = 0;
+            wsclient->send("HELLO");
             break;
 
         case LWS_CALLBACK_CLIENT_RECEIVE:
@@ -62,13 +63,36 @@ static int websockets_callback(struct libwebsocket_context* context,
         break;
 
         case LWS_CALLBACK_CLIENT_WRITEABLE:
-            // send packet
-            buf = (char*)(data->buf + LWS_SEND_BUFFER_PRE_PADDING);
-            strcpy(buf, "HELLO");
-            data->len = 5;
+            if (!wsclient->m_write_bufs.empty())
+            {
+                buf = (char*)(data->buf + LWS_SEND_BUFFER_PRE_PADDING);
 
-            n = libwebsocket_write(wsi, (unsigned char*)buf, 5, LWS_WRITE_TEXT);
-            break;
+                std::string& front = wsclient->m_write_bufs.front();
+                size_t len = front.length();
+
+                if (len <= MAX_MESSAGE_PAYLOAD)
+                {
+                    memcpy(buf, front.c_str(), len);
+                    n = libwebsocket_write(wsi, (unsigned char*)buf, len, LWS_WRITE_TEXT);
+                    wsclient->m_write_bufs.pop();
+
+                    // schedule another write if there's more to write
+                    if (!wsclient->m_write_bufs.empty())
+                        libwebsocket_callback_on_writable(context, wsi);
+                }
+                 else
+                {
+                    memcpy(buf, front.c_str(), MAX_MESSAGE_PAYLOAD);
+                    n = libwebsocket_write(wsi, (unsigned char*)buf, len, LWS_WRITE_TEXT);
+                    front = front.substr(MAX_MESSAGE_PAYLOAD);
+                    
+                    // schedule another write
+                    libwebsocket_callback_on_writable(context, wsi);
+                }
+
+
+                break;
+            }
 
         default:
             break;
@@ -81,13 +105,35 @@ static int websockets_callback(struct libwebsocket_context* context,
 void WebSocketsClient::onMessage(const std::string& msg)
 {
     printf("RECEIVED %s\n\n\n", msg.c_str());
+
+    std::wstring wmsg = kl::towstring(msg);
+
+    kl::JsonNode node;
+    node.fromString(wmsg);
+
+    if (node.childExists("token"))
+    {
+        std::wstring token = node["token"];
+        
+        kl::JsonNode result;
+        result["token"] = token;
+
+        std::string reply = kl::tostring(result.toString());
+        send(reply);
+    }
 }
+
+
+void WebSocketsClient::send(const std::string& msg)
+{
+    m_write_bufs.push(msg);
+    libwebsocket_callback_on_writable(m_context, m_wsi);
+}
+
 
 bool WebSocketsClient::run(const std::string& server, int port, bool ssl)
 {
     struct lws_context_creation_info info;
-    struct libwebsocket_context* context;
-    struct libwebsocket* wsi;
 
     static struct libwebsocket_protocols protocols[] =
     {
@@ -109,18 +155,18 @@ bool WebSocketsClient::run(const std::string& server, int port, bool ssl)
     info.protocols = protocols;
     info.user = (void*)this;
 
-	context = libwebsocket_create_context(&info);
+	m_context = libwebsocket_create_context(&info);
 
-	if (!context)
+	if (!m_context)
     {
 		// libwebsocket init failed
 		return false;
 	}
 
 
-    wsi = libwebsocket_client_connect(context, server.c_str(), port, ssl ? 1 : 0, "/", server.c_str(), "origin", NULL, -1);
+    m_wsi = libwebsocket_client_connect(m_context, server.c_str(), port, ssl ? 1 : 0, "/", server.c_str(), "origin", NULL, -1);
 
-    if (!wsi)
+    if (!m_wsi)
     {
         // connect failed
         return false;
@@ -129,10 +175,8 @@ bool WebSocketsClient::run(const std::string& server, int port, bool ssl)
     int res = 0;
     while (res >= 0)
     {
-        res = libwebsocket_service(context, 50);
+        res = libwebsocket_service(m_context, 50);
     }
 
     return true;
 }
-
-
