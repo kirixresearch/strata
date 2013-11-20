@@ -230,7 +230,7 @@ int Sdserv::runServer()
      else if (m_server_type == serverWebSocketsClient)
     {
         WebSocketsClient ws;
-        ws.run();
+        ws.run(m_websockets_server, 80, false);
     }
 
     return 0;
@@ -272,8 +272,11 @@ bool Sdserv::initOptions(int argc, const char* argv[])
             m_notready_evtid = kl::towstring(argv[i+1]);
         if (0 == strcmp(argv[i], "--idle-quit") && i+1 < argc)
             m_idle_quit = atoi(argv[i+1]);
-        if (0 == strcmp(argv[i], "--ws"))
+        if (0 == strcmp(argv[i], "--ws") && i+1 < argc)
+        {
             m_server_type = serverWebSocketsClient;
+            m_websockets_server = argv[i+1];
+        }
     }
 
 

@@ -106,7 +106,7 @@ static void extractPairs(const std::wstring& str,
 
 // -- RequestInfo class implementation --
 
-RequestInfo::RequestInfo(struct mg_connection* conn, const struct mg_request_info* ri)
+HttpRequestInfo::HttpRequestInfo(struct mg_connection* conn, const struct mg_request_info* ri)
 {
     m_conn = conn;
     m_req = ri;
@@ -117,7 +117,7 @@ RequestInfo::RequestInfo(struct mg_connection* conn, const struct mg_request_inf
     m_content_length = -1;
 }
 
-RequestInfo::~RequestInfo()
+HttpRequestInfo::~HttpRequestInfo()
 {
     // remove temporary post files
     std::map<std::wstring, RequestFileInfo>::iterator f_it;
@@ -128,7 +128,7 @@ RequestInfo::~RequestInfo()
 }
 
 
-void RequestInfo::read()
+void HttpRequestInfo::read()
 {    
     char boundary[128];   // boundaries actually have a max length of 70, we'll allow 120
     size_t boundary_length = 0;
@@ -254,7 +254,7 @@ void RequestInfo::read()
     }
 }
 
-bool RequestInfo::isHTTP_1_1() const
+bool HttpRequestInfo::isHTTP_1_1() const
 {
     return *(m_req->http_version + 2) == '1' ? true : false;
 }
@@ -407,7 +407,7 @@ void dump(char* buf, int len, const char* comment)
 }
 
 
-void RequestInfo::readMultipart(const char* boundary, size_t boundary_length)
+void HttpRequestInfo::readMultipart(const char* boundary, size_t boundary_length)
 {
     std::vector<PostPartBase*> parts;
     PostPartBase* curpart = NULL;
@@ -553,7 +553,7 @@ void RequestInfo::readMultipart(const char* boundary, size_t boundary_length)
 }
 
 
-std::wstring RequestInfo::getValue(const std::wstring& key, const std::wstring& def)
+std::wstring HttpRequestInfo::getValue(const std::wstring& key, const std::wstring& def)
 {
     std::map<std::wstring, RequestPostInfo>::iterator p_it;
     p_it = m_post.find(key);
@@ -570,7 +570,7 @@ std::wstring RequestInfo::getValue(const std::wstring& key, const std::wstring& 
     return def;
 }
 
-bool RequestInfo::getValueExists(const std::wstring& key) const
+bool HttpRequestInfo::getValueExists(const std::wstring& key)
 {
     std::map<std::wstring, RequestPostInfo>::const_iterator p_it;
     p_it = m_post.find(key);
@@ -585,7 +585,7 @@ bool RequestInfo::getValueExists(const std::wstring& key) const
     return false;
 }
 
-std::wstring RequestInfo::getGetValue(const std::wstring& key)
+std::wstring HttpRequestInfo::getGetValue(const std::wstring& key)
 {
     std::map<std::wstring, std::wstring>::iterator g_it;
     g_it = m_get.find(key);
@@ -594,7 +594,7 @@ std::wstring RequestInfo::getGetValue(const std::wstring& key)
     return L"";
 }
 
-std::wstring RequestInfo::getPostValue(const std::wstring& key)
+std::wstring HttpRequestInfo::getPostValue(const std::wstring& key)
 {
     std::map<std::wstring, RequestPostInfo>::iterator p_it;
     p_it = m_post.find(key);
@@ -607,7 +607,7 @@ std::wstring RequestInfo::getPostValue(const std::wstring& key)
 }
 
 
-RequestFileInfo RequestInfo::getPostFileInfo(const std::wstring& key)
+RequestFileInfo HttpRequestInfo::getPostFileInfo(const std::wstring& key)
 {
     std::map<std::wstring, RequestFileInfo>::iterator it;
 
@@ -619,24 +619,24 @@ RequestFileInfo RequestInfo::getPostFileInfo(const std::wstring& key)
     return it->second;
 }
 
-bool RequestInfo::acceptCompressed()
+bool HttpRequestInfo::acceptCompressed()
 {
     return m_accept_compressed;
 }
 
-std::wstring RequestInfo::getHost()
+std::wstring HttpRequestInfo::getHost()
 {
     const char* host = mg_get_header(this->m_conn, "Host");
     if (!host) return L"";
     return kl::towstring(host);
 }
 
-std::wstring RequestInfo::getURI()
+std::wstring HttpRequestInfo::getURI()
 {
     return kl::towstring(m_req->uri);
 }
 
-std::wstring RequestInfo::getQuery()
+std::wstring HttpRequestInfo::getQuery()
 {
     std::wstring result;
     if (m_req->query_string)
@@ -645,22 +645,30 @@ std::wstring RequestInfo::getQuery()
     return result;
 }
 
-void RequestInfo::setStatusCode(int code, const char* msg)
+void HttpRequestInfo::sendNotFoundError()
+{
+    setStatusCode(404);
+    setContentType("text/html");
+    write("<html><body><h2>Not found</h2></body></html>");
+}
+
+
+void HttpRequestInfo::setStatusCode(int code, const char* msg)
 {
     m_status_code = code;
 }
 
-void RequestInfo::setContentType(const char* content_type)
+void HttpRequestInfo::setContentType(const char* content_type)
 {
     m_content_type = content_type;
 }
 
-void RequestInfo::setContentLength(int length)
+void HttpRequestInfo::setContentLength(int length)
 {
     m_content_length = length;
 }
 
-void RequestInfo::redirect(const char* location, int http_code)
+void HttpRequestInfo::redirect(const char* location, int http_code)
 {
     m_status_code = http_code;
     std::string loc = "Location: ";
@@ -668,17 +676,17 @@ void RequestInfo::redirect(const char* location, int http_code)
     addHeader(loc.c_str());
 }
 
-void RequestInfo::addHeader(const char* header)
+void HttpRequestInfo::addHeader(const char* header)
 {
     m_headers.push_back(header);
 }
 
-void RequestInfo::addCookie(ResponseCookie& cookie)
+void HttpRequestInfo::addCookie(ResponseCookie& cookie)
 {
     m_response_cookies.push_back(cookie);
 }
 
-void RequestInfo::addCookie(const std::string& name, const std::string& value, time_t expire_time)
+void HttpRequestInfo::addCookie(const std::string& name, const std::string& value, time_t expire_time)
 {
     ResponseCookie cookie;
     cookie.name = name;
@@ -744,7 +752,7 @@ static const char* getHttpCodeString(int code)
 }
 
 
-void RequestInfo::checkHeaderSent()
+void HttpRequestInfo::checkHeaderSent()
 {
     if (m_header_sent)
         return;
@@ -818,7 +826,7 @@ void RequestInfo::checkHeaderSent()
 
 
 
-size_t RequestInfo::write(const void* ptr, size_t length)
+size_t HttpRequestInfo::write(const void* ptr, size_t length)
 {
     setContentLength((int)length);
 
@@ -827,7 +835,7 @@ size_t RequestInfo::write(const void* ptr, size_t length)
     return (size_t)mg_write(m_conn, ptr, (int)length);
 }
 
-size_t RequestInfo::write(const std::string& str)
+size_t HttpRequestInfo::write(const std::string& str)
 {
     setContentLength((int)str.length());
 
@@ -836,7 +844,7 @@ size_t RequestInfo::write(const std::string& str)
     return (size_t)mg_write(m_conn, str.c_str(), (int)str.length());
 }
 
-size_t RequestInfo::write(const std::wstring& str)
+size_t HttpRequestInfo::write(const std::wstring& str)
 {
     setContentLength((int)str.length());
 
@@ -844,37 +852,37 @@ size_t RequestInfo::write(const std::wstring& str)
 }
 
 
-size_t RequestInfo::writePiece(const void* ptr, size_t length)
+size_t HttpRequestInfo::writePiece(const void* ptr, size_t length)
 {
     checkHeaderSent();
     
     return (size_t)mg_write(m_conn, ptr, (int)length);
 }
 
-size_t RequestInfo::writePiece(const std::string& str)
+size_t HttpRequestInfo::writePiece(const std::string& str)
 {
     checkHeaderSent();
     
     return (size_t)mg_write(m_conn, str.c_str(), (int)str.length());
 }
 
-size_t RequestInfo::writePiece(const std::wstring& str)
+size_t HttpRequestInfo::writePiece(const std::wstring& str)
 {
     return write(kl::tostring(str));
 }
 
 
-std::wstring RequestInfo::getMethod() const
+std::wstring HttpRequestInfo::getMethod() const
 {
     return kl::towstring(m_req->request_method);
 }
 
-bool RequestInfo::isMethodGet() const
+bool HttpRequestInfo::isMethodGet() const
 {
     return (m_req->request_method && *m_req->request_method == 'G') ? true : false;
 }
 
-bool RequestInfo::isMethodPost() const
+bool HttpRequestInfo::isMethodPost() const
 {
     if (!m_req->request_method)
         return false;
@@ -900,7 +908,7 @@ int HttpServer::request_callback(struct mg_connection* conn)
 
     g_sdserv.updateLastAccessTimestamp();
 
-    RequestInfo req(conn, request_info);
+    HttpRequestInfo req(conn, request_info);
     req.read();
 
     if (!g_controller.onRequest(req))

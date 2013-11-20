@@ -13,7 +13,28 @@
 #define __SDSERV_CONTROLLER_H
 
 
-#include "http.h"
+#include "request.h"
+
+
+class ServerSessionObject
+{
+// session object for storing information that
+// can be accessed across multiple calls
+
+public:
+
+    ServerSessionObject() {}
+    virtual ~ServerSessionObject() {}
+
+    void setType(const char* type) { m_type = type; }
+    const char* getType() const { return m_type; }
+    bool isType(const char* type) const { return m_type == type; }
+
+private:
+
+    const char* m_type;
+};
+
 
 
 struct SessionQueryResultColumn

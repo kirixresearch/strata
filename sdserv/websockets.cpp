@@ -17,7 +17,7 @@
 
 
 #define MAX_MESSAGE_PAYLOAD 1400
-#define SITE_URL "dataex.goldprairie.com"
+
 
 struct websockets_message_data
 {
@@ -80,10 +80,10 @@ static int websockets_callback(struct libwebsocket_context* context,
 
 void WebSocketsClient::onMessage(const std::string& msg)
 {
-    printf("%s\n\n\n", msg.c_str());
+    printf("RECEIVED %s\n\n\n", msg.c_str());
 }
 
-bool WebSocketsClient::run()
+bool WebSocketsClient::run(const std::string& server, int port, bool ssl)
 {
     struct lws_context_creation_info info;
     struct libwebsocket_context* context;
@@ -118,7 +118,7 @@ bool WebSocketsClient::run()
 	}
 
 
-    wsi = libwebsocket_client_connect(context, SITE_URL, 80, 0 /* use_ssl */, "/", SITE_URL, "origin", NULL, -1);
+    wsi = libwebsocket_client_connect(context, server.c_str(), port, ssl ? 1 : 0, "/", server.c_str(), "origin", NULL, -1);
 
     if (!wsi)
     {

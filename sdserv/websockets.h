@@ -20,7 +20,7 @@ class WebSocketsClient
 {
 public:
 
-    bool run();
+    bool run(const std::string& server, int port = 80, bool ssl = false);
 
 public:
 

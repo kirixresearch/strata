@@ -72,12 +72,12 @@ private:
     char m_cert_file_path[255];
     const char* m_options[255];
 
-
     int m_idle_quit;
     xcm::mutex m_last_access_mutex;
     time_t m_last_access;
 
     int m_server_type;
+    std::string m_websockets_server;
 };
 
 

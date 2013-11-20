@@ -157,6 +157,7 @@
     <ClInclude Include="controller.h" />
     <ClInclude Include="http.h" />
     <ClInclude Include="mongoose.h" />
+    <ClInclude Include="request.h" />
     <ClInclude Include="sdserv.h" />
     <ClInclude Include="websockets.h" />
   </ItemGroup>

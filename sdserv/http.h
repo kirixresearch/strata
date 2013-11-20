@@ -9,9 +9,11 @@
  */
 
 
-#ifndef __APP_WEBSERVER_H
-#define __APP_WEBSERVER_H
+#ifndef __APP_HTTP_H
+#define __APP_HTTP_H
 
+
+#include "request.h"
 
 struct mg_context;
 struct mg_request_info;
@@ -25,16 +27,6 @@ public:
 };
 
 
-class RequestFileInfo
-{
-public:
-
-    bool isOk() const { return post_filename.empty() ? false : true; }
-
-    std::wstring post_filename;
-    std::wstring temp_filename;
-};
-
 class ResponseCookie
 {
 public:
@@ -44,34 +36,14 @@ public:
 };
 
 
-class ServerSessionObject
-{
-// session object for storing information that
-// can be accessed across multiple calls
 
-public:
-
-    ServerSessionObject() {}
-    virtual ~ServerSessionObject() {}
-
-    void setType(const char* type) { m_type = type; }
-    const char* getType() const { return m_type; }
-    bool isType(const char* type) const { return m_type == type; }
-
-private:
-
-    const char* m_type;
-};
-
-
-class RequestInfo
+class HttpRequestInfo : public RequestInfo
 {
 public:
 
-    RequestInfo(struct mg_connection* conn,
-                const struct mg_request_info* ri);
+    HttpRequestInfo(struct mg_connection* conn, const struct mg_request_info* ri);
 
-    virtual ~RequestInfo();
+    virtual ~HttpRequestInfo();
 
     void read();
     
@@ -84,14 +56,15 @@ public:
     std::wstring getPostValue(const std::wstring& key);
     RequestFileInfo getPostFileInfo(const std::wstring& key);
     bool movePostFile(const std::wstring& key, const std::wstring& dest_path);
-    void setGetValue(const std::wstring& key, const std::wstring& value) { m_get[key] = value; }
-    bool getValueExists(const std::wstring& key) const;
+    void setValue(const std::wstring& key, const std::wstring& value) { m_get[key] = value; }
+    bool getValueExists(const std::wstring& key);
     bool acceptCompressed();
     
+    void sendNotFoundError();
     void setStatusCode(int code, const char* msg = NULL);
     void setContentType(const char* content_type);
     void setContentLength(int length = -1);
-    int getContentLength() const { return m_content_length; }
+    int getContentLength() { return m_content_length; }
     void redirect(const char* location, int http_code = 301);
     void addHeader(const char* header);
     void addCookie(ResponseCookie& cookie);

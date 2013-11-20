@@ -847,11 +847,14 @@ void Controller::apiQuery(RequestInfo& req)
             return;
         }
         
-        // translate any urls in the query to table paths
-        std::wstring host = kl::beforeLast(req.getHost(), L':');
-        klregex::wregex r(L"(https|sdservs|http|sdserv)://" + host + L":?[0-9]*/");
-        r.replace(sql, L"/");
+        
+        // TODO: reimplement this
 
+        // translate any urls in the query to table paths
+        //std::wstring host = kl::beforeLast(req.getHost(), L':');
+        //klregex::wregex r(L"(https|sdservs|http|sdserv)://" + host + L":?[0-9]*/");
+        //r.replace(sql, L"/");
+        
 
         xcm::IObjectPtr obj;
         db->execute(sql, 0, obj, NULL);
@@ -1020,15 +1023,13 @@ void Controller::apiRead(RequestInfo& req)
         xd::IFileInfoPtr finfo = db->getFileInfo(req.getURI());
         if (finfo.isNull())
         {
-            req.setStatusCode(404);
-            req.setContentType("text/html");
-            req.write("<html><body><h2>Not found</h2></body></html>");
+            req.sendNotFoundError();
             return;
         }
 
         if (finfo->getType() == xd::filetypeFolder)
         {
-            req.setGetValue(L"path", req.getURI());
+            req.setValue(L"path", req.getURI());
             apiFolderInfo(req);
             return;
         }
@@ -1037,9 +1038,7 @@ void Controller::apiRead(RequestInfo& req)
             xd::IStreamPtr stream = db->openStream(req.getURI());
             if (stream.isNull())
             {
-                req.setStatusCode(404);
-                req.setContentType("text/html");
-                req.write("<html><body><h2>Not found</h2></body></html>");
+                req.sendNotFoundError();
                 return;
             }
 
@@ -1056,9 +1055,7 @@ void Controller::apiRead(RequestInfo& req)
         xd::IIteratorPtr iter = db->query(req.getURI(), L"", req.getValue(L"where"), req.getValue(L"order"), NULL);
         if (!iter.isOk())
         {
-            req.setStatusCode(404);
-            req.setContentType("text/html");
-            req.write("<html><body><h2>Not found</h2></body></html>");
+            req.sendNotFoundError();
             return;
         }
         
