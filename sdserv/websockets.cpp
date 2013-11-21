@@ -220,17 +220,15 @@ void WebSocketsClient::onMessage(const std::string& msg)
     // parse headers
     std::wstring token, method, path, params;
 
-    size_t hdrend = wmsg.find(L"\n\n");
+    size_t end = wmsg.find(L"\n\n");
     size_t pos = 0;
-    size_t lf, colon;
+    size_t lf, colon, eq, amp;
     std::wstring chunk, key, value;
-    if (hdrend == wmsg.npos)
+    if (end == wmsg.npos)
         return; // invalid format
-    while (true)
+    while (pos < end)
     {
         lf = wmsg.find('\n', pos);
-        if (lf == hdrend)
-            break;
 
         chunk = wmsg.substr(pos, lf-pos);
 
@@ -254,6 +252,33 @@ void WebSocketsClient::onMessage(const std::string& msg)
     WebSocketsRequestInfo req(this);
     req.m_uri = path;
     req.m_token = kl::tostring(token);
+
+
+    // parse parameters
+    pos = 0;
+    end = params.length();
+    while (pos < end)
+    {
+        amp = params.find('&', pos);
+        if (amp == params.npos)
+            amp = end;
+
+        chunk = params.substr(pos, amp-pos);
+
+        eq = chunk.find('=');
+        if (eq == chunk.npos)
+            break; // invalid format (missing equals)
+
+        key = chunk.substr(0, eq);
+        value = chunk.substr(eq+1);
+        kl::trim(key);
+        kl::trim(value);
+
+        req.setValue(key, value);
+
+        pos = amp+1;
+    }
+
 
     g_controller.invokeApi(path, method, req);
 }
