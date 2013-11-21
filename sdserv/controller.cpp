@@ -296,12 +296,16 @@ void Controller::apiFolderInfo(RequestInfo& req)
     
     // return success to caller
     kl::JsonNode response;
-    response["success"].setBoolean(true);
-    kl::JsonNode items = response["items"];
 
     xd::IFileInfoEnumPtr folder_info = db->getFolderInfo(path);
     if (folder_info.isOk())
     {
+        response["success"].setBoolean(true);
+        response["items"].setArray();
+
+        kl::JsonNode items = response["items"];
+
+
         size_t i, cnt = folder_info->size();
         for (i = 0; i < cnt; ++i)
         {
@@ -337,6 +341,8 @@ void Controller::apiFolderInfo(RequestInfo& req)
     }
      else
     {
+        response["success"].setBoolean(false);
+
         returnApiError(req, "Path does not exist");
         return;
     }

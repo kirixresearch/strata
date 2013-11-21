@@ -48,6 +48,7 @@ private:
     WebSocketsClient* m_client;
     std::map<std::wstring, std::wstring> m_params;
     std::wstring m_uri;
+    std::string m_token;
     std::string m_content_type;
     int m_content_length;
 };

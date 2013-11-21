@@ -43,7 +43,7 @@ std::wstring WebSocketsRequestInfo::getValue(const std::wstring& key, const std:
 {
     std::map<std::wstring, std::wstring>::const_iterator p_it;
     p_it = m_params.find(key);
-    if (p_it != m_params.end())
+    if (p_it == m_params.end())
         return def;
     return p_it->second;
 }
@@ -87,21 +87,27 @@ size_t WebSocketsRequestInfo::write(const void* ptr, size_t length)
     return msg.length();
 }
 
+size_t WebSocketsRequestInfo::write(const std::wstring& str)
+{
+    return write(kl::tostring(str));
+}
+
 size_t WebSocketsRequestInfo::write(const std::string& str)
 {
-    m_client->send(str);
+    std::string header = "Token: " + m_token + "\n\n";
+    m_client->send(header + str);
     return str.length();
 }
 
-size_t WebSocketsRequestInfo::write(const std::wstring& str)
-{
-    m_client->send(kl::tostring(str));
-    return str.length();
-}
+
 
 void WebSocketsRequestInfo::sendNotFoundError()
 {
-    m_client->send("{ \"success\": false, \"msg\": \"Not found\" }");
+    std::string reply;
+    reply = "Token: " + m_token + "\n" +
+            "Error: NOTFOUND\n\n";
+
+    m_client->send(reply);
 }
 
 
@@ -203,31 +209,53 @@ static int websockets_callback(struct libwebsocket_context* context,
 }
 
 
+
+
 void WebSocketsClient::onMessage(const std::string& msg)
 {
-    printf("RECEIVED %s\n\n\n", msg.c_str());
+    printf("RECEIVED: %s\n\n\n", msg.c_str());
 
     std::wstring wmsg = kl::towstring(msg);
+    
+    // parse headers
+    std::wstring token, method, path, params;
 
-    kl::JsonNode node;
-    node.fromString(wmsg);
-
-    if (node.childExists("token"))
+    size_t hdrend = wmsg.find(L"\n\n");
+    size_t pos = 0;
+    size_t lf, colon;
+    std::wstring chunk, key, value;
+    if (hdrend == wmsg.npos)
+        return; // invalid format
+    while (true)
     {
-        std::wstring token = node["token"];
-        std::wstring method = node["method"];
+        lf = wmsg.find('\n', pos);
+        if (lf == hdrend)
+            break;
 
-        kl::JsonNode result;
-        result["token"] = token;
+        chunk = wmsg.substr(pos, lf-pos);
 
+        colon = chunk.find(':');
+        if (colon == chunk.npos)
+            return; // invalid format
 
-        WebSocketsRequestInfo req(this);
-        req.m_uri = node["path"];
-        
+        key = chunk.substr(0, colon);
+        value = chunk.substr(colon+1);
+        kl::trim(value);
 
-        g_controller.invokeApi(req.m_uri, method, req);
+        if (key == L"Token") token = value;
+        else if (key == L"Parameters") params = value;
+        else if (key == L"Path") path = value;
+        else if (key == L"Method") method = value;
 
+        pos = lf+1;
     }
+
+
+    WebSocketsRequestInfo req(this);
+    req.m_uri = path;
+    req.m_token = kl::tostring(token);
+
+    g_controller.invokeApi(path, method, req);
 }
 
 
@@ -284,7 +312,7 @@ bool WebSocketsClient::run(const std::string& server, int port, bool ssl)
     int res = 0;
     while (res >= 0)
     {
-        res = libwebsocket_service(m_context, 50);
+        res = libwebsocket_service(m_context, 10);
     }
 
     return true;
