@@ -56,6 +56,7 @@ Sdserv::Sdserv()
     m_last_access = time(NULL);
     m_idle_quit = 0;
     m_server_type = serverHttp;
+    m_websockets_ssl = false;
 }
 
 Sdserv::~Sdserv()
@@ -229,8 +230,9 @@ int Sdserv::runServer()
     }
      else if (m_server_type == serverWebSocketsClient)
     {
+        int port = m_websockets_ssl ? 443 :  80;
         WebSocketsClient ws;
-        ws.run(m_websockets_server, 80, false);
+        ws.run(m_websockets_server, port, m_websockets_ssl);
     }
 
     return 0;
@@ -276,6 +278,10 @@ bool Sdserv::initOptions(int argc, const char* argv[])
         {
             m_server_type = serverWebSocketsClient;
             m_websockets_server = argv[i+1];
+        }
+        if (0 == strcmp(argv[i], "--wsssl"))
+        {
+            m_websockets_ssl = true;
         }
     }
 

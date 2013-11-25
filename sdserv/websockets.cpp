@@ -301,7 +301,7 @@ bool WebSocketsClient::run(const std::string& server, int port, bool ssl)
             "",                                       // name
             websockets_callback,                      // callback
             sizeof(struct websockets_message_data),   // per_session_data_size
-            81920,                                     // rx_buffer_size
+            81920,                                    // rx_buffer_size
             0                                         // no_buffer_all_partial_tx
         },
 
@@ -316,6 +316,9 @@ bool WebSocketsClient::run(const std::string& server, int port, bool ssl)
     info.port = CONTEXT_PORT_NO_LISTEN;
     info.protocols = protocols;
     info.user = (void*)this;
+    info.ka_time = 300;
+    info.ka_probes = 6;
+    info.ka_interval = 10;
 
 	m_context = libwebsocket_create_context(&info);
 
@@ -326,19 +329,50 @@ bool WebSocketsClient::run(const std::string& server, int port, bool ssl)
 	}
 
 
-    m_wsi = libwebsocket_client_connect(m_context, server.c_str(), port, ssl ? 1 : 0, "/", server.c_str(), "origin", NULL, -1);
+    int try_count;
 
-    if (!m_wsi)
+    while (true)
     {
-        // connect failed
-        return false;
+
+
+        try_count = 0;
+        while (true)
+        {
+            m_wsi = libwebsocket_client_connect(m_context, server.c_str(), port, ssl ? 2 : 0, "/", server.c_str(), "origin", NULL, -1);
+            if (m_wsi)
+                break;
+
+            // connect failed, try again
+            try_count++;
+            printf("Could not connect, trying again. Try %d\n", try_count);
+            ::Sleep(10000);
+        }
+
+
+
+        time_t t, last_ping = 0;
+        int counter = 0;
+
+        int res = 0;
+        while (res >= 0)
+        {
+            res = libwebsocket_service(m_context, 10);
+
+            ++counter;
+            if (counter % 2000 == 0)
+            {
+                t = time(NULL);
+                if (t - last_ping > 300) // 5 minutes)
+                {
+                    send("PING");
+                    last_ping = t;
+                }
+            }
+        }
+
+        m_wsi = NULL;
     }
 
-    int res = 0;
-    while (res >= 0)
-    {
-        res = libwebsocket_service(m_context, 10);
-    }
 
     return true;
 }

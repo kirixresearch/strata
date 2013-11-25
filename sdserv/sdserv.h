@@ -78,6 +78,7 @@ private:
 
     int m_server_type;
     std::string m_websockets_server;
+    bool m_websockets_ssl;
 };
 
 
