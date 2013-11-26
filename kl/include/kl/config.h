@@ -25,7 +25,8 @@ class Config
 {
 public:
 
-    Config();
+    Config(const std::wstring& organization, const std::wstring& product);
+    ~Config();
 
     void setPath(const std::wstring& path);
 

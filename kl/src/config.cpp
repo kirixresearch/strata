@@ -58,8 +58,28 @@ class ConfigWinRegImpl : public ConfigImplBase
 {
 public:
 
-    ConfigWinRegImpl()
+    ConfigWinRegImpl(const std::wstring& organization, const std::wstring& product)
     {
+        std::wstring key = L"SOFTWARE\\" + organization;
+
+
+        HKEY hkey = NULL;
+        RegCreateKeyExW(getRootKey(), key.c_str(), 0, NULL, REG_OPTION_NON_VOLATILE,
+                        KEY_ALL_ACCESS, NULL, &hkey, NULL);
+        RegCloseKey(hkey);
+
+        hkey = NULL;
+        key += (L"\\" + product);
+        RegCreateKeyExW(getRootKey(), key.c_str(), 0, NULL, REG_OPTION_NON_VOLATILE,
+                        KEY_ALL_ACCESS, NULL, &hkey, NULL);
+        RegCloseKey(hkey);
+
+
+        m_base_path = L"SOFTWARE\\";
+        m_base_path += organization;
+        m_base_path += L'\\';
+        m_base_path += product;
+
     }
 
     void setPath(const std::wstring& path)
@@ -69,10 +89,10 @@ public:
 
     bool exists(const std::wstring& path)
     {
-        std::wstring key = concatPath(m_path, path);
+        std::wstring key = concatPath(getCurrentKeyPath(), path);
 
         HKEY hkey = NULL;
-        if (ERROR_SUCCESS == RegOpenKeyEx(getRootKey(), key.c_str(), 0, KEY_READ, &hkey))
+        if (ERROR_SUCCESS == RegOpenKeyExW(getRootKey(), key.c_str(), 0, KEY_READ, &hkey))
         {
             RegCloseKey(hkey);
             return true;
@@ -130,7 +150,7 @@ public:
 
         
         HKEY hkey = NULL;
-        if (ERROR_SUCCESS == RegOpenKeyEx(getRootKey(), key.c_str(), 0, KEY_QUERY_VALUE, &hkey))
+        if (ERROR_SUCCESS == RegOpenKeyExW(getRootKey(), key.c_str(), 0, KEY_QUERY_VALUE, &hkey))
         {
             RegCloseKey(hkey);
             value = def;
@@ -139,7 +159,7 @@ public:
 
         // get value type
         DWORD err, dwtype, dwvalue, dwsize;
-        err = RegQueryValueEx(hkey, valname.c_str(), 0, &dwtype, NULL, &dwsize);
+        err = RegQueryValueExW(hkey, valname.c_str(), 0, &dwtype, NULL, &dwsize);
         if (err != ERROR_SUCCESS)
         {
             RegCloseKey(hkey);
@@ -150,7 +170,7 @@ public:
         if (dwtype == REG_DWORD)
         {
             dwsize = sizeof(DWORD);
-            err = RegQueryValueEx(hkey, valname.c_str(), 0, NULL, (BYTE*)&dwvalue, &dwsize);
+            err = RegQueryValueExW(hkey, valname.c_str(), 0, NULL, (BYTE*)&dwvalue, &dwsize);
             if (err != ERROR_SUCCESS)
             {
                 RegCloseKey(hkey);
@@ -165,7 +185,7 @@ public:
          else if (dwtype == REG_SZ)
         {
             wchar_t* buf = new wchar_t[dwsize];
-            err = RegQueryValueEx(hkey, valname.c_str(), 0, NULL, (BYTE*)buf, &dwsize);
+            err = RegQueryValueExW(hkey, valname.c_str(), 0, NULL, (BYTE*)buf, &dwsize);
             if (err != ERROR_SUCCESS)
             {
                 delete[] buf;
@@ -194,7 +214,7 @@ public:
 
         
         HKEY hkey = NULL;
-        if (ERROR_SUCCESS == RegOpenKeyEx(getRootKey(), key.c_str(), 0, KEY_QUERY_VALUE, &hkey))
+        if (ERROR_SUCCESS == RegOpenKeyExW(getRootKey(), key.c_str(), 0, KEY_QUERY_VALUE, &hkey))
         {
             RegCloseKey(hkey);
             *value = def;
@@ -203,7 +223,7 @@ public:
 
         // get value type
         DWORD err, dwtype, dwvalue, dwsize;
-        err = RegQueryValueEx(hkey, valname.c_str(), 0, &dwtype, NULL, &dwsize);
+        err = RegQueryValueExW(hkey, valname.c_str(), 0, &dwtype, NULL, &dwsize);
         if (err != ERROR_SUCCESS)
         {
             RegCloseKey(hkey);
@@ -214,7 +234,7 @@ public:
         if (dwtype == REG_DWORD)
         {
             dwsize = sizeof(DWORD);
-            err = RegQueryValueEx(hkey, valname.c_str(), 0, NULL, (BYTE*)&dwvalue, &dwsize);
+            err = RegQueryValueExW(hkey, valname.c_str(), 0, NULL, (BYTE*)&dwvalue, &dwsize);
             if (err != ERROR_SUCCESS)
             {
                 RegCloseKey(hkey);
@@ -229,7 +249,7 @@ public:
          else if (dwtype == REG_SZ)
         {
             wchar_t* buf = new wchar_t[dwsize];
-            err = RegQueryValueEx(hkey, valname.c_str(), 0, NULL, (BYTE*)buf, &dwsize);
+            err = RegQueryValueExW(hkey, valname.c_str(), 0, NULL, (BYTE*)buf, &dwsize);
             if (err != ERROR_SUCCESS)
             {
                 delete[] buf;
@@ -254,10 +274,48 @@ public:
 
     std::vector<std::wstring> getGroups(const std::wstring& path)
     {
+        std::vector<std::wstring> res;
+
+        std::wstring key = concatPath(getCurrentKeyPath(), path);
+        
+        HKEY hkey = NULL;
+        if (ERROR_SUCCESS != RegOpenKeyExW(getRootKey(), key.c_str(), 0, KEY_ENUMERATE_SUB_KEYS, &hkey))
+        {
+            RegCloseKey(hkey);
+            return res;
+        }
+
+        DWORD idx = 0;
+        wchar_t name[512];
+        while (ERROR_SUCCESS == RegEnumKeyW(hkey, idx++, name, 500))
+        {
+            res.push_back(name);
+        }
+
+        RegCloseKey(hkey);
+
+        return res;
     }
 
     bool deleteGroup(const std::wstring& path)
     {
+        std::vector<std::wstring> res;
+
+        std::wstring key, valname;
+        getKeyAndValue(path, key, valname);
+
+
+        HKEY hkey = NULL;
+        if (ERROR_SUCCESS != RegOpenKeyExW(getRootKey(), key.c_str(), 0, KEY_ALL_ACCESS, &hkey))
+        {
+            RegCloseKey(hkey);
+            return false;
+        }
+        
+
+        RegDeleteKeyW(hkey, valname.c_str());
+
+        RegCloseKey(hkey);
     }
 
 private:
@@ -289,7 +347,7 @@ private:
 
     void getKeyAndValue(const std::wstring& path, std::wstring& key, std::wstring& value)
     {
-        std::wstring full = concatPath(m_path, path);
+        std::wstring full = concatPath(getCurrentKeyPath(), path);
 
         if (full.find('\\') == full.npos)
         {
@@ -303,14 +361,19 @@ private:
     }
 
 
-
     HKEY getRootKey()
     {
         return HKEY_CURRENT_USER;
     }
 
+    std::wstring getCurrentKeyPath()
+    {
+        return concatPath(m_base_path, m_path);
+    }
+
 private:
 
+    std::wstring m_base_path;
     std::wstring m_path;
 
 };
@@ -322,10 +385,20 @@ private:
 
 
 
-Config::Config()
+Config::Config(const std::wstring& organization, const std::wstring& product)
 {
+    m_impl = NULL;
 
+#ifdef WIN32
+    m_impl = new ConfigWinRegImpl(organization, product);
+#endif
 }
+
+Config::~Config()
+{
+    delete m_impl;
+}
+
 
 void Config::setPath(const std::wstring& path)
 {
