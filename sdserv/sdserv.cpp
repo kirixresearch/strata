@@ -20,6 +20,22 @@ Sdserv g_sdserv;
 Controller g_controller;
 
 
+
+Sdserv::Sdserv()
+{
+    m_options[0] = 0;
+    m_last_access = time(NULL);
+    m_idle_quit = 0;
+    m_server_type = serverHttp;
+    m_websockets_ssl = false;
+}
+
+Sdserv::~Sdserv()
+{
+}
+
+
+
 static kl::JsonNode getJsonNodeFromFile(const std::wstring& filename)
 {
     xf_off_t size = xf_get_file_size(filename);
@@ -47,20 +63,6 @@ static kl::JsonNode getJsonNodeFromFile(const std::wstring& filename)
     delete[] buf;
     
     return config;
-}
-
-
-Sdserv::Sdserv()
-{
-    m_options[0] = 0;
-    m_last_access = time(NULL);
-    m_idle_quit = 0;
-    m_server_type = serverHttp;
-    m_websockets_ssl = false;
-}
-
-Sdserv::~Sdserv()
-{
 }
 
 
