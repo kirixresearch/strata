@@ -60,7 +60,7 @@ public:
 
     ConfigWinRegImpl(const std::wstring& organization, const std::wstring& product)
     {
-        std::wstring key = L"SOFTWARE\\" + organization;
+        std::wstring key = L"Software\\" + organization;
 
 
         HKEY hkey = NULL;
@@ -75,7 +75,7 @@ public:
         RegCloseKey(hkey);
 
 
-        m_base_path = L"SOFTWARE\\";
+        m_base_path = L"Software\\";
         m_base_path += organization;
         m_base_path += L'\\';
         m_base_path += product;
@@ -85,6 +85,14 @@ public:
     void setPath(const std::wstring& path)
     {
         m_path = path;
+
+        // make sure it exists
+        std::wstring key = getCurrentKeyPath();
+
+        HKEY hkey = NULL;
+        RegCreateKeyExW(getRootKey(), key.c_str(), 0, NULL, REG_OPTION_NON_VOLATILE,
+                        KEY_ALL_ACCESS, NULL, &hkey, NULL);
+        RegCloseKey(hkey);
     }
 
     bool exists(const std::wstring& path)
@@ -324,7 +332,7 @@ private:
 
     std::wstring concatPath(const std::wstring& p1, const std::wstring& p2)
     {
-        std::wstring result = p1 + p2;
+        std::wstring result = p1 + L"\\" + p2;
         size_t i;
         for (i = 0; i < result.length(); ++i)
         {
