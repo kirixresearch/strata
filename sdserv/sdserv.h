@@ -82,6 +82,4 @@ private:
 };
 
 
-extern Sdserv g_sdserv;
-
 #endif
