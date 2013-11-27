@@ -41,16 +41,22 @@ void MainFrame::addItem()
 {
     kcl::ScrollListItem* item = new kcl::ScrollListItem;
 
-    // create 'uninstall' button element
-    wxButton* uninstall_button = new wxButton(m_list,
-                                              -1,
-                                              _("Uninstall"));
 
-    kcl::ScrollListElement* uninstall2;
-    uninstall2 = item->addElement(uninstall_button);
-    uninstall2->setPadding(8,8,15,15);
-    uninstall2->setVisible(true);
-    uninstall2->setName(wxT("uninstall_button"));
+    // create bitmap element
+    kcl::ScrollListElement* bitmap;
+    bitmap = item->addElement(GETBMP(gf_checkmark_32));
+    bitmap->setPadding(0,0,15,15);
+    bitmap->setName(wxT("bitmap"));
+
+    // create name text element
+    kcl::ScrollListElement* name;
+    name = item->addElement("Ap_hist");
+    name->setPadding(0,0,10,8);
+    name->setRelativePosition(bitmap,
+                              kcl::ScrollListElement::positionOnRight);
+    name->setTextBold(true);
+    name->setTextWrap(false);
+    name->setName(wxT("name"));
 
 
     m_list->addItem(item);

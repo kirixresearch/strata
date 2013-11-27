@@ -11,6 +11,7 @@
 #include <wx/wx.h>
 #include <vector>
 #include <map>
+#include <kl/config.h>
 
 
 class SdconnApp : public wxApp
@@ -25,7 +26,7 @@ public:
 
 private:
 
-
+    kl::Config m_config;
 };
 
 extern SdconnApp* g_app;
