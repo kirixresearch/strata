@@ -17,8 +17,8 @@
 MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
     : wxFrame((wxFrame*)NULL,-1,title,pos,size)
 {
-    m_toolbar = new wxAuiToolBar(this, -1);
-    m_toolbar->AddTool(16000, g_app->getBitmap("gf_checkmark_32"), g_app->getBitmap("gf_checkmark_32"));
+    m_toolbar = new wxAuiToolBar(this, -1, wxDefaultPosition, wxDefaultSize, wxAUI_TB_TEXT);
+    m_toolbar->AddTool(16000, _("Add Table"), GETBMP(gf_db_conn_blue_24));
     m_toolbar->Realize();
 
     m_list = new kcl::ScrollListControl(this, -1);

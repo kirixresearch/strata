@@ -29,3 +29,5 @@ private:
 };
 
 extern SdconnApp* g_app;
+
+#define GETBMP(bmp) g_app->getBitmap(#bmp)
