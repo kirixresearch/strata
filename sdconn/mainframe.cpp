@@ -14,25 +14,52 @@
 #include "app.h"
 #include "mainframe.h"
 
-MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
-    : wxFrame((wxFrame*)NULL,-1,title,pos,size)
+
+
+enum
 {
-    m_toolbar = new wxAuiToolBar(this, -1, wxDefaultPosition, wxDefaultSize, wxAUI_TB_TEXT);
+    ID_AddTable = 20000
+};
+
+
+BEGIN_EVENT_TABLE(MainFrame, wxFrame)
+    //EVT_BUTTON(ID_AddTable, MainFrame::onAddTable)
+END_EVENT_TABLE()
+
+
+MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
+                                            : wxFrame((wxFrame*)NULL,-1,title,pos,size)
+{
+    m_toolbar = new wxAuiToolBar(this, ID_AddTable, wxDefaultPosition, wxDefaultSize, wxAUI_TB_TEXT);
     m_toolbar->AddTool(16000, _("Add Table"), GETBMP(gf_db_conn_blue_24));
     m_toolbar->Realize();
 
     m_list = new kcl::ScrollListControl(this, -1);
 
-
+    refreshList();
+    /*
     addItem();
     addItem();
     addItem();
     addItem();
+    */
 
     wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
     sizer->Add(m_toolbar, 0, wxEXPAND);
     sizer->Add(m_list, 1, wxEXPAND);
     SetSizer(sizer);
+}
+
+
+
+void MainFrame::refreshList()
+{
+    // sync the list from the model
+    kl::Config& model = g_app->getConfig();
+
+    model.setPath(L"Resources");
+
+
 }
 
 

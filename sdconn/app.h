@@ -20,6 +20,7 @@ public:
     SdconnApp() : wxApp() {}
     
     wxBitmap getBitmap(const wxString& image_name);
+    kl::Config& getConfig() { return m_config; }
 
 public:
     virtual bool OnInit();

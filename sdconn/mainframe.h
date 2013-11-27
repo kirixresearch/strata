@@ -21,8 +21,15 @@ public:
 
     void addItem();
 
-public:
+private:
+
+    void refreshList();
+
+private:
 
     wxAuiToolBar* m_toolbar;
     kcl::ScrollListControl* m_list;
+
+private:
+    DECLARE_EVENT_TABLE()
 };

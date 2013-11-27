@@ -19,6 +19,8 @@ SdconnApp* g_app;
 
 bool SdconnApp::OnInit()
 {
+    m_config.init(L"Sdserv", L"Sdserv");
+
     g_app = this;
 
     wxImage::AddHandler(new wxPNGHandler);
