@@ -316,6 +316,7 @@ public:
         RegDeleteKeyW(hkey, valname.c_str());
 
         RegCloseKey(hkey);
+
         return true;
     }
 
@@ -386,13 +387,9 @@ private:
 
 
 
-Config::Config(const std::wstring& organization, const std::wstring& product)
+Config::Config()
 {
     m_impl = NULL;
-
-#ifdef WIN32
-    m_impl = new ConfigWinRegImpl(organization, product);
-#endif
 }
 
 Config::~Config()
@@ -400,6 +397,14 @@ Config::~Config()
     delete m_impl;
 }
 
+bool Config::init(const std::wstring& organization, const std::wstring& product)
+{
+#ifdef WIN32
+    m_impl = new ConfigWinRegImpl(organization, product);
+#endif
+
+    return true;
+}
 
 void Config::setPath(const std::wstring& path)
 {
