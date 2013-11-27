@@ -11,12 +11,15 @@
 #include <wx/wx.h>
 #include <wx/aui/auibar.h>
 #include "../kcl/scrolllistcontrol.h"
+#include "app.h"
 #include "mainframe.h"
 
 MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
     : wxFrame((wxFrame*)NULL,-1,title,pos,size)
 {
     m_toolbar = new wxAuiToolBar(this, -1);
+    m_toolbar->AddTool(16000, g_app->getBitmap("gf_checkmark_32"), g_app->getBitmap("gf_checkmark_32"));
+    m_toolbar->Realize();
 
     m_list = new kcl::ScrollListControl(this, -1);
 

@@ -9,6 +9,8 @@
  */
 
 #include <wx/wx.h>
+#include <vector>
+#include <map>
 
 
 class SdconnApp : public wxApp
@@ -16,5 +18,14 @@ class SdconnApp : public wxApp
 public:
     SdconnApp() : wxApp() {}
     
+    wxBitmap getBitmap(const wxString& image_name);
+
+public:
     virtual bool OnInit();
+
+private:
+
+
 };
+
+extern SdconnApp* g_app;

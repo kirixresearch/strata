@@ -58,6 +58,9 @@
       <AdditionalDependencies>comctl32.lib;rpcrt4.lib;wxbase30ud.lib;wxmsw30ud_core.lib;wxmsw30ud_adv.lib;wxmsw30ud_html.lib;wxmsw30ud_aui.lib;wxjpegd.lib;wxpngd.lib;wxzlibd.lib;../kl/lib/klud.lib;../kcl/lib/kclud.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../supp/wxWidgets/lib/vc_lib</AdditionalLibraryDirectories>
     </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>../supp/wxWidgets/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -78,14 +81,21 @@
       <AdditionalDependencies>comctl32.lib;rpcrt4.lib;wxbase30u.lib;wxmsw30u_core.lib;wxmsw30u_adv.lib;wxmsw30u_html.lib;wxmsw30u_aui.lib;wxjpeg.lib;wxpng.lib;wxzlib.lib;../kl/lib/klu.lib;../kcl/lib/kclu.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../supp/wxWidgets/lib/vc_lib</AdditionalLibraryDirectories>
     </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>../supp/wxWidgets/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="app.cpp" />
+    <ClCompile Include="bitmaps.cpp" />
     <ClCompile Include="mainframe.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app.h" />
     <ClInclude Include="mainframe.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="sdconn.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
