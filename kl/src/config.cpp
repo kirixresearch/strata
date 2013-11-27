@@ -316,6 +316,7 @@ public:
         RegDeleteKeyW(hkey, valname.c_str());
 
         RegCloseKey(hkey);
+        return true;
     }
 
 private:
