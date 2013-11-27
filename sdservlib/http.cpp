@@ -9,7 +9,7 @@
  */
 
 
-#include "sdserv.h"
+#include "sdservlib.h"
 #include "http.h"
 #include "mongoose.h"
 #include "controller.h"
@@ -19,9 +19,6 @@
 #include <kl/memory.h>
 
 
-
-
-extern Controller g_controller;
 
 
 // member and function helpers for extracting 
@@ -905,13 +902,14 @@ bool HttpRequestInfo::isMethodPost() const
 int HttpServer::request_callback(struct mg_connection* conn)
 {
     const struct mg_request_info* request_info = mg_get_request_info(conn);
+    HttpServer* server = (HttpServer*)request_info->user_data;
 
-    g_sdserv.updateLastAccessTimestamp();
+    server->m_sdserv->updateLastAccessTimestamp();
 
     HttpRequestInfo req(conn, request_info);
     req.read();
 
-    if (!g_controller.onRequest(req))
+    if (!server->m_sdserv->m_controller->onRequest(req))
     {
         req.setStatusCode(404);
         req.setContentType("text/html");
@@ -927,27 +925,26 @@ int HttpServer::request_callback(struct mg_connection* conn)
 //static
 void HttpServer::run(const char* options[])
 {
-
     struct mg_context* ctx;
     struct mg_callbacks callbacks;
 
     if (options[0] == 0)
     {
-        g_sdserv.signalServerNotReady();
+        m_sdserv->signalServerNotReady();
         return;
     }
     
     memset(&callbacks, 0, sizeof(callbacks));
     callbacks.begin_request = request_callback;
 
-    ctx = mg_start(&callbacks, NULL, options);
+    ctx = mg_start(&callbacks, (void*)this, options);
     if (!ctx)
     {
-        g_sdserv.signalServerNotReady();
+        m_sdserv->signalServerNotReady();
         return;
     }
     
-    g_sdserv.signalServerReady();
+    m_sdserv->signalServerReady();
 
     int counter = 0;
 
@@ -955,7 +952,7 @@ void HttpServer::run(const char* options[])
     {
         ::Sleep(1000);
 
-        if (g_sdserv.m_idle_quit > 0)
+        if (m_sdserv->m_idle_quit > 0)
         {
             counter++;
             if ((counter % 10) == 0)
@@ -963,10 +960,10 @@ void HttpServer::run(const char* options[])
                 time_t t = time(NULL);
                 bool quit = false;
 
-                g_sdserv.m_last_access_mutex.lock();
-                if (t - g_sdserv.m_last_access > g_sdserv.m_idle_quit)
+                m_sdserv->m_last_access_mutex.lock();
+                if (t - m_sdserv->m_last_access > m_sdserv->m_idle_quit)
                     quit = true;
-                g_sdserv.m_last_access_mutex.unlock();
+                m_sdserv->m_last_access_mutex.unlock();
 
                 if (quit)
                     break;

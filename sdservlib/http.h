@@ -113,12 +113,16 @@ private:
 class HttpServer
 {
 public:
-    void run(const char* options[]);
 
+    HttpServer(Sdserv* sdserv) { m_sdserv = sdserv; }
+    void run(const char* options[]);
 
 private:
     static int HttpServer::request_callback(struct mg_connection* conn);
 
+private:
+
+    Sdserv* m_sdserv;
 };
 
 

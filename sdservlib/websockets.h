@@ -59,6 +59,8 @@ class WebSocketsClient
 {
 public:
 
+    WebSocketsClient(Sdserv* sdserv) { m_sdserv = sdserv; }
+
     bool run(const std::string& server, int port = 80, bool ssl = false);
 
 public:
@@ -68,6 +70,7 @@ public:
 
 public:
 
+    Sdserv* m_sdserv;
     struct libwebsocket_context* m_context;
     struct libwebsocket* m_wsi;
     std::queue<std::string> m_write_bufs;

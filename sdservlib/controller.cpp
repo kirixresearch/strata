@@ -8,7 +8,7 @@
  *
  */
 
-#include "sdserv.h"
+#include "sdservlib.h"
 #include "controller.h"
 #include "http.h"
 #include <kl/regex.h>
@@ -265,7 +265,7 @@ xd::IDatabasePtr Controller::getSessionDatabase(RequestInfo& req)
         return xcm::null;
 
 
-    std::wstring cstr = g_sdserv.getDatabaseConnectionString();
+    std::wstring cstr = m_sdserv.getDatabaseConnectionString();
     if (cstr.length() == 0)
         return xcm::null;
 

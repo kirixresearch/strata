@@ -9,16 +9,11 @@
  */
 
 #define _WINSOCKAPI_
-#include "sdserv.h"
+#include "sdservlib.h"
 #include "http.h"
 #include "controller.h"
 #include "websockets.h"
 #include "libwebsockets.h"
-
-
-extern Controller g_controller;
-
-
 
 
 
@@ -280,7 +275,7 @@ void WebSocketsClient::onMessage(const std::string& msg)
     }
 
 
-    g_controller.invokeApi(path, method, req);
+    m_sdserv->m_controller->invokeApi(path, method, req);
 }
 
 
