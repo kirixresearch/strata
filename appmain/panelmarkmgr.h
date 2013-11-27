@@ -18,7 +18,6 @@
 class DlgExprBuilder;
 
 
-// -- PancelMarkMgr class declaration --
 
 
 xcm_interface IMarkMgr : public xcm::IObject
@@ -51,7 +50,6 @@ public:
     MarkMgrPanel();
     ~MarkMgrPanel();
 
-    // -- IDocument --
     bool initDoc(IFramePtr frame,
                  IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,
@@ -61,7 +59,7 @@ public:
 
 private:
 
-    // -- panel methods --
+    // panel methods
     void checkOverlayText();
     void populate(bool refresh = true);
     void populateRow(int row, ITableDocMarkPtr mark);
@@ -82,15 +80,15 @@ private:
     void onSetFocus(wxFocusEvent& event);
     void onKillFocus(wxFocusEvent& event);
     
-    // -- RowSelectionGrid signal events --
+    // RowSelectionGrid signal events
     void onDeletingRows(std::vector<int> rows, bool* allow);
     void onDeletedRows(std::vector<int> rows);
     
-    // -- frame events --
+    // frame events
     void onActiveChildChanged(IDocumentSitePtr doc_site);
     void onFrameEvent(FrameworkEvent& evt);
 
-    // -- grid events --
+    // grid events
     void onGridPreGhostRowInsert(kcl::GridEvent& evt);
     void onGridPreInvalidAreaInsert(kcl::GridEvent& evt);
     void onGridModelChange(kcl::GridEvent& evt);
@@ -99,11 +97,11 @@ private:
     void onGridCellRightClick(kcl::GridEvent& evt);
     void onGridBeginEdit(kcl::GridEvent& evt);
 
-    // -- expr builder events --
+    // expr builder events
     void onExprEditFinished(wxString);
     void onExprEditCancelled();
 
-    // -- color panel events --
+    // color panel events
     void onColorPanelDestructing(kcl::ColorPanel* panel);
     void onColorSelected(wxColour color, int button);
 

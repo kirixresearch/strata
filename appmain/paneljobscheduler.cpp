@@ -58,7 +58,9 @@ enum ScheduleChoiceIndexes
     ScheduleChoice_Monthly
 };
 
-// -- utility functions --
+
+
+// utility functions
 
 void populateJobSchedulerEntry(JobSchedulerPanelEntry* panel_entry, JobSchedulerEntry& e)
 {
@@ -424,7 +426,7 @@ bool JobSchedulerPanel::initDoc(IFramePtr frame,
     m_commandlist_grid->refresh(kcl::Grid::refreshAll);
 
 
-    // -- set our drop targets --
+    // set our drop targets
 
     kcl::GridDataDropTarget* drop_target1 = new kcl::GridDataDropTarget(m_joblist_grid);
     drop_target1->sigDropped.connect(this, &JobSchedulerPanel::onGridDataDropped);
@@ -440,7 +442,7 @@ bool JobSchedulerPanel::initDoc(IFramePtr frame,
     drop_target2->sigDropped.connect(this, &JobSchedulerPanel::onGridDataDropped);
     m_commandlist_grid->SetDropTarget(drop_target2);
 
-    // -- connect row selection grid signals --
+    // connect row selection grid signals
     
     m_joblist_grid->sigInsertingRows.connect(this, &JobSchedulerPanel::onJobListInsertingRows);
     m_joblist_grid->sigDeletedRows.connect(this, &JobSchedulerPanel::onJobListDeletedRows);
@@ -549,7 +551,7 @@ wxStaticBoxSizer* JobSchedulerPanel::createMonthlySizer()
 
 wxBoxSizer* JobSchedulerPanel::createVerticalSizer()
 {
-    // -- create frequency sizer --
+    // create frequency sizer
     wxStaticText* label_frequency = new wxStaticText(this, -1, _("Schedule Job:"));
     m_frequency_choice = new wxChoice(this,
                                     ID_Frequency_Choice,
@@ -568,7 +570,7 @@ wxBoxSizer* JobSchedulerPanel::createVerticalSizer()
     frequency_sizer->AddSpacer(5);
     frequency_sizer->Add(m_frequency_choice, 1, wxEXPAND);
     
-    // -- create end sizer --
+    // create end sizer
     wxStaticText* label_finish = new wxStaticText(this, -1, _("End:"));
     m_finishtime_active_checkbox = new wxCheckBox(this,
                                     ID_FinishActive_CheckBox,
@@ -597,7 +599,7 @@ wxBoxSizer* JobSchedulerPanel::createVerticalSizer()
     m_finishtime_sizer->AddSpacer(2);
     m_finishtime_sizer->Add(m_finishtime_datectrl, 1, wxEXPAND);
 
-    // -- create start sizer --
+    // create start sizer
     wxStaticText* label_start = new wxStaticText(this, -1, _("Begin:"));
     m_starttime_textctrl = new wxTextCtrl(this,
                                     ID_StartTime_TextCtrl,
@@ -644,7 +646,7 @@ wxBoxSizer* JobSchedulerPanel::createVerticalSizer()
     wxBoxSizer* weekly_sizer = createWeeklySizer();
     wxBoxSizer* monthly_sizer = createMonthlySizer();
     
-    // -- create the vertical sizer --
+    // create the vertical sizer
     m_vert_sizer = new wxBoxSizer(wxVERTICAL);
     m_vert_sizer->Add(m_top_sizer, 0, wxEXPAND);
     m_vert_sizer->AddSpacer(8);
@@ -708,14 +710,14 @@ void JobSchedulerPanel::doLayout()
 
 void JobSchedulerPanel::checkOverlayText()
 {
-    // -- job list grid --
+    // job list grid
 
     if (m_joblist_grid->getRowCount() == 0)
         m_joblist_grid->setOverlayText(_("To add a scheduled job,\ndouble-click here"));
          else
         m_joblist_grid->setOverlayText(wxEmptyString);
 
-    // -- command list grid --
+    // command list grid
 
     if (m_current_job_entry == NULL)
     {
@@ -1324,7 +1326,7 @@ void JobSchedulerPanel::onGridDataDropped(kcl::GridDataDropTarget* drop_target)
         return;
     }
 
-    // -- we're dragging from the project panel --
+    // we're dragging from the project panel
     
     
     // only accept tree data objects here

@@ -31,10 +31,10 @@ private:
     void addJobItem(jobs::IJobInfoPtr job_info);
     void updateJobItem(kcl::ScrollListItem* item);
     
-    // -- signal events --
+    // signal events
     void onJobQueueChanged();
     
-    // -- events --
+    // events
     void onCancelButtonClicked(wxCommandEvent& evt);
     void onDoJobQueueRefresh(wxCommandEvent& evt);
     
@@ -64,7 +64,6 @@ public:
 
 public:
 
-    // -- IDocument --
     bool initDoc(IFramePtr frame,
                  IDocumentSitePtr doc_site,
                  wxWindow* docsite_wnd,

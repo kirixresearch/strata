@@ -28,7 +28,7 @@ DatabaseInfoPanel::~DatabaseInfoPanel()
 {
 }
 
-// -- IDocument --
+// IDocument
 bool DatabaseInfoPanel::initDoc(IFramePtr frame,
                                 IDocumentSitePtr site,
                                 wxWindow* doc_site,
@@ -46,7 +46,7 @@ bool DatabaseInfoPanel::initDoc(IFramePtr frame,
     site->setCaption(_("Project Properties"));
     m_doc_site = site;
 
-    // -- create project name sizer --
+    // create project name sizer
     
     wxStaticText* project_name_label = new wxStaticText(this,
                                              -1,
@@ -68,7 +68,7 @@ bool DatabaseInfoPanel::initDoc(IFramePtr frame,
     project_name_sizer->Add(m_project_name_text, 1, wxALIGN_CENTER);
 
 
-    // -- create project location sizer --
+    // create project location sizer
     
     wxStaticText* project_location_label = new wxStaticText(
                                                 this,
@@ -82,7 +82,7 @@ bool DatabaseInfoPanel::initDoc(IFramePtr frame,
     project_location_sizer->Add(location, 1, wxALIGN_CENTER);
 
 
-    // -- create used space sizer --
+    // create used space sizer
     
     wxStaticText* project_size_label = new wxStaticText(
                                                 this,
@@ -112,7 +112,7 @@ bool DatabaseInfoPanel::initDoc(IFramePtr frame,
     project_size_sizer->Add(project_size_str, 0, wxALIGN_CENTER);
 
 
-    // -- resize label widths so they line up --
+    // resize label widths so they line up
     wxSize min = getMaxTextSize(project_name_label,
                                      project_location_label,
                                      project_size_label);
@@ -123,7 +123,7 @@ bool DatabaseInfoPanel::initDoc(IFramePtr frame,
     project_size_sizer->SetItemMinSize(project_size_label, min);
 
 
-    // -- create a platform standards-compliant OK/Cancel sizer --
+    // create a platform standards-compliant OK/Cancel sizer
     
     wxStdDialogButtonSizer* ok_cancel_sizer = new wxStdDialogButtonSizer;
     ok_cancel_sizer->AddButton(new wxButton(this, wxID_OK));
@@ -131,7 +131,9 @@ bool DatabaseInfoPanel::initDoc(IFramePtr frame,
     ok_cancel_sizer->Realize();
     ok_cancel_sizer->AddSpacer(5);
     
-    // -- this code is necessary to get the sizer's bottom margin to 8 --
+
+    // this code is necessary to get the sizer's bottom margin to 8
+
     wxSize min_size = ok_cancel_sizer->GetMinSize();
     min_size.SetHeight(min_size.GetHeight()+16);
     ok_cancel_sizer->SetMinSize(min_size);

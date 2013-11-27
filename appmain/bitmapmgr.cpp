@@ -244,7 +244,7 @@ wxBitmap BitmapMgr::lookupBitmap(const wxString& bitmap_name, int status, int si
             entry_name += wxT(".png");
         }
     
-        // -- load the bitmap from the catalog --
+        // load the bitmap from the catalog
         wxMemoryBuffer buf;
         if (!m_bundle->getEntry(entry_name, buf))
         {

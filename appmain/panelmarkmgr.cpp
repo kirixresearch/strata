@@ -44,7 +44,7 @@ const int COLOR_COL_WIDTH = 40;
 const int EDITBUTTON_COL_WIDTH = 35;
 
 
-// -- utility functions --
+// utility functions
 
 static ITableDocPtr getActiveTableDoc()
 {
@@ -123,7 +123,6 @@ MarkMgrPanel::~MarkMgrPanel()
 }
 
 
-// -- IDocument --
 
 bool MarkMgrPanel::initDoc(IFramePtr frame,
                            IDocumentSitePtr doc_site,
@@ -853,7 +852,7 @@ void MarkMgrPanel::onKillFocus(wxFocusEvent& evt)
 }
 
 
-// -- manage color panel events --
+// manage color panel events
 
 void MarkMgrPanel::onColorPanelDestructing(kcl::ColorPanel* panel)
 {

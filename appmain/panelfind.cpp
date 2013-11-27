@@ -21,8 +21,6 @@
 #include "dlgdatabasefile.h"
 
 
-// -- FindPanel class implementation --
-
 enum
 {
     ID_FindModeCombo = 10000,
@@ -102,7 +100,7 @@ FindPanel::~FindPanel()
 {
 }
 
-// -- IDocument --
+
 bool FindPanel::initDoc(IFramePtr frame,
                         IDocumentSitePtr site,
                         wxWindow* docsite_wnd,
@@ -133,7 +131,7 @@ bool FindPanel::initDoc(IFramePtr frame,
     SetAcceleratorTable(accel);
     
     
-    // -- create 'find mode' sizer --
+    // create 'find mode' sizer
     wxArrayString choices;
     choices.Add(_("Find In Files"));
     choices.Add(_("Find In Current Window"));
@@ -154,7 +152,7 @@ bool FindPanel::initDoc(IFramePtr frame,
 
     
     
-    // -- create 'find' sizer --
+    // create 'find' sizer
     
     m_find_label = new wxStaticText(this, -1, _("Fi&nd:"));
     m_find_combo = new wxComboBox(this,
@@ -172,7 +170,7 @@ bool FindPanel::initDoc(IFramePtr frame,
     m_find_sizer->Add(m_find_combo, 1);
 
 
-    // -- create 'find in' sizer --
+    // create 'find in' sizer
     
     m_find_in_label = new wxStaticText(this, -1, _("Look in:"));
     m_find_in_combo = new wxComboBox(this,
@@ -204,7 +202,7 @@ bool FindPanel::initDoc(IFramePtr frame,
     m_find_in_sizer->Add(find_in_browse, 0, wxALIGN_CENTER | wxLEFT, 2);
 
 
-    // -- create replace sizer --
+    // create replace sizer
     
     m_replace_label = new wxStaticText(this, -1, _("Re&place with:"));
     m_replace_combo = new wxComboBox(this,
@@ -222,7 +220,7 @@ bool FindPanel::initDoc(IFramePtr frame,
     m_replace_sizer->Add(m_replace_combo, 1);
 
     
-    // -- create options sizer --
+    // create options sizer
     
     m_matchcase_checkbox = new wxCheckBox(this,
                                     ID_MatchCase,
@@ -266,7 +264,7 @@ bool FindPanel::initDoc(IFramePtr frame,
     // we don't support multi-doc find yet
     option_sizer->Show(m_allopen_checkbox, false);
     
-    // -- create button sizer --
+    // create button sizer
     
     m_button_sizer = new wxBoxSizer(wxHORIZONTAL);
     m_button_sizer->AddStretchSpacer();
@@ -374,7 +372,7 @@ void FindPanel::setMode(int mode, bool layout)
         }
     }
     
-    // -- layout the button sizer --
+    // layout the button sizer
     
     if (m_button_sizer != NULL)
     {
@@ -420,7 +418,7 @@ void FindPanel::setMode(int mode, bool layout)
         }
     }
     
-    // -- layout main sizer --
+    // layout main sizer
     
     if (m_main_sizer != NULL)
     {
