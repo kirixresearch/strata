@@ -44,20 +44,43 @@ void MainFrame::addItem()
 
     // create bitmap element
     kcl::ScrollListElement* bitmap;
-    bitmap = item->addElement(GETBMP(gf_checkmark_32));
+    bitmap = item->addElement(GETBMP(gf_checkmark_32), wxPoint(10,25));
     bitmap->setPadding(0,0,15,15);
     bitmap->setName(wxT("bitmap"));
 
     // create name text element
     kcl::ScrollListElement* name;
     name = item->addElement("Ap_hist");
-    name->setPadding(0,0,10,8);
-    name->setRelativePosition(bitmap,
-                              kcl::ScrollListElement::positionOnRight);
+    name->setPadding(0,0,15,8);
+    name->setRelativePosition(bitmap, kcl::ScrollListElement::positionOnRight);
     name->setTextBold(true);
     name->setTextWrap(false);
     name->setName(wxT("name"));
 
+
+    // create name text element
+    kcl::ScrollListElement* location;
+    location = item->addElement("c:\\users\\server\\data\\ap_hist.csv");
+    location->setPadding(0,0,10,8);
+    location->setRelativePosition(name, kcl::ScrollListElement::positionBelow);
+    location->setTextBold(false);
+    location->setTextWrap(false);
+    location->setName(wxT("name"));
+
+
+     // create 'start now' button element
+    wxButton* settings_button = new wxButton(m_list,
+                                             -1,
+                                             _("Settings"),
+                                             wxDefaultPosition,
+                                             wxSize(80,25),
+                                             wxBU_EXACTFIT);
+
+    kcl::ScrollListElement* settings;
+    settings = item->addElement(settings_button);
+    settings->setPadding(0,8,0,30);
+    settings->setAbsolutePosition(wxPoint(-100, 25));
+    settings->setName(wxT("settings_button"));
 
     m_list->addItem(item);
 }

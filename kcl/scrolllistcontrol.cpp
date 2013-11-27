@@ -603,6 +603,9 @@ void ScrollListControl::drawItem(kcl::ScrollListItem* item, int item_y)
         // get the element's stored position
         wxPoint pt = element->getPosition();
         
+        if (pt.x < 0)
+            pt.x = m_cli_width + pt.x;
+
         // get the element's stored padding
         lpad = element->getPaddingLeft();
         tpad = element->getPaddingTop();

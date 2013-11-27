@@ -23,10 +23,10 @@ bool SdconnApp::OnInit()
 
     wxImage::AddHandler(new wxPNGHandler);
 
-    MainFrame *frame = new MainFrame(_T("SD Connector"), wxPoint(50,50),
-                wxSize(408,350));
+    MainFrame* frame = new MainFrame(_T("SD Connector"), wxPoint(50,50), wxSize(420,500));
+    frame->Center();
+    frame->Show(true);
 
-    frame->Show(TRUE);
     SetTopWindow(frame);
     return TRUE;
 }
