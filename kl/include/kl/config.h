@@ -38,7 +38,7 @@ public:
     bool write(const std::wstring& path, long value);
     bool write(const std::wstring& path, bool value) { return write(path, (long)(value ? 1 : 0)); }
 
-    bool read(const std::wstring& path, std::wstring& value, const std::wstring& def = L"");
+    bool read(const std::wstring& path, std::wstring* value, const std::wstring& def = L"");
     bool read(const std::wstring& path, long* value, long def);
     bool read(const std::wstring& path, bool* value, bool def = false)
     {
@@ -50,6 +50,8 @@ public:
 
     std::vector<std::wstring> getGroups(const std::wstring& path = L"");
     bool deleteGroup(const std::wstring& path = L"");
+
+    std::wstring operator[](const std::wstring& str) { std::wstring res; read(str, &res, L""); return res; }
 
 private:
 

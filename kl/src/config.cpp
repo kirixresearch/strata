@@ -37,7 +37,7 @@ public:
     virtual bool write(const std::wstring& path, const std::wstring& value) = 0;
     virtual bool write(const std::wstring& path, long value) = 0;
 
-    virtual bool read(const std::wstring& path, std::wstring& value, const std::wstring& def = L"") = 0;
+    virtual bool read(const std::wstring& path, std::wstring* value, const std::wstring& def = L"") = 0;
     virtual bool read(const std::wstring& path, long* value, long def) = 0;
 
     virtual std::vector<std::wstring> getGroups(const std::wstring& path = L"") = 0;
@@ -151,7 +151,7 @@ public:
         return (err == ERROR_SUCCESS ? true : false);
     }
 
-    bool read(const std::wstring& path, std::wstring& value, const std::wstring& def)
+    bool read(const std::wstring& path, std::wstring* value, const std::wstring& def)
     {
         std::wstring key, valname;
         getKeyAndValue(path, key, valname);
@@ -161,7 +161,7 @@ public:
         if (ERROR_SUCCESS == RegOpenKeyExW(getRootKey(), key.c_str(), 0, KEY_QUERY_VALUE, &hkey))
         {
             RegCloseKey(hkey);
-            value = def;
+            *value = def;
             return true;
         }
 
@@ -171,7 +171,7 @@ public:
         if (err != ERROR_SUCCESS)
         {
             RegCloseKey(hkey);
-            value = def;
+            *value = def;
             return false;
         }
 
@@ -182,12 +182,12 @@ public:
             if (err != ERROR_SUCCESS)
             {
                 RegCloseKey(hkey);
-                value = def;
+                *value = def;
                 return false;
             }
 
             RegCloseKey(hkey);
-            value = kl::stdswprintf(L"%d", dwvalue);
+            *value = kl::stdswprintf(L"%d", dwvalue);
             return true;
         }
          else if (dwtype == REG_SZ)
@@ -198,18 +198,18 @@ public:
             {
                 delete[] buf;
                 RegCloseKey(hkey);
-                value = def;
+                *value = def;
                 return false;
             }
 
-            value = buf;
+            *value = buf;
             delete[] buf;
             RegCloseKey(hkey);
             return true;
         }
          else
         {
-            value = def;
+            *value = def;
             RegCloseKey(hkey);
             return false;
         }
@@ -434,7 +434,7 @@ bool Config::write(const std::wstring& path, long value)
     return m_impl->write(path, value);
 }
 
-bool Config::read(const std::wstring& path, std::wstring& value, const std::wstring& def)
+bool Config::read(const std::wstring& path, std::wstring* value, const std::wstring& def)
 {
     return m_impl->read(path, value, def);
 }
