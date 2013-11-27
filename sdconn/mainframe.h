@@ -10,6 +10,7 @@
 
 #include <wx/wx.h>
 
+class wxAuiToolBar;
 namespace kcl { class ScrollListControl; }
 
 class MainFrame : public wxFrame
@@ -18,7 +19,10 @@ public:
     MainFrame(const wxString& title, const wxPoint& pos, const wxSize& size);
     ~MainFrame() { }
 
+    void addItem();
+
 public:
 
+    wxAuiToolBar* m_toolbar;
     kcl::ScrollListControl* m_list;
 };
