@@ -13,6 +13,8 @@
 #define __SDSERV_CONTROLLER_H
 
 
+#include <xd/xd.h>
+#include "../jobs/jobs.h"
 #include "request.h"
 
 

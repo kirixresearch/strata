@@ -11,9 +11,15 @@
 #include "sdservlib.h"
 #include "controller.h"
 #include "http.h"
+#include <ctime>
+#include <kl/portable.h>
 #include <kl/regex.h>
 #include <kl/string.h>
 #include <kl/thread.h>
+#include <kl/md5.h>
+#include <kl/base64.h>
+#include <kl/file.h>
+#include <kl/json.h>
 
 
 Controller::Controller()

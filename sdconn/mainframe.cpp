@@ -20,7 +20,8 @@
 
 enum
 {
-    ID_AddTable = 20000
+    ID_AddTable = 20000,
+    ID_Settings
 };
 
 
@@ -32,11 +33,12 @@ END_EVENT_TABLE()
 MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
                                             : wxFrame((wxFrame*)NULL,-1,title,pos,size)
 {
-    m_toolbar = new wxAuiToolBar(this, -1, wxDefaultPosition, wxDefaultSize, wxAUI_TB_TEXT);
+    m_toolbar = new wxAuiToolBar(this, -1, wxDefaultPosition, wxSize(40,80), wxAUI_TB_TEXT);
     m_toolbar->AddTool(ID_AddTable, _("Add Table"), GETBMP(gf_db_conn_blue_24));
+    m_toolbar->AddTool(ID_Settings, _("Settings"), GETBMP(gf_gear_24));
     m_toolbar->Realize();
 
-    m_list = new kcl::ScrollListControl(this, -1);
+    m_list = new kcl::ScrollListControl(this, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
 
     refreshList();
     /*

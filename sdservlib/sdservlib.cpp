@@ -13,7 +13,12 @@
 #include "http.h"
 #include "controller.h"
 #include "websockets.h"
+#include <kl/json.h>
+#include <kl/file.h>
 
+#ifdef WIN32
+#include <Windows.h>
+#endif
 
 
 Sdserv::Sdserv()

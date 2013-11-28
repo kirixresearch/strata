@@ -12,7 +12,7 @@
 #include <vector>
 #include <map>
 #include <kl/config.h>
-
+#include "../sdservlib/sdservlib.h"
 
 class SdconnApp : public wxApp
 {
@@ -28,6 +28,7 @@ public:
 private:
 
     kl::Config m_config;
+    Sdserv m_sdserv;
 };
 
 extern SdconnApp* g_app;

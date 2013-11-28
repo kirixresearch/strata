@@ -57,11 +57,13 @@ BitmapMgr g_bitmap_mgr;
 
 #include "../img/c/gf_checkmark_32.png.c"
 #include "../img/c/gf_db_conn_blue_24.png.c"
+#include "../img/c/gf_gear_24.png.c"
 
 void registerImages()
 {
     REGISTER(gf_checkmark_32)
     REGISTER(gf_db_conn_blue_24)
+    REGISTER(gf_gear_24)
 }
 
 wxBitmap lookupBitmap(const wxString& name)

@@ -17,6 +17,8 @@
 #include <kl/url.h>
 #include <kl/md5.h>
 #include <kl/memory.h>
+#include <kl/file.h>
+#include <kl/system.h>
 
 
 
@@ -950,7 +952,7 @@ void HttpServer::run(const char* options[])
 
     while (1)
     {
-        ::Sleep(1000);
+        kl::millisleep(1000);
 
         if (m_sdserv->m_idle_quit > 0)
         {

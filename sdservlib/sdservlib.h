@@ -12,23 +12,11 @@
 #ifndef __SDSERV_SDSERV_H
 #define __SDSERV_SDSERV_H
 
-#include <string>
-#include <map>
 #include <vector>
-#include <cstring>
-#include <cwchar>
-#include <ctime>
-#include <windows.h>
-#include <xd/xd.h>
+#include <map>
+#include <string>
+#include <xcm/xcmthread.h>
 #include <kl/string.h>
-#include <kl/md5.h>
-#include <kl/base64.h>
-#include <kl/portable.h>
-#include <kl/memory.h>
-#include <kl/file.h>
-#include <kl/json.h>
-#include "../jobs/jobs.h"
-
 
 class Controller;
 class Sdserv
