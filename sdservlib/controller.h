@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __SDSERV_CONTROLLER_H
-#define __SDSERV_CONTROLLER_H
+#ifndef __SDSERVLIB_CONTROLLER_H
+#define __SDSERVLIB_CONTROLLER_H
 
 
 #include <xd/xd.h>

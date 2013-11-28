@@ -9,8 +9,8 @@
  */
 
  
-#ifndef __SDSERV_SDSERV_H
-#define __SDSERV_SDSERV_H
+#ifndef __SDSERVLIB_SDSERVLIB_H
+#define __SDSERVLIB_SDSERVLIB_H
 
 #include <vector>
 #include <map>
@@ -38,8 +38,10 @@ public:
     Sdserv();
     ~Sdserv();
     
-    bool initOptions(int argc, const char* argv[]);
-    const char** getOptions() { return m_options; }
+    bool initOptionsFromCommandLine(int argc, const char* argv[]);
+    void setOption(const std::wstring& option, const std::wstring& value);
+
+    const char** getMgOptions() { return m_options; }
 
     int runServer();
     std::wstring getDatabaseConnectionString(const std::wstring& database = L"");

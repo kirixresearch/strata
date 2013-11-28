@@ -244,7 +244,7 @@ int Sdserv::runServer()
 
 
 
-bool Sdserv::initOptions(int argc, const char* argv[])
+bool Sdserv::initOptionsFromCommandLine(int argc, const char* argv[])
 {
     //const char *options[40] = { "listening_ports",   LISTENING_PORT,
     //                            "enable_keep_alive", "yes",
@@ -339,3 +339,8 @@ bool Sdserv::initOptions(int argc, const char* argv[])
     return true;
 }
 
+
+
+void Sdserv::setOption(const std::wstring& option, const std::wstring& value)
+{
+}

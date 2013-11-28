@@ -9,8 +9,8 @@
  */
 
  
-#ifndef __SDSERV_WEBSOCKETS_H
-#define __SDSERV_WEBSOCKETS_H
+#ifndef __SDSERVLIB_WEBSOCKETS_H
+#define __SDSERVLIB_WEBSOCKETS_H
 
 #include <queue>
 

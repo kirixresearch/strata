@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_REQUEST_H
-#define __APP_REQUEST_H
+#ifndef __SDSERVLIB_REQUEST_H
+#define __SDSERVLIB_REQUEST_H
 
 
 

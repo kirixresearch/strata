@@ -10,9 +10,7 @@
 
 
 #include "sdserv.h"
-#include "http.h"
-#include "controller.h"
-#include "websockets.h"
+#include "../sdservlib/sdservlib.h"
 
 
 
@@ -20,7 +18,7 @@ int main(int argc, const char** argv)
 {
     Sdserv sdserv;
 
-    if (!sdserv.initOptions(argc, argv))
+    if (!sdserv.initOptionsFromCommandLine(argc, argv))
     {
         sdserv.signalServerNotReady();
         return 0;

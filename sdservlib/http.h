@@ -9,8 +9,8 @@
  */
 
 
-#ifndef __APP_HTTP_H
-#define __APP_HTTP_H
+#ifndef __SDSERVLIB_HTTP_H
+#define __SDSERVLIB_HTTP_H
 
 #include <kl/memory.h>
 #include "request.h"
