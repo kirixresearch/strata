@@ -144,7 +144,7 @@ public:
         }
 
         DWORD err;
-        err = RegSetValueExW(hkey, valname.c_str(), 0, REG_SZ, (const BYTE*)value.c_str(), value.length()+1);
+        err = RegSetValueExW(hkey, valname.c_str(), 0, REG_SZ, (const BYTE*)value.c_str(), sizeof(wchar_t)*(value.length()+1));
 
         RegCloseKey(hkey);
 
@@ -158,7 +158,7 @@ public:
 
         
         HKEY hkey = NULL;
-        if (ERROR_SUCCESS == RegOpenKeyExW(getRootKey(), key.c_str(), 0, KEY_QUERY_VALUE, &hkey))
+        if (ERROR_SUCCESS != RegOpenKeyExW(getRootKey(), key.c_str(), 0, KEY_QUERY_VALUE, &hkey))
         {
             RegCloseKey(hkey);
             *value = def;
@@ -256,7 +256,7 @@ public:
         }
          else if (dwtype == REG_SZ)
         {
-            wchar_t* buf = new wchar_t[dwsize];
+            wchar_t* buf = new wchar_t[dwsize+sizeof(wchar_t)];
             err = RegQueryValueExW(hkey, valname.c_str(), 0, NULL, (BYTE*)buf, &dwsize);
             if (err != ERROR_SUCCESS)
             {
@@ -367,7 +367,7 @@ private:
         }
 
         key = kl::beforeLast(full, L'\\');
-        value = kl::afterLast(full, L'//');
+        value = kl::afterLast(full, L'\\');
     }
 
 
