@@ -19,11 +19,12 @@ public:
     MainFrame(const wxString& title, const wxPoint& pos, const wxSize& size);
     ~MainFrame() { }
 
-    void addItem();
+    void addItem(const std::wstring& name, const std::wstring& location);
 
 private:
 
     void refreshList();
+    void onAddTable(wxCommandEvent& evt);
 
 private:
 

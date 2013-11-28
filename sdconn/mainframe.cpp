@@ -10,6 +10,7 @@
 
 #include <wx/wx.h>
 #include <wx/aui/auibar.h>
+#include <kl/string.h>
 #include "../kcl/scrolllistcontrol.h"
 #include "app.h"
 #include "mainframe.h"
@@ -23,15 +24,15 @@ enum
 
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)
-    //EVT_BUTTON(ID_AddTable, MainFrame::onAddTable)
+    EVT_MENU(ID_AddTable, MainFrame::onAddTable)
 END_EVENT_TABLE()
 
 
 MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
                                             : wxFrame((wxFrame*)NULL,-1,title,pos,size)
 {
-    m_toolbar = new wxAuiToolBar(this, ID_AddTable, wxDefaultPosition, wxDefaultSize, wxAUI_TB_TEXT);
-    m_toolbar->AddTool(16000, _("Add Table"), GETBMP(gf_db_conn_blue_24));
+    m_toolbar = new wxAuiToolBar(this, -1, wxDefaultPosition, wxDefaultSize, wxAUI_TB_TEXT);
+    m_toolbar->AddTool(ID_AddTable, _("Add Table"), GETBMP(gf_db_conn_blue_24));
     m_toolbar->Realize();
 
     m_list = new kcl::ScrollListControl(this, -1);
@@ -51,20 +52,41 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 }
 
 
+void MainFrame::onAddTable(wxCommandEvent& evt)
+{
+    kl::Config& model = g_app->getConfig();
+
+    std::wstring key = kl::getUniqueString();
+
+    model.write(L"Resources/" + key + L"/name", L"Hello");
+    model.write(L"Resources/" + key + L"/location", L"Location");
+
+
+
+}
 
 void MainFrame::refreshList()
 {
     // sync the list from the model
     kl::Config& model = g_app->getConfig();
 
-    model.setPath(L"Resources");
+
+    std::vector<std::wstring> groups = model.getGroups(L"Resources");
+    std::vector<std::wstring>::iterator it;
+    for (it = groups.begin(); it != groups.end(); ++it)
+    {
+        std::wstring name = model.read(L"Resources/" + *it + L"/name");
+        std::wstring location = model.read(L"Resources/" + *it + L"/location");
+        
 
 
+        addItem(name, location);
+    }
 }
 
 
 
-void MainFrame::addItem()
+void MainFrame::addItem(const std::wstring& name, const std::wstring& location)
 {
     kcl::ScrollListItem* item = new kcl::ScrollListItem;
 
@@ -76,23 +98,23 @@ void MainFrame::addItem()
     bitmap->setName(wxT("bitmap"));
 
     // create name text element
-    kcl::ScrollListElement* name;
-    name = item->addElement("Ap_hist");
-    name->setPadding(0,0,15,8);
-    name->setRelativePosition(bitmap, kcl::ScrollListElement::positionOnRight);
-    name->setTextBold(true);
-    name->setTextWrap(false);
-    name->setName(wxT("name"));
+    kcl::ScrollListElement* element_name;
+    element_name = item->addElement(name);
+    element_name->setPadding(0,0,15,8);
+    element_name->setRelativePosition(bitmap, kcl::ScrollListElement::positionOnRight);
+    element_name->setTextBold(true);
+    element_name->setTextWrap(false);
+    element_name->setName(wxT("name"));
 
 
     // create name text element
-    kcl::ScrollListElement* location;
-    location = item->addElement("c:\\users\\server\\data\\ap_hist.csv");
-    location->setPadding(0,0,10,8);
-    location->setRelativePosition(name, kcl::ScrollListElement::positionBelow);
-    location->setTextBold(false);
-    location->setTextWrap(false);
-    location->setName(wxT("name"));
+    kcl::ScrollListElement* element_location;
+    element_location = item->addElement(location);
+    element_location->setPadding(0,0,10,8);
+    element_location->setRelativePosition(element_name, kcl::ScrollListElement::positionBelow);
+    element_location->setTextBold(false);
+    element_location->setTextWrap(false);
+    element_location->setName(wxT("name"));
 
 
      // create 'start now' button element
@@ -103,11 +125,11 @@ void MainFrame::addItem()
                                              wxSize(80,25),
                                              wxBU_EXACTFIT);
 
-    kcl::ScrollListElement* settings;
-    settings = item->addElement(settings_button);
-    settings->setPadding(0,8,0,30);
-    settings->setAbsolutePosition(wxPoint(-100, 25));
-    settings->setName(wxT("settings_button"));
+    kcl::ScrollListElement* element_settings;
+    element_settings = item->addElement(settings_button);
+    element_settings->setPadding(0,8,0,30);
+    element_settings->setAbsolutePosition(wxPoint(-100, 25));
+    element_settings->setName(wxT("settings_button"));
 
     m_list->addItem(item);
 }
