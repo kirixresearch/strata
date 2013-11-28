@@ -9,11 +9,12 @@
  */
 
 #include <wx/wx.h>
+#include <wx/filename.h>
 #include <wx/aui/auibar.h>
 #include <kl/string.h>
-#include "../kcl/scrolllistcontrol.h"
 #include "app.h"
 #include "mainframe.h"
+#include "../kcl/scrolllistcontrol.h"
 
 
 
@@ -54,13 +55,39 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 
 void MainFrame::onAddTable(wxCommandEvent& evt)
 {
+    wxString filter;
+    filter += _("All Files");
+    filter += wxT(" (*.*)|*.*|");
+    filter.RemoveLast(); // get rid of the last pipe sign
+
+    wxFileDialog dlg(this,
+                     _("Choose File"),
+                     wxT(""),
+                     wxT(""),
+                     filter,
+                     wxFD_OPEN|wxFD_MULTIPLE|wxFD_FILE_MUST_EXIST);
+
+    if (dlg.ShowModal() == wxOK)
+        return;
+
+
+
     kl::Config& model = g_app->getConfig();
 
-    std::wstring key = kl::getUniqueString();
+    wxArrayString arr;
+    dlg.GetPaths(arr);
+    for (size_t i = 0; i < arr.GetCount(); ++i)
+    {
+        wxFileName fn(arr[i]);
 
-    model.write(L"Resources/" + key + L"/name", L"Hello");
-    model.write(L"Resources/" + key + L"/location", L"Location");
+        std::wstring fullpath = arr[i];
+        std::wstring filename = fn.GetName();
 
+        std::wstring key = kl::getUniqueString();
+
+        model.write(L"Resources/" + key + L"/name", filename);
+        model.write(L"Resources/" + key + L"/location", fullpath);
+    }
 
     refreshList();
 }
