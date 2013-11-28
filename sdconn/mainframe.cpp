@@ -62,7 +62,7 @@ void MainFrame::onAddTable(wxCommandEvent& evt)
     model.write(L"Resources/" + key + L"/location", L"Location");
 
 
-
+    refreshList();
 }
 
 void MainFrame::refreshList()
@@ -70,6 +70,8 @@ void MainFrame::refreshList()
     // sync the list from the model
     kl::Config& model = g_app->getConfig();
 
+
+    m_list->clearItems();
 
     std::vector<std::wstring> groups = model.getGroups(L"Resources");
     std::vector<std::wstring>::iterator it;
@@ -82,6 +84,8 @@ void MainFrame::refreshList()
 
         addItem(name, location);
     }
+
+    m_list->refresh();
 }
 
 
