@@ -40,8 +40,7 @@ public:
     
     bool initOptionsFromCommandLine(int argc, const char* argv[]);
     void setOption(const std::wstring& option, const std::wstring& value);
-
-    const char** getMgOptions() { return m_options; }
+    std::wstring getOption(const std::wstring& option);
 
     int runServer();
     std::wstring getDatabaseConnectionString(const std::wstring& database = L"");
@@ -52,27 +51,13 @@ public:
 
 private:
 
-    bool useConfigFile(const std::wstring& config_file);
-
-private:
-
     Controller* m_controller;
-
-    std::wstring m_config_file;
-
-    std::wstring m_ready_evtid;
-    std::wstring m_notready_evtid;
-
-    char m_cert_file_path[255];
-    const char* m_options[255];
 
     int m_idle_quit;
     xcm::mutex m_last_access_mutex;
     time_t m_last_access;
 
-    int m_server_type;
-    std::string m_websockets_server;
-    bool m_websockets_ssl;
+    std::map<std::wstring, std::wstring> m_options;
 };
 
 

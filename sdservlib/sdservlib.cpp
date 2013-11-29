@@ -23,11 +23,20 @@
 
 Sdserv::Sdserv()
 {
-    m_options[0] = 0;
+    // default settings
+    setOption(L"sdserv.server_type", L"http");
+    setOption(L"http.port", L"80,443s");
+    setOption(L"websockets.ssl", L"true");
+
+    //setOption(L"sdserv.config_file", L"");
+    //setOption(L"sdserv.database", L"");
+    //setOption(L"sdserv.win32evt_ready", L"");
+    //setOption(L"sdserv.win32evt_notready", L"");
+    //setOption(L"sdserv.idle_quit", L"");
+
+
     m_last_access = time(NULL);
     m_idle_quit = 0;
-    m_server_type = serverHttp;
-    m_websockets_ssl = false;
     m_controller = new Controller;
 }
 
@@ -70,7 +79,9 @@ static kl::JsonNode getJsonNodeFromFile(const std::wstring& filename)
 
 std::wstring Sdserv::getDatabaseConnectionString(const std::wstring& database_name)
 {
-    kl::JsonNode config = getJsonNodeFromFile(m_config_file);
+    std::wstring config_file = getOption(L"sdserv.config_file");
+
+    kl::JsonNode config = getJsonNodeFromFile(config_file);
     if (config.isNull())
         return L"";
 
@@ -104,98 +115,13 @@ std::wstring Sdserv::getDatabaseConnectionString(const std::wstring& database_na
 }
 
 
-bool Sdserv::useConfigFile(const std::wstring& config_file)
-{
-    static char s_ports[255];
-    size_t i;
-    size_t options_arr_size = 0;
-    
-    
-    kl::JsonNode config = getJsonNodeFromFile(config_file);
-    if (config.isNull())
-        return L"";
-    
-    kl::JsonNode server = config["server"];
-    if (server.isNull())
-    {
-        printf("Missing server node in configuration file.\n");
-        return false;
-    }
-    
-
-
-    // handle 'ports' and 'ssl_ports'
-    std::string tmps;
-    
-    kl::JsonNode ports_node = server["ports"];
-    for (i = 0; i < ports_node.getChildCount(); ++i)
-    {
-        if (tmps.length() > 0)
-            tmps += ",";
-        tmps += kl::itostring(ports_node[i].getInteger());
-    }
-    
-    kl::JsonNode ssl_ports_node = server["ssl_ports"];
-    for (i = 0; i < ssl_ports_node.getChildCount(); ++i)
-    {
-        if (tmps.length() > 0)
-            tmps += ",";
-        tmps += kl::itostring(ssl_ports_node[i].getInteger());
-        tmps += "s";
-    }
-    
-    if (tmps.length() == 0 || tmps.length() >= sizeof(s_ports)-1)
-    {
-        printf("Please specify at least one port or ssl_port.\n");
-        return false;
-    }
-    strcpy(s_ports, tmps.c_str());
-    
-    
-    m_options[options_arr_size++] = "listening_ports";
-    m_options[options_arr_size++] = s_ports;
-    
-    // enable keep alive by default
-    m_options[options_arr_size++] = "enable_keep_alive";
-    m_options[options_arr_size++] = "yes";
-
-    // enable keep alive by default
-    m_options[options_arr_size++] = "num_threads";
-    m_options[options_arr_size++] = "30";
-    
-    
-    
-    kl::JsonNode ssl_cert = server["ssl_cert"];
-    if (ssl_cert.isOk())
-    {
-        std::wstring cert_file = ssl_cert.getString();
-        if (!xf_get_file_exist(cert_file))
-        {
-            printf("Certificate %ls does not exist.\n", cert_file.c_str());
-            return false;
-        }
-        
-        std::string cert_file_asc = kl::tostring(cert_file);
-        strcpy(m_cert_file_path, cert_file_asc.c_str());
-        
-        m_options[options_arr_size++] = "ssl_certificate";
-        m_options[options_arr_size++] = m_cert_file_path;
-    }
-    
-    
-    // terminator
-    m_options[options_arr_size++] = NULL;
-    
-    m_config_file = config_file;
-    
-    return true;
-}
-
 void Sdserv::signalServerReady()
 {
-    if (m_ready_evtid.length() > 0)
+    std::wstring ready_evtid = getOption(L"sdserv.win32evt_ready");
+
+    if (ready_evtid.length() > 0)
     {
-        HANDLE evt_ready = CreateEvent(NULL, FALSE, FALSE, m_ready_evtid.c_str());
+        HANDLE evt_ready = CreateEvent(NULL, FALSE, FALSE, ready_evtid.c_str());
         if (evt_ready)
         {
             SetEvent(evt_ready);
@@ -207,9 +133,11 @@ void Sdserv::signalServerReady()
 
 void Sdserv::signalServerNotReady()
 {
-    if (m_notready_evtid.length() > 0)
+    std::wstring notready_evtid = getOption(L"sdserv.win32evt_notready");
+
+    if (notready_evtid.length() > 0)
     {
-        HANDLE evt_notready = CreateEvent(NULL, FALSE, FALSE, m_notready_evtid.c_str());
+        HANDLE evt_notready = CreateEvent(NULL, FALSE, FALSE, notready_evtid.c_str());
         if (evt_notready)
         {
             SetEvent(evt_notready);
@@ -227,16 +155,50 @@ void Sdserv::updateLastAccessTimestamp()
 
 int Sdserv::runServer()
 {
-    if (m_server_type == serverHttp)
+    std::wstring database = getOption(L"sdserv.database");
+    if (database.length() > 0)
+    {
+        std::wstring cstr = getDatabaseConnectionString(database);
+        if (cstr.empty())
+        {
+            printf("Unknown database '%ls'.  Exiting...\n", database.c_str());
+            return 1;
+        }
+
+        m_controller->setConnectionString(cstr);
+    }
+
+
+
+    std::wstring idle_quit = getOption(L"sdserv.idle_quit");
+    if (idle_quit.length() > 0)
+        m_idle_quit = kl::wtoi(idle_quit);
+
+
+
+    std::wstring server_type = getOption(L"sdserv.server_type");
+    if (server_type == L"http")
     {
         HttpServer http(this);
-        http.run(m_options);
+        http.run();
     }
-     else if (m_server_type == serverWebSocketsClient)
+     else if (server_type == L"websockets")
     {
-        int port = m_websockets_ssl ? 443 :  80;
+        bool ssl = false;
+
+        if (getOption(L"websockets.ssl") == L"true")
+            ssl = true;
+
+        std::string server = kl::tostring(getOption(L"websockets.server"));
+
+        int port = ssl  ? 443 :  80;
         WebSocketsClient ws(this);
-        ws.run(m_websockets_server, port, m_websockets_ssl);
+        ws.run(server, port, ssl);
+    }
+     else
+    {
+        printf("unknown sdserv server mode\n");
+        return 1;
     }
 
     return 0;
@@ -267,73 +229,39 @@ bool Sdserv::initOptionsFromCommandLine(int argc, const char* argv[])
     for (i = 1; i < argc; ++i)
     {
         if (0 == strcmp(argv[i], "-f") && i+1 < argc)
-            cfg_file = kl::towstring(argv[i+1]);
-        if (0 == strcmp(argv[i], "-d") && i+1 < argc)
-            database = kl::towstring(argv[i+1]);
-        if (0 == strcmp(argv[i], "-p") && i+1 < argc)
-            port = argv[i+1];
-        if (0 == strcmp(argv[i], "--win32evt-ready") && i+1 < argc)
-            m_ready_evtid = kl::towstring(argv[i+1]);
-        if (0 == strcmp(argv[i], "--win32evt-notready") && i+1 < argc)
-            m_notready_evtid = kl::towstring(argv[i+1]);
-        if (0 == strcmp(argv[i], "--idle-quit") && i+1 < argc)
-            m_idle_quit = atoi(argv[i+1]);
-        if (0 == strcmp(argv[i], "--ws") && i+1 < argc)
         {
-            m_server_type = serverWebSocketsClient;
-            m_websockets_server = argv[i+1];
+            setOption(L"sdserv.config_file", kl::towstring(argv[i+1]));
         }
-        if (0 == strcmp(argv[i], "--wsssl"))
+         else if (0 == strcmp(argv[i], "-d") && i+1 < argc)
         {
-            m_websockets_ssl = true;
+            setOption(L"sdserv.database", kl::towstring(argv[i+1]));
         }
-    }
-
-
-    if (cfg_file.length() > 0)
-    {
-        if (!useConfigFile(cfg_file))
-            return false;
-    }
-     else if (xf_get_file_exist(L"sdserv.conf"))
-    {
-        if (!useConfigFile(L"sdserv.conf"))
-            return false;
-    }
-     else if (xf_get_file_exist(home_cfg_file))
-    {
-        if (!useConfigFile(home_cfg_file))
-            return false;
-    }
-
-
-    if (port.length() > 0 && port.length() < 80)
-    {
-        int i = 0;
-        for (i = 0; i < sizeof(m_options); ++i)
+         else if (0 == strcmp(argv[i], "--win32evt-ready") && i+1 < argc)
         {
-            if (!m_options[i])
-                break;
-
-            if (0 == strcmp(m_options[i], "listening_ports"))
-            {
-                strcpy((char*)m_options[i+1], port.c_str());
-            }
+            setOption(L"sdserv.win32evt_ready", kl::towstring(argv[i+1]));
+        }
+         else if (0 == strcmp(argv[i], "--win32evt-notready") && i+1 < argc)
+        {
+            setOption(L"sdserv.win32evt_notready", kl::towstring(argv[i+1]));
+        }
+         else if (0 == strcmp(argv[i], "--idle-quit") && i+1 < argc)
+        {
+            setOption(L"sdserv.idle_quit", kl::towstring(argv[i+1]));
+        }
+         else if (0 == strcmp(argv[i], "--ws") && i+1 < argc)
+        {
+            setOption(L"sdserv.server_type", L"websockets");
+            setOption(L"websockets.server", kl::towstring(argv[i+1]));
+        }
+         else if (0 == strcmp(argv[i], "--wsssl"))
+        {
+            setOption(L"websockets.ssl", L"true");
+        }
+         else if (0 == strcmp(argv[i], "-p") && i+1 < argc)
+        {
+            setOption(L"http.port", kl::towstring(argv[i+1]));
         }
     }
-
-    if (database.length() > 0)
-    {
-        std::wstring cstr = getDatabaseConnectionString(database);
-        if (cstr.empty())
-        {
-            printf("Unknown database '%ls'.  Exiting...\n", database.c_str());
-            return 1;
-        }
-
-        m_controller->setConnectionString(cstr);
-    }
-
 
 
     return true;
@@ -343,4 +271,11 @@ bool Sdserv::initOptionsFromCommandLine(int argc, const char* argv[])
 
 void Sdserv::setOption(const std::wstring& option, const std::wstring& value)
 {
+    m_options[option] = value;
+}
+
+
+std::wstring Sdserv::getOption(const std::wstring& option)
+{
+    return m_options[option];
 }

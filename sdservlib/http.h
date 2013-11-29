@@ -115,7 +115,7 @@ class HttpServer
 public:
 
     HttpServer(Sdserv* sdserv) { m_sdserv = sdserv; }
-    void run(const char* options[]);
+    bool run();
 
 private:
     static int HttpServer::request_callback(struct mg_connection* conn);
@@ -123,6 +123,11 @@ private:
 private:
 
     Sdserv* m_sdserv;
+    char m_ports[255];
+    char m_ssl_cert_file[255];
+
+    const char* m_options[255];
+    size_t m_options_arr_size;
 };
 
 

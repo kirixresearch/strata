@@ -925,25 +925,100 @@ int HttpServer::request_callback(struct mg_connection* conn)
 
 
 //static
-void HttpServer::run(const char* options[])
+bool HttpServer::run()
 {
+
+
+
+    // handle 'ports' and 'ssl_ports'
+    std::vector<std::wstring> arr;
+    std::vector<std::wstring>::iterator it;
+    std::wstring tmps;
+
+    kl::parseDelimitedList(m_sdserv->getOption(L"http.port"), arr, ',');
+    for (it = arr.begin(); it != arr.end(); ++it)
+    {
+        if (tmps.length() > 0)
+            tmps += L",";
+        tmps += *it;
+    }
+
+    kl::parseDelimitedList(m_sdserv->getOption(L"http.ssl_port"), arr, ',');
+    for (it = arr.begin(); it != arr.end(); ++it)
+    {
+        if (tmps.length() > 0)
+            tmps += L",";
+        tmps += *it;
+        if (it->length() > 0)
+            tmps += L"s";
+    }
+
+    if (tmps.length() == 0 || tmps.length() >= sizeof(m_ports)-1)
+    {
+        printf("Please specify at least one port or ssl_port.\n");
+        return false;
+    }
+    strcpy(m_ports, kl::tostring(tmps).c_str());
+    
+    
+    // set listening ports
+    m_options[m_options_arr_size++] = "listening_ports";
+    m_options[m_options_arr_size++] = m_ports;
+    
+    // enable keep alive by default
+    m_options[m_options_arr_size++] = "enable_keep_alive";
+    m_options[m_options_arr_size++] = "yes";
+
+    // enable keep alive by default
+    m_options[m_options_arr_size++] = "num_threads";
+    m_options[m_options_arr_size++] = "30";
+    
+    
+    
+    tmps = m_sdserv->getOption(L"http.ssl_cert");
+    if (tmps.length() > 0 && tmps.length() < sizeof(m_ssl_cert_file)-1)
+    {
+        if (!xf_get_file_exist(tmps))
+        {
+            printf("Certificate %ls does not exist.\n", tmps.c_str());
+            return false;
+        }
+
+        strcpy(m_ssl_cert_file, kl::tostring(tmps).c_str());
+
+        m_options[m_options_arr_size++] = "ssl_certificate";
+        m_options[m_options_arr_size++] = m_ssl_cert_file;
+    }
+
+
+    // terminator
+    m_options[m_options_arr_size++] = NULL;
+    
+
+
+
+
+
+
+
+
     struct mg_context* ctx;
     struct mg_callbacks callbacks;
 
-    if (options[0] == 0)
+    if (m_options[0] == 0)
     {
         m_sdserv->signalServerNotReady();
-        return;
+        return false;
     }
     
     memset(&callbacks, 0, sizeof(callbacks));
     callbacks.begin_request = request_callback;
 
-    ctx = mg_start(&callbacks, (void*)this, options);
+    ctx = mg_start(&callbacks, (void*)this, m_options);
     if (!ctx)
     {
         m_sdserv->signalServerNotReady();
-        return;
+        return false;
     }
     
     m_sdserv->signalServerReady();
@@ -976,5 +1051,5 @@ void HttpServer::run(const char* options[])
     // causing a hang right now.  Maybe has something to do with keep alive?
     //mg_stop(ctx);
 
-    return;
+    return true;
 }
