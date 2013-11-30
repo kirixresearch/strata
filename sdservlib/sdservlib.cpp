@@ -79,6 +79,18 @@ static kl::JsonNode getJsonNodeFromFile(const std::wstring& filename)
 
 std::wstring Sdserv::getDatabaseConnectionString(const std::wstring& database_name)
 {
+    // first, look for option "database.<dbname>"
+
+    std::wstring res = getOption(L"database." + database_name);
+    if (res.length() > 0)
+    {
+        kl::replaceStr(res, L"%database%", database_name);
+        return res;
+    }
+
+
+    // then, check a config file, if available
+
     std::wstring config_file = getOption(L"sdserv.config_file");
 
     kl::JsonNode config = getJsonNodeFromFile(config_file);
