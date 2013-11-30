@@ -58,6 +58,7 @@ private:
     time_t m_last_access;
 
     std::map<std::wstring, std::wstring> m_options;
+    xcm::mutex m_options_mutex;
 };
 
 

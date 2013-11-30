@@ -283,11 +283,17 @@ bool Sdserv::initOptionsFromCommandLine(int argc, const char* argv[])
 
 void Sdserv::setOption(const std::wstring& option, const std::wstring& value)
 {
+    m_options_mutex.lock();
     m_options[option] = value;
+    m_options_mutex.unlock();
 }
 
 
 std::wstring Sdserv::getOption(const std::wstring& option)
 {
-    return m_options[option];
+    m_options_mutex.lock();
+    std::wstring res = m_options[option];
+    m_options_mutex.unlock();
+
+    return res;
 }
