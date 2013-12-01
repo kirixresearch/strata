@@ -21,6 +21,9 @@ public:
     
     wxBitmap getBitmap(const wxString& image_name);
     kl::Config& getConfig() { return m_config; }
+    Sdserv& getSdserv() { return m_sdserv; }
+
+    bool startServer();
 
 public:
     virtual bool OnInit();

@@ -25,6 +25,7 @@ private:
 
     void refreshList();
     void onAddTable(wxCommandEvent& evt);
+    void onSettings(wxCommandEvent& evt);
 
 private:
 

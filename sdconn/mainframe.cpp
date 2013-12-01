@@ -14,6 +14,7 @@
 #include <kl/string.h>
 #include "app.h"
 #include "mainframe.h"
+#include "dlgsettings.h"
 #include "../kcl/scrolllistcontrol.h"
 
 
@@ -27,6 +28,7 @@ enum
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(ID_AddTable, MainFrame::onAddTable)
+    EVT_MENU(ID_Settings, MainFrame::onSettings)
 END_EVENT_TABLE()
 
 
@@ -73,7 +75,6 @@ void MainFrame::onAddTable(wxCommandEvent& evt)
         return;
 
 
-
     kl::Config& model = g_app->getConfig();
 
     wxArrayString arr;
@@ -93,6 +94,17 @@ void MainFrame::onAddTable(wxCommandEvent& evt)
 
     refreshList();
 }
+
+
+void MainFrame::onSettings(wxCommandEvent& evt)
+{
+    DlgSettings dlg(this);
+
+    if (dlg.ShowModal() == wxOK)
+        return;
+
+}
+
 
 void MainFrame::refreshList()
 {

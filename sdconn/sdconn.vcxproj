@@ -39,9 +39,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\debugu\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\releaseu\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -88,10 +90,12 @@
   <ItemGroup>
     <ClCompile Include="app.cpp" />
     <ClCompile Include="bitmaps.cpp" />
+    <ClCompile Include="dlgsettings.cpp" />
     <ClCompile Include="mainframe.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app.h" />
+    <ClInclude Include="dlgsettings.h" />
     <ClInclude Include="mainframe.h" />
   </ItemGroup>
   <ItemGroup>
