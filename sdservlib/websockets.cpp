@@ -14,6 +14,7 @@
 #include "controller.h"
 #include "websockets.h"
 #include "libwebsockets.h"
+#include <kl/url.h>
 
 
 
@@ -89,7 +90,7 @@ size_t WebSocketsRequestInfo::write(const std::wstring& str)
 
 size_t WebSocketsRequestInfo::write(const std::string& str)
 {
-    std::string header = "Token: " + m_token + "\n\n";
+    std::string header = "Status: Response\nToken: " + m_token + "\n\n";
     m_client->send(header + str);
     return str.length();
 }
@@ -147,9 +148,20 @@ static int websockets_callback(struct libwebsocket_context* context,
 	switch (reason)
     {
         case LWS_CALLBACK_CLIENT_ESTABLISHED:
+        {
             data->index = 0;
-            wsclient->send("HELLO");
-            break;
+
+            std::wstring username = wsclient->m_sdserv->getOption(L"login.username");
+            std::wstring password = wsclient->m_sdserv->getOption(L"login.password");
+
+            std::wstring msg;
+            msg =  L"Token: " + kl::getUniqueString() + L"\n";
+            msg += L"Method: login\n";
+            msg += L"Parameters: username=" + kl::url_encodeURIComponent(username) + L"&password=" + kl::url_encodeURIComponent(password) + L"\n\n";
+
+            wsclient->send(kl::tostring(msg));
+        }
+        break;
 
         case LWS_CALLBACK_CLIENT_RECEIVE:
         {
