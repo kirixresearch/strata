@@ -658,24 +658,7 @@ IFsItemEnumPtr DbFolderFsItem::getChildren()
             wxString path = appendPath(m_path, item_name);
             kl::JsonNode node;
 
-            if (!info->isMount())
-            {
-                node = JsonConfig::loadFromDb(m_db, towstr(path));
-            }
-             else
-            {
-                // links to node files must be dereferenced manually.  We
-                // should expand the API to include a way of opening node
-                // files having the database do the deferencing work
-                std::wstring cstr, rpath;
-                if (m_db->getMountPoint(towstr(path), cstr, rpath))
-                {
-                    xd::IDatabasePtr db2 = m_db->getMountDatabase(towstr(path));
-                    if (db2)
-                        node = JsonConfig::loadFromDb(db2, towstr(path));
-                }
-            }
-
+            node = JsonConfig::loadFromDb(m_db, towstr(path));
             if (!node.isOk())
                 continue;
 
