@@ -1449,8 +1449,11 @@ void TableDoc::onSaveAs(wxCommandEvent& evt)
         std::wstring rpath;
         std::wstring folder = towstr(dlg.getPath().BeforeLast(wxT('/')));
 
+        xd::IFileInfoPtr finfo = db->getFileInfo(folder);
+        if (finfo.isNull())
+            return;
 
-        if (!db->getMountPoint(folder, cstr, rpath))
+        if (!finfo->isMount())
         {
             std::wstring save_path = towstr(dlg.getPath());
 
