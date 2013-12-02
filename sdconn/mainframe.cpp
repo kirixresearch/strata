@@ -22,13 +22,15 @@
 enum
 {
     ID_AddTable = 20000,
-    ID_Settings
+    ID_Settings,
+    ID_Delete
 };
 
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)
     EVT_MENU(ID_AddTable, MainFrame::onAddTable)
     EVT_MENU(ID_Settings, MainFrame::onSettings)
+    EVT_MENU(ID_Delete, MainFrame::onDelete)
 END_EVENT_TABLE()
 
 
@@ -38,6 +40,8 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
     m_toolbar = new wxAuiToolBar(this, -1, wxDefaultPosition, wxSize(40,80), wxAUI_TB_TEXT);
     m_toolbar->AddTool(ID_AddTable, _("Add Table"), GETBMP(gf_db_conn_blue_24));
     m_toolbar->AddTool(ID_Settings, _("Settings"), GETBMP(gf_gear_24));
+    m_toolbar->AddSeparator();
+    m_toolbar->AddTool(ID_Delete, _("Remove"), GETBMP(gf_x_24));
     m_toolbar->Realize();
 
     m_list = new kcl::ScrollListControl(this, -1, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
@@ -106,6 +110,40 @@ void MainFrame::onSettings(wxCommandEvent& evt)
 }
 
 
+void MainFrame::onDelete(wxCommandEvent& evt)
+{
+    // sync the list from the model
+    kl::Config& model = g_app->getConfig();
+
+
+    std::vector<kcl::ScrollListItem*> to_delete;
+
+    size_t i, cnt = m_list->getItemCount();
+    //size_t new_idx = (size_t)-1;
+    for (i = 0; i < cnt; ++i)
+    {
+        kcl::ScrollListItem* item = m_list->getItem(i);
+        if (item->isSelected())
+        {
+            //new_idx = i;
+            std::wstring path = L"Resources/" + item->getExtraString().ToStdWstring();
+            model.deleteGroup(path);
+        }
+    }
+
+
+    refreshList();
+
+    /*
+    if (new_idx != (size_t)-1 && new_idx < m_list->getItemCount())
+    {
+        m_list->getItem(new_idx)->setSelected();
+        m_list->refresh();
+    }
+    */
+}
+
+
 void MainFrame::refreshList()
 {
     // sync the list from the model
@@ -123,18 +161,19 @@ void MainFrame::refreshList()
         
 
 
-        addItem(name, location);
+        addItem(*it, name, location);
     }
 
     m_list->refresh();
+    m_list->SetFocus();
 }
 
 
 
-void MainFrame::addItem(const std::wstring& name, const std::wstring& location)
+void MainFrame::addItem(const std::wstring& id, const std::wstring& name, const std::wstring& location)
 {
     kcl::ScrollListItem* item = new kcl::ScrollListItem;
-
+    item->setExtraString(id);
 
     // create bitmap element
     kcl::ScrollListElement* bitmap;
