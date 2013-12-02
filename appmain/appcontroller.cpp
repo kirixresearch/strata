@@ -4383,26 +4383,8 @@ bool AppController::openAny(const wxString& _location,
         {
             kl::JsonNode node;
         
-            if (!file_info->isMount())
-            {
-                node = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(location));
-            }
-             else
-            {
-                // links to node files must be dereferenced manually.  We
-                // should expand the API to include a way of opening node
-                // files having the database do the deferencing work
-                std::wstring cstr, rpath;
-                if (db->getMountPoint(towstr(location), cstr, rpath))
-                {
-                    if (cstr == L"")
-                    {
-                        node = JsonConfig::loadFromDb(g_app->getDatabase(), rpath);
-                        location = rpath;
-                    }
-                }
-            }
-            
+
+            node = JsonConfig::loadFromDb(g_app->getDatabase(), towstr(location));
             if (!node.isOk())
                 return false;
 
