@@ -9,9 +9,11 @@
  */
 
 #include <wx/wx.h>
+#include <wx/stdpaths.h>
 #include "app.h"
 #include "mainframe.h"
 #include <kl/thread.h>
+#include <kl/file.h>
 
 IMPLEMENT_APP(SdconnApp)
 
@@ -20,9 +22,26 @@ SdconnApp* g_app;
 
 bool SdconnApp::OnInit()
 {
+    g_app = this;
+
+    // init config
     m_config.init(L"Sdserv", L"Sdserv");
 
-    g_app = this;
+    // set database path
+    std::wstring m_database_connection_str = L"Xdprovider=xdfs;Database=" + getAppDataPath();
+    m_database_connection_str += PATH_SEPARATOR_STR;
+    m_database_connection_str += L"data";
+    if (!xf_get_directory_exist(towstr(m_database_connection_str)))
+        xf_mkdir(towstr(m_database_connection_str));
+
+    // init database
+
+    xcm::ptr<xd::IDatabaseMgr> dbmgr = xd::getDatabaseMgr();
+
+    if (dbmgr.isNull())
+        return false;
+
+    m_database = dbmgr->open(m_database_connection_str);
 
     wxImage::AddHandler(new wxPNGHandler);
 
@@ -46,6 +65,29 @@ wxBitmap SdconnApp::getBitmap(const wxString& name)
 
 
 
+wxString SdconnApp::getAppDataPath()
+{
+    // on windows by default, this directory is stored in the user's 
+    // Application Data directory.  On English language systems, this 
+    // is usually C:\Document and Settings\<user>\Application Data
+    // The app's data path is, by default, put in the <Company>
+    // subdirectory inside this folder.
+
+    wxString retval;
+    
+    wxStandardPaths& sp = wxStandardPaths::Get();
+    wxString default_appdata_path = sp.GetUserConfigDir();
+    
+    if (default_appdata_path.Right(1) != PATH_SEPARATOR_STR)
+        default_appdata_path += PATH_SEPARATOR_CHAR;
+    default_appdata_path += APP_COMPANY_KEY;
+    
+    // if the <AppData>/<Company> subdir doesn't exist, create it
+    if (!xf_get_directory_exist(towstr(default_appdata_path)))
+        xf_mkdir(towstr(default_appdata_path));
+    
+    return default_appdata_path;
+}
 
 
 
@@ -97,7 +139,7 @@ bool SdconnApp::startServer()
     sdserv.setOption(L"websockets.ssl", L"true");
     sdserv.setOption(L"websockets.server", L"dataex.goldprairie.com");
     sdserv.setOption(L"sdserv.database", L"default");
-    sdserv.setOption(L"database.default", L"xdprovider=xdnative;database=C:\\Users\\bwilliams\\Documents\\Gold Prairie Projects\\Default Project;user id=admin;Password=");
+    sdserv.setOption(L"database.default", m_database_connection_str);
     sdserv.setOption(L"login.username", L"test@test.com");
     sdserv.setOption(L"login.password", L"test99");
 
@@ -109,5 +151,3 @@ bool SdconnApp::startServer()
 
     return true;
 }
-
-

@@ -78,8 +78,8 @@ void MainFrame::onAddTable(wxCommandEvent& evt)
     if (dlg.ShowModal() == wxOK)
         return;
 
+    xd::IDatabasePtr db = g_app->getDatabase();
 
-    kl::Config& model = g_app->getConfig();
 
     wxArrayString arr;
     dlg.GetPaths(arr);
@@ -87,13 +87,11 @@ void MainFrame::onAddTable(wxCommandEvent& evt)
     {
         wxFileName fn(arr[i]);
 
+        std::wstring key = kl::getUniqueString();
         std::wstring fullpath = arr[i];
         std::wstring filename = fn.GetName();
 
-        std::wstring key = kl::getUniqueString();
-
-        model.write(L"Resources/" + key + L"/name", filename);
-        model.write(L"Resources/" + key + L"/location", fullpath);
+        db->setMountPoint(filename, L"", fullpath);
     }
 
     refreshList();
@@ -112,56 +110,46 @@ void MainFrame::onSettings(wxCommandEvent& evt)
 
 void MainFrame::onDelete(wxCommandEvent& evt)
 {
-    // sync the list from the model
-    kl::Config& model = g_app->getConfig();
-
-
     std::vector<kcl::ScrollListItem*> to_delete;
 
+
+    xd::IDatabasePtr db = g_app->getDatabase();
+
     size_t i, cnt = m_list->getItemCount();
-    //size_t new_idx = (size_t)-1;
     for (i = 0; i < cnt; ++i)
     {
         kcl::ScrollListItem* item = m_list->getItem(i);
         if (item->isSelected())
         {
-            //new_idx = i;
-            std::wstring path = L"Resources/" + item->getExtraString().ToStdWstring();
-            model.deleteGroup(path);
+            db->deleteFile(towstr(item->getExtraString()));
         }
     }
 
 
     refreshList();
 
-    /*
-    if (new_idx != (size_t)-1 && new_idx < m_list->getItemCount())
-    {
-        m_list->getItem(new_idx)->setSelected();
-        m_list->refresh();
-    }
-    */
 }
 
 
 void MainFrame::refreshList()
 {
-    // sync the list from the model
-    kl::Config& model = g_app->getConfig();
-
-
     m_list->clearItems();
 
-    std::vector<std::wstring> groups = model.getGroups(L"Resources");
-    std::vector<std::wstring>::iterator it;
-    for (it = groups.begin(); it != groups.end(); ++it)
+
+    xd::IDatabasePtr db = g_app->getDatabase();
+    xd::IFileInfoEnumPtr files = db->getFolderInfo(L"");
+    xd::IFileInfoPtr finfo;
+
+    size_t i, cnt = files->size();
+    for (i = 0; i < cnt; ++i)
     {
-        std::wstring name = model.read(L"Resources/" + *it + L"/name");
-        std::wstring location = model.read(L"Resources/" + *it + L"/location");
-        
+        finfo = files->getItem(i);
 
-
-        addItem(*it, name, location);
+        std::wstring cstr, fullpath;
+        if (db->getMountPoint(finfo->getName(), cstr, fullpath))
+        {   
+            addItem(finfo->getName(), finfo->getName(), fullpath);
+        }
     }
 
     m_list->refresh();
@@ -217,4 +205,5 @@ void MainFrame::addItem(const std::wstring& id, const std::wstring& name, const 
 
     m_list->addItem(item);
 }
+
 
