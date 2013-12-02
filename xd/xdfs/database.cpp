@@ -1165,10 +1165,6 @@ public:
 
 xd::IFileInfoPtr FsDatabase::getFileInfo(const std::wstring& path)
 {
-    std::wstring phys_path = makeFullPath(path);
-
-
-
     std::wstring cstr, rpath;
     if (detectMountPoint(path, cstr, rpath))
     {
@@ -1221,6 +1217,8 @@ xd::IFileInfoPtr FsDatabase::getFileInfo(const std::wstring& path)
     }
 
 
+
+    std::wstring phys_path = makeFullPath(path);
 
 
 
@@ -1339,9 +1337,16 @@ xd::IFileInfoEnumPtr FsDatabase::getFolderInfo(const std::wstring& path)
                 if (mount_path.length() == 0 || mount_path[mount_path.length()-1] != '/')
                     mount_path += L"/";
                 mount_path += info.m_name;
+
+                XdfsFileInfo* f = new XdfsFileInfo(static_cast<IFsDatabase*>(this));
+                f->name = info.m_name;
+                retval->append(f);
+
+                /*
                 xd::IFileInfoPtr file_info = getFileInfo(mount_path);
                 if (file_info)
                     retval->append(file_info);
+                */
                 continue;
             }
             
@@ -1453,6 +1458,16 @@ IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatInfo
         IXdsqlTablePtr sptr = (IXdsqlTable*)l;
         return sptr;
     }
+
+
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, cstr, rpath))
+    {
+        if (cstr.length() > 0)
+            return xcm::null;
+        return openSetEx(rpath, fi);
+    }
+
 
 
     // if the file doesn't exist, bail out
