@@ -86,7 +86,7 @@ class Controller
 {
 public:
 
-    Controller();
+    Controller(Sdserv* sdserv);
     virtual ~Controller();
 
     void invokeApi(const std::wstring& uri, const std::wstring& method, RequestInfo& req);
@@ -134,6 +134,7 @@ private:
 
 private:
 
+    Sdserv* m_sdserv;
     std::map< std::wstring , ServerSessionObject* > m_session_objects;
     xcm::mutex m_session_object_mutex;
 

@@ -15,7 +15,7 @@
 #include "websockets.h"
 #include "libwebsockets.h"
 #include <kl/url.h>
-
+#include <kl/json.h>
 
 
 
@@ -90,7 +90,7 @@ size_t WebSocketsRequestInfo::write(const std::wstring& str)
 
 size_t WebSocketsRequestInfo::write(const std::string& str)
 {
-    std::string header = "Status: Response\nToken: " + m_token + "\n\n";
+    std::string header = "Message-Type: Response\nToken: " + m_token + "\n\n";
     m_client->send(header + str);
     return str.length();
 }
@@ -225,7 +225,7 @@ void WebSocketsClient::onMessage(const std::string& msg)
     std::wstring wmsg = kl::towstring(msg);
     
     // parse headers
-    std::wstring token, method, path, params;
+    std::wstring msgtype, token, method, path, params, notify;
 
     size_t end = wmsg.find(L"\n\n");
     size_t pos = 0;
@@ -247,10 +247,12 @@ void WebSocketsClient::onMessage(const std::string& msg)
         value = chunk.substr(colon+1);
         kl::trim(value);
 
-        if (key == L"Token") token = value;
+        if (key == L"Message-Type") msgtype = value;
+        else if (key == L"Method") method = value;
+        else if (key == L"Token") token = value;
         else if (key == L"Parameters") params = value;
         else if (key == L"Path") path = value;
-        else if (key == L"Method") method = value;
+        else if (key == L"Notify") notify = value;
 
         pos = lf+1;
     }
@@ -287,8 +289,65 @@ void WebSocketsClient::onMessage(const std::string& msg)
     }
 
 
-    m_sdserv->m_controller->invokeApi(path, method, req);
+    if (msgtype == L"Method")
+    {
+        m_sdserv->m_controller->invokeApi(path, method, req);
+    }
+     else if (msgtype == L"Notify")
+    {
+        if (notify == L"Login Successful")
+        {
+            // inform server of our data assets
+            updateAssetInformation();
+        }
+    }
 }
+
+
+void WebSocketsClient::updateAssetInformation()
+{
+    m_publish_flag = 1;
+}
+
+void WebSocketsClient::doPublishAssets()
+{
+    xd::IDatabasePtr db = m_sdserv->m_database;
+    if (db.isNull())
+        return;
+
+    kl::JsonNode root;
+
+    root["assets"].setArray();
+    kl::JsonNode assets = root["assets"];
+
+    xd::IFileInfoEnumPtr files = db->getFolderInfo(L"");
+    size_t i, cnt = files->size();
+
+    for (i = 0; i < cnt; ++i)
+    {
+        xd::IFileInfoPtr finfo = files->getItem(i);
+
+
+        kl::JsonNode item = assets.appendElement();
+        item.setObject();
+
+        item["id"] = finfo->getName();
+        item["name"] = finfo->getName();
+    }
+    
+
+    std::wstring assets_str = root.toString();
+
+    std::wstring msg;
+    msg =  L"Token: " + kl::getUniqueString() + L"\n";
+    msg += L"Method: assets\n";
+    msg += L"Parameters: assets=" + kl::url_encodeURIComponent(assets_str) + L"\n\n";
+
+
+    send(kl::tostring(msg));
+}
+
+
 
 
 void WebSocketsClient::send(const std::string& msg)
@@ -352,7 +411,7 @@ bool WebSocketsClient::run(const std::string& server, int port, bool ssl)
             // connect failed, try again
             try_count++;
             printf("Could not connect, trying again. Try %d\n", try_count);
-            ::Sleep(10000);
+            ::Sleep(5000);
         }
 
 
@@ -374,6 +433,12 @@ bool WebSocketsClient::run(const std::string& server, int port, bool ssl)
                     send("PING");
                     last_ping = t;
                 }
+            }
+
+            if (m_publish_flag)
+            {
+                m_publish_flag = 0;
+                doPublishAssets();
             }
         }
 

@@ -17,12 +17,15 @@
 #include <string>
 #include <xcm/xcmthread.h>
 #include <kl/string.h>
+#include <xd/xd.h>
 
 class Controller;
+class WebSocketsClient;
 class Sdserv
 {
     friend class HttpServer;
     friend class WebSocketsClient;
+    friend class Controller;
 
 public:
 
@@ -45,12 +48,15 @@ public:
     int runServer();
     std::wstring getDatabaseConnectionString(const std::wstring& database = L"");
 
+    void updateAssetInformation();
+
     void signalServerReady();
     void signalServerNotReady();
     void updateLastAccessTimestamp();
 
 private:
 
+    WebSocketsClient* m_ws_client;
     Controller* m_controller;
 
     int m_idle_quit;
@@ -59,6 +65,8 @@ private:
 
     std::map<std::wstring, std::wstring> m_options;
     xcm::mutex m_options_mutex;
+
+    xd::IDatabasePtr m_database;
 };
 
 

@@ -59,7 +59,11 @@ class WebSocketsClient
 {
 public:
 
-    WebSocketsClient(Sdserv* sdserv) { m_sdserv = sdserv; }
+    WebSocketsClient(Sdserv* sdserv)
+    {
+        m_sdserv = sdserv;
+        m_publish_flag = 0;
+    }
 
     bool run(const std::string& server, int port = 80, bool ssl = false);
 
@@ -68,12 +72,20 @@ public:
     void onMessage(const std::string& msg);
     void send(const std::string& msg);
 
+    void updateAssetInformation();
+
 public:
 
     Sdserv* m_sdserv;
     struct libwebsocket_context* m_context;
     struct libwebsocket* m_wsi;
     std::queue<std::string> m_write_bufs;
+    int m_publish_flag;
+
+private:
+
+    void doPublishAssets();
+
 };
 
 

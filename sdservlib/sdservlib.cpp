@@ -23,6 +23,8 @@
 
 Sdserv::Sdserv()
 {
+    m_ws_client = NULL;
+
     // default settings
     setOption(L"sdserv.server_type", L"http");
     setOption(L"http.port", L"80,443s");
@@ -37,7 +39,7 @@ Sdserv::Sdserv()
 
     m_last_access = time(NULL);
     m_idle_quit = 0;
-    m_controller = new Controller;
+    m_controller = new Controller(this);
 }
 
 Sdserv::~Sdserv()
@@ -165,17 +167,42 @@ void Sdserv::updateLastAccessTimestamp()
     m_last_access_mutex.unlock();
 }
 
+void Sdserv::updateAssetInformation()
+{
+    if (m_ws_client)
+    {
+        m_ws_client->updateAssetInformation();
+    }
+}
+
 int Sdserv::runServer()
 {
     std::wstring database = getOption(L"sdserv.database");
     if (database.length() > 0)
     {
+        m_database.clear();
+
         std::wstring cstr = getDatabaseConnectionString(database);
         if (cstr.empty())
         {
             printf("Unknown database '%ls'.  Exiting...\n", database.c_str());
             return 1;
         }
+
+
+        xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
+        if (dbmgr)
+        {
+            m_database = dbmgr->open(cstr);
+        }
+
+
+        if (m_database.isNull())
+        {
+            printf("Could not open database.\n");
+            return 1;
+        }
+
 
         m_controller->setConnectionString(cstr);
     }
@@ -205,7 +232,9 @@ int Sdserv::runServer()
 
         int port = ssl  ? 443 :  80;
         WebSocketsClient ws(this);
+        m_ws_client = &ws;
         ws.run(server, port, ssl);
+        m_ws_client = NULL;
     }
      else
     {
@@ -297,3 +326,5 @@ std::wstring Sdserv::getOption(const std::wstring& option)
 
     return res;
 }
+
+

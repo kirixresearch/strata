@@ -22,8 +22,10 @@
 #include <kl/json.h>
 
 
-Controller::Controller()
+Controller::Controller(Sdserv* sdserv)
 {
+    m_sdserv = sdserv;
+
     // don't allow job id of zero
     m_job_info_vec.push_back(xcm::null);
 }
@@ -232,6 +234,12 @@ xd::IDatabasePtr Controller::getSessionDatabase(RequestInfo& req)
     if (m_database.isOk())
         return m_database;
 
+    if (m_sdserv->m_database.isOk())
+    {
+        m_database = m_sdserv->m_database;
+        return m_database;
+    }
+
     xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
     if (dbmgr.isNull())
         return xcm::null;
@@ -240,7 +248,6 @@ xd::IDatabasePtr Controller::getSessionDatabase(RequestInfo& req)
 
     if (db.isNull())
     {
-
         dbmgr->createDatabase(m_connection_string);
         db = dbmgr->open(m_connection_string);
         printf("creating database: %ls\n", m_connection_string.c_str());

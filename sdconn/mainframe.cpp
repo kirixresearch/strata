@@ -95,6 +95,9 @@ void MainFrame::onAddTable(wxCommandEvent& evt)
     }
 
     refreshList();
+
+
+    g_app->getSdserv().updateAssetInformation();
 }
 
 
