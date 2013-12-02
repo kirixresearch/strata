@@ -2285,10 +2285,6 @@ void RelationDiagram::onTreeDataDropped(wxDragResult& drag_result,
     std::vector<wxString>::iterator it;
     DbDoc::getFsItemPaths(items, res, true);
 
-    // make sure all paths (even singleton mounts on the linkbar)
-    // are converted to their _REAL_ path in the project
-    for (it = res.begin(); it != res.end(); ++it)
-        getRemotePathIfExists(*it);
 
     for (it = res.begin(); it != res.end(); ++it)
     {

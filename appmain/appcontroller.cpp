@@ -5814,8 +5814,7 @@ bool AppController::createProject(const wxString& location,
 {
     // actually create the database
 
-    xcm::ptr<xd::IDatabaseMgr> dbmgr;
-    dbmgr.create_instance("xdnative.DatabaseMgr");
+    xcm::ptr<xd::IDatabaseMgr> dbmgr = xd::getDatabaseMgr();
 
     if (dbmgr.isNull())
     {

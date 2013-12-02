@@ -3181,10 +3181,6 @@ void ReportDoc::onCanvasDropEvent(kcanvas::IEventPtr evt)
         std::vector<wxString>::iterator it;
         DbDoc::getFsItemPaths(fs_items, res, true);
         
-        // make sure all paths (even singleton mounts on the linkbar)
-        // are converted to their _REAL_ path in the project
-        for (it = res.begin(); it != res.end(); ++it)
-            getRemotePathIfExists(*it);
         
         if (res.size() != 1)
         {

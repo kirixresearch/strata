@@ -62,7 +62,7 @@
     {
         public:
 
-            towstr(const wxString& s) : std::wstring((const wchar_t*)s.c_str()) {}
+            towstr(const wxString& s) : std::wstring(s.ToStdWstring()) {}
 
             towstr(const char* s) : std::wstring()
             {
@@ -224,11 +224,6 @@ wxString makeValidObjectName(
 
 // returns a localized name for a given type
 wxString getDbColumnTypeText(int xd_type);
-
-// this function determines if the specified path is an internal mount,
-// and if it is, converts the string that was passed in to the remote
-// path specified in the mount
-bool getRemotePathIfExists(wxString& path);
 
 bool isSamePath(const std::wstring& path1, const std::wstring& path2);
 
