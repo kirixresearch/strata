@@ -29,7 +29,7 @@
 Service g_service;
 
 
-static int request_callback( struct mg_connection* conn)
+static int request_callback(struct mg_connection* conn)
 {
     const struct mg_request_info* request_info = mg_get_request_info(conn);
 
