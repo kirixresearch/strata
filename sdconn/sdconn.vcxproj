@@ -73,7 +73,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../supp/wxWidgets/include;../supp/wxWidgets/lib/vc_lib/mswu;../kl/include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../supp/wxWidgets/include;../supp/wxWidgets/lib/vc_lib/mswu;../kl/include;../xd/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
