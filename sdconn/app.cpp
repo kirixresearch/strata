@@ -28,11 +28,15 @@ bool SdconnApp::OnInit()
     m_config.init(L"Sdserv", L"Sdserv");
 
     // set database path
-    m_database_connection_str = L"Xdprovider=xdfs;Database=" + getAppDataPath();
-    m_database_connection_str += PATH_SEPARATOR_STR;
-    m_database_connection_str += L"data";
-    if (!xf_get_directory_exist(towstr(m_database_connection_str)))
-        xf_mkdir(towstr(m_database_connection_str));
+    std::wstring data_folder = getAppDataPath();
+    data_folder += PATH_SEPARATOR_STR;
+    data_folder += L"data";
+
+    if (!xf_get_directory_exist(data_folder))
+        xf_mkdir(data_folder);
+
+    m_database_connection_str = L"Xdprovider=xdfs;Database=" + data_folder;
+
 
     // init database
 
