@@ -12,6 +12,7 @@
 #include <wx/filename.h>
 #include <wx/aui/auibar.h>
 #include <kl/string.h>
+#include <kl/crypt.h>
 #include "app.h"
 #include "mainframe.h"
 #include "dlgsettings.h"
@@ -75,7 +76,7 @@ void MainFrame::onAddTable(wxCommandEvent& evt)
                      filter,
                      wxFD_OPEN|wxFD_MULTIPLE|wxFD_FILE_MUST_EXIST);
 
-    if (dlg.ShowModal() == wxOK)
+    if (dlg.ShowModal() != wxID_OK)
         return;
 
     xd::IDatabasePtr db = g_app->getDatabase();
@@ -105,9 +106,26 @@ void MainFrame::onSettings(wxCommandEvent& evt)
 {
     DlgSettings dlg(this);
 
-    if (dlg.ShowModal() == wxOK)
+    kl::Config& config = g_app->getConfig();
+
+
+    std::wstring user = config.read(L"Settings/User");
+    std::wstring password = config.read(L"Settings/Password");
+    std::wstring server = config.read(L"Settings/Server", kl::towstring(DEFAULT_SERVER));
+
+    if (password.length() > 0)
+        password = kl::decryptString(password, kl::towstring(PASSWORD_KEY));
+
+    dlg.setUserName(user);
+    dlg.setPassword(password);
+    dlg.setService(server);
+
+    if (dlg.ShowModal() != wxID_OK)
         return;
 
+    config.write(L"Settings/User", towstr(dlg.getUserName()));
+    config.write(L"Settings/Password", kl::encryptString(towstr(dlg.getPassword()), kl::towstring(PASSWORD_KEY)));
+    config.write(L"Settings/Server", towstr(dlg.getService()));
 }
 
 

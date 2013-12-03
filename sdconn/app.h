@@ -15,8 +15,17 @@
 #include "../sdservlib/sdservlib.h"
 #include <xd/xd.h>
 
+
+#ifdef WIN32
+#define APP_COMPANY_KEY     "Sdconn"
+#define APP_CONFIG_KEY      "Sdconn"
+#else
 #define APP_COMPANY_KEY     "sdconn"
 #define APP_CONFIG_KEY      "sdconn"
+#endif
+
+#define DEFAULT_SERVER      ""
+#define PASSWORD_KEY        "4$9akJlQ"
 
 #define GETBMP(bmp) g_app->getBitmap(#bmp)
 

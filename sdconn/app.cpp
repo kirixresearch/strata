@@ -14,6 +14,8 @@
 #include "mainframe.h"
 #include <kl/thread.h>
 #include <kl/file.h>
+#include <kl/crypt.h>
+
 
 IMPLEMENT_APP(SdconnApp)
 
@@ -25,7 +27,7 @@ bool SdconnApp::OnInit()
     g_app = this;
 
     // init config
-    m_config.init(L"Sdserv", L"Sdserv");
+    m_config.init(kl::towstring(APP_COMPANY_KEY), kl::towstring(APP_CONFIG_KEY));
 
     // set database path
     std::wstring data_folder = getAppDataPath();
@@ -136,22 +138,41 @@ public:
 
 bool SdconnApp::startServer()
 {
-    Sdserv& sdserv = g_app->getSdserv();
 
-    // default settings
-    sdserv.setOption(L"sdserv.server_type", L"websockets");
-    sdserv.setOption(L"websockets.ssl", L"true");
-    sdserv.setOption(L"websockets.server", L"dataex.goldprairie.com");
-    sdserv.setOption(L"sdserv.database", L"default");
-    sdserv.setOption(L"database.default", m_database_connection_str);
-    sdserv.setOption(L"login.username", L"test@test.com");
-    sdserv.setOption(L"login.password", L"test99");
+    kl::Config& config = g_app->getConfig();
+    std::wstring user = config.read(L"Settings/User");
+    std::wstring password = config.read(L"Settings/Password");
+    std::wstring server = config.read(L"Settings/Server", kl::towstring(DEFAULT_SERVER));
+    if (password.length() > 0)
+    {
+        password = kl::decryptString(password, kl::towstring(PASSWORD_KEY));
+    }
 
-    // start the job in a thread
-    ServerThread* server_thread = new ServerThread();
 
-    if (server_thread->create() != 0)
+    if (user.length() > 0 && server.length() > 0)
+    {
+
+        // default settings
+        Sdserv& sdserv = g_app->getSdserv();
+        sdserv.setOption(L"sdserv.server_type", L"websockets");
+        sdserv.setOption(L"websockets.ssl", L"true");
+        sdserv.setOption(L"websockets.server", server);
+        sdserv.setOption(L"sdserv.database", L"default");
+        sdserv.setOption(L"database.default", m_database_connection_str);
+        sdserv.setOption(L"login.username", user);
+        sdserv.setOption(L"login.password", password);
+
+
+        // start the job in a thread
+        ServerThread* server_thread = new ServerThread();
+
+        if (server_thread->create() != 0)
+            return false;
+
+        return true;
+    }
+     else
+    {
         return false;
-
-    return true;
+    }
 }

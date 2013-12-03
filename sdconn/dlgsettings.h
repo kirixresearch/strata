@@ -37,6 +37,7 @@ public:
     
     void setMessage(const wxString& message);
     void setUserName(const wxString& username);
+    void setPassword(const wxString& username);
     void setService(const wxString& service);
     
 private:

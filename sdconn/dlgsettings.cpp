@@ -168,6 +168,13 @@ void DlgSettings::setUserName(const wxString& username)
     m_username_ctrl->SetValue(username);
 }
 
+void DlgSettings::setPassword(const wxString& password)
+{
+    m_password = password;
+    m_password_ctrl->SetValue(password);
+}
+
+
 
 void DlgSettings::setService(const wxString& service)
 {
