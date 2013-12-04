@@ -109,6 +109,9 @@ public:
 
     IXdfsSetPtr openSetEx(const std::wstring& path, const xd::FormatInfo& fi);
 
+    bool loadDataView(const std::wstring& path, xd::FormatInfo* format_info);
+    bool saveDataView(const std::wstring& path, const xd::FormatInfo* format_info);
+
     bool createFolder(const std::wstring& path);
     bool renameFile(const std::wstring& path, const std::wstring& new_name);
     bool moveFile(const std::wstring& path, const std::wstring& new_folder);

@@ -34,6 +34,7 @@
 #include "../xdcommon/dbfuncs.h"
 #include <kl/url.h>
 #include <kl/hex.h>
+#include <kl/json.h>
 
 
 #ifdef WIN32
@@ -171,7 +172,7 @@ static bool determineSetFormatInfo(const std::wstring& path,
         
     if (!f.openFile(path, xfRead, xfShareReadWrite))
     {
-        info->format = xd::formatNative;
+        info->format = xd::formatDefault;
         return false;
     }
     
@@ -338,7 +339,7 @@ bool FsDatabase::getSetFormat(const std::wstring& path,
     std::wstring phys_path = makeFullPath(path);
     if (!xf_get_file_exist(phys_path))
     {
-        info->format = xd::formatNative;
+        info->format = xd::formatDefault;
         return false;
     }
 
@@ -908,7 +909,7 @@ bool FsDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
     if (info->append)
     {
         xd::FormatInfo fi;
-        fi.format = xd::formatNative;
+        fi.format = xd::formatDefault;
 
         IXdfsSetPtr output = openSetEx(info->output, fi);
         if (output.isNull())
@@ -1079,7 +1080,7 @@ public:
             switch (format)
             {
                 default:
-                case xd::formatNative:
+                case xd::formatDefault:
                 case xd::formatXbase:
                 case xd::formatDelimitedText:
                 case xd::formatFixedLengthText:
@@ -1174,7 +1175,7 @@ xd::IFileInfoPtr FsDatabase::getFileInfo(const std::wstring& path)
             xdcommon::FileInfo* f = new xdcommon::FileInfo;
             f->name = kl::afterLast(path, L'/');
             f->type = xd::filetypeFolder;
-            f->format = xd::formatNative;
+            f->format = xd::formatDefault;
             f->is_mount = true;
             return static_cast<xd::IFileInfo*>(f);
         }
@@ -1182,7 +1183,7 @@ xd::IFileInfoPtr FsDatabase::getFileInfo(const std::wstring& path)
         {
             std::wstring file_primary_key;
             int file_type = xd::filetypeTable;
-            int file_format = xd::formatNative;
+            int file_format = xd::formatDefault;
             int is_mount = -1;
             
             if (getLocalFileExist(path))
@@ -1228,7 +1229,7 @@ xd::IFileInfoPtr FsDatabase::getFileInfo(const std::wstring& path)
         f->name = kl::afterLast(phys_path, PATH_SEPARATOR_CHAR);
         kl::trim(f->name);
         f->type = xd::filetypeFolder;
-        f->format = xd::formatNative;
+        f->format = xd::formatDefault;
         
         return static_cast<xd::IFileInfo*>(f);
     }
@@ -1300,7 +1301,7 @@ xd::IFileInfoEnumPtr FsDatabase::getFolderInfo(const std::wstring& path)
             xdcommon::FileInfo* f = new xdcommon::FileInfo;
             f->name = *it;
             f->type = xd::filetypeFolder;
-            f->format = xd::formatNative;
+            f->format = xd::formatDefault;
             retval->append(f);
         }
         
@@ -1325,7 +1326,7 @@ xd::IFileInfoEnumPtr FsDatabase::getFolderInfo(const std::wstring& path)
             f->name = info.m_name;
             kl::trim(f->name);
             f->type = xd::filetypeFolder;
-            f->format = xd::formatNative;
+            f->format = xd::formatDefault;
             retval->append(f);
         }
          else if (info.m_type == xfFileTypeNormal)
@@ -1481,7 +1482,7 @@ IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatInfo
 
     // if the native format was passed, have the database do it's best to
     // determine the format from the text definition or the file extension
-    if (format == xd::formatNative)
+    if (format == xd::formatDefault)
     {
         FsSetFormatInfo info;
         getSetFormat(path, &info, FsSetFormatInfo::maskFormat | FsSetFormatInfo::maskDelimiters);
@@ -1512,7 +1513,7 @@ IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatInfo
         if (set.isNull())
             return xcm::null;
 
-        if (fi.format == xd::formatNative)
+        if (fi.format == xd::formatDefault)
         {
             xd::IDelimitedTextSetPtr tset = set;
             
@@ -1580,6 +1581,124 @@ xd::IIteratorPtr FsDatabase::query(const xd::QueryParams& qp)
 }
 
 
+bool FsDatabase::loadDataView(const std::wstring& path, xd::FormatInfo* info)
+{
+    std::wstring phys_path = makeFullPath(path) + L".xdfs0";
+    std::wstring json = xf_get_file_contents(phys_path);
+
+    kl::JsonNode root;
+    if (!root.fromString(json))
+        return false;
+
+    std::wstring format_str = root["format"];
+         if (format_str == L"default")               info->format = xd::formatDefault;
+    else if (format_str == L"xbase")                 info->format = xd::formatXbase;
+    else if (format_str == L"delimitedtext")         info->format = xd::formatDelimitedText;
+    else if (format_str == L"fixedlengthtext")       info->format = xd::formatFixedLengthText;
+    else if (format_str == L"text")                  info->format = xd::formatText;
+    else if (format_str == L"typeddelimitedtext")    info->format = xd::formatTypedDelimitedText;
+    else                                             info->format = xd::formatDefault;
+
+    std::wstring encoding_str = root["encoding"];
+         if (encoding_str == L"invalid")             info->encoding = xd::encodingInvalid;
+    else if (encoding_str == L"undefined")           info->encoding = xd::encodingUndefined;
+    else if (encoding_str == L"ascii")               info->encoding = xd::encodingASCII;
+    else if (encoding_str == L"utf8")                info->encoding = xd::encodingUTF8;
+    else if (encoding_str == L"utf16")               info->encoding = xd::encodingUTF16;
+    else if (encoding_str == L"utf32")               info->encoding = xd::encodingUTF32;
+    else if (encoding_str == L"ucs2")                info->encoding = xd::encodingUCS2;
+    else if (encoding_str == L"utf16be")             info->encoding = xd::encodingUTF16BE;
+    else if (encoding_str == L"iso8859_1")           info->encoding = xd::encodingISO8859_1;
+    else if (encoding_str == L"ebcdic")              info->encoding = xd::encodingEBCDIC;
+    else if (encoding_str == L"comp")                info->encoding = xd::encodingCOMP;
+    else if (encoding_str == L"comp3")               info->encoding = xd::encodingCOMP3;
+    else     
+
+    if (root.childExists("delimitedtext"))
+    {
+        kl::JsonNode delimitedtext = root["delimitedtext"];
+        info->text_qualifiers = delimitedtext["text_qualifiers"];
+        info->delimiters = delimitedtext["delimiters"];
+        info->line_delimiters = delimitedtext["line_delimiters"];
+        info->first_row_column_names = delimitedtext["header_row"].getBoolean();;
+    }
+
+    if (root.childExists("fixedlengthtext"))
+    {
+        kl::JsonNode fixedlengthtext = root["fixedlengthtext"];
+        info->fixed_start_offset = fixedlengthtext["start_offset"].getInteger();
+        info->fixed_row_width = fixedlengthtext["row_width"].getInteger();
+        info->fixed_line_delimited = fixedlengthtext["line_delimited"].getBoolean();
+    }
+
+    return true;
+}
+
+bool FsDatabase::saveDataView(const std::wstring& path, const xd::FormatInfo* info)
+{
+    std::wstring phys_path = makeFullPath(path) + L".xdfs0";
+
+    kl::JsonNode root;
+    
+    switch (info->format)
+    {
+        default:
+        case xd::formatDefault:            root["format"] = "default";            break;
+        case xd::formatXbase:              root["format"] = "xbase";              break;
+        case xd::formatDelimitedText:      root["format"] = "delimitedtext";      break;
+        case xd::formatFixedLengthText:    root["format"] = "fixedlengthtext";    break;
+        case xd::formatText:               root["format"] = "text";               break;
+        case xd::formatTypedDelimitedText: root["format"] = "typeddelimitedtext"; break;
+    }
+
+    switch (info->encoding)
+    {
+        default:
+        case xd::encodingInvalid:          root["encoding"] = "invalid";          break;
+        case xd::encodingUndefined:        root["encoding"] = "undefined";        break;
+        case xd::encodingASCII:            root["encoding"] = "ascii";            break;
+        case xd::encodingUTF8:             root["encoding"] = "utf8";             break;
+        case xd::encodingUTF16:            root["encoding"] = "utf16";            break;
+        case xd::encodingUTF32:            root["encoding"] = "utf32";            break;
+        case xd::encodingUCS2:             root["encoding"] = "ucs2";             break;
+        case xd::encodingUTF16BE:          root["encoding"] = "utf16be";          break;
+        case xd::encodingISO8859_1:        root["encoding"] = "iso8859_1";        break;
+        case xd::encodingEBCDIC:           root["encoding"] = "ebcdic";           break;
+        case xd::encodingCOMP:             root["encoding"] = "comp";             break;
+        case xd::encodingCOMP3:            root["encoding"] = "comp3";            break;
+    }
+
+
+    root["data_connection_string"] = info->data_connection_string;
+    root["data_file"] = info->data_file;
+
+    if (info->format == xd::formatDelimitedText)
+    {
+        kl::JsonNode delimitedtext = root["delimitedtext"];
+        delimitedtext["text_qualifiers"] = info->text_qualifiers;
+        delimitedtext["delimiters"] = info->delimiters;
+        delimitedtext["line_delimiters"] = info->line_delimiters;
+        delimitedtext["header_row"].setBoolean(info->first_row_column_names);
+    }
+
+
+    if (info->format == xd::formatFixedLengthText)
+    {
+        kl::JsonNode fixedlengthtext = root["fixedlengthtext"];
+        fixedlengthtext["start_offset"].setInteger(info->fixed_start_offset);
+        fixedlengthtext["row_width"].setInteger(info->fixed_row_width);
+        fixedlengthtext["line_delimited"].setBoolean(info->fixed_line_delimited);
+    }
+
+
+
+    
+    // if the file doesn't exist, bail out
+    return xf_put_file_contents(phys_path, root.toString());
+
+}
+
+
 xd::IStructurePtr FsDatabase::createStructure()
 {
     Structure* s = new Structure;
@@ -1620,7 +1739,7 @@ bool FsDatabase::createTable(const std::wstring& _path,
 {
     size_t i, col_count = struct_config->getColumnCount();
 
-    int format = xd::formatNative;
+    int format = xd::formatDefault;
     if (format_info)
         format = format_info->format;
     
@@ -1658,7 +1777,7 @@ bool FsDatabase::createTable(const std::wstring& _path,
         }
     }
 
-    if (format == xd::formatNative)
+    if (format == xd::formatDefault)
     {
         // look for an extension to yield some guidance as to which
         // file format to use by default -- if no extension, assume csv
@@ -1966,7 +2085,7 @@ bool FsDatabase::createStream(const std::wstring& path, const std::wstring& mime
 xd::IRowInserterPtr FsDatabase::bulkInsert(const std::wstring& path)
 {
     xd::FormatInfo fi;
-    fi.format = xd::formatNative;
+    fi.format = xd::formatDefault;
 
     IXdfsSetPtr set = openSetEx(path, fi);
     if (set.isNull())
@@ -1978,7 +2097,7 @@ xd::IRowInserterPtr FsDatabase::bulkInsert(const std::wstring& path)
 xd::IStructurePtr FsDatabase::describeTable(const std::wstring& path)
 {
     xd::FormatInfo fi;
-    fi.format = xd::formatNative;
+    fi.format = xd::formatDefault;
 
     IXdsqlTablePtr tbl = openSetEx(path, fi);
     if (tbl.isNull())

@@ -523,7 +523,7 @@ xd::IFileInfoEnumPtr SqlServerDatabase::getFolderInfo(const std::wstring& path)
                     xdcommon::FileInfo* f = new xdcommon::FileInfo;
                     f->name = table_name;
                     f->type = xd::filetypeTable;
-                    f->format = xd::formatNative;
+                    f->format = xd::formatDefault;
 
                     retval->append(f);
                 }

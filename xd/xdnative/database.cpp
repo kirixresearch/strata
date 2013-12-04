@@ -2224,7 +2224,7 @@ xd::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& path)
         xdcommon::FileInfo* f = new xdcommon::FileInfo;
         f->name = kl::afterLast(path, '/');
         f->type = xd::filetypeTable;
-        f->format = xd::formatNative;
+        f->format = xd::formatDefault;
         f->is_mount = false;
         return static_cast<xd::IFileInfo*>(f);
     }
@@ -2239,7 +2239,7 @@ xd::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& path)
             xdcommon::FileInfo* f = new xdcommon::FileInfo;
             f->name = kl::afterLast(path, '/');
             f->type = xd::filetypeFolder;
-            f->format = xd::formatNative;
+            f->format = xd::formatDefault;
             f->is_mount = true;
             return static_cast<xd::IFileInfo*>(f);
         }
@@ -2247,7 +2247,7 @@ xd::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& path)
         {
             std::wstring file_primary_key;
             int file_type = xd::filetypeTable;
-            int file_format = xd::formatNative;
+            int file_format = xd::formatDefault;
             int is_mount = -1;
             std::wstring file_mime_type;
             std::wstring file_object_id;
@@ -2296,7 +2296,7 @@ xd::IFileInfoPtr XdnativeDatabase::getFileInfo(const std::wstring& path)
 
 
     XdnativeFileInfo* f = new XdnativeFileInfo(this);
-    f->format = xd::formatNative;
+    f->format = xd::formatDefault;
     f->type = xd::filetypeNode;
     f->is_mount = false;
     f->path = path;

@@ -1688,7 +1688,7 @@ xd::IFileInfoPtr OdbcDatabase::getFileInfo(const std::wstring& path)
         OdbcFileInfo* f = new OdbcFileInfo(this);
         f->name = L"/";
         f->type = xd::filetypeFolder;
-        f->format = xd::formatNative;
+        f->format = xd::formatDefault;
         return static_cast<xd::IFileInfo*>(f);
     }
      else
@@ -1771,7 +1771,7 @@ xd::IFileInfoEnumPtr OdbcDatabase::getTreeFolderInfo(const std::wstring& path)
             OdbcFileInfo* f = new OdbcFileInfo(this);
             f->name = *it;
             f->type = xd::filetypeFolder;
-            f->format = xd::formatNative;
+            f->format = xd::formatDefault;
 
             retval->append(f);
         }
@@ -1830,7 +1830,7 @@ xd::IFileInfoEnumPtr OdbcDatabase::getTreeFolderInfo(const std::wstring& path)
             OdbcFileInfo* f = new OdbcFileInfo(this);
             f->name = kl::towstring((char*)table_name);
             f->type = xd::filetypeTable;
-            f->format = xd::formatNative;
+            f->format = xd::formatDefault;
 
             kl::trim(f->name);
             kl::makeLower(f->name);
@@ -1965,7 +1965,7 @@ xd::IFileInfoEnumPtr OdbcDatabase::getFolderInfo(const std::wstring& path)
         OdbcFileInfo* f = new OdbcFileInfo(this);
         f->name = wtablename;
         f->type = xd::filetypeTable;
-        f->format = xd::formatNative;
+        f->format = xd::formatDefault;
 
         retval->append(f);
     }

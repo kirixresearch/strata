@@ -910,7 +910,7 @@ xd::IFileInfoPtr OracleDatabase::getFileInfo(const std::wstring& _path)
     OracleFileInfo* f = new OracleFileInfo(this);
     f->name = kl::afterFirst(path, '.');
     f->type = xd::filetypeTable;
-    f->format = xd::formatNative;
+    f->format = xd::formatDefault;
     return static_cast<xd::IFileInfo*>(f);
 }
 
@@ -951,7 +951,7 @@ xd::IFileInfoEnumPtr OracleDatabase::getFolderInfo(const std::wstring& path)
             f->name = kl::towstring(owner);
             kl::trim(f->name);
             f->type = xd::filetypeFolder;
-            f->format = xd::formatNative;
+            f->format = xd::formatDefault;
             retval->append(f);
 
             iter->skip(1);
@@ -998,7 +998,7 @@ xd::IFileInfoEnumPtr OracleDatabase::getFolderInfo(const std::wstring& path)
             f->name = kl::towstring(table_name);
             kl::trim(f->name);
             f->type = xd::filetypeTable;
-            f->format = xd::formatNative;
+            f->format = xd::formatDefault;
             retval->append(f);
 
             iter->skip(1);

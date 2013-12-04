@@ -131,8 +131,8 @@ enum
 
 enum
 {
-    formatNative = 0,             // database's native format (table)
-    formatXbase = 1,              // xbase (table)
+    formatDefault = 0,            // database's default table format
+    formatXbase = 1,              // xbase table
     formatDelimitedText = 2,      // delimited text file, interpreted as table
     formatFixedLengthText = 3,    // fixed length text, interpreted as table
     formatText = 4,               // regular text file, as stream (not table)
@@ -301,6 +301,39 @@ enum
 {
     sqlPassThrough = 0x01,
     sqlAlwaysCopy = 0x02
+};
+
+
+
+
+
+struct ColumnInfo
+{
+    ColumnInfo()
+    {
+        type = typeInvalid;
+        width = 0;
+        scale = 0;
+        nulls_allowed = true;
+        calculated = false;
+        offset = 0;
+        encoding = encodingUndefined;
+        column_ordinal = 0;
+        table_ordinal = 0;
+    }
+
+
+    std::wstring name;
+    int type;
+    int width;
+    int scale;
+    bool nulls_allowed;
+    bool calculated;
+    std::wstring expression;
+    int offset;
+    int encoding;
+    int column_ordinal;
+    int table_ordinal;
 };
 
 
@@ -544,11 +577,12 @@ public:
 
 
 
+
 struct FormatInfo
 {
     FormatInfo()
     {
-        format = formatNative;
+        format = formatDefault;
         encoding = encodingUndefined;
         first_row_column_names = true;
         determine_structure = false;
@@ -556,6 +590,9 @@ struct FormatInfo
     
     int format;
     int encoding;
+
+    std::wstring data_connection_string;  // optional connection string associated with data_file
+    std::wstring data_file;               // project relative path, or file:/// url
     
     // delimited files parameters (when format = formatDelimitedText)
     std::wstring text_qualifiers;
@@ -563,6 +600,14 @@ struct FormatInfo
     std::wstring line_delimiters;
     bool first_row_column_names;
     bool determine_structure;
+
+    // fixed length parameters (when format = formatFixedLengthText)
+    int fixed_start_offset;
+    int fixed_row_width;
+    bool fixed_line_delimited;
+
+    // structure
+    std::vector<ColumnInfo> columns;
 };
 
 
@@ -631,6 +676,13 @@ public:
     virtual bool createFolder(const std::wstring& path) = 0;
     virtual bool createStream(const std::wstring& path, const std::wstring& mime_type) = 0;
     virtual bool createTable(const std::wstring& path, IStructurePtr struct_config, FormatInfo* format_info) = 0;
+
+    virtual bool loadDataView(const std::wstring& path, FormatInfo* format_info) { return false; }
+    virtual bool saveDataView(const std::wstring& path, const FormatInfo* format_info) { return false; }
+
+    virtual IDatabasePtr getMountDatabase(const std::wstring& path) = 0;
+    virtual bool setMountPoint(const std::wstring& path, const std::wstring& connection_str,  const std::wstring& remote_path) = 0;
+    virtual bool getMountPoint(const std::wstring& path, std::wstring& connection_str,  std::wstring& remote_path) = 0;
     
     virtual IStreamPtr openStream(const std::wstring& path) = 0;
     virtual bool renameFile(const std::wstring& path, const std::wstring& new_name) = 0;
@@ -642,9 +694,6 @@ public:
     virtual IFileInfoPtr getFileInfo(const std::wstring& path) = 0;
     virtual IFileInfoEnumPtr getFolderInfo(const std::wstring& path) = 0;
     
-    virtual IDatabasePtr getMountDatabase(const std::wstring& path) = 0;
-    virtual bool setMountPoint(const std::wstring& path, const std::wstring& connection_str,  const std::wstring& remote_path) = 0;
-    virtual bool getMountPoint(const std::wstring& path, std::wstring& connection_str,  std::wstring& remote_path) = 0;
 
     virtual IIndexInfoPtr createIndex(const std::wstring& path,
                                       const std::wstring& name,

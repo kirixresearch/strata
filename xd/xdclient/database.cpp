@@ -506,12 +506,12 @@ xd::IFileInfoPtr ClientDatabase::getFileInfo(const std::wstring& path)
     else f->type = xd::filetypeTable;
 
     std::wstring format = file_info["format"];
-         if (format == L"native")          f->format = xd::formatNative;
+         if (format == L"native")          f->format = xd::formatDefault;
     else if (format == L"delimitedtext")   f->format = xd::formatDelimitedText;
     else if (format == L"fixedlengthtext") f->format = xd::formatFixedLengthText;
     else if (format == L"text")            f->format = xd::formatText;
     else if (format == L"xbase")           f->format = xd::formatXbase;            
-    else f->format = xd::formatNative;
+    else f->format = xd::formatDefault;
 
     f->mime_type = file_info["mime_type"];
     f->is_mount = file_info["is_mount"].getBoolean();
@@ -558,12 +558,12 @@ xd::IFileInfoEnumPtr ClientDatabase::getFolderInfo(const std::wstring& path)
 
 
         std::wstring format = item["format"];
-             if (format == L"native")          f->format = xd::formatNative;
+             if (format == L"native")          f->format = xd::formatDefault;
         else if (format == L"delimitedtext")   f->format = xd::formatDelimitedText;
         else if (format == L"fixedlengthtext") f->format = xd::formatFixedLengthText;
         else if (format == L"text")            f->format = xd::formatText;
         else if (format == L"xbase")           f->format = xd::formatXbase;            
-        else f->format = xd::formatNative;
+        else f->format = xd::formatDefault;
 
         
         f->mime_type = item["mime_type"];

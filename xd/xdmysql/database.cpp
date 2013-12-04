@@ -620,7 +620,7 @@ xd::IFileInfoPtr MysqlDatabase::getFileInfo(const std::wstring& path)
         MySqlFileInfo* f = new MySqlFileInfo(this);
         f->name = L"/";
         f->type = xd::filetypeFolder;
-        f->format = xd::formatNative;
+        f->format = xd::formatDefault;
         return static_cast<xd::IFileInfo*>(f);
     }
      else
@@ -675,7 +675,7 @@ xd::IFileInfoEnumPtr MysqlDatabase::getFolderInfo(const std::wstring& path)
         kl::trim(wtable_name);
         f->name = wtable_name;
         f->type = xd::filetypeTable;
-        f->format = xd::formatNative;
+        f->format = xd::formatDefault;
 
         retval->append(f);
     }

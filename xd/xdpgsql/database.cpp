@@ -1073,7 +1073,7 @@ xd::IFileInfoPtr PgsqlDatabase::getFileInfo(const std::wstring& path)
     PgsqlFileInfo* f = new PgsqlFileInfo(this);
     f->name = name;
     f->type = xd::filetypeTable;
-    f->format = xd::formatNative;
+    f->format = xd::formatDefault;
 
     if (type.substr(0, 7) == L"stream;")
     {
@@ -1164,7 +1164,7 @@ xd::IFileInfoEnumPtr PgsqlDatabase::getFolderInfo(const std::wstring& path)
         PgsqlFileInfo* f = new PgsqlFileInfo(this);
         f->name = name;
         f->type = xd::filetypeTable;
-        f->format = xd::formatNative;
+        f->format = xd::formatDefault;
 
         if (type.substr(0, 7) == L"stream;")
         {

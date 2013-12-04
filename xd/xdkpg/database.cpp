@@ -440,7 +440,7 @@ xd::IFileInfoPtr KpgDatabase::getFileInfo(const std::wstring& path)
         xdcommon::FileInfo* f = new xdcommon::FileInfo();
         f->name = L"/";
         f->type = xd::filetypeFolder;
-        f->format = xd::formatNative;
+        f->format = xd::formatDefault;
         return static_cast<xd::IFileInfo*>(f);
     }
      else
