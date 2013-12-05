@@ -279,6 +279,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="filestream.cpp" />
+    <ClCompile Include="formatdefinition.cpp" />
     <ClCompile Include="groupquery.cpp" />
     <ClCompile Include="idxutil.cpp" />
     <ClCompile Include="indexinfo.cpp" />
@@ -346,6 +347,7 @@
     <ClInclude Include="extfileinfo.h" />
     <ClInclude Include="fileinfo.h" />
     <ClInclude Include="filestream.h" />
+    <ClInclude Include="formatdefinition.h" />
     <ClInclude Include="groupquery.h" />
     <ClInclude Include="idxutil.h" />
     <ClInclude Include="indexinfo.h" />
