@@ -119,10 +119,10 @@ bool DelimitedTextSet::init(const std::wstring& filename)
             // however, many csv files also use other delimiters, like semicolons
 
             FsSetFormatInfo info;
-            if (m_database->getSetFormat(filename,
-                                         &info,
-                                         FsSetFormatInfo::maskFormat |
-                                         FsSetFormatInfo::maskDelimiters))
+            if (m_database->getFileFormat(filename,
+                                          &info,
+                                          FsSetFormatInfo::maskFormat |
+                                          FsSetFormatInfo::maskDelimiters))
             {
                 m_delimiters = info.delimiters;
             }

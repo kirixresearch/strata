@@ -54,9 +54,9 @@ xcm_interface IFsDatabase : public xcm::IObject
 
 public:
 
-    virtual bool getSetFormat(const std::wstring& path,
-                              FsSetFormatInfo* info,
-                              int info_mask) = 0;
+    virtual bool getFileFormat(const std::wstring& phys_path,
+                               FsSetFormatInfo* info,
+                               int info_mask) = 0;
     virtual std::wstring getDefinitionDirectory() = 0;
     virtual std::wstring getTempFileDirectory() = 0;
 };
@@ -82,9 +82,9 @@ public:
     
     // xd::IDatabase
     
-    bool getSetFormat(const std::wstring& path,
-                      FsSetFormatInfo* info,
-                      int info_mask);
+    bool getFileFormat(const std::wstring& phys_path,
+                       FsSetFormatInfo* info,
+                       int info_mask);
     std::wstring getTempFileDirectory();
     std::wstring getDefinitionDirectory();
     

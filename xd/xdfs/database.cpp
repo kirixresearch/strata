@@ -332,12 +332,10 @@ static bool isTextFileExtension(const std::wstring& _ext)
 }
 
 
-bool FsDatabase::getSetFormat(const std::wstring& path,
-                              FsSetFormatInfo* info,
-                              int info_mask)
+bool FsDatabase::getFileFormat(const std::wstring& phys_path,
+                               FsSetFormatInfo* info,
+                               int info_mask)
 {
-    // get a physical pathname from the internal path name
-    std::wstring phys_path = makeFullPath(path);
     if (!xf_get_file_exist(phys_path))
     {
         info->format = xd::formatDefault;
@@ -386,8 +384,8 @@ bool FsDatabase::getSetFormat(const std::wstring& path,
     }
 
     // chop off and format the file extenstion
-    std::wstring ext = kl::afterLast(path, L'.');
-    if (ext.length() == path.length())
+    std::wstring ext = kl::afterLast(phys_path, L'.');
+    if (ext.length() == phys_path.length())
         ext = L"";
 
     // if a format is not specified in the ExtFileInfo,
@@ -1074,7 +1072,7 @@ public:
     int getType()
     {
         // if type == -1, we will determine the file type from
-        // the file format, which is determined by getSetFormat
+        // the file format, which is determined by getFileFormat
         if (type == -1)
         {
             int format = getFormat();
@@ -1101,7 +1099,7 @@ public:
             
         // get the format and cache the result
         FsSetFormatInfo info;
-        db->getSetFormat(path, &info, FsSetFormatInfo::maskFormat);
+        db->getFileFormat(phys_path, &info, FsSetFormatInfo::maskFormat);
         format = info.format;
         fetched_format = true;
         
@@ -1222,6 +1220,20 @@ xd::IFileInfoPtr FsDatabase::getFileInfo(const std::wstring& path)
 
     std::wstring phys_path = makeFullPath(path);
 
+    if (xf_get_file_exist(phys_path + L".xdfs0"))
+    {
+        xd::FormatInfo def;
+        if (!loadDefinitionFromFile(phys_path + L".xdfs0", &def))
+            return xcm::null;
+
+        xdcommon::FileInfo* f = new xdcommon::FileInfo;
+        f->name = kl::afterLast(phys_path, PATH_SEPARATOR_CHAR);
+        kl::trim(f->name);
+        f->type = xd::filetypeTable;
+        f->format = def.format;
+        
+        return static_cast<xd::IFileInfo*>(f);
+    }
 
 
     if (xf_get_directory_exist(phys_path))
@@ -1484,7 +1496,7 @@ IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatInfo
             return xcm::null;
         if (deffi.format != xd::formatDefault)
             fi = &deffi;
-        phys_path = fi->data_file;
+        phys_path = deffi.data_file;
     }
 
     if (!xf_get_file_exist(phys_path))
@@ -1500,7 +1512,7 @@ IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatInfo
     if (format == xd::formatDefault)
     {
         FsSetFormatInfo info;
-        getSetFormat(path, &info, FsSetFormatInfo::maskFormat | FsSetFormatInfo::maskDelimiters);
+        getFileFormat(phys_path, &info, FsSetFormatInfo::maskFormat | FsSetFormatInfo::maskDelimiters);
         format = info.format;
         delimiters = info.delimiters;
     }

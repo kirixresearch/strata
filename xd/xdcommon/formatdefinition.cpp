@@ -103,7 +103,12 @@ bool loadDefinitionFromString(const std::wstring& str, xd::FormatInfo* def)
     else if (encoding_str == L"ebcdic")              def->encoding = xd::encodingEBCDIC;
     else if (encoding_str == L"comp")                def->encoding = xd::encodingCOMP;
     else if (encoding_str == L"comp3")               def->encoding = xd::encodingCOMP3;
-    else     
+    else                                             def->encoding = xd::encodingUndefined;
+
+
+    def->data_connection_string = root["data_connection_string"];
+    def->data_file = root["data_file"]; 
+
 
     if (root.childExists("delimitedtext"))
     {
