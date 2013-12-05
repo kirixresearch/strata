@@ -338,7 +338,7 @@ void Controller::apiFolderInfo(RequestInfo& req)
             
             switch (finfo->getFormat())
             {
-                case xd::formatNative:          item["format"] = "native";            break;
+                case xd::formatDefault:          item["format"] = "native";            break;
                 case xd::formatXbase:           item["format"] = "xbase";             break;
                 case xd::formatDelimitedText:   item["format"] = "delimited_text";    break;
                 case xd::formatFixedLengthText: item["format"] = "fixedlength_text";  break;
@@ -394,7 +394,7 @@ void Controller::apiFileInfo(RequestInfo& req)
 
         switch (finfo->getFormat())
         {
-            case xd::formatNative:          file_info["format"] = "native";            break;
+            case xd::formatDefault:          file_info["format"] = "native";            break;
             case xd::formatXbase:           file_info["format"] = "xbase";             break;
             case xd::formatDelimitedText:   file_info["format"] = "delimited_text";    break;
             case xd::formatFixedLengthText: file_info["format"] = "fixedlength_text";  break;

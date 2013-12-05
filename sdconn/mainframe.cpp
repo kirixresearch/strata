@@ -92,7 +92,9 @@ void MainFrame::onAddTable(wxCommandEvent& evt)
         std::wstring fullpath = arr[i];
         std::wstring filename = fn.GetName();
 
-        db->setMountPoint(filename, L"", fullpath);
+        xd::FormatInfo fi;
+        fi.data_file = fullpath;
+        db->saveDataView(key, &fi);
     }
 
     refreshList();
@@ -167,9 +169,13 @@ void MainFrame::refreshList()
         finfo = files->getItem(i);
 
         std::wstring cstr, fullpath;
-        if (db->getMountPoint(finfo->getName(), cstr, fullpath))
-        {   
-            addItem(finfo->getName(), finfo->getName(), fullpath);
+
+        xd::FormatInfo def;
+        if (db->loadDataView(finfo->getName(), &def))
+        {
+            std::wstring name = kl::afterLast(def.data_file, PATH_SEPARATOR_CHAR);
+
+            addItem(finfo->getName(), name, def.data_file);
         }
     }
 
