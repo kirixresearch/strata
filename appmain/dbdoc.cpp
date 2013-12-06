@@ -282,6 +282,9 @@ public:
 
         // we want the "cloud" folder to always be on top
 
+        if (f1_name == f2_name)
+            return false;
+
         if (kl::iequals(f1_name, L"cloud"))
             return true;
         if (kl::iequals(f2_name, L"cloud"))

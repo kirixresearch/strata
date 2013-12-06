@@ -1101,8 +1101,9 @@ bool FsDatabase::deleteFile(const std::wstring& _path)
 
 bool FsDatabase::getFileExist(const std::wstring& path)
 {
-    if (path.empty())
-        return false;
+    // root always exists
+    if (path.empty() || path == L"/")
+        return true;
 
     std::wstring cstr, rpath;
     if (detectMountPoint(path, &cstr, &rpath))
@@ -1485,6 +1486,17 @@ xd::IFileInfoEnumPtr FsDatabase::getFolderInfo(const std::wstring& path)
 
 xd::IStreamPtr FsDatabase::openStream(const std::wstring& path)
 {
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, &cstr, &rpath))
+    {
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return xcm::null;
+
+        return db->openStream(rpath);
+    }
+
+
     FileStream* stream = new FileStream;
     
     std::wstring phys_path = makeFullPath(path);
@@ -1768,23 +1780,40 @@ static int xdToDelimitedTextEncoding(int xd_encoding)
 }
 
 
-bool FsDatabase::createTable(const std::wstring& _path,
-                             xd::IStructurePtr struct_config,
+bool FsDatabase::createTable(const std::wstring& path,
+                             xd::IStructurePtr structure,
                              xd::FormatDefinition* format_info)
 {
-    size_t i, col_count = struct_config->getColumnCount();
+    if (path.length() == 0)
+        return false;
+
+    if (getFileExist(path))
+        return false;  // already exists
+
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, &cstr, &rpath))
+    {
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return xcm::null;
+
+        return db->createTable(rpath, structure, format_info);
+    }
+
+
+    size_t i, col_count = structure->getColumnCount();
 
     int format = xd::formatDefault;
     if (format_info)
         format = format_info->format;
     
-    std::wstring path = makeFullPath(_path);
+    std::wstring phys_path = makeFullPath(path);
 
     // traverse the path given and create
     // all directories that do not exist
 
-    std::wstring base_path = kl::beforeFirst(path, PATH_SEPARATOR_CHAR);
-    std::wstring remainder = kl::afterFirst(path, PATH_SEPARATOR_CHAR);
+    std::wstring base_path = kl::beforeFirst(phys_path, PATH_SEPARATOR_CHAR);
+    std::wstring remainder = kl::afterFirst(phys_path, PATH_SEPARATOR_CHAR);
     std::wstring old_remainder;
 
     while (1)
@@ -1817,9 +1846,9 @@ bool FsDatabase::createTable(const std::wstring& _path,
         // look for an extension to yield some guidance as to which
         // file format to use by default -- if no extension, assume csv
         std::wstring ext;
-        int ext_pos = path.find_last_of(L'.');
+        int ext_pos = phys_path.find_last_of(L'.');
         if (ext_pos >= 0)
-            ext = path.substr(ext_pos+1);
+            ext = phys_path.substr(ext_pos+1);
         kl::makeLower(ext);
 
         // default to a csv
@@ -1841,7 +1870,7 @@ bool FsDatabase::createTable(const std::wstring& _path,
         for (i = 0; i < col_count; ++i)
         {
             xd::IColumnInfoPtr col_info;
-            col_info = struct_config->getColumnInfoByIdx(i);
+            col_info = structure->getColumnInfoByIdx(i);
 
             XbaseField f;
             f.name = kl::tostring(col_info->getName());
@@ -1855,11 +1884,11 @@ bool FsDatabase::createTable(const std::wstring& _path,
 
         // create the xbase file
         XbaseFile file;
-        if (!file.createFile(path, fields))
+        if (!file.createFile(phys_path, fields))
             return false;
         file.closeFile();
         
-        return xf_get_file_exist(path);
+        return xf_get_file_exist(phys_path);
     }
      else if (format == xd::formatTypedDelimitedText)
     {
@@ -1873,7 +1902,7 @@ bool FsDatabase::createTable(const std::wstring& _path,
         for (i = 0; i < col_count; ++i)
         {
             xd::IColumnInfoPtr col_info;
-            col_info = struct_config->getColumnInfoByIdx(i);
+            col_info = structure->getColumnInfoByIdx(i);
             if (col_info->getType() == xd::typeWideCharacter)
                 unicode_data_found = true;
             
@@ -1943,10 +1972,10 @@ bool FsDatabase::createTable(const std::wstring& _path,
             fields.clear();
         }
 
-        file.createFile(path, fields, csv_encoding);
+        file.createFile(phys_path, fields, csv_encoding);
         file.closeFile();
 
-        return xf_get_file_exist(path);
+        return xf_get_file_exist(phys_path);
     }
      else if (format == xd::formatDelimitedText)
     {
@@ -1957,9 +1986,9 @@ bool FsDatabase::createTable(const std::wstring& _path,
         // look for an extension to yield some guidance as to which
         // file format to use by default -- if no extension, assume csv
         std::wstring ext;
-        int ext_pos = path.find_last_of(L'.');
+        int ext_pos = phys_path.find_last_of(L'.');
         if (ext_pos >= 0)
-            ext = path.substr(ext_pos+1);
+            ext = phys_path.substr(ext_pos+1);
              else
             ext = L"csv";
         kl::makeLower(ext);
@@ -1991,7 +2020,7 @@ bool FsDatabase::createTable(const std::wstring& _path,
         for (i = 0; i < col_count; ++i)
         {
             xd::IColumnInfoPtr col_info;
-            col_info = struct_config->getColumnInfoByIdx(i);
+            col_info = structure->getColumnInfoByIdx(i);
             if (col_info->getType() == xd::typeWideCharacter)
                 unicode_data_found = true;
             
@@ -2025,19 +2054,19 @@ bool FsDatabase::createTable(const std::wstring& _path,
             fields.clear();
         }
 
-        file.createFile(path, fields, csv_encoding);
+        file.createFile(phys_path, fields, csv_encoding);
         file.closeFile();
         
 
         // save structure to edf
         DelimitedTextSet* tset = new DelimitedTextSet(this);
-        if (!tset->init(path))
+        if (!tset->init(phys_path))
         {
             delete tset;
             return false;
         }
 
-        tset->setCreateStructure(struct_config);
+        tset->setCreateStructure(structure);
 
         if (ext == L"tsv")
         {
@@ -2066,7 +2095,7 @@ bool FsDatabase::createTable(const std::wstring& _path,
      else if (format == xd::formatFixedLengthText)
     {
         // create the fixed length file
-        xf_file_t file = xf_open(path, xfCreate, xfReadWrite, xfShareNone);
+        xf_file_t file = xf_open(phys_path, xfCreate, xfReadWrite, xfShareNone);
         xf_close(file);
 
         /*
@@ -2076,7 +2105,7 @@ bool FsDatabase::createTable(const std::wstring& _path,
         tset->saveConfiguration();
         */
 
-        return xf_get_file_exist(path);
+        return xf_get_file_exist(phys_path);
     }
 
     return false;
@@ -2085,6 +2114,20 @@ bool FsDatabase::createTable(const std::wstring& _path,
 
 bool FsDatabase::createStream(const std::wstring& path, const std::wstring& mime_type)
 {
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, &cstr, &rpath))
+    {
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return false;
+
+        return db->createStream(rpath, mime_type);
+    }
+
+
+
+
+
     FileStream* stream = new FileStream;
     stream->ref();
 
@@ -2119,6 +2162,18 @@ bool FsDatabase::createStream(const std::wstring& path, const std::wstring& mime
 
 xd::IRowInserterPtr FsDatabase::bulkInsert(const std::wstring& path)
 {
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, &cstr, &rpath))
+    {
+        // action takes place in a mount
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return xcm::null;
+
+        return db->bulkInsert(rpath);
+    }
+
+
     xd::FormatDefinition fi;
     fi.format = xd::formatDefault;
 
@@ -2131,6 +2186,18 @@ xd::IRowInserterPtr FsDatabase::bulkInsert(const std::wstring& path)
 
 xd::IStructurePtr FsDatabase::describeTable(const std::wstring& path)
 {
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, &cstr, &rpath))
+    {
+        // action takes place in a mount
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return xcm::null;
+
+        return db->describeTable(rpath);
+    }
+
+
     xd::FormatDefinition fi;
     fi.format = xd::formatDefault;
 
@@ -2145,6 +2212,19 @@ bool FsDatabase::modifyStructure(const std::wstring& path,
                                  xd::IStructurePtr struct_config,
                                  xd::IJob* job)
 {
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, &cstr, &rpath))
+    {
+        // action takes place in a mount
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return xcm::null;
+
+        return db->modifyStructure(path, struct_config, job);
+    }
+
+
+
     return false;
 }
 

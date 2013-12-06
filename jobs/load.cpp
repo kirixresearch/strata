@@ -155,8 +155,8 @@ int LoadJob::runJob()
 
         // create the destination table
 
-        xd::FormatInfo* p_destination_format = NULL;
-        xd::FormatInfo destination_format;
+        xd::FormatDefinition* p_destination_format = NULL;
+        xd::FormatDefinition destination_format;
 
         if (object.childExists("destination_format"))
         {

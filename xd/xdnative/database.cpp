@@ -1890,8 +1890,9 @@ bool XdnativeDatabase::getLocalFileExist(const std::wstring& path)
 
 bool XdnativeDatabase::getFileExist(const std::wstring& path)
 {
-    if (path.empty())
-        return false;
+    // root always exists
+    if (path.empty() || path == L"/")
+        return true;
 
     std::wstring cstr, rpath;
     if (detectMountPoint(path, &cstr, &rpath))
@@ -1899,7 +1900,7 @@ bool XdnativeDatabase::getFileExist(const std::wstring& path)
         // root always exists
         if (rpath.empty() || rpath == L"/")
             return true;
-            
+
         xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
             return false;
@@ -3767,9 +3768,9 @@ bool XdnativeDatabase::deleteRelation(const std::wstring& relation_id)
 
 
 xd::IIndexInfoPtr XdnativeDatabase::createIndex(const std::wstring& path,
-                                           const std::wstring& name,
-                                           const std::wstring& expr,
-                                           xd::IJob* job)
+                                                const std::wstring& name,
+                                                const std::wstring& expr,
+                                                xd::IJob* job)
 {
     std::wstring cstr, rpath;
     if (detectMountPoint(path, &cstr, &rpath))
@@ -3921,6 +3922,18 @@ xd::IRowInserterPtr XdnativeDatabase::bulkInsert(const std::wstring& path)
 
 bool XdnativeDatabase::modifyStructure(const std::wstring& path, xd::IStructurePtr struct_config, xd::IJob* job)
 {
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, &cstr, &rpath))
+    {
+        // action takes place in a mount
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return xcm::null;
+
+        return db->modifyStructure(path, struct_config, job);
+    }
+
+
     IXdnativeSetPtr set = openTable(path);
     if (set.isNull())
         return xcm::null;
