@@ -925,14 +925,40 @@ bool FsDatabase::renameFile(const std::wstring& path,
     return true;
 }
 
-bool FsDatabase::moveFile(const std::wstring& _path,
-                          const std::wstring& _new_path)
+bool FsDatabase::moveFile(const std::wstring& src_path,
+                          const std::wstring& dest_path)
 {
-    std::wstring path = makeFullPath(_path);
-    std::wstring new_path = makeFullPath(_new_path);
+    std::wstring src_cstr, src_rpath;
+    std::wstring dest_cstr, dest_rpath;
+
+    if (detectMountPoint(src_path, &src_cstr, &src_rpath))
+    {
+
+        if (detectMountPoint(dest_path, &dest_cstr, &src_rpath))
+        {
+            if (src_cstr == dest_cstr)
+            {
+                xd::IDatabasePtr db = lookupOrOpenMountDb(src_cstr);
+                if (db.isNull())
+                    return false;
+
+                return db->moveFile(src_rpath, dest_rpath);
+            }
+        }
+
+        return false;  // no cross-mount moves
+    }
     
-    return xf_move(path, new_path);
+    if (detectMountPoint(dest_path, &dest_cstr, &src_rpath))
+        return false;  // no cross-mount moves
+
+
+    std::wstring src_phys_path = makeFullPath(src_path);
+    std::wstring dest_phys_path = makeFullPath(dest_path);
+    
+    return xf_move(src_phys_path, dest_phys_path);
 }
+
 
 bool FsDatabase::copyFile(const std::wstring& src_path,
                           const std::wstring& dest_path)
@@ -1294,8 +1320,9 @@ xd::IFileInfoPtr FsDatabase::getFileInfo(const std::wstring& path)
         xdcommon::FileInfo* f = new xdcommon::FileInfo;
         f->name = kl::afterLast(phys_path, PATH_SEPARATOR_CHAR);
         kl::trim(f->name);
-        f->type = xd::filetypeTable;
+        f->type = def.object_type;
         f->format = def.format;
+        f->is_mount = true;
         
         return static_cast<xd::IFileInfo*>(f);
     }
@@ -1425,6 +1452,7 @@ xd::IFileInfoEnumPtr FsDatabase::getFolderInfo(const std::wstring& path)
                     XdfsFileInfo* f = new XdfsFileInfo(static_cast<IFsDatabase*>(this));
                     f->name = info.m_name.substr(0, info.m_name.length() - 6);
                     f->type = fd.object_type;
+                    f->is_mount = true;
                     retval->append(f);
                 }
 
