@@ -858,33 +858,64 @@ bool FsDatabase::getMountPoint(const std::wstring& path,
 }
 
 
-bool FsDatabase::createFolder(const std::wstring& _path)
+bool FsDatabase::createFolder(const std::wstring& path)
 {
-    std::wstring path = makeFullPath(_path);
+    if (path.empty())
+        return false;
+
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, &cstr, &rpath))
+    {
+        // action takes place in a mount
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return xcm::null;
+
+        return db->createFolder(rpath);
+    }
+
+
+    std::wstring phys_path = makeFullPath(path);
     
-    return xf_mkdir(path);
+    return xf_mkdir(phys_path);
 }
 
 bool FsDatabase::renameFile(const std::wstring& path,
                             const std::wstring& new_name)
 {
-    std::wstring good_path = makeFullPath(path);
+    if (path.empty() || new_name.empty())
+        return false;
+
+    std::wstring cstr, rpath;
+    if (detectMountPoint(path, &cstr, &rpath))
+    {
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return false;
+
+        return db->renameFile(rpath, new_name);
+    }
+    
+
+
+
+    std::wstring phys_path = makeFullPath(path);
     
     // if there is a trailing slash, strip it off
-    if (good_path.length() > 0 && good_path[good_path.length()-1] == PATH_SEPARATOR_CHAR)
-        good_path.erase(good_path.length()-1, 1);
+    if (phys_path.length() > 0 && phys_path[phys_path.length()-1] == PATH_SEPARATOR_CHAR)
+        phys_path.erase(phys_path.length()-1, 1);
     
-    std::wstring stub_path = kl::beforeLast(good_path, PATH_SEPARATOR_CHAR);
+    std::wstring stub_path = kl::beforeLast(phys_path, PATH_SEPARATOR_CHAR);
     
     std::wstring new_path = stub_path;
     new_path += PATH_SEPARATOR_CHAR;
     new_path += new_name;
     
-    if (!xf_move(good_path, new_path))
+    if (!xf_move(phys_path, new_path))
         return false;
         
     // perhaps there is a definition file that needs renaming too
-    std::wstring oldextf = ExtFileInfo::getConfigFilenameFromPath(getDefinitionDirectory(), good_path);
+    std::wstring oldextf = ExtFileInfo::getConfigFilenameFromPath(getDefinitionDirectory(), phys_path);
     if (xf_get_file_exist(oldextf))
     {
         std::wstring newextf = ExtFileInfo::getConfigFilenameFromPath(getDefinitionDirectory(), new_path);
