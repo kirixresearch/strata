@@ -632,8 +632,9 @@ std::wstring FsDatabase::makeFullPath(const std::wstring& _path)
 
 
 bool FsDatabase::detectMountPoint(const std::wstring& path,
-                                  std::wstring& connection_str,
-                                  std::wstring& remote_path)
+                                  std::wstring* connection_str,
+                                  std::wstring* remote_path,
+                                  std::wstring* mount_root)
 {
     std::vector<std::wstring> parts;
     std::vector<std::wstring>::iterator it, it2;
@@ -665,38 +666,36 @@ bool FsDatabase::detectMountPoint(const std::wstring& path,
 
 
         phys_path = makeFullPath(fpath);
-        phys_path += L".xdmnt";
+        phys_path += L".xdfs0";
         
         if (xf_get_file_exist(phys_path))
         {
-            kl::xmlnode root;
-            if (!root.load(phys_path))
+            xd::FormatDefinition def;
+            if (!loadDefinitionFromFile(phys_path, &def))
                 return false;
-            
-            kl::xmlnode& cs = root.getChild(L"connection_str");
-            if (cs.isEmpty())
-                return false;
-                
-            kl::xmlnode& rp = root.getChild(L"remote_path");
-            if (rp.isEmpty())
-                return false;
-            
 
-            connection_str = xdcommon::decryptConnectionStringPassword(cs.getNodeValue());
-            remote_path = rp.getNodeValue();
+            if (def.data_connection_string.length() == 0)
+                return false;
+
+            if (connection_str) *connection_str = def.data_connection_string;
+            if (remote_path)    *remote_path = def.data_path;
+            if (mount_root)     *mount_root = fpath;
 
             for (it2 = it+1; it2 < parts.end(); ++it2)
             {
-                if (remote_path.empty() || remote_path[remote_path.length()-1] != '/')
+                if (remote_path)
                 {
-                    remote_path += L'/';
-                }
+                    if (remote_path->empty() || (*remote_path)[remote_path->length()-1] != '/')
+                    {
+                        *remote_path += L'/';
+                    }
                 
-                remote_path += *it2;
-                if (it2+1 < parts.end())
-                    remote_path += L'/';
+                    (*remote_path) += *it2;
+                    if (it2+1 < parts.end())
+                        (*remote_path) += L'/';
+                }
             }
-            
+
             return true;
         }
     }
@@ -760,7 +759,7 @@ xd::IDatabasePtr FsDatabase::lookupOrOpenMountDb(const std::wstring& cstr)
 xd::IDatabasePtr FsDatabase::getMountDatabase(const std::wstring& path)
 {
     std::wstring cstr, rpath;
-    if (detectMountPoint(path, cstr, rpath))
+    if (detectMountPoint(path, &cstr, &rpath))
     {
         return lookupOrOpenMountDb(cstr);
     }
@@ -768,13 +767,13 @@ xd::IDatabasePtr FsDatabase::getMountDatabase(const std::wstring& path)
     return xcm::null;
 }
      
-bool FsDatabase::setMountPoint(const std::wstring& _path,
+bool FsDatabase::setMountPoint(const std::wstring& path,
                                const std::wstring& connection_str,
                                const std::wstring& remote_path)
 {
     // convert path to real file name
-    std::wstring path = makeFullPath(_path);
-    path += L".xdmnt";
+    std::wstring phys_path = makeFullPath(path);
+    phys_path += L".xdfs0";
     
     // process connection string
     std::wstring final_connection_string = connection_str;
@@ -783,6 +782,21 @@ bool FsDatabase::setMountPoint(const std::wstring& _path,
     final_connection_string = xdcommon::encryptConnectionStringPassword(final_connection_string);
 
 
+    xd::FormatDefinition fd;
+    fd.data_connection_string = connection_str;
+    fd.data_path = remote_path;
+    fd.object_type = xd::filetypeFolder;
+    fd.object_id = kl::getUniqueString();
+
+    // prefer just to store an empty path designating root folder instead of a slash
+    if (fd.data_path == L"/")
+        fd.data_path = L"";
+
+
+    return saveDefinitionToFile(phys_path, &fd);
+
+
+    /*
     kl::xmlnode root;
     
     root.setNodeName(L"xdmnt");
@@ -792,14 +806,31 @@ bool FsDatabase::setMountPoint(const std::wstring& _path,
     
     kl::xmlnode& rpath = root.addChild(L"remote_path");
     rpath.setNodeValue(remote_path);
+
     
     return root.save(path);
+    */
 }
                               
-bool FsDatabase::getMountPoint(const std::wstring& _path,
+bool FsDatabase::getMountPoint(const std::wstring& path,
                                std::wstring& connection_str,
                                std::wstring& remote_path)
 {
+    // convert path to real file name
+    std::wstring phys_path = makeFullPath(path);
+    phys_path += L".xdfs0";
+
+    xd::FormatDefinition fd;
+
+    if (!loadDefinitionFromFile(phys_path, &fd))
+        return false;
+
+    connection_str = fd.data_connection_string;
+    remote_path = fd.data_path;
+
+    return true;
+
+    /*
     // convert path to real file name
     std::wstring path = makeFullPath(_path);
     path += L".xdmnt";
@@ -823,6 +854,7 @@ bool FsDatabase::getMountPoint(const std::wstring& _path,
     remote_path = rp.getNodeValue();
 
     return true;
+    */
 }
 
 
@@ -907,7 +939,7 @@ bool FsDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
     
     if (info->append)
     {
-        xd::FormatInfo fi;
+        xd::FormatDefinition fi;
         fi.format = xd::formatDefault;
 
         IXdfsSetPtr output = openSetEx(info->output, fi);
@@ -923,7 +955,7 @@ bool FsDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
 
 
     std::wstring cstr, rpath;
-    if (detectMountPoint(info->output, cstr, rpath))
+    if (detectMountPoint(info->output, &cstr, &rpath))
     {
         xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
@@ -974,16 +1006,18 @@ bool FsDatabase::deleteFile(const std::wstring& _path)
 {
     std::wstring path = makeFullPath(_path);
     
-    
+    if (path.empty() || path == L"/")
+        return false;
+
+    if (xf_get_file_exist(path + L".xdfs0"))
+    {
+        xf_remove(path + L".xdfs0");
+        return true;
+    }
     
     std::wstring cstr, rpath;
-    if (detectMountPoint(_path, cstr, rpath))
+    if (detectMountPoint(_path, &cstr, &rpath))
     {
-        // check if they are deleting a mount file
-        path += L".xdmnt";
-        if (xf_get_file_exist(path))
-            return xf_remove(path);
-        
         xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
             return false;
@@ -1014,7 +1048,7 @@ bool FsDatabase::getFileExist(const std::wstring& path)
         return false;
 
     std::wstring cstr, rpath;
-    if (detectMountPoint(path, cstr, rpath))
+    if (detectMountPoint(path, &cstr, &rpath))
     {
         // root always exists
         if (rpath.empty() || rpath == L"/")
@@ -1166,7 +1200,7 @@ public:
 xd::IFileInfoPtr FsDatabase::getFileInfo(const std::wstring& path)
 {
     std::wstring cstr, rpath;
-    if (detectMountPoint(path, cstr, rpath))
+    if (detectMountPoint(path, &cstr, &rpath))
     {
         // if it's the root, it's automatically a folder
         if (rpath.empty() || rpath == L"/")
@@ -1222,7 +1256,7 @@ xd::IFileInfoPtr FsDatabase::getFileInfo(const std::wstring& path)
 
     if (xf_get_file_exist(phys_path + L".xdfs0"))
     {
-        xd::FormatInfo def;
+        xd::FormatDefinition def;
         if (!loadDefinitionFromFile(phys_path + L".xdfs0", &def))
             return xcm::null;
 
@@ -1275,7 +1309,7 @@ xd::IFileInfoEnumPtr FsDatabase::getFolderInfo(const std::wstring& path)
     
     std::wstring cstr, rpath;
     
-    if (detectMountPoint(path, cstr, rpath))
+    if (detectMountPoint(path, &cstr, &rpath))
     {
         xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
         if (db.isNull())
@@ -1347,30 +1381,22 @@ xd::IFileInfoEnumPtr FsDatabase::getFolderInfo(const std::wstring& path)
             std::wstring ext = kl::afterLast(info.m_name, '.');
             kl::makeLower(ext);
 
-            if (ext == L"xdmnt")
+            if (ext == L"xdfs0")
             {
-                info.m_name = info.m_name.substr(0, info.m_name.length() - 6);
-                std::wstring mount_path = path;
-                if (mount_path.length() == 0 || mount_path[mount_path.length()-1] != '/')
-                    mount_path += L"/";
-                mount_path += info.m_name;
+                std::wstring full_path = phys_path;
+                full_path += PATH_SEPARATOR_CHAR;
+                full_path += info.m_name;
 
-                XdfsFileInfo* f = new XdfsFileInfo(static_cast<IFsDatabase*>(this));
-                f->name = info.m_name;
-                retval->append(f);
+                xd::FormatDefinition fd;
 
-                /*
-                xd::IFileInfoPtr file_info = getFileInfo(mount_path);
-                if (file_info)
-                    retval->append(file_info);
-                */
-                continue;
-            }
-             else if (ext == L"xdfs0")
-            {
-                XdfsFileInfo* f = new XdfsFileInfo(static_cast<IFsDatabase*>(this));
-                f->name = info.m_name.substr(0, info.m_name.length() - 6);
-                retval->append(f);
+                if (loadDefinitionFromFile(full_path, &fd))
+                {
+                    XdfsFileInfo* f = new XdfsFileInfo(static_cast<IFsDatabase*>(this));
+                    f->name = info.m_name.substr(0, info.m_name.length() - 6);
+                    f->type = fd.object_type;
+                    retval->append(f);
+                }
+
                 continue;
             }
             
@@ -1472,10 +1498,10 @@ static IXdfsSetPtr openDelimitedTextSet(FsDatabase* db,
 }
 
 
-IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatInfo& _fi)
+IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatDefinition& _fi)
 {
-    const xd::FormatInfo* fi = &_fi;
-    xd::FormatInfo deffi;
+    const xd::FormatDefinition* fi = &_fi;
+    xd::FormatDefinition deffi;
 
     // check for ptr sets
     if (path.substr(0, 12) == L"/.temp/.ptr/")
@@ -1496,8 +1522,9 @@ IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatInfo
             return xcm::null;
         if (deffi.format != xd::formatDefault)
             fi = &deffi;
-        phys_path = deffi.data_file;
+        phys_path = deffi.data_path;
     }
+
 
     if (!xf_get_file_exist(phys_path))
         return xcm::null;
@@ -1600,6 +1627,31 @@ IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatInfo
 
 xd::IIteratorPtr FsDatabase::query(const xd::QueryParams& qp)
 {
+    std::wstring cstr, rpath, mount_root;
+    if (detectMountPoint(qp.from, &cstr, &rpath, &mount_root))
+    {
+        // action takes place in a mount
+        xd::IDatabasePtr db = lookupOrOpenMountDb(cstr);
+        if (db.isNull())
+            return xcm::null;
+
+        xd::QueryParams call_params = qp;
+        call_params.from = rpath;
+        
+        xd::IIteratorPtr ret = db->query(call_params);
+        if (ret.isOk())
+        {
+            std::wstring tbl = ret->getTable();
+            if (tbl.length() > 0)
+            {
+                tbl = xd::appendPath(mount_root, tbl);
+                ret->setTable(tbl);
+            }
+
+            return ret;
+        }
+    }
+
     IXdsqlTablePtr tbl = openSetEx(qp.from, qp.format);
     if (tbl.isNull())
         return xcm::null;
@@ -1608,14 +1660,14 @@ xd::IIteratorPtr FsDatabase::query(const xd::QueryParams& qp)
 }
 
 
-bool FsDatabase::loadDataView(const std::wstring& path, xd::FormatInfo* info)
+bool FsDatabase::loadDataView(const std::wstring& path, xd::FormatDefinition* info)
 {
     std::wstring phys_path = makeFullPath(path) + L".xdfs0";
 
     return loadDefinitionFromFile(phys_path, info);
 }
 
-bool FsDatabase::saveDataView(const std::wstring& path, const xd::FormatInfo* info)
+bool FsDatabase::saveDataView(const std::wstring& path, const xd::FormatDefinition* info)
 {
     std::wstring phys_path = makeFullPath(path) + L".xdfs0";
     
@@ -1659,7 +1711,7 @@ static int xdToDelimitedTextEncoding(int xd_encoding)
 
 bool FsDatabase::createTable(const std::wstring& _path,
                              xd::IStructurePtr struct_config,
-                             xd::FormatInfo* format_info)
+                             xd::FormatDefinition* format_info)
 {
     size_t i, col_count = struct_config->getColumnCount();
 
@@ -2008,7 +2060,7 @@ bool FsDatabase::createStream(const std::wstring& path, const std::wstring& mime
 
 xd::IRowInserterPtr FsDatabase::bulkInsert(const std::wstring& path)
 {
-    xd::FormatInfo fi;
+    xd::FormatDefinition fi;
     fi.format = xd::formatDefault;
 
     IXdfsSetPtr set = openSetEx(path, fi);
@@ -2020,7 +2072,7 @@ xd::IRowInserterPtr FsDatabase::bulkInsert(const std::wstring& path)
 
 xd::IStructurePtr FsDatabase::describeTable(const std::wstring& path)
 {
-    xd::FormatInfo fi;
+    xd::FormatDefinition fi;
     fi.format = xd::formatDefault;
 
     IXdsqlTablePtr tbl = openSetEx(path, fi);

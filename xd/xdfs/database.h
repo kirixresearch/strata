@@ -107,10 +107,10 @@ public:
 
     xd::IJobPtr createJob();
 
-    IXdfsSetPtr openSetEx(const std::wstring& path, const xd::FormatInfo& fi);
+    IXdfsSetPtr openSetEx(const std::wstring& path, const xd::FormatDefinition& fi);
 
-    bool loadDataView(const std::wstring& path, xd::FormatInfo* format_info);
-    bool saveDataView(const std::wstring& path, const xd::FormatInfo* format_info);
+    bool loadDataView(const std::wstring& path, xd::FormatDefinition* format_info);
+    bool saveDataView(const std::wstring& path, const xd::FormatDefinition* format_info);
 
     bool createFolder(const std::wstring& path);
     bool renameFile(const std::wstring& path, const std::wstring& new_name);
@@ -134,7 +134,7 @@ public:
                        std::wstring& remote_path);
 
     xd::IStructurePtr createStructure();
-    bool createTable(const std::wstring& path, xd::IStructurePtr struct_config, xd::FormatInfo* format_info);
+    bool createTable(const std::wstring& path, xd::IStructurePtr struct_config, xd::FormatDefinition* format_info);
     xd::IStreamPtr openStream(const std::wstring& ofs_path);
     bool createStream(const std::wstring& ofs_path, const std::wstring& mime_type);
 
@@ -169,8 +169,9 @@ private:
     std::wstring makeFullPath(const std::wstring& _path);
     
     bool detectMountPoint(const std::wstring& path,
-                          std::wstring& connection_str,
-                          std::wstring& remote_path);
+                          std::wstring* connection_str = NULL,
+                          std::wstring* remote_path = NULL,
+                          std::wstring* mount_root = NULL);
                           
     xd::IDatabasePtr lookupOrOpenMountDb(const std::wstring& connection);
     
