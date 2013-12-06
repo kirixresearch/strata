@@ -729,7 +729,7 @@ xd::IStructurePtr ClientDatabase::createStructure()
 
 bool ClientDatabase::createTable(const std::wstring& path,
                                  xd::IStructurePtr structure,
-                                 xd::FormatInfo* format_info)
+                                 xd::FormatDefinition* format_info)
 {
     std::wstring columns = structureToJson(structure);
 

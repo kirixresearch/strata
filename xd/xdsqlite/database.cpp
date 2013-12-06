@@ -499,7 +499,7 @@ xd::IStructurePtr SlDatabase::createStructure()
 
 bool SlDatabase::createTable(const std::wstring& path,
                              xd::IStructurePtr struct_config,
-                             xd::FormatInfo* format_info)
+                             xd::FormatDefinition* format_info)
 {
     // generate table name, SQL CREATE statment, and execute
 

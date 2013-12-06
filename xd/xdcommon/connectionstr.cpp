@@ -166,6 +166,9 @@ inline std::wstring getConnectionStringEncryptionKey()
 
 std::wstring decryptConnectionStringPassword(const std::wstring& connection_str)
 {
+    if (connection_str.length() == 0)
+        return connection_str;
+
     // decrypt password from string, if any
     std::wstring pw;
     xd::ConnectionStringParser cstr(connection_str);
@@ -197,6 +200,9 @@ std::wstring decryptConnectionStringPassword(const std::wstring& connection_str)
 
 std::wstring encryptConnectionStringPassword(const std::wstring& connection_str)
 {
+    if (connection_str.length() == 0)
+        return connection_str;
+
     // scramble password, if any
     std::wstring pw;
     xd::ConnectionStringParser cstr(connection_str);

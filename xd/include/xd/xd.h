@@ -289,7 +289,7 @@ enum
 {
     filetypeNode =   0x00,
     filetypeFolder = 0x01,
-    filetypeTable =    0x02,
+    filetypeTable =  0x02,
     filetypeStream = 0x04
 };
 
@@ -578,21 +578,25 @@ public:
 
 
 
-struct FormatInfo
+struct FormatDefinition
 {
-    FormatInfo()
+    FormatDefinition()
     {
         format = formatDefault;
+        object_type = filetypeTable;
         encoding = encodingUndefined;
         first_row_column_names = true;
         determine_structure = false;
     };
     
+    std::wstring object_id;
+    int object_type;
+
     int format;
     int encoding;
 
     std::wstring data_connection_string;  // optional connection string associated with data_file
-    std::wstring data_file;               // project relative path, or file:/// url
+    std::wstring data_path;               // project relative path, or file:/// url
     
     // delimited files parameters (when format = formatDelimitedText)
     std::wstring text_qualifiers;
@@ -637,7 +641,7 @@ struct QueryParams
     std::wstring where;
     std::wstring order;
 
-    FormatInfo format;
+    FormatDefinition format;
 
     IJobPtr job;
 };
@@ -675,10 +679,10 @@ public:
 
     virtual bool createFolder(const std::wstring& path) = 0;
     virtual bool createStream(const std::wstring& path, const std::wstring& mime_type) = 0;
-    virtual bool createTable(const std::wstring& path, IStructurePtr struct_config, FormatInfo* format_info) = 0;
+    virtual bool createTable(const std::wstring& path, IStructurePtr struct_config, FormatDefinition* format_info) = 0;
 
-    virtual bool loadDataView(const std::wstring& path, FormatInfo* format_info) { return false; }
-    virtual bool saveDataView(const std::wstring& path, const FormatInfo* format_info) { return false; }
+    virtual bool loadDataView(const std::wstring& path, FormatDefinition* format_info) { return false; }
+    virtual bool saveDataView(const std::wstring& path, const FormatDefinition* format_info) { return false; }
 
     virtual IDatabasePtr getMountDatabase(const std::wstring& path) = 0;
     virtual bool setMountPoint(const std::wstring& path, const std::wstring& connection_str,  const std::wstring& remote_path) = 0;

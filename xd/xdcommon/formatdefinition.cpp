@@ -14,14 +14,25 @@
 #include <kl/json.h>
 #include <kl/file.h>
 #include "formatdefinition.h"
+#include "connectionstr.h"
 
 
 
-
-std::wstring saveDefinitionToString(const xd::FormatInfo* def)
+std::wstring saveDefinitionToString(const xd::FormatDefinition* def)
 {
     kl::JsonNode root;
     
+    root["object_id"] = def->object_id;
+    
+    switch (def->object_type)
+    {
+        default:
+        case xd::filetypeTable:            root["object_type"] = "table";         break;
+        case xd::filetypeFolder:           root["object_type"] = "folder";        break;
+        case xd::filetypeStream:           root["object_type"] = "stream";        break;
+    }
+
+
     switch (def->format)
     {
         default:
@@ -51,8 +62,8 @@ std::wstring saveDefinitionToString(const xd::FormatInfo* def)
     }
 
 
-    root["data_connection_string"] = def->data_connection_string;
-    root["data_file"] = def->data_file;
+    root["data_connection_string"] = xdcommon::encryptConnectionStringPassword(def->data_connection_string);
+    root["data_path"] = def->data_path;
 
     if (def->format == xd::formatDelimitedText)
     {
@@ -75,11 +86,19 @@ std::wstring saveDefinitionToString(const xd::FormatInfo* def)
     return root.toString();
 }
 
-bool loadDefinitionFromString(const std::wstring& str, xd::FormatInfo* def)
+bool loadDefinitionFromString(const std::wstring& str, xd::FormatDefinition* def)
 {
     kl::JsonNode root;
     if (!root.fromString(str))
         return false;
+
+    def->object_id = root["object_id"];
+
+    std::wstring object_type = root["object_type"];
+         if (object_type == L"folder")               def->object_type = xd::filetypeFolder;
+    else if (object_type == L"stream")               def->object_type = xd::filetypeStream;
+    else if (object_type == L"table")                def->object_type = xd::filetypeTable;
+    else                                             def->object_type = xd::filetypeTable;
 
     std::wstring format_str = root["format"];
          if (format_str == L"default")               def->format = xd::formatDefault;
@@ -106,8 +125,8 @@ bool loadDefinitionFromString(const std::wstring& str, xd::FormatInfo* def)
     else                                             def->encoding = xd::encodingUndefined;
 
 
-    def->data_connection_string = root["data_connection_string"];
-    def->data_file = root["data_file"]; 
+    def->data_connection_string = xdcommon::decryptConnectionStringPassword(root["data_connection_string"]);
+    def->data_path = root["data_path"]; 
 
 
     if (root.childExists("delimitedtext"))
@@ -131,7 +150,7 @@ bool loadDefinitionFromString(const std::wstring& str, xd::FormatInfo* def)
 }
 
 
-bool saveDefinitionToFile(const std::wstring& path, const xd::FormatInfo* def)
+bool saveDefinitionToFile(const std::wstring& path, const xd::FormatDefinition* def)
 {
     std::wstring str = saveDefinitionToString(def);
     if (str.length() == 0)
@@ -139,7 +158,7 @@ bool saveDefinitionToFile(const std::wstring& path, const xd::FormatInfo* def)
     return xf_put_file_contents(path, str);
 }
 
-bool loadDefinitionFromFile(const std::wstring& path, xd::FormatInfo* def)
+bool loadDefinitionFromFile(const std::wstring& path, xd::FormatDefinition* def)
 {
     std::wstring str = xf_get_file_contents(path);;
     return loadDefinitionFromString(str, def);

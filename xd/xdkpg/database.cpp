@@ -526,7 +526,7 @@ xd::IStructurePtr KpgDatabase::createStructure()
 
 bool KpgDatabase::createTable(const std::wstring& _path,
                               xd::IStructurePtr struct_config,
-                              xd::FormatInfo* format_info)
+                              xd::FormatDefinition* format_info)
 {
     XCM_AUTO_LOCK(m_obj_mutex);
 

@@ -155,7 +155,7 @@ public:
 
     xd::IStructurePtr createStructure();
     bool createStream(const std::wstring& path, const std::wstring& mime_type);
-    bool createTable(const std::wstring& path, xd::IStructurePtr structure, xd::FormatInfo* format_info);
+    bool createTable(const std::wstring& path, xd::IStructurePtr structure, xd::FormatDefinition* format_info);
     
     IXdnativeSetPtr openSetById(const std::wstring& set_id);
     std::wstring getSetIdFromPath(const std::wstring& set_path);

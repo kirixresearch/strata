@@ -1082,7 +1082,7 @@ xd::IStructurePtr OracleDatabase::createStructure()
 
 bool OracleDatabase::createTable(const std::wstring& path,
                                  xd::IStructurePtr struct_config,
-                                 xd::FormatInfo* format_info)
+                                 xd::FormatDefinition* format_info)
 {
     std::wstring command;
     command.reserve(1024);

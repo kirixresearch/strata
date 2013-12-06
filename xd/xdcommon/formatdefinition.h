@@ -14,11 +14,11 @@
 #define __XDCOMMON_FORMATDEFINITION_H
 
 
-std::wstring saveDefinitionToString(const xd::FormatInfo* def);
-bool loadDefinitionFromString(const std::wstring& str, xd::FormatInfo* def);
+std::wstring saveDefinitionToString(const xd::FormatDefinition* def);
+bool loadDefinitionFromString(const std::wstring& str, xd::FormatDefinition* def);
 
-bool saveDefinitionToFile(const std::wstring& path, const xd::FormatInfo* def);
-bool loadDefinitionFromFile(const std::wstring& path, xd::FormatInfo* def);
+bool saveDefinitionToFile(const std::wstring& path, const xd::FormatDefinition* def);
+bool loadDefinitionFromFile(const std::wstring& path, xd::FormatDefinition* def);
 
 
 #endif

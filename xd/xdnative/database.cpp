@@ -3005,7 +3005,7 @@ xd::IStructurePtr XdnativeDatabase::createStructure()
 
 bool XdnativeDatabase::createTable(const std::wstring& path,
                                    xd::IStructurePtr structure,
-                                   xd::FormatInfo* format_info)
+                                   xd::FormatDefinition* format_info)
 {
     if (path.length() == 0)
         return false;
