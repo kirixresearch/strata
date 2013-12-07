@@ -36,6 +36,7 @@
 #include <kl/url.h>
 #include <kl/hex.h>
 #include <kl/json.h>
+#include <kl/md5.h>
 
 
 #ifdef WIN32
@@ -705,6 +706,25 @@ bool FsDatabase::detectMountPoint(const std::wstring& path,
 
 
 
+std::wstring FsDatabase::getObjectIdFromPath(const std::wstring& path)
+{
+    std::wstring object_id;
+    
+    object_id = L"xdfs:";
+    object_id += xf_get_network_path(path);
+    
+#ifdef WIN32
+    // win32's filenames are case-insensitive, so
+    // when generating the set id, make the whole filename
+    // lowercase to avoid multiple id's for the same file
+    kl::makeLower(object_id);
+#endif
+    
+    return kl::md5str(object_id);
+}
+
+
+
 
 bool FsDatabase::checkCircularMount(const std::wstring& path,
                                     xd::IDatabasePtr remote_db, 
@@ -713,6 +733,7 @@ bool FsDatabase::checkCircularMount(const std::wstring& path,
     // TODO: implement
     return false;
 }
+
                             
 xd::IDatabasePtr FsDatabase::lookupOrOpenMountDb(const std::wstring& cstr)
 {
@@ -1146,14 +1167,21 @@ class XdfsFileInfo : public xd::IFileInfo
 
 public:
 
-    XdfsFileInfo(IFsDatabasePtr _db)
+    XdfsFileInfo(FsDatabase* _db)
     {
         db = _db;
+        db->ref();
+
         type = -1;
         format = -1;
         fetched_format = false;
         is_mount = false;
         row_count = 0;
+    }
+
+    virtual ~XdfsFileInfo()
+    {
+        db->unref();
     }
 
     const std::wstring& getName()
@@ -1230,6 +1258,9 @@ public:
 
     const std::wstring& getObjectId()
     {
+        if (!object_id.empty())
+            return object_id;
+        object_id = db->getObjectIdFromPath(phys_path);
         return object_id;
     }
     
@@ -1250,7 +1281,7 @@ public:
     int type;
     int format;
     bool is_mount;
-    IFsDatabasePtr db;
+    FsDatabase* db;
     bool fetched_format;
     xd::rowpos_t row_count;
 };
@@ -1273,6 +1304,7 @@ xd::IFileInfoPtr FsDatabase::getFileInfo(const std::wstring& path)
          else
         {
             std::wstring file_primary_key;
+            std::wstring object_id;
             int file_type = xd::filetypeTable;
             int file_format = xd::formatDefault;
             int is_mount = -1;
@@ -1291,6 +1323,7 @@ xd::IFileInfoPtr FsDatabase::getFileInfo(const std::wstring& path)
                         file_type = file_info->getType();
                         file_format = file_info->getFormat();
                         file_primary_key = file_info->getPrimaryKey();
+                        object_id = file_info->getObjectId();
                         if (is_mount == -1)
                             is_mount = file_info->isMount() ? 1 : 0;
                     }
@@ -1303,6 +1336,7 @@ xd::IFileInfoPtr FsDatabase::getFileInfo(const std::wstring& path)
             f->format = file_format;
             f->is_mount = (is_mount == 1 ? true : false);
             f->primary_key = file_primary_key;
+            f->object_id = object_id;
             
             return static_cast<xd::IFileInfo*>(f);
         }
@@ -1343,7 +1377,7 @@ xd::IFileInfoPtr FsDatabase::getFileInfo(const std::wstring& path)
     {
         if (xf_get_file_exist(phys_path))
         {
-            XdfsFileInfo* f = new XdfsFileInfo(static_cast<IFsDatabase*>(this));
+            XdfsFileInfo* f = new XdfsFileInfo(this);
             f->name = kl::afterLast(phys_path, PATH_SEPARATOR_CHAR);
             kl::trim(f->name);
             f->path = path;
@@ -1450,7 +1484,7 @@ xd::IFileInfoEnumPtr FsDatabase::getFolderInfo(const std::wstring& path)
 
                 if (loadDefinitionFromFile(full_path, &fd))
                 {
-                    XdfsFileInfo* f = new XdfsFileInfo(static_cast<IFsDatabase*>(this));
+                    XdfsFileInfo* f = new XdfsFileInfo(this);
                     f->name = info.m_name.substr(0, info.m_name.length() - 6);
                     f->type = fd.object_type;
                     f->is_mount = true;
@@ -1462,7 +1496,7 @@ xd::IFileInfoEnumPtr FsDatabase::getFolderInfo(const std::wstring& path)
             
             
             
-            XdfsFileInfo* f = new XdfsFileInfo(static_cast<IFsDatabase*>(this));
+            XdfsFileInfo* f = new XdfsFileInfo(this);
 
             f->name = info.m_name;
             kl::trim(f->name);

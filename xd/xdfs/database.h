@@ -68,6 +68,8 @@ XCM_DECLARE_SMARTPTR(IFsDatabase)
 class FsDatabase : public xd::IDatabase,
                    public IFsDatabase
 {
+    friend class XdfsFileInfo;
+
     XCM_CLASS_NAME("xdfs.Database")
     XCM_BEGIN_INTERFACE_MAP(FsDatabase)
         XCM_INTERFACE_ENTRY(xd::IDatabase)
@@ -178,6 +180,8 @@ private:
     bool checkCircularMount(const std::wstring& path,
                             xd::IDatabasePtr remote_db, 
                             const std::wstring remote_path);
+
+    std::wstring getObjectIdFromPath(const std::wstring& path);
 
 private:
 
