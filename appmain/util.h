@@ -33,7 +33,7 @@
 
     inline std::wstring towstr(const wxString& s)
     {
-        return s.ToStdWString()
+        return s.ToStdWstring();
     }
 
     inline std::wstring towstr(const char* s)
@@ -80,11 +80,7 @@
 
 inline std::string tostr(const wxString& s)
 {
-#ifdef _UNICODE
-    return (const char*)s.mbc_str();
-#else
-    return s.c_str();
-#endif
+    return s.ToStdString();
 }
 
 inline std::string tostr(const std::wstring& s)

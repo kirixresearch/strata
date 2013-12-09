@@ -144,7 +144,7 @@ void Color::Set(const wxString& color)
     c.Trim(false);
 
     // parse out the r,g,b values
-    std::wstring expr = kl::towstring((const wxChar*)c.c_str());
+    std::wstring expr = c.ToStdWstring();
     static const klregex::wregex regex_rgb(L"^rgb\\s*\\(\\s*(?<red>\\d+)\\s*,\\s*(?<green>\\d+)\\s*,\\s*(?<blue>\\d+)\\s*\\)");
 
     klregex::wmatch matchres;
