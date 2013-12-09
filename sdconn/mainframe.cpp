@@ -93,7 +93,7 @@ void MainFrame::onAddTable(wxCommandEvent& evt)
         std::wstring filename = fn.GetName();
 
         xd::FormatDefinition fi;
-        fi.data_file = fullpath;
+        fi.data_path = fullpath;
         db->saveDataView(key, &fi);
     }
 
@@ -173,9 +173,9 @@ void MainFrame::refreshList()
         xd::FormatDefinition def;
         if (db->loadDataView(finfo->getName(), &def))
         {
-            std::wstring name = kl::afterLast(def.data_file, PATH_SEPARATOR_CHAR);
+            std::wstring name = kl::afterLast(def.data_path, PATH_SEPARATOR_CHAR);
 
-            addItem(finfo->getName(), name, def.data_file);
+            addItem(finfo->getName(), name, def.data_path);
         }
     }
 
