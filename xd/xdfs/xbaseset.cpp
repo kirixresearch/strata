@@ -31,30 +31,31 @@
 
 // XbaseSet class implementation
 
-XbaseSet::XbaseSet()
+XbaseSet::XbaseSet(FsDatabase* db)
 {
-
+    m_database = db;
+    m_database->ref();
 }
 
 XbaseSet::~XbaseSet()
 {
     if (m_file.isOpen())
         m_file.closeFile();
+
+    m_database->unref();
 }
 
-bool XbaseSet::init(xd::IDatabasePtr db,
-                    const std::wstring& filename)
+bool XbaseSet::init(const std::wstring& filename)
 {
     if (!m_file.openFile(filename))
         return false;
 
     // set the set info filename
-    xd::IAttributesPtr attr = db->getAttributes();
+    xd::IAttributesPtr attr = m_database->getAttributes();
     std::wstring definition_path = attr->getStringAttribute(xd::dbattrDefinitionDirectory);
     
     setConfigFilePath(ExtFileInfo::getConfigFilenameFromPath(definition_path, filename));
 
-    m_database = db;
     return true;
 }
 

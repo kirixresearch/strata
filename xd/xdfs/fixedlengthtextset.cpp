@@ -57,14 +57,14 @@ FixedLengthDefinition::FixedLengthDefinition()
 
 // -- FixedLengthTextSet class implementation --
 
-FixedLengthTextSet::FixedLengthTextSet()
+FixedLengthTextSet::FixedLengthTextSet(FsDatabase* db)
 {
-    m_database = xcm::null;
+    m_database = db;
+    m_database->ref();
 
     m_definition = new FixedLengthDefinition;
     m_definition->ref();
     
-
     m_path = L"";
     m_row_count = 0;
 
@@ -76,20 +76,20 @@ FixedLengthTextSet::~FixedLengthTextSet()
 {
     // release definition object
     m_definition->unref();
+
+    m_database->unref();
 }
 
-bool FixedLengthTextSet::init(xd::IDatabasePtr db,
-                              const std::wstring& filename)
+bool FixedLengthTextSet::init(const std::wstring& filename)
 {
     if (!xf_get_file_exist(filename))
         return false;
 
     // set our member variables
-    m_database = db;
     m_path = filename;
     
     // figure out the config file name
-    xd::IAttributesPtr attr = db->getAttributes();
+    xd::IAttributesPtr attr = m_database->getAttributes();
     std::wstring definition_path = attr->getStringAttribute(xd::dbattrDefinitionDirectory);
     m_configfile_path = ExtFileInfo::getConfigFilenameFromPath(definition_path, filename);
 

@@ -1545,34 +1545,15 @@ xd::IStreamPtr FsDatabase::openStream(const std::wstring& path)
 }
 
 
-static IXdfsSetPtr openXbaseSet(xd::IDatabasePtr db,
-                                   const std::wstring& path)
+static IXdfsSetPtr openFixedLengthTextSet(FsDatabase* db,
+                                          const std::wstring& path)
 {
     // we need to manually protect the ref count because
     // smart pointer operations happen in init()
     
-    XbaseSet* set = new XbaseSet;
+    FixedLengthTextSet* set = new FixedLengthTextSet(db);
     set->ref();
-    if (!set->init(static_cast<xd::IDatabase*>(db), path))
-    {
-        set->unref();
-        return xcm::null;
-    }
-    
-    IXdfsSetPtr retval = static_cast<IXdfsSet*>(set);
-    set->unref();
-    return retval;
-}
-
-static IXdfsSetPtr openFixedLengthTextSet(xd::IDatabasePtr db,
-                                             const std::wstring& path)
-{
-    // we need to manually protect the ref count because
-    // smart pointer operations happen in init()
-    
-    FixedLengthTextSet* set = new FixedLengthTextSet;
-    set->ref();
-    if (!set->init(static_cast<xd::IDatabase*>(db), path))
+    if (!set->init(path))
     {
         set->unref();
         return xcm::null;
@@ -1589,17 +1570,7 @@ static IXdfsSetPtr openDelimitedTextSet(FsDatabase* db,
     // we need to manually protect the ref count because
     // smart pointer operations happen in init()
     
-    DelimitedTextSet* set = new DelimitedTextSet(db);
-    set->ref();
-    if (!set->init(path))
-    {
-        set->unref();
-        return xcm::null;
-    }
-    
-    IXdfsSetPtr retval = static_cast<IXdfsSet*>(set);
-    set->unref();
-    return retval;
+
 }
 
 
@@ -1656,21 +1627,46 @@ IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatDefi
     // open the set in the appropriate format
     if (format == xd::formatXbase) // dbf
     {
-        set = openXbaseSet(this, phys_path);
-        if (set.isNull())
+        XbaseSet* rawset = new XbaseSet(this);
+        rawset->setObjectPath(path);
+        rawset->ref();
+        if (!rawset->init(phys_path))
+        {
+            rawset->unref();
             return xcm::null;
+        }
+
+        set = static_cast<IXdfsSet*>(rawset);
+        rawset->unref();
     }
      else if (format == xd::formatTypedDelimitedText) // icsv
     {
-        set = openDelimitedTextSet(this, phys_path);
-        if (set.isNull())
+        DelimitedTextSet* rawset = new DelimitedTextSet(this);
+        rawset->setObjectPath(path);
+        rawset->ref();
+        if (!rawset->init(phys_path))
+        {
+            rawset->unref();
             return xcm::null;
+        }
+    
+        set = static_cast<IXdfsSet*>(rawset);
+        rawset->unref();
     }
-     else if (format == xd::formatDelimitedText) // csv or tsv
+     else if (format == xd::formatDelimitedText)      // csv or tsv
     {
-        set = openDelimitedTextSet(this, phys_path);
-        if (set.isNull())
+        DelimitedTextSet* rawset = new DelimitedTextSet(this);
+        rawset->setObjectPath(path);
+        rawset->ref();
+        if (!rawset->init(phys_path))
+        {
+            rawset->unref();
             return xcm::null;
+        }
+    
+        set = static_cast<IXdfsSet*>(rawset);
+        rawset->unref();
+
 
         if (fi->format == xd::formatDefault)
         {

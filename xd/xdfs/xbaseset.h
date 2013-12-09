@@ -74,10 +74,10 @@ friend class XbaseRowInserter;
 
 public:
 
-    XbaseSet();
+    XbaseSet(FsDatabase* db);
     ~XbaseSet();
 
-    bool init(xd::IDatabasePtr db, const std::wstring& filename);
+    bool init(const std::wstring& filename);
 
     std::wstring getSetId();
 
@@ -102,7 +102,7 @@ public:
 
 private:
 
-    xd::IDatabasePtr m_database;
+    FsDatabase* m_database;
     XbaseFile m_file;
 };
 

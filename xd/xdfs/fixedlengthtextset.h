@@ -91,10 +91,10 @@ friend class FixedLengthTextRowInserter;
 
 public:
 
-    FixedLengthTextSet();
+    FixedLengthTextSet(FsDatabase* db);
     ~FixedLengthTextSet();
-    bool init(xd::IDatabasePtr db,
-              const std::wstring& filename);
+
+    bool init(const std::wstring& filename);
 
     void setCreateStructure(xd::IStructurePtr structure);
 
@@ -102,8 +102,8 @@ public:
     IXdsqlRowDeleterPtr getRowDeleter() { return xcm::null; }
 
     xd::IIteratorPtr createIterator(const std::wstring& columns,
-                                       const std::wstring& order,
-                                       xd::IJob* job);
+                                    const std::wstring& order,
+                                    xd::IJob* job);
 
     xd::rowpos_t getRowCount();
 
@@ -142,7 +142,7 @@ private:
 
 private:
 
-    xd::IDatabasePtr m_database;
+    FsDatabase* m_database;
     std::wstring m_path;
     std::wstring m_configfile_path;
 

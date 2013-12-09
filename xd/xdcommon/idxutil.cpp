@@ -79,6 +79,9 @@ IIndex* createExternalIndex(xd::IDatabasePtr db,
                             bool allow_dups,
                             xd::IJob* job)
 {
+    if (table_path.empty())
+        return false;
+
     xd::IFileInfoPtr finfo = db->getFileInfo(table_path);
     if (finfo.isNull())
         return false;
