@@ -57,9 +57,6 @@ public:
     TableIterator();
     virtual ~TableIterator();
 
-    bool addEventHandler(ITableEvents* handler);
-    bool removeEventHandler(ITableEvents* handler);
-
     bool init(XdnativeDatabase* database,
               TableSet* set,
               ITable* table,
