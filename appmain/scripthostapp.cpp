@@ -1658,7 +1658,7 @@ public:
                 
             // generate temporary path for template
             wxString path = wxT("/.temp/template_");
-            path += makeUniqueString();
+            path += kl::getUniqueString();
             
             // get template mime type
             kl::JsonNode node;

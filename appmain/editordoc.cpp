@@ -2064,7 +2064,7 @@ void EditorDoc::onExecute(wxCommandEvent& evt)
         static int counter = 0;
         ++counter;
         m_path = wxT("/.temp/");
-        m_path += makeUniqueString();
+        m_path += kl::getUniqueString();
         m_external = false;
     }
 

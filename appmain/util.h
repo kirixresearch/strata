@@ -172,15 +172,12 @@ wxString removeChar(const wxString& s, wxChar c);
 // and parts of kl; should factor
 wxChar* zl_strchr(wxChar* str, wxChar ch);
 
-wxString makeUniqueString();
-
 void int2buf(unsigned char* buf, unsigned int i);
 int buf2int(const unsigned char* buf);
 
 
 // TODO: similar functions exist elsewhere; should factor
 std::vector< std::pair<std::wstring, bool> > sortExprToVector(const std::wstring& sort_expr);
-
 
 
 // -- database helper functions -----------------------------------------------

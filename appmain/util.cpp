@@ -309,18 +309,6 @@ wxChar* zl_strchr(wxChar* str, wxChar ch)
     return NULL;
 }
 
-wxString makeUniqueString()
-{
-    unsigned int part1 = ((unsigned int)time(NULL)) & 0xffffffff;
-    unsigned int part2 = rand();
-    static unsigned int part3 = rand();
-    
-    part3++;
-    
-    wxString result;
-    result.Printf(wxT("u%08x%04x%04x"), part1, (part2 & 0xffff), (part3 & 0xffff));
-    return result;
-}
 
 void int2buf(unsigned char* buf, unsigned int i)
 {
