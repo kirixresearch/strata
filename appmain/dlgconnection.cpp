@@ -21,7 +21,15 @@ enum
     ID_First = wxID_HIGHEST + 1,
     ID_ToggleButton_Folder,
     ID_ToggleButton_Server,
-    ID_ToggleButton_DataSource
+    ID_ToggleButton_DataSource,
+
+    ID_Server_Type,
+    ID_Server_Server,
+    ID_Server_Database,
+    ID_Server_Port,
+    ID_Server_Username,
+    ID_Server_Password
+
 };
 
 
@@ -86,9 +94,116 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
 
 
 
+
+
+
     // server page
     m_serverpage_sizer = new wxBoxSizer(wxVERTICAL);
 
+    // create message
+    wxStaticText* message_label = new wxStaticText(this, -1, _("Please enter the connection settings for the database to which you would like to connect."));
+    resizeStaticText(message_label);
+
+    // create the server sizer
+    wxStaticText* server_label = new wxStaticText(this, -1, _("Server:"));
+    wxTextCtrl* server_textctrl = new wxTextCtrl(this, ID_Server_Server, 
+                                                 m_ci.server,
+                                                 wxDefaultPosition,
+                                                 wxSize(200,21));
+    
+    wxSizer* server_sizer = new wxBoxSizer(wxHORIZONTAL);
+    server_sizer->Add(50,23);
+    server_sizer->Add(server_label, 0, wxALIGN_CENTER);
+    server_sizer->Add(server_textctrl, 1, wxALIGN_CENTER);
+    server_sizer->Add(50,23);
+    
+    // create the database sizer
+    wxStaticText* database_label = new wxStaticText(this,  -1,  _("Database:"));
+    wxTextCtrl* database_textctrl = new wxTextCtrl(this, 
+                                         ID_Server_Database,
+                                         m_ci.database,
+                                         wxDefaultPosition,
+                                         wxSize(200,21));
+    
+    wxSizer* database_sizer = new wxBoxSizer(wxHORIZONTAL);
+    database_sizer->Add(50,23);
+    database_sizer->Add(database_label, 0, wxALIGN_CENTER);
+    database_sizer->Add(database_textctrl, 1, wxALIGN_CENTER);
+    database_sizer->Add(50,23);
+
+    // create the port number sizer
+    wxStaticText* port_label = new wxStaticText(this, -1,  _("Port Number:"));
+    wxTextCtrl* port_textctrl = new wxTextCtrl(this, 
+                                     ID_Server_Port, 
+                                     wxString::Format(wxT("%d"), m_ci.port),
+                                     wxDefaultPosition,
+                                     wxSize(200,21));
+    
+    wxSizer* port_sizer = new wxBoxSizer(wxHORIZONTAL);
+    port_sizer->Add(50,23);
+    port_sizer->Add(port_label, 0, wxALIGN_CENTER);
+    port_sizer->Add(port_textctrl, 1, wxALIGN_CENTER);
+    port_sizer->Add(50,23);
+
+    // create the username sizer
+    wxStaticText* username_label = new wxStaticText(this, -1, _("User Name:"));
+    wxTextCtrl* username_textctrl = new wxTextCtrl(this, 
+                                         ID_Server_Username,
+                                         m_ci.username,
+                                         wxDefaultPosition,
+                                         wxSize(200,21));
+    
+    wxSizer* username_sizer = new wxBoxSizer(wxHORIZONTAL);
+    username_sizer->Add(50,23);
+    username_sizer->Add(username_label, 0, wxALIGN_CENTER);
+    username_sizer->Add(username_textctrl, 1, wxALIGN_CENTER);
+    username_sizer->Add(50,23);
+
+    // create the password sizer
+    wxStaticText* password_label = new wxStaticText(this,
+                                                    -1,
+                                                    _("Password:"));
+
+    wxTextCtrl* password_textctrl = new wxTextCtrl(this,
+                                         ID_Server_Password,
+                                         m_ci.password,
+                                         wxDefaultPosition,
+                                         wxSize(200,21),
+                                         wxTE_PASSWORD);
+    
+    wxSizer* password_sizer = new wxBoxSizer(wxHORIZONTAL);
+    password_sizer->Add(50,23);
+    password_sizer->Add(password_label, 0, wxALIGN_CENTER);
+    password_sizer->Add(password_textctrl, 1, wxALIGN_CENTER);
+    password_sizer->Add(50,23);
+
+    // measure the label widths
+    wxSize label_size = getMaxTextSize(server_label,
+                                       database_label,
+                                       username_label,
+                                       password_label,
+                                       port_label);
+    label_size.x += 10;
+    
+
+    server_sizer->SetItemMinSize(server_label, label_size);
+    database_sizer->SetItemMinSize(database_label, label_size);
+    username_sizer->SetItemMinSize(username_label, label_size);
+    password_sizer->SetItemMinSize(password_label, label_size);
+    port_sizer->SetItemMinSize(port_label, label_size);
+
+    // create main sizer
+    m_serverpage_sizer->AddSpacer(20);
+    m_serverpage_sizer->Add(message_label, 0, wxEXPAND | wxLEFT | wxRIGHT, 20);
+    m_serverpage_sizer->AddSpacer(4);
+    m_serverpage_sizer->Add(new wxStaticLine(this, -1, wxDefaultPosition, wxSize(1,1)),
+                            0, wxEXPAND | wxLEFT | wxRIGHT, 20);
+    m_serverpage_sizer->AddSpacer(2);
+    m_serverpage_sizer->Add(server_sizer, 0, wxEXPAND | wxTOP, 10);
+    m_serverpage_sizer->Add(database_sizer, 0, wxEXPAND | wxTOP, 10);
+    m_serverpage_sizer->Add(port_sizer, 0, wxEXPAND | wxTOP, 10);
+    m_serverpage_sizer->Add(username_sizer, 0, wxEXPAND | wxTOP, 10);
+    m_serverpage_sizer->Add(password_sizer, 0, wxEXPAND | wxTOP, 10);
 
 
 
@@ -105,6 +220,7 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
     m_container_sizer->Add(m_filepage_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);
     m_container_sizer->Add(m_serverpage_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);
     m_container_sizer->Add(m_datasourcepage_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);
+    setActivePage(ID_ToggleButton_Folder);
 
 
 
@@ -156,7 +272,6 @@ void DlgConnection::onToggleButton(wxCommandEvent& evt)
 
 void DlgConnection::setActivePage(int page)
 {
-
     m_togglebutton_folder->SetValue(page == m_togglebutton_folder->GetId());
     m_togglebutton_server->SetValue(page == m_togglebutton_server->GetId());
     m_togglebutton_datasources->SetValue(page == m_togglebutton_datasources->GetId());
@@ -164,19 +279,30 @@ void DlgConnection::setActivePage(int page)
     if (page == ID_ToggleButton_Folder)
     {
         m_container_sizer->Show(m_filepage_sizer);
+        m_container_sizer->GetItem(m_filepage_sizer)->SetProportion(1);
         m_container_sizer->Hide(m_serverpage_sizer);
+        m_container_sizer->GetItem(m_serverpage_sizer)->SetProportion(0);
         m_container_sizer->Hide(m_datasourcepage_sizer);
+        m_container_sizer->GetItem(m_datasourcepage_sizer)->SetProportion(0);
     }
      else if (page == ID_ToggleButton_Server)
     {
         m_container_sizer->Hide(m_filepage_sizer);
+        m_container_sizer->GetItem(m_filepage_sizer)->SetProportion(0);
         m_container_sizer->Show(m_serverpage_sizer);
+        m_container_sizer->GetItem(m_serverpage_sizer)->SetProportion(1);
         m_container_sizer->Hide(m_datasourcepage_sizer);
+        m_container_sizer->GetItem(m_datasourcepage_sizer)->SetProportion(0);
     }
      else if (page == ID_ToggleButton_DataSource)
     {
         m_container_sizer->Hide(m_filepage_sizer);
+        m_container_sizer->GetItem(m_filepage_sizer)->SetProportion(0);
         m_container_sizer->Hide(m_serverpage_sizer);
+        m_container_sizer->GetItem(m_serverpage_sizer)->SetProportion(0);
         m_container_sizer->Show(m_datasourcepage_sizer);
+        m_container_sizer->GetItem(m_datasourcepage_sizer)->SetProportion(1);
     }
+
+    Layout();
 }

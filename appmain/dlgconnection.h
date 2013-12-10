@@ -16,9 +16,15 @@
 
 
 
-class Connection
+class ConnectionInfo2
 {
 public:
+
+    std::wstring server;
+    int port;
+    std::wstring database;
+    std::wstring username;
+    std::wstring password;
 
 };
 
@@ -63,7 +69,7 @@ private:
     // file page controls
     wxFileListCtrl* m_file_ctrl;
 
-
+    ConnectionInfo2 m_ci;
 
     DECLARE_EVENT_TABLE()
 };
