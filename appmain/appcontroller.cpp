@@ -17,6 +17,7 @@
 #include "scriptapp.h"
 #include "dlgprojectmgr.h"
 #include "dlgdatabasefile.h"
+#include "dlgconnection.h"
 #include "extensionmgr.h"
 #include "extensionpkg.h"
 #include "moduleremoveduprec.h"
@@ -99,7 +100,6 @@ BEGIN_EVENT_TABLE(AppController, wxEvtHandler)
     EVT_MENU(ID_Project_NewQuery, AppController::onNewQuery)
     EVT_MENU(ID_Project_NewScript, AppController::onNewScript)
     EVT_MENU(ID_Project_OpenFile, AppController::onOpenFile)
-    EVT_MENU(ID_Project_OpenDatabase, AppController::onOpenDatabase)
     EVT_MENU(ID_Project_OpenLocation, AppController::onOpenLocation)
     EVT_MENU(ID_Project_OpenLocationComplete, AppController::onOpenLocationComplete)
     EVT_MENU(ID_Project_RemoveDupRecs, AppController::onRemoveDupRecs)
@@ -810,7 +810,7 @@ bool AppController::init()
     menuFile->AppendSeparator();
     menuFile->Append(ID_Project_Import, _("&Import..."));
     menuFile->Append(ID_Project_Export, _("&Export..."));
-    menuFile->Append(ID_Project_OpenDatabase, _("Create Co&nnection..."));
+    menuFile->Append(ID_Project_ConnectExternal, _("Create Co&nnection..."));
     menuFile->AppendSeparator();
     menuFile->Append(ID_App_OpenProject, _("P&rojects..."));
     menuFile->AppendSeparator();
@@ -2149,12 +2149,6 @@ void AppController::onOpenFile(wxCommandEvent& evt)
                            APPLICATION_NAME,
                            wxOK | wxICON_INFORMATION | wxCENTER);
     }
-}
-
-void AppController::onOpenDatabase(wxCommandEvent& evt)
-{
-    wxCommandEvent e;
-    onConnectExternal(e);
 }
 
 void AppController::onOpenLocation(wxCommandEvent& evt)
@@ -6331,6 +6325,11 @@ static void onExportWizardFinished(ExportWizard* dlg)
 
 void AppController::showCreateExternalConnectionWizard()
 {
+    DlgConnection* dlg = new DlgConnection(g_app->getMainWindow());
+
+    dlg->Show();
+
+    /*
     IDocumentSitePtr site;
     site = g_app->getMainFrame()->lookupSite(wxT("CreateConnectionWizard"));
     if (site.isNull())
@@ -6348,6 +6347,7 @@ void AppController::showCreateExternalConnectionWizard()
         if (!site->getVisible())
             site->setVisible(true);
     }
+    */
 }
 
 

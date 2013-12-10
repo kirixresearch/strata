@@ -208,7 +208,6 @@ private:
     void onStopRecord(wxCommandEvent& evt);
     void onCreateBookmark(wxCommandEvent& evt);
     void onOpenFile(wxCommandEvent& evt);
-    void onOpenDatabase(wxCommandEvent& evt);
     void onOpenLocation(wxCommandEvent& evt);
     void onOpenLocationComplete(wxCommandEvent& evt);
     void onOpenURL(wxCommandEvent& evt);
