@@ -30,16 +30,35 @@ enum
     ID_Server_Username,
     ID_Server_Password,
 
-    ID_DataSource_Grid
+    ID_DataSource_Grid,
+
+    ID_TableList_Grid,
+    ID_TableList_BasePathTextCtrl,
+    ID_TableList_BasePathBrowseButton,
+    ID_TableList_SelectAllButton,
+    ID_TableList_SelectNoneButton
 
 };
 
+
+
+// table selection grid column indexes
+
+enum
+{
+    ONOFF_IDX = 0,
+    SOURCE_TABLENAME_IDX = 1,
+    DEST_TABLENAME_IDX = 2,
+    APPEND_IDX = 3
+};
 
 
 
 BEGIN_EVENT_TABLE(DlgConnection, wxDialog)
     //EVT_BUTTON(wxID_OK, DlgConnection::onOK)
     //EVT_BUTTON(wxID_CANCEL, DlgConnection::onCancel)
+    EVT_BUTTON(wxID_BACKWARD, DlgConnection::onBackward)
+    EVT_BUTTON(wxID_FORWARD, DlgConnection::onForward)
     EVT_TOGGLEBUTTON(ID_ToggleButton_Folder, DlgConnection::onToggleButton)
     EVT_TOGGLEBUTTON(ID_ToggleButton_Server, DlgConnection::onToggleButton)
     EVT_TOGGLEBUTTON(ID_ToggleButton_DataSource, DlgConnection::onToggleButton)
@@ -62,6 +81,8 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
                                                           wxSize(540, 480),
                                                           wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
 {
+    m_last_page = 0;
+    m_current_page = 0;
 
     // toggle button sizer
 
@@ -244,6 +265,8 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
     
     populateDataSourceGrid();
     
+
+
     // create main sizer
     m_datasourcepage_sizer = new wxBoxSizer(wxVERTICAL);
     m_datasourcepage_sizer->AddSpacer(20);
@@ -258,38 +281,130 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
 
 
 
+    // -- table list page ----------------------------------------------------
+
+    m_tablelistpage_sizer = new wxBoxSizer(wxVERTICAL);
+
+
+
+
+
+    wxStaticText* tablelistpage_message_label = new wxStaticText(this, -1, _("Please select the tables from the list that you would like to import."));
+    resizeStaticText(tablelistpage_message_label);
+
+    m_tablelist_grid = new kcl::RowSelectionGrid(this,
+                                       ID_TableList_Grid,
+                                       wxDefaultPosition,
+                                       wxDefaultSize,
+                                       kcl::DEFAULT_BORDER,
+                                       false, false);
+    m_tablelist_grid->setGreenBarInterval(0);
+
+    m_tablelist_grid->createModelColumn(ONOFF_IDX, wxEmptyString, kcl::Grid::typeBoolean, 1, 0);
+    m_tablelist_grid->createModelColumn(SOURCE_TABLENAME_IDX, _("Source Name"), kcl::Grid::typeCharacter, 512, 0);
+    m_tablelist_grid->createModelColumn(DEST_TABLENAME_IDX, _("Destination Name"), kcl::Grid::typeCharacter, 512, 0);
+    m_tablelist_grid->createModelColumn(APPEND_IDX, _("Append"), kcl::Grid::typeBoolean, 1, 0);
+
+    // set cell properties for the grid
+    kcl::CellProperties cellprops;
+    cellprops.mask = kcl::CellProperties::cpmaskAlignment;
+    cellprops.alignment = kcl::Grid::alignRight;
+    m_tablelist_grid->setModelColumnProperties(ONOFF_IDX, &cellprops);
+    
+    cellprops.mask = kcl::CellProperties::cpmaskAlignment;
+    cellprops.alignment = kcl::Grid::alignCenter;
+    m_tablelist_grid->setModelColumnProperties(APPEND_IDX, &cellprops);
+    
+    cellprops.mask = kcl::CellProperties::cpmaskEditable;
+    cellprops.editable = false;
+    m_tablelist_grid->setModelColumnProperties(SOURCE_TABLENAME_IDX, &cellprops);
+    
+    m_tablelist_grid->setRowLabelSize(0);
+    m_tablelist_grid->createDefaultView();
+    m_tablelist_grid->setColumnSize(ONOFF_IDX, 23);
+    m_tablelist_grid->setColumnSize(SOURCE_TABLENAME_IDX, 120);
+    m_tablelist_grid->setColumnSize(DEST_TABLENAME_IDX, 120);
+    m_tablelist_grid->setColumnSize(APPEND_IDX, 50);
+
+    // create import location sizer
+    
+    wxStaticText* label_basepath = new wxStaticText(this,
+                                                    -1,
+                                                    _("Import to:"),
+                                                    wxDefaultPosition,
+                                                    wxDefaultSize);
+    m_tablelist_basepath = new wxTextCtrl(this,
+                                         ID_TableList_BasePathTextCtrl,
+                                         wxEmptyString,
+                                         wxDefaultPosition,
+                                         wxSize(200,21));
+    m_tablelist_basepath->SetValue(m_ci.base_path);
+    
+    wxButton* browse_button = new wxButton(this, ID_TableList_BasePathBrowseButton, _("Browse..."));
+    
+    wxBoxSizer* dest_folder_sizer = new wxBoxSizer(wxHORIZONTAL);
+    dest_folder_sizer->Add(label_basepath, 0, wxALIGN_CENTER);
+    dest_folder_sizer->AddSpacer(5);
+    dest_folder_sizer->Add(m_tablelist_basepath, 1, wxALIGN_CENTER);
+    dest_folder_sizer->AddSpacer(5);
+    dest_folder_sizer->Add(browse_button);
+    
+    // create button sizer
+    
+    wxButton* selectall_button = new wxButton(this, ID_TableList_SelectAllButton, _("Select All"));
+    wxButton* selectnone_button = new wxButton(this, ID_TableList_SelectNoneButton, _("Select None"));
+    
+    wxBoxSizer* button_sizer = new wxBoxSizer(wxHORIZONTAL);
+    button_sizer->Add(selectall_button);
+    button_sizer->AddSpacer(5);
+    button_sizer->Add(selectnone_button);
+    
+    // create main sizer
+    m_tablelistpage_sizer->AddSpacer(20);
+    m_tablelistpage_sizer->Add(tablelistpage_message_label, 0, wxEXPAND | wxLEFT | wxRIGHT, 20);
+    m_tablelistpage_sizer->AddSpacer(4);
+    m_tablelistpage_sizer->Add(new wxStaticLine(this, -1, wxDefaultPosition, wxSize(1,1)),
+                               0, wxEXPAND | wxLEFT | wxRIGHT, 20);
+    m_tablelistpage_sizer->AddSpacer(12);
+    m_tablelistpage_sizer->Add(dest_folder_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 20);
+    m_tablelistpage_sizer->AddSpacer(8);
+    m_tablelistpage_sizer->Add(m_tablelist_grid, 1, wxEXPAND | wxLEFT | wxRIGHT, 20);
+    m_tablelistpage_sizer->AddSpacer(8);
+    m_tablelistpage_sizer->Add(button_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 20);
+    m_tablelistpage_sizer->AddSpacer(12);
+
+
+
+
+
+
+
+
+
+    
+
     m_container_sizer = new wxBoxSizer(wxVERTICAL);
     m_container_sizer->Add(m_filepage_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);
     m_container_sizer->Add(m_serverpage_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);
     m_container_sizer->Add(m_datasourcepage_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);
-    setActivePage(pageFolder);
+    m_container_sizer->Add(m_tablelistpage_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);
 
 
 
 
-
-    // -- table list page ----------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-    wxButton* ok_button = new wxButton(this, wxID_OK);
-    wxButton* cancel_button = new wxButton(this, wxID_CANCEL);
+    m_ok_button = new wxButton(this, wxID_OK);
+    m_cancel_button = new wxButton(this, wxID_CANCEL);
+    m_backward_button = new wxButton(this, wxID_BACKWARD, _("Previous"));
+    m_forward_button = new wxButton(this, wxID_FORWARD, _("Next"));
         
-    wxStdDialogButtonSizer* ok_cancel_sizer = new wxStdDialogButtonSizer;
-    ok_cancel_sizer->AddButton(ok_button);
-    ok_cancel_sizer->AddButton(cancel_button);
-    ok_cancel_sizer->Realize();
-    ok_cancel_sizer->AddSpacer(5);
-    ok_button->SetDefault();
+    m_button_sizer = new wxBoxSizer(wxHORIZONTAL);
+    m_button_sizer->AddStretchSpacer(1);
+    m_button_sizer->Add(m_backward_button, 0, wxEXPAND | wxRIGHT, 5);
+    m_button_sizer->Add(m_forward_button, 0, wxEXPAND | wxRIGHT, 5);
+    m_button_sizer->Add(m_ok_button, 0, wxEXPAND | wxRIGHT, 5);
+    m_button_sizer->Add(m_cancel_button, 0, wxEXPAND | wxRIGHT, 5);
+
+    m_ok_button->SetDefault();
 
 
 
@@ -300,9 +415,12 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
     sizer->AddSpacer(10);
     sizer->Add(m_container_sizer, 1, wxEXPAND);
     sizer->AddSpacer(10);
-    sizer->Add(ok_cancel_sizer, 0, wxEXPAND);
+    sizer->Add(m_button_sizer, 0, wxEXPAND);
     sizer->AddSpacer(10);
     SetSizer(sizer);
+
+
+    setActivePage(pageFolder);
 
 
     Center();
@@ -333,46 +451,77 @@ void DlgConnection::onToggleButton(wxCommandEvent& evt)
 
 }
 
+void DlgConnection::onBackward(wxCommandEvent& evt)
+{
+    setActivePage(m_last_page);
+}
+
+
+void DlgConnection::onForward(wxCommandEvent& evt)
+{
+    setActivePage(pageTableList);
+}
+
+
 
 void DlgConnection::setActivePage(int page)
 {
-    m_togglebutton_folder->SetValue(page == pageFolder ? true : false);
-    m_togglebutton_server->SetValue(page == pageServer ? true : false);
-    m_togglebutton_datasources->SetValue(page == pageDataSource ? true : false);
-    
+    m_last_page = m_current_page;
+    m_current_page = page;
+
+
+    if (page == pageFolder || page == pageServer || page == pageDataSource)
+    {
+        m_togglebutton_folder->SetValue(page == pageFolder ? true : false);
+        m_togglebutton_server->SetValue(page == pageServer ? true : false);
+        m_togglebutton_datasources->SetValue(page == pageDataSource ? true : false);
+    }
+
     if (page == pageFolder)
     {
         m_container_sizer->Show(m_filepage_sizer);
-        m_container_sizer->GetItem(m_filepage_sizer)->SetProportion(1);
         m_container_sizer->Hide(m_serverpage_sizer);
-        m_container_sizer->GetItem(m_serverpage_sizer)->SetProportion(0);
         m_container_sizer->Hide(m_datasourcepage_sizer);
-        m_container_sizer->GetItem(m_datasourcepage_sizer)->SetProportion(0);
+        m_container_sizer->Hide(m_tablelistpage_sizer);
+        showButtons(wxFORWARD | wxCANCEL);
     }
      else if (page == pageServer)
     {
         m_container_sizer->Hide(m_filepage_sizer);
-        m_container_sizer->GetItem(m_filepage_sizer)->SetProportion(0);
         m_container_sizer->Show(m_serverpage_sizer);
-        m_container_sizer->GetItem(m_serverpage_sizer)->SetProportion(1);
         m_container_sizer->Hide(m_datasourcepage_sizer);
-        m_container_sizer->GetItem(m_datasourcepage_sizer)->SetProportion(0);
+        m_container_sizer->Hide(m_tablelistpage_sizer);
+        showButtons(wxFORWARD | wxCANCEL);
 
         m_server_server->SetFocus();
     }
      else if (page == pageDataSource)
     {
         m_container_sizer->Hide(m_filepage_sizer);
-        m_container_sizer->GetItem(m_filepage_sizer)->SetProportion(0);
         m_container_sizer->Hide(m_serverpage_sizer);
-        m_container_sizer->GetItem(m_serverpage_sizer)->SetProportion(0);
         m_container_sizer->Show(m_datasourcepage_sizer);
-        m_container_sizer->GetItem(m_datasourcepage_sizer)->SetProportion(1);
-
-
+        m_container_sizer->Hide(m_tablelistpage_sizer);
+        showButtons(wxFORWARD | wxCANCEL);
+    }
+     else if (page == pageTableList)
+    {
+        m_container_sizer->Hide(m_filepage_sizer);
+        m_container_sizer->Hide(m_serverpage_sizer);
+        m_container_sizer->Hide(m_datasourcepage_sizer);
+        m_container_sizer->Show(m_tablelistpage_sizer);
+        showButtons(wxBACKWARD | wxOK | wxCANCEL);
     }
 
     Layout();
+}
+
+
+void DlgConnection::showButtons(int mask)
+{
+    m_button_sizer->Show(m_ok_button, (mask & wxOK) ? true:false);
+    m_button_sizer->Show(m_cancel_button, (mask & wxCANCEL) ? true:false);
+    m_button_sizer->Show(m_backward_button, (mask & wxBACKWARD) ? true:false);
+    m_button_sizer->Show(m_forward_button, (mask & wxFORWARD) ? true:false);
 }
 
 
