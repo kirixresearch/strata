@@ -28,7 +28,9 @@ enum
     ID_Server_Database,
     ID_Server_Port,
     ID_Server_Username,
-    ID_Server_Password
+    ID_Server_Password,
+
+    ID_DataSource_Grid
 
 };
 
@@ -85,7 +87,7 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
 
 
 
-    // file page
+    // -- file page ----------------------------------------------------------
 
     m_filepage_sizer = new wxBoxSizer(wxVERTICAL);
     m_file_ctrl = new wxFileListCtrl(this, -1, "", false);
@@ -97,12 +99,13 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
 
 
 
-    // server page
+    // -- server page --------------------------------------------------------
+    
     m_serverpage_sizer = new wxBoxSizer(wxVERTICAL);
 
     // create message
-    wxStaticText* message_label = new wxStaticText(this, -1, _("Please enter the connection settings for the database to which you would like to connect."));
-    resizeStaticText(message_label);
+    wxStaticText* server_message_label = new wxStaticText(this, -1, _("Please enter the connection settings for the database to which you would like to connect."));
+    resizeStaticText(server_message_label);
 
     // create the server sizer
     wxStaticText* server_label = new wxStaticText(this, -1, _("Server:"));
@@ -194,7 +197,7 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
 
     // create main sizer
     m_serverpage_sizer->AddSpacer(20);
-    m_serverpage_sizer->Add(message_label, 0, wxEXPAND | wxLEFT | wxRIGHT, 20);
+    m_serverpage_sizer->Add(server_message_label, 0, wxEXPAND | wxLEFT | wxRIGHT, 20);
     m_serverpage_sizer->AddSpacer(4);
     m_serverpage_sizer->Add(new wxStaticLine(this, -1, wxDefaultPosition, wxSize(1,1)),
                             0, wxEXPAND | wxLEFT | wxRIGHT, 20);
@@ -208,10 +211,48 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
 
 
 
-    // data source page
+    // -- data source page ---------------------------------------------------
+
     m_datasourcepage_sizer = new wxBoxSizer(wxVERTICAL);
 
+    wxStaticText* datasource_message_label = new wxStaticText(this, -1, _("Please select the ODBC data source to which you would like to connect."));
+    resizeStaticText(datasource_message_label);
 
+    // create grid
+    m_datasource_grid = new kcl::Grid;
+    m_datasource_grid->setCursorType(kcl::Grid::cursorRowHighlight);
+    m_datasource_grid->setBorderType(kcl::DEFAULT_BORDER);
+    m_datasource_grid->setOptionState(kcl::Grid::optHorzGridLines |
+                           kcl::Grid::optVertGridLines |
+                           kcl::Grid::optColumnMove |
+                           kcl::Grid::optColumnResize |
+                           kcl::Grid::optSelect |
+                           kcl::Grid::optActivateHyperlinks, false);
+    m_datasource_grid->createModelColumn(-1, _("Data Source"), kcl::Grid::typeCharacter, 256, 0);
+    m_datasource_grid->createModelColumn(-1, _("Description"), kcl::Grid::typeCharacter, 1024, 0);
+    m_datasource_grid->setRowLabelSize(0);
+    m_datasource_grid->createDefaultView();
+    m_datasource_grid->setColumnProportionalSize(0, 1);
+    m_datasource_grid->setColumnProportionalSize(1, 2);
+    m_datasource_grid->Create(this, ID_DataSource_Grid);
+
+    kcl::CellProperties cp;
+    cp.mask = kcl::CellProperties::cpmaskEditable;
+    cp.editable = false;
+    m_datasource_grid->setModelColumnProperties(0, &cp);
+    
+    populateDataSourceGrid();
+    
+    // create main sizer
+    m_datasourcepage_sizer = new wxBoxSizer(wxVERTICAL);
+    m_datasourcepage_sizer->AddSpacer(20);
+    m_datasourcepage_sizer->Add(datasource_message_label, 0, wxEXPAND | wxLEFT | wxRIGHT, 20);
+    m_datasourcepage_sizer->AddSpacer(4);
+    m_datasourcepage_sizer->Add(new wxStaticLine(this, -1, wxDefaultPosition, wxSize(1,1)),
+                    0, wxEXPAND | wxLEFT | wxRIGHT, 20);
+    m_datasourcepage_sizer->AddSpacer(12);
+    m_datasourcepage_sizer->Add(m_datasource_grid, 1, wxEXPAND | wxLEFT | wxRIGHT, 20);
+    m_datasourcepage_sizer->AddSpacer(20);
 
 
 
@@ -254,6 +295,7 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
 DlgConnection::~DlgConnection()
 {
 }
+
 
 void DlgConnection::onOK(wxCommandEvent& evt)
 {
@@ -305,4 +347,60 @@ void DlgConnection::setActivePage(int page)
     }
 
     Layout();
+}
+
+
+void DlgConnection::populateDataSourceGrid()
+{
+    xcm::ptr<xd::IDatabaseMgr> dbmgr;
+    dbmgr.create_instance("xdodbc.DatabaseMgr");
+
+    if (dbmgr.isNull())
+    {
+        wxString appname = APPLICATION_NAME;
+        wxString message = wxString::Format(_("This software is missing a required component (xdodbc) and must be reinstalled"));
+        m_datasource_grid->setOverlayText(message);
+        m_datasource_grid->SetFocus();
+        return;
+    }
+
+    xd::IDatabaseEntryEnumPtr odbc_databases;
+    odbc_databases = dbmgr->getDatabaseList(L"", 0, L"", L"");
+
+    m_datasource_grid->deleteAllRows();
+
+    int i, count = odbc_databases->size();
+
+    for (i = 0; i < count; ++i)
+    {
+        m_datasource_grid->insertRow(-1);
+
+        xd::IDatabaseEntryPtr item = odbc_databases->getItem(i);
+        m_datasource_grid->setCellString(i, 0, item->getName());
+        m_datasource_grid->setCellString(i, 1, item->getDescription());
+    }
+
+    // if we already have a server name, move the cursor
+    // to the corresponding grid row
+
+    int row_count = m_datasource_grid->getRowCount();
+    std::wstring cell_str;
+
+    for (i = 0; i < row_count; ++i)
+    {
+        cell_str = towstr(m_datasource_grid->getCellString(i, 0));
+
+        if (kl::iequals(m_ci.server, cell_str))
+        {
+            m_datasource_grid->moveCursor(i, 0);
+            break;
+        }
+    }
+
+    if (row_count == 0)
+        m_datasource_grid->setOverlayText(_("Please contact your database administrator\nto set up an ODBC database connection"));
+         else
+        m_datasource_grid->setOverlayText(wxEmptyString);
+    
+    m_datasource_grid->refresh(kcl::Grid::refreshAll);
 }

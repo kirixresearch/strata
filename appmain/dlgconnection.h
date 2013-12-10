@@ -32,7 +32,7 @@ public:
 
 class wxToggleButton;
 class wxFileListCtrl;
-
+namespace kcl { class Grid; }
 
 class DlgConnection : public wxDialog
 {
@@ -47,6 +47,9 @@ public:
 
 
 private:
+
+
+    void populateDataSourceGrid();
 
     // event handlers
     
@@ -68,6 +71,11 @@ private:
 
     // file page controls
     wxFileListCtrl* m_file_ctrl;
+    
+
+    // data source page controls
+    kcl::Grid* m_datasource_grid;
+
 
     ConnectionInfo2 m_ci;
 
