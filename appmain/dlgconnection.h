@@ -20,6 +20,11 @@ class ConnectionInfo2
 {
 public:
 
+    ConnectionInfo2()
+    {
+        port = 0;
+    }
+
     std::wstring server;
     int port;
     std::wstring database;
@@ -36,6 +41,16 @@ namespace kcl { class Grid; }
 
 class DlgConnection : public wxDialog
 {
+
+    enum
+    {
+        pageFile = 1,
+        pageFolder,
+        pageServer,
+        pageDataSource,
+        pageTextFormat,
+        pageTableList
+    };
 
 public:
 
@@ -72,6 +87,8 @@ private:
     // file page controls
     wxFileListCtrl* m_file_ctrl;
     
+    // server page controls
+    wxTextCtrl* m_server_server;
 
     // data source page controls
     kcl::Grid* m_datasource_grid;

@@ -109,15 +109,16 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
 
     // create the server sizer
     wxStaticText* server_label = new wxStaticText(this, -1, _("Server:"));
-    wxTextCtrl* server_textctrl = new wxTextCtrl(this, ID_Server_Server, 
-                                                 m_ci.server,
-                                                 wxDefaultPosition,
-                                                 wxSize(200,21));
+    m_server_server = new wxTextCtrl(this,
+                                       ID_Server_Server, 
+                                       m_ci.server,
+                                       wxDefaultPosition,
+                                       wxSize(200,21));
     
     wxSizer* server_sizer = new wxBoxSizer(wxHORIZONTAL);
     server_sizer->Add(50,23);
     server_sizer->Add(server_label, 0, wxALIGN_CENTER);
-    server_sizer->Add(server_textctrl, 1, wxALIGN_CENTER);
+    server_sizer->Add(m_server_server, 1, wxALIGN_CENTER);
     server_sizer->Add(50,23);
     
     // create the database sizer
@@ -261,7 +262,22 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
     m_container_sizer->Add(m_filepage_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);
     m_container_sizer->Add(m_serverpage_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);
     m_container_sizer->Add(m_datasourcepage_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);
-    setActivePage(ID_ToggleButton_Folder);
+    setActivePage(pageFolder);
+
+
+
+
+
+    // -- table list page ----------------------------------------------------
+
+
+
+
+
+
+
+
+
 
 
 
@@ -308,17 +324,23 @@ void DlgConnection::onCancel(wxCommandEvent& evt)
 
 void DlgConnection::onToggleButton(wxCommandEvent& evt)
 {
-    setActivePage(evt.GetId());
+    switch (evt.GetId())
+    {
+        case ID_ToggleButton_Folder:     setActivePage(pageFolder); break;
+        case ID_ToggleButton_Server:     setActivePage(pageServer); break;
+        case ID_ToggleButton_DataSource: setActivePage(pageDataSource); break;
+    }
+
 }
 
 
 void DlgConnection::setActivePage(int page)
 {
-    m_togglebutton_folder->SetValue(page == m_togglebutton_folder->GetId());
-    m_togglebutton_server->SetValue(page == m_togglebutton_server->GetId());
-    m_togglebutton_datasources->SetValue(page == m_togglebutton_datasources->GetId());
+    m_togglebutton_folder->SetValue(page == pageFolder ? true : false);
+    m_togglebutton_server->SetValue(page == pageServer ? true : false);
+    m_togglebutton_datasources->SetValue(page == pageDataSource ? true : false);
     
-    if (page == ID_ToggleButton_Folder)
+    if (page == pageFolder)
     {
         m_container_sizer->Show(m_filepage_sizer);
         m_container_sizer->GetItem(m_filepage_sizer)->SetProportion(1);
@@ -327,7 +349,7 @@ void DlgConnection::setActivePage(int page)
         m_container_sizer->Hide(m_datasourcepage_sizer);
         m_container_sizer->GetItem(m_datasourcepage_sizer)->SetProportion(0);
     }
-     else if (page == ID_ToggleButton_Server)
+     else if (page == pageServer)
     {
         m_container_sizer->Hide(m_filepage_sizer);
         m_container_sizer->GetItem(m_filepage_sizer)->SetProportion(0);
@@ -335,8 +357,10 @@ void DlgConnection::setActivePage(int page)
         m_container_sizer->GetItem(m_serverpage_sizer)->SetProportion(1);
         m_container_sizer->Hide(m_datasourcepage_sizer);
         m_container_sizer->GetItem(m_datasourcepage_sizer)->SetProportion(0);
+
+        m_server_server->SetFocus();
     }
-     else if (page == ID_ToggleButton_DataSource)
+     else if (page == pageDataSource)
     {
         m_container_sizer->Hide(m_filepage_sizer);
         m_container_sizer->GetItem(m_filepage_sizer)->SetProportion(0);
@@ -344,6 +368,8 @@ void DlgConnection::setActivePage(int page)
         m_container_sizer->GetItem(m_serverpage_sizer)->SetProportion(0);
         m_container_sizer->Show(m_datasourcepage_sizer);
         m_container_sizer->GetItem(m_datasourcepage_sizer)->SetProportion(1);
+
+
     }
 
     Layout();
