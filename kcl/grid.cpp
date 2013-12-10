@@ -1435,7 +1435,7 @@ const int EndEditCleanupId = 23976;
 const int ScrollTimerId = 23977;
 
 
-BEGIN_EVENT_TABLE(Grid, wxControl)
+BEGIN_EVENT_TABLE(Grid, wxNavigationEnabled<wxControl>)
     EVT_PAINT(Grid::onPaint)
     EVT_SIZE(Grid::onSize)
     EVT_SCROLLWIN(Grid::onScroll)
@@ -8433,6 +8433,14 @@ void Grid::onKeyDown(wxKeyEvent& event)
     
     if (key_code == WXK_TAB)
     {
+        // if the grid is in a dialog, the tab key should be used
+        // for navigating controls
+        if (GetParent()->IsKindOf(CLASSINFO(wxDialog)))
+        {
+            Navigate();
+            return;
+        }
+
         if (event.ShiftDown())
         {
             key_code = WXK_LEFT;

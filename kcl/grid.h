@@ -518,7 +518,7 @@ public:
 
 WX_DECLARE_STRING_HASH_MAP(int, wxStringToColIdxHashMap);
 
-class Grid : public wxControl
+class Grid : public wxNavigationEnabled<wxControl>
 {
 friend class GridTextCtrl;
 friend class GridChoiceCtrl;
