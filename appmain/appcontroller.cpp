@@ -6323,10 +6323,34 @@ static void onExportWizardFinished(ExportWizard* dlg)
 }
 
 
+
+static void onConnectionDlgFinished(DlgConnection* dlg)
+{
+    xd::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return;
+
+    Connection& ci = dlg->getConnectionInfo();
+    std::vector<ConnectionTable>::iterator it;
+
+    std::wstring cstr = ci.getConnectionString();
+
+    for (it = ci.tables.begin(); it != ci.tables.end(); ++it)
+    {
+        xd::FormatDefinition fi;
+        fi.data_connection_string = cstr;
+        fi.data_path = it->input_tablename;
+        db->saveDataView(it->output_tablename, &fi);
+    }
+    
+    g_app->getAppController()->refreshDbDoc();
+}
+
+
 void AppController::showCreateExternalConnectionWizard()
 {
     DlgConnection* dlg = new DlgConnection(g_app->getMainWindow());
-
+    dlg->sigFinished.connect(&onConnectionDlgFinished);
     dlg->Show();
 
     /*

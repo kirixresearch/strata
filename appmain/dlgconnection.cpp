@@ -8,12 +8,18 @@
  *
  */
 
-
 #include "appmain.h"
-#include "dlgconnection.h"
+#include <wx/wx.h>
 #include <wx/artprov.h>
 #include <wx/tglbtn.h>
 #include <wx/filectrl.h>
+#include <wx/statline.h>
+#include <kl/string.h>
+#include <xd/xd.h>
+#include "../kcl/grid.h"
+#include "../kcl/rowselectiongrid.h"
+#include "dlgconnection.h"
+#include "util.h"
 
 
 
@@ -183,11 +189,9 @@ BEGIN_EVENT_TABLE(DlgConnection, wxDialog)
 
     EVT_BUTTON(wxID_BACKWARD, DlgConnection::onBackward)
     EVT_BUTTON(wxID_FORWARD, DlgConnection::onForward)
-    //EVT_BUTTON(wxID_OK, DlgConnection::onOK)
-    //EVT_BUTTON(wxID_CANCEL, DlgConnection::onCancel)
 
-
-
+    EVT_BUTTON(wxID_OK, DlgConnection::onOK)
+    EVT_BUTTON(wxID_CANCEL, DlgConnection::onCancel)
 END_EVENT_TABLE()
 
 
@@ -668,11 +672,48 @@ void DlgConnection::onTableListSelectNone(wxCommandEvent& evt)
 
 void DlgConnection::onOK(wxCommandEvent& evt)
 {
+    if (m_current_page == pageTableList)
+    {
+        m_ci.tables.clear();
+
+        int row, row_count = m_tablelist_grid->getRowCount();
+        for (row = 0; row < row_count; ++row)
+        {
+            if (m_tablelist_grid->getCellBoolean(row, ONOFF_IDX))
+            {
+                ConnectionTable t;
+                t.input_tablename = m_tablelist_grid->getCellString(row, SOURCE_TABLENAME_IDX);
+                t.output_tablename = m_tablelist_grid->getCellString(row, DEST_TABLENAME_IDX);
+                t.append = m_tablelist_grid->getCellBoolean(row, APPEND_IDX);
+                m_ci.tables.push_back(t);
+            }
+        }
+
+    }
+
+
+    sigFinished(this);
+
+    if (IsModal())
+    {
+        EndModal(wxID_OK);
+    }
+     else
+    {
+        Destroy();
+    }
 }
     
 void DlgConnection::onCancel(wxCommandEvent& evt)
 {
-
+    if (IsModal())
+    {
+        EndModal(wxID_CANCEL);
+    }
+     else
+    {
+        Destroy();
+    }
 }
 
 void DlgConnection::onToggleButton(wxCommandEvent& evt)
@@ -707,7 +748,7 @@ void DlgConnection::onForward(wxCommandEvent& evt)
             msg += wxT("  ");
             msg += dbmgr->getErrorString();
             
-            appMessageBox(msg, _("Connection failed"),  wxOK | wxICON_EXCLAMATION | wxCENTER);
+            ::wxMessageBox(msg, _("Connection failed"),  wxOK | wxICON_EXCLAMATION | wxCENTER, wxTheApp->GetTopWindow());
             return;
         }
 
@@ -788,7 +829,6 @@ void DlgConnection::populateDataSourceGrid()
 
     if (dbmgr.isNull())
     {
-        wxString appname = APPLICATION_NAME;
         wxString message = wxString::Format(_("This software is missing a required component (xdodbc) and must be reinstalled"));
         m_datasource_grid->setOverlayText(message);
         m_datasource_grid->SetFocus();
@@ -819,7 +859,7 @@ void DlgConnection::populateDataSourceGrid()
 
     for (i = 0; i < row_count; ++i)
     {
-        cell_str = towstr(m_datasource_grid->getCellString(i, 0));
+        cell_str = m_datasource_grid->getCellString(i, 0).ToStdWstring();
 
         if (kl::iequals(m_ci.server, cell_str))
         {
