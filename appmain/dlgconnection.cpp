@@ -16,6 +16,117 @@
 #include <wx/filectrl.h>
 
 
+
+std::wstring Connection::getConnectionString()
+{
+    std::wstring cstr;
+    std::wstring provider;
+    std::wstring dbtype;
+        
+    switch (type)
+    {
+        case xd::dbtypeXdnative:        provider = L"xdnative"; break;
+        case xd::dbtypeKpg:             provider = L"xdkpg"; break;
+
+        #ifdef WIN32
+        case xd::dbtypeAccess:          provider = L"xdodbc"; dbtype = L"access"; break;
+        case xd::dbtypeSqlServer:       provider = L"xdodbc"; dbtype = L"mssql"; break;
+        #else
+        case xd::dbtypeAccess:          provider = L"xdaccess"; break;
+        case xd::dbtypeSqlServer:       provider = L"xdsqlserver"; break;
+        #endif                      
+                                    
+        case xd::dbtypeExcel:           provider = L"xdodbc"; dbtype = L"excel"; break;
+        case xd::dbtypeSqlite:          provider = L"xdsqlite"; break;
+        case xd::dbtypeMySql:           provider = L"xdmysql"; break;
+                                    
+        case xd::dbtypePostgres:        provider = L"xdpgsql"; break;
+        case xd::dbtypeOracle:          provider = L"xdoracle"; break;
+        case xd::dbtypeOdbc:            provider = L"xdodbc"; dbtype = L"dsn"; break;
+        case xd::dbtypeDb2:             provider = L"xdodbc"; dbtype = L"db2"; break;
+        case xd::dbtypeClient:          provider = L"xdclient"; break;
+        case xd::dbtypeFilesystem:
+        case xd::dbtypeUndefined:
+            if (path.length() == 0)
+                return L"";
+            provider = L"xdfs"; break;
+
+        default:
+            return L"";
+    }
+
+
+    // build connection string
+        
+
+    cstr += L"xdprovider=";
+    cstr += provider;
+    cstr += L";";
+        
+    if (dbtype.length() > 0)
+    {
+        cstr += L"xddbtype=";
+        cstr += dbtype;
+        cstr += L";";
+    }
+        
+    if (server.length() > 0)
+    {
+        cstr += L"host=";
+        cstr += server;
+        cstr += L";";
+    }
+        
+    if (port != 0)
+    {
+        cstr += L"port=";
+        cstr += kl::itowstring(port);
+        cstr += L";";
+    }
+        
+    cstr += L"user id=";
+    cstr += username;
+    cstr += L";";
+        
+    cstr += L"password=";
+    cstr += password;
+    cstr += L";";
+        
+    if (database.length() > 0)
+    {
+        cstr += L"database=";
+        cstr += database;
+        cstr += L";";
+    }
+     else
+    {
+        if (type == xd::dbtypeKpg || type == xd::dbtypeAccess || type == xd::dbtypeSqlite || type == xd::dbtypeExcel)
+        {
+            cstr += L"database=";
+            cstr += path;
+            cstr += L";";
+        }
+    }
+        
+    return cstr;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 enum
 {
     ID_First = wxID_HIGHEST + 1,
@@ -128,6 +239,31 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
     wxStaticText* server_message_label = new wxStaticText(this, -1, _("Please enter the connection settings for the database to which you would like to connect."));
     resizeStaticText(server_message_label);
 
+    // create the server type
+    wxStaticText* servertype_label = new wxStaticText(this, -1, _("Type:"));
+
+
+    m_server_type = new wxChoice(this,
+                                 ID_Server_Type,
+                                 wxDefaultPosition,
+                                 wxSize(200,21),
+                                 0,
+                                 NULL);
+    
+    m_server_type->Append(_("MySQL"),      (void*)xd::dbtypeMySql);     
+    m_server_type->Append(_("SQL Server"), (void*)xd::dbtypeSqlServer);
+    m_server_type->Append(_("Oracle"),     (void*)xd::dbtypeOracle);    
+    m_server_type->Append(_("PostgreSQL"), (void*)xd::dbtypePostgres);
+    m_server_type->Append(_("DB2"),        (void*)xd::dbtypeDb2);       
+    m_server_type->SetSelection(0);
+
+    
+    wxSizer* servertype_sizer = new wxBoxSizer(wxHORIZONTAL);
+    servertype_sizer->Add(50,23);
+    servertype_sizer->Add(servertype_label, 0, wxALIGN_CENTER);
+    servertype_sizer->Add(m_server_type, 1, wxALIGN_CENTER);
+    servertype_sizer->Add(50,23);
+    
     // create the server sizer
     wxStaticText* server_label = new wxStaticText(this, -1, _("Server:"));
     m_server_server = new wxTextCtrl(this,
@@ -203,7 +339,8 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
     password_sizer->Add(50,23);
 
     // measure the label widths
-    wxSize label_size = getMaxTextSize(server_label,
+    wxSize label_size = getMaxTextSize(servertype_label,
+                                       server_label,
                                        database_label,
                                        username_label,
                                        password_label,
@@ -211,6 +348,7 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
     label_size.x += 10;
     
 
+    servertype_sizer->SetItemMinSize(servertype_label, label_size);
     server_sizer->SetItemMinSize(server_label, label_size);
     database_sizer->SetItemMinSize(database_label, label_size);
     username_sizer->SetItemMinSize(username_label, label_size);
@@ -224,6 +362,7 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
     m_serverpage_sizer->Add(new wxStaticLine(this, -1, wxDefaultPosition, wxSize(1,1)),
                             0, wxEXPAND | wxLEFT | wxRIGHT, 20);
     m_serverpage_sizer->AddSpacer(2);
+    m_serverpage_sizer->Add(servertype_sizer, 0, wxEXPAND | wxTOP, 10);
     m_serverpage_sizer->Add(server_sizer, 0, wxEXPAND | wxTOP, 10);
     m_serverpage_sizer->Add(database_sizer, 0, wxEXPAND | wxTOP, 10);
     m_serverpage_sizer->Add(port_sizer, 0, wxEXPAND | wxTOP, 10);
@@ -459,6 +598,27 @@ void DlgConnection::onBackward(wxCommandEvent& evt)
 
 void DlgConnection::onForward(wxCommandEvent& evt)
 {
+    if (m_current_page == pageServer)
+    {
+        xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
+        if (dbmgr.isNull())
+            return;
+
+        xd::IDatabasePtr db = dbmgr->open(m_ci.getConnectionString());
+        if (db.isNull())
+        {
+            wxString msg = _("There was an error connecting to the specified database.");
+            msg += wxT("  ");
+            msg += dbmgr->getErrorString();
+            
+            appMessageBox(msg, _("Connection failed"),  wxOK | wxICON_EXCLAMATION | wxCENTER);
+            return;
+        }
+
+        populateTableListGrid(db);
+    }
+
+
     setActivePage(pageTableList);
 }
 
@@ -579,3 +739,144 @@ void DlgConnection::populateDataSourceGrid()
     
     m_datasource_grid->refresh(kcl::Grid::refreshAll);
 }
+
+
+
+static void getTablesRecursive(xd::IDatabasePtr& db, const std::wstring& path, std::vector<std::wstring>& retval)
+{
+    xd::IFileInfoEnumPtr items = db->getFolderInfo(path);
+
+    if (items.isNull())
+        return;
+
+    int count = items->size();
+    int item_type;
+    int i;
+
+    for (i = 0; i < count; ++i)
+    {
+        xd::IFileInfoPtr info = items->getItem(i);
+        item_type = info->getType();
+
+        // skip 'hidden' objects
+        if (info->getName().substr(0,1) == '.')
+            continue;
+
+        if (item_type == xd::filetypeFolder)
+        {
+            std::wstring folder_path = path;
+            folder_path += info->getName();
+            folder_path += L"/";
+
+            // recursively traverse this folder
+            getTablesRecursive(db, folder_path, retval);
+        }
+         else if (item_type == xd::filetypeTable)
+        {
+            std::wstring name = path;
+            
+            if (name.length() == 0 || name[name.length()-1] != '/')
+                name += L"/";
+                
+            name += info->getName();
+
+            retval.push_back(name);
+        }
+    }
+}
+
+
+
+static ConnectionTable* lookupTable(Connection& c, const std::wstring& tbl)
+{
+    std::vector<ConnectionTable>::iterator it;
+    for (it = c.tables.begin(); it != c.tables.end(); ++it)
+    {
+        if (kl::iequals(tbl, it->input_tablename))
+            return &(*it);
+        if (kl::iequals(tbl, L"/" + it->input_tablename))
+            return &(*it);
+    }
+
+    return NULL;
+}
+
+
+
+void DlgConnection::populateTableListGrid(xd::IDatabasePtr db)
+{
+    // delete all existing rows from grid
+    m_tablelist_grid->deleteAllRows();
+
+    if (db.isNull())
+        return;
+
+    std::vector<std::wstring> tables;
+    std::vector<std::wstring>::iterator it;
+
+    getTablesRecursive(db, L"", tables);
+
+    // format oracle tables the way oracle users
+    // would expect them: "owner.table_name"
+
+    if (m_ci.type == xd::dbtypeOracle || m_ci.type == xd::dbtypeDb2)
+    {
+        for (it = tables.begin(); it != tables.end(); ++it)
+        {
+            std::wstring temps = kl::afterFirst(*it, '/');
+            *it = kl::replaceStr(temps, L"/", L".");
+        }
+    }
+
+
+    // sort the table names vector
+    std::sort(tables.begin(), tables.end());
+
+
+    // populate the grid from the info vector
+    int row = 0;
+    for (it = tables.begin(); it != tables.end(); ++it)
+    {
+        bool selected = true;
+        std::wstring src_tablename = *it;
+        std::wstring out_tablename;
+        bool append = false;
+
+        // remove slash from beginning
+        if (kl::stringFrequency(src_tablename, '/') == 1 && src_tablename[0] == '/')
+            src_tablename = src_tablename.substr(1);
+
+        if (m_ci.type == xd::dbtypeOracle || m_ci.type == xd::dbtypeDb2)
+            out_tablename = kl::afterLast(*it, '.');
+             else
+            out_tablename = kl::afterLast(*it, '/');
+
+        out_tablename = makeValidObjectName(out_tablename, db).ToStdWstring();
+
+        // correlate with the template
+        if (m_ci.tables.size() > 0)
+        {
+            // tables already exist in the template.  "selected" is
+            // by default off.  If the line exists in the template, use
+            // the info stored there.
+            selected = false;
+
+            ConnectionTable* tbl = lookupTable(m_ci, src_tablename);
+            if (tbl)
+            {
+                out_tablename = tbl->output_tablename;
+                append = tbl->append;
+                selected = true;
+            }
+        }
+        
+        m_tablelist_grid->insertRow(-1);
+        m_tablelist_grid->setCellBoolean(row, ONOFF_IDX, selected);
+        m_tablelist_grid->setCellString(row, SOURCE_TABLENAME_IDX, src_tablename);
+        m_tablelist_grid->setCellString(row, DEST_TABLENAME_IDX, out_tablename);
+        m_tablelist_grid->setCellBitmap(row, DEST_TABLENAME_IDX, GETBMP(xpm_blank_16));
+        m_tablelist_grid->setCellBoolean(row, APPEND_IDX, append);
+        row++;
+    }
+}
+

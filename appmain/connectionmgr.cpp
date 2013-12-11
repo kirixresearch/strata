@@ -16,17 +16,17 @@
 // -- Connection class implementation --
 
 
-class Connection : public IConnection
+class ConnectionImpl : public IConnection
 {
     XCM_CLASS_NAME("appmain.Connection")
-    XCM_BEGIN_INTERFACE_MAP(Connection)
+    XCM_BEGIN_INTERFACE_MAP(ConnectionImpl)
         XCM_INTERFACE_ENTRY(IConnection)
     XCM_END_INTERFACE_MAP()
 
 public:
 
 
-    Connection()
+    ConnectionImpl()
     {
         m_type = dbtypeUndefined;
         m_description = wxT("");
@@ -41,7 +41,7 @@ public:
         m_db = xcm::null;
     }
 
-    ~Connection()
+    ~ConnectionImpl()
     {
     }
 
@@ -377,7 +377,7 @@ private:
 
 IConnectionPtr createUnmanagedConnection()
 {
-    Connection* connection = new Connection;
+    ConnectionImpl* connection = new ConnectionImpl;
     IConnectionPtr c = static_cast<IConnection*>(connection);
     return c;
 }

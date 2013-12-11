@@ -16,15 +16,34 @@
 
 
 
-class ConnectionInfo2
+class ConnectionTable
 {
 public:
 
-    ConnectionInfo2()
+    bool append;
+    std::wstring input_tablename;
+    std::wstring output_tablename;
+};
+
+
+
+class Connection
+{
+public:
+
+    Connection()
     {
         port = 0;
+        type = xd::dbtypeUndefined;
     }
 
+    std::wstring getConnectionString();
+
+public:
+
+    std::wstring path;
+
+    int type;
     std::wstring server;
     int port;
     std::wstring database;
@@ -32,6 +51,8 @@ public:
     std::wstring password;
 
     std::wstring base_path;
+
+    std::vector<ConnectionTable> tables;
 };
 
 
@@ -60,14 +81,13 @@ public:
     DlgConnection(wxWindow* parent);
     ~DlgConnection();
 
-
     void setActivePage(int page);
-
 
 private:
 
 
     void populateDataSourceGrid();
+    void populateTableListGrid(xd::IDatabasePtr);
     void showButtons(int mask);
 
     // event handlers
@@ -105,6 +125,7 @@ private:
     wxFileListCtrl* m_file_ctrl;
     
     // server page controls
+    wxChoice* m_server_type;
     wxTextCtrl* m_server_server;
 
     // data source page controls
@@ -114,7 +135,9 @@ private:
     kcl::RowSelectionGrid* m_tablelist_grid;
     wxTextCtrl* m_tablelist_basepath;
 
-    ConnectionInfo2 m_ci;
+    Connection m_ci;
+
+    std::vector<int> m_server_types;  // database types (xd::dbtype*) that have the same indexes as the combo box
 
     DECLARE_EVENT_TABLE()
 };
