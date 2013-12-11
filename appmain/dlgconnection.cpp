@@ -166,13 +166,25 @@ enum
 
 
 BEGIN_EVENT_TABLE(DlgConnection, wxDialog)
-    //EVT_BUTTON(wxID_OK, DlgConnection::onOK)
-    //EVT_BUTTON(wxID_CANCEL, DlgConnection::onCancel)
-    EVT_BUTTON(wxID_BACKWARD, DlgConnection::onBackward)
-    EVT_BUTTON(wxID_FORWARD, DlgConnection::onForward)
     EVT_TOGGLEBUTTON(ID_ToggleButton_Folder, DlgConnection::onToggleButton)
     EVT_TOGGLEBUTTON(ID_ToggleButton_Server, DlgConnection::onToggleButton)
     EVT_TOGGLEBUTTON(ID_ToggleButton_DataSource, DlgConnection::onToggleButton)
+
+    EVT_CHOICE(ID_Server_Type,   DlgConnection::onServerParameterChanged)
+    EVT_TEXT(ID_Server_Server,   DlgConnection::onServerParameterChanged)
+    EVT_TEXT(ID_Server_Database, DlgConnection::onServerParameterChanged)
+    EVT_TEXT(ID_Server_Port,     DlgConnection::onServerParameterChanged)
+    EVT_TEXT(ID_Server_Username, DlgConnection::onServerParameterChanged)
+    EVT_TEXT(ID_Server_Password, DlgConnection::onServerParameterChanged)
+
+
+    EVT_BUTTON(wxID_BACKWARD, DlgConnection::onBackward)
+    EVT_BUTTON(wxID_FORWARD, DlgConnection::onForward)
+    //EVT_BUTTON(wxID_OK, DlgConnection::onOK)
+    //EVT_BUTTON(wxID_CANCEL, DlgConnection::onCancel)
+
+
+
 END_EVENT_TABLE()
 
 
@@ -255,7 +267,13 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
     m_server_type->Append(_("Oracle"),     (void*)xd::dbtypeOracle);    
     m_server_type->Append(_("PostgreSQL"), (void*)xd::dbtypePostgres);
     m_server_type->Append(_("DB2"),        (void*)xd::dbtypeDb2);       
-    m_server_type->SetSelection(0);
+    
+    // set combo setting from m_ci
+    for (int idx = 0; idx < m_server_type->GetCount(); ++idx)
+    {
+        if (m_server_type->GetClientData(idx) == (void*)m_ci.type)
+            m_server_type->SetSelection(idx);
+    }
 
     
     wxSizer* servertype_sizer = new wxBoxSizer(wxHORIZONTAL);
@@ -294,16 +312,16 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
 
     // create the port number sizer
     wxStaticText* port_label = new wxStaticText(this, -1,  _("Port Number:"));
-    wxTextCtrl* port_textctrl = new wxTextCtrl(this, 
-                                     ID_Server_Port, 
-                                     wxString::Format(wxT("%d"), m_ci.port),
-                                     wxDefaultPosition,
-                                     wxSize(200,21));
+    m_server_port = new wxTextCtrl(this, 
+                                   ID_Server_Port, 
+                                   wxString::Format("%d", m_ci.port),
+                                   wxDefaultPosition,
+                                   wxSize(200,21));
     
     wxSizer* port_sizer = new wxBoxSizer(wxHORIZONTAL);
     port_sizer->Add(50,23);
     port_sizer->Add(port_label, 0, wxALIGN_CENTER);
-    port_sizer->Add(port_textctrl, 1, wxALIGN_CENTER);
+    port_sizer->Add(m_server_port, 1, wxALIGN_CENTER);
     port_sizer->Add(50,23);
 
     // create the username sizer
@@ -569,6 +587,32 @@ DlgConnection::~DlgConnection()
 {
 }
 
+
+void DlgConnection::onServerParameterChanged(wxCommandEvent& evt)
+{
+    switch (evt.GetId())
+    {
+        case ID_Server_Type:
+            m_ci.type = (long)m_server_type->GetClientData(m_server_type->GetSelection());
+            switch (m_ci.type)
+            {
+                case xd::dbtypeMySql:      m_ci.port = 3306; break;
+                case xd::dbtypeSqlServer:  m_ci.port = 1433; break;
+                case xd::dbtypeOracle:     m_ci.port = 1521; break;
+                case xd::dbtypePostgres:   m_ci.port = 5432; break;
+                case xd::dbtypeDb2:        m_ci.port = 50000; break;
+            }
+
+            m_server_port->SetValue(wxString::Format("%d", m_ci.port));
+            break;
+
+        case ID_Server_Server:    m_ci.server = evt.GetString().ToStdWstring(); break;
+        case ID_Server_Database:  m_ci.database = evt.GetString().ToStdWstring(); break;
+        case ID_Server_Username:  m_ci.username = evt.GetString().ToStdWstring(); break;
+        case ID_Server_Password:  m_ci.password = evt.GetString().ToStdWstring(); break;
+        case ID_Server_Port:      m_ci.port = wxAtoi(evt.GetString()); break;
+    }
+}
 
 void DlgConnection::onOK(wxCommandEvent& evt)
 {

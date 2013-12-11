@@ -33,8 +33,8 @@ public:
 
     Connection()
     {
-        port = 0;
-        type = xd::dbtypeUndefined;
+        port = 3306;
+        type = xd::dbtypeMySql;
     }
 
     std::wstring getConnectionString();
@@ -92,6 +92,8 @@ private:
 
     // event handlers
     
+    void onServerParameterChanged(wxCommandEvent& evt);
+
     void onOK(wxCommandEvent& evt);
     void onCancel(wxCommandEvent& evt);
     void onBackward(wxCommandEvent& evt);
@@ -127,6 +129,7 @@ private:
     // server page controls
     wxChoice* m_server_type;
     wxTextCtrl* m_server_server;
+    wxTextCtrl* m_server_port;
 
     // data source page controls
     kcl::Grid* m_datasource_grid;
