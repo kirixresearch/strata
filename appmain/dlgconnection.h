@@ -93,6 +93,10 @@ private:
     // event handlers
     
     void onServerParameterChanged(wxCommandEvent& evt);
+    void onServerPasswordEnterPressed(wxCommandEvent& evt);
+
+    void onTableListSelectAll(wxCommandEvent& evt);
+    void onTableListSelectNone(wxCommandEvent& evt);
 
     void onOK(wxCommandEvent& evt);
     void onCancel(wxCommandEvent& evt);

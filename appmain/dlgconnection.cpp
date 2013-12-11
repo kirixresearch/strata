@@ -176,7 +176,10 @@ BEGIN_EVENT_TABLE(DlgConnection, wxDialog)
     EVT_TEXT(ID_Server_Port,     DlgConnection::onServerParameterChanged)
     EVT_TEXT(ID_Server_Username, DlgConnection::onServerParameterChanged)
     EVT_TEXT(ID_Server_Password, DlgConnection::onServerParameterChanged)
+    EVT_TEXT_ENTER(ID_Server_Password, DlgConnection::onServerPasswordEnterPressed)
 
+    EVT_BUTTON(ID_TableList_SelectAllButton, DlgConnection::onTableListSelectAll)
+    EVT_BUTTON(ID_TableList_SelectNoneButton, DlgConnection::onTableListSelectNone)
 
     EVT_BUTTON(wxID_BACKWARD, DlgConnection::onBackward)
     EVT_BUTTON(wxID_FORWARD, DlgConnection::onForward)
@@ -269,7 +272,7 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
     m_server_type->Append(_("DB2"),        (void*)xd::dbtypeDb2);       
     
     // set combo setting from m_ci
-    for (int idx = 0; idx < m_server_type->GetCount(); ++idx)
+    for (size_t idx = 0; idx < m_server_type->GetCount(); ++idx)
     {
         if (m_server_type->GetClientData(idx) == (void*)m_ci.type)
             m_server_type->SetSelection(idx);
@@ -620,6 +623,48 @@ void DlgConnection::onServerParameterChanged(wxCommandEvent& evt)
         case ID_Server_Port:      m_ci.port = wxAtoi(evt.GetString()); break;
     }
 }
+
+void DlgConnection::onServerPasswordEnterPressed(wxCommandEvent& evt)
+{
+    if (m_forward_button->IsShown())
+    {
+        wxCommandEvent evt(wxEVT_COMMAND_BUTTON_CLICKED, m_forward_button->GetId());
+        evt.SetEventObject(this);
+        GetEventHandler()->ProcessEvent(evt);
+    }
+     else if (m_ok_button->IsShown())
+    {
+        wxCommandEvent evt(wxEVT_COMMAND_BUTTON_CLICKED, m_ok_button->GetId());
+        evt.SetEventObject(this);
+        GetEventHandler()->ProcessEvent(evt);
+    }
+}
+
+
+void DlgConnection::onTableListSelectAll(wxCommandEvent& evt)
+{
+    if (m_tablelist_grid->isEditing())
+        m_tablelist_grid->endEdit(true);
+
+    int row, count = m_tablelist_grid->getRowCount();
+    for (row = 0; row < count; ++row)
+        m_tablelist_grid->setCellBoolean(row, ONOFF_IDX, true);
+
+    m_tablelist_grid->refreshColumn(kcl::Grid::refreshAll, ONOFF_IDX);
+}
+
+void DlgConnection::onTableListSelectNone(wxCommandEvent& evt)
+{
+    if (m_tablelist_grid->isEditing())
+        m_tablelist_grid->endEdit(true);
+
+    int row, count = m_tablelist_grid->getRowCount();
+    for (row = 0; row < count; ++row)
+        m_tablelist_grid->setCellBoolean(row, ONOFF_IDX, false);
+
+    m_tablelist_grid->refreshColumn(kcl::Grid::refreshAll, ONOFF_IDX);
+}
+
 
 void DlgConnection::onOK(wxCommandEvent& evt)
 {
