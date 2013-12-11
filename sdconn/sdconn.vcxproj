@@ -90,13 +90,17 @@
   <ItemGroup>
     <ClCompile Include="app.cpp" />
     <ClCompile Include="bitmaps.cpp" />
+    <ClCompile Include="dlgconnection.cpp" />
     <ClCompile Include="dlgsettings.cpp" />
     <ClCompile Include="mainframe.cpp" />
+    <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app.h" />
+    <ClInclude Include="dlgconnection.h" />
     <ClInclude Include="dlgsettings.h" />
     <ClInclude Include="mainframe.h" />
+    <ClInclude Include="util.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="sdconn.rc" />

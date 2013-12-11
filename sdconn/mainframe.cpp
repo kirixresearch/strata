@@ -16,6 +16,7 @@
 #include "app.h"
 #include "mainframe.h"
 #include "dlgsettings.h"
+#include "dlgconnection.h"
 #include "../kcl/scrolllistcontrol.h"
 
 
@@ -64,6 +65,12 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 
 void MainFrame::onAddTable(wxCommandEvent& evt)
 {
+    DlgConnection dlg(this);
+
+    if (dlg.ShowModal() != wxID_OK)
+        return;
+
+/*
     wxString filter;
     filter += _("All Files");
     filter += wxT(" (*.*)|*.*|");
@@ -97,10 +104,12 @@ void MainFrame::onAddTable(wxCommandEvent& evt)
         db->saveDataView(key, &fi);
     }
 
+
     refreshList();
 
 
     g_app->getSdserv().updateAssetInformation();
+*/
 }
 
 

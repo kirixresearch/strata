@@ -56,6 +56,9 @@ BitmapMgr g_bitmap_mgr;
 
 
 #include "../img/c/gf_checkmark_32.png.c"
+#include "../img/c/gf_folder_open_32.png.c"
+#include "../img/c/gf_db_db_32.png.c"
+#include "../img/c/gf_db_od_32.png.c"
 #include "../img/c/gf_db_conn_blue_24.png.c"
 #include "../img/c/gf_gear_24.png.c"
 #include "../img/c/gf_x_24.png.c"
@@ -63,7 +66,10 @@ BitmapMgr g_bitmap_mgr;
 void registerImages()
 {
     REGISTER(gf_checkmark_32)
+    REGISTER(gf_folder_open_32)
     REGISTER(gf_db_conn_blue_24)
+    REGISTER(gf_db_db_32)
+    REGISTER(gf_db_od_32)
     REGISTER(gf_gear_24)
     REGISTER(gf_x_24)
 }
