@@ -449,39 +449,6 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
     wxStaticText* tablelistpage_message_label = new wxStaticText(this, -1, _("Please select the tables from the list that you would like to import."));
     resizeStaticText(tablelistpage_message_label);
 
-    m_tablelist_grid = new kcl::RowSelectionGrid(this,
-                                       ID_TableList_Grid,
-                                       wxDefaultPosition,
-                                       wxDefaultSize,
-                                       kcl::DEFAULT_BORDER,
-                                       false, false);
-    m_tablelist_grid->setGreenBarInterval(0);
-
-    m_tablelist_grid->createModelColumn(ONOFF_IDX, wxEmptyString, kcl::Grid::typeBoolean, 1, 0);
-    m_tablelist_grid->createModelColumn(SOURCE_TABLENAME_IDX, _("Source Name"), kcl::Grid::typeCharacter, 512, 0);
-    m_tablelist_grid->createModelColumn(DEST_TABLENAME_IDX, _("Destination Name"), kcl::Grid::typeCharacter, 512, 0);
-    m_tablelist_grid->createModelColumn(APPEND_IDX, _("Append"), kcl::Grid::typeBoolean, 1, 0);
-
-    // set cell properties for the grid
-    kcl::CellProperties cellprops;
-    cellprops.mask = kcl::CellProperties::cpmaskAlignment;
-    cellprops.alignment = kcl::Grid::alignRight;
-    m_tablelist_grid->setModelColumnProperties(ONOFF_IDX, &cellprops);
-    
-    cellprops.mask = kcl::CellProperties::cpmaskAlignment;
-    cellprops.alignment = kcl::Grid::alignCenter;
-    m_tablelist_grid->setModelColumnProperties(APPEND_IDX, &cellprops);
-    
-    cellprops.mask = kcl::CellProperties::cpmaskEditable;
-    cellprops.editable = false;
-    m_tablelist_grid->setModelColumnProperties(SOURCE_TABLENAME_IDX, &cellprops);
-    
-    m_tablelist_grid->setRowLabelSize(0);
-    m_tablelist_grid->createDefaultView();
-    m_tablelist_grid->setColumnSize(ONOFF_IDX, 23);
-    m_tablelist_grid->setColumnSize(SOURCE_TABLENAME_IDX, 120);
-    m_tablelist_grid->setColumnSize(DEST_TABLENAME_IDX, 120);
-    m_tablelist_grid->setColumnSize(APPEND_IDX, 50);
 
     // create import location sizer
     
@@ -506,6 +473,51 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
     dest_folder_sizer->AddSpacer(5);
     dest_folder_sizer->Add(browse_button);
     
+
+    // create table list grid
+    m_tablelist_grid = new kcl::RowSelectionGrid(this,
+                                       ID_TableList_Grid,
+                                       wxDefaultPosition,
+                                       wxDefaultSize,
+                                       kcl::DEFAULT_BORDER,
+                                       false, false);
+    m_tablelist_grid->setGreenBarInterval(0);
+    m_tablelist_grid->setAcceptsFocus(true);
+
+    m_tablelist_grid->createModelColumn(ONOFF_IDX, wxEmptyString, kcl::Grid::typeBoolean, 1, 0);
+    m_tablelist_grid->createModelColumn(SOURCE_TABLENAME_IDX, _("Source Name"), kcl::Grid::typeCharacter, 512, 0);
+    m_tablelist_grid->createModelColumn(DEST_TABLENAME_IDX, _("Destination Name"), kcl::Grid::typeCharacter, 512, 0);
+    m_tablelist_grid->createModelColumn(APPEND_IDX, _("Append"), kcl::Grid::typeBoolean, 1, 0);
+
+    // set cell properties for the grid
+    kcl::CellProperties cellprops;
+    cellprops.mask = kcl::CellProperties::cpmaskAlignment;
+    cellprops.alignment = kcl::Grid::alignRight;
+    m_tablelist_grid->setModelColumnProperties(ONOFF_IDX, &cellprops);
+    
+    cellprops.mask = kcl::CellProperties::cpmaskAlignment;
+    cellprops.alignment = kcl::Grid::alignCenter;
+    m_tablelist_grid->setModelColumnProperties(APPEND_IDX, &cellprops);
+    
+    cellprops.mask = kcl::CellProperties::cpmaskEditable;
+    cellprops.editable = false;
+    m_tablelist_grid->setModelColumnProperties(SOURCE_TABLENAME_IDX, &cellprops);
+    
+    m_tablelist_grid->setRowLabelSize(0);
+    m_tablelist_grid->createDefaultView();
+    m_tablelist_grid->setColumnSize(ONOFF_IDX, 23);
+    m_tablelist_grid->setColumnProportionalSize(SOURCE_TABLENAME_IDX, 1); // was 120 px
+    m_tablelist_grid->setColumnProportionalSize(DEST_TABLENAME_IDX, 1);
+    m_tablelist_grid->setColumnSize(APPEND_IDX, 50);
+
+
+
+
+
+
+
+
+
     // create button sizer
     
     wxButton* selectall_button = new wxButton(this, ID_TableList_SelectAllButton, _("Select All"));
@@ -536,10 +548,6 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
 
 
 
-
-
-    
-
     m_container_sizer = new wxBoxSizer(wxVERTICAL);
     m_container_sizer->Add(m_filepage_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);
     m_container_sizer->Add(m_serverpage_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);
@@ -548,11 +556,10 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
 
 
 
-
+    m_forward_button = new wxButton(this, wxID_FORWARD, _("Next"));
+    m_backward_button = new wxButton(this, wxID_BACKWARD, _("Previous"));
     m_ok_button = new wxButton(this, wxID_OK);
     m_cancel_button = new wxButton(this, wxID_CANCEL);
-    m_backward_button = new wxButton(this, wxID_BACKWARD, _("Previous"));
-    m_forward_button = new wxButton(this, wxID_FORWARD, _("Next"));
         
     m_button_sizer = new wxBoxSizer(wxHORIZONTAL);
     m_button_sizer->AddStretchSpacer(1);
@@ -561,7 +568,7 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
     m_button_sizer->Add(m_ok_button, 0, wxEXPAND | wxRIGHT, 5);
     m_button_sizer->Add(m_cancel_button, 0, wxEXPAND | wxRIGHT, 5);
 
-    m_ok_button->SetDefault();
+    //m_ok_button->SetDefault();
 
 
 

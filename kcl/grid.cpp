@@ -8398,6 +8398,17 @@ void Grid::removeToolTip()
 
 void Grid::onKeyDown(wxKeyEvent& event)
 {
+    if (event.GetKeyCode() == WXK_TAB)
+    {
+        // if the grid is in a dialog, the tab key should be used
+        // for navigating controls
+        if (GetParent()->IsKindOf(CLASSINFO(wxDialog)))
+        {
+            Navigate();
+            return;
+        }
+    }
+
     GridEvent evt;
     evt.m_key_event = event;
     evt.SetRow(m_cursor_row);
@@ -8433,14 +8444,6 @@ void Grid::onKeyDown(wxKeyEvent& event)
     
     if (key_code == WXK_TAB)
     {
-        // if the grid is in a dialog, the tab key should be used
-        // for navigating controls
-        if (GetParent()->IsKindOf(CLASSINFO(wxDialog)))
-        {
-            Navigate();
-            return;
-        }
-
         if (event.ShiftDown())
         {
             key_code = WXK_LEFT;
