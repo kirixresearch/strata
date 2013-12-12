@@ -100,8 +100,7 @@ size_t WebSocketsRequestInfo::write(const std::string& str)
 void WebSocketsRequestInfo::sendNotFoundError()
 {
     std::string reply;
-    reply = "Token: " + m_token + "\n" +
-            "Error: NOTFOUND\n\n";
+    reply = "Message-Type: Response\nToken: " + m_token + "\nError: NOTFOUND\n\n";
 
     m_client->send(reply);
 }
