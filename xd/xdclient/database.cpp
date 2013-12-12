@@ -506,7 +506,7 @@ xd::IFileInfoPtr ClientDatabase::getFileInfo(const std::wstring& path)
     else f->type = xd::filetypeTable;
 
     std::wstring format = file_info["format"];
-         if (format == L"native")          f->format = xd::formatDefault;
+         if (format == L"default")         f->format = xd::formatDefault;
     else if (format == L"delimitedtext")   f->format = xd::formatDelimitedText;
     else if (format == L"fixedlengthtext") f->format = xd::formatFixedLengthText;
     else if (format == L"text")            f->format = xd::formatText;

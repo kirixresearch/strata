@@ -394,7 +394,7 @@ void Controller::apiFileInfo(RequestInfo& req)
 
         switch (finfo->getFormat())
         {
-            case xd::formatDefault:          file_info["format"] = "native";            break;
+            case xd::formatDefault:         file_info["format"] = "default";            break;
             case xd::formatXbase:           file_info["format"] = "xbase";             break;
             case xd::formatDelimitedText:   file_info["format"] = "delimited_text";    break;
             case xd::formatFixedLengthText: file_info["format"] = "fixedlength_text";  break;
