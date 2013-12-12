@@ -8,7 +8,6 @@
  *
  */
 
-
 #include "app.h"
 #include <wx/wx.h>
 #include <wx/artprov.h>
@@ -190,11 +189,9 @@ BEGIN_EVENT_TABLE(DlgConnection, wxDialog)
 
     EVT_BUTTON(wxID_BACKWARD, DlgConnection::onBackward)
     EVT_BUTTON(wxID_FORWARD, DlgConnection::onForward)
-    //EVT_BUTTON(wxID_OK, DlgConnection::onOK)
-    //EVT_BUTTON(wxID_CANCEL, DlgConnection::onCancel)
 
-
-
+    EVT_BUTTON(wxID_OK, DlgConnection::onOK)
+    EVT_BUTTON(wxID_CANCEL, DlgConnection::onCancel)
 END_EVENT_TABLE()
 
 
@@ -675,11 +672,48 @@ void DlgConnection::onTableListSelectNone(wxCommandEvent& evt)
 
 void DlgConnection::onOK(wxCommandEvent& evt)
 {
+    if (m_current_page == pageTableList)
+    {
+        m_ci.tables.clear();
+
+        int row, row_count = m_tablelist_grid->getRowCount();
+        for (row = 0; row < row_count; ++row)
+        {
+            if (m_tablelist_grid->getCellBoolean(row, ONOFF_IDX))
+            {
+                ConnectionTable t;
+                t.input_tablename = m_tablelist_grid->getCellString(row, SOURCE_TABLENAME_IDX);
+                t.output_tablename = m_tablelist_grid->getCellString(row, DEST_TABLENAME_IDX);
+                t.append = m_tablelist_grid->getCellBoolean(row, APPEND_IDX);
+                m_ci.tables.push_back(t);
+            }
+        }
+
+    }
+
+
+    sigFinished(this);
+
+    if (IsModal())
+    {
+        EndModal(wxID_OK);
+    }
+     else
+    {
+        Destroy();
+    }
 }
     
 void DlgConnection::onCancel(wxCommandEvent& evt)
 {
-
+    if (IsModal())
+    {
+        EndModal(wxID_CANCEL);
+    }
+     else
+    {
+        Destroy();
+    }
 }
 
 void DlgConnection::onToggleButton(wxCommandEvent& evt)

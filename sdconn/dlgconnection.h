@@ -63,6 +63,8 @@ namespace kcl { class Grid; }
 namespace kcl { class RowSelectionGrid; }
 
 
+
+
 class DlgConnection : public wxDialog
 {
 
@@ -82,6 +84,10 @@ public:
     ~DlgConnection();
 
     void setActivePage(int page);
+    Connection& getConnectionInfo() { return m_ci; }
+
+public: // signals
+    xcm::signal1<DlgConnection*> sigFinished;
 
 private:
 
@@ -148,6 +154,8 @@ private:
 
     DECLARE_EVENT_TABLE()
 };
+
+
 
 
 

@@ -65,10 +65,31 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& pos, const wxSize& si
 
 void MainFrame::onAddTable(wxCommandEvent& evt)
 {
+    xd::IDatabasePtr db = g_app->getDatabase();
+
+
     DlgConnection dlg(this);
 
     if (dlg.ShowModal() != wxID_OK)
         return;
+
+    Connection& ci = dlg.getConnectionInfo();
+    std::vector<ConnectionTable>::iterator it;
+
+    std::wstring cstr = ci.getConnectionString();
+
+    for (it = ci.tables.begin(); it != ci.tables.end(); ++it)
+    {
+        xd::FormatDefinition fi;
+        fi.data_connection_string = cstr;
+        fi.data_path = it->input_tablename;
+        db->saveDataView(it->output_tablename, &fi);
+    }
+    
+    refreshList();
+
+    g_app->getSdserv().updateAssetInformation();
+
 
 /*
     wxString filter;
@@ -163,6 +184,43 @@ void MainFrame::onDelete(wxCommandEvent& evt)
 }
 
 
+std::wstring getLocationString(xd::FormatDefinition def)
+{
+    if (def.data_connection_string.length() == 0)
+    {
+        // no connection, just return path
+        return def.data_path;
+    }
+    
+    xd::ConnectionStringParser parser(def.data_connection_string);
+
+    std::wstring provider = parser.getLowerValue(L"xdprovider");
+    std::wstring dbtype = parser.getLowerValue(L"xddbtype");
+    std::wstring host = parser.getValue(L"host");
+
+    if (provider == L"xdmysql")
+    {
+        return def.data_path + L" on " + host + L" (MySQL)";
+    }
+    else if (provider == L"xdpgsql")
+    {
+        return def.data_path + L" on " + host + L" (PostgreSQL)";
+    }
+    else if (provider == L"xdoracle")
+    {
+        return def.data_path + L" on " + host + L" (Oracle)";
+    }
+    else if (provider == L"xdodbc" && dbtype == L"mssql")
+    {
+        return def.data_path + L" on " + host + L" (SQL Server)";
+    }
+
+    if (host.length() > 0)
+        return def.data_path + L" on " + host;
+         else
+        return def.data_path;
+}
+
 void MainFrame::refreshList()
 {
     m_list->clearItems();
@@ -184,7 +242,7 @@ void MainFrame::refreshList()
         {
             std::wstring name = kl::afterLast(def.data_path, PATH_SEPARATOR_CHAR);
 
-            addItem(finfo->getName(), name, def.data_path);
+            addItem(finfo->getName(), name, getLocationString(def));
         }
     }
 
