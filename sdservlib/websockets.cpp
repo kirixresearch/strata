@@ -429,7 +429,7 @@ bool WebSocketsClient::run(const std::string& server, int port, bool ssl)
                 t = time(NULL);
                 if (t - last_ping > 300) // 5 minutes)
                 {
-                    send("PING");
+                    send("PING_FROM_CLIENT");
                     last_ping = t;
                 }
             }
