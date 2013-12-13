@@ -16,6 +16,7 @@
 #include "libwebsockets.h"
 #include <kl/url.h>
 #include <kl/json.h>
+#include <kl/thread.h>
 
 
 
@@ -112,6 +113,30 @@ void WebSocketsRequestInfo::sendNotFoundError()
 
 
 
+class WebSocketsRequestThread : public kl::Thread
+{
+public:
+
+    WebSocketsRequestThread(Sdserv* _sdserv, WebSocketsClient* _ws, const std::wstring& _path, const std::wstring& _method) : sdserv(_sdserv), req(_ws), path(_path), method(_method)
+    {
+    }
+
+    ~WebSocketsRequestThread()
+    {
+    }
+
+    std::wstring path;
+    std::wstring method;
+    WebSocketsRequestInfo req;
+    Sdserv* sdserv;
+
+    unsigned int entry()
+    {
+        sdserv->m_controller->invokeApi(path, method, req);
+
+        return 0;
+    }
+};
 
 
 
@@ -260,40 +285,45 @@ void WebSocketsClient::onMessage(const std::string& msg)
     }
 
 
-    WebSocketsRequestInfo req(this);
-    req.m_uri = path;
-    req.m_token = kl::tostring(token);
-
-
-    // parse parameters
-    pos = 0;
-    end = params.length();
-    while (pos < end)
-    {
-        amp = params.find('&', pos);
-        if (amp == params.npos)
-            amp = end;
-
-        chunk = params.substr(pos, amp-pos);
-
-        eq = chunk.find('=');
-        if (eq == chunk.npos)
-            break; // invalid format (missing equals)
-
-        key = chunk.substr(0, eq);
-        value = chunk.substr(eq+1);
-        kl::trim(key);
-        kl::trim(value);
-
-        req.setValue(key, value);
-
-        pos = amp+1;
-    }
 
 
     if (msgtype == L"Method")
     {
-        m_sdserv->m_controller->invokeApi(path, method, req);
+        WebSocketsRequestThread* thread = new WebSocketsRequestThread(m_sdserv, this, path, method);
+
+        WebSocketsRequestInfo& req = thread->req;
+        req.m_uri = path;
+        req.m_token = kl::tostring(token);
+
+        // parse parameters
+        pos = 0;
+        end = params.length();
+        while (pos < end)
+        {
+            amp = params.find('&', pos);
+            if (amp == params.npos)
+                amp = end;
+
+            chunk = params.substr(pos, amp-pos);
+
+            eq = chunk.find('=');
+            if (eq == chunk.npos)
+                break; // invalid format (missing equals)
+
+            key = chunk.substr(0, eq);
+            value = chunk.substr(eq+1);
+            kl::trim(key);
+            kl::trim(value);
+
+            req.setValue(key, value);
+
+            pos = amp+1;
+        }
+
+
+        //m_sdserv->m_controller->invokeApi(path, method, req);
+
+        thread->create();
     }
      else if (msgtype == L"Notify")
     {

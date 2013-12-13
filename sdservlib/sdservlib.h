@@ -25,6 +25,7 @@ class Sdserv
 {
     friend class HttpServer;
     friend class WebSocketsClient;
+    friend class WebSocketsRequestThread;
     friend class Controller;
 
 public:
