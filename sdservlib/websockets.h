@@ -63,6 +63,7 @@ public:
     {
         m_sdserv = sdserv;
         m_publish_flag = 0;
+        m_write_flag = 0;
     }
 
     bool run(const std::string& server, int port = 80, bool ssl = false);
@@ -79,8 +80,10 @@ public:
     Sdserv* m_sdserv;
     struct libwebsocket_context* m_context;
     struct libwebsocket* m_wsi;
+    xcm::mutex m_write_bufs_mutex;
     std::queue<std::string> m_write_bufs;
     int m_publish_flag;
+    int m_write_flag;
 
 private:
 

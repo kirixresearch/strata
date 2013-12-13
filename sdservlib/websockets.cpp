@@ -203,37 +203,50 @@ static int websockets_callback(struct libwebsocket_context* context,
         break;
 
         case LWS_CALLBACK_CLIENT_WRITEABLE:
-            if (!wsclient->m_write_bufs.empty())
+        {
+            wsclient->m_write_bufs_mutex.lock();
+            if (wsclient->m_write_bufs.empty())
             {
-                buf = (char*)(data->buf + LWS_SEND_BUFFER_PRE_PADDING);
-
-                std::string& front = wsclient->m_write_bufs.front();
-                size_t len = front.length();
-
-                if (len <= MAX_MESSAGE_PAYLOAD)
-                {
-                    memcpy(buf, front.c_str(), len);
-                    n = libwebsocket_write(wsi, (unsigned char*)buf, len, LWS_WRITE_TEXT);
-                }
-                 else
-                {
-                    buf = new char[LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING];
-                    memcpy(buf + LWS_SEND_BUFFER_PRE_PADDING, front.c_str(), len);
-                    n = libwebsocket_write(wsi, (unsigned char*)(buf+LWS_SEND_BUFFER_PRE_PADDING), len, LWS_WRITE_TEXT);
-                    delete[] buf;
-
-                    // schedule another write
-                    libwebsocket_callback_on_writable(context, wsi);
-                }
-
-                wsclient->m_write_bufs.pop();
-
-                // schedule another write if there's more to write
-                if (!wsclient->m_write_bufs.empty())
-                    libwebsocket_callback_on_writable(context, wsi);
-
+                wsclient->m_write_bufs_mutex.unlock();
                 break;
             }
+
+            bool schedule_more_writes = false;
+
+            buf = (char*)(data->buf + LWS_SEND_BUFFER_PRE_PADDING);
+
+            std::string& front = wsclient->m_write_bufs.front();
+            size_t len = front.length();
+
+            if (len <= MAX_MESSAGE_PAYLOAD)
+            {
+                memcpy(buf, front.c_str(), len);
+                wsclient->m_write_bufs.pop();
+                if (!wsclient->m_write_bufs.empty())
+                    schedule_more_writes = true;
+                wsclient->m_write_bufs_mutex.unlock();
+
+                n = libwebsocket_write(wsi, (unsigned char*)buf, len, LWS_WRITE_TEXT);
+            }
+             else
+            {
+                len = MAX_MESSAGE_PAYLOAD;
+
+                buf = new char[LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING];
+                memcpy(buf + LWS_SEND_BUFFER_PRE_PADDING, front.c_str(), len);
+                front = front.substr(len);
+                wsclient->m_write_bufs_mutex.unlock();
+
+                n = libwebsocket_write(wsi, (unsigned char*)(buf+LWS_SEND_BUFFER_PRE_PADDING), len, LWS_WRITE_TEXT);
+                delete[] buf;
+
+                // schedule another write
+                libwebsocket_callback_on_writable(context, wsi);
+            }
+
+
+            break;
+        }
 
         default:
             break;
@@ -384,8 +397,10 @@ void WebSocketsClient::doPublishAssets()
 
 void WebSocketsClient::send(const std::string& msg)
 {
+    m_write_bufs_mutex.lock();
     m_write_bufs.push(msg);
-    libwebsocket_callback_on_writable(m_context, m_wsi);
+    m_write_flag = 1;
+    m_write_bufs_mutex.unlock();
 }
 
 
@@ -471,6 +486,14 @@ bool WebSocketsClient::run(const std::string& server, int port, bool ssl)
             {
                 m_publish_flag = 0;
                 doPublishAssets();
+            }
+
+            if (m_write_flag)
+            {
+                libwebsocket_callback_on_writable(m_context, m_wsi);
+                m_write_bufs_mutex.lock();
+                m_write_flag = 0;
+                m_write_bufs_mutex.unlock();
             }
         }
 
