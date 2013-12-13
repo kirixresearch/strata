@@ -162,6 +162,9 @@ static int websockets_callback(struct libwebsocket_context* context,
         }
         break;
 
+        case LWS_CALLBACK_CLOSED:
+        break;
+
         case LWS_CALLBACK_CLIENT_RECEIVE:
         {
             size_t remaining = libwebsockets_remaining_packet_payload(wsi);

@@ -239,6 +239,7 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="colorselector.cpp" />
+    <ClCompile Include="filepanel.cpp" />
     <ClCompile Include="grid.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -334,6 +335,7 @@
     <ClInclude Include="colordropdown.h" />
     <ClInclude Include="colorpanel.h" />
     <ClInclude Include="colorselector.h" />
+    <ClInclude Include="filepanel.h" />
     <ClInclude Include="grid.h" />
     <ClInclude Include="griddnd.h" />
     <ClInclude Include="gridmemmodel.h" />

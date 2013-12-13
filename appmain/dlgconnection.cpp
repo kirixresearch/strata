@@ -12,12 +12,12 @@
 #include <wx/wx.h>
 #include <wx/artprov.h>
 #include <wx/tglbtn.h>
-#include <wx/filectrl.h>
 #include <wx/statline.h>
 #include <kl/string.h>
 #include <xd/xd.h>
 #include "../kcl/grid.h"
 #include "../kcl/rowselectiongrid.h"
+#include "../kcl/filepanel.h"
 #include "dlgconnection.h"
 #include "util.h"
 
@@ -241,9 +241,9 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
     // -- file page ----------------------------------------------------------
 
     m_filepage_sizer = new wxBoxSizer(wxVERTICAL);
-    m_file_ctrl = new wxFileListCtrl(this, -1, "", false);
-    m_file_ctrl->GoToHomeDir();
-    m_filepage_sizer->Add(m_file_ctrl, 1, wxEXPAND);
+    m_file_panel = new kcl::FilePanel(this);
+    //m_file_panel->GoToHomeDir();
+    m_filepage_sizer->Add(m_file_panel, 1, wxEXPAND);
 
 
 

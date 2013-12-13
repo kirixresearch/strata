@@ -61,7 +61,7 @@ class wxToggleButton;
 class wxFileListCtrl;
 namespace kcl { class Grid; }
 namespace kcl { class RowSelectionGrid; }
-
+namespace kcl { class FilePanel; }
 
 
 
@@ -134,7 +134,7 @@ private:
     wxButton* m_backward_button;
 
     // file page controls
-    wxFileListCtrl* m_file_ctrl;
+    kcl::FilePanel* m_file_panel;
     
     // server page controls
     wxChoice* m_server_type;
