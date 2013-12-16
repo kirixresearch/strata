@@ -220,20 +220,22 @@ static int websockets_callback(struct libwebsocket_context* context,
             }
              else
             {
-                len = MAX_MESSAGE_PAYLOAD;
-
                 buf = new char[LWS_SEND_BUFFER_PRE_PADDING + len + LWS_SEND_BUFFER_POST_PADDING];
                 memcpy(buf + LWS_SEND_BUFFER_PRE_PADDING, front.c_str(), len);
-                front = front.substr(len);
+                wsclient->m_write_bufs.pop();
+                if (!wsclient->m_write_bufs.empty())
+                    schedule_more_writes = true;
                 wsclient->m_write_bufs_mutex.unlock();
 
                 n = libwebsocket_write(wsi, (unsigned char*)(buf+LWS_SEND_BUFFER_PRE_PADDING), len, LWS_WRITE_TEXT);
                 delete[] buf;
+            }
 
+            if (schedule_more_writes)
+            {
                 // schedule another write
                 libwebsocket_callback_on_writable(context, wsi);
             }
-
 
             break;
         }
