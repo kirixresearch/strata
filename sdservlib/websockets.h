@@ -84,6 +84,7 @@ public:
     std::queue<std::string> m_write_bufs;
     int m_publish_flag;
     int m_write_flag;
+    std::wstring m_session;
 
 private:
 

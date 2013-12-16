@@ -174,16 +174,6 @@ static int websockets_callback(struct libwebsocket_context* context,
         case LWS_CALLBACK_CLIENT_ESTABLISHED:
         {
             data->index = 0;
-
-            std::wstring username = wsclient->m_sdserv->getOption(L"login.username");
-            std::wstring password = wsclient->m_sdserv->getOption(L"login.password");
-
-            std::wstring msg;
-            msg =  L"Token: " + kl::getUniqueString() + L"\n";
-            msg += L"Method: login\n";
-            msg += L"Parameters: username=" + kl::url_encodeURIComponent(username) + L"&password=" + kl::url_encodeURIComponent(password) + L"\n\n";
-
-            wsclient->send(kl::tostring(msg));
         }
         break;
 
@@ -265,7 +255,7 @@ void WebSocketsClient::onMessage(const std::string& msg)
     std::wstring wmsg = kl::towstring(msg);
     
     // parse headers
-    std::wstring msgtype, token, method, path, params, notify;
+    std::wstring msgtype, token, method, path, params, notify, session;
 
     size_t end = wmsg.find(L"\n\n");
     size_t pos = 0;
@@ -293,6 +283,7 @@ void WebSocketsClient::onMessage(const std::string& msg)
         else if (key == L"Parameters") params = value;
         else if (key == L"Path") path = value;
         else if (key == L"Notify") notify = value;
+        else if (key == L"Session") session = value;
 
         pos = lf+1;
     }
@@ -345,6 +336,30 @@ void WebSocketsClient::onMessage(const std::string& msg)
             // inform server of our data assets
             updateAssetInformation();
         }
+        else if (notify == L"Welcome")
+        {
+            std::wstring username = m_sdserv->getOption(L"login.username");
+            std::wstring password = m_sdserv->getOption(L"login.password");
+
+            std::wstring msg;
+            msg =  L"Token: " + kl::getUniqueString() + L"\n";
+            msg += L"Method: login\n";
+            msg += L"Parameters: username=" + kl::url_encodeURIComponent(username) + L"&password=" + kl::url_encodeURIComponent(password);
+            if (m_session.length() > 0)
+            {
+                msg += L"&session=" + kl::url_encodeURIComponent(m_session);
+            }
+
+            msg += L"\n\n";
+            send(kl::tostring(msg));
+
+            if (m_session.length() == 0)
+            {
+                // new session
+                m_session = session;
+            }
+        }
+
     }
 }
 

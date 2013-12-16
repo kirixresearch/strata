@@ -235,6 +235,9 @@ void MainFrame::refreshList()
     {
         finfo = files->getItem(i);
 
+        if (kl::iequals(finfo->getName(), L"cloud"))
+            continue;
+
         std::wstring cstr, fullpath;
 
         xd::FormatDefinition def;
