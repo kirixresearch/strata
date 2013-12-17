@@ -1057,11 +1057,12 @@ void Controller::apiRead(RequestInfo& req)
             }
 
             req.setContentType(kl::tostring(finfo->getMimeType()).c_str());
+            req.setContentLength(-1);
 
             char buf[4096];
             unsigned long len;
             while (stream->read(buf, 4096, &len))
-                req.write(buf, len);
+                req.writePiece(buf, len);
             return;
         }
 

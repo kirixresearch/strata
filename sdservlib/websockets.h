@@ -37,6 +37,8 @@ public:
     RequestFileInfo getPostFileInfo(const std::wstring& key);
     
     void setContentType(const char* content_type);
+    void setContentLength(int length) { }
+    size_t writePiece(const void* ptr, size_t length);
     size_t write(const void* ptr, size_t length);
     size_t write(const std::string& str);
     size_t write(const std::wstring& str);

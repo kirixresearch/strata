@@ -77,6 +77,13 @@ void WebSocketsRequestInfo::setContentType(const char* content_type)
     m_content_type = content_type;
 }
 
+size_t WebSocketsRequestInfo::writePiece(const void* ptr, size_t length)
+{
+    std::string msg((char*)ptr, length);
+    m_client->send(msg);
+    return msg.length();
+}
+
 size_t WebSocketsRequestInfo::write(const void* ptr, size_t length)
 {
     std::string msg((char*)ptr, length);

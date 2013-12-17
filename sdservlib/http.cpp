@@ -806,7 +806,7 @@ void HttpRequestInfo::checkHeaderSent()
     {
         if (m_content_length == -1)
         {
-            mg_must_close(m_conn);
+            mg_force_close(m_conn);
             reply += "Connection: close\r\n\r\n";
         }
          else
@@ -816,7 +816,7 @@ void HttpRequestInfo::checkHeaderSent()
     }
      else
     {
-        mg_must_close(m_conn);
+        mg_force_close(m_conn);
         reply += "\r\n";
     }
 
