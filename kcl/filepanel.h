@@ -12,10 +12,43 @@
 #ifndef __KCL_FILEPANEL_H
 #define __KCL_FILEPANEL_H
 
-class wxFileListCtrl;
+#include <vector>
+class wxTreeCtrl;
 
 namespace kcl
 {
+
+
+
+
+class FileInfo
+{
+public:
+
+    wxString name;
+    bool folder;
+};
+
+class FileCtrl : public wxListCtrl
+{
+public:
+
+    FileCtrl(wxWindow* parent,
+             wxWindowID id = wxID_ANY,
+             const wxPoint& pos = wxDefaultPosition,
+             const wxSize& size = wxDefaultSize,
+             long style = wxLC_LIST);
+
+    bool goToDir(const wxString& dir);
+
+private:
+
+    bool populate();
+
+    wxString m_curdir;
+    wxString m_filespec;
+    std::vector<FileInfo> m_files;
+};
 
 
 class FilePanel :  public wxPanel
@@ -27,7 +60,8 @@ public:
 
 private:
 
-    wxFileListCtrl* m_file_ctrl;
+    wxTreeCtrl* m_location_tree;
+    FileCtrl* m_file_ctrl;
 
     DECLARE_EVENT_TABLE()
 };
