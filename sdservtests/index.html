@@ -5,17 +5,14 @@
 var tests = [];
 </script>
 
-
+<script>var g_url = "http://localhost:28000";</script>
+<script src="jquery-1.9.1.min.js"></script>
 <script src="test0001.js"></script>
 
 <script>
 
     function onLoad()
 	{
-	    var path = document.URL.substr(8).replace('index.html', 'project');
-		var node = document.getElementById("instructions");
-		node.innerHTML = "<p>Make sure the following command is running: <b>" +
-		                 "sdserv -d xdprovider=xdfs;database=" + path + " -p 28000</b></p>";
 	}
 
 
