@@ -10,6 +10,15 @@ var tests = [];
 
 <script>
 
+    function onLoad()
+	{
+	    var path = document.URL.substr(8).replace('index.html', 'project');
+		var node = document.getElementById("instructions");
+		node.innerHTML = "<p>Make sure the following command is running: <b>" +
+		                 "sdserv -d xdprovider=xdfs;database=" + path + " -p 28000</b></p>";
+	}
+
+
     function log(str)
     {
         var node = document.getElementById("write");
@@ -46,7 +55,9 @@ var tests = [];
 
 </head>
 
-<body>
+<body onload="onLoad()">
+
+<div id="instructions"></div>
 
 <form>
     <input type="button" value="Run Tests" onclick="runTests();" >
