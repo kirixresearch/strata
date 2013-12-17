@@ -1385,6 +1385,21 @@ xd::IFileInfoPtr FsDatabase::getFileInfo(const std::wstring& path)
             f->type = -1;  // auto-determine type
             // file info's format field is retrieved on demand
             
+            if (f->name.find('.') != f->name.npos)
+            {
+                std::wstring ext = kl::afterLast(f->name, '.');
+                if (kl::iequals(ext, "html") || kl::iequals(ext, "htm"))
+                {
+                    f->type = xd::filetypeStream;
+                    f->mime_type = L"text/html";
+                }
+                 else if (kl::iequals(ext, "js"))
+                {
+                    f->type = xd::filetypeStream;
+                    f->mime_type = L"application/javascript";
+                }
+            }
+
             return static_cast<xd::IFileInfo*>(f);
         }
     }

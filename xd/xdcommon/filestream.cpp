@@ -69,6 +69,9 @@ bool FileStream::read(void* buf,
         *read_count = r;
     }
     
+    if (read_size > 0 && r == 0)
+        return false;
+
     return true;
 }
                   
