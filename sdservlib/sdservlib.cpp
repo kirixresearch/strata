@@ -81,6 +81,10 @@ static kl::JsonNode getJsonNodeFromFile(const std::wstring& filename)
 
 std::wstring Sdserv::getDatabaseConnectionString(const std::wstring& database_name)
 {
+    // if database_name is a connection string itself, use it
+    if (kl::icontains(database_name, L"xdprovider="))
+        return database_name;
+
     // first, look for option "database.<dbname>"
 
     std::wstring res = getOption(L"database." + database_name);

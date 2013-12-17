@@ -898,7 +898,11 @@ bool HttpRequestInfo::isMethodPost() const
 
 
 
-
+HttpServer::HttpServer(Sdserv* sdserv)
+{
+    m_sdserv = sdserv;
+    m_options_arr_size = 0;
+}
 
 //static
 int HttpServer::request_callback(struct mg_connection* conn)

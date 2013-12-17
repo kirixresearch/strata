@@ -114,7 +114,7 @@ class HttpServer
 {
 public:
 
-    HttpServer(Sdserv* sdserv) { m_sdserv = sdserv; }
+    HttpServer(Sdserv* sdserv);
     bool run();
 
 private:
