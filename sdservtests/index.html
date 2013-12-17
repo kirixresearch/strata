@@ -1,0 +1,62 @@
+<html>
+<head>
+
+<script>
+var tests = [];
+</script>
+
+
+<script src="test0001.js"></script>
+
+<script>
+
+    function log(str)
+    {
+        var node = document.getElementById("write");
+        node.innerHTML += ("<p>" + str + "</p>");
+    }
+    
+	function clearLog()
+	{
+		document.getElementById("write").innerHTML = "";
+	}
+	
+    function runTests()
+    {
+	    clearLog();
+		
+        for (var i = 0; i < tests.length; ++i)
+        {
+		    
+            var result = tests[i]();
+			if (result)
+			{
+			    log("Test #" + (i+1) + " succeeded.");
+			}
+			 else
+			{
+			    log("<b>Test #" + (i+1) + " FAILED.</b>");
+			}
+        }
+		
+		return false;
+    }
+	
+</script>
+
+</head>
+
+<body>
+
+<form>
+    <input type="button" value="Run Tests" onclick="runTests();" >
+</form>
+
+<br>
+<div id="write"></div>
+
+</body>
+</html>
+
+
+
