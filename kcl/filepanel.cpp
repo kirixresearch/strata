@@ -84,10 +84,10 @@ FileCtrl::FileCtrl(wxWindow* parent,
 {
     SetImageList(wxTheFileIconsTable->GetSmallImageList(), wxIMAGE_LIST_SMALL);
 
-    InsertColumn(0, _("Name"),          wxLIST_FORMAT_LEFT, 180);
-    InsertColumn(1, _("Date Modified"), wxLIST_FORMAT_LEFT, 80);
-    InsertColumn(2, _("Type"),          wxLIST_FORMAT_LEFT, 80);
-    InsertColumn(3, _("Size"),          wxLIST_FORMAT_RIGHT, 80);
+    InsertColumn(0, _("Name"),          wxLIST_FORMAT_LEFT, 230);
+    InsertColumn(1, _("Size"),          wxLIST_FORMAT_RIGHT, 80);
+    InsertColumn(2, _("Date Modified"), wxLIST_FORMAT_LEFT, 135);
+    InsertColumn(3, _("Type"),          wxLIST_FORMAT_LEFT, 80);
 
     
     goToDir("C:\\");
@@ -127,9 +127,15 @@ bool FileCtrl::populate()
     bool more = dir.GetFirst(&fname, "", wxDIR_DIRS);
     while (more)
     {
+        wxFileName fn;
+        fn.AssignDir(m_curdir);
+        fn.AppendDir(fname);
+
         FileInfo fi;
         fi.folder = true;
         fi.name = fname;
+        fi.size = 0;
+        fi.datetime = fn.GetModificationTime();
         m_files.push_back(fi);
 
         more = dir.GetNext(&fname);
@@ -195,7 +201,7 @@ bool FileCtrl::populate()
 
         if (it->folder)
         {
-            this->SetItem(idx, 2, _("File folder"));
+            this->SetItem(idx, 3, _("File folder"));
         }
          else
         {
@@ -215,21 +221,21 @@ bool FileCtrl::populate()
                          else
                         desc.MakeCapitalized();
                     desc += " File";
-                    this->SetItem(idx, 2, ext + " File");
+                    this->SetItem(idx, 3, ext + " File");
                 }
 
-                this->SetItem(idx, 2, desc);
+                this->SetItem(idx, 3, desc);
             }
              else
             {
-                this->SetItem(idx, 2, _("Data File"));
+                this->SetItem(idx, 3, _("Data File"));
             }
         }
 
 
         if (it->datetime.IsValid())
         {
-            this->SetItem(idx, 1, it->datetime.Format());
+            this->SetItem(idx, 2, it->datetime.Format());
         }
         
         if (!it->folder)
@@ -237,7 +243,7 @@ bool FileCtrl::populate()
             wxULongLong kb = it->size / 1024;
             wxString sizestr = wxNumberFormatter::ToString((long)kb.GetValue());
             sizestr += " KB";
-            this->SetItem(idx, 3, sizestr);
+            this->SetItem(idx, 1, sizestr);
         }
 
         idx++;
