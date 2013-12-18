@@ -7,13 +7,35 @@ var tests = [];
 
 <script>var g_url = "http://localhost:28000";</script>
 <script src="jquery-1.9.1.min.js"></script>
+<script src="util.js"></script>
 <script src="test0001.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <script>
 
     function onLoad()
-	{
-	}
+    {
+    }
 
 
     function log(str)
@@ -22,32 +44,32 @@ var tests = [];
         node.innerHTML += ("<p>" + str + "</p>");
     }
     
-	function clearLog()
-	{
-		document.getElementById("write").innerHTML = "";
-	}
-	
+    function clearLog()
+    {
+        document.getElementById("write").innerHTML = "";
+    }
+    
     function runTests()
     {
-	    clearLog();
-		
+        clearLog();
+        
         for (var i = 0; i < tests.length; ++i)
         {
-		    
+            
             var result = tests[i]();
-			if (result)
-			{
-			    log("Test #" + (i+1) + " succeeded.");
-			}
-			 else
-			{
-			    log("<b>Test #" + (i+1) + " FAILED.</b>");
-			}
+            if (result)
+            {
+                log("Test #" + (i+1) + " succeeded.");
+            }
+             else
+            {
+                log("<b>Test #" + (i+1) + " FAILED.</b>");
+            }
         }
-		
-		return false;
+        
+        return false;
     }
-	
+    
 </script>
 
 </head>
