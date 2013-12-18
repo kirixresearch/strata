@@ -17,9 +17,17 @@
 #include <wx/dir.h>
 #include <wx/tokenzr.h>
 #include <wx/imaglist.h>
+#include <wx/stdpaths.h>
+#include <wx/wupdlock.h>
 #include <wx/generic/dirctrlg.h>
+#include <wx/numformatter.h>
+#include <wx/mimetype.h>
 #include "filepanel.h"
 
+#ifdef WIN32
+#include <windows.h>
+#include <shlobj.h>
+#endif
 
 
 extern size_t wxGetAvailableDrives(wxArrayString &paths, wxArrayString &names, wxArrayInt &icon_ids);
@@ -76,11 +84,12 @@ FileCtrl::FileCtrl(wxWindow* parent,
 {
     SetImageList(wxTheFileIconsTable->GetSmallImageList(), wxIMAGE_LIST_SMALL);
 
-    InsertColumn(0, _("Name"),          wxLIST_FORMAT_LEFT, wxLIST_AUTOSIZE);
-    InsertColumn(1, _("Date Modified"), wxLIST_FORMAT_LEFT, wxLIST_AUTOSIZE);
-    InsertColumn(2, _("Type"),          wxLIST_FORMAT_LEFT, wxLIST_AUTOSIZE);
-    InsertColumn(3, _("Size"),          wxLIST_FORMAT_LEFT, wxLIST_AUTOSIZE);
+    InsertColumn(0, _("Name"),          wxLIST_FORMAT_LEFT, 180);
+    InsertColumn(1, _("Date Modified"), wxLIST_FORMAT_LEFT, 80);
+    InsertColumn(2, _("Type"),          wxLIST_FORMAT_LEFT, 80);
+    InsertColumn(3, _("Size"),          wxLIST_FORMAT_RIGHT, 80);
 
+    
     goToDir("C:\\");
 }
 
@@ -101,8 +110,10 @@ bool FileCtrl::populate()
 {
     wxBusyCursor bc;
     wxLogNull nulllog;
+    wxWindowUpdateLocker noUpdates(this);
 
     DeleteAllItems();
+    m_files.clear();
 
     wxDir dir(m_curdir);
 
@@ -136,10 +147,16 @@ bool FileCtrl::populate()
         bool more = dir.GetFirst(&fname, t.GetNextToken(), wxDIR_FILES);
         while (more)
         {
+            wxFileName fn(m_curdir, fname);
+            
+
             FileInfo fi;
             fi.folder = false;
             fi.name = fname;
+            fi.size = fn.GetSize();
+            fi.datetime = fn.GetModificationTime();
             m_files.push_back(fi);
+
 
             more = dir.GetNext(&fname);
         }
@@ -157,23 +174,71 @@ bool FileCtrl::populate()
     {
         image_id = wxFileIconsTable::folder;
 
-        if (it->folder)
+
+        if (it->name.find('.') != it->name.npos)
         {
-            image_id = wxFileIconsTable::folder;
+            ext = it->name.AfterLast('.');
+            image_id = wxTheFileIconsTable->GetIconID(ext);
         }
          else
         {
-            image_id = wxFileIconsTable::file;
-
-            if (it->name.find('.') != it->name.npos)
-            {
-                ext = it->name.AfterLast('.');
-                image_id = wxTheFileIconsTable->GetIconID(ext);
-            }
+            ext = L"";
         }
+
+
+        if (it->folder)
+            image_id = wxFileIconsTable::folder;
+             else
+            image_id = wxFileIconsTable::file;
 
         this->InsertItem(idx, it->name, image_id);
 
+        if (it->folder)
+        {
+            this->SetItem(idx, 2, _("File folder"));
+        }
+         else
+        {
+            if (ext.length() > 0)
+            {
+                wxString desc;
+                wxFileType* ft = wxTheMimeTypesManager->GetFileTypeFromExtension(ext);
+                if (ft)
+                {
+                    ft->GetDescription(&desc);
+                }
+                 else
+                {
+                    desc = ext;
+                    if (desc.length() <= 3)
+                        desc.MakeUpper();
+                         else
+                        desc.MakeCapitalized();
+                    desc += " File";
+                    this->SetItem(idx, 2, ext + " File");
+                }
+
+                this->SetItem(idx, 2, desc);
+            }
+             else
+            {
+                this->SetItem(idx, 2, _("Data File"));
+            }
+        }
+
+
+        if (it->datetime.IsValid())
+        {
+            this->SetItem(idx, 1, it->datetime.Format());
+        }
+        
+        if (!it->folder)
+        {
+            wxULongLong kb = it->size / 1024;
+            wxString sizestr = wxNumberFormatter::ToString((long)kb.GetValue());
+            sizestr += " KB";
+            this->SetItem(idx, 3, sizestr);
+        }
 
         idx++;
     }
@@ -189,14 +254,22 @@ bool FileCtrl::populate()
 
 
 
+class LocationTreeData : public wxTreeItemData
+{
+public:
+    LocationTreeData(const wxString& _loc) { loc = _loc; }
+    wxString loc;
+};
 
 enum
 {
-    ID_First = wxID_HIGHEST+1
+    ID_First = wxID_HIGHEST+1,
+    ID_Location_TreeCtrl
 };
 
 
 BEGIN_EVENT_TABLE(FilePanel, wxNavigationEnabled<wxPanel>)
+    EVT_TREE_SEL_CHANGED(ID_Location_TreeCtrl, FilePanel::onTreeSelectionChanged)
 END_EVENT_TABLE()
 
 
@@ -207,8 +280,26 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
                                                                 wxTAB_TRAVERSAL | wxCLIP_CHILDREN | wxBORDER)
 {
     wxBusyCursor bc;
+    wxStandardPaths& paths = wxStandardPaths::Get();
 
-    m_location_tree = new wxTreeCtrl(this, wxID_ANY, wxDefaultPosition, wxSize(180,180), wxBORDER_NONE | wxTR_NO_BUTTONS | wxTR_NO_LINES | wxTR_HIDE_ROOT);
+    wxString home_dir = ::wxGetHomeDir();
+    wxString documents_dir = paths.GetDocumentsDir();
+#ifdef WIN32
+    wxString desktop_dir = paths.MSWGetShellDir(CSIDL_DESKTOP);
+    wxString downloads_dir = home_dir + "\\Downloads";
+    wxString music_dir = paths.MSWGetShellDir(CSIDL_MYMUSIC);
+    wxString pictures_dir = paths.MSWGetShellDir(CSIDL_MYPICTURES);
+    wxString videos_dir = paths.MSWGetShellDir(CSIDL_MYVIDEO);
+#else
+    wxString desktop_dir = home_dir + "/Desktop";
+    wxString downloads_dir = home_dir + "/Downloads";
+    wxString music_dir = home_dir + "/Music";
+    wxString videos_dir = home_dir + "/Videos";
+#endif
+
+
+
+    m_location_tree = new wxTreeCtrl(this, ID_Location_TreeCtrl, wxDefaultPosition, wxSize(180,180), wxBORDER_NONE | wxTR_NO_BUTTONS | wxTR_NO_LINES | wxTR_HIDE_ROOT);
 
     m_location_tree->SetImageList(wxTheFileIconsTable->GetSmallImageList());
 
@@ -216,16 +307,16 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
     wxTreeItemId root_id = m_location_tree->AddRoot("root");
 
     wxTreeItemId favorites_id = m_location_tree->AppendItem(root_id, _("Favorites"), wxFileIconsTable::folder);
-    m_location_tree->AppendItem(favorites_id, _("Desktop"), wxFileIconsTable::folder);
-    m_location_tree->AppendItem(favorites_id, _("Downloads"), wxFileIconsTable::folder);
+    m_location_tree->AppendItem(favorites_id, _("Desktop"), wxFileIconsTable::folder, -1, new LocationTreeData(desktop_dir));
+    m_location_tree->AppendItem(favorites_id, _("Downloads"), wxFileIconsTable::folder, -1, new LocationTreeData(downloads_dir));
 
     m_location_tree->AppendItem(root_id, ""); // spacer
 
     wxTreeItemId libraries_id = m_location_tree->AppendItem(root_id, _("Libraries"), wxFileIconsTable::folder);
-    m_location_tree->AppendItem(libraries_id, _("Documents"), wxFileIconsTable::folder);
-    m_location_tree->AppendItem(libraries_id, _("Music"), wxFileIconsTable::folder);
-    m_location_tree->AppendItem(libraries_id, _("Pictures"), wxFileIconsTable::folder);
-    m_location_tree->AppendItem(libraries_id, _("Videos"), wxFileIconsTable::folder);
+    m_location_tree->AppendItem(libraries_id, _("Documents"), wxFileIconsTable::folder, -1, new LocationTreeData(documents_dir));
+    m_location_tree->AppendItem(libraries_id, _("Music"), wxFileIconsTable::folder, -1, new LocationTreeData(music_dir));
+    m_location_tree->AppendItem(libraries_id, _("Pictures"), wxFileIconsTable::folder, -1, new LocationTreeData(pictures_dir));
+    m_location_tree->AppendItem(libraries_id, _("Videos"), wxFileIconsTable::folder, -1, new LocationTreeData(videos_dir));
 
     m_location_tree->AppendItem(root_id, ""); // spacer
 
@@ -237,7 +328,7 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
 
     for (size_t i = 0; i < drives.GetCount(); ++i)
     {
-        m_location_tree->AppendItem(computer_id, drive_names[i], drive_icons[i]);
+        m_location_tree->AppendItem(computer_id, drive_names[i], drive_icons[i],  -1, new LocationTreeData(drives[i]));
     }
 
     m_location_tree->ExpandAll();
@@ -259,6 +350,21 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
 
 FilePanel::~FilePanel()
 {
+}
+
+
+void FilePanel::onTreeSelectionChanged(wxTreeEvent& evt)
+{
+    wxTreeItemId id = evt.GetItem();
+    if (id.IsOk())
+    {
+        LocationTreeData* item = (LocationTreeData*)m_location_tree->GetItemData(id);
+        if (item)
+        {
+            m_file_ctrl->goToDir(item->loc);
+        }
+    }
+
 }
 
 

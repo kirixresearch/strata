@@ -27,6 +27,8 @@ public:
 
     wxString name;
     bool folder;
+    wxULongLong size;
+    wxDateTime datetime;
 };
 
 class FileCtrl : public wxListCtrl
@@ -57,6 +59,10 @@ public:
    
     FilePanel(wxWindow* parent, wxWindowID id = wxID_ANY);
     virtual ~FilePanel();
+
+private:
+
+    void onTreeSelectionChanged(wxTreeEvent& evt);
 
 private:
 
