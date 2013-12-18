@@ -36,7 +36,6 @@ OBJECTS = \
 	griddnd.o \
 	gridmemmodel.o \
 	gridvalidator.o \
-	notebookcontrol.o \
 	popupcontainer.o \
 	rowselectiongrid.o \
 	rulercontrol.o \

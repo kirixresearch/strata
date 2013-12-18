@@ -16,7 +16,6 @@
 #include "button.h"
 #include "validcontrol.h"
 #include "wizard.h"
-#include "notebookcontrol.h"
 #include "bannercontrol.h"
 #include "grid.h"
 #include "gridmemmodel.h"
