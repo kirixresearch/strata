@@ -32,7 +32,6 @@
 #include "bitmapcombo.h"
 #include "scrolllistcontrol.h"
 #include "rowselectiongrid.h"
-#include "xmdi.h"
 #include "util.h"
 
 
