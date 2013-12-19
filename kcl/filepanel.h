@@ -60,6 +60,9 @@ public:
     FilePanel(wxWindow* parent, wxWindowID id = wxID_ANY);
     virtual ~FilePanel();
 
+    void setFilterString(const wxString& value);
+    void setFilterIndex(int value);
+
 private:
 
     void onTreeSelectionChanged(wxTreeEvent& evt);
@@ -68,6 +71,12 @@ private:
 
     wxTreeCtrl* m_location_tree;
     FileCtrl* m_file_ctrl;
+    wxTextCtrl* m_path_ctrl;
+    wxChoice* m_filter_ctrl;
+
+    wxString m_filter_string;
+    int m_filter_index;
+    std::vector<wxString> m_wildcards;
 
     DECLARE_EVENT_TABLE()
 };

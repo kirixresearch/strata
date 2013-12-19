@@ -110,7 +110,7 @@ bool FileCtrl::populate()
 {
     wxBusyCursor bc;
     wxLogNull nulllog;
-    wxWindowUpdateLocker noUpdates(this);
+    wxWindowUpdateLocker freeze(this);
 
     DeleteAllItems();
     m_files.clear();
@@ -270,7 +270,9 @@ public:
 enum
 {
     ID_First = wxID_HIGHEST+1,
-    ID_Location_TreeCtrl
+    ID_Location_TreeCtrl,
+    ID_Path_TextCtrl,
+    ID_Filter_Choice
 };
 
 
@@ -283,8 +285,10 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
                                                                 id,
                                                                 wxDefaultPosition,
                                                                 wxDefaultSize,
-                                                                wxTAB_TRAVERSAL | wxCLIP_CHILDREN | wxBORDER)
+                                                                wxTAB_TRAVERSAL | wxCLIP_CHILDREN)
 {
+    m_filter_index = 0;
+
     wxBusyCursor bc;
     wxStandardPaths& paths = wxStandardPaths::Get();
 
@@ -306,6 +310,7 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
 
 
     m_location_tree = new wxTreeCtrl(this, ID_Location_TreeCtrl, wxDefaultPosition, wxSize(180,180), wxBORDER_NONE | wxTR_NO_BUTTONS | wxTR_NO_LINES | wxTR_HIDE_ROOT);
+    m_location_tree->SetIndent(10);
 
     m_location_tree->SetImageList(wxTheFileIconsTable->GetSmallImageList());
 
@@ -339,17 +344,46 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
 
     m_location_tree->ExpandAll();
 
-
     m_file_ctrl = new FileCtrl(this, wxID_ANY, wxDefaultPosition, wxSize(150,150), wxLC_REPORT | wxBORDER_NONE);
 
+
+    m_path_ctrl = new wxTextCtrl(this,
+                                 ID_Path_TextCtrl, 
+                                 "",
+                                 wxDefaultPosition,
+                                 wxSize(200,23));
+
+    m_filter_ctrl = new wxChoice(this,
+                                 ID_Filter_Choice,
+                                 wxDefaultPosition,
+                                 wxSize(185,21),
+                                 0,
+                                 NULL);
+    
+    m_filter_ctrl->Append(_("All Files (*.*)"), (void*)0);  
+    m_filter_ctrl->SetSelection(0);   
+
+    
 
     wxBoxSizer* horz_sizer = new wxBoxSizer(wxHORIZONTAL);
     horz_sizer->Add(m_location_tree, 0, wxEXPAND);
     horz_sizer->Add(new DividerLine(this, -1, wxDefaultPosition, wxSize(1,1)), 0, wxEXPAND);
     horz_sizer->Add(m_file_ctrl, 1, wxEXPAND);
 
+
+    wxBoxSizer* path_sizer = new wxBoxSizer(wxHORIZONTAL);
+    path_sizer->AddSpacer(15);
+    path_sizer->Add(new wxStaticText(this, -1, _("File name:")), 0, wxALIGN_CENTER);
+    path_sizer->AddSpacer(5);
+    path_sizer->Add(m_path_ctrl, 1, wxEXPAND);
+    path_sizer->AddSpacer(5);
+    path_sizer->Add(m_filter_ctrl, 0, wxEXPAND);
+    path_sizer->AddSpacer(5);
+
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
     main_sizer->Add(horz_sizer, 1, wxEXPAND);
+    main_sizer->AddSpacer(8);
+    main_sizer->Add(path_sizer, 0, wxEXPAND);
 
     SetSizer(main_sizer);
 }
@@ -358,6 +392,38 @@ FilePanel::~FilePanel()
 {
 }
 
+
+void FilePanel::setFilterString(const wxString& value)
+{
+    m_filter_string = value;
+
+    wxWindowUpdateLocker freeze(m_filter_ctrl);
+
+    while (m_filter_ctrl->GetCount())
+        m_filter_ctrl->Delete(0);
+
+    wxStringTokenizer t(m_filter_string, wxT("|"));
+    while (t.HasMoreTokens())
+    {
+        wxString desc = t.GetNextToken();
+        if (!t.HasMoreTokens())
+            break;
+        wxString wildcard = t.GetNextToken();
+
+        m_filter_ctrl->Append(desc, (void*)m_wildcards.size());
+        m_wildcards.push_back(wildcard);
+    }
+
+    if (m_filter_index >= 0 && m_filter_index < (int)m_filter_ctrl->GetCount())
+        m_filter_ctrl->SetSelection(m_filter_index);
+}
+
+void FilePanel::setFilterIndex(int value)
+{
+    m_filter_index = value;
+    if (m_filter_index >= 0 && m_filter_index < (int)m_filter_ctrl->GetCount())
+        m_filter_ctrl->SetSelection(m_filter_index);
+}
 
 void FilePanel::onTreeSelectionChanged(wxTreeEvent& evt)
 {
