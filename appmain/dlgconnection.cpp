@@ -242,7 +242,27 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
 
     m_filepage_sizer = new wxBoxSizer(wxVERTICAL);
     m_file_panel = new kcl::FilePanel(this);
-    //m_file_panel->GoToHomeDir();
+
+    // populate the file dialog filter
+    wxString filter;
+    filter += _("All Files");
+    filter += wxT(" (*.*)|*.*|");
+    filter += _("Package Files");
+    filter += wxT(" (*.kpg)|*.kpg|");
+    filter += _("Microsoft Access Files");
+    filter += wxT(" (*.mdb, *.accdb)|*.mdb;*.accdb|");
+    filter += _("Microsoft Excel Files");
+    filter += wxT(" (*.xls, *.xlsx)|*.xls;*.xlsx|");
+    filter += _("Microsoft FoxPro/Xbase Files");
+    filter += wxT(" (*.dbf)|*.dbf|");
+    filter += _("Comma-Delimited Files");
+    filter += wxT(" (*.csv)|*.csv|");
+    filter += _("Tab-Delimited Files");
+    filter += wxT(" (*.tsv)|*.tsv|");
+    filter += _("Text Files");
+    filter += wxT(" (*.txt)|*.txt|");
+
+    m_file_panel->setFilterString(filter);
     m_filepage_sizer->Add(m_file_panel, 1, wxEXPAND);
 
 
@@ -355,7 +375,7 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
                                          m_ci.password,
                                          wxDefaultPosition,
                                          wxSize(200,21),
-                                         wxTE_PASSWORD);
+                                         wxTE_PASSWORD | wxTE_PROCESS_ENTER);
     
     wxSizer* password_sizer = new wxBoxSizer(wxHORIZONTAL);
     password_sizer->Add(50,23);
@@ -556,7 +576,7 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
 
 
     m_container_sizer = new wxBoxSizer(wxVERTICAL);
-    m_container_sizer->Add(m_filepage_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);
+    m_container_sizer->Add(m_filepage_sizer, 1, wxEXPAND);
     m_container_sizer->Add(m_serverpage_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);
     m_container_sizer->Add(m_datasourcepage_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);
     m_container_sizer->Add(m_tablelistpage_sizer, 1, wxEXPAND | wxLEFT | wxRIGHT, 5);
@@ -735,7 +755,16 @@ void DlgConnection::onBackward(wxCommandEvent& evt)
 
 void DlgConnection::onForward(wxCommandEvent& evt)
 {
-    if (m_current_page == pageServer)
+    if (m_current_page == pageFile)
+    {
+        m_ci.tables.clear();
+
+        std::vector<wxString> files;
+        m_file_panel->getPaths(files);
+
+        populateTableListGrid(files);
+    }
+     else if (m_current_page == pageServer)
     {
         xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
         if (dbmgr.isNull())
@@ -938,6 +967,56 @@ static ConnectionTable* lookupTable(Connection& c, const std::wstring& tbl)
 }
 
 
+
+
+void DlgConnection::populateTableListGrid(std::vector<wxString>& tables)
+{
+    std::vector<wxString>::iterator it;
+
+    // delete all existing rows from grid
+    m_tablelist_grid->deleteAllRows();
+
+    // sort the table names vector
+    std::sort(tables.begin(), tables.end());
+
+
+    // populate the grid from the info vector
+    int row = 0;
+    for (it = tables.begin(); it != tables.end(); ++it)
+    {
+        bool selected = true;
+        std::wstring src_tablename = *it;
+        std::wstring out_tablename = kl::afterLast(src_tablename, PATH_SEPARATOR_CHAR);
+        bool append = false;
+
+        //out_tablename = makeValidObjectName(out_tablename, db).ToStdWstring();
+
+        // correlate with the template
+        if (m_ci.tables.size() > 0)
+        {
+            // tables already exist in the template.  "selected" is
+            // by default off.  If the line exists in the template, use
+            // the info stored there.
+            selected = false;
+
+            ConnectionTable* tbl = lookupTable(m_ci, src_tablename);
+            if (tbl)
+            {
+                out_tablename = tbl->output_tablename;
+                append = tbl->append;
+                selected = true;
+            }
+        }
+        
+        m_tablelist_grid->insertRow(-1);
+        m_tablelist_grid->setCellBoolean(row, ONOFF_IDX, selected);
+        m_tablelist_grid->setCellString(row, SOURCE_TABLENAME_IDX, src_tablename);
+        m_tablelist_grid->setCellString(row, DEST_TABLENAME_IDX, out_tablename);
+        m_tablelist_grid->setCellBitmap(row, DEST_TABLENAME_IDX, GETBMP(xpm_blank_16));
+        m_tablelist_grid->setCellBoolean(row, APPEND_IDX, append);
+        row++;
+    }
+}
 
 void DlgConnection::populateTableListGrid(xd::IDatabasePtr db)
 {

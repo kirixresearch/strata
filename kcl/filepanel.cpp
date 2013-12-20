@@ -90,7 +90,9 @@ FileCtrl::FileCtrl(wxWindow* parent,
     InsertColumn(3, _("Type"),          wxLIST_FORMAT_LEFT, 80);
 
     
-    goToDir("C:\\");
+    wxStandardPaths& paths = wxStandardPaths::Get();
+    wxString documents_dir = paths.GetDocumentsDir();
+    goToDir(documents_dir);
 }
 
 
@@ -199,6 +201,8 @@ bool FileCtrl::populate()
 
         this->InsertItem(idx, it->name, image_id);
 
+        this->SetItemData(idx, idx);
+
         if (it->folder)
         {
             this->SetItem(idx, 3, _("File folder"));
@@ -254,6 +258,23 @@ bool FileCtrl::populate()
 
 
 
+void FileCtrl::getSelection(std::vector<FileInfo>& files)
+{
+    files.clear();
+
+    std::vector<wxString> selected;
+
+    long item = -1;
+    while (true)
+    {
+        item = GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+        if (item == -1)
+            break;
+
+        long idx = GetItemData(item);
+        files.push_back(m_files[idx]);
+    }
+}
 
 
 
@@ -271,13 +292,19 @@ enum
 {
     ID_First = wxID_HIGHEST+1,
     ID_Location_TreeCtrl,
+    ID_File_Ctrl,
     ID_Path_TextCtrl,
     ID_Filter_Choice
 };
 
 
 BEGIN_EVENT_TABLE(FilePanel, wxNavigationEnabled<wxPanel>)
+    EVT_TREE_SEL_CHANGING(ID_Location_TreeCtrl, FilePanel::onTreeSelectionChanging)
     EVT_TREE_SEL_CHANGED(ID_Location_TreeCtrl, FilePanel::onTreeSelectionChanged)
+    EVT_LIST_ITEM_SELECTED(ID_File_Ctrl, FilePanel::onFileCtrlItemSelected)
+    EVT_TEXT_ENTER(ID_Path_TextCtrl, FilePanel::onPathCtrlEnterPressed)
+    EVT_CHILD_FOCUS(FilePanel::onChildFocus)
+    EVT_IDLE(FilePanel::onIdle)
 END_EVENT_TABLE()
 
 
@@ -344,14 +371,15 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
 
     m_location_tree->ExpandAll();
 
-    m_file_ctrl = new FileCtrl(this, wxID_ANY, wxDefaultPosition, wxSize(150,150), wxLC_REPORT | wxBORDER_NONE);
+    m_file_ctrl = new FileCtrl(this, ID_File_Ctrl, wxDefaultPosition, wxSize(150,150), wxLC_REPORT | wxBORDER_NONE);
 
 
     m_path_ctrl = new wxTextCtrl(this,
                                  ID_Path_TextCtrl, 
                                  "",
                                  wxDefaultPosition,
-                                 wxSize(200,23));
+                                 wxSize(200,23),
+                                 wxTE_PROCESS_ENTER);
 
     m_filter_ctrl = new wxChoice(this,
                                  ID_Filter_Choice,
@@ -425,6 +453,18 @@ void FilePanel::setFilterIndex(int value)
         m_filter_ctrl->SetSelection(m_filter_index);
 }
 
+void FilePanel::onTreeSelectionChanging(wxTreeEvent& evt)
+{
+    wxTreeItemId id = evt.GetItem();
+    if (id.IsOk())
+    {
+        if (m_location_tree->GetItemText(id).Length() == 0)
+        {
+            evt.Veto();
+        }
+    }
+}
+
 void FilePanel::onTreeSelectionChanged(wxTreeEvent& evt)
 {
     wxTreeItemId id = evt.GetItem();
@@ -436,9 +476,144 @@ void FilePanel::onTreeSelectionChanged(wxTreeEvent& evt)
             m_file_ctrl->goToDir(item->loc);
         }
     }
+}
+
+
+wxString FilePanel::getFilename()
+{
+    return m_path_ctrl->GetValue();
+}
+
+void FilePanel::getFilenames(std::vector<wxString>& result)
+{
+    result.clear();
+
+    wxString str = m_path_ctrl->GetValue();
+    str.Trim(true);
+    str.Trim(false);
+
+    if (str.IsEmpty())
+        return;
+
+    bool quote = false;
+
+    wxString cur;
+    wxString::iterator it;
+
+    for (it = str.begin(); it != str.end(); ++it)
+    {
+        if (*it == '"')
+        {
+            quote = !quote;
+            continue;
+        }
+
+        if (!quote && *it == ' ')
+        {
+            if (cur.length() > 0)
+            {
+                result.push_back(cur);
+                cur = "";
+            }
+            continue;
+        }
+
+        cur += *it;
+    }
+
+    if (cur.length() > 0)
+        result.push_back(cur);
+}
+
+wxString FilePanel::getPath()
+{
+    wxString res = getFilename();
+    wxFileName fn(m_file_ctrl->m_curdir, res);
+    return fn.GetFullPath();
+}
+
+void FilePanel::getPaths(std::vector<wxString>& result)
+{
+    getFilenames(result);
+
+    std::vector<wxString>::iterator it;
+    for (it = result.begin(); it != result.end(); ++it)
+    {
+        wxFileName fn(m_file_ctrl->m_curdir, *it);
+        *it = fn.GetFullPath();
+    }
+}
+
+
+
+void FilePanel::onFileCtrlItemSelected(wxListEvent& evt)
+{
+    std::vector<FileInfo> files;
+    std::vector<FileInfo>::iterator it;
+
+    m_file_ctrl->getSelection(files);
+
+    wxString path_value;
+
+    if (files.size() == 1)
+    {
+        if (!files[0].folder)
+            path_value = files[0].name;
+    }
+     else
+    {
+        for (it = files.begin(); it != files.end(); ++it)
+        {
+            if (it->folder)
+                continue;
+            if (path_value.length() > 0)
+                path_value += " ";
+            path_value += '"';
+            path_value += it->name;
+            path_value += '"';
+        }
+    }
+
+    m_path_ctrl->SetValue(path_value);
+}
+
+
+void FilePanel::onPathCtrlEnterPressed(wxCommandEvent& evt)
+{
+    wxString val = m_path_ctrl->GetValue();
+ 
+    if (val.find(wxFileName::GetPathSeparator()) != val.npos)
+    {
+        // path separator found; if the text control contains a valid directory,
+        // update the current path
+
+        wxDir dir(val);
+        if (dir.IsOpened())
+        {
+            m_file_ctrl->goToDir(val);
+        }
+    }
 
 }
 
+void FilePanel::onChildFocus(wxChildFocusEvent& evt)
+{
+    if (evt.GetWindow() == m_path_ctrl)
+    {
+         m_path_ctrl_focus_received = true;
+    }
+
+    evt.Skip();
+}
+
+void FilePanel::onIdle(wxIdleEvent& evt)
+{
+    if (m_path_ctrl_focus_received)
+    {
+        m_path_ctrl->SelectAll();
+        m_path_ctrl_focus_received = false;
+    }
+}
 
 
 }; // namespace kcl

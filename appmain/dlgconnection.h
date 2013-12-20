@@ -94,6 +94,7 @@ private:
 
     void populateDataSourceGrid();
     void populateTableListGrid(xd::IDatabasePtr);
+    void populateTableListGrid(std::vector<wxString>& paths);
     void showButtons(int mask);
 
     // event handlers

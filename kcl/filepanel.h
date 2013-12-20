@@ -33,6 +33,8 @@ public:
 
 class FileCtrl : public wxListCtrl
 {
+friend class FilePanel;
+
 public:
 
     FileCtrl(wxWindow* parent,
@@ -42,6 +44,8 @@ public:
              long style = wxLC_LIST);
 
     bool goToDir(const wxString& dir);
+
+    void getSelection(std::vector<FileInfo>& files);
 
 private:
 
@@ -53,7 +57,7 @@ private:
 };
 
 
-class FilePanel :  public wxPanel
+class FilePanel : public wxPanel
 {
 public:
    
@@ -63,9 +67,20 @@ public:
     void setFilterString(const wxString& value);
     void setFilterIndex(int value);
 
+    wxString getFilename();
+    void getFilenames(std::vector<wxString>& result);
+
+    wxString getPath();
+    void getPaths(std::vector<wxString>& result);
+
 private:
 
+    void onTreeSelectionChanging(wxTreeEvent& evt);
     void onTreeSelectionChanged(wxTreeEvent& evt);
+    void onFileCtrlItemSelected(wxListEvent& evt);
+    void onPathCtrlEnterPressed(wxCommandEvent& evt);
+    void onChildFocus(wxChildFocusEvent& evt);
+    void onIdle(wxIdleEvent& evt);
 
 private:
 
@@ -77,6 +92,7 @@ private:
     wxString m_filter_string;
     int m_filter_index;
     std::vector<wxString> m_wildcards;
+    bool m_path_ctrl_focus_received;
 
     DECLARE_EVENT_TABLE()
 };
