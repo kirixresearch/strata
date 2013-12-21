@@ -85,14 +85,15 @@ private:
 private:
 
     wxTreeCtrl* m_location_tree;
-    FileCtrl* m_file_ctrl;
     wxTextCtrl* m_path_ctrl;
+    FileCtrl* m_file_ctrl;
+    wxTextCtrl* m_filename_ctrl;
     wxChoice* m_filter_ctrl;
 
     wxString m_filter_string;
     int m_filter_index;
     std::vector<wxString> m_wildcards;
-    bool m_path_ctrl_focus_received;
+    bool m_filename_ctrl_focus_received;
 
     DECLARE_EVENT_TABLE()
 };

@@ -22,6 +22,7 @@
 #include <wx/generic/dirctrlg.h>
 #include <wx/numformatter.h>
 #include <wx/mimetype.h>
+#include <wx/artprov.h>
 #include "filepanel.h"
 
 #ifdef WIN32
@@ -36,7 +37,31 @@ extern size_t wxGetAvailableDrives(wxArrayString &paths, wxArrayString &names, w
 namespace kcl
 {
 
-
+/* XPM */
+static char* goparent_xpm[] = {
+"16 16 5 1",
+"  c None",
+". c Black",
+"O c #FFFF00",
+"o c #EFE7D6",
+"X c #FFF200",
+"                ",
+"  .....         ",
+" .XoXoX.        ",
+"..............  ",
+".oXoXoXoOoXoXo. ",
+".XoXo.oXoXoXoX. ",
+".oXo...oXoXoXo. ",
+".Xo.....oXoXoX. ",
+".oXoO.OoXoXoXo. ",
+".XoXo.oOoOoXoX. ",
+".oXoX.......Xo. ",
+".XoXoXoXoXoXoX. ",
+".oXoXoXoXoXoXo. ",
+"............... ",
+"                ",
+"                "
+};
 
 class DividerLine : public wxControl
 {
@@ -292,8 +317,9 @@ enum
 {
     ID_First = wxID_HIGHEST+1,
     ID_Location_TreeCtrl,
-    ID_File_Ctrl,
     ID_Path_TextCtrl,
+    ID_File_Ctrl,
+    ID_Filename_TextCtrl,
     ID_Filter_Choice
 };
 
@@ -302,7 +328,7 @@ BEGIN_EVENT_TABLE(FilePanel, wxNavigationEnabled<wxPanel>)
     EVT_TREE_SEL_CHANGING(ID_Location_TreeCtrl, FilePanel::onTreeSelectionChanging)
     EVT_TREE_SEL_CHANGED(ID_Location_TreeCtrl, FilePanel::onTreeSelectionChanged)
     EVT_LIST_ITEM_SELECTED(ID_File_Ctrl, FilePanel::onFileCtrlItemSelected)
-    EVT_TEXT_ENTER(ID_Path_TextCtrl, FilePanel::onPathCtrlEnterPressed)
+    EVT_TEXT_ENTER(ID_Filename_TextCtrl, FilePanel::onPathCtrlEnterPressed)
     EVT_CHILD_FOCUS(FilePanel::onChildFocus)
     EVT_IDLE(FilePanel::onIdle)
 END_EVENT_TABLE()
@@ -315,6 +341,7 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
                                                                 wxTAB_TRAVERSAL | wxCLIP_CHILDREN)
 {
     m_filter_index = 0;
+    m_filename_ctrl_focus_received = false;
 
     wxBusyCursor bc;
     wxStandardPaths& paths = wxStandardPaths::Get();
@@ -334,12 +361,19 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
     wxString videos_dir = home_dir + "/Videos";
 #endif
 
+    m_path_ctrl = new wxTextCtrl(this,
+                                 ID_Path_TextCtrl, 
+                                 "",
+                                 wxDefaultPosition,
+                                 wxSize(200,23),
+                                 wxTE_PROCESS_ENTER);
 
+    wxBitmapButton* goparent_button = new wxBitmapButton(this, -1, wxBitmap(goparent_xpm), wxDefaultPosition, wxSize(24,24));
 
-    m_location_tree = new wxTreeCtrl(this, ID_Location_TreeCtrl, wxDefaultPosition, wxSize(180,180), wxBORDER_NONE | wxTR_NO_BUTTONS | wxTR_NO_LINES | wxTR_HIDE_ROOT);
+    m_location_tree = new wxTreeCtrl(this, ID_Location_TreeCtrl, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxTR_NO_BUTTONS | wxTR_NO_LINES | wxTR_HIDE_ROOT);
     m_location_tree->SetIndent(10);
-
     m_location_tree->SetImageList(wxTheFileIconsTable->GetSmallImageList());
+
 
 
     wxTreeItemId root_id = m_location_tree->AddRoot("root");
@@ -374,8 +408,8 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
     m_file_ctrl = new FileCtrl(this, ID_File_Ctrl, wxDefaultPosition, wxSize(150,150), wxLC_REPORT | wxBORDER_NONE);
 
 
-    m_path_ctrl = new wxTextCtrl(this,
-                                 ID_Path_TextCtrl, 
+    m_filename_ctrl = new wxTextCtrl(this,
+                                 ID_Filename_TextCtrl, 
                                  "",
                                  wxDefaultPosition,
                                  wxSize(200,23),
@@ -393,8 +427,17 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
 
     
 
+    wxBoxSizer* top_sizer = new wxBoxSizer(wxHORIZONTAL);
+    wxSizerItem* label_sizer_item = top_sizer->Add(new wxStaticText(this, -1, _("Look in:"), wxDefaultPosition, wxSize(175, -1), wxALIGN_RIGHT|wxST_NO_AUTORESIZE), 0, wxALIGN_CENTER);
+    top_sizer->AddSpacer(5);
+    top_sizer->Add(m_path_ctrl, 1, wxALIGN_CENTER);
+    top_sizer->AddSpacer(2);
+    top_sizer->Add(goparent_button, 0);
+    top_sizer->AddSpacer(5);
+
     wxBoxSizer* horz_sizer = new wxBoxSizer(wxHORIZONTAL);
-    horz_sizer->Add(m_location_tree, 0, wxEXPAND);
+    wxSizerItem* tree_sizer_item = horz_sizer->Add(m_location_tree, 0, wxEXPAND);
+    tree_sizer_item->SetMinSize(180,100);
     horz_sizer->Add(new DividerLine(this, -1, wxDefaultPosition, wxSize(1,1)), 0, wxEXPAND);
     horz_sizer->Add(m_file_ctrl, 1, wxEXPAND);
 
@@ -403,12 +446,14 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
     path_sizer->AddSpacer(15);
     path_sizer->Add(new wxStaticText(this, -1, _("File name:")), 0, wxALIGN_CENTER);
     path_sizer->AddSpacer(5);
-    path_sizer->Add(m_path_ctrl, 1, wxEXPAND);
+    path_sizer->Add(m_filename_ctrl, 1, wxEXPAND);
     path_sizer->AddSpacer(5);
     path_sizer->Add(m_filter_ctrl, 0, wxEXPAND);
     path_sizer->AddSpacer(5);
 
     wxBoxSizer* main_sizer = new wxBoxSizer(wxVERTICAL);
+    main_sizer->Add(top_sizer, 0, wxEXPAND);
+    main_sizer->AddSpacer(5);
     main_sizer->Add(horz_sizer, 1, wxEXPAND);
     main_sizer->AddSpacer(8);
     main_sizer->Add(path_sizer, 0, wxEXPAND);
@@ -481,14 +526,14 @@ void FilePanel::onTreeSelectionChanged(wxTreeEvent& evt)
 
 wxString FilePanel::getFilename()
 {
-    return m_path_ctrl->GetValue();
+    return m_filename_ctrl->GetValue();
 }
 
 void FilePanel::getFilenames(std::vector<wxString>& result)
 {
     result.clear();
 
-    wxString str = m_path_ctrl->GetValue();
+    wxString str = m_filename_ctrl->GetValue();
     str.Trim(true);
     str.Trim(false);
 
@@ -574,13 +619,13 @@ void FilePanel::onFileCtrlItemSelected(wxListEvent& evt)
         }
     }
 
-    m_path_ctrl->SetValue(path_value);
+    m_filename_ctrl->SetValue(path_value);
 }
 
 
 void FilePanel::onPathCtrlEnterPressed(wxCommandEvent& evt)
 {
-    wxString val = m_path_ctrl->GetValue();
+    wxString val = m_filename_ctrl->GetValue();
  
     if (val.find(wxFileName::GetPathSeparator()) != val.npos)
     {
@@ -598,9 +643,9 @@ void FilePanel::onPathCtrlEnterPressed(wxCommandEvent& evt)
 
 void FilePanel::onChildFocus(wxChildFocusEvent& evt)
 {
-    if (evt.GetWindow() == m_path_ctrl)
+    if (evt.GetWindow() == m_filename_ctrl)
     {
-         m_path_ctrl_focus_received = true;
+         m_filename_ctrl_focus_received = true;
     }
 
     evt.Skip();
@@ -608,10 +653,10 @@ void FilePanel::onChildFocus(wxChildFocusEvent& evt)
 
 void FilePanel::onIdle(wxIdleEvent& evt)
 {
-    if (m_path_ctrl_focus_received)
+    if (m_filename_ctrl_focus_received)
     {
-        m_path_ctrl->SelectAll();
-        m_path_ctrl_focus_received = false;
+        m_filename_ctrl->SelectAll();
+        m_filename_ctrl_focus_received = false;
     }
 }
 
