@@ -18,6 +18,7 @@
 #include "../kcl/grid.h"
 #include "../kcl/rowselectiongrid.h"
 #include "../kcl/filepanel.h"
+#include "../kcl/buttonbar.h"
 #include "dlgconnection.h"
 #include "util.h"
 
@@ -175,9 +176,9 @@ enum
 
 
 BEGIN_EVENT_TABLE(DlgConnection, wxDialog)
-    EVT_TOGGLEBUTTON(ID_ToggleButton_File, DlgConnection::onToggleButton)
-    EVT_TOGGLEBUTTON(ID_ToggleButton_Server, DlgConnection::onToggleButton)
-    EVT_TOGGLEBUTTON(ID_ToggleButton_DataSource, DlgConnection::onToggleButton)
+    EVT_BUTTON(ID_ToggleButton_File, DlgConnection::onToggleButton)
+    EVT_BUTTON(ID_ToggleButton_Server, DlgConnection::onToggleButton)
+    EVT_BUTTON(ID_ToggleButton_DataSource, DlgConnection::onToggleButton)
 
     EVT_CHOICE(ID_Server_Type,   DlgConnection::onServerParameterChanged)
     EVT_TEXT(ID_Server_Server,   DlgConnection::onServerParameterChanged)
@@ -221,27 +222,14 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
 
     // toggle button sizer
 
+
+    kcl::ButtonBar* button_bar = new kcl::ButtonBar(this, wxID_ANY);
+    button_bar->addItem(ID_ToggleButton_File, GETBMP(gf_folder_open_32), _("File"));
+    button_bar->addItem(ID_ToggleButton_Server, GETBMP(gf_db_db_32), _("Database"));
+    button_bar->addItem(ID_ToggleButton_DataSource, GETBMP(gf_db_od_32), _("Data Sources"));
+
     wxBoxSizer* togglebutton_sizer = new wxBoxSizer(wxHORIZONTAL);
-    wxBitmap bmp;
-
-    m_togglebutton_file = new wxToggleButton(this, ID_ToggleButton_File, _("File"));
-    bmp = addMarginToBitmap(GETBMP(gf_folder_open_32), 0,8,0,0);
-    m_togglebutton_file->SetBitmap(bmp, wxTOP);
-
-    m_togglebutton_server = new wxToggleButton(this, ID_ToggleButton_Server, _("Database"));
-    bmp = addMarginToBitmap(GETBMP(gf_db_db_32), 0,8,0,0);
-    m_togglebutton_server->SetBitmap(bmp, wxTOP);
-
-    m_togglebutton_datasources = new wxToggleButton(this, ID_ToggleButton_DataSource, _("Data Sources"));
-    bmp = addMarginToBitmap(GETBMP(gf_db_od_32), 0,8,0,0);
-    m_togglebutton_datasources->SetBitmap(bmp, wxTOP);
-
-    togglebutton_sizer->Add(m_togglebutton_file, 0, wxEXPAND);
-    togglebutton_sizer->Add(m_togglebutton_server, 0, wxEXPAND);
-    togglebutton_sizer->Add(m_togglebutton_datasources, 0, wxEXPAND);
-
-
-
+    togglebutton_sizer->Add(button_bar, 1, wxEXPAND);
 
     // -- file page ----------------------------------------------------------
 
@@ -606,8 +594,7 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
 
 
     wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
-    sizer->AddSpacer(5);
-    sizer->Add(togglebutton_sizer, 0, wxEXPAND | wxLEFT | wxRIGHT, 5);
+    sizer->Add(togglebutton_sizer, 0, wxEXPAND, 5);
     sizer->AddSpacer(10);
     sizer->Add(m_container_sizer, 1, wxEXPAND);
     sizer->AddSpacer(10);
@@ -616,6 +603,7 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
     SetSizer(sizer);
 
 
+    button_bar->selectItem(ID_ToggleButton_File);
     setActivePage(pageFile);
 
 
@@ -750,7 +738,6 @@ void DlgConnection::onToggleButton(wxCommandEvent& evt)
         case ID_ToggleButton_Server:     setActivePage(pageServer); break;
         case ID_ToggleButton_DataSource: setActivePage(pageDataSource); break;
     }
-
 }
 
 void DlgConnection::onBackward(wxCommandEvent& evt)
@@ -800,14 +787,6 @@ void DlgConnection::setActivePage(int page)
 {
     m_last_page = m_current_page;
     m_current_page = page;
-
-
-    if (page == pageFile || page == pageServer || page == pageDataSource)
-    {
-        m_togglebutton_file->SetValue(page == pageFile ? true : false);
-        m_togglebutton_server->SetValue(page == pageServer ? true : false);
-        m_togglebutton_datasources->SetValue(page == pageDataSource ? true : false);
-    }
 
     if (page == pageFile)
     {
