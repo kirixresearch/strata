@@ -214,7 +214,7 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
                                                           -1,
                                                           _("Create Connection"),
                                                           wxDefaultPosition,
-                                                          wxSize(540, 480),
+                                                          wxSize(640, 480),
                                                           wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
 {
     m_last_page = 0;
@@ -748,16 +748,40 @@ void DlgConnection::onBackward(wxCommandEvent& evt)
 
 void DlgConnection::onForward(wxCommandEvent& evt)
 {
+    bool connect_to_database = false;
+
+    if (m_current_page == pageServer)
+    {
+        connect_to_database = true;
+    }
+
     if (m_current_page == pageFile)
     {
-        m_ci.tables.clear();
-
         std::vector<wxString> files;
         m_file_panel->getPaths(files);
 
-        populateTableListGrid(files);
+        if (files.size() == 1 && kl::icontains(files[0].ToStdWstring(), L".mdb"))
+        {
+            connect_to_database = true;
+            m_ci.type = xd::dbtypeAccess;
+            m_ci.path = files[0];
+        }
+         else if (files.size() == 1 && kl::icontains(files[0].ToStdWstring(), L".kpg"))
+        {
+            connect_to_database = true;
+            m_ci.type = xd::dbtypeKpg;
+            m_ci.path = files[0];
+        }
+         else
+        {
+            m_ci.tables.clear();
+            populateTableListGrid(files);
+            return;
+        }
     }
-     else if (m_current_page == pageServer)
+
+
+    if (connect_to_database)
     {
         xd::IDatabaseMgrPtr dbmgr = xd::getDatabaseMgr();
         if (dbmgr.isNull())
