@@ -34,6 +34,13 @@
 extern size_t wxGetAvailableDrives(wxArrayString &paths, wxArrayString &names, wxArrayInt &icon_ids);
 
 
+
+IMPLEMENT_DYNAMIC_CLASS(kcl::FilePanelEvent, wxEvent)
+wxDEFINE_EVENT( wxEVT_FILEPANEL_ITEM_ACTIVATED, kcl::FilePanelEvent );
+
+
+
+
 namespace kcl
 {
 
@@ -295,8 +302,6 @@ void FileCtrl::getSelection(std::vector<FileInfo>& files)
         files.push_back(m_files[idx]);
     }
 }
-
-
 
 
 
@@ -636,6 +641,11 @@ void FilePanel::onFileCtrlItemActivated(wxListEvent& evt)
             path += files[0].name;
 
             setDirectory(path);
+        }
+         else
+        {
+            FilePanelEvent evt(wxEVT_FILEPANEL_ITEM_ACTIVATED, GetId());
+            GetParent()->GetEventHandler()->ProcessEvent(evt);
         }
     }
 }

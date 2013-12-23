@@ -57,6 +57,29 @@ private:
 };
 
 
+
+
+// event declarations/classes
+
+class WXDLLIMPEXP_AUI FilePanelEvent : public wxNotifyEvent
+{
+public:
+    FilePanelEvent(wxEventType command_type = wxEVT_NULL, int win_id = 0) : wxNotifyEvent(command_type, win_id)
+    {
+    }
+
+    FilePanelEvent(const FilePanelEvent& c) : wxNotifyEvent(c)
+    {
+    }
+
+    wxEvent *Clone() const { return new FilePanelEvent(*this); }
+
+private:
+
+    DECLARE_DYNAMIC_CLASS_NO_ASSIGN(FilePanelEvent)
+};
+
+
 class FilePanel : public wxPanel
 {
 public:
@@ -103,7 +126,29 @@ private:
 };
 
 
-};
+
+
+
+
+
+
+
+};  // namespace kcl
+
+
+
+
+wxDECLARE_EXPORTED_EVENT( WXDLLIMPEXP_AUI, wxEVT_FILEPANEL_ITEM_ACTIVATED, kcl::FilePanelEvent );
+
+typedef void (wxEvtHandler::*KclFilePanelEventFunction)(kcl::FilePanelEvent&);
+
+#define KclFilePanelEventHandler(func) \
+    wxEVENT_HANDLER_CAST(KclFilePanelEventFunction, func)
+
+#define EVT_FILEPANEL_ITEM_ACTIVATED(id, func) \
+   wx__DECLARE_EVT1(wxEVT_FILEPANEL_ITEM_ACTIVATED, id, KclFilePanelEventHandler(func))
+
+
 
 
 #endif

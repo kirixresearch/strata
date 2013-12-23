@@ -62,7 +62,7 @@ class wxFileListCtrl;
 namespace kcl { class Grid; }
 namespace kcl { class RowSelectionGrid; }
 namespace kcl { class FilePanel; }
-
+namespace kcl { class FilePanelEvent; }
 
 
 class DlgConnection : public wxDialog
@@ -110,6 +110,7 @@ private:
     void onBackward(wxCommandEvent& evt);
     void onForward(wxCommandEvent& evt);
     void onToggleButton(wxCommandEvent& evt);
+    void onFilePanelItemActivated(kcl::FilePanelEvent& evt);
 
 private:
     

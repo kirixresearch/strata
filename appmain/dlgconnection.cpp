@@ -154,7 +154,9 @@ enum
     ID_TableList_BasePathTextCtrl,
     ID_TableList_BasePathBrowseButton,
     ID_TableList_SelectAllButton,
-    ID_TableList_SelectNoneButton
+    ID_TableList_SelectNoneButton,
+
+    ID_File_Panel
 
 };
 
@@ -193,6 +195,8 @@ BEGIN_EVENT_TABLE(DlgConnection, wxDialog)
 
     EVT_BUTTON(wxID_OK, DlgConnection::onOK)
     EVT_BUTTON(wxID_CANCEL, DlgConnection::onCancel)
+
+    EVT_FILEPANEL_ITEM_ACTIVATED(ID_File_Panel, DlgConnection::onFilePanelItemActivated)
 END_EVENT_TABLE()
 
 
@@ -242,7 +246,7 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
     // -- file page ----------------------------------------------------------
 
     m_filepage_sizer = new wxBoxSizer(wxVERTICAL);
-    m_file_panel = new kcl::FilePanel(this);
+    m_file_panel = new kcl::FilePanel(this, ID_File_Panel);
 
     // populate the file dialog filter
     wxString filter;
@@ -852,6 +856,12 @@ void DlgConnection::showButtons(int mask)
     m_button_sizer->Show(m_forward_button, (mask & wxFORWARD) ? true:false);
 }
 
+
+void DlgConnection::onFilePanelItemActivated(kcl::FilePanelEvent& evt)
+{
+    wxCommandEvent e;
+    onForward(e);
+}
 
 void DlgConnection::populateDataSourceGrid()
 {
