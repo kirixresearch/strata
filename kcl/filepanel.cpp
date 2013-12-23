@@ -113,11 +113,6 @@ FileCtrl::FileCtrl(wxWindow* parent,
     InsertColumn(1, _("Size"),          wxLIST_FORMAT_RIGHT, 80);
     InsertColumn(2, _("Date Modified"), wxLIST_FORMAT_LEFT, 135);
     InsertColumn(3, _("Type"),          wxLIST_FORMAT_LEFT, 80);
-
-    
-    wxStandardPaths& paths = wxStandardPaths::Get();
-    wxString documents_dir = paths.GetDocumentsDir();
-    goToDir(documents_dir);
 }
 
 
@@ -320,7 +315,8 @@ enum
     ID_Path_TextCtrl,
     ID_File_Ctrl,
     ID_Filename_TextCtrl,
-    ID_Filter_Choice
+    ID_Filter_Choice,
+    ID_GoParent_Button
 };
 
 
@@ -328,9 +324,11 @@ BEGIN_EVENT_TABLE(FilePanel, wxNavigationEnabled<wxPanel>)
     EVT_TREE_SEL_CHANGING(ID_Location_TreeCtrl, FilePanel::onTreeSelectionChanging)
     EVT_TREE_SEL_CHANGED(ID_Location_TreeCtrl, FilePanel::onTreeSelectionChanged)
     EVT_LIST_ITEM_SELECTED(ID_File_Ctrl, FilePanel::onFileCtrlItemSelected)
+    EVT_LIST_ITEM_ACTIVATED(ID_File_Ctrl, FilePanel::onFileCtrlItemActivated)
     EVT_TEXT_ENTER(ID_Filename_TextCtrl, FilePanel::onPathCtrlEnterPressed)
     EVT_CHILD_FOCUS(FilePanel::onChildFocus)
     EVT_IDLE(FilePanel::onIdle)
+    EVT_BUTTON(ID_GoParent_Button, FilePanel::onGoParentClicked)
 END_EVENT_TABLE()
 
 
@@ -368,7 +366,7 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
                                  wxSize(200,23),
                                  wxTE_PROCESS_ENTER);
 
-    wxBitmapButton* goparent_button = new wxBitmapButton(this, -1, wxBitmap(goparent_xpm), wxDefaultPosition, wxSize(24,24));
+    wxBitmapButton* goparent_button = new wxBitmapButton(this, ID_GoParent_Button, wxBitmap(goparent_xpm), wxDefaultPosition, wxSize(24,24));
 
     m_location_tree = new wxTreeCtrl(this, ID_Location_TreeCtrl, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxTR_NO_BUTTONS | wxTR_NO_LINES | wxTR_HIDE_ROOT);
     m_location_tree->SetIndent(10);
@@ -425,7 +423,10 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
     m_filter_ctrl->Append(_("All Files (*.*)"), (void*)0);  
     m_filter_ctrl->SetSelection(0);   
 
-    
+
+    // default to documents dir
+    setDirectory(documents_dir);
+
 
     wxBoxSizer* top_sizer = new wxBoxSizer(wxHORIZONTAL);
     wxSizerItem* label_sizer_item = top_sizer->Add(new wxStaticText(this, -1, _("Look in:"), wxDefaultPosition, wxSize(175, -1), wxALIGN_RIGHT|wxST_NO_AUTORESIZE), 0, wxALIGN_CENTER);
@@ -440,7 +441,6 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
     tree_sizer_item->SetMinSize(180,100);
     horz_sizer->Add(new DividerLine(this, -1, wxDefaultPosition, wxSize(1,1)), 0, wxEXPAND);
     horz_sizer->Add(m_file_ctrl, 1, wxEXPAND);
-
 
     wxBoxSizer* path_sizer = new wxBoxSizer(wxHORIZONTAL);
     path_sizer->AddSpacer(15);
@@ -498,6 +498,14 @@ void FilePanel::setFilterIndex(int value)
         m_filter_ctrl->SetSelection(m_filter_index);
 }
 
+
+void FilePanel::setDirectory(const wxString& value)
+{
+    m_path_ctrl->SetValue(value);
+    m_file_ctrl->goToDir(value);
+}
+
+
 void FilePanel::onTreeSelectionChanging(wxTreeEvent& evt)
 {
     wxTreeItemId id = evt.GetItem();
@@ -510,6 +518,24 @@ void FilePanel::onTreeSelectionChanging(wxTreeEvent& evt)
     }
 }
 
+void FilePanel::onGoParentClicked(wxCommandEvent& evt)
+{
+    wxString path = m_path_ctrl->GetValue();
+    wxChar sep = wxFileName::GetPathSeparator();
+    if (path.Last() == sep)
+        path.RemoveLast();
+    if (path.find(sep) == path.npos)
+        return;
+    path = path.BeforeLast(sep);
+    
+    if (path.length() == 2 && path[1] == ':')
+        path += sep;
+
+    wxDir dir(path);
+    if (dir.IsOpened())
+        setDirectory(path);
+}
+
 void FilePanel::onTreeSelectionChanged(wxTreeEvent& evt)
 {
     wxTreeItemId id = evt.GetItem();
@@ -518,7 +544,7 @@ void FilePanel::onTreeSelectionChanged(wxTreeEvent& evt)
         LocationTreeData* item = (LocationTreeData*)m_location_tree->GetItemData(id);
         if (item)
         {
-            m_file_ctrl->goToDir(item->loc);
+            setDirectory(item->loc);
         }
     }
 }
@@ -590,6 +616,29 @@ void FilePanel::getPaths(std::vector<wxString>& result)
 }
 
 
+void FilePanel::onFileCtrlItemActivated(wxListEvent& evt)
+{
+    wxBusyCursor bc;
+
+    std::vector<FileInfo> files;
+    std::vector<FileInfo>::iterator it;
+
+    m_file_ctrl->getSelection(files);
+
+    if (files.size() == 1)
+    {
+        if (files[0].folder)
+        {
+            wxString path = m_path_ctrl->GetValue();
+            wxChar sep = wxFileName::GetPathSeparator();
+            if (path.Last() != sep)
+                path += sep;
+            path += files[0].name;
+
+            setDirectory(path);
+        }
+    }
+}
 
 void FilePanel::onFileCtrlItemSelected(wxListEvent& evt)
 {

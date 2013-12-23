@@ -137,6 +137,7 @@ enum
 {
     ID_First = wxID_HIGHEST + 1,
     ID_ToggleButton_Folder,
+    ID_ToggleButton_File,
     ID_ToggleButton_Server,
     ID_ToggleButton_DataSource,
 
@@ -172,7 +173,7 @@ enum
 
 
 BEGIN_EVENT_TABLE(DlgConnection, wxDialog)
-    EVT_TOGGLEBUTTON(ID_ToggleButton_Folder, DlgConnection::onToggleButton)
+    EVT_TOGGLEBUTTON(ID_ToggleButton_File, DlgConnection::onToggleButton)
     EVT_TOGGLEBUTTON(ID_ToggleButton_Server, DlgConnection::onToggleButton)
     EVT_TOGGLEBUTTON(ID_ToggleButton_DataSource, DlgConnection::onToggleButton)
 
@@ -219,9 +220,9 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
     wxBoxSizer* togglebutton_sizer = new wxBoxSizer(wxHORIZONTAL);
     wxBitmap bmp;
 
-    m_togglebutton_folder = new wxToggleButton(this, ID_ToggleButton_Folder, _("Folder"));
+    m_togglebutton_file = new wxToggleButton(this, ID_ToggleButton_File, _("File"));
     bmp = addMarginToBitmap(GETBMP(gf_folder_open_32), 0,8,0,0);
-    m_togglebutton_folder->SetBitmap(bmp, wxTOP);
+    m_togglebutton_file->SetBitmap(bmp, wxTOP);
 
     m_togglebutton_server = new wxToggleButton(this, ID_ToggleButton_Server, _("Database"));
     bmp = addMarginToBitmap(GETBMP(gf_db_db_32), 0,8,0,0);
@@ -231,7 +232,7 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
     bmp = addMarginToBitmap(GETBMP(gf_db_od_32), 0,8,0,0);
     m_togglebutton_datasources->SetBitmap(bmp, wxTOP);
 
-    togglebutton_sizer->Add(m_togglebutton_folder, 0, wxEXPAND);
+    togglebutton_sizer->Add(m_togglebutton_file, 0, wxEXPAND);
     togglebutton_sizer->Add(m_togglebutton_server, 0, wxEXPAND);
     togglebutton_sizer->Add(m_togglebutton_datasources, 0, wxEXPAND);
 
@@ -611,7 +612,7 @@ DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
     SetSizer(sizer);
 
 
-    setActivePage(pageFolder);
+    setActivePage(pageFile);
 
 
     Center();
@@ -741,6 +742,7 @@ void DlgConnection::onToggleButton(wxCommandEvent& evt)
     switch (evt.GetId())
     {
         case ID_ToggleButton_Folder:     setActivePage(pageFolder); break;
+        case ID_ToggleButton_File:       setActivePage(pageFile); break;
         case ID_ToggleButton_Server:     setActivePage(pageServer); break;
         case ID_ToggleButton_DataSource: setActivePage(pageDataSource); break;
     }
@@ -796,14 +798,14 @@ void DlgConnection::setActivePage(int page)
     m_current_page = page;
 
 
-    if (page == pageFolder || page == pageServer || page == pageDataSource)
+    if (page == pageFile || page == pageServer || page == pageDataSource)
     {
-        m_togglebutton_folder->SetValue(page == pageFolder ? true : false);
+        m_togglebutton_file->SetValue(page == pageFile ? true : false);
         m_togglebutton_server->SetValue(page == pageServer ? true : false);
         m_togglebutton_datasources->SetValue(page == pageDataSource ? true : false);
     }
 
-    if (page == pageFolder)
+    if (page == pageFile)
     {
         m_container_sizer->Show(m_filepage_sizer);
         m_container_sizer->Hide(m_serverpage_sizer);
@@ -1016,6 +1018,8 @@ void DlgConnection::populateTableListGrid(std::vector<wxString>& tables)
         m_tablelist_grid->setCellBoolean(row, APPEND_IDX, append);
         row++;
     }
+
+    m_tablelist_grid->refresh(kcl::Grid::refreshAll);
 }
 
 void DlgConnection::populateTableListGrid(xd::IDatabasePtr db)
@@ -1093,5 +1097,7 @@ void DlgConnection::populateTableListGrid(xd::IDatabasePtr db)
         m_tablelist_grid->setCellBoolean(row, APPEND_IDX, append);
         row++;
     }
+
+    m_tablelist_grid->refresh(kcl::Grid::refreshAll);
 }
 

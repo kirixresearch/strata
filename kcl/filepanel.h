@@ -67,6 +67,8 @@ public:
     void setFilterString(const wxString& value);
     void setFilterIndex(int value);
 
+    void setDirectory(const wxString& value);
+
     wxString getFilename();
     void getFilenames(std::vector<wxString>& result);
 
@@ -78,7 +80,9 @@ private:
     void onTreeSelectionChanging(wxTreeEvent& evt);
     void onTreeSelectionChanged(wxTreeEvent& evt);
     void onFileCtrlItemSelected(wxListEvent& evt);
+    void onFileCtrlItemActivated(wxListEvent& evt);
     void onPathCtrlEnterPressed(wxCommandEvent& evt);
+    void onGoParentClicked(wxCommandEvent& evt);
     void onChildFocus(wxChildFocusEvent& evt);
     void onIdle(wxIdleEvent& evt);
 

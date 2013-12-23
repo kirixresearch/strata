@@ -114,7 +114,7 @@ private:
 private:
     
     wxAuiToolBar* m_toolbar;
-    wxToggleButton* m_togglebutton_folder;
+    wxToggleButton* m_togglebutton_file;
     wxToggleButton* m_togglebutton_server;
     wxToggleButton* m_togglebutton_datasources;
 
