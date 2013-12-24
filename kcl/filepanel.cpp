@@ -304,6 +304,12 @@ void FileCtrl::getSelection(std::vector<FileInfo>& files)
 }
 
 
+void FileCtrl::setWildcard(const wxString& val)
+{
+    m_filespec = val;
+    populate();
+}
+
 
 
 class LocationTreeData : public wxTreeItemData
@@ -334,6 +340,7 @@ BEGIN_EVENT_TABLE(FilePanel, wxNavigationEnabled<wxPanel>)
     EVT_CHILD_FOCUS(FilePanel::onChildFocus)
     EVT_IDLE(FilePanel::onIdle)
     EVT_BUTTON(ID_GoParent_Button, FilePanel::onGoParentClicked)
+    EVT_CHOICE(ID_Filter_Choice, FilePanel::onFilterChoice)
 END_EVENT_TABLE()
 
 
@@ -477,6 +484,7 @@ void FilePanel::setFilterString(const wxString& value)
 
     wxWindowUpdateLocker freeze(m_filter_ctrl);
 
+    m_wildcards.clear();
     while (m_filter_ctrl->GetCount())
         m_filter_ctrl->Delete(0);
 
@@ -699,6 +707,16 @@ void FilePanel::onPathCtrlEnterPressed(wxCommandEvent& evt)
     }
 
 }
+
+void FilePanel::onFilterChoice(wxCommandEvent& evt)
+{
+    int sel = m_filter_ctrl->GetSelection();
+    if (sel >= 0 && sel < (int)m_wildcards.size())
+    {
+        m_file_ctrl->setWildcard(m_wildcards[sel]);
+    }
+}
+
 
 void FilePanel::onChildFocus(wxChildFocusEvent& evt)
 {

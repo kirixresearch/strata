@@ -44,6 +44,7 @@ public:
              long style = wxLC_LIST);
 
     bool goToDir(const wxString& dir);
+    void setWildcard(const wxString& value);
 
     void getSelection(std::vector<FileInfo>& files);
 
@@ -105,6 +106,7 @@ private:
     void onFileCtrlItemSelected(wxListEvent& evt);
     void onFileCtrlItemActivated(wxListEvent& evt);
     void onPathCtrlEnterPressed(wxCommandEvent& evt);
+    void onFilterChoice(wxCommandEvent& evt);
     void onGoParentClicked(wxCommandEvent& evt);
     void onChildFocus(wxChildFocusEvent& evt);
     void onIdle(wxIdleEvent& evt);
