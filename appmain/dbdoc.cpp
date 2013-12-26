@@ -865,7 +865,7 @@ enum
 
 
 BEGIN_EVENT_TABLE(DbDoc, wxEvtHandler)
-    EVT_MENU(ID_Project_ConnectExternal, DbDoc::onCreateExternalConnection)
+    EVT_MENU(ID_Project_ConnectExternalDatabase, DbDoc::onConnectExternalDatabase)
     EVT_MENU(ID_Project_NewTable, DbDoc::onCreateTable)
     EVT_MENU(ID_Project_Import, DbDoc::onImportData)
     EVT_MENU(ID_Project_Export, DbDoc::onExportData)
@@ -1362,7 +1362,7 @@ void DbDoc::onKeyDown(const wxKeyEvent& evt, bool* handled)
     }
 }
 
-void DbDoc::onCreateExternalConnection(wxCommandEvent& evt)
+void DbDoc::onConnectExternalDatabase(wxCommandEvent& evt)
 {
     IFsItemEnumPtr items;
     items = m_fspanel->getSelectedItems();
@@ -1375,7 +1375,7 @@ void DbDoc::onCreateExternalConnection(wxCommandEvent& evt)
     if (!folder)
         return;
 
-    g_app->getAppController()->showCreateExternalConnectionWizard();
+    g_app->getAppController()->showConnectExternalDatabaseWizard();
 }
 
 void DbDoc::onCreateTable(wxCommandEvent& evt)
@@ -3097,7 +3097,7 @@ void DbDoc::onFsItemRightClicked(IFsItemPtr item)
             menuPopup.AppendSeparator();
             menuPopup.Append(ID_Project_Import, _("&Import..."));
             menuPopup.Append(ID_Project_Export, _("&Export..."));
-            menuPopup.Append(ID_Project_ConnectExternal, _("Create Co&nnection..."));
+            menuPopup.Append(ID_Project_ConnectExternalDatabase, _("Create Co&nnection to Database..."));
             menuPopup.AppendSeparator();            
 
             menuPopup.Append(ID_App_OpenProject, _("P&rojects..."));
@@ -3142,7 +3142,7 @@ void DbDoc::onFsItemRightClicked(IFsItemPtr item)
                 menuPopup.Append(ID_RefreshItem, _("Refre&sh"));
                 menuPopup.AppendSeparator();
                 menuPopup.AppendSubMenu(submenuNew, _("&New"));
-                menuPopup.Append(ID_Project_ConnectExternal, _("Cre&ate Connection..."));
+                menuPopup.Append(ID_Project_ConnectExternalDatabase, _("Cre&ate Connection to Database..."));
                 menuPopup.AppendSeparator();
                 menuPopup.Append(ID_Paste, _("&Paste"));
                 menuPopup.AppendSeparator();

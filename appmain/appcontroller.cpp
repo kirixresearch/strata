@@ -157,7 +157,8 @@ BEGIN_EVENT_TABLE(AppController, wxEvtHandler)
     EVT_MENU(ID_App_ToggleProtect, AppController::onToggleLock)
     EVT_MENU(ID_Project_Import, AppController::onImportData)
     EVT_MENU(ID_Project_Export, AppController::onExportData)
-    EVT_MENU(ID_Project_ConnectExternal, AppController::onConnectExternal)
+    EVT_MENU(ID_Project_ConnectExternalTables, AppController::onConnectExternalTables)
+    EVT_MENU(ID_Project_ConnectExternalDatabase, AppController::onConnectExternalDatabase)
     EVT_MENU(ID_App_JobScheduler, AppController::onJobScheduler)
     EVT_MENU(ID_App_JobManager, AppController::onJobManager)
     EVT_MENU(ID_App_ExtensionManager, AppController::onExtensionManager)
@@ -810,7 +811,8 @@ bool AppController::init()
     menuFile->AppendSeparator();
     menuFile->Append(ID_Project_Import, _("&Import..."));
     menuFile->Append(ID_Project_Export, _("&Export..."));
-    menuFile->Append(ID_Project_ConnectExternal, _("Create Co&nnection..."));
+    menuFile->Append(ID_Project_ConnectExternalTables, _("Link to External Tables..."));
+    menuFile->Append(ID_Project_ConnectExternalDatabase, _("Create Co&nnection to Database..."));
     menuFile->AppendSeparator();
     menuFile->Append(ID_App_OpenProject, _("P&rojects..."));
     menuFile->AppendSeparator();
@@ -4112,9 +4114,15 @@ void AppController::onCheckForUpdates(wxCommandEvent& evt)
 }
 
 
-void AppController::onConnectExternal(wxCommandEvent& evt)
+void AppController::onConnectExternalDatabase(wxCommandEvent& evt)
 {
-    showCreateExternalConnectionWizard();
+    showConnectExternalDatabaseWizard();
+}
+
+
+void AppController::onConnectExternalTables(wxCommandEvent& evt)
+{
+    showConnectExternalTablesWizard();
 }
 
 
@@ -6324,7 +6332,7 @@ static void onExportWizardFinished(ExportWizard* dlg)
 
 
 
-static void onConnectionDlgFinished(DlgConnection* dlg)
+static void onConnectExternalDatabaseWizardFinished(DlgConnection* dlg)
 {
     xd::IDatabasePtr db = g_app->getDatabase();
     if (db.isNull())
@@ -6347,10 +6355,10 @@ static void onConnectionDlgFinished(DlgConnection* dlg)
 }
 
 
-void AppController::showCreateExternalConnectionWizard()
+void AppController::showConnectExternalDatabaseWizard()
 {
-    DlgConnection* dlg = new DlgConnection(g_app->getMainWindow());
-    dlg->sigFinished.connect(&onConnectionDlgFinished);
+    DlgConnection* dlg = new DlgConnection(g_app->getMainWindow(), wxID_ANY, _("Connect To Database"), DlgConnection::optionFolder);
+    dlg->sigFinished.connect(&onConnectExternalDatabaseWizardFinished);
     dlg->Show();
 
     /*
@@ -6372,6 +6380,39 @@ void AppController::showCreateExternalConnectionWizard()
             site->setVisible(true);
     }
     */
+}
+
+
+
+
+static void onConnectExternalTablesWizardFinished(DlgConnection* dlg)
+{
+    xd::IDatabasePtr db = g_app->getDatabase();
+    if (db.isNull())
+        return;
+
+    Connection& ci = dlg->getConnectionInfo();
+    std::vector<ConnectionTable>::iterator it;
+
+    std::wstring cstr = ci.getConnectionString();
+
+    for (it = ci.tables.begin(); it != ci.tables.end(); ++it)
+    {
+        xd::FormatDefinition fi;
+        fi.data_connection_string = cstr;
+        fi.data_path = it->input_tablename;
+        db->saveDataView(it->output_tablename, &fi);
+    }
+    
+    g_app->getAppController()->refreshDbDoc();
+}
+
+
+void AppController::showConnectExternalTablesWizard()
+{
+    DlgConnection* dlg = new DlgConnection(g_app->getMainWindow(), wxID_ANY, _("Link to External Tables"));
+    dlg->sigFinished.connect(&onConnectExternalTablesWizardFinished);
+    dlg->Show();
 }
 
 

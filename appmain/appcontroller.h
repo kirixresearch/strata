@@ -148,7 +148,8 @@ public:
     
     // show commands
     void showAbout();
-    void showCreateExternalConnectionWizard();
+    void showConnectExternalDatabaseWizard();
+    void showConnectExternalTablesWizard();
     void showImportWizard(const ImportInfo& info,
                           const wxString& location = wxEmptyString);
     void showExportWizard(const ExportInfo& info,
@@ -215,7 +216,8 @@ private:
     void onCloseProject(wxCommandEvent& evt);
     void onImportData(wxCommandEvent& evt);
     void onExportData(wxCommandEvent& evt);
-    void onConnectExternal(wxCommandEvent& evt);
+    void onConnectExternalDatabase(wxCommandEvent& evt);
+    void onConnectExternalTables(wxCommandEvent& evt);
     void onCloseAllChildren(wxCommandEvent& evt);
     void onCloseChild(wxCommandEvent& evt);
     void onStop(wxCommandEvent& evt);

@@ -68,6 +68,15 @@ namespace kcl { class FilePanelEvent; }
 class DlgConnection : public wxDialog
 {
 
+public:
+
+    enum
+    {
+        optionFolder = 0x01,
+    };
+
+private:
+
     enum
     {
         pageFile = 1,
@@ -80,7 +89,7 @@ class DlgConnection : public wxDialog
 
 public:
 
-    DlgConnection(wxWindow* parent);
+    DlgConnection(wxWindow* parent, wxWindowID id, const wxString& title, int options = 0);
     ~DlgConnection();
 
     void setActivePage(int page);
@@ -121,6 +130,7 @@ private:
 
     int m_last_page;
     int m_current_page;
+    int m_options;
 
     wxSizer* m_container_sizer;
     wxSizer* m_filepage_sizer;

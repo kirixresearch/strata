@@ -210,21 +210,23 @@ static wxBitmap addMarginToBitmap(const wxBitmap& bmp, int left, int top, int ri
     return wxBitmap(newimg);
 }
 
-DlgConnection::DlgConnection(wxWindow* parent) : wxDialog(parent,
-                                                          -1,
-                                                          _("Create Connection"),
+DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& title, int options)
+                                               : wxDialog(parent,
+                                                          id,
+                                                          title.empty() ? _("Create Connection") : title,
                                                           wxDefaultPosition,
                                                           wxSize(640, 480),
                                                           wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
 {
     m_last_page = 0;
     m_current_page = 0;
+    m_options = options;
 
     // toggle button sizer
 
 
     kcl::ButtonBar* button_bar = new kcl::ButtonBar(this, wxID_ANY);
-    button_bar->addItem(ID_ToggleButton_File, GETBMP(gf_folder_open_32), _("File"));
+    button_bar->addItem(ID_ToggleButton_File, GETBMP(gf_folder_open_32), (m_options & optionFolder) ? _("Folder") : _("File"));
     button_bar->addItem(ID_ToggleButton_Server, GETBMP(gf_db_db_32), _("Database"));
     button_bar->addItem(ID_ToggleButton_DataSource, GETBMP(gf_db_od_32), _("Data Sources"));
 
@@ -776,6 +778,7 @@ void DlgConnection::onForward(wxCommandEvent& evt)
         {
             m_ci.tables.clear();
             populateTableListGrid(files);
+            setActivePage(pageTableList);
             return;
         }
     }
@@ -818,7 +821,11 @@ void DlgConnection::setActivePage(int page)
         m_container_sizer->Hide(m_serverpage_sizer);
         m_container_sizer->Hide(m_datasourcepage_sizer);
         m_container_sizer->Hide(m_tablelistpage_sizer);
-        showButtons(wxFORWARD | wxCANCEL);
+
+        if (m_options & optionFolder)
+            showButtons(wxOK | wxCANCEL);
+             else
+            showButtons(wxFORWARD | wxCANCEL);
     }
      else if (page == pageServer)
     {
@@ -826,7 +833,11 @@ void DlgConnection::setActivePage(int page)
         m_container_sizer->Show(m_serverpage_sizer);
         m_container_sizer->Hide(m_datasourcepage_sizer);
         m_container_sizer->Hide(m_tablelistpage_sizer);
-        showButtons(wxFORWARD | wxCANCEL);
+
+        if (m_options & optionFolder)
+            showButtons(wxOK | wxCANCEL);
+             else
+            showButtons(wxFORWARD | wxCANCEL);
 
         m_server_server->SetFocus();
     }
@@ -836,7 +847,11 @@ void DlgConnection::setActivePage(int page)
         m_container_sizer->Hide(m_serverpage_sizer);
         m_container_sizer->Show(m_datasourcepage_sizer);
         m_container_sizer->Hide(m_tablelistpage_sizer);
-        showButtons(wxFORWARD | wxCANCEL);
+
+        if (m_options & optionFolder)
+            showButtons(wxOK | wxCANCEL);
+             else
+            showButtons(wxFORWARD | wxCANCEL);
     }
      else if (page == pageTableList)
     {
