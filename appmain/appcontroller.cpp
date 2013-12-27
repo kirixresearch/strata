@@ -6302,6 +6302,8 @@ static void onConnectExternalDatabaseWizardFinished(DlgConnection* dlg)
     wxString conn_name;
     switch (info.type)
     {
+        case xd::dbtypeOracle:
+        case xd::dbtypeDb2:
         case xd::dbtypeSqlServer:
         case xd::dbtypePostgres:
         case xd::dbtypeMySql:
@@ -6310,12 +6312,9 @@ static void onConnectExternalDatabaseWizardFinished(DlgConnection* dlg)
                                          info.server.c_str());
             break;
         
-        case xd::dbtypeOracle:
-        case xd::dbtypeDb2:
+
         case xd::dbtypeOdbc:
-            conn_name = wxString::Format(_("%s on %s"),
-                                         info.database.c_str(),
-                                         dlg->getConnectionInfo().server.c_str());
+            conn_name = info.database;
             break;
 
         case xd::dbtypeFilesystem:

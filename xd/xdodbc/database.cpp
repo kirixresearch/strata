@@ -843,12 +843,7 @@ void OdbcDatabase::errorSqlConn(HDBC hdbc)
                                     2048,
                                     &text_len_ptr);
         m_error.setError(odbcStateToXdError(state), kl::towstring((TCHAR*)message));
-    }
-     else
-    {
-        m_error.setError(xd::errorGeneral, L"");
-    }
-                          
+    }                  
 }
 
 
@@ -868,13 +863,11 @@ SQLRETURN OdbcDatabase::connect(HDBC conn)
                               &out_length,
                               SQL_DRIVER_NOPROMPT);
                               
-#ifdef _DEBUG
     if (retval != SQL_SUCCESS &&
         retval != SQL_SUCCESS_WITH_INFO)
     {
         errorSqlConn(conn);
     }
-#endif
 
     return retval;
 }

@@ -198,6 +198,8 @@ BEGIN_EVENT_TABLE(DlgConnection, wxDialog)
     EVT_BUTTON(wxID_CANCEL, DlgConnection::onCancel)
 
     EVT_FILEPANEL_ITEM_ACTIVATED(ID_File_Panel, DlgConnection::onFilePanelItemActivated)
+
+    EVT_KCLGRID_CELL_LEFT_DCLICK(DlgConnection::onDataSourceLeftDClick)
 END_EVENT_TABLE()
 
 
@@ -713,8 +715,23 @@ void DlgConnection::onOK(wxCommandEvent& evt)
                 m_ci.tables.push_back(t);
             }
         }
-
     }
+
+
+    if (m_current_page == pageDataSource)
+    {
+        int row = m_datasource_grid->getCursorRow();
+        if (row >= 0 && row < m_datasource_grid->getRowCount())
+        {
+            m_ci.type = xd::dbtypeOdbc;
+            m_ci.database = m_datasource_grid->getCellString(row, 0);
+        }
+         else
+        {
+            return;
+        }
+    }
+
 
 
     sigFinished(this);
@@ -790,6 +807,22 @@ void DlgConnection::onForward(wxCommandEvent& evt)
             m_ci.type = xd::dbtypeFilesystem;
             populateTableListGrid(files);
             setActivePage(pageTableList);
+            return;
+        }
+    }
+
+
+    if (m_current_page == pageDataSource)
+    {
+        int row = m_datasource_grid->getCursorRow();
+        if (row >= 0 && row < m_datasource_grid->getRowCount())
+        {
+            m_ci.type = xd::dbtypeOdbc;
+            m_ci.database = m_datasource_grid->getCellString(row, 0);
+            connect_to_database = true;
+        }
+         else
+        {
             return;
         }
     }
@@ -893,6 +926,18 @@ void DlgConnection::onFilePanelItemActivated(kcl::FilePanelEvent& evt)
         onOK(evt);
          else
         onForward(e);
+}
+
+void DlgConnection::onDataSourceLeftDClick(kcl::GridEvent& evt)
+{
+    if (evt.GetId() == ID_DataSource_Grid)
+    {
+        wxCommandEvent e;
+        if (m_options & optionFolder)
+            onOK(evt);
+             else
+            onForward(e);
+    }
 }
 
 void DlgConnection::populateDataSourceGrid()

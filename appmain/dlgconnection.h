@@ -120,6 +120,7 @@ private:
     void onForward(wxCommandEvent& evt);
     void onToggleButton(wxCommandEvent& evt);
     void onFilePanelItemActivated(kcl::FilePanelEvent& evt);
+    void onDataSourceLeftDClick(kcl::GridEvent& evt);
 
 private:
     
