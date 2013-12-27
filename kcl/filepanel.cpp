@@ -114,6 +114,8 @@ FileCtrl::FileCtrl(wxWindow* parent,
                    const wxSize& size,
                    long style) : wxListCtrl(parent, id, pos, size, style)
 {
+    m_folder_only = false;
+
     SetImageList(wxTheFileIconsTable->GetSmallImageList(), wxIMAGE_LIST_SMALL);
 
     InsertColumn(0, _("Name"),          wxLIST_FORMAT_LEFT, 230);
@@ -170,33 +172,33 @@ bool FileCtrl::populate()
         more = dir.GetNext(&fname);
     }
 
-    wxString filespec = m_filespec;
-    if (filespec.IsEmpty())
-        filespec = "*.*";
-
-
-    wxStringTokenizer t(filespec, wxT(";"));
-    while (t.HasMoreTokens())
+    if (!m_folder_only)
     {
+        wxString filespec = m_filespec;
+        if (filespec.IsEmpty())
+            filespec = "*.*";
 
-        bool more = dir.GetFirst(&fname, t.GetNextToken(), wxDIR_FILES);
-        while (more)
+        wxStringTokenizer t(filespec, wxT(";"));
+        while (t.HasMoreTokens())
         {
-            wxFileName fn(m_curdir, fname);
+            bool more = dir.GetFirst(&fname, t.GetNextToken(), wxDIR_FILES);
+            while (more)
+            {
+                wxFileName fn(m_curdir, fname);
             
 
-            FileInfo fi;
-            fi.folder = false;
-            fi.name = fname;
-            fi.size = fn.GetSize();
-            fi.datetime = fn.GetModificationTime();
-            m_files.push_back(fi);
+                FileInfo fi;
+                fi.folder = false;
+                fi.name = fname;
+                fi.size = fn.GetSize();
+                fi.datetime = fn.GetModificationTime();
+                m_files.push_back(fi);
 
 
-            more = dir.GetNext(&fname);
+                more = dir.GetNext(&fname);
+            }
         }
     }
-
 
 
     // populate control
@@ -310,6 +312,12 @@ void FileCtrl::setWildcard(const wxString& val)
     populate();
 }
 
+void FileCtrl::setFolderOnly(bool value)
+{
+    m_folder_only = value;
+    populate();
+}
+
 
 
 class LocationTreeData : public wxTreeItemData
@@ -352,6 +360,7 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
 {
     m_filter_index = 0;
     m_filename_ctrl_focus_received = false;
+    m_folder_only = false;
 
     wxBusyCursor bc;
     wxStandardPaths& paths = wxStandardPaths::Get();
@@ -475,6 +484,13 @@ FilePanel::FilePanel(wxWindow* parent, wxWindowID id) : wxPanel(parent,
 
 FilePanel::~FilePanel()
 {
+}
+
+
+void FilePanel::setFolderOnly(bool value)
+{
+    m_folder_only = value;
+    m_file_ctrl->setFolderOnly(value);
 }
 
 
@@ -642,6 +658,14 @@ void FilePanel::onFileCtrlItemActivated(wxListEvent& evt)
     {
         if (files[0].folder)
         {
+            if (m_folder_only)
+            {
+                // user is selecting folder
+                FilePanelEvent evt(wxEVT_FILEPANEL_ITEM_ACTIVATED, GetId());
+                GetParent()->GetEventHandler()->ProcessEvent(evt);
+                return;
+            }
+
             wxString path = m_path_ctrl->GetValue();
             wxChar sep = wxFileName::GetPathSeparator();
             if (path.Last() != sep)
@@ -669,8 +693,16 @@ void FilePanel::onFileCtrlItemSelected(wxListEvent& evt)
 
     if (files.size() == 1)
     {
-        if (!files[0].folder)
-            path_value = files[0].name;
+        if (m_folder_only)
+        {
+            if (files[0].folder)
+                path_value = files[0].name;
+        }
+         else
+        {
+            if (!files[0].folder)
+                path_value = files[0].name;
+        }
     }
      else
     {

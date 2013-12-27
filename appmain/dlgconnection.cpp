@@ -238,6 +238,10 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
     m_filepage_sizer = new wxBoxSizer(wxVERTICAL);
     m_file_panel = new kcl::FilePanel(this, ID_File_Panel);
 
+    if (m_options & optionFolder)
+        m_file_panel->setFolderOnly(true);
+
+
     // populate the file dialog filter
     wxString filter;
     filter += _("All Files");
@@ -687,6 +691,12 @@ void DlgConnection::onTableListSelectNone(wxCommandEvent& evt)
 
 void DlgConnection::onOK(wxCommandEvent& evt)
 {
+    if (m_current_page == pageFile)
+    {
+        m_ci.type = xd::dbtypeFilesystem;
+        m_ci.path = m_file_panel->getPath().ToStdWstring();
+    }
+
     if (m_current_page == pageTableList)
     {
         m_ci.tables.clear();
@@ -777,6 +787,7 @@ void DlgConnection::onForward(wxCommandEvent& evt)
          else
         {
             m_ci.tables.clear();
+            m_ci.type = xd::dbtypeFilesystem;
             populateTableListGrid(files);
             setActivePage(pageTableList);
             return;
@@ -878,7 +889,10 @@ void DlgConnection::showButtons(int mask)
 void DlgConnection::onFilePanelItemActivated(kcl::FilePanelEvent& evt)
 {
     wxCommandEvent e;
-    onForward(e);
+    if (m_options & optionFolder)
+        onOK(evt);
+         else
+        onForward(e);
 }
 
 void DlgConnection::populateDataSourceGrid()

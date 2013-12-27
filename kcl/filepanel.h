@@ -45,6 +45,7 @@ public:
 
     bool goToDir(const wxString& dir);
     void setWildcard(const wxString& value);
+    void setFolderOnly(bool value);
 
     void getSelection(std::vector<FileInfo>& files);
 
@@ -54,6 +55,7 @@ private:
 
     wxString m_curdir;
     wxString m_filespec;
+    bool m_folder_only;
     std::vector<FileInfo> m_files;
 };
 
@@ -88,6 +90,7 @@ public:
     FilePanel(wxWindow* parent, wxWindowID id = wxID_ANY);
     virtual ~FilePanel();
 
+    void setFolderOnly(bool value);
     void setFilterString(const wxString& value);
     void setFilterIndex(int value);
 
@@ -118,6 +121,7 @@ private:
     FileCtrl* m_file_ctrl;
     wxTextCtrl* m_filename_ctrl;
     wxChoice* m_filter_ctrl;
+    bool m_folder_only;
 
     wxString m_filter_string;
     int m_filter_index;

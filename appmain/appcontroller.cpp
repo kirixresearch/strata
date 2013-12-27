@@ -4886,44 +4886,6 @@ static void onImportWizardFinished(ImportWizard* dlg)
     dlg->getTemplate().execute();
 }
 
-static void onCreateExternalConnectionWizardFinished(ConnectionWizard* dlg)
-{
-    wxString conn_str = dlg->getConnectionString();
-    ConnectionInfo info = dlg->getConnectionInfo();
-    wxString conn_name;
-    switch (info.type)
-    {
-        case dbtypeSqlServer:
-        case dbtypePostgres:
-        case dbtypeMySql:
-            conn_name = wxString::Format(_("%s on %s"),
-                                         info.database.c_str(),
-                                         info.server.c_str());
-            break;
-        
-        case dbtypeOracle:
-        case dbtypeDb2:
-        case dbtypeOdbc:
-            conn_name = wxString::Format(_("%s on %s"),
-                                         info.database.c_str(),
-                                         dlg->getConnectionInfo().server.c_str());
-            break;
-
-        case dbtypeFilesystem:
-            conn_name = dlg->getConnectionInfo().path;
-            if (conn_name.Last() == '/' || conn_name.Last() == '\\')
-                conn_name.RemoveLast();
-            break;
-
-        case dbtypeClient:
-            conn_name = dlg->getConnectionInfo().server;
-            break;
-    }
-
-    makeSafeConnectionName(g_app->getDatabase(), conn_name);
-            
-    g_app->getAppController()->createMountPoint(conn_str, conn_name);
-}
 
 bool AppController::openExcel(const wxString& location, int* site_id)
 {
@@ -6334,24 +6296,43 @@ static void onExportWizardFinished(ExportWizard* dlg)
 
 static void onConnectExternalDatabaseWizardFinished(DlgConnection* dlg)
 {
-    xd::IDatabasePtr db = g_app->getDatabase();
-    if (db.isNull())
-        return;
+    Connection& info = dlg->getConnectionInfo();
+    std::wstring conn_str = info.getConnectionString();
 
-    Connection& ci = dlg->getConnectionInfo();
-    std::vector<ConnectionTable>::iterator it;
-
-    std::wstring cstr = ci.getConnectionString();
-
-    for (it = ci.tables.begin(); it != ci.tables.end(); ++it)
+    wxString conn_name;
+    switch (info.type)
     {
-        xd::FormatDefinition fi;
-        fi.data_connection_string = cstr;
-        fi.data_path = it->input_tablename;
-        db->saveDataView(it->output_tablename, &fi);
+        case xd::dbtypeSqlServer:
+        case xd::dbtypePostgres:
+        case xd::dbtypeMySql:
+            conn_name = wxString::Format(_("%s on %s"),
+                                         info.database.c_str(),
+                                         info.server.c_str());
+            break;
+        
+        case xd::dbtypeOracle:
+        case xd::dbtypeDb2:
+        case xd::dbtypeOdbc:
+            conn_name = wxString::Format(_("%s on %s"),
+                                         info.database.c_str(),
+                                         dlg->getConnectionInfo().server.c_str());
+            break;
+
+        case xd::dbtypeFilesystem:
+            conn_name = dlg->getConnectionInfo().path;
+            if (conn_name.length() > 0 && (conn_name.Last() == '/' || conn_name.Last() == '\\'))
+                conn_name.RemoveLast();
+            break;
+
+        case xd::dbtypeClient:
+            conn_name = dlg->getConnectionInfo().server;
+            break;
     }
-    
-    g_app->getAppController()->refreshDbDoc();
+
+    makeSafeConnectionName(g_app->getDatabase(), conn_name);
+            
+    g_app->getAppController()->createMountPoint(conn_str, conn_name);
+
 }
 
 
@@ -6360,26 +6341,6 @@ void AppController::showConnectExternalDatabaseWizard()
     DlgConnection* dlg = new DlgConnection(g_app->getMainWindow(), wxID_ANY, _("Connect To Database"), DlgConnection::optionFolder);
     dlg->sigFinished.connect(&onConnectExternalDatabaseWizardFinished);
     dlg->Show();
-
-    /*
-    IDocumentSitePtr site;
-    site = g_app->getMainFrame()->lookupSite(wxT("CreateConnectionWizard"));
-    if (site.isNull())
-    {
-        ConnectionWizard* wizard = new ConnectionWizard;
-        wizard->sigConnectionWizardFinished.connect(&onCreateExternalConnectionWizardFinished);
-
-        site = g_app->getMainFrame()->createSite(wizard, sitetypeModeless,
-                                                 -1, -1, 540, 480);
-        site->setMinSize(540,480);
-        site->setName(wxT("CreateConnectionWizard"));
-    }
-     else
-    {
-        if (!site->getVisible())
-            site->setVisible(true);
-    }
-    */
 }
 
 
