@@ -303,10 +303,10 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
 
     
     wxSizer* servertype_sizer = new wxBoxSizer(wxHORIZONTAL);
-    servertype_sizer->Add(50,23);
+    servertype_sizer->Add(80,23);
     servertype_sizer->Add(servertype_label, 0, wxALIGN_CENTER);
     servertype_sizer->Add(m_server_type, 1, wxALIGN_CENTER);
-    servertype_sizer->Add(50,23);
+    servertype_sizer->Add(80,23);
     
     // create the server sizer
     wxStaticText* server_label = new wxStaticText(this, -1, _("Server:"));
@@ -317,10 +317,10 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
                                        wxSize(200,21));
     
     wxSizer* server_sizer = new wxBoxSizer(wxHORIZONTAL);
-    server_sizer->Add(50,23);
+    server_sizer->Add(80,23);
     server_sizer->Add(server_label, 0, wxALIGN_CENTER);
     server_sizer->Add(m_server_server, 1, wxALIGN_CENTER);
-    server_sizer->Add(50,23);
+    server_sizer->Add(80,23);
     
     // create the database sizer
     wxStaticText* database_label = new wxStaticText(this,  -1,  _("Database:"));
@@ -331,10 +331,10 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
                                          wxSize(200,21));
     
     wxSizer* database_sizer = new wxBoxSizer(wxHORIZONTAL);
-    database_sizer->Add(50,23);
+    database_sizer->Add(80,23);
     database_sizer->Add(database_label, 0, wxALIGN_CENTER);
     database_sizer->Add(database_textctrl, 1, wxALIGN_CENTER);
-    database_sizer->Add(50,23);
+    database_sizer->Add(80,23);
 
     // create the port number sizer
     wxStaticText* port_label = new wxStaticText(this, -1,  _("Port Number:"));
@@ -345,10 +345,10 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
                                    wxSize(200,21));
     
     wxSizer* port_sizer = new wxBoxSizer(wxHORIZONTAL);
-    port_sizer->Add(50,23);
+    port_sizer->Add(80,23);
     port_sizer->Add(port_label, 0, wxALIGN_CENTER);
     port_sizer->Add(m_server_port, 1, wxALIGN_CENTER);
-    port_sizer->Add(50,23);
+    port_sizer->Add(80,23);
 
     // create the username sizer
     wxStaticText* username_label = new wxStaticText(this, -1, _("User Name:"));
@@ -359,10 +359,10 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
                                          wxSize(200,21));
     
     wxSizer* username_sizer = new wxBoxSizer(wxHORIZONTAL);
-    username_sizer->Add(50,23);
+    username_sizer->Add(80,23);
     username_sizer->Add(username_label, 0, wxALIGN_CENTER);
     username_sizer->Add(username_textctrl, 1, wxALIGN_CENTER);
-    username_sizer->Add(50,23);
+    username_sizer->Add(80,23);
 
     // create the password sizer
     wxStaticText* password_label = new wxStaticText(this,
@@ -377,10 +377,10 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
                                          wxTE_PASSWORD | wxTE_PROCESS_ENTER);
     
     wxSizer* password_sizer = new wxBoxSizer(wxHORIZONTAL);
-    password_sizer->Add(50,23);
+    password_sizer->Add(80,23);
     password_sizer->Add(password_label, 0, wxALIGN_CENTER);
     password_sizer->Add(password_textctrl, 1, wxALIGN_CENTER);
-    password_sizer->Add(50,23);
+    password_sizer->Add(80,23);
 
     // measure the label widths
     wxSize label_size = getMaxTextSize(servertype_label,
@@ -405,7 +405,7 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
     m_serverpage_sizer->AddSpacer(4);
     m_serverpage_sizer->Add(new wxStaticLine(this, -1, wxDefaultPosition, wxSize(1,1)),
                             0, wxEXPAND | wxLEFT | wxRIGHT, 20);
-    m_serverpage_sizer->AddSpacer(2);
+    m_serverpage_sizer->AddSpacer(8);
     m_serverpage_sizer->Add(servertype_sizer, 0, wxEXPAND | wxTOP, 10);
     m_serverpage_sizer->Add(server_sizer, 0, wxEXPAND | wxTOP, 10);
     m_serverpage_sizer->Add(database_sizer, 0, wxEXPAND | wxTOP, 10);
