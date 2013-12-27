@@ -658,14 +658,6 @@ void FilePanel::onFileCtrlItemActivated(wxListEvent& evt)
     {
         if (files[0].folder)
         {
-            if (m_folder_only)
-            {
-                // user is selecting folder
-                FilePanelEvent evt(wxEVT_FILEPANEL_ITEM_ACTIVATED, GetId());
-                GetParent()->GetEventHandler()->ProcessEvent(evt);
-                return;
-            }
-
             wxString path = m_path_ctrl->GetValue();
             wxChar sep = wxFileName::GetPathSeparator();
             if (path.Last() != sep)

@@ -215,7 +215,7 @@ DlgConnection::DlgConnection(wxWindow* parent, wxWindowID id, const wxString& ti
                                                           id,
                                                           title.empty() ? _("Create Connection") : title,
                                                           wxDefaultPosition,
-                                                          wxSize(640, 480),
+                                                          wxSize(680, 520),
                                                           wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
 {
     m_last_page = 0;
