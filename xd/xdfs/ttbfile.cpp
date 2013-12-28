@@ -300,6 +300,7 @@ bool TtbTable::create(const std::wstring& filename, xd::IStructure* structure)
     if (xf_write(f, header, ttb_header_len, 1) != 1)
     {
         delete[] flds;
+        delete[] header;
         xf_close(f);
         return false;
     }
@@ -307,11 +308,13 @@ bool TtbTable::create(const std::wstring& filename, xd::IStructure* structure)
     if (xf_write(f, flds, field_arr_len, 1) != 1)
     {
         delete[] flds;
+        delete[] header;
         xf_close(f);
         return false;
     }
 
     delete[] flds;
+    delete[] header;
 
     xf_close(f);
 
