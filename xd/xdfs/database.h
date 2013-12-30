@@ -66,7 +66,8 @@ XCM_DECLARE_SMARTPTR(IFsDatabase)
 
 
 class FsDatabase : public xd::IDatabase,
-                   public IFsDatabase
+                   public IFsDatabase,
+                   public IXdsqlDatabase
 {
     friend class XdfsFileInfo;
 
@@ -74,6 +75,7 @@ class FsDatabase : public xd::IDatabase,
     XCM_BEGIN_INTERFACE_MAP(FsDatabase)
         XCM_INTERFACE_ENTRY(xd::IDatabase)
         XCM_INTERFACE_ENTRY(IFsDatabase)
+        XCM_INTERFACE_ENTRY(IXdsqlDatabase)
     XCM_END_INTERFACE_MAP()
 
 public:
@@ -109,7 +111,9 @@ public:
 
     xd::IJobPtr createJob();
 
+    IXdsqlTablePtr openTable(const std::wstring& path);
     IXdfsSetPtr openSetEx(const std::wstring& path, const xd::FormatDefinition& fi);
+
 
     bool loadDataView(const std::wstring& path, xd::FormatDefinition* format_info);
     bool saveDataView(const std::wstring& path, const xd::FormatDefinition* format_info);

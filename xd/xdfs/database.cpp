@@ -34,6 +34,7 @@
 #include "../xdcommon/connectionstr.h"
 #include "../xdcommon/dbfuncs.h"
 #include "../xdcommon/formatdefinition.h"
+#include "../xdcommon/cmndynamicset.h"
 #include <kl/url.h>
 #include <kl/hex.h>
 #include <kl/json.h>
@@ -1614,6 +1615,13 @@ static IXdfsSetPtr openDelimitedTextSet(FsDatabase* db,
 }
 
 
+IXdsqlTablePtr FsDatabase::openTable(const std::wstring& path)
+{
+    xd::FormatDefinition fi;
+    fi.format = xd::formatDefault;
+    return openSetEx(path, fi);
+}
+
 IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatDefinition& _fi)
 {
     const xd::FormatDefinition* fi = &_fi;
@@ -1810,6 +1818,42 @@ xd::IIteratorPtr FsDatabase::query(const xd::QueryParams& qp)
             return ret;
         }
     }
+
+
+    if (qp.where.length() > 0)
+    {
+        // create an iterator for the table we are interested in
+        IXdsqlTablePtr table = openSetEx(qp.from, qp.format);
+        if (table.isNull())
+            return xcm::null;
+        xd::IIteratorPtr iter = table->createIterator(L"", L"", NULL);
+        if (iter.isNull())
+            return xcm::null;
+
+        // create a filtered record set
+        CommonDynamicSet* dynset = new CommonDynamicSet;
+        dynset->ref();
+        if (!dynset->create(static_cast<xd::IDatabase*>(this), qp.from))
+        {
+            // error.setError(xd::errorGeneral, L"Unable to process WHERE clause");
+            dynset->unref();
+            return xcm::null;
+        }
+        
+        // insert all rows meeting expression
+        int res = dynset->insert(iter, qp.where, 0, qp.job);
+        if (res == -1)
+        {
+            // error.setError(xd::errorGeneral, L"Unable to process WHERE clause");
+            dynset->unref();
+            return xcm::null;
+        }
+        
+        xd::IIteratorPtr result_iter = dynset->createIterator(qp.columns, qp.order, NULL);
+        dynset->unref();
+        return result_iter;
+    }
+
 
     IXdsqlTablePtr tbl = openSetEx(qp.from, qp.format);
     if (tbl.isNull())

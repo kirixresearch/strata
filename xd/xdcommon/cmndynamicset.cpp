@@ -410,8 +410,8 @@ int CommonDynamicSet::insert(xd::IIteratorPtr source_iter,
 
 
 xd::IIteratorPtr CommonDynamicSet::createIterator(const std::wstring& columns,
-                                                     const std::wstring& expr,
-                                                     xd::IJob* job)
+                                                  const std::wstring& expr,
+                                                  xd::IJob* job)
 {
     xd::IIteratorPtr data_iter = m_database->query(m_base_path, columns, L"", L"", NULL);
     if (data_iter.isNull())
