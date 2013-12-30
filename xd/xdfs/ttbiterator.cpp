@@ -14,6 +14,7 @@
 #endif
 
 
+#include <cmath>
 #include <xd/xd.h>
 #include <kl/math.h>
 #include <kl/portable.h>
@@ -25,6 +26,12 @@
 #include "../xdcommon/structure.h"
 #include "../xdcommon/util.h"
 
+
+#ifdef _MSC_VER
+#include <float.h>
+#define isnan _isnan
+#define finite _finite
+#endif
 
 const std::string empty_string = "";
 const std::wstring empty_wstring = L"";
@@ -49,6 +56,35 @@ inline xd::rowpos_t rowidGetRowPos(xd::rowid_t rowid)
 inline xd::tableord_t rowidGetTableOrd(xd::rowid_t rowid)
 {
     return (rowid >> 36);
+}
+
+
+static double decstr2dbl(const char* c, int width, int scale)
+{
+    double res = 0;
+    double d = kl::pow10(width-scale-1);
+    bool neg = false;
+    while (width)
+    {
+        if (*c == '-')
+            neg = true;
+
+        if (*c >= '0' && *c <= '9')
+        {
+            res += d * (*c - '0');
+        }
+
+        d /= 10;
+        c++;
+        width--;
+    }
+
+    if (neg)
+    {
+        res *= -1.0;
+    }
+
+    return res;
 }
 
 
@@ -818,19 +854,28 @@ const std::wstring& TtbIterator::getWideString(xd::objhandle_t data_handle)
 
 xd::datetime_t TtbIterator::getDateTime(xd::objhandle_t data_handle)
 {
-/*
     TtbDataAccessInfo* dai = (TtbDataAccessInfo*)data_handle;
-    if (dai == NULL)
+
+    //if (!dai->is_active)
+    //    return empty_wstring;
+    if (!m_rowptr)
     {
         xd::DateTime dt;
         return dt;
     }
 
-    if (dai->expr)
-    {
-        dai->expr->eval(&dai->expr_result);
-        kscript::ExprDateTime edt = dai->expr_result.getDateTime();
 
+    if (dai->isCalculated())
+    {
+        if (!dai->expr->eval(&dai->expr_result) ||
+             dai->expr->getType() != kscript::Value::typeDateTime)
+        {
+            // upon failure, return an empty date
+            xd::DateTime dt;
+            return dt;
+        }
+
+        kscript::ExprDateTime edt = dai->expr_result.getDateTime();
         xd::datetime_t dt;
         dt = edt.date;
         dt <<= 32;
@@ -840,113 +885,196 @@ xd::datetime_t TtbIterator::getDateTime(xd::objhandle_t data_handle)
 
         return dt;
     }
-    
-    return 0;
-*/
+
+
+    if (dai->type == xd::typeDate)
+    {
+        xd::datetime_t dt = buf2int(m_rowptr+dai->offset);
+        dt <<= 32;
+
+        return dt;
+    }
+        else if (dai->type == xd::typeDateTime)
+    {
+        xd::datetime_t dt = buf2int(m_rowptr+dai->offset);
+        xd::datetime_t ts = buf2int(m_rowptr+dai->offset+4);
+
+        dt <<= 32;
+        dt |= ts;
+
+        return dt;
+    }
+
     return 0;
 }
 
 double TtbIterator::getDouble(xd::objhandle_t data_handle)
 {
-/*
     TtbDataAccessInfo* dai = (TtbDataAccessInfo*)data_handle;
-    if (dai == NULL)
-    {
+
+    //if (!dai->is_active)
+    //    return empty_wstring;
+    if (!m_rowptr)
         return 0.0;
+
+    if (dai->type == xd::typeInteger)
+    {
+        // implicit conversion from integer -> double
+        return getInteger(data_handle);
+    }
+     else if (dai->type == xd::typeCharacter ||
+              dai->type == xd::typeWideCharacter)
+    {
+        return kl::nolocale_atof(getString(data_handle).c_str());
     }
 
-    if (dai->expr)
-    {
-        dai->expr->eval(&dai->expr_result);
-        return dai->expr_result.getDouble();
-    }
-    
+
     if (dai->isCalculated())
     {
-        // calculated field with bad expr
+        if (!dai->expr->eval(&dai->expr_result) ||
+             (dai->expr->getType() != kscript::Value::typeDouble &&
+              dai->expr->getType() != kscript::Value::typeInteger &&
+              dai->expr->getType() != kscript::Value::typeUndefined)
+           )
+        {
+            return 0.0;
+        }
+
+        double d = dai->expr_result.getDouble();
+
+        if (isnan(d) || !finite(d))
+            d = 0.0;
+
+        if (dai->scale == 255)
+            return d;
+             else
+            return kl::dblround(d, dai->scale);
+    }
+
+
+    if (dai->type == xd::typeNumeric)
+    {
+        return kl::dblround(
+                decstr2dbl((char*)m_rowptr + dai->offset, dai->width, dai->scale),
+                dai->scale);
+    }
+     else if (dai->type == xd::typeDouble)
+    {
+        // FIXME: this will only work on little-endian (intel) processors
+        double d;
+        memcpy(&d, m_rowptr + dai->offset, sizeof(double));
+        return kl::dblround(d, dai->scale);
+    }
+     else
+    {
         return 0.0;
     }
 
-    return m_file.getDouble(dai->ordinal);
-*/
+
     return 0;
 }
 
 int TtbIterator::getInteger(xd::objhandle_t data_handle)
 {
-/*
     TtbDataAccessInfo* dai = (TtbDataAccessInfo*)data_handle;
-    if (dai == NULL)
-    {
+
+    if (!dai)
+        return false;
+    if (!m_rowptr)
         return 0;
+
+    if (dai->type == xd::typeDouble || dai->type == xd::typeNumeric)
+    {
+        // implicit conversion from numeric/double -> integer
+        double d = getDouble(data_handle);
+        return (int)kl::dblround(d, 0);
+    }
+     else if (dai->type == xd::typeCharacter || dai->type == xd::typeWideCharacter)
+    {
+        return atoi(getString(data_handle).c_str());
     }
 
-    if (dai->expr)
-    {
-        dai->expr->eval(&dai->expr_result);
-        return dai->expr_result.getInteger();
-    }
-    
     if (dai->isCalculated())
     {
-        // calculated field with bad expr
-        return 0;
+        if (!dai->expr->eval(&dai->expr_result) ||
+             (dai->expr->getType() != kscript::Value::typeDouble &&
+              dai->expr->getType() != kscript::Value::typeInteger))
+        {
+            return 0;
+        }
+
+        return dai->expr_result.getInteger();
     }
 
-    return m_file.getInteger(dai->ordinal);
-*/
-    return 0;
+
+    unsigned char* ptr = m_rowptr+dai->offset;
+    unsigned int retval;
+
+    retval = *(ptr) +
+                (*(ptr+1) << 8) +
+                (*(ptr+2) << 16) +
+                (*(ptr+3) << 24);
+
+    return (signed int)retval;
 }
+
 
 bool TtbIterator::getBoolean(xd::objhandle_t data_handle)
 {
-/*
     TtbDataAccessInfo* dai = (TtbDataAccessInfo*)data_handle;
-    if (dai == NULL)
-    {
-        return false;
-    }
 
-    if (dai->expr)
-    {
-        dai->expr->eval(&dai->expr_result);
-        return dai->expr_result.getBoolean();
-    }
-    
+    if (!dai)
+        return false;
+    if (!m_rowptr)
+        return false;
+
     if (dai->isCalculated())
     {
-        // calculated field with bad expr
-        return false;
+        if (!dai->expr->eval(&dai->expr_result) ||
+             dai->expr->getType() != kscript::Value::typeBoolean)
+        {
+            return false;
+        }
+
+        return dai->expr_result.getBoolean();
+
     }
 
-    return m_file.getBoolean(dai->ordinal);
-*/
-    return false;
+    return (*(m_rowptr+dai->offset) == 'T' ? true : false);
 }
+
 
 bool TtbIterator::isNull(xd::objhandle_t data_handle)
 {
-/*
     TtbDataAccessInfo* dai = (TtbDataAccessInfo*)data_handle;
-    if (dai == NULL)
-    {
-        return false;
-    }
 
-    if (dai->expr)
-    {
-        dai->expr->eval(&dai->expr_result);
-        return dai->expr_result.isNull();
-    }
-    
+    //if (!dai->is_active)
+    //    return true;
+
+    if (!m_rowptr)
+        return true;
+
     if (dai->isCalculated())
     {
-        // calculated field with bad expr
-        return true;
+        if (!dai->expr->eval(&dai->expr_result))
+            return true;
+
+        return dai->expr_result.isNull();
     }
-            
-    return m_file.isNull(dai->ordinal);
-*/
+     else
+    {
+        // check null
+        if (dai->nulls_allowed)
+        {
+            // remove the null bit, if any
+            *(m_rowptr + dai->offset - 1) &= 0xfe;
+        }
+         else
+        {
+            return false;
+        }
+    }
+
     return false;
 }
 
