@@ -1368,6 +1368,16 @@ xd::IFileInfoPtr FsDatabase::getFileInfo(const std::wstring& path)
         return static_cast<xd::IFileInfo*>(f);
     }
 
+    if (xf_get_file_exist(phys_path + L".ttb"))
+    {
+        xdcommon::FileInfo* f = new xdcommon::FileInfo;
+        f->name = kl::afterLast(phys_path, PATH_SEPARATOR_CHAR);
+        kl::trim(f->name);
+        f->type = xd::filetypeTable;
+        f->format = xd::formatTTB;
+
+        return static_cast<xd::IFileInfo*>(f);
+    }
 
     if (xf_get_directory_exist(phys_path))
     {
@@ -1514,6 +1524,15 @@ xd::IFileInfoEnumPtr FsDatabase::getFolderInfo(const std::wstring& path)
 
                 continue;
             }
+             else if (ext == L"ttb")
+            {
+                XdfsFileInfo* f = new XdfsFileInfo(this);
+                f->name = info.m_name.substr(0, info.m_name.length() - 4);
+                f->type = xd::filetypeTable;
+                f->format = xd::formatTTB;
+                retval->append(f);
+                continue;
+            }
             
             
             
@@ -1622,6 +1641,10 @@ IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatDefi
         phys_path = deffi.data_path;
     }
 
+    if (xf_get_file_exist(phys_path + L".ttb"))
+    {
+        phys_path += L".ttb";
+    }
 
     if (!xf_get_file_exist(phys_path))
         return xcm::null;
