@@ -302,6 +302,8 @@
     </ClCompile>
     <ClCompile Include="rawtext.cpp" />
     <ClCompile Include="ttbfile.cpp" />
+    <ClCompile Include="ttbiterator.cpp" />
+    <ClCompile Include="ttbset.cpp" />
     <ClCompile Include="xbase.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -352,6 +354,8 @@
     <ClInclude Include="fixedlengthtextset.h" />
     <ClInclude Include="rawtext.h" />
     <ClInclude Include="ttbfile.h" />
+    <ClInclude Include="ttbiterator.h" />
+    <ClInclude Include="ttbset.h" />
     <ClInclude Include="xbase.h" />
     <ClInclude Include="xbaseiterator.h" />
     <ClInclude Include="xbaseset.h" />

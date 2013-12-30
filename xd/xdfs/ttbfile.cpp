@@ -878,10 +878,10 @@ bool TtbTable::writeRow(xd::rowpos_t row, unsigned char* buf)
 
 
 bool TtbTable::writeColumnInfo(int col_idx,
-                                  const std::wstring& col_name,
-                                  int type,
-                                  int width,
-                                  int scale)
+                               const std::wstring& col_name,
+                               int type,
+                               int width,
+                               int scale)
 {
     XCM_AUTO_LOCK(m_object_mutex);
 
@@ -1004,10 +1004,6 @@ bool TtbTable::isRowDeleted(xd::rowpos_t row)
     return deleted;
 }
 
-xd::rowpos_t TtbTable::setDeletedRowCount(int deleted_row_count)
-{
-    return 0;
-}
 
 xd::rowpos_t TtbTable::getRowCount(xd::rowpos_t* deleted_row_count)
 {

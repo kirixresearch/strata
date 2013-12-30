@@ -19,6 +19,7 @@
 #include "xdfs.h"
 #include "database.h"
 #include "xbaseset.h"
+#include "ttbset.h"
 #include "delimitedtextset.h"
 #include "fixedlengthtextset.h"
 #include "xbase.h"
@@ -391,12 +392,17 @@ bool FsDatabase::getFileFormat(const std::wstring& phys_path,
 
     // if a format is not specified in the ExtFileInfo,
     // use the file extension to determine the format
-    if (0 == wcscasecmp(ext.c_str(), L"dbf"))
+    if (0 == wcscasecmp(ext.c_str(), L"ttb"))
+    {
+        info->format = xd::formatTTB;
+        return true;
+    }
+     else if (0 == wcscasecmp(ext.c_str(), L"dbf"))
     {
         info->format = xd::formatXbase;
         return true;
     }
-    if (0 == wcscasecmp(ext.c_str(), L"icsv"))
+     else if (0 == wcscasecmp(ext.c_str(), L"icsv"))
     {
         info->format = xd::formatTypedDelimitedText;
         return true;
@@ -1654,6 +1660,20 @@ IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatDefi
         set = static_cast<IXdfsSet*>(rawset);
         rawset->unref();
     }
+     else if (format == xd::formatTTB) // ttb
+    {
+        TtbSet* rawset = new TtbSet(this);
+        rawset->setObjectPath(path);
+        rawset->ref();
+        if (!rawset->init(phys_path))
+        {
+            rawset->unref();
+            return xcm::null;
+        }
+
+        set = static_cast<IXdfsSet*>(rawset);
+        rawset->unref();
+    }
      else if (format == xd::formatTypedDelimitedText) // icsv
     {
         DelimitedTextSet* rawset = new DelimitedTextSet(this);
@@ -1896,13 +1916,15 @@ bool FsDatabase::createTable(const std::wstring& path,
             ext = phys_path.substr(ext_pos+1);
         kl::makeLower(ext);
 
-        // default to a csv
-        format = xd::formatDelimitedText;
+        // default to a ttb
+        format = xd::formatTTB;
 
         if (ext == L"icsv")
             format = xd::formatTypedDelimitedText;
         else if (ext == L"dbf")
             format = xd::formatXbase;
+        else if (ext == L"ttb")
+            format = xd::formatTTB;
     }
     
     if (format == xd::formatXbase)

@@ -136,7 +136,8 @@ enum
     formatDelimitedText = 2,      // delimited text file, interpreted as table
     formatFixedLengthText = 3,    // fixed length text, interpreted as table
     formatText = 4,               // regular text file, as stream (not table)
-    formatTypedDelimitedText = 5  // a delimited text file with type information (icsv)
+    formatTypedDelimitedText = 5, // a delimited text file with type information (icsv)
+    formatTTB = 6                 // TTB table format
 };
 
 

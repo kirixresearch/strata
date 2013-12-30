@@ -12,6 +12,7 @@
 #ifndef __XDFS_TTBTBL_H
 #define __XDFS_TTBTBL_H
 
+#include <kl/file.h>
 
 const int ttb_header_len = 1024;
 const int ttb_column_descriptor_len = 256;
@@ -47,6 +48,7 @@ public:
     virtual ~TtbTable();
 
     bool open(const std::wstring& filename);
+    bool isOpen() const { return m_file ? true : false; }
     bool reopen(bool exclusive);
     void close();
 
@@ -54,7 +56,7 @@ public:
     std::wstring getMapFilename();
 
     int getRowWidth();
-    xd::rowpos_t getRowCount(xd::rowpos_t* deleted_row_count);
+    xd::rowpos_t getRowCount(xd::rowpos_t* deleted_row_count = NULL);
     xd::IStructurePtr getStructure();
 
     xd::rowpos_t findNextRowPos(xd::rowpos_t offset, int delta);
@@ -76,7 +78,6 @@ public:
                          int width,
                          int scale);
 
-    xd::rowpos_t setDeletedRowCount(int deleted_row_count);
     void recalcPhysRowCount();
     bool restoreDeleted();
 
