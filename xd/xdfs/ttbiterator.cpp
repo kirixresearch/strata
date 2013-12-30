@@ -351,12 +351,12 @@ bool TtbIterator::seek(const unsigned char* key, int length, bool soft)
     xd::rowpos_t row = rowidGetRowPos(*rowid);
 
     m_buf_rowcount = m_file.getRows(m_buf,
-                                      m_rowpos_buf,
-                                      0,
-                                      row,
-                                      1,
-                                      true,
-                                      m_include_deleted);
+                                    m_rowpos_buf,
+                                    0,
+                                    row,
+                                    1,
+                                    true,
+                                    m_include_deleted);
     m_buf_pos = 0;
     m_eof = (m_buf_rowcount == 0 ? true : false);
     m_bof = (m_buf_rowcount == 0 ? true : false);
@@ -396,7 +396,15 @@ double TtbIterator::getPos()
 
 void TtbIterator::goRow(const xd::rowid_t& rowid)
 {
+    xd::tableord_t table_ord = rowidGetTableOrd(rowid);
+    xd::rowpos_t row_pos = rowidGetRowPos(rowid);
 
+    m_file.getRow(row_pos, m_buf);
+    m_rowptr = m_buf;
+    m_buf_pos = 0;
+    m_rowpos_buf[m_buf_pos] = row_pos;
+
+    updatePosition();
 }
 
 xd::IStructurePtr TtbIterator::getStructure()
