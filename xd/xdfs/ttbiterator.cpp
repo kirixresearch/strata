@@ -133,6 +133,7 @@ bool TtbIterator::init(xd::IDatabasePtr db,
 
     m_table_ord = 0;
     m_table_rowwidth = m_file.getRowWidth();
+    m_row_count = m_file.getRowCount();
 
     m_read_ahead_rowcount = tableiterator_read_ahead_buffer_size/m_table_rowwidth;
     if (m_read_ahead_rowcount == 0)
@@ -167,7 +168,7 @@ std::wstring TtbIterator::getTable()
 
 xd::rowpos_t TtbIterator::getRowCount()
 {
-    return 0;
+    return m_row_count;
 }
 
 xd::IDatabasePtr TtbIterator::getDatabase()
@@ -198,7 +199,7 @@ void TtbIterator::updatePosition()
 
 unsigned int TtbIterator::getIteratorFlags()
 {
-    return 0;
+    return xd::ifFastRowCount;
 }
 
 
