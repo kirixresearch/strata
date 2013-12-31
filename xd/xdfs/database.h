@@ -112,7 +112,7 @@ public:
     xd::IJobPtr createJob();
 
     IXdsqlTablePtr openTable(const std::wstring& path);
-    IXdfsSetPtr openSetEx(const std::wstring& path, const xd::FormatDefinition& fi);
+    IXdsqlTablePtr openSetEx(const std::wstring& path, const xd::FormatDefinition& fi);
 
 
     bool loadDataView(const std::wstring& path, xd::FormatDefinition* format_info);

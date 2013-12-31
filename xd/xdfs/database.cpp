@@ -1027,7 +1027,7 @@ bool FsDatabase::copyData(const xd::CopyParams* info, xd::IJob* job)
         xd::FormatDefinition fi;
         fi.format = xd::formatDefault;
 
-        IXdfsSetPtr output = openSetEx(info->output, fi);
+        IXdsqlTablePtr output = openSetEx(info->output, fi);
         if (output.isNull())
             return false;
     }
@@ -1295,6 +1295,17 @@ public:
 
 xd::IFileInfoPtr FsDatabase::getFileInfo(const std::wstring& path)
 {
+    if (path.substr(0, 11) == L"/.temp/.ptr")
+    {
+        xdcommon::FileInfo* f = new xdcommon::FileInfo;
+        f->name = kl::afterLast(path, '/');
+        f->type = xd::filetypeTable;
+        f->format = xd::formatDefault;
+        f->is_mount = false;
+        return static_cast<xd::IFileInfo*>(f);
+    }
+
+
     std::wstring cstr, rpath;
     if (detectMountPoint(path, &cstr, &rpath))
     {
@@ -1622,7 +1633,7 @@ IXdsqlTablePtr FsDatabase::openTable(const std::wstring& path)
     return openSetEx(path, fi);
 }
 
-IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatDefinition& _fi)
+IXdsqlTablePtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatDefinition& _fi)
 {
     const xd::FormatDefinition* fi = &_fi;
     xd::FormatDefinition deffi;
@@ -1674,7 +1685,7 @@ IXdfsSetPtr FsDatabase::openSetEx(const std::wstring& path, const xd::FormatDefi
 
 
     
-    IXdfsSetPtr set;
+    IXdsqlTablePtr set;
     
     // open the set in the appropriate format
     if (format == xd::formatXbase) // dbf
@@ -2311,11 +2322,15 @@ xd::IRowInserterPtr FsDatabase::bulkInsert(const std::wstring& path)
     xd::FormatDefinition fi;
     fi.format = xd::formatDefault;
 
-    IXdfsSetPtr set = openSetEx(path, fi);
+    IXdsqlTablePtr set = openSetEx(path, fi);
     if (set.isNull())
         return xcm::null;
+        
+    IXdfsSetPtr xdfs_set = set;
+    if (xdfs_set.isNull())
+        return xcm::null;
     
-    return set->getRowInserter();
+    return xdfs_set->getRowInserter();
 }
 
 xd::IStructurePtr FsDatabase::describeTable(const std::wstring& path)
