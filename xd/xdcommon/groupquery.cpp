@@ -19,12 +19,35 @@
 #include <kl/portable.h>
 #include <kl/math.h>
 #include <xd/xd.h>
-#include "database.h"
 #include "../xdcommon/xdcommon.h"
 #include "../xdcommon/exindex.h"
 #include "../xdcommon/keylayout.h"
 #include "../xdcommon/util.h"
 #include "../../kscript/kscript.h"
+
+
+namespace xdcommon
+{
+
+
+
+enum
+{
+    GroupFunc_None = 0,
+    GroupFunc_First = 1,
+    GroupFunc_Last = 2,
+    GroupFunc_Min = 3,
+    GroupFunc_Max = 4,
+    GroupFunc_Sum = 5,
+    GroupFunc_Avg = 6,
+    GroupFunc_Count = 7,
+    GroupFunc_MaxDistance = 8,
+    GroupFunc_Stddev = 9,
+    GroupFunc_Variance = 10,
+    GroupFunc_Merge = 11,
+    GroupFunc_GroupID = 12
+};
+
 
 
 static void getDefaultExprWidthAndScale(const std::wstring& expr, int type, int* width, int* scale)
@@ -685,7 +708,7 @@ void buf2str(std::string& str, char* ptr, int len)
 
 
 
-bool XdnativeDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
+bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* job)
 {
     std::wstring input = info->input;
     std::wstring group = info->group;
@@ -705,7 +728,7 @@ bool XdnativeDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
     xd::rowpos_t row_count = 0;
 
 
-    xd::IFileInfoPtr finfo = getFileInfo(input);
+    xd::IFileInfoPtr finfo = db->getFileInfo(input);
     if (finfo.isNull())
         return false;
 
@@ -714,7 +737,7 @@ bool XdnativeDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
     xd::QueryParams qp;
     qp.from = input;
 
-    sp_iter = query(qp);
+    sp_iter = db->query(qp);
     if (sp_iter.isNull())
     {
         // iterator can't be made for some reason
@@ -1043,7 +1066,7 @@ bool XdnativeDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
 
     
     // create output structure
-    xd::IStructurePtr output_struct = createStructure();
+    xd::IStructurePtr output_struct = db->createStructure();
     std::set<std::wstring> unique_output_fields;
     std::vector<GroupOutputInfo>::iterator out_it;
 
@@ -1070,10 +1093,10 @@ bool XdnativeDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
         info->setScale(out_it->m_scale);
     }
 
-    if (!createTable(info->output, output_struct, NULL))
+    if (!db->createTable(info->output, output_struct, NULL))
         return false;
 
-    xd::IRowInserterPtr output_inserter = bulkInsert(info->output);
+    xd::IRowInserterPtr output_inserter = db->bulkInsert(info->output);
     if (output_inserter.isNull())
         return false;
 
@@ -1125,12 +1148,19 @@ bool XdnativeDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
 
     ExIndex* idx = NULL;
     
+
+    std::wstring temp_path = db->getAttributes()->getStringAttribute(xd::dbattrTempDirectory);
+
     if (!group.empty())
     {
-        index_filename = getTempFilename();
+        index_filename = temp_path;
+        index_filename += PATH_SEPARATOR_STR;
+        index_filename += kl::getUniqueString();
+        index_filename += L".idx";
+
 
         idx = new ExIndex;
-        idx->setTempFilePath(getTempPath());
+        idx->setTempFilePath(temp_path);
 
 
         keylen = kl.getKeyLength();
@@ -1945,7 +1975,7 @@ bool XdnativeDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
 
     if (cancelled)
     {
-        deleteFile(info->output);
+        db->deleteFile(info->output);
         return false;
     }
      else
@@ -1965,3 +1995,4 @@ bool XdnativeDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
 
 
 
+};

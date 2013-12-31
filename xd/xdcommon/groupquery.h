@@ -20,14 +20,7 @@ namespace xdcommon
 
 
 
-bool runGroupQuery(xd::IDatabasePtr db,
-                   xd::IIteratorPtr iter,
-                   const std::wstring& output_path,
-                   const std::wstring& group,
-                   const std::wstring& output,
-                   const std::wstring& condition,
-                   const std::wstring& having,
-                   xd::IJob* job);
+bool runGroupQuery(xd::IDatabasePtr db, xd::GroupQueryParams* info, xd::IJob* job);
 
 
 }; // namespace xdcommon

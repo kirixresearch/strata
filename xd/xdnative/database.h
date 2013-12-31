@@ -167,6 +167,7 @@ public:
     bool deleteStream(const std::wstring& ofs_path);
     
     xd::IIteratorPtr query(const xd::QueryParams& qp);
+    bool groupQuery(xd::GroupQueryParams* info, xd::IJob* job);
 
     xd::IRelationPtr createRelation(const std::wstring& tag,
                                        const std::wstring& left_set_path,
@@ -199,8 +200,6 @@ public:
                  xcm::IObjectPtr& result,
                  xd::IJob* job);
                  
-    bool groupQuery(xd::GroupQueryParams* info, xd::IJob* job);
-
 private:
 
     bool detectMountPoint(const std::wstring& path,

@@ -35,6 +35,7 @@
 #include "../xdcommon/dbfuncs.h"
 #include "../xdcommon/formatdefinition.h"
 #include "../xdcommon/cmndynamicset.h"
+#include "../xdcommon/groupquery.h"
 #include <kl/url.h>
 #include <kl/hex.h>
 #include <kl/json.h>
@@ -2392,7 +2393,7 @@ bool FsDatabase::execute(const std::wstring& command,
 
 bool FsDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
 {
-    return false;
+    return xdcommon::runGroupQuery(static_cast<xd::IDatabase*>(this), info, job);
 }
 
 

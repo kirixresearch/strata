@@ -28,6 +28,7 @@
 #include "../xdcommon/connectionstr.h"
 #include "../xdcommon/dbfuncs.h"
 #include "../xdcommon/cmndynamicset.h"
+#include "../xdcommon/groupquery.h"
 #include "nodefilestream.h"
 #include "database.h"
 #include "baseset.h"
@@ -3343,6 +3344,11 @@ xd::IIteratorPtr XdnativeDatabase::query(const xd::QueryParams& qp)
     if (table.isNull())
         return xcm::null;
     return table->createIterator(qp.columns, qp.order, qp.job);
+}
+
+bool XdnativeDatabase::groupQuery(xd::GroupQueryParams* info, xd::IJob* job)
+{
+    return xdcommon::runGroupQuery(static_cast<xd::IDatabase*>(this), info, job);
 }
 
 
