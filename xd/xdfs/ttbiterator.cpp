@@ -178,16 +178,40 @@ xd::IDatabasePtr TtbIterator::getDatabase()
 
 xd::IIteratorPtr TtbIterator::clone()
 {
-    TtbIterator* iter = new TtbIterator;
+    TtbIterator* new_iter = new TtbIterator;
     
-    if (!iter->init(m_database, m_set, m_file.getFilename()))
+
+    if (!new_iter->init(m_database, m_set, m_file.getFilename()))
     {
         return xcm::null;
     }
     
-   // iter->goRow(m_current_row);
+    if (new_iter->m_table_rowwidth != m_table_rowwidth ||
+        new_iter->m_buf_rowcount != m_buf_rowcount)
+    {
+        // buffer sizes aren't the same anymore; clone not possible
+        delete new_iter;
+        return xcm::null;
+    }
+
+    new_iter->m_table_ord = m_table_ord;
+    new_iter->m_row_count = m_row_count;
+    new_iter->m_eof = m_eof;
+    new_iter->m_bof = m_bof;
+    new_iter->m_read_ahead_rowcount = m_read_ahead_rowcount;
+    new_iter->m_include_deleted = m_include_deleted;
+
+    new_iter->m_buf_rowcount = m_buf_rowcount;
+    new_iter->m_buf_pos = m_buf_pos;
+    new_iter->m_rowid = m_rowid;
+    memcpy(new_iter->m_buf, m_buf, m_table_rowwidth * m_buf_rowcount);
+    memcpy(new_iter->m_rowpos_buf, m_rowpos_buf, sizeof(xd::rowpos_t) * m_buf_rowcount);
+
+    new_iter->updatePosition();
+
+
     
-    return static_cast<xd::IIterator*>(iter);
+    return static_cast<xd::IIterator*>(new_iter);
 }
 
 void TtbIterator::updatePosition()

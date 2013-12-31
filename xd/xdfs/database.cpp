@@ -1101,6 +1101,13 @@ bool FsDatabase::deleteFile(const std::wstring& _path)
         return true;
     }
     
+    if (xf_get_file_exist(path + L".ttb"))
+    {
+        xf_remove(path + L".ttb");
+        xf_remove(path + L".map");
+        return true;
+    }
+
     std::wstring cstr, rpath;
     if (detectMountPoint(_path, &cstr, &rpath))
     {
@@ -2006,7 +2013,14 @@ bool FsDatabase::createTable(const std::wstring& path,
             format = xd::formatTTB;
     }
     
-    if (format == xd::formatXbase)
+    if (format == xd::formatTTB)
+    {
+        if (!kl::icontains(phys_path, L".ttb"))
+            phys_path += L".ttb";
+
+        return TtbTable::create(phys_path, structure);
+    }
+     else if (format == xd::formatXbase)
     {
         // create an xbase file with no rows in it
         
