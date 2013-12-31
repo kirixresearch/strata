@@ -293,7 +293,7 @@ bool TtbTable::create(const std::wstring& filename, xd::IStructure* structure)
 
     // row count
     int2buf(header+20, 0); // lower 32 bits
-    int2buf(header+24, 0); // upper 32 bits;
+    int2buf(header+24, 0); // upper 32 bits
 
     // write out the header info
     
@@ -1019,11 +1019,38 @@ xd::rowpos_t TtbTable::getRowCount(xd::rowpos_t* deleted_row_count)
         }
     }
 
-    return m_phys_row_count;
+    // lock the header
+    if (!xf_trylock(m_file, 0, ttb_header_len, 10000))
+        return m_phys_row_count;
+
+    unsigned char buf[8];
+    if (!xf_seek(m_file, 0, xfSeekSet))
+    {
+        xf_unlock(m_file, 0, ttb_header_len);
+        return false;
+    }
+
+    if (8 != xf_read(m_file, buf, 1, 8))
+    {
+        xf_unlock(m_file, 0, ttb_header_len);
+        XCM_AUTO_LOCK(m_object_mutex);
+        return m_phys_row_count;
+    }
+
+    // unlock header
+
+    xf_unlock(m_file, 0, ttb_header_len);
+
+    {
+        XCM_AUTO_LOCK(m_object_mutex);
+        m_phys_row_count = bufToInt64(buf);
+        return m_phys_row_count;
+    }
 }
 
 
-void TtbTable::recalcPhysRowCount()
+
+xd::rowpos_t TtbTable::recalcPhysRowCount()
 {
     XCM_AUTO_LOCK(m_object_mutex);
 
@@ -1038,7 +1065,7 @@ void TtbTable::recalcPhysRowCount()
     {
         // lock the header
         if (!xf_trylock(m_file, 0, ttb_header_len, 10000))
-            return;
+            return real_phys_row_count;
 
         m_phys_row_count = real_phys_row_count;
 
@@ -1060,6 +1087,8 @@ void TtbTable::recalcPhysRowCount()
         }
         */
     }
+
+    return real_phys_row_count;
 }
 
 

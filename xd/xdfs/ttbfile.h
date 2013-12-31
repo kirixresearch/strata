@@ -78,7 +78,7 @@ public:
                          int width,
                          int scale);
 
-    void recalcPhysRowCount();
+    xd::rowpos_t recalcPhysRowCount();
     bool restoreDeleted();
 
     unsigned long long getStructureModifyTime();
