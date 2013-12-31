@@ -169,6 +169,8 @@ xd::IStructurePtr CommonDynamicSet::getStructure()
 }
 
 
+
+
 bool CommonDynamicSet::create(xd::IDatabasePtr database,
                               const std::wstring& base_path)
 {
@@ -179,6 +181,13 @@ bool CommonDynamicSet::create(xd::IDatabasePtr database,
     IXdsqlTablePtr base_table = xdb->openTable(base_path);
     if (base_table.isNull())
         return false;
+
+    return create(database, base_table);
+}
+
+bool CommonDynamicSet::create(xd::IDatabasePtr database,
+                              IXdsqlTablePtr base_table)
+{
 
     //std::wstring filename = dbi->getUniqueFilename();
     //filename += L".dyn";
@@ -206,15 +215,15 @@ bool CommonDynamicSet::create(xd::IDatabasePtr database,
 
     m_index = static_cast<IIndex*>(di);
     m_filename = filename;
-    m_base_path = base_path;
     m_base_table = base_table;
     m_row_count = 0;
 
-    m_base_iter = database->query(base_path, L"", L"", L"", NULL);
+    m_base_iter = base_table->createIterator(L"", L"", NULL);
     m_database = database;
     
     return true;
 }
+
 
 void CommonDynamicSet::startBulkInsert()
 {
@@ -413,7 +422,7 @@ xd::IIteratorPtr CommonDynamicSet::createIterator(const std::wstring& columns,
                                                   const std::wstring& expr,
                                                   xd::IJob* job)
 {
-    xd::IIteratorPtr data_iter = m_database->query(m_base_path, columns, L"", L"", NULL);
+    xd::IIteratorPtr data_iter = m_base_table->createIterator(columns, L"", NULL);
     if (data_iter.isNull())
         return xcm::null;
     data_iter->goFirst();

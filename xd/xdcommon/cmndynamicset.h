@@ -50,6 +50,9 @@ public:
     bool create(xd::IDatabasePtr database,
                 const std::wstring& base_path);
 
+    bool create(xd::IDatabasePtr database,
+                IXdsqlTablePtr base_table);
+
     void setObjectPath(const std::wstring& new_path);
     std::wstring getObjectPath();
 
@@ -92,7 +95,6 @@ private:
     std::wstring m_filename;
     std::wstring m_temp_path;
     std::vector<CommonDynamicSetIndexEntry> m_indexes;
-    std::wstring m_base_path;
     IXdsqlTablePtr m_base_table;
     xd::IIteratorPtr m_base_iter;
     xd::rowpos_t m_row_count;

@@ -1833,7 +1833,7 @@ xd::IIteratorPtr FsDatabase::query(const xd::QueryParams& qp)
         // create a filtered record set
         CommonDynamicSet* dynset = new CommonDynamicSet;
         dynset->ref();
-        if (!dynset->create(static_cast<xd::IDatabase*>(this), qp.from))
+        if (!dynset->create(static_cast<xd::IDatabase*>(this), table))
         {
             // error.setError(xd::errorGeneral, L"Unable to process WHERE clause");
             dynset->unref();
