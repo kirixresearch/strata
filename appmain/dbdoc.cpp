@@ -3411,7 +3411,7 @@ void DbDoc::onDragDrop(IFsItemPtr target,
         std::wstring dest_driver = getDbDriver(dest_db);
 
         std::wstring dest_name = src_name;
-        if (dest_driver == L"xdfs")
+        if (g_app->getDbDriver() != L"xdfs" && dest_driver == L"xdfs")
         {
             // if we're saving the file to a filesystem mount and no extension
             // is specified, then automatically add a 'csv' or 'js' extension; this

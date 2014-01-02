@@ -1041,6 +1041,12 @@ std::wstring determineMimeType(const std::wstring& path)
 
 std::wstring addExtensionIfExternalFsDatabase(const std::wstring& _path, const std::wstring& ext)
 {
+    if (g_app->getDbDriver() == "xdfs")
+    {
+        // root fs is alrady xdfs, so we don't need to worry about this
+        return _path;
+    }
+
     std::wstring path = _path;
     std::wstring extension;
     xd::IDatabasePtr mount_db = g_app->getDatabase()->getMountDatabase(path);
