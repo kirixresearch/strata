@@ -1024,7 +1024,7 @@ xd::rowpos_t TtbTable::getRowCount(xd::rowpos_t* deleted_row_count)
         return m_phys_row_count;
 
     unsigned char buf[8];
-    if (!xf_seek(m_file, 0, xfSeekSet))
+    if (!xf_seek(m_file, 20, xfSeekSet))
     {
         xf_unlock(m_file, 0, ttb_header_len);
         return false;

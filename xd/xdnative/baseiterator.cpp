@@ -2825,7 +2825,7 @@ bool BaseIterator::putInteger(xd::objhandle_t column_handle,
 
     if (dai->type == xd::typeInteger)
     {
-        // set data --
+        // set data
         unsigned char* ptr = m_rowptr+dai->offset;
         unsigned int v = (unsigned int)value;
         *(ptr)   = (v) & 0xff;

@@ -68,6 +68,22 @@ private:
 
 
 
+class TtbInsertData
+{
+public:
+    
+    std::wstring name;
+    int type;
+    int width;
+    int scale;
+    int offset;
+    bool nulls_allowed;
+
+    xd::IColumnInfoPtr col;
+};
+
+
+
 class TtbRowInserter : public xd::IRowInserter
 {
     XCM_CLASS_NAME("xdfs.TtbRowInserter")
@@ -116,14 +132,21 @@ public:
     bool flush();
 
 private:
+
     TtbSet* m_set;
     TtbTable* m_file;  // pointer to m_set's TtbTable;
+
+    int m_row_width;
+    int m_buf_row;
+    std::wstring m_tbl_filename;
+    unsigned char* m_buf;
+    unsigned char* m_rowptr;
     
     bool m_inserting;
+
+    std::vector<TtbInsertData*> m_fields;
 };
 
 
 
-
 #endif
-
